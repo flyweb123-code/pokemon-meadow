@@ -28,6 +28,9 @@ targets:
         UIStatusBarStyle: UIStatusBarStyleLightContent
         LSApplicationQueriesSchemes: [shortcuts]
         ITSAppUsesNonExemptEncryption: false
+        NSMotionUsageDescription: 걸은 거리만큼 가방에 알을 넣으려고 걸음 기록을 읽어요.
+        NSLocationWhenInUseUsageDescription: 알을 어느 동네에서 주웠는지 남기려고 위치를 써요.
+        NSLocationAlwaysAndWhenInUseUsageDescription: 휴대폰이 잠겨 있어도 걸으면 알을 줍고, 주운 동네를 남기려고 위치를 써요.
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.flyweb123.pokerun

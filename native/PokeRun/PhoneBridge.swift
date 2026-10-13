@@ -50,8 +50,40 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
         flushPending()
     }
 
+    // MARK: 걸음 → 가방 알 (WalkTracker)
+
+    private let walkKey = "pendingWalk"
+
+    func enqueueWalk(km: Double, place: String) {
+        var list = UserDefaults.standard.array(forKey: walkKey) as? [[String: Any]] ?? []
+        list.append(["km": km, "place": place])
+        UserDefaults.standard.set(list, forKey: walkKey)
+        flushPending()
+    }
+
+    private func flushWalk(_ web: WKWebView) {
+        let list = UserDefaults.standard.array(forKey: walkKey) as? [[String: Any]] ?? []
+        guard !list.isEmpty else { return }
+        UserDefaults.standard.set([[String: Any]](), forKey: walkKey)
+        for item in list {
+            let km = item["km"] as? Double ?? 0
+            let place = (item["place"] as? String ?? "")
+            guard let placeJSON = try? JSONSerialization.data(withJSONObject: [place]),
+                  let arg = String(data: placeJSON, encoding: .utf8) else { continue }
+            // arg 는 ["동네"] 모양이라 [0] 으로 꺼낸다 (따옴표가 섞여도 안전)
+            web.evaluateJavaScript("window.pokeRunWalk(\(km), \(arg)[0])") { [weak self] result, error in
+                if error != nil || (result as? Bool) == false, let self {
+                    var back = UserDefaults.standard.array(forKey: self.walkKey) as? [[String: Any]] ?? []
+                    back.append(item)
+                    UserDefaults.standard.set(back, forKey: self.walkKey)
+                }
+            }
+        }
+    }
+
     private func flushPending() {
         guard gameReady, let web = webView else { return }
+        flushWalk(web)
         let list = UserDefaults.standard.array(forKey: pendingKey) as? [Double] ?? []
         guard !list.isEmpty else { return }
         UserDefaults.standard.set([Double](), forKey: pendingKey)

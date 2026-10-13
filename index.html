@@ -284,7 +284,7 @@ ol.log li.big .txt{color:#c03838}
 .runwin{max-width:640px;height:min(90vh,760px);display:flex;flex-direction:column}
 .run-body{flex:1;min-height:0;overflow-y:auto;padding-bottom:14px}
 .run-body .rtab[hidden]{display:none}
-.runtabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:3px solid var(--frame)}
+.runtabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:3px solid var(--frame)}
 .runtab{padding:10px 4px;font-size:16px;text-align:center;border-left:3px solid var(--frame);background:var(--win)}
 .runtab:first-child{border-left:0}
 .runtab[aria-selected="true"]{background:var(--frame);color:var(--win);font-weight:700}
@@ -317,6 +317,20 @@ ol.log li.big .txt{color:#c03838}
 .eslot.empty{border-style:dashed;color:var(--dim);background:transparent;justify-content:center}
 .eslot.new .egg{animation:roll .7s cubic-bezier(.3,1.5,.6,1)}
 @keyframes roll{from{transform:translateY(-30px) rotate(-200deg);opacity:0}}
+.runtab .dot,.bag-tabs .dot{display:inline-block;width:8px;height:8px;background:#e04838;margin-left:4px;vertical-align:middle;box-shadow:0 0 0 2px var(--win)}
+.eslot.add{font-size:30px;color:var(--frame);border-color:var(--inner)}
+.bag-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.bag-tabs button{font:inherit;font-size:13px;border:3px solid var(--inner);background:#fff;color:var(--win-ink);padding:5px 9px;cursor:pointer}
+.bag-tabs button b{margin-left:4px}
+.bag-tabs button[aria-selected="true"]{border-color:var(--frame);background:var(--frame);color:var(--win)}
+.bag-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.bslot{position:relative;border:3px solid var(--inner);background:#fff;padding:16px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;font:inherit;font-size:11px;color:var(--win-ink);min-width:0;cursor:pointer}
+.bslot .egg{width:36px;height:44px}
+.bslot .pl{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dim);font-size:10px}
+.bslot[aria-current="true"]{border-color:var(--cursor);background:var(--card)}
+.newtag{position:absolute;top:2px;left:50%;transform:translateX(-50%);font-size:9px;line-height:1;background:#e04838;color:#fff;padding:2px 4px;letter-spacing:.5px}
+.bag-empty{grid-column:1/-1;color:var(--dim);font-size:14px;padding:18px 0;text-align:center}
+.bag-pick .lk-btn{margin-top:8px}
 .egg-actions{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;font-size:14px}
 .gradeinfo{font-size:12px;color:var(--dim);margin:10px 0 0;line-height:1.7}
 #buddy{display:grid;gap:10px}
@@ -633,8 +647,14 @@ ol.runs li span{color:var(--dim)}
     <div class="run-body">
       <section class="rtab" data-tab="egg">
         <div class="incu-box" id="incu"></div>
-        <h4>부화 중인 알 <span class="small" id="eggCount"></span></h4>
+        <h4>부화기 <span class="small" id="eggCount"></span></h4>
         <div class="eggs" id="eggs"></div>
+      </section>
+      <section class="rtab" data-tab="bag">
+        <div class="incu-box bag-pick" id="bagPick"></div>
+        <h4>가방 <span class="small" id="bagCount"></span></h4>
+        <div class="bag-tabs" id="bagTabs" role="tablist"></div>
+        <div class="bag-grid" id="bagGrid"></div>
       </section>
       <section class="rtab" data-tab="buddy">
         <h4>런닝 짝꿍 <span class="small" id="budCount"></span></h4>
@@ -654,7 +674,7 @@ ol.runs li span{color:var(--dim)}
       </section>
     </div>
     <div class="runtabs" role="tablist">
-      <button class="runtab" role="tab" data-tab="egg">알</button><button class="runtab" role="tab" data-tab="buddy">짝꿍</button><button class="runtab" role="tab" data-tab="run">달리기</button>
+      <button class="runtab" role="tab" data-tab="egg">부화기</button><button class="runtab" role="tab" data-tab="bag">가방</button><button class="runtab" role="tab" data-tab="buddy">짝꿍</button><button class="runtab" role="tab" data-tab="run">달리기</button>
     </div>
   </div>
 </div>
@@ -2546,13 +2566,13 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, log: S.log.slice(0, 120),
     mons: S.mons.map(m => ({ uid: m.uid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, asleep: m.state === 'sleep', born: m.born })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t })), lockT: S.lockT,
-    eggs: S.eggs, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid };
+    eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid };
 }
 let saveFrozen = false;
 function save() { if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.eggs = d.eggs || []; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
+  S.lockT = d.lockT || 0; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
   S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
@@ -2565,7 +2585,7 @@ async function restore(d) {
 async function fresh() {
   S.base = midnight(); S.clock = realClock(); S.rel = {}; S.log = [];
   logEl.innerHTML = '';
-  S.eggs = []; S.unlocked.clear(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
+  S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked.clear(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
   const e = { id: S.eid++, g: 1, km: 0, need: GRADE[1].km, isNew: true, t: Date.now() }; S.eggs.push(e);
   for (let i = 0; i < 4; i++) { const p = randLand(); addBerry(p.x, p.y); }
   log('초원이 텅 비어 있다. 알을 부화시켜 친구를 만들어 보자.', [], true);
@@ -2951,7 +2971,7 @@ const MAX_BUDS = 3;
 const budReady = b => !!b && !!CHILDREN[b.sp] && b.km >= evoNeed(b);
 const evoNeed = m => { const g = gradeOf(baseOf(m.sp)), stage = evoStage(m.sp); return [0, 5, 10, 15, 20, 25][g] * (stage ? 1.5 : 1); };
 const fmtKm = v => (Math.floor(v * 100) / 100).toFixed(2);
-S.eggs = []; S.unlocked = new Set(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
+S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked = new Set(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
 const hatchQ = [];
 
 function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); if (dexBtns[sp]) lockDexBtn(sp); } }
@@ -2962,14 +2982,36 @@ function drawEgg() {
   S.eggs.push(e);
   save(); return e;
 }
-// 알 뽑기 버튼 없이 빈 칸은 바로 새 알로 채운다
-function fillEggs() { while (S.eggs.length < MAX_EGGS) drawEgg(); }
+// 가방: 움직인 거리만큼 알을 줍는다. 250m마다 0~2개라 2.5km면 대개 5~15개, 등급 확률은 알 뽑기와 같다.
+const MAX_BAG = 999, BAG_STEP = .25;
+const rollGrade = () => { const r = Math.random(); return r < .45 ? 1 : r < .75 ? 2 : r < .9 ? 3 : r < .98 ? 4 : 5; };
+function collectEggs(km, place) {
+  S.bagAcc += km; let n = 0;
+  while (S.bagAcc >= BAG_STEP) { S.bagAcc -= BAG_STEP; n += Math.floor(Math.random() * 3); }
+  n = Math.min(n, MAX_BAG - S.bag.length);
+  const t = Date.now(), got = [];
+  for (let i = 0; i < n; i++) { const g = rollGrade(); const e = { id: S.eid++, g, t, isNew: true }; if (place) e.place = place; S.bag.push(e); got.push(g); }
+  return got;
+}
+function gotLog(got, how, place) {
+  if (!got.length) return;
+  const by = [5, 4, 3, 2, 1].filter(g => got.includes(g)).map(g => `${GRADE[g].n} ${got.filter(x => x === g).length}`).join(', ');
+  log(`${how}${place ? ` ${place} 근처에서` : ''} 알 ${got.length}개를 주웠다! (${by})`, [], true);
+}
+// 가방의 알을 부화기로 옮긴다
+function incubate(e) {
+  if (S.eggs.length >= MAX_EGGS || !S.bag.includes(e)) return false;
+  S.bag = S.bag.filter(x => x !== e);
+  S.eggs.push({ id: e.id, g: e.g, km: 0, need: GRADE[e.g].km, isNew: true, t: e.t, place: e.place });
+  save(); return true;
+}
 // distance from any source goes to every egg and the buddy
 function applyKm(km) {
   if (!(km > 0)) return;
   S.totalKm += km;
   for (const e of [...S.eggs]) { e.km += km; if (e.km >= e.need) hatchEgg(e); }
-  fillEggs();
+  // 아이폰 앱이 걸음(만보기)으로 알을 줍고 있으면 런닝 거리로는 줍지 않는다 (같은 거리를 두 번 세지 않게)
+  if (!S.walkSync) gotLog(collectEggs(km), `${fmtKm(km)}km를 움직이며`);
   for (const b of S.buds) if (CHILDREN[b.sp]) b.km += km;
 }
 // 아이폰 앱(워치 연동)에서 열렸을 때: 알 현황을 앱으로 보내고, 워치에서 달린 거리를 받는다
@@ -2983,6 +3025,13 @@ function postNative() {
     try { h.postMessage({ eggs: S.eggs.map(e => ({ id: e.id, grade: GRADE[e.g].n, km: Math.round(e.km * 100) / 100, need: e.need })), buddy, total: Math.round(S.totalKm * 100) / 100 }); } catch (e) {}
   }, 300);
 }
+// 아이폰 앱: 잠금 중에도 걸은 거리(만보기)와 그 근처 동네 이름을 보낸다. 알 줍기에만 쓴다.
+window.pokeRunWalk = (km, place) => {
+  km = +km; if (!(km > 0 && km <= 200)) return false;
+  S.walkSync = true; S.walkKm += km;
+  gotLog(collectEggs(km, place || ''), `걸어서 ${fmtKm(km)}km`, place || '');
+  save(); renderRun(); return true;
+};
 window.pokeRunAddKm = km => { km = Math.round(+km * 100) / 100; if (!(km >= .01 && km <= 100)) return false; applyKm(km); addRun(km, 'watch'); return true; };
 function addRun(km, src) {
   S.runs.unshift({ t: Date.now(), km, src }); if (S.runs.length > 60) S.runs.pop();
@@ -3149,15 +3198,43 @@ $('#manAdd').onclick = () => {
 const runEl = $('#run');
 function openRun() { runEl.hidden = false; setRunTab(runTab); renderRun(); renderLock(); }
 $('#openRun').onclick = () => tabTo(runEl, openRun);
-$('#closeRun').onclick = () => runEl.hidden = true;
+$('#closeRun').onclick = () => { seeBag(); runEl.hidden = true; };
 runEl.addEventListener('click', e => { if (e.target === runEl) runEl.hidden = true; });
-let runTab = 'egg', eggSel = null;
+let runTab = 'egg', eggSel = null, bagG = 0, bagSel = null;
+// 가방을 보고 나가면 NEW 표시를 지운다
+function seeBag() { if (runTab !== 'bag' || runEl.hidden) return; let ch = false; S.bag.forEach(e => { if (e.isNew) { e.isNew = false; ch = true; } }); if (ch) save(); }
+function fmtWhen(t) { const d = new Date(t); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; }
+function renderBag() {
+  const hasNew = S.bag.some(e => e.isNew);
+  const tb = document.querySelector('.runtab[data-tab="bag"]'); tb.innerHTML = '가방' + (hasNew ? '<i class="dot" aria-label="새 알"></i>' : '');
+  if (runTab !== 'bag') return;
+  const sig = [bagG, bagSel?.id, S.bag.length, S.bag.filter(e => e.isNew).length, S.eggs.length].join();
+  if (sig === renderBag.sig) return; renderBag.sig = sig;
+  $('#bagCount').textContent = `${S.bag.length}개`;
+  const cnt = g => S.bag.filter(e => !g || e.g === g).length, nw = g => S.bag.some(e => e.isNew && (!g || e.g === g));
+  $('#bagTabs').innerHTML = [0, 1, 2, 3, 4, 5].map(g => `<button role="tab" data-g="${g}" aria-selected="${g === bagG}">${g ? GRADE[g].n : '전체'}<b>${cnt(g)}</b>${nw(g) ? '<i class="dot"></i>' : ''}</button>`).join('');
+  const list = S.bag.filter(e => !bagG || e.g === bagG).slice().reverse();
+  if (!S.bag.includes(bagSel)) bagSel = null;
+  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot" data-id="${e.id}" aria-current="${e === bagSel}">${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g)}<span>${GRADE[e.g].n}</span><span class="pl">${e.place ? esc(e.place.split(' ').pop()) : fmtWhen(e.t)}</span></button>`).join('')
+    : `<div class="bag-empty">${S.bag.length ? '이 등급 알이 없어요' : '움직이면 알을 주울 수 있어요'}</div>`;
+  const e = bagSel, full = S.eggs.length >= MAX_EGGS;
+  $('#bagPick').hidden = !e;
+  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">가방</span><div class="egg-detail">부화까지 ${GRADE[e.g].km}km<br>${fmtWhen(e.t)}에 주움${e.place ? `<br>${esc(e.place)} 근처` : ''}</div><button class="lk-btn main" id="bagIn" ${full ? 'disabled' : ''}>${full ? `부화기가 꽉 찼어요 (${MAX_EGGS}/${MAX_EGGS})` : '부화기에 넣기'}</button></div>`;
+}
+document.addEventListener('click', ev => {
+  const tab = ev.target.closest('#bagTabs [data-g]'); if (tab) { bagG = +tab.dataset.g; renderBag(); return; }
+  const sl = ev.target.closest('#bagGrid .bslot');
+  if (sl) { const e = S.bag.find(x => x.id === +sl.dataset.id); bagSel = e === bagSel ? null : e; if (e && e.isNew) { e.isNew = false; save(); } renderBag(); return; }
+  if (ev.target.closest('#bagIn') && bagSel) { const e = bagSel; if (incubate(e)) { bagSel = null; eggSel = S.eggs[S.eggs.length - 1]; log(`${GRADE[e.g].n} 알을 부화기에 넣었다.`); setRunTab('egg'); renderRun(); } }
+});
 try { runTab = localStorage.getItem('pk-run-tab') || 'egg'; } catch (e) {}
 function setRunTab(t) {
+  if (runTab === 'bag' && t !== 'bag') seeBag();
   runTab = t; try { localStorage.setItem('pk-run-tab', t); } catch (e) {}
   document.querySelectorAll('.runtab').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
   document.querySelectorAll('.rtab').forEach(x => x.hidden = x.dataset.tab !== t);
   $('.run-body').scrollTop = 0;
+  renderBag.sig = ''; renderRun();
 }
 document.querySelectorAll('.runtab').forEach(b => b.onclick = () => setRunTab(b.dataset.tab));
 $('#buddy').addEventListener('click', e => {
@@ -3171,7 +3248,7 @@ function renderRun() {
   $('#runTotal').innerHTML = ` 총 <b>${fmtKm(S.totalKm)}</b>km · 도감 ${S.unlocked.size}/${Object.keys(SPECIES).length}`;
   if (!S.eggs.includes(eggSel)) eggSel = S.eggs[0] || null;
   const e = eggSel;
-  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">부화 중</span><div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km</div>`
+  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">부화 중</span><div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km${e.place ? `<div class="egg-detail">${esc(e.place)} 근처에서 주운 알</div>` : ''}</div>`
     : '';
   $('#eggCount').textContent = `${S.eggs.length}/${MAX_EGGS}`;
   const box = $('#eggs'); box.innerHTML = '';
@@ -3181,9 +3258,10 @@ function renderRun() {
       b.innerHTML = `<span class="tag2">부화 중</span>${eggHtml(x.g, 'wob')}<span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div><span class="small">${fmtKm(x.km)}/${x.need}km</span>`;
       b.setAttribute('aria-current', x === e); if (x.isNew) { b.classList.add('new'); x.isNew = false; }
       b.onclick = () => { eggSel = x; renderRun(); };
-    } else { b.classList.add('empty'); b.innerHTML = '빈 칸'; }
+    } else { b.classList.add('empty', 'add'); b.innerHTML = '+'; b.setAttribute('aria-label', '가방에서 알 가져오기'); b.onclick = () => setRunTab('bag'); }
     box.append(b);
   }
+  renderBag();
   for (const m of S.buds) if (!thumbOf(m.sp)) ensureSprite(m.sp).then(renderRun).catch(() => {});
   $('#budCount').textContent = `${S.buds.length}/${MAX_BUDS}`;
   $('#buddy').innerHTML = Array.from({ length: MAX_BUDS }, (_, i) => {
@@ -3262,7 +3340,7 @@ async function start(data) {
   let d = data && data.mons ? data : null;
   if (!d) { try { d = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { d = null; } }
   if (d && d.mons && (d.mons.length || d.unlocked)) await restore(d); else await fresh();
-  fillEggs(); Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp));
+  Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp));
   sky();
   requestAnimationFrame(t => { last = t; frame(t); });
   // 아이폰 앱에 준비됐다고 알리고, 현재 알 현황을 바로 보낸다
