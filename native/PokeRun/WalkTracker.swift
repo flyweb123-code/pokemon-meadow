@@ -69,10 +69,14 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
             var dedup: [String] = []
             for x in parts where !dedup.contains(x) { dedup.append(x) }
             let area = dedup.joined(separator: " ")
-            // 근처 건물·랜드마크를 하나 붙인다 (예: "석촌호수")
-            self.nearbyLandmark(loc, fallback: p?.areasOfInterest?.first) { mark in
+            // 물가·바다 위인지 (호수·강 이름이 있으면 물가)
+            var tags: Set<String> = []
+            if p?.inlandWater != nil { tags.insert("water") }
+            if p?.ocean != nil { tags.insert("sea") }
+            // 근처 건물·랜드마크를 하나 붙이고, 주변 장소 종류로 알의 테마를 정한다 (예: "석촌호수", 주유소 → gas)
+            self.nearbyLandmark(loc, fallback: p?.areasOfInterest?.first) { mark, near in
                 let place = [area, mark ?? ""].filter { !$0.isEmpty }.joined(separator: " ")
-                self.sync(place: place.isEmpty ? nil : place)
+                self.sync(place: place.isEmpty ? nil : place, tags: Array(tags.union(near)).sorted())
             }
         }
     }
@@ -85,30 +89,49 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
         return s
     }
 
-    // 반경 400m 안에서 가장 가까운 공원·명소·학교·역 같은 장소 이름
-    private func nearbyLandmark(_ loc: CLLocation, fallback: String?, done: @escaping (String?) -> Void) {
+    // 장소 이름으로 쓸 종류
+    private static let landmarkKinds: Set<MKPointOfInterestCategory> = [
+        .park, .nationalPark, .museum, .stadium, .university, .school, .library, .publicTransport,
+        .amusementPark, .zoo, .aquarium, .beach, .marina, .theater, .movieTheater, .hospital, .fitnessCenter
+    ]
+    // 장소 종류 → 게임의 알 테마(app.html THEMES 키)
+    private static let themeOf: [MKPointOfInterestCategory: String] = [
+        .park: "park", .nationalPark: "mountain", .campground: "park",
+        .beach: "sea", .marina: "sea", .aquarium: "zoo", .zoo: "zoo",
+        .gasStation: "gas", .evCharger: "station", .parking: "city",
+        .publicTransport: "station", .airport: "airport",
+        .school: "school", .university: "school", .library: "school", .museum: "school",
+        .hospital: "hospital", .pharmacy: "hospital",
+        .stadium: "sports", .fitnessCenter: "sports",
+        .store: "city", .foodMarket: "city", .cafe: "city", .restaurant: "city", .amusementPark: "city",
+        .nightlife: "city", .theater: "city", .movieTheater: "city"
+    ]
+
+    // 반경 400m 안에서 가장 가까운 공원·명소·학교·역 같은 장소 이름 + 반경 250m 안 장소 종류의 테마들
+    private func nearbyLandmark(_ loc: CLLocation, fallback: String?, done: @escaping (String?, Set<String>) -> Void) {
         let req = MKLocalPointsOfInterestRequest(center: loc.coordinate, radius: 400)
-        req.pointOfInterestFilter = MKPointOfInterestFilter(including: [
-            .park, .nationalPark, .museum, .stadium, .university, .school, .library, .publicTransport,
-            .amusementPark, .zoo, .aquarium, .beach, .marina, .theater, .movieTheater, .hospital, .fitnessCenter
-        ])
+        req.pointOfInterestFilter = MKPointOfInterestFilter(including: Array(WalkTracker.landmarkKinds.union(WalkTracker.themeOf.keys)))
         MKLocalSearch(request: req).start { res, _ in
-            let best = res?.mapItems
-                .compactMap { item -> (String, CLLocationDistance)? in
-                    guard let name = item.name, let c = item.placemark.location else { return nil }
-                    return (name, c.distance(from: loc))
+            var best: (String, CLLocationDistance)?
+            var tags: Set<String> = []
+            for item in res?.mapItems ?? [] {
+                guard let c = item.placemark.location else { continue }
+                let d = c.distance(from: loc)
+                if let cat = item.pointOfInterestCategory {
+                    if d <= 250, let t = WalkTracker.themeOf[cat] { tags.insert(t) }
+                    if WalkTracker.landmarkKinds.contains(cat), let name = item.name, d < (best?.1 ?? .infinity) { best = (name, d) }
                 }
-                .min { $0.1 < $1.1 }?.0
-            DispatchQueue.main.async { done(best ?? fallback) }
+            }
+            DispatchQueue.main.async { done(best?.0 ?? fallback, tags) }
         }
     }
 
     func locationManager(_ m: CLLocationManager, didFailWithError error: Error) {
-        sync(place: nil)
+        sync(place: nil, tags: [])
     }
 
     // 지난번 이후 걸은 거리를 만보기에서 읽는다 (만보기는 최근 7일치만 갖고 있다)
-    private func sync(place: String?) {
+    private func sync(place: String?, tags: [String] = []) {
         detectRuns()
         guard !busy, CMPedometer.isDistanceAvailable() else { return }
         busy = true
@@ -123,7 +146,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
                 guard error == nil, let meters = data?.distance?.doubleValue else { return }
                 UserDefaults.standard.set(now.timeIntervalSince1970, forKey: self.lastKey)
                 let km = meters / 1000
-                if km >= 0.01 { PhoneBridge.shared.enqueueWalk(km: km, place: place ?? "") }
+                if km >= 0.01 { PhoneBridge.shared.enqueueWalk(km: km, place: place ?? "", tags: tags) }
             }
         }
     }

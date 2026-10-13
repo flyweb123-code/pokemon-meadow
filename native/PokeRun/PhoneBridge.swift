@@ -61,9 +61,9 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
 
     private let walkKey = "pendingWalk"
 
-    func enqueueWalk(km: Double, place: String) {
+    func enqueueWalk(km: Double, place: String, tags: [String] = []) {
         var list = UserDefaults.standard.array(forKey: walkKey) as? [[String: Any]] ?? []
-        list.append(["km": km, "place": place])
+        list.append(["km": km, "place": place, "tags": tags.joined(separator: ",")])
         UserDefaults.standard.set(list, forKey: walkKey)
         flushPending()
     }
@@ -75,10 +75,11 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
         for item in list {
             let km = item["km"] as? Double ?? 0
             let place = (item["place"] as? String ?? "")
-            guard let placeJSON = try? JSONSerialization.data(withJSONObject: [place]),
+            let tags = (item["tags"] as? String ?? "")
+            guard let placeJSON = try? JSONSerialization.data(withJSONObject: [place, tags]),
                   let arg = String(data: placeJSON, encoding: .utf8) else { continue }
-            // arg 는 ["동네"] 모양이라 [0] 으로 꺼낸다 (따옴표가 섞여도 안전)
-            web.evaluateJavaScript("window.pokeRunWalk(\(km), \(arg)[0])") { [weak self] result, error in
+            // arg 는 ["동네", "water,park"] 모양이라 [0], [1] 로 꺼낸다 (따옴표가 섞여도 안전)
+            web.evaluateJavaScript("window.pokeRunWalk(\(km), \(arg)[0], \(arg)[1])") { [weak self] result, error in
                 if error != nil || (result as? Bool) == false, let self {
                     var back = UserDefaults.standard.array(forKey: self.walkKey) as? [[String: Any]] ?? []
                     back.append(item)

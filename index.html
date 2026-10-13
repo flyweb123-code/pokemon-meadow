@@ -3008,13 +3008,13 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, log: S.log.slice(0, LOG_MAX),
     mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, asleep: m.state === 'sleep', born: m.born })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [] };
 }
 let saveFrozen = false;
 function save() { if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.box = d.box || []; S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
+  S.lockT = d.lockT || 0; S.box = d.box || []; S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.recentHatch = d.recentHatch || []; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
   S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
@@ -3681,12 +3681,12 @@ function drawEgg() {
 // 가방: 움직인 거리만큼 알을 줍는다. 250m마다 0~2개라 2.5km면 대개 5~15개, 등급 확률은 알 뽑기와 같다.
 const MAX_BAG = 999, BAG_STEP = .25;
 const rollGrade = () => { const r = Math.random(); return r < .45 ? 1 : r < .75 ? 2 : r < .9 ? 3 : r < .98 ? 4 : 5; };
-function collectEggs(km, place) {
+function collectEggs(km, place, tags) {
   S.bagAcc += km; let n = 0;
   while (S.bagAcc >= BAG_STEP) { S.bagAcc -= BAG_STEP; n += Math.floor(Math.random() * 3); }
   n = Math.min(n, MAX_BAG - S.bag.length);
   const t = Date.now(), got = [];
-  for (let i = 0; i < n; i++) { const g = rollGrade(); const e = { id: S.eid++, g, t, isNew: true }; if (place) e.place = place; S.bag.push(e); got.push(g); }
+  for (let i = 0; i < n; i++) { const g = rollGrade(); const e = { id: S.eid++, g, t, isNew: true }; if (place) e.place = place; if (tags && tags.length) e.tags = tags; S.bag.push(e); got.push(g); }
   return got;
 }
 function gotLog(got, how, place) {
@@ -3699,14 +3699,14 @@ function gotLog(got, how, place) {
 function unincubate(e) {
   if (!S.eggs.includes(e) || S.bag.length >= MAX_BAG) return false;
   S.eggs = S.eggs.filter(x => x !== e);
-  const b = { id: e.id, g: e.g, t: e.t || Date.now(), km: e.km || 0 }; if (e.place) b.place = e.place; S.bag.push(b);
+  const b = { id: e.id, g: e.g, t: e.t || Date.now(), km: e.km || 0 }; if (e.place) b.place = e.place; if (e.tags) b.tags = e.tags; S.bag.push(b);
   save(); return true;
 }
 // 가방의 알을 부화기로 옮긴다
 function incubate(e) {
   if (S.eggs.length >= MAX_EGGS || !S.bag.includes(e)) return false;
   S.bag = S.bag.filter(x => x !== e);
-  const x = { id: e.id, g: e.g, km: e.km || 0, need: GRADE[e.g].km, isNew: true, t: e.t, place: e.place }; S.eggs.push(x);
+  const x = { id: e.id, g: e.g, km: e.km || 0, need: GRADE[e.g].km, isNew: true, t: e.t, place: e.place, tags: e.tags }; S.eggs.push(x);
   if (x.km >= x.need) hatchEgg(x);
   save(); return true;
 }
@@ -3731,10 +3731,11 @@ function postNative() {
   }, 300);
 }
 // 아이폰 앱: 잠금 중에도 걸은 거리(만보기)와 그 근처 동네 이름을 보낸다. 알 줍기에만 쓴다.
-window.pokeRunWalk = (km, place) => {
+window.pokeRunWalk = (km, place, tags) => {
   km = +km; if (!(km > 0 && km <= 200)) return false;
   S.walkSync = true; S.walkKm += km;
-  gotLog(collectEggs(km, place || ''), `걸어서 ${fmtKm(km)}km`, place || '');
+  tags = String(tags || '').split(',').filter(k => THEMES[k]);
+  gotLog(collectEggs(km, place || '', tags), `걸어서 ${fmtKm(km)}km`, place || '');
   save(); renderRun(); return true;
 };
 // 아이폰 앱: 워치 런닝(watch), 또는 모션 기록에서 찾아낸 달리기(auto, 시작·끝 시각 포함)
@@ -3755,10 +3756,57 @@ function addRun(km, src, t0, t1) {
   log(`${src === 'gps' ? 'GPS로' : src === 'watch' ? '워치로' : src === 'auto' ? '알아서 기록된 런닝으로' : '건강 앱 기록으로'} ${fmtKm(km)}km를 달렸다.${g ? ` ${g}G를 받았다!` : ''}`, [], true);
   save(); renderRun();
 }
+// 알을 주운 곳의 특징(테마) → 잘 어울리는 타입·서식지·도감 설명 낱말·특정 종
+// 타입 번호: 1노말 2격투 3비행 4독 5땅 6바위 7벌레 8고스트 9강철 10불꽃 11물 12풀 13전기 14에스퍼 15얼음 16드래곤 17악 18페어리
+// 서식지(hab): 1동굴 2숲 3초원 4산 6거친땅 7바다 8도시 9물가
+const THEMES = {
+  water:   { n: '물가', kw: /호수|강$|강변|강공원|[가-힣]천$|하천|천변|저수지|연못|호$|댐|분수|수변|습지|개울|계곡/, t: [11, 12, 5], hab: [9], fx: /연못|호수|강가|물가|늪/ },
+  sea:     { n: '바다', kw: /바다|해변|해수욕장|해안|항$|항구|포구|부두|마리나|섬$|등대/, t: [11, 3, 15], hab: [7], fx: /바다|해변|파도|모래사장/ },
+  park:    { n: '숲·공원', kw: /공원|숲|수목원|정원|식물원|생태|녹지|둘레길|캠핑|휴양림|잔디/, t: [12, 7, 1], hab: [2, 3], fx: /숲|나무|꽃|풀숲/ },
+  mountain:{ n: '산', kw: /산$|산[ 가-힣]*입구|봉$|등산|고개|암$|바위|동굴|굴$/, t: [6, 5, 2], hab: [4, 1], fx: /산|바위|동굴|절벽/ },
+  gas:     { n: '주유소', kw: /주유소|충전소|LPG|가스|정비|세차|카센터|정유/, t: [4, 10, 9], hab: [], fx: /기름|가스|석유|연료|매연|오염|쓰레기|진흙|오물/, sp: [88, 109, 110, 569, 890] },
+  station: { n: '역', kw: /역$|역 |터미널|정류장|지하철|철도|환승/, t: [13, 9, 1], hab: [8], fx: /전기|전선|발전|철/ },
+  airport: { n: '공항', kw: /공항|비행장|헬기/, t: [3, 9, 16], hab: [], fx: /하늘|날개|비행/ },
+  city:    { n: '도시', kw: /시장|백화점|마트|상가|몰$|타워|빌딩|오피스|아파트|롯데월드|쇼핑|거리$|카페/, t: [1, 9, 17], hab: [8], fx: /도시|사람|빌딩|쓰레기/ },
+  school:  { n: '학교', kw: /학교|대학|캠퍼스|도서관|박물관|미술관|과학관|학원|연구/, t: [14, 1, 18], hab: [], fx: /책|지능|공부|두뇌|생각/ },
+  hospital:{ n: '병원', kw: /병원|의원|약국|보건|의료|클리닉/, t: [18, 1, 14], hab: [], fx: /치료|상처|간호|병/, sp: [113, 242, 440, 531] },
+  sports:  { n: '운동장', kw: /운동장|경기장|체육관|스타디움|헬스|피트니스|야구장|축구장|트랙|육상/, t: [2, 1, 13], hab: [], fx: /단련|근육|펀치|킥|격투/ },
+  shrine:  { n: '절·묘지', kw: /절$|사찰|암자|묘지|추모|성당|교회|사당|궁$|궁궐|능$/, t: [8, 14, 17], hab: [], fx: /영혼|유령|저주|무덤|혼/ },
+  factory: { n: '공장', kw: /공장|공단|산업|발전소|변전소|공사|창고|물류/, t: [9, 13, 4], hab: [8], fx: /쇠|금속|강철|전기|기계/ },
+  zoo:     { n: '동물원', kw: /동물원|목장|농장|아쿠아리움|수족관/, t: [1, 11, 12], hab: [3], fx: /무리|목장|우유/ },
+};
+// 알 하나의 테마 목록: 아이폰이 보낸 주변 장소 종류(tags) + 장소 이름에서 찾은 낱말 + 밤에 주운 알
+function eggThemes(e) {
+  const out = new Set((e.tags || []).filter(k => THEMES[k]));
+  // 시·구·동 같은 행정 이름(마포'구' 등)은 빼고 장소 이름만 본다
+  const words = String(e.place || '').split(/\s+/).filter((w, i) => i > 0 && !/(시|구|군|동|읍|면|리|가|로|길)$/.test(w) && !/^\d/.test(w));
+  for (const [k, th] of Object.entries(THEMES)) if (words.some(w => th.kw.test(w))) out.add(k);
+  const h = new Date(e.t || Date.now()).getHours();
+  if (h >= 21 || h < 5) out.add('night');
+  return [...out];
+}
+const NIGHT = { n: '밤', t: [8, 17], hab: [], fx: /밤|어둠|달/ };
+function themeHint(e) { const ks = eggThemes(e).filter(k => k !== 'night'); if (!ks.length) return ''; const ty = [...new Set(ks.flatMap(k => THEMES[k].t.slice(0, 2)))].slice(0, 3).map(t => TYPE_KO[t]); return `${ty.join('·')} 기운이 느껴진다`; }
 function hatchEgg(e) {
   S.eggs = S.eggs.filter(x => x !== e);
-  const pool = POOL[e.g], fresh = pool.filter(sp => !S.unlocked.has(sp));
-  const sp = fresh.length && Math.random() < .75 ? pick(fresh) : pick(pool);
+  const pool = POOL[e.g], ths = eggThemes(e).map(k => THEMES[k] || NIGHT), recent = new Set(S.recentHatch || []);
+  // 기본 1, 테마 타입 +12, 서식지 +4, 도감 설명 낱말 +8, 특정 종 +20 (테마 종이 대략 60~70%) → 안 만난 종 ×2.5, 최근 부화한 종 ×0.15 (같은 종이 연달아 나오지 않게)
+  const w = pool.map(sp => {
+    const d = SPECIES[sp]; let v = 1;
+    for (const th of ths) {
+      if (d.t.some(t => th.t.includes(t))) v += th === NIGHT ? 4 : 12;
+      if (d.hab && th.hab.includes(d.hab)) v += 4;
+      if (th.fx && d.fx && th.fx.test(d.fx)) v += 8;
+      if (th.sp && th.sp.includes(sp)) v += 20;
+    }
+    if (!S.unlocked.has(sp)) v *= 2.5;
+    if (recent.has(sp)) v *= .15;
+    return v;
+  });
+  let r = Math.random() * w.reduce((a, b) => a + b, 0), i = 0;
+  while (i < pool.length - 1 && (r -= w[i]) > 0) i++;
+  const sp = pool[i];
+  S.recentHatch = [sp, ...(S.recentHatch || []).filter(x => x !== sp)].slice(0, 12);
   hatchQ.push({ g: e.g, sp, place: e.place }); save();
 }
 // hatch cutscene: wobble, crack, flash, reveal
@@ -3937,7 +3985,7 @@ function renderBag() {
   const e = bagSel, full = S.eggs.length >= MAX_EGGS;
   $('#bagPop').hidden = !e;
   if (e) { $('#bagIn').disabled = full; $('#bagIn').textContent = full ? `부화기가 꽉 찼어요` : '부화기에 넣기'; }
-  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${GRADE[e.g].km}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움${e.place ? `<br>${esc(e.place)} 근처` : ''}</div></div>`;
+  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${GRADE[e.g].km}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움${e.place ? `<br>${esc(e.place)} 근처` : ''}${themeHint(e) ? `<br>${themeHint(e)}` : ''}</div></div>`;
 }
 document.addEventListener('click', ev => {
   const tab = ev.target.closest('#bagTabs [data-g]'); if (tab) { bagG = +tab.dataset.g; renderBag(); return; }
@@ -3970,7 +4018,7 @@ function renderRun() {
   $('#runTotal').innerHTML = ` 총 <b>${fmtKm(S.totalKm)}</b>km · 도감 ${S.unlocked.size}/${Object.keys(SPECIES).length}`;
   if (!S.eggs.includes(eggSel)) eggSel = S.eggs[0] || null;
   const e = eggSel;
-  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">부화 중</span><div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km${e.place ? `<div class="egg-detail">${esc(e.place)} 근처에서 주운 알</div>` : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div>`
+  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">부화 중</span><div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km${e.place ? `<div class="egg-detail">${esc(e.place)} 근처에서 주운 알${themeHint(e) ? `<br>${themeHint(e)}` : ''}</div>` : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div>`
     : '';
   $('#eggCount').textContent = `${S.eggs.length}/${MAX_EGGS}`;
   const box = $('#eggs'); box.innerHTML = '';
@@ -4087,6 +4135,7 @@ async function start(data) {
   try { window.webkit?.messageHandlers?.pokeRun?.postMessage({ ready: true }); } catch (e) {}
 }
 if (/[?&]debug/.test(location.search)) window.__meadow = { S, newPoke, takeLockKm, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
+if (/[?&]debug/.test(location.search)) Object.assign(window, { __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint });
 window.claude?.hot?.snapshot?.(() => serialize());
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
 })();
