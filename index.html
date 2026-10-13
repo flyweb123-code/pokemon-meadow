@@ -4746,9 +4746,10 @@ async function hatchAll() {
   if (hatching) return;
   const ready = S.eggs.filter(e => e.km >= e.need); if (!ready.length) return;
   hatching = true;
-  const res = ready.map(e => { hatchEgg(e); return bornPoke(hatchQ.pop()); });
-  save(); renderRun();
+  // 알은 결과 창이 뜰 때 부화기에서 뺀다 (그 전엔 목록에 그대로)
+  const res = ready.map(e => { hatchEgg(e, true); return bornPoke(hatchQ.pop()); });
   await Promise.all(res.map(r => ensureSprite(r.sp).catch(() => {})));
+  S.eggs = S.eggs.filter(e => !ready.includes(e)); save();
   const strip = $('#hlStrip'), fieldBtn = $('#hatchField'), ok = $('#hatchOk');
   strip.innerHTML = res.map((r, k) => `<button data-k="${k}" aria-label="${esc(SPECIES[r.sp].n)}"><img src="${thumbOf(r.sp)}" alt="">${r.isNew ? '<b>N</b>' : ''}</button>`).join('');
   hatchStage.classList.remove('evo', 'tapme'); hatchEl.classList.add('list'); hatchEl.hidden = false;
