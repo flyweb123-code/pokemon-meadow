@@ -38,6 +38,30 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .win{background:var(--win);border:4px solid var(--frame);box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px var(--inner),6px 6px 0 rgba(0,0,0,.35);padding:14px 20px}
 .win.blue{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px var(--inner-blue),6px 6px 0 rgba(0,0,0,.35)}
 .hud{position:absolute;z-index:20}
+.goldbar{right:170px;top:20px;display:flex;align-items:center;gap:8px}
+.gold{display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:18px}
+.gold b{font-variant-numeric:tabular-nums;color:#a86a00}
+.gold span{font-size:13px;color:var(--dim)}
+.gold.up{animation:gup .5s steps(4)}
+@keyframes gup{0%{transform:translateY(-4px)}50%{transform:translateY(2px)}}
+.coin{display:inline-block;width:14px;height:14px;background:#ffc830;box-shadow:inset -3px -3px 0 #d08a00,inset 3px 3px 0 #fff2a0,0 0 0 2px #6a4400;flex:none}
+.mapico{width:46px;height:46px;display:grid;place-items:center;border:3px solid var(--frame);background:var(--win);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner),3px 3px 0 rgba(0,0,0,.35);cursor:pointer;padding:0}
+.mapico[aria-pressed="true"]{background:#ffe27a;box-shadow:inset 0 0 0 3px #ffe27a,inset 0 0 0 5px var(--frame),1px 1px 0 rgba(0,0,0,.35);transform:translate(2px,2px)}
+.shopwin{max-width:560px;max-height:90vh;display:flex;flex-direction:column}
+.shop-gold{display:inline-flex;align-items:center;gap:6px;margin-left:12px}
+.shop-gold b{color:#a86a00}
+.shop-h{margin:4px 0 8px;font-size:16px}
+.shop-list{display:grid;gap:8px;overflow-y:auto;min-height:0}
+.shop-row{display:flex;align-items:center;gap:10px;border:3px solid var(--inner);background:#fff;padding:10px}
+.shop-row.cur{border-color:var(--frame);background:var(--card)}
+.shop-row .disc{flex:none;width:44px;height:44px;display:grid;place-items:center;background:var(--frame);color:#ffe27a;font-size:22px}
+.shop-row.cur .disc{animation:bop .8s steps(2) infinite}
+@keyframes bop{50%{transform:translateY(-3px)}}
+.sr-main{flex:1;min-width:0}.sr-main b{display:block;font-size:16px}.sr-main span{display:block;font-size:12px;color:var(--dim);margin-top:2px}
+.sr-btns{display:flex;flex-direction:column;gap:6px;flex:none}
+.sr-btns .lk-btn{padding:7px 10px;font-size:13px;min-width:86px}
+.sr-btns .lk-btn[disabled]{opacity:.55}
+.shop-msg{min-height:1.4em;margin:10px 0 0;font-size:14px}
 .clockwin{left:20px;top:20px;display:flex;align-items:baseline;gap:16px}
 #side,#edge{display:none}
 .dlg{--dlg-in:#7aa6d8}
@@ -524,6 +548,8 @@ ol.log li.big .txt{color:#c03838}
   .clockwin{grid-area:stage;align-self:start;justify-self:start;z-index:25;margin:calc(env(safe-area-inset-top) + 8px) 0 0 calc(env(safe-area-inset-left) + 8px);
     padding:6px 12px;gap:8px;box-shadow:3px 3px 0 rgba(0,0,0,.35)}
   .clockwin .t{font-size:18px}
+  .goldbar{grid-area:stage;align-self:start;justify-self:end;z-index:25;margin:calc(env(safe-area-inset-top) + 8px) calc(env(safe-area-inset-right) + 8px) 0 0;flex-direction:column;align-items:flex-end;gap:8px}
+  .gold{padding:5px 10px;font-size:15px;box-shadow:3px 3px 0 rgba(0,0,0,.35)}
   .clockwin .d{font-size:12px}
   .card{grid-row:1;grid-column:1/-1;position:relative;align-self:end;z-index:30;width:auto;margin:0 8px 8px;max-height:62%;overflow-y:auto;left:auto!important;top:auto!important;padding:10px 14px 12px}
   .card .close{position:absolute;right:4px;top:4px;border:0;padding:8px 12px;font-size:16px}
@@ -629,6 +655,11 @@ ol.log li.big .txt{color:#c03838}
     <button class="opt" id="openSet">설정</button>
   </nav>
 
+  <div class="hud goldbar" id="goldbar">
+    <div class="win gold" id="gold" aria-label="골드"><i class="coin" aria-hidden="true"></i><b id="goldN">0</b><span>G</span></div>
+    <button class="mapico" id="btnBerry" aria-pressed="false" aria-label="열매 주기"><svg viewBox="0 0 12 12" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><path fill="#3a7a2a" d="M6 0h2v1h1v1H7v1H6z"/><path fill="#5aa83a" d="M4 1h2v2H4z"/><path fill="#20202c" d="M3 3h6v1h1v1h1v4h-1v1H9v1H3v-1H2V9H1V5h1V4h1z"/><path fill="#d8344a" d="M3 4h6v1h1v4H9v1H3V9H2V5h1z"/><path fill="#ff7a8a" d="M3 5h2v2H3z"/><path fill="#fff" d="M3 5h1v1H3z"/><path fill="#9a1a30" d="M8 8h1v1H8zM4 9h4v1H4z"/></svg></button>
+  </div>
+
   <div id="edge" aria-hidden="true"></div>
   <aside class="win" id="side" aria-label="사이드 바"><button class="ico" id="sideSet" type="button" aria-label="설정"><svg viewBox="0 0 10 10" width="30" height="30" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true"><rect x="4" y="0" width="1" height="1"/><rect x="5" y="0" width="1" height="1"/><rect x="2" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="5" y="1" width="1" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="1" y="2" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="3" y="2" width="1" height="1"/><rect x="4" y="2" width="1" height="1"/><rect x="5" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/><rect x="6" y="3" width="1" height="1"/><rect x="7" y="3" width="1" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="1" y="4" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="7" y="4" width="1" height="1"/><rect x="8" y="4" width="1" height="1"/><rect x="9" y="4" width="1" height="1"/><rect x="0" y="5" width="1" height="1"/><rect x="1" y="5" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="7" y="5" width="1" height="1"/><rect x="8" y="5" width="1" height="1"/><rect x="9" y="5" width="1" height="1"/><rect x="2" y="6" width="1" height="1"/><rect x="3" y="6" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/><rect x="7" y="6" width="1" height="1"/><rect x="1" y="7" width="1" height="1"/><rect x="2" y="7" width="1" height="1"/><rect x="3" y="7" width="1" height="1"/><rect x="4" y="7" width="1" height="1"/><rect x="5" y="7" width="1" height="1"/><rect x="6" y="7" width="1" height="1"/><rect x="7" y="7" width="1" height="1"/><rect x="8" y="7" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="4" y="8" width="1" height="1"/><rect x="5" y="8" width="1" height="1"/><rect x="7" y="8" width="1" height="1"/><rect x="4" y="9" width="1" height="1"/><rect x="5" y="9" width="1" height="1"/></svg></button></aside>
 
@@ -649,8 +680,8 @@ ol.log li.big .txt{color:#c03838}
   </section>
 
   <div class="hud win cmdwin" id="cmd" role="group" aria-label="명령">
-    <button class="opt wide" id="btnBerry" aria-pressed="false">열매 주기</button>
     <button class="opt wide" id="btnLog" aria-pressed="false">일지</button>
+    <button class="opt wide" id="openShop" aria-pressed="false">상점</button>
   </div>
 
   <div class="hud win hint" id="hint" hidden>풀밭을 누르면 열매를 놓아요</div>
@@ -674,6 +705,14 @@ ol.log li.big .txt{color:#c03838}
   </div>
 </div>
 
+<div class="sheet" id="shop" hidden>
+  <div class="win shopwin" role="dialog" aria-label="상점">
+    <div class="sheet-head"><h3>상점<span class="cap shop-gold"><i class="coin" aria-hidden="true"></i><b id="shopGold">0</b>G</span></h3><button class="opt" id="closeShop">닫기</button></div>
+    <h4 class="shop-h">배경 음악</h4>
+    <div class="shop-list" id="shopList"></div>
+    <p class="shop-msg" id="shopMsg"></p>
+  </div>
+</div>
 <div class="sheet" id="set" hidden>
   <div class="win setwin" role="dialog" aria-label="설정">
     <div class="sheet-head"><h3>설정</h3><button class="opt" id="closeSet">닫기</button></div>
@@ -686,7 +725,7 @@ ol.log li.big .txt{color:#c03838}
       <section class="set-sec">
         <h4>소리</h4>
         <p>아이폰 무음 모드에서는 소리가 나지 않아요.</p>
-        <div class="set-btns"><button class="lk-btn main" id="sfxToggle">효과음 켜짐</button></div>
+        <div class="set-btns"><button class="lk-btn main" id="bgmToggle">배경 음악 켜짐</button><button class="lk-btn main" id="sfxToggle">효과음 켜짐</button></div>
       </section>
       <section class="set-sec">
         <h4>초원</h4>
@@ -828,6 +867,78 @@ function sfx(name, k = 0) {
     case 'pickup': tone(NOTE(88), t, .05, { vol: .05 }); tone(NOTE(93), t + .06, .1, { vol: .05 }); break;
   }
 }
+// ---------- 배경 음악: 직접 만든 8비트 곡을 사각파·삼각파·잡음으로 연주한다 ----------
+// 한 곡 = 8마디 × 8칸(8분음표). 멜로디 칸: 숫자 = 음(MIDI), '-' = 앞 음 늘이기, 0 = 쉼.
+const TRACKS = [
+  { id: 'town', n: '초원 마을', d: '느긋한 마을의 아침. 처음부터 가진 곡', price: 0, bpm: 100, lt: 'square', bp: 'soft', dr: 'soft',
+    lead: '67 - 71 - 74 - 72 71 | 69 - - - 67 - - - | 64 - 67 - 71 - 69 67 | 66 - - - - - 0 0 | 67 - 71 - 74 - 76 74 | 72 - 71 - 69 - 67 - | 69 - 71 - 72 - 66 - | 67 - - - - - 0 0',
+    roots: [43, 38, 40, 38, 43, 36, 38, 43] },
+  { id: 'forest', n: '숲속 산책', d: '나뭇잎 사이로 걷는 오후', price: 500, bpm: 112, lt: 'square', bp: 'walk', dr: 'soft',
+    lead: '64 - 67 - 71 - 69 67 | 69 - 71 - 72 - 71 69 | 67 - 69 - 71 - 74 72 | 71 - - - - - 0 0 | 72 - 71 - 69 - 67 - | 69 - 67 - 66 - 64 - | 66 - 67 - 69 - 71 - | 64 - - - - - 0 0',
+    roots: [40, 45, 43, 47, 36, 45, 38, 40] },
+  { id: 'lake', n: '밤의 호숫가', d: '반딧불이 떠다니는 조용한 밤', price: 800, bpm: 76, lt: 'triangle', bp: 'arp', dr: 'none',
+    lead: '76 - - - 74 - 72 - | 71 - - - 69 - - - | 72 - - - 71 - 69 - | 68 - - - - - - - | 69 - 72 - 76 - 74 - | 72 - 71 - 69 - 71 - | 72 - 74 - 71 - 68 - | 69 - - - - - - -',
+    roots: [45, 41, 45, 40, 45, 41, 38, 45] },
+  { id: 'sea', n: '바닷가 모험', d: '파도를 따라 달리는 신나는 곡', price: 1200, bpm: 132, lt: 'square', bp: 'bounce', dr: 'beat',
+    lead: '72 - 72 74 76 - 72 - | 77 - 76 - 74 - 72 - | 74 - 74 76 77 - 74 - | 79 - - - 76 - 0 0 | 81 - 79 - 77 - 76 - | 77 - 76 - 74 - 72 - | 74 - 76 - 77 - 79 - | 84 - - - - - 0 0',
+    roots: [36, 41, 43, 36, 41, 36, 43, 36] },
+  { id: 'fest', n: '축제의 광장', d: '북소리 둥둥, 들뜬 축제 날', price: 1800, bpm: 140, lt: 'square', bp: 'bounce', dr: 'beat',
+    lead: '65 69 72 69 74 - 72 - | 70 - 69 - 67 - 65 - | 67 70 74 70 76 - 74 - | 72 - - - 0 0 0 0 | 77 - 76 - 74 - 72 - | 70 - 72 - 74 - 70 - | 69 - 67 - 69 - 70 - | 65 - - - 0 0 0 0',
+    roots: [41, 34, 36, 41, 38, 34, 36, 41] },
+  { id: 'battle', n: '결전의 시간', d: '두근두근, 강한 상대가 나타났다!', price: 2500, bpm: 160, lt: 'square', bp: 'drive', dr: 'battle',
+    lead: '74 - 74 - 77 - 76 74 | 72 - 74 - 69 - - - | 70 - 70 - 74 - 72 70 | 69 - - - 73 - - - | 74 - 77 - 81 - 79 77 | 76 - 77 - 79 - 76 - | 77 - 76 - 74 - 73 - | 74 - - - - - 0 0',
+    roots: [38, 36, 34, 33, 38, 36, 34, 38] },
+];
+TRACKS.forEach(t => { t.seq = t.lead.replace(/\|/g, ' ').trim().split(/\s+/).map(x => x === '-' ? '-' : +x); });
+const BASS = { soft: [0, '-', 7, '-', 12, '-', 7, '-'], walk: [0, '-', 7, '-', 10, '-', 7, '-'], arp: [0, 7, 12, 7, 0, 7, 12, 7], bounce: [0, '-', 12, '-', 7, '-', 12, '-'], drive: [0, 0, 12, 0, 0, 12, 0, 12] };
+const DRUM = { none: '........', soft: 'k...s...', beat: 'k.h.s.h.', battle: 'kkh.s.hk' };
+let bgmOn = true; try { bgmOn = localStorage.getItem('pk-bgm') !== '0'; } catch (e) {}
+const bgm = { timer: 0, step: 0, next: 0, track: null, preview: null, prevT: 0, gain: null };
+function bgmTone(f, t0, dur, type, vol) {
+  const a = actx, o = a.createOscillator(), g = a.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t0);
+  g.gain.setValueAtTime(vol, t0); g.gain.setValueAtTime(vol, t0 + dur * .85); g.gain.linearRampToValueAtTime(0, t0 + dur);
+  o.connect(g).connect(bgm.gain); o.start(t0); o.stop(t0 + dur + .02);
+}
+function bgmDrum(c, t0) {
+  const a = actx;
+  if (c === 'k') { const o = a.createOscillator(), g = a.createGain(); o.type = 'square'; o.frequency.setValueAtTime(150, t0); o.frequency.exponentialRampToValueAtTime(40, t0 + .12); g.gain.setValueAtTime(.09, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + .14); o.connect(g).connect(bgm.gain); o.start(t0); o.stop(t0 + .16); return; }
+  if (!noiseBuf) noise(t0, .001, 0); // 잡음 버퍼 준비
+  const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
+  src.buffer = noiseBuf; f.type = 'highpass'; f.frequency.value = c === 'h' ? 6000 : 1500;
+  const len = c === 'h' ? .04 : .12, vol = c === 'h' ? .035 : .08;
+  g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + len);
+  src.connect(f).connect(g).connect(bgm.gain); src.start(t0); src.stop(t0 + len + .02);
+}
+function bgmStep(t, i, t0) {
+  const sd = 60 / t.bpm / 2, seq = t.seq, n = seq[i];
+  if (typeof n === 'number' && n > 0) { let k = 1; while (seq[(i + k) % 64] === '-' && k < 16) k++; bgmTone(NOTE(n), t0, sd * k * .92, t.lt, t.lt === 'triangle' ? .09 : .045); }
+  const bar = Math.floor(i / 8), j = i % 8, bp = BASS[t.bp], b = bp[j];
+  if (b !== '-') { let k = 1; while (bp[(j + k) % 8] === '-' && j + k < 8) k++; bgmTone(NOTE(t.roots[bar] + b), t0, sd * k * .9, 'triangle', .11); }
+  const dc = DRUM[t.dr][j]; if (dc !== '.') bgmDrum(dc, t0);
+}
+function bgmTick() {
+  const t = bgm.track; if (!t || !actx) return;
+  const sd = 60 / t.bpm / 2;
+  if (bgm.next < actx.currentTime) bgm.next = actx.currentTime + .05;
+  while (bgm.next < actx.currentTime + .3) { bgmStep(t, bgm.step, bgm.next); bgm.next += sd; bgm.step = (bgm.step + 1) % 64; }
+}
+function bgmPlay(id) {
+  const a = audio(); if (!a) return;
+  if (!bgm.gain) { bgm.gain = a.createGain(); bgm.gain.gain.value = .55; bgm.gain.connect(a.destination); }
+  const t = TRACKS.find(x => x.id === id) || TRACKS[0];
+  if (bgm.track !== t) { bgm.track = t; bgm.step = 0; bgm.next = a.currentTime + .1; }
+  if (!bgm.timer) bgm.timer = setInterval(bgmTick, 60);
+  bgmTick();
+}
+function bgmStop() { clearInterval(bgm.timer); bgm.timer = 0; bgm.track = null; }
+function bgmStart() { if (bgm.preview) return; if (bgmOn) bgmPlay(S.bgm || 'town'); else bgmStop(); }
+// 상점 미리 듣기: 15초 듣고 원래 곡으로 돌아간다
+function bgmPreview(id) { bgm.preview = id; clearTimeout(bgm.prevT); bgmPlay(id); bgm.prevT = setTimeout(() => { bgmStopPreview(); if (!$('#shop').hidden) renderShop(); }, 15000); }
+function bgmStopPreview() { bgm.preview = null; clearTimeout(bgm.prevT); bgm.track = null; if (bgmOn) bgmPlay(S.bgm || 'town'); else bgmStop(); }
+// 아이폰은 화면을 처음 누를 때 소리를 켤 수 있다. 앱을 내리면 쉬고, 돌아오면 다시 튼다.
+document.addEventListener('pointerdown', () => { if (bgmOn && !bgm.timer) bgmStart(); }, { capture: true, passive: true });
+document.addEventListener('visibilitychange', () => { if (!actx) return; if (document.hidden) actx.suspend(); else actx.resume(); });
 // 버튼·칸을 누르면 짧은 '틱' 소리
 document.addEventListener('click', e => {
   const b = e.target.closest('button,.eslot,.bslot,[role="button"],[role="tab"]'); if (!b || b.disabled) return;
@@ -2704,13 +2815,13 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, log: S.log.slice(0, 120),
     mons: S.mons.map(m => ({ uid: m.uid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, asleep: m.state === 'sleep', born: m.born })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t })), lockT: S.lockT,
-    eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid };
+    gold: S.gold, tracks: S.tracks, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid };
 }
 let saveFrozen = false;
 function save() { if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
+  S.lockT = d.lockT || 0; S.gold = d.gold || 0; S.tracks = d.tracks || ['town']; S.bgm = d.bgm || 'town'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
   S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
@@ -2723,7 +2834,7 @@ async function restore(d) {
 async function fresh() {
   S.base = midnight(); S.clock = realClock(); S.rel = {}; S.log = [];
   logEl.innerHTML = '';
-  S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked.clear(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
+  S.gold = 0; S.tracks = ['town']; S.bgm = 'town'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked.clear(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
   const e = { id: S.eid++, g: 1, km: 0, need: GRADE[1].km, isNew: true, t: Date.now() }; S.eggs.push(e);
   for (let i = 0; i < 4; i++) { const p = randLand(); addBerry(p.x, p.y); }
   log('초원이 텅 비어 있다. 알을 부화시켜 친구를 만들어 보자.', [], true);
@@ -2862,10 +2973,10 @@ const grid = $('#dexGrid'), dexBtns = {};
 let dexMode = 'field';
 function openDex(mode = 'field') { dexMode = mode; sheet.classList.toggle('pick-buddy', mode === 'buddy'); $('#dexTitle').textContent = mode === 'buddy' ? '짝꿍 고르기' : '포켓몬 도감'; picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); sheet.hidden = false; $('#dexOwn').innerHTML = `<b>${S.unlocked.size}</b>/${Object.keys(SPECIES).length}`; refreshDexBadges(); filterDex(); if (!narrow.matches) $('#dexQ').focus(); }
 // the menu works like a tab bar: one window at a time, tapping the open one closes it
-function hideSheets() { sheet.hidden = true; $('#mgr').hidden = true; $('#run').hidden = true; $('#set').hidden = true; }
+function hideSheets() { sheet.hidden = true; $('#mgr').hidden = true; $('#run').hidden = true; $('#set').hidden = true; $('#shop').hidden = true; }
 function tabTo(el, open) { const was = !el.hidden; closeToggles(); hideSheets(); if (!was) open(); }
 $('#openDex').onclick = () => tabTo(sheet, openDex);
-new MutationObserver(() => { [['#openDex', '#sheet'], ['#openRun', '#run'], ['#openMgr', '#mgr'], ['#openSet', '#set'], ['#sideSet', '#set']].forEach(([b, w]) => $(b).setAttribute('aria-pressed', !$(w).hidden)); document.body.classList.toggle('sheet-open', ['#sheet', '#run', '#mgr'].some(w => !$(w).hidden)); })
+new MutationObserver(() => { [['#openDex', '#sheet'], ['#openRun', '#run'], ['#openMgr', '#mgr'], ['#openSet', '#set'], ['#sideSet', '#set'], ['#openShop', '#shop']].forEach(([b, w]) => $(b).setAttribute('aria-pressed', !$(w).hidden)); document.body.classList.toggle('sheet-open', ['#sheet', '#run', '#mgr', '#shop'].some(w => !$(w).hidden)); })
   .observe(document.body, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
 $('#closeDex').onclick = () => { sheet.hidden = true; };
 // 도감 창이 닫히면 그 위의 카드·필터 창도 닫는다
@@ -2873,6 +2984,33 @@ new MutationObserver(() => { if (sheet.hidden) { $('#dexPop').hidden = true; $('
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
 const setEl = $('#set');
 $('#openSet').onclick = () => tabTo(setEl, () => { setEl.hidden = false; });
+const shopEl = $('#shop');
+$('#openShop').onclick = () => tabTo(shopEl, () => { shopEl.hidden = false; $('#shopMsg').textContent = ''; renderShop(); });
+$('#closeShop').onclick = () => { shopEl.hidden = true; };
+shopEl.addEventListener('click', e => { if (e.target === shopEl) shopEl.hidden = true; });
+function renderShop() {
+  $('#shopGold').textContent = S.gold.toLocaleString();
+  $('#shopList').innerHTML = TRACKS.map(t => {
+    const own = S.tracks.includes(t.id), cur = S.bgm === t.id, pre = bgm.preview === t.id;
+    const main = cur ? `<button class="lk-btn" disabled>재생 중</button>` : own ? `<button class="lk-btn main" data-act="use">선택</button>` : `<button class="lk-btn main" data-act="buy">${t.price.toLocaleString()}G</button>`;
+    return `<div class="shop-row${cur ? ' cur' : ''}" data-id="${t.id}"><span class="disc" aria-hidden="true">♪</span><div class="sr-main"><b>${t.n}</b><span>${t.d}</span></div><div class="sr-btns">${main}${cur ? '' : `<button class="lk-btn" data-act="pre">${pre ? '■ 그만' : '▶ 듣기'}</button>`}</div></div>`;
+  }).join('');
+}
+$('#shopList').addEventListener('click', e => {
+  const btn = e.target.closest('[data-act]'); if (!btn) return;
+  const t = TRACKS.find(x => x.id === btn.closest('[data-id]').dataset.id), act = btn.dataset.act;
+  if (act === 'pre') { if (bgm.preview === t.id) bgmStopPreview(); else bgmPreview(t.id); }
+  else if (act === 'buy') {
+    if (S.gold < t.price) { $('#shopMsg').textContent = `골드가 ${(t.price - S.gold).toLocaleString()}G 모자라요. 달리거나 알을 부화시켜 모아 보자.`; sfx('wob'); return; }
+    S.gold -= t.price; S.tracks.push(t.id); renderGold(); sfx('newdex');
+    $('#shopMsg').innerHTML = `${J({ name: t.n }, '을/를')} 샀다!`; S.bgm = t.id; bgm.preview = null; bgmStart(); save();
+  } else if (act === 'use') { S.bgm = t.id; bgm.preview = null; bgmStart(); save(); $('#shopMsg').innerHTML = `${J({ name: t.n }, '을/를')} 틀었다.`; }
+  renderShop();
+});
+new MutationObserver(() => { if (shopEl.hidden && bgm.preview) bgmStopPreview(); }).observe(shopEl, { attributes: true, attributeFilter: ['hidden'] });
+function bgmLabel() { $('#bgmToggle').textContent = bgmOn ? '배경 음악 켜짐' : '배경 음악 꺼짐'; $('#bgmToggle').classList.toggle('main', bgmOn); }
+bgmLabel();
+$('#bgmToggle').onclick = () => { bgmOn = !bgmOn; try { localStorage.setItem('pk-bgm', bgmOn ? '1' : '0'); } catch (e) {} bgmLabel(); if (bgmOn) bgmStart(); else bgmStop(); };
 function sfxLabel() { $('#sfxToggle').textContent = sfxOn ? '효과음 켜짐' : '효과음 꺼짐'; $('#sfxToggle').classList.toggle('main', sfxOn); }
 sfxLabel();
 $('#sfxToggle').onclick = () => { sfxOn = !sfxOn; try { localStorage.setItem('pk-sfx', sfxOn ? '1' : '0'); } catch (e) {} sfxLabel(); if (sfxOn) sfx('pickup'); };
@@ -2928,7 +3066,7 @@ async function openCard(sp, dir = 0) {
   const act = $('#dpAct'); act.hidden = lock;
   if (!lock) {
     if (dexMode === 'buddy') { act.textContent = S.buds.some(b => b.sp === sp) ? '이미 짝꿍이에요' : '짝꿍으로 정하기'; act.classList.toggle('off', S.buds.some(b => b.sp === sp)); }
-    else { const on = picked.has(sp); act.textContent = on ? '선택 해제' : '필드에 풀어놓기 선택'; act.classList.toggle('off', on); }
+    else { const full = S.mons.length >= MAX_MONS; act.textContent = full ? `필드가 꽉 찼어요 (${MAX_MONS}/${MAX_MONS})` : '필드에 풀어놓기'; act.classList.toggle('off', full); }
   }
 }
 function cardStep(dir) { const list = cardList(), i = list.indexOf(cardSp), j = i + dir; if (j >= 0 && j < list.length) { sfx('tap'); openCard(list[j], dir); } }
@@ -2940,7 +3078,10 @@ $('#dexPop').addEventListener('click', e => { if (e.target.id === 'dexPop') clos
 $('#dpAct').onclick = async () => {
   const sp = cardSp; if (sp == null) return;
   if (dexMode === 'buddy') { if (S.buds.some(b => b.sp === sp)) return; closeCard(); picked.clear(); picked.add(sp); await setBuddySp(sp); return; }
-  togglePick(sp); openCard(sp);
+  // 바로 필드에 풀어놓는다
+  if (S.mons.length >= MAX_MONS) return;
+  closeCard(); sheet.hidden = true;
+  try { const m = await spawn(sp); if (m) select(m); } catch (e) { log(`${SPECIES[sp].n}의 그림을 불러오지 못했다.`); }
 };
 { let x0 = null, y0 = 0; const w = $('#dexPop .win');
   w.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; x0 = e.clientX; y0 = e.clientY; });
@@ -3166,7 +3307,7 @@ const MAX_BUDS = 3;
 const budReady = b => !!b && !!CHILDREN[b.sp] && b.km >= evoNeed(b);
 const evoNeed = m => { const g = gradeOf(baseOf(m.sp)), stage = evoStage(m.sp); return [0, 5, 10, 15, 20, 25][g] * (stage ? 1.5 : 1); };
 const fmtKm = v => (Math.floor(v * 100) / 100).toFixed(2);
-S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked = new Set(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
+S.gold = 0; S.tracks = ['town']; S.bgm = 'town'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked = new Set(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
 const hatchQ = [];
 
 function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); if (dexBtns[sp]) lockDexBtn(sp); } }
@@ -3237,9 +3378,14 @@ window.pokeRunWalk = (km, place) => {
   save(); renderRun(); return true;
 };
 window.pokeRunAddKm = (km, t0) => { km = Math.round(+km * 100) / 100; if (!(km >= .01 && km <= 100)) return false; applyKm(km); addRun(km, 'watch', +t0 || 0); return true; };
+// 골드: 달리면 1km에 10G, 같은 포켓몬이 또 나오면 알 등급에 따라 받는다
+const RUN_G = 10, DUP_G = [0, 15, 30, 60, 120, 250];
+function renderGold() { $('#goldN').textContent = S.gold.toLocaleString(); const g = $('#gold'); g.classList.remove('up'); void g.offsetWidth; g.classList.add('up'); if (!$('#shop').hidden) renderShop(); }
+function addGold(n) { n = Math.round(n); if (!(n > 0)) return 0; S.gold += n; renderGold(); return n; }
 function addRun(km, src, t0) {
   const r = { t: Date.now(), km, src }; if (t0) r.t0 = t0; S.runs.unshift(r); if (S.runs.length > 60) S.runs.pop();
-  log(`${src === 'gps' ? 'GPS로' : src === 'watch' ? '워치로' : '건강 앱 기록으로'} ${fmtKm(km)}km를 달렸다.`, [], true);
+  const g = addGold(km * RUN_G);
+  log(`${src === 'gps' ? 'GPS로' : src === 'watch' ? '워치로' : '건강 앱 기록으로'} ${fmtKm(km)}km를 달렸다.${g ? ` ${g}G를 받았다!` : ''}`, [], true);
   save(); renderRun();
 }
 function hatchEgg(e) {
@@ -3298,7 +3444,8 @@ async function playHatch() {
   await wait(300); egg.remove();
   const img = document.createElement('img'); img.alt = SPECIES[sp].n; img.src = thumbOf(sp); hatchStage.append(img);
   const isNew = !S.unlocked.has(sp); unlock(sp); setTimeout(() => sfx(isNew ? 'newdex' : 'hatch'), 250);
-  $('#hatchMsg').innerHTML = `${GRADE[g].n} 알에서 <b>${esc(SPECIES[sp].n)}</b>${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났다!${isNew ? '<br><span class="small">도감에 새로 등록됐다</span>' : ''}`;
+  const dupG = isNew ? 0 : addGold(DUP_G[g]);
+  $('#hatchMsg').innerHTML = `${GRADE[g].n} 알에서 <b>${esc(SPECIES[sp].n)}</b>${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났다!${isNew ? '<br><span class="small">도감에 새로 등록됐다</span>' : `<br><span class="small">이미 만난 포켓몬이라 <b>${dupG}G</b>를 받았다</span>`}`;
   showDexInfo(sp);
   const ok = $('#hatchOk'); ok.hidden = false; ok.textContent = S.mons.length < MAX_MONS ? '필드로 보내기' : '확인';
   ok.focus();
@@ -3553,7 +3700,7 @@ async function start(data) {
   if (!d) { try { d = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { d = null; } }
   if (d && d.mons && (d.mons.length || d.unlocked)) await restore(d); else await fresh();
   Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp));
-  sky(); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
+  renderGold(); sky(); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
   requestAnimationFrame(t => { last = t; frame(t); });
   // 아이폰 앱에 준비됐다고 알리고, 현재 알 현황을 바로 보낸다
   window.pokeRunReady = true; postNative();
