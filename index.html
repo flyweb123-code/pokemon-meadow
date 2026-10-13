@@ -7,7 +7,8 @@
 #pokePop .win{width:min(400px,100%);min-width:0;box-sizing:border-box;position:relative}#pokePop .dp-pic{height:136px;position:relative;margin-bottom:0}#pokePop .dp-pic img{height:108px;width:auto;max-width:100%}.sw-h[hidden]{display:none}
 .hd-rk{min-height:22px;display:flex;align-items:center}.hd-rk .rk{font-size:14px;padding:1px 8px;line-height:18px}.m-head{align-items:center}
 .slot.empty:active,.eslot.add:active,.bd-empty:active,.slot.empty.tapd,.eslot.tapd,.bd-empty.tapd{background:#d4d4dc!important}
-.eslot.tapd .egg{transform:translateY(2px) scale(.94)}
+.eslot.ready:active,.eslot.ready.tapd{background:#ece4d2!important;box-shadow:inset 0 4px 0 rgba(0,0,0,.18);transform:translateY(3px)}
+.eslot.ready{transition:transform .05s,box-shadow .05s,background .05s}
 .slot.empty,.eslot.add,.bd-empty{transition:background .12s}
 .pp-x{border:0;background:none;font:inherit;font-size:20px;line-height:1;padding:6px 4px 6px 12px;margin:-6px -4px -6px 0;color:var(--dim);cursor:pointer}
 .pp-body{border:0!important;background:none!important;padding:0!important;margin:0 0 12px!important}.pp-body .ivs{margin-top:8px}
@@ -71,10 +72,12 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .hatch>.hwhite.big{animation-duration:2.2s}
 .hatch .win{z-index:1}
 .hatch .win.aura{--ac:255,205,80;--ar:1;border-color:rgb(var(--ac));animation:aura 1.8s ease-in-out infinite}
-.hatch .win.aura.a1{--ac:190,200,214;--ar:.3;animation-duration:2.6s}
-.hatch .win.aura.a2{--ac:90,170,255;--ar:.5;animation-duration:2.3s}
-.hatch .win.aura.a3{--ac:176,108,255;--ar:.7;animation-duration:2.1s}
-.hatch .win.aura.a4{--ac:255,138,52;--ar:.85;animation-duration:1.9s}
+.hatch .win.aura.a1{--ac:190,200,214;--ar:.3}
+.hatch .win.aura.a2{--ac:90,170,255;--ar:.5}
+.hatch .win.aura.a3{--ac:176,108,255;--ar:.7}
+.hatch .win.aura.a4{--ac:255,138,52;--ar:.85}
+/* 전설만 후광이 일렁이고, 나머지는 가만히 (첫 장면 그대로) */
+.hatch .win.aura:not(.a5){animation:aura 1s steps(1,end) 1 paused}
 .hatch .win.aura.a5{--ac:255,205,80;--ar:1.25}
 @keyframes aura{0%,100%{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 0 3px rgba(var(--ac),.55),0 0 calc(22px * var(--ar)) calc(8px * var(--ar)) rgba(var(--ac),.8),0 0 calc(60px * var(--ar)) calc(22px * var(--ar)) rgba(var(--ac),.35)}
 50%{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 0 3px rgba(var(--ac),.8),0 0 calc(34px * var(--ar)) calc(14px * var(--ar)) rgba(var(--ac),.95),0 0 calc(90px * var(--ar)) calc(36px * var(--ar)) rgba(var(--ac),.5)}}
@@ -730,9 +733,9 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .hatch-stage.tapme::after{content:'톡톡!';position:absolute;right:14%;top:8px;font-size:15px;color:#ffe680;text-shadow:2px 2px 0 #383848;animation:tapblink .8s steps(1,end) infinite;pointer-events:none}
 @keyframes tapblink{50%{opacity:0}}
 .hatch-stage .egg.knock{animation:hknock .17s ease-out 1}
-.hatch-stage .egg.quake{animation:equake .1s steps(2,end) var(--qn,3)}
+.hatch-stage .egg.quake{animation:equake .08s steps(2,end) var(--qn,2)}
 @keyframes equake{0%,100%{transform:none}25%{transform:translateX(calc(var(--qx,3) * -1px)) rotate(calc(var(--qa,6) * -1deg))}75%{transform:translateX(calc(var(--qx,3) * 1px)) rotate(calc(var(--qa,6) * 1deg))}}
-.hatch .win.wquake{animation:wquake .09s steps(2,end) var(--qn,3)}
+.hatch .win.wquake{animation:wquake .08s steps(2,end) var(--qn,2)}
 @keyframes wquake{0%,100%{transform:none}33%{transform:translate(calc(var(--wx,2) * -1px),calc(var(--wx,2) * .5px))}66%{transform:translate(calc(var(--wx,2) * 1px),calc(var(--wx,2) * -.5px))}}
 @keyframes hknock{0%{transform:translateX(calc(var(--kx,1) * -6px)) rotate(calc(var(--kx,1) * -8deg)) scale(1.24)}45%{transform:translateX(calc(var(--kx,1) * 3px)) rotate(calc(var(--kx,1) * 3deg)) scale(.9,.94)}100%{transform:none}}
 .hatch-stage .tapfx{position:absolute;width:6px;height:6px;margin:-3px;background:#fff;z-index:3;pointer-events:none;box-shadow:0 -12px #fff,0 12px #fff,-12px 0 #fff,12px 0 #fff,-8px -8px #ffe680,8px -8px #ffe680,-8px 8px #ffe680,8px 8px #ffe680;animation:tapfx .32s steps(3,end) forwards}
@@ -4790,9 +4793,9 @@ function rumble(st, g = 1) {
 // 금이 한 단계 갈 때 알과 창이 크게 흔들린다 (등급이 높을수록 크게·오래)
 function eggQuake(egg, win, st, g) {
   const p = g + st * .6;
-  egg.style.setProperty('--qa', (3 + p * 2.2).toFixed(1)); egg.style.setProperty('--qx', (1.5 + p * 1.1).toFixed(1)); egg.style.setProperty('--qn', 2 + g + st);
-  win.style.setProperty('--wx', (1 + p * .9).toFixed(1)); win.style.setProperty('--qn', 2 + g + st);
-  egg.qUntil = performance.now() + (2 + g + st) * 100;
+  egg.style.setProperty('--qa', (3 + p * 2.2).toFixed(1)); egg.style.setProperty('--qx', (1.5 + p * 1.1).toFixed(1)); egg.style.setProperty('--qn', 1 + Math.ceil(g / 2));
+  win.style.setProperty('--wx', (1 + p * .9).toFixed(1)); win.style.setProperty('--qn', 1 + Math.ceil(g / 2));
+  egg.qUntil = performance.now() + (1 + Math.ceil(g / 2)) * 80;
   egg.classList.remove('knock', 'wig', 'quake'); win.classList.remove('jolt', 'wquake'); void egg.offsetWidth; egg.classList.add('quake'); win.classList.add('wquake');
 }
 // 알 두드리기: 마구 두드리면 금이 가다가 깨진다 (높은 등급일수록 많이). 한동안 가만히 두면 알이 혼자 흔들린다.
@@ -4876,7 +4879,8 @@ document.addEventListener('pointerdown', e => { const b = e.target.closest('#egg
 ['pointerup', 'pointercancel'].forEach(t => document.addEventListener(t, () => document.querySelectorAll('#eggHatch.press,#eggOut.press').forEach(b => b.classList.remove('press')), true));
 let hatching = false;
 // 부화 창 화면 효과 초기화 (밝기·어둠·후광)
-function hatchFx() { hatchEl.classList.remove('legend'); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); hatchEl.querySelector('.win').classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5'); hatchEl.querySelector('.hwhite')?.classList.remove('go', 'big'); }
+// 부화 창 효과 초기화. 흔들림 클래스도 지운다 (창을 다시 열 때 지난번 흔들림이 다시 재생되지 않게)
+function hatchFx() { hatchEl.classList.remove('legend'); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); hatchEl.querySelector('.win').classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5', 'jolt', 'wquake'); hatchEl.querySelector('.hwhite')?.classList.remove('go', 'big'); }
 async function playHatch() {
   if (hatching || !hatchQ.length) return;
   hatching = true;
