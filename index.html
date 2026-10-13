@@ -134,6 +134,7 @@ ol.log{list-style:none;margin:0;padding:0 4px 0 0;overflow-y:auto;height:calc(5 
 .dlg.open .more{opacity:.5}
 ol.log li{display:block;font-size:14px;line-height:1.6;padding:5px 0;border-bottom:2px dotted var(--dlg-in)}
 ol.log li:last-child{border-bottom:0}
+ol.log li.empty{color:var(--dim);text-align:center}
 .dlg.night ol.log li.big .txt{color:#ff9a8a}
 ol.log li time{color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
 ol.log li.big .txt{color:#c03838}
@@ -430,7 +431,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .runtab[aria-selected="true"]{background:var(--frame);color:var(--win);font-weight:700}
 .incu-box .egg-detail{font-size:13px;color:var(--dim);margin-top:4px;line-height:1.5}
 .incu-box .state.ready{background:#e8a020;color:#fff}
-#eggHatch{display:block;margin-top:8px;padding:8px 14px;font:inherit;font-size:14px;background:#e8a020;color:#fff;border:3px solid var(--frame);box-shadow:3px 3px 0 rgba(0,0,0,.25);cursor:pointer}
+#eggHatch{display:block;padding:7px 12px;font:inherit;font-size:14px;background:#e8a020;color:#fff;border:3px solid var(--frame);box-shadow:3px 3px 0 rgba(0,0,0,.25);cursor:pointer}
 .eslot.ready .tag2{background:#e8a020;color:#fff}
 .eslot.ready{border-color:#e8a020}
 .egg.wob.shake,.egg.big.shake{animation:eggready 1.2s steps(2) infinite}@keyframes eggready{0%,60%,100%{transform:rotate(0)}70%{transform:rotate(-8deg)}80%{transform:rotate(8deg)}90%{transform:rotate(-5deg)}}
@@ -468,7 +469,8 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .bag-sort{display:flex}.bag-sort button{font:inherit;font-size:12px;border:3px solid var(--inner);background:#fff;color:var(--win-ink);padding:4px 8px;margin-left:-3px;cursor:pointer}
 .bag-sort button[aria-pressed="true"]{border-color:var(--frame);background:var(--frame);color:var(--win);position:relative}
 .bslot .prog.sm{width:80%;height:7px;border-width:2px;margin:1px 0}.bslot .km{font-size:9px;letter-spacing:-.3px}
-#eggOut{display:block;margin-top:8px;padding:7px 10px;font-size:13px}
+#eggOut{display:block;padding:7px 10px;font-size:13px}
+.incu-btns{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin-top:8px}
 .bag-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:0 0 10px}
 @media (max-width:560px){.bag-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .bag-tabs button{font:inherit;font-size:13px;border:3px solid var(--inner);background:#fff;color:var(--win-ink);padding:6px 4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:2px;white-space:nowrap;position:relative}
@@ -601,8 +603,8 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .hatch-stage.tapme{cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 .hatch-stage.tapme::after{content:'톡톡!';position:absolute;right:14%;top:8px;font-size:15px;color:#ffe680;text-shadow:2px 2px 0 #383848;animation:tapblink .8s steps(1,end) infinite;pointer-events:none}
 @keyframes tapblink{50%{opacity:0}}
-.hatch-stage .egg.knock{animation:hknock .22s steps(1,end) 1}
-@keyframes hknock{0%{transform:translateX(calc(var(--kx,1) * -8px)) rotate(calc(var(--kx,1) * -10deg)) scale(1.07,.9)}35%{transform:translateX(calc(var(--kx,1) * 4px)) rotate(calc(var(--kx,1) * 5deg))}70%,100%{transform:none}}
+.hatch-stage .egg.knock{animation:hknock .17s ease-out 1}
+@keyframes hknock{0%{transform:translateX(calc(var(--kx,1) * -6px)) rotate(calc(var(--kx,1) * -8deg)) scale(1.24)}45%{transform:translateX(calc(var(--kx,1) * 3px)) rotate(calc(var(--kx,1) * 3deg)) scale(.9,.94)}100%{transform:none}}
 .hatch-stage .tapfx{position:absolute;width:6px;height:6px;margin:-3px;background:#fff;z-index:3;pointer-events:none;box-shadow:0 -12px #fff,0 12px #fff,-12px 0 #fff,12px 0 #fff,-8px -8px #ffe680,8px -8px #ffe680,-8px 8px #ffe680,8px 8px #ffe680;animation:tapfx .32s steps(3,end) forwards}
 @keyframes tapfx{0%{transform:scale(.6)}70%{opacity:1}100%{transform:scale(1.7);opacity:0}}
 .hatch .win.jolt{animation:jolt .14s steps(2,end)}
@@ -618,6 +620,26 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .hl-strip img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
 .hl-strip b{position:absolute;right:1px;top:0;font-size:10px;color:#e8a020;text-shadow:1px 1px 0 #fff}
 .hatch .boxbtn.sub{background:var(--win);color:var(--frame);margin-bottom:8px}
+/* 앱을 켰을 때 알림: 새로 주운 알·부화 준비된 알. 확인하면 알 메뉴로 하나씩 날아간다 */
+.noti{position:fixed;inset:0;z-index:5800;background:rgba(10,14,30,.6);display:grid;place-items:center;padding:16px}
+.noti .win{width:min(380px,100%);text-align:center;animation:npop .32s steps(4,end)}
+@keyframes npop{0%{transform:scale(.3)}60%{transform:scale(1.08)}100%{transform:none}}
+.noti h3{margin:0 0 10px;font-size:20px;display:flex;justify-content:center;align-items:center;gap:10px}
+.noti .st{width:4px;height:4px;background:#ffd84a;box-shadow:0 -6px #ffd84a,0 6px #ffd84a,-6px 0 #ffd84a,6px 0 #ffd84a;animation:tapblink .5s steps(1,end) infinite}
+.noti .st.s2{animation-delay:.25s}
+.noti p{margin:6px 0;font-size:16px}
+.noti .ns{background:linear-gradient(#e8f4ff,#cfe4f8);border:3px solid var(--frame);padding:8px 10px 10px;margin-bottom:10px}
+.noti .ns.rd{background:linear-gradient(#fff6dc,#fde7b0)}
+.noti-eggs{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin:6px 0 4px;min-height:34px}
+.noti-eggs .egg{width:26px;height:32px;animation:ndrop .3s steps(3,end) both;animation-delay:var(--d)}
+.noti-eggs.rd .egg{animation:ndrop .3s steps(3,end) both,eggready 1.2s steps(2) .4s infinite;animation-delay:var(--d),calc(var(--d) + .3s)}
+@keyframes ndrop{0%{transform:translateY(-26px);opacity:0}60%{transform:translateY(3px);opacity:1}100%{transform:none}}
+.noti .more{font-size:13px;color:#666;align-self:center}
+.noti .small{font-size:13px;color:#556}
+.flyegg{position:fixed;z-index:7000;pointer-events:none;width:26px;height:32px}
+.flyegg .egg{width:100%;height:100%}
+#openRun.bump{animation:tbump .16s steps(2,end)}
+@keyframes tbump{50%{transform:scale(1.25)}}
 #eggAll{float:right;font:inherit;font-size:13px;padding:3px 10px;background:#e8a020;color:#fff;border:3px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.25);cursor:pointer}
 @keyframes hpop{0%{transform:scale(.25)}50%{transform:scale(1.1)}100%{transform:none}}
 .hatch-stage.evo{background:#1e2340;box-shadow:inset 0 0 0 3px #46508a;transition:background-color .3s}
@@ -825,6 +847,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
       <input id="dexQ" type="search" placeholder="이름이나 번호" aria-label="이름이나 번호로 찾기" autocomplete="off">
       <button class="fsel" id="dexType" data-v="0" aria-haspopup="listbox">모든 타입</button>
       <button class="fsel" id="dexGen" data-v="0" aria-haspopup="listbox">모든 세대</button>
+      <button class="fsel" id="dexSort" data-v="0" aria-haspopup="listbox">번호순</button>
     </div>
     <div class="dex" id="dexGrid"></div>
     <p class="dex-empty" id="dexEmpty" hidden>찾는 포켓몬이 없다.</p>
@@ -960,6 +983,13 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
     <div class="bp-btns"><button class="lk-btn main" id="bagIn">부화기에 넣기</button><button class="lk-btn" id="bagClose">닫기</button></div>
   </div>
 </div>
+<div class="noti" id="noti" hidden>
+  <div class="win" role="dialog" aria-label="새 소식">
+    <h3><i class="st s1"></i>새 소식!<i class="st s2"></i></h3>
+    <div id="notiBody"></div>
+    <button class="boxbtn" id="notiOk">확인</button>
+  </div>
+</div>
 <div class="hatch" id="hatch" hidden>
   <div class="win" role="dialog" aria-label="알 부화">
     <div class="hatch-stage" id="hatchStage"></div>
@@ -1022,6 +1052,7 @@ function sfx(name, k = 0) {
     case 'tap': tone(1320, t, .035, { vol: .045 }); break;
     case 'open': tone(880, t, .04, { vol: .05 }); tone(1320, t + .045, .05, { vol: .05 }); break;
     case 'wob': tone(220, t, .06, { vol: .06 }); tone(196, t + .08, .06, { vol: .06 }); break;
+    case 'tick': tone(880 + Math.min(k, 24) * 40, t, .03, { vol: .05 }); break;
     case 'knock': tone(170 + k * 30, t, .03, { vol: .08 }); tone(95, t + .025, .045, { type: 'triangle', vol: .09 }); break;
     case 'hop': tone(330, t, .09, { vol: .06, to: 660, steps: 3 }); break;
     case 'crack': noise(t, .08, .16, 2500); tone(1568, t, .03, { vol: .04 }); break;
@@ -1055,14 +1086,25 @@ const TRACKS = [
 ];
 const OLD_TRACKS = { forest: 500, lake: 800, sea: 1200, fest: 1800, battle: 2500 };   // 예전 직접 만든 곡: 산 골드는 돌려준다
 let bgmOn = VOL.bgm > 0;
-const bgm = { el: new Audio(), id: null, url: '', preview: null, prevT: 0, have: new Set() };
-bgm.el.loop = true; bgm.el.volume = .55 * VOL.bgm / 10; bgm.el.preload = 'auto';
-// 아이폰은 audio.volume 을 무시한다 → 소리를 Web Audio 게인으로 거쳐 볼륨을 맞춘다
-function bgmRoute() {
-  if (bgm.gain || !actx) return;
-  try { const src = actx.createMediaElementSource(bgm.el); bgm.gain = actx.createGain(); src.connect(bgm.gain).connect(actx.destination); bgm.el.volume = 1; bgmVol(); } catch (e) {}
+// 곡은 Web Audio 버퍼로 튼다. 예전엔 <audio>를 Web Audio 로 거쳤는데, 아이폰에서 출력 주파수(44.1k↔48k)가 바뀌면 곡이 중간에 빨라졌다.
+// 메모리를 아끼려고 32kHz 모노로 풀어 둔다 (게임보이 곡이라 소리 차이가 거의 없다).
+const bgm = { id: null, buf: null, src: null, gain: null, preview: null, prevT: 0, have: new Set(), cache: new Map() };
+function bgmRoute() { if (bgm.gain || !actx) return; bgm.gain = actx.createGain(); bgm.gain.connect(actx.destination); bgmVol(); }
+function bgmVol() { if (bgm.gain) bgm.gain.gain.value = .55 * VOL.bgm / 10; }
+async function bgmDecode(blob) {
+  const ab = await blob.arrayBuffer(), O = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  const c = new O(1, 1, 32000);
+  const dec = await new Promise((res, rej) => { const p = c.decodeAudioData(ab, res, rej); if (p && p.catch) p.catch(rej); });
+  if (dec.numberOfChannels === 1) return dec;
+  const mono = c.createBuffer(1, dec.length, dec.sampleRate), out = mono.getChannelData(0), l = dec.getChannelData(0), r = dec.getChannelData(1);
+  for (let i = 0; i < out.length; i++) out[i] = (l[i] + r[i]) * .5;
+  return mono;
 }
-function bgmVol() { const v = .55 * VOL.bgm / 10; if (bgm.gain) bgm.gain.gain.value = v; else bgm.el.volume = v; }
+function bgmSrcStop() { const x = bgm.src; bgm.src = null; if (x) { try { x.stop(); } catch (e) {} try { x.disconnect(); } catch (e) {} } }
+function bgmSrcStart() {
+  if (bgm.src || !bgm.buf) return; const a = audio(); if (!a) return; bgmRoute();
+  const x = a.createBufferSource(); x.buffer = bgm.buf; x.loop = true; x.connect(bgm.gain); x.start(); bgm.src = x;
+}
 // IndexedDB: 곡 이름표 → 파일
 function musicDB() {
   return new Promise((res, rej) => { const r = indexedDB.open('pk-music', 1); r.onupgradeneeded = () => r.result.createObjectStore('t'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
@@ -1073,16 +1115,19 @@ const musicPut = (id, blob) => musicDo('readwrite', st => st.put(blob, id));
 const musicKeys = () => musicDo('readonly', st => st.getAllKeys());
 musicKeys().then(k => { (k || []).forEach(x => /^cry\d+$/.test(x) ? cry.have.add(+x.slice(3)) : bgm.have.add(x)); cryLabel(); if (bgmOn && bgm.id == null) bgmStart(); if (!$('#shop').hidden) renderShop(); }).catch(() => {});
 async function bgmPlay(id) {
-  if (bgm.id === id && bgm.url) { if (bgm.el.paused) bgm.el.play().catch(() => {}); return; }
-  bgm.id = id;
-  let blob = null; try { blob = await musicGet(id); } catch (e) {}
-  if (bgm.id !== id) return;
-  if (bgm.url) URL.revokeObjectURL(bgm.url);
-  bgm.url = blob ? URL.createObjectURL(blob) : '';
-  if (!bgm.url) { bgm.el.pause(); bgm.el.removeAttribute('src'); return; }
-  bgm.el.src = bgm.url; bgm.el.currentTime = 0; bgm.el.play().catch(() => {});
+  if (bgm.id === id && bgm.buf) { bgmSrcStart(); return; }
+  bgm.id = id; bgmSrcStop(); bgm.buf = null;
+  let buf = bgm.cache.get(id);
+  if (!buf) {
+    let blob = null; try { blob = await musicGet(id); } catch (e) {}
+    if (bgm.id !== id || !blob) return;
+    try { buf = await bgmDecode(blob); } catch (e) { return; }
+    if (bgm.id !== id) return;
+    bgm.cache.set(id, buf); while (bgm.cache.size > 2) bgm.cache.delete(bgm.cache.keys().next().value);
+  }
+  bgm.buf = buf; if (!bgmAway) bgmSrcStart();
 }
-function bgmStop() { bgm.el.pause(); bgm.id = null; }
+function bgmStop() { bgmSrcStop(); bgm.id = null; bgm.buf = null; }
 function bgmStart() { if (bgm.preview) return; if (bgmOn) bgmPlay(S.bgm || 'azalea'); else bgmStop(); }
 // 상점 미리 듣기: 15초 듣고 원래 곡으로 돌아간다
 function bgmPreview(id) { bgm.preview = id; clearTimeout(bgm.prevT); bgmPlay(id); bgm.prevT = setTimeout(() => { bgmStopPreview(); if (!$('#shop').hidden) renderShop(); }, 15000); }
@@ -1091,18 +1136,18 @@ function bgmStopPreview() { bgm.preview = null; clearTimeout(bgm.prevT); if (bgm
 // 곡은 켜자마자 미리 불러 두고(재생 시도), 첫 터치 때 같은 터치 안에서 바로 play() 한다 (아이폰 자동 재생 제한)
 function bgmKick() {
   if (!bgmOn || document.hidden || bgm.preview) return;
-  if (bgm.url && bgm.id === (S.bgm || 'azalea')) { if (bgm.el.paused) bgm.el.play().catch(() => {}); }
-  else bgmStart();
+  if (bgm.buf && bgm.id === (S.bgm || 'azalea')) bgmSrcStart();
+  else if (bgm.id !== (S.bgm || 'azalea')) bgmStart();
 }
 ['pointerdown', 'touchend', 'click'].forEach(t => document.addEventListener(t, bgmKick, { capture: true, passive: true }));
 // 앱을 닫을 때: 소리를 먼저 0으로 내리고 멈춘 뒤 오디오를 재움(바로 재우면 늘어지는 소리가 남)
 let bgmAway = false, bgmAwayT = 0;
 function bgmHide() { if (bgmAway) return; bgmAway = true; clearTimeout(bgmAwayT);
   if (bgm.gain && actx) { try { const g = bgm.gain.gain, t = actx.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0, t + .06); } catch (e) { bgm.gain.gain.value = 0; } }
-  else bgm.el.volume = 0;
-  bgmAwayT = setTimeout(() => { bgm.el.pause(); if (actx && actx.state === 'running') actx.suspend().catch(() => {}); }, 80); }
-function bgmShow() { if (!bgmAway) return; bgmAway = false; clearTimeout(bgmAwayT); bgm.el.pause();
-  const go = () => { if (bgm.gain && actx) { try { bgm.gain.gain.cancelScheduledValues(actx.currentTime); } catch (e) {} } bgmVol(); if (bgmOn && bgm.url && !bgm.preview) bgm.el.play().catch(() => {}); };
+  bgmAwayT = setTimeout(() => { if (actx && actx.state === 'running') actx.suspend().catch(() => {}); }, 80); }
+// 돌아오면 멈췄던 자리부터 이어서 (오디오를 재우면 버퍼 재생도 그 자리에 멈춰 있다)
+function bgmShow() { if (!bgmAway) return; bgmAway = false; clearTimeout(bgmAwayT);
+  const go = () => { if (bgm.gain && actx) { try { bgm.gain.gain.cancelScheduledValues(actx.currentTime); } catch (e) {} } bgmVol(); if (bgmOn && !bgm.preview) bgmSrcStart(); notiSoon(); };
   if (actx && actx.state !== 'running') actx.resume().then(go, go); else go(); }
 document.addEventListener('visibilitychange', () => { document.hidden ? bgmHide() : bgmShow(); });
 addEventListener('pagehide', bgmHide); addEventListener('pageshow', () => { if (!document.hidden) bgmShow(); });
@@ -1144,7 +1189,7 @@ async function importMusic(files) {
     const name = f.name.replace(/[_]+/g, ' ');
     const t = TRACKS.find(x => x.key.test(name));
     if (!t) { miss.push(f.name); continue; }
-    try { await musicPut(t.id, f); bgm.have.add(t.id); ok++; if (bgm.id === t.id) bgm.id = null; } catch (e) { miss.push(f.name); }
+    try { await musicPut(t.id, f); bgm.have.add(t.id); ok++; bgm.cache.delete(t.id); if (bgm.id === t.id) bgm.id = null; } catch (e) { miss.push(f.name); }
   }
   bgmStart();
   return { ok, miss };
@@ -1369,8 +1414,7 @@ const logEl = $('#log'); const LOG_MAX = 20;
 function log(html, who = [], big = false) {
   const e = { t: S.clock, html, who: who.map(m => m.uid), big };
   S.log.unshift(e); while (S.log.length > LOG_MAX) S.log.pop();
-  if (passesFilter(e)) { logEl.prepend(logItem(e)); while (logEl.children.length > LOG_MAX) logEl.lastChild.remove(); }
-  renderDlg();
+  renderLog();
 }
 function passesFilter(e) { return true; }
 function logItem(e) {
@@ -1378,7 +1422,15 @@ function logItem(e) {
   li.innerHTML = `<span class="txt">${e.html}</span>`;
   return li;
 }
-function renderLog() { logEl.innerHTML = ''; S.log.filter(passesFilter).forEach(e => logEl.append(logItem(e))); renderDlg(); }
+// 관찰 일지: 오래된 것이 위, 최신이 아래. 상태창에 이미 보이는 최근 줄은 빼고 그 이전 것만.
+function renderLog() {
+  const end = !$('#journal').hidden && logEl.scrollHeight - logEl.scrollTop - logEl.clientHeight < 30;
+  const skip = getComputedStyle($('#dlgPrev')).display === 'none' ? 1 : 2, old = S.log.slice(skip);   // 폰에선 상태창에 한 줄만 보인다
+  logEl.innerHTML = ''; old.filter(passesFilter).reverse().forEach(e => logEl.append(logItem(e)));
+  if (!old.length) logEl.innerHTML = '<li class="empty">지난 기록이 아직 없어요</li>';
+  if (end) logEl.scrollTop = logEl.scrollHeight;
+  renderDlg();
+}
 const dlgEl = $('#dlg');
 function foldDlg(on) { dlgEl.classList.toggle('folded', on); $('#dlgFold').setAttribute('aria-label', on ? '상태창 펴기' : '상태창 접기'); try { localStorage.setItem('pk-dlg-fold', on ? '1' : ''); } catch (e) {} }
 $('#dlgFold').addEventListener('click', e => { e.stopPropagation(); foldDlg(!dlgEl.classList.contains('folded')); });
@@ -3045,13 +3097,13 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, log: S.log.slice(0, LOG_MAX),
     mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, asleep: m.state === 'sleep', born: m.born })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1 };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, lastPlace: S.lastPlace || null };
 }
 let saveFrozen = false;
 function save() { if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.box = d.box || []; S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
+  S.lockT = d.lockT || 0; S.box = d.box || []; S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.lastPlace = d.lastPlace || null; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
   S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
@@ -3193,7 +3245,7 @@ window.addEventListener('pointerup', endDrag);
 window.addEventListener('pointercancel', e => { const d = drag; if (!d || e.pointerId !== d.id) return; drag = null; if (d.on) { d.m.held = false; d.m.el.classList.remove('held'); if (d.target) d.target.el.classList.remove('drop-target'); settle(d.m); setState(d.m, 'idle', 2); } });
 function setTool(t) { S.tool = t; $('#btnBerry').setAttribute('aria-pressed', t === 'berry'); stage.classList.toggle('berry-mode', t === 'berry'); $('#hint').hidden = t !== 'berry'; }
 // only one of the toggles is on at a time
-function setLog(on) { $('#journal').hidden = !on; dlgEl.classList.toggle('open', on); if (on) logEl.scrollTop = 0; }
+function setLog(on) { $('#journal').hidden = !on; dlgEl.classList.toggle('open', on); if (on) { renderLog(); requestAnimationFrame(() => { logEl.scrollTop = logEl.scrollHeight; }); } }
 function closeToggles() { if (S.tool === 'berry') setTool('look'); setLog(false); }
 $('#btnBerry').onclick = () => { const on = S.tool !== 'berry'; closeToggles(); hideSheets(); if (on) { select(null); setTool('berry'); } };
 dlgEl.addEventListener('click', e => { if (dlgEl.classList.contains('folded') || e.target.closest('#journal')) return; const on = $('#journal').hidden; closeToggles(); hideSheets(); if (on) { select(null); setLog(true); sfx('open'); } });
@@ -3313,6 +3365,7 @@ const io = new IntersectionObserver(es => es.forEach(en => {
 const FILTERS = {
   dexType: { t: '타입', all: '모든 타입', opts: TYPE_KO.slice(1).map((n, i) => [i + 1, n, TYPE_C[i + 1]]) },
   dexGen: { t: '세대', all: '모든 세대', opts: [1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => [g, `${g}세대`]) },
+  dexSort: { t: '정렬', all: '번호순', opts: [[1, '만난 것 먼저']] },
 };
 let fFor = null;
 function openFilter(id) {
@@ -3324,8 +3377,9 @@ function openFilter(id) {
 function setFilter(id, v) {
   const b = $('#' + id), F = FILTERS[id]; b.dataset.v = v; b.classList.toggle('on', !!v);
   b.textContent = v ? F.opts.find(o => o[0] === v)[1] : F.all; filterDex();
+  if (id === 'dexSort') try { localStorage.setItem('pk-dex-sort', v); } catch (e) {}
 }
-['dexType', 'dexGen'].forEach(id => $('#' + id).onclick = () => openFilter(id));
+['dexType', 'dexGen', 'dexSort'].forEach(id => $('#' + id).onclick = () => openFilter(id));
 $('#fPop').addEventListener('click', e => { const o = e.target.closest('[data-v]'); if (o) setFilter(fFor, +o.dataset.v); if (o || e.target.id === 'fPop') $('#fPop').hidden = true; });
 Object.keys(SPECIES).map(Number).forEach(sp => {
   const d = SPECIES[sp], b = document.createElement('button');
@@ -3338,7 +3392,7 @@ Object.keys(SPECIES).map(Number).forEach(sp => {
 const dexLocked = sp => !S.unlocked.has(+sp);
 // 도감 카드: 도감에서 누르면 새 창으로 뜨고, 좌우로 넘겨 이전·다음 포켓몬을 본다
 let cardSp = null;
-const cardList = () => Object.keys(dexBtns).filter(k => !dexBtns[k].hidden).map(Number);
+const cardList = () => Object.keys(dexBtns).filter(k => !dexBtns[k].hidden).map(Number).sort((a, b) => (+dexBtns[a].style.order || a) - (+dexBtns[b].style.order || b));
 async function openCard(sp, dir = 0) {
   cardSp = sp; const pop = $('#dexPop'), lock = dexLocked(sp), d = SPECIES[sp];
   if (!lock) playCry(sp, .15);
@@ -3397,16 +3451,19 @@ function refreshDexBadges() {
   updateDexCount();
 }
 function filterDex() {
-  const q = $('#dexQ').value.trim(), ty = +$('#dexType').dataset.v, gen = +$('#dexGen').dataset.v;
+  const q = $('#dexQ').value.trim(), ty = +$('#dexType').dataset.v, gen = +$('#dexGen').dataset.v, sortMet = +$('#dexSort').dataset.v === 1;
   let shown = 0;
   for (const sp in dexBtns) {
     const d = SPECIES[sp];
     const ok = (!q || (!dexLocked(sp) && d.n.includes(q)) || String(+sp) === q.replace(/^0+/, '')) && (!ty || d.t.includes(ty)) && (!gen || d.gen === gen);
     dexBtns[sp].hidden = !ok; if (ok) shown++;
+    // 정렬 '만난 포켓몬 먼저': 만난 종을 번호순으로 앞에, 못 만난 종은 그 뒤에
+    dexBtns[sp].style.order = sortMet && dexLocked(sp) ? 2000 + +sp : sortMet ? +sp : '';
   }
   $('#dexEmpty').hidden = shown > 0;
 }
 $('#dexQ').addEventListener('input', filterDex);
+try { if (localStorage.getItem('pk-dex-sort') === '1') setFilter('dexSort', 1); } catch (e) {}
 $('#dexClear').onclick = () => { picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); updateDexCount(); };
 $('#dexGo').onclick = async () => {
   if (dexMode === 'buddy') { const sp = [...picked][0]; if (sp != null) await setBuddySp(sp); return; }
@@ -3872,7 +3929,8 @@ function applyKm(km) {
   for (const e of S.eggs) { const was = e.km >= e.need; e.km += km; if (!was && e.km >= e.need) ready++; }
   if (ready) log(`알 ${ready}개가 움직이기 시작했다! 부화기에서 부화시켜 보자.`, [], true);
   // 아이폰 앱이 걸음(만보기)으로 알을 줍고 있으면 런닝 거리로는 줍지 않는다 (같은 거리를 두 번 세지 않게)
-  if (!S.walkSync) gotLog(collectEggs(km), `${fmtKm(km)}km를 움직이며`);
+  const lp = S.lastPlace && Date.now() - S.lastPlace.t < 3 * 3600e3 ? S.lastPlace : null;
+  if (!S.walkSync) gotLog(collectEggs(km, lp?.n || '', lp?.tags), `${fmtKm(km)}km를 움직이며`, lp?.n || '');
   for (const b of S.buds) { if (CHILDREN[b.sp]) b.km += km; b.frAcc = (b.frAcc || 0) + km * 5; const n = Math.floor(b.frAcc); if (n) { b.frAcc -= n; addFr(b.pid, n); } }
 }
 // 아이폰 앱(워치 연동)에서 열렸을 때: 알 현황을 앱으로 보내고, 워치에서 달린 거리를 받는다
@@ -3891,6 +3949,7 @@ window.pokeRunWalk = (km, place, tags) => {
   km = +km; if (!(km > 0 && km <= 200)) return false;
   S.walkSync = true; S.walkKm += km;
   tags = String(tags || '').split(',').filter(k => THEMES[k]);
+  if (place) S.lastPlace = { n: String(place), tags, t: Date.now() };
   gotLog(collectEggs(km, place || '', tags), `걸어서 ${fmtKm(km)}km`, place || '');
   save(); renderRun(); return true;
 };
@@ -4110,7 +4169,7 @@ function tapEgg(egg, g, msg) {
       win.classList.remove('jolt'); void win.offsetWidth; win.classList.add('jolt');
       const f = n / need, st = f >= .85 ? 3 : f >= .6 ? 2 : f >= .3 ? 1 : 0;
       if (st > stage) { stage = st; egg.classList.add('c' + st); sfx(st === 3 ? 'crack2' : 'crack'); pend = 2; if (st === 1) msg.textContent = '…!'; if (st === 3) msg.textContent = '알이 깨지려고 한다!'; }
-      else { sfx('knock', st); pend = st ? 1 : 0; }
+      else { sfx('knock', st); pend = st >= 2 ? 2 : 1; }
       haptic(pend);
       if (n >= need) {
         clearTimeout(idle); hatchStage.removeEventListener('pointerdown', down); hatchStage.removeEventListener('click', up); hatchStage.classList.remove('tapme');
@@ -4175,15 +4234,52 @@ async function playHatch() {
   showDexInfo(sp);
   const ok = $('#hatchOk'); ok.hidden = false; ok.textContent = S.mons.length < MAX_MONS ? '필드로 보내기' : '확인';
   ok.focus();
-  await new Promise(r => ok.onclick = r);
-  hatchEl.hidden = true; hatching = false;
-  if (S.mons.length < MAX_MONS) { runEl.hidden = true; const m = await spawn(sp, { pid: P.id }); m.born = S.clock; select(m); log(`${GRADE[g].n} 알에서 ${P.shiny ? '✦ 색이 다른 ' : ''}${J(m,'이/가')} 태어났다!`, [m], true); }
+  // 창 바깥을 누르면 필드로 보내지 않고 닫는다 (포켓몬은 상자에)
+  const send = await new Promise(r => { ok.onclick = () => r(true); hatchEl.onclick = ev => { if (!ev.target.closest('.win')) r(false); }; });
+  hatchEl.onclick = null; hatchEl.hidden = true; hatching = false;
+  if (!send) log(`${GRADE[g].n} 알에서 ${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어나 포켓몬 상자에 들어갔다.`, [], true);
+  else if (S.mons.length < MAX_MONS) { runEl.hidden = true; const m = await spawn(sp, { pid: P.id }); m.born = S.clock; select(m); log(`${GRADE[g].n} 알에서 ${P.shiny ? '✦ 색이 다른 ' : ''}${J(m,'이/가')} 태어났다!`, [m], true); }
   else log(`${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났지만 필드가 꽉 차서 포켓몬 상자에 들어갔다.`, [], true);
   save(); renderRun(); refreshCap();
   if (hatchQ.length) playHatch();
 }
 const wait = ms => new Promise(r => setTimeout(r, ms));
 // 모두 부화: 부화 준비된 알을 한꺼번에 깨고, 연출 없이 태어난 포켓몬만 넘겨 가며 본다
+// ---------- 앱을 켰을 때 알림 ----------
+// 새로 주운 알(가방의 NEW, 아직 알리지 않은 것)과 부화 준비로 바뀐 알을 한 창에 보여 준다
+let notiT = 0, notiOpen = false;
+function notiSoon(ms = 1500) { clearTimeout(notiT); notiT = setTimeout(notiShow, ms); }
+function notiShow() {
+  if (notiOpen || document.hidden) return;
+  if (hatching || evolving) { notiSoon(2000); return; }
+  const got = S.bag.filter(e => e.isNew && !e.nt), rdy = S.eggs.filter(e => e.km >= e.need && !e.rn);
+  if (!got.length && !rdy.length) return;
+  notiOpen = true;
+  const MAXI = 24, row = (list, cls) => `<div class="noti-eggs ${cls}">${list.slice(0, MAXI).map((e, i) => eggHtml(e.g).replace('class="egg ', `style="--d:${i * 45}ms" class="egg `)).join('')}${list.length > MAXI ? `<span class="more">+${list.length - MAXI}</span>` : ''}</div>`;
+  const by = list => [5, 4, 3, 2, 1].filter(g => list.some(e => e.g === g)).map(g => `${GRADE[g].n} ${list.filter(e => e.g === g).length}`).join(' · ');
+  const places = [...new Set(got.map(e => e.place).filter(Boolean))];
+  $('#notiBody').innerHTML = (got.length ? `<div class="ns"><p>알 <b>${got.length}</b>개를 주웠다!</p>${row(got.slice().reverse(), 'new')}<div class="small">${by(got)}${places.length ? `<br>${places.slice(0, 2).map(esc).join(', ')}${places.length > 2 ? ` 외 ${places.length - 2}곳` : ''} 근처` : ''}</div></div>` : '')
+    + (rdy.length ? `<div class="ns rd"><p>알 <b>${rdy.length}</b>개가 부화 준비됐다!</p>${row(rdy, 'rd')}<div class="small">부화기에서 부화시켜 보자</div></div>` : '');
+  $('#noti').hidden = false; sfx('newdex'); haptic(1);
+  $('#notiOk').onclick = () => notiDone(got, rdy);
+}
+// 확인: 알 그림이 하나씩 빠르게 '알' 메뉴로 날아가 담긴다 (담길 때마다 틱 소리와 진동)
+async function notiDone(got, rdy) {
+  for (const e of got) e.nt = true; for (const e of rdy) e.rn = true; save();
+  const eggs = [...$('#notiBody').querySelectorAll('.egg')], tab = $('#openRun'), tr = tab.getBoundingClientRect();
+  const tx = tr.left + tr.width / 2, ty = tr.top + tr.height / 2;
+  const fl = eggs.map(el => { const r = el.getBoundingClientRect(), f = document.createElement('div'); f.className = 'flyegg'; f.style.left = r.left + 'px'; f.style.top = r.top + 'px'; f.innerHTML = el.outerHTML; f.firstChild.removeAttribute('style'); f.firstChild.style.animation = 'none'; return { f, x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+  $('#noti').hidden = true;
+  const step = Math.max(28, Math.min(70, 1100 / Math.max(1, fl.length)));
+  fl.forEach(({ f, x, y }, i) => {
+    document.body.append(f);
+    const dx = tx - x, dy = ty - y;
+    const a = f.animate([{ transform: 'none' }, { transform: `translate(${dx * .35}px,${dy * .35 - 60}px) scale(1.15)`, offset: .4 }, { transform: `translate(${dx}px,${dy}px) scale(.35)` }], { duration: 420, delay: i * step, easing: 'ease-in', fill: 'both' });
+    a.onfinish = () => { f.remove(); tab.classList.remove('bump'); void tab.offsetWidth; tab.classList.add('bump'); haptic(i % 3 ? 0 : 1); sfx('tick', i); };
+  });
+  await wait(fl.length * step + 450);
+  notiOpen = false; renderRun();
+}
 async function hatchAll() {
   if (hatching) return;
   const ready = S.eggs.filter(e => e.km >= e.need); if (!ready.length) return;
@@ -4214,8 +4310,8 @@ async function hatchAll() {
   ok.hidden = false; ok.textContent = '확인';
   sfx(res.some(r => r.isNew) ? 'newdex' : 'hatch'); haptic(2);
   show(0);
-  await new Promise(r => ok.onclick = r);
-  hatchEl.hidden = true; hatchEl.classList.remove('list'); hatchStage.onpointerdown = hatchStage.onpointerup = null; hatching = false;
+  await new Promise(r => { ok.onclick = r; hatchEl.onclick = ev => { if (!ev.target.closest('.win')) r(); }; });
+  hatchEl.onclick = null; hatchEl.hidden = true; hatchEl.classList.remove('list'); hatchStage.onpointerdown = hatchStage.onpointerup = null; hatching = false;
   const nw = res.filter(r => r.isNew).length, sh = res.filter(r => r.P.shiny).length;
   log(`알 ${res.length}개가 한꺼번에 부화했다! ${res.map(r => SPECIES[r.sp].n).join(', ')}${nw ? ` (새로 만난 포켓몬 ${nw}마리)` : ''}${sh ? ` ✦ 색이 다른 포켓몬 ${sh}마리!` : ''}`, [], true);
   save(); renderRun(); refreshCap();
@@ -4331,7 +4427,7 @@ function renderBag() {
   const e = bagSel, full = S.eggs.length >= MAX_EGGS;
   $('#bagPop').hidden = !e;
   if (e) { $('#bagIn').disabled = full; $('#bagIn').textContent = full ? `부화기가 꽉 찼어요` : '부화기에 넣기'; }
-  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${GRADE[e.g].km}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움${e.place ? `<br>${esc(e.place)} 근처` : ''}${themeHint(e) ? `<br>${themeHint(e)}` : ''}</div></div>`;
+  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${GRADE[e.g].km}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움<br>주운 곳: ${e.place ? `<b>${esc(e.place)}</b> 근처` : '기록 없음'}${themeHint(e) ? `<br>${themeHint(e)}` : ''}</div></div>`;
 }
 document.addEventListener('click', ev => {
   const tab = ev.target.closest('#bagTabs [data-g]'); if (tab) { bagG = +tab.dataset.g; renderBag(); return; }
@@ -4366,7 +4462,7 @@ function renderRun() {
   $('#runTotal').innerHTML = ` 총 <b>${fmtKm(S.totalKm)}</b>km · 도감 ${S.unlocked.size}/${Object.keys(SPECIES).length}`;
   if (!S.eggs.includes(eggSel)) eggSel = S.eggs[0] || null;
   const e = eggSel;
-  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? '알이 움직이고 있다!' : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}${e.place ? `<div class="egg-detail">${esc(e.place)} 근처에서 주운 알${themeHint(e) ? `<br>${themeHint(e)}` : ''}</div>` : ''}${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div>`
+  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? '알이 움직이고 있다!' : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}${e.place ? `<div class="egg-detail">${esc(e.place)} 근처에서 주운 알${themeHint(e) ? `<br>${themeHint(e)}` : ''}</div>` : ''}<div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
     : '';
   $('#eggCount').textContent = `${S.eggs.length}/${MAX_EGGS}`;
   const nReady = S.eggs.filter(x => x.km >= x.need).length, all = $('#eggAll'); all.hidden = nReady < 2; all.textContent = `모두 부화 (${nReady})`;
@@ -4479,14 +4575,14 @@ async function start(data) {
   if (d && d.mons && (d.mons.length || d.unlocked)) await restore(d); else await fresh();
   if (bgmOn && bgm.id !== S.bgm) bgmStart();
   Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp));
-  migrateBox(); undoAutoHatch(); renderGold(); sky(); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
+  migrateBox(); undoAutoHatch(); renderGold(); notiSoon(1800); sky(); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
   requestAnimationFrame(t => { last = t; frame(t); });
   // 아이폰 앱에 준비됐다고 알리고, 현재 알 현황을 바로 보낸다
   window.pokeRunReady = true; postNative();
   try { window.webkit?.messageHandlers?.pokeRun?.postMessage({ ready: true }); } catch (e) {}
 }
 if (/[?&]debug/.test(location.search)) window.__meadow = { S, newPoke, takeLockKm, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
-if (/[?&]debug/.test(location.search)) Object.assign(window, { __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf });
+if (/[?&]debug/.test(location.search)) Object.assign(window, { __log: log, __save: save, __bgm: bgm, __actx: () => actx, __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf });
 window.claude?.hot?.snapshot?.(() => serialize());
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
 })();
