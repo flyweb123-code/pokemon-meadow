@@ -15,6 +15,7 @@ struct GameView: UIViewRepresentable {
         // 배경 음악이 앱을 켜자마자 나오게 (터치 없이 재생 허용)
         config.mediaTypesRequiringUserActionForPlayback = []
         config.userContentController.add(WeakHandler(bridge), name: "pokeRun")
+        config.userContentController.add(HapticHandler(), name: "haptic")
         let web = WKWebView(frame: .zero, configuration: config)
         web.navigationDelegate = context.coordinator
         web.isOpaque = false
@@ -76,5 +77,15 @@ final class WeakHandler: NSObject, WKScriptMessageHandler {
     init(_ target: WKScriptMessageHandler) { self.target = target }
     func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage) {
         target?.userContentController(c, didReceive: message)
+    }
+}
+
+// 알 두드리기 진동: 게임이 haptic 메시지로 0(약하게)·1(보통)·2(세게)를 보낸다
+final class HapticHandler: NSObject, WKScriptMessageHandler {
+    private let gens: [UIImpactFeedbackGenerator] = [.init(style: .light), .init(style: .medium), .init(style: .heavy)]
+    func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage) {
+        let n = max(0, min(2, (message.body as? Int) ?? 1))
+        gens[n].impactOccurred()
+        gens[n].prepare()
     }
 }

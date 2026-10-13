@@ -429,6 +429,11 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .runtab:first-child{border-left:0}
 .runtab[aria-selected="true"]{background:var(--frame);color:var(--win);font-weight:700}
 .incu-box .egg-detail{font-size:13px;color:var(--dim);margin-top:4px;line-height:1.5}
+.incu-box .state.ready{background:#e8a020;color:#fff}
+#eggHatch{display:block;margin-top:8px;padding:8px 14px;font:inherit;font-size:14px;background:#e8a020;color:#fff;border:3px solid var(--frame);box-shadow:3px 3px 0 rgba(0,0,0,.25);cursor:pointer}
+.eslot.ready .tag2{background:#e8a020;color:#fff}
+.eslot.ready{border-color:#e8a020}
+.egg.wob.shake,.egg.big.shake{animation:eggready 1.2s steps(2) infinite}@keyframes eggready{0%,60%,100%{transform:rotate(0)}70%{transform:rotate(-8deg)}80%{transform:rotate(8deg)}90%{transform:rotate(-5deg)}}
 .incu-box .state{display:inline-block;font-size:11px;background:var(--frame);color:var(--win);padding:1px 6px;margin-left:6px;vertical-align:middle}
 .run-body h4{margin:0 0 8px;font-size:16px}
 .run-body section{min-width:0}
@@ -592,6 +597,28 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .hatch-stage .flash.go{animation:flash .9s steps(6,end)}
 @keyframes flash{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
 .hatch-stage img{height:128px;image-rendering:pixelated;animation:hpop .5s steps(4,end)}
+/* 알 두드리기: 누른 쪽으로 찌그러지며 밀리고, 누른 자리에 도트 별이 튄다 */
+.hatch-stage.tapme{cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+.hatch-stage.tapme::after{content:'톡톡!';position:absolute;right:14%;top:8px;font-size:15px;color:#ffe680;text-shadow:2px 2px 0 #383848;animation:tapblink .8s steps(1,end) infinite;pointer-events:none}
+@keyframes tapblink{50%{opacity:0}}
+.hatch-stage .egg.knock{animation:hknock .22s steps(1,end) 1}
+@keyframes hknock{0%{transform:translateX(calc(var(--kx,1) * -8px)) rotate(calc(var(--kx,1) * -10deg)) scale(1.07,.9)}35%{transform:translateX(calc(var(--kx,1) * 4px)) rotate(calc(var(--kx,1) * 5deg))}70%,100%{transform:none}}
+.hatch-stage .tapfx{position:absolute;width:6px;height:6px;margin:-3px;background:#fff;z-index:3;pointer-events:none;box-shadow:0 -12px #fff,0 12px #fff,-12px 0 #fff,12px 0 #fff,-8px -8px #ffe680,8px -8px #ffe680,-8px 8px #ffe680,8px 8px #ffe680;animation:tapfx .32s steps(3,end) forwards}
+@keyframes tapfx{0%{transform:scale(.6)}70%{opacity:1}100%{transform:scale(1.7);opacity:0}}
+.hatch .win.jolt{animation:jolt .14s steps(2,end)}
+@keyframes jolt{0%{transform:translate(3px,-2px)}50%{transform:translate(-3px,2px)}100%{transform:none}}
+/* 모두 부화: 부화한 포켓몬을 넘겨 가며 본다 */
+.hatch:not(.list) .hl-only{display:none}
+.hl-nav{display:flex;align-items:center;justify-content:center;gap:14px;margin:-4px 0 10px;font-size:15px;color:var(--frame)}
+.hl-nav button{font:inherit;font-size:16px;width:44px;height:36px;background:var(--win);color:var(--frame);border:3px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.3);cursor:pointer}
+.hl-strip{display:flex;gap:4px;overflow-x:auto;margin:10px 0;padding-bottom:2px;scrollbar-width:none}
+.hl-strip::-webkit-scrollbar{display:none}
+.hl-strip button{flex:0 0 44px;height:44px;position:relative;background:#eef0f6;border:2px solid #c8ccd8;padding:0;cursor:pointer}
+.hl-strip button[aria-current="true"]{background:#fff2c0;border-color:#e8a020}
+.hl-strip img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+.hl-strip b{position:absolute;right:1px;top:0;font-size:10px;color:#e8a020;text-shadow:1px 1px 0 #fff}
+.hatch .boxbtn.sub{background:var(--win);color:var(--frame);margin-bottom:8px}
+#eggAll{float:right;font:inherit;font-size:13px;padding:3px 10px;background:#e8a020;color:#fff;border:3px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.25);cursor:pointer}
 @keyframes hpop{0%{transform:scale(.25)}50%{transform:scale(1.1)}100%{transform:none}}
 .hatch-stage.evo{background:#1e2340;box-shadow:inset 0 0 0 3px #46508a;transition:background-color .3s}
 .hatch-stage.evo img{filter:brightness(0) invert(1) drop-shadow(0 0 6px rgba(160,190,255,.9))}
@@ -871,7 +898,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
     <div class="run-body">
       <section class="rtab" data-tab="egg">
         <div class="incu-box" id="incu"></div>
-        <h4>부화기 <span class="small" id="eggCount"></span></h4>
+        <h4>부화기 <span class="small" id="eggCount"></span><button id="eggAll" hidden></button></h4>
         <div class="eggs" id="eggs"></div>
       </section>
       <section class="rtab" data-tab="bag">
@@ -937,7 +964,10 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
   <div class="win" role="dialog" aria-label="알 부화">
     <div class="hatch-stage" id="hatchStage"></div>
     <p id="hatchMsg">어라…?</p>
+    <div class="hl-nav hl-only" id="hatchNav"><button id="hlPrev" aria-label="이전">◀</button><span id="hlNum"></span><button id="hlNext" aria-label="다음">▶</button></div>
     <div class="dexinfo" id="hatchDex" hidden></div>
+    <div class="hl-strip hl-only" id="hlStrip"></div>
+    <button class="boxbtn sub hl-only" id="hatchField">필드로 보내기</button>
     <button class="boxbtn" id="hatchOk" hidden>확인</button>
   </div>
 </div>
@@ -992,6 +1022,7 @@ function sfx(name, k = 0) {
     case 'tap': tone(1320, t, .035, { vol: .045 }); break;
     case 'open': tone(880, t, .04, { vol: .05 }); tone(1320, t + .045, .05, { vol: .05 }); break;
     case 'wob': tone(220, t, .06, { vol: .06 }); tone(196, t + .08, .06, { vol: .06 }); break;
+    case 'knock': tone(170 + k * 30, t, .03, { vol: .08 }); tone(95, t + .025, .045, { type: 'triangle', vol: .09 }); break;
     case 'hop': tone(330, t, .09, { vol: .06, to: 660, steps: 3 }); break;
     case 'crack': noise(t, .08, .16, 2500); tone(1568, t, .03, { vol: .04 }); break;
     case 'crack2': noise(t, .14, .2, 1800); tone(1760, t, .03, { vol: .05 }); tone(1397, t + .05, .03, { vol: .05 }); break;
@@ -3014,13 +3045,13 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, log: S.log.slice(0, LOG_MAX),
     mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, asleep: m.state === 'sleep', born: m.born })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [] };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1 };
 }
 let saveFrozen = false;
 function save() { if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.box = d.box || []; S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.recentHatch = d.recentHatch || []; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
+  S.lockT = d.lockT || 0; S.box = d.box || []; S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
   S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
@@ -3033,7 +3064,7 @@ async function restore(d) {
 async function fresh() {
   S.base = midnight(); S.clock = realClock(); S.rel = {}; S.log = [];
   logEl.innerHTML = '';
-  S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked.clear(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
+  S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked.clear(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1; S.undo1 = true;
   const e = { id: S.eid++, g: 1, km: 0, need: GRADE[1].km, isNew: true, t: Date.now() }; S.eggs.push(e);
   for (let i = 0; i < 4; i++) { const p = randLand(); addBerry(p.x, p.y); }
   log('필드가 텅 비어 있다. 알을 부화시켜 친구를 만들어 보자.', [], true);
@@ -3765,6 +3796,26 @@ function addFr(id, n) { const p = boxOf(id); if (p && n > 0) p.fr = Math.min(255
 // 필드에 나갈 개체: 같은 종 중 필드에 없는 것, 랭크 높은 순
 const freePoke = sp => S.box.filter(p => p.sp === sp && !onField(p.id)).sort((a, b) => ivSum(b) - ivSum(a))[0] || null;
 // 예전 저장: 필드·도감·짝꿍에 있던 포켓몬을 상자에 한 마리씩 넣는다 (이로치 아님)
+// 2026-10-14 새벽(한국 시각) 런닝이 반영되며 알이 저절로 깨졌던 것을 한 번만 되돌린다 (사용자 요청: 부화기에서 직접 부화)
+function undoAutoHatch() {
+  if (S.undo1) return; S.undo1 = true;
+  const from = Date.parse('2026-10-13T16:30:00Z'), got = S.box.filter(p => p.g && p.t >= from).sort((a, b) => a.t - b.t);
+  if (!got.length) return;
+  const ids = new Set(got.map(p => p.id));
+  for (const m of [...S.mons]) if (ids.has(m.pid)) removeMon(m);
+  S.buds = S.buds.filter(b => !ids.has(b.pid));
+  S.box = S.box.filter(p => !ids.has(p.id));
+  const seen = new Set();
+  for (const p of got) {
+    // 상자에 같은 종이 더 없으면 처음 만난 종이었다 → 도감에서 다시 잠금, 있으면 받은 골드를 돌려놓는다
+    if (!S.box.some(q => q.sp === p.sp) && !seen.has(p.sp)) { seen.add(p.sp); S.unlocked.delete(p.sp); if (dexBtns[p.sp]) lockDexBtn(p.sp); }
+    else S.gold = Math.max(0, S.gold - DUP_G[p.g]);
+    const e = { id: S.eid++, g: p.g, km: GRADE[p.g].km, need: GRADE[p.g].km, t: p.t }; if (p.place) e.place = p.place;
+    if (S.eggs.length < MAX_EGGS) S.eggs.push(e); else S.bag.push({ id: e.id, g: e.g, t: e.t, km: e.km, place: e.place });
+  }
+  log(`깨졌던 알 ${got.length}개를 부화 전으로 되돌렸다. 부화기에서 부화시켜 보자.`, [], true);
+  save();
+}
 function migrateBox() {
   for (const m of S.mons) if (m.pid == null || !boxOf(m.pid)) { const p = newPoke(m.sp, { shiny: false }); m.pid = p.id; }
   for (const sp of S.unlocked) if (!S.box.some(p => p.sp === sp)) newPoke(sp, { shiny: false });
@@ -3810,14 +3861,16 @@ function incubate(e) {
   if (S.eggs.length >= MAX_EGGS || !S.bag.includes(e)) return false;
   S.bag = S.bag.filter(x => x !== e);
   const x = { id: e.id, g: e.g, km: e.km || 0, need: GRADE[e.g].km, isNew: true, t: e.t, place: e.place, tags: e.tags }; S.eggs.push(x);
-  if (x.km >= x.need) hatchEgg(x);
   save(); return true;
 }
 // distance from any source goes to every egg and the buddy
 function applyKm(km) {
   if (!(km > 0)) return;
   S.totalKm += km;
-  for (const e of [...S.eggs]) { e.km += km; if (e.km >= e.need) hatchEgg(e); }
+  // 거리가 다 찬 알은 저절로 깨지지 않고 '부화 준비'가 된다 → 부화기에서 눌러 부화
+  let ready = 0;
+  for (const e of S.eggs) { const was = e.km >= e.need; e.km += km; if (!was && e.km >= e.need) ready++; }
+  if (ready) log(`알 ${ready}개가 움직이기 시작했다! 부화기에서 부화시켜 보자.`, [], true);
   // 아이폰 앱이 걸음(만보기)으로 알을 줍고 있으면 런닝 거리로는 줍지 않는다 (같은 거리를 두 번 세지 않게)
   if (!S.walkSync) gotLog(collectEggs(km), `${fmtKm(km)}km를 움직이며`);
   for (const b of S.buds) { if (CHILDREN[b.sp]) b.km += km; b.frAcc = (b.frAcc || 0) + km * 5; const n = Math.floor(b.frAcc); if (n) { b.frAcc -= n; addFr(b.pid, n); } }
@@ -4022,6 +4075,54 @@ function hatchEgg(e) {
   S.recentHatch = [sp, ...(S.recentHatch || []).filter(x => x !== sp)].slice(0, 12);
   hatchQ.push({ g: e.g, sp, place: e.place }); save();
 }
+// 태어난 포켓몬을 상자에 넣고 도감 등록, 이미 만난 종이면 골드
+function bornPoke({ g, sp, place }) {
+  const P = newPoke(sp, { g, place }), isNew = !S.unlocked.has(sp); unlock(sp);
+  return { g, sp, place, P, isNew, dupG: isNew ? 0 : addGold(DUP_G[g]) };
+}
+const bornMsg = ({ g, sp, P, isNew, dupG }) => `${GRADE[g].n} 알에서 <b>${esc(SPECIES[sp].n)}</b>${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났다!${isNew ? '<br><span class="small">도감에 새로 등록됐다</span>' : `<br><span class="small">이미 만난 포켓몬이라 <b>${dupG}G</b>를 받았다</span>`}`
+  + `<div class="rkline">개체 랭크 <span class="rk ${rankOf(P)}">${rankOf(P)}</span>${P.shiny ? ' <b class="sh">✦ 색이 다른 포켓몬이다!</b>' : ''}</div>`;
+function bornImg(sp, P) { const img = document.createElement('img'); img.alt = SPECIES[sp].n; img.src = thumbOf(sp); if (P.shiny) { img.classList.add('shiny'); img.style.setProperty('--shue', shinyHue(sp) + 'deg'); } return img; }
+// 진동: 아이폰 앱은 haptic 메시지, 안드로이드는 vibrate, iOS 사파리(18+)는 스위치 체크박스를 누를 때 나는 짧은 진동
+let hapSw = null;
+function haptic(n = 1) {
+  try { const h = window.webkit?.messageHandlers?.haptic; if (h) { h.postMessage(n); return; } } catch (e) {}
+  try {
+    if (navigator.vibrate) { navigator.vibrate([10, 22, 40][n] || 20); return; }
+    if (!hapSw) { hapSw = document.createElement('label'); hapSw.innerHTML = '<input type="checkbox" switch>'; hapSw.style.cssText = 'position:fixed;left:-200px;top:0;opacity:0;pointer-events:none'; document.body.append(hapSw); }
+    hapSw.click();
+  } catch (e) {}
+}
+// 알 두드리기: 마구 두드리면 금이 가다가 깨진다 (높은 등급일수록 많이). 한동안 가만히 두면 알이 혼자 흔들린다.
+function tapEgg(egg, g, msg) {
+  return new Promise(done => {
+    const need = 8 + g * 2, win = hatchEl.querySelector('.win'); let n = 0, stage = 0, idle = 0, pend = -1;
+    msg.textContent = '알을 톡톡 두드려 보자!';
+    hatchStage.classList.add('tapme');
+    const nudge = () => { clearTimeout(idle); idle = setTimeout(() => { if (n >= need) return; egg.classList.remove('wig', 'knock'); void egg.offsetWidth; egg.classList.add('wig'); sfx('wob'); nudge(); }, 2600); };
+    const down = ev => {
+      ev.preventDefault(); if (n >= need) return;
+      n++;
+      const r = hatchStage.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
+      egg.style.setProperty('--kx', x < r.width / 2 ? -1 : 1);
+      egg.classList.remove('knock', 'wig'); void egg.offsetWidth; egg.classList.add('knock');
+      const p = document.createElement('i'); p.className = 'tapfx'; p.style.left = x + 'px'; p.style.top = y + 'px'; hatchStage.append(p); setTimeout(() => p.remove(), 360);
+      win.classList.remove('jolt'); void win.offsetWidth; win.classList.add('jolt');
+      const f = n / need, st = f >= .85 ? 3 : f >= .6 ? 2 : f >= .3 ? 1 : 0;
+      if (st > stage) { stage = st; egg.classList.add('c' + st); sfx(st === 3 ? 'crack2' : 'crack'); pend = 2; if (st === 1) msg.textContent = '…!'; if (st === 3) msg.textContent = '알이 깨지려고 한다!'; }
+      else { sfx('knock', st); pend = st ? 1 : 0; }
+      haptic(pend);
+      if (n >= need) {
+        clearTimeout(idle); hatchStage.removeEventListener('pointerdown', down); hatchStage.removeEventListener('click', up); hatchStage.classList.remove('tapme');
+        setTimeout(() => { egg.classList.remove('knock'); egg.classList.add('wig2'); sfx('rattle'); }, 220);
+        setTimeout(done, 900);
+      } else nudge();
+    };
+    // 터치에선 손을 뗄 때만 '사용자 동작'으로 쳐서, iOS 사파리 진동은 click 에서 한 번 더 시도한다
+    const up = () => { if (pend >= 0 && !window.webkit?.messageHandlers?.haptic && !navigator.vibrate) haptic(pend); pend = -1; };
+    hatchStage.addEventListener('pointerdown', down); hatchStage.addEventListener('click', up); nudge();
+  });
+}
 // hatch cutscene: wobble, crack, flash, reveal
 // 도트 알: 18×22 칸 그림 하나를 목록·세부·부화 창에서 같이 쓴다 (색은 등급별 CSS 변수)
 const EGG_SVG = (() => {
@@ -4060,22 +4161,16 @@ async function playHatch() {
   hatchStage.classList.remove('evo');
   hatchStage.innerHTML = eggHtml(g) + '<div class="flash"></div>' + [[-60, -50], [60, -46], [-54, 30], [58, 34]].map(([x, y]) => `<i class="shard" style="--dx:${x}px;--dy:${y}px"></i>`).join('');
   const egg = hatchStage.querySelector('.egg'), msg = $('#hatchMsg');
-  const beat = async (cls, ms) => { egg.classList.remove('wig', 'hop'); void egg.offsetWidth; egg.classList.add(cls); sfx(cls === 'hop' ? 'hop' : 'wob'); await wait(ms); egg.classList.remove(cls); };
-  await wait(600);
-  await beat('wig', 600); await wait(500);
-  await beat('wig', 600); await wait(400);
-  egg.classList.add('c1'); sfx('crack'); msg.textContent = '…!'; await beat('hop', 350); await wait(500);
-  egg.classList.add('c2'); sfx('crack'); await beat('wig', 600); await wait(250);
-  egg.classList.add('c3'); sfx('crack2'); msg.textContent = '알이 깨지려고 한다!'; egg.classList.add('wig2'); sfx('rattle'); await wait(900);
+  await wait(500);
+  egg.classList.add('wig'); sfx('wob'); await wait(600); egg.classList.remove('wig');
+  await tapEgg(egg, g, msg);
   hatchStage.querySelector('.flash').classList.add('go'); sfx('burst');
   hatchStage.querySelectorAll('.shard').forEach(x => { x.style.setProperty('--ec', getComputedStyle(egg).getPropertyValue('--ec')); x.classList.add('go'); });
-  await wait(300); egg.remove();
-  const P = newPoke(sp, { g, place });
-  const img = document.createElement('img'); img.alt = SPECIES[sp].n; img.src = thumbOf(sp); if (P.shiny) { img.classList.add('shiny'); img.style.setProperty('--shue', shinyHue(sp) + 'deg'); } hatchStage.append(img);
-  const isNew = !S.unlocked.has(sp); unlock(sp); setTimeout(() => sfx(isNew ? 'newdex' : 'hatch'), 250); playCry(sp, isNew ? 1.6 : .9);
-  const dupG = isNew ? 0 : addGold(DUP_G[g]);
-  $('#hatchMsg').innerHTML = `${GRADE[g].n} 알에서 <b>${esc(SPECIES[sp].n)}</b>${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났다!${isNew ? '<br><span class="small">도감에 새로 등록됐다</span>' : `<br><span class="small">이미 만난 포켓몬이라 <b>${dupG}G</b>를 받았다</span>`}`
-    + `<div class="rkline">개체 랭크 <span class="rk ${rankOf(P)}">${rankOf(P)}</span>${P.shiny ? ' <b class="sh">✦ 색이 다른 포켓몬이다!</b>' : ''}</div>`;
+  haptic(2); await wait(300); egg.remove();
+  const B = bornPoke({ g, sp, place }), { P, isNew } = B;
+  hatchStage.append(bornImg(sp, P));
+  setTimeout(() => sfx(isNew ? 'newdex' : 'hatch'), 250); playCry(sp, isNew ? 1.6 : .9);
+  $('#hatchMsg').innerHTML = bornMsg(B);
   if (P.shiny) setTimeout(() => sfx('shiny'), 900);
   showDexInfo(sp);
   const ok = $('#hatchOk'); ok.hidden = false; ok.textContent = S.mons.length < MAX_MONS ? '필드로 보내기' : '확인';
@@ -4088,6 +4183,44 @@ async function playHatch() {
   if (hatchQ.length) playHatch();
 }
 const wait = ms => new Promise(r => setTimeout(r, ms));
+// 모두 부화: 부화 준비된 알을 한꺼번에 깨고, 연출 없이 태어난 포켓몬만 넘겨 가며 본다
+async function hatchAll() {
+  if (hatching) return;
+  const ready = S.eggs.filter(e => e.km >= e.need); if (!ready.length) return;
+  hatching = true;
+  const res = ready.map(e => { hatchEgg(e); return bornPoke(hatchQ.pop()); });
+  save(); renderRun();
+  await Promise.all(res.map(r => ensureSprite(r.sp).catch(() => {})));
+  const strip = $('#hlStrip'), fieldBtn = $('#hatchField'), ok = $('#hatchOk');
+  strip.innerHTML = res.map((r, k) => `<button data-k="${k}" aria-label="${esc(SPECIES[r.sp].n)}"><img src="${thumbOf(r.sp)}" alt="">${r.isNew ? '<b>N</b>' : ''}</button>`).join('');
+  hatchStage.classList.remove('evo', 'tapme'); hatchEl.classList.add('list'); hatchEl.hidden = false;
+  let i = 0;
+  const show = k => {
+    i = (k + res.length) % res.length; const r = res[i];
+    hatchStage.innerHTML = ''; hatchStage.append(bornImg(r.sp, r.P));
+    $('#hatchMsg').innerHTML = bornMsg(r); showDexInfo(r.sp);
+    $('#hlNum').textContent = `${i + 1} / ${res.length}`;
+    strip.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-current', j === i));
+    strip.children[i]?.scrollIntoView({ block: 'nearest', inline: 'center' });
+    fieldBtn.hidden = onField(r.P.id) || S.mons.length >= MAX_MONS;
+    playCry(r.sp, r.isNew ? 1.3 : .8);
+  };
+  $('#hlPrev').onclick = () => show(i - 1); $('#hlNext').onclick = () => show(i + 1);
+  strip.onclick = ev => { const b = ev.target.closest('[data-k]'); if (b) show(+b.dataset.k); };
+  let sx = null;
+  hatchStage.onpointerdown = ev => { sx = ev.clientX; };
+  hatchStage.onpointerup = ev => { if (sx != null && Math.abs(ev.clientX - sx) > 40) show(i + (ev.clientX < sx ? 1 : -1)); sx = null; };
+  fieldBtn.onclick = async () => { const r = res[i]; if (onField(r.P.id) || S.mons.length >= MAX_MONS) return; fieldBtn.hidden = true; const m = await spawn(r.sp, { pid: r.P.id }); m.born = S.clock; save(); refreshCap(); show(i); };
+  ok.hidden = false; ok.textContent = '확인';
+  sfx(res.some(r => r.isNew) ? 'newdex' : 'hatch'); haptic(2);
+  show(0);
+  await new Promise(r => ok.onclick = r);
+  hatchEl.hidden = true; hatchEl.classList.remove('list'); hatchStage.onpointerdown = hatchStage.onpointerup = null; hatching = false;
+  const nw = res.filter(r => r.isNew).length, sh = res.filter(r => r.P.shiny).length;
+  log(`알 ${res.length}개가 한꺼번에 부화했다! ${res.map(r => SPECIES[r.sp].n).join(', ')}${nw ? ` (새로 만난 포켓몬 ${nw}마리)` : ''}${sh ? ` ✦ 색이 다른 포켓몬 ${sh}마리!` : ''}`, [], true);
+  save(); renderRun(); refreshCap();
+  if (hatchQ.length) playHatch();
+}
 // 부화·진화 창의 도감 정보: 번호, 이름, 분류, 타입, 키·몸무게, 도감 설명
 function dexInfoHtml(sp) {
   const d = SPECIES[sp];
@@ -4204,6 +4337,8 @@ document.addEventListener('click', ev => {
   const tab = ev.target.closest('#bagTabs [data-g]'); if (tab) { bagG = +tab.dataset.g; renderBag(); return; }
   const sl = ev.target.closest('#bagGrid .bslot');
   if (sl) { const e = S.bag.find(x => x.id === +sl.dataset.id); bagSel = e === bagSel ? null : e; if (e && e.isNew) { e.isNew = false; save(); } renderBag(); return; }
+  if (ev.target.closest('#eggAll')) { hatchAll(); return; }
+  if (ev.target.closest('#eggHatch') && eggSel && eggSel.km >= eggSel.need) { const e = eggSel; eggSel = null; hatchEgg(e); renderRun(); if (!hatching) playHatch(); return; }
   if (ev.target.closest('#eggOut') && eggSel) { const e = eggSel; if (unincubate(e)) { eggSel = null; renderRun(); } return; }
   const so = ev.target.closest('#bagSort [data-sort]'); if (so) { bagSort = so.dataset.sort; try { localStorage.setItem('pk-bag-sort', bagSort); } catch (x) {} renderBag.sig = ''; renderBag(); return; }
   if (ev.target.closest('#bagClose') || ev.target.id === 'bagPop') { bagSel = null; renderBag(); return; }
@@ -4231,14 +4366,16 @@ function renderRun() {
   $('#runTotal').innerHTML = ` 총 <b>${fmtKm(S.totalKm)}</b>km · 도감 ${S.unlocked.size}/${Object.keys(SPECIES).length}`;
   if (!S.eggs.includes(eggSel)) eggSel = S.eggs[0] || null;
   const e = eggSel;
-  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">부화 중</span><div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km${e.place ? `<div class="egg-detail">${esc(e.place)} 근처에서 주운 알${themeHint(e) ? `<br>${themeHint(e)}` : ''}</div>` : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div>`
+  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? '알이 움직이고 있다!' : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}${e.place ? `<div class="egg-detail">${esc(e.place)} 근처에서 주운 알${themeHint(e) ? `<br>${themeHint(e)}` : ''}</div>` : ''}${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div>`
     : '';
   $('#eggCount').textContent = `${S.eggs.length}/${MAX_EGGS}`;
+  const nReady = S.eggs.filter(x => x.km >= x.need).length, all = $('#eggAll'); all.hidden = nReady < 2; all.textContent = `모두 부화 (${nReady})`;
   const box = $('#eggs'); box.innerHTML = '';
   for (let i = 0; i < MAX_EGGS; i++) {
     const x = S.eggs[i], b = document.createElement('button'); b.className = 'eslot';
     if (x) {
-      b.innerHTML = `<span class="tag2">부화 중</span>${eggHtml(x.g, 'wob')}<span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div>`;
+      const rd = x.km >= x.need; b.classList.toggle('ready', rd);
+      b.innerHTML = `<span class="tag2">${rd ? '부화 준비' : '부화 중'}</span>${eggHtml(x.g, rd ? 'wob shake' : 'wob')}<span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div>`;
       b.setAttribute('aria-current', x === e); if (x.isNew) { b.classList.add('new'); x.isNew = false; }
       b.onclick = () => { eggSel = x; renderRun(); };
     } else { b.classList.add('empty', 'add'); b.innerHTML = '+'; b.setAttribute('aria-label', '가방에서 알 가져오기'); b.onclick = () => setRunTab('bag'); }
@@ -4342,7 +4479,7 @@ async function start(data) {
   if (d && d.mons && (d.mons.length || d.unlocked)) await restore(d); else await fresh();
   if (bgmOn && bgm.id !== S.bgm) bgmStart();
   Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp));
-  migrateBox(); renderGold(); sky(); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
+  migrateBox(); undoAutoHatch(); renderGold(); sky(); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
   requestAnimationFrame(t => { last = t; frame(t); });
   // 아이폰 앱에 준비됐다고 알리고, 현재 알 현황을 바로 보낸다
   window.pokeRunReady = true; postNative();
