@@ -21,6 +21,7 @@
 .rk.S::after{content:'';position:absolute;top:-2px;bottom:-2px;left:-60%;width:40%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent);transform:skewX(-20deg);animation:rkshine 2.6s steps(10,end) infinite;pointer-events:none}
 @keyframes rkshine{0%{left:-60%}45%,100%{left:130%}}
 .berrybar{display:flex;flex-direction:column;align-items:flex-start;gap:6px}#frTest{background:rgba(255,255,255,.85)}#frTest[aria-pressed="true"]{background:#c03838;color:#fff}
+.fr-go[data-u],.fr-go[data-p]{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
 .test-btn{font:inherit;font-size:11px;background:none;border:2px dashed #c03838;color:#c03838;padding:3px 6px;cursor:pointer}
 .run-eggs{padding:2px 0 6px 6px;border-bottom:2px dotted var(--inner)}.run-eggs .re-row{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);margin-top:3px}.re-eggs{display:flex;gap:1px;flex:none}.re-eggs .egg{width:12px;height:15px}.re-eggs .egg svg{width:100%;height:100%}.re-pl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .run-row:has(+.run-eggs){border-bottom:0}
@@ -4160,10 +4161,18 @@ function moodOf(m) {
 }
 // 같은 상황이면 같은 문장이 유지되게 (창을 다시 그릴 때 깜빡이지 않게)
 function pick2(m, L) { const k = L[0]; if (!m.moodK || m.moodK !== k) { m.moodK = k; m.moodI = Math.floor(Math.random() * L.length); } return L[m.moodI % L.length]; }
+// 친구 이름을 누르면 그 친구의 정보창으로 (필드에 있으면 필드 정보창, 상자에만 있으면 상자 상세)
+function frGo(e, field) {
+  const b = e.target.closest('.fr-go'); if (!b) return; e.stopPropagation(); sfx('tap');
+  const m = b.dataset.u != null && S.mons.find(o => String(o.uid) === b.dataset.u);
+  if (m) return field ? select(m) : openMon(m);
+  if (b.dataset.p != null && boxOf(+b.dataset.p)) openPoke(+b.dataset.p);
+}
+document.addEventListener('click', e => { if (e.target.closest('#pMemo')) frGo(e, true); else if (e.target.closest('#mMemo')) frGo(e, false); }, true);
 function memoHtml(m) {
   const good = friendsAll(m).filter(x => x.r >= 1).slice(0, 1);   // 친구는 가장 친한 한 마리만
   const row = (k, v, c = '') => `<div class="mrow${c}"><span class="mk">${k}</span><span class="mv">${v}</span></div>`;
-  return row('친구', good.length ? good.map(x => `<b class="good">♥ ${esc(x.name)}</b>${x.r >= 60 ? ' 단짝' : ''}`).join(' · ') : '아직 친한 포켓몬이 없다')
+  return row('친구', good.length ? good.map(x => `<b class="good fr-go"${x.m ? ` data-u="${x.m.uid}"` : x.P ? ` data-p="${x.P.id}"` : ''}>♥ ${esc(x.name)}</b>${x.r >= 60 ? ' 단짝' : ''}`).join(' · ') : '아직 친한 포켓몬이 없다')
     + row('상태', moodOf(m))
     + row('생각', thoughtOf(m), ' th');
 }
