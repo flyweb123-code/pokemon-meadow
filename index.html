@@ -219,6 +219,7 @@ ol.log li.big .txt{color:#c03838}
 .dex button[aria-pressed="true"]::after{content:"✔";position:absolute;right:5px;top:3px;color:var(--cursor);font-size:14px}
 .dex .nm{font-size:13px}
 .dex .here{position:absolute;left:4px;top:4px;font-size:11px;background:var(--frame);color:var(--win);padding:1px 4px}
+.dex .here.bud{background:#e8a020;color:#fff}
 .dex-empty{margin:0;font-size:14px;color:var(--dim)}
 .dexbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 20px;border-top:3px dotted var(--inner);padding-top:10px;font-size:15px}
 .dexbar .opt[hidden]{display:none}
@@ -319,9 +320,21 @@ ol.log li.big .txt{color:#c03838}
 @keyframes roll{from{transform:translateY(-30px) rotate(-200deg);opacity:0}}
 .egg-actions{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;font-size:14px}
 .gradeinfo{font-size:12px;color:var(--dim);margin:10px 0 0;line-height:1.7}
-.buddy-box{display:flex;gap:12px;align-items:center;border:3px solid var(--inner);background:#fff;padding:10px 12px;margin-bottom:14px;min-height:84px;font-size:14px}
-.buddy-box img{height:56px;image-rendering:pixelated}
-.buddy-box .info{flex:1;min-width:0}
+.bd-card{display:grid;gap:14px;border:3px solid var(--frame);background:#fff;padding:14px;box-shadow:3px 3px 0 rgba(0,0,0,.2)}
+.bd-top{display:flex;gap:14px;align-items:center;min-width:0}
+.bd-pic{flex:none;width:104px;height:104px;display:grid;place-items:center;background:#e4f2d0;border:3px solid var(--inner)}
+.bd-pic img{width:88px;height:88px;object-fit:contain;image-rendering:pixelated}
+.bd-name{min-width:0}
+.bd-name b{display:block;font-size:22px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bd-name span{display:block;font-size:13px;color:var(--dim);margin-top:4px}
+.bd-evo .row{display:flex;justify-content:space-between;gap:8px;font-size:14px;margin-top:6px}
+.bd-evo .row b{color:#2a58a8}
+.bd-tag{display:inline-block;font-size:12px;background:var(--frame);color:var(--win);padding:2px 8px}
+.bd-tag.ready{background:#e8a020;color:#fff}
+.bd-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bd-empty{width:100%;display:grid;justify-items:center;gap:12px;padding:24px 12px;border:3px dashed var(--inner);background:#fff;font:inherit;font-size:16px;color:var(--win-ink);cursor:pointer}
+.bd-empty .q{width:104px;height:104px;display:grid;place-items:center;border:3px solid var(--inner);background:#f0f0f4;font-size:44px;color:var(--dim)}
+.bd-empty b{border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:10px 22px}
 .lockrun{border:3px solid var(--frame);background:#eef4ff;padding:14px;margin-bottom:12px;box-shadow:4px 4px 0 rgba(0,0,0,.25);cursor:pointer;user-select:none;-webkit-user-select:none}
 .lockrun:not(.wait):active{transform:translate(2px,2px);box-shadow:2px 2px 0 rgba(0,0,0,.25);background:#dde9ff}
 .lockrun:focus-visible{outline:3px solid var(--cursor);outline-offset:2px}
@@ -515,7 +528,7 @@ ol.runs li span{color:var(--dim)}
   <nav class="hud win menuwin" aria-label="메뉴">
     <button class="opt" id="openDex">도감</button>
     <button class="opt" id="openRun">알</button>
-    <button class="opt" id="openMgr">꺼내기 <span id="capBadge">0/12</span></button>
+    <button class="opt" id="openMgr">필드 <span id="capBadge">0/12</span></button>
     <button class="opt" id="openSet">설정</button>
   </nav>
 
@@ -548,7 +561,7 @@ ol.runs li span{color:var(--dim)}
 
 <div class="sheet" id="sheet" hidden>
   <div class="win dexwin" role="dialog" aria-label="포켓몬 도감">
-    <div class="sheet-head"><h3>포켓몬 도감<span class="cap" id="dexOwn"></span></h3><button class="opt" id="closeDex">닫기</button></div>
+    <div class="sheet-head"><h3><span id="dexTitle">포켓몬 도감</span><span class="cap" id="dexOwn"></span></h3><button class="opt" id="closeDex">닫기</button></div>
     <div class="filters">
       <input id="dexQ" type="search" placeholder="이름이나 번호" aria-label="이름이나 번호로 찾기" autocomplete="off">
       <select id="dexType" aria-label="타입"></select>
@@ -584,8 +597,8 @@ ol.runs li span{color:var(--dim)}
 </div>
 
 <div class="sheet" id="mgr" hidden>
-  <div class="win mgrwin" role="dialog" aria-label="꺼내기">
-    <div class="sheet-head"><h3>꺼내기<span class="cap" id="mgrCap"></span></h3><button class="opt" id="closeMgr">닫기</button></div>
+  <div class="win mgrwin" role="dialog" aria-label="필드">
+    <div class="sheet-head"><h3>필드<span class="cap" id="mgrCap"></span></h3><button class="opt" id="closeMgr">닫기</button></div>
     <div class="mgr-tools"><button class="lk-btn main" id="mgrRandom">무작위 6마리</button></div>
     <div class="mgr-body">
       <div class="slots" id="slots"></div>
@@ -606,10 +619,7 @@ ol.runs li span{color:var(--dim)}
         <p class="gradeinfo">일반 2.5km · 희귀 5km · 레어 7.5km · 에픽 10km · 전설 15km<br>알에서는 진화 전 포켓몬만 나와요. 등급이 높을수록 드문 포켓몬이에요.</p>
       </section>
       <section class="rtab" data-tab="buddy">
-        <h4>같이 달리는 포켓몬</h4>
-        <div class="buddy-box" id="buddy"></div>
-        <p class="gradeinfo">짝꿍과 함께 달린 거리가 정해진 만큼 쌓이면 진화해요. 짝꿍은 한 마리만 정할 수 있고, 바꾸면 쌓인 거리는 처음부터 다시 세요.</p>
-        <div class="egg-actions"><button class="opt" id="buddyPick">꺼내기에서 짝꿍 고르기</button></div>
+        <div id="buddy"></div>
       </section>
       <section class="rtab" data-tab="run">
         <div class="lockrun" id="lock" role="button" tabindex="0" aria-label="런닝 시작">
@@ -2668,7 +2678,8 @@ $('#onlySel').addEventListener('change', renderLog);
 const sheet = $('#sheet');
 const picked = new Set();
 const grid = $('#dexGrid'), dexBtns = {};
-function openDex() { sheet.hidden = false; $('#dexOwn').innerHTML = `<b>${S.unlocked.size}</b>/${Object.keys(SPECIES).length}`; refreshDexBadges(); filterDex(); if (!narrow.matches) $('#dexQ').focus(); }
+let dexMode = 'field';
+function openDex(mode = 'field') { dexMode = mode; sheet.classList.toggle('pick-buddy', mode === 'buddy'); $('#dexTitle').textContent = mode === 'buddy' ? '짝꿍 고르기' : '포켓몬 도감'; picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); sheet.hidden = false; $('#dexOwn').innerHTML = `<b>${S.unlocked.size}</b>/${Object.keys(SPECIES).length}`; refreshDexBadges(); filterDex(); if (!narrow.matches) $('#dexQ').focus(); }
 // the menu works like a tab bar: one window at a time, tapping the open one closes it
 function hideSheets() { sheet.hidden = true; $('#mgr').hidden = true; $('#run').hidden = true; $('#set').hidden = true; }
 function tabTo(el, open) { const was = !el.hidden; closeToggles(); hideSheets(); if (!was) open(); }
@@ -2700,19 +2711,22 @@ Object.keys(SPECIES).map(Number).forEach(sp => {
 const dexLocked = sp => !S.unlocked.has(+sp);
 function togglePick(sp) {
   if (dexLocked(sp)) { $('#dexCount').textContent = '아직 만나지 못한 포켓몬이다. 알을 부화시켜 만나 보자.'; return; }
+  if (dexMode === 'buddy') { const on = picked.has(sp); picked.forEach(x => dexBtns[x].setAttribute('aria-pressed', 'false')); picked.clear(); if (!on) { picked.add(sp); dexBtns[sp].setAttribute('aria-pressed', 'true'); } updateDexCount(); return; }
   if (picked.has(sp)) picked.delete(sp);
   else if (S.mons.length + picked.size < MAX_MONS) picked.add(sp);
-  else { $('#dexCount').textContent = `초원이 꽉 찼다 (${MAX_MONS}/${MAX_MONS}). 꺼내기에서 자리를 비워 줘.`; return; }
+  else { $('#dexCount').textContent = `필드가 꽉 찼어요 (${MAX_MONS}/${MAX_MONS})`; return; }
   dexBtns[sp].setAttribute('aria-pressed', picked.has(sp)); updateDexCount();
 }
 function updateDexCount() {
   const free = MAX_MONS - S.mons.length - picked.size;
+  if (dexMode === 'buddy') { const sp = [...picked][0]; $('#dexCount').textContent = sp ? SPECIES[sp].n : ''; $('#dexClear').hidden = true; $('#dexGo').hidden = !sp; $('#dexGo').textContent = '짝꿍으로 정하기'; return; }
   $('#dexCount').textContent = picked.size ? `${picked.size}마리 선택` : '';
   $('#dexGo').hidden = $('#dexClear').hidden = !picked.size; $('#dexGo').textContent = picked.size ? `${picked.size}마리 풀어놓기` : '풀어놓기';
 }
 function refreshDexBadges() {
   const cnt = {}; S.mons.forEach(m => cnt[m.sp] = (cnt[m.sp] || 0) + 1);
-  for (const sp in dexBtns) { const h = dexBtns[sp].querySelector('.here'); h.hidden = !cnt[sp]; h.textContent = cnt[sp] ? `초원 ×${cnt[sp]}` : ''; }
+  const bsp = S.mons.find(m => m.uid === S.buddy)?.sp;
+  for (const sp in dexBtns) { const h = dexBtns[sp].querySelector('.here'); h.hidden = !cnt[sp]; h.classList.toggle('bud', +sp === bsp); h.textContent = +sp === bsp ? '짝꿍' : cnt[sp] ? `필드 ×${cnt[sp]}` : ''; }
   updateDexCount();
 }
 function filterDex() {
@@ -2728,6 +2742,7 @@ function filterDex() {
 ['#dexQ', '#dexType', '#dexGen'].forEach(id => $(id).addEventListener('input', filterDex));
 $('#dexClear').onclick = () => { picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); updateDexCount(); };
 $('#dexGo').onclick = async () => {
+  if (dexMode === 'buddy') { const sp = [...picked][0]; if (sp != null) await setBuddySp(sp); return; }
   const list = [...picked]; picked.clear(); Object.values(dexBtns).forEach(b => b.setAttribute('aria-pressed', 'false'));
   sheet.hidden = true;
   let last = null;
@@ -2853,7 +2868,6 @@ function renderMgrDetail(rebuild) {
         <button class="opt" id="mLook">초원에서 보기</button>
         <button class="opt" id="mFeed">열매 주기</button>
         <button class="opt" id="mSleep">재우기</button>
-        <button class="opt" id="mRun">같이 런닝하기</button>
         <button class="opt danger" id="mFree">숲으로 보내기</button>
       </div>`;
     const inp = $('#mName'); inp.value = m.name;
@@ -2862,7 +2876,6 @@ function renderMgrDetail(rebuild) {
     $('#mLook').onclick = () => { closeMgr(); select(m); };
     $('#mFeed').onclick = () => feedNear(m);
     $('#mSleep').onclick = () => toggleSleep(m);
-    $('#mRun').onclick = () => toggleBuddy(m);
     $('#mFree').onclick = () => {
       if (Date.now() - mgrFreeArm > 3000) { mgrFreeArm = Date.now(); $('#mFree').textContent = '한 번 더 누르면 보냄'; return; }
       mgrFreeArm = 0; const i = S.mons.indexOf(m); if (S.buddy === m.uid) { S.buddy = null; S.buddyKm = 0; } removeMon(m); mgrSel = S.mons[Math.min(i, S.mons.length - 1)] || null; renderMgr(true); refreshCap();
@@ -2877,8 +2890,7 @@ function renderMgrDetail(rebuild) {
   const sb = $('#mSleep'), busy = m.hidden || m.state === 'interact' || m.state === 'special';
   sb.textContent = m.state === 'sleep' ? '깨우기' : busy ? '지금은 바쁨' : '재우기'; sb.disabled = m.state !== 'sleep' && busy;
   if (mgrFreeArm && Date.now() - mgrFreeArm > 3000) { mgrFreeArm = 0; $('#mFree').textContent = '숲으로 보내기'; }
-  const isB = S.buddy === m.uid, rb = $('#mRun');
-  rb.textContent = isB ? '짝꿍 그만하기' : '같이 런닝하기'; rb.setAttribute('aria-pressed', isB);
+  const isB = S.buddy === m.uid;
   if (isB) $('#mDoing').textContent += CHILDREN[m.sp] ? ` · 런닝 짝꿍 (진화까지 ${fmtKm(S.buddyKm)}/${evoNeed(m)}km)` : ' · 런닝 짝꿍';
 }
 function renameMon(m, v) {
@@ -3081,7 +3093,11 @@ function setRunTab(t) {
   $('.run-body').scrollTop = 0;
 }
 document.querySelectorAll('.runtab').forEach(b => b.onclick = () => setRunTab(b.dataset.tab));
-$('#buddyPick').onclick = () => { runEl.hidden = true; openMgr(S.mons.find(m => m.uid === S.buddy) || S.sel); };
+$('#buddy').addEventListener('click', e => {
+  const a = e.target.closest('[data-act]')?.dataset.act; if (!a) return;
+  if (a === 'pick') { hideSheets(); openDex('buddy'); }
+  else { const m = S.mons.find(x => x.uid === S.buddy); if (m) { toggleBuddy(m); renderRun(); } }
+});
 const EGG_HINT = ['', '초원에서 흔히 보는 포켓몬이 들어 있어요.', '조금 드문 포켓몬이 들어 있어요.', '쉽게 만나기 힘든 포켓몬이 들어 있어요.', '아주 드문 포켓몬이 들어 있어요.', '전설이나 환상의 포켓몬이 들어 있어요!'];
 function renderRun() {
   if (runEl.hidden) return;
@@ -3103,10 +3119,22 @@ function renderRun() {
   }
   $('#drawEgg').disabled = S.eggs.length >= MAX_EGGS;
   const m = S.mons.find(x => x.uid === S.buddy);
-  $('#buddy').innerHTML = !m ? `<div class="info">아직 짝꿍이 없어요. <b>꺼내기</b>에서 포켓몬을 고르고 <b>같이 런닝하기</b>를 눌러 주세요.</div>`
-    : `<img alt="" src="${thumbOf(m.form)}"><div class="info"><b>${esc(m.name)}</b>${CHILDREN[m.sp] ? `<div class="prog evo"><i style="width:${Math.min(100, S.buddyKm / evoNeed(m) * 100)}%"></i></div>진화까지 ${fmtKm(S.buddyKm)} / ${evoNeed(m)}km${m.evoReady ? ' · <b>진화 준비 완료!</b>' : ''}` : '<div class="small">더 이상 진화하지 않는 포켓몬이에요</div>'}</div>`;
+  $('#buddy').innerHTML = !m ? `<button class="bd-empty" data-act="pick"><span class="q">?</span><b>도감에서 짝꿍 고르기</b></button>`
+    : `<div class="bd-card"><div class="bd-top"><div class="bd-pic"><img alt="" src="${thumbOf(m.form)}"></div><div class="bd-name"><b>${esc(m.name)}</b><span>${m.name !== SPECIES[m.sp].n ? `${SPECIES[m.sp].n} · ` : ''}No.${String(m.sp).padStart(4, '0')}</span></div></div>`
+    + (CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, S.buddyKm / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${m.evoReady ? '<span class="bd-tag ready">진화 준비 완료</span>' : '진화까지'}</span><span><b>${fmtKm(S.buddyKm)}</b> / ${evoNeed(m)}km</span></div></div>` : `<div><span class="bd-tag">최종 진화</span></div>`)
+    + `<div class="bd-btns"><button class="lk-btn" data-act="pick">바꾸기</button><button class="lk-btn" data-act="stop">그만하기</button></div></div>`;
   tickLock();
   $('#runs').innerHTML = S.runs.slice(0, 20).map(r => { const d = new Date(r.t); return `<li>${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')} <span>${r.src === 'gps' ? 'GPS' : r.src === 'watch' ? '워치' : '건강 앱'}</span><b>${fmtKm(r.km)}km</b></li>`; }).join('') || '<li><span>아직 달린 기록이 없어요</span></li>';
+}
+async function setBuddySp(sp) {
+  let m = S.mons.find(x => x.uid === S.buddy && x.sp === sp) || S.mons.find(x => x.sp === sp);
+  if (!m) {
+    if (S.mons.length >= MAX_MONS) { $('#dexCount').textContent = `필드가 꽉 찼어요 (${MAX_MONS}/${MAX_MONS})`; return; }
+    try { m = await spawn(sp); } catch (e) { $('#dexCount').textContent = '그림을 불러오지 못했어요'; return; }
+    refreshCap();
+  }
+  if (S.buddy !== m.uid) { S.buddyKm = 0; S.buddy = m.uid; log(`${J(m,'이/가')} 런닝 짝꿍이 되었다!`, [m], true); emote(m, '♪', 'note'); }
+  save(); picked.clear(); sheet.hidden = true; setRunTab('buddy'); openRun();
 }
 function toggleBuddy(m) {
   if (S.buddy === m.uid) { S.buddy = null; log(`${J(m,'과/와')} 같이 달리기를 그만뒀다.`, [m]); }
