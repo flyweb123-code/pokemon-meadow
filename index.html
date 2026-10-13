@@ -315,6 +315,7 @@ ol.log li.big .txt{color:#c03838}
 .sheet-head .cap b{color:var(--win-ink)}
 .mgr-tools{display:flex;flex-wrap:wrap;justify-content:flex-start;align-items:center;gap:8px;margin:0 0 12px;min-height:40px}
 .mgr-tools .tcount{margin-left:auto;font-size:14px;color:var(--dim);white-space:nowrap}.mgr-tools .tcount b{color:var(--win-ink);font-size:17px}
+.mgr-tools .lk-btn.danger{background:#c03838;color:#fff;border-color:#c03838}
 .mgr-tools .tlabel{font-size:16px;font-weight:bold}
 #boxSort button:first-child,#bagSort button:first-child{margin-left:0}
 .mgr-tools #eggAll[hidden]+.tcount{margin-left:auto}
@@ -383,6 +384,8 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 #buddy .bd-ind{font-size:12px;color:#5c6c5c;display:flex;align-items:center;gap:4px}#buddy .bd-ind .hearts{letter-spacing:1px}
 .pp-fr{display:flex;justify-content:space-between;font-size:13px;margin-top:4px}.pp-fr .hearts{color:#e04870;letter-spacing:1px}
 .pp-meta{font-size:12px;color:var(--dim);margin-top:4px;line-height:1.5}
+.pp-free{display:block;margin:10px auto 0;font:inherit;font-size:13px;background:none;border:0;color:#c03838;padding:4px 10px;cursor:pointer}
+.pp-free.arm{background:#c03838;color:#fff}.pp-free[hidden]{display:none}
 .pp-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .pp-btns:has(#ppField[hidden]){grid-template-columns:1fr}#ppField[hidden]{display:none}
 .pp-btns .boxbtn{white-space:nowrap;padding-left:4px;padding-right:4px;font-size:clamp(12px,3.6vw,15px)}
@@ -917,7 +920,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
   <div class="win mgrwin" role="dialog" aria-label="포켓몬">
     <div class="sheet-head"><h3 id="mgrTitle">포켓몬</h3><button class="opt" id="closeMgr">닫기</button></div>
     <div class="mtab" data-t="field">
-      <div class="mgr-tools"><button class="lk-btn main" id="mgrRandom">무작위 12마리</button><span class="tcount" id="mgrCap"></span></div>
+      <div class="mgr-tools"><button class="lk-btn main" id="mgrRandom">무작위 12마리</button><button class="lk-btn" id="mgrClear">모두 빼기</button><span class="tcount" id="mgrCap"></span></div>
       <div class="mgr-body">
         <div class="slots" id="slots"></div>
       </div>
@@ -994,6 +997,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
     <div class="dp-stage"><button class="dp-nav" id="ppPrev" aria-label="이전">◀</button><div class="dp-pic" id="ppPic"><img alt="" id="ppImg"></div><button class="dp-nav" id="ppNext" aria-label="다음">▶</button></div>
     <div class="pp-body" id="ppBody"></div>
     <div class="pp-btns"><button class="boxbtn" id="ppField"></button><button class="boxbtn off" id="ppBud"></button></div>
+    <button class="pp-free" id="ppFree">놓아주기</button>
   </div>
 </div>
 <div class="bagpop" id="bagPop" hidden>
@@ -3613,11 +3617,27 @@ function openPoke(id, dir = 0) {
     + `<div class="mvrow">기술 ${(P.fr || 0) >= FR_MAX ? movesHtml(P.sp, false) : `<span class="mvlock">${movesOf(P.sp).map(() => '???').join(' · ')} — 친밀도 만점이 되면 쓸 수 있어요</span>`}</div>`
     + `<div class="pp-meta">${P.place ? `${esc(P.place)} 근처에서 만났다<br>` : ''}${dt.getMonth() + 1}/${dt.getDate()}${P.g ? ` ${GRADE[P.g].n} 알에서 부화` : ''}</div>`;
   const on = onField(P.id), full = S.mons.length >= MAX_MONS, isBud = S.buds.some(b => b.pid === P.id);
+  const rb = $('#ppFree'); rb.hidden = budPick != null; if (freeArm !== id) { freeArm = null; rb.classList.remove('arm'); rb.textContent = '놓아주기'; }
   const fb = $('#ppField'); fb.hidden = budPick != null; fb.textContent = on ? '필드에서 빼기' : full ? '필드가 꽉 찼어요' : '필드에 내보내기'; fb.disabled = !on && full; fb.classList.toggle('off', on);
   const noRoom = budPick == null && S.buds.length >= MAX_BUDS;
   const bb = $('#ppBud'); bb.textContent = isBud ? '짝꿍이에요' : noRoom ? '짝꿍 자리가 없어요' : '짝꿍으로'; bb.disabled = isBud || noRoom; bb.classList.toggle('off', isBud || noRoom);
 }
-const closePoke = () => { $('#pokePop').hidden = true; pokeId = null; };
+const closePoke = () => { $('#pokePop').hidden = true; pokeId = null; freeArm = null; };
+// 놓아주기: 한 번 더 눌러야 숲으로 돌려보낸다 (필드·짝꿍에서도 빠짐, 도감 기록은 남음)
+let freeArm = null, freeT = 0;
+$('#ppFree').onclick = () => {
+  const P = boxOf(pokeId), b = $('#ppFree'); if (!P) return;
+  if (freeArm !== P.id) { freeArm = P.id; b.classList.add('arm'); b.textContent = '한 번 더 누르면 놓아줘요'; clearTimeout(freeT); freeT = setTimeout(() => { if (freeArm === P.id) { freeArm = null; b.classList.remove('arm'); b.textContent = '놓아주기'; } }, 3000); return; }
+  freeArm = null; clearTimeout(freeT);
+  const L = boxList(), i = L.indexOf(P), m = S.mons.find(x => x.pid === P.id);
+  if (m) removeMon(m);
+  S.buds = S.buds.filter(x => x.pid !== P.id);
+  S.box = S.box.filter(x => x !== P);
+  log(`${J({ name: SPECIES[P.sp].n }, '을/를')} 숲으로 놓아주었다. 잘 지내!`, [], true); sfx('open');
+  save(); refreshCap(); renderBox();
+  const L2 = boxList(), nx = L2[Math.min(i, L2.length - 1)];
+  if (nx) openPoke(nx.id); else closePoke();
+};
 function pokeStep(dir) { const L = boxList(), i = L.indexOf(boxOf(pokeId)), j = i + dir; if (j >= 0 && j < L.length) { sfx('tap'); openPoke(L[j].id, dir); } }
 $('#ppPrev').onclick = () => pokeStep(-1); $('#ppNext').onclick = () => pokeStep(1); $('#ppClose').onclick = closePoke;
 $('#pokePop').addEventListener('click', e => { if (e.target.id === 'pokePop') closePoke(); });
@@ -3655,6 +3675,15 @@ $('#mgrRandom').onclick = async () => {
   btn.disabled = false; if (last) { mgrSel = last; renderMgr(true); refreshCap(); }
 };
 mgr.addEventListener('click', e => { if (e.target === mgr) closeMgr(); });
+// 모두 빼기: 필드의 포켓몬을 전부 상자로 (한 번 더 눌러 확인)
+let clearArm = 0;
+$('#mgrClear').onclick = () => {
+  const b = $('#mgrClear'); if (!S.mons.length) return;
+  if (Date.now() - clearArm > 3000) { clearArm = Date.now(); b.textContent = '한 번 더 누르면 빼요'; b.classList.add('danger'); setTimeout(() => { if (Date.now() - clearArm >= 3000) { b.textContent = '모두 빼기'; b.classList.remove('danger'); } }, 3100); return; }
+  clearArm = 0; b.textContent = '모두 빼기'; b.classList.remove('danger');
+  const n = S.mons.length; for (const m of [...S.mons]) removeMon(m);
+  mgrSel = null; log(`필드의 포켓몬 ${n}마리가 모두 포켓몬 상자로 돌아갔다.`); save(); refreshCap(); renderMgr(true);
+};
 function slotState(m) {
   if (m.hidden) return ['away', '숨음'];
   if (m.state === 'sleep') return ['sleep', '잠듦'];
