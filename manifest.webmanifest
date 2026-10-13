@@ -1,6 +1,6 @@
 {
-  "name": "포켓몬 관찰 초원",
-  "short_name": "초원",
+  "name": "포켓런닝",
+  "short_name": "포켓런닝",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
