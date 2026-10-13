@@ -410,7 +410,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .slot.empty .plus{font-size:24px;line-height:1}
 .slot .no{position:absolute;right:5px;top:4px;font-size:10px;color:var(--dim)}
 .mgr-detail{padding:0;overflow-y:auto;font-size:14px;max-height:calc(100vh - 140px)}
-#monPop .win{width:min(400px,calc(100% - 70px));min-width:0;box-sizing:border-box;position:relative}.mp-nav{position:absolute;top:96px;width:30px;height:56px;font-size:15px;padding:0;z-index:3}.mp-nav.l{left:-37px}.mp-nav.r{right:-37px}.mp-nav:disabled{opacity:.25}.m-pages{overflow:hidden;margin-top:6px}.m-track{display:flex;width:200%;transition:transform .22s steps(5,end);align-items:flex-start}.m-pg{width:50%;flex:none;box-sizing:border-box}.m-pg+.m-pg{padding-left:2px}.m-dots{display:flex;justify-content:center;gap:6px;margin-top:6px;cursor:pointer;padding:4px}.m-dots i{width:6px;height:6px;background:var(--inner)}.m-dots i.on{background:var(--frame)}#mPg2 .ivs{margin-top:2px}#mPg2 .mvrow{margin-top:8px;font-size:13px}
+#monPop .win{width:min(400px,100%);min-width:0;box-sizing:border-box;position:relative}.sw-h{position:absolute;top:50%;width:6px;height:14px;margin-top:-7px;z-index:2;opacity:.45;pointer-events:none;background:var(--frame);animation:swh 1.4s steps(2,end) infinite}.sw-h.l{left:8px;clip-path:polygon(100% 0,0 50%,100% 100%)}.sw-h.r{right:8px;clip-path:polygon(0 0,100% 50%,0 100%);animation-name:swhr}.sw-h[hidden]{display:none}@keyframes swh{50%{transform:translateX(-3px)}}@keyframes swhr{50%{transform:translateX(3px)}}.m-pages{overflow:hidden;margin-top:6px}.m-track{display:flex;width:200%;transition:transform .22s steps(5,end);align-items:flex-start}.m-pg{width:50%;flex:none;box-sizing:border-box}.m-pg+.m-pg{padding-left:2px}.m-dots{display:flex;justify-content:center;gap:6px;margin-top:6px;cursor:pointer;padding:4px}.m-dots i{width:6px;height:6px;background:var(--inner)}.m-dots i.on{background:var(--frame)}#mPg2 .ivs{margin-top:2px}#mPg2 .mvrow{margin-top:8px;font-size:13px}
 .monpop .mgr-detail{min-width:0}.monpop .mgr-detail .bars,.monpop .mgr-detail .bar{min-width:0}
 .slots .slot img{height:clamp(44px,7.5vh,72px);width:auto;max-height:none}
 .slots .slot .ph{min-height:0}
@@ -425,8 +425,8 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .namerow input:focus{border-bottom-color:var(--frame)}
 .nm-edit .pen-b{flex:none;width:13px;height:13px;margin-left:1px;color:var(--frame);display:inline-flex}.nm-edit .pen-b svg{width:100%;height:100%}.sx{font-weight:normal;margin-left:2px}.sx.m{color:#3070d0}.sx.f{color:#e04870}.namerow .sx,.pp-nm .sx{font-size:18px}.pp-nm{flex:0 1 auto}.pp-nm input{font:inherit;font-weight:700;font-size:16px;color:var(--win-ink);background:none;border:0;border-bottom:2px solid transparent;padding:1px 0;width:6.2em;min-width:0;outline:0;border-radius:0}.pp-nm input:focus{border-bottom-color:var(--frame)}.pp-nm .pen-b{width:11px;height:11px}.st-tag[hidden]{display:none}
 .namerow{margin-top:10px}
-.monpop .dp-pic{height:132px;margin-bottom:0;position:relative;flex:1}.m-stage{margin-bottom:0}
-.st-tag{position:absolute;left:6px;top:6px;z-index:2;font-size:12px;line-height:1;color:var(--win-ink);background:#fff;border:2px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.2);padding:4px 8px}.monpop .dp-pic img{height:104px;width:auto;max-width:100%}
+.monpop .dp-pic{height:136px;margin-bottom:0;position:relative;flex:1}.m-stage{margin-bottom:0}.m-head{min-height:0;margin-bottom:6px}#monClose[hidden]{display:none}
+.st-tag{position:absolute;left:6px;top:6px;z-index:2;font-size:12px;line-height:1;color:var(--win-ink);background:#fff;border:2px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.2);padding:4px 8px}.monpop .dp-pic img{height:108px;width:auto;max-width:100%}
 .dp-pic .st-tag.sleep{background:#4a5098;color:#fff}.dp-pic .st-tag.play{background:#c04870;color:#fff}.dp-pic .st-tag.eat{background:#a07020;color:#fff}.dp-pic .st-tag.away{background:#888;color:#fff}
 .namerow small{font-size:12px;color:var(--dim);white-space:nowrap}
 .mgr-detail .sub{margin:6px 0 0;font-size:12px;color:#5c6c5c}
@@ -987,8 +987,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 </div>
 <div class="dexpop monpop" id="monPop" hidden>
   <div class="win" role="dialog" aria-label="필드 포켓몬">
-    <button class="dp-nav mp-nav l" id="mPrev" aria-label="이전 포켓몬">◀</button><button class="dp-nav mp-nav r" id="mNext" aria-label="다음 포켓몬">▶</button>
-    <div class="dp-head"><span id="monPos"></span><button class="opt" id="monClose">닫기</button></div>
+        <div class="dp-head m-head"><span id="monPos"></span><button class="opt" id="monClose" hidden>닫기</button></div>
     <section class="mgr-detail" id="mgrDetail" aria-live="polite"></section>
   </div>
 </div>
@@ -3647,7 +3646,6 @@ const closeMon = () => { monPop.hidden = true; };
 // 필드 정보창 아래쪽(기력~생각)은 옆으로 넘기면 개체값·친밀도·기술 쪽으로
 let monPg = 0;
 function monPage(n, quiet) { monPg = n; const t = $('#mPages .m-track'); if (!t) return; t.style.transform = `translateX(${-50 * n}%)`; $('#mPages').querySelectorAll('.m-dots i').forEach((d, i) => d.classList.toggle('on', i === n)); if (!quiet) sfx('tap'); }
-$('#mPrev').onclick = () => monStep(-1); $('#mNext').onclick = () => monStep(1);
 function monStep(dir) { const i = S.mons.indexOf(mgrSel), j = i + dir; if (i < 0 || j < 0 || j >= S.mons.length) return; sfx('tap'); openMon(S.mons[j]); const st = $('#mStage'); if (st) { st.classList.remove('slide-l', 'slide-r'); void st.offsetWidth; st.classList.add(dir > 0 ? 'slide-l' : 'slide-r'); } }
 { let x0 = null, y0 = 0; const w = $('#monPop .win');
   w.addEventListener('pointerdown', e => { if (e.target.closest('button,input')) return; x0 = e.clientX; y0 = e.clientY; });
@@ -3804,7 +3802,7 @@ function renderMgrDetail(rebuild) {
   const d = SPECIES[m.sp], t = T(m);
   if (rebuild || mgrDet.dataset.uid !== String(m.uid)) {
     mgrDet.dataset.uid = m.uid;
-    mgrDet.innerHTML = `<div class="dp-pic" id="mStage"><span class="st-tag st" id="mSt"></span><img alt="" id="mPic"></div>
+    mgrDet.innerHTML = `<div class="dp-pic" id="mStage"><span class="st-tag st" id="mSt"></span><img alt="" id="mPic"><i class="sw-h l" id="mHl"></i><i class="sw-h r" id="mHr"></i></div>
       <div class="ihead">${infoHead(boxOf(m.pid), m.sp, nameEdit('mName', m.name, sexOf(m)), (m.name !== d.n ? `<span class="ih-sp">${esc(d.n)}</span>` : '') + (t.noct ? '<span class="ih-sp">야행성</span>' : '') + (d.leg || d.my ? '<span class="ih-sp">전설</span>' : ''))}</div>
       <div class="m-pages" id="mPages"><div class="m-track"><div class="m-pg"><div class="bars" id="mBars"></div><div class="memo" id="mMemo"></div></div><div class="m-pg" id="mPg2"></div></div>
         <div class="m-dots"><i class="on"></i><i></i></div></div>
@@ -3814,7 +3812,7 @@ function renderMgrDetail(rebuild) {
     inp.addEventListener('change', () => renameMon(m, inp.value));
     inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); });
     $('#mLook').onclick = () => { closeMgr(); select(m); };
-    { const i = S.mons.indexOf(m); $('#mPrev').disabled = i <= 0; $('#mNext').disabled = i >= S.mons.length - 1; $('#monPos').textContent = `${i + 1} / ${S.mons.length}`; }
+    { const i = S.mons.indexOf(m); $('#mHl').hidden = i <= 0; $('#mHr').hidden = i >= S.mons.length - 1; $('#monPos').textContent = `${i + 1} / ${S.mons.length}`; }
     monPage(monPg, true);
     // 필드에서 빼기: 포켓몬 상자로 돌아간다 (떠나보내는 게 아님)
     $('#mOut').onclick = () => {
