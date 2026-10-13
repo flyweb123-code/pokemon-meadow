@@ -4685,7 +4685,7 @@ function notiShow() {
 // 확인: 알 그림이 하나씩 빠르게 '알' 메뉴로 날아가 담긴다 (담길 때마다 틱 소리와 진동)
 async function notiDone(got, rdy) {
   for (const e of got) e.nt = true; for (const e of rdy) e.rn = true; save();
-  const eggs = [...$('#notiBody').querySelectorAll('.egg')], tab = $('#openRun'), tr = tab.getBoundingClientRect();
+  const eggs = [...$('#notiBody').querySelectorAll('.noti-eggs.new .egg')], tab = $('#openRun'), tr = tab.getBoundingClientRect();
   const tx = tr.left + tr.width / 2, ty = tr.top + tr.height / 2;
   const fl = eggs.map(el => { const r = el.getBoundingClientRect(), f = document.createElement('div'); f.className = 'flyegg'; f.style.left = r.left + 'px'; f.style.top = r.top + 'px'; f.innerHTML = el.outerHTML; f.firstChild.removeAttribute('style'); f.firstChild.style.animation = 'none'; return { f, x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
   $('#noti').hidden = true;
@@ -4696,8 +4696,10 @@ async function notiDone(got, rdy) {
     const a = f.animate([{ transform: 'none' }, { transform: `translate(${dx * .35}px,${dy * .35 - 60}px) scale(1.15)`, offset: .4 }, { transform: `translate(${dx}px,${dy}px) scale(.35)` }], { duration: 420, delay: i * step, easing: 'ease-in', fill: 'both' });
     a.onfinish = () => { f.remove(); tab.classList.remove('bump'); void tab.offsetWidth; tab.classList.add('bump'); haptic(i % 3 ? 0 : 1); sfx('tick', i); };
   });
-  await wait(fl.length * step + 450);
+  if (fl.length) await wait(fl.length * step + 450);
   notiOpen = false; renderRun();
+  // 부화 준비 알림은 주운 게 아니라 날아가는 모션 없이 부화기 창만 연다
+  if (rdy.length && !hatching && !evolving) { closeToggles(); hideSheets(); runTab = 'egg'; openRun(); }
 }
 async function hatchAll() {
   if (hatching) return;
@@ -4979,7 +4981,7 @@ async function start(data) {
   window.pokeRunReady = true; postNative();
   try { window.webkit?.messageHandlers?.pokeRun?.postMessage({ ready: true }); } catch (e) {}
 }
-if (/[?&]debug/.test(location.search)) window.__meadow = { S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
+if (/[?&]debug/.test(location.search)) window.__meadow = { notiShow, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
 if (/[?&]debug/.test(location.search)) Object.assign(window, { __drag: () => drag, __log: log, __save: save, __bgm: bgm, __actx: () => actx, __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf, __thoughtOf: thoughtOf, __addRel: addRel, __tyIcon: tyIcon, __evoKids: evoKids, __friendsAll: friendsAll, __renameBox: renameBox });
 window.claude?.hot?.snapshot?.(() => serialize());
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
