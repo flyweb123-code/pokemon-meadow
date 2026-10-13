@@ -63,6 +63,11 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 #eggTestAll{margin-left:4px}
 .dexinfo.ivinfo .iv-h{display:flex;align-items:center;gap:8px;font-size:15px}.dexinfo.ivinfo .ivs{margin:8px 0 0}
 #hlStrip{display:none!important}
+.incu-empty{margin:auto;color:var(--dim);font-size:15px;text-align:center}
+.hatch-stage{position:relative}.gpop{position:absolute;left:50%;top:18%;z-index:3;display:flex;align-items:center;gap:5px;font-size:20px;color:#e8a020;font-weight:bold;white-space:nowrap;pointer-events:none;
+  text-shadow:2px 0 #fff,-2px 0 #fff,0 2px #fff,0 -2px #fff,2px 2px #5a3a00;animation:gpop 1.6s steps(16,end) forwards}
+.gpop i{width:16px;height:16px;background:#f4c430;border:3px solid #a06a00;box-shadow:inset -3px -3px 0 #d89a10,inset 3px 3px 0 #ffe680;box-sizing:border-box}
+@keyframes gpop{0%{opacity:0;transform:translate(-50%,10px) scale(.6)}12%{opacity:1;transform:translate(-50%,0) scale(1.15)}20%{transform:translate(-50%,-4px) scale(1)}75%{opacity:1;transform:translate(-50%,-26px)}100%{opacity:0;transform:translate(-50%,-40px)}}
 </style>
 <style>
 /* Layout: the meadow fills the window; pixel-RPG windows float over it (clock top-left, menu top-right,
@@ -990,7 +995,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
       <div id="buddy"></div>
     </div>
     <div class="mtab boxtab" data-t="box" hidden>
-      <div class="mgr-tools"><div class="bag-sort" id="boxSort"><button data-sort="new">최신</button><button data-sort="rank">랭크</button><button data-sort="fr">친밀도</button><button data-sort="no">번호</button></div><span class="tcount" id="boxCount"></span></div>
+      <div class="mgr-tools"><div class="bag-sort" id="boxSort"><button data-sort="new">최신</button><button data-sort="rank">랭크</button><button data-sort="fr">친밀도</button><button data-sort="no">번호</button><button data-sort="field">필드</button></div><span class="tcount" id="boxCount"></span></div>
       <div class="boxgrid" id="boxGrid"></div>
     </div>
     <div class="runtabs mtabs" id="mgrTabs" role="tablist"><button class="runtab" role="tab" data-t="box">포켓몬</button><button class="runtab" role="tab" data-t="field">필드</button><button class="runtab" role="tab" data-t="buddy">짝꿍</button></div>
@@ -3742,7 +3747,7 @@ function sideTap(pop, e) { const r = pop.querySelector('.win').getBoundingClient
 monPop.addEventListener('click', e => { if (e.target !== monPop) return; const d = sideTap(monPop, e); if (d) { const h = $(d < 0 ? '#mHl' : '#mHr'); if (!h.hidden) monStep(d); return; } closeMon(); });
 document.querySelectorAll('#boxSort [data-sort]').forEach(b => b.onclick = () => { boxSort = b.dataset.sort; try { localStorage.setItem('pk-box-sort', boxSort); } catch (e) {} renderBox(); });
 function boxList() {
-  const L = S.box.slice();
+  const L = boxSort === 'field' ? S.box.filter(p => onField(p.id)) : S.box.slice();   // 필드: 필드에 나가 있는 포켓몬만
   if (boxSort === 'rank') L.sort((a, b) => ivSum(b) - ivSum(a) || b.shiny - a.shiny);
   else if (boxSort === 'fr') L.sort((a, b) => (b.fr || 0) - (a.fr || 0));
   else if (boxSort === 'no') L.sort((a, b) => a.sp - b.sp || ivSum(b) - ivSum(a));
@@ -3754,7 +3759,7 @@ function renderBox() {
   const L = boxList(), bud = new Set(S.buds.map(b => b.pid));
   $('#boxCount').innerHTML = budPick != null ? '<b class="pickhint">짝꿍을 골라 주세요</b>' : `${S.box.some(p => p.shiny) ? `이로치 ${S.box.filter(p => p.shiny).length} · ` : ''}전체 <b>${S.box.length}</b>마리`;
   $('#boxGrid').innerHTML = L.length ? L.map(p => `<button class="pk${p.shiny ? ' shiny' : ''}${pkCls(p)}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rankOf(p)}">${rankOf(p)}</span>${bud.has(p.id) ? '<span class="tg bud">짝꿍</span>' : onField(p.id) ? '<span class="tg">필드</span>' : ''}<img alt="" data-sp="${p.sp}" data-sx="${p.sex || ''}" src="${thumbP(p) || ''}"><span class="nm">${esc(nameOf(p))}${sexHtml(p.sex)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(p.fr)}</span></button>`).join('')
-    : '<p class="empty-msg">아직 부화시킨 포켓몬이 없다.</p>';
+    : `<p class="empty-msg">${boxSort === 'field' && S.box.length ? '필드에 나가 있는 포켓몬이 없다.' : '아직 부화시킨 포켓몬이 없다.'}</p>`;
   $('#boxGrid').querySelectorAll('img[data-sp]').forEach(im => { const sp = +im.dataset.sp; if (!thumbOf(sp)) ensureSprite(sp).then(() => { im.src = thumbOf(fKey(sp, im.dataset.sx)); }).catch(() => {}); });
 }
 $('#boxGrid').addEventListener('click', e => { const b = e.target.closest('[data-id]'); if (b) openPoke(+b.dataset.id); });
@@ -4582,6 +4587,8 @@ function bornPoke({ g, sp, place }) {
 }
 const bornMsg = ({ g, sp, P, isNew, dupG }) => `${GRADE[g].n} 알에서 <b>${esc(SPECIES[sp].n)}</b>${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났다!<br><span class="small">${isNew ? `새로 만난 포켓몬이라 <b>${dupG}G</b>를 받았다` : `이미 만난 포켓몬이라 <b>${dupG}G</b>를 받았다`}</span>`
   + `<div class="rkline">개체 랭크 <span class="rk ${rankOf(P)}">${rankOf(P)}</span>${P.shiny ? ' <b class="sh">✦ 색이 다른 포켓몬이다!</b>' : ''}</div>`;
+// 부화 골드: +NG 가 동전과 함께 떠올랐다 사라진다
+function goldPop(n) { if (!n) return; const g = document.createElement('div'); g.className = 'gpop'; g.innerHTML = `<i></i>+${n}G`; hatchStage.append(g); sfx('pickup'); setTimeout(() => g.remove(), 1700); }
 function bornImg(sp, P, isNew) { const w = document.createElement('span'); w.className = 'born-pic'; w.append(bornImgEl(sp, P)); if (isNew) w.insertAdjacentHTML('beforeend', '<b class="born-new">NEW</b>'); return w; }
 function bornImgEl(sp, P) { const img = document.createElement('img'); img.alt = SPECIES[sp].n; img.src = thumbOf(fKey(sp, P.sex)); if (P.shiny) { img.classList.add('shiny'); img.style.setProperty('--shue', shinyHue(sp) + 'deg'); } return img; }
 // 진동: 아이폰 앱은 haptic 메시지, 안드로이드는 vibrate, iOS 사파리(18+)는 스위치 체크박스를 누를 때 나는 짧은 진동
@@ -4698,7 +4705,7 @@ async function playHatch() {
   haptic(2); await wait(300); egg.remove();
   const B = bornPoke({ g, sp, place }), { P, isNew } = B;
   hatchStage.append(bornImg(sp, P, isNew));
-  setTimeout(() => sfx(isNew ? 'newdex' : 'hatch'), 250); playCry(sp, isNew ? 1.6 : .9);
+  setTimeout(() => sfx(isNew ? 'newdex' : 'hatch'), 250); setTimeout(() => goldPop(B.dupG), 900); playCry(sp, isNew ? 1.6 : .9);
   $('#hatchMsg').innerHTML = bornMsg(B);
   if (P.shiny) setTimeout(() => sfx('shiny'), 900);
   showDexInfo(sp);
@@ -4771,7 +4778,7 @@ async function hatchAll() {
   let i = 0, ivMode = false;
   const show = k => {
     i = (k + res.length) % res.length; const r = res[i];
-    hatchStage.innerHTML = ''; hatchStage.append(bornImg(r.sp, r.P, r.isNew));
+    hatchStage.innerHTML = ''; hatchStage.append(bornImg(r.sp, r.P, r.isNew)); if (!r.gp) { r.gp = 1; setTimeout(() => goldPop(r.dupG), 250); }
     $('#hatchMsg').innerHTML = bornMsg(r); showDexInfo(r.sp); if (ivMode) showIvInfo(r);
     $('#hlNum').textContent = `${i + 1} / ${res.length}`;
     { const y = hatchStage.offsetTop + hatchStage.offsetHeight / 2; $('#hlPrev').style.top = $('#hlNext').style.top = y + 'px'; }
@@ -4928,7 +4935,7 @@ function renderRun() {
   if (!S.eggs.includes(eggSel)) eggSel = S.eggs[0] || null;
   const e = eggSel;
   $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? '알이 움직이고 있다!' : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}<div class="egg-detail">${e.place ? `${esc(e.place)} 근처에서 주운 알` : '어디서 주웠는지 기록이 없는 알'}<br>${themeHint(e)}</div><div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
-    : '';
+    : '<p class="incu-empty">부화 중인 알이 없습니다</p>';
   $('#eggCount').innerHTML = `<b>${S.eggs.length}</b>/${MAX_EGGS}`;
   const nReady = S.eggs.filter(x => x.km >= x.need).length, all = $('#eggAll'); all.hidden = nReady < 2; all.textContent = `모두 부화 (${nReady})`;
   const box = $('#eggs'); box.innerHTML = '';
