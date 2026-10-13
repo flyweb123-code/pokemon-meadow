@@ -60,6 +60,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .hatch .boxbtn.go{background:#e8a020;color:#fff}.hatch .boxbtn.go:active{box-shadow:inset 0 4px 0 rgba(0,0,0,.35);padding:14px 16px 10px}
 /* 기본 스크롤 막대는 어디서도 안 보이게 (스크롤은 그대로 된다) */
 *{scrollbar-width:none;-ms-overflow-style:none}*::-webkit-scrollbar{display:none;width:0;height:0}
+#eggTestAll{margin-left:4px}
 </style>
 <style>
 /* Layout: the meadow fills the window; pixel-RPG windows float over it (clock top-left, menu top-right,
@@ -1000,7 +1001,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
     <div class="run-body">
       <section class="rtab" data-tab="egg">
         <div class="incu-box" id="incu"></div>
-        <div class="mgr-tools"><button id="eggAll" hidden></button><button id="eggTest" class="test-btn">부화 준비로 (테스트)</button><span class="tcount" id="eggCount"></span></div>
+        <div class="mgr-tools"><button id="eggAll" hidden></button><button id="eggTest" class="test-btn">준비로(테스트)</button><button id="eggTestAll" class="test-btn">모두 준비로</button><span class="tcount" id="eggCount"></span></div>
         <div class="eggs" id="eggs"></div>
       </section>
       <section class="rtab" data-tab="bag">
@@ -4943,6 +4944,7 @@ $('#bagTestG').innerHTML = [1, 2, 3, 4, 5].map(g => `<button data-g="${g}">${GRA
 $('#bagTest').onclick = () => { $('#bagTestG').hidden = !$('#bagTestG').hidden; };
 $('#bagTestG').onclick = ev => { const b = ev.target.closest('[data-g]'); if (!b) return;
   S.bag.push({ id: S.eid++, g: +b.dataset.g, t: Date.now(), isNew: true, nt: true, km: 0, place: pick(TEST_PLACES) }); save(); renderBag.sig = ''; renderRun(); sfx('pickup'); };
+$('#eggTestAll').onclick = () => { S.eggs.forEach(e => { e.km = Math.max(e.km, e.need); }); save(); renderRun(); };
 $('#eggTest').onclick = () => { const e = eggSel || S.eggs[0]; if (!e) return; e.km = Math.max(e.km, e.need); save(); renderRun(); };   // 선택한 알만
 // 짝꿍 카드 (포켓몬 창 › 짝꿍 탭)
 function renderBuddy() {
