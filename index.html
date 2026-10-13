@@ -399,7 +399,12 @@ ol.log li.big .txt{color:#c03838}
 .mgr-detail .pic::after{content:"";position:absolute;left:0;right:0;bottom:0;height:18px;background:#7cb85a;border-top:3px solid #5a9a40}
 .mgr-detail .pic img{position:relative;z-index:1;margin-bottom:8px;image-rendering:pixelated;max-height:96px}
 .namerow{display:flex;gap:8px;align-items:center}
-.namerow input{flex:1;min-width:0;font:inherit;font-size:20px;font-weight:700;color:var(--win-ink);background:#fff;border:3px solid var(--frame);padding:4px 8px;border-radius:0}
+.nm-edit{flex:1;min-width:0;display:flex;align-items:center;gap:4px;cursor:text}
+.namerow input{flex:0 1 auto;max-width:100%;min-width:0;font:inherit;font-size:20px;font-weight:700;color:var(--win-ink);background:none;border:0;border-bottom:2px solid transparent;padding:2px 0;border-radius:0;outline:0}
+.namerow input:focus{border-bottom-color:var(--frame)}
+.nm-edit span{flex:none;font-size:13px;color:var(--dim)}
+.namerow{margin-top:10px}
+.monpop .dp-pic{height:160px;margin-bottom:0}.monpop .dp-pic img{height:128px;width:auto;max-width:100%}
 .namerow small{font-size:12px;color:var(--dim);white-space:nowrap}
 .mgr-detail .sub{margin:6px 0 0;font-size:12px;color:#5c6c5c}
 .mgr-detail .bar .track{border-color:var(--frame)}
@@ -3542,9 +3547,9 @@ function renderMgrDetail(rebuild) {
   const d = SPECIES[m.sp], t = T(m);
   if (rebuild || mgrDet.dataset.uid !== String(m.uid)) {
     mgrDet.dataset.uid = m.uid;
-    mgrDet.innerHTML = `<div class="pic"><img alt="" id="mPic"></div>
-      <div class="namerow"><input id="mName" maxlength="8" aria-label="이름" autocomplete="off"><small>No.${String(m.sp).padStart(4, '0')}</small></div>
-      <p class="sub">${d.n} · ${d.g} · ${t.ty}${t.noct ? ' · 야행성' : ''}${d.leg || d.my ? ' · 전설' : ''}</p>
+    mgrDet.innerHTML = `<div class="dp-pic" id="mStage"><img alt="" id="mPic"></div>
+      <div class="namerow"><label class="nm-edit"><input id="mName" maxlength="8" aria-label="이름 바꾸기" autocomplete="off"><span aria-hidden="true">✎</span></label><small>No.${String(m.sp).padStart(4, '0')}</small></div>
+      <p class="sub">${m.name !== d.n ? `${d.n} · ` : ''}${d.g} · ${t.ty}${t.noct ? ' · 야행성' : ''}${d.leg || d.my ? ' · 전설' : ''}</p>
       <p class="sub" id="mIndiv"></p>
       <div class="bars" id="mBars"></div>
       <p class="doing" id="mDoing"></p>
@@ -3556,6 +3561,8 @@ function renderMgrDetail(rebuild) {
         <button class="opt danger" id="mFree">숲으로 보내기</button>
       </div>`;
     const inp = $('#mName'); inp.value = m.name;
+    const fitName = () => { const c = fitName.c || (fitName.c = document.createElement('canvas').getContext('2d')); c.font = getComputedStyle(inp).font; inp.style.width = Math.ceil(c.measureText(inp.value || '가').width) + 4 + 'px'; };
+    inp.addEventListener('input', fitName); requestAnimationFrame(fitName);
     inp.addEventListener('change', () => renameMon(m, inp.value));
     inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); });
     $('#mLook').onclick = () => { closeMgr(); select(m); };
@@ -3568,6 +3575,7 @@ function renderMgrDetail(rebuild) {
   }
   const pic = $('#mPic'), want = isPmd(m.form) ? thumbOf(m.form) : m.state === 'sleep' ? (stillCache[m.form] || SPRITES[m.form]) : SPRITES[m.form];
   if (pic.getAttribute('src') !== want) pic.src = want;
+  { const P = boxOf(m.pid), st = $('#mStage'); st.className = 'dp-pic' + pkCls(P) + (P?.shiny ? ' shiny' : ''); st.style.setProperty('--shue', shinyHue(m.sp) + 'deg'); }
   const days = Math.max(1, dayOf(S.clock) - dayOf(m.born ?? S.clock) + 1);
   $('#mBars').innerHTML = bar('기력', m.energy, 'var(--hp)') + bar('배고픔', m.hunger, 'var(--hunger)') + bar('외로움', m.social, 'var(--lonely)');
   $('#mDoing').textContent = `${doingText(m)}${m.form !== m.sp ? ` (${DEX[m.form].n}로 변신 중)` : ''} · 필드에서 ${days}일째`;
