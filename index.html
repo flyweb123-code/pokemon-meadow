@@ -495,6 +495,8 @@ ol.log li.big .txt{color:#c03838}
 .bd-top{display:flex;gap:14px;align-items:center;min-width:0}
 .bd-pic{flex:none;width:88px;height:88px;display:grid;place-items:center;background:#e4f2d0;border:3px solid var(--inner)}
 .bd-pic img{width:76px;height:76px;object-fit:contain;image-rendering:pixelated}
+.bd-pic img.hop{animation:bdhop .35s steps(3)}@keyframes bdhop{40%{transform:translateY(-8px)}}
+.bd-card{cursor:pointer}
 .bd-name{min-width:0}
 .bd-name b{display:block;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bd-name span{display:block;font-size:12px;color:var(--dim);margin-top:2px}
@@ -3183,7 +3185,7 @@ $('#cryFile').onchange = async e => {
   const f = e.target.files[0]; e.target.value = ''; if (!f) return;
   $('#cryImport').textContent = '가져오는 중…';
   let n = 0; try { n = await importCries(f); } catch (err) {}
-  cryLabel(); if (!n) alert('울음소리 파일을 찾지 못했어요. 포켓런닝-울음소리.zip 을 골라 주세요.'); else playCry(25);
+  cryLabel(); if (!n) alert('울음소리 파일을 찾지 못했어요. pokerun-cries.zip 을 골라 주세요.'); else playCry(25);
 };
 $('#musicFile').onchange = async e => {
   const files = [...e.target.files]; e.target.value = ''; if (!files.length) return;
@@ -3379,7 +3381,7 @@ function setMgrTab(t) {
 }
 document.querySelectorAll('#mgrTabs button').forEach(b => b.onclick = () => setMgrTab(b.dataset.t));
 const monPop = $('#monPop');
-function openMon(m) { mgrSel = m; mgrFreeArm = 0; monPop.hidden = false; renderMgr(true); }
+function openMon(m) { if (monPop.hidden || mgrSel !== m) playCry(m.sp, .1); mgrSel = m; mgrFreeArm = 0; monPop.hidden = false; renderMgr(true); }
 const closeMon = () => { monPop.hidden = true; };
 $('#monClose').onclick = closeMon;
 monPop.addEventListener('click', e => { if (e.target === monPop) closeMon(); });
@@ -3403,7 +3405,7 @@ function renderBox() {
 $('#boxGrid').addEventListener('click', e => { const b = e.target.closest('[data-id]'); if (b) openPoke(+b.dataset.id); });
 let pokeId = null;
 function openPoke(id, dir = 0) {
-  const P = boxOf(id); if (!P) return; pokeId = id;
+  const P = boxOf(id); if (!P) return; if ($('#pokePop').hidden || pokeId !== id) playCry(P.sp, .1); pokeId = id;
   const L = boxList(), i = L.indexOf(P), d = SPECIES[P.sp], rk = rankOf(P);
   $('#pokePop').hidden = false; $('#ppPos').textContent = `${i + 1} / ${L.length}`;
   $('#ppPrev').disabled = i <= 0; $('#ppNext').disabled = i >= L.length - 1;
@@ -3890,7 +3892,8 @@ function setRunTab(t) {
 }
 document.querySelectorAll('.runtab[data-tab]').forEach(b => b.onclick = () => setRunTab(b.dataset.tab));
 $('#buddy').addEventListener('click', e => {
-  const a = e.target.closest('[data-act]')?.dataset.act; if (!a) return;
+  const a = e.target.closest('[data-act]')?.dataset.act;
+  if (!a) { const c = e.target.closest('.bd-card'); if (c && S.buds[+c.dataset.i]) { playCry(S.buds[+c.dataset.i].sp); const im = c.querySelector('.bd-pic img'); im?.classList.remove('hop'); void im?.offsetWidth; im?.classList.add('hop'); } return; }
   const i = +e.target.closest('[data-i]').dataset.i;
   if (a === 'pick') { budSlot = i; hideSheets(); openDex('buddy'); }
   else if (S.buds[i]) { log(`${J({ name: SPECIES[S.buds[i].sp].n },'과/와')} 같이 달리기를 그만뒀다.`); S.buds.splice(i, 1); save(); renderRun(); }
