@@ -35,6 +35,12 @@ struct GameView: UIViewRepresentable {
             bridge.gameReady = false
         }
 
+        // 웹 화면이 메모리 부족 등으로 죽으면 하얀 화면으로 두지 않고 다시 불러온다
+        func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+            bridge.gameReady = false
+            webView.reload()
+        }
+
         // shortcuts:// 같은 앱 링크는 밖으로 넘긴다 (잠금 화면 런닝의 '가져오기')
         func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction,
                      decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
