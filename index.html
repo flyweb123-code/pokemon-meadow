@@ -35,6 +35,13 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .win.blue{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px var(--inner-blue),6px 6px 0 rgba(0,0,0,.35)}
 .hud{position:absolute;z-index:20}
 .clockwin{left:20px;top:20px;display:flex;align-items:baseline;gap:16px}
+#side,#edge{display:none}
+.dlg{--dlg-in:#7aa6d8}
+/* 밤(19:30~5:30)에는 시간 창과 상태창을 밤하늘 색으로 */
+.clockwin,.dlg{transition:background-color .6s,color .6s}
+.clockwin.night,.dlg.night{--win:#1e2340;--win-ink:#e4e2f6;--inner:#46508a;--inner-blue:#46508a;--dlg-in:#46508a;--dim:#8e96c4;--cursor:#ffd75e;--frame:#0e1024;color:var(--win-ink)}
+.dlg.night .now b{color:#ffd75e}
+.clockwin.night .t{color:#ffe9a8;text-shadow:0 0 6px rgba(255,220,120,.35)}
 .clockwin .t{font-size:32px;font-weight:700;font-variant-numeric:tabular-nums}
 .clockwin .d{font-size:16px}
 .menuwin{right:20px;top:20px;display:flex;flex-direction:column;gap:2px;padding:12px 18px}
@@ -48,13 +55,13 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 
 .dlg{left:20px;bottom:20px;right:330px;max-width:760px;min-height:96px;padding:16px 26px 18px;font-size:20px;line-height:1.55}
 .dlg .prev{font-size:14px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dlg .now{min-height:31px}
+.dlg .now{min-height:31px;margin-right:22px}
 .dlg .now b,.journal b{font-weight:700;color:#2a58a8}
-.dlg .more{position:absolute;right:20px;bottom:12px;color:var(--cursor);font-size:14px;animation:blink 1s steps(2) infinite}
-.dlg{cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+.dlg .more{position:absolute;right:10px;bottom:4px;color:var(--cursor);font:inherit;font-size:14px;line-height:1;background:none;border:0;padding:8px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.dlg{-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 .win.dlg.folded{min-height:0;padding-top:4px;padding-bottom:4px}
 .dlg.folded .now,.dlg.folded .prev{display:none}
-.dlg.folded .more{position:static;display:block;text-align:center;line-height:1;transform:rotate(180deg);animation:none;font-size:12px}
+.dlg.folded .more{position:static;display:block;margin-left:auto;padding:6px 10px;transform:rotate(180deg)}
 @keyframes blink{50%{opacity:0}}
 
 .journal{left:20px;bottom:150px;width:min(520px,calc(100% - 40px));max-height:min(56vh,520px);display:flex;flex-direction:column;padding:14px 18px 12px}
@@ -395,7 +402,7 @@ ol.runs li span{color:var(--dim)}
   html,body{height:100%;overflow:hidden;overscroll-behavior:none;background:var(--frame)}
   .app{position:fixed;inset:0;bottom:calc(0px - var(--ext,0px));height:auto;min-height:0;overflow:hidden;display:grid;padding:0;gap:0;background:var(--frame);
     grid-template-columns:minmax(0,3fr) minmax(0,2fr);grid-template-rows:minmax(0,1fr) auto auto;
-    grid-template-areas:"stage stage" "dlg dlg" "menu cmd"}
+    grid-template-areas:"stage stage" "stage stage" "menu cmd"}
   .stage-wrap{grid-area:stage;position:relative;inset:auto;aspect-ratio:auto;margin:0;overflow:hidden;
     touch-action:manipulation;scrollbar-width:none;-webkit-overflow-scrolling:touch;background:var(--forest)}
   .stage-wrap::-webkit-scrollbar{display:none}
@@ -408,19 +415,22 @@ ol.runs li span{color:var(--dim)}
     padding:6px 12px;gap:8px;box-shadow:3px 3px 0 rgba(0,0,0,.35)}
   .clockwin .t{font-size:18px}
   .clockwin .d{font-size:12px}
-  .card{grid-area:stage;position:relative;align-self:end;z-index:30;width:auto;margin:0 8px 8px;max-height:62%;overflow-y:auto;left:auto!important;top:auto!important;padding:10px 14px 12px}
+  .card{grid-row:1;grid-column:1/-1;position:relative;align-self:end;z-index:30;width:auto;margin:0 8px 8px;max-height:62%;overflow-y:auto;left:auto!important;top:auto!important;padding:10px 14px 12px}
   .card .close{position:absolute;right:4px;top:4px;border:0;padding:8px 12px;font-size:16px}
   .card .no{margin-right:36px}
   .card-actions .opt{padding:10px 0 10px 20px}
-  .journal{grid-area:stage;position:relative;align-self:end;z-index:31;width:auto;margin:0 8px 8px;max-height:55%;left:auto;bottom:auto}
+  .journal{grid-row:1;grid-column:1/-1;position:relative;align-self:end;z-index:31;width:auto;margin:0 8px 8px;max-height:55%;left:auto;bottom:auto}
   .hint{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top) + 64px);bottom:auto;white-space:nowrap;z-index:40}
   /* bottom panel */
-  .dlg{grid-area:dlg;position:relative;left:auto;right:auto;bottom:auto;top:auto;margin:0;border-width:3px 0 0;box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 6px #7aa6d8;
+  .dlg{grid-row:2;grid-column:1/-1;z-index:20;position:relative;left:auto;right:auto;bottom:auto;top:auto;margin:0;border-width:3px 0 0;box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 6px var(--dlg-in);
     padding:10px 18px 12px;font-size:16px;line-height:1.5;min-height:calc(3em + 22px);max-width:none}
-  .app .win.dlg{box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 6px #7aa6d8}
+  .app .win.dlg{box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 6px var(--dlg-in)}
   .dlg .prev{display:none}
   .dlg .now{min-height:0}
-  .dlg .more{right:12px;bottom:6px}
+  .dlg .more{right:4px;bottom:0}
+  .app .win.dlg.folded{justify-self:end;align-self:end;margin:0 calc(env(safe-area-inset-right) + 8px) 8px 0;padding:0;border:3px solid var(--frame);
+    box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 6px var(--dlg-in),3px 3px 0 rgba(0,0,0,.35)}
+  .dlg.folded .more{padding:10px 14px}
   .menuwin,.cmdwin{margin:0;border:0;box-shadow:none;background:var(--frame);display:grid;gap:0;padding:0 0 var(--sab)}
   .menuwin{grid-area:menu;grid-template-columns:repeat(3,minmax(0,1fr));padding-left:env(safe-area-inset-left)}
   .cmdwin{grid-area:cmd;grid-template-columns:repeat(2,minmax(0,1fr));padding-right:env(safe-area-inset-right)}
@@ -438,11 +448,16 @@ ol.runs li span{color:var(--dim)}
   .mgrwin .sheet-head{flex-wrap:wrap;gap:0 14px}
   .mgrwin .sheet-head h3{flex:1 1 100%}
   .mgrwin .sheet-head .opt{font-size:15px}
-  #closeDex,#closeMgr,#closeRun,#closeSet{display:none}
-  body > #openSet{position:fixed;top:calc(env(safe-area-inset-top) + 8px);right:calc(env(safe-area-inset-right) + 8px);min-height:0;padding:9px 12px;font-size:14px;border:3px solid var(--frame);background:var(--win);color:var(--win-ink);box-shadow:3px 3px 0 rgba(0,0,0,.35);z-index:75}
-  body > #openSet[aria-pressed="true"]{background:var(--frame);color:#ffe27a;border-color:#ffe27a}
-  body.sheet-open > #openSet{display:none}
-  body > #openSet::before{display:none}
+  #closeDex,#closeMgr,#closeRun{display:none}
+  #side #openSet{display:none}
+  #edge{display:block;position:fixed;right:0;top:calc(env(safe-area-inset-top) + 70px);bottom:calc(var(--sab) + 90px);width:22px;z-index:74;touch-action:none}
+  body.sheet-open #edge{display:none}
+  #side{display:flex;flex-direction:column;gap:8px;position:fixed;z-index:76;right:0;top:calc(env(safe-area-inset-top) + 70px);padding:10px 8px 10px 10px;border-right:0;
+    box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 6px var(--inner),-4px 4px 0 rgba(0,0,0,.35);transform:translateX(calc(100% + 8px));transition:transform .16s steps(4);touch-action:none}
+  #side.open{transform:none}
+  #side .ico{display:grid;place-items:center;width:52px;height:52px;padding:0;border:3px solid var(--frame);background:#4b4b66;color:#f8f8f8;cursor:pointer;
+    box-shadow:inset 0 -4px 0 #2b2b3c,inset 0 3px 0 #6a6a88;-webkit-tap-highlight-color:transparent}
+  #side .ico:active,#side .ico[aria-pressed="true"]{background:#2b2b3c;color:#ffe27a;box-shadow:inset 0 0 0 3px #ffe27a}
   .setwin{height:100%}
   /* full-screen windows */
   /* windows sit above the tab bar, which always stays on screen */
@@ -476,8 +491,8 @@ ol.runs li span{color:var(--dim)}
   .menuwin{grid-template-columns:1fr;padding:calc(env(safe-area-inset-top) + 8px) calc(env(safe-area-inset-right) + 8px) 4px 8px;align-content:start;border-top:0;border-left:3px solid #23232f}
   .cmdwin{padding:4px calc(env(safe-area-inset-right) + 8px) calc(var(--sab) + 8px) 8px;border-top:0;border-left:3px solid #23232f}
   .menuwin .opt,.cmdwin .opt{min-height:44px}
-  body > #openSet{right:calc(176px + env(safe-area-inset-right) + 8px)}
-  .card,.journal{max-width:440px;justify-self:start}
+  #side,#edge{right:calc(176px + env(safe-area-inset-right))}
+  .card,.journal{grid-area:stage;max-width:440px;justify-self:start}
   .sheet{bottom:0;right:calc(176px + env(safe-area-inset-right))}
   .sheet .win{padding-right:14px;padding-bottom:calc(var(--sab) + 10px)}
 }
@@ -504,12 +519,15 @@ ol.runs li span{color:var(--dim)}
     <button class="opt" id="openSet">설정</button>
   </nav>
 
+  <div id="edge" aria-hidden="true"></div>
+  <aside class="win" id="side" aria-label="사이드 바"><button class="ico" id="sideSet" type="button" aria-label="설정"><svg viewBox="0 0 10 10" width="30" height="30" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true"><rect x="4" y="0" width="1" height="1"/><rect x="5" y="0" width="1" height="1"/><rect x="2" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="5" y="1" width="1" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="1" y="2" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="3" y="2" width="1" height="1"/><rect x="4" y="2" width="1" height="1"/><rect x="5" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/><rect x="6" y="3" width="1" height="1"/><rect x="7" y="3" width="1" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="1" y="4" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="7" y="4" width="1" height="1"/><rect x="8" y="4" width="1" height="1"/><rect x="9" y="4" width="1" height="1"/><rect x="0" y="5" width="1" height="1"/><rect x="1" y="5" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="7" y="5" width="1" height="1"/><rect x="8" y="5" width="1" height="1"/><rect x="9" y="5" width="1" height="1"/><rect x="2" y="6" width="1" height="1"/><rect x="3" y="6" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/><rect x="7" y="6" width="1" height="1"/><rect x="1" y="7" width="1" height="1"/><rect x="2" y="7" width="1" height="1"/><rect x="3" y="7" width="1" height="1"/><rect x="4" y="7" width="1" height="1"/><rect x="5" y="7" width="1" height="1"/><rect x="6" y="7" width="1" height="1"/><rect x="7" y="7" width="1" height="1"/><rect x="8" y="7" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="4" y="8" width="1" height="1"/><rect x="5" y="8" width="1" height="1"/><rect x="7" y="8" width="1" height="1"/><rect x="4" y="9" width="1" height="1"/><rect x="5" y="9" width="1" height="1"/></svg></button></aside>
+
   <section class="card" id="info" hidden aria-live="polite"></section>
 
-  <div class="hud win blue dlg" id="dlg" role="log" aria-live="polite" title="눌러서 접기/펴기">
+  <div class="hud win blue dlg" id="dlg" role="log" aria-live="polite">
     <div class="prev" id="dlgPrev"></div>
     <div class="now" id="dlgNow"></div>
-    <span class="more" aria-hidden="true">▼</span>
+    <button class="more" id="dlgFold" type="button" aria-label="상태창 접기">▼</button>
   </div>
 
   <section class="hud win journal" id="journal" hidden>
@@ -845,9 +863,9 @@ function logItem(e) {
 }
 function renderLog() { logEl.innerHTML = ''; S.log.filter(passesFilter).forEach(e => logEl.append(logItem(e))); renderDlg(); }
 const dlgEl = $('#dlg');
-function foldDlg(on) { dlgEl.classList.toggle('folded', on); try { localStorage.setItem('pk-dlg-fold', on ? '1' : ''); } catch (e) {} if (typeof fit === 'function') setTimeout(fit, 0); }
-dlgEl.addEventListener('click', () => foldDlg(!dlgEl.classList.contains('folded')));
-try { if (localStorage.getItem('pk-dlg-fold')) dlgEl.classList.add('folded'); } catch (e) {}
+function foldDlg(on) { dlgEl.classList.toggle('folded', on); $('#dlgFold').setAttribute('aria-label', on ? '상태창 펴기' : '상태창 접기'); try { localStorage.setItem('pk-dlg-fold', on ? '1' : ''); } catch (e) {} }
+$('#dlgFold').addEventListener('click', e => { e.stopPropagation(); foldDlg(!dlgEl.classList.contains('folded')); });
+try { if (localStorage.getItem('pk-dlg-fold')) foldDlg(true); } catch (e) {}
 const stripHint = h => h.replace(/\s*\((런닝 · 알|알)\)$/, '');
 function renderDlg() {
   const [a, b] = S.log;
@@ -2375,6 +2393,7 @@ function sky() {
   $('#phase').textContent = phase;
   { const d = new Date(); $('#day').textContent = `${d.getMonth() + 1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})`; }
   $('#time').textContent = clockStr();
+  { const nt = isNight(); $('#clock').classList.toggle('night', nt); $('#dlg').classList.toggle('night', nt); }
   const wantFlies = isNight() ? 14 : 0;
   while (flies.length < wantFlies) { const f = document.createElement('div'); f.className = 'firefly'; fxEl.append(f); flies.push({ el: f, x: rnd(0, W), y: rnd(150, 580), p: rnd(0, 6) }); }
   while (flies.length > wantFlies) flies.pop().el.remove();
@@ -2654,7 +2673,7 @@ function openDex() { sheet.hidden = false; $('#dexOwn').innerHTML = `<b>${S.unlo
 function hideSheets() { sheet.hidden = true; $('#mgr').hidden = true; $('#run').hidden = true; $('#set').hidden = true; }
 function tabTo(el, open) { const was = !el.hidden; closeToggles(); hideSheets(); if (!was) open(); }
 $('#openDex').onclick = () => tabTo(sheet, openDex);
-new MutationObserver(() => { [['#openDex', '#sheet'], ['#openRun', '#run'], ['#openMgr', '#mgr'], ['#openSet', '#set']].forEach(([b, w]) => $(b).setAttribute('aria-pressed', !$(w).hidden)); document.body.classList.toggle('sheet-open', ['#sheet', '#run', '#mgr'].some(w => !$(w).hidden)); })
+new MutationObserver(() => { [['#openDex', '#sheet'], ['#openRun', '#run'], ['#openMgr', '#mgr'], ['#openSet', '#set'], ['#sideSet', '#set']].forEach(([b, w]) => $(b).setAttribute('aria-pressed', !$(w).hidden)); document.body.classList.toggle('sheet-open', ['#sheet', '#run', '#mgr'].some(w => !$(w).hidden)); })
   .observe(document.body, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
 $('#closeDex').onclick = () => { sheet.hidden = true; };
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
@@ -2746,9 +2765,19 @@ $('#savePaste').onclick = async () => {
   if (!confirm(`지금 초원을 이 저장으로 바꿀까요?\n(포켓몬 ${(d.mons || []).length}마리 · 알 ${(d.eggs || []).length}개 · 도감 ${(d.unlocked || []).length}종)`)) return;
   saveFrozen = true; localStorage.setItem(KEY, JSON.stringify(d)); location.reload();
 };
-// 폰에서는 설정 버튼을 창들보다 위에 두려고 body 로 옮긴다
-const setBtn = $('#openSet'), setHome = setBtn.parentNode;
-function placeSet() { if (narrow.matches) document.body.append(setBtn); else setHome.append(setBtn); }
+// 폰에서는 설정을 오른쪽 가장자리에서 쓸어 여는 사이드 바의 아이콘으로 둔다
+const setBtn = $('#openSet'), setHome = setBtn.parentNode, sideEl = $('#side');
+function placeSet() { if (narrow.matches) sideEl.append(setBtn); else { setHome.append(setBtn); sideOpen(false); } }
+function sideOpen(on) { sideEl.classList.toggle('open', on); }
+{ let sx = null, sy = 0; const edge = $('#edge');
+  const down = e => { sx = e.clientX; sy = e.clientY; if (e.currentTarget === edge) try { edge.setPointerCapture(e.pointerId); } catch (_) {} };
+  const move = (e, open) => { if (sx == null || Math.abs(e.clientY - sy) > 60) return; const dx = e.clientX - sx;
+    if (open ? dx < -24 : dx > 24) { sideOpen(open); sx = null; } };
+  edge.addEventListener('pointerdown', down); edge.addEventListener('pointermove', e => move(e, true));
+  sideEl.addEventListener('pointerdown', down); sideEl.addEventListener('pointermove', e => move(e, false));
+  addEventListener('pointerup', () => { sx = null; }); addEventListener('pointercancel', () => { sx = null; });
+  document.addEventListener('pointerdown', e => { if (sideEl.classList.contains('open') && !sideEl.contains(e.target)) sideOpen(false); }, true); }
+$('#sideSet').onclick = () => { sideOpen(false); setBtn.click(); };
 placeSet(); narrow.addEventListener('change', () => { placeSet(); fit(); });
 let mgrSel = null, mgrKey = '', mgrFreeArm = 0, mgrT = 0;
 function openMgr(m) { mgr.hidden = false; mgrSel = m || mgrSel || S.mons[0] || null; mgrKey = ''; renderMgr(true); }
