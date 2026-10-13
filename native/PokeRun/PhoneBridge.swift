@@ -57,6 +57,35 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
         flushPending()
     }
 
+    // MARK: 운동 경로의 몇 곳 → 그 런닝에서 주운 알의 '주운 곳' (HealthSync)
+
+    private let placesKey = "pendingPlaces"
+
+    func enqueuePlaces(start: Double, end: Double, places: [[Any]]) {
+        var list = UserDefaults.standard.array(forKey: placesKey) as? [[String: Any]] ?? []
+        list.append(["start": start, "end": end, "places": places])
+        UserDefaults.standard.set(list, forKey: placesKey)
+        flushPending()
+    }
+
+    private func flushPlaces(_ web: WKWebView) {
+        let list = UserDefaults.standard.array(forKey: placesKey) as? [[String: Any]] ?? []
+        guard !list.isEmpty else { return }
+        UserDefaults.standard.set([[String: Any]](), forKey: placesKey)
+        for item in list {
+            let s = (item["start"] as? Double ?? 0) * 1000, e = (item["end"] as? Double ?? 0) * 1000
+            guard let data = try? JSONSerialization.data(withJSONObject: item["places"] ?? []),
+                  let arg = String(data: data, encoding: .utf8) else { continue }
+            web.evaluateJavaScript("window.pokeRunPlaces ? window.pokeRunPlaces(\(Int(s)), \(Int(e)), \(arg)) : false") { [weak self] result, error in
+                if error != nil || (result as? Bool) == false, let self {
+                    var back = UserDefaults.standard.array(forKey: self.placesKey) as? [[String: Any]] ?? []
+                    back.append(item)
+                    UserDefaults.standard.set(back, forKey: self.placesKey)
+                }
+            }
+        }
+    }
+
     // MARK: 걸음 → 가방 알 (WalkTracker)
 
     private let walkKey = "pendingWalk"
@@ -93,6 +122,7 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
         guard gameReady, let web = webView else { return }
         flushWalk(web)
         let list = pendingRuns()
+        defer { flushPlaces(web) }
         guard !list.isEmpty else { return }
         UserDefaults.standard.set([[Double]](), forKey: pendingKey)
         for item in list {

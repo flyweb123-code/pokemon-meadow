@@ -1,5 +1,6 @@
 import Foundation
 import HealthKit
+import CoreLocation
 
 // 워치만 차고 달려도 반영: 건강 앱에 저장된 '달리기' 운동(애플워치 운동 앱, NRC 등)을 읽어
 // 지난번 이후 새로 끝난 것을 런닝 기록으로 보낸다. 앱을 열 때마다 확인한다.
@@ -14,7 +15,7 @@ final class HealthSync {
 
     func refresh() {
         guard HKHealthStore.isHealthDataAvailable(), !busy else { return }
-        let read: Set<HKObjectType> = [HKObjectType.workoutType(), HKQuantityType(.distanceWalkingRunning)]
+        let read: Set<HKObjectType> = [HKObjectType.workoutType(), HKQuantityType(.distanceWalkingRunning), HKSeriesType.workoutRoute()]
         store.requestAuthorization(toShare: nil, read: read) { [weak self] _, _ in
             DispatchQueue.main.async { self?.query() }
         }
@@ -47,11 +48,85 @@ final class HealthSync {
                     let km = meters / 1000
                     if km >= 0.1 {
                         PhoneBridge.shared.enqueueRun(km: km, start: w.startDate.timeIntervalSince1970, end: w.endDate.timeIntervalSince1970, kind: 2)
+                        self.routePlaces(w)
                     }
                 }
                 UserDefaults.standard.set(newest.timeIntervalSince1970, forKey: self.lastKey)
+                self.backfillRoutes()
             }
         }
         store.execute(q)
+    }
+
+    // MARK: 운동 경로(GPS) → 알을 주운 곳
+
+    // 예전에 넣은 운동(지난 7일)도 한 번은 경로를 읽어 주운 곳이 빈 알을 채운다
+    private let backfillKey = "healthRouteBackfill.v1"
+    private func backfillRoutes() {
+        guard !UserDefaults.standard.bool(forKey: backfillKey) else { return }
+        UserDefaults.standard.set(true, forKey: backfillKey)
+        let pred = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            HKQuery.predicateForWorkouts(with: .running),
+            HKQuery.predicateForSamples(withStart: Date().addingTimeInterval(-7 * 24 * 3600), end: nil, options: .strictStartDate),
+        ])
+        let q = HKSampleQuery(sampleType: .workoutType(), predicate: pred, limit: 30, sortDescriptors: nil) { [weak self] _, samples, _ in
+            DispatchQueue.main.async { for w in (samples as? [HKWorkout]) ?? [] { self?.routePlaces(w) } }
+        }
+        store.execute(q)
+    }
+
+    // 경로에서 고르게 몇 곳(최대 5)을 뽑아 동네 이름으로 바꿔 게임에 보낸다
+    private var geoQueue: [(CLLocation, (String, String) -> Void)] = []
+    private var geoBusy = false
+    private let geocoder = CLGeocoder()
+
+    private func routePlaces(_ w: HKWorkout) {
+        let pred = HKQuery.predicateForObjects(from: w)
+        let rq = HKSampleQuery(sampleType: HKSeriesType.workoutRoute(), predicate: pred, limit: 1, sortDescriptors: nil) { [weak self] _, samples, _ in
+            guard let self, let route = (samples as? [HKWorkoutRoute])?.first else { return }
+            var locs: [CLLocation] = []
+            let lq = HKWorkoutRouteQuery(route: route) { [weak self] _, batch, done, _ in
+                locs.append(contentsOf: batch ?? [])
+                guard done, let self else { return }
+                guard !locs.isEmpty else { return }
+                let n = min(5, locs.count)
+                let picks = (0..<n).map { locs[min(locs.count - 1, Int(Double($0) + 0.5) * locs.count / n)] }
+                DispatchQueue.main.async { self.geocodeAll(picks, start: w.startDate, end: w.endDate) }
+            }
+            self.store.execute(lq)
+        }
+        store.execute(rq)
+    }
+
+    private func geocodeAll(_ picks: [CLLocation], start: Date, end: Date) {
+        var out: [[Any]] = []
+        var left = picks.count
+        for loc in picks {
+            geoQueue.append((loc, { name, tags in
+                if !name.isEmpty { out.append([name, tags, loc.timestamp.timeIntervalSince1970 * 1000]) }
+                left -= 1
+                if left == 0, !out.isEmpty { PhoneBridge.shared.enqueuePlaces(start: start.timeIntervalSince1970, end: end.timeIntervalSince1970, places: out) }
+            }))
+        }
+        nextGeo()
+    }
+
+    // 지오코더는 한 번에 하나씩 (너무 자주 부르면 막힌다)
+    private func nextGeo() {
+        guard !geoBusy, !geoQueue.isEmpty else { return }
+        geoBusy = true
+        let (loc, done) = geoQueue.removeFirst()
+        geocoder.reverseGeocodeLocation(loc, preferredLocale: Locale(identifier: "ko_KR")) { [weak self] marks, _ in
+            let p = marks?.first
+            var city = p?.administrativeArea ?? ""
+            for suffix in ["특별자치시", "특별자치도", "특별시", "광역시", "도"] where city.hasSuffix(suffix) && city.count > suffix.count { city = String(city.dropLast(suffix.count)); break }
+            var parts: [String] = []
+            for x in [city, p?.subAdministrativeArea ?? p?.locality ?? "", p?.subLocality ?? "", p?.areasOfInterest?.first ?? ""] where !x.isEmpty && !parts.contains(x) { parts.append(x) }
+            var tags: [String] = []
+            if p?.inlandWater != nil { tags.append("water") }
+            if p?.ocean != nil { tags.append("sea") }
+            done(parts.joined(separator: " "), tags.joined(separator: ","))
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { self?.geoBusy = false; self?.nextGeo() }
+        }
     }
 }

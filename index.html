@@ -15,6 +15,10 @@
 .rk.S{position:relative;overflow:hidden;color:#5a3600!important;text-shadow:1px 1px 0 #fff3b0;border:2px solid #8a5a08!important;background:linear-gradient(180deg,#fff2a0 0 30%,#ffd028 30% 60%,#e8a010 60% 85%,#c07c08 85%)!important;box-shadow:inset 1px 1px 0 #fffbe0,inset -1px -1px 0 #a06a00,0 0 0 1px #ffe27a,0 0 6px rgba(255,200,40,.7)}
 .rk.S::after{content:'';position:absolute;top:-2px;bottom:-2px;left:-60%;width:40%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent);transform:skewX(-20deg);animation:rkshine 2.6s steps(10,end) infinite;pointer-events:none}
 @keyframes rkshine{0%{left:-60%}45%,100%{left:130%}}
+.test-btn{font:inherit;font-size:11px;background:none;border:2px dashed #c03838;color:#c03838;padding:3px 6px;cursor:pointer}
+.run-eggs{padding:2px 0 6px 6px;border-bottom:2px dotted var(--inner)}.run-eggs .re-row{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);margin-top:3px}.re-eggs{display:flex;gap:1px;flex:none}.re-eggs .egg{width:12px;height:15px}.re-eggs .egg svg{width:100%;height:100%}.re-pl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.run-row:has(+.run-eggs){border-bottom:0}
+.dex .here{display:none!important}.filters .fsel{flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 <style>
 /* Layout: the meadow fills the window; pixel-RPG windows float over it (clock top-left, menu top-right,
@@ -880,7 +884,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
       <input id="dexQ" type="search" placeholder="이름이나 번호" aria-label="이름이나 번호로 찾기" autocomplete="off">
       <button class="fsel" id="dexType" data-v="0" aria-haspopup="listbox">모든 타입</button>
       <button class="fsel" id="dexGen" data-v="0" aria-haspopup="listbox">모든 세대</button>
-      <button class="fsel" id="dexSort" data-v="0" aria-haspopup="listbox">번호순</button>
+      <button class="fsel" id="dexSort" data-v="0" aria-haspopup="listbox">등록순</button>
     </div>
     <div class="dex" id="dexGrid"></div>
     <p class="dex-empty" id="dexEmpty" hidden>찾는 포켓몬이 없다.</p>
@@ -954,20 +958,15 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
     <div class="run-body">
       <section class="rtab" data-tab="egg">
         <div class="incu-box" id="incu"></div>
-        <div class="mgr-tools"><button id="eggAll" hidden></button><span class="tcount" id="eggCount"></span></div>
+        <div class="mgr-tools"><button id="eggAll" hidden></button><button id="eggTest" class="test-btn">부화 준비로 (테스트)</button><span class="tcount" id="eggCount"></span></div>
         <div class="eggs" id="eggs"></div>
       </section>
       <section class="rtab" data-tab="bag">
-        <div class="mgr-tools"><div class="bag-sort" id="bagSort"><button data-sort="new">최신순</button><button data-sort="km">거리순</button></div><span class="tcount" id="bagCount"></span></div>
+        <div class="mgr-tools"><div class="bag-sort" id="bagSort"><button data-sort="new">최신순</button><button data-sort="km">거리순</button><button data-sort="grade">등급순</button></div><span class="tcount" id="bagCount"></span></div>
         <div class="bag-tabs" id="bagTabs" role="tablist"></div>
         <div class="bag-grid" id="bagGrid"></div>
       </section>
       <section class="rtab" data-tab="run">
-        <div class="lockrun" id="lock" role="button" tabindex="0" aria-label="런닝 시작">
-          <div class="lk-top"><span class="lk-icon" aria-hidden="true">▶</span><div class="lk-text"><b class="lk-title" id="lockTitle">런닝 시작</b></div><span class="lk-clock" id="lockClock" hidden>00:00</span></div>
-          <div class="small" id="lockInfo"></div>
-          <div class="lk-btns" id="lockBtns" hidden><button class="lk-btn main" id="lockFetch">가져오기</button><button class="lk-btn main" id="lockPaste">거리 붙여넣기</button><button class="lk-btn" id="lockCancel">취소</button></div>
-        </div>
         <div class="mgr-tools runs-h"><b class="tlabel">런닝 기록</b><span class="tcount" id="runTotal"></span></div>
         <div class="runs" id="runs"></div>
       </section>
@@ -3220,7 +3219,7 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, lastPlace: S.lastPlace || null };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, lastPlace: S.lastPlace || null };
 }
 let saveFrozen = false;
 function save() { if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
@@ -3228,7 +3227,7 @@ async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
   S.lockT = d.lockT || 0; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.lastPlace = d.lastPlace || null; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
-  if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
+  if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
   S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
   for (const o of [...(d.mons || [])].sort((a, b) => (b.uid === d.buddy) - (a.uid === d.buddy)).slice(0, MAX_MONS)) { const m = await spawn(o.sp, { ...o, quiet: true }); m.notes = o.notes || [];
     // 앱을 닫아 둔 동안에도 서서히 배고파진다. 다만 80까지만 (켰을 때 먹여 줄 틈이 있게)
@@ -3243,7 +3242,7 @@ async function restore(d) {
 async function fresh() {
   S.base = midnight(); S.clock = realClock(); S.rel = {}; S.log = [];
   logEl.innerHTML = '';
-  S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked.clear(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1; S.undo1 = true;
+  S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked.clear(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1; S.undo1 = true;
   const e = { id: S.eid++, g: 1, km: 0, need: GRADE[1].km, isNew: true, t: Date.now() }; S.eggs.push(e);
   for (let i = 0; i < 4; i++) { const p = randLand(); addBerry(p.x, p.y); }
   log('필드가 텅 비어 있다. 알을 부화시켜 친구를 만들어 보자.', [], true);
@@ -3410,7 +3409,7 @@ function renderShop() {
     + `<button class="lk-btn" data-act="pre" ${has ? '' : 'disabled'}>${pre ? '■ 그만' : '▶ 듣기'}</button>`
     + (own ? `<button class="lk-btn" disabled>보유 중</button>` : `<button class="lk-btn main" data-act="buy">구매</button>`);
 }
-$('#shopList').addEventListener('click', e => { const v = e.target.closest('[data-id]'); if (!v) return; shopSel = v.dataset.id; $('#shopMsg').textContent = ''; renderShop(); });
+$('#shopList').addEventListener('click', e => { const v = e.target.closest('[data-id]'); if (!v) return; shopSel = shopSel === v.dataset.id ? null : v.dataset.id; $('#shopMsg').textContent = ''; renderShop(); });
 $('#shopBar').addEventListener('click', e => {
   const btn = e.target.closest('[data-act]'); if (!btn) return;
   const t = TRACKS.find(x => x.id === shopSel), act = btn.dataset.act;
@@ -3491,7 +3490,7 @@ const io = new IntersectionObserver(es => es.forEach(en => {
 const FILTERS = {
   dexType: { t: '타입', all: '모든 타입', opts: TYPE_KO.slice(1).map((n, i) => [i + 1, n, TYPE_C[i + 1]]) },
   dexGen: { t: '세대', all: '모든 세대', opts: [1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => [g, `${g}세대`]) },
-  dexSort: { t: '정렬', all: '번호순', opts: [[1, '만난 것 먼저']] },
+  dexSort: { t: '정렬', all: '등록순', opts: [[1, '번호순']] },
 };
 let fFor = null;
 function openFilter(id) {
@@ -3503,7 +3502,7 @@ function openFilter(id) {
 function setFilter(id, v) {
   const b = $('#' + id), F = FILTERS[id]; b.dataset.v = v; b.classList.toggle('on', !!v);
   b.textContent = v ? F.opts.find(o => o[0] === v)[1] : F.all; filterDex();
-  if (id === 'dexSort') try { localStorage.setItem('pk-dex-sort', v); } catch (e) {}
+  if (id === 'dexSort') try { localStorage.setItem('pk-dex-sort2', v); } catch (e) {}
 }
 ['dexType', 'dexGen', 'dexSort'].forEach(id => $('#' + id).onclick = () => openFilter(id));
 $('#fPop').addEventListener('click', e => { const o = e.target.closest('[data-v]'); if (o) setFilter(fFor, +o.dataset.v); if (o || e.target.id === 'fPop') $('#fPop').hidden = true; });
@@ -3577,20 +3576,20 @@ function refreshDexBadges() {
   updateDexCount();
 }
 function filterDex() {
-  const q = $('#dexQ').value.trim(), ty = +$('#dexType').dataset.v, gen = +$('#dexGen').dataset.v, sortMet = +$('#dexSort').dataset.v === 1;
+  const q = $('#dexQ').value.trim(), ty = +$('#dexType').dataset.v, gen = +$('#dexGen').dataset.v, sortNo = +$('#dexSort').dataset.v === 1, reg = sortNo ? null : new Map([...S.unlocked].map((sp, i) => [+sp, i]));
   let shown = 0;
   for (const sp in dexBtns) {
     const d = SPECIES[sp];
     const ok = (!q || (!dexLocked(sp) && d.n.includes(q)) || String(+sp) === q.replace(/^0+/, '')) && (!ty || d.t.includes(ty)) && (!gen || d.gen === gen);
     dexBtns[sp].hidden = !ok; if (ok) shown++;
     // 정렬 '만난 포켓몬 먼저': 만난 종을 번호순으로 앞에, 못 만난 종은 그 뒤에
-    dexBtns[sp].style.order = sortMet && dexLocked(sp) ? 2000 + +sp : sortMet ? +sp : '';
+    dexBtns[sp].style.order = sortNo ? '' : reg.has(+sp) ? reg.get(+sp) : 5000 + +sp;
   }
   $('#dexEmpty').hidden = shown > 0;
 }
 $('#dexQ').addEventListener('input', filterDex);
 // 기본 정렬은 '만난 것 먼저' (번호순을 고른 적 있으면 그대로)
-{ let v = null; try { v = localStorage.getItem('pk-dex-sort'); } catch (e) {} if (v !== '0') { const b = $('#dexSort'); b.dataset.v = 1; b.classList.add('on'); b.textContent = FILTERS.dexSort.opts[0][1]; } }
+{ let v = null; try { v = localStorage.getItem('pk-dex-sort2'); } catch (e) {} const b = $('#dexSort'); if (v === '1') { b.dataset.v = 1; b.classList.add('on'); b.textContent = '번호순'; } else b.textContent = '등록순'; }
 $('#dexClear').onclick = () => { picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); updateDexCount(); };
 $('#dexGo').onclick = async () => {
   if (dexMode === 'buddy') { const sp = [...picked][0]; if (sp != null) await setBuddySp(sp); return; }
@@ -4204,7 +4203,7 @@ function migrateBox() {
   for (const sp of S.unlocked) if (!S.box.some(p => p.sp === sp)) newPoke(sp, { shiny: false });
   for (const b of S.buds) if (b.pid == null || !boxOf(b.pid)) b.pid = (S.box.filter(p => p.sp === b.sp).sort((x, y) => ivSum(y) - ivSum(x))[0] || newPoke(b.sp, { shiny: false })).id;
 }
-S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked = new Set(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
+S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked = new Set(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1;
 const hatchQ = [];
 
 function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); if (dexBtns[sp]) lockDexBtn(sp); } }
@@ -4218,12 +4217,13 @@ function drawEgg() {
 // 가방: 움직인 거리만큼 알을 줍는다. 250m마다 0~2개라 2.5km면 대개 5~15개, 등급 확률은 알 뽑기와 같다.
 const MAX_BAG = 999, BAG_STEP = .25;
 const rollGrade = () => { const r = Math.random(); return r < .45 ? 1 : r < .75 ? 2 : r < .9 ? 3 : r < .98 ? 4 : 5; };
-function collectEggs(km, place, tags) {
+function collectEggs(km, place, tags, pf) {
   S.bagAcc += km; let n = 0;
   while (S.bagAcc >= BAG_STEP) { S.bagAcc -= BAG_STEP; n += Math.floor(Math.random() * 3); }
   n = Math.min(n, MAX_BAG - S.bag.length);
   const t = Date.now(), got = [];
-  for (let i = 0; i < n; i++) { const g = rollGrade(); const e = { id: S.eid++, g, t, isNew: true }; if (place) e.place = place; if (tags && tags.length) e.tags = tags; S.bag.push(e); got.push(g); }
+  got.eggs = [];
+  for (let i = 0; i < n; i++) { const g = rollGrade(); const e = { id: S.eid++, g, t, isNew: true }; const pl = pf ? pf() : place ? { n: place, tags } : null; if (pl?.n) e.place = pl.n; if (pl?.tags?.length) e.tags = pl.tags; S.bag.push(e); got.push(g); got.eggs.push(e); }
   return got;
 }
 function gotLog(got, how, place) {
@@ -4247,17 +4247,19 @@ function incubate(e) {
   save(); return true;
 }
 // distance from any source goes to every egg and the buddy
-function applyKm(km) {
-  if (!(km > 0)) return;
+function applyKm(km, t0 = 0, t1 = 0) {
+  if (!(km > 0)) return [];
   S.totalKm += km;
   // 거리가 다 찬 알은 저절로 깨지지 않고 '부화 준비'가 된다 → 부화기에서 눌러 부화
   let ready = 0;
   for (const e of S.eggs) { const was = e.km >= e.need; e.km += km; if (!was && e.km >= e.need) ready++; }
   if (ready) log(`알 ${ready}개가 움직이기 시작했다! 부화기에서 부화시켜 보자.`, [], true);
   // 아이폰 앱이 걸음(만보기)으로 알을 줍고 있으면 런닝 거리로는 줍지 않는다 (같은 거리를 두 번 세지 않게)
-  const lp = S.lastPlace && Date.now() - S.lastPlace.t < 3 * 3600e3 ? S.lastPlace : null;
-  if (!S.walkSync) gotLog(collectEggs(km, lp?.n || '', lp?.tags), `${fmtKm(km)}km를 움직이며`, lp?.n || '');
+  // 알마다 달린 길(지나간 곳 기록) 중 한 곳을 골라 주운 곳으로 남긴다
+  let got = [];
+  if (!S.walkSync) { got = collectEggs(km, '', null, () => routePlace(t0, t1)); const ps = [...new Set(got.eggs.map(e => e.place).filter(Boolean))]; gotLog(got, `${fmtKm(km)}km를 움직이며`, ps.length === 1 ? ps[0] : ''); }
   for (const b of S.buds) { if (evoKids(b.sp, boxOf(b.pid)).length) b.km += km; b.frAcc = (b.frAcc || 0) + km * 5; const n = Math.floor(b.frAcc); if (n) { b.frAcc -= n; addFr(b.pid, n); } }
+  return got.eggs || [];
 }
 // 아이폰 앱(워치 연동)에서 열렸을 때: 알 현황을 앱으로 보내고, 워치에서 달린 거리를 받는다
 var nativeT = 0;
@@ -4275,7 +4277,7 @@ window.pokeRunWalk = (km, place, tags) => {
   km = +km; if (!(km > 0 && km <= 200)) return false;
   S.walkSync = true; S.walkKm += km;
   tags = String(tags || '').split(',').filter(k => THEMES[k]);
-  if (place) S.lastPlace = { n: String(place), tags, t: Date.now() };
+  if (place) { S.lastPlace = { n: String(place), tags, t: Date.now() }; notePlace(place, tags, Date.now()); }
   gotLog(collectEggs(km, place || '', tags), `걸어서 ${fmtKm(km)}km`, place || '');
   save(); renderRun(); return true;
 };
@@ -4285,14 +4287,40 @@ window.pokeRunAddKm = (km, t0, src = 'watch', t1 = 0) => {
   t0 = +t0 || 0; t1 = +t1 || 0; src = ['auto', 'health'].includes(src) ? src : 'watch';
   // 같은 달리기가 여러 길(워치 앱·건강 앱·자동 감지·잠금 런닝)로 들어오면 시간이 겹치는 두 번째부터 건너뛴다
   if (t0 && S.runs.some(r => r.t0 && r.t0 < (t1 || t0) + 60000 && (r.t || r.t0) > t0 - 60000)) return true;
-  applyKm(km); addRun(km, src, t0, t1); return true;
+  addRun(km, src, t0, t1, applyKm(km, t0, t1)); return true;
+};
+// 지나간 곳 기록 (아이폰 앱이 보낸 동네·운동 경로의 몇 곳)
+function notePlace(n, tags, t) { if (!n) return; S.places.push({ n: String(n), tags: tags || [], t }); S.places.sort((a, b) => a.t - b.t); if (S.places.length > 300) S.places.splice(0, S.places.length - 300); }
+function routePlace(t0, t1) {
+  const L = t0 ? S.places.filter(p => p.t >= t0 - 10 * 60e3 && p.t <= (t1 || t0) + 10 * 60e3) : [];
+  if (L.length) return pick(L);
+  return S.lastPlace && Date.now() - S.lastPlace.t < 3 * 3600e3 ? S.lastPlace : null;
+}
+// 아이폰 앱: 건강 앱 운동 경로(GPS)에서 뽑은 몇 곳 [[이름, 'water,park', 시각ms], ...]
+// 그 런닝에서 주웠는데 주운 곳이 비어 있는 알은 경로 중 한 곳으로 채운다
+window.pokeRunPlaces = (t0, t1, list) => {
+  t0 = +t0 || 0; t1 = +t1 || t0; if (!Array.isArray(list) || !t0) return false;
+  const pts = list.map(x => ({ n: String(x[0] || ''), tags: String(x[1] || '').split(',').filter(k => THEMES[k]), t: +x[2] || t0 })).filter(p => p.n);
+  if (!pts.length) return true;
+  if (!S.places.some(p => p.t >= t0 && p.t <= t1)) pts.forEach(p => notePlace(p.n, p.tags, p.t));
+  const all = [...S.bag, ...S.eggs], fill = e => { if (e.place) return; const p = pick(pts); e.place = p.n; if (p.tags.length) e.tags = p.tags; };
+  for (const r of S.runs) {
+    if (!(r.t0 && r.t0 < t1 + 60000 && r.t > t0 - 60000)) continue;
+    if (r.eggs) for (const x of r.eggs) { const e = all.find(y => y.id === x.id); if (e) { fill(e); x.place = e.place; } else if (!x.place) x.place = pick(pts).n; }
+  }
+  // 예전 알(런닝과 이어져 있지 않은 것): 그 운동이 끝난 뒤 6시간 안에 주웠으면 그 길에서 주운 걸로
+  const old = all.filter(e => e.t >= t0 && e.t <= t1 + 6 * 3600e3 && !S.runs.some(r => r.eggs?.some(x => x.id === e.id)));
+  old.forEach(fill);
+  const run = S.runs.find(r => !r.eggs && r.t0 && r.t0 < t1 + 60000 && r.t > t0 - 60000);
+  if (run && old.length) run.eggs = old.map(e => ({ id: e.id, g: e.g, place: e.place || '' }));
+  save(); renderRun(); return true;
 };
 // 골드: 달리면 1km에 10G, 같은 포켓몬이 또 나오면 알 등급에 따라 받는다
 const RUN_G = 10, DUP_G = [0, 15, 30, 60, 120, 250];
 function renderGold() { $('#goldN').textContent = S.gold.toLocaleString(); const g = $('#gold'); g.classList.remove('up'); void g.offsetWidth; g.classList.add('up'); if (!$('#shop').hidden) renderShop(); }
 function addGold(n) { n = Math.round(n); if (!(n > 0)) return 0; S.gold += n; renderGold(); return n; }
-function addRun(km, src, t0, t1) {
-  const r = { t: t1 || Date.now(), km, src }; if (t0) r.t0 = t0; S.runs.unshift(r); S.runs.sort((a, b) => b.t - a.t); if (S.runs.length > 60) S.runs.pop();
+function addRun(km, src, t0, t1, eggs) {
+  const r = { t: t1 || Date.now(), km, src }; if (t0) r.t0 = t0; if (eggs?.length) r.eggs = eggs.map(e => ({ id: e.id, g: e.g, place: e.place || '' })); S.runs.unshift(r); S.runs.sort((a, b) => b.t - a.t); if (S.runs.length > 60) S.runs.pop();
   const g = addGold(km * RUN_G);
   log(`${src === 'gps' ? 'GPS로' : src === 'watch' ? '워치로' : src === 'auto' ? '알아서 기록된 런닝으로' : '건강 앱 기록으로'} ${fmtKm(km)}km를 달렸다.${g ? ` ${g}G를 받았다!` : ''}`, [], true);
   save(); renderRun();
@@ -4689,44 +4717,9 @@ const SHORTCUT = '초원 거리';
 S.lockT = 0; let lockAsked = false;
 const pad2 = n => String(n).padStart(2, '0');
 const fmtT = t => { const d = new Date(t); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`; };
-function renderLock() {
-  const on = !!S.lockT, el = $('#lock');
-  el.classList.toggle('wait', on); el.setAttribute('role', on ? 'group' : 'button'); el.tabIndex = on ? -1 : 0;
-  el.querySelector('.lk-icon').textContent = on ? '●' : '▶';
-  $('#lockTitle').textContent = on ? '달리는 중' : '런닝 시작';
-  $('#lockClock').hidden = $('#lockBtns').hidden = !on;
-  $('#lockInfo').textContent = '';
-  tickLock();
-}
-function tickLock() {
-  if (!S.lockT) return;
-  const sec = Math.max(0, Math.floor((Date.now() - S.lockT) / 1000)), h = Math.floor(sec / 3600);
-  $('#lockClock').textContent = (h ? h + ':' : '') + pad2(Math.floor(sec / 60) % 60) + ':' + pad2(sec % 60);
-}
-function startLockRun() { if (S.lockT) return; S.lockT = Date.now(); save(); renderLock(); }
-$('#lock').addEventListener('click', e => { if (!e.target.closest('button')) startLockRun(); });
-$('#lock').addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.id === 'lock') { e.preventDefault(); startLockRun(); } });
-$('#lockCancel').onclick = () => { S.lockT = 0; lockAsked = false; save(); renderLock(); };
-$('#lockFetch').onclick = () => {
-  lockAsked = true;
-  location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(SHORTCUT)}&input=text&text=${encodeURIComponent(fmtT(S.lockT))}`;
-};
-function takeLockKm(raw) {
-  const m = String(raw || '').replace(/,/g, '.').match(/\d+(?:\.\d+)?/);
-  const v = m ? Math.round(parseFloat(m[0]) * 100) / 100 : NaN;
-  if (!(v >= .01 && v <= 60)) { $('#lockInfo').textContent = `거리를 읽지 못했어요 (${String(raw || '빈 값').slice(0, 20)}). 다시 가져와 주세요.`; return; }
-  const t0 = S.lockT; S.lockT = 0; lockAsked = false;
-  applyKm(v); addRun(v, 'health', t0); renderLock();
-  $('#lockInfo').innerHTML = `<b>${fmtKm(v)}km</b>를 가져왔어요!`;
-}
-$('#lockPaste').onclick = async () => {
-  try { takeLockKm(await navigator.clipboard.readText()); }
-  catch (e) { $('#lockInfo').textContent = '붙여넣기가 막혀 있어요. 다시 눌러 주세요.'; }
-};
-document.addEventListener('visibilitychange', () => { if (!document.hidden && lockAsked && S.lockT) { if (runEl.hidden) openRun(); $('#lockPaste').focus(); } });
 // running window
 const runEl = $('#run');
-function openRun() { runEl.hidden = false; setRunTab(runTab); renderRun(); renderLock(); }
+function openRun() { runEl.hidden = false; setRunTab(runTab); renderRun(); }
 $('#openRun').onclick = () => tabTo(runEl, () => { runTab = 'egg'; openRun(); });
 $('#closeRun').onclick = () => { seeBag(); runEl.hidden = true; };
 runEl.addEventListener('click', e => { if (e.target === runEl) runEl.hidden = true; });
@@ -4747,6 +4740,7 @@ function renderBag() {
   document.querySelectorAll('#bagSort [data-sort]').forEach(b => b.setAttribute('aria-pressed', b.dataset.sort === bagSort));
   const list = S.bag.filter(e => !bagG || e.g === bagG).slice().reverse();
   if (bagSort === 'km') list.sort((a, b) => (b.km || 0) / GRADE[b.g].km - (a.km || 0) / GRADE[a.g].km || (b.km || 0) - (a.km || 0));
+  if (bagSort === 'grade') list.sort((a, b) => b.g - a.g || b.t - a.t);
   if (!S.bag.includes(bagSel)) bagSel = null;
   $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot" data-id="${e.id}" aria-current="${e === bagSel}">${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g)}<span>${GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.split(' ').pop()) : fmtWhen(e.t)}</span></button>`).join('')
     : `<div class="bag-empty">${S.bag.length ? '이 등급 알이 없어요' : '움직이면 알을 주울 수 있어요'}</div>`;
@@ -4804,9 +4798,10 @@ function renderRun() {
     box.append(b);
   }
   renderBag();
-  tickLock();
   renderRunLog();
 }
+// 테스트용: 부화기 알을 모두 부화 준비 상태로 (나중에 뺄 것)
+$('#eggTest').onclick = () => { S.eggs.forEach(e => { e.km = Math.max(e.km, e.need); }); save(); renderRun(); };
 // 짝꿍 카드 (포켓몬 창 › 짝꿍 탭)
 function renderBuddy() {
   for (const m of S.buds) if (!thumbOf(m.sp)) ensureSprite(m.sp).then(renderBuddy).catch(() => {});
@@ -4828,6 +4823,10 @@ function renderRunLog() {
     if (day !== lastDay) { lastDay = day; html += `<div class="run-day">${d.getMonth() + 1}월 ${d.getDate()}일 (${WD[d.getDay()]})</div>`; }
     const mins = r.t0 ? Math.max(1, Math.round((r.t - r.t0) / 60000)) : 0;
     html += `<div class="run-row"><span class="rt">${r.t0 ? `${hm(r.t0)} ~ ${hm(r.t)}` : hm(r.t)}${mins ? ` <i>${mins >= 60 ? `${Math.floor(mins / 60)}시간 ` : ''}${mins % 60 ? `${mins % 60}분` : ''}</i>` : ''}</span><span class="src">${r.src === 'gps' ? 'GPS' : r.src === 'watch' ? '워치' : r.src === 'auto' ? '자동' : '건강 앱'}</span><b>${fmtKm(r.km)}km</b></div>`;
+    if (r.eggs?.length) {
+      const by = {}; for (const x of r.eggs) (by[x.place || ''] ||= []).push(x.g);
+      html += `<div class="run-eggs">${Object.entries(by).map(([pl, gs]) => `<div class="re-row"><span class="re-eggs">${gs.sort((a, b) => b - a).map(g => eggHtml(g)).join('')}</span><span class="re-pl">${pl ? `${esc(pl)} 근처` : '주운 곳 모름'}</span></div>`).join('')}</div>`;
+    }
   }
   $('#runs').innerHTML = html || '<div class="run-row"><span class="rt">아직 달린 기록이 없어요</span></div>';
 }
@@ -4907,7 +4906,7 @@ async function start(data) {
   window.pokeRunReady = true; postNative();
   try { window.webkit?.messageHandlers?.pokeRun?.postMessage({ ready: true }); } catch (e) {}
 }
-if (/[?&]debug/.test(location.search)) window.__meadow = { S, newPoke, takeLockKm, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
+if (/[?&]debug/.test(location.search)) window.__meadow = { S, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
 if (/[?&]debug/.test(location.search)) Object.assign(window, { __drag: () => drag, __log: log, __save: save, __bgm: bgm, __actx: () => actx, __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf, __thoughtOf: thoughtOf, __addRel: addRel, __tyIcon: tyIcon, __evoKids: evoKids, __friendsAll: friendsAll, __renameBox: renameBox });
 window.claude?.hot?.snapshot?.(() => serialize());
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
