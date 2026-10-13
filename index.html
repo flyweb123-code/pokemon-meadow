@@ -1766,9 +1766,10 @@ async function spawn(sp, opts = {}) {
   await ensureSprite(sp);
   const sx = opts.pid != null ? (boxOf(opts.pid)?.sex || '') : (opts.sex ?? rollSex(sp)), key = fKey(sp, sx);
   const d = await measure(key); makeStill(sp);
-  const same = S.mons.filter(x => x.sp === sp).length;
+  // 같은 종이 여러 마리여도 이름에 번호를 붙이지 않는다 (예전 저장의 '피카츄 2' 도 '피카츄' 로)
+  const nm0 = opts.name && opts.name.replace(/ \d+$/, '') === DEX[sp].n ? DEX[sp].n : opts.name;
   const m = {
-    uid: opts.uid || S.uid++, sp, form: sp, name: opts.name || (DEX[sp].n + (same ? ' ' + (same + 1) : '')),
+    uid: opts.uid || S.uid++, sp, form: sp, name: nm0 || DEX[sp].n,
     x: 0, y: 0, tx: 0, ty: 0, face: 1, lift: 0, w: d.w * scaleOf(key), h: d.h * scaleOf(key), at: 0, sk: key, sex: opts.pid != null ? undefined : sx,
     energy: opts.energy ?? rnd(60, 95), hunger: opts.hunger ?? rnd(10, 45), social: opts.social ?? rnd(10, 50),
     state: 'idle', t: rnd(.5, 2), goal: null, partner: null, hidden: false, bubT: 0, formT: 0,
