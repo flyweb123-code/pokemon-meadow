@@ -4509,13 +4509,50 @@ function useMove(m, i = 0) {
   const L = movesOf(m.sp); if (!L.length || !awake(m) || m.held || m.evolving || m.mvBusy) return false;
   const [name, t] = L[Math.min(i, L.length - 1)];
   m.mvBusy = true; setTimeout(() => { m.mvBusy = false; }, 2000);
-  // 먼저 울음소리와 함께 외치고(크앙!), 이어서 기술 연출과 타입별 효과음
-  emote(m, shoutOf(m.sp), '', 1.4); if (cry.have.has(m.sp) && sfxOn) playCry(m.sp); else cryChirp(m.sp); anim(m, 'hop');
-  const f = -m.face || 1, o = { x: m.x, y: m.y - m.h * .5 - (m.lift || 0) };
-  setTimeout(() => { if (!S.mons.includes(m)) return; strike(m); mvSnd(t); setTimeout(() => (MV_FX[t] || MV_FX[1])(o, f, m), 120); }, 480);
+  // 먼저 외치고(크앙!), 이어서 기술 모션·연출과 타입별 효과음
+  emote(m, shoutOf(m.sp), '', 1.4); anim(m, 'hop');
+  const f = -m.face || 1, mo = MOVE_MO[name] || (T(m).sp === 'dig' ? 'dig' : null);
+  const fire = () => { if (!S.mons.includes(m)) return; const o = { x: m.x, y: m.y - m.h * .5 - (m.lift || 0) }; mvSnd(t); setTimeout(() => (MV_FX[t] || MV_FX[1])(o, f, m), 120); };
+  setTimeout(() => { if (!S.mons.includes(m)) return; if (mo) moveMotion(m, mo, f, fire); else { strike(m); fire(); } }, 480);
   const by = watching(m), seen = startle(m, name, by);
   if (!seen && (by || Math.random() < .5)) log(`${J(m,'이/가')} ${J({ name },'을/를')} 썼다!`, [m]);
   return true;
+}
+// 기술마다 어울리는 몸동작: 땅속·물속으로 들어갔다 앞쪽에서 튀어나오기, 사라졌다 나타나기, 날아올랐다 내리꽂기, 돌진, 회전, 땅 울리기
+const MOVE_MO = { '구멍파기': 'dig', '다이빙': 'dive', '고스트다이브': 'vanish', '야습': 'vanish', '섀도스틸': 'vanish', '순간이동': 'tele', '이차원홀': 'tele', '공중날기': 'fly', '뛰어오르기': 'fly', '드래곤다이브': 'fly', '브레이브버드': 'fly', '애크러뱃': 'fly', '데스윙': 'fly', '폭포오르기': 'fly', '고속스핀': 'spin', '화염바퀴': 'spin', '아이스스피너': 'spin', '지옥의바퀴': 'spin', '드릴라이너': 'spin', '하이퍼드릴': 'spin', '돌진': 'dash', '몸통박치기': 'dash', '이판사판태클': 'dash', '로켓박치기': 'dash', '전광석화': 'dash', '신속': 'dash', '와일드볼트': 'dash', '플레어드라이브': 'dash', '웨이브태클': 'dash', '니트로차지': 'dash', '아쿠아브레이크': 'dash', '덤벼들기': 'dash', '아이언헤드': 'dash', '사념의박치기': 'dash', '양날박치기': 'dash', '박치기': 'dash', '레이징불': 'dash', '스타어설트': 'dash', '지진': 'quake', '10만마력': 'quake', '땅고르기': 'quake', '분함의발구르기': 'quake', '짓밟기': 'quake', '대지의힘': 'quake', '단단해지기': 'harden', '코스믹파워': 'harden' };
+function moveMotion(m, mo, f, fire) {
+  const dur = { dig: 1.8, dive: 1.8, vanish: 1.6, tele: 1.6, fly: 1.3, spin: 1, dash: .9, quake: 1, harden: 1.1 }[mo] || 1;
+  m.goal = null; setState(m, 'special', dur + .4); m.special = 'mvmo'; m.mvBusy = true; setTimeout(() => { m.mvBusy = false; }, (dur + .4) * 1000);
+  if (mo === 'dig' || mo === 'dive' || mo === 'vanish' || mo === 'tele') {
+    const under = mo === 'dig' || mo === 'dive', out = under ? 'burrow' : 'vanish', inn = under ? 'emerge' : 'appear';
+    if (mo === 'dig') dustAt(m); else if (mo === 'dive') splashAt(m); else for (let i = 0; i < 4; i++) particle(m.x + rnd(-14, 14), m.y - m.h / 2 + rnd(-14, 14), 'smoke');
+    m.act.classList.add(out);
+    setTimeout(() => { if (!S.mons.includes(m)) return; m.hidden = true; m.el.style.visibility = 'hidden';
+      const step = mo === 'tele' ? rnd(90, 150) : rnd(60, 90);
+      m.x = m.tx = clamp(m.x + f * step, XL + 30, XR - 30); m.y = m.ty = clamp(m.y + rnd(-10, 10), MIN_Y, MAX_Y); if (mo !== 'dive') settle(m); m.home = { x: m.x, y: m.y };
+    }, 800);
+    setTimeout(() => { if (!S.mons.includes(m)) return; m.hidden = false; m.el.style.visibility = ''; m.act.classList.remove(out); anim(m, inn);
+      if (mo === 'dig') dustAt(m); else if (mo === 'dive') splashAt(m);
+      setTimeout(() => { strike(m); fire(); }, 250);
+    }, 1250);
+    return;
+  }
+  const A = (el, kf, ms, ease = 'ease-out') => el.animate(kf, { duration: ms, easing: ease });
+  if (mo === 'fly') {
+    A(m.liftEl, [{ transform: 'translateY(0)' }, { transform: 'translateY(-110px)', offset: .45 }, { transform: 'translateY(-110px)', offset: .6 }, { transform: 'translateY(0)' }], 900, 'ease-in-out');
+    setTimeout(() => { if (!S.mons.includes(m)) return; dustAt(m); strike(m); fire(); }, 880);
+  } else if (mo === 'spin') {
+    A(m.act, [{ transform: 'translateX(-50%) rotate(0)' }, { transform: `translateX(-50%) rotate(${f * 720}deg)` }], 700, 'ease-in-out');
+    setTimeout(fire, 450);
+  } else if (mo === 'dash') {
+    A(m.act, [{ transform: 'translateX(-50%)' }, { transform: `translateX(calc(-50% + ${f * -10}px))`, offset: .25 }, { transform: `translateX(calc(-50% + ${f * 46}px))`, offset: .55 }, { transform: 'translateX(-50%)' }], 650);
+    setTimeout(() => { strike(m); fire(); }, 330);
+  } else if (mo === 'quake') {
+    anim(m, 'hop'); setTimeout(() => { if (!S.mons.includes(m)) return; dustAt(m); A(wrap, [{ transform: 'translate(0,0)' }, { transform: 'translate(-5px,2px)' }, { transform: 'translate(5px,-2px)' }, { transform: 'translate(-4px,1px)' }, { transform: 'translate(0,0)' }], 500, 'linear'); haptic(2); fire(); }, 380);
+  } else if (mo === 'harden') {
+    A(m.act, [{ filter: 'brightness(1)' }, { filter: 'brightness(1.8) saturate(.3)' }, { filter: 'brightness(1)' }], 900);
+    fire();
+  } else { strike(m); fire(); }
 }
 // 기술을 쓰면 가까이 있던 포켓몬들이 깜짝 놀란다: 펄쩍 뛰고 조금 물러나거나, 자다가 깬다
 function startle(m, name, loud) {
