@@ -755,8 +755,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
   .dlg .now{min-height:0}
   .dlg .more{right:4px;bottom:0}
   .journal{left:0;right:0;bottom:calc(100% + 3px)}
-  .app .win.dlg.folded{justify-self:end;align-self:end;margin:0 calc(env(safe-area-inset-right) + 8px) 8px 0;padding:0;border:3px solid var(--frame);
-    box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 6px var(--dlg-in),3px 3px 0 rgba(0,0,0,.35)}
+  .app .win.dlg.folded{justify-self:end;align-self:end;margin:0;padding:0;width:50px;height:38px;box-sizing:border-box;position:relative}.app .dlg.folded .more{position:absolute;right:4px;bottom:0;margin:0}
   .dlg.folded .more{padding:10px 14px}
   .menuwin,.cmdwin{margin:0;border:0;box-shadow:none;background:var(--frame);display:grid;gap:0;padding:0 0 var(--sab)}
   .menuwin{grid-area:menu;grid-template-columns:repeat(3,minmax(0,1fr));padding-left:env(safe-area-inset-left)}
