@@ -4568,7 +4568,11 @@ function tapEgg(egg, g, msg) {
     hatchStage.classList.add('tapme');
     const nudge = () => { clearTimeout(idle); idle = setTimeout(() => { if (n >= need) return; egg.classList.remove('wig', 'knock'); void egg.offsetWidth; egg.classList.add('wig'); sfx('wob'); nudge(); }, 2600); };
     const down = ev => {
-      ev.preventDefault(); if (n >= need) return;
+      ev.preventDefault();
+      if (n >= need) {   // 다 두드린 뒤 깨지기 직전까지도 계속 두드릴 수 있다 (흔들림은 유지)
+        const r = hatchStage.getBoundingClientRect(), p = document.createElement('i'); p.className = 'tapfx'; p.style.left = ev.clientX - r.left + 'px'; p.style.top = ev.clientY - r.top + 'px'; hatchStage.append(p); setTimeout(() => p.remove(), 360);
+        win.classList.remove('jolt'); void win.offsetWidth; win.classList.add('jolt'); sfx('knock', 3); sfx('charge', 1); pend = 2; haptic(2); return;
+      }
       n++;
       const r = hatchStage.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
       egg.style.setProperty('--kx', x < r.width / 2 ? -1 : 1);
@@ -4581,9 +4585,9 @@ function tapEgg(egg, g, msg) {
       sfx('charge', f);
       haptic(pend);
       if (n >= need) {
-        clearTimeout(idle); hatchStage.removeEventListener('pointerdown', down); hatchStage.removeEventListener('click', up); hatchStage.classList.remove('tapme');
+        clearTimeout(idle);
         setTimeout(() => { egg.classList.remove('knock'); egg.classList.add('wig2'); sfx('rattle'); sfx('rise'); }, 220);
-        setTimeout(done, 900);
+        setTimeout(() => { hatchStage.removeEventListener('pointerdown', down); hatchStage.removeEventListener('click', up); hatchStage.classList.remove('tapme'); done(); }, 900);
       } else nudge();
     };
     // 터치에선 손을 뗄 때만 '사용자 동작'으로 쳐서, iOS 사파리 진동은 click 에서 한 번 더 시도한다
