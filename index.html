@@ -344,14 +344,14 @@ ol.log li.big .txt{color:#c03838}
 /* S 랭크: 금빛 테두리 빛 + 반짝이 */
 .mon.rkS .flip{animation:sglow 1.8s ease-in-out infinite}
 @keyframes sglow{0%,100%{filter:drop-shadow(0 0 1px #fff6c0) drop-shadow(0 0 3px #ffc830)}50%{filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 7px #ffb000)}}
-.mon.rkS .lift::before{content:'✦';position:absolute;left:14px;bottom:30px;color:#ffe060;font-size:11px;text-shadow:0 0 3px #fff;animation:spk 2.4s steps(1) infinite;pointer-events:none}
-@keyframes spk{0%{opacity:1;transform:translate(0,0)}25%{opacity:0}50%{opacity:1;transform:translate(-30px,-14px)}75%{opacity:0}}
+.mon.rkS .lift::before{content:'✦';position:absolute;left:0;bottom:calc(var(--mh,60px) * .55);color:#fff3a0;font-size:20px;text-shadow:0 0 4px #ffb000,0 0 2px #fff;animation:spk 1.6s steps(1) infinite;pointer-events:none;z-index:3}
+@keyframes spk{0%{opacity:1;transform:translate(calc(var(--mw,50px) * .4),0) scale(1)}20%{opacity:.4;transform:translate(calc(var(--mw,50px) * .4),0) scale(.6)}35%{opacity:0}50%{opacity:1;transform:translate(calc(var(--mw,50px) * -.45),calc(var(--mh,60px) * -.35)) scale(1.1)}70%{opacity:.4;transform:translate(calc(var(--mw,50px) * -.45),calc(var(--mh,60px) * -.35)) scale(.6)}85%{opacity:0}}
 .pk.rkS img,.dp-pic.rkS img,.bd-pic.rkS img{animation:sglow 1.8s ease-in-out infinite}
 .pk.rkS{background:radial-gradient(circle at 50% 40%,#fff4c8,#fff 70%)}
 .pk.shiny.rkS img,.dp-pic.shiny.rkS img,.bd-pic.shiny.rkS img{animation:none;filter:hue-rotate(var(--shue)) saturate(1.25) drop-shadow(0 0 4px #ffc830)}
 /* 친밀도 만점: 하트가 떠오름 */
-.mon.frMax .lift::after{content:'♥';position:absolute;left:-4px;bottom:40px;color:#ff5a8a;font-size:13px;text-shadow:0 0 3px #fff;animation:frup 5s ease-out infinite;pointer-events:none;opacity:0}
-@keyframes frup{0%,70%{opacity:0;transform:translateY(0)}75%{opacity:1}100%{opacity:0;transform:translateY(-22px)}}
+.mon.frMax .lift::after{content:'♥';position:absolute;left:-8px;bottom:calc(var(--mh,60px) + 2px);color:#ff3a78;font-size:24px;text-shadow:0 0 3px #fff,0 0 1px #fff;animation:frup 3.2s ease-out infinite;pointer-events:none;opacity:0;z-index:3}
+@keyframes frup{0%,30%{opacity:0;transform:translateY(6px) scale(.6)}40%{opacity:1;transform:translateY(0) scale(1.15)}55%{opacity:1;transform:translateY(-4px) scale(1)}100%{opacity:0;transform:translateY(-26px) scale(1)}}
 .hmax{color:#ff3a78;font-weight:400;text-shadow:0 0 4px #ffb0c8}
 .shiny img,.mon.shiny .act img,.mon.shiny .spr,img.shiny{filter:hue-rotate(var(--shue,150deg)) saturate(1.25)}
 .mon.shiny .act::after{content:'✦';position:absolute;right:-6px;top:-6px;color:#ffd84a;font-size:12px;text-shadow:0 0 4px #fff;animation:twk 1.2s steps(2) infinite}
@@ -3635,7 +3635,7 @@ function indivHtml(m) { const P = boxOf(m.pid); return P ? `랭크 <span class="
 // S 랭크는 금빛으로 빛나고, 친밀도 만점(255)은 가끔 하트가 떠오른다
 const FR_MAX = 255;
 const pkCls = P => (P && rankOf(P) === 'S' ? ' rkS' : '') + (P && (P.fr || 0) >= FR_MAX ? ' frMax' : '');
-function markMon(m) { const P = boxOf(m.pid); m.el?.classList.toggle('rkS', !!P && rankOf(P) === 'S'); m.el?.classList.toggle('frMax', !!P && (P.fr || 0) >= FR_MAX); }
+function markMon(m) { const P = boxOf(m.pid); if (m.el) { m.el.style.setProperty('--mh', (m.h || 60) + 'px'); m.el.style.setProperty('--mw', (m.w || 50) + 'px'); } m.el?.classList.toggle('rkS', !!P && rankOf(P) === 'S'); m.el?.classList.toggle('frMax', !!P && (P.fr || 0) >= FR_MAX); }
 setInterval(() => S.mons.forEach(markMon), 4000);
 const hearts = fr => { if ((fr || 0) >= 255) return '<b class="hmax">♥♥♥♥♥</b>'; const n = Math.min(5, Math.floor((fr || 0) / 51)); return '♥'.repeat(n) + '♡'.repeat(5 - n); };
 function newPoke(sp, o = {}) {
