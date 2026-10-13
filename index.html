@@ -317,10 +317,7 @@ ol.log li.big .txt{color:#c03838}
 .vol-v{text-align:right;font-variant-numeric:tabular-nums}
 .lk-btn.danger{grid-column:1 / -1;color:#b03030;border-color:#b03030}
 #mgrRandom{padding:10px 18px}
-.mtabs{display:grid;grid-template-columns:1fr 1fr;border:3px solid var(--frame);margin:0 0 10px}
-.mtabs button{font:inherit;font-size:15px;padding:8px;border:0;background:var(--win);color:var(--win-ink);cursor:pointer}
-.mtabs button+button{border-left:3px solid var(--frame)}
-.mtabs button[aria-selected="true"]{background:var(--frame);color:var(--win);font-weight:700}
+.runtabs.mtabs{grid-template-columns:1fr 1fr;margin-top:10px}
 .mtab:not([hidden]){flex:1;min-height:0;display:flex;flex-direction:column}
 .mtab .mgr-body{flex:1}
 .box-tools{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
@@ -351,8 +348,8 @@ ol.log li.big .txt{color:#c03838}
 .pokepop .boxbtn.off{background:var(--win);color:var(--frame)}.pokepop .boxbtn[disabled]{opacity:.5}
 .hatch .rkline{font-size:14px;margin:-4px 0 10px}
 .hatch-stage img.shiny{filter:hue-rotate(var(--shue)) saturate(1.25) drop-shadow(0 0 8px #ffe680)}
-.mgr-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px}
-.slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(118px,auto);gap:8px;overflow-y:auto;align-content:start;padding:4px}
+.mgr-body{flex:1;min-height:0;display:block}
+.slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));gap:8px;height:100%;min-height:0;padding:4px;box-sizing:border-box}
 .slot{position:relative;border:3px solid var(--inner);background:#fff;padding:6px 4px 8px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;font-size:13px;min-width:0}
 @media (hover:hover){.slot:hover{border-color:var(--frame)}}
 .slot:focus-visible{border-color:var(--frame);outline:0}
@@ -367,7 +364,13 @@ ol.log li.big .txt{color:#c03838}
 .slot.empty{border-style:dashed;color:var(--dim);justify-content:center;background:transparent}
 .slot.empty .plus{font-size:24px;line-height:1}
 .slot .no{position:absolute;right:5px;top:4px;font-size:10px;color:var(--dim)}
-.mgr-detail{border-left:3px dotted var(--inner);padding:4px 0 4px 16px;overflow-y:auto;font-size:14px}
+.mgr-detail{padding:0;overflow-y:auto;font-size:14px;max-height:calc(100vh - 140px)}
+.monpop .win{width:min(400px,100%);min-width:0;box-sizing:border-box}
+.monpop .mgr-detail{min-width:0}.monpop .mgr-detail .bars,.monpop .mgr-detail .bar{min-width:0}
+.slots .slot img{height:clamp(44px,7.5vh,72px);width:auto;max-height:none}
+.slots .slot .ph{min-height:0}
+.boxgrid:has(> .empty-msg){display:flex;align-items:center;justify-content:center}
+.boxgrid > .empty-msg{margin:0;white-space:nowrap;text-align:center;color:var(--dim)}
 .mgr-detail .pic{height:110px;display:flex;align-items:flex-end;justify-content:center;background:linear-gradient(#cfe8b8,#a8d088);border:3px solid var(--card-frame);margin-bottom:10px;position:relative;overflow:hidden}
 .mgr-detail .pic::after{content:"";position:absolute;left:0;right:0;bottom:0;height:18px;background:#7cb85a;border-top:3px solid #5a9a40}
 .mgr-detail .pic img{position:relative;z-index:1;margin-bottom:8px;image-rendering:pixelated;max-height:96px}
@@ -593,9 +596,6 @@ ol.log li.big .txt{color:#c03838}
   .mgrwin{height:92vh;padding:12px 14px}
   .sheet:has(.mgrwin){padding:8px}
   .mgrwin{min-width:0}
-  .mgr-body{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;overflow-y:auto}
-  .slots{grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible}
-  .mgr-detail{border-left:0;border-top:3px dotted var(--inner);padding:12px 0 0;overflow:visible}
 }
 /* Phone: one screen like an app. The meadow fills everything above a bottom panel (dialogue + tab bar);
    clock and speed float over the meadow; windows open full screen. position:fixed rather than 100vh,
@@ -682,9 +682,6 @@ ol.log li.big .txt{color:#c03838}
   .dexbar #dexCount{flex:1 1 100%}
   .dexbar .opt{font-size:16px;padding:10px 0 10px 18px}
   .mgrwin{min-width:0}
-  .mgr-body{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;overflow-y:auto}
-  .slots{grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible}
-  .mgr-detail{border-left:0;border-top:3px dotted var(--inner);padding:12px 0 0;overflow:visible}
   .mgr-detail .acts .opt{padding:10px 0 10px 20px}
   .runwin{height:100%}
   .hatch>div{max-width:calc(100vw - 32px)}
@@ -805,18 +802,17 @@ ol.log li.big .txt{color:#c03838}
 <div class="sheet" id="mgr" hidden>
   <div class="win mgrwin" role="dialog" aria-label="포켓몬">
     <div class="sheet-head"><h3>포켓몬<span class="cap" id="mgrCap"></span></h3><button class="opt" id="closeMgr">닫기</button></div>
-    <div class="mtabs" role="tablist"><button role="tab" data-t="field">필드</button><button role="tab" data-t="box">포켓몬</button></div>
     <div class="mtab" data-t="field">
       <div class="mgr-tools"><button class="lk-btn main" id="mgrRandom">무작위 12마리</button></div>
       <div class="mgr-body">
         <div class="slots" id="slots"></div>
-        <section class="mgr-detail" id="mgrDetail" aria-live="polite"></section>
       </div>
     </div>
     <div class="mtab boxtab" data-t="box" hidden>
       <div class="box-tools"><span class="small" id="boxCount"></span><div class="bag-sort" id="boxSort"><button data-sort="new">최신</button><button data-sort="rank">랭크</button><button data-sort="fr">친밀도</button><button data-sort="no">번호</button></div></div>
       <div class="boxgrid" id="boxGrid"></div>
     </div>
+    <div class="runtabs mtabs" id="mgrTabs" role="tablist"><button class="runtab" role="tab" data-t="field">필드</button><button class="runtab" role="tab" data-t="box">포켓몬</button></div>
   </div>
 </div>
 
@@ -867,6 +863,12 @@ ol.log li.big .txt{color:#c03838}
     </div>
     <div class="dexinfo" id="dpInfo"></div>
     <button class="boxbtn" id="dpAct"></button>
+  </div>
+</div>
+<div class="dexpop monpop" id="monPop" hidden>
+  <div class="win" role="dialog" aria-label="필드 포켓몬">
+    <div class="dp-head"><span>필드</span><button class="opt" id="monClose">닫기</button></div>
+    <section class="mgr-detail" id="mgrDetail" aria-live="polite"></section>
   </div>
 </div>
 <div class="dexpop pokepop" id="pokePop" hidden>
@@ -3271,18 +3273,23 @@ function sideOpen(on) { sideEl.classList.toggle('open', on); }
 $('#sideSet').onclick = () => { sideOpen(false); setBtn.click(); };
 placeSet(); narrow.addEventListener('change', () => { placeSet(); fit(); });
 let mgrSel = null, mgrKey = '', mgrFreeArm = 0, mgrT = 0;
-function openMgr(m) { mgr.hidden = false; mgrSel = m || mgrSel || S.mons[0] || null; mgrKey = ''; renderMgr(true); }
-function closeMgr() { mgr.hidden = true; }
+function openMgr(m) { mgr.hidden = false; mgrSel = m || mgrSel || S.mons[0] || null; mgrKey = ''; renderMgr(true); if (m) { setMgrTab('field'); openMon(m); } }
+function closeMgr() { mgr.hidden = true; $('#monPop').hidden = true; }
 // 포켓몬 메뉴 탭: 필드 / 포켓몬(상자 전체)
 let mgrTab = 'field', boxSort = 'new';
 try { mgrTab = localStorage.getItem('pk-mgr-tab') || 'field'; boxSort = localStorage.getItem('pk-box-sort') || 'new'; } catch (e) {}
 function setMgrTab(t) {
   mgrTab = t; try { localStorage.setItem('pk-mgr-tab', t); } catch (e) {}
-  document.querySelectorAll('.mtabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.t === t));
+  document.querySelectorAll('#mgrTabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.t === t));
   document.querySelectorAll('.mtab').forEach(x => x.hidden = x.dataset.t !== t);
   if (t === 'box') renderBox(); else renderMgr(true);
 }
-document.querySelectorAll('.mtabs button').forEach(b => b.onclick = () => setMgrTab(b.dataset.t));
+document.querySelectorAll('#mgrTabs button').forEach(b => b.onclick = () => setMgrTab(b.dataset.t));
+const monPop = $('#monPop');
+function openMon(m) { mgrSel = m; mgrFreeArm = 0; monPop.hidden = false; renderMgr(true); }
+const closeMon = () => { monPop.hidden = true; };
+$('#monClose').onclick = closeMon;
+monPop.addEventListener('click', e => { if (e.target === monPop) closeMon(); });
 document.querySelectorAll('#boxSort [data-sort]').forEach(b => b.onclick = () => { boxSort = b.dataset.sort; try { localStorage.setItem('pk-box-sort', boxSort); } catch (e) {} renderBox(); });
 function boxList() {
   const L = S.box.slice();
@@ -3340,7 +3347,7 @@ $('#ppBud').onclick = () => {
   log(`${J({ name: SPECIES[P.sp].n },'이/가')} 런닝 짝꿍이 되었다!`, [], true); save(); renderBox(); openPoke(P.id);
 };
 new MutationObserver(() => { if (mgr.hidden) closePoke(); }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
-$('#openMgr').onclick = () => tabTo(mgr, () => { openMgr(S.sel); setMgrTab(mgrTab); });
+$('#openMgr').onclick = () => tabTo(mgr, () => { openMgr(); setMgrTab(mgrTab); });
 $('#closeMgr').onclick = closeMgr;
 // fill up to six free spots with random species from the dex
 $('#mgrRandom').onclick = async () => {
@@ -3376,7 +3383,7 @@ function renderMgr(force) {
       if (m) {
         b.dataset.uid = m.uid; b.setAttribute('aria-current', m === mgrSel);
         b.innerHTML = `<span class="st"></span><span class="no">${String(m.sp).padStart(4, '0')}</span><span class="ph"><img alt="" src="${thumbOf(m.form)}"></span><span class="nm">${esc(m.name)}</span><span class="mini"><i></i></span>`;
-        b.onclick = () => { mgrSel = m; mgrFreeArm = 0; renderMgr(); };
+        b.onclick = () => openMon(m);
       } else {
         b.classList.add('empty'); b.innerHTML = '<span class="plus">+</span><span>빈 자리</span>';
         b.onclick = () => setMgrTab('box');
@@ -3397,7 +3404,7 @@ function renderMgr(force) {
 }
 function renderMgrDetail(rebuild) {
   const m = mgrSel;
-  if (!m) { mgrDet.innerHTML = `<p class="empty-msg">초원이 비어 있다.<br>빈 자리를 눌러 포켓몬을 불러 보자.</p>`; return; }
+  if (!m) { mgrDet.innerHTML = ''; $('#monPop').hidden = true; return; }
   const d = SPECIES[m.sp], t = T(m);
   if (rebuild || mgrDet.dataset.uid !== String(m.uid)) {
     mgrDet.dataset.uid = m.uid;
@@ -3422,7 +3429,7 @@ function renderMgrDetail(rebuild) {
     $('#mSleep').onclick = () => toggleSleep(m);
     $('#mFree').onclick = () => {
       if (Date.now() - mgrFreeArm > 3000) { mgrFreeArm = Date.now(); $('#mFree').textContent = '한 번 더 누르면 보냄'; return; }
-      mgrFreeArm = 0; const i = S.mons.indexOf(m); removeMon(m); mgrSel = S.mons[Math.min(i, S.mons.length - 1)] || null; renderMgr(true); refreshCap();
+      mgrFreeArm = 0; const i = S.mons.indexOf(m); removeMon(m); mgrSel = S.mons[Math.min(i, S.mons.length - 1)] || null; closeMon(); renderMgr(true); refreshCap();
     };
   }
   const pic = $('#mPic'), want = isPmd(m.form) ? thumbOf(m.form) : m.state === 'sleep' ? (stillCache[m.form] || SPRITES[m.form]) : SPRITES[m.form];
@@ -3474,10 +3481,10 @@ const budReady = b => !!b && !!CHILDREN[b.sp] && b.km >= evoNeed(b);
 const evoNeed = m => { const g = gradeOf(baseOf(m.sp)), stage = evoStage(m.sp); return [0, 5, 10, 15, 20, 25][g] * (stage ? 1.5 : 1); };
 const fmtKm = v => (Math.floor(v * 100) / 100).toFixed(2);
 // ---------- 포켓몬 상자: 부화한 한 마리 한 마리 (개체값·이로치·친밀도) ----------
-// 개체값은 능력치 6개마다 0~31. 합계로 S~F 랭크, 높을수록 드물다(S 2%, A 6%, B 9%, C 13%, D 18%, E 22%, F 30%).
+// 개체값은 능력치 6개마다 0~31. 합계로 S~F 랭크(대략 S 2%, A 8%, B 20%, C 30%, D 25%, E 10%, F 5%).
 // 이로치는 6세대 이후 본가 게임처럼 1/4096. 친밀도 0~255(하트 5칸).
 const IV_N = ['HP', '공격', '방어', '특공', '특방', '스피드'];
-const RANKS = [['S', 139], ['A', 125], ['B', 115], ['C', 105], ['D', 94], ['E', 81], ['F', 0]];
+const RANKS = [['S', 140], ['A', 122], ['B', 105], ['C', 87], ['D', 69], ['E', 56], ['F', 0]];
 const SHINY_RATE = 1 / 4096;
 const ivSum = p => p.iv.reduce((a, b) => a + b, 0);
 const rankOf = p => RANKS.find(([, v]) => ivSum(p) >= v)[0];
@@ -3784,12 +3791,12 @@ try { runTab = localStorage.getItem('pk-run-tab') || 'egg'; } catch (e) {}
 function setRunTab(t) {
   if (runTab === 'bag' && t !== 'bag') seeBag();
   runTab = t; try { localStorage.setItem('pk-run-tab', t); } catch (e) {}
-  document.querySelectorAll('.runtab').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
+  document.querySelectorAll('.runtab[data-tab]').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
   document.querySelectorAll('.rtab').forEach(x => x.hidden = x.dataset.tab !== t);
   $('.run-body').scrollTop = 0;
   renderBag.sig = ''; renderRun();
 }
-document.querySelectorAll('.runtab').forEach(b => b.onclick = () => setRunTab(b.dataset.tab));
+document.querySelectorAll('.runtab[data-tab]').forEach(b => b.onclick = () => setRunTab(b.dataset.tab));
 $('#buddy').addEventListener('click', e => {
   const a = e.target.closest('[data-act]')?.dataset.act; if (!a) return;
   const i = +e.target.closest('[data-i]').dataset.i;
