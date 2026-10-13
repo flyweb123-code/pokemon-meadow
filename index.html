@@ -1190,6 +1190,44 @@ function noise(t0, dur, vol = .12, hp = 1200) {
 }
 const NOTE = n => 440 * Math.pow(2, (n - 69) / 12);
 function melody(t, notes, len, opt) { notes.forEach((n, i) => { if (n) tone(NOTE(n), t + i * len, len * .9, opt); }); return t + notes.length * len; }
+// 기술 외침: 타입·몸집에 어울리는 울음 글자. 종마다 늘 같은 소리
+const SHOUT_T = { 3: ['삐요!', '쿠루루!', '피요옷!'], 4: ['쉬이익!', '부글!'], 5: ['그르릉!', '구웅!'], 6: ['고오오!', '구궁!'], 7: ['찌르르!', '지잉!'], 8: ['케케케!', '히히힛!'], 9: ['카앙!', '기잉!'], 10: ['캬오!', '크와앙!'], 11: ['뿌우!', '쀼잇!'], 12: ['파아!', '후우웅!'], 13: ['찌잇!', '삐까!'], 14: ['후웅…!', '므응!'], 15: ['퓨우!', '키잉!'], 16: ['그와앙!', '크롸아!'], 17: ['그르르!', '캬학!'], 18: ['삐잉!', '퓨이!'], 2: ['하앗!', '우랏!'] };
+const SHOUT_S = [['삐익!', '뀨!', '꾸우!', '뀨잉!', '삐잇!', '캬!'], ['크앙!', '캬앙!', '크룽!', '갸웅!', '쿠웅!', '캬오!'], ['크아앙!', '그오오!', '쿠오오!', '크롸앙!', '구오옹!']];
+const sizeTier = sp => { const h = (SPECIES[sp]?.h ?? 7) / 10; return h < .6 ? 0 : h < 1.5 ? 1 : 2; };
+function shoutOf(sp) {
+  const d = SPECIES[sp], ty = (d?.t || []).find(x => SHOUT_T[x]), L = (ty && sp % 3 !== 0) ? SHOUT_T[ty] : SHOUT_S[sizeTier(sp)];
+  return L[(sp * 7) % L.length];
+}
+// 울음소리 파일이 없을 때 대신 내는 짧은 도트 울음 (작을수록 높게)
+function cryChirp(sp) {
+  if (!sfxOn) return; const a = audio(); if (!a) return; const t = a.currentTime + .01, z = sizeTier(sp), b = [880, 440, 196][z] * (1 + (sp % 5) * .06);
+  tone(b, t, .09, { vol: .06, to: b * 1.5 }); tone(b * 1.4, t + .11, .16, { vol: .06, to: b * .8, steps: 4 });
+}
+// 기술 효과음 (타입별)
+function mvSnd(ty) {
+  if (!sfxOn) return; const a = audio(); if (!a) return; const t = a.currentTime + .05;
+  const hit = (d, f = 180) => { noise(t + d, .09, .16, 500); tone(f, t + d, .1, { vol: .07, to: f * .4 }); };
+  switch (ty) {
+    case 2: for (let i = 0; i < 4; i++) hit(i * .12, 160); break;
+    case 3: for (let i = 0; i < 4; i++) noise(t + i * .12, .35, .06, 1800 + i * 400); tone(500, t, .6, { type: 'triangle', vol: .04, to: 1100 }); break;
+    case 4: for (let i = 0; i < 9; i++) tone(300 + Math.random() * 500, t + i * .09, .05, { type: 'triangle', vol: .05, to: 700 + Math.random() * 300 }); break;
+    case 5: noise(t, .5, .2, 150); tone(70, t, .5, { type: 'sawtooth', vol: .06, to: 45 }); break;
+    case 6: for (let i = 0; i < 4; i++) { tone(900, t + i * .16, .12, { type: 'triangle', vol: .03, to: 300 }); hit(i * .16 + .45, 120); } break;
+    case 7: tone(180, t, .4, { type: 'sawtooth', vol: .035, to: 240, steps: 10 }); noise(t + .1, .08, .12, 3000); noise(t + .26, .08, .12, 3000); break;
+    case 8: tone(620, t, .9, { type: 'triangle', vol: .05, to: 280, steps: 8 }); tone(180, t + .95, .3, { vol: .05, to: 90 }); break;
+    case 9: for (let i = 0; i < 3; i++) { tone(1760, t + i * .12, .08, { vol: .04 }); tone(2637, t + i * .12, .12, { type: 'triangle', vol: .04 }); noise(t + i * .12, .05, .08, 4000); } break;
+    case 10: noise(t, .5, .16, 700); for (let i = 0; i < 6; i++) noise(t + .05 + i * .08, .03, .1, 3000); tone(140, t, .5, { type: 'sawtooth', vol: .03, to: 90 }); break;
+    case 11: noise(t, .45, .08, 2500); for (let i = 0; i < 6; i++) tone(900 - i * 60, t + i * .07, .06, { type: 'triangle', vol: .05, to: 400 }); break;
+    case 12: noise(t, .5, .07, 3500); for (let i = 0; i < 5; i++) tone(700 + i * 120, t + i * .08, .04, { type: 'triangle', vol: .04 }); break;
+    case 13: for (let k = 0; k < 2; k++) { tone(1400, t + k * .38, .14, { vol: .06, to: 180, steps: 6 }); noise(t + k * .38 + .1, .25, .2, 2500); } break;
+    case 14: for (let i = 0; i < 4; i++) tone(380 + i * 90, t + i * .22, .4, { type: 'sine', vol: .07, to: 760 + i * 90 }); break;
+    case 15: [2093, 2637, 3136, 2637, 3520].forEach((f, i) => tone(f, t + i * .07, .12, { type: 'triangle', vol: .04 })); noise(t, .4, .05, 6000); break;
+    case 16: tone(110, t, .6, { type: 'sawtooth', vol: .06, to: 240, steps: 6 }); noise(t, .6, .12, 400); break;
+    case 17: noise(t, .12, .16, 2500); noise(t + .2, .12, .16, 2500); tone(90, t + .3, .35, { type: 'sawtooth', vol: .05, to: 60 }); break;
+    case 18: [1047, 1319, 1568, 2093, 1568, 2093].forEach((f, i) => tone(f, t + i * .08, .1, { type: 'triangle', vol: .045 })); break;
+    default: for (let i = 0; i < 3; i++) hit(i * .14, 200);
+  }
+}
 function sfx(name, k = 0) {
   if (!sfxOn) return; const a = audio(); if (!a) return;
   const t = a.currentTime + .01;
@@ -4470,10 +4508,11 @@ mgrDet.addEventListener('click', e => { const c = e.target.closest('button.mvchi
 function useMove(m, i = 0) {
   const L = movesOf(m.sp); if (!L.length || !awake(m) || m.held || m.evolving || m.mvBusy) return false;
   const [name, t] = L[Math.min(i, L.length - 1)];
-  m.mvBusy = true; setTimeout(() => { m.mvBusy = false; }, 1600);
-  strike(m); emote(m, `${name}!`, '', 1.6); sfx(t === 13 ? 'burst' : t === 10 ? 'crack' : 'hop');
+  m.mvBusy = true; setTimeout(() => { m.mvBusy = false; }, 2000);
+  // 먼저 울음소리와 함께 외치고(크앙!), 이어서 기술 연출과 타입별 효과음
+  emote(m, shoutOf(m.sp), '', 1.4); if (cry.have.has(m.sp) && sfxOn) playCry(m.sp); else cryChirp(m.sp); anim(m, 'hop');
   const f = -m.face || 1, o = { x: m.x, y: m.y - m.h * .5 - (m.lift || 0) };
-  setTimeout(() => (MV_FX[t] || MV_FX[1])(o, f, m), 120);
+  setTimeout(() => { if (!S.mons.includes(m)) return; strike(m); mvSnd(t); setTimeout(() => (MV_FX[t] || MV_FX[1])(o, f, m), 120); }, 480);
   const by = watching(m), seen = startle(m, name, by);
   if (!seen && (by || Math.random() < .5)) log(`${J(m,'이/가')} ${J({ name },'을/를')} 썼다!`, [m]);
   return true;
