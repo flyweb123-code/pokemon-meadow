@@ -404,7 +404,8 @@ ol.log li.big .txt{color:#c03838}
 .namerow input:focus{border-bottom-color:var(--frame)}
 .nm-edit span{flex:none;font-size:13px;color:var(--dim)}
 .namerow{margin-top:10px}
-.monpop .dp-pic{height:160px;margin-bottom:0}.monpop .dp-pic img{height:128px;width:auto;max-width:100%}
+.monpop .dp-pic{height:160px;margin-bottom:0;position:relative}
+.st-tag{position:absolute;left:6px;top:6px;z-index:2;font-size:12px;line-height:1;color:var(--win-ink);background:#fff;border:2px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.2);padding:4px 8px}.monpop .dp-pic img{height:128px;width:auto;max-width:100%}
 .namerow small{font-size:12px;color:var(--dim);white-space:nowrap}
 .mgr-detail .sub{margin:6px 0 0;font-size:12px;color:#5c6c5c}
 .mgr-detail .bar .track{border-color:var(--frame)}
@@ -909,7 +910,7 @@ ol.log li.big .txt{color:#c03838}
 </div>
 <div class="dexpop monpop" id="monPop" hidden>
   <div class="win" role="dialog" aria-label="필드 포켓몬">
-    <div class="dp-head"><span>필드</span><button class="opt" id="monClose">닫기</button></div>
+    <div class="dp-head"><span></span><button class="opt" id="monClose">닫기</button></div>
     <section class="mgr-detail" id="mgrDetail" aria-live="polite"></section>
   </div>
 </div>
@@ -1544,7 +1545,7 @@ function arrive(m) {
       if (nb && m.hunger > 40) return moveTo(m, nb, { kind: 'berry', berry: nb }, 1.25);
       return setState(m, 'idle', 1.5);
     }
-    b.eater = m; eatBerry(b); addFr(m.pid, 3);
+    b.eater = m; eatBerry(b); addFr(m.pid, 1);
     setState(m, 'eat', m.sp === 143 ? 5 : 3); emote(m, '냠', 'heart', 2.5);
     if (Math.random() < .45) log(pick([`${J(m,'이/가')} 나무열매를 냠냠 먹었다.`, `${J(m,'이/가')} 열매를 맛있게 먹는다.`]), [m]);
     return;
@@ -3547,7 +3548,7 @@ function renderMgrDetail(rebuild) {
   const d = SPECIES[m.sp], t = T(m);
   if (rebuild || mgrDet.dataset.uid !== String(m.uid)) {
     mgrDet.dataset.uid = m.uid;
-    mgrDet.innerHTML = `<div class="dp-pic" id="mStage"><img alt="" id="mPic"></div>
+    mgrDet.innerHTML = `<div class="dp-pic" id="mStage"><span class="st-tag">필드</span><img alt="" id="mPic"></div>
       <div class="namerow"><label class="nm-edit"><input id="mName" maxlength="8" aria-label="이름 바꾸기" autocomplete="off"><span aria-hidden="true">✎</span></label><small>No.${String(m.sp).padStart(4, '0')}</small></div>
       <p class="sub">${m.name !== d.n ? `${d.n} · ` : ''}${d.g} · ${t.ty}${t.noct ? ' · 야행성' : ''}${d.leg || d.my ? ' · 전설' : ''}</p>
       <p class="sub" id="mIndiv"></p>
@@ -4051,7 +4052,7 @@ function frame(now) {
   tickFlies(now); tickBugs(now, real);
   acc += real; if (acc > .5) { acc = 0; sky(); rotBerries(); }
   infoT -= real; if (infoT <= 0 && S.sel) { infoT = .5; renderInfo(); }
-  S.frAcc += real; if (S.frAcc >= 300) { S.frAcc -= 300; S.mons.forEach(m => addFr(m.pid, 1)); }
+  S.frAcc += real; if (S.frAcc >= 3600) { S.frAcc -= 3600; S.mons.forEach(m => addFr(m.pid, 1)); }
   mgrT -= real; if (mgrT <= 0) { mgrT = .5; refreshCap(); renderMgr(); renderRun();
     if (hatchQ.length && !hatching) playHatch();
     if (S.buds.some(budReady) && !evolving && !hatching && sheet.hidden && !drag) evolveBuddy(); }
