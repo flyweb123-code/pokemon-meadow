@@ -19,6 +19,14 @@
 .run-eggs{padding:2px 0 6px 6px;border-bottom:2px dotted var(--inner)}.run-eggs .re-row{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);margin-top:3px}.re-eggs{display:flex;gap:1px;flex:none}.re-eggs .egg{width:12px;height:15px}.re-eggs .egg svg{width:100%;height:100%}.re-pl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .run-row:has(+.run-eggs){border-bottom:0}
 .dex .here{display:none!important}.filters .fsel{flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+#sheet.off{opacity:0!important;transform:translateX(-300vw)!important}
+html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
+.mgr-two{display:grid;grid-template-columns:1fr 1fr;gap:6px}.mgr-two .lk-btn{min-width:84px;margin:0;justify-content:center;text-align:center}
+.nm-edit{flex:0 1 auto!important;max-width:100%}
+.card .nm-plain{font-size:19px;font-weight:700}.card .ih-top{margin-top:2px;display:flex;align-items:center;gap:4px}.card .dp-head{margin-bottom:2px;min-height:22px}.card .bars{margin-top:6px}
+.card .mvcard{margin-top:8px}
+.mgr-two #mgrRandom,.mgr-two #mgrClear{padding:10px 12px}
 </style>
 <style>
 /* Layout: the meadow fills the window; pixel-RPG windows float over it (clock top-left, menu top-right,
@@ -242,7 +250,7 @@ ol.log li.big .txt{color:#c03838}
 
 .berry{position:absolute;width:14px;height:14px;margin:-12px 0 0 -7px;border-radius:50%;
   background:radial-gradient(circle at 35% 35%,#9fd3ff 0,#3a7fd6 55%,#24539a 100%);box-shadow:0 2px 0 rgba(0,0,0,.25)}
-.berry::after{content:"";position:absolute;width:7px;height:5px;left:6px;top:-4px;border-radius:0 80% 0 80%;background:#3d9a3d}
+
 .berry.red{background:radial-gradient(circle at 35% 35%,#ffb0a8 0,#e2414b 55%,#a2222b 100%)}
 .berry.new{animation:drop .5s cubic-bezier(.3,1.6,.6,1)}
 .berry{touch-action:none;cursor:grab}.berry::before{content:"";position:absolute;inset:-14px;border-radius:50%}
@@ -935,7 +943,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
   <div class="win mgrwin" role="dialog" aria-label="포켓몬">
     <div class="sheet-head"><h3 id="mgrTitle">포켓몬</h3><button class="opt" id="closeMgr">닫기</button></div>
     <div class="mtab" data-t="field">
-      <div class="mgr-tools"><button class="lk-btn main" id="mgrRandom">무작위 12마리</button><button class="lk-btn" id="mgrClear">모두 빼기</button><span class="tcount" id="mgrCap"></span></div>
+      <div class="mgr-tools"><div class="mgr-two"><button class="lk-btn" id="mgrClear">모두 빼기</button><button class="lk-btn main" id="mgrRandom">무작위</button></div><span class="tcount" id="mgrCap"></span></div>
       <div class="mgr-body">
         <div class="slots" id="slots"></div>
       </div>
@@ -1533,7 +1541,7 @@ async function spawn(sp, opts = {}) {
   m.el = el; m.liftEl = el.querySelector('.lift'); m.flipEl = el.querySelector('.flip'); m.act = el.querySelector('.act'); m.img = el.querySelector('img'); m.spr = el.querySelector('.spr'); m.snot = el.querySelector('.snot');
   m.img.src = SPRITES[sp]; m.img.width = m.w; m.img.height = m.h; m.img.alt = m.name; m.img.draggable = false;
   for (const el2 of [m.img, m.spr]) {
-    el2.addEventListener('click', ev => { ev.stopPropagation(); if (performance.now() - suppressClick > 300) select(m); });
+    el2.addEventListener('click', ev => { ev.stopPropagation(); if (performance.now() - suppressClick > 300) select(S.sel === m ? null : m); });
     el2.addEventListener('pointerdown', ev => grab(m, ev));
   }
   setMode(m);
@@ -3150,27 +3158,20 @@ function renderInfo() {
   const box = infoEl, m = S.sel;
   if (!m) { box.hidden = true; box.dataset.uid = ''; return; }
   box.hidden = false;
-  const t = T(m);
+  const t = T(m), d = SPECIES[m.sp], P = boxOf(m.pid);
   if (box.dataset.uid !== String(m.uid)) {
     box.dataset.uid = m.uid;
-    box.innerHTML = `<button class="close" id="pclose" aria-label="닫기">✕</button>
-      <div class="top"><h2 id="pname">${esc(m.name)}${sexHtml(sexOf(m))}</h2><span class="no">No.${String(m.sp).padStart(3, '0')}</span></div>
-      <p class="sub">${SPECIES[m.sp].g} ${tyIcons(m.sp)}${t.noct ? ' · 야행성' : ''}${SPECIES[m.sp].leg || SPECIES[m.sp].my ? ' · 전설' : ''}</p>
-      <p class="sub" id="pIndiv"></p>
-      <div class="mvrow" id="pMoves"></div>
+    // 다른 포켓몬 정보창과 같은 차림: 랭크(좌상단) · 이름/분류/만난 곳 · 기력~친밀도 · 친구/상태/생각
+    box.innerHTML = `<div class="dp-head m-head"><span class="hd-rk">${rkBadge(P)}</span></div>
+      <div class="ihead">${infoHead(P, m.sp, `<span class="nm-plain" id="pname">${esc(m.name)}</span>${sexHtml(sexOf(m))}`, (m.name !== d.n ? `<span class="ih-sp">${esc(d.n)}</span>` : '') + (t.noct ? '<span class="ih-sp">야행성</span>' : '') + (d.leg || d.my ? '<span class="ih-sp">전설</span>' : ''))}</div>
       <div class="bars" id="pbars"></div>
-      <p class="doing" id="pdoing"></p>
-      <div class="card-actions"><button class="opt" id="pfeed">열매 주기</button><button class="opt danger" id="pfree">숲으로 보내기</button></div>`;
-    $('#pclose').onclick = () => select(null);
-    $('#pfeed').onclick = () => feedNear(m);
-    $('#pfree').onclick = () => removeMon(m);
+      <div class="memo" id="pMemo"></div>
+      <div id="pMoves"></div>`;
   }
   $('#pname').textContent = m.name;
-  $('#pdoing').textContent = doingText(m) + (m.form !== m.sp ? ` (${DEX[m.form].n}로 변신 중)` : '');
-  $('#pIndiv').innerHTML = indivHtml(m);
-  { const h = canMove(m) ? '기술 ' + movesHtml(m.sp, true) : '', el = $('#pMoves'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; el.hidden = !h; } }
-  { const f = isFull(m), b = $('#pfeed'); b.disabled = f; b.textContent = f ? '배불러요' : '열매 주기'; }
-  $('#pbars').innerHTML = bar('기력', m.energy, 'var(--hp)') + bar('배부름', 100 - m.hunger, 'var(--hunger)') + bar('외로움', m.social, 'var(--lonely)');
+  $('#pbars').innerHTML = bar('기력', m.energy, 'var(--hp)') + bar('배부름', 100 - m.hunger, 'var(--hunger)') + bar('외로움', m.social, 'var(--lonely)') + (P ? `<div class="bar frbar"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span><span></span></div>` : '');
+  { const h = memoHtml(m), el = $('#pMemo'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
+  { const h = canMove(m) ? moveCard(m.sp, P?.fr || 0, true) : '', el = $('#pMoves'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; el.hidden = !h; } }
 }
 const narrow = matchMedia('(max-width: 760px), (max-height: 500px) and (orientation: landscape)');
 // 홈 화면 앱에서 iOS가 화면 바닥까지 뷰포트를 주지 않으면 그만큼 앱을 아래로 늘린다
@@ -3384,11 +3385,14 @@ function openDex(mode = 'field') { dexMode = mode; sheet.classList.toggle('pick-
 function hideSheets() { sheet.hidden = true; $('#mgr').hidden = true; $('#run').hidden = true; $('#set').hidden = true; $('#shop').hidden = true; }
 function tabTo(el, open) { const was = !el.hidden; closeToggles(); hideSheets(); if (!was) open(); }
 $('#openDex').onclick = () => tabTo(sheet, openDex);
-new MutationObserver(() => { [['#openDex', '#sheet'], ['#openRun', '#run'], ['#openMgr', '#mgr'], ['#openSet', '#set'], ['#sideSet', '#set'], ['#openShop', '#shop']].forEach(([b, w]) => $(b).setAttribute('aria-pressed', !$(w).hidden)); document.body.classList.toggle('sheet-open', ['#sheet', '#run', '#mgr', '#shop'].some(w => !$(w).hidden)); })
-  .observe(document.body, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
+function syncTabs() { [['#openDex', '#sheet'], ['#openRun', '#run'], ['#openMgr', '#mgr'], ['#openSet', '#set'], ['#sideSet', '#set'], ['#openShop', '#shop']].forEach(([b, w]) => $(b).setAttribute('aria-pressed', !$(w).hidden)); document.body.classList.toggle('sheet-open', ['#sheet', '#run', '#mgr', '#shop'].some(w => !$(w).hidden)); }
+new MutationObserver(syncTabs).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
 $('#closeDex').onclick = () => { sheet.hidden = true; };
 // 도감 창이 닫히면 그 위의 카드·필터 창도 닫는다
-new MutationObserver(() => { if (sheet.hidden) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } }).observe(sheet, { attributes: true, attributeFilter: ['hidden'] });
+// 도감 창은 칸이 1000개가 넘어 display 를 껐다 켤 때마다 스타일을 다시 계산하느라 늦게 열렸다
+// → 한 번 그린 채로 두고, 숨길 때는 class 'off'(안 보이게·누를 수 없게)만 바꾼다
+{ let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
+  Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
 const setEl = $('#set');
 $('#openSet').onclick = () => tabTo(setEl, () => { setEl.hidden = false; });
@@ -3530,7 +3534,7 @@ async function openCard(sp, dir = 0) {
   img.src = thumbOf(sp) || ''; img.alt = lock ? '???' : d.n;
   if (!thumbOf(sp)) ensureSprite(sp).then(() => { if (cardSp === sp) img.src = thumbOf(sp); }).catch(() => {});
   $('#dpInfo').innerHTML = lock ? `<div class="dx-top"><span class="dx-no">No.${String(sp).padStart(4, '0')}</span><b>???</b></div><p class="dx-lock">아직 만나지 못한 포켓몬이다.<br>알을 부화시켜 만나 보자.</p>` : dexInfoHtml(sp);
-  const act = $('#dpAct'); act.hidden = lock;
+  const act = $('#dpAct'); act.hidden = lock || dexMode !== 'buddy';
   if (!lock) {
     if (dexMode === 'buddy') { act.textContent = S.buds.some(b => b.sp === sp) ? '이미 짝꿍이에요' : '짝꿍으로 정하기'; act.classList.toggle('off', S.buds.some(b => b.sp === sp)); }
     else { const full = S.mons.length >= MAX_MONS, none = !freePoke(sp); act.textContent = full ? `필드가 꽉 찼어요 (${MAX_MONS}/${MAX_MONS})` : none ? '모두 필드에 나가 있어요' : '필드에 풀어놓기'; act.classList.toggle('off', full || none); }
@@ -3572,7 +3576,6 @@ function updateDexCount() {
 function refreshDexBadges() {
   const cnt = {}; S.mons.forEach(m => cnt[m.sp] = (cnt[m.sp] || 0) + 1);
   const bsp = new Set(S.buds.map(b => b.sp));
-  for (const sp in dexBtns) { const h = dexBtns[sp].querySelector('.here'); const isB = bsp.has(+sp); h.hidden = !cnt[sp] && !isB; h.classList.toggle('bud', isB); h.textContent = isB ? '짝꿍' : cnt[sp] ? `필드 ×${cnt[sp]}` : ''; }
   updateDexCount();
 }
 function filterDex() {
@@ -3581,9 +3584,9 @@ function filterDex() {
   for (const sp in dexBtns) {
     const d = SPECIES[sp];
     const ok = (!q || (!dexLocked(sp) && d.n.includes(q)) || String(+sp) === q.replace(/^0+/, '')) && (!ty || d.t.includes(ty)) && (!gen || d.gen === gen);
-    dexBtns[sp].hidden = !ok; if (ok) shown++;
+    const b = dexBtns[sp]; if (b.hidden !== !ok) b.hidden = !ok; if (ok) shown++;
     // 정렬 '만난 포켓몬 먼저': 만난 종을 번호순으로 앞에, 못 만난 종은 그 뒤에
-    dexBtns[sp].style.order = sortNo ? '' : reg.has(+sp) ? reg.get(+sp) : 5000 + +sp;
+    const o = String(sortNo ? '' : reg.has(+sp) ? reg.get(+sp) : 5000 + +sp); if (b.style.order !== o) b.style.order = o;
   }
   $('#dexEmpty').hidden = shown > 0;
 }
@@ -3747,7 +3750,7 @@ $('#closeMgr').onclick = closeMgr;
 // fill up to six free spots with random species from the dex
 $('#mgrRandom').onclick = async () => {
   const btn = $('#mgrRandom'), free = MAX_MONS - S.mons.length, pool = S.box.filter(p => !onField(p.id));
-  const say = t => { btn.textContent = t; setTimeout(() => btn.textContent = '무작위 12마리', 2200); };
+  const say = t => { btn.textContent = t; setTimeout(() => btn.textContent = '무작위', 2200); };
   if (!pool.length) return say('내보낼 포켓몬이 없어요');
   if (free <= 0) return say('필드가 꽉 찼어요');
   btn.disabled = true; let last = null;
@@ -4137,7 +4140,7 @@ const MV_FX = {
   18: (o, f) => { mvSprite('fairy', o.x, o.y - 40, [[0, 0, .5, 0, 0], [0, -10, 2.2, 90, 1], [f * 120, 0, 2.6, 180, 0]], 1100, 0, 4); for (let i = 0; i < 10; i++) mvSprite('fairy', o.x + rnd(-40, 40), o.y + rnd(-40, 20), [[0, 0, .3, 0, 1], [0, -10, 1.2, 0, 1], [0, -20, .3, 0, 0]], 700, i * 70, 3); },
 };
 // 정보창의 기술 이름을 누르면 바로 쓴다 (필드 상세창에서는 창을 닫고 맵에서)
-infoEl.addEventListener('click', e => { const c = e.target.closest('button.mvchip'); if (c && S.sel && canMove(S.sel)) useMove(S.sel, +c.dataset.mv); });
+infoEl.addEventListener('click', e => { const c = e.target.closest('button.mvchip,button.mvcard'); if (c && S.sel && canMove(S.sel)) useMove(S.sel, +c.dataset.mv); });
 mgrDet.addEventListener('click', e => { const c = e.target.closest('button.mvchip,button.mvcard'); const m = mgrSel; if (!c || !m || !canMove(m)) return; closeMgr(); setTimeout(() => useMove(m, +c.dataset.mv), 300); });
 function useMove(m, i = 0) {
   const L = movesOf(m.sp); if (!L.length || !awake(m) || m.held || m.evolving || m.mvBusy) return false;
