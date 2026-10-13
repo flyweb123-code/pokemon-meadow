@@ -172,7 +172,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
                     DispatchQueue.main.async {
                         let km = (data?.distance?.doubleValue ?? 0) / 1000
                         if km >= 0.5 {
-                            PhoneBridge.shared.enqueueAutoRun(km: km, start: start.timeIntervalSince1970, end: end.timeIntervalSince1970)
+                            PhoneBridge.shared.enqueueRun(km: km, start: start.timeIntervalSince1970, end: end.timeIntervalSince1970, kind: 1)
                         }
                         group.leave()
                     }

@@ -290,6 +290,7 @@ ol.log li.big .txt{color:#c03838}
 .dex .here.bud{background:#e8a020;color:#fff}
 .dex-empty{margin:0;font-size:14px;color:var(--dim)}
 .dexbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 20px;padding-top:10px;font-size:15px}
+.dexbar:has(#dexCount:empty):not(:has(button:not([hidden]))){display:none}
 .dexbar .opt[hidden]{display:none}
 .credit{margin:0;font-size:11px;color:var(--dim)}
 .dexbar #dexCount{margin-right:auto;font-size:14px}
@@ -3680,9 +3681,9 @@ window.pokeRunWalk = (km, place) => {
 // 아이폰 앱: 워치 런닝(watch), 또는 모션 기록에서 찾아낸 달리기(auto, 시작·끝 시각 포함)
 window.pokeRunAddKm = (km, t0, src = 'watch', t1 = 0) => {
   km = Math.round(+km * 100) / 100; if (!(km >= .01 && km <= 100)) return false;
-  t0 = +t0 || 0; t1 = +t1 || 0; src = src === 'auto' ? 'auto' : 'watch';
-  // 자동 기록은 이미 있는 런닝(잠금 런닝·워치)과 시간이 겹치면 건너뛴다
-  if (src === 'auto' && t0 && S.runs.some(r => r.t0 && r.t0 < (t1 || t0) + 60000 && (r.t || r.t0) > t0 - 60000)) return true;
+  t0 = +t0 || 0; t1 = +t1 || 0; src = ['auto', 'health'].includes(src) ? src : 'watch';
+  // 같은 달리기가 여러 길(워치 앱·건강 앱·자동 감지·잠금 런닝)로 들어오면 시간이 겹치는 두 번째부터 건너뛴다
+  if (t0 && S.runs.some(r => r.t0 && r.t0 < (t1 || t0) + 60000 && (r.t || r.t0) > t0 - 60000)) return true;
   applyKm(km); addRun(km, src, t0, t1); return true;
 };
 // 골드: 달리면 1km에 10G, 같은 포켓몬이 또 나오면 알 등급에 따라 받는다

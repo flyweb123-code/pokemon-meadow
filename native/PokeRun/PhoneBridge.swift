@@ -43,23 +43,16 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
 
     // MARK: watch → app
 
-    // 대기열 한 칸: [달린 거리 km, 시작 시각(초, 모르면 0), 끝 시각(초), 자동이면 1]
+    // 대기열 한 칸: [달린 거리 km, 시작 시각(초, 모르면 0), 끝 시각(초), 종류(0 워치, 1 자동 감지, 2 건강 앱)]
     private func pendingRuns() -> [[Double]] {
         let raw = UserDefaults.standard.array(forKey: pendingKey) ?? []
         return raw.compactMap { ($0 as? [Double]) ?? (($0 as? Double).map { [$0, 0] }) }
     }
 
-    private func enqueue(_ km: Double, start: Double) {
+    // 모션 기록에서 찾은 달리기(WalkTracker, kind 1), 건강 앱 운동(HealthSync, kind 2)
+    func enqueueRun(km: Double, start: Double, end: Double, kind: Double) {
         var list = pendingRuns()
-        list.append([km, start])
-        UserDefaults.standard.set(list, forKey: pendingKey)
-        flushPending()
-    }
-
-    // 모션 기록에서 찾은 달리기 (WalkTracker)
-    func enqueueAutoRun(km: Double, start: Double, end: Double) {
-        var list = pendingRuns()
-        list.append([km, start, end, 1])
+        list.append([km, start, end, kind])
         UserDefaults.standard.set(list, forKey: pendingKey)
         flushPending()
     }
@@ -104,7 +97,8 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
         for item in list {
             let km = item[0], startMs = (item.count > 1 ? item[1] : 0) * 1000
             let endMs = (item.count > 2 ? item[2] : 0) * 1000
-            let src = item.count > 3 && item[3] == 1 ? "auto" : "watch"
+            let kind = item.count > 3 ? item[3] : 0
+            let src = kind == 1 ? "auto" : kind == 2 ? "health" : "watch"
             web.evaluateJavaScript("window.pokeRunAddKm(\(km), \(Int(startMs)), '\(src)', \(Int(endMs)))") { [weak self] result, error in
                 // 넣지 못했으면 다시 대기열로
                 if error != nil || (result as? Bool) == false, let self {
@@ -119,7 +113,8 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
     func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
         guard let km = userInfo["km"] as? Double, km > 0 else { return }
         let start = userInfo["start"] as? Double ?? 0
-        DispatchQueue.main.async { self.enqueue(km, start: start) }
+        let end = userInfo["end"] as? Double ?? 0
+        DispatchQueue.main.async { self.enqueueRun(km: km, start: start, end: end, kind: 0) }
     }
 
     // 워치가 열릴 때 최신 알 현황을 바로 달라고 한다
