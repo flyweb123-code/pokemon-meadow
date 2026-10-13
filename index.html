@@ -61,6 +61,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 /* 기본 스크롤 막대는 어디서도 안 보이게 (스크롤은 그대로 된다) */
 *{scrollbar-width:none;-ms-overflow-style:none}*::-webkit-scrollbar{display:none;width:0;height:0}
 #eggTestAll{margin-left:4px}
+.dexinfo.ivinfo .iv-h{display:flex;align-items:center;gap:8px;font-size:15px}.dexinfo.ivinfo .ivs{margin:8px 0 0}
 </style>
 <style>
 /* Layout: the meadow fills the window; pixel-RPG windows float over it (clock top-left, menu top-right,
@@ -4763,11 +4764,11 @@ async function hatchAll() {
   const strip = $('#hlStrip'), fieldBtn = $('#hatchField'), ok = $('#hatchOk');
   strip.innerHTML = res.map((r, k) => `<button data-k="${k}" aria-label="${esc(SPECIES[r.sp].n)}"><img src="${thumbOf(r.sp)}" alt="">${r.isNew ? '<b>N</b>' : ''}</button>`).join('');
   hatchStage.classList.remove('evo', 'tapme'); hatchEl.classList.add('list'); hatchEl.hidden = false;
-  let i = 0;
+  let i = 0, ivMode = false;
   const show = k => {
     i = (k + res.length) % res.length; const r = res[i];
     hatchStage.innerHTML = ''; hatchStage.append(bornImg(r.sp, r.P, r.isNew));
-    $('#hatchMsg').innerHTML = bornMsg(r); showDexInfo(r.sp);
+    $('#hatchMsg').innerHTML = bornMsg(r); showDexInfo(r.sp); if (ivMode) showIvInfo(r);
     $('#hlNum').textContent = `${i + 1} / ${res.length}`;
     { const y = hatchStage.offsetTop + hatchStage.offsetHeight / 2; $('#hlPrev').style.top = $('#hlNext').style.top = y + 'px'; }
     strip.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-current', j === i));
@@ -4781,15 +4782,16 @@ async function hatchAll() {
   hatchStage.onpointerdown = ev => { sx = ev.clientX; };
   hatchStage.onpointerup = ev => { if (sx != null && Math.abs(ev.clientX - sx) > 40) show(i + (ev.clientX < sx ? 1 : -1)); sx = null; };
   fieldBtn.onclick = async () => { const r = res[i]; if (onField(r.P.id) || S.mons.length >= MAX_MONS) return; fieldBtn.hidden = true; const m = await spawn(r.sp, { pid: r.P.id }); m.born = S.clock; save(); refreshCap(); show(i); };
-  ok.hidden = false; ok.textContent = '확인'; const look = $('#hatchLook'); look.hidden = false;
+  // 상태창 보기: 창을 떠나지 않고 도감 정보 칸만 개체값으로 바꿔 본다 (다시 누르면 도감 정보)
+  ok.hidden = false; ok.textContent = '확인'; const look = $('#hatchLook'); look.hidden = false; look.textContent = '상태창 보기';
+  look.onclick = () => { ivMode = !ivMode; look.textContent = ivMode ? '도감 정보' : '상태창 보기'; showDexInfo(res[i].sp); if (ivMode) showIvInfo(res[i]); };
   sfx(res.some(r => r.isNew) ? 'newdex' : 'hatch'); haptic(2);
   show(0);
-  const how = await new Promise(r => { ok.onclick = () => r(); look.onclick = () => r('look'); hatchEl.onclick = ev => { if (!ev.target.closest('.win')) r(); }; });
-  hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; hatchEl.classList.remove('list'); hatchStage.onpointerdown = hatchStage.onpointerup = null; hatching = false;
+  await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = ev => { if (!ev.target.closest('.win')) r(); }; });
+  hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; look.textContent = '상태창 보기'; $('#hatchDex').classList.remove('ivinfo'); hatchEl.classList.remove('list'); hatchStage.onpointerdown = hatchStage.onpointerup = null; hatching = false;
   const nw = res.filter(r => r.isNew).length, sh = res.filter(r => r.P.shiny).length;
   log(`알 ${res.length}개가 한꺼번에 부화했다! ${res.map(r => SPECIES[r.sp].n).join(', ')}${nw ? ` (새로 만난 포켓몬 ${nw}마리)` : ''}${sh ? ` ✦ 색이 다른 포켓몬 ${sh}마리!` : ''}`, [], true);
   save(); renderRun(); refreshCap();
-  if (how === 'look') lookBorn(res[i].P.id);
   if (hatchQ.length) playHatch();
 }
 // 부화·진화 창의 도감 정보: 번호, 이름, 분류, 타입, 키·몸무게, 도감 설명
@@ -4799,7 +4801,9 @@ function dexInfoHtml(sp) {
     + `<div class="dx-meta">${tyIcons(sp)}<span class="hw">키 ${(d.h / 10).toFixed(1)}m · 몸무게 ${(d.w / 10).toFixed(1)}kg</span></div>`
     + (d.fx ? `<p class="dx-fx">${esc(d.fx)}</p>` : '');
 }
-function showDexInfo(sp) { const x = $('#hatchDex'); if (sp == null) { x.hidden = true; x.innerHTML = ''; } else { x.innerHTML = dexInfoHtml(sp); x.hidden = false; } }
+function showIvInfo({ P }) { const x = $('#hatchDex'); x.classList.add('ivinfo'); x.hidden = false;
+  x.innerHTML = `<div class="iv-h">${rkBadge(P)}<b>${esc(nameOf(P))}</b>${sexHtml(P.sex)}${P.shiny ? '<b class="sh">✦</b>' : ''}</div><div class="ivs">${P.iv.map((v, k) => `<span>${IV_N[k]}</span><span class="b"><i class="${v === 31 ? 'max' : ''}" style="width:${Math.round(v / 31 * 100)}%"></i></span><span class="v">${v}</span>`).join('')}</div>`; }
+function showDexInfo(sp) { const x = $('#hatchDex'); x.classList.remove('ivinfo'); if (sp == null) { x.hidden = true; x.innerHTML = ''; } else { x.innerHTML = dexInfoHtml(sp); x.hidden = false; } }
 
 // evolution: white silhouette flickers between the two forms, faster and faster, then a burst
 const veil = document.createElement('div'); veil.className = 'evo-veil';
