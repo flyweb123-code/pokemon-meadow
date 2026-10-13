@@ -52,22 +52,30 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .mapico .b-night{display:none}.boot-night .mapico .b-night{display:block}.boot-night .mapico .b-day{display:none}.mapico.night .b-night{display:block}.mapico.night .b-day{display:none}
 .mapico.night{--win:#1e2340;--inner:#46508a;--frame:#0e1024}
 .mapico[aria-pressed="true"]{background:#ffe27a;box-shadow:inset 0 0 0 3px #ffe27a,inset 0 0 0 5px var(--frame),1px 1px 0 rgba(0,0,0,.35);transform:translate(2px,2px)}
-.shopwin{max-width:560px;max-height:90vh;display:flex;flex-direction:column}
+.shopwin{max-width:560px;height:min(90vh,760px);display:flex;flex-direction:column}
+.shopwin .stab:not([hidden]){flex:1;min-height:0;display:flex;flex-direction:column}
+.shopwin .soon{margin:auto;color:var(--dim);font-size:16px;text-align:center}
+.runtabs.shoptabs{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:10px}
+.bgm-pick{display:grid;grid-template-columns:76px minmax(0,1fr);align-items:center;gap:6px;margin-bottom:10px;font-size:15px}
+.bgm-pick .fsel{width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#bgmPop{z-index:5800}#bgmOpts.fopts{grid-template-columns:1fr}#bgmOpts.fopts button{text-align:left;padding:9px 10px}
+.bgm-note{margin:10px 0 0;font-size:12px;color:var(--dim)}
 .shop-gold{display:inline-flex;align-items:center;gap:6px;font-size:18px}
 .shop-gold b{color:#a86a00}
 .shop-h{margin:4px 0 8px;font-size:16px}
 .shop-inv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;overflow-y:auto;min-height:0;padding:2px}
 .vin{font:inherit;border:3px solid var(--inner);background:#fff;padding:8px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:var(--win-ink);min-width:0;position:relative}
-.vin[aria-current="true"]{border-color:var(--cursor);background:var(--card)}
+.vin[aria-current="true"]{border-color:var(--frame);background:var(--card)}
+.vin.pre{border-color:var(--cursor);background:var(--card);box-shadow:0 0 0 2px var(--cursor)}
 .vpic{position:relative;width:56px;height:56px}.vpic svg{width:100%;height:100%;display:block}
 .vpic .vn{position:absolute;right:-4px;top:-6px;font-style:normal;font-size:16px;color:var(--frame);text-shadow:1px 1px 0 #fff}
-.vin.cur .vpic svg{animation:vspin 1.6s steps(8) infinite}
+.vin.pre .vpic svg{animation:vspin 1.6s steps(8) infinite}
 @keyframes vspin{to{transform:rotate(360deg)}}
 .vin:not(.own) .vpic svg{filter:saturate(.35) brightness(.9)}
 .vin.nofile .vpic{opacity:.45}
 .vname{font-size:11px;line-height:1.3;text-align:center;word-break:keep-all;overflow-wrap:anywhere;min-height:2.6em;display:flex;align-items:center;justify-content:center;width:100%;max-width:100%;padding:0 3px;box-sizing:border-box;overflow:hidden}
 .vtag{font-size:10px;padding:1px 5px;background:var(--frame);color:var(--win)}
-.vin.cur .vtag{background:#e8a020}.vin:not(.own) .vtag{background:#a86a00}
+.vin:not(.own) .vtag{background:#a86a00}
 .shop-bar{display:flex;align-items:center;gap:8px;margin-top:10px;border:3px solid var(--frame);background:var(--card);padding:8px}
 .sb-name{flex:1;min-width:0}.sb-name b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sb-name span{font-size:12px;color:var(--dim)}
 .shop-bar .lk-btn{padding:8px 10px;font-size:13px;flex:none}.shop-bar .lk-btn[disabled]{opacity:.5}
@@ -772,10 +780,14 @@ ol.log li.big .txt{color:#c03838}
 <div class="sheet" id="shop" hidden>
   <div class="win shopwin" role="dialog" aria-label="상점">
     <div class="sheet-head"><h3>상점</h3><span class="shop-gold"><i class="coin" aria-hidden="true"></i><b id="shopGold">0</b>G</span></div>
-    <h4 class="shop-h">배경 음악</h4>
-    <div class="shop-inv" id="shopList"></div>
-    <div class="shop-bar" id="shopBar"></div>
-    <p class="shop-msg" id="shopMsg"></p>
+    <section class="stab" data-st="bgm">
+      <div class="shop-inv" id="shopList"></div>
+      <div class="shop-bar" id="shopBar"></div>
+      <p class="shop-msg" id="shopMsg"></p>
+    </section>
+    <section class="stab" data-st="cloth" hidden><p class="soon">아직 준비중입니다</p></section>
+    <section class="stab" data-st="acc" hidden><p class="soon">아직 준비중입니다</p></section>
+    <div class="runtabs shoptabs" id="shopTabs" role="tablist"><button class="runtab" role="tab" data-st="bgm">배경 음악</button><button class="runtab" role="tab" data-st="cloth">옷</button><button class="runtab" role="tab" data-st="acc">액세서리</button></div>
   </div>
 </div>
 <div class="sheet" id="set" hidden>
@@ -790,6 +802,7 @@ ol.log li.big .txt{color:#c03838}
       <section class="set-sec">
         <h4>소리</h4>
         <p>효과음은 아이폰 무음 모드에서 나지 않아요. 배경 음악은 곡 파일을 한 번 가져와야 나와요(이 기기에만 저장).</p>
+        <div class="bgm-pick"><span class="vol-n">곡</span><button class="fsel" id="bgmPick" aria-haspopup="listbox"></button></div>
         <div class="vol" data-k="bgm"><span class="vol-n">배경 음악</span><button class="vol-b" data-d="-1" aria-label="배경 음악 작게">◀</button><div class="vol-bar" role="slider" aria-label="배경 음악 볼륨" aria-valuemin="0" aria-valuemax="10"></div><button class="vol-b" data-d="1" aria-label="배경 음악 크게">▶</button><b class="vol-v"></b></div>
         <div class="vol" data-k="sfx"><span class="vol-n">효과음</span><button class="vol-b" data-d="-1" aria-label="효과음 작게">◀</button><div class="vol-bar" role="slider" aria-label="효과음 볼륨" aria-valuemin="0" aria-valuemax="10"></div><button class="vol-b" data-d="1" aria-label="효과음 크게">▶</button><b class="vol-v"></b></div>
         <div class="set-btns one"><button class="lk-btn main" id="musicImport">곡 파일 가져오기</button><input type="file" id="musicFile" accept="audio/*,.mp3" multiple hidden></div>
@@ -850,6 +863,9 @@ ol.log li.big .txt{color:#c03838}
   </div>
 </div>
 
+<div class="fpop" id="bgmPop" hidden>
+  <div class="win" role="listbox" aria-label="배경 음악"><h4>배경 음악</h4><div class="fopts bgm-opts" id="bgmOpts"></div><p class="bgm-note">곡은 상점에서 더 살 수 있어요.</p></div>
+</div>
 <div class="fpop" id="fPop" hidden>
   <div class="win" role="listbox" aria-label="필터"><h4 id="fPopT"></h4><div class="fopts" id="fOpts"></div></div>
 </div>
@@ -3073,12 +3089,12 @@ function renderShop() {
   if (!shopSel) shopSel = S.bgm;
   $('#shopList').innerHTML = TRACKS.map(t => {
     const own = S.tracks.includes(t.id), cur = S.bgm === t.id, has = bgm.have.has(t.id);
-    return `<button class="vin${cur ? ' cur' : ''}${own ? ' own' : ''}${has ? '' : ' nofile'}" data-id="${t.id}" aria-current="${shopSel === t.id}"><span class="vpic">${vinylSvg(t.c)}</span><span class="vname">${t.n}</span><span class="vtag">${cur ? '재생 중' : own ? '보유' : `${t.price.toLocaleString()}G`}</span></button>`;
+    return `<button class="vin${bgm.preview === t.id ? ' pre' : ''}${own ? ' own' : ''}${has ? '' : ' nofile'}" data-id="${t.id}" aria-current="${shopSel === t.id}"><span class="vpic">${vinylSvg(t.c)}</span><span class="vname">${t.n}</span><span class="vtag">${own ? '보유 중' : `${t.price.toLocaleString()}G`}</span></button>`;
   }).join('');
   const t = TRACKS.find(x => x.id === shopSel), own = S.tracks.includes(t.id), cur = S.bgm === t.id, pre = bgm.preview === t.id, has = bgm.have.has(t.id);
   $('#shopBar').innerHTML = `<div class="sb-name"><b>${t.n}</b><span>${t.g}${has ? '' : ' · 곡 파일 없음'}</span></div>`
-    + `<button class="lk-btn" data-act="pre" ${has && !cur ? '' : 'disabled'}>${pre ? '■ 그만' : '▶ 듣기'}</button>`
-    + (cur ? `<button class="lk-btn" disabled>재생 중</button>` : own ? `<button class="lk-btn main" data-act="use">선택</button>` : `<button class="lk-btn main" data-act="buy">${t.price.toLocaleString()}G 사기</button>`);
+    + `<button class="lk-btn" data-act="pre" ${has ? '' : 'disabled'}>${pre ? '■ 그만' : '▶ 듣기'}</button>`
+    + (own ? `<button class="lk-btn" disabled>보유 중</button>` : `<button class="lk-btn main" data-act="buy">${t.price.toLocaleString()}G 사기</button>`);
 }
 $('#shopList').addEventListener('click', e => { const v = e.target.closest('[data-id]'); if (!v) return; shopSel = v.dataset.id; $('#shopMsg').textContent = ''; renderShop(); });
 $('#shopBar').addEventListener('click', e => {
@@ -3088,11 +3104,31 @@ $('#shopBar').addEventListener('click', e => {
   else if (act === 'buy') {
     if (S.gold < t.price) { $('#shopMsg').textContent = `골드가 ${(t.price - S.gold).toLocaleString()}G 모자라요.`; sfx('wob'); return; }
     S.gold -= t.price; S.tracks.push(t.id); renderGold(); sfx('newdex');
-    $('#shopMsg').innerHTML = `${J({ name: t.n }, '을/를')} 샀다!`; S.bgm = t.id; bgm.preview = null; bgmStart(); save();
-  } else if (act === 'use') { S.bgm = t.id; bgm.preview = null; bgmStart(); save(); $('#shopMsg').innerHTML = `${J({ name: t.n }, '을/를')} 틀었다.`; }
+    $('#shopMsg').innerHTML = `${J({ name: t.n }, '을/를')} 샀다! 설정에서 배경 음악으로 고를 수 있다.`; save(); renderBgmPick();
+  }
   renderShop();
 });
 new MutationObserver(() => { if (shopEl.hidden && bgm.preview) bgmStopPreview(); }).observe(shopEl, { attributes: true, attributeFilter: ['hidden'] });
+// 상점 하단 탭: 배경 음악 · 옷 · 액세서리 (옷·액세서리는 준비중)
+function setShopTab(t) {
+  document.querySelectorAll('#shopTabs [data-st]').forEach(b => b.setAttribute('aria-selected', b.dataset.st === t));
+  document.querySelectorAll('.shopwin .stab').forEach(x => x.hidden = x.dataset.st !== t);
+  if (t !== 'bgm' && bgm.preview) { bgmStopPreview(); renderShop(); }
+}
+document.querySelectorAll('#shopTabs [data-st]').forEach(b => b.onclick = () => setShopTab(b.dataset.st));
+setShopTab('bgm');
+// 설정 › 소리 › 곡: 가진 곡 중에서 고른다
+function renderBgmPick() { const t = TRACKS.find(x => x.id === S.bgm) || TRACKS[0]; $('#bgmPick').textContent = t.n; }
+$('#bgmPick').onclick = () => {
+  $('#bgmOpts').innerHTML = TRACKS.filter(t => S.tracks.includes(t.id)).map(t => `<button data-id="${t.id}" aria-selected="${S.bgm === t.id}"><i class="sw" style="background:${t.c}"></i>${t.n}${bgm.have.has(t.id) ? '' : ' <small>(곡 파일 없음)</small>'}</button>`).join('');
+  $('#bgmPop').hidden = false;
+};
+$('#bgmPop').addEventListener('click', e => {
+  const o = e.target.closest('[data-id]');
+  if (o) { S.bgm = o.dataset.id; bgm.preview = null; bgmStart(); save(); renderBgmPick(); }
+  if (o || e.target.id === 'bgmPop') $('#bgmPop').hidden = true;
+});
+renderBgmPick(); new MutationObserver(() => { if (!$('#set').hidden) renderBgmPick(); else $('#bgmPop').hidden = true; }).observe($('#set'), { attributes: true, attributeFilter: ['hidden'] });
 $('#musicImport').onclick = () => $('#musicFile').click();
 $('#musicFile').onchange = async e => {
   const files = [...e.target.files]; e.target.value = ''; if (!files.length) return;
