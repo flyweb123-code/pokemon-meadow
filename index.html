@@ -231,7 +231,8 @@ ol.log li.big .txt{color:#c03838}
 .mgrwin{max-width:980px;height:min(88vh,720px);display:flex;flex-direction:column}
 .sheet-head .cap{font-size:16px;font-weight:400;margin-left:10px;color:var(--dim)}
 .sheet-head .cap b{color:var(--win-ink)}
-.mgr-tools{display:flex;justify-content:flex-start;align-items:center;margin:0 0 12px}
+.mgr-tools{display:flex;flex-wrap:wrap;justify-content:flex-start;align-items:center;gap:8px;margin:0 0 12px}
+.mgr-tools .lk-btn:not(.main){padding:10px 10px;font-size:14px}
 .mgr-tools #reset{margin-left:auto}
 #mgrRandom{padding:10px 18px}
 .mgr-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px}
@@ -534,7 +535,7 @@ ol.runs li span{color:var(--dim)}
 <div class="sheet" id="mgr" hidden>
   <div class="win mgrwin" role="dialog" aria-label="꺼내기">
     <div class="sheet-head"><h3>꺼내기<span class="cap" id="mgrCap"></span></h3><button class="opt" id="closeMgr">닫기</button></div>
-    <div class="mgr-tools"><button class="lk-btn main" id="mgrRandom">무작위 6마리</button></div>
+    <div class="mgr-tools"><button class="lk-btn main" id="mgrRandom">무작위 6마리</button><button class="lk-btn" id="saveCopy">저장 복사</button><button class="lk-btn" id="savePaste">저장 붙여넣기</button></div>
     <div class="mgr-body">
       <div class="slots" id="slots"></div>
       <section class="mgr-detail" id="mgrDetail" aria-live="polite"></section>
@@ -2462,7 +2463,8 @@ function serialize() {
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t })), lockT: S.lockT,
     eggs: S.eggs, unlocked: [...S.unlocked], buddy: S.buddy, buddyKm: S.buddyKm, runs: S.runs, totalKm: S.totalKm, eid: S.eid };
 }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
+let saveFrozen = false;
+function save() { if (saveFrozen) return; try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
   S.lockT = d.lockT || 0; S.eggs = d.eggs || []; S.buddy = d.buddy ?? null; S.buddyKm = d.buddyKm || 0; S.runs = d.runs || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
@@ -2689,6 +2691,23 @@ $('#reset').onclick = async () => {
 // 20 slots, one per resident; the side sheet renames, feeds, puts to bed, wakes or releases the chosen one.
 const mgr = $('#mgr'), slotsEl = $('#slots'), mgrDet = $('#mgrDetail');
 const resetBtn = $('#reset'), resetHome = resetBtn.parentNode;
+// 저장 옮기기: 홈 화면 앱과 Safari, 새 아이콘은 저장 공간이 따로라서 글자로 복사해 옮긴다
+const packSave = () => 'MEADOW1:' + btoa(unescape(encodeURIComponent(JSON.stringify(serialize()))));
+$('#saveCopy').onclick = async () => {
+  save(); const t = packSave(), btn = $('#saveCopy');
+  try { await navigator.clipboard.writeText(t); btn.textContent = '복사했어요!'; }
+  catch (e) { prompt('아래 글자를 모두 복사해 주세요', t); }
+  setTimeout(() => btn.textContent = '저장 복사', 2000);
+};
+$('#savePaste').onclick = async () => {
+  let t = '';
+  try { t = await navigator.clipboard.readText(); } catch (e) { t = prompt('복사한 저장 글자를 붙여넣어 주세요') || ''; }
+  t = t.trim();
+  if (!t.startsWith('MEADOW1:')) { alert('저장 글자가 아니에요. 먼저 다른 곳에서 \'저장 복사\'를 눌러 주세요.'); return; }
+  let d; try { d = JSON.parse(decodeURIComponent(escape(atob(t.slice(8))))); } catch (e) { alert('저장 글자가 깨져 있어요. 다시 복사해 주세요.'); return; }
+  if (!confirm(`지금 초원을 이 저장으로 바꿀까요?\n(포켓몬 ${(d.mons || []).length}마리 · 알 ${(d.eggs || []).length}개 · 도감 ${(d.unlocked || []).length}종)`)) return;
+  saveFrozen = true; localStorage.setItem(KEY, JSON.stringify(d)); location.reload();
+};
 function placeReset() { if (narrow.matches) $('.mgr-tools').append(resetBtn); else resetHome.append(resetBtn); }
 placeReset(); narrow.addEventListener('change', () => { placeReset(); fit(); });
 let mgrSel = null, mgrKey = '', mgrFreeArm = 0, mgrT = 0;
