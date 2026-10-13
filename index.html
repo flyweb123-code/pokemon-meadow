@@ -34,6 +34,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 #hatchMsg .rkline{margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px}
 .mtab[data-t="field"] .mgr-tools{padding:0 4px}#mgrClear{background:#c83838!important;border-color:#7a1c1c!important;color:#fff!important}
 .hearts.frtap{justify-self:start;width:max-content;cursor:pointer}
+.dexpop{-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
 </style>
 <style>
 /* Layout: the meadow fills the window; pixel-RPG windows float over it (clock top-left, menu top-right,
@@ -3698,7 +3699,9 @@ function monStep(dir) { const i = S.mons.indexOf(mgrSel), j = i + dir; if (i < 0
   w.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null; if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { if (e.target.closest('#mPages')) monPage(dx < 0 ? 1 : 0); else monStep(dx < 0 ? 1 : -1); } });
   w.addEventListener('pointercancel', () => { x0 = null; }); }
 $('#monPop').addEventListener('click', e => { if (e.target.closest('.m-dots')) monPage(monPg ? 0 : 1); });
-monPop.addEventListener('click', e => { if (e.target === monPop) closeMon(); });
+// 창 바깥 좌우(화살표 힌트 있는 띠)를 누르면 넘기고, 그 밖의 바깥은 닫는다
+function sideTap(pop, e) { const r = pop.querySelector('.win').getBoundingClientRect(); if (e.clientY < r.top || e.clientY > r.bottom) return 0; return e.clientX < r.left ? -1 : e.clientX > r.right ? 1 : 0; }
+monPop.addEventListener('click', e => { if (e.target !== monPop) return; const d = sideTap(monPop, e); if (d) { const h = $(d < 0 ? '#mHl' : '#mHr'); if (!h.hidden) monStep(d); return; } closeMon(); });
 document.querySelectorAll('#boxSort [data-sort]').forEach(b => b.onclick = () => { boxSort = b.dataset.sort; try { localStorage.setItem('pk-box-sort', boxSort); } catch (e) {} renderBox(); });
 function boxList() {
   const L = S.box.slice();
@@ -3755,7 +3758,7 @@ $('#ppFree').onclick = () => {
   if (nx) openPoke(nx.id); else closePoke();
 };
 function pokeStep(dir) { const L = boxList(), i = L.indexOf(boxOf(pokeId)), j = i + dir; if (j >= 0 && j < L.length) { sfx('tap'); openPoke(L[j].id, dir); } }
-$('#pokePop').addEventListener('click', e => { if (e.target.id === 'pokePop') closePoke(); });
+$('#pokePop').addEventListener('click', e => { if (e.target.id !== 'pokePop') return; const d = sideTap($('#pokePop'), e); if (d) { const h = $(d < 0 ? '#ppHl' : '#ppHr'); if (!h.hidden) pokeStep(d); return; } closePoke(); });
 { let x0 = null, y0 = 0; const w = $('#pokePop .win');
   w.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; x0 = e.clientX; y0 = e.clientY; });
   w.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null; if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) pokeStep(dx < 0 ? 1 : -1); });
