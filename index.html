@@ -4061,9 +4061,11 @@ const GRADE = [null,
 const MAX_EGGS = 15;
 const gradeOf = sp => { const d = SPECIES[sp]; if (d.leg || d.my) return 5; const c = d.cr ?? 45; return c >= 190 ? 1 : c >= 120 ? 2 : c >= 45 ? 3 : 4; };
 const baseOf = sp => { let s = sp; while (SPECIES[s] && SPECIES[s].fr) s = SPECIES[s].fr; return s; };
-const POOL = [[], [], [], [], [], []];
+const POOL = [[], [], [], [], [], []], COMMON = new Set();
 const CHILDREN = {};
 for (const k of Object.keys(SPECIES)) { const sp = +k, d = SPECIES[sp]; if (!d.fr) POOL[gradeOf(sp)].push(sp); else (CHILDREN[d.fr] = CHILDREN[d.fr] || []).push(sp); }
+// 등급마다 포획률이 높은(흔한) 종 1/4 을 골라 둔다 (같으면 번호 앞쪽)
+POOL.forEach(L => L.slice().sort((a, b) => (SPECIES[b].cr ?? 45) - (SPECIES[a].cr ?? 45) || a - b).slice(0, Math.max(1, Math.floor(L.length / 4))).forEach(sp => COMMON.add(sp)));
 const MAX_BUDS = 3;
 // 진화 조건(species ev): 없음 = 달린 거리로 진화, 'fr' = 친밀도도 높아야, 'fr:day/night' = 낮/밤에, 그 밖(돌·통신교환 등) = 거리로는 안 됨. eg 1 암컷만, 2 수컷만
 const FR_EVO = 160;
@@ -4544,7 +4546,7 @@ function themeHint(e) { const ks = eggThemes(e).filter(k => k !== 'night'); if (
 function hatchEgg(e, keep, ask) {
   if (!keep) S.eggs = S.eggs.filter(x => x !== e);
   const pool = POOL[e.g], ths = eggThemes(e).map(k => THEMES[k] || NIGHT), recent = new Set(S.recentHatch || []);
-  // 기본 1, 테마 타입 +12, 서식지 +4, 도감 설명 낱말 +8, 특정 종 +20 (테마 종이 대략 60~70%) → 안 만난 종 ×2.5, 최근 부화한 종 ×0.15 (같은 종이 연달아 나오지 않게)
+  // 기본 1, 테마 타입 +12, 서식지 +4, 도감 설명 낱말 +8, 특정 종 +20 (테마 종이 대략 60~70%) → 등급마다 흔한 종(포획률 상위 1/4)은 ×10 이라 자주 겹친다
   const w = pool.map(sp => {
     const d = SPECIES[sp]; let v = 1;
     for (const th of ths) {
@@ -4553,8 +4555,7 @@ function hatchEgg(e, keep, ask) {
       if (th.fx && d.fx && th.fx.test(d.fx)) v += 8;
       if (th.sp && th.sp.includes(sp)) v += 20;
     }
-    if (!S.unlocked.has(sp)) v *= 2.5;
-    if (recent.has(sp)) v *= .15;
+    if (COMMON.has(sp)) v *= 10;
     return v;
   });
   let r = Math.random() * w.reduce((a, b) => a + b, 0), i = 0;
