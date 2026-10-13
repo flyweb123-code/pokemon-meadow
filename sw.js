@@ -17,6 +17,6 @@ self.addEventListener('fetch', e => {
   if (/\/s\d+\.json$/.test(u.pathname) || /\.png$/.test(u.pathname)) {
     e.respondWith(caches.open(CACHE).then(async c => (await c.match(e.request)) || fetch(e.request).then(r => { if (r.ok) c.put(e.request, r.clone()); return r; })));
   } else if (e.request.mode === 'navigate') {
-    e.respondWith(fetch(e.request).then(r => { caches.open(CACHE).then(c => c.put('index.html', r.clone())); return r; }).catch(() => caches.match('index.html')));
+    e.respondWith(fetch(e.request.url, { cache: 'no-cache' }).then(r => { caches.open(CACHE).then(c => c.put('index.html', r.clone())); return r; }).catch(() => caches.match('index.html')));
   }
 });

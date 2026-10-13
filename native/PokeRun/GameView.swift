@@ -21,7 +21,9 @@ struct GameView: UIViewRepresentable {
         web.scrollView.bounces = false
         web.scrollView.contentInsetAdjustmentBehavior = .never
         bridge.webView = web
-        web.load(URLRequest(url: gameURL))
+        // 패치가 바로 보이도록 서버에 새 버전이 있는지 매번 확인하고 받는다
+        web.load(URLRequest(url: gameURL, cachePolicy: .reloadRevalidatingCacheData))
+        context.coordinator.observeForeground(web)
         return web
     }
 
@@ -30,6 +32,18 @@ struct GameView: UIViewRepresentable {
     final class Coordinator: NSObject, WKNavigationDelegate {
         let bridge: PhoneBridge
         init(bridge: PhoneBridge) { self.bridge = bridge }
+        private var leftAt = Date()
+
+        // 백그라운드에 30분 넘게 있다가 돌아오면 새 버전이 있을 수 있으니 다시 불러온다
+        func observeForeground(_ web: WKWebView) {
+            NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { [weak self] _ in
+                self?.leftAt = Date()
+            }
+            NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self, weak web] _ in
+                guard let self, let web, Date().timeIntervalSince(self.leftAt) > 30 * 60 else { return }
+                web.load(URLRequest(url: gameURL, cachePolicy: .reloadRevalidatingCacheData))
+            }
+        }
 
         func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
             bridge.gameReady = false
