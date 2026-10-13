@@ -39,6 +39,10 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .hatch-btns{display:flex;gap:8px}.hatch-btns .boxbtn{flex:1 1 0;min-width:0}.hatch .boxbtn.white{background:#fff;color:var(--frame)}
 .fopts.two{grid-template-columns:1fr 1fr}.fopts.two button.all{grid-column:auto}.fopts.two button{text-align:center}
 .bag-test{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:0 0 6px}.bag-test [data-g]{font:inherit;font-size:11px;padding:3px 6px;border:2px solid var(--frame);background:#fff;color:var(--win-ink);cursor:pointer}
+.bp-btns.three{grid-template-columns:2fr 1fr 1fr}.lk-btn.del{color:#c03838;border-color:#c03838}.lk-btn.del.arm{background:#c03838;color:#fff}
+.bag-tools-r{display:flex;align-items:center;gap:8px;margin-left:auto}#bagMulti{font:inherit;font-size:12px;padding:4px 8px;border:2px solid var(--frame);background:#fff;color:var(--win-ink);cursor:pointer}#bagMulti[aria-pressed="true"]{background:var(--frame);color:var(--win)}
+.bag-mbar{display:flex;align-items:center;gap:6px;margin:0 0 8px;padding:6px 8px;border:3px solid #c03838;background:#fff;font-size:13px}.bag-mbar .n{flex:1;min-width:0}.bag-mbar button{font:inherit;font-size:12px;padding:5px 8px;border:2px solid var(--frame);background:#fff;color:var(--win-ink);cursor:pointer}.bag-mbar #bagMDel{background:#c03838;border-color:#7a1c1c;color:#fff}.bag-mbar #bagMDel[disabled]{opacity:.45}
+.bslot .chk{position:absolute;top:3px;right:3px;width:16px;height:16px;border:2px solid var(--frame);background:#fff;box-sizing:border-box}.bslot.on .chk{background:#c03838;border-color:#7a1c1c;box-shadow:inset 0 0 0 2px #fff}.bslot.on{border-color:#c03838}
 </style>
 <style>
 /* Layout: the meadow fills the window; pixel-RPG windows float over it (clock top-left, menu top-right,
@@ -983,7 +987,8 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
         <div class="eggs" id="eggs"></div>
       </section>
       <section class="rtab" data-tab="bag">
-        <div class="mgr-tools"><div class="bag-sort" id="bagSort"><button data-sort="new">최신순</button><button data-sort="km">거리순</button><button data-sort="grade">등급순</button></div><span class="tcount" id="bagCount"></span></div>
+        <div class="mgr-tools"><div class="bag-sort" id="bagSort"><button data-sort="new">최신순</button><button data-sort="km">거리순</button><button data-sort="grade">등급순</button></div><span class="bag-tools-r"><span class="tcount" id="bagCount"></span><button id="bagMulti" aria-pressed="false">선택</button></span></div>
+        <div class="bag-mbar" id="bagMBar" hidden><span class="n" id="bagMN"></span><button id="bagMAll">전체 선택</button><button id="bagMDel">버리기</button></div>
         <div class="bag-test"><button id="bagTest" class="test-btn">알 추가 (테스트)</button><span id="bagTestG" hidden></span></div>
         <div class="bag-tabs" id="bagTabs" role="tablist"></div>
         <div class="bag-grid" id="bagGrid"></div>
@@ -1035,7 +1040,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 <div class="bagpop" id="bagPop" hidden>
   <div class="win" role="dialog" aria-label="알 정보">
     <div class="incu-box bag-pick" id="bagPick"></div>
-    <div class="bp-btns"><button class="lk-btn main" id="bagIn">부화기에 넣기</button><button class="lk-btn" id="bagClose">닫기</button></div>
+    <div class="bp-btns three"><button class="lk-btn main" id="bagIn">부화기에 넣기</button><button class="lk-btn del" id="bagDel">버리기</button><button class="lk-btn" id="bagClose">닫기</button></div>
   </div>
 </div>
 <div class="noti" id="noti" hidden>
@@ -4519,7 +4524,7 @@ function eggThemes(e) {
   return [...out];
 }
 const NIGHT = { n: '밤', t: [8, 17], hab: [], fx: /밤|어둠|달/ };
-function themeHint(e) { const ks = eggThemes(e).filter(k => k !== 'night'); if (!ks.length) return ''; const ty = [...new Set(ks.flatMap(k => THEMES[k].t.slice(0, 2)))].slice(0, 3).map(t => TYPE_KO[t]); return `${ty.join('·')} 기운이 느껴진다`; }
+function themeHint(e) { const ks = eggThemes(e).filter(k => k !== 'night'); if (!ks.length) return '어떤 기운인지 잘 모르겠다'; const ty = [...new Set(ks.flatMap(k => THEMES[k].t.slice(0, 2)))].slice(0, 3).map(t => TYPE_KO[t]); return `${ty.join('·')} 기운이 느껴진다`; }
 // keep: 알은 부화기에 그대로 두고, 부화 연출에서 깨질 때 뺀다
 function hatchEgg(e, keep) {
   if (!keep) S.eggs = S.eggs.filter(x => x !== e);
@@ -4792,7 +4797,7 @@ function openRun() { runEl.hidden = false; setRunTab(runTab); renderRun(); }
 $('#openRun').onclick = () => tabTo(runEl, () => { runTab = 'egg'; openRun(); });
 $('#closeRun').onclick = () => { seeBag(); runEl.hidden = true; };
 runEl.addEventListener('click', e => { if (e.target === runEl) runEl.hidden = true; });
-let runTab = 'egg', eggSel = null, bagG = 0, bagSel = null, bagSort = 'new';
+let runTab = 'egg', eggSel = null, bagG = 0, bagSel = null, bagSort = 'new', bagMul = null, delArm = 0;   // bagMul: 여러 개 고르는 중이면 고른 알 id 모음
 try { bagSort = localStorage.getItem('pk-bag-sort') || 'new'; } catch (e) {}
 // 가방을 보고 나가면 NEW 표시를 지운다
 function seeBag() { if (runTab !== 'bag' || runEl.hidden) return; let ch = false; S.bag.forEach(e => { if (e.isNew) { e.isNew = false; ch = true; } }); if (ch) save(); }
@@ -4800,8 +4805,8 @@ function fmtWhen(t) { const d = new Date(t); return `${d.getMonth() + 1}/${d.get
 function renderBag() {
   const hasNew = S.bag.some(e => e.isNew);
   const tb = document.querySelector('.runtab[data-tab="bag"]'); tb.innerHTML = '가방' + (hasNew ? '<i class="dot" aria-label="새 알"></i>' : '');
-  if (runTab !== 'bag') { $('#bagPop').hidden = true; bagSel = null; return; }
-  const sig = [bagG, bagSort, bagSel?.id, S.bag.length, S.bag.filter(e => e.isNew).length, S.eggs.length].join();
+  if (runTab !== 'bag') { $('#bagPop').hidden = true; bagSel = null; bagMul = null; return; }
+  const sig = [bagG, bagSort, bagSel?.id, bagMul ? 'm' + [...bagMul].join('.') : '', delArm, S.bag.length, S.bag.filter(e => e.isNew).length, S.eggs.length].join();
   if (sig === renderBag.sig) return; renderBag.sig = sig;
   $('#bagCount').innerHTML = `전체 <b>${S.bag.length}</b>개`;
   const cnt = g => S.bag.filter(e => !g || e.g === g).length, nw = g => S.bag.some(e => e.isNew && (!g || e.g === g));
@@ -4811,22 +4816,32 @@ function renderBag() {
   if (bagSort === 'km') list.sort((a, b) => (b.km || 0) / GRADE[b.g].km - (a.km || 0) / GRADE[a.g].km || (b.km || 0) - (a.km || 0));
   if (bagSort === 'grade') list.sort((a, b) => b.g - a.g || b.t - a.t);
   if (!S.bag.includes(bagSel)) bagSel = null;
-  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot" data-id="${e.id}" aria-current="${e === bagSel}">${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g)}<span>${GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.split(' ').pop()) : fmtWhen(e.t)}</span></button>`).join('')
+  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot${bagMul?.has(e.id) ? ' on' : ''}" data-id="${e.id}" aria-current="${e === bagSel}">${bagMul ? '<i class="chk"></i>' : ''}${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g)}<span>${GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.split(' ').pop()) : fmtWhen(e.t)}</span></button>`).join('')
     : `<div class="bag-empty">${S.bag.length ? '이 등급 알이 없어요' : '움직이면 알을 주울 수 있어요'}</div>`;
+  $('#bagMulti').setAttribute('aria-pressed', !!bagMul); $('#bagMulti').textContent = bagMul ? '취소' : '선택';
+  $('#bagMBar').hidden = !bagMul;
+  if (bagMul) { $('#bagMN').innerHTML = bagMul.size ? `<b>${bagMul.size}</b>개 골랐어요` : '버릴 알을 골라 주세요'; const d = $('#bagMDel'); d.disabled = !bagMul.size; d.textContent = delArm === 2 ? '정말 버릴까요?' : '버리기'; $('#bagMAll').textContent = list.length && list.every(x => bagMul.has(x.id)) ? '선택 해제' : '전체 선택'; }
   const e = bagSel, full = S.eggs.length >= MAX_EGGS;
   $('#bagPop').hidden = !e;
+  if (e) { $('#bagDel').classList.toggle('arm', delArm === 1); $('#bagDel').textContent = delArm === 1 ? '정말?' : '버리기'; }
   if (e) { $('#bagIn').disabled = full; $('#bagIn').textContent = full ? `부화기가 꽉 찼어요` : '부화기에 넣기'; }
-  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${GRADE[e.g].km}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움<br>주운 곳: ${e.place ? `<b>${esc(e.place)}</b> 근처` : '기록 없음'}${themeHint(e) ? `<br>${themeHint(e)}` : ''}</div></div>`;
+  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${GRADE[e.g].km}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움<br>주운 곳: ${e.place ? `${esc(e.place)} 근처` : '기록 없음'}<br>${themeHint(e)}</div></div>`;
 }
 document.addEventListener('click', ev => {
   const tab = ev.target.closest('#bagTabs [data-g]'); if (tab) { bagG = +tab.dataset.g; renderBag(); return; }
   const sl = ev.target.closest('#bagGrid .bslot');
-  if (sl) { const e = S.bag.find(x => x.id === +sl.dataset.id); bagSel = e === bagSel ? null : e; if (e && e.isNew) { e.isNew = false; save(); } renderBag(); return; }
+  if (sl && bagMul) { const id = +sl.dataset.id; bagMul.has(id) ? bagMul.delete(id) : bagMul.add(id); delArm = 0; const e = S.bag.find(x => x.id === id); if (e && e.isNew) { e.isNew = false; save(); } renderBag(); return; }
+  if (sl) { delArm = 0; const e = S.bag.find(x => x.id === +sl.dataset.id); bagSel = e === bagSel ? null : e; if (e && e.isNew) { e.isNew = false; save(); } renderBag(); return; }
   if (ev.target.closest('#eggAll')) { hatchAll(); return; }
   if (ev.target.closest('#eggHatch') && eggSel && eggSel.km >= eggSel.need && !hatchQ.some(q => q.egg === eggSel)) { const e = eggSel; eggSel = null; hatchEgg(e, true); renderRun(); if (!hatching) playHatch(); return; }
   if (ev.target.closest('#eggOut') && eggSel) { const e = eggSel; if (unincubate(e)) { eggSel = null; renderRun(); } return; }
   const so = ev.target.closest('#bagSort [data-sort]'); if (so) { bagSort = so.dataset.sort; try { localStorage.setItem('pk-bag-sort', bagSort); } catch (x) {} renderBag.sig = ''; renderBag(); return; }
-  if (ev.target.closest('#bagClose') || ev.target.id === 'bagPop') { bagSel = null; renderBag(); return; }
+  if (ev.target.closest('#bagClose') || ev.target.id === 'bagPop') { bagSel = null; delArm = 0; renderBag(); return; }
+  // 알 버리기: 한 번 더 눌러야 버려진다
+  if (ev.target.closest('#bagDel') && bagSel) { if (delArm !== 1) { delArm = 1; renderBag(); return; } const e = bagSel; S.bag = S.bag.filter(x => x !== e); bagSel = null; delArm = 0; save(); renderBag.sig = ''; renderRun(); return; }
+  if (ev.target.closest('#bagMulti')) { bagMul = bagMul ? null : new Set(); bagSel = null; delArm = 0; renderBag(); return; }
+  if (ev.target.closest('#bagMAll') && bagMul) { const ids = S.bag.filter(e => !bagG || e.g === bagG).map(e => e.id), all = ids.length && ids.every(id => bagMul.has(id)); ids.forEach(id => all ? bagMul.delete(id) : bagMul.add(id)); delArm = 0; renderBag(); return; }
+  if (ev.target.closest('#bagMDel') && bagMul?.size) { if (delArm !== 2) { delArm = 2; renderBag(); return; } const n = bagMul.size; S.bag = S.bag.filter(e => !bagMul.has(e.id)); bagMul = null; delArm = 0; save(); renderBag.sig = ''; renderRun(); return; }
   if (ev.target.closest('#bagIn') && bagSel) { const e = bagSel; if (incubate(e)) { bagSel = null; eggSel = S.eggs[S.eggs.length - 1]; renderBag.sig = ''; renderRun(); } }
 });
 function setRunTab(t) {
@@ -4851,7 +4866,7 @@ function renderRun() {
   $('#runTotal').innerHTML = `총 <b>${fmtKm(S.totalKm)}</b>km`;
   if (!S.eggs.includes(eggSel)) eggSel = S.eggs[0] || null;
   const e = eggSel;
-  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? '알이 움직이고 있다!' : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}${e.place ? `<div class="egg-detail">${esc(e.place)} 근처에서 주운 알${themeHint(e) ? `<br>${themeHint(e)}` : ''}</div>` : ''}<div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
+  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? '알이 움직이고 있다!' : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}<div class="egg-detail">${e.place ? `${esc(e.place)} 근처에서 주운 알` : '어디서 주웠는지 기록이 없는 알'}<br>${themeHint(e)}</div><div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
     : '';
   $('#eggCount').innerHTML = `<b>${S.eggs.length}</b>/${MAX_EGGS}`;
   const nReady = S.eggs.filter(x => x.km >= x.need).length, all = $('#eggAll'); all.hidden = nReady < 2; all.textContent = `모두 부화 (${nReady})`;
