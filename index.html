@@ -67,9 +67,15 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 @keyframes hwhite{0%{opacity:0}10%{opacity:1}35%{opacity:1}100%{opacity:0}}
 .hatch>.hwhite.big{animation-duration:2.2s}
 .hatch .win{z-index:1}
-.hatch .win.aura{border-color:#c8961e;animation:aura 1.8s ease-in-out infinite}
-@keyframes aura{0%,100%{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px #f2c84b,0 0 0 3px #ffe9a0,0 0 22px 8px rgba(255,214,90,.8),0 0 60px 22px rgba(255,170,40,.35)}
-50%{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px #f2c84b,0 0 0 3px #fff6d0,0 0 34px 14px rgba(255,226,120,.95),0 0 90px 36px rgba(255,180,50,.5)}}
+.hatch .win.aura{--ac:255,205,80;--ar:1;border-color:rgb(var(--ac));animation:aura 1.8s ease-in-out infinite}
+.hatch .win.aura.a1{--ac:190,200,214;--ar:.3;animation-duration:2.6s}
+.hatch .win.aura.a2{--ac:90,170,255;--ar:.5;animation-duration:2.3s}
+.hatch .win.aura.a3{--ac:176,108,255;--ar:.7;animation-duration:2.1s}
+.hatch .win.aura.a4{--ac:255,138,52;--ar:.85;animation-duration:1.9s}
+.hatch .win.aura.a5{--ac:255,205,80;--ar:1.25}
+@keyframes aura{0%,100%{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 0 3px rgba(var(--ac),.55),0 0 calc(22px * var(--ar)) calc(8px * var(--ar)) rgba(var(--ac),.8),0 0 calc(60px * var(--ar)) calc(22px * var(--ar)) rgba(var(--ac),.35)}
+50%{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 0 3px rgba(var(--ac),.8),0 0 calc(34px * var(--ar)) calc(14px * var(--ar)) rgba(var(--ac),.95),0 0 calc(90px * var(--ar)) calc(36px * var(--ar)) rgba(var(--ac),.5)}}
+.berry.mine::after{content:'♥';position:absolute;left:50%;top:-14px;transform:translateX(-50%);font-size:11px;color:#e04870;text-shadow:0 1px 0 #fff}
 .ehalo{position:absolute;left:50%;top:50%;width:200px;height:200px;margin:-100px 0 0 -100px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,215,90,.8),rgba(255,190,60,.3) 45%,rgba(255,190,60,0) 70%);opacity:0;transform:scale(.4);transition:opacity .3s,transform .3s}
 .ehalo.s1{opacity:.35;transform:scale(.6)}.ehalo.s2{opacity:.6;transform:scale(.85)}.ehalo.s3{opacity:.9;transform:scale(1.1)}
 .bag-mbar #bagMIn{background:var(--frame);color:var(--win)}.bag-mbar #bagMIn[disabled]{opacity:.45}
@@ -1533,11 +1539,37 @@ const ensureSprite = sp => SPRITES[sp] ? Promise.resolve() : loadChunk(Math.floo
 // The few species without one keep their B/W image (a plain data URI string).
 const PSCALE = 2.75;   // 8px 단위 프레임이 정수 px 로 떨어지는 값 (3→2.75)
 const isPmd = sp => typeof SPRITES[sp] === 'object';
-const scaleOf = sp => isPmd(sp) ? (SPRITES[sp].a.Idle[2] >= 40 ? 1.875 : PSCALE) : SCALE;   // big dungeon sprites are drawn 2×
+// 필드 크기: 실제 키로 소(≤0.5m)·중(~1.3m)·대 세 무리로 나눠, 같은 무리는 눈에 보이는 몸 크기가 비슷하게 맞춘다 (2026-10-13)
+const SIZE_T = [46, 58, 74];
+const sizeCls = sp => { const h = SPECIES[parseInt(sp)]?.h ?? 7; return h <= 5 ? 0 : h <= 13 ? 1 : 2; };
+const scaleOf = sp => { const P = SPRITES[sp]; if (!isPmd(sp)) return SCALE * [.85, 1, 1.15][sizeCls(sp)]; if (!P.vh) return P.a.Idle[2] >= 40 ? 1.875 : PSCALE; return Math.max(1.2, Math.min(3.6, SIZE_T[sizeCls(sp)] / P.vh)); };
+// 아틀라스 프레임 사이에 투명한 틈을 넣어 다시 만든다: 확대할 때 옆 프레임의 검은 테두리가 번져 보이던 것 막기.
+// 그러면서 Idle 첫 프레임의 실제로 보이는 몸 크기(vh)를 잰다
+const padded = {};
+function padAtlas(k) {
+  const P = SPRITES[k]; if (!isPmd(k) || P.G != null) return Promise.resolve();
+  return padded[k] || (padded[k] = new Promise(res => {
+    const im = new Image();
+    im.onload = () => {
+      try {
+        const G = 4, A = P.a, names = Object.keys(A), ny = {}; let W = 0, H = 0;
+        for (const n of names) { const a = A[n]; ny[n] = H; H += a[2] + G; W = Math.max(W, a[3] * (a[1] + G)); }
+        const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+        for (const n of names) { const a = A[n]; for (let f = 0; f < a[3]; f++) x.drawImage(im, f * a[1], a[0], a[1], a[2], f * (a[1] + G), ny[n], a[1], a[2]); }
+        const a = A.Idle, d = x.getImageData(0, ny.Idle, a[1], a[2]).data; let t = a[2], b = -1, l = a[1], r = -1;
+        for (let yy = 0; yy < a[2]; yy++) for (let xx = 0; xx < a[1]; xx++) if (d[(yy * a[1] + xx) * 4 + 3] > 40) { t = Math.min(t, yy); b = Math.max(b, yy); l = Math.min(l, xx); r = Math.max(r, xx); }
+        const vh = b >= t ? Math.max(b - t + 1, (r - l + 1) * .8) : 0;
+        P.i = c.toDataURL('image/png'); for (const n of names) A[n][0] = ny[n]; P.G = G; if (vh) P.vh = vh; delete atlasDims[k];
+      } catch (e) { P.G = 0; }
+      res();
+    };
+    im.onerror = () => { P.G = 0; res(); }; im.src = P.i;
+  }));
+}
 const thumbOf = sp => { const s = SPRITES[sp]; return !s ? '' : typeof s === 'string' ? s : s.th; };
 const atlasDims = {};
 function atlasSize(sp) {
-  if (!atlasDims[sp]) { let w = 0, h = 0; for (const k in SPRITES[sp].a) { const a = SPRITES[sp].a[k]; w = Math.max(w, a[1] * a[3]); h = Math.max(h, a[0] + a[2]); } atlasDims[sp] = [w, h]; }
+  if (!atlasDims[sp]) { let w = 0, h = 0; for (const k in SPRITES[sp].a) { const a = SPRITES[sp].a[k]; w = Math.max(w, (a[1] + (SPRITES[sp].G || 0)) * a[3]); h = Math.max(h, a[0] + a[2] + (SPRITES[sp].G || 0)); } atlasDims[sp] = [w, h]; }
   return atlasDims[sp];
 }
 const stillCache = {};
@@ -1557,7 +1589,7 @@ const dims = {};
 function measure(sp) {
   return new Promise(res => {
     if (dims[sp]) return res(dims[sp]);
-    if (isPmd(sp)) { const P = SPRITES[sp], a = P.a.Idle; dims[sp] = { w: a[1], h: a[5] + P.fy }; return res(dims[sp]); }
+    if (isPmd(sp)) return padAtlas(sp).then(() => { const P = SPRITES[sp], a = P.a.Idle; dims[sp] = { w: a[1], h: a[5] + P.fy }; res(dims[sp]); });
     const im = new Image();
     im.onload = () => { dims[sp] = { w: im.naturalWidth, h: im.naturalHeight }; res(dims[sp]); };
     im.onerror = () => { dims[sp] = { w: 48, h: 48 }; res(dims[sp]); };
@@ -1685,7 +1717,7 @@ async function spawn(sp, opts = {}) {
   m.el = el; m.liftEl = el.querySelector('.lift'); m.flipEl = el.querySelector('.flip'); m.act = el.querySelector('.act'); m.img = el.querySelector('img'); m.spr = el.querySelector('.spr'); m.snot = el.querySelector('.snot');
   m.img.src = SPRITES[sp]; m.img.width = m.w; m.img.height = m.h; m.img.alt = m.name; m.img.draggable = false;
   for (const el2 of [m.img, m.spr]) {
-    el2.addEventListener('click', ev => { ev.stopPropagation(); if (performance.now() - suppressClick > 300) select(S.sel === m ? null : m); });
+    el2.addEventListener('click', ev => { ev.stopPropagation(); if (performance.now() - suppressClick > 300) { if (S.tool === 'berry') feedOne(m); else select(S.sel === m ? null : m); } });
     el2.addEventListener('pointerdown', ev => grab(m, ev));
   }
   setMode(m);
@@ -1733,10 +1765,23 @@ const isFull = m => m.hunger <= 5;
 function noticeBerry(b) {
   if (!b) return;
   for (const m of S.mons) {
+    if (b.for && b.for !== m) continue;
     if (!awake(m) || m.held || m.evolving || isFull(m) || T(m).mv === 'swim' || dist(m, b) > 300) continue;
     if (!(m.state === 'idle' || m.state === 'move') || (m.goal?.kind === 'berry' && m.goal.berry !== b && S.berries.includes(m.goal.berry) && dist(m, m.goal.berry) < dist(m, b))) continue;
     emote(m, '!', '', 1); moveTo(m, b, { kind: 'berry', berry: b }, 1.3);
   }
+}
+// 열매를 고른 채 포켓몬을 누르면: 그 포켓몬 바로 앞에 그 포켓몬 몫의 열매를 놓는다 (다른 포켓몬은 안 먹는다)
+function feedOne(m) {
+  setTool('look'); sfx('tap');
+  if (isFull(m)) { emote(m, '배불러'); return; }
+  const tries = [m.face, -m.face].map(f => ({ x: clamp(m.x + f * Math.max(26, m.w * .45), XL + 30, XR - 30), y: clamp(m.y + 4, MIN_Y, MAX_Y) }));
+  const p = T(m).mv === 'swim' ? null : tries.find(q => pondVal(q.x, q.y) >= 1.05);
+  if (!p) {   // 물 위의 포켓몬에게는 바로 던져 준다
+    addFr(m.pid, 1); m.hunger = clamp(m.hunger - BERRY_FILL); emote(m, '♥', 'heart'); log(`${J(m,'이/가')} 던져 준 열매를 받아먹었다.`, [m]); return;
+  }
+  const b = addBerry(p.x, p.y); if (!b) return; b.for = m; b.el.classList.add('mine');
+  if (awake(m) && !m.held && !m.evolving && (m.state === 'idle' || m.state === 'move')) { emote(m, '!', '', 1); moveTo(m, b, { kind: 'berry', berry: b }, 1.3); }
 }
 // 놓은 열매 끌어서 옮기기
 let bdrag = null;
@@ -1767,7 +1812,8 @@ function rotBerries() {
 function nearestBerry(m) {
   let best = null, bd = 1e9;
   // 숲 가장자리에 저절로 떨어진 열매는 꽤 배고플 때만 줍는다 (내가 준 열매는 배가 덜 찼으면 먹는다)
-  for (const b of S.berries) { if (b.nat && m.hunger <= SELF_FEED) continue; const d = dist(m, b); if (d < bd) { bd = d; best = b; } }
+  for (const b of S.berries) { if (b.nat && m.hunger <= SELF_FEED) continue; if (b.for && b.for !== m && S.mons.includes(b.for)) continue;   // 다른 포켓몬 몫으로 준 열매는 건드리지 않는다
+ const d = dist(m, b); if (d < bd) { bd = d; best = b; } }
   return T(m).mv === 'swim' ? null : best;
 }
 
@@ -3040,7 +3086,7 @@ function drawSprite(m, dt) {
   const s = scaleOf(m.sk || m.form), st = m.spr.style;
   st.width = a[1] * s + 'px'; st.height = a[2] * s + 'px';
   st.left = (-a[4] * s) + 'px'; st.top = (-(a[5] + P.fy) * s) + 'px';
-  st.backgroundPosition = `${-f * a[1] * s}px ${-a[0] * s}px`;
+  st.backgroundPosition = `${-f * (a[1] + (P.G || 0)) * s}px ${-a[0] * s}px`;
   if (name === 'Sleep') { m.snot.style.left = (-a[4] * s + a[1] * s * .18) + 'px'; m.snot.style.bottom = (a[2] * s * .35) + 'px'; }
 }
 
@@ -3452,7 +3498,8 @@ stage.addEventListener('click', e => {
     if (y < MIN_Y - 10) return;
     if (pondVal(x, y) < 1.05) { ring(x, y); return; }
     noticeBerry(addBerry(x, y));
-  } else { select(null); if (!dlgEl.classList.contains('folded')) { foldDlg(true); sfx('tap'); } }   // 빈 곳을 누르면 상태창(일지 포함)을 접는다
+  } else if (S.sel) { select(null); sfx('tap'); }   // 포켓몬 정보창이 떠 있으면 그것만 닫는다
+  else if (!dlgEl.classList.contains('folded')) { foldDlg(true); sfx('tap'); }   // 그다음 빈 곳을 누르면 상태창(일지 포함)을 접는다
 });
 
 // ---------- drag and drop ----------
@@ -4779,7 +4826,7 @@ document.addEventListener('pointerdown', e => { const b = e.target.closest('#egg
 ['pointerup', 'pointercancel'].forEach(t => document.addEventListener(t, () => document.querySelectorAll('#eggHatch.press,#eggOut.press').forEach(b => b.classList.remove('press')), true));
 let hatching = false;
 // 부화 창 화면 효과 초기화 (밝기·어둠·후광)
-function hatchFx() { hatchEl.classList.remove('legend'); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); hatchEl.querySelector('.win').classList.remove('aura'); hatchEl.querySelector('.hwhite')?.classList.remove('go', 'big'); }
+function hatchFx() { hatchEl.classList.remove('legend'); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); hatchEl.querySelector('.win').classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5'); hatchEl.querySelector('.hwhite')?.classList.remove('go', 'big'); }
 async function playHatch() {
   if (hatching || !hatchQ.length) return;
   hatching = true;
@@ -4801,7 +4848,7 @@ async function playHatch() {
   hatchStage.querySelector('.flash').classList.add('go'); sfx('pop');
   // 깨지는 순간 화면 전체가 하얗게 → 천천히 원래대로. 전설은 긴장 곡을 멈추고 카드 테두리에 후광
   { const wh = hatchEl.querySelector('.hwhite'), L = g === 5; wh.classList.remove('go', 'big'); void wh.offsetWidth; wh.classList.add('go'); if (L) wh.classList.add('big');
-    setTimeout(() => { hatchEl.classList.remove('legend'); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); if (L) { const w = hatchEl.querySelector('.win'); w.classList.remove('jolt'); w.classList.add('aura'); } }, L ? 500 : 300);
+    setTimeout(() => { hatchEl.classList.remove('legend'); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); { const w = hatchEl.querySelector('.win'); w.classList.remove('jolt'); w.classList.add('aura', 'a' + g); } }, L ? 500 : 300);
     if (L) { tenseStop(.25); setTimeout(() => { if (hatching) bgmDuck(1, 3); }, 3200); } }
   if (src) { S.eggs = S.eggs.filter(x => x !== src); renderBag.sig = ''; renderRun(); }
   hatchStage.querySelectorAll('.shard').forEach(x => { x.style.setProperty('--ec', getComputedStyle(egg).getPropertyValue('--ec')); x.classList.add('go'); });
@@ -4819,7 +4866,7 @@ async function playHatch() {
   // 태어난 포켓몬은 포켓몬 상자로 (필드에는 포켓몬 창에서 내보낸다)
   const how = await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = ev => { if (!ev.target.closest('.win')) r(); }; }); const send = false;
   hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatching = false;
-  if (g === 5) { hatchFx(); bgmDuck(1, 2.5); }
+  hatchFx(); if (g === 5) bgmDuck(1, 2.5);
   if (!send) log(`${GRADE[g].n} 알에서 ${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어나 포켓몬 상자에 들어갔다.`, [], true);
   else if (S.mons.length < MAX_MONS) { runEl.hidden = true; const m = await spawn(sp, { pid: P.id }); m.born = S.clock; select(m); log(`${GRADE[g].n} 알에서 ${P.shiny ? '✦ 색이 다른 ' : ''}${J(m,'이/가')} 태어났다!`, [m], true); }
   else log(`${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났지만 필드가 꽉 차서 포켓몬 상자에 들어갔다.`, [], true);
@@ -4886,6 +4933,7 @@ async function hatchAll() {
     i = (k + res.length) % res.length; const r = res[i];
     hatchStage.innerHTML = ''; hatchStage.append(bornImg(r.sp, r.P, r.isNew)); if (!r.gp) { r.gp = 1; setTimeout(() => goldPop(r.dupG), 250); }
     $('#hatchMsg').innerHTML = bornMsg(r); showDexInfo(r.sp); if (ivMode) showIvInfo(r);
+    { const w = hatchEl.querySelector('.win'); w.classList.remove('a1', 'a2', 'a3', 'a4', 'a5'); w.classList.add('aura', 'a' + r.g); }
     $('#hlNum').textContent = `${i + 1} / ${res.length}`;
     { const y = hatchStage.offsetTop + hatchStage.offsetHeight / 2; $('#hlPrev').style.top = $('#hlNext').style.top = y + 'px'; }
     strip.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-current', j === i));
@@ -4906,7 +4954,7 @@ async function hatchAll() {
   hatchInfoFix(res);
   show(0);
   await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = ev => { if (!ev.target.closest('.win')) r(); }; });
-  hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatchEl.classList.remove('list'); hatchStage.onpointerdown = hatchStage.onpointerup = null; hatching = false;
+  hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatchFx(); hatchEl.classList.remove('list'); hatchStage.onpointerdown = hatchStage.onpointerup = null; hatching = false;
   const nw = res.filter(r => r.isNew).length, sh = res.filter(r => r.P.shiny).length;
   log(`알 ${res.length}개가 한꺼번에 부화했다! ${res.map(r => SPECIES[r.sp].n).join(', ')}${nw ? ` (새로 만난 포켓몬 ${nw}마리)` : ''}${sh ? ` ✦ 색이 다른 포켓몬 ${sh}마리!` : ''}`, [], true);
   save(); renderRun(); refreshCap();
