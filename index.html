@@ -2399,9 +2399,20 @@ const narrow = matchMedia('(max-width: 760px), (max-height: 500px) and (orientat
 function fitBottom() {
   const standalone = navigator.standalone || matchMedia('(display-mode: standalone)').matches;
   const tall = innerHeight > innerWidth ? Math.max(screen.width, screen.height) : Math.min(screen.width, screen.height);
-  const ext = standalone && narrow.matches ? Math.max(0, Math.min(120, tall - innerHeight)) : 0;
+  const lvh = vhPx('100lvh');
+  const ext = standalone && narrow.matches ? Math.max(0, Math.min(120, Math.max(tall, lvh) - innerHeight)) : 0;
   document.documentElement.style.setProperty('--ext', ext + 'px');
 }
+function vhPx(v) { const d = document.createElement('div'); d.style.cssText = `position:fixed;top:0;height:${v};width:1px;visibility:hidden`; document.body.append(d); const h = d.getBoundingClientRect().height; d.remove(); return Math.round(h); }
+function envPx(side) { const d = document.createElement('div'); d.style.cssText = `position:fixed;top:0;height:env(safe-area-inset-${side});width:1px;visibility:hidden`; document.body.append(d); const h = d.getBoundingClientRect().height; d.remove(); return Math.round(h); }
+// 시계를 세 번 빠르게 누르면 화면 크기 정보를 대화창에 보여 준다 (하단 여백 진단용)
+let clockTaps = [];
+$('#clock').addEventListener('click', () => {
+  const now = Date.now(); clockTaps = clockTaps.filter(t => now - t < 800); clockTaps.push(now);
+  if (clockTaps.length < 3) return; clockTaps = [];
+  const a = document.querySelector('.app').getBoundingClientRect(), b = $('#openDex').getBoundingClientRect();
+  $('#dlgNow').textContent = `in ${innerHeight} out ${outerHeight} scr ${screen.height} vv ${Math.round(visualViewport?.height || 0)} doc ${document.documentElement.clientHeight} | vh ${vhPx('100vh')} dvh ${vhPx('100dvh')} lvh ${vhPx('100lvh')} svh ${vhPx('100svh')} | top ${envPx('top')} bot ${envPx('bottom')} | app ${Math.round(a.bottom)} tab ${Math.round(b.bottom)} ext ${getComputedStyle(document.documentElement).getPropertyValue('--ext')} sa ${navigator.standalone}`;
+});
 fitBottom(); addEventListener('resize', fitBottom); addEventListener('orientationchange', () => setTimeout(fitBottom, 300));
 function placeInfo() {
   const m = S.sel; if (!m || infoEl.hidden) return;
@@ -2430,7 +2441,7 @@ function serialize() {
 }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
-  S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html));
+  S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
   S.lockT = d.lockT || 0; S.eggs = d.eggs || []; S.buddy = d.buddy ?? null; S.buddyKm = d.buddyKm || 0; S.runs = d.runs || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
   S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
   for (const o of (d.mons || []).slice(0, MAX_MONS)) { const m = await spawn(o.sp, { ...o, quiet: true }); if (o.asleep) sleep(m, false); }
