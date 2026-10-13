@@ -484,7 +484,7 @@ ol.log li.big .txt{color:#c03838}
 .mvuse.on{border-color:var(--tc);background:color-mix(in srgb,var(--tc) 14%,#fff)}
 .mvuse.on:active{transform:translateY(2px);box-shadow:none}
 .mvuse b{font-weight:700}.mvuse>span:last-child{margin-left:auto;color:var(--dim);font-size:13px}.mvuse.on>span:last-child{color:var(--win-ink)}
-.mvuse:disabled{cursor:default;background:#e4e2da;border-color:#b4b2aa;color:#8e8c86;box-shadow:none}.mvuse:disabled b{color:#8e8c86}.mvuse:disabled>span:last-child{color:#9e9c96}.mvuse:disabled .mv-lock{color:#8e8c86}.mvuse .mv-lock{display:inline-flex;width:16px}
+.mvuse:disabled{cursor:default;background:#e4e2da;border-color:#b4b2aa;color:#8e8c86;box-shadow:none}.mvuse:disabled b{color:#8e8c86}.mvuse:disabled>span:last-child{color:#9e9c96}.mvuse:disabled .mv-lock{color:#8e8c86}.mvuse .mv-lock{display:inline-flex;flex:none;width:16px;height:16px}.mvuse .mv-lock svg{display:block;width:16px;height:16px}.mvuse:disabled{opacity:1}
 .mvchip{display:inline-flex;align-items:center;gap:5px;font:inherit;font-size:13px;color:var(--win-ink);background:#fff;border:2px solid var(--tc);padding:2px 8px 2px 2px;box-shadow:2px 2px 0 rgba(0,0,0,.15)}
 .mvchip i{font-style:normal;font-size:10px;color:#fff;background:var(--tc);padding:1px 4px}
 button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);box-shadow:none}
@@ -4453,7 +4453,7 @@ const MV_FX = {
   18: (o, f) => { mvSprite('fairy', o.x, o.y - 40, [[0, 0, .5, 0, 0], [0, -10, 2.2, 90, 1], [f * 120, 0, 2.6, 180, 0]], 1100, 0, 4); for (let i = 0; i < 10; i++) mvSprite('fairy', o.x + rnd(-40, 40), o.y + rnd(-40, 20), [[0, 0, .3, 0, 1], [0, -10, 1.2, 0, 1], [0, -20, .3, 0, 0]], 700, i * 70, 3); },
 };
 // 정보창의 기술 이름을 누르면 바로 쓴다 (필드 상세창에서는 창을 닫고 맵에서)
-infoEl.addEventListener('click', e => { const c = e.target.closest('button.mvchip,button.mvcard,button.mvuse'); if (c && S.sel && canMove(S.sel)) { userAct(S.sel); useMove(S.sel, +c.dataset.mv); } });
+infoEl.addEventListener('click', e => { const c = e.target.closest('button.mvchip,button.mvcard,button.mvuse'); if (c && S.sel && canMove(S.sel)) { const m = S.sel; userAct(m); if (c.classList.contains('mvuse')) select(null); useMove(m, +c.dataset.mv); } });
 mgrDet.addEventListener('click', e => { const c = e.target.closest('button.mvchip,button.mvcard'); const m = mgrSel; if (!c || !m || !canMove(m)) return; closeMgr(); setTimeout(() => useMove(m, +c.dataset.mv), 300); });
 function useMove(m, i = 0) {
   const L = movesOf(m.sp); if (!L.length || !awake(m) || m.held || m.evolving || m.mvBusy) return false;
@@ -4462,7 +4462,25 @@ function useMove(m, i = 0) {
   strike(m); emote(m, `${name}!`, '', 1.6); sfx(t === 13 ? 'burst' : t === 10 ? 'crack' : 'hop');
   const f = -m.face || 1, o = { x: m.x, y: m.y - m.h * .5 - (m.lift || 0) };
   setTimeout(() => (MV_FX[t] || MV_FX[1])(o, f, m), 120);
-  if (watching(m) || Math.random() < .5) log(`${J(m,'이/가')} ${J({ name },'을/를')} 썼다!`, [m]);
+  const by = watching(m), seen = startle(m, name, by);
+  if (!seen && (by || Math.random() < .5)) log(`${J(m,'이/가')} ${J({ name },'을/를')} 썼다!`, [m]);
+  return true;
+}
+// 기술을 쓰면 가까이 있던 포켓몬들이 깜짝 놀란다: 펄쩍 뛰고 조금 물러나거나, 자다가 깬다
+function startle(m, name, loud) {
+  const near = S.mons.filter(o => o !== m && !o.hidden && !o.held && !o.evolving && o.state !== 'interact' && dist(o, m) < 150 + m.w * .5);
+  if (!near.length) return false;
+  near.forEach((o, k) => setTimeout(() => {
+    if (!S.mons.includes(o) || o.held) return;
+    if (o.state === 'sleep') { wake(o); emote(o, '!!', 'anger'); return; }
+    anim(o, 'hop'); emote(o, pick(['!', '!!', '!?']), '', 1.4); o.goal = null;
+    const d = Math.max(1, dist(o, m)), k2 = 40 + Math.random() * 30;
+    moveTo(o, { x: o.x + (o.x - m.x) / d * k2, y: o.y + (o.y - m.y) / d * k2 * .6 }, { kind: 'flee' }, 1.6);
+  }, 260 + k * 90));
+  if (loud || Math.random() < .5) {
+    const w = near.slice(0, 3), more = near.length > 3 ? ' 등' : '';
+    log(`${J(m,'이/가')} ${J({ name },'을/를')} 쓰자 ${w.map(N).join(', ')}${more}${more || hasBat(w[w.length - 1].name) ? '이' : '가'} 깜짝 놀랐다!`, [m, ...near]);
+  }
   return true;
 }
 let mvAcc = 0;
