@@ -2525,13 +2525,15 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, log: S.log.slice(0, 120),
     mons: S.mons.map(m => ({ uid: m.uid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, asleep: m.state === 'sleep', born: m.born })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t })), lockT: S.lockT,
-    eggs: S.eggs, unlocked: [...S.unlocked], buddy: S.buddy, buddyKm: S.buddyKm, runs: S.runs, totalKm: S.totalKm, eid: S.eid };
+    eggs: S.eggs, unlocked: [...S.unlocked], bud: S.bud, runs: S.runs, totalKm: S.totalKm, eid: S.eid };
 }
 let saveFrozen = false;
 function save() { if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.eggs = d.eggs || []; S.buddy = d.buddy ?? null; S.buddyKm = d.buddyKm || 0; S.runs = d.runs || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
+  S.lockT = d.lockT || 0; S.eggs = d.eggs || []; S.bud = d.bud || null;
+  // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
+  if (!d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.bud = { sp: o.sp, km: d.buddyKm || 0 }; } S.runs = d.runs || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
   S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
   for (const o of [...(d.mons || [])].sort((a, b) => (b.uid === d.buddy) - (a.uid === d.buddy)).slice(0, MAX_MONS)) { const m = await spawn(o.sp, { ...o, quiet: true }); if (o.asleep) sleep(m, false); }
   for (const b of d.berries || []) addBerry(b.x, b.y, false, b.t || Date.now());
@@ -2542,7 +2544,7 @@ async function restore(d) {
 async function fresh() {
   S.base = midnight(); S.clock = realClock(); S.rel = {}; S.log = [];
   logEl.innerHTML = '';
-  S.eggs = []; S.unlocked.clear(); S.buddy = null; S.buddyKm = 0; S.runs = []; S.totalKm = 0; S.eid = 1;
+  S.eggs = []; S.unlocked.clear(); S.bud = null; S.runs = []; S.totalKm = 0; S.eid = 1;
   const e = { id: S.eid++, g: 1, km: 0, need: GRADE[1].km, isNew: true, t: Date.now() }; S.eggs.push(e);
   for (let i = 0; i < 4; i++) { const p = randLand(); addBerry(p.x, p.y); }
   log('초원이 텅 비어 있다. 알을 부화시켜 친구를 만들어 보자.', [], true);
@@ -2725,7 +2727,7 @@ function updateDexCount() {
 }
 function refreshDexBadges() {
   const cnt = {}; S.mons.forEach(m => cnt[m.sp] = (cnt[m.sp] || 0) + 1);
-  const bsp = S.mons.find(m => m.uid === S.buddy)?.sp;
+  const bsp = S.bud?.sp;
   for (const sp in dexBtns) { const h = dexBtns[sp].querySelector('.here'); h.hidden = !cnt[sp]; h.classList.toggle('bud', +sp === bsp); h.textContent = +sp === bsp ? '짝꿍' : cnt[sp] ? `필드 ×${cnt[sp]}` : ''; }
   updateDexCount();
 }
@@ -2878,7 +2880,7 @@ function renderMgrDetail(rebuild) {
     $('#mSleep').onclick = () => toggleSleep(m);
     $('#mFree').onclick = () => {
       if (Date.now() - mgrFreeArm > 3000) { mgrFreeArm = Date.now(); $('#mFree').textContent = '한 번 더 누르면 보냄'; return; }
-      mgrFreeArm = 0; const i = S.mons.indexOf(m); if (S.buddy === m.uid) { S.buddy = null; S.buddyKm = 0; } removeMon(m); mgrSel = S.mons[Math.min(i, S.mons.length - 1)] || null; renderMgr(true); refreshCap();
+      mgrFreeArm = 0; const i = S.mons.indexOf(m); removeMon(m); mgrSel = S.mons[Math.min(i, S.mons.length - 1)] || null; renderMgr(true); refreshCap();
     };
   }
   const pic = $('#mPic'), want = isPmd(m.form) ? thumbOf(m.form) : m.state === 'sleep' ? (stillCache[m.form] || SPRITES[m.form]) : SPRITES[m.form];
@@ -2890,8 +2892,6 @@ function renderMgrDetail(rebuild) {
   const sb = $('#mSleep'), busy = m.hidden || m.state === 'interact' || m.state === 'special';
   sb.textContent = m.state === 'sleep' ? '깨우기' : busy ? '지금은 바쁨' : '재우기'; sb.disabled = m.state !== 'sleep' && busy;
   if (mgrFreeArm && Date.now() - mgrFreeArm > 3000) { mgrFreeArm = 0; $('#mFree').textContent = '숲으로 보내기'; }
-  const isB = S.buddy === m.uid;
-  if (isB) $('#mDoing').textContent += CHILDREN[m.sp] ? ` · 런닝 짝꿍 (진화까지 ${fmtKm(S.buddyKm)}/${evoNeed(m)}km)` : ' · 런닝 짝꿍';
 }
 function renameMon(m, v) {
   const name = v.trim().slice(0, 8) || DEX[m.sp].n;
@@ -2926,9 +2926,10 @@ const baseOf = sp => { let s = sp; while (SPECIES[s] && SPECIES[s].fr) s = SPECI
 const POOL = [[], [], [], [], [], []];
 const CHILDREN = {};
 for (const k of Object.keys(SPECIES)) { const sp = +k, d = SPECIES[sp]; if (!d.fr) POOL[gradeOf(sp)].push(sp); else (CHILDREN[d.fr] = CHILDREN[d.fr] || []).push(sp); }
+const budReady = () => !!S.bud && !!CHILDREN[S.bud.sp] && S.bud.km >= evoNeed(S.bud);
 const evoNeed = m => { const g = gradeOf(baseOf(m.sp)), stage = evoStage(m.sp); return [0, 5, 10, 15, 20, 25][g] * (stage ? 1.5 : 1); };
 const fmtKm = v => (Math.floor(v * 100) / 100).toFixed(2);
-S.eggs = []; S.unlocked = new Set(); S.buddy = null; S.buddyKm = 0; S.runs = []; S.totalKm = 0; S.eid = 1;
+S.eggs = []; S.unlocked = new Set(); S.bud = null; S.runs = []; S.totalKm = 0; S.eid = 1;
 const hatchQ = [];
 
 function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); if (dexBtns[sp]) lockDexBtn(sp); } }
@@ -2944,8 +2945,7 @@ function applyKm(km) {
   if (!(km > 0)) return;
   S.totalKm += km;
   for (const e of [...S.eggs]) { e.km += km; if (e.km >= e.need) hatchEgg(e); }
-  const b = S.mons.find(m => m.uid === S.buddy);
-  if (b && CHILDREN[b.sp]) { S.buddyKm += km; if (S.buddyKm >= evoNeed(b)) b.evoReady = true; }
+  if (S.bud && CHILDREN[S.bud.sp]) S.bud.km += km;
 }
 // 아이폰 앱(워치 연동)에서 열렸을 때: 알 현황을 앱으로 보내고, 워치에서 달린 거리를 받는다
 var nativeT = 0;
@@ -2953,8 +2953,8 @@ function postNative() {
   const h = window.webkit?.messageHandlers?.pokeRun; if (!h) return;
   clearTimeout(nativeT);
   nativeT = setTimeout(() => {
-    const b = S.mons.find(m => m.uid === S.buddy), img = b ? thumbOf(b.form) : '';
-    const buddy = b ? { name: b.name, species: SPECIES[b.sp].n, km: Math.round(S.buddyKm * 100) / 100, need: CHILDREN[b.sp] ? evoNeed(b) : 0, ready: !!b.evoReady, img: img.length < 60000 ? img : '' } : null;
+    const b = S.bud, img = b ? thumbOf(b.sp) || '' : '';
+    const buddy = b ? { name: SPECIES[b.sp].n, species: SPECIES[b.sp].n, km: Math.round(b.km * 100) / 100, need: CHILDREN[b.sp] ? evoNeed(b) : 0, ready: budReady(), img: img.length < 60000 ? img : '' } : null;
     try { h.postMessage({ eggs: S.eggs.map(e => ({ id: e.id, grade: GRADE[e.g].n, km: Math.round(e.km * 100) / 100, need: e.need })), buddy, total: Math.round(S.totalKm * 100) / 100 }); } catch (e) {}
   }, 300);
 }
@@ -2987,12 +2987,12 @@ async function playHatch() {
   const img = document.createElement('img'); img.alt = SPECIES[sp].n; img.src = thumbOf(sp); hatchStage.append(img);
   const isNew = !S.unlocked.has(sp); unlock(sp);
   $('#hatchMsg').innerHTML = `${GRADE[g].n} 알에서 <b>${esc(SPECIES[sp].n)}</b>${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났다!${isNew ? '<br><span class="small">도감에 새로 등록됐다</span>' : ''}`;
-  const ok = $('#hatchOk'); ok.hidden = false; ok.textContent = S.mons.length < MAX_MONS ? '초원으로 보내기' : '확인';
+  const ok = $('#hatchOk'); ok.hidden = false; ok.textContent = S.mons.length < MAX_MONS ? '필드로 보내기' : '확인';
   ok.focus();
   await new Promise(r => ok.onclick = r);
   hatchEl.hidden = true; hatching = false;
   if (S.mons.length < MAX_MONS) { runEl.hidden = true; const m = await spawn(sp); m.born = S.clock; select(m); log(`${GRADE[g].n} 알에서 ${J(m,'이/가')} 태어났다!`, [m], true); }
-  else log(`${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났지만 초원이 꽉 차서 도감에만 등록됐다.`, [], true);
+  else log(`${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났지만 필드가 꽉 차서 도감에만 등록됐다.`, [], true);
   save(); renderRun(); refreshCap();
   if (hatchQ.length) playHatch();
 }
@@ -3022,7 +3022,7 @@ async function evolve(m) {
   for (let i = 0; i < 3; i++) setTimeout(() => ring(m.x, m.y - m.h / 2), i * 180);
   burst(m, 'spark', '✦', 8); anim(m, 'hop');
   if (m.name === oldName || m.name.startsWith(oldName + ' ')) { m.name = m.name.replace(oldName, DEX[to].n); m.tag.textContent = m.name; }
-  unlock(to); S.buddyKm = 0;
+  unlock(to);
   log(`축하해! ${J({ name: oldName },'은/는')} ${J(m,'으로/로')} 진화했다!`, [m], true);
   emote(m, '♪', 'note', 2); m.evolving = false; setState(m, 'idle', 3);
   infoEl.dataset.uid = ''; renderInfo(); evolving = false; save(); setTimeout(() => veil.remove(), 700);
@@ -3096,7 +3096,7 @@ document.querySelectorAll('.runtab').forEach(b => b.onclick = () => setRunTab(b.
 $('#buddy').addEventListener('click', e => {
   const a = e.target.closest('[data-act]')?.dataset.act; if (!a) return;
   if (a === 'pick') { hideSheets(); openDex('buddy'); }
-  else { const m = S.mons.find(x => x.uid === S.buddy); if (m) { toggleBuddy(m); renderRun(); } }
+  else if (S.bud) { log(`${J({ name: SPECIES[S.bud.sp].n },'과/와')} 같이 달리기를 그만뒀다.`); S.bud = null; save(); renderRun(); }
 });
 const EGG_HINT = ['', '초원에서 흔히 보는 포켓몬이 들어 있어요.', '조금 드문 포켓몬이 들어 있어요.', '쉽게 만나기 힘든 포켓몬이 들어 있어요.', '아주 드문 포켓몬이 들어 있어요.', '전설이나 환상의 포켓몬이 들어 있어요!'];
 function renderRun() {
@@ -3118,28 +3118,41 @@ function renderRun() {
     box.append(b);
   }
   $('#drawEgg').disabled = S.eggs.length >= MAX_EGGS;
-  const m = S.mons.find(x => x.uid === S.buddy);
+  const m = S.bud;
+  if (m && !thumbOf(m.sp)) ensureSprite(m.sp).then(renderRun).catch(() => {});
   $('#buddy').innerHTML = !m ? `<button class="bd-empty" data-act="pick"><span class="q">?</span><b>도감에서 짝꿍 고르기</b></button>`
-    : `<div class="bd-card"><div class="bd-top"><div class="bd-pic"><img alt="" src="${thumbOf(m.form)}"></div><div class="bd-name"><b>${esc(m.name)}</b><span>${m.name !== SPECIES[m.sp].n ? `${SPECIES[m.sp].n} · ` : ''}No.${String(m.sp).padStart(4, '0')}</span></div></div>`
-    + (CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, S.buddyKm / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${m.evoReady ? '<span class="bd-tag ready">진화 준비 완료</span>' : '진화까지'}</span><span><b>${fmtKm(S.buddyKm)}</b> / ${evoNeed(m)}km</span></div></div>` : `<div><span class="bd-tag">최종 진화</span></div>`)
+    : `<div class="bd-card"><div class="bd-top"><div class="bd-pic"><img alt="" src="${thumbOf(m.sp) || ''}"></div><div class="bd-name"><b>${esc(SPECIES[m.sp].n)}</b><span>No.${String(m.sp).padStart(4, '0')}</span></div></div>`
+    + (CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady() ? '<span class="bd-tag ready">진화 준비 완료</span>' : '진화까지'}</span><span><b>${fmtKm(m.km)}</b> / ${evoNeed(m)}km</span></div></div>` : `<div><span class="bd-tag">최종 진화</span></div>`)
     + `<div class="bd-btns"><button class="lk-btn" data-act="pick">바꾸기</button><button class="lk-btn" data-act="stop">그만하기</button></div></div>`;
   tickLock();
   $('#runs').innerHTML = S.runs.slice(0, 20).map(r => { const d = new Date(r.t); return `<li>${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')} <span>${r.src === 'gps' ? 'GPS' : r.src === 'watch' ? '워치' : '건강 앱'}</span><b>${fmtKm(r.km)}km</b></li>`; }).join('') || '<li><span>아직 달린 기록이 없어요</span></li>';
 }
 async function setBuddySp(sp) {
-  let m = S.mons.find(x => x.uid === S.buddy && x.sp === sp) || S.mons.find(x => x.sp === sp);
-  if (!m) {
-    if (S.mons.length >= MAX_MONS) { $('#dexCount').textContent = `필드가 꽉 찼어요 (${MAX_MONS}/${MAX_MONS})`; return; }
-    try { m = await spawn(sp); } catch (e) { $('#dexCount').textContent = '그림을 불러오지 못했어요'; return; }
-    refreshCap();
-  }
-  if (S.buddy !== m.uid) { S.buddyKm = 0; S.buddy = m.uid; log(`${J(m,'이/가')} 런닝 짝꿍이 되었다!`, [m], true); emote(m, '♪', 'note'); }
+  if (S.bud?.sp !== sp) { S.bud = { sp, km: 0 }; log(`${J({ name: SPECIES[sp].n },'이/가')} 런닝 짝꿍이 되었다!`, [], true); }
+  try { await ensureSprite(sp); } catch (e) {}
   save(); picked.clear(); sheet.hidden = true; setRunTab('buddy'); openRun();
 }
-function toggleBuddy(m) {
-  if (S.buddy === m.uid) { S.buddy = null; log(`${J(m,'과/와')} 같이 달리기를 그만뒀다.`, [m]); }
-  else { if (S.buddy !== m.uid) S.buddyKm = 0; S.buddy = m.uid; log(`${J(m,'이/가')} 런닝 짝꿍이 되었다! 같이 달리면 진화할지도 모른다.`, [m], true); emote(m, '♪', 'note'); }
-  save(); renderMgr(true);
+// 짝꿍 진화: 필드와 따로, 부화 창에서 보여 준다
+async function evolveBuddy() {
+  const b = S.bud, kids = b && CHILDREN[b.sp]; if (!kids || evolving || hatching) return;
+  evolving = true;
+  const from = b.sp, to = pick(kids), fromN = SPECIES[from].n, toN = SPECIES[to].n;
+  try { await ensureSprite(from); await ensureSprite(to); } catch (e) { evolving = false; return; }
+  [sheet, mgr, runEl, setEl].forEach(x => x.hidden = true);
+  hatchEl.hidden = false; $('#hatchOk').hidden = true; $('#hatchMsg').innerHTML = `어라…? ${J({ name: fromN },'의/의')} 모습이…!`;
+  hatchStage.innerHTML = `<img alt="" src="${thumbOf(from)}"><div class="flash"></div>`;
+  const img = hatchStage.querySelector('img');
+  await wait(900); img.style.filter = 'brightness(0) invert(1)';
+  let gap = 520, now = to;
+  while (gap > 60) { img.src = thumbOf(now); now = now === to ? from : to; await wait(gap); gap *= .84; }
+  hatchStage.querySelector('.flash').classList.add('go'); await wait(300);
+  img.src = thumbOf(to); img.style.filter = '';
+  S.bud = { sp: to, km: 0 }; unlock(to);
+  $('#hatchMsg').innerHTML = `축하해! ${J({ name: fromN },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`;
+  log(`축하해! 짝꿍 ${J({ name: fromN },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`, [], true);
+  const ok = $('#hatchOk'); ok.hidden = false; ok.textContent = '확인'; ok.focus();
+  await new Promise(r => ok.onclick = r);
+  hatchEl.hidden = true; evolving = false; save(); renderRun();
 }
 // the dex only lets you release species you have met
 function lockDexBtn(sp) {
@@ -3166,8 +3179,7 @@ function frame(now) {
   infoT -= real; if (infoT <= 0 && S.sel) { infoT = .5; renderInfo(); }
   mgrT -= real; if (mgrT <= 0) { mgrT = .5; refreshCap(); renderMgr(); renderRun();
     if (hatchQ.length && !hatching) playHatch();
-    const b = S.buddy != null && S.mons.find(x => x.uid === S.buddy);
-    if (b && b.evoReady && !evolving && !hatching && sheet.hidden && !drag) evolve(b); }
+    if (budReady() && !evolving && !hatching && sheet.hidden && !drag) evolveBuddy(); }
   placeInfo(); placeMark();
   saveT -= real; if (saveT <= 0) { saveT = 8; save(); }
   requestAnimationFrame(frame);
