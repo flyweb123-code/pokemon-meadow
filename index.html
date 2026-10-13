@@ -4397,7 +4397,7 @@ window.pokeRunPlaces = (t0, t1, list) => {
   save(); renderRun(); return true;
 };
 // 골드: 달리면 1km에 10G, 같은 포켓몬이 또 나오면 알 등급에 따라 받는다
-const RUN_G = 10, DUP_G = [0, 15, 30, 60, 120, 250];
+const RUN_G = 10, DUP_G = [0, 15, 30, 60, 120, 250], NEW_G = 50;   // NEW_G: 새로 만난 포켓몬(부화·진화)
 function renderGold() { $('#goldN').textContent = S.gold.toLocaleString(); const g = $('#gold'); g.classList.remove('up'); void g.offsetWidth; g.classList.add('up'); if (!$('#shop').hidden) renderShop(); }
 function addGold(n) { n = Math.round(n); if (!(n > 0)) return 0; S.gold += n; renderGold(); return n; }
 function addRun(km, src, t0, t1, eggs) {
@@ -4578,9 +4578,9 @@ function rollEgg(e) {
 // 태어난 포켓몬을 상자에 넣고 도감 등록, 이미 만난 종이면 골드
 function bornPoke({ g, sp, place }) {
   const P = newPoke(sp, { g, place }), isNew = !S.unlocked.has(sp); unlock(sp);
-  return { g, sp, place, P, isNew, dupG: isNew ? 0 : addGold(DUP_G[g]) };
+  return { g, sp, place, P, isNew, dupG: addGold(isNew ? NEW_G : DUP_G[g]) };
 }
-const bornMsg = ({ g, sp, P, isNew, dupG }) => `${GRADE[g].n} 알에서 <b>${esc(SPECIES[sp].n)}</b>${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났다!${isNew ? '' : `<br><span class="small">이미 만난 포켓몬이라 <b>${dupG}G</b>를 받았다</span>`}`
+const bornMsg = ({ g, sp, P, isNew, dupG }) => `${GRADE[g].n} 알에서 <b>${esc(SPECIES[sp].n)}</b>${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났다!<br><span class="small">${isNew ? `새로 만난 포켓몬이라 <b>${dupG}G</b>를 받았다` : `이미 만난 포켓몬이라 <b>${dupG}G</b>를 받았다`}</span>`
   + `<div class="rkline">개체 랭크 <span class="rk ${rankOf(P)}">${rankOf(P)}</span>${P.shiny ? ' <b class="sh">✦ 색이 다른 포켓몬이다!</b>' : ''}</div>`;
 function bornImg(sp, P, isNew) { const w = document.createElement('span'); w.className = 'born-pic'; w.append(bornImgEl(sp, P)); if (isNew) w.insertAdjacentHTML('beforeend', '<b class="born-new">NEW</b>'); return w; }
 function bornImgEl(sp, P) { const img = document.createElement('img'); img.alt = SPECIES[sp].n; img.src = thumbOf(fKey(sp, P.sex)); if (P.shiny) { img.classList.add('shiny'); img.style.setProperty('--shue', shinyHue(sp) + 'deg'); } return img; }
@@ -5004,8 +5004,9 @@ async function evolveBuddy() {
   let step = 0; while (gap > 60) { img.src = thumbOf(now); now = now === to ? from : to; sfx('evotick', step++); await wait(gap); gap *= .84; }
   hatchStage.querySelector('.flash').classList.add('go'); sfx('burst'); await wait(300);
   img.src = thumbOf(to); hatchStage.classList.remove('evo');
+  const newTo = !S.unlocked.has(to); if (newTo) addGold(NEW_G);
   b.sp = to; b.km = 0; unlock(to); { const P = boxOf(b.pid); if (P) P.sp = to; }
-  $('#hatchMsg').innerHTML = `축하해! ${J({ name: fromN },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`; sfx('evolve'); playCry(to, 1.2);
+  $('#hatchMsg').innerHTML = `축하해! ${J({ name: fromN },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!${newTo ? `<br><span class="small">새로 만난 포켓몬이라 <b>${NEW_G}G</b>를 받았다</span>` : ''}`; sfx('evolve'); playCry(to, 1.2);
   log(`축하해! 짝꿍 ${J({ name: fromN },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`, [], true);
   showDexInfo(to);
   const ok = $('#hatchOk'); ok.hidden = false; ok.textContent = '확인'; ok.focus();
