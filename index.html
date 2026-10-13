@@ -3097,7 +3097,7 @@ function renderShop() {
   const own = S.tracks.includes(t.id), cur = S.bgm === t.id, pre = bgm.preview === t.id, has = bgm.have.has(t.id);
   $('#shopBar').innerHTML = `<div class="sb-name"><b>${t.n}</b><span>${t.g}${has ? '' : ' · 곡 파일 없음'}</span></div>`
     + `<button class="lk-btn" data-act="pre" ${has ? '' : 'disabled'}>${pre ? '■ 그만' : '▶ 듣기'}</button>`
-    + (own ? `<button class="lk-btn" disabled>보유 중</button>` : `<button class="lk-btn main" data-act="buy">${t.price.toLocaleString()}G 사기</button>`);
+    + (own ? `<button class="lk-btn" disabled>보유 중</button>` : `<button class="lk-btn main" data-act="buy">구매</button>`);
 }
 $('#shopList').addEventListener('click', e => { const v = e.target.closest('[data-id]'); if (!v) return; shopSel = v.dataset.id; $('#shopMsg').textContent = ''; renderShop(); });
 $('#shopBar').addEventListener('click', e => {
