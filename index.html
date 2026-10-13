@@ -38,8 +38,11 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .win{background:var(--win);border:4px solid var(--frame);box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px var(--inner),6px 6px 0 rgba(0,0,0,.35);padding:14px 20px}
 .win.blue{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px var(--inner-blue),6px 6px 0 rgba(0,0,0,.35)}
 .hud{position:absolute;z-index:20}
-.goldbar{right:170px;top:20px;display:flex;align-items:center;gap:8px}
-.gold{display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:18px}
+.goldbar{right:170px;top:24px;display:flex;align-items:center;gap:8px}
+.berrybar{left:20px;top:92px}
+.gold{display:flex;align-items:center;gap:6px;font-size:20px;color:#fff;text-shadow:2px 0 0 #20202c,-2px 0 0 #20202c,0 2px 0 #20202c,0 -2px 0 #20202c,2px 2px 0 #20202c}
+.gold b{color:#ffd84a!important}
+.gold span{color:#fff!important;font-size:15px!important}
 .gold b{font-variant-numeric:tabular-nums;color:#a86a00}
 .gold span{font-size:13px;color:var(--dim)}
 .gold.up{animation:gup .5s steps(4)}
@@ -48,10 +51,25 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .mapico{width:46px;height:46px;display:grid;place-items:center;border:3px solid var(--frame);background:var(--win);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner),3px 3px 0 rgba(0,0,0,.35);cursor:pointer;padding:0}
 .mapico[aria-pressed="true"]{background:#ffe27a;box-shadow:inset 0 0 0 3px #ffe27a,inset 0 0 0 5px var(--frame),1px 1px 0 rgba(0,0,0,.35);transform:translate(2px,2px)}
 .shopwin{max-width:560px;max-height:90vh;display:flex;flex-direction:column}
-.shop-gold{display:inline-flex;align-items:center;gap:6px;margin-left:12px}
+.shop-gold{display:inline-flex;align-items:center;gap:6px;font-size:18px}
 .shop-gold b{color:#a86a00}
 .shop-h{margin:4px 0 8px;font-size:16px}
-.shop-list{display:grid;gap:8px;overflow-y:auto;min-height:0}
+.shop-inv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;overflow-y:auto;min-height:0;padding:2px}
+.vin{font:inherit;border:3px solid var(--inner);background:#fff;padding:8px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:var(--win-ink);min-width:0;position:relative}
+.vin[aria-current="true"]{border-color:var(--cursor);background:var(--card)}
+.vpic{position:relative;width:56px;height:56px}.vpic svg{width:100%;height:100%;display:block}
+.vpic .vn{position:absolute;right:-4px;top:-6px;font-style:normal;font-size:16px;color:var(--frame);text-shadow:1px 1px 0 #fff}
+.vin.cur .vpic svg{animation:vspin 1.6s steps(8) infinite}
+@keyframes vspin{to{transform:rotate(360deg)}}
+.vin:not(.own) .vpic svg{filter:saturate(.35) brightness(.9)}
+.vin.nofile .vpic{opacity:.45}
+.vname{font-size:11px;line-height:1.3;text-align:center;word-break:keep-all;min-height:2.6em;display:flex;align-items:center}
+.vtag{font-size:10px;padding:1px 5px;background:var(--frame);color:var(--win)}
+.vin.cur .vtag{background:#e8a020}.vin:not(.own) .vtag{background:#a86a00}
+.shop-bar{display:flex;align-items:center;gap:8px;margin-top:10px;border:3px solid var(--frame);background:var(--card);padding:8px}
+.sb-name{flex:1;min-width:0}.sb-name b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sb-name span{font-size:12px;color:var(--dim)}
+.shop-bar .lk-btn{padding:8px 10px;font-size:13px;flex:none}.shop-bar .lk-btn[disabled]{opacity:.5}
+@media (max-width:420px){.shop-inv{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .shop-row{display:flex;align-items:center;gap:10px;border:3px solid var(--inner);background:#fff;padding:10px}
 .shop-row.cur{border-color:var(--frame);background:var(--card)}
 .shop-row .disc{flex:none;width:44px;height:44px;display:grid;place-items:center;background:var(--frame);color:#ffe27a;font-size:22px}
@@ -549,7 +567,8 @@ ol.log li.big .txt{color:#c03838}
     padding:6px 12px;gap:8px;box-shadow:3px 3px 0 rgba(0,0,0,.35)}
   .clockwin .t{font-size:18px}
   .goldbar{grid-area:stage;align-self:start;justify-self:end;z-index:25;margin:calc(env(safe-area-inset-top) + 8px) calc(env(safe-area-inset-right) + 8px) 0 0;flex-direction:column;align-items:flex-end;gap:8px}
-  .gold{padding:5px 10px;font-size:15px;box-shadow:3px 3px 0 rgba(0,0,0,.35)}
+  .gold{font-size:18px}
+  .berrybar{grid-area:stage;align-self:start;justify-self:start;z-index:25;margin:calc(env(safe-area-inset-top) + 60px) 0 0 calc(env(safe-area-inset-left) + 8px)}
   .clockwin .d{font-size:12px}
   .card{grid-row:1;grid-column:1/-1;position:relative;align-self:end;z-index:30;width:auto;margin:0 8px 8px;max-height:62%;overflow-y:auto;left:auto!important;top:auto!important;padding:10px 14px 12px}
   .card .close{position:absolute;right:4px;top:4px;border:0;padding:8px 12px;font-size:16px}
@@ -656,7 +675,10 @@ ol.log li.big .txt{color:#c03838}
   </nav>
 
   <div class="hud goldbar" id="goldbar">
-    <div class="win gold" id="gold" aria-label="골드"><i class="coin" aria-hidden="true"></i><b id="goldN">0</b><span>G</span></div>
+    <div class="gold" id="gold" aria-label="골드"><i class="coin" aria-hidden="true"></i><b id="goldN">0</b><span>G</span></div>
+  </div>
+
+  <div class="hud berrybar">
     <button class="mapico" id="btnBerry" aria-pressed="false" aria-label="열매 주기"><svg viewBox="0 0 12 12" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><path fill="#3a7a2a" d="M6 0h2v1h1v1H7v1H6z"/><path fill="#5aa83a" d="M4 1h2v2H4z"/><path fill="#20202c" d="M3 3h6v1h1v1h1v4h-1v1H9v1H3v-1H2V9H1V5h1V4h1z"/><path fill="#d8344a" d="M3 4h6v1h1v4H9v1H3V9H2V5h1z"/><path fill="#ff7a8a" d="M3 5h2v2H3z"/><path fill="#fff" d="M3 5h1v1H3z"/><path fill="#9a1a30" d="M8 8h1v1H8zM4 9h4v1H4z"/></svg></button>
   </div>
 
@@ -707,9 +729,10 @@ ol.log li.big .txt{color:#c03838}
 
 <div class="sheet" id="shop" hidden>
   <div class="win shopwin" role="dialog" aria-label="상점">
-    <div class="sheet-head"><h3>상점<span class="cap shop-gold"><i class="coin" aria-hidden="true"></i><b id="shopGold">0</b>G</span></h3><button class="opt" id="closeShop">닫기</button></div>
+    <div class="sheet-head"><h3>상점</h3><span class="shop-gold"><i class="coin" aria-hidden="true"></i><b id="shopGold">0</b>G</span></div>
     <h4 class="shop-h">배경 음악</h4>
-    <div class="shop-list" id="shopList"></div>
+    <div class="shop-inv" id="shopList"></div>
+    <div class="shop-bar" id="shopBar"></div>
     <p class="shop-msg" id="shopMsg"></p>
   </div>
 </div>
@@ -724,8 +747,8 @@ ol.log li.big .txt{color:#c03838}
       </section>
       <section class="set-sec">
         <h4>소리</h4>
-        <p>아이폰 무음 모드에서는 소리가 나지 않아요.</p>
-        <div class="set-btns"><button class="lk-btn main" id="bgmToggle">배경 음악 켜짐</button><button class="lk-btn main" id="sfxToggle">효과음 켜짐</button></div>
+        <p>효과음은 아이폰 무음 모드에서 나지 않아요. 배경 음악은 곡 파일을 한 번 가져와야 나와요(이 기기에만 저장).</p>
+        <div class="set-btns"><button class="lk-btn main" id="bgmToggle">배경 음악 켜짐</button><button class="lk-btn main" id="musicImport">곡 파일 가져오기</button><input type="file" id="musicFile" accept="audio/*,.mp3" multiple hidden><button class="lk-btn main" id="sfxToggle">효과음 켜짐</button></div>
       </section>
       <section class="set-sec">
         <h4>초원</h4>
@@ -867,78 +890,72 @@ function sfx(name, k = 0) {
     case 'pickup': tone(NOTE(88), t, .05, { vol: .05 }); tone(NOTE(93), t + .06, .1, { vol: .05 }); break;
   }
 }
-// ---------- 배경 음악: 직접 만든 8비트 곡을 사각파·삼각파·잡음으로 연주한다 ----------
-// 한 곡 = 8마디 × 8칸(8분음표). 멜로디 칸: 숫자 = 음(MIDI), '-' = 앞 음 늘이기, 0 = 쉼.
+// ---------- 배경 음악: 경완이 가진 곡 파일을 이 기기 안(IndexedDB)에 넣어 두고 튼다 ----------
+// 곡 파일은 공개 사이트에 올리지 않는다. 설정 › 소리 › '곡 파일 가져오기'로 한 번 넣으면 이 기기에 남는다.
 const TRACKS = [
-  { id: 'town', n: '초원 마을', d: '느긋한 마을의 아침. 처음부터 가진 곡', price: 0, bpm: 100, lt: 'square', bp: 'soft', dr: 'soft',
-    lead: '67 - 71 - 74 - 72 71 | 69 - - - 67 - - - | 64 - 67 - 71 - 69 67 | 66 - - - - - 0 0 | 67 - 71 - 74 - 76 74 | 72 - 71 - 69 - 67 - | 69 - 71 - 72 - 66 - | 67 - - - - - 0 0',
-    roots: [43, 38, 40, 38, 43, 36, 38, 43] },
-  { id: 'forest', n: '숲속 산책', d: '나뭇잎 사이로 걷는 오후', price: 500, bpm: 112, lt: 'square', bp: 'walk', dr: 'soft',
-    lead: '64 - 67 - 71 - 69 67 | 69 - 71 - 72 - 71 69 | 67 - 69 - 71 - 74 72 | 71 - - - - - 0 0 | 72 - 71 - 69 - 67 - | 69 - 67 - 66 - 64 - | 66 - 67 - 69 - 71 - | 64 - - - - - 0 0',
-    roots: [40, 45, 43, 47, 36, 45, 38, 40] },
-  { id: 'lake', n: '밤의 호숫가', d: '반딧불이 떠다니는 조용한 밤', price: 800, bpm: 76, lt: 'triangle', bp: 'arp', dr: 'none',
-    lead: '76 - - - 74 - 72 - | 71 - - - 69 - - - | 72 - - - 71 - 69 - | 68 - - - - - - - | 69 - 72 - 76 - 74 - | 72 - 71 - 69 - 71 - | 72 - 74 - 71 - 68 - | 69 - - - - - - -',
-    roots: [45, 41, 45, 40, 45, 41, 38, 45] },
-  { id: 'sea', n: '바닷가 모험', d: '파도를 따라 달리는 신나는 곡', price: 1200, bpm: 132, lt: 'square', bp: 'bounce', dr: 'beat',
-    lead: '72 - 72 74 76 - 72 - | 77 - 76 - 74 - 72 - | 74 - 74 76 77 - 74 - | 79 - - - 76 - 0 0 | 81 - 79 - 77 - 76 - | 77 - 76 - 74 - 72 - | 74 - 76 - 77 - 79 - | 84 - - - - - 0 0',
-    roots: [36, 41, 43, 36, 41, 36, 43, 36] },
-  { id: 'fest', n: '축제의 광장', d: '북소리 둥둥, 들뜬 축제 날', price: 1800, bpm: 140, lt: 'square', bp: 'bounce', dr: 'beat',
-    lead: '65 69 72 69 74 - 72 - | 70 - 69 - 67 - 65 - | 67 70 74 70 76 - 74 - | 72 - - - 0 0 0 0 | 77 - 76 - 74 - 72 - | 70 - 72 - 74 - 70 - | 69 - 67 - 69 - 70 - | 65 - - - 0 0 0 0',
-    roots: [41, 34, 36, 41, 38, 34, 36, 41] },
-  { id: 'battle', n: '결전의 시간', d: '두근두근, 강한 상대가 나타났다!', price: 2500, bpm: 160, lt: 'square', bp: 'drive', dr: 'battle',
-    lead: '74 - 74 - 77 - 76 74 | 72 - 74 - 69 - - - | 70 - 70 - 74 - 72 70 | 69 - - - 73 - - - | 74 - 77 - 81 - 79 77 | 76 - 77 - 79 - 76 - | 77 - 76 - 74 - 73 - | 74 - - - - - 0 0',
-    roots: [38, 36, 34, 33, 38, 36, 34, 38] },
+  { id: 'azalea', n: '고동마을·검은먹시티', g: '금·은', price: 0, c: '#d8a040', key: /azalea|blackthorn/i },
+  { id: 'pallet', n: '태초마을', g: '레드·블루', price: 300, c: '#e85050', key: /pallet/i },
+  { id: 'oak', n: '오박사 연구소', g: '레드·블루', price: 300, c: '#a0a0b0', key: /oak/i },
+  { id: 'violet', n: '도라지시티·담청시티', g: '금·은', price: 500, c: '#9a6ad8', key: /violet|olivine/i },
+  { id: 'kanto', n: '상록·회색·블루·노랑시티·홍련섬', g: '금·은', price: 500, c: '#50a060', key: /viridian|pewter|cerulean|cinnabar/i },
+  { id: 'surf1', n: '파도타기 (레드·블루)', g: '레드·블루', price: 800, c: '#4080e0', key: /surfing/i },
+  { id: 'goldenrod', n: '금빛시티', g: '금·은', price: 800, c: '#f0c020', key: /goldenrod/i },
+  { id: 'celadon', n: '무지개시티·연분홍시티', g: '금·은', price: 1000, c: '#e070b0', key: /celadon|fuchsia|fuschia/i },
+  { id: 'ecruteak', n: '인주시티·진청시티', g: '금·은', price: 1000, c: '#c05030', key: /ecruteak|cianwood/i },
+  { id: 'park', n: '자연공원', g: '금·은', price: 1200, c: '#70b040', key: /national.?park/i },
+  { id: 'surf2', n: '파도타기 (금·은)', g: '금·은', price: 1200, c: '#30b0c0', key: /surf.?theme/i },
+  { id: 'lavender', n: '보라타운', g: '금·은', price: 1500, c: '#7050a0', key: /lavender/i },
 ];
-TRACKS.forEach(t => { t.seq = t.lead.replace(/\|/g, ' ').trim().split(/\s+/).map(x => x === '-' ? '-' : +x); });
-const BASS = { soft: [0, '-', 7, '-', 12, '-', 7, '-'], walk: [0, '-', 7, '-', 10, '-', 7, '-'], arp: [0, 7, 12, 7, 0, 7, 12, 7], bounce: [0, '-', 12, '-', 7, '-', 12, '-'], drive: [0, 0, 12, 0, 0, 12, 0, 12] };
-const DRUM = { none: '........', soft: 'k...s...', beat: 'k.h.s.h.', battle: 'kkh.s.hk' };
+const OLD_TRACKS = { forest: 500, lake: 800, sea: 1200, fest: 1800, battle: 2500 };   // 예전 직접 만든 곡: 산 골드는 돌려준다
 let bgmOn = true; try { bgmOn = localStorage.getItem('pk-bgm') !== '0'; } catch (e) {}
-const bgm = { timer: 0, step: 0, next: 0, track: null, preview: null, prevT: 0, gain: null };
-function bgmTone(f, t0, dur, type, vol) {
-  const a = actx, o = a.createOscillator(), g = a.createGain();
-  o.type = type; o.frequency.setValueAtTime(f, t0);
-  g.gain.setValueAtTime(vol, t0); g.gain.setValueAtTime(vol, t0 + dur * .85); g.gain.linearRampToValueAtTime(0, t0 + dur);
-  o.connect(g).connect(bgm.gain); o.start(t0); o.stop(t0 + dur + .02);
+const bgm = { el: new Audio(), id: null, url: '', preview: null, prevT: 0, have: new Set() };
+bgm.el.loop = true; bgm.el.volume = .55; bgm.el.preload = 'auto';
+// IndexedDB: 곡 이름표 → 파일
+function musicDB() {
+  return new Promise((res, rej) => { const r = indexedDB.open('pk-music', 1); r.onupgradeneeded = () => r.result.createObjectStore('t'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
 }
-function bgmDrum(c, t0) {
-  const a = actx;
-  if (c === 'k') { const o = a.createOscillator(), g = a.createGain(); o.type = 'square'; o.frequency.setValueAtTime(150, t0); o.frequency.exponentialRampToValueAtTime(40, t0 + .12); g.gain.setValueAtTime(.09, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + .14); o.connect(g).connect(bgm.gain); o.start(t0); o.stop(t0 + .16); return; }
-  if (!noiseBuf) noise(t0, .001, 0); // 잡음 버퍼 준비
-  const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
-  src.buffer = noiseBuf; f.type = 'highpass'; f.frequency.value = c === 'h' ? 6000 : 1500;
-  const len = c === 'h' ? .04 : .12, vol = c === 'h' ? .035 : .08;
-  g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + len);
-  src.connect(f).connect(g).connect(bgm.gain); src.start(t0); src.stop(t0 + len + .02);
+async function musicDo(mode, fn) { const db = await musicDB(); return new Promise((res, rej) => { const tx = db.transaction('t', mode), st = tx.objectStore('t'); const r = fn(st); tx.oncomplete = () => res(r && r.result); tx.onerror = () => rej(tx.error); }); }
+const musicGet = id => musicDo('readonly', st => st.get(id));
+const musicPut = (id, blob) => musicDo('readwrite', st => st.put(blob, id));
+const musicKeys = () => musicDo('readonly', st => st.getAllKeys());
+musicKeys().then(k => { (k || []).forEach(x => bgm.have.add(x)); if (bgmOn && bgm.id == null) bgmStart(); if (!$('#shop').hidden) renderShop(); }).catch(() => {});
+async function bgmPlay(id) {
+  if (bgm.id === id && bgm.url) { if (bgm.el.paused) bgm.el.play().catch(() => {}); return; }
+  bgm.id = id;
+  let blob = null; try { blob = await musicGet(id); } catch (e) {}
+  if (bgm.id !== id) return;
+  if (bgm.url) URL.revokeObjectURL(bgm.url);
+  bgm.url = blob ? URL.createObjectURL(blob) : '';
+  if (!bgm.url) { bgm.el.pause(); bgm.el.removeAttribute('src'); return; }
+  bgm.el.src = bgm.url; bgm.el.currentTime = 0; bgm.el.play().catch(() => {});
 }
-function bgmStep(t, i, t0) {
-  const sd = 60 / t.bpm / 2, seq = t.seq, n = seq[i];
-  if (typeof n === 'number' && n > 0) { let k = 1; while (seq[(i + k) % 64] === '-' && k < 16) k++; bgmTone(NOTE(n), t0, sd * k * .92, t.lt, t.lt === 'triangle' ? .09 : .045); }
-  const bar = Math.floor(i / 8), j = i % 8, bp = BASS[t.bp], b = bp[j];
-  if (b !== '-') { let k = 1; while (bp[(j + k) % 8] === '-' && j + k < 8) k++; bgmTone(NOTE(t.roots[bar] + b), t0, sd * k * .9, 'triangle', .11); }
-  const dc = DRUM[t.dr][j]; if (dc !== '.') bgmDrum(dc, t0);
-}
-function bgmTick() {
-  const t = bgm.track; if (!t || !actx) return;
-  const sd = 60 / t.bpm / 2;
-  if (bgm.next < actx.currentTime) bgm.next = actx.currentTime + .05;
-  while (bgm.next < actx.currentTime + .3) { bgmStep(t, bgm.step, bgm.next); bgm.next += sd; bgm.step = (bgm.step + 1) % 64; }
-}
-function bgmPlay(id) {
-  const a = audio(); if (!a) return;
-  if (!bgm.gain) { bgm.gain = a.createGain(); bgm.gain.gain.value = .55; bgm.gain.connect(a.destination); }
-  const t = TRACKS.find(x => x.id === id) || TRACKS[0];
-  if (bgm.track !== t) { bgm.track = t; bgm.step = 0; bgm.next = a.currentTime + .1; }
-  if (!bgm.timer) bgm.timer = setInterval(bgmTick, 60);
-  bgmTick();
-}
-function bgmStop() { clearInterval(bgm.timer); bgm.timer = 0; bgm.track = null; }
-function bgmStart() { if (bgm.preview) return; if (bgmOn) bgmPlay(S.bgm || 'town'); else bgmStop(); }
+function bgmStop() { bgm.el.pause(); bgm.id = null; }
+function bgmStart() { if (bgm.preview) return; if (bgmOn) bgmPlay(S.bgm || 'azalea'); else bgmStop(); }
 // 상점 미리 듣기: 15초 듣고 원래 곡으로 돌아간다
 function bgmPreview(id) { bgm.preview = id; clearTimeout(bgm.prevT); bgmPlay(id); bgm.prevT = setTimeout(() => { bgmStopPreview(); if (!$('#shop').hidden) renderShop(); }, 15000); }
-function bgmStopPreview() { bgm.preview = null; clearTimeout(bgm.prevT); bgm.track = null; if (bgmOn) bgmPlay(S.bgm || 'town'); else bgmStop(); }
+function bgmStopPreview() { bgm.preview = null; clearTimeout(bgm.prevT); if (bgmOn) bgmPlay(S.bgm || 'azalea'); else bgmStop(); }
 // 아이폰은 화면을 처음 누를 때 소리를 켤 수 있다. 앱을 내리면 쉬고, 돌아오면 다시 튼다.
-document.addEventListener('pointerdown', () => { if (bgmOn && !bgm.timer) bgmStart(); }, { capture: true, passive: true });
-document.addEventListener('visibilitychange', () => { if (!actx) return; if (document.hidden) actx.suspend(); else actx.resume(); });
+document.addEventListener('pointerdown', () => { if (bgmOn && (bgm.id == null || bgm.el.paused) && !document.hidden) bgmStart(); }, { capture: true, passive: true });
+document.addEventListener('visibilitychange', () => { if (document.hidden) bgm.el.pause(); else if (bgmOn && bgm.url) bgm.el.play().catch(() => {}); if (actx) { if (document.hidden) actx.suspend(); else actx.resume(); } });
+// 곡 파일 가져오기: 파일 이름으로 어느 곡인지 맞춘다
+async function importMusic(files) {
+  let ok = 0; const miss = [];
+  for (const f of files) {
+    const name = f.name.replace(/[_]+/g, ' ');
+    const t = TRACKS.find(x => x.key.test(name));
+    if (!t) { miss.push(f.name); continue; }
+    try { await musicPut(t.id, f); bgm.have.add(t.id); ok++; if (bgm.id === t.id) bgm.id = null; } catch (e) { miss.push(f.name); }
+  }
+  bgmStart();
+  return { ok, miss };
+}
+// 바이닐 아이콘(16×16 도트): 검은 판 + 곡마다 다른 색 라벨 + 음표
+const VINYL = (() => {
+  const px = []; for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) { const d = Math.hypot(x - 7.5, y - 7.5); if (d < 7.6) px.push([x, y, d]); }
+  const path = f => px.filter(f).map(([x, y]) => `M${x} ${y}h1v1h-1z`).join('');
+  return { disc: path(([, , d]) => d >= 3.2 && !(d > 4.9 && d < 5.6)), groove: path(([, , d]) => d > 4.9 && d < 5.6), label: path(([, , d]) => d < 3.2 && d >= 1), hole: path(([, , d]) => d < 1), shine: path(([x, y, d]) => d >= 5.6 && x < 7 && y < 7 && x + y > 4 && x + y < 7) };
+})();
+const vinylSvg = c => `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="${VINYL.disc}" fill="#22222c"/><path d="${VINYL.groove}" fill="#3e3e4e"/><path d="${VINYL.shine}" fill="#5a5a70"/><path d="${VINYL.label}" fill="${c}"/><path d="${VINYL.hole}" fill="#f4f0e0"/></svg><i class="vn">♪</i>`;
 // 버튼·칸을 누르면 짧은 '틱' 소리
 document.addEventListener('click', e => {
   const b = e.target.closest('button,.eslot,.bslot,[role="button"],[role="tab"]'); if (!b || b.disabled) return;
@@ -2821,7 +2838,7 @@ let saveFrozen = false;
 function save() { if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.gold = d.gold || 0; S.tracks = d.tracks || ['town']; S.bgm = d.bgm || 'town'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
+  S.lockT = d.lockT || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
   S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
@@ -2834,7 +2851,7 @@ async function restore(d) {
 async function fresh() {
   S.base = midnight(); S.clock = realClock(); S.rel = {}; S.log = [];
   logEl.innerHTML = '';
-  S.gold = 0; S.tracks = ['town']; S.bgm = 'town'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked.clear(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
+  S.gold = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked.clear(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
   const e = { id: S.eid++, g: 1, km: 0, need: GRADE[1].km, isNew: true, t: Date.now() }; S.eggs.push(e);
   for (let i = 0; i < 4; i++) { const p = randLand(); addBerry(p.x, p.y); }
   log('초원이 텅 비어 있다. 알을 부화시켜 친구를 만들어 보자.', [], true);
@@ -2986,28 +3003,41 @@ const setEl = $('#set');
 $('#openSet').onclick = () => tabTo(setEl, () => { setEl.hidden = false; });
 const shopEl = $('#shop');
 $('#openShop').onclick = () => tabTo(shopEl, () => { shopEl.hidden = false; $('#shopMsg').textContent = ''; renderShop(); });
-$('#closeShop').onclick = () => { shopEl.hidden = true; };
 shopEl.addEventListener('click', e => { if (e.target === shopEl) shopEl.hidden = true; });
+let shopSel = null;
 function renderShop() {
   $('#shopGold').textContent = S.gold.toLocaleString();
+  if (!shopSel) shopSel = S.bgm;
   $('#shopList').innerHTML = TRACKS.map(t => {
-    const own = S.tracks.includes(t.id), cur = S.bgm === t.id, pre = bgm.preview === t.id;
-    const main = cur ? `<button class="lk-btn" disabled>재생 중</button>` : own ? `<button class="lk-btn main" data-act="use">선택</button>` : `<button class="lk-btn main" data-act="buy">${t.price.toLocaleString()}G</button>`;
-    return `<div class="shop-row${cur ? ' cur' : ''}" data-id="${t.id}"><span class="disc" aria-hidden="true">♪</span><div class="sr-main"><b>${t.n}</b><span>${t.d}</span></div><div class="sr-btns">${main}${cur ? '' : `<button class="lk-btn" data-act="pre">${pre ? '■ 그만' : '▶ 듣기'}</button>`}</div></div>`;
+    const own = S.tracks.includes(t.id), cur = S.bgm === t.id, has = bgm.have.has(t.id);
+    return `<button class="vin${cur ? ' cur' : ''}${own ? ' own' : ''}${has ? '' : ' nofile'}" data-id="${t.id}" aria-current="${shopSel === t.id}"><span class="vpic">${vinylSvg(t.c)}</span><span class="vname">${t.n}</span><span class="vtag">${cur ? '재생 중' : own ? '보유' : `${t.price.toLocaleString()}G`}</span></button>`;
   }).join('');
+  const t = TRACKS.find(x => x.id === shopSel), own = S.tracks.includes(t.id), cur = S.bgm === t.id, pre = bgm.preview === t.id, has = bgm.have.has(t.id);
+  $('#shopBar').innerHTML = `<div class="sb-name"><b>${t.n}</b><span>${t.g}${has ? '' : ' · 곡 파일 없음'}</span></div>`
+    + `<button class="lk-btn" data-act="pre" ${has && !cur ? '' : 'disabled'}>${pre ? '■ 그만' : '▶ 듣기'}</button>`
+    + (cur ? `<button class="lk-btn" disabled>재생 중</button>` : own ? `<button class="lk-btn main" data-act="use">선택</button>` : `<button class="lk-btn main" data-act="buy">${t.price.toLocaleString()}G 사기</button>`);
 }
-$('#shopList').addEventListener('click', e => {
+$('#shopList').addEventListener('click', e => { const v = e.target.closest('[data-id]'); if (!v) return; shopSel = v.dataset.id; $('#shopMsg').textContent = ''; renderShop(); });
+$('#shopBar').addEventListener('click', e => {
   const btn = e.target.closest('[data-act]'); if (!btn) return;
-  const t = TRACKS.find(x => x.id === btn.closest('[data-id]').dataset.id), act = btn.dataset.act;
+  const t = TRACKS.find(x => x.id === shopSel), act = btn.dataset.act;
   if (act === 'pre') { if (bgm.preview === t.id) bgmStopPreview(); else bgmPreview(t.id); }
   else if (act === 'buy') {
-    if (S.gold < t.price) { $('#shopMsg').textContent = `골드가 ${(t.price - S.gold).toLocaleString()}G 모자라요. 달리거나 알을 부화시켜 모아 보자.`; sfx('wob'); return; }
+    if (S.gold < t.price) { $('#shopMsg').textContent = `골드가 ${(t.price - S.gold).toLocaleString()}G 모자라요.`; sfx('wob'); return; }
     S.gold -= t.price; S.tracks.push(t.id); renderGold(); sfx('newdex');
     $('#shopMsg').innerHTML = `${J({ name: t.n }, '을/를')} 샀다!`; S.bgm = t.id; bgm.preview = null; bgmStart(); save();
   } else if (act === 'use') { S.bgm = t.id; bgm.preview = null; bgmStart(); save(); $('#shopMsg').innerHTML = `${J({ name: t.n }, '을/를')} 틀었다.`; }
   renderShop();
 });
 new MutationObserver(() => { if (shopEl.hidden && bgm.preview) bgmStopPreview(); }).observe(shopEl, { attributes: true, attributeFilter: ['hidden'] });
+$('#musicImport').onclick = () => $('#musicFile').click();
+$('#musicFile').onchange = async e => {
+  const files = [...e.target.files]; e.target.value = ''; if (!files.length) return;
+  $('#musicImport').textContent = '가져오는 중…';
+  const r = await importMusic(files);
+  $('#musicImport').textContent = `${bgm.have.size}/${TRACKS.length}곡 연결됨`;
+  if (r.miss.length) alert(`이 파일은 어느 곡인지 몰라 건너뛰었어요:\n${r.miss.join('\n')}`);
+};
 function bgmLabel() { $('#bgmToggle').textContent = bgmOn ? '배경 음악 켜짐' : '배경 음악 꺼짐'; $('#bgmToggle').classList.toggle('main', bgmOn); }
 bgmLabel();
 $('#bgmToggle').onclick = () => { bgmOn = !bgmOn; try { localStorage.setItem('pk-bgm', bgmOn ? '1' : '0'); } catch (e) {} bgmLabel(); if (bgmOn) bgmStart(); else bgmStop(); };
@@ -3307,7 +3337,7 @@ const MAX_BUDS = 3;
 const budReady = b => !!b && !!CHILDREN[b.sp] && b.km >= evoNeed(b);
 const evoNeed = m => { const g = gradeOf(baseOf(m.sp)), stage = evoStage(m.sp); return [0, 5, 10, 15, 20, 25][g] * (stage ? 1.5 : 1); };
 const fmtKm = v => (Math.floor(v * 100) / 100).toFixed(2);
-S.gold = 0; S.tracks = ['town']; S.bgm = 'town'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked = new Set(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
+S.gold = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked = new Set(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
 const hatchQ = [];
 
 function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); if (dexBtns[sp]) lockDexBtn(sp); } }
