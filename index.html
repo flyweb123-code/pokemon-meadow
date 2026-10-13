@@ -320,11 +320,6 @@ ol.log li.big .txt{color:#c03838}
 .lk-btn#lockCancel{grid-column:1 / -1;padding:8px;font-size:13px;box-shadow:none;border-width:2px}
 .lockrun.wait{background:#fff6d8;cursor:default}
 .lockrun.wait .lk-icon{background:#e05a3c;color:#fff}
-.gps{border:3px solid var(--frame);background:var(--card);padding:12px 14px;margin-bottom:12px}
-.gps .big{font-size:32px;font-weight:700;font-variant-numeric:tabular-nums}
-.gps .row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.gps .go{font-weight:700}
-.gps.on{background:#e6ffe8}
 .manual{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:14px;margin-bottom:12px}
 .manual input{width:90px;font:inherit;font-size:16px;border:3px solid var(--frame);padding:4px 6px;border-radius:0}
 ol.runs{list-style:none;margin:0;padding:0;font-size:13px;max-height:200px;overflow-y:auto}
@@ -354,8 +349,7 @@ ol.runs li span{color:var(--dim)}
 @media (max-width:760px){
   .runwin{height:auto;max-height:92vh}.run-body{grid-template-columns:1fr;gap:14px}.run-body .runpanel{border-left:0;padding-left:0;border-top:3px dotted var(--inner);padding-top:14px}
   .eggs{gap:5px}.eslot{min-height:108px;font-size:11px;padding:20px 1px 6px}.eslot .small{font-size:9px;letter-spacing:-.3px}.run-body .egg{transform:scale(.85)}.incu-box .egg.big{transform:none}
-  .gps b,#gpsKm{font-size:28px}.sheet-head .cap{display:block;margin:2px 0 0}
-  .app{height:auto;min-height:100%;overflow:visible;display:flex;flex-direction:column;gap:14px;padding:0 16px 20px}
+    .app{height:auto;min-height:100%;overflow:visible;display:flex;flex-direction:column;gap:14px;padding:0 16px 20px}
   .stage-wrap{position:relative;inset:auto;aspect-ratio:1.6;margin:0 -16px}
   .hud,.card{position:static}
   .clockwin{order:-1;margin:14px 0 0;align-self:flex-start}
@@ -560,10 +554,6 @@ ol.runs li span{color:var(--dim)}
           <div class="lk-top"><span class="lk-icon" aria-hidden="true">▶</span><div class="lk-text"><b class="lk-title" id="lockTitle">런닝 시작</b></div><span class="lk-clock" id="lockClock" hidden>00:00</span></div>
           <div class="small" id="lockInfo"></div>
           <div class="lk-btns" id="lockBtns" hidden><button class="lk-btn main" id="lockFetch">가져오기</button><button class="lk-btn main" id="lockPaste">거리 붙여넣기</button><button class="lk-btn" id="lockCancel">취소</button></div>
-        </div>
-        <div class="gps" id="gps">
-          <div class="row"><span class="big" id="gpsKm">0.00 km</span><button class="opt go" id="gpsBtn">GPS 달리기 시작</button></div>
-          <div class="small" id="gpsInfo">휴대폰에서 이 화면을 켜 둔 채로 달려요. 달린 거리는 알과 짝꿍에게 바로 쌓여요.</div>
         </div>
         <div class="manual">
           <label for="manKm">건강 앱 기록 입력</label>
@@ -2790,7 +2780,7 @@ function toggleSleep(m) {
 function refreshCap() { $('#capBadge').textContent = `${S.mons.length}/${MAX_MONS}`; }
 
 // ---------- eggs, running and evolution ----------
-// Every species starts locked. Eggs (max 5) hatch only from distance run: GPS on the phone, or a
+// Every species starts locked. Eggs (max 5) hatch only from distance run: the lock-screen run, or a
 // distance typed in from the Health app. Eggs hold first-stage species; their grade follows the
 // species' rarity. A buddy chosen in the manager evolves after running enough together.
 const GRADE = [null,
@@ -2891,35 +2881,6 @@ async function evolve(m) {
   infoEl.dataset.uid = ''; renderInfo(); evolving = false; save(); setTimeout(() => veil.remove(), 700);
 }
 
-// GPS run: points with poor accuracy or impossible speed are dropped
-let gpsWatch = null, gpsLast = null, gpsKm = 0, wakeLock = null;
-const hav = (a, b) => { const R = 6371, r = Math.PI / 180, dLa = (b.lat - a.lat) * r, dLo = (b.lon - a.lon) * r; const h = Math.sin(dLa / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLo / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); };
-function gpsInfo(t) { $('#gpsInfo').textContent = t; }
-async function startGps() {
-  if (!navigator.geolocation) return gpsInfo('이 브라우저는 위치를 쓸 수 없어요. 건강 앱 기록을 입력해 주세요.');
-  gpsKm = 0; gpsLast = null; $('#gps').classList.add('on'); $('#gpsBtn').textContent = '달리기 끝내기'; gpsInfo('위치를 찾는 중…');
-  try { wakeLock = await navigator.wakeLock?.request('screen'); } catch (e) { wakeLock = null; }
-  gpsWatch = navigator.geolocation.watchPosition(pos => {
-    const c = pos.coords, p = { lat: c.latitude, lon: c.longitude, t: pos.timestamp };
-    if (c.accuracy > 35) { gpsInfo(`신호가 약해요 (오차 ${Math.round(c.accuracy)}m)`); return; }
-    if (gpsLast) {
-      const d = hav(gpsLast, p), dt = (p.t - gpsLast.t) / 1000;
-      if (dt > 0 && d * 1000 / dt > 7) { gpsLast = p; return; }      // faster than 25 km/h: a jump, not running
-      if (d * 1000 < 4) return;                                         // jitter while standing still
-      gpsKm += d; applyKm(d); $('#gpsKm').textContent = fmtKm(gpsKm) + ' km';
-      gpsInfo(`기록 중 · 오차 ${Math.round(c.accuracy)}m`); if (!$('#run').hidden) renderRun();
-    } else gpsInfo('출발! 기록 중이에요.');
-    gpsLast = p;
-  }, err => { gpsInfo(err.code === 1 ? '위치 권한이 막혀 있어요. 건강 앱 기록을 입력해 주세요.' : '위치를 받을 수 없어요. 건강 앱 기록을 입력해 주세요.'); stopGps(true); },
-  { enableHighAccuracy: true, maximumAge: 2000, timeout: 20000 });
-}
-function stopGps(failed) {
-  if (gpsWatch != null) navigator.geolocation.clearWatch(gpsWatch);
-  gpsWatch = null; $('#gps').classList.remove('on'); $('#gpsBtn').textContent = 'GPS 달리기 시작';
-  try { wakeLock?.release(); } catch (e) {} wakeLock = null;
-  if (gpsKm >= .01) addRun(gpsKm, 'gps'); else if (!failed) gpsInfo('달린 거리가 없어요.');
-  gpsKm = 0; $('#gpsKm').textContent = '0.00 km';
-}
 // lock-screen run: the game notes the start time, the phone (or Nike Run Club) writes the distance to
 // Health while the screen is locked, and the '초원 거리' shortcut sums Health distance since that time
 // and copies it; the game reads it back from the clipboard.
@@ -2962,7 +2923,6 @@ $('#lockPaste').onclick = async () => {
   catch (e) { $('#lockInfo').textContent = '붙여넣기가 막혀 있어요. 아래 칸에 거리를 직접 적어 주세요.'; $('#manKm').focus(); }
 };
 document.addEventListener('visibilitychange', () => { if (!document.hidden && lockAsked && S.lockT) { if (runEl.hidden) openRun(); $('#lockPaste').focus(); } });
-$('#gpsBtn').onclick = () => gpsWatch == null ? startGps() : stopGps();
 $('#manAdd').onclick = () => {
   const v = parseFloat($('#manKm').value);
   if (!(v > 0) || v > 60) { $('#manKm').focus(); return; }
