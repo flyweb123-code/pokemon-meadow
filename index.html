@@ -63,7 +63,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .shop-gold{display:inline-flex;align-items:center;gap:6px;font-size:18px}
 .shop-gold b{color:#a86a00}
 .shop-h{margin:4px 0 8px;font-size:16px}
-.shop-inv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;overflow-y:auto;min-height:0;padding:2px}
+.shop-inv{flex:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;overflow-y:auto;min-height:0;padding:2px;align-content:start}
 .vin{font:inherit;border:3px solid var(--inner);background:#fff;padding:8px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:var(--win-ink);min-width:0;position:relative}
 .vin[aria-current="true"]{border-color:var(--frame);background:var(--card)}
 .vin.pre{border-color:var(--cursor);background:var(--card);box-shadow:0 0 0 2px var(--cursor)}
@@ -71,7 +71,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .vpic .vn{position:absolute;right:-4px;top:-6px;font-style:normal;font-size:16px;color:var(--frame);text-shadow:1px 1px 0 #fff}
 .vin.pre .vpic svg{animation:vspin 1.6s steps(8) infinite}
 @keyframes vspin{to{transform:rotate(360deg)}}
-.vin:not(.own) .vpic svg{filter:saturate(.35) brightness(.9)}
+.vin.own{cursor:default;background:#ececf0;border-style:dashed}.vin.own .vpic svg{filter:grayscale(1) brightness(1.1);opacity:.55}.vin.own .vname{color:var(--dim)}.vin.own .vtag{background:#9a9aaa}
 .vin.nofile .vpic{opacity:.45}
 .vname{font-size:11px;line-height:1.3;text-align:center;word-break:keep-all;overflow-wrap:anywhere;min-height:2.6em;display:flex;align-items:center;justify-content:center;width:100%;max-width:100%;padding:0 3px;box-sizing:border-box;overflow:hidden}
 .vtag{font-size:10px;padding:1px 5px;background:var(--frame);color:var(--win)}
@@ -89,7 +89,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .sr-btns{display:flex;flex-direction:column;gap:6px;flex:none}
 .sr-btns .lk-btn{padding:7px 10px;font-size:13px;min-width:86px}
 .sr-btns .lk-btn[disabled]{opacity:.55}
-.shop-msg{min-height:1.4em;margin:10px 0 0;font-size:14px}
+.shop-msg{margin:8px 0 0;font-size:14px}.shop-msg:empty{display:none}
 .clockwin{left:20px;top:20px;display:flex;align-items:baseline;gap:16px}
 #side,#edge{display:none}
 .dlg{--dlg-in:#7aa6d8}
@@ -3087,12 +3087,14 @@ shopEl.addEventListener('click', e => { if (e.target === shopEl) shopEl.hidden =
 let shopSel = null;
 function renderShop() {
   $('#shopGold').textContent = S.gold.toLocaleString();
-  if (!shopSel) shopSel = S.bgm;
+  if (!shopSel || S.tracks.includes(shopSel)) shopSel = (TRACKS.find(t => !S.tracks.includes(t.id)) || {}).id || null;
   $('#shopList').innerHTML = TRACKS.map(t => {
     const own = S.tracks.includes(t.id), cur = S.bgm === t.id, has = bgm.have.has(t.id);
-    return `<button class="vin${bgm.preview === t.id ? ' pre' : ''}${own ? ' own' : ''}${has ? '' : ' nofile'}" data-id="${t.id}" aria-current="${shopSel === t.id}"><span class="vpic">${vinylSvg(t.c)}</span><span class="vname">${t.n}</span><span class="vtag">${own ? '보유 중' : `${t.price.toLocaleString()}G`}</span></button>`;
+    return `<button class="vin${bgm.preview === t.id ? ' pre' : ''}${own ? ' own' : ''}${has ? '' : ' nofile'}" data-id="${t.id}" aria-current="${shopSel === t.id}"${own ? ' disabled' : ''}><span class="vpic">${vinylSvg(t.c)}</span><span class="vname">${t.n}</span><span class="vtag">${own ? '보유 중' : `${t.price.toLocaleString()}G`}</span></button>`;
   }).join('');
-  const t = TRACKS.find(x => x.id === shopSel), own = S.tracks.includes(t.id), cur = S.bgm === t.id, pre = bgm.preview === t.id, has = bgm.have.has(t.id);
+  const t = TRACKS.find(x => x.id === shopSel);
+  $('#shopBar').hidden = !t; if (!t) return;
+  const own = S.tracks.includes(t.id), cur = S.bgm === t.id, pre = bgm.preview === t.id, has = bgm.have.has(t.id);
   $('#shopBar').innerHTML = `<div class="sb-name"><b>${t.n}</b><span>${t.g}${has ? '' : ' · 곡 파일 없음'}</span></div>`
     + `<button class="lk-btn" data-act="pre" ${has ? '' : 'disabled'}>${pre ? '■ 그만' : '▶ 듣기'}</button>`
     + (own ? `<button class="lk-btn" disabled>보유 중</button>` : `<button class="lk-btn main" data-act="buy">${t.price.toLocaleString()}G 사기</button>`);
@@ -3105,7 +3107,7 @@ $('#shopBar').addEventListener('click', e => {
   else if (act === 'buy') {
     if (S.gold < t.price) { $('#shopMsg').textContent = `골드가 ${(t.price - S.gold).toLocaleString()}G 모자라요.`; sfx('wob'); return; }
     S.gold -= t.price; S.tracks.push(t.id); renderGold(); sfx('newdex');
-    $('#shopMsg').innerHTML = `${J({ name: t.n }, '을/를')} 샀다! 설정에서 배경 음악으로 고를 수 있다.`; save(); renderBgmPick();
+    $('#shopMsg').innerHTML = `${J({ name: t.n }, '을/를')} 샀다!`; save(); renderBgmPick();
   }
   renderShop();
 });
