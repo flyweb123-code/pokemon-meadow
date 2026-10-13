@@ -150,6 +150,7 @@ ol.log li.big .txt{color:#c03838}
 .berry::after{content:"";position:absolute;width:7px;height:5px;left:6px;top:-4px;border-radius:0 80% 0 80%;background:#3d9a3d}
 .berry.red{background:radial-gradient(circle at 35% 35%,#ffb0a8 0,#e2414b 55%,#a2222b 100%)}
 .berry.new{animation:drop .5s cubic-bezier(.3,1.6,.6,1)}
+.berry.rot{opacity:.45;transition:opacity 30s linear;filter:saturate(.4)}
 @keyframes drop{from{transform:translateY(-30px);opacity:0}}
 
 .bubble{position:absolute;left:0;top:0;transform:translate(-50%,-100%);background:#f8f8f8;color:#282830;border:2px solid #383848;padding:1px 6px 2px;
@@ -872,9 +873,10 @@ function removeMon(m) {
 }
 
 // ---------- berries ----------
-function addBerry(x, y, natural = false) {
+const BERRY_LIFE = 10 * 60e3;   // 놓인 열매는 실제 시간 10분 뒤 사라짐
+function addBerry(x, y, natural = false, t = Date.now()) {
   if (pondVal(x, y) < 1.05) return null;
-  const b = { id: S.bid++, x, y: clamp(y, MIN_Y, MAX_Y), claimed: null };
+  const b = { id: S.bid++, x, y: clamp(y, MIN_Y, MAX_Y), claimed: null, t };
   b.el = document.createElement('div'); b.el.className = 'berry new' + (Math.random() < .4 ? ' red' : '');
   b.el.style.left = b.x + 'px'; b.el.style.top = b.y + 'px'; b.el.style.zIndex = Math.round(b.y);
   itemsEl.append(b.el); S.berries.push(b);
@@ -882,6 +884,13 @@ function addBerry(x, y, natural = false) {
   return b;
 }
 function eatBerry(b) { b.el.remove(); S.berries = S.berries.filter(x => x !== b); }
+function rotBerries() {
+  const now = Date.now();
+  for (const b of [...S.berries]) {
+    const left = b.t + BERRY_LIFE - now;
+    if (left <= 0) eatBerry(b); else if (left < 30e3) b.el.classList.add('rot');
+  }
+}
 function nearestBerry(m) {
   let best = null, bd = 1e9;
   for (const b of S.berries) { const d = dist(m, b); if (d < bd) { bd = d; best = b; } }
@@ -2438,7 +2447,7 @@ const KEY = 'pk-meadow-v2';
 function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, log: S.log.slice(0, 120),
     mons: S.mons.map(m => ({ uid: m.uid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, asleep: m.state === 'sleep', born: m.born })),
-    berries: S.berries.map(b => ({ x: b.x, y: b.y })), lockT: S.lockT,
+    berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t })), lockT: S.lockT,
     eggs: S.eggs, unlocked: [...S.unlocked], buddy: S.buddy, buddyKm: S.buddyKm, runs: S.runs, totalKm: S.totalKm, eid: S.eid };
 }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
@@ -2447,7 +2456,8 @@ async function restore(d) {
   S.lockT = d.lockT || 0; S.eggs = d.eggs || []; S.buddy = d.buddy ?? null; S.buddyKm = d.buddyKm || 0; S.runs = d.runs || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
   S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
   for (const o of (d.mons || []).slice(0, MAX_MONS)) { const m = await spawn(o.sp, { ...o, quiet: true }); if (o.asleep) sleep(m, false); }
-  for (const b of d.berries || []) addBerry(b.x, b.y);
+  for (const b of d.berries || []) addBerry(b.x, b.y, false, b.t || Date.now());
+  rotBerries();
   S.uid = Math.max(S.uid, d.uid || 1);
   renderLog();
 }
@@ -3012,7 +3022,7 @@ function frame(now) {
   }
   for (const m of S.mons) { if (m.bubT > 0) m.bubT -= real; m.realDt = real * Math.min(S.speed || 0, 3); render(m, now); }
   tickFlies(now); tickBugs(now, real);
-  acc += real; if (acc > .5) { acc = 0; sky(); }
+  acc += real; if (acc > .5) { acc = 0; sky(); rotBerries(); }
   infoT -= real; if (infoT <= 0 && S.sel) { infoT = .5; renderInfo(); }
   mgrT -= real; if (mgrT <= 0) { mgrT = .5; refreshCap(); renderMgr(); renderRun();
     if (hatchQ.length && !hatching) playHatch();
