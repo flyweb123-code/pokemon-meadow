@@ -1569,7 +1569,17 @@ const PSCALE = 2.75;   // 8px 단위 프레임이 정수 px 로 떨어지는 값
 const isPmd = sp => typeof SPRITES[sp] === 'object';
 // 필드 크기: 실제 키로 소(≤0.5m)·중(~1.3m)·대 세 무리로 나눠, 같은 무리는 눈에 보이는 몸 크기가 비슷하게 맞춘다 (2026-10-13)
 // → 무리 안에서 똑같이 맞추니 망나뇽이 볼비트보다 작아지는 일이 생겨서, 실제 키에 따라 연속으로 커지게 (로그 눈금이라 큰 포켓몬도 화면을 넘지 않는다)
-const sizeT = sp => { const h = Math.max(.1, (SPECIES[parseInt(sp)]?.h ?? 7) / 10); return Math.max(36, Math.min(112, 40 + 14 * Math.log2(h / .3))); };
+// 몸 크기: 키만 보면 뱀처럼 긴 포켓몬(아보 2m)이 너무 커서, 몸무게(세제곱근)와 섞은 값으로 본다.
+// 그리고 진화 전 모습은 진화 후 모습보다 커지지 않게 (진화 후의 92%까지)
+const sizeRaw = sp => { const d = SPECIES[sp]; if (!d) return 1; const h = Math.max(.1, (d.h ?? 7) / 10), w = Math.max(.1, (d.w ?? 100) / 10); return Math.sqrt(h * .3 * Math.cbrt(w)); };
+let SIZE_KIDS = null; const sizeMemo = {};
+function sizeEff(sp) {
+  if (sizeMemo[sp]) return sizeMemo[sp];
+  if (!SIZE_KIDS) { SIZE_KIDS = {}; for (const k in SPECIES) { const f = SPECIES[k].fr; if (f) (SIZE_KIDS[f] = SIZE_KIDS[f] || []).push(+k); } }
+  let v = sizeRaw(sp); for (const c of SIZE_KIDS[sp] || []) v = Math.min(v, sizeEff(c) * .92);
+  return (sizeMemo[sp] = v);
+}
+const sizeT = sp => { const e = sizeEff(parseInt(sp)); return Math.max(34, Math.min(112, 40 + 20 * Math.log2(e / .45))); };
 const sizeCls = sp => { const h = SPECIES[parseInt(sp)]?.h ?? 7; return h <= 5 ? 0 : h <= 13 ? 1 : 2; };
 const scaleOf = sp => { const P = SPRITES[sp]; if (!isPmd(sp)) return SCALE * [.85, 1, 1.15][sizeCls(sp)]; if (!P.vh) return P.a.Idle[2] >= 40 ? 1.875 : PSCALE; return Math.max(1, Math.min(4, sizeT(sp) / P.vh)); };
 // 아틀라스 프레임 사이에 투명한 틈을 넣어 다시 만든다: 확대할 때 옆 프레임의 검은 테두리가 번져 보이던 것 막기.
@@ -1585,9 +1595,9 @@ function padAtlas(k) {
         for (const n of names) { const a = A[n]; ny[n] = H; H += a[2] + G; W = Math.max(W, a[3] * (a[1] + G)); }
         const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
         for (const n of names) { const a = A[n]; for (let f = 0; f < a[3]; f++) x.drawImage(im, f * a[1], a[0], a[1], a[2], f * (a[1] + G), ny[n], a[1], a[2]); }
-        const a = A.Idle, d = x.getImageData(0, ny.Idle, a[1], a[2]).data; let t = a[2], b = -1, l = a[1], r = -1;
-        for (let yy = 0; yy < a[2]; yy++) for (let xx = 0; xx < a[1]; xx++) if (d[(yy * a[1] + xx) * 4 + 3] > 40) { t = Math.min(t, yy); b = Math.max(b, yy); l = Math.min(l, xx); r = Math.max(r, xx); }
-        const vh = b >= t ? Math.max(b - t + 1, (r - l + 1) * .8) : 0;
+        const a = A.Idle, d = x.getImageData(0, ny.Idle, a[1], a[2]).data; let cnt = 0, t = a[2], b = -1, l = a[1], r = -1;
+        for (let yy = 0; yy < a[2]; yy++) for (let xx = 0; xx < a[1]; xx++) if (d[(yy * a[1] + xx) * 4 + 3] > 40) { cnt++; t = Math.min(t, yy); b = Math.max(b, yy); l = Math.min(l, xx); r = Math.max(r, xx); }
+        const vh = cnt ? Math.sqrt(cnt / .55) : 0;   // 보이는 몸 크기 = 실제로 칠해진 칸 수 기준 (옆으로 길거나 똬리 튼 포켓몬도 덩치만큼)
         P.i = c.toDataURL('image/png'); for (const n of names) A[n][0] = ny[n]; P.G = G; if (vh) P.vh = vh; delete atlasDims[k];
       } catch (e) { P.G = 0; }
       res();
