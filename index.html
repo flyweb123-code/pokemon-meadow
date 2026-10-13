@@ -360,7 +360,7 @@ ol.log li.big .txt{color:#c03838}
 .pk:active{background:rgba(0,0,0,.05)}
 .tyis{display:inline-flex;gap:2px;vertical-align:middle}
 .tyi{font-style:normal;font-size:10px;line-height:1;color:#fff;background:var(--tc);padding:2px 4px 1px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.25);text-shadow:1px 1px 0 rgba(0,0,0,.3)}
-.pp-top .tyis{margin-left:2px}.pp-top .tyi{font-size:11px;padding:3px 4px 2px}
+.pp-top .tyis{margin-left:2px}.pp-top .tyi,.sub .tyi,.dx-meta .tyi{font-size:11px;padding:3px 4px 2px}.dx-meta .tyis{margin-right:6px}
 .pk.shiny.rkS img,.dp-pic.shiny.rkS img,.bd-pic.shiny.rkS img{animation:none;filter:hue-rotate(var(--shue)) saturate(1.25) drop-shadow(0 0 4px #ffc830)}
 .fulltag{display:inline-block;font-size:11px;font-weight:400;color:#fff;background:#e8a020;padding:1px 6px}
 .mvfx{position:absolute;left:0;top:0;background-size:100% 100%;image-rendering:pixelated;pointer-events:none;will-change:transform}
@@ -437,7 +437,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .memo .mrow{display:grid;grid-template-columns:34px 1fr;gap:6px;padding:2px 0}
 .memo .mk{color:var(--dim)}
 .memo .good{color:#d04070;font-weight:normal}
-.memo .note{display:block}.memo .note+.note{margin-top:2px}
+.memo .th .mv{font-size:12px;letter-spacing:-.4px;word-break:keep-all}.memo .th .mv b{font-weight:normal}
 .mgr-detail .acts{display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;margin-top:12px;border-top:3px dotted var(--inner);padding-top:8px}
 .mgr-detail .acts .opt{font-size:15px}
 .mgr-detail .acts .opt:disabled{color:var(--dim);cursor:default}
@@ -3085,7 +3085,7 @@ function renderInfo() {
     box.dataset.uid = m.uid;
     box.innerHTML = `<button class="close" id="pclose" aria-label="닫기">✕</button>
       <div class="top"><h2 id="pname">${esc(m.name)}</h2><span class="no">No.${String(m.sp).padStart(3, '0')}</span></div>
-      <p class="sub">${SPECIES[m.sp].g} · ${t.ty}${t.noct ? ' · 야행성' : ''}${SPECIES[m.sp].leg || SPECIES[m.sp].my ? ' · 전설' : ''}</p>
+      <p class="sub">${SPECIES[m.sp].g} ${tyIcons(m.sp)}${t.noct ? ' · 야행성' : ''}${SPECIES[m.sp].leg || SPECIES[m.sp].my ? ' · 전설' : ''}</p>
       <p class="sub" id="pIndiv"></p>
       <div class="mvrow" id="pMoves"></div>
       <div class="bars" id="pbars"></div>
@@ -3610,12 +3610,11 @@ function openPoke(id, dir = 0) {
   const pic = $('#ppPic'), img = $('#ppImg'); pic.classList.toggle('shiny', P.shiny); pic.classList.toggle('rkS', rk === 'S'); pic.classList.toggle('frMax', (P.fr || 0) >= FR_MAX); pic.style.setProperty('--shue', shinyHue(P.sp) + 'deg');
   pic.classList.remove('slide-l', 'slide-r'); void pic.offsetWidth; if (dir) pic.classList.add(dir > 0 ? 'slide-l' : 'slide-r');
   img.src = thumbOf(P.sp) || ''; if (!thumbOf(P.sp)) ensureSprite(P.sp).then(() => { if (pokeId === id) img.src = thumbOf(P.sp); }).catch(() => {});
-  const dt = new Date(P.t);
   $('#ppBody').innerHTML = `<div class="pp-top"><span class="no">No.${String(P.sp).padStart(4, '0')}</span><b>${esc(d.n)}</b>${P.shiny ? '<b class="sh">✦ 이로치</b>' : ''}${tyIcons(P.sp)}<span class="rk ${rk}">${rk}</span></div>`
     + `<div class="ivs">${P.iv.map((v, k) => `<span>${IV_N[k]}</span><span class="b"><i class="${v === 31 ? 'max' : ''}" style="width:${Math.round(v / 31 * 100)}%"></i></span>`).join('')}</div>`
     + `<div class="pp-fr"><span>친밀도</span><span><span class="hearts">${hearts(P.fr)}</span> ${Math.min(255, P.fr || 0)}/255</span></div>`
     + `<div class="mvrow">기술 ${(P.fr || 0) >= FR_MAX ? movesHtml(P.sp, false) : `<span class="mvlock">${movesOf(P.sp).map(() => '???').join(' · ')} — 친밀도 만점이 되면 쓸 수 있어요</span>`}</div>`
-    + `<div class="pp-meta">${P.place ? `${esc(P.place)} 근처에서 만났다<br>` : ''}${dt.getMonth() + 1}/${dt.getDate()}${P.g ? ` ${GRADE[P.g].n} 알에서 부화` : ''}</div>`;
+    + `<div class="pp-meta">${P.place ? `${esc(P.place)} 근처에서 만났다 · ${metDay(P)}<br>` : `${metDay(P)} 만남<br>`}${P.g ? `${GRADE[P.g].n} 알에서 부화` : ''}</div>`;
   const on = onField(P.id), full = S.mons.length >= MAX_MONS, isBud = S.buds.some(b => b.pid === P.id);
   const rb = $('#ppFree'); rb.hidden = budPick != null; if (freeArm !== id) { freeArm = null; rb.classList.remove('arm'); rb.textContent = '놓아주기'; }
   const fb = $('#ppField'); fb.hidden = budPick != null; fb.textContent = on ? '필드에서 빼기' : full ? '필드가 꽉 찼어요' : '필드에 내보내기'; fb.disabled = !on && full; fb.classList.toggle('off', on);
@@ -3734,7 +3733,7 @@ function renderMgrDetail(rebuild) {
     mgrDet.dataset.uid = m.uid;
     mgrDet.innerHTML = `<div class="dp-pic" id="mStage"><span class="st-tag st" id="mSt"></span><img alt="" id="mPic"></div>
       <div class="namerow"><label class="nm-edit"><input id="mName" maxlength="8" aria-label="이름 바꾸기" autocomplete="off"><span aria-hidden="true">✎</span></label><small>No.${String(m.sp).padStart(4, '0')}</small></div>
-      <p class="sub">${m.name !== d.n ? `${d.n} · ` : ''}${d.g} · ${t.ty}${t.noct ? ' · 야행성' : ''}${d.leg || d.my ? ' · 전설' : ''}</p>
+      <p class="sub">${m.name !== d.n ? `${d.n} · ` : ''}${d.g} ${tyIcons(m.sp)}${t.noct ? ' · 야행성' : ''}${d.leg || d.my ? ' · 전설' : ''}</p>
       <p class="sub" id="mIndiv"></p>
       <div class="mvrow" id="mMoves"></div>
       <div class="bars" id="mBars"></div>
@@ -3763,7 +3762,7 @@ function renderMgrDetail(rebuild) {
   $('#mIndiv').innerHTML = indivHtml(m) + metHtml(boxOf(m.pid), '<br>');
   { const h = canMove(m) ? '기술 ' + movesHtml(m.sp, true) : '', el = $('#mMoves'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; el.hidden = !h; } }
 }
-// 상황 칸: 지금 하는 일, 기분·생각, 친한 포켓몬, 오늘 있었던 일을 메모처럼
+// 상황 칸: 친구, 기분, 생각을 메모처럼
 function moodOf(m) {
   const P = boxOf(m.pid), fr = P?.fr || 0, best = friendsOf(m).find(x => x.r >= 20);
   if (m.state === 'sleep') return pick2(m, ['쿨쿨… 좋은 꿈을 꾸는 것 같다', '새근새근 깊이 잠들었다']);
@@ -3779,14 +3778,91 @@ function moodOf(m) {
 // 같은 상황이면 같은 문장이 유지되게 (창을 다시 그릴 때 깜빡이지 않게)
 function pick2(m, L) { const k = L[0]; if (!m.moodK || m.moodK !== k) { m.moodK = k; m.moodI = Math.floor(Math.random() * L.length); } return L[m.moodI % L.length]; }
 function memoHtml(m) {
-  const day = new Date().toDateString(), notes = (m.notes || []).filter(n => n.d === day);
   const good = friendsOf(m).filter(x => x.r >= 1).slice(0, 3);
-  const row = (k, v) => `<div class="mrow"><span class="mk">${k}</span><span class="mv">${v}</span></div>`;
-  return `<h5>상황</h5>`
-    + row('지금', esc(doingText(m) + (m.form !== m.sp ? ` (${DEX[m.form].n}로 변신 중)` : '')))
-    + row('기분', `“${esc(moodOf(m))}”`)
-    + row('친구', good.length ? good.map(x => `<b class="good">♥ ${esc(x.o.name)}</b>${x.r >= 60 ? ' 단짝' : ''}`).join(' · ') : '아직 친한 포켓몬이 없다')
-    + row('오늘', notes.length ? notes.map(n => `<span class="note">${esc(n.t)}</span>`).join('') : '아직 별일 없었다');
+  const row = (k, v, c = '') => `<div class="mrow${c}"><span class="mk">${k}</span><span class="mv">${v}</span></div>`;
+  return row('친구', good.length ? good.map(x => `<b class="good">♥ ${esc(x.o.name)}</b>${x.r >= 60 ? ' 단짝' : ''}`).join(' · ') : '아직 친한 포켓몬이 없다')
+    + row('기분', esc(moodOf(m)))
+    + row('생각', thoughtOf(m), ' th');
+}
+// 생각: 당연한 일 말고, 포켓몬끼리의 미묘한 관계나 혼자 하는 귀여운 생각을 한 줄로
+const BEATS = { 10: [12, 15, 7, 9], 11: [10, 5, 6], 12: [11, 5, 6], 13: [11, 3], 15: [12, 5, 3, 16], 2: [1, 15, 6, 9, 17], 5: [10, 13, 4, 6, 9], 3: [12, 2, 7], 14: [2, 4], 7: [12, 14, 17], 6: [10, 15, 3, 7], 8: [14, 8], 16: [16], 17: [14, 8], 9: [15, 6, 18], 18: [2, 16, 17], 4: [12, 18] };
+const TH_SP = {
+  25: '#은/는 자신의 빨간 볼이 예쁘다고 생각하는 것 같다.', 26: '#은/는 자기 꼬리 끝 번개 모양을 꽤 자랑스러워한다.',
+  1: '#은/는 등의 씨앗이 언제 꽃필지 몰래 기대하고 있다.', 4: '#은/는 꼬리 불꽃이 꺼질까 봐 구름을 경계하고 있다.', 7: '#은/는 자기 등껍질 무늬가 제일 멋지다고 생각한다.',
+  35: '#은/는 달이 뜨면 춤출 준비를 몰래 하고 있다.', 37: '#은/는 꼬리 여섯 개 중 제일 예쁜 걸 고르는 중이다.', 39: '#은/는 자기 노래를 끝까지 들어 줄 친구를 찾고 있다.',
+  52: '#은/는 어디선가 동전 냄새를 맡은 것 같다.', 54: '#은/는 머리가 왜 아픈지 아직도 모르는 것 같다.', 58: '#은/는 트레이너를 지키는 게 자기 일이라고 믿는다.',
+  63: '#은/는 자면서도 미래를 보고 있다고 믿는 것 같다.', 74: '#은/는 다른 돌멩이와 헷갈리지 않았으면 하는 눈치다.', 79: '#은/는 아까 무슨 생각을 했는지 잊어버린 것 같다.',
+  94: '#은/는 누군가의 그림자에 숨어들 기회를 노리고 있다.', 104: '#은/는 머리에 쓴 뼈가 오늘따라 잘 맞는다고 생각한다.', 113: '#은/는 알을 누구에게 줄지 고민 중인 것 같다.',
+  120: '#은/는 밤하늘의 별 하나가 자기 친척이라고 믿는다.', 129: '#은/는 언젠가 하늘을 날 수 있다고 굳게 믿고 있다.', 132: '#은/는 오늘은 누구로 변신할지 고르는 중이다.',
+  133: '#은/는 커서 무엇이 될지 매일 마음이 바뀌는 것 같다.', 143: '#은/는 다음 낮잠 장소를 벌써 정해 둔 것 같다.', 151: '#은/는 남몰래 다른 포켓몬 흉내를 연습하고 있다.',
+  172: '#은/는 피카츄처럼 멋진 볼을 갖고 싶어 한다.', 175: '#은/는 껍데기 무늬를 누가 좀 봐 줬으면 하는 눈치다.', 183: '#은/는 꼬리 공이 잘 떠 있는지 자꾸 확인한다.',
+  194: '#은/는 아무 생각이 없어 보이지만 사실 정말 아무 생각이 없다.', 393: '#은/는 도움을 거절한 걸 살짝 후회하는 것 같다.', 446: '#은/는 숨겨 둔 간식이 아직 무사한지 걱정한다.',
+  447: '#은/는 다른 포켓몬의 마음을 파동으로 읽어 보려 한다.', 570: '#은/는 다른 포켓몬으로 둔갑해 장난칠 궁리를 한다.', 778: '#은/는 피카츄 옷이 오늘도 잘 어울린다고 믿는다.',
+  906: '#은/는 머리 위 꽃잎이 흐트러지지 않았는지 신경 쓴다.', 909: '#은/는 따뜻한 몸으로 친구를 데워 주고 싶어 한다.', 912: '#은/는 머리 모양이 망가질까 봐 물장구를 참고 있다.'
+};
+const TH_TY = {
+  1: ['#은/는 평범하다는 말을 은근히 신경 쓰는 것 같다.', '#은/는 낮잠 자기 좋은 자리 순위를 매기고 있다.'],
+  2: ['#은/는 아무도 안 볼 때 혼자 자세를 연습한다.', '#은/는 나무에게 한판 붙자고 할지 고민 중이다.'],
+  3: ['#은/는 구름 하나를 자기 것으로 정해 둔 것 같다.', '#은/는 하늘에서 본 비밀 장소를 혼자만 알고 있다.'],
+  4: ['#은/는 자기 냄새가 괜찮은지 몰래 맡아 보곤 한다.', '#은/는 독이 있어서 오히려 매력 있다고 믿는다.'],
+  5: ['#은/는 필드 어딘가에 보물을 묻어 둔 것 같다.', '#은/는 땅속이 훨씬 아늑하다고 생각한다.'],
+  6: ['#은/는 마음에 드는 돌멩이를 모으고 있는 것 같다.', '#은/는 자기가 제일 단단하다고 자랑하고 싶어 한다.'],
+  7: ['#은/는 풀잎마다 이름을 붙여 주고 있는 것 같다.', '#은/는 작은 것들의 세상이 더 재밌다고 생각한다.'],
+  8: ['#은/는 누군가를 깜짝 놀래킬 계획을 짜고 있다.', '#은/는 아무도 자기를 못 봤다고 믿고 있다.'],
+  9: ['#은/는 비 오는 날 몸이 녹슬까 봐 걱정한다.', '#은/는 반짝반짝 광나는 자기 몸에 만족하는 것 같다.'],
+  10: ['#은/는 오늘 불꽃 모양이 유난히 멋지다고 생각한다.', '#은/는 밤에는 자기가 필드의 등불이라고 믿는다.'],
+  11: ['#은/는 호수에 비친 자기 얼굴을 꽤 좋아하는 것 같다.', '#은/는 빗방울 소리를 세는 걸 좋아하는 것 같다.'],
+  12: ['#은/는 햇볕을 쬐면 키가 조금 큰다고 믿는다.', '#은/는 꽃향기로 오늘의 운세를 점치고 있다.'],
+  13: ['#은/는 정전기로 친구 털을 세워 보고 싶어 한다.', '#은/는 번개 치는 날을 은근히 기다리고 있다.'],
+  14: ['#은/는 트레이너의 다음 행동을 맞혔다고 생각한다.', '#은/는 꿈에서 본 미래를 혼자 곱씹고 있다.'],
+  15: ['#은/는 오늘 내쉰 입김 모양이 마음에 드는 것 같다.', '#은/는 햇볕이 너무 세면 녹을까 봐 걱정한다.'],
+  16: ['#은/는 자기가 필드에서 제일 멋지다고 확신한다.', '#은/는 언젠가 하늘을 다 가질 거라고 믿는다.'],
+  17: ['#은/는 몰래 뭔가 숨겨 둔 게 있는 눈치다.', '#은/는 착한 척하는 게 생각보다 어렵다고 느낀다.'],
+  18: ['#은/는 반짝이는 건 다 자기 거라고 생각한다.', '#은/는 웃으면 모두 친구가 된다고 믿는다.']
+};
+const TH_C = { 1: '#은/는 어두운 곳에 있으면 아무도 못 찾을 거라 믿는다.', 2: '#은/는 하늘과 자기 색이 똑같다고 뿌듯해한다.', 3: '#은/는 흙장난을 해도 티가 안 나서 다행이라 생각한다.',
+  4: '#은/는 바위 사이에 있으면 들키지 않을 거라 믿는다.', 5: '#은/는 풀숲에 숨으면 완벽하다고 생각하는 것 같다.', 6: '#은/는 분홍색이 자기한테 제일 잘 어울린다고 믿는다.',
+  7: '#은/는 보라색이 신비로운 색이라고 굳게 믿는다.', 8: '#은/는 자기 빨간색이 필드에서 제일 눈에 띈다고 생각한다.', 9: '#은/는 하얀 몸이 더러워질까 봐 진흙을 피해 다닌다.',
+  10: '#은/는 자기 노란 빛깔이 해님을 닮았다고 생각한다.' };
+const isAnc = (a, b) => { let s = SPECIES[b]?.fr; while (s) { if (s === a) return true; s = SPECIES[s]?.fr; } return false; };
+function thoughtOf(m) {
+  const now = Date.now(), c = m.th;
+  if (c && c.exp > now && (!c.o || S.mons.some(o => o.uid === c.o)) && c.nm === m.name) return c.h;
+  const L = [], add = (w, f, o) => L.push({ w, f, o });
+  const fm = (tpl, o) => { let t = tpl.replace('#은/는', J(m, '은/는')); if (o) t = t.replace(/@(\S+?\/\S+?)(?=\s|$|[.,])/, (_, p) => J(o, p)).replace('@', N(o)); return t; };
+  const d = SPECIES[m.sp], P = boxOf(m.pid), ty = d.t;
+  for (const o of S.mons) {
+    if (o === m || o.hidden) continue;
+    const r = getRel(m, o), od = SPECIES[o.sp];
+    if (r <= -20) { add(5, '#은/는 @을/를 견제하고 있는 듯 하다.', o); add(3, '#은/는 @이/가 칭찬받으면 슬쩍 토라진다.', o); add(3, '#은/는 @과/와 눈이 마주치면 고개를 휙 돌린다.', o); }
+    else if (r >= 30) { add(4, '#은/는 @ 옆자리를 은근히 노리고 있다.', o); add(3, '#은/는 @의 잠버릇을 다 알고 있는 것 같다.', o); add(3, '#은/는 @에게만 비밀 장소를 알려 준 것 같다.', o); add(2, '#은/는 몰래 @의 걸음걸이를 따라 하고 있다.', o); }
+    else if (r >= 1) { add(1.5, '#은/는 @과/와 더 친해지고 싶은 눈치다.', o); }
+    else add(.6, '#은/는 @에게 말을 걸 타이밍을 재고 있다.', o);
+    if (o.sp === m.sp) add(4, '#은/는 자기랑 똑같이 생긴 @이/가 신기한가 보다.', o);
+    else if (isAnc(m.sp, o.sp)) add(4, '#은/는 @을/를 보며 언젠가 저렇게 될 거라 다짐한다.', o);
+    else if (isAnc(o.sp, m.sp)) add(4, '#은/는 @을/를 보면 어릴 적 생각이 나는 것 같다.', o);
+    const oBeats = od.t.find(t => (BEATS[t] || []).some(x => ty.includes(x))), mBeats = ty.find(t => (BEATS[t] || []).some(x => od.t.includes(x)));
+    if (oBeats && !mBeats) add(2, `#은/는 @의 ${TYPE_KO[oBeats]} 기운이 살짝 무서운 모양이다.`, o);
+    if (mBeats && !oBeats) add(2, '#은/는 @ 앞에서 괜히 어깨에 힘을 주고 있다.', o);
+    if (od.h >= d.h * 3 && od.h >= 12) add(1.5, '#은/는 커다란 @의 등에 올라타 보고 싶어 한다.', o);
+    if (d.h >= od.h * 3 && d.h >= 12) add(1.5, '#은/는 작은 @을/를 밟지 않으려고 조심조심 걷는다.', o);
+  }
+  if (TH_SP[m.sp]) add(6, TH_SP[m.sp]);
+  for (const t of ty) for (const x of TH_TY[t] || []) add(1.2, x);
+  if (TH_C[d.c]) add(1.5, TH_C[d.c]);
+  if (d.h <= 3) add(1, '#은/는 작아서 어디든 들어갈 수 있다고 자랑스러워한다.');
+  if (d.h >= 20) add(1, '#은/는 몸이 커서 숨바꼭질이 어렵다고 고민한다.');
+  if (d.baby) add(2, '#은/는 빨리 커서 어른 포켓몬처럼 되고 싶어 한다.');
+  if (P?.shiny) add(4, '#은/는 자기 몸 색이 남들과 다르다는 걸 아는 것 같다.');
+  if (P && rankOf(P) === 'S') add(2, '#은/는 자기가 특별하다는 걸 어렴풋이 아는 것 같다.');
+  if ((P?.fr || 0) >= FR_MAX) add(2, '#은/는 트레이너 발소리를 멀리서도 알아듣는다.');
+  if (m.name !== d.n) add(2, '#은/는 새 이름이 꽤 마음에 드는 것 같다.');
+  if (T(m).noct) add(1, '#은/는 밤이야말로 진짜 자기 시간이라고 생각한다.');
+  let k = Math.random() * L.reduce((a, x) => a + x.w, 0), pickd = L[0];
+  for (const x of L) { k -= x.w; if (k <= 0) { pickd = x; break; } }
+  const h = fm(pickd.f, pickd.o);
+  m.th = { h, exp: now + 6 * 60e3, o: pickd.o?.uid, nm: m.name };
+  return h;
 }
 function renameMon(m, v) {
   const name = v.trim().slice(0, 8) || DEX[m.sp].n;
@@ -3834,7 +3910,8 @@ const ivSum = p => p.iv.reduce((a, b) => a + b, 0);
 const rankOf = p => RANKS.find(([, v]) => ivSum(p) >= v)[0];
 const shinyHue = sp => 70 + (sp * 47) % 220;
 // 알을 주운 곳 = 처음 만난 곳
-const metHtml = (P, pre = '') => P && P.place ? `${pre}<span class="met">${esc(P.place)} 근처에서 만났다</span>` : '';
+const metDay = P => { const d = new Date(P.t); return `${d.getMonth() + 1}/${d.getDate()}`; };
+const metHtml = (P, pre = '') => P && P.place ? `${pre}<span class="met">${esc(P.place)} 근처에서 만났다 · ${metDay(P)}</span>` : '';
 function indivHtml(m) { const P = boxOf(m.pid); return P ? `랭크 <span class="rk ${rankOf(P)}">${rankOf(P)}</span>${P.shiny ? ' <b class="sh">✦ 이로치</b>' : ''} · 친밀도 <span class="hearts" style="color:#e04870">${hearts(P.fr)}</span>` : ''; }
 // S 랭크는 금빛으로 빛나고, 친밀도 만점(255)은 가끔 하트가 떠오른다
 const FR_MAX = 255;
@@ -4416,7 +4493,7 @@ async function hatchAll() {
 function dexInfoHtml(sp) {
   const d = SPECIES[sp];
   return `<div class="dx-top"><span class="dx-no">No.${String(sp).padStart(4, '0')}</span><b>${esc(d.n)}</b><span class="dx-g">${esc(d.g || '')}</span></div>`
-    + `<div class="dx-meta">${d.t.map(t => `<span class="tychip" style="background:${TYPE_C[t]}">${TYPE_KO[t]}</span>`).join('')}<span class="hw">키 ${(d.h / 10).toFixed(1)}m · 몸무게 ${(d.w / 10).toFixed(1)}kg</span></div>`
+    + `<div class="dx-meta">${tyIcons(sp)}<span class="hw">키 ${(d.h / 10).toFixed(1)}m · 몸무게 ${(d.w / 10).toFixed(1)}kg</span></div>`
     + (d.fx ? `<p class="dx-fx">${esc(d.fx)}</p>` : '');
 }
 function showDexInfo(sp) { const x = $('#hatchDex'); if (sp == null) { x.hidden = true; x.innerHTML = ''; } else { x.innerHTML = dexInfoHtml(sp); x.hidden = false; } }
@@ -4677,7 +4754,7 @@ async function start(data) {
   try { window.webkit?.messageHandlers?.pokeRun?.postMessage({ ready: true }); } catch (e) {}
 }
 if (/[?&]debug/.test(location.search)) window.__meadow = { S, newPoke, takeLockKm, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
-if (/[?&]debug/.test(location.search)) Object.assign(window, { __drag: () => drag, __log: log, __save: save, __bgm: bgm, __actx: () => actx, __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf });
+if (/[?&]debug/.test(location.search)) Object.assign(window, { __drag: () => drag, __log: log, __save: save, __bgm: bgm, __actx: () => actx, __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf, __thoughtOf: thoughtOf });
 window.claude?.hot?.snapshot?.(() => serialize());
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
 })();
