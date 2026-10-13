@@ -1841,7 +1841,9 @@ function noticeBerry(b) {
 // 열매를 고른 채 포켓몬을 누르면: 그 포켓몬 바로 앞에 그 포켓몬 몫의 열매를 놓는다 (다른 포켓몬은 안 먹는다)
 function feedOne(m) {
   setTool('look'); sfx('tap');
-  if (isFull(m)) { userAct(m); emote(m, '배불러'); log(`${J(m,'은/는')} 배가 불러서 열매를 사양했다.`, [m]); return; }
+  userAct(m);
+  if (m.state === 'sleep') wake(m, `${J(m,'이/가')} 열매 냄새에 눈을 번쩍 떴다.`);   // 자고 있어도 직접 주면 바로 깬다
+  if (isFull(m)) { emote(m, '배불러'); log(`${J(m,'은/는')} 배가 불러서 열매를 사양했다.`, [m]); return; }
   const tries = [m.face, -m.face].map(f => ({ x: clamp(m.x + f * Math.max(26, m.w * .45), XL + 30, XR - 30), y: clamp(m.y + 4, MIN_Y, MAX_Y) }));
   const p = T(m).mv === 'swim' ? null : tries.find(q => pondVal(q.x, q.y) >= 1.05);
   if (!p) {   // 물 위의 포켓몬에게는 바로 던져 준다
@@ -4453,7 +4455,7 @@ const MV_FX = {
   18: (o, f) => { mvSprite('fairy', o.x, o.y - 40, [[0, 0, .5, 0, 0], [0, -10, 2.2, 90, 1], [f * 120, 0, 2.6, 180, 0]], 1100, 0, 4); for (let i = 0; i < 10; i++) mvSprite('fairy', o.x + rnd(-40, 40), o.y + rnd(-40, 20), [[0, 0, .3, 0, 1], [0, -10, 1.2, 0, 1], [0, -20, .3, 0, 0]], 700, i * 70, 3); },
 };
 // 정보창의 기술 이름을 누르면 바로 쓴다 (필드 상세창에서는 창을 닫고 맵에서)
-infoEl.addEventListener('click', e => { const c = e.target.closest('button.mvchip,button.mvcard,button.mvuse'); if (c && S.sel && canMove(S.sel)) { const m = S.sel; userAct(m); if (c.classList.contains('mvuse')) select(null); useMove(m, +c.dataset.mv); } });
+infoEl.addEventListener('click', e => { const c = e.target.closest('button.mvchip,button.mvcard,button.mvuse'); if (c && S.sel && canMove(S.sel)) { const m = S.sel; userAct(m); if (c.classList.contains('mvuse')) select(null); if (m.state === 'sleep') wake(m, `${J(m,'이/가')} 부르는 소리에 벌떡 일어났다.`); useMove(m, +c.dataset.mv); } });
 mgrDet.addEventListener('click', e => { const c = e.target.closest('button.mvchip,button.mvcard'); const m = mgrSel; if (!c || !m || !canMove(m)) return; closeMgr(); setTimeout(() => useMove(m, +c.dataset.mv), 300); });
 function useMove(m, i = 0) {
   const L = movesOf(m.sp); if (!L.length || !awake(m) || m.held || m.evolving || m.mvBusy) return false;
