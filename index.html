@@ -38,6 +38,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .frtip,.frtip.sm{border:0!important;box-shadow:0 3px 8px rgba(0,0,0,.28)!important;padding:5px 9px}.frtip.sm{padding:3px 7px}.frtip::after,.frtip.sm::after{bottom:-8px!important;margin-left:-5px!important;border-width:4px 5px!important;border-top-color:#fff!important}
 .hatch-btns{display:flex;gap:8px}.hatch-btns .boxbtn{flex:1 1 0;min-width:0}.hatch .boxbtn.white{background:#fff;color:var(--frame)}
 .fopts.two{grid-template-columns:1fr 1fr}.fopts.two button.all{grid-column:auto}.fopts.two button{text-align:center}
+.bag-test{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:0 0 6px}.bag-test [data-g]{font:inherit;font-size:11px;padding:3px 6px;border:2px solid var(--frame);background:#fff;color:var(--win-ink);cursor:pointer}
 </style>
 <style>
 /* Layout: the meadow fills the window; pixel-RPG windows float over it (clock top-left, menu top-right,
@@ -983,6 +984,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
       </section>
       <section class="rtab" data-tab="bag">
         <div class="mgr-tools"><div class="bag-sort" id="bagSort"><button data-sort="new">최신순</button><button data-sort="km">거리순</button><button data-sort="grade">등급순</button></div><span class="tcount" id="bagCount"></span></div>
+        <div class="bag-test"><button id="bagTest" class="test-btn">알 추가 (테스트)</button><span id="bagTestG" hidden></span></div>
         <div class="bag-tabs" id="bagTabs" role="tablist"></div>
         <div class="bag-grid" id="bagGrid"></div>
       </section>
@@ -4866,6 +4868,12 @@ function renderRun() {
   renderRunLog();
 }
 // 테스트용: 부화기 알을 모두 부화 준비 상태로 (나중에 뺄 것)
+// 테스트용: 등급을 골라 지금 날짜·무작위 장소로 가방에 알을 넣는다 (나중에 뺄 것)
+const TEST_PLACES = ['한강공원', '동네 놀이터', '석촌호수', '해운대 해수욕장', '북한산 둘레길', '서울역', '김포공항', '노량진 수산시장', 'GS칼텍스 주유소', '동네 빵집', '어린이대공원 동물원', '잠실종합운동장', '대학병원', '초등학교', '봉은사', '공단 공장'];
+$('#bagTestG').innerHTML = [1, 2, 3, 4, 5].map(g => `<button data-g="${g}">${GRADE[g].n}</button>`).join('');
+$('#bagTest').onclick = () => { $('#bagTestG').hidden = !$('#bagTestG').hidden; };
+$('#bagTestG').onclick = ev => { const b = ev.target.closest('[data-g]'); if (!b) return;
+  S.bag.push({ id: S.eid++, g: +b.dataset.g, t: Date.now(), isNew: true, nt: true, km: 0, place: pick(TEST_PLACES) }); save(); renderBag.sig = ''; renderRun(); sfx('pickup'); };
 $('#eggTest').onclick = () => { S.eggs.forEach(e => { e.km = Math.max(e.km, e.need); }); save(); renderRun(); };
 // 짝꿍 카드 (포켓몬 창 › 짝꿍 탭)
 function renderBuddy() {
