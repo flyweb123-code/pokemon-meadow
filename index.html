@@ -27,6 +27,8 @@
 /* 작은 화면(아이폰 SE 등): 버튼 글자가 잘리지 않게 */
 @media (max-width:380px){.filters .fsel{font-size:13px;padding:6px 20px 6px 8px}.filters .fsel::after{right:6px}#pokePop .pp-btns .boxbtn,#monPop .m-btns .boxbtn{font-size:13px;letter-spacing:-.5px}.bag-sort button{padding:4px 5px;font-size:11px}}
 .bag-sort button{white-space:nowrap}#boxSort button[data-dir]:not([data-dir=''])::after{content:attr(data-dir);font-size:9px;margin-left:3px;vertical-align:1px}
+.legdark{position:absolute;inset:0;z-index:1040;pointer-events:none;opacity:0;transition:opacity .5s;background:radial-gradient(circle at var(--lx) var(--ly),color-mix(in srgb,var(--lc) 30%,transparent) 0,rgba(6,4,18,.55) 120px,rgba(6,4,18,.82) 320px)}.legdark.on{opacity:1}
+.legflash{position:absolute;inset:0;z-index:1090;pointer-events:none;mix-blend-mode:screen}
 .test-btn{font:inherit;font-size:11px;background:none;border:2px dashed #c03838;color:#c03838;padding:3px 6px;cursor:pointer}
 .run-eggs{padding:2px 0 6px 6px;border-bottom:2px dotted var(--inner)}.run-eggs .re-row{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);margin-top:3px}.re-eggs{display:flex;gap:1px;flex:none}.re-eggs .egg{width:12px;height:15px}.re-eggs .egg svg{width:100%;height:100%}.re-pl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .run-row:has(+.run-eggs){border-bottom:0}
@@ -4521,6 +4523,7 @@ function useMove(m, i = 0) {
   const L = movesOf(m.sp); if (!L.length || !awake(m) || m.held || m.evolving || m.mvBusy) return false;
   const [name, t, dc] = L[Math.min(i, L.length - 1)];
   m.mvBusy = true; setTimeout(() => { m.mvBusy = false; }, 2000);
+  if (isLegend(m)) return legendMove(m, name, t, dc);
   // 먼저 외치고(크앙!), 이어서 기술 모션·연출과 타입별 효과음
   emote(m, shoutOf(m.sp), '', 1.4); anim(m, 'hop');
   const f = -m.face || 1, mo = MOVE_MO[name] || (T(m).sp === 'dig' ? 'dig' : null);
@@ -4529,6 +4532,75 @@ function useMove(m, i = 0) {
   const by = watching(m), seen = startle(m, name, by);
   if (!seen && (by || Math.random() < .5)) log(`${J(m,'이/가')} ${J({ name },'을/를')} 썼다!`, [m]);
   return true;
+}
+// ---------- 전설 포켓몬 기술: 필드가 어두워지고, 타입에 맞는 거대한 연출이 화면을 덮는다. 필드의 모든 포켓몬이 놀란다 ----------
+const LEG_FX = {   // k: 그림, mode: 펼치는 방식, c: 타입 색
+  1: { k: 'hit', mode: 'burst', c: '#ffffff' }, 2: { k: 'punch', mode: 'burst', c: '#ff7030' }, 3: { k: 'wind', mode: 'sweep', c: '#d8f0ff' },
+  4: { k: 'poison', mode: 'rise', c: '#b060d0' }, 5: { k: 'clod', mode: 'rise', c: '#c89040' }, 6: { k: 'rock', mode: 'rain', c: '#b09070' },
+  7: { k: 'bug', mode: 'swirl', c: '#a8d020' }, 8: { k: 'ghost', mode: 'sweep', c: '#8a50d0' }, 9: { k: 'metal', mode: 'rain', c: '#c8d4e0' },
+  10: { k: 'fire', mode: 'rise', c: '#ff7020' }, 11: { k: 'water', mode: 'sweep', c: '#4890f0' }, 12: { k: 'leaf', mode: 'swirl', c: '#58c040' },
+  13: { k: 'elec', mode: 'bolt', c: '#ffe040' }, 14: { k: 'psy', mode: 'swirl', c: '#f060b0' }, 15: { k: 'snow', mode: 'rain', c: '#b8e8ff' },
+  16: { k: 'dragon', mode: 'sweep', c: '#7058f0' }, 17: { k: 'darkball', mode: 'burst', c: '#5a3a80' }, 18: { k: 'fairy', mode: 'rain', c: '#ff90c8' },
+};
+function viewBox() {   // 지금 화면에 보이는 필드 범위 (필드 좌표)
+  const wr = wrap.getBoundingClientRect(), sr = stage.getBoundingClientRect();
+  const x0 = (wr.left - sr.left) / scale, y0 = Math.max(0, (wr.top - sr.top) / scale);
+  return { x0, y0, x1: x0 + wr.width / scale, y1: y0 + wr.height / scale };
+}
+function legendMove(m, name, t, dc) {
+  const fx = LEG_FX[t] || LEG_FX[1], v = viewBox(), W = v.x1 - v.x0, H = v.y1 - v.y0, f = -m.face || 1;
+  m.goal = null; setState(m, 'special', 4.6); m.special = 'mvmo'; m.mvBusy = true; setTimeout(() => { m.mvBusy = false; }, 4600);
+  emote(m, shoutOf(m.sp), '', 2); anim(m, 'hop'); bgmDuck(.2, .4);
+  // 1) 필드가 어두워지고 전설만 밝게 남는다
+  const dk = document.createElement('div'); dk.className = 'legdark'; dk.style.setProperty('--lc', fx.c);
+  dk.style.setProperty('--lx', m.x + 'px'); dk.style.setProperty('--ly', (m.y - m.h * .5) + 'px'); stage.append(dk);
+  m.zAdd = 1045 - Math.round(m.y); requestAnimationFrame(() => dk.classList.add('on'));
+  legSnd(t, 0);
+  // 2) 기를 모은다: 몸이 타입 색으로 빛나고 고리가 안쪽으로 모인다
+  setTimeout(() => {
+    if (!S.mons.includes(m)) return;
+    playOnce(m, 'Charge') || anim(m, 'shake');
+    m.act.animate([{ filter: `drop-shadow(0 0 0 ${fx.c})` }, { filter: `drop-shadow(0 0 10px ${fx.c}) brightness(1.4)` }, { filter: `drop-shadow(0 0 4px ${fx.c})` }], { duration: 1100, fill: 'forwards' });
+    const o = { x: m.x, y: m.y - m.h * .5 };
+    for (let i = 0; i < 3; i++) { const d = document.createElement('div'); d.className = 'mvring'; d.style.cssText = `left:${o.x}px;top:${o.y}px;border-color:${fx.c}`; fxEl.append(d);
+      d.animate([{ transform: 'translate(-50%,-50%) scale(7)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(.3)', opacity: 1 }], { duration: 600, delay: i * 200, fill: 'both', easing: 'ease-in' }).onfinish = () => d.remove(); }
+  }, 500);
+  // 3) 터진다: 화면 가득 타입 연출 + 번쩍 + 흔들림 + 모두 놀람
+  setTimeout(() => {
+    if (!S.mons.includes(m)) return;
+    moveAnim(m, dc); const o = { x: m.x, y: m.y - m.h * .5 };
+    const fl = document.createElement('div'); fl.className = 'legflash'; fl.style.background = fx.c; stage.append(fl);
+    fl.animate([{ opacity: .85 }, { opacity: 0 }], { duration: 500, easing: 'ease-out' }).onfinish = () => fl.remove();
+    wrap.animate([{ transform: 'translate(0,0)' }, { transform: 'translate(-7px,3px)' }, { transform: 'translate(6px,-3px)' }, { transform: 'translate(-5px,2px)' }, { transform: 'translate(4px,-1px)' }, { transform: 'translate(0,0)' }], { duration: 700 });
+    haptic(2); legBurst(fx, o, f, v, W, H);
+    for (let i = 0; i < 4; i++) mvRing(o.x, o.y, fx.c, 1100, i * 220, 14);
+    (MV_FX[t] || MV_FX[1])(o, f, m);
+    const near = S.mons.filter(x => x !== m && !x.hidden && !x.held && !x.evolving);
+    near.forEach((x, k) => setTimeout(() => { if (!S.mons.includes(x) || x.held) return;
+      if (x.state === 'sleep') wake(x); if (x.partner) { const q = x.partner; q.partner = null; x.partner = null; setState(q, 'idle', 1); }
+      anim(x, 'hop'); emote(x, pick(['!!', '!?', '…!']), '', 1.8); x.goal = null;
+      const d = Math.max(1, dist(x, m)); moveTo(x, { x: x.x + (x.x - m.x) / d * rnd(50, 90), y: x.y + (x.y - m.y) / d * 30 }, { kind: 'flee' }, 1.8);
+    }, 200 + k * 60));
+    setTimeout(() => log(`${J(m,'이/가')} ${J({ name },'을/를')} 썼다! 필드가 흔들리고 ${near.length ? '모든 포켓몬이 깜짝 놀랐다' : '하늘이 울렸다'}!`, [m, ...near], true), 300 + near.length * 60);   // 깨어난 포켓몬 기록보다 뒤에
+  }, 1500);
+  // 4) 어둠이 걷히고 음악이 돌아온다
+  setTimeout(() => { dk.classList.remove('on'); m.zAdd = 0; m.act.animate([{ filter: `drop-shadow(0 0 4px ${fx.c})` }, { filter: 'none' }], { duration: 600 }); bgmDuck(1, 1.6); setTimeout(() => dk.remove(), 900); }, 3700);
+  return true;
+}
+function legBurst(fx, o, f, v, W, H) {
+  const { k, mode } = fx, R = (a, b) => a + Math.random() * (b - a);
+  if (mode === 'rain') for (let i = 0; i < 34; i++) { const x = R(v.x0, v.x1); mvSprite(k, x, v.y0 - 20, [[0, 0, 1.4, 0, 1], [R(-20, 20), H * .6, 1.6, R(-90, 90), 1], [R(-30, 30), H + 20, 1.6, R(-180, 180), 0]], R(900, 1400), i * 45, 5); }
+  else if (mode === 'rise') for (let i = 0; i < 36; i++) { const x = R(v.x0, v.x1); mvSprite(k, x, v.y1 + 10, [[0, 0, 1, 0, 0], [R(-10, 10), -H * .5, 1.8, 0, 1], [R(-20, 20), -H * .95, 2.2, 0, 0]], R(1000, 1500), i * 40, 5); }
+  else if (mode === 'sweep') for (let i = 0; i < 30; i++) { const y = R(v.y0 + 10, v.y1 - 10), x = f > 0 ? v.x0 - 30 : v.x1 + 30; mvSprite(k, x, y, [[0, 0, 1.2, f > 0 ? 0 : 180, 0], [f * W * .5, R(-20, 20), 1.8, f > 0 ? 0 : 180, 1], [f * (W + 60), R(-30, 30), 2, f > 0 ? 0 : 180, 0]], R(900, 1300), i * 45, 5, f); }
+  else if (mode === 'swirl') for (let i = 0; i < 32; i++) { const a = i / 32 * Math.PI * 4, r0 = 30, r1 = Math.max(W, H) * .7; mvSprite(k, o.x, o.y, [[Math.cos(a) * r0, Math.sin(a) * r0, .8, 0, 0], [Math.cos(a + 1.2) * r1 * .5, Math.sin(a + 1.2) * r1 * .4, 1.8, 360, 1], [Math.cos(a + 2.4) * r1, Math.sin(a + 2.4) * r1 * .7, 2.2, 720, 0]], 1400, i * 25, 5); }
+  else if (mode === 'bolt') for (let i = 0; i < 8; i++) { const x = R(v.x0 + 20, v.x1 - 20), y = R(v.y0 + H * .4, v.y1 - 10); mvSprite('elec', x, y - 90, [[0, -120, 2.2, 0, 1], [0, 0, 2.6, 0, 1], [0, 0, 2.6, 0, 0]], 380, i * 140, 6); setTimeout(() => { mvRing(x, y, '#ffe040', 500, 0, 6); for (let j = 0; j < 4; j++) particle(x + R(-20, 20), y, 'dust'); }, 260 + i * 140); }
+  else for (let i = 0; i < 14; i++) { const x = R(v.x0 + 20, v.x1 - 20), y = R(v.y0 + 20, v.y1 - 20); mvSprite(k, x, y, [[0, 0, .4, 0, 1], [0, 0, 2.6, 45, 1], [0, 0, 3, 90, 0]], 520, i * 90, 5); setTimeout(() => mvRing(x, y, fx.c, 600, 0, 7), i * 90); }
+}
+function legSnd(ty, d0) {
+  if (!sfxOn) return; const a = audio(); if (!a) return; const t = a.currentTime + .05 + d0;
+  tone(55, t, 1.4, { type: 'sawtooth', vol: .07, to: 110 }); tone(82, t + .1, 1.3, { type: 'square', vol: .04, to: 165, steps: 8 }); noise(t + .3, .5, .08, 300);   // 차오르는 울림
+  [0, 4, 7, 12].forEach((n, i) => tone(NOTE(50 + n), t + .5 + i * .12, .9 - i * .1, { type: 'triangle', vol: .06 }));
+  setTimeout(() => { if (!sfxOn) return; const t2 = a.currentTime + .02; noise(t2, .5, .3, 120); noise(t2 + .05, .5, .22, 900); tone(98, t2, .9, { type: 'sawtooth', vol: .09, to: 40 }); tone(NOTE(62), t2, 1.2, { type: 'square', vol: .05 }); tone(NOTE(69), t2, 1.2, { type: 'square', vol: .04 }); mvSnd(ty); setTimeout(() => mvSnd(ty), 300); setTimeout(() => mvSnd(ty), 650); }, d0 * 1000 + 1500);
 }
 // 기술마다 어울리는 몸동작: 땅속·물속으로 들어갔다 앞쪽에서 튀어나오기, 사라졌다 나타나기, 날아올랐다 내리꽂기, 돌진, 회전, 땅 울리기
 const MOVE_MO = { '구멍파기': 'dig', '다이빙': 'dive', '고스트다이브': 'vanish', '야습': 'vanish', '섀도스틸': 'vanish', '순간이동': 'tele', '이차원홀': 'tele', '공중날기': 'fly', '뛰어오르기': 'fly', '드래곤다이브': 'fly', '브레이브버드': 'fly', '애크러뱃': 'fly', '데스윙': 'fly', '폭포오르기': 'fly', '고속스핀': 'spin', '화염바퀴': 'spin', '아이스스피너': 'spin', '지옥의바퀴': 'spin', '드릴라이너': 'spin', '하이퍼드릴': 'spin', '돌진': 'dash', '몸통박치기': 'dash', '이판사판태클': 'dash', '로켓박치기': 'dash', '전광석화': 'dash', '신속': 'dash', '와일드볼트': 'dash', '플레어드라이브': 'dash', '웨이브태클': 'dash', '니트로차지': 'dash', '아쿠아브레이크': 'dash', '덤벼들기': 'dash', '아이언헤드': 'dash', '사념의박치기': 'dash', '양날박치기': 'dash', '박치기': 'dash', '레이징불': 'dash', '스타어설트': 'dash', '지진': 'quake', '10만마력': 'quake', '땅고르기': 'quake', '분함의발구르기': 'quake', '짓밟기': 'quake', '대지의힘': 'quake', '단단해지기': 'harden', '코스믹파워': 'harden' };
@@ -4593,7 +4665,7 @@ let mvAcc = 0;
 function tickMoves(real) {
   mvAcc += real; if (mvAcc < 1) return; mvAcc = 0;
   for (const m of S.mons) {
-    if (!canMove(m) || !awake(m) || m.state !== 'idle') continue;
+    if (!canMove(m) || !awake(m) || m.state !== 'idle' || isLegend(m)) continue;   // 전설은 사용자가 누를 때만
     m.mvT = (m.mvT ?? rnd(15, 40)) - 1;
     if (m.mvT <= 0) { m.mvT = rnd(45, 100); useMove(m); }
   }
