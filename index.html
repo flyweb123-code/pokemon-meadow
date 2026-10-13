@@ -1299,7 +1299,7 @@ document.addEventListener('click', e => {
   if (b.id === 'hatchOk') return;
   sfx(b.closest('.menu,.cmd,.runtabs,.tabbar,nav') ? 'open' : 'tap');
 }, true);
-const POND = { x: 735, y: 432, rx: 150, ry: 80 };
+const POND = { x: 735, y: 432, rx: 112, ry: 60 };   // 2026-10-14 줄임 (원래 150×80): 아래로 지나갈 길이 생기게
 const MIN_Y = 150, MAX_Y = 580;
 // the part of the meadow Pokémon may use; phones show (and use) only a window of it
 let XL = 0, XR = 960;
@@ -1520,6 +1520,7 @@ function friendsAll(m) {
 }
 const getRel = (a, b) => S.rel[relKey(a, b)] || 0;
 function addRel(a, b, d) {
+  if (d > 0) d *= .4;   // 친해지는 속도는 천천히 (2026-10-14), 사이가 나빠지는 건 그대로
   const k = relKey(a, b), before = S.rel[k] || 0, after = clamp(before + d, -100, 100);
   S.rel[k] = after;
   if (before < 60 && after >= 60) log(`${J(a,'과/와')} ${J(b,'은/는')} 이제 단짝이 되었다!`, [a, b], true);
@@ -3011,6 +3012,12 @@ function update(m, dt) {
       if (t.mv === 'walk' && pondVal(m.x, m.y) < 1.08) projectOut(m, 1.08);
       if (t.mv === 'swim' && pondVal(m.x, m.y) > .9) projectOut(m, .9);
       m.x = clamp(m.x, XL + 20, XR - 20); m.y = clamp(m.y, MIN_Y, MAX_Y);
+      // 길이 막혀(호수·화면 끝) 거의 못 나아가면 1초쯤 뒤 왔던 쪽으로 돌아 나간다
+      { const gain = d - Math.hypot(m.tx - m.x, m.ty - m.y);
+        m.stk = gain < step * .3 ? (m.stk || 0) + dt : Math.max(0, (m.stk || 0) - dt);
+        if (m.stk > 1 && t.mv !== 'swim') { m.stk = 0; const back = { x: clamp(m.x - dx / d * rnd(90, 170) + rnd(-40, 40), XL + 30, XR - 30), y: clamp(m.y - dy / d * rnd(50, 110) + rnd(-30, 30), MIN_Y + 5, MAX_Y - 5) };
+          if (t.mv === 'walk' && pondVal(back.x, back.y) < 1.15) projectOut(back, 1.2);
+          m.goal = null; m.tx = back.x; m.ty = back.y; m.t = Math.min(m.t, 4); break; } }
       if (m.t <= 0) { if (g && g.kind === 'chase') chaseEnd(m); else think(m); }
       break;
     }
@@ -3335,7 +3342,7 @@ function fit() {
     // phones: the meadow fills the height; only a window of it is shown, and Pokémon keep to it
     scale = Math.max(w / W, h / H); const vis = Math.min(W, w / scale);
     // 호수가 오른쪽에 통째로 보이게 창을 잡는다
-    XL = clamp(POND.x + POND.rx + 24 - vis, 0, W - vis); XR = XL + vis;
+    XL = clamp(POND.x + POND.rx + 60 - vis, 0, W - vis); XR = XL + vis;
     S.ox = -XL * scale; S.oy = (h - H * scale) / 2;
   } else { XL = 0; XR = W; scale = Math.min(w / W, h / H); S.ox = (w - W * scale) / 2; S.oy = (h - H * scale) / 2; }
   stage.style.transform = `translate(${S.ox}px,${S.oy}px) scale(${scale})`;
@@ -4068,7 +4075,7 @@ function refreshCap() { $('#capBadge').textContent = `${S.mons.length}/${MAX_MON
 // species' rarity. Up to 3 buddies chosen in the dex evolve after running enough together.
 const GRADE = [null,
   { n: '일반', km: 2.5 }, { n: '희귀', km: 5 }, { n: '레어', km: 7.5 }, { n: '에픽', km: 10 }, { n: '전설', km: 15 }];
-const MAX_EGGS = 15;
+const MAX_EGGS = 20;   // 2026-10-14 15→20
 const gradeOf = sp => { const d = SPECIES[sp]; if (d.leg || d.my) return 5; const c = d.cr ?? 45; return c >= 190 ? 1 : c >= 120 ? 2 : c >= 45 ? 3 : 4; };
 const baseOf = sp => { let s = sp; while (SPECIES[s] && SPECIES[s].fr) s = SPECIES[s].fr; return s; };
 const POOL = [[], [], [], [], [], []], COMMON = new Set();
