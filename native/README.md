@@ -31,6 +31,22 @@
 6. **저장 옮기기**: 홈 화면 웹앱의 설정 › 저장 복사 → 새 포켓런닝 앱의 설정 › 저장 붙여넣기.
 
 무료 Apple ID 로 설치하면 7일 뒤 앱이 열리지 않아요. 그때 Mac 에서 ▶ 를 다시 누르면 돼요 (저장은 그대로).
+무료 계정은 Xcode 가 직접 본 기기에만 설치할 수 있어서, 워치가 Xcode 에 안 잡히면 워치 앱이 'could not be installed' 로 실패해요.
+
+## 유료 계정 + TestFlight 로 설치하기 (권장)
+
+워치를 Xcode 에 연결하지 않아도 되고, 빌드 하나가 90일 가요.
+
+1. developer.apple.com/programs 에서 Apple Developer Program 가입 → 승인 메일 기다리기.
+2. 터미널에서 최신 코드 받기: `cd pokemon-meadow && git pull && cd native && xcodegen`
+3. Xcode › Settings › Accounts 에서 유료 팀이 보이는지 확인. PokeRun, PokeRunWatch 두 타깃의 Signing › Team 을 유료 팀으로 바꿔요.
+4. appstoreconnect.apple.com › 앱 › + › 신규 앱: 플랫폼 iOS, 이름 '포켓런닝'(이미 있으면 '포켓런닝 경완' 처럼), 번들 ID `com.flyweb123.pokerun`, SKU 아무 글자.
+   - 번들 ID 가 목록에 없으면 Xcode 에서 한 번 빌드(▶)하면 생겨요.
+5. Xcode 위쪽 기기를 **Any iOS Device (arm64)** 로 고르고 **Product › Archive**.
+6. 끝나면 열리는 Organizer 에서 **Distribute App › TestFlight Internal Only** › Upload.
+7. 10~30분 뒤 App Store Connect › 포켓런닝 › TestFlight 에 빌드가 뜨면, '내부 테스트' 그룹을 만들고 내 Apple ID 를 넣어요.
+8. 아이폰에 **TestFlight** 앱(App Store)을 깔고 포켓런닝 설치. 워치 앱은 Watch 앱 › 설치 가능한 앱에서 설치(또는 자동).
+9. 다음 업데이트 때는 project.yml 의 `CURRENT_PROJECT_VERSION` 숫자를 1 올리고 `xcodegen` → 5~6 반복.
 
 ## 쓰는 법
 

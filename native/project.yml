@@ -27,6 +27,7 @@ targets:
         UIViewControllerBasedStatusBarAppearance: false
         UIStatusBarStyle: UIStatusBarStyleLightContent
         LSApplicationQueriesSchemes: [shortcuts]
+        ITSAppUsesNonExemptEncryption: false
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.flyweb123.pokerun
@@ -47,6 +48,7 @@ targets:
         WKBackgroundModes: [workout-processing]
         NSHealthShareUsageDescription: 달린 거리를 알에 쌓으려고 건강 데이터를 읽어요.
         NSHealthUpdateUsageDescription: 런닝을 운동 기록으로 저장해요.
+        ITSAppUsesNonExemptEncryption: false
     entitlements:
       path: PokeRunWatch/PokeRunWatch.entitlements
       properties:
