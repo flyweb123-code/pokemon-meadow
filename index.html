@@ -352,6 +352,7 @@ ol.log li.big .txt{color:#c03838}
 /* 친밀도 만점: 하트가 떠오름 */
 .mon.frMax .lift::after{content:'♥';position:absolute;left:-8px;bottom:calc(var(--mh,60px) + 2px);color:#ff3a78;font-size:24px;text-shadow:0 0 3px #fff,0 0 1px #fff;animation:frup 3.2s ease-out infinite;pointer-events:none;opacity:0;z-index:3}
 @keyframes frup{0%,30%{opacity:0;transform:translateY(6px) scale(.6)}40%{opacity:1;transform:translateY(0) scale(1.15)}55%{opacity:1;transform:translateY(-4px) scale(1)}100%{opacity:0;transform:translateY(-26px) scale(1)}}
+.fulltag{display:inline-block;font-size:11px;font-weight:400;color:#fff;background:#e8a020;padding:1px 6px}
 .hmax{color:#ff3a78;font-weight:400;text-shadow:0 0 4px #ffb0c8}
 .shiny img,.mon.shiny .act img,.mon.shiny .spr,img.shiny{filter:hue-rotate(var(--shue,150deg)) saturate(1.25)}
 .mon.shiny .act::after{content:'✦';position:absolute;right:-6px;top:-6px;color:#ffd84a;font-size:12px;text-shadow:0 0 4px #fff;animation:twk 1.2s steps(2) infinite}
@@ -1429,6 +1430,11 @@ function addBerry(x, y, natural = false, t = Date.now()) {
   if (S.berries.length > 24) eatBerry(S.berries[0]);
   return b;
 }
+// 하루에 열매는 포켓몬마다 BERRY_DAY 개까지. 다 먹으면 그날은 배부름(열매를 안 먹음)
+const BERRY_DAY = 3, todayKey = () => new Date().toDateString();
+function ateToday(m) { const P = boxOf(m.pid); return P && P.ateD === todayKey() ? P.ateN || 0 : 0; }
+const isFull = m => ateToday(m) >= BERRY_DAY;
+function countBerry(m) { const P = boxOf(m.pid); if (!P) return; const d = todayKey(); if (P.ateD !== d) { P.ateD = d; P.ateN = 0; } P.ateN++; }
 function eatBerry(b) { b.el.remove(); S.berries = S.berries.filter(x => x !== b); }
 function rotBerries() {
   const now = Date.now();
@@ -1501,13 +1507,13 @@ function think(m) {
   m.goal = null; m.partner = null; m.spdMul = 1;
   if (m.hidden) return;
   const t = T(m);
-  if (m.hunger > 85 && t.mv !== 'swim') {
+  if (m.hunger > 85 && t.mv !== 'swim' && !isFull(m)) {
     const b = nearestBerry(m);
     if (b) return moveTo(m, b, { kind: 'berry', berry: b }, 1.25);
     return moveTo(m, { x: rnd(XL + 60, XR - 60), y: MIN_Y + rnd(0, 18) }, { kind: 'forage' });
   }
   if (m.energy < 15 || (wrongTime(m) && Math.random() < .55)) return goToBed(m);
-  if (m.hunger > 62) {
+  if (m.hunger > 62 && !isFull(m)) {
     const b = nearestBerry(m);
     if (b) return moveTo(m, b, { kind: 'berry', berry: b }, 1.25);
     if (t.mv !== 'swim' && Math.random() < .5) { // forage at the forest edge
@@ -1542,10 +1548,12 @@ function arrive(m) {
         if (!m.lateCd || S.clock - m.lateCd > 240) { m.lateCd = S.clock; log(`${J(m,'이/가')} 한발 늦었다. ${J(b.eater,'이/가')} 열매를 먼저 먹어 버렸다.`, [m, b.eater]); addRel(m, b.eater, -3); }
       }
       const nb = nearestBerry(m);
-      if (nb && m.hunger > 40) return moveTo(m, nb, { kind: 'berry', berry: nb }, 1.25);
+      if (nb && m.hunger > 40 && !isFull(m)) return moveTo(m, nb, { kind: 'berry', berry: nb }, 1.25);
       return setState(m, 'idle', 1.5);
     }
-    b.eater = m; eatBerry(b); addFr(m.pid, 1);
+    if (isFull(m)) { emote(m, '배불러'); return setState(m, 'idle', 2); }
+    b.eater = m; eatBerry(b); addFr(m.pid, 1); countBerry(m);
+    if (isFull(m)) { m.hunger = 0; setTimeout(() => emote(m, '배불러!', 'heart', 2), 3200); log(`${J(m,'이/가')} 배가 불러서 오늘은 더 못 먹겠다.`, [m]); }
     setState(m, 'eat', m.sp === 143 ? 5 : 3); emote(m, '냠', 'heart', 2.5);
     if (Math.random() < .45) log(pick([`${J(m,'이/가')} 나무열매를 냠냠 먹었다.`, `${J(m,'이/가')} 열매를 맛있게 먹는다.`]), [m]);
     return;
@@ -2680,6 +2688,7 @@ function update(m, dt) {
   if (m.held || m.evolving) return;
   const t = T(m), asleep = m.state === 'sleep';
   m.hunger = clamp(m.hunger + dt * .16 * (t.hun || 1) * (asleep ? .3 : 1));
+  if (m.hunger > 20 && isFull(m)) m.hunger = 20;
   if (!asleep) m.social = clamp(m.social + dt * .4 * (t.soc || 1));
   if (m.spCd > 0) m.spCd -= dt;
   if (asleep) m.energy = clamp(m.energy + dt * 1.3);
@@ -2948,7 +2957,8 @@ function renderInfo() {
   }
   $('#pname').textContent = m.name;
   $('#pdoing').textContent = doingText(m) + (m.form !== m.sp ? ` (${DEX[m.form].n}로 변신 중)` : '');
-  $('#pIndiv').innerHTML = indivHtml(m);
+  $('#pIndiv').innerHTML = indivHtml(m) + berryHtml(m);
+  { const f = isFull(m), b = $('#pfeed'); b.disabled = f; b.textContent = f ? '배불러요' : '열매 주기'; }
   $('#pbars').innerHTML = bar('기력', m.energy, 'var(--hp)') + bar('배고픔', m.hunger, 'var(--hunger)') + bar('외로움', m.social, 'var(--lonely)');
 }
 const narrow = matchMedia('(max-width: 760px), (max-height: 500px) and (orientation: landscape)');
@@ -3061,7 +3071,7 @@ stage.addEventListener('click', e => {
     if (y < MIN_Y - 10) return;
     if (pondVal(x, y) < 1.05) { ring(x, y); return; }
     addBerry(x, y);
-    S.mons.forEach(m => { if (awake(m) && m.hunger > 40 && dist(m, { x, y }) < 260 && (m.state === 'idle' || (m.state === 'move' && m.goal?.kind === 'wander'))) think(m); });
+    S.mons.forEach(m => { if (awake(m) && m.hunger > 40 && !isFull(m) && dist(m, { x, y }) < 260 && (m.state === 'idle' || (m.state === 'move' && m.goal?.kind === 'wander'))) think(m); });
   } else if (!$('#journal').hidden) setLog(false);
   else select(null);
 });
@@ -3581,7 +3591,8 @@ function renderMgrDetail(rebuild) {
   $('#mBars').innerHTML = bar('기력', m.energy, 'var(--hp)') + bar('배고픔', m.hunger, 'var(--hunger)') + bar('외로움', m.social, 'var(--lonely)');
   $('#mDoing').textContent = `${doingText(m)}${m.form !== m.sp ? ` (${DEX[m.form].n}로 변신 중)` : ''} · 필드에서 ${days}일째`;
   $('#mRels').innerHTML = relsHtml(m, 5, 3);
-  $('#mIndiv').innerHTML = indivHtml(m);
+  $('#mIndiv').innerHTML = indivHtml(m) + berryHtml(m);
+  { const f = isFull(m), b = $('#mFeed'); b.disabled = f; b.textContent = f ? '배불러요' : '열매 주기'; }
   const sb = $('#mSleep'), busy = m.hidden || m.state === 'interact' || m.state === 'special';
   sb.textContent = m.state === 'sleep' ? '깨우기' : busy ? '지금은 바쁨' : '재우기'; sb.disabled = m.state !== 'sleep' && busy;
   if (mgrFreeArm && Date.now() - mgrFreeArm > 3000) { mgrFreeArm = 0; $('#mFree').textContent = '숲으로 보내기'; }
@@ -3632,6 +3643,7 @@ const SHINY_RATE = 1 / 4096;
 const ivSum = p => p.iv.reduce((a, b) => a + b, 0);
 const rankOf = p => RANKS.find(([, v]) => ivSum(p) >= v)[0];
 const shinyHue = sp => 70 + (sp * 47) % 220;
+const berryHtml = m => isFull(m) ? ' · <b class="fulltag">배부름</b>' : ` · 열매 ${ateToday(m)}/${BERRY_DAY}`;
 function indivHtml(m) { const P = boxOf(m.pid); return P ? `랭크 <span class="rk ${rankOf(P)}">${rankOf(P)}</span>${P.shiny ? ' <b class="sh">✦ 이로치</b>' : ''} · 친밀도 <span class="hearts" style="color:#e04870">${hearts(P.fr)}</span>` : ''; }
 // S 랭크는 금빛으로 빛나고, 친밀도 만점(255)은 가끔 하트가 떠오른다
 const FR_MAX = 255;
