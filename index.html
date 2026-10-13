@@ -320,8 +320,12 @@ ol.log li.big .txt{color:#c03838}
 .lk-btn#lockCancel{grid-column:1 / -1;padding:8px;font-size:13px;box-shadow:none;border-width:2px}
 .lockrun.wait{background:#fff6d8;cursor:default}
 .lockrun.wait .lk-icon{background:#e05a3c;color:#fff}
-.manual{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:14px;margin-bottom:12px}
-.manual input{width:90px;font:inherit;font-size:16px;border:3px solid var(--frame);padding:4px 6px;border-radius:0}
+.manbox{background:var(--card);cursor:default}
+.man-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:12px}
+.man-in{display:flex;align-items:center;gap:6px;border:3px solid var(--frame);background:#fff;padding:0 10px}
+.man-in input{flex:1;min-width:0;width:100%;font:inherit;font-size:20px;font-weight:700;border:0;padding:9px 0;background:transparent;border-radius:0;outline:0}
+.man-in span{font-size:15px;color:var(--dim)}
+.man-in:focus-within{outline:3px solid var(--cursor);outline-offset:1px}
 ol.runs{list-style:none;margin:0;padding:0;font-size:13px;max-height:200px;overflow-y:auto}
 ol.runs li{display:flex;justify-content:space-between;gap:8px;border-bottom:2px dotted var(--inner);padding:4px 0}
 ol.runs li span{color:var(--dim)}
@@ -443,7 +447,6 @@ ol.runs li span{color:var(--dim)}
   .mgr-detail{border-left:0;border-top:3px dotted var(--inner);padding:12px 0 0;overflow:visible}
   .mgr-detail .acts .opt{padding:10px 0 10px 20px}
   .runwin{height:100%}
-  .manual input{font-size:16px}
   .hatch>div{max-width:calc(100vw - 32px)}
 }
 @media (max-height:500px) and (orientation:landscape){
@@ -555,10 +558,9 @@ ol.runs li span{color:var(--dim)}
           <div class="small" id="lockInfo"></div>
           <div class="lk-btns" id="lockBtns" hidden><button class="lk-btn main" id="lockFetch">가져오기</button><button class="lk-btn main" id="lockPaste">거리 붙여넣기</button><button class="lk-btn" id="lockCancel">취소</button></div>
         </div>
-        <div class="manual">
-          <label for="manKm">건강 앱 기록 입력</label>
-          <input id="manKm" type="number" min="0" max="60" step="0.01" inputmode="decimal" placeholder="0.00"> km
-          <button class="opt" id="manAdd">기록 추가</button>
+        <div class="lockrun manbox" id="manual">
+          <div class="lk-top"><span class="lk-icon" aria-hidden="true">+</span><div class="lk-text"><b class="lk-title"><label for="manKm">기록 직접 추가</label></b></div></div>
+          <div class="man-row"><span class="man-in"><input id="manKm" type="number" min="0" max="60" step="0.01" inputmode="decimal" placeholder="0.00" enterkeyhint="done"><span>km</span></span><button class="lk-btn main" id="manAdd">추가</button></div>
         </div>
         <ol class="runs" id="runs"></ol>
       </section>
@@ -2934,6 +2936,7 @@ $('#lockPaste').onclick = async () => {
   catch (e) { $('#lockInfo').textContent = '붙여넣기가 막혀 있어요. 아래 칸에 거리를 직접 적어 주세요.'; $('#manKm').focus(); }
 };
 document.addEventListener('visibilitychange', () => { if (!document.hidden && lockAsked && S.lockT) { if (runEl.hidden) openRun(); $('#lockPaste').focus(); } });
+$('#manKm').addEventListener('keydown', e => { if (e.key === 'Enter') $('#manAdd').click(); });
 $('#manAdd').onclick = () => {
   const v = parseFloat($('#manKm').value);
   if (!(v > 0) || v > 60) { $('#manKm').focus(); return; }
