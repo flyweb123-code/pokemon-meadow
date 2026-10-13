@@ -4627,12 +4627,15 @@ function tapEgg(egg, g, msg) {
       if (n >= need) {
         clearTimeout(idle);
         setTimeout(() => { egg.classList.remove('knock'); egg.classList.add('wig2'); sfx('rattle'); sfx('rise'); }, 220);
-        setTimeout(() => { hatchStage.removeEventListener('pointerdown', down); hatchStage.removeEventListener('click', up); hatchStage.classList.remove('tapme'); done(); }, 900);
+        hatchEl.onclick = null;
+        setTimeout(() => { hatchStage.removeEventListener('pointerdown', down); hatchStage.removeEventListener('click', up); hatchStage.classList.remove('tapme'); done(true); }, 900);
       } else nudge();
     };
     // 터치에선 손을 뗄 때만 '사용자 동작'으로 쳐서, iOS 사파리 진동은 click 에서 한 번 더 시도한다
     const up = () => { if (pend >= 0 && !window.webkit?.messageHandlers?.haptic && !navigator.vibrate) haptic(pend); pend = -1; };
     hatchStage.addEventListener('pointerdown', down); hatchStage.addEventListener('click', up); nudge();
+    // 다 두드리기 전에 창 바깥을 누르면 그만둔다 (알은 부화기에 그대로)
+    hatchEl.onclick = ev => { if (ev.target.closest('.win') || n >= need) return; clearTimeout(idle); hatchStage.removeEventListener('pointerdown', down); hatchStage.removeEventListener('click', up); hatchStage.classList.remove('tapme'); hatchEl.onclick = null; done(false); };
   });
 }
 // hatch cutscene: wobble, crack, flash, reveal
@@ -4687,7 +4690,7 @@ async function playHatch() {
     clearInterval(wt); go.hidden = true; hatchEl.onclick = null; egg.classList.remove('wig');
     if (!yes) { hatchEl.hidden = true; hatching = false; renderRun(); if (hatchQ.length) playHatch(); return; }
   }
-  await tapEgg(egg, g, msg);
+  if (!await tapEgg(egg, g, msg)) { hatchEl.hidden = true; hatching = false; renderRun(); if (hatchQ.length) playHatch(); return; }
   hatchStage.querySelector('.flash').classList.add('go'); sfx('pop');
   if (src) { S.eggs = S.eggs.filter(x => x !== src); renderBag.sig = ''; renderRun(); }
   hatchStage.querySelectorAll('.shard').forEach(x => { x.style.setProperty('--ec', getComputedStyle(egg).getPropertyValue('--ec')); x.classList.add('go'); });
