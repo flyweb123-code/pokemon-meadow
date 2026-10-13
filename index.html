@@ -344,70 +344,85 @@ ol.runs li span{color:var(--dim)}
   .slots{grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible}
   .mgr-detail{border-left:0;border-top:3px dotted var(--inner);padding:12px 0 0;overflow:visible}
 }
-/* Phone: one screen like an app. Clock on top, the meadow fills the middle (swipe sideways to look
-   around), dialogue, commands and the menu as a tab bar at the bottom; windows open full screen. */
+/* Phone: one screen like an app. The meadow fills everything above a bottom panel (dialogue + tab bar);
+   clock and speed float over the meadow; windows open full screen. position:fixed rather than 100vh,
+   because iOS home-screen apps report a short 100vh and leave a strip at the bottom. */
+.spd{display:none}
 @media (max-width:760px),(max-height:500px) and (orientation:landscape){
-  html,body{height:100%;overflow:hidden;overscroll-behavior:none}
-  .app{height:100dvh;min-height:0;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr);
-    grid-template-rows:auto minmax(0,1fr) auto auto auto;grid-template-areas:"clock" "stage" "dlg" "cmd" "menu";
-    gap:0;padding:0;background:var(--forest)}
+  html,body{height:100%;overflow:hidden;overscroll-behavior:none;background:var(--frame)}
+  .app{position:fixed;inset:0;height:auto;min-height:0;overflow:hidden;display:grid;padding:0;gap:0;background:var(--frame);
+    grid-template-columns:minmax(0,3fr) minmax(0,2fr);grid-template-rows:minmax(0,1fr) auto auto;
+    grid-template-areas:"stage stage" "dlg dlg" "menu cmd"}
   .stage-wrap{grid-area:stage;position:relative;inset:auto;aspect-ratio:auto;margin:0;overflow-x:auto;overflow-y:hidden;
-    touch-action:pan-x;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+    touch-action:pan-x;scrollbar-width:none;-webkit-overflow-scrolling:touch;background:var(--forest)}
   .stage-wrap::-webkit-scrollbar{display:none}
   .stage-wrap .sizer{height:1px}
   .mon{touch-action:none}
   .hud{position:static}
   .win{box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 6px var(--inner);border-width:3px}
-  .clockwin{grid-area:clock;order:0;margin:0;align-self:stretch;border-width:0 0 3px;box-shadow:none;
-    padding:calc(env(safe-area-inset-top) + 6px) 16px 6px;gap:10px;justify-content:space-between}
-  .clockwin .t{font-size:20px}
-  .clockwin .d{font-size:14px}
-  .dlg{grid-area:dlg;margin:0;border-width:3px 0;padding:8px 16px 10px;font-size:15px;line-height:1.45;min-height:0;height:78px;overflow:hidden;max-width:none}
-  .dlg .prev{font-size:12px}
-  .dlg .now{min-height:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  /* floating over the meadow */
+  .clockwin{grid-area:stage;align-self:start;justify-self:start;z-index:25;margin:calc(env(safe-area-inset-top) + 8px) 0 0 calc(env(safe-area-inset-left) + 8px);
+    padding:6px 12px;gap:8px;box-shadow:3px 3px 0 rgba(0,0,0,.35)}
+  .clockwin .t{font-size:18px}
+  .clockwin .d{font-size:12px}
+  .spd{display:block;grid-area:stage;align-self:start;justify-self:end;z-index:25;margin:calc(env(safe-area-inset-top) + 8px) calc(env(safe-area-inset-right) + 8px) 0 0;
+    padding:8px 12px;min-width:64px;min-height:40px;font-size:15px;text-align:center;box-shadow:3px 3px 0 rgba(0,0,0,.35)}
+  .spd b{color:var(--cursor)}
+  .card{grid-area:stage;position:relative;align-self:end;z-index:30;width:auto;margin:0 8px 8px;max-height:62%;overflow-y:auto;left:auto!important;top:auto!important;padding:10px 14px 12px}
+  .card .close{position:absolute;right:4px;top:4px;border:0;padding:8px 12px;font-size:16px}
+  .card .no{margin-right:36px}
+  .card-actions .opt{padding:10px 0 10px 20px}
+  .journal{grid-area:stage;position:relative;align-self:end;z-index:31;width:auto;margin:0 8px 8px;max-height:85%;left:auto;bottom:auto}
+  .hint{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top) + 64px);bottom:auto;white-space:nowrap;z-index:40}
+  /* bottom panel */
+  .dlg{grid-area:dlg;position:relative;left:auto;right:auto;bottom:auto;top:auto;margin:0;border-width:3px 0 0;box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 6px #7aa6d8;
+    padding:10px 18px 12px;font-size:16px;line-height:1.5;min-height:calc(3em + 22px);max-width:none}
+  .dlg .prev{display:none}
+  .dlg .now{min-height:0}
   .dlg .more{right:12px;bottom:6px}
-  .cmdwin{grid-area:cmd;margin:0;border-width:0 0 3px;box-shadow:none;grid-template-columns:repeat(6,auto);justify-content:space-between;gap:0 4px;padding:4px 12px}
-  .cmdwin .opt,.cmdwin .opt.wide{grid-column:auto;font-size:13px;padding:8px 0 8px 13px}
-  .cmdwin .opt::before{font-size:11px}
-  .menuwin{grid-area:menu;margin:0;border:0;box-shadow:none;background:var(--frame);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:0;padding:0 0 env(safe-area-inset-bottom)}
-  .menuwin .opt{color:var(--win);text-align:center;padding:12px 2px;font-size:14px;white-space:normal;line-height:1.25;border-left:2px solid rgba(255,255,255,.12)}
+  .menuwin,.cmdwin{margin:0;border:0;box-shadow:none;background:var(--frame);display:grid;gap:0;padding:0 0 env(safe-area-inset-bottom)}
+  .menuwin{grid-area:menu;grid-template-columns:repeat(3,minmax(0,1fr));padding-left:env(safe-area-inset-left)}
+  .cmdwin{grid-area:cmd;grid-template-columns:repeat(2,minmax(0,1fr));padding-right:env(safe-area-inset-right)}
+  .cmdwin [data-s]{display:none}
+  .menuwin .opt,.cmdwin .opt,.cmdwin .opt.wide{grid-column:auto;color:var(--win);text-align:center;min-height:58px;padding:8px 2px;font-size:15px;
+    white-space:normal;line-height:1.2;border-left:2px solid rgba(255,255,255,.12);font-weight:400}
   .menuwin .opt:first-child{border-left:0}
-  .menuwin .opt::before{display:none}
-  .menuwin .opt:active{background:rgba(255,255,255,.12)}
-  .menuwin .opt.danger{color:#ff9a8a}
-  .menuwin #capBadge{display:block;font-size:12px;opacity:.75}
-  .card{grid-area:stage;position:relative;align-self:end;z-index:30;width:auto;margin:0 8px 8px;max-height:70%;overflow-y:auto;left:auto!important;top:auto!important}
-  .card .close{position:absolute;right:6px;top:6px;border:0;padding:2px 8px}
-  .card .no{margin-right:30px}
-  .dlg{position:relative}
-  .journal{grid-area:stage;position:relative;align-self:end;z-index:31;width:auto;margin:0 8px 8px;max-height:80%;left:auto;bottom:auto}
-  .hint{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top) + 56px);bottom:auto;white-space:nowrap;z-index:40}
+  .menuwin .opt::before,.cmdwin .opt::before{display:none}
+  .menuwin .opt:active,.cmdwin .opt:active{background:rgba(255,255,255,.14)}
+  .cmdwin .opt[aria-pressed="true"]{background:rgba(255,255,255,.18);color:#ffe27a}
+  .menuwin #capBadge{display:block;font-size:12px;opacity:.7}
+  .mgrwin #reset{margin-left:auto;margin-right:16px}
+  .menuwin #reset{display:none}
   /* full-screen windows */
   .sheet{padding:0;place-items:stretch;background:var(--win)}
-  .sheet .win{max-width:none;height:100dvh!important;max-height:none!important;border:0;box-shadow:none;
-    padding:calc(env(safe-area-inset-top) + 10px) 14px calc(env(safe-area-inset-bottom) + 10px)}
+  .sheet .win{max-width:none;height:100%!important;max-height:none!important;border:0;box-shadow:none;
+    padding:calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 14px) calc(env(safe-area-inset-bottom) + 10px) calc(env(safe-area-inset-left) + 14px)}
   .sheet:has(.mgrwin){padding:0}
-  .sheet-head{margin-bottom:8px}
+  .sheet-head{margin-bottom:8px;align-items:center}
   .sheet-head h3{font-size:18px}
   .sheet-head .cap{display:inline;margin-left:8px;font-size:14px}
-  .sheet-head .opt{padding:8px 0 8px 18px}
-  .filters input{flex:1 1 100%}
-  .filters select{flex:1 1 0;min-width:0}
+  .sheet-head .opt{padding:10px 4px 10px 20px;font-size:16px}
+  .filters input{flex:1 1 100%;font-size:16px}
+  .filters select{flex:1 1 0;min-width:0;font-size:16px}
   .dexwin .dex{grid-template-columns:repeat(3,minmax(0,1fr))}
   .dexbar{gap:4px 14px;font-size:13px}
   .dexbar #dexCount{flex:1 1 100%}
-  .dexbar .opt{font-size:15px;padding:8px 0 8px 18px}
-  .run-body .runpanel{padding-bottom:8px}
-  .hatch .win,.hatch>div{max-width:calc(100vw - 32px)}
+  .dexbar .opt{font-size:16px;padding:10px 0 10px 18px}
+  .mgrwin{min-width:0}
+  .mgr-body{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;overflow-y:auto}
+  .slots{grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible}
+  .mgr-detail{border-left:0;border-top:3px dotted var(--inner);padding:12px 0 0;overflow:visible}
+  .mgr-detail .acts .opt{padding:10px 0 10px 20px}
+  .runwin{height:100%}.run-body{grid-template-columns:1fr;gap:14px}.run-body .runpanel{border-left:0;padding-left:0;border-top:3px dotted var(--inner);padding-top:14px;padding-bottom:8px}
+  .manual input{font-size:16px}
+  .hatch>div{max-width:calc(100vw - 32px)}
 }
 @media (max-height:500px) and (orientation:landscape){
-  .app{grid-template-rows:minmax(0,1fr) auto;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"stage menu" "stage cmd"}
-  .clockwin,.dlg{display:none}
+  .app{grid-template-columns:minmax(0,1fr) 176px;grid-template-rows:minmax(0,1fr) auto;grid-template-areas:"stage menu" "stage cmd"}
+  .dlg{display:none}
   .menuwin{grid-template-columns:1fr;padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 0;align-content:start}
-  .menuwin .opt{border-left:0;border-top:2px solid rgba(255,255,255,.12);padding:12px 10px}
-  .cmdwin{grid-template-columns:repeat(2,auto);padding:4px 10px env(safe-area-inset-bottom)}
-  .cmdwin .opt.wide{grid-column:span 2}
+  .cmdwin{padding:0 env(safe-area-inset-right) env(safe-area-inset-bottom) 0}
+  .menuwin .opt,.cmdwin .opt{min-height:48px;border-left:0;border-top:2px solid rgba(255,255,255,.12)}
   .card,.journal{max-width:440px;justify-self:start}
 }
 @media (prefers-reduced-motion: reduce){.mon.held .flip,.act,.bubble,.pt,.berry.new,.ring,.mon.wet .ripple,.sel-mark,.dlg .more,.snot,.bfly::before,.bfly::after,.glint{animation:none!important}.snot{transform:scale(1)}}
@@ -425,6 +440,7 @@ ol.runs li span{color:var(--dim)}
   </div>
 
   <div class="hud win clockwin" id="clock"><span class="t" id="time">07:00</span><span class="d"><span id="day">1일째</span> · <span id="phase">아침</span></span></div>
+  <button class="hud win spd" id="spd" aria-label="속도 바꾸기"><b>▶</b> 1×</button>
 
   <nav class="hud win menuwin" aria-label="메뉴">
     <button class="opt" id="openDex">도감</button>
@@ -2492,6 +2508,11 @@ window.addEventListener('pointerup', endDrag);
 window.addEventListener('pointercancel', e => { const d = drag; if (!d || e.pointerId !== d.id) return; drag = null; if (d.on) { d.m.held = false; d.m.el.classList.remove('held'); if (d.target) d.target.el.classList.remove('drop-target'); settle(d.m); setState(d.m, 'idle', 2); } });
 const speedBtns = [...document.querySelectorAll('#cmd [data-s]')];
 speedBtns.forEach(b => b.addEventListener('click', () => { S.speed = +b.dataset.s; speedBtns.forEach(x => x.setAttribute('aria-pressed', x === b)); }));
+// phones: one button cycles the speed
+const SPEEDS = [1, 3, 10, 0];
+function showSpd() { $('#spd').innerHTML = S.speed ? `<b>▶</b> ${S.speed}×` : '<b>Ⅱ</b> 멈춤'; }
+speedBtns.forEach(b => b.addEventListener('click', showSpd));
+$('#spd').onclick = () => { const n = SPEEDS[(SPEEDS.indexOf(S.speed) + 1) % SPEEDS.length]; speedBtns.find(b => +b.dataset.s === n).click(); };
 function setTool(t) { S.tool = t; $('#btnBerry').setAttribute('aria-pressed', t === 'berry'); stage.classList.toggle('berry-mode', t === 'berry'); $('#hint').hidden = t !== 'berry'; }
 $('#btnBerry').onclick = () => setTool(S.tool === 'berry' ? 'look' : 'berry');
 $('#btnLog').onclick = () => { const j = $('#journal'); j.hidden = !j.hidden; $('#btnLog').setAttribute('aria-pressed', !j.hidden); };
@@ -2575,6 +2596,9 @@ $('#reset').onclick = async () => {
 // ---------- meadow manager ----------
 // 20 slots, one per resident; the side sheet renames, feeds, puts to bed, wakes or releases the chosen one.
 const mgr = $('#mgr'), slotsEl = $('#slots'), mgrDet = $('#mgrDetail');
+const resetBtn = $('#reset'), resetHome = resetBtn.parentNode;
+function placeReset() { if (narrow.matches) $('#closeMgr').before(resetBtn); else resetHome.append(resetBtn); }
+placeReset(); narrow.addEventListener('change', () => { placeReset(); fitCentered = false; fit(); });
 let mgrSel = null, mgrKey = '', mgrFreeArm = 0, mgrT = 0;
 function openMgr(m) { mgr.hidden = false; mgrSel = m || mgrSel || S.mons[0] || null; mgrKey = ''; renderMgr(true); }
 function closeMgr() { mgr.hidden = true; }
