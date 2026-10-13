@@ -341,6 +341,18 @@ ol.log li.big .txt{color:#c03838}
 .pk .tg{position:absolute;right:3px;top:3px;font-size:9px;background:var(--frame);color:var(--win);padding:1px 3px}
 .pk .tg.bud{background:#e8a020;color:#fff}
 .pk .sh,.pp-body .sh{color:#e8a020;font-size:12px;margin-left:2px;text-shadow:0 0 4px rgba(255,200,40,.7)}
+/* S 랭크: 금빛 테두리 빛 + 반짝이 */
+.mon.rkS .flip{animation:sglow 1.8s ease-in-out infinite}
+@keyframes sglow{0%,100%{filter:drop-shadow(0 0 1px #fff6c0) drop-shadow(0 0 3px #ffc830)}50%{filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 7px #ffb000)}}
+.mon.rkS .lift::before{content:'✦';position:absolute;left:14px;bottom:30px;color:#ffe060;font-size:11px;text-shadow:0 0 3px #fff;animation:spk 2.4s steps(1) infinite;pointer-events:none}
+@keyframes spk{0%{opacity:1;transform:translate(0,0)}25%{opacity:0}50%{opacity:1;transform:translate(-30px,-14px)}75%{opacity:0}}
+.pk.rkS img,.dp-pic.rkS img,.bd-pic.rkS img{animation:sglow 1.8s ease-in-out infinite}
+.pk.rkS{background:radial-gradient(circle at 50% 40%,#fff4c8,#fff 70%)}
+.pk.shiny.rkS img,.dp-pic.shiny.rkS img,.bd-pic.shiny.rkS img{animation:none;filter:hue-rotate(var(--shue)) saturate(1.25) drop-shadow(0 0 4px #ffc830)}
+/* 친밀도 만점: 하트가 떠오름 */
+.mon.frMax .lift::after{content:'♥';position:absolute;left:-4px;bottom:40px;color:#ff5a8a;font-size:13px;text-shadow:0 0 3px #fff;animation:frup 5s ease-out infinite;pointer-events:none;opacity:0}
+@keyframes frup{0%,70%{opacity:0;transform:translateY(0)}75%{opacity:1}100%{opacity:0;transform:translateY(-22px)}}
+.hmax{color:#ff3a78;font-weight:400;text-shadow:0 0 4px #ffb0c8}
 .shiny img,.mon.shiny .act img,.mon.shiny .spr,img.shiny{filter:hue-rotate(var(--shue,150deg)) saturate(1.25)}
 .mon.shiny .act::after{content:'✦';position:absolute;right:-6px;top:-6px;color:#ffd84a;font-size:12px;text-shadow:0 0 4px #fff;animation:twk 1.2s steps(2) infinite}
 @keyframes twk{50%{opacity:.2}}
@@ -492,8 +504,8 @@ ol.log li.big .txt{color:#c03838}
 #buddy .bd-main{gap:4px}
 #buddy .bd-pic{width:72px;height:72px}#buddy .bd-pic img{width:64px;height:64px}
 #buddy .bd-name{display:flex;align-items:baseline;gap:8px}#buddy .bd-name span{margin:0;flex:none}
-#buddy .bd-empty .q{width:72px;height:72px;font-size:36px}
-.bd-card{display:grid;grid-template-rows:auto auto;align-content:space-evenly;gap:8px;border:3px solid var(--frame);background:#fff;padding:10px 12px;box-shadow:3px 3px 0 rgba(0,0,0,.2);min-height:0}
+#buddy .bd-empty{font-size:40px;color:var(--dim);line-height:1}
+.bd-card{position:relative;display:grid;grid-template-rows:auto;align-content:center;gap:8px;border:3px solid var(--frame);background:#fff;padding:10px 12px;box-shadow:3px 3px 0 rgba(0,0,0,.2);min-height:0}
 .bd-row{display:flex;gap:12px;align-items:center;min-height:0}
 .bd-main{flex:1;min-width:0;display:grid;gap:8px}
 .bd-top{display:flex;gap:14px;align-items:center;min-width:0}
@@ -508,7 +520,8 @@ ol.log li.big .txt{color:#c03838}
 .bd-evo .row b{color:#2a58a8}
 .bd-tag{display:inline-block;font-size:12px;background:var(--frame);color:var(--win);padding:2px 8px}
 .bd-tag.ready{background:#e8a020;color:#fff}
-.bd-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bd-x{position:absolute;right:2px;top:0;border:0;background:none;font:inherit;font-size:20px;line-height:1;padding:8px 10px;color:var(--dim);cursor:pointer}
+#buddy .bd-name{padding-right:28px}
 .bd-empty{width:100%;height:100%;display:flex;align-items:center;justify-content:center;gap:14px;padding:10px;border:3px dashed var(--inner);background:#fff;font:inherit;font-size:16px;color:var(--win-ink);cursor:pointer}
 .bd-empty .q{flex:none;width:88px;height:88px;display:grid;place-items:center;border:3px solid var(--inner);background:#f0f0f4;font-size:44px;color:var(--dim)}
 .bd-empty b{border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:8px 16px}
@@ -804,7 +817,7 @@ ol.log li.big .txt{color:#c03838}
     <div class="set-body">
       <section class="set-sec">
         <h4>백업</h4>
-        <p>홈 화면 앱, Safari, 새로 추가한 아이콘은 저장 공간이 서로 따로예요. 여기서 저장 복사를 누르고, 옮길 곳의 설정에서 저장 붙여넣기를 누르면 알, 도감, 초원이 그대로 옮겨져요.</p>
+        <p>홈 화면 앱, Safari, 새로 추가한 아이콘은 저장 공간이 서로 따로예요. 여기서 저장 복사를 누르고, 옮길 곳의 설정에서 저장 붙여넣기를 누르면 알, 도감, 필드가 그대로 옮겨져요.</p>
         <div class="set-btns"><button class="lk-btn main" id="saveCopy">저장 복사</button><button class="lk-btn main" id="savePaste">저장 붙여넣기</button></div>
       </section>
       <section class="set-sec">
@@ -1382,11 +1395,12 @@ async function spawn(sp, opts = {}) {
   m.bub = document.createElement('div'); m.bub.className = 'bubble'; m.bub.hidden = true; fxEl.append(m.bub);
   m.tag = document.createElement('div'); m.tag.className = 'tag'; m.tag.textContent = m.name; m.tag.hidden = true; fxEl.append(m.tag);
   { const P = boxOf(m.pid); if (P && P.shiny) { el.classList.add('shiny'); el.style.setProperty('--shue', shinyHue(sp) + 'deg'); } }
+  m.el = el; markMon(m);
   if (DEX[sp].mv === 'hover' && sp === 92) el.classList.add('ghost');
   if (m.uid % 3 === 0 && DEX[sp].mv !== 'swim') el.classList.add('snotty');
   monsEl.append(el);
   S.mons.push(m);
-  if (!opts.quiet) { log(`${J(m,'이/가')} 초원에 나타났다.`, [m]); anim(m, 'appear'); }
+  if (!opts.quiet) { log(`${J(m,'이/가')} 필드에 나타났다.`, [m]); anim(m, 'appear'); }
   return m;
 }
 function removeMon(m) {
@@ -1580,12 +1594,12 @@ const R = (a, b) => [a, b];
 // kinds: play, chat, care, show, fight (timed, side by side) · scared, chase, nap (resolve at once)
 const PAIR_RULES = [
   { when: (a, b) => isSp(a, 382) && isSp(b, 383), w: 30, make: (a, b) => ({ key: 'kyogre-groudon', kind: 'fight',
-    text: () => `${J(a,'과/와')} ${N(b)}의 힘이 정면으로 부딪친다! 초원에 비와 뙤약볕이 번갈아 쏟아진다.`,
+    text: () => `${J(a,'과/와')} ${N(b)}의 힘이 정면으로 부딪친다! 필드에 비와 뙤약볕이 번갈아 쏟아진다.`,
     end: (a2, b2, w, l) => S.mons.find(o => o.sp === 384) ? `하늘에서 ${J(S.mons.find(o => o.sp === 384),'이/가')} 내려와 둘을 갈라놓았다.` : `${J(w,'이/가')} 버텨냈다. ${J(l,'은/는')} 잠시 물러섰다.` }) },
   { when: (a, b) => isSp(a, 483) && isSp(b, 484), w: 30, make: (a, b) => ({ key: 'dialga-palkia', kind: 'fight',
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 마주치자 시간과 공간이 일그러진다!` }) },
   { when: (a, b) => isSp(a, 380) && isSp(b, 381), w: 30, make: (a, b) => ({ key: 'latis', kind: 'play',
-    text: () => `${J(a,'과/와')} ${J(b,'이/가')} 남매답게 나란히 초원 위를 미끄러지듯 난다.`, rel: [14, 20] }) },
+    text: () => `${J(a,'과/와')} ${J(b,'이/가')} 남매답게 나란히 필드 위를 미끄러지듯 난다.`, rel: [14, 20] }) },
   { when: (a, b) => isSp(a, 150) && isSp(b, 151), w: 30, make: (a, b) => ({ key: 'mewtwo-mew', kind: 'chat',
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 말없이 서로를 바라본다. 같은 유전자를 느낀 걸까.`, ea: '…', eb: '?' }) },
   { when: (a, b) => isSp(a, 130) && isSp(b, 129), w: 30, make: (a, b) => ({ key: 'gyarados-magikarp', kind: 'care',
@@ -1636,13 +1650,13 @@ const EXTRA_PAIRS = [
   [[455], SMALLW, 'show', 'snip', { t: ['덥석!', '!'], cls: 'hit', hurt: 1, after: '!!', y: .6 }, (a, b) => `${J(a,'이/가')} ${J(b,'을/를')} 덥석 물려고 입을 벌린다! ${J(b,'은/는')} 간신히 피했다.`],
   [[731, 732, 733], [102, 103, 70, 1, 187], 'chat', 'snip', { t: ['콕', '콕콕'], cls: 'hit', hurt: 1, after: '#' }, (a, b) => `${J(a,'이/가')} 부리로 ${J(b,'을/를')} 콕콕 쪼아 본다. 나무인 줄 알았나 보다.`],
   // riding on top
-  [[95, 208], [74, 75, 524, 837], 'play', 'perch', { h: .45, t: ['♪', '!'] }, (a, b) => `${J(b,'이/가')} ${N(a)} 머리 위에 올라타 초원을 구경한다.`],
+  [[95, 208], [74, 75, 524, 837], 'play', 'perch', { h: .45, t: ['♪', '!'] }, (a, b) => `${J(b,'이/가')} ${N(a)} 머리 위에 올라타 필드를 구경한다.`],
   [[131], SMALLW, 'care', 'perch', { h: .55 }, (a, b) => `${J(b,'이/가')} ${N(a)}의 등에 올라탔다. ${J(a,'은/는')} 천천히 헤엄치듯 걸어 준다.`, 18],
-  [[6, 149, 373], SMALLW, 'play', 'perch', { h: .5, fly: 1, t: ['♪', '야호!'] }, (a, b) => `${J(a,'이/가')} ${J(b,'을/를')} 등에 태우고 초원 위를 한 바퀴 날아 준다!`, 15],
+  [[6, 149, 373], SMALLW, 'play', 'perch', { h: .5, fly: 1, t: ['♪', '야호!'] }, (a, b) => `${J(a,'이/가')} ${J(b,'을/를')} 등에 태우고 필드 위를 한 바퀴 날아 준다!`, 15],
   [[26, 25], [172], 'care', 'perch', { h: .8, t: ['♥', '♪'], cls: 'heart' }, (a, b) => `${J(b,'이/가')} ${N(a)} 머리 위에 폴짝 올라가 앉았다.`],
   [[115], SMALLW, 'care', 'perch', { h: .25, front: 1, t: '♥', cls: 'heart' }, (a, b) => `${J(b,'이/가')} ${N(a)}의 배 주머니에 쏙 들어갔다. 따뜻해 보인다.`, 15],
   [[143, 446], [446, 175, 25, 133], 'care', 'perch', { h: .6, t: ['♪', 'Zz'] }, (a, b) => `${J(b,'이/가')} ${N(a)}의 커다란 배 위로 기어올라가 신이 났다.`, 10],
-  [[672, 673], SMALLW, 'play', 'perch', { h: .7, t: ['♪', '이랴!'] }, (a, b) => `${J(b,'이/가')} ${N(a)} 등에 올라타 초원을 달린다!`, 15],
+  [[672, 673], SMALLW, 'play', 'perch', { h: .7, t: ['♪', '이랴!'] }, (a, b) => `${J(b,'이/가')} ${N(a)} 등에 올라타 필드를 달린다!`, 15],
   [[333, 334], SMALLW, 'care', 'perch', { h: .45, t: ['♥', 'zz'], cls: 'heart' }, (a, b) => `${J(b,'이/가')} ${N(a)}의 솜구름 날개 위에 폭 안겼다.`, 12],
   [[977], [978], 'care', 'perch', { h: .55, front: 1, t: ['!', '♪'] }, (a, b) => `${J(b,'이/가')} ${N(a)}의 입속에 쏙 들어가 자리를 잡았다. 명콤비다.`],
   [[527, 528], ANY, 'play', 'perch', { rev: 1, h: .9, t: '♥', cls: 'heart' }, (a, b) => `${J(a,'이/가')} 하트 모양 코로 ${N(b)}에게 철썩 달라붙었다.`, 6],
@@ -1650,7 +1664,7 @@ const EXTRA_PAIRS = [
   // chasing
   [[52, 53, 431, 509], [19, 20, 504, 734], 'play', 'tag', { t: ['찍!', '!'] }, (a, b) => `${J(a,'이/가')} ${J(b,'을/를')} 보더니 사냥 본능이 깨어났다! 쫓고 쫓기는 추격전이 시작됐다.`],
   [[16, 17, 21, 22, 396, 519, 661, 821], [10, 13, 265, 401, 412, 736, 824], 'play', 'tag', { t: ['!', '콕!'], spd: 2.4 }, (a, b) => `${J(a,'이/가')} ${J(b,'을/를')} 쪼아 보려고 쫓아다닌다! ${J(b,'은/는')} 필사적으로 도망친다.`],
-  [[58], [77], 'play', 'tag', { t: '♪' }, (a, b) => `${J(a,'과/와')} ${J(b,'이/가')} 누가 더 빠른지 초원을 빙글빙글 달린다.`],
+  [[58], [77], 'play', 'tag', { t: '♪' }, (a, b) => `${J(a,'과/와')} ${J(b,'이/가')} 누가 더 빠른지 필드를 빙글빙글 달린다.`],
   [[209, 210], [35, 36, 173], 'play', 'tag', { t: ['멍!', '!'] }, (a, b) => `${J(a,'이/가')} 으르렁대며 ${J(b,'을/를')} 쫓아다닌다. ${J(b,'은/는')} 울상이다.`],
   [[300], ANY, 'play', 'tag', { t: '♪', spd: 2.6 }, (a, b) => `${J(a,'이/가')} ${N(b)}의 꼬리를 자기 꼬리인 줄 알고 쫓아간다.`, 8],
   [[944, 945, 190, 424], ANY, 'chat', 'tag', { t: ['훔쳤다!', '!'] }, (a, b) => `${J(a,'이/가')} ${N(b)}의 열매를 슬쩍 집어 들고 달아난다!`, 6],
@@ -1851,7 +1865,7 @@ const PROC = [
     (a, b) => `${J(a,'이/가')} ${N(b)} 머리 위를 쉼터로 삼았다. ${J(b,'은/는')} 개의치 않는다.`] },
   { w: 4, when: (a, b) => isSmall(a) && walker(a) && walker(b) && kg(b) > 80 && !winged(a), kind: 'play', mo: 'perch', p: { rev: 1, h: .6 }, lines: [
     (a, b) => `${J(a,'이/가')} 영차영차 ${N(b)}의 등 위로 기어올라 갔다.`,
-    (a, b) => `${J(a,'이/가')} 덩치 큰 ${N(b)} 등에 올라타 높은 곳에서 초원을 내려다본다.`] },
+    (a, b) => `${J(a,'이/가')} 덩치 큰 ${N(b)} 등에 올라타 높은 곳에서 필드를 내려다본다.`] },
   { w: 3, when: (a, b) => tailed(b) && prankster(a), kind: 'chat', mo: 'snip', p: { t: ['꾹!', '!'], cls: 'hit', hurt: 1, after: '#', y: .3 }, lines: [
     (a, b) => `${J(a,'이/가')} ${N(b)}의 꼬리를 꾹 밟고 시치미를 뗐다.`,
     (a, b) => `${J(a,'이/가')} ${N(b)}의 꼬리를 살짝 잡아당겼다. ${J(b,'이/가')} 홱 돌아본다.`], rel: [-5, -2] },
@@ -1876,7 +1890,7 @@ const PROC = [
     (a, b) => `날쌘 ${J(a,'이/가')} 느릿느릿한 ${N(b)} 주위를 쌩쌩 돌며 놀린다.`,
     (a, b) => `${J(a,'이/가')} ${N(b)}에게 잡아 보라며 약을 올린다. ${J(b,'은/는')} 따라잡을 수가 없다.`], rel: [-3, 4] },
   { w: 3, when: (a, b) => SPm(a).spd >= 85 && SPm(b).spd >= 85 && walker(a) && walker(b), kind: 'play', mo: 'tag', p: { t: ['슝!', '!'], spd: 3 }, lines: [
-    (a, b) => `${J(a,'과/와')} ${J(b,'이/가')} 누가 더 빠른지 초원을 빙글빙글 질주한다!`] },
+    (a, b) => `${J(a,'과/와')} ${J(b,'이/가')} 누가 더 빠른지 필드를 빙글빙글 질주한다!`] },
   { w: 3, when: (a, b) => SPm(a).atk >= 100 && SPm(b).df >= 100, kind: 'show', mo: 'bonk', p: { t: ['깡!', '쿵!'] }, lines: [
     (a, b) => `힘센 ${J(a,'이/가')} 단단한 ${N(b)}에게 힘껏 부딪혀 본다. 꿈쩍도 하지 않는다!`] },
   // food and needs
@@ -1965,7 +1979,7 @@ function sceneCandidates(a, b) {
     if (isLegend(x) && !isLegend(y)) add(9, { key: 'awe', kind: 'scared', roles: [x, y], text: () => `${J(y,'이/가')} ${N(x)}의 위엄에 놀라 고개를 숙이고 물러난다.` });
   }
   if (isLegend(a) && isLegend(b)) {
-    add(6, { key: 'legend-chat', kind: 'chat', ea: '…', eb: '…', text: () => `${J(a,'과/와')} ${J(b,'이/가')} 조용히 눈빛을 주고받는다. 초원 전체가 숨을 죽였다.` });
+    add(6, { key: 'legend-chat', kind: 'chat', ea: '…', eb: '…', text: () => `${J(a,'과/와')} ${J(b,'이/가')} 조용히 눈빛을 주고받는다. 필드 전체가 숨을 죽였다.` });
     add(4, { key: 'legend-clash', kind: 'fight', text: () => `${J(a,'과/와')} ${N(b)}의 힘겨루기에 땅이 흔들린다!` });
   }
   // size
@@ -2912,17 +2926,15 @@ function renderInfo() {
   const box = infoEl, m = S.sel;
   if (!m) { box.hidden = true; box.dataset.uid = ''; return; }
   box.hidden = false;
-  const rels = relsHtml(m, 3, 2);
   const t = T(m);
   if (box.dataset.uid !== String(m.uid)) {
     box.dataset.uid = m.uid;
     box.innerHTML = `<button class="close" id="pclose" aria-label="닫기">✕</button>
       <div class="top"><h2 id="pname">${esc(m.name)}</h2><span class="no">No.${String(m.sp).padStart(3, '0')}</span></div>
-      <p class="sub">${SPECIES[m.sp].g} · ${t.ty}${t.noct ? ' · 야행성' : ''}${SPECIES[m.sp].leg || SPECIES[m.sp].my ? ' · 전설' : ''}</p>${SPECIES[m.sp].fx ? `<p class="fx">${esc(SPECIES[m.sp].fx)}</p>` : ''}
+      <p class="sub">${SPECIES[m.sp].g} · ${t.ty}${t.noct ? ' · 야행성' : ''}${SPECIES[m.sp].leg || SPECIES[m.sp].my ? ' · 전설' : ''}</p>
       <p class="sub" id="pIndiv"></p>
       <div class="bars" id="pbars"></div>
       <p class="doing" id="pdoing"></p>
-      <div class="rels" id="prels"></div>
       <div class="card-actions"><button class="opt" id="pfeed">열매 주기</button><button class="opt danger" id="pfree">숲으로 보내기</button></div>`;
     $('#pclose').onclick = () => select(null);
     $('#pfeed').onclick = () => { const p = { x: m.x + rnd(-40, 40), y: m.y + rnd(10, 30) }; if (T(m).mv === 'swim') { Object.assign(p, shorePoint(m)); } addBerry(p.x, p.y); };
@@ -2932,7 +2944,6 @@ function renderInfo() {
   $('#pdoing').textContent = doingText(m) + (m.form !== m.sp ? ` (${DEX[m.form].n}로 변신 중)` : '');
   $('#pIndiv').innerHTML = indivHtml(m);
   $('#pbars').innerHTML = bar('기력', m.energy, 'var(--hp)') + bar('배고픔', m.hunger, 'var(--hunger)') + bar('외로움', m.social, 'var(--lonely)');
-  $('#prels').innerHTML = rels;
 }
 const narrow = matchMedia('(max-width: 760px), (max-height: 500px) and (orientation: landscape)');
 // 홈 화면 앱에서 iOS가 화면 바닥까지 뷰포트를 주지 않으면 그만큼 앱을 아래로 늘린다
@@ -3003,7 +3014,7 @@ async function fresh() {
   S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked.clear(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
   const e = { id: S.eid++, g: 1, km: 0, need: GRADE[1].km, isNew: true, t: Date.now() }; S.eggs.push(e);
   for (let i = 0; i < 4; i++) { const p = randLand(); addBerry(p.x, p.y); }
-  log('초원이 텅 비어 있다. 알을 부화시켜 친구를 만들어 보자.', [], true);
+  log('필드가 텅 비어 있다. 알을 부화시켜 친구를 만들어 보자.', [], true);
 }
 
 // ---------- UI ----------
@@ -3371,7 +3382,7 @@ $('#savePaste').onclick = async () => {
   t = t.trim();
   if (!t.startsWith('MEADOW1:')) { alert('저장 글자가 아니에요. 먼저 다른 곳에서 \'저장 복사\'를 눌러 주세요.'); return; }
   let d; try { d = JSON.parse(decodeURIComponent(escape(atob(t.slice(8))))); } catch (e) { alert('저장 글자가 깨져 있어요. 다시 복사해 주세요.'); return; }
-  if (!confirm(`지금 초원을 이 저장으로 바꿀까요?\n(포켓몬 ${(d.mons || []).length}마리 · 알 ${(d.eggs || []).length}개 · 도감 ${(d.unlocked || []).length}종)`)) return;
+  if (!confirm(`지금 필드를 이 저장으로 바꿀까요?\n(포켓몬 ${(d.mons || []).length}마리 · 알 ${(d.eggs || []).length}개 · 도감 ${(d.unlocked || []).length}종)`)) return;
   saveFrozen = true; localStorage.setItem(KEY, JSON.stringify(d)); location.reload();
 };
 // 폰에서는 설정을 오른쪽 가장자리에서 쓸어 여는 사이드 바의 아이콘으로 둔다
@@ -3421,7 +3432,7 @@ function renderBox() {
   document.querySelectorAll('#boxSort [data-sort]').forEach(b => b.setAttribute('aria-pressed', b.dataset.sort === boxSort));
   const L = boxList(), bud = new Set(S.buds.map(b => b.pid));
   $('#boxCount').innerHTML = budPick != null ? '<b class="pickhint">짝꿍을 골라 주세요</b>' : `${S.box.length}마리${S.box.some(p => p.shiny) ? ` · 이로치 ${S.box.filter(p => p.shiny).length}` : ''}`;
-  $('#boxGrid').innerHTML = L.length ? L.map(p => `<button class="pk${p.shiny ? ' shiny' : ''}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rankOf(p)}">${rankOf(p)}</span>${bud.has(p.id) ? '<span class="tg bud">짝꿍</span>' : onField(p.id) ? '<span class="tg">필드</span>' : ''}<img alt="" data-sp="${p.sp}" src="${thumbOf(p.sp) || ''}"><span class="nm">${esc(SPECIES[p.sp].n)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(p.fr)}</span></button>`).join('')
+  $('#boxGrid').innerHTML = L.length ? L.map(p => `<button class="pk${p.shiny ? ' shiny' : ''}${pkCls(p)}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rankOf(p)}">${rankOf(p)}</span>${bud.has(p.id) ? '<span class="tg bud">짝꿍</span>' : onField(p.id) ? '<span class="tg">필드</span>' : ''}<img alt="" data-sp="${p.sp}" src="${thumbOf(p.sp) || ''}"><span class="nm">${esc(SPECIES[p.sp].n)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(p.fr)}</span></button>`).join('')
     : '<p class="empty-msg">아직 부화시킨 포켓몬이 없다.</p>';
   $('#boxGrid').querySelectorAll('img[data-sp]').forEach(im => { const sp = +im.dataset.sp; if (!thumbOf(sp)) ensureSprite(sp).then(() => { im.src = thumbOf(sp); }).catch(() => {}); });
 }
@@ -3432,7 +3443,7 @@ function openPoke(id, dir = 0) {
   const L = boxList(), i = L.indexOf(P), d = SPECIES[P.sp], rk = rankOf(P);
   $('#pokePop').hidden = false; $('#ppPos').textContent = `${i + 1} / ${L.length}`;
   $('#ppPrev').disabled = i <= 0; $('#ppNext').disabled = i >= L.length - 1;
-  const pic = $('#ppPic'), img = $('#ppImg'); pic.classList.toggle('shiny', P.shiny); pic.style.setProperty('--shue', shinyHue(P.sp) + 'deg');
+  const pic = $('#ppPic'), img = $('#ppImg'); pic.classList.toggle('shiny', P.shiny); pic.classList.toggle('rkS', rk === 'S'); pic.classList.toggle('frMax', (P.fr || 0) >= FR_MAX); pic.style.setProperty('--shue', shinyHue(P.sp) + 'deg');
   pic.classList.remove('slide-l', 'slide-r'); void pic.offsetWidth; if (dir) pic.classList.add(dir > 0 ? 'slide-l' : 'slide-r');
   img.src = thumbOf(P.sp) || ''; if (!thumbOf(P.sp)) ensureSprite(P.sp).then(() => { if (pokeId === id) img.src = thumbOf(P.sp); }).catch(() => {});
   const dt = new Date(P.t);
@@ -3539,7 +3550,7 @@ function renderMgrDetail(rebuild) {
       <p class="doing" id="mDoing"></p>
       <div class="rels" id="mRels"></div>
       <div class="acts">
-        <button class="opt" id="mLook">초원에서 보기</button>
+        <button class="opt" id="mLook">필드에서 보기</button>
         <button class="opt" id="mFeed">열매 주기</button>
         <button class="opt" id="mSleep">재우기</button>
         <button class="opt danger" id="mFree">숲으로 보내기</button>
@@ -3559,7 +3570,7 @@ function renderMgrDetail(rebuild) {
   if (pic.getAttribute('src') !== want) pic.src = want;
   const days = Math.max(1, dayOf(S.clock) - dayOf(m.born ?? S.clock) + 1);
   $('#mBars').innerHTML = bar('기력', m.energy, 'var(--hp)') + bar('배고픔', m.hunger, 'var(--hunger)') + bar('외로움', m.social, 'var(--lonely)');
-  $('#mDoing').textContent = `${doingText(m)}${m.form !== m.sp ? ` (${DEX[m.form].n}로 변신 중)` : ''} · 초원에서 ${days}일째`;
+  $('#mDoing').textContent = `${doingText(m)}${m.form !== m.sp ? ` (${DEX[m.form].n}로 변신 중)` : ''} · 필드에서 ${days}일째`;
   $('#mRels').innerHTML = relsHtml(m, 5, 3);
   $('#mIndiv').innerHTML = indivHtml(m);
   const sb = $('#mSleep'), busy = m.hidden || m.state === 'interact' || m.state === 'special';
@@ -3613,7 +3624,12 @@ const ivSum = p => p.iv.reduce((a, b) => a + b, 0);
 const rankOf = p => RANKS.find(([, v]) => ivSum(p) >= v)[0];
 const shinyHue = sp => 70 + (sp * 47) % 220;
 function indivHtml(m) { const P = boxOf(m.pid); return P ? `랭크 <span class="rk ${rankOf(P)}">${rankOf(P)}</span>${P.shiny ? ' <b class="sh">✦ 이로치</b>' : ''} · 친밀도 <span class="hearts" style="color:#e04870">${hearts(P.fr)}</span>` : ''; }
-const hearts = fr => { const n = Math.min(5, Math.floor((fr || 0) / 51)); return '♥'.repeat(n) + '♡'.repeat(5 - n); };
+// S 랭크는 금빛으로 빛나고, 친밀도 만점(255)은 가끔 하트가 떠오른다
+const FR_MAX = 255;
+const pkCls = P => (P && rankOf(P) === 'S' ? ' rkS' : '') + (P && (P.fr || 0) >= FR_MAX ? ' frMax' : '');
+function markMon(m) { const P = boxOf(m.pid); m.el?.classList.toggle('rkS', !!P && rankOf(P) === 'S'); m.el?.classList.toggle('frMax', !!P && (P.fr || 0) >= FR_MAX); }
+setInterval(() => S.mons.forEach(markMon), 4000);
+const hearts = fr => { if ((fr || 0) >= 255) return '<b class="hmax">♥♥♥♥♥</b>'; const n = Math.min(5, Math.floor((fr || 0) / 51)); return '♥'.repeat(n) + '♡'.repeat(5 - n); };
 function newPoke(sp, o = {}) {
   const p = { id: S.eid++, sp, iv: Array.from({ length: 6 }, () => Math.floor(Math.random() * 32)), shiny: o.shiny ?? Math.random() < SHINY_RATE, fr: 0, t: Date.now() };
   if (o.g) p.g = o.g; if (o.place) p.place = o.place;
@@ -3956,10 +3972,11 @@ function renderBuddy() {
   $('#budCount').textContent = `${S.buds.length}/${MAX_BUDS}`;
   $('#buddy').innerHTML = Array.from({ length: MAX_BUDS }, (_, i) => {
     const m = S.buds[i];
-    if (!m) return `<button class="bd-empty" data-act="pick" data-i="${i}"><span class="q">?</span><b>포켓몬에서 고르기</b></button>`;
-    return `<div class="bd-card" data-i="${i}"><div class="bd-row"><div class="bd-pic"><img alt="" src="${thumbOf(m.sp) || ''}"></div><div class="bd-main"><div class="bd-name"><b>${esc(SPECIES[m.sp].n)}</b><span>No.${String(m.sp).padStart(4, '0')}</span></div><div class="bd-ind">${indivHtml(m)}</div>`
+    if (!m) return `<button class="bd-empty" data-act="pick" data-i="${i}" aria-label="짝꿍 추가">+</button>`;
+    const P = boxOf(m.pid);
+    return `<div class="bd-card" data-i="${i}"><button class="bd-x" data-act="stop" aria-label="짝꿍에서 빼기">✕</button><div class="bd-row"><div class="bd-pic${pkCls(P)}${P?.shiny ? ' shiny' : ''}" style="--shue:${shinyHue(m.sp)}deg"><img alt="" src="${thumbOf(m.sp) || ''}"></div><div class="bd-main"><div class="bd-name"><b>${esc(SPECIES[m.sp].n)}</b><span>No.${String(m.sp).padStart(4, '0')}</span></div><div class="bd-ind">${indivHtml(m)}</div>`
       + (CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) ? '<span class="bd-tag ready">진화 준비 완료</span>' : '진화까지'}</span><span><b>${fmtKm(m.km)}</b> / ${evoNeed(m)}km</span></div></div>` : `<div><span class="bd-tag">최종 진화</span></div>`)
-      + `</div></div><div class="bd-btns"><button class="lk-btn" data-act="pick">바꾸기</button><button class="lk-btn" data-act="stop">그만하기</button></div></div>`;
+      + `</div></div></div>`;
   }).join('');
 }
 function renderRunLog() {
