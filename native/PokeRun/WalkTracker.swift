@@ -1,5 +1,6 @@
 import CoreLocation
 import CoreMotion
+import MapKit
 import Foundation
 
 // 알 줍기: 휴대폰이 잠겨 있어도 걸은 거리만큼 가방에 알을 넣는다.
@@ -57,11 +58,45 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
     func locationManager(_ m: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let loc = locations.last else { return }
         geocoder.reverseGeocodeLocation(loc, preferredLocale: Locale(identifier: "ko_KR")) { [weak self] marks, _ in
+            guard let self else { return }
             let p = marks?.first
-            // 예: "마포구 망원동"
-            let parts = [p?.subAdministrativeArea ?? p?.locality, p?.subLocality].compactMap { $0 }
-            let place = parts.isEmpty ? (p?.name ?? "") : parts.joined(separator: " ")
-            self?.sync(place: place.isEmpty ? nil : place)
+            // 예: "서울 송파구 석촌동"
+            let city = p?.administrativeArea.map(WalkTracker.shortCity)
+            let parts = [city, p?.subAdministrativeArea ?? p?.locality, p?.subLocality].compactMap { $0 }.filter { !$0.isEmpty }
+            var dedup: [String] = []
+            for x in parts where !dedup.contains(x) { dedup.append(x) }
+            let area = dedup.joined(separator: " ")
+            // 근처 건물·랜드마크를 하나 붙인다 (예: "석촌호수")
+            self.nearbyLandmark(loc, fallback: p?.areasOfInterest?.first) { mark in
+                let place = [area, mark ?? ""].filter { !$0.isEmpty }.joined(separator: " ")
+                self.sync(place: place.isEmpty ? nil : place)
+            }
+        }
+    }
+
+    // "서울특별시" → "서울", "경기도" → "경기"
+    private static func shortCity(_ s: String) -> String {
+        for suffix in ["특별자치시", "특별자치도", "특별시", "광역시", "도"] where s.hasSuffix(suffix) && s.count > suffix.count {
+            return String(s.dropLast(suffix.count))
+        }
+        return s
+    }
+
+    // 반경 400m 안에서 가장 가까운 공원·명소·학교·역 같은 장소 이름
+    private func nearbyLandmark(_ loc: CLLocation, fallback: String?, done: @escaping (String?) -> Void) {
+        let req = MKLocalPointsOfInterestRequest(center: loc.coordinate, radius: 400)
+        req.pointOfInterestFilter = MKPointOfInterestFilter(including: [
+            .park, .nationalPark, .museum, .stadium, .university, .school, .library, .publicTransport,
+            .amusementPark, .zoo, .aquarium, .beach, .marina, .theater, .movieTheater, .hospital, .fitnessCenter
+        ])
+        MKLocalSearch(request: req).start { res, _ in
+            let best = res?.mapItems
+                .compactMap { item -> (String, CLLocationDistance)? in
+                    guard let name = item.name, let c = item.placemark.location else { return nil }
+                    return (name, c.distance(from: loc))
+                }
+                .min { $0.1 < $1.1 }?.0
+            DispatchQueue.main.async { done(best ?? fallback) }
         }
     }
 

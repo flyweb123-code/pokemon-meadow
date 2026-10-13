@@ -324,8 +324,10 @@ ol.log li.big .txt{color:#c03838}
 .bag-sort button[aria-pressed="true"]{border-color:var(--frame);background:var(--frame);color:var(--win);position:relative}
 .bslot .prog.sm{width:80%;height:7px;border-width:2px;margin:1px 0}.bslot .km{font-size:9px;letter-spacing:-.3px}
 #eggOut{display:block;margin-top:8px;padding:7px 10px;font-size:13px}
-.bag-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
-.bag-tabs button{font:inherit;font-size:13px;border:3px solid var(--inner);background:#fff;color:var(--win-ink);padding:5px 9px;cursor:pointer}
+.bag-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:0 0 10px}
+@media (max-width:560px){.bag-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.bag-tabs button{font:inherit;font-size:13px;border:3px solid var(--inner);background:#fff;color:var(--win-ink);padding:6px 4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:2px;white-space:nowrap;position:relative}
+.bag-tabs button .dot{position:absolute;top:-4px;right:-4px;margin:0}
 .bag-tabs button b{margin-left:4px}
 .bag-tabs button[aria-selected="true"]{border-color:var(--frame);background:var(--frame);color:var(--win)}
 .bag-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
@@ -335,7 +337,11 @@ ol.log li.big .txt{color:#c03838}
 .bslot[aria-current="true"]{border-color:var(--cursor);background:var(--card)}
 .newtag{position:absolute;top:2px;left:50%;transform:translateX(-50%);font-size:9px;line-height:1;background:#e04838;color:#fff;padding:2px 4px;letter-spacing:.5px}
 .bag-empty{grid-column:1/-1;color:var(--dim);font-size:14px;padding:18px 0;text-align:center}
-.bag-pick .lk-btn{margin-top:8px}
+.bagpop{position:fixed;inset:0;z-index:5600;background:rgba(10,14,30,.6);display:grid;place-items:center;padding:16px}
+.bagpop .win{width:min(400px,100%)}
+.bagpop .incu-box{margin-bottom:12px}
+.bp-btns{display:grid;grid-template-columns:2fr 1fr;gap:8px}
+.bp-btns .lk-btn[disabled]{opacity:.55}
 .egg-actions{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;font-size:14px}
 .gradeinfo{font-size:12px;color:var(--dim);margin:10px 0 0;line-height:1.7}
 /* 짝꿍 탭: 세 칸이 화면을 꽉 채운다. 칸마다 두 줄(그림+이름·진화 / 버튼) */
@@ -444,7 +450,7 @@ ol.log li.big .txt{color:#c03838}
 /* Narrow screens: the meadow sits on top, windows stack below it. */
 @media (max-width:760px){
   .runwin{height:auto;max-height:92vh}.run-body{grid-template-columns:1fr;gap:14px}.run-body .runpanel{border-left:0;padding-left:0;border-top:3px dotted var(--inner);padding-top:14px}
-  .eggs{gap:5px}.eslot{min-height:108px;font-size:11px;padding:20px 1px 6px}.eslot .small{font-size:9px;letter-spacing:-.3px}.eslot .egg{width:36px;height:44px}
+  .eggs{gap:5px}.eslot{min-height:96px;font-size:11px;padding:20px 1px 6px}.eslot .small{font-size:9px;letter-spacing:-.3px}.eslot .egg{width:36px;height:44px}
     .app{height:auto;min-height:100%;overflow:visible;display:flex;flex-direction:column;gap:14px;padding:0 16px 20px}
   .stage-wrap{position:relative;inset:auto;aspect-ratio:1.6;margin:0 -16px}
   .hud,.card{position:static}
@@ -675,7 +681,6 @@ ol.log li.big .txt{color:#c03838}
         <div class="eggs" id="eggs"></div>
       </section>
       <section class="rtab" data-tab="bag">
-        <div class="incu-box bag-pick" id="bagPick"></div>
         <div class="bag-head"><h4>가방 <span class="small" id="bagCount"></span></h4><div class="bag-sort" id="bagSort"><button data-sort="new">최신순</button><button data-sort="km">거리순</button></div></div>
         <div class="bag-tabs" id="bagTabs" role="tablist"></div>
         <div class="bag-grid" id="bagGrid"></div>
@@ -700,6 +705,12 @@ ol.log li.big .txt{color:#c03838}
   </div>
 </div>
 
+<div class="bagpop" id="bagPop" hidden>
+  <div class="win" role="dialog" aria-label="알 정보">
+    <div class="incu-box bag-pick" id="bagPick"></div>
+    <div class="bp-btns"><button class="lk-btn main" id="bagIn">부화기에 넣기</button><button class="lk-btn" id="bagClose">닫기</button></div>
+  </div>
+</div>
 <div class="hatch" id="hatch" hidden>
   <div class="win" role="dialog" aria-label="알 부화">
     <div class="hatch-stage" id="hatchStage"></div>
@@ -3230,7 +3241,7 @@ function fmtWhen(t) { const d = new Date(t); return `${d.getMonth() + 1}/${d.get
 function renderBag() {
   const hasNew = S.bag.some(e => e.isNew);
   const tb = document.querySelector('.runtab[data-tab="bag"]'); tb.innerHTML = '가방' + (hasNew ? '<i class="dot" aria-label="새 알"></i>' : '');
-  if (runTab !== 'bag') return;
+  if (runTab !== 'bag') { $('#bagPop').hidden = true; bagSel = null; return; }
   const sig = [bagG, bagSort, bagSel?.id, S.bag.length, S.bag.filter(e => e.isNew).length, S.eggs.length].join();
   if (sig === renderBag.sig) return; renderBag.sig = sig;
   $('#bagCount').textContent = `${S.bag.length}개`;
@@ -3243,8 +3254,9 @@ function renderBag() {
   $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot" data-id="${e.id}" aria-current="${e === bagSel}">${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g)}<span>${GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.split(' ').pop()) : fmtWhen(e.t)}</span></button>`).join('')
     : `<div class="bag-empty">${S.bag.length ? '이 등급 알이 없어요' : '움직이면 알을 주울 수 있어요'}</div>`;
   const e = bagSel, full = S.eggs.length >= MAX_EGGS;
-  $('#bagPick').hidden = !e;
-  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${GRADE[e.g].km}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움${e.place ? `<br>${esc(e.place)} 근처` : ''}</div><button class="lk-btn main" id="bagIn" ${full ? 'disabled' : ''}>${full ? `부화기가 꽉 찼어요 (${MAX_EGGS}/${MAX_EGGS})` : '부화기에 넣기'}</button></div>`;
+  $('#bagPop').hidden = !e;
+  if (e) { $('#bagIn').disabled = full; $('#bagIn').textContent = full ? `부화기가 꽉 찼어요` : '부화기에 넣기'; }
+  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${GRADE[e.g].km}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움${e.place ? `<br>${esc(e.place)} 근처` : ''}</div></div>`;
 }
 document.addEventListener('click', ev => {
   const tab = ev.target.closest('#bagTabs [data-g]'); if (tab) { bagG = +tab.dataset.g; renderBag(); return; }
@@ -3252,6 +3264,7 @@ document.addEventListener('click', ev => {
   if (sl) { const e = S.bag.find(x => x.id === +sl.dataset.id); bagSel = e === bagSel ? null : e; if (e && e.isNew) { e.isNew = false; save(); } renderBag(); return; }
   if (ev.target.closest('#eggOut') && eggSel) { const e = eggSel; if (unincubate(e)) { log(`${GRADE[e.g].n} 알을 가방에 넣었다. (${fmtKm(e.km)}km 쌓인 채로)`); eggSel = null; renderRun(); } return; }
   const so = ev.target.closest('#bagSort [data-sort]'); if (so) { bagSort = so.dataset.sort; try { localStorage.setItem('pk-bag-sort', bagSort); } catch (x) {} renderBag.sig = ''; renderBag(); return; }
+  if (ev.target.closest('#bagClose') || ev.target.id === 'bagPop') { bagSel = null; renderBag(); return; }
   if (ev.target.closest('#bagIn') && bagSel) { const e = bagSel; if (incubate(e)) { bagSel = null; eggSel = S.eggs[S.eggs.length - 1]; log(`${GRADE[e.g].n} 알을 부화기에 넣었다.`); setRunTab('egg'); renderRun(); } }
 });
 try { runTab = localStorage.getItem('pk-run-tab') || 'egg'; } catch (e) {}
@@ -3271,7 +3284,7 @@ $('#buddy').addEventListener('click', e => {
   else if (S.buds[i]) { log(`${J({ name: SPECIES[S.buds[i].sp].n },'과/와')} 같이 달리기를 그만뒀다.`); S.buds.splice(i, 1); save(); renderRun(); }
 });
 function renderRun() {
-  if (runEl.hidden) return;
+  if (runEl.hidden) { if (!$('#bagPop').hidden) { $('#bagPop').hidden = true; bagSel = null; } return; }
   $('#runTotal').innerHTML = ` 총 <b>${fmtKm(S.totalKm)}</b>km · 도감 ${S.unlocked.size}/${Object.keys(SPECIES).length}`;
   if (!S.eggs.includes(eggSel)) eggSel = S.eggs[0] || null;
   const e = eggSel;
@@ -3282,7 +3295,7 @@ function renderRun() {
   for (let i = 0; i < MAX_EGGS; i++) {
     const x = S.eggs[i], b = document.createElement('button'); b.className = 'eslot';
     if (x) {
-      b.innerHTML = `<span class="tag2">부화 중</span>${eggHtml(x.g, 'wob')}<span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div><span class="small">${fmtKm(x.km)}/${x.need}km</span>`;
+      b.innerHTML = `<span class="tag2">부화 중</span>${eggHtml(x.g, 'wob')}<span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div>`;
       b.setAttribute('aria-current', x === e); if (x.isNew) { b.classList.add('new'); x.isNew = false; }
       b.onclick = () => { eggSel = x; renderRun(); };
     } else { b.classList.add('empty', 'add'); b.innerHTML = '+'; b.setAttribute('aria-label', '가방에서 알 가져오기'); b.onclick = () => setRunTab('bag'); }
