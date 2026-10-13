@@ -420,10 +420,10 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .mgr-detail .pic::after{content:"";position:absolute;left:0;right:0;bottom:0;height:18px;background:#7cb85a;border-top:3px solid #5a9a40}
 .mgr-detail .pic img{position:relative;z-index:1;margin-bottom:8px;image-rendering:pixelated;max-height:96px}
 .namerow{display:flex;gap:8px;align-items:center}
-.nm-edit{flex:1;min-width:0;display:flex;align-items:center;gap:4px;cursor:text}
+.nm-edit{flex:1;min-width:0;display:flex;align-items:center;gap:2px;cursor:text}
 .namerow input{flex:0 1 auto;max-width:100%;min-width:0;font:inherit;font-size:20px;font-weight:700;color:var(--win-ink);background:none;border:0;border-bottom:2px solid transparent;padding:2px 0;border-radius:0;outline:0}
 .namerow input:focus{border-bottom-color:var(--frame)}
-.nm-edit .pen-b{flex:none;width:20px;height:20px;color:var(--frame);display:inline-flex}.nm-edit .pen-b svg{width:100%;height:100%}.sx{font-weight:normal;margin-left:2px}.sx.m{color:#3070d0}.sx.f{color:#e04870}.namerow .sx,.pp-nm .sx{font-size:18px}.pp-nm{flex:0 1 auto}.pp-nm input{font:inherit;font-weight:700;font-size:16px;color:var(--win-ink);background:none;border:0;border-bottom:2px solid transparent;padding:1px 0;width:6.2em;min-width:0;outline:0;border-radius:0}.pp-nm input:focus{border-bottom-color:var(--frame)}.pp-nm .pen-b{width:16px;height:16px}
+.nm-edit .pen-b{flex:none;width:13px;height:13px;margin-left:1px;color:var(--frame);display:inline-flex}.nm-edit .pen-b svg{width:100%;height:100%}.sx{font-weight:normal;margin-left:2px}.sx.m{color:#3070d0}.sx.f{color:#e04870}.namerow .sx,.pp-nm .sx{font-size:18px}.pp-nm{flex:0 1 auto}.pp-nm input{font:inherit;font-weight:700;font-size:16px;color:var(--win-ink);background:none;border:0;border-bottom:2px solid transparent;padding:1px 0;width:6.2em;min-width:0;outline:0;border-radius:0}.pp-nm input:focus{border-bottom-color:var(--frame)}.pp-nm .pen-b{width:11px;height:11px}.st-tag[hidden]{display:none}
 .namerow{margin-top:10px}
 .monpop .dp-pic{height:160px;margin-bottom:0;position:relative;flex:1}.m-stage{margin-bottom:0}
 .st-tag{position:absolute;left:6px;top:6px;z-index:2;font-size:12px;line-height:1;color:var(--win-ink);background:#fff;border:2px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.2);padding:4px 8px}.monpop .dp-pic img{height:128px;width:auto;max-width:100%}
@@ -3663,7 +3663,7 @@ function renderBox() {
   document.querySelectorAll('#boxSort [data-sort]').forEach(b => b.setAttribute('aria-pressed', b.dataset.sort === boxSort));
   const L = boxList(), bud = new Set(S.buds.map(b => b.pid));
   $('#boxCount').innerHTML = budPick != null ? '<b class="pickhint">짝꿍을 골라 주세요</b>' : `${S.box.some(p => p.shiny) ? `이로치 ${S.box.filter(p => p.shiny).length} · ` : ''}전체 <b>${S.box.length}</b>마리`;
-  $('#boxGrid').innerHTML = L.length ? L.map(p => `<button class="pk${p.shiny ? ' shiny' : ''}${pkCls(p)}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rankOf(p)}">${rankOf(p)}</span>${bud.has(p.id) ? '<span class="tg bud">짝꿍</span>' : onField(p.id) ? '<span class="tg">필드</span>' : ''}<img alt="" data-sp="${p.sp}" data-sx="${p.sex || ''}" src="${thumbP(p) || ''}"><span class="nm">${esc(nameOf(p))}${sexHtml(p.sex)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span>${tyIcons(p.sp)}<span class="hearts">${hearts(p.fr)}</span></button>`).join('')
+  $('#boxGrid').innerHTML = L.length ? L.map(p => `<button class="pk${p.shiny ? ' shiny' : ''}${pkCls(p)}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rankOf(p)}">${rankOf(p)}</span>${bud.has(p.id) ? '<span class="tg bud">짝꿍</span>' : onField(p.id) ? '<span class="tg">필드</span>' : ''}<img alt="" data-sp="${p.sp}" data-sx="${p.sex || ''}" src="${thumbP(p) || ''}"><span class="nm">${esc(nameOf(p))}${sexHtml(p.sex)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(p.fr)}</span></button>`).join('')
     : '<p class="empty-msg">아직 부화시킨 포켓몬이 없다.</p>';
   $('#boxGrid').querySelectorAll('img[data-sp]').forEach(im => { const sp = +im.dataset.sp; if (!thumbOf(sp)) ensureSprite(sp).then(() => { im.src = thumbOf(fKey(sp, im.dataset.sx)); }).catch(() => {}); });
 }
@@ -3677,12 +3677,12 @@ function openPoke(id, dir = 0) {
   const pic = $('#ppPic'), img = $('#ppImg'); pic.classList.toggle('shiny', P.shiny); pic.classList.toggle('rkS', rk === 'S'); pic.classList.toggle('frMax', (P.fr || 0) >= FR_MAX); pic.style.setProperty('--shue', shinyHue(P.sp) + 'deg');
   pic.classList.remove('slide-l', 'slide-r'); void pic.offsetWidth; if (dir) pic.classList.add(dir > 0 ? 'slide-l' : 'slide-r');
   img.src = thumbP(P) || ''; if (!thumbOf(P.sp)) ensureSprite(P.sp).then(() => { if (pokeId === id) img.src = thumbP(P); }).catch(() => {});
-  $('#ppBody').innerHTML = `<div class="pp-top"><span class="no">No.${String(P.sp).padStart(4, '0')}</span><label class="nm-edit pp-nm"><input id="ppName" maxlength="8" aria-label="이름 바꾸기" autocomplete="off" value="${esc(nameOf(P))}" style="width:${nameOf(P).length + .6}em">${sexHtml(P.sex)}<span class="pen-b" aria-hidden="true">${PEN}</span></label>${P.shiny ? '<b class="sh">✦ 이로치</b>' : ''}${tyIcons(P.sp)}<span class="rk ${rk}">${rk}</span></div><div class="pp-g">${nameOf(P) !== d.n ? `${esc(d.n)} · ` : ''}${esc(d.g || '')}</div>`
+  $('#ppBody').innerHTML = `<div class="pp-top"><span class="no">No.${String(P.sp).padStart(4, '0')}</span><label class="nm-edit pp-nm"><input id="ppName" maxlength="8" aria-label="이름 바꾸기" autocomplete="off" value="${esc(nameOf(P))}" style="width:${nameOf(P).length + .15}em"><span class="pen-b" aria-hidden="true">${PEN}</span>${sexHtml(P.sex)}</label>${P.shiny ? '<b class="sh">✦ 이로치</b>' : ''}${tyIcons(P.sp)}<span class="rk ${rk}">${rk}</span></div><div class="pp-g">${nameOf(P) !== d.n ? `${esc(d.n)} · ` : ''}${esc(d.g || '')}</div>`
     + `<div class="ivs">${P.iv.map((v, k) => `<span>${IV_N[k]}</span><span class="b"><i class="${v === 31 ? 'max' : ''}" style="width:${Math.round(v / 31 * 100)}%"></i></span><span class="v">${v}</span>`).join('')}</div>`
     + `<div class="pp-fr"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>`
     + `<div class="mvrow">기술 ${(P.fr || 0) >= FR_MAX ? movesHtml(P.sp, false) : `<span class="mvlock">${movesOf(P.sp).map(() => '???').join(' · ')} — 친밀도 만점이 되면 쓸 수 있어요</span>`}</div>`
     + `<div class="pp-meta">${P.place ? `${metDay(P)} ${esc(P.place)} 근처에서 만났다<br>` : `${metDay(P)} 만남<br>`}${P.g ? `${GRADE[P.g].n} 알에서 부화` : ''}</div>`;
-  { const inp = $('#ppName'); inp.addEventListener('input', () => { inp.style.width = (Math.max(1, inp.value.length) + .6) + 'em'; }); inp.addEventListener('change', () => renameBox(P, inp.value)); inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); }); }
+  { const inp = $('#ppName'); inp.addEventListener('input', () => { inp.style.width = (Math.max(1, inp.value.length) + .15) + "em"; }); inp.addEventListener('change', () => renameBox(P, inp.value)); inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); }); }
   const on = onField(P.id), full = S.mons.length >= MAX_MONS, isBud = S.buds.some(b => b.pid === P.id);
   const rb = $('#ppFree'); rb.hidden = budPick != null; if (freeArm !== id) { freeArm = null; rb.classList.remove('arm'); rb.textContent = '놓아주기'; }
   const fb = $('#ppField'); fb.hidden = budPick != null; fb.textContent = on ? '필드에서 빼기' : full ? '필드가 꽉 찼어요' : '필드에 내보내기'; fb.disabled = !on && full; fb.classList.toggle('off', on);
@@ -3799,7 +3799,7 @@ function renderMgrDetail(rebuild) {
   if (rebuild || mgrDet.dataset.uid !== String(m.uid)) {
     mgrDet.dataset.uid = m.uid;
     mgrDet.innerHTML = `<div class="dp-stage m-stage"><button class="dp-nav" id="mPrev" aria-label="이전">◀</button><div class="dp-pic" id="mStage"><span class="st-tag st" id="mSt"></span><img alt="" id="mPic"></div><button class="dp-nav" id="mNext" aria-label="다음">▶</button></div>
-      <div class="namerow"><label class="nm-edit"><input id="mName" maxlength="8" aria-label="이름 바꾸기" autocomplete="off">${sexHtml(sexOf(m))}<span class="pen-b" aria-hidden="true">${PEN}</span></label><small>No.${String(m.sp).padStart(4, '0')}</small></div>
+      <div class="namerow"><label class="nm-edit"><input id="mName" maxlength="8" aria-label="이름 바꾸기" autocomplete="off"><span class="pen-b" aria-hidden="true">${PEN}</span>${sexHtml(sexOf(m))}</label><small>No.${String(m.sp).padStart(4, '0')}</small></div>
       <p class="sub">${m.name !== d.n ? `${d.n} · ` : ''}${d.g} ${tyIcons(m.sp)}${t.noct ? ' · 야행성' : ''}${d.leg || d.my ? ' · 전설' : ''}</p>
       <p class="sub" id="mIndiv"></p>
       <div class="mvrow" id="mMoves"></div>
@@ -3821,7 +3821,7 @@ function renderMgrDetail(rebuild) {
   }
   const pic = $('#mPic'), want = isPmd(m.form) ? thumbOf(m.sk || m.form) : m.state === 'sleep' ? (stillCache[m.form] || SPRITES[m.form]) : SPRITES[m.form];
   if (pic.getAttribute('src') !== want) pic.src = want;
-  { const [c, tx] = slotState(m), el = $('#mSt'); el.className = 'st-tag st ' + c; el.textContent = tx; }
+  { const [c, tx] = slotState(m), el = $('#mSt'); el.className = 'st-tag st ' + c; el.textContent = tx; el.hidden = tx === '이동'; }
   { const P = boxOf(m.pid), st = $('#mStage'); st.className = 'dp-pic' + pkCls(P) + (P?.shiny ? ' shiny' : ''); st.style.setProperty('--shue', shinyHue(m.sp) + 'deg'); }
   $('#mBars').innerHTML = bar('기력', m.energy, 'var(--hp)') + bar('배부름', 100 - m.hunger, 'var(--hunger)') + bar('외로움', m.social, 'var(--lonely)');
   { const h = memoHtml(m), el = $('#mMemo'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
@@ -3847,7 +3847,7 @@ function memoHtml(m) {
   const good = friendsAll(m).filter(x => x.r >= 1).slice(0, 3);
   const row = (k, v, c = '') => `<div class="mrow${c}"><span class="mk">${k}</span><span class="mv">${v}</span></div>`;
   return row('친구', good.length ? good.map(x => `<b class="good">♥ ${esc(x.name)}</b>${x.r >= 60 ? ' 단짝' : ''}`).join(' · ') : '아직 친한 포켓몬이 없다')
-    + row('기분', esc(moodOf(m)))
+    + row('상태', esc(moodOf(m)))
     + row('생각', thoughtOf(m), ' th');
 }
 // 생각: 당연한 일 말고, 포켓몬끼리의 미묘한 관계나 혼자 하는 귀여운 생각을 한 줄로
