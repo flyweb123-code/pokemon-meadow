@@ -90,7 +90,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .boot *,.boot *::before,.boot *::after{transition:none!important}
 .boot-night #night{background-color:rgb(48,57,110)}
 .boot-night .clockwin,.boot-night .dlg,.boot-night .mapico,.clockwin.night,.dlg.night{--win:#1e2340;--win-ink:#e4e2f6;--inner:#46508a;--inner-blue:#46508a;--dlg-in:#46508a;--dim:#8e96c4;--cursor:#ffd75e;--frame:#0e1024;color:var(--win-ink)}
-.dlg.night .now b{color:#ffd75e}
+.dlg.night .now b,.dlg.night .journal b{color:#ffd75e}
 .clockwin.night .t{color:#ffe9a8;text-shadow:0 0 6px rgba(255,220,120,.35)}
 .clockwin .t{font-size:32px;font-weight:700;font-variant-numeric:tabular-nums}
 .clockwin .d{font-size:16px}
@@ -114,15 +114,19 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .dlg.folded .more{position:static;display:block;margin-left:auto;padding:6px 10px;transform:rotate(180deg)}
 @keyframes blink{50%{opacity:0}}
 
-.journal{left:20px;bottom:150px;width:min(520px,calc(100% - 40px));max-height:min(56vh,520px);display:flex;flex-direction:column;padding:14px 18px 12px}
-.journal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;font-size:16px}
-.journal-head h3{margin:0;font-size:20px;font-weight:700}
+/* 관찰 일지: 상태창이 위로 늘어나며 펼쳐진다 (색은 상태창 낮/밤을 그대로 따름) */
+.journal{display:flex;flex-direction:column;margin:-2px 0 10px;padding:0 0 10px;border-bottom:3px solid var(--dlg-in);cursor:default;user-select:text;-webkit-user-select:text}
+.dlg.open .prev{display:none}
+.journal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:4px;font-size:16px}
+.journal-head h3{margin:0;font-size:17px;font-weight:700}
 .journal-head label{display:flex;gap:6px;align-items:center;font-size:14px}
-ol.log{list-style:none;margin:0;padding:0 4px 0 0;overflow-y:auto;min-height:80px;max-height:calc(5 * 39px);overscroll-behavior:contain}
+ol.log{list-style:none;margin:0;padding:0 4px 0 0;overflow-y:auto;min-height:60px;max-height:calc(5 * 38px);overscroll-behavior:contain;line-height:1.5}
 .journal-head .small{color:var(--dim);font-size:13px}
 .dlg{cursor:pointer}
 .dlg.open .more{opacity:.5}
-ol.log li{display:grid;grid-template-columns:86px minmax(0,1fr);gap:8px;font-size:14px;line-height:1.6;padding:5px 0;border-bottom:2px dotted var(--inner)}
+ol.log li{display:grid;grid-template-columns:86px minmax(0,1fr);gap:8px;font-size:14px;line-height:1.6;padding:5px 0;border-bottom:2px dotted var(--dlg-in)}
+ol.log li:last-child{border-bottom:0}
+.dlg.night ol.log li.big .txt{color:#ff9a8a}
 ol.log li time{color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
 ol.log li.big .txt{color:#c03838}
 
@@ -581,7 +585,6 @@ ol.log li.big .txt{color:#c03838}
   .menuwin{flex-direction:row;flex-wrap:wrap;gap:2px 18px}
   .cmdwin{grid-template-columns:minmax(0,1fr)}
   .dlg{font-size:16px;min-height:0}
-  .journal{width:auto;max-height:60vh}
   .card{width:auto}
   .card{position:relative}
   .card .close{right:8px;top:6px;border:0;padding:2px 6px}
@@ -621,7 +624,6 @@ ol.log li.big .txt{color:#c03838}
   .card .close{position:absolute;right:4px;top:4px;border:0;padding:8px 12px;font-size:16px}
   .card .no{margin-right:36px}
   .card-actions .opt{padding:10px 0 10px 20px}
-  .journal{grid-row:1;grid-column:1/-1;position:relative;align-self:end;z-index:31;width:auto;margin:0 8px 8px;max-height:55%;left:auto;bottom:auto}
   .hint{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top) + 64px);bottom:auto;white-space:nowrap;z-index:40}
   /* bottom panel */
   .dlg{grid-row:2;grid-column:1/-1;z-index:20;position:relative;left:auto;right:auto;bottom:auto;top:auto;margin:0;border-width:3px 0 0;box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 6px var(--dlg-in);
@@ -694,7 +696,7 @@ ol.log li.big .txt{color:#c03838}
   .cmdwin{padding:4px calc(env(safe-area-inset-right) + 8px) calc(var(--sab) + 8px) 8px;border-top:0;border-left:3px solid #23232f}
   .menuwin .opt,.cmdwin .opt{min-height:44px}
   #side,#edge{right:calc(176px + env(safe-area-inset-right))}
-  .card,.journal{grid-area:stage;max-width:440px;justify-self:start}
+  .card{grid-area:stage;max-width:440px;justify-self:start}
   .sheet{bottom:0;right:calc(176px + env(safe-area-inset-right))}
   .sheet .win{padding-right:14px;padding-bottom:calc(var(--sab) + 10px)}
 }
@@ -735,17 +737,15 @@ ol.log li.big .txt{color:#c03838}
   <section class="card" id="info" hidden aria-live="polite"></section>
 
   <div class="hud win blue dlg" id="dlg" role="log" aria-live="polite">
+    <section class="journal" id="journal" hidden>
+      <div class="journal-head"><h3>관찰 일지</h3><span class="small">최근 20개</span></div>
+      <ol class="log" id="log"></ol>
+    </section>
     <div class="prev" id="dlgPrev"></div>
     <div class="now" id="dlgNow"></div>
     <button class="more" id="dlgFold" type="button" aria-label="상태창 접기">▼</button>
   </div>
 
-  <section class="hud win journal" id="journal" hidden>
-    <div class="journal-head">
-      <h3>관찰 일지</h3><span class="small">최근 20개</span>
-    </div>
-    <ol class="log" id="log"></ol>
-  </section>
 
   <div class="hud win cmdwin" id="cmd" role="group" aria-label="명령">
     <button class="opt wide" id="openShop" aria-pressed="false">상점</button>
@@ -3044,7 +3044,7 @@ function setTool(t) { S.tool = t; $('#btnBerry').setAttribute('aria-pressed', t 
 function setLog(on) { $('#journal').hidden = !on; dlgEl.classList.toggle('open', on); if (on) logEl.scrollTop = 0; }
 function closeToggles() { if (S.tool === 'berry') setTool('look'); setLog(false); }
 $('#btnBerry').onclick = () => { const on = S.tool !== 'berry'; closeToggles(); hideSheets(); if (on) { select(null); setTool('berry'); } };
-dlgEl.addEventListener('click', () => { if (dlgEl.classList.contains('folded')) return; const on = $('#journal').hidden; closeToggles(); hideSheets(); if (on) { select(null); setLog(true); sfx('open'); } });
+dlgEl.addEventListener('click', e => { if (dlgEl.classList.contains('folded') || e.target.closest('#journal')) return; const on = $('#journal').hidden; closeToggles(); hideSheets(); if (on) { select(null); setLog(true); sfx('open'); } });
 const sheet = $('#sheet');
 const picked = new Set();
 const grid = $('#dexGrid'), dexBtns = {};
@@ -3474,10 +3474,10 @@ const budReady = b => !!b && !!CHILDREN[b.sp] && b.km >= evoNeed(b);
 const evoNeed = m => { const g = gradeOf(baseOf(m.sp)), stage = evoStage(m.sp); return [0, 5, 10, 15, 20, 25][g] * (stage ? 1.5 : 1); };
 const fmtKm = v => (Math.floor(v * 100) / 100).toFixed(2);
 // ---------- 포켓몬 상자: 부화한 한 마리 한 마리 (개체값·이로치·친밀도) ----------
-// 개체값은 능력치 6개마다 0~31. 합계로 S~F 랭크(대략 S 2%, A 8%, B 20%, C 30%, D 25%, E 10%, F 5%).
+// 개체값은 능력치 6개마다 0~31. 합계로 S~F 랭크, 높을수록 드물다(S 2%, A 6%, B 9%, C 13%, D 18%, E 22%, F 30%).
 // 이로치는 6세대 이후 본가 게임처럼 1/4096. 친밀도 0~255(하트 5칸).
 const IV_N = ['HP', '공격', '방어', '특공', '특방', '스피드'];
-const RANKS = [['S', 140], ['A', 122], ['B', 105], ['C', 87], ['D', 69], ['E', 56], ['F', 0]];
+const RANKS = [['S', 139], ['A', 125], ['B', 115], ['C', 105], ['D', 94], ['E', 81], ['F', 0]];
 const SHINY_RATE = 1 / 4096;
 const ivSum = p => p.iv.reduce((a, b) => a + b, 0);
 const rankOf = p => RANKS.find(([, v]) => ivSum(p) >= v)[0];
