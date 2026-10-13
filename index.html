@@ -217,6 +217,9 @@ ol.log li.big .txt{color:#c03838}
 .sheet{grid-template-columns:minmax(0,1fr)}
 .dexwin{height:min(86vh,760px);display:flex;flex-direction:column;gap:10px}
 .filters{display:flex;flex-wrap:wrap;gap:8px}
+.fsel{font:inherit;font-size:14px;color:var(--win-ink);background:#fff;border:3px solid var(--frame);padding:6px 28px 6px 10px;border-radius:0;position:relative;text-align:left;cursor:pointer;min-width:110px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
+.fsel::after{content:'▼';position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--frame)}
+.fsel.on{background:var(--frame);color:var(--win)}.fsel.on::after{color:var(--win)}
 .filters input,.filters select{font:inherit;font-size:14px;color:var(--win-ink);background:#fff;border:3px solid var(--frame);padding:6px 10px;border-radius:0}
 .filters input{flex:1 1 180px;min-width:0}
 .dexwin .dex{flex:1;min-height:0;overflow-y:auto;align-content:start;padding:4px}
@@ -343,6 +346,30 @@ ol.log li.big .txt{color:#c03838}
 .bslot[aria-current="true"]{border-color:var(--cursor);background:var(--card)}
 .newtag{position:absolute;top:2px;left:50%;transform:translateX(-50%);font-size:9px;line-height:1;background:#e04838;color:#fff;padding:2px 4px;letter-spacing:.5px}
 .bag-empty{grid-column:1/-1;color:var(--dim);font-size:14px;padding:18px 0;text-align:center}
+.fpop{position:fixed;inset:0;z-index:5700;background:rgba(10,14,30,.5);display:grid;place-items:center;padding:16px}
+.fpop .win{width:min(420px,100%);max-height:80vh;overflow-y:auto}
+.fpop h4{margin:0 0 10px;font-size:16px}
+.fopts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.fopts button{font:inherit;font-size:14px;border:3px solid var(--inner);background:#fff;color:var(--win-ink);padding:9px 4px;cursor:pointer;position:relative}
+.fopts button.all{grid-column:1/-1}
+.fopts button[aria-selected="true"]{border-color:var(--frame);outline:3px solid var(--cursor);outline-offset:-6px}
+.fopts button .sw{display:inline-block;width:10px;height:10px;margin-right:6px;border:2px solid rgba(0,0,0,.3);vertical-align:-1px}
+.dexpop{position:fixed;inset:0;z-index:5600;background:rgba(10,14,30,.6);display:grid;place-items:center;padding:16px}
+.dexpop .win{width:min(420px,100%);touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.dp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13px;color:var(--dim)}
+.dp-stage{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.dp-pic{flex:1;height:170px;display:grid;place-items:center;background:#e4f2d0;border:3px solid var(--inner);box-shadow:inset 0 -18px 0 #cfe6b4}
+.dp-pic img{height:140px;image-rendering:pixelated;object-fit:contain}
+.dp-pic.locked img{filter:brightness(0) opacity(.4)}
+.dp-pic.slide-l img{animation:dpl .18s steps(3)}.dp-pic.slide-r img{animation:dpr .18s steps(3)}
+@keyframes dpl{from{transform:translateX(40px);opacity:0}}@keyframes dpr{from{transform:translateX(-40px);opacity:0}}
+.dp-nav{flex:none;width:40px;height:56px;font:inherit;font-size:18px;border:3px solid var(--frame);background:var(--win);color:var(--frame);cursor:pointer;box-shadow:inset 0 -4px 0 rgba(0,0,0,.15)}
+.dp-nav:disabled{opacity:.3}
+.dexpop .dexinfo{animation:none;min-height:120px}
+.dexpop .dx-lock{margin:0;color:var(--dim);font-size:14px;line-height:1.6}
+.dexpop .boxbtn{display:block;width:100%;font:inherit;font-size:16px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:11px 16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
+.dexpop .boxbtn.off{background:var(--win);color:var(--frame)}
+.dexpop .boxbtn[hidden]{display:none}
 .bagpop{position:fixed;inset:0;z-index:5600;background:rgba(10,14,30,.6);display:grid;place-items:center;padding:16px}
 .bagpop .win{width:min(400px,100%)}
 .bagpop .incu-box{margin-bottom:12px}
@@ -555,7 +582,7 @@ ol.log li.big .txt{color:#c03838}
   .sheet-head .cap{display:inline;margin-left:8px;font-size:14px}
   .sheet-head .opt{padding:10px 4px 10px 20px;font-size:16px}
   .filters input{flex:1 1 100%;font-size:16px}
-  .filters select{flex:1 1 0;min-width:0;font-size:16px}
+  .filters select,.fsel{flex:1 1 0;min-width:0;font-size:16px}
   .dexwin .dex{grid-template-columns:repeat(3,minmax(0,1fr))}
   .dexbar{gap:4px 14px;font-size:13px}
   .dexbar #dexCount{flex:1 1 100%}
@@ -634,8 +661,8 @@ ol.log li.big .txt{color:#c03838}
     <div class="sheet-head"><h3><span id="dexTitle">포켓몬 도감</span><span class="cap" id="dexOwn"></span></h3><button class="opt" id="closeDex">닫기</button></div>
     <div class="filters">
       <input id="dexQ" type="search" placeholder="이름이나 번호" aria-label="이름이나 번호로 찾기" autocomplete="off">
-      <select id="dexType" aria-label="타입"></select>
-      <select id="dexGen" aria-label="세대"></select>
+      <button class="fsel" id="dexType" data-v="0" aria-haspopup="listbox">모든 타입</button>
+      <button class="fsel" id="dexGen" data-v="0" aria-haspopup="listbox">모든 세대</button>
     </div>
     <div class="dex" id="dexGrid"></div>
     <p class="dex-empty" id="dexEmpty" hidden>찾는 포켓몬이 없다.</p>
@@ -716,6 +743,21 @@ ol.log li.big .txt{color:#c03838}
   </div>
 </div>
 
+<div class="fpop" id="fPop" hidden>
+  <div class="win" role="listbox" aria-label="필터"><h4 id="fPopT"></h4><div class="fopts" id="fOpts"></div></div>
+</div>
+<div class="dexpop" id="dexPop" hidden>
+  <div class="win" role="dialog" aria-label="도감 카드">
+    <div class="dp-head"><span id="dpPos"></span><button class="opt" id="dpClose">닫기</button></div>
+    <div class="dp-stage" id="dpStage">
+      <button class="dp-nav prev" id="dpPrev" aria-label="이전 포켓몬">◀</button>
+      <div class="dp-pic"><img alt="" id="dpImg"></div>
+      <button class="dp-nav next" id="dpNext" aria-label="다음 포켓몬">▶</button>
+    </div>
+    <div class="dexinfo" id="dpInfo"></div>
+    <button class="boxbtn" id="dpAct"></button>
+  </div>
+</div>
 <div class="bagpop" id="bagPop" hidden>
   <div class="win" role="dialog" aria-label="알 정보">
     <div class="incu-box bag-pick" id="bagPick"></div>
@@ -2826,6 +2868,8 @@ $('#openDex').onclick = () => tabTo(sheet, openDex);
 new MutationObserver(() => { [['#openDex', '#sheet'], ['#openRun', '#run'], ['#openMgr', '#mgr'], ['#openSet', '#set'], ['#sideSet', '#set']].forEach(([b, w]) => $(b).setAttribute('aria-pressed', !$(w).hidden)); document.body.classList.toggle('sheet-open', ['#sheet', '#run', '#mgr'].some(w => !$(w).hidden)); })
   .observe(document.body, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
 $('#closeDex').onclick = () => { sheet.hidden = true; };
+// 도감 창이 닫히면 그 위의 카드·필터 창도 닫는다
+new MutationObserver(() => { if (sheet.hidden) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } }).observe(sheet, { attributes: true, attributeFilter: ['hidden'] });
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
 const setEl = $('#set');
 $('#openSet').onclick = () => tabTo(setEl, () => { setEl.hidden = false; });
@@ -2840,17 +2884,69 @@ const io = new IntersectionObserver(es => es.forEach(en => {
   const b = en.target, sp = +b.dataset.sp; io.unobserve(b);
   ensureSprite(sp).then(() => { b.querySelector('img').src = thumbOf(sp); }).catch(() => {});
 }), { root: grid, rootMargin: '200px' });
-$('#dexType').innerHTML = '<option value="0">모든 타입</option>' + TYPE_KO.slice(1).map((n, i) => `<option value="${i + 1}">${n}</option>`).join('');
-$('#dexGen').innerHTML = '<option value="0">모든 세대</option>' + [1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => `<option value="${g}">${g}세대</option>`).join('');
+// 필터: 시스템 선택창 대신 도트 창에 목록을 띄운다
+const FILTERS = {
+  dexType: { t: '타입', all: '모든 타입', opts: TYPE_KO.slice(1).map((n, i) => [i + 1, n, TYPE_C[i + 1]]) },
+  dexGen: { t: '세대', all: '모든 세대', opts: [1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => [g, `${g}세대`]) },
+};
+let fFor = null;
+function openFilter(id) {
+  fFor = id; const F = FILTERS[id], v = +$('#' + id).dataset.v;
+  $('#fPopT').textContent = F.t;
+  $('#fOpts').innerHTML = `<button class="all" data-v="0" aria-selected="${v === 0}">${F.all}</button>` + F.opts.map(([k, n, c]) => `<button data-v="${k}" aria-selected="${v === k}">${c ? `<i class="sw" style="background:${c}"></i>` : ''}${n}</button>`).join('');
+  $('#fPop').hidden = false;
+}
+function setFilter(id, v) {
+  const b = $('#' + id), F = FILTERS[id]; b.dataset.v = v; b.classList.toggle('on', !!v);
+  b.textContent = v ? F.opts.find(o => o[0] === v)[1] : F.all; filterDex();
+}
+['dexType', 'dexGen'].forEach(id => $('#' + id).onclick = () => openFilter(id));
+$('#fPop').addEventListener('click', e => { const o = e.target.closest('[data-v]'); if (o) setFilter(fFor, +o.dataset.v); if (o || e.target.id === 'fPop') $('#fPop').hidden = true; });
 Object.keys(SPECIES).map(Number).forEach(sp => {
   const d = SPECIES[sp], b = document.createElement('button');
   b.dataset.sp = sp; b.setAttribute('aria-pressed', 'false');
   b.innerHTML = `<img alt=""><span class="nm">${d.n}</span><small>No.${String(sp).padStart(4, '0')}</small><span class="here" hidden></span>`;
   b.title = `${d.g} · ${d.t.map(x => TYPE_KO[x]).join('·')}`;
-  b.onclick = () => togglePick(sp);
+  b.onclick = () => openCard(sp);
   dexBtns[sp] = b; grid.append(b); io.observe(b);
 });
 const dexLocked = sp => !S.unlocked.has(+sp);
+// 도감 카드: 도감에서 누르면 새 창으로 뜨고, 좌우로 넘겨 이전·다음 포켓몬을 본다
+let cardSp = null;
+const cardList = () => Object.keys(dexBtns).filter(k => !dexBtns[k].hidden).map(Number);
+async function openCard(sp, dir = 0) {
+  cardSp = sp; const pop = $('#dexPop'), lock = dexLocked(sp), d = SPECIES[sp];
+  pop.hidden = false;
+  const list = cardList(), i = list.indexOf(sp);
+  $('#dpPos').textContent = `${i + 1} / ${list.length}`;
+  $('#dpPrev').disabled = i <= 0; $('#dpNext').disabled = i < 0 || i >= list.length - 1;
+  const pic = $('#dpStage .dp-pic'), img = $('#dpImg');
+  pic.classList.toggle('locked', lock); pic.classList.remove('slide-l', 'slide-r'); void pic.offsetWidth; if (dir) pic.classList.add(dir > 0 ? 'slide-l' : 'slide-r');
+  img.src = thumbOf(sp) || ''; img.alt = lock ? '???' : d.n;
+  if (!thumbOf(sp)) ensureSprite(sp).then(() => { if (cardSp === sp) img.src = thumbOf(sp); }).catch(() => {});
+  $('#dpInfo').innerHTML = lock ? `<div class="dx-top"><span class="dx-no">No.${String(sp).padStart(4, '0')}</span><b>???</b></div><p class="dx-lock">아직 만나지 못한 포켓몬이다.<br>알을 부화시켜 만나 보자.</p>` : dexInfoHtml(sp);
+  const act = $('#dpAct'); act.hidden = lock;
+  if (!lock) {
+    if (dexMode === 'buddy') { act.textContent = S.buds.some(b => b.sp === sp) ? '이미 짝꿍이에요' : '짝꿍으로 정하기'; act.classList.toggle('off', S.buds.some(b => b.sp === sp)); }
+    else { const on = picked.has(sp); act.textContent = on ? '선택 해제' : '필드에 풀어놓기 선택'; act.classList.toggle('off', on); }
+  }
+}
+function cardStep(dir) { const list = cardList(), i = list.indexOf(cardSp), j = i + dir; if (j >= 0 && j < list.length) { sfx('tap'); openCard(list[j], dir); } }
+function closeCard() { $('#dexPop').hidden = true; cardSp = null; }
+$('#dpPrev').onclick = e => { e.stopPropagation(); cardStep(-1); };
+$('#dpNext').onclick = e => { e.stopPropagation(); cardStep(1); };
+$('#dpClose').onclick = closeCard;
+$('#dexPop').addEventListener('click', e => { if (e.target.id === 'dexPop') closeCard(); });
+$('#dpAct').onclick = async () => {
+  const sp = cardSp; if (sp == null) return;
+  if (dexMode === 'buddy') { if (S.buds.some(b => b.sp === sp)) return; closeCard(); picked.clear(); picked.add(sp); await setBuddySp(sp); return; }
+  togglePick(sp); openCard(sp);
+};
+{ let x0 = null, y0 = 0; const w = $('#dexPop .win');
+  w.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; x0 = e.clientX; y0 = e.clientY; });
+  w.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null; if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) cardStep(dx < 0 ? 1 : -1); });
+  w.addEventListener('pointercancel', () => { x0 = null; });
+  document.addEventListener('keydown', e => { if ($('#dexPop').hidden) return; if (e.key === 'ArrowLeft') cardStep(-1); else if (e.key === 'ArrowRight') cardStep(1); else if (e.key === 'Escape') closeCard(); }); }
 function togglePick(sp) {
   if (dexLocked(sp)) { $('#dexCount').textContent = '아직 만나지 못한 포켓몬이다. 알을 부화시켜 만나 보자.'; return; }
   if (dexMode === 'buddy') { const on = picked.has(sp); picked.forEach(x => dexBtns[x].setAttribute('aria-pressed', 'false')); picked.clear(); if (!on) { picked.add(sp); dexBtns[sp].setAttribute('aria-pressed', 'true'); } updateDexCount(); return; }
@@ -2872,7 +2968,7 @@ function refreshDexBadges() {
   updateDexCount();
 }
 function filterDex() {
-  const q = $('#dexQ').value.trim(), ty = +$('#dexType').value, gen = +$('#dexGen').value;
+  const q = $('#dexQ').value.trim(), ty = +$('#dexType').dataset.v, gen = +$('#dexGen').dataset.v;
   let shown = 0;
   for (const sp in dexBtns) {
     const d = SPECIES[sp];
@@ -2881,7 +2977,7 @@ function filterDex() {
   }
   $('#dexEmpty').hidden = shown > 0;
 }
-['#dexQ', '#dexType', '#dexGen'].forEach(id => $(id).addEventListener('input', filterDex));
+$('#dexQ').addEventListener('input', filterDex);
 $('#dexClear').onclick = () => { picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); updateDexCount(); };
 $('#dexGo').onclick = async () => {
   if (dexMode === 'buddy') { const sp = [...picked][0]; if (sp != null) await setBuddySp(sp); return; }
