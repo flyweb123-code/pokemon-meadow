@@ -3268,10 +3268,10 @@ document.addEventListener('click', ev => {
   const tab = ev.target.closest('#bagTabs [data-g]'); if (tab) { bagG = +tab.dataset.g; renderBag(); return; }
   const sl = ev.target.closest('#bagGrid .bslot');
   if (sl) { const e = S.bag.find(x => x.id === +sl.dataset.id); bagSel = e === bagSel ? null : e; if (e && e.isNew) { e.isNew = false; save(); } renderBag(); return; }
-  if (ev.target.closest('#eggOut') && eggSel) { const e = eggSel; if (unincubate(e)) { log(`${GRADE[e.g].n} 알을 가방에 넣었다. (${fmtKm(e.km)}km 쌓인 채로)`); eggSel = null; renderRun(); } return; }
+  if (ev.target.closest('#eggOut') && eggSel) { const e = eggSel; if (unincubate(e)) { eggSel = null; renderRun(); } return; }
   const so = ev.target.closest('#bagSort [data-sort]'); if (so) { bagSort = so.dataset.sort; try { localStorage.setItem('pk-bag-sort', bagSort); } catch (x) {} renderBag.sig = ''; renderBag(); return; }
   if (ev.target.closest('#bagClose') || ev.target.id === 'bagPop') { bagSel = null; renderBag(); return; }
-  if (ev.target.closest('#bagIn') && bagSel) { const e = bagSel; if (incubate(e)) { bagSel = null; eggSel = S.eggs[S.eggs.length - 1]; log(`${GRADE[e.g].n} 알을 부화기에 넣었다.`); setRunTab('egg'); renderRun(); } }
+  if (ev.target.closest('#bagIn') && bagSel) { const e = bagSel; if (incubate(e)) { bagSel = null; eggSel = S.eggs[S.eggs.length - 1]; setRunTab('egg'); renderRun(); } }
 });
 try { runTab = localStorage.getItem('pk-run-tab') || 'egg'; } catch (e) {}
 function setRunTab(t) {
