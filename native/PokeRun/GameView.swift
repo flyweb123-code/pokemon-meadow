@@ -12,6 +12,8 @@ struct GameView: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
         config.allowsInlineMediaPlayback = true
+        // 배경 음악이 앱을 켜자마자 나오게 (터치 없이 재생 허용)
+        config.mediaTypesRequiringUserActionForPlayback = []
         config.userContentController.add(WeakHandler(bridge), name: "pokeRun")
         let web = WKWebView(frame: .zero, configuration: config)
         web.navigationDelegate = context.coordinator

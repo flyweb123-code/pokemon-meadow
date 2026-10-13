@@ -1029,7 +1029,13 @@ function bgmStart() { if (bgm.preview) return; if (bgmOn) bgmPlay(S.bgm || 'azal
 function bgmPreview(id) { bgm.preview = id; clearTimeout(bgm.prevT); bgmPlay(id); bgm.prevT = setTimeout(() => { bgmStopPreview(); if (!$('#shop').hidden) renderShop(); }, 15000); }
 function bgmStopPreview() { bgm.preview = null; clearTimeout(bgm.prevT); if (bgmOn) bgmPlay(S.bgm || 'azalea'); else bgmStop(); }
 // 아이폰은 화면을 처음 누를 때 소리를 켤 수 있다. 앱을 내리면 쉬고, 돌아오면 다시 튼다.
-document.addEventListener('pointerdown', () => { if (bgmOn && (bgm.id == null || bgm.el.paused) && !document.hidden) bgmStart(); }, { capture: true, passive: true });
+// 곡은 켜자마자 미리 불러 두고(재생 시도), 첫 터치 때 같은 터치 안에서 바로 play() 한다 (아이폰 자동 재생 제한)
+function bgmKick() {
+  if (!bgmOn || document.hidden || bgm.preview) return;
+  if (bgm.url && bgm.id === (S.bgm || 'azalea')) { if (bgm.el.paused) bgm.el.play().catch(() => {}); }
+  else bgmStart();
+}
+['pointerdown', 'touchend', 'click'].forEach(t => document.addEventListener(t, bgmKick, { capture: true, passive: true }));
 document.addEventListener('visibilitychange', () => { if (document.hidden) bgm.el.pause(); else if (bgmOn && bgm.url) bgm.el.play().catch(() => {}); if (actx) { if (document.hidden) actx.suspend(); else actx.resume(); } });
 // 곡 파일 가져오기: 파일 이름으로 어느 곡인지 맞춘다
 // 울음소리: 포켓런닝-울음소리.zip(0001.mp3 ~ 1025.mp3, 압축 없이 묶음)을 이 기기에 저장해 둔다
@@ -4011,6 +4017,7 @@ async function start(data) {
   let d = data && data.mons ? data : null;
   if (!d) { try { d = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { d = null; } }
   if (d && d.mons && (d.mons.length || d.unlocked)) await restore(d); else await fresh();
+  if (bgmOn && bgm.id !== S.bgm) bgmStart();
   Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp));
   migrateBox(); renderGold(); sky(); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
   requestAnimationFrame(t => { last = t; frame(t); });
