@@ -375,6 +375,8 @@ ol.runs li span{color:var(--dim)}
 .hatch-stage .flash.go{animation:flash 1s ease-out}
 @keyframes flash{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
 .hatch-stage img{height:128px;image-rendering:pixelated;animation:appear .6s ease-out}
+.hatch-stage.evo{background:#1e2340;box-shadow:inset 0 0 0 3px #46508a;transition:background-color .3s}
+.hatch-stage.evo img{filter:brightness(0) invert(1) drop-shadow(0 0 6px rgba(160,190,255,.9))}
 .hatch p{font-size:18px;margin:8px 0 12px}
 .hatch .opt{display:inline-block}
 .dex button.locked img{filter:brightness(0) opacity(.35)}
@@ -2979,7 +2981,7 @@ async function playHatch() {
   const { g, sp } = hatchQ.shift();
   try { await ensureSprite(sp); } catch (e) {}
   hatchEl.hidden = false; $('#hatchOk').hidden = true; $('#hatchMsg').textContent = '어라…? 알의 모습이…!';
-  hatchStage.innerHTML = `<div class="egg g${g} shake"></div><div class="flash"></div>`;
+  hatchStage.classList.remove('evo'); hatchStage.innerHTML = `<div class="egg g${g} shake"></div><div class="flash"></div>`;
   const egg = hatchStage.querySelector('.egg');
   await wait(1600); egg.classList.add('crack'); $('#hatchMsg').textContent = '알에 금이 갔다!';
   await wait(1200); hatchStage.querySelector('.flash').classList.add('go');
@@ -3142,11 +3144,11 @@ async function evolveBuddy() {
   hatchEl.hidden = false; $('#hatchOk').hidden = true; $('#hatchMsg').innerHTML = `어라…? ${J({ name: fromN },'의/의')} 모습이…!`;
   hatchStage.innerHTML = `<img alt="" src="${thumbOf(from)}"><div class="flash"></div>`;
   const img = hatchStage.querySelector('img');
-  await wait(900); img.style.filter = 'brightness(0) invert(1)';
+  await wait(900); hatchStage.classList.add('evo');
   let gap = 520, now = to;
   while (gap > 60) { img.src = thumbOf(now); now = now === to ? from : to; await wait(gap); gap *= .84; }
   hatchStage.querySelector('.flash').classList.add('go'); await wait(300);
-  img.src = thumbOf(to); img.style.filter = '';
+  img.src = thumbOf(to); hatchStage.classList.remove('evo');
   S.bud = { sp: to, km: 0 }; unlock(to);
   $('#hatchMsg').innerHTML = `축하해! ${J({ name: fromN },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`;
   log(`축하해! 짝꿍 ${J({ name: fromN },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`, [], true);
