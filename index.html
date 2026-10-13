@@ -4720,6 +4720,8 @@ function notiShow() {
     + (rdy.length ? `<div class="ns rd"><p>알 <b>${rdy.length}</b>개가 부화 준비됐다!</p>${row(rdy, 'rd')}<div class="small">부화기에서 부화시켜 보자</div></div>` : '');
   $('#noti').hidden = false; sfx('newdex'); haptic(1);
   $('#notiOk').onclick = () => notiDone(got, rdy);
+  // 바깥을 누르면 알림만 닫는다 (본 걸로 쳐서 다시 뜨지 않게)
+  $('#noti').onclick = ev => { if (ev.target.id !== 'noti') return; for (const e of got) e.nt = true; for (const e of rdy) e.rn = true; save(); $('#noti').hidden = true; notiOpen = false; renderRun(); };
 }
 // 확인: 알 그림이 하나씩 빠르게 '알' 메뉴로 날아가 담긴다 (담길 때마다 틱 소리와 진동)
 async function notiDone(got, rdy) {
