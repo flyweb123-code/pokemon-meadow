@@ -40,8 +40,8 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .opt:hover::before,.opt:focus-visible::before,.opt[aria-pressed="true"]::before{content:"▶"}
 .opt[aria-pressed="true"]{font-weight:700}
 .opt.danger{color:#b03030}
-.cmdwin{right:20px;bottom:20px;display:grid;grid-template-columns:repeat(4,auto);gap:2px 20px;padding:12px 18px}
-.cmdwin .wide{grid-column:span 2}
+.cmdwin{right:20px;bottom:20px;display:grid;grid-template-columns:repeat(2,auto);gap:2px 20px;padding:12px 18px}
+.cmdwin .wide{grid-column:auto}
 
 .dlg{left:20px;bottom:20px;right:330px;max-width:760px;min-height:96px;padding:16px 26px 18px;font-size:20px;line-height:1.55}
 .dlg .prev{font-size:14px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -223,6 +223,7 @@ ol.log li.big .txt{color:#c03838}
 .mgrwin{max-width:980px;height:min(88vh,720px);display:flex;flex-direction:column}
 .sheet-head .cap{font-size:16px;font-weight:400;margin-left:10px;color:var(--dim)}
 .sheet-head .cap b{color:var(--win-ink)}
+#mgrRandom{margin-left:auto;margin-right:18px}
 .mgr-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px}
 .slots{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-auto-rows:minmax(118px,auto);gap:8px;overflow-y:auto;align-content:start;padding:4px}
 .slot{position:relative;border:3px solid var(--inner);background:#fff;padding:6px 4px 8px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;font-size:13px;min-width:0}
@@ -254,8 +255,15 @@ ol.log li.big .txt{color:#c03838}
 .mgr-detail .empty-msg{color:var(--dim);margin-top:40px;text-align:center}
 
 /* Running and eggs */
-.runwin{max-width:980px;height:min(90vh,760px);display:flex;flex-direction:column}
-.run-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;overflow-y:auto}
+.runwin{max-width:640px;height:min(90vh,760px);display:flex;flex-direction:column}
+.run-body{flex:1;min-height:0;overflow-y:auto;padding-top:14px}
+.run-body .rtab[hidden]{display:none}
+.runtabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:3px solid var(--frame)}
+.runtab{padding:10px 4px;font-size:16px;text-align:center;border-left:3px solid var(--frame);background:var(--win)}
+.runtab:first-child{border-left:0}
+.runtab[aria-selected="true"]{background:var(--frame);color:var(--win);font-weight:700}
+.incu-box .egg-detail{font-size:13px;color:var(--dim);margin-top:4px;line-height:1.5}
+.incu-box .state{display:inline-block;font-size:11px;background:var(--frame);color:var(--win);padding:1px 6px;margin-left:6px;vertical-align:middle}
 .run-body h4{margin:0 0 8px;font-size:16px}
 .run-body section{min-width:0}
 .run-body .runpanel{border-left:3px dotted var(--inner);padding-left:18px}
@@ -288,12 +296,25 @@ ol.log li.big .txt{color:#c03838}
 .buddy-box{display:flex;gap:12px;align-items:center;border:3px solid var(--inner);background:#fff;padding:10px 12px;margin-bottom:14px;min-height:84px;font-size:14px}
 .buddy-box img{height:56px;image-rendering:pixelated}
 .buddy-box .info{flex:1;min-width:0}
-.lockrun{border:3px solid var(--frame);background:#eef4ff;padding:12px 14px;margin-bottom:12px}
-.lockrun .row{display:flex;justify-content:space-between;align-items:center;gap:6px 14px;flex-wrap:wrap}
-.lockrun .btns{justify-content:flex-start;margin-top:6px}
-.lockrun .opt[hidden]{display:none}
-.lockrun #lockInfo{margin-top:4px;line-height:1.5}
-.lockrun.wait{background:#fff6d8}
+.lockrun{border:3px solid var(--frame);background:#eef4ff;padding:14px;margin-bottom:12px;box-shadow:4px 4px 0 rgba(0,0,0,.25);cursor:pointer;user-select:none;-webkit-user-select:none}
+.lockrun:not(.wait):active{transform:translate(2px,2px);box-shadow:2px 2px 0 rgba(0,0,0,.25);background:#dde9ff}
+.lockrun:focus-visible{outline:3px solid var(--cursor);outline-offset:2px}
+.lk-top{display:flex;align-items:center;gap:14px}
+.lk-icon{flex:none;width:52px;height:52px;display:grid;place-items:center;background:var(--frame);color:#ffe27a;font-size:24px}
+.lk-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.lk-title{font-size:19px}
+.lk-sub{font-size:12px;color:var(--dim)}
+.lk-clock{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+.lk-clock[hidden]{display:none}
+.lockrun #lockInfo{margin-top:10px;line-height:1.55}
+.lk-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.lk-btns[hidden]{display:none}
+.lk-btn{border:3px solid var(--frame);background:var(--win);padding:12px 6px;font-size:15px;text-align:center;box-shadow:3px 3px 0 rgba(0,0,0,.2)}
+.lk-btn.main{background:var(--frame);color:var(--win);font-weight:700}
+.lk-btn:active{transform:translate(2px,2px);box-shadow:none}
+.lk-btn#lockCancel{grid-column:1 / -1;padding:8px;font-size:13px;box-shadow:none;border-width:2px}
+.lockrun.wait{background:#fff6d8;cursor:default}
+.lockrun.wait .lk-icon{background:#e05a3c;color:#fff}
 .gps{border:3px solid var(--frame);background:var(--card);padding:12px 14px;margin-bottom:12px}
 .gps .big{font-size:32px;font-weight:700;font-variant-numeric:tabular-nums}
 .gps .row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
@@ -353,7 +374,6 @@ ol.runs li span{color:var(--dim)}
 /* Phone: one screen like an app. The meadow fills everything above a bottom panel (dialogue + tab bar);
    clock and speed float over the meadow; windows open full screen. position:fixed rather than 100vh,
    because iOS home-screen apps report a short 100vh and leave a strip at the bottom. */
-.spd{display:none}
 @media (max-width:760px),(max-height:500px) and (orientation:landscape){
   html,body{height:100%;overflow:hidden;overscroll-behavior:none;background:var(--frame)}
   .app{position:fixed;inset:0;height:auto;min-height:0;overflow:hidden;display:grid;padding:0;gap:0;background:var(--frame);
@@ -371,9 +391,6 @@ ol.runs li span{color:var(--dim)}
     padding:6px 12px;gap:8px;box-shadow:3px 3px 0 rgba(0,0,0,.35)}
   .clockwin .t{font-size:18px}
   .clockwin .d{font-size:12px}
-  .spd{display:block;grid-area:stage;align-self:start;justify-self:end;z-index:25;margin:calc(env(safe-area-inset-top) + 8px) calc(env(safe-area-inset-right) + 8px) 0 0;
-    padding:8px 12px;min-width:64px;min-height:40px;font-size:15px;text-align:center;box-shadow:3px 3px 0 rgba(0,0,0,.35)}
-  .spd b{color:var(--cursor)}
   .card{grid-area:stage;position:relative;align-self:end;z-index:30;width:auto;margin:0 8px 8px;max-height:62%;overflow-y:auto;left:auto!important;top:auto!important;padding:10px 14px 12px}
   .card .close{position:absolute;right:4px;top:4px;border:0;padding:8px 12px;font-size:16px}
   .card .no{margin-right:36px}
@@ -390,7 +407,6 @@ ol.runs li span{color:var(--dim)}
   .menuwin,.cmdwin{margin:0;border:0;box-shadow:none;background:var(--frame);display:grid;gap:0;padding:0 0 env(safe-area-inset-bottom)}
   .menuwin{grid-area:menu;grid-template-columns:repeat(3,minmax(0,1fr));padding-left:env(safe-area-inset-left)}
   .cmdwin{grid-area:cmd;grid-template-columns:repeat(2,minmax(0,1fr));padding-right:env(safe-area-inset-right)}
-  .cmdwin [data-s]{display:none}
   .menuwin .opt,.cmdwin .opt,.cmdwin .opt.wide{grid-column:auto;color:var(--win);text-align:center;min-height:58px;padding:8px 2px;font-size:15px;
     white-space:normal;line-height:1.2;border-left:2px solid rgba(255,255,255,.12);font-weight:400}
   .menuwin .opt:first-child{border-left:0}
@@ -398,12 +414,18 @@ ol.runs li span{color:var(--dim)}
   .menuwin .opt:active,.cmdwin .opt:active{background:rgba(255,255,255,.14)}
   .cmdwin .opt[aria-pressed="true"]{background:rgba(255,255,255,.18);color:#ffe27a}
   .menuwin #capBadge{display:none}
-  .mgrwin #reset{margin-left:auto;margin-right:16px}
+  .mgrwin .sheet-head{flex-wrap:wrap;gap:0 14px}
+  .mgrwin .sheet-head h3{flex:1 1 100%}
+  .mgrwin .sheet-head .opt{font-size:15px}
+  .mgrwin #closeMgr{margin-left:auto}
   .menuwin #reset{display:none}
   /* full-screen windows */
-  .sheet{padding:0;place-items:stretch;background:var(--win);grid-template-rows:minmax(0,1fr)}
+  /* windows sit above the tab bar, which always stays on screen */
+  .sheet{padding:0;place-items:stretch;background:var(--win);grid-template-rows:minmax(0,1fr);bottom:calc(58px + env(safe-area-inset-bottom));z-index:60}
+  .menuwin,.cmdwin{position:relative;inset:auto;z-index:70}
+  .menuwin .opt[aria-pressed="true"]{background:rgba(255,255,255,.18);color:#ffe27a}
   .sheet .win{max-width:none;height:100%!important;max-height:none!important;border:0;box-shadow:none;
-    padding:calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 14px) calc(env(safe-area-inset-bottom) + 10px) calc(env(safe-area-inset-left) + 14px)}
+    padding:calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 14px) 10px calc(env(safe-area-inset-left) + 14px)}
   .sheet:has(.mgrwin){padding:0}
   .sheet-head{margin-bottom:8px;align-items:center}
   .sheet-head h3{font-size:18px}
@@ -420,7 +442,7 @@ ol.runs li span{color:var(--dim)}
   .slots{grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible}
   .mgr-detail{border-left:0;border-top:3px dotted var(--inner);padding:12px 0 0;overflow:visible}
   .mgr-detail .acts .opt{padding:10px 0 10px 20px}
-  .runwin{height:100%}.run-body{grid-template-columns:1fr;gap:14px}.run-body .runpanel{border-left:0;padding-left:0;border-top:3px dotted var(--inner);padding-top:14px;padding-bottom:8px}
+  .runwin{height:100%}
   .manual input{font-size:16px}
   .hatch>div{max-width:calc(100vw - 32px)}
 }
@@ -431,6 +453,8 @@ ol.runs li span{color:var(--dim)}
   .cmdwin{padding:0 env(safe-area-inset-right) env(safe-area-inset-bottom) 0}
   .menuwin .opt,.cmdwin .opt{min-height:48px;border-left:0;border-top:2px solid rgba(255,255,255,.12)}
   .card,.journal{max-width:440px;justify-self:start}
+  .sheet{bottom:0;right:calc(176px + env(safe-area-inset-right))}
+  .sheet .win{padding-right:14px;padding-bottom:calc(env(safe-area-inset-bottom) + 10px)}
 }
 @media (prefers-reduced-motion: reduce){.mon.held .flip,.act,.bubble,.pt,.berry.new,.ring,.mon.wet .ripple,.sel-mark,.dlg .more,.snot,.bfly::before,.bfly::after,.glint{animation:none!important}.snot{transform:scale(1)}}
 </style>
@@ -447,7 +471,6 @@ ol.runs li span{color:var(--dim)}
   </div>
 
   <div class="hud win clockwin" id="clock"><span class="t" id="time">07:00</span><span class="d"><span id="day">1일째</span> · <span id="phase">아침</span></span></div>
-  <button class="hud win spd" id="spd" aria-label="속도 바꾸기"><b>▶</b> 1×</button>
 
   <nav class="hud win menuwin" aria-label="메뉴">
     <button class="opt" id="openDex">도감</button>
@@ -473,10 +496,6 @@ ol.runs li span{color:var(--dim)}
   </section>
 
   <div class="hud win cmdwin" id="cmd" role="group" aria-label="명령">
-    <button class="opt" data-s="0" aria-pressed="false">멈춤</button>
-    <button class="opt" data-s="1" aria-pressed="true">1×</button>
-    <button class="opt" data-s="3" aria-pressed="false">3×</button>
-    <button class="opt" data-s="10" aria-pressed="false">10×</button>
     <button class="opt wide" id="btnBerry" aria-pressed="false">열매 주기</button>
     <button class="opt wide" id="btnLog" aria-pressed="false">일지</button>
   </div>
@@ -497,7 +516,6 @@ ol.runs li span{color:var(--dim)}
     <p class="credit">스프라이트 PMDCollab (CC BY-NC 4.0) · 포켓몬 © Nintendo · Creatures · GAME FREAK. 개인 팬 게임이에요.</p>
     <div class="dexbar">
       <span id="dexCount">초원에 0마리</span>
-      <button class="opt" id="dexRandom">무작위 6마리</button>
       <button class="opt" id="dexClear" hidden>선택 해제</button>
       <button class="opt go" id="dexGo" hidden>풀어놓기</button>
     </div>
@@ -506,7 +524,7 @@ ol.runs li span{color:var(--dim)}
 
 <div class="sheet" id="mgr" hidden>
   <div class="win mgrwin" role="dialog" aria-label="초원 관리">
-    <div class="sheet-head"><h3>초원 관리<span class="cap" id="mgrCap"></span></h3><button class="opt" id="closeMgr">닫기</button></div>
+    <div class="sheet-head"><h3>초원 관리<span class="cap" id="mgrCap"></span></h3><button class="opt" id="mgrRandom">무작위 6마리</button><button class="opt" id="closeMgr">닫기</button></div>
     <div class="mgr-body">
       <div class="slots" id="slots"></div>
       <section class="mgr-detail" id="mgrDetail" aria-live="polite"></section>
@@ -517,23 +535,28 @@ ol.runs li span{color:var(--dim)}
 <div class="sheet" id="run" hidden>
   <div class="win runwin" role="dialog" aria-label="런닝과 알">
     <div class="sheet-head"><h3>런닝 · 알<span class="cap" id="runTotal"></span></h3><button class="opt" id="closeRun">닫기</button></div>
+    <div class="runtabs" role="tablist">
+      <button class="runtab" role="tab" data-tab="egg">알</button><button class="runtab" role="tab" data-tab="buddy">짝꿍</button><button class="runtab" role="tab" data-tab="run">달리기</button>
+    </div>
     <div class="run-body">
-      <section>
-        <h4>다음 부화</h4>
+      <section class="rtab" data-tab="egg">
         <div class="incu-box" id="incu"></div>
         <h4>부화 중인 알 <span class="small" id="eggCount"></span></h4>
         <div class="eggs" id="eggs"></div>
         <div class="egg-actions"><button class="opt" id="drawEgg">알 뽑기</button><span class="small" id="drawMsg">달린 거리는 모든 알에 똑같이 쌓여요</span></div>
         <p class="gradeinfo">일반 2.5km · 희귀 5km · 레어 7.5km · 에픽 10km · 전설 15km<br>알에서는 진화 전 포켓몬만 나와요. 등급이 높을수록 드문 포켓몬이에요.</p>
       </section>
-      <section class="runpanel">
+      <section class="rtab" data-tab="buddy">
         <h4>같이 달리는 포켓몬</h4>
         <div class="buddy-box" id="buddy"></div>
-        <h4>달리기</h4>
-        <div class="lockrun" id="lock">
-          <div class="row"><b>잠금 화면 런닝</b><span class="small">NRC · 건강 앱 · 단축어</span></div>
+        <p class="gradeinfo">짝꿍과 함께 달린 거리가 정해진 만큼 쌓이면 진화해요. 짝꿍은 한 마리만 정할 수 있고, 바꾸면 쌓인 거리는 처음부터 다시 세요.</p>
+        <div class="egg-actions"><button class="opt" id="buddyPick">초원 관리에서 짝꿍 고르기</button></div>
+      </section>
+      <section class="rtab" data-tab="run">
+        <div class="lockrun" id="lock" role="button" tabindex="0" aria-label="잠금 화면 런닝 시작">
+          <div class="lk-top"><span class="lk-icon" aria-hidden="true">▶</span><div class="lk-text"><b class="lk-title" id="lockTitle">잠금 화면 런닝 시작</b><span class="lk-sub" id="lockSub">누르면 바로 시작해요</span></div><span class="lk-clock" id="lockClock" hidden>00:00</span></div>
           <div class="small" id="lockInfo"></div>
-          <div class="row btns"><button class="opt go" id="lockStart">런닝 시작</button><button class="opt go" id="lockFetch" hidden>가져오기</button><button class="opt go" id="lockPaste" hidden>거리 붙여넣기</button><button class="opt" id="lockCancel" hidden>취소</button></div>
+          <div class="lk-btns" id="lockBtns" hidden><button class="lk-btn main" id="lockFetch">가져오기</button><button class="lk-btn main" id="lockPaste">거리 붙여넣기</button><button class="lk-btn" id="lockCancel">취소</button></div>
         </div>
         <div class="gps" id="gps">
           <div class="row"><span class="big" id="gpsKm">0.00 km</span><button class="opt go" id="gpsBtn">GPS 달리기 시작</button></div>
@@ -756,6 +779,10 @@ function addRel(a, b, d) {
   if (before > -40 && after <= -40) log(`${J(a,'과/와')} ${J(b,'은/는')} 서로 앙숙이 되어 버렸다.`, [a, b], true);
 }
 const hour = () => (S.clock % 1440) / 60;
+// the meadow runs on the real clock: S.clock is minutes since local midnight of the first day
+const midnight = (t = Date.now()) => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
+const realClock = () => (Date.now() - S.base) / 60000;
+S.base = midnight();
 const isNight = () => { const h = hour(); return h >= 19.5 || h < 5.5; };
 const wrongTime = m => DEX[m.sp].noct ? !isNight() : isNight();
 const T = m => DEX[m.sp];
@@ -2294,7 +2321,7 @@ function sky() {
   nightEl.style.backgroundColor = `rgb(${mix(col[0])},${mix(col[1])},${mix(col[2])})`;
   const phase = h < 5 ? '한밤' : h < 7 ? '새벽' : h < 11 ? '아침' : h < 14 ? '한낮' : h < 17 ? '오후' : h < 19.5 ? '해질녘' : '밤';
   $('#phase').textContent = phase;
-  $('#day').textContent = `${Math.floor(S.clock / 1440) + 1}일째`;
+  { const d = new Date(); $('#day').textContent = `${d.getMonth() + 1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})`; }
   $('#time').textContent = clockStr();
   const wantFlies = isNight() ? 14 : 0;
   while (flies.length < wantFlies) { const f = document.createElement('div'); f.className = 'firefly'; fxEl.append(f); flies.push({ el: f, x: rnd(0, W), y: rnd(150, 580), p: rnd(0, 6) }); }
@@ -2392,14 +2419,14 @@ function select(m) {
 // ---------- save ----------
 const KEY = 'pk-meadow-v2';
 function serialize() {
-  return { clock: S.clock, uid: S.uid, rel: S.rel, log: S.log.slice(0, 120),
+  return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, log: S.log.slice(0, 120),
     mons: S.mons.map(m => ({ uid: m.uid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, asleep: m.state === 'sleep', born: m.born })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y })), lockT: S.lockT,
     eggs: S.eggs, unlocked: [...S.unlocked], buddy: S.buddy, buddyKm: S.buddyKm, runs: S.runs, totalKm: S.totalKm, eid: S.eid };
 }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
-  S.clock = d.clock || 420; S.rel = d.rel || {}; S.log = d.log || [];
+  S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = d.log || [];
   S.lockT = d.lockT || 0; S.eggs = d.eggs || []; S.buddy = d.buddy ?? null; S.buddyKm = d.buddyKm || 0; S.runs = d.runs || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
   S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
   for (const o of (d.mons || []).slice(0, MAX_MONS)) { const m = await spawn(o.sp, { ...o, quiet: true }); if (o.asleep) sleep(m, false); }
@@ -2408,10 +2435,10 @@ async function restore(d) {
   renderLog();
 }
 async function fresh() {
-  S.clock = 7 * 60; S.rel = {}; S.log = [];
+  S.base = midnight(); S.clock = realClock(); S.rel = {}; S.log = [];
   logEl.innerHTML = '';
   S.eggs = []; S.unlocked.clear(); S.buddy = null; S.buddyKm = 0; S.runs = []; S.totalKm = 0; S.eid = 1;
-  const e = { id: S.eid++, g: 1, km: 0, need: GRADE[1].km, isNew: true }; S.eggs.push(e);
+  const e = { id: S.eid++, g: 1, km: 0, need: GRADE[1].km, isNew: true, t: Date.now() }; S.eggs.push(e);
   for (let i = 0; i < 4; i++) { const p = randLand(); addBerry(p.x, p.y); }
   log('초원이 텅 비어 있다. 알을 부화시켜 친구를 만들어 보자. (런닝 · 알)', [], true);
 }
@@ -2536,25 +2563,23 @@ function meetByHand(m, o) {
 }
 window.addEventListener('pointerup', endDrag);
 window.addEventListener('pointercancel', e => { const d = drag; if (!d || e.pointerId !== d.id) return; drag = null; if (d.on) { d.m.held = false; d.m.el.classList.remove('held'); if (d.target) d.target.el.classList.remove('drop-target'); settle(d.m); setState(d.m, 'idle', 2); } });
-const speedBtns = [...document.querySelectorAll('#cmd [data-s]')];
-speedBtns.forEach(b => b.addEventListener('click', () => { S.speed = +b.dataset.s; speedBtns.forEach(x => x.setAttribute('aria-pressed', x === b)); }));
-// phones: one button cycles the speed
-const SPEEDS = [1, 3, 10, 0];
-function showSpd() { $('#spd').innerHTML = S.speed ? `<b>▶</b> ${S.speed}×` : '<b>Ⅱ</b> 멈춤'; }
-speedBtns.forEach(b => b.addEventListener('click', showSpd));
-$('#spd').onclick = () => { const n = SPEEDS[(SPEEDS.indexOf(S.speed) + 1) % SPEEDS.length]; speedBtns.find(b => +b.dataset.s === n).click(); };
 function setTool(t) { S.tool = t; $('#btnBerry').setAttribute('aria-pressed', t === 'berry'); stage.classList.toggle('berry-mode', t === 'berry'); $('#hint').hidden = t !== 'berry'; }
 // only one of the toggles is on at a time
 function setLog(on) { $('#journal').hidden = !on; $('#btnLog').setAttribute('aria-pressed', on); }
 function closeToggles() { if (S.tool === 'berry') setTool('look'); setLog(false); }
-$('#btnBerry').onclick = () => { const on = S.tool !== 'berry'; closeToggles(); if (on) { select(null); setTool('berry'); } };
-$('#btnLog').onclick = () => { const on = $('#journal').hidden; closeToggles(); if (on) { select(null); setLog(true); } };
+$('#btnBerry').onclick = () => { const on = S.tool !== 'berry'; closeToggles(); hideSheets(); if (on) { select(null); setTool('berry'); } };
+$('#btnLog').onclick = () => { const on = $('#journal').hidden; closeToggles(); hideSheets(); if (on) { select(null); setLog(true); } };
 $('#onlySel').addEventListener('change', renderLog);
 const sheet = $('#sheet');
 const picked = new Set();
 const grid = $('#dexGrid'), dexBtns = {};
 function openDex() { sheet.hidden = false; $('#dexOwn').innerHTML = `<b>${S.unlocked.size}</b>/${Object.keys(SPECIES).length}`; refreshDexBadges(); filterDex(); if (!narrow.matches) $('#dexQ').focus(); }
-$('#openDex').onclick = () => { closeToggles(); openDex(); };
+// the menu works like a tab bar: one window at a time, tapping the open one closes it
+function hideSheets() { sheet.hidden = true; $('#mgr').hidden = true; $('#run').hidden = true; }
+function tabTo(el, open) { const was = !el.hidden; closeToggles(); hideSheets(); if (!was) open(); }
+$('#openDex').onclick = () => tabTo(sheet, openDex);
+new MutationObserver(() => [['#openDex', '#sheet'], ['#openRun', '#run'], ['#openMgr', '#mgr']].forEach(([b, w]) => $(b).setAttribute('aria-pressed', !$(w).hidden)))
+  .observe(document.body, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
 $('#closeDex').onclick = () => { sheet.hidden = true; };
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { sheet.hidden = true; mgr.hidden = true; $('#run').hidden = true; if (S.tool === 'berry') setTool('look'); } });
@@ -2603,11 +2628,6 @@ function filterDex() {
 }
 ['#dexQ', '#dexType', '#dexGen'].forEach(id => $(id).addEventListener('input', filterDex));
 $('#dexClear').onclick = () => { picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); updateDexCount(); };
-$('#dexRandom').onclick = () => {
-  const vis = Object.keys(dexBtns).map(Number).filter(sp => !dexBtns[sp].hidden && !picked.has(sp) && !dexLocked(sp));
-  for (let i = 0; i < 6 && vis.length && S.mons.length + picked.size < MAX_MONS; i++) { const sp = vis.splice(Math.floor(Math.random() * vis.length), 1)[0]; picked.add(sp); dexBtns[sp].setAttribute('aria-pressed', 'true'); }
-  updateDexCount();
-};
 $('#dexGo').onclick = async () => {
   const list = [...picked]; picked.clear(); Object.values(dexBtns).forEach(b => b.setAttribute('aria-pressed', 'false'));
   sheet.hidden = true;
@@ -2635,8 +2655,18 @@ placeReset(); narrow.addEventListener('change', () => { placeReset(); fit(); });
 let mgrSel = null, mgrKey = '', mgrFreeArm = 0, mgrT = 0;
 function openMgr(m) { mgr.hidden = false; mgrSel = m || mgrSel || S.mons[0] || null; mgrKey = ''; renderMgr(true); }
 function closeMgr() { mgr.hidden = true; }
-$('#openMgr').onclick = () => { closeToggles(); openMgr(S.sel); };
+$('#openMgr').onclick = () => tabTo(mgr, () => openMgr(S.sel));
 $('#closeMgr').onclick = closeMgr;
+// fill up to six free spots with random species from the dex
+$('#mgrRandom').onclick = async () => {
+  const btn = $('#mgrRandom'), free = MAX_MONS - S.mons.length, pool = [...S.unlocked];
+  const say = t => { btn.textContent = t; setTimeout(() => btn.textContent = '무작위 6마리', 2200); };
+  if (!pool.length) return say('도감에 등록된 포켓몬이 없어요');
+  if (free <= 0) return say('초원이 꽉 찼어요');
+  btn.disabled = true; let last = null;
+  for (let i = 0; i < Math.min(6, free); i++) { try { last = await spawn(pick(pool)); } catch (e) {} }
+  btn.disabled = false; if (last) { mgrSel = last; renderMgr(true); refreshCap(); }
+};
 mgr.addEventListener('click', e => { if (e.target === mgr) closeMgr(); });
 function slotState(m) {
   if (m.hidden) return ['away', '숨음'];
@@ -2713,7 +2743,7 @@ function renderMgrDetail(rebuild) {
   }
   const pic = $('#mPic'), want = isPmd(m.form) ? thumbOf(m.form) : m.state === 'sleep' ? (stillCache[m.form] || SPRITES[m.form]) : SPRITES[m.form];
   if (pic.getAttribute('src') !== want) pic.src = want;
-  const days = dayOf(S.clock) - dayOf(m.born ?? S.clock) + 1;
+  const days = Math.max(1, dayOf(S.clock) - dayOf(m.born ?? S.clock) + 1);
   $('#mBars').innerHTML = bar('기력', m.energy, 'var(--hp)') + bar('배고픔', m.hunger, 'var(--hunger)') + bar('외로움', m.social, 'var(--lonely)');
   $('#mDoing').textContent = `${doingText(m)}${m.form !== m.sp ? ` (${DEX[m.form].n}로 변신 중)` : ''} · 초원에서 ${days}일째`;
   $('#mRels').innerHTML = relsHtml(m, 5, 3);
@@ -2766,7 +2796,7 @@ function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); if (dexBtns
 function drawEgg() {
   if (S.eggs.length >= MAX_EGGS) return null;
   const r = Math.random(), g = r < .45 ? 1 : r < .75 ? 2 : r < .9 ? 3 : r < .98 ? 4 : 5;
-  const e = { id: S.eid++, g, km: 0, need: GRADE[g].km, isNew: true };
+  const e = { id: S.eid++, g, km: 0, need: GRADE[g].km, isNew: true, t: Date.now() };
   S.eggs.push(e);
   save(); return e;
 }
@@ -2884,14 +2914,25 @@ S.lockT = 0; let lockAsked = false;
 const pad2 = n => String(n).padStart(2, '0');
 const fmtT = t => { const d = new Date(t); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`; };
 function renderLock() {
-  const on = !!S.lockT;
-  $('#lock').classList.toggle('wait', on);
-  $('#lockStart').hidden = on; $('#lockFetch').hidden = $('#lockCancel').hidden = $('#lockPaste').hidden = !on;
+  const on = !!S.lockT, el = $('#lock');
+  el.classList.toggle('wait', on); el.setAttribute('role', on ? 'group' : 'button'); el.tabIndex = on ? -1 : 0;
+  el.querySelector('.lk-icon').textContent = on ? '●' : '▶';
+  $('#lockTitle').textContent = on ? '달리는 중' : '잠금 화면 런닝 시작';
+  $('#lockSub').textContent = on ? `${fmtT(S.lockT).slice(5)} 시작 · 화면을 잠가도 괜찮아요` : '누르면 바로 시작해요 · NRC로 달려도 돼요';
+  $('#lockClock').hidden = $('#lockBtns').hidden = !on;
   $('#lockInfo').innerHTML = on
-    ? `<b>${fmtT(S.lockT).slice(5)}</b>부터 달리는 중이에요. 다 달렸으면 <b>가져오기</b>를 누르고, 단축어가 끝나면 이 앱으로 돌아와 <b>거리 붙여넣기</b>를 눌러요.`
-    : '시작을 누르고 화면을 잠근 채 달려요. Nike Run Club으로 달려도 돼요. 거리는 건강 앱에서 가져와요.';
+    ? '다 달렸으면 <b>가져오기</b>를 눌러요. 단축어가 끝나면 이 앱으로 돌아와 <b>거리 붙여넣기</b>를 누르면 돼요.'
+    : '시작한 뒤에 화면을 잠그고 달리면, 거리는 건강 앱에서 가져와요.';
+  tickLock();
 }
-$('#lockStart').onclick = () => { S.lockT = Date.now(); save(); renderLock(); log('런닝을 시작했다. 화면을 잠그고 달려도 괜찮다.', [], true); };
+function tickLock() {
+  if (!S.lockT) return;
+  const sec = Math.max(0, Math.floor((Date.now() - S.lockT) / 1000)), h = Math.floor(sec / 3600);
+  $('#lockClock').textContent = (h ? h + ':' : '') + pad2(Math.floor(sec / 60) % 60) + ':' + pad2(sec % 60);
+}
+function startLockRun() { if (S.lockT) return; S.lockT = Date.now(); save(); renderLock(); log('런닝을 시작했다. 화면을 잠그고 달려도 괜찮다.', [], true); }
+$('#lock').addEventListener('click', e => { if (!e.target.closest('button')) startLockRun(); });
+$('#lock').addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.id === 'lock') { e.preventDefault(); startLockRun(); } });
 $('#lockCancel').onclick = () => { S.lockT = 0; lockAsked = false; save(); renderLock(); };
 $('#lockFetch').onclick = () => {
   lockAsked = true;
@@ -2919,25 +2960,37 @@ $('#manAdd').onclick = () => {
 
 // running window
 const runEl = $('#run');
-function openRun() { runEl.hidden = false; renderRun(); renderLock(); }
-$('#openRun').onclick = () => { closeToggles(); openRun(); };
+function openRun() { runEl.hidden = false; setRunTab(runTab); renderRun(); renderLock(); }
+$('#openRun').onclick = () => tabTo(runEl, openRun);
 $('#closeRun').onclick = () => runEl.hidden = true;
 runEl.addEventListener('click', e => { if (e.target === runEl) runEl.hidden = true; });
-$('#drawEgg').onclick = () => { const e = drawEgg(); $('#drawMsg').textContent = e ? `${GRADE[e.g].n} 알이 나왔다! (${GRADE[e.g].km}km)` : '알은 5개까지만 가질 수 있어요'; renderRun(); };
+$('#drawEgg').onclick = () => { const e = drawEgg(); if (e) eggSel = e; $('#drawMsg').textContent = e ? `${GRADE[e.g].n} 알이 나왔다! (${GRADE[e.g].km}km)` : '알은 5개까지만 가질 수 있어요'; renderRun(); };
+let runTab = 'egg', eggSel = null;
+try { runTab = localStorage.getItem('pk-run-tab') || 'egg'; } catch (e) {}
+function setRunTab(t) {
+  runTab = t; try { localStorage.setItem('pk-run-tab', t); } catch (e) {}
+  document.querySelectorAll('.runtab').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
+  document.querySelectorAll('.rtab').forEach(x => x.hidden = x.dataset.tab !== t);
+  $('.run-body').scrollTop = 0;
+}
+document.querySelectorAll('.runtab').forEach(b => b.onclick = () => setRunTab(b.dataset.tab));
+$('#buddyPick').onclick = () => { runEl.hidden = true; openMgr(S.mons.find(m => m.uid === S.buddy) || S.sel); };
+const EGG_HINT = ['', '초원에서 흔히 보는 포켓몬이 들어 있어요.', '조금 드문 포켓몬이 들어 있어요.', '쉽게 만나기 힘든 포켓몬이 들어 있어요.', '아주 드문 포켓몬이 들어 있어요.', '전설이나 환상의 포켓몬이 들어 있어요!'];
 function renderRun() {
   if (runEl.hidden) return;
   $('#runTotal').innerHTML = ` 총 <b>${fmtKm(S.totalKm)}</b>km · 도감 ${S.unlocked.size}/${Object.keys(SPECIES).length}`;
-  const left = x => x.need - x.km, e = S.eggs.reduce((a, x) => !a || left(x) < left(a) ? x : a, null);
-  $('#incu').innerHTML = e ? `<div class="egg big g${e.g} wob"></div><div class="info"><b>${GRADE[e.g].n} 알</b><div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${fmtKm(e.km)} / ${e.need}km · 앞으로 ${fmtKm(Math.max(0, e.need - e.km))}km</div>`
+  if (!S.eggs.includes(eggSel)) eggSel = S.eggs[0] || null;
+  const e = eggSel;
+  $('#incu').innerHTML = e ? `<div class="egg big g${e.g} wob"></div><div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">부화 중</span><div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km<div class="egg-detail">${EGG_HINT[e.g]}${e.t ? `<br>${new Date(e.t).getMonth() + 1}/${new Date(e.t).getDate()}에 얻은 알` : ''}</div></div>`
     : `<div class="info">알이 없어요. 아래에서 알을 뽑아 주세요.</div>`;
   $('#eggCount').textContent = `${S.eggs.length}/${MAX_EGGS}`;
   const box = $('#eggs'); box.innerHTML = '';
   for (let i = 0; i < MAX_EGGS; i++) {
     const x = S.eggs[i], b = document.createElement('button'); b.className = 'eslot';
     if (x) {
-      b.innerHTML = `${x === e ? '<span class="tag2">곧 부화</span>' : ''}<div class="egg g${x.g} wob"></div><span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div><span class="small">${fmtKm(x.km)}/${x.need}km</span>`;
+      b.innerHTML = `<span class="tag2">부화 중</span><div class="egg g${x.g} wob"></div><span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div><span class="small">${fmtKm(x.km)}/${x.need}km</span>`;
       b.setAttribute('aria-current', x === e); if (x.isNew) { b.classList.add('new'); x.isNew = false; }
-      b.tabIndex = -1;
+      b.onclick = () => { eggSel = x; renderRun(); };
     } else { b.classList.add('empty'); b.innerHTML = '빈 칸'; b.onclick = () => $('#drawEgg').click(); }
     box.append(b);
   }
@@ -2945,6 +2998,7 @@ function renderRun() {
   const m = S.mons.find(x => x.uid === S.buddy);
   $('#buddy').innerHTML = !m ? `<div class="info">아직 짝꿍이 없어요. <b>초원 관리</b>에서 포켓몬을 고르고 <b>같이 런닝하기</b>를 눌러 주세요.</div>`
     : `<img alt="" src="${thumbOf(m.form)}"><div class="info"><b>${esc(m.name)}</b>${CHILDREN[m.sp] ? `<div class="prog evo"><i style="width:${Math.min(100, S.buddyKm / evoNeed(m) * 100)}%"></i></div>진화까지 ${fmtKm(S.buddyKm)} / ${evoNeed(m)}km${m.evoReady ? ' · <b>진화 준비 완료!</b>' : ''}` : '<div class="small">더 이상 진화하지 않는 포켓몬이에요</div>'}</div>`;
+  tickLock();
   $('#runs').innerHTML = S.runs.slice(0, 20).map(r => { const d = new Date(r.t); return `<li>${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')} <span>${r.src === 'gps' ? 'GPS' : '건강 앱'}</span><b>${fmtKm(r.km)}km</b></li>`; }).join('') || '<li><span>아직 달린 기록이 없어요</span></li>';
 }
 function toggleBuddy(m) {
@@ -2963,10 +3017,10 @@ function lockDexBtn(sp) {
 let last = performance.now(), acc = 0, treeT = 30, infoT = 0, saveT = 0;
 function frame(now) {
   const real = Math.min(.1, (now - last) / 1000); last = now;
+  S.clock = realClock();
   let sim = real * S.speed;
   while (sim > 0) {
     const dt = Math.min(.1, sim); sim -= dt;
-    S.clock += dt * 2;
     for (const m of [...S.mons]) update(m, dt);
     treeT -= dt;
     if (treeT <= 0) { treeT = rnd(25, 50); if (!isNight() && S.berries.length < 10) { addBerry(rnd(XL + 60, XR - 60), MIN_Y + rnd(4, 26), true); } }
