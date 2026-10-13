@@ -58,3 +58,5 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.flyweb123.pokerun.watchkitapp
         TARGETED_DEVICE_FAMILY: "4"
+        # 아이폰 앱에 담겨 갈 때도 옛 워치(SE 1세대 등 arm64_32)용 코드를 같이 넣는다
+        ONLY_ACTIVE_ARCH: NO
