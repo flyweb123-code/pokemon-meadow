@@ -33,6 +33,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .hatch .win{position:relative}.hatch.list .hl-nav{display:contents}.hatch.list #hlPrev,.hatch.list #hlNext{position:absolute;margin-top:-18px;z-index:2}.hatch.list #hlPrev{left:10px}.hatch.list #hlNext{right:10px}.hatch.list #hlNum{position:absolute;top:10px;right:14px;font-size:13px;color:var(--dim)}
 #hatchMsg .rkline{margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px}
 .mtab[data-t="field"] .mgr-tools{padding:0 4px}#mgrClear{background:#c83838!important;border-color:#7a1c1c!important;color:#fff!important}
+.hearts.frtap{justify-self:start;width:max-content;cursor:pointer}
 </style>
 <style>
 /* Layout: the meadow fills the window; pixel-RPG windows float over it (clock top-left, menu top-right,
@@ -4077,7 +4078,9 @@ document.addEventListener('click', e => {
   e.stopPropagation(); e.preventDefault();
   if (!tip) { tip = document.createElement('div'); tip.id = 'frTip'; tip.className = 'frtip'; document.body.appendChild(tip); }
   const r = h.getBoundingClientRect(); tip.textContent = h.dataset.tip || `친밀도 ${h.dataset.fr}/255`; tip.classList.toggle('sm', !!h.dataset.tip); tip.hidden = false;
-  tip.style.left = (r.left + r.width / 2) + 'px'; tip.style.top = (r.top - 6) + 'px';
+  // 누른 자리 바로 위에 (하트 줄이 칸 너비로 늘어나 있어도 손가락 위치 기준)
+  const x = e.clientX && e.clientX >= r.left - 4 && e.clientX <= r.right + 4 ? e.clientX : r.left + r.width / 2;
+  tip.style.left = Math.max(40, Math.min(innerWidth - 40, x)) + 'px'; tip.style.top = (r.top - 6) + 'px';
   clearTimeout(tip.t); tip.t = setTimeout(() => { tip.hidden = true; }, 1800); sfx('tap');
 }, true);
 function indivHtml(m) { const P = boxOf(m.pid); return P ? `랭크 <span class="rk ${rankOf(P)}">${rankOf(P)}</span>${P.shiny ? ' <b class="sh">✦ 이로치</b>' : ''} · 친밀도 <span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}" style="color:#e04870">${hearts(P.fr)}</span>` : ''; }
