@@ -429,6 +429,12 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .mgr-detail .sub{margin:6px 0 0;font-size:12px;color:#5c6c5c}
 .mgr-detail .bar .track{border-color:var(--frame)}
 .mgr-detail .doing{border-top-color:var(--inner)}
+.memo{margin:10px 0 0;padding:8px 0 2px;border-top:3px dotted var(--inner);font-size:13px;line-height:1.5}
+.memo h5{margin:0 0 4px;font-size:13px;color:var(--dim);font-weight:normal}
+.memo .mrow{display:grid;grid-template-columns:34px 1fr;gap:6px;padding:2px 0}
+.memo .mk{color:var(--dim)}
+.memo .good{color:#d04070;font-weight:normal}
+.memo .note{display:block}.memo .note+.note{margin-top:2px}
 .mgr-detail .acts{display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;margin-top:12px;border-top:3px dotted var(--inner);padding-top:8px}
 .mgr-detail .acts .opt{font-size:15px}
 .mgr-detail .acts .opt:disabled{color:var(--dim);cursor:default}
@@ -1427,6 +1433,9 @@ const logEl = $('#log'); const LOG_MAX = 20;
 function log(html, who = [], big = false) {
   const e = { t: S.clock, html, who: who.map(m => m.uid), big };
   S.log.unshift(e); while (S.log.length > LOG_MAX) S.log.pop();
+  // 포켓몬마다 오늘 있었던 일을 세 줄까지 따로 적어 둔다 (상황 칸 '오늘')
+  const day = new Date().toDateString(), txt = html.replace(/<[^>]+>/g, '').replace(/\s*\((런닝 · 알|알)\)$/, '');
+  for (const m of who) { if (!m || !S.mons.includes(m)) continue; m.notes = (m.notes || []).filter(n => n.d === day); m.notes.unshift({ d: day, t: txt }); m.notes.length = Math.min(m.notes.length, 3); }
   renderLog();
 }
 function passesFilter(e) { return true; }
@@ -3134,7 +3143,7 @@ function select(m) {
 const KEY = 'pk-meadow-v2';
 function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, log: S.log.slice(0, LOG_MAX),
-    savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, asleep: m.state === 'sleep', born: m.born })),
+    savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [] })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat })), lockT: S.lockT,
     gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, lastPlace: S.lastPlace || null };
 }
@@ -3146,7 +3155,7 @@ async function restore(d) {
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
   S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
-  for (const o of [...(d.mons || [])].sort((a, b) => (b.uid === d.buddy) - (a.uid === d.buddy)).slice(0, MAX_MONS)) { const m = await spawn(o.sp, { ...o, quiet: true });
+  for (const o of [...(d.mons || [])].sort((a, b) => (b.uid === d.buddy) - (a.uid === d.buddy)).slice(0, MAX_MONS)) { const m = await spawn(o.sp, { ...o, quiet: true }); m.notes = o.notes || [];
     // 앱을 닫아 둔 동안에도 서서히 배고파진다. 다만 80까지만 (켰을 때 먹여 줄 틈이 있게)
     if (d.savedAt > 0 && m.hunger < 80) m.hunger = Math.min(80, m.hunger + Math.max(0, Date.now() - d.savedAt) / 1000 * HUNGER_RATE * (T(m).hun || 1) * .6); if (o.asleep) sleep(m, false); }
   for (const b of d.berries || []) addBerry(b.x, b.y, !!b.nat, b.t || Date.now());
@@ -3700,13 +3709,10 @@ function renderMgrDetail(rebuild) {
       <p class="sub" id="mIndiv"></p>
       <div class="mvrow" id="mMoves"></div>
       <div class="bars" id="mBars"></div>
-      <p class="doing" id="mDoing"></p>
-      <div class="rels" id="mRels"></div>
+      <div class="memo" id="mMemo"></div>
       <div class="acts">
         <button class="opt" id="mLook">필드에서 보기</button>
-        <button class="opt" id="mFeed">열매 주기</button>
-        <button class="opt" id="mSleep">재우기</button>
-        <button class="opt danger" id="mFree">숲으로 보내기</button>
+        <button class="opt" id="mOut">필드에서 빼기</button>
       </div>`;
     const inp = $('#mName'); inp.value = m.name;
     const fitName = () => { const c = fitName.c || (fitName.c = document.createElement('canvas').getContext('2d')); c.font = getComputedStyle(inp).font; inp.style.width = Math.ceil(c.measureText(inp.value || '가').width) + 4 + 'px'; };
@@ -3714,27 +3720,44 @@ function renderMgrDetail(rebuild) {
     inp.addEventListener('change', () => renameMon(m, inp.value));
     inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); });
     $('#mLook').onclick = () => { closeMgr(); select(m); };
-    $('#mFeed').onclick = () => feedNear(m);
-    $('#mSleep').onclick = () => toggleSleep(m);
-    $('#mFree').onclick = () => {
-      if (Date.now() - mgrFreeArm > 3000) { mgrFreeArm = Date.now(); $('#mFree').textContent = '한 번 더 누르면 보냄'; return; }
-      mgrFreeArm = 0; const i = S.mons.indexOf(m); removeMon(m); mgrSel = S.mons[Math.min(i, S.mons.length - 1)] || null; closeMon(); renderMgr(true); refreshCap();
+    // 필드에서 빼기: 포켓몬 상자로 돌아간다 (떠나보내는 게 아님)
+    $('#mOut').onclick = () => {
+      const i = S.mons.indexOf(m); log(`${J(m,'이/가')} 포켓몬 상자로 돌아갔다.`); removeMon(m); mgrSel = S.mons[Math.min(i, S.mons.length - 1)] || null; closeMon(); renderMgr(true); refreshCap(); save();
     };
   }
   const pic = $('#mPic'), want = isPmd(m.form) ? thumbOf(m.form) : m.state === 'sleep' ? (stillCache[m.form] || SPRITES[m.form]) : SPRITES[m.form];
   if (pic.getAttribute('src') !== want) pic.src = want;
   { const [c, tx] = slotState(m), el = $('#mSt'); el.className = 'st-tag st ' + c; el.textContent = tx; }
   { const P = boxOf(m.pid), st = $('#mStage'); st.className = 'dp-pic' + pkCls(P) + (P?.shiny ? ' shiny' : ''); st.style.setProperty('--shue', shinyHue(m.sp) + 'deg'); }
-  const days = Math.max(1, dayOf(S.clock) - dayOf(m.born ?? S.clock) + 1);
   $('#mBars').innerHTML = bar('기력', m.energy, 'var(--hp)') + bar('배부름', 100 - m.hunger, 'var(--hunger)') + bar('외로움', m.social, 'var(--lonely)');
-  $('#mDoing').textContent = `${doingText(m)}${m.form !== m.sp ? ` (${DEX[m.form].n}로 변신 중)` : ''} · 필드에서 ${days}일째`;
-  $('#mRels').innerHTML = relsHtml(m, 5, 3);
+  { const h = memoHtml(m), el = $('#mMemo'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
   $('#mIndiv').innerHTML = indivHtml(m) + metHtml(boxOf(m.pid), '<br>');
   { const h = canMove(m) ? '기술 ' + movesHtml(m.sp, true) : '', el = $('#mMoves'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; el.hidden = !h; } }
-  { const f = isFull(m), b = $('#mFeed'); b.disabled = f; b.textContent = f ? '배불러요' : '열매 주기'; }
-  const sb = $('#mSleep'), busy = m.hidden || m.state === 'interact' || m.state === 'special';
-  sb.textContent = m.state === 'sleep' ? '깨우기' : busy ? '지금은 바쁨' : '재우기'; sb.disabled = m.state !== 'sleep' && busy;
-  if (mgrFreeArm && Date.now() - mgrFreeArm > 3000) { mgrFreeArm = 0; $('#mFree').textContent = '숲으로 보내기'; }
+}
+// 상황 칸: 지금 하는 일, 기분·생각, 친한 포켓몬, 오늘 있었던 일을 메모처럼
+function moodOf(m) {
+  const P = boxOf(m.pid), fr = P?.fr || 0, best = friendsOf(m).find(x => x.r >= 20);
+  if (m.state === 'sleep') return pick2(m, ['쿨쿨… 좋은 꿈을 꾸는 것 같다', '새근새근 깊이 잠들었다']);
+  if (m.hunger > 78) return pick2(m, ['배가 너무 고프다… 열매 먹고 싶어', '꼬르륵… 나무 열매가 생각난다']);
+  if (m.hunger > 50) return pick2(m, ['조금 출출하다', '열매 하나쯤 먹고 싶다']);
+  if (m.energy < 25) return pick2(m, ['졸려서 눈이 감긴다', '슬슬 쉬고 싶다']);
+  if (m.social > 70) return best ? `${J(best.o, '이/가')} 보고 싶다` : pick2(m, ['심심하다… 누가 놀아 줬으면', '친구를 사귀고 싶다']);
+  if (isFull(m)) return pick2(m, ['배가 불러 기분이 좋다', '배부르고 느긋하다']);
+  if (fr >= FR_MAX) return '트레이너가 정말 좋다!';
+  if (m.state === 'interact' && m.partner) return `${J(m.partner, '과/와')} 함께라 즐겁다`;
+  return pick2(m, ['오늘 날씨가 좋다', '필드가 마음에 든다', '느긋하게 쉬는 중', '주변을 구경하고 있다']);
+}
+// 같은 상황이면 같은 문장이 유지되게 (창을 다시 그릴 때 깜빡이지 않게)
+function pick2(m, L) { const k = L[0]; if (!m.moodK || m.moodK !== k) { m.moodK = k; m.moodI = Math.floor(Math.random() * L.length); } return L[m.moodI % L.length]; }
+function memoHtml(m) {
+  const day = new Date().toDateString(), notes = (m.notes || []).filter(n => n.d === day);
+  const good = friendsOf(m).filter(x => x.r >= 1).slice(0, 3);
+  const row = (k, v) => `<div class="mrow"><span class="mk">${k}</span><span class="mv">${v}</span></div>`;
+  return `<h5>상황</h5>`
+    + row('지금', esc(doingText(m) + (m.form !== m.sp ? ` (${DEX[m.form].n}로 변신 중)` : '')))
+    + row('기분', `“${esc(moodOf(m))}”`)
+    + row('친구', good.length ? good.map(x => `<b class="good">♥ ${esc(x.o.name)}</b>${x.r >= 60 ? ' 단짝' : ''}`).join(' · ') : '아직 친한 포켓몬이 없다')
+    + row('오늘', notes.length ? notes.map(n => `<span class="note">${esc(n.t)}</span>`).join('') : '아직 별일 없었다');
 }
 function renameMon(m, v) {
   const name = v.trim().slice(0, 8) || DEX[m.sp].n;
