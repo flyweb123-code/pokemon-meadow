@@ -1109,6 +1109,13 @@ function sfx(name, k = 0) {
     case 'crack': noise(t, .08, .16, 2500); tone(1568, t, .03, { vol: .04 }); break;
     case 'crack2': noise(t, .14, .2, 1800); tone(1760, t, .03, { vol: .05 }); tone(1397, t + .05, .03, { vol: .05 }); break;
     case 'rattle': for (let i = 0; i < 6; i++) tone(i % 2 ? 247 : 262, t + i * .14, .07, { vol: .05 }); break;
+    // 알 두드리기: 두드릴수록 음이 한 칸씩 올라간다 (k = 0~1 진행도)
+    case 'charge': { const n = 60 + Math.round(k * 26); tone(NOTE(n), t, .06, { vol: .045 }); tone(NOTE(n + 7), t + .035, .05, { type: 'triangle', vol: .05 }); break; }
+    // 깨지기 직전: 쭉 차오르는 소리
+    case 'rise': tone(220, t, .75, { vol: .045, to: 1320, steps: 14 }); tone(330, t, .75, { type: 'triangle', vol: .06, to: 1760 }); noise(t + .45, .3, .05, 3000); break;
+    // 부화: 화악 하고 터지는 소리 (낮은 쿵 + 큰 쏴아 + 반짝이)
+    case 'pop': noise(t, .5, .32, 250); noise(t + .02, .45, .18, 2400); tone(160, t, .3, { type: 'triangle', vol: .14, to: 38 });
+      tone(660, t, .18, { vol: .05, to: 1980 }); for (let i = 0; i < 5; i++) tone(NOTE(91 + [0, 4, 7, 12, 16][i]), t + .08 + i * .045, .07, { vol: .035 }); break;
     case 'burst': noise(t, .35, .22, 600); tone(110, t, .25, { vol: .06, to: 55 }); break;
     case 'hatch': melody(t, [72, 76, 79, 84, 0, 79, 84], .09, { vol: .06 }); melody(t, [60, 64, 67, 72, 0, 67, 72], .09, { type: 'triangle', vol: .08 }); break;
     case 'newdex': { const e = melody(t, [72, 76, 79, 84, 0, 79, 84], .09, { vol: .06 }); melody(t, [60, 64, 67, 72, 0, 67, 72], .09, { type: 'triangle', vol: .08 });
@@ -4508,8 +4515,9 @@ function eggThemes(e) {
 }
 const NIGHT = { n: '밤', t: [8, 17], hab: [], fx: /밤|어둠|달/ };
 function themeHint(e) { const ks = eggThemes(e).filter(k => k !== 'night'); if (!ks.length) return ''; const ty = [...new Set(ks.flatMap(k => THEMES[k].t.slice(0, 2)))].slice(0, 3).map(t => TYPE_KO[t]); return `${ty.join('·')} 기운이 느껴진다`; }
-function hatchEgg(e) {
-  S.eggs = S.eggs.filter(x => x !== e);
+// keep: 알은 부화기에 그대로 두고, 부화 연출에서 깨질 때 뺀다
+function hatchEgg(e, keep) {
+  if (!keep) S.eggs = S.eggs.filter(x => x !== e);
   const pool = POOL[e.g], ths = eggThemes(e).map(k => THEMES[k] || NIGHT), recent = new Set(S.recentHatch || []);
   // 기본 1, 테마 타입 +12, 서식지 +4, 도감 설명 낱말 +8, 특정 종 +20 (테마 종이 대략 60~70%) → 안 만난 종 ×2.5, 최근 부화한 종 ×0.15 (같은 종이 연달아 나오지 않게)
   const w = pool.map(sp => {
@@ -4528,7 +4536,7 @@ function hatchEgg(e) {
   while (i < pool.length - 1 && (r -= w[i]) > 0) i++;
   const sp = pool[i];
   S.recentHatch = [sp, ...(S.recentHatch || []).filter(x => x !== sp)].slice(0, 12);
-  hatchQ.push({ g: e.g, sp, place: e.place }); save();
+  hatchQ.push({ g: e.g, sp, place: e.place, egg: keep ? e : null }); save();
 }
 // 태어난 포켓몬을 상자에 넣고 도감 등록, 이미 만난 종이면 골드
 function bornPoke({ g, sp, place }) {
@@ -4567,10 +4575,11 @@ function tapEgg(egg, g, msg) {
       const f = n / need, st = f >= .85 ? 3 : f >= .6 ? 2 : f >= .3 ? 1 : 0;
       if (st > stage) { stage = st; egg.classList.add('c' + st); sfx(st === 3 ? 'crack2' : 'crack'); pend = 2; if (st === 1) msg.textContent = '…!'; if (st === 3) msg.textContent = '알이 깨지려고 한다!'; }
       else { sfx('knock', st); pend = st >= 2 ? 2 : 1; }
+      sfx('charge', f);
       haptic(pend);
       if (n >= need) {
         clearTimeout(idle); hatchStage.removeEventListener('pointerdown', down); hatchStage.removeEventListener('click', up); hatchStage.classList.remove('tapme');
-        setTimeout(() => { egg.classList.remove('knock'); egg.classList.add('wig2'); sfx('rattle'); }, 220);
+        setTimeout(() => { egg.classList.remove('knock'); egg.classList.add('wig2'); sfx('rattle'); sfx('rise'); }, 220);
         setTimeout(done, 900);
       } else nudge();
     };
@@ -4611,7 +4620,7 @@ let hatching = false;
 async function playHatch() {
   if (hatching || !hatchQ.length) return;
   hatching = true;
-  const { g, sp, place } = hatchQ.shift();
+  const { g, sp, place, egg: src } = hatchQ.shift();
   try { await ensureSprite(sp); } catch (e) {}
   hatchEl.hidden = false; $('#hatchOk').hidden = true; showDexInfo(null); $('#hatchMsg').textContent = '어라…? 알의 모습이…!';
   hatchStage.classList.remove('evo');
@@ -4620,7 +4629,8 @@ async function playHatch() {
   await wait(500);
   egg.classList.add('wig'); sfx('wob'); await wait(600); egg.classList.remove('wig');
   await tapEgg(egg, g, msg);
-  hatchStage.querySelector('.flash').classList.add('go'); sfx('burst');
+  hatchStage.querySelector('.flash').classList.add('go'); sfx('pop');
+  if (src) { S.eggs = S.eggs.filter(x => x !== src); renderBag.sig = ''; renderRun(); }
   hatchStage.querySelectorAll('.shard').forEach(x => { x.style.setProperty('--ec', getComputedStyle(egg).getPropertyValue('--ec')); x.classList.add('go'); });
   haptic(2); await wait(300); egg.remove();
   const B = bornPoke({ g, sp, place }), { P, isNew } = B;
@@ -4798,7 +4808,7 @@ document.addEventListener('click', ev => {
   const sl = ev.target.closest('#bagGrid .bslot');
   if (sl) { const e = S.bag.find(x => x.id === +sl.dataset.id); bagSel = e === bagSel ? null : e; if (e && e.isNew) { e.isNew = false; save(); } renderBag(); return; }
   if (ev.target.closest('#eggAll')) { hatchAll(); return; }
-  if (ev.target.closest('#eggHatch') && eggSel && eggSel.km >= eggSel.need) { const e = eggSel; eggSel = null; hatchEgg(e); renderRun(); if (!hatching) playHatch(); return; }
+  if (ev.target.closest('#eggHatch') && eggSel && eggSel.km >= eggSel.need && !hatchQ.some(q => q.egg === eggSel)) { const e = eggSel; eggSel = null; hatchEgg(e, true); renderRun(); if (!hatching) playHatch(); return; }
   if (ev.target.closest('#eggOut') && eggSel) { const e = eggSel; if (unincubate(e)) { eggSel = null; renderRun(); } return; }
   const so = ev.target.closest('#bagSort [data-sort]'); if (so) { bagSort = so.dataset.sort; try { localStorage.setItem('pk-bag-sort', bagSort); } catch (x) {} renderBag.sig = ''; renderBag(); return; }
   if (ev.target.closest('#bagClose') || ev.target.id === 'bagPop') { bagSel = null; renderBag(); return; }
