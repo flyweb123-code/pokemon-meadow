@@ -895,9 +895,9 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
     <div class="sheet-head"><h3><span id="dexTitle">포켓몬 도감</span><span class="cap" id="dexOwn"></span></h3><button class="opt" id="closeDex">닫기</button></div>
     <div class="filters">
       <input id="dexQ" type="search" placeholder="이름이나 번호" aria-label="이름이나 번호로 찾기" autocomplete="off">
+      <button class="fsel on" id="dexSort" data-v="0" aria-haspopup="listbox">등록순</button>
       <button class="fsel" id="dexType" data-v="0" aria-haspopup="listbox">모든 타입</button>
       <button class="fsel" id="dexGen" data-v="0" aria-haspopup="listbox">모든 세대</button>
-      <button class="fsel" id="dexSort" data-v="0" aria-haspopup="listbox">등록순</button>
     </div>
     <div class="dex" id="dexGrid"></div>
     <p class="dex-empty" id="dexEmpty" hidden>찾는 포켓몬이 없다.</p>
@@ -3534,7 +3534,7 @@ function openFilter(id) {
   $('#fPop').hidden = false;
 }
 function setFilter(id, v) {
-  const b = $('#' + id), F = FILTERS[id]; b.dataset.v = v; b.classList.toggle('on', !!v);
+  const b = $('#' + id), F = FILTERS[id]; b.dataset.v = v; b.classList.toggle('on', !!v || id === 'dexSort');
   b.textContent = v ? F.opts.find(o => o[0] === v)[1] : F.all; filterDex();
   if (id === 'dexSort') try { localStorage.setItem('pk-dex-sort2', v); } catch (e) {}
 }
@@ -3609,7 +3609,7 @@ function refreshDexBadges() {
   updateDexCount();
 }
 function filterDex() {
-  const q = $('#dexQ').value.trim(), ty = +$('#dexType').dataset.v, gen = +$('#dexGen').dataset.v, sortNo = +$('#dexSort').dataset.v === 1, reg = sortNo ? null : new Map([...S.unlocked].map((sp, i) => [+sp, i]));
+  const q = $('#dexQ').value.trim(), ty = +$('#dexType').dataset.v, gen = +$('#dexGen').dataset.v, sortNo = +$('#dexSort').dataset.v === 1, reg = sortNo ? null : new Map([...S.unlocked].reverse().map((sp, i) => [+sp, i]));
   let shown = 0;
   for (const sp in dexBtns) {
     const d = SPECIES[sp];
@@ -3622,7 +3622,7 @@ function filterDex() {
 }
 $('#dexQ').addEventListener('input', filterDex);
 // 기본 정렬은 '만난 것 먼저' (번호순을 고른 적 있으면 그대로)
-{ let v = null; try { v = localStorage.getItem('pk-dex-sort2'); } catch (e) {} const b = $('#dexSort'); if (v === '1') { b.dataset.v = 1; b.classList.add('on'); b.textContent = '번호순'; } else b.textContent = '등록순'; }
+{ let v = null; try { v = localStorage.getItem('pk-dex-sort2'); } catch (e) {} const b = $('#dexSort'); b.classList.add('on'); if (v === '1') { b.dataset.v = 1; b.textContent = '번호순'; } else b.textContent = '등록순'; }
 $('#dexClear').onclick = () => { picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); updateDexCount(); };
 $('#dexGo').onclick = async () => {
   if (dexMode === 'buddy') { const sp = [...picked][0]; if (sp != null) await setBuddySp(sp); return; }
