@@ -1037,7 +1037,17 @@ function bgmKick() {
   else bgmStart();
 }
 ['pointerdown', 'touchend', 'click'].forEach(t => document.addEventListener(t, bgmKick, { capture: true, passive: true }));
-document.addEventListener('visibilitychange', () => { if (document.hidden) bgm.el.pause(); else if (bgmOn && bgm.url) bgm.el.play().catch(() => {}); if (actx) { if (document.hidden) actx.suspend(); else actx.resume(); } });
+// 앱을 닫을 때: 소리를 먼저 0으로 내리고 멈춘 뒤 오디오를 재움(바로 재우면 늘어지는 소리가 남)
+let bgmAway = false, bgmAwayT = 0;
+function bgmHide() { if (bgmAway) return; bgmAway = true; clearTimeout(bgmAwayT);
+  if (bgm.gain && actx) { try { const g = bgm.gain.gain, t = actx.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0, t + .06); } catch (e) { bgm.gain.gain.value = 0; } }
+  else bgm.el.volume = 0;
+  bgmAwayT = setTimeout(() => { bgm.el.pause(); if (actx && actx.state === 'running') actx.suspend().catch(() => {}); }, 80); }
+function bgmShow() { if (!bgmAway) return; bgmAway = false; clearTimeout(bgmAwayT); bgm.el.pause();
+  const go = () => { if (bgm.gain && actx) { try { bgm.gain.gain.cancelScheduledValues(actx.currentTime); } catch (e) {} } bgmVol(); if (bgmOn && bgm.url && !bgm.preview) bgm.el.play().catch(() => {}); };
+  if (actx && actx.state !== 'running') actx.resume().then(go, go); else go(); }
+document.addEventListener('visibilitychange', () => { document.hidden ? bgmHide() : bgmShow(); });
+addEventListener('pagehide', bgmHide); addEventListener('pageshow', () => { if (!document.hidden) bgmShow(); });
 // 곡 파일 가져오기: 파일 이름으로 어느 곡인지 맞춘다
 // 울음소리: 포켓런닝-울음소리.zip(0001.mp3 ~ 1025.mp3, 압축 없이 묶음)을 이 기기에 저장해 둔다
 const cry = { have: new Set(), buf: new Map(), last: 0 };
