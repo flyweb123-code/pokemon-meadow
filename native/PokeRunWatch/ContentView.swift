@@ -15,6 +15,9 @@ struct ContentView: View {
                         Text(model.message).font(.footnote).foregroundStyle(.secondary)
                     }
                 }
+                if let b = model.state?.buddy {
+                    Section("같이 달리는 짝꿍") { BuddyRow(buddy: b) }
+                }
                 Section("부화 중인 알") {
                     if let eggs = model.state?.eggs, !eggs.isEmpty {
                         ForEach(eggs) { EggRow(egg: $0) }
@@ -25,7 +28,6 @@ struct ContentView: View {
                 }
                 if let s = model.state {
                     Section {
-                        if !s.buddy.isEmpty { LabeledContent("짝꿍", value: s.buddy) }
                         LabeledContent("총 거리", value: String(format: "%.2fkm", s.total))
                     }
                 }
@@ -83,6 +85,36 @@ struct EggRow: View {
             ProgressView(value: min(egg.km, egg.need), total: egg.need).tint(grass)
             Text(egg.km >= egg.need ? "아이폰에서 열면 부화해요!" : String(format: "앞으로 %.2fkm", egg.need - egg.km))
                 .font(.caption2).foregroundStyle(egg.km >= egg.need ? gold : .secondary)
+        }
+        .padding(.vertical, 2)
+    }
+}
+
+struct BuddyRow: View {
+    let buddy: BuddyInfo
+
+    var body: some View {
+        HStack(spacing: 10) {
+            if let img = buddy.image {
+                Image(uiImage: img)
+                    .interpolation(.none)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 52, height: 52)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text(buddy.name).font(.headline)
+                if buddy.name != buddy.species {
+                    Text(buddy.species).font(.caption2).foregroundStyle(.secondary)
+                }
+                if buddy.need > 0 {
+                    ProgressView(value: min(buddy.km, buddy.need), total: buddy.need).tint(gold)
+                    Text(buddy.ready ? "진화 준비 완료!" : String(format: "진화까지 %.2fkm", buddy.need - buddy.km))
+                        .font(.caption2).foregroundStyle(buddy.ready ? gold : .secondary)
+                } else {
+                    Text("더 진화하지 않아요").font(.caption2).foregroundStyle(.secondary)
+                }
+            }
         }
         .padding(.vertical, 2)
     }

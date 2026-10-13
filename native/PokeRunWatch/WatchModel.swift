@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import HealthKit
 import WatchConnectivity
 
@@ -9,9 +10,23 @@ struct EggInfo: Codable, Identifiable {
     let need: Double
 }
 
+struct BuddyInfo: Codable {
+    let name: String
+    let species: String
+    var km: Double
+    let need: Double      // 0 이면 더 진화하지 않는 포켓몬
+    var ready: Bool
+    let img: String       // data:image/png;base64,... (작은 도트 그림)
+
+    var image: UIImage? {
+        guard let comma = img.firstIndex(of: ","), let data = Data(base64Encoded: String(img[img.index(after: comma)...])) else { return nil }
+        return UIImage(data: data)
+    }
+}
+
 struct GameState: Codable {
     var eggs: [EggInfo]
-    var buddy: String
+    var buddy: BuddyInfo?
     var total: Double
 }
 
@@ -120,6 +135,11 @@ final class WatchModel: NSObject, ObservableObject {
         WCSession.default.transferUserInfo(["km": km, "end": Date().timeIntervalSince1970])
         if var s = state {
             for i in s.eggs.indices { s.eggs[i].km += km }
+            if var b = s.buddy, b.need > 0 {
+                b.km += km
+                if b.km >= b.need { b.ready = true }
+                s.buddy = b
+            }
             s.total += km
             state = s
         }

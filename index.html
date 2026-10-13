@@ -2912,8 +2912,9 @@ function postNative() {
   const h = window.webkit?.messageHandlers?.pokeRun; if (!h) return;
   clearTimeout(nativeT);
   nativeT = setTimeout(() => {
-    const b = S.mons.find(m => m.uid === S.buddy);
-    try { h.postMessage({ eggs: S.eggs.map(e => ({ id: e.id, grade: GRADE[e.g].n, km: Math.round(e.km * 100) / 100, need: e.need })), buddy: b ? b.name : '', total: Math.round(S.totalKm * 100) / 100 }); } catch (e) {}
+    const b = S.mons.find(m => m.uid === S.buddy), img = b ? thumbOf(b.form) : '';
+    const buddy = b ? { name: b.name, species: SPECIES[b.sp].n, km: Math.round(S.buddyKm * 100) / 100, need: CHILDREN[b.sp] ? evoNeed(b) : 0, ready: !!b.evoReady, img: img.length < 60000 ? img : '' } : null;
+    try { h.postMessage({ eggs: S.eggs.map(e => ({ id: e.id, grade: GRADE[e.g].n, km: Math.round(e.km * 100) / 100, need: e.need })), buddy, total: Math.round(S.totalKm * 100) / 100 }); } catch (e) {}
   }, 300);
 }
 window.pokeRunAddKm = km => { km = Math.round(+km * 100) / 100; if (!(km >= .01 && km <= 100)) return false; applyKm(km); addRun(km, 'watch'); return true; };
