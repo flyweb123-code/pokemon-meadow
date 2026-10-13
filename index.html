@@ -2499,7 +2499,7 @@ function serialize() {
     eggs: S.eggs, unlocked: [...S.unlocked], buddy: S.buddy, buddyKm: S.buddyKm, runs: S.runs, totalKm: S.totalKm, eid: S.eid };
 }
 let saveFrozen = false;
-function save() { if (saveFrozen) return; try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
+function save() { if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
   S.lockT = d.lockT || 0; S.eggs = d.eggs || []; S.buddy = d.buddy ?? null; S.buddyKm = d.buddyKm || 0; S.runs = d.runs || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
@@ -2906,9 +2906,20 @@ function applyKm(km) {
   const b = S.mons.find(m => m.uid === S.buddy);
   if (b && CHILDREN[b.sp]) { S.buddyKm += km; if (S.buddyKm >= evoNeed(b)) b.evoReady = true; }
 }
+// 아이폰 앱(워치 연동)에서 열렸을 때: 알 현황을 앱으로 보내고, 워치에서 달린 거리를 받는다
+var nativeT = 0;
+function postNative() {
+  const h = window.webkit?.messageHandlers?.pokeRun; if (!h) return;
+  clearTimeout(nativeT);
+  nativeT = setTimeout(() => {
+    const b = S.mons.find(m => m.uid === S.buddy);
+    try { h.postMessage({ eggs: S.eggs.map(e => ({ id: e.id, grade: GRADE[e.g].n, km: Math.round(e.km * 100) / 100, need: e.need })), buddy: b ? b.name : '', total: Math.round(S.totalKm * 100) / 100 }); } catch (e) {}
+  }, 300);
+}
+window.pokeRunAddKm = km => { km = Math.round(+km * 100) / 100; if (!(km >= .01 && km <= 100)) return false; applyKm(km); addRun(km, 'watch'); return true; };
 function addRun(km, src) {
   S.runs.unshift({ t: Date.now(), km, src }); if (S.runs.length > 60) S.runs.pop();
-  log(`${src === 'gps' ? 'GPS로' : '건강 앱 기록으로'} ${fmtKm(km)}km를 달렸다.`, [], true);
+  log(`${src === 'gps' ? 'GPS로' : src === 'watch' ? '워치로' : '건강 앱 기록으로'} ${fmtKm(km)}km를 달렸다.`, [], true);
   save(); renderRun();
 }
 function hatchEgg(e) {
@@ -3065,7 +3076,7 @@ function renderRun() {
   $('#buddy').innerHTML = !m ? `<div class="info">아직 짝꿍이 없어요. <b>꺼내기</b>에서 포켓몬을 고르고 <b>같이 런닝하기</b>를 눌러 주세요.</div>`
     : `<img alt="" src="${thumbOf(m.form)}"><div class="info"><b>${esc(m.name)}</b>${CHILDREN[m.sp] ? `<div class="prog evo"><i style="width:${Math.min(100, S.buddyKm / evoNeed(m) * 100)}%"></i></div>진화까지 ${fmtKm(S.buddyKm)} / ${evoNeed(m)}km${m.evoReady ? ' · <b>진화 준비 완료!</b>' : ''}` : '<div class="small">더 이상 진화하지 않는 포켓몬이에요</div>'}</div>`;
   tickLock();
-  $('#runs').innerHTML = S.runs.slice(0, 20).map(r => { const d = new Date(r.t); return `<li>${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')} <span>${r.src === 'gps' ? 'GPS' : '건강 앱'}</span><b>${fmtKm(r.km)}km</b></li>`; }).join('') || '<li><span>아직 달린 기록이 없어요</span></li>';
+  $('#runs').innerHTML = S.runs.slice(0, 20).map(r => { const d = new Date(r.t); return `<li>${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')} <span>${r.src === 'gps' ? 'GPS' : r.src === 'watch' ? '워치' : '건강 앱'}</span><b>${fmtKm(r.km)}km</b></li>`; }).join('') || '<li><span>아직 달린 기록이 없어요</span></li>';
 }
 function toggleBuddy(m) {
   if (S.buddy === m.uid) { S.buddy = null; log(`${J(m,'과/와')} 같이 달리기를 그만뒀다.`, [m]); }
@@ -3112,6 +3123,9 @@ async function start(data) {
   Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp));
   sky();
   requestAnimationFrame(t => { last = t; frame(t); });
+  // 아이폰 앱에 준비됐다고 알리고, 현재 알 현황을 바로 보낸다
+  window.pokeRunReady = true; postNative();
+  try { window.webkit?.messageHandlers?.pokeRun?.postMessage({ ready: true }); } catch (e) {}
 }
 if (/[?&]debug/.test(location.search)) window.__meadow = { S, takeLockKm, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
 window.claude?.hot?.snapshot?.(() => serialize());

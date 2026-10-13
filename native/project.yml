@@ -1,0 +1,58 @@
+# 포켓런닝 아이폰 앱 + 애플워치 앱. Mac 에서 `xcodegen` 을 실행하면 PokeRun.xcodeproj 가 만들어진다.
+name: PokeRun
+options:
+  bundleIdPrefix: com.flyweb123
+  deploymentTarget:
+    iOS: "17.0"
+    watchOS: "10.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    CODE_SIGN_STYLE: Automatic
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.0"
+    ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+targets:
+  PokeRun:
+    type: application
+    platform: iOS
+    sources: [PokeRun]
+    info:
+      path: PokeRun/Info.plist
+      properties:
+        CFBundleDisplayName: 포켓런닝
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIViewControllerBasedStatusBarAppearance: false
+        UIStatusBarStyle: UIStatusBarStyleLightContent
+        LSApplicationQueriesSchemes: [shortcuts]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.flyweb123.pokerun
+        TARGETED_DEVICE_FAMILY: "1"
+    dependencies:
+      - target: PokeRunWatch
+
+  PokeRunWatch:
+    type: application
+    platform: watchOS
+    sources: [PokeRunWatch]
+    info:
+      path: PokeRunWatch/Info.plist
+      properties:
+        CFBundleDisplayName: 포켓런닝
+        WKApplication: true
+        WKCompanionAppBundleIdentifier: com.flyweb123.pokerun
+        WKBackgroundModes: [workout-processing]
+        NSHealthShareUsageDescription: 달린 거리를 알에 쌓으려고 건강 데이터를 읽어요.
+        NSHealthUpdateUsageDescription: 런닝을 운동 기록으로 저장해요.
+    entitlements:
+      path: PokeRunWatch/PokeRunWatch.entitlements
+      properties:
+        com.apple.developer.healthkit: true
+        com.apple.developer.healthkit.access: []
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.flyweb123.pokerun.watchkitapp
+        TARGETED_DEVICE_FAMILY: "4"
