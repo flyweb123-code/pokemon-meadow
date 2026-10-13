@@ -4269,7 +4269,7 @@ function undoAutoHatch() {
     if (!S.box.some(q => q.sp === p.sp) && !seen.has(p.sp)) { seen.add(p.sp); S.unlocked.delete(p.sp); if (dexBtns[p.sp]) lockDexBtn(p.sp); }
     else S.gold = Math.max(0, S.gold - DUP_G[p.g]);
     const e = { id: S.eid++, g: p.g, km: GRADE[p.g].km, need: GRADE[p.g].km, t: p.t }; if (p.place) e.place = p.place;
-    if (S.eggs.length < MAX_EGGS) S.eggs.push(e); else S.bag.push({ id: e.id, g: e.g, t: e.t, km: e.km, place: e.place });
+    if (S.eggs.length < MAX_EGGS) S.eggs.push(e); else S.bag.push({ id: e.id, g: e.g, t: e.t, km: e.km, place: e.place, sp: e.sp });
   }
   log(`깨졌던 알 ${got.length}개를 부화 전으로 되돌렸다. 부화기에서 부화시켜 보자.`, [], true);
   save();
@@ -4312,14 +4312,14 @@ function gotLog(got, how, place) {
 function unincubate(e) {
   if (!S.eggs.includes(e) || S.bag.length >= MAX_BAG) return false;
   S.eggs = S.eggs.filter(x => x !== e);
-  const b = { id: e.id, g: e.g, t: e.t || Date.now(), km: e.km || 0 }; if (e.place) b.place = e.place; if (e.tags) b.tags = e.tags; S.bag.push(b);
+  const b = { id: e.id, g: e.g, t: e.t || Date.now(), km: e.km || 0, sp: e.sp }; if (e.place) b.place = e.place; if (e.tags) b.tags = e.tags; S.bag.push(b);
   save(); return true;
 }
 // 가방의 알을 부화기로 옮긴다
 function incubate(e) {
   if (S.eggs.length >= MAX_EGGS || !S.bag.includes(e)) return false;
   S.bag = S.bag.filter(x => x !== e);
-  const x = { id: e.id, g: e.g, km: e.km || 0, need: GRADE[e.g].km, isNew: true, t: e.t, place: e.place, tags: e.tags }; S.eggs.push(x);
+  const x = { id: e.id, g: e.g, km: e.km || 0, need: GRADE[e.g].km, isNew: true, t: e.t, place: e.place, tags: e.tags, sp: e.sp }; S.eggs.push(x);
   save(); return true;
 }
 // distance from any source goes to every egg and the buddy
@@ -4379,7 +4379,7 @@ window.pokeRunPlaces = (t0, t1, list) => {
   const pts = list.map(x => ({ n: String(x[0] || ''), tags: String(x[1] || '').split(',').filter(k => THEMES[k]), t: +x[2] || t0 })).filter(p => p.n);
   if (!pts.length) return true;
   if (!S.places.some(p => p.t >= t0 && p.t <= t1)) pts.forEach(p => notePlace(p.n, p.tags, p.t));
-  const all = [...S.bag, ...S.eggs], fill = e => { if (e.place) return; const p = pick(pts); e.place = p.n; if (p.tags.length) e.tags = p.tags; };
+  const all = [...S.bag, ...S.eggs], fill = e => { if (e.place) return; const p = pick(pts); e.place = p.n; if (p.tags.length) e.tags = p.tags; delete e.sp; eggSp(e); };
   for (const r of S.runs) {
     if (!(r.t0 && r.t0 < t1 + 60000 && r.t > t0 - 60000)) continue;
     if (r.eggs) for (const x of r.eggs) { const e = all.find(y => y.id === x.id); if (e) { fill(e); x.place = e.place; } else if (!x.place) x.place = pick(pts).n; }
@@ -4543,9 +4543,17 @@ function eggThemes(e) {
 const NIGHT = { n: '밤', t: [8, 17], hab: [], fx: /밤|어둠|달/ };
 function themeHint(e) { const ks = eggThemes(e).filter(k => k !== 'night'); if (!ks.length) return '어떤 기운인지 잘 모르겠다'; const ty = [...new Set(ks.flatMap(k => THEMES[k].t.slice(0, 2)))].slice(0, 3).map(t => TYPE_KO[t]); return `${ty.join('·')} 기운이 느껴진다`; }
 // keep: 알은 부화기에 그대로 두고, 부화 연출에서 깨질 때 뺀다
+// 알 속 포켓몬은 알을 주울 때(또는 처음 볼 때) 정해져 e.sp 에 남는다. 장소가 나중에 채워지면 그때 한 번 다시 정한다
+const eggSp = e => e.sp || (e.sp = rollEgg(e));
+function eggSpAll() { for (const e of S.bag) if (!e.sp) eggSp(e); for (const e of S.eggs) if (!e.sp) eggSp(e); }
 function hatchEgg(e, keep, ask) {
   if (!keep) S.eggs = S.eggs.filter(x => x !== e);
-  const pool = POOL[e.g], ths = eggThemes(e).map(k => THEMES[k] || NIGHT), recent = new Set(S.recentHatch || []);
+  const sp = eggSp(e);
+  S.recentHatch = [sp, ...(S.recentHatch || []).filter(x => x !== sp)].slice(0, 12);
+  hatchQ.push({ g: e.g, sp, place: e.place, egg: keep ? e : null, ask }); save();
+}
+function rollEgg(e) {
+  const pool = POOL[e.g], ths = eggThemes(e).map(k => THEMES[k] || NIGHT);
   // 기본 1, 테마 타입 +12, 서식지 +4, 도감 설명 낱말 +8, 특정 종 +20 (테마 종이 대략 60~70%) → 등급마다 흔한 종(포획률 상위 1/4)은 ×10 이라 자주 겹친다
   const w = pool.map(sp => {
     const d = SPECIES[sp]; let v = 1;
@@ -4560,9 +4568,7 @@ function hatchEgg(e, keep, ask) {
   });
   let r = Math.random() * w.reduce((a, b) => a + b, 0), i = 0;
   while (i < pool.length - 1 && (r -= w[i]) > 0) i++;
-  const sp = pool[i];
-  S.recentHatch = [sp, ...(S.recentHatch || []).filter(x => x !== sp)].slice(0, 12);
-  hatchQ.push({ g: e.g, sp, place: e.place, egg: keep ? e : null, ask }); save();
+  return pool[i];
 }
 // 태어난 포켓몬을 상자에 넣고 도감 등록, 이미 만난 종이면 골드
 function bornPoke({ g, sp, place }) {
@@ -4904,6 +4910,7 @@ $('#buddy').addEventListener('click', e => {
   else if (S.buds[i]) { log(`${J({ name: SPECIES[S.buds[i].sp].n },'과/와')} 같이 달리기를 그만뒀다.`); S.buds.splice(i, 1); save(); renderRun(); }
 });
 function renderRun() {
+  eggSpAll();
   if (!mgr.hidden) renderBuddy();
   if (runEl.hidden) { if (!$('#bagPop').hidden) { $('#bagPop').hidden = true; bagSel = null; } return; }
   $('#runTotal').innerHTML = `총 <b>${fmtKm(S.totalKm)}</b>km`;
