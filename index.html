@@ -131,7 +131,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .dlg .more{position:absolute;right:10px;bottom:4px;color:var(--cursor);font:inherit;font-size:14px;line-height:1;background:none;border:0;padding:8px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .dlg{-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 .win.dlg.folded{min-height:0;padding-top:4px;padding-bottom:4px}
-.dlg.folded .now,.dlg.folded .prev{display:none}
+.dlg.folded .now,.dlg.folded .prev,.dlg.folded #journal{display:none}
 .dlg.folded .more{position:static;display:block;margin-left:auto;padding:6px 10px;transform:rotate(180deg)}
 @keyframes blink{50%{opacity:0}}
 
@@ -1484,7 +1484,7 @@ function renderLog() {
   renderDlg();
 }
 const dlgEl = $('#dlg');
-function foldDlg(on) { dlgEl.classList.toggle('folded', on); $('#dlgFold').setAttribute('aria-label', on ? '상태창 펴기' : '상태창 접기'); try { localStorage.setItem('pk-dlg-fold', on ? '1' : ''); } catch (e) {} }
+function foldDlg(on) { if (on && !$('#journal').hidden) setLog(false); dlgEl.classList.toggle('folded', on); $('#dlgFold').setAttribute('aria-label', on ? '상태창 펴기' : '상태창 접기'); try { localStorage.setItem('pk-dlg-fold', on ? '1' : ''); } catch (e) {} }
 $('#dlgFold').addEventListener('click', e => { e.stopPropagation(); foldDlg(!dlgEl.classList.contains('folded')); });
 try { if (localStorage.getItem('pk-dlg-fold')) foldDlg(true); } catch (e) {}
 const stripHint = h => h.replace(/\s*\((런닝 · 알|알)\)$/, '');
