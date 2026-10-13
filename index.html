@@ -3570,9 +3570,10 @@ function openFilter(id) {
   $('#fPop').hidden = false;
 }
 function setFilter(id, v) {
-  const b = $('#' + id), F = FILTERS[id]; b.dataset.v = v; b.classList.toggle('on', !!v || id === 'dexSort');
+  const b = $('#' + id), F = FILTERS[id], was = +b.dataset.v; b.dataset.v = v;
+  if (id !== 'dexSort') b.classList.toggle('on', !!v); else if (v !== was) b.classList.remove('on');   // 정렬 버튼 강조는 처음 힌트일 뿐, 다른 정렬로 바꾸면 꺼진다   // 정렬 버튼 강조는 처음 힌트일 뿐, 한 번 고르면 꺼진다
   b.textContent = v ? F.opts.find(o => o[0] === v)[1] : F.all; filterDex();
-  if (id === 'dexSort') try { localStorage.setItem('pk-dex-sort2', v); } catch (e) {}
+  if (id === 'dexSort') try { localStorage.setItem('pk-dex-sort2', v); if (v !== was) localStorage.setItem('pk-dex-sort-hint', '1'); } catch (e) {}
 }
 ['dexType', 'dexGen', 'dexSort'].forEach(id => $('#' + id).onclick = () => openFilter(id));
 $('#fPop').addEventListener('click', e => { const o = e.target.closest('[data-v]'); if (o) setFilter(fFor, +o.dataset.v); if (o || e.target.id === 'fPop') $('#fPop').hidden = true; });
@@ -3658,7 +3659,7 @@ function filterDex() {
 }
 $('#dexQ').addEventListener('input', filterDex);
 // 기본 정렬은 '만난 것 먼저' (번호순을 고른 적 있으면 그대로)
-{ let v = null; try { v = localStorage.getItem('pk-dex-sort2'); } catch (e) {} const b = $('#dexSort'); b.classList.add('on'); if (v === '1') { b.dataset.v = 1; b.textContent = '번호순'; } else b.textContent = '등록순'; }
+{ let v = null; try { v = localStorage.getItem('pk-dex-sort2'); } catch (e) {} const b = $('#dexSort'); let seen = null; try { seen = localStorage.getItem('pk-dex-sort-hint'); } catch (e) {} b.classList.toggle('on', !seen); if (v === '1') { b.dataset.v = 1; b.textContent = '번호순'; } else b.textContent = '등록순'; }
 $('#dexClear').onclick = () => { picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); updateDexCount(); };
 $('#dexGo').onclick = async () => {
   if (dexMode === 'buddy') { const sp = [...picked][0]; if (sp != null) await setBuddySp(sp); return; }
