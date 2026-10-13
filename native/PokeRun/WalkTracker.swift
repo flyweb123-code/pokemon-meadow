@@ -103,8 +103,10 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
         .school: "school", .university: "school", .library: "school", .museum: "school",
         .hospital: "hospital", .pharmacy: "hospital",
         .stadium: "sports", .fitnessCenter: "sports",
-        .store: "city", .foodMarket: "city", .cafe: "city", .restaurant: "city", .amusementPark: "city",
-        .nightlife: "city", .theater: "city", .movieTheater: "city"
+        .store: "city", .foodMarket: "city", .cafe: "bakery", .restaurant: "restaurant", .amusementPark: "amusement",
+        .nightlife: "club", .theater: "concert", .movieTheater: "cinema",
+        .bakery: "bakery", .laundry: "laundry", .police: "police", .fireStation: "firestation",
+        .postOffice: "postoffice", .bank: "bank", .atm: "bank", .hotel: "hotel", .brewery: "pub", .winery: "pub"
     ]
 
     // 반경 400m 안에서 가장 가까운 공원·명소·학교·역 같은 장소 이름 + 반경 250m 안 장소 종류의 테마들
