@@ -359,8 +359,8 @@ ol.runs li span{color:var(--dim)}
   .app{position:fixed;inset:0;height:auto;min-height:0;overflow:hidden;display:grid;padding:0;gap:0;background:var(--frame);
     grid-template-columns:minmax(0,3fr) minmax(0,2fr);grid-template-rows:minmax(0,1fr) auto auto;
     grid-template-areas:"stage stage" "dlg dlg" "menu cmd"}
-  .stage-wrap{grid-area:stage;position:relative;inset:auto;aspect-ratio:auto;margin:0;overflow-x:auto;overflow-y:hidden;
-    touch-action:pan-x;scrollbar-width:none;-webkit-overflow-scrolling:touch;background:var(--forest)}
+  .stage-wrap{grid-area:stage;position:relative;inset:auto;aspect-ratio:auto;margin:0;overflow:hidden;
+    touch-action:manipulation;scrollbar-width:none;-webkit-overflow-scrolling:touch;background:var(--forest)}
   .stage-wrap::-webkit-scrollbar{display:none}
   .stage-wrap .sizer{height:1px}
   .mon{touch-action:none}
@@ -378,11 +378,12 @@ ol.runs li span{color:var(--dim)}
   .card .close{position:absolute;right:4px;top:4px;border:0;padding:8px 12px;font-size:16px}
   .card .no{margin-right:36px}
   .card-actions .opt{padding:10px 0 10px 20px}
-  .journal{grid-area:stage;position:relative;align-self:end;z-index:31;width:auto;margin:0 8px 8px;max-height:85%;left:auto;bottom:auto}
+  .journal{grid-area:stage;position:relative;align-self:end;z-index:31;width:auto;margin:0 8px 8px;max-height:55%;left:auto;bottom:auto}
   .hint{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top) + 64px);bottom:auto;white-space:nowrap;z-index:40}
   /* bottom panel */
   .dlg{grid-area:dlg;position:relative;left:auto;right:auto;bottom:auto;top:auto;margin:0;border-width:3px 0 0;box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 6px #7aa6d8;
     padding:10px 18px 12px;font-size:16px;line-height:1.5;min-height:calc(3em + 22px);max-width:none}
+  .app .win.dlg{box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 6px #7aa6d8}
   .dlg .prev{display:none}
   .dlg .now{min-height:0}
   .dlg .more{right:12px;bottom:6px}
@@ -396,7 +397,7 @@ ol.runs li span{color:var(--dim)}
   .menuwin .opt::before,.cmdwin .opt::before{display:none}
   .menuwin .opt:active,.cmdwin .opt:active{background:rgba(255,255,255,.14)}
   .cmdwin .opt[aria-pressed="true"]{background:rgba(255,255,255,.18);color:#ffe27a}
-  .menuwin #capBadge{display:block;font-size:12px;opacity:.7}
+  .menuwin #capBadge{display:none}
   .mgrwin #reset{margin-left:auto;margin-right:16px}
   .menuwin #reset{display:none}
   /* full-screen windows */
@@ -567,6 +568,8 @@ const W = 960, H = 600, SCALE = 1.5;
 const MAX_MONS = 20;   // the meadow holds at most 20 residents
 const POND = { x: 735, y: 432, rx: 150, ry: 80 };
 const MIN_Y = 150, MAX_Y = 580;
+// the part of the meadow Pokémon may use; phones show (and use) only a window of it
+let XL = 0, XR = 960;
 
 // mv: walk | amph (walks and swims) | swim (pond only) | fly | hover
 const OVR = {
@@ -629,7 +632,7 @@ const N = m => `<b>${esc(m.name)}</b>`;
 const NL = (list, p) => list.slice(0, -1).map(N).concat(J(list[list.length - 1], p)).join(', ');
 const pondVal = (x, y) => ((x - POND.x) / POND.rx) ** 2 + ((y - POND.y) / POND.ry) ** 2;
 function randLand() {
-  for (let i = 0; i < 50; i++) { const p = { x: rnd(40, 920), y: rnd(MIN_Y + 10, MAX_Y - 5) }; if (pondVal(p.x, p.y) > 1.35) return p; }
+  for (let i = 0; i < 50; i++) { const p = { x: rnd(XL + 40, XR - 40), y: rnd(MIN_Y + 10, MAX_Y - 5) }; if (pondVal(p.x, p.y) > 1.35) return p; }
   return { x: 200, y: 400 };
 }
 function randPond(k = .8) {
@@ -863,7 +866,7 @@ function nearestBerry(m) {
 // ---------- behaviour ----------
 function setState(m, s, t) { if (m.state === 'interact' && s !== 'interact' && m.act) clearMotion(m); m.state = s; m.t = t; }
 function moveTo(m, p, goal, spdMul = 1) {
-  m.tx = clamp(p.x, 30, 930); m.ty = clamp(p.y, MIN_Y, MAX_Y);
+  m.tx = clamp(p.x, XL + 30, XR - 30); m.ty = clamp(p.y, MIN_Y, MAX_Y);
   const mv = T(m).mv;
   if (mv === 'swim') { const v = pondVal(m.tx, m.ty); if (v > .8) { const q = { x: m.tx, y: m.ty }; projectOut(q, .78); m.tx = q.x; m.ty = q.y; } }
   else if ((mv === 'walk') && pondVal(m.tx, m.ty) < 1.1) { const q = shorePoint({ x: m.tx, y: m.ty }); m.tx = q.x; m.ty = q.y; }
@@ -921,14 +924,14 @@ function think(m) {
   if (m.hunger > 85 && t.mv !== 'swim') {
     const b = nearestBerry(m);
     if (b) return moveTo(m, b, { kind: 'berry', berry: b }, 1.25);
-    return moveTo(m, { x: rnd(60, 900), y: MIN_Y + rnd(0, 18) }, { kind: 'forage' });
+    return moveTo(m, { x: rnd(XL + 60, XR - 60), y: MIN_Y + rnd(0, 18) }, { kind: 'forage' });
   }
   if (m.energy < 15 || (wrongTime(m) && Math.random() < .55)) return goToBed(m);
   if (m.hunger > 62) {
     const b = nearestBerry(m);
     if (b) return moveTo(m, b, { kind: 'berry', berry: b }, 1.25);
     if (t.mv !== 'swim' && Math.random() < .5) { // forage at the forest edge
-      return moveTo(m, { x: rnd(60, 900), y: MIN_Y + rnd(0, 18) }, { kind: 'forage' });
+      return moveTo(m, { x: rnd(XL + 60, XR - 60), y: MIN_Y + rnd(0, 18) }, { kind: 'forage' });
     }
   }
   if (m.social > 42 && Math.random() < .85) {
@@ -944,7 +947,7 @@ function think(m) {
   let p;
   if (t.mv === 'swim') p = randPond(.8);
   else if (t.mv === 'amph' && Math.random() < .5) p = randPond(.7);
-  else if (t.mv === 'fly' || t.mv === 'hover') p = { x: rnd(40, 920), y: rnd(MIN_Y + 10, MAX_Y - 10) };
+  else if (t.mv === 'fly' || t.mv === 'hover') p = { x: rnd(XL + 40, XR - 40), y: rnd(MIN_Y + 10, MAX_Y - 10) };
   else { const near = Math.random() < .6; p = near ? { x: m.x + rnd(-180, 180), y: m.y + rnd(-110, 110) } : randLand(); }
   moveTo(m, p);
 }
@@ -1439,13 +1442,13 @@ function chooseScene(a, b) {
 // Each special pair scene (PAIR_RULES key) gets its own choreography: positions, poses and effects per tick.
 // a and b are the scene roles [x, y] from the rule; sc.mt is time since the scene began.
 function place(m, x, y) {
-  m.x = clamp(x, 24, 936); m.y = clamp(y, MIN_Y, MAX_Y);
+  m.x = clamp(x, XL + 24, XR - 24); m.y = clamp(y, MIN_Y, MAX_Y);
   const mv = T(m).mv;
   if (mv === 'walk' && pondVal(m.x, m.y) < 1.08) projectOut(m, 1.08);
   if (mv === 'swim' && pondVal(m.x, m.y) > .9) projectOut(m, .9);
 }
 const faceTo = (m, x) => { if (Math.abs(x - m.x) > .5) m.face = x > m.x ? -1 : 1; };
-const sceneCenter = (a, b, r) => ({ x: clamp((a.x + b.x) / 2, 40 + r, 920 - r), y: clamp((a.y + b.y) / 2, MIN_Y + 10 + r * .4, MAX_Y - 10 - r * .3) });
+const sceneCenter = (a, b, r) => ({ x: clamp((a.x + b.x) / 2, XL + 40 + r, XR - 40 - r), y: clamp((a.y + b.y) / 2, MIN_Y + 10 + r * .4, MAX_Y - 10 - r * .3) });
 const every = (sc, k, gap) => { sc[k] = (sc[k] ?? 0) - sc.dt; if (sc[k] <= 0) { sc[k] += gap; return true; } return false; };
 const once = (sc, k, at) => { if (!sc[k] && sc.mt >= at) { sc[k] = 1; return true; } return false; };
 const orbit = (m, c, ang, rx, ry) => { const x = c.x + Math.cos(ang) * rx, y = c.y + Math.sin(ang) * ry; faceTo(m, x); place(m, x, y); };
@@ -1474,7 +1477,7 @@ const MOT = {
       if (every(sc, 'p', .14)) { particle(a.x, a.y - a.lift - a.h * .4, 'spark', '✦'); particle(b.x, b.y - b.lift - b.h * .4, 'heart', '·'); }
     } },
   'mewtwo-mew': { dur: 8,
-    init(sc, a, b) { a.el.classList.add('aura'); b.el.classList.add('aura'); b.xl = 36; sc.c = { x: clamp(a.x, 120, 840), y: clamp(a.y, MIN_Y + 40, MAX_Y - 30) }; },
+    init(sc, a, b) { a.el.classList.add('aura'); b.el.classList.add('aura'); b.xl = 36; sc.c = { x: clamp(a.x, XL + 90, XR - 90), y: clamp(a.y, MIN_Y + 40, MAX_Y - 30) }; },
     tick(sc, a, b) {
       place(a, sc.c.x, sc.c.y); orbit(b, { x: sc.c.x, y: sc.c.y + 2 }, sc.mt * 1.7, 78, 26); faceTo(a, b.x);
       if (every(sc, 'e', 2.2)) { emote(a, '…', '', 1.2); setTimeout(() => S.mons.includes(b) && emote(b, '?', 'note', 1.2), 700); }
@@ -1584,7 +1587,7 @@ const TPL = {
     } },
   // the partner (b) rides on the actor's (a) head or back while a strolls, or flies when p.fly; p.rev swaps who rides
   perch: { dur: 8,
-    init(sc, a, b) { const [m] = sc.p.rev ? [b, a] : [a, b]; sc.c = { x: clamp(m.x, 120, 840), y: clamp(m.y, MIN_Y + 30, MAX_Y - 20) }; sc.dx = rnd(-m.w * .1, m.w * .1); anim(sc.p.rev ? a : b, 'hop'); },
+    init(sc, a, b) { const [m] = sc.p.rev ? [b, a] : [a, b]; sc.c = { x: clamp(m.x, XL + 90, XR - 90), y: clamp(m.y, MIN_Y + 30, MAX_Y - 20) }; sc.dx = rnd(-m.w * .1, m.w * .1); anim(sc.p.rev ? a : b, 'hop'); },
     tick(sc, a, b) {
       const [m, r] = sc.p.rev ? [b, a] : [a, b];
       if (sc.p.fly) { m.xl = Math.min(50, sc.mt * 30); orbit(m, sc.c, sc.mt * .9, 120, 40); }
@@ -1975,7 +1978,7 @@ function doSpecial(m) {
     setState(m, 'special', 3); m.special = 'gust';
     for (let i = 0; i < 5; i++) particle(m.x + rnd(-30, 30), m.y - 6, 'dust');
     const b = S.berries.find(b => dist(b, m) < 130);
-    if (b) { b.x = clamp(b.x + rnd(-90, 90), 40, 920); b.el.style.left = b.x + 'px'; log(`${J(m,'이/가')} 날갯짓으로 바람을 일으키자 열매가 데굴데굴 굴러갔다.`, [m]); }
+    if (b) { b.x = clamp(b.x + rnd(-90, 90), XL + 40, XR - 40); b.el.style.left = b.x + 'px'; log(`${J(m,'이/가')} 날갯짓으로 바람을 일으키자 열매가 데굴데굴 굴러갔다.`, [m]); }
     else if (Math.random() < .3) log(`${J(m,'이/가')} 힘차게 날갯짓을 한다.`, [m]);
     return true;
   }
@@ -1999,7 +2002,7 @@ function tickSpecial(m, dt) {
     if (m.phase === 0 && m.t < (s === 'dig' ? 4.4 : 3.1)) { m.phase = 1; m.hidden = true; m.el.style.visibility = 'hidden'; }
     if (m.phase === 1 && m.t < 1) {
       m.phase = 2; m.hidden = false; m.el.style.visibility = '';
-      const p = s === 'teleport' ? { x: rnd(60, 900), y: rnd(MIN_Y + 20, MAX_Y - 10) } : randLand();
+      const p = s === 'teleport' ? { x: rnd(XL + 60, XR - 60), y: rnd(MIN_Y + 20, MAX_Y - 10) } : randLand();
       m.x = m.tx = p.x; m.y = m.ty = p.y;
       m.act.classList.remove(out); anim(m, inn);
       if (s === 'dig') { dustAt(m); const near = S.mons.filter(o => o !== m && awake(o) && dist(o, m) < 60); near.forEach(o => { emote(o, '!'); }); if (near.length) log(`${J(m,'이/가')} ${N(near[0])} 바로 앞에서 쑥 튀어나왔다!`, [m, near[0]]); }
@@ -2125,7 +2128,7 @@ function update(m, dt) {
       m.up = dy < -Math.abs(dx) * .8;
       if (t.mv === 'walk' && pondVal(m.x, m.y) < 1.08) projectOut(m, 1.08);
       if (t.mv === 'swim' && pondVal(m.x, m.y) > .9) projectOut(m, .9);
-      m.x = clamp(m.x, 20, 940); m.y = clamp(m.y, MIN_Y, MAX_Y);
+      m.x = clamp(m.x, XL + 20, XR - 20); m.y = clamp(m.y, MIN_Y, MAX_Y);
       if (m.t <= 0) { if (g && g.kind === 'chase') chaseEnd(m); else think(m); }
       break;
     }
@@ -2307,7 +2310,7 @@ const bugs = [];
 function tickBugs(now, real) {
   for (const f of bugs) {
     const dx = f.tx - f.x, dy = f.ty - f.y, d = Math.hypot(dx, dy);
-    if (d < 6) { const p = Math.random() < .5 ? randLand() : { x: f.x + rnd(-120, 120), y: f.y + rnd(-60, 60) }; f.tx = clamp(p.x, 20, 940); f.ty = clamp(p.y - 30, MIN_Y - 40, MAX_Y - 20); continue; }
+    if (d < 6) { const p = Math.random() < .5 ? randLand() : { x: f.x + rnd(-120, 120), y: f.y + rnd(-60, 60) }; f.tx = clamp(p.x, XL + 20, XR - 20); f.ty = clamp(p.y - 30, MIN_Y - 40, MAX_Y - 20); continue; }
     const v = 40 * real; f.x += dx / d * Math.min(d, v) + Math.sin(now / 140 + f.p) * .6; f.y += dy / d * Math.min(d, v) + Math.cos(now / 170 + f.p) * .8;
     f.el.style.left = f.x.toFixed(1) + 'px'; f.el.style.top = f.y.toFixed(1) + 'px';
   }
@@ -2381,6 +2384,7 @@ function placeInfo() {
   infoEl.style.left = left.toFixed(0) + 'px'; infoEl.style.top = top.toFixed(0) + 'px';
 }
 function select(m) {
+  if (m && narrow.matches) closeToggles();
   S.sel = m;
   renderInfo(); placeInfo(); if ($('#onlySel').checked) renderLog();
 }
@@ -2415,28 +2419,43 @@ async function fresh() {
 // ---------- UI ----------
 const wrap = $('#wrap'), stage = $('#stage');
 let scale = 1;
-const sizer = document.createElement('div'); sizer.className = 'sizer'; wrap.append(sizer);
-let fitCentered = false;
 function fit() {
   const w = wrap.clientWidth, h = wrap.clientHeight;
+  if (!w || !h) return;
   if (narrow.matches) {
-    // phones: the meadow fills the height and is swiped sideways
-    scale = Math.max(w / W, h / H); S.ox = 0; S.oy = (h - H * scale) / 2;
-    sizer.style.width = Math.ceil(W * scale) + 'px';
-    if (!fitCentered && w) { fitCentered = true; wrap.scrollLeft = (W * scale - w) / 2; }
-  } else { scale = Math.min(w / W, h / H); S.ox = (w - W * scale) / 2; S.oy = (h - H * scale) / 2; sizer.style.width = '0'; }
+    // phones: the meadow fills the height; only a window of it is shown, and Pokémon keep to it
+    scale = Math.max(w / W, h / H); const vis = Math.min(W, w / scale);
+    XL = clamp((W - vis) / 2 + vis * .15, 0, W - vis); XR = XL + vis;
+    S.ox = -XL * scale; S.oy = (h - H * scale) / 2;
+  } else { XL = 0; XR = W; scale = Math.min(w / W, h / H); S.ox = (w - W * scale) / 2; S.oy = (h - H * scale) / 2; }
   stage.style.transform = `translate(${S.ox}px,${S.oy}px) scale(${scale})`;
+  keepInside();
+}
+// after the window changes, bring everyone (and fallen berries) back into view
+function keepInside() {
+  for (const m of S.mons || []) {
+    if (m.held || m.state === 'interact' || m.state === 'special') continue;
+    if (m.x < XL + 20 || m.x > XR - 20) {
+      const p = T(m).mv === 'swim' ? null : randLand();
+      m.x = p ? p.x : clamp(m.x, XL + 30, XR - 30); if (p) m.y = p.y; m.goal = null;
+      if (m.state === 'move') setState(m, 'idle', 1);
+    }
+  }
+  for (const b of [...(S.berries || [])]) if (b.x < XL + 10 || b.x > XR - 10) { b.x = clamp(b.x, XL + 30, XR - 30); b.el.style.left = b.x + 'px'; }
 }
 new ResizeObserver(fit).observe(wrap);
 stage.addEventListener('click', e => {
   if (performance.now() - suppressClick < 300) return;
   const r = stage.getBoundingClientRect(); const x = (e.clientX - r.left) / scale, y = (e.clientY - r.top) / scale;
+  // one tap uses (or cancels) whatever was switched on
   if (S.tool === 'berry') {
+    setTool('look');
     if (y < MIN_Y - 10) return;
     if (pondVal(x, y) < 1.05) { ring(x, y); return; }
     addBerry(x, y);
     S.mons.forEach(m => { if (awake(m) && m.hunger > 40 && dist(m, { x, y }) < 260 && (m.state === 'idle' || (m.state === 'move' && m.goal?.kind === 'wander'))) think(m); });
-  } else select(null);
+  } else if (!$('#journal').hidden) setLog(false);
+  else select(null);
 });
 
 // ---------- drag and drop ----------
@@ -2478,7 +2497,7 @@ window.addEventListener('pointermove', e => {
   const p = worldPt(e);
   if (!d.on) { if (Math.hypot(p.x - d.start.x, p.y - d.start.y) * scale < 6) return; d.on = true; liftUp(d.m); }
   const m = d.m;
-  m.x = clamp(p.x, 20, 940); m.y = clamp(p.y + m.h * .35, MIN_Y, MAX_Y);
+  m.x = clamp(p.x, XL + 20, XR - 20); m.y = clamp(p.y + m.h * .35, MIN_Y, MAX_Y);
   markTarget(dropTargetAt(m, p));
   e.preventDefault();
 });
@@ -2504,7 +2523,7 @@ function meetByHand(m, o) {
   if (o.state === 'interact' && o.partner) { const p = o.partner; p.partner = null; p.scene = null; setState(p, 'idle', 1); o.partner = null; }
   const sp = specialScenes(m, o);
   const side = m.x < o.x ? -1 : 1;
-  m.x = clamp(o.x + side * Math.max(34, (m.w + o.w) * .32), 20, 940); m.y = o.y + 2; settle(m);
+  m.x = clamp(o.x + side * Math.max(34, (m.w + o.w) * .32), XL + 20, XR - 20); m.y = o.y + 2; settle(m);
   m.home = { x: m.x, y: m.y };
   if (o.state === 'sleep') {
     const nap = sp.find(x => x.sc.key === 'snorlax-belly' && x.sc.roles[0] === o);
@@ -2525,14 +2544,17 @@ function showSpd() { $('#spd').innerHTML = S.speed ? `<b>▶</b> ${S.speed}×` :
 speedBtns.forEach(b => b.addEventListener('click', showSpd));
 $('#spd').onclick = () => { const n = SPEEDS[(SPEEDS.indexOf(S.speed) + 1) % SPEEDS.length]; speedBtns.find(b => +b.dataset.s === n).click(); };
 function setTool(t) { S.tool = t; $('#btnBerry').setAttribute('aria-pressed', t === 'berry'); stage.classList.toggle('berry-mode', t === 'berry'); $('#hint').hidden = t !== 'berry'; }
-$('#btnBerry').onclick = () => setTool(S.tool === 'berry' ? 'look' : 'berry');
-$('#btnLog').onclick = () => { const j = $('#journal'); j.hidden = !j.hidden; $('#btnLog').setAttribute('aria-pressed', !j.hidden); };
+// only one of the toggles is on at a time
+function setLog(on) { $('#journal').hidden = !on; $('#btnLog').setAttribute('aria-pressed', on); }
+function closeToggles() { if (S.tool === 'berry') setTool('look'); setLog(false); }
+$('#btnBerry').onclick = () => { const on = S.tool !== 'berry'; closeToggles(); if (on) { select(null); setTool('berry'); } };
+$('#btnLog').onclick = () => { const on = $('#journal').hidden; closeToggles(); if (on) { select(null); setLog(true); } };
 $('#onlySel').addEventListener('change', renderLog);
 const sheet = $('#sheet');
 const picked = new Set();
 const grid = $('#dexGrid'), dexBtns = {};
 function openDex() { sheet.hidden = false; $('#dexOwn').innerHTML = `<b>${S.unlocked.size}</b>/${Object.keys(SPECIES).length}`; refreshDexBadges(); filterDex(); if (!narrow.matches) $('#dexQ').focus(); }
-$('#openDex').onclick = openDex;
+$('#openDex').onclick = () => { closeToggles(); openDex(); };
 $('#closeDex').onclick = () => { sheet.hidden = true; };
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { sheet.hidden = true; mgr.hidden = true; $('#run').hidden = true; if (S.tool === 'berry') setTool('look'); } });
@@ -2609,11 +2631,11 @@ $('#reset').onclick = async () => {
 const mgr = $('#mgr'), slotsEl = $('#slots'), mgrDet = $('#mgrDetail');
 const resetBtn = $('#reset'), resetHome = resetBtn.parentNode;
 function placeReset() { if (narrow.matches) $('#closeMgr').before(resetBtn); else resetHome.append(resetBtn); }
-placeReset(); narrow.addEventListener('change', () => { placeReset(); fitCentered = false; fit(); });
+placeReset(); narrow.addEventListener('change', () => { placeReset(); fit(); });
 let mgrSel = null, mgrKey = '', mgrFreeArm = 0, mgrT = 0;
 function openMgr(m) { mgr.hidden = false; mgrSel = m || mgrSel || S.mons[0] || null; mgrKey = ''; renderMgr(true); }
 function closeMgr() { mgr.hidden = true; }
-$('#openMgr').onclick = () => openMgr(S.sel);
+$('#openMgr').onclick = () => { closeToggles(); openMgr(S.sel); };
 $('#closeMgr').onclick = closeMgr;
 mgr.addEventListener('click', e => { if (e.target === mgr) closeMgr(); });
 function slotState(m) {
@@ -2898,7 +2920,7 @@ $('#manAdd').onclick = () => {
 // running window
 const runEl = $('#run');
 function openRun() { runEl.hidden = false; renderRun(); renderLock(); }
-$('#openRun').onclick = openRun;
+$('#openRun').onclick = () => { closeToggles(); openRun(); };
 $('#closeRun').onclick = () => runEl.hidden = true;
 runEl.addEventListener('click', e => { if (e.target === runEl) runEl.hidden = true; });
 $('#drawEgg').onclick = () => { const e = drawEgg(); $('#drawMsg').textContent = e ? `${GRADE[e.g].n} 알이 나왔다! (${GRADE[e.g].km}km)` : '알은 5개까지만 가질 수 있어요'; renderRun(); };
@@ -2947,7 +2969,7 @@ function frame(now) {
     S.clock += dt * 2;
     for (const m of [...S.mons]) update(m, dt);
     treeT -= dt;
-    if (treeT <= 0) { treeT = rnd(25, 50); if (!isNight() && S.berries.length < 10) { addBerry(rnd(60, 900), MIN_Y + rnd(4, 26), true); } }
+    if (treeT <= 0) { treeT = rnd(25, 50); if (!isNight() && S.berries.length < 10) { addBerry(rnd(XL + 60, XR - 60), MIN_Y + rnd(4, 26), true); } }
   }
   for (const m of S.mons) { if (m.bubT > 0) m.bubT -= real; m.realDt = real * Math.min(S.speed || 0, 3); render(m, now); }
   tickFlies(now); tickBugs(now, real);
