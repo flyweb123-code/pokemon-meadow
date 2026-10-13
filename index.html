@@ -20,6 +20,7 @@
 .rk.S{position:relative;overflow:hidden;color:#5a3600!important;text-shadow:1px 1px 0 #fff3b0;border:2px solid #8a5a08!important;background:linear-gradient(180deg,#fff2a0 0 30%,#ffd028 30% 60%,#e8a010 60% 85%,#c07c08 85%)!important;box-shadow:inset 1px 1px 0 #fffbe0,inset -1px -1px 0 #a06a00,0 0 0 1px #ffe27a,0 0 6px rgba(255,200,40,.7)}
 .rk.S::after{content:'';position:absolute;top:-2px;bottom:-2px;left:-60%;width:40%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent);transform:skewX(-20deg);animation:rkshine 2.6s steps(10,end) infinite;pointer-events:none}
 @keyframes rkshine{0%{left:-60%}45%,100%{left:130%}}
+.berrybar{display:flex;flex-direction:column;align-items:flex-start;gap:6px}#frTest{background:rgba(255,255,255,.85)}#frTest[aria-pressed="true"]{background:#c03838;color:#fff}
 .test-btn{font:inherit;font-size:11px;background:none;border:2px dashed #c03838;color:#c03838;padding:3px 6px;cursor:pointer}
 .run-eggs{padding:2px 0 6px 6px;border-bottom:2px dotted var(--inner)}.run-eggs .re-row{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);margin-top:3px}.re-eggs{display:flex;gap:1px;flex:none}.re-eggs .egg{width:12px;height:15px}.re-eggs .egg svg{width:100%;height:100%}.re-pl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .run-row:has(+.run-eggs){border-bottom:0}
@@ -72,10 +73,10 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .hatch>.hwhite.big{animation-duration:2.2s}
 .hatch .win{z-index:1}
 .hatch .win.aura{--ac:255,205,80;--ar:1;border-color:rgb(var(--ac));animation:aura 1.8s ease-in-out infinite}
-.hatch .win.aura.a1{--ac:190,200,214;--ar:.3}
-.hatch .win.aura.a2{--ac:90,170,255;--ar:.5}
-.hatch .win.aura.a3{--ac:176,108,255;--ar:.7}
-.hatch .win.aura.a4{--ac:255,138,52;--ar:.85}
+.hatch .win.aura.a1{--ac:108,192,112;--ar:.3}
+.hatch .win.aura.a2{--ac:240,160,64;--ar:.5}
+.hatch .win.aura.a3{--ac:79,149,220;--ar:.7}
+.hatch .win.aura.a4{--ac:160,112,216;--ar:.85}
 /* 등급이 오를수록 화려하게: 일반·희귀는 테두리 색만, 레어는 은은한 빛, 에픽은 두 겹 빛, 전설만 일렁이는 큰 후광 */
 .hatch .win.aura:not(.a5){animation:none}
 .hatch>.hrays{position:absolute;left:50%;top:50%;width:170vmax;height:170vmax;margin:-85vmax 0 0 -85vmax;pointer-events:none;opacity:0;transition:opacity .8s;
@@ -84,7 +85,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 @keyframes hrays{to{transform:rotate(360deg)}}
 .hatch .win.aura.a1,.hatch .win.aura.a2{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),6px 6px 0 rgba(0,0,0,.35)}
 .hatch .win.aura.a3{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 0 2px rgba(var(--ac),.5),0 0 16px 4px rgba(var(--ac),.55)}
-.hatch .win.aura.a4{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 0 3px #ffd9a8,0 0 0 6px rgba(var(--ac),.7),0 0 26px 10px rgba(var(--ac),.75),0 0 60px 20px rgba(255,190,90,.35)}
+.hatch .win.aura.a4{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 0 3px #e4d2ff,0 0 0 6px rgba(var(--ac),.7),0 0 26px 10px rgba(var(--ac),.75),0 0 60px 20px rgba(var(--ac),.35)}
 .hatch .win.aura.a5{--ac:255,205,80;--ar:1.6}
 @keyframes aura{0%,100%{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 0 3px rgba(var(--ac),.55),0 0 calc(22px * var(--ar)) calc(8px * var(--ar)) rgba(var(--ac),.8),0 0 calc(60px * var(--ar)) calc(22px * var(--ar)) rgba(var(--ac),.35)}
 50%{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 0 3px rgba(var(--ac),.8),0 0 calc(34px * var(--ar)) calc(14px * var(--ar)) rgba(var(--ac),.95),0 0 calc(90px * var(--ar)) calc(36px * var(--ar)) rgba(var(--ac),.5)}}
@@ -483,7 +484,7 @@ ol.log li.big .txt{color:#c03838}
 .mvuse.on{border-color:var(--tc);background:color-mix(in srgb,var(--tc) 14%,#fff)}
 .mvuse.on:active{transform:translateY(2px);box-shadow:none}
 .mvuse b{font-weight:700}.mvuse>span:last-child{margin-left:auto;color:var(--dim);font-size:13px}.mvuse.on>span:last-child{color:var(--win-ink)}
-.mvuse:disabled{cursor:default;opacity:.75}.mvuse .mv-lock{display:inline-flex;width:16px}
+.mvuse:disabled{cursor:default;background:#e4e2da;border-color:#b4b2aa;color:#8e8c86;box-shadow:none}.mvuse:disabled b{color:#8e8c86}.mvuse:disabled>span:last-child{color:#9e9c96}.mvuse:disabled .mv-lock{color:#8e8c86}.mvuse .mv-lock{display:inline-flex;width:16px}
 .mvchip{display:inline-flex;align-items:center;gap:5px;font:inherit;font-size:13px;color:var(--win-ink);background:#fff;border:2px solid var(--tc);padding:2px 8px 2px 2px;box-shadow:2px 2px 0 rgba(0,0,0,.15)}
 .mvchip i{font-style:normal;font-size:10px;color:#fff;background:var(--tc);padding:1px 4px}
 button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);box-shadow:none}
@@ -958,6 +959,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 
   <div class="hud berrybar">
     <button class="mapico" id="btnBerry" aria-pressed="false" aria-label="열매 주기"><svg class="b-day" viewBox="0 0 12 12" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><path fill="#3a7a2a" d="M6 0h2v1h1v1H7v1H6z"/><path fill="#5aa83a" d="M4 1h2v2H4z"/><path fill="#20202c" d="M3 3h6v1h1v1h1v4h-1v1H9v1H3v-1H2V9H1V5h1V4h1z"/><path fill="#d8344a" d="M3 4h6v1h1v4H9v1H3V9H2V5h1z"/><path fill="#ff7a8a" d="M3 5h2v2H3z"/><path fill="#fff" d="M3 5h1v1H3z"/><path fill="#9a1a30" d="M8 8h1v1H8zM4 9h4v1H4z"/></svg><svg class="b-night" viewBox="0 0 12 12" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><path fill="#2a5a4a" d="M6 0h2v1h1v1H7v1H6z"/><path fill="#3e7a5e" d="M4 1h2v2H4z"/><path fill="#0e1024" d="M3 3h6v1h1v1h1v4h-1v1H9v1H3v-1H2V9H1V5h1V4h1z"/><path fill="#7a3a8a" d="M3 4h6v1h1v4H9v1H3V9H2V5h1z"/><path fill="#b070c8" d="M3 5h2v2H3z"/><path fill="#e8e2ff" d="M3 5h1v1H3z"/><path fill="#46205a" d="M8 8h1v1H8zM4 9h4v1H4z"/><path fill="#ffd75e" d="M10 0h1v1h-1zM9 1h1v1H9zM11 1h1v1h-1zM10 2h1v1h-1zM1 1h1v1H1z"/></svg></button>
+    <button id="frTest" class="test-btn" aria-pressed="false">친밀도 만점 (테스트)</button>
   </div>
 
   <div id="edge" aria-hidden="true"></div>
@@ -4871,7 +4873,7 @@ function tapEgg(egg, g, msg) {
         hatchStage.querySelector('.ehalo')?.classList.add('s' + st); rumble(st, g); eggQuake(egg, win, st, g); if (st === 1) msg.textContent = '…!'; if (st === 3) msg.textContent = '알이 깨지려고 한다!'; }
       else { sfx('knock', st); pend = st >= 2 ? 2 : 1; }
       sfx('charge', f);
-      if (g === 5) { hatchEl.style.setProperty('--dk', f.toFixed(3)); tense.f = f; } else hatchEl.style.setProperty('--lit', Math.min(1, f * 1.05).toFixed(3));   // 두드릴수록 화면 전체가 환해진다 (전설은 점점 어두워진다)
+      if (g === 5) { hatchEl.style.setProperty('--dk', f.toFixed(3)); tense.f = f; } else hatchEl.style.setProperty('--lit', g <= 2 ? 0 : Math.max(0, Math.min(1, (f - .35) / .5)).toFixed(3));   // 레어·에픽은 절반쯤 두드리면 화면 전체가 환해지기 시작한다 (일반·희귀는 없음, 전설은 점점 어두워진다)
       haptic(pend);
       if (n >= need) {
         clearTimeout(idle);
@@ -5216,6 +5218,13 @@ function renderRun() {
 // 테스트용: 등급을 골라 지금 날짜·무작위 장소로 가방에 알을 넣는다 (나중에 뺄 것)
 const TEST_PLACES = ['한강공원', '동네 놀이터', '석촌호수', '해운대 해수욕장', '북한산 둘레길', '서울역', '김포공항', '노량진 수산시장', 'GS칼텍스 주유소', '동네 빵집', '어린이대공원 동물원', '잠실종합운동장', '대학병원', '초등학교', '봉은사', '공단 공장'];
 $('#bagTestG').innerHTML = [1, 2, 3, 4, 5].map(g => `<button data-g="${g}">${GRADE[g].n}</button>`).join('');
+// 테스트: 필드에 나와 있는 포켓몬 친밀도를 잠시 만점으로 (다시 누르면 원래 값으로)
+function frTestSync() { $('#frTest').setAttribute('aria-pressed', S.box.some(p => p.frT != null)); }
+$('#frTest').onclick = ev => { ev.stopPropagation();
+  if (S.box.some(p => p.frT != null)) S.box.forEach(p => { if (p.frT != null) { p.fr = p.frT; delete p.frT; } });
+  else S.mons.forEach(m => { const P = boxOf(m.pid); if (P) { P.frT = P.fr || 0; P.fr = FR_MAX; } });
+  frTestSync(); sfx('tap'); renderInfo(); save(); };
+frTestSync();
 $('#bagTest').onclick = () => { $('#bagTestG').hidden = !$('#bagTestG').hidden; };
 $('#bagTestG').onclick = ev => { const b = ev.target.closest('[data-g]'); if (!b) return;
   S.bag.push({ id: S.eid++, g: +b.dataset.g, t: Date.now(), isNew: true, nt: true, km: 0, place: pick(TEST_PLACES) }); save(); renderBag.sig = ''; renderRun(); sfx('pickup'); };
