@@ -1412,7 +1412,10 @@ function measure(sp) {
 // ---------- world state ----------
 const S = { clock: 7 * 60, mons: [], berries: [], rel: {}, log: [], uid: 1, bid: 1, speed: 1, tool: 'look', sel: null };
 const monsEl = $('#mons'), fxEl = $('#fx'), itemsEl = $('#items');
-const relKey = (a, b) => a.uid < b.uid ? a.uid + '-' + b.uid : b.uid + '-' + a.uid;
+// 관계는 포켓몬 상자 번호(p12)로 기억한다 — 필드에서 빠졌다 다시 나와도 그대로
+const relId = m => m.pid != null ? 'p' + m.pid : String(m.uid);
+const relKey = (a, b) => [relId(a), relId(b)].sort().join('-');
+const dropRel = id => Object.keys(S.rel).forEach(k => { if (k.split('-').includes(id)) delete S.rel[k]; });
 const getRel = (a, b) => S.rel[relKey(a, b)] || 0;
 function addRel(a, b, d) {
   const k = relKey(a, b), before = S.rel[k] || 0, after = clamp(before + d, -100, 100);
@@ -1499,6 +1502,7 @@ async function spawn(sp, opts = {}) {
     home: randLand(), born: opts.born ?? S.clock, zT: rnd(0, 1.2), pid: opts.pid ?? null,
   };
   S.uid = Math.max(S.uid, m.uid + 1);
+  { const P = m.pid != null ? boxOf(m.pid) : null; if (P) { if (!opts.name && P.nm) m.name = P.nm; if (!m.notes) m.notes = P.notes || []; } }
   const p = opts.x != null ? { x: opts.x, y: opts.y } : (DEX[sp].mv === 'swim' ? randPond(.6) : randLand());
   m.x = m.tx = p.x; m.y = m.ty = p.y;
   // DOM
@@ -1523,13 +1527,15 @@ async function spawn(sp, opts = {}) {
   if (!opts.quiet) { log(`${J(m,'이/가')} 필드에 나타났다.`, [m]); anim(m, 'appear'); }
   return m;
 }
-function removeMon(m) {
+// 필드에서 빼기: 상자로 돌아갈 뿐이라 친밀도·관계·이름·오늘 메모는 상자 쪽에 남는다
+function removeMon(m, quiet = false) {
   S.mons.forEach(o => { if (o.partner === m) { o.partner = null; think(o); } if (o.goal && o.goal.mon === m) think(o); });
+  const P = boxOf(m.pid);
+  if (P) { P.nm = m.name !== DEX[m.sp].n ? m.name : undefined; P.notes = m.notes || []; } else dropRel(relId(m));
+  if (!quiet) log(`${J(m,'이/가')} 포켓몬 상자로 돌아갔다.`, [m]);
   m.el.remove(); m.bub.remove(); m.tag.remove();
   S.mons = S.mons.filter(o => o !== m);
-  Object.keys(S.rel).forEach(k => { if (k.split('-').includes(String(m.uid))) delete S.rel[k]; });
   if (S.sel === m) select(null);
-  log(`${J(m,'이/가')} 숲으로 돌아갔다.`, [m]);
 }
 
 // ---------- berries ----------
@@ -3165,6 +3171,8 @@ async function restore(d) {
   for (const b of d.berries || []) addBerry(b.x, b.y, !!b.nat, b.t || Date.now());
   rotBerries();
   S.uid = Math.max(S.uid, d.uid || 1);
+  { const u2p = {}; for (const o of d.mons || []) if (o.pid != null) u2p[o.uid] = 'p' + o.pid;
+    for (const k of Object.keys(S.rel)) if (/^\d+-\d+$/.test(k)) { const [a, b] = k.split('-'); const n = [u2p[a] || a, u2p[b] || b].sort().join('-'); if (n !== k) { S.rel[n] = S.rel[k]; delete S.rel[k]; } } }
   renderLog();
 }
 async function fresh() {
@@ -3629,7 +3637,8 @@ $('#ppFree').onclick = () => {
   if (freeArm !== P.id) { freeArm = P.id; b.classList.add('arm'); b.textContent = '한 번 더 누르면 놓아줘요'; clearTimeout(freeT); freeT = setTimeout(() => { if (freeArm === P.id) { freeArm = null; b.classList.remove('arm'); b.textContent = '놓아주기'; } }, 3000); return; }
   freeArm = null; clearTimeout(freeT);
   const L = boxList(), i = L.indexOf(P), m = S.mons.find(x => x.pid === P.id);
-  if (m) removeMon(m);
+  if (m) removeMon(m, true);
+  dropRel('p' + P.id);
   S.buds = S.buds.filter(x => x.pid !== P.id);
   S.box = S.box.filter(x => x !== P);
   log(`${J({ name: SPECIES[P.sp].n }, '을/를')} 숲으로 놓아주었다. 잘 지내!`, [], true); sfx('open');
@@ -3675,12 +3684,9 @@ $('#mgrRandom').onclick = async () => {
 };
 mgr.addEventListener('click', e => { if (e.target === mgr) closeMgr(); });
 // 모두 빼기: 필드의 포켓몬을 전부 상자로 (한 번 더 눌러 확인)
-let clearArm = 0;
 $('#mgrClear').onclick = () => {
-  const b = $('#mgrClear'); if (!S.mons.length) return;
-  if (Date.now() - clearArm > 3000) { clearArm = Date.now(); b.textContent = '한 번 더 누르면 빼요'; b.classList.add('danger'); setTimeout(() => { if (Date.now() - clearArm >= 3000) { b.textContent = '모두 빼기'; b.classList.remove('danger'); } }, 3100); return; }
-  clearArm = 0; b.textContent = '모두 빼기'; b.classList.remove('danger');
-  const n = S.mons.length; for (const m of [...S.mons]) removeMon(m);
+  if (!S.mons.length) return;
+  const n = S.mons.length; for (const m of [...S.mons]) removeMon(m, true); sfx('tap');
   mgrSel = null; log(`필드의 포켓몬 ${n}마리가 모두 포켓몬 상자로 돌아갔다.`); save(); refreshCap(); renderMgr(true);
 };
 function slotState(m) {
@@ -3750,7 +3756,7 @@ function renderMgrDetail(rebuild) {
     $('#mLook').onclick = () => { closeMgr(); select(m); };
     // 필드에서 빼기: 포켓몬 상자로 돌아간다 (떠나보내는 게 아님)
     $('#mOut').onclick = () => {
-      const i = S.mons.indexOf(m); log(`${J(m,'이/가')} 포켓몬 상자로 돌아갔다.`); removeMon(m); mgrSel = S.mons[Math.min(i, S.mons.length - 1)] || null; closeMon(); renderMgr(true); refreshCap(); save();
+      const i = S.mons.indexOf(m); removeMon(m); mgrSel = S.mons[Math.min(i, S.mons.length - 1)] || null; closeMon(); renderMgr(true); refreshCap(); save();
     };
   }
   const pic = $('#mPic'), want = isPmd(m.form) ? thumbOf(m.form) : m.state === 'sleep' ? (stillCache[m.form] || SPRITES[m.form]) : SPRITES[m.form];
@@ -4031,7 +4037,8 @@ function undoAutoHatch() {
   const from = Date.parse('2026-10-13T16:30:00Z'), got = S.box.filter(p => p.g && p.t >= from).sort((a, b) => a.t - b.t);
   if (!got.length) return;
   const ids = new Set(got.map(p => p.id));
-  for (const m of [...S.mons]) if (ids.has(m.pid)) removeMon(m);
+  for (const m of [...S.mons]) if (ids.has(m.pid)) removeMon(m, true);
+  ids.forEach(id => dropRel('p' + id));
   S.buds = S.buds.filter(b => !ids.has(b.pid));
   S.box = S.box.filter(p => !ids.has(p.id));
   const seen = new Set();
@@ -4754,7 +4761,7 @@ async function start(data) {
   try { window.webkit?.messageHandlers?.pokeRun?.postMessage({ ready: true }); } catch (e) {}
 }
 if (/[?&]debug/.test(location.search)) window.__meadow = { S, newPoke, takeLockKm, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
-if (/[?&]debug/.test(location.search)) Object.assign(window, { __drag: () => drag, __log: log, __save: save, __bgm: bgm, __actx: () => actx, __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf, __thoughtOf: thoughtOf });
+if (/[?&]debug/.test(location.search)) Object.assign(window, { __drag: () => drag, __log: log, __save: save, __bgm: bgm, __actx: () => actx, __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf, __thoughtOf: thoughtOf, __addRel: addRel });
 window.claude?.hot?.snapshot?.(() => serialize());
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
 })();
