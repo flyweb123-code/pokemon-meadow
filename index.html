@@ -730,6 +730,10 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .hatch-stage.tapme::after{content:'톡톡!';position:absolute;right:14%;top:8px;font-size:15px;color:#ffe680;text-shadow:2px 2px 0 #383848;animation:tapblink .8s steps(1,end) infinite;pointer-events:none}
 @keyframes tapblink{50%{opacity:0}}
 .hatch-stage .egg.knock{animation:hknock .17s ease-out 1}
+.hatch-stage .egg.quake{animation:equake .1s steps(2,end) var(--qn,3)}
+@keyframes equake{0%,100%{transform:none}25%{transform:translateX(calc(var(--qx,3) * -1px)) rotate(calc(var(--qa,6) * -1deg))}75%{transform:translateX(calc(var(--qx,3) * 1px)) rotate(calc(var(--qa,6) * 1deg))}}
+.hatch .win.wquake{animation:wquake .09s steps(2,end) var(--qn,3)}
+@keyframes wquake{0%,100%{transform:none}33%{transform:translate(calc(var(--wx,2) * -1px),calc(var(--wx,2) * .5px))}66%{transform:translate(calc(var(--wx,2) * 1px),calc(var(--wx,2) * -.5px))}}
 @keyframes hknock{0%{transform:translateX(calc(var(--kx,1) * -6px)) rotate(calc(var(--kx,1) * -8deg)) scale(1.24)}45%{transform:translateX(calc(var(--kx,1) * 3px)) rotate(calc(var(--kx,1) * 3deg)) scale(.9,.94)}100%{transform:none}}
 .hatch-stage .tapfx{position:absolute;width:6px;height:6px;margin:-3px;background:#fff;z-index:3;pointer-events:none;box-shadow:0 -12px #fff,0 12px #fff,-12px 0 #fff,12px 0 #fff,-8px -8px #ffe680,8px -8px #ffe680,-8px 8px #ffe680,8px 8px #ffe680;animation:tapfx .32s steps(3,end) forwards}
 @keyframes tapfx{0%{transform:scale(.6)}70%{opacity:1}100%{transform:scale(1.7);opacity:0}}
@@ -1232,9 +1236,12 @@ async function bgmDecode(blob) {
   return mono;
 }
 function bgmSrcStop() { const x = bgm.src; bgm.src = null; if (x) { try { x.stop(); } catch (e) {} try { x.disconnect(); } catch (e) {} } }
-function bgmSrcStart() {
+// 곡 위치 기억: 오디오를 새로 만들어도 멈췄던 자리부터 이어서 튼다
+const bgmPos = () => { if (!bgm.src || !actx || !bgm.buf) return bgm.pos || 0; return ((actx.currentTime - bgm.t0) % bgm.buf.duration + bgm.buf.duration) % bgm.buf.duration; };
+function bgmSrcStart(off = bgm.pos || 0) {
   if (bgm.src || !bgm.buf) return; const a = audio(); if (!a) return; bgmRoute();
-  const x = a.createBufferSource(); x.buffer = bgm.buf; x.loop = true; x.connect(bgm.gain); x.start(); bgm.src = x;
+  off = off % bgm.buf.duration || 0;
+  const x = a.createBufferSource(); x.buffer = bgm.buf; x.loop = true; x.connect(bgm.gain); x.start(0, off); bgm.src = x; bgm.t0 = a.currentTime - off;
 }
 // IndexedDB: 곡 이름표 → 파일
 function musicDB() {
@@ -1247,7 +1254,7 @@ const musicKeys = () => musicDo('readonly', st => st.getAllKeys());
 musicKeys().then(k => { (k || []).forEach(x => /^cry\d+$/.test(x) ? cry.have.add(+x.slice(3)) : bgm.have.add(x)); cryLabel(); if (bgmOn && bgm.id == null) bgmStart(); if (!$('#shop').hidden) renderShop(); }).catch(() => {});
 async function bgmPlay(id) {
   if (bgm.id === id && bgm.buf) { bgmSrcStart(); return; }
-  bgm.id = id; bgmSrcStop(); bgm.buf = null;
+  bgm.id = id; bgmSrcStop(); bgm.buf = null; bgm.pos = 0;
   let buf = bgm.cache.get(id);
   if (!buf) {
     let blob = null; try { blob = await musicGet(id); } catch (e) {}
@@ -1308,7 +1315,7 @@ function bgmKick() {
 ['pointerdown', 'touchend', 'click'].forEach(t => document.addEventListener(t, bgmKick, { capture: true, passive: true }));
 // 앱을 닫을 때: 소리를 먼저 0으로 내리고 멈춘 뒤 오디오를 재움(바로 재우면 늘어지는 소리가 남)
 let bgmAway = false, bgmAwayT = 0;
-function bgmHide() { if (bgmAway) return; bgmAway = true; clearTimeout(bgmAwayT);
+function bgmHide() { if (bgmAway) return; bgmAway = true; clearTimeout(bgmAwayT); bgm.pos = bgmPos();
   if (bgm.gain && actx) { try { const g = bgm.gain.gain, t = actx.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0, t + .06); } catch (e) { bgm.gain.gain.value = 0; } }
   bgmAwayT = setTimeout(() => { if (actx && actx.state === 'running') actx.suspend().catch(() => {}); }, 80); }
 // 돌아오면 멈췄던 자리부터 이어서 (오디오를 재우면 버퍼 재생도 그 자리에 멈춰 있다)
@@ -1320,6 +1327,7 @@ document.addEventListener('visibilitychange', () => { document.hidden ? bgmHide(
 // 돌아올 때와 다음 터치 때 시간이 실제로 흐르는지 확인하고, 깨워도 안 되면 오디오를 새로 만든다 (곡은 처음부터 다시)
 let audioChk = 0;
 function audioRebuild() {
+  const pos = bgm.src ? (bgmAway ? bgm.pos : bgmPos()) : bgm.pos; bgm.pos = pos || 0;
   const old = actx; actx = null; bgm.gain = null; bgm.src = null; noiseBuf = null; if (tense.on) tenseStop(0);
   try { if (old && old.state !== 'closed') old.close().catch(() => {}); } catch (e) {}
   if (!audio()) return; if (bgmOn && !bgm.preview && !document.hidden && bgm.buf) bgmSrcStart();
@@ -4763,9 +4771,19 @@ function haptic(n = 1) {
   } catch (e) {}
 }
 // 금이 갈 때마다 점점 커지는 진동: 1단계 한 번, 2단계 두 번, 3단계 길게 우르르
-function rumble(st) {
-  try { if (!window.webkit?.messageHandlers?.haptic && navigator.vibrate) { navigator.vibrate([[40], [60, 40, 80], [90, 30, 90, 30, 160]][st - 1]); return; } } catch (e) {}
-  const n = [1, 2, 4][st - 1] || 1; for (let i = 1; i < n; i++) setTimeout(() => haptic(2), i * 70);
+// 금이 한 단계 갈 때 진동: 단계가 오를수록, 알 등급이 높을수록 여러 번·길게
+function rumble(st, g = 1) {
+  const n = st + Math.ceil(g / 2);
+  try { if (!window.webkit?.messageHandlers?.haptic && navigator.vibrate) { const p = []; for (let i = 0; i < n; i++) p.push(40 + g * 12 + st * 10, 35); navigator.vibrate(p); return; } } catch (e) {}
+  for (let i = 1; i < n; i++) setTimeout(() => haptic(2), i * 70);
+}
+// 금이 한 단계 갈 때 알과 창이 크게 흔들린다 (등급이 높을수록 크게·오래)
+function eggQuake(egg, win, st, g) {
+  const p = g + st * .6;
+  egg.style.setProperty('--qa', (3 + p * 2.2).toFixed(1)); egg.style.setProperty('--qx', (1.5 + p * 1.1).toFixed(1)); egg.style.setProperty('--qn', 2 + g + st);
+  win.style.setProperty('--wx', (1 + p * .9).toFixed(1)); win.style.setProperty('--qn', 2 + g + st);
+  egg.qUntil = performance.now() + (2 + g + st) * 100;
+  egg.classList.remove('knock', 'wig', 'quake'); win.classList.remove('jolt', 'wquake'); void egg.offsetWidth; egg.classList.add('quake'); win.classList.add('wquake');
 }
 // 알 두드리기: 마구 두드리면 금이 가다가 깨진다 (높은 등급일수록 많이). 한동안 가만히 두면 알이 혼자 흔들린다.
 function tapEgg(egg, g, msg) {
@@ -4784,13 +4802,14 @@ function tapEgg(egg, g, msg) {
       n++;
       const r = hatchStage.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
       egg.style.setProperty('--kx', x < r.width / 2 ? -1 : 1);
-      egg.classList.remove('knock', 'wig'); void egg.offsetWidth; egg.classList.add('knock');
+      const quaking = performance.now() < (egg.qUntil || 0);   // 쩌적 흔들림 중에는 톡톡 모션으로 끊지 않는다
+      if (!quaking) { egg.classList.remove('knock', 'wig', 'quake'); void egg.offsetWidth; egg.classList.add('knock'); }
       const p = document.createElement('i'); p.className = 'tapfx'; p.style.left = x + 'px'; p.style.top = y + 'px'; hatchStage.append(p); setTimeout(() => p.remove(), 360);
-      win.classList.remove('jolt'); void win.offsetWidth; win.classList.add('jolt');
+      if (!quaking) { win.classList.remove('jolt', 'wquake'); void win.offsetWidth; win.classList.add('jolt'); }
       const f = n / need, st = f >= .85 ? 3 : f >= .6 ? 2 : f >= .3 ? 1 : 0;
       if (st > stage) { stage = st; egg.classList.add('c' + st); sfx(st === 3 ? 'crack2' : 'crack'); pend = 2;
         const gl = egg.querySelector('.eglow'); if (gl) { gl.classList.remove('zap'); void gl.offsetWidth; gl.classList.add('zap'); }
-        hatchStage.querySelector('.ehalo')?.classList.add('s' + st); rumble(st); if (st === 1) msg.textContent = '…!'; if (st === 3) msg.textContent = '알이 깨지려고 한다!'; }
+        hatchStage.querySelector('.ehalo')?.classList.add('s' + st); rumble(st, g); eggQuake(egg, win, st, g); if (st === 1) msg.textContent = '…!'; if (st === 3) msg.textContent = '알이 깨지려고 한다!'; }
       else { sfx('knock', st); pend = st >= 2 ? 2 : 1; }
       sfx('charge', f);
       if (g === 5) { hatchEl.style.setProperty('--dk', f.toFixed(3)); tense.f = f; } else hatchEl.style.setProperty('--lit', Math.min(1, f * 1.05).toFixed(3));   // 두드릴수록 화면 전체가 환해진다 (전설은 점점 어두워진다)
