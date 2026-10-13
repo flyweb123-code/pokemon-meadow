@@ -5030,11 +5030,12 @@ async function hatchAll() {
   hatchStage.classList.remove('evo', 'tapme'); hatchEl.classList.add('list'); hatchEl.hidden = false;
   let i = 0, ivMode = false;
   const show = k => {
-    i = (k + res.length) % res.length; const r = res[i];
+    if (k < 0 || k >= res.length) return;   // 처음·끝에서 더 넘기지 않는다
+    i = k; const r = res[i];
     hatchStage.innerHTML = ''; hatchStage.append(bornImg(r.sp, r.P, r.isNew)); if (!r.gp) { r.gp = 1; setTimeout(() => goldPop(r.dupG), 250); }
     $('#hatchMsg').innerHTML = bornMsg(r); showDexInfo(r.sp); if (ivMode) showIvInfo(r);
     { const w = hatchEl.querySelector('.win'); w.classList.remove('a1', 'a2', 'a3', 'a4', 'a5'); w.classList.add('aura', 'a' + r.g); hatchEl.classList.toggle('rays', r.g === 5); }
-    $('#hlNum').textContent = `${i + 1} / ${res.length}`;
+    $('#hlNum').textContent = `${i + 1} / ${res.length}`; $('#hlPrev').style.visibility = i ? '' : 'hidden'; $('#hlNext').style.visibility = i < res.length - 1 ? '' : 'hidden';
     { const y = hatchStage.offsetTop + hatchStage.offsetHeight / 2; $('#hlPrev').style.top = $('#hlNext').style.top = y + 'px'; }
     strip.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-current', j === i));
     strip.children[i]?.scrollIntoView({ block: 'nearest', inline: 'center' });
@@ -5054,7 +5055,7 @@ async function hatchAll() {
   hatchInfoFix(res);
   show(0);
   await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = ev => { if (!ev.target.closest('.win')) r(); }; });
-  hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatchFx(); hatchEl.classList.remove('list'); hatchStage.onpointerdown = hatchStage.onpointerup = null; hatching = false;
+  hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatchFx(); hatchEl.classList.remove('list'); $('#hlPrev').style.visibility = $('#hlNext').style.visibility = ''; hatchStage.onpointerdown = hatchStage.onpointerup = null; hatching = false;
   const nw = res.filter(r => r.isNew).length, sh = res.filter(r => r.P.shiny).length;
   log(`알 ${res.length}개가 한꺼번에 부화했다! ${res.map(r => SPECIES[r.sp].n).join(', ')}${nw ? ` (새로 만난 포켓몬 ${nw}마리)` : ''}${sh ? ` ✦ 색이 다른 포켓몬 ${sh}마리!` : ''}`, [], true);
   save(); renderRun(); refreshCap();
