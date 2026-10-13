@@ -459,7 +459,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .hatch .rkline{font-size:14px;margin:-4px 0 10px}
 .hatch-stage img.shiny{filter:hue-rotate(var(--shue)) saturate(1.25) drop-shadow(0 0 8px #ffe680)}
 .mgr-body{flex:1;min-height:0;display:block}
-.slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));gap:8px;height:100%;min-height:0;padding:4px;box-sizing:border-box}
+.slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));gap:8px;height:100%;min-height:0;padding:4px;box-sizing:border-box}
 .slot{position:relative;border:3px solid var(--inner);background:#fff;padding:6px 4px 8px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;font-size:13px;min-width:0}
 @media (hover:hover){.slot:hover{border-color:var(--frame)}}
 .slot:focus-visible{border-color:var(--frame);outline:0}
@@ -889,7 +889,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
   <div class="hud win clockwin" id="clock"><span class="t" id="time">07:00</span><span class="d"><span id="day">1일째</span> · <span id="phase">아침</span></span></div>
 
   <nav class="hud win menuwin" aria-label="메뉴">
-    <button class="opt" id="openMgr">포켓몬 <span id="capBadge">0/12</span></button>
+    <button class="opt" id="openMgr">포켓몬 <span id="capBadge">0/9</span></button>
     <button class="opt" id="openRun">알</button>
     <button class="opt" id="openDex">도감</button>
     <button class="opt" id="openSet">설정</button>
@@ -1094,7 +1094,7 @@ const SPECIES = {"1":{"n":"이상해씨","g":"씨앗포켓몬","t":[12,4],"gen":
 (() => {
 'use strict';
 const W = 960, H = 600, SCALE = 1.5;
-const MAX_MONS = 12;   // the meadow holds at most 12 residents
+const MAX_MONS = 9;   // 필드에는 최대 9마리 (2026-10-14 사용자 요청, 원래 12)
 // ---------- 효과음: 파일 없이 사각파·잡음으로 만드는 옛 휴대용 게임기 소리 ----------
 // 볼륨 0~10 (0 = 끔). 예전 켜짐/꺼짐 설정은 10/0으로 옮긴다
 const VOL = { bgm: 10, sfx: 10 };
