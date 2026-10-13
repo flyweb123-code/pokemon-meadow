@@ -3353,8 +3353,7 @@ stage.addEventListener('click', e => {
     if (y < MIN_Y - 10) return;
     if (pondVal(x, y) < 1.05) { ring(x, y); return; }
     noticeBerry(addBerry(x, y));
-  } else if (!$('#journal').hidden) setLog(false);
-  else select(null);
+  } else { select(null); if (!dlgEl.classList.contains('folded')) { foldDlg(true); sfx('tap'); } }   // 빈 곳을 누르면 상태창(일지 포함)을 접는다
 });
 
 // ---------- drag and drop ----------
