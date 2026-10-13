@@ -115,11 +115,12 @@ final class WatchModel: NSObject, ObservableObject {
             _ = try? await builder.finishWorkout()
             let km = (self.currentDistance() * 100).rounded() / 100
             await MainActor.run {
+                let start = self.startDate
                 self.running = false
                 self.startDate = nil
                 self.session = nil
                 self.builder = nil
-                self.send(km: km)
+                self.send(km: km, start: start)
             }
         }
     }
@@ -130,9 +131,10 @@ final class WatchModel: NSObject, ObservableObject {
     }
 
     // 아이폰이 멀리 있어도 transferUserInfo 는 대기했다가 전해진다
-    private func send(km: Double) {
+    private func send(km: Double, start: Date?) {
         guard km >= 0.01 else { message = "달린 거리가 없어요"; return }
-        WCSession.default.transferUserInfo(["km": km, "end": Date().timeIntervalSince1970])
+        // 시작 시각도 보내서 게임의 런닝 기록에 '몇 시 ~ 몇 시'로 남긴다
+        WCSession.default.transferUserInfo(["km": km, "start": start?.timeIntervalSince1970 ?? 0, "end": Date().timeIntervalSince1970])
         if var s = state {
             for i in s.eggs.indices { s.eggs[i].km += km }
             if var b = s.buddy, b.need > 0 {

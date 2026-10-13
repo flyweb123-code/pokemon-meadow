@@ -43,9 +43,15 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
 
     // MARK: watch → app
 
-    private func enqueue(_ km: Double) {
-        var list = UserDefaults.standard.array(forKey: pendingKey) as? [Double] ?? []
-        list.append(km)
+    // 대기열 한 칸: [달린 거리 km, 시작 시각(초, 모르면 0)]
+    private func pendingRuns() -> [[Double]] {
+        let raw = UserDefaults.standard.array(forKey: pendingKey) ?? []
+        return raw.compactMap { ($0 as? [Double]) ?? (($0 as? Double).map { [$0, 0] }) }
+    }
+
+    private func enqueue(_ km: Double, start: Double) {
+        var list = pendingRuns()
+        list.append([km, start])
         UserDefaults.standard.set(list, forKey: pendingKey)
         flushPending()
     }
@@ -84,15 +90,16 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
     private func flushPending() {
         guard gameReady, let web = webView else { return }
         flushWalk(web)
-        let list = UserDefaults.standard.array(forKey: pendingKey) as? [Double] ?? []
+        let list = pendingRuns()
         guard !list.isEmpty else { return }
-        UserDefaults.standard.set([Double](), forKey: pendingKey)
-        for km in list {
-            web.evaluateJavaScript("window.pokeRunAddKm(\(km))") { [weak self] result, error in
+        UserDefaults.standard.set([[Double]](), forKey: pendingKey)
+        for item in list {
+            let km = item[0], startMs = (item.count > 1 ? item[1] : 0) * 1000
+            web.evaluateJavaScript("window.pokeRunAddKm(\(km), \(Int(startMs)))") { [weak self] result, error in
                 // 넣지 못했으면 다시 대기열로
                 if error != nil || (result as? Bool) == false, let self {
-                    var back = UserDefaults.standard.array(forKey: self.pendingKey) as? [Double] ?? []
-                    back.append(km)
+                    var back = self.pendingRuns()
+                    back.append(item)
                     UserDefaults.standard.set(back, forKey: self.pendingKey)
                 }
             }
@@ -101,7 +108,8 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
 
     func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
         guard let km = userInfo["km"] as? Double, km > 0 else { return }
-        DispatchQueue.main.async { self.enqueue(km) }
+        let start = userInfo["start"] as? Double ?? 0
+        DispatchQueue.main.async { self.enqueue(km, start: start) }
     }
 
     // 워치가 열릴 때 최신 알 현황을 바로 달라고 한다

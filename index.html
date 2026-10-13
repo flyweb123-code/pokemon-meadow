@@ -319,6 +319,11 @@ ol.log li.big .txt{color:#c03838}
 @keyframes roll{from{transform:translateY(-30px) rotate(-200deg);opacity:0}}
 .runtab .dot,.bag-tabs .dot{display:inline-block;width:8px;height:8px;background:#e04838;margin-left:4px;vertical-align:middle;box-shadow:0 0 0 2px var(--win)}
 .eslot.add{font-size:30px;color:var(--frame);border-color:var(--inner)}
+.bag-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.bag-head h4{margin:0}
+.bag-sort{display:flex}.bag-sort button{font:inherit;font-size:12px;border:3px solid var(--inner);background:#fff;color:var(--win-ink);padding:4px 8px;margin-left:-3px;cursor:pointer}
+.bag-sort button[aria-pressed="true"]{border-color:var(--frame);background:var(--frame);color:var(--win);position:relative}
+.bslot .prog.sm{width:80%;height:7px;border-width:2px;margin:1px 0}.bslot .km{font-size:9px;letter-spacing:-.3px}
+#eggOut{display:block;margin-top:8px;padding:7px 10px;font-size:13px}
 .bag-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
 .bag-tabs button{font:inherit;font-size:13px;border:3px solid var(--inner);background:#fff;color:var(--win-ink);padding:5px 9px;cursor:pointer}
 .bag-tabs button b{margin-left:4px}
@@ -333,21 +338,29 @@ ol.log li.big .txt{color:#c03838}
 .bag-pick .lk-btn{margin-top:8px}
 .egg-actions{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;font-size:14px}
 .gradeinfo{font-size:12px;color:var(--dim);margin:10px 0 0;line-height:1.7}
-#buddy{display:grid;gap:10px}
-.bd-card{display:flex;gap:12px;align-items:center;border:3px solid var(--frame);background:#fff;padding:10px;box-shadow:3px 3px 0 rgba(0,0,0,.2)}
+/* 짝꿍 탭: 세 칸이 화면을 꽉 채운다. 칸마다 두 줄(그림+이름·진화 / 버튼) */
+.rtab[data-tab="buddy"]:not([hidden]){display:flex;flex-direction:column;height:100%}
+#buddy{flex:1;min-height:0;display:grid;grid-template-rows:repeat(3,minmax(140px,1fr));gap:8px}
+#buddy .bd-btns .lk-btn{padding:7px 6px}
+#buddy .bd-main{gap:4px}
+#buddy .bd-pic{width:72px;height:72px}#buddy .bd-pic img{width:64px;height:64px}
+#buddy .bd-name{display:flex;align-items:baseline;gap:8px}#buddy .bd-name span{margin:0;flex:none}
+#buddy .bd-empty .q{width:72px;height:72px;font-size:36px}
+.bd-card{display:grid;grid-template-rows:auto auto;align-content:space-evenly;gap:8px;border:3px solid var(--frame);background:#fff;padding:10px 12px;box-shadow:3px 3px 0 rgba(0,0,0,.2);min-height:0}
+.bd-row{display:flex;gap:12px;align-items:center;min-height:0}
 .bd-main{flex:1;min-width:0;display:grid;gap:8px}
 .bd-top{display:flex;gap:14px;align-items:center;min-width:0}
 .bd-pic{flex:none;width:88px;height:88px;display:grid;place-items:center;background:#e4f2d0;border:3px solid var(--inner)}
 .bd-pic img{width:76px;height:76px;object-fit:contain;image-rendering:pixelated}
 .bd-name{min-width:0}
 .bd-name b{display:block;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bd-name{display:flex;align-items:baseline;gap:8px}.bd-name span{font-size:12px;color:var(--dim);flex:none}
+.bd-name span{display:block;font-size:12px;color:var(--dim);margin-top:2px}
 .bd-evo .row{display:flex;justify-content:space-between;gap:8px;font-size:13px;margin-top:4px}
 .bd-evo .row b{color:#2a58a8}
 .bd-tag{display:inline-block;font-size:12px;background:var(--frame);color:var(--win);padding:2px 8px}
 .bd-tag.ready{background:#e8a020;color:#fff}
 .bd-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.bd-empty{width:100%;display:flex;align-items:center;gap:14px;padding:10px;border:3px dashed var(--inner);background:#fff;font:inherit;font-size:16px;color:var(--win-ink);cursor:pointer}
+.bd-empty{width:100%;height:100%;display:flex;align-items:center;justify-content:center;gap:14px;padding:10px;border:3px dashed var(--inner);background:#fff;font:inherit;font-size:16px;color:var(--win-ink);cursor:pointer}
 .bd-empty .q{flex:none;width:88px;height:88px;display:grid;place-items:center;border:3px solid var(--inner);background:#f0f0f4;font-size:44px;color:var(--dim)}
 .bd-empty b{border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:8px 16px}
 .lockrun{border:3px solid var(--frame);background:#eef4ff;padding:14px;margin-bottom:12px;box-shadow:4px 4px 0 rgba(0,0,0,.25);cursor:pointer;user-select:none;-webkit-user-select:none}
@@ -375,9 +388,20 @@ ol.log li.big .txt{color:#c03838}
 .man-in input{flex:1;min-width:0;width:100%;font:inherit;font-size:20px;font-weight:700;border:0;padding:9px 0;background:transparent;border-radius:0;outline:0}
 .man-in span{font-size:15px;color:var(--dim)}
 .man-in:focus-within{outline:3px solid var(--cursor);outline-offset:1px}
-ol.runs{list-style:none;margin:0;padding:0;font-size:13px;max-height:200px;overflow-y:auto}
-ol.runs li{display:flex;justify-content:space-between;gap:8px;border-bottom:2px dotted var(--inner);padding:4px 0}
-ol.runs li span{color:var(--dim)}
+/* 달리기 탭: 런닝 시작을 가운데 크게, 기록은 아래 */
+.rtab[data-tab="run"]:not([hidden]){display:flex;flex-direction:column;min-height:100%}
+#lock{flex:1;min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;margin:4px 0 16px;padding:20px 14px}
+#lock .lk-top{flex-direction:column;gap:14px}
+#lock .lk-icon{width:112px;height:112px;font-size:48px;box-shadow:inset -6px -6px 0 rgba(0,0,0,.3),inset 6px 6px 0 rgba(255,255,255,.15)}
+#lock .lk-title{font-size:26px}
+#lock .lk-clock{font-size:40px}
+#lock .lk-btns{width:100%;max-width:420px}
+.runs-h{margin:0 0 6px}
+.runs{font-size:13px;max-height:38vh;overflow-y:auto}
+.run-day{font-weight:700;font-size:13px;margin:8px 0 2px;padding:2px 6px;background:var(--frame);color:var(--win);display:inline-block}
+.run-row{display:flex;align-items:baseline;gap:8px;border-bottom:2px dotted var(--inner);padding:5px 0}
+.run-row .rt{flex:1;min-width:0}.run-row .rt i{font-style:normal;color:var(--dim);font-size:12px}
+.run-row .src{color:var(--dim);font-size:12px}
 .hatch{position:fixed;inset:0;z-index:6000;background:rgba(10,14,30,.82);display:grid;place-items:center;padding:16px}
 .hatch .win{text-align:center;width:min(420px,100%)}
 .hatch-stage{height:180px;display:grid;place-items:center;position:relative}
@@ -652,7 +676,7 @@ ol.runs li span{color:var(--dim)}
       </section>
       <section class="rtab" data-tab="bag">
         <div class="incu-box bag-pick" id="bagPick"></div>
-        <h4>가방 <span class="small" id="bagCount"></span></h4>
+        <div class="bag-head"><h4>가방 <span class="small" id="bagCount"></span></h4><div class="bag-sort" id="bagSort"><button data-sort="new">최신순</button><button data-sort="km">거리순</button></div></div>
         <div class="bag-tabs" id="bagTabs" role="tablist"></div>
         <div class="bag-grid" id="bagGrid"></div>
       </section>
@@ -666,11 +690,8 @@ ol.runs li span{color:var(--dim)}
           <div class="small" id="lockInfo"></div>
           <div class="lk-btns" id="lockBtns" hidden><button class="lk-btn main" id="lockFetch">가져오기</button><button class="lk-btn main" id="lockPaste">거리 붙여넣기</button><button class="lk-btn" id="lockCancel">취소</button></div>
         </div>
-        <div class="lockrun manbox" id="manual">
-          <div class="lk-top"><span class="lk-icon" aria-hidden="true">+</span><div class="lk-text"><b class="lk-title"><label for="manKm">기록 직접 추가</label></b></div></div>
-          <div class="man-row"><span class="man-in"><input id="manKm" type="number" min="0" max="60" step="0.01" inputmode="decimal" placeholder="0.00" enterkeyhint="done"><span>km</span></span><button class="lk-btn main" id="manAdd">추가</button></div>
-        </div>
-        <ol class="runs" id="runs"></ol>
+        <h4 class="runs-h">런닝 기록</h4>
+        <div class="runs" id="runs"></div>
       </section>
     </div>
     <div class="runtabs" role="tablist">
@@ -2998,11 +3019,19 @@ function gotLog(got, how, place) {
   const by = [5, 4, 3, 2, 1].filter(g => got.includes(g)).map(g => `${GRADE[g].n} ${got.filter(x => x === g).length}`).join(', ');
   log(`${how}${place ? ` ${place} 근처에서` : ''} 알 ${got.length}개를 주웠다! (${by})`, [], true);
 }
+// 부화기의 알을 가방으로 뺀다. 쌓인 거리는 그대로 남는다.
+function unincubate(e) {
+  if (!S.eggs.includes(e) || S.bag.length >= MAX_BAG) return false;
+  S.eggs = S.eggs.filter(x => x !== e);
+  const b = { id: e.id, g: e.g, t: e.t || Date.now(), km: e.km || 0 }; if (e.place) b.place = e.place; S.bag.push(b);
+  save(); return true;
+}
 // 가방의 알을 부화기로 옮긴다
 function incubate(e) {
   if (S.eggs.length >= MAX_EGGS || !S.bag.includes(e)) return false;
   S.bag = S.bag.filter(x => x !== e);
-  S.eggs.push({ id: e.id, g: e.g, km: 0, need: GRADE[e.g].km, isNew: true, t: e.t, place: e.place });
+  const x = { id: e.id, g: e.g, km: e.km || 0, need: GRADE[e.g].km, isNew: true, t: e.t, place: e.place }; S.eggs.push(x);
+  if (x.km >= x.need) hatchEgg(x);
   save(); return true;
 }
 // distance from any source goes to every egg and the buddy
@@ -3032,9 +3061,9 @@ window.pokeRunWalk = (km, place) => {
   gotLog(collectEggs(km, place || ''), `걸어서 ${fmtKm(km)}km`, place || '');
   save(); renderRun(); return true;
 };
-window.pokeRunAddKm = km => { km = Math.round(+km * 100) / 100; if (!(km >= .01 && km <= 100)) return false; applyKm(km); addRun(km, 'watch'); return true; };
-function addRun(km, src) {
-  S.runs.unshift({ t: Date.now(), km, src }); if (S.runs.length > 60) S.runs.pop();
+window.pokeRunAddKm = (km, t0) => { km = Math.round(+km * 100) / 100; if (!(km >= .01 && km <= 100)) return false; applyKm(km); addRun(km, 'watch', +t0 || 0); return true; };
+function addRun(km, src, t0) {
+  const r = { t: Date.now(), km, src }; if (t0) r.t0 = t0; S.runs.unshift(r); if (S.runs.length > 60) S.runs.pop();
   log(`${src === 'gps' ? 'GPS로' : src === 'watch' ? '워치로' : '건강 앱 기록으로'} ${fmtKm(km)}km를 달렸다.`, [], true);
   save(); renderRun();
 }
@@ -3177,30 +3206,24 @@ $('#lockFetch').onclick = () => {
 function takeLockKm(raw) {
   const m = String(raw || '').replace(/,/g, '.').match(/\d+(?:\.\d+)?/);
   const v = m ? Math.round(parseFloat(m[0]) * 100) / 100 : NaN;
-  if (!(v >= .01 && v <= 60)) { $('#lockInfo').textContent = `거리를 읽지 못했어요 (${String(raw || '빈 값').slice(0, 20)}). 아래 칸에 직접 적어 주세요.`; $('#manKm').focus(); return; }
-  S.lockT = 0; lockAsked = false;
-  applyKm(v); addRun(v, 'health'); renderLock();
+  if (!(v >= .01 && v <= 60)) { $('#lockInfo').textContent = `거리를 읽지 못했어요 (${String(raw || '빈 값').slice(0, 20)}). 다시 가져와 주세요.`; return; }
+  const t0 = S.lockT; S.lockT = 0; lockAsked = false;
+  applyKm(v); addRun(v, 'health', t0); renderLock();
   $('#lockInfo').innerHTML = `<b>${fmtKm(v)}km</b>를 가져왔어요!`;
 }
 $('#lockPaste').onclick = async () => {
   try { takeLockKm(await navigator.clipboard.readText()); }
-  catch (e) { $('#lockInfo').textContent = '붙여넣기가 막혀 있어요. 아래 칸에 거리를 직접 적어 주세요.'; $('#manKm').focus(); }
+  catch (e) { $('#lockInfo').textContent = '붙여넣기가 막혀 있어요. 다시 눌러 주세요.'; }
 };
 document.addEventListener('visibilitychange', () => { if (!document.hidden && lockAsked && S.lockT) { if (runEl.hidden) openRun(); $('#lockPaste').focus(); } });
-$('#manKm').addEventListener('keydown', e => { if (e.key === 'Enter') $('#manAdd').click(); });
-$('#manAdd').onclick = () => {
-  const v = parseFloat($('#manKm').value);
-  if (!(v > 0) || v > 60) { $('#manKm').focus(); return; }
-  applyKm(v); addRun(v, 'health'); $('#manKm').value = ''; if (S.lockT) { S.lockT = 0; lockAsked = false; renderLock(); save(); }
-};
-
 // running window
 const runEl = $('#run');
 function openRun() { runEl.hidden = false; setRunTab(runTab); renderRun(); renderLock(); }
 $('#openRun').onclick = () => tabTo(runEl, openRun);
 $('#closeRun').onclick = () => { seeBag(); runEl.hidden = true; };
 runEl.addEventListener('click', e => { if (e.target === runEl) runEl.hidden = true; });
-let runTab = 'egg', eggSel = null, bagG = 0, bagSel = null;
+let runTab = 'egg', eggSel = null, bagG = 0, bagSel = null, bagSort = 'new';
+try { bagSort = localStorage.getItem('pk-bag-sort') || 'new'; } catch (e) {}
 // 가방을 보고 나가면 NEW 표시를 지운다
 function seeBag() { if (runTab !== 'bag' || runEl.hidden) return; let ch = false; S.bag.forEach(e => { if (e.isNew) { e.isNew = false; ch = true; } }); if (ch) save(); }
 function fmtWhen(t) { const d = new Date(t); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; }
@@ -3208,23 +3231,27 @@ function renderBag() {
   const hasNew = S.bag.some(e => e.isNew);
   const tb = document.querySelector('.runtab[data-tab="bag"]'); tb.innerHTML = '가방' + (hasNew ? '<i class="dot" aria-label="새 알"></i>' : '');
   if (runTab !== 'bag') return;
-  const sig = [bagG, bagSel?.id, S.bag.length, S.bag.filter(e => e.isNew).length, S.eggs.length].join();
+  const sig = [bagG, bagSort, bagSel?.id, S.bag.length, S.bag.filter(e => e.isNew).length, S.eggs.length].join();
   if (sig === renderBag.sig) return; renderBag.sig = sig;
   $('#bagCount').textContent = `${S.bag.length}개`;
   const cnt = g => S.bag.filter(e => !g || e.g === g).length, nw = g => S.bag.some(e => e.isNew && (!g || e.g === g));
   $('#bagTabs').innerHTML = [0, 1, 2, 3, 4, 5].map(g => `<button role="tab" data-g="${g}" aria-selected="${g === bagG}">${g ? GRADE[g].n : '전체'}<b>${cnt(g)}</b>${nw(g) ? '<i class="dot"></i>' : ''}</button>`).join('');
+  document.querySelectorAll('#bagSort [data-sort]').forEach(b => b.setAttribute('aria-pressed', b.dataset.sort === bagSort));
   const list = S.bag.filter(e => !bagG || e.g === bagG).slice().reverse();
+  if (bagSort === 'km') list.sort((a, b) => (b.km || 0) / GRADE[b.g].km - (a.km || 0) / GRADE[a.g].km || (b.km || 0) - (a.km || 0));
   if (!S.bag.includes(bagSel)) bagSel = null;
-  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot" data-id="${e.id}" aria-current="${e === bagSel}">${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g)}<span>${GRADE[e.g].n}</span><span class="pl">${e.place ? esc(e.place.split(' ').pop()) : fmtWhen(e.t)}</span></button>`).join('')
+  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot" data-id="${e.id}" aria-current="${e === bagSel}">${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g)}<span>${GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.split(' ').pop()) : fmtWhen(e.t)}</span></button>`).join('')
     : `<div class="bag-empty">${S.bag.length ? '이 등급 알이 없어요' : '움직이면 알을 주울 수 있어요'}</div>`;
   const e = bagSel, full = S.eggs.length >= MAX_EGGS;
   $('#bagPick').hidden = !e;
-  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">가방</span><div class="egg-detail">부화까지 ${GRADE[e.g].km}km<br>${fmtWhen(e.t)}에 주움${e.place ? `<br>${esc(e.place)} 근처` : ''}</div><button class="lk-btn main" id="bagIn" ${full ? 'disabled' : ''}>${full ? `부화기가 꽉 찼어요 (${MAX_EGGS}/${MAX_EGGS})` : '부화기에 넣기'}</button></div>`;
+  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${GRADE[e.g].km}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움${e.place ? `<br>${esc(e.place)} 근처` : ''}</div><button class="lk-btn main" id="bagIn" ${full ? 'disabled' : ''}>${full ? `부화기가 꽉 찼어요 (${MAX_EGGS}/${MAX_EGGS})` : '부화기에 넣기'}</button></div>`;
 }
 document.addEventListener('click', ev => {
   const tab = ev.target.closest('#bagTabs [data-g]'); if (tab) { bagG = +tab.dataset.g; renderBag(); return; }
   const sl = ev.target.closest('#bagGrid .bslot');
   if (sl) { const e = S.bag.find(x => x.id === +sl.dataset.id); bagSel = e === bagSel ? null : e; if (e && e.isNew) { e.isNew = false; save(); } renderBag(); return; }
+  if (ev.target.closest('#eggOut') && eggSel) { const e = eggSel; if (unincubate(e)) { log(`${GRADE[e.g].n} 알을 가방에 넣었다. (${fmtKm(e.km)}km 쌓인 채로)`); eggSel = null; renderRun(); } return; }
+  const so = ev.target.closest('#bagSort [data-sort]'); if (so) { bagSort = so.dataset.sort; try { localStorage.setItem('pk-bag-sort', bagSort); } catch (x) {} renderBag.sig = ''; renderBag(); return; }
   if (ev.target.closest('#bagIn') && bagSel) { const e = bagSel; if (incubate(e)) { bagSel = null; eggSel = S.eggs[S.eggs.length - 1]; log(`${GRADE[e.g].n} 알을 부화기에 넣었다.`); setRunTab('egg'); renderRun(); } }
 });
 try { runTab = localStorage.getItem('pk-run-tab') || 'egg'; } catch (e) {}
@@ -3248,7 +3275,7 @@ function renderRun() {
   $('#runTotal').innerHTML = ` 총 <b>${fmtKm(S.totalKm)}</b>km · 도감 ${S.unlocked.size}/${Object.keys(SPECIES).length}`;
   if (!S.eggs.includes(eggSel)) eggSel = S.eggs[0] || null;
   const e = eggSel;
-  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">부화 중</span><div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km${e.place ? `<div class="egg-detail">${esc(e.place)} 근처에서 주운 알</div>` : ''}</div>`
+  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">부화 중</span><div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km${e.place ? `<div class="egg-detail">${esc(e.place)} 근처에서 주운 알</div>` : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div>`
     : '';
   $('#eggCount').textContent = `${S.eggs.length}/${MAX_EGGS}`;
   const box = $('#eggs'); box.innerHTML = '';
@@ -3267,12 +3294,20 @@ function renderRun() {
   $('#buddy').innerHTML = Array.from({ length: MAX_BUDS }, (_, i) => {
     const m = S.buds[i];
     if (!m) return `<button class="bd-empty" data-act="pick" data-i="${i}"><span class="q">?</span><b>도감에서 고르기</b></button>`;
-    return `<div class="bd-card" data-i="${i}"><div class="bd-pic"><img alt="" src="${thumbOf(m.sp) || ''}"></div><div class="bd-main"><div class="bd-name"><b>${esc(SPECIES[m.sp].n)}</b><span>No.${String(m.sp).padStart(4, '0')}</span></div>`
+    return `<div class="bd-card" data-i="${i}"><div class="bd-row"><div class="bd-pic"><img alt="" src="${thumbOf(m.sp) || ''}"></div><div class="bd-main"><div class="bd-name"><b>${esc(SPECIES[m.sp].n)}</b><span>No.${String(m.sp).padStart(4, '0')}</span></div>`
       + (CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) ? '<span class="bd-tag ready">진화 준비 완료</span>' : '진화까지'}</span><span><b>${fmtKm(m.km)}</b> / ${evoNeed(m)}km</span></div></div>` : `<div><span class="bd-tag">최종 진화</span></div>`)
-      + `<div class="bd-btns"><button class="lk-btn" data-act="pick">바꾸기</button><button class="lk-btn" data-act="stop">그만하기</button></div></div></div>`;
+      + `</div></div><div class="bd-btns"><button class="lk-btn" data-act="pick">바꾸기</button><button class="lk-btn" data-act="stop">그만하기</button></div></div>`;
   }).join('');
   tickLock();
-  $('#runs').innerHTML = S.runs.slice(0, 20).map(r => { const d = new Date(r.t); return `<li>${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')} <span>${r.src === 'gps' ? 'GPS' : r.src === 'watch' ? '워치' : '건강 앱'}</span><b>${fmtKm(r.km)}km</b></li>`; }).join('') || '<li><span>아직 달린 기록이 없어요</span></li>';
+  const WD = '일월화수목금토', hm = t => { const d = new Date(t); return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`; };
+  let lastDay = '', html = '';
+  for (const r of S.runs.slice(0, 40)) {
+    const d = new Date(r.t0 || r.t), day = `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
+    if (day !== lastDay) { lastDay = day; html += `<div class="run-day">${d.getMonth() + 1}월 ${d.getDate()}일 (${WD[d.getDay()]})</div>`; }
+    const mins = r.t0 ? Math.max(1, Math.round((r.t - r.t0) / 60000)) : 0;
+    html += `<div class="run-row"><span class="rt">${r.t0 ? `${hm(r.t0)} ~ ${hm(r.t)}` : hm(r.t)}${mins ? ` <i>${mins >= 60 ? `${Math.floor(mins / 60)}시간 ` : ''}${mins % 60 ? `${mins % 60}분` : ''}</i>` : ''}</span><span class="src">${r.src === 'gps' ? 'GPS' : r.src === 'watch' ? '워치' : '건강 앱'}</span><b>${fmtKm(r.km)}km</b></div>`;
+  }
+  $('#runs').innerHTML = html || '<div class="run-row"><span class="rt">아직 달린 기록이 없어요</span></div>';
 }
 let budSlot = 0;
 async function setBuddySp(sp) {
