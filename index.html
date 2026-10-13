@@ -4563,7 +4563,7 @@ function haptic(n = 1) {
 // 알 두드리기: 마구 두드리면 금이 가다가 깨진다 (높은 등급일수록 많이). 한동안 가만히 두면 알이 혼자 흔들린다.
 function tapEgg(egg, g, msg) {
   return new Promise(done => {
-    const need = 14 + g * 4, win = hatchEl.querySelector('.win'); let n = 0, stage = 0, idle = 0, pend = -1;
+    const need = 20 + g * 10, win = hatchEl.querySelector('.win'); let n = 0, stage = 0, idle = 0, pend = -1;
     msg.textContent = '알을 톡톡 두드려 보자!';
     hatchStage.classList.add('tapme');
     const nudge = () => { clearTimeout(idle); idle = setTimeout(() => { if (n >= need) return; egg.classList.remove('wig', 'knock'); void egg.offsetWidth; egg.classList.add('wig'); sfx('wob'); nudge(); }, 2600); };
