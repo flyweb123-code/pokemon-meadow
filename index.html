@@ -350,9 +350,12 @@ ol.log li.big .txt{color:#c03838}
 .ivs{display:grid;grid-template-columns:auto 1fr auto;gap:3px 8px;align-items:center;font-size:12px;margin:8px 0}
 .ivs .b{height:8px;border:2px solid var(--frame);background:#eee}.ivs .b i{display:block;height:100%;background:#4a9a50}
 .ivs .b i.max{background:#e8a020}
+.pickhint{color:#c03040;font-size:12px}
+#buddy .bd-ind{font-size:12px;color:#5c6c5c;display:flex;align-items:center;gap:4px}#buddy .bd-ind .hearts{letter-spacing:1px}
 .pp-fr{display:flex;justify-content:space-between;font-size:13px;margin-top:4px}.pp-fr .hearts{color:#e04870;letter-spacing:1px}
 .pp-meta{font-size:12px;color:var(--dim);margin-top:4px;line-height:1.5}
 .pp-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pp-btns .boxbtn{white-space:nowrap;padding-left:4px;padding-right:4px;font-size:clamp(12px,3.6vw,15px)}
 .pokepop .boxbtn{display:block;width:100%;font:inherit;font-size:15px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:10px 8px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
 .pokepop .boxbtn.off{background:var(--win);color:var(--frame)}.pokepop .boxbtn[disabled]{opacity:.5}
 .hatch .rkline{font-size:14px;margin:-4px 0 10px}
@@ -2916,6 +2919,7 @@ function renderInfo() {
     box.innerHTML = `<button class="close" id="pclose" aria-label="닫기">✕</button>
       <div class="top"><h2 id="pname">${esc(m.name)}</h2><span class="no">No.${String(m.sp).padStart(3, '0')}</span></div>
       <p class="sub">${SPECIES[m.sp].g} · ${t.ty}${t.noct ? ' · 야행성' : ''}${SPECIES[m.sp].leg || SPECIES[m.sp].my ? ' · 전설' : ''}</p>${SPECIES[m.sp].fx ? `<p class="fx">${esc(SPECIES[m.sp].fx)}</p>` : ''}
+      <p class="sub" id="pIndiv"></p>
       <div class="bars" id="pbars"></div>
       <p class="doing" id="pdoing"></p>
       <div class="rels" id="prels"></div>
@@ -2926,6 +2930,7 @@ function renderInfo() {
   }
   $('#pname').textContent = m.name;
   $('#pdoing').textContent = doingText(m) + (m.form !== m.sp ? ` (${DEX[m.form].n}로 변신 중)` : '');
+  $('#pIndiv').innerHTML = indivHtml(m);
   $('#pbars').innerHTML = bar('기력', m.energy, 'var(--hp)') + bar('배고픔', m.hunger, 'var(--hunger)') + bar('외로움', m.social, 'var(--lonely)');
   $('#prels').innerHTML = rels;
 }
@@ -3387,9 +3392,10 @@ let mgrSel = null, mgrKey = '', mgrFreeArm = 0, mgrT = 0;
 function openMgr(m) { mgr.hidden = false; mgrSel = m || mgrSel || S.mons[0] || null; mgrKey = ''; renderMgr(true); if (m) { setMgrTab('field'); openMon(m); } }
 function closeMgr() { mgr.hidden = true; $('#monPop').hidden = true; }
 // 포켓몬 메뉴 탭: 필드 / 포켓몬(상자 전체)
-let mgrTab = 'field', boxSort = 'new';
+let mgrTab = 'field', boxSort = 'new', budPick = null;   // budPick: 짝꿍 칸을 고르는 중이면 그 칸 번호
 try { boxSort = localStorage.getItem('pk-box-sort') || 'new'; } catch (e) {}
 function setMgrTab(t) {
+  if (t !== 'box') budPick = null;
   mgrTab = t; try { localStorage.setItem('pk-mgr-tab', t); } catch (e) {}
   document.querySelectorAll('#mgrTabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.t === t));
   document.querySelectorAll('.mtab').forEach(x => x.hidden = x.dataset.t !== t);
@@ -3414,7 +3420,7 @@ function boxList() {
 function renderBox() {
   document.querySelectorAll('#boxSort [data-sort]').forEach(b => b.setAttribute('aria-pressed', b.dataset.sort === boxSort));
   const L = boxList(), bud = new Set(S.buds.map(b => b.pid));
-  $('#boxCount').textContent = `${S.box.length}마리${S.box.some(p => p.shiny) ? ` · 이로치 ${S.box.filter(p => p.shiny).length}` : ''}`;
+  $('#boxCount').innerHTML = budPick != null ? '<b class="pickhint">짝꿍을 골라 주세요</b>' : `${S.box.length}마리${S.box.some(p => p.shiny) ? ` · 이로치 ${S.box.filter(p => p.shiny).length}` : ''}`;
   $('#boxGrid').innerHTML = L.length ? L.map(p => `<button class="pk${p.shiny ? ' shiny' : ''}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rankOf(p)}">${rankOf(p)}</span>${bud.has(p.id) ? '<span class="tg bud">짝꿍</span>' : onField(p.id) ? '<span class="tg">필드</span>' : ''}<img alt="" data-sp="${p.sp}" src="${thumbOf(p.sp) || ''}"><span class="nm">${esc(SPECIES[p.sp].n)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(p.fr)}</span></button>`).join('')
     : '<p class="empty-msg">아직 부화시킨 포켓몬이 없다.</p>';
   $('#boxGrid').querySelectorAll('img[data-sp]').forEach(im => { const sp = +im.dataset.sp; if (!thumbOf(sp)) ensureSprite(sp).then(() => { im.src = thumbOf(sp); }).catch(() => {}); });
@@ -3436,7 +3442,8 @@ function openPoke(id, dir = 0) {
     + `<div class="pp-meta">개체값 합계 ${ivSum(P)}/186 · ${dt.getMonth() + 1}/${dt.getDate()}${P.g ? ` ${GRADE[P.g].n} 알에서 부화` : ''}${P.place ? ` · ${esc(P.place)} 근처에서 주운 알` : ''}</div>`;
   const on = onField(P.id), full = S.mons.length >= MAX_MONS, isBud = S.buds.some(b => b.pid === P.id);
   const fb = $('#ppField'); fb.textContent = on ? '필드에서 빼기' : full ? '필드가 꽉 찼어요' : '필드에 내보내기'; fb.disabled = !on && full; fb.classList.toggle('off', on);
-  const bb = $('#ppBud'); bb.textContent = isBud ? '짝꿍이에요' : S.buds.length >= MAX_BUDS ? '짝꿍 자리가 없어요' : '짝꿍으로'; bb.disabled = isBud || S.buds.length >= MAX_BUDS;
+  const noRoom = budPick == null && S.buds.length >= MAX_BUDS;
+  const bb = $('#ppBud'); bb.textContent = isBud ? '짝꿍이에요' : noRoom ? '짝꿍 자리가 없어요' : '짝꿍으로'; bb.disabled = isBud || noRoom; bb.classList.toggle('off', isBud || noRoom);
 }
 const closePoke = () => { $('#pokePop').hidden = true; pokeId = null; };
 function pokeStep(dir) { const L = boxList(), i = L.indexOf(boxOf(pokeId)), j = i + dir; if (j >= 0 && j < L.length) { sfx('tap'); openPoke(L[j].id, dir); } }
@@ -3454,9 +3461,13 @@ $('#ppField').onclick = async () => {
   refreshCap(); renderBox(); openPoke(P.id); save();
 };
 $('#ppBud').onclick = () => {
-  const P = boxOf(pokeId); if (!P || S.buds.length >= MAX_BUDS || S.buds.some(b => b.pid === P.id)) return;
-  S.buds = S.buds.filter(b => b.sp !== P.sp); S.buds.push({ sp: P.sp, km: 0, pid: P.id });
-  log(`${J({ name: SPECIES[P.sp].n },'이/가')} 런닝 짝꿍이 되었다!`, [], true); save(); renderBox(); openPoke(P.id);
+  const P = boxOf(pokeId); if (!P || S.buds.some(b => b.pid === P.id)) return;
+  const slot = budPick; if (slot == null && S.buds.length >= MAX_BUDS) return;
+  const keep = S.buds.filter((b, k) => k !== slot && b.sp !== P.sp), nb = { sp: P.sp, km: 0, pid: P.id };
+  if (slot != null) keep.splice(Math.min(slot, keep.length), 0, nb); else keep.push(nb);
+  S.buds = keep;
+  log(`${J({ name: SPECIES[P.sp].n },'이/가')} 런닝 짝꿍이 되었다!`, [], true); save();
+  if (slot != null) { closePoke(); setMgrTab('buddy'); } else { renderBox(); openPoke(P.id); }
 };
 new MutationObserver(() => { if (mgr.hidden) closePoke(); }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
 $('#openMgr').onclick = () => tabTo(mgr, () => { openMgr(); setMgrTab('field'); });
@@ -3550,7 +3561,7 @@ function renderMgrDetail(rebuild) {
   $('#mBars').innerHTML = bar('기력', m.energy, 'var(--hp)') + bar('배고픔', m.hunger, 'var(--hunger)') + bar('외로움', m.social, 'var(--lonely)');
   $('#mDoing').textContent = `${doingText(m)}${m.form !== m.sp ? ` (${DEX[m.form].n}로 변신 중)` : ''} · 초원에서 ${days}일째`;
   $('#mRels').innerHTML = relsHtml(m, 5, 3);
-  { const P = boxOf(m.pid); $('#mIndiv').innerHTML = P ? `랭크 <span class="rk ${rankOf(P)}">${rankOf(P)}</span>${P.shiny ? ' <b class="sh">✦ 이로치</b>' : ''} · 친밀도 <span class="hearts" style="color:#e04870">${hearts(P.fr)}</span>` : ''; }
+  $('#mIndiv').innerHTML = indivHtml(m);
   const sb = $('#mSleep'), busy = m.hidden || m.state === 'interact' || m.state === 'special';
   sb.textContent = m.state === 'sleep' ? '깨우기' : busy ? '지금은 바쁨' : '재우기'; sb.disabled = m.state !== 'sleep' && busy;
   if (mgrFreeArm && Date.now() - mgrFreeArm > 3000) { mgrFreeArm = 0; $('#mFree').textContent = '숲으로 보내기'; }
@@ -3601,6 +3612,7 @@ const SHINY_RATE = 1 / 4096;
 const ivSum = p => p.iv.reduce((a, b) => a + b, 0);
 const rankOf = p => RANKS.find(([, v]) => ivSum(p) >= v)[0];
 const shinyHue = sp => 70 + (sp * 47) % 220;
+function indivHtml(m) { const P = boxOf(m.pid); return P ? `랭크 <span class="rk ${rankOf(P)}">${rankOf(P)}</span>${P.shiny ? ' <b class="sh">✦ 이로치</b>' : ''} · 친밀도 <span class="hearts" style="color:#e04870">${hearts(P.fr)}</span>` : ''; }
 const hearts = fr => { const n = Math.min(5, Math.floor((fr || 0) / 51)); return '♥'.repeat(n) + '♡'.repeat(5 - n); };
 function newPoke(sp, o = {}) {
   const p = { id: S.eid++, sp, iv: Array.from({ length: 6 }, () => Math.floor(Math.random() * 32)), shiny: o.shiny ?? Math.random() < SHINY_RATE, fr: 0, t: Date.now() };
@@ -3912,7 +3924,7 @@ $('#buddy').addEventListener('click', e => {
   const a = e.target.closest('[data-act]')?.dataset.act;
   if (!a) { const c = e.target.closest('.bd-card'); if (c && S.buds[+c.dataset.i]) { playCry(S.buds[+c.dataset.i].sp); const im = c.querySelector('.bd-pic img'); im?.classList.remove('hop'); void im?.offsetWidth; im?.classList.add('hop'); } return; }
   const i = +e.target.closest('[data-i]').dataset.i;
-  if (a === 'pick') { budSlot = i; hideSheets(); openDex('buddy'); }
+  if (a === 'pick') { budPick = i; setMgrTab('box'); }
   else if (S.buds[i]) { log(`${J({ name: SPECIES[S.buds[i].sp].n },'과/와')} 같이 달리기를 그만뒀다.`); S.buds.splice(i, 1); save(); renderRun(); }
 });
 function renderRun() {
@@ -3944,8 +3956,8 @@ function renderBuddy() {
   $('#budCount').textContent = `${S.buds.length}/${MAX_BUDS}`;
   $('#buddy').innerHTML = Array.from({ length: MAX_BUDS }, (_, i) => {
     const m = S.buds[i];
-    if (!m) return `<button class="bd-empty" data-act="pick" data-i="${i}"><span class="q">?</span><b>도감에서 고르기</b></button>`;
-    return `<div class="bd-card" data-i="${i}"><div class="bd-row"><div class="bd-pic"><img alt="" src="${thumbOf(m.sp) || ''}"></div><div class="bd-main"><div class="bd-name"><b>${esc(SPECIES[m.sp].n)}</b><span>No.${String(m.sp).padStart(4, '0')}</span></div>`
+    if (!m) return `<button class="bd-empty" data-act="pick" data-i="${i}"><span class="q">?</span><b>포켓몬에서 고르기</b></button>`;
+    return `<div class="bd-card" data-i="${i}"><div class="bd-row"><div class="bd-pic"><img alt="" src="${thumbOf(m.sp) || ''}"></div><div class="bd-main"><div class="bd-name"><b>${esc(SPECIES[m.sp].n)}</b><span>No.${String(m.sp).padStart(4, '0')}</span></div><div class="bd-ind">${indivHtml(m)}</div>`
       + (CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) ? '<span class="bd-tag ready">진화 준비 완료</span>' : '진화까지'}</span><span><b>${fmtKm(m.km)}</b> / ${evoNeed(m)}km</span></div></div>` : `<div><span class="bd-tag">최종 진화</span></div>`)
       + `</div></div><div class="bd-btns"><button class="lk-btn" data-act="pick">바꾸기</button><button class="lk-btn" data-act="stop">그만하기</button></div></div>`;
   }).join('');
