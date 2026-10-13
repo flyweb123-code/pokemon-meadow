@@ -657,6 +657,11 @@ ol.log li.big .txt{color:#c03838}
         <div class="set-btns"><button class="lk-btn main" id="saveCopy">저장 복사</button><button class="lk-btn main" id="savePaste">저장 붙여넣기</button></div>
       </section>
       <section class="set-sec">
+        <h4>소리</h4>
+        <p>아이폰 무음 모드에서는 소리가 나지 않아요.</p>
+        <div class="set-btns"><button class="lk-btn main" id="sfxToggle">효과음 켜짐</button></div>
+      </section>
+      <section class="set-sec">
         <h4>초원</h4>
         <p>포켓몬, 알, 도감, 달린 기록이 모두 지워져요.</p>
         <div class="set-btns"><button class="lk-btn danger" id="reset">초원 초기화</button></div>
@@ -734,6 +739,59 @@ const SPECIES = {"1":{"n":"이상해씨","g":"씨앗포켓몬","t":[12,4],"gen":
 'use strict';
 const W = 960, H = 600, SCALE = 1.5;
 const MAX_MONS = 12;   // the meadow holds at most 12 residents
+// ---------- 효과음: 파일 없이 사각파·잡음으로 만드는 옛 휴대용 게임기 소리 ----------
+let sfxOn = true; try { sfxOn = localStorage.getItem('pk-sfx') !== '0'; } catch (e) {}
+let actx = null, noiseBuf = null;
+function audio() {
+  if (!actx) { const A = window.AudioContext || window.webkitAudioContext; if (!A) return null; actx = new A(); }
+  if (actx.state === 'suspended') actx.resume();
+  return actx;
+}
+// 아이폰은 사용자가 화면을 처음 누를 때 소리를 켜 준다
+document.addEventListener('pointerdown', () => { if (sfxOn) audio(); }, { capture: true, passive: true });
+function tone(f, t0, dur, { type = 'square', vol = .07, to = 0, steps = 0 } = {}) {
+  const a = actx, o = a.createOscillator(), g = a.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t0);
+  if (to) { if (steps) { for (let i = 1; i <= steps; i++) o.frequency.setValueAtTime(f + (to - f) * i / steps, t0 + dur * i / (steps + 1)); } else o.frequency.linearRampToValueAtTime(to, t0 + dur); }
+  g.gain.setValueAtTime(vol, t0); g.gain.setValueAtTime(vol, t0 + dur * .8); g.gain.linearRampToValueAtTime(0, t0 + dur);
+  o.connect(g).connect(a.destination); o.start(t0); o.stop(t0 + dur + .02);
+}
+function noise(t0, dur, vol = .12, hp = 1200) {
+  const a = actx;
+  if (!noiseBuf) { noiseBuf = a.createBuffer(1, a.sampleRate * .5, a.sampleRate); const d = noiseBuf.getChannelData(0); let v = 0; for (let i = 0; i < d.length; i++) { if (i % 6 === 0) v = Math.random() * 2 - 1; d[i] = v; } }
+  const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
+  src.buffer = noiseBuf; f.type = 'highpass'; f.frequency.value = hp;
+  g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + dur);
+  src.connect(f).connect(g).connect(a.destination); src.start(t0); src.stop(t0 + dur + .02);
+}
+const NOTE = n => 440 * Math.pow(2, (n - 69) / 12);
+function melody(t, notes, len, opt) { notes.forEach((n, i) => { if (n) tone(NOTE(n), t + i * len, len * .9, opt); }); return t + notes.length * len; }
+function sfx(name, k = 0) {
+  if (!sfxOn) return; const a = audio(); if (!a) return;
+  const t = a.currentTime + .01;
+  switch (name) {
+    case 'tap': tone(1320, t, .035, { vol: .045 }); break;
+    case 'open': tone(880, t, .04, { vol: .05 }); tone(1320, t + .045, .05, { vol: .05 }); break;
+    case 'wob': tone(220, t, .06, { vol: .06 }); tone(196, t + .08, .06, { vol: .06 }); break;
+    case 'hop': tone(330, t, .09, { vol: .06, to: 660, steps: 3 }); break;
+    case 'crack': noise(t, .08, .16, 2500); tone(1568, t, .03, { vol: .04 }); break;
+    case 'crack2': noise(t, .14, .2, 1800); tone(1760, t, .03, { vol: .05 }); tone(1397, t + .05, .03, { vol: .05 }); break;
+    case 'rattle': for (let i = 0; i < 6; i++) tone(i % 2 ? 247 : 262, t + i * .14, .07, { vol: .05 }); break;
+    case 'burst': noise(t, .35, .22, 600); tone(110, t, .25, { vol: .06, to: 55 }); break;
+    case 'hatch': melody(t, [72, 76, 79, 84, 0, 79, 84], .09, { vol: .06 }); melody(t, [60, 64, 67, 72, 0, 67, 72], .09, { type: 'triangle', vol: .08 }); break;
+    case 'newdex': { const e = melody(t, [72, 76, 79, 84, 0, 79, 84], .09, { vol: .06 }); melody(t, [60, 64, 67, 72, 0, 67, 72], .09, { type: 'triangle', vol: .08 });
+      melody(e + .1, [88, 0, 91, 96], .07, { vol: .05 }); tone(NOTE(84), e + .1, .45, { type: 'triangle', vol: .07 }); break; }
+    case 'evotick': tone(NOTE(60 + (k % 12) * 2 + Math.floor(k / 6) * 2), t, .05, { vol: .045 }); break;
+    case 'evolve': melody(t, [67, 72, 76, 79, 0, 76, 79, 84], .1, { vol: .06 }); melody(t, [55, 60, 64, 67, 0, 64, 67, 72], .1, { type: 'triangle', vol: .08 }); break;
+    case 'pickup': tone(NOTE(88), t, .05, { vol: .05 }); tone(NOTE(93), t + .06, .1, { vol: .05 }); break;
+  }
+}
+// 버튼·칸을 누르면 짧은 '틱' 소리
+document.addEventListener('click', e => {
+  const b = e.target.closest('button,.eslot,.bslot,[role="button"],[role="tab"]'); if (!b || b.disabled) return;
+  if (b.id === 'hatchOk') return;
+  sfx(b.closest('.menu,.cmd,.runtabs,.tabbar,nav') ? 'open' : 'tap');
+}, true);
 const POND = { x: 735, y: 432, rx: 150, ry: 80 };
 const MIN_Y = 150, MAX_Y = 580;
 // the part of the meadow Pokémon may use; phones show (and use) only a window of it
@@ -2771,6 +2829,9 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
 const setEl = $('#set');
 $('#openSet').onclick = () => tabTo(setEl, () => { setEl.hidden = false; });
+function sfxLabel() { $('#sfxToggle').textContent = sfxOn ? '효과음 켜짐' : '효과음 꺼짐'; $('#sfxToggle').classList.toggle('main', sfxOn); }
+sfxLabel();
+$('#sfxToggle').onclick = () => { sfxOn = !sfxOn; try { localStorage.setItem('pk-sfx', sfxOn ? '1' : '0'); } catch (e) {} sfxLabel(); if (sfxOn) sfx('pickup'); };
 $('#closeSet').onclick = () => { setEl.hidden = true; };
 setEl.addEventListener('click', e => { if (e.target === setEl) setEl.hidden = true; });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { hideSheets(); if (S.tool === 'berry') setTool('look'); } });
@@ -3033,6 +3094,7 @@ function collectEggs(km, place) {
 }
 function gotLog(got, how, place) {
   if (!got.length) return;
+  sfx('pickup');
   const by = [5, 4, 3, 2, 1].filter(g => got.includes(g)).map(g => `${GRADE[g].n} ${got.filter(x => x === g).length}`).join(', ');
   log(`${how}${place ? ` ${place} 근처에서` : ''} 알 ${got.length}개를 주웠다! (${by})`, [], true);
 }
@@ -3128,18 +3190,18 @@ async function playHatch() {
   hatchStage.classList.remove('evo');
   hatchStage.innerHTML = eggHtml(g) + '<div class="flash"></div>' + [[-60, -50], [60, -46], [-54, 30], [58, 34]].map(([x, y]) => `<i class="shard" style="--dx:${x}px;--dy:${y}px"></i>`).join('');
   const egg = hatchStage.querySelector('.egg'), msg = $('#hatchMsg');
-  const beat = async (cls, ms) => { egg.classList.remove('wig', 'hop'); void egg.offsetWidth; egg.classList.add(cls); await wait(ms); egg.classList.remove(cls); };
+  const beat = async (cls, ms) => { egg.classList.remove('wig', 'hop'); void egg.offsetWidth; egg.classList.add(cls); sfx(cls === 'hop' ? 'hop' : 'wob'); await wait(ms); egg.classList.remove(cls); };
   await wait(600);
   await beat('wig', 600); await wait(500);
   await beat('wig', 600); await wait(400);
-  egg.classList.add('c1'); msg.textContent = '…!'; await beat('hop', 350); await wait(500);
-  egg.classList.add('c2'); await beat('wig', 600); await wait(250);
-  egg.classList.add('c3'); msg.textContent = '알이 깨지려고 한다!'; egg.classList.add('wig2'); await wait(900);
-  hatchStage.querySelector('.flash').classList.add('go');
+  egg.classList.add('c1'); sfx('crack'); msg.textContent = '…!'; await beat('hop', 350); await wait(500);
+  egg.classList.add('c2'); sfx('crack'); await beat('wig', 600); await wait(250);
+  egg.classList.add('c3'); sfx('crack2'); msg.textContent = '알이 깨지려고 한다!'; egg.classList.add('wig2'); sfx('rattle'); await wait(900);
+  hatchStage.querySelector('.flash').classList.add('go'); sfx('burst');
   hatchStage.querySelectorAll('.shard').forEach(x => { x.style.setProperty('--ec', getComputedStyle(egg).getPropertyValue('--ec')); x.classList.add('go'); });
   await wait(300); egg.remove();
   const img = document.createElement('img'); img.alt = SPECIES[sp].n; img.src = thumbOf(sp); hatchStage.append(img);
-  const isNew = !S.unlocked.has(sp); unlock(sp);
+  const isNew = !S.unlocked.has(sp); unlock(sp); setTimeout(() => sfx(isNew ? 'newdex' : 'hatch'), 250);
   $('#hatchMsg').innerHTML = `${GRADE[g].n} 알에서 <b>${esc(SPECIES[sp].n)}</b>${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났다!${isNew ? '<br><span class="small">도감에 새로 등록됐다</span>' : ''}`;
   showDexInfo(sp);
   const ok = $('#hatchOk'); ok.hidden = false; ok.textContent = S.mons.length < MAX_MONS ? '필드로 보내기' : '확인';
@@ -3347,11 +3409,11 @@ async function evolveBuddy() {
   const img = hatchStage.querySelector('img');
   await wait(900); hatchStage.classList.add('evo');
   let gap = 520, now = to;
-  while (gap > 60) { img.src = thumbOf(now); now = now === to ? from : to; await wait(gap); gap *= .84; }
-  hatchStage.querySelector('.flash').classList.add('go'); await wait(300);
+  let step = 0; while (gap > 60) { img.src = thumbOf(now); now = now === to ? from : to; sfx('evotick', step++); await wait(gap); gap *= .84; }
+  hatchStage.querySelector('.flash').classList.add('go'); sfx('burst'); await wait(300);
   img.src = thumbOf(to); hatchStage.classList.remove('evo');
   b.sp = to; b.km = 0; unlock(to);
-  $('#hatchMsg').innerHTML = `축하해! ${J({ name: fromN },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`;
+  $('#hatchMsg').innerHTML = `축하해! ${J({ name: fromN },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`; sfx('evolve');
   log(`축하해! 짝꿍 ${J({ name: fromN },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`, [], true);
   showDexInfo(to);
   const ok = $('#hatchOk'); ok.hidden = false; ok.textContent = '확인'; ok.focus();
