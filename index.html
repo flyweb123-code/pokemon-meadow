@@ -307,7 +307,7 @@ ol.log li.big .txt{color:#c03838}
 .egg.big{width:72px;height:88px}
 .egg.wob{animation:wob 1.6s ease-in-out infinite;transform-origin:50% 90%}
 @keyframes wob{0%,70%,100%{transform:rotate(0)}76%{transform:rotate(-8deg)}84%{transform:rotate(8deg)}92%{transform:rotate(-4deg)}}
-.eggs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.eggs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:4px}
 .eslot{border:3px solid var(--inner);-webkit-tap-highlight-color:transparent;background:#fff;min-height:124px;padding:22px 4px 8px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;font-size:12px;position:relative}
 @media (hover:hover){.eslot:hover{border-color:var(--frame)}}
 .eslot:focus-visible{border-color:var(--frame);outline:0}
@@ -319,21 +319,23 @@ ol.log li.big .txt{color:#c03838}
 @keyframes roll{from{transform:translateY(-30px) rotate(-200deg);opacity:0}}
 .egg-actions{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;font-size:14px}
 .gradeinfo{font-size:12px;color:var(--dim);margin:10px 0 0;line-height:1.7}
-.bd-card{display:grid;gap:14px;border:3px solid var(--frame);background:#fff;padding:14px;box-shadow:3px 3px 0 rgba(0,0,0,.2)}
+#buddy{display:grid;gap:10px}
+.bd-card{display:flex;gap:12px;align-items:center;border:3px solid var(--frame);background:#fff;padding:10px;box-shadow:3px 3px 0 rgba(0,0,0,.2)}
+.bd-main{flex:1;min-width:0;display:grid;gap:8px}
 .bd-top{display:flex;gap:14px;align-items:center;min-width:0}
-.bd-pic{flex:none;width:104px;height:104px;display:grid;place-items:center;background:#e4f2d0;border:3px solid var(--inner)}
-.bd-pic img{width:88px;height:88px;object-fit:contain;image-rendering:pixelated}
+.bd-pic{flex:none;width:88px;height:88px;display:grid;place-items:center;background:#e4f2d0;border:3px solid var(--inner)}
+.bd-pic img{width:76px;height:76px;object-fit:contain;image-rendering:pixelated}
 .bd-name{min-width:0}
-.bd-name b{display:block;font-size:22px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bd-name span{display:block;font-size:13px;color:var(--dim);margin-top:4px}
-.bd-evo .row{display:flex;justify-content:space-between;gap:8px;font-size:14px;margin-top:6px}
+.bd-name b{display:block;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bd-name{display:flex;align-items:baseline;gap:8px}.bd-name span{font-size:12px;color:var(--dim);flex:none}
+.bd-evo .row{display:flex;justify-content:space-between;gap:8px;font-size:13px;margin-top:4px}
 .bd-evo .row b{color:#2a58a8}
 .bd-tag{display:inline-block;font-size:12px;background:var(--frame);color:var(--win);padding:2px 8px}
 .bd-tag.ready{background:#e8a020;color:#fff}
 .bd-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.bd-empty{width:100%;display:grid;justify-items:center;gap:12px;padding:24px 12px;border:3px dashed var(--inner);background:#fff;font:inherit;font-size:16px;color:var(--win-ink);cursor:pointer}
-.bd-empty .q{width:104px;height:104px;display:grid;place-items:center;border:3px solid var(--inner);background:#f0f0f4;font-size:44px;color:var(--dim)}
-.bd-empty b{border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:10px 22px}
+.bd-empty{width:100%;display:flex;align-items:center;gap:14px;padding:10px;border:3px dashed var(--inner);background:#fff;font:inherit;font-size:16px;color:var(--win-ink);cursor:pointer}
+.bd-empty .q{flex:none;width:88px;height:88px;display:grid;place-items:center;border:3px solid var(--inner);background:#f0f0f4;font-size:44px;color:var(--dim)}
+.bd-empty b{border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:8px 16px}
 .lockrun{border:3px solid var(--frame);background:#eef4ff;padding:14px;margin-bottom:12px;box-shadow:4px 4px 0 rgba(0,0,0,.25);cursor:pointer;user-select:none;-webkit-user-select:none}
 .lockrun:not(.wait):active{transform:translate(2px,2px);box-shadow:2px 2px 0 rgba(0,0,0,.25);background:#dde9ff}
 .lockrun:focus-visible{outline:3px solid var(--cursor);outline-offset:2px}
@@ -622,10 +624,9 @@ ol.runs li span{color:var(--dim)}
         <div class="incu-box" id="incu"></div>
         <h4>부화 중인 알 <span class="small" id="eggCount"></span></h4>
         <div class="eggs" id="eggs"></div>
-        <div class="egg-actions"><button class="opt" id="drawEgg">알 뽑기</button><span class="small" id="drawMsg">달린 거리는 모든 알에 똑같이 쌓여요</span></div>
-        <p class="gradeinfo">일반 2.5km · 희귀 5km · 레어 7.5km · 에픽 10km · 전설 15km<br>알에서는 진화 전 포켓몬만 나와요. 등급이 높을수록 드문 포켓몬이에요.</p>
       </section>
       <section class="rtab" data-tab="buddy">
+        <h4>런닝 짝꿍 <span class="small" id="budCount"></span></h4>
         <div id="buddy"></div>
       </section>
       <section class="rtab" data-tab="run">
@@ -2532,15 +2533,15 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, log: S.log.slice(0, 120),
     mons: S.mons.map(m => ({ uid: m.uid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, asleep: m.state === 'sleep', born: m.born })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t })), lockT: S.lockT,
-    eggs: S.eggs, unlocked: [...S.unlocked], bud: S.bud, runs: S.runs, totalKm: S.totalKm, eid: S.eid };
+    eggs: S.eggs, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid };
 }
 let saveFrozen = false;
 function save() { if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.eggs = d.eggs || []; S.bud = d.bud || null;
+  S.lockT = d.lockT || 0; S.eggs = d.eggs || []; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
-  if (!d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.bud = { sp: o.sp, km: d.buddyKm || 0 }; } S.runs = d.runs || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
+  if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
   S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
   for (const o of [...(d.mons || [])].sort((a, b) => (b.uid === d.buddy) - (a.uid === d.buddy)).slice(0, MAX_MONS)) { const m = await spawn(o.sp, { ...o, quiet: true }); if (o.asleep) sleep(m, false); }
   for (const b of d.berries || []) addBerry(b.x, b.y, false, b.t || Date.now());
@@ -2551,7 +2552,7 @@ async function restore(d) {
 async function fresh() {
   S.base = midnight(); S.clock = realClock(); S.rel = {}; S.log = [];
   logEl.innerHTML = '';
-  S.eggs = []; S.unlocked.clear(); S.bud = null; S.runs = []; S.totalKm = 0; S.eid = 1;
+  S.eggs = []; S.unlocked.clear(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
   const e = { id: S.eid++, g: 1, km: 0, need: GRADE[1].km, isNew: true, t: Date.now() }; S.eggs.push(e);
   for (let i = 0; i < 4; i++) { const p = randLand(); addBerry(p.x, p.y); }
   log('초원이 텅 비어 있다. 알을 부화시켜 친구를 만들어 보자.', [], true);
@@ -2734,8 +2735,8 @@ function updateDexCount() {
 }
 function refreshDexBadges() {
   const cnt = {}; S.mons.forEach(m => cnt[m.sp] = (cnt[m.sp] || 0) + 1);
-  const bsp = S.bud?.sp;
-  for (const sp in dexBtns) { const h = dexBtns[sp].querySelector('.here'); h.hidden = !cnt[sp]; h.classList.toggle('bud', +sp === bsp); h.textContent = +sp === bsp ? '짝꿍' : cnt[sp] ? `필드 ×${cnt[sp]}` : ''; }
+  const bsp = new Set(S.buds.map(b => b.sp));
+  for (const sp in dexBtns) { const h = dexBtns[sp].querySelector('.here'); const isB = bsp.has(+sp); h.hidden = !cnt[sp] && !isB; h.classList.toggle('bud', isB); h.textContent = isB ? '짝꿍' : cnt[sp] ? `필드 ×${cnt[sp]}` : ''; }
   updateDexCount();
 }
 function filterDex() {
@@ -2922,21 +2923,22 @@ function toggleSleep(m) {
 function refreshCap() { $('#capBadge').textContent = `${S.mons.length}/${MAX_MONS}`; }
 
 // ---------- eggs, running and evolution ----------
-// Every species starts locked. Eggs (max 5) hatch only from distance run: the lock-screen run, or a
+// Every species starts locked. Eggs (max 15, empty slots refill) hatch only from distance run: the lock-screen run, or a
 // distance typed in from the Health app. Eggs hold first-stage species; their grade follows the
-// species' rarity. A buddy chosen in the manager evolves after running enough together.
+// species' rarity. Up to 3 buddies chosen in the dex evolve after running enough together.
 const GRADE = [null,
   { n: '일반', km: 2.5 }, { n: '희귀', km: 5 }, { n: '레어', km: 7.5 }, { n: '에픽', km: 10 }, { n: '전설', km: 15 }];
-const MAX_EGGS = 5;
+const MAX_EGGS = 15;
 const gradeOf = sp => { const d = SPECIES[sp]; if (d.leg || d.my) return 5; const c = d.cr ?? 45; return c >= 190 ? 1 : c >= 120 ? 2 : c >= 45 ? 3 : 4; };
 const baseOf = sp => { let s = sp; while (SPECIES[s] && SPECIES[s].fr) s = SPECIES[s].fr; return s; };
 const POOL = [[], [], [], [], [], []];
 const CHILDREN = {};
 for (const k of Object.keys(SPECIES)) { const sp = +k, d = SPECIES[sp]; if (!d.fr) POOL[gradeOf(sp)].push(sp); else (CHILDREN[d.fr] = CHILDREN[d.fr] || []).push(sp); }
-const budReady = () => !!S.bud && !!CHILDREN[S.bud.sp] && S.bud.km >= evoNeed(S.bud);
+const MAX_BUDS = 3;
+const budReady = b => !!b && !!CHILDREN[b.sp] && b.km >= evoNeed(b);
 const evoNeed = m => { const g = gradeOf(baseOf(m.sp)), stage = evoStage(m.sp); return [0, 5, 10, 15, 20, 25][g] * (stage ? 1.5 : 1); };
 const fmtKm = v => (Math.floor(v * 100) / 100).toFixed(2);
-S.eggs = []; S.unlocked = new Set(); S.bud = null; S.runs = []; S.totalKm = 0; S.eid = 1;
+S.eggs = []; S.unlocked = new Set(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
 const hatchQ = [];
 
 function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); if (dexBtns[sp]) lockDexBtn(sp); } }
@@ -2947,12 +2949,15 @@ function drawEgg() {
   S.eggs.push(e);
   save(); return e;
 }
+// 알 뽑기 버튼 없이 빈 칸은 바로 새 알로 채운다
+function fillEggs() { while (S.eggs.length < MAX_EGGS) drawEgg(); }
 // distance from any source goes to every egg and the buddy
 function applyKm(km) {
   if (!(km > 0)) return;
   S.totalKm += km;
   for (const e of [...S.eggs]) { e.km += km; if (e.km >= e.need) hatchEgg(e); }
-  if (S.bud && CHILDREN[S.bud.sp]) S.bud.km += km;
+  fillEggs();
+  for (const b of S.buds) if (CHILDREN[b.sp]) b.km += km;
 }
 // 아이폰 앱(워치 연동)에서 열렸을 때: 알 현황을 앱으로 보내고, 워치에서 달린 거리를 받는다
 var nativeT = 0;
@@ -2960,8 +2965,8 @@ function postNative() {
   const h = window.webkit?.messageHandlers?.pokeRun; if (!h) return;
   clearTimeout(nativeT);
   nativeT = setTimeout(() => {
-    const b = S.bud, img = b ? thumbOf(b.sp) || '' : '';
-    const buddy = b ? { name: SPECIES[b.sp].n, species: SPECIES[b.sp].n, km: Math.round(b.km * 100) / 100, need: CHILDREN[b.sp] ? evoNeed(b) : 0, ready: budReady(), img: img.length < 60000 ? img : '' } : null;
+    const b = S.buds[0], img = b ? thumbOf(b.sp) || '' : '';
+    const buddy = b ? { name: SPECIES[b.sp].n, species: SPECIES[b.sp].n, km: Math.round(b.km * 100) / 100, need: CHILDREN[b.sp] ? evoNeed(b) : 0, ready: budReady(b), img: img.length < 60000 ? img : '' } : null;
     try { h.postMessage({ eggs: S.eggs.map(e => ({ id: e.id, grade: GRADE[e.g].n, km: Math.round(e.km * 100) / 100, need: e.need })), buddy, total: Math.round(S.totalKm * 100) / 100 }); } catch (e) {}
   }, 300);
 }
@@ -3124,7 +3129,6 @@ function openRun() { runEl.hidden = false; setRunTab(runTab); renderRun(); rende
 $('#openRun').onclick = () => tabTo(runEl, openRun);
 $('#closeRun').onclick = () => runEl.hidden = true;
 runEl.addEventListener('click', e => { if (e.target === runEl) runEl.hidden = true; });
-$('#drawEgg').onclick = () => { const e = drawEgg(); if (e) eggSel = e; $('#drawMsg').textContent = e ? `${GRADE[e.g].n} 알이 나왔다! (${GRADE[e.g].km}km)` : '알은 5개까지만 가질 수 있어요'; renderRun(); };
 let runTab = 'egg', eggSel = null;
 try { runTab = localStorage.getItem('pk-run-tab') || 'egg'; } catch (e) {}
 function setRunTab(t) {
@@ -3136,17 +3140,17 @@ function setRunTab(t) {
 document.querySelectorAll('.runtab').forEach(b => b.onclick = () => setRunTab(b.dataset.tab));
 $('#buddy').addEventListener('click', e => {
   const a = e.target.closest('[data-act]')?.dataset.act; if (!a) return;
-  if (a === 'pick') { hideSheets(); openDex('buddy'); }
-  else if (S.bud) { log(`${J({ name: SPECIES[S.bud.sp].n },'과/와')} 같이 달리기를 그만뒀다.`); S.bud = null; save(); renderRun(); }
+  const i = +e.target.closest('[data-i]').dataset.i;
+  if (a === 'pick') { budSlot = i; hideSheets(); openDex('buddy'); }
+  else if (S.buds[i]) { log(`${J({ name: SPECIES[S.buds[i].sp].n },'과/와')} 같이 달리기를 그만뒀다.`); S.buds.splice(i, 1); save(); renderRun(); }
 });
-const EGG_HINT = ['', '초원에서 흔히 보는 포켓몬이 들어 있어요.', '조금 드문 포켓몬이 들어 있어요.', '쉽게 만나기 힘든 포켓몬이 들어 있어요.', '아주 드문 포켓몬이 들어 있어요.', '전설이나 환상의 포켓몬이 들어 있어요!'];
 function renderRun() {
   if (runEl.hidden) return;
   $('#runTotal').innerHTML = ` 총 <b>${fmtKm(S.totalKm)}</b>km · 도감 ${S.unlocked.size}/${Object.keys(SPECIES).length}`;
   if (!S.eggs.includes(eggSel)) eggSel = S.eggs[0] || null;
   const e = eggSel;
-  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">부화 중</span><div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km<div class="egg-detail">${EGG_HINT[e.g]}${e.t ? `<br>${new Date(e.t).getMonth() + 1}/${new Date(e.t).getDate()}에 얻은 알` : ''}</div></div>`
-    : `<div class="info">알이 없어요. 아래에서 알을 뽑아 주세요.</div>`;
+  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">부화 중</span><div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km</div>`
+    : '';
   $('#eggCount').textContent = `${S.eggs.length}/${MAX_EGGS}`;
   const box = $('#eggs'); box.innerHTML = '';
   for (let i = 0; i < MAX_EGGS; i++) {
@@ -3155,27 +3159,31 @@ function renderRun() {
       b.innerHTML = `<span class="tag2">부화 중</span>${eggHtml(x.g, 'wob')}<span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div><span class="small">${fmtKm(x.km)}/${x.need}km</span>`;
       b.setAttribute('aria-current', x === e); if (x.isNew) { b.classList.add('new'); x.isNew = false; }
       b.onclick = () => { eggSel = x; renderRun(); };
-    } else { b.classList.add('empty'); b.innerHTML = '빈 칸'; b.onclick = () => $('#drawEgg').click(); }
+    } else { b.classList.add('empty'); b.innerHTML = '빈 칸'; }
     box.append(b);
   }
-  $('#drawEgg').disabled = S.eggs.length >= MAX_EGGS;
-  const m = S.bud;
-  if (m && !thumbOf(m.sp)) ensureSprite(m.sp).then(renderRun).catch(() => {});
-  $('#buddy').innerHTML = !m ? `<button class="bd-empty" data-act="pick"><span class="q">?</span><b>도감에서 짝꿍 고르기</b></button>`
-    : `<div class="bd-card"><div class="bd-top"><div class="bd-pic"><img alt="" src="${thumbOf(m.sp) || ''}"></div><div class="bd-name"><b>${esc(SPECIES[m.sp].n)}</b><span>No.${String(m.sp).padStart(4, '0')}</span></div></div>`
-    + (CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady() ? '<span class="bd-tag ready">진화 준비 완료</span>' : '진화까지'}</span><span><b>${fmtKm(m.km)}</b> / ${evoNeed(m)}km</span></div></div>` : `<div><span class="bd-tag">최종 진화</span></div>`)
-    + `<div class="bd-btns"><button class="lk-btn" data-act="pick">바꾸기</button><button class="lk-btn" data-act="stop">그만하기</button></div></div>`;
+  for (const m of S.buds) if (!thumbOf(m.sp)) ensureSprite(m.sp).then(renderRun).catch(() => {});
+  $('#budCount').textContent = `${S.buds.length}/${MAX_BUDS}`;
+  $('#buddy').innerHTML = Array.from({ length: MAX_BUDS }, (_, i) => {
+    const m = S.buds[i];
+    if (!m) return `<button class="bd-empty" data-act="pick" data-i="${i}"><span class="q">?</span><b>도감에서 고르기</b></button>`;
+    return `<div class="bd-card" data-i="${i}"><div class="bd-pic"><img alt="" src="${thumbOf(m.sp) || ''}"></div><div class="bd-main"><div class="bd-name"><b>${esc(SPECIES[m.sp].n)}</b><span>No.${String(m.sp).padStart(4, '0')}</span></div>`
+      + (CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) ? '<span class="bd-tag ready">진화 준비 완료</span>' : '진화까지'}</span><span><b>${fmtKm(m.km)}</b> / ${evoNeed(m)}km</span></div></div>` : `<div><span class="bd-tag">최종 진화</span></div>`)
+      + `<div class="bd-btns"><button class="lk-btn" data-act="pick">바꾸기</button><button class="lk-btn" data-act="stop">그만하기</button></div></div></div>`;
+  }).join('');
   tickLock();
   $('#runs').innerHTML = S.runs.slice(0, 20).map(r => { const d = new Date(r.t); return `<li>${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')} <span>${r.src === 'gps' ? 'GPS' : r.src === 'watch' ? '워치' : '건강 앱'}</span><b>${fmtKm(r.km)}km</b></li>`; }).join('') || '<li><span>아직 달린 기록이 없어요</span></li>';
 }
+let budSlot = 0;
 async function setBuddySp(sp) {
-  if (S.bud?.sp !== sp) { S.bud = { sp, km: 0 }; log(`${J({ name: SPECIES[sp].n },'이/가')} 런닝 짝꿍이 되었다!`, [], true); }
+  const i = Math.min(budSlot, S.buds.length);
+  if (S.buds[i]?.sp !== sp && !S.buds.some(b => b.sp === sp)) { S.buds[i] = { sp, km: 0 }; log(`${J({ name: SPECIES[sp].n },'이/가')} 런닝 짝꿍이 되었다!`, [], true); }
   try { await ensureSprite(sp); } catch (e) {}
   save(); picked.clear(); sheet.hidden = true; setRunTab('buddy'); openRun();
 }
 // 짝꿍 진화: 필드와 따로, 부화 창에서 보여 준다
 async function evolveBuddy() {
-  const b = S.bud, kids = b && CHILDREN[b.sp]; if (!kids || evolving || hatching) return;
+  const b = S.buds.find(budReady), kids = b && CHILDREN[b.sp]; if (!kids || evolving || hatching) return;
   evolving = true;
   const from = b.sp, to = pick(kids), fromN = SPECIES[from].n, toN = SPECIES[to].n;
   try { await ensureSprite(from); await ensureSprite(to); } catch (e) { evolving = false; return; }
@@ -3188,7 +3196,7 @@ async function evolveBuddy() {
   while (gap > 60) { img.src = thumbOf(now); now = now === to ? from : to; await wait(gap); gap *= .84; }
   hatchStage.querySelector('.flash').classList.add('go'); await wait(300);
   img.src = thumbOf(to); hatchStage.classList.remove('evo');
-  S.bud = { sp: to, km: 0 }; unlock(to);
+  b.sp = to; b.km = 0; unlock(to);
   $('#hatchMsg').innerHTML = `축하해! ${J({ name: fromN },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`;
   log(`축하해! 짝꿍 ${J({ name: fromN },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`, [], true);
   const ok = $('#hatchOk'); ok.hidden = false; ok.textContent = '확인'; ok.focus();
@@ -3220,7 +3228,7 @@ function frame(now) {
   infoT -= real; if (infoT <= 0 && S.sel) { infoT = .5; renderInfo(); }
   mgrT -= real; if (mgrT <= 0) { mgrT = .5; refreshCap(); renderMgr(); renderRun();
     if (hatchQ.length && !hatching) playHatch();
-    if (budReady() && !evolving && !hatching && sheet.hidden && !drag) evolveBuddy(); }
+    if (S.buds.some(budReady) && !evolving && !hatching && sheet.hidden && !drag) evolveBuddy(); }
   placeInfo(); placeMark();
   saveT -= real; if (saveT <= 0) { saveT = 8; save(); }
   requestAnimationFrame(frame);
@@ -3231,7 +3239,7 @@ async function start(data) {
   let d = data && data.mons ? data : null;
   if (!d) { try { d = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { d = null; } }
   if (d && d.mons && (d.mons.length || d.unlocked)) await restore(d); else await fresh();
-  Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp));
+  fillEggs(); Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp));
   sky();
   requestAnimationFrame(t => { last = t; frame(t); });
   // 아이폰 앱에 준비됐다고 알리고, 현재 알 현황을 바로 보낸다
