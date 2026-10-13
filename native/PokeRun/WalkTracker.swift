@@ -15,7 +15,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
     private let geocoder = CLGeocoder()
     private let activity = CMMotionActivityManager()
     private let lastKey = "walkLastSync"
-    private let runKey = "runLastCheck"
+    private let runKey = "runLastCheck.v2"
     private var runBusy = false
     private var busy = false
 
@@ -159,9 +159,9 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
     private func detectRuns() {
         guard CMMotionActivityManager.isActivityAvailable(), !runBusy else { return }
         let now = Date()
+        // 처음에는 지난 2일을 본다 (건강 앱·워치 기록과 겹치면 게임이 한 번만 넣는다)
         if UserDefaults.standard.object(forKey: runKey) == nil {
-            UserDefaults.standard.set(now.timeIntervalSince1970, forKey: runKey)
-            return
+            UserDefaults.standard.set(now.addingTimeInterval(-2 * 24 * 3600).timeIntervalSince1970, forKey: runKey)
         }
         let last = Date(timeIntervalSince1970: UserDefaults.standard.double(forKey: runKey))
         // 지금 달리는 중일 수 있으니 마지막 10분은 다음에 본다

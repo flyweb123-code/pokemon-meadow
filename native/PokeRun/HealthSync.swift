@@ -8,7 +8,8 @@ final class HealthSync {
     static let shared = HealthSync()
 
     private let store = HKHealthStore()
-    private let lastKey = "healthLastSync"
+    // v2: 처음 켤 때 지난 2일치를 확인한다 (예전 v1 은 '지금부터'라서 앱을 다시 설치하기 전에 뛴 기록을 놓쳤다)
+    private let lastKey = "healthLastSync.v2"
     private var busy = false
 
     func refresh() {
@@ -21,10 +22,9 @@ final class HealthSync {
 
     private func query() {
         guard !busy else { return }
-        // 처음 켤 때는 지금부터 센다 (예전 운동을 한꺼번에 넣지 않음)
+        // 처음에는 지난 2일만 본다 (아주 예전 운동을 한꺼번에 넣지 않음). 같은 시간대 기록은 게임이 한 번만 넣는다.
         if UserDefaults.standard.object(forKey: lastKey) == nil {
-            UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: lastKey)
-            return
+            UserDefaults.standard.set(Date().addingTimeInterval(-2 * 24 * 3600).timeIntervalSince1970, forKey: lastKey)
         }
         busy = true
         let last = Date(timeIntervalSince1970: UserDefaults.standard.double(forKey: lastKey))
