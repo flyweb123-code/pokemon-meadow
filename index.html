@@ -123,16 +123,16 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 @keyframes blink{50%{opacity:0}}
 
 /* 관찰 일지: 상태창이 위로 늘어나며 펼쳐진다 (색은 상태창 낮/밤을 그대로 따름) */
-.journal{display:flex;flex-direction:column;margin:-2px 0 10px;padding:0 0 10px;border-bottom:3px solid var(--dlg-in);cursor:default;user-select:text;-webkit-user-select:text}
-.dlg.open .prev{display:none}
+.journal{position:absolute;left:-4px;right:-4px;bottom:calc(100% + 4px);display:flex;flex-direction:column;padding:inherit;padding-bottom:10px;border:inherit;border-bottom:0;background:inherit;box-shadow:inherit;color:inherit;cursor:default;user-select:text;-webkit-user-select:text}
+.journal{flex:none}
 .journal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:4px;font-size:16px}
 .journal-head h3{margin:0;font-size:17px;font-weight:700}
 .journal-head label{display:flex;gap:6px;align-items:center;font-size:14px}
-ol.log{list-style:none;margin:0;padding:0 4px 0 0;overflow-y:auto;min-height:60px;max-height:calc(5 * 38px);overscroll-behavior:contain;line-height:1.5}
+ol.log{list-style:none;margin:0;padding:0 4px 0 0;overflow-y:auto;height:calc(5 * 34px);overscroll-behavior:contain;line-height:1.5}
 .journal-head .small{color:var(--dim);font-size:13px}
 .dlg{cursor:pointer}
 .dlg.open .more{opacity:.5}
-ol.log li{display:grid;grid-template-columns:86px minmax(0,1fr);gap:8px;font-size:14px;line-height:1.6;padding:5px 0;border-bottom:2px dotted var(--dlg-in)}
+ol.log li{display:block;font-size:14px;line-height:1.6;padding:5px 0;border-bottom:2px dotted var(--dlg-in)}
 ol.log li:last-child{border-bottom:0}
 .dlg.night ol.log li.big .txt{color:#ff9a8a}
 ol.log li time{color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -640,6 +640,7 @@ ol.log li.big .txt{color:#c03838}
   .dlg .prev{display:none}
   .dlg .now{min-height:0}
   .dlg .more{right:4px;bottom:0}
+  .journal{left:0;right:0;bottom:calc(100% + 3px)}
   .app .win.dlg.folded{justify-self:end;align-self:end;margin:0 calc(env(safe-area-inset-right) + 8px) 8px 0;padding:0;border:3px solid var(--frame);
     box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 6px var(--dlg-in),3px 3px 0 rgba(0,0,0,.35)}
   .dlg.folded .more{padding:10px 14px}
@@ -743,7 +744,7 @@ ol.log li.big .txt{color:#c03838}
 
   <div class="hud win blue dlg" id="dlg" role="log" aria-live="polite">
     <section class="journal" id="journal" hidden>
-      <div class="journal-head"><h3>관찰 일지</h3><span class="small">최근 20개</span></div>
+      <div class="journal-head"><h3>관찰 일지</h3></div>
       <ol class="log" id="log"></ol>
     </section>
     <div class="prev" id="dlgPrev"></div>
@@ -1254,7 +1255,7 @@ function log(html, who = [], big = false) {
 function passesFilter(e) { return true; }
 function logItem(e) {
   const li = document.createElement('li'); if (e.big) li.className = 'big';
-  li.innerHTML = `<time>${Math.floor(e.t / 1440) + 1}일 ${clockStr(e.t)}</time><span class="txt">${e.html}</span>`;
+  li.innerHTML = `<span class="txt">${e.html}</span>`;
   return li;
 }
 function renderLog() { logEl.innerHTML = ''; S.log.filter(passesFilter).forEach(e => logEl.append(logItem(e))); renderDlg(); }
