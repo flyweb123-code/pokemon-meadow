@@ -1540,9 +1540,10 @@ const ensureSprite = sp => SPRITES[sp] ? Promise.resolve() : loadChunk(Math.floo
 const PSCALE = 2.75;   // 8px 단위 프레임이 정수 px 로 떨어지는 값 (3→2.75)
 const isPmd = sp => typeof SPRITES[sp] === 'object';
 // 필드 크기: 실제 키로 소(≤0.5m)·중(~1.3m)·대 세 무리로 나눠, 같은 무리는 눈에 보이는 몸 크기가 비슷하게 맞춘다 (2026-10-13)
-const SIZE_T = [46, 58, 74];
+// → 무리 안에서 똑같이 맞추니 망나뇽이 볼비트보다 작아지는 일이 생겨서, 실제 키에 따라 연속으로 커지게 (로그 눈금이라 큰 포켓몬도 화면을 넘지 않는다)
+const sizeT = sp => { const h = Math.max(.1, (SPECIES[parseInt(sp)]?.h ?? 7) / 10); return Math.max(36, Math.min(112, 40 + 14 * Math.log2(h / .3))); };
 const sizeCls = sp => { const h = SPECIES[parseInt(sp)]?.h ?? 7; return h <= 5 ? 0 : h <= 13 ? 1 : 2; };
-const scaleOf = sp => { const P = SPRITES[sp]; if (!isPmd(sp)) return SCALE * [.85, 1, 1.15][sizeCls(sp)]; if (!P.vh) return P.a.Idle[2] >= 40 ? 1.875 : PSCALE; return Math.max(1.2, Math.min(3.6, SIZE_T[sizeCls(sp)] / P.vh)); };
+const scaleOf = sp => { const P = SPRITES[sp]; if (!isPmd(sp)) return SCALE * [.85, 1, 1.15][sizeCls(sp)]; if (!P.vh) return P.a.Idle[2] >= 40 ? 1.875 : PSCALE; return Math.max(1, Math.min(4, sizeT(sp) / P.vh)); };
 // 아틀라스 프레임 사이에 투명한 틈을 넣어 다시 만든다: 확대할 때 옆 프레임의 검은 테두리가 번져 보이던 것 막기.
 // 그러면서 Idle 첫 프레임의 실제로 보이는 몸 크기(vh)를 잰다
 const padded = {};
