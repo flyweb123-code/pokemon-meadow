@@ -1,6 +1,6 @@
 // Offline cache for the home-screen app. The page is fetched fresh when online so updates arrive;
-// sprite chunks never change between versions of the same file name, so they are served from cache.
-const CACHE = 'meadow-v1';
+// sprite chunks are served from cache; bump CACHE when they change.
+const CACHE = 'meadow-v2';   // 청크가 바뀌면 올린다 (v2: 암컷 스프라이트)
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => {
