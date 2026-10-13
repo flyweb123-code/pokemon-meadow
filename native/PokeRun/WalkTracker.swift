@@ -13,7 +13,10 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
     private let pedometer = CMPedometer()
     private let geocoder = CLGeocoder()
+    private let activity = CMMotionActivityManager()
     private let lastKey = "walkLastSync"
+    private let runKey = "runLastCheck"
+    private var runBusy = false
     private var busy = false
 
     override init() {
@@ -106,6 +109,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
 
     // 지난번 이후 걸은 거리를 만보기에서 읽는다 (만보기는 최근 7일치만 갖고 있다)
     private func sync(place: String?) {
+        detectRuns()
         guard !busy, CMPedometer.isDistanceAvailable() else { return }
         busy = true
         let now = Date()
@@ -120,6 +124,63 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
                 UserDefaults.standard.set(now.timeIntervalSince1970, forKey: self.lastKey)
                 let km = meters / 1000
                 if km >= 0.01 { PhoneBridge.shared.enqueueWalk(km: km, place: place ?? "") }
+            }
+        }
+    }
+
+    // MARK: 자동 런닝 기록
+    // 런닝 시작을 누르지 않아도, 모션 기록에서 '달리기' 구간(5분 이상)을 찾아
+    // 그 구간 거리를 만보기로 재고 0.5km 이상이면 런닝 기록으로 보낸다.
+    private func detectRuns() {
+        guard CMMotionActivityManager.isActivityAvailable(), !runBusy else { return }
+        let now = Date()
+        if UserDefaults.standard.object(forKey: runKey) == nil {
+            UserDefaults.standard.set(now.timeIntervalSince1970, forKey: runKey)
+            return
+        }
+        let last = Date(timeIntervalSince1970: UserDefaults.standard.double(forKey: runKey))
+        // 지금 달리는 중일 수 있으니 마지막 10분은 다음에 본다
+        let to = now.addingTimeInterval(-10 * 60)
+        let from = max(last, now.addingTimeInterval(-7 * 24 * 3600))
+        guard to.timeIntervalSince(from) > 60 else { return }
+        runBusy = true
+        activity.queryActivityStarting(from: from, to: to, to: .main) { [weak self] acts, error in
+            guard let self else { return }
+            guard error == nil, let acts else { self.runBusy = false; return }
+            // 달리기 구간 모으기 (2분 안쪽으로 끊긴 건 이어 붙인다)
+            var segs: [(Date, Date)] = []
+            for (i, a) in acts.enumerated() {
+                let end = i + 1 < acts.count ? acts[i + 1].startDate : to
+                guard a.running, a.confidence != .low else { continue }
+                if let lastSeg = segs.last, a.startDate.timeIntervalSince(lastSeg.1) < 120 {
+                    segs[segs.count - 1].1 = end
+                } else {
+                    segs.append((a.startDate, end))
+                }
+            }
+            // 끝나지 않은 구간이 있으면 그 시작 전까지만 확인한 것으로 둔다
+            var checked = to
+            if let lastSeg = segs.last, to.timeIntervalSince(lastSeg.1) < 120 {
+                checked = lastSeg.0
+                segs.removeLast()
+            }
+            segs = segs.filter { $0.1.timeIntervalSince($0.0) >= 5 * 60 }
+            let group = DispatchGroup()
+            for (start, end) in segs {
+                group.enter()
+                self.pedometer.queryPedometerData(from: start, to: end) { data, _ in
+                    DispatchQueue.main.async {
+                        let km = (data?.distance?.doubleValue ?? 0) / 1000
+                        if km >= 0.5 {
+                            PhoneBridge.shared.enqueueAutoRun(km: km, start: start.timeIntervalSince1970, end: end.timeIntervalSince1970)
+                        }
+                        group.leave()
+                    }
+                }
+            }
+            group.notify(queue: .main) {
+                UserDefaults.standard.set(checked.timeIntervalSince1970, forKey: self.runKey)
+                self.runBusy = false
             }
         }
     }

@@ -43,7 +43,7 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
 
     // MARK: watch → app
 
-    // 대기열 한 칸: [달린 거리 km, 시작 시각(초, 모르면 0)]
+    // 대기열 한 칸: [달린 거리 km, 시작 시각(초, 모르면 0), 끝 시각(초), 자동이면 1]
     private func pendingRuns() -> [[Double]] {
         let raw = UserDefaults.standard.array(forKey: pendingKey) ?? []
         return raw.compactMap { ($0 as? [Double]) ?? (($0 as? Double).map { [$0, 0] }) }
@@ -52,6 +52,14 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
     private func enqueue(_ km: Double, start: Double) {
         var list = pendingRuns()
         list.append([km, start])
+        UserDefaults.standard.set(list, forKey: pendingKey)
+        flushPending()
+    }
+
+    // 모션 기록에서 찾은 달리기 (WalkTracker)
+    func enqueueAutoRun(km: Double, start: Double, end: Double) {
+        var list = pendingRuns()
+        list.append([km, start, end, 1])
         UserDefaults.standard.set(list, forKey: pendingKey)
         flushPending()
     }
@@ -95,7 +103,9 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
         UserDefaults.standard.set([[Double]](), forKey: pendingKey)
         for item in list {
             let km = item[0], startMs = (item.count > 1 ? item[1] : 0) * 1000
-            web.evaluateJavaScript("window.pokeRunAddKm(\(km), \(Int(startMs)))") { [weak self] result, error in
+            let endMs = (item.count > 2 ? item[2] : 0) * 1000
+            let src = item.count > 3 && item[3] == 1 ? "auto" : "watch"
+            web.evaluateJavaScript("window.pokeRunAddKm(\(km), \(Int(startMs)), '\(src)', \(Int(endMs)))") { [weak self] result, error in
                 // 넣지 못했으면 다시 대기열로
                 if error != nil || (result as? Bool) == false, let self {
                     var back = self.pendingRuns()

@@ -38,7 +38,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .win{background:var(--win);border:4px solid var(--frame);box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px var(--inner),6px 6px 0 rgba(0,0,0,.35);padding:14px 20px}
 .win.blue{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px var(--inner-blue),6px 6px 0 rgba(0,0,0,.35)}
 .hud{position:absolute;z-index:20}
-.goldbar{right:170px;top:24px;display:flex;align-items:center;gap:8px}
+.goldbar{right:170px;top:20px;height:78px;display:flex;align-items:center;gap:8px}
 .berrybar{left:20px;top:92px}
 .gold{display:flex;align-items:center;gap:6px;font-size:20px;color:#fff;text-shadow:2px 0 0 #20202c,-2px 0 0 #20202c,0 2px 0 #20202c,0 -2px 0 #20202c,2px 2px 0 #20202c}
 .gold b{color:#ffd84a!important}
@@ -49,6 +49,8 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 @keyframes gup{0%{transform:translateY(-4px)}50%{transform:translateY(2px)}}
 .coin{display:inline-block;width:14px;height:14px;background:#ffc830;box-shadow:inset -3px -3px 0 #d08a00,inset 3px 3px 0 #fff2a0,0 0 0 2px #6a4400;flex:none}
 .mapico{width:46px;height:46px;display:grid;place-items:center;border:3px solid var(--frame);background:var(--win);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner),3px 3px 0 rgba(0,0,0,.35);cursor:pointer;padding:0}
+.mapico .b-night{display:none}.boot-night .mapico .b-night{display:block}.boot-night .mapico .b-day{display:none}.mapico.night .b-night{display:block}.mapico.night .b-day{display:none}
+.mapico.night{--win:#1e2340;--inner:#46508a;--frame:#0e1024}
 .mapico[aria-pressed="true"]{background:#ffe27a;box-shadow:inset 0 0 0 3px #ffe27a,inset 0 0 0 5px var(--frame),1px 1px 0 rgba(0,0,0,.35);transform:translate(2px,2px)}
 .shopwin{max-width:560px;max-height:90vh;display:flex;flex-direction:column}
 .shop-gold{display:inline-flex;align-items:center;gap:6px;font-size:18px}
@@ -63,7 +65,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 @keyframes vspin{to{transform:rotate(360deg)}}
 .vin:not(.own) .vpic svg{filter:saturate(.35) brightness(.9)}
 .vin.nofile .vpic{opacity:.45}
-.vname{font-size:11px;line-height:1.3;text-align:center;word-break:keep-all;min-height:2.6em;display:flex;align-items:center}
+.vname{font-size:11px;line-height:1.3;text-align:center;word-break:keep-all;overflow-wrap:anywhere;min-height:2.6em;display:flex;align-items:center;justify-content:center;width:100%;max-width:100%;padding:0 3px;box-sizing:border-box;overflow:hidden}
 .vtag{font-size:10px;padding:1px 5px;background:var(--frame);color:var(--win)}
 .vin.cur .vtag{background:#e8a020}.vin:not(.own) .vtag{background:#a86a00}
 .shop-bar{display:flex;align-items:center;gap:8px;margin-top:10px;border:3px solid var(--frame);background:var(--card);padding:8px}
@@ -87,7 +89,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .clockwin,.dlg{transition:background-color .6s,color .6s}
 .boot *,.boot *::before,.boot *::after{transition:none!important}
 .boot-night #night{background-color:rgb(48,57,110)}
-.boot-night .clockwin,.boot-night .dlg,.clockwin.night,.dlg.night{--win:#1e2340;--win-ink:#e4e2f6;--inner:#46508a;--inner-blue:#46508a;--dlg-in:#46508a;--dim:#8e96c4;--cursor:#ffd75e;--frame:#0e1024;color:var(--win-ink)}
+.boot-night .clockwin,.boot-night .dlg,.boot-night .mapico,.clockwin.night,.dlg.night{--win:#1e2340;--win-ink:#e4e2f6;--inner:#46508a;--inner-blue:#46508a;--dlg-in:#46508a;--dim:#8e96c4;--cursor:#ffd75e;--frame:#0e1024;color:var(--win-ink)}
 .dlg.night .now b{color:#ffd75e}
 .clockwin.night .t{color:#ffe9a8;text-shadow:0 0 6px rgba(255,220,120,.35)}
 .clockwin .t{font-size:32px;font-weight:700;font-variant-numeric:tabular-nums}
@@ -116,7 +118,10 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .journal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;font-size:16px}
 .journal-head h3{margin:0;font-size:20px;font-weight:700}
 .journal-head label{display:flex;gap:6px;align-items:center;font-size:14px}
-ol.log{list-style:none;margin:0;padding:0 4px 0 0;overflow-y:auto;min-height:80px}
+ol.log{list-style:none;margin:0;padding:0 4px 0 0;overflow-y:auto;min-height:80px;max-height:calc(5 * 39px);overscroll-behavior:contain}
+.journal-head .small{color:var(--dim);font-size:13px}
+.dlg{cursor:pointer}
+.dlg.open .more{opacity:.5}
 ol.log li{display:grid;grid-template-columns:86px minmax(0,1fr);gap:8px;font-size:14px;line-height:1.6;padding:5px 0;border-bottom:2px dotted var(--inner)}
 ol.log li time{color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
 ol.log li.big .txt{color:#c03838}
@@ -298,8 +303,50 @@ ol.log li.big .txt{color:#c03838}
 .set-sec h4{margin:0 0 6px;font-size:18px}
 .set-sec p{margin:0 0 12px;line-height:1.55;color:var(--dim);font-size:13px}
 .set-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.set-btns.one{grid-template-columns:1fr;margin-top:12px}
+.vol{display:grid;grid-template-columns:76px 40px minmax(0,1fr) 40px 30px;align-items:center;gap:6px;margin-bottom:10px;font-size:15px}
+.vol-b{height:40px;border:3px solid var(--frame);background:var(--win);color:var(--ink,#20202c);font:inherit;font-size:13px;padding:0;cursor:pointer;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);touch-action:manipulation}
+.vol-b:active{transform:translateY(2px);box-shadow:none}
+.vol-bar{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px;height:28px;padding:3px;border:3px solid var(--frame);background:#20202c;touch-action:none;cursor:pointer}
+.vol-bar i{background:#3a3a52}.vol-bar i.on{background:#5ad06a;box-shadow:inset 0 -3px 0 #2a8a3a}
+.vol-bar i.on.hi{background:#ffd84a;box-shadow:inset 0 -3px 0 #c89a00}
+.vol-v{text-align:right;font-variant-numeric:tabular-nums}
 .lk-btn.danger{grid-column:1 / -1;color:#b03030;border-color:#b03030}
 #mgrRandom{padding:10px 18px}
+.mtabs{display:grid;grid-template-columns:1fr 1fr;border:3px solid var(--frame);margin:0 0 10px}
+.mtabs button{font:inherit;font-size:15px;padding:8px;border:0;background:var(--win);color:var(--win-ink);cursor:pointer}
+.mtabs button+button{border-left:3px solid var(--frame)}
+.mtabs button[aria-selected="true"]{background:var(--frame);color:var(--win);font-weight:700}
+.mtab:not([hidden]){flex:1;min-height:0;display:flex;flex-direction:column}
+.mtab .mgr-body{flex:1}
+.box-tools{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.boxgrid{flex:1;min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;align-content:start;padding:2px}
+.pk{position:relative;font:inherit;border:3px solid var(--inner);background:#fff;padding:16px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--win-ink);cursor:pointer;min-width:0}
+.pk img{height:52px;image-rendering:pixelated;object-fit:contain}
+.pk .nm{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk .hearts{font-size:9px;letter-spacing:-1px;color:#e04870}
+.rk{display:inline-block;min-width:18px;text-align:center;font-size:11px;font-weight:700;color:#fff;padding:0 4px;border:2px solid rgba(0,0,0,.25)}
+.rk.S{background:#e8a020}.rk.A{background:#e04848}.rk.B{background:#8a5ad0}.rk.C{background:#3a80d0}.rk.D{background:#40a060}.rk.E{background:#909098}.rk.F{background:#6a6a70}
+.pk .rk{position:absolute;left:3px;top:3px}
+.pk .tg{position:absolute;right:3px;top:3px;font-size:9px;background:var(--frame);color:var(--win);padding:1px 3px}
+.pk .tg.bud{background:#e8a020;color:#fff}
+.pk .sh,.pp-body .sh{color:#e8a020;font-size:12px;margin-left:2px;text-shadow:0 0 4px rgba(255,200,40,.7)}
+.shiny img,.mon.shiny .act img,.mon.shiny .spr,img.shiny{filter:hue-rotate(var(--shue,150deg)) saturate(1.25)}
+.mon.shiny .act::after{content:'✦';position:absolute;right:-6px;top:-6px;color:#ffd84a;font-size:12px;text-shadow:0 0 4px #fff;animation:twk 1.2s steps(2) infinite}
+@keyframes twk{50%{opacity:.2}}
+.pp-body{border:3px solid var(--inner);background:#fff;padding:10px 12px;margin-bottom:12px}
+.pp-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pp-top b{font-size:17px}.pp-top .no{font-size:12px;color:var(--dim)}
+.pp-top .rk{font-size:14px;padding:1px 8px;margin-left:auto}
+.ivs{display:grid;grid-template-columns:auto 1fr auto;gap:3px 8px;align-items:center;font-size:12px;margin:8px 0}
+.ivs .b{height:8px;border:2px solid var(--frame);background:#eee}.ivs .b i{display:block;height:100%;background:#4a9a50}
+.ivs .b i.max{background:#e8a020}
+.pp-fr{display:flex;justify-content:space-between;font-size:13px;margin-top:4px}.pp-fr .hearts{color:#e04870;letter-spacing:1px}
+.pp-meta{font-size:12px;color:var(--dim);margin-top:4px;line-height:1.5}
+.pp-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pokepop .boxbtn{display:block;width:100%;font:inherit;font-size:15px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:10px 8px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
+.pokepop .boxbtn.off{background:var(--win);color:var(--frame)}.pokepop .boxbtn[disabled]{opacity:.5}
+.hatch .rkline{font-size:14px;margin:-4px 0 10px}
+.hatch-stage img.shiny{filter:hue-rotate(var(--shue)) saturate(1.25) drop-shadow(0 0 8px #ffe680)}
 .mgr-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px}
 .slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(118px,auto);gap:8px;overflow-y:auto;align-content:start;padding:4px}
 .slot{position:relative;border:3px solid var(--inner);background:#fff;padding:6px 4px 8px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;font-size:13px;min-width:0}
@@ -532,7 +579,7 @@ ol.log li.big .txt{color:#c03838}
   .clockwin{order:-1;margin:14px 0 0;align-self:flex-start}
   .clockwin .t{font-size:24px}
   .menuwin{flex-direction:row;flex-wrap:wrap;gap:2px 18px}
-  .cmdwin{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .cmdwin{grid-template-columns:minmax(0,1fr)}
   .dlg{font-size:16px;min-height:0}
   .journal{width:auto;max-height:60vh}
   .card{width:auto}
@@ -553,7 +600,7 @@ ol.log li.big .txt{color:#c03838}
 @media (max-width:760px),(max-height:500px) and (orientation:landscape){
   html,body{height:100%;overflow:hidden;overscroll-behavior:none;background:var(--frame)}
   .app{position:fixed;inset:0;bottom:calc(0px - var(--ext,0px));height:auto;min-height:0;overflow:hidden;display:grid;padding:0;gap:0;background:var(--frame);
-    grid-template-columns:minmax(0,3fr) minmax(0,2fr);grid-template-rows:minmax(0,1fr) auto auto;
+    grid-template-columns:minmax(0,3fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto auto;
     grid-template-areas:"stage stage" "stage stage" "menu cmd"}
   .stage-wrap{grid-area:stage;position:relative;inset:auto;aspect-ratio:auto;margin:0;overflow:hidden;
     touch-action:manipulation;scrollbar-width:none;-webkit-overflow-scrolling:touch;background:var(--forest)}
@@ -566,8 +613,8 @@ ol.log li.big .txt{color:#c03838}
   .clockwin{grid-area:stage;align-self:start;justify-self:start;z-index:25;margin:calc(env(safe-area-inset-top) + 8px) 0 0 calc(env(safe-area-inset-left) + 8px);
     padding:6px 12px;gap:8px;box-shadow:3px 3px 0 rgba(0,0,0,.35)}
   .clockwin .t{font-size:18px}
-  .goldbar{grid-area:stage;align-self:start;justify-self:end;z-index:25;margin:calc(env(safe-area-inset-top) + 8px) calc(env(safe-area-inset-right) + 8px) 0 0;flex-direction:column;align-items:flex-end;gap:8px}
-  .gold{font-size:18px}
+  .goldbar{grid-area:stage;align-self:start;justify-self:end;z-index:25;height:auto;margin:calc(env(safe-area-inset-top) + 8px) calc(env(safe-area-inset-right) + 8px) 0 0;flex-direction:column;align-items:flex-end;gap:8px}
+  .gold{font-size:18px;height:42px}
   .berrybar{grid-area:stage;align-self:start;justify-self:start;z-index:25;margin:calc(env(safe-area-inset-top) + 60px) 0 0 calc(env(safe-area-inset-left) + 8px)}
   .clockwin .d{font-size:12px}
   .card{grid-row:1;grid-column:1/-1;position:relative;align-self:end;z-index:30;width:auto;margin:0 8px 8px;max-height:62%;overflow-y:auto;left:auto!important;top:auto!important;padding:10px 14px 12px}
@@ -588,7 +635,7 @@ ol.log li.big .txt{color:#c03838}
   .dlg.folded .more{padding:10px 14px}
   .menuwin,.cmdwin{margin:0;border:0;box-shadow:none;background:var(--frame);display:grid;gap:0;padding:0 0 var(--sab)}
   .menuwin{grid-area:menu;grid-template-columns:repeat(3,minmax(0,1fr));padding-left:env(safe-area-inset-left)}
-  .cmdwin{grid-area:cmd;grid-template-columns:repeat(2,minmax(0,1fr));padding-right:env(safe-area-inset-right)}
+  .cmdwin{grid-area:cmd;grid-template-columns:minmax(0,1fr);padding-right:env(safe-area-inset-right)}
   /* bottom tray: raised pixel keys on a dark tray; the tray runs on into the space under it */
   .menuwin,.cmdwin{gap:6px;padding-top:8px;padding-bottom:calc(var(--sab) + 8px);border-top:3px solid #23232f}
   .menuwin{padding-left:calc(env(safe-area-inset-left) + 6px);padding-right:3px}
@@ -670,7 +717,7 @@ ol.log li.big .txt{color:#c03838}
   <nav class="hud win menuwin" aria-label="메뉴">
     <button class="opt" id="openDex">도감</button>
     <button class="opt" id="openRun">알</button>
-    <button class="opt" id="openMgr">필드 <span id="capBadge">0/12</span></button>
+    <button class="opt" id="openMgr">포켓몬 <span id="capBadge">0/12</span></button>
     <button class="opt" id="openSet">설정</button>
   </nav>
 
@@ -679,7 +726,7 @@ ol.log li.big .txt{color:#c03838}
   </div>
 
   <div class="hud berrybar">
-    <button class="mapico" id="btnBerry" aria-pressed="false" aria-label="열매 주기"><svg viewBox="0 0 12 12" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><path fill="#3a7a2a" d="M6 0h2v1h1v1H7v1H6z"/><path fill="#5aa83a" d="M4 1h2v2H4z"/><path fill="#20202c" d="M3 3h6v1h1v1h1v4h-1v1H9v1H3v-1H2V9H1V5h1V4h1z"/><path fill="#d8344a" d="M3 4h6v1h1v4H9v1H3V9H2V5h1z"/><path fill="#ff7a8a" d="M3 5h2v2H3z"/><path fill="#fff" d="M3 5h1v1H3z"/><path fill="#9a1a30" d="M8 8h1v1H8zM4 9h4v1H4z"/></svg></button>
+    <button class="mapico" id="btnBerry" aria-pressed="false" aria-label="열매 주기"><svg class="b-day" viewBox="0 0 12 12" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><path fill="#3a7a2a" d="M6 0h2v1h1v1H7v1H6z"/><path fill="#5aa83a" d="M4 1h2v2H4z"/><path fill="#20202c" d="M3 3h6v1h1v1h1v4h-1v1H9v1H3v-1H2V9H1V5h1V4h1z"/><path fill="#d8344a" d="M3 4h6v1h1v4H9v1H3V9H2V5h1z"/><path fill="#ff7a8a" d="M3 5h2v2H3z"/><path fill="#fff" d="M3 5h1v1H3z"/><path fill="#9a1a30" d="M8 8h1v1H8zM4 9h4v1H4z"/></svg><svg class="b-night" viewBox="0 0 12 12" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><path fill="#2a5a4a" d="M6 0h2v1h1v1H7v1H6z"/><path fill="#3e7a5e" d="M4 1h2v2H4z"/><path fill="#0e1024" d="M3 3h6v1h1v1h1v4h-1v1H9v1H3v-1H2V9H1V5h1V4h1z"/><path fill="#7a3a8a" d="M3 4h6v1h1v4H9v1H3V9H2V5h1z"/><path fill="#b070c8" d="M3 5h2v2H3z"/><path fill="#e8e2ff" d="M3 5h1v1H3z"/><path fill="#46205a" d="M8 8h1v1H8zM4 9h4v1H4z"/><path fill="#ffd75e" d="M10 0h1v1h-1zM9 1h1v1H9zM11 1h1v1h-1zM10 2h1v1h-1zM1 1h1v1H1z"/></svg></button>
   </div>
 
   <div id="edge" aria-hidden="true"></div>
@@ -695,14 +742,12 @@ ol.log li.big .txt{color:#c03838}
 
   <section class="hud win journal" id="journal" hidden>
     <div class="journal-head">
-      <h3>관찰 일지</h3>
-      <label><input type="checkbox" id="onlySel"> 선택한 포켓몬만</label>
+      <h3>관찰 일지</h3><span class="small">최근 20개</span>
     </div>
     <ol class="log" id="log"></ol>
   </section>
 
   <div class="hud win cmdwin" id="cmd" role="group" aria-label="명령">
-    <button class="opt wide" id="btnLog" aria-pressed="false">일지</button>
     <button class="opt wide" id="openShop" aria-pressed="false">상점</button>
   </div>
 
@@ -748,12 +793,9 @@ ol.log li.big .txt{color:#c03838}
       <section class="set-sec">
         <h4>소리</h4>
         <p>효과음은 아이폰 무음 모드에서 나지 않아요. 배경 음악은 곡 파일을 한 번 가져와야 나와요(이 기기에만 저장).</p>
-        <div class="set-btns"><button class="lk-btn main" id="bgmToggle">배경 음악 켜짐</button><button class="lk-btn main" id="musicImport">곡 파일 가져오기</button><input type="file" id="musicFile" accept="audio/*,.mp3" multiple hidden><button class="lk-btn main" id="sfxToggle">효과음 켜짐</button></div>
-      </section>
-      <section class="set-sec">
-        <h4>초원</h4>
-        <p>포켓몬, 알, 도감, 달린 기록이 모두 지워져요.</p>
-        <div class="set-btns"><button class="lk-btn danger" id="reset">초원 초기화</button></div>
+        <div class="vol" data-k="bgm"><span class="vol-n">배경 음악</span><button class="vol-b" data-d="-1" aria-label="배경 음악 작게">◀</button><div class="vol-bar" role="slider" aria-label="배경 음악 볼륨" aria-valuemin="0" aria-valuemax="10"></div><button class="vol-b" data-d="1" aria-label="배경 음악 크게">▶</button><b class="vol-v"></b></div>
+        <div class="vol" data-k="sfx"><span class="vol-n">효과음</span><button class="vol-b" data-d="-1" aria-label="효과음 작게">◀</button><div class="vol-bar" role="slider" aria-label="효과음 볼륨" aria-valuemin="0" aria-valuemax="10"></div><button class="vol-b" data-d="1" aria-label="효과음 크게">▶</button><b class="vol-v"></b></div>
+        <div class="set-btns one"><button class="lk-btn main" id="musicImport">곡 파일 가져오기</button><input type="file" id="musicFile" accept="audio/*,.mp3" multiple hidden></div>
       </section>
       <p class="credit set-credit">그림 PMDCollab (CC BY-NC 4.0) · 포켓몬 © Nintendo · Creatures · GAME FREAK. 개인 팬 게임이에요.</p>
     </div>
@@ -761,12 +803,19 @@ ol.log li.big .txt{color:#c03838}
 </div>
 
 <div class="sheet" id="mgr" hidden>
-  <div class="win mgrwin" role="dialog" aria-label="필드">
-    <div class="sheet-head"><h3>필드<span class="cap" id="mgrCap"></span></h3><button class="opt" id="closeMgr">닫기</button></div>
-    <div class="mgr-tools"><button class="lk-btn main" id="mgrRandom">무작위 12마리</button></div>
-    <div class="mgr-body">
-      <div class="slots" id="slots"></div>
-      <section class="mgr-detail" id="mgrDetail" aria-live="polite"></section>
+  <div class="win mgrwin" role="dialog" aria-label="포켓몬">
+    <div class="sheet-head"><h3>포켓몬<span class="cap" id="mgrCap"></span></h3><button class="opt" id="closeMgr">닫기</button></div>
+    <div class="mtabs" role="tablist"><button role="tab" data-t="field">필드</button><button role="tab" data-t="box">포켓몬</button></div>
+    <div class="mtab" data-t="field">
+      <div class="mgr-tools"><button class="lk-btn main" id="mgrRandom">무작위 12마리</button></div>
+      <div class="mgr-body">
+        <div class="slots" id="slots"></div>
+        <section class="mgr-detail" id="mgrDetail" aria-live="polite"></section>
+      </div>
+    </div>
+    <div class="mtab boxtab" data-t="box" hidden>
+      <div class="box-tools"><span class="small" id="boxCount"></span><div class="bag-sort" id="boxSort"><button data-sort="new">최신</button><button data-sort="rank">랭크</button><button data-sort="fr">친밀도</button><button data-sort="no">번호</button></div></div>
+      <div class="boxgrid" id="boxGrid"></div>
     </div>
   </div>
 </div>
@@ -820,6 +869,14 @@ ol.log li.big .txt{color:#c03838}
     <button class="boxbtn" id="dpAct"></button>
   </div>
 </div>
+<div class="dexpop pokepop" id="pokePop" hidden>
+  <div class="win" role="dialog" aria-label="포켓몬 정보">
+    <div class="dp-head"><span id="ppPos"></span><button class="opt" id="ppClose">닫기</button></div>
+    <div class="dp-stage"><button class="dp-nav" id="ppPrev" aria-label="이전">◀</button><div class="dp-pic" id="ppPic"><img alt="" id="ppImg"></div><button class="dp-nav" id="ppNext" aria-label="다음">▶</button></div>
+    <div class="pp-body" id="ppBody"></div>
+    <div class="pp-btns"><button class="boxbtn" id="ppField"></button><button class="boxbtn off" id="ppBud"></button></div>
+  </div>
+</div>
 <div class="bagpop" id="bagPop" hidden>
   <div class="win" role="dialog" aria-label="알 정보">
     <div class="incu-box bag-pick" id="bagPick"></div>
@@ -844,7 +901,10 @@ const SPECIES = {"1":{"n":"이상해씨","g":"씨앗포켓몬","t":[12,4],"gen":
 const W = 960, H = 600, SCALE = 1.5;
 const MAX_MONS = 12;   // the meadow holds at most 12 residents
 // ---------- 효과음: 파일 없이 사각파·잡음으로 만드는 옛 휴대용 게임기 소리 ----------
-let sfxOn = true; try { sfxOn = localStorage.getItem('pk-sfx') !== '0'; } catch (e) {}
+// 볼륨 0~10 (0 = 끔). 예전 켜짐/꺼짐 설정은 10/0으로 옮긴다
+const VOL = { bgm: 10, sfx: 10 };
+try { for (const k of ['bgm', 'sfx']) { const v = localStorage.getItem('pk-' + k + '-vol'); VOL[k] = v != null ? Math.max(0, Math.min(10, +v || 0)) : localStorage.getItem('pk-' + k) === '0' ? 0 : 10; } } catch (e) {}
+let sfxOn = VOL.sfx > 0;
 let actx = null, noiseBuf = null;
 function audio() {
   if (!actx) { const A = window.AudioContext || window.webkitAudioContext; if (!A) return null; actx = new A(); }
@@ -857,7 +917,7 @@ function tone(f, t0, dur, { type = 'square', vol = .07, to = 0, steps = 0 } = {}
   const a = actx, o = a.createOscillator(), g = a.createGain();
   o.type = type; o.frequency.setValueAtTime(f, t0);
   if (to) { if (steps) { for (let i = 1; i <= steps; i++) o.frequency.setValueAtTime(f + (to - f) * i / steps, t0 + dur * i / (steps + 1)); } else o.frequency.linearRampToValueAtTime(to, t0 + dur); }
-  g.gain.setValueAtTime(vol, t0); g.gain.setValueAtTime(vol, t0 + dur * .8); g.gain.linearRampToValueAtTime(0, t0 + dur);
+  vol *= VOL.sfx / 10; g.gain.setValueAtTime(vol, t0); g.gain.setValueAtTime(vol, t0 + dur * .8); g.gain.linearRampToValueAtTime(0, t0 + dur);
   o.connect(g).connect(a.destination); o.start(t0); o.stop(t0 + dur + .02);
 }
 function noise(t0, dur, vol = .12, hp = 1200) {
@@ -865,7 +925,7 @@ function noise(t0, dur, vol = .12, hp = 1200) {
   if (!noiseBuf) { noiseBuf = a.createBuffer(1, a.sampleRate * .5, a.sampleRate); const d = noiseBuf.getChannelData(0); let v = 0; for (let i = 0; i < d.length; i++) { if (i % 6 === 0) v = Math.random() * 2 - 1; d[i] = v; } }
   const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
   src.buffer = noiseBuf; f.type = 'highpass'; f.frequency.value = hp;
-  g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + dur);
+  vol = Math.max(.002, vol * VOL.sfx / 10); g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + dur);
   src.connect(f).connect(g).connect(a.destination); src.start(t0); src.stop(t0 + dur + .02);
 }
 const NOTE = n => 440 * Math.pow(2, (n - 69) / 12);
@@ -887,6 +947,7 @@ function sfx(name, k = 0) {
       melody(e + .1, [88, 0, 91, 96], .07, { vol: .05 }); tone(NOTE(84), e + .1, .45, { type: 'triangle', vol: .07 }); break; }
     case 'evotick': tone(NOTE(60 + (k % 12) * 2 + Math.floor(k / 6) * 2), t, .05, { vol: .045 }); break;
     case 'evolve': melody(t, [67, 72, 76, 79, 0, 76, 79, 84], .1, { vol: .06 }); melody(t, [55, 60, 64, 67, 0, 64, 67, 72], .1, { type: 'triangle', vol: .08 }); break;
+    case 'shiny': for (let i = 0; i < 6; i++) tone(NOTE(96 + (i % 3) * 3), t + i * .07, .06, { vol: .045 }); break;
     case 'pickup': tone(NOTE(88), t, .05, { vol: .05 }); tone(NOTE(93), t + .06, .1, { vol: .05 }); break;
   }
 }
@@ -894,22 +955,22 @@ function sfx(name, k = 0) {
 // 곡 파일은 공개 사이트에 올리지 않는다. 설정 › 소리 › '곡 파일 가져오기'로 한 번 넣으면 이 기기에 남는다.
 const TRACKS = [
   { id: 'azalea', n: '고동마을·검은먹시티', g: '금·은', price: 0, c: '#d8a040', key: /azalea|blackthorn/i },
-  { id: 'pallet', n: '태초마을', g: '레드·블루', price: 300, c: '#e85050', key: /pallet/i },
-  { id: 'oak', n: '오박사 연구소', g: '레드·블루', price: 300, c: '#a0a0b0', key: /oak/i },
-  { id: 'violet', n: '도라지시티·담청시티', g: '금·은', price: 500, c: '#9a6ad8', key: /violet|olivine/i },
-  { id: 'kanto', n: '상록·회색·블루·노랑시티·홍련섬', g: '금·은', price: 500, c: '#50a060', key: /viridian|pewter|cerulean|cinnabar/i },
-  { id: 'surf1', n: '파도타기 (레드·블루)', g: '레드·블루', price: 800, c: '#4080e0', key: /surfing/i },
-  { id: 'goldenrod', n: '금빛시티', g: '금·은', price: 800, c: '#f0c020', key: /goldenrod/i },
-  { id: 'celadon', n: '무지개시티·연분홍시티', g: '금·은', price: 1000, c: '#e070b0', key: /celadon|fuchsia|fuschia/i },
-  { id: 'ecruteak', n: '인주시티·진청시티', g: '금·은', price: 1000, c: '#c05030', key: /ecruteak|cianwood/i },
-  { id: 'park', n: '자연공원', g: '금·은', price: 1200, c: '#70b040', key: /national.?park/i },
-  { id: 'surf2', n: '파도타기 (금·은)', g: '금·은', price: 1200, c: '#30b0c0', key: /surf.?theme/i },
-  { id: 'lavender', n: '보라타운', g: '금·은', price: 1500, c: '#7050a0', key: /lavender/i },
+  { id: 'pallet', n: '태초마을', g: '레드·블루', price: 100, c: '#e85050', key: /pallet/i },
+  { id: 'oak', n: '오박사 연구소', g: '레드·블루', price: 100, c: '#a0a0b0', key: /oak/i },
+  { id: 'violet', n: '도라지시티·담청시티', g: '금·은', price: 100, c: '#9a6ad8', key: /violet|olivine/i },
+  { id: 'kanto', n: '상록·회색·블루·노랑시티·홍련섬', g: '금·은', price: 100, c: '#50a060', key: /viridian|pewter|cerulean|cinnabar/i },
+  { id: 'surf1', n: '파도타기 (레드·블루)', g: '레드·블루', price: 100, c: '#4080e0', key: /surfing/i },
+  { id: 'goldenrod', n: '금빛시티', g: '금·은', price: 100, c: '#f0c020', key: /goldenrod/i },
+  { id: 'celadon', n: '무지개시티·연분홍시티', g: '금·은', price: 100, c: '#e070b0', key: /celadon|fuchsia|fuschia/i },
+  { id: 'ecruteak', n: '인주시티·진청시티', g: '금·은', price: 100, c: '#c05030', key: /ecruteak|cianwood/i },
+  { id: 'park', n: '자연공원', g: '금·은', price: 100, c: '#70b040', key: /national.?park/i },
+  { id: 'surf2', n: '파도타기 (금·은)', g: '금·은', price: 100, c: '#30b0c0', key: /surf.?theme/i },
+  { id: 'lavender', n: '보라타운', g: '금·은', price: 100, c: '#7050a0', key: /lavender/i },
 ];
 const OLD_TRACKS = { forest: 500, lake: 800, sea: 1200, fest: 1800, battle: 2500 };   // 예전 직접 만든 곡: 산 골드는 돌려준다
-let bgmOn = true; try { bgmOn = localStorage.getItem('pk-bgm') !== '0'; } catch (e) {}
+let bgmOn = VOL.bgm > 0;
 const bgm = { el: new Audio(), id: null, url: '', preview: null, prevT: 0, have: new Set() };
-bgm.el.loop = true; bgm.el.volume = .55; bgm.el.preload = 'auto';
+bgm.el.loop = true; bgm.el.volume = .55 * VOL.bgm / 10; bgm.el.preload = 'auto';
 // IndexedDB: 곡 이름표 → 파일
 function musicDB() {
   return new Promise((res, rej) => { const r = indexedDB.open('pk-music', 1); r.onupgradeneeded = () => r.result.createObjectStore('t'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
@@ -1165,14 +1226,14 @@ const awake = m => m.state !== 'sleep' && !m.hidden;
 function clockStr(c = S.clock) { const m = Math.floor(c % 1440); return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); }
 
 // ---------- log ----------
-const logEl = $('#log');
+const logEl = $('#log'); const LOG_MAX = 20;
 function log(html, who = [], big = false) {
   const e = { t: S.clock, html, who: who.map(m => m.uid), big };
-  S.log.unshift(e); if (S.log.length > 200) S.log.pop();
-  if (passesFilter(e)) { logEl.prepend(logItem(e)); while (logEl.children.length > 200) logEl.lastChild.remove(); }
+  S.log.unshift(e); while (S.log.length > LOG_MAX) S.log.pop();
+  if (passesFilter(e)) { logEl.prepend(logItem(e)); while (logEl.children.length > LOG_MAX) logEl.lastChild.remove(); }
   renderDlg();
 }
-function passesFilter(e) { return !$('#onlySel').checked || !S.sel || e.who.includes(S.sel.uid); }
+function passesFilter(e) { return true; }
 function logItem(e) {
   const li = document.createElement('li'); if (e.big) li.className = 'big';
   li.innerHTML = `<time>${Math.floor(e.t / 1440) + 1}일 ${clockStr(e.t)}</time><span class="txt">${e.html}</span>`;
@@ -1218,7 +1279,7 @@ async function spawn(sp, opts = {}) {
     x: 0, y: 0, tx: 0, ty: 0, face: 1, lift: 0, w: d.w * scaleOf(sp), h: d.h * scaleOf(sp), at: 0,
     energy: opts.energy ?? rnd(60, 95), hunger: opts.hunger ?? rnd(10, 45), social: opts.social ?? rnd(10, 50),
     state: 'idle', t: rnd(.5, 2), goal: null, partner: null, hidden: false, bubT: 0, formT: 0,
-    home: randLand(), born: opts.born ?? S.clock, zT: rnd(0, 1.2),
+    home: randLand(), born: opts.born ?? S.clock, zT: rnd(0, 1.2), pid: opts.pid ?? null,
   };
   S.uid = Math.max(S.uid, m.uid + 1);
   const p = opts.x != null ? { x: opts.x, y: opts.y } : (DEX[sp].mv === 'swim' ? randPond(.6) : randLand());
@@ -1236,6 +1297,7 @@ async function spawn(sp, opts = {}) {
   el.querySelector('.shadow').style.transform = `scale(${clamp(m.w / 60, .7, 1.8)})`;
   m.bub = document.createElement('div'); m.bub.className = 'bubble'; m.bub.hidden = true; fxEl.append(m.bub);
   m.tag = document.createElement('div'); m.tag.className = 'tag'; m.tag.textContent = m.name; m.tag.hidden = true; fxEl.append(m.tag);
+  { const P = boxOf(m.pid); if (P && P.shiny) { el.classList.add('shiny'); el.style.setProperty('--shue', shinyHue(sp) + 'deg'); } }
   if (DEX[sp].mv === 'hover' && sp === 92) el.classList.add('ghost');
   if (m.uid % 3 === 0 && DEX[sp].mv !== 'swim') el.classList.add('snotty');
   monsEl.append(el);
@@ -1379,7 +1441,7 @@ function arrive(m) {
       if (nb && m.hunger > 40) return moveTo(m, nb, { kind: 'berry', berry: nb }, 1.25);
       return setState(m, 'idle', 1.5);
     }
-    b.eater = m; eatBerry(b);
+    b.eater = m; eatBerry(b); addFr(m.pid, 3);
     setState(m, 'eat', m.sp === 143 ? 5 : 3); emote(m, '냠', 'heart', 2.5);
     if (Math.random() < .45) log(pick([`${J(m,'이/가')} 나무열매를 냠냠 먹었다.`, `${J(m,'이/가')} 열매를 맛있게 먹는다.`]), [m]);
     return;
@@ -2710,7 +2772,7 @@ function sky() {
   $('#phase').textContent = phase;
   { const d = new Date(); $('#day').textContent = `${d.getMonth() + 1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})`; }
   $('#time').textContent = clockStr();
-  { const nt = isNight(); $('#clock').classList.toggle('night', nt); $('#dlg').classList.toggle('night', nt); }
+  { const nt = isNight(); $('#clock').classList.toggle('night', nt); $('#dlg').classList.toggle('night', nt); $('#btnBerry').classList.toggle('night', nt); }
   const wantFlies = isNight() ? 14 : 0;
   while (flies.length < wantFlies) { const f = document.createElement('div'); f.className = 'firefly'; fxEl.append(f); flies.push({ el: f, x: rnd(0, W), y: rnd(150, 580), p: rnd(0, 6) }); }
   while (flies.length > wantFlies) flies.pop().el.remove();
@@ -2823,22 +2885,22 @@ function placeInfo() {
 function select(m) {
   if (m && narrow.matches) closeToggles();
   S.sel = m;
-  renderInfo(); placeInfo(); if ($('#onlySel').checked) renderLog();
+  renderInfo(); placeInfo();
 }
 
 // ---------- save ----------
 const KEY = 'pk-meadow-v2';
 function serialize() {
-  return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, log: S.log.slice(0, 120),
-    mons: S.mons.map(m => ({ uid: m.uid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, asleep: m.state === 'sleep', born: m.born })),
+  return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, log: S.log.slice(0, LOG_MAX),
+    mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, asleep: m.state === 'sleep', born: m.born })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t })), lockT: S.lockT,
-    gold: S.gold, tracks: S.tracks, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid };
 }
 let saveFrozen = false;
 function save() { if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
-  S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
+  S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
+  S.lockT = d.lockT || 0; S.box = d.box || []; S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
   S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
@@ -2851,7 +2913,7 @@ async function restore(d) {
 async function fresh() {
   S.base = midnight(); S.clock = realClock(); S.rel = {}; S.log = [];
   logEl.innerHTML = '';
-  S.gold = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked.clear(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
+  S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked.clear(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
   const e = { id: S.eid++, g: 1, km: 0, need: GRADE[1].km, isNew: true, t: Date.now() }; S.eggs.push(e);
   for (let i = 0; i < 4; i++) { const p = randLand(); addBerry(p.x, p.y); }
   log('초원이 텅 비어 있다. 알을 부화시켜 친구를 만들어 보자.', [], true);
@@ -2979,11 +3041,10 @@ window.addEventListener('pointerup', endDrag);
 window.addEventListener('pointercancel', e => { const d = drag; if (!d || e.pointerId !== d.id) return; drag = null; if (d.on) { d.m.held = false; d.m.el.classList.remove('held'); if (d.target) d.target.el.classList.remove('drop-target'); settle(d.m); setState(d.m, 'idle', 2); } });
 function setTool(t) { S.tool = t; $('#btnBerry').setAttribute('aria-pressed', t === 'berry'); stage.classList.toggle('berry-mode', t === 'berry'); $('#hint').hidden = t !== 'berry'; }
 // only one of the toggles is on at a time
-function setLog(on) { $('#journal').hidden = !on; $('#btnLog').setAttribute('aria-pressed', on); }
+function setLog(on) { $('#journal').hidden = !on; dlgEl.classList.toggle('open', on); if (on) logEl.scrollTop = 0; }
 function closeToggles() { if (S.tool === 'berry') setTool('look'); setLog(false); }
 $('#btnBerry').onclick = () => { const on = S.tool !== 'berry'; closeToggles(); hideSheets(); if (on) { select(null); setTool('berry'); } };
-$('#btnLog').onclick = () => { const on = $('#journal').hidden; closeToggles(); hideSheets(); if (on) { select(null); setLog(true); } };
-$('#onlySel').addEventListener('change', renderLog);
+dlgEl.addEventListener('click', () => { if (dlgEl.classList.contains('folded')) return; const on = $('#journal').hidden; closeToggles(); hideSheets(); if (on) { select(null); setLog(true); sfx('open'); } });
 const sheet = $('#sheet');
 const picked = new Set();
 const grid = $('#dexGrid'), dexBtns = {};
@@ -3038,12 +3099,27 @@ $('#musicFile').onchange = async e => {
   $('#musicImport').textContent = `${bgm.have.size}/${TRACKS.length}곡 연결됨`;
   if (r.miss.length) alert(`이 파일은 어느 곡인지 몰라 건너뛰었어요:\n${r.miss.join('\n')}`);
 };
-function bgmLabel() { $('#bgmToggle').textContent = bgmOn ? '배경 음악 켜짐' : '배경 음악 꺼짐'; $('#bgmToggle').classList.toggle('main', bgmOn); }
-bgmLabel();
-$('#bgmToggle').onclick = () => { bgmOn = !bgmOn; try { localStorage.setItem('pk-bgm', bgmOn ? '1' : '0'); } catch (e) {} bgmLabel(); if (bgmOn) bgmStart(); else bgmStop(); };
-function sfxLabel() { $('#sfxToggle').textContent = sfxOn ? '효과음 켜짐' : '효과음 꺼짐'; $('#sfxToggle').classList.toggle('main', sfxOn); }
-sfxLabel();
-$('#sfxToggle').onclick = () => { sfxOn = !sfxOn; try { localStorage.setItem('pk-sfx', sfxOn ? '1' : '0'); } catch (e) {} sfxLabel(); if (sfxOn) sfx('pickup'); };
+// 설정 › 소리: 도트 칸 10개 볼륨 바 (칸을 누르거나 끌거나 ◀▶)
+function volDraw(k) {
+  const row = document.querySelector(`.vol[data-k="${k}"]`), bar = row.querySelector('.vol-bar'), v = VOL[k];
+  if (!bar.children.length) for (let i = 0; i < 10; i++) bar.append(document.createElement('i'));
+  [...bar.children].forEach((c, i) => { c.classList.toggle('on', i < v); c.classList.toggle('hi', i < v && i >= 7); });
+  bar.setAttribute('aria-valuenow', v); row.querySelector('.vol-v').textContent = v ? v : '끔';
+}
+function setVol(k, v) {
+  v = Math.max(0, Math.min(10, Math.round(v))); if (v === VOL[k]) return;
+  VOL[k] = v; try { localStorage.setItem('pk-' + k + '-vol', v); } catch (e) {} volDraw(k);
+  if (k === 'bgm') { bgm.el.volume = .55 * v / 10; const was = bgmOn; bgmOn = v > 0; if (bgmOn && !was) bgmStart(); else if (!bgmOn && was) bgmStop(); }
+  else { sfxOn = v > 0; if (sfxOn) sfx('tap'); }
+}
+document.querySelectorAll('.vol').forEach(row => {
+  const k = row.dataset.k, bar = row.querySelector('.vol-bar');
+  row.querySelectorAll('.vol-b').forEach(b => b.onclick = () => setVol(k, VOL[k] + +b.dataset.d));
+  const at = e => { const r = bar.getBoundingClientRect(); setVol(k, Math.ceil((e.clientX - r.left) / r.width * 10)); };
+  bar.addEventListener('pointerdown', e => { bar.setPointerCapture(e.pointerId); at(e); });
+  bar.addEventListener('pointermove', e => { if (bar.hasPointerCapture(e.pointerId)) at(e); });
+  volDraw(k);
+});
 $('#closeSet').onclick = () => { setEl.hidden = true; };
 setEl.addEventListener('click', e => { if (e.target === setEl) setEl.hidden = true; });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { hideSheets(); if (S.tool === 'berry') setTool('look'); } });
@@ -3096,7 +3172,7 @@ async function openCard(sp, dir = 0) {
   const act = $('#dpAct'); act.hidden = lock;
   if (!lock) {
     if (dexMode === 'buddy') { act.textContent = S.buds.some(b => b.sp === sp) ? '이미 짝꿍이에요' : '짝꿍으로 정하기'; act.classList.toggle('off', S.buds.some(b => b.sp === sp)); }
-    else { const full = S.mons.length >= MAX_MONS; act.textContent = full ? `필드가 꽉 찼어요 (${MAX_MONS}/${MAX_MONS})` : '필드에 풀어놓기'; act.classList.toggle('off', full); }
+    else { const full = S.mons.length >= MAX_MONS, none = !freePoke(sp); act.textContent = full ? `필드가 꽉 찼어요 (${MAX_MONS}/${MAX_MONS})` : none ? '모두 필드에 나가 있어요' : '필드에 풀어놓기'; act.classList.toggle('off', full || none); }
   }
 }
 function cardStep(dir) { const list = cardList(), i = list.indexOf(cardSp), j = i + dir; if (j >= 0 && j < list.length) { sfx('tap'); openCard(list[j], dir); } }
@@ -3109,9 +3185,9 @@ $('#dpAct').onclick = async () => {
   const sp = cardSp; if (sp == null) return;
   if (dexMode === 'buddy') { if (S.buds.some(b => b.sp === sp)) return; closeCard(); picked.clear(); picked.add(sp); await setBuddySp(sp); return; }
   // 바로 필드에 풀어놓는다
-  if (S.mons.length >= MAX_MONS) return;
+  const P = freePoke(sp); if (S.mons.length >= MAX_MONS || !P) return;
   closeCard(); sheet.hidden = true;
-  try { const m = await spawn(sp); if (m) select(m); } catch (e) { log(`${SPECIES[sp].n}의 그림을 불러오지 못했다.`); }
+  try { const m = await spawn(sp, { pid: P.id }); if (m) select(m); } catch (e) { log(`${SPECIES[sp].n}의 그림을 불러오지 못했다.`); }
 };
 { let x0 = null, y0 = 0; const w = $('#dexPop .win');
   w.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; x0 = e.clientX; y0 = e.clientY; });
@@ -3155,17 +3231,8 @@ $('#dexGo').onclick = async () => {
   const list = [...picked]; picked.clear(); Object.values(dexBtns).forEach(b => b.setAttribute('aria-pressed', 'false'));
   sheet.hidden = true;
   let last = null;
-  for (const sp of list) { try { last = await spawn(sp); } catch (e) { log(`${SPECIES[sp].n}의 그림을 불러오지 못했다.`); } }
+  for (const sp of list) { const P = freePoke(sp); if (!P) continue; try { last = await spawn(sp, { pid: P.id }); } catch (e) { log(`${SPECIES[sp].n}의 그림을 불러오지 못했다.`); } }
   if (last) select(last);
-};
-let resetArm = 0;
-$('#reset').onclick = async () => {
-  const btn = $('#reset');
-  if (Date.now() - resetArm > 3000) { resetArm = Date.now(); btn.textContent = '한 번 더 누르면 초기화'; setTimeout(() => btn.textContent = '초원 초기화', 3000); return; }
-  resetArm = 0; btn.textContent = '초원 초기화';
-  [...S.mons].forEach(m => { m.el.remove(); m.bub.remove(); m.tag.remove(); }); S.mons = []; S.log = []; renderLog();
-  [...S.berries].forEach(eatBerry); select(null);
-  await fresh(); save(); Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp)); renderRun();
 };
 
 
@@ -3206,16 +3273,83 @@ placeSet(); narrow.addEventListener('change', () => { placeSet(); fit(); });
 let mgrSel = null, mgrKey = '', mgrFreeArm = 0, mgrT = 0;
 function openMgr(m) { mgr.hidden = false; mgrSel = m || mgrSel || S.mons[0] || null; mgrKey = ''; renderMgr(true); }
 function closeMgr() { mgr.hidden = true; }
-$('#openMgr').onclick = () => tabTo(mgr, () => openMgr(S.sel));
+// 포켓몬 메뉴 탭: 필드 / 포켓몬(상자 전체)
+let mgrTab = 'field', boxSort = 'new';
+try { mgrTab = localStorage.getItem('pk-mgr-tab') || 'field'; boxSort = localStorage.getItem('pk-box-sort') || 'new'; } catch (e) {}
+function setMgrTab(t) {
+  mgrTab = t; try { localStorage.setItem('pk-mgr-tab', t); } catch (e) {}
+  document.querySelectorAll('.mtabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.t === t));
+  document.querySelectorAll('.mtab').forEach(x => x.hidden = x.dataset.t !== t);
+  if (t === 'box') renderBox(); else renderMgr(true);
+}
+document.querySelectorAll('.mtabs button').forEach(b => b.onclick = () => setMgrTab(b.dataset.t));
+document.querySelectorAll('#boxSort [data-sort]').forEach(b => b.onclick = () => { boxSort = b.dataset.sort; try { localStorage.setItem('pk-box-sort', boxSort); } catch (e) {} renderBox(); });
+function boxList() {
+  const L = S.box.slice();
+  if (boxSort === 'rank') L.sort((a, b) => ivSum(b) - ivSum(a) || b.shiny - a.shiny);
+  else if (boxSort === 'fr') L.sort((a, b) => (b.fr || 0) - (a.fr || 0));
+  else if (boxSort === 'no') L.sort((a, b) => a.sp - b.sp || ivSum(b) - ivSum(a));
+  else L.reverse();
+  return L;
+}
+function renderBox() {
+  document.querySelectorAll('#boxSort [data-sort]').forEach(b => b.setAttribute('aria-pressed', b.dataset.sort === boxSort));
+  const L = boxList(), bud = new Set(S.buds.map(b => b.pid));
+  $('#boxCount').textContent = `${S.box.length}마리${S.box.some(p => p.shiny) ? ` · 이로치 ${S.box.filter(p => p.shiny).length}` : ''}`;
+  $('#boxGrid').innerHTML = L.length ? L.map(p => `<button class="pk${p.shiny ? ' shiny' : ''}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rankOf(p)}">${rankOf(p)}</span>${bud.has(p.id) ? '<span class="tg bud">짝꿍</span>' : onField(p.id) ? '<span class="tg">필드</span>' : ''}<img alt="" data-sp="${p.sp}" src="${thumbOf(p.sp) || ''}"><span class="nm">${esc(SPECIES[p.sp].n)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(p.fr)}</span></button>`).join('')
+    : '<p class="empty-msg">아직 부화시킨 포켓몬이 없다.</p>';
+  $('#boxGrid').querySelectorAll('img[data-sp]').forEach(im => { const sp = +im.dataset.sp; if (!thumbOf(sp)) ensureSprite(sp).then(() => { im.src = thumbOf(sp); }).catch(() => {}); });
+}
+$('#boxGrid').addEventListener('click', e => { const b = e.target.closest('[data-id]'); if (b) openPoke(+b.dataset.id); });
+let pokeId = null;
+function openPoke(id, dir = 0) {
+  const P = boxOf(id); if (!P) return; pokeId = id;
+  const L = boxList(), i = L.indexOf(P), d = SPECIES[P.sp], rk = rankOf(P);
+  $('#pokePop').hidden = false; $('#ppPos').textContent = `${i + 1} / ${L.length}`;
+  $('#ppPrev').disabled = i <= 0; $('#ppNext').disabled = i >= L.length - 1;
+  const pic = $('#ppPic'), img = $('#ppImg'); pic.classList.toggle('shiny', P.shiny); pic.style.setProperty('--shue', shinyHue(P.sp) + 'deg');
+  pic.classList.remove('slide-l', 'slide-r'); void pic.offsetWidth; if (dir) pic.classList.add(dir > 0 ? 'slide-l' : 'slide-r');
+  img.src = thumbOf(P.sp) || ''; if (!thumbOf(P.sp)) ensureSprite(P.sp).then(() => { if (pokeId === id) img.src = thumbOf(P.sp); }).catch(() => {});
+  const dt = new Date(P.t);
+  $('#ppBody').innerHTML = `<div class="pp-top"><span class="no">No.${String(P.sp).padStart(4, '0')}</span><b>${esc(d.n)}</b>${P.shiny ? '<b class="sh">✦ 이로치</b>' : ''}<span class="rk ${rk}">${rk}</span></div>`
+    + `<div class="ivs">${P.iv.map((v, k) => `<span>${IV_N[k]}</span><span class="b"><i class="${v === 31 ? 'max' : ''}" style="width:${Math.round(v / 31 * 100)}%"></i></span><span>${v}</span>`).join('')}</div>`
+    + `<div class="pp-fr"><span>친밀도</span><span><span class="hearts">${hearts(P.fr)}</span> ${P.fr || 0}/255</span></div>`
+    + `<div class="pp-meta">개체값 합계 ${ivSum(P)}/186 · ${dt.getMonth() + 1}/${dt.getDate()}${P.g ? ` ${GRADE[P.g].n} 알에서 부화` : ''}${P.place ? ` · ${esc(P.place)} 근처에서 주운 알` : ''}</div>`;
+  const on = onField(P.id), full = S.mons.length >= MAX_MONS, isBud = S.buds.some(b => b.pid === P.id);
+  const fb = $('#ppField'); fb.textContent = on ? '필드에서 빼기' : full ? '필드가 꽉 찼어요' : '필드에 내보내기'; fb.disabled = !on && full; fb.classList.toggle('off', on);
+  const bb = $('#ppBud'); bb.textContent = isBud ? '짝꿍이에요' : S.buds.length >= MAX_BUDS ? '짝꿍 자리가 없어요' : '짝꿍으로'; bb.disabled = isBud || S.buds.length >= MAX_BUDS;
+}
+const closePoke = () => { $('#pokePop').hidden = true; pokeId = null; };
+function pokeStep(dir) { const L = boxList(), i = L.indexOf(boxOf(pokeId)), j = i + dir; if (j >= 0 && j < L.length) { sfx('tap'); openPoke(L[j].id, dir); } }
+$('#ppPrev').onclick = () => pokeStep(-1); $('#ppNext').onclick = () => pokeStep(1); $('#ppClose').onclick = closePoke;
+$('#pokePop').addEventListener('click', e => { if (e.target.id === 'pokePop') closePoke(); });
+{ let x0 = null, y0 = 0; const w = $('#pokePop .win');
+  w.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; x0 = e.clientX; y0 = e.clientY; });
+  w.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null; if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) pokeStep(dx < 0 ? 1 : -1); });
+  w.addEventListener('pointercancel', () => { x0 = null; }); }
+$('#ppField').onclick = async () => {
+  const P = boxOf(pokeId); if (!P) return;
+  const m = S.mons.find(x => x.pid === P.id);
+  if (m) removeMon(m);
+  else if (S.mons.length < MAX_MONS) { try { await spawn(P.sp, { pid: P.id }); } catch (e) {} }
+  refreshCap(); renderBox(); openPoke(P.id); save();
+};
+$('#ppBud').onclick = () => {
+  const P = boxOf(pokeId); if (!P || S.buds.length >= MAX_BUDS || S.buds.some(b => b.pid === P.id)) return;
+  S.buds = S.buds.filter(b => b.sp !== P.sp); S.buds.push({ sp: P.sp, km: 0, pid: P.id });
+  log(`${J({ name: SPECIES[P.sp].n },'이/가')} 런닝 짝꿍이 되었다!`, [], true); save(); renderBox(); openPoke(P.id);
+};
+new MutationObserver(() => { if (mgr.hidden) closePoke(); }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
+$('#openMgr').onclick = () => tabTo(mgr, () => { openMgr(S.sel); setMgrTab(mgrTab); });
 $('#closeMgr').onclick = closeMgr;
 // fill up to six free spots with random species from the dex
 $('#mgrRandom').onclick = async () => {
-  const btn = $('#mgrRandom'), free = MAX_MONS - S.mons.length, pool = [...S.unlocked];
+  const btn = $('#mgrRandom'), free = MAX_MONS - S.mons.length, pool = S.box.filter(p => !onField(p.id));
   const say = t => { btn.textContent = t; setTimeout(() => btn.textContent = '무작위 12마리', 2200); };
-  if (!pool.length) return say('도감에 등록된 포켓몬이 없어요');
+  if (!pool.length) return say('내보낼 포켓몬이 없어요');
   if (free <= 0) return say('필드가 꽉 찼어요');
   btn.disabled = true; let last = null;
-  for (let i = 0; i < free; i++) { try { last = await spawn(pick(pool)); } catch (e) {} }
+  for (let i = 0; i < free && pool.length; i++) { const P = pool.splice(Math.floor(Math.random() * pool.length), 1)[0]; try { last = await spawn(P.sp, { pid: P.id }); } catch (e) {} }
   btn.disabled = false; if (last) { mgrSel = last; renderMgr(true); refreshCap(); }
 };
 mgr.addEventListener('click', e => { if (e.target === mgr) closeMgr(); });
@@ -3245,7 +3379,7 @@ function renderMgr(force) {
         b.onclick = () => { mgrSel = m; mgrFreeArm = 0; renderMgr(); };
       } else {
         b.classList.add('empty'); b.innerHTML = '<span class="plus">+</span><span>빈 자리</span>';
-        b.onclick = () => { closeMgr(); openDex(); };
+        b.onclick = () => setMgrTab('box');
       }
       slotsEl.append(b);
     }
@@ -3270,6 +3404,7 @@ function renderMgrDetail(rebuild) {
     mgrDet.innerHTML = `<div class="pic"><img alt="" id="mPic"></div>
       <div class="namerow"><input id="mName" maxlength="8" aria-label="이름" autocomplete="off"><small>No.${String(m.sp).padStart(4, '0')}</small></div>
       <p class="sub">${d.n} · ${d.g} · ${t.ty}${t.noct ? ' · 야행성' : ''}${d.leg || d.my ? ' · 전설' : ''}</p>
+      <p class="sub" id="mIndiv"></p>
       <div class="bars" id="mBars"></div>
       <p class="doing" id="mDoing"></p>
       <div class="rels" id="mRels"></div>
@@ -3296,6 +3431,7 @@ function renderMgrDetail(rebuild) {
   $('#mBars').innerHTML = bar('기력', m.energy, 'var(--hp)') + bar('배고픔', m.hunger, 'var(--hunger)') + bar('외로움', m.social, 'var(--lonely)');
   $('#mDoing').textContent = `${doingText(m)}${m.form !== m.sp ? ` (${DEX[m.form].n}로 변신 중)` : ''} · 초원에서 ${days}일째`;
   $('#mRels').innerHTML = relsHtml(m, 5, 3);
+  { const P = boxOf(m.pid); $('#mIndiv').innerHTML = P ? `랭크 <span class="rk ${rankOf(P)}">${rankOf(P)}</span>${P.shiny ? ' <b class="sh">✦ 이로치</b>' : ''} · 친밀도 <span class="hearts" style="color:#e04870">${hearts(P.fr)}</span>` : ''; }
   const sb = $('#mSleep'), busy = m.hidden || m.state === 'interact' || m.state === 'special';
   sb.textContent = m.state === 'sleep' ? '깨우기' : busy ? '지금은 바쁨' : '재우기'; sb.disabled = m.state !== 'sleep' && busy;
   if (mgrFreeArm && Date.now() - mgrFreeArm > 3000) { mgrFreeArm = 0; $('#mFree').textContent = '숲으로 보내기'; }
@@ -3337,7 +3473,33 @@ const MAX_BUDS = 3;
 const budReady = b => !!b && !!CHILDREN[b.sp] && b.km >= evoNeed(b);
 const evoNeed = m => { const g = gradeOf(baseOf(m.sp)), stage = evoStage(m.sp); return [0, 5, 10, 15, 20, 25][g] * (stage ? 1.5 : 1); };
 const fmtKm = v => (Math.floor(v * 100) / 100).toFixed(2);
-S.gold = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked = new Set(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
+// ---------- 포켓몬 상자: 부화한 한 마리 한 마리 (개체값·이로치·친밀도) ----------
+// 개체값은 능력치 6개마다 0~31. 합계로 S~F 랭크(대략 S 2%, A 8%, B 20%, C 30%, D 25%, E 10%, F 5%).
+// 이로치는 6세대 이후 본가 게임처럼 1/4096. 친밀도 0~255(하트 5칸).
+const IV_N = ['HP', '공격', '방어', '특공', '특방', '스피드'];
+const RANKS = [['S', 140], ['A', 122], ['B', 105], ['C', 87], ['D', 69], ['E', 56], ['F', 0]];
+const SHINY_RATE = 1 / 4096;
+const ivSum = p => p.iv.reduce((a, b) => a + b, 0);
+const rankOf = p => RANKS.find(([, v]) => ivSum(p) >= v)[0];
+const shinyHue = sp => 70 + (sp * 47) % 220;
+const hearts = fr => { const n = Math.min(5, Math.floor((fr || 0) / 51)); return '♥'.repeat(n) + '♡'.repeat(5 - n); };
+function newPoke(sp, o = {}) {
+  const p = { id: S.eid++, sp, iv: Array.from({ length: 6 }, () => Math.floor(Math.random() * 32)), shiny: o.shiny ?? Math.random() < SHINY_RATE, fr: 0, t: Date.now() };
+  if (o.g) p.g = o.g; if (o.place) p.place = o.place;
+  S.box.push(p); return p;
+}
+const boxOf = id => id == null ? null : S.box.find(p => p.id === id);
+const onField = id => S.mons.some(m => m.pid === id);
+function addFr(id, n) { const p = boxOf(id); if (p && n > 0) p.fr = Math.min(255, (p.fr || 0) + n); }
+// 필드에 나갈 개체: 같은 종 중 필드에 없는 것, 랭크 높은 순
+const freePoke = sp => S.box.filter(p => p.sp === sp && !onField(p.id)).sort((a, b) => ivSum(b) - ivSum(a))[0] || null;
+// 예전 저장: 필드·도감·짝꿍에 있던 포켓몬을 상자에 한 마리씩 넣는다 (이로치 아님)
+function migrateBox() {
+  for (const m of S.mons) if (m.pid == null || !boxOf(m.pid)) { const p = newPoke(m.sp, { shiny: false }); m.pid = p.id; }
+  for (const sp of S.unlocked) if (!S.box.some(p => p.sp === sp)) newPoke(sp, { shiny: false });
+  for (const b of S.buds) if (b.pid == null || !boxOf(b.pid)) b.pid = (S.box.filter(p => p.sp === b.sp).sort((x, y) => ivSum(y) - ivSum(x))[0] || newPoke(b.sp, { shiny: false })).id;
+}
+S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked = new Set(); S.buds = []; S.runs = []; S.totalKm = 0; S.eid = 1;
 const hatchQ = [];
 
 function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); if (dexBtns[sp]) lockDexBtn(sp); } }
@@ -3387,7 +3549,7 @@ function applyKm(km) {
   for (const e of [...S.eggs]) { e.km += km; if (e.km >= e.need) hatchEgg(e); }
   // 아이폰 앱이 걸음(만보기)으로 알을 줍고 있으면 런닝 거리로는 줍지 않는다 (같은 거리를 두 번 세지 않게)
   if (!S.walkSync) gotLog(collectEggs(km), `${fmtKm(km)}km를 움직이며`);
-  for (const b of S.buds) if (CHILDREN[b.sp]) b.km += km;
+  for (const b of S.buds) { if (CHILDREN[b.sp]) b.km += km; b.frAcc = (b.frAcc || 0) + km * 5; const n = Math.floor(b.frAcc); if (n) { b.frAcc -= n; addFr(b.pid, n); } }
 }
 // 아이폰 앱(워치 연동)에서 열렸을 때: 알 현황을 앱으로 보내고, 워치에서 달린 거리를 받는다
 var nativeT = 0;
@@ -3407,22 +3569,29 @@ window.pokeRunWalk = (km, place) => {
   gotLog(collectEggs(km, place || ''), `걸어서 ${fmtKm(km)}km`, place || '');
   save(); renderRun(); return true;
 };
-window.pokeRunAddKm = (km, t0) => { km = Math.round(+km * 100) / 100; if (!(km >= .01 && km <= 100)) return false; applyKm(km); addRun(km, 'watch', +t0 || 0); return true; };
+// 아이폰 앱: 워치 런닝(watch), 또는 모션 기록에서 찾아낸 달리기(auto, 시작·끝 시각 포함)
+window.pokeRunAddKm = (km, t0, src = 'watch', t1 = 0) => {
+  km = Math.round(+km * 100) / 100; if (!(km >= .01 && km <= 100)) return false;
+  t0 = +t0 || 0; t1 = +t1 || 0; src = src === 'auto' ? 'auto' : 'watch';
+  // 자동 기록은 이미 있는 런닝(잠금 런닝·워치)과 시간이 겹치면 건너뛴다
+  if (src === 'auto' && t0 && S.runs.some(r => r.t0 && r.t0 < (t1 || t0) + 60000 && (r.t || r.t0) > t0 - 60000)) return true;
+  applyKm(km); addRun(km, src, t0, t1); return true;
+};
 // 골드: 달리면 1km에 10G, 같은 포켓몬이 또 나오면 알 등급에 따라 받는다
 const RUN_G = 10, DUP_G = [0, 15, 30, 60, 120, 250];
 function renderGold() { $('#goldN').textContent = S.gold.toLocaleString(); const g = $('#gold'); g.classList.remove('up'); void g.offsetWidth; g.classList.add('up'); if (!$('#shop').hidden) renderShop(); }
 function addGold(n) { n = Math.round(n); if (!(n > 0)) return 0; S.gold += n; renderGold(); return n; }
-function addRun(km, src, t0) {
-  const r = { t: Date.now(), km, src }; if (t0) r.t0 = t0; S.runs.unshift(r); if (S.runs.length > 60) S.runs.pop();
+function addRun(km, src, t0, t1) {
+  const r = { t: t1 || Date.now(), km, src }; if (t0) r.t0 = t0; S.runs.unshift(r); S.runs.sort((a, b) => b.t - a.t); if (S.runs.length > 60) S.runs.pop();
   const g = addGold(km * RUN_G);
-  log(`${src === 'gps' ? 'GPS로' : src === 'watch' ? '워치로' : '건강 앱 기록으로'} ${fmtKm(km)}km를 달렸다.${g ? ` ${g}G를 받았다!` : ''}`, [], true);
+  log(`${src === 'gps' ? 'GPS로' : src === 'watch' ? '워치로' : src === 'auto' ? '알아서 기록된 런닝으로' : '건강 앱 기록으로'} ${fmtKm(km)}km를 달렸다.${g ? ` ${g}G를 받았다!` : ''}`, [], true);
   save(); renderRun();
 }
 function hatchEgg(e) {
   S.eggs = S.eggs.filter(x => x !== e);
   const pool = POOL[e.g], fresh = pool.filter(sp => !S.unlocked.has(sp));
   const sp = fresh.length && Math.random() < .75 ? pick(fresh) : pick(pool);
-  hatchQ.push({ g: e.g, sp }); save();
+  hatchQ.push({ g: e.g, sp, place: e.place }); save();
 }
 // hatch cutscene: wobble, crack, flash, reveal
 // 도트 알: 18×22 칸 그림 하나를 목록·세부·부화 창에서 같이 쓴다 (색은 등급별 CSS 변수)
@@ -3456,7 +3625,7 @@ let hatching = false;
 async function playHatch() {
   if (hatching || !hatchQ.length) return;
   hatching = true;
-  const { g, sp } = hatchQ.shift();
+  const { g, sp, place } = hatchQ.shift();
   try { await ensureSprite(sp); } catch (e) {}
   hatchEl.hidden = false; $('#hatchOk').hidden = true; showDexInfo(null); $('#hatchMsg').textContent = '어라…? 알의 모습이…!';
   hatchStage.classList.remove('evo');
@@ -3472,17 +3641,20 @@ async function playHatch() {
   hatchStage.querySelector('.flash').classList.add('go'); sfx('burst');
   hatchStage.querySelectorAll('.shard').forEach(x => { x.style.setProperty('--ec', getComputedStyle(egg).getPropertyValue('--ec')); x.classList.add('go'); });
   await wait(300); egg.remove();
-  const img = document.createElement('img'); img.alt = SPECIES[sp].n; img.src = thumbOf(sp); hatchStage.append(img);
+  const P = newPoke(sp, { g, place });
+  const img = document.createElement('img'); img.alt = SPECIES[sp].n; img.src = thumbOf(sp); if (P.shiny) { img.classList.add('shiny'); img.style.setProperty('--shue', shinyHue(sp) + 'deg'); } hatchStage.append(img);
   const isNew = !S.unlocked.has(sp); unlock(sp); setTimeout(() => sfx(isNew ? 'newdex' : 'hatch'), 250);
   const dupG = isNew ? 0 : addGold(DUP_G[g]);
-  $('#hatchMsg').innerHTML = `${GRADE[g].n} 알에서 <b>${esc(SPECIES[sp].n)}</b>${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났다!${isNew ? '<br><span class="small">도감에 새로 등록됐다</span>' : `<br><span class="small">이미 만난 포켓몬이라 <b>${dupG}G</b>를 받았다</span>`}`;
+  $('#hatchMsg').innerHTML = `${GRADE[g].n} 알에서 <b>${esc(SPECIES[sp].n)}</b>${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났다!${isNew ? '<br><span class="small">도감에 새로 등록됐다</span>' : `<br><span class="small">이미 만난 포켓몬이라 <b>${dupG}G</b>를 받았다</span>`}`
+    + `<div class="rkline">개체 랭크 <span class="rk ${rankOf(P)}">${rankOf(P)}</span>${P.shiny ? ' <b class="sh">✦ 색이 다른 포켓몬이다!</b>' : ''}</div>`;
+  if (P.shiny) setTimeout(() => sfx('shiny'), 900);
   showDexInfo(sp);
   const ok = $('#hatchOk'); ok.hidden = false; ok.textContent = S.mons.length < MAX_MONS ? '필드로 보내기' : '확인';
   ok.focus();
   await new Promise(r => ok.onclick = r);
   hatchEl.hidden = true; hatching = false;
-  if (S.mons.length < MAX_MONS) { runEl.hidden = true; const m = await spawn(sp); m.born = S.clock; select(m); log(`${GRADE[g].n} 알에서 ${J(m,'이/가')} 태어났다!`, [m], true); }
-  else log(`${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났지만 필드가 꽉 차서 도감에만 등록됐다.`, [], true);
+  if (S.mons.length < MAX_MONS) { runEl.hidden = true; const m = await spawn(sp, { pid: P.id }); m.born = S.clock; select(m); log(`${GRADE[g].n} 알에서 ${P.shiny ? '✦ 색이 다른 ' : ''}${J(m,'이/가')} 태어났다!`, [m], true); }
+  else log(`${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났지만 필드가 꽉 차서 포켓몬 상자에 들어갔다.`, [], true);
   save(); renderRun(); refreshCap();
   if (hatchQ.length) playHatch();
 }
@@ -3659,14 +3831,14 @@ function renderRun() {
     const d = new Date(r.t0 || r.t), day = `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
     if (day !== lastDay) { lastDay = day; html += `<div class="run-day">${d.getMonth() + 1}월 ${d.getDate()}일 (${WD[d.getDay()]})</div>`; }
     const mins = r.t0 ? Math.max(1, Math.round((r.t - r.t0) / 60000)) : 0;
-    html += `<div class="run-row"><span class="rt">${r.t0 ? `${hm(r.t0)} ~ ${hm(r.t)}` : hm(r.t)}${mins ? ` <i>${mins >= 60 ? `${Math.floor(mins / 60)}시간 ` : ''}${mins % 60 ? `${mins % 60}분` : ''}</i>` : ''}</span><span class="src">${r.src === 'gps' ? 'GPS' : r.src === 'watch' ? '워치' : '건강 앱'}</span><b>${fmtKm(r.km)}km</b></div>`;
+    html += `<div class="run-row"><span class="rt">${r.t0 ? `${hm(r.t0)} ~ ${hm(r.t)}` : hm(r.t)}${mins ? ` <i>${mins >= 60 ? `${Math.floor(mins / 60)}시간 ` : ''}${mins % 60 ? `${mins % 60}분` : ''}</i>` : ''}</span><span class="src">${r.src === 'gps' ? 'GPS' : r.src === 'watch' ? '워치' : r.src === 'auto' ? '자동' : '건강 앱'}</span><b>${fmtKm(r.km)}km</b></div>`;
   }
   $('#runs').innerHTML = html || '<div class="run-row"><span class="rt">아직 달린 기록이 없어요</span></div>';
 }
 let budSlot = 0;
 async function setBuddySp(sp) {
   const i = Math.min(budSlot, S.buds.length);
-  if (S.buds[i]?.sp !== sp && !S.buds.some(b => b.sp === sp)) { S.buds[i] = { sp, km: 0 }; log(`${J({ name: SPECIES[sp].n },'이/가')} 런닝 짝꿍이 되었다!`, [], true); }
+  if (S.buds[i]?.sp !== sp && !S.buds.some(b => b.sp === sp)) { const P = S.box.filter(p => p.sp === sp).sort((a, b) => ivSum(b) - ivSum(a))[0] || newPoke(sp, { shiny: false }); S.buds[i] = { sp, km: 0, pid: P.id }; log(`${J({ name: SPECIES[sp].n },'이/가')} 런닝 짝꿍이 되었다!`, [], true); }
   try { await ensureSprite(sp); } catch (e) {}
   save(); picked.clear(); sheet.hidden = true; setRunTab('buddy'); openRun();
 }
@@ -3685,7 +3857,7 @@ async function evolveBuddy() {
   let step = 0; while (gap > 60) { img.src = thumbOf(now); now = now === to ? from : to; sfx('evotick', step++); await wait(gap); gap *= .84; }
   hatchStage.querySelector('.flash').classList.add('go'); sfx('burst'); await wait(300);
   img.src = thumbOf(to); hatchStage.classList.remove('evo');
-  b.sp = to; b.km = 0; unlock(to);
+  b.sp = to; b.km = 0; unlock(to); { const P = boxOf(b.pid); if (P) P.sp = to; }
   $('#hatchMsg').innerHTML = `축하해! ${J({ name: fromN },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`; sfx('evolve');
   log(`축하해! 짝꿍 ${J({ name: fromN },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`, [], true);
   showDexInfo(to);
@@ -3716,6 +3888,7 @@ function frame(now) {
   tickFlies(now); tickBugs(now, real);
   acc += real; if (acc > .5) { acc = 0; sky(); rotBerries(); }
   infoT -= real; if (infoT <= 0 && S.sel) { infoT = .5; renderInfo(); }
+  S.frAcc += real; if (S.frAcc >= 300) { S.frAcc -= 300; S.mons.forEach(m => addFr(m.pid, 1)); }
   mgrT -= real; if (mgrT <= 0) { mgrT = .5; refreshCap(); renderMgr(); renderRun();
     if (hatchQ.length && !hatching) playHatch();
     if (S.buds.some(budReady) && !evolving && !hatching && sheet.hidden && !drag) evolveBuddy(); }
@@ -3730,13 +3903,13 @@ async function start(data) {
   if (!d) { try { d = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { d = null; } }
   if (d && d.mons && (d.mons.length || d.unlocked)) await restore(d); else await fresh();
   Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp));
-  renderGold(); sky(); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
+  migrateBox(); renderGold(); sky(); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
   requestAnimationFrame(t => { last = t; frame(t); });
   // 아이폰 앱에 준비됐다고 알리고, 현재 알 현황을 바로 보낸다
   window.pokeRunReady = true; postNative();
   try { window.webkit?.messageHandlers?.pokeRun?.postMessage({ ready: true }); } catch (e) {}
 }
-if (/[?&]debug/.test(location.search)) window.__meadow = { S, takeLockKm, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
+if (/[?&]debug/.test(location.search)) window.__meadow = { S, newPoke, takeLockKm, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
 window.claude?.hot?.snapshot?.(() => serialize());
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
 })();
