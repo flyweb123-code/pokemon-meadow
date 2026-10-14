@@ -582,7 +582,7 @@ ol.log li.big .txt{color:#c03838}
 #info.bud .inf-ico{border-color:#e9a3bf}
 .pf .pf-rk{position:absolute;left:2px;top:2px;z-index:3;line-height:1}.pf .pf-rk .rk{font-size:10px;min-width:12px;padding:0 3px;line-height:13px;border-width:1px}
 body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch-action:none!important}
-.petbar{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,calc(100% - 24px));z-index:40;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;box-sizing:border-box;background:rgba(30,26,52,.9);color:#fff;border:3px solid #fff;box-shadow:0 0 0 3px #2a2440,5px 5px 0 3px rgba(0,0,0,.28);font-size:15px}.petbar[hidden]{display:none!important}.petbar .pb-ic{flex:none;width:34px;height:34px;display:grid;place-items:center;background:#ffe3ee;border:2px solid #e8679a}.petbar .pb-t{flex:1;min-width:0;line-height:1.35;letter-spacing:-.3px;word-break:keep-all}.petbar .pb-x{flex:none;font:inherit;font-size:14px;padding:7px 10px;background:#e8679a;color:#fff;border:2px solid #fff;box-shadow:2px 2px 0 rgba(0,0,0,.35);cursor:pointer}.petbar .pb-x:active{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.35)}.petbar .pb-n{display:flex;gap:3px;margin-top:6px}.petbar .pb-n i{flex:1;min-width:0;height:9px;background:rgba(255,255,255,.25)}.petbar .pb-n i.on{background:#ff8ab4}@media (max-width:760px),(max-height:500px) and (orientation:landscape){.petbar{position:relative;left:auto;bottom:auto;transform:none;grid-area:stage;align-self:end;justify-self:center;margin:0 0 14px;width:calc(100% - 24px)}}
+.petbar{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,calc(100% - 24px));z-index:40;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;box-sizing:border-box;background:rgba(30,26,52,.9);color:#fff;border:3px solid #fff;box-shadow:0 0 0 3px #2a2440,5px 5px 0 3px rgba(0,0,0,.28);font-size:15px}.petbar[hidden]{display:none!important}.pet-trail{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9000}.petbar .pb-ic{flex:none;width:34px;height:34px;display:grid;place-items:center;background:#ffe3ee;border:2px solid #e8679a}.petbar .pb-t{flex:1;min-width:0;line-height:1.35;letter-spacing:-.3px;word-break:keep-all}.petbar .pb-x{flex:none;font:inherit;font-size:14px;padding:7px 10px;background:#e8679a;color:#fff;border:2px solid #fff;box-shadow:2px 2px 0 rgba(0,0,0,.35);cursor:pointer}.petbar .pb-x:active{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.35)}.petbar .pb-n{display:flex;gap:3px;margin-top:6px}.petbar .pb-n i{flex:1;min-width:0;height:9px;background:rgba(255,255,255,.25)}.petbar .pb-n i.on{background:#ff8ab4}@media (max-width:760px),(max-height:500px) and (orientation:landscape){.petbar{position:relative;left:auto;bottom:auto;transform:none;grid-area:stage;align-self:end;justify-self:center;margin:0 0 14px;width:calc(100% - 24px)}}
 .tr-card{position:relative;overflow:hidden;isolation:isolate}.tr-card>*{position:relative;z-index:1}
 .tr-card::before,.tr-card::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:0}
 .tr-card.r1{border-color:#3a7a3a;box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px #9ccf8a}
@@ -2338,15 +2338,15 @@ function petDone() {
   log(fr ? `${J(m,'은/는')} 쓰다듬어 주자 아주 좋아했다.` : `${J(m,'은/는')} 쓰다듬어 주자 기분 좋은 듯 눈을 가늘게 떴다.`, [m]);
   /* 기뻐서 왼쪽·오른쪽을 번갈아 보며 춤춘다 (그동안은 제자리) */
   petM.done = true; $('#petBar').hidden = true; const f0 = m.face || 1;
-  const NB = 8; for (let k = 0; k < NB; k++) setTimeout(() => { if (!S.mons.includes(m)) return; m.face = k % 2 ? f0 : -f0; if (k % 2 === 0) anim(m, 'phop'); if (k === 2) emote(m, '♪', 'heart', 1.2); }, k * 220);
-  setTimeout(() => { m.face = f0; petEnd(); save(); }, NB * 220 + 100);
+  const NB = 5; for (let k = 0; k < NB; k++) setTimeout(() => { if (!S.mons.includes(m)) return; m.face = k % 2 ? f0 : -f0; if (k % 2 === 0) anim(m, 'phop'); if (k === 1) emote(m, '♪', 'heart', 1); }, k * 190);
+  setTimeout(() => { m.face = f0; petEnd(); save(); }, NB * 190 + 50);
 }
 const petHit = (m, x, y) => { const r = [m.spr, m.img].map(e => e?.getBoundingClientRect()).find(r => r && r.width) || m.el.getBoundingClientRect(), p = 22;   /* m.el 은 발밑 점이라 그림 크기로 판정 */ return x > r.left - p && x < r.right + p && y > r.top - p && y < r.bottom + p; };
 addEventListener('pointerdown', e => { if (!petM || e.target.closest('#petBar')) return; if (petM.done) { e.stopPropagation(); e.preventDefault(); return; }
-  e.stopPropagation(); e.preventDefault(); if (petHit(petM.m, e.clientX, e.clientY)) petM.rub = { id: e.pointerId, x: e.clientX, y: e.clientY, tx: 0, ht: 0 };
+  e.stopPropagation(); e.preventDefault(); if (petHit(petM.m, e.clientX, e.clientY)) { petM.rub = { id: e.pointerId, x: e.clientX, y: e.clientY, tx: 0, ht: 0 }; petTrail(e.clientX, e.clientY, true); }
   else { petCancelAt = performance.now(); petQuit(); } }, true);   /* 포켓몬이 아닌 빈 곳을 누르면 쓰다듬기를 그만둔다 */
 addEventListener('pointermove', e => { const p = petM; if (!p || p.done || !p.rub || e.pointerId !== p.rub.id) return; e.stopPropagation();
-  const d = Math.hypot(e.clientX - p.rub.x, e.clientY - p.rub.y); p.rub.x = e.clientX; p.rub.y = e.clientY;
+  const d = Math.hypot(e.clientX - p.rub.x, e.clientY - p.rub.y); p.rub.x = e.clientX; p.rub.y = e.clientY; petTrail(e.clientX, e.clientY);
   if (!petHit(p.m, e.clientX, e.clientY)) return;
   /* 손맛: 문지르는 동안 털결처럼 톡톡(보통), 게이지가 한 칸 찰 때마다 세게 */
   const now = performance.now(); p.rub.tx += d; if (p.rub.tx >= 34 && now - p.rub.ht > 60) { p.rub.tx = 0; p.rub.ht = now; haptic(1); }
@@ -2356,6 +2356,21 @@ addEventListener('pointermove', e => { const p = petM; if (!p || p.done || !p.ru
 ['pointerup', 'pointercancel'].forEach(t => addEventListener(t, e => { if (petM?.rub && e.pointerId === petM.rub.id) petM.rub = null; if (petM || performance.now() - petCancelAt < 700) e.stopPropagation(); }, true));
 addEventListener('click', e => { if ((petM && !e.target.closest('#petBar')) || performance.now() - petCancelAt < 700) { e.stopPropagation(); e.preventDefault(); } }, true);
 let petCancelAt = 0;
+// 문지르는 손가락 자국: 화면 위 투명 캔버스에 지나간 길을 분홍 빛 줄기로 그리고 0.4초 동안 가늘어지며 사라진다
+const TRAIL_LIFE = 400; let trCv = null, trPts = [], trRaf = 0;
+function petTrail(x, y, start) {
+  if (!trCv) { trCv = document.createElement('canvas'); trCv.className = 'pet-trail'; document.body.append(trCv); }
+  const dpr = devicePixelRatio || 1, W = innerWidth, H = innerHeight; if (trCv.width !== Math.round(W * dpr) || trCv.height !== Math.round(H * dpr)) { trCv.width = Math.round(W * dpr); trCv.height = Math.round(H * dpr); }
+  trPts.push({ x, y, t: performance.now(), brk: !!start }); if (!trRaf) trRaf = requestAnimationFrame(drawTrail);
+}
+function drawTrail() {
+  const c = trCv.getContext('2d'), dpr = devicePixelRatio || 1, now = performance.now();
+  trPts = trPts.filter(p => now - p.t < TRAIL_LIFE); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, trCv.width, trCv.height); c.lineCap = 'round';
+  for (let i = 1; i < trPts.length; i++) { const a = trPts[i - 1], b = trPts[i]; if (b.brk) continue; const k = 1 - (now - b.t) / TRAIL_LIFE;
+    c.strokeStyle = `rgba(255,138,180,${.55 * k})`; c.lineWidth = 4 + 12 * k; c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke();
+    c.strokeStyle = `rgba(255,255,255,${.9 * k})`; c.lineWidth = 1.5 + 4 * k; c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke(); }
+  trRaf = trPts.length ? requestAnimationFrame(drawTrail) : 0;
+}
 function petQuit() { if (!petM || petM.done) return; const m = petM.m; emote(m, '…', '', 1); petEnd(); }
 // 놓은 열매 끌어서 옮기기
 let bdrag = null;
