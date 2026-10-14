@@ -196,14 +196,14 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .hatch.g4t>.hlit{background:radial-gradient(circle at 50% 45%,rgba(255,244,255,.97),rgba(216,164,255,.75) 40%,rgba(150,92,230,.5))}
 .hatch.g4t>.hglow{background:radial-gradient(circle at 50% 45%,rgba(250,235,255,.9),rgba(220,180,255,.5) 55%,rgba(190,140,255,.35))}
 .hatch.g4t>.hrays{opacity:calc(var(--lit,0) * .75);background:repeating-conic-gradient(from 0deg,rgba(226,180,255,0) 0deg,rgba(226,180,255,.5) 5deg,rgba(226,180,255,.5) 8deg,rgba(226,180,255,0) 13deg,rgba(226,180,255,0) 20deg);animation-duration:9s;transition:opacity .5s}
-.hatch.legend>.hlit{background:radial-gradient(circle closest-side at 50% 45%,#fff 0,rgba(255,238,170,.95) 22%,rgba(255,204,90,.65) 55%,rgba(255,170,40,0) 100%);opacity:var(--lg,0);transform:scale(calc(.55 + var(--lg,0) * .7));transition:opacity .3s,transform .3s}
+.hatch.legend>.hlit{background:radial-gradient(circle at 50% 45%,#fffbe8 0,rgba(255,234,150,.97) 26%,rgba(255,200,70,.85) 55%,rgba(214,150,30,.8));opacity:var(--lg,0);transition:opacity .3s}   /* 2단계: 어둠 속에서 화면 전체가 금빛으로 차오른다 */
 .hatch.legend>.hrays{opacity:var(--lg,0);background:repeating-conic-gradient(from 0deg,rgba(255,232,140,0) 0deg,rgba(255,232,140,.65) 4deg,rgba(255,232,140,.65) 6deg,rgba(255,232,140,0) 10deg,rgba(255,232,140,0) 15deg);animation-duration:6s;transition:opacity .5s}
 .hatch.legend>.hdark{opacity:calc(.55 + var(--dk,0) * .45 - var(--lg,0) * .35)}
 .hatch.legend .win{filter:brightness(calc(1 - var(--dk,0) * .28 + var(--lg,0) * .3))}
 .hatch.surge>.hrays{animation-duration:1.6s}.hatch.g4t.surge>.hrays{animation-duration:3s}
 /* 1단계(금지급 전설·환상) 부화: 별이 뜬 어둠 속에서 무지개 빛기둥이 돌며 색이 바뀌고, 무지개 반짝이가 쏟아진다 */
 .hatch.myth>.hdark{background:radial-gradient(1.5px 1.5px at 18% 22%,#fff,transparent),radial-gradient(1.5px 1.5px at 78% 16%,#fff,transparent),radial-gradient(1px 1px at 64% 70%,#fff,transparent),radial-gradient(1px 1px at 30% 80%,#fff,transparent),radial-gradient(2px 2px at 88% 58%,#ffe9ff,transparent),radial-gradient(1px 1px at 10% 60%,#fff,transparent),radial-gradient(circle at 50% 45%,rgba(30,0,60,.55),#06001a 75%)}
-.hatch.myth>.hlit{background:radial-gradient(circle closest-side at 50% 45%,#fff 0,rgba(255,220,250,.95) 20%,rgba(160,220,255,.7) 48%,rgba(200,140,255,0) 100%);animation:mythHue 2.4s linear infinite}
+.hatch.myth>.hlit{background:radial-gradient(circle at 50% 45%,rgba(255,255,255,.95) 0,rgba(255,255,255,.35) 30%,rgba(255,255,255,0) 60%),conic-gradient(from 0deg at 50% 45%,#ff7aa8,#ffc861,#fff27a,#7cf0a0,#6ad8ff,#9a8cff,#ef8aff,#ff7aa8);animation:mythHue 3s linear infinite}   /* 1단계: 화면 전체가 무지개 프리즘 빛으로 차오르며 색이 돈다 */
 .hatch.myth>.hrays{background:repeating-conic-gradient(from 0deg,rgba(255,90,140,0) 0deg,rgba(255,90,140,.6) 4deg,rgba(255,220,80,.6) 6deg,rgba(255,220,80,0) 10deg,rgba(80,220,255,0) 15deg,rgba(80,220,255,.6) 19deg,rgba(180,120,255,.6) 21deg,rgba(180,120,255,0) 25deg,rgba(0,0,0,0) 30deg);animation:hrays 4s linear infinite,mythHue 2.4s linear infinite}
 .hatch.myth.surge>.hrays{animation-duration:1.2s,1.2s}
 .hatch.myth>.hwhite.go{background:radial-gradient(circle at 50% 45%,#fff 25%,#ffe4f6 50%,#dff4ff 72%,#fff3c8)}
@@ -4357,7 +4357,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.48';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.49';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
