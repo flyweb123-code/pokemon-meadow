@@ -4357,7 +4357,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.54';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.55';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5982,7 +5982,7 @@ function tapEgg(egg, g0, msg, g = g0) {   /* g0 알 등급, g 연출 등급(나�
   return new Promise(done => {
     const need = ({ 6: 80, 5: 60, 4: 40 })[g] || 20,   /* 두드릴 횟수는 나올 포켓몬 단계로: 1단계 80, 2단계 60, 3단계 40, 기본 20 */ win = hatchEl.querySelector('.win'); let n = 0, stage = 0, idle = 0, pend = -1;
     msg.textContent = '알을 톡톡 두드려 보자!';
-    if (g >= 5) { hatchEl.classList.add('legend'); if (g === 6) hatchEl.classList.add('myth'); tenseStart(); } else if (g === 4) hatchEl.classList.add('g4t');
+    if (g >= 5) { hatchEl.classList.add('legend'); tenseStart(); }   /* 1단계도 처음엔 2단계와 똑같이 시작 (스포 방지), 절반쯤 두드리면 무지개로 바뀐다 */ else if (g === 4) hatchEl.classList.add('g4t');
     hatchStage.classList.add('tapme');
     // 두드리기 힌트: 창 안 아무 곳에 파장 원이 번진다 (잠깐 안 두드리면 다시)
     let lastTap = 0; const ring = () => { if (n >= need || performance.now() - lastTap < 1600) return; const r = hatchStage.getBoundingClientRect(), o = document.createElement('i'); o.className = 'tapring';
@@ -6002,18 +6002,19 @@ function tapEgg(egg, g0, msg, g = g0) {   /* g0 알 등급, g 연출 등급(나�
       if (!quaking) { egg.classList.remove('knock', 'wig', 'quake'); void egg.offsetWidth; egg.classList.add('knock'); }
       const p = document.createElement('i'); p.className = 'tapfx'; p.style.left = x + 'px'; p.style.top = y + 'px'; hatchStage.append(p); setTimeout(() => p.remove(), 360);
       if (!quaking) { win.classList.remove('jolt', 'wquake'); void win.offsetWidth; win.classList.add('jolt'); }
-      const f = n / need, st = f >= .85 ? 3 : f >= .6 ? 2 : f >= .3 ? 1 : 0;
+      const f = g === 6 ? (n < 30 ? n / 60 : .5 + (n - 30) / (need - 30) * .5) : n / need, st = f >= .85 ? 3 : f >= .6 ? 2 : f >= .3 ? 1 : 0;   /* 1단계: 30번째까지는 2단계(60번)와 똑같은 속도로 진행 → 그다음 정체가 드러난다 */
       if (st > stage) { stage = st; egg.classList.add('c' + st); sfx(st === 3 ? 'crack2' : 'crack'); pend = 2;
         const gl = egg.querySelector('.eglow'); if (gl) { gl.classList.remove('zap'); void gl.offsetWidth; gl.classList.add('zap'); }
         hatchStage.querySelector('.ehalo')?.classList.add('s' + st); rumble(st, g); eggQuake(egg, win, st, g); if (st === 1) msg.textContent = '…!'; if (st === 3) msg.textContent = '알이 깨지려고 한다!'; }
       else { sfx('knock', st); pend = st >= 2 ? 2 : 1; }
       sfx('charge', f);
       { const lt = g >= 4 ? Math.pow(f, 1.3) : Math.max(0, Math.min(1, (f - .75) / .25));   // 에픽·전설은 첫 두드림부터 서서히, 레어는 끝무렵(75%)부터 환해진다
+        if (g === 6 && f >= .5 && !hatchEl.classList.contains('myth')) { hatchEl.classList.add('myth'); hSparks(12, 6, true); }   /* 1단계 정체가 드러나는 순간 */
         if (g >= 4) raysSpin(f * f * (g === 4 ? 140 : 220));   /* 두드릴수록 빛줄기가 점점 빨라진다 */
         if (g <= 3 && f >= .4) { const wh = hatchEl.querySelector('.hwhite'); wh.style.transition = 'opacity .35s'; wh.style.opacity = ((f - .4) / .6 * .55).toFixed(3); }   /* 평범한 알: 40%부터 화면이 서서히 밝아진다 */
         if (g >= 5) { hatchEl.style.setProperty('--dk', f.toFixed(3)); hatchEl.style.setProperty('--lg', lt.toFixed(3)); tense.f = f; }   // 전설: 어두워지다가 끝무렵 금빛이 터져 나온다
         else hatchEl.style.setProperty('--lit', g <= 3 ? 0 : lt.toFixed(3));   // 일반·희귀·레어 알은 배경이 밝아지지 않는다
-        if (g >= 4 && lt > .12) hSparks(g >= 5 ? 3 + Math.round(lt * (g === 6 ? 6 : 4)) : 1 + Math.round(lt * 2), g);
+        { const gv = g === 6 && f < .5 ? 5 : g; if (g >= 4 && lt > .12) hSparks(gv >= 5 ? 3 + Math.round(lt * (gv === 6 ? 6 : 4)) : 1 + Math.round(lt * 2), gv); }
         if (g === 3 && f >= .45) hSparks(1 + (f >= .85 ? 1 : 0), 3); }   /* 레어: 절반쯤부터 파란 반짝이가 조금씩 */
       haptic(pend);
       if (n >= need) {
