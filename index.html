@@ -4157,6 +4157,18 @@ stage.addEventListener('click', e => {
   else { foldDlg(!dlgEl.classList.contains('folded')); sfx('tap'); }   // 그다음 빈 곳을 누르면 상태창(일지 포함)을 접고, 다시 누르면 편다
 });
 
+// 빈 땅을 문지르면 빛 줄기가 나오고, 그대로 포켓몬 위를 문지르면 바로 그 포켓몬 쓰다듬기가 시작된다
+let freeRub = null;
+stage.addEventListener('pointerdown', e => { if (e.button > 0 || petM || S.tool === 'berry' || e.target.closest('.mon,.berry,button,input')) return;
+  freeRub = { id: e.pointerId, x0: e.clientX, y0: e.clientY, on: false }; });
+addEventListener('pointermove', e => { const f = freeRub; if (!f || e.pointerId !== f.id || petM) return;
+  if (!f.on) { if (Math.hypot(e.clientX - f.x0, e.clientY - f.y0) < 10) return; f.on = true; petTrail(f.x0, f.y0, true); }
+  petTrail(e.clientX, e.clientY);
+  const m = S.mons.find(m => !m.hidden && !m.held && !m.evolving && !m.pet && petHit(m, e.clientX, e.clientY));
+  if (m) { freeRub = null; petStart(m); if (!petM) return; petTrail(e.clientX, e.clientY, true);
+    petM.rub = { id: e.pointerId, x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, t0: performance.now(), on: true, far: 99, tx: 0, ht: 0 }; } }, true);
+['pointerup', 'pointercancel'].forEach(t => addEventListener(t, e => { const f = freeRub; if (!f || e.pointerId !== f.id) return; freeRub = null; if (f.on) suppressClick = performance.now(); }, true));   /* 문지르기만 했으면 빈 곳 누름(상태창 접기)으로 치지 않는다 */
+
 // ---------- drag and drop ----------
 // Press a Pokémon and drag to carry it; drop it anywhere to leave it there, or onto another Pokémon to
 // make them meet. If the pair has a signature scene, that scene plays; the target glows (★) while hovering.
