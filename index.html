@@ -4106,12 +4106,12 @@ let mgrSel = null, mgrKey = '', mgrFreeArm = 0, mgrT = 0;
 function openMgr(m) { mgr.hidden = false; mgrSel = m || mgrSel || S.mons[0] || null; mgrKey = ''; renderMgr(true); if (m) { setMgrTab('field'); openMon(m); } }
 function closeMgr() { mgr.hidden = true; $('#monPop').hidden = true; }
 // 포켓몬 메뉴 탭: 필드 / 포켓몬(상자 전체)
-let mgrTab = 'field', boxSort = 'new', budPick = null;   // budPick: 짝꿍 칸을 고르는 중이면 그 칸 번호
+let mgrTab = 'field', boxSort = 'new', budPick = null, boxFromSlot = false;   // budPick: 짝꿍 칸을 고르는 중이면 그 칸 번호
 // 정렬 버튼은 다시 누를 때마다 내림차순 ↔ 오름차순 (boxDir: 1 = 큰 것/최근 먼저)
 let boxDir = 1;
 try { boxSort = localStorage.getItem('pk-box-sort') || 'new'; boxDir = localStorage.getItem('pk-box-dir') === '-1' ? -1 : 1; } catch (e) {}
 function setMgrTab(t) {
-  if (t !== 'box') budPick = null;
+  boxFromSlot = false; if (t !== 'box') budPick = null;
   mgrTab = t; try { localStorage.setItem('pk-mgr-tab', t); } catch (e) {}
   document.querySelectorAll('#mgrTabs button').forEach(b => { b.setAttribute('aria-selected', b.dataset.t === t); if (b.dataset.t === t) $('#mgrTitle').textContent = b.textContent; });   // 창 제목 = 지금 탭
   document.querySelectorAll('.mtab').forEach(x => x.hidden = x.dataset.t !== t);
@@ -4230,7 +4230,7 @@ $('#ppField').onclick = async () => {
   const P = boxOf(pokeId); if (!P) return;
   const m = S.mons.find(x => x.pid === P.id);
   if (m) removeMon(m);
-  else if (S.mons.length < MAX_MONS) { try { await spawn(P.sp, { pid: P.id }); } catch (e) {} }
+  else if (S.mons.length < MAX_MONS) { try { await spawn(P.sp, { pid: P.id }); } catch (e) {} if (boxFromSlot && S.mons.some(x => x.pid === P.id)) { refreshCap(); save(); closePoke(); setMgrTab('field'); return; } }
   refreshCap(); renderBox(); openPoke(P.id); save();
 };
 $('#ppEvoBtn').onclick = () => evolvePoke(boxOf(pokeId));
@@ -4290,7 +4290,7 @@ function renderMgr(force) {
         b.onclick = () => openMon(m);
       } else {
         b.classList.add('empty'); b.innerHTML = '<span class="plus">+</span><span>빈 자리</span>';
-        b.onclick = () => pressGo(b, () => setMgrTab('box'));
+        b.onclick = () => pressGo(b, () => { setMgrTab('box'); boxFromSlot = true; });   // 빈 자리에서 왔으면 내보낸 뒤 필드 탭으로 돌아간다
       }
       slotsEl.append(b);
     }
@@ -5640,16 +5640,16 @@ async function setBuddySp(sp) {
 // 진화하기 버튼: 필드에 나가 있으면 필드에서, 아니면 부화 창에서 진화한다. 진화하면 진화까지 달린 거리(P.km)는 0, 같이 달린 거리(P.runKm)는 그대로
 function evolvePoke(P) {
   if (!pokeReady(P) || evolving || hatching) return;
-  if (!$('#pokePop').hidden) closePoke();
-  const m = S.mons.find(x => x.pid === P.id);
-  return m ? evolve(m) : evolveWin(P);
+  const card = !$('#pokePop').hidden; if (card) closePoke();
+  return evolveWin(P, card);   // 필드에 나가 있어도 진화 창에서 모션을 보여 준다
 }
-async function evolveWin(P) {
+async function evolveWin(P, card) {
   const kids = evoKids(P.sp, P, true); if (!kids.length || evolving || hatching) return;
   const b = S.buds.find(x => x.pid === P.id);
   evolving = true;
   const from = P.sp, to = pick(kids), fromN = SPECIES[from].n, toN = SPECIES[to].n;
   try { await ensureSprite(from); await ensureSprite(to); } catch (e) { evolving = false; return; }
+  const open = [sheet, mgr, runEl, setEl].filter(x => !x.hidden);
   [sheet, mgr, runEl, setEl].forEach(x => x.hidden = true);
   hatchEl.hidden = false; $('#hatchOk').hidden = true; showDexInfo(null); $('#hatchMsg').innerHTML = `어라…? ${J({ name: fromN },'의/의')} 모습이…!`;
   hatchStage.innerHTML = `<img alt="" src="${thumbOf(from)}"><div class="flash"></div>`;
@@ -5661,12 +5661,14 @@ async function evolveWin(P) {
   img.src = thumbOf(to); hatchStage.classList.remove('evo');
   const newTo = !S.unlocked.has(to); if (newTo) addGold(NEW_G);
   P.sp = to; P.km = 0; if (b) { b.sp = to; b.km = 0; } unlock(to);
+  { const m = S.mons.find(x => x.pid === P.id); if (m) { m.sp = to; setForm(m, to); m.el.classList.remove('ditto'); if (m.name === fromN || m.name.startsWith(fromN + ' ')) { m.name = m.name.replace(fromN, toN); m.tag.textContent = m.name; } } }   // 필드에 있던 포켓몬도 새 모습으로
   $('#hatchMsg').innerHTML = `축하해! ${J({ name: fromN },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!${newTo ? `<br><span class="small">새로 만난 포켓몬이라 <b>${NEW_G}G</b>를 받았다</span>` : ''}`; sfx('evolve'); playCry(to, 1.2);
   log(`축하해! ${b ? '짝꿍 ' : ''}${J({ name: fromN },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`, [], true);
   showDexInfo(to);
   const ok = $('#hatchOk'); ok.hidden = false; ok.textContent = '확인'; ok.focus();
   await new Promise(r => ok.onclick = r);
   hatchEl.hidden = true; evolving = false; save(); renderRun(); renderBox();
+  open.forEach(x => x.hidden = false); if (!mgr.hidden) { renderBuddy(); renderMgr(true); } if (card) openPoke(P.id);   // 보던 창으로 돌아간다
 }
 // the dex only lets you release species you have met
 function lockDexBtn(sp) {
