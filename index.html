@@ -66,6 +66,40 @@
 .boxq{margin:0 0 8px}.boxq input{flex:1 1 100%}
 #boxGrid>.pk[hidden]{display:none}
 #boxGrid.nohit::before{content:'찾는 포켓몬이 없다.';grid-column:1/-1;text-align:center;color:var(--dim);padding:24px 0}
+#evoFull{position:fixed;inset:0;z-index:7000;overflow:hidden;background:#05060e;color:#fff;opacity:0;transition:opacity .35s;--p:0}
+#evoFull.in{opacity:1}#evoFull[hidden]{display:none}
+#evoFull .ef-sky{position:absolute;inset:0;background:radial-gradient(circle at 50% 42%,rgba(90,110,220,calc(.15 + var(--p)*.45)),rgba(20,24,60,.6) 45%,#05060e 75%)}
+#evoFull .ef-rays{position:absolute;left:50%;top:42%;width:240vmax;height:240vmax;margin:-120vmax 0 0 -120vmax;opacity:0;background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.16) 0deg 6deg,transparent 6deg 18deg);-webkit-mask:radial-gradient(circle,#000 0,#000 8%,transparent 42%);mask:radial-gradient(circle,#000 0,#000 8%,transparent 42%);animation:efspin 14s linear infinite;transition:opacity .6s}
+#evoFull.go .ef-rays{opacity:calc(.25 + var(--p)*.75)}
+#evoFull.go .ef-rays{animation-duration:calc(14s - var(--p)*11s)}
+@keyframes efspin{to{transform:rotate(360deg)}}
+#evoFull .ef-glow{position:absolute;left:50%;top:42%;width:46vmin;height:46vmin;margin:-23vmin 0 0 -23vmin;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,calc(var(--p)*.9)),rgba(180,200,255,calc(var(--p)*.35)) 40%,transparent 70%);transform:scale(calc(.6 + var(--p)*1.1))}
+#evoFull .ef-stage{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:min(56vw,280px);height:min(56vw,280px);display:grid;place-items:center;transition:top .6s ease,width .6s ease,height .6s ease}
+#evoFull.fin .ef-stage{top:var(--sy);width:var(--ss);height:var(--ss)}
+#evoFull .ef-glow,#evoFull .ef-rays{transition:top .6s ease}#evoFull.fin .ef-glow,#evoFull.fin .ef-rays{top:var(--sy)}
+#evoFull.go:not(.done) .ef-stage{animation:efshake .09s steps(2) infinite;animation-play-state:paused}
+#evoFull.go:not(.done)[style*="--p: 0.9"] .ef-stage,#evoFull.go:not(.done)[style*="--p: 1"] .ef-stage{animation-play-state:running}
+@keyframes efshake{50%{transform:translate(calc(-50% + 2px),calc(-50% - 2px))}}
+#evoFull .ef-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;transition:filter .5s}
+#evoFull .ef-img.sil{filter:brightness(0) invert(1) drop-shadow(0 0 6px #fff) drop-shadow(0 0 18px #9ab8ff)}
+#evoFull .ef-img.beat{animation:efbeat .18s ease-out}
+@keyframes efbeat{0%{transform:scale(1.08)}100%{transform:scale(1)}}
+#evoFull.done .ef-img{animation:efpop .6s cubic-bezier(.2,1.6,.4,1)}
+@keyframes efpop{0%{transform:scale(.6)}100%{transform:scale(1)}}
+#evoFull .ef-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+#evoFull.boom .ef-flash{animation:efflash 1.1s ease-out forwards}
+@keyframes efflash{0%{opacity:0}8%{opacity:1}40%{opacity:.9}100%{opacity:0}}
+#evoFull .ef-parts{position:absolute;inset:0;pointer-events:none}
+#evoFull .ef-mote{position:absolute;left:50%;top:42%;width:6px;height:6px;margin:-3px;background:#fff;box-shadow:0 0 8px 2px #9ab8ff;animation:efmote 1.1s ease-in forwards}
+@keyframes efmote{0%{transform:translate(var(--fx),var(--fy));opacity:0}20%{opacity:1}100%{transform:translate(0,0);opacity:0}}
+#evoFull .ef-sp{position:fixed;width:8px;height:8px;margin:-4px;background:#fff6c0;box-shadow:0 0 10px 3px #ffe070;animation:efsp .9s ease-out forwards}
+#evoFull .ef-sp.big{width:10px;height:10px;animation-duration:1.3s}
+@keyframes efsp{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+#evoFull .ef-bottom{position:absolute;left:0;right:0;bottom:0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;align-items:stretch;max-width:520px;margin:0 auto}
+#evoFull .ef-msg{background:var(--win);color:var(--win-ink);border:4px solid var(--frame);box-shadow:inset 0 0 0 3px var(--inner);padding:14px 18px;font-size:17px;line-height:1.5;min-height:3em}
+#evoFull .ef-msg .small{font-size:13px;color:var(--dim)}
+#evoFull .ef-card{color:var(--win-ink)}
+#evoFull .ef-ok{width:100%;display:block;font:inherit;font-size:16px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:11px 16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35),0 0 0 2px var(--inner);cursor:pointer}#evoFull .ef-ok[hidden]{display:none}
 .test-btn{font:inherit;font-size:11px;background:none;border:2px dashed #c03838;color:#c03838;padding:3px 6px;cursor:pointer}
 .run-eggs{padding:2px 0 6px 6px;border-bottom:2px dotted var(--inner)}.run-eggs .re-row{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);margin-top:3px}.re-eggs{display:flex;gap:1px;flex:none}.re-eggs .egg{width:12px;height:15px}.re-eggs .egg svg{width:100%;height:100%}.re-pl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .run-row:has(+.run-eggs){border-bottom:0}
@@ -1354,7 +1388,8 @@ async function musicDo(mode, fn) { const db = await musicDB(); return new Promis
 const musicGet = id => musicDo('readonly', st => st.get(id));
 const musicPut = (id, blob) => musicDo('readwrite', st => st.put(blob, id));
 const musicKeys = () => musicDo('readonly', st => st.getAllKeys());
-musicKeys().then(k => { (k || []).forEach(x => /^cry\d+$/.test(x) ? cry.have.add(+x.slice(3)) : bgm.have.add(x)); cryLabel(); if (bgmOn && bgm.id == null) bgmStart(); if (!$('#shop').hidden) renderShop(); }).catch(() => {});
+const evoMus = { have: false, buf: null, src: null, g: null };
+musicKeys().then(k => { (k || []).forEach(x => x === 'evo' ? (evoMus.have = true) : /^cry\d+$/.test(x) ? cry.have.add(+x.slice(3)) : bgm.have.add(x)); cryLabel(); if (bgmOn && bgm.id == null) bgmStart(); if (!$('#shop').hidden) renderShop(); }).catch(() => {});
 async function bgmPlay(id) {
   if (bgm.id === id && bgm.buf) { bgmSrcStart(); return; }
   bgm.id = id; bgmSrcStop(); bgm.buf = null; bgm.pos = 0;
@@ -1481,6 +1516,7 @@ async function importMusic(files) {
   let ok = 0; const miss = [];
   for (const f of files) {
     const name = f.name.replace(/[_]+/g, ' ');
+    if (/evolution|진화/i.test(name)) { try { await musicPut('evo', f); evoMus.have = true; evoMus.buf = null; ok++; } catch (e) { miss.push(f.name); } continue; }   // 진화 음악
     const t = TRACKS.find(x => x.key.test(name));
     if (!t) { miss.push(f.name); continue; }
     try { await musicPut(t.id, f); bgm.have.add(t.id); ok++; bgm.cache.delete(t.id); if (bgm.id === t.id) bgm.id = null; } catch (e) { miss.push(f.name); }
@@ -4137,7 +4173,8 @@ function sideTap(pop, e) { const r = pop.querySelector('.win').getBoundingClient
 monPop.addEventListener('click', e => { if (e.target !== monPop) return; const d = sideTap(monPop, e); if (d) { const h = $(d < 0 ? '#mHl' : '#mHr'); if (!h.hidden) monStep(d); return; } closeMon(); });
 document.querySelectorAll('#boxSort [data-sort]').forEach(b => b.onclick = () => { const k = b.dataset.sort; if (k === boxSort && k !== 'field') boxDir = -boxDir; else { boxSort = k; boxDir = 1; } try { localStorage.setItem('pk-box-sort', boxSort); localStorage.setItem('pk-box-dir', boxDir); } catch (e) {} renderBox(); });
 // 검색: 별명·종 이름에 들어 있거나 도감 번호가 같으면
-const boxQ = () => $('#boxQ').value.trim();
+let boxQv = '';
+const boxQ = () => boxQv;
 const boxHit = (p, q) => !q || nameOf(p).includes(q) || SPECIES[p.sp].n.includes(q) || String(p.sp) === q.replace(/^0+/, '');
 function boxList(all) {
   const q = all ? '' : boxQ();
@@ -4179,7 +4216,9 @@ function renderBox() {
   for (const r of make) { const im = r.el.querySelector('img[data-sp]'), sp = +im.dataset.sp; if (!thumbOf(sp)) ensureSprite(sp).then(() => { im.src = thumbOf(fKey(sp, im.dataset.sx)); }).catch(() => {}); }
 }
 setTimeout(() => (window.requestIdleCallback || setTimeout)(() => { if (!pkEls.size) renderBox(); }), 3000);   // 상자 칸을 미리 만들어 두어 첫 진입도 빠르게
-$('#boxQ').addEventListener('input', () => renderBox());
+// 검색은 엔터(키보드 '검색')를 눌렀을 때만 한다. 글자를 다 지우거나 ✕ 를 누르면 바로 전체로 돌아간다
+$('#boxQ').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); boxQv = $('#boxQ').value.trim(); renderBox(); $('#boxQ').blur(); } });
+$('#boxQ').addEventListener('input', () => { if (!$('#boxQ').value.trim() && boxQv) { boxQv = ''; renderBox(); } });
 $('#boxGrid').addEventListener('click', e => { const b = e.target.closest('[data-id]'); if (b) openPoke(+b.dataset.id); });
 let pokeId = null;
 function openPoke(id, dir = 0) {
@@ -5643,31 +5682,91 @@ function evolvePoke(P) {
   const card = !$('#pokePop').hidden; if (card) closePoke();
   return evolveWin(P, card);   // 필드에 나가 있어도 진화 창에서 모션을 보여 준다
 }
+// ---------- 진화: 전체 화면 연출 (금·은 진화 음악 박자에 맞춘다) ----------
+// 음악(39. Evolution): 0.81초에 본곡 시작, 한 박 0.4146초, 8박 한 마디. 첫 마디는 2박마다, 둘째 마디는 1박마다,
+// 셋째 마디는 반 박 → 1/4 박 → 1/8 박으로 모습이 바뀌다가 넷째 마디 첫 박(10.76초)에 진화한다. 곡이 없으면 같은 박자로 효과음만.
+const EVO_B = .4146, EVO_T0 = .81, EVO_BAR = EVO_B * 8, EVO_END = EVO_T0 + EVO_BAR * 3;
+const EVO_SWAPS = (() => { const t = [], add = (a, b, st) => { for (let x = a; x < b - 1e-6; x += st) t.push(x); };
+  const s2 = EVO_T0 + EVO_BAR, s3 = s2 + EVO_BAR;
+  add(EVO_T0, s2, EVO_B * 2); add(s2, s3, EVO_B); add(s3, s3 + EVO_BAR / 2, EVO_B / 2); add(s3 + EVO_BAR / 2, s3 + EVO_BAR * .75, EVO_B / 4); add(s3 + EVO_BAR * .75, EVO_END, EVO_B / 8);
+  return t; })();
+async function evoMusicStart() {
+  const a = audio(); if (!a || !evoMus.have || !bgmOn) return null;
+  try {
+    if (!evoMus.buf) { const blob = await musicGet('evo'); if (!blob) return null; evoMus.buf = await bgmDecode(blob); }
+    const src = a.createBufferSource(), g = a.createGain(); g.gain.value = .6 * VOL.bgm / 10;
+    src.buffer = evoMus.buf; src.connect(g).connect(a.destination); const t0 = a.currentTime + .05; src.start(t0);
+    evoMus.src = src; evoMus.g = g; return t0;
+  } catch (e) { return null; }
+}
+function evoMusicFade(sec) { const a = actx, g = evoMus.g, src = evoMus.src; if (!a || !g) return; const t = a.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + sec); try { src.stop(t + sec + .05); } catch (e) {} evoMus.src = evoMus.g = null; }
+let evoEl = null;
+function evoDom() {
+  if (evoEl) return evoEl;
+  evoEl = document.createElement('div'); evoEl.id = 'evoFull'; evoEl.hidden = true;
+  evoEl.innerHTML = '<div class="ef-sky"></div><div class="ef-rays"></div><div class="ef-parts"></div><div class="ef-glow"></div><div class="ef-stage"><img alt="" class="ef-img"></div><div class="ef-flash"></div>'
+    + '<div class="ef-bottom"><div class="ef-msg"></div><div class="ef-card dexinfo" hidden></div><button class="boxbtn ef-ok" hidden>확인</button></div>';
+  document.body.appendChild(evoEl); return evoEl;
+}
+function evoSpark(el, x, y, big) { const d = document.createElement('i'); d.className = 'ef-sp' + (big ? ' big' : ''); d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.setProperty('--dx', rnd(-1, 1) * (big ? 220 : 60) + 'px'); d.style.setProperty('--dy', rnd(-1, 1) * (big ? 220 : 60) + 'px'); d.addEventListener('animationend', () => d.remove()); el.appendChild(d); }
 async function evolveWin(P, card) {
   const kids = evoKids(P.sp, P, true); if (!kids.length || evolving || hatching) return;
   const b = S.buds.find(x => x.pid === P.id);
   evolving = true;
-  const from = P.sp, to = pick(kids), fromN = SPECIES[from].n, toN = SPECIES[to].n;
+  const from = P.sp, to = pick(kids), fromN = SPECIES[from].n, toN = SPECIES[to].n, nm = nameOf(P);
   try { await ensureSprite(from); await ensureSprite(to); } catch (e) { evolving = false; return; }
+  const el = evoDom(), img = el.querySelector('.ef-img'), msg = el.querySelector('.ef-msg'), ok = el.querySelector('.ef-ok'), cardEl = el.querySelector('.ef-card'), parts = el.querySelector('.ef-parts');
+  const fromSrc = thumbOf(fKey(from, P.sex)) || thumbOf(from), toSrc = thumbOf(fKey(to, P.sex)) || thumbOf(to);
   const open = [sheet, mgr, runEl, setEl].filter(x => !x.hidden);
+  el.className = ''; el.style.setProperty('--p', 0); img.src = fromSrc; img.className = 'ef-img'; ok.hidden = true; cardEl.hidden = true; cardEl.innerHTML = ''; parts.innerHTML = '';
+  msg.innerHTML = `어라…? <b>${esc(nm)}</b>의 모습이…!`;
+  el.hidden = false; requestAnimationFrame(() => el.classList.add('in'));
   [sheet, mgr, runEl, setEl].forEach(x => x.hidden = true);
-  hatchEl.hidden = false; $('#hatchOk').hidden = true; showDexInfo(null); $('#hatchMsg').innerHTML = `어라…? ${J({ name: fromN },'의/의')} 모습이…!`;
-  hatchStage.innerHTML = `<img alt="" src="${thumbOf(from)}"><div class="flash"></div>`;
-  const img = hatchStage.querySelector('img');
-  await wait(900); hatchStage.classList.add('evo');
-  let gap = 520, now = to;
-  let step = 0; while (gap > 60) { img.src = thumbOf(now); now = now === to ? from : to; sfx('evotick', step++); await wait(gap); gap *= .84; }
-  hatchStage.querySelector('.flash').classList.add('go'); sfx('burst'); await wait(300);
-  img.src = thumbOf(to); hatchStage.classList.remove('evo');
+  bgmDuck(0, .4);
+  await wait(500);
+  // 박자 시계: 음악이 있으면 오디오 시각, 없으면 화면 시각
+  const t0 = await evoMusicStart(), music = t0 != null, p0 = performance.now();
+  const now = () => music ? actx.currentTime - t0 : (performance.now() - p0) / 1000;
+  if (!music) sfx('evotick', 0);
+  await new Promise(done => {
+    let k = 0, cur = 0, lastPart = 0;
+    const tick = () => {
+      const t = now(), p = clamp((t - EVO_T0) / (EVO_END - EVO_T0), 0, 1);
+      el.style.setProperty('--p', p.toFixed(3));
+      if (t >= EVO_T0 && !el.classList.contains('go')) { el.classList.add('go'); img.classList.add('sil'); }
+      while (k < EVO_SWAPS.length && t >= EVO_SWAPS[k]) {
+        cur ^= 1; img.src = cur ? toSrc : fromSrc; k++;
+        img.classList.remove('beat'); void img.offsetWidth; img.classList.add('beat');
+        if (!music) sfx('evotick', Math.min(30, k));
+      }
+      // 빛 알갱이가 모여든다 (끝으로 갈수록 많이)
+      if (t >= EVO_T0 && t - lastPart > .22 - p * .18) { lastPart = t; const w = el.clientWidth, h = el.clientHeight, a = Math.random() * Math.PI * 2, r = Math.max(w, h) * .55;
+        const d = document.createElement('i'); d.className = 'ef-mote'; d.style.setProperty('--fx', Math.cos(a) * r + 'px'); d.style.setProperty('--fy', Math.sin(a) * r + 'px'); d.addEventListener('animationend', () => d.remove()); parts.appendChild(d); }
+      if (t >= EVO_END) return done();
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+  // 진화하는 순간: 하얗게 번쩍 → 새 모습
+  el.classList.add('boom'); img.src = toSrc; sfx('burst'); haptic(2);
+  const r = el.querySelector('.ef-stage').getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  for (let i = 0; i < 26; i++) evoSpark(parts, cx, cy, true);
+  await wait(420); img.classList.remove('sil'); el.classList.add('done');
+  evoMusicFade(1.2);
   const newTo = !S.unlocked.has(to); if (newTo) addGold(NEW_G);
   P.sp = to; P.km = 0; if (b) { b.sp = to; b.km = 0; } unlock(to);
   { const m = S.mons.find(x => x.pid === P.id); if (m) { m.sp = to; setForm(m, to); m.el.classList.remove('ditto'); if (m.name === fromN || m.name.startsWith(fromN + ' ')) { m.name = m.name.replace(fromN, toN); m.tag.textContent = m.name; } } }   // 필드에 있던 포켓몬도 새 모습으로
-  $('#hatchMsg').innerHTML = `축하해! ${J({ name: fromN },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!${newTo ? `<br><span class="small">새로 만난 포켓몬이라 <b>${NEW_G}G</b>를 받았다</span>` : ''}`; sfx('evolve'); playCry(to, 1.2);
-  log(`축하해! ${b ? '짝꿍 ' : ''}${J({ name: fromN },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`, [], true);
-  showDexInfo(to);
-  const ok = $('#hatchOk'); ok.hidden = false; ok.textContent = '확인'; ok.focus();
-  await new Promise(r => ok.onclick = r);
-  hatchEl.hidden = true; evolving = false; save(); renderRun(); renderBox();
+  await wait(700);
+  sfx('evolve'); playCry(to, .9);
+  msg.innerHTML = `축하해! ${J({ name: nm }, '은/는')} ${J({ name: toN }, '으로/로')} 진화했다!${newTo ? `<br><span class="small">새로 만난 포켓몬이라 <b>${NEW_G}G</b>를 받았다</span>` : ''}`;
+  log(`축하해! ${b ? '짝꿍 ' : ''}${J({ name: nm },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`, [], true);
+  cardEl.innerHTML = dexInfoHtml(to); cardEl.hidden = false; ok.hidden = false; ok.focus();
+  { const bt = el.querySelector('.ef-bottom').getBoundingClientRect().top; el.style.setProperty('--sy', bt / 2 + 'px'); el.style.setProperty('--ss', Math.max(90, Math.min(220, bt - 50)) + 'px'); el.classList.add('fin'); }   // 새 모습은 아래 글 상자 위 빈 곳 가운데로
+  save();
+  await new Promise(res => ok.onclick = res);
+  sfx('tap'); el.classList.remove('in'); bgmDuck(1, 1.2);
+  await wait(350); el.hidden = true; el.className = ''; parts.innerHTML = '';
+  evolving = false; save(); renderRun(); renderBox();
   open.forEach(x => x.hidden = false); if (!mgr.hidden) { renderBuddy(); renderMgr(true); } if (card) openPoke(P.id);   // 보던 창으로 돌아간다
 }
 // the dex only lets you release species you have met
