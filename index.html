@@ -721,7 +721,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .pp-fr{display:flex;justify-content:space-between;font-size:13px;margin-top:4px}.frtap{cursor:pointer;padding:4px 0}.frtip{position:fixed;z-index:9000;transform:translate(-50%,-100%);background:#fff;color:var(--frame);border:3px solid var(--frame);padding:4px 8px;font-size:12px;white-space:nowrap;pointer-events:auto;cursor:pointer;box-shadow:3px 3px 0 rgba(0,0,0,.2)}.frtip::after{content:'';position:absolute;left:50%;bottom:-9px;margin-left:-5px;border:5px solid transparent;border-top-color:var(--frame)}.frtip[hidden]{display:none}.frtip.sm{font-size:11px;padding:2px 6px;border-width:2px}.frtip.sm::after{bottom:-8px;border-width:4px;margin-left:-4px}[data-tip]{cursor:pointer}.pp-fr .hearts{color:#e04870;letter-spacing:1px}
 .pp-meta{font-size:12px;color:var(--dim);margin-top:4px;line-height:1.5}
 .pp-free{display:block;margin:10px auto 0;font:inherit;font-size:13px;background:none;border:0;color:#c03838;padding:4px 10px;cursor:pointer}
-.pp-free.arm{background:#c03838;color:#fff}.pp-free[hidden]{display:none}
+.pp-free.arm{background:#c03838;color:#fff}#freeAsk{z-index:5700}#freeAsk .win{width:min(300px,100%);box-sizing:border-box;text-align:center;padding:16px}.ask-pic{display:grid;place-items:center;height:72px}.ask-pic img{width:72px;height:72px;image-rendering:pixelated;object-fit:contain}.ask-q{margin:8px 0 14px;font-size:16px;line-height:1.5;word-break:keep-all}.ask-btns{display:flex;gap:8px}.ask-btns .boxbtn{flex:1 1 0;min-width:0;padding:10px 6px}#freeAsk .boxbtn.red{background:#c03838;border-color:#7a1f1f;color:#fff}.pp-free[hidden]{display:none}
 .pp-btns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
 .pp-btns:has(#ppField[hidden]),.pp-btns:has(#ppBud[hidden]){grid-template-columns:1fr}#ppField[hidden]{display:none}
 .m-btns{margin-top:10px;grid-template-columns:repeat(3,minmax(0,1fr))}.m-btns:has(#mBud[hidden]){grid-template-columns:repeat(2,minmax(0,1fr))}#mBud[hidden]{display:none}#monPop .boxbtn.pink.sunk{background:#f7dfe8;border-color:#d9a9bc;color:#b0788f}#monPop .m-btns .boxbtn{min-width:0;font-size:14px;padding:10px 2px;white-space:nowrap}#pokePop .pp-btns .boxbtn{padding-left:2px;padding-right:2px}.pp-btns .boxbtn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:4px;padding-right:4px;font-size:clamp(12px,3.6vw,15px)}
@@ -750,7 +750,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .slot[aria-current="true"]{border-color:var(--cursor);background:var(--card)}
 .slot .ph{flex:1;display:flex;align-items:flex-end;justify-content:center;min-height:56px}
 .slot img{max-height:64px;max-width:100%;image-rendering:pixelated;object-fit:contain}
-.slot .nm{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slot .nm{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.slot .nmw{display:flex;align-items:center;justify-content:center;gap:2px;max-width:100%;min-width:0}.slot .nmw .nm{min-width:0}.slot .nmw .sx{flex:none;font-size:.9em;line-height:1}
 .slot .st{position:absolute;left:4px;top:4px;font-size:11px;padding:1px 4px;background:var(--frame);color:var(--win)}
 .slot .st.sleep{background:#4a5098}.slot .st.play{background:#c04870}.slot .st.eat{background:#a07020}.slot .st.away{background:#888}
 .slot .mini{width:80%;height:6px;background:var(--hp-track);border:2px solid var(--frame);box-sizing:content-box}
@@ -1446,6 +1446,12 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
     <button class="pp-free" id="ppFree">놓아주기</button>
   </div>
 </div>
+<div class="dexpop askpop" id="freeAsk" hidden>
+  <div class="win" role="alertdialog" aria-label="놓아주기 확인">
+    <div class="ask-pic" id="faPic"></div><p class="ask-q" id="faQ"></p>
+    <div class="ask-btns"><button class="boxbtn white" id="faNo">아니요</button><button class="boxbtn red" id="faYes">놓아주기</button></div>
+  </div>
+</div>
 <div class="bagpop" id="bagPop" hidden>
   <div class="win" role="dialog" aria-label="알 정보">
     <div class="incu-box bag-pick" id="bagPick"></div>
@@ -1956,7 +1962,7 @@ const chunkLoads = {};
 // ---------- 업데이트 받기 로딩창 ----------
 // 스프라이트 청크가 캐시에 없으면(처음 설치, 또는 sw.js 의 CACHE 가 올라 새 청크가 나왔을 때) 피카츄가 달리는 게이지 바를 띄우고
 // s0…s20.json 을 받아 서비스 워커와 같은 캐시에 넣는다. 크기는 빌드 때 채운다(압축 풀린 바이트).
-const CHUNK_CACHE = 'meadow-v7', CHUNK_SZ = [1152284,1077297,1397456,1074319,1295987,1115366,1317751,1435041,1536461,1677789,1105629,1127217,1437944,1255247,1228175,1593219,1210755,1448196,1183379,1363292,683879];
+const CHUNK_CACHE = 'meadow-v8', CHUNK_SZ = [1152284,1077297,1397456,1074319,1295987,1115366,1317751,1435041,1536461,1677789,1105629,1127217,1437944,1255247,1228175,1593219,1210755,1448196,1183379,1363292,683879];
 const PIKA_RUN = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFwAAAAbCAYAAADxsuiMAAADJ0lEQVR4nNWZPXbbMAzHoU71LdwbdMxmj+kN2ilH0JobJGtPodxAHjN67OZuyi3UDRkoUCAFgh8WbZXv6cW2yD9+BEEQUgDCDZV7W26b5v4S+H3T0Eq7FXexHcnh10BjYPwtHFGDe207coR3bZEW4qjfL1LNGFeJu4hFGCeOxa4FxDFrxQEMtDYOIS+KNFDxt0rcTt+hN1eJDRqziPCHxwypWTDeaQQYevMxVTfHVi1u6jv0APsjwPm0rg3EcbGSUnRK97QotpGUGk1du9DTxtfiXvAzrlhLmjMOvduRJsId0LXz5PjvWkoh3RSnCFs3Bl+L2+HxgkAd47NIfW0eDF3+pDhEQuQmOYUvDHeIAr8J7lxnB4W1SXDoyGGS7RSuXRLdt+QO7NjoTkBEFCcpGQFIhi5ySqKz786dGf2ucOqKkhA3FouUXKf4Ewk5eyvcPNqFXL8UvhwUMc+o75QYdEWnbIIbx6WTQ/rik2az8743TfAp7uMd4NsP0y0ADv9eAXAE+Pkq3PyK1t7+aGt1p7Hf1XLsXtwA83PA0JsxIX3r8D/fZxD0inUy+ncSpeL/fIpD+y3HKdQ052yRO2UxAdhWo3rV2TYvT3g5uNuM+kHk4KEtqR1AlBpoa1IuzDnYtsCd8WAUAJ4MXg7z/QLxIqck6v+X3M7BQKdtaBLcQIpDeLTGnJIJX5Pb6ociPMSdom1XkQOGtlGus6WJa/oZ8LW4Abxqyef2qyivHAw2OjSbZue+cdsf3Y5vz+bvx3sCKmv7oxlD40nX1+c2qCr59duwKfK1uBGnt5t00Grc1CfljaVTFp5PcbDzyYAkvg5tmp09sW0j6Lfn2SEAxsH+wqS0CtwiA+fmnx8ejX7Oq1v9cBjdrZu6fUI2JC0/z7LrXtxOqvD16OJpJdcnzkR5+eTn1wJnA3gHEIflB0+Bfk1up7LRzpxUfS0/2oG8wJ/yamysqDf0Jr10rdEZpv+iNLv5CfN8Ssrdqp21ufmXrpXT0grcrlFePVyjA140ChXJNfoLeytxO5og7KgV9Y2RlaGtbsqbtWv0K3HfRL8adEVt0q/ZsvQ/AULNuNvtaaCpAAAAAElFTkSuQmCC';
 const gateLoads = {};
 const gateReady = (async () => {
@@ -1978,7 +1984,7 @@ const gateReady = (async () => {
   const paint = () => { const n = Object.values(got).reduce((a, b) => a + b, 0), f = Math.min(1, n / total); bar.style.width = (f * 100).toFixed(1) + '%'; pk.style.left = (f * 100).toFixed(1) + '%'; pct.textContent = Math.floor(f * 100) + '%'; mb.textContent = `${MB(n)} / ${MB(total)}MB`; };
   paint();
   const one = async k => {
-    const r = await fetch(`s${k}.json`, { cache: 'no-cache' }); if (!r.ok) throw new Error('chunk ' + k);
+    const r = await fetch(`s${k}.json?v=${CHUNK_CACHE}`, { cache: 'no-store' }); if (!r.ok) throw new Error('chunk ' + k);   // ?v= : 아직 남은 옛 서비스 워커가 옛 캐시의 옛 그림을 내주지 않게
     const parts = []; got[k] = 0;
     if (r.body && r.body.getReader) { const rd = r.body.getReader(); for (;;) { const { done, value } = await rd.read(); if (done) break; parts.push(value); got[k] += value.length; paint(); } }
     else { parts.push(new Uint8Array(await r.arrayBuffer())); }
@@ -2013,8 +2019,8 @@ function loadChunk(k) {
       await Promise.race([gateReady, new Promise(r => setTimeout(r, 1500))]);
       if (gateLoads[k]) await gateLoads[k].catch(() => {});
       let r = null;
-      try { r = window.caches && CHUNK_SZ.length ? await caches.match(`s${k}.json`) : null; } catch (e) {}
-      if (!r) { r = await fetch(`s${k}.json`); if (!r.ok) throw new Error('sprite chunk ' + k); }
+      try { r = window.caches && CHUNK_SZ.length ? await (await caches.open(CHUNK_CACHE)).match(`s${k}.json`) : null; } catch (e) {}   // 지금 캐시에서만 (옛 캐시가 먼저 걸리지 않게)
+      if (!r) { r = await fetch(CHUNK_SZ.length ? `s${k}.json?v=${CHUNK_CACHE}` : `s${k}.json`); if (!r.ok) throw new Error('sprite chunk ' + k); }
       data = await r.json();
     }
     Object.assign(SPRITES, data);
@@ -4431,7 +4437,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.99';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.01';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -4938,15 +4944,21 @@ $('#ppX').onclick = () => { sfx('tap'); closePoke(); };
 // 놓아주기: 한 번 더 눌러야 숲으로 돌려보낸다 (필드·짝꿍에서도 빠짐, 도감 기록은 남음)
 let freeArm = null, freeT = 0;
 $('#ppFree').onclick = () => {
-  const P = boxOf(pokeId), b = $('#ppFree'); if (!P) return;
-  if (freeArm !== P.id) { freeArm = P.id; b.classList.add('arm'); b.textContent = '한 번 더 누르면 놓아줘요'; clearTimeout(freeT); freeT = setTimeout(() => { if (freeArm === P.id) { freeArm = null; b.classList.remove('arm'); b.textContent = '놓아주기'; } }, 3000); return; }
+  const P = boxOf(pokeId); if (!P) return; sfx('tap');   // 창 위에 '정말 놓아주시겠습니까?' 확인 창
+  const ask = $('#freeAsk'); $('#faPic').innerHTML = ''; { const im = $('#ppImg').cloneNode(); im.removeAttribute('id'); $('#faPic').append(im); }
+  $('#faQ').innerHTML = `정말 <b>${esc(nameOf(P))}</b>${hasBat(nameOf(P)) ? '을' : '를'}<br>놓아주시겠습니까?`; ask.hidden = false;
+  const close = () => { ask.hidden = true; ask.onclick = null; };
+  $('#faNo').onclick = () => { sfx('tap'); close(); }; ask.onclick = e => { if (e.target === ask) close(); };
+  $('#faYes').onclick = () => { close(); freeArm = P.id; releasePoke(P); };
+};
+function releasePoke(P) {
   freeArm = null; clearTimeout(freeT);
   const L = boxList(), i = L.indexOf(P), m = S.mons.find(x => x.pid === P.id);
   if (m) removeMon(m, true);
   dropRel('p' + P.id);
   S.buds = S.buds.filter(x => x.pid !== P.id);
   S.box = S.box.filter(x => x !== P);
-  log(`${J({ name: SPECIES[P.sp].n }, '을/를')} 숲으로 놓아주었다. 잘 지내!`, [], true); sfx('open');
+  log(`바이바이- ${esc(nameOf(P))}!`, [], true); sfx('open');
   save(); refreshCap(); renderBox();
   const L2 = boxList(), nx = L2[Math.min(i, L2.length - 1)];
   if (nx) openPoke(nx.id); else closePoke();
@@ -5017,7 +5029,7 @@ function renderMgr(force) { refreshCap();
   if (mgrSel && !S.mons.includes(mgrSel)) mgrSel = null;
   $("#mgrCap").innerHTML = `<b>${S.mons.length}</b>/${MAX_MONS}`;
   const isBud = m => m.pid && S.buds.some(b => b.pid === m.pid);
-  const key = S.mons.map(m => m.uid + ':' + m.name + ':' + m.form + (isBud(m) ? 'b' : '')).join(',') + '|' + (mgrSel ? mgrSel.uid : '');
+  const key = S.mons.map(m => m.uid + ':' + m.name + ':' + sexOf(m) + ':' + m.form + (isBud(m) ? 'b' : '')).join(',') + '|' + (mgrSel ? mgrSel.uid : '');
   if (force || key !== mgrKey) {
     const focusUid = document.activeElement?.dataset?.uid;
     slotsEl.innerHTML = '';
@@ -5025,7 +5037,7 @@ function renderMgr(force) { refreshCap();
       const m = S.mons[i], b = document.createElement('button'); b.className = 'slot';
       if (m) {
         b.dataset.uid = m.uid; b.setAttribute('aria-current', m === mgrSel); if (isBud(m)) b.classList.add('bud'); setTier(b, m.sp);
-        b.innerHTML = `<span class="sl-tags"><span class="st"></span>${isBud(m) ? '<span class="sl-bud">짝꿍</span>' : ''}</span><span class="sl-x" role="button" aria-label="필드에서 빼기">✕</span><span class="ph${pkCls(boxOf(m.pid))}"><img alt="" src="${thumbOf(m.sk || m.form)}"></span><span class="nm${tnCls(m.sp)}">${esc(m.name)}</span><span class="mini"><i></i></span>`;
+        b.innerHTML = `<span class="sl-tags"><span class="st"></span>${isBud(m) ? '<span class="sl-bud">짝꿍</span>' : ''}</span><span class="sl-x" role="button" aria-label="필드에서 빼기">✕</span><span class="ph${pkCls(boxOf(m.pid))}"><img alt="" src="${thumbOf(m.sk || m.form)}"></span><span class="nmw"><span class="nm${tnCls(m.sp)}">${esc(m.name)}</span>${sexHtml(sexOf(m))}</span><span class="mini"><i></i></span>`;
         b.onclick = e => { if (e.target.closest('.sl-x')) { sfx('tap'); removeMon(m); if (mgrSel === m) mgrSel = null; renderMgr(true); refreshCap(); save(); return; } openMon(m); };   // 우상단 ✕ = 바로 상자로
       } else {
         b.classList.add('empty'); b.innerHTML = '<span class="plus">+</span><span>빈 자리</span>';
@@ -6080,7 +6092,7 @@ function eggQuake(egg, win, st, g) {
 // 알 두드리기: 마구 두드리면 금이 가다가 깨진다 (높은 등급일수록 많이). 한동안 가만히 두면 알이 혼자 흔들린다.
 function tapEgg(egg, g0, msg, g = g0) {   /* g0 알 등급, g 연출 등급(나올 포켓몬 단계: 횟수·연출 모두) */
   return new Promise(done => {
-    const need = ({ 6: 80, 5: 60, 4: 40 })[g] || 20,   /* 두드릴 횟수는 나올 포켓몬 단계로: 1단계 80, 2단계 60, 3단계 40, 기본 20 */ win = hatchEl.querySelector('.win'); let n = 0, stage = 0, idle = 0, pend = -1;
+    const need = ({ 6: 80, 5: 60, 4: 40 })[g] || 15,   /* 두드릴 횟수는 나올 포켓몬 티어로: 1티어 80, 2티어 60, 3티어 40, 4티어 이하 15 (경완 2026-10-14) */ win = hatchEl.querySelector('.win'); let n = 0, stage = 0, idle = 0, pend = -1;
     msg.textContent = '알을 톡톡 두드려 보자!';
     if (g >= 5) { hatchEl.classList.add('legend'); tenseStart(); }   /* 1단계도 처음엔 2단계와 똑같이 시작 (스포 방지), 절반쯤 두드리면 무지개로 바뀐다 */ else if (g === 4) hatchEl.classList.add('g4t');
     hatchStage.classList.add('tapme');
@@ -6705,28 +6717,33 @@ function lockDexBtn(sp) {
 
 // ---------- loop ----------
 let last = performance.now(), acc = 0, treeT = 30, infoT = 0, saveT = 0;
+// 한 마리에서 오류가 나도 필드 전체가 멈추지 않게: 그 포켓몬만 건너뛰고 오류는 기록(pk-err)
+function frameErr(e, m) { try { console.error(e); const t = `${new Date().toISOString()} ${m ? 'sp' + m.sp + ' ' + m.state : ''} ${e && e.stack || e}`.slice(0, 600); const L = JSON.parse(localStorage.getItem('pk-err') || '[]'); if (L[0] !== t) { L.unshift(t); localStorage.setItem('pk-err', JSON.stringify(L.slice(0, 5))); } } catch (x) {} if (m) { try { m.partner = null; setState(m, 'idle', 1); } catch (x) {} } }
 function frame(now) {
+  requestAnimationFrame(frame);
+  try { frameIn(now); } catch (e) { frameErr(e); }
+}
+function frameIn(now) {
   const real = Math.min(.1, (now - last) / 1000); last = now;
   S.clock = realClock();
   let sim = real * S.speed;
   while (sim > 0) {
     const dt = Math.min(.1, sim); sim -= dt;
-    for (const m of [...S.mons]) update(m, dt);
+    for (const m of [...S.mons]) { try { update(m, dt); } catch (e) { frameErr(e, m); } }
     treeT -= dt;
     if (treeT <= 0) { treeT = rnd(25, 50); if (!isNight() && S.berries.length < 10) { addBerry(rnd(XL + 60, XR - 60), MIN_Y + rnd(4, 26), true); } }
   }
   for (const m of S.mons) { if (m.held && drag?.m !== m) { m.held = false; m.el.classList.remove('held'); settle(m); setState(m, 'idle', 1); }   /* 손에서 놓쳤는데 들린 채 남은 포켓몬 풀어 주기 */
-    if (m.bubT > 0) m.bubT -= real; m.realDt = real * Math.min(S.speed || 0, 3); render(m, now); }
+    if (m.bubT > 0) m.bubT -= real; m.realDt = real * Math.min(S.speed || 0, 3); try { render(m, now); } catch (e) { frameErr(e, m); } }
   nightHoles(); tickFlies(now); tickBugs(now, real);
   acc += real; if (acc > .5) { acc = 0; sky(); rotBerries(); for (const g of [...$('#glows').children]) if (!S.mons.some(m => m.gl === g || m.glA === g)) g.remove(); }   /* 필드에서 빠진 포켓몬의 빛이 남지 않게 */
-  tickMoves(real);
+  try { tickMoves(real); } catch (e) { frameErr(e); }
   infoT -= real; if (infoT <= 0 && S.sel) { infoT = .5; renderInfo(); }
   S.mons.forEach(m => { m.frT = (m.frT || 0) + real * frRate(m); if (m.frT >= 3600) { m.frT -= 3600; addFr(m.pid, 1); } });   /* 필드에 있는 시간: 세 게이지가 찰수록 빨리 (FR_TABLE) */
   mgrT -= real; if (mgrT <= 0) { mgrT = .5; refreshCap(); renderMgr(); renderRun();
     if (hatchQ.length && !hatching) playHatch(); }
   placeInfo(); placeMark(); mirrorPf();
   saveT -= real; if (saveT <= 0) { saveT = 8; save(); }
-  requestAnimationFrame(frame);
 }
 
 async function start(data) {
