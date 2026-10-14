@@ -756,6 +756,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .bslot[aria-current="true"]{border-color:var(--cursor);background:var(--card)}
 .newtag{position:absolute;top:2px;left:50%;transform:translateX(-50%);font-size:9px;line-height:1;background:#e04838;color:#fff;padding:2px 4px;letter-spacing:.5px}
 .bag-empty{grid-column:1/-1;color:var(--dim);font-size:14px;padding:18px 0;text-align:center}
+.rtab[data-tab="bag"].none:not([hidden]){display:flex;flex-direction:column;min-height:100%}.rtab.none #bagGrid{flex:1;display:flex;align-items:center;justify-content:center}.rtab.none .bag-empty{padding:0}
 .fpop{position:fixed;inset:0;z-index:5700;background:rgba(10,14,30,.5);display:grid;place-items:center;padding:16px}
 .fpop .win{width:min(420px,100%);max-height:80vh;overflow-y:auto}
 .fpop h4{margin:0 0 10px;font-size:16px}
@@ -5783,6 +5784,7 @@ function renderBag() {
   if (!S.bag.includes(bagSel)) bagSel = null;
   $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot${bagMul?.has(e.id) ? ' on' : ''}" data-id="${e.id}" aria-current="${e === bagSel}">${bagMul ? '<i class="chk"></i>' : ''}${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g)}<span>${GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.split(' ').pop()) : fmtWhen(e.t)}</span></button>`).join('')
     : `<div class="bag-empty">${S.bag.length ? '이 등급 알이 없어요' : '움직이면 알을 주울 수 있어요'}</div>`;
+  document.querySelector('.rtab[data-tab="bag"]').classList.toggle('none', !S.bag.length);   // 알이 하나도 없으면 안내 문구를 남은 공간 정중앙에
   $('#bagMulti').setAttribute('aria-pressed', !!bagMul); $('#bagMulti').textContent = bagMul ? '취소' : '선택';
   $('#bagMBar').hidden = !bagMul;
   if (bagMul) { $('#bagMN').innerHTML = bagMul.size ? `<b>${bagMul.size}</b>개 선택` : '알을 골라 주세요'; const d = $('#bagMDel'); d.disabled = !bagMul.size; d.textContent = delArm === 2 ? '정말 버릴까요?' : '버리기'; $('#bagMAll').textContent = list.length && list.every(x => bagMul.has(x.id)) ? '선택 해제' : '전체 선택';
