@@ -4477,7 +4477,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.10';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.11';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5744,6 +5744,7 @@ function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); (S.dexNew |
 // v3.09: 작은 스프라이트(토중몬 등)를 칸 높이까지 늘리면 도트가 커 보인다(경완) → 도트 한 칸 최대 2배까지만 키우고 칸 높이는 그대로
 function dexImgFit(im, H = 56) { const h = Math.min(H, Math.round(im.naturalHeight * 2)); im.style.height = h + 'px'; im.style.marginTop = (H - h) + 'px'; }
 $('#dpImg').addEventListener('load', e => { const im = e.target, h = Math.min(108, Math.round(im.naturalHeight * 3)); im.style.height = h + 'px'; });   // 도감 카드: 작은 포켓몬은 3배까지만 (v3.10)
+$('#slots').addEventListener('load', e => { const im = e.target; if (im.tagName === 'IMG' && im.closest('.ph')) im.style.maxHeight = Math.round(im.naturalHeight * 2) + 'px'; }, true);   // 필드 슬롯도 2배까지만 (v3.11)
 $('#boxGrid').addEventListener('load', e => { if (e.target.tagName === 'IMG' && e.target.closest('.pk')) dexImgFit(e.target, 52); }, true);   // 포켓몬 상자 리스트도 같은 규칙 (v3.10)
 function dexCellReady(sp) { const b = dexBtns[sp]; if (!b) return; io.unobserve(b); const put = () => { const im = b.querySelector('img'); if (thumbOf(sp) && im.src !== thumbOf(sp)) im.src = thumbOf(sp); if (im.complete && im.naturalHeight) dexImgFit(im); im.decode?.().catch(() => {}); };
   thumbOf(sp) ? put() : ensureSprite(sp).then(put).catch(() => {}); if (sheet.hidden) filterDex(); }
