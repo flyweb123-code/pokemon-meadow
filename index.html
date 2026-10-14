@@ -402,7 +402,7 @@ ol.log li.big .txt{color:#c03838}
 .hint{position:absolute;left:50%;top:20px;transform:translateX(-50%);z-index:40;padding:8px 16px;font-size:14px}
 
 .mon{position:absolute;left:0;top:0;width:0;height:0}
-.mon .shadow{position:absolute;left:0;top:0;width:44px;height:12px;margin:-6px 0 0 -22px;border-radius:50%;background:rgba(20,40,10,.28)}
+.mon .shadow{position:absolute;left:0;top:0;width:44px;height:12px;margin:-7px 0 0 -22px;border-radius:50%;background:radial-gradient(closest-side,rgba(20,40,10,.38),rgba(20,40,10,.3) 70%,rgba(20,40,10,0))}
 .mon .lift{position:absolute;left:0;bottom:0;width:0}
 .mon .flip{position:absolute;left:0;bottom:0}
 .mon .act{position:absolute;bottom:0;left:0;transform:translateX(-50%)}
@@ -721,7 +721,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .pp-fr{display:flex;justify-content:space-between;font-size:13px;margin-top:4px}.frtap{cursor:pointer;padding:4px 0}.frtip{position:fixed;z-index:9000;transform:translate(-50%,-100%);background:#fff;color:var(--frame);border:3px solid var(--frame);padding:4px 8px;font-size:12px;white-space:nowrap;pointer-events:auto;cursor:pointer;box-shadow:3px 3px 0 rgba(0,0,0,.2)}.frtip::after{content:'';position:absolute;left:50%;bottom:-9px;margin-left:-5px;border:5px solid transparent;border-top-color:var(--frame)}.frtip[hidden]{display:none}.frtip.sm{font-size:11px;padding:2px 6px;border-width:2px}.frtip.sm::after{bottom:-8px;border-width:4px;margin-left:-4px}[data-tip]{cursor:pointer}.pp-fr .hearts{color:#e04870;letter-spacing:1px}
 .pp-meta{font-size:12px;color:var(--dim);margin-top:4px;line-height:1.5}
 .pp-free{display:block;margin:10px auto 0;font:inherit;font-size:13px;background:none;border:0;color:#c03838;padding:4px 10px;cursor:pointer}
-.pp-free.arm{background:#c03838;color:#fff}#freeAsk{z-index:5700}#freeAsk .win{width:min(300px,100%);box-sizing:border-box;text-align:center;padding:16px}.ask-pic{display:grid;place-items:center;height:72px}.ask-pic img{width:72px;height:72px;image-rendering:pixelated;object-fit:contain}.ask-q{margin:8px 0 14px;font-size:16px;line-height:1.5;word-break:keep-all}.ask-btns{display:flex;gap:8px}.ask-btns .boxbtn{flex:1 1 0;min-width:0;padding:10px 6px}#freeAsk .boxbtn.red{background:#c03838;border-color:#7a1f1f;color:#fff}.pp-free[hidden]{display:none}
+.pp-free.arm{background:#c03838;color:#fff}#freeAsk{z-index:5700}#freeAsk .win{width:min(300px,100%);box-sizing:border-box;text-align:center;padding:16px}.ask-pic{display:grid;place-items:center;height:72px}.ask-pic img{width:72px;height:72px;image-rendering:pixelated;object-fit:contain}.ask-q{margin:8px 0 14px;font-size:16px;line-height:1.5;word-break:keep-all}.ask-btns{display:flex;gap:8px}.ask-btns[hidden]{display:none}.ask-pic img.bye{animation:byeGo 1.3s ease-in forwards}@keyframes byeGo{0%{transform:none;opacity:1}30%{transform:translateY(-4px)}100%{transform:translate(40px,-10px) scale(.6);opacity:0}}.ask-btns .boxbtn{flex:1 1 0;min-width:0;padding:10px 6px}#freeAsk .boxbtn.red{background:#c03838;border-color:#7a1f1f;color:#fff}.pp-free[hidden]{display:none}
 .pp-btns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
 .pp-btns:has(#ppField[hidden]),.pp-btns:has(#ppBud[hidden]){grid-template-columns:1fr}#ppField[hidden]{display:none}
 .m-btns{margin-top:10px;grid-template-columns:repeat(3,minmax(0,1fr))}.m-btns:has(#mBud[hidden]){grid-template-columns:repeat(2,minmax(0,1fr))}#mBud[hidden]{display:none}#monPop .boxbtn.pink.sunk{background:#f7dfe8;border-color:#d9a9bc;color:#b0788f}#monPop .m-btns .boxbtn{min-width:0;font-size:14px;padding:10px 2px;white-space:nowrap}#pokePop .pp-btns .boxbtn{padding-left:2px;padding-right:2px}.pp-btns .boxbtn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:4px;padding-right:4px;font-size:clamp(12px,3.6vw,15px)}
@@ -1962,7 +1962,7 @@ const chunkLoads = {};
 // ---------- 업데이트 받기 로딩창 ----------
 // 스프라이트 청크가 캐시에 없으면(처음 설치, 또는 sw.js 의 CACHE 가 올라 새 청크가 나왔을 때) 피카츄가 달리는 게이지 바를 띄우고
 // s0…s20.json 을 받아 서비스 워커와 같은 캐시에 넣는다. 크기는 빌드 때 채운다(압축 풀린 바이트).
-const CHUNK_CACHE = 'meadow-v11', CHUNK_SZ = [1152284,1077297,1397456,1074319,1295987,1115366,1317751,1435041,1536461,1677789,1105757,1126905,1437779,1255099,1228215,1593187,1210911,1447380,1183358,1362684,682904];
+const CHUNK_CACHE = 'meadow-v12', CHUNK_SZ = [1152284,1077297,1397456,1074319,1295987,1115366,1317751,1435041,1536461,1677789,1137870,1154712,1454974,1262166,1233376,1608563,1237499,1495578,1233032,1400600,742815];
 const PIKA_RUN = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFwAAAAbCAYAAADxsuiMAAADJ0lEQVR4nNWZPXbbMAzHoU71LdwbdMxmj+kN2ilH0JobJGtPodxAHjN67OZuyi3UDRkoUCAFgh8WbZXv6cW2yD9+BEEQUgDCDZV7W26b5v4S+H3T0Eq7FXexHcnh10BjYPwtHFGDe207coR3bZEW4qjfL1LNGFeJu4hFGCeOxa4FxDFrxQEMtDYOIS+KNFDxt0rcTt+hN1eJDRqziPCHxwypWTDeaQQYevMxVTfHVi1u6jv0APsjwPm0rg3EcbGSUnRK97QotpGUGk1du9DTxtfiXvAzrlhLmjMOvduRJsId0LXz5PjvWkoh3RSnCFs3Bl+L2+HxgkAd47NIfW0eDF3+pDhEQuQmOYUvDHeIAr8J7lxnB4W1SXDoyGGS7RSuXRLdt+QO7NjoTkBEFCcpGQFIhi5ySqKz786dGf2ucOqKkhA3FouUXKf4Ewk5eyvcPNqFXL8UvhwUMc+o75QYdEWnbIIbx6WTQ/rik2az8743TfAp7uMd4NsP0y0ADv9eAXAE+Pkq3PyK1t7+aGt1p7Hf1XLsXtwA83PA0JsxIX3r8D/fZxD0inUy+ncSpeL/fIpD+y3HKdQ052yRO2UxAdhWo3rV2TYvT3g5uNuM+kHk4KEtqR1AlBpoa1IuzDnYtsCd8WAUAJ4MXg7z/QLxIqck6v+X3M7BQKdtaBLcQIpDeLTGnJIJX5Pb6ociPMSdom1XkQOGtlGus6WJa/oZ8LW4Abxqyef2qyivHAw2OjSbZue+cdsf3Y5vz+bvx3sCKmv7oxlD40nX1+c2qCr59duwKfK1uBGnt5t00Grc1CfljaVTFp5PcbDzyYAkvg5tmp09sW0j6Lfn2SEAxsH+wqS0CtwiA+fmnx8ejX7Oq1v9cBjdrZu6fUI2JC0/z7LrXtxOqvD16OJpJdcnzkR5+eTn1wJnA3gHEIflB0+Bfk1up7LRzpxUfS0/2oG8wJ/yamysqDf0Jr10rdEZpv+iNLv5CfN8Ssrdqp21ufmXrpXT0grcrlFePVyjA140ChXJNfoLeytxO5og7KgV9Y2RlaGtbsqbtWv0K3HfRL8adEVt0q/ZsvQ/AULNuNvtaaCpAAAAAElFTkSuQmCC';
 const gateLoads = {};
 const gateReady = (async () => {
@@ -2041,7 +2041,7 @@ const isPmd = sp => typeof SPRITES[sp] === 'object';
 // 그리고 진화 전 모습은 진화 후 모습보다 커지지 않게 (진화 후의 92%까지)
 // 2026-10-14 경완 요청: 3D 본가(소드실드·아르세우스·스칼렛바이올렛)처럼 실제 키에 더 가깝게 → 키 비중을 올리고(h^0.75), 화면 크기는 e^0.6 으로 넓게 벌림.
 // 너무 작거나 크지 않게 아래는 30px, 위는 80px 부터 부드럽게 눌러 최대 약 130px (폰 화면에서 고래왕이 너무 커서)
-const sizeRaw = sp => { const d = SPECIES[sp]; if (!d) return 1; const h = Math.max(.1, (d.h ?? 7) / 10), w = Math.max(.1, (d.w ?? 100) / 10); return Math.pow(h, .75) * Math.pow(.45 * Math.cbrt(w), .25); };
+const sizeRaw = sp => { const d = SPECIES[sp]; if (!d) return 1; const h = Math.max(.1, (d.h ?? 7) / 10), w = Math.max(.1, (d.w ?? 100) / 10); return Math.pow(h, .25) * Math.pow(.45 * Math.cbrt(w), .75); };   // v3.05: 덩치는 몸무게(부피)가 거의 정한다 — 키 2m 야도킹(80kg)이 코리갑(1.1m·120kg)보다 커 보이던 것 (보이는 크기 vh 도 칠해진 넓이 기준이라 맞음)
 let SIZE_KIDS = null; const sizeMemo = {};
 function sizeEff(sp) {
   if (sizeMemo[sp]) return sizeMemo[sp];
@@ -2049,9 +2049,9 @@ function sizeEff(sp) {
   let v = sizeRaw(sp); for (const c of SIZE_KIDS[sp] || []) v = Math.min(v, sizeEff(c) * .92);
   return (sizeMemo[sp] = v);
 }
-const sizeT = sp => { const e = sizeEff(parseInt(sp)), x = 66 * Math.pow(e, .6); return Math.max(30, x <= 80 ? x : 80 + 50 * (1 - Math.exp(-(x - 80) / 50))); };
+const sizeT = sp => { const e = sizeEff(parseInt(sp)), x = 48 * Math.pow(e, .7); return Math.max(30, x <= 90 ? x : 90 + 60 * (1 - Math.exp(-(x - 90) / 60))); };   // v3.05: 크로뱃·홍수몬·딱구리 너무 크다, 꼬치조가 어써러셔만 하다(경완) → 중간 크기는 줄이고 거대한 포켓몬과 차이는 벌림, 90px 위는 눌러 최대 약 150px
 const sizeCls = sp => { const h = SPECIES[parseInt(sp)]?.h ?? 7; return h <= 5 ? 0 : h <= 13 ? 1 : 2; };
-const scaleOf = sp => { const P = SPRITES[sp]; if (!isPmd(sp)) return SCALE * [.85, 1, 1.15][sizeCls(sp)]; if (!P.vh) return P.a.Idle[2] >= 40 ? 1.875 : PSCALE; const big = P.a.Idle[2] >= 40, k = Math.round(sizeT(sp) / P.vh * 2) / 2; return Math.max(1, Math.min(big ? 3.5 : 4.5, k)); };   // 픽셀이 고르게 보이도록 0.5배 단위, 원래 크기 근처에서만
+const scaleOf = sp => { const P = SPRITES[sp]; if (!isPmd(sp)) return SCALE * [.85, 1, 1.15][sizeCls(sp)]; if (!P.vh) return P.a.Idle[2] >= 40 ? 1.875 : PSCALE; const big = P.a.Idle[2] >= 40, k = Math.round(sizeT(sp) / P.vh * 4) / 4; return Math.max(1, Math.min(big ? 3.5 : 4.5, k)); };   // 픽셀이 고르게 보이도록 0.5배 단위, 원래 크기 근처에서만
 // 아틀라스 프레임 사이에 투명한 틈을 넣어 다시 만든다: 확대할 때 옆 프레임의 검은 테두리가 번져 보이던 것 막기.
 // 그러면서 Idle 첫 프레임의 실제로 보이는 몸 크기(vh)를 잰다
 const padded = {};
@@ -2067,8 +2067,12 @@ function padAtlas(k) {
         for (const n of names) { const a = A[n]; for (let f = 0; f < a[3]; f++) x.drawImage(im, f * a[1], a[0], a[1], a[2], f * (a[1] + G), ny[n], a[1], a[2]); }
         const a = A.Idle, d = x.getImageData(0, ny.Idle, a[1], a[2]).data; let cnt = 0, t = a[2], b = -1, l = a[1], r = -1;
         for (let yy = 0; yy < a[2]; yy++) for (let xx = 0; xx < a[1]; xx++) if (d[(yy * a[1] + xx) * 4 + 3] > 40) { cnt++; t = Math.min(t, yy); b = Math.max(b, yy); l = Math.min(l, xx); r = Math.max(r, xx); }
-        const vh = cnt ? Math.sqrt(cnt / .55) : 0;   // 보이는 몸 크기 = 실제로 칠해진 칸 수 기준 (옆으로 길거나 똬리 튼 포켓몬도 덩치만큼)
-        P.i = c.toDataURL('image/png'); for (const n of names) A[n][0] = ny[n]; P.G = G; if (vh) P.vh = vh; delete atlasDims[k];
+        const vh = cnt ? Math.sqrt(cnt / .55) : 0;
+        { let fl = a[1], fr = -1; for (let yy = Math.max(t, b - 3); yy <= b; yy++) for (let xx = 0; xx < a[1]; xx++) if (d[(yy * a[1] + xx) * 4 + 3] > 40) { fl = Math.min(fl, xx); fr = Math.max(fr, xx); } if (fr >= fl) P.fw = Math.max(fr - fl + 1, (r - l + 1) * .35); }   // 발 폭 (그림자용)   // 보이는 몸 크기 = 실제로 칠해진 칸 수 기준 (옆으로 길거나 똬리 튼 포켓몬도 덩치만큼)
+        for (const n of names) A[n][0] = ny[n]; P.G = G; if (vh) P.vh = vh; delete atlasDims[k];
+        // 크게 확대되는 포켓몬은 도트가 굵어 보이므로 Scale2x 로 두 배 고운 도트로 다시 찍는다 (좌표는 그대로, 그림만 고해상도 → 화면 도트 크기 절반)
+        let cv = c; const sc = scaleOf(k); if (sc >= 2.5) { cv = scale2x(cv); if (sc >= 5) cv = scale2x(cv); }
+        P.i = cv.toDataURL('image/png');
       } catch (e) { P.G = 0; }
       res();
     };
@@ -2077,6 +2081,26 @@ function padAtlas(k) {
 }
 const thumbOf = sp => { const s = SPRITES[sp]; return !s ? '' : typeof s === 'string' ? s : s.th; };
 const atlasDims = {};
+// 그림자: 발이 닿는 폭(아래쪽 몇 줄의 칠해진 폭)에 맞추고, 발 선보다 살짝 위에 중심을 둬 발밑에 붙어 보이게
+function shadowFit(m) {
+  const sh = m.el.querySelector('.shadow'); if (!sh) return;
+  const k = m.sk || m.form, P = SPRITES[k], s = scaleOf(k);
+  const w = clamp(isPmd(k) && P.fw ? P.fw * s * 1.12 : m.w * .62, 14, 220), h = Math.max(5, Math.round(w * .3));
+  sh.style.transform = ''; sh.style.width = Math.round(w) + 'px'; sh.style.height = h + 'px'; sh.style.margin = `${-Math.round(h * .62)}px 0 0 ${-Math.round(w / 2)}px`;
+}
+function scale2x(src) {
+  const w = src.width, h = src.height, s = new Uint32Array(src.getContext('2d').getImageData(0, 0, w, h).data.buffer);
+  const c = document.createElement('canvas'); c.width = w * 2; c.height = h * 2; const x = c.getContext('2d'), od = x.createImageData(w * 2, h * 2), o = new Uint32Array(od.data.buffer), W2 = w * 2;
+  for (let y = 0; y < h; y++) for (let i = 0; i < w; i++) {
+    const p = s[y * w + i], A = y ? s[(y - 1) * w + i] : p, D = y < h - 1 ? s[(y + 1) * w + i] : p, C = i ? s[y * w + i - 1] : p, B = i < w - 1 ? s[y * w + i + 1] : p;
+    const q = (y * 2) * W2 + i * 2;
+    if (C === A && C !== D && A !== B) o[q] = A; else o[q] = p;
+    if (A === B && A !== C && B !== D) o[q + 1] = B; else o[q + 1] = p;
+    if (D === C && D !== B && C !== A) o[q + W2] = C; else o[q + W2] = p;
+    if (B === D && B !== A && D !== C) o[q + W2 + 1] = D; else o[q + W2 + 1] = p;
+  }
+  x.putImageData(od, 0, 0); return c;
+}
 function atlasSize(sp) {
   if (!atlasDims[sp]) { let w = 0, h = 0; for (const k in SPRITES[sp].a) { const a = SPRITES[sp].a[k]; w = Math.max(w, (a[1] + (SPRITES[sp].G || 0)) * a[3]); h = Math.max(h, a[0] + a[2] + (SPRITES[sp].G || 0)); } atlasDims[sp] = [w, h]; }
   return atlasDims[sp];
@@ -2265,7 +2289,7 @@ async function spawn(sp, opts = {}) {
     el2.addEventListener('pointerdown', ev => grab(m, ev));
   }
   setMode(m);
-  el.querySelector('.shadow').style.transform = `scale(${clamp(m.w / 60, .7, 1.8)})`;
+  shadowFit(m);
   m.bub = document.createElement('div'); m.bub.className = 'bubble'; m.bub.hidden = true; fxEl.append(m.bub);
   m.tag = document.createElement('div'); m.tag.className = 'tag'; m.tag.textContent = m.name; m.tag.hidden = true; fxEl.append(m.tag);
   { const P = boxOf(m.pid); if (P && P.shiny) { el.classList.add('shiny'); el.style.setProperty('--shue', shinyHue(sp) + 'deg'); } }
@@ -3753,7 +3777,7 @@ function healArrive(m, o) {
   setState(m, 'idle', 2);
 }
 function setForm(m, sp) {
-  const apply = d => { m.form = sp; m.sk = fKey(sp, sexOf(m)); m.w = d.w * scaleOf(m.sk); m.h = d.h * scaleOf(m.sk); m.img.width = m.w; m.img.height = m.h; if (!isPmd(sp)) { m.img.src = SPRITES[sp]; m.curSrc = SPRITES[sp]; } setMode(m); };
+  const apply = d => { m.form = sp; m.sk = fKey(sp, sexOf(m)); m.w = d.w * scaleOf(m.sk); m.h = d.h * scaleOf(m.sk); m.img.width = m.w; m.img.height = m.h; if (!isPmd(sp)) { m.img.src = SPRITES[sp]; m.curSrc = SPRITES[sp]; } setMode(m); shadowFit(m); };
   if (SPRITES[sp] && dims[fKey(sp, sexOf(m))]) apply(dims[fKey(sp, sexOf(m))]);
   else ensureSprite(sp).then(() => { makeStill(sp); return measure(fKey(sp, sexOf(m))); }).then(apply);
   m.el.classList.toggle('ditto', sp !== m.sp);
@@ -4439,7 +4463,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.04';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.06';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -4949,9 +4973,13 @@ $('#ppFree').onclick = () => {
   const P = boxOf(pokeId); if (!P) return; sfx('tap');   // 창 위에 '정말 놓아주시겠습니까?' 확인 창
   const ask = $('#freeAsk'); $('#faPic').innerHTML = ''; { const im = $('#ppImg').cloneNode(); im.removeAttribute('id'); $('#faPic').append(im); }
   $('#faQ').innerHTML = `정말 <b>${esc(nameOf(P))}</b>${hasBat(nameOf(P)) ? '을' : '를'}<br>놓아주시겠습니까?`; ask.hidden = false;
-  const close = () => { ask.hidden = true; ask.onclick = null; };
+  const btns = ask.querySelector('.ask-btns'); btns.hidden = false;
+  const close = () => { ask.hidden = true; ask.onclick = null; btns.hidden = false; };
   $('#faNo').onclick = () => { sfx('tap'); close(); }; ask.onclick = e => { if (e.target === ask) close(); };
-  $('#faYes').onclick = () => { close(); freeArm = P.id; releasePoke(P); };
+  $('#faYes').onclick = () => {   // 같은 창에 '바이바이- 이름!'을 잠깐 띄웠다가 닫는다
+    btns.hidden = true; ask.onclick = null; $('#faQ').innerHTML = `바이바이- <b>${esc(nameOf(P))}</b>!`; ask.querySelector('.ask-pic img')?.classList.add('bye'); sfx('open');
+    setTimeout(() => { close(); freeArm = P.id; releasePoke(P); }, 1300);
+  };
 };
 function releasePoke(P) {
   freeArm = null; clearTimeout(freeT);
@@ -4960,7 +4988,7 @@ function releasePoke(P) {
   dropRel('p' + P.id);
   S.buds = S.buds.filter(x => x.pid !== P.id);
   S.box = S.box.filter(x => x !== P);
-  log(`바이바이- ${esc(nameOf(P))}!`, [], true); sfx('open');
+  log(`바이바이- ${esc(nameOf(P))}!`, [], true);
   save(); refreshCap(); renderBox();
   const L2 = boxList(), nx = L2[Math.min(i, L2.length - 1)];
   if (nx) openPoke(nx.id); else closePoke();
@@ -6761,7 +6789,7 @@ async function start(data) {
   window.pokeRunReady = true; postNative();
   try { window.webkit?.messageHandlers?.pokeRun?.postMessage({ ready: true }); } catch (e) {}
 }
-if (/[?&]debug/.test(location.search)) window.__meadow = { save, evoMus, bgm, bgmPos, feedOne, tense, hatchEgg, playHatch, TIER, TIER_SPS, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
+if (/[?&]debug/.test(location.search)) window.__meadow = { scaleOf, sizeT, SPRITES, save, evoMus, bgm, bgmPos, feedOne, tense, hatchEgg, playHatch, TIER, TIER_SPS, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
 if (/[?&]debug/.test(location.search)) Object.assign(window, { __drag: () => drag, __log: log, __save: save, __bgm: bgm, __actx: () => actx, __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf, __thoughtOf: thoughtOf, __addRel: addRel, __tyIcon: tyIcon, __evoKids: evoKids, __friendsAll: friendsAll, __renameBox: renameBox });
 window.claude?.hot?.snapshot?.(() => serialize());
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
