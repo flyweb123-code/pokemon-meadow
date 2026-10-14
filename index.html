@@ -89,7 +89,7 @@
 .frpop b{margin-right:2px;color:#ff5d8f}
 @keyframes frpop{0%{opacity:0;transform:translate(-50%,-80%)}15%{opacity:1;transform:translate(-50%,-100%)}75%{opacity:1;transform:translate(-50%,-150%)}100%{opacity:0;transform:translate(-50%,-170%)}}
 .boxq{margin:0 0 8px}.boxq input{flex:1 1 100%}
-#boxGrid>.pk[hidden]{display:none}
+#boxGrid>.pk{content-visibility:auto;contain-intrinsic-size:auto 118px}#boxGrid>.pk[hidden]{display:none}
 #boxGrid.nohit::before{content:'찾는 포켓몬이 없다.';grid-column:1/-1;text-align:center;color:var(--dim);padding:24px 0}
 #evoFull{position:fixed;inset:0;z-index:7000;overflow:hidden;background:#05060e;color:#fff;opacity:0;transition:opacity .35s;--p:0}
 #evoFull.in{opacity:1}#evoFull[hidden]{display:none}
@@ -669,8 +669,8 @@ body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch
 #dexGrid .newtag{left:auto;right:3px;top:3px;transform:none;animation:nbob 1.2s steps(2,end) infinite}@keyframes nbob{50%{transform:translateY(-3px)}}
 .pk .pk-new{position:absolute;right:4px;top:4px;width:7px;height:7px;background:#e04838}.pk .pk-new~.tg{right:15px}.pk .tg{position:absolute;right:3px;top:3px;font-size:9px;background:var(--frame);color:var(--win);padding:1px 3px}
 .pk .tg{background:#3c9a4c;color:#fff}.pk .tg.bud{background:#e8a020;color:#fff}
-.pk.t-leg .nm{background:linear-gradient(90deg,#ff3d5e,#f08a10,#c8a000,#22a050,#2a86e8,#6a58f0,#c03ae8);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:bold}.pk.t-leg .nm .sh,.pk.t-leg .nm i,.pk.t-leg .nm b{-webkit-text-fill-color:initial}
-.pk.t-sil .nm{color:#b07a08;font-weight:bold}.pk.t-brz .nm{color:#7a3ec8;font-weight:bold}
+.pk.t-leg .nm{background:linear-gradient(90deg,#ff3d5e,#f08a10,#c8a000,#22a050,#2a86e8,#6a58f0,#c03ae8);-webkit-background-clip:text;background-clip:text;color:transparent}.pk.t-leg .nm .sh,.pk.t-leg .nm i,.pk.t-leg .nm b{-webkit-text-fill-color:initial}
+.pk.t-sil .nm{color:#b07a08}.pk.t-brz .nm{color:#7a3ec8}
 .pk .sh,.pp-body .sh{color:#e8a020;font-size:12px;margin-left:2px;text-shadow:0 0 4px rgba(255,200,40,.7)}
 /* S 랭크: 금빛 테두리 빛 + 반짝이 */
 .mon.rkS .flip{animation:sglow 1.8s ease-in-out infinite}.mon.nightf .act,.mon.nightf .shadow{filter:url(#nightF)}.mon.selflit .flip{animation:sglowN 2s ease-in-out infinite}@keyframes sglowN{0%,100%{filter:brightness(.6) sepia(.15) drop-shadow(0 0 2px rgba(255,220,140,.35))}50%{filter:brightness(.66) sepia(.15) drop-shadow(0 0 4px rgba(255,200,90,.4))}}#glows{position:absolute;inset:0;pointer-events:none}.gl{position:absolute;left:0;top:0;z-index:1050;border-radius:50%;mix-blend-mode:screen;pointer-events:none;width:200px;height:96px;margin:-48px 0 0 -100px;background:radial-gradient(closest-side,rgba(255,214,130,.1),rgba(255,200,110,.05) 40%,rgba(255,190,90,0) 70%,rgba(255,170,50,0));animation:glp 2s ease-in-out infinite}@keyframes glp{50%{opacity:.85}}.mon.selflit .shadow{opacity:.35}
@@ -2462,8 +2462,27 @@ function nearestBerry(m) {
 
 // ---------- behaviour ----------
 function setState(m, s, t) { if (m.state === 'interact' && s !== 'interact' && m.act) clearMotion(m); m.state = s; m.t = t; }
+// 좌상단 시계·열매·테스트 버튼 자리 (월드 좌표, 1초마다 다시 잰다): 포켓몬이 그 밑에 서 있으면 누르기 힘들어 피해 간다
+let hudZ = [], hudZt = 0;
+function hudZone() {
+  const now = performance.now(); if (now - hudZt < 1000) return hudZ; hudZt = now; hudZ = [];
+  let sr; try { sr = stage.getBoundingClientRect(); } catch (e) { return hudZ; } if (!sr.width || !scale) return hudZ;
+  for (const el of [$('#clock'), $('#btnBerry'), $('#frTest')]) { if (!el || el.closest('[hidden]') || getComputedStyle(el).display === 'none') continue; const r = el.getBoundingClientRect(); if (!r.width) continue;
+    hudZ.push({ x0: (r.left - sr.left) / scale, x1: (r.right - sr.left) / scale, y1: (r.bottom - sr.top) / scale }); }
+  return hudZ;
+}
+const hudHit = (m, x, y) => hudZone().find(z => x > z.x0 - (m.w || 60) * .5 && x < z.x1 + (m.w || 60) * .5 + 8 && y < z.y1 + (m.h || 60) * .85);
+const inHud = (m, x = m.x, y = m.y) => !!hudHit(m, x, y);
+function outOfHud(m, q) {
+  for (let k = 0, z; k < 4 && (z = hudHit(m, q.x, q.y)); k++) {
+    const a = { x: z.x1 + (m.w || 60) * .5 + 14, y: q.y }, b = { x: q.x, y: z.y1 + (m.h || 60) * .85 + 10 };
+    q = b.y <= MAX_Y && (b.y - q.y < a.x - q.x || a.x > XR - 30) ? b : a;
+  }
+  return q;
+}
 function moveTo(m, p, goal, spdMul = 1) {
   m.tx = clamp(p.x, XL + 30, XR - 30); m.ty = clamp(p.y, MIN_Y, MAX_Y);
+  { const q = outOfHud(m, { x: m.tx, y: m.ty }); m.tx = clamp(q.x, XL + 30, XR - 30); m.ty = clamp(q.y, MIN_Y, MAX_Y); }
   const mv = T(m).mv;
   if (mv === 'swim') { const v = pondVal(m.tx, m.ty); if (v > .8) { const q = { x: m.tx, y: m.ty }; projectOut(q, .78); m.tx = q.x; m.ty = q.y; } }
   else if ((mv === 'walk') && pondVal(m.tx, m.ty) < 1.1) { const q = shorePoint({ x: m.tx, y: m.ty }); m.tx = q.x; m.ty = q.y; }
@@ -3761,6 +3780,7 @@ function update(m, dt) {
   if (m.form !== m.sp) { m.formT -= dt; if (m.formT <= 0 && m.state !== 'interact') revert(m); }
   m.t -= dt;
   if (m.pet) { m.goal = null; if (m.state !== 'idle' && m.state !== 'eat') setState(m, 'idle', 1); m.t = Math.max(m.t, 1); }   /* 쓰다듬는 동안은 제자리 */
+  if (m.state === 'idle' && !m.pet && inHud(m)) { moveTo(m, outOfHud(m, { x: clamp(m.x, XL + 30, XR - 30), y: m.y })); }   /* 좌상단 버튼 밑에 서 있지 않게 */
   switch (m.state) {
     case 'move': {
       const g = m.goal;
@@ -4360,7 +4380,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.61';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.62';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
