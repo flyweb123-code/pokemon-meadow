@@ -90,6 +90,18 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
 
     private let walkKey = "pendingWalk"
 
+    // 오늘 걸은 거리 (화면 표시용, 실시간)
+    private var todayKm: Double?
+    private var todayDay = 0.0
+    func sendToday(km: Double, day: Date) {
+        todayKm = km; todayDay = day.timeIntervalSince1970
+        flushToday()
+    }
+    private func flushToday() {
+        guard gameReady, let web = webView, let km = todayKm else { return }
+        web.evaluateJavaScript("window.pokeRunToday && window.pokeRunToday(\(km), \(todayDay * 1000))")
+    }
+
     func enqueueWalk(km: Double, place: String, tags: [String] = []) {
         var list = UserDefaults.standard.array(forKey: walkKey) as? [[String: Any]] ?? []
         list.append(["km": km, "place": place, "tags": tags.joined(separator: ",")])
@@ -121,6 +133,7 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
     private func flushPending() {
         guard gameReady, let web = webView else { return }
         flushWalk(web)
+        flushToday()
         let list = pendingRuns()
         defer { flushPlaces(web) }
         guard !list.isEmpty else { return }

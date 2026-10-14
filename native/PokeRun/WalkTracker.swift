@@ -38,6 +38,30 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
         }
     }
 
+    // 앱 화면이 켜져 있는 동안: 오늘 0시부터 걸은 거리를 만보기에서 실시간으로 받아 게임 프로필에 보낸다.
+    // 250m 더 걸을 때마다 알 줍기(sync)도 한 번씩 한다.
+    private var liveOn = false
+    private var liveSynced = -1.0
+    func startLive() {
+        guard CMPedometer.isDistanceAvailable(), !liveOn else { return }
+        liveOn = true
+        let day = Calendar.current.startOfDay(for: Date())
+        pedometer.startUpdates(from: day) { [weak self] data, error in
+            guard error == nil, let m = data?.distance?.doubleValue else { return }
+            DispatchQueue.main.async {
+                guard let self else { return }
+                let km = m / 1000
+                PhoneBridge.shared.sendToday(km: km, day: day)
+                if self.liveSynced < 0 { self.liveSynced = km }
+                else if km - self.liveSynced >= 0.25 { self.liveSynced = km; self.refresh() }
+            }
+        }
+    }
+    func stopLive() {
+        guard liveOn else { return }
+        pedometer.stopUpdates(); liveOn = false; liveSynced = -1
+    }
+
     // 앱을 열 때마다 한 번 더 확인한다
     func refresh() {
         if manager.authorizationStatus == .authorizedAlways || manager.authorizationStatus == .authorizedWhenInUse {

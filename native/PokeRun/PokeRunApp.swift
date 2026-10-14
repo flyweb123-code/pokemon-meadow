@@ -6,7 +6,7 @@ struct PokeRunApp: App {
     @StateObject private var bridge = PhoneBridge.shared
     @Environment(\.scenePhase) private var phase
 
-    init() { WalkTracker.shared.start(); HealthSync.shared.refresh() }
+    init() { WalkTracker.shared.start(); WalkTracker.shared.startLive(); HealthSync.shared.refresh() }
 
     var body: some Scene {
         WindowGroup {
@@ -14,7 +14,10 @@ struct PokeRunApp: App {
                 .ignoresSafeArea()
                 .background(Color(red: 0x38 / 255, green: 0x38 / 255, blue: 0x48 / 255))
                 .statusBarHidden(false)
-                .onChange(of: phase) { _, p in if p == .active { WalkTracker.shared.refresh(); HealthSync.shared.refresh() } }
+                .onChange(of: phase) { _, p in
+                    if p == .active { WalkTracker.shared.refresh(); WalkTracker.shared.startLive(); HealthSync.shared.refresh() }
+                    else if p == .background { WalkTracker.shared.stopLive() }
+                }
         }
     }
 }

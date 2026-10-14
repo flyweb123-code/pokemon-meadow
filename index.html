@@ -294,7 +294,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .sr-btns .lk-btn[disabled]{opacity:.55}
 .shop-msg{margin:8px 0 0;font-size:14px}.shop-msg:empty{display:none}
 .clockwin{left:20px;top:20px;display:flex;align-items:baseline;gap:16px}
-#side,#edge{display:none}
+#side,#edge{display:none!important}
 .dlg{--dlg-in:#7aa6d8}
 /* 밤(19:30~5:30)에는 시간 창과 상태창을 밤하늘 색으로 */
 .clockwin,.dlg{transition:background-color .6s,color .6s}
@@ -526,6 +526,12 @@ ol.log li.big .txt{color:#c03838}
 .set-body{flex:1;min-height:0;overflow-y:auto}
 .set-sec{border:3px solid var(--frame);background:var(--card);padding:14px;margin-bottom:12px;box-shadow:4px 4px 0 rgba(0,0,0,.25)}
 .set-sec h4{margin:0 0 6px;font-size:18px}
+.set-title{margin:6px 0 8px;font-size:15px;color:var(--dim)}
+.pf-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.pf-box{border:3px solid var(--frame);background:var(--win);padding:10px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.pf-box span{font-size:12px;color:var(--dim)}.pf-box b{font-size:24px;line-height:1.1;color:var(--win-ink)}.pf-box i{font-style:normal;font-size:12px;color:var(--dim)}
+.pf-box.live b{color:#2a8a4a}
+.pf-note{margin:8px 0 0;font-size:12px;color:var(--dim)}
 .set-sec p{margin:0 0 12px;line-height:1.55;color:var(--dim);font-size:13px}
 .set-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .set-btns.one{grid-template-columns:1fr;margin-top:12px}
@@ -924,7 +930,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 @media (max-width:760px),(max-height:500px) and (orientation:landscape){
   html,body{height:100%;overflow:hidden;overscroll-behavior:none;background:var(--frame)}
   .app{position:fixed;inset:0;bottom:calc(0px - var(--ext,0px));height:auto;min-height:0;overflow:hidden;display:grid;padding:0;gap:0;background:var(--frame);
-    grid-template-columns:minmax(0,3fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto auto;
+    grid-template-columns:minmax(0,3fr) minmax(0,2fr);grid-template-rows:minmax(0,1fr) auto auto;
     grid-template-areas:"stage stage" "stage stage" "menu cmd"}
   .stage-wrap{grid-area:stage;position:relative;inset:auto;aspect-ratio:auto;margin:0;overflow:hidden;
     touch-action:manipulation;scrollbar-width:none;-webkit-overflow-scrolling:touch;background:var(--forest)}
@@ -959,7 +965,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
   .dlg.folded .more{padding:10px 14px}
   .menuwin,.cmdwin{margin:0;border:0;box-shadow:none;background:var(--frame);display:grid;gap:0;padding:0 0 var(--sab)}
   .menuwin{grid-area:menu;grid-template-columns:repeat(3,minmax(0,1fr));padding-left:env(safe-area-inset-left)}
-  .cmdwin{grid-area:cmd;grid-template-columns:minmax(0,1fr);padding-right:env(safe-area-inset-right)}
+  .cmdwin{grid-area:cmd;grid-template-columns:repeat(2,minmax(0,1fr));padding-right:env(safe-area-inset-right)}
   /* bottom tray: raised pixel keys on a dark tray; the tray runs on into the space under it */
   .menuwin,.cmdwin{gap:6px;padding-top:8px;padding-bottom:calc(var(--sab) + 8px);border-top:3px solid #23232f}
   .menuwin{padding-left:calc(env(safe-area-inset-left) + 6px);padding-right:3px}
@@ -1039,7 +1045,6 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
     <button class="opt" id="openMgr">포켓몬 <span id="capBadge">0/9</span></button>
     <button class="opt" id="openRun">알</button>
     <button class="opt" id="openDex">도감</button>
-    <button class="opt" id="openSet">설정</button>
   </nav>
 
   <div class="hud goldbar" id="goldbar">
@@ -1070,6 +1075,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 
   <div class="hud win cmdwin" id="cmd" role="group" aria-label="명령">
     <button class="opt wide" id="openShop" aria-pressed="false">상점</button>
+    <button class="opt wide" id="openSet" aria-pressed="false">프로필</button>
   </div>
 
   <div class="hud win hint" id="hint" hidden>풀밭을 누르면 열매를 놓아요</div>
@@ -1108,9 +1114,19 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
   </div>
 </div>
 <div class="sheet" id="set" hidden>
-  <div class="win setwin" role="dialog" aria-label="설정">
-    <div class="sheet-head"><h3>설정</h3><button class="opt" id="closeSet">닫기</button></div>
+  <div class="win setwin" role="dialog" aria-label="프로필">
+    <div class="sheet-head"><h3>프로필</h3><button class="opt" id="closeSet">닫기</button></div>
     <div class="set-body">
+      <section class="set-sec pf-sec">
+        <h4>오늘</h4>
+        <div class="pf-grid">
+          <div class="pf-box"><span>걸은 거리</span><b id="pfWalk">0.00</b><i>km</i></div>
+          <div class="pf-box"><span>달린 거리</span><b id="pfRun">0.00</b><i>km</i></div>
+          <div class="pf-box"><span>주운 알</span><b id="pfEggs">0</b><i>개</i></div>
+        </div>
+        <p class="pf-note" id="pfNote"></p>
+      </section>
+      <h4 class="set-title">설정</h4>
       <section class="set-sec">
         <h4>백업</h4>
         <p>홈 화면 앱, Safari, 새로 추가한 아이콘은 저장 공간이 서로 따로예요. 여기서 저장 복사를 누르고, 옮길 곳의 설정에서 저장 붙여넣기를 누르면 알, 도감, 필드가 그대로 옮겨져요.</p>
@@ -3741,13 +3757,13 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, lastPlace: S.lastPlace || null };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, today: S.today, ped: S.ped, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, lastPlace: S.lastPlace || null };
 }
 let saveFrozen = false;
 function save() { if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.lastPlace = d.lastPlace || null; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
+  S.lockT = d.lockT || 0; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.lastPlace = d.lastPlace || null; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
@@ -3919,7 +3935,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
 const setEl = $('#set');
-$('#openSet').onclick = () => tabTo(setEl, () => { setEl.hidden = false; });
+$('#openSet').onclick = () => tabTo(setEl, () => { renderProfile(); setEl.hidden = false; setEl.querySelector('.set-body').scrollTop = 0; });
 const shopEl = $('#shop');
 $('#openShop').onclick = () => tabTo(shopEl, () => { shopEl.hidden = false; shopSel = null; $('#shopMsg').textContent = ''; setShopTab('bgm'); renderShop(); });
 shopEl.addEventListener('click', e => { if (e.target === shopEl) shopEl.hidden = true; });
@@ -4153,7 +4169,7 @@ $('#savePaste').onclick = async () => {
 };
 // 폰에서는 설정을 오른쪽 가장자리에서 쓸어 여는 사이드 바의 아이콘으로 둔다
 const setBtn = $('#openSet'), setHome = setBtn.parentNode, sideEl = $('#side');
-function placeSet() { if (narrow.matches) sideEl.append(setBtn); else { setHome.append(setBtn); sideOpen(false); } }
+function placeSet() { sideOpen(false); }   // 예전엔 폰에서 설정을 오른쪽 사이드 바로 옮겼다 (이제 프로필 탭)
 function sideOpen(on) { sideEl.classList.toggle('open', on); }
 { let sx = null, sy = 0; const edge = $('#edge');
   const down = e => { sx = e.clientX; sy = e.clientY; if (e.currentTarget === edge) try { edge.setPointerCapture(e.pointerId); } catch (_) {} };
@@ -4959,12 +4975,26 @@ function drawEgg() {
 // 가방: 움직인 거리만큼 알을 줍는다. 250m마다 0~2개라 2.5km면 대개 5~15개, 등급 확률은 알 뽑기와 같다.
 const MAX_BAG = 999, BAG_STEP = .25;
 const rollGrade = () => { const r = Math.random(); return r < .45 ? 1 : r < .75 ? 2 : r < .9 ? 3 : r < .98 ? 4 : 5; };
+// 오늘 기록: 걸은 거리(만보기), 주운 알. 날짜가 바뀌면 새로
+const dayKey = (t = Date.now()) => { const d = new Date(t); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
+function today() { if (!S.today || S.today.d !== dayKey()) S.today = { d: dayKey(), walk: 0, eggs: 0 }; return S.today; }
+function renderProfile() {
+  if (!$('#pfWalk')) return; const T = today(), live = S.ped && S.ped.d === T.d;
+  $('#pfWalk').textContent = fmtKm(live ? S.ped.km : T.walk); $('#pfWalk').parentNode.classList.toggle('live', !!live);
+  const k0 = new Date(); k0.setHours(0, 0, 0, 0);
+  $('#pfRun').textContent = fmtKm(S.runs.filter(r => r.t >= +k0).reduce((a, r) => a + r.km, 0));
+  $('#pfEggs').textContent = T.eggs;
+  $('#pfNote').textContent = live ? '걸은 거리는 아이폰 만보기 기록이 바로바로 들어와요.' : '걸은 거리는 아이폰 앱에서 만보기 기록을 받아요.';
+}
+// 아이폰 앱: 오늘 0시부터 걸은 거리(만보기)를 걷는 동안 계속 보낸다 (화면 표시용, 알 줍기는 pokeRunWalk)
+window.pokeRunToday = (km, dayMs) => { km = +km; if (!(km >= 0)) return false; S.ped = { d: dayKey(+dayMs || Date.now()), km }; if (!setEl.hidden) renderProfile(); return true; };
 function collectEggs(km, place, tags, pf) {
   S.bagAcc += km; let n = 0;
   while (S.bagAcc >= BAG_STEP) { S.bagAcc -= BAG_STEP; n += Math.floor(Math.random() * 3); }
   n = Math.min(n, MAX_BAG - S.bag.length);
   const t = Date.now(), got = [];
   got.eggs = [];
+  today().eggs += n;
   for (let i = 0; i < n; i++) { const g = rollGrade(); const e = { id: S.eid++, g, t, isNew: true }; const pl = pf ? pf() : place ? { n: place, tags } : null; if (pl?.n) e.place = pl.n; if (pl?.tags?.length) e.tags = pl.tags; S.bag.push(e); got.push(g); got.eggs.push(e); }
   return got;
 }
@@ -5017,7 +5047,7 @@ function postNative() {
 // 아이폰 앱: 잠금 중에도 걸은 거리(만보기)와 그 근처 동네 이름을 보낸다. 알 줍기에만 쓴다.
 window.pokeRunWalk = (km, place, tags) => {
   km = +km; if (!(km > 0 && km <= 200)) return false;
-  S.walkSync = true; S.walkKm += km;
+  S.walkSync = true; S.walkKm += km; today().walk += km;
   tags = String(tags || '').split(',').filter(k => THEMES[k]);
   if (place) { S.lastPlace = { n: String(place), tags, t: Date.now() }; notePlace(place, tags, Date.now()); }
   gotLog(collectEggs(km, place || '', tags), `걸어서 ${fmtKm(km)}km`, place || '');
