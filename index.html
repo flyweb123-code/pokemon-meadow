@@ -71,7 +71,7 @@
 .win .evobtn.dis:active,.win .evobtn.fin:active{box-shadow:none;padding:0 10px}#pokePop .win{touch-action:pan-y}.win .evobtn.fin{display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:#fff7e0;color:#6a4a10;border-color:#ecd39a;box-shadow:inset 0 0 0 2px #fff7e0,inset 0 0 0 4px #f0d38a;font-size:13px}.win .evobtn.fin,.win .evobtn.fin:active{padding:0 14px!important;box-shadow:none!important}.win .evobtn.dis,.win .evobtn.dis:active{padding:0 10px!important;box-shadow:none!important}.win .evobtn.fin b{margin-left:auto;font-size:17px;color:#a8660a}.win .evobtn.fin small{font-size:12px;margin-left:2px;color:#a8660a}
 .win .evobtn{display:block;flex:none;width:100%;min-width:0;margin:0;padding:0 10px;height:40px;background:#e8a020;border-color:#9a6410;color:#fff;animation:softGlow 4s ease-in-out infinite}
 @media (prefers-reduced-motion: reduce){.bd-card.ready,.evobtn,.bd-evobtn,.bd-card.ready .prog.evo{animation:none}}
-#boxGrid>.pk{content-visibility:auto;contain-intrinsic-size:auto 118px}
+
 /* 관찰 일지: 따로 뜬 상자가 아니라 상태창이 위로 늘어난 모양 (가운데 이음선 없이, 안쪽 테두리가 위아래로 이어진다) */
 .dlg.open .journal{bottom:100%;border-bottom:0;padding-bottom:4px;box-shadow:inset 4px 0 0 var(--win),inset -4px 0 0 var(--win),inset 0 4px 0 var(--win),inset 8px 0 0 var(--inner-blue),inset -8px 0 0 var(--inner-blue),inset 0 8px 0 var(--inner-blue),6px 0 0 rgba(0,0,0,.35)}
 .app .win.dlg.open{box-shadow:inset 4px 0 0 var(--win),inset -4px 0 0 var(--win),inset 0 -4px 0 var(--win),inset 8px 0 0 var(--inner-blue),inset -8px 0 0 var(--inner-blue),inset 0 -8px 0 var(--inner-blue),6px 6px 0 rgba(0,0,0,.35)}
@@ -668,7 +668,9 @@ body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch
 .pk .rk{position:absolute;left:3px;top:3px}
 #dexGrid .newtag{left:auto;right:3px;top:3px;transform:none;animation:nbob 1.2s steps(2,end) infinite}@keyframes nbob{50%{transform:translateY(-3px)}}
 .pk .pk-new{position:absolute;right:4px;top:4px;width:7px;height:7px;background:#e04838}.pk .pk-new~.tg{right:15px}.pk .tg{position:absolute;right:3px;top:3px;font-size:9px;background:var(--frame);color:var(--win);padding:1px 3px}
-.pk .tg.bud{background:#e8a020;color:#fff}
+.pk .tg{background:#3c9a4c;color:#fff}.pk .tg.bud{background:#e8a020;color:#fff}
+.pk.t-leg .nm{background:linear-gradient(90deg,#ff3d5e,#f08a10,#c8a000,#22a050,#2a86e8,#6a58f0,#c03ae8);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:bold}.pk.t-leg .nm .sh,.pk.t-leg .nm i,.pk.t-leg .nm b{-webkit-text-fill-color:initial}
+.pk.t-sil .nm{color:#b07a08;font-weight:bold}.pk.t-brz .nm{color:#7a3ec8;font-weight:bold}
 .pk .sh,.pp-body .sh{color:#e8a020;font-size:12px;margin-left:2px;text-shadow:0 0 4px rgba(255,200,40,.7)}
 /* S 랭크: 금빛 테두리 빛 + 반짝이 */
 .mon.rkS .flip{animation:sglow 1.8s ease-in-out infinite}.mon.nightf .act,.mon.nightf .shadow{filter:url(#nightF)}.mon.selflit .flip{animation:sglowN 2s ease-in-out infinite}@keyframes sglowN{0%,100%{filter:brightness(.6) sepia(.15) drop-shadow(0 0 2px rgba(255,220,140,.35))}50%{filter:brightness(.66) sepia(.15) drop-shadow(0 0 4px rgba(255,200,90,.4))}}#glows{position:absolute;inset:0;pointer-events:none}.gl{position:absolute;left:0;top:0;z-index:1050;border-radius:50%;mix-blend-mode:screen;pointer-events:none;width:200px;height:96px;margin:-48px 0 0 -100px;background:radial-gradient(closest-side,rgba(255,214,130,.1),rgba(255,200,110,.05) 40%,rgba(255,190,90,0) 70%,rgba(255,170,50,0));animation:glp 2s ease-in-out infinite}@keyframes glp{50%{opacity:.85}}.mon.selflit .shadow{opacity:.35}
@@ -4358,7 +4360,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.60';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.61';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -4773,7 +4775,7 @@ function boxList(all, keepAll) {
 }
 // 상자 칸은 한 번 만든 걸 다시 쓴다: 정렬이 바뀌면 순서만 옮기고, 내용이 바뀐 칸만 새로 만든다
 const pkEls = new Map(), pkTpl = document.createElement('template');
-const pkHtml = (p, tag, rk) => `<button class="pk${p.shiny ? ' shiny' : ''}${pkCls(p)}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rk}">${rk}</span>${p.nw ? '<i class="pk-new" aria-label="새 포켓몬"></i>' : ''}${tag === 2 ? '<span class="tg bud">짝꿍</span>' : tag === 1 ? '<span class="tg">필드</span>' : ''}<img alt="" data-sp="${p.sp}" data-sx="${p.sex || ''}" src="${thumbP(p) || ''}"><span class="nm">${esc(nameOf(p))}${sexHtml(p.sex)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(p.fr)}</span></button>`;
+const pkHtml = (p, tag, rk) => `<button class="pk${p.shiny ? ' shiny' : ''}${pkCls(p)}${tierOf(+p.sp) ? ' t-' + tierOf(+p.sp) : ''}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rk}">${rk}</span>${p.nw ? '<i class="pk-new" aria-label="새 포켓몬"></i>' : ''}${tag === 2 ? '<span class="tg bud">짝꿍</span>' : tag === 1 ? '<span class="tg">필드</span>' : ''}<img alt="" data-sp="${p.sp}" data-sx="${p.sex || ''}" src="${thumbP(p) || ''}"><span class="nm">${esc(nameOf(p))}${sexHtml(p.sex)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(p.fr)}</span></button>`;
 // 박스 탭을 본 뒤 다른 탭으로 가거나 창이 닫히면 NEW 표시를 지운다 (가방과 같은 규칙)
 function seeDex() { if (!S.dexNew?.size) return; const L = [...S.dexNew]; S.dexNew.clear(); L.forEach(sp => dexBtns[sp] && lockDexBtn(sp)); save(); }
 { let was = !sheet.hidden; new MutationObserver(() => { const now = !sheet.hidden; if (was && !now && dexMode !== 'buddy') seeDex(); was = now; }).observe(sheet, { attributes: true, attributeFilter: ['class'] }); }   // 도감을 봤다가 닫으면 NEW 지움
@@ -4804,7 +4806,8 @@ function renderBox() {
   for (const c of [...grid.children]) if (!keep.has(c) && !c.classList.contains('empty-msg')) c.remove();
   // 새 칸만 붙이고, 순서는 CSS order 로 (칸을 옮기지 않아 정렬이 바로 바뀐다)
   if (make.length) { const f = document.createDocumentFragment(); for (const r of make) f.appendChild(r.el); grid.appendChild(f); }
-  want.forEach((r, k) => { if (r.k !== k) { r.k = k; r.el.style.order = k; } });
+  // 순서가 바뀌면 칸을 실제로 다시 늘어놓는다 (CSS order 만 바꾸면 아이폰에서 후광만 남거나 자리가 어긋나 보였다)
+  { const cur = [...grid.children].filter(c => c.classList.contains('pk')); if (want.some((r, k) => cur[k] !== r.el)) { const f = document.createDocumentFragment(); for (const r of want) f.appendChild(r.el); grid.appendChild(f); } }
   L.forEach((p, k) => { const h = !boxHit(p, q) || (fo && !field.has(p.id)); if (want[k].el.hidden !== h) want[k].el.hidden = h; });
   grid.classList.toggle('nohit', !!q && !hits);
   for (const r of make) { const im = r.el.querySelector('img[data-sp]'), sp = +im.dataset.sp; if (!thumbOf(sp)) ensureSprite(sp).then(() => { im.src = thumbOf(fKey(sp, im.dataset.sx)); }).catch(() => {}); }
