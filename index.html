@@ -65,8 +65,9 @@
 @keyframes barGlow{0%,100%{box-shadow:0 0 0 1px #ffd75e,0 0 3px 0 rgba(255,200,60,.3)}50%{box-shadow:0 0 0 1px #ffe9a0,0 0 10px 2px rgba(255,200,60,.55)}}
 .pp-evo{display:flex;align-items:center;gap:8px;margin:0 0 8px}.pp-evo[hidden]{display:none}.pp-evo .pp-run{flex:1;min-width:0;white-space:nowrap;font-size:12px;color:var(--dim)}.pp-evo .pp-run b{color:var(--win-ink)}
 .pp-evo .pp-run{white-space:normal!important;line-height:1.5}.pp-evo .pp-sub{font-size:11px}.pp-evo .pp-sub .bd-tag{font-size:11px;padding:1px 6px}.pp-evo .pp-sub b{color:var(--win-ink)}#pokePop #ppEvoBtn[hidden]{display:none}
-#pokePop #ppEvoBtn:disabled{background:#e4e4ec;color:#a0a0b4;border-color:#c8c8d8;box-shadow:none;animation:none;cursor:default}
-#pokePop #ppEvoBtn{flex:0 0 auto;width:auto;min-width:0;margin:0;padding:0 18px;height:40px;background:#e8a020;border-color:#9a6410;color:#fff;animation:softGlow 4s ease-in-out infinite}
+#pokePop #ppEvoBtn.dis,#pokePop #ppEvoBtn.fin{background:#e4e4ec;color:#a0a0b4;border-color:#c8c8d8;box-shadow:none;animation:none;cursor:default}
+#pokePop #ppEvoBtn.dis:active,#pokePop #ppEvoBtn.fin:active{box-shadow:none;padding:0 10px}#pokePop .win{touch-action:pan-y}#pokePop #ppEvoBtn.fin{background:#f3f1ea;color:var(--win-ink);font-size:14px}#pokePop #ppEvoBtn.fin b{margin-left:4px}
+#pokePop #ppEvoBtn{display:block;flex:none;width:100%;min-width:0;margin:0;padding:0 10px;height:40px;background:#e8a020;border-color:#9a6410;color:#fff;animation:softGlow 4s ease-in-out infinite}
 @media (prefers-reduced-motion: reduce){.bd-card.ready,#ppEvoBtn,.bd-evobtn,.bd-card.ready .prog.evo{animation:none}}
 #boxGrid>.pk{content-visibility:auto;contain-intrinsic-size:auto 118px}
 /* 관찰 일지: 따로 뜬 상자가 아니라 상태창이 위로 늘어난 모양 (가운데 이음선 없이, 안쪽 테두리가 위아래로 이어진다) */
@@ -189,6 +190,18 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
   background:repeating-conic-gradient(from 0deg,rgba(255,224,120,.38) 0 9deg,rgba(255,224,120,0) 9deg 24deg);-webkit-mask:radial-gradient(circle,#000 0,#000 18%,transparent 55%);mask:radial-gradient(circle,#000 0,#000 18%,transparent 55%);animation:hrays 14s linear infinite}
 .hatch.rays>.hrays{opacity:1}
 @keyframes hrays{to{transform:rotate(360deg)}}
+/* 에픽: 끝무렵 보랏빛으로 환해지며 빛줄기·반짝이 / 전설: 어둠 속에서 금빛 기둥이 터져 나오듯 (더 크게·빠르게) */
+.hatch.g4t>.hlit{background:radial-gradient(circle at 50% 45%,rgba(255,244,255,.97),rgba(216,164,255,.75) 40%,rgba(150,92,230,.5))}
+.hatch.g4t>.hglow{background:radial-gradient(circle at 50% 45%,rgba(250,235,255,.9),rgba(220,180,255,.5) 55%,rgba(190,140,255,.35))}
+.hatch.g4t>.hrays{opacity:calc(var(--lit,0) * .75);background:repeating-conic-gradient(from 0deg,rgba(226,180,255,.5) 0 8deg,rgba(226,180,255,0) 8deg 20deg);animation-duration:9s;transition:opacity .3s}
+.hatch.legend>.hlit{background:radial-gradient(circle at 50% 45%,#fff 0,rgba(255,238,170,.95) 16%,rgba(255,204,90,.65) 40%,rgba(255,170,40,0) 72%);opacity:var(--lg,0);transform:scale(calc(.55 + var(--lg,0) * .7));transition:opacity .3s,transform .3s}
+.hatch.legend>.hrays{opacity:var(--lg,0);background:repeating-conic-gradient(from 0deg,rgba(255,232,140,.65) 0 6deg,rgba(255,232,140,0) 6deg 15deg);animation-duration:6s;transition:opacity .3s}
+.hatch.legend>.hdark{opacity:calc(.55 + var(--dk,0) * .45 - var(--lg,0) * .35)}
+.hatch.legend .win{filter:brightness(calc(1 - var(--dk,0) * .28 + var(--lg,0) * .3))}
+.hatch.surge>.hrays{animation-duration:1.6s}.hatch.g4t.surge>.hrays{animation-duration:3s}
+.hspark{position:absolute;width:6px;height:6px;pointer-events:none;z-index:4;background:#fff;box-shadow:0 0 6px 2px var(--sc,#ffe070);animation:hspark .9s steps(6,end) forwards}
+.hspark.b{width:9px;height:9px}
+@keyframes hspark{0%{transform:translateY(0) scale(.3);opacity:0}20%{opacity:1;transform:translateY(-10px) scale(1)}100%{transform:translateY(-80px) scale(.2);opacity:0}}
 .hatch .win.aura.a1,.hatch .win.aura.a2{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),6px 6px 0 rgba(0,0,0,.35)}
 .hatch .win.aura.a3{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 0 2px rgba(var(--ac),.5),0 0 16px 4px rgba(var(--ac),.55)}
 .hatch .win.aura.a4{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 22px 6px rgba(var(--ac),.7),0 0 56px 18px rgba(var(--ac),.35)}
@@ -201,7 +214,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 #eggHatch,#eggOut{transition:transform .06s,box-shadow .06s}#eggHatch:active,#eggOut:active,#eggHatch.press,#eggOut.press{transform:translate(3px,3px);box-shadow:0 0 0 rgba(0,0,0,0)!important}
 .hatch .boxbtn.go{background:#e8a020;color:#fff}.hatch .boxbtn.go:active{box-shadow:inset 0 4px 0 rgba(0,0,0,.35);padding:14px 16px 10px}
 /* 기본 스크롤 막대는 어디서도 안 보이게 (스크롤은 그대로 된다) */
-*{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+html{touch-action:manipulation}*{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 *{scrollbar-width:none;-ms-overflow-style:none}*::-webkit-scrollbar{display:none;width:0;height:0}
 #eggTestAll{margin-left:4px}
 .dexinfo.ivinfo .iv-h{display:flex;align-items:center;gap:8px;font-size:15px}.dexinfo.ivinfo .ivs{margin:8px 0 0}
@@ -345,7 +358,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 @keyframes blink{50%{opacity:0}}
 
 /* 관찰 일지: 상태창이 위로 늘어나며 펼쳐진다 (색은 상태창 낮/밤을 그대로 따름) */
-.journal{position:absolute;left:-4px;right:-4px;bottom:calc(100% + 4px);display:flex;flex-direction:column;padding:inherit;padding-bottom:10px;border:inherit;border-bottom:0;background:inherit;box-shadow:inherit;color:inherit;cursor:default;user-select:text;-webkit-user-select:text}
+.journal{position:absolute;left:-4px;right:-4px;bottom:calc(100% + 4px);display:flex;flex-direction:column;padding:inherit;padding-bottom:10px;border:inherit;border-bottom:0;background:inherit;box-shadow:inherit;color:inherit;cursor:default}
 .journal{flex:none}
 .journal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:4px;font-size:16px}
 .journal-head h3{margin:0;font-size:17px;font-weight:700}
@@ -639,7 +652,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .dexpop .boxbtn.red{background:#c83838;border-color:#7a1c1c;color:#fff}/* 눌린 버튼: 아래 그림자가 위로 옮겨가며 면이 4px 내려간다 → 글자도 padding 으로 같은 만큼 내려 함께 움직인다 */
 
 .pokepop .boxbtn.sunk{background:#b9b9c6;border-color:#8a8a9a;color:#5a5a6a;box-shadow:inset 0 4px 0 rgba(0,0,0,.3),inset 3px 0 0 rgba(0,0,0,.12);padding-top:14px;padding-bottom:6px}
-.pokepop .boxbtn.pink.sunk{background:#e3b3c6;border-color:#9a6278;color:#7a3a54}
+.pokepop .boxbtn.pink.sunk{background:#f7dfe8;border-color:#d9a9bc;color:#b0788f}
 .pokepop .boxbtn.sunk.popout{animation:btnPop .2s cubic-bezier(.3,1.6,.5,1) forwards}
 @keyframes btnPop{0%{background:#b9b9c6;box-shadow:inset 0 4px 0 rgba(0,0,0,.3);padding-top:14px;padding-bottom:6px}100%{background:var(--frame);border-color:var(--frame);color:var(--win);box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);padding-top:10px;padding-bottom:10px}}
 .pokepop .boxbtn.off{background:var(--win);color:var(--frame)}.pokepop .boxbtn[disabled]{opacity:.5}
@@ -847,7 +860,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 #buddy .bd-card .bd-pic{background:#fcd9e6;border-color:#e9a3bf}
 #buddy .bd-card .prog{border-color:#9a3462}#buddy .bd-card .prog i{background:#e8679a}
 #buddy .bd-card .bd-x{color:#c0507e}
-#buddy .bd-empty{border-color:#e9a3bf;background:#fff8fb}#buddy .bd-empty .q{border-color:#e9a3bf;background:#fde9f1;color:#d27aa0}
+
 .bd-main{flex:1;min-width:0;display:grid;gap:8px}
 .bd-top{display:flex;gap:14px;align-items:center;min-width:0}
 .bd-pic{flex:none;width:88px;height:88px;display:grid;place-items:center;background:#e4f2d0;border:3px solid var(--inner)}
@@ -909,7 +922,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .hatch .win{text-align:center;width:min(420px,100%)}
 .hatch-stage{height:180px;display:grid;place-items:center;position:relative}
 /* 부화 창 크기 고정: 알 단계에도 태어난 뒤 크기만큼 자리를 잡고, 알은 그 가운데 */
-.hatch:not(.list) .win{min-height:min(600px,calc(100dvh - 40px));display:flex;flex-direction:column}.hatch:not(.list) .hatch-stage{flex:1 0 180px;height:auto}
+.hatch:not(.list) .win{min-height:min(500px,calc(100dvh - 40px));display:flex;flex-direction:column}.hatch:not(.list) .hatch-stage{flex:1 1 120px;min-height:120px;height:auto}
 .h-no{position:absolute;left:18px;top:16px;z-index:2;font-size:14px;color:var(--dim)}.h-no[hidden]{display:none}#hatchDex .dx-no{display:none}
 .hatch-stage .egg{width:108px;height:132px;transform-origin:50% 92%}
 /* 도트 게임식 흔들림: 부드럽게 돌지 않고 칸 단위로 끊어서 움직인다 */
@@ -1333,7 +1346,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
     <i class="sw-h l" id="ppHl"></i><i class="sw-h r" id="ppHr"></i><div class="dp-head m-head"><span class="hd-rk" id="ppRk"></span><button class="pp-x" id="ppX" aria-label="닫기">✕</button></div>
     <div class="dp-pic" id="ppPic"><img alt="" id="ppImg"></div>
     <div class="pp-body" id="ppBody"></div>
-    <div class="pp-evo" id="ppEvo" hidden><span class="pp-run"></span><button class="boxbtn" id="ppEvoBtn" disabled>진화하기</button></div>
+    <div class="pp-evo" id="ppEvo" hidden><button class="boxbtn" id="ppEvoBtn">진화하기</button></div>
     <div class="pp-btns"><button class="boxbtn" id="ppField"></button><button class="boxbtn pink" id="ppBud"></button></div>
     <button class="pp-free" id="ppFree">놓아주기</button>
   </div>
@@ -4050,10 +4063,16 @@ $('#openDex').onclick = () => tabTo(sheet, openDex);
 document.querySelectorAll('.menuwin .opt').forEach(b => {
   let ate = 0;
   // 눌린 모양을 먼저 화면에 그린 뒤(다음 프레임) 창을 연다 → 무거운 창(포켓몬 박스 등)을 여는 동안에도 버튼은 바로 눌려 보인다
+  // 닿는 순간 활성(노란) 모양까지 바로 칠한다 → 꾹 누르고 있으면 활성된 채 눌린 모습
   b.addEventListener('pointerdown', e => { if (e.button > 0 || !b.onclick || b.classList.contains('hold')) return; b.classList.add('hold'); ate = performance.now();
+    if (b.getAttribute('aria-pressed') !== 'true') { document.querySelectorAll('.menuwin .opt[aria-pressed="true"]').forEach(o => o.setAttribute('aria-pressed', 'false')); b.setAttribute('aria-pressed', 'true'); }
     requestAnimationFrame(() => setTimeout(() => { b.onclick(e); requestAnimationFrame(() => b.classList.remove('hold')); }, 0)); });
   b.addEventListener('click', e => { if (performance.now() - ate < 1000) { ate = 0; e.stopImmediatePropagation(); e.preventDefault(); } }, true);
 });
+// 꾹 눌러도 아이폰 글자 선택 돋보기·메뉴가 뜨지 않게 (입력 칸은 그대로)
+{ const typing = e => { const t = e.target && e.target.nodeType === 1 ? e.target : e.target?.parentElement; return !!t?.closest('input,textarea,[contenteditable]'); };
+  document.addEventListener('selectstart', e => { if (!typing(e)) e.preventDefault(); });
+  document.addEventListener('contextmenu', e => { if (!typing(e)) e.preventDefault(); }); }
 // 운영자 모드·테스트 버튼 (이 기기에만 저장)
 { const de = document.documentElement, get = k => { try { return localStorage.getItem(k) === '1'; } catch (e) { return false; } }, put = (k, v) => { try { v ? localStorage.setItem(k, '1') : localStorage.removeItem(k); } catch (e) {} };
   const paint = () => { const op = get('pk-op'), t = op && get('pk-tests'); de.classList.toggle('op', op); de.classList.toggle('tests', t); $('#testSw').setAttribute('aria-checked', t); };
@@ -4220,7 +4239,7 @@ function openFilter(id) {
 }
 function setFilter(id, v) {
   const b = $('#' + id), F = FILTERS[id], was = +b.dataset.v; b.dataset.v = v;
-  b.classList.toggle('on', id === 'dexSort' ? !v : !!v);   // 정렬은 등록순일 때 켜진 모양
+  b.classList.toggle('on', id === 'dexSort' ? false : !!v);   // 정렬의 켜진 모양은 도감을 처음 열었을 때만 (다시 고르면 꺼진 모양)
   b.textContent = v ? F.opts.find(o => o[0] === v)[1] : F.all; filterDex();
 }
 ['dexType', 'dexGen', 'dexSort'].forEach(id => $('#' + id).onclick = () => openFilter(id));
@@ -4236,7 +4255,8 @@ Object.keys(SPECIES).map(Number).forEach(sp => {
 const dexLocked = sp => !S.unlocked.has(+sp);
 // 도감 카드: 도감에서 누르면 새 창으로 뜨고, 좌우로 넘겨 이전·다음 포켓몬을 본다
 let cardSp = null;
-const cardList = () => Object.keys(dexBtns).filter(k => !dexBtns[k].hidden).map(Number).sort((a, b) => (+dexBtns[a].style.order || a) - (+dexBtns[b].style.order || b));
+const dexOrd = sp => { const o = dexBtns[sp].style.order; return o === '' ? +sp : +o; };   // 등록순 맨 앞(order 0)도 그대로
+const cardList = () => Object.keys(dexBtns).filter(k => !dexBtns[k].hidden).map(Number).sort((a, b) => dexOrd(a) - dexOrd(b));
 async function openCard(sp, dir = 0) {
   if (S.dexNew?.delete(sp)) { lockDexBtn(sp); save(); }
   cardSp = sp; const pop = $('#dexPop'), lock = dexLocked(sp), d = SPECIES[sp];
@@ -4459,7 +4479,6 @@ function openPoke(id, dir = 0) {
   $('#pokePop').hidden = false; 
   $('#ppHl').hidden = i <= 0; $('#ppHr').hidden = i >= L.length - 1; $('#ppRk').innerHTML = rkBadge(P);
   const pic = $('#ppPic'), img = $('#ppImg'); pic.classList.toggle('shiny', P.shiny); pic.classList.toggle('rkS', rk === 'S'); pic.classList.toggle('frMax', (P.fr || 0) >= FR_MAX); pic.style.setProperty('--shue', shinyHue(P.sp) + 'deg');
-  pic.classList.remove('slide-l', 'slide-r'); void pic.offsetWidth; if (dir) pic.classList.add(dir > 0 ? 'slide-l' : 'slide-r');
   img.src = thumbP(P) || ''; if (!thumbOf(P.sp)) ensureSprite(P.sp).then(() => { if (pokeId === id) img.src = thumbP(P); }).catch(() => {});
   $('#ppBody').innerHTML = infoHead(P, P.sp, nameEdit('ppName', nameOf(P), P.sex), nameOf(P) !== d.n ? `<span class="ih-sp">${esc(d.n)}</span>` : '')
     + `<div class="ivs">${ivRows(P)}<span class="fr-l">친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>`
@@ -4470,12 +4489,12 @@ function openPoke(id, dir = 0) {
   const rb = $('#ppFree'); rb.hidden = budPick != null; if (freeArm !== id) { freeArm = null; rb.classList.remove('arm'); rb.textContent = '놓아주기'; }
   const fb = $('#ppField'); fb.hidden = budPick != null; fb.textContent = on ? '필드에서 빼기' : full ? '필드 가득 참' : '필드에 내보내기'; fb.disabled = !on && full; fb.classList.toggle('sunk', on); fb.classList.remove('popout');
   const noRoom = budPick == null && S.buds.length >= MAX_BUDS;
-  // 진화 칸: 같이 달린 거리와 진화하기(조건이 안 되면 꺼진 채), 돌·교환 같은 진화는 특별한 조건이라고 알려 준다
-  { const ev = $('#ppEvo'), kids = CHILDREN[P.sp], btn = $('#ppEvoBtn'); ev.hidden = !kids || budPick != null;
-    if (!ev.hidden) { const run = `같이 달린 거리 <b>${fmtKm(P.runKm || 0)}</b>km`, ok = evoKids(P.sp, P), need = evoNeed(P), km = P.km || 0;
-      const sub = !ok.length ? `<span class="bd-tag">특별한 조건</span> ${esc(evoWhy(kids[0]))}`
-        : km < need ? `진화까지 <b>${fmtKm(km)}</b> / ${need}km` : pokeReady(P) ? '진화할 수 있어요!' : esc(evoWhy(ok[0]));
-      ev.querySelector('.pp-run').innerHTML = `${run}<br><span class="pp-sub">${sub}</span>`; btn.disabled = !pokeReady(P); btn.hidden = !ok.length; } }
+  // 진화 칸: 가로로 긴 진화하기 버튼. 아직이면 꺼진 모양이고 누르면 버튼 가운데에서 말풍선(남은 거리·조건). 최종 진화는 같은 자리에 같이 달린 거리
+  { const ev = $('#ppEvo'), kids = CHILDREN[P.sp], btn = $('#ppEvoBtn'); ev.hidden = budPick != null;
+    btn.classList.toggle('fin', !kids); btn.classList.remove('dis'); delete btn.dataset.tip; delete btn.dataset.tipc;
+    if (!kids) { btn.innerHTML = `같이 달린 거리 <b>${fmtKm(P.runKm || 0)}</b>km`; }
+    else { const ok = evoKids(P.sp, P), need = evoNeed(P), km = P.km || 0; btn.textContent = '진화하기';
+      if (!pokeReady(P)) { btn.classList.add('dis'); btn.dataset.tipc = ''; btn.dataset.tip = !ok.length ? evoWhy(kids[0]) : km < need ? `진화까지 ${fmtKm(Math.max(0, need - km))}km` : evoWhy(ok[0]); } } }
   const bb = $('#ppBud'); bb.textContent = isBud ? '짝꿍 해제하기' : noRoom ? '짝꿍 자리 없음' : '짝꿍으로'; bb.disabled = !isBud && noRoom; bb.classList.toggle('off', !isBud && noRoom); bb.classList.toggle('sunk', isBud);   // 짝꿍이면 눌린 버튼(누르면 해제)
 }
 const closePoke = () => { $('#pokePop').hidden = true; pokeId = null; freeArm = null; };
@@ -4497,11 +4516,25 @@ $('#ppFree').onclick = () => {
   if (nx) openPoke(nx.id); else closePoke();
 };
 function pokeStep(dir) { const L = boxList(), i = L.indexOf(boxOf(pokeId)), j = i + dir; if (j >= 0 && j < L.length) { sfx('tap'); openPoke(L[j].id, dir); } }
-$('#pokePop').addEventListener('click', e => { if (e.target.id !== 'pokePop') return; const d = sideTap($('#pokePop'), e); if (d) { const h = $(d < 0 ? '#ppHl' : '#ppHr'); if (!h.hidden) pokeStep(d); return; } closePoke(); });
-{ let x0 = null, y0 = 0; const w = $('#pokePop .win');
-  w.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; x0 = e.clientX; y0 = e.clientY; });
-  w.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null; if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) pokeStep(dx < 0 ? 1 : -1); });
-  w.addEventListener('pointercancel', () => { x0 = null; }); }
+$('#pokePop').addEventListener('click', e => { if (e.target.id !== 'pokePop' || performance.now() - ppSwiped < 400) return; const d = sideTap($('#pokePop'), e); if (d) { const h = $(d < 0 ? '#ppHl' : '#ppHr'); if (!h.hidden) pokeStep(d); return; } closePoke(); });
+// 밀어서 넘기기: 카드가 손가락을 따라 밀리고, 놓으면 앞 카드가 밀려 나가며 다음 카드가 반대쪽에서 들어온다
+let ppSwiped = 0;
+{ const w = $('#pokePop .win'); let x0 = null, y0 = 0, dx0 = 0, busy = false;
+  const can = d => { const L = boxList(), j = L.indexOf(boxOf(pokeId)) + d; return j >= 0 && j < L.length; };
+  const back = () => { if (dx0) { w.style.transform = ''; w.animate([{ transform: `translateX(${dx0}px)` }, { transform: 'none' }], { duration: 180, easing: 'cubic-bezier(.2,.8,.3,1)' }); } dx0 = 0; };
+  w.addEventListener('pointerdown', e => { if (busy || e.button > 0 || e.target.closest('button,input,.frtap,[data-tip]')) return; x0 = e.clientX; y0 = e.clientY; dx0 = 0; });
+  w.addEventListener('pointermove', e => { if (x0 == null) return; const dx = e.clientX - x0, dy = e.clientY - y0;
+    if (!dx0 && (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(dy))) return;
+    dx0 = (dx * (can(dx < 0 ? 1 : -1) ? 1 : .2)) || .01; w.style.transform = `translateX(${dx0}px)`; });
+  w.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0, dy = e.clientY - y0, d = dx < 0 ? 1 : -1; x0 = null;
+    if (dx0) ppSwiped = performance.now();
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) && can(d)) { busy = true; const W = innerWidth, from = dx0; dx0 = 0;
+      w.style.transform = `translateX(${-d * W}px)`;
+      w.animate([{ transform: `translateX(${from}px)` }, { transform: `translateX(${-d * W}px)` }], { duration: 130, easing: 'ease-in' }).onfinish = () => {
+        pokeStep(d); w.style.transform = '';
+        const a = w.animate([{ transform: `translateX(${d * W}px)` }, { transform: 'none' }], { duration: 210, easing: 'cubic-bezier(.2,.8,.3,1)' }); a.onfinish = a.oncancel = () => { busy = false; }; };
+    } else back(); });
+  w.addEventListener('pointercancel', () => { x0 = null; back(); }); }
 $('#ppField').onclick = async () => {
   const P = boxOf(pokeId); if (!P) return;
   const m = S.mons.find(x => x.pid === P.id);
@@ -4512,7 +4545,7 @@ $('#ppField').onclick = async () => {
     try { await spawn(P.sp, { pid: P.id }); } catch (e) {} if (boxFromSlot && S.mons.some(x => x.pid === P.id)) { refreshCap(); save(); closePoke(); setMgrTab('field'); return; } }
   refreshCap(); renderBox(); openPoke(P.id); save();
 };
-$('#ppEvoBtn').onclick = () => evolvePoke(boxOf(pokeId));
+$('#ppEvoBtn').onclick = () => { const b = $('#ppEvoBtn'); if (b.classList.contains('dis') || b.classList.contains('fin')) return; evolvePoke(boxOf(pokeId)); };
 $('#ppBud').onclick = () => {
   const P = boxOf(pokeId); if (!P) return;
   { const i = S.buds.findIndex(b => b.pid === P.id); if (i >= 0) { sfx('tap'); log(`${J({ name: SPECIES[P.sp].n },'과/와')} 같이 달리기를 그만뒀다.`); S.buds.splice(i, 1); save(); renderBox(); openPoke(P.id); renderRun(); return; } }   // 짝꿍 해제
@@ -4847,7 +4880,7 @@ document.addEventListener('click', e => {
   // 친밀도: 하트 어디를 눌러도 가운데 하트 바로 위에 (하트 줄이 칸 너비로 늘어나 있어도 글자 기준)
   let x = r.left + r.width / 2;
   if (!h.dataset.tip) { const rg = document.createRange(); rg.selectNodeContents(h); const t = rg.getBoundingClientRect(); if (t.width) x = t.left + t.width / 2; }
-  else if (e.clientX && e.clientX >= r.left - 4 && e.clientX <= r.right + 4) x = e.clientX;
+  else if (!('tipc' in h.dataset) && e.clientX && e.clientX >= r.left - 4 && e.clientX <= r.right + 4) x = e.clientX;
   tip.style.left = Math.max(40, Math.min(innerWidth - 40, x)) + 'px'; tip.style.top = (r.top - 6) + 'px';
   clearTimeout(tip.t); tip.t = setTimeout(() => { tip.hidden = true; tip.of = null; }, 1800); sfx('tap');
 }, true);
@@ -5534,7 +5567,7 @@ function tapEgg(egg, g, msg) {
   return new Promise(done => {
     const need = g === 1 ? 20 : 20 + g * 10,   /* 일반 알은 20번 */ win = hatchEl.querySelector('.win'); let n = 0, stage = 0, idle = 0, pend = -1;
     msg.textContent = '알을 톡톡 두드려 보자!';
-    if (g === 5) { hatchEl.classList.add('legend'); tenseStart(); }
+    if (g === 5) { hatchEl.classList.add('legend'); tenseStart(); } else if (g === 4) hatchEl.classList.add('g4t');
     hatchStage.classList.add('tapme');
     const nudge = () => { clearTimeout(idle); idle = setTimeout(() => { if (n >= need) return; egg.classList.remove('wig', 'knock'); void egg.offsetWidth; egg.classList.add('wig'); sfx('wob'); nudge(); }, 2600); };
     const down = ev => {
@@ -5556,11 +5589,15 @@ function tapEgg(egg, g, msg) {
         hatchStage.querySelector('.ehalo')?.classList.add('s' + st); rumble(st, g); eggQuake(egg, win, st, g); if (st === 1) msg.textContent = '…!'; if (st === 3) msg.textContent = '알이 깨지려고 한다!'; }
       else { sfx('knock', st); pend = st >= 2 ? 2 : 1; }
       sfx('charge', f);
-      if (g === 5) { hatchEl.style.setProperty('--dk', f.toFixed(3)); tense.f = f; } else hatchEl.style.setProperty('--lit', g <= 2 ? 0 : Math.max(0, Math.min(1, (f - .35) / .5)).toFixed(3));   // 레어·에픽은 절반쯤 두드리면 화면 전체가 환해지기 시작한다 (일반·희귀는 없음, 전설은 점점 어두워진다)
+      { const lt = Math.max(0, Math.min(1, (f - .75) / .25));   // 두드리기가 거의 끝날 때(75%)부터 화면 전체가 환해진다
+        if (g === 5) { hatchEl.style.setProperty('--dk', f.toFixed(3)); hatchEl.style.setProperty('--lg', lt.toFixed(3)); tense.f = f; }   // 전설: 어두워지다가 끝무렵 금빛이 터져 나온다
+        else hatchEl.style.setProperty('--lit', lt.toFixed(3));
+        if (g >= 4 && lt > 0) hSparks(g === 5 ? 3 + Math.round(lt * 4) : 1 + Math.round(lt * 2), g); }
       haptic(pend);
       if (n >= need) {
         clearTimeout(idle);
         setTimeout(() => { egg.classList.remove('knock'); egg.classList.add('wig2'); sfx('rattle'); sfx('rise'); }, 220);
+        if (g >= 4) { hatchEl.classList.add('surge'); for (let k = 0; k < 6; k++) setTimeout(() => hSparks(g === 5 ? 7 : 4, g, true), k * 140); }   // 깨지기 직전: 빛줄기가 빨라지고 반짝이가 쏟아진다
         hatchEl.onclick = null;
         setTimeout(() => { hatchStage.removeEventListener('pointerdown', down); hatchStage.removeEventListener('click', up); hatchStage.classList.remove('tapme'); done(true); }, 900);
       } else nudge();
@@ -5613,7 +5650,9 @@ document.addEventListener('pointerdown', e => { const b = e.target.closest('#egg
 let hatching = false;
 // 부화 창 화면 효과 초기화 (밝기·어둠·후광)
 // 부화 창 효과 초기화. 흔들림 클래스도 지운다 (창을 다시 열 때 지난번 흔들림이 다시 재생되지 않게)
-function hatchFx() { hatchEl.classList.remove('legend', 'rays'); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); hatchEl.querySelector('.win').classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5', 'jolt', 'wquake'); hatchEl.querySelector('.hwhite')?.classList.remove('go', 'big'); }
+function hSparks(k, g, big) { for (let i = 0; i < k; i++) { const s = document.createElement('i'); s.className = 'hspark' + (big && Math.random() < .4 ? ' b' : ''); s.style.left = (50 + (Math.random() - .5) * 80) + '%'; s.style.top = (28 + Math.random() * 48) + '%';
+  s.style.setProperty('--sc', g === 5 ? (Math.random() < .6 ? '#ffd84a' : '#fff6c0') : (Math.random() < .5 ? '#d6a4ff' : '#ffc4ef')); s.style.animationDelay = (Math.random() * .2).toFixed(2) + 's'; hatchEl.append(s); setTimeout(() => s.remove(), 1300); } }
+function hatchFx() { hatchEl.classList.remove('legend', 'rays', 'g4t', 'surge'); hatchEl.style.setProperty('--lg', 0); hatchEl.querySelectorAll('.hspark').forEach(e => e.remove()); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); hatchEl.querySelector('.win').classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5', 'jolt', 'wquake'); hatchEl.querySelector('.hwhite')?.classList.remove('go', 'big'); }
 async function playHatch() {
   if (hatching || !hatchQ.length) return;
   hatching = true;
