@@ -1,6 +1,6 @@
 // Offline cache for the home-screen app. The page is fetched fresh when online so updates arrive;
 // sprite chunks are served from cache; bump CACHE when they change.
-const CACHE = 'meadow-v10';   // 청크가 바뀌면 올린다 (v10: 육파리 뒷모습·자루도 눈, v9: 떨구새 날갯짓·뒷모습 크기, v8: 옛 캐시 청크가 새 캐시로 옮겨지던 문제 고침, v2: 암컷 스프라이트, v3: 기술 모션, v4: 45종 도트 다시 그림, v5: 45종 뒷모습·대기 프레임, v6: 45종 얼굴 점 살림)
+const CACHE = 'meadow-v11';   // 청크가 바뀌면 올린다 (v11: 마임꽁꽁 얼굴, v10: 육파리 뒷모습·자루도 눈, v9: 떨구새 날갯짓·뒷모습 크기, v8: 옛 캐시 청크가 새 캐시로 옮겨지던 문제 고침, v2: 암컷 스프라이트, v3: 기술 모션, v4: 45종 도트 다시 그림, v5: 45종 뒷모습·대기 프레임, v6: 45종 얼굴 점 살림)
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => {
