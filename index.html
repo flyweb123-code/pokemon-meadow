@@ -669,7 +669,7 @@ body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch
 .pk.rkA{background:radial-gradient(circle 40px at 50% 42px,rgba(255,120,120,.38),rgba(255,120,120,0))}.pk.rkA img,.dp-pic.rkA img,.bd-pic.rkA img{animation:aglowI 2s ease-in-out infinite}@keyframes aglowI{0%,100%{filter:drop-shadow(0 0 1px #ffd0d0) drop-shadow(0 0 3px #ff5050)}50%{filter:drop-shadow(0 0 2px #ffd0d0) drop-shadow(0 0 7px #ff3838)}}
 .mon.rkS .lift::before{content:'✦';position:absolute;left:0;bottom:calc(var(--mh,60px) * .55);color:#fff3a0;font-size:20px;text-shadow:0 0 4px #ffb000,0 0 2px #fff;animation:spk 1.6s steps(1) infinite;pointer-events:none;z-index:3}
 @keyframes spk{0%{opacity:1;transform:translate(calc(var(--mw,50px) * .4),0) scale(1)}20%{opacity:.4;transform:translate(calc(var(--mw,50px) * .4),0) scale(.6)}35%{opacity:0}50%{opacity:1;transform:translate(calc(var(--mw,50px) * -.45),calc(var(--mh,60px) * -.35)) scale(1.1)}70%{opacity:.4;transform:translate(calc(var(--mw,50px) * -.45),calc(var(--mh,60px) * -.35)) scale(.6)}85%{opacity:0}}
-.born-pic.rkS img:not(.shiny){animation:sglow 1.8s ease-in-out infinite}.born-pic.rkA img:not(.shiny){animation:aglowI 2s ease-in-out infinite}.born-pic.rkS img.shiny{filter:hue-rotate(var(--shue)) saturate(1.25) drop-shadow(0 0 4px #ffc830)}.born-pic.rkA img.shiny{filter:hue-rotate(var(--shue)) saturate(1.25) drop-shadow(0 0 4px #ff5050)}
+.hatch-stage .born-pic.rkS img:not(.shiny){animation:hpop .5s steps(4,end),sglow 1.8s ease-in-out .5s infinite}.hatch-stage .born-pic.rkA img:not(.shiny){animation:hpop .5s steps(4,end),aglowI 2s ease-in-out .5s infinite}.born-pic.rkS img.shiny{filter:hue-rotate(var(--shue)) saturate(1.25) drop-shadow(0 0 4px #ffc830)}.born-pic.rkA img.shiny{filter:hue-rotate(var(--shue)) saturate(1.25) drop-shadow(0 0 4px #ff5050)}
 .pk.rkS img,.dp-pic.rkS img,.bd-pic.rkS img{animation:sglow 1.8s ease-in-out infinite}
 .pk.rkS{background:radial-gradient(circle 40px at 50% 42px,rgba(255,236,160,.7),rgba(255,236,160,0))}
 .pk.press{background:rgba(0,0,0,.05)}
@@ -4344,7 +4344,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.42';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.43';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6098,7 +6098,7 @@ async function playHatch() {
   const B = bornPoke({ g, sp, place }), { P, isNew } = B;
   hatchStage.append(bornImg(sp, P, isNew));
   // 태어난 포켓몬 뒤 후광: 개체 랭크 A 이상만 (S 는 더 크고 밝게 맥박), 그 아래는 사라진다
-  { const ha = hatchStage.querySelector('.ehalo'), rk = rankOf(P); if (ha) { ha.classList.remove('s1', 's2', 's3'); ha.classList.toggle('rkA', rk === 'A'); ha.classList.toggle('rkS', rk === 'S'); } }
+  { const ha = hatchStage.querySelector('.ehalo'), rk = rankOf(P); if (ha) { ha.classList.remove('s1', 's2', 's3'); ha.classList.remove('rkA', 'rkS');   /* 랭크 후광은 스프라이트 빛(.born-pic.rkS/rkA)으로만: 겹치지 않게 */ } }
   setTimeout(() => sfx(isNew ? 'newdex' : 'hatch'), 250); setTimeout(() => goldPop(B.dupG), 900); playCry(sp, isNew ? 1.6 : .9);
   $('#hatchMsg').innerHTML = bornMsg(B);
   if (P.shiny) setTimeout(() => sfx('shiny'), 900);
