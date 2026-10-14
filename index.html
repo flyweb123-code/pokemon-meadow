@@ -532,7 +532,10 @@ ol.log li.big .txt{color:#c03838}
 .pf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}.pf-sec{padding-bottom:14px}
 .pf-box{border:3px solid var(--frame);background:var(--win);padding:12px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
 .pf-box span{font-size:12px;color:var(--dim)}.pf-box b{font-size:24px;line-height:1.1;color:var(--win-ink)}.pf-box i{font-style:normal;font-size:12px;color:var(--dim)}
-.pf-box.live b{color:#2a8a4a}
+.pf-box b{transition:color .3s}
+.pf-box.walking{border-color:#2a8a4a;animation:pfWalk 2.4s ease-in-out infinite}.pf-box.walking b{color:#2a8a4a}
+.pf-box.walking span::before{content:'';display:inline-block;width:6px;height:6px;margin:0 5px 1px 0;background:#3cb05a;vertical-align:middle;animation:pfDot 1.2s steps(2) infinite}
+@keyframes pfWalk{0%,100%{box-shadow:0 0 0 0 rgba(60,176,90,0)}50%{box-shadow:0 0 0 3px rgba(60,176,90,.25)}}@keyframes pfDot{50%{opacity:.2}}
 .pf-note{margin:8px 0 0;font-size:12px;color:var(--dim)}
 .set-sec p{margin:0 0 12px;line-height:1.55;color:var(--dim);font-size:13px}
 .set-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -4630,7 +4633,7 @@ const budReady = b => !!b && evoKids(b.sp, boxOf(b.pid), true).length > 0 && b.k
 // 짝꿍에서 빠져도 개체에 남은 거리(P.km)를 다 채웠으면 정보카드에서 진화할 수 있다
 const pokeReady = P => !!P && evoKids(P.sp, P, true).length > 0 && (P.km || 0) >= evoNeed(P);
 const evoNeed = m => { const g = gradeOf(baseOf(m.sp)), stage = evoStage(m.sp); return [0, 5, 10, 15, 20, 25][g] * (stage ? 1.5 : 1); };
-const fmtKm = v => (Math.floor(v * 100) / 100).toFixed(2);
+const fmtKm = v => (Math.floor(v * 100 + 1e-6) / 100).toFixed(2);
 // ---------- 포켓몬 상자: 부화한 한 마리 한 마리 (개체값·이로치·친밀도) ----------
 // 개체값은 능력치 6개마다 0~31. 합계로 S~F 랭크(대략 S 2%, A 8%, B 20%, C 30%, D 25%, E 10%, F 5%).
 // 이로치는 6세대 이후 본가 게임처럼 1/4096. 친밀도 0~255(하트 5칸).
@@ -4988,11 +4991,19 @@ function renderProfile() {
   if (!$('#pfWalk')) return; const T = today(), live = S.ped && S.ped.d === T.d, k0 = new Date(); k0.setHours(0, 0, 0, 0);
   const runKm = S.runs.filter(r => r.t >= +k0).reduce((a, r) => a + r.km, 0);
   // 이동 거리: 만보기(걷기·달리기 다 들어간다)가 오면 그 값, 아니면 걸은 거리 + 달린 기록 (둘 중 큰 쪽)
-  $('#pfWalk').textContent = fmtKm(live ? Math.max(S.ped.km, runKm) : T.walk + runKm); $('#pfWalk').parentNode.classList.toggle('live', !!live);
+  $('#pfWalk').textContent = fmtKm(live ? Math.max(S.ped.km, runKm) : T.walk + runKm); $('#pfWalk').parentNode.classList.toggle('walking', !!live && Date.now() - (S.ped.at || 0) < WALK_LIVE);
   $('#pfEggs').textContent = T.eggs;
 }
 // 아이폰 앱: 오늘 0시부터 걸은 거리(만보기)를 걷는 동안 계속 보낸다 (화면 표시용, 알 줍기는 pokeRunWalk)
-window.pokeRunToday = (km, dayMs) => { km = +km; if (!(km >= 0)) return false; S.ped = { d: dayKey(+dayMs || Date.now()), km }; if (!setEl.hidden) renderProfile(); return true; };
+// 걷는 중: 이동 거리가 최근 20초 안에 늘었으면 초록색으로 켜진 모양, 아니면 검정
+const WALK_LIVE = 20000; let walkOffT = 0;
+window.pokeRunToday = (km, dayMs) => {
+  km = +km; if (!(km >= 0)) return false; const d = dayKey(+dayMs || Date.now()), o = S.ped;
+  const up = o && o.d === d && km > o.km + 1e-4;
+  S.ped = { d, km, at: up ? Date.now() : (o && o.d === d ? o.at || 0 : 0) };
+  if (up) { clearTimeout(walkOffT); walkOffT = setTimeout(() => { if (!setEl.hidden) renderProfile(); }, WALK_LIVE + 50); }
+  if (!setEl.hidden) renderProfile(); return true;
+};
 function collectEggs(km, place, tags, pf) {
   S.bagAcc += km; let n = 0;
   while (S.bagAcc >= BAG_STEP) { S.bagAcc -= BAG_STEP; n += Math.floor(Math.random() * 3); }
