@@ -587,7 +587,8 @@ ol.log li.big .txt{color:#c03838}
 .rk{display:inline-block;min-width:18px;text-align:center;font-size:11px;font-weight:700;color:#fff;padding:0 4px;border:2px solid rgba(0,0,0,.25)}
 .rk.S{background:#e8a020}.rk.A{background:#e04848}.rk.B{background:#8a5ad0}.rk.C{background:#3a80d0}.rk.D{background:#40a060}.rk.E{background:#909098}.rk.F{background:#6a6a70}
 .pk .rk{position:absolute;left:3px;top:3px}
-.pk .pk-new{position:absolute;left:50%;top:4px;width:8px;height:8px;margin-left:-4px;background:#e04838;box-shadow:0 0 0 2px var(--win)}.pk .tg{position:absolute;right:3px;top:3px;font-size:9px;background:var(--frame);color:var(--win);padding:1px 3px}
+#dexGrid .newtag{left:auto;right:3px;top:3px;transform:none;animation:nbob 1.2s steps(2,end) infinite}@keyframes nbob{50%{transform:translateY(-3px)}}
+.pk .pk-new{position:absolute;right:4px;top:4px;width:7px;height:7px;background:#e04838}.pk .pk-new~.tg{right:15px}.pk .tg{position:absolute;right:3px;top:3px;font-size:9px;background:var(--frame);color:var(--win);padding:1px 3px}
 .pk .tg.bud{background:#e8a020;color:#fff}
 .pk .sh,.pp-body .sh{color:#e8a020;font-size:12px;margin-left:2px;text-shadow:0 0 4px rgba(255,200,40,.7)}
 /* S 랭크: 금빛 테두리 빛 + 반짝이 */
@@ -638,6 +639,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .dexpop .boxbtn.red{background:#c83838;border-color:#7a1c1c;color:#fff}/* 눌린 버튼: 아래 그림자가 위로 옮겨가며 면이 4px 내려간다 → 글자도 padding 으로 같은 만큼 내려 함께 움직인다 */
 
 .pokepop .boxbtn.sunk{background:#b9b9c6;border-color:#8a8a9a;color:#5a5a6a;box-shadow:inset 0 4px 0 rgba(0,0,0,.3),inset 3px 0 0 rgba(0,0,0,.12);padding-top:14px;padding-bottom:6px}
+.pokepop .boxbtn.pink.sunk{background:#e3b3c6;border-color:#9a6278;color:#7a3a54}
 .pokepop .boxbtn.sunk.popout{animation:btnPop .2s cubic-bezier(.3,1.6,.5,1) forwards}
 @keyframes btnPop{0%{background:#b9b9c6;box-shadow:inset 0 4px 0 rgba(0,0,0,.3);padding-top:14px;padding-bottom:6px}100%{background:var(--frame);border-color:var(--frame);color:var(--win);box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);padding-top:10px;padding-bottom:10px}}
 .pokepop .boxbtn.off{background:var(--win);color:var(--frame)}.pokepop .boxbtn[disabled]{opacity:.5}
@@ -696,6 +698,14 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 /* Running and eggs */
 .runwin{max-width:640px;height:min(90vh,760px);display:flex;flex-direction:column}
 .run-body{flex:1;min-height:0;overflow-y:auto;padding-bottom:14px}
+/* 부화기: 알 슬롯 3줄이 아래 탭 바로 위까지 늘어나 남는 여백이 없게 (공간이 모자라면 최소 크기로 두고 스크롤) */
+.rtab[data-tab="egg"]:not([hidden]){display:flex;flex-direction:column;min-height:100%}
+.rtab[data-tab="egg"] .eggs{flex:1;grid-auto-rows:minmax(74px,1fr);margin-bottom:0}
+.rtab[data-tab="egg"] .eslot{min-height:0;justify-content:center;container-type:size;overflow:hidden;padding-top:18px;padding-bottom:4px;gap:2px}
+.rtab[data-tab="egg"] .eslot .egg{height:clamp(24px,calc(100cqh - 50px),48px);width:auto;aspect-ratio:36/44}
+.rtab[data-tab="egg"] .eslot .egg svg{width:100%;height:100%}
+.rtab[data-tab="egg"]>.mgr-tools{margin-bottom:6px;min-height:32px}
+.run-body:has(>.rtab[data-tab="egg"]:not([hidden])){padding-bottom:8px}
 .run-body .rtab[hidden]{display:none}
 .runtabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:3px solid var(--frame)}.runtabs.eggtabs{grid-template-columns:repeat(2,minmax(0,1fr))}
 .runtab{padding:10px 4px;font-size:16px;text-align:center;border-left:3px solid var(--frame);background:var(--win)}
@@ -832,6 +842,12 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 #buddy .bd-empty{font-size:40px;color:var(--dim);line-height:1}
 .bd-card{position:relative;display:grid;grid-template-rows:auto;align-content:center;gap:8px;border:3px solid var(--frame);background:#fff;padding:10px 12px;box-shadow:3px 3px 0 rgba(0,0,0,.2);min-height:0}
 .bd-row{display:flex;gap:12px;align-items:center;min-height:0}
+/* 짝꿍 칸: 분홍색 계열 */
+#buddy .bd-card{border-color:#9a3462;background:#fff3f7;box-shadow:3px 3px 0 rgba(154,52,98,.25)}
+#buddy .bd-card .bd-pic{background:#fcd9e6;border-color:#e9a3bf}
+#buddy .bd-card .prog{border-color:#9a3462}#buddy .bd-card .prog i{background:#e8679a}
+#buddy .bd-card .bd-x{color:#c0507e}
+#buddy .bd-empty{border-color:#e9a3bf;background:#fff8fb}#buddy .bd-empty .q{border-color:#e9a3bf;background:#fde9f1;color:#d27aa0}
 .bd-main{flex:1;min-width:0;display:grid;gap:8px}
 .bd-top{display:flex;gap:14px;align-items:center;min-width:0}
 .bd-pic{flex:none;width:88px;height:88px;display:grid;place-items:center;background:#e4f2d0;border:3px solid var(--inner)}
@@ -892,6 +908,8 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .hatch{position:fixed;inset:0;z-index:6000;background:rgba(10,14,30,.82);display:grid;place-items:center;padding:16px}
 .hatch .win{text-align:center;width:min(420px,100%)}
 .hatch-stage{height:180px;display:grid;place-items:center;position:relative}
+/* 부화 창 크기 고정: 알 단계에도 태어난 뒤 크기만큼 자리를 잡고, 알은 그 가운데 */
+.hatch:not(.list) .win{min-height:min(600px,calc(100dvh - 40px));display:flex;flex-direction:column}.hatch:not(.list) .hatch-stage{flex:1 0 180px;height:auto}
 .h-no{position:absolute;left:18px;top:16px;z-index:2;font-size:14px;color:var(--dim)}.h-no[hidden]{display:none}#hatchDex .dx-no{display:none}
 .hatch-stage .egg{width:108px;height:132px;transform-origin:50% 92%}
 /* 도트 게임식 흔들림: 부드럽게 돌지 않고 칸 단위로 끊어서 움직인다 */
@@ -957,7 +975,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 .op-sw{flex:none;width:58px;height:30px;padding:0;border:3px solid var(--frame);background:#b9b9c6;cursor:pointer;position:relative;box-shadow:inset 0 3px 0 rgba(0,0,0,.2)}
 .op-sw i{position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border:2px solid var(--frame)}
 .op-sw[aria-checked="true"]{background:#4ccf5a}.op-sw[aria-checked="true"] i{left:auto;right:2px}
-#openRun,#openMgr,#openDex{position:relative}.mdot{position:absolute;top:5px;right:6px;width:9px;height:9px;background:#e04838;box-shadow:0 0 0 2px #fff;pointer-events:none}
+#openRun,#openMgr,#openDex{position:relative}.mdot{position:absolute;top:6px;right:7px;width:6px;height:6px;background:#e04838;pointer-events:none}
 @keyframes tbump{50%{transform:scale(1.25)}}
 #eggAll{font:inherit;font-size:13px;padding:3px 10px;background:#e8a020;color:#fff;border:3px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.25);cursor:pointer}
 @keyframes hpop{0%{transform:scale(.25)}50%{transform:scale(1.1)}100%{transform:none}}
@@ -1054,6 +1072,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
     white-space:normal;line-height:1.2;border:0;font-weight:400;background:#4b4b66;
     box-shadow:inset 0 3px 0 rgba(255,255,255,.2),inset 0 -4px 0 rgba(0,0,0,.4),0 3px 0 #1c1c26}
   .menuwin .opt::before,.cmdwin .opt::before{display:none}
+  .menuwin .opt{touch-action:manipulation;transition:none}
   .menuwin .opt.hold,.menuwin .opt:active,.cmdwin .opt:active{transform:translateY(2px);box-shadow:inset 0 3px 0 rgba(0,0,0,.35),0 1px 0 #1c1c26}
   .cmdwin .opt[aria-pressed="true"]{background:#2b2b3c;color:#ffe27a;transform:translateY(2px);box-shadow:inset 0 3px 0 rgba(0,0,0,.4),inset 0 0 0 2px #ffe27a,0 1px 0 #1c1c26}
   .menuwin #capBadge{display:none}
@@ -4030,7 +4049,9 @@ $('#openDex').onclick = () => tabTo(sheet, openDex);
 // 손가락이 닿는 순간(pointerdown) 바로 창을 열고 활성 표시를 한다. 뒤따르는 click 은 한 번 삼킨다 (키보드 click 은 그대로)
 document.querySelectorAll('.menuwin .opt').forEach(b => {
   let ate = 0;
-  b.addEventListener('pointerdown', e => { if (e.button > 0 || !b.onclick) return; b.classList.add('hold'); ate = performance.now(); b.onclick(e); setTimeout(() => b.classList.remove('hold'), 0); });
+  // 눌린 모양을 먼저 화면에 그린 뒤(다음 프레임) 창을 연다 → 무거운 창(포켓몬 박스 등)을 여는 동안에도 버튼은 바로 눌려 보인다
+  b.addEventListener('pointerdown', e => { if (e.button > 0 || !b.onclick || b.classList.contains('hold')) return; b.classList.add('hold'); ate = performance.now();
+    requestAnimationFrame(() => setTimeout(() => { b.onclick(e); requestAnimationFrame(() => b.classList.remove('hold')); }, 0)); });
   b.addEventListener('click', e => { if (performance.now() - ate < 1000) { ate = 0; e.stopImmediatePropagation(); e.preventDefault(); } }, true);
 });
 // 운영자 모드·테스트 버튼 (이 기기에만 저장)
@@ -4455,7 +4476,7 @@ function openPoke(id, dir = 0) {
       const sub = !ok.length ? `<span class="bd-tag">특별한 조건</span> ${esc(evoWhy(kids[0]))}`
         : km < need ? `진화까지 <b>${fmtKm(km)}</b> / ${need}km` : pokeReady(P) ? '진화할 수 있어요!' : esc(evoWhy(ok[0]));
       ev.querySelector('.pp-run').innerHTML = `${run}<br><span class="pp-sub">${sub}</span>`; btn.disabled = !pokeReady(P); btn.hidden = !ok.length; } }
-  const bb = $('#ppBud'); bb.textContent = isBud ? '짝꿍이에요' : noRoom ? '짝꿍 자리 없음' : '짝꿍으로'; bb.disabled = isBud || noRoom; bb.classList.toggle('off', isBud || noRoom);
+  const bb = $('#ppBud'); bb.textContent = isBud ? '짝꿍 해제하기' : noRoom ? '짝꿍 자리 없음' : '짝꿍으로'; bb.disabled = !isBud && noRoom; bb.classList.toggle('off', !isBud && noRoom); bb.classList.toggle('sunk', isBud);   // 짝꿍이면 눌린 버튼(누르면 해제)
 }
 const closePoke = () => { $('#pokePop').hidden = true; pokeId = null; freeArm = null; };
 $('#ppX').onclick = () => { sfx('tap'); closePoke(); };
@@ -4484,7 +4505,7 @@ $('#pokePop').addEventListener('click', e => { if (e.target.id !== 'pokePop') re
 $('#ppField').onclick = async () => {
   const P = boxOf(pokeId); if (!P) return;
   const m = S.mons.find(x => x.pid === P.id);
-  if (m) { const fb = $('#ppField'); if (fb.classList.contains('popout')) return; sfx('tap'); fb.textContent = '필드에 내보내기'; fb.classList.add('popout'); await wait(200); removeMon(m); }   // 눌려 있던 버튼이 툭 튀어나오며 필드에서 뺀다
+  if (m) { sfx('tap'); removeMon(m); }   // 눌려 있던 버튼이 중간 모션 없이 바로 '필드에 내보내기'로
   else if (S.mons.length < MAX_MONS) { const fb = $('#ppField'); if (fb.classList.contains('pressd') || fb.classList.contains('sunk')) return; sfx('tap');
     if (boxFromSlot) { fb.classList.add('pressd'); await wait(110); fb.classList.remove('pressd'); }   // 빈 슬롯에서 왔으면 바로 눌린 뒤 필드로
     else { fb.classList.add('sunk'); fb.textContent = '필드에서 빼기'; }   // 그림을 불러오는 동안 기다리지 않고 먼저 눌린 모양으로
@@ -4493,13 +4514,14 @@ $('#ppField').onclick = async () => {
 };
 $('#ppEvoBtn').onclick = () => evolvePoke(boxOf(pokeId));
 $('#ppBud').onclick = () => {
-  const P = boxOf(pokeId); if (!P || S.buds.some(b => b.pid === P.id)) return;
+  const P = boxOf(pokeId); if (!P) return;
+  { const i = S.buds.findIndex(b => b.pid === P.id); if (i >= 0) { sfx('tap'); log(`${J({ name: SPECIES[P.sp].n },'과/와')} 같이 달리기를 그만뒀다.`); S.buds.splice(i, 1); save(); renderBox(); openPoke(P.id); renderRun(); return; } }   // 짝꿍 해제
   const slot = budPick; if (slot == null && S.buds.length >= MAX_BUDS) return;
   const keep = S.buds.filter((b, k) => k !== slot && b.sp !== P.sp), nb = { sp: P.sp, km: P.km || 0, pid: P.id };
   if (slot != null) keep.splice(Math.min(slot, keep.length), 0, nb); else keep.push(nb);
   S.buds = keep;
   log(`${J({ name: SPECIES[P.sp].n },'이/가')} 런닝 짝꿍이 되었다!`, [], true); save();
-  renderBox(); closePoke(); setMgrTab('buddy');   // 짝꿍이 되면 짝꿍 탭으로
+  sfx('tap'); renderBox(); if (slot != null) { closePoke(); setMgrTab('buddy'); } else openPoke(P.id);   // 짝꿍 칸에서 왔으면 짝꿍 탭으로, 아니면 카드에 남아 버튼만 눌린 모양으로
   evoNotice(P.sp, P);
 };
 new MutationObserver(() => { if (mgr.hidden) closePoke(); }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
@@ -5510,7 +5532,7 @@ function eggQuake(egg, win, st, g) {
 // 알 두드리기: 마구 두드리면 금이 가다가 깨진다 (높은 등급일수록 많이). 한동안 가만히 두면 알이 혼자 흔들린다.
 function tapEgg(egg, g, msg) {
   return new Promise(done => {
-    const need = 20 + g * 10, win = hatchEl.querySelector('.win'); let n = 0, stage = 0, idle = 0, pend = -1;
+    const need = g === 1 ? 20 : 20 + g * 10,   /* 일반 알은 20번 */ win = hatchEl.querySelector('.win'); let n = 0, stage = 0, idle = 0, pend = -1;
     msg.textContent = '알을 톡톡 두드려 보자!';
     if (g === 5) { hatchEl.classList.add('legend'); tenseStart(); }
     hatchStage.classList.add('tapme');
@@ -5860,7 +5882,7 @@ function setRunTab(t) {
 document.querySelectorAll('.runtab[data-tab]').forEach(b => b.onclick = () => setRunTab(b.dataset.tab));
 $('#buddy').addEventListener('click', e => {
   const a = e.target.closest('[data-act]')?.dataset.act;
-  if (!a) { const c = e.target.closest('.bd-card'); if (c && S.buds[+c.dataset.i]) { playCry(S.buds[+c.dataset.i].sp); const im = c.querySelector('.bd-pic img'); im?.classList.remove('hop'); void im?.offsetWidth; im?.classList.add('hop'); } return; }
+  if (!a) { const c = e.target.closest('.bd-card'), b = c && S.buds[+c.dataset.i]; if (b && boxOf(b.pid)) { sfx('tap'); budPick = null; openPoke(b.pid); } return; }   // 짝꿍 칸을 누르면 그 포켓몬 정보 카드
   const i = +e.target.closest('[data-i]').dataset.i;
   if (a === 'pick') { budPick = i; pressGo(e.target.closest('.bd-empty'), () => setMgrTab('box'), 40); }
   else if (a === 'evo') { if (budReady(S.buds[i])) evolvePoke(boxOf(S.buds[i].pid)); }
