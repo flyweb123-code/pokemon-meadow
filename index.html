@@ -1962,7 +1962,7 @@ const chunkLoads = {};
 // ---------- 업데이트 받기 로딩창 ----------
 // 스프라이트 청크가 캐시에 없으면(처음 설치, 또는 sw.js 의 CACHE 가 올라 새 청크가 나왔을 때) 피카츄가 달리는 게이지 바를 띄우고
 // s0…s20.json 을 받아 서비스 워커와 같은 캐시에 넣는다. 크기는 빌드 때 채운다(압축 풀린 바이트).
-const CHUNK_CACHE = 'meadow-v15', CHUNK_SZ = [1152284,1077297,1397456,1074319,1295987,1115366,1317751,1435041,1536461,1677789,1151101,1156905,1460097,1273901,1245192,1606010,1248435,1546887,1279239,1454582,908009];
+const CHUNK_CACHE = 'meadow-v16', CHUNK_SZ = [1152284,1077297,1397456,1074319,1295987,1115366,1317751,1435041,1536461,1677789,1154348,1163780,1460283,1273901,1245192,1606010,1248435,1533269,1279239,1465283,919887];
 const PIKA_RUN = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFwAAAAbCAYAAADxsuiMAAADJ0lEQVR4nNWZPXbbMAzHoU71LdwbdMxmj+kN2ilH0JobJGtPodxAHjN67OZuyi3UDRkoUCAFgh8WbZXv6cW2yD9+BEEQUgDCDZV7W26b5v4S+H3T0Eq7FXexHcnh10BjYPwtHFGDe207coR3bZEW4qjfL1LNGFeJu4hFGCeOxa4FxDFrxQEMtDYOIS+KNFDxt0rcTt+hN1eJDRqziPCHxwypWTDeaQQYevMxVTfHVi1u6jv0APsjwPm0rg3EcbGSUnRK97QotpGUGk1du9DTxtfiXvAzrlhLmjMOvduRJsId0LXz5PjvWkoh3RSnCFs3Bl+L2+HxgkAd47NIfW0eDF3+pDhEQuQmOYUvDHeIAr8J7lxnB4W1SXDoyGGS7RSuXRLdt+QO7NjoTkBEFCcpGQFIhi5ySqKz786dGf2ucOqKkhA3FouUXKf4Ewk5eyvcPNqFXL8UvhwUMc+o75QYdEWnbIIbx6WTQ/rik2az8743TfAp7uMd4NsP0y0ADv9eAXAE+Pkq3PyK1t7+aGt1p7Hf1XLsXtwA83PA0JsxIX3r8D/fZxD0inUy+ncSpeL/fIpD+y3HKdQ052yRO2UxAdhWo3rV2TYvT3g5uNuM+kHk4KEtqR1AlBpoa1IuzDnYtsCd8WAUAJ4MXg7z/QLxIqck6v+X3M7BQKdtaBLcQIpDeLTGnJIJX5Pb6ociPMSdom1XkQOGtlGus6WJa/oZ8LW4Abxqyef2qyivHAw2OjSbZue+cdsf3Y5vz+bvx3sCKmv7oxlD40nX1+c2qCr59duwKfK1uBGnt5t00Grc1CfljaVTFp5PcbDzyYAkvg5tmp09sW0j6Lfn2SEAxsH+wqS0CtwiA+fmnx8ejX7Oq1v9cBjdrZu6fUI2JC0/z7LrXtxOqvD16OJpJdcnzkR5+eTn1wJnA3gHEIflB0+Bfk1up7LRzpxUfS0/2oG8wJ/yamysqDf0Jr10rdEZpv+iNLv5CfN8Ssrdqp21ufmXrpXT0grcrlFePVyjA140ChXJNfoLeytxO5og7KgV9Y2RlaGtbsqbtWv0K3HfRL8adEVt0q/ZsvQ/AULNuNvtaaCpAAAAAElFTkSuQmCC';
 const gateLoads = {};
 const gateReady = (async () => {
@@ -2041,7 +2041,7 @@ const isPmd = sp => typeof SPRITES[sp] === 'object';
 // 그리고 진화 전 모습은 진화 후 모습보다 커지지 않게 (진화 후의 92%까지)
 // 2026-10-14 경완 요청: 3D 본가(소드실드·아르세우스·스칼렛바이올렛)처럼 실제 키에 더 가깝게 → 키 비중을 올리고(h^0.75), 화면 크기는 e^0.6 으로 넓게 벌림.
 // 너무 작거나 크지 않게 아래는 30px, 위는 80px 부터 부드럽게 눌러 최대 약 130px (폰 화면에서 고래왕이 너무 커서)
-const SIZE_ADJ = { 150: .85, 199: .8, 878: 1.3, 144: 1.35, 145: 1.35, 146: 1.35, 641: 1.4, 642: 1.4, 645: 1.4, 905: 1.4 };   // v3.08 경완: 뮤츠·야도킹 너무 크다, 끼리동 너무 작다. v3.12: 파이어 너무 작다(날개 큰 전설 새 셋), v3.13: 로스 시리즈 작다(토네로스·볼트로스·랜드로스·러브로스)
+const SIZE_ADJ = { 150: .85, 199: .8, 878: 1.3, 144: 1.35, 145: 1.35, 146: 1.35, 641: 1.4, 642: 1.4, 645: 1.4, 905: 1.4, 870: .6 };   // v3.14 대여르 너무 크다(3m 는 대열 길이)   // v3.08 경완: 뮤츠·야도킹 너무 크다, 끼리동 너무 작다. v3.12: 파이어 너무 작다(날개 큰 전설 새 셋), v3.13: 로스 시리즈 작다(토네로스·볼트로스·랜드로스·러브로스)
 const sizeRaw = sp => { const d = SPECIES[sp]; if (!d) return 1; const h = Math.max(.1, (d.h ?? 7) / 10), w = Math.max(.1, (d.w ?? 100) / 10); return (SIZE_ADJ[sp] || 1) * Math.pow(h, .25) * Math.pow(.45 * Math.cbrt(w), .75); };   // v3.05: 덩치는 몸무게(부피)가 거의 정한다 — 키 2m 야도킹(80kg)이 코리갑(1.1m·120kg)보다 커 보이던 것 (보이는 크기 vh 도 칠해진 넓이 기준이라 맞음)
 let SIZE_KIDS = null; const sizeMemo = {};
 function sizeEff(sp) {
@@ -4477,7 +4477,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.13';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.14';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5745,6 +5745,7 @@ function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); (S.dexNew |
 function dexImgFit(im, H = 56) { const h = Math.min(H, Math.round(im.naturalHeight * 2)); im.style.height = h + 'px'; im.style.marginTop = (H - h) + 'px'; }
 $('#dpImg').addEventListener('load', e => { const im = e.target, h = Math.min(108, Math.round(im.naturalHeight * 3)); im.style.height = h + 'px'; });   // 도감 카드: 작은 포켓몬은 3배까지만 (v3.10)
 $('#slots').addEventListener('load', e => { const im = e.target; if (im.tagName === 'IMG' && im.closest('.ph')) im.style.maxHeight = Math.round(im.naturalHeight * 2) + 'px'; }, true);   // 필드 슬롯도 2배까지만 (v3.11)
+document.addEventListener('load', e => { const im = e.target; if (im.tagName !== 'IMG' || !im.closest('.bd-pic') || !im.naturalWidth) return; const k = Math.min(3, 84 / im.naturalWidth, 84 / im.naturalHeight); im.style.width = Math.round(im.naturalWidth * k) + 'px'; im.style.height = Math.round(im.naturalHeight * k) + 'px'; }, true);   // 짝꿍 카드 사진도 3배까지만 (v3.14)
 $('#boxGrid').addEventListener('load', e => { if (e.target.tagName === 'IMG' && e.target.closest('.pk')) dexImgFit(e.target, 52); }, true);   // 포켓몬 상자 리스트도 같은 규칙 (v3.10)
 function dexCellReady(sp) { const b = dexBtns[sp]; if (!b) return; io.unobserve(b); const put = () => { const im = b.querySelector('img'); if (thumbOf(sp) && im.src !== thumbOf(sp)) im.src = thumbOf(sp); if (im.complete && im.naturalHeight) dexImgFit(im); im.decode?.().catch(() => {}); };
   thumbOf(sp) ? put() : ensureSprite(sp).then(put).catch(() => {}); if (sheet.hidden) filterDex(); }
