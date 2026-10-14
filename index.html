@@ -50,21 +50,21 @@
 .legdark{position:absolute;inset:0;z-index:1040;pointer-events:none;opacity:0;transition:opacity .5s;background:radial-gradient(circle at var(--lx) var(--ly),color-mix(in srgb,var(--lc) 30%,transparent) 0,rgba(6,4,18,.55) 120px,rgba(6,4,18,.82) 320px)}.legdark.on{opacity:1}
 .legflash{position:absolute;inset:0;z-index:1090;pointer-events:none;mix-blend-mode:screen}
 #boxSort{flex:1 1 100%;min-width:0}#boxSort button{flex:1 1 0;min-width:0;padding-left:0;padding-right:0;text-align:center}
-.bd-card.ready{border-color:#e8a020;animation:bdGlow 1.4s ease-in-out infinite}
-@keyframes bdGlow{0%,100%{box-shadow:3px 3px 0 rgba(0,0,0,.2),0 0 0 2px #ffd75e,0 0 8px 2px rgba(255,200,60,.55)}50%{box-shadow:3px 3px 0 rgba(0,0,0,.2),0 0 0 3px #ffe9a0,0 0 18px 6px rgba(255,200,60,.85)}}
+.bd-card.ready{border-color:#e8a020;animation:bdGlow 4s ease-in-out infinite}
+@keyframes bdGlow{0%,100%{box-shadow:3px 3px 0 rgba(0,0,0,.2),0 0 0 2px #ffd75e,0 0 4px 0 rgba(255,200,60,.3)}50%{box-shadow:3px 3px 0 rgba(0,0,0,.2),0 0 0 2px #ffe4a0,0 0 12px 3px rgba(255,200,60,.5)}}
 .bd-evo .row>span:last-child{white-space:nowrap}
 .bd-evobtn{font:inherit;font-size:12px;line-height:1;padding:4px 10px;background:#e8a020;color:#fff;border:3px solid #9a6410;box-shadow:0 3px 0 #9a6410;cursor:pointer}
 .bd-evobtn:active{transform:translateY(3px);box-shadow:none}
 .bd-evobtn:disabled{background:#e4e4ec;color:#a0a0b4;border-color:#c8c8d8;box-shadow:none;cursor:default}
-.bd-evobtn:not(:disabled){border-color:#ffd75e;animation:btnGlow 3.2s ease-in-out infinite}
+.bd-evobtn:not(:disabled){border-color:#ffd75e;animation:btnGlow 4s ease-in-out infinite}
 @keyframes btnGlow{0%,100%{box-shadow:0 3px 0 #9a6410,0 0 3px 0 rgba(255,200,60,.3)}50%{box-shadow:0 3px 0 #9a6410,0 0 10px 2px rgba(255,210,80,.55)}}
 @keyframes softGlow{0%,100%{box-shadow:0 0 3px 0 rgba(255,200,60,.3)}50%{box-shadow:0 0 12px 3px rgba(255,210,80,.55)}}
-.bd-card.ready .prog.evo{border-color:#e8a020;animation:barGlow 3.2s ease-in-out infinite}.bd-card.ready .prog.evo i{background:#ffc840}
+.bd-card.ready .prog.evo{border-color:#e8a020;animation:barGlow 4s ease-in-out infinite}.bd-card.ready .prog.evo i{background:#ffc840}
 @keyframes barGlow{0%,100%{box-shadow:0 0 0 1px #ffd75e,0 0 3px 0 rgba(255,200,60,.3)}50%{box-shadow:0 0 0 1px #ffe9a0,0 0 10px 2px rgba(255,200,60,.55)}}
 .pp-evo{display:flex;align-items:center;gap:8px;margin:0 0 8px}.pp-evo[hidden]{display:none}.pp-evo .pp-run{flex:1;min-width:0;white-space:nowrap;font-size:12px;color:var(--dim)}.pp-evo .pp-run b{color:var(--win-ink)}
 .pp-evo .pp-run{white-space:normal!important;line-height:1.5}.pp-evo .pp-sub{font-size:11px}.pp-evo .pp-sub .bd-tag{font-size:11px;padding:1px 6px}.pp-evo .pp-sub b{color:var(--win-ink)}#pokePop #ppEvoBtn[hidden]{display:none}
 #pokePop #ppEvoBtn:disabled{background:#e4e4ec;color:#a0a0b4;border-color:#c8c8d8;box-shadow:none;animation:none;cursor:default}
-#pokePop #ppEvoBtn{flex:0 0 auto;width:auto;min-width:0;margin:0;padding:0 18px;height:40px;background:#e8a020;border-color:#9a6410;color:#fff;animation:softGlow 3.2s ease-in-out infinite}
+#pokePop #ppEvoBtn{flex:0 0 auto;width:auto;min-width:0;margin:0;padding:0 18px;height:40px;background:#e8a020;border-color:#9a6410;color:#fff;animation:softGlow 4s ease-in-out infinite}
 @media (prefers-reduced-motion: reduce){.bd-card.ready,#ppEvoBtn,.bd-evobtn,.bd-card.ready .prog.evo{animation:none}}
 #boxGrid>.pk{content-visibility:auto;contain-intrinsic-size:auto 118px}
 .frpop{position:absolute;transform:translate(-50%,-100%);white-space:nowrap;font:12px/1 var(--px);color:#fff;background:#e04870;border:2px solid #8a1f40;padding:3px 6px;z-index:2000;pointer-events:none;animation:frpop 1.6s steps(12) forwards}
