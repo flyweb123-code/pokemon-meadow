@@ -89,7 +89,7 @@
 #evoFull.go:not(.done)[style*="--p: 0.9"] .ef-stage,#evoFull.go:not(.done)[style*="--p: 1"] .ef-stage{animation-play-state:running}
 @keyframes efshake{50%{transform:translate(calc(-50% + 2px),calc(-50% - 2px))}}
 #evoFull .ef-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;transition:opacity .5s}
-#evoFull .ef-wh{position:absolute;left:-20%;top:-20%;width:140%;height:140%;object-fit:contain;opacity:0;transition:opacity .5s;pointer-events:none}
+#evoFull .ef-wh{position:absolute;left:-20%;top:-20%;width:140%;height:140%;max-width:none;max-height:none;object-fit:contain;opacity:0;transition:opacity .5s;pointer-events:none}
 #evoFull.sil .ef-img{opacity:0}#evoFull.sil .ef-wh{opacity:1}
 #evoFull .ef-img.beat,#evoFull .ef-wh.beat{animation:efbeat .18s ease-out}
 @keyframes efbeat{0%{transform:scale(1.08)}100%{transform:scale(1)}}
@@ -5719,6 +5719,7 @@ function evolvePoke(P) {
 // ---------- 진화: 전체 화면 연출 (금·은 진화 음악 박자에 맞춘다) ----------
 // 음악(39. Evolution): 0.81초에 본곡 시작, 한 박 0.4146초, 8박 한 마디. 첫 마디는 2박마다, 둘째 마디는 1박마다,
 // 셋째 마디는 반 박 → 1/4 박 → 1/8 박으로 모습이 바뀌다가 넷째 마디 첫 박(10.76초)에 진화한다. 곡이 없으면 같은 박자로 효과음만.
+const EVO_FR = 51;   // 진화했을 때 오르는 친밀도
 const EVO_B = .4146, EVO_T0 = .81, EVO_BAR = EVO_B * 8, EVO_END = EVO_T0 + EVO_BAR * 3;
 const EVO_SWAPS = (() => { const t = [], add = (a, b, st) => { for (let x = a; x < b - 1e-6; x += st) t.push(x); };
   const s2 = EVO_T0 + EVO_BAR, s3 = s2 + EVO_BAR;
@@ -5802,11 +5803,12 @@ async function evolveWin(P, card) {
   evoMusicFade(1.2);
   const newTo = !S.unlocked.has(to); if (newTo) addGold(NEW_G);
   P.sp = to; P.km = 0; if (b) { b.sp = to; b.km = 0; } unlock(to);
+  const fr0 = P.fr || 0; P.fr = Math.min(FR_MAX, fr0 + EVO_FR);   // 진화하면 친밀도가 크게 오른다 (하트 한 칸)
   { const m = S.mons.find(x => x.pid === P.id); if (m) { m.sp = to; setForm(m, to); m.el.classList.remove('ditto'); if (m.name === fromN || m.name.startsWith(fromN + ' ')) { m.name = m.name.replace(fromN, toN); m.tag.textContent = m.name; } } }   // 필드에 있던 포켓몬도 새 모습으로
   await wait(700);
   sfx('evolve'); playCry(to, .9);
   let shut = false; setTimeout(() => { if (!shut && evoMus.have) evoMusicStart(2.5, evoMus.pos || 0).then(t => { if (shut && t != null) evoMusicFade(.3); }); }, 1800);   // 울음소리가 끝나면 진화 곡이 다시 흐른다
-  msg.innerHTML = `축하해! ${J({ name: nm }, '은/는')} ${J({ name: toN }, '으로/로')} 진화했다!${newTo ? `<br><span class="small">새로 만난 포켓몬이라 <b>${NEW_G}G</b>를 받았다</span>` : ''}`;
+  msg.innerHTML = `축하해! ${J({ name: nm }, '은/는')} ${J({ name: toN }, '으로/로')} 진화했다!<br><span class="small"><span style="color:#e04870">♥</span> 친밀도가 크게 올랐다!${P.fr > fr0 ? '' : ' (이미 최고)'}${newTo ? ` · 새로 만난 포켓몬이라 <b>${NEW_G}G</b>를 받았다` : ''}</span>`;
   log(`축하해! ${b ? '짝꿍 ' : ''}${J({ name: nm },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`, [], true);
   cardEl.innerHTML = dexInfoHtml(to); cardEl.hidden = false; ok.hidden = false; ok.focus();
   { const bt = el.querySelector('.ef-bottom').getBoundingClientRect().top; el.style.setProperty('--sy', bt / 2 + 'px'); el.style.setProperty('--ss', Math.max(90, Math.min(220, bt - 50)) + 'px'); el.classList.add('fin'); }   // 새 모습은 아래 글 상자 위 빈 곳 가운데로
