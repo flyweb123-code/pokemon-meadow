@@ -56,9 +56,13 @@
 .bd-evobtn{font:inherit;font-size:12px;line-height:1;padding:4px 10px;background:#e8a020;color:#fff;border:3px solid #9a6410;box-shadow:0 3px 0 #9a6410;cursor:pointer}
 .bd-evobtn:active{transform:translateY(3px);box-shadow:none}
 .bd-evobtn:disabled{background:#e4e4ec;color:#a0a0b4;border-color:#c8c8d8;box-shadow:none;cursor:default}
+.bd-evobtn:not(:disabled){border-color:#ffd75e;animation:btnGlow 1.4s ease-in-out infinite}
+@keyframes btnGlow{0%,100%{box-shadow:0 3px 0 #9a6410,0 0 6px 1px rgba(255,200,60,.6)}50%{box-shadow:0 3px 0 #9a6410,0 0 14px 4px rgba(255,210,80,.95)}}
+.bd-card.ready .prog.evo{border-color:#e8a020;animation:barGlow 1.4s ease-in-out infinite}.bd-card.ready .prog.evo i{background:#ffc840}
+@keyframes barGlow{0%,100%{box-shadow:0 0 0 1px #ffd75e,0 0 6px 1px rgba(255,200,60,.55)}50%{box-shadow:0 0 0 2px #ffe9a0,0 0 14px 4px rgba(255,200,60,.9)}}
 .pp-evo{display:flex;align-items:center;gap:8px;margin:0 0 8px}.pp-evo[hidden]{display:none}.pp-evo .pp-run{flex:1;min-width:0;white-space:nowrap;font-size:12px;color:var(--dim)}.pp-evo .pp-run b{color:var(--win-ink)}
 #pokePop #ppEvoBtn{flex:0 0 auto;width:auto;min-width:0;margin:0;padding:0 18px;height:40px;background:#e8a020;border-color:#9a6410;color:#fff;animation:bdGlow 1.4s ease-in-out infinite}
-@media (prefers-reduced-motion: reduce){.bd-card.ready,#ppEvoBtn{animation:none}}
+@media (prefers-reduced-motion: reduce){.bd-card.ready,#ppEvoBtn,.bd-evobtn,.bd-card.ready .prog.evo{animation:none}}
 #boxGrid>.pk{content-visibility:auto;contain-intrinsic-size:auto 118px}
 .frpop{position:absolute;transform:translate(-50%,-100%);white-space:nowrap;font:12px/1 var(--px);color:#fff;background:#e04870;border:2px solid #8a1f40;padding:3px 6px;z-index:2000;pointer-events:none;animation:frpop 1.6s steps(12) forwards}
 .frpop b{margin-right:3px;color:#ffd0dc}
