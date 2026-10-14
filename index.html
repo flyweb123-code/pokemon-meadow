@@ -585,7 +585,7 @@ ol.log li.big .txt{color:#c03838}
 .pf .pf-rk{position:absolute;left:2px;top:2px;z-index:3;line-height:1}.pf .pf-rk .rk{font-size:10px;min-width:12px;padding:0 3px;line-height:13px;border-width:1px}
 body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch-action:none!important}
 .petbar{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,calc(100% - 24px));z-index:40;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;box-sizing:border-box;background:rgba(30,26,52,.9);color:#fff;border:3px solid #fff;box-shadow:0 0 0 3px #2a2440,5px 5px 0 3px rgba(0,0,0,.28);font-size:15px}.petbar[hidden]{display:none!important}
-[data-rk]{--rkc:#6a6a70}[data-rk="E"]{--rkc:#909098}[data-rk="D"]{--rkc:#40a060}[data-rk="C"]{--rkc:#3a80d0}[data-rk="B"]{--rkc:#8a5ad0}[data-rk="A"]{--rkc:#e04848}[data-rk="S"]{--rkc:#e8a020}
+[data-rk]{--rkc:#6a6a70}[data-rk="E"]{--rkc:#909098}[data-rk="D"]{--rkc:#5f8f6e}[data-rk="C"]{--rkc:#4e7fc0}[data-rk="B"]{--rkc:#8e48e8}[data-rk="A"]{--rkc:#e04848}[data-rk="S"]{--rkc:#e8a020}
 .dp-pic[data-rk]:not([data-rk=""]),#info #pPf[data-rk]:not([data-rk=""]){border-color:var(--rkc)!important}
 .dp-pic[data-rk="A"],#info #pPf[data-rk="A"]{box-shadow:0 0 7px rgba(240,80,80,.7)!important}.dp-pic[data-rk="A"]::after,#info #pPf[data-rk="A"]::after,.dp-pic[data-rk="S"]::after,#info #pPf[data-rk="S"]::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:4;--gc:rgba(255,80,80,.75);box-shadow:inset 0 0 5px var(--gc);animation:rkIn 2.2s ease-in-out infinite}.dp-pic[data-rk="S"]::after,#info #pPf[data-rk="S"]::after{--gc:rgba(255,205,60,.85)}@keyframes rkIn{50%{box-shadow:inset 0 0 11px var(--gc)}}
 .dp-pic[data-rk="S"],#info #pPf[data-rk="S"]{box-shadow:0 0 8px rgba(255,200,40,.75)!important}
@@ -657,7 +657,7 @@ body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch
 .pk .nm{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pk .hearts{font-size:9px;letter-spacing:-1px;color:#e04870}
 .rk{display:inline-block;box-sizing:border-box;width:20px;padding:0!important;text-align:center;font-size:11px;font-weight:700;color:#fff;padding:0 4px;border:2px solid rgba(0,0,0,.25)}
-.rk.S{background:#e8a020}.rk.A{background:#e04848}.rk.B{background:#8a5ad0}.rk.C{background:#3a80d0}.rk.D{background:#40a060}.rk.E{background:#909098}.rk.F{background:#6a6a70}
+.rk.S{background:#e8a020}.rk.A{background:#e04848}.rk.B{background:#8e48e8}.rk.C{background:#4e7fc0}.rk.D{background:#5f8f6e}.rk.E{background:#909098}.rk.F{background:#6a6a70}
 .pk .rk{position:absolute;left:3px;top:3px}
 #dexGrid .newtag{left:auto;right:3px;top:3px;transform:none;animation:nbob 1.2s steps(2,end) infinite}@keyframes nbob{50%{transform:translateY(-3px)}}
 .pk .pk-new{position:absolute;right:4px;top:4px;width:7px;height:7px;background:#e04838}.pk .pk-new~.tg{right:15px}.pk .tg{position:absolute;right:3px;top:3px;font-size:9px;background:var(--frame);color:var(--win);padding:1px 3px}
@@ -4343,7 +4343,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.39';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.40';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
