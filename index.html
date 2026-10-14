@@ -83,8 +83,8 @@
   .dlg.open .journal{bottom:100%;box-shadow:inset 3px 0 0 var(--win),inset -3px 0 0 var(--win),inset 0 3px 0 var(--win),inset 6px 0 0 var(--dlg-in),inset -6px 0 0 var(--dlg-in),inset 0 6px 0 var(--dlg-in)}
   .app .win.dlg.open{box-shadow:inset 3px 0 0 var(--win),inset -3px 0 0 var(--win),inset 0 -3px 0 var(--win),inset 6px 0 0 var(--dlg-in),inset -6px 0 0 var(--dlg-in),inset 0 -6px 0 var(--dlg-in)}
 }
-.frpop{position:absolute;transform:translate(-50%,-100%);white-space:nowrap;font:12px/1 var(--px);color:#fff;background:#e04870;border:2px solid #8a1f40;padding:3px 6px;z-index:2000;pointer-events:none;animation:frpop 1.6s steps(12) forwards}
-.frpop b{margin-right:3px;color:#ffd0dc}
+.frpop{position:absolute;transform:translate(-50%,-100%);white-space:nowrap;font:15px/1 var(--px);font-weight:bold;color:#e04870;text-shadow:2px 0 #fff,-2px 0 #fff,0 2px #fff,0 -2px #fff,2px 2px #fff,-2px -2px #fff,2px -2px #fff,-2px 2px #fff;z-index:2000;pointer-events:none;animation:frpop 1.6s steps(12) forwards}
+.frpop b{margin-right:2px;color:#ff5d8f}
 @keyframes frpop{0%{opacity:0;transform:translate(-50%,-80%)}15%{opacity:1;transform:translate(-50%,-100%)}75%{opacity:1;transform:translate(-50%,-150%)}100%{opacity:0;transform:translate(-50%,-170%)}}
 .boxq{margin:0 0 8px}.boxq input{flex:1 1 100%}
 #boxGrid>.pk[hidden]{display:none}
@@ -2117,7 +2117,7 @@ function burst(m, cls, text, n = 3) {
 }
 function ring(x, y, cls = '') { const d = document.createElement('div'); d.className = 'ring ' + cls; d.style.left = x + 'px'; d.style.top = y + 'px'; d.addEventListener('animationend', () => d.remove()); fxEl.append(d); }
 // 직접 준 열매를 먹으면 머리 위에 '친밀도 +1' 이 떠올랐다 사라진다
-function frPop(m) { const d = document.createElement('div'); d.className = 'frpop'; d.innerHTML = '<b>♥</b>친밀도 +1'; d.style.left = m.x + 'px'; d.style.top = (m.y - m.h - m.lift - 6) + 'px'; d.addEventListener('animationend', () => d.remove()); fxEl.append(d); }
+function frPop(m) { const d = document.createElement('div'); d.className = 'frpop'; d.innerHTML = '<b>♥</b>+1'; d.style.left = m.x + 'px'; d.style.top = (m.y - m.h - m.lift - 6) + 'px'; d.addEventListener('animationend', () => d.remove()); fxEl.append(d); }
 function emote(m, text, cls = '', dur = 2.2) {
   m.bub.className = 'bubble ' + cls; m.bub.textContent = text; m.bub.hidden = false; m.bubT = dur;
   m.bub.style.animation = 'none'; void m.bub.offsetWidth; m.bub.style.animation = '';
@@ -3791,6 +3791,7 @@ function relsHtml(m, nGood, nBad) {
 }
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const infoEl = $('#info');
+infoEl.addEventListener('click', e => { if (e.target.closest('#infoX')) { e.stopPropagation(); sfx('tap'); select(null); } });   // 필드 정보창 ✕ 로 닫기
 function renderInfo() {
   const box = infoEl, m = S.sel;
   if (!m) { box.hidden = true; box.dataset.uid = ''; return; }
@@ -3799,7 +3800,7 @@ function renderInfo() {
   if (box.dataset.uid !== String(m.uid)) {
     box.dataset.uid = m.uid;
     // 다른 포켓몬 정보창과 같은 차림: 랭크(좌상단) · 이름/분류/만난 곳 · 기력~친밀도 · 친구/상태/생각
-    box.innerHTML = `<div class="dp-head m-head"><span class="hd-rk">${rkBadge(P)}</span></div>
+    box.innerHTML = `<div class="dp-head m-head"><span class="hd-rk">${rkBadge(P)}</span><button class="pp-x" id="infoX" aria-label="닫기">✕</button></div>
       <div class="ihead"><div class="ih-top"><span class="nm-plain" id="pname">${esc(m.name)}</span>${sexHtml(sexOf(m))}${P?.shiny ? '<b class="sh" data-tip="이로치">✦</b>' : ''}<span class="ih-r">${tyIcons(m.sp)}${esc(d.g || '')}</span></div></div>
       <div class="pbody"><div class="pf" id="pPf"><div class="pf-in"></div><div class="pf-in"></div><span class="pf-z"></span></div><div class="bars" id="pbars"></div></div>
       <div class="memo" id="pMemo"></div>
@@ -4534,7 +4535,7 @@ function openPoke(id, dir = 0, quiet = false) {
 function setEvoBtn(btn, P) {
   const kids = CHILDREN[P.sp]; let cls = '', html = '진화하기', tip = '';
   if (!kids) { cls = 'fin'; html = `<span>같이 달린 거리</span><b>${fmtKm(P.runKm || 0)}</b><small>km</small>`; }
-  else if (!pokeReady(P)) { const ok = evoKids(P.sp, P), need = evoNeed(P), km = P.km || 0; cls = 'dis'; tip = !ok.length ? evoWhy(kids[0]) : km < need ? `진화까지 ${fmtKm(km)} / ${need}km` : evoWhy(ok[0]); }
+  else if (!pokeReady(P)) { const ok = evoKids(P.sp, P), need = evoNeed(P), km = P.km || 0; cls = 'dis'; tip = !ok.length ? evoWhy(kids[0]) : km < need ? `진화까지 ${(Math.floor(km * 10) / 10).toFixed(1)} / ${need}km` : evoWhy(ok[0]); }
   btn.classList.remove('fin', 'dis'); if (cls) btn.classList.add(cls); if (btn.innerHTML !== html) btn.innerHTML = html;
   if (tip) { btn.dataset.tip = tip; btn.dataset.tipc = ''; } else { delete btn.dataset.tip; delete btn.dataset.tipc; }
 }
@@ -6030,7 +6031,7 @@ function renderBuddy() {
     if (!m) return `<button class="bd-empty" data-act="pick" data-i="${i}" aria-label="짝꿍 추가">+</button>`;
     const P = boxOf(m.pid);
     return `<div class="bd-card${budReady(m) ? ' ready' : ''}" data-i="${i}"><button class="bd-x" data-act="stop" aria-label="짝꿍에서 빼기">✕</button><div class="bd-row"><div class="bd-pic${pkCls(P)}${P?.shiny ? ' shiny' : ''}" style="--shue:${shinyHue(m.sp)}deg"><img alt="" src="${(P ? thumbP(P) : thumbOf(m.sp)) || ''}"></div><div class="bd-main"><div class="bd-name"><b>${esc(P ? nameOf(P) : SPECIES[m.sp].n)}</b>${sexHtml(P?.sex)}</div><div class="bd-ind">${indivHtml(m)}</div>`
-      + (!evoKids(m.sp, P).length && CHILDREN[m.sp] ? `<div><span class="bd-tag">특별한 진화</span> <span class="bd-why">${esc(evoWhy(CHILDREN[m.sp][0]).replace(' 진화해요', ''))}</span></div><div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>` : CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) || m.km < evoNeed(m) ? `<button class="bd-evobtn" data-act="evo"${budReady(m) ? '' : ' disabled'}>진화하기</button>` : `<span class="bd-why">${esc(evoWhy(evoKids(m.sp, P)[0]))}</span>`}</span><span><b>${fmtKm(m.km)}</b> / ${evoNeed(m)}km</span></div></div>` : `<div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>`)
+      + (!evoKids(m.sp, P).length && CHILDREN[m.sp] ? `<div><span class="bd-tag">특별한 진화</span> <span class="bd-why">${esc(evoWhy(CHILDREN[m.sp][0]).replace(' 진화해요', ''))}</span></div><div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>` : CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) || m.km < evoNeed(m) ? `<button class="bd-evobtn" data-act="evo"${budReady(m) ? '' : ' disabled'}>진화하기</button>` : `<span class="bd-why">${esc(evoWhy(evoKids(m.sp, P)[0]))}</span>`}</span><span><b>${(Math.floor(m.km * 10) / 10).toFixed(1)}</b> / ${evoNeed(m)}km</span></div></div>` : `<div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>`)
       + `</div></div></div>`;
   }).join('');
 }
