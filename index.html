@@ -52,6 +52,7 @@
 #boxSort{flex:1 1 100%;min-width:0}#boxSort button{flex:1 1 0;min-width:0;padding-left:0;padding-right:0;text-align:center}
 .bd-card.ready{border-color:#e8a020;animation:bdGlow 1.4s ease-in-out infinite}
 @keyframes bdGlow{0%,100%{box-shadow:3px 3px 0 rgba(0,0,0,.2),0 0 0 2px #ffd75e,0 0 8px 2px rgba(255,200,60,.55)}50%{box-shadow:3px 3px 0 rgba(0,0,0,.2),0 0 0 3px #ffe9a0,0 0 18px 6px rgba(255,200,60,.85)}}
+.bd-evo .row>span:last-child{white-space:nowrap}
 .bd-evobtn{font:inherit;font-size:12px;line-height:1;padding:4px 10px;background:#e8a020;color:#fff;border:3px solid #9a6410;box-shadow:0 3px 0 #9a6410;cursor:pointer}
 .bd-evobtn:active{transform:translateY(3px);box-shadow:none}
 .bd-evobtn:disabled{background:#e4e4ec;color:#a0a0b4;border-color:#c8c8d8;box-shadow:none;cursor:default}
@@ -1092,7 +1093,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
       </div>
     </div>
     <div class="mtab budtab" data-t="buddy" hidden>
-      <div class="mgr-tools"><span class="tcount" id="budCount"></span></div>
+      <div class="mgr-tools"><button id="budFill" class="test-btn">진화 거리 채우기</button><span class="tcount" id="budCount"></span></div>
       <div id="buddy"></div>
     </div>
     <div class="mtab boxtab" data-t="box" hidden>
@@ -5580,6 +5581,9 @@ frTestSync();
     for (const k of Object.keys(SPECIES)) { const sp = +k; const P = newPoke(sp); P.fr = Math.floor(Math.random() * 256); P.t = now - Math.floor(Math.random() * 30 * 864e5); if (places.length) P.place = places[Math.floor(Math.random() * places.length)]; unlock(sp); }
     log(`포켓몬 ${Object.keys(SPECIES).length}종을 한 마리씩 만들었다. (테스트)`, [], true); sfx('open'); save(); renderBox(); };
 }
+// 테스트: 짝꿍들의 진화 거리를 다 채운다 (진화하기 버튼 확인용)
+$('#budFill').onclick = () => { let n = 0; for (const b of S.buds) { const P = boxOf(b.pid); if (!CHILDREN[b.sp]) continue; const need = evoNeed(b); if (b.km < need) { b.km = need; n++; } if (P) P.km = Math.max(P.km || 0, b.km); }
+  log(n ? `짝꿍 ${n}마리의 진화 거리를 채웠다. (테스트)` : '채울 짝꿍이 없다. (테스트)', [], true); sfx('tap'); save(); renderBuddy(); };
 $('#bagTest').onclick = () => { $('#bagTestG').hidden = !$('#bagTestG').hidden; };
 $('#bagTestG').onclick = ev => { const b = ev.target.closest('[data-g]'); if (!b) return;
   S.bag.push({ id: S.eid++, g: +b.dataset.g, t: Date.now(), isNew: true, nt: true, km: 0, place: pick(TEST_PLACES) }); save(); renderBag.sig = ''; renderRun(); sfx('pickup'); };
