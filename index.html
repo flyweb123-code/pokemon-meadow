@@ -124,7 +124,9 @@
 #evoFull .ef-msg .small{font-size:13px;color:var(--dim)}
 #evoFull .ef-card{color:var(--win-ink)}
 #evoFull .ef-ok{width:100%;display:block;font:inherit;font-size:16px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:11px 16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35),0 0 0 2px var(--inner);cursor:pointer}#evoFull .ef-ok[hidden]{display:none}
-.pf-diag{margin:8px 0 0;font-size:11px;line-height:1.4;color:#c03838;border:2px dashed #c03838;padding:3px 6px}.pf-diag:empty{display:none}
+.pf-runs .runs{max-height:none}.pf-runs .runs-h{display:flex;align-items:baseline;justify-content:space-between}.pf-runs .runs-h h4{margin:0}
+.pf-runs .runs>:first-child{margin-top:0}
+.pf-diag{margin:14px 0 0;font-size:11px;line-height:1.4;color:#c03838;border:2px dashed #c03838;padding:3px 6px}.pf-diag:empty{display:none}
 .test-btn{font:inherit;font-size:11px;background:none;border:2px dashed #c03838;color:#c03838;padding:3px 6px;cursor:pointer}
 .run-eggs{padding:2px 0 6px 6px;border-bottom:2px dotted var(--inner)}.run-eggs .re-row{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);margin-top:3px}.re-eggs{display:flex;gap:1px;flex:none}.re-eggs .egg{width:12px;height:15px}.re-eggs .egg svg{width:100%;height:100%}.re-pl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .run-row:has(+.run-eggs){border-bottom:0}
@@ -557,7 +559,7 @@ ol.log li.big .txt{color:#c03838}
 .pf-box span{font-size:12px;color:var(--dim)}.pf-box b{font-size:24px;line-height:1.1;color:var(--win-ink)}.pf-box i{font-style:normal;font-size:12px;color:var(--dim)}
 .pf-box b{transition:color .3s}
 .pf-box.walking{border-color:#2a8a4a;animation:pfWalk 2.4s ease-in-out infinite}.pf-box.walking b{color:#2a8a4a}
-.pf-box.walking span::before{content:'';display:inline-block;width:6px;height:6px;margin:0 5px 1px 0;background:#3cb05a;vertical-align:middle;animation:pfDot 1.2s steps(2) infinite}
+.pf-box{position:relative}.pf-box.walking::before{content:'';position:absolute;left:7px;top:7px;width:8px;height:8px;background:#3cb05a;animation:pfDot 1.2s steps(2) infinite}
 @keyframes pfWalk{0%,100%{box-shadow:0 0 0 0 rgba(60,176,90,0)}50%{box-shadow:0 0 0 3px rgba(60,176,90,.25)}}@keyframes pfDot{50%{opacity:.2}}
 .pf-note{margin:8px 0 0;font-size:12px;color:var(--dim)}
 .set-sec p{margin:0 0 12px;line-height:1.55;color:var(--dim);font-size:13px}
@@ -689,7 +691,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .runwin{max-width:640px;height:min(90vh,760px);display:flex;flex-direction:column}
 .run-body{flex:1;min-height:0;overflow-y:auto;padding-bottom:14px}
 .run-body .rtab[hidden]{display:none}
-.runtabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:3px solid var(--frame)}
+.runtabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:3px solid var(--frame)}.runtabs.eggtabs{grid-template-columns:repeat(2,minmax(0,1fr))}
 .runtab{padding:10px 4px;font-size:16px;text-align:center;border-left:3px solid var(--frame);background:var(--win)}
 .runtab:first-child{border-left:0}
 .runtab[aria-selected="true"]{background:var(--frame);color:var(--win);font-weight:700}
@@ -1145,14 +1147,18 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
   <div class="win setwin" role="dialog" aria-label="프로필">
     <div class="sheet-head"><button class="opt" id="setBack" hidden aria-label="프로필로">◀</button><h3 id="setTitle">프로필</h3><span class="pf-sp"></span><button class="pf-gear" id="pfGear" type="button" aria-label="설정"><svg viewBox="0 0 10 10" width="30" height="30" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true"><rect x="4" y="0" width="1" height="1"/><rect x="5" y="0" width="1" height="1"/><rect x="2" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="5" y="1" width="1" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="1" y="2" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="3" y="2" width="1" height="1"/><rect x="4" y="2" width="1" height="1"/><rect x="5" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/><rect x="6" y="3" width="1" height="1"/><rect x="7" y="3" width="1" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="1" y="4" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="7" y="4" width="1" height="1"/><rect x="8" y="4" width="1" height="1"/><rect x="9" y="4" width="1" height="1"/><rect x="0" y="5" width="1" height="1"/><rect x="1" y="5" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="7" y="5" width="1" height="1"/><rect x="8" y="5" width="1" height="1"/><rect x="9" y="5" width="1" height="1"/><rect x="2" y="6" width="1" height="1"/><rect x="3" y="6" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/><rect x="7" y="6" width="1" height="1"/><rect x="1" y="7" width="1" height="1"/><rect x="2" y="7" width="1" height="1"/><rect x="3" y="7" width="1" height="1"/><rect x="4" y="7" width="1" height="1"/><rect x="5" y="7" width="1" height="1"/><rect x="6" y="7" width="1" height="1"/><rect x="7" y="7" width="1" height="1"/><rect x="8" y="7" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="4" y="8" width="1" height="1"/><rect x="5" y="8" width="1" height="1"/><rect x="7" y="8" width="1" height="1"/><rect x="4" y="9" width="1" height="1"/><rect x="5" y="9" width="1" height="1"/></svg></button><button class="opt" id="closeSet">닫기</button></div>
     <div class="set-body">
-      <section class="set-sec pf-sec" id="pfPage">
+      <div id="pfPage"><section class="set-sec pf-sec">
         <h4>오늘</h4>
         <div class="pf-grid">
           <div class="pf-box"><span>이동 거리</span><b id="pfWalk">0.00</b><i>km</i></div>
           <div class="pf-box"><span>주운 알</span><b id="pfEggs">0</b><i>개</i></div>
         </div>
-        <p class="pf-diag" id="pfDiag"></p>
       </section>
+      <section class="set-sec pf-sec pf-runs" id="pfRuns">
+        <div class="mgr-tools runs-h"><h4>런닝 기록</h4><span class="tcount" id="runTotal"></span></div>
+        <div class="runs" id="runs"></div>
+      </section>
+      <p class="pf-diag" id="pfDiag"></p></div>
       <div id="setPage" hidden>
       <section class="set-sec">
         <h4>백업</h4>
@@ -1212,13 +1218,9 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
         <div class="bag-tabs" id="bagTabs" role="tablist"></div>
         <div class="bag-grid" id="bagGrid"></div>
       </section>
-      <section class="rtab" data-tab="run">
-        <div class="mgr-tools runs-h"><b class="tlabel">런닝 기록</b><span class="tcount" id="runTotal"></span></div>
-        <div class="runs" id="runs"></div>
-      </section>
     </div>
-    <div class="runtabs" role="tablist">
-      <button class="runtab" role="tab" data-tab="egg">부화기</button><button class="runtab" role="tab" data-tab="bag">가방</button><button class="runtab" role="tab" data-tab="run">달리기</button>
+    <div class="runtabs eggtabs" role="tablist">
+      <button class="runtab" role="tab" data-tab="egg">부화기</button><button class="runtab" role="tab" data-tab="bag">가방</button>
     </div>
   </div>
 </div>
@@ -3976,7 +3978,7 @@ const setEl = $('#set');
 function setPage(on) { $('#setPage').hidden = !on; $('#pfPage').hidden = on; $('#pfGear').hidden = on; $('#setBack').hidden = !on; $('#setTitle').textContent = on ? '설정' : '프로필'; setEl.querySelector('.set-body').scrollTop = 0; }
 $('#pfGear').onclick = () => { sfx('tap'); setPage(true); };
 $('#setBack').onclick = () => { sfx('tap'); setPage(false); };
-$('#openSet').onclick = () => tabTo(setEl, () => { renderProfile(); setPage(false); setEl.hidden = false; });
+$('#openSet').onclick = () => tabTo(setEl, () => { renderProfile(); renderRunLog(); setPage(false); setEl.hidden = false; });
 const shopEl = $('#shop');
 $('#openShop').onclick = () => tabTo(shopEl, () => { shopEl.hidden = false; shopSel = null; $('#shopMsg').textContent = ''; setShopTab('bgm'); renderShop(); });
 shopEl.addEventListener('click', e => { if (e.target === shopEl) shopEl.hidden = true; });
@@ -5154,7 +5156,7 @@ function addRun(km, src, t0, t1, eggs) {
   const r = { t: t1 || Date.now(), km, src }; if (t0) r.t0 = t0; if (eggs?.length) r.eggs = eggs.map(e => ({ id: e.id, g: e.g, place: e.place || '' })); S.runs.unshift(r); S.runs.sort((a, b) => b.t - a.t); if (S.runs.length > 60) S.runs.pop();
   const g = addGold(km * RUN_G);
   log(`${src === 'gps' ? 'GPS로' : src === 'watch' ? '워치로' : src === 'auto' ? '알아서 기록된 런닝으로' : '건강 앱 기록으로'} ${fmtKm(km)}km를 달렸다.${g ? ` ${g}G를 받았다!` : ''}`, [], true);
-  save(); renderRun();
+  save(); renderRun(); if (!setEl.hidden) { renderProfile(); renderRunLog(); }
 }
 // 알을 주운 곳의 특징(테마) → 잘 어울리는 타입·서식지·도감 설명 낱말·특정 종
 // 타입 번호: 1노말 2격투 3비행 4독 5땅 6바위 7벌레 8고스트 9강철 10불꽃 11물 12풀 13전기 14에스퍼 15얼음 16드래곤 17악 18페어리
@@ -5530,7 +5532,7 @@ async function notiDone(got, rdy) {
     a.onfinish = () => { f.remove(); tab.classList.remove('bump'); void tab.offsetWidth; tab.classList.add('bump'); haptic(i % 3 ? 0 : 1); sfx('tick', i); };
   });
   if (fl.length) await wait(fl.length * step + 450);
-  notiOpen = false; renderRun();
+  notiOpen = false; if (fl.length) bagNext = true; renderRun();   // 알이 '알' 메뉴로 날아갔으면 다음에 열 때 가방부터
   // 부화 준비 알림은 주운 게 아니라 날아가는 모션 없이 부화기 창만 연다
   if (rdy.length && !hatching && !evolving) { closeToggles(); hideSheets(); runTab = 'egg'; openRun(); }
 }
@@ -5633,7 +5635,8 @@ const fmtT = t => { const d = new Date(t); return `${d.getFullYear()}-${pad2(d.g
 // running window
 const runEl = $('#run');
 function openRun() { runEl.hidden = false; setRunTab(runTab); renderRun(); }
-$('#openRun').onclick = () => tabTo(runEl, () => { runTab = 'egg'; openRun(); });
+let bagNext = false;
+$('#openRun').onclick = () => tabTo(runEl, () => { runTab = bagNext ? 'bag' : 'egg'; bagNext = false; openRun(); });
 $('#closeRun').onclick = () => { seeBag(); runEl.hidden = true; };
 runEl.addEventListener('click', e => { if (e.target === runEl) runEl.hidden = true; });
 let runTab = 'egg', eggSel = null, bagG = 0, bagSel = null, bagSort = 'new', bagMul = null, delArm = 0;   // bagMul: 여러 개 고르는 중이면 고른 알 id 모음
@@ -5689,6 +5692,7 @@ document.addEventListener('click', ev => {
   if (ev.target.closest('#bagIn') && bagSel) { const e = bagSel; if (incubate(e)) { bagSel = null; eggSel = S.eggs[S.eggs.length - 1]; renderBag.sig = ''; renderRun(); } }
 });
 function setRunTab(t) {
+  if (t !== 'egg' && t !== 'bag') t = 'egg';   // 달리기 탭은 프로필로 옮겼다
   if (runTab === 'bag' && t !== 'bag') seeBag();
   runTab = t; try { localStorage.setItem('pk-run-tab', t); } catch (e) {}
   document.querySelectorAll('.runtab[data-tab]').forEach(b => { b.setAttribute('aria-selected', b.dataset.tab === t); if (b.dataset.tab === t) $('#runTitle').textContent = b.textContent; });
@@ -5709,7 +5713,6 @@ function renderRun() {
   eggSpAll();
   if (!mgr.hidden) renderBuddy();
   if (runEl.hidden) { if (!$('#bagPop').hidden) { $('#bagPop').hidden = true; bagSel = null; } return; }
-  $('#runTotal').innerHTML = `총 <b>${fmtKm(S.totalKm)}</b>km`;
   if (!S.eggs.includes(eggSel)) eggSel = S.eggs[0] || null;
   const e = eggSel;
   $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? '알이 움직이고 있다!' : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}<div class="egg-detail">${e.place ? `${esc(e.place)} 근처에서 주운 알` : '어디서 주웠는지 기록이 없는 알'}<br>${themeHint(e)}</div><div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
@@ -5730,7 +5733,6 @@ function renderRun() {
     box.append(b);
   }
   renderBag();
-  renderRunLog();
 }
 // 테스트용: 부화기 알을 모두 부화 준비 상태로 (나중에 뺄 것)
 // 테스트용: 등급을 골라 지금 날짜·무작위 장소로 가방에 알을 넣는다 (나중에 뺄 것)
@@ -5777,6 +5779,7 @@ function renderBuddy() {
   }).join('');
 }
 function renderRunLog() {
+  $('#runTotal').innerHTML = `총 <b>${fmtKm(S.totalKm)}</b>km`;
   const WD = '일월화수목금토', hm = t => { const d = new Date(t); return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`; };
   let lastDay = '', html = '';
   for (const r of S.runs.slice(0, 40)) {
