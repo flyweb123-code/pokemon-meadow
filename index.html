@@ -582,7 +582,7 @@ ol.log li.big .txt{color:#c03838}
 #info.bud .inf-ico{border-color:#e9a3bf}
 .pf .pf-rk{position:absolute;left:2px;top:2px;z-index:3;line-height:1}.pf .pf-rk .rk{font-size:10px;min-width:12px;padding:0 3px;line-height:13px;border-width:1px}
 body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch-action:none!important}
-.petbar{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,calc(100% - 24px));z-index:40;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;box-sizing:border-box;background:rgba(30,26,52,.9);color:#fff;border:3px solid #fff;box-shadow:0 0 0 3px #2a2440,5px 5px 0 3px rgba(0,0,0,.28);font-size:15px}.petbar[hidden]{display:none!important}.pet-trail{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9000}.petbar .pb-ic{flex:none;width:34px;height:34px;display:grid;place-items:center;background:#ffe3ee;border:2px solid #e8679a}.petbar .pb-t{flex:1;min-width:0;line-height:1.35;letter-spacing:-.3px;word-break:keep-all}.petbar .pb-x{flex:none;font:inherit;font-size:14px;padding:7px 10px;background:#e8679a;color:#fff;border:2px solid #fff;box-shadow:2px 2px 0 rgba(0,0,0,.35);cursor:pointer}.petbar .pb-x:active{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.35)}.petbar .pb-n{display:flex;gap:3px;margin-top:6px}.petbar .pb-n i{flex:1;min-width:0;height:9px;background:rgba(255,255,255,.25)}.petbar .pb-n i.on{background:#ff8ab4}@media (max-width:760px),(max-height:500px) and (orientation:landscape){.petbar{position:relative;left:auto;bottom:auto;transform:none;grid-area:stage;align-self:end;justify-self:center;margin:0 0 14px;width:calc(100% - 24px)}}
+.petbar{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,calc(100% - 24px));z-index:40;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;box-sizing:border-box;background:rgba(30,26,52,.9);color:#fff;border:3px solid #fff;box-shadow:0 0 0 3px #2a2440,5px 5px 0 3px rgba(0,0,0,.28);font-size:15px}.petbar[hidden]{display:none!important}.pet-trail{position:fixed;left:0;top:0;pointer-events:none;z-index:2147483000}.petbar .pb-ic{flex:none;width:34px;height:34px;display:grid;place-items:center;background:#ffe3ee;border:2px solid #e8679a}.petbar .pb-t{flex:1;min-width:0;line-height:1.35;letter-spacing:-.3px;word-break:keep-all}.petbar .pb-x{flex:none;font:inherit;font-size:14px;padding:7px 10px;background:#e8679a;color:#fff;border:2px solid #fff;box-shadow:2px 2px 0 rgba(0,0,0,.35);cursor:pointer}.petbar .pb-x:active{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.35)}.petbar .pb-n{display:block;margin-top:6px;height:10px;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 2px rgba(255,255,255,.35);overflow:hidden}.petbar .pb-n b{display:block;height:100%;width:0;background:#ff8ab4;transition:width .08s linear}.petbar .pb-n.hot b{background:linear-gradient(90deg,#ff8ab4,#ffd36e)}@media (max-width:760px),(max-height:500px) and (orientation:landscape){.petbar{position:relative;left:auto;bottom:auto;transform:none;grid-area:stage;align-self:end;justify-self:center;margin:0 0 14px;width:calc(100% - 24px)}}
 .tr-card{position:relative;overflow:hidden;isolation:isolate}.tr-card>*{position:relative;z-index:1}
 .tr-card::before,.tr-card::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:0}
 .tr-card.r1{border-color:#3a7a3a;box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px #9ccf8a}
@@ -2314,7 +2314,7 @@ function feedNow(m) {
     setState(m, 'eat', m.sp === 143 ? 8 : 5); log(`${J(m,'이/가')} 떨어진 열매를 바로 냠냠 먹었다.`, [m]); save(); }, 520);
 }
 // 쓰다듬기: 정보창·상태창을 숨기고 그 포켓몬 위를 문지른다. PET_N 번 문지르면 아주 좋아하며 끝 (친밀도 +3 은 하루 3번까지, 즐거움 +20)
-const PET_N = 12, PET_STEP = 150, PET_DAY = 3;   // 문지르기 12번 (약 1800px)
+const PET_N = 12, PET_LEN = 1700, PET_DAY = 3;   // 게이지 바: 보통 빠르기로 약 1700px 문지르면 가득. 빠르게 문지를수록 더 빨리 차고, 멈추면 줄어든다. PET_N 은 반응(하트·진동) 구간 수
 let petM = null;
 function petStart(m) {
   select(null); if (!S.mons.includes(m) || m.held || m.evolving) return;
@@ -2322,10 +2322,14 @@ function petStart(m) {
   if (m.partner) { const o = m.partner; m.partner = null; o.partner = null; o.scene = null; setState(o, 'idle', 1); }
   if (m.state === 'sleep') wake(m, `${J(m,'이/가')} 손길에 눈을 떴다.`);
   m.goal = null; m.scene = null; m.pet = true; setState(m, 'idle', 1);
-  petM = { m, n: 0, acc: 0, rub: null };
+  petM = { m, n: 0, v: 0, spd: 0, mvT: 0, rub: null }; petTick.t = 0; requestAnimationFrame(petTick); petTrail(-99, -99, true);
   document.body.classList.add('petting'); $('#petBar').hidden = false; if (!$('#petIc').firstChild) $('#petIc').innerHTML = ICO_HAND; petDots(); emote(m, '?', '', 1);
 }
-function petDots() { $('#petN').innerHTML = petM ? Array.from({ length: PET_N }, (_, i) => `<i${i < petM.n ? ' class="on"' : ''}></i>`).join('') : ''; }
+function petDots() { const b = $('#petN'); if (!b.firstChild) b.innerHTML = '<b></b>'; b.firstChild.style.width = (petM ? Math.min(1, petM.v) * 100 : 0) + '%'; b.classList.toggle('hot', !!petM && petM.spd > 900); }
+// 멈추면 게이지가 천천히 줄어든다 (손을 뗀 지 0.3초 뒤부터 초당 18%)
+function petTick(ts) { const p = petM; if (!p) return; const dt = petTick.t ? Math.min(.1, (ts - petTick.t) / 1000) : 0; petTick.t = ts;
+  if (!p.done) { p.spd *= Math.pow(.02, dt); if (performance.now() - p.mvT > 300 && p.v > 0) { p.v = Math.max(0, p.v - .18 * dt); p.n = Math.min(p.n, Math.floor(p.v * PET_N)); } petDots(); }
+  requestAnimationFrame(petTick); }
 function petEnd() {
   if (!petM) return; const m = petM.m; m.pet = false; if (S.mons.includes(m) && m.state === 'idle') setState(m, 'idle', 1.5);
   petM = null; document.body.classList.remove('petting'); $('#petBar').hidden = true; queueMicrotask(dlgBound);
@@ -2350,16 +2354,19 @@ addEventListener('pointermove', e => { const p = petM; if (!p || p.done || !p.ru
   if (!petHit(p.m, e.clientX, e.clientY)) return;
   /* 손맛: 문지르는 동안 털결처럼 톡톡(보통), 게이지가 한 칸 찰 때마다 세게 */
   const now = performance.now(); p.rub.tx += d; if (p.rub.tx >= 34 && now - p.rub.ht > 60) { p.rub.tx = 0; p.rub.ht = now; haptic(1); }
-  p.acc += d; if (p.acc < PET_STEP) return; p.acc = 0; p.n++; petDots();
-  if (p.n >= PET_N) return petDone();
-  emote(p.m, p.n % 3 === 0 ? '♪' : '♥', 'heart', .9); p.rub.ht = now; haptic(2); }, true);
+  /* 빠르기(px/초)를 부드럽게 재서, 빠를수록 한 번 문지른 거리가 게이지에 더 크게 들어간다 (느리면 0.5배, 아주 빠르면 2배) */
+  const dtm = Math.max(8, now - (p.mvT || now - 16)); p.mvT = now; p.spd = p.spd * .8 + (d / dtm * 1000) * .2;
+  p.v += d / PET_LEN * clamp(p.spd / 700, .5, 2); petDots();
+  if (p.v >= 1) return petDone();
+  const n = Math.floor(p.v * PET_N); if (n > p.n) { p.n = n; emote(p.m, n % 3 === 0 ? '♪' : '♥', 'heart', .9); p.rub.ht = now; haptic(2); } }, true);
 ['pointerup', 'pointercancel'].forEach(t => addEventListener(t, e => { if (petM?.rub && e.pointerId === petM.rub.id) petM.rub = null; if (petM || performance.now() - petCancelAt < 700) e.stopPropagation(); }, true));
 addEventListener('click', e => { if ((petM && !e.target.closest('#petBar')) || performance.now() - petCancelAt < 700) { e.stopPropagation(); e.preventDefault(); } }, true);
 let petCancelAt = 0;
 // 문지르는 손가락 자국: 화면 위 투명 캔버스에 지나간 길을 분홍 빛 줄기로 그리고 0.4초 동안 가늘어지며 사라진다
 const TRAIL_LIFE = 400; let trCv = null, trPts = [], trRaf = 0;
 function petTrail(x, y, start) {
-  if (!trCv) { trCv = document.createElement('canvas'); trCv.className = 'pet-trail'; document.body.append(trCv); }
+  if (!trCv || !trCv.isConnected) { trCv = document.createElement('canvas'); trCv.className = 'pet-trail'; document.body.append(trCv); }
+  trCv.style.width = innerWidth + 'px'; trCv.style.height = innerHeight + 'px';
   const dpr = devicePixelRatio || 1, W = innerWidth, H = innerHeight; if (trCv.width !== Math.round(W * dpr) || trCv.height !== Math.round(H * dpr)) { trCv.width = Math.round(W * dpr); trCv.height = Math.round(H * dpr); }
   trPts.push({ x, y, t: performance.now(), brk: !!start }); if (!trRaf) trRaf = requestAnimationFrame(drawTrail);
 }
