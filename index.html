@@ -667,8 +667,8 @@ body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch
 .rk.S{background:#e8a020}.rk.A{background:#e04848}.rk.B{background:#8e48e8}.rk.C{background:#4e7fc0}.rk.D{background:#6f8574}.rk.E{background:#909098}.rk.F{background:#6a6a70}
 .pk .rk{position:absolute;left:3px;top:3px}
 #dexGrid .newtag{left:auto;right:3px;top:3px;transform:none;animation:nbob 1.2s steps(2,end) infinite}@keyframes nbob{50%{transform:translateY(-3px)}}
-.pk .pk-new{position:absolute;right:4px;top:4px;width:7px;height:7px;background:#e04838}.pk .pk-new~.tg{right:15px}.pk .tg{position:absolute;right:3px;top:3px;font-size:9px;background:var(--frame);color:var(--win);padding:1px 3px}
-.pk .tg{background:#3c9a4c;color:#fff}.pk .tg.bud{background:#e8a020;color:#fff}
+.pk .pk-new{position:absolute;right:4px;top:4px;width:7px;height:7px;background:#e04838}.pk .pk-new~.tgs{right:15px}.pk .tgs{position:absolute;right:3px;top:3px;display:flex;gap:2px}.pk .tg{font-size:9px;background:var(--frame);color:var(--win);padding:1px 3px}
+.pk .tg{background:#3c9a4c;color:#fff}.pk .tg.bud{background:#e8679a;color:#fff}
 .pk.t-leg .nm,.tn-leg:not(.ih-top),.ih-top.tn-leg .nm-edit input{background:linear-gradient(90deg,#ff3d5e,#f08a10,#c8a000,#22a050,#2a86e8,#6a58f0,#c03ae8);-webkit-background-clip:text;background-clip:text;color:transparent}.pk.t-leg .nm .sh,.pk.t-leg .nm i,.pk.t-leg .nm b{-webkit-text-fill-color:initial}
 .pk.t-sil .nm,.tn-sil:not(.ih-top),.ih-top.tn-sil .nm-edit input{background:linear-gradient(180deg,#f2c641 0%,#d99a12 42%,#8f5a00 58%,#c98a10 78%,#f0c040 100%);-webkit-background-clip:text;background-clip:text;color:transparent}.pk.t-brz .nm,.tn-brz:not(.ih-top),.ih-top.tn-brz .nm-edit input{background:linear-gradient(180deg,#d2a8ff 0%,#a160f2 40%,#5c1fb8 58%,#8d48e6 78%,#cfa2ff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}.ih-top:is(.tn-leg,.tn-sil,.tn-brz) .nm-edit input{-webkit-text-fill-color:transparent;caret-color:var(--win-ink)}
 .pk .sh,.pp-body .sh{color:#e8a020;font-size:12px;margin-left:2px;text-shadow:0 0 4px rgba(255,200,40,.7)}
@@ -717,7 +717,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .ivs .b{height:8px;border:2px solid var(--frame);background:#eee}.ivs .b i{display:block;height:100%;background:#4a9a50}
 .ivs .b i.max{background:#e8a020}.ivs .v{text-align:right}
 .pickhint{color:#c03040;font-size:12px}
-#buddy .bd-why{font-size:11px;color:#806040}#buddy .bd-ind{font-size:12px;color:#5c6c5c;display:flex;align-items:center;gap:4px}#buddy .bd-ind .hearts{letter-spacing:1px}
+#buddy .bd-why{font-size:13px;color:#806040}#buddy .bd-ind{font-size:14px;color:#5c6c5c;display:flex;align-items:center;gap:4px}#buddy .bd-ind .hearts{letter-spacing:1px}
 .pp-fr{display:flex;justify-content:space-between;font-size:13px;margin-top:4px}.frtap{cursor:pointer;padding:4px 0}.frtip{position:fixed;z-index:9000;transform:translate(-50%,-100%);background:#fff;color:var(--frame);border:3px solid var(--frame);padding:4px 8px;font-size:12px;white-space:nowrap;pointer-events:auto;cursor:pointer;box-shadow:3px 3px 0 rgba(0,0,0,.2)}.frtip::after{content:'';position:absolute;left:50%;bottom:-9px;margin-left:-5px;border:5px solid transparent;border-top-color:var(--frame)}.frtip[hidden]{display:none}.frtip.sm{font-size:11px;padding:2px 6px;border-width:2px}.frtip.sm::after{bottom:-8px;border-width:4px;margin-left:-4px}[data-tip]{cursor:pointer}.pp-fr .hearts{color:#e04870;letter-spacing:1px}
 .pp-meta{font-size:12px;color:var(--dim);margin-top:4px;line-height:1.5}
 .pp-free{display:block;margin:10px auto 0;font:inherit;font-size:13px;background:none;border:0;color:#c03838;padding:4px 10px;cursor:pointer}
@@ -935,7 +935,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 #buddy{flex:1;min-height:0;display:grid;grid-template-rows:repeat(3,minmax(140px,1fr));gap:8px}
 #buddy .bd-btns .lk-btn{padding:7px 6px}
 #buddy .bd-main{gap:4px}
-#buddy .bd-pic{width:72px;height:72px}#buddy .bd-pic img{width:64px;height:64px}
+#buddy .bd-pic{width:92px;height:92px}#buddy .bd-pic img{width:84px;height:84px}#buddy .bd-card .bd-pic[data-rk]:not([data-rk=""]){border-color:var(--rkc)}
 #buddy .bd-name{display:flex;align-items:baseline;gap:8px}#buddy .bd-name span{margin:0;flex:none}
 #buddy .bd-empty{font-size:40px;color:var(--dim);line-height:1}
 .bd-card{position:relative;display:grid;grid-template-rows:auto;align-content:center;gap:8px;border:3px solid var(--frame);background:#fff;padding:10px 12px;box-shadow:3px 3px 0 rgba(0,0,0,.2);min-height:0}
@@ -960,7 +960,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .bd-tag{display:inline-block;font-size:12px;background:var(--frame);color:var(--win);padding:2px 8px}
 .bd-tag.ready{background:#e8a020;color:#fff}
 .bd-x{position:absolute;right:2px;top:0;border:0;background:none;font:inherit;font-size:20px;line-height:1;padding:8px 10px;color:var(--dim);cursor:pointer}
-#buddy .bd-name{padding-right:28px;gap:2px}#buddy .bd-name>b:first-child{min-width:0}#buddy .bd-name b.sx{display:inline;flex:none;font-size:18px}.bd-runkm{font-size:12px;color:var(--dim);margin-top:4px}.bd-runkm b{color:var(--win-ink)}
+#buddy .bd-name{padding-right:28px;gap:2px}#buddy .bd-name>b:first-child{min-width:0}#buddy .bd-name b.sx{display:inline;flex:none;font-size:21px}#buddy .bd-name>b:first-child{font-size:21px}#buddy .bd-evo .row{font-size:14px}#buddy .bd-runkm{font-size:14px}.bd-runkm{font-size:12px;color:var(--dim);margin-top:4px}.bd-runkm b{color:var(--win-ink)}
 .bd-empty{width:100%;height:100%;display:flex;align-items:center;justify-content:center;gap:14px;padding:10px;border:3px dashed var(--inner);background:#fff;font:inherit;font-size:16px;color:var(--win-ink);cursor:pointer}
 .bd-empty .q{flex:none;width:88px;height:88px;display:grid;place-items:center;border:3px solid var(--inner);background:#f0f0f4;font-size:44px;color:var(--dim)}
 .bd-empty b{border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:8px 16px}
@@ -4428,7 +4428,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.79';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.80';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -4845,7 +4845,7 @@ function boxList(all, keepAll) {
 }
 // 상자 칸은 한 번 만든 걸 다시 쓴다: 정렬이 바뀌면 순서만 옮기고, 내용이 바뀐 칸만 새로 만든다
 const pkEls = new Map(), pkTpl = document.createElement('template');
-const pkHtml = (p, tag, rk) => `<button class="pk${p.shiny ? ' shiny' : ''}${pkCls(p)}${tierOf(+p.sp) ? ' t-' + tierOf(+p.sp) : ''}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rk}">${rk}</span>${p.nw ? '<i class="pk-new" aria-label="새 포켓몬"></i>' : ''}${tag === 2 ? '<span class="tg bud">짝꿍</span>' : tag === 1 ? '<span class="tg">필드</span>' : ''}<img alt="" data-sp="${p.sp}" data-sx="${p.sex || ''}" src="${thumbP(p) || ''}"><span class="nm">${esc(nameOf(p))}${sexHtml(p.sex)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(p.fr)}</span></button>`;
+const pkHtml = (p, tag, rk) => `<button class="pk${p.shiny ? ' shiny' : ''}${pkCls(p)}${tierOf(+p.sp) ? ' t-' + tierOf(+p.sp) : ''}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rk}">${rk}</span>${p.nw ? '<i class="pk-new" aria-label="새 포켓몬"></i>' : ''}${tag ? `<span class="tgs">${tag & 1 ? '<span class="tg">필드</span>' : ''}${tag & 2 ? '<span class="tg bud">짝꿍</span>' : ''}</span>` : ''}<img alt="" data-sp="${p.sp}" data-sx="${p.sex || ''}" src="${thumbP(p) || ''}"><span class="nm">${esc(nameOf(p))}${sexHtml(p.sex)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(p.fr)}</span></button>`;
 // 박스 탭을 본 뒤 다른 탭으로 가거나 창이 닫히면 NEW 표시를 지운다 (가방과 같은 규칙)
 function seeDex() { if (!S.dexNew?.size) return; const L = [...S.dexNew]; S.dexNew.clear(); L.forEach(sp => dexBtns[sp] && lockDexBtn(sp)); save(); }
 { let was = !sheet.hidden; new MutationObserver(() => { const now = !sheet.hidden; if (was && !now && dexMode !== 'buddy') seeDex(); was = now; }).observe(sheet, { attributes: true, attributeFilter: ['class'] }); }   // 도감을 봤다가 닫으면 NEW 지움
@@ -4864,7 +4864,7 @@ function renderBox() {
   if (fo && !L.some(p => field.has(p.id))) grid.insertAdjacentHTML('afterbegin', '<p class="empty-msg" style="grid-column:1/-1">필드에 나가 있는 포켓몬이 없다.</p>');
   const want = [], make = [];
   for (const p of L) {
-    const tag = bud.has(p.id) ? 2 : field.has(p.id) ? 1 : 0, rk = rankOf(p), th = !!thumbOf(p.sp);
+    const tag = (field.has(p.id) ? 1 : 0) | (bud.has(p.id) ? 2 : 0), rk = rankOf(p), th = !!thumbOf(p.sp);
     const sig = `${p.sp}|${p.sex}|${p.shiny}|${p.fr}|${p.nm || ''}|${tag}|${rk}|${th}|${p.nw ? 1 : 0}`;
     let r = pkEls.get(p.id);
     if (!r || r.sig !== sig) { r = { sig, el: null, html: pkHtml(p, tag, rk) }; pkEls.set(p.id, r); make.push(r); }
@@ -5322,7 +5322,7 @@ document.addEventListener('click', e => {
   tip.style.left = Math.max(40, Math.min(innerWidth - 40, x)) + 'px'; tip.style.top = (r.top - 6) + 'px';
   clearTimeout(tip.t); tip.t = setTimeout(() => { tip.hidden = true; tip.of = null; }, 1800); sfx('tap');
 }, true);
-function indivHtml(m) { const P = boxOf(m.pid); return P ? `랭크 <span class="rk ${rankOf(P)}">${rankOf(P)}</span>${P.shiny ? ' <b class="sh">✦ 이로치</b>' : ''} · 친밀도 <span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}" style="color:#e04870">${hearts(P.fr)}</span>` : ''; }
+function indivHtml(m) { const P = boxOf(m.pid); return P ? `${P.shiny ? '<b class="sh">✦ 이로치</b> · ' : ''}친밀도 <span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}" style="color:#e04870">${hearts(P.fr)}</span>` : ''; }
 // S 랭크는 금빛으로 빛나고, 친밀도 만점(255)은 가끔 하트가 떠오른다
 const FR_MAX = 255;
 const pkCls = P => (P && rankOf(P) === 'S' ? ' rkS' : P && rankOf(P) === 'A' ? ' rkA' : '') + (P && (P.fr || 0) >= FR_MAX ? ' frMax' : '');
@@ -6525,7 +6525,7 @@ function renderBuddy() {
     const m = S.buds[i];
     if (!m) return `<button class="bd-empty" data-act="pick" data-i="${i}" aria-label="짝꿍 추가">+</button>`;
     const P = boxOf(m.pid);
-    return `<div class="bd-card${budReady(m) ? ' ready' : ''}${tierOf(+m.sp) ? ' ' + tierOf(+m.sp) : ''}" data-i="${i}"><button class="bd-x" data-act="stop" aria-label="짝꿍에서 빼기">✕</button><div class="bd-row"><div class="bd-pic${pkCls(P)}${P?.shiny ? ' shiny' : ''}" style="--shue:${shinyHue(m.sp)}deg"><img alt="" src="${(P ? thumbP(P) : thumbOf(m.sp)) || ''}"></div><div class="bd-main"><div class="bd-name"><b class="${tnCls(m.sp)}">${esc(P ? nameOf(P) : SPECIES[m.sp].n)}</b>${sexHtml(P?.sex)}</div><div class="bd-ind">${indivHtml(m)}</div>`
+    return `<div class="bd-card${budReady(m) ? ' ready' : ''}${tierOf(+m.sp) ? ' ' + tierOf(+m.sp) : ''}" data-i="${i}"><button class="bd-x" data-act="stop" aria-label="짝꿍에서 빼기">✕</button><div class="bd-row"><div class="bd-pic${pkCls(P)}${P?.shiny ? ' shiny' : ''}" data-rk="${P ? rankOf(P) : ''}" style="--shue:${shinyHue(m.sp)}deg"><img alt="" src="${(P ? thumbP(P) : thumbOf(m.sp)) || ''}"></div><div class="bd-main"><div class="bd-name"><b class="${tnCls(m.sp)}">${esc(P ? nameOf(P) : SPECIES[m.sp].n)}</b>${sexHtml(P?.sex)}</div><div class="bd-ind">${indivHtml(m)}</div>`
       + (!evoKids(m.sp, P).length && CHILDREN[m.sp] ? `<div><span class="bd-tag">특별한 진화</span> <span class="bd-why">${esc(spWhy(P || m))}</span></div><div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>` : CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) || m.km < evoNeed(m) ? `<button class="bd-evobtn" data-act="evo"${budReady(m) ? '' : ' disabled'}>진화하기</button>` : `<span class="bd-why">${esc(evoWhy(evoKids(m.sp, P)[0]))}</span>`}</span><span><b>${fmtKm(m.km)}</b> / ${evoNeed(m)}km</span></div></div>` : `<div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>`)
       + `</div></div></div>`;
   }).join('');
