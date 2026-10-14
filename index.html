@@ -263,7 +263,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .stage canvas{position:absolute;inset:0;width:960px;height:600px;image-rendering:pixelated}
 .stage.berry-mode{cursor:copy}
 #mons{position:absolute;inset:0;pointer-events:none}#mons>*{pointer-events:auto;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
-#night{position:absolute;inset:0;pointer-events:none;z-index:1000;mix-blend-mode:multiply;transition:background-color .6s}#lights{position:absolute;inset:0;pointer-events:none;z-index:1001;opacity:var(--dark,0);transition:opacity .6s}.slight{position:absolute;left:0;top:0;width:220px;height:170px;margin:-85px 0 0 -110px;border-radius:50%;mix-blend-mode:screen;background:radial-gradient(ellipse,rgba(255,224,130,.42),rgba(255,200,90,.3) 30%,rgba(255,180,60,.12) 55%,rgba(255,180,60,0) 72%);animation:slp 2.4s ease-in-out infinite}@keyframes slp{50%{opacity:.82;scale:.94}}
+#night{position:absolute;inset:0;pointer-events:none;z-index:1000;mix-blend-mode:multiply;transition:background-color .6s}
 #fx{position:absolute;inset:0;pointer-events:none;z-index:1100}
 
 /* RPG window */
@@ -582,7 +582,17 @@ ol.log li.big .txt{color:#c03838}
 #info.bud .inf-ico{border-color:#e9a3bf}
 .pf .pf-rk{position:absolute;left:2px;top:2px;z-index:3;line-height:1}.pf .pf-rk .rk{font-size:10px;min-width:12px;padding:0 3px;line-height:13px;border-width:1px}
 body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch-action:none!important}
-.petbar{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,calc(100% - 24px));z-index:40;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;box-sizing:border-box;background:rgba(30,26,52,.9);color:#fff;border:3px solid #fff;box-shadow:0 0 0 3px #2a2440,5px 5px 0 3px rgba(0,0,0,.28);font-size:15px}.petbar[hidden]{display:none!important}.app-ver{position:absolute;right:12px;bottom:8px;font-size:11px;line-height:1;color:var(--dim);opacity:.75;pointer-events:none;letter-spacing:.3px}.petbar{pointer-events:none}.petbar.top{bottom:auto;top:78px}.pet-trail{position:fixed;left:0;top:0;pointer-events:none;z-index:2147483000}.petbar .pb-ic{flex:none;width:34px;height:34px;display:grid;place-items:center;background:#ffe3ee;border:2px solid #e8679a}.petbar .pb-t{flex:1;min-width:0;line-height:1.35;letter-spacing:-.3px;word-break:keep-all}.petbar .pb-x{flex:none;font:inherit;font-size:14px;padding:7px 10px;background:#e8679a;color:#fff;border:2px solid #fff;box-shadow:2px 2px 0 rgba(0,0,0,.35);cursor:pointer}.petbar .pb-x:active{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.35)}.petbar .pb-n{display:block;margin-top:6px;height:10px;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 2px rgba(255,255,255,.35);overflow:hidden}.petbar .pb-n b{display:block;height:100%;width:0;background:#ff8ab4}.petbar .pb-n.pop{animation:pbpop .32s cubic-bezier(.3,1.8,.5,1)}@keyframes pbpop{0%{transform:scaleY(1)}35%{transform:scaleY(1.18)}100%{transform:scaleY(1)}}.petbar .pb-n.hot b{background:linear-gradient(90deg,#ff8ab4,#ffd36e)}@media (max-width:760px),(max-height:500px) and (orientation:landscape){.petbar{position:relative;left:auto;bottom:auto;transform:none;grid-area:stage;align-self:end;justify-self:center;margin:0 0 14px;width:calc(100% - 24px)}.petbar.top{top:auto;align-self:start;margin:calc(env(safe-area-inset-top) + 66px) 0 0}}
+.petbar{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,calc(100% - 24px));z-index:40;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;box-sizing:border-box;background:rgba(30,26,52,.9);color:#fff;border:3px solid #fff;box-shadow:0 0 0 3px #2a2440,5px 5px 0 3px rgba(0,0,0,.28);font-size:15px}.petbar[hidden]{display:none!important}
+[data-rk]{--rkc:#6a6a70}[data-rk="E"]{--rkc:#909098}[data-rk="D"]{--rkc:#40a060}[data-rk="C"]{--rkc:#3a80d0}[data-rk="B"]{--rkc:#8a5ad0}[data-rk="A"]{--rkc:#e04848}[data-rk="S"]{--rkc:#e8a020}
+.dp-pic[data-rk]:not([data-rk=""]),#info #pPf[data-rk]:not([data-rk=""]){border-color:var(--rkc)!important}
+.dp-pic[data-rk="A"],.dp-pic[data-rk="S"],#info #pPf[data-rk="A"],#info #pPf[data-rk="S"]{overflow:hidden}
+.dp-pic[data-rk="A"]::after,.dp-pic[data-rk="S"]::after,#info #pPf[data-rk="A"]::after,#info #pPf[data-rk="S"]::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:4;padding:3px;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.dp-pic[data-rk="A"]::after,#info #pPf[data-rk="A"]::after{background:linear-gradient(110deg,#e04848 0 35%,#ffb0b0 45%,#fff 50%,#ffb0b0 55%,#e04848 65% 100%);background-size:300% 100%;animation:rkShine 2.6s linear infinite}
+.dp-pic[data-rk="S"]::after,#info #pPf[data-rk="S"]::after{padding:4px;background:linear-gradient(110deg,#e8a020,#fff2a0,#ffd028,#fff,#ff9a30,#fff2a0,#e8a020);background-size:300% 100%;animation:rkShine 1.8s linear infinite}
+.dp-pic[data-rk="A"],#info #pPf[data-rk="A"]{box-shadow:0 0 0 1px #fff inset,0 0 8px rgba(224,72,72,.55)!important}
+.dp-pic[data-rk="S"],#info #pPf[data-rk="S"]{box-shadow:0 0 0 1px #fff8d0 inset,0 0 10px rgba(255,200,40,.75),0 0 2px #fff!important;animation:rkGlow 2s ease-in-out infinite}
+.dp-pic[data-rk="S"]::before,#info #pPf[data-rk="S"]::before{content:'✦';position:absolute;right:7px;top:5px;z-index:5;color:#fff6b0;font-size:14px;line-height:1;text-shadow:0 0 4px #ffb000;animation:spk 1.6s steps(1) infinite;pointer-events:none}
+@keyframes rkShine{0%{background-position:100% 0}100%{background-position:-200% 0}}@keyframes rkGlow{50%{box-shadow:0 0 0 1px #fff8d0 inset,0 0 16px rgba(255,200,40,.95),0 0 3px #fff}}.app-ver{position:absolute;right:12px;bottom:8px;font-size:11px;line-height:1;color:var(--dim);opacity:.75;pointer-events:none;letter-spacing:.3px}.petbar{pointer-events:none}.petbar.top{bottom:auto;top:78px}.pet-trail{position:fixed;left:0;top:0;pointer-events:none;z-index:2147483000}.petbar .pb-ic{flex:none;width:34px;height:34px;display:grid;place-items:center;background:#ffe3ee;border:2px solid #e8679a}.petbar .pb-t{flex:1;min-width:0;line-height:1.35;letter-spacing:-.3px;word-break:keep-all}.petbar .pb-x{flex:none;font:inherit;font-size:14px;padding:7px 10px;background:#e8679a;color:#fff;border:2px solid #fff;box-shadow:2px 2px 0 rgba(0,0,0,.35);cursor:pointer}.petbar .pb-x:active{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.35)}.petbar .pb-n{display:block;margin-top:6px;height:10px;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 2px rgba(255,255,255,.35);overflow:hidden}.petbar .pb-n b{display:block;height:100%;width:0;background:#ff8ab4}.petbar .pb-n.pop{animation:pbpop .32s cubic-bezier(.3,1.8,.5,1)}@keyframes pbpop{0%{transform:scaleY(1)}35%{transform:scaleY(1.18)}100%{transform:scaleY(1)}}.petbar .pb-n.hot b{background:linear-gradient(90deg,#ff8ab4,#ffd36e)}@media (max-width:760px),(max-height:500px) and (orientation:landscape){.petbar{position:relative;left:auto;bottom:auto;transform:none;grid-area:stage;align-self:end;justify-self:center;margin:0 0 14px;width:calc(100% - 24px)}.petbar.top{top:auto;align-self:start;margin:calc(env(safe-area-inset-top) + 66px) 0 0}}
 .tr-card{position:relative;overflow:hidden;isolation:isolate}.tr-card>*{position:relative;z-index:1}
 .tr-card::before,.tr-card::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:0}
 .tr-card.r1{border-color:#3a7a3a;box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px #9ccf8a}
@@ -656,7 +666,7 @@ body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch
 .pk .tg.bud{background:#e8a020;color:#fff}
 .pk .sh,.pp-body .sh{color:#e8a020;font-size:12px;margin-left:2px;text-shadow:0 0 4px rgba(255,200,40,.7)}
 /* S 랭크: 금빛 테두리 빛 + 반짝이 */
-.mon.rkS .flip{animation:sglow 1.8s ease-in-out infinite}
+.mon.rkS .flip{animation:sglow 1.8s ease-in-out infinite}.mon.selflit .flip{animation:sglowN 2s ease-in-out infinite}@keyframes sglowN{0%,100%{filter:brightness(1.12) drop-shadow(0 0 2px #fffbe0) drop-shadow(0 0 6px #ffd040) drop-shadow(0 0 14px rgba(255,190,40,.55))}50%{filter:brightness(1.22) drop-shadow(0 0 3px #fffbe0) drop-shadow(0 0 9px #ffc020) drop-shadow(0 0 22px rgba(255,180,30,.6))}}.mon.selflit .shadow{opacity:.35}
 @keyframes sglow{0%,100%{filter:drop-shadow(0 0 1px #fff6c0) drop-shadow(0 0 3px #ffc830)}50%{filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 7px #ffb000)}}
 .mon.rkS .lift::before{content:'✦';position:absolute;left:0;bottom:calc(var(--mh,60px) * .55);color:#fff3a0;font-size:20px;text-shadow:0 0 4px #ffb000,0 0 2px #fff;animation:spk 1.6s steps(1) infinite;pointer-events:none;z-index:3}
 @keyframes spk{0%{opacity:1;transform:translate(calc(var(--mw,50px) * .4),0) scale(1)}20%{opacity:.4;transform:translate(calc(var(--mw,50px) * .4),0) scale(.6)}35%{opacity:0}50%{opacity:1;transform:translate(calc(var(--mw,50px) * -.45),calc(var(--mh,60px) * -.35)) scale(1.1)}70%{opacity:.4;transform:translate(calc(var(--mw,50px) * -.45),calc(var(--mh,60px) * -.35)) scale(.6)}85%{opacity:0}}
@@ -703,7 +713,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .dexpop .boxbtn.red{background:#c83838;border-color:#7a1c1c;color:#fff}/* 눌린 버튼: 아래 그림자가 위로 옮겨가며 면이 4px 내려간다 → 글자도 padding 으로 같은 만큼 내려 함께 움직인다 */
 
 .win.bud{background:#fff3f7;border-color:#9a3462;box-shadow:inset 0 0 0 3px #fff3f7,inset 0 0 0 6px #e9a3bf,6px 6px 0 rgba(0,0,0,.35)}.win.bud .dp-pic{background:#fcd9e6;border-color:#e9a3bf;box-shadow:inset 0 -18px 0 #f6c3d6}.win.bud .mvcard:not(.on){border-color:#e9a3bf!important}.win.bud .pp-free{color:#c0507e}
-#info.night{--card:#232a4e;--card-frame:#0e1024;--win-ink:#e4e2f6;--dim:#8e96c4;--inner:#46508a;--hp-track:#141832;color:#e4e2f6}#info.night .inf-ico{background:#2e365f;border-color:#0e1024}#info.night .pp-x{color:#8e96c4}#info.night .pf{border-color:#0e1024;background:linear-gradient(#3a4478,#2a3260)}#info.night .mvcard,#info.night .mvuse.lock{background:#2a3158;color:#c8cbe8;border-color:#46508a}#info.night .mvuse{background:#2a3158;color:#e4e2f6;border-color:#46508a;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}#info.night .mvuse.on{background:color-mix(in srgb,var(--tc) 30%,#232a4e);border-color:color-mix(in srgb,var(--tc) 80%,#fff)}#info.night .mvuse.on b,#info.night .mvuse.on>span:last-child{color:#f2f0ff}#info.bud.night{background:#3a2446;border-color:#0e1024}#info.bud.night .pf{border-color:#9a5a86;background:linear-gradient(#5a3a6a,#43284f)}#info .dp-head{position:relative}#info .pbody{align-items:stretch}#info #pPf{height:auto;min-height:84px;width:92px;align-self:stretch}#info .ihead{margin-top:10px}#info .ih-top{margin-top:0;min-height:26px;align-items:center;gap:6px}#info .ih-top .sx{font-size:17px;line-height:1}#info .m-head{margin-bottom:0}#infoBud{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}.pf .pf-rk{left:0!important;top:0!important}.pf .pf-rk .rk{border:0!important;font-size:11px;padding:1px 4px;line-height:13px;display:block}.win .evobtn.spc{display:flex;align-items:center;gap:8px;justify-content:flex-start;padding:0 12px!important;background:#f6f0ff!important;color:#5a3a8a!important;border-color:#c8b0e8!important;box-shadow:none!important;animation:none;cursor:default;font-size:13px;text-align:left}.win .evobtn.spc:active{padding:0 12px!important}.evobtn.spc .sp-tag{flex:none;font-size:12px;line-height:1;padding:4px 7px;background:#7a5ab0;color:#fff}.evobtn.spc .sp-why{flex:1;min-width:0;line-height:1.3}#info.bud{background:#fff3f7;border-color:#9a3462;box-shadow:6px 6px 0 rgba(0,0,0,.35)}#info.bud .pf{border-color:#e9a3bf;background:linear-gradient(#fcd9e6,#f6c3d6)}#info.bud .mvcard:not(.on){border-color:#e9a3bf!important}
+#info.night{--card:#232a4e;--card-frame:#0e1024;--win-ink:#e4e2f6;--dim:#8e96c4;--inner:#46508a;--hp-track:#141832;color:#e4e2f6}#info.night .inf-ico{background:#2e365f;border-color:#0e1024}#info.night .pp-x{color:#8e96c4}#info.night .pf{border-color:#0e1024;background:linear-gradient(#3a4478,#2a3260)}#info.night .mvcard,#info.night .mvuse.lock{background:#2a3158;color:#c8cbe8;border-color:#46508a}#info.night .mvuse{background:#2a3158;color:#e4e2f6;border-color:#46508a;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}#info.night .mvuse.on{background:color-mix(in srgb,var(--tc) 30%,#232a4e);border-color:color-mix(in srgb,var(--tc) 80%,#fff)}#info.night .mvuse.on b,#info.night .mvuse.on>span:last-child{color:#f2f0ff}#info.bud.night{background:#3a2446;border-color:#0e1024}#info.bud.night .pf{border-color:#9a5a86;background:linear-gradient(#5a3a6a,#43284f)}#info .dp-head{position:relative}#info .pbody{align-items:stretch}#info #pPf{height:auto;min-height:84px;width:92px;align-self:stretch}#info .ihead{margin-top:10px}#info .ih-top{margin-top:0;min-height:26px;align-items:center;gap:6px}#info .ih-top .sx{font-size:17px;line-height:1}#info .m-head{margin-bottom:0}#infoBud{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}.pf .pf-rk{left:0!important;top:0!important;z-index:6}.pf .pf-rk .rk{border:0!important;font-size:11px;padding:1px 4px;line-height:13px;display:block}.win .evobtn.spc{display:flex;align-items:center;gap:8px;justify-content:flex-start;padding:0 12px!important;background:#f6f0ff!important;color:#5a3a8a!important;border-color:#c8b0e8!important;box-shadow:none!important;animation:none;cursor:default;font-size:13px;text-align:left}.win .evobtn.spc:active{padding:0 12px!important}.evobtn.spc .sp-tag{flex:none;font-size:12px;line-height:1;padding:4px 7px;background:#7a5ab0;color:#fff}.evobtn.spc .sp-why{flex:1;min-width:0;line-height:1.3}#info.bud{background:#fff3f7;border-color:#9a3462;box-shadow:6px 6px 0 rgba(0,0,0,.35)}#info.bud .pf{border-color:#e9a3bf;background:linear-gradient(#fcd9e6,#f6c3d6)}#info.bud .mvcard:not(.on){border-color:#e9a3bf!important}
 .bud-tag{margin-left:6px;font-size:12px;line-height:1;padding:4px 8px;background:#e8679a;color:#fff;border:2px solid #9a3462;box-shadow:2px 2px 0 rgba(0,0,0,.2)}.bud-tag[hidden]{display:none}.hd-rk:empty+.bud-tag{margin-left:0}
 #mStage,#pPf{cursor:pointer}
 .pokepop .boxbtn.sunk,#monPop .boxbtn.sunk{background:#b9b9c6;border-color:#8a8a9a;color:#5a5a6a;box-shadow:inset 0 4px 0 rgba(0,0,0,.3),inset 3px 0 0 rgba(0,0,0,.12);padding-top:15px;padding-bottom:7px}
@@ -1202,7 +1212,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
       <canvas id="bg" width="1920" height="1200"></canvas>
       <div id="items"></div>
       <div id="mons"></div>
-      <div id="night"></div><div id="lights"></div>
+      <div id="night"></div>
       <div id="fx"></div>
     </div>
   </div>
@@ -2373,7 +2383,7 @@ addEventListener('pointermove', e => { const p = petM; if (!p || p.done || !p.ru
   const n = Math.floor(p.v * PET_N); if (n > p.n) { p.n = n; p.dvv = (p.dvv || 0) + .35; const bb = $('#petN'); bb.classList.remove('pop'); void bb.offsetWidth; bb.classList.add('pop'); emote(p.m, n % 3 === 0 ? '♪' : '♥', 'heart', .9); p.rub.ht = now; haptic(2); } }, true);
 ['pointerup', 'pointercancel'].forEach(t => addEventListener(t, e => { const rb = petM?.rub; if (rb && e.pointerId === rb.id) { petM.rub = null;
     /* 포켓몬이 아닌 곳을 문지르지 않고 톡 누르고 떼면 그만둔다 */
-    if (t === 'pointerup' && !rb.on && rb.far < 12 && performance.now() - rb.t0 < 450 && !petM.done) { petCancelAt = performance.now(); petQuit(); e.stopPropagation(); return; } } if (petM || performance.now() - petCancelAt < 700) e.stopPropagation(); }, true));
+    if (t === 'pointerup' && !rb.on && rb.far < 12 && performance.now() - rb.t0 < 450 && !petM.done) { petCancelAt = performance.now(); petQuit(); e.stopPropagation(); return; } } if ((petM || performance.now() - petCancelAt < 700) && !drag) e.stopPropagation(); }, true));
 addEventListener('click', e => { if ((petM && !e.target.closest('#petBar')) || performance.now() - petCancelAt < 700) { e.stopPropagation(); e.preventDefault(); } }, true);
 let petCancelAt = 0;
 // 문지르는 손가락 자국: 화면 위 투명 캔버스에 지나간 길을 분홍 빛 줄기로 그리고 0.4초 동안 가늘어지며 사라진다
@@ -2391,6 +2401,8 @@ function drawTrail() {
   const runs = []; let cur = []; for (const p of trPts) { if (p.brk && cur.length) { runs.push(cur); cur = []; } if (!cur.length || Math.hypot(p.x - cur[cur.length - 1].x, p.y - cur[cur.length - 1].y) > 1.5) cur.push(p); } if (cur.length) runs.push(cur);
   for (const run of runs) { if (run.length < 2) continue;
     const pts = [run[0]]; for (let i = 1; i < run.length; i++) { const a = run[i - 1], b = run[i]; pts.push({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, t: (a.t + b.t) / 2 }); } pts.push(run[run.length - 1]);   /* 꺾인 곳을 둥글게 */
+    for (let it = 0; it < 3; it++) { const q = [pts[0]]; for (let i = 0; i < pts.length - 1; i++) { const a = pts[i], b = pts[i + 1], L = (u, v, k) => u + (v - u) * k;
+      q.push({ x: L(a.x, b.x, .25), y: L(a.y, b.y, .25), t: L(a.t, b.t, .25) }, { x: L(a.x, b.x, .75), y: L(a.y, b.y, .75), t: L(a.t, b.t, .75) }); } q.push(pts[pts.length - 1]); pts.splice(0, pts.length, ...q); }   /* 차이킨 곡선으로 세 번 다듬어 꺾임 없이 */
     const n = pts.length, head = pts[n - 1].t;
     const shape = (W, alpha, col) => { const L = [], R = [];
       for (let i = 0; i < n; i++) { const a = pts[Math.max(0, i - 1)], b = pts[Math.min(n - 1, i + 1)]; let dx = b.x - a.x, dy = b.y - a.y; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
@@ -3792,7 +3804,8 @@ function render(m, now) {
   if (m.land && (m.sp !== 129 || pondVal(m.x, m.y) < .85)) { m.land = false; if (!m.held) { splashAt(m); log(`${J(m,'이/가')} 겨우 호수로 돌아와 첨벙! 한결 편안해 보인다.`, [m]); } }
   { const fl = !!m.land && !m.held; if (fl !== !!m.flop) { m.flop = fl; m.el.classList.toggle('flop', fl); } }
   m.el.style.transform = `translate(${m.x.toFixed(1)}px,${m.y.toFixed(1)}px)`;
-  m.el.style.zIndex = Math.round(m.y) + (m.zAdd || 0) + (m.perch ? 2 : 0) + (m.pet ? 5000 : 0);
+  { const lit = skyDark > .25 && m.el.classList.contains('rkS'); if (lit !== !!m.lit) { m.lit = lit; m.el.classList.toggle('selflit', lit); } }   /* 어두우면 S 랭크는 밤 그늘 위로 올라와 스스로 빛난다 */
+  m.el.style.zIndex = Math.round(m.y) + (m.zAdd || 0) + (m.perch ? 2 : 0) + (m.pet ? 5000 : 0) + (m.lit ? 1100 : 0);
   m.liftEl.style.transform = `translateY(${(wet ? m.h * .38 : m.flop ? m.h * .42 : 0) - m.lift - bob}px)`;   // 육지의 잉어킹은 그림자에 붙게 조금 내린다
   if (m.flop && now > (m.swT || 0)) { m.swT = now + rnd(180, 360); for (const s of [-1, 1]) if (Math.random() < .75) particle(m.x + s * rnd(6, m.w * .32), m.y - m.h * .2 - rnd(0, 10), 'sweat', '', d => d.style.setProperty('--dx', s * rnd(12, 26) + 'px')); }
   m.flipEl.style.transform = `scaleX(${m.face})`; m.flipEl.style.setProperty('--f', m.face);
@@ -3924,14 +3937,14 @@ function drawBg() {
 }
 
 // ---------- day / night ----------
-const nightEl = $('#night'), lightsEl = $('#lights'); const flies = [];
+const nightEl = $('#night'); var skyDark = skyDark || 0; const flies = [];
 /* 필드 조명: 시각별 곱하기 색 (한밤→새벽 푸른 기운→해돋이 분홍·주황→아침 노란 빛→한낮→오후 금빛→노을 주황·붉은→저녁 보라→밤) */
 const SKY = [[0, [40, 48, 100]], [3.5, [42, 50, 104]], [4.8, [70, 68, 132]], [5.6, [150, 124, 176]], [6.4, [255, 184, 160]], [7.4, [255, 224, 190]], [9, [252, 248, 236]], [11, [255, 255, 255]], [14.5, [255, 252, 240]], [16.3, [255, 228, 182]], [17.6, [252, 186, 128]], [18.5, [214, 132, 132]], [19.3, [124, 94, 156]], [20.4, [58, 64, 120]], [22, [46, 54, 108]], [24, [40, 48, 100]]];
 function sky() {
   const h = hour();
   { let i = 0; while (i < SKY.length - 2 && h >= SKY[i + 1][0]) i++; const [h0, c0] = SKY[i], [h1, c1] = SKY[i + 1], k = Math.min(1, Math.max(0, (h - h0) / (h1 - h0))), e = k * k * (3 - 2 * k);
     const col = c0.map((v, j) => Math.round(v + (c1[j] - v) * e)); nightEl.style.backgroundColor = `rgb(${col.join(',')})`;
-    lightsEl.style.setProperty('--dark', clamp((1 - (col[0] + col[1] + col[2]) / 765) * 1.6, 0, 1).toFixed(2)); }   /* 어두울수록 S 랭크 후광이 주변을 밝힌다 */
+    skyDark = clamp((1 - (col[0] + col[1] + col[2]) / 765) * 1.6, 0, 1); }   /* 어두운 정도: S 랭크 포켓몬이 스스로 빛나는지 */
   const phase = h < 4 ? '한밤' : h < 5.5 ? '새벽' : h < 7 ? '해돋이' : h < 10 ? '아침' : h < 14 ? '한낮' : h < 16.5 ? '오후' : h < 18.6 ? '노을' : h < 20 ? '저녁' : '밤';
   $('#phase').textContent = phase;
   { const d = new Date(); $('#day').textContent = `${d.getMonth() + 1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})`; }
@@ -3964,12 +3977,6 @@ function addGlints() {
     $('#items').before(g);
   }
 }
-// S 랭크 후광: 밤 그늘(#night) 위 층에서 은은한 빛을 비춰 포켓몬과 주변을 밝힌다
-const litMap = new Map();
-function tickLights() {
-  for (const [m, el] of litMap) if (!S.mons.includes(m) || !m.el?.classList.contains('rkS')) { el.remove(); litMap.delete(m); }
-  for (const m of S.mons) { if (!m.el?.classList.contains('rkS')) continue; let el = litMap.get(m); if (!el) { el = document.createElement('i'); el.className = 'slight'; lightsEl.append(el); litMap.set(m, el); }
-    const k = Math.max(.7, Math.min(1.5, (m.h || 60) / 70)); el.style.transform = `translate(${m.x.toFixed(1)}px,${(m.y - (m.h || 60) * .42 - (m.lift || 0)).toFixed(1)}px) scale(${k.toFixed(2)})`; el.style.display = m.hidden ? 'none' : ''; } }
 function tickFlies(now) {
   for (const f of flies) { f.x += Math.sin(now / 900 + f.p) * .4; f.y += Math.cos(now / 1100 + f.p * 2) * .3; f.el.style.left = f.x + 'px'; f.el.style.top = f.y + 'px'; f.el.style.opacity = .4 + .6 * Math.abs(Math.sin(now / 600 + f.p)); }
 }
@@ -4008,7 +4015,7 @@ function renderInfo() {
     // 다른 포켓몬 정보창과 같은 차림: 랭크(좌상단) · 이름/분류/만난 곳 · 기력~친밀도 · 친구/상태/생각
     box.innerHTML = `<div class="dp-head m-head"><span class="inf-acts"><button class="inf-ico" id="infFeed" aria-label="나무열매 주기">${ICO_BERRY}</button><button class="inf-ico" id="infPet" aria-label="쓰다듬기">${ICO_HAND}</button></span><span class="bud-tag" id="infoBud" hidden>짝꿍</span><button class="pp-x" id="infoX" aria-label="닫기">✕</button></div>
       <div class="ihead"><div class="ih-top"><span class="nm-plain" id="pname">${esc(m.name)}</span>${sexHtml(sexOf(m))}${P?.shiny ? '<b class="sh" data-tip="이로치">✦</b>' : ''}<span class="ih-r">${tyIcons(m.sp)}${esc(d.g || '')}</span></div></div>
-      <div class="pbody"><div class="pf" id="pPf"><div class="pf-in"></div><div class="pf-in"></div><span class="pf-rk">${rkBadge(P)}</span><span class="pf-z"></span></div><div class="bars" id="pbars"></div></div>
+      <div class="pbody"><div class="pf" id="pPf" data-rk="${P ? rankOf(P) : ''}"><div class="pf-in"></div><div class="pf-in"></div><span class="pf-rk">${rkBadge(P)}</span><span class="pf-z"></span></div><div class="bars" id="pbars"></div></div>
       <div class="memo" id="pMemo"></div>
       <div id="pMoves"></div>`;
   }
@@ -4265,7 +4272,7 @@ function meetByHand(m, o) {
   setState(o, 'idle', 1); o.goal = null;
   interact(m, o, sp.length ? pickWeighted(sp) : null);
 }
-window.addEventListener('pointerup', endDrag);
+window.addEventListener('pointerup', endDrag); window.addEventListener('pointercancel', endDrag);   /* 아이폰이 터치를 취소해도 든 포켓몬을 내려놓는다 (안 그러면 들린 채로 갇힘) */
 window.addEventListener('pointercancel', e => { const d = drag; if (!d || e.pointerId !== d.id) return; drag = null; clearTimeout(d.lt); if (d.on) { d.m.held = false; d.m.el.classList.remove('held'); if (d.target) d.target.el.classList.remove('drop-target'); settle(d.m); setState(d.m, 'idle', 2); } });
 function setTool(t) { S.tool = t; $('#btnBerry').setAttribute('aria-pressed', t === 'berry'); stage.classList.toggle('berry-mode', t === 'berry'); $('#hint').hidden = t !== 'berry'; }
 // only one of the toggles is on at a time
@@ -4316,7 +4323,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.29';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.30';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -4786,7 +4793,7 @@ function openPoke(id, dir = 0, quiet = false, noCry = false) {
   const L = pokeList(), i = L.indexOf(P), d = SPECIES[P.sp], rk = rankOf(P);
   $('#pokePop').hidden = false; { const bud = S.buds.some(b => b.pid === P.id); $('#pokePop .win').classList.toggle('bud', bud); /* 지금 짝꿍이면 분홍 (등록·해제하면 바로 바뀐다) */ $('#ppBudTag').hidden = !bud; }
   $('#ppHl').hidden = i <= 0; $('#ppHr').hidden = i >= L.length - 1; $('#ppRk').innerHTML = rkBadge(P);
-  const pic = $('#ppPic'), img = $('#ppImg'); pic.classList.toggle('shiny', P.shiny); pic.classList.toggle('rkS', rk === 'S'); pic.classList.toggle('frMax', (P.fr || 0) >= FR_MAX); pic.style.setProperty('--shue', shinyHue(P.sp) + 'deg');
+  const pic = $('#ppPic'), img = $('#ppImg'); pic.classList.toggle('shiny', P.shiny); pic.classList.toggle('rkS', rk === 'S'); pic.dataset.rk = rk; pic.classList.toggle('frMax', (P.fr || 0) >= FR_MAX); pic.style.setProperty('--shue', shinyHue(P.sp) + 'deg');
   img.src = thumbP(P) || ''; if (!thumbOf(P.sp)) ensureSprite(P.sp).then(() => { if (pokeId === id) img.src = thumbP(P); }).catch(() => {});
   $('#ppBody').innerHTML = infoHead(P, P.sp, nameEdit('ppName', nameOf(P), P.sex), nameOf(P) !== d.n ? `<span class="ih-sp">${esc(d.n)}</span>` : '')
     + `<div class="ivs">${ivRows(P)}<span class="fr-l">친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>`
@@ -4953,7 +4960,7 @@ function renderMgrDetail(rebuild) {
   const pic = $('#mPic'), want = isPmd(m.form) ? thumbOf(m.sk || m.form) : m.state === 'sleep' ? (stillCache[m.form] || SPRITES[m.form]) : SPRITES[m.form];
   if (pic.getAttribute('src') !== want) pic.src = want;
   { const [c, tx] = slotState(m), el = $('#mSt'); el.className = 'st-tag st ' + c; el.textContent = tx; el.hidden = tx === '이동'; }
-  { const P = boxOf(m.pid), st = $('#mStage'); st.className = 'dp-pic' + pkCls(P) + (P?.shiny ? ' shiny' : ''); st.style.setProperty('--shue', shinyHue(m.sp) + 'deg'); }
+  { const P = boxOf(m.pid), st = $('#mStage'); st.className = 'dp-pic' + pkCls(P) + (P?.shiny ? ' shiny' : ''); st.dataset.rk = P ? rankOf(P) : ''; st.style.setProperty('--shue', shinyHue(m.sp) + 'deg'); }
   { const P = boxOf(m.pid); $('#mBars').innerHTML = bar('기력', m.energy, 'var(--hp)') + bar('배부름', 100 - m.hunger, 'var(--hunger)') + bar('즐거움', m.joy ?? 60, 'var(--lonely)') + (P ? `<div class="bar frbar"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>` : ''); }
   { const h = memoHtml(m), el = $('#mMemo'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
   { const P = boxOf(m.pid), el = $('#mPg2');
@@ -6544,8 +6551,9 @@ function frame(now) {
     treeT -= dt;
     if (treeT <= 0) { treeT = rnd(25, 50); if (!isNight() && S.berries.length < 10) { addBerry(rnd(XL + 60, XR - 60), MIN_Y + rnd(4, 26), true); } }
   }
-  for (const m of S.mons) { if (m.bubT > 0) m.bubT -= real; m.realDt = real * Math.min(S.speed || 0, 3); render(m, now); }
-  tickFlies(now); tickBugs(now, real); tickLights();
+  for (const m of S.mons) { if (m.held && drag?.m !== m) { m.held = false; m.el.classList.remove('held'); settle(m); setState(m, 'idle', 1); }   /* 손에서 놓쳤는데 들린 채 남은 포켓몬 풀어 주기 */
+    if (m.bubT > 0) m.bubT -= real; m.realDt = real * Math.min(S.speed || 0, 3); render(m, now); }
+  tickFlies(now); tickBugs(now, real);
   acc += real; if (acc > .5) { acc = 0; sky(); rotBerries(); }
   tickMoves(real);
   infoT -= real; if (infoT <= 0 && S.sel) { infoT = .5; renderInfo(); }
