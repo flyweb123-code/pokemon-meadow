@@ -4443,7 +4443,7 @@ function renderBox() {
   document.querySelectorAll('#boxSort [data-sort]').forEach(b => { const on = b.dataset.sort === boxSort; b.setAttribute('aria-pressed', on); b.dataset.dir = on && boxSort !== 'field' ? (boxDir > 0 ? '▼' : '▲') : ''; });
   const L = boxList(true), q = boxQ(), bud = new Set(S.buds.map(b => b.pid)), field = new Set(S.mons.map(m => m.pid)), grid = $('#boxGrid');
   const hits = q ? L.filter(p => boxHit(p, q)).length : 0;
-  $('#boxCount').innerHTML = budPick != null ? '<b class="pickhint">짝꿍을 골라 주세요</b>' : q ? `찾은 포켓몬 <b>${hits}</b>마리` : `${S.box.some(p => p.shiny) ? `이로치 ${S.box.filter(p => p.shiny).length} · ` : ''}전체 <b>${S.box.length}</b>마리`;
+  $('#boxCount').innerHTML = q ? `찾은 포켓몬 <b>${hits}</b>마리` : `${S.box.some(p => p.shiny) ? `이로치 ${S.box.filter(p => p.shiny).length} · ` : ''}전체 <b>${S.box.length}</b>마리`;
   if (!L.length) { pkEls.clear(); grid.innerHTML = `<p class="empty-msg">${boxSort === 'field' && S.box.length ? '필드에 나가 있는 포켓몬이 없다.' : '아직 부화시킨 포켓몬이 없다.'}</p>`; return; }
   grid.querySelector('.empty-msg')?.remove();
   const want = [], make = [];
