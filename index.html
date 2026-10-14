@@ -2633,7 +2633,8 @@ const sameFamily = (a, b) => a.sp !== b.sp && SPD(a.sp).ch && SPD(a.sp).ch === S
 const isLegend = m => SPD(m.sp).leg || SPD(m.sp).my;
 /* 정보·부화 카드 전체 테두리: 본가·커뮤니티 분류로 특별한 포켓몬 3단계 (종족값만으로는 게을킹 같은 예외가 생긴다)
    leg: 금지급 전설 + 환상 / sil: 준전설 (전설 표시 중 금지급 아닌 종) / brz: 600족·울트라비스트·패러독스 */
-const TIER_LEG = new Set([150, 151, 249, 250, 251, 382, 383, 384, 385, 386, 483, 484, 487, 489, 490, 491, 492, 493, 494, 643, 644, 646, 647, 648, 649, 716, 717, 718, 719, 720, 721, 789, 790, 791, 792, 800, 801, 802, 807, 808, 809, 888, 889, 890, 893, 898, 1007, 1008, 1024, 1025]), TIER_SIL = new Set([144, 145, 146, 243, 244, 245, 377, 378, 379, 380, 381, 480, 481, 482, 485, 486, 488, 638, 639, 640, 641, 642, 645, 772, 773, 785, 786, 787, 788, 891, 892, 894, 895, 896, 897, 905, 1001, 1002, 1003, 1004, 1014, 1015, 1016, 1017]), TIER_BRZ = new Set([149, 248, 373, 376, 445, 635, 706, 784, 793, 794, 795, 796, 797, 798, 799, 803, 804, 805, 806, 887, 984, 985, 986, 987, 988, 989, 990, 991, 992, 993, 994, 995, 998, 1005, 1006, 1009, 1010, 1020, 1021, 1022, 1023]);
+const TIER_LEG = new Set([150, 249, 250, 382, 383, 384, 483, 484, 487, 493, 643, 644, 646, 716, 717, 718, 789, 790, 791, 792, 800, 888, 889, 890, 898, 1007, 1008, 1024]), TIER_SIL = new Set([144, 145, 146, 243, 244, 245, 377, 378, 379, 380, 381, 485, 486, 488, 638, 639, 640, 641, 642, 645, 772, 773, 785, 786, 787, 788, 892, 894, 895, 896, 897, 905, 1001, 1002, 1003, 1004, 1009, 1010, 1014, 1015, 1016, 1017, 1020, 1021, 1022, 1023]), TIER_BRZ = new Set([151, 251, 385, 386, 480, 481, 482, 489, 490, 491, 492, 494, 647, 648, 649, 719, 720, 721, 793, 794, 795, 796, 797, 798, 799, 801, 802, 803, 804, 805, 806, 807, 893, 988, 993, 994, 995, 1005, 1006, 1025]);
+const isTop = m => ['leg', 'sil'].includes(tierOf(+m.sp));
 const tierOf = sp => TIER_LEG.has(sp) ? 'leg' : TIER_SIL.has(sp) ? 'sil' : TIER_BRZ.has(sp) ? 'brz' : '';
 const fxGrade = (sp, g) => ({ leg: 6, sil: 5, brz: 4 })[tierOf(+sp)] || Math.min(g, 2);   /* 부화 연출은 알 등급이 아니라 나올 포켓몬으로: 1단계 무지개(새 연출) / 2단계 예전 전설 알 연출 / 3단계 예전 에픽 알 연출 / 나머지는 평범하게 */
 const setTier = (w, sp) => { const t = tierOf(+sp); for (const k of ['leg', 'sil', 'brz']) w.classList.toggle(k, k === t); };
@@ -4357,7 +4358,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.58';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.59';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5371,7 +5372,7 @@ function useMove(m, i = 0) {
   const L = movesOf(m.sp); if (!L.length || !awake(m) || m.held || m.evolving || m.mvBusy) return false;
   const [name, t, dc] = L[Math.min(i, L.length - 1)];
   m.mvBusy = true; setTimeout(() => { m.mvBusy = false; }, 2000);
-  if (isLegend(m)) return legendMove(m, name, t, dc);   /* 상위 기술(화면 가득 연출)은 특별 1·2단계(= 전설·환상 플래그)만. 3단계(600족·UB·패러독스)는 일반 기술 */
+  if (isTop(m)) return legendMove(m, name, t, dc);   /* 상위 기술(화면 가득 연출)은 특별 1·2단계만. 3단계·기본은 일반 기술 */
   // 튀어오르기: 아무 효과 없이 제자리에서 몇 번 퐁퐁 튄다
   if (name === '튀어오르기') {
     for (let k = 0; k < 4; k++) setTimeout(() => { if (S.mons.includes(m)) { anim(m, 'hop'); sfx('tap'); } }, k * 470);
@@ -5519,7 +5520,7 @@ let mvAcc = 0;
 function tickMoves(real) {
   mvAcc += real; if (mvAcc < 1) return; mvAcc = 0;
   for (const m of S.mons) {
-    if (!canMove(m) || !awake(m) || m.state !== 'idle' || isLegend(m)) continue;   // 전설은 사용자가 누를 때만
+    if (!canMove(m) || !awake(m) || m.state !== 'idle' || isTop(m)) continue;   // 1·2단계는 사용자가 누를 때만
     m.mvT = (m.mvT ?? rnd(15, 40)) - 1;
     if (m.mvT <= 0) { m.mvT = rnd(45, 100); useMove(m); }
   }
