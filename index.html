@@ -570,10 +570,10 @@ ol.log li.big .txt{color:#c03838}
 #setBack{padding:4px 10px}#set .sheet-head{min-height:44px;box-sizing:border-box}/* 프로필(톱니)과 하위 화면(◀) 머리 높이를 같게: 밀어서 뒤로 갈 때 들어오는 창이 끝난 모습과 같은 자리 */#set #closeSet{display:none}
 .tr-card{display:flex;gap:12px;align-items:stretch;margin:4px 0 14px;padding:10px;border:3px solid var(--frame);background:var(--win);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner)}
 .tr-pic{flex:none;width:112px;height:112px;position:relative;background:#e4f2d0;border:3px solid var(--inner);box-shadow:inset 0 -14px 0 #cfe6b4;overflow:hidden}
-.tr-ow{position:absolute;left:0;top:0;width:64px;height:64px;background-repeat:no-repeat;background-size:64px 384px;image-rendering:pixelated;will-change:transform}
+.tr-pic{display:grid;place-items:center}.tr-ow{width:64px;height:64px;background-repeat:no-repeat;background-size:64px 384px;background-position:0 0;image-rendering:pixelated}
 .tr-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:10px}
 .tr-top{display:flex;align-items:center;gap:6px;min-width:0}
-.tr-nm{flex:1;min-width:0;display:flex;align-items:center;gap:4px;cursor:text}.tr-nm .pen-b{flex:none;width:14px;height:14px;color:var(--dim)}.tr-nm .pen-b svg{width:100%;height:100%;display:block}.tr-nm input{border:0;outline:0;background:none;padding:0;margin:0;color:var(--win-ink);font-family:inherit;font-size:20px;font-weight:700;max-width:100%}.tr-nm input::placeholder{color:var(--dim);font-weight:400}
+.tr-nm{flex:1;min-width:0;display:flex;align-items:center;gap:4px;cursor:text}.tr-nm .pen-b{flex:none;width:14px;height:14px;color:var(--dim)}.tr-nm .pen-b svg{width:100%;height:100%;display:block}.tr-nm input{border:0;outline:0;background:none;padding:0;margin:0;color:var(--win-ink);font-family:inherit;font-size:20px;font-weight:700;max-width:100%}.tr-nm input::placeholder{color:var(--win-ink);opacity:1;font-weight:700}
 .tr-sex{flex:none;margin-left:auto;width:32px;height:32px;padding:0;border:0;background:none;font:inherit;font-size:22px;line-height:1;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .tr-sex.m{color:#3870d0}.tr-sex.f{color:#e05888}.tr-sex:active{transform:scale(.88)}
 .tr-badge{align-self:flex-start;display:inline-flex;align-items:center;padding:3px 10px;border:2px solid #c8962a;background:#fff7e0;color:#6a4a10;box-shadow:2px 2px 0 rgba(0,0,0,.15);font-size:13px}.tr-badge b{font-weight:700;white-space:nowrap}
@@ -660,7 +660,8 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .pokepop .boxbtn{display:block;width:100%;font:inherit;font-size:15px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:10px 8px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
 .dexpop .boxbtn.red{background:#c83838;border-color:#7a1c1c;color:#fff}/* 눌린 버튼: 아래 그림자가 위로 옮겨가며 면이 4px 내려간다 → 글자도 padding 으로 같은 만큼 내려 함께 움직인다 */
 
-.pokepop .boxbtn.sunk{background:#b9b9c6;border-color:#8a8a9a;color:#5a5a6a;box-shadow:inset 0 4px 0 rgba(0,0,0,.3),inset 3px 0 0 rgba(0,0,0,.12);padding-top:14px;padding-bottom:6px}
+.pokepop.bud .win{background:#fff3f7;border-color:#9a3462;box-shadow:inset 0 0 0 3px #fff3f7,inset 0 0 0 6px #e9a3bf,6px 6px 0 rgba(154,52,98,.3)}.pokepop.bud .dp-pic{background:#fcd9e6;border-color:#e9a3bf;box-shadow:inset 0 -18px 0 #f6c3d6}.pokepop.bud .ivs .bar,.pokepop.bud .mvcard{border-color:#e9a3bf}.pokepop.bud .pp-free{color:#c0507e}
+.pokepop .boxbtn.sunk{background:#b9b9c6;border-color:#8a8a9a;color:#5a5a6a;box-shadow:inset 0 4px 0 rgba(0,0,0,.3),inset 3px 0 0 rgba(0,0,0,.12);padding-top:15px;padding-bottom:7px}
 .pokepop .boxbtn.pink.sunk{background:#f7dfe8;border-color:#d9a9bc;color:#b0788f}
 .pokepop .boxbtn.sunk.popout{animation:btnPop .2s cubic-bezier(.3,1.6,.5,1) forwards}
 @keyframes btnPop{0%{background:#b9b9c6;box-shadow:inset 0 4px 0 rgba(0,0,0,.3);padding-top:14px;padding-bottom:6px}100%{background:var(--frame);border-color:var(--frame);color:var(--win);box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);padding-top:10px;padding-bottom:10px}}
@@ -842,7 +843,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .rdex #dpAct{margin-top:12px}
 /* 창 크기 고정: 위 칸·설명 칸 높이를 정해 두고, 이름·분류는 한 줄 */
 .rdex .cd-top{height:156px}.rdex .cd-n,.rdex .cd-g{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rdex .cd-fx{height:8.5em;min-height:0;overflow-y:auto}.rdex #dpAct.vh{visibility:hidden}
-.ghost .sw-h{display:none}.ghost,.ghost *{animation:none!important;transition:none!important}.dp-arr{position:absolute;top:18%;width:58px;height:64%;margin-top:0;padding:0;border:0;background:none;cursor:pointer;z-index:3;-webkit-tap-highlight-color:transparent;display:flex;align-items:center}.dp-arr.l{justify-content:flex-start;padding-left:8px}.dp-arr.r{justify-content:flex-end;padding-right:8px}.dp-arr.l{left:-22px}.dp-arr.r{right:-22px}.dp-arr[hidden]{display:none}.dp-arr .sw-h{position:static;display:block;margin:0}.dp-arr:active .sw-h{opacity:1;transform:scale(1.3)}
+.fx-h.sw-h{position:fixed;z-index:7;margin-top:-7px}.fx-h.dp-arr{position:fixed;z-index:7;margin:0}.fx-h[hidden]{display:block!important;visibility:hidden}.fx-h.dp-arr[hidden]{display:flex!important}.ghost .sw-h{display:none}.ghost,.ghost *{animation:none!important;transition:none!important}.dp-arr{position:absolute;top:18%;width:58px;height:64%;margin-top:0;padding:0;border:0;background:none;cursor:pointer;z-index:3;-webkit-tap-highlight-color:transparent;display:flex;align-items:center}.dp-arr.l{justify-content:flex-start;padding-left:8px}.dp-arr.r{justify-content:flex-end;padding-right:8px}.dp-arr.l{left:-22px}.dp-arr.r{right:-22px}.dp-arr[hidden]{display:none}.dp-arr .sw-h{position:static;display:block;margin:0}.dp-arr:active .sw-h{opacity:1;transform:scale(1.3)}
 .dexpop .dx-lock{margin:0;color:var(--dim);font-size:14px;line-height:1.6}
 .dexpop .boxbtn{display:block;width:100%;font:inherit;font-size:16px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:11px 16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
 .dexpop .boxbtn.off{background:var(--win);color:var(--frame)}
@@ -1240,7 +1241,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
       <div id="pfPage"><section class="tr-card" aria-label="트레이너 카드">
         <div class="tr-pic" id="trPic"><i class="tr-ow" id="trOw"></i></div>
         <div class="tr-info">
-          <div class="tr-top"><label class="nm-edit tr-nm"><input id="trName" maxlength="8" aria-label="트레이너 이름" autocomplete="off" placeholder="이름 짓기"><span class="pen-b" aria-hidden="true"></span></label>
+          <div class="tr-top"><label class="nm-edit tr-nm"><input id="trName" maxlength="8" aria-label="트레이너 이름" autocomplete="off" placeholder="트레이너"><span class="pen-b" aria-hidden="true"></span></label>
             <button type="button" class="tr-sex" id="trSex" aria-label="성별 바꾸기"></button></div>
           <div class="tr-badge"><b id="trRank">견습 트레이너</b></div>
         </div>
@@ -4440,14 +4441,20 @@ $('#monPop').addEventListener('click', e => { if (e.target.closest('.m-dots')) m
 // 정보 카드 밀어서 넘기기 (모든 넘기는 카드 공용): 카드 전체가 손가락을 따라 밀리고, 양옆에 이전·다음 카드가 붙어 따라 들어온다.
 // 놓으면 다음 카드가 가운데로 와서 그대로 그 카드가 된다 (스프라이트만 따로 움직이지 않는다)
 function cardPager(pop, o) {
-  const w = pop.querySelector('.win'), GAP = 14, DUR = 240; let x0 = null, y0 = 0, dx0 = 0, busy = false, gh = {}, W = 0, swT = 0, t0 = 0;
+  const w = pop.querySelector('.win'), GAP = 14, DUR = 380, EASE = 'cubic-bezier(.25,.75,.3,1)'; let x0 = null, y0 = 0, dx0 = 0, busy = false, gh = {}, W = 0, swT = 0, t0 = 0;
   const ghost = d => { if (d in gh) return gh[d]; if (!o.can(d)) return gh[d] = null;
     const r = w.getBoundingClientRect(), g = o.snap(d, w); g.removeAttribute('id'); g.setAttribute('aria-hidden', 'true'); g.inert = true; g.classList.add('ghost');   /* 안쪽 id 는 남긴다(스타일 유지). 원래 카드가 문서에서 앞이라 $() 는 원래 카드를 찾는다 */
     Object.assign(g.style, { position: 'fixed', left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', margin: '0', pointerEvents: 'none', zIndex: 1 }); pop.append(g); return gh[d] = g; };
-  const hints = () => w.querySelectorAll(':scope > .sw-h, :scope > .dp-arr');
-  const put = x => { w.style.transform = x ? `translateX(${x}px)` : ''; hints().forEach(a => a.style.translate = x ? `${-x}px 0` : ''); /* 힌트 화살표는 제자리 */ for (const d of [1, -1]) if (gh[d]) gh[d].style.transform = `translateX(${x + d * (W + GAP)}px)`; };
-  const anim = on => { const t = on ? `transform ${DUR}ms cubic-bezier(.2,.8,.3,1)` : ''; w.style.transition = t; hints().forEach(a => a.style.transition = on ? `translate ${DUR}ms cubic-bezier(.2,.8,.3,1)` : ''); for (const d of [1, -1]) if (gh[d]) gh[d].style.transition = t; };
-  const clear = () => { anim(false); put(0); for (const d of [1, -1]) gh[d]?.remove(); gh = {}; };
+  // 힌트 화살표는 카드 밖(창 바깥 층)으로 꺼내 화면에 고정한다: 카드를 밀어도 움직이지 않는다
+  const hs = [...w.querySelectorAll(':scope > .sw-h, :scope > .dp-arr')]; hs.forEach(a => { a.classList.add('fx-h'); pop.append(a); });
+  const place = () => { if (pop.hidden || x0 != null || busy) return; const r = w.getBoundingClientRect(); if (!r.width) return;
+    for (const a of hs) { const L = a.classList.contains('l'), arr = a.classList.contains('dp-arr');
+      if (arr) Object.assign(a.style, { left: (L ? r.left - 22 : r.right + 22 - 58) + 'px', top: r.top + r.height * .18 + 'px', height: r.height * .64 + 'px', right: 'auto' });
+      else Object.assign(a.style, { left: (L ? r.left - 12 : r.right + 6) + 'px', top: r.top + r.height / 2 + 'px', right: 'auto' }); } };
+  new ResizeObserver(place).observe(w); new MutationObserver(() => requestAnimationFrame(place)).observe(pop, { attributes: true, attributeFilter: ['hidden', 'class'] }); addEventListener('resize', place);
+  const put = x => { w.style.transform = x ? `translateX(${x}px)` : ''; /* 힌트 화살표는 제자리 */ for (const d of [1, -1]) if (gh[d]) gh[d].style.transform = `translateX(${x + d * (W + GAP)}px)`; };
+  const anim = on => { const t = on ? `transform ${DUR}ms ${EASE}` : ''; w.style.transition = t; for (const d of [1, -1]) if (gh[d]) gh[d].style.transition = t; };
+  const clear = () => { anim(false); put(0); for (const d of [1, -1]) gh[d]?.remove(); gh = {}; requestAnimationFrame(place); };
   // 새 카드의 그림이 다 그려진 다음에 유령 카드를 걷는다 (한 프레임 비는 깜빡임 방지)
   const ready = () => Promise.race([Promise.all([...w.querySelectorAll('img')].map(i => i.decode ? i.decode().catch(() => {}) : 0)), new Promise(r => setTimeout(r, 150))]).then(() => new Promise(r => requestAnimationFrame(() => r())));
   w.style.touchAction = 'pan-y'; w.addEventListener('dragstart', e => e.preventDefault());   // 그림을 끌어도 카드가 넘어가게
@@ -4459,8 +4466,8 @@ function cardPager(pop, o) {
   const end = e => { if (x0 == null) return; const dx = e ? e.clientX - x0 : 0, dy = e ? e.clientY - y0 : 0, d = dx < 0 ? 1 : -1; x0 = null;
     if (!dx0) return; swT = performance.now();
     const fast = performance.now() - t0 < 260 && Math.abs(dx) > 24;
-    if (e && (Math.abs(dx) > Math.min(90, W * .22) || fast) && Math.abs(dx) > Math.abs(dy) && gh[d]) { busy = true; anim(true); put(-d * (W + GAP)); setTimeout(() => { anim(false); o.step(d); ready().then(() => { clear(); busy = false; }); }, DUR + 10); }
-    else { busy = true; anim(true); put(0); setTimeout(() => { clear(); busy = false; }, DUR + 10); }
+    if (e && (Math.abs(dx) > Math.min(90, W * .22) || fast) && Math.abs(dx) > Math.abs(dy) && gh[d]) { busy = true; anim(true); put(-d * (W + GAP)); setTimeout(() => { anim(false); o.step(d); ready().then(() => { busy = false; clear(); }); }, DUR + 10); }
+    else { busy = true; anim(true); put(0); setTimeout(() => { busy = false; clear(); }, DUR + 10); }
     dx0 = 0; };
   w.addEventListener('pointerup', end); w.addEventListener('pointercancel', () => end(null));
   pop.addEventListener('click', e => { if (performance.now() - swT < 400) { e.stopImmediatePropagation(); e.preventDefault(); } }, true);   // 밀고 난 뒤의 click 은 닫기·넘기기로 치지 않는다
@@ -4546,12 +4553,12 @@ $('#boxQ').addEventListener('input', () => { if (!$('#boxQ').value.trim() && box
   $('#boxGrid').addEventListener('pointermove', e => { if (pk && Math.hypot(e.clientX - x0, e.clientY - y0) > 8) off(); });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach(k => $('#boxGrid').addEventListener(k, () => setTimeout(off, k === 'pointerup' ? 80 : 0)));
   $('#boxGrid').closest('.win, .sheet')?.addEventListener('scroll', off, true); }
-$('#boxGrid').addEventListener('click', e => { const b = e.target.closest('[data-id]'); if (b) openPoke(+b.dataset.id); });
+$('#boxGrid').addEventListener('click', e => { const b = e.target.closest('[data-id]'); if (b) { ppBud = false; openPoke(+b.dataset.id); } });
 let pokeId = null;
 function openPoke(id, dir = 0, quiet = false) {
   const P = boxOf(id); if (!P) return; if (!quiet && P.nw) { P.nw = false; save(); renderBox(); } if (!quiet && ($('#pokePop').hidden || pokeId !== id)) playCry(P.sp, .1); pokeId = id;
-  const L = boxList(), i = L.indexOf(P), d = SPECIES[P.sp], rk = rankOf(P);
-  $('#pokePop').hidden = false; 
+  const L = pokeList(), i = L.indexOf(P), d = SPECIES[P.sp], rk = rankOf(P);
+  $('#pokePop').hidden = false; $('#pokePop').classList.toggle('bud', ppBud);
   $('#ppHl').hidden = i <= 0; $('#ppHr').hidden = i >= L.length - 1; $('#ppRk').innerHTML = rkBadge(P);
   const pic = $('#ppPic'), img = $('#ppImg'); pic.classList.toggle('shiny', P.shiny); pic.classList.toggle('rkS', rk === 'S'); pic.classList.toggle('frMax', (P.fr || 0) >= FR_MAX); pic.style.setProperty('--shue', shinyHue(P.sp) + 'deg');
   img.src = thumbP(P) || ''; if (!thumbOf(P.sp)) ensureSprite(P.sp).then(() => { if (pokeId === id) img.src = thumbP(P); }).catch(() => {});
@@ -4575,7 +4582,7 @@ function setEvoBtn(btn, P) {
   btn.classList.remove('fin', 'dis'); if (cls) btn.classList.add(cls); if (btn.innerHTML !== html) btn.innerHTML = html;
   if (tip) { btn.dataset.tip = tip; btn.dataset.tipc = ''; } else { delete btn.dataset.tip; delete btn.dataset.tipc; }
 }
-const closePoke = () => { $('#pokePop').hidden = true; pokeId = null; freeArm = null; };
+const closePoke = () => { $('#pokePop').hidden = true; pokeId = null; freeArm = null; ppBud = false; };
 $('#ppX').onclick = () => { sfx('tap'); closePoke(); };
 // 놓아주기: 한 번 더 눌러야 숲으로 돌려보낸다 (필드·짝꿍에서도 빠짐, 도감 기록은 남음)
 let freeArm = null, freeT = 0;
@@ -4593,11 +4600,13 @@ $('#ppFree').onclick = () => {
   const L2 = boxList(), nx = L2[Math.min(i, L2.length - 1)];
   if (nx) openPoke(nx.id); else closePoke();
 };
-function pokeStep(dir) { const L = boxList(), i = L.indexOf(boxOf(pokeId)), j = i + dir; if (j >= 0 && j < L.length) { sfx('tap'); openPoke(L[j].id, dir); } }
+let ppBud = false;   // 짝꿍 칸에서 연 정보 카드: 짝꿍끼리만 넘기고 분홍 카드
+const pokeList = () => ppBud ? S.buds.map(b => boxOf(b.pid)).filter(Boolean) : boxList();
+function pokeStep(dir) { const L = pokeList(), i = L.indexOf(boxOf(pokeId)), j = i + dir; if (j >= 0 && j < L.length) { sfx('tap'); openPoke(L[j].id, dir); } }
 $('#pokePop').addEventListener('click', e => { if (e.target.id !== 'pokePop') return; const d = sideTap($('#pokePop'), e); if (d) { const h = $(d < 0 ? '#ppHl' : '#ppHr'); if (!h.hidden) pokeStep(d); return; } closePoke(); });
 cardPager($('#pokePop'), {
-  can: d => { const L = boxList(), j = L.indexOf(boxOf(pokeId)) + d; return j >= 0 && j < L.length; },
-  snap: (d, w) => { const cur = pokeId, L = boxList(), n = L[L.indexOf(boxOf(cur)) + d]; openPoke(n.id, 0, true); const g = w.cloneNode(true); openPoke(cur, 0, true); return g; },
+  can: d => { const L = pokeList(), j = L.indexOf(boxOf(pokeId)) + d; return j >= 0 && j < L.length; },
+  snap: (d, w) => { const cur = pokeId, L = pokeList(), n = L[L.indexOf(boxOf(cur)) + d]; openPoke(n.id, 0, true); const g = w.cloneNode(true); openPoke(cur, 0, true); return g; },
   step: d => pokeStep(d) });
 $('#ppField').onclick = async () => {
   const P = boxOf(pokeId); if (!P) return;
@@ -5300,35 +5309,18 @@ const dayKey = (t = Date.now()) => { const d = new Date(t); return `${d.getFullY
 function today() { if (!S.today || S.today.d !== dayKey()) S.today = { d: dayKey(), walk: 0, eggs: 0 }; return S.today; }
 // 트레이너: 이름·성별(금·은·크리스탈의 주인공 그림)·등급(지금까지 달린 거리)
 const TR_OW = { m: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAABgCAYAAAAU0fKgAAACYUlEQVR4nO1YsZHCMBA8GAKXoNAhISVQgsughA8dUsKHlEAJhJRA6NAlONMH/IrzaU/ofxwwDDvDYMu61Uo6ne+8EoIQ2sjax3FY2basIYQ2XkLD7GU/ThnJutZYROQSmkzd2uuMEffjVOryILDM2tCS6L4bNirkeoQaKzAO517arpfh3Bclo0/b9TKOw2q2Btq47fi1HWAjct/ftusj68AUwCZNAcDigGQ4HO9G31/UWKxxCG2crqd4220j7vG77bZxup7SfWY8XU+pA65vu20ytM9Akm0jk457hjQX7wB5wDqsbcMlNJkT2Xa9iPQ0WlLW5hJYAya7SPBa8aAGbjwo4Wk8uIQmOREwHI40JmTxoAZV8aBknCmAiqrhf+G68nDuXVfG6NSV4QNYKCsV64M+M4fCOUfgwL/+6WfFeAAFdhul6/1thIrsaQGfePDA8vGglA9gazUJ3UamwvoFTmOVH2hCKCweJvzjGqkOm15VTNRkejCXQHe2p/KpI2Er9aLpUPdvT4QSrD7a6etd5BE4EkHhFU/hJR1WHVXApuDlR8XDpJNOdpAogaeAZmZL4B0Dih3xU3Dk17Tg0J3+WnAIpqBrgVK6b+uFLCo/S7ZKBytVLTWFRrYGmFcIbUxbWRGFquKBHaRIABLPYHG8ezyowafgUAqqhlbIciSdG3m5sjVOCpgKVnCwJCPtAo5yIqhMKNxs3St53CloApveMEOXQKvwjBbFO8aDT8HB8doFB4X9EKkTj+LrnW3lfpxmgcRi9l7QJf5+nPKPEJJ7Y/ZR1qsVrCr6VddOwy4Ynun2H+Nl5dP12W48AAAAAElFTkSuQmCC', f: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAABgCAYAAAAU0fKgAAAChklEQVR4nO1Yu5XbMBBc6l0RCFGCwisDIctwCSzFIUKWoVAlMEQJzuhAWmiwnAUpny+wHzc5CovP7G+AvUGIhBBXNl7KMtixzUAIcV3mST7ztRm/jXeJadpsMtjFYZzrAhTdsOTUbPJhEejCmCbRzUpOsszTYzw7JuDpJScJ4ywlp4fu+Y36jT9CiOv1x30NIa6/bj/rX/zGOa4PRKTCtRLTYxxPH3A3XBjT9LIbvnEjEZGL2hjGuVF4os5VfwwInSFhJqiUsgwfaJNu9JmvNQIqeiLObyc4Xveiousuu0bvCA2jhW3NacLITLELuxnIRG33fqNsislutHeYywdMGB80UUD7KaJx3qCiYbRs5I2JED64jXd3suowGhsn2sqzOmsi5USbOFX/1DWc2MTbUJeVqsvpxUjM8ywD8TfOa8q4KdleOT91pSyDW0zWkUgm9F7AG6nkREOpYY5pWt0wKjx7M8X81I0tsi4feIImXJgCWdf+/kf4wLviD78PdCGGEq99Nw/0ZE0aTCavxGkeaELFlOr47gNDUdgbmXEAljSlNEsqJSeXI7ph3MB/muTeTJbSGfyKiJlQyjJs3gAOdIoAkfQWucXUbGKg2wLbFfbgsI8LEScKzAT2xBN5433gvQ0OO/EQkfyJvBXG/7ThaE7XXuDIt66jqbzMUz0Vv5mcDQfkBOvMWBS68GyDsddsVB9YSEd8oeIW05FmoyuHbP4b8n18wORsOM6Gg5n2dsOhrzb3XihlqRzphdKK+0pjDQfjiS4fHOEClxzQH9/2NnARfJkPzoZjqijOhuM1uSdfbjgaH1h+VAQYGSvVBE0kXGhTWTfu/l/Z6xUsKjWDFhOzFXU4/hsxFxD0hqGbSAAAAABJRU5ErkJggg==' };
-const TR_LV = [[0, '견습 트레이너'], [5, '초보 트레이너'], [15, '신참 트레이너'], [30, '숙련 트레이너'], [60, '베테랑 트레이너'], [100, '엘리트 트레이너'], [160, '에이스 트레이너'], [250, '체육관 관장'], [400, '사천왕'], [600, '챔피언'], [1000, '포켓몬 마스터']];
+const TR_LV = [[0, '견습 트레이너'], [10, '초보 트레이너'], [30, '신참 트레이너'], [60, '숙련 트레이너'], [100, '베테랑 트레이너'], [160, '엘리트 트레이너'], [250, '에이스 트레이너'], [400, '체육관 관장'], [600, '사천왕'], [850, '챔피언'], [1025, '포켓몬 마스터']];   // 모은 도감 수
 const trOf = () => S.tr || (S.tr = { n: '', sex: 'm' });
 const TN = () => trOf().n || '트레이너';
 const TJ = p => J({ name: TN() }, p);
-function trLevel() { const k = S.totalKm || 0; let i = 0; while (i + 1 < TR_LV.length && k >= TR_LV[i + 1][0]) i++; return { i, k, name: TR_LV[i][1], next: TR_LV[i + 1] }; }
+function trLevel() { const k = S.unlocked?.size || 0; let i = 0; while (i + 1 < TR_LV.length && k >= TR_LV[i + 1][0]) i++; return { i, k, name: TR_LV[i][1], next: TR_LV[i + 1] }; }
 function renderTrainer() {
   const t = trOf(), L = trLevel(), inp = $('#trName'), pen = document.querySelector('.tr-nm .pen-b'); if (!pen.firstChild) pen.innerHTML = PEN;
   $('#trOw').style.backgroundImage = `url(${TR_OW[t.sex] || TR_OW.m})`;
   if (document.activeElement !== inp) { inp.value = t.n; }
   inp.style.width = Math.max(2, (inp.value || inp.placeholder).length) + .3 + 'em';
   const sx = $('#trSex'); sx.className = 'tr-sex ' + t.sex; sx.textContent = t.sex === 'f' ? '♀' : '♂'; sx.setAttribute('aria-label', t.sex === 'f' ? '여자 (눌러서 바꾸기)' : '남자 (눌러서 바꾸기)');
-  $('#trRank').textContent = L.name; trWalk();
-}
-// 프로필 칸 안에서 금·은 필드 도트 캐릭터가 좌우로 걸어다니다 가끔 멈춰 이쪽을 본다 (16×16 6칸: 앞·뒤·옆 서기, 앞·뒤·옆 걷기)
-let trWT = 0;
-function trWalk() {
-  if (trWT) return; const el = $('#trOw'), box = $('#trPic'); let x = 24, dir = -1, f = 0, rest = 8, step = 0;
-  const tick = () => {
-    if (setEl.hidden || !el.isConnected) { trWT = 0; return; }
-    const W = box.clientWidth - 64; step++;
-    let fr = 0, flip = 1;
-    if (rest > 0) { rest--; fr = 0; if (!rest) dir = Math.random() < .5 ? -1 : 1; }
-    else { x += dir * 4; if (x <= 0 || x >= W) { x = Math.max(0, Math.min(W, x)); if (Math.random() < .5) rest = 10 + (Math.random() * 10 | 0); else dir = -dir; }
-      else if (Math.random() < .03) rest = 8 + (Math.random() * 10 | 0);
-      fr = step % 2 ? 5 : 2; flip = dir > 0 ? -1 : 1; }
-    el.style.backgroundPosition = `0 ${-fr * 64}px`; el.style.transform = `translate(${x}px,${(box.clientHeight - 64) / 2 + 6}px) scaleX(${flip})`;
-    trWT = setTimeout(tick, 150);
-  };
-  tick();
+  $('#trRank').textContent = L.name;
 }
 $('#trName').addEventListener('input', e => { e.target.style.width = Math.max(2, (e.target.value || e.target.placeholder).length) + .3 + 'em'; });
 $('#trName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } });
@@ -6065,7 +6057,7 @@ function setRunTab(t) {
 document.querySelectorAll('.runtab[data-tab]').forEach(b => b.onclick = () => setRunTab(b.dataset.tab));
 $('#buddy').addEventListener('click', e => {
   const a = e.target.closest('[data-act]')?.dataset.act;
-  if (!a) { const c = e.target.closest('.bd-card'), b = c && S.buds[+c.dataset.i]; if (b && boxOf(b.pid)) { sfx('tap'); budPick = null; openPoke(b.pid); } return; }   // 짝꿍 칸을 누르면 그 포켓몬 정보 카드
+  if (!a) { const c = e.target.closest('.bd-card'), b = c && S.buds[+c.dataset.i]; if (b && boxOf(b.pid)) { sfx('tap'); budPick = null; ppBud = true; openPoke(b.pid); } return; }   // 짝꿍 칸을 누르면 그 포켓몬 정보 카드
   const i = +e.target.closest('[data-i]').dataset.i;
   if (a === 'pick') { budPick = i; pressGo(e.target.closest('.bd-empty'), () => setMgrTab('box'), 40); }
   else if (a === 'evo') { if (budReady(S.buds[i])) evolvePoke(boxOf(S.buds[i].pid)); }
