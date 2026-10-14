@@ -1379,6 +1379,7 @@ function bgmSrcStart(off = bgm.pos || 0) {
   if (bgm.src || !bgm.buf) return; const a = audio(); if (!a) return; bgmRoute();
   off = off % bgm.buf.duration || 0;
   const x = a.createBufferSource(); x.buffer = bgm.buf; x.loop = true; x.connect(bgm.gain); x.start(0, off); bgm.src = x; bgm.t0 = a.currentTime - off;
+  if (bgm.fadeIn) { const g = bgm.gain.gain, t = a.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(0, t); g.linearRampToValueAtTime(.55 * VOL.bgm / 10, t + bgm.fadeIn); bgm.fadeIn = 0; }
 }
 // IndexedDB: 곡 이름표 → 파일
 function musicDB() {
@@ -1390,9 +1391,9 @@ const musicPut = (id, blob) => musicDo('readwrite', st => st.put(blob, id));
 const musicKeys = () => musicDo('readonly', st => st.getAllKeys());
 const evoMus = { have: false, buf: null, src: null, g: null };
 musicKeys().then(k => { (k || []).forEach(x => x === 'evo' ? (evoMus.have = true) : /^cry\d+$/.test(x) ? cry.have.add(+x.slice(3)) : bgm.have.add(x)); cryLabel(); if (bgmOn && bgm.id == null) bgmStart(); if (!$('#shop').hidden) renderShop(); }).catch(() => {});
-async function bgmPlay(id) {
-  if (bgm.id === id && bgm.buf) { bgmSrcStart(); return; }
-  bgm.id = id; bgmSrcStop(); bgm.buf = null; bgm.pos = 0;
+async function bgmPlay(id, pos) {
+  if (bgm.id === id && bgm.buf) { if (pos != null) bgm.pos = pos; bgmSrcStart(); return; }
+  bgm.id = id; bgmSrcStop(); bgm.buf = null; bgm.pos = pos || 0;
   let buf = bgm.cache.get(id);
   if (!buf) {
     let blob = null; try { blob = await musicGet(id); } catch (e) {}
@@ -1406,8 +1407,19 @@ async function bgmPlay(id) {
 function bgmStop() { bgmSrcStop(); bgm.id = null; bgm.buf = null; }
 function bgmStart() { if (bgm.preview) return; if (bgmOn) bgmPlay(S.bgm || 'azalea'); else bgmStop(); }
 // 상점 미리 듣기: 15초 듣고 원래 곡으로 돌아간다
-function bgmPreview(id) { bgm.preview = id; clearTimeout(bgm.prevT); bgmPlay(id); bgm.prevT = setTimeout(() => { bgmStopPreview(); if (!$('#shop').hidden) renderShop(); }, 15000); }
-function bgmStopPreview() { bgm.preview = null; clearTimeout(bgm.prevT); if (bgmOn) bgmPlay(S.bgm || 'azalea'); else bgmStop(); }
+// 끝날 때쯤 2초 동안 소리가 줄고, 원래 곡은 멈췄던 자리부터 소리를 키우며 다시 튼다
+function bgmPreview(id) {
+  if (!bgm.preview && bgm.id && bgm.buf) bgm.ret = { id: bgm.id, pos: bgmPos() };
+  bgm.preview = id; bgm.fadeIn = 0; clearTimeout(bgm.prevT); bgmDuck(1, .05);
+  if (bgm.id === id) bgmSrcStop(); bgmPlay(id, 0);
+  bgm.prevT = setTimeout(() => { bgmDuck(0, 2); bgm.prevT = setTimeout(() => { bgmStopPreview(); if (!$('#shop').hidden) renderShop(); }, 2000); }, 13000);
+}
+function bgmStopPreview() {
+  bgm.preview = null; clearTimeout(bgm.prevT); const r = bgm.ret; bgm.ret = null;
+  if (!bgmOn) return bgmStop();
+  const id = S.bgm || 'azalea', pos = r && r.id === id ? r.pos : 0;
+  bgmSrcStop(); bgm.fadeIn = 1.5; bgmPlay(id, pos);
+}
 // 메인 곡 잠깐 줄이기/되돌리기 (전설 알 부화)
 function bgmDuck(to, sec) { const a = actx; if (!a || !bgm.gain) return; const g = bgm.gain.gain, t = a.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(.55 * VOL.bgm / 10 * to, t + sec); }
 // 전설 알: 긴장감 있는 8비트 곡 (D 단조, 두드릴수록 빨라지고 높은 음이 더해진다). 직접 만든 곡이라 파일이 필요 없다
@@ -5814,7 +5826,7 @@ async function start(data) {
   window.pokeRunReady = true; postNative();
   try { window.webkit?.messageHandlers?.pokeRun?.postMessage({ ready: true }); } catch (e) {}
 }
-if (/[?&]debug/.test(location.search)) window.__meadow = { feedOne, tense, hatchEgg, playHatch, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
+if (/[?&]debug/.test(location.search)) window.__meadow = { bgm, bgmPos, feedOne, tense, hatchEgg, playHatch, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
 if (/[?&]debug/.test(location.search)) Object.assign(window, { __drag: () => drag, __log: log, __save: save, __bgm: bgm, __actx: () => actx, __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf, __thoughtOf: thoughtOf, __addRel: addRel, __tyIcon: tyIcon, __evoKids: evoKids, __friendsAll: friendsAll, __renameBox: renameBox });
 window.claude?.hot?.snapshot?.(() => serialize());
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
