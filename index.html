@@ -4381,7 +4381,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.66';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.67';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5156,7 +5156,7 @@ function thoughtOf(m) {
 // 상자 정보창에서 이름 바꾸기 (필드에 있으면 필드 포켓몬 이름도 같이)
 // 두 정보창(필드·상자) 공통 머리: 이름·성별·랭크 / 분류·타입 / 만난 날짜·장소
 const rkBadge = P => { const rk = P ? rankOf(P) : ''; return rk ? `<span class="rk ${rk}">${rk}</span>` : ''; };
-const tnCls = sp => tierOf(+sp) ? ' tn-' + tierOf(+sp) : '';   // 특별한 포켓몬 이름 글자색 (1단계 무지개·2단계 금빛·3단계 보랏빛)
+const tnCls = sp => '';   // 이름 단계 글자색은 박스 격자에서만 (2026-10-14 경완 결정). 다른 화면도 켜려면 tierOf(+sp) ? ' tn-' + tierOf(+sp) : ''
 function infoHead(P, sp, nameHtml, extra = '') {
   const d = SPECIES[sp], rk = P ? rankOf(P) : '';
   return `<div class="ih-top${tnCls(sp)}">${nameHtml}${P?.shiny ? '<b class="sh" data-tip="이로치">✦</b>' : ''}</div>`
