@@ -207,6 +207,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .hatch.myth>.hrays{background:repeating-conic-gradient(from 0deg,rgba(255,90,140,0) 0deg,rgba(255,90,140,.6) 4deg,rgba(255,220,80,.6) 6deg,rgba(255,220,80,0) 10deg,rgba(80,220,255,0) 15deg,rgba(80,220,255,.6) 19deg,rgba(180,120,255,.6) 21deg,rgba(180,120,255,0) 25deg,rgba(0,0,0,0) 30deg);animation:hrays 4s linear infinite,mythHue 2.4s linear infinite}
 .hatch.myth.surge>.hrays{animation-duration:1.2s,1.2s}
 .hatch.myth>.hwhite.go{background:radial-gradient(circle at 50% 45%,#fff 25%,#ffe4f6 50%,#dff4ff 72%,#fff3c8)}
+/* 부화 뒤: 빛줄기는 느리게, 카드는 밝기 그대로 */.hatch.done>.hrays{animation-duration:18s}.hatch.myth.done>.hrays{animation-duration:18s,6s}.hatch.done .win{filter:none}.hatch.done>.hglow{opacity:0}
 @keyframes mythHue{to{filter:hue-rotate(360deg)}}
 .hspark{position:absolute;width:6px;height:6px;pointer-events:none;z-index:4;background:#fff;box-shadow:0 0 6px 2px var(--sc,#ffe070);animation:hspark .9s steps(6,end) forwards}
 .hspark.b{width:9px;height:9px}
@@ -4357,7 +4358,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.50';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.51';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6081,7 +6082,10 @@ let hatching = false;
 // 부화 창 효과 초기화. 흔들림 클래스도 지운다 (창을 다시 열 때 지난번 흔들림이 다시 재생되지 않게)
 function hSparks(k, g, big) { for (let i = 0; i < k; i++) { const s = document.createElement('i'); s.className = 'hspark' + (big && Math.random() < .4 ? ' b' : ''); s.style.left = (50 + (Math.random() - .5) * 80) + '%'; s.style.top = (28 + Math.random() * 48) + '%';
   s.style.setProperty('--sc', g === 6 ? `hsl(${Math.random() * 360 | 0} 100% 72%)` : g === 5 ? (Math.random() < .6 ? '#ffd84a' : '#fff6c0') : g === 3 ? (Math.random() < .5 ? '#8ac8ff' : '#e0f2ff') : (Math.random() < .5 ? '#d6a4ff' : '#ffc4ef')); s.style.animationDelay = (Math.random() * .2).toFixed(2) + 's'; hatchEl.append(s); setTimeout(() => s.remove(), 1300); } }
-function hatchFx() { hatchEl.classList.remove('legend', 'myth', 'rays', 'g4t', 'surge'); { const wh = hatchEl.querySelector('.hwhite'); if (wh) { wh.style.transition = ''; wh.style.opacity = ''; } } hatchEl.style.setProperty('--lg', 0); hatchEl.querySelectorAll('.hspark').forEach(e => e.remove()); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); hatchEl.querySelector('.win').classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5', 'jolt', 'wquake', 'leg', 'sil', 'brz'); hatchEl.querySelector('.hwhite')?.classList.remove('go', 'big'); }
+// 부화 뒤 정보 카드 뒤 배경: 특별한 포켓몬은 단계 색(1 무지개·2 금빛·3 보랏빛)을 채운 채 빛줄기가 천천히 돈다
+function hatchBg(fg) { const c = hatchEl.classList; c.remove('surge'); c.toggle('done', fg >= 4); c.toggle('legend', fg >= 5); c.toggle('myth', fg === 6); c.toggle('g4t', fg === 4); c.toggle('rays', fg >= 5);
+  hatchEl.style.setProperty('--dk', 0); hatchEl.style.setProperty('--lg', fg >= 5 ? .8 : 0); hatchEl.style.setProperty('--lit', fg === 4 ? .8 : 0); }
+function hatchFx() { hatchEl.classList.remove('legend', 'myth', 'rays', 'g4t', 'surge', 'done'); { const wh = hatchEl.querySelector('.hwhite'); if (wh) { wh.style.transition = ''; wh.style.opacity = ''; } } hatchEl.style.setProperty('--lg', 0); hatchEl.querySelectorAll('.hspark').forEach(e => e.remove()); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); hatchEl.querySelector('.win').classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5', 'jolt', 'wquake', 'leg', 'sil', 'brz'); hatchEl.querySelector('.hwhite')?.classList.remove('go', 'big'); }
 async function playHatch() {
   if (hatching || !hatchQ.length) return;
   hatching = true;
@@ -6103,7 +6107,7 @@ async function playHatch() {
   hatchStage.querySelector('.flash').classList.add('go'); sfx('pop');
   // 깨지는 순간 화면 전체가 하얗게 → 천천히 원래대로. 전설은 긴장 곡을 멈추고 카드 테두리에 후광
   { const wh = hatchEl.querySelector('.hwhite'), L = fg >= 5; wh.style.setProperty('--wl', parseFloat(wh.style.opacity) || (parseFloat(hatchEl.style.getPropertyValue(L ? '--lg' : '--lit')) || 0) * .55); wh.classList.remove('go', 'big'); wh.style.transition = ''; wh.style.opacity = '';   /* 밝아진 만큼에서 이어서 하얗게 */ void wh.offsetWidth; wh.classList.add('go'); if (L) wh.classList.add('big');
-    setTimeout(() => { hatchEl.classList.remove('legend'); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); { const w = hatchEl.querySelector('.win'); w.classList.remove('jolt'); setTier(w, sp); if (fg >= 5) hatchEl.classList.add('rays'); } }, L ? 500 : 300);
+    setTimeout(() => { hatchBg(fg); { const w = hatchEl.querySelector('.win'); w.classList.remove('jolt'); setTier(w, sp); } }, L ? 500 : 300);
     if (L) { tenseStop(.25); setTimeout(() => { if (hatching) bgmDuck(1, 3); }, 3200); } }
   if (src) { S.eggs = S.eggs.filter(x => x !== src); renderBag.sig = ''; renderRun(); }
   hatchStage.querySelectorAll('.shard').forEach(x => { x.style.setProperty('--ec', getComputedStyle(egg).getPropertyValue('--ec')); x.classList.add('go'); });
@@ -6192,7 +6196,7 @@ async function hatchAll() {
     if (d && !q && !still) slide(d);   // 다음 카드는 오른쪽에서, 이전 카드는 왼쪽에서 밀려 들어온다
     hatchStage.innerHTML = ''; hatchStage.append(bornImg(r.sp, r.P, r.isNew)); if (!q && !r.gp) { r.gp = 1; setTimeout(() => goldPop(r.dupG), 250); }
     $('#hatchMsg').innerHTML = bornMsg(r); showDexInfo(r.sp); if (ivMode) showIvInfo(r);
-    { const w = hatchEl.querySelector('.win'); w.classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5'); setTier(w, r.sp); hatchEl.classList.toggle('rays', fxGrade(r.sp, r.g) >= 5); hatchEl.classList.toggle('myth', fxGrade(r.sp, r.g) === 6); }
+    { const w = hatchEl.querySelector('.win'); w.classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5'); setTier(w, r.sp); hatchBg(fxGrade(r.sp, r.g)); }
     $('#hlNum').textContent = `${i + 1} / ${res.length}`; $('#hlHl').hidden = i <= 0; $('#hlHr').hidden = i >= res.length - 1;
     strip.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-current', j === i));
     if (!q) strip.children[i]?.scrollIntoView({ block: 'nearest', inline: 'center' });
