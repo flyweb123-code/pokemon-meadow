@@ -673,6 +673,13 @@ body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch
 .pk.t-sil .nm,.tn-sil:not(.ih-top),.ih-top.tn-sil .nm-edit input{background:linear-gradient(180deg,#f2c641 0%,#d99a12 42%,#8f5a00 58%,#c98a10 78%,#f0c040 100%);-webkit-background-clip:text;background-clip:text;color:transparent}.pk.t-brz .nm,.tn-brz:not(.ih-top),.ih-top.tn-brz .nm-edit input{background:linear-gradient(180deg,#d2a8ff 0%,#a160f2 40%,#5c1fb8 58%,#8d48e6 78%,#cfa2ff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}.ih-top:is(.tn-leg,.tn-sil,.tn-brz) .nm-edit input{-webkit-text-fill-color:transparent;caret-color:var(--win-ink)}
 .pk .sh,.pp-body .sh{color:#e8a020;font-size:12px;margin-left:2px;text-shadow:0 0 4px rgba(255,200,40,.7)}
 /* S 랭크: 금빛 테두리 빛 + 반짝이 */
+.mon:is(.rkS,.rkA).rubA .flip{animation:rubS1 .42s ease-out}.mon:is(.rkS,.rkA).rubB .flip{animation:rubS2 .42s ease-out}.mon.rkA.rubA .flip{animation-name:rubA1}.mon.rkA.rubB .flip{animation-name:rubA2}
+@keyframes rubS1{0%{filter:drop-shadow(0 0 4px #fff8d0) drop-shadow(0 0 16px #ffb000)}100%{filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 6px #ffc830)}}@keyframes rubS2{0%{filter:drop-shadow(0 0 4px #fff8d0) drop-shadow(0 0 16px #ffb000)}100%{filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 6px #ffc830)}}
+@keyframes rubA1{0%{filter:drop-shadow(0 0 4px #ffd0d0) drop-shadow(0 0 16px #ff2a2a)}100%{filter:drop-shadow(0 0 2px #ff9090) drop-shadow(0 0 6px #ff3a3a)}}@keyframes rubA2{0%{filter:drop-shadow(0 0 4px #ffd0d0) drop-shadow(0 0 16px #ff2a2a)}100%{filter:drop-shadow(0 0 2px #ff9090) drop-shadow(0 0 6px #ff3a3a)}}
+.mon.joyHalo .flip{animation:joyS .32s ease-in-out infinite alternate!important}.mon.rkA.joyHalo .flip{animation-name:joyA!important}
+@keyframes joyS{from{filter:drop-shadow(0 0 3px #fff8d0) drop-shadow(0 0 8px #ffc020)}to{filter:drop-shadow(0 0 5px #fffbe0) drop-shadow(0 0 18px #ffb000)}}@keyframes joyA{from{filter:drop-shadow(0 0 3px #ffd0d0) drop-shadow(0 0 8px #ff4040)}to{filter:drop-shadow(0 0 5px #ffe0e0) drop-shadow(0 0 18px #ff2020)}}
+.hspk{position:absolute;transform:translate(-50%,-50%);line-height:1;pointer-events:none;color:#fff6b0;text-shadow:0 0 4px #ffb000,0 0 2px #fff;animation:hspk .9s ease-out forwards}.hspk.A{color:#ffe0e0;text-shadow:0 0 4px #ff3a3a,0 0 2px #fff}
+@keyframes hspk{0%{opacity:0;scale:.3}25%{opacity:1;scale:1.25}60%{opacity:1;scale:.9}100%{opacity:0;scale:.4;translate:0 -10px}}
 .mon.rkS .flip{animation:sglow 1.8s ease-in-out infinite}.mon.rkA .flip{animation:aglowM 2s ease-in-out infinite}@keyframes aglowM{0%,100%{filter:drop-shadow(0 0 2px #ff9090) drop-shadow(0 0 6px #ff3a3a)}50%{filter:drop-shadow(0 0 3px #ffa0a0) drop-shadow(0 0 11px #ff2828)}}   /* A 랭크: 박스와 같은 붉은 후광 */.mon.nightf .act,.mon.nightf .shadow{filter:url(#nightF)}.mon.selflit .flip{animation:sglowN 2s ease-in-out infinite}@keyframes sglowN{0%,100%{filter:brightness(.6) sepia(.15) drop-shadow(0 0 2px rgba(255,224,140,.75)) drop-shadow(0 0 6px rgba(255,176,32,.7))}50%{filter:brightness(.66) sepia(.15) drop-shadow(0 0 3px rgba(255,232,160,.9)) drop-shadow(0 0 11px rgba(255,170,20,.85))}}#glows{position:absolute;inset:0;pointer-events:none}.gl{position:absolute;left:0;top:0;z-index:1050;border-radius:50%;mix-blend-mode:screen;pointer-events:none;width:200px;height:96px;margin:-48px 0 0 -100px;background:radial-gradient(closest-side,rgba(255,214,130,.1),rgba(255,200,110,.05) 40%,rgba(255,190,90,0) 70%,rgba(255,170,50,0));animation:glp 2s ease-in-out infinite}@keyframes glp{50%{opacity:.85}}.mon.selflit .shadow{opacity:.35}
 @keyframes sglow{0%,100%{filter:drop-shadow(0 0 1px #fff6c0) drop-shadow(0 0 3px #ffc830)}50%{filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 7px #ffb000)}}
 .pk.rkA{background:radial-gradient(circle 40px at 50% 42px,rgba(255,120,120,.38),rgba(255,120,120,0))}.pk.rkA img,.dp-pic.rkA img,.bd-pic.rkA img{animation:aglowI 2s ease-in-out infinite}@keyframes aglowI{0%,100%{filter:drop-shadow(0 0 1px #ffd0d0) drop-shadow(0 0 3px #ff5050)}50%{filter:drop-shadow(0 0 2px #ffd0d0) drop-shadow(0 0 7px #ff3838)}}
@@ -2368,8 +2375,19 @@ function petEnd() {
   if (!petM) return; const m = petM.m; m.pet = false; if (S.mons.includes(m) && m.state === 'idle') setState(m, 'idle', 1.5);
   petM = null; document.body.classList.remove('petting'); $('#petBar').hidden = true; queueMicrotask(dlgBound);
 }
+// 후광 있는 포켓몬(S·A 랭크): 문지를 때마다 후광이 번쩍, 다 쓰다듬어 좋아할 때는 반짝반짝
+const haloOf = m => m.el?.classList.contains('rkS') ? 'S' : m.el?.classList.contains('rkA') ? 'A' : '';
+function haloFlash(m) { if (!haloOf(m)) return; const a = m.el.classList.contains('rubA'); m.el.classList.toggle('rubA', !a); m.el.classList.toggle('rubB', a); clearTimeout(m.rubT); m.rubT = setTimeout(() => m.el.classList.remove('rubA', 'rubB'), 420); }
+function haloJoy(m) {
+  const h = haloOf(m); if (!h) return; m.el.classList.add('joyHalo'); clearTimeout(m.joyT); m.joyT = setTimeout(() => m.el.classList.remove('joyHalo'), 2600);
+  const H = m.h || 60, W = m.w || 50;
+  for (let k = 0; k < 14; k++) setTimeout(() => { if (!S.mons.includes(m)) return; const i = document.createElement('i'); i.className = 'hspk ' + h; i.textContent = k % 3 ? '✦' : '✧';
+    const a = Math.random() * Math.PI * 2, rx = W * (.45 + Math.random() * .35), ry = H * (.4 + Math.random() * .3);
+    i.style.left = (m.x + Math.cos(a) * rx).toFixed(1) + 'px'; i.style.top = (m.y - (m.lift || 0) - H * .5 + Math.sin(a) * ry).toFixed(1) + 'px'; i.style.fontSize = (10 + Math.random() * 10).toFixed(0) + 'px';
+    fxEl.append(i); setTimeout(() => i.remove(), 900); }, k * 150);
+}
 function petDone() {
-  const m = petM.m, P = boxOf(m.pid);
+  const m = petM.m, P = boxOf(m.pid); haloJoy(m);
   let fr = 0; if (P && dayCap(m, 'pet', PET_DAY)) { fr = 3; addFr(P.id, 3); }
   m.social = clamp(m.social - 20); m.joy = clamp((m.joy ?? 60) + 20);
   haptic(2); setTimeout(() => haptic(2), 110); setTimeout(() => haptic(1), 220); sfx('pickup'); if (fr) frPop(m, fr);
@@ -2387,7 +2405,7 @@ addEventListener('pointermove', e => { const p = petM; if (!p || p.done || !p.ru
   const d = Math.hypot(e.clientX - p.rub.x, e.clientY - p.rub.y); p.rub.x = e.clientX; p.rub.y = e.clientY; p.rub.far = Math.max(p.rub.far, Math.hypot(e.clientX - p.rub.x0, e.clientY - p.rub.y0)); petTrail(e.clientX, e.clientY);
   if (!petHit(p.m, e.clientX, e.clientY)) return;
   /* 손맛: 문지르는 동안 털결처럼 톡톡(보통), 게이지가 한 칸 찰 때마다 세게 */
-  const now = performance.now(); p.rub.tx += d; if (p.rub.tx >= 34 && now - p.rub.ht > 60) { p.rub.tx = 0; p.rub.ht = now; haptic(1); }
+  const now = performance.now(); p.rub.tx += d; if (p.rub.tx >= 34 && now - p.rub.ht > 60) { p.rub.tx = 0; p.rub.ht = now; haptic(1); haloFlash(p.m); }
   /* 빠르기(px/초)를 부드럽게 재서, 빠를수록 한 번 문지른 거리가 게이지에 더 크게 들어간다 (느리면 0.5배, 아주 빠르면 2배) */
   const dtm = Math.max(8, now - (p.mvT || now - 16)); p.mvT = now; p.spd = p.spd * .8 + (d / dtm * 1000) * .2;
   p.v += d / PET_LEN * clamp(p.spd / 700, .5, 2); petDots();
@@ -4382,7 +4400,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.70';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.71';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
