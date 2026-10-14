@@ -194,7 +194,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .hatch.g4t>.hlit{background:radial-gradient(circle at 50% 45%,rgba(255,244,255,.97),rgba(216,164,255,.75) 40%,rgba(150,92,230,.5))}
 .hatch.g4t>.hglow{background:radial-gradient(circle at 50% 45%,rgba(250,235,255,.9),rgba(220,180,255,.5) 55%,rgba(190,140,255,.35))}
 .hatch.g4t>.hrays{opacity:calc(var(--lit,0) * .75);background:repeating-conic-gradient(from 0deg,rgba(226,180,255,0) 0deg,rgba(226,180,255,.5) 5deg,rgba(226,180,255,.5) 8deg,rgba(226,180,255,0) 13deg,rgba(226,180,255,0) 20deg);animation-duration:9s;transition:opacity .5s}
-.hatch.legend>.hlit{background:radial-gradient(circle at 50% 45%,#fff 0,rgba(255,238,170,.95) 16%,rgba(255,204,90,.65) 40%,rgba(255,170,40,0) 72%);opacity:var(--lg,0);transform:scale(calc(.55 + var(--lg,0) * .7));transition:opacity .3s,transform .3s}
+.hatch.legend>.hlit{background:radial-gradient(circle closest-side at 50% 45%,#fff 0,rgba(255,238,170,.95) 22%,rgba(255,204,90,.65) 55%,rgba(255,170,40,0) 100%);opacity:var(--lg,0);transform:scale(calc(.55 + var(--lg,0) * .7));transition:opacity .3s,transform .3s}
 .hatch.legend>.hrays{opacity:var(--lg,0);background:repeating-conic-gradient(from 0deg,rgba(255,232,140,0) 0deg,rgba(255,232,140,.65) 4deg,rgba(255,232,140,.65) 6deg,rgba(255,232,140,0) 10deg,rgba(255,232,140,0) 15deg);animation-duration:6s;transition:opacity .5s}
 .hatch.legend>.hdark{opacity:calc(.55 + var(--dk,0) * .45 - var(--lg,0) * .35)}
 .hatch.legend .win{filter:brightness(calc(1 - var(--dk,0) * .28 + var(--lg,0) * .3))}
@@ -633,7 +633,7 @@ ol.log li.big .txt{color:#c03838}
 .mvuse.on{border-color:var(--tc);background:color-mix(in srgb,var(--tc) 14%,#fff)}
 .mvuse.on:active{transform:translateY(2px);box-shadow:none}
 .mvuse b{font-weight:700}.mvuse>span:last-child{margin-left:auto;color:var(--dim);font-size:13px}.mvuse.on>span:last-child{color:var(--win-ink)}
-.mvuse:disabled{cursor:default;background:#e4e2da;border-color:#b4b2aa;color:#8e8c86;box-shadow:none}.mvuse:disabled b{color:#8e8c86}.mvuse:disabled>span:last-child{color:#9e9c96}.mvuse:disabled .mv-lock{color:#8e8c86}.mvuse .mv-lock{display:inline-flex;flex:none;width:16px;height:16px}.mvuse .mv-lock svg{display:block;width:16px;height:16px}.mvuse:disabled{opacity:1}
+.mvuse.lock{cursor:default;background:#e4e2da;border-color:#b4b2aa;color:#8e8c86;box-shadow:none}.mvuse.lock b{color:#8e8c86}.mvuse.lock>span:last-child{color:#9e9c96}.mvuse.lock .mv-lock{color:#8e8c86}.mvuse .mv-lock{display:inline-flex;flex:none;width:16px;height:16px}.mvuse .mv-lock svg{display:block;width:16px;height:16px}.mvuse.lock{opacity:1}
 .mvchip{display:inline-flex;align-items:center;gap:5px;font:inherit;font-size:13px;color:var(--win-ink);background:#fff;border:2px solid var(--tc);padding:2px 8px 2px 2px;box-shadow:2px 2px 0 rgba(0,0,0,.15)}
 .mvchip i{font-style:normal;font-size:10px;color:#fff;background:var(--tc);padding:1px 4px}
 button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);box-shadow:none}
@@ -660,9 +660,12 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .pokepop .boxbtn{display:block;width:100%;font:inherit;font-size:15px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:10px 8px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
 .dexpop .boxbtn.red{background:#c83838;border-color:#7a1c1c;color:#fff}/* 눌린 버튼: 아래 그림자가 위로 옮겨가며 면이 4px 내려간다 → 글자도 padding 으로 같은 만큼 내려 함께 움직인다 */
 
-.pokepop.bud .win{background:#fff3f7;border-color:#9a3462;box-shadow:inset 0 0 0 3px #fff3f7,inset 0 0 0 6px #e9a3bf,6px 6px 0 rgba(154,52,98,.3)}.pokepop.bud .dp-pic{background:#fcd9e6;border-color:#e9a3bf;box-shadow:inset 0 -18px 0 #f6c3d6}.pokepop.bud .ivs .bar,.pokepop.bud .mvcard{border-color:#e9a3bf}.pokepop.bud .pp-free{color:#c0507e}
+.win.bud{background:#fff3f7;border-color:#9a3462;box-shadow:inset 0 0 0 4px #fff3f7,inset 0 0 0 8px #e9a3bf,6px 6px 0 rgba(0,0,0,.35)}.win.bud .dp-pic{background:#fcd9e6;border-color:#e9a3bf;box-shadow:inset 0 -18px 0 #f6c3d6}.win.bud .mvcard:not(.on){border-color:#e9a3bf!important}.win.bud .pp-free{color:#c0507e}
+.bud-tag{margin-left:6px;font-size:12px;line-height:1;padding:4px 8px;background:#e8679a;color:#fff;border:2px solid #9a3462;box-shadow:2px 2px 0 rgba(0,0,0,.2)}.bud-tag[hidden]{display:none}.hd-rk:empty+.bud-tag{margin-left:0}
+#mStage{cursor:pointer}
 .pokepop .boxbtn.sunk{background:#b9b9c6;border-color:#8a8a9a;color:#5a5a6a;box-shadow:inset 0 4px 0 rgba(0,0,0,.3),inset 3px 0 0 rgba(0,0,0,.12);padding-top:15px;padding-bottom:7px}
 .pokepop .boxbtn.pink.sunk{background:#f7dfe8;border-color:#d9a9bc;color:#b0788f}
+.pokepop .boxbtn.pressd{padding-top:13px!important;padding-bottom:7px!important}.pokepop .boxbtn.pink.pressd{background:#c9507e}
 .pokepop .boxbtn.sunk.popout{animation:btnPop .2s cubic-bezier(.3,1.6,.5,1) forwards}
 @keyframes btnPop{0%{background:#b9b9c6;box-shadow:inset 0 4px 0 rgba(0,0,0,.3);padding-top:14px;padding-bottom:6px}100%{background:var(--frame);border-color:var(--frame);color:var(--win);box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);padding-top:10px;padding-bottom:10px}}
 .pokepop .boxbtn.off{background:var(--win);color:var(--frame)}.pokepop .boxbtn[disabled]{opacity:.5}
@@ -681,6 +684,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .slot .st.sleep{background:#4a5098}.slot .st.play{background:#c04870}.slot .st.eat{background:#a07020}.slot .st.away{background:#888}
 .slot .mini{width:80%;height:6px;background:var(--hp-track);border:2px solid var(--frame);box-sizing:content-box}
 .slot .mini i{display:block;height:100%;background:var(--hunger)}
+.slot.bud{background:#fff3f7;border-color:#e9a3bf}.slot.bud:hover,.slot.bud:focus-visible{border-color:#c0507e}.slot.bud[aria-current="true"]{background:#fcd9e6;border-color:#c0507e}.slot.bud .mini{border-color:#9a3462}
 .slot.empty{border-style:dashed;color:var(--dim);justify-content:center;background:transparent}
 .slot.empty .plus{font-size:24px;line-height:1}
 .slot .no{position:absolute;right:5px;top:4px;font-size:10px;color:var(--dim)}.slot .sl-x{position:absolute;right:0;top:0;font-size:15px;line-height:1;padding:5px 6px 8px 10px;color:var(--dim);z-index:1}.slot .sl-x:active{color:var(--frame)}
@@ -1354,13 +1358,13 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 </div>
 <div class="dexpop monpop" id="monPop" hidden>
   <div class="win" role="dialog" aria-label="필드 포켓몬">
-        <i class="sw-h l" id="mHl"></i><i class="sw-h r" id="mHr"></i><div class="dp-head m-head"><span class="hd-rk" id="mRk"></span><button class="pp-x" id="monX" aria-label="닫기">✕</button></div>
+        <i class="sw-h l" id="mHl"></i><i class="sw-h r" id="mHr"></i><div class="dp-head m-head"><span class="hd-rk" id="mRk"></span><span class="bud-tag" id="mBudTag" hidden>짝꿍</span><button class="pp-x" id="monX" aria-label="닫기">✕</button></div>
     <section class="mgr-detail" id="mgrDetail" aria-live="polite"></section>
   </div>
 </div>
 <div class="dexpop pokepop" id="pokePop" hidden>
   <div class="win" role="dialog" aria-label="포켓몬 정보">
-    <i class="sw-h l" id="ppHl"></i><i class="sw-h r" id="ppHr"></i><div class="dp-head m-head"><span class="hd-rk" id="ppRk"></span><button class="pp-x" id="ppX" aria-label="닫기">✕</button></div>
+    <i class="sw-h l" id="ppHl"></i><i class="sw-h r" id="ppHr"></i><div class="dp-head m-head"><span class="hd-rk" id="ppRk"></span><span class="bud-tag" id="ppBudTag" hidden>짝꿍</span><button class="pp-x" id="ppX" aria-label="닫기">✕</button></div>
     <div class="dp-pic" id="ppPic"><img alt="" id="ppImg"></div>
     <div class="pp-body" id="ppBody"></div>
     <div class="pp-evo" id="ppEvo" hidden><button class="boxbtn evobtn" id="ppEvoBtn">진화하기</button></div>
@@ -1404,6 +1408,7 @@ const MAX_MONS = 9;   // 필드에는 최대 9마리 (2026-10-14 사용자 요�
 // ---------- 효과음: 파일 없이 사각파·잡음으로 만드는 옛 휴대용 게임기 소리 ----------
 // 볼륨 0~10 (0 = 끔). 예전 켜짐/꺼짐 설정은 10/0으로 옮긴다
 const VOL = { bgm: 10, sfx: 10 };
+const volG = v => v > 0 ? .5 * Math.pow(2, (v - 1) / 9) : 0;   // 볼륨 칸 → 크기: 1칸이 예전 5칸만큼, 10칸은 예전 최대 그대로
 try { for (const k of ['bgm', 'sfx']) { const v = localStorage.getItem('pk-' + k + '-vol'); VOL[k] = v != null ? Math.max(0, Math.min(10, +v || 0)) : localStorage.getItem('pk-' + k) === '0' ? 0 : 10; } } catch (e) {}
 let sfxOn = VOL.sfx > 0;
 let actx = null, noiseBuf = null;
@@ -1423,7 +1428,7 @@ function tone(f, t0, dur, { type = 'square', vol = .07, to = 0, steps = 0 } = {}
   const a = actx, o = a.createOscillator(), g = a.createGain();
   o.type = type; o.frequency.setValueAtTime(f, t0);
   if (to) { if (steps) { for (let i = 1; i <= steps; i++) o.frequency.setValueAtTime(f + (to - f) * i / steps, t0 + dur * i / (steps + 1)); } else o.frequency.linearRampToValueAtTime(to, t0 + dur); }
-  vol *= VOL.sfx / 10; g.gain.setValueAtTime(vol, t0); g.gain.setValueAtTime(vol, t0 + dur * .8); g.gain.linearRampToValueAtTime(0, t0 + dur);
+  vol *= volG(VOL.sfx); g.gain.setValueAtTime(vol, t0); g.gain.setValueAtTime(vol, t0 + dur * .8); g.gain.linearRampToValueAtTime(0, t0 + dur);
   o.connect(g).connect(a.destination); o.start(t0); o.stop(t0 + dur + .02);
 }
 function noise(t0, dur, vol = .12, hp = 1200) {
@@ -1431,7 +1436,7 @@ function noise(t0, dur, vol = .12, hp = 1200) {
   if (!noiseBuf) { noiseBuf = a.createBuffer(1, a.sampleRate * .5, a.sampleRate); const d = noiseBuf.getChannelData(0); let v = 0; for (let i = 0; i < d.length; i++) { if (i % 6 === 0) v = Math.random() * 2 - 1; d[i] = v; } }
   const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
   src.buffer = noiseBuf; f.type = 'highpass'; f.frequency.value = hp;
-  vol = Math.max(.002, vol * VOL.sfx / 10); g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + dur);
+  vol = Math.max(.002, vol * volG(VOL.sfx)); g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + dur);
   src.connect(f).connect(g).connect(a.destination); src.start(t0); src.stop(t0 + dur + .02);
 }
 const NOTE = n => 440 * Math.pow(2, (n - 69) / 12);
@@ -1532,7 +1537,7 @@ let bgmOn = VOL.bgm > 0;
 // 메모리를 아끼려고 32kHz 모노로 풀어 둔다 (게임보이 곡이라 소리 차이가 거의 없다).
 const bgm = { id: null, buf: null, src: null, gain: null, preview: null, prevT: 0, have: new Set(), cache: new Map() };
 function bgmRoute() { if (bgm.gain || !actx) return; bgm.gain = actx.createGain(); bgm.gain.connect(actx.destination); bgmVol(); }
-function bgmVol() { if (bgm.gain) bgm.gain.gain.value = .55 * VOL.bgm / 10; }
+function bgmVol() { if (bgm.gain) bgm.gain.gain.value = .55 * volG(VOL.bgm); }
 async function bgmDecode(blob) {
   const ab = await blob.arrayBuffer(), O = window.OfflineAudioContext || window.webkitOfflineAudioContext;
   const c = new O(1, 1, 32000);
@@ -1548,8 +1553,9 @@ const bgmPos = () => { if (!bgm.src || !actx || !bgm.buf) return bgm.pos || 0; r
 function bgmSrcStart(off = bgm.pos || 0) {
   if (bgm.src || !bgm.buf) return; const a = audio(); if (!a) return; bgmRoute();
   off = off % bgm.buf.duration || 0;
-  const x = a.createBufferSource(); x.buffer = bgm.buf; x.loop = true; x.connect(bgm.gain); x.start(0, off); bgm.src = x; bgm.t0 = a.currentTime - off;
-  if (bgm.fadeIn) { const g = bgm.gain.gain, t = a.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(0, t); g.linearRampToValueAtTime(.55 * VOL.bgm / 10, t + bgm.fadeIn); bgm.fadeIn = 0; }
+  const x = a.createBufferSource(); x.buffer = bgm.buf; x.loop = !(S.bgmRand && !bgm.preview); x.connect(bgm.gain); x.start(0, off); bgm.src = x; bgm.t0 = a.currentTime - off;
+  x.onended = () => { if (bgm.src !== x || x.loop) return; bgm.src = null; bgm.pos = 0; if (S.bgmRand && bgmOn && !bgm.preview) bgmPlay(bgmRandId(bgm.id)); };   // 무작위 재생: 한 곡이 끝나면 다른 곡
+  if (bgm.fadeIn) { const g = bgm.gain.gain, t = a.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(0, t); g.linearRampToValueAtTime(.55 * volG(VOL.bgm), t + bgm.fadeIn); bgm.fadeIn = 0; }
 }
 // IndexedDB: 곡 이름표 → 파일
 function musicDB() {
@@ -1575,7 +1581,9 @@ async function bgmPlay(id, pos) {
   bgm.buf = buf; if (!bgmAway) bgmSrcStart();
 }
 function bgmStop() { bgmSrcStop(); bgm.id = null; bgm.buf = null; }
-function bgmStart() { if (bgm.preview) return; if (bgmOn) bgmPlay(S.bgm || 'azalea'); else bgmStop(); }
+// 가진 곡(파일까지 있는 곡) 중에서 무작위로, 방금 곡은 되도록 피한다
+function bgmRandId(not) { const L = TRACKS.filter(t => S.tracks.includes(t.id) && bgm.have.has(t.id)).map(t => t.id); const M = L.length > 1 ? L.filter(x => x !== not) : L; return M[Math.floor(Math.random() * M.length)] || S.bgm || 'azalea'; }
+function bgmStart() { if (bgm.preview) return; if (bgmOn) bgmPlay(S.bgmRand ? (bgm.id && bgm.buf ? bgm.id : bgmRandId()) : S.bgm || 'azalea'); else bgmStop(); }
 // 상점 미리 듣기: 15초 듣고 원래 곡으로 돌아간다
 // 끝날 때쯤 2초 동안 소리가 줄고, 원래 곡은 멈췄던 자리부터 소리를 키우며 다시 튼다
 function bgmPreview(id) {
@@ -1591,7 +1599,7 @@ function bgmStopPreview() {
   bgmSrcStop(); bgm.fadeIn = 1.5; bgmPlay(id, pos);
 }
 // 메인 곡 잠깐 줄이기/되돌리기 (전설 알 부화)
-function bgmDuck(to, sec) { const a = actx; if (!a || !bgm.gain) return; const g = bgm.gain.gain, t = a.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(.55 * VOL.bgm / 10 * to, t + sec); }
+function bgmDuck(to, sec) { const a = actx; if (!a || !bgm.gain) return; const g = bgm.gain.gain, t = a.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(.55 * volG(VOL.bgm) * to, t + sec); }
 // 전설 알: 긴장감 있는 8비트 곡 (D 단조, 두드릴수록 빨라지고 높은 음이 더해진다). 직접 만든 곡이라 파일이 필요 없다
 const tense = { on: false, g: null, t: 0, step: 0, f: 0, iv: 0 };
 function tenseNote(f, t0, dur, type, vol) { const a = actx, o = a.createOscillator(), g = a.createGain(); o.type = type; o.frequency.setValueAtTime(f, t0); g.gain.setValueAtTime(vol, t0); g.gain.setValueAtTime(vol, t0 + dur * .7); g.gain.linearRampToValueAtTime(0, t0 + dur); o.connect(g).connect(tense.g); o.start(t0); o.stop(t0 + dur + .02); }
@@ -1616,7 +1624,7 @@ function tenseStart() {
   const a = audio(); if (!a || tense.on) return;
   bgmDuck(0, .8);
   if (!(VOL.bgm > 0)) { tense.on = true; return; }
-  tense.g = a.createGain(); tense.g.connect(a.destination); const v = .9 * VOL.bgm / 10;
+  tense.g = a.createGain(); tense.g.connect(a.destination); const v = .9 * volG(VOL.bgm);
   tense.g.gain.setValueAtTime(0, a.currentTime); tense.g.gain.linearRampToValueAtTime(v, a.currentTime + 1);
   tense.on = true; tense.f = 0; tense.step = 0; tense.t = a.currentTime + .6; tense.iv = setInterval(tenseTick, 60); tenseTick();
 }
@@ -1690,7 +1698,7 @@ async function playCry(sp, delay = 0) {
       buf = await new Promise((res, rej) => a.decodeAudioData(ab, res, rej));
       cry.buf.set(sp, buf); if (cry.buf.size > 40) cry.buf.delete(cry.buf.keys().next().value);
     }
-    const src = a.createBufferSource(), g = a.createGain(); g.gain.value = .6 * VOL.sfx / 10;
+    const src = a.createBufferSource(), g = a.createGain(); g.gain.value = .6 * volG(VOL.sfx);
     src.buffer = buf; src.connect(g).connect(a.destination); src.start(a.currentTime + delay);
   } catch (e) {}
 }
@@ -3904,7 +3912,7 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, today: S.today, ped: S.ped, tr: S.tr, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, lastPlace: S.lastPlace || null, dexNew: [...(S.dexNew || [])] };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, lastPlace: S.lastPlace || null, dexNew: [...(S.dexNew || [])] };
 }
 let saveFrozen = false;
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
@@ -3912,7 +3920,7 @@ async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
   S.lockT = d.lockT || 0; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.lastPlace = d.lastPlace || null; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
-  if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.eid = d.eid || 1;
+  if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
   cleanPlaces();
   S.dexNew = new Set(d.dexNew || []); S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
@@ -3930,7 +3938,9 @@ async function fresh() {
   S.base = midnight(); S.clock = realClock(); S.rel = {}; S.log = [];
   logEl.innerHTML = '';
   S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked.clear(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1; S.undo1 = true;
-  const e = { id: S.eid++, g: 1, km: 0, need: GRADE[1].km, isNew: true, t: Date.now() }; S.eggs.push(e);
+  // 처음 시작: 부화기에 바로 부화시킬 수 있는 일반 알 하나, 가방에 일반·희귀·레어·에픽·전설 알 하나씩 (안의 포켓몬은 부화할 때 정해진다)
+  const t = Date.now(); S.eggs.push({ id: S.eid++, g: 1, km: GRADE[1].km, need: GRADE[1].km, isNew: true, t });
+  for (const g of [1, 2, 3, 4, 5]) S.bag.push({ id: S.eid++, g, t, isNew: true });
   for (let i = 0; i < 4; i++) { const p = randLand(); addBerry(p.x, p.y); }
   log('필드가 텅 비어 있다. 알을 부화시켜 친구를 만들어 보자.', [], true);
 }
@@ -4079,7 +4089,7 @@ $('#openDex').onclick = () => tabTo(sheet, openDex);
 // 하단 메뉴(포켓몬·알·도감·상점·프로필): 모양은 기본·활성 두 가지뿐. 닿는 순간 바로 창이 열리고(활성 모양), 뒤따르는 click 은 삼킨다 (키보드 click 은 그대로)
 document.querySelectorAll('.menuwin .opt,.cmdwin .opt').forEach(b => {
   let ate = 0;
-  b.addEventListener('pointerdown', e => { if (e.button > 0 || !b.onclick) return; ate = performance.now(); e.preventDefault(); b.onclick(e); syncTabs(); });
+  b.addEventListener('pointerdown', e => { if (e.button > 0 || !b.onclick) return; ate = performance.now(); e.preventDefault(); if (b.getAttribute('aria-pressed') !== 'true') sfx('tap'); b.onclick(e); syncTabs(); });
   b.addEventListener('click', e => { if (performance.now() - ate < 1500) { ate = 0; e.stopImmediatePropagation(); e.preventDefault(); } }, true);
 });
 // 아무 기능 없는 빈 곳을 누르면 선택된 것(알·상점 곡·필드 칸)이 풀린다
@@ -4189,14 +4199,14 @@ function setShopTab(t) {
 document.querySelectorAll('#shopTabs [data-st]').forEach(b => b.onclick = () => setShopTab(b.dataset.st));
 setShopTab('bgm');
 // 설정 › 소리 › 곡: 가진 곡 중에서 고른다
-function renderBgmPick() { const t = TRACKS.find(x => x.id === S.bgm) || TRACKS[0]; $('#bgmPick').textContent = t.n; }
+function renderBgmPick() { const t = TRACKS.find(x => x.id === S.bgm) || TRACKS[0]; $('#bgmPick').textContent = S.bgmRand ? '무작위 재생' : t.n; }
 $('#bgmPick').onclick = () => {
-  $('#bgmOpts').innerHTML = TRACKS.filter(t => S.tracks.includes(t.id)).map(t => `<button data-id="${t.id}" aria-selected="${S.bgm === t.id}"><i class="sw" style="background:${t.c}"></i>${t.n}${bgm.have.has(t.id) ? '' : ' <small>(곡 파일 없음)</small>'}</button>`).join('');
+  $('#bgmOpts').innerHTML = `<button data-id="__rand" aria-selected="${!!S.bgmRand}"><i class="sw" style="background:repeating-linear-gradient(90deg,#e8679a 0 4px,#4f95dc 4px 8px,#ffc840 8px 12px)"></i>무작위 재생 <small>(가진 곡 섞어 듣기)</small></button>` + TRACKS.filter(t => S.tracks.includes(t.id)).map(t => `<button data-id="${t.id}" aria-selected="${!S.bgmRand && S.bgm === t.id}"><i class="sw" style="background:${t.c}"></i>${t.n}${bgm.have.has(t.id) ? '' : ' <small>(곡 파일 없음)</small>'}</button>`).join('');
   $('#bgmPop').hidden = false;
 };
 $('#bgmPop').addEventListener('click', e => {
   const o = e.target.closest('[data-id]');
-  if (o) { S.bgm = o.dataset.id; bgm.preview = null; bgmStart(); save(); renderBgmPick(); }
+  if (o) { const r = o.dataset.id === '__rand'; if (r !== !!S.bgmRand || !r) { S.bgmRand = r; if (!r) S.bgm = o.dataset.id; bgm.preview = null; if (r) { bgmStop(); } bgmStart(); save(); } renderBgmPick(); }
   if (o || e.target.id === 'bgmPop') $('#bgmPop').hidden = true;
 });
 renderBgmPick(); new MutationObserver(() => { if (!$('#set').hidden) renderBgmPick(); else $('#bgmPop').hidden = true; }).observe($('#set'), { attributes: true, attributeFilter: ['hidden'] });
@@ -4466,17 +4476,18 @@ function cardPager(pop, o) {
   const end = e => { if (x0 == null) return; const dx = e ? e.clientX - x0 : 0, dy = e ? e.clientY - y0 : 0, d = dx < 0 ? 1 : -1; x0 = null;
     if (!dx0) return; swT = performance.now();
     const fast = performance.now() - t0 < 260 && Math.abs(dx) > 24;
-    if (e && (Math.abs(dx) > Math.min(90, W * .22) || fast) && Math.abs(dx) > Math.abs(dy) && gh[d]) { busy = true; anim(true); put(-d * (W + GAP)); setTimeout(() => { anim(false); o.step(d); ready().then(() => { busy = false; clear(); }); }, DUR + 10); }
-    else { busy = true; anim(true); put(0); setTimeout(() => { busy = false; clear(); }, DUR + 10); }
+    if (e && (Math.abs(dx) > Math.min(90, W * .22) || fast) && Math.abs(dx) > Math.abs(dy) && gh[d]) { busy = true; anim(false); put(-d * (W + GAP)); o.step(d); ready().then(() => { busy = false; clear(); }); }   // 놓으면 바로 다음 카드 (미끄러져 자리 찾는 모션 없음)
+    else { busy = false; clear(); }
     dx0 = 0; };
   w.addEventListener('pointerup', end); w.addEventListener('pointercancel', () => end(null));
   pop.addEventListener('click', e => { if (performance.now() - swT < 400) { e.stopImmediatePropagation(); e.preventDefault(); } }, true);   // 밀고 난 뒤의 click 은 닫기·넘기기로 치지 않는다
 }
 // 누르는 버튼: 누르고 있는 동안 눌린 모양(iOS 는 touchstart 가 있어야 :active 가 먹는다), 버튼 밖으로 나가서 떼면 누르지 않은 것으로
 document.addEventListener('touchstart', () => {}, { passive: true });
-{ let pb = null, eat = null, eatT = 0;
-  const out = (b, x, y) => { const r = b.getBoundingClientRect(); return x < r.left - 4 || x > r.right + 4 || y < r.top - 4 || y > r.bottom + 4; };
-  document.addEventListener('pointerdown', e => { eat = null; pb = e.target.closest?.('button') || null; pb?.classList.remove('outp'); }, true);
+{ let pb = null, eat = null, eatT = 0, sx = 0, sy = 0;
+  // 버튼이 눌린 사이 움직이거나(창 등장 애니메이션 등) 손가락이 살짝 흔들려도 누른 것으로 친다: 손가락이 실제로 12px 넘게 움직여 버튼 밖으로 나갔을 때만 취소
+  const out = (b, x, y) => { if (Math.hypot(x - sx, y - sy) < 12) return false; const r = b.getBoundingClientRect(); return x < r.left - 6 || x > r.right + 6 || y < r.top - 6 || y > r.bottom + 6; };
+  document.addEventListener('pointerdown', e => { eat = null; sx = e.clientX; sy = e.clientY; pb = e.target.closest?.('button') || null; pb?.classList.remove('outp'); }, true);
   document.addEventListener('pointermove', e => { if (pb) pb.classList.toggle('outp', out(pb, e.clientX, e.clientY)); }, true);
   document.addEventListener('pointerup', e => { if (pb && out(pb, e.clientX, e.clientY)) { eat = pb; eatT = performance.now(); } pb?.classList.remove('outp'); pb = null; }, true);
   document.addEventListener('pointercancel', () => { pb?.classList.remove('outp'); pb = null; }, true);
@@ -4558,7 +4569,7 @@ let pokeId = null;
 function openPoke(id, dir = 0, quiet = false) {
   const P = boxOf(id); if (!P) return; if (!quiet && P.nw) { P.nw = false; save(); renderBox(); } if (!quiet && ($('#pokePop').hidden || pokeId !== id)) playCry(P.sp, .1); pokeId = id;
   const L = pokeList(), i = L.indexOf(P), d = SPECIES[P.sp], rk = rankOf(P);
-  $('#pokePop').hidden = false; $('#pokePop').classList.toggle('bud', ppBud);
+  $('#pokePop').hidden = false; { const bud = S.buds.some(b => b.pid === P.id); $('#pokePop .win').classList.toggle('bud', bud); /* 지금 짝꿍이면 분홍 (등록·해제하면 바로 바뀐다) */ $('#ppBudTag').hidden = !bud; }
   $('#ppHl').hidden = i <= 0; $('#ppHr').hidden = i >= L.length - 1; $('#ppRk').innerHTML = rkBadge(P);
   const pic = $('#ppPic'), img = $('#ppImg'); pic.classList.toggle('shiny', P.shiny); pic.classList.toggle('rkS', rk === 'S'); pic.classList.toggle('frMax', (P.fr || 0) >= FR_MAX); pic.style.setProperty('--shue', shinyHue(P.sp) + 'deg');
   img.src = thumbP(P) || ''; if (!thumbOf(P.sp)) ensureSprite(P.sp).then(() => { if (pokeId === id) img.src = thumbP(P); }).catch(() => {});
@@ -4582,7 +4593,8 @@ function setEvoBtn(btn, P) {
   btn.classList.remove('fin', 'dis'); if (cls) btn.classList.add(cls); if (btn.innerHTML !== html) btn.innerHTML = html;
   if (tip) { btn.dataset.tip = tip; btn.dataset.tipc = ''; } else { delete btn.dataset.tip; delete btn.dataset.tipc; }
 }
-const closePoke = () => { $('#pokePop').hidden = true; pokeId = null; freeArm = null; ppBud = false; };
+const closePoke = () => { $('#pokePop').hidden = true; pokeId = null; freeArm = null; ppBud = false; if (!monPop.hidden) { if (!S.mons.includes(mgrSel)) closeMon(); else renderMgr(true); } };
+$('#monPop').addEventListener('click', e => { if (!e.target.closest('#mStage') || !mgrSel?.pid || !boxOf(mgrSel.pid)) return; sfx('tap'); ppBud = false; openPoke(mgrSel.pid); });   // 필드 개체 정보의 그림을 누르면 그 포켓몬 정보 카드
 $('#ppX').onclick = () => { sfx('tap'); closePoke(); };
 // 놓아주기: 한 번 더 눌러야 숲으로 돌려보낸다 (필드·짝꿍에서도 빠짐, 도감 기록은 남음)
 let freeArm = null, freeT = 0;
@@ -4623,11 +4635,12 @@ $('#ppBud').onclick = () => {
   const P = boxOf(pokeId); if (!P) return;
   { const i = S.buds.findIndex(b => b.pid === P.id); if (i >= 0) { sfx('tap'); log(`${J({ name: SPECIES[P.sp].n },'과/와')} 같이 달리기를 그만뒀다.`); S.buds.splice(i, 1); save(); renderBox(); openPoke(P.id); renderRun(); return; } }   // 짝꿍 해제
   const slot = budPick; if (slot == null && S.buds.length >= MAX_BUDS) return;
+  if (slot != null && !$('#ppBud').dataset.go) { const b = $('#ppBud'); b.dataset.go = 1; pressBtn(b, () => { b.click(); delete b.dataset.go; }, 160); return; }   // 빈 짝꿍 칸에서 왔으면 눌린 모양을 잠깐 보여 준 뒤 짝꿍 탭으로
   const keep = S.buds.filter((b, k) => k !== slot && b.sp !== P.sp), nb = { sp: P.sp, km: P.km || 0, pid: P.id };
   if (slot != null) keep.splice(Math.min(slot, keep.length), 0, nb); else keep.push(nb);
   S.buds = keep;
   log(`${J({ name: SPECIES[P.sp].n },'이/가')} 런닝 짝꿍이 되었다!`, [], true); save();
-  sfx('tap'); renderBox(); if (slot != null) { closePoke(); setMgrTab('buddy'); } else openPoke(P.id);   // 짝꿍 칸에서 왔으면 짝꿍 탭으로, 아니면 카드에 남아 버튼만 눌린 모양으로
+  if (slot == null) sfx('tap'); renderBox(); if (slot != null) { closePoke(); setMgrTab('buddy'); } else openPoke(P.id);   // 짝꿍 칸에서 왔으면 짝꿍 탭으로, 아니면 카드에 남아 버튼만 눌린 모양으로
   evoNotice(P.sp, P);
 };
 new MutationObserver(() => { if (mgr.hidden) closePoke(); }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
@@ -4664,14 +4677,15 @@ function renderMgr(force) {
   if (mgr.hidden) return;
   if (mgrSel && !S.mons.includes(mgrSel)) mgrSel = S.mons[0] || null;
   $("#mgrCap").innerHTML = `<b>${S.mons.length}</b>/${MAX_MONS}`;
-  const key = S.mons.map(m => m.uid + ':' + m.name + ':' + m.form).join(',') + '|' + (mgrSel ? mgrSel.uid : '');
+  const isBud = m => m.pid && S.buds.some(b => b.pid === m.pid);
+  const key = S.mons.map(m => m.uid + ':' + m.name + ':' + m.form + (isBud(m) ? 'b' : '')).join(',') + '|' + (mgrSel ? mgrSel.uid : '');
   if (force || key !== mgrKey) {
     const focusUid = document.activeElement?.dataset?.uid;
     slotsEl.innerHTML = '';
     for (let i = 0; i < MAX_MONS; i++) {
       const m = S.mons[i], b = document.createElement('button'); b.className = 'slot';
       if (m) {
-        b.dataset.uid = m.uid; b.setAttribute('aria-current', m === mgrSel);
+        b.dataset.uid = m.uid; b.setAttribute('aria-current', m === mgrSel); if (isBud(m)) b.classList.add('bud');
         b.innerHTML = `<span class="st"></span><span class="sl-x" role="button" aria-label="필드에서 빼기">✕</span><span class="ph"><img alt="" src="${thumbOf(m.sk || m.form)}"></span><span class="nm">${esc(m.name)}</span><span class="mini"><i></i></span>`;
         b.onclick = e => { if (e.target.closest('.sl-x')) { sfx('tap'); removeMon(m); if (mgrSel === m) mgrSel = null; renderMgr(true); refreshCap(); save(); return; } openMon(m); };   // 우상단 ✕ = 바로 상자로
       } else {
@@ -4708,7 +4722,7 @@ function renderMgrDetail(rebuild) {
     inp.addEventListener('change', () => renameMon(m, inp.value));
     inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); });
     $('#mLook').onclick = ev => pressBtn(ev.currentTarget, () => { closeMgr(); select(m); });
-    { const i = S.mons.indexOf(m); $('#mHl').hidden = i <= 0; $('#mHr').hidden = i >= S.mons.length - 1; $('#mRk').innerHTML = rkBadge(boxOf(m.pid)); }
+    { const i = S.mons.indexOf(m); $('#mHl').hidden = i <= 0; $('#mHr').hidden = i >= S.mons.length - 1; $('#mRk').innerHTML = rkBadge(boxOf(m.pid)); const bud = !!m.pid && S.buds.some(b => b.pid === m.pid); $('#monPop .win').classList.toggle('bud', bud); $('#mBudTag').hidden = !bud; }
     monPage(monPg, true);
     // 필드에서 빼기: 포켓몬 상자로 돌아간다 (떠나보내는 게 아님)
     $('#mOut').onclick = ev => pressBtn(ev.currentTarget, () => {
@@ -4951,7 +4965,8 @@ const metDay = P => { const d = new Date(P.t); return `${d.getMonth() + 1}/${d.g
 const metHtml = (P, pre = '') => P && P.place ? `${pre}<span class="met">${metDay(P)} ${esc(P.place)} 근처에서 만났다</span>` : '';
 // 친밀도 숫자는 하트를 누를 때만 말풍선으로
 document.addEventListener('click', e => {
-  const h = e.target.closest('.frtap,[data-tip]'); let tip = $('#frTip');
+  let h = e.target.closest('.frtap,[data-tip]'), tip = $('#frTip');
+  if (!h) { const lk = e.target.closest('.mvcard:not(.on),.mvuse.lock'); if (lk) h = lk.closest('.win,#info')?.querySelector('.frtap') || null; }   // 잠긴 기술을 누르면 친밀도 하트 위 숫자 말풍선
   if (tip && !tip.hidden && (e.target.closest('#frTip') || h === tip.of)) { e.stopPropagation(); e.preventDefault(); tip.hidden = true; tip.of = null; clearTimeout(tip.t); sfx('tap'); return; }
   if (!h) { if (tip) { tip.hidden = true; tip.of = null; } return; }
   e.stopPropagation(); e.preventDefault();
@@ -4992,7 +5007,7 @@ function moveCard(sp, fr, tap) {
 function moveBtn(m) {
   const [n, t] = movesOf(m.sp)[0] || []; if (!n || !m.pid) return '';
   const on = canMove(m);
-  return `<button class="mvuse${on ? ' on' : ''}" data-mv="0" style="--tc:${TYPE_C[t]}"${on ? '' : ' disabled'}>${on ? tyIcon(t) : `<span class="mv-lock">${LOCK}</span>`}<b>기술 쓰기</b><span>${on ? esc(n) : '친밀도 만점에 해금'}</span></button>`;
+  return `<button class="mvuse${on ? ' on' : ' lock'}" data-mv="0" style="--tc:${TYPE_C[t]}"${on ? '' : ' aria-disabled="true"'}>${on ? tyIcon(t) : `<span class="mv-lock">${LOCK}</span>`}<b>기술 쓰기</b><span>${on ? esc(n) : '친밀도 만점에 해금'}</span></button>`;
 }
 const tyIcons = sp => `<span class="tyis">${SPECIES[sp].t.map(tyIcon).join('')}</span>`;
 function movesHtml(sp, tap) { return movesOf(sp).map(([n, t], i) => `<${tap ? 'button' : 'span'} class="mvchip" data-mv="${i}" style="--tc:${TYPE_C[t]}"><i>${TYPE_KO[t]}</i>${esc(n)}</${tap ? 'button' : 'span'}>`).join(''); }
@@ -5792,7 +5807,7 @@ async function playHatch() {
   if (hatching || !hatchQ.length) return;
   hatching = true;
   const { g, sp, place, egg: src, ask } = hatchQ.shift();
-  try { await ensureSprite(sp); } catch (e) {}
+  const spReady = ensureSprite(sp).catch(() => {});   // 그림은 알이 깨질 때까지 받아 두면 된다 → 창은 바로 뜬다 (예전엔 그림을 받는 동안 버튼이 먹통처럼 보였다)
   hatchEl.hidden = false; $('#hatchOk').hidden = true; showDexInfo(null); $('#hatchMsg').textContent = '어라…? 알의 모습이…!';
   hatchStage.classList.remove('evo'); hatchFx();
   hatchStage.innerHTML = '<i class="ehalo"></i>' + eggHtml(g).replace('</svg>', '</svg>' + EGG_CK) + '<div class="flash"></div>' + [[-60, -50], [60, -46], [-54, 30], [58, 34]].map(([x, y]) => `<i class="shard" style="--dx:${x}px;--dy:${y}px"></i>`).join('');
@@ -5813,7 +5828,7 @@ async function playHatch() {
     if (L) { tenseStop(.25); setTimeout(() => { if (hatching) bgmDuck(1, 3); }, 3200); } }
   if (src) { S.eggs = S.eggs.filter(x => x !== src); renderBag.sig = ''; renderRun(); }
   hatchStage.querySelectorAll('.shard').forEach(x => { x.style.setProperty('--ec', getComputedStyle(egg).getPropertyValue('--ec')); x.classList.add('go'); });
-  haptic(2); await wait(300); egg.remove();
+  haptic(2); await wait(300); await spReady; egg.remove();
   const B = bornPoke({ g, sp, place }), { P, isNew } = B;
   hatchStage.append(bornImg(sp, P, isNew));
   // 태어난 포켓몬 뒤 후광: 개체 랭크 A 이상만 (S 는 더 크고 밝게 맥박), 그 아래는 사라진다
@@ -6029,6 +6044,7 @@ document.addEventListener('click', ev => {
   if (sl && bagMul) { const id = +sl.dataset.id; bagMul.has(id) ? bagMul.delete(id) : bagMul.add(id); delArm = 0; const e = S.bag.find(x => x.id === id); if (e && e.isNew) { e.isNew = false; save(); } renderBag(); return; }
   if (sl) { delArm = 0; const e = S.bag.find(x => x.id === +sl.dataset.id); bagSel = e === bagSel ? null : e; if (e && e.isNew) { e.isNew = false; save(); } renderBag(); return; }
   if (ev.target.closest('#eggAll')) { hatchAll(); return; }
+  if (ev.target.closest('#eggHatch') && hatching && hatchEl.hidden) { hatching = false; hatchQ.length = 0; }   // 부화 창이 닫혔는데 '부화 중'으로 남아 있으면 풀어 준다
   if (ev.target.closest('#eggHatch') && eggSel && eggSel.km >= eggSel.need && !hatchQ.some(q => q.egg === eggSel)) { const e = eggSel; eggSel = null; hatchEgg(e, true); renderRun(); if (!hatching) playHatch(); return; }
   if (ev.target.closest('#eggOut') && eggSel) { const e = eggSel; if (unincubate(e)) { eggSel = null; renderRun(); } return; }
   const so = ev.target.closest('#bagSort [data-sort]'); if (so) { bagSort = so.dataset.sort; try { localStorage.setItem('pk-bag-sort', bagSort); } catch (x) {} renderBag.sig = ''; renderBag(); return; }
@@ -6180,9 +6196,9 @@ async function evoMusicStart(fade = 0, off = 0) {
   const a = audio(); if (!a || !evoMus.have || !bgmOn) return null;
   try {
     if (!evoMus.buf) { const blob = await musicGet('evo'); if (!blob) return null; evoMus.buf = await bgmDecode(blob); }
-    const src = a.createBufferSource(), g = a.createGain(); g.gain.value = .6 * VOL.bgm / 10;
+    const src = a.createBufferSource(), g = a.createGain(); g.gain.value = .6 * volG(VOL.bgm);
     src.buffer = evoMus.buf; src.connect(g).connect(a.destination); const t0 = a.currentTime + .05; off = off % evoMus.buf.duration || 0; src.start(t0, off);
-    if (fade) { src.loop = true; g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.6 * VOL.bgm / 10, t0 + fade); }   // 진화가 끝나고 끊겼던 자리부터 다시, 소리를 키우며
+    if (fade) { src.loop = true; g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.6 * volG(VOL.bgm), t0 + fade); }   // 진화가 끝나고 끊겼던 자리부터 다시, 소리를 키우며
     evoMus.src = src; evoMus.g = g; evoMus.t0 = t0 - off; return t0;
   } catch (e) { return null; }
 }
