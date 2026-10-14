@@ -226,7 +226,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 html{touch-action:manipulation}img{-webkit-user-drag:none}*{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 *{scrollbar-width:none;-ms-overflow-style:none}*::-webkit-scrollbar{display:none;width:0;height:0}
 #eggTestAll{margin-left:4px}
-.dexinfo.ivinfo .iv-h{display:flex;align-items:center;gap:8px;font-size:15px}.dexinfo.ivinfo .ivs{margin:8px 0 0}
+.dexinfo.ivinfo .iv-h{display:flex;align-items:center;gap:8px;font-size:15px}.dexinfo.ivinfo .ivs{margin:0}
 #hlStrip{display:none!important}
 .incu-empty{margin:auto;color:var(--dim);font-size:15px;text-align:center}
 .hatch-stage{position:relative}.gpop{position:absolute;left:50%;top:18%;z-index:3;display:flex;align-items:center;gap:5px;font-size:20px;color:#e8a020;font-weight:bold;white-space:nowrap;pointer-events:none;
@@ -1085,11 +1085,11 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 .hatch .boxbtn:active{box-shadow:inset 0 4px 0 rgba(0,0,0,.35);padding:14px 16px 10px}
 .hatch .boxbtn:focus,.hatch .boxbtn:focus-visible{outline:0}
 .dexinfo{text-align:left;border:3px solid var(--inner);background:#fff;padding:10px 12px;margin:0 0 12px;animation:hpop .4s steps(4,end)}
-.dexinfo .dx-top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.dexinfo .dx-top{display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
 .dexinfo .dx-top b{font-size:17px}.dexinfo .dx-no{font-size:12px;color:var(--dim)}
-.dexinfo .dx-g{font-size:13px;color:var(--dim);margin-left:auto}
+.dexinfo .dx-g{font-size:13px;color:var(--dim);margin-left:auto;display:flex;align-items:center;gap:6px;white-space:nowrap}.dexinfo .dx-g .tyis{margin:0}.dexinfo .dx-g .tyi{width:22px;height:22px}
 .dexinfo .dx-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:6px 0;font-size:13px}
-.dexinfo .dx-meta span.hw{color:var(--dim);margin-left:auto}
+.dexinfo .dx-meta span.hw{color:var(--dim)}
 .tychip{display:inline-block;font-size:12px;color:#fff;padding:1px 8px;border:2px solid rgba(0,0,0,.25);text-shadow:1px 1px 0 rgba(0,0,0,.3)}
 .dexinfo .dx-fx{margin:0;font-size:14px;line-height:1.6;word-break:keep-all}
 .card .fx{margin:6px 0 0;font-size:12px;line-height:1.5;color:#4a564a;word-break:keep-all}
@@ -1956,7 +1956,7 @@ const chunkLoads = {};
 // ---------- 업데이트 받기 로딩창 ----------
 // 스프라이트 청크가 캐시에 없으면(처음 설치, 또는 sw.js 의 CACHE 가 올라 새 청크가 나왔을 때) 피카츄가 달리는 게이지 바를 띄우고
 // s0…s20.json 을 받아 서비스 워커와 같은 캐시에 넣는다. 크기는 빌드 때 채운다(압축 풀린 바이트).
-const CHUNK_CACHE = 'meadow-v6', CHUNK_SZ = [1152284,1077297,1397456,1074319,1295987,1115366,1317751,1435041,1536461,1677789,1105421,1126185,1437624,1255195,1227971,1593071,1210783,1447972,1182871,1362912,683351];
+const CHUNK_CACHE = 'meadow-v7', CHUNK_SZ = [1152284,1077297,1397456,1074319,1295987,1115366,1317751,1435041,1536461,1677789,1105629,1127217,1437944,1255247,1228175,1593219,1210755,1448196,1183379,1363292,683879];
 const PIKA_RUN = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFwAAAAbCAYAAADxsuiMAAADJ0lEQVR4nNWZPXbbMAzHoU71LdwbdMxmj+kN2ilH0JobJGtPodxAHjN67OZuyi3UDRkoUCAFgh8WbZXv6cW2yD9+BEEQUgDCDZV7W26b5v4S+H3T0Eq7FXexHcnh10BjYPwtHFGDe207coR3bZEW4qjfL1LNGFeJu4hFGCeOxa4FxDFrxQEMtDYOIS+KNFDxt0rcTt+hN1eJDRqziPCHxwypWTDeaQQYevMxVTfHVi1u6jv0APsjwPm0rg3EcbGSUnRK97QotpGUGk1du9DTxtfiXvAzrlhLmjMOvduRJsId0LXz5PjvWkoh3RSnCFs3Bl+L2+HxgkAd47NIfW0eDF3+pDhEQuQmOYUvDHeIAr8J7lxnB4W1SXDoyGGS7RSuXRLdt+QO7NjoTkBEFCcpGQFIhi5ySqKz786dGf2ucOqKkhA3FouUXKf4Ewk5eyvcPNqFXL8UvhwUMc+o75QYdEWnbIIbx6WTQ/rik2az8743TfAp7uMd4NsP0y0ADv9eAXAE+Pkq3PyK1t7+aGt1p7Hf1XLsXtwA83PA0JsxIX3r8D/fZxD0inUy+ncSpeL/fIpD+y3HKdQ052yRO2UxAdhWo3rV2TYvT3g5uNuM+kHk4KEtqR1AlBpoa1IuzDnYtsCd8WAUAJ4MXg7z/QLxIqck6v+X3M7BQKdtaBLcQIpDeLTGnJIJX5Pb6ociPMSdom1XkQOGtlGus6WJa/oZ8LW4Abxqyef2qyivHAw2OjSbZue+cdsf3Y5vz+bvx3sCKmv7oxlD40nX1+c2qCr59duwKfK1uBGnt5t00Grc1CfljaVTFp5PcbDzyYAkvg5tmp09sW0j6Lfn2SEAxsH+wqS0CtwiA+fmnx8ejX7Oq1v9cBjdrZu6fUI2JC0/z7LrXtxOqvD16OJpJdcnzkR5+eTn1wJnA3gHEIflB0+Bfk1up7LRzpxUfS0/2oG8wJ/yamysqDf0Jr10rdEZpv+iNLv5CfN8Ssrdqp21ufmXrpXT0grcrlFePVyjA140ChXJNfoLeytxO5og7KgV9Y2RlaGtbsqbtWv0K3HfRL8adEVt0q/ZsvQ/AULNuNvtaaCpAAAAAElFTkSuQmCC';
 const gateLoads = {};
 const gateReady = (async () => {
@@ -4431,7 +4431,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.97';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.98';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6223,10 +6223,10 @@ async function playHatch() {
   setTimeout(() => sfx(isNew ? 'newdex' : 'hatch'), 250); setTimeout(() => goldPop(B.dupG), 900); playCry(sp, isNew ? 1.6 : .9);
   $('#hatchMsg').innerHTML = bornMsg(B);
   if (P.shiny) setTimeout(() => sfx('shiny'), 900);
-  hatchInfoFix([{ sp, P }]); showDexInfo(sp);
+  hatchInfoFix([{ sp, P }]); showDexInfo(sp, P);
   const ok = $('#hatchOk'), look = $('#hatchLook'); ok.hidden = false; ok.textContent = '확인'; look.hidden = false; look.textContent = '상태창 보기';
   // 상태창 보기: 다른 화면으로 넘어가지 않고 도감 정보 칸만 개체값으로 바꿔 본다
-  let ivm = false; look.onclick = () => { ivm = !ivm; look.textContent = ivm ? '도감 정보' : '상태창 보기'; showDexInfo(sp); if (ivm) showIvInfo({ P }); };
+  let ivm = false; look.onclick = () => { ivm = !ivm; look.textContent = ivm ? '도감 정보' : '상태창 보기'; showDexInfo(sp, P); if (ivm) showIvInfo({ P }); };
   // 필드에 빈 칸이 있으면 바로 내보낼 수 있다 (누르면 눌린 채로 남고, 포켓몬은 뒤에서 필드에 나온다)
   const sb = $('#hatchSend'); let send = false; sb.hidden = S.mons.length >= MAX_MONS; sb.classList.remove('sunk'); sb.disabled = false; sb.textContent = '필드로';
   let sm = null, busy = false;   // 다시 누르면 필드에서 빼서 상자로 (토글)
@@ -6305,7 +6305,7 @@ async function hatchAll() {
     const d = Math.sign(k - i); i = k; const r = res[i];
        // 눌러서 넘길 때는 도감처럼 모션 없이 바로 바꾼다
     hatchStage.innerHTML = ''; hatchStage.append(bornImg(r.sp, r.P, r.isNew)); if (!q && !r.gp) { r.gp = 1; setTimeout(() => goldPop(r.dupG), 250); }
-    $('#hatchMsg').innerHTML = bornMsg(r); showDexInfo(r.sp); if (ivMode) showIvInfo(r);
+    $('#hatchMsg').innerHTML = bornMsg(r); showDexInfo(r.sp, r.P); if (ivMode) showIvInfo(r);
     { const w = hatchEl.querySelector('.win'); w.classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5'); setTier(w, r.sp); hatchBg(fxGrade(r.sp, r.g)); }
     $('#hlNum').textContent = `${i + 1} / ${res.length}`; $('#hlHl').hidden = i <= 0; $('#hlHr').hidden = i >= res.length - 1;
     strip.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-current', j === i));
@@ -6323,7 +6323,7 @@ async function hatchAll() {
   fieldBtn.onclick = async () => { const r = res[i]; if (onField(r.P.id) || S.mons.length >= MAX_MONS) return; fieldBtn.hidden = true; const m = await spawn(r.sp, { pid: r.P.id }); m.born = S.clock; markNew(m); save(); refreshCap(); show(i); };
   // 상태창 보기: 창을 떠나지 않고 도감 정보 칸만 개체값으로 바꿔 본다 (다시 누르면 도감 정보)
   ok.hidden = false; ok.textContent = '확인'; const look = $('#hatchLook'); look.hidden = false; look.textContent = '상태창 보기';
-  look.onclick = () => { ivMode = !ivMode; look.textContent = ivMode ? '도감 정보' : '상태창 보기'; showDexInfo(res[i].sp); if (ivMode) showIvInfo(res[i]); };
+  look.onclick = () => { ivMode = !ivMode; look.textContent = ivMode ? '도감 정보' : '상태창 보기'; showDexInfo(res[i].sp, res[i].P); if (ivMode) showIvInfo(res[i]); };
   sfx(res.some(r => r.isNew) ? 'newdex' : 'hatch'); haptic(2);
   hatchInfoFix(res);
   show(0);
@@ -6340,17 +6340,17 @@ async function hatchAll() {
 let hatchPg = null;   // 모두 부화 목록일 때만
 cardPager(hatchEl, { can: d => !!hatchPg?.can(d), snap: (d, w) => hatchPg.snap(d, w), step: d => hatchPg?.step(d), skip: e => !hatchPg || !!e.target.closest('#hlStrip') });
 // 부화·진화 창의 도감 정보: 번호, 이름, 분류, 타입, 키·몸무게, 도감 설명
-function dexInfoHtml(sp) {
+function dexInfoHtml(sp, P) {   // 한 줄: 이름·성별 …… 타입 아이콘·분류 / 다음 줄 키·몸무게(왼쪽)
   const d = SPECIES[sp];
-  return `<div class="dx-top"><span class="dx-no">No.${String(sp).padStart(4, '0')}</span><b>${esc(d.n)}</b><span class="dx-g">${esc(d.g || '')}</span></div>`
-    + `<div class="dx-meta">${tyIcons(sp)}<span class="hw">키 ${(d.h / 10).toFixed(1)}m · 몸무게 ${(d.w / 10).toFixed(1)}kg</span></div>`
+  return `<div class="dx-top"><span class="dx-no">No.${String(sp).padStart(4, '0')}</span><b>${esc(d.n)}</b>${P ? sexHtml(P.sex) + (P.shiny ? '<b class="sh">✦</b>' : '') : ''}<span class="dx-g">${tyIcons(sp)}<span>${esc(d.g || '')}</span></span></div>`
+    + `<div class="dx-meta"><span class="hw">키 ${(d.h / 10).toFixed(1)}m · 몸무게 ${(d.w / 10).toFixed(1)}kg</span></div>`
     + (d.fx ? `<p class="dx-fx">${esc(d.fx)}</p>` : '');
 }
 function showIvInfo({ P }) { const x = $('#hatchDex'); x.classList.add('ivinfo'); x.hidden = false;
-  x.innerHTML = `<div class="iv-h">${rkBadge(P)}<b>${esc(nameOf(P))}</b>${sexHtml(P.sex)}${P.shiny ? '<b class="sh">✦</b>' : ''}</div><div class="ivs">${ivRows(P)}</div>`; }
+  x.innerHTML = `<div class="ivs">${ivRows(P)}</div>`; }
 // 도감 정보 ↔ 개체값을 바꿔도 창 크기가 그대로이게: 보여 줄 포켓몬 모두의 두 모습 중 가장 큰 높이로 고정
-function hatchInfoFix(list) { const x = $('#hatchDex'); x.style.minHeight = ''; x.style.boxSizing = 'border-box'; let h = 0; for (const r of list) { showDexInfo(r.sp); h = Math.max(h, x.offsetHeight); showIvInfo(r); h = Math.max(h, x.offsetHeight); } x.style.minHeight = h + 'px'; }
-function showDexInfo(sp) { const x = $('#hatchDex'), no = $('#hatchNo'); x.classList.remove('ivinfo'); no.hidden = sp == null; if (sp != null) no.textContent = `No.${String(sp).padStart(4, '0')}`; /* 도감 번호는 창 좌상단 */ if (sp == null) { x.hidden = true; x.innerHTML = ''; x.style.minHeight = ''; } else { x.innerHTML = dexInfoHtml(sp); x.hidden = false; } }
+function hatchInfoFix(list) { const x = $('#hatchDex'); x.style.minHeight = ''; x.style.boxSizing = 'border-box'; let h = 0; for (const r of list) { showDexInfo(r.sp, r.P); h = Math.max(h, x.offsetHeight); showIvInfo(r); h = Math.max(h, x.offsetHeight); } x.style.minHeight = h + 'px'; }
+function showDexInfo(sp, P) { const x = $('#hatchDex'), no = $('#hatchNo'); x.classList.remove('ivinfo'); no.hidden = sp == null; if (sp != null) no.textContent = `No.${String(sp).padStart(4, '0')}`; /* 도감 번호는 창 좌상단 */ if (sp == null) { x.hidden = true; x.innerHTML = ''; x.style.minHeight = ''; } else { x.innerHTML = dexInfoHtml(sp, P); x.hidden = false; } }
 
 // evolution: white silhouette flickers between the two forms, faster and faster, then a burst
 const veil = document.createElement('div'); veil.className = 'evo-veil';
