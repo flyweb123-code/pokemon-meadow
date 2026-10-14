@@ -44,6 +44,8 @@
 .fr-go[data-u],.fr-go[data-p]{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
 /* 긴 목록은 화면 밖 칸을 그리지 않는다 (도감 1025칸, 포켓몬 상자) */
 #dexGrid>button{content-visibility:auto;contain-intrinsic-size:auto 120px}
+/* 도감 창은 닫혀도 배치를 기억해 둔다 (다시 열 때 1025칸을 새로 배치하지 않아 바로 뜬다) */
+#sheet[hidden]{display:grid!important;visibility:hidden;pointer-events:none;content-visibility:hidden}#sheet[hidden].warm{content-visibility:visible}
 /* 작은 화면(아이폰 SE 등): 버튼 글자가 잘리지 않게 */
 @media (max-width:380px){.filters .fsel{font-size:13px;padding:6px 20px 6px 8px}.filters .fsel::after{right:6px}#pokePop .pp-btns .boxbtn,#monPop .m-btns .boxbtn{font-size:13px;letter-spacing:-.5px}.bag-sort button{padding:4px 5px;font-size:11px}}
 .bag-sort button{white-space:nowrap}#boxSort button[data-dir]:not([data-dir=''])::after{content:attr(data-dir);font-size:9px;margin-left:3px;vertical-align:1px}
@@ -71,6 +73,11 @@
 .dlg.open .journal{bottom:100%;border-bottom:0;padding-bottom:4px;box-shadow:inset 4px 0 0 var(--win),inset -4px 0 0 var(--win),inset 0 4px 0 var(--win),inset 8px 0 0 var(--inner-blue),inset -8px 0 0 var(--inner-blue),inset 0 8px 0 var(--inner-blue),6px 0 0 rgba(0,0,0,.35)}
 .app .win.dlg.open{box-shadow:inset 4px 0 0 var(--win),inset -4px 0 0 var(--win),inset 0 -4px 0 var(--win),inset 8px 0 0 var(--inner-blue),inset -8px 0 0 var(--inner-blue),inset 0 -8px 0 var(--inner-blue),6px 6px 0 rgba(0,0,0,.35)}
 .dlg.open .journal ol.log li:last-child{border-bottom:2px dotted var(--dlg-in)}
+.dlg.open .journal{transform-origin:50% 100%;animation:jrOpen .26s cubic-bezier(.2,.8,.3,1)}
+.dlg.open .journal>*{animation:jrFade .3s ease-out}
+@keyframes jrOpen{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes jrFade{0%,35%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.dlg.open .journal,.dlg.open .journal>*{animation:none}}
 @media (max-width:760px),(max-height:500px) and (orientation:landscape){
   .dlg.open .journal{bottom:100%;box-shadow:inset 3px 0 0 var(--win),inset -3px 0 0 var(--win),inset 0 3px 0 var(--win),inset 6px 0 0 var(--dlg-in),inset -6px 0 0 var(--dlg-in),inset 0 6px 0 var(--dlg-in)}
   .app .win.dlg.open{box-shadow:inset 3px 0 0 var(--win),inset -3px 0 0 var(--win),inset 0 -3px 0 var(--win),inset 6px 0 0 var(--dlg-in),inset -6px 0 0 var(--dlg-in),inset 0 -6px 0 var(--dlg-in)}
@@ -387,6 +394,8 @@ ol.log li.big .txt{color:#c03838}
 .mon .ripple{position:absolute;left:0;top:0;width:60px;height:14px;margin:-7px 0 0 -30px;border-radius:50%;border:2px solid rgba(255,255,255,.55);display:none}
 .mon.wet .ripple{display:block;animation:ripple 1.6s ease-in-out infinite}
 .mon.wet .shadow{display:none}
+.mon.flop .act>img,.mon.flop .act>.spr{transform-origin:50% 100%;animation:flop .55s ease-in-out infinite}
+@keyframes flop{0%,100%{transform:none}25%{transform:translateY(-5px) rotate(-14deg)}50%{transform:translateY(0) rotate(0)}75%{transform:translateY(-3px) rotate(12deg)}}
 .mon.ghost img,.mon.ghost .spr{opacity:.82}
 .mon.asleep img{filter:brightness(.92) saturate(.9)}
 .mon.ditto img,.mon.ditto .spr{filter:drop-shadow(0 0 2px #c48be0) drop-shadow(0 0 1px #c48be0)}
@@ -496,6 +505,9 @@ ol.log li.big .txt{color:#c03838}
 .fsel.on{background:var(--frame);color:var(--win)}.fsel.on::after{color:var(--win)}
 .filters input,.filters select{font:inherit;font-size:14px;color:var(--win-ink);background:#fff;border:3px solid var(--frame);padding:6px 10px;border-radius:0}
 .filters input{flex:1 1 180px;min-width:0}
+.filters .qw{flex:1 1 180px;min-width:0;position:relative;display:flex}.filters .qw input{flex:1 1 auto;width:100%;padding-right:36px}.qw input::-webkit-search-cancel-button,.qw input::-webkit-search-decoration{-webkit-appearance:none;appearance:none;display:none}
+.qw .qi{position:absolute;right:11px;top:50%;width:16px;height:16px;margin-top:-8px;color:#8a8a98;pointer-events:none}.qw .qx{position:absolute;right:3px;top:50%;transform:translateY(-50%);width:30px;height:30px;border:0;background:none;color:var(--win-ink);font:inherit;font-size:19px;font-weight:700;line-height:30px;padding:0;cursor:pointer;display:none}
+.qw input:not(:placeholder-shown)~.qi{display:none}.qw input:not(:placeholder-shown)~.qx{display:block}
 .dexwin .dex{flex:1;min-height:0;overflow-y:auto;align-content:start;padding:4px}
 .dex button{position:relative}
 .dex button[aria-pressed="true"]{border-color:var(--cursor);background:var(--card)}
@@ -1016,7 +1028,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
   .sheet-head h3{font-size:18px}
   .sheet-head .cap{display:inline;margin-left:8px;font-size:14px}
   .sheet-head .opt{padding:10px 4px 10px 20px;font-size:16px}
-  .filters input{flex:1 1 100%;font-size:16px}
+  .filters input{flex:1 1 100%;font-size:16px}.filters .qw{flex:1 1 100%}
   .filters select,.fsel{flex:1 1 0;min-width:0;font-size:16px}
   .dexwin .dex{grid-template-columns:repeat(3,minmax(0,1fr))}
   .dexbar{gap:4px 14px;font-size:13px}
@@ -1098,7 +1110,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
   <div class="win dexwin" role="dialog" aria-label="포켓몬 도감">
     <div class="sheet-head"><h3><span id="dexTitle">포켓몬 도감</span><span class="cap" id="dexOwn"></span></h3><button class="opt" id="closeDex">닫기</button></div>
     <div class="filters">
-      <input id="dexQ" type="search" placeholder="이름이나 번호" aria-label="이름이나 번호로 찾기" autocomplete="off">
+      <span class="qw"><input id="dexQ" type="search" placeholder="이름이나 번호" aria-label="이름이나 번호로 찾기" autocomplete="off"><svg class="qi" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10 10l4.5 4.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/></svg><button type="button" class="qx" aria-label="검색어 지우기">✕</button></span>
       <button class="fsel on" id="dexSort" data-v="0" aria-haspopup="listbox">등록순</button>
       <button class="fsel" id="dexType" data-v="0" aria-haspopup="listbox">모든 타입</button>
       <button class="fsel" id="dexGen" data-v="0" aria-haspopup="listbox">모든 세대</button>
@@ -1172,11 +1184,11 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
     </div>
     <div class="mtab boxtab" data-t="box" hidden>
       <div class="bag-test"><button id="boxReset" class="test-btn">전체 포켓몬 초기화</button><button id="boxGen" class="test-btn">포켓몬 생성하기</button></div>
-      <div class="filters boxq"><input id="boxQ" type="search" placeholder="이름이나 번호" aria-label="포켓몬 이름이나 번호로 찾기" autocomplete="off"></div>
+      <div class="filters boxq"><span class="qw"><input id="boxQ" type="search" placeholder="이름이나 번호" aria-label="포켓몬 이름이나 번호로 찾기" autocomplete="off"><svg class="qi" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10 10l4.5 4.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/></svg><button type="button" class="qx" aria-label="검색어 지우기">✕</button></span></div>
       <div class="mgr-tools"><div class="bag-sort" id="boxSort"><button data-sort="new">날짜</button><button data-sort="rank">랭크</button><button data-sort="bs">종족값</button><button data-sort="fr">친밀도</button><button data-sort="no">번호</button><button data-sort="field">필드</button></div><span class="tcount" id="boxCount"></span></div>
       <div class="boxgrid" id="boxGrid"></div>
     </div>
-    <div class="runtabs mtabs" id="mgrTabs" role="tablist"><button class="runtab" role="tab" data-t="box">포켓몬</button><button class="runtab" role="tab" data-t="field">필드</button><button class="runtab" role="tab" data-t="buddy">짝꿍</button></div>
+    <div class="runtabs mtabs" id="mgrTabs" role="tablist"><button class="runtab" role="tab" data-t="box">박스</button><button class="runtab" role="tab" data-t="field">필드</button><button class="runtab" role="tab" data-t="buddy">짝꿍</button></div>
   </div>
 </div>
 
@@ -2178,7 +2190,7 @@ function goToBed(m) {
   else moveTo(m, { x: m.home.x + rnd(-30, 30), y: m.home.y + rnd(-20, 20) }, { kind: 'bed' }, .8);
 }
 function canMeet(m, o) {
-  if (o === m || o.held || m.held || !awake(o) || o.state === 'interact' || o.state === 'special' || o.state === 'eat') return false;
+  if (o === m || o.held || m.held || m.land || o.land || !awake(o) || o.state === 'interact' || o.state === 'special' || o.state === 'eat') return false;
   const a = T(m).mv, b = T(o).mv;
   if (a === 'swim' && !['amph', 'fly', 'hover', 'swim'].includes(b)) return false;
   if (b === 'swim' && !['amph', 'fly', 'hover', 'swim'].includes(a)) return false;
@@ -2197,6 +2209,10 @@ function pickPartner(m) {
 function think(m) {
   m.goal = null; m.partner = null; m.spdMul = 1;
   if (m.hidden) return;
+  if (m.land) {   // 육지의 잉어킹: 숨을 헐떡이며 쉬엄쉬엄 호수로 파닥파닥
+    if (Math.random() < .3) { setState(m, 'idle', rnd(1, 2.2)); emote(m, pick(['헉…헉…', '💦', '파닥파닥', '…!']), '', 1.6); return; }
+    return moveTo(m, randPond(.45), { kind: 'wander' }, .3);
+  }
   const t = T(m);
   const b0 = !isFull(m) ? nearestBerry(m) : null;
   if (b0 && dist(m, b0) < 320) return moveTo(m, b0, { kind: 'berry', berry: b0 }, 1.25);   // 떨어진 열매는 배가 덜 찼으면 먹으러 간다
@@ -2741,7 +2757,7 @@ function place(m, x, y) {
   m.x = clamp(x, XL + 24, XR - 24); m.y = clamp(y, MIN_Y, MAX_Y);
   const mv = T(m).mv;
   if (mv === 'walk' && pondVal(m.x, m.y) < 1.08) projectOut(m, 1.08);
-  if (mv === 'swim' && pondVal(m.x, m.y) > .9) projectOut(m, .9);
+  if (mv === 'swim' && !m.land && pondVal(m.x, m.y) > .9) projectOut(m, .9);
 }
 const faceTo = (m, x) => { if (Math.abs(x - m.x) > .5) m.face = x > m.x ? -1 : 1; };
 const sceneCenter = (a, b, r) => ({ x: clamp((a.x + b.x) / 2, XL + 40 + r, XR - 40 - r), y: clamp((a.y + b.y) / 2, MIN_Y + 10 + r * .4, MAX_Y - 10 - r * .3) });
@@ -3447,7 +3463,7 @@ function update(m, dt) {
       if (Math.abs(dx) > 2) m.face = dx > 0 ? -1 : 1;
       m.up = dy < -Math.abs(dx) * .8;
       if (t.mv === 'walk' && pondVal(m.x, m.y) < 1.08) projectOut(m, 1.08);
-      if (t.mv === 'swim' && pondVal(m.x, m.y) > .9) projectOut(m, .9);
+      if (t.mv === 'swim' && !m.land && pondVal(m.x, m.y) > .9) projectOut(m, .9);
       m.x = clamp(m.x, XL + 20, XR - 20); m.y = clamp(m.y, MIN_Y, MAX_Y);
       // 길이 막혀(호수·화면 끝) 거의 못 나아가면 1초쯤 뒤 왔던 쪽으로 돌아 나간다
       { const gain = d - Math.hypot(m.tx - m.x, m.ty - m.y);
@@ -3478,6 +3494,8 @@ function render(m, now) {
   const bob = flyer && !grounded ? Math.sin(now / 260 + m.uid) * 4 : 0;
   const wet = !flyer && pondVal(m.x, m.y) < .97;
   if (wet !== m.wet) { m.wet = wet; m.el.classList.toggle('wet', wet); }
+  if (m.land && (m.sp !== 129 || pondVal(m.x, m.y) < .85)) { m.land = false; if (!m.held) { splashAt(m); log(`${J(m,'이/가')} 겨우 호수로 돌아와 첨벙! 한결 편안해 보인다.`, [m]); } }
+  { const fl = !!m.land && !m.held; if (fl !== !!m.flop) { m.flop = fl; m.el.classList.toggle('flop', fl); } }
   m.el.style.transform = `translate(${m.x.toFixed(1)}px,${m.y.toFixed(1)}px)`;
   m.el.style.zIndex = Math.round(m.y) + (m.zAdd || 0) + (m.perch ? 2 : 0);
   m.liftEl.style.transform = `translateY(${(wet ? m.h * .38 : 0) - m.lift - bob}px)`;
@@ -3896,12 +3914,14 @@ function endDrag(e) {
   if (o && S.mons.includes(o)) { userAct(o); return meetByHand(m, o); }
   settle(m);
   m.home = { x: m.x, y: m.y };
+  if (m.land) { setState(m, 'idle', 1.2); dustAt(m); userAct(m); emote(m, '!?'); return log(pick([`${J(m,'이/가')} 땅 위에서 파닥파닥 몸부림친다. 호수로 돌아가고 싶은 눈치다.`, `${J(m,'은/는')} 물 밖이 영 불편한지 펄떡펄떡 뛰며 호수 쪽을 바라본다.`]), [m]); }
   setState(m, 'idle', rnd(4, 8)); dustAt(m); userAct(m);
   log(pick([`${J(m,'이/가')} 새 자리에서 두리번거린다.`, `${J(m,'이/가')} 내려놓인 자리를 킁킁 살핀다.`, `${J(m,'이/가')} 옮겨진 자리가 마음에 드는 눈치다.`]), [m]);
 }
 // keep each kind of mover somewhere it can stand
 function settle(m) {
   const mv = T(m).mv;
+  if (mv === 'swim' && m.sp === 129 && pondVal(m.x, m.y) > 1) { m.land = true; return; }   // 잉어킹만 육지에 내려놓을 수 있다 (호수로 힘겹게 돌아간다)
   if (mv === 'swim' && pondVal(m.x, m.y) > .9) { projectOut(m, .8); splashAt(m); }
   else if (mv === 'walk' && pondVal(m.x, m.y) < 1.08) { const q = shorePoint(m); m.x = q.x; m.y = q.y; }
 }
@@ -4149,6 +4169,7 @@ function filterDex() {
   $('#dexEmpty').hidden = shown > 0;
 }
 $('#dexQ').addEventListener('input', filterDex);
+document.addEventListener('click', e => { const x = e.target.closest('.qw .qx'); if (!x) return; const q = x.parentNode.querySelector('input'); sfx('tap'); q.value = ''; q.dispatchEvent(new Event('input')); q.blur(); });   // 검색어 지우기
 // 기본 정렬은 '만난 것 먼저' (번호순을 고른 적 있으면 그대로)
 // 도감을 열 때마다 등록순(켜진 모양)으로 시작한다
 function dexSortReset() { const b = $('#dexSort'); b.dataset.v = 0; b.textContent = '등록순'; b.classList.add('on'); }
@@ -4275,7 +4296,9 @@ function renderBox() {
   grid.classList.toggle('nohit', !!q && !hits);
   for (const r of make) { const im = r.el.querySelector('img[data-sp]'), sp = +im.dataset.sp; if (!thumbOf(sp)) ensureSprite(sp).then(() => { im.src = thumbOf(fKey(sp, im.dataset.sx)); }).catch(() => {}); }
 }
-setTimeout(() => (window.requestIdleCallback || setTimeout)(() => { if (!pkEls.size) renderBox(); }), 3000);   // 상자 칸을 미리 만들어 두어 첫 진입도 빠르게
+setTimeout(() => (window.requestIdleCallback || setTimeout)(() => { if (!pkEls.size) renderBox(); }), 3000);
+// 도감도 미리 한 번 배치해 둔다 (보이지 않게) → 처음 열 때도 바로
+setTimeout(() => (window.requestIdleCallback || setTimeout)(() => { if (!sheet.hidden) return; filterDex(); sheet.classList.add('warm'); void $('#dexGrid').offsetHeight; sheet.classList.remove('warm'); }), 4000);   // 상자 칸을 미리 만들어 두어 첫 진입도 빠르게
 // 검색은 엔터(키보드 '검색')를 눌렀을 때만 한다. 글자를 다 지우거나 ✕ 를 누르면 바로 전체로 돌아간다
 $('#boxQ').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); boxQv = $('#boxQ').value.trim(); renderBox(); $('#boxQ').blur(); } });
 $('#boxQ').addEventListener('input', () => { if (!$('#boxQ').value.trim() && boxQv) { boxQv = ''; renderBox(); } });
@@ -4349,7 +4372,7 @@ $('#ppBud').onclick = () => {
   evoNotice(P.sp, P);
 };
 new MutationObserver(() => { if (mgr.hidden) closePoke(); }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
-$('#openMgr').onclick = () => tabTo(mgr, () => { openMgr(); setMgrTab('box'); });
+$('#openMgr').onclick = () => tabTo(mgr, () => { if (budPick != null) { budPick = null; closePoke(); } openMgr(); setMgrTab('box'); });   // 짝꿍 고르다 나갔으면 고르기 상태를 푼다
 $('#closeMgr').onclick = closeMgr;
 // fill up to six free spots with random species from the dex
 $('#mgrRandom').onclick = async () => {
@@ -4394,7 +4417,7 @@ function renderMgr(force) {
         b.onclick = () => openMon(m);
       } else {
         b.classList.add('empty'); b.innerHTML = '<span class="plus">+</span><span>빈 자리</span>';
-        b.onclick = () => pressGo(b, () => { setMgrTab('box'); boxFromSlot = true; });   // 빈 자리에서 왔으면 내보낸 뒤 필드 탭으로 돌아간다
+        b.onclick = () => pressGo(b, () => { setMgrTab('box'); boxFromSlot = true; }, 40);   // 빈 자리에서 왔으면 내보낸 뒤 필드 탭으로 돌아간다
       }
       slotsEl.append(b);
     }
@@ -5402,7 +5425,7 @@ const hatchEl = $('#hatch'), hatchStage = $('#hatchStage');
 // 부화시키기·가방으로 빼기: 누르는 동안 버튼이 쑥 들어간다 (iOS 는 touchstart 가 있어야 :active 가 먹는다)
 document.addEventListener('touchstart', () => {}, { passive: true });
 // 빈 칸(+)을 누르면 칸이 쑥 눌렸다 올라온 뒤 다음 화면으로
-function pressGo(el, go) { if (!el || el.classList.contains('tapd')) return go(); sfx('tap'); el.classList.add('tapd'); setTimeout(() => { el.classList.remove('tapd'); go(); }, 150); }
+function pressGo(el, go, ms = 150) { if (!el || el.classList.contains('tapd')) return go(); sfx('tap'); el.classList.add('tapd'); setTimeout(() => { el.classList.remove('tapd'); go(); }, ms); }
 document.addEventListener('pointerdown', e => { const b = e.target.closest('#eggHatch,#eggOut'); if (b) b.classList.add('press'); }, true);
 ['pointerup', 'pointercancel'].forEach(t => document.addEventListener(t, () => document.querySelectorAll('#eggHatch.press,#eggOut.press').forEach(b => b.classList.remove('press')), true));
 let hatching = false;
@@ -5666,7 +5689,7 @@ $('#buddy').addEventListener('click', e => {
   const a = e.target.closest('[data-act]')?.dataset.act;
   if (!a) { const c = e.target.closest('.bd-card'); if (c && S.buds[+c.dataset.i]) { playCry(S.buds[+c.dataset.i].sp); const im = c.querySelector('.bd-pic img'); im?.classList.remove('hop'); void im?.offsetWidth; im?.classList.add('hop'); } return; }
   const i = +e.target.closest('[data-i]').dataset.i;
-  if (a === 'pick') { budPick = i; pressGo(e.target.closest('.bd-empty'), () => setMgrTab('box')); }
+  if (a === 'pick') { budPick = i; pressGo(e.target.closest('.bd-empty'), () => setMgrTab('box'), 40); }
   else if (a === 'evo') { if (budReady(S.buds[i])) evolvePoke(boxOf(S.buds[i].pid)); }
   else if (S.buds[i]) { log(`${J({ name: SPECIES[S.buds[i].sp].n },'과/와')} 같이 달리기를 그만뒀다.`); S.buds.splice(i, 1); save(); renderRun(); }
 });
