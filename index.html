@@ -1086,7 +1086,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
     box-shadow:inset 0 3px 0 rgba(255,255,255,.2),inset 0 -4px 0 rgba(0,0,0,.4),0 3px 0 #1c1c26}
   .menuwin .opt::before,.cmdwin .opt::before{display:none}
   .menuwin .opt{touch-action:manipulation;transition:none}
-  .menuwin .opt.hold,.menuwin .opt:active,.cmdwin .opt:active{transform:translateY(2px);box-shadow:inset 0 3px 0 rgba(0,0,0,.35),0 1px 0 #1c1c26}
+  .cmdwin .opt:active{transform:translateY(2px);box-shadow:inset 0 3px 0 rgba(0,0,0,.35),0 1px 0 #1c1c26}
   .cmdwin .opt[aria-pressed="true"]{background:#2b2b3c;color:#ffe27a;transform:translateY(2px);box-shadow:inset 0 3px 0 rgba(0,0,0,.4),inset 0 0 0 2px #ffe27a,0 1px 0 #1c1c26}
   .menuwin #capBadge{display:none}
   .mgrwin .sheet-head{flex-wrap:wrap;gap:0 14px}
@@ -1107,7 +1107,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
   /* windows sit above the tab bar, which always stays on screen */
   .sheet{padding:0;place-items:stretch;background:var(--win);grid-template-rows:minmax(0,1fr);bottom:calc(58px + var(--sab) - var(--ext,0px));z-index:60}
   .menuwin,.cmdwin{position:relative;inset:auto;z-index:70}
-  .menuwin .opt[aria-pressed="true"]{background:#2b2b3c;color:#ffe27a;transform:translateY(2px);box-shadow:inset 0 3px 0 rgba(0,0,0,.4),inset 0 0 0 2px #ffe27a,0 1px 0 #1c1c26}
+  .menuwin .opt.hold,.menuwin .opt[aria-pressed="true"]{background:#2b2b3c;color:#ffe27a;transform:translateY(2px);box-shadow:inset 0 3px 0 rgba(0,0,0,.4),inset 0 0 0 2px #ffe27a,0 1px 0 #1c1c26}
   .sheet .win{max-width:none;height:100%!important;max-height:none!important;border:0;box-shadow:none;
     padding:calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 14px) 10px calc(env(safe-area-inset-left) + 14px)}
   .sheet:has(.mgrwin){padding:0}
@@ -4059,16 +4059,16 @@ function openDex(mode = 'field') { dexMode = mode; dexSortReset(); sheet.classLi
 function hideSheets() { sheet.hidden = true; $('#mgr').hidden = true; $('#run').hidden = true; $('#set').hidden = true; $('#shop').hidden = true; }
 function tabTo(el, open) { const was = !el.hidden; closeToggles(); hideSheets(); if (!was) open(); }
 $('#openDex').onclick = () => tabTo(sheet, openDex);
-// 하단 메뉴: 손가락이 닿는 순간 눌린 모양으로 두고 클릭 처리 뒤에 뗀다 (떼는 순간 한 번 튀어 올랐다 다시 눌리던 버벅임 없앰)
-// 손가락이 닿는 순간(pointerdown) 바로 창을 열고 활성 표시를 한다. 뒤따르는 click 은 한 번 삼킨다 (키보드 click 은 그대로)
+// 하단 메뉴: 모양은 기본·활성 두 가지뿐. 닿는 순간 활성 모양(hold), 버튼 안에서 떼야 창이 열린다.
+// 누른 채 버튼 밖으로 나가면 기본 모양으로 돌아오고, 밖에서 떼면 아무 일도 없다. 뒤따르는 click 은 삼킨다 (키보드 click 은 그대로)
 document.querySelectorAll('.menuwin .opt').forEach(b => {
-  let ate = 0;
-  // 눌린 모양을 먼저 화면에 그린 뒤(다음 프레임) 창을 연다 → 무거운 창(포켓몬 박스 등)을 여는 동안에도 버튼은 바로 눌려 보인다
-  // 닿는 순간 활성(노란) 모양까지 바로 칠한다 → 꾹 누르고 있으면 활성된 채 눌린 모습
-  b.addEventListener('pointerdown', e => { if (e.button > 0 || !b.onclick || b.classList.contains('hold')) return; b.classList.add('hold'); ate = performance.now();
-    if (b.getAttribute('aria-pressed') !== 'true') { document.querySelectorAll('.menuwin .opt[aria-pressed="true"]').forEach(o => o.setAttribute('aria-pressed', 'false')); b.setAttribute('aria-pressed', 'true'); }
-    requestAnimationFrame(() => setTimeout(() => { b.onclick(e); requestAnimationFrame(() => { b.classList.remove('hold'); syncTabs(); }); }, 0)); });
-  b.addEventListener('click', e => { if (performance.now() - ate < 1000) { ate = 0; e.stopImmediatePropagation(); e.preventDefault(); } }, true);
+  let id = null, ate = 0;
+  const inside = e => { const r = b.getBoundingClientRect(); return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom; };
+  b.addEventListener('pointerdown', e => { if (e.button > 0 || !b.onclick) return; id = e.pointerId; b.classList.add('hold'); try { b.setPointerCapture(e.pointerId); } catch (_) {} });
+  b.addEventListener('pointermove', e => { if (id === e.pointerId) b.classList.toggle('hold', inside(e)); });
+  b.addEventListener('pointerup', e => { if (id !== e.pointerId) return; id = null; ate = performance.now(); if (inside(e)) { b.onclick(e); syncTabs(); } b.classList.remove('hold'); });
+  b.addEventListener('pointercancel', () => { id = null; b.classList.remove('hold'); });
+  b.addEventListener('click', e => { if (performance.now() - ate < 800) { ate = 0; e.stopImmediatePropagation(); e.preventDefault(); } }, true);
 });
 // 꾹 눌러도 아이폰 글자 선택 돋보기·메뉴가 뜨지 않게 (입력 칸은 그대로)
 { const typing = e => { const t = e.target && e.target.nodeType === 1 ? e.target : e.target?.parentElement; return !!t?.closest('input,textarea,[contenteditable]'); };
@@ -4081,7 +4081,7 @@ document.querySelectorAll('.menuwin .opt').forEach(b => {
   $('#testSw').onclick = () => { sfx('tap'); put('pk-tests', !get('pk-tests')); paint(); };
   let n = 0, t0 = 0; document.querySelector('.set-credit').addEventListener('click', () => { const now = Date.now(); n = now - t0 < 1500 ? n + 1 : 1; t0 = now;
     if (n >= 7) { n = 0; const on = !get('pk-op'); put('pk-op', on); if (!on) put('pk-tests', false); paint(); sfx(on ? 'pickup' : 'tap'); log(on ? '운영자 모드를 켰다.' : '운영자 모드를 껐다.', [], true); } }); }
-function syncTabs() { [['#openDex', '#sheet'], ['#openRun', '#run'], ['#openMgr', '#mgr'], ['#openSet', '#set'], ['#sideSet', '#set'], ['#openShop', '#shop']].forEach(([b, w]) => { const e = $(b), h = document.querySelector('.menuwin .opt.hold[aria-pressed="true"]'); if (e.classList.contains('hold')) return; e.setAttribute('aria-pressed', h ? false : !$(w).hidden); }); /* 누르는 중(hold)인 버튼은 건드리지 않는다 */ document.body.classList.toggle('sheet-open', ['#sheet', '#run', '#mgr', '#shop'].some(w => !$(w).hidden)); }
+function syncTabs() { [['#openDex', '#sheet'], ['#openRun', '#run'], ['#openMgr', '#mgr'], ['#openSet', '#set'], ['#sideSet', '#set'], ['#openShop', '#shop']].forEach(([b, w]) => $(b).setAttribute('aria-pressed', !$(w).hidden)); document.body.classList.toggle('sheet-open', ['#sheet', '#run', '#mgr', '#shop'].some(w => !$(w).hidden)); }
 new MutationObserver(syncTabs).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
 $('#closeDex').onclick = () => { sheet.hidden = true; };
 // 도감 창이 닫히면 그 위의 카드·필터 창도 닫는다
