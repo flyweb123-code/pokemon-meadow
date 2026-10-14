@@ -135,7 +135,7 @@
 
 #sheet.off{opacity:0!important;pointer-events:none!important;z-index:-1!important}/* 닫힌 도감도 제자리에 투명하게 그려 두어 열 때 빈 칸이 깜빡이지 않게 */
 html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
-.mgr-two{display:grid;grid-template-columns:1fr 1fr;gap:6px}.mgr-two .lk-btn{min-width:84px;margin:0;justify-content:center;text-align:center}
+.mgr-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px}.mgr-two .lk-btn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mgr-two .lk-btn{min-width:84px;margin:0;justify-content:center;text-align:center}
 .nm-edit{flex:0 1 auto!important;max-width:100%}
 .card .nm-plain{font-size:19px;font-weight:700}.card .ih-top{margin-top:2px;display:flex;align-items:center;gap:4px}.card .dp-head{margin-bottom:2px;min-height:22px}.card .bars{margin-top:6px}
 .card .mvcard{margin-top:8px}
@@ -4839,9 +4839,9 @@ $('#mgrRandom').onclick = async () => {
   const say = t => { btn.textContent = t; setTimeout(() => btn.textContent = '무작위', 2200); };
   if (!pool.length) return say('내보낼 포켓몬이 없어요');
   if (free <= 0) return say('필드가 꽉 찼어요');
-  btn.disabled = true; let last = null;
+  btn.disabled = true; btn.dataset.busy = 1; let last = null;
   for (let i = 0; i < free && pool.length; i++) { const P = pool.splice(Math.floor(Math.random() * pool.length), 1)[0]; try { last = await spawn(P.sp, { pid: P.id }); } catch (e) {} }
-  btn.disabled = false; if (last) { renderMgr(true); refreshCap(); }
+  delete btn.dataset.busy; btn.disabled = false; refreshCap(); if (last) renderMgr(true);
 };
 mgr.addEventListener('click', e => { if (e.target === mgr) closeMgr(); });
 // 모두 빼기: 필드의 포켓몬을 전부 상자로 (한 번 더 눌러 확인)
@@ -4860,7 +4860,7 @@ function slotState(m) {
   return ['', '쉼'];
 }
 const dayOf = c => Math.floor(c / 1440);
-function renderMgr(force) {
+function renderMgr(force) { refreshCap();
   if (mgr.hidden) return;
   if (mgrSel && !S.mons.includes(mgrSel)) mgrSel = null;
   $("#mgrCap").innerHTML = `<b>${S.mons.length}</b>/${MAX_MONS}`;
@@ -5089,7 +5089,7 @@ function toggleSleep(m) {
   else if (!m.hidden && m.state !== 'interact' && m.state !== 'special') { sleep(m, true); log(`${J(m,'을/를')} 토닥토닥 재웠다.`, [m]); }
   renderMgr();
 }
-function refreshCap() { $('#capBadge').textContent = `${S.mons.length}/${MAX_MONS}`; }
+function refreshCap() { $('#capBadge').textContent = `${S.mons.length}/${MAX_MONS}`; const rb = $('#mgrRandom'); if (rb && !rb.dataset.busy) rb.disabled = S.mons.length >= MAX_MONS; }   /* 필드가 꽉 차면 무작위 버튼을 끈다 */
 
 // ---------- eggs, running and evolution ----------
 // Every species starts locked. Eggs (max 15, empty slots refill) hatch only from distance run: the lock-screen run, or a
@@ -5524,7 +5524,7 @@ const TR_OW = { m: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAABgCAYAAA
 const TR_LV = [[0, '견습 트레이너'], [10, '초보 트레이너'], [30, '신참 트레이너'], [60, '숙련 트레이너'], [100, '베테랑 트레이너'], [160, '엘리트 트레이너'], [250, '에이스 트레이너'], [400, '체육관 관장'], [600, '사천왕'], [850, '챔피언'], [1025, '포켓몬 마스터']];   // 모은 도감 수
 const trOf = () => S.tr || (S.tr = { n: '', sex: 'm' });
 const TN = () => trOf().n || '트레이너';
-const TJ = p => J({ name: TN() }, p);
+const TJ = p => J({ name: TN() }, p).replace(/<\/?b>/g, '');   /* 트레이너 이름은 굵게 하지 않는다 */
 function trLevel() { const k = S.unlocked?.size || 0; let i = 0; while (i + 1 < TR_LV.length && k >= TR_LV[i + 1][0]) i++; return { i, k, name: TR_LV[i][1], next: TR_LV[i + 1] }; }
 function renderTrainer() {
   const t = trOf(), L = trLevel(), inp = $('#trName'), pen = document.querySelector('.tr-nm .pen-b'); if (!pen.firstChild) pen.innerHTML = PEN;
