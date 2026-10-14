@@ -64,11 +64,11 @@
 .bd-card.ready .prog.evo{border-color:#e8a020;animation:barGlow 4s ease-in-out infinite}.bd-card.ready .prog.evo i{background:#ffc840}
 @keyframes barGlow{0%,100%{box-shadow:0 0 0 1px #ffd75e,0 0 3px 0 rgba(255,200,60,.3)}50%{box-shadow:0 0 0 1px #ffe9a0,0 0 10px 2px rgba(255,200,60,.55)}}
 .pp-evo{display:flex;align-items:center;gap:8px;margin:0 0 8px}.pp-evo[hidden]{display:none}.pp-evo .pp-run{flex:1;min-width:0;white-space:nowrap;font-size:12px;color:var(--dim)}.pp-evo .pp-run b{color:var(--win-ink)}
-.pp-evo .pp-run{white-space:normal!important;line-height:1.5}.pp-evo .pp-sub{font-size:11px}.pp-evo .pp-sub .bd-tag{font-size:11px;padding:1px 6px}.pp-evo .pp-sub b{color:var(--win-ink)}#pokePop #ppEvoBtn[hidden]{display:none}
-#pokePop #ppEvoBtn.dis,#pokePop #ppEvoBtn.fin{background:#e4e4ec;color:#a0a0b4;border-color:#c8c8d8;box-shadow:none;animation:none;cursor:default}
-#pokePop #ppEvoBtn.dis:active,#pokePop #ppEvoBtn.fin:active{box-shadow:none;padding:0 10px}#pokePop .win{touch-action:pan-y}#pokePop #ppEvoBtn.fin{background:#f3f1ea;color:var(--win-ink);font-size:14px}#pokePop #ppEvoBtn.fin b{margin-left:4px}
-#pokePop #ppEvoBtn{display:block;flex:none;width:100%;min-width:0;margin:0;padding:0 10px;height:40px;background:#e8a020;border-color:#9a6410;color:#fff;animation:softGlow 4s ease-in-out infinite}
-@media (prefers-reduced-motion: reduce){.bd-card.ready,#ppEvoBtn,.bd-evobtn,.bd-card.ready .prog.evo{animation:none}}
+.pp-evo .pp-run{white-space:normal!important;line-height:1.5}.pp-evo .pp-sub{font-size:11px}.pp-evo .pp-sub .bd-tag{font-size:11px;padding:1px 6px}.pp-evo .pp-sub b{color:var(--win-ink)}.win .evobtn[hidden]{display:none}
+.win .evobtn.dis,.win .evobtn.fin{background:#e4e4ec;color:#a0a0b4;border-color:#c8c8d8;box-shadow:none;animation:none;cursor:default}
+.win .evobtn.dis:active,.win .evobtn.fin:active{box-shadow:none;padding:0 10px}#pokePop .win{touch-action:pan-y}.win .evobtn.fin{display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:#fff7e0;color:#6a4a10;border-color:#c8962a;box-shadow:inset 0 0 0 2px #fff7e0,inset 0 0 0 4px #f0d38a;font-size:13px}.win .evobtn.fin:active{padding:0 14px}.win .evobtn.fin b{margin-left:auto;font-size:17px;color:#a8660a}.win .evobtn.fin small{font-size:12px;margin-left:2px;color:#a8660a}
+.win .evobtn{display:block;flex:none;width:100%;min-width:0;margin:0;padding:0 10px;height:40px;background:#e8a020;border-color:#9a6410;color:#fff;animation:softGlow 4s ease-in-out infinite}
+@media (prefers-reduced-motion: reduce){.bd-card.ready,.evobtn,.bd-evobtn,.bd-card.ready .prog.evo{animation:none}}
 #boxGrid>.pk{content-visibility:auto;contain-intrinsic-size:auto 118px}
 /* 관찰 일지: 따로 뜬 상자가 아니라 상태창이 위로 늘어난 모양 (가운데 이음선 없이, 안쪽 테두리가 위아래로 이어진다) */
 .dlg.open .journal{bottom:100%;border-bottom:0;padding-bottom:4px;box-shadow:inset 4px 0 0 var(--win),inset -4px 0 0 var(--win),inset 0 4px 0 var(--win),inset 8px 0 0 var(--inner-blue),inset -8px 0 0 var(--inner-blue),inset 0 8px 0 var(--inner-blue),6px 0 0 rgba(0,0,0,.35)}
@@ -209,12 +209,12 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 @keyframes aura{0%,100%{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 calc(22px * var(--ar)) calc(8px * var(--ar)) rgba(var(--ac),.8),0 0 calc(60px * var(--ar)) calc(22px * var(--ar)) rgba(var(--ac),.35)}
 50%{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 calc(34px * var(--ar)) calc(14px * var(--ar)) rgba(var(--ac),.95),0 0 calc(90px * var(--ar)) calc(36px * var(--ar)) rgba(var(--ac),.5)}}
 .ehalo{position:absolute;left:50%;top:50%;width:200px;height:200px;margin:-100px 0 0 -100px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,215,90,.8),rgba(255,190,60,.3) 45%,rgba(255,190,60,0) 70%);opacity:0;transform:scale(.4);transition:opacity .3s,transform .3s}
-.ehalo.s1{opacity:.35;transform:scale(.6)}.ehalo.s2{opacity:.6;transform:scale(.85)}.ehalo.s3{opacity:.9;transform:scale(1.1)}
+.ehalo.rkA{opacity:.7;transform:scale(1)}.ehalo.rkS{opacity:1;transform:scale(1.4);background:radial-gradient(circle,rgba(255,250,210,.95),rgba(255,214,80,.6) 35%,rgba(255,190,60,.2) 58%,rgba(255,190,60,0) 72%);animation:hpulse 1.4s ease-in-out .3s infinite}@keyframes hpulse{50%{transform:scale(1.6);opacity:.85}}.ehalo.s1{opacity:.35;transform:scale(.6)}.ehalo.s2{opacity:.6;transform:scale(.85)}.ehalo.s3{opacity:.9;transform:scale(1.1)}
 .bag-mbar #bagMIn{background:var(--frame);color:var(--win)}.bag-mbar #bagMIn[disabled]{opacity:.45}
 #eggHatch,#eggOut{transition:transform .06s,box-shadow .06s}#eggHatch:active,#eggOut:active,#eggHatch.press,#eggOut.press{transform:translate(3px,3px);box-shadow:0 0 0 rgba(0,0,0,0)!important}
 .hatch .boxbtn.go{background:#e8a020;color:#fff}.hatch .boxbtn.go:active{box-shadow:inset 0 4px 0 rgba(0,0,0,.35);padding:14px 16px 10px}
 /* 기본 스크롤 막대는 어디서도 안 보이게 (스크롤은 그대로 된다) */
-html{touch-action:manipulation}*{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+html{touch-action:manipulation}img{-webkit-user-drag:none}*{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 *{scrollbar-width:none;-ms-overflow-style:none}*::-webkit-scrollbar{display:none;width:0;height:0}
 #eggTestAll{margin-left:4px}
 .dexinfo.ivinfo .iv-h{display:flex;align-items:center;gap:8px;font-size:15px}.dexinfo.ivinfo .ivs{margin:8px 0 0}
@@ -675,7 +675,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .slot.empty .plus{font-size:24px;line-height:1}
 .slot .no{position:absolute;right:5px;top:4px;font-size:10px;color:var(--dim)}.slot .sl-x{position:absolute;right:0;top:0;font-size:15px;line-height:1;padding:5px 6px 8px 10px;color:var(--dim);z-index:1}.slot .sl-x:active{color:var(--frame)}
 .mgr-detail{padding:0;overflow-y:auto;font-size:14px;max-height:calc(100vh - 140px)}
-#monPop .win{width:min(400px,100%);min-width:0;box-sizing:border-box;position:relative}.sw-h{position:absolute;top:50%;width:6px;height:14px;margin-top:-7px;z-index:2;opacity:.8;pointer-events:none;background:#fff;animation:swh 1.4s steps(2,end) infinite}.sw-h.l{left:-12px;clip-path:polygon(100% 0,0 50%,100% 100%)}.sw-h.r{right:-12px;clip-path:polygon(0 0,100% 50%,0 100%);animation-name:swhr}.sw-h[hidden]{display:none}@keyframes swh{50%{transform:translateX(-3px)}}@keyframes swhr{50%{transform:translateX(3px)}}.m-pages{overflow:hidden;margin-top:6px}.m-track{height:214px}.m-pg{height:214px;overflow:hidden}#mMemo .th .mv{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}#monPop .m-btns .boxbtn{height:48px;box-sizing:border-box}.ih-top{min-height:30px}.ih-sub{min-height:22px;flex-wrap:nowrap;overflow:hidden;white-space:nowrap}.ih-met{min-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}.ih-met .md{margin-right:4px}.m-track{display:flex;width:200%;transition:transform .22s steps(5,end);align-items:flex-start}.m-pg{width:50%;flex:none;box-sizing:border-box}.m-pg+.m-pg{padding-left:2px}.m-dots{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:6px;cursor:pointer;padding:4px}.m-dots i{width:6px;height:6px;background:var(--inner)}.m-dots i.on{background:var(--frame)}#mPg2 .ivs{margin-top:2px}#mPg2 .mvrow{margin-top:8px;font-size:13px}
+#monPop .win{width:min(400px,100%);min-width:0;box-sizing:border-box;position:relative}.sw-h{position:absolute;top:50%;width:6px;height:14px;margin-top:-7px;z-index:2;opacity:.8;pointer-events:none;background:#fff;animation:swh 1.4s steps(2,end) infinite}.sw-h.l{left:-12px;clip-path:polygon(100% 0,0 50%,100% 100%)}.sw-h.r{right:-12px;clip-path:polygon(0 0,100% 50%,0 100%);animation-name:swhr}.sw-h[hidden]{display:none}@keyframes swh{50%{transform:translateX(-3px)}}@keyframes swhr{50%{transform:translateX(3px)}}.m-pages{overflow:hidden;margin-top:6px}#mPg2 .evobtn{margin-top:8px;height:36px}.m-track{height:214px}.m-pg{height:214px;overflow:hidden}#mMemo .th .mv{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}#monPop .m-btns .boxbtn{height:48px;box-sizing:border-box}.ih-top{min-height:30px}.ih-sub{min-height:22px;flex-wrap:nowrap;overflow:hidden;white-space:nowrap}.ih-met{min-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}.ih-met .md{margin-right:4px}.m-track{display:flex;width:200%;transition:transform .22s steps(5,end);align-items:flex-start}.m-pg{width:50%;flex:none;box-sizing:border-box}.m-pg+.m-pg{padding-left:2px}.m-dots{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:6px;cursor:pointer;padding:4px}.m-dots i{width:6px;height:6px;background:var(--inner)}.m-dots i.on{background:var(--frame)}#mPg2 .ivs{margin-top:2px}#mPg2 .mvrow{margin-top:8px;font-size:13px}
 .monpop .mgr-detail{min-width:0}.monpop .mgr-detail .bars,.monpop .mgr-detail .bar{min-width:0}
 .slots .slot img{height:clamp(44px,7.5vh,72px);width:auto;max-height:none}
 .slots .slot .ph{min-height:0}
@@ -833,7 +833,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .rdex #dpAct{margin-top:12px}
 /* 창 크기 고정: 위 칸·설명 칸 높이를 정해 두고, 이름·분류는 한 줄 */
 .rdex .cd-top{height:156px}.rdex .cd-n,.rdex .cd-g{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rdex .cd-fx{height:8.5em;min-height:0;overflow-y:auto}.rdex #dpAct.vh{visibility:hidden}
-.dp-arr{position:absolute;top:50%;width:22px;height:72px;margin-top:-36px;padding:0;border:0;background:none;cursor:pointer;z-index:3}.dp-arr.l{left:-22px}.dp-arr.r{right:-22px}.dp-arr[hidden]{display:none}.dp-arr .sw-h{position:static;display:block;margin:0 auto}.dp-arr:active .sw-h{opacity:1;transform:scale(1.3)}
+.dp-arr{position:absolute;top:18%;width:58px;height:64%;margin-top:0;padding:0;border:0;background:none;cursor:pointer;z-index:3;-webkit-tap-highlight-color:transparent;display:flex;align-items:center}.dp-arr.l{justify-content:flex-start;padding-left:8px}.dp-arr.r{justify-content:flex-end;padding-right:8px}.dp-arr.l{left:-22px}.dp-arr.r{right:-22px}.dp-arr[hidden]{display:none}.dp-arr .sw-h{position:static;display:block;margin:0}.dp-arr:active .sw-h{opacity:1;transform:scale(1.3)}
 .dexpop .dx-lock{margin:0;color:var(--dim);font-size:14px;line-height:1.6}
 .dexpop .boxbtn{display:block;width:100%;font:inherit;font-size:16px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:11px 16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
 .dexpop .boxbtn.off{background:var(--win);color:var(--frame)}
@@ -922,7 +922,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .hatch .win{text-align:center;width:min(420px,100%)}
 .hatch-stage{height:180px;display:grid;place-items:center;position:relative}
 /* 부화 창 크기 고정: 알 단계에도 태어난 뒤 크기만큼 자리를 잡고, 알은 그 가운데 */
-.hatch:not(.list) .win{min-height:min(500px,calc(100dvh - 40px));display:flex;flex-direction:column}.hatch:not(.list) .hatch-stage{flex:1 1 120px;min-height:120px;height:auto}
+.hatch:not(.list) .win{min-height:min(360px,calc(100dvh - 40px));display:flex;flex-direction:column}.hatch:not(.list) .hatch-stage{flex:1 0 180px;height:auto}
 .h-no{position:absolute;left:18px;top:16px;z-index:2;font-size:14px;color:var(--dim)}.h-no[hidden]{display:none}#hatchDex .dx-no{display:none}
 .hatch-stage .egg{width:108px;height:132px;transform-origin:50% 92%}
 /* 도트 게임식 흔들림: 부드럽게 돌지 않고 칸 단위로 끊어서 움직인다 */
@@ -1346,7 +1346,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
     <i class="sw-h l" id="ppHl"></i><i class="sw-h r" id="ppHr"></i><div class="dp-head m-head"><span class="hd-rk" id="ppRk"></span><button class="pp-x" id="ppX" aria-label="닫기">✕</button></div>
     <div class="dp-pic" id="ppPic"><img alt="" id="ppImg"></div>
     <div class="pp-body" id="ppBody"></div>
-    <div class="pp-evo" id="ppEvo" hidden><button class="boxbtn" id="ppEvoBtn">진화하기</button></div>
+    <div class="pp-evo" id="ppEvo" hidden><button class="boxbtn evobtn" id="ppEvoBtn">진화하기</button></div>
     <div class="pp-btns"><button class="boxbtn" id="ppField"></button><button class="boxbtn pink" id="ppBud"></button></div>
     <button class="pp-free" id="ppFree">놓아주기</button>
   </div>
@@ -4066,7 +4066,7 @@ document.querySelectorAll('.menuwin .opt').forEach(b => {
   // 닿는 순간 활성(노란) 모양까지 바로 칠한다 → 꾹 누르고 있으면 활성된 채 눌린 모습
   b.addEventListener('pointerdown', e => { if (e.button > 0 || !b.onclick || b.classList.contains('hold')) return; b.classList.add('hold'); ate = performance.now();
     if (b.getAttribute('aria-pressed') !== 'true') { document.querySelectorAll('.menuwin .opt[aria-pressed="true"]').forEach(o => o.setAttribute('aria-pressed', 'false')); b.setAttribute('aria-pressed', 'true'); }
-    requestAnimationFrame(() => setTimeout(() => { b.onclick(e); requestAnimationFrame(() => b.classList.remove('hold')); }, 0)); });
+    requestAnimationFrame(() => setTimeout(() => { b.onclick(e); requestAnimationFrame(() => { b.classList.remove('hold'); syncTabs(); }); }, 0)); });
   b.addEventListener('click', e => { if (performance.now() - ate < 1000) { ate = 0; e.stopImmediatePropagation(); e.preventDefault(); } }, true);
 });
 // 꾹 눌러도 아이폰 글자 선택 돋보기·메뉴가 뜨지 않게 (입력 칸은 그대로)
@@ -4080,7 +4080,7 @@ document.querySelectorAll('.menuwin .opt').forEach(b => {
   $('#testSw').onclick = () => { sfx('tap'); put('pk-tests', !get('pk-tests')); paint(); };
   let n = 0, t0 = 0; document.querySelector('.set-credit').addEventListener('click', () => { const now = Date.now(); n = now - t0 < 1500 ? n + 1 : 1; t0 = now;
     if (n >= 7) { n = 0; const on = !get('pk-op'); put('pk-op', on); if (!on) put('pk-tests', false); paint(); sfx(on ? 'pickup' : 'tap'); log(on ? '운영자 모드를 켰다.' : '운영자 모드를 껐다.', [], true); } }); }
-function syncTabs() { [['#openDex', '#sheet'], ['#openRun', '#run'], ['#openMgr', '#mgr'], ['#openSet', '#set'], ['#sideSet', '#set'], ['#openShop', '#shop']].forEach(([b, w]) => $(b).setAttribute('aria-pressed', !$(w).hidden)); document.body.classList.toggle('sheet-open', ['#sheet', '#run', '#mgr', '#shop'].some(w => !$(w).hidden)); }
+function syncTabs() { [['#openDex', '#sheet'], ['#openRun', '#run'], ['#openMgr', '#mgr'], ['#openSet', '#set'], ['#sideSet', '#set'], ['#openShop', '#shop']].forEach(([b, w]) => { const e = $(b), h = document.querySelector('.menuwin .opt.hold[aria-pressed="true"]'); if (e.classList.contains('hold')) return; e.setAttribute('aria-pressed', h ? false : !$(w).hidden); }); /* 누르는 중(hold)인 버튼은 건드리지 않는다 */ document.body.classList.toggle('sheet-open', ['#sheet', '#run', '#mgr', '#shop'].some(w => !$(w).hidden)); }
 new MutationObserver(syncTabs).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
 $('#closeDex').onclick = () => { sheet.hidden = true; };
 // 도감 창이 닫히면 그 위의 카드·필터 창도 닫는다
@@ -4404,14 +4404,52 @@ $('#monX').onclick = () => { sfx('tap'); closeMon(); };
 // 필드 정보창 아래쪽(기력~생각)은 옆으로 넘기면 개체값·친밀도·기술 쪽으로
 let monPg = 0;
 function monPage(n, quiet) { monPg = n; const t = $('#mPages .m-track'); if (!t) return; t.style.transform = `translateX(${-50 * n}%)`; $('#mPages').querySelectorAll('.m-dots i').forEach((d, i) => d.classList.toggle('on', i === n)); if (!quiet) sfx('tap'); }
-function monStep(dir) { const i = S.mons.indexOf(mgrSel), j = i + dir; if (i < 0 || j < 0 || j >= S.mons.length) return; sfx('tap'); openMon(S.mons[j]); const st = $('#mStage'); if (st) { st.classList.remove('slide-l', 'slide-r'); void st.offsetWidth; st.classList.add(dir > 0 ? 'slide-l' : 'slide-r'); } }
+function monStep(dir) { const i = S.mons.indexOf(mgrSel), j = i + dir; if (i < 0 || j < 0 || j >= S.mons.length) return; sfx('tap'); openMon(S.mons[j]); }
 { let x0 = null, y0 = 0; const w = $('#monPop .win');
-  w.addEventListener('pointerdown', e => { if (e.target.closest('button,input')) return; x0 = e.clientX; y0 = e.clientY; });
-  w.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null; if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { if (e.target.closest('#mPages')) monPage(dx < 0 ? 1 : 0); else monStep(dx < 0 ? 1 : -1); } });
+  w.addEventListener('pointerdown', e => { if (e.target.closest('button,input') || !e.target.closest('#mPages')) return; x0 = e.clientX; y0 = e.clientY; });   // 아래쪽 칸만 페이지 넘김 (카드 넘김은 cardPager)
+  w.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null; if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) monPage(dx < 0 ? 1 : 0); });
   w.addEventListener('pointercancel', () => { x0 = null; }); }
 $('#monPop').addEventListener('click', e => { if (e.target.closest('.m-dots')) monPage(monPg ? 0 : 1); });
+// 정보 카드 밀어서 넘기기 (모든 넘기는 카드 공용): 카드 전체가 손가락을 따라 밀리고, 양옆에 이전·다음 카드가 붙어 따라 들어온다.
+// 놓으면 다음 카드가 가운데로 와서 그대로 그 카드가 된다 (스프라이트만 따로 움직이지 않는다)
+function cardPager(pop, o) {
+  const w = pop.querySelector('.win'), GAP = 14; let x0 = null, y0 = 0, dx0 = 0, busy = false, gh = {}, W = 0, swT = 0;
+  const ghost = d => { if (d in gh) return gh[d]; if (!o.can(d)) return gh[d] = null;
+    const r = w.getBoundingClientRect(), g = o.snap(d, w); g.removeAttribute('id'); g.querySelectorAll('[id]').forEach(e => e.removeAttribute('id')); g.classList.add('ghost');
+    Object.assign(g.style, { position: 'fixed', left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', margin: '0', pointerEvents: 'none', zIndex: 1 }); pop.append(g); return gh[d] = g; };
+  const put = x => { w.style.transform = x ? `translateX(${x}px)` : ''; for (const d of [1, -1]) if (gh[d]) gh[d].style.transform = `translateX(${x + d * (W + GAP)}px)`; };
+  const anim = on => { const t = on ? 'transform .16s cubic-bezier(.3,.7,.4,1)' : ''; w.style.transition = t; for (const d of [1, -1]) if (gh[d]) gh[d].style.transition = t; };
+  const clear = () => { for (const d of [1, -1]) gh[d]?.remove(); gh = {}; anim(false); w.style.transform = ''; };
+  w.style.touchAction = 'pan-y'; w.addEventListener('dragstart', e => e.preventDefault());   // 그림을 끌어도 카드가 넘어가게
+  w.addEventListener('pointerdown', e => { if (busy || e.button > 0 || e.target.closest('button,input,.frtap,[data-tip]') || o.skip?.(e)) return; x0 = e.clientX; y0 = e.clientY; dx0 = 0; W = w.offsetWidth; });
+  w.addEventListener('pointermove', e => { if (x0 == null) return; const dx = e.clientX - x0, dy = e.clientY - y0;
+    if (!dx0 && (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(dy))) return;
+    if (!dx0) { ghost(1); ghost(-1); try { w.setPointerCapture(e.pointerId); } catch (_) {} }   // 손가락이 카드 밖으로 나가도 끝까지 따라간다
+    dx0 = (dx * (gh[dx < 0 ? 1 : -1] ? 1 : .2)) || .01; put(dx0); });
+  const end = e => { if (x0 == null) return; const dx = e ? e.clientX - x0 : 0, dy = e ? e.clientY - y0 : 0, d = dx < 0 ? 1 : -1; x0 = null;
+    if (!dx0) return; swT = performance.now();
+    if (e && Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) && gh[d]) { busy = true; anim(true); put(-d * (W + GAP)); setTimeout(() => { o.step(d); clear(); busy = false; }, 170); }
+    else { busy = true; anim(true); put(0); setTimeout(() => { clear(); busy = false; }, 170); }
+    dx0 = 0; };
+  w.addEventListener('pointerup', end); w.addEventListener('pointercancel', () => end(null));
+  pop.addEventListener('click', e => { if (performance.now() - swT < 400) { e.stopImmediatePropagation(); e.preventDefault(); } }, true);   // 밀고 난 뒤의 click 은 닫기·넘기기로 치지 않는다
+}
+// 누르는 버튼: 누르고 있는 동안 눌린 모양(iOS 는 touchstart 가 있어야 :active 가 먹는다), 버튼 밖으로 나가서 떼면 누르지 않은 것으로
+document.addEventListener('touchstart', () => {}, { passive: true });
+{ let pb = null, eat = null, eatT = 0;
+  const out = (b, x, y) => { const r = b.getBoundingClientRect(); return x < r.left - 4 || x > r.right + 4 || y < r.top - 4 || y > r.bottom + 4; };
+  document.addEventListener('pointerdown', e => { eat = null; pb = e.target.closest?.('button') || null; pb?.classList.remove('outp'); }, true);
+  document.addEventListener('pointermove', e => { if (pb) pb.classList.toggle('outp', out(pb, e.clientX, e.clientY)); }, true);
+  document.addEventListener('pointerup', e => { if (pb && out(pb, e.clientX, e.clientY)) { eat = pb; eatT = performance.now(); } pb?.classList.remove('outp'); pb = null; }, true);
+  document.addEventListener('pointercancel', () => { pb?.classList.remove('outp'); pb = null; }, true);
+  document.addEventListener('click', e => { if (eat && performance.now() - eatT < 500 && eat.contains(e.target)) { eat = null; e.stopImmediatePropagation(); e.preventDefault(); } }, true); }
 // 창 바깥 좌우(화살표 힌트 있는 띠)를 누르면 넘기고, 그 밖의 바깥은 닫는다
 function sideTap(pop, e) { const r = pop.querySelector('.win').getBoundingClientRect(); if (e.clientY < r.top || e.clientY > r.bottom) return 0; return e.clientX < r.left ? -1 : e.clientX > r.right ? 1 : 0; }
+cardPager(monPop, {
+  can: d => { const j = S.mons.indexOf(mgrSel) + d; return j >= 0 && j < S.mons.length; },
+  skip: e => !!e.target.closest('#mPages'),
+  snap: (d, w) => { const cur = mgrSel; mgrSel = S.mons[S.mons.indexOf(cur) + d]; renderMgrDetail(true); const g = w.cloneNode(true); mgrSel = cur; renderMgrDetail(true); return g; },
+  step: d => monStep(d) });
 monPop.addEventListener('click', e => { if (e.target !== monPop) return; const d = sideTap(monPop, e); if (d) { const h = $(d < 0 ? '#mHl' : '#mHr'); if (!h.hidden) monStep(d); return; } closeMon(); });
 document.querySelectorAll('#boxSort [data-sort]').forEach(b => b.onclick = () => { const k = b.dataset.sort; if (k === boxSort && k !== 'field') boxDir = -boxDir; else { boxSort = k; boxDir = 1; } try { localStorage.setItem('pk-box-sort', boxSort); localStorage.setItem('pk-box-dir', boxDir); } catch (e) {} renderBox(); });
 // 검색: 별명·종 이름에 들어 있거나 도감 번호가 같으면
@@ -4473,8 +4511,8 @@ $('#boxQ').addEventListener('keydown', e => { if (e.key === 'Enter') { e.prevent
 $('#boxQ').addEventListener('input', () => { if (!$('#boxQ').value.trim() && boxQv) { boxQv = ''; renderBox(); } });
 $('#boxGrid').addEventListener('click', e => { const b = e.target.closest('[data-id]'); if (b) openPoke(+b.dataset.id); });
 let pokeId = null;
-function openPoke(id, dir = 0) {
-  const P = boxOf(id); if (!P) return; if (P.nw) { P.nw = false; save(); renderBox(); } if ($('#pokePop').hidden || pokeId !== id) playCry(P.sp, .1); pokeId = id;
+function openPoke(id, dir = 0, quiet = false) {
+  const P = boxOf(id); if (!P) return; if (!quiet && P.nw) { P.nw = false; save(); renderBox(); } if (!quiet && ($('#pokePop').hidden || pokeId !== id)) playCry(P.sp, .1); pokeId = id;
   const L = boxList(), i = L.indexOf(P), d = SPECIES[P.sp], rk = rankOf(P);
   $('#pokePop').hidden = false; 
   $('#ppHl').hidden = i <= 0; $('#ppHr').hidden = i >= L.length - 1; $('#ppRk').innerHTML = rkBadge(P);
@@ -4489,13 +4527,16 @@ function openPoke(id, dir = 0) {
   const rb = $('#ppFree'); rb.hidden = budPick != null; if (freeArm !== id) { freeArm = null; rb.classList.remove('arm'); rb.textContent = '놓아주기'; }
   const fb = $('#ppField'); fb.hidden = budPick != null; fb.textContent = on ? '필드에서 빼기' : full ? '필드 가득 참' : '필드에 내보내기'; fb.disabled = !on && full; fb.classList.toggle('sunk', on); fb.classList.remove('popout');
   const noRoom = budPick == null && S.buds.length >= MAX_BUDS;
-  // 진화 칸: 가로로 긴 진화하기 버튼. 아직이면 꺼진 모양이고 누르면 버튼 가운데에서 말풍선(남은 거리·조건). 최종 진화는 같은 자리에 같이 달린 거리
-  { const ev = $('#ppEvo'), kids = CHILDREN[P.sp], btn = $('#ppEvoBtn'); ev.hidden = budPick != null;
-    btn.classList.toggle('fin', !kids); btn.classList.remove('dis'); delete btn.dataset.tip; delete btn.dataset.tipc;
-    if (!kids) { btn.innerHTML = `같이 달린 거리 <b>${fmtKm(P.runKm || 0)}</b>km`; }
-    else { const ok = evoKids(P.sp, P), need = evoNeed(P), km = P.km || 0; btn.textContent = '진화하기';
-      if (!pokeReady(P)) { btn.classList.add('dis'); btn.dataset.tipc = ''; btn.dataset.tip = !ok.length ? evoWhy(kids[0]) : km < need ? `진화까지 ${fmtKm(Math.max(0, need - km))}km` : evoWhy(ok[0]); } } }
+  { $('#ppEvo').hidden = budPick != null; setEvoBtn($('#ppEvoBtn'), P); }
   const bb = $('#ppBud'); bb.textContent = isBud ? '짝꿍 해제하기' : noRoom ? '짝꿍 자리 없음' : '짝꿍으로'; bb.disabled = !isBud && noRoom; bb.classList.toggle('off', !isBud && noRoom); bb.classList.toggle('sunk', isBud);   // 짝꿍이면 눌린 버튼(누르면 해제)
+}
+// 진화하기 버튼 (정보 카드·필드 개체 정보 공용): 가로로 긴 버튼. 아직이면 꺼진 모양이고 누르면 버튼 가운데 말풍선(진화까지 쌓인 km / 필요 km, 또는 조건). 최종 진화는 같은 자리에 같이 달린 거리
+function setEvoBtn(btn, P) {
+  const kids = CHILDREN[P.sp]; let cls = '', html = '진화하기', tip = '';
+  if (!kids) { cls = 'fin'; html = `<span>같이 달린 거리</span><b>${fmtKm(P.runKm || 0)}</b><small>km</small>`; }
+  else if (!pokeReady(P)) { const ok = evoKids(P.sp, P), need = evoNeed(P), km = P.km || 0; cls = 'dis'; tip = !ok.length ? evoWhy(kids[0]) : km < need ? `진화까지 ${fmtKm(km)} / ${need}km` : evoWhy(ok[0]); }
+  btn.classList.remove('fin', 'dis'); if (cls) btn.classList.add(cls); if (btn.innerHTML !== html) btn.innerHTML = html;
+  if (tip) { btn.dataset.tip = tip; btn.dataset.tipc = ''; } else { delete btn.dataset.tip; delete btn.dataset.tipc; }
 }
 const closePoke = () => { $('#pokePop').hidden = true; pokeId = null; freeArm = null; };
 $('#ppX').onclick = () => { sfx('tap'); closePoke(); };
@@ -4516,25 +4557,11 @@ $('#ppFree').onclick = () => {
   if (nx) openPoke(nx.id); else closePoke();
 };
 function pokeStep(dir) { const L = boxList(), i = L.indexOf(boxOf(pokeId)), j = i + dir; if (j >= 0 && j < L.length) { sfx('tap'); openPoke(L[j].id, dir); } }
-$('#pokePop').addEventListener('click', e => { if (e.target.id !== 'pokePop' || performance.now() - ppSwiped < 400) return; const d = sideTap($('#pokePop'), e); if (d) { const h = $(d < 0 ? '#ppHl' : '#ppHr'); if (!h.hidden) pokeStep(d); return; } closePoke(); });
-// 밀어서 넘기기: 카드가 손가락을 따라 밀리고, 놓으면 앞 카드가 밀려 나가며 다음 카드가 반대쪽에서 들어온다
-let ppSwiped = 0;
-{ const w = $('#pokePop .win'); let x0 = null, y0 = 0, dx0 = 0, busy = false;
-  const can = d => { const L = boxList(), j = L.indexOf(boxOf(pokeId)) + d; return j >= 0 && j < L.length; };
-  const back = () => { if (dx0) { w.style.transform = ''; w.animate([{ transform: `translateX(${dx0}px)` }, { transform: 'none' }], { duration: 180, easing: 'cubic-bezier(.2,.8,.3,1)' }); } dx0 = 0; };
-  w.addEventListener('pointerdown', e => { if (busy || e.button > 0 || e.target.closest('button,input,.frtap,[data-tip]')) return; x0 = e.clientX; y0 = e.clientY; dx0 = 0; });
-  w.addEventListener('pointermove', e => { if (x0 == null) return; const dx = e.clientX - x0, dy = e.clientY - y0;
-    if (!dx0 && (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(dy))) return;
-    dx0 = (dx * (can(dx < 0 ? 1 : -1) ? 1 : .2)) || .01; w.style.transform = `translateX(${dx0}px)`; });
-  w.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0, dy = e.clientY - y0, d = dx < 0 ? 1 : -1; x0 = null;
-    if (dx0) ppSwiped = performance.now();
-    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) && can(d)) { busy = true; const W = innerWidth, from = dx0; dx0 = 0;
-      w.style.transform = `translateX(${-d * W}px)`;
-      w.animate([{ transform: `translateX(${from}px)` }, { transform: `translateX(${-d * W}px)` }], { duration: 130, easing: 'ease-in' }).onfinish = () => {
-        pokeStep(d); w.style.transform = '';
-        const a = w.animate([{ transform: `translateX(${d * W}px)` }, { transform: 'none' }], { duration: 210, easing: 'cubic-bezier(.2,.8,.3,1)' }); a.onfinish = a.oncancel = () => { busy = false; }; };
-    } else back(); });
-  w.addEventListener('pointercancel', () => { x0 = null; back(); }); }
+$('#pokePop').addEventListener('click', e => { if (e.target.id !== 'pokePop') return; const d = sideTap($('#pokePop'), e); if (d) { const h = $(d < 0 ? '#ppHl' : '#ppHr'); if (!h.hidden) pokeStep(d); return; } closePoke(); });
+cardPager($('#pokePop'), {
+  can: d => { const L = boxList(), j = L.indexOf(boxOf(pokeId)) + d; return j >= 0 && j < L.length; },
+  snap: (d, w) => { const cur = pokeId, L = boxList(), n = L[L.indexOf(boxOf(cur)) + d]; openPoke(n.id, 0, true); const g = w.cloneNode(true); openPoke(cur, 0, true); return g; },
+  step: d => pokeStep(d) });
 $('#ppField').onclick = async () => {
   const P = boxOf(pokeId); if (!P) return;
   const m = S.mons.find(x => x.pid === P.id);
@@ -4651,8 +4678,9 @@ function renderMgrDetail(rebuild) {
   { const P = boxOf(m.pid), el = $('#mPg2');
     const h = (P ? `<div class="ivs">${ivRows(P)}</div>`
       : '')
-      + moveCard(m.sp, P?.fr || 0, canMove(m));
-    if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
+      + moveCard(m.sp, P?.fr || 0, canMove(m)) + (P ? '<button class="boxbtn evobtn" id="mEvo"></button>' : '');
+    if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; const eb = $('#mEvo'); if (eb) eb.onclick = () => { const Q = boxOf(m.pid); if (!Q || eb.classList.contains('dis') || eb.classList.contains('fin')) return; closeMon(); evolvePoke(Q); }; }
+    if (P && $('#mEvo')) setEvoBtn($('#mEvo'), P); }
 }
 // 상황 칸: 친구, 기분, 생각을 메모처럼
 function moodOf(m) {
@@ -5681,6 +5709,8 @@ async function playHatch() {
   haptic(2); await wait(300); egg.remove();
   const B = bornPoke({ g, sp, place }), { P, isNew } = B;
   hatchStage.append(bornImg(sp, P, isNew));
+  // 태어난 포켓몬 뒤 후광: 개체 랭크 A 이상만 (S 는 더 크고 밝게 맥박), 그 아래는 사라진다
+  { const ha = hatchStage.querySelector('.ehalo'), rk = rankOf(P); if (ha) { ha.classList.remove('s1', 's2', 's3'); ha.classList.toggle('rkA', rk === 'A'); ha.classList.toggle('rkS', rk === 'S'); } }
   setTimeout(() => sfx(isNew ? 'newdex' : 'hatch'), 250); setTimeout(() => goldPop(B.dupG), 900); playCry(sp, isNew ? 1.6 : .9);
   $('#hatchMsg').innerHTML = bornMsg(B);
   if (P.shiny) setTimeout(() => sfx('shiny'), 900);
@@ -5947,7 +5977,7 @@ function renderRun() {
     const x = S.eggs[i], b = document.createElement('button'); b.className = 'eslot';
     if (x) {
       const rd = x.km >= x.need; b.classList.toggle('ready', rd);
-      b.innerHTML = `${rd && !x.rs ? '<i class="edot"></i>' : ''}<span class="tag2">${rd ? '부화 준비' : '부화 중'}</span>${eggHtml(x.g, rd ? 'wob shake' : 'wob')}<span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div><span class="ekm">${fmtKm(x.km)}/${x.need}km</span>`;
+      b.innerHTML = `${rd && !x.rs ? '<i class="edot"></i>' : ''}<span class="tag2">${rd ? '부화 준비' : '부화 중'}</span>${eggHtml(x.g, rd ? 'wob shake' : 'wob')}<span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div><span class="ekm">${(Math.floor(x.km * 10) / 10).toFixed(1)}/${x.need}km</span>`;
       b.setAttribute('aria-current', x === e); if (x.isNew) { b.classList.add('new'); x.isNew = false; }
       b.onclick = () => { eggSel = x; if (x.km >= x.need && !hatching && !evolving && !hatchQ.length) pressGo(b, () => { hatchEgg(x, true, true); playHatch(); renderRun(); }); else renderRun(); };   // 준비된 알은 칸이 눌렸다가 창이 뜬다
     } else { b.classList.add('empty', 'add'); b.innerHTML = '+'; b.setAttribute('aria-label', '가방에서 알 가져오기'); b.onclick = () => pressGo(b, () => setRunTab('bag')); }
