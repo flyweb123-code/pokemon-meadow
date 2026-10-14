@@ -676,7 +676,7 @@ body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch
 .mon:is(.rkS,.rkA).rubA .flip{animation:rubS1 .42s ease-out}.mon:is(.rkS,.rkA).rubB .flip{animation:rubS2 .42s ease-out}.mon.rkA.rubA .flip{animation-name:rubA1}.mon.rkA.rubB .flip{animation-name:rubA2}
 @keyframes rubS1{0%{filter:drop-shadow(0 0 4px #fff8d0) drop-shadow(0 0 16px #ffb000)}100%{filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 6px #ffc830)}}@keyframes rubS2{0%{filter:drop-shadow(0 0 4px #fff8d0) drop-shadow(0 0 16px #ffb000)}100%{filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 6px #ffc830)}}
 @keyframes rubA1{0%{filter:drop-shadow(0 0 4px #ffd0d0) drop-shadow(0 0 16px #ff2a2a)}100%{filter:drop-shadow(0 0 2px #ff9090) drop-shadow(0 0 6px #ff3a3a)}}@keyframes rubA2{0%{filter:drop-shadow(0 0 4px #ffd0d0) drop-shadow(0 0 16px #ff2a2a)}100%{filter:drop-shadow(0 0 2px #ff9090) drop-shadow(0 0 6px #ff3a3a)}}
-.mon.joyHalo .flip{animation:joyS .16s steps(1,end) infinite!important}.mon.rkA.joyHalo .flip{animation-name:joyA!important}
+.mon.joyHalo .flip{animation:none!important;filter:none}.mon.joyHalo.joyOn .flip{filter:brightness(1.3) drop-shadow(0 0 5px #fffbe0) drop-shadow(0 0 22px #ffb000)}.mon.rkA.joyHalo.joyOn .flip{filter:brightness(1.3) drop-shadow(0 0 5px #ffe0e0) drop-shadow(0 0 22px #ff2020)}
 @keyframes joyS{0%{filter:brightness(1.3) drop-shadow(0 0 5px #fffbe0) drop-shadow(0 0 22px #ffb000)}50%{filter:drop-shadow(0 0 0 transparent)}}@keyframes joyA{0%{filter:brightness(1.3) drop-shadow(0 0 5px #ffe0e0) drop-shadow(0 0 22px #ff2020)}50%{filter:drop-shadow(0 0 0 transparent)}}   /* 좋아할 때: 켜졌다 꺼졌다 점멸 */
 .hspk{position:absolute;transform:translate(-50%,-50%);line-height:1;pointer-events:none;color:#fff6b0;text-shadow:0 0 4px #ffb000,0 0 2px #fff;animation:hspk .7s ease-out forwards}.hspk.A{color:#ffe0e0;text-shadow:0 0 4px #ff3a3a,0 0 2px #fff}
 @keyframes hspk{0%{opacity:0;scale:.3}25%{opacity:1;scale:1.25}60%{opacity:1;scale:.9}100%{opacity:0;scale:.4;translate:0 -10px}}
@@ -2379,7 +2379,8 @@ function petEnd() {
 const haloOf = m => m.el?.classList.contains('rkS') ? 'S' : m.el?.classList.contains('rkA') ? 'A' : '';
 function haloFlash(m) { if (!haloOf(m)) return; const a = m.el.classList.contains('rubA'); m.el.classList.toggle('rubA', !a); m.el.classList.toggle('rubB', a); clearTimeout(m.rubT); m.rubT = setTimeout(() => m.el.classList.remove('rubA', 'rubB'), 420); }
 function haloJoy(m) {
-  const h = haloOf(m); if (!h) return; m.el.classList.add('joyHalo'); clearTimeout(m.joyT); m.joyT = setTimeout(() => m.el.classList.remove('joyHalo'), 2600);
+  const h = haloOf(m); if (!h) return; clearTimeout(m.rubT); m.el.classList.remove('rubA', 'rubB'); m.el.classList.add('joyHalo', 'joyOn');   /* 춤 시작과 동시에 점멸: 스크립트로 직접 켰다 껐다 (아이폰에서도 바로) */
+  clearInterval(m.joyI); clearTimeout(m.joyT); m.joyI = setInterval(() => m.el.classList.toggle('joyOn'), 80); m.joyT = setTimeout(() => { clearInterval(m.joyI); m.el.classList.remove('joyHalo', 'joyOn'); }, 2600);
   const H = m.h || 60, W = m.w || 50;
   for (let k = 0; k < 24; k++) setTimeout(() => { if (!S.mons.includes(m)) return; const i = document.createElement('i'); i.className = 'hspk ' + h; i.textContent = k % 3 ? '✦' : '✧';
     const a = Math.random() * Math.PI * 2, rx = W * (.45 + Math.random() * .35), ry = H * (.4 + Math.random() * .3);
@@ -4428,7 +4429,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.84';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.85';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
