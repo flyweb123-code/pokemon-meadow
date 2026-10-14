@@ -587,7 +587,7 @@ ol.log li.big .txt{color:#c03838}
 .rk{display:inline-block;min-width:18px;text-align:center;font-size:11px;font-weight:700;color:#fff;padding:0 4px;border:2px solid rgba(0,0,0,.25)}
 .rk.S{background:#e8a020}.rk.A{background:#e04848}.rk.B{background:#8a5ad0}.rk.C{background:#3a80d0}.rk.D{background:#40a060}.rk.E{background:#909098}.rk.F{background:#6a6a70}
 .pk .rk{position:absolute;left:3px;top:3px}
-.pk .tg{position:absolute;right:3px;top:3px;font-size:9px;background:var(--frame);color:var(--win);padding:1px 3px}
+.pk .pk-new{position:absolute;left:50%;top:4px;width:8px;height:8px;margin-left:-4px;background:#e04838;box-shadow:0 0 0 2px var(--win)}.pk .tg{position:absolute;right:3px;top:3px;font-size:9px;background:var(--frame);color:var(--win);padding:1px 3px}
 .pk .tg.bud{background:#e8a020;color:#fff}
 .pk .sh,.pp-body .sh{color:#e8a020;font-size:12px;margin-left:2px;text-shadow:0 0 4px rgba(255,200,40,.7)}
 /* S 랭크: 금빛 테두리 빛 + 반짝이 */
@@ -808,6 +808,8 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .rd-bar{flex:none;width:44px;height:8px;background:#3a8a3e;box-shadow:inset 0 -2px 0 rgba(0,0,0,.35)}.rd-bar.b{background:#2d6fc0}
 .rd-btn{flex:none;margin-left:auto;width:30px;height:30px;background:#262626;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)}
 .rdex #dpAct{margin-top:12px}
+/* 창 크기 고정: 위 칸·설명 칸 높이를 정해 두고, 이름·분류는 한 줄 */
+.rdex .cd-top{height:156px}.rdex .cd-n,.rdex .cd-g{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rdex .cd-fx{height:8.5em;min-height:0;overflow-y:auto}.rdex #dpAct.vh{visibility:hidden}
 .dp-arr{position:absolute;top:50%;width:22px;height:72px;margin-top:-36px;padding:0;border:0;background:none;cursor:pointer;z-index:3}.dp-arr.l{left:-22px}.dp-arr.r{right:-22px}.dp-arr[hidden]{display:none}.dp-arr .sw-h{position:static;display:block;margin:0 auto}.dp-arr:active .sw-h{opacity:1;transform:scale(1.3)}
 .dexpop .dx-lock{margin:0;color:var(--dim);font-size:14px;line-height:1.6}
 .dexpop .boxbtn{display:block;width:100%;font:inherit;font-size:16px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:11px 16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
@@ -1046,7 +1048,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
     white-space:normal;line-height:1.2;border:0;font-weight:400;background:#4b4b66;
     box-shadow:inset 0 3px 0 rgba(255,255,255,.2),inset 0 -4px 0 rgba(0,0,0,.4),0 3px 0 #1c1c26}
   .menuwin .opt::before,.cmdwin .opt::before{display:none}
-  .menuwin .opt:active,.cmdwin .opt:active{transform:translateY(2px);box-shadow:inset 0 3px 0 rgba(0,0,0,.35),0 1px 0 #1c1c26}
+  .menuwin .opt.hold,.menuwin .opt:active,.cmdwin .opt:active{transform:translateY(2px);box-shadow:inset 0 3px 0 rgba(0,0,0,.35),0 1px 0 #1c1c26}
   .cmdwin .opt[aria-pressed="true"]{background:#2b2b3c;color:#ffe27a;transform:translateY(2px);box-shadow:inset 0 3px 0 rgba(0,0,0,.4),inset 0 0 0 2px #ffe27a,0 1px 0 #1c1c26}
   .menuwin #capBadge{display:none}
   .mgrwin .sheet-head{flex-wrap:wrap;gap:0 14px}
@@ -4014,6 +4016,12 @@ function openDex(mode = 'field') { dexMode = mode; dexSortReset(); sheet.classLi
 function hideSheets() { sheet.hidden = true; $('#mgr').hidden = true; $('#run').hidden = true; $('#set').hidden = true; $('#shop').hidden = true; }
 function tabTo(el, open) { const was = !el.hidden; closeToggles(); hideSheets(); if (!was) open(); }
 $('#openDex').onclick = () => tabTo(sheet, openDex);
+// 하단 메뉴: 손가락이 닿는 순간 눌린 모양으로 두고 클릭 처리 뒤에 뗀다 (떼는 순간 한 번 튀어 올랐다 다시 눌리던 버벅임 없앰)
+document.querySelectorAll('.menuwin .opt').forEach(b => {
+  b.addEventListener('pointerdown', () => b.classList.add('hold'));
+  const up = () => setTimeout(() => b.classList.remove('hold'), 0);
+  b.addEventListener('click', up); b.addEventListener('pointercancel', up); b.addEventListener('pointerup', () => setTimeout(() => b.classList.remove('hold'), 400));   // 버튼 밖에서 떼어 클릭이 안 오면 잠시 뒤 원래대로
+});
 function syncTabs() { [['#openDex', '#sheet'], ['#openRun', '#run'], ['#openMgr', '#mgr'], ['#openSet', '#set'], ['#sideSet', '#set'], ['#openShop', '#shop']].forEach(([b, w]) => $(b).setAttribute('aria-pressed', !$(w).hidden)); document.body.classList.toggle('sheet-open', ['#sheet', '#run', '#mgr', '#shop'].some(w => !$(w).hidden)); }
 new MutationObserver(syncTabs).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
 $('#closeDex').onclick = () => { sheet.hidden = true; };
@@ -4206,7 +4214,7 @@ async function openCard(sp, dir = 0) {
   $('#dpMeta').innerHTML = lock ? `<b class="cd-n">?????</b><span class="cd-g">??? 포켓몬</span><span class="cd-hw"><i>키</i>?.? m</span><span class="cd-hw"><i>몸무게</i>??.? kg</span>`
     : `<b class="cd-n">${esc(d.n)}</b><span class="cd-g">${esc(d.g || '')}</span><span class="cd-ty">${tyIcons(sp)}</span><span class="cd-hw"><i>키</i>${(d.h / 10).toFixed(1)} m</span><span class="cd-hw"><i>몸무게</i>${(d.w / 10).toFixed(1)} kg</span>`;
   $('#dpFx').innerHTML = lock ? '아직 만나지 못한 포켓몬이다.<br>알을 부화시켜 만나 보자.' : esc(d.fx || '');
-  const act = $('#dpAct'); act.hidden = lock || dexMode !== 'buddy';
+  const act = $('#dpAct'); act.hidden = dexMode !== 'buddy'; act.classList.toggle('vh', lock);   // 짝꿍 고르기 중엔 자리를 늘 차지해 창 크기가 그대로
   if (!lock) {
     if (dexMode === 'buddy') { act.textContent = S.buds.some(b => b.sp === sp) ? '이미 짝꿍이에요' : '짝꿍으로 정하기'; act.classList.toggle('off', S.buds.some(b => b.sp === sp)); }
     else { const full = S.mons.length >= MAX_MONS, none = !freePoke(sp); act.textContent = full ? `필드가 꽉 찼어요 (${MAX_MONS}/${MAX_MONS})` : none ? '모두 필드에 나가 있어요' : '필드에 풀어놓기'; act.classList.toggle('off', full || none); }
@@ -4362,10 +4370,10 @@ function boxList(all) {
 }
 // 상자 칸은 한 번 만든 걸 다시 쓴다: 정렬이 바뀌면 순서만 옮기고, 내용이 바뀐 칸만 새로 만든다
 const pkEls = new Map(), pkTpl = document.createElement('template');
-const pkHtml = (p, tag, rk) => `<button class="pk${p.shiny ? ' shiny' : ''}${pkCls(p)}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rk}">${rk}</span>${p.nw ? '<span class="newtag">NEW</span>' : ''}${tag === 2 ? '<span class="tg bud">짝꿍</span>' : tag === 1 ? '<span class="tg">필드</span>' : ''}<img alt="" data-sp="${p.sp}" data-sx="${p.sex || ''}" src="${thumbP(p) || ''}"><span class="nm">${esc(nameOf(p))}${sexHtml(p.sex)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(p.fr)}</span></button>`;
+const pkHtml = (p, tag, rk) => `<button class="pk${p.shiny ? ' shiny' : ''}${pkCls(p)}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rk}">${rk}</span>${p.nw ? '<i class="pk-new" aria-label="새 포켓몬"></i>' : ''}${tag === 2 ? '<span class="tg bud">짝꿍</span>' : tag === 1 ? '<span class="tg">필드</span>' : ''}<img alt="" data-sp="${p.sp}" data-sx="${p.sex || ''}" src="${thumbP(p) || ''}"><span class="nm">${esc(nameOf(p))}${sexHtml(p.sex)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(p.fr)}</span></button>`;
 // 박스 탭을 본 뒤 다른 탭으로 가거나 창이 닫히면 NEW 표시를 지운다 (가방과 같은 규칙)
 function seeBox() { let ch = false; S.box.forEach(p => { if (p.nw) { p.nw = false; ch = true; } }); if (ch) { save(); renderBox(); } }
-new MutationObserver(() => { if (mgr.hidden && mgrTab === 'box') seeBox(); }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
+{ let was = !mgr.hidden; new MutationObserver(() => { const now = !mgr.hidden; if (was && !now && mgrTab === 'box') seeBox(); was = now; }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] }); }   // 열려 있다가 닫힐 때만
 // 하단 메뉴 알림 점: 알(가방에 새 알) · 포켓몬(박스에 새 포켓몬)
 function menuDots() { const set = (b, on) => { let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot" aria-label="새 소식"></i>'); else if (!on && d) d.remove(); };
   set($('#openRun'), S.bag.some(e => e.isNew)); set($('#openMgr'), S.box.some(p => p.nw)); }
@@ -5766,7 +5774,7 @@ try { bagSort = localStorage.getItem('pk-bag-sort') || 'new'; } catch (e) {}
 // 가방을 보고 나가면 NEW 표시를 지운다
 function seeBag(closing) { if (runTab !== 'bag' || (runEl.hidden && !closing)) return; let ch = false; S.bag.forEach(e => { if (e.isNew) { e.isNew = false; ch = true; } }); if (ch) { save(); renderBag.sig = ''; renderRun(); } }
 // 가방 탭을 본 채로 창이 닫히면(하단 메뉴 이동·바깥 누름·다른 창 열림 등 어떤 길이든) NEW 표시를 지운다
-new MutationObserver(() => { if (runEl.hidden) seeBag(true); }).observe(runEl, { attributes: true, attributeFilter: ['hidden'] });
+{ let was = !runEl.hidden; new MutationObserver(() => { const now = !runEl.hidden; if (was && !now) seeBag(true); was = now; }).observe(runEl, { attributes: true, attributeFilter: ['hidden'] }); }   // 열려 있다가 닫힐 때만
 function fmtWhen(t) { const d = new Date(t); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; }
 function renderBag() {
   const hasNew = S.bag.some(e => e.isNew);
