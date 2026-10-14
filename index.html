@@ -201,6 +201,13 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .hatch.legend>.hdark{opacity:calc(.55 + var(--dk,0) * .45 - var(--lg,0) * .35)}
 .hatch.legend .win{filter:brightness(calc(1 - var(--dk,0) * .28 + var(--lg,0) * .3))}
 .hatch.surge>.hrays{animation-duration:1.6s}.hatch.g4t.surge>.hrays{animation-duration:3s}
+/* 1단계(금지급 전설·환상) 부화: 별이 뜬 어둠 속에서 무지개 빛기둥이 돌며 색이 바뀌고, 무지개 반짝이가 쏟아진다 */
+.hatch.myth>.hdark{background:radial-gradient(1.5px 1.5px at 18% 22%,#fff,transparent),radial-gradient(1.5px 1.5px at 78% 16%,#fff,transparent),radial-gradient(1px 1px at 64% 70%,#fff,transparent),radial-gradient(1px 1px at 30% 80%,#fff,transparent),radial-gradient(2px 2px at 88% 58%,#ffe9ff,transparent),radial-gradient(1px 1px at 10% 60%,#fff,transparent),radial-gradient(circle at 50% 45%,rgba(30,0,60,.55),#06001a 75%)}
+.hatch.myth>.hlit{background:radial-gradient(circle closest-side at 50% 45%,#fff 0,rgba(255,220,250,.95) 20%,rgba(160,220,255,.7) 48%,rgba(200,140,255,0) 100%);animation:mythHue 2.4s linear infinite}
+.hatch.myth>.hrays{background:repeating-conic-gradient(from 0deg,rgba(255,90,140,0) 0deg,rgba(255,90,140,.6) 4deg,rgba(255,220,80,.6) 6deg,rgba(255,220,80,0) 10deg,rgba(80,220,255,0) 15deg,rgba(80,220,255,.6) 19deg,rgba(180,120,255,.6) 21deg,rgba(180,120,255,0) 25deg,rgba(0,0,0,0) 30deg);animation:hrays 4s linear infinite,mythHue 2.4s linear infinite}
+.hatch.myth.surge>.hrays{animation-duration:1.2s,1.2s}
+.hatch.myth>.hwhite.go{background:radial-gradient(circle at 50% 45%,#fff 25%,#ffe4f6 50%,#dff4ff 72%,#fff3c8)}
+@keyframes mythHue{to{filter:hue-rotate(360deg)}}
 .hspark{position:absolute;width:6px;height:6px;pointer-events:none;z-index:4;background:#fff;box-shadow:0 0 6px 2px var(--sc,#ffe070);animation:hspark .9s steps(6,end) forwards}
 .hspark.b{width:9px;height:9px}
 @keyframes hspark{0%{transform:translateY(0) scale(.3);opacity:0}20%{opacity:1;transform:translateY(-10px) scale(1)}100%{transform:translateY(-80px) scale(.2);opacity:0}}
@@ -712,7 +719,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .pokepop .boxbtn{display:block;width:100%;font:inherit;font-size:15px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:10px 8px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
 .dexpop .boxbtn.red{background:#c83838;border-color:#7a1c1c;color:#fff}/* 눌린 버튼: 아래 그림자가 위로 옮겨가며 면이 4px 내려간다 → 글자도 padding 으로 같은 만큼 내려 함께 움직인다 */
 
-/* 특별한 포켓몬 카드 테두리 3단계: leg 금지급 전설·환상(무지개 프리즘이 흐르는 굵은 테두리+색이 바뀌는 빛+반짝이) / sil 준전설(오로라 청록·보라 흐름+빛+반짝이) / brz 600족·울트라비스트·패러독스(불꽃 흐름+주황 빛) */.hatch .win:is(.leg,.sil,.brz),.pokepop .win:is(.leg,.sil,.brz){box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 6px var(--tl),6px 6px 0 rgba(0,0,0,.35)}.pokepop .win.bud:is(.leg,.sil,.brz){box-shadow:inset 0 0 0 4px #fff3f7,inset 0 0 0 6px var(--tl),6px 6px 0 rgba(0,0,0,.35)}.hatch .win:is(.leg,.sil,.brz)::after,.pokepop .win:is(.leg,.sil,.brz)::after{content:'';position:absolute;inset:var(--ti);padding:var(--tp);pointer-events:none;z-index:6;background:var(--tg);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);animation:tierFlow var(--ts) linear infinite}.win.leg{--tl:#fff;--ti:-6px;--tp:7px;--ts:2.6s;--tg:repeating-linear-gradient(135deg,#ff4d6d 0px,#ffb13b 23px,#fff36a 46px,#5cf08a 69px,#3cd0ff 91px,#7a6cff 114px,#e05cff 137px,#ff4d6d 160px);animation:legGlow 3s linear infinite}.win.sil{--tl:#c8f4ff;--ti:-5px;--tp:6px;--ts:3.6s;--tg:repeating-linear-gradient(135deg,#1fc8b8 0px,#7ef0e0 27px,#6aa8ff 53px,#b48cff 80px,#ff9ad8 107px,#6aa8ff 133px,#1fc8b8 160px);animation:silGlow 3.6s ease-in-out infinite}.win.brz{--tl:#ffc070;--ti:-5px;--tp:6px;--ts:2.2s;--tg:repeating-linear-gradient(135deg,#b0181c 0px,#ff5a1a 32px,#ffd24a 64px,#ff8a1a 96px,#d02040 128px,#b0181c 160px);animation:brzGlow 1.8s ease-in-out infinite}.hatch .win:is(.leg,.sil)::before,.pokepop .win:is(.leg,.sil)::before{content:'✦';position:absolute;right:-11px;top:-13px;z-index:7;font-size:22px;line-height:1;color:#fff;text-shadow:0 0 4px #fff,0 0 8px #ff6ad0,0 0 12px #5cd8ff;pointer-events:none;animation:spk 1.6s steps(1) infinite}.win.sil::before{font-size:17px;right:-9px;top:-11px;text-shadow:0 0 4px #fff,0 0 9px #6aa8ff,0 0 12px #b48cff}@keyframes tierFlow{to{background-position:226.27px 0}}@keyframes legGlow{0%,100%{filter:drop-shadow(0 0 9px rgba(255,90,140,.7))}25%{filter:drop-shadow(0 0 13px rgba(255,210,60,.75))}50%{filter:drop-shadow(0 0 9px rgba(80,230,140,.7))}75%{filter:drop-shadow(0 0 13px rgba(90,160,255,.75))}}@keyframes silGlow{0%,100%{filter:drop-shadow(0 0 6px rgba(60,220,210,.6))}50%{filter:drop-shadow(0 0 11px rgba(180,140,255,.7))}}@keyframes brzGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(255,100,30,.5))}50%{filter:drop-shadow(0 0 9px rgba(255,140,40,.75))}}
+/* 특별한 포켓몬 카드 테두리 3단계: leg 금지급 전설·환상(무지개 프리즘이 흐르는 굵은 테두리+색이 바뀌는 빛+반짝이) / sil 준전설(금빛 흐름+빛+반짝이) / brz 600족·울트라비스트·패러독스(보랏빛 흐름) */.hatch .win:is(.leg,.sil,.brz),.pokepop .win:is(.leg,.sil,.brz){box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 6px var(--tl),6px 6px 0 rgba(0,0,0,.35)}.pokepop .win.bud:is(.leg,.sil,.brz){box-shadow:inset 0 0 0 4px #fff3f7,inset 0 0 0 6px var(--tl),6px 6px 0 rgba(0,0,0,.35)}.hatch .win:is(.leg,.sil,.brz)::after,.pokepop .win:is(.leg,.sil,.brz)::after{content:'';position:absolute;inset:var(--ti);padding:var(--tp);pointer-events:none;z-index:6;background:var(--tg);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);animation:tierFlow var(--ts) linear infinite}.win.leg{--tl:#fff;--ti:-6px;--tp:7px;--ts:2.6s;--tg:repeating-linear-gradient(135deg,#ff4d6d 0px,#ffb13b 23px,#fff36a 46px,#5cf08a 69px,#3cd0ff 91px,#7a6cff 114px,#e05cff 137px,#ff4d6d 160px);animation:legGlow 3s linear infinite}.win.sil{--tl:#ffe9a0;--ti:-5px;--tp:6px;--ts:3.2s;--tg:repeating-linear-gradient(135deg,#a06a10 0px,#e8b030 32px,#fff0a0 64px,#ffd24a 96px,#c08418 128px,#a06a10 160px);animation:silGlow 2.8s ease-in-out infinite}.win.brz{--tl:#d8b8ff;--ti:-4px;--tp:5px;--ts:4s;--tg:repeating-linear-gradient(135deg,#6a3cb8 0px,#a070e8 40px,#d8c0ff 80px,#9058e0 120px,#6a3cb8 160px);animation:none}.hatch .win:is(.leg,.sil)::before,.pokepop .win:is(.leg,.sil)::before{content:'✦';position:absolute;right:-11px;top:-13px;z-index:7;font-size:22px;line-height:1;color:#fff;text-shadow:0 0 4px #fff,0 0 8px #ff6ad0,0 0 12px #5cd8ff;pointer-events:none;animation:spk 1.6s steps(1) infinite}.win.sil::before{font-size:17px;right:-9px;top:-11px;color:#fff6c0;text-shadow:0 0 4px #fff,0 0 8px #ffb000}@keyframes tierFlow{to{background-position:226.27px 0}}@keyframes legGlow{0%,100%{filter:drop-shadow(0 0 9px rgba(255,90,140,.7))}25%{filter:drop-shadow(0 0 13px rgba(255,210,60,.75))}50%{filter:drop-shadow(0 0 9px rgba(80,230,140,.7))}75%{filter:drop-shadow(0 0 13px rgba(90,160,255,.75))}}@keyframes silGlow{0%,100%{filter:drop-shadow(0 0 5px rgba(255,200,70,.45))}50%{filter:drop-shadow(0 0 11px rgba(255,210,80,.75))}}
 .win.bud{background:#fff3f7;border-color:#9a3462;box-shadow:inset 0 0 0 3px #fff3f7,inset 0 0 0 6px #e9a3bf,6px 6px 0 rgba(0,0,0,.35)}.win.bud .dp-pic{background:#fcd9e6;border-color:#e9a3bf;box-shadow:inset 0 -18px 0 #f6c3d6}.win.bud .mvcard:not(.on){border-color:#e9a3bf!important}.win.bud .pp-free{color:#c0507e}
 #info.night{--card:#232a4e;--card-frame:#0e1024;--win-ink:#e4e2f6;--dim:#8e96c4;--inner:#46508a;--hp-track:#141832;color:#e4e2f6}#info.night .inf-ico{background:#2e365f;border-color:#0e1024}#info.night .pp-x{color:#8e96c4}#info.night .pf{border-color:#0e1024;background:linear-gradient(#3a4478,#2a3260)}#info.night .mvcard,#info.night .mvuse.lock{background:#2a3158;color:#c8cbe8;border-color:#46508a}#info.night .mvuse{background:#2a3158;color:#e4e2f6;border-color:#46508a;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}#info.night .mvuse.on{background:color-mix(in srgb,var(--tc) 30%,#232a4e);border-color:color-mix(in srgb,var(--tc) 80%,#fff)}#info.night .mvuse.on b,#info.night .mvuse.on>span:last-child{color:#f2f0ff}#info.bud.night{background:#3a2446;border-color:#0e1024}#info.bud.night .pf{border-color:#9a5a86;background:linear-gradient(#5a3a6a,#43284f)}#info .dp-head{position:relative}#info .pbody{align-items:stretch}#info #pPf{height:auto;min-height:84px;width:92px;align-self:stretch}#info .ihead{margin-top:10px}#info .ih-top{margin-top:0;min-height:26px;align-items:center;gap:6px}#info .ih-top .sx{font-size:17px;line-height:1}#info .m-head{margin-bottom:0}#infoBud{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}.pf .pf-rk{left:0!important;top:0!important;z-index:6}.pf .pf-rk .rk{border:0!important;font-size:11px;padding:1px 0!important;width:16px;line-height:13px;display:block}.win .evobtn.spc{display:flex;align-items:center;gap:8px;justify-content:flex-start;padding:0 12px!important;background:#f6f0ff!important;color:#5a3a8a!important;border-color:#c8b0e8!important;box-shadow:none!important;animation:none;cursor:default;font-size:13px;text-align:left}.win .evobtn.spc:active{padding:0 12px!important}.evobtn.spc .sp-tag{flex:none;font-size:12px;line-height:1;padding:4px 7px;background:#7a5ab0;color:#fff}.evobtn.spc .sp-why{flex:1;min-width:0;line-height:1.3}#info.bud{background:#fff3f7;border-color:#9a3462;box-shadow:6px 6px 0 rgba(0,0,0,.35)}#info.bud .pf{border-color:#e9a3bf;background:linear-gradient(#fcd9e6,#f6c3d6)}#info.bud .mvcard:not(.on){border-color:#e9a3bf!important}
 .bud-tag{margin-left:6px;font-size:12px;line-height:1;padding:4px 8px;background:#e8679a;color:#fff;border:2px solid #9a3462;box-shadow:2px 2px 0 rgba(0,0,0,.2)}.bud-tag[hidden]{display:none}.hd-rk:empty+.bud-tag{margin-left:0}
@@ -2628,6 +2635,7 @@ const isLegend = m => SPD(m.sp).leg || SPD(m.sp).my;
    leg: 금지급 전설 + 환상 / sil: 준전설 (전설 표시 중 금지급 아닌 종) / brz: 600족·울트라비스트·패러독스 */
 const TIER_LEG = new Set([150, 151, 249, 250, 251, 382, 383, 384, 385, 386, 483, 484, 487, 489, 490, 491, 492, 493, 494, 643, 644, 646, 647, 648, 649, 716, 717, 718, 719, 720, 721, 789, 790, 791, 792, 800, 801, 802, 807, 808, 809, 888, 889, 890, 893, 898, 1007, 1008, 1024, 1025]), TIER_SIL = new Set([144, 145, 146, 243, 244, 245, 377, 378, 379, 380, 381, 480, 481, 482, 485, 486, 488, 638, 639, 640, 641, 642, 645, 772, 773, 785, 786, 787, 788, 891, 892, 894, 895, 896, 897, 905, 1001, 1002, 1003, 1004, 1014, 1015, 1016, 1017]), TIER_BRZ = new Set([149, 248, 373, 376, 445, 635, 706, 784, 793, 794, 795, 796, 797, 798, 799, 803, 804, 805, 806, 887, 984, 985, 986, 987, 988, 989, 990, 991, 992, 993, 994, 995, 998, 1005, 1006, 1009, 1010, 1020, 1021, 1022, 1023]);
 const tierOf = sp => TIER_LEG.has(sp) ? 'leg' : TIER_SIL.has(sp) ? 'sil' : TIER_BRZ.has(sp) ? 'brz' : '';
+const fxGrade = (sp, g) => ({ leg: 6, sil: 5, brz: 4 })[tierOf(+sp)] || Math.min(g, 2);   /* 부화 연출은 알 등급이 아니라 나올 포켓몬으로: 1단계 무지개(새 연출) / 2단계 예전 전설 알 연출 / 3단계 예전 에픽 알 연출 / 나머지는 평범하게 */
 const setTier = (w, sp) => { const t = tierOf(+sp); for (const k of ['leg', 'sil', 'brz']) w.classList.toggle(k, k === t); };
 const isBaby = m => !!SPD(m.sp).baby;
 const isBig = m => SPD(m.sp).w >= 1500 || SPD(m.sp).h >= 30;
@@ -4349,7 +4357,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.47';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.48';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5970,11 +5978,11 @@ function eggQuake(egg, win, st, g) {
   egg.classList.remove('knock', 'wig', 'quake'); win.classList.remove('jolt', 'wquake'); void egg.offsetWidth; egg.classList.add('quake'); win.classList.add('wquake');
 }
 // 알 두드리기: 마구 두드리면 금이 가다가 깨진다 (높은 등급일수록 많이). 한동안 가만히 두면 알이 혼자 흔들린다.
-function tapEgg(egg, g, msg) {
+function tapEgg(egg, g0, msg, g = g0) {   /* g0 알 등급(두드릴 횟수), g 연출 등급(나올 포켓몬 단계) */
   return new Promise(done => {
-    const need = g === 1 ? 20 : 20 + g * 10,   /* 일반 알은 20번 */ win = hatchEl.querySelector('.win'); let n = 0, stage = 0, idle = 0, pend = -1;
+    const need = g0 === 1 ? 20 : 20 + g0 * 10,   /* 일반 알은 20번 */ win = hatchEl.querySelector('.win'); let n = 0, stage = 0, idle = 0, pend = -1;
     msg.textContent = '알을 톡톡 두드려 보자!';
-    if (g === 5) { hatchEl.classList.add('legend'); tenseStart(); } else if (g === 4) hatchEl.classList.add('g4t');
+    if (g >= 5) { hatchEl.classList.add('legend'); if (g === 6) hatchEl.classList.add('myth'); tenseStart(); } else if (g === 4) hatchEl.classList.add('g4t');
     hatchStage.classList.add('tapme');
     // 두드리기 힌트: 창 안 아무 곳에 파장 원이 번진다 (잠깐 안 두드리면 다시)
     let lastTap = 0; const ring = () => { if (n >= need || performance.now() - lastTap < 1600) return; const r = hatchStage.getBoundingClientRect(), o = document.createElement('i'); o.className = 'tapring';
@@ -6001,15 +6009,15 @@ function tapEgg(egg, g, msg) {
       else { sfx('knock', st); pend = st >= 2 ? 2 : 1; }
       sfx('charge', f);
       { const lt = g >= 4 ? Math.pow(f, 1.3) : Math.max(0, Math.min(1, (f - .75) / .25));   // 에픽·전설은 첫 두드림부터 서서히, 레어는 끝무렵(75%)부터 환해진다
-        if (g === 5) { hatchEl.style.setProperty('--dk', f.toFixed(3)); hatchEl.style.setProperty('--lg', lt.toFixed(3)); tense.f = f; }   // 전설: 어두워지다가 끝무렵 금빛이 터져 나온다
+        if (g >= 5) { hatchEl.style.setProperty('--dk', f.toFixed(3)); hatchEl.style.setProperty('--lg', lt.toFixed(3)); tense.f = f; }   // 전설: 어두워지다가 끝무렵 금빛이 터져 나온다
         else hatchEl.style.setProperty('--lit', g <= 3 ? 0 : lt.toFixed(3));   // 일반·희귀·레어 알은 배경이 밝아지지 않는다
-        if (g >= 4 && lt > .12) hSparks(g === 5 ? 3 + Math.round(lt * 4) : 1 + Math.round(lt * 2), g);
+        if (g >= 4 && lt > .12) hSparks(g >= 5 ? 3 + Math.round(lt * (g === 6 ? 6 : 4)) : 1 + Math.round(lt * 2), g);
         if (g === 3 && f >= .45) hSparks(1 + (f >= .85 ? 1 : 0), 3); }   /* 레어: 절반쯤부터 파란 반짝이가 조금씩 */
       haptic(pend);
       if (n >= need) {
         clearTimeout(idle);
         setTimeout(() => { egg.classList.remove('knock'); egg.classList.add('wig2'); sfx('rattle'); sfx('rise'); }, 220);
-        if (g >= 4) { hatchEl.classList.add('surge'); for (let k = 0; k < 6; k++) setTimeout(() => hSparks(g === 5 ? 7 : 4, g, true), k * 140); }
+        if (g >= 4) { hatchEl.classList.add('surge'); for (let k = 0; k < 6; k++) setTimeout(() => hSparks(g === 6 ? 10 : g === 5 ? 7 : 4, g, true), k * 140); }
         else if (g === 3) for (let k = 0; k < 3; k++) setTimeout(() => hSparks(3, 3, true), k * 160);   /* 레어: 깨지기 직전 반짝이 한 번 */   // 깨지기 직전: 빛줄기가 빨라지고 반짝이가 쏟아진다
         hatchEl.onclick = null;
         clearInterval(ringT); { const wh = hatchEl.querySelector('.hwhite'); wh.style.transition = 'opacity .9s ease-in'; void wh.offsetWidth; wh.style.opacity = g >= 4 ? .9 : .75; }   // 깨지기 직전까지 화면이 점점 하얘진다
@@ -6020,7 +6028,7 @@ function tapEgg(egg, g, msg) {
     const up = () => { if (pend >= 0 && !window.webkit?.messageHandlers?.haptic && !navigator.vibrate) haptic(pend); pend = -1; };
     win.addEventListener('pointerdown', down); win.addEventListener('click', up); nudge();
     // 다 두드리기 전에 창 바깥을 누르면 그만둔다 (알은 부화기에 그대로)
-    hatchEl.onclick = ev => { if (ev.target.closest('.win') || n >= need) return; clearTimeout(idle); clearInterval(ringT); win.removeEventListener('pointerdown', down); win.removeEventListener('click', up); hatchStage.classList.remove('tapme'); hatchEl.onclick = null; hatchFx(); if (g === 5) { tenseStop(.6); bgmDuck(1, 1.5); } done(false); };
+    hatchEl.onclick = ev => { if (ev.target.closest('.win') || n >= need) return; clearTimeout(idle); clearInterval(ringT); win.removeEventListener('pointerdown', down); win.removeEventListener('click', up); hatchStage.classList.remove('tapme'); hatchEl.onclick = null; hatchFx(); if (g >= 5) { tenseStop(.6); bgmDuck(1, 1.5); } done(false); };
   });
 }
 // hatch cutscene: wobble, crack, flash, reveal
@@ -6072,12 +6080,12 @@ let hatching = false;
 // 부화 창 화면 효과 초기화 (밝기·어둠·후광)
 // 부화 창 효과 초기화. 흔들림 클래스도 지운다 (창을 다시 열 때 지난번 흔들림이 다시 재생되지 않게)
 function hSparks(k, g, big) { for (let i = 0; i < k; i++) { const s = document.createElement('i'); s.className = 'hspark' + (big && Math.random() < .4 ? ' b' : ''); s.style.left = (50 + (Math.random() - .5) * 80) + '%'; s.style.top = (28 + Math.random() * 48) + '%';
-  s.style.setProperty('--sc', g === 5 ? (Math.random() < .6 ? '#ffd84a' : '#fff6c0') : g === 3 ? (Math.random() < .5 ? '#8ac8ff' : '#e0f2ff') : (Math.random() < .5 ? '#d6a4ff' : '#ffc4ef')); s.style.animationDelay = (Math.random() * .2).toFixed(2) + 's'; hatchEl.append(s); setTimeout(() => s.remove(), 1300); } }
-function hatchFx() { hatchEl.classList.remove('legend', 'rays', 'g4t', 'surge'); { const wh = hatchEl.querySelector('.hwhite'); if (wh) { wh.style.transition = ''; wh.style.opacity = ''; } } hatchEl.style.setProperty('--lg', 0); hatchEl.querySelectorAll('.hspark').forEach(e => e.remove()); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); hatchEl.querySelector('.win').classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5', 'jolt', 'wquake', 'leg', 'sil', 'brz'); hatchEl.querySelector('.hwhite')?.classList.remove('go', 'big'); }
+  s.style.setProperty('--sc', g === 6 ? `hsl(${Math.random() * 360 | 0} 100% 72%)` : g === 5 ? (Math.random() < .6 ? '#ffd84a' : '#fff6c0') : g === 3 ? (Math.random() < .5 ? '#8ac8ff' : '#e0f2ff') : (Math.random() < .5 ? '#d6a4ff' : '#ffc4ef')); s.style.animationDelay = (Math.random() * .2).toFixed(2) + 's'; hatchEl.append(s); setTimeout(() => s.remove(), 1300); } }
+function hatchFx() { hatchEl.classList.remove('legend', 'myth', 'rays', 'g4t', 'surge'); { const wh = hatchEl.querySelector('.hwhite'); if (wh) { wh.style.transition = ''; wh.style.opacity = ''; } } hatchEl.style.setProperty('--lg', 0); hatchEl.querySelectorAll('.hspark').forEach(e => e.remove()); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); hatchEl.querySelector('.win').classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5', 'jolt', 'wquake', 'leg', 'sil', 'brz'); hatchEl.querySelector('.hwhite')?.classList.remove('go', 'big'); }
 async function playHatch() {
   if (hatching || !hatchQ.length) return;
   hatching = true;
-  const { g, sp, place, egg: src, ask } = hatchQ.shift();
+  const { g, sp, place, egg: src, ask } = hatchQ.shift(), fg = fxGrade(sp, g);   /* 화려한 부화 연출은 특별한 포켓몬(3단계)이 나올 때만 */
   const spReady = ensureSprite(sp).catch(() => {});   // 그림은 알이 깨질 때까지 받아 두면 된다 → 창은 바로 뜬다 (예전엔 그림을 받는 동안 버튼이 먹통처럼 보였다)
   hatchEl.hidden = false; $('#hatchOk').hidden = true; showDexInfo(null); $('#hatchMsg').textContent = '어라…? 알의 모습이…!';
   hatchStage.classList.remove('evo'); hatchFx();
@@ -6091,11 +6099,11 @@ async function playHatch() {
     clearInterval(wt); if (yes) { go.classList.add('gone', 'asmsg'); msg.style.visibility = 'hidden'; } else go.hidden = true; hatchEl.onclick = null; egg.classList.remove('wig');   // 두드리는 동안 버튼 자리는 남겨 알이 움직이지 않게
     if (!yes) { hatchEl.hidden = true; hatching = false; renderRun(); if (hatchQ.length) playHatch(); return; }
   }
-  { const go = $('#hatchGo'), as = go.classList.contains('asmsg'), ok = await tapEgg(egg, g, as ? go : msg); if (go.classList.contains('gone')) { go.classList.remove('gone', 'asmsg'); go.hidden = true; go.textContent = '부화시키기'; msg.style.visibility = ''; } if (!ok) { hatchEl.hidden = true; hatching = false; renderRun(); if (hatchQ.length) playHatch(); return; } }
+  { const go = $('#hatchGo'), as = go.classList.contains('asmsg'), ok = await tapEgg(egg, g, as ? go : msg, fg); if (go.classList.contains('gone')) { go.classList.remove('gone', 'asmsg'); go.hidden = true; go.textContent = '부화시키기'; msg.style.visibility = ''; } if (!ok) { hatchEl.hidden = true; hatching = false; renderRun(); if (hatchQ.length) playHatch(); return; } }
   hatchStage.querySelector('.flash').classList.add('go'); sfx('pop');
   // 깨지는 순간 화면 전체가 하얗게 → 천천히 원래대로. 전설은 긴장 곡을 멈추고 카드 테두리에 후광
-  { const wh = hatchEl.querySelector('.hwhite'), L = g === 5; wh.style.setProperty('--wl', parseFloat(wh.style.opacity) || (parseFloat(hatchEl.style.getPropertyValue(L ? '--lg' : '--lit')) || 0) * .55); wh.classList.remove('go', 'big'); wh.style.transition = ''; wh.style.opacity = '';   /* 밝아진 만큼에서 이어서 하얗게 */ void wh.offsetWidth; wh.classList.add('go'); if (L) wh.classList.add('big');
-    setTimeout(() => { hatchEl.classList.remove('legend'); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); { const w = hatchEl.querySelector('.win'); w.classList.remove('jolt'); setTier(w, sp); if (g === 5) hatchEl.classList.add('rays'); } }, L ? 500 : 300);
+  { const wh = hatchEl.querySelector('.hwhite'), L = fg >= 5; wh.style.setProperty('--wl', parseFloat(wh.style.opacity) || (parseFloat(hatchEl.style.getPropertyValue(L ? '--lg' : '--lit')) || 0) * .55); wh.classList.remove('go', 'big'); wh.style.transition = ''; wh.style.opacity = '';   /* 밝아진 만큼에서 이어서 하얗게 */ void wh.offsetWidth; wh.classList.add('go'); if (L) wh.classList.add('big');
+    setTimeout(() => { hatchEl.classList.remove('legend'); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); { const w = hatchEl.querySelector('.win'); w.classList.remove('jolt'); setTier(w, sp); if (fg >= 5) hatchEl.classList.add('rays'); } }, L ? 500 : 300);
     if (L) { tenseStop(.25); setTimeout(() => { if (hatching) bgmDuck(1, 3); }, 3200); } }
   if (src) { S.eggs = S.eggs.filter(x => x !== src); renderBag.sig = ''; renderRun(); }
   hatchStage.querySelectorAll('.shard').forEach(x => { x.style.setProperty('--ec', getComputedStyle(egg).getPropertyValue('--ec')); x.classList.add('go'); });
@@ -6115,7 +6123,7 @@ async function playHatch() {
   // 태어난 포켓몬은 포켓몬 상자로 (필드에는 포켓몬 창에서 내보낸다)
   const how = await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = ev => { if (!ev.target.closest('.win')) r(); }; }); const send = false;
   hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatching = false;
-  hatchFx(); if (g === 5) bgmDuck(1, 2.5);
+  hatchFx(); if (fg >= 5) bgmDuck(1, 2.5);
   if (!send) log(`${GRADE[g].n} 알에서 ${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어나 포켓몬 상자에 들어갔다.`, [], true);
   else if (S.mons.length < MAX_MONS) { runEl.hidden = true; const m = await spawn(sp, { pid: P.id }); m.born = S.clock; select(m); log(`${GRADE[g].n} 알에서 ${P.shiny ? '✦ 색이 다른 ' : ''}${J(m,'이/가')} 태어났다!`, [m], true); }
   else log(`${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났지만 필드가 꽉 차서 포켓몬 상자에 들어갔다.`, [], true);
@@ -6184,7 +6192,7 @@ async function hatchAll() {
     if (d && !q && !still) slide(d);   // 다음 카드는 오른쪽에서, 이전 카드는 왼쪽에서 밀려 들어온다
     hatchStage.innerHTML = ''; hatchStage.append(bornImg(r.sp, r.P, r.isNew)); if (!q && !r.gp) { r.gp = 1; setTimeout(() => goldPop(r.dupG), 250); }
     $('#hatchMsg').innerHTML = bornMsg(r); showDexInfo(r.sp); if (ivMode) showIvInfo(r);
-    { const w = hatchEl.querySelector('.win'); w.classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5'); setTier(w, r.sp); hatchEl.classList.toggle('rays', r.g === 5); }
+    { const w = hatchEl.querySelector('.win'); w.classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5'); setTier(w, r.sp); hatchEl.classList.toggle('rays', fxGrade(r.sp, r.g) >= 5); hatchEl.classList.toggle('myth', fxGrade(r.sp, r.g) === 6); }
     $('#hlNum').textContent = `${i + 1} / ${res.length}`; $('#hlHl').hidden = i <= 0; $('#hlHr').hidden = i >= res.length - 1;
     strip.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-current', j === i));
     if (!q) strip.children[i]?.scrollIntoView({ block: 'nearest', inline: 'center' });
