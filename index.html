@@ -957,7 +957,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 .op-sw{flex:none;width:58px;height:30px;padding:0;border:3px solid var(--frame);background:#b9b9c6;cursor:pointer;position:relative;box-shadow:inset 0 3px 0 rgba(0,0,0,.2)}
 .op-sw i{position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border:2px solid var(--frame)}
 .op-sw[aria-checked="true"]{background:#4ccf5a}.op-sw[aria-checked="true"] i{left:auto;right:2px}
-#openRun,#openMgr{position:relative}.mdot{position:absolute;top:5px;right:6px;width:9px;height:9px;background:#e04838;box-shadow:0 0 0 2px #fff;pointer-events:none}
+#openRun,#openMgr,#openDex{position:relative}.mdot{position:absolute;top:5px;right:6px;width:9px;height:9px;background:#e04838;box-shadow:0 0 0 2px #fff;pointer-events:none}
 @keyframes tbump{50%{transform:scale(1.25)}}
 #eggAll{font:inherit;font-size:13px;padding:3px 10px;background:#e8a020;color:#fff;border:3px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.25);cursor:pointer}
 @keyframes hpop{0%{transform:scale(.25)}50%{transform:scale(1.1)}100%{transform:none}}
@@ -3854,7 +3854,7 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, today: S.today, ped: S.ped, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, lastPlace: S.lastPlace || null };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, today: S.today, ped: S.ped, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, lastPlace: S.lastPlace || null, dexNew: [...(S.dexNew || [])] };
 }
 let saveFrozen = false;
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
@@ -3865,7 +3865,7 @@ async function restore(d) {
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
   cleanPlaces();
-  S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
+  S.dexNew = new Set(d.dexNew || []); S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
   for (const o of [...(d.mons || [])].sort((a, b) => (b.uid === d.buddy) - (a.uid === d.buddy)).slice(0, MAX_MONS)) { const m = await spawn(o.sp, { ...o, quiet: true }); m.notes = o.notes || [];
     // 앱을 닫아 둔 동안에도 서서히 배고파진다. 다만 80까지만 (켰을 때 먹여 줄 틈이 있게)
     if (d.savedAt > 0 && m.hunger < 80) m.hunger = Math.min(80, m.hunger + Math.max(0, Date.now() - d.savedAt) / 1000 * HUNGER_RATE * (T(m).hun || 1) * .6); if (o.asleep) sleep(m, false); }
@@ -4216,6 +4216,7 @@ const dexLocked = sp => !S.unlocked.has(+sp);
 let cardSp = null;
 const cardList = () => Object.keys(dexBtns).filter(k => !dexBtns[k].hidden).map(Number).sort((a, b) => (+dexBtns[a].style.order || a) - (+dexBtns[b].style.order || b));
 async function openCard(sp, dir = 0) {
+  if (S.dexNew?.delete(sp)) { lockDexBtn(sp); save(); }
   cardSp = sp; const pop = $('#dexPop'), lock = dexLocked(sp), d = SPECIES[sp];
   if (!lock) playCry(sp, .15);
   pop.hidden = false;
@@ -4389,11 +4390,13 @@ function boxList(all) {
 const pkEls = new Map(), pkTpl = document.createElement('template');
 const pkHtml = (p, tag, rk) => `<button class="pk${p.shiny ? ' shiny' : ''}${pkCls(p)}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rk}">${rk}</span>${p.nw ? '<i class="pk-new" aria-label="새 포켓몬"></i>' : ''}${tag === 2 ? '<span class="tg bud">짝꿍</span>' : tag === 1 ? '<span class="tg">필드</span>' : ''}<img alt="" data-sp="${p.sp}" data-sx="${p.sex || ''}" src="${thumbP(p) || ''}"><span class="nm">${esc(nameOf(p))}${sexHtml(p.sex)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(p.fr)}</span></button>`;
 // 박스 탭을 본 뒤 다른 탭으로 가거나 창이 닫히면 NEW 표시를 지운다 (가방과 같은 규칙)
+function seeDex() { if (!S.dexNew?.size) return; const L = [...S.dexNew]; S.dexNew.clear(); L.forEach(sp => dexBtns[sp] && lockDexBtn(sp)); save(); }
+{ let was = !sheet.hidden; new MutationObserver(() => { const now = !sheet.hidden; if (was && !now && dexMode !== 'buddy') seeDex(); was = now; }).observe(sheet, { attributes: true, attributeFilter: ['class'] }); }   // 도감을 봤다가 닫으면 NEW 지움
 function seeBox() { let ch = false; S.box.forEach(p => { if (p.nw) { p.nw = false; ch = true; } }); if (ch) { save(); renderBox(); } }
 { let was = !mgr.hidden; new MutationObserver(() => { const now = !mgr.hidden; if (was && !now && mgrTab === 'box') seeBox(); was = now; }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] }); }   // 열려 있다가 닫힐 때만
 // 하단 메뉴 알림 점: 알(가방에 새 알) · 포켓몬(박스에 새 포켓몬)
 function menuDots() { const set = (b, on) => { let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot" aria-label="새 소식"></i>'); else if (!on && d) d.remove(); };
-  set($('#openRun'), S.bag.some(e => e.isNew)); set($('#openMgr'), S.box.some(p => p.nw)); }
+  set($('#openRun'), S.bag.some(e => e.isNew)); set($('#openDex'), !!S.dexNew?.size); set($('#openMgr'), S.box.some(p => p.nw)); }
 function renderBox() {
   document.querySelectorAll('#boxSort [data-sort]').forEach(b => { const on = b.dataset.sort === boxSort; b.setAttribute('aria-pressed', on); b.dataset.dir = on && boxSort !== 'field' ? (boxDir > 0 ? '▼' : '▲') : ''; });
   const L = boxList(true), q = boxQ(), bud = new Set(S.buds.map(b => b.pid)), field = new Set(S.mons.map(m => m.pid)), grid = $('#boxGrid');
@@ -5131,7 +5134,10 @@ function migrateBox() {
 S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked = new Set(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1;
 const hatchQ = [];
 
-function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); if (dexBtns[sp]) lockDexBtn(sp); } }
+function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); (S.dexNew ||= new Set()).add(sp); if (dexBtns[sp]) { lockDexBtn(sp); dexCellReady(sp); } } }
+// 새로 등록된 칸은 그림을 바로 넣고 순서도 미리 맞춰 둔다 → 도감을 열 때 없던 칸이 뒤늦게 생기는 모습이 안 보인다
+function dexCellReady(sp) { const b = dexBtns[sp]; if (!b) return; io.unobserve(b); const put = () => { const im = b.querySelector('img'); if (thumbOf(sp) && im.src !== thumbOf(sp)) im.src = thumbOf(sp); im.decode?.().catch(() => {}); };
+  thumbOf(sp) ? put() : ensureSprite(sp).then(put).catch(() => {}); if (sheet.hidden) filterDex(); }
 function drawEgg() {
   if (S.eggs.length >= MAX_EGGS) return null;
   const r = Math.random(), g = r < .45 ? 1 : r < .75 ? 2 : r < .9 ? 3 : r < .98 ? 4 : 5;
@@ -6069,6 +6075,7 @@ async function evolveWin(P, card) {
 // the dex only lets you release species you have met
 function lockDexBtn(sp) {
   const b = dexBtns[sp], on = S.unlocked.has(sp);
+  { const nw = on && !!S.dexNew?.has(sp), t = b.querySelector('.newtag'); if (nw && !t) b.insertAdjacentHTML('beforeend', '<span class="newtag">NEW</span>'); else if (!nw && t) t.remove(); }
   b.classList.toggle('locked', !on); b.querySelector('.nm').textContent = on ? SPECIES[sp].n : '???';
   b.title = on ? `${SPECIES[sp].g} · ${SPECIES[sp].t.map(x => TYPE_KO[x]).join('·')}` : '아직 만나지 못한 포켓몬';
 }
