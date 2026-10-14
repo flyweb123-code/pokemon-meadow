@@ -526,8 +526,10 @@ ol.log li.big .txt{color:#c03838}
 .set-body{flex:1;min-height:0;overflow-y:auto}
 .set-sec{border:3px solid var(--frame);background:var(--card);padding:14px;margin-bottom:12px;box-shadow:4px 4px 0 rgba(0,0,0,.25)}
 .set-sec h4{margin:0 0 6px;font-size:18px}
-.set-title{margin:6px 0 8px;font-size:15px;color:var(--dim)}
-.pf-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.pf-sp{flex:1}#setTitle{margin-right:auto}#set .sheet-head .pf-sp{display:none}
+.pf-gear{display:grid;place-items:center;width:44px;height:44px;padding:0;border:3px solid var(--frame);background:var(--win);color:var(--frame);cursor:pointer;box-shadow:2px 2px 0 rgba(0,0,0,.2)}.pf-gear svg{width:26px;height:26px}.pf-gear:active{transform:translateY(2px);box-shadow:none}.pf-gear[hidden],#setBack[hidden]{display:none}
+#setBack{padding:4px 10px}
+.pf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
 .pf-box{border:3px solid var(--frame);background:var(--win);padding:10px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
 .pf-box span{font-size:12px;color:var(--dim)}.pf-box b{font-size:24px;line-height:1.1;color:var(--win-ink)}.pf-box i{font-style:normal;font-size:12px;color:var(--dim)}
 .pf-box.live b{color:#2a8a4a}
@@ -1115,18 +1117,17 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 </div>
 <div class="sheet" id="set" hidden>
   <div class="win setwin" role="dialog" aria-label="프로필">
-    <div class="sheet-head"><h3>프로필</h3><button class="opt" id="closeSet">닫기</button></div>
+    <div class="sheet-head"><button class="opt" id="setBack" hidden aria-label="프로필로">◀</button><h3 id="setTitle">프로필</h3><span class="pf-sp"></span><button class="pf-gear" id="pfGear" type="button" aria-label="설정"><svg viewBox="0 0 10 10" width="30" height="30" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true"><rect x="4" y="0" width="1" height="1"/><rect x="5" y="0" width="1" height="1"/><rect x="2" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="5" y="1" width="1" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="1" y="2" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="3" y="2" width="1" height="1"/><rect x="4" y="2" width="1" height="1"/><rect x="5" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/><rect x="6" y="3" width="1" height="1"/><rect x="7" y="3" width="1" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="1" y="4" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="7" y="4" width="1" height="1"/><rect x="8" y="4" width="1" height="1"/><rect x="9" y="4" width="1" height="1"/><rect x="0" y="5" width="1" height="1"/><rect x="1" y="5" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="7" y="5" width="1" height="1"/><rect x="8" y="5" width="1" height="1"/><rect x="9" y="5" width="1" height="1"/><rect x="2" y="6" width="1" height="1"/><rect x="3" y="6" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/><rect x="7" y="6" width="1" height="1"/><rect x="1" y="7" width="1" height="1"/><rect x="2" y="7" width="1" height="1"/><rect x="3" y="7" width="1" height="1"/><rect x="4" y="7" width="1" height="1"/><rect x="5" y="7" width="1" height="1"/><rect x="6" y="7" width="1" height="1"/><rect x="7" y="7" width="1" height="1"/><rect x="8" y="7" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="4" y="8" width="1" height="1"/><rect x="5" y="8" width="1" height="1"/><rect x="7" y="8" width="1" height="1"/><rect x="4" y="9" width="1" height="1"/><rect x="5" y="9" width="1" height="1"/></svg></button><button class="opt" id="closeSet">닫기</button></div>
     <div class="set-body">
-      <section class="set-sec pf-sec">
+      <section class="set-sec pf-sec" id="pfPage">
         <h4>오늘</h4>
         <div class="pf-grid">
-          <div class="pf-box"><span>걸은 거리</span><b id="pfWalk">0.00</b><i>km</i></div>
-          <div class="pf-box"><span>달린 거리</span><b id="pfRun">0.00</b><i>km</i></div>
+          <div class="pf-box"><span>이동 거리</span><b id="pfWalk">0.00</b><i>km</i></div>
           <div class="pf-box"><span>주운 알</span><b id="pfEggs">0</b><i>개</i></div>
         </div>
         <p class="pf-note" id="pfNote"></p>
       </section>
-      <h4 class="set-title">설정</h4>
+      <div id="setPage" hidden>
       <section class="set-sec">
         <h4>백업</h4>
         <p>홈 화면 앱, Safari, 새로 추가한 아이콘은 저장 공간이 서로 따로예요. 여기서 저장 복사를 누르고, 옮길 곳의 설정에서 저장 붙여넣기를 누르면 알, 도감, 필드가 그대로 옮겨져요.</p>
@@ -1141,6 +1142,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
         <div class="set-btns one"><button class="lk-btn main" id="musicImport">곡 파일 가져오기</button><input type="file" id="musicFile" accept="audio/*,.mp3" multiple hidden><button class="lk-btn main" id="cryImport">울음소리 가져오기</button><input type="file" id="cryFile" accept=".zip,application/zip" hidden></div>
       </section>
       <p class="credit set-credit">그림 PMDCollab (CC BY-NC 4.0) · 포켓몬 © Nintendo · Creatures · GAME FREAK. 개인 팬 게임이에요.</p>
+      </div>
     </div>
   </div>
 </div>
@@ -3935,7 +3937,11 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
 const setEl = $('#set');
-$('#openSet').onclick = () => tabTo(setEl, () => { renderProfile(); setEl.hidden = false; setEl.querySelector('.set-body').scrollTop = 0; });
+// 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
+function setPage(on) { $('#setPage').hidden = !on; $('#pfPage').hidden = on; $('#pfGear').hidden = on; $('#setBack').hidden = !on; $('#setTitle').textContent = on ? '설정' : '프로필'; setEl.querySelector('.set-body').scrollTop = 0; }
+$('#pfGear').onclick = () => { sfx('tap'); setPage(true); };
+$('#setBack').onclick = () => { sfx('tap'); setPage(false); };
+$('#openSet').onclick = () => tabTo(setEl, () => { renderProfile(); setPage(false); setEl.hidden = false; });
 const shopEl = $('#shop');
 $('#openShop').onclick = () => tabTo(shopEl, () => { shopEl.hidden = false; shopSel = null; $('#shopMsg').textContent = ''; setShopTab('bgm'); renderShop(); });
 shopEl.addEventListener('click', e => { if (e.target === shopEl) shopEl.hidden = true; });
@@ -4979,12 +4985,12 @@ const rollGrade = () => { const r = Math.random(); return r < .45 ? 1 : r < .75 
 const dayKey = (t = Date.now()) => { const d = new Date(t); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
 function today() { if (!S.today || S.today.d !== dayKey()) S.today = { d: dayKey(), walk: 0, eggs: 0 }; return S.today; }
 function renderProfile() {
-  if (!$('#pfWalk')) return; const T = today(), live = S.ped && S.ped.d === T.d;
-  $('#pfWalk').textContent = fmtKm(live ? S.ped.km : T.walk); $('#pfWalk').parentNode.classList.toggle('live', !!live);
-  const k0 = new Date(); k0.setHours(0, 0, 0, 0);
-  $('#pfRun').textContent = fmtKm(S.runs.filter(r => r.t >= +k0).reduce((a, r) => a + r.km, 0));
+  if (!$('#pfWalk')) return; const T = today(), live = S.ped && S.ped.d === T.d, k0 = new Date(); k0.setHours(0, 0, 0, 0);
+  const runKm = S.runs.filter(r => r.t >= +k0).reduce((a, r) => a + r.km, 0);
+  // 이동 거리: 만보기(걷기·달리기 다 들어간다)가 오면 그 값, 아니면 걸은 거리 + 달린 기록 (둘 중 큰 쪽)
+  $('#pfWalk').textContent = fmtKm(live ? Math.max(S.ped.km, runKm) : T.walk + runKm); $('#pfWalk').parentNode.classList.toggle('live', !!live);
   $('#pfEggs').textContent = T.eggs;
-  $('#pfNote').textContent = live ? '걸은 거리는 아이폰 만보기 기록이 바로바로 들어와요.' : '걸은 거리는 아이폰 앱에서 만보기 기록을 받아요.';
+  $('#pfNote').textContent = live ? '이동 거리는 아이폰 만보기 기록이 바로바로 들어와요.' : '이동 거리는 아이폰 앱의 만보기 기록과 런닝 기록을 합친 거예요.';
 }
 // 아이폰 앱: 오늘 0시부터 걸은 거리(만보기)를 걷는 동안 계속 보낸다 (화면 표시용, 알 줍기는 pokeRunWalk)
 window.pokeRunToday = (km, dayMs) => { km = +km; if (!(km >= 0)) return false; S.ped = { d: dayKey(+dayMs || Date.now()), km }; if (!setEl.hidden) renderProfile(); return true; };
