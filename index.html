@@ -703,7 +703,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .dexpop .boxbtn.red{background:#c83838;border-color:#7a1c1c;color:#fff}/* 눌린 버튼: 아래 그림자가 위로 옮겨가며 면이 4px 내려간다 → 글자도 padding 으로 같은 만큼 내려 함께 움직인다 */
 
 .win.bud{background:#fff3f7;border-color:#9a3462;box-shadow:inset 0 0 0 4px #fff3f7,inset 0 0 0 8px #e9a3bf,6px 6px 0 rgba(0,0,0,.35)}.win.bud .dp-pic{background:#fcd9e6;border-color:#e9a3bf;box-shadow:inset 0 -18px 0 #f6c3d6}.win.bud .mvcard:not(.on){border-color:#e9a3bf!important}.win.bud .pp-free{color:#c0507e}
-#info.bud{background:#fff3f7;border-color:#9a3462;box-shadow:6px 6px 0 rgba(0,0,0,.35)}#info.bud .pf{border-color:#e9a3bf;background:linear-gradient(#fcd9e6,#f6c3d6)}#info.bud .mvcard:not(.on){border-color:#e9a3bf!important}
+#info.night{--card:#232a4e;--card-frame:#0e1024;--win-ink:#e4e2f6;--dim:#8e96c4;--inner:#46508a;--hp-track:#141832;color:#e4e2f6}#info.night .inf-ico{background:#2e365f;border-color:#0e1024}#info.night .pp-x{color:#8e96c4}#info.night .pf{border-color:#0e1024;background:linear-gradient(#3a4478,#2a3260)}#info.night .mvcard,#info.night .mvuse.lock{background:#2a3158;color:#c8cbe8;border-color:#46508a}#info.bud.night{background:#3a2446;border-color:#0e1024}#info.bud.night .pf{border-color:#9a5a86;background:linear-gradient(#5a3a6a,#43284f)}#info .dp-head{position:relative}#infoBud{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}.pf .pf-rk{left:0!important;top:0!important}.pf .pf-rk .rk{border:0!important;font-size:11px;padding:1px 4px;line-height:13px;display:block}.win .evobtn.spc{display:flex;align-items:center;gap:8px;justify-content:flex-start;padding:0 12px!important;background:#f6f0ff!important;color:#5a3a8a!important;border-color:#c8b0e8!important;box-shadow:none!important;animation:none;cursor:default;font-size:13px;text-align:left}.win .evobtn.spc:active{padding:0 12px!important}.evobtn.spc .sp-tag{flex:none;font-size:12px;line-height:1;padding:4px 7px;background:#7a5ab0;color:#fff}.evobtn.spc .sp-why{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#info.bud{background:#fff3f7;border-color:#9a3462;box-shadow:6px 6px 0 rgba(0,0,0,.35)}#info.bud .pf{border-color:#e9a3bf;background:linear-gradient(#fcd9e6,#f6c3d6)}#info.bud .mvcard:not(.on){border-color:#e9a3bf!important}
 .bud-tag{margin-left:6px;font-size:12px;line-height:1;padding:4px 8px;background:#e8679a;color:#fff;border:2px solid #9a3462;box-shadow:2px 2px 0 rgba(0,0,0,.2)}.bud-tag[hidden]{display:none}.hd-rk:empty+.bud-tag{margin-left:0}
 #mStage,#pPf{cursor:pointer}
 .pokepop .boxbtn.sunk,#monPop .boxbtn.sunk{background:#b9b9c6;border-color:#8a8a9a;color:#5a5a6a;box-shadow:inset 0 4px 0 rgba(0,0,0,.3),inset 3px 0 0 rgba(0,0,0,.12);padding-top:15px;padding-bottom:7px}
@@ -2314,7 +2314,7 @@ function feedNow(m) {
     setState(m, 'eat', m.sp === 143 ? 8 : 5); log(`${J(m,'이/가')} 떨어진 열매를 바로 냠냠 먹었다.`, [m]); save(); }, 520);
 }
 // 쓰다듬기: 정보창·상태창을 숨기고 그 포켓몬 위를 문지른다. PET_N 번 문지르면 아주 좋아하며 끝 (친밀도 +3 은 하루 3번까지, 즐거움 +20)
-const PET_N = 8, PET_STEP = 70, PET_DAY = 3;
+const PET_N = 12, PET_STEP = 90, PET_DAY = 3;   // 문지르기 12번 (약 1080px)
 let petM = null;
 function petStart(m) {
   select(null); if (!S.mons.includes(m) || m.held || m.evolving) return;
@@ -2334,15 +2334,17 @@ function petDone() {
   const m = petM.m, P = boxOf(m.pid);
   let fr = 0; if (P && dayCap(m, 'pet', PET_DAY)) { fr = 3; addFr(P.id, 3); }
   m.social = clamp(m.social - 20); m.joy = clamp((m.joy ?? 60) + 20);
-  anim(m, 'hop'); emote(m, '♥♥♥', 'heart', 2.4); haptic(1); sfx('pickup');
-  if (fr) frPop(m, fr);
+  haptic(1); sfx('pickup'); if (fr) frPop(m, fr);
   log(fr ? `${J(m,'은/는')} 쓰다듬어 주자 아주 좋아했다.` : `${J(m,'은/는')} 쓰다듬어 주자 기분 좋은 듯 눈을 가늘게 떴다.`, [m]);
-  petEnd(); save();
+  /* 기뻐서 왼쪽·오른쪽을 번갈아 보며 춤춘다 (그동안은 제자리) */
+  petM.done = true; $('#petBar').hidden = true; const f0 = m.face || 1;
+  for (let k = 0; k < 8; k++) setTimeout(() => { if (!S.mons.includes(m)) return; m.face = k % 2 ? f0 : -f0; if (k % 2 === 0) anim(m, 'hop'); if (k === 3) emote(m, '♪', 'heart', 1.2); }, k * 230);
+  setTimeout(() => { m.face = f0; petEnd(); save(); }, 8 * 230 + 120);
 }
 const petHit = (m, x, y) => { const r = [m.spr, m.img].map(e => e?.getBoundingClientRect()).find(r => r && r.width) || m.el.getBoundingClientRect(), p = 22;   /* m.el 은 발밑 점이라 그림 크기로 판정 */ return x > r.left - p && x < r.right + p && y > r.top - p && y < r.bottom + p; };
-addEventListener('pointerdown', e => { if (!petM || e.target.closest('#petBar')) return;
+addEventListener('pointerdown', e => { if (!petM || e.target.closest('#petBar')) return; if (petM.done) { e.stopPropagation(); e.preventDefault(); return; }
   e.stopPropagation(); e.preventDefault(); if (petHit(petM.m, e.clientX, e.clientY)) petM.rub = { id: e.pointerId, x: e.clientX, y: e.clientY }; }, true);
-addEventListener('pointermove', e => { const p = petM; if (!p || !p.rub || e.pointerId !== p.rub.id) return; e.stopPropagation();
+addEventListener('pointermove', e => { const p = petM; if (!p || p.done || !p.rub || e.pointerId !== p.rub.id) return; e.stopPropagation();
   const d = Math.hypot(e.clientX - p.rub.x, e.clientY - p.rub.y); p.rub.x = e.clientX; p.rub.y = e.clientY;
   if (!petHit(p.m, e.clientX, e.clientY)) return;
   p.acc += d; if (p.acc < PET_STEP) return; p.acc = 0; p.n++; petDots();
@@ -3876,7 +3878,7 @@ function sky() {
   $('#phase').textContent = phase;
   { const d = new Date(); $('#day').textContent = `${d.getMonth() + 1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})`; }
   $('#time').textContent = clockStr();
-  { const nt = isNight(); $('#clock').classList.toggle('night', nt); $('#dlg').classList.toggle('night', nt); $('#btnBerry').classList.toggle('night', nt); }
+  { const nt = isNight(); $('#clock').classList.toggle('night', nt); $('#dlg').classList.toggle('night', nt); infoEl.classList.toggle('night', nt); $('#btnBerry').classList.toggle('night', nt); }
   const wantFlies = isNight() ? 14 : 0;
   while (flies.length < wantFlies) { const f = document.createElement('div'); f.className = 'firefly'; fxEl.append(f); flies.push({ el: f, x: rnd(0, W), y: rnd(150, 580), p: rnd(0, 6) }); }
   while (flies.length > wantFlies) flies.pop().el.remove();
@@ -4709,8 +4711,9 @@ function openPoke(id, dir = 0, quiet = false, noCry = false) {
 function setEvoBtn(btn, P) {
   const kids = CHILDREN[P.sp]; let cls = '', html = '진화하기', tip = '';
   if (!kids) { cls = 'fin'; html = `<span>같이 달린 거리</span><b>${fmtKm(P.runKm || 0)}</b><small>km</small>`; }
-  else if (!pokeReady(P)) { const ok = evoKids(P.sp, P), need = evoNeed(P), km = P.km || 0; cls = 'dis'; tip = !ok.length ? evoWhy(kids[0]) : km < need ? `진화까지 ${fmtKm(km)} / ${need}km` : evoWhy(ok[0]); }
-  btn.classList.remove('fin', 'dis'); if (cls) btn.classList.add(cls); if (btn.innerHTML !== html) btn.innerHTML = html;
+  else if (!evoKids(P.sp, P).length) { cls = 'spc'; html = `<span class="sp-tag">특별한 진화</span><span class="sp-why">${esc(spWhy(P))}</span>`; }   /* 달린 거리로는 진화하지 않는 포켓몬: 힌트를 바로 보여 준다 */
+  else if (!pokeReady(P)) { const ok = evoKids(P.sp, P), need = evoNeed(P), km = P.km || 0; cls = 'dis'; tip = km < need ? `진화까지 ${fmtKm(km)} / ${need}km` : evoWhy(ok[0]); }
+  btn.classList.remove('fin', 'dis', 'spc'); if (cls) btn.classList.add(cls); if (btn.innerHTML !== html) btn.innerHTML = html;
   if (tip) { btn.dataset.tip = tip; btn.dataset.tipc = ''; } else { delete btn.dataset.tip; delete btn.dataset.tipc; }
 }
 const closePoke = () => { $('#pokePop').hidden = true; pokeId = null; freeArm = null; ppBud = false; if (!monPop.hidden) { if (!S.mons.includes(mgrSel)) closeMon(); else renderMgr(true); } if (S.sel) { if (!S.mons.includes(S.sel)) select(null); else { infoEl.dataset.uid = ''; renderInfo(); } } };
@@ -5065,11 +5068,14 @@ function evoNotice(sp, P) {
   $('#noti').hidden = false; notiOpen = true; sfx('open');
   $('#notiOk').onclick = () => { $('#noti').hidden = true; notiOpen = false; };
 }
+// 특별한 진화 힌트: 성별 조건이 먼저, 아니면 진화 조건 (진화해요 는 뺀다)
+function spWhy(P) { const L = CHILDREN[P.sp] || []; for (const c of L) { const d = SPECIES[c]; if (d.eqx && (d.eqx === 1 ? 'f' : 'm') !== P.sex) continue; return evoWhy(c).replace(' 진화해요', ''); } const d = SPECIES[L[0]]; return d?.eqx ? `${d.eqx === 1 ? '암컷' : '수컷'}만 진화할 수 있어요` : evoWhy(L[0]).replace(' 진화해요', ''); }
 const budReady = b => !!b && evoKids(b.sp, boxOf(b.pid), true).length > 0 && b.km >= evoNeed(b);
 // 짝꿍에서 빠져도 개체에 남은 거리(P.km)를 다 채웠으면 정보카드에서 진화할 수 있다
 const pokeReady = P => !!P && evoKids(P.sp, P, true).length > 0 && (P.km || 0) >= evoNeed(P);
 const evoNeed = m => { const g = gradeOf(baseOf(m.sp)), stage = evoStage(m.sp); return [0, 5, 10, 15, 20, 25][g] * (stage ? 1.5 : 1); };
 const fmtKm = v => (Math.floor(v * 100 + 1e-6) / 100).toFixed(2);
+const fmtKm1 = v => (Math.floor(v * 10 + 1e-6) / 10).toFixed(1);
 // ---------- 포켓몬 상자: 부화한 한 마리 한 마리 (개체값·이로치·친밀도) ----------
 // 개체값은 능력치 6개마다 0~31. 합계로 S~F 랭크(대략 S 2%, A 8%, B 20%, C 30%, D 25%, E 10%, F 5%).
 // 이로치는 6세대 이후 본가 게임처럼 1/4096. 친밀도 0~255(하트 5칸).
@@ -5385,7 +5391,8 @@ function tickMoves(real) {
 function newPoke(sp, o = {}) {
   const p = { id: S.eid++, sp, iv: Array.from({ length: 6 }, () => Math.floor(Math.random() * 32)), shiny: o.shiny ?? Math.random() < SHINY_RATE, fr: 0, t: Date.now(), sex: o.sex ?? rollSex(sp) };
   if (o.g) p.g = o.g; if (o.place) p.place = o.place;
-  S.box.push(p); return p;
+  S.box.push(p); boxSort = 'new'; boxDir = 1; try { localStorage.setItem('pk-box-sort', 'new'); localStorage.setItem('pk-box-dir', 1); } catch (e) {}   /* 새 포켓몬이 들어오면 상자는 날짜 최신순 */
+  return p;
 }
 const boxOf = id => id == null ? null : S.box.find(p => p.id === id);
 // 성별: 상자 P.sex 'm'/'f', 성별 없는 종은 '' (종마다 본가 암수 비율 gr: 암컷 확률 gr/8, -1은 성별 없음)
@@ -5868,12 +5875,14 @@ function tapEgg(egg, g, msg) {
       { const lt = g >= 4 ? Math.pow(f, 1.3) : Math.max(0, Math.min(1, (f - .75) / .25));   // 에픽·전설은 첫 두드림부터 서서히, 레어는 끝무렵(75%)부터 환해진다
         if (g === 5) { hatchEl.style.setProperty('--dk', f.toFixed(3)); hatchEl.style.setProperty('--lg', lt.toFixed(3)); tense.f = f; }   // 전설: 어두워지다가 끝무렵 금빛이 터져 나온다
         else hatchEl.style.setProperty('--lit', g <= 3 ? 0 : lt.toFixed(3));   // 일반·희귀·레어 알은 배경이 밝아지지 않는다
-        if (g >= 4 && lt > .12) hSparks(g === 5 ? 3 + Math.round(lt * 4) : 1 + Math.round(lt * 2), g); }
+        if (g >= 4 && lt > .12) hSparks(g === 5 ? 3 + Math.round(lt * 4) : 1 + Math.round(lt * 2), g);
+        if (g === 3 && f >= .45) hSparks(1 + (f >= .85 ? 1 : 0), 3); }   /* 레어: 절반쯤부터 파란 반짝이가 조금씩 */
       haptic(pend);
       if (n >= need) {
         clearTimeout(idle);
         setTimeout(() => { egg.classList.remove('knock'); egg.classList.add('wig2'); sfx('rattle'); sfx('rise'); }, 220);
-        if (g >= 4) { hatchEl.classList.add('surge'); for (let k = 0; k < 6; k++) setTimeout(() => hSparks(g === 5 ? 7 : 4, g, true), k * 140); }   // 깨지기 직전: 빛줄기가 빨라지고 반짝이가 쏟아진다
+        if (g >= 4) { hatchEl.classList.add('surge'); for (let k = 0; k < 6; k++) setTimeout(() => hSparks(g === 5 ? 7 : 4, g, true), k * 140); }
+        else if (g === 3) for (let k = 0; k < 3; k++) setTimeout(() => hSparks(3, 3, true), k * 160);   /* 레어: 깨지기 직전 반짝이 한 번 */   // 깨지기 직전: 빛줄기가 빨라지고 반짝이가 쏟아진다
         hatchEl.onclick = null;
         clearInterval(ringT); { const wh = hatchEl.querySelector('.hwhite'); wh.style.transition = 'opacity .9s ease-in'; void wh.offsetWidth; wh.style.opacity = g >= 4 ? .9 : .75; }   // 깨지기 직전까지 화면이 점점 하얘진다
         setTimeout(() => { win.removeEventListener('pointerdown', down); win.removeEventListener('click', up); hatchStage.classList.remove('tapme'); done(true); }, 900);
@@ -5935,7 +5944,7 @@ let hatching = false;
 // 부화 창 화면 효과 초기화 (밝기·어둠·후광)
 // 부화 창 효과 초기화. 흔들림 클래스도 지운다 (창을 다시 열 때 지난번 흔들림이 다시 재생되지 않게)
 function hSparks(k, g, big) { for (let i = 0; i < k; i++) { const s = document.createElement('i'); s.className = 'hspark' + (big && Math.random() < .4 ? ' b' : ''); s.style.left = (50 + (Math.random() - .5) * 80) + '%'; s.style.top = (28 + Math.random() * 48) + '%';
-  s.style.setProperty('--sc', g === 5 ? (Math.random() < .6 ? '#ffd84a' : '#fff6c0') : (Math.random() < .5 ? '#d6a4ff' : '#ffc4ef')); s.style.animationDelay = (Math.random() * .2).toFixed(2) + 's'; hatchEl.append(s); setTimeout(() => s.remove(), 1300); } }
+  s.style.setProperty('--sc', g === 5 ? (Math.random() < .6 ? '#ffd84a' : '#fff6c0') : g === 3 ? (Math.random() < .5 ? '#8ac8ff' : '#e0f2ff') : (Math.random() < .5 ? '#d6a4ff' : '#ffc4ef')); s.style.animationDelay = (Math.random() * .2).toFixed(2) + 's'; hatchEl.append(s); setTimeout(() => s.remove(), 1300); } }
 function hatchFx() { hatchEl.classList.remove('legend', 'rays', 'g4t', 'surge'); { const wh = hatchEl.querySelector('.hwhite'); if (wh) { wh.style.transition = ''; wh.style.opacity = ''; } } hatchEl.style.setProperty('--lg', 0); hatchEl.querySelectorAll('.hspark').forEach(e => e.remove()); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); hatchEl.querySelector('.win').classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5', 'jolt', 'wquake'); hatchEl.querySelector('.hwhite')?.classList.remove('go', 'big'); }
 async function playHatch() {
   if (hatching || !hatchQ.length) return;
@@ -6159,7 +6168,7 @@ function renderBag() {
   if (bagSort === 'km') list.sort((a, b) => (b.km || 0) / GRADE[b.g].km - (a.km || 0) / GRADE[a.g].km || (b.km || 0) - (a.km || 0));
   if (bagSort === 'grade') list.sort((a, b) => b.g - a.g || b.t - a.t);
   if (!S.bag.includes(bagSel)) bagSel = null;
-  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot${bagMul?.has(e.id) ? ' on' : ''}" data-id="${e.id}" aria-current="${e === bagSel}">${bagMul ? '<i class="chk"></i>' : ''}${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g)}<span>${GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.split(' ').pop()) : fmtWhen(e.t)}</span></button>`).join('')
+  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot${bagMul?.has(e.id) ? ' on' : ''}" data-id="${e.id}" aria-current="${e === bagSel}">${bagMul ? '<i class="chk"></i>' : ''}${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g)}<span>${GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm1(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.split(' ').pop()) : fmtWhen(e.t)}</span></button>`).join('')
     : `<div class="bag-empty">${S.bag.length ? '이 등급 알이 없어요' : '움직이면 알을 주울 수 있어요'}</div>`;
   document.querySelector('.rtab[data-tab="bag"]').classList.toggle('none', !S.bag.length);   // 알이 하나도 없으면 안내 문구를 남은 공간 정중앙에
   $('#bagMulti').setAttribute('aria-pressed', !!bagMul); $('#bagMulti').textContent = bagMul ? '취소' : '선택';
