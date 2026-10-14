@@ -636,7 +636,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .m-btns{margin-top:10px;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}#monPop .m-btns .boxbtn{min-width:0;font-size:14px;padding:10px 2px;white-space:nowrap}#pokePop .pp-btns .boxbtn{padding-left:2px;padding-right:2px}.pp-btns .boxbtn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:4px;padding-right:4px;font-size:clamp(12px,3.6vw,15px)}
 .pokepop .boxbtn{display:block;width:100%;font:inherit;font-size:15px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:10px 8px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
 .dexpop .boxbtn.red{background:#c83838;border-color:#7a1c1c;color:#fff}/* 눌린 버튼: 아래 그림자가 위로 옮겨가며 면이 4px 내려간다 → 글자도 padding 으로 같은 만큼 내려 함께 움직인다 */
-.pokepop .boxbtn{transition:background .12s,border-color .12s,color .12s,box-shadow .12s,padding .12s}
+
 .pokepop .boxbtn.sunk{background:#b9b9c6;border-color:#8a8a9a;color:#5a5a6a;box-shadow:inset 0 4px 0 rgba(0,0,0,.3),inset 3px 0 0 rgba(0,0,0,.12);padding-top:14px;padding-bottom:6px}
 .pokepop .boxbtn.sunk.popout{animation:btnPop .2s cubic-bezier(.3,1.6,.5,1) forwards}
 @keyframes btnPop{0%{background:#b9b9c6;box-shadow:inset 0 4px 0 rgba(0,0,0,.3);padding-top:14px;padding-bottom:6px}100%{background:var(--frame);border-color:var(--frame);color:var(--win);box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);padding-top:10px;padding-bottom:10px}}
@@ -658,7 +658,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .slot .mini i{display:block;height:100%;background:var(--hunger)}
 .slot.empty{border-style:dashed;color:var(--dim);justify-content:center;background:transparent}
 .slot.empty .plus{font-size:24px;line-height:1}
-.slot .no{position:absolute;right:5px;top:4px;font-size:10px;color:var(--dim)}
+.slot .no{position:absolute;right:5px;top:4px;font-size:10px;color:var(--dim)}.slot .sl-x{position:absolute;right:0;top:0;font-size:15px;line-height:1;padding:5px 6px 8px 10px;color:var(--dim);z-index:1}.slot .sl-x:active{color:var(--frame)}
 .mgr-detail{padding:0;overflow-y:auto;font-size:14px;max-height:calc(100vh - 140px)}
 #monPop .win{width:min(400px,100%);min-width:0;box-sizing:border-box;position:relative}.sw-h{position:absolute;top:50%;width:6px;height:14px;margin-top:-7px;z-index:2;opacity:.8;pointer-events:none;background:#fff;animation:swh 1.4s steps(2,end) infinite}.sw-h.l{left:-12px;clip-path:polygon(100% 0,0 50%,100% 100%)}.sw-h.r{right:-12px;clip-path:polygon(0 0,100% 50%,0 100%);animation-name:swhr}.sw-h[hidden]{display:none}@keyframes swh{50%{transform:translateX(-3px)}}@keyframes swhr{50%{transform:translateX(3px)}}.m-pages{overflow:hidden;margin-top:6px}.m-track{height:214px}.m-pg{height:214px;overflow:hidden}#mMemo .th .mv{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}#monPop .m-btns .boxbtn{height:48px;box-sizing:border-box}.ih-top{min-height:30px}.ih-sub{min-height:22px;flex-wrap:nowrap;overflow:hidden;white-space:nowrap}.ih-met{min-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}.ih-met .md{margin-right:4px}.m-track{display:flex;width:200%;transition:transform .22s steps(5,end);align-items:flex-start}.m-pg{width:50%;flex:none;box-sizing:border-box}.m-pg+.m-pg{padding-left:2px}.m-dots{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:6px;cursor:pointer;padding:4px}.m-dots i{width:6px;height:6px;background:var(--inner)}.m-dots i.on{background:var(--frame)}#mPg2 .ivs{margin-top:2px}#mPg2 .mvrow{margin-top:8px;font-size:13px}
 .monpop .mgr-detail{min-width:0}.monpop .mgr-detail .bars,.monpop .mgr-detail .bar{min-width:0}
@@ -776,6 +776,21 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .dp-nav{flex:none;width:40px;height:56px;font:inherit;font-size:18px;border:3px solid var(--frame);background:var(--win);color:var(--frame);cursor:pointer;box-shadow:inset 0 -4px 0 rgba(0,0,0,.15)}
 .dp-nav:disabled{opacity:.3}
 .dexpop .dexinfo{animation:none;min-height:120px}
+/* 클래식 도감 카드 (흑백 게임보이 도감 화면) */
+#dexPop .win{width:min(400px,100%);min-width:0;box-sizing:border-box;position:relative}
+.cdex{background:#f8f8f0;border:3px solid #181818;box-shadow:inset 0 0 0 3px #f8f8f0,inset 0 0 0 5px #181818;padding:14px 14px 12px;margin-bottom:12px;color:#181818}
+.cd-top{display:flex;gap:12px;align-items:stretch}
+.cd-l{flex:none;width:44%;display:flex;flex-direction:column;align-items:center}
+.cdex .dp-pic{flex:none;width:100%;height:128px;background:none;border:0;box-shadow:none;overflow:hidden}
+.cdex .dp-pic img{height:112px;width:auto;max-width:100%}
+.cd-no{font-size:15px;margin-top:2px;letter-spacing:.5px}
+.cd-r{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:5px}
+.cd-n{font-size:20px;font-weight:normal;line-height:1.15;word-break:keep-all}
+.cd-g{font-size:14px}
+.cd-ty .tyi{width:20px;height:20px}
+.cd-hw{display:flex;font-size:14px;gap:6px}.cd-hw i{font-style:normal;width:52px;flex:none}
+.cd-rule{height:9px;margin:10px -2px 10px;background:linear-gradient(#181818,#181818) bottom/100% 3px no-repeat,repeating-linear-gradient(90deg,#181818 0 3px,transparent 3px 18px) 6px 0/100% 6px no-repeat}
+.cd-fx{margin:0;font-size:14px;line-height:1.7;word-break:keep-all;min-height:4.8em}
 .dexpop .dx-lock{margin:0;color:var(--dim);font-size:14px;line-height:1.6}
 .dexpop .boxbtn{display:block;width:100%;font:inherit;font-size:16px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:11px 16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
 .dexpop .boxbtn.off{background:var(--win);color:var(--frame)}
@@ -1240,13 +1255,12 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 </div>
 <div class="dexpop" id="dexPop" hidden>
   <div class="win" role="dialog" aria-label="도감 카드">
-    <div class="dp-head"><span id="dpPos"></span><button class="opt" id="dpClose">닫기</button></div>
-    <div class="dp-stage" id="dpStage">
-      <button class="dp-nav prev" id="dpPrev" aria-label="이전 포켓몬">◀</button>
-      <div class="dp-pic"><img alt="" id="dpImg"></div>
-      <button class="dp-nav next" id="dpNext" aria-label="다음 포켓몬">▶</button>
+    <i class="sw-h l" id="dpHl"></i><i class="sw-h r" id="dpHr"></i><div class="dp-head m-head"><span id="dpPos"></span><button class="pp-x" id="dpClose" aria-label="닫기">✕</button></div>
+    <div class="cdex" id="dpStage">
+      <div class="cd-top"><div class="cd-l"><div class="dp-pic"><img alt="" id="dpImg"></div><div class="cd-no" id="dpNo"></div></div><div class="cd-r" id="dpMeta"></div></div>
+      <div class="cd-rule"></div>
+      <p class="cd-fx" id="dpFx"></p>
     </div>
-    <div class="dexinfo" id="dpInfo"></div>
     <button class="boxbtn" id="dpAct"></button>
   </div>
 </div>
@@ -3882,10 +3896,11 @@ function specialScenes(a, b) { return sceneCandidates(a, b).filter(x => x.sc.rar
 function pickWeighted(c) { let tot = 0; c.forEach(x => tot += x.w); let v = Math.random() * tot; for (const x of c) { v -= x.w; if (v <= 0) return x.sc; } return c[c.length - 1].sc; }
 function worldPt(e) { const r = stage.getBoundingClientRect(); return { x: (e.clientX - r.left) / scale, y: (e.clientY - r.top) / scale }; }
 function dropTargetAt(m, p) {
-  let best = null, bd = 1e9;
+  // 그림자가 아니라 몸 위치끼리 잰다: 떠 있는 포켓몬(lift)도 보이는 몸 가운데로
+  let best = null, bd = 1e9; const my = m.y - m.h * .45 - (m.lift || 0);
   for (const o of S.mons) {
     if (o === m || o.hidden) continue;
-    const cy = o.y - o.h * .45, d = Math.hypot(p.x - o.x, (p.y - cy) * 1.2);
+    const cy = o.y - o.h * .45 - (o.lift || 0), d = Math.hypot(m.x - o.x, (my - cy) * 1.2);
     if (d < Math.max(34, o.w * .5) && d < bd) { bd = d; best = o; }
   }
   return best;
@@ -4154,12 +4169,16 @@ async function openCard(sp, dir = 0) {
   pop.hidden = false;
   const list = cardList(), i = list.indexOf(sp);
   $('#dpPos').textContent = `${i + 1} / ${list.length}`;
-  $('#dpPrev').disabled = i <= 0; $('#dpNext').disabled = i < 0 || i >= list.length - 1;
+  $('#dpHl').hidden = i <= 0; $('#dpHr').hidden = i < 0 || i >= list.length - 1;
   const pic = $('#dpStage .dp-pic'), img = $('#dpImg');
   pic.classList.toggle('locked', lock); pic.classList.remove('slide-l', 'slide-r'); void pic.offsetWidth; if (dir) pic.classList.add(dir > 0 ? 'slide-l' : 'slide-r');
   img.src = thumbOf(sp) || ''; img.alt = lock ? '???' : d.n;
   if (!thumbOf(sp)) ensureSprite(sp).then(() => { if (cardSp === sp) img.src = thumbOf(sp); }).catch(() => {});
-  $('#dpInfo').innerHTML = lock ? `<div class="dx-top"><span class="dx-no">No.${String(sp).padStart(4, '0')}</span><b>???</b></div><p class="dx-lock">아직 만나지 못한 포켓몬이다.<br>알을 부화시켜 만나 보자.</p>` : dexInfoHtml(sp);
+  // 클래식 도감: 왼쪽 그림·번호, 오른쪽 이름·분류·키·몸무게, 눈금 선 아래 설명
+  $('#dpNo').textContent = `No.${String(sp).padStart(4, '0')}`;
+  $('#dpMeta').innerHTML = lock ? `<b class="cd-n">?????</b><span class="cd-g">??? 포켓몬</span><span class="cd-hw"><i>키</i>?.? m</span><span class="cd-hw"><i>몸무게</i>??.? kg</span>`
+    : `<b class="cd-n">${esc(d.n)}</b><span class="cd-g">${esc(d.g || '')}</span><span class="cd-ty">${tyIcons(sp)}</span><span class="cd-hw"><i>키</i>${(d.h / 10).toFixed(1)} m</span><span class="cd-hw"><i>몸무게</i>${(d.w / 10).toFixed(1)} kg</span>`;
+  $('#dpFx').innerHTML = lock ? '아직 만나지 못한 포켓몬이다.<br>알을 부화시켜 만나 보자.' : esc(d.fx || '');
   const act = $('#dpAct'); act.hidden = lock || dexMode !== 'buddy';
   if (!lock) {
     if (dexMode === 'buddy') { act.textContent = S.buds.some(b => b.sp === sp) ? '이미 짝꿍이에요' : '짝꿍으로 정하기'; act.classList.toggle('off', S.buds.some(b => b.sp === sp)); }
@@ -4168,10 +4187,8 @@ async function openCard(sp, dir = 0) {
 }
 function cardStep(dir) { const list = cardList(), i = list.indexOf(cardSp), j = i + dir; if (j >= 0 && j < list.length) { sfx('tap'); openCard(list[j], dir); } }
 function closeCard() { $('#dexPop').hidden = true; cardSp = null; }
-$('#dpPrev').onclick = e => { e.stopPropagation(); cardStep(-1); };
-$('#dpNext').onclick = e => { e.stopPropagation(); cardStep(1); };
 $('#dpClose').onclick = closeCard;
-$('#dexPop').addEventListener('click', e => { if (e.target.id === 'dexPop') closeCard(); });
+$('#dexPop').addEventListener('click', e => { if (e.target.id !== 'dexPop') return; const d = sideTap($('#dexPop'), e); if (d) { const h = $(d < 0 ? '#dpHl' : '#dpHr'); if (!h.hidden) cardStep(d); return; } closeCard(); });
 $('#dpAct').onclick = async () => {
   const sp = cardSp; if (sp == null) return;
   if (dexMode === 'buddy') { if (S.buds.some(b => b.sp === sp)) return; closeCard(); picked.clear(); picked.add(sp); await setBuddySp(sp); return; }
@@ -4405,7 +4422,9 @@ $('#ppField').onclick = async () => {
   const P = boxOf(pokeId); if (!P) return;
   const m = S.mons.find(x => x.pid === P.id);
   if (m) { const fb = $('#ppField'); if (fb.classList.contains('popout')) return; sfx('tap'); fb.textContent = '필드에 내보내기'; fb.classList.add('popout'); await wait(200); removeMon(m); }   // 눌려 있던 버튼이 툭 튀어나오며 필드에서 뺀다
-  else if (S.mons.length < MAX_MONS) { if (boxFromSlot) { const fb = $('#ppField'); if (fb.classList.contains('pressd')) return; sfx('tap'); fb.classList.add('pressd'); await wait(160); fb.classList.remove('pressd'); }   // 빈 슬롯에서 왔으면 버튼이 눌린 뒤 필드로
+  else if (S.mons.length < MAX_MONS) { const fb = $('#ppField'); if (fb.classList.contains('pressd') || fb.classList.contains('sunk')) return; sfx('tap');
+    if (boxFromSlot) { fb.classList.add('pressd'); await wait(110); fb.classList.remove('pressd'); }   // 빈 슬롯에서 왔으면 바로 눌린 뒤 필드로
+    else { fb.classList.add('sunk'); fb.textContent = '필드에서 빼기'; }   // 그림을 불러오는 동안 기다리지 않고 먼저 눌린 모양으로
     try { await spawn(P.sp, { pid: P.id }); } catch (e) {} if (boxFromSlot && S.mons.some(x => x.pid === P.id)) { refreshCap(); save(); closePoke(); setMgrTab('field'); return; } }
   refreshCap(); renderBox(); openPoke(P.id); save();
 };
@@ -4462,8 +4481,8 @@ function renderMgr(force) {
       const m = S.mons[i], b = document.createElement('button'); b.className = 'slot';
       if (m) {
         b.dataset.uid = m.uid; b.setAttribute('aria-current', m === mgrSel);
-        b.innerHTML = `<span class="st"></span><span class="no">${String(m.sp).padStart(4, '0')}</span><span class="ph"><img alt="" src="${thumbOf(m.sk || m.form)}"></span><span class="nm">${esc(m.name)}</span><span class="mini"><i></i></span>`;
-        b.onclick = () => openMon(m);
+        b.innerHTML = `<span class="st"></span><span class="sl-x" role="button" aria-label="필드에서 빼기">✕</span><span class="ph"><img alt="" src="${thumbOf(m.sk || m.form)}"></span><span class="nm">${esc(m.name)}</span><span class="mini"><i></i></span>`;
+        b.onclick = e => { if (e.target.closest('.sl-x')) { sfx('tap'); removeMon(m); if (mgrSel === m) mgrSel = null; renderMgr(true); refreshCap(); save(); return; } openMon(m); };   // 우상단 ✕ = 바로 상자로
       } else {
         b.classList.add('empty'); b.innerHTML = '<span class="plus">+</span><span>빈 자리</span>';
         b.onclick = () => pressGo(b, () => { setMgrTab('box'); boxFromSlot = true; }, 40);   // 빈 자리에서 왔으면 내보낸 뒤 필드 탭으로 돌아간다
