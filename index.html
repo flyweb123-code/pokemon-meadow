@@ -4208,13 +4208,13 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, joy: m.joy, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, lastPlace: S.lastPlace || null, dexNew: [...(S.dexNew || [])] };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, dexNew: [...(S.dexNew || [])] };
 }
 let saveFrozen = false;
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.lastPlace = d.lastPlace || null; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
+  S.lockT = d.lockT || 0; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
@@ -4430,7 +4430,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.89';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.90';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5255,6 +5255,17 @@ const CHILDREN = {};
 for (const k of Object.keys(SPECIES)) { const sp = +k, d = SPECIES[sp]; if (!d.fr) POOL[gradeOf(sp)].push(sp); else (CHILDREN[d.fr] = CHILDREN[d.fr] || []).push(sp); }
 // 등급마다 포획률이 높은(흔한) 종 1/4 을 골라 둔다 (같으면 번호 앞쪽)
 POOL.forEach(L => L.slice().sort((a, b) => (SPECIES[b].cr ?? 45) - (SPECIES[a].cr ?? 45) || a - b).slice(0, Math.max(1, Math.floor(L.length / 4))).forEach(sp => COMMON.add(sp)));
+// 티어 (랭크와 다른 개념): 진화 전 종을 그 가족(진화형 포함)의 능력으로 1~10 티어에 나눈다.
+// 1~3 티어 = 특별한 포켓몬 리스트(TIER_LEG/SIL/BRZ, 가족 중 하나라도 들면), 4~10 티어 = 나머지를 가족 최고 종족값 순으로 같은 수씩
+const famOf = sp => [sp, ...(CHILDREN[sp] || []).flatMap(famOf)], bstOf = sp => SPECIES[sp].bs.reduce((a, b) => a + b, 0);
+const TIER = {}, TIER_SPS = Array.from({ length: 11 }, () => []), TIER_Z = {}, FAM_BST = {};
+{ const base = Object.keys(SPECIES).map(Number).filter(sp => !SPECIES[sp].fr), rest = [];
+  for (const b of base) { const F = famOf(b); FAM_BST[b] = Math.max(...F.map(bstOf)); const t = Math.min(...F.map(x => TIER_LEG.has(x) ? 1 : TIER_SIL.has(x) ? 2 : TIER_BRZ.has(x) ? 3 : 99)); if (t < 4) TIER[b] = t; else rest.push(b); }
+  rest.sort((a, b) => FAM_BST[b] - FAM_BST[a] || a - b); rest.forEach((b, i) => TIER[b] = 4 + Math.floor(i * 7 / rest.length));
+  for (const b of base) TIER_SPS[TIER[b]].push(b);
+  for (const L of TIER_SPS) { if (!L.length) continue; const lo = Math.min(...L.map(b => FAM_BST[b])), hi = Math.max(...L.map(b => FAM_BST[b])); for (const b of L) TIER_Z[b] = hi > lo ? (FAM_BST[b] - lo) / (hi - lo) : .5; } }
+// 알 등급마다 나오는 티어 비율(%). 1~3 티어는 에픽·전설 알에서만. 각 등급의 가장 낮은 티어(일반 제외)는 '아래로 넘친' 칸이라 그 티어 안에서 강한 종이 잘 나온다
+const EGG_TIERS = [null, { 10: 55, 9: 30, 8: 15 }, { 9: 30, 8: 35, 7: 25, 6: 10 }, { 7: 30, 6: 35, 5: 25, 4: 10 }, { 4: 30, 3: 50, 2: 15, 1: 5 }, { 3: 25, 2: 40, 1: 35 }];
 const MAX_BUDS = 3;
 // 진화 조건(species ev): 없음 = 달린 거리로 진화, 'fr' = 친밀도도 높아야, 'fr:day/night' = 낮/밤에, 그 밖(돌·통신교환 등) = 거리로는 안 됨. eg 1 암컷만, 2 수컷만
 const FR_EVO = 160;
@@ -5985,7 +5996,8 @@ function themeHint(e) { const ks = eggThemes(e).filter(k => k !== 'night'); if (
 // keep: 알은 부화기에 그대로 두고, 부화 연출에서 깨질 때 뺀다
 // 알 속 포켓몬은 알을 주울 때(또는 처음 볼 때) 정해져 e.sp 에 남는다. 장소가 나중에 채워지면 그때 한 번 다시 정한다
 const eggSp = e => e.sp || (e.sp = rollEgg(e));
-function eggSpAll() { for (const e of S.bag) if (!e.sp) eggSp(e); for (const e of S.eggs) if (!e.sp) eggSp(e); }
+function eggSpAll() { if (S.eggV !== 2) { for (const e of [...S.bag, ...S.eggs]) delete e.sp; S.eggV = 2; }   /* 티어 방식으로 바꾼 뒤 아직 안 깬 알 속 포켓몬을 한 번 다시 정한다 */
+  for (const e of S.bag) if (!e.sp) eggSp(e); for (const e of S.eggs) if (!e.sp) eggSp(e); }
 function hatchEgg(e, keep, ask) {
   if (!keep) S.eggs = S.eggs.filter(x => x !== e);
   const sp = eggSp(e);
@@ -5993,8 +6005,12 @@ function hatchEgg(e, keep, ask) {
   hatchQ.push({ g: e.g, sp, place: e.place, egg: keep ? e : null, ask }); save();
 }
 function rollEgg(e) {
-  const pool = POOL[e.g], ths = eggThemes(e).map(k => THEMES[k] || NIGHT);
-  // 기본 1, 테마 타입 +12, 서식지 +4, 도감 설명 낱말 +8, 특정 종 +20 (테마 종이 대략 60~70%) → 등급마다 흔한 종(포획률 상위 1/4)은 ×10 이라 자주 겹친다
+  const tab = EGG_TIERS[e.g] || EGG_TIERS[1], ths = eggThemes(e).map(k => THEMES[k] || NIGHT);
+  const ts = Object.keys(tab).map(Number).filter(t => TIER_SPS[t].length), spill = e.g >= 2 ? Math.max(...ts) : 0;
+  let r = Math.random() * ts.reduce((a, t) => a + tab[t], 0), t = ts[ts.length - 1];
+  for (const x of ts) if ((r -= tab[x]) <= 0) { t = x; break; }   // 1) 알 등급 비율로 티어를 고르고
+  const pool = TIER_SPS[t];
+  // 2) 그 티어 안에서: 종족값이 높을수록 드물게 (아래로 넘친 티어면 반대로 강한 종이 잘 나옴) × 장소 테마(기본 1, 타입 +12, 서식지 +4, 도감 낱말 +8, 특정 종 +20) × 최근 부화 ×0.3
   const w = pool.map(sp => {
     const d = SPECIES[sp]; let v = 1;
     for (const th of ths) {
@@ -6003,12 +6019,12 @@ function rollEgg(e) {
       if (th.fx && d.fx && th.fx.test(d.fx)) v += 8;
       if (th.sp && th.sp.includes(sp)) v += 20;
     }
-    if (COMMON.has(sp)) v *= e.g >= 4 ? 2 : 10;   /* 에픽은 종이 적어(34종) 흔한 종 8종이 75% 를 차지하던 것 → ×2 로 고르게 */
+    v *= Math.exp((t === spill ? 1.4 : -1.4) * TIER_Z[sp]);
     if (S.recentHatch?.includes(sp)) v *= .3;   // 최근 부화한 12종은 덜 나온다
     return v;
   });
-  let r = Math.random() * w.reduce((a, b) => a + b, 0), i = 0;
-  while (i < pool.length - 1 && (r -= w[i]) > 0) i++;
+  let q = Math.random() * w.reduce((a, b) => a + b, 0), i = 0;
+  while (i < pool.length - 1 && (q -= w[i]) > 0) i++;
   return pool[i];
 }
 // 태어난 포켓몬을 상자에 넣고 도감 등록, 이미 만난 종이면 골드
@@ -6716,7 +6732,7 @@ async function start(data) {
   window.pokeRunReady = true; postNative();
   try { window.webkit?.messageHandlers?.pokeRun?.postMessage({ ready: true }); } catch (e) {}
 }
-if (/[?&]debug/.test(location.search)) window.__meadow = { save, evoMus, bgm, bgmPos, feedOne, tense, hatchEgg, playHatch, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
+if (/[?&]debug/.test(location.search)) window.__meadow = { save, evoMus, bgm, bgmPos, feedOne, tense, hatchEgg, playHatch, TIER, TIER_SPS, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
 if (/[?&]debug/.test(location.search)) Object.assign(window, { __drag: () => drag, __log: log, __save: save, __bgm: bgm, __actx: () => actx, __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf, __thoughtOf: thoughtOf, __addRel: addRel, __tyIcon: tyIcon, __evoKids: evoKids, __friendsAll: friendsAll, __renameBox: renameBox });
 window.claude?.hot?.snapshot?.(() => serialize());
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
