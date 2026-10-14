@@ -3921,7 +3921,7 @@ const sheet = $('#sheet');
 const picked = new Set();
 const grid = $('#dexGrid'), dexBtns = {};
 let dexMode = 'field';
-function openDex(mode = 'field') { dexMode = mode; sheet.classList.toggle('pick-buddy', mode === 'buddy'); $('#dexTitle').textContent = mode === 'buddy' ? '짝꿍 고르기' : '포켓몬 도감'; picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); sheet.hidden = false; $('#dexOwn').textContent = `${S.unlocked.size}/${Object.keys(SPECIES).length}`; refreshDexBadges(); filterDex(); if (!narrow.matches) $('#dexQ').focus(); }
+function openDex(mode = 'field') { dexMode = mode; dexSortReset(); sheet.classList.toggle('pick-buddy', mode === 'buddy'); $('#dexTitle').textContent = mode === 'buddy' ? '짝꿍 고르기' : '포켓몬 도감'; picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); sheet.hidden = false; $('#dexOwn').textContent = `${S.unlocked.size}/${Object.keys(SPECIES).length}`; refreshDexBadges(); filterDex(); if (!narrow.matches) $('#dexQ').focus(); }
 // the menu works like a tab bar: one window at a time, tapping the open one closes it
 function hideSheets() { sheet.hidden = true; $('#mgr').hidden = true; $('#run').hidden = true; $('#set').hidden = true; $('#shop').hidden = true; }
 function tabTo(el, open) { const was = !el.hidden; closeToggles(); hideSheets(); if (!was) open(); }
@@ -4052,9 +4052,8 @@ function openFilter(id) {
 }
 function setFilter(id, v) {
   const b = $('#' + id), F = FILTERS[id], was = +b.dataset.v; b.dataset.v = v;
-  if (id !== 'dexSort') b.classList.toggle('on', !!v); else if (v !== was) b.classList.remove('on');   // 정렬 버튼 강조는 처음 힌트일 뿐, 다른 정렬로 바꾸면 꺼진다   // 정렬 버튼 강조는 처음 힌트일 뿐, 한 번 고르면 꺼진다
+  b.classList.toggle('on', id === 'dexSort' ? !v : !!v);   // 정렬은 등록순일 때 켜진 모양
   b.textContent = v ? F.opts.find(o => o[0] === v)[1] : F.all; filterDex();
-  if (id === 'dexSort') try { localStorage.setItem('pk-dex-sort2', v); if (v !== was) localStorage.setItem('pk-dex-sort-hint', '1'); } catch (e) {}
 }
 ['dexType', 'dexGen', 'dexSort'].forEach(id => $('#' + id).onclick = () => openFilter(id));
 $('#fPop').addEventListener('click', e => { const o = e.target.closest('[data-v]'); if (o) setFilter(fFor, +o.dataset.v); if (o || e.target.id === 'fPop') $('#fPop').hidden = true; });
@@ -4140,7 +4139,9 @@ function filterDex() {
 }
 $('#dexQ').addEventListener('input', filterDex);
 // 기본 정렬은 '만난 것 먼저' (번호순을 고른 적 있으면 그대로)
-{ let v = null; try { v = localStorage.getItem('pk-dex-sort2'); } catch (e) {} const b = $('#dexSort'); let seen = null; try { seen = localStorage.getItem('pk-dex-sort-hint'); } catch (e) {} b.classList.toggle('on', !seen); if (v === '1') { b.dataset.v = 1; b.textContent = '번호순'; } else b.textContent = '등록순'; }
+// 도감을 열 때마다 등록순(켜진 모양)으로 시작한다
+function dexSortReset() { const b = $('#dexSort'); b.dataset.v = 0; b.textContent = '등록순'; b.classList.add('on'); }
+dexSortReset();
 $('#dexClear').onclick = () => { picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); updateDexCount(); };
 $('#dexGo').onclick = async () => {
   if (dexMode === 'buddy') { const sp = [...picked][0]; if (sp != null) await setBuddySp(sp); return; }
