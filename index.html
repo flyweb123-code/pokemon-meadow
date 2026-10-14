@@ -124,6 +124,7 @@
 #evoFull .ef-msg .small{font-size:13px;color:var(--dim)}
 #evoFull .ef-card{color:var(--win-ink)}
 #evoFull .ef-ok{width:100%;display:block;font:inherit;font-size:16px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:11px 16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35),0 0 0 2px var(--inner);cursor:pointer}#evoFull .ef-ok[hidden]{display:none}
+.pf-diag{margin:8px 0 0;font-size:11px;line-height:1.4;color:#c03838;border:2px dashed #c03838;padding:3px 6px}.pf-diag:empty{display:none}
 .test-btn{font:inherit;font-size:11px;background:none;border:2px dashed #c03838;color:#c03838;padding:3px 6px;cursor:pointer}
 .run-eggs{padding:2px 0 6px 6px;border-bottom:2px dotted var(--inner)}.run-eggs .re-row{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);margin-top:3px}.re-eggs{display:flex;gap:1px;flex:none}.re-eggs .egg{width:12px;height:15px}.re-eggs .egg svg{width:100%;height:100%}.re-pl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .run-row:has(+.run-eggs){border-bottom:0}
@@ -463,6 +464,8 @@ ol.log li.big .txt{color:#c03838}
 .pt{position:absolute;left:0;top:0;font:700 15px/1 var(--body,var(--px));animation:rise 1.2s ease-out forwards;transform:translate(-50%,-50%)}
 .pt.heart{color:#ff5a78}.pt.note{color:#fff;text-shadow:0 0 3px #2b6cc4}.pt.spark{color:#ffe14d;text-shadow:0 0 4px #fff3a0}.pt.flame{color:#ff8a2a;text-shadow:0 0 4px #ffd27a}
 .pt.dust{width:10px;height:10px;border-radius:50%;background:rgba(150,120,80,.7);animation:dust .7s ease-out forwards}
+.pt.sweat{width:9px;height:13px;border-radius:50% 50% 50% 50%/35% 35% 65% 65%;background:#d4f0ff;border:2px solid #2f7fd8;box-shadow:inset 2px 2px 0 #fff;animation:sweat .8s ease-out forwards}
+@keyframes sweat{0%{transform:translate(0,0) scale(.5);opacity:0}10%{opacity:1}70%{opacity:1}45%{transform:translate(calc(var(--dx) * .7),-8px) scale(1)}100%{transform:translate(var(--dx),12px) scale(.9);opacity:0}}
 .pt.splash{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.85);animation:splash .8s ease-out forwards}
 .pt.smoke{width:18px;height:18px;border-radius:50%;background:rgba(150,110,190,.55);animation:dust 1.2s ease-out forwards}
 @keyframes rise{to{transform:translate(-50%,-40px);opacity:0}}
@@ -1148,6 +1151,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
           <div class="pf-box"><span>이동 거리</span><b id="pfWalk">0.00</b><i>km</i></div>
           <div class="pf-box"><span>주운 알</span><b id="pfEggs">0</b><i>개</i></div>
         </div>
+        <p class="pf-diag" id="pfDiag"></p>
       </section>
       <div id="setPage" hidden>
       <section class="set-sec">
@@ -3498,7 +3502,8 @@ function render(m, now) {
   { const fl = !!m.land && !m.held; if (fl !== !!m.flop) { m.flop = fl; m.el.classList.toggle('flop', fl); } }
   m.el.style.transform = `translate(${m.x.toFixed(1)}px,${m.y.toFixed(1)}px)`;
   m.el.style.zIndex = Math.round(m.y) + (m.zAdd || 0) + (m.perch ? 2 : 0);
-  m.liftEl.style.transform = `translateY(${(wet ? m.h * .38 : 0) - m.lift - bob}px)`;
+  m.liftEl.style.transform = `translateY(${(wet ? m.h * .38 : m.flop ? m.h * .42 : 0) - m.lift - bob}px)`;   // 육지의 잉어킹은 그림자에 붙게 조금 내린다
+  if (m.flop && now > (m.swT || 0)) { m.swT = now + rnd(180, 360); for (const s of [-1, 1]) if (Math.random() < .75) particle(m.x + s * rnd(6, m.w * .32), m.y - m.h * .2 - rnd(0, 10), 'sweat', '', d => d.style.setProperty('--dx', s * rnd(12, 26) + 'px')); }
   m.flipEl.style.transform = `scaleX(${m.face})`; m.flipEl.style.setProperty('--f', m.face);
   if (isPmd(m.form)) drawSprite(m, m.realDt || 0);
   else { const want = m.state === 'sleep' ? (stillCache[m.form] || SPRITES[m.form]) : SPRITES[m.form]; if (m.curSrc !== want) { m.curSrc = want; m.img.src = want; } }
@@ -5024,12 +5029,19 @@ function renderProfile() {
   // 이동 거리: 만보기(걷기·달리기 다 들어간다)가 오면 그 값, 아니면 걸은 거리 + 달린 기록 (둘 중 큰 쪽)
   $('#pfWalk').textContent = fmtKm(live ? Math.max(S.ped.km, runKm) : T.walk + runKm); $('#pfWalk').parentNode.classList.toggle('walking', !!live && Date.now() - (S.ped.at || 0) < WALK_LIVE);
   $('#pfEggs').textContent = T.eggs;
+  // 테스트: 아이폰 앱 만보기 신호 (언제·몇 번·얼마) — 이동 거리가 안 늘 때 어디서 막히는지 보려고
+  const D = pedDiag, ago = D.at ? Math.round((Date.now() - D.at) / 1000) : -1;
+  $('#pfDiag').textContent = !window.webkit?.messageHandlers?.pokeRun ? '' : D.err ? `만보기 오류: ${D.err}` : D.n ? `만보기 신호 ${D.n}번 · 마지막 ${ago}초 전 · ${D.km.toFixed(3)}km` : '만보기 신호를 아직 못 받았어요';
 }
+const pedDiag = { n: 0, at: 0, km: 0, err: '' };
+window.pokeRunPedErr = msg => { pedDiag.err = String(msg); if (!setEl.hidden) renderProfile(); };
+setInterval(() => { if (!setEl.hidden && pedDiag.n) renderProfile(); }, 1000);
 // 아이폰 앱: 오늘 0시부터 걸은 거리(만보기)를 걷는 동안 계속 보낸다 (화면 표시용, 알 줍기는 pokeRunWalk)
 // 걷는 중: 이동 거리가 최근 20초 안에 늘었으면 초록색으로 켜진 모양, 아니면 검정
 const WALK_LIVE = 20000; let walkOffT = 0;
 window.pokeRunToday = (km, dayMs) => {
   km = +km; if (!(km >= 0)) return false; const d = dayKey(+dayMs || Date.now()), o = S.ped;
+  pedDiag.n++; pedDiag.at = Date.now(); pedDiag.km = km; pedDiag.err = '';
   const up = o && o.d === d && km > o.km + 1e-4;
   S.ped = { d, km, at: up ? Date.now() : (o && o.d === d ? o.at || 0 : 0) };
   if (up) { clearTimeout(walkOffT); walkOffT = setTimeout(() => { if (!setEl.hidden) renderProfile(); }, WALK_LIVE + 50); }

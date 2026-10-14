@@ -47,22 +47,32 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
     private var liveBest = 0.0
     private var liveDay = Date.distantPast
     func startLive() {
-        guard CMPedometer.isDistanceAvailable(), !liveOn else { return }
+        guard CMPedometer.isDistanceAvailable() else { PhoneBridge.shared.sendPedErr("이 기기는 만보기 거리를 지원하지 않아요"); return }
+        switch CMPedometer.authorizationStatus() {
+        case .denied: PhoneBridge.shared.sendPedErr("동작 및 피트니스 권한이 꺼져 있어요 (설정 › 개인정보 보호 › 동작 및 피트니스)"); return
+        case .restricted: PhoneBridge.shared.sendPedErr("동작 및 피트니스 사용이 제한되어 있어요"); return
+        default: break
+        }
+        guard !liveOn else { pollToday(); return }
         liveOn = true
         liveDay = Calendar.current.startOfDay(for: Date()); liveBest = 0
         let day = liveDay
         pedometer.startUpdates(from: day) { [weak self] data, error in
-            guard error == nil, let m = data?.distance?.doubleValue else { return }
+            if let error { DispatchQueue.main.async { PhoneBridge.shared.sendPedErr("실시간: \(error.localizedDescription)") }; return }
+            guard let m = data?.distance?.doubleValue else { return }
             DispatchQueue.main.async { self?.gotToday(km: m / 1000, day: day) }
         }
         pollToday()
-        liveTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in self?.pollToday() }
+        let t = Timer(timeInterval: 5, repeats: true) { [weak self] _ in self?.pollToday() }
+        RunLoop.main.add(t, forMode: .common)   // 화면을 스크롤하는 동안에도 돈다
+        liveTimer = t
     }
     private func pollToday() {
         let now = Date(), day = Calendar.current.startOfDay(for: now)
         if day != liveDay { liveDay = day; liveBest = 0; liveSynced = -1 }   // 자정이 지나면 새 날
         pedometer.queryPedometerData(from: day, to: now) { [weak self] data, error in
-            guard error == nil, let m = data?.distance?.doubleValue else { return }
+            if let error { DispatchQueue.main.async { PhoneBridge.shared.sendPedErr("조회: \(error.localizedDescription)") }; return }
+            guard let m = data?.distance?.doubleValue else { return }
             DispatchQueue.main.async { self?.gotToday(km: m / 1000, day: day) }
         }
     }

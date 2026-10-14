@@ -102,6 +102,15 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
         web.evaluateJavaScript("window.pokeRunToday && window.pokeRunToday(\(km), \(todayDay * 1000))")
     }
 
+    // 만보기 문제를 게임 프로필에 보여 준다 (이동 거리가 안 늘 때 원인 확인용)
+    private var pedErr: String?
+    func sendPedErr(_ msg: String) {
+        pedErr = msg
+        guard gameReady, let web = webView,
+              let data = try? JSONSerialization.data(withJSONObject: [msg]), let arg = String(data: data, encoding: .utf8) else { return }
+        web.evaluateJavaScript("window.pokeRunPedErr && window.pokeRunPedErr(\(arg)[0])")
+    }
+
     func enqueueWalk(km: Double, place: String, tags: [String] = []) {
         var list = UserDefaults.standard.array(forKey: walkKey) as? [[String: Any]] ?? []
         list.append(["km": km, "place": place, "tags": tags.joined(separator: ",")])
@@ -134,6 +143,7 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
         guard gameReady, let web = webView else { return }
         flushWalk(web)
         flushToday()
+        if todayKm == nil, let e = pedErr { sendPedErr(e) }
         let list = pendingRuns()
         defer { flushPlaces(web) }
         guard !list.isEmpty else { return }
