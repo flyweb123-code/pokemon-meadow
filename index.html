@@ -4357,7 +4357,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.57';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.58';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5982,7 +5982,7 @@ function tapEgg(egg, g0, msg, g = g0) {   /* g0 알 등급, g 연출 등급(나�
   return new Promise(done => {
     const need = ({ 6: 80, 5: 60, 4: 40 })[g] || 20,   /* 두드릴 횟수는 나올 포켓몬 단계로: 1단계 80, 2단계 60, 3단계 40, 기본 20 */ win = hatchEl.querySelector('.win'); let n = 0, stage = 0, idle = 0, pend = -1;
     msg.textContent = '알을 톡톡 두드려 보자!';
-    if (g >= 5) { void hatchEl.offsetWidth; hatchEl.classList.add('dimin', 'legend'); setTimeout(() => hatchEl.classList.remove('dimin'), 3000); tenseStart(); }   /* 1단계도 처음엔 2단계와 똑같이 시작 (스포 방지), 절반쯤 두드리면 무지개로 바뀐다 */ else if (g === 4) hatchEl.classList.add('g4t');
+    if (g >= 5) { hatchEl.classList.add('legend'); tenseStart(); }   /* 1단계도 처음엔 2단계와 똑같이 시작 (스포 방지), 절반쯤 두드리면 무지개로 바뀐다 */ else if (g === 4) hatchEl.classList.add('g4t');
     hatchStage.classList.add('tapme');
     // 두드리기 힌트: 창 안 아무 곳에 파장 원이 번진다 (잠깐 안 두드리면 다시)
     let lastTap = 0; const ring = () => { if (n >= need || performance.now() - lastTap < 1600) return; const r = hatchStage.getBoundingClientRect(), o = document.createElement('i'); o.className = 'tapring';
