@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><style>img{max-width:100%}</style></head><body><title>포켓런닝</title>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="포켓런닝"><meta name="theme-color" content="#24482a"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" type="image/png" href="icon-192.png"><style>img{max-width:100%}</style></head><body><title>포켓런닝</title>
 <script>
 // 첫 화면부터 지금 시각의 밤낮으로 그린다 (낮으로 떴다가 밤으로 바뀌지 않게). 첫 sky() 뒤에 boot 를 뗀다.
 (() => { const d = new Date(), h = d.getHours() + d.getMinutes() / 60, c = document.documentElement.classList; c.add('boot'); if (h >= 19.5 || h < 5.5) c.add('boot-night'); })();
@@ -6799,4 +6799,4 @@ window.claude?.hot?.snapshot?.(() => serialize());
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
 })();
 </script>
-</body></html>
+<script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script></body></html>
