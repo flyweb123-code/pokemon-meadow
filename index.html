@@ -4312,7 +4312,7 @@ $('#ppBud').onclick = () => {
   if (slot != null) keep.splice(Math.min(slot, keep.length), 0, nb); else keep.push(nb);
   S.buds = keep;
   log(`${J({ name: SPECIES[P.sp].n },'이/가')} 런닝 짝꿍이 되었다!`, [], true); save();
-  if (slot != null) { closePoke(); setMgrTab('buddy'); } else { renderBox(); openPoke(P.id); }
+  renderBox(); closePoke(); setMgrTab('buddy');   // 짝꿍이 되면 짝꿍 탭으로
   evoNotice(P.sp, P);
 };
 new MutationObserver(() => { if (mgr.hidden) closePoke(); }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
