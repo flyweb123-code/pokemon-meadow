@@ -132,7 +132,7 @@
 .run-row:has(+.run-eggs){border-bottom:0}.run-eggs .re-none{opacity:.3;filter:grayscale(1)}.run-eggs .re-row{flex-wrap:wrap}.run-eggs .re-eggs{flex-wrap:wrap;max-width:100%}
 .dex .here{display:none!important}.filters .fsel{flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-#sheet.off{opacity:0!important;transform:translateX(-300vw)!important}
+#sheet.off{opacity:0!important;pointer-events:none!important;z-index:-1!important}/* 닫힌 도감도 제자리에 투명하게 그려 두어 열 때 빈 칸이 깜빡이지 않게 */
 html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .mgr-two{display:grid;grid-template-columns:1fr 1fr;gap:6px}.mgr-two .lk-btn{min-width:84px;margin:0;justify-content:center;text-align:center}
 .nm-edit{flex:0 1 auto!important;max-width:100%}
@@ -5754,7 +5754,9 @@ runEl.addEventListener('click', e => { if (e.target === runEl) runEl.hidden = tr
 let runTab = 'egg', eggSel = null, bagG = 0, bagSel = null, bagSort = 'new', bagMul = null, delArm = 0;   // bagMul: 여러 개 고르는 중이면 고른 알 id 모음
 try { bagSort = localStorage.getItem('pk-bag-sort') || 'new'; } catch (e) {}
 // 가방을 보고 나가면 NEW 표시를 지운다
-function seeBag() { if (runTab !== 'bag' || runEl.hidden) return; let ch = false; S.bag.forEach(e => { if (e.isNew) { e.isNew = false; ch = true; } }); if (ch) save(); }
+function seeBag(closing) { if (runTab !== 'bag' || (runEl.hidden && !closing)) return; let ch = false; S.bag.forEach(e => { if (e.isNew) { e.isNew = false; ch = true; } }); if (ch) { save(); renderBag.sig = ''; renderRun(); } }
+// 가방 탭을 본 채로 창이 닫히면(하단 메뉴 이동·바깥 누름·다른 창 열림 등 어떤 길이든) NEW 표시를 지운다
+new MutationObserver(() => { if (runEl.hidden) seeBag(true); }).observe(runEl, { attributes: true, attributeFilter: ['hidden'] });
 function fmtWhen(t) { const d = new Date(t); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; }
 function renderBag() {
   const hasNew = S.bag.some(e => e.isNew);
