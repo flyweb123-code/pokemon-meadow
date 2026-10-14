@@ -676,7 +676,7 @@ body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch
 .mon:is(.rkS,.rkA).rubA .flip{animation:rubS1 .42s ease-out}.mon:is(.rkS,.rkA).rubB .flip{animation:rubS2 .42s ease-out}.mon.rkA.rubA .flip{animation-name:rubA1}.mon.rkA.rubB .flip{animation-name:rubA2}
 @keyframes rubS1{0%{filter:drop-shadow(0 0 4px #fff8d0) drop-shadow(0 0 16px #ffb000)}100%{filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 6px #ffc830)}}@keyframes rubS2{0%{filter:drop-shadow(0 0 4px #fff8d0) drop-shadow(0 0 16px #ffb000)}100%{filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 6px #ffc830)}}
 @keyframes rubA1{0%{filter:drop-shadow(0 0 4px #ffd0d0) drop-shadow(0 0 16px #ff2a2a)}100%{filter:drop-shadow(0 0 2px #ff9090) drop-shadow(0 0 6px #ff3a3a)}}@keyframes rubA2{0%{filter:drop-shadow(0 0 4px #ffd0d0) drop-shadow(0 0 16px #ff2a2a)}100%{filter:drop-shadow(0 0 2px #ff9090) drop-shadow(0 0 6px #ff3a3a)}}
-.mon.joyHalo .flip{animation:none!important;filter:none}.mon.joyHalo.joyOn .flip{filter:brightness(1.3) drop-shadow(0 0 5px #fffbe0) drop-shadow(0 0 22px #ffb000)}.mon.rkA.joyHalo.joyOn .flip{filter:brightness(1.3) drop-shadow(0 0 5px #ffe0e0) drop-shadow(0 0 22px #ff2020)}
+.mon.joyHalo .flip{animation:none!important;filter:none!important}.mon.joyHalo.joyOn .act>:is(img,.spr){filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 5px #fffbe0) drop-shadow(0 0 18px #ffb000)}.mon.rkA.joyHalo.joyOn .act>:is(img,.spr){filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 5px #ffe0e0) drop-shadow(0 0 18px #ff2020)}.mon.shiny.joyHalo.joyOn .act>:is(img,.spr){filter:hue-rotate(var(--shue,150deg)) saturate(1.25) drop-shadow(0 0 2px #fff) drop-shadow(0 0 5px #fffbe0) drop-shadow(0 0 18px #ffb000)}.mon.shiny.rkA.joyHalo.joyOn .act>:is(img,.spr){filter:hue-rotate(var(--shue,150deg)) saturate(1.25) drop-shadow(0 0 2px #fff) drop-shadow(0 0 5px #ffe0e0) drop-shadow(0 0 18px #ff2020)}
 @keyframes joyS{0%{filter:brightness(1.3) drop-shadow(0 0 5px #fffbe0) drop-shadow(0 0 22px #ffb000)}50%{filter:drop-shadow(0 0 0 transparent)}}@keyframes joyA{0%{filter:brightness(1.3) drop-shadow(0 0 5px #ffe0e0) drop-shadow(0 0 22px #ff2020)}50%{filter:drop-shadow(0 0 0 transparent)}}   /* 좋아할 때: 켜졌다 꺼졌다 점멸 */
 .hspk{position:absolute;transform:translate(-50%,-50%);line-height:1;pointer-events:none;color:#fff6b0;text-shadow:0 0 4px #ffb000,0 0 2px #fff;animation:hspk .7s ease-out forwards}.hspk.A{color:#ffe0e0;text-shadow:0 0 4px #ff3a3a,0 0 2px #fff}
 @keyframes hspk{0%{opacity:0;scale:.3}25%{opacity:1;scale:1.25}60%{opacity:1;scale:.9}100%{opacity:0;scale:.4;translate:0 -10px}}
@@ -2396,6 +2396,7 @@ function petDone() {
   holdLog(S.log[0], 1000 + USER_LOG_HOLD); m.petMood = performance.now() + 31000;   /* 좋아하는 춤(1초)이 끝난 뒤 상태창 5초 유지, 정보창 '상태'는 30초 동안 기분 좋음 */
   /* 기뻐서 왼쪽·오른쪽을 번갈아 보며 춤춘다 (그동안은 제자리) */
   petM.done = true; $('#petBar').hidden = true; const f0 = m.face || 1;
+  if (haloOf(m)) { emote(m, '♪', 'heart', 1); setTimeout(() => { petEnd(); save(); }, 1000); return; }   /* 후광 포켓몬은 춤 없이 제자리에서 바로 점멸 */
   const NB = 5; for (let k = 0; k < NB; k++) setTimeout(() => { if (!S.mons.includes(m)) return; m.face = k % 2 ? f0 : -f0; if (k % 2 === 0) anim(m, 'phop'); if (k === 1) emote(m, '♪', 'heart', 1); }, k * 190);
   setTimeout(() => { m.face = f0; petEnd(); save(); }, NB * 190 + 50);
 }
@@ -4429,7 +4430,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.87';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.88';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
