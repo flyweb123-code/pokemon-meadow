@@ -3983,12 +3983,12 @@ function setPage(on) { if (on === true) on = 'set'; $('#setPage').hidden = on !=
 $('#pfGear').onclick = () => { sfx('tap'); setPage(true); };
 $('#setBack').onclick = () => { sfx('tap'); setPage(false); };
 $('#pfRunBtn').onclick = () => { sfx('tap'); renderRunLog(); setPage('runs'); };
-// 하위 화면(런닝 기록·설정): 왼쪽 가장자리에서 오른쪽으로 밀면 손가락을 따라 화면이 밀리고, 아래로 프로필이 보이며 뒤로 간다
+// 하위 화면(런닝 기록·설정): 화면 아무 데서나 오른쪽으로 밀면, 왼쪽에서 프로필 창이 들어오며 지금 창을 옆으로 밀어내고 뒤로 간다
 { const body = setEl.querySelector('.set-body'); let sw = null;
   const sub = () => ['#runPage', '#setPage'].map(q => $(q)).find(e => !e.hidden);
   body.addEventListener('pointerdown', e => {
     const pg = sub(); if (!pg || e.button > 0) return;
-    const r = body.getBoundingClientRect(); if (e.clientX - r.left > 36) return;
+    const r = body.getBoundingClientRect(); if (e.target.closest('input, .vol, [data-noswipe]')) return;
     sw = { id: e.pointerId, x0: e.clientX, y0: e.clientY, t0: performance.now(), pg, w: r.width, on: false, dx: 0 };
   });
   body.addEventListener('pointermove', e => {
@@ -3997,21 +3997,20 @@ $('#pfRunBtn').onclick = () => { sfx('tap'); renderRunLog(); setPage('runs'); };
     if (!sw.on) { if (Math.abs(dy) > 12 && Math.abs(dy) > dx) { sw = null; return; } if (dx < 8) return;
       sw.on = true; try { body.setPointerCapture(e.pointerId); } catch (_) {}
       const pf = $('#pfPage'), cs = getComputedStyle(body);
-      pf.hidden = false; pf.style.cssText = `position:absolute;left:${cs.paddingLeft};right:${cs.paddingRight};top:${body.scrollTop + parseFloat(cs.paddingTop)}px;pointer-events:none`;
+      pf.hidden = false; pf.style.cssText = `position:absolute;left:${cs.paddingLeft};right:${cs.paddingRight};top:${body.scrollTop + parseFloat(cs.paddingTop)}px;pointer-events:none;transform:translateX(${-sw.w - 14}px)`;
       body.style.position = 'relative'; body.style.overflowX = 'hidden'; sw.pf = pf; }
-    sw.dx = Math.max(0, dx); const k = sw.dx / sw.w;
-    sw.pg.style.transform = `translateX(${sw.dx}px)`; sw.pg.style.boxShadow = '-6px 0 10px rgba(0,0,0,.12)';
-    sw.pf.style.transform = `translateX(${(-30 + 30 * k).toFixed(1)}%)`; sw.pf.style.opacity = (.4 + .6 * k).toFixed(2);
+    sw.dx = Math.max(0, dx);
+    sw.pg.style.transform = `translateX(${sw.dx}px)`; sw.pf.style.transform = `translateX(${sw.dx - sw.w - 14}px)`;   // 두 창이 나란히 붙어 함께 움직인다
     e.preventDefault();
   });
   const end = e => {
     if (!sw || e.pointerId !== sw.id) return; const s0 = sw; sw = null; if (!s0.on) return;
     const v = s0.dx / Math.max(1, performance.now() - s0.t0), back = s0.dx > s0.w * .35 || v > .5;
-    const ease = 'transform .22s cubic-bezier(.2,.8,.3,1),opacity .22s';
+    const ease = 'transform .24s cubic-bezier(.2,.8,.3,1)';
     s0.pg.style.transition = s0.pf.style.transition = ease;
-    s0.pg.style.transform = `translateX(${back ? s0.w : 0}px)`; s0.pf.style.transform = `translateX(${back ? 0 : -30}%)`; s0.pf.style.opacity = back ? 1 : .4;
+    s0.pg.style.transform = `translateX(${back ? s0.w : 0}px)`; s0.pf.style.transform = `translateX(${back ? 0 : -s0.w - 14}px)`;
     setTimeout(() => { s0.pg.style.cssText = ''; s0.pf.style.cssText = ''; body.style.position = body.style.overflowX = '';
-      if (back) { sfx('tap'); setPage(false); } else s0.pf.hidden = true; }, 230);
+      if (back) { sfx("tap"); setPage(false); } else s0.pf.hidden = true; }, 250);
   };
   body.addEventListener('pointerup', end); body.addEventListener('pointercancel', end);
 }
@@ -4400,7 +4399,7 @@ $('#pokePop').addEventListener('click', e => { if (e.target.id !== 'pokePop') re
 $('#ppField').onclick = async () => {
   const P = boxOf(pokeId); if (!P) return;
   const m = S.mons.find(x => x.pid === P.id);
-  if (m) { const fb = $('#ppField'); if (fb.classList.contains('popout')) return; sfx('tap'); fb.classList.add('popout'); await wait(200); removeMon(m); }   // 눌려 있던 버튼이 툭 튀어나오며 필드에서 뺀다
+  if (m) { const fb = $('#ppField'); if (fb.classList.contains('popout')) return; sfx('tap'); fb.textContent = '필드에 내보내기'; fb.classList.add('popout'); await wait(200); removeMon(m); }   // 눌려 있던 버튼이 툭 튀어나오며 필드에서 뺀다
   else if (S.mons.length < MAX_MONS) { try { await spawn(P.sp, { pid: P.id }); } catch (e) {} if (boxFromSlot && S.mons.some(x => x.pid === P.id)) { refreshCap(); save(); closePoke(); setMgrTab('field'); return; } }
   refreshCap(); renderBox(); openPoke(P.id); save();
 };
