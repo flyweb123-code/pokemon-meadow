@@ -736,7 +736,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 /* 필드 슬롯·짝꿍 카드도 특별 단계 테두리 (빛 번짐 없이 테두리만 돈다) */#mgr :is(.slot,.bd-card):is(.leg,.sil,.brz){border-color:transparent;background:linear-gradient(var(--sbg,#fff),var(--sbg,#fff)),var(--tg);background-origin:border-box;background-clip:padding-box,border-box,border-box;background-repeat:no-repeat;animation:tierSpin var(--ts) linear infinite}#mgr :is(.slot,.bd-card).leg{animation-name:tierSpin2}#buddy .bd-card{--sbg:#fff3f7}
 .pokepop .boxbtn.sunk,#monPop .boxbtn.sunk{background:#b9b9c6;border-color:#8a8a9a;color:#5a5a6a;box-shadow:inset 0 4px 0 rgba(0,0,0,.3),inset 3px 0 0 rgba(0,0,0,.12);padding-top:15px;padding-bottom:7px}
 .pokepop .boxbtn.pink.sunk{background:#f7dfe8;border-color:#d9a9bc;color:#b0788f}
-.pokepop .boxbtn.pressd{padding-top:13px!important;padding-bottom:7px!important}.pokepop .boxbtn.pink.pressd{background:#c9507e}
+.pokepop .boxbtn.pressd{padding-top:13px!important;padding-bottom:7px!important}.pokepop .boxbtn.pink.pressd{background:#c9507e}:is(.pokepop,#monPop) .boxbtn.green{background:#3c9a4c;border-color:#1f5a2a;color:#fff}:is(.pokepop,#monPop) .boxbtn.green.pressd{background:#2f7e3d}:is(.pokepop,#monPop) .boxbtn.green.sunk{background:#dcefdf;border-color:#a6c8ab;color:#5f8a66}:is(.pokepop,#monPop) .boxbtn.green.off{background:var(--win);color:#3c8a4a;border-color:#3c8a4a}
 .pokepop .boxbtn.sunk.popout{animation:btnPop .2s cubic-bezier(.3,1.6,.5,1) forwards}
 @keyframes btnPop{0%{background:#b9b9c6;box-shadow:inset 0 4px 0 rgba(0,0,0,.3);padding-top:14px;padding-bottom:6px}100%{background:var(--frame);border-color:var(--frame);color:var(--win);box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);padding-top:10px;padding-bottom:10px}}
 .pokepop .boxbtn.off{background:var(--win);color:var(--frame)}.pokepop .boxbtn[disabled]{opacity:.5}
@@ -1442,7 +1442,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
     <div class="dp-pic" id="ppPic"><img alt="" id="ppImg"></div>
     <div class="pp-body" id="ppBody"></div>
     <div class="pp-evo" id="ppEvo" hidden><button class="boxbtn evobtn" id="ppEvoBtn">진화하기</button></div>
-    <div class="pp-btns"><button class="boxbtn pink" id="ppBud"></button><button class="boxbtn" id="ppField"></button></div>
+    <div class="pp-btns"><button class="boxbtn pink" id="ppBud"></button><button class="boxbtn green" id="ppField"></button></div>
     <button class="pp-free" id="ppFree">놓아주기</button>
   </div>
 </div>
@@ -4428,7 +4428,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.81';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.82';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5049,7 +5049,7 @@ function renderMgrDetail(rebuild) {
       <div class="ihead">${infoHead(boxOf(m.pid), m.sp, nameEdit('mName', m.name, sexOf(m)), (m.name !== d.n ? `<span class="ih-sp">${esc(d.n)}</span>` : '') + (t.noct ? '<span class="ih-sp">야행성</span>' : '') + (d.leg || d.my ? '<span class="ih-sp">전설</span>' : ''))}</div>
       <div class="m-pages" id="mPages"><div class="m-track"><div class="m-pg"><div class="bars" id="mBars"></div><div class="memo" id="mMemo"></div></div><div class="m-pg" id="mPg2"></div></div>
         <div class="m-dots"><i class="on"></i><i></i></div></div>
-      <div class="pp-btns m-btns"><button class="boxbtn red" id="mOut">필드 빼기</button><button class="boxbtn white" id="mLook">필드 보기</button><button class="boxbtn pink" id="mBud"></button></div>`;
+      <div class="pp-btns m-btns"><button class="boxbtn red" id="mOut">필드 빼기</button><button class="boxbtn green" id="mLook">필드 보기</button><button class="boxbtn pink" id="mBud"></button></div>`;
     const inp = $('#mName'); inp.value = m.name;
     inp.addEventListener('input', () => { inp.style.width = (Math.max(1, inp.value.length) + .15) + 'em'; });
     inp.addEventListener('change', () => renameMon(m, inp.value));
