@@ -56,14 +56,15 @@
 .bd-evobtn{font:inherit;font-size:12px;line-height:1;padding:4px 10px;background:#e8a020;color:#fff;border:3px solid #9a6410;box-shadow:0 3px 0 #9a6410;cursor:pointer}
 .bd-evobtn:active{transform:translateY(3px);box-shadow:none}
 .bd-evobtn:disabled{background:#e4e4ec;color:#a0a0b4;border-color:#c8c8d8;box-shadow:none;cursor:default}
-.bd-evobtn:not(:disabled){border-color:#ffd75e;animation:btnGlow 1.4s ease-in-out infinite}
-@keyframes btnGlow{0%,100%{box-shadow:0 3px 0 #9a6410,0 0 6px 1px rgba(255,200,60,.6)}50%{box-shadow:0 3px 0 #9a6410,0 0 14px 4px rgba(255,210,80,.95)}}
-.bd-card.ready .prog.evo{border-color:#e8a020;animation:barGlow 1.4s ease-in-out infinite}.bd-card.ready .prog.evo i{background:#ffc840}
-@keyframes barGlow{0%,100%{box-shadow:0 0 0 1px #ffd75e,0 0 6px 1px rgba(255,200,60,.55)}50%{box-shadow:0 0 0 2px #ffe9a0,0 0 14px 4px rgba(255,200,60,.9)}}
+.bd-evobtn:not(:disabled){border-color:#ffd75e;animation:btnGlow 3.2s ease-in-out infinite}
+@keyframes btnGlow{0%,100%{box-shadow:0 3px 0 #9a6410,0 0 3px 0 rgba(255,200,60,.3)}50%{box-shadow:0 3px 0 #9a6410,0 0 10px 2px rgba(255,210,80,.55)}}
+@keyframes softGlow{0%,100%{box-shadow:0 0 3px 0 rgba(255,200,60,.3)}50%{box-shadow:0 0 12px 3px rgba(255,210,80,.55)}}
+.bd-card.ready .prog.evo{border-color:#e8a020;animation:barGlow 3.2s ease-in-out infinite}.bd-card.ready .prog.evo i{background:#ffc840}
+@keyframes barGlow{0%,100%{box-shadow:0 0 0 1px #ffd75e,0 0 3px 0 rgba(255,200,60,.3)}50%{box-shadow:0 0 0 1px #ffe9a0,0 0 10px 2px rgba(255,200,60,.55)}}
 .pp-evo{display:flex;align-items:center;gap:8px;margin:0 0 8px}.pp-evo[hidden]{display:none}.pp-evo .pp-run{flex:1;min-width:0;white-space:nowrap;font-size:12px;color:var(--dim)}.pp-evo .pp-run b{color:var(--win-ink)}
 .pp-evo .pp-run{white-space:normal!important;line-height:1.5}.pp-evo .pp-sub{font-size:11px}.pp-evo .pp-sub .bd-tag{font-size:11px;padding:1px 6px}.pp-evo .pp-sub b{color:var(--win-ink)}#pokePop #ppEvoBtn[hidden]{display:none}
 #pokePop #ppEvoBtn:disabled{background:#e4e4ec;color:#a0a0b4;border-color:#c8c8d8;box-shadow:none;animation:none;cursor:default}
-#pokePop #ppEvoBtn{flex:0 0 auto;width:auto;min-width:0;margin:0;padding:0 18px;height:40px;background:#e8a020;border-color:#9a6410;color:#fff;animation:bdGlow 1.4s ease-in-out infinite}
+#pokePop #ppEvoBtn{flex:0 0 auto;width:auto;min-width:0;margin:0;padding:0 18px;height:40px;background:#e8a020;border-color:#9a6410;color:#fff;animation:softGlow 3.2s ease-in-out infinite}
 @media (prefers-reduced-motion: reduce){.bd-card.ready,#ppEvoBtn,.bd-evobtn,.bd-card.ready .prog.evo{animation:none}}
 #boxGrid>.pk{content-visibility:auto;contain-intrinsic-size:auto 118px}
 .frpop{position:absolute;transform:translate(-50%,-100%);white-space:nowrap;font:12px/1 var(--px);color:#fff;background:#e04870;border:2px solid #8a1f40;padding:3px 6px;z-index:2000;pointer-events:none;animation:frpop 1.6s steps(12) forwards}
@@ -75,10 +76,11 @@
 #evoFull{position:fixed;inset:0;z-index:7000;overflow:hidden;background:#05060e;color:#fff;opacity:0;transition:opacity .35s;--p:0}
 #evoFull.in{opacity:1}#evoFull[hidden]{display:none}
 #evoFull .ef-sky{position:absolute;inset:0;background:radial-gradient(circle at 50% 42%,rgba(90,110,220,calc(.15 + var(--p)*.45)),rgba(20,24,60,.6) 45%,#05060e 75%)}
-#evoFull .ef-rays{position:absolute;left:50%;top:42%;width:240vmax;height:240vmax;margin:-120vmax 0 0 -120vmax;opacity:0;background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.16) 0deg 6deg,transparent 6deg 18deg);-webkit-mask:radial-gradient(circle,#000 0,#000 8%,transparent 42%);mask:radial-gradient(circle,#000 0,#000 8%,transparent 42%);animation:efspin 14s linear infinite;transition:opacity .6s}
-#evoFull.go .ef-rays{opacity:calc(.25 + var(--p)*.75)}
-#evoFull.go .ef-rays{animation-duration:calc(14s - var(--p)*11s)}
-@keyframes efspin{to{transform:rotate(360deg)}}
+#evoFull .ef-rays{position:absolute;left:50%;top:42%;width:150vmin;height:150vmin;margin:-75vmin 0 0 -75vmin;opacity:0;pointer-events:none;background:radial-gradient(closest-side,rgba(255,255,255,.55),rgba(200,215,255,.32) 22%,rgba(130,160,255,.14) 48%,rgba(90,110,220,.05) 70%,transparent);animation:eflight 2.8s ease-in-out infinite;transition:opacity .6s}
+#evoFull .ef-rays::after{content:'';position:absolute;inset:25%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.7),rgba(220,230,255,.25) 45%,transparent);animation:eflight 2.8s ease-in-out infinite reverse}
+#evoFull.go .ef-rays{opacity:calc(.3 + var(--p)*.7)}
+#evoFull.go .ef-rays,#evoFull.go .ef-rays::after{animation-duration:calc(2.8s - var(--p)*1.9s)}
+@keyframes eflight{0%,100%{transform:scale(.88);opacity:.75}50%{transform:scale(1.08);opacity:1}}
 #evoFull .ef-glow{position:absolute;left:50%;top:42%;width:46vmin;height:46vmin;margin:-23vmin 0 0 -23vmin;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,calc(var(--p)*.9)),rgba(180,200,255,calc(var(--p)*.35)) 40%,transparent 70%);transform:scale(calc(.6 + var(--p)*1.1))}
 #evoFull .ef-stage{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:min(56vw,280px);height:min(56vw,280px);display:grid;place-items:center;transition:top .6s ease,width .6s ease,height .6s ease}
 #evoFull.fin .ef-stage{top:var(--sy);width:var(--ss);height:var(--ss)}
@@ -86,9 +88,10 @@
 #evoFull.go:not(.done) .ef-stage{animation:efshake .09s steps(2) infinite;animation-play-state:paused}
 #evoFull.go:not(.done)[style*="--p: 0.9"] .ef-stage,#evoFull.go:not(.done)[style*="--p: 1"] .ef-stage{animation-play-state:running}
 @keyframes efshake{50%{transform:translate(calc(-50% + 2px),calc(-50% - 2px))}}
-#evoFull .ef-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;transition:filter .5s}
-#evoFull .ef-img.sil{filter:brightness(0) invert(1) drop-shadow(0 0 6px #fff) drop-shadow(0 0 18px #9ab8ff)}
-#evoFull .ef-img.beat{animation:efbeat .18s ease-out}
+#evoFull .ef-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;transition:opacity .5s}
+#evoFull .ef-wh{position:absolute;left:-20%;top:-20%;width:140%;height:140%;object-fit:contain;opacity:0;transition:opacity .5s;pointer-events:none}
+#evoFull.sil .ef-img{opacity:0}#evoFull.sil .ef-wh{opacity:1}
+#evoFull .ef-img.beat,#evoFull .ef-wh.beat{animation:efbeat .18s ease-out}
 @keyframes efbeat{0%{transform:scale(1.08)}100%{transform:scale(1)}}
 #evoFull.done .ef-img{animation:efpop .6s cubic-bezier(.2,1.6,.4,1)}
 @keyframes efpop{0%{transform:scale(.6)}100%{transform:scale(1)}}
@@ -587,7 +590,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .ivs .b i.max{background:#e8a020}.ivs .v{text-align:right}
 .pickhint{color:#c03040;font-size:12px}
 #buddy .bd-why{font-size:11px;color:#806040}#buddy .bd-ind{font-size:12px;color:#5c6c5c;display:flex;align-items:center;gap:4px}#buddy .bd-ind .hearts{letter-spacing:1px}
-.pp-fr{display:flex;justify-content:space-between;font-size:13px;margin-top:4px}.frtap{cursor:pointer;padding:4px 0}.frtip{position:fixed;z-index:9000;transform:translate(-50%,-100%);background:#fff;color:var(--frame);border:3px solid var(--frame);padding:4px 8px;font-size:12px;white-space:nowrap;pointer-events:none;box-shadow:3px 3px 0 rgba(0,0,0,.2)}.frtip::after{content:'';position:absolute;left:50%;bottom:-9px;margin-left:-5px;border:5px solid transparent;border-top-color:var(--frame)}.frtip[hidden]{display:none}.frtip.sm{font-size:11px;padding:2px 6px;border-width:2px}.frtip.sm::after{bottom:-8px;border-width:4px;margin-left:-4px}[data-tip]{cursor:pointer}.pp-fr .hearts{color:#e04870;letter-spacing:1px}
+.pp-fr{display:flex;justify-content:space-between;font-size:13px;margin-top:4px}.frtap{cursor:pointer;padding:4px 0}.frtip{position:fixed;z-index:9000;transform:translate(-50%,-100%);background:#fff;color:var(--frame);border:3px solid var(--frame);padding:4px 8px;font-size:12px;white-space:nowrap;pointer-events:auto;cursor:pointer;box-shadow:3px 3px 0 rgba(0,0,0,.2)}.frtip::after{content:'';position:absolute;left:50%;bottom:-9px;margin-left:-5px;border:5px solid transparent;border-top-color:var(--frame)}.frtip[hidden]{display:none}.frtip.sm{font-size:11px;padding:2px 6px;border-width:2px}.frtip.sm::after{bottom:-8px;border-width:4px;margin-left:-4px}[data-tip]{cursor:pointer}.pp-fr .hearts{color:#e04870;letter-spacing:1px}
 .pp-meta{font-size:12px;color:var(--dim);margin-top:4px;line-height:1.5}
 .pp-free{display:block;margin:10px auto 0;font:inherit;font-size:13px;background:none;border:0;color:#c03838;padding:4px 10px;cursor:pointer}
 .pp-free.arm{background:#c03838;color:#fff}.pp-free[hidden]{display:none}
@@ -4627,16 +4630,17 @@ const metHtml = (P, pre = '') => P && P.place ? `${pre}<span class="met">${metDa
 // 친밀도 숫자는 하트를 누를 때만 말풍선으로
 document.addEventListener('click', e => {
   const h = e.target.closest('.frtap,[data-tip]'); let tip = $('#frTip');
-  if (!h) { if (tip) tip.hidden = true; return; }
+  if (tip && !tip.hidden && (e.target.closest('#frTip') || h === tip.of)) { e.stopPropagation(); e.preventDefault(); tip.hidden = true; tip.of = null; clearTimeout(tip.t); sfx('tap'); return; }
+  if (!h) { if (tip) { tip.hidden = true; tip.of = null; } return; }
   e.stopPropagation(); e.preventDefault();
   if (!tip) { tip = document.createElement('div'); tip.id = 'frTip'; tip.className = 'frtip'; document.body.appendChild(tip); }
-  const r = h.getBoundingClientRect(); tip.textContent = h.dataset.tip || `친밀도 ${h.dataset.fr}/255`; tip.classList.toggle('sm', !!h.dataset.tip); tip.hidden = false;
+  const r = h.getBoundingClientRect(); tip.textContent = h.dataset.tip || `친밀도 ${h.dataset.fr}/255`; tip.classList.toggle('sm', !!h.dataset.tip); tip.hidden = false; tip.of = h;
   // 친밀도: 하트 어디를 눌러도 가운데 하트 바로 위에 (하트 줄이 칸 너비로 늘어나 있어도 글자 기준)
   let x = r.left + r.width / 2;
   if (!h.dataset.tip) { const rg = document.createRange(); rg.selectNodeContents(h); const t = rg.getBoundingClientRect(); if (t.width) x = t.left + t.width / 2; }
   else if (e.clientX && e.clientX >= r.left - 4 && e.clientX <= r.right + 4) x = e.clientX;
   tip.style.left = Math.max(40, Math.min(innerWidth - 40, x)) + 'px'; tip.style.top = (r.top - 6) + 'px';
-  clearTimeout(tip.t); tip.t = setTimeout(() => { tip.hidden = true; }, 1800); sfx('tap');
+  clearTimeout(tip.t); tip.t = setTimeout(() => { tip.hidden = true; tip.of = null; }, 1800); sfx('tap');
 }, true);
 function indivHtml(m) { const P = boxOf(m.pid); return P ? `랭크 <span class="rk ${rankOf(P)}">${rankOf(P)}</span>${P.shiny ? ' <b class="sh">✦ 이로치</b>' : ''} · 친밀도 <span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}" style="color:#e04870">${hearts(P.fr)}</span>` : ''; }
 // S 랭크는 금빛으로 빛나고, 친밀도 만점(255)은 가끔 하트가 떠오른다
@@ -5735,11 +5739,21 @@ let evoEl = null;
 function evoDom() {
   if (evoEl) return evoEl;
   evoEl = document.createElement('div'); evoEl.id = 'evoFull'; evoEl.hidden = true;
-  evoEl.innerHTML = '<div class="ef-sky"></div><div class="ef-rays"></div><div class="ef-parts"></div><div class="ef-glow"></div><div class="ef-stage"><img alt="" class="ef-img"></div><div class="ef-flash"></div>'
+  evoEl.innerHTML = '<div class="ef-sky"></div><div class="ef-rays"></div><div class="ef-parts"></div><div class="ef-glow"></div><div class="ef-stage"><img alt="" class="ef-img"><img alt="" class="ef-wh"></div><div class="ef-flash"></div>'
     + '<div class="ef-bottom"><div class="ef-msg"></div><div class="ef-card dexinfo" hidden></div><button class="boxbtn ef-ok" hidden>확인</button></div>';
   document.body.appendChild(evoEl); return evoEl;
 }
 function evoSpark(el, x, y, big) { const d = document.createElement('i'); d.className = 'ef-sp' + (big ? ' big' : ''); d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.setProperty('--dx', rnd(-1, 1) * (big ? 220 : 60) + 'px'); d.style.setProperty('--dy', rnd(-1, 1) * (big ? 220 : 60) + 'px'); d.addEventListener('animationend', () => d.remove()); el.appendChild(d); }
+// 하얀 실루엣 그림: 스프라이트 모양 그대로 흰색 + 둘레 빛 (네모 칸 없이 투명한 바탕)
+async function evoWhite(src) {
+  const im = new Image(); im.src = src; await im.decode();
+  const w = im.naturalWidth, h = im.naturalHeight, k = Math.max(1, Math.round(160 / Math.max(w, h))), M = Math.max(w, h) * k, S = Math.round(M * 1.4);
+  const t = document.createElement('canvas'); t.width = w * k; t.height = h * k; const tx = t.getContext('2d'); tx.imageSmoothingEnabled = false;
+  tx.drawImage(im, 0, 0, w * k, h * k); tx.globalCompositeOperation = 'source-in'; tx.fillStyle = '#fff'; tx.fillRect(0, 0, t.width, t.height);
+  const c = document.createElement('canvas'); c.width = c.height = S; const x = c.getContext('2d'), ox = (S - t.width) / 2, oy = (S - t.height) / 2;
+  x.shadowColor = '#9ab8ff'; x.shadowBlur = M * .12; x.drawImage(t, ox, oy); x.shadowColor = '#fff'; x.shadowBlur = M * .04; x.drawImage(t, ox, oy); x.shadowBlur = 0; x.drawImage(t, ox, oy);
+  return c.toDataURL();
+}
 async function evolveWin(P, card) {
   const kids = evoKids(P.sp, P, true); if (!kids.length || evolving || hatching) return;
   const b = S.buds.find(x => x.pid === P.id);
@@ -5747,9 +5761,10 @@ async function evolveWin(P, card) {
   const from = P.sp, to = pick(kids), fromN = SPECIES[from].n, toN = SPECIES[to].n, nm = nameOf(P);
   try { await ensureSprite(from); await ensureSprite(to); } catch (e) { evolving = false; return; }
   const el = evoDom(), img = el.querySelector('.ef-img'), msg = el.querySelector('.ef-msg'), ok = el.querySelector('.ef-ok'), cardEl = el.querySelector('.ef-card'), parts = el.querySelector('.ef-parts');
-  const fromSrc = thumbOf(fKey(from, P.sex)) || thumbOf(from), toSrc = thumbOf(fKey(to, P.sex)) || thumbOf(to);
+  const fromSrc = thumbOf(fKey(from, P.sex)) || thumbOf(from), toSrc = thumbOf(fKey(to, P.sex)) || thumbOf(to), wh = el.querySelector('.ef-wh');
+  let fromW = '', toW = ''; try { [fromW, toW] = await Promise.all([evoWhite(fromSrc), evoWhite(toSrc)]); } catch (e) {}
   const open = [sheet, mgr, runEl, setEl].filter(x => !x.hidden);
-  el.className = ''; el.style.setProperty('--p', 0); img.src = fromSrc; img.className = 'ef-img'; ok.hidden = true; cardEl.hidden = true; cardEl.innerHTML = ''; parts.innerHTML = '';
+  el.className = ''; el.style.setProperty('--p', 0); img.src = fromSrc; img.className = 'ef-img'; wh.src = fromW; wh.className = 'ef-wh'; ok.hidden = true; cardEl.hidden = true; cardEl.innerHTML = ''; parts.innerHTML = '';
   msg.innerHTML = `어라…? <b>${esc(nm)}</b>의 모습이…!`;
   el.hidden = false; requestAnimationFrame(() => el.classList.add('in'));
   [sheet, mgr, runEl, setEl].forEach(x => x.hidden = true);
@@ -5759,7 +5774,7 @@ async function evolveWin(P, card) {
   const t0 = await evoMusicStart(), music = t0 != null, p0 = performance.now();
   const now = () => music ? actx.currentTime - t0 : (performance.now() - p0) / 1000;
   if (!music) sfx('evotick', 0);
-  img.classList.add('sil');   // 첫 모습 바꾸기(0.81초) 전에 하얗게 다 바뀐다 → 다음 모습이 색으로 비치지 않는다
+  el.classList.add('sil');   // 첫 모습 바꾸기(0.81초) 전에 하얗게 다 바뀐다 → 다음 모습이 색으로 비치지 않는다
   await new Promise(done => {
     let k = 0, cur = 0, lastPart = 0;
     const tick = () => {
@@ -5767,8 +5782,8 @@ async function evolveWin(P, card) {
       el.style.setProperty('--p', p.toFixed(3));
       if (t >= EVO_T0 && !el.classList.contains('go')) el.classList.add('go');
       while (k < EVO_SWAPS.length && t >= EVO_SWAPS[k]) {
-        cur ^= 1; img.src = cur ? toSrc : fromSrc; k++;
-        img.classList.remove('beat'); void img.offsetWidth; img.classList.add('beat');
+        cur ^= 1; img.src = cur ? toSrc : fromSrc; wh.src = cur ? toW : fromW; k++;
+        for (const x of [img, wh]) { x.classList.remove('beat'); void x.offsetWidth; x.classList.add('beat'); }
         if (!music) sfx('evotick', Math.min(30, k));
       }
       // 빛 알갱이가 모여든다 (끝으로 갈수록 많이)
@@ -5780,10 +5795,10 @@ async function evolveWin(P, card) {
     requestAnimationFrame(tick);
   });
   // 진화하는 순간: 하얗게 번쩍 → 새 모습
-  el.classList.add('boom'); img.src = toSrc; sfx('evoboom'); haptic(2);
+  el.classList.add('boom'); img.src = toSrc; wh.src = toW; sfx('evoboom'); haptic(2);
   const r = el.querySelector('.ef-stage').getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
   for (let i = 0; i < 26; i++) evoSpark(parts, cx, cy, true);
-  await wait(420); img.classList.remove('sil'); el.classList.add('done');
+  await wait(420); el.classList.remove('sil'); el.classList.add('done');
   evoMusicFade(1.2);
   const newTo = !S.unlocked.has(to); if (newTo) addGold(NEW_G);
   P.sp = to; P.km = 0; if (b) { b.sp = to; b.km = 0; } unlock(to);
