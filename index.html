@@ -1962,7 +1962,7 @@ const chunkLoads = {};
 // ---------- 업데이트 받기 로딩창 ----------
 // 스프라이트 청크가 캐시에 없으면(처음 설치, 또는 sw.js 의 CACHE 가 올라 새 청크가 나왔을 때) 피카츄가 달리는 게이지 바를 띄우고
 // s0…s20.json 을 받아 서비스 워커와 같은 캐시에 넣는다. 크기는 빌드 때 채운다(압축 풀린 바이트).
-const CHUNK_CACHE = 'meadow-v12', CHUNK_SZ = [1152284,1077297,1397456,1074319,1295987,1115366,1317751,1435041,1536461,1677789,1137870,1154712,1454974,1262166,1233376,1608563,1237499,1495578,1233032,1400600,742815];
+const CHUNK_CACHE = 'meadow-v13', CHUNK_SZ = [1152284,1077297,1397456,1074319,1295987,1115366,1317751,1435041,1536461,1677789,1151101,1156905,1454974,1262166,1233376,1608563,1248435,1495578,1233032,1436724,780285];
 const PIKA_RUN = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFwAAAAbCAYAAADxsuiMAAADJ0lEQVR4nNWZPXbbMAzHoU71LdwbdMxmj+kN2ilH0JobJGtPodxAHjN67OZuyi3UDRkoUCAFgh8WbZXv6cW2yD9+BEEQUgDCDZV7W26b5v4S+H3T0Eq7FXexHcnh10BjYPwtHFGDe207coR3bZEW4qjfL1LNGFeJu4hFGCeOxa4FxDFrxQEMtDYOIS+KNFDxt0rcTt+hN1eJDRqziPCHxwypWTDeaQQYevMxVTfHVi1u6jv0APsjwPm0rg3EcbGSUnRK97QotpGUGk1du9DTxtfiXvAzrlhLmjMOvduRJsId0LXz5PjvWkoh3RSnCFs3Bl+L2+HxgkAd47NIfW0eDF3+pDhEQuQmOYUvDHeIAr8J7lxnB4W1SXDoyGGS7RSuXRLdt+QO7NjoTkBEFCcpGQFIhi5ySqKz786dGf2ucOqKkhA3FouUXKf4Ewk5eyvcPNqFXL8UvhwUMc+o75QYdEWnbIIbx6WTQ/rik2az8743TfAp7uMd4NsP0y0ADv9eAXAE+Pkq3PyK1t7+aGt1p7Hf1XLsXtwA83PA0JsxIX3r8D/fZxD0inUy+ncSpeL/fIpD+y3HKdQ052yRO2UxAdhWo3rV2TYvT3g5uNuM+kHk4KEtqR1AlBpoa1IuzDnYtsCd8WAUAJ4MXg7z/QLxIqck6v+X3M7BQKdtaBLcQIpDeLTGnJIJX5Pb6ociPMSdom1XkQOGtlGus6WJa/oZ8LW4Abxqyef2qyivHAw2OjSbZue+cdsf3Y5vz+bvx3sCKmv7oxlD40nX1+c2qCr59duwKfK1uBGnt5t00Grc1CfljaVTFp5PcbDzyYAkvg5tmp09sW0j6Lfn2SEAxsH+wqS0CtwiA+fmnx8ejX7Oq1v9cBjdrZu6fUI2JC0/z7LrXtxOqvD16OJpJdcnzkR5+eTn1wJnA3gHEIflB0+Bfk1up7LRzpxUfS0/2oG8wJ/yamysqDf0Jr10rdEZpv+iNLv5CfN8Ssrdqp21ufmXrpXT0grcrlFePVyjA140ChXJNfoLeytxO5og7KgV9Y2RlaGtbsqbtWv0K3HfRL8adEVt0q/ZsvQ/AULNuNvtaaCpAAAAAElFTkSuQmCC';
 const gateLoads = {};
 const gateReady = (async () => {
@@ -2041,7 +2041,8 @@ const isPmd = sp => typeof SPRITES[sp] === 'object';
 // 그리고 진화 전 모습은 진화 후 모습보다 커지지 않게 (진화 후의 92%까지)
 // 2026-10-14 경완 요청: 3D 본가(소드실드·아르세우스·스칼렛바이올렛)처럼 실제 키에 더 가깝게 → 키 비중을 올리고(h^0.75), 화면 크기는 e^0.6 으로 넓게 벌림.
 // 너무 작거나 크지 않게 아래는 30px, 위는 80px 부터 부드럽게 눌러 최대 약 130px (폰 화면에서 고래왕이 너무 커서)
-const sizeRaw = sp => { const d = SPECIES[sp]; if (!d) return 1; const h = Math.max(.1, (d.h ?? 7) / 10), w = Math.max(.1, (d.w ?? 100) / 10); return Math.pow(h, .25) * Math.pow(.45 * Math.cbrt(w), .75); };   // v3.05: 덩치는 몸무게(부피)가 거의 정한다 — 키 2m 야도킹(80kg)이 코리갑(1.1m·120kg)보다 커 보이던 것 (보이는 크기 vh 도 칠해진 넓이 기준이라 맞음)
+const SIZE_ADJ = { 150: .85, 199: .8, 878: 1.3 };   // v3.08 경완: 뮤츠·야도킹 너무 크다, 끼리동 너무 작다
+const sizeRaw = sp => { const d = SPECIES[sp]; if (!d) return 1; const h = Math.max(.1, (d.h ?? 7) / 10), w = Math.max(.1, (d.w ?? 100) / 10); return (SIZE_ADJ[sp] || 1) * Math.pow(h, .25) * Math.pow(.45 * Math.cbrt(w), .75); };   // v3.05: 덩치는 몸무게(부피)가 거의 정한다 — 키 2m 야도킹(80kg)이 코리갑(1.1m·120kg)보다 커 보이던 것 (보이는 크기 vh 도 칠해진 넓이 기준이라 맞음)
 let SIZE_KIDS = null; const sizeMemo = {};
 function sizeEff(sp) {
   if (sizeMemo[sp]) return sizeMemo[sp];
@@ -2051,7 +2052,7 @@ function sizeEff(sp) {
 }
 const sizeT = sp => { const e = sizeEff(parseInt(sp)), x = 48 * Math.pow(e, .7); return Math.max(30, x <= 90 ? x : 90 + 60 * (1 - Math.exp(-(x - 90) / 60))); };   // v3.05: 크로뱃·홍수몬·딱구리 너무 크다, 꼬치조가 어써러셔만 하다(경완) → 중간 크기는 줄이고 거대한 포켓몬과 차이는 벌림, 90px 위는 눌러 최대 약 150px
 const sizeCls = sp => { const h = SPECIES[parseInt(sp)]?.h ?? 7; return h <= 5 ? 0 : h <= 13 ? 1 : 2; };
-const scaleOf = sp => { const P = SPRITES[sp]; if (!isPmd(sp)) return SCALE * [.85, 1, 1.15][sizeCls(sp)]; if (!P.vh) return P.a.Idle[2] >= 40 ? 1.875 : PSCALE; const big = P.a.Idle[2] >= 40, k = Math.round(sizeT(sp) / P.vh * 4) / 4; return Math.max(1, Math.min(big ? 3.5 : 4.5, k)); };   // 픽셀이 고르게 보이도록 0.5배 단위, 원래 크기 근처에서만
+const scaleOf = sp => { const P = SPRITES[sp]; if (!isPmd(sp)) return SCALE * [.85, 1, 1.15][sizeCls(sp)]; if (!P.vh) return P.a.Idle[2] >= 40 ? 1.875 : PSCALE; const big = P.a.Idle[2] >= 40; let k = Math.round(sizeT(sp) / P.vh * 4) / 4; if (k > 2.75 && k < 3.5) k = 2.75; return Math.max(1, Math.min(big ? 3.5 : 4.5, k)); };   // v3.08: 도트 한 칸은 아르세우스(2.75배)만큼까지(경완) — 조금 넘는 건 2.75로, 훨씬 커야 하는 건 Scale2x 로 고운 도트   // 픽셀이 고르게 보이도록 0.5배 단위, 원래 크기 근처에서만
 // 아틀라스 프레임 사이에 투명한 틈을 넣어 다시 만든다: 확대할 때 옆 프레임의 검은 테두리가 번져 보이던 것 막기.
 // 그러면서 Idle 첫 프레임의 실제로 보이는 몸 크기(vh)를 잰다
 const padded = {};
@@ -2071,7 +2072,7 @@ function padAtlas(k) {
         { let fl = a[1], fr = -1; for (let yy = Math.max(t, b - 3); yy <= b; yy++) for (let xx = 0; xx < a[1]; xx++) if (d[(yy * a[1] + xx) * 4 + 3] > 40) { fl = Math.min(fl, xx); fr = Math.max(fr, xx); } if (fr >= fl) P.fw = Math.max(fr - fl + 1, (r - l + 1) * .35); }   // 발 폭 (그림자용)   // 보이는 몸 크기 = 실제로 칠해진 칸 수 기준 (옆으로 길거나 똬리 튼 포켓몬도 덩치만큼)
         for (const n of names) A[n][0] = ny[n]; P.G = G; if (vh) P.vh = vh; delete atlasDims[k];
         // 크게 확대되는 포켓몬은 도트가 굵어 보이므로 Scale2x 로 두 배 고운 도트로 다시 찍는다 (좌표는 그대로, 그림만 고해상도 → 화면 도트 크기 절반)
-        let cv = c; const sc = scaleOf(k); if (sc >= 4) cv = scale2x(cv);   // v3.07: 2.5배부터 하니 픽셀 느낌이 사라진다(경완) → 4배 이상만
+        let cv = c; const sc = scaleOf(k); if (sc >= 3.5) cv = scale2x(cv);   // v3.07: 2.5배부터 하니 픽셀 느낌이 사라진다(경완) → 4배 이상만
         P.i = cv.toDataURL('image/png');
       } catch (e) { P.G = 0; }
       res();
@@ -4463,7 +4464,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.07';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.08';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6789,7 +6790,7 @@ async function start(data) {
   window.pokeRunReady = true; postNative();
   try { window.webkit?.messageHandlers?.pokeRun?.postMessage({ ready: true }); } catch (e) {}
 }
-if (/[?&]debug/.test(location.search)) window.__meadow = { scaleOf, sizeT, SPRITES, save, evoMus, bgm, bgmPos, feedOne, tense, hatchEgg, playHatch, TIER, TIER_SPS, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
+if (/[?&]debug/.test(location.search)) window.__meadow = { scaleOf, sizeT, SPRITES, loadChunk, padAtlas, save, evoMus, bgm, bgmPos, feedOne, tense, hatchEgg, playHatch, TIER, TIER_SPS, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
 if (/[?&]debug/.test(location.search)) Object.assign(window, { __drag: () => drag, __log: log, __save: save, __bgm: bgm, __actx: () => actx, __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf, __thoughtOf: thoughtOf, __addRel: addRel, __tyIcon: tyIcon, __evoKids: evoKids, __friendsAll: friendsAll, __renameBox: renameBox });
 window.claude?.hot?.snapshot?.(() => serialize());
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
