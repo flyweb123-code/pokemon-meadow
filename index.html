@@ -791,6 +791,22 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .cd-hw{display:flex;font-size:14px;gap:6px}.cd-hw i{font-style:normal;width:52px;flex:none}
 .cd-rule{height:9px;margin:10px -2px 10px;background:linear-gradient(#181818,#181818) bottom/100% 3px no-repeat,repeating-linear-gradient(90deg,#181818 0 3px,transparent 3px 18px) 6px 0/100% 6px no-repeat}
 .cd-fx{margin:0;font-size:14px;line-height:1.7;word-break:keep-all;min-height:4.8em}
+/* 빨간 도감 기계: 위 렌즈·불빛, 회색 화면 테두리 안에 흑백 도감 화면, 아래 십자키·버튼 */
+#dexPop .win.rdex{background:#d42a2e;border:4px solid #5e0d12;box-shadow:inset 0 0 0 3px #ee5a5a,inset 0 -6px 0 3px #a3171d,6px 6px 0 rgba(0,0,0,.35);padding:12px 16px 14px}
+.rd-top{position:relative;display:flex;align-items:center;gap:7px;min-height:52px;margin:0 0 12px;padding-bottom:10px;border-bottom:3px solid #8e1218;box-shadow:0 3px 0 #ee5a5a}
+.rd-lens{flex:none;width:44px;height:44px;background:radial-gradient(circle at 34% 32%,#cdeeff 0 14%,#38a8f0 15% 52%,#1060b8 53% 100%);border:4px solid #fff;box-shadow:0 0 0 3px #3a0a0d;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);border-radius:0;margin:-2px 6px 0 2px}
+.rd-lens{border:0;box-shadow:none;background:radial-gradient(circle at 37% 35%,#e0f6ff 0 10%,transparent 11%),radial-gradient(circle,#3aaaf2 0 38%,#1462bc 39% 52%,#3a0a0d 53% 60%,#fff 61% 80%,#3a0a0d 81%)}
+.rd-led{flex:none;width:12px;height:12px;align-self:flex-start;margin-top:2px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.45),inset 3px 3px 0 rgba(255,255,255,.55)}.rd-led.r{background:#ff4040}.rd-led.y{background:#ffd23a}.rd-led.g{background:#4ccf5a}
+.rd-top #dpPos{margin-left:auto;color:#ffe3e3;font-size:13px}.rd-top .pp-x{color:#fff;margin-left:4px}
+.rd-bez{position:relative;background:#dcdcdc;border:3px solid #3a0a0d;box-shadow:inset 0 0 0 3px #f2f2f2,inset -4px -4px 0 3px #b4b4b4;padding:16px 16px 26px}
+.rd-dot{position:absolute;top:6px;width:6px;height:6px;background:#d42a2e}.rd-dot:first-child{left:calc(50% - 12px)}.rd-dot+.rd-dot{left:calc(50% + 6px)}
+.rd-spk{position:absolute;right:16px;bottom:7px;width:30px;height:12px;background:repeating-linear-gradient(#555 0 2px,transparent 2px 5px)}
+.rdex .cdex{margin-bottom:0;background:#e9efd8;border-color:#2a2a2a;box-shadow:inset 0 0 0 3px #e9efd8,inset 0 0 0 5px #2a2a2a}
+.rd-foot{display:flex;align-items:center;gap:12px;margin-top:12px;height:40px}
+.rd-pad{flex:none;width:36px;height:36px;background:linear-gradient(#262626,#262626) center/12px 100% no-repeat,linear-gradient(#262626,#262626) center/100% 12px no-repeat}
+.rd-bar{flex:none;width:44px;height:8px;background:#3a8a3e;box-shadow:inset 0 -2px 0 rgba(0,0,0,.35)}.rd-bar.b{background:#2d6fc0}
+.rd-btn{flex:none;margin-left:auto;width:30px;height:30px;background:#262626;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)}
+.rdex #dpAct{margin-top:12px}
 .dexpop .dx-lock{margin:0;color:var(--dim);font-size:14px;line-height:1.6}
 .dexpop .boxbtn{display:block;width:100%;font:inherit;font-size:16px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:11px 16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
 .dexpop .boxbtn.off{background:var(--win);color:var(--frame)}
@@ -872,6 +888,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .hatch{position:fixed;inset:0;z-index:6000;background:rgba(10,14,30,.82);display:grid;place-items:center;padding:16px}
 .hatch .win{text-align:center;width:min(420px,100%)}
 .hatch-stage{height:180px;display:grid;place-items:center;position:relative}
+.h-no{position:absolute;left:18px;top:16px;z-index:2;font-size:14px;color:var(--dim)}.h-no[hidden]{display:none}#hatchDex .dx-no{display:none}
 .hatch-stage .egg{width:108px;height:132px;transform-origin:50% 92%}
 /* 도트 게임식 흔들림: 부드럽게 돌지 않고 칸 단위로 끊어서 움직인다 */
 .hatch-stage .egg.wig{animation:hwig .6s steps(1,end) 1}
@@ -1259,13 +1276,15 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
   <div class="win" role="listbox" aria-label="필터"><h4 id="fPopT"></h4><div class="fopts" id="fOpts"></div></div>
 </div>
 <div class="dexpop" id="dexPop" hidden>
-  <div class="win" role="dialog" aria-label="도감 카드">
-    <i class="sw-h l" id="dpHl"></i><i class="sw-h r" id="dpHr"></i><div class="dp-head m-head"><span id="dpPos"></span><button class="pp-x" id="dpClose" aria-label="닫기">✕</button></div>
+  <div class="win rdex" role="dialog" aria-label="도감 카드">
+    <i class="sw-h l" id="dpHl"></i><i class="sw-h r" id="dpHr"></i><div class="dp-head m-head rd-top"><i class="rd-lens"></i><i class="rd-led r"></i><i class="rd-led y"></i><i class="rd-led g"></i><span id="dpPos"></span><button class="pp-x" id="dpClose" aria-label="닫기">✕</button></div>
+    <div class="rd-bez"><i class="rd-dot"></i><i class="rd-dot"></i>
     <div class="cdex" id="dpStage">
       <div class="cd-top"><div class="cd-l"><div class="dp-pic"><img alt="" id="dpImg"></div><div class="cd-no" id="dpNo"></div></div><div class="cd-r" id="dpMeta"></div></div>
       <div class="cd-rule"></div>
       <p class="cd-fx" id="dpFx"></p>
-    </div>
+    </div><i class="rd-spk"></i></div>
+    <div class="rd-foot"><i class="rd-pad"></i><i class="rd-bar"></i><i class="rd-bar b"></i><i class="rd-btn"></i></div>
     <button class="boxbtn" id="dpAct"></button>
   </div>
 </div>
@@ -1300,7 +1319,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 </div>
 <div class="hatch" id="hatch" hidden><i class="hdark"></i><i class="hlit"></i><i class="hglow"></i><i class="hrays"></i><i class="hwhite"></i>
   <div class="win" role="dialog" aria-label="알 부화">
-    <i class="sw-h l" id="hlHl" hidden></i><i class="sw-h r" id="hlHr" hidden></i><div class="hatch-stage" id="hatchStage"></div>
+    <i class="sw-h l" id="hlHl" hidden></i><i class="sw-h r" id="hlHr" hidden></i><span class="h-no" id="hatchNo" hidden></span><div class="hatch-stage" id="hatchStage"></div>
     <p id="hatchMsg">어라…?</p>
     <div class="hl-nav hl-only" id="hatchNav"><button id="hlPrev" aria-label="이전">◀</button><span id="hlNum"></span><button id="hlNext" aria-label="다음">▶</button></div>
     <div class="dexinfo" id="hatchDex" hidden></div>
@@ -5685,7 +5704,7 @@ function showIvInfo({ P }) { const x = $('#hatchDex'); x.classList.add('ivinfo')
   x.innerHTML = `<div class="iv-h">${rkBadge(P)}<b>${esc(nameOf(P))}</b>${sexHtml(P.sex)}${P.shiny ? '<b class="sh">✦</b>' : ''}</div><div class="ivs">${ivRows(P)}</div>`; }
 // 도감 정보 ↔ 개체값을 바꿔도 창 크기가 그대로이게: 보여 줄 포켓몬 모두의 두 모습 중 가장 큰 높이로 고정
 function hatchInfoFix(list) { const x = $('#hatchDex'); x.style.minHeight = ''; x.style.boxSizing = 'border-box'; let h = 0; for (const r of list) { showDexInfo(r.sp); h = Math.max(h, x.offsetHeight); showIvInfo(r); h = Math.max(h, x.offsetHeight); } x.style.minHeight = h + 'px'; }
-function showDexInfo(sp) { const x = $('#hatchDex'); x.classList.remove('ivinfo'); if (sp == null) { x.hidden = true; x.innerHTML = ''; x.style.minHeight = ''; } else { x.innerHTML = dexInfoHtml(sp); x.hidden = false; } }
+function showDexInfo(sp) { const x = $('#hatchDex'), no = $('#hatchNo'); x.classList.remove('ivinfo'); no.hidden = sp == null; if (sp != null) no.textContent = `No.${String(sp).padStart(4, '0')}`; /* 도감 번호는 창 좌상단 */ if (sp == null) { x.hidden = true; x.innerHTML = ''; x.style.minHeight = ''; } else { x.innerHTML = dexInfoHtml(sp); x.hidden = false; } }
 
 // evolution: white silhouette flickers between the two forms, faster and faster, then a burst
 const veil = document.createElement('div'); veil.className = 'evo-veil';
