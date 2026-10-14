@@ -116,7 +116,8 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
             let p = marks?.first
             // 예: "서울 송파구 석촌동"
             let city = p?.administrativeArea.map(WalkTracker.shortCity)
-            let parts = [city, p?.subAdministrativeArea ?? p?.locality, p?.subLocality].compactMap { $0 }.filter { !$0.isEmpty }
+            // "서울 서울특별시"처럼 겹치지 않게 모두 줄인 이름으로 비교한다
+            let parts = [city, (p?.subAdministrativeArea ?? p?.locality).map(WalkTracker.shortCity), p?.subLocality].compactMap { $0 }.filter { !$0.isEmpty }
             var dedup: [String] = []
             for x in parts where !dedup.contains(x) { dedup.append(x) }
             let area = dedup.joined(separator: " ")
@@ -134,6 +135,8 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
 
     // "서울특별시" → "서울", "경기도" → "경기"
     private static func shortCity(_ s: String) -> String {
+        let provinces = ["경기도", "강원도", "충청북도", "충청남도", "전라북도", "전라남도", "경상북도", "경상남도", "제주도"]
+        if s.hasSuffix("도") && !provinces.contains(s) && !s.hasSuffix("특별자치도") { return s }
         for suffix in ["특별자치시", "특별자치도", "특별시", "광역시", "도"] where s.hasSuffix(suffix) && s.count > suffix.count {
             return String(s.dropLast(suffix.count))
         }

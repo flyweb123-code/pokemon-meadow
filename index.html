@@ -191,10 +191,10 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 @keyframes hrays{to{transform:rotate(360deg)}}
 .hatch .win.aura.a1,.hatch .win.aura.a2{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),6px 6px 0 rgba(0,0,0,.35)}
 .hatch .win.aura.a3{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 0 2px rgba(var(--ac),.5),0 0 16px 4px rgba(var(--ac),.55)}
-.hatch .win.aura.a4{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 0 3px #e4d2ff,0 0 0 6px rgba(var(--ac),.7),0 0 26px 10px rgba(var(--ac),.75),0 0 60px 20px rgba(var(--ac),.35)}
+.hatch .win.aura.a4{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 22px 6px rgba(var(--ac),.7),0 0 56px 18px rgba(var(--ac),.35)}
 .hatch .win.aura.a5{--ac:255,205,80;--ar:1.6}
-@keyframes aura{0%,100%{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 0 3px rgba(var(--ac),.55),0 0 calc(22px * var(--ar)) calc(8px * var(--ar)) rgba(var(--ac),.8),0 0 calc(60px * var(--ar)) calc(22px * var(--ar)) rgba(var(--ac),.35)}
-50%{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 0 3px rgba(var(--ac),.8),0 0 calc(34px * var(--ar)) calc(14px * var(--ar)) rgba(var(--ac),.95),0 0 calc(90px * var(--ar)) calc(36px * var(--ar)) rgba(var(--ac),.5)}}
+@keyframes aura{0%,100%{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 calc(22px * var(--ar)) calc(8px * var(--ar)) rgba(var(--ac),.8),0 0 calc(60px * var(--ar)) calc(22px * var(--ar)) rgba(var(--ac),.35)}
+50%{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px rgb(var(--ac)),0 0 calc(34px * var(--ar)) calc(14px * var(--ar)) rgba(var(--ac),.95),0 0 calc(90px * var(--ar)) calc(36px * var(--ar)) rgba(var(--ac),.5)}}
 .ehalo{position:absolute;left:50%;top:50%;width:200px;height:200px;margin:-100px 0 0 -100px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,215,90,.8),rgba(255,190,60,.3) 45%,rgba(255,190,60,0) 70%);opacity:0;transform:scale(.4);transition:opacity .3s,transform .3s}
 .ehalo.s1{opacity:.35;transform:scale(.6)}.ehalo.s2{opacity:.6;transform:scale(.85)}.ehalo.s3{opacity:.9;transform:scale(1.1)}
 .bag-mbar #bagMIn{background:var(--frame);color:var(--win)}.bag-mbar #bagMIn[disabled]{opacity:.45}
@@ -548,7 +548,7 @@ ol.log li.big .txt{color:#c03838}
 #boxSort button:first-child,#bagSort button:first-child{margin-left:0}
 .mgr-tools #eggAll[hidden]+.tcount{margin-left:auto}
 .setwin{max-width:560px;display:flex;flex-direction:column}
-.set-body{flex:1;min-height:0;overflow-y:auto}
+.set-body{flex:1;min-height:0;overflow-y:auto;touch-action:pan-y}
 .set-sec{border:3px solid var(--frame);background:var(--card);padding:14px;margin-bottom:12px;box-shadow:4px 4px 0 rgba(0,0,0,.25)}
 .set-sec h4{margin:0 0 6px;font-size:18px}
 .pf-sp{flex:1}#setTitle{margin-right:auto}#set .sheet-head .pf-sp{display:none}
@@ -3804,6 +3804,7 @@ async function restore(d) {
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.eid = d.eid || 1;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
+  cleanPlaces();
   S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
   for (const o of [...(d.mons || [])].sort((a, b) => (b.uid === d.buddy) - (a.uid === d.buddy)).slice(0, MAX_MONS)) { const m = await spawn(o.sp, { ...o, quiet: true }); m.notes = o.notes || [];
     // 앱을 닫아 둔 동안에도 서서히 배고파진다. 다만 80까지만 (켰을 때 먹여 줄 틈이 있게)
@@ -3979,6 +3980,38 @@ function setPage(on) { if (on === true) on = 'set'; $('#setPage').hidden = on !=
 $('#pfGear').onclick = () => { sfx('tap'); setPage(true); };
 $('#setBack').onclick = () => { sfx('tap'); setPage(false); };
 $('#pfRunBtn').onclick = () => { sfx('tap'); renderRunLog(); setPage('runs'); };
+// 하위 화면(런닝 기록·설정): 왼쪽 가장자리에서 오른쪽으로 밀면 손가락을 따라 화면이 밀리고, 아래로 프로필이 보이며 뒤로 간다
+{ const body = setEl.querySelector('.set-body'); let sw = null;
+  const sub = () => ['#runPage', '#setPage'].map(q => $(q)).find(e => !e.hidden);
+  body.addEventListener('pointerdown', e => {
+    const pg = sub(); if (!pg || e.button > 0) return;
+    const r = body.getBoundingClientRect(); if (e.clientX - r.left > 36) return;
+    sw = { id: e.pointerId, x0: e.clientX, y0: e.clientY, t0: performance.now(), pg, w: r.width, on: false, dx: 0 };
+  });
+  body.addEventListener('pointermove', e => {
+    if (!sw || e.pointerId !== sw.id) return;
+    const dx = e.clientX - sw.x0, dy = e.clientY - sw.y0;
+    if (!sw.on) { if (Math.abs(dy) > 12 && Math.abs(dy) > dx) { sw = null; return; } if (dx < 8) return;
+      sw.on = true; try { body.setPointerCapture(e.pointerId); } catch (_) {}
+      const pf = $('#pfPage'), cs = getComputedStyle(body);
+      pf.hidden = false; pf.style.cssText = `position:absolute;left:${cs.paddingLeft};right:${cs.paddingRight};top:${body.scrollTop + parseFloat(cs.paddingTop)}px;pointer-events:none`;
+      body.style.position = 'relative'; body.style.overflowX = 'hidden'; sw.pf = pf; }
+    sw.dx = Math.max(0, dx); const k = sw.dx / sw.w;
+    sw.pg.style.transform = `translateX(${sw.dx}px)`; sw.pg.style.boxShadow = '-6px 0 10px rgba(0,0,0,.12)';
+    sw.pf.style.transform = `translateX(${(-30 + 30 * k).toFixed(1)}%)`; sw.pf.style.opacity = (.4 + .6 * k).toFixed(2);
+    e.preventDefault();
+  });
+  const end = e => {
+    if (!sw || e.pointerId !== sw.id) return; const s0 = sw; sw = null; if (!s0.on) return;
+    const v = s0.dx / Math.max(1, performance.now() - s0.t0), back = s0.dx > s0.w * .35 || v > .5;
+    const ease = 'transform .22s cubic-bezier(.2,.8,.3,1),opacity .22s';
+    s0.pg.style.transition = s0.pf.style.transition = ease;
+    s0.pg.style.transform = `translateX(${back ? s0.w : 0}px)`; s0.pf.style.transform = `translateX(${back ? 0 : -30}%)`; s0.pf.style.opacity = back ? 1 : .4;
+    setTimeout(() => { s0.pg.style.cssText = ''; s0.pf.style.cssText = ''; body.style.position = body.style.overflowX = '';
+      if (back) { sfx('tap'); setPage(false); } else s0.pf.hidden = true; }, 230);
+  };
+  body.addEventListener('pointerup', end); body.addEventListener('pointercancel', end);
+}
 $('#openSet').onclick = () => tabTo(setEl, () => { renderProfile(); renderRunLog(); setPage(false); setEl.hidden = false; });
 const shopEl = $('#shop');
 $('#openShop').onclick = () => tabTo(shopEl, () => { shopEl.hidden = false; shopSel = null; $('#shopMsg').textContent = ''; setShopTab('bgm'); renderShop(); });
@@ -5107,8 +5140,25 @@ function postNative() {
   }, 300);
 }
 // 아이폰 앱: 잠금 중에도 걸은 거리(만보기)와 그 근처 동네 이름을 보낸다. 알 줍기에만 쓴다.
+// 지역 이름 정리: "서울 서울특별시 송파구" → "서울 송파구" (시·도 꼬리를 줄이고 겹치는 낱말은 한 번만)
+const PROV = new Set(['경기도', '강원도', '충청북도', '충청남도', '전라북도', '전라남도', '경상북도', '경상남도', '제주도']);
+function cleanPlace(s) {
+  if (!s) return s; const out = [];
+  for (let w of String(s).split(/\s+/)) {
+    if (!w) continue;
+    const m = w.match(/^(.+?)(특별자치시|특별자치도|특별시|광역시)$/); if (m) w = m[1]; else if (PROV.has(w)) w = w.slice(0, -1);
+    if (!out.includes(w)) out.push(w);
+  }
+  return out.join(' ');
+}
+function cleanPlaces() {   // 예전에 저장된 알·포켓몬·기록의 장소도 한 번 정리
+  const fix = o => { if (o && typeof o.place === 'string') o.place = cleanPlace(o.place); };
+  [S.bag, S.eggs, S.box].forEach(L => (L || []).forEach(fix));
+  (S.runs || []).forEach(r => (r.eggs || []).forEach(fix));
+  (S.places || []).forEach(p => { p.n = cleanPlace(p.n); }); if (S.lastPlace) S.lastPlace.n = cleanPlace(S.lastPlace.n);
+}
 window.pokeRunWalk = (km, place, tags) => {
-  km = +km; if (!(km > 0 && km <= 200)) return false;
+  place = cleanPlace(place); km = +km; if (!(km > 0 && km <= 200)) return false;
   S.walkSync = true; S.walkKm += km; today().walk += km;
   tags = String(tags || '').split(',').filter(k => THEMES[k]);
   if (place) { S.lastPlace = { n: String(place), tags, t: Date.now() }; notePlace(place, tags, Date.now()); }
@@ -5551,7 +5601,8 @@ async function hatchAll() {
   let i = 0, ivMode = false;
   const show = k => {
     if (k < 0 || k >= res.length) return;   // 처음·끝에서 더 넘기지 않는다
-    i = k; const r = res[i];
+    const d = Math.sign(k - i); i = k; const r = res[i];
+    if (d) slide(d);   // 다음 카드는 오른쪽에서, 이전 카드는 왼쪽에서 밀려 들어온다
     hatchStage.innerHTML = ''; hatchStage.append(bornImg(r.sp, r.P, r.isNew)); if (!r.gp) { r.gp = 1; setTimeout(() => goldPop(r.dupG), 250); }
     $('#hatchMsg').innerHTML = bornMsg(r); showDexInfo(r.sp); if (ivMode) showIvInfo(r);
     { const w = hatchEl.querySelector('.win'); w.classList.remove('a1', 'a2', 'a3', 'a4', 'a5'); w.classList.add('aura', 'a' + r.g); hatchEl.classList.toggle('rays', r.g === 5); }
@@ -5564,10 +5615,17 @@ async function hatchAll() {
   $('#hlPrev').onclick = () => show(i - 1); $('#hlNext').onclick = () => show(i + 1);
   strip.onclick = ev => { const b = ev.target.closest('[data-k]'); if (b) show(+b.dataset.k); };
   // 넘기기: 포켓몬 정보 카드와 같이 창을 밀거나, 창 옆 빈 곳을 누른다
-  const hw = hatchEl.querySelector('.win'); let sx = null, sy = 0;
-  hw.onpointerdown = ev => { sx = ev.target.closest('button, #hlStrip') ? null : ev.clientX; sy = ev.clientY; };
-  hw.onpointerup = ev => { if (sx == null) return; const dx = ev.clientX - sx, dy = ev.clientY - sy; sx = null; if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) show(i + (dx < 0 ? 1 : -1)); };
-  hw.onpointercancel = () => { sx = null; };
+  const hw = hatchEl.querySelector('.win'); let sx = null, sy = 0, sdx = 0;
+  function slide(d, from = 0) { hw.style.transform = ''; hw.animate([{ transform: `translateX(${from || d * 90}px)`, opacity: .15 }, { transform: 'none', opacity: 1 }], { duration: 240, easing: 'cubic-bezier(.2,.8,.3,1)' }); }
+  hw.onpointerdown = ev => { sx = ev.target.closest('button, #hlStrip') ? null : ev.clientX; sy = ev.clientY; sdx = 0; };
+  hw.onpointermove = ev => { if (sx == null) return; const dx = ev.clientX - sx, dy = ev.clientY - sy; if (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(dy)) return;
+    const edge = (dx > 0 && i <= 0) || (dx < 0 && i >= res.length - 1); sdx = dx * (edge ? .2 : .6); hw.style.transform = `translateX(${sdx}px)`; };   // 손가락을 따라 카드가 밀린다 (끝에서는 조금만)
+  hw.onpointerup = ev => { if (sx == null) return; const dx = ev.clientX - sx, dy = ev.clientY - sy; sx = null;
+    const k = i + (dx < 0 ? 1 : -1);
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) && k >= 0 && k < res.length) { hw.animate([{ transform: `translateX(${sdx}px)` }, { transform: `translateX(${dx < 0 ? -120 : 120}px)`, opacity: .1 }], { duration: 110, easing: 'ease-in' }).onfinish = () => { show(k); }; hw.style.transform = `translateX(${dx < 0 ? -120 : 120}px)`; hw.style.opacity = ''; }
+    else if (sdx) { hw.style.transform = ''; hw.animate([{ transform: `translateX(${sdx}px)` }, { transform: 'none' }], { duration: 180, easing: 'cubic-bezier(.2,.8,.3,1)' }); }
+    sdx = 0; };
+  hw.onpointercancel = () => { sx = null; if (sdx) { hw.style.transform = ''; sdx = 0; } };
   fieldBtn.onclick = async () => { const r = res[i]; if (onField(r.P.id) || S.mons.length >= MAX_MONS) return; fieldBtn.hidden = true; const m = await spawn(r.sp, { pid: r.P.id }); m.born = S.clock; save(); refreshCap(); show(i); };
   // 상태창 보기: 창을 떠나지 않고 도감 정보 칸만 개체값으로 바꿔 본다 (다시 누르면 도감 정보)
   ok.hidden = false; ok.textContent = '확인'; const look = $('#hatchLook'); look.hidden = false; look.textContent = '상태창 보기';
@@ -5576,7 +5634,7 @@ async function hatchAll() {
   hatchInfoFix(res);
   show(0);
   await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = ev => { if (ev.target.closest('.win')) return; const d = sideTap(hatchEl, ev); if (d) { if (!$(d < 0 ? '#hlHl' : '#hlHr').hidden) show(i + d); return; } r(); }; });
-  hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatchFx(); hatchEl.classList.remove('list'); $('#hlHl').hidden = $('#hlHr').hidden = true; hw.onpointerdown = hw.onpointerup = hw.onpointercancel = null; hatching = false;
+  hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatchFx(); hatchEl.classList.remove('list'); $('#hlHl').hidden = $('#hlHr').hidden = true; hw.onpointerdown = hw.onpointermove = hw.onpointerup = hw.onpointercancel = null; hw.style.transform = ''; hatching = false;
   const nw = res.filter(r => r.isNew).length, sh = res.filter(r => r.P.shiny).length;
   log(`알 ${res.length}개가 한꺼번에 부화했다! ${res.map(r => SPECIES[r.sp].n).join(', ')}${nw ? ` (새로 만난 포켓몬 ${nw}마리)` : ''}${sh ? ` ✦ 색이 다른 포켓몬 ${sh}마리!` : ''}`, [], true);
   save(); renderRun(); refreshCap();
