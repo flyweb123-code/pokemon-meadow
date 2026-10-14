@@ -61,6 +61,8 @@
 .bd-card.ready .prog.evo{border-color:#e8a020;animation:barGlow 1.4s ease-in-out infinite}.bd-card.ready .prog.evo i{background:#ffc840}
 @keyframes barGlow{0%,100%{box-shadow:0 0 0 1px #ffd75e,0 0 6px 1px rgba(255,200,60,.55)}50%{box-shadow:0 0 0 2px #ffe9a0,0 0 14px 4px rgba(255,200,60,.9)}}
 .pp-evo{display:flex;align-items:center;gap:8px;margin:0 0 8px}.pp-evo[hidden]{display:none}.pp-evo .pp-run{flex:1;min-width:0;white-space:nowrap;font-size:12px;color:var(--dim)}.pp-evo .pp-run b{color:var(--win-ink)}
+.pp-evo .pp-run{white-space:normal!important;line-height:1.5}.pp-evo .pp-sub{font-size:11px}.pp-evo .pp-sub .bd-tag{font-size:11px;padding:1px 6px}.pp-evo .pp-sub b{color:var(--win-ink)}#pokePop #ppEvoBtn[hidden]{display:none}
+#pokePop #ppEvoBtn:disabled{background:#e4e4ec;color:#a0a0b4;border-color:#c8c8d8;box-shadow:none;animation:none;cursor:default}
 #pokePop #ppEvoBtn{flex:0 0 auto;width:auto;min-width:0;margin:0;padding:0 18px;height:40px;background:#e8a020;border-color:#9a6410;color:#fff;animation:bdGlow 1.4s ease-in-out infinite}
 @media (prefers-reduced-motion: reduce){.bd-card.ready,#ppEvoBtn,.bd-evobtn,.bd-card.ready .prog.evo{animation:none}}
 #boxGrid>.pk{content-visibility:auto;contain-intrinsic-size:auto 118px}
@@ -119,7 +121,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .jscroll{position:absolute;right:6px;color:var(--cursor);pointer-events:none;line-height:0;animation:jbob 1s steps(2,end) infinite}.jscroll.up{top:44px}.jscroll.up svg{transform:rotate(180deg)}.jscroll.dn{bottom:12px}.jscroll[hidden]{display:none}@keyframes jbob{50%{translate:0 2px}}
 .card .ih-top{flex-wrap:nowrap}.card .ih-r{margin-left:auto;display:flex;align-items:center;gap:4px;font-size:12px;color:var(--dim);white-space:nowrap;min-width:0;overflow:hidden}.card .ih-r .tyi{width:18px;height:18px}
 .born-pic{position:relative;display:inline-block;line-height:0}.born-new{position:absolute;right:-14px;top:-6px;font:700 11px/1 var(--px);color:#fff;background:#e04848;border:2px solid #7a1c1c;padding:2px 4px;letter-spacing:1px;animation:jbob 1s steps(2,end) infinite}
-.hatch .win{position:relative}.hatch.list .hl-nav{display:contents}.hatch.list #hlPrev,.hatch.list #hlNext{position:absolute;margin-top:-18px;z-index:2}.hatch.list #hlPrev{left:10px}.hatch.list #hlNext{right:10px}.hatch.list #hlNum{position:absolute;top:10px;right:14px;font-size:13px;color:var(--dim)}
+.hatch .win{position:relative}.hatch.list #hlPrev,.hatch.list #hlNext{display:none!important}.hatch.list .hl-nav{display:contents}.hatch.list #hlPrev,.hatch.list #hlNext{position:absolute;margin-top:-18px;z-index:2}.hatch.list #hlPrev{left:10px}.hatch.list #hlNext{right:10px}.hatch.list #hlNum{position:absolute;top:10px;right:14px;font-size:13px;color:var(--dim)}
 #hatchMsg .rkline{margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px}
 .mtab[data-t="field"] .mgr-tools{padding:0 4px}#mgrClear{background:#c83838!important;border-color:#7a1c1c!important;color:#fff!important}
 .hearts.frtap{justify-self:start;width:max-content;cursor:pointer}
@@ -764,7 +766,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .bd-tag{display:inline-block;font-size:12px;background:var(--frame);color:var(--win);padding:2px 8px}
 .bd-tag.ready{background:#e8a020;color:#fff}
 .bd-x{position:absolute;right:2px;top:0;border:0;background:none;font:inherit;font-size:20px;line-height:1;padding:8px 10px;color:var(--dim);cursor:pointer}
-#buddy .bd-name{padding-right:28px}
+#buddy .bd-name{padding-right:28px;gap:2px}#buddy .bd-name>b:first-child{min-width:0}#buddy .bd-name b.sx{display:inline;flex:none;font-size:18px}.bd-runkm{font-size:12px;color:var(--dim);margin-top:4px}.bd-runkm b{color:var(--win-ink)}
 .bd-empty{width:100%;height:100%;display:flex;align-items:center;justify-content:center;gap:14px;padding:10px;border:3px dashed var(--inner);background:#fff;font:inherit;font-size:16px;color:var(--win-ink);cursor:pointer}
 .bd-empty .q{flex:none;width:88px;height:88px;display:grid;place-items:center;border:3px solid var(--inner);background:#f0f0f4;font-size:44px;color:var(--dim)}
 .bd-empty b{border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:8px 16px}
@@ -1134,7 +1136,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
       </div>
     </div>
     <div class="mtab budtab" data-t="buddy" hidden>
-      <div class="mgr-tools"><button id="budFill" class="test-btn">진화 거리 채우기</button><span class="tcount" id="budCount"></span></div>
+      <div class="mgr-tools"><button id="budFill" class="test-btn">진화 거리 +5km</button><span class="tcount" id="budCount"></span></div>
       <div id="buddy"></div>
     </div>
     <div class="mtab boxtab" data-t="box" hidden>
@@ -1203,7 +1205,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
     <i class="sw-h l" id="ppHl"></i><i class="sw-h r" id="ppHr"></i><div class="dp-head m-head"><span class="hd-rk" id="ppRk"></span><button class="pp-x" id="ppX" aria-label="닫기">✕</button></div>
     <div class="dp-pic" id="ppPic"><img alt="" id="ppImg"></div>
     <div class="pp-body" id="ppBody"></div>
-    <div class="pp-evo" id="ppEvo" hidden><span class="pp-run"></span><button class="boxbtn" id="ppEvoBtn">진화하기</button></div>
+    <div class="pp-evo" id="ppEvo" hidden><span class="pp-run"></span><button class="boxbtn" id="ppEvoBtn" disabled>진화하기</button></div>
     <div class="pp-btns"><button class="boxbtn" id="ppField"></button><button class="boxbtn pink" id="ppBud"></button></div>
     <button class="pp-free" id="ppFree">놓아주기</button>
   </div>
@@ -1223,7 +1225,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 </div>
 <div class="hatch" id="hatch" hidden><i class="hdark"></i><i class="hlit"></i><i class="hglow"></i><i class="hrays"></i><i class="hwhite"></i>
   <div class="win" role="dialog" aria-label="알 부화">
-    <div class="hatch-stage" id="hatchStage"></div>
+    <i class="sw-h l" id="hlHl" hidden></i><i class="sw-h r" id="hlHr" hidden></i><div class="hatch-stage" id="hatchStage"></div>
     <p id="hatchMsg">어라…?</p>
     <div class="hl-nav hl-only" id="hatchNav"><button id="hlPrev" aria-label="이전">◀</button><span id="hlNum"></span><button id="hlNext" aria-label="다음">▶</button></div>
     <div class="dexinfo" id="hatchDex" hidden></div>
@@ -1334,6 +1336,12 @@ function sfx(name, k = 0) {
     // 부화: 화악 하고 터지는 소리 (낮은 쿵 + 큰 쏴아 + 반짝이)
     case 'pop': noise(t, .5, .32, 250); noise(t + .02, .45, .18, 2400); tone(160, t, .3, { type: 'triangle', vol: .14, to: 38 });
       tone(660, t, .18, { vol: .05, to: 1980 }); for (let i = 0; i < 5; i++) tone(NOTE(91 + [0, 4, 7, 12, 16][i]), t + .08 + i * .045, .07, { vol: .035 }); break;
+    // 진화 순간: 쿵 하고 크게 터지며 반짝이는 화음이 퍼진다
+    case 'evoboom': noise(t, 1.1, .42, 180); noise(t, .8, .26, 2600); noise(t + .05, 1.2, .08, 7000);
+      tone(150, t, .7, { type: 'triangle', vol: .2, to: 28 }); tone(75, t, .55, { vol: .07, to: 30 });
+      tone(300, t, .22, { vol: .06, to: 2400, steps: 10 });
+      [72, 76, 79, 84, 88, 91, 96].forEach((n, i) => tone(NOTE(n), t + .12 + i * .05, .5 - i * .03, { type: i % 2 ? 'triangle' : 'square', vol: .04 }));
+      tone(NOTE(84), t + .5, .6, { type: 'triangle', vol: .06 }); tone(NOTE(91), t + .5, .6, { type: 'triangle', vol: .05 }); break;
     case 'burst': noise(t, .35, .22, 600); tone(110, t, .25, { vol: .06, to: 55 }); break;
     case 'hatch': melody(t, [72, 76, 79, 84, 0, 79, 84], .09, { vol: .06 }); melody(t, [60, 64, 67, 72, 0, 67, 72], .09, { type: 'triangle', vol: .08 }); break;
     case 'newdex': { const e = melody(t, [72, 76, 79, 84, 0, 79, 84], .09, { vol: .06 }); melody(t, [60, 64, 67, 72, 0, 67, 72], .09, { type: 'triangle', vol: .08 });
@@ -4254,7 +4262,12 @@ function openPoke(id, dir = 0) {
   const rb = $('#ppFree'); rb.hidden = budPick != null; if (freeArm !== id) { freeArm = null; rb.classList.remove('arm'); rb.textContent = '놓아주기'; }
   const fb = $('#ppField'); fb.hidden = budPick != null; fb.textContent = on ? '필드에서 빼기' : full ? '필드 가득 참' : '필드에 내보내기'; fb.disabled = !on && full; fb.classList.toggle('red', on);
   const noRoom = budPick == null && S.buds.length >= MAX_BUDS;
-  { const ev = $('#ppEvo'), r = pokeReady(P) && budPick == null; ev.hidden = !r; if (r) ev.querySelector('.pp-run').innerHTML = `같이 달린 거리 <b>${fmtKm(P.runKm || P.km || 0)}</b>km`; }
+  // 진화 칸: 같이 달린 거리와 진화하기(조건이 안 되면 꺼진 채), 돌·교환 같은 진화는 특별한 조건이라고 알려 준다
+  { const ev = $('#ppEvo'), kids = CHILDREN[P.sp], btn = $('#ppEvoBtn'); ev.hidden = !kids || budPick != null;
+    if (!ev.hidden) { const run = `같이 달린 거리 <b>${fmtKm(P.runKm || 0)}</b>km`, ok = evoKids(P.sp, P), need = evoNeed(P), km = P.km || 0;
+      const sub = !ok.length ? `<span class="bd-tag">특별한 조건</span> ${esc(evoWhy(kids[0]))}`
+        : km < need ? `진화까지 <b>${fmtKm(km)}</b> / ${need}km` : pokeReady(P) ? '진화할 수 있어요!' : esc(evoWhy(ok[0]));
+      ev.querySelector('.pp-run').innerHTML = `${run}<br><span class="pp-sub">${sub}</span>`; btn.disabled = !pokeReady(P); btn.hidden = !ok.length; } }
   const bb = $('#ppBud'); bb.textContent = isBud ? '짝꿍이에요' : noRoom ? '짝꿍 자리 없음' : '짝꿍으로'; bb.disabled = isBud || noRoom; bb.classList.toggle('off', isBud || noRoom);
 }
 const closePoke = () => { $('#pokePop').hidden = true; pokeId = null; freeArm = null; };
@@ -5446,8 +5459,7 @@ async function hatchAll() {
     hatchStage.innerHTML = ''; hatchStage.append(bornImg(r.sp, r.P, r.isNew)); if (!r.gp) { r.gp = 1; setTimeout(() => goldPop(r.dupG), 250); }
     $('#hatchMsg').innerHTML = bornMsg(r); showDexInfo(r.sp); if (ivMode) showIvInfo(r);
     { const w = hatchEl.querySelector('.win'); w.classList.remove('a1', 'a2', 'a3', 'a4', 'a5'); w.classList.add('aura', 'a' + r.g); hatchEl.classList.toggle('rays', r.g === 5); }
-    $('#hlNum').textContent = `${i + 1} / ${res.length}`; $('#hlPrev').style.visibility = i ? '' : 'hidden'; $('#hlNext').style.visibility = i < res.length - 1 ? '' : 'hidden';
-    { const y = hatchStage.offsetTop + hatchStage.offsetHeight / 2; $('#hlPrev').style.top = $('#hlNext').style.top = y + 'px'; }
+    $('#hlNum').textContent = `${i + 1} / ${res.length}`; $('#hlHl').hidden = i <= 0; $('#hlHr').hidden = i >= res.length - 1;
     strip.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-current', j === i));
     strip.children[i]?.scrollIntoView({ block: 'nearest', inline: 'center' });
     fieldBtn.hidden = true;
@@ -5455,9 +5467,11 @@ async function hatchAll() {
   };
   $('#hlPrev').onclick = () => show(i - 1); $('#hlNext').onclick = () => show(i + 1);
   strip.onclick = ev => { const b = ev.target.closest('[data-k]'); if (b) show(+b.dataset.k); };
-  let sx = null;
-  hatchStage.onpointerdown = ev => { sx = ev.clientX; };
-  hatchStage.onpointerup = ev => { if (sx != null && Math.abs(ev.clientX - sx) > 40) show(i + (ev.clientX < sx ? 1 : -1)); sx = null; };
+  // 넘기기: 포켓몬 정보 카드와 같이 창을 밀거나, 창 옆 빈 곳을 누른다
+  const hw = hatchEl.querySelector('.win'); let sx = null, sy = 0;
+  hw.onpointerdown = ev => { sx = ev.target.closest('button, #hlStrip') ? null : ev.clientX; sy = ev.clientY; };
+  hw.onpointerup = ev => { if (sx == null) return; const dx = ev.clientX - sx, dy = ev.clientY - sy; sx = null; if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) show(i + (dx < 0 ? 1 : -1)); };
+  hw.onpointercancel = () => { sx = null; };
   fieldBtn.onclick = async () => { const r = res[i]; if (onField(r.P.id) || S.mons.length >= MAX_MONS) return; fieldBtn.hidden = true; const m = await spawn(r.sp, { pid: r.P.id }); m.born = S.clock; save(); refreshCap(); show(i); };
   // 상태창 보기: 창을 떠나지 않고 도감 정보 칸만 개체값으로 바꿔 본다 (다시 누르면 도감 정보)
   ok.hidden = false; ok.textContent = '확인'; const look = $('#hatchLook'); look.hidden = false; look.textContent = '상태창 보기';
@@ -5465,8 +5479,8 @@ async function hatchAll() {
   sfx(res.some(r => r.isNew) ? 'newdex' : 'hatch'); haptic(2);
   hatchInfoFix(res);
   show(0);
-  await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = ev => { if (!ev.target.closest('.win')) r(); }; });
-  hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatchFx(); hatchEl.classList.remove('list'); $('#hlPrev').style.visibility = $('#hlNext').style.visibility = ''; hatchStage.onpointerdown = hatchStage.onpointerup = null; hatching = false;
+  await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = ev => { if (ev.target.closest('.win')) return; const d = sideTap(hatchEl, ev); if (d) { if (!$(d < 0 ? '#hlHl' : '#hlHr').hidden) show(i + d); return; } r(); }; });
+  hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatchFx(); hatchEl.classList.remove('list'); $('#hlHl').hidden = $('#hlHr').hidden = true; hw.onpointerdown = hw.onpointerup = hw.onpointercancel = null; hatching = false;
   const nw = res.filter(r => r.isNew).length, sh = res.filter(r => r.P.shiny).length;
   log(`알 ${res.length}개가 한꺼번에 부화했다! ${res.map(r => SPECIES[r.sp].n).join(', ')}${nw ? ` (새로 만난 포켓몬 ${nw}마리)` : ''}${sh ? ` ✦ 색이 다른 포켓몬 ${sh}마리!` : ''}`, [], true);
   save(); renderRun(); refreshCap();
@@ -5649,8 +5663,8 @@ frTestSync();
     log(`포켓몬 ${Object.keys(SPECIES).length}종을 한 마리씩 만들었다. (테스트)`, [], true); sfx('open'); save(); renderBox(); };
 }
 // 테스트: 짝꿍들의 진화 거리를 다 채운다 (진화하기 버튼 확인용)
-$('#budFill').onclick = () => { let n = 0; for (const b of S.buds) { const P = boxOf(b.pid); if (!CHILDREN[b.sp]) continue; const need = evoNeed(b); if (b.km < need) { b.km = need; n++; } if (P) P.km = Math.max(P.km || 0, b.km); }
-  log(n ? `짝꿍 ${n}마리의 진화 거리를 채웠다. (테스트)` : '채울 짝꿍이 없다. (테스트)', [], true); sfx('tap'); save(); renderBuddy(); };
+$('#budFill').onclick = () => { let n = 0; for (const b of S.buds) { const P = boxOf(b.pid); n++; if (evoKids(b.sp, P).length) b.km += 5; if (P) { P.km = b.km; P.runKm = (P.runKm || 0) + 5; } }   // 테스트: 누를 때마다 5km 같이 달린 셈
+  log(n ? `짝꿍 ${n}마리와 5km 달렸다. (테스트)` : '짝꿍이 없다. (테스트)', [], true); sfx('tap'); save(); renderBuddy(); };
 $('#bagTest').onclick = () => { $('#bagTestG').hidden = !$('#bagTestG').hidden; };
 $('#bagTestG').onclick = ev => { const b = ev.target.closest('[data-g]'); if (!b) return;
   S.bag.push({ id: S.eid++, g: +b.dataset.g, t: Date.now(), isNew: true, nt: true, km: 0, place: pick(TEST_PLACES) }); save(); renderBag.sig = ''; renderRun(); sfx('pickup'); };
@@ -5664,8 +5678,8 @@ function renderBuddy() {
     const m = S.buds[i];
     if (!m) return `<button class="bd-empty" data-act="pick" data-i="${i}" aria-label="짝꿍 추가">+</button>`;
     const P = boxOf(m.pid);
-    return `<div class="bd-card${budReady(m) ? ' ready' : ''}" data-i="${i}"><button class="bd-x" data-act="stop" aria-label="짝꿍에서 빼기">✕</button><div class="bd-row"><div class="bd-pic${pkCls(P)}${P?.shiny ? ' shiny' : ''}" style="--shue:${shinyHue(m.sp)}deg"><img alt="" src="${(P ? thumbP(P) : thumbOf(m.sp)) || ''}"></div><div class="bd-main"><div class="bd-name"><b>${esc(P ? nameOf(P) : SPECIES[m.sp].n)}${sexHtml(P?.sex)}</b><span>No.${String(m.sp).padStart(4, '0')}</span></div><div class="bd-ind">${indivHtml(m)}</div>`
-      + (!evoKids(m.sp, P).length && CHILDREN[m.sp] ? `<div><span class="bd-tag">특별한 진화</span> <span class="bd-why">${esc(evoWhy(CHILDREN[m.sp][0]).replace(' 진화해요', ''))}</span></div>` : CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) || m.km < evoNeed(m) ? `<button class="bd-evobtn" data-act="evo"${budReady(m) ? '' : ' disabled'}>진화하기</button>` : `<span class="bd-why">${esc(evoWhy(evoKids(m.sp, P)[0]))}</span>`}</span><span><b>${fmtKm(m.km)}</b> / ${evoNeed(m)}km</span></div></div>` : `<div><span class="bd-tag">최종 진화</span></div>`)
+    return `<div class="bd-card${budReady(m) ? ' ready' : ''}" data-i="${i}"><button class="bd-x" data-act="stop" aria-label="짝꿍에서 빼기">✕</button><div class="bd-row"><div class="bd-pic${pkCls(P)}${P?.shiny ? ' shiny' : ''}" style="--shue:${shinyHue(m.sp)}deg"><img alt="" src="${(P ? thumbP(P) : thumbOf(m.sp)) || ''}"></div><div class="bd-main"><div class="bd-name"><b>${esc(P ? nameOf(P) : SPECIES[m.sp].n)}</b>${sexHtml(P?.sex)}</div><div class="bd-ind">${indivHtml(m)}</div>`
+      + (!evoKids(m.sp, P).length && CHILDREN[m.sp] ? `<div><span class="bd-tag">특별한 진화</span> <span class="bd-why">${esc(evoWhy(CHILDREN[m.sp][0]).replace(' 진화해요', ''))}</span></div><div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>` : CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) || m.km < evoNeed(m) ? `<button class="bd-evobtn" data-act="evo"${budReady(m) ? '' : ' disabled'}>진화하기</button>` : `<span class="bd-why">${esc(evoWhy(evoKids(m.sp, P)[0]))}</span>`}</span><span><b>${fmtKm(m.km)}</b> / ${evoNeed(m)}km</span></div></div>` : `<div><span class="bd-tag">최종 진화</span></div><div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>`)
       + `</div></div></div>`;
   }).join('');
 }
@@ -5706,17 +5720,17 @@ const EVO_SWAPS = (() => { const t = [], add = (a, b, st) => { for (let x = a; x
   const s2 = EVO_T0 + EVO_BAR, s3 = s2 + EVO_BAR;
   add(EVO_T0, s2, EVO_B * 2); add(s2, s3, EVO_B); add(s3, s3 + EVO_BAR / 2, EVO_B / 2); add(s3 + EVO_BAR / 2, s3 + EVO_BAR * .75, EVO_B / 4); add(s3 + EVO_BAR * .75, EVO_END, EVO_B / 8);
   return t; })();
-async function evoMusicStart(fade = 0) {
+async function evoMusicStart(fade = 0, off = 0) {
   const a = audio(); if (!a || !evoMus.have || !bgmOn) return null;
   try {
     if (!evoMus.buf) { const blob = await musicGet('evo'); if (!blob) return null; evoMus.buf = await bgmDecode(blob); }
     const src = a.createBufferSource(), g = a.createGain(); g.gain.value = .6 * VOL.bgm / 10;
-    src.buffer = evoMus.buf; src.connect(g).connect(a.destination); const t0 = a.currentTime + .05; src.start(t0);
-    if (fade) { src.loop = true; g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.6 * VOL.bgm / 10, t0 + fade); }   // 진화가 끝나고 처음부터 다시, 소리를 키우며
-    evoMus.src = src; evoMus.g = g; return t0;
+    src.buffer = evoMus.buf; src.connect(g).connect(a.destination); const t0 = a.currentTime + .05; off = off % evoMus.buf.duration || 0; src.start(t0, off);
+    if (fade) { src.loop = true; g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.6 * VOL.bgm / 10, t0 + fade); }   // 진화가 끝나고 끊겼던 자리부터 다시, 소리를 키우며
+    evoMus.src = src; evoMus.g = g; evoMus.t0 = t0 - off; return t0;
   } catch (e) { return null; }
 }
-function evoMusicFade(sec) { const a = actx, g = evoMus.g, src = evoMus.src; if (!a || !g) return; const t = a.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + sec); try { src.stop(t + sec + .05); } catch (e) {} evoMus.src = evoMus.g = null; }
+function evoMusicFade(sec) { const a = actx, g = evoMus.g, src = evoMus.src; if (!a || !g) return; const t = a.currentTime; evoMus.pos = t + sec - evoMus.t0; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + sec); try { src.stop(t + sec + .05); } catch (e) {} evoMus.src = evoMus.g = null; }
 let evoEl = null;
 function evoDom() {
   if (evoEl) return evoEl;
@@ -5745,12 +5759,13 @@ async function evolveWin(P, card) {
   const t0 = await evoMusicStart(), music = t0 != null, p0 = performance.now();
   const now = () => music ? actx.currentTime - t0 : (performance.now() - p0) / 1000;
   if (!music) sfx('evotick', 0);
+  img.classList.add('sil');   // 첫 모습 바꾸기(0.81초) 전에 하얗게 다 바뀐다 → 다음 모습이 색으로 비치지 않는다
   await new Promise(done => {
     let k = 0, cur = 0, lastPart = 0;
     const tick = () => {
       const t = now(), p = clamp((t - EVO_T0) / (EVO_END - EVO_T0), 0, 1);
       el.style.setProperty('--p', p.toFixed(3));
-      if (t >= EVO_T0 && !el.classList.contains('go')) { el.classList.add('go'); img.classList.add('sil'); }
+      if (t >= EVO_T0 && !el.classList.contains('go')) el.classList.add('go');
       while (k < EVO_SWAPS.length && t >= EVO_SWAPS[k]) {
         cur ^= 1; img.src = cur ? toSrc : fromSrc; k++;
         img.classList.remove('beat'); void img.offsetWidth; img.classList.add('beat');
@@ -5765,7 +5780,7 @@ async function evolveWin(P, card) {
     requestAnimationFrame(tick);
   });
   // 진화하는 순간: 하얗게 번쩍 → 새 모습
-  el.classList.add('boom'); img.src = toSrc; sfx('burst'); haptic(2);
+  el.classList.add('boom'); img.src = toSrc; sfx('evoboom'); haptic(2);
   const r = el.querySelector('.ef-stage').getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
   for (let i = 0; i < 26; i++) evoSpark(parts, cx, cy, true);
   await wait(420); img.classList.remove('sil'); el.classList.add('done');
@@ -5775,7 +5790,7 @@ async function evolveWin(P, card) {
   { const m = S.mons.find(x => x.pid === P.id); if (m) { m.sp = to; setForm(m, to); m.el.classList.remove('ditto'); if (m.name === fromN || m.name.startsWith(fromN + ' ')) { m.name = m.name.replace(fromN, toN); m.tag.textContent = m.name; } } }   // 필드에 있던 포켓몬도 새 모습으로
   await wait(700);
   sfx('evolve'); playCry(to, .9);
-  let shut = false; setTimeout(() => { if (!shut && evoMus.have) evoMusicStart(2.5).then(t => { if (shut && t != null) evoMusicFade(.3); }); }, 1800);   // 울음소리가 끝나면 진화 곡이 다시 흐른다
+  let shut = false; setTimeout(() => { if (!shut && evoMus.have) evoMusicStart(2.5, evoMus.pos || 0).then(t => { if (shut && t != null) evoMusicFade(.3); }); }, 1800);   // 울음소리가 끝나면 진화 곡이 다시 흐른다
   msg.innerHTML = `축하해! ${J({ name: nm }, '은/는')} ${J({ name: toN }, '으로/로')} 진화했다!${newTo ? `<br><span class="small">새로 만난 포켓몬이라 <b>${NEW_G}G</b>를 받았다</span>` : ''}`;
   log(`축하해! ${b ? '짝꿍 ' : ''}${J({ name: nm },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`, [], true);
   cardEl.innerHTML = dexInfoHtml(to); cardEl.hidden = false; ok.hidden = false; ok.focus();
