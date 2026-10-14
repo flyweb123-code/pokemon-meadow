@@ -951,6 +951,12 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .flyegg{position:fixed;z-index:7000;pointer-events:none;width:26px;height:32px}
 .flyegg .egg{width:100%;height:100%}
 #openRun.bump{animation:tbump .16s steps(2,end)}
+/* 운영자 모드(설정 맨 아래 출처 글을 7번 누르면 켜짐)에서만 운영자 칸이 보이고, 그 토글로 테스트 버튼들을 켜고 끈다 */
+html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,html:not(.tests) .bag-test{display:none!important}
+.op-row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:15px}
+.op-sw{flex:none;width:58px;height:30px;padding:0;border:3px solid var(--frame);background:#b9b9c6;cursor:pointer;position:relative;box-shadow:inset 0 3px 0 rgba(0,0,0,.2)}
+.op-sw i{position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border:2px solid var(--frame)}
+.op-sw[aria-checked="true"]{background:#4ccf5a}.op-sw[aria-checked="true"] i{left:auto;right:2px}
 #openRun,#openMgr{position:relative}.mdot{position:absolute;top:5px;right:6px;width:9px;height:9px;background:#e04838;box-shadow:0 0 0 2px #fff;pointer-events:none}
 @keyframes tbump{50%{transform:scale(1.25)}}
 #eggAll{font:inherit;font-size:13px;padding:3px 10px;background:#e8a020;color:#fff;border:3px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.25);cursor:pointer}
@@ -1199,7 +1205,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
         </div>
       </section>
       <button class="pf-link" id="pfRunBtn" type="button"><span class="pf-lt">런닝 기록</span><span class="tcount" id="runTotal"></span><span class="pf-arr">▶</span></button>
-      <p class="pf-diag" id="pfDiag"></p></div>
+      <p class="pf-diag test-only" id="pfDiag"></p></div>
       <div id="runPage" hidden><section class="set-sec pf-sec pf-runs">
         <div class="runs" id="runs"></div>
       </section></div>
@@ -1217,7 +1223,11 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
         <div class="vol" data-k="sfx"><span class="vol-n">효과음</span><button class="vol-b" data-d="-1" aria-label="효과음 작게">◀</button><div class="vol-bar" role="slider" aria-label="효과음 볼륨" aria-valuemin="0" aria-valuemax="10"></div><button class="vol-b" data-d="1" aria-label="효과음 크게">▶</button><b class="vol-v"></b></div>
         <div class="set-btns one"><button class="lk-btn main" id="musicImport">곡 파일 가져오기</button><input type="file" id="musicFile" accept="audio/*,.mp3" multiple hidden><button class="lk-btn main" id="cryImport">울음소리 가져오기</button><input type="file" id="cryFile" accept=".zip,application/zip" hidden></div>
       </section>
-      <section class="set-sec">
+      <section class="set-sec op-only">
+        <h4>운영자</h4>
+        <div class="op-row"><span>테스트 버튼 보이기</span><button class="op-sw" id="testSw" role="switch" aria-checked="false"><i></i></button></div>
+      </section>
+      <section class="set-sec test-only">
         <h4>테스트</h4>
         <p>알·포켓몬·도감·런닝 기록·골드를 모두 지우고 처음 시작 상태로 돌아가요. 소리 설정과 가져온 곡·울음소리는 남아요.</p>
         <div class="set-btns one"><button class="lk-btn test-btn" id="allReset">전체 초기화 (테스트)</button></div>
@@ -4022,6 +4032,13 @@ document.querySelectorAll('.menuwin .opt').forEach(b => {
   const up = () => setTimeout(() => b.classList.remove('hold'), 0);
   b.addEventListener('click', up); b.addEventListener('pointercancel', up); b.addEventListener('pointerup', () => setTimeout(() => b.classList.remove('hold'), 400));   // 버튼 밖에서 떼어 클릭이 안 오면 잠시 뒤 원래대로
 });
+// 운영자 모드·테스트 버튼 (이 기기에만 저장)
+{ const de = document.documentElement, get = k => { try { return localStorage.getItem(k) === '1'; } catch (e) { return false; } }, put = (k, v) => { try { v ? localStorage.setItem(k, '1') : localStorage.removeItem(k); } catch (e) {} };
+  const paint = () => { const op = get('pk-op'), t = op && get('pk-tests'); de.classList.toggle('op', op); de.classList.toggle('tests', t); $('#testSw').setAttribute('aria-checked', t); };
+  paint();
+  $('#testSw').onclick = () => { sfx('tap'); put('pk-tests', !get('pk-tests')); paint(); };
+  let n = 0, t0 = 0; document.querySelector('.set-credit').addEventListener('click', () => { const now = Date.now(); n = now - t0 < 1500 ? n + 1 : 1; t0 = now;
+    if (n >= 7) { n = 0; const on = !get('pk-op'); put('pk-op', on); if (!on) put('pk-tests', false); paint(); sfx(on ? 'pickup' : 'tap'); log(on ? '운영자 모드를 켰다.' : '운영자 모드를 껐다.', [], true); } }); }
 function syncTabs() { [['#openDex', '#sheet'], ['#openRun', '#run'], ['#openMgr', '#mgr'], ['#openSet', '#set'], ['#sideSet', '#set'], ['#openShop', '#shop']].forEach(([b, w]) => $(b).setAttribute('aria-pressed', !$(w).hidden)); document.body.classList.toggle('sheet-open', ['#sheet', '#run', '#mgr', '#shop'].some(w => !$(w).hidden)); }
 new MutationObserver(syncTabs).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
 $('#closeDex').onclick = () => { sheet.hidden = true; };
