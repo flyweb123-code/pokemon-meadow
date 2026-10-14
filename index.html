@@ -4027,10 +4027,11 @@ function hideSheets() { sheet.hidden = true; $('#mgr').hidden = true; $('#run').
 function tabTo(el, open) { const was = !el.hidden; closeToggles(); hideSheets(); if (!was) open(); }
 $('#openDex').onclick = () => tabTo(sheet, openDex);
 // 하단 메뉴: 손가락이 닿는 순간 눌린 모양으로 두고 클릭 처리 뒤에 뗀다 (떼는 순간 한 번 튀어 올랐다 다시 눌리던 버벅임 없앰)
+// 손가락이 닿는 순간(pointerdown) 바로 창을 열고 활성 표시를 한다. 뒤따르는 click 은 한 번 삼킨다 (키보드 click 은 그대로)
 document.querySelectorAll('.menuwin .opt').forEach(b => {
-  b.addEventListener('pointerdown', () => b.classList.add('hold'));
-  const up = () => setTimeout(() => b.classList.remove('hold'), 0);
-  b.addEventListener('click', up); b.addEventListener('pointercancel', up); b.addEventListener('pointerup', () => setTimeout(() => b.classList.remove('hold'), 400));   // 버튼 밖에서 떼어 클릭이 안 오면 잠시 뒤 원래대로
+  let ate = 0;
+  b.addEventListener('pointerdown', e => { if (e.button > 0 || !b.onclick) return; b.classList.add('hold'); ate = performance.now(); b.onclick(e); setTimeout(() => b.classList.remove('hold'), 0); });
+  b.addEventListener('click', e => { if (performance.now() - ate < 1000) { ate = 0; e.stopImmediatePropagation(); e.preventDefault(); } }, true);
 });
 // 운영자 모드·테스트 버튼 (이 기기에만 저장)
 { const de = document.documentElement, get = k => { try { return localStorage.getItem(k) === '1'; } catch (e) { return false; } }, put = (k, v) => { try { v ? localStorage.setItem(k, '1') : localStorage.removeItem(k); } catch (e) {} };
