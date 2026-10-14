@@ -1442,7 +1442,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
     <div class="dp-pic" id="ppPic"><img alt="" id="ppImg"></div>
     <div class="pp-body" id="ppBody"></div>
     <div class="pp-evo" id="ppEvo" hidden><button class="boxbtn evobtn" id="ppEvoBtn">진화하기</button></div>
-    <div class="pp-btns"><button class="boxbtn" id="ppField"></button><button class="boxbtn pink" id="ppBud"></button></div>
+    <div class="pp-btns"><button class="boxbtn pink" id="ppBud"></button><button class="boxbtn" id="ppField"></button></div>
     <button class="pp-free" id="ppFree">놓아주기</button>
   </div>
 </div>
@@ -4428,7 +4428,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.75';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.76';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
