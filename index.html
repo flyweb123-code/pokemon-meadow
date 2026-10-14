@@ -2350,10 +2350,9 @@ function petDone() {
 }
 const petHit = (m, x, y) => { const r = [m.spr, m.img].map(e => e?.getBoundingClientRect()).find(r => r && r.width) || m.el.getBoundingClientRect(), p = 22;   /* m.el 은 발밑 점이라 그림 크기로 판정 */ return x > r.left - p && x < r.right + p && y > r.top - p && y < r.bottom + p; };
 addEventListener('pointerdown', e => { if (!petM || e.target.closest('#petBar')) return; if (petM.done) { e.stopPropagation(); e.preventDefault(); return; }
-  e.stopPropagation(); e.preventDefault(); if (petHit(petM.m, e.clientX, e.clientY)) { petM.rub = { id: e.pointerId, x: e.clientX, y: e.clientY, tx: 0, ht: 0 }; petTrail(e.clientX, e.clientY, true); }
-  else { petCancelAt = performance.now(); petQuit(); } }, true);   /* 포켓몬이 아닌 빈 곳을 누르면 쓰다듬기를 그만둔다 */
+  e.stopPropagation(); e.preventDefault(); petM.rub = { id: e.pointerId, x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, t0: performance.now(), on: petHit(petM.m, e.clientX, e.clientY), far: 0, tx: 0, ht: 0 }; petTrail(e.clientX, e.clientY, true);   /* 바깥에서 시작해 문질러 들어와도 된다 (빈 곳을 톡 누르면 떼는 순간 그만둔다) */ }, true);
 addEventListener('pointermove', e => { const p = petM; if (!p || p.done || !p.rub || e.pointerId !== p.rub.id) return; e.stopPropagation();
-  const d = Math.hypot(e.clientX - p.rub.x, e.clientY - p.rub.y); p.rub.x = e.clientX; p.rub.y = e.clientY; petTrail(e.clientX, e.clientY);
+  const d = Math.hypot(e.clientX - p.rub.x, e.clientY - p.rub.y); p.rub.x = e.clientX; p.rub.y = e.clientY; p.rub.far = Math.max(p.rub.far, Math.hypot(e.clientX - p.rub.x0, e.clientY - p.rub.y0)); petTrail(e.clientX, e.clientY);
   if (!petHit(p.m, e.clientX, e.clientY)) return;
   /* 손맛: 문지르는 동안 털결처럼 톡톡(보통), 게이지가 한 칸 찰 때마다 세게 */
   const now = performance.now(); p.rub.tx += d; if (p.rub.tx >= 34 && now - p.rub.ht > 60) { p.rub.tx = 0; p.rub.ht = now; haptic(1); }
@@ -2362,7 +2361,9 @@ addEventListener('pointermove', e => { const p = petM; if (!p || p.done || !p.ru
   p.v += d / PET_LEN * clamp(p.spd / 700, .5, 2); petDots();
   if (p.v >= 1) return petDone();
   const n = Math.floor(p.v * PET_N); if (n > p.n) { p.n = n; emote(p.m, n % 3 === 0 ? '♪' : '♥', 'heart', .9); p.rub.ht = now; haptic(2); } }, true);
-['pointerup', 'pointercancel'].forEach(t => addEventListener(t, e => { if (petM?.rub && e.pointerId === petM.rub.id) petM.rub = null; if (petM || performance.now() - petCancelAt < 700) e.stopPropagation(); }, true));
+['pointerup', 'pointercancel'].forEach(t => addEventListener(t, e => { const rb = petM?.rub; if (rb && e.pointerId === rb.id) { petM.rub = null;
+    /* 포켓몬이 아닌 곳을 문지르지 않고 톡 누르고 떼면 그만둔다 */
+    if (t === 'pointerup' && !rb.on && rb.far < 12 && performance.now() - rb.t0 < 450 && !petM.done) { petCancelAt = performance.now(); petQuit(); e.stopPropagation(); return; } } if (petM || performance.now() - petCancelAt < 700) e.stopPropagation(); }, true));
 addEventListener('click', e => { if ((petM && !e.target.closest('#petBar')) || performance.now() - petCancelAt < 700) { e.stopPropagation(); e.preventDefault(); } }, true);
 let petCancelAt = 0;
 // 문지르는 손가락 자국: 화면 위 투명 캔버스에 지나간 길을 분홍 빛 줄기로 그리고 0.4초 동안 가늘어지며 사라진다
