@@ -951,7 +951,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .bd-pic{flex:none;width:88px;height:88px;display:grid;place-items:center;background:#e4f2d0;border:3px solid var(--inner)}
 .bd-pic img{width:76px;height:76px;object-fit:contain;image-rendering:pixelated}
 .bd-pic img.hop{animation:bdhop .35s steps(3)}@keyframes bdhop{40%{transform:translateY(-8px)}}
-.bd-card{cursor:pointer}
+.bd-card{cursor:pointer}.bd-card .bd-new{position:absolute;left:6px;top:6px;width:8px;height:8px;background:#e04838;box-shadow:0 0 0 2px #fff3f7;z-index:2}
 .bd-name{min-width:0}
 .bd-name b{display:block;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bd-name span{display:block;font-size:12px;color:var(--dim);margin-top:2px}
@@ -4431,7 +4431,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.98';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.99';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -4742,6 +4742,7 @@ let boxDir = 1;
 try { boxSort = localStorage.getItem('pk-box-sort') || 'new'; boxDir = localStorage.getItem('pk-box-dir') === '-1' ? -1 : 1; } catch (e) {}
 function setMgrTab(t) {
   if (mgrTab === 'box' && t !== 'box' && !mgr.hidden) seeBox();
+  if (mgrTab === 'buddy' && t !== 'buddy') seeBuds();
   boxFromSlot = false; if (t !== 'box') budPick = null;
   mgrTab = t; try { localStorage.setItem('pk-mgr-tab', t); } catch (e) {}
   document.querySelectorAll('#mgrTabs button').forEach(b => { b.setAttribute('aria-selected', b.dataset.t === t); if (b.dataset.t === t) $('#mgrTitle').textContent = b.textContent; });   // 창 제목 = 지금 탭
@@ -4857,7 +4858,9 @@ function seeBox() { let ch = false; S.box.forEach(p => { if (p.nw) { p.nw = fals
 { let was = !mgr.hidden; new MutationObserver(() => { const now = !mgr.hidden; if (was && !now && mgrTab === 'box') seeBox(); was = now; }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] }); }   // 열려 있다가 닫힐 때만
 // 하단 메뉴 알림 점: 알(가방에 새 알) · 포켓몬(박스에 새 포켓몬)
 function menuDots() { const set = (b, on) => { let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot" aria-label="새 소식"></i>'); else if (!on && d) d.remove(); };
-  set($('#openRun'), S.bag.some(e => e.isNew) || S.eggs.some(e => e.km >= e.need && !e.rs)); set($('#openDex'), !!S.dexNew?.size); set($('#openMgr'), S.box.some(p => p.nw)); }
+  set($('#openRun'), S.bag.some(e => e.isNew) || S.eggs.some(e => e.km >= e.need && !e.rs)); set($('#openDex'), !!S.dexNew?.size); set($('#openMgr'), S.box.some(p => p.nw) || S.buds.some(b => b.nw));
+  { const t = document.querySelector('#mgrTabs [data-t="buddy"]'), on = S.buds.some(b => b.nw), d = t && t.querySelector('.dot'); if (t && on && !d) t.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새 짝꿍"></i>'); else if (t && !on && d) d.remove(); } }
+function seeBuds() { if (S.buds.some(b => b.nw)) { S.buds.forEach(b => delete b.nw); save(); } }
 function renderBox() {
   document.querySelectorAll('#boxSort [data-sort]').forEach(b => { const on = b.dataset.sort === boxSort; b.setAttribute('aria-pressed', on); b.dataset.dir = on && boxSort !== 'field' ? (boxDir > 0 ? '▼' : '▲') : ''; });
   const L = boxList(true, true), q = boxQ(), bud = new Set(S.buds.map(b => b.pid)), field = new Set(S.mons.map(m => m.pid)), grid = $('#boxGrid'), fo = boxSort === 'field';   /* 필드 보기도 칸은 지우지 않고 숨긴다 → 다른 정렬로 돌아갈 때 바로 */
@@ -4972,14 +4975,14 @@ $('#ppBud').onclick = () => {
   { const i = S.buds.findIndex(b => b.pid === P.id); if (i >= 0) { sfx('tap'); log(`${J({ name: SPECIES[P.sp].n },'과/와')} 같이 달리기를 그만뒀다.`); S.buds.splice(i, 1); save(); renderBox(); openPoke(P.id); renderRun(); return; } }   // 짝꿍 해제
   const slot = budPick; if (slot == null && S.buds.length >= MAX_BUDS) return;
   if (slot != null && !$('#ppBud').dataset.go) { const b = $('#ppBud'); b.dataset.go = 1; pressBtn(b, () => { b.click(); delete b.dataset.go; }, 160); return; }   // 빈 짝꿍 칸에서 왔으면 눌린 모양을 잠깐 보여 준 뒤 짝꿍 탭으로
-  const keep = S.buds.filter((b, k) => k !== slot && b.sp !== P.sp), nb = { sp: P.sp, km: P.km || 0, pid: P.id };
+  const keep = S.buds.filter((b, k) => k !== slot && b.sp !== P.sp), nb = { sp: P.sp, km: P.km || 0, pid: P.id, nw: true };   // 새 짝꿍 빨간 점 (짝꿍 탭을 보고 나가거나 그 칸을 누르면 지움)
   if (slot != null) keep.splice(Math.min(slot, keep.length), 0, nb); else keep.push(nb);
   S.buds = keep;
   log(`${J({ name: SPECIES[P.sp].n },'이/가')} 런닝 짝꿍이 되었다!`, [], true); save();
   if (slot == null) sfx('tap'); renderBox(); if (slot != null) { closePoke(); setMgrTab('buddy'); } else openPoke(P.id);   // 짝꿍 칸에서 왔으면 짝꿍 탭으로, 아니면 카드에 남아 버튼만 눌린 모양으로
   evoNotice(P.sp, P);
 };
-new MutationObserver(() => { if (mgr.hidden) closePoke(); }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
+new MutationObserver(() => { if (mgr.hidden) { closePoke(); if (mgrTab === 'buddy') seeBuds(); } }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
 $('#openMgr').onclick = () => tabTo(mgr, () => { if (budPick != null) { budPick = null; closePoke(); } openMgr(); setMgrTab('box'); });   // 짝꿍 고르다 나갔으면 고르기 상태를 푼다
 $('#closeMgr').onclick = closeMgr;
 // fill up to six free spots with random species from the dex
@@ -6470,7 +6473,7 @@ function setRunTab(t) {
 document.querySelectorAll('.runtab[data-tab]').forEach(b => b.onclick = () => setRunTab(b.dataset.tab));
 $('#buddy').addEventListener('click', e => {
   const a = e.target.closest('[data-act]')?.dataset.act;
-  if (!a) { const c = e.target.closest('.bd-card'), b = c && S.buds[+c.dataset.i]; if (b && boxOf(b.pid)) { sfx('tap'); budPick = null; ppBud = true; openPoke(b.pid); } return; }   // 짝꿍 칸을 누르면 그 포켓몬 정보 카드
+  if (!a) { const c = e.target.closest('.bd-card'), b = c && S.buds[+c.dataset.i]; if (b && boxOf(b.pid)) { sfx('tap'); budPick = null; if (b.nw) { delete b.nw; save(); renderBuddy(); } ppBud = true; openPoke(b.pid); } return; }   // 짝꿍 칸을 누르면 그 포켓몬 정보 카드
   const i = +e.target.closest('[data-i]').dataset.i;
   if (a === 'pick') { budPick = i; setMgrTab('box'); }
   else if (a === 'evo') { if (budReady(S.buds[i])) evolvePoke(boxOf(S.buds[i].pid)); }
@@ -6552,7 +6555,7 @@ function renderBuddy() {
     const m = S.buds[i];
     if (!m) return `<button class="bd-empty" data-act="pick" data-i="${i}" aria-label="짝꿍 추가">+</button>`;
     const P = boxOf(m.pid);
-    return `<div class="bd-card${budReady(m) ? ' ready' : ''}${tierOf(+m.sp) ? ' ' + tierOf(+m.sp) : ''}" data-i="${i}"><button class="bd-x" data-act="stop" aria-label="짝꿍에서 빼기">✕</button><div class="bd-row"><div class="bd-pic${pkCls(P)}${P?.shiny ? ' shiny' : ''}" data-rk="${P ? rankOf(P) : ''}" style="--shue:${shinyHue(m.sp)}deg"><img alt="" src="${(P ? thumbP(P) : thumbOf(m.sp)) || ''}"><span class="bd-rk">${rkBadge(P)}</span></div><div class="bd-main"><div class="bd-name"><b class="${tnCls(m.sp)}">${esc(P ? nameOf(P) : SPECIES[m.sp].n)}</b>${sexHtml(P?.sex)}</div><div class="bd-ind">${indivHtml(m)}</div>`
+    return `<div class="bd-card${budReady(m) ? ' ready' : ''}${tierOf(+m.sp) ? ' ' + tierOf(+m.sp) : ''}" data-i="${i}"><button class="bd-x" data-act="stop" aria-label="짝꿍에서 빼기">✕</button>${m.nw ? '<i class="bd-new" aria-label="새 짝꿍"></i>' : ''}<div class="bd-row"><div class="bd-pic${pkCls(P)}${P?.shiny ? ' shiny' : ''}" data-rk="${P ? rankOf(P) : ''}" style="--shue:${shinyHue(m.sp)}deg"><img alt="" src="${(P ? thumbP(P) : thumbOf(m.sp)) || ''}"><span class="bd-rk">${rkBadge(P)}</span></div><div class="bd-main"><div class="bd-name"><b class="${tnCls(m.sp)}">${esc(P ? nameOf(P) : SPECIES[m.sp].n)}</b>${sexHtml(P?.sex)}</div><div class="bd-ind">${indivHtml(m)}</div>`
       + (!evoKids(m.sp, P).length && CHILDREN[m.sp] ? `<div><span class="bd-tag">특별한 진화</span> <span class="bd-why">${esc(spWhy(P || m))}</span></div><div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>` : CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) || m.km < evoNeed(m) ? `<button class="bd-evobtn" data-act="evo"${budReady(m) ? '' : ' disabled'}>진화하기</button>` : `<span class="bd-why">${esc(evoWhy(evoKids(m.sp, P)[0]))}</span>`}</span><span><b>${fmtKm(m.km)}</b> / ${evoNeed(m)}km</span></div></div>` : `<div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>`)
       + `</div></div></div>`;
   }).join('');
