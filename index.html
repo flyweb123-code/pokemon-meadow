@@ -221,7 +221,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .ehalo.rkA{opacity:.7;transform:scale(.88)}.ehalo.rkS{opacity:1;transform:scale(1);background:radial-gradient(circle,rgba(255,250,210,.95),rgba(255,214,80,.6) 35%,rgba(255,190,60,.2) 58%,rgba(255,190,60,0) 72%);animation:hpulse 1.4s ease-in-out .3s infinite}@keyframes hpulse{50%{transform:scale(1.1);opacity:.85}}.ehalo.s1{opacity:.35;transform:scale(.6)}.ehalo.s2{opacity:.6;transform:scale(.85)}.ehalo.s3{opacity:.9;transform:scale(1.05)}
 .bag-mbar #bagMIn{background:var(--frame);color:var(--win)}.bag-mbar #bagMIn[disabled]{opacity:.45}
 #eggHatch,#eggOut{transition:transform .06s,box-shadow .06s}#eggHatch:active,#eggOut:active,#eggHatch.press,#eggOut.press{transform:translate(3px,3px);box-shadow:0 0 0 rgba(0,0,0,0)!important}
-.hatch .boxbtn.go{background:#e8a020;color:#fff}.hatch .boxbtn.green{background:#3c9a4c;border-color:#1f5a2a;color:#fff;padding-left:6px;padding-right:6px;white-space:nowrap;letter-spacing:-.5px}.hatch .boxbtn.green.sunk{background:#dcefdf;border-color:#a6c8ab;color:#5f8a66;box-shadow:inset 0 4px 0 rgba(0,0,0,.15);cursor:default}.hatch-btns:has(#hatchSend:not([hidden])) .boxbtn{font-size:15px;padding-left:4px;padding-right:4px}.hatch .boxbtn.go:active{box-shadow:inset 0 4px 0 rgba(0,0,0,.35);padding:14px 16px 10px}
+.hatch .boxbtn.go{background:#e8a020;color:#fff}.hatch .boxbtn.green{background:#3c9a4c;border-color:#1f5a2a;color:#fff;padding-left:6px;padding-right:6px;white-space:nowrap;letter-spacing:-.5px}.hatch .boxbtn.green.sunk{background:#dcefdf;border-color:#a6c8ab;color:#5f8a66;box-shadow:inset 0 4px 0 rgba(0,0,0,.15)}.hatch-btns:has(#hatchSend:not([hidden])) .boxbtn{font-size:15px;padding-left:4px;padding-right:4px}.hatch .boxbtn.go:active{box-shadow:inset 0 4px 0 rgba(0,0,0,.35);padding:14px 16px 10px}
 /* 기본 스크롤 막대는 어디서도 안 보이게 (스크롤은 그대로 된다) */
 html{touch-action:manipulation}img{-webkit-user-drag:none}*{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 *{scrollbar-width:none;-ms-overflow-style:none}*::-webkit-scrollbar{display:none;width:0;height:0}
@@ -4430,7 +4430,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.95';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.96';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6228,7 +6228,11 @@ async function playHatch() {
   let ivm = false; look.onclick = () => { ivm = !ivm; look.textContent = ivm ? '도감 정보' : '상태창 보기'; showDexInfo(sp); if (ivm) showIvInfo({ P }); };
   // 필드에 빈 칸이 있으면 바로 내보낼 수 있다 (누르면 눌린 채로 남고, 포켓몬은 뒤에서 필드에 나온다)
   const sb = $('#hatchSend'); let send = false; sb.hidden = S.mons.length >= MAX_MONS; sb.classList.remove('sunk'); sb.disabled = false; sb.textContent = '필드로';
-  sb.onclick = async () => { if (send || S.mons.length >= MAX_MONS) return; send = true; sfx('tap'); sb.classList.add('sunk'); sb.disabled = true; sb.textContent = '필드에 나감'; const m = await spawn(sp, { pid: P.id }); m.born = S.clock; save(); refreshCap(); };
+  let sm = null, busy = false;   // 다시 누르면 필드에서 빼서 상자로 (토글)
+  sb.onclick = async () => { if (busy) return; sfx('tap');
+    if (send) { const m = sm && S.mons.includes(sm) ? sm : S.mons.find(x => x.pid === P.id); if (m) removeMon(m, true); send = false; sm = null; sb.classList.remove('sunk'); sb.textContent = '필드로'; save(); refreshCap(); return; }
+    if (S.mons.length >= MAX_MONS) return; send = true; busy = true; sb.classList.add('sunk'); sb.textContent = '필드에 나감';
+    try { sm = await spawn(sp, { pid: P.id }); sm.born = S.clock; } finally { busy = false; } save(); refreshCap(); };
   ok.focus();
   const how = await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = ev => { if (!ev.target.closest('.win')) r(); }; });
   hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; sb.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatching = false;
