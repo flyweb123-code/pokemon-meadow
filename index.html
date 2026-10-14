@@ -3918,6 +3918,7 @@ function render(m, now) {
 
 // 필드 보기: 정보창 없이 머리 위 화살표 + 이름표로 위치만 알려 준다 (빈 곳을 누르면 해제)
 var lookMon = null;
+function markNew(m) { if (!m || !S.mons.includes(m)) return; if (S.sel && S.sel !== m) select(null); lookMon = m; }   // 필드로 막 내보낸 포켓몬(가장 최근 한 마리)에 이름표·화살표
 const selMark = document.createElement('div'); selMark.className = 'sel-mark'; selMark.hidden = true;
 function placeMark() {
   if (lookMon && !S.mons.includes(lookMon)) lookMon = null;
@@ -4430,7 +4431,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.96';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.97';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -4962,7 +4963,7 @@ $('#ppField').onclick = async () => {
   else if (S.mons.length < MAX_MONS) { const fb = $('#ppField'); if (fb.classList.contains('pressd') || fb.classList.contains('sunk')) return; sfx('tap');
     if (boxFromSlot) { fb.classList.add('pressd'); await wait(110); fb.classList.remove('pressd'); }   // 빈 슬롯에서 왔으면 바로 눌린 뒤 필드로
     else { fb.classList.add('sunk'); fb.textContent = '필드에서 빼기'; }   // 그림을 불러오는 동안 기다리지 않고 먼저 눌린 모양으로
-    try { await spawn(P.sp, { pid: P.id }); } catch (e) {} if (boxFromSlot && S.mons.some(x => x.pid === P.id)) { refreshCap(); save(); closePoke(); setMgrTab('field'); return; } }
+    try { markNew(await spawn(P.sp, { pid: P.id })); } catch (e) {} if (boxFromSlot && S.mons.some(x => x.pid === P.id)) { refreshCap(); save(); closePoke(); setMgrTab('field'); return; } }
   refreshCap(); renderBox(); openPoke(P.id); save();
 };
 $('#ppEvoBtn').onclick = () => { const b = $('#ppEvoBtn'); if (b.classList.contains('dis') || b.classList.contains('fin')) return; evolvePoke(boxOf(pokeId)); };
@@ -4989,7 +4990,7 @@ $('#mgrRandom').onclick = async () => {
   if (free <= 0) return say('필드가 꽉 찼어요');
   btn.disabled = true; btn.dataset.busy = 1; let last = null;
   for (let i = 0; i < free && pool.length; i++) { const P = pool.splice(Math.floor(Math.random() * pool.length), 1)[0]; try { last = await spawn(P.sp, { pid: P.id }); } catch (e) {} }
-  delete btn.dataset.busy; btn.disabled = false; refreshCap(); if (last) renderMgr(true);
+  delete btn.dataset.busy; btn.disabled = false; refreshCap(); if (last) { markNew(last); renderMgr(true); }
 };
 mgr.addEventListener('click', e => { if (e.target === mgr) closeMgr(); });
 // 모두 빼기: 필드의 포켓몬을 전부 상자로 (한 번 더 눌러 확인)
@@ -6232,7 +6233,7 @@ async function playHatch() {
   sb.onclick = async () => { if (busy) return; sfx('tap');
     if (send) { const m = sm && S.mons.includes(sm) ? sm : S.mons.find(x => x.pid === P.id); if (m) removeMon(m, true); send = false; sm = null; sb.classList.remove('sunk'); sb.textContent = '필드로'; save(); refreshCap(); return; }
     if (S.mons.length >= MAX_MONS) return; send = true; busy = true; sb.classList.add('sunk'); sb.textContent = '필드에 나감';
-    try { sm = await spawn(sp, { pid: P.id }); sm.born = S.clock; } finally { busy = false; } save(); refreshCap(); };
+    try { sm = await spawn(sp, { pid: P.id }); sm.born = S.clock; markNew(sm); } finally { busy = false; } save(); refreshCap(); };
   ok.focus();
   const how = await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = ev => { if (!ev.target.closest('.win')) r(); }; });
   hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; sb.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatching = false;
@@ -6319,7 +6320,7 @@ async function hatchAll() {
   function slide(d, from = 0) { hw.style.transform = ''; hw.animate([{ transform: `translateX(${from || d * 90}px)`, opacity: .15 }, { transform: 'none', opacity: 1 }], { duration: 240, easing: 'cubic-bezier(.2,.8,.3,1)' }); }
   // 밀어서 넘기기는 포켓몬 정보 카드와 같은 cardPager (양옆 카드가 붙어 들어온다)
   hatchPg = { can: d => i + d >= 0 && i + d < res.length, snap: (d, w) => { const k = i; show(k + d, true); const g = w.cloneNode(true); show(k, true); return g; }, step: d => { sfx('tap'); show(i + d, false, true); } };
-  fieldBtn.onclick = async () => { const r = res[i]; if (onField(r.P.id) || S.mons.length >= MAX_MONS) return; fieldBtn.hidden = true; const m = await spawn(r.sp, { pid: r.P.id }); m.born = S.clock; save(); refreshCap(); show(i); };
+  fieldBtn.onclick = async () => { const r = res[i]; if (onField(r.P.id) || S.mons.length >= MAX_MONS) return; fieldBtn.hidden = true; const m = await spawn(r.sp, { pid: r.P.id }); m.born = S.clock; markNew(m); save(); refreshCap(); show(i); };
   // 상태창 보기: 창을 떠나지 않고 도감 정보 칸만 개체값으로 바꿔 본다 (다시 누르면 도감 정보)
   ok.hidden = false; ok.textContent = '확인'; const look = $('#hatchLook'); look.hidden = false; look.textContent = '상태창 보기';
   look.onclick = () => { ivMode = !ivMode; look.textContent = ivMode ? '도감 정보' : '상태창 보기'; showDexInfo(res[i].sp); if (ivMode) showIvInfo(res[i]); };
