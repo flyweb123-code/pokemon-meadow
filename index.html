@@ -585,7 +585,7 @@ ol.log li.big .txt{color:#c03838}
 .pf .pf-rk{position:absolute;left:2px;top:2px;z-index:3;line-height:1}.pf .pf-rk .rk{font-size:10px;min-width:12px;padding:0 3px;line-height:13px;border-width:1px}
 body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch-action:none!important}
 .petbar{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,calc(100% - 24px));z-index:40;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;box-sizing:border-box;background:rgba(30,26,52,.9);color:#fff;border:3px solid #fff;box-shadow:0 0 0 3px #2a2440,5px 5px 0 3px rgba(0,0,0,.28);font-size:15px}.petbar[hidden]{display:none!important}
-[data-rk]{--rkc:#6a6a70}[data-rk="E"]{--rkc:#909098}[data-rk="D"]{--rkc:#5f8f6e}[data-rk="C"]{--rkc:#4e7fc0}[data-rk="B"]{--rkc:#8e48e8}[data-rk="A"]{--rkc:#e04848}[data-rk="S"]{--rkc:#e8a020}
+[data-rk]{--rkc:#6a6a70}[data-rk="E"]{--rkc:#909098}[data-rk="D"]{--rkc:#6f8574}[data-rk="C"]{--rkc:#62809f}[data-rk="B"]{--rkc:#8e48e8}[data-rk="A"]{--rkc:#e04848}[data-rk="S"]{--rkc:#e8a020}
 .dp-pic[data-rk]:not([data-rk=""]),#info #pPf[data-rk]:not([data-rk=""]){border-color:var(--rkc)!important}
 .dp-pic[data-rk="A"],#info #pPf[data-rk="A"]{box-shadow:0 0 7px rgba(240,80,80,.7)!important}.dp-pic[data-rk="A"]::after,#info #pPf[data-rk="A"]::after,.dp-pic[data-rk="S"]::after,#info #pPf[data-rk="S"]::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:4;--gc:rgba(255,80,80,.75);box-shadow:inset 0 0 5px var(--gc);animation:rkIn 2.2s ease-in-out infinite}.dp-pic[data-rk="S"]::after,#info #pPf[data-rk="S"]::after{--gc:rgba(255,205,60,.85)}@keyframes rkIn{50%{box-shadow:inset 0 0 11px var(--gc)}}
 .dp-pic[data-rk="S"],#info #pPf[data-rk="S"]{box-shadow:0 0 8px rgba(255,200,40,.75)!important}
@@ -657,7 +657,7 @@ body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch
 .pk .nm{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pk .hearts{font-size:9px;letter-spacing:-1px;color:#e04870}
 .rk{display:inline-block;box-sizing:border-box;width:20px;padding:0!important;text-align:center;font-size:11px;font-weight:700;color:#fff;padding:0 4px;border:2px solid rgba(0,0,0,.25)}
-.rk.S{background:#e8a020}.rk.A{background:#e04848}.rk.B{background:#8e48e8}.rk.C{background:#4e7fc0}.rk.D{background:#5f8f6e}.rk.E{background:#909098}.rk.F{background:#6a6a70}
+.rk.S{background:#e8a020}.rk.A{background:#e04848}.rk.B{background:#8e48e8}.rk.C{background:#62809f}.rk.D{background:#6f8574}.rk.E{background:#909098}.rk.F{background:#6a6a70}
 .pk .rk{position:absolute;left:3px;top:3px}
 #dexGrid .newtag{left:auto;right:3px;top:3px;transform:none;animation:nbob 1.2s steps(2,end) infinite}@keyframes nbob{50%{transform:translateY(-3px)}}
 .pk .pk-new{position:absolute;right:4px;top:4px;width:7px;height:7px;background:#e04838}.pk .pk-new~.tg{right:15px}.pk .tg{position:absolute;right:3px;top:3px;font-size:9px;background:var(--frame);color:var(--win);padding:1px 3px}
@@ -669,6 +669,7 @@ body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch
 .pk.rkA{background:radial-gradient(circle 40px at 50% 42px,rgba(255,120,120,.38),rgba(255,120,120,0))}.pk.rkA img,.dp-pic.rkA img,.bd-pic.rkA img{animation:aglowI 2s ease-in-out infinite}@keyframes aglowI{0%,100%{filter:drop-shadow(0 0 1px #ffd0d0) drop-shadow(0 0 3px #ff5050)}50%{filter:drop-shadow(0 0 2px #ffd0d0) drop-shadow(0 0 7px #ff3838)}}
 .mon.rkS .lift::before{content:'✦';position:absolute;left:0;bottom:calc(var(--mh,60px) * .55);color:#fff3a0;font-size:20px;text-shadow:0 0 4px #ffb000,0 0 2px #fff;animation:spk 1.6s steps(1) infinite;pointer-events:none;z-index:3}
 @keyframes spk{0%{opacity:1;transform:translate(calc(var(--mw,50px) * .4),0) scale(1)}20%{opacity:.4;transform:translate(calc(var(--mw,50px) * .4),0) scale(.6)}35%{opacity:0}50%{opacity:1;transform:translate(calc(var(--mw,50px) * -.45),calc(var(--mh,60px) * -.35)) scale(1.1)}70%{opacity:.4;transform:translate(calc(var(--mw,50px) * -.45),calc(var(--mh,60px) * -.35)) scale(.6)}85%{opacity:0}}
+.born-pic.rkS img:not(.shiny){animation:sglow 1.8s ease-in-out infinite}.born-pic.rkA img:not(.shiny){animation:aglowI 2s ease-in-out infinite}.born-pic.rkS img.shiny{filter:hue-rotate(var(--shue)) saturate(1.25) drop-shadow(0 0 4px #ffc830)}.born-pic.rkA img.shiny{filter:hue-rotate(var(--shue)) saturate(1.25) drop-shadow(0 0 4px #ff5050)}
 .pk.rkS img,.dp-pic.rkS img,.bd-pic.rkS img{animation:sglow 1.8s ease-in-out infinite}
 .pk.rkS{background:radial-gradient(circle 40px at 50% 42px,rgba(255,236,160,.7),rgba(255,236,160,0))}
 .pk.press{background:rgba(0,0,0,.05)}
@@ -711,7 +712,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .pokepop .boxbtn{display:block;width:100%;font:inherit;font-size:15px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:10px 8px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
 .dexpop .boxbtn.red{background:#c83838;border-color:#7a1c1c;color:#fff}/* 눌린 버튼: 아래 그림자가 위로 옮겨가며 면이 4px 내려간다 → 글자도 padding 으로 같은 만큼 내려 함께 움직인다 */
 
-.pokepop .win.leg{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 6px #e8b030,6px 6px 0 rgba(0,0,0,.35),0 0 14px rgba(255,200,60,.45);animation:legGlow 2.6s ease-in-out infinite}.pokepop .win.bud.leg{box-shadow:inset 0 0 0 4px #fff3f7,inset 0 0 0 6px #e8b030,6px 6px 0 rgba(0,0,0,.35),0 0 14px rgba(255,200,60,.45)}.pokepop .win.leg::after{content:'';position:absolute;inset:-4px;padding:4px;pointer-events:none;z-index:6;background:linear-gradient(115deg,#b07010,#ffd860 20%,#fff6c8 30%,#ffc030 40%,#b07010 55%,#ffd860 75%,#fff6c8 85%,#b07010);background-size:300% 300%;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);animation:rkShine 3s linear infinite}@keyframes legGlow{50%{filter:drop-shadow(0 0 6px rgba(255,210,80,.5))}}
+.hatch .win.leg,.pokepop .win.leg{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 6px #e8b030,6px 6px 0 rgba(0,0,0,.35),0 0 14px rgba(255,200,60,.45);animation:legGlow 2.6s ease-in-out infinite}.pokepop .win.bud.leg{box-shadow:inset 0 0 0 4px #fff3f7,inset 0 0 0 6px #e8b030,6px 6px 0 rgba(0,0,0,.35),0 0 14px rgba(255,200,60,.45)}.hatch .win.leg::after,.pokepop .win.leg::after{content:'';position:absolute;inset:-4px;padding:4px;pointer-events:none;z-index:6;background:linear-gradient(115deg,#b07010,#ffd860 20%,#fff6c8 30%,#ffc030 40%,#b07010 55%,#ffd860 75%,#fff6c8 85%,#b07010);background-size:300% 300%;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);animation:rkShine 3s linear infinite}@keyframes legGlow{50%{filter:drop-shadow(0 0 6px rgba(255,210,80,.5))}}
 .win.bud{background:#fff3f7;border-color:#9a3462;box-shadow:inset 0 0 0 3px #fff3f7,inset 0 0 0 6px #e9a3bf,6px 6px 0 rgba(0,0,0,.35)}.win.bud .dp-pic{background:#fcd9e6;border-color:#e9a3bf;box-shadow:inset 0 -18px 0 #f6c3d6}.win.bud .mvcard:not(.on){border-color:#e9a3bf!important}.win.bud .pp-free{color:#c0507e}
 #info.night{--card:#232a4e;--card-frame:#0e1024;--win-ink:#e4e2f6;--dim:#8e96c4;--inner:#46508a;--hp-track:#141832;color:#e4e2f6}#info.night .inf-ico{background:#2e365f;border-color:#0e1024}#info.night .pp-x{color:#8e96c4}#info.night .pf{border-color:#0e1024;background:linear-gradient(#3a4478,#2a3260)}#info.night .mvcard,#info.night .mvuse.lock{background:#2a3158;color:#c8cbe8;border-color:#46508a}#info.night .mvuse{background:#2a3158;color:#e4e2f6;border-color:#46508a;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}#info.night .mvuse.on{background:color-mix(in srgb,var(--tc) 30%,#232a4e);border-color:color-mix(in srgb,var(--tc) 80%,#fff)}#info.night .mvuse.on b,#info.night .mvuse.on>span:last-child{color:#f2f0ff}#info.bud.night{background:#3a2446;border-color:#0e1024}#info.bud.night .pf{border-color:#9a5a86;background:linear-gradient(#5a3a6a,#43284f)}#info .dp-head{position:relative}#info .pbody{align-items:stretch}#info #pPf{height:auto;min-height:84px;width:92px;align-self:stretch}#info .ihead{margin-top:10px}#info .ih-top{margin-top:0;min-height:26px;align-items:center;gap:6px}#info .ih-top .sx{font-size:17px;line-height:1}#info .m-head{margin-bottom:0}#infoBud{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}.pf .pf-rk{left:0!important;top:0!important;z-index:6}.pf .pf-rk .rk{border:0!important;font-size:11px;padding:1px 0!important;width:16px;line-height:13px;display:block}.win .evobtn.spc{display:flex;align-items:center;gap:8px;justify-content:flex-start;padding:0 12px!important;background:#f6f0ff!important;color:#5a3a8a!important;border-color:#c8b0e8!important;box-shadow:none!important;animation:none;cursor:default;font-size:13px;text-align:left}.win .evobtn.spc:active{padding:0 12px!important}.evobtn.spc .sp-tag{flex:none;font-size:12px;line-height:1;padding:4px 7px;background:#7a5ab0;color:#fff}.evobtn.spc .sp-why{flex:1;min-width:0;line-height:1.3}#info.bud{background:#fff3f7;border-color:#9a3462;box-shadow:6px 6px 0 rgba(0,0,0,.35)}#info.bud .pf{border-color:#e9a3bf;background:linear-gradient(#fcd9e6,#f6c3d6)}#info.bud .mvcard:not(.on){border-color:#e9a3bf!important}
 .bud-tag{margin-left:6px;font-size:12px;line-height:1;padding:4px 8px;background:#e8679a;color:#fff;border:2px solid #9a3462;box-shadow:2px 2px 0 rgba(0,0,0,.2)}.bud-tag[hidden]{display:none}.hd-rk:empty+.bud-tag{margin-left:0}
@@ -4343,7 +4344,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.40';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.41';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5936,7 +5937,7 @@ function centerImg(img) {
       if (x1 < 0) return; c = cenCache[k] = [(w - 1) / 2 - (x0 + x1) / 2, (h - 1) / 2 - (y0 + y1) / 2, h]; } catch (e) { return; } }
   const s = (img.offsetHeight || 128) / c[2]; img.style.translate = `${(c[0] * s).toFixed(1)}px ${(c[1] * s).toFixed(1)}px`;
 }
-function bornImg(sp, P, isNew) { const w = document.createElement('span'); w.className = 'born-pic'; w.append(bornImgEl(sp, P)); if (isNew) w.insertAdjacentHTML('beforeend', '<b class="born-new">NEW</b>'); return w; }
+function bornImg(sp, P, isNew) { const w = document.createElement('span'); w.className = 'born-pic'; { const rk = rankOf(P); if (rk === 'S' || rk === 'A') w.classList.add('rk' + rk); } w.append(bornImgEl(sp, P)); if (isNew) w.insertAdjacentHTML('beforeend', '<b class="born-new">NEW</b>'); return w; }
 function bornImgEl(sp, P) { const img = document.createElement('img'); img.alt = SPECIES[sp].n; img.onload = () => centerImg(img); img.src = thumbOf(fKey(sp, P.sex)); if (P.shiny) { img.classList.add('shiny'); img.style.setProperty('--shue', shinyHue(sp) + 'deg'); } return img; }
 // 진동: 아이폰 앱은 haptic 메시지, 안드로이드는 vibrate, iOS 사파리(18+)는 스위치 체크박스를 누를 때 나는 짧은 진동
 let hapSw = null;
@@ -6067,7 +6068,7 @@ let hatching = false;
 // 부화 창 효과 초기화. 흔들림 클래스도 지운다 (창을 다시 열 때 지난번 흔들림이 다시 재생되지 않게)
 function hSparks(k, g, big) { for (let i = 0; i < k; i++) { const s = document.createElement('i'); s.className = 'hspark' + (big && Math.random() < .4 ? ' b' : ''); s.style.left = (50 + (Math.random() - .5) * 80) + '%'; s.style.top = (28 + Math.random() * 48) + '%';
   s.style.setProperty('--sc', g === 5 ? (Math.random() < .6 ? '#ffd84a' : '#fff6c0') : g === 3 ? (Math.random() < .5 ? '#8ac8ff' : '#e0f2ff') : (Math.random() < .5 ? '#d6a4ff' : '#ffc4ef')); s.style.animationDelay = (Math.random() * .2).toFixed(2) + 's'; hatchEl.append(s); setTimeout(() => s.remove(), 1300); } }
-function hatchFx() { hatchEl.classList.remove('legend', 'rays', 'g4t', 'surge'); { const wh = hatchEl.querySelector('.hwhite'); if (wh) { wh.style.transition = ''; wh.style.opacity = ''; } } hatchEl.style.setProperty('--lg', 0); hatchEl.querySelectorAll('.hspark').forEach(e => e.remove()); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); hatchEl.querySelector('.win').classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5', 'jolt', 'wquake'); hatchEl.querySelector('.hwhite')?.classList.remove('go', 'big'); }
+function hatchFx() { hatchEl.classList.remove('legend', 'rays', 'g4t', 'surge'); { const wh = hatchEl.querySelector('.hwhite'); if (wh) { wh.style.transition = ''; wh.style.opacity = ''; } } hatchEl.style.setProperty('--lg', 0); hatchEl.querySelectorAll('.hspark').forEach(e => e.remove()); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); hatchEl.querySelector('.win').classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5', 'jolt', 'wquake', 'leg'); hatchEl.querySelector('.hwhite')?.classList.remove('go', 'big'); }
 async function playHatch() {
   if (hatching || !hatchQ.length) return;
   hatching = true;
@@ -6089,7 +6090,7 @@ async function playHatch() {
   hatchStage.querySelector('.flash').classList.add('go'); sfx('pop');
   // 깨지는 순간 화면 전체가 하얗게 → 천천히 원래대로. 전설은 긴장 곡을 멈추고 카드 테두리에 후광
   { const wh = hatchEl.querySelector('.hwhite'), L = g === 5; wh.style.setProperty('--wl', parseFloat(wh.style.opacity) || (parseFloat(hatchEl.style.getPropertyValue(L ? '--lg' : '--lit')) || 0) * .55); wh.classList.remove('go', 'big'); wh.style.transition = ''; wh.style.opacity = '';   /* 밝아진 만큼에서 이어서 하얗게 */ void wh.offsetWidth; wh.classList.add('go'); if (L) wh.classList.add('big');
-    setTimeout(() => { hatchEl.classList.remove('legend'); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); { const w = hatchEl.querySelector('.win'); w.classList.remove('jolt'); w.classList.add('aura', 'a' + g); if (g === 5) hatchEl.classList.add('rays'); } }, L ? 500 : 300);
+    setTimeout(() => { hatchEl.classList.remove('legend'); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); { const w = hatchEl.querySelector('.win'); w.classList.remove('jolt'); w.classList.toggle('leg', isLegend({ sp })); if (g === 5) hatchEl.classList.add('rays'); } }, L ? 500 : 300);
     if (L) { tenseStop(.25); setTimeout(() => { if (hatching) bgmDuck(1, 3); }, 3200); } }
   if (src) { S.eggs = S.eggs.filter(x => x !== src); renderBag.sig = ''; renderRun(); }
   hatchStage.querySelectorAll('.shard').forEach(x => { x.style.setProperty('--ec', getComputedStyle(egg).getPropertyValue('--ec')); x.classList.add('go'); });
@@ -6178,7 +6179,7 @@ async function hatchAll() {
     if (d && !q && !still) slide(d);   // 다음 카드는 오른쪽에서, 이전 카드는 왼쪽에서 밀려 들어온다
     hatchStage.innerHTML = ''; hatchStage.append(bornImg(r.sp, r.P, r.isNew)); if (!q && !r.gp) { r.gp = 1; setTimeout(() => goldPop(r.dupG), 250); }
     $('#hatchMsg').innerHTML = bornMsg(r); showDexInfo(r.sp); if (ivMode) showIvInfo(r);
-    { const w = hatchEl.querySelector('.win'); w.classList.remove('a1', 'a2', 'a3', 'a4', 'a5'); w.classList.add('aura', 'a' + r.g); hatchEl.classList.toggle('rays', r.g === 5); }
+    { const w = hatchEl.querySelector('.win'); w.classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5'); w.classList.toggle('leg', isLegend({ sp: r.sp })); hatchEl.classList.toggle('rays', r.g === 5); }
     $('#hlNum').textContent = `${i + 1} / ${res.length}`; $('#hlHl').hidden = i <= 0; $('#hlHr').hidden = i >= res.length - 1;
     strip.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-current', j === i));
     if (!q) strip.children[i]?.scrollIntoView({ block: 'nearest', inline: 'center' });
@@ -6199,7 +6200,10 @@ async function hatchAll() {
   sfx(res.some(r => r.isNew) ? 'newdex' : 'hatch'); haptic(2);
   hatchInfoFix(res);
   show(0);
-  await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = ev => { if (ev.target.closest('.win')) return; const d = sideTap(hatchEl, ev); if (d) { if (!$(d < 0 ? '#hlHl' : '#hlHr').hidden) show(i + d); return; } r(); }; });
+  await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = ev => { const w = ev.target.closest('.win');
+      if (w) { if (ev.target.closest('button,input,a,#hlStrip,[data-tip]')) return; const R = w.getBoundingClientRect(), d = ev.clientX < R.left + EDGE_IN ? -1 : ev.clientX > R.right - EDGE_IN ? 1 : 0;   /* 카드 안쪽 테두리 띠를 눌러도 넘긴다 (정보 카드와 같은 폭) */
+        if (d && !$(d < 0 ? '#hlHl' : '#hlHr').hidden) hatchPg?.step(d); return; }
+      const d = sideTap(hatchEl, ev); if (d) { if (!$(d < 0 ? '#hlHl' : '#hlHr').hidden) show(i + d); return; } r(); }; });
   hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatchFx(); hatchEl.classList.remove('list'); $('#hlHl').hidden = $('#hlHr').hidden = true; hatchPg = null; hw.style.transform = ''; hatching = false;
   const nw = res.filter(r => r.isNew).length, sh = res.filter(r => r.P.shiny).length;
   log(`알 ${res.length}개가 한꺼번에 부화했다! ${res.map(r => SPECIES[r.sp].n).join(', ')}${nw ? ` (새로 만난 포켓몬 ${nw}마리)` : ''}${sh ? ` ✦ 색이 다른 포켓몬 ${sh}마리!` : ''}`, [], true);
