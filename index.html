@@ -63,6 +63,9 @@
 .frpop{position:absolute;transform:translate(-50%,-100%);white-space:nowrap;font:12px/1 var(--px);color:#fff;background:#e04870;border:2px solid #8a1f40;padding:3px 6px;z-index:2000;pointer-events:none;animation:frpop 1.6s steps(12) forwards}
 .frpop b{margin-right:3px;color:#ffd0dc}
 @keyframes frpop{0%{opacity:0;transform:translate(-50%,-80%)}15%{opacity:1;transform:translate(-50%,-100%)}75%{opacity:1;transform:translate(-50%,-150%)}100%{opacity:0;transform:translate(-50%,-170%)}}
+.boxq{margin:0 0 8px}.boxq input{flex:1 1 100%}
+#boxGrid>.pk[hidden]{display:none}
+#boxGrid.nohit::before{content:'찾는 포켓몬이 없다.';grid-column:1/-1;text-align:center;color:var(--dim);padding:24px 0}
 .test-btn{font:inherit;font-size:11px;background:none;border:2px dashed #c03838;color:#c03838;padding:3px 6px;cursor:pointer}
 .run-eggs{padding:2px 0 6px 6px;border-bottom:2px dotted var(--inner)}.run-eggs .re-row{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);margin-top:3px}.re-eggs{display:flex;gap:1px;flex:none}.re-eggs .egg{width:12px;height:15px}.re-eggs .egg svg{width:100%;height:100%}.re-pl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .run-row:has(+.run-eggs){border-bottom:0}
@@ -1098,6 +1101,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
     </div>
     <div class="mtab boxtab" data-t="box" hidden>
       <div class="bag-test"><button id="boxReset" class="test-btn">전체 포켓몬 초기화</button><button id="boxGen" class="test-btn">포켓몬 생성하기</button></div>
+      <div class="filters boxq"><input id="boxQ" type="search" placeholder="이름이나 번호" aria-label="포켓몬 이름이나 번호로 찾기" autocomplete="off"></div>
       <div class="mgr-tools"><div class="bag-sort" id="boxSort"><button data-sort="new">날짜</button><button data-sort="rank">랭크</button><button data-sort="bs">종족값</button><button data-sort="fr">친밀도</button><button data-sort="no">번호</button><button data-sort="field">필드</button></div><span class="tcount" id="boxCount"></span></div>
       <div class="boxgrid" id="boxGrid"></div>
     </div>
@@ -4132,8 +4136,12 @@ $('#monPop').addEventListener('click', e => { if (e.target.closest('.m-dots')) m
 function sideTap(pop, e) { const r = pop.querySelector('.win').getBoundingClientRect(); if (e.clientY < r.top || e.clientY > r.bottom) return 0; return e.clientX < r.left ? -1 : e.clientX > r.right ? 1 : 0; }
 monPop.addEventListener('click', e => { if (e.target !== monPop) return; const d = sideTap(monPop, e); if (d) { const h = $(d < 0 ? '#mHl' : '#mHr'); if (!h.hidden) monStep(d); return; } closeMon(); });
 document.querySelectorAll('#boxSort [data-sort]').forEach(b => b.onclick = () => { const k = b.dataset.sort; if (k === boxSort && k !== 'field') boxDir = -boxDir; else { boxSort = k; boxDir = 1; } try { localStorage.setItem('pk-box-sort', boxSort); localStorage.setItem('pk-box-dir', boxDir); } catch (e) {} renderBox(); });
-function boxList() {
-  const L = boxSort === 'field' ? S.box.filter(p => onField(p.id)) : S.box.slice();   // 필드: 필드에 나가 있는 포켓몬만
+// 검색: 별명·종 이름에 들어 있거나 도감 번호가 같으면
+const boxQ = () => $('#boxQ').value.trim();
+const boxHit = (p, q) => !q || nameOf(p).includes(q) || SPECIES[p.sp].n.includes(q) || String(p.sp) === q.replace(/^0+/, '');
+function boxList(all) {
+  const q = all ? '' : boxQ();
+  const L = (boxSort === 'field' ? S.box.filter(p => onField(p.id)) : S.box.slice()).filter(p => boxHit(p, q));   // 필드: 필드에 나가 있는 포켓몬만
   const d = boxSort === 'field' ? 1 : boxDir, idx = new Map(S.box.map((p, i) => [p, i]));
   const key = { rank: rankScore, bs: p => bsSum(p.sp), fr: p => p.fr || 0, no: p => -p.sp }[boxSort] || (p => idx.get(p));   // 날짜: 상자에 들어온 순서
   // 키는 한 번씩만 계산해 두고 정렬 (1000마리도 바로)
@@ -4146,8 +4154,9 @@ const pkEls = new Map(), pkTpl = document.createElement('template');
 const pkHtml = (p, tag, rk) => `<button class="pk${p.shiny ? ' shiny' : ''}${pkCls(p)}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rk}">${rk}</span>${tag === 2 ? '<span class="tg bud">짝꿍</span>' : tag === 1 ? '<span class="tg">필드</span>' : ''}<img alt="" data-sp="${p.sp}" data-sx="${p.sex || ''}" src="${thumbP(p) || ''}"><span class="nm">${esc(nameOf(p))}${sexHtml(p.sex)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(p.fr)}</span></button>`;
 function renderBox() {
   document.querySelectorAll('#boxSort [data-sort]').forEach(b => { const on = b.dataset.sort === boxSort; b.setAttribute('aria-pressed', on); b.dataset.dir = on && boxSort !== 'field' ? (boxDir > 0 ? '▼' : '▲') : ''; });
-  const L = boxList(), bud = new Set(S.buds.map(b => b.pid)), field = new Set(S.mons.map(m => m.pid)), grid = $('#boxGrid');
-  $('#boxCount').innerHTML = budPick != null ? '<b class="pickhint">짝꿍을 골라 주세요</b>' : `${S.box.some(p => p.shiny) ? `이로치 ${S.box.filter(p => p.shiny).length} · ` : ''}전체 <b>${S.box.length}</b>마리`;
+  const L = boxList(true), q = boxQ(), bud = new Set(S.buds.map(b => b.pid)), field = new Set(S.mons.map(m => m.pid)), grid = $('#boxGrid');
+  const hits = q ? L.filter(p => boxHit(p, q)).length : 0;
+  $('#boxCount').innerHTML = budPick != null ? '<b class="pickhint">짝꿍을 골라 주세요</b>' : q ? `찾은 포켓몬 <b>${hits}</b>마리` : `${S.box.some(p => p.shiny) ? `이로치 ${S.box.filter(p => p.shiny).length} · ` : ''}전체 <b>${S.box.length}</b>마리`;
   if (!L.length) { pkEls.clear(); grid.innerHTML = `<p class="empty-msg">${boxSort === 'field' && S.box.length ? '필드에 나가 있는 포켓몬이 없다.' : '아직 부화시킨 포켓몬이 없다.'}</p>`; return; }
   grid.querySelector('.empty-msg')?.remove();
   const want = [], make = [];
@@ -4165,9 +4174,12 @@ function renderBox() {
   // 새 칸만 붙이고, 순서는 CSS order 로 (칸을 옮기지 않아 정렬이 바로 바뀐다)
   if (make.length) { const f = document.createDocumentFragment(); for (const r of make) f.appendChild(r.el); grid.appendChild(f); }
   want.forEach((r, k) => { if (r.k !== k) { r.k = k; r.el.style.order = k; } });
+  L.forEach((p, k) => { const h = !boxHit(p, q); if (want[k].el.hidden !== h) want[k].el.hidden = h; });
+  grid.classList.toggle('nohit', !!q && !hits);
   for (const r of make) { const im = r.el.querySelector('img[data-sp]'), sp = +im.dataset.sp; if (!thumbOf(sp)) ensureSprite(sp).then(() => { im.src = thumbOf(fKey(sp, im.dataset.sx)); }).catch(() => {}); }
 }
 setTimeout(() => (window.requestIdleCallback || setTimeout)(() => { if (!pkEls.size) renderBox(); }), 3000);   // 상자 칸을 미리 만들어 두어 첫 진입도 빠르게
+$('#boxQ').addEventListener('input', () => renderBox());
 $('#boxGrid').addEventListener('click', e => { const b = e.target.closest('[data-id]'); if (b) openPoke(+b.dataset.id); });
 let pokeId = null;
 function openPoke(id, dir = 0) {
