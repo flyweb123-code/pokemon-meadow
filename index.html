@@ -807,6 +807,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .rd-bar{flex:none;width:44px;height:8px;background:#3a8a3e;box-shadow:inset 0 -2px 0 rgba(0,0,0,.35)}.rd-bar.b{background:#2d6fc0}
 .rd-btn{flex:none;margin-left:auto;width:30px;height:30px;background:#262626;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)}
 .rdex #dpAct{margin-top:12px}
+.dp-arr{position:absolute;top:50%;width:22px;height:72px;margin-top:-36px;padding:0;border:0;background:none;cursor:pointer;z-index:3}.dp-arr.l{left:-22px}.dp-arr.r{right:-22px}.dp-arr[hidden]{display:none}.dp-arr .sw-h{position:static;display:block;margin:0 auto}.dp-arr:active .sw-h{opacity:1;transform:scale(1.3)}
 .dexpop .dx-lock{margin:0;color:var(--dim);font-size:14px;line-height:1.6}
 .dexpop .boxbtn{display:block;width:100%;font:inherit;font-size:16px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:11px 16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
 .dexpop .boxbtn.off{background:var(--win);color:var(--frame)}
@@ -1277,7 +1278,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 </div>
 <div class="dexpop" id="dexPop" hidden>
   <div class="win rdex" role="dialog" aria-label="도감 카드">
-    <i class="sw-h l" id="dpHl"></i><i class="sw-h r" id="dpHr"></i><div class="dp-head m-head rd-top"><i class="rd-lens"></i><i class="rd-led r"></i><i class="rd-led y"></i><i class="rd-led g"></i><span id="dpPos"></span><button class="pp-x" id="dpClose" aria-label="닫기">✕</button></div>
+    <button class="dp-arr l" id="dpHl" aria-label="이전 포켓몬"><i class="sw-h l"></i></button><button class="dp-arr r" id="dpHr" aria-label="다음 포켓몬"><i class="sw-h r"></i></button><div class="dp-head m-head rd-top"><i class="rd-lens"></i><i class="rd-led r"></i><i class="rd-led y"></i><i class="rd-led g"></i><span id="dpPos"></span><button class="pp-x" id="dpClose" aria-label="닫기">✕</button></div>
     <div class="rd-bez"><i class="rd-dot"></i><i class="rd-dot"></i>
     <div class="cdex" id="dpStage">
       <div class="cd-top"><div class="cd-l"><div class="dp-pic"><img alt="" id="dpImg"></div><div class="cd-no" id="dpNo"></div></div><div class="cd-r" id="dpMeta"></div></div>
@@ -4195,7 +4196,7 @@ async function openCard(sp, dir = 0) {
   $('#dpPos').textContent = `${i + 1} / ${list.length}`;
   $('#dpHl').hidden = i <= 0; $('#dpHr').hidden = i < 0 || i >= list.length - 1;
   const pic = $('#dpStage .dp-pic'), img = $('#dpImg');
-  pic.classList.toggle('locked', lock); pic.classList.remove('slide-l', 'slide-r'); void pic.offsetWidth; if (dir) pic.classList.add(dir > 0 ? 'slide-l' : 'slide-r');
+  pic.classList.toggle('locked', lock);   // 넘길 때 그림은 그냥 바뀐다(슬라이드 없음)
   img.src = thumbOf(sp) || ''; img.alt = lock ? '???' : d.n;
   if (!thumbOf(sp)) ensureSprite(sp).then(() => { if (cardSp === sp) img.src = thumbOf(sp); }).catch(() => {});
   // 클래식 도감: 왼쪽 그림·번호, 오른쪽 이름·분류·키·몸무게, 눈금 선 아래 설명
@@ -4221,10 +4222,10 @@ $('#dpAct').onclick = async () => {
   closeCard(); sheet.hidden = true;
   try { const m = await spawn(sp, { pid: P.id }); if (m) select(m); } catch (e) { log(`${SPECIES[sp].n}의 그림을 불러오지 못했다.`); }
 };
-{ let x0 = null, y0 = 0; const w = $('#dexPop .win');
-  w.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; x0 = e.clientX; y0 = e.clientY; });
-  w.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null; if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) cardStep(dx < 0 ? 1 : -1); });
-  w.addEventListener('pointercancel', () => { x0 = null; });
+// 도감 카드는 밀어서 넘기지 않고 바깥 좌우 화살표 버튼(또는 그 옆 바깥)으로만 넘긴다
+$('#dpHl').onclick = e => { e.stopPropagation(); cardStep(-1); };
+$('#dpHr').onclick = e => { e.stopPropagation(); cardStep(1); };
+{
   document.addEventListener('keydown', e => { if ($('#dexPop').hidden) return; if (e.key === 'ArrowLeft') cardStep(-1); else if (e.key === 'ArrowRight') cardStep(1); else if (e.key === 'Escape') closeCard(); }); }
 function togglePick(sp) {
   if (dexLocked(sp)) { $('#dexCount').textContent = '아직 만나지 못한 포켓몬이다. 알을 부화시켜 만나 보자.'; return; }
