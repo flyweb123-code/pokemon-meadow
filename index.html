@@ -704,7 +704,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .pp-free{display:block;margin:10px auto 0;font:inherit;font-size:13px;background:none;border:0;color:#c03838;padding:4px 10px;cursor:pointer}
 .pp-free.arm{background:#c03838;color:#fff}.pp-free[hidden]{display:none}
 .pp-btns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
-.pp-btns:has(#ppField[hidden]){grid-template-columns:1fr}#ppField[hidden]{display:none}
+.pp-btns:has(#ppField[hidden]),.pp-btns:has(#ppBud[hidden]){grid-template-columns:1fr}#ppField[hidden]{display:none}
 .m-btns{margin-top:10px;grid-template-columns:repeat(3,minmax(0,1fr))}.m-btns:has(#mBud[hidden]){grid-template-columns:repeat(2,minmax(0,1fr))}#mBud[hidden]{display:none}#monPop .boxbtn.pink.sunk{background:#f7dfe8;border-color:#d9a9bc;color:#b0788f}#monPop .m-btns .boxbtn{min-width:0;font-size:14px;padding:10px 2px;white-space:nowrap}#pokePop .pp-btns .boxbtn{padding-left:2px;padding-right:2px}.pp-btns .boxbtn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:4px;padding-right:4px;font-size:clamp(12px,3.6vw,15px)}
 .pokepop .boxbtn{display:block;width:100%;font:inherit;font-size:15px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:10px 8px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
 .dexpop .boxbtn.red{background:#c83838;border-color:#7a1c1c;color:#fff}/* 눌린 버튼: 아래 그림자가 위로 옮겨가며 면이 4px 내려간다 → 글자도 padding 으로 같은 만큼 내려 함께 움직인다 */
@@ -4341,7 +4341,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.32';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.33';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -4819,11 +4819,12 @@ function openPoke(id, dir = 0, quiet = false, noCry = false) {
     ;
   { const inp = $('#ppName'); inp.addEventListener('input', () => { inp.style.width = (Math.max(1, inp.value.length) + .15) + "em"; }); inp.addEventListener('change', () => renameBox(P, inp.value)); inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); }); }
   const on = onField(P.id), full = S.mons.length >= MAX_MONS, isBud = S.buds.some(b => b.pid === P.id);
-  const rb = $('#ppFree'); rb.hidden = budPick != null; if (freeArm !== id) { freeArm = null; rb.classList.remove('arm'); rb.textContent = '놓아주기'; }
-  const fb = $('#ppField'); fb.hidden = budPick != null; fb.textContent = on ? '필드에서 빼기' : full ? '필드 가득 참' : '필드에 내보내기'; fb.disabled = !on && full; fb.classList.toggle('sunk', on); fb.classList.remove('popout');
+  const pick = budPick != null || boxFromSlot;   /* 빈 짝꿍 칸·빈 필드 슬롯에서 왔으면 그 일 하는 버튼 하나만 */
+  const rb = $('#ppFree'); rb.hidden = pick; if (freeArm !== id) { freeArm = null; rb.classList.remove('arm'); rb.textContent = '놓아주기'; }
+  const fb = $('#ppField'); fb.hidden = budPick != null; fb.textContent = on ? (boxFromSlot ? '이미 필드에 있어요' : '필드에서 빼기') : full ? '필드 가득 참' : '필드에 내보내기'; fb.disabled = (!on && full) || (boxFromSlot && on); fb.classList.toggle('sunk', on && !boxFromSlot); fb.classList.toggle('off', boxFromSlot && on); fb.classList.remove('popout');
   const noRoom = budPick == null && S.buds.length >= MAX_BUDS;
-  { $('#ppEvo').hidden = budPick != null; setEvoBtn($('#ppEvoBtn'), P); }
-  const bb = $('#ppBud'); bb.textContent = isBud ? '짝꿍 해제하기' : noRoom ? '짝꿍 자리 없음' : '짝꿍으로'; bb.disabled = !isBud && noRoom; bb.classList.toggle('off', !isBud && noRoom); bb.classList.toggle('sunk', isBud);   // 짝꿍이면 눌린 버튼(누르면 해제)
+  { $('#ppEvo').hidden = pick; setEvoBtn($('#ppEvoBtn'), P); }
+  const bb = $('#ppBud'); bb.hidden = boxFromSlot; bb.textContent = isBud ? '짝꿍 해제하기' : noRoom ? '짝꿍 자리 없음' : '짝꿍으로'; bb.disabled = !isBud && noRoom; bb.classList.toggle('off', !isBud && noRoom); bb.classList.toggle('sunk', isBud);   // 짝꿍이면 눌린 버튼(누르면 해제)
 }
 // 진화하기 버튼 (정보 카드·필드 개체 정보 공용): 가로로 긴 버튼. 아직이면 꺼진 모양이고 누르면 버튼 가운데 말풍선(진화까지 쌓인 km / 필요 km, 또는 조건). 최종 진화는 같은 자리에 같이 달린 거리
 function setEvoBtn(btn, P) {
@@ -4864,7 +4865,7 @@ cardPager($('#pokePop'), {
 $('#ppField').onclick = async () => {
   const P = boxOf(pokeId); if (!P) return;
   const m = S.mons.find(x => x.pid === P.id);
-  if (m) { sfx('tap'); removeMon(m); }   // 눌려 있던 버튼이 중간 모션 없이 바로 '필드에 내보내기'로
+  if (m) { if (boxFromSlot) return; sfx('tap'); removeMon(m); }   // 눌려 있던 버튼이 중간 모션 없이 바로 '필드에 내보내기'로
   else if (S.mons.length < MAX_MONS) { const fb = $('#ppField'); if (fb.classList.contains('pressd') || fb.classList.contains('sunk')) return; sfx('tap');
     if (boxFromSlot) { fb.classList.add('pressd'); await wait(110); fb.classList.remove('pressd'); }   // 빈 슬롯에서 왔으면 바로 눌린 뒤 필드로
     else { fb.classList.add('sunk'); fb.textContent = '필드에서 빼기'; }   // 그림을 불러오는 동안 기다리지 않고 먼저 눌린 모양으로
