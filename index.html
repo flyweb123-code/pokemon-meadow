@@ -548,7 +548,7 @@ ol.log li.big .txt{color:#c03838}
 #boxSort button:first-child,#bagSort button:first-child{margin-left:0}
 .mgr-tools #eggAll[hidden]+.tcount{margin-left:auto}
 .setwin{max-width:560px;display:flex;flex-direction:column}
-.set-body{flex:1;min-height:0;overflow-y:auto;touch-action:pan-y}
+.set-body{flex:1;min-height:0;overflow-y:auto;touch-action:pan-y}#set{touch-action:pan-y}
 .set-sec{border:3px solid var(--frame);background:var(--card);padding:14px;margin-bottom:12px;box-shadow:4px 4px 0 rgba(0,0,0,.25)}
 .set-sec h4{margin:0 0 6px;font-size:18px}
 .pf-sp{flex:1}#setTitle{margin-right:auto}#set .sheet-head .pf-sp{display:none}
@@ -919,6 +919,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .hatch-stage.evo img{filter:brightness(0) invert(1) drop-shadow(0 0 6px rgba(160,190,255,.9))}
 .hatch p{font-size:18px;margin:8px 0 12px}
 .hatch .boxbtn{display:block;width:100%;font:inherit;font-size:17px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:12px 16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
+.boxbtn.pressd{box-shadow:inset 0 5px 0 rgba(0,0,0,.35)!important;transform:translateY(3px);filter:brightness(.88)}
 .hatch .boxbtn:active{box-shadow:inset 0 4px 0 rgba(0,0,0,.35);padding:14px 16px 10px}
 .hatch .boxbtn:focus,.hatch .boxbtn:focus-visible{outline:0}
 .dexinfo{text-align:left;border:3px solid var(--inner);background:#fff;padding:10px 12px;margin:0 0 12px;animation:hpop .4s steps(4,end)}
@@ -3984,18 +3985,18 @@ $('#pfGear').onclick = () => { sfx('tap'); setPage(true); };
 $('#setBack').onclick = () => { sfx('tap'); setPage(false); };
 $('#pfRunBtn').onclick = () => { sfx('tap'); renderRunLog(); setPage('runs'); };
 // 하위 화면(런닝 기록·설정): 화면 아무 데서나 오른쪽으로 밀면, 왼쪽에서 프로필 창이 들어오며 지금 창을 옆으로 밀어내고 뒤로 간다
-{ const body = setEl.querySelector('.set-body'); let sw = null;
+{ const body = setEl.querySelector('.set-body'); let sw = null, swEnd = 0;
   const sub = () => ['#runPage', '#setPage'].map(q => $(q)).find(e => !e.hidden);
-  body.addEventListener('pointerdown', e => {
+  setEl.addEventListener('pointerdown', e => {   // 창 전체(양옆 여백 포함)에서 받는다
     const pg = sub(); if (!pg || e.button > 0) return;
     const r = body.getBoundingClientRect(); if (e.target.closest('input, .vol, [data-noswipe]')) return;
     sw = { id: e.pointerId, x0: e.clientX, y0: e.clientY, t0: performance.now(), pg, w: r.width, on: false, dx: 0 };
   });
-  body.addEventListener('pointermove', e => {
+  setEl.addEventListener('pointermove', e => {
     if (!sw || e.pointerId !== sw.id) return;
     const dx = e.clientX - sw.x0, dy = e.clientY - sw.y0;
     if (!sw.on) { if (Math.abs(dy) > 12 && Math.abs(dy) > dx) { sw = null; return; } if (dx < 8) return;
-      sw.on = true; try { body.setPointerCapture(e.pointerId); } catch (_) {}
+      sw.on = true; try { setEl.setPointerCapture(e.pointerId); } catch (_) {}
       const pf = $('#pfPage'), cs = getComputedStyle(body);
       pf.hidden = false; pf.style.cssText = `position:absolute;left:${cs.paddingLeft};right:${cs.paddingRight};top:${body.scrollTop + parseFloat(cs.paddingTop)}px;pointer-events:none;transform:translateX(${-sw.w - 14}px)`;
       body.style.position = 'relative'; body.style.overflowX = 'hidden'; sw.pf = pf; }
@@ -4004,7 +4005,7 @@ $('#pfRunBtn').onclick = () => { sfx('tap'); renderRunLog(); setPage('runs'); };
     e.preventDefault();
   });
   const end = e => {
-    if (!sw || e.pointerId !== sw.id) return; const s0 = sw; sw = null; if (!s0.on) return;
+    if (!sw || e.pointerId !== sw.id) return; const s0 = sw; sw = null; if (!s0.on) return; swEnd = performance.now();
     const v = s0.dx / Math.max(1, performance.now() - s0.t0), back = s0.dx > s0.w * .35 || v > .5;
     const ease = 'transform .24s cubic-bezier(.2,.8,.3,1)';
     s0.pg.style.transition = s0.pf.style.transition = ease;
@@ -4012,7 +4013,8 @@ $('#pfRunBtn').onclick = () => { sfx('tap'); renderRunLog(); setPage('runs'); };
     setTimeout(() => { s0.pg.style.cssText = ''; s0.pf.style.cssText = ''; body.style.position = body.style.overflowX = '';
       if (back) { sfx("tap"); setPage(false); } else s0.pf.hidden = true; }, 250);
   };
-  body.addEventListener('pointerup', end); body.addEventListener('pointercancel', end);
+  setEl.addEventListener('pointerup', end); setEl.addEventListener('pointercancel', end);
+  setEl.addEventListener('click', e => { if (performance.now() - swEnd < 400) { e.stopPropagation(); e.preventDefault(); } }, true);   // 밀고 뗀 손이 바깥(닫기)으로 눌리지 않게
 }
 $('#openSet').onclick = () => tabTo(setEl, () => { renderProfile(); renderRunLog(); setPage(false); setEl.hidden = false; });
 const shopEl = $('#shop');
@@ -4491,13 +4493,13 @@ function renderMgrDetail(rebuild) {
     inp.addEventListener('input', () => { inp.style.width = (Math.max(1, inp.value.length) + .15) + 'em'; });
     inp.addEventListener('change', () => renameMon(m, inp.value));
     inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); });
-    $('#mLook').onclick = () => { closeMgr(); select(m); };
+    $('#mLook').onclick = ev => pressBtn(ev.currentTarget, () => { closeMgr(); select(m); });
     { const i = S.mons.indexOf(m); $('#mHl').hidden = i <= 0; $('#mHr').hidden = i >= S.mons.length - 1; $('#mRk').innerHTML = rkBadge(boxOf(m.pid)); }
     monPage(monPg, true);
     // 필드에서 빼기: 포켓몬 상자로 돌아간다 (떠나보내는 게 아님)
-    $('#mOut').onclick = () => {
+    $('#mOut').onclick = ev => pressBtn(ev.currentTarget, () => {
       const i = S.mons.indexOf(m); removeMon(m); mgrSel = S.mons[Math.min(i, S.mons.length - 1)] || null; closeMon(); renderMgr(true); refreshCap(); save();
-    };
+    });
   }
   const pic = $('#mPic'), want = isPmd(m.form) ? thumbOf(m.sk || m.form) : m.state === 'sleep' ? (stillCache[m.form] || SPRITES[m.form]) : SPRITES[m.form];
   if (pic.getAttribute('src') !== want) pic.src = want;
@@ -5492,6 +5494,8 @@ const hatchEl = $('#hatch'), hatchStage = $('#hatchStage');
 // 부화시키기·가방으로 빼기: 누르는 동안 버튼이 쑥 들어간다 (iOS 는 touchstart 가 있어야 :active 가 먹는다)
 document.addEventListener('touchstart', () => {}, { passive: true });
 // 빈 칸(+)을 누르면 칸이 쑥 눌렸다 올라온 뒤 다음 화면으로
+// 상자 모양 버튼: 쑥 눌렸다가 실행 (두 번 눌러도 한 번만)
+function pressBtn(el, go, ms = 140) { if (!el || el.classList.contains('pressd')) return; sfx('tap'); el.classList.add('pressd'); setTimeout(() => { el.classList.remove('pressd'); go(); }, ms); }
 function pressGo(el, go, ms = 150) { if (!el || el.classList.contains('tapd')) return go(); sfx('tap'); el.classList.add('tapd'); setTimeout(() => { el.classList.remove('tapd'); go(); }, ms); }
 document.addEventListener('pointerdown', e => { const b = e.target.closest('#eggHatch,#eggOut'); if (b) b.classList.add('press'); }, true);
 ['pointerup', 'pointercancel'].forEach(t => document.addEventListener(t, () => document.querySelectorAll('#eggHatch.press,#eggOut.press').forEach(b => b.classList.remove('press')), true));
