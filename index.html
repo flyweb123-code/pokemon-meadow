@@ -281,7 +281,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 @keyframes gup{0%{transform:translateY(-4px)}50%{transform:translateY(2px)}}
 .coin{display:inline-block;width:14px;height:14px;background:#ffc830;box-shadow:inset -3px -3px 0 #d08a00,inset 3px 3px 0 #fff2a0,0 0 0 2px #6a4400;flex:none}
 .mapico{width:46px;height:46px;display:grid;place-items:center;border:3px solid var(--frame);background:var(--win);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner),3px 3px 0 rgba(0,0,0,.35);cursor:pointer;padding:0}
-.mapico .b-night{display:none}.boot-night .mapico .b-night{display:block}.boot-night .mapico .b-day{display:none}.mapico.night .b-night{display:block}.mapico.night .b-day{display:none}
+.mapico .b-night{display:none!important}
 .mapico.night{--win:#1e2340;--inner:#46508a;--frame:#0e1024}
 .mapico[aria-pressed="true"]{background:#ffe27a;box-shadow:inset 0 0 0 3px #ffe27a,inset 0 0 0 5px var(--frame),1px 1px 0 rgba(0,0,0,.35);transform:translate(2px,2px)}
 .shopwin{max-width:560px;height:min(90vh,760px);display:flex;flex-direction:column}
@@ -421,7 +421,7 @@ ol.log li.big .txt{color:#c03838}
 .act.headache{animation:headache .7s ease-in-out infinite;transform-origin:50% 100%}
 .act.nod{animation:nod .8s ease-in-out;transform-origin:50% 100%}
 .mon.aura img,.mon.aura .spr{filter:drop-shadow(0 0 3px #e0a0ff) drop-shadow(0 0 7px #b070ff)}
-.act.hop{animation:hop .45s ease-out}
+.act.hop{animation:hop .45s ease-out}.act.phop{animation:phop .3s ease-out}@keyframes phop{0%,100%{transform:translateX(-50%) translateY(0)}45%{transform:translateX(-50%) translateY(-7px)}}
 .act.shake{animation:shake .25s linear 3}
 .act.burrow{animation:burrow .9s ease-in forwards}
 .act.emerge{animation:emerge .7s ease-out}
@@ -702,8 +702,8 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .pokepop .boxbtn{display:block;width:100%;font:inherit;font-size:15px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:10px 8px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
 .dexpop .boxbtn.red{background:#c83838;border-color:#7a1c1c;color:#fff}/* 눌린 버튼: 아래 그림자가 위로 옮겨가며 면이 4px 내려간다 → 글자도 padding 으로 같은 만큼 내려 함께 움직인다 */
 
-.win.bud{background:#fff3f7;border-color:#9a3462;box-shadow:inset 0 0 0 4px #fff3f7,inset 0 0 0 8px #e9a3bf,6px 6px 0 rgba(0,0,0,.35)}.win.bud .dp-pic{background:#fcd9e6;border-color:#e9a3bf;box-shadow:inset 0 -18px 0 #f6c3d6}.win.bud .mvcard:not(.on){border-color:#e9a3bf!important}.win.bud .pp-free{color:#c0507e}
-#info.night{--card:#232a4e;--card-frame:#0e1024;--win-ink:#e4e2f6;--dim:#8e96c4;--inner:#46508a;--hp-track:#141832;color:#e4e2f6}#info.night .inf-ico{background:#2e365f;border-color:#0e1024}#info.night .pp-x{color:#8e96c4}#info.night .pf{border-color:#0e1024;background:linear-gradient(#3a4478,#2a3260)}#info.night .mvcard,#info.night .mvuse.lock{background:#2a3158;color:#c8cbe8;border-color:#46508a}#info.bud.night{background:#3a2446;border-color:#0e1024}#info.bud.night .pf{border-color:#9a5a86;background:linear-gradient(#5a3a6a,#43284f)}#info .dp-head{position:relative}#infoBud{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}.pf .pf-rk{left:0!important;top:0!important}.pf .pf-rk .rk{border:0!important;font-size:11px;padding:1px 4px;line-height:13px;display:block}.win .evobtn.spc{display:flex;align-items:center;gap:8px;justify-content:flex-start;padding:0 12px!important;background:#f6f0ff!important;color:#5a3a8a!important;border-color:#c8b0e8!important;box-shadow:none!important;animation:none;cursor:default;font-size:13px;text-align:left}.win .evobtn.spc:active{padding:0 12px!important}.evobtn.spc .sp-tag{flex:none;font-size:12px;line-height:1;padding:4px 7px;background:#7a5ab0;color:#fff}.evobtn.spc .sp-why{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#info.bud{background:#fff3f7;border-color:#9a3462;box-shadow:6px 6px 0 rgba(0,0,0,.35)}#info.bud .pf{border-color:#e9a3bf;background:linear-gradient(#fcd9e6,#f6c3d6)}#info.bud .mvcard:not(.on){border-color:#e9a3bf!important}
+.win.bud{background:#fff3f7;border-color:#9a3462;box-shadow:inset 0 0 0 3px #fff3f7,inset 0 0 0 6px #e9a3bf,6px 6px 0 rgba(0,0,0,.35)}.win.bud .dp-pic{background:#fcd9e6;border-color:#e9a3bf;box-shadow:inset 0 -18px 0 #f6c3d6}.win.bud .mvcard:not(.on){border-color:#e9a3bf!important}.win.bud .pp-free{color:#c0507e}
+#info.night{--card:#232a4e;--card-frame:#0e1024;--win-ink:#e4e2f6;--dim:#8e96c4;--inner:#46508a;--hp-track:#141832;color:#e4e2f6}#info.night .inf-ico{background:#2e365f;border-color:#0e1024}#info.night .pp-x{color:#8e96c4}#info.night .pf{border-color:#0e1024;background:linear-gradient(#3a4478,#2a3260)}#info.night .mvcard,#info.night .mvuse.lock{background:#2a3158;color:#c8cbe8;border-color:#46508a}#info.bud.night{background:#3a2446;border-color:#0e1024}#info.bud.night .pf{border-color:#9a5a86;background:linear-gradient(#5a3a6a,#43284f)}#info .dp-head{position:relative}#info .pbody{align-items:stretch}#info #pPf{height:auto;min-height:84px;width:92px;align-self:stretch}#info .ihead{margin-top:10px}#info .ih-top{margin-top:0;min-height:26px;align-items:center;gap:6px}#info .ih-top .sx{font-size:17px;line-height:1}#info .m-head{margin-bottom:0}#infoBud{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}.pf .pf-rk{left:0!important;top:0!important}.pf .pf-rk .rk{border:0!important;font-size:11px;padding:1px 4px;line-height:13px;display:block}.win .evobtn.spc{display:flex;align-items:center;gap:8px;justify-content:flex-start;padding:0 12px!important;background:#f6f0ff!important;color:#5a3a8a!important;border-color:#c8b0e8!important;box-shadow:none!important;animation:none;cursor:default;font-size:13px;text-align:left}.win .evobtn.spc:active{padding:0 12px!important}.evobtn.spc .sp-tag{flex:none;font-size:12px;line-height:1;padding:4px 7px;background:#7a5ab0;color:#fff}.evobtn.spc .sp-why{flex:1;min-width:0;line-height:1.3}#info.bud{background:#fff3f7;border-color:#9a3462;box-shadow:6px 6px 0 rgba(0,0,0,.35)}#info.bud .pf{border-color:#e9a3bf;background:linear-gradient(#fcd9e6,#f6c3d6)}#info.bud .mvcard:not(.on){border-color:#e9a3bf!important}
 .bud-tag{margin-left:6px;font-size:12px;line-height:1;padding:4px 8px;background:#e8679a;color:#fff;border:2px solid #9a3462;box-shadow:2px 2px 0 rgba(0,0,0,.2)}.bud-tag[hidden]{display:none}.hd-rk:empty+.bud-tag{margin-left:0}
 #mStage,#pPf{cursor:pointer}
 .pokepop .boxbtn.sunk,#monPop .boxbtn.sunk{background:#b9b9c6;border-color:#8a8a9a;color:#5a5a6a;box-shadow:inset 0 4px 0 rgba(0,0,0,.3),inset 3px 0 0 rgba(0,0,0,.12);padding-top:15px;padding-bottom:7px}
@@ -2191,7 +2191,7 @@ function emote(m, text, cls = '', dur = 2.2) {
   m.bub.className = 'bubble ' + cls; m.bub.textContent = text; m.bub.hidden = false; m.bubT = dur;
   m.bub.style.animation = 'none'; void m.bub.offsetWidth; m.bub.style.animation = '';
 }
-function anim(m, cls) { m.act.classList.remove('hop', 'shake', 'emerge', 'appear', 'stretch'); void m.act.offsetWidth; m.act.classList.add(cls); if (cls === 'hop' && m.spr && !m.one) playOnce(m, 'Hop'); }
+function anim(m, cls) { m.act.classList.remove('hop', 'phop', 'shake', 'emerge', 'appear', 'stretch'); void m.act.offsetWidth; m.act.classList.add(cls); if (cls === 'hop' && m.spr && !m.one) playOnce(m, 'Hop'); }
 
 // ---------- create ----------
 async function spawn(sp, opts = {}) {
@@ -2314,7 +2314,7 @@ function feedNow(m) {
     setState(m, 'eat', m.sp === 143 ? 8 : 5); log(`${J(m,'이/가')} 떨어진 열매를 바로 냠냠 먹었다.`, [m]); save(); }, 520);
 }
 // 쓰다듬기: 정보창·상태창을 숨기고 그 포켓몬 위를 문지른다. PET_N 번 문지르면 아주 좋아하며 끝 (친밀도 +3 은 하루 3번까지, 즐거움 +20)
-const PET_N = 12, PET_STEP = 90, PET_DAY = 3;   // 문지르기 12번 (약 1080px)
+const PET_N = 12, PET_STEP = 150, PET_DAY = 3;   // 문지르기 12번 (약 1800px)
 let petM = null;
 function petStart(m) {
   select(null); if (!S.mons.includes(m) || m.held || m.evolving) return;
@@ -2338,8 +2338,8 @@ function petDone() {
   log(fr ? `${J(m,'은/는')} 쓰다듬어 주자 아주 좋아했다.` : `${J(m,'은/는')} 쓰다듬어 주자 기분 좋은 듯 눈을 가늘게 떴다.`, [m]);
   /* 기뻐서 왼쪽·오른쪽을 번갈아 보며 춤춘다 (그동안은 제자리) */
   petM.done = true; $('#petBar').hidden = true; const f0 = m.face || 1;
-  for (let k = 0; k < 8; k++) setTimeout(() => { if (!S.mons.includes(m)) return; m.face = k % 2 ? f0 : -f0; if (k % 2 === 0) anim(m, 'hop'); if (k === 3) emote(m, '♪', 'heart', 1.2); }, k * 230);
-  setTimeout(() => { m.face = f0; petEnd(); save(); }, 8 * 230 + 120);
+  const NB = 14; for (let k = 0; k < NB; k++) setTimeout(() => { if (!S.mons.includes(m)) return; m.face = k % 2 ? f0 : -f0; if (k % 2 === 0) anim(m, 'phop'); if (k === 3 || k === 9) emote(m, k === 3 ? '♪' : '♥', 'heart', 1.2); }, k * 240);
+  setTimeout(() => { m.face = f0; petEnd(); save(); }, NB * 240 + 120);
 }
 const petHit = (m, x, y) => { const r = [m.spr, m.img].map(e => e?.getBoundingClientRect()).find(r => r && r.width) || m.el.getBoundingClientRect(), p = 22;   /* m.el 은 발밑 점이라 그림 크기로 판정 */ return x > r.left - p && x < r.right + p && y > r.top - p && y < r.bottom + p; };
 addEventListener('pointerdown', e => { if (!petM || e.target.closest('#petBar')) return; if (petM.done) { e.stopPropagation(); e.preventDefault(); return; }
@@ -2349,7 +2349,7 @@ addEventListener('pointermove', e => { const p = petM; if (!p || p.done || !p.ru
   if (!petHit(p.m, e.clientX, e.clientY)) return;
   p.acc += d; if (p.acc < PET_STEP) return; p.acc = 0; p.n++; petDots();
   if (p.n >= PET_N) return petDone();
-  emote(p.m, p.n % 3 === 0 ? '♪' : '♥', 'heart', .9); if (p.n % 2 === 0) anim(p.m, 'hop'); haptic(0); }, true);
+  emote(p.m, p.n % 3 === 0 ? '♪' : '♥', 'heart', .9); haptic(0); }, true);
 ['pointerup', 'pointercancel'].forEach(t => addEventListener(t, e => { if (petM?.rub && e.pointerId === petM.rub.id) petM.rub = null; if (petM) e.stopPropagation(); }, true));
 addEventListener('click', e => { if (petM && !e.target.closest('#petBar')) { e.stopPropagation(); e.preventDefault(); } }, true);
 $('#petX').onclick = () => { if (!petM) return; const m = petM.m; emote(m, '…', '', 1); petEnd(); };
@@ -2400,7 +2400,7 @@ function moveTo(m, p, goal, spdMul = 1) {
 function sleep(m, msg = true) {
   m.goal = null; m.partner = null; setState(m, 'sleep', 0); m.el.classList.add('asleep');
   // nod off first, then lie squashed and breathe; restored sleepers skip the nodding
-  m.act.classList.remove('hop', 'shake', 'emerge', 'appear', 'stretch', 'doze', 'sleeping');
+  m.act.classList.remove('hop', 'phop', 'shake', 'emerge', 'appear', 'stretch', 'doze', 'sleeping');
   void m.act.offsetWidth; m.act.classList.add(msg ? 'doze' : 'sleeping');
   m.zT = msg ? 2.4 : rnd(0, 1.2); m.sleepAge = 0; m.one = null;
   if (msg && Math.random() < .5) log(pick([`${J(m,'이/가')} 꾸벅꾸벅 졸다가 잠들었다.`, `${J(m,'이/가')} 몸을 동그랗게 말고 잠들었다.`]), [m]);
@@ -3735,7 +3735,7 @@ function render(m, now) {
   if (m.land && (m.sp !== 129 || pondVal(m.x, m.y) < .85)) { m.land = false; if (!m.held) { splashAt(m); log(`${J(m,'이/가')} 겨우 호수로 돌아와 첨벙! 한결 편안해 보인다.`, [m]); } }
   { const fl = !!m.land && !m.held; if (fl !== !!m.flop) { m.flop = fl; m.el.classList.toggle('flop', fl); } }
   m.el.style.transform = `translate(${m.x.toFixed(1)}px,${m.y.toFixed(1)}px)`;
-  m.el.style.zIndex = Math.round(m.y) + (m.zAdd || 0) + (m.perch ? 2 : 0);
+  m.el.style.zIndex = Math.round(m.y) + (m.zAdd || 0) + (m.perch ? 2 : 0) + (m.pet ? 5000 : 0);
   m.liftEl.style.transform = `translateY(${(wet ? m.h * .38 : m.flop ? m.h * .42 : 0) - m.lift - bob}px)`;   // 육지의 잉어킹은 그림자에 붙게 조금 내린다
   if (m.flop && now > (m.swT || 0)) { m.swT = now + rnd(180, 360); for (const s of [-1, 1]) if (Math.random() < .75) particle(m.x + s * rnd(6, m.w * .32), m.y - m.h * .2 - rnd(0, 10), 'sweat', '', d => d.style.setProperty('--dx', s * rnd(12, 26) + 'px')); }
   m.flipEl.style.transform = `scaleX(${m.face})`; m.flipEl.style.setProperty('--f', m.face);
@@ -3933,7 +3933,7 @@ const infoEl = $('#info');
 infoEl.addEventListener('click', e => { if (e.target.closest('#infoX')) { e.stopPropagation(); sfx('tap'); select(null); return; }
   if (e.target.closest('#infFeed') && S.sel) { e.stopPropagation(); feedNow(S.sel); return; }
   if (e.target.closest('#infPet') && S.sel) { e.stopPropagation(); petStart(S.sel); return; }
-  if (e.target.closest('#pPf') && S.sel?.pid && boxOf(S.sel.pid)) { e.stopPropagation(); sfx('tap'); ppBud = false; openPoke(S.sel.pid, 0, false, true); } });   /* 울음소리는 필드 정보창 열 때 이미 들었다 */   // 필드 정보창 그림을 누르면 그 포켓몬 정보 카드   // 필드 정보창 ✕ 로 닫기
+  if (e.target.closest('#pPf') && S.sel?.pid && boxOf(S.sel.pid)) { e.stopPropagation(); sfx('tap'); ppBud = false; ppSolo = true; openPoke(S.sel.pid, 0, false, true); } });   /* 울음소리는 필드 정보창 열 때 이미 들었다 */   // 필드 정보창 그림을 누르면 그 포켓몬 정보 카드   // 필드 정보창 ✕ 로 닫기
 function renderInfo() {
   const box = infoEl, m = S.sel;
   if (!m) { box.hidden = true; box.dataset.uid = ''; return; }
@@ -4125,7 +4125,7 @@ function dropTargetAt(m, p) {
 }
 function grab(m, e) {
   if (e.button > 0 || m.hidden || m.evolving) return;
-  drag = { m, start: worldPt(e), id: e.pointerId, on: false, target: null };
+  drag = { m, start: worldPt(e), id: e.pointerId, on: false, target: null }; drag.bx = m.x - drag.start.x; drag.by = (m.y - m.lift) - drag.start.y;   /* 누른 지점이 손가락 아래에 그대로 */
   // 꾹 누르면(0.38초) 그 자리에서 들어 올린다. 짧게 누르면 정보창(클릭)
   const d = drag; d.lt = setTimeout(() => { if (drag === d && !d.on && S.mons.includes(m)) { d.on = true; liftUp(m); } }, 380);
 }
@@ -4149,7 +4149,7 @@ window.addEventListener('pointermove', e => {
   const p = worldPt(e);
   if (!d.on) { if (Math.hypot(p.x - d.start.x, p.y - d.start.y) * scale < 6) return; d.on = true; liftUp(d.m); }
   const m = d.m;
-  m.x = clamp(p.x, XL + 20, XR - 20); m.y = clamp(p.y + m.h * .35, MIN_Y, MAX_Y);
+  m.x = clamp(p.x + d.bx, XL + 20, XR - 20); m.y = clamp(p.y + d.by + m.lift, MIN_Y, MAX_Y);
   markTarget(dropTargetAt(m, p));
   e.preventDefault();
 });
@@ -4571,7 +4571,7 @@ $('#monPop').addEventListener('click', e => { if (e.target.closest('.m-dots')) m
 // 정보 카드 밀어서 넘기기 (모든 넘기는 카드 공용): 카드 전체가 손가락을 따라 밀리고, 양옆에 이전·다음 카드가 붙어 따라 들어온다.
 // 놓으면 다음 카드가 가운데로 와서 그대로 그 카드가 된다 (스프라이트만 따로 움직이지 않는다)
 function cardPager(pop, o) {
-  const w = pop.querySelector('.win'), GAP = 14, DUR = 420, EASE = 'cubic-bezier(.22,.7,.25,1)'; let x0 = null, y0 = 0, dx0 = 0, busy = false, gh = {}, W = 0, swT = 0, t0 = 0;
+  const w = pop.querySelector('.win'), GAP = 14, DUR = 620, EASE = 'cubic-bezier(.25,.6,.3,1)'; let x0 = null, y0 = 0, dx0 = 0, busy = false, gh = {}, W = 0, swT = 0, t0 = 0;
   const ghost = d => { if (d in gh) return gh[d]; if (!o.can(d)) return gh[d] = null;
     const r = w.getBoundingClientRect(), g = o.snap(d, w); g.removeAttribute('id'); g.setAttribute('aria-hidden', 'true'); g.inert = true; g.classList.add('ghost');   /* 안쪽 id 는 남긴다(스타일 유지). 원래 카드가 문서에서 앞이라 $() 는 원래 카드를 찾는다 */
     Object.assign(g.style, { position: 'fixed', left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', margin: '0', pointerEvents: 'none', zIndex: 1 }); pop.append(g); return gh[d] = g; };
@@ -4595,8 +4595,8 @@ function cardPager(pop, o) {
     dx0 = (dx * (gh[dx < 0 ? 1 : -1] ? 1 : .2)) || .01; put(dx0); });
   const end = e => { if (x0 == null) return; const dx = e ? e.clientX - x0 : 0, dy = e ? e.clientY - y0 : 0, d = dx < 0 ? 1 : -1; x0 = null;
     if (!dx0) return; swT = performance.now();
-    const fast = performance.now() - t0 < 260 && Math.abs(dx) > 24;
-    if (e && (Math.abs(dx) > Math.min(90, W * .22) || fast) && Math.abs(dx) > Math.abs(dy) && gh[d]) { busy = true; anim(true); put(-d * (W + GAP));   /* 다음 카드가 천천히 미끄러져 들어온다 */
+    const fast = performance.now() - t0 < 320 && Math.abs(dx) > 14;   /* 살짝만 밀어도 넘어간다 */
+    if (e && (Math.abs(dx) > Math.min(46, W * .12) || fast) && Math.abs(dx) > Math.abs(dy) && gh[d]) { busy = true; anim(true); put(-d * (W + GAP));   /* 다음 카드가 천천히 미끄러져 들어온다 */
       setTimeout(() => { o.step(d); ready().then(() => { busy = false; clear(); }); }, DUR); }   // 놓으면 다음 카드가 DUR 동안 미끄러져 들어온다 (놓기 전 자리로 돌아가는 모션은 없음)
     else { busy = false; clear(); }
     dx0 = 0; };
@@ -4686,7 +4686,7 @@ $('#boxQ').addEventListener('input', () => { if (!$('#boxQ').value.trim() && box
   $('#boxGrid').addEventListener('pointermove', e => { if (pk && Math.hypot(e.clientX - x0, e.clientY - y0) > 8) off(); });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach(k => $('#boxGrid').addEventListener(k, () => setTimeout(off, k === 'pointerup' ? 80 : 0)));
   $('#boxGrid').closest('.win, .sheet')?.addEventListener('scroll', off, true); }
-$('#boxGrid').addEventListener('click', e => { const b = e.target.closest('[data-id]'); if (b) { ppBud = false; openPoke(+b.dataset.id); } });
+$('#boxGrid').addEventListener('click', e => { const b = e.target.closest('[data-id]'); if (b) { ppBud = false; ppSolo = false; openPoke(+b.dataset.id); } });
 let pokeId = null;
 function openPoke(id, dir = 0, quiet = false, noCry = false) {
   const P = boxOf(id); if (!P) return; if (!quiet && P.nw) { P.nw = false; save(); renderBox(); } if (!quiet && !noCry && ($('#pokePop').hidden || pokeId !== id)) playCry(P.sp, .1); pokeId = id;
@@ -4716,8 +4716,8 @@ function setEvoBtn(btn, P) {
   btn.classList.remove('fin', 'dis', 'spc'); if (cls) btn.classList.add(cls); if (btn.innerHTML !== html) btn.innerHTML = html;
   if (tip) { btn.dataset.tip = tip; btn.dataset.tipc = ''; } else { delete btn.dataset.tip; delete btn.dataset.tipc; }
 }
-const closePoke = () => { $('#pokePop').hidden = true; pokeId = null; freeArm = null; ppBud = false; if (!monPop.hidden) { if (!S.mons.includes(mgrSel)) closeMon(); else renderMgr(true); } if (S.sel) { if (!S.mons.includes(S.sel)) select(null); else { infoEl.dataset.uid = ''; renderInfo(); } } };
-$('#monPop').addEventListener('click', e => { if (!e.target.closest('#mStage') || !mgrSel?.pid || !boxOf(mgrSel.pid)) return; sfx('tap'); ppBud = false; openPoke(mgrSel.pid, 0, false, true); });   // 필드 개체 정보의 그림을 누르면 그 포켓몬 정보 카드
+const closePoke = () => { $('#pokePop').hidden = true; pokeId = null; freeArm = null; ppBud = false; ppSolo = false; if (!monPop.hidden) { if (!S.mons.includes(mgrSel)) closeMon(); else renderMgr(true); } if (S.sel) { if (!S.mons.includes(S.sel)) select(null); else { infoEl.dataset.uid = ''; renderInfo(); } } };
+$('#monPop').addEventListener('click', e => { if (!e.target.closest('#mStage') || !mgrSel?.pid || !boxOf(mgrSel.pid)) return; sfx('tap'); ppBud = false; ppSolo = true; openPoke(mgrSel.pid, 0, false, true); });   // 필드 개체 정보의 그림을 누르면 그 포켓몬 정보 카드
 $('#ppX').onclick = () => { sfx('tap'); closePoke(); };
 // 놓아주기: 한 번 더 눌러야 숲으로 돌려보낸다 (필드·짝꿍에서도 빠짐, 도감 기록은 남음)
 let freeArm = null, freeT = 0;
@@ -4735,8 +4735,8 @@ $('#ppFree').onclick = () => {
   const L2 = boxList(), nx = L2[Math.min(i, L2.length - 1)];
   if (nx) openPoke(nx.id); else closePoke();
 };
-let ppBud = false;   // 짝꿍 칸에서 연 정보 카드: 짝꿍끼리만 넘기고 분홍 카드
-const pokeList = () => ppBud ? S.buds.map(b => boxOf(b.pid)).filter(Boolean) : boxList();
+let ppBud = false, ppSolo = false;   // 짝꿍 칸에서 연 정보 카드: 짝꿍끼리만 넘기고 분홍 카드 / ppSolo: 필드 정보창 사진에서 연 카드는 넘기지 않는다
+const pokeList = () => ppSolo ? [boxOf(pokeId)].filter(Boolean) : ppBud ? S.buds.map(b => boxOf(b.pid)).filter(Boolean) : boxList();
 function pokeStep(dir) { const L = pokeList(), i = L.indexOf(boxOf(pokeId)), j = i + dir; if (j >= 0 && j < L.length) { sfx('tap'); openPoke(L[j].id, dir); } }
 $('#pokePop').addEventListener('click', e => { if (e.target.id !== 'pokePop') return; const d = sideTap($('#pokePop'), e); if (d) { const h = $(d < 0 ? '#ppHl' : '#ppHr'); if (!h.hidden) pokeStep(d); return; } closePoke(); });
 cardPager($('#pokePop'), {
@@ -5069,7 +5069,7 @@ function evoNotice(sp, P) {
   $('#notiOk').onclick = () => { $('#noti').hidden = true; notiOpen = false; };
 }
 // 특별한 진화 힌트: 성별 조건이 먼저, 아니면 진화 조건 (진화해요 는 뺀다)
-function spWhy(P) { const L = CHILDREN[P.sp] || []; for (const c of L) { const d = SPECIES[c]; if (d.eqx && (d.eqx === 1 ? 'f' : 'm') !== P.sex) continue; return evoWhy(c).replace(' 진화해요', ''); } const d = SPECIES[L[0]]; return d?.eqx ? `${d.eqx === 1 ? '암컷' : '수컷'}만 진화할 수 있어요` : evoWhy(L[0]).replace(' 진화해요', ''); }
+function spWhy(P) { const L = CHILDREN[P.sp] || []; for (const c of L) { const d = SPECIES[c]; if (d.eqx && (d.eqx === 1 ? 'f' : 'm') !== P.sex) continue; return evoWhy(c); } const d = SPECIES[L[0]]; return d?.eqx ? `${d.eqx === 1 ? '암컷' : '수컷'}만 진화할 수 있어요` : evoWhy(L[0]); }
 const budReady = b => !!b && evoKids(b.sp, boxOf(b.pid), true).length > 0 && b.km >= evoNeed(b);
 // 짝꿍에서 빠져도 개체에 남은 거리(P.km)를 다 채웠으면 정보카드에서 진화할 수 있다
 const pokeReady = P => !!P && evoKids(P.sp, P, true).length > 0 && (P.km || 0) >= evoNeed(P);
@@ -6157,6 +6157,7 @@ function fmtWhen(t) { const d = new Date(t); return `${d.getMonth() + 1}/${d.get
 function renderBag() {
   const hasNew = S.bag.some(e => e.isNew);
   const tb = document.querySelector('.runtab[data-tab="bag"]'); tb.innerHTML = '가방' + (hasNew ? '<i class="dot" aria-label="새 알"></i>' : '');
+  const te = document.querySelector('.runtab[data-tab="egg"]'), rdy = S.eggs.some(e => e.km >= e.need); if (!!te.querySelector('.dot') !== rdy) te.innerHTML = '부화기' + (rdy ? '<i class="dot" aria-label="부화 준비"></i>' : '');
   if (runTab !== 'bag') { $('#bagPop').hidden = true; bagSel = null; bagMul = null; return; }
   const sig = [bagG, bagSort, bagSel?.id, bagMul ? 'm' + [...bagMul].join('.') : '', delArm, S.bag.length, S.bag.filter(e => e.isNew).length, S.eggs.length].join();
   if (sig === renderBag.sig) return; renderBag.sig = sig;
@@ -6292,7 +6293,7 @@ function renderBuddy() {
     if (!m) return `<button class="bd-empty" data-act="pick" data-i="${i}" aria-label="짝꿍 추가">+</button>`;
     const P = boxOf(m.pid);
     return `<div class="bd-card${budReady(m) ? ' ready' : ''}" data-i="${i}"><button class="bd-x" data-act="stop" aria-label="짝꿍에서 빼기">✕</button><div class="bd-row"><div class="bd-pic${pkCls(P)}${P?.shiny ? ' shiny' : ''}" style="--shue:${shinyHue(m.sp)}deg"><img alt="" src="${(P ? thumbP(P) : thumbOf(m.sp)) || ''}"></div><div class="bd-main"><div class="bd-name"><b>${esc(P ? nameOf(P) : SPECIES[m.sp].n)}</b>${sexHtml(P?.sex)}</div><div class="bd-ind">${indivHtml(m)}</div>`
-      + (!evoKids(m.sp, P).length && CHILDREN[m.sp] ? `<div><span class="bd-tag">특별한 진화</span> <span class="bd-why">${esc(evoWhy(CHILDREN[m.sp][0]).replace(' 진화해요', ''))}</span></div><div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>` : CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) || m.km < evoNeed(m) ? `<button class="bd-evobtn" data-act="evo"${budReady(m) ? '' : ' disabled'}>진화하기</button>` : `<span class="bd-why">${esc(evoWhy(evoKids(m.sp, P)[0]))}</span>`}</span><span><b>${fmtKm(m.km)}</b> / ${evoNeed(m)}km</span></div></div>` : `<div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>`)
+      + (!evoKids(m.sp, P).length && CHILDREN[m.sp] ? `<div><span class="bd-tag">특별한 진화</span> <span class="bd-why">${esc(spWhy(P || m))}</span></div><div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>` : CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) || m.km < evoNeed(m) ? `<button class="bd-evobtn" data-act="evo"${budReady(m) ? '' : ' disabled'}>진화하기</button>` : `<span class="bd-why">${esc(evoWhy(evoKids(m.sp, P)[0]))}</span>`}</span><span><b>${fmtKm(m.km)}</b> / ${evoNeed(m)}km</span></div></div>` : `<div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>`)
       + `</div></div></div>`;
   }).join('');
 }
