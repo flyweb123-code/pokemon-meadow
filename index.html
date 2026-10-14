@@ -2681,7 +2681,22 @@ const fxGrade = (sp, g) => ({ leg: 6, sil: 5, brz: 4 })[tierOf(+sp)] || Math.min
 // 단계 테두리 빛은 모든 카드가 같은 시계로 돈다: 새로 만든 칸(짝꿍 카드처럼 자주 다시 그리는 곳)도 처음부터 다시 돌지 않고 이어서
 const TIER_MS = { leg: 6000, sil: 3400, brz: 4000 };
 const tierSync = el => { const t = ['leg', 'sil', 'brz'].find(k => el.classList.contains(k)); if (el.dataset.tsy === (t || '')) return; el.dataset.tsy = t || ''; el.style.animationDelay = t ? `-${(performance.now() % TIER_MS[t]).toFixed(0)}ms` : ''; };
-const setTier = (w, sp) => { const t = tierOf(+sp); for (const k of ['leg', 'sil', 'brz']) w.classList.toggle(k, k === t); tierSync(w); };
+// 테두리 빛이 네 변을 같은 빠르기로 돈다: 긴 카드에서 각도로만 돌리면 긴 변은 빠르고 짧은 변은 느려서, 카드 모양에 맞춰 --ang 을 고르게 나눈 키프레임으로 돌린다
+const tierAnims = new WeakMap(), tierRO = new ResizeObserver(es => es.forEach(e => e.target.isConnected ? tierRun(e.target) : tierRO.unobserve(e.target)));   /* 숨어 있다 보이거나 크기가 바뀌면 다시 맞춘다 */
+function tierRun(el) {
+  tierRO.observe(el);
+  const pseudo = el.matches('.hatch .win, .pokepop .win, .monpop .win') ? '::after' : undefined;
+  const t = ['leg', 'sil', 'brz'].find(k => el.classList.contains(k)), old = tierAnims.get(el), r = el.getBoundingClientRect();
+  if (!t || !r.width || !el.isConnected) { if (old && !t) { old.a.cancel(); tierAnims.delete(el); } return; }
+  const key = `${t}|${Math.round(r.width / 8)}|${Math.round(r.height / 8)}`; if (old && old.key === key) return; old?.a.cancel();
+  const w = r.width / 2, h = r.height / 2, P = 4 * (w + h), N = 64, laps = t === 'leg' ? 2 : 1, ang = [];
+  for (let i = 0; i <= N; i++) { let d = i / N * P, x, y;   /* 위 가운데에서 시계 방향으로 둘레를 같은 거리씩 */
+    if ((d -= 0) <= w) { x = d; y = -h; } else if ((d -= w) <= 2 * h) { x = w; y = -h + d; } else if ((d -= 2 * h) <= 2 * w) { x = w - d; y = h; } else if ((d -= 2 * w) <= 2 * h) { x = -w; y = h - d; } else { d -= 2 * h; x = -w + d; y = -h; }
+    let a = Math.atan2(x, -y) * 180 / Math.PI; if (a < 0) a += 360; if (i === N) a = 360; if (ang.length && a < ang[ang.length - 1] - 1) a += 360; ang.push(a); }
+  const kf = []; for (let L = 0; L < laps; L++) ang.forEach((a, i) => { if (L && !i) return; kf.push({ '--ang': (a + 360 * L).toFixed(2) + 'deg' }); });
+  try { const dur = TIER_MS[t], a = el.animate(kf, { duration: dur, iterations: Infinity, easing: 'linear', pseudoElement: pseudo }); a.currentTime = performance.now() % dur; tierAnims.set(el, { a, key }); } catch (e) {}
+}
+const setTier = (w, sp) => { const t = tierOf(+sp); for (const k of ['leg', 'sil', 'brz']) w.classList.toggle(k, k === t); tierSync(w); requestAnimationFrame(() => tierRun(w)); };
 const isBaby = m => !!SPD(m.sp).baby;
 const isBig = m => SPD(m.sp).w >= 1500 || SPD(m.sp).h >= 30;
 const isSmall = m => SPD(m.sp).w <= 120 && SPD(m.sp).h <= 6;
@@ -4413,7 +4428,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.74';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.75';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6514,7 +6529,7 @@ function renderBuddy() {
       + `</div></div></div>`;
   }).join('');
   const be = $('#buddy'); if (be.dataset.h === bh) return; be.dataset.h = bh; be.innerHTML = bh;   /* 바뀐 게 없으면 다시 그리지 않는다 (테두리 빛이 처음부터 다시 돌지 않게) */
-  be.querySelectorAll('.bd-card').forEach(tierSync);
+  be.querySelectorAll('.bd-card').forEach(tierSync); requestAnimationFrame(() => be.querySelectorAll('.bd-card').forEach(tierRun));
 }
 function renderRunLog() {
   { const k0 = new Date(); k0.setHours(0, 0, 0, 0); $('#runTotal').innerHTML = `오늘 <b>${fmtKm(S.runs.filter(r => r.t >= +k0).reduce((a, r) => a + r.km, 0))}</b>km`; }   // 버튼엔 오늘 뛴 거리만 (없으면 0.00)
