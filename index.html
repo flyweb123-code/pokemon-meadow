@@ -948,6 +948,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .flyegg{position:fixed;z-index:7000;pointer-events:none;width:26px;height:32px}
 .flyegg .egg{width:100%;height:100%}
 #openRun.bump{animation:tbump .16s steps(2,end)}
+#openRun,#openMgr{position:relative}.mdot{position:absolute;top:5px;right:6px;width:9px;height:9px;background:#e04838;box-shadow:0 0 0 2px #fff;pointer-events:none}
 @keyframes tbump{50%{transform:scale(1.25)}}
 #eggAll{font:inherit;font-size:13px;padding:3px 10px;background:#e8a020;color:#fff;border:3px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.25);cursor:pointer}
 @keyframes hpop{0%{transform:scale(.25)}50%{transform:scale(1.1)}100%{transform:none}}
@@ -3843,7 +3844,7 @@ function serialize() {
     gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, today: S.today, ped: S.ped, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, lastPlace: S.lastPlace || null };
 }
 let saveFrozen = false;
-function save() { if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
+function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
   S.lockT = d.lockT || 0; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.lastPlace = d.lastPlace || null; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
@@ -4318,6 +4319,7 @@ let mgrTab = 'field', boxSort = 'new', budPick = null, boxFromSlot = false;   //
 let boxDir = 1;
 try { boxSort = localStorage.getItem('pk-box-sort') || 'new'; boxDir = localStorage.getItem('pk-box-dir') === '-1' ? -1 : 1; } catch (e) {}
 function setMgrTab(t) {
+  if (mgrTab === 'box' && t !== 'box' && !mgr.hidden) seeBox();
   boxFromSlot = false; if (t !== 'box') budPick = null;
   mgrTab = t; try { localStorage.setItem('pk-mgr-tab', t); } catch (e) {}
   document.querySelectorAll('#mgrTabs button').forEach(b => { b.setAttribute('aria-selected', b.dataset.t === t); if (b.dataset.t === t) $('#mgrTitle').textContent = b.textContent; });   // 창 제목 = 지금 탭
@@ -4359,7 +4361,13 @@ function boxList(all) {
 }
 // 상자 칸은 한 번 만든 걸 다시 쓴다: 정렬이 바뀌면 순서만 옮기고, 내용이 바뀐 칸만 새로 만든다
 const pkEls = new Map(), pkTpl = document.createElement('template');
-const pkHtml = (p, tag, rk) => `<button class="pk${p.shiny ? ' shiny' : ''}${pkCls(p)}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rk}">${rk}</span>${tag === 2 ? '<span class="tg bud">짝꿍</span>' : tag === 1 ? '<span class="tg">필드</span>' : ''}<img alt="" data-sp="${p.sp}" data-sx="${p.sex || ''}" src="${thumbP(p) || ''}"><span class="nm">${esc(nameOf(p))}${sexHtml(p.sex)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(p.fr)}</span></button>`;
+const pkHtml = (p, tag, rk) => `<button class="pk${p.shiny ? ' shiny' : ''}${pkCls(p)}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rk}">${rk}</span>${p.nw ? '<span class="newtag">NEW</span>' : ''}${tag === 2 ? '<span class="tg bud">짝꿍</span>' : tag === 1 ? '<span class="tg">필드</span>' : ''}<img alt="" data-sp="${p.sp}" data-sx="${p.sex || ''}" src="${thumbP(p) || ''}"><span class="nm">${esc(nameOf(p))}${sexHtml(p.sex)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(p.fr)}</span></button>`;
+// 박스 탭을 본 뒤 다른 탭으로 가거나 창이 닫히면 NEW 표시를 지운다 (가방과 같은 규칙)
+function seeBox() { let ch = false; S.box.forEach(p => { if (p.nw) { p.nw = false; ch = true; } }); if (ch) { save(); renderBox(); } }
+new MutationObserver(() => { if (mgr.hidden && mgrTab === 'box') seeBox(); }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
+// 하단 메뉴 알림 점: 알(가방에 새 알) · 포켓몬(박스에 새 포켓몬)
+function menuDots() { const set = (b, on) => { let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot" aria-label="새 소식"></i>'); else if (!on && d) d.remove(); };
+  set($('#openRun'), S.bag.some(e => e.isNew)); set($('#openMgr'), S.box.some(p => p.nw)); }
 function renderBox() {
   document.querySelectorAll('#boxSort [data-sort]').forEach(b => { const on = b.dataset.sort === boxSort; b.setAttribute('aria-pressed', on); b.dataset.dir = on && boxSort !== 'field' ? (boxDir > 0 ? '▼' : '▲') : ''; });
   const L = boxList(true), q = boxQ(), bud = new Set(S.buds.map(b => b.pid)), field = new Set(S.mons.map(m => m.pid)), grid = $('#boxGrid');
@@ -4370,7 +4378,7 @@ function renderBox() {
   const want = [], make = [];
   for (const p of L) {
     const tag = bud.has(p.id) ? 2 : field.has(p.id) ? 1 : 0, rk = rankOf(p), th = !!thumbOf(p.sp);
-    const sig = `${p.sp}|${p.sex}|${p.shiny}|${p.fr}|${p.nm || ''}|${tag}|${rk}|${th}`;
+    const sig = `${p.sp}|${p.sex}|${p.shiny}|${p.fr}|${p.nm || ''}|${tag}|${rk}|${th}|${p.nw ? 1 : 0}`;
     let r = pkEls.get(p.id);
     if (!r || r.sig !== sig) { r = { sig, el: null, html: pkHtml(p, tag, rk) }; pkEls.set(p.id, r); make.push(r); }
     want.push(r);
@@ -4395,7 +4403,7 @@ $('#boxQ').addEventListener('input', () => { if (!$('#boxQ').value.trim() && box
 $('#boxGrid').addEventListener('click', e => { const b = e.target.closest('[data-id]'); if (b) openPoke(+b.dataset.id); });
 let pokeId = null;
 function openPoke(id, dir = 0) {
-  const P = boxOf(id); if (!P) return; if ($('#pokePop').hidden || pokeId !== id) playCry(P.sp, .1); pokeId = id;
+  const P = boxOf(id); if (!P) return; if (P.nw) { P.nw = false; save(); renderBox(); } if ($('#pokePop').hidden || pokeId !== id) playCry(P.sp, .1); pokeId = id;
   const L = boxList(), i = L.indexOf(P), d = SPECIES[P.sp], rk = rankOf(P);
   $('#pokePop').hidden = false; 
   $('#ppHl').hidden = i <= 0; $('#ppHr').hidden = i >= L.length - 1; $('#ppRk').innerHTML = rkBadge(P);
@@ -5432,7 +5440,7 @@ function rollEgg(e) {
 }
 // 태어난 포켓몬을 상자에 넣고 도감 등록, 이미 만난 종이면 골드
 function bornPoke({ g, sp, place }) {
-  const P = newPoke(sp, { g, place }), isNew = !S.unlocked.has(sp); unlock(sp);
+  const P = newPoke(sp, { g, place }), isNew = !S.unlocked.has(sp); unlock(sp); P.nw = true;   // 박스에 새로 들어온 표시 (확인하면 지움)
   return { g, sp, place, P, isNew, dupG: addGold(isNew ? NEW_G : DUP_G[g]) };
 }
 const bornMsg = ({ g, sp, P, isNew, dupG }) => `${GRADE[g].n} 알에서 <b>${esc(SPECIES[sp].n)}</b>${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났다!<br><span class="small">${isNew ? `새로 만난 포켓몬이라 <b>${dupG}G</b>를 받았다` : `이미 만난 포켓몬이라 <b>${dupG}G</b>를 받았다`}</span>`
@@ -6069,7 +6077,7 @@ async function start(data) {
   if (!d) { try { d = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { d = null; } }
   if (d && d.mons && (d.mons.length || d.unlocked)) await restore(d); else await fresh();
   if (bgmOn && bgm.id !== S.bgm) bgmStart();
-  Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp));
+  Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp)); menuDots();
   migrateBox(); undoAutoHatch(); renderGold(); notiSoon(1800); sky(); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
   requestAnimationFrame(t => { last = t; frame(t); });
   // 아이폰 앱에 준비됐다고 알리고, 현재 알 현황을 바로 보낸다
