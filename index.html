@@ -4344,7 +4344,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.43';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.44';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5210,7 +5210,7 @@ const ivSum = p => p.iv.reduce((a, b) => a + b, 0);
 const bsOf = sp => SPECIES[sp]?.bs || [0, 0, 0, 0, 0, 0];
 const bsSum = sp => bsOf(sp).reduce((a, b) => a + b, 0);
 const rankScore = p => ivSum(p) + (bsSum(p.sp) - 400) / 8;
-const rankOf = p => RANKS.find(([, v]) => rankScore(p) >= v)[0];
+const rankOf = p => (RANKS.find(([, v]) => rankScore(p) >= v) || RANKS[RANKS.length - 1])[0];   /* 종족값이 아주 낮으면 점수가 0 아래로 내려갈 수 있다 → F */
 // 능력치 = 개체값 + 종족값 한 줄로 (따로 보이지 않는다, 총합 줄 없음). 막대는 200 을 꽉 찬 것으로, 개체값 31 이면 금색
 const ivRows = P => { const bs = bsOf(P.sp); return P.iv.map((v, k) => { const t = v + bs[k]; return `<span>${IV_N[k]}</span><span class="b"><i class="${v === 31 ? 'max' : ''}" style="width:${Math.min(100, Math.round(t / 200 * 100))}%"></i></span><span class="v">${t}</span>`; }).join(''); };
 const shinyHue = sp => 70 + (sp * 47) % 220;
