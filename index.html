@@ -2163,10 +2163,12 @@ const stripHint = h => h.replace(/\s*\((런닝 · 알|알)\)$/, '');
 // 상호작용 중인 포켓몬을 누르면 그 상호작용 문장을 상태창 맨 앞에 붙잡아 둔다 (끝나거나 선택을 풀면 원래대로)
 let dlgPin = null;
 function pinOf() {
+  if (dlgHold && performance.now() < dlgHold.until && S.log.includes(dlgHold.e)) return dlgHold.e; dlgHold = null;
   const p = dlgPin; if (!p) return null;
   if (S.sel !== p.m || p.m.state !== 'interact' || !p.m.partner) { dlgPin = null; return null; }
   return p.e;
 }
+let dlgHold = null;   // 쓰다듬기처럼 잠시 상태창에 붙잡아 둘 메시지 {e, until}
 function renderDlg() {
   const pe = pinOf(), [a0, a1] = S.log, a = pe || a0, b = pe ? (a0 !== pe ? a0 : a1) : a1;
   $('#dlgNow').innerHTML = a ? stripHint(a.html) : '';
@@ -2340,6 +2342,7 @@ function petDone() {
   m.social = clamp(m.social - 20); m.joy = clamp((m.joy ?? 60) + 20);
   haptic(2); setTimeout(() => haptic(2), 110); setTimeout(() => haptic(1), 220); sfx('pickup'); if (fr) frPop(m, fr);
   log(fr ? `${J(m,'은/는')} 쓰다듬어 주자 아주 좋아했다.` : `${J(m,'은/는')} 쓰다듬어 주자 기분 좋은 듯 눈을 가늘게 떴다.`, [m]);
+  dlgHold = { e: S.log[0], until: performance.now() + 9000 }; setTimeout(renderDlg, 9100); m.petMood = performance.now() + 180000;   /* 상태창 9초 유지, 정보창 '상태'는 3분 동안 기분 좋음 */
   /* 기뻐서 왼쪽·오른쪽을 번갈아 보며 춤춘다 (그동안은 제자리) */
   petM.done = true; $('#petBar').hidden = true; const f0 = m.face || 1;
   const NB = 5; for (let k = 0; k < NB; k++) setTimeout(() => { if (!S.mons.includes(m)) return; m.face = k % 2 ? f0 : -f0; if (k % 2 === 0) anim(m, 'phop'); if (k === 1) emote(m, '♪', 'heart', 1); }, k * 190);
@@ -4920,6 +4923,7 @@ function renderMgrDetail(rebuild) {
 function moodOf(m) {
   const P = boxOf(m.pid), fr = P?.fr || 0, best = friendsOf(m).find(x => x.r >= 20);
   if (m.state === 'sleep') return pick2(m, ['쿨쿨… 좋은 꿈을 꾸는 것 같다', '새근새근 깊이 잠들었다']);
+  if (m.petMood > performance.now()) return pick2(m, ['쓰다듬어 줘서 기분이 아주 좋다', `${TJ('이/가')} 쓰다듬어 줘서 행복하다`]);
   if (m.hunger > 78) return pick2(m, ['배가 너무 고프다… 열매 먹고 싶어', '꼬르륵… 나무 열매가 생각난다']);
   if (m.hunger > 50) return pick2(m, ['조금 출출하다', '열매 하나쯤 먹고 싶다']);
   if (m.energy < 25) return pick2(m, ['졸려서 눈이 감긴다', '슬슬 쉬고 싶다']);
