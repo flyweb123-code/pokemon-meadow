@@ -198,15 +198,15 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .hatch.g4t>.hrays{opacity:calc(var(--lit,0) * .75);background:repeating-conic-gradient(from 0deg,rgba(226,180,255,0) 0deg,rgba(226,180,255,.5) 5deg,rgba(226,180,255,.5) 8deg,rgba(226,180,255,0) 13deg,rgba(226,180,255,0) 20deg);animation-duration:9s;transition:opacity .5s}
 .hatch.legend>.hlit{background:radial-gradient(circle at 50% 45%,#fffbe8 0,rgba(255,234,150,.97) 26%,rgba(255,200,70,.85) 55%,rgba(214,150,30,.8));opacity:var(--lg,0);transition:opacity .3s}   /* 2단계: 어둠 속에서 화면 전체가 금빛으로 차오른다 */
 .hatch.legend>.hrays{opacity:var(--lg,0);background:repeating-conic-gradient(from 0deg,rgba(255,232,140,0) 0deg,rgba(255,232,140,.65) 4deg,rgba(255,232,140,.65) 6deg,rgba(255,232,140,0) 10deg,rgba(255,232,140,0) 15deg);animation-duration:6s;transition:opacity .5s}
-.hatch.legend>.hdark{opacity:calc(.55 + var(--dk,0) * .45 - var(--lg,0) * .35)}
+.hatch.legend>.hdark{opacity:calc(.55 + var(--dk,0) * .45 - var(--lg,0) * .35)}.hatch.dimin>.hdark:not(.hm),.hatch.dimin .win{transition-duration:2.8s!important;transition-timing-function:ease-in!important}   /* 부화시키기를 누르면 천천히 어두워진다 */
 .hatch.legend .win{filter:brightness(calc(1 - var(--dk,0) * .28 + var(--lg,0) * .3))}
 
 /* 1단계(금지급 전설·환상) 부화: 별이 뜬 어둠 속에서 무지개 빛기둥이 돌며 색이 바뀌고, 무지개 반짝이가 쏟아진다 */
-.hatch.myth>.hdark{background:radial-gradient(1.5px 1.5px at 18% 22%,#fff,transparent),radial-gradient(1.5px 1.5px at 78% 16%,#fff,transparent),radial-gradient(1px 1px at 64% 70%,#fff,transparent),radial-gradient(1px 1px at 30% 80%,#fff,transparent),radial-gradient(2px 2px at 88% 58%,#ffe9ff,transparent),radial-gradient(1px 1px at 10% 60%,#fff,transparent),radial-gradient(circle at 50% 45%,rgba(30,0,60,.55),#06001a 75%)}
-.hatch.myth>.hlit{background:radial-gradient(circle at 50% 45%,rgba(255,255,255,.95) 0,rgba(255,255,255,.35) 30%,rgba(255,255,255,0) 60%),conic-gradient(from 0deg at 50% 45%,#ff7aa8,#ffc861,#fff27a,#7cf0a0,#6ad8ff,#9a8cff,#ef8aff,#ff7aa8);animation:mythHue 3s linear infinite}   /* 1단계: 화면 전체가 무지개 프리즘 빛으로 차오르며 색이 돈다 */
-.hatch.myth>.hrays{background:repeating-conic-gradient(from 0deg,rgba(255,90,140,0) 0deg,rgba(255,90,140,.6) 4deg,rgba(255,220,80,.6) 6deg,rgba(255,220,80,0) 10deg,rgba(80,220,255,0) 15deg,rgba(80,220,255,.6) 19deg,rgba(180,120,255,.6) 21deg,rgba(180,120,255,0) 25deg,rgba(0,0,0,0) 30deg);animation:hrays 4s linear infinite,mythHue 2.4s linear infinite}
+/* 1단계 무지개 층(.hm)은 금빛 층 위에 겹쳐 두고 투명도만 서서히 올린다 → 금빛에서 무지개로 부드럽게 바뀜 */#hatch>.hm{opacity:0;transition:opacity 2.4s ease-in-out}#hatch>.hdark.hm{background:radial-gradient(1.5px 1.5px at 18% 22%,#fff,transparent),radial-gradient(1.5px 1.5px at 78% 16%,#fff,transparent),radial-gradient(1px 1px at 64% 70%,#fff,transparent),radial-gradient(1px 1px at 30% 80%,#fff,transparent),radial-gradient(2px 2px at 88% 58%,#ffe9ff,transparent),radial-gradient(1px 1px at 10% 60%,#fff,transparent)}#hatch.myth.legend>.hdark.hm{opacity:1}
+#hatch>.hlit.hm{background:radial-gradient(circle at 50% 45%,rgba(255,255,255,.95) 0,rgba(255,255,255,.35) 30%,rgba(255,255,255,0) 60%),conic-gradient(from 0deg at 50% 45%,#ff7aa8,#ffc861,#fff27a,#7cf0a0,#6ad8ff,#9a8cff,#ef8aff,#ff7aa8);transform:none;animation:mythHue 3s linear infinite}   /* 1단계: 화면 전체가 무지개 프리즘 빛으로 차오르며 색이 돈다 */#hatch.myth>.hlit.hm{opacity:var(--lg,0)}
+#hatch>.hrays.hm{background:repeating-conic-gradient(from 0deg,rgba(255,90,140,0) 0deg,rgba(255,90,140,.6) 4deg,rgba(255,220,80,.6) 6deg,rgba(255,220,80,0) 10deg,rgba(80,220,255,0) 15deg,rgba(80,220,255,.6) 19deg,rgba(180,120,255,.6) 21deg,rgba(180,120,255,0) 25deg,rgba(0,0,0,0) 30deg);animation:hrays 4s linear infinite,mythHue 2.4s linear infinite}#hatch.myth>.hrays.hm{opacity:var(--lg,0)}.hatch.myth>.hrays:not(.hm){opacity:0;transition:opacity 2.4s ease-in-out}
 .hatch.myth>.hwhite.go{background:radial-gradient(circle at 50% 45%,#fff 25%,#ffe4f6 50%,#dff4ff 72%,#fff3c8)}
-/* 부화 뒤: 빛줄기는 느리게, 카드는 밝기 그대로 */.hatch.done>.hrays{animation-duration:18s}.hatch.myth.done>.hrays{animation-duration:18s,6s}.hatch.done .win{filter:none}.hatch.g4t.done>.hrays{opacity:.9;background:repeating-conic-gradient(from 0deg,rgba(255,240,255,0) 0deg,rgba(255,240,255,.55) 5deg,rgba(255,240,255,.55) 8deg,rgba(255,240,255,0) 13deg,rgba(255,240,255,0) 20deg)}.hatch.done>.hglow{opacity:0}
+/* 부화 뒤: 빛줄기는 느리게, 카드는 밝기 그대로 */.hatch.done>.hrays{animation-duration:18s}#hatch.done>.hrays.hm{animation-duration:18s,6s}.hatch.done .win{filter:none}.hatch.g4t.done>.hrays{opacity:.9;background:repeating-conic-gradient(from 0deg,rgba(255,240,255,0) 0deg,rgba(255,240,255,.55) 5deg,rgba(255,240,255,.55) 8deg,rgba(255,240,255,0) 13deg,rgba(255,240,255,0) 20deg)}.hatch.done>.hglow{opacity:0}
 @keyframes mythHue{to{filter:hue-rotate(360deg)}}
 .hspark{position:absolute;width:6px;height:6px;pointer-events:none;z-index:4;background:#fff;box-shadow:0 0 6px 2px var(--sc,#ffe070);animation:hspark .9s steps(6,end) forwards}
 .hspark.b{width:9px;height:9px}
@@ -1448,7 +1448,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
     <button class="boxbtn" id="notiOk">확인</button>
   </div>
 </div>
-<div class="hatch" id="hatch" hidden><i class="hdark"></i><i class="hlit"></i><i class="hglow"></i><i class="hrays"></i><i class="hwhite"></i>
+<div class="hatch" id="hatch" hidden><i class="hdark"></i><i class="hdark hm"></i><i class="hlit"></i><i class="hlit hm"></i><i class="hglow"></i><i class="hrays"></i><i class="hrays hm"></i><i class="hwhite"></i>
   <div class="win" role="dialog" aria-label="알 부화">
     <i class="sw-h l" id="hlHl" hidden></i><i class="sw-h r" id="hlHr" hidden></i><span class="h-no" id="hatchNo" hidden></span><div class="hatch-stage" id="hatchStage"></div>
     <p id="hatchMsg">어라…?</p>
@@ -4357,7 +4357,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.55';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.56';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5982,7 +5982,7 @@ function tapEgg(egg, g0, msg, g = g0) {   /* g0 알 등급, g 연출 등급(나�
   return new Promise(done => {
     const need = ({ 6: 80, 5: 60, 4: 40 })[g] || 20,   /* 두드릴 횟수는 나올 포켓몬 단계로: 1단계 80, 2단계 60, 3단계 40, 기본 20 */ win = hatchEl.querySelector('.win'); let n = 0, stage = 0, idle = 0, pend = -1;
     msg.textContent = '알을 톡톡 두드려 보자!';
-    if (g >= 5) { hatchEl.classList.add('legend'); tenseStart(); }   /* 1단계도 처음엔 2단계와 똑같이 시작 (스포 방지), 절반쯤 두드리면 무지개로 바뀐다 */ else if (g === 4) hatchEl.classList.add('g4t');
+    if (g >= 5) { void hatchEl.offsetWidth; hatchEl.classList.add('dimin', 'legend'); setTimeout(() => hatchEl.classList.remove('dimin'), 3000); tenseStart(); }   /* 1단계도 처음엔 2단계와 똑같이 시작 (스포 방지), 절반쯤 두드리면 무지개로 바뀐다 */ else if (g === 4) hatchEl.classList.add('g4t');
     hatchStage.classList.add('tapme');
     // 두드리기 힌트: 창 안 아무 곳에 파장 원이 번진다 (잠깐 안 두드리면 다시)
     let lastTap = 0; const ring = () => { if (n >= need || performance.now() - lastTap < 1600) return; const r = hatchStage.getBoundingClientRect(), o = document.createElement('i'); o.className = 'tapring';
@@ -6088,11 +6088,11 @@ function hSparks(k, g, big) { for (let i = 0; i < k; i++) { const s = document.c
 // 빛줄기 회전: CSS 회전에 더해 두드릴수록 점점 빨라진다 (각도는 이어져서 튀지 않음)
 let raysV = 0, raysA = 0, raysRaf = 0, raysT = 0;
 function raysSpin(v) { raysV = v; if (raysRaf || !v) return; raysT = performance.now();
-  const step = t => { raysA = (raysA + raysV * (t - raysT) / 1000) % 360; raysT = t; const r = hatchEl.querySelector('.hrays'); if (r) r.style.rotate = raysA.toFixed(1) + 'deg'; raysRaf = raysV ? requestAnimationFrame(step) : 0; };
+  const step = t => { raysA = (raysA + raysV * (t - raysT) / 1000) % 360; raysT = t; for (const r of hatchEl.querySelectorAll('.hrays')) r.style.rotate = raysA.toFixed(1) + 'deg'; raysRaf = raysV ? requestAnimationFrame(step) : 0; };
   raysRaf = requestAnimationFrame(step); }
 function hatchBg(fg) { raysSpin(0); const c = hatchEl.classList; c.remove('surge'); c.toggle('done', fg >= 4); c.toggle('legend', fg >= 5); c.toggle('myth', fg === 6); c.toggle('g4t', fg === 4); c.toggle('rays', fg >= 5);
   hatchEl.style.setProperty('--dk', 0); hatchEl.style.setProperty('--lg', fg >= 5 ? .8 : 0); hatchEl.style.setProperty('--lit', fg === 4 ? .8 : 0); }
-function hatchFx() { raysSpin(0); raysA = 0; { const r = hatchEl.querySelector('.hrays'); if (r) r.style.rotate = ''; } hatchEl.classList.remove('legend', 'myth', 'rays', 'g4t', 'surge', 'done'); { const wh = hatchEl.querySelector('.hwhite'); if (wh) { wh.style.transition = ''; wh.style.opacity = ''; } } hatchEl.style.setProperty('--lg', 0); hatchEl.querySelectorAll('.hspark').forEach(e => e.remove()); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); hatchEl.querySelector('.win').classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5', 'jolt', 'wquake', 'leg', 'sil', 'brz'); hatchEl.querySelector('.hwhite')?.classList.remove('go', 'big'); }
+function hatchFx() { raysSpin(0); raysA = 0; for (const r of hatchEl.querySelectorAll('.hrays')) r.style.rotate = ''; hatchEl.classList.remove('legend', 'myth', 'rays', 'g4t', 'surge', 'done', 'dimin'); { const wh = hatchEl.querySelector('.hwhite'); if (wh) { wh.style.transition = ''; wh.style.opacity = ''; } } hatchEl.style.setProperty('--lg', 0); hatchEl.querySelectorAll('.hspark').forEach(e => e.remove()); hatchEl.style.setProperty('--lit', 0); hatchEl.style.setProperty('--dk', 0); hatchEl.querySelector('.win').classList.remove('aura', 'a1', 'a2', 'a3', 'a4', 'a5', 'jolt', 'wquake', 'leg', 'sil', 'brz'); hatchEl.querySelector('.hwhite')?.classList.remove('go', 'big'); }
 async function playHatch() {
   if (hatching || !hatchQ.length) return;
   hatching = true;
