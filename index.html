@@ -670,7 +670,7 @@ body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch
 .pk .pk-new{position:absolute;right:4px;top:4px;width:7px;height:7px;background:#e04838}.pk .pk-new~.tg{right:15px}.pk .tg{position:absolute;right:3px;top:3px;font-size:9px;background:var(--frame);color:var(--win);padding:1px 3px}
 .pk .tg{background:#3c9a4c;color:#fff}.pk .tg.bud{background:#e8a020;color:#fff}
 .pk.t-leg .nm{background:linear-gradient(90deg,#ff3d5e,#f08a10,#c8a000,#22a050,#2a86e8,#6a58f0,#c03ae8);-webkit-background-clip:text;background-clip:text;color:transparent}.pk.t-leg .nm .sh,.pk.t-leg .nm i,.pk.t-leg .nm b{-webkit-text-fill-color:initial}
-.pk.t-sil .nm{color:#b07a08}.pk.t-brz .nm{color:#7a3ec8}
+.pk.t-sil .nm{background:linear-gradient(180deg,#f2c641 0%,#d99a12 42%,#8f5a00 58%,#c98a10 78%,#f0c040 100%);-webkit-background-clip:text;background-clip:text;color:transparent}.pk.t-brz .nm{color:#7a3ec8}
 .pk .sh,.pp-body .sh{color:#e8a020;font-size:12px;margin-left:2px;text-shadow:0 0 4px rgba(255,200,40,.7)}
 /* S 랭크: 금빛 테두리 빛 + 반짝이 */
 .mon.rkS .flip{animation:sglow 1.8s ease-in-out infinite}.mon.nightf .act,.mon.nightf .shadow{filter:url(#nightF)}.mon.selflit .flip{animation:sglowN 2s ease-in-out infinite}@keyframes sglowN{0%,100%{filter:brightness(.6) sepia(.15) drop-shadow(0 0 2px rgba(255,220,140,.35))}50%{filter:brightness(.66) sepia(.15) drop-shadow(0 0 4px rgba(255,200,90,.4))}}#glows{position:absolute;inset:0;pointer-events:none}.gl{position:absolute;left:0;top:0;z-index:1050;border-radius:50%;mix-blend-mode:screen;pointer-events:none;width:200px;height:96px;margin:-48px 0 0 -100px;background:radial-gradient(closest-side,rgba(255,214,130,.1),rgba(255,200,110,.05) 40%,rgba(255,190,90,0) 70%,rgba(255,170,50,0));animation:glp 2s ease-in-out infinite}@keyframes glp{50%{opacity:.85}}.mon.selflit .shadow{opacity:.35}
@@ -679,7 +679,7 @@ body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch
 .mon.rkS .lift::before{content:'✦';position:absolute;left:0;bottom:calc(var(--mh,60px) * .55);color:#fff3a0;font-size:20px;text-shadow:0 0 4px #ffb000,0 0 2px #fff;animation:spk 1.6s steps(1) infinite;pointer-events:none;z-index:3}
 @keyframes spk{0%{opacity:1;transform:translate(calc(var(--mw,50px) * .4),0) scale(1)}20%{opacity:.4;transform:translate(calc(var(--mw,50px) * .4),0) scale(.6)}35%{opacity:0}50%{opacity:1;transform:translate(calc(var(--mw,50px) * -.45),calc(var(--mh,60px) * -.35)) scale(1.1)}70%{opacity:.4;transform:translate(calc(var(--mw,50px) * -.45),calc(var(--mh,60px) * -.35)) scale(.6)}85%{opacity:0}}
 .hatch-stage .born-pic.rkS img:not(.shiny){animation:hpop .5s steps(4,end),sglow 1.8s ease-in-out .5s infinite}.hatch-stage .born-pic.rkA img:not(.shiny){animation:hpop .5s steps(4,end),aglowI 2s ease-in-out .5s infinite}.born-pic.rkS img.shiny{filter:hue-rotate(var(--shue)) saturate(1.25) drop-shadow(0 0 4px #ffc830)}.born-pic.rkA img.shiny{filter:hue-rotate(var(--shue)) saturate(1.25) drop-shadow(0 0 4px #ff5050)}
-.pk.rkS img,.dp-pic.rkS img,.bd-pic.rkS img{animation:sglow 1.8s ease-in-out infinite}
+.pk.rkS img,.dp-pic.rkS img,.bd-pic.rkS img{animation:sglow 1.8s ease-in-out infinite}#boxGrid .pk.rkS img{animation:none;filter:drop-shadow(0 0 1px #fff6c0) drop-shadow(0 0 5px #ffc030)}#boxGrid .pk.rkA img{animation:none;filter:drop-shadow(0 0 1px #ffd0d0) drop-shadow(0 0 5px #ff4040)}#boxGrid .pk.shiny.rkS img{filter:hue-rotate(var(--shue)) saturate(1.25) drop-shadow(0 0 4px #ffc830)}
 .pk.rkS{background:radial-gradient(circle 40px at 50% 42px,rgba(255,236,160,.7),rgba(255,236,160,0))}
 .pk.press{background:rgba(0,0,0,.05)}
 .tyis{display:inline-flex;gap:2px;vertical-align:middle}
@@ -1181,6 +1181,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
   .setwin{height:100%}
   /* full-screen windows */
   /* windows sit above the tab bar, which always stays on screen */
+  .mgr-open #wrap{visibility:hidden}   /* 포켓몬 창이 화면을 덮는 동안 필드는 그리지 않는다 (박스 스크롤 렉) */
   .sheet{padding:0;place-items:stretch;background:var(--win);grid-template-rows:minmax(0,1fr);bottom:calc(58px + var(--sab) - var(--ext,0px));z-index:60}
   .menuwin,.cmdwin{position:relative;inset:auto;z-index:70}
   .menuwin .opt[aria-pressed="true"]{background:#2b2b3c;color:#ffe27a;transform:translateY(2px);box-shadow:inset 0 3px 0 rgba(0,0,0,.4),inset 0 0 0 2px #ffe27a,0 1px 0 #1c1c26}
@@ -4380,7 +4381,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.62';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.63';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -4649,6 +4650,7 @@ $('#dexGo').onclick = async () => {
 // ---------- meadow manager ----------
 // 20 slots, one per resident; the side sheet renames, feeds, puts to bed, wakes or releases the chosen one.
 const mgr = $('#mgr'), slotsEl = $('#slots'), mgrDet = $('#mgrDetail');
+new MutationObserver(() => document.documentElement.classList.toggle('mgr-open', !mgr.hidden)).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
 // 저장 옮기기: 홈 화면 앱과 Safari, 새 아이콘은 저장 공간이 따로라서 글자로 복사해 옮긴다
 const packSave = () => 'MEADOW1:' + btoa(unescape(encodeURIComponent(JSON.stringify(serialize()))));
 $('#saveCopy').onclick = async () => {
