@@ -5702,12 +5702,13 @@ const EVO_SWAPS = (() => { const t = [], add = (a, b, st) => { for (let x = a; x
   const s2 = EVO_T0 + EVO_BAR, s3 = s2 + EVO_BAR;
   add(EVO_T0, s2, EVO_B * 2); add(s2, s3, EVO_B); add(s3, s3 + EVO_BAR / 2, EVO_B / 2); add(s3 + EVO_BAR / 2, s3 + EVO_BAR * .75, EVO_B / 4); add(s3 + EVO_BAR * .75, EVO_END, EVO_B / 8);
   return t; })();
-async function evoMusicStart() {
+async function evoMusicStart(fade = 0) {
   const a = audio(); if (!a || !evoMus.have || !bgmOn) return null;
   try {
     if (!evoMus.buf) { const blob = await musicGet('evo'); if (!blob) return null; evoMus.buf = await bgmDecode(blob); }
     const src = a.createBufferSource(), g = a.createGain(); g.gain.value = .6 * VOL.bgm / 10;
     src.buffer = evoMus.buf; src.connect(g).connect(a.destination); const t0 = a.currentTime + .05; src.start(t0);
+    if (fade) { src.loop = true; g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.6 * VOL.bgm / 10, t0 + fade); }   // 진화가 끝나고 처음부터 다시, 소리를 키우며
     evoMus.src = src; evoMus.g = g; return t0;
   } catch (e) { return null; }
 }
@@ -5770,13 +5771,14 @@ async function evolveWin(P, card) {
   { const m = S.mons.find(x => x.pid === P.id); if (m) { m.sp = to; setForm(m, to); m.el.classList.remove('ditto'); if (m.name === fromN || m.name.startsWith(fromN + ' ')) { m.name = m.name.replace(fromN, toN); m.tag.textContent = m.name; } } }   // 필드에 있던 포켓몬도 새 모습으로
   await wait(700);
   sfx('evolve'); playCry(to, .9);
+  let shut = false; setTimeout(() => { if (!shut && evoMus.have) evoMusicStart(2.5).then(t => { if (shut && t != null) evoMusicFade(.3); }); }, 1800);   // 울음소리가 끝나면 진화 곡이 다시 흐른다
   msg.innerHTML = `축하해! ${J({ name: nm }, '은/는')} ${J({ name: toN }, '으로/로')} 진화했다!${newTo ? `<br><span class="small">새로 만난 포켓몬이라 <b>${NEW_G}G</b>를 받았다</span>` : ''}`;
   log(`축하해! ${b ? '짝꿍 ' : ''}${J({ name: nm },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`, [], true);
   cardEl.innerHTML = dexInfoHtml(to); cardEl.hidden = false; ok.hidden = false; ok.focus();
   { const bt = el.querySelector('.ef-bottom').getBoundingClientRect().top; el.style.setProperty('--sy', bt / 2 + 'px'); el.style.setProperty('--ss', Math.max(90, Math.min(220, bt - 50)) + 'px'); el.classList.add('fin'); }   // 새 모습은 아래 글 상자 위 빈 곳 가운데로
   save();
   await new Promise(res => ok.onclick = res);
-  sfx('tap'); el.classList.remove('in'); bgmDuck(1, 1.2);
+  shut = true; evoMusicFade(.8); sfx('tap'); el.classList.remove('in'); bgmDuck(1, 1.2);
   await wait(350); el.hidden = true; el.className = ''; parts.innerHTML = '';
   evolving = false; save(); renderRun(); renderBox();
   open.forEach(x => x.hidden = false); if (!mgr.hidden) { renderBuddy(); renderMgr(true); } if (card) openPoke(P.id);   // 보던 창으로 돌아간다
@@ -5826,7 +5828,7 @@ async function start(data) {
   window.pokeRunReady = true; postNative();
   try { window.webkit?.messageHandlers?.pokeRun?.postMessage({ ready: true }); } catch (e) {}
 }
-if (/[?&]debug/.test(location.search)) window.__meadow = { bgm, bgmPos, feedOne, tense, hatchEgg, playHatch, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
+if (/[?&]debug/.test(location.search)) window.__meadow = { evoMus, bgm, bgmPos, feedOne, tense, hatchEgg, playHatch, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
 if (/[?&]debug/.test(location.search)) Object.assign(window, { __drag: () => drag, __log: log, __save: save, __bgm: bgm, __actx: () => actx, __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf, __thoughtOf: thoughtOf, __addRel: addRel, __tyIcon: tyIcon, __evoKids: evoKids, __friendsAll: friendsAll, __renameBox: renameBox });
 window.claude?.hot?.snapshot?.(() => serialize());
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
