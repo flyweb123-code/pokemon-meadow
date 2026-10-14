@@ -67,6 +67,14 @@
 #pokePop #ppEvoBtn{flex:0 0 auto;width:auto;min-width:0;margin:0;padding:0 18px;height:40px;background:#e8a020;border-color:#9a6410;color:#fff;animation:softGlow 4s ease-in-out infinite}
 @media (prefers-reduced-motion: reduce){.bd-card.ready,#ppEvoBtn,.bd-evobtn,.bd-card.ready .prog.evo{animation:none}}
 #boxGrid>.pk{content-visibility:auto;contain-intrinsic-size:auto 118px}
+/* 관찰 일지: 따로 뜬 상자가 아니라 상태창이 위로 늘어난 모양 (가운데 이음선 없이, 안쪽 테두리가 위아래로 이어진다) */
+.dlg.open .journal{bottom:100%;border-bottom:0;padding-bottom:4px;box-shadow:inset 4px 0 0 var(--win),inset -4px 0 0 var(--win),inset 0 4px 0 var(--win),inset 8px 0 0 var(--inner-blue),inset -8px 0 0 var(--inner-blue),inset 0 8px 0 var(--inner-blue),6px 0 0 rgba(0,0,0,.35)}
+.app .win.dlg.open{box-shadow:inset 4px 0 0 var(--win),inset -4px 0 0 var(--win),inset 0 -4px 0 var(--win),inset 8px 0 0 var(--inner-blue),inset -8px 0 0 var(--inner-blue),inset 0 -8px 0 var(--inner-blue),6px 6px 0 rgba(0,0,0,.35)}
+.dlg.open .journal ol.log li:last-child{border-bottom:2px dotted var(--dlg-in)}
+@media (max-width:760px),(max-height:500px) and (orientation:landscape){
+  .dlg.open .journal{bottom:100%;box-shadow:inset 3px 0 0 var(--win),inset -3px 0 0 var(--win),inset 0 3px 0 var(--win),inset 6px 0 0 var(--dlg-in),inset -6px 0 0 var(--dlg-in),inset 0 6px 0 var(--dlg-in)}
+  .app .win.dlg.open{box-shadow:inset 3px 0 0 var(--win),inset -3px 0 0 var(--win),inset 0 -3px 0 var(--win),inset 6px 0 0 var(--dlg-in),inset -6px 0 0 var(--dlg-in),inset 0 -6px 0 var(--dlg-in)}
+}
 .frpop{position:absolute;transform:translate(-50%,-100%);white-space:nowrap;font:12px/1 var(--px);color:#fff;background:#e04870;border:2px solid #8a1f40;padding:3px 6px;z-index:2000;pointer-events:none;animation:frpop 1.6s steps(12) forwards}
 .frpop b{margin-right:3px;color:#ffd0dc}
 @keyframes frpop{0%{opacity:0;transform:translate(-50%,-80%)}15%{opacity:1;transform:translate(-50%,-100%)}75%{opacity:1;transform:translate(-50%,-150%)}100%{opacity:0;transform:translate(-50%,-170%)}}
