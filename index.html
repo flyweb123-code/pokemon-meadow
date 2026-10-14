@@ -4646,7 +4646,14 @@ document.addEventListener('touchstart', () => {}, { passive: true });
   document.addEventListener('pointercancel', () => { pb?.classList.remove('outp'); pb = null; }, true);
   document.addEventListener('click', e => { if (eat && performance.now() - eatT < 500 && eat.contains(e.target)) { eat = null; e.stopImmediatePropagation(); e.preventDefault(); } }, true); }
 // 창 바깥 좌우(화살표 힌트 있는 띠)를 누르면 넘기고, 그 밖의 바깥은 닫는다
-function sideTap(pop, e) { const r = pop.querySelector('.win').getBoundingClientRect(); if (e.clientY < r.top || e.clientY > r.bottom) return 0; return e.clientX < r.left ? -1 : e.clientX > r.right ? 1 : 0; }
+function sideTap(pop, e) { const r = pop.querySelector('.win').getBoundingClientRect(); if (e.clientY < r.top - 90 || e.clientY > r.bottom + 90) return 0; return e.clientX < r.left ? -1 : e.clientX > r.right ? 1 : 0; }   /* 카드 위아래로 90px 더 */
+// 카드 안쪽 가장자리 띠(좌우 24px)도 버튼·글자 입력이 아니면 넘기기로 친다
+const EDGE_IN = 24;
+document.addEventListener('click', e => { if (!e.isTrusted) return;
+  for (const [pop, l, r, step] of [['#pokePop', '#ppHl', '#ppHr', d => pokeStep(d)], ['#monPop', '#mHl', '#mHr', d => monStep(d)], ['#dexPop', '#dpHl', '#dpHr', d => cardStep(d)]]) {
+    const P = $(pop); if (P.hidden) continue; const w = P.querySelector('.win:not(.ghost)'); if (!w || !w.contains(e.target) || e.target.closest('button,input,textarea,a,label,.frtap,[data-tip],.mvcard,.mvuse')) continue;
+    const R = w.getBoundingClientRect(), d = e.clientX < R.left + EDGE_IN ? -1 : e.clientX > R.right - EDGE_IN ? 1 : 0; if (!d || $(d < 0 ? l : r).hidden) continue;
+    e.stopPropagation(); e.preventDefault(); step(d); return; } }, true);
 cardPager(monPop, {
   can: d => { const j = S.mons.indexOf(mgrSel) + d; return j >= 0 && j < S.mons.length; },
   skip: e => !!e.target.closest('#mPages'),
