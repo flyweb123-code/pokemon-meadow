@@ -2041,7 +2041,7 @@ const isPmd = sp => typeof SPRITES[sp] === 'object';
 // 그리고 진화 전 모습은 진화 후 모습보다 커지지 않게 (진화 후의 92%까지)
 // 2026-10-14 경완 요청: 3D 본가(소드실드·아르세우스·스칼렛바이올렛)처럼 실제 키에 더 가깝게 → 키 비중을 올리고(h^0.75), 화면 크기는 e^0.6 으로 넓게 벌림.
 // 너무 작거나 크지 않게 아래는 30px, 위는 80px 부터 부드럽게 눌러 최대 약 130px (폰 화면에서 고래왕이 너무 커서)
-const SIZE_ADJ = { 150: .85, 199: .8, 878: 1.3 };   // v3.08 경완: 뮤츠·야도킹 너무 크다, 끼리동 너무 작다
+const SIZE_ADJ = { 150: .85, 199: .8, 878: 1.3, 144: 1.35, 145: 1.35, 146: 1.35 };   // v3.08 경완: 뮤츠·야도킹 너무 크다, 끼리동 너무 작다. v3.12: 파이어 너무 작다(날개 큰 전설 새 셋)
 const sizeRaw = sp => { const d = SPECIES[sp]; if (!d) return 1; const h = Math.max(.1, (d.h ?? 7) / 10), w = Math.max(.1, (d.w ?? 100) / 10); return (SIZE_ADJ[sp] || 1) * Math.pow(h, .25) * Math.pow(.45 * Math.cbrt(w), .75); };   // v3.05: 덩치는 몸무게(부피)가 거의 정한다 — 키 2m 야도킹(80kg)이 코리갑(1.1m·120kg)보다 커 보이던 것 (보이는 크기 vh 도 칠해진 넓이 기준이라 맞음)
 let SIZE_KIDS = null; const sizeMemo = {};
 function sizeEff(sp) {
@@ -4477,7 +4477,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.11';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.12';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
