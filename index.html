@@ -549,6 +549,7 @@ ol.log li.big .txt{color:#c03838}
 .mgr-tools #eggAll[hidden]+.tcount{margin-left:auto}
 .setwin{max-width:560px;display:flex;flex-direction:column}
 .set-body{flex:1;min-height:0;overflow-y:auto;touch-action:pan-y}#set{touch-action:pan-y}
+#set .setwin{padding-left:0!important;padding-right:0!important}#set .set-body{padding-left:14px;padding-right:14px}#set .sheet-head{padding-left:14px;padding-right:14px}
 .set-sec{border:3px solid var(--frame);background:var(--card);padding:14px;margin-bottom:12px;box-shadow:4px 4px 0 rgba(0,0,0,.25)}
 .set-sec h4{margin:0 0 6px;font-size:18px}
 .pf-sp{flex:1}#setTitle{margin-right:auto}#set .sheet-head .pf-sp{display:none}
@@ -3998,10 +3999,10 @@ $('#pfRunBtn').onclick = () => { sfx('tap'); renderRunLog(); setPage('runs'); };
     if (!sw.on) { if (Math.abs(dy) > 12 && Math.abs(dy) > dx) { sw = null; return; } if (dx < 8) return;
       sw.on = true; try { setEl.setPointerCapture(e.pointerId); } catch (_) {}
       const pf = $('#pfPage'), cs = getComputedStyle(body);
-      pf.hidden = false; pf.style.cssText = `position:absolute;left:${cs.paddingLeft};right:${cs.paddingRight};top:${body.scrollTop + parseFloat(cs.paddingTop)}px;pointer-events:none;transform:translateX(${-sw.w - 14}px)`;
+      pf.hidden = false; pf.style.cssText = `position:absolute;left:${cs.paddingLeft};right:${cs.paddingRight};top:${body.scrollTop + parseFloat(cs.paddingTop)}px;pointer-events:none;transform:translateX(${-sw.w}px)`;
       body.style.position = 'relative'; body.style.overflowX = 'hidden'; sw.pf = pf; }
     sw.dx = Math.max(0, dx);
-    sw.pg.style.transform = `translateX(${sw.dx}px)`; sw.pf.style.transform = `translateX(${sw.dx - sw.w - 14}px)`;   // 두 창이 나란히 붙어 함께 움직인다
+    sw.pg.style.transform = `translateX(${sw.dx}px)`; sw.pf.style.transform = `translateX(${sw.dx - sw.w}px)`;   // 두 창이 나란히 붙어 함께 움직인다
     e.preventDefault();
   });
   const end = e => {
@@ -4009,7 +4010,7 @@ $('#pfRunBtn').onclick = () => { sfx('tap'); renderRunLog(); setPage('runs'); };
     const v = s0.dx / Math.max(1, performance.now() - s0.t0), back = s0.dx > s0.w * .35 || v > .5;
     const ease = 'transform .24s cubic-bezier(.2,.8,.3,1)';
     s0.pg.style.transition = s0.pf.style.transition = ease;
-    s0.pg.style.transform = `translateX(${back ? s0.w : 0}px)`; s0.pf.style.transform = `translateX(${back ? 0 : -s0.w - 14}px)`;
+    s0.pg.style.transform = `translateX(${back ? s0.w : 0}px)`; s0.pf.style.transform = `translateX(${back ? 0 : -s0.w}px)`;
     setTimeout(() => { s0.pg.style.cssText = ''; s0.pf.style.cssText = ''; body.style.position = body.style.overflowX = '';
       if (back) { sfx("tap"); setPage(false); } else s0.pf.hidden = true; }, 250);
   };
