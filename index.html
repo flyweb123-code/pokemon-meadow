@@ -1229,7 +1229,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 
   <section class="card" id="info" hidden aria-live="polite"></section>
 
-  <div class="petbar" id="petBar" hidden><span class="pb-ic" id="petIc"></span><span class="pb-t">포켓몬을 문질러서 쓰다듬어 보세요<span class="pb-n" id="petN"></span></span><button class="pb-x" id="petX">그만하기</button></div>
+  <div class="petbar" id="petBar" hidden><span class="pb-ic" id="petIc"></span><span class="pb-t">포켓몬을 문질러서 쓰다듬어 보세요<span class="pb-n" id="petN"></span></span></div>
   <div class="hud win blue dlg" id="dlg" role="log" aria-live="polite">
     <section class="journal" id="journal" hidden>
       <div class="journal-head"><h3>관찰 일지</h3></div>
@@ -2357,7 +2357,6 @@ addEventListener('pointermove', e => { const p = petM; if (!p || p.done || !p.ru
 addEventListener('click', e => { if ((petM && !e.target.closest('#petBar')) || performance.now() - petCancelAt < 700) { e.stopPropagation(); e.preventDefault(); } }, true);
 let petCancelAt = 0;
 function petQuit() { if (!petM || petM.done) return; const m = petM.m; emote(m, '…', '', 1); petEnd(); }
-$('#petX').onclick = petQuit;
 // 놓은 열매 끌어서 옮기기
 let bdrag = null;
 window.addEventListener('pointermove', e => {
@@ -4589,7 +4588,7 @@ $('#monPop').addEventListener('click', e => { if (e.target.closest('.m-dots')) m
 // 정보 카드 밀어서 넘기기 (모든 넘기는 카드 공용): 카드 전체가 손가락을 따라 밀리고, 양옆에 이전·다음 카드가 붙어 따라 들어온다.
 // 놓으면 다음 카드가 가운데로 와서 그대로 그 카드가 된다 (스프라이트만 따로 움직이지 않는다)
 function cardPager(pop, o) {
-  const w = pop.querySelector('.win'), GAP = 14, DUR = 620, EASE = 'cubic-bezier(.25,.6,.3,1)'; let x0 = null, y0 = 0, dx0 = 0, busy = false, gh = {}, W = 0, swT = 0, t0 = 0;
+  const w = pop.querySelector('.win'), GAP = 14, DUR = 500, EASE = 'cubic-bezier(.25,.6,.3,1)'; let x0 = null, y0 = 0, dx0 = 0, busy = false, gh = {}, W = 0, swT = 0, t0 = 0;
   const ghost = d => { if (d in gh) return gh[d]; if (!o.can(d)) return gh[d] = null;
     const r = w.getBoundingClientRect(), g = o.snap(d, w); g.removeAttribute('id'); g.setAttribute('aria-hidden', 'true'); g.inert = true; g.classList.add('ghost');   /* 안쪽 id 는 남긴다(스타일 유지). 원래 카드가 문서에서 앞이라 $() 는 원래 카드를 찾는다 */
     Object.assign(g.style, { position: 'fixed', left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', margin: '0', pointerEvents: 'none', zIndex: 1 }); pop.append(g); return gh[d] = g; };
