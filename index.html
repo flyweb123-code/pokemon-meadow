@@ -585,10 +585,10 @@ body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch
 .petbar{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,calc(100% - 24px));z-index:40;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;box-sizing:border-box;background:rgba(30,26,52,.9);color:#fff;border:3px solid #fff;box-shadow:0 0 0 3px #2a2440,5px 5px 0 3px rgba(0,0,0,.28);font-size:15px}.petbar[hidden]{display:none!important}
 [data-rk]{--rkc:#6a6a70}[data-rk="E"]{--rkc:#909098}[data-rk="D"]{--rkc:#40a060}[data-rk="C"]{--rkc:#3a80d0}[data-rk="B"]{--rkc:#8a5ad0}[data-rk="A"]{--rkc:#e04848}[data-rk="S"]{--rkc:#e8a020}
 .dp-pic[data-rk]:not([data-rk=""]),#info #pPf[data-rk]:not([data-rk=""]){border-color:var(--rkc)!important}
-.dp-pic[data-rk="A"],#info #pPf[data-rk="A"]{box-shadow:0 0 5px rgba(224,72,72,.35)!important}
-.dp-pic[data-rk="S"],#info #pPf[data-rk="S"]{box-shadow:0 0 4px rgba(255,200,40,.4)!important;animation:rkGlow 2.4s ease-in-out infinite}
+.dp-pic[data-rk="A"],#info #pPf[data-rk="A"]{box-shadow:0 0 7px rgba(240,80,80,.7)!important}.dp-pic[data-rk="A"]::after,#info #pPf[data-rk="A"]::after,.dp-pic[data-rk="S"]::after,#info #pPf[data-rk="S"]::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:4;--gc:rgba(255,80,80,.75);box-shadow:inset 0 0 5px var(--gc);animation:rkIn 2.2s ease-in-out infinite}.dp-pic[data-rk="S"]::after,#info #pPf[data-rk="S"]::after{--gc:rgba(255,205,60,.85)}@keyframes rkIn{50%{box-shadow:inset 0 0 11px var(--gc)}}
+.dp-pic[data-rk="S"],#info #pPf[data-rk="S"]{box-shadow:0 0 8px rgba(255,200,40,.75)!important}
 .dp-pic[data-rk="S"]::before,#info #pPf[data-rk="S"]::before{content:'✦';position:absolute;right:7px;top:5px;z-index:5;color:#fff6b0;font-size:14px;line-height:1;text-shadow:0 0 4px #ffb000;animation:spk 1.6s steps(1) infinite;pointer-events:none}
-@keyframes rkShine{0%{background-position:100% 0}100%{background-position:-200% 0}}@keyframes rkGlow{50%{box-shadow:0 0 8px rgba(255,200,40,.6)}}.app-ver{position:absolute;right:12px;bottom:8px;font-size:11px;line-height:1;color:var(--dim);opacity:.75;pointer-events:none;letter-spacing:.3px}.petbar{pointer-events:none}.petbar.top{bottom:auto;top:78px}.pet-trail{position:fixed;left:0;top:0;pointer-events:none;z-index:2147483000}.petbar .pb-ic{flex:none;width:34px;height:34px;display:grid;place-items:center;background:#ffe3ee;border:2px solid #e8679a}.petbar .pb-t{flex:1;min-width:0;line-height:1.35;letter-spacing:-.3px;word-break:keep-all}.petbar .pb-x{flex:none;font:inherit;font-size:14px;padding:7px 10px;background:#e8679a;color:#fff;border:2px solid #fff;box-shadow:2px 2px 0 rgba(0,0,0,.35);cursor:pointer}.petbar .pb-x:active{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.35)}.petbar .pb-n{display:block;margin-top:6px;height:10px;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 2px rgba(255,255,255,.35);overflow:hidden}.petbar .pb-n b{display:block;height:100%;width:0;background:#ff8ab4}.petbar .pb-n.pop{animation:pbpop .32s cubic-bezier(.3,1.8,.5,1)}@keyframes pbpop{0%{transform:scaleY(1)}35%{transform:scaleY(1.18)}100%{transform:scaleY(1)}}.petbar .pb-n.hot b{background:linear-gradient(90deg,#ff8ab4,#ffd36e)}@media (max-width:760px),(max-height:500px) and (orientation:landscape){.petbar{position:relative;left:auto;bottom:auto;transform:none;grid-area:stage;align-self:end;justify-self:center;margin:0 0 14px;width:calc(100% - 24px)}.petbar.top{top:auto;align-self:start;margin:calc(env(safe-area-inset-top) + 66px) 0 0}}
+@keyframes rkShine{0%{background-position:100% 0}100%{background-position:-200% 0}}@keyframes rkGlow{50%{box-shadow:0 0 13px rgba(255,210,60,.95)}}.app-ver{position:absolute;right:12px;bottom:8px;font-size:11px;line-height:1;color:var(--dim);opacity:.75;pointer-events:none;letter-spacing:.3px}.petbar{pointer-events:none}.petbar.top{bottom:auto;top:78px}.pet-trail{position:fixed;left:0;top:0;pointer-events:none;z-index:2147483000}.petbar .pb-ic{flex:none;width:34px;height:34px;display:grid;place-items:center;background:#ffe3ee;border:2px solid #e8679a}.petbar .pb-t{flex:1;min-width:0;line-height:1.35;letter-spacing:-.3px;word-break:keep-all}.petbar .pb-x{flex:none;font:inherit;font-size:14px;padding:7px 10px;background:#e8679a;color:#fff;border:2px solid #fff;box-shadow:2px 2px 0 rgba(0,0,0,.35);cursor:pointer}.petbar .pb-x:active{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.35)}.petbar .pb-n{display:block;margin-top:6px;height:10px;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 2px rgba(255,255,255,.35);overflow:hidden}.petbar .pb-n b{display:block;height:100%;width:0;background:#ff8ab4}.petbar .pb-n.pop{animation:pbpop .32s cubic-bezier(.3,1.8,.5,1)}@keyframes pbpop{0%{transform:scaleY(1)}35%{transform:scaleY(1.18)}100%{transform:scaleY(1)}}.petbar .pb-n.hot b{background:linear-gradient(90deg,#ff8ab4,#ffd36e)}@media (max-width:760px),(max-height:500px) and (orientation:landscape){.petbar{position:relative;left:auto;bottom:auto;transform:none;grid-area:stage;align-self:end;justify-self:center;margin:0 0 14px;width:calc(100% - 24px)}.petbar.top{top:auto;align-self:start;margin:calc(env(safe-area-inset-top) + 66px) 0 0}}
 .tr-card{position:relative;overflow:hidden;isolation:isolate}.tr-card>*{position:relative;z-index:1}
 .tr-card::before,.tr-card::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:0}
 .tr-card.r1{border-color:#3a7a3a;box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px #9ccf8a}
@@ -662,13 +662,13 @@ body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch
 .pk .tg.bud{background:#e8a020;color:#fff}
 .pk .sh,.pp-body .sh{color:#e8a020;font-size:12px;margin-left:2px;text-shadow:0 0 4px rgba(255,200,40,.7)}
 /* S 랭크: 금빛 테두리 빛 + 반짝이 */
-.mon.rkS .flip{animation:sglow 1.8s ease-in-out infinite}.mon.selflit .flip{animation:sglowN 2s ease-in-out infinite}@keyframes sglowN{0%,100%{filter:brightness(.6) sepia(.15) drop-shadow(0 0 2px rgba(255,220,140,.35))}50%{filter:brightness(.66) sepia(.15) drop-shadow(0 0 4px rgba(255,200,90,.4))}}#glows{position:absolute;inset:0;pointer-events:none}.gl{position:absolute;left:0;top:0;z-index:1050;border-radius:50%;mix-blend-mode:screen;pointer-events:none;width:200px;height:96px;margin:-48px 0 0 -100px;background:radial-gradient(closest-side,rgba(255,214,110,.3),rgba(255,196,80,.17) 35%,rgba(255,180,60,.06) 65%,rgba(255,170,50,0));animation:glp 2s ease-in-out infinite}@keyframes glp{50%{opacity:.85}}.mon.selflit .shadow{opacity:.35}
+.mon.rkS .flip{animation:sglow 1.8s ease-in-out infinite}.mon.nightf .act,.mon.nightf .shadow{filter:url(#nightF)}.mon.selflit .flip{animation:sglowN 2s ease-in-out infinite}@keyframes sglowN{0%,100%{filter:brightness(.6) sepia(.15) drop-shadow(0 0 2px rgba(255,220,140,.35))}50%{filter:brightness(.66) sepia(.15) drop-shadow(0 0 4px rgba(255,200,90,.4))}}#glows{position:absolute;inset:0;pointer-events:none}.gl{position:absolute;left:0;top:0;z-index:1050;border-radius:50%;mix-blend-mode:screen;pointer-events:none;width:200px;height:96px;margin:-48px 0 0 -100px;background:radial-gradient(closest-side,rgba(255,214,130,.1),rgba(255,200,110,.05) 40%,rgba(255,190,90,0) 70%,rgba(255,170,50,0));animation:glp 2s ease-in-out infinite}@keyframes glp{50%{opacity:.85}}.mon.selflit .shadow{opacity:.35}
 @keyframes sglow{0%,100%{filter:drop-shadow(0 0 1px #fff6c0) drop-shadow(0 0 3px #ffc830)}50%{filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 7px #ffb000)}}
-.mon.rkA .lift::after{content:'';position:absolute;left:calc(var(--mw,50px) * -.7);bottom:calc(var(--mh,60px) * .02);width:calc(var(--mw,50px) * 1.4);height:calc(var(--mh,60px) * .96);border-radius:50%;background:radial-gradient(closest-side,rgba(255,80,80,.42),rgba(255,70,70,.2) 55%,rgba(255,60,60,0));z-index:-1;pointer-events:none;animation:aglow 2.2s ease-in-out infinite}@keyframes aglow{50%{opacity:.7}}.pk.rkA{background:radial-gradient(circle at 50% 36%,rgba(255,120,120,.4),transparent 60%)}
+.mon.rkA .lift::after{content:'';position:absolute;left:calc(var(--mw,50px) * -.7);bottom:calc(var(--mh,60px) * .02);width:calc(var(--mw,50px) * 1.4);height:calc(var(--mh,60px) * .96);border-radius:50%;background:radial-gradient(closest-side,rgba(255,80,80,.42),rgba(255,70,70,.2) 55%,rgba(255,60,60,0));z-index:-1;pointer-events:none;animation:aglow 2.2s ease-in-out infinite}@keyframes aglow{50%{opacity:.7}}.pk.rkA{background:radial-gradient(circle 40px at 50% 42px,rgba(255,120,120,.38),rgba(255,120,120,0))}.pk.rkA img,.dp-pic.rkA img,.bd-pic.rkA img{animation:aglowI 2s ease-in-out infinite}@keyframes aglowI{0%,100%{filter:drop-shadow(0 0 1px #ffd0d0) drop-shadow(0 0 3px #ff5050)}50%{filter:drop-shadow(0 0 2px #ffd0d0) drop-shadow(0 0 7px #ff3838)}}
 .mon.rkS .lift::before{content:'✦';position:absolute;left:0;bottom:calc(var(--mh,60px) * .55);color:#fff3a0;font-size:20px;text-shadow:0 0 4px #ffb000,0 0 2px #fff;animation:spk 1.6s steps(1) infinite;pointer-events:none;z-index:3}
 @keyframes spk{0%{opacity:1;transform:translate(calc(var(--mw,50px) * .4),0) scale(1)}20%{opacity:.4;transform:translate(calc(var(--mw,50px) * .4),0) scale(.6)}35%{opacity:0}50%{opacity:1;transform:translate(calc(var(--mw,50px) * -.45),calc(var(--mh,60px) * -.35)) scale(1.1)}70%{opacity:.4;transform:translate(calc(var(--mw,50px) * -.45),calc(var(--mh,60px) * -.35)) scale(.6)}85%{opacity:0}}
 .pk.rkS img,.dp-pic.rkS img,.bd-pic.rkS img{animation:sglow 1.8s ease-in-out infinite}
-.pk.rkS{background:radial-gradient(circle at 50% 36%,rgba(255,236,160,.75),transparent 60%)}
+.pk.rkS{background:radial-gradient(circle 40px at 50% 42px,rgba(255,236,160,.7),rgba(255,236,160,0))}
 .pk.press{background:rgba(0,0,0,.05)}
 .tyis{display:inline-flex;gap:2px;vertical-align:middle}
 .tyi{width:16px;height:16px;display:block;image-rendering:pixelated}
@@ -1210,7 +1210,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
       <canvas id="bg" width="1920" height="1200"></canvas>
       <div id="items"></div>
       <div id="mons"></div>
-      <div id="night"></div><div id="glows"></div>
+      <div id="night"></div><svg width="0" height="0" style="position:absolute"><filter id="nightF" filterUnits="userSpaceOnUse" x="-400" y="-400" width="800" height="800" color-interpolation-filters="sRGB"><feColorMatrix id="nightM" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0"/></filter></svg><div id="glows"></div>
       <div id="fx"></div>
     </div>
   </div>
@@ -2347,7 +2347,7 @@ function petDots() { const b = $('#petN'); if (!b.firstChild) b.innerHTML = '<b>
 // 멈추면 게이지가 바로 빠르게 줄어든다 (멈춘 지 0.12초 뒤부터 초당 45%)
 function petTick(ts) { const p = petM; if (!p) return; const dt = petTick.t ? Math.min(.1, (ts - petTick.t) / 1000) : 0; petTick.t = ts;
   /* 탄성: 보이는 게이지(dv)가 실제 값(v)을 스프링처럼 따라가며 살짝 넘쳤다 돌아온다 */
-  if (dt) { p.dv ??= 0; p.dvv ??= 0; const a = 260 * (p.v - p.dv) - 22 * p.dvv; p.dvv += a * dt; p.dv += p.dvv * dt; }
+  if (dt) { p.dv ??= 0; p.dvv ??= 0; const a = 260 * (p.v - p.dv) - 15 * p.dvv; p.dvv += a * dt; p.dv += p.dvv * dt; }
   if (!p.done) { p.spd *= Math.pow(.02, dt); if (performance.now() - p.mvT > 120 && p.v > 0) { p.v = Math.max(0, p.v - .45 * dt); p.n = Math.min(p.n, Math.floor(p.v * PET_N)); } petDots(); }
   requestAnimationFrame(petTick); }
 function petEnd() {
@@ -2378,7 +2378,7 @@ addEventListener('pointermove', e => { const p = petM; if (!p || p.done || !p.ru
   const dtm = Math.max(8, now - (p.mvT || now - 16)); p.mvT = now; p.spd = p.spd * .8 + (d / dtm * 1000) * .2;
   p.v += d / PET_LEN * clamp(p.spd / 700, .5, 2); petDots();
   if (p.v >= 1) return petDone();
-  const n = Math.floor(p.v * PET_N); if (n > p.n) { p.n = n; p.dvv = (p.dvv || 0) + .35; const bb = $('#petN'); bb.classList.remove('pop'); void bb.offsetWidth; bb.classList.add('pop'); emote(p.m, n % 3 === 0 ? '♪' : '♥', 'heart', .9); p.rub.ht = now; haptic(2); } }, true);
+  const n = Math.floor(p.v * PET_N); if (n > p.n) { p.n = n; p.dvv = (p.dvv || 0) + .9; const bb = $('#petN'); bb.classList.remove('pop'); void bb.offsetWidth; bb.classList.add('pop'); emote(p.m, n % 3 === 0 ? '♪' : '♥', 'heart', .9); p.rub.ht = now; haptic(2); } }, true);
 ['pointerup', 'pointercancel'].forEach(t => addEventListener(t, e => { const rb = petM?.rub; if (rb && e.pointerId === rb.id) { petM.rub = null;
     /* 포켓몬이 아닌 곳을 문지르지 않고 톡 누르고 떼면 그만둔다 */
     if (t === 'pointerup' && !rb.on && rb.far < 12 && performance.now() - rb.t0 < 450 && !petM.done) { petCancelAt = performance.now(); petQuit(); e.stopPropagation(); return; } } if ((petM || performance.now() - petCancelAt < 700) && !drag) e.stopPropagation(); }, true));
@@ -3802,10 +3802,15 @@ function render(m, now) {
   if (m.land && (m.sp !== 129 || pondVal(m.x, m.y) < .85)) { m.land = false; if (!m.held) { splashAt(m); log(`${J(m,'이/가')} 겨우 호수로 돌아와 첨벙! 한결 편안해 보인다.`, [m]); } }
   { const fl = !!m.land && !m.held; if (fl !== !!m.flop) { m.flop = fl; m.el.classList.toggle('flop', fl); } }
   m.el.style.transform = `translate(${m.x.toFixed(1)}px,${m.y.toFixed(1)}px)`;
-  { const lit = skyDark > .25 && m.el.classList.contains('rkS') && !m.hidden; if (lit !== !!m.lit) { m.lit = lit; m.el.classList.toggle('selflit', lit);
+  { const lit = skyDark > .25 && m.el.classList.contains('rkS') && !m.hidden; if (lit !== !!m.lit) { m.lit = lit; m.el.classList.toggle('selflit', lit && !m.bright);
       if (lit) { m.gl = document.createElement('i'); m.gl.className = 'gl'; $('#glows').append(m.gl); } else { m.gl?.remove(); m.gl = null; } }
     if (m.gl) { if (!m.el.isConnected) { m.gl.remove(); m.gl = null; m.lit = false; } else { const k = Math.max(.75, Math.min(1.6, (m.w || 50) / 55)); m.gl.style.transform = `translate(${m.x.toFixed(1)}px,${(m.y - 4).toFixed(1)}px) scale(${k.toFixed(2)})`; m.gl.style.opacity = Math.min(1, skyDark * 1.2).toFixed(2); } } }   /* 어두우면 S 랭크는 밤 그늘 위에서 은은하게 빛나고(쓰다듬을 때보다 어둡게), 발밑 가까운 땅부터 밝힌다 */
-  m.el.style.zIndex = Math.round(m.y) + (m.zAdd || 0) + (m.perch ? 2 : 0) + (m.pet ? 5000 : 0) + (m.lit ? 1100 : 0);
+  { const br = skyDark > .25 && !m.hidden && S.sel === m && !m.pet; if (br !== !!m.bright) { m.bright = br; m.el.classList.toggle('selflit', !!m.lit && !br); } }   /* 어두울 때 누른 포켓몬은 쓰다듬을 때처럼 그 포켓몬만 밝게 */
+  const upOf = o => o.lit || o.bright;
+  /* 밝게 보이는 포켓몬만 밤 그늘 위로 올린다. 그 바로 앞(아래쪽)에 겹친 포켓몬도 함께 올리되 밤빛 필터로 똑같이 어둡게 해서, 앞뒤 순서는 그대로 둔다 */
+  const shade = !upOf(m) && !m.pet && skyDark > .25 && S.mons.some(o => o !== m && upOf(o) && !o.hidden && m.y > o.y && m.y - o.y < (o.h || 60) + (m.h || 60) && Math.abs(m.x - o.x) < ((o.w || 50) + (m.w || 50)) / 2 + 12);
+  if (shade !== !!m.shade) { m.shade = shade; m.el.classList.toggle('nightf', shade); }
+  m.el.style.zIndex = Math.round(m.y) + (m.zAdd || 0) + (m.perch ? 2 : 0) + (m.pet ? 5000 : 0) + (upOf(m) || shade ? 1100 : 0);
   m.liftEl.style.transform = `translateY(${(wet ? m.h * .38 : m.flop ? m.h * .42 : 0) - m.lift - bob}px)`;   // 육지의 잉어킹은 그림자에 붙게 조금 내린다
   if (m.flop && now > (m.swT || 0)) { m.swT = now + rnd(180, 360); for (const s of [-1, 1]) if (Math.random() < .75) particle(m.x + s * rnd(6, m.w * .32), m.y - m.h * .2 - rnd(0, 10), 'sweat', '', d => d.style.setProperty('--dx', s * rnd(12, 26) + 'px')); }
   m.flipEl.style.transform = `scaleX(${m.face})`; m.flipEl.style.setProperty('--f', m.face);
@@ -3940,13 +3945,22 @@ function drawBg() {
 }
 
 // ---------- day / night ----------
+/* S 랭크의 빛: 노란 빛을 얹지 않고, 발밑 가까운 곳부터 밤 그늘을 걷어내 원래 땅 색이 드러나게 한다 (#night 에 구멍 마스크) */
+let holeKey = '';
+function nightHoles() {
+  const L = S.mons.filter(m => m.lit && m.el.isConnected), k0 = Math.min(1, skyDark * 1.2);
+  const parts = L.map(m => { const k = Math.max(.75, Math.min(1.6, (m.w || 50) / 55)), rx = Math.round(100 * k), ry = Math.round(54 * k), a = (1 - .62 * k0).toFixed(2), b = (1 - .4 * k0).toFixed(2), c = (1 - .15 * k0).toFixed(2);
+    return `radial-gradient(${rx}px ${ry}px at ${Math.round(m.x)}px ${Math.round(m.y - 6)}px,rgba(0,0,0,${a}) 0,rgba(0,0,0,${b}) 35%,rgba(0,0,0,${c}) 70%,#000 100%)`; });
+  const key = parts.join(','); if (key === holeKey) return; holeKey = key;
+  const st = nightEl.style; st.webkitMaskImage = st.maskImage = key || ''; st.webkitMaskComposite = parts.length > 1 ? 'source-in' : ''; st.maskComposite = parts.length > 1 ? 'intersect' : '';
+}
 const nightEl = $('#night'); var skyDark = skyDark || 0; const flies = [];
 /* 필드 조명: 시각별 곱하기 색 (한밤→새벽 푸른 기운→해돋이 분홍·주황→아침 노란 빛→한낮→오후 금빛→노을 주황·붉은→저녁 보라→밤) */
 const SKY = [[0, [40, 48, 100]], [3.5, [42, 50, 104]], [4.8, [70, 68, 132]], [5.6, [150, 124, 176]], [6.4, [255, 184, 160]], [7.4, [255, 224, 190]], [9, [252, 248, 236]], [11, [255, 255, 255]], [14.5, [255, 252, 240]], [16.3, [255, 228, 182]], [17.6, [252, 186, 128]], [18.5, [214, 132, 132]], [19.3, [124, 94, 156]], [20.4, [58, 64, 120]], [22, [46, 54, 108]], [24, [40, 48, 100]]];
 function sky() {
   const h = hour();
   { let i = 0; while (i < SKY.length - 2 && h >= SKY[i + 1][0]) i++; const [h0, c0] = SKY[i], [h1, c1] = SKY[i + 1], k = Math.min(1, Math.max(0, (h - h0) / (h1 - h0))), e = k * k * (3 - 2 * k);
-    const col = c0.map((v, j) => Math.round(v + (c1[j] - v) * e)); nightEl.style.backgroundColor = `rgb(${col.join(',')})`;
+    const col = c0.map((v, j) => Math.round(v + (c1[j] - v) * e)); nightEl.style.backgroundColor = `rgb(${col.join(',')})`; { const [r, g, b] = col.map(v => (v / 255).toFixed(3)); $('#nightM')?.setAttribute('values', `${r} 0 0 0 0 0 ${g} 0 0 0 0 0 ${b} 0 0 0 0 0 1 0`); }
     skyDark = clamp((1 - (col[0] + col[1] + col[2]) / 765) * 1.6, 0, 1); }   /* 어두운 정도: S 랭크 포켓몬이 스스로 빛나는지 */
   const phase = h < 4 ? '한밤' : h < 5.5 ? '새벽' : h < 7 ? '해돋이' : h < 10 ? '아침' : h < 14 ? '한낮' : h < 16.5 ? '오후' : h < 18.6 ? '노을' : h < 20 ? '저녁' : '밤';
   $('#phase').textContent = phase;
@@ -4327,7 +4341,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.31';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.32';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -4797,7 +4811,7 @@ function openPoke(id, dir = 0, quiet = false, noCry = false) {
   const L = pokeList(), i = L.indexOf(P), d = SPECIES[P.sp], rk = rankOf(P);
   $('#pokePop').hidden = false; { const bud = S.buds.some(b => b.pid === P.id); $('#pokePop .win').classList.toggle('bud', bud); $('#pokePop .win').classList.toggle('leg', !!(SPD(P.sp).leg || SPD(P.sp).my)); /* 지금 짝꿍이면 분홍 (등록·해제하면 바로 바뀐다) */ $('#ppBudTag').hidden = !bud; }
   $('#ppHl').hidden = i <= 0; $('#ppHr').hidden = i >= L.length - 1; $('#ppRk').innerHTML = rkBadge(P);
-  const pic = $('#ppPic'), img = $('#ppImg'); pic.classList.toggle('shiny', P.shiny); pic.classList.toggle('rkS', rk === 'S'); pic.dataset.rk = rk; pic.classList.toggle('frMax', (P.fr || 0) >= FR_MAX); pic.style.setProperty('--shue', shinyHue(P.sp) + 'deg');
+  const pic = $('#ppPic'), img = $('#ppImg'); pic.classList.toggle('shiny', P.shiny); pic.classList.toggle('rkS', rk === 'S'); pic.classList.toggle('rkA', rk === 'A'); pic.dataset.rk = rk; pic.classList.toggle('frMax', (P.fr || 0) >= FR_MAX); pic.style.setProperty('--shue', shinyHue(P.sp) + 'deg');
   img.src = thumbP(P) || ''; if (!thumbOf(P.sp)) ensureSprite(P.sp).then(() => { if (pokeId === id) img.src = thumbP(P); }).catch(() => {});
   $('#ppBody').innerHTML = infoHead(P, P.sp, nameEdit('ppName', nameOf(P), P.sex), nameOf(P) !== d.n ? `<span class="ih-sp">${esc(d.n)}</span>` : '')
     + `<div class="ivs">${ivRows(P)}<span class="fr-l">친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>`
@@ -6557,7 +6571,7 @@ function frame(now) {
   }
   for (const m of S.mons) { if (m.held && drag?.m !== m) { m.held = false; m.el.classList.remove('held'); settle(m); setState(m, 'idle', 1); }   /* 손에서 놓쳤는데 들린 채 남은 포켓몬 풀어 주기 */
     if (m.bubT > 0) m.bubT -= real; m.realDt = real * Math.min(S.speed || 0, 3); render(m, now); }
-  tickFlies(now); tickBugs(now, real);
+  nightHoles(); tickFlies(now); tickBugs(now, real);
   acc += real; if (acc > .5) { acc = 0; sky(); rotBerries(); }
   tickMoves(real);
   infoT -= real; if (infoT <= 0 && S.sel) { infoT = .5; renderInfo(); }
