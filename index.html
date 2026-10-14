@@ -5721,14 +5721,14 @@ function tapEgg(egg, g, msg) {
         setTimeout(() => { egg.classList.remove('knock'); egg.classList.add('wig2'); sfx('rattle'); sfx('rise'); }, 220);
         if (g >= 4) { hatchEl.classList.add('surge'); for (let k = 0; k < 6; k++) setTimeout(() => hSparks(g === 5 ? 7 : 4, g, true), k * 140); }   // 깨지기 직전: 빛줄기가 빨라지고 반짝이가 쏟아진다
         hatchEl.onclick = null;
-        clearInterval(ringT); setTimeout(() => { hatchStage.removeEventListener('pointerdown', down); hatchStage.removeEventListener('click', up); hatchStage.classList.remove('tapme'); done(true); }, 900);
+        clearInterval(ringT); setTimeout(() => { win.removeEventListener('pointerdown', down); win.removeEventListener('click', up); hatchStage.classList.remove('tapme'); done(true); }, 900);
       } else nudge();
     };
     // 터치에선 손을 뗄 때만 '사용자 동작'으로 쳐서, iOS 사파리 진동은 click 에서 한 번 더 시도한다
     const up = () => { if (pend >= 0 && !window.webkit?.messageHandlers?.haptic && !navigator.vibrate) haptic(pend); pend = -1; };
-    hatchStage.addEventListener('pointerdown', down); hatchStage.addEventListener('click', up); nudge();
+    win.addEventListener('pointerdown', down); win.addEventListener('click', up); nudge();
     // 다 두드리기 전에 창 바깥을 누르면 그만둔다 (알은 부화기에 그대로)
-    hatchEl.onclick = ev => { if (ev.target.closest('.win') || n >= need) return; clearTimeout(idle); clearInterval(ringT); hatchStage.removeEventListener('pointerdown', down); hatchStage.removeEventListener('click', up); hatchStage.classList.remove('tapme'); hatchEl.onclick = null; hatchFx(); if (g === 5) { tenseStop(.6); bgmDuck(1, 1.5); } done(false); };
+    hatchEl.onclick = ev => { if (ev.target.closest('.win') || n >= need) return; clearTimeout(idle); clearInterval(ringT); win.removeEventListener('pointerdown', down); win.removeEventListener('click', up); hatchStage.classList.remove('tapme'); hatchEl.onclick = null; hatchFx(); if (g === 5) { tenseStop(.6); bgmDuck(1, 1.5); } done(false); };
   });
 }
 // hatch cutscene: wobble, crack, flash, reveal
