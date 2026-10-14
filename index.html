@@ -578,6 +578,12 @@ ol.log li.big .txt{color:#c03838}
 .tr-sex.m{color:#3870d0}.tr-sex.f{color:#e05888}.tr-sex:active{transform:scale(.88)}
 .tr-badge{align-self:flex-start;display:inline-flex;align-items:center;padding:3px 10px;border:2px solid #c8962a;background:#fff7e0;color:#6a4a10;box-shadow:2px 2px 0 rgba(0,0,0,.15);font-size:13px}.tr-badge b{font-weight:700;white-space:nowrap}
 /* 트레이너 카드 등급(r0~r10): 높을수록 화려하게 */
+.inf-acts{display:flex;gap:6px;align-items:center}.inf-ico{width:34px;height:34px;padding:0;display:grid;place-items:center;background:#fff;border:2px solid var(--card-frame);box-shadow:2px 2px 0 rgba(0,0,0,.18);cursor:pointer;-webkit-tap-highlight-color:transparent}.inf-ico:active{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.18)}.inf-ico svg{display:block}
+#info.bud .inf-ico{border-color:#e9a3bf}
+.pf .pf-rk{position:absolute;left:2px;top:2px;z-index:3;line-height:1}.pf .pf-rk .rk{font-size:10px;min-width:12px;padding:0 3px;line-height:13px;border-width:1px}
+body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch-action:none!important}
+.petbar{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:0!important;padding-left:14px!important;padding-right:12px!important}.petbar[hidden]{display:none!important}.petbar .pb-t{flex:1;min-width:0}.petbar .pb-x{flex:none;font:inherit;font-size:15px;padding:6px 12px;background:#fff;color:var(--win-ink);border:3px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.25);cursor:pointer}.petbar .pb-x:active{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.25)}
+.petbar .pb-t{font-size:15px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.3px}.petbar .pb-n{display:flex;gap:3px;margin-top:6px}.petbar .pb-n i{width:8px;height:8px;background:var(--inner)}.petbar .pb-n i.on{background:#e04870}
 .tr-card{position:relative;overflow:hidden;isolation:isolate}.tr-card>*{position:relative;z-index:1}
 .tr-card::before,.tr-card::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:0}
 .tr-card.r1{border-color:#3a7a3a;box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px #9ccf8a}
@@ -1224,6 +1230,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 
   <section class="card" id="info" hidden aria-live="polite"></section>
 
+  <div class="hud win blue dlg petbar" id="petBar" hidden><span class="pb-t">포켓몬을 문질러서 쓰다듬어 보세요<span class="pb-n" id="petN"></span></span><button class="pb-x" id="petX">그만하기</button></div>
   <div class="hud win blue dlg" id="dlg" role="log" aria-live="polite">
     <section class="journal" id="journal" hidden>
       <div class="journal-head"><h3>관찰 일지</h3></div>
@@ -2180,7 +2187,7 @@ function burst(m, cls, text, n = 3) {
 }
 function ring(x, y, cls = '') { const d = document.createElement('div'); d.className = 'ring ' + cls; d.style.left = x + 'px'; d.style.top = y + 'px'; d.addEventListener('animationend', () => d.remove()); fxEl.append(d); }
 // 직접 준 열매를 먹으면 머리 위에 '친밀도 +1' 이 떠올랐다 사라진다
-function frPop(m) { const d = document.createElement('div'); d.className = 'frpop'; d.innerHTML = '<b>♥</b>+1'; d.style.left = m.x + 'px'; d.style.top = (m.y - m.h - m.lift - 6) + 'px'; d.addEventListener('animationend', () => d.remove()); fxEl.append(d); }
+function frPop(m, n = 1) { const d = document.createElement('div'); d.className = 'frpop'; d.innerHTML = '<b>♥</b>+' + n; d.style.left = m.x + 'px'; d.style.top = (m.y - m.h - m.lift - 6) + 'px'; d.addEventListener('animationend', () => d.remove()); fxEl.append(d); }
 function emote(m, text, cls = '', dur = 2.2) {
   m.bub.className = 'bubble ' + cls; m.bub.textContent = text; m.bub.hidden = false; m.bubT = dur;
   m.bub.style.animation = 'none'; void m.bub.offsetWidth; m.bub.style.animation = '';
@@ -2279,6 +2286,63 @@ function feedOne(m) {
   const b = addBerry(p.x, p.y); if (!b) return; b.for = m; userAct(m, 20);
   if (awake(m) && !m.held && !m.evolving && (m.state === 'idle' || m.state === 'move')) { emote(m, '!', '', 1); moveTo(m, b, { kind: 'berry', berry: b }, 1.3); }
 }
+// 필드 정보창의 아이콘 그림
+const ICO_BERRY = '<svg viewBox="0 0 12 12" width="26" height="26" shape-rendering="crispEdges" aria-hidden="true"><path fill="#3a7a2a" d="M6 0h2v1h1v1H7v1H6z"/><path fill="#5aa83a" d="M4 1h2v2H4z"/><path fill="#20202c" d="M3 3h6v1h1v1h1v4h-1v1H9v1H3v-1H2V9H1V5h1V4h1z"/><path fill="#d8344a" d="M3 4h6v1h1v4H9v1H3V9H2V5h1z"/><path fill="#ff7a8a" d="M3 5h2v2H3z"/><path fill="#fff" d="M3 5h1v1H3z"/><path fill="#9a1a30" d="M8 8h1v1H8zM4 9h4v1H4z"/></svg>';
+const ICO_HAND = '<svg viewBox="0 0 12 12" width="26" height="26" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M1 2h1v1h-1zM1 3h1v1h-1zM1 4h1v1h-1zM1 5h1v1h-1zM1 6h1v1h-1zM1 7h1v1h-1zM1 8h1v1h-1zM2 1h1v1h-1zM2 9h1v1h-1zM2 10h1v1h-1zM3 1h1v1h-1zM3 2h1v1h-1zM3 3h1v1h-1zM3 4h1v1h-1zM3 11h1v1h-1zM4 0h1v1h-1zM4 11h1v1h-1zM5 1h1v1h-1zM5 2h1v1h-1zM5 3h1v1h-1zM5 4h1v1h-1zM5 11h1v1h-1zM6 0h1v1h-1zM6 11h1v1h-1zM7 1h1v1h-1zM7 2h1v1h-1zM7 3h1v1h-1zM7 4h1v1h-1zM7 11h1v1h-1zM8 1h1v1h-1zM8 9h1v1h-1zM8 10h1v1h-1zM9 2h1v1h-1zM9 3h1v1h-1zM9 4h1v1h-1zM9 5h1v1h-1zM9 8h1v1h-1zM10 4h1v1h-1zM10 7h1v1h-1zM11 5h1v1h-1zM11 6h1v1h-1z"/><path fill="#ffd2a8" d="M2 2h1v1h-1zM2 3h1v1h-1zM2 4h1v1h-1zM2 5h1v1h-1zM2 6h1v1h-1zM2 7h1v1h-1zM2 8h1v1h-1zM3 5h1v1h-1zM3 6h1v1h-1zM3 7h1v1h-1zM3 8h1v1h-1zM3 9h1v1h-1zM3 10h1v1h-1zM4 1h1v1h-1zM4 2h1v1h-1zM4 3h1v1h-1zM4 4h1v1h-1zM4 5h1v1h-1zM4 6h1v1h-1zM4 7h1v1h-1zM4 8h1v1h-1zM4 9h1v1h-1zM4 10h1v1h-1zM5 5h1v1h-1zM5 6h1v1h-1zM5 7h1v1h-1zM5 8h1v1h-1zM5 9h1v1h-1zM5 10h1v1h-1zM6 1h1v1h-1zM6 2h1v1h-1zM6 3h1v1h-1zM6 4h1v1h-1zM6 5h1v1h-1zM6 6h1v1h-1zM6 7h1v1h-1zM6 8h1v1h-1zM6 9h1v1h-1zM6 10h1v1h-1zM7 5h1v1h-1zM7 6h1v1h-1zM7 7h1v1h-1zM7 8h1v1h-1zM7 9h1v1h-1zM7 10h1v1h-1zM8 2h1v1h-1zM8 3h1v1h-1zM8 4h1v1h-1zM8 5h1v1h-1zM8 6h1v1h-1zM8 7h1v1h-1zM8 8h1v1h-1zM9 6h1v1h-1zM9 7h1v1h-1zM10 5h1v1h-1zM10 6h1v1h-1z"/><path fill="#e8a070" d="M3 8h1v1h-1zM4 9h1v1h-1zM5 9h1v1h-1zM6 9h1v1h-1zM7 9h1v1h-1zM8 8h1v1h-1zM9 7h1v1h-1z"/><path fill="#fff4e4" d="M2 2h1v1h-1zM4 1h1v1h-1zM6 1h1v1h-1z"/></svg>';
+// 필드 정보창의 열매 아이콘: 창을 닫고 그 포켓몬 앞에 열매가 떨어지자마자 먹는다 (다른 포켓몬은 못 가져간다)
+function feedNow(m) {
+  select(null); userAct(m, 20);
+  if (!S.mons.includes(m) || m.held || m.evolving) return;
+  if (m.state === 'sleep') wake(m, `${J(m,'이/가')} 열매 냄새에 눈을 번쩍 떴다.`);
+  if (isFull(m)) { emote(m, '배불러'); log(`${J(m,'은/는')} 배가 불러서 열매를 사양했다.`, [m]); return; }
+  if (m.partner) { const o = m.partner; m.partner = null; o.partner = null; o.scene = null; setState(o, 'idle', 1); }
+  m.goal = null; m.scene = null; setState(m, 'idle', 2);
+  const x = m.x + (m.face || 1) * Math.max(14, m.w * .3), y = m.y + 2, el = document.createElement('div');
+  el.className = 'berry new' + (Math.random() < .4 ? ' red' : ''); Object.assign(el.style, { left: x + 'px', top: y + 'px', zIndex: Math.round(y) + 1, pointerEvents: 'none' }); itemsEl.append(el);
+  emote(m, '!', '', .8);
+  setTimeout(() => { el.remove(); if (!S.mons.includes(m)) return;
+    addFr(m.pid, 1); frPop(m); m.hunger = clamp(m.hunger - BERRY_FILL);
+    if (isFull(m)) { m.hunger = 0; setTimeout(() => emote(m, '배불러!', 'heart', 2), 3200); }
+    setState(m, 'eat', m.sp === 143 ? 8 : 5); log(`${J(m,'이/가')} 떨어진 열매를 바로 냠냠 먹었다.`, [m]); save(); }, 520);
+}
+// 쓰다듬기: 정보창·상태창을 숨기고 그 포켓몬 위를 문지른다. PET_N 번 문지르면 아주 좋아하며 끝 (친밀도 +3 은 하루 3번까지, 즐거움 +20)
+const PET_N = 8, PET_STEP = 70, PET_DAY = 3;
+let petM = null;
+function petStart(m) {
+  select(null); if (!S.mons.includes(m) || m.held || m.evolving) return;
+  userAct(m, 60);
+  if (m.partner) { const o = m.partner; m.partner = null; o.partner = null; o.scene = null; setState(o, 'idle', 1); }
+  if (m.state === 'sleep') wake(m, `${J(m,'이/가')} 손길에 눈을 떴다.`);
+  m.goal = null; m.scene = null; m.pet = true; setState(m, 'idle', 1);
+  petM = { m, n: 0, acc: 0, rub: null };
+  document.body.classList.add('petting'); $('#petBar').hidden = false; petDots(); emote(m, '?', '', 1);
+}
+function petDots() { $('#petN').innerHTML = petM ? Array.from({ length: PET_N }, (_, i) => `<i${i < petM.n ? ' class="on"' : ''}></i>`).join('') : ''; }
+function petEnd() {
+  if (!petM) return; const m = petM.m; m.pet = false; if (S.mons.includes(m) && m.state === 'idle') setState(m, 'idle', 1.5);
+  petM = null; document.body.classList.remove('petting'); $('#petBar').hidden = true; queueMicrotask(dlgBound);
+}
+function petDone() {
+  const m = petM.m, P = boxOf(m.pid);
+  let fr = 0; if (P) { const d = dayKey(); if (P.petD !== d) { P.petD = d; P.petN = 0; } if (P.petN < PET_DAY) { P.petN++; fr = 3; addFr(P.id, 3); } }
+  m.social = clamp(m.social - 20);
+  anim(m, 'hop'); emote(m, '♥♥♥', 'heart', 2.4); haptic(1); sfx('pickup');
+  if (fr) frPop(m, fr);
+  log(fr ? `${J(m,'은/는')} 쓰다듬어 주자 아주 좋아했다.` : `${J(m,'은/는')} 쓰다듬어 주자 기분 좋은 듯 눈을 가늘게 떴다.`, [m]);
+  petEnd(); save();
+}
+const petHit = (m, x, y) => { const r = [m.spr, m.img].map(e => e?.getBoundingClientRect()).find(r => r && r.width) || m.el.getBoundingClientRect(), p = 22;   /* m.el 은 발밑 점이라 그림 크기로 판정 */ return x > r.left - p && x < r.right + p && y > r.top - p && y < r.bottom + p; };
+addEventListener('pointerdown', e => { if (!petM || e.target.closest('#petBar')) return;
+  e.stopPropagation(); e.preventDefault(); if (petHit(petM.m, e.clientX, e.clientY)) petM.rub = { id: e.pointerId, x: e.clientX, y: e.clientY }; }, true);
+addEventListener('pointermove', e => { const p = petM; if (!p || !p.rub || e.pointerId !== p.rub.id) return; e.stopPropagation();
+  const d = Math.hypot(e.clientX - p.rub.x, e.clientY - p.rub.y); p.rub.x = e.clientX; p.rub.y = e.clientY;
+  if (!petHit(p.m, e.clientX, e.clientY)) return;
+  p.acc += d; if (p.acc < PET_STEP) return; p.acc = 0; p.n++; petDots();
+  if (p.n >= PET_N) return petDone();
+  emote(p.m, p.n % 3 === 0 ? '♪' : '♥', 'heart', .9); if (p.n % 2 === 0) anim(p.m, 'hop'); haptic(0); }, true);
+['pointerup', 'pointercancel'].forEach(t => addEventListener(t, e => { if (petM?.rub && e.pointerId === petM.rub.id) petM.rub = null; if (petM) e.stopPropagation(); }, true));
+addEventListener('click', e => { if (petM && !e.target.closest('#petBar')) { e.stopPropagation(); e.preventDefault(); } }, true);
+$('#petX').onclick = () => { if (!petM) return; const m = petM.m; emote(m, '…', '', 1); petEnd(); };
 // 놓은 열매 끌어서 옮기기
 let bdrag = null;
 window.addEventListener('pointermove', e => {
@@ -2351,7 +2415,7 @@ function goToBed(m) {
   else moveTo(m, { x: m.home.x + rnd(-30, 30), y: m.home.y + rnd(-20, 20) }, { kind: 'bed' }, .8);
 }
 function canMeet(m, o) {
-  if (o === m || o.held || m.held || m.land || o.land || !awake(o) || o.state === 'interact' || o.state === 'special' || o.state === 'eat') return false;
+  if (o === m || o.held || m.held || m.land || o.land || !awake(o) || o.state === 'interact' || o.state === 'special' || o.state === 'eat' || o.pet || m.pet) return false;
   const a = T(m).mv, b = T(o).mv;
   if (a === 'swim' && !['amph', 'fly', 'hover', 'swim'].includes(b)) return false;
   if (b === 'swim' && !['amph', 'fly', 'hover', 'swim'].includes(a)) return false;
@@ -3603,6 +3667,7 @@ function update(m, dt) {
   else m.energy = clamp(m.energy - dt * (m.state === 'move' ? .26 : .1) * (t.slp || 1));
   if (m.form !== m.sp) { m.formT -= dt; if (m.formT <= 0 && m.state !== 'interact') revert(m); }
   m.t -= dt;
+  if (m.pet) { m.goal = null; if (m.state !== 'idle' && m.state !== 'eat') setState(m, 'idle', 1); m.t = Math.max(m.t, 1); }   /* 쓰다듬는 동안은 제자리 */
   switch (m.state) {
     case 'move': {
       const g = m.goal;
@@ -3854,6 +3919,8 @@ function relsHtml(m, nGood, nBad) {
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const infoEl = $('#info');
 infoEl.addEventListener('click', e => { if (e.target.closest('#infoX')) { e.stopPropagation(); sfx('tap'); select(null); return; }
+  if (e.target.closest('#infFeed') && S.sel) { e.stopPropagation(); feedNow(S.sel); return; }
+  if (e.target.closest('#infPet') && S.sel) { e.stopPropagation(); petStart(S.sel); return; }
   if (e.target.closest('#pPf') && S.sel?.pid && boxOf(S.sel.pid)) { e.stopPropagation(); sfx('tap'); ppBud = false; openPoke(S.sel.pid); } });   // 필드 정보창 그림을 누르면 그 포켓몬 정보 카드   // 필드 정보창 ✕ 로 닫기
 function renderInfo() {
   const box = infoEl, m = S.sel;
@@ -3863,15 +3930,16 @@ function renderInfo() {
   if (box.dataset.uid !== String(m.uid)) {
     box.dataset.uid = m.uid;
     // 다른 포켓몬 정보창과 같은 차림: 랭크(좌상단) · 이름/분류/만난 곳 · 기력~친밀도 · 친구/상태/생각
-    box.innerHTML = `<div class="dp-head m-head"><span class="hd-rk">${rkBadge(P)}</span><span class="bud-tag" id="infoBud" hidden>짝꿍</span><button class="pp-x" id="infoX" aria-label="닫기">✕</button></div>
+    box.innerHTML = `<div class="dp-head m-head"><span class="inf-acts"><button class="inf-ico" id="infFeed" aria-label="나무열매 주기">${ICO_BERRY}</button><button class="inf-ico" id="infPet" aria-label="쓰다듬기">${ICO_HAND}</button></span><span class="bud-tag" id="infoBud" hidden>짝꿍</span><button class="pp-x" id="infoX" aria-label="닫기">✕</button></div>
       <div class="ihead"><div class="ih-top"><span class="nm-plain" id="pname">${esc(m.name)}</span>${sexHtml(sexOf(m))}${P?.shiny ? '<b class="sh" data-tip="이로치">✦</b>' : ''}<span class="ih-r">${tyIcons(m.sp)}${esc(d.g || '')}</span></div></div>
-      <div class="pbody"><div class="pf" id="pPf"><div class="pf-in"></div><div class="pf-in"></div><span class="pf-z"></span></div><div class="bars" id="pbars"></div></div>
+      <div class="pbody"><div class="pf" id="pPf"><div class="pf-in"></div><div class="pf-in"></div><span class="pf-rk">${rkBadge(P)}</span><span class="pf-z"></span></div><div class="bars" id="pbars"></div></div>
       <div class="memo" id="pMemo"></div>
       <div id="pMoves"></div>`;
   }
   $('#pname').textContent = m.name;
   { const bud = !!m.pid && S.buds.some(b => b.pid === m.pid); box.classList.toggle('bud', bud); $('#infoBud').hidden = !bud; }
-  $('#pbars').innerHTML = bar('기력', m.energy, 'var(--hp)') + bar('배부름', 100 - m.hunger, 'var(--hunger)') + bar('외로움', m.social, 'var(--lonely)') + (P ? `<div class="bar frbar"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>` : '');
+  { const h = rkBadge(P), el = box.querySelector('.pf-rk'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
+  $('#pbars').innerHTML = bar('기력', m.energy, 'var(--hp)') + bar('배부름', 100 - m.hunger, 'var(--hunger)') + bar('즐거움', 100 - m.social, 'var(--lonely)') + (P ? `<div class="bar frbar"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>` : '');
   { const h = memoHtml(m), el = $('#pMemo'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
   { const h = moveBtn(m), el = $('#pMoves'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; el.hidden = !h; } }
 }
@@ -4778,7 +4846,7 @@ function renderMgrDetail(rebuild) {
   if (pic.getAttribute('src') !== want) pic.src = want;
   { const [c, tx] = slotState(m), el = $('#mSt'); el.className = 'st-tag st ' + c; el.textContent = tx; el.hidden = tx === '이동'; }
   { const P = boxOf(m.pid), st = $('#mStage'); st.className = 'dp-pic' + pkCls(P) + (P?.shiny ? ' shiny' : ''); st.style.setProperty('--shue', shinyHue(m.sp) + 'deg'); }
-  { const P = boxOf(m.pid); $('#mBars').innerHTML = bar('기력', m.energy, 'var(--hp)') + bar('배부름', 100 - m.hunger, 'var(--hunger)') + bar('외로움', m.social, 'var(--lonely)') + (P ? `<div class="bar frbar"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>` : ''); }
+  { const P = boxOf(m.pid); $('#mBars').innerHTML = bar('기력', m.energy, 'var(--hp)') + bar('배부름', 100 - m.hunger, 'var(--hunger)') + bar('즐거움', 100 - m.social, 'var(--lonely)') + (P ? `<div class="bar frbar"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>` : ''); }
   { const h = memoHtml(m), el = $('#mMemo'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
   { const P = boxOf(m.pid), el = $('#mPg2');
     const h = (P ? `<div class="ivs">${ivRows(P)}</div>`
