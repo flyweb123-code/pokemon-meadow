@@ -582,7 +582,7 @@ ol.log li.big .txt{color:#c03838}
 #info.bud .inf-ico{border-color:#e9a3bf}
 .pf .pf-rk{position:absolute;left:2px;top:2px;z-index:3;line-height:1}.pf .pf-rk .rk{font-size:10px;min-width:12px;padding:0 3px;line-height:13px;border-width:1px}
 body.petting #dlg,body.petting #info{display:none!important}body.petting *{touch-action:none!important}
-.petbar{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,calc(100% - 24px));z-index:40;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;box-sizing:border-box;background:rgba(30,26,52,.9);color:#fff;border:3px solid #fff;box-shadow:0 0 0 3px #2a2440,5px 5px 0 3px rgba(0,0,0,.28);font-size:15px}.petbar[hidden]{display:none!important}.app-ver{position:absolute;right:12px;bottom:8px;font-size:11px;line-height:1;color:var(--dim);opacity:.75;pointer-events:none;letter-spacing:.3px}.petbar{pointer-events:none}.petbar.top{bottom:auto;top:78px}.pet-trail{position:fixed;left:0;top:0;pointer-events:none;z-index:2147483000}.petbar .pb-ic{flex:none;width:34px;height:34px;display:grid;place-items:center;background:#ffe3ee;border:2px solid #e8679a}.petbar .pb-t{flex:1;min-width:0;line-height:1.35;letter-spacing:-.3px;word-break:keep-all}.petbar .pb-x{flex:none;font:inherit;font-size:14px;padding:7px 10px;background:#e8679a;color:#fff;border:2px solid #fff;box-shadow:2px 2px 0 rgba(0,0,0,.35);cursor:pointer}.petbar .pb-x:active{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.35)}.petbar .pb-n{display:block;margin-top:6px;height:10px;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 2px rgba(255,255,255,.35);overflow:hidden}.petbar .pb-n b{display:block;height:100%;width:0;background:#ff8ab4}.petbar .pb-n.pop{animation:pbpop .32s cubic-bezier(.3,1.8,.5,1)}@keyframes pbpop{0%{transform:scaleY(1)}35%{transform:scaleY(1.6)}100%{transform:scaleY(1)}}.petbar .pb-n.hot b{background:linear-gradient(90deg,#ff8ab4,#ffd36e)}@media (max-width:760px),(max-height:500px) and (orientation:landscape){.petbar{position:relative;left:auto;bottom:auto;transform:none;grid-area:stage;align-self:end;justify-self:center;margin:0 0 14px;width:calc(100% - 24px)}.petbar.top{top:auto;align-self:start;margin:calc(env(safe-area-inset-top) + 66px) 0 0}}
+.petbar{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,calc(100% - 24px));z-index:40;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;box-sizing:border-box;background:rgba(30,26,52,.9);color:#fff;border:3px solid #fff;box-shadow:0 0 0 3px #2a2440,5px 5px 0 3px rgba(0,0,0,.28);font-size:15px}.petbar[hidden]{display:none!important}.app-ver{position:absolute;right:12px;bottom:8px;font-size:11px;line-height:1;color:var(--dim);opacity:.75;pointer-events:none;letter-spacing:.3px}.petbar{pointer-events:none}.petbar.top{bottom:auto;top:78px}.pet-trail{position:fixed;left:0;top:0;pointer-events:none;z-index:2147483000}.petbar .pb-ic{flex:none;width:34px;height:34px;display:grid;place-items:center;background:#ffe3ee;border:2px solid #e8679a}.petbar .pb-t{flex:1;min-width:0;line-height:1.35;letter-spacing:-.3px;word-break:keep-all}.petbar .pb-x{flex:none;font:inherit;font-size:14px;padding:7px 10px;background:#e8679a;color:#fff;border:2px solid #fff;box-shadow:2px 2px 0 rgba(0,0,0,.35);cursor:pointer}.petbar .pb-x:active{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.35)}.petbar .pb-n{display:block;margin-top:6px;height:10px;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 2px rgba(255,255,255,.35);overflow:hidden}.petbar .pb-n b{display:block;height:100%;width:0;background:#ff8ab4}.petbar .pb-n.pop{animation:pbpop .32s cubic-bezier(.3,1.8,.5,1)}@keyframes pbpop{0%{transform:scaleY(1)}35%{transform:scaleY(1.18)}100%{transform:scaleY(1)}}.petbar .pb-n.hot b{background:linear-gradient(90deg,#ff8ab4,#ffd36e)}@media (max-width:760px),(max-height:500px) and (orientation:landscape){.petbar{position:relative;left:auto;bottom:auto;transform:none;grid-area:stage;align-self:end;justify-self:center;margin:0 0 14px;width:calc(100% - 24px)}.petbar.top{top:auto;align-self:start;margin:calc(env(safe-area-inset-top) + 66px) 0 0}}
 .tr-card{position:relative;overflow:hidden;isolation:isolate}.tr-card>*{position:relative;z-index:1}
 .tr-card::before,.tr-card::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:0}
 .tr-card.r1{border-color:#3a7a3a;box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px #9ccf8a}
@@ -2113,12 +2113,17 @@ function clockStr(c = S.clock) { const m = Math.floor(c % 1440); return String(M
 const logEl = $('#log'); const LOG_MAX = 20;
 // 사용자가 직접 한 행동(열매 주기·끌어 옮기기·기술 쓰기)에 대한 반응이 나오면 접힌 상태창을 편다
 let userW = [];
-function userAct(m, sec = 12) { const t = performance.now() + sec * 1000; userW = userW.filter(w => w.m !== m && w.t > performance.now()); userW.push({ m, t }); }
+let userActAt = 0;
+function userAct(m, sec = 12) { userActAt = performance.now(); const t = performance.now() + sec * 1000; userW = userW.filter(w => w.m !== m && w.t > performance.now()); userW.push({ m, t }); }
 function watching(m) { const n = performance.now(); return userW.some(w => w.m === m && w.t > n); }
+let dlgHold = null;   // 쓰다듬기처럼 잠시 상태창에 붙잡아 둘 메시지 {e, until}
+const USER_LOG_HOLD = 5000;
+function holdLog(e, ms) { dlgHold = { e, until: performance.now() + ms }; clearTimeout(holdLog.t); holdLog.t = setTimeout(renderDlg, ms + 50); }
 function log(html, who = [], big = false) {
   const dg = $('#dlg'); if (dg && dg.classList.contains('folded') && who.some(watching)) foldDlg(false, true);
   const e = { t: S.clock, html, who: who.map(m => m.uid), big };
   S.log.unshift(e); while (S.log.length > LOG_MAX) S.log.pop();
+  if (who.some(watching) && (performance.now() - userActAt < 400 || !(dlgHold && performance.now() < dlgHold.until))) holdLog(e, USER_LOG_HOLD);   /* 방금 누른 행동이면 바로 바꾸고, 그 밖엔 이미 붙잡힌 메시지가 끝날 때까지 둔다 */   /* 사용자가 상호작용시킨 포켓몬의 메시지는 최소 5초 상태창에 남긴다 */
   // 포켓몬마다 오늘 있었던 일을 세 줄까지 따로 적어 둔다 (상황 칸 '오늘')
   const day = new Date().toDateString(), txt = html.replace(/<[^>]+>/g, '').replace(/\s*\((런닝 · 알|알)\)$/, '');
   for (const m of who) { if (!m || !S.mons.includes(m)) continue; m.notes = (m.notes || []).filter(n => n.d === day); m.notes.unshift({ d: day, t: txt }); m.notes.length = Math.min(m.notes.length, 3); }
@@ -2169,7 +2174,6 @@ function pinOf() {
   if (S.sel !== p.m || p.m.state !== 'interact' || !p.m.partner) { dlgPin = null; return null; }
   return p.e;
 }
-let dlgHold = null;   // 쓰다듬기처럼 잠시 상태창에 붙잡아 둘 메시지 {e, until}
 function renderDlg() {
   const pe = pinOf(), [a0, a1] = S.log, a = pe || a0, b = pe ? (a0 !== pe ? a0 : a1) : a1;
   $('#dlgNow').innerHTML = a ? stripHint(a.html) : '';
@@ -2335,7 +2339,7 @@ function petDots() { const b = $('#petN'); if (!b.firstChild) b.innerHTML = '<b>
 // 멈추면 게이지가 바로 빠르게 줄어든다 (멈춘 지 0.12초 뒤부터 초당 45%)
 function petTick(ts) { const p = petM; if (!p) return; const dt = petTick.t ? Math.min(.1, (ts - petTick.t) / 1000) : 0; petTick.t = ts;
   /* 탄성: 보이는 게이지(dv)가 실제 값(v)을 스프링처럼 따라가며 살짝 넘쳤다 돌아온다 */
-  if (dt) { p.dv ??= 0; p.dvv ??= 0; const a = 260 * (p.v - p.dv) - 15 * p.dvv; p.dvv += a * dt; p.dv += p.dvv * dt; }
+  if (dt) { p.dv ??= 0; p.dvv ??= 0; const a = 260 * (p.v - p.dv) - 22 * p.dvv; p.dvv += a * dt; p.dv += p.dvv * dt; }
   if (!p.done) { p.spd *= Math.pow(.02, dt); if (performance.now() - p.mvT > 120 && p.v > 0) { p.v = Math.max(0, p.v - .45 * dt); p.n = Math.min(p.n, Math.floor(p.v * PET_N)); } petDots(); }
   requestAnimationFrame(petTick); }
 function petEnd() {
@@ -2348,7 +2352,7 @@ function petDone() {
   m.social = clamp(m.social - 20); m.joy = clamp((m.joy ?? 60) + 20);
   haptic(2); setTimeout(() => haptic(2), 110); setTimeout(() => haptic(1), 220); sfx('pickup'); if (fr) frPop(m, fr);
   log(fr ? `${J(m,'은/는')} 쓰다듬어 주자 아주 좋아했다.` : `${J(m,'은/는')} 쓰다듬어 주자 기분 좋은 듯 눈을 가늘게 떴다.`, [m]);
-  dlgHold = { e: S.log[0], until: performance.now() + 4000 }; setTimeout(renderDlg, 4100); m.petMood = performance.now() + 31000;   /* 좋아하는 춤(1초)이 끝난 뒤 상태창 3초 유지, 정보창 '상태'는 30초 동안 기분 좋음 */
+  holdLog(S.log[0], 1000 + USER_LOG_HOLD); m.petMood = performance.now() + 31000;   /* 좋아하는 춤(1초)이 끝난 뒤 상태창 5초 유지, 정보창 '상태'는 30초 동안 기분 좋음 */
   /* 기뻐서 왼쪽·오른쪽을 번갈아 보며 춤춘다 (그동안은 제자리) */
   petM.done = true; $('#petBar').hidden = true; const f0 = m.face || 1;
   const NB = 5; for (let k = 0; k < NB; k++) setTimeout(() => { if (!S.mons.includes(m)) return; m.face = k % 2 ? f0 : -f0; if (k % 2 === 0) anim(m, 'phop'); if (k === 1) emote(m, '♪', 'heart', 1); }, k * 190);
@@ -2366,7 +2370,7 @@ addEventListener('pointermove', e => { const p = petM; if (!p || p.done || !p.ru
   const dtm = Math.max(8, now - (p.mvT || now - 16)); p.mvT = now; p.spd = p.spd * .8 + (d / dtm * 1000) * .2;
   p.v += d / PET_LEN * clamp(p.spd / 700, .5, 2); petDots();
   if (p.v >= 1) return petDone();
-  const n = Math.floor(p.v * PET_N); if (n > p.n) { p.n = n; p.dvv = (p.dvv || 0) + .9; const bb = $('#petN'); bb.classList.remove('pop'); void bb.offsetWidth; bb.classList.add('pop'); emote(p.m, n % 3 === 0 ? '♪' : '♥', 'heart', .9); p.rub.ht = now; haptic(2); } }, true);
+  const n = Math.floor(p.v * PET_N); if (n > p.n) { p.n = n; p.dvv = (p.dvv || 0) + .35; const bb = $('#petN'); bb.classList.remove('pop'); void bb.offsetWidth; bb.classList.add('pop'); emote(p.m, n % 3 === 0 ? '♪' : '♥', 'heart', .9); p.rub.ht = now; haptic(2); } }, true);
 ['pointerup', 'pointercancel'].forEach(t => addEventListener(t, e => { const rb = petM?.rub; if (rb && e.pointerId === rb.id) { petM.rub = null;
     /* 포켓몬이 아닌 곳을 문지르지 않고 톡 누르고 떼면 그만둔다 */
     if (t === 'pointerup' && !rb.on && rb.far < 12 && performance.now() - rb.t0 < 450 && !petM.done) { petCancelAt = performance.now(); petQuit(); e.stopPropagation(); return; } } if (petM || performance.now() - petCancelAt < 700) e.stopPropagation(); }, true));
@@ -4312,7 +4316,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.28';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.29';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
