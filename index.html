@@ -635,9 +635,11 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .pp-btns:has(#ppField[hidden]){grid-template-columns:1fr}#ppField[hidden]{display:none}
 .m-btns{margin-top:10px;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}#monPop .m-btns .boxbtn{min-width:0;font-size:14px;padding:10px 2px;white-space:nowrap}#pokePop .pp-btns .boxbtn{padding-left:2px;padding-right:2px}.pp-btns .boxbtn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:4px;padding-right:4px;font-size:clamp(12px,3.6vw,15px)}
 .pokepop .boxbtn{display:block;width:100%;font:inherit;font-size:15px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:10px 8px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
-.dexpop .boxbtn.red{background:#c83838;border-color:#7a1c1c;color:#fff}.pokepop .boxbtn.sunk{background:#b9b9c6;border-color:#8a8a9a;color:#5a5a6a;box-shadow:inset 0 5px 0 rgba(0,0,0,.3),inset 3px 0 0 rgba(0,0,0,.12);transform:translateY(2px);padding-top:12px;padding-bottom:8px}
+.dexpop .boxbtn.red{background:#c83838;border-color:#7a1c1c;color:#fff}/* 눌린 버튼: 아래 그림자가 위로 옮겨가며 면이 4px 내려간다 → 글자도 padding 으로 같은 만큼 내려 함께 움직인다 */
+.pokepop .boxbtn{transition:background .12s,border-color .12s,color .12s,box-shadow .12s,padding .12s}
+.pokepop .boxbtn.sunk{background:#b9b9c6;border-color:#8a8a9a;color:#5a5a6a;box-shadow:inset 0 4px 0 rgba(0,0,0,.3),inset 3px 0 0 rgba(0,0,0,.12);padding-top:14px;padding-bottom:6px}
 .pokepop .boxbtn.sunk.popout{animation:btnPop .2s cubic-bezier(.3,1.6,.5,1) forwards}
-@keyframes btnPop{0%{background:#b9b9c6;box-shadow:inset 0 4px 0 rgba(0,0,0,.22);transform:translateY(1px)}100%{background:var(--frame);border-color:var(--frame);color:var(--win);box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);transform:translateY(-2px)}}
+@keyframes btnPop{0%{background:#b9b9c6;box-shadow:inset 0 4px 0 rgba(0,0,0,.3);padding-top:14px;padding-bottom:6px}100%{background:var(--frame);border-color:var(--frame);color:var(--win);box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);padding-top:10px;padding-bottom:10px}}
 .pokepop .boxbtn.off{background:var(--win);color:var(--frame)}.pokepop .boxbtn[disabled]{opacity:.5}
 .hatch .rkline{font-size:14px;margin:-4px 0 10px}
 .hatch-stage img.shiny{filter:hue-rotate(var(--shue)) saturate(1.25) drop-shadow(0 0 8px #ffe680)}
@@ -920,7 +922,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .hatch-stage.evo img{filter:brightness(0) invert(1) drop-shadow(0 0 6px rgba(160,190,255,.9))}
 .hatch p{font-size:18px;margin:8px 0 12px}
 .hatch .boxbtn{display:block;width:100%;font:inherit;font-size:17px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:12px 16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
-.boxbtn.pressd{box-shadow:inset 0 5px 0 rgba(0,0,0,.35)!important;transform:translateY(3px);filter:brightness(.88)}
+.boxbtn.pressd{box-shadow:inset 0 4px 0 rgba(0,0,0,.35)!important;padding-top:14px!important;padding-bottom:6px!important;filter:brightness(.9)}
 .hatch .boxbtn:active{box-shadow:inset 0 4px 0 rgba(0,0,0,.35);padding:14px 16px 10px}
 .hatch .boxbtn:focus,.hatch .boxbtn:focus-visible{outline:0}
 .dexinfo{text-align:left;border:3px solid var(--inner);background:#fff;padding:10px 12px;margin:0 0 12px;animation:hpop .4s steps(4,end)}
@@ -4403,7 +4405,8 @@ $('#ppField').onclick = async () => {
   const P = boxOf(pokeId); if (!P) return;
   const m = S.mons.find(x => x.pid === P.id);
   if (m) { const fb = $('#ppField'); if (fb.classList.contains('popout')) return; sfx('tap'); fb.textContent = '필드에 내보내기'; fb.classList.add('popout'); await wait(200); removeMon(m); }   // 눌려 있던 버튼이 툭 튀어나오며 필드에서 뺀다
-  else if (S.mons.length < MAX_MONS) { try { await spawn(P.sp, { pid: P.id }); } catch (e) {} if (boxFromSlot && S.mons.some(x => x.pid === P.id)) { refreshCap(); save(); closePoke(); setMgrTab('field'); return; } }
+  else if (S.mons.length < MAX_MONS) { if (boxFromSlot) { const fb = $('#ppField'); if (fb.classList.contains('pressd')) return; sfx('tap'); fb.classList.add('pressd'); await wait(160); fb.classList.remove('pressd'); }   // 빈 슬롯에서 왔으면 버튼이 눌린 뒤 필드로
+    try { await spawn(P.sp, { pid: P.id }); } catch (e) {} if (boxFromSlot && S.mons.some(x => x.pid === P.id)) { refreshCap(); save(); closePoke(); setMgrTab('field'); return; } }
   refreshCap(); renderBox(); openPoke(P.id); save();
 };
 $('#ppEvoBtn').onclick = () => evolvePoke(boxOf(pokeId));
