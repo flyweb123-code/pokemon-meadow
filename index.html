@@ -864,7 +864,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .bslot[aria-current="true"]{border-color:var(--cursor);background:var(--card)}
 .newtag{position:absolute;top:2px;left:50%;transform:translateX(-50%);font-size:9px;line-height:1;background:#e04838;color:#fff;padding:2px 4px;letter-spacing:.5px}
 .bag-empty{grid-column:1/-1;color:var(--dim);font-size:14px;padding:18px 0;text-align:center}
-.rtab[data-tab="bag"].none:not([hidden]){display:flex;flex-direction:column;min-height:100%}.rtab.none #bagGrid{flex:1;display:flex;align-items:center;justify-content:center}.rtab.none .bag-empty{padding:0}
+/* 가방: 정렬·등급 칸까지는 고정, 알 칸만 스크롤 */.run-body:has(>.rtab[data-tab="bag"]:not([hidden])){overflow:hidden;display:flex;flex-direction:column}.rtab[data-tab="bag"]:not([hidden]){flex:1;min-height:0;display:flex;flex-direction:column}.rtab[data-tab="bag"]>*{flex:none}.rtab[data-tab="bag"]>#bagGrid{flex:1 1 auto;min-height:0;overflow-y:auto;align-content:start;overscroll-behavior:contain;padding-bottom:4px}.rtab[data-tab="bag"].none:not([hidden]){display:flex;flex-direction:column;min-height:100%}.rtab.none #bagGrid{flex:1;display:flex;align-items:center;justify-content:center}.rtab.none .bag-empty{padding:0}
 .fpop{position:fixed;inset:0;z-index:5700;background:rgba(10,14,30,.5);display:grid;place-items:center;padding:16px}
 .fpop .win{width:min(420px,100%);max-height:80vh;overflow-y:auto}
 .fpop h4{margin:0 0 10px;font-size:16px}
@@ -4429,7 +4429,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '2.85';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '2.86';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -4815,7 +4815,7 @@ document.addEventListener('touchstart', () => {}, { passive: true });
   document.addEventListener('pointercancel', () => { pb?.classList.remove('outp'); pb = null; }, true);
   document.addEventListener('click', e => { if (eat && performance.now() - eatT < 500 && eat.contains(e.target)) { eat = null; e.stopImmediatePropagation(); e.preventDefault(); } }, true); }
 // 창 바깥 좌우(화살표 힌트 있는 띠)를 누르면 넘기고, 그 밖의 바깥은 닫는다
-function sideTap(pop, e) { const r = pop.querySelector('.win').getBoundingClientRect(); if (e.clientY < r.top - 90 || e.clientY > r.bottom + 90) return 0; return e.clientX < r.left ? -1 : e.clientX > r.right ? 1 : 0; }   /* 카드 위아래로 90px 더 */
+function sideTap(pop, e) { const r = pop.querySelector('.win:not(.ghost)').getBoundingClientRect(); return e.clientX < r.left ? -1 : e.clientX > r.right ? 1 : 0; }   /* 카드 좌우 여백은 높이와 상관없이 넘기기 띠: 눌러도 창이 닫히지 않는다 (끝이면 아무 일 없음) */
 // 카드 안쪽 가장자리 띠(좌우 24px)도 버튼·글자 입력이 아니면 넘기기로 친다
 const EDGE_IN = 48;   /* 개체값 이름(HP·공격…)과 숫자 칸까지 */
 document.addEventListener('click', e => { if (!e.isTrusted) return;
