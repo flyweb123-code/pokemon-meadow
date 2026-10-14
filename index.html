@@ -715,7 +715,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .rtab[data-tab="egg"]:not([hidden]){display:flex;flex-direction:column;min-height:100%}
 .rtab[data-tab="egg"] .eggs{flex:1;grid-auto-rows:minmax(74px,1fr);margin-bottom:0}
 .rtab[data-tab="egg"] .eslot{min-height:0;justify-content:center;container-type:size;overflow:hidden;padding-top:18px;padding-bottom:4px;gap:2px}
-.rtab[data-tab="egg"] .eslot .egg{height:clamp(24px,calc(100cqh - 50px),48px);width:auto;aspect-ratio:36/44}
+.rtab[data-tab="egg"] .eslot .egg{height:clamp(22px,calc(100cqh - 60px),48px);width:auto;aspect-ratio:36/44}
 .rtab[data-tab="egg"] .eslot .egg svg{width:100%;height:100%}
 .rtab[data-tab="egg"]>.mgr-tools{margin-bottom:6px;min-height:32px}
 .run-body:has(>.rtab[data-tab="egg"]:not([hidden])){padding-bottom:8px}
@@ -753,7 +753,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 @media (hover:hover){.eslot:hover{border-color:var(--frame)}}
 .eslot:focus-visible{border-color:var(--frame);outline:0}
 .eslot[aria-current="true"],.eslot[aria-current="true"]:hover{border-color:var(--cursor);background:var(--card)}
-.eslot .prog.sm{width:80%;height:8px;border-width:2px;margin:1px 0}
+.eslot .prog.sm{width:80%;height:8px;border-width:2px;margin:1px 0}.eslot .edot{position:absolute;right:5px;top:24px;width:7px;height:7px;background:#e04838;z-index:3;pointer-events:none}.eslot .ekm{font-size:9px;line-height:1;color:var(--dim);white-space:nowrap;letter-spacing:-.3px}
 .eslot .tag2{position:absolute;z-index:2;left:50%;transform:translateX(-50%);white-space:nowrap;top:3px;font-size:10px;background:var(--frame);color:var(--win);padding:1px 4px}
 .eslot.empty{border-style:dashed;color:var(--dim);background:transparent;justify-content:center}
 .eslot.new .egg{animation:roll .7s cubic-bezier(.3,1.5,.6,1)}
@@ -4438,7 +4438,7 @@ function seeBox() { let ch = false; S.box.forEach(p => { if (p.nw) { p.nw = fals
 { let was = !mgr.hidden; new MutationObserver(() => { const now = !mgr.hidden; if (was && !now && mgrTab === 'box') seeBox(); was = now; }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] }); }   // 열려 있다가 닫힐 때만
 // 하단 메뉴 알림 점: 알(가방에 새 알) · 포켓몬(박스에 새 포켓몬)
 function menuDots() { const set = (b, on) => { let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot" aria-label="새 소식"></i>'); else if (!on && d) d.remove(); };
-  set($('#openRun'), S.bag.some(e => e.isNew)); set($('#openDex'), !!S.dexNew?.size); set($('#openMgr'), S.box.some(p => p.nw)); }
+  set($('#openRun'), S.bag.some(e => e.isNew) || S.eggs.some(e => e.km >= e.need && !e.rs)); set($('#openDex'), !!S.dexNew?.size); set($('#openMgr'), S.box.some(p => p.nw)); }
 function renderBox() {
   document.querySelectorAll('#boxSort [data-sort]').forEach(b => { const on = b.dataset.sort === boxSort; b.setAttribute('aria-pressed', on); b.dataset.dir = on && boxSort !== 'field' ? (boxDir > 0 ? '▼' : '▲') : ''; });
   const L = boxList(true), q = boxQ(), bud = new Set(S.buds.map(b => b.pid)), field = new Set(S.mons.map(m => m.pid)), grid = $('#boxGrid');
@@ -5859,7 +5859,9 @@ try { bagSort = localStorage.getItem('pk-bag-sort') || 'new'; } catch (e) {}
 // 가방을 보고 나가면 NEW 표시를 지운다
 function seeBag(closing) { if (runTab !== 'bag' || (runEl.hidden && !closing)) return; let ch = false; S.bag.forEach(e => { if (e.isNew) { e.isNew = false; ch = true; } }); if (ch) { save(); renderBag.sig = ''; renderRun(); } }
 // 가방 탭을 본 채로 창이 닫히면(하단 메뉴 이동·바깥 누름·다른 창 열림 등 어떤 길이든) NEW 표시를 지운다
-{ let was = !runEl.hidden; new MutationObserver(() => { const now = !runEl.hidden; if (was && !now) seeBag(true); was = now; }).observe(runEl, { attributes: true, attributeFilter: ['hidden'] }); }   // 열려 있다가 닫힐 때만
+// 부화 준비된 알: 부화기를 봤다가 떠나면 빨간 점을 지운다
+function seeReady() { let ch = false; for (const e of S.eggs) if (e.km >= e.need && !e.rs) { e.rs = true; ch = true; } if (ch) { save(); renderRun(); } }
+{ let was = !runEl.hidden; new MutationObserver(() => { const now = !runEl.hidden; if (was && !now) { seeBag(true); if (runTab === 'egg') seeReady(); } was = now; }).observe(runEl, { attributes: true, attributeFilter: ['hidden'] }); }   // 열려 있다가 닫힐 때만
 function fmtWhen(t) { const d = new Date(t); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; }
 function renderBag() {
   const hasNew = S.bag.some(e => e.isNew);
@@ -5912,6 +5914,7 @@ document.addEventListener('click', ev => {
 function setRunTab(t) {
   if (t !== 'egg' && t !== 'bag') t = 'egg';   // 달리기 탭은 프로필로 옮겼다
   if (runTab === 'bag' && t !== 'bag') seeBag();
+  if (runTab === 'egg' && t !== 'egg' && !runEl.hidden) seeReady();
   runTab = t; try { localStorage.setItem('pk-run-tab', t); } catch (e) {}
   document.querySelectorAll('.runtab[data-tab]').forEach(b => { b.setAttribute('aria-selected', b.dataset.tab === t); if (b.dataset.tab === t) $('#runTitle').textContent = b.textContent; });
   document.querySelectorAll('.rtab').forEach(x => x.hidden = x.dataset.tab !== t);
@@ -5933,7 +5936,7 @@ function renderRun() {
   if (runEl.hidden) { if (!$('#bagPop').hidden) { $('#bagPop').hidden = true; bagSel = null; } return; }
   if (!S.eggs.includes(eggSel)) eggSel = S.eggs[0] || null;
   const e = eggSel;
-  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? '알이 움직이고 있다!' : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}<div class="egg-detail">${e.place ? `${esc(e.place)} 근처에서 주운 알` : '어디서 주웠는지 기록이 없는 알'}<br>${themeHint(e)}</div><div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
+  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? `${fmtKm(e.km)} / ${e.need}km` : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}<div class="egg-detail">${e.place ? `${esc(e.place)} 근처에서 주운 알` : '어디서 주웠는지 기록이 없는 알'}<br>${themeHint(e)}</div><div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
     : '<p class="incu-empty">부화 중인 알이 없습니다</p>';
   // 알이 있을 때 높이를 기억해 두고, 빈 부화기도 같은 높이로 둔다
   if (e) requestAnimationFrame(() => { const h = $('#incu').offsetHeight; if (h > 40) document.documentElement.style.setProperty('--incu-h', h + 'px'); });
@@ -5944,7 +5947,7 @@ function renderRun() {
     const x = S.eggs[i], b = document.createElement('button'); b.className = 'eslot';
     if (x) {
       const rd = x.km >= x.need; b.classList.toggle('ready', rd);
-      b.innerHTML = `<span class="tag2">${rd ? '부화 준비' : '부화 중'}</span>${eggHtml(x.g, rd ? 'wob shake' : 'wob')}<span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div>`;
+      b.innerHTML = `${rd && !x.rs ? '<i class="edot"></i>' : ''}<span class="tag2">${rd ? '부화 준비' : '부화 중'}</span>${eggHtml(x.g, rd ? 'wob shake' : 'wob')}<span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div><span class="ekm">${fmtKm(x.km)}/${x.need}km</span>`;
       b.setAttribute('aria-current', x === e); if (x.isNew) { b.classList.add('new'); x.isNew = false; }
       b.onclick = () => { eggSel = x; if (x.km >= x.need && !hatching && !evolving && !hatchQ.length) pressGo(b, () => { hatchEgg(x, true, true); playHatch(); renderRun(); }); else renderRun(); };   // 준비된 알은 칸이 눌렸다가 창이 뜬다
     } else { b.classList.add('empty', 'add'); b.innerHTML = '+'; b.setAttribute('aria-label', '가방에서 알 가져오기'); b.onclick = () => pressGo(b, () => setRunTab('bag')); }
@@ -6180,7 +6183,7 @@ async function start(data) {
   window.pokeRunReady = true; postNative();
   try { window.webkit?.messageHandlers?.pokeRun?.postMessage({ ready: true }); } catch (e) {}
 }
-if (/[?&]debug/.test(location.search)) window.__meadow = { evoMus, bgm, bgmPos, feedOne, tense, hatchEgg, playHatch, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
+if (/[?&]debug/.test(location.search)) window.__meadow = { save, evoMus, bgm, bgmPos, feedOne, tense, hatchEgg, playHatch, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates };   // test hook
 if (/[?&]debug/.test(location.search)) Object.assign(window, { __drag: () => drag, __log: log, __save: save, __bgm: bgm, __actx: () => actx, __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf, __thoughtOf: thoughtOf, __addRel: addRel, __tyIcon: tyIcon, __evoKids: evoKids, __friendsAll: friendsAll, __renameBox: renameBox });
 window.claude?.hot?.snapshot?.(() => serialize());
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
