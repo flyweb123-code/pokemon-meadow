@@ -3873,7 +3873,6 @@ function tickSpecial(m, dt) {
   }
   if (s === 'dig' || s === 'teleport') {
     if (m.phase === 0 && m.t < (s === 'dig' ? 4.4 : 3.1)) { m.phase = 1; m.hidden = true; m.el.style.visibility = 'hidden'; }
-    if (s === 'dig' && m.phase === 1 && m.t < 1.5) holeOff(m);   /* 다시 나올 때쯤 구멍이 메워진다 */
     if (m.phase === 1 && m.t < 1) {
       m.phase = 2; m.hidden = false; m.el.style.visibility = '';
       const p = s === 'teleport' ? { x: rnd(XL + 60, XR - 60), y: rnd(MIN_Y + 20, MAX_Y - 10) } : randLand();
@@ -3931,7 +3930,7 @@ function digDown(m, ms = 900) { const e = m.el; e.style.setProperty('--dh', Math
   holeOff(m); const h = document.createElement('i'); h.className = 'hole'; Object.assign(h.style, { left: m.x + 'px', top: m.y + 'px', zIndex: Math.round(m.y) - 2 }); h.style.setProperty('--hw', Math.round(Math.max(24, Math.min(70, (m.w || 30) * .8))) + 'px'); itemsEl.append(h); m.hole = h; setTimeout(() => { if (m.hole === h) holeOff(m); }, 8000); }
 function holeOff(m) { const h = m.hole; if (!h) return; m.hole = null; h.classList.add('out'); setTimeout(() => h.remove(), 600); }
 function digUp(m, ms = 600) { const e = m.el; e.style.setProperty('--dh', Math.round((m.h || 40) + 8) + 'px'); e.style.setProperty('--dd', ms + 'ms');
-  e.classList.remove('down'); void e.offsetWidth; e.classList.add('dig', 'up'); holeOff(m); digFx(m, ms); digSnd(ms / 1000);
+  e.classList.remove('down'); void e.offsetWidth; e.classList.add('dig', 'up'); { const h = m.hole; setTimeout(() => { if (m.hole === h) holeOff(m); }, 1100); }   /* v3.48 경완: 구멍은 다시 나오고 조금 뒤에 메워진다 */ digFx(m, ms); digSnd(ms / 1000);
   clearTimeout(m.digT); m.digT = setTimeout(() => e.classList.remove('dig', 'up'), ms + 30); }
 function digClear(m) { clearTimeout(m.digT); m.el?.classList.remove('dig', 'up', 'down'); holeOff(m); }
 function splashAt(m) { for (let i = 0; i < 5; i++) particle(m.x + rnd(-6, 6), m.y - 6, 'splash', '', d => d.style.setProperty('--dx', rnd(-26, 26) + 'px')); }
@@ -4613,7 +4612,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.47';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.48';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
