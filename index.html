@@ -864,6 +864,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 #eggOut{display:block;padding:7px 10px;font-size:13px}
 .incu-btns{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin-top:8px}
 #bagGrid .bslot{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.incu-box .info{min-width:0}.egg-detail .epl{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bag-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:0 0 10px}
 @media (max-width:560px){.bag-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .bag-tabs button{font:inherit;font-size:13px;border:3px solid var(--inner);background:#fff;color:var(--win-ink);padding:6px 4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:2px;white-space:nowrap;position:relative}
@@ -4538,7 +4539,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.36';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.37';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5954,6 +5955,17 @@ function postNative() {
 const PROV = new Set(['경기도', '강원도', '충청북도', '충청남도', '전라북도', '전라남도', '경상북도', '경상남도', '제주도']);
 const SIDO = {};   // 시·도 이름 → 짧은 이름
 [['서울', '서울시'], ['부산', '부산시'], ['대구', '대구시'], ['인천', '인천시'], ['광주', '광주시'], ['대전', '대전시'], ['울산', '울산시'], ['세종', '세종시'], ['경기', '경기'], ['강원', '강원'], ['충북', '충청북'], ['충남', '충청남'], ['전북', '전라북'], ['전남', '전라남'], ['경북', '경상북'], ['경남', '경상남'], ['제주', '제주']].forEach(([k, ...v]) => [k, ...v].forEach(n => SIDO[n] = k));
+// 화면에 보일 짧은 장소 이름 (v3.37 경완: 길면 중요한 것 위주로). 저장된 이름은 그대로 두고 보여 줄 때만 줄인다
+// "서울 석촌동 석촌호수" → "석촌동 석촌호수", 그래도 길면 "석촌호수", 괄호·'○○점' 같은 꼬리도 뗀다
+function shortPlace(s) {
+  const w = String(s || '').split(/\s+/).filter(Boolean); if (w.length < 2) return w.join(' ');
+  const i = w.findIndex(x => /(동|읍|면|리|\d가)$/.test(x)), area = i >= 0 ? w[i] : w[0];
+  let mark = (i >= 0 ? w.slice(i + 1) : w.slice(1)).join(' ').replace(/\s*[(（][^)）]*[)）]/g, '').trim();
+  if (!mark) return i >= 0 ? w.slice(0, i + 1).join(' ') : w.join(' ');
+  if (mark.length > 10) mark = mark.replace(/\s+\S+(점|지점|본점|센터점)$/, '');
+  const both = `${area} ${mark}`;
+  return both.length <= 14 ? both : mark.length <= 14 ? mark : mark.slice(0, 13) + '…';
+}
 function cleanPlace(s) {
   if (!s) return s; const out = [];
   for (let w of String(s).split(/\s+/)) {
@@ -6610,7 +6622,7 @@ function renderBag() {
   $('#bagPop').hidden = !e;
   if (e) { $('#bagDel').classList.toggle('arm', delArm === 1); $('#bagDel').textContent = delArm === 1 ? '정말?' : '버리기'; }
   if (e) { $('#bagIn').disabled = full; $('#bagIn').textContent = full ? `부화기가 꽉 찼어요` : '부화기에 넣기'; }
-  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${GRADE[e.g].km}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움<br>주운 곳: ${e.place ? `${esc(e.place)} 근처` : '기록 없음'}<br>${themeHint(e)}</div></div>`;
+  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${GRADE[e.g].km}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움<span class="epl">주운 곳: ${e.place ? `${esc(shortPlace(e.place))} 근처` : '기록 없음'}</span>${themeHint(e)}</div></div>`;
 }
 // 가방: 알을 꾹 누르면(0.45초) 여러 개 고르기 모드가 켜지고 그 알이 골라진다 (v3.36 경완)
 { let lp = null, lpDone = 0;
@@ -6626,6 +6638,8 @@ function renderBag() {
 document.addEventListener('click', ev => {
   const tab = ev.target.closest('#bagTabs [data-g]'); if (tab) { bagG = +tab.dataset.g; renderBag(); return; }
   const sl = ev.target.closest('#bagGrid .bslot');
+  // 여러 개 고르는 중에 가방의 빈 곳(알·버튼이 아닌 곳)을 누르면 고르기 취소 (v3.37 경완)
+  if (bagMul && !sl && ev.target.closest('.rtab[data-tab="bag"]') && !ev.target.closest('button, input, [role=tab]')) { bagMul = null; delArm = 0; renderBag(); return; }
   if (sl && bagMul) { const id = +sl.dataset.id; bagMul.has(id) ? bagMul.delete(id) : bagMul.add(id); delArm = 0; const e = S.bag.find(x => x.id === id); if (e && e.isNew) { e.isNew = false; save(); } renderBag(); return; }
   if (sl) { delArm = 0; const e = S.bag.find(x => x.id === +sl.dataset.id); bagSel = e === bagSel ? null : e; if (e && e.isNew) { e.isNew = false; save(); } renderBag(); return; }
   if (ev.target.closest('#eggAll')) { hatchAll(); return; }
@@ -6670,7 +6684,7 @@ function renderRun() {
   if (runEl.hidden) { if (!$('#bagPop').hidden) { $('#bagPop').hidden = true; bagSel = null; } return; }
   if (!eggNone && !S.eggs.includes(eggSel)) eggSel = S.eggs[0] || null; else if (eggNone) eggSel = null;
   const e = eggSel;
-  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? `${fmtKm(e.km)} / ${e.need}km` : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}<div class="egg-detail">${e.place ? `${esc(e.place)} 근처에서 주운 알` : '어디서 주웠는지 기록이 없는 알'}<br>${themeHint(e)}</div><div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
+  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? `${fmtKm(e.km)} / ${e.need}km` : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}<div class="egg-detail"><span class="epl">${e.place ? `${esc(shortPlace(e.place))} 근처에서 주운 알` : '어디서 주웠는지 기록이 없는 알'}</span>${themeHint(e)}</div><div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
     : `<p class="incu-empty">${S.eggs.length ? '알을 눌러 보자' : '부화 중인 알이 없습니다'}</p>`;
   // 알이 있을 때 높이를 기억해 두고, 빈 부화기도 같은 높이로 둔다
   if (e) requestAnimationFrame(() => { const h = $('#incu').offsetHeight; if (h > 40) document.documentElement.style.setProperty('--incu-h', h + 'px'); });
