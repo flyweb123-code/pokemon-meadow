@@ -863,7 +863,6 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .bslot .prog.sm{width:80%;height:7px;border-width:2px;margin:1px 0}.bslot .km{font-size:9px;letter-spacing:-.3px}
 #eggOut{display:block;padding:7px 10px;font-size:13px}
 .incu-btns{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin-top:8px}
-.bag-pity{margin:-4px 0 10px;font-size:12px;color:var(--dim);text-align:center}.bag-pity b{color:var(--win-ink)}
 .bag-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:0 0 10px}
 @media (max-width:560px){.bag-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .bag-tabs button{font:inherit;font-size:13px;border:3px solid var(--inner);background:#fff;color:var(--win-ink);padding:6px 4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:2px;white-space:nowrap;position:relative}
@@ -1415,7 +1414,6 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
         <div class="bag-mbar" id="bagMBar" hidden><span class="n" id="bagMN"></span><button id="bagMAll">전체 선택</button><button id="bagMIn">부화기에</button><button id="bagMDel">버리기</button></div>
         <div class="bag-test"><button id="bagTest" class="test-btn">알 추가 (테스트)</button><span id="bagTestG" hidden></span></div>
         <div class="bag-tabs" id="bagTabs" role="tablist"></div>
-        <div class="bag-pity" id="bagPity"></div>
         <div class="bag-grid" id="bagGrid"></div>
       </section>
     </div>
@@ -4539,7 +4537,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.34';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.35';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5820,7 +5818,7 @@ function drawEgg() {
 }
 // 가방: 움직인 거리만큼 알을 줍는다. 250m마다 0~2개라 2.5km면 대개 5~15개, 등급 확률은 알 뽑기와 같다.
 const MAX_BAG = 999, BAG_STEP = .25;
-const PITY_E = 75, PITY_L = 150;   // v3.34 경완: 천장은 평균 거리의 1.5배 (에픽 75km, 전설 150km)
+const PITY_E = 75, PITY_L = 150;   // v3.34 경완: 천장은 평균 거리의 1.5배 (에픽 75km, 전설 150km). v3.35: 남은 거리는 화면에 안 보인다
 const rollGrade = () => { const r = Math.random(); return r < .6825 ? 1 : r < .9325 ? 2 : r < .9925 ? 3 : r < .9975 ? 4 : 5; };   // v3.32 경완: 알은 1km에 약 4개, 전설 100km·에픽 50km·레어 4km에 1개꼴 → 68.25/25/6/0.5/0.25 (예전 45/30/15/8/2)
 // 오늘 기록: 걸은 거리(만보기), 주운 알. 날짜가 바뀌면 새로
 const dayKey = (t = Date.now()) => { const d = new Date(t); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
@@ -6590,10 +6588,9 @@ function renderBag() {
   const tb = document.querySelector('.runtab[data-tab="bag"]'); tb.innerHTML = '가방' + (hasNew ? '<i class="dot" aria-label="새 알"></i>' : '');
   const te = document.querySelector('.runtab[data-tab="egg"]'), rdy = S.eggs.some(e => (e.km >= e.need && !e.rs) || e.nwI); if (!!te.querySelector('.dot') !== rdy) te.innerHTML = '부화기' + (rdy ? '<i class="dot" aria-label="새 알"></i>' : '');
   if (runTab !== 'bag') { $('#bagPop').hidden = true; bagSel = null; bagMul = null; return; }
-  const sig = [Math.floor(S.pity?.e || 0), Math.floor(S.pity?.l || 0), bagG, bagSort, bagSel?.id, bagMul ? 'm' + [...bagMul].join('.') : '', delArm, S.bag.length, S.bag.filter(e => e.isNew).length, S.eggs.length].join();
+  const sig = [bagG, bagSort, bagSel?.id, bagMul ? 'm' + [...bagMul].join('.') : '', delArm, S.bag.length, S.bag.filter(e => e.isNew).length, S.eggs.length].join();
   if (sig === renderBag.sig) return; renderBag.sig = sig;
   $('#bagCount').innerHTML = `전체 <b>${S.bag.length}</b>개`;
-  { const P = S.pity || { e: 0, l: 0 }, left = (c, v) => Math.max(0, Math.ceil(c - v - 1e-6)); $('#bagPity').innerHTML = `천장까지 에픽 <b>${left(PITY_E, P.e)}</b>km · 전설 <b>${left(PITY_L, P.l)}</b>km`; }
   const cnt = g => S.bag.filter(e => !g || e.g === g).length, nw = g => S.bag.some(e => e.isNew && (!g || e.g === g));
   $('#bagTabs').innerHTML = [0, 1, 2, 3, 4, 5].map(g => `<button role="tab" data-g="${g}" aria-selected="${g === bagG}">${g ? GRADE[g].n : '전체'}<b>${cnt(g)}</b>${nw(g) ? '<i class="dot"></i>' : ''}</button>`).join('');
   document.querySelectorAll('#bagSort [data-sort]').forEach(b => b.setAttribute('aria-pressed', b.dataset.sort === bagSort));
