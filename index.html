@@ -2391,7 +2391,7 @@ async function spawn(sp, opts = {}) {
   const m = {
     uid: opts.uid || S.uid++, sp, form: sp, name: nm0 || DEX[sp].n,
     x: 0, y: 0, tx: 0, ty: 0, face: 1, lift: 0, w: d.w * scaleOf(key), h: d.h * scaleOf(key), at: 0, sk: key, sex: opts.pid != null ? undefined : sx,
-    energy: opts.energy ?? rnd(60, 95), hunger: opts.hunger ?? rnd(10, 45), social: opts.social ?? rnd(10, 50), joy: opts.joy ?? rnd(55, 75), clean: opts.clean ?? 100, frT: opts.frT || 0,
+    energy: opts.energy ?? rnd(60, 95), hunger: opts.hunger ?? rnd(10, 45), social: opts.social ?? rnd(10, 50), joy: opts.joy ?? rnd(55, 75), clean: opts.clean ?? 100, frT: opts.frT || 0, joyH: opts.joyH || 0,
     state: 'idle', t: rnd(.5, 2), goal: null, partner: null, hidden: false, bubT: 0, formT: 0,
     home: randLand(), born: opts.born ?? S.clock, zT: rnd(0, 1.2), pid: opts.pid ?? null,
   };
@@ -2501,7 +2501,7 @@ function offFr(m, sec) {
   const flush = () => { if (day === dayKey()) { while (got-- > 0 && dayCap(m, 'fld', FLD_FR_DAY)) addFr(m.pid, 1); } else if (got > 0) addFr(m.pid, Math.min(got, FLD_FR_DAY)); got = 0; };
   for (let k = 0; k < steps; k++) {
     if (m.hunger < 80) m.hunger = Math.min(80, m.hunger + hun * dt / 60);
-    m.joy = Math.max(0, (m.joy ?? 60) - joy * dt / 60); m.clean = Math.max(0, (m.clean ?? 100) - CLEAN_RATE * dt);
+    if (!(m.joyH > t)) m.joy = Math.max(0, (m.joy ?? 60) - joy * dt / 60); m.clean = Math.max(0, (m.clean ?? 100) - CLEAN_RATE * dt);
     const a = gaugeAvg(m), r = m.pid && !m.hidden ? FR_TABLE.find(([v]) => a >= v)[1] + (a >= 40 && fr0 ? .5 : 0) : 0;
     acc += r * dt; while (acc >= 3600) { acc -= 3600; got++; }
     t += dt * 1000; if (t >= mid) { flush(); day = dayKey(t); mid = nm(t); }
@@ -2539,14 +2539,14 @@ function feedNow(m) {
     if (Math.hypot(sp.x - m.x, sp.y - m.y) < 4) go(); else { moveTo(m, { x: bxp, y }, { kind: 'feedb', go }, .8); setTimeout(() => { if (!ate) { if (m.goal?.go === go) go(); else { ate = true; el.remove(); } } }, 5000); } });
 }
 // v3.43 경완: 열매가 실제처럼 튄다 — 중력으로 떨어지고, 땅에 닿으면 탄성(0.42)만큼 다시 튀어 오르며 납작해졌다 돌아온다. 살짝 옆으로 구르며 멈춘다
-function berryBounce(el, h, done) {
+function berryBounce(el, h, done, fade = true) {
   const G = 1500, E = .42; let y = -h, v = 0, x = 0, vx = (Math.random() < .5 ? -1 : 1) * (14 + Math.random() * 10), sq = 0, rot = 0, t0 = 0, rest = 0;
   const step = ts => { if (!el.isConnected) return; const dt = t0 ? Math.min(.033, (ts - t0) / 1000) : 0; t0 = ts;
     v += G * dt; y += v * dt;
     if (y >= 0) { y = 0; if (v > 60) { sq = Math.min(.35, v / 1600); v = -v * E; vx *= .6; } else { v = 0; rest += dt; } }
     if (y === 0 && v === 0) vx *= Math.pow(.02, dt);   // 땅에선 구름이 금방 멈춘다
     x += vx * dt; rot += vx * dt * 2; sq *= Math.pow(.0005, dt);
-    el.style.opacity = Math.min(1, (h + y) / 25 + .2);
+    if (fade) el.style.opacity = Math.min(1, (h + y) / 25 + .2);
     el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${rot.toFixed(0)}deg) scale(${(1 + sq).toFixed(3)},${(1 - sq).toFixed(3)})`;
     el.style.transformOrigin = '50% 100%';
     if (rest > .18) return done(x);
@@ -2554,7 +2554,7 @@ function berryBounce(el, h, done) {
   requestAnimationFrame(step);
 }
 // 쓰다듬기: 정보창·상태창을 숨기고 그 포켓몬 위를 문지른다. PET_N 번 문지르면 아주 좋아하며 끝 (친밀도 +3 은 하루 3번까지, 즐거움 +20)
-let PET_N = 12, PET_LEN = 2500, PET_DAY = 2, WASH_DAY = 1;   // 쓰다듬기 친밀도 +3 하루 2번, 빗질(씻기기) +3 하루 1번
+let PET_N = 12, PET_LEN = 1500, PET_DAY = 2, WASH_DAY = 1, JOY_HOLD = 5;   // v3.68 경완: 쓰다듬기 게이지 더 빨리(2500→1500). 쓰다듬기는 즐거움을 가득 채우고, 가득 차 있지 않았으면 친밀도 +1 (하루 한도 없음). 빗질(씻기기) +3 하루 1번. JOY_HOLD = 즐거움 100 이 되면 안 떨어지는 분
    // 게이지 바: 보통 빠르기로 약 1700px 문지르면 가득. 빠르게 문지를수록 더 빨리 차고, 멈추면 줄어든다. PET_N 은 반응(하트·진동) 구간 수
 let petM = null;
 function petStart(m, wash = false) {
@@ -2596,9 +2596,9 @@ function haloJoy(m) {
 }
 function petDone() {
   const m = petM.m, P = boxOf(m.pid); haloJoy(m);
-  const wash = petM.wash; let fr = 0; if (P && dayCap(m, wash ? 'wash' : 'pet', wash ? WASH_DAY : PET_DAY)) { fr = 3; addFr(P.id, 3); }
+  const wash = petM.wash; let fr = 0; if (P && (wash ? dayCap(m, 'wash', WASH_DAY) : (m.joy ?? 60) < 100)) { fr = wash ? 3 : 1; addFr(P.id, fr); }
   if (wash) { m.clean = 100; dirtVis(m); m.joy = clamp((m.joy ?? 60) + 10); washShine(m); $('#washBrush').hidden = true; }
-  else { m.social = clamp(m.social - 20); m.joy = clamp((m.joy ?? 60) + 20); }
+  else { m.social = clamp(m.social - 20); m.joy = 100; }
   haptic(2); setTimeout(() => haptic(2), 110); setTimeout(() => haptic(1), 220); sfx('pickup'); if (fr) frPop(m, fr);
   log(wash ? (fr ? `${J(m,'을/를')} 깨끗하게 빗겨 주자 반짝반짝 윤이 나며 아주 좋아했다.` : `${J(m,'을/를')} 깨끗하게 빗겨 주었다. 반짝반짝!`)
     : fr ? `${J(m,'은/는')} 쓰다듬어 주자 아주 좋아했다.` : `${J(m,'은/는')} 쓰다듬어 주자 기분 좋은 듯 눈을 가늘게 떴다.`, [m]);
@@ -2610,7 +2610,7 @@ function petDone() {
   setTimeout(() => { m.face = f0; petEnd(); save(); }, NB * 190 + 50);
 }
 // 빗질 판정은 손끝이 아니라 빗의 솔 부분으로 (v3.40 경완). 문지르는 중 빗(.wash-brush.on: -12° 기울기·1.06배) 솔 줄의 왼쪽·가운데·오른쪽이 손끝에서 떨어진 거리
-const BRISTLE = [[-2, -14], [14, -17], [31, -21]], WASH_SPD = 1.6;   // 빗질 게이지는 쓰다듬기보다 1.6배 빨리 찬다
+const BRISTLE = [[-2, -14], [14, -17], [31, -21]], WASH_SPD = .96;   // 빗질 게이지 빠르기는 그대로 (v3.68 에 쓰다듬기만 빨라짐: 2500/1.6 = 1500/.96)
 const brushHit = (m, x, y) => BRISTLE.some(([dx, dy]) => petHit(m, x + dx, y + dy, 6));
 const petHit = (m, x, y, p = 22) => { const r = [m.spr, m.img].map(e => e?.getBoundingClientRect()).find(r => r && r.width) || m.el.getBoundingClientRect();    /* m.el 은 발밑 점이라 그림 크기로 판정 */ return x > r.left - p && x < r.right + p && y > r.top - p && y < r.bottom + p; };
 addEventListener('pointerdown', e => { if (!petM || e.target.closest('#petBar')) return;
@@ -4102,7 +4102,8 @@ function update(m, dt) {
   if (m.state === 'idle' && !m.hidden && !m.propSit && behindTree(m.x, m.y) && !((m.btCd = (m.btCd || 0) - dt) > 0)) { m.btCd = 1.5; moveTo(m, outOfTree({ x: m.x + rnd(-30, 30), y: m.y })); }   // v3.62: 나무 뒤에 서 있으면 앞으로 나온다
   if (m.forageCd > 0) m.forageCd -= dt; if (m.propCd > 0) m.propCd -= dt; if (m.hungryCd > 0) m.hungryCd -= dt; if (m.likeCd > 0) m.likeCd -= dt;
   if (!asleep) m.social = clamp(m.social + dt * .4 * (t.soc || 1));
-  m.joy = clamp((m.joy ?? 60) - dt * JOY_RATE * (asleep ? .3 : 1));   /* 즐거움: 깨어 있으면 약 2시간에 바닥 */
+  if (m.joy >= 100) { if (!(m.joyH > 0)) m.joyH = Date.now() + JOY_HOLD * 60000; } else m.joyH = 0;   /* v3.68: 즐거움이 100 이 되면 JOY_HOLD 분 동안은 안 떨어진다 */
+  if (!(m.joyH > Date.now())) m.joy = clamp((m.joy ?? 60) - dt * JOY_RATE * (asleep ? .3 : 1));   /* 즐거움: 깨어 있으면 약 2시간에 바닥 */
   if (m.spCd > 0) m.spCd -= dt;
   if (asleep) m.energy = clamp(m.energy + dt * 1.3);
   else m.energy = clamp(m.energy - dt * (m.state === 'move' ? .26 : .1) * (t.slp || 1));
@@ -4654,10 +4655,10 @@ function shakeTree(m) {
   const L = [...treeEl.querySelectorAll('.tb')], k = L.length;   // v3.61 경완: 한 번 흔들면 달린 열매가 모두 떨어진다
   if (!k) { emote(m, '…'); log(`${J(m,'이/가')} 열매나무를 흔들었지만 열매가 하나도 없었다.`, [m]); return false; }
   const r = treeEl.getBoundingClientRect(), sc = r.width / 100;
-  L.slice(-k).forEach((b, i) => { S.tree.n--; const bx = PROPS.tree.x - 50 * LS('tree') + parseFloat(b.style.left), by = PROPS.tree.y - 116 * LS('tree') + parseFloat(b.style.top), gx = bx + rnd(-10, 10), gy = PROPS.tree.y + rnd(6, 26);
-    b.remove(); const f = document.createElement('i'); f.className = 'tb fall' + (b.classList.contains('red') ? ' red' : ''); f.style.left = bx + 'px'; f.style.top = by + 'px'; fxEl.append(f);
-    f.animate([{ transform: 'translate(0,0)' }, { transform: `translate(${gx - bx}px,${gy - by}px)` }], { duration: 420 + i * 90, easing: 'cubic-bezier(.5,0,1,1)', delay: 120 + i * 140, fill: 'forwards' })
-      .finished.then(() => { f.remove(); const nb = addBerry(gx, gy, true); if (nb) { nb.shk = true; callHungry(nb); } }); });
+  L.slice(-k).forEach((b, i) => { S.tree.n--; const bx = PROPS.tree.x - 50 * LS('tree') + parseFloat(b.style.left), by = PROPS.tree.y - 116 * LS('tree') + parseFloat(b.style.top), gx = bx + rnd(-4, 4), gy = PROPS.tree.y + rnd(6, 26), red = b.classList.contains('red');
+    /* v3.68 경완: 손으로 준 열매처럼 중력으로 떨어져 땅에서 통통 튀고 구르다 멈춘다 (달린 자리에 잠깐 남아 있다가 하나씩) */
+    setTimeout(() => { b.remove(); const f = document.createElement('i'); f.className = 'tb fall' + (red ? ' red' : ''); f.style.left = gx + 'px'; f.style.top = gy + 'px'; f.style.transform = `translate(0,${by - gy}px)`; fxEl.append(f);
+      berryBounce(f, gy - by, x => { f.remove(); const nb = addBerry(gx + x, gy, true); if (nb) { nb.shk = true; callHungry(nb); } }, false); }, 120 + i * 140); });
   S.tree.t = S.tree.n === TSL().length - k ? Date.now() : S.tree.t; save();
   log(`${J(m,'이/가')} 열매나무를 흔들어 열매를 떨어뜨렸다.`, [m]); return true;
 }
@@ -4878,7 +4879,7 @@ function select(m) {
 const KEY = /[?&]studio/.test(location.search) ? 'pk-studio-v2' : 'pk-meadow-v2';   // 작업실 미리보기는 따로 저장
 function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
-    savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, joy: m.joy, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
+    savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, joy: m.joy, joyH: m.joyH || 0, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk })), lockT: S.lockT,
     gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, dexNew: [...(S.dexNew || [])] };
 }
@@ -5109,7 +5110,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.67';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.68';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7537,7 +7538,7 @@ function setLayoutIn(L) {
 function applyBal(b) {
   const num = v => typeof v === 'number' && isFinite(v), arr = (A, v) => { if (Array.isArray(v) && v.length === A.length) A.splice(0, A.length, ...v); };
   arr(DUP_G, b.DUP_G); arr(NEW_EGG_G, b.NEW_EGG_G); if (Array.isArray(b.FR_TABLE) && b.FR_TABLE.every(r => r.length === 2)) FR_TABLE.splice(0, FR_TABLE.length, ...b.FR_TABLE);
-  if (num(b.NEW_G)) NEW_G = b.NEW_G; if (num(b.RUN_G)) RUN_G = b.RUN_G; if (num(b.BERRY_FR_DAY)) BERRY_FR_DAY = b.BERRY_FR_DAY; if (num(b.PET_DAY)) PET_DAY = b.PET_DAY; if (num(b.WASH_DAY)) WASH_DAY = b.WASH_DAY;
+  if (num(b.NEW_G)) NEW_G = b.NEW_G; if (num(b.RUN_G)) RUN_G = b.RUN_G; if (num(b.BERRY_FR_DAY)) BERRY_FR_DAY = b.BERRY_FR_DAY; if (num(b.PET_DAY)) PET_DAY = b.PET_DAY; if (num(b.JOY_HOLD)) JOY_HOLD = b.JOY_HOLD; if (num(b.WASH_DAY)) WASH_DAY = b.WASH_DAY;
   if (num(b.FLD_FR_DAY)) FLD_FR_DAY = b.FLD_FR_DAY; if (num(b.WALK_FR)) WALK_FR = b.WALK_FR; if (num(b.FR_EVO)) FR_EVO = b.FR_EVO; if (num(b.FR_MAX)) FR_MAX = b.FR_MAX; if (num(b.HUNGER_RATE)) HUNGER_RATE = b.HUNGER_RATE;
   if (num(b.CLEAN_DAYS) && b.CLEAN_DAYS > 0) CLEAN_RATE = 100 / (b.CLEAN_DAYS * 86400); if (num(b.JOY_HOURS) && b.JOY_HOURS > 0) JOY_RATE = 100 / (b.JOY_HOURS * 3600);
   if (num(b.MAX_EGGS)) MAX_EGGS = b.MAX_EGGS; if (num(b.MAX_BAG)) MAX_BAG = b.MAX_BAG; if (num(b.BAG_STEP) && b.BAG_STEP > 0) BAG_STEP = b.BAG_STEP; if (num(b.SHINY_N) && b.SHINY_N > 0) SHINY_RATE = 1 / b.SHINY_N;
@@ -7613,7 +7614,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   const api = window.__studio = {
     SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
     ICO: { berry: ICO_BERRY, brush: ICO_BRUSH, hand: ICO_HAND, pen: PEN, egg: EGG_SVG },   // v3.66: 작업실이 게임 아이콘을 그대로 쓴다
-    get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, WASH_DAY, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]) }; },
+    get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]) }; },
     get cfg() { return CFG; },
     get SPRITES() { return SPRITES; }, ensureSprite, thumbOf, gradeOf, tierOf, shinyHue, tyIcon, scaleOf, baseOf, movesOf, eggHtml, propSpots,
     ready: false, onSel: null, onLayout: null, onMon: null, onLog: null,
