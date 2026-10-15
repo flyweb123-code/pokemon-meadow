@@ -4477,7 +4477,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.19';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.20';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5867,6 +5867,8 @@ function postNative() {
 // 아이폰 앱: 잠금 중에도 걸은 거리(만보기)와 그 근처 동네 이름을 보낸다. 알 줍기에만 쓴다.
 // 지역 이름 정리: "서울 서울특별시 송파구" → "서울 송파구" (시·도 꼬리를 줄이고 겹치는 낱말은 한 번만)
 const PROV = new Set(['경기도', '강원도', '충청북도', '충청남도', '전라북도', '전라남도', '경상북도', '경상남도', '제주도']);
+const SIDO = {};   // 시·도 이름 → 짧은 이름
+[['서울', '서울시'], ['부산', '부산시'], ['대구', '대구시'], ['인천', '인천시'], ['광주', '광주시'], ['대전', '대전시'], ['울산', '울산시'], ['세종', '세종시'], ['경기', '경기'], ['강원', '강원'], ['충북', '충청북'], ['충남', '충청남'], ['전북', '전라북'], ['전남', '전라남'], ['경북', '경상북'], ['경남', '경상남'], ['제주', '제주']].forEach(([k, ...v]) => [k, ...v].forEach(n => SIDO[n] = k));
 function cleanPlace(s) {
   if (!s) return s; const out = [];
   for (let w of String(s).split(/\s+/)) {
@@ -5874,10 +5876,12 @@ function cleanPlace(s) {
     const m = w.match(/^(.+?)(특별자치시|특별자치도|특별시|광역시)$/); if (m) w = m[1]; else if (PROV.has(w)) w = w.slice(0, -1);
     if (!out.includes(w)) out.push(w);
   }
-  // 시·구는 빼고 'OO동 가게·건물 이름'만 남긴다 (예: '서울 송파구 석촌동 석촌호수' → '석촌동 석촌호수')
+  // 시·도(짧게)는 남기고 시·군·구는 빼서 '서울 석촌동 석촌호수'처럼 (서울시→서울, 대전광역시→대전, 경기도→경기)
+  const sd = out.length > 1 ? SIDO[out[0]] : null; if (sd) out[0] = sd;
   let i = out.findIndex((w, k) => k <= 3 && /(동|읍|면|리|\d가)$/.test(w));
   if (i < 0) for (let k = Math.min(2, out.length - 2); k >= 0; k--) if (/(구|군|시)$/.test(out[k])) { i = k; break; }
-  return (i > 0 ? out.slice(i) : out).join(' ');
+  if (i <= 0 || (sd && i === 1)) return out.join(' ');
+  return (sd ? [sd, ...out.slice(i)] : out.slice(i)).join(' ');
 }
 function cleanPlaces() {   // 예전에 저장된 알·포켓몬·기록의 장소도 한 번 정리
   const fix = o => { if (o && typeof o.place === 'string') o.place = cleanPlace(o.place); };
@@ -6506,7 +6510,7 @@ function renderBag() {
   if (bagSort === 'km') list.sort((a, b) => (b.km || 0) / GRADE[b.g].km - (a.km || 0) / GRADE[a.g].km || (b.km || 0) - (a.km || 0));
   if (bagSort === 'grade') list.sort((a, b) => b.g - a.g || b.t - a.t);
   if (!S.bag.includes(bagSel)) bagSel = null;
-  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot${bagMul?.has(e.id) ? ' on' : ''}" data-id="${e.id}" aria-current="${e === bagSel}">${bagMul ? '<i class="chk"></i>' : ''}${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g)}<span>${GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm1(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.replace(/^\S+(동|읍|면|리|\d가) (?=\S)/, '')) : fmtWhen(e.t)}</span></button>`).join('')
+  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot${bagMul?.has(e.id) ? ' on' : ''}" data-id="${e.id}" aria-current="${e === bagSel}">${bagMul ? '<i class="chk"></i>' : ''}${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g)}<span>${GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm1(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.replace(/^(\S+ )?\S+(동|읍|면|리|\d가) (?=\S)/, '')) : fmtWhen(e.t)}</span></button>`).join('')
     : `<div class="bag-empty">${S.bag.length ? '이 등급 알이 없어요' : '움직이면 알을 주울 수 있어요'}</div>`;
   document.querySelector('.rtab[data-tab="bag"]').classList.toggle('none', !S.bag.length);   // 알이 하나도 없으면 안내 문구를 남은 공간 정중앙에
   $('#bagMulti').setAttribute('aria-pressed', !!bagMul); $('#bagMulti').textContent = bagMul ? '취소' : '선택';
