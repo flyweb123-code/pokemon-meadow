@@ -106,6 +106,7 @@ table.t th{font-family:var(--px);font-size:11px;font-weight:400;color:var(--mute
 .tcol h3{margin:0;font-family:var(--px);font-size:13px;font-weight:400;display:flex;justify-content:space-between}
 .tcol .grid{grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:4px}.tcol .mc{aspect-ratio:auto;height:72px}.tcol .mc img{bottom:14px;max-height:72%}
 .tcol .mc .no{font-size:8px}
+.tcol .mc{cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.tcol .mc.drag{opacity:.35}.tcol .mc.drop{box-shadow:inset 3px 0 0 var(--acc)}.tcol.drop{border-color:var(--acc)}.tcol .tr0{min-height:22px;padding:0 8px;font-size:11px;margin-left:6px}
 .bubs{display:grid;gap:6px}
 .bubs .bc{display:grid;grid-template-columns:96px 104px minmax(0,1fr);gap:8px 12px;align-items:center;background:var(--deep);border:1px solid var(--chip);border-radius:6px;padding:10px}
 .bubs .bw{display:grid;place-items:center;min-height:44px;background:#5d9a3e;border-radius:4px;padding:8px 2px 12px}
@@ -114,12 +115,18 @@ table.t th{font-family:var(--px);font-size:11px;font-weight:400;color:var(--mute
 .gb.heart{color:#e0405a}.gb.anger{color:#d62f2f}.gb.note{color:#2b6cc4}.gb.zz{color:#5560a8;background:#e8eaff}.gb.star{color:#c08000;background:#fff6c8}.gb svg{display:block;width:16px;height:16px;margin:1px 0 0}
 .bubs ul{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:4px 6px}.bubs li{background:var(--chip);border-radius:4px;padding:3px 8px;font-size:12.5px;line-height:1.4;color:var(--fg)}.bubs .bn{font-size:13px;font-weight:600;color:var(--fg)}
 .plist{display:grid;gap:2px}
-.pr{display:grid;grid-template-columns:44px 40px minmax(0,1fr) 54px 70px;align-items:center;gap:8px;padding:3px 6px;border-radius:4px;background:none;border:0;text-align:left;color:inherit}
+.pr,.prh{display:grid;grid-template-columns:44px 40px minmax(90px,170px) 40px minmax(0,1fr) 64px;align-items:center;gap:10px;padding:3px 8px;border-radius:4px;background:none;border:0;text-align:left;color:inherit}
+.prh{font-size:11px;color:var(--mute);padding-bottom:0}.plist .pr:nth-child(even){background:rgba(128,128,128,.06)}
+.pr .pn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pr .pb{display:block;height:8px;border-radius:4px;background:rgba(128,128,128,.18);overflow:hidden}.pr .pb i{display:block;height:100%;border-radius:4px;opacity:.85}
+.gsel{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.gsel button{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:8px;align-items:center;padding:8px 10px;background:var(--panel);border:1px solid var(--chip);border-radius:6px;color:var(--soft);text-align:left;min-width:0}
+.gsel button .egg{grid-row:1/3;width:20px;height:25px}.gsel b{color:var(--gc);font-size:14px}.gsel .num{font-size:11px;color:var(--mute)}.gsel button.on{border-color:var(--gc);box-shadow:inset 0 -3px 0 var(--gc);background:var(--chip)}
+.trs{display:grid;gap:6px}.trw{display:grid;grid-template-columns:56px minmax(0,1fr) 92px;align-items:center;gap:10px}.trw .iw{display:flex;align-items:center;gap:4px}.trw .iw input{min-width:0;flex:1}.trw .iw span{font-size:12px;color:var(--mute)}
+.tadd{display:flex;flex-wrap:wrap;align-items:center;gap:4px}.tadd .chip{min-height:26px;padding:0 4px}
 .pr:hover{background:#30343f}.pr.on{background:var(--chip);box-shadow:inset 3px 0 0 var(--acc)}
 .pr img{width:36px;height:36px;object-fit:contain;image-rendering:pixelated}
 .pr{cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.pr .hd{display:flex;gap:4px;align-items:center;color:var(--soft)}.pr.drop{box-shadow:inset 0 2px 0 var(--acc)}.pr.drag{opacity:.45}
 .pr .p{font-family:var(--px);text-align:right;font-size:12px}
-.pr .tb{display:block;height:4px;background:var(--acc);border-radius:2px;margin-top:2px;opacity:.7}
+
 .tag{font-family:var(--px);font-size:11px;font-weight:700;padding:1px 6px;border-radius:3px;color:#14161c;white-space:nowrap;text-shadow:0 1px 0 rgba(255,255,255,.35)}
 .prev{display:grid;place-items:center;height:200px;background:repeating-conic-gradient(#2b2e37 0 25%,#30343f 0 50%) 0 0/12px 12px;border-radius:6px;border:1px solid var(--chip)}
 .prev canvas{image-rendering:pixelated;max-width:100%;max-height:100%}
@@ -196,13 +203,21 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 #sbar.and{font:500 13px/1 system-ui,sans-serif;padding:0 18px}#sbar.and .sd{flex:none}#sbar.and .sp{flex:1}
 .gi{display:inline-grid;place-items:center;width:22px;height:22px;flex:none}.gi svg{width:100%;height:100%;display:block}
 .coin{display:inline-block;width:12px;height:12px;background:#ffc830;box-shadow:inset -2px -2px 0 #d08a00,inset 2px 2px 0 #fff2a0,0 0 0 2px #6a4400}
-.egg{--ec:#f6f4ea;--es:#6cc070;--esh:#d6d2c2;--eo:#383848;display:inline-block;flex:none;width:18px;height:22px;vertical-align:middle}.egg svg{display:block;width:100%;height:100%}
-.egg.g2{--es:#f0a040}.egg.g3{--es:#4f95dc}.egg.g4{--es:#a070d8}.egg.g5{--ec:#fff1b8;--esh:#e8d48a;--es:#e0a020;filter:drop-shadow(0 0 3px #ffe680)}
+.egg{--ec:#f6f4ea;--es:#6cc070;--esh:#d6d2c2;--eo:#1c1c26;display:inline-block;flex:none;width:15px;height:19px;vertical-align:middle}.egg svg{display:block;width:100%;height:100%}
+.egg.g1{--es:#8fcf7a}.egg.g2{--es:#f0a040}.egg.g3{--es:#4f95dc}.egg.g4{--es:#a070d8}.egg.g5{--es:#f2c230;filter:drop-shadow(0 0 3px #ffe680)}
 h2.ih{display:flex;align-items:center;gap:8px}
-.bal2{display:grid;gap:6px}.br{display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:8px 12px;align-items:center;padding:8px 10px;background:var(--deep);border:1px solid var(--chip);border-radius:6px;font-size:13px}
+.balg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:12px;align-items:start}.balg .card{margin:0}
+.bal2{display:grid}.br{display:grid;grid-template-columns:minmax(0,1fr) 128px;gap:8px 12px;align-items:center;padding:9px 2px;border-top:1px solid var(--chip);font-size:13px}.bal2 .br:first-child{border-top:0}
+.br .uw{display:flex;align-items:center;gap:6px}.br .uw input{min-width:0;flex:1}.br .u{font-size:11.5px;color:var(--mute);min-width:24px}
+.br .wide input{text-align:center}
 .br .bi{display:flex;align-items:center;gap:10px;min-width:0}.br small{display:block;color:var(--mute);font-size:11.5px}.br .bi.span{grid-column:1/-1}
-.br .wide{grid-column:1/-1;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:6px}.br .wide label{display:grid;justify-items:center;gap:3px;font-size:11.5px;color:var(--soft);text-align:center}.br .wide label input{width:100%}
+.br .wide{grid-column:1/-1;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:6px;padding-left:32px}.br .wide label{display:grid;justify-items:center;gap:3px;font-size:11px;color:var(--soft);text-align:center}.br .wide .egg{width:12px;height:15px}.br .wide label input{width:100%}
 .odd .gn{display:flex;align-items:center;gap:6px;font-weight:600}
+.od2,.odh{grid-template-columns:76px minmax(0,1fr) 104px 64px}.odh{display:grid;gap:10px;margin-bottom:-4px}.odh span:nth-child(2){text-align:center}.odh span:nth-child(3),.odh span:nth-child(4){text-align:right}
+.odb{position:relative;height:12px;cursor:ew-resize;touch-action:none;overflow:visible}.odb i{border-radius:6px}.odb.auto{cursor:default;opacity:.75}
+.odb .knob{position:absolute;top:50%;width:14px;height:20px;margin:-10px 0 0 -7px;background:var(--fg);border:2px solid var(--panel);border-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.5);pointer-events:none}
+.kmi{display:flex;align-items:center;gap:4px}.kmi input{min-width:0;flex:1}.kmi span{font-size:12px;color:var(--mute)}.kmi.auto{justify-content:flex-end;font-family:var(--px);padding-right:2px}.od2 .pc{text-align:right;font-size:12px}
+body.odrag{cursor:ew-resize;user-select:none}
 .nav a .lb{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.nav a .n{margin-left:0}
 .nav a .ren{opacity:0;width:22px;height:22px;padding:4px;background:none;border:0;color:var(--soft);display:grid;place-items:center;border-radius:3px;flex:none;cursor:pointer}.nav a:hover .ren,.nav a .ren:focus-visible{opacity:1}.nav a .ren:hover{background:var(--chipb);color:#fff}.nav a .ren svg{width:12px;height:12px}
 .nav a input{flex:1;min-width:0;font:inherit;background:var(--deep);border:1px solid var(--acc);color:#fff;border-radius:3px;padding:2px 5px}
@@ -271,8 +286,8 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
   .tabs a.on{color:var(--acc)}
   .tabs svg{width:22px;height:22px}
   .tiers{grid-template-columns:minmax(0,1fr)}
-  .odd{grid-template-columns:72px minmax(0,1fr) 84px}.odd .gn{white-space:nowrap}
-  .pr{grid-template-columns:40px 36px minmax(0,1fr) 44px 64px;gap:6px}
+  .odd{grid-template-columns:72px minmax(0,1fr) 84px}.odd .gn{white-space:nowrap}.od2,.odh{grid-template-columns:64px minmax(0,1fr) 88px}.od2 .pc,.odh span:nth-child(4){display:none}
+  .pr,.prh{grid-template-columns:36px 34px minmax(0,1fr) 34px 58px;gap:6px}.pr .pb,.prh .pb{display:none}.gsel{grid-template-columns:repeat(5,minmax(56px,1fr));overflow-x:auto}.gsel button{grid-template-columns:1fr;justify-items:center;padding:6px 4px}.gsel button .egg{grid-row:auto}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -390,12 +405,12 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.2';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.3';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
   poke: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M4 1h4v1h1v1h1v2H7V4H5v1H2V3h1V2h1zM2 7h3v1h2V7h3v2H9v1H8v1H4v-1H3V9H2zM5 5h2v2H5z"/></svg>',
-  egg: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M5 1h2v1h1v2h1v2h1v3H9v1H8v1H4v-1H3V9H2V6h1V4h1V2h1z"/></svg>',
+  egg: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M5 0h2v1h1v1h1v2h1v5h-1v2h-1v1H4v-1H3V9H2V4h1V2h1V1h1z"/></svg>',
   tier: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 1h10v2H1zm0 4h7v2H1zm0 4h4v2H1z"/></svg>',
   art: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 1h10v10H1zm1 1v6l2-2 2 2 2-3 2 3V2zm2 1h2v2H4z"/></svg>',
   bal: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M5 1h2v2h3v1H9l2 4H7l2-4H7v6h2v1H3v-1h2V4H3l2 4H1l2-4H2V3h3z"/></svg>',
@@ -516,7 +531,11 @@ const ensureTh = sp => TH[sp] ? Promise.resolve() : thumbsReady().then(() => TH[
 const thumb = sp => TH[sp] || A?.thumbOf?.(sp) || '';
 function tierOfSp(sp) { return D.tierOv?.[sp] ?? A.TIER[sp]; }
 function tierLists() { const L = Array.from({ length: 11 }, () => []); for (const sp of Object.keys(A.TIER)) L[tierOfSp(+sp)].push(+sp); return L; }
-function tierZ(L) { const Z = {}; for (const T of L) { if (!T.length) continue; const v = T.map(b => A.FAM_BST[b]), lo = Math.min(...v), hi = Math.max(...v); for (const b of T) Z[b] = hi > lo ? (A.FAM_BST[b] - lo) / (hi - lo) : .5; } return Z; }
+// v2.3 경완: 티어 안 순서. 직접 정한 티어는 앞일수록 드물게(z 1 → 0), 안 정한 티어는 가족 최고 종족값 기준 (게임 retier 와 같은 계산)
+const tierOrdOf = t => D.tierOrd && t in D.tierOrd ? D.tierOrd[t] : ORIG?.tierOrd?.[t] || null;
+function orderTier(t, T) { const O = tierOrdOf(t), byB = (a, b) => A.FAM_BST[b] - A.FAM_BST[a]; if (!O?.length) return [...T].sort(byB); const have = new Set(T), q = O.filter(b => have.has(b)); return [...q, ...T.filter(b => !q.includes(b)).sort(byB)]; }
+function tierZ(L) { const Z = {}; L.forEach((T, t) => { if (!T.length) return; if (tierOrdOf(t)?.length) { const all = orderTier(t, T); all.forEach((b, i) => { Z[b] = all.length > 1 ? 1 - i / (all.length - 1) : .5; }); return; }
+  const v = T.map(b => A.FAM_BST[b]), lo = Math.min(...v), hi = Math.max(...v); for (const b of T) Z[b] = hi > lo ? (A.FAM_BST[b] - lo) / (hi - lo) : .5; }); return Z; }
 // 알 등급 g 에서 종마다 나올 확률 (장소 테마·최근 부화는 빼고 기본값)
 function poolProb(g, L = tierLists(), Z = tierZ(L)) {
   const tab = eggTiers()[g], ts = Object.keys(tab).map(Number).filter(t => L[t]?.length && tab[t] > 0), spill = g >= 2 ? Math.max(...ts) : 0, tot = ts.reduce((a, t) => a + tab[t], 0), out = {};
@@ -722,7 +741,11 @@ const GI = {
 };
 const PEN = '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M8 0h2v1h-2zM7 1h4v1h-4zM6 2h1v1h-1zM9 2h3v1h-3zM5 3h1v1h-1zM8 3h3v1h-3zM4 4h1v1h-1zM7 4h3v1h-3zM3 5h1v1h-1zM6 5h3v1h-3zM2 6h1v1h-1zM5 6h3v1h-3zM2 7h1v1h-1zM4 7h3v1h-3zM1 8h1v1h-1zM3 8h3v1h-3zM1 9h1v1h-1zM4 9h1v1h-1zM1 10h3v1h-3z"/></svg>';
 const gi = k => `<span class="gi">${k === 'coin' ? '<i class="coin"></i>' : (A?.ICO?.[k] || GI[k] || '')}</span>`;
-const eggI = g => A?.ICO?.egg ? `<span class="egg g${g}">${A.ICO.egg}</span>` : '';
+// v2.3 경완: 무늬(금처럼 보임) 없는 매끈한 알. 등급 색으로 칠하고 그늘·하이라이트만
+const EGGP = (() => { const W = 14, H = 18, half = [2, 3, 4, 5, 5, 6, 6, 6, 7, 7, 7, 7, 7, 7, 6, 6, 5, 3], inn = (x, y) => y >= 0 && y < H && x >= 7 - half[y] && x < 7 + half[y], R = { o: '', b: '', sh: '', hl: '' };
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { if (!inn(x, y)) continue; const k = !inn(x - 1, y) || !inn(x + 1, y) || !inn(x, y - 1) || !inn(x, y + 1) ? 'o' : (!inn(x + 2, y + 1) || !inn(x + 1, y + 2)) ? 'sh' : ((x === 4 && y >= 3 && y <= 4) || (x === 3 && y >= 5 && y <= 7)) ? 'hl' : 'b'; R[k] += `M${x} ${y}h1v1h-1z`; }
+  return `<svg viewBox="0 0 ${W} ${H}" shape-rendering="crispEdges" aria-hidden="true"><path fill="var(--es)" d="${R.b}${R.sh}${R.hl}"/><path fill="#000" fill-opacity=".22" d="${R.sh}"/><path fill="#fff" fill-opacity=".75" d="${R.hl}"/><path fill="var(--eo)" d="${R.o}"/></svg>`; })();
+const eggI = g => `<span class="egg g${g}">${EGGP}</span>`;
 const iga = w => { const c = w.charCodeAt(w.length - 1) - 0xAC00; return c >= 0 && c < 11172 && c % 28 ? '이' : '가'; };
 function closeZoom() { $('#zoom').hidden = true; zoomK = null; $$('.dock .it.on').forEach(e => e.classList.remove('on')); }
 function zoomPos(z, el) { if (mobile() || winApply(z)) return; const r = $('#dock').getBoundingClientRect(), t = (el || $('#dock')).getBoundingClientRect(); z.style.left = (r.width > 40 ? r.right : r.left + 44) + 8 + 'px'; z.style.top = Math.max(8, Math.min(innerHeight - z.offsetHeight - 8, t.top - 20)) + 'px'; }
@@ -849,9 +872,11 @@ function renderOdds() {
   const O = odds(), tot = O.reduce((a, b) => a + b, 0), pt = pity(), oc = (i) => D.odds && D.odds[i] !== ORIG.odds[i] ? ' ch' : '';
   $('#oddsC').innerHTML = `
   <div class="card"><h2>등급별 확률</h2>
-    <div class="small mute">250m마다 알을 0~2개 주워요 (1km에 평균 4개). 주운 알마다 아래 확률로 등급이 정해져요.</div>
-    ${O.map((p, i) => `<div class="odd"><span class="gn">${eggI(i + 1)}<b style="color:${GC[i + 1]}">${GN[i + 1]}</b></span><div class="bar"><i style="width:${Math.max(.6, p * 100)}%;background:${GC[i + 1]}"></i></div><input class="inp${oc(i)}" data-o="${i}" inputmode="decimal" value="${+(p * 100).toFixed(4)}" aria-label="${GN[i + 1]} 확률 %"></div>`).join('')}
-    <div class="sum${Math.abs(tot - 1) > 1e-6 ? ' bad' : ''}">합계 <span class="num">${+(tot * 100).toFixed(4)}%</span>${Math.abs(tot - 1) > 1e-6 ? ' · 100%가 되어야 해요 (게임에선 마지막 등급이 나머지를 가져가요)' : ''}</div>
+    <div class="small mute">1km에 알을 평균 4개 주워요. 등급마다 "평균 몇 km 걸으면 1개 나오는지"로 정해요. 막대를 끌거나 km를 적어요. 일반 알은 나머지를 가져가요.</div>
+    <div class="odh"><span></span><span class="small mute">← 드물게 · 자주 →</span><span class="small mute">1개에</span><span class="small mute">알 1개당</span></div>
+    ${O.map((p, i) => `<div class="odd od2"><span class="gn">${eggI(i + 1)}<b style="color:${GC[i + 1]}">${GN[i + 1]}</b></span><div class="bar odb${i ? '' : ' auto'}" data-ob="${i}"><i style="width:${(oddF(p) * 100).toFixed(2)}%;background:${GC[i + 1]}"></i>${i ? '<b class="knob" style="left:' + (oddF(p) * 100).toFixed(2) + '%"></b>' : ''}</div>
+      ${i ? `<label class="kmi"><input class="inp${oc(i)}" data-km="${i}" inputmode="decimal" value="${kmTx(kmPer(p))}" aria-label="${GN[i + 1]} 알 1개 나오는 거리 km"><span>km</span></label>` : `<span class="kmi auto num">${kmTx(kmPer(p))}<span>km</span></span>`}<span class="num mute pc">${pct(p)}</span></div>`).join('')}
+    ${tot > 1 + 1e-6 || O[0] < 0 ? '<div class="sum bad">드문 등급 합이 너무 커요. km를 늘려 주세요.</div>' : ''}
   </div>
   <div class="card"><h2>몇 km에 한 개꼴?</h2>
     <div class="tw"><table class="t"><tr><th>등급</th><th>알 1개당</th><th>평균 거리</th><th>100km에</th></tr>${O.map((p, i) => `<tr><td><span class="gn" style="display:inline-flex;align-items:center;gap:6px;color:${GC[i + 1]}">${eggI(i + 1)}${GN[i + 1]}</span></td><td class="num">${pct(p)}</td><td class="num">${fmtKm(kmPer(p))}</td><td class="num">${(p * 400).toFixed(1)}개</td></tr>`).join('')}</table></div>
@@ -870,9 +895,19 @@ function renderOdds() {
     <div class="small mute">숫자를 고치면 작업본에 모여요. 작업본을 보여 주시면 제가 게임에 넣을게요.</div>`;
   $('#oddsReset').onclick = () => { delete D.odds; delete D.pity; saveDraft(); renderOdds(); };
 }
+// v2.3 경완: 확률은 "알 1개 나오는 평균 거리(km)"로. 막대는 로그 눈금(0.01%~100%)이라 드문 등급도 끌어서 맞출 수 있다. 일반 알은 나머지
+const oddF = p => p > 0 ? Math.max(0, Math.min(1, (Math.log10(p) + 4) / 4)) : 0;
+const kmTx = km => !isFinite(km) ? '-' : km >= 100 ? String(Math.round(km)) : km >= 10 ? String(+km.toFixed(1)) : String(+km.toFixed(2));
+const nice = km => { const e = Math.pow(10, Math.floor(Math.log10(km)) - 1); return Math.round(km / e) * e; };   // 끌 때는 두 자리 숫자로
+function setOdd(i, p) { const O = [...odds()], rest = O.reduce((a, q, j) => a + (j && j !== i ? q : 0), 0); O[i] = Math.max(1e-5, Math.min(p, .995 - rest)); O[0] = Math.max(0, 1 - O.slice(1).reduce((a, b) => a + b, 0));
+  D.odds = O; if (O.every((q, j) => Math.abs(q - ORIG.odds[j]) < 1e-9)) delete D.odds; }
+$('#oddsC').addEventListener('pointerdown', e => { const b = e.target.closest('.odb[data-ob]'); if (!b || b.classList.contains('auto') || e.button > 0) return; e.preventDefault(); const i = +b.dataset.ob;
+  const at = x => { const r = $(`.odb[data-ob="${i}"]`).getBoundingClientRect(), f = Math.max(0, Math.min(1, (x - r.left) / r.width)); setOdd(i, 1 / (4 * nice(1 / (4 * Math.pow(10, f * 4 - 4))))); renderOdds(); };
+  document.body.classList.add('odrag'); at(e.clientX); const mv = ev => at(ev.clientX), up = () => { document.body.classList.remove('odrag'); removeEventListener('pointermove', mv); removeEventListener('pointerup', up); saveDraft(); renderOdds(); };
+  addEventListener('pointermove', mv); addEventListener('pointerup', up); });
 $('#oddsC').addEventListener('change', e => {
   const t = e.target, v = parseFloat(t.value); if (isNaN(v) || v < 0) { renderOdds(); return; }
-  if (t.dataset.o != null) { const O = [...odds()]; O[+t.dataset.o] = v / 100; D.odds = O; if (O.every((p, i) => Math.abs(p - ORIG.odds[i]) < 1e-9)) delete D.odds; }
+  if (t.dataset.km != null) { if (!(v > 0)) { renderOdds(); return; } setOdd(+t.dataset.km, 1 / (4 * v)); }
   if (t.dataset.p) { D.pity = { ...(D.pity || {}), [t.dataset.p]: v }; if (D.pity.e === ORIG.pity.e) delete D.pity.e; if (D.pity.l === ORIG.pity.l) delete D.pity.l; if (!Object.keys(D.pity).length) delete D.pity; }
   saveDraft(); renderOdds();
 });
@@ -908,22 +943,25 @@ function renderPool() {
   const g = sel.poolG, tab = eggTiers()[g], L = tierLists(), prob = probOf(g, L), EX = !!eggList(g), ch = D.eggTiers && JSON.stringify(D.eggTiers[g]) !== JSON.stringify(ORIG.eggTiers[g]);
   const tot = Object.values(tab).reduce((a, b) => a + b, 0), rows = Object.entries(prob).sort((a, b) => b[1] - a[1]), max = rows[0]?.[1] || 1, q = poolQ.trim();
   $('#poolC').innerHTML = `
-  <div class="card"><div class="chips">${[1, 2, 3, 4, 5].map(i => `<button class="chip${i === g ? ' on' : ''}" data-g="${i}">${eggI(i)}${GN[i]} 알</button>`).join('')}</div>
+  <div class="gsel">${[1, 2, 3, 4, 5].map(i => `<button class="${i === g ? 'on' : ''}" data-g="${i}" style="--gc:${GC[i]}">${eggI(i)}<b>${GN[i]}</b><span class="num">${(eggList(i) || []).length ? '직접' : Object.keys(eggTiers()[i]).length + '티어'}</span></button>`).join('')}</div>
+  <div class="card">
     ${EX ? `<div class="sum" style="color:var(--warn)">이 알은 포켓몬과 순서를 직접 정해서 아래 티어 비율은 쓰지 않아요. <button class="chip" id="elReset">티어 비율로 되돌리기</button></div>` : ''}
     <h2 class="ih">${eggI(g)}${GN[g]} 알에서 나오는 티어</h2>
     <div class="bar" style="height:14px">${Object.keys(tab).map(Number).sort((a, b) => a - b).map(t => `<i style="width:${tab[t] / tot * 100}%;background:${TC(t)}" title="${t}티어 ${tab[t]}%"></i>`).join('')}</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px 12px">${Array.from({ length: 10 }, (_, i) => i + 1).map(t => `<label class="odd" style="grid-template-columns:auto minmax(0,1fr);gap:6px"><span class="tag" style="background:${TC(t)}">${t}티어</span><input class="inp${ch && (tab[t] || 0) !== (ORIG.eggTiers[g][t] || 0) ? ' ch' : ''}" data-t="${t}" inputmode="decimal" value="${tab[t] || 0}" aria-label="${t}티어 %"></label>`).join('')}</div>
+    <div class="trs">${Object.keys(tab).map(Number).sort((a, b) => a - b).map(t => `<label class="trw"><span class="tag" style="background:${TC(t)}">${t}티어</span><div class="bar"><i style="width:${tab[t] / tot * 100}%;background:${TC(t)}"></i></div><span class="iw"><input class="inp${ch && (tab[t] || 0) !== (ORIG.eggTiers[g][t] || 0) ? ' ch' : ''}" data-t="${t}" inputmode="decimal" value="${tab[t] || 0}" aria-label="${t}티어 %"><span>%</span></span></label>`).join('')}</div>
+    ${Object.keys(tab).length < 10 ? `<div class="tadd"><span class="small mute">티어 더 넣기</span>${Array.from({ length: 10 }, (_, i) => i + 1).filter(t => !tab[t]).map(t => `<button class="chip" data-ta="${t}"><span class="tag" style="background:${TC(t)}">${t}</span></button>`).join('')}</div>` : ''}
     <div class="sum${Math.abs(tot - 100) > 1e-6 ? ' bad' : ''}">합계 <span class="num">${+tot.toFixed(3)}%</span>${Math.abs(tot - 100) > 1e-6 ? ' · 게임은 합계로 나눠서 써요 (100이 아니어도 비율대로)' : ''}${g >= 2 ? ` · 가장 낮은 ${Math.max(...Object.keys(tab).filter(t => tab[t] > 0).map(Number))}티어는 '아래로 넘친 칸'이라 강한 종이 잘 나와요` : ''}</div>
   </div>
-  <div class="card"><div class="row" style="flex-wrap:wrap"><h2 style="flex:1">나오는 포켓몬 ${rows.length}종 <span class="small mute" style="font-family:var(--ui)">· 합계 ${+(rows.reduce((a, r) => a + r[1], 0) * 100).toFixed(2)}% (칸마다 반올림해서 더하면 조금 모자라요)</span></h2><div class="search" style="min-width:160px"><input id="poolQ" value="${esc(poolQ)}" placeholder="찾기" autocomplete="off"></div></div>
-    <div class="small mute">장소 테마와 최근 부화 효과는 빼고 본 기본 확률이에요. 진화 전 모습만 알에서 나와요. 줄을 잡고 위아래로 끌면 순서가 바뀌고 (휴대폰은 꾹 누른 뒤 끌어요), 아래로 갈수록 확률이 낮아져요. 다른 알로 옮기려면 포켓몬을 누르고 오른쪽에서 고르세요.</div>
-    <div class="plist" id="plist">${rows.filter(([sp]) => !q || sp === q || spName(+sp).includes(q)).map(([sp, p], i) => `<button class="pr${+sp === sel.pool ? ' on' : ''}" data-sp="${sp}"><span class="hd" title="줄을 끌어서 순서 바꾸기">≡<span class="num mute small">${i + 1}</span></span><img alt="" data-th="${sp}"><span>${esc(spName(+sp))}<span class="tb" style="width:${p / max * 100}%"></span></span><span class="tag" style="background:${TC(tierOfSp(+sp))};justify-self:start">${tierOfSp(+sp)}</span><span class="p">${pct(p)}</span></button>`).join('')}</div>
+  <div class="card"><div class="row" style="flex-wrap:wrap"><h2 style="flex:1">나오는 포켓몬 <span class="num mute">${rows.length}종</span></h2><div class="search" style="min-width:160px"><input id="poolQ" value="${esc(poolQ)}" placeholder="이름 찾기" autocomplete="off"></div></div>
+    <div class="small mute">줄을 잡고 끌면 순서가 바뀌어요 (휴대폰은 꾹 누른 뒤). 위일수록 자주 나와요. 다른 알로 옮기려면 포켓몬을 누르고 오른쪽에서 골라요. 장소 테마·최근 부화 효과는 뺀 기본 확률이에요.</div>
+    <div class="prh"><span>순위</span><span></span><span>포켓몬</span><span>티어</span><span class="pb">확률</span><span></span></div>
+    <div class="plist" id="plist">${rows.filter(([sp]) => !q || sp === q || spName(+sp).includes(q)).map(([sp, p], i) => `<button class="pr${+sp === sel.pool ? ' on' : ''}" data-sp="${sp}"><span class="hd" title="줄을 끌어서 순서 바꾸기">≡<span class="num mute small">${i + 1}</span></span><img alt="" data-th="${sp}"><span class="pn">${esc(spName(+sp))}</span><span class="tag" style="background:${TC(tierOfSp(+sp))};justify-self:start">${tierOfSp(+sp)}</span><span class="pb"><i style="width:${p / max * 100}%;background:${TC(tierOfSp(+sp))}"></i></span><span class="p">${pct(p)}</span></button>`).join('')}</div>
   </div>`;
   fillThumbs($('#plist'));
   $('#poolQ').oninput = e => { poolQ = e.target.value; const p = e.target.selectionStart; renderPool(); const i = $('#poolQ'); i.focus(); i.setSelectionRange(p, p); };
   if (sel.pool) showPoolSp(sel.pool);
 }
-$('#poolC').addEventListener('click', e => { if (e.target.closest('#elReset')) { setList(sel.poolG, null); renderPool(); toast('티어 비율로 되돌렸어요'); return; } if (Date.now() - prDragAt < 300) return; const c = e.target.closest('[data-g]'); if (c) { sel.poolG = +c.dataset.g; renderPool(); return; } const r = e.target.closest('.pr'); if (r) { sel.pool = +r.dataset.sp; $$('.pr').forEach(x => x.classList.toggle('on', x === r)); showPoolSp(sel.pool); toInsp('#poolI'); } });
+$('#poolC').addEventListener('click', e => { const ta = e.target.closest('[data-ta]'); if (ta) { const ET = JSON.parse(JSON.stringify(eggTiers())); ET[sel.poolG][ta.dataset.ta] = 5; D.eggTiers = ET; saveDraft(); renderPool(); return; } if (e.target.closest('#elReset')) { setList(sel.poolG, null); renderPool(); toast('티어 비율로 되돌렸어요'); return; } if (Date.now() - prDragAt < 300) return; const c = e.target.closest('[data-g]'); if (c) { sel.poolG = +c.dataset.g; renderPool(); return; } const r = e.target.closest('.pr'); if (r) { sel.pool = +r.dataset.sp; $$('.pr').forEach(x => x.classList.toggle('on', x === r)); showPoolSp(sel.pool); toInsp('#poolI'); } });
 // 순서 끌기: ≡ 를 잡고 위아래로
 let prDragAt = 0;
 $('#poolC').addEventListener('pointerdown', e => { const row = e.target.closest('#plist .pr'); if (!row || e.button > 0) return; const touch = e.pointerType !== 'mouse'; if (!touch) e.preventDefault();
@@ -958,12 +996,35 @@ function showPoolSp(sp) {
 // ---------- 티어 ----------
 function renderTier() {
   const L = tierLists(), ov = D.tierOv || {};
-  $('#tierC').innerHTML = `<div class="small mute" style="margin-bottom:10px">진화 전 모습으로 묶어요. 1~3티어는 특별한 포켓몬(전설·환상 가족), 4~10티어는 나머지를 가족 최고 종족값 순서로 같은 수씩 나눈 거예요. 주황 점은 작업본에서 옮긴 포켓몬이에요.</div>
-  <div class="tiers">${L.map((T, t) => t ? `<div class="tcol"><h3><span class="tag" style="background:${TC(t)}">${t}티어</span><span class="num mute">${T.length}종</span></h3><div class="grid">${T.sort((a, b) => A.FAM_BST[b] - A.FAM_BST[a]).map(sp => `<button class="mc${ov[sp] ? ' ov' : ''}${sel.tier === sp ? ' on' : ''}" data-sp="${sp}" title="${esc(spName(sp))} · ${A.FAM_BST[sp]}"><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('')}</div></div>` : '').join('')}</div>`;
+  $('#tierC').innerHTML = `<div class="small mute" style="margin-bottom:10px">진화 전 모습으로 묶어요. 1~3티어는 특별한 포켓몬(전설·환상 가족), 4~10티어는 나머지를 가족 최고 종족값 순서로 나눈 거예요. <b>카드를 끌어서</b> 순서를 바꾸거나 다른 티어로 옮겨요 (휴대폰은 꾹 누른 뒤). 티어 안에서는 <b>앞일수록 알에서 드물게</b> 나와요. 단, 알 › 등급별 포켓몬에서 순서를 직접 정한 알은 그 확률을 따라요. 주황 점은 작업본에서 옮긴 포켓몬이에요.</div>
+  <div class="tiers">${L.map((T, t) => t ? `<div class="tcol" data-tt="${t}"><h3><span class="tag" style="background:${TC(t)}">${t}티어</span><span class="num mute">${T.length}종 · ${tierOrdOf(t)?.length ? '직접 정한 순서' : '종족값 순'}${tierOrdOf(t)?.length ? ` <button class="chip tr0" data-tr0="${t}">종족값 순으로</button>` : ''}</span></h3><div class="grid">${orderTier(t, T).map(sp => `<button class="mc${ov[sp] ? ' ov' : ''}${sel.tier === sp ? ' on' : ''}" data-sp="${sp}" title="${esc(spName(sp))} · ${A.FAM_BST[sp]}"><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('')}</div></div>` : '').join('')}</div>`;
   fillThumbs($('#tierC'));
   if (sel.tier) showTierSp(sel.tier);
 }
-$('#tierC').addEventListener('click', e => { const b = e.target.closest('.mc'); if (!b) return; sel.tier = +b.dataset.sp; $$('#tierC .mc').forEach(c => c.classList.toggle('on', c === b)); showTierSp(sel.tier); toInsp('#tierI'); });
+$('#tierC').addEventListener('click', e => { const r0 = e.target.closest('[data-tr0]'); if (r0) { D.tierOrd = { ...(D.tierOrd || {}) }; const t = +r0.dataset.tr0; if (ORIG.tierOrd[t]) D.tierOrd[t] = null; else delete D.tierOrd[t]; if (!Object.keys(D.tierOrd).length) delete D.tierOrd; saveDraft(); renderTier(); return; }
+  if (Date.now() - tcDragAt < 300) return; const b = e.target.closest('.mc'); if (!b) return; sel.tier = +b.dataset.sp; $$('#tierC .mc').forEach(c => c.classList.toggle('on', c === b)); showTierSp(sel.tier); toInsp('#tierI'); });
+// 카드 끌기: 다른 카드 위에 놓으면 그 앞에, 티어 칸 빈 곳에 놓으면 맨 뒤에
+let tcDragAt = 0;
+$('#tierC').addEventListener('pointerdown', e => { const card = e.target.closest('.tcol .mc'); if (!card || e.button > 0) return; const touch = e.pointerType !== 'mouse'; if (!touch) e.preventDefault();
+  const sp = +card.dataset.sp, x0 = e.clientX, y0 = e.clientY; let on = false, over = null, overC = null, lp = 0, g = null;
+  const begin = () => { on = true; card.classList.add('drag'); navigator.vibrate?.(8); g = document.createElement('div'); g.className = 'ghost'; g.innerHTML = `<img alt="" src="${thumb(sp)}">`; document.body.append(g); };
+  if (touch) lp = setTimeout(begin, 300);
+  const mv = ev => { if (!on) { if (Math.hypot(ev.clientX - x0, ev.clientY - y0) < 6) return; if (touch) return end(); begin(); }
+    g.style.left = ev.clientX + 'px'; g.style.top = ev.clientY + 'px'; const el = document.elementFromPoint(ev.clientX, ev.clientY), c = el?.closest('#tierC .mc'), col = el?.closest('#tierC .tcol');
+    over?.classList.remove('drop'); overC?.classList.remove('drop'); over = c && c !== card ? c : null; overC = !over && col ? col : null; over?.classList.add('drop'); overC?.classList.add('drop');
+    const sc = $('#tierC').closest('.scroll') || $('#tierC'), r = sc.getBoundingClientRect(); if (ev.clientY < r.top + 40) sc.scrollTop -= 14; else if (ev.clientY > r.bottom - 40) sc.scrollTop += 14; };
+  const tm = ev => { if (on) ev.preventDefault(); };
+  const end = () => { clearTimeout(lp); removeEventListener('pointermove', mv); removeEventListener('pointerup', end); removeEventListener('pointercancel', end); removeEventListener('touchmove', tm); card.classList.remove('drag'); g?.remove();
+    over?.classList.remove('drop'); overC?.classList.remove('drop'); if (!on) return; tcDragAt = Date.now(); if (!over && !overC) return;
+    const tf = tierOfSp(sp), tt = +(over || overC).closest('.tcol').dataset.tt, L = tierLists();
+    const dst = orderTier(tt, L[tt]).filter(b => b !== sp), at = over ? dst.indexOf(+over.dataset.sp) : dst.length; dst.splice(at < 0 ? dst.length : at, 0, sp);
+    D.tierOrd = { ...(D.tierOrd || {}) };
+    if (tf !== tt) { D.tierOv = { ...(D.tierOv || {}) }; if (tt === A.TIER[sp]) delete D.tierOv[sp]; else D.tierOv[sp] = tt; if (!Object.keys(D.tierOv).length) delete D.tierOv;
+      if (tierOrdOf(tf)?.length) D.tierOrd[tf] = tierOrdOf(tf).filter(b => b !== sp); }
+    D.tierOrd[tt] = dst; if (JSON.stringify(D.tierOrd[tt]) === JSON.stringify(ORIG.tierOrd[tt])) delete D.tierOrd[tt]; if (!Object.keys(D.tierOrd).length) delete D.tierOrd;
+    sel.tier = sp; saveDraft(); renderTier(); toast(tf !== tt ? `${spName(sp)} → ${tt}티어` : '순서를 바꿨어요'); };
+  addEventListener('pointermove', mv); addEventListener('pointerup', end); addEventListener('pointercancel', end); addEventListener('touchmove', tm, { passive: false }); });
+$('#tierC').addEventListener('contextmenu', e => { if (e.target.closest('.tcol .mc')) e.preventDefault(); });
 function showTierSp(sp) {
   const t = tierOfSp(sp), o = A.TIER[sp], fam = [sp, ...(A.CHILDREN[sp] || [])].map(spName).join(' → ');
   $('#tierI').innerHTML = `<div class="row"><img src="${thumb(sp)}" alt="" style="width:56px;height:56px;object-fit:contain;image-rendering:pixelated"><div><h2>${esc(spName(sp))}</h2><span class="small mute">No.${sp} · 가족 최고 종족값 ${A.FAM_BST[sp]}</span></div></div>
@@ -985,14 +1046,15 @@ const BAL = [
 ];
 // v1.8 경완: 줄마다 게임 아이콘
 const BICO = { DUP_G: 'coin', NEW_EGG_G: 'egg', NEW_G: 'star', RUN_G: 'shoe', FR_TABLE: 'clock', BERRY_FR_DAY: 'berry', JOY_HOLD: 'hand', WASH_DAY: 'brush', FLD_FR_DAY: 'note', WALK_FR: 'shoe', FR_EVO: 'star', FR_MAX: 'heart', CLEAN_DAYS: 'brush', HUNGER_RATE: 'berry', JOY_HOURS: 'note', MAX_EGGS: 'egg', MAX_BAG: 'bag', BAG_STEP: 'shoe', SHINY_N: 'star' }, SICO = ['coin', 'heart', 'clock', 'egg'];
+const BUNIT = { NEW_G: 'G', RUN_G: 'G', BERRY_FR_DAY: '/일', JOY_HOLD: '분', WASH_DAY: '회/일', FLD_FR_DAY: '/일', WALK_FR: '/km', FR_EVO: '점', FR_MAX: '점', CLEAN_DAYS: '일', HUNGER_RATE: '/초', JOY_HOURS: '시간', MAX_EGGS: '칸', MAX_BAG: '개', BAG_STEP: 'km', SHINY_N: '분의 1' };
 const bico = k => BICO[k] === 'egg' ? `<span class="gi">${eggI(1)}</span>` : gi(BICO[k]);
 function renderBal() {
-  $('#balC').innerHTML = BAL.map(([h, L], si) => `<div class="card"><h2 class="ih">${SICO[si] === 'egg' ? `<span class="gi">${eggI(3)}</span>` : gi(SICO[si])}${h}</h2><div class="bal2">${L.map(([k, n, sub, kind]) => {
+  $('#balC').innerHTML = '<div class="balg">' + BAL.map(([h, L], si) => `<div class="card"><h2 class="ih">${SICO[si] === 'egg' ? `<span class="gi">${eggI(3)}</span>` : gi(SICO[si])}${h}</h2><div class="bal2">${L.map(([k, n, sub, kind]) => {
     const v = bal(k), c = D.bal && k in D.bal ? ' ch' : '', arr = Array.isArray(v);
     const lab = `<div class="bi${arr ? ' span' : ''}">${bico(k)}<div>${n}${sub ? `<small>${sub}</small>` : ''}</div></div>`;
-    if (!arr) return `<div class="br">${lab}<input class="inp${c}" data-b="${k}" inputmode="decimal" value="${v}"></div>`;
-    const cells = kind === 'tbl' ? v.map((r, i) => `<label>평균 ${r[0]} 이상<input class="inp${c}" data-b="${k}" data-i="${i}" value="${r.join(', ')}"></label>`) : v.map((x, i) => i ? `<label>${eggI(i)}<span style="color:${GC[i]}">${GN[i]}</span><input class="inp${c}" data-b="${k}" data-i="${i}" inputmode="decimal" value="${x}"></label>` : '').filter(Boolean);
-    return `<div class="br">${lab}<div class="wide" style="--n:${cells.length}">${cells.join('')}</div></div>`; }).join('')}</div></div>`).join('');
+    if (!arr) return `<div class="br">${lab}<span class="uw"><input class="inp${c}" data-b="${k}" inputmode="decimal" value="${v}"><span class="u">${BUNIT[k] || ''}</span></span></div>`;
+    const cells = kind === 'tbl' ? v.map((r, i) => `<label>평균 ${r[0]}↑ · 시간당<input class="inp${c}" data-b="${k}" data-i="${i}" value="${r.join(', ')}"></label>`) : v.map((x, i) => i ? `<label>${eggI(i)}<span style="color:${GC[i]}">${GN[i]}</span><input class="inp${c}" data-b="${k}" data-i="${i}" inputmode="decimal" value="${x}"></label>` : '').filter(Boolean);
+    return `<div class="br">${lab}<div class="wide" style="--n:${cells.length}">${cells.join('')}</div></div>`; }).join('')}</div></div>`).join('') + '</div>';
   $('#balI').innerHTML = `<h4>밸런스</h4><div class="small mute">게임 곳곳에 있는 숫자들이에요. 고친 칸은 주황색이 되고 작업본에 모여요.</div><div class="chips"><button class="chip" id="balReset"${D.bal ? '' : ' disabled'}>모두 게임 값으로</button></div>`;
   $('#balReset').onclick = () => { delete D.bal; saveDraft(); renderBal(); };
 }
@@ -1013,6 +1075,7 @@ function changes() {
   if (D.eggTiers) for (let g = 1; g <= 5; g++) { const a = ORIG.eggTiers[g], b = D.eggTiers[g]; if (JSON.stringify(a) !== JSON.stringify(b)) out.push([`${GN[g]} 알 티어 비율`, fmtTab(a), fmtTab(b), 'egg:' + g]); }
   if (D.eggList) for (const g of Object.keys(D.eggList)) out.push([`${GN[g]} 알 포켓몬`, ORIG.eggList?.[g] ? '직접 정한 목록' : '티어 비율', D.eggList[g] ? `직접 정함 (${D.eggList[g].length}종)` : '티어 비율', 'elist:' + g]);
   if (D.tierOv) for (const [sp, t] of Object.entries(D.tierOv)) out.push([`${spName(+sp)} 티어`, A.TIER[sp] + '티어', t + '티어', 'tier:' + sp]);
+  if (D.tierOrd) for (const [t, O] of Object.entries(D.tierOrd)) out.push([`${t}티어 순서`, ORIG.tierOrd[t] ? '직접 정한 순서' : '종족값 순', O ? '직접 정한 순서' : '종족값 순', 'tord:' + t]);
   if (D.bal) for (const [k, v] of Object.entries(D.bal)) out.push([balName(k), JSON.stringify(ORIG.bal[k]), JSON.stringify(v), 'bal:' + k]);
   return out;
 }
@@ -1030,6 +1093,7 @@ function undoChange(key) {
   else if (t === 'egg') { D.eggTiers = JSON.parse(JSON.stringify(D.eggTiers)); D.eggTiers[a] = JSON.parse(JSON.stringify(ORIG.eggTiers[a])); if (JSON.stringify(D.eggTiers) === JSON.stringify(ORIG.eggTiers)) delete D.eggTiers; }
   else if (t === 'elist') { delete D.eggList[a]; if (!Object.keys(D.eggList).length) delete D.eggList; }
   else if (t === 'tier') { delete D.tierOv[a]; if (!Object.keys(D.tierOv).length) delete D.tierOv; }
+  else if (t === 'tord') { delete D.tierOrd[a]; if (!Object.keys(D.tierOrd).length) delete D.tierOrd; }
   else if (t === 'bal') { delete D.bal[a]; if (!Object.keys(D.bal).length) delete D.bal; }
   saveDraft(); renderWork(); toast('되돌렸어요');
 }
@@ -1067,7 +1131,8 @@ function renderWork() {
 function snapshot() {
   const tierOv = { ...(LIVE.data?.tierOv || {}) }; for (const [sp, t] of Object.entries(D.tierOv || {})) tierOv[sp] = t; for (const sp of Object.keys(tierOv)) if (tierOv[sp] === A.TIER0[sp]) delete tierOv[sp];
   const eggL = {}; for (let g = 1; g <= 5; g++) { const E = eggList(g); if (E) eggL[g] = E; }
-  return { layout: D.layout || ORIG.layout, odds: odds(), pity: pity(), eggTiers: eggTiers(), eggList: eggL, tierOv, bal: { ...ORIG.bal, ...(D.bal || {}) } };
+  const tierOrd = { ...(ORIG.tierOrd || {}), ...(D.tierOrd || {}) }; for (const t of Object.keys(tierOrd)) if (!tierOrd[t]?.length) delete tierOrd[t];
+  return { layout: D.layout || ORIG.layout, odds: odds(), pity: pity(), eggTiers: eggTiers(), eggList: eggL, tierOv, tierOrd, bal: { ...ORIG.bal, ...(D.bal || {}) } };
 }
 const ghErr = e => e.status === 401 ? '열쇠가 맞지 않거나 만료됐어요' : e.status === 403 || e.status === 404 ? '저장소에 쓸 권한이 없어요 (pokemon-meadow, Contents 쓰기)' : e.message || String(e);
 async function gh(path, opt = {}, tok = store.get('st-gh-token')) {
@@ -1148,6 +1213,7 @@ const BUBS = [
 ];
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.3', '10월 16일', ['알 아이콘을 무늬 없는 매끈한 알로', '수집 확률: 등급마다 "알 1개 나오는 평균 거리(km)"로 정하고, 막대를 끌어서도 바꿈 (일반 알은 나머지)', '등급별 포켓몬 정리: 알 고르기 칸, 티어별 막대·% 줄, 포켓몬 목록 칸 정렬', '티어: 카드를 끌어서 순서·티어 옮기기. 앞일수록 알에서 드물게 (알별로 직접 정한 순서가 있으면 그걸 따름)', '밸런스를 두 줄 칸으로 정리하고 단위 표시', '맵 포켓몬 모두 빼기가 원래 있던 포켓몬도 뺌 (게임 v3.69)']],
   ['2.2', '10월 16일', ['포켓몬 화면: ← → 키로 이전·다음 포켓몬, ↑ ↓ 키로 동작 넘기기 (위쪽 ◀ ▶ 버튼도)', '포켓몬 정보 정리: 큰 미리보기에 이로치 버튼, 동작·정보·종족값 막대·도감 설명을 칸별로']],
   ['2.1', '10월 16일', ['포켓몬 넣기 창에서 누르기만 해도 맵에 나옴 (끌어다 놓기도 그대로). 나온 포켓몬은 바로 골라진 상태, 맵 빈 곳을 누르면 선택 풀림', '포켓몬 넣기 창에 포켓몬 이름 표시', '포켓몬 넣기 창·소품 창도 오른쪽 아래 모서리로 크기 조절 (떠 있는 창 모두 옮기기·크기 조절 가능)', '맵 화면 필드 포켓몬에 "무작위로 채우기" 버튼 (빈 칸을 채우고, 꽉 차 있으면 새로 뽑기)', '소품 창 기본 폭을 3칸으로 넓힘', '"맵에 하나뿐" 칸을 없애고 열매나무·횃대·모닥불 등도 같은 목록에 개수 1로 표시', '밸런스: 쓰다듬기 하루 횟수 대신 "즐거움 100 유지 시간(분)" (게임 v3.68 쓰다듬기 규칙 변경에 맞춤)']],
   ['2.0', '10월 16일', ['맵 소품 창을 "전체 소품 / 맵에 있는 소품" 탭으로 나눔. 맵에 있는 소품을 누르면 맵에서 그 소품이 골라지고 모양을 바꿀 수 있어요', '소품 창 오른쪽 끝을 끌어 너비 조절 (두 번 누르면 처음 너비)', '전체 소품에서 소품을 누르면 크기·색조·채도·밝기를 정해 "이 모양으로 맵에 추가"']],
@@ -1179,7 +1245,7 @@ function hook() {
   $('#gLoad').hidden = true;
   if (!w.document.__unmk) { w.document.__unmk = 1; w.addEventListener('pointerdown', e => { if (!e.target.closest?.('.mon')) unmarkMon(); }, true); }   // v2.1 경완: 맵 빈 곳을 누르면 포켓몬 선택(테두리) 풀기
   if (!ORIG) {
-    const K = A.K; LIVE = A.cfg || { ver: 0 }; ORIG = { odds: K.ODDS, pity: { e: K.PITY_E, l: K.PITY_L }, eggTiers: JSON.parse(JSON.stringify(A.EGG_TIERS)), eggList: JSON.parse(JSON.stringify(A.EGG_LIST || [])), layout: A.defaultLayout(),
+    const K = A.K; LIVE = A.cfg || { ver: 0 }; ORIG = { odds: K.ODDS, pity: { e: K.PITY_E, l: K.PITY_L }, eggTiers: JSON.parse(JSON.stringify(A.EGG_TIERS)), eggList: JSON.parse(JSON.stringify(A.EGG_LIST || [])), tierOrd: JSON.parse(JSON.stringify(A.TIER_ORD || {})), layout: A.defaultLayout(),
       bal: { DUP_G: K.DUP_G, NEW_EGG_G: K.NEW_EGG_G, NEW_G: K.NEW_G, RUN_G: K.RUN_G, FR_TABLE: K.FR_TABLE, BERRY_FR_DAY: K.BERRY_FR_DAY, JOY_HOLD: K.JOY_HOLD, WASH_DAY: K.WASH_DAY, FLD_FR_DAY: K.FLD_FR_DAY, WALK_FR: K.WALK_FR, FR_EVO: K.FR_EVO, FR_MAX: K.FR_MAX,
         CLEAN_DAYS: Math.round(100 / K.CLEAN_RATE / 86400 * 100) / 100, HUNGER_RATE: K.HUNGER_RATE, JOY_HOURS: Math.round(100 / K.JOY_RATE / 3600 * 100) / 100, MAX_EGGS: K.MAX_EGGS, MAX_BAG: K.MAX_BAG, BAG_STEP: K.BAG_STEP, SHINY_N: Math.round(1 / K.SHINY_RATE) } };
     A.ensureSprite(1).then(() => { $('#logoI').src = thumb(25) || ''; A.ensureSprite(25).then(() => $('#logoI').src = thumb(25)); });
