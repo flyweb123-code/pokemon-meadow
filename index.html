@@ -1142,6 +1142,8 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
   .app{position:fixed;inset:0;bottom:calc(0px - var(--ext,0px));height:auto;min-height:0;overflow:hidden;display:grid;padding:0;gap:0;background:var(--frame);
     grid-template-columns:minmax(0,3fr) minmax(0,2fr);grid-template-rows:minmax(0,1fr) auto auto;
     grid-template-areas:"stage stage" "stage stage" "menu cmd"}
+  /* v3.43: 가끔 처음 켤 때 상태창이 화면 반을 차지하던 것 — 아이폰 웹킷이 필드(두 줄에 걸친 칸)의 크기를 상태창 줄에 나눠 넣었다. 필드는 크기 계산에서 빼고(contain:size), 상태창은 늘어나지 않고 아래에 붙게 */
+  .stage-wrap{contain:size}
   .stage-wrap{grid-area:stage;position:relative;inset:auto;aspect-ratio:auto;margin:0;overflow:hidden;
     touch-action:manipulation;scrollbar-width:none;-webkit-overflow-scrolling:touch;background:var(--forest)}
   .stage-wrap::-webkit-scrollbar{display:none}
@@ -1164,7 +1166,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
   .card-actions .opt{padding:10px 0 10px 20px}
   .hint{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top) + 64px);bottom:auto;white-space:nowrap;z-index:40}
   /* bottom panel */
-  .dlg{grid-row:2;grid-column:1/-1;z-index:20;position:relative;left:auto;right:auto;bottom:auto;top:auto;margin:0;border-width:3px 0 0;box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 6px var(--dlg-in);
+  .dlg{grid-row:2;grid-column:1/-1;align-self:end;z-index:20;position:relative;left:auto;right:auto;bottom:auto;top:auto;margin:0;border-width:3px 0 0;box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 6px var(--dlg-in);
     padding:10px 18px 12px;font-size:16px;line-height:1.5;min-height:calc(1.5em + 22px);max-width:none}
   .app .win.dlg{box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 6px var(--dlg-in)}
   .dlg .prev{display:none}
@@ -2434,12 +2436,27 @@ function feedNow(m) {
   if (m.partner) { const o = m.partner; m.partner = null; o.partner = null; o.scene = null; setState(o, 'idle', 1); }
   m.goal = null; m.scene = null; setState(m, 'idle', 2);
   const x = m.x + (m.face || 1) * Math.max(14, m.w * .3), y = m.y + 2, el = document.createElement('div');
-  el.className = 'berry new hi' + (Math.random() < .4 ? ' red' : ''); Object.assign(el.style, { left: x + 'px', top: y + 'px', zIndex: Math.round(y) + 1, pointerEvents: 'none' }); itemsEl.append(el);   // v3.42: 정보창에서 준 열매는 더 높이서 떨어진다 (잘 보이게)
+  el.className = 'berry' + (Math.random() < .4 ? ' red' : ''); Object.assign(el.style, { left: x + 'px', top: y + 'px', zIndex: Math.round(y) + 1, pointerEvents: 'none' }); itemsEl.append(el);   // v3.42: 정보창에서 준 열매는 더 높이서 떨어진다 (잘 보이게)
   emote(m, '!', '', .8);
-  setTimeout(() => { el.remove(); if (!S.mons.includes(m)) return;
+  berryBounce(el, 110, () => { el.remove(); if (!S.mons.includes(m)) return;
     if (berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - BERRY_FILL); berryBoost(m, true);
     if (isFull(m)) { m.hunger = 0; setTimeout(() => emote(m, '배불러!', 'heart', 2), 3200); }
-    setState(m, 'eat', m.sp === 143 ? 8 : 5); log(`${J(m,'이/가')} 떨어진 열매를 바로 냠냠 먹었다.`, [m]); save(); }, 950);
+    setState(m, 'eat', m.sp === 143 ? 8 : 5); log(`${J(m,'이/가')} 떨어진 열매를 바로 냠냠 먹었다.`, [m]); save(); });
+}
+// v3.43 경완: 열매가 실제처럼 튄다 — 중력으로 떨어지고, 땅에 닿으면 탄성(0.42)만큼 다시 튀어 오르며 납작해졌다 돌아온다. 살짝 옆으로 구르며 멈춘다
+function berryBounce(el, h, done) {
+  const G = 1500, E = .42; let y = -h, v = 0, x = 0, vx = (Math.random() < .5 ? -1 : 1) * (14 + Math.random() * 10), sq = 0, rot = 0, t0 = 0, rest = 0;
+  const step = ts => { if (!el.isConnected) return; const dt = t0 ? Math.min(.033, (ts - t0) / 1000) : 0; t0 = ts;
+    v += G * dt; y += v * dt;
+    if (y >= 0) { y = 0; if (v > 60) { sq = Math.min(.35, v / 1600); v = -v * E; vx *= .6; } else { v = 0; rest += dt; } }
+    if (y === 0 && v === 0) vx *= Math.pow(.02, dt);   // 땅에선 구름이 금방 멈춘다
+    x += vx * dt; rot += vx * dt * 2; sq *= Math.pow(.0005, dt);
+    el.style.opacity = Math.min(1, (h + y) / 25 + .2);
+    el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${rot.toFixed(0)}deg) scale(${(1 + sq).toFixed(3)},${(1 - sq).toFixed(3)})`;
+    el.style.transformOrigin = '50% 100%';
+    if (rest > .18) return done();
+    requestAnimationFrame(step); };
+  requestAnimationFrame(step);
 }
 // 쓰다듬기: 정보창·상태창을 숨기고 그 포켓몬 위를 문지른다. PET_N 번 문지르면 아주 좋아하며 끝 (친밀도 +3 은 하루 3번까지, 즐거움 +20)
 const PET_N = 12, PET_LEN = 2500, PET_DAY = 2, WASH_DAY = 1;   // 쓰다듬기 친밀도 +3 하루 2번, 빗질(씻기기) +3 하루 1번
@@ -4545,7 +4562,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.42';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.43';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6706,7 +6723,8 @@ function renderRun() {
       const rd = x.km >= x.need; b.classList.toggle('ready', rd);
       b.innerHTML = `${(rd && !x.rs) || x.nwI ? '<i class="edot"></i>' : ''}<span class="tag2">${rd ? '부화 준비' : '부화 중'}</span>${eggHtml(x.g, rd ? 'wob shake' : 'wob')}<span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div><span class="ekm">${(Math.floor(x.km * 10) / 10).toFixed(1)}/${x.need}km</span>`;
       b.setAttribute('aria-current', x === e); if (x.isNew) { b.classList.add('new'); x.isNew = false; }
-      b.onclick = () => { eggSel = x; eggNone = false; if (x.nwI) { delete x.nwI; save(); } if (x.km >= x.need && !hatching && !evolving && !hatchQ.length) pressGo(b, () => { hatchEgg(x, true, true); playHatch(); renderRun(); }); else renderRun(); };   // 준비된 알은 칸이 눌렸다가 창이 뜬다
+      b.onclick = () => { if (x === eggSel && x.km < x.need) { eggSel = null; eggNone = true; renderRun(); return; }   // v3.43: 선택된 알을 다시 누르면 선택 해제
+        eggSel = x; eggNone = false; if (x.nwI) { delete x.nwI; save(); } if (x.km >= x.need && !hatching && !evolving && !hatchQ.length) pressGo(b, () => { hatchEgg(x, true, true); playHatch(); renderRun(); }); else renderRun(); };   // 준비된 알은 칸이 눌렸다가 창이 뜬다
     } else { b.classList.add('empty', 'add'); b.innerHTML = '+'; b.setAttribute('aria-label', '가방에서 알 가져오기'); b.onclick = () => setRunTab('bag'); }
     box.append(b);
   }
