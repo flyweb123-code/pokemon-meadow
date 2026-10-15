@@ -4539,7 +4539,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.38';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.39';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6632,8 +6632,8 @@ function renderBag() {
   const end = () => { if (lp) { clearTimeout(lp.t); lp = null; } };
   $('#bagGrid').addEventListener('pointerdown', ev => { const sl = ev.target.closest('.bslot'); end(); lpDone = 0; if (!sl) return;
     lp = { x: ev.clientX, y: ev.clientY, t: setTimeout(() => { lp = null; const id = +sl.dataset.id;
-      if (!bagMul) { bagMul = new Set(); bagSel = null; delArm = 0; } bagMul.add(id);
-      const e = S.bag.find(x => x.id === id); if (e && e.isNew) { e.isNew = false; save(); }
+      if (bagMul) { bagMul = null; delArm = 0; }   // 고르는 중에 다시 꾹 누르면 고르기 끝 (v3.39)
+      else { bagMul = new Set([id]); bagSel = null; delArm = 0; const e = S.bag.find(x => x.id === id); if (e && e.isNew) { e.isNew = false; save(); } }
       lpDone = performance.now(); haptic(); sfx('tap'); renderBag(); }, 450) }; });
   $('#bagGrid').addEventListener('pointermove', ev => { if (lp && Math.hypot(ev.clientX - lp.x, ev.clientY - lp.y) > 10) end(); });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach(k => $('#bagGrid').addEventListener(k, end));
