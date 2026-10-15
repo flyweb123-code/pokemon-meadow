@@ -4809,6 +4809,9 @@ async function restore(d) {
   for (const o of [...(d.mons || [])].sort((a, b) => (b.uid === d.buddy) - (a.uid === d.buddy)).slice(0, MAX_MONS)) { const m = await spawn(o.sp, { ...o, quiet: true }); m.notes = o.notes || [];
     if (o.asleep) sleep(m, false); }
   // 앱을 닫아 둔 동안: 배고파지고 심심해지면서 그만큼 필드 친밀도 (친구가 옆에 있었는지 보려고 다 불러온 뒤에)
+  // v3.60: 맵이 960→360 폭으로 바뀌어 예전 자리(오른쪽 밖, 옛 연못 자리)에 저장된 포켓몬을 지금 맵 안으로 데려온다
+  for (const m of S.mons) { const sw = T(m).mv === 'swim', pv = pondVal(m.x, m.y);
+    if (m.x < XL + 20 || m.x > XR - 20 || m.y < MIN_Y || m.y > MAX_Y || (sw ? pv > 1 : pv < 1.05)) { const p = sw ? randPond(.6) : randLand(); m.x = m.tx = p.x; m.y = m.ty = p.y; m.goal = null; m.home = randLand(); } }
   if (d.savedAt > 0) S.mons.forEach(m => offFr(m, (Date.now() - d.savedAt) / 1000));
   for (const b of d.berries || []) addBerry(b.x, b.y, !!b.nat, b.t || Date.now());
   rotBerries();
@@ -5020,7 +5023,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.59';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.60';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
