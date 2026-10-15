@@ -2373,7 +2373,12 @@ const JOY_RATE = 100 / 7200, BERRY_FR_DAY = 5;   // 즐거움은 깨어 있으�
 const gaugeAvg = m => (m.energy + (100 - m.hunger) + (m.joy ?? 60)) / 3;
 const frRate = m => { if (!m.pid || m.hidden) return 0; const a = gaugeAvg(m); return FR_TABLE.find(([v]) => a >= v)[1] + (withFriend(m) ? .5 : 0); };
 // 앱이 꺼져 있던(화면을 떠나 있던) 동안의 필드 친밀도: 떠날 때 게이지 기준 속도로 쌓는다
-function offFr(m, sec) { if (!(sec > 1)) return; m.frT = (m.frT || 0) + Math.min(sec, 30 * 864e2) * frRate(m); const n = Math.floor(m.frT / 3600); if (n > 0) { m.frT -= n * 3600; addFr(m.pid, n); } }
+const FLD_FR_DAY = 10;   // 필드에 있는 시간으로 받는 친밀도는 하루 10까지
+function offFr(m, sec) { if (!(sec > 1)) return; sec = Math.min(sec, 30 * 864e2); m.frT = (m.frT || 0) + sec * frRate(m); let n = Math.floor(m.frT / 3600); if (n <= 0) return; m.frT -= n * 3600;
+  // 지난 날들 몫(하루 10까지)을 먼저 주고, 남은 건 오늘 몫으로
+  const t0 = new Date(Date.now() - sec * 1000); t0.setHours(0, 0, 0, 0); const k0 = new Date(); k0.setHours(0, 0, 0, 0); const past = Math.round((k0 - t0) / 864e5);
+  if (past > 0) { const g = Math.min(n, past * FLD_FR_DAY); addFr(m.pid, g); n -= g; }
+  while (n-- > 0 && dayCap(m, 'fld', FLD_FR_DAY)) addFr(m.pid, 1); }
 { let hidAt = 0; document.addEventListener('visibilitychange', () => { if (document.hidden) hidAt = Date.now(); else if (hidAt) { const sec = (Date.now() - hidAt) / 1000; hidAt = 0; S.mons.forEach(m => offFr(m, sec)); save(); } }); }
 function dayCap(m, k, max) { const P = boxOf(m.pid); if (!P) return false; const d = dayKey(); if (P[k + 'D'] !== d) { P[k + 'D'] = d; P[k + 'N'] = 0; } if (P[k + 'N'] >= max) return false; P[k + 'N']++; return true; }
 function berryFr(m) { if (!dayCap(m, 'ber', BERRY_FR_DAY)) return false; addFr(m.pid, 1); return true; }   // 열매 친밀도 +1 (하루 5개까지)
@@ -4481,7 +4486,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.22';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.23';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5847,15 +5852,17 @@ function incubate(e) {
 }
 // distance from any source goes to every egg and the buddy
 // 알·짝꿍에 거리를 쌓는다 (걸은 거리는 걷는 동안 실시간으로, 런닝은 걸음으로 이미 쌓인 만큼을 뺀 나머지만)
-function feedKm(km) {
+function feedKm(km, fr = km * WALK_FR) {
+  if (fr > 0) for (const b of S.buds) { b.frAcc = (b.frAcc || 0) + fr; const n = Math.floor(b.frAcc); if (n) { b.frAcc -= n; addFr(b.pid, n); } }
   if (!(km > 0)) return;
   S.totalKm += km;
   // 거리가 다 찬 알은 저절로 깨지지 않고 '부화 준비'가 된다 → 부화기에서 눌러 부화
   let ready = 0;
   for (const e of S.eggs) { const was = e.km >= e.need; e.km += km; if (!was && e.km >= e.need) ready++; }
   if (ready) log(`알 ${ready}개가 움직이기 시작했다! 부화기에서 부화시켜 보자.`, [], true);
-  for (const b of S.buds) { const P = boxOf(b.pid); if (evoKids(b.sp, P).length) b.km += km; if (P) { P.km = b.km; P.runKm = (P.runKm || 0) + km; } b.frAcc = (b.frAcc || 0) + km * 5; const n = Math.floor(b.frAcc); if (n) { b.frAcc -= n; addFr(b.pid, n); } }
+  for (const b of S.buds) { const P = boxOf(b.pid); if (evoKids(b.sp, P).length) b.km += km; if (P) { P.km = b.km; P.runKm = (P.runKm || 0) + km; } }
 }
+const WALK_FR = 2;   // 짝꿍 친밀도: 같이 움직인 거리 1km에 2 (걷기·런닝 같음, 같은 거리는 한 번만)
 // 걸음으로 쌓은 거리 기록 [시작ms, 끝ms, km] (런닝과 겹치는 만큼을 알아내려고, 8일치)
 function noteFed(t0, t1, km) {
   const L = S.fedLog, z = L[L.length - 1];
@@ -5927,7 +5934,7 @@ window.pokeRunAddKm = (km, t0, src = 'watch', t1 = 0) => {
   // 같은 달리기가 여러 길(워치 앱·건강 앱·자동 감지·잠금 런닝)로 들어오면 시간이 겹치는 두 번째부터 건너뛴다
   if (t0 && S.runs.some(r => r.t0 && r.t0 < (t1 || t0) + 60000 && (r.t || r.t0) > t0 - 60000)) return true;
   // 걸음(만보기)으로 이미 쌓인 거리는 빼고 나머지만 쌓는다 (자동 감지 런닝은 만보기 거리라 전부 쌓여 있다)
-  const feed = src === 'auto' ? 0 : t0 ? Math.max(0, km - fedIn(t0, t1 || Date.now())) : km;
+  const walked = src === 'auto' ? km : t0 ? Math.min(km, fedIn(t0, t1 || Date.now())) : 0, feed = km - walked;
   addRun(km, src, t0, t1, applyKm(km, t0, t1, feed)); return true;
 };
 // 지나간 곳 기록 (아이폰 앱이 보낸 동네·운동 경로의 몇 곳)
@@ -6837,7 +6844,7 @@ function frameIn(now) {
   acc += real; if (acc > .5) { acc = 0; sky(); rotBerries(); for (const g of [...$('#glows').children]) if (!S.mons.some(m => m.gl === g || m.glA === g)) g.remove(); }   /* 필드에서 빠진 포켓몬의 빛이 남지 않게 */
   try { tickMoves(real); } catch (e) { frameErr(e); }
   infoT -= real; if (infoT <= 0 && S.sel) { infoT = .5; renderInfo(); }
-  S.mons.forEach(m => { m.frT = (m.frT || 0) + real * frRate(m); if (m.frT >= 3600) { m.frT -= 3600; addFr(m.pid, 1); } });   /* 필드에 있는 시간: 세 게이지가 찰수록 빨리 (FR_TABLE) */
+  S.mons.forEach(m => { m.frT = (m.frT || 0) + real * frRate(m); if (m.frT >= 3600) { m.frT -= 3600; if (dayCap(m, 'fld', FLD_FR_DAY)) addFr(m.pid, 1); } });   /* 필드에 있는 시간: 세 게이지가 찰수록 빨리 (FR_TABLE) */
   mgrT -= real; if (mgrT <= 0) { mgrT = .5; refreshCap(); renderMgr(); renderRun();
     if (hatchQ.length && !hatching) playHatch(); }
   placeInfo(); placeMark(); mirrorPf();
