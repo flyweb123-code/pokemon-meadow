@@ -207,6 +207,14 @@ h2.ih{display:flex;align-items:center;gap:8px}
 .nav a .ren{opacity:0;width:22px;height:22px;padding:4px;background:none;border:0;color:var(--soft);display:grid;place-items:center;border-radius:3px;flex:none;cursor:pointer}.nav a:hover .ren,.nav a .ren:focus-visible{opacity:1}.nav a .ren:hover{background:var(--chipb);color:#fff}.nav a .ren svg{width:12px;height:12px}
 .nav a input{flex:1;min-width:0;font:inherit;background:var(--deep);border:1px solid var(--acc);color:#fff;border-radius:3px;padding:2px 5px}
 .anims{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:6px}.am{display:grid;justify-items:center;gap:2px;padding:6px 4px 5px;background:var(--deep);border:1px solid var(--chip);border-radius:6px;color:var(--soft);font-size:12px;cursor:pointer}
+.mh{display:flex;align-items:center;gap:8px}.mh h2{margin:0;font-size:20px}.mh .no{font-family:var(--px);font-size:12px;color:var(--mute)}.mh .sp{flex:1}.mh .nav{width:30px;height:30px;padding:0;display:grid;place-items:center;font-size:12px}
+.mtys{display:flex;gap:4px;flex-wrap:wrap;margin-top:-4px}
+.mpv{position:relative;background:var(--deep);border:1px solid var(--chip);border-radius:6px;display:grid;place-items:center;padding:8px}.mpv canvas{width:200px;height:200px;image-rendering:pixelated;max-width:100%}
+.mpv .shy{position:absolute;top:8px;right:8px}.mpv .hint{position:absolute;left:8px;bottom:6px;font-size:10.5px;color:var(--mute)}@media (hover:none){.mpv .hint{display:none}}
+.msec{display:grid;gap:6px}.msec h4{margin:0;font-size:12px;color:var(--mute);font-weight:600}
+.mst{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.mst>div{background:var(--deep);border:1px solid var(--chip);border-radius:6px;padding:7px 9px;display:grid;gap:2px;min-width:0}.mst span{font-size:11px;color:var(--mute)}.mst b{font-size:13px;overflow-wrap:anywhere}.mst .w{grid-column:1/-1}
+.bsr{display:grid;grid-template-columns:52px 30px minmax(0,1fr);align-items:center;gap:6px;font-size:12px}.bsr span{color:var(--mute)}.bsr .num{text-align:right}.bsr i{display:block;height:6px;border-radius:3px;background:var(--chip);overflow:hidden}.bsr i em{display:block;height:100%;background:var(--acc)}
+.mdx{font-size:12.5px;line-height:1.6;color:var(--soft);background:var(--deep);border-left:3px solid var(--acc);border-radius:4px;padding:8px 10px}
 .am canvas{width:48px;height:48px;image-rendering:pixelated}.am b{font-weight:600;color:var(--fg);white-space:nowrap}.am span{font-size:10.5px}.am:hover{border-color:var(--chipb)}.am.on{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
 .slots .sl .x{position:absolute;top:2px;right:2px;width:18px;height:18px;display:grid;place-items:center;font-size:10px;line-height:1;background:rgba(0,0,0,.45);color:#fff;border-radius:3px;opacity:.7;cursor:pointer}.slots .sl .x:hover{background:var(--bad);opacity:1}
 .slots .sl.on{box-shadow:0 0 0 2px var(--acc)!important}
@@ -382,7 +390,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.1';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.2';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -801,19 +809,30 @@ async function showMon(sp) {
   const d = A.SPECIES[sp], P = A.SPRITES[sp], pmd = typeof P === 'object', t = tierOfSp(A.baseOf(sp)), g = A.gradeOf(A.baseOf(sp));
   const ty = d.t.map(x => `<span class="tag" style="background:${A.TYPE_C[x]}">${A.TYPE_KO[x]}</span>`).join(' ');
   const fam = d.fr ? `${spName(d.fr)}에서 진화` : (A.CHILDREN[sp]?.length ? `${A.CHILDREN[sp].map(spName).join('·')}(으)로 진화` : '진화 없음');
-  $('#monI').innerHTML = `<div class="row"><h2>${esc(d.n)}</h2><span class="num mute">No.${sp}</span></div>
-    <div class="prev"><canvas id="mcv" width="200" height="200"></canvas></div>
-    ${pmd ? `<div class="anims" id="anims">${Object.keys(P.a).map(n => `<button class="am${n === 'Idle' ? ' on' : ''}" data-a="${n}"><canvas width="48" height="48" data-f="${n}"></canvas><b>${ANIM_KO[n] || n}</b><span class="num mute">${P.a[n][3]}장</span></button>`).join('')}</div>` : '<div class="small mute">이 포켓몬은 움직이는 그림이 없어 한 장 그림을 써요.</div>'}
-    <div class="chips"><button class="chip" id="shy">이로치로 보기</button><button class="chip" id="toMap">맵에 풀어놓기</button></div>
-    <div class="kv"><span>타입</span><b>${ty}</b><span>분류</span><b>${esc(d.g || '')}</b><span>키·몸무게</span><b class="num">${(d.h / 10).toFixed(1)}m · ${(d.w / 10).toFixed(1)}kg</b><span>종족값</span><b class="num">${d.bs.reduce((a, b) => a + b, 0)} (${d.bs.join('/')})</b><span>진화</span><b>${esc(fam)}</b><span>티어</span><b><span class="tag" style="background:${TC(t)}">${t}티어</span>${D.tierOv?.[A.baseOf(sp)] ? ' <span class="mute small">작업본에서 옮김</span>' : ''}</b><span>진화 거리 등급</span><b>${GN[g]}</b></div>
-    ${d.fx ? `<div class="small mute">${esc(d.fx)}</div>` : ''}`;
+  const BSN = ['HP', '공격', '방어', '특수공격', '특수방어', '스피드'], tot = d.bs.reduce((a, b) => a + b, 0);
+  $('#monI').innerHTML = `<div class="mh"><h2>${esc(d.n)}</h2><span class="no">No.${sp}</span><span class="sp"></span><button class="chip nav" id="mPrev" aria-label="이전 포켓몬" title="이전 (←)">◀</button><button class="chip nav" id="mNext" aria-label="다음 포켓몬" title="다음 (→)">▶</button></div>
+    <div class="mtys">${ty}</div>
+    <div class="mpv"><canvas id="mcv" width="200" height="200"></canvas><button class="chip shy" id="shy">이로치</button><span class="hint">← → 포켓몬 · ↑ ↓ 동작</span></div>
+    ${pmd ? `<div class="msec"><h4>동작</h4><div class="anims" id="anims">${Object.keys(P.a).map(n => `<button class="am${n === 'Idle' ? ' on' : ''}" data-a="${n}"><canvas width="48" height="48" data-f="${n}"></canvas><b>${ANIM_KO[n] || n}</b><span class="num mute">${P.a[n][3]}장</span></button>`).join('')}</div></div>` : '<div class="small mute">이 포켓몬은 움직이는 그림이 없어 한 장 그림을 써요.</div>'}
+    <div class="msec"><h4>정보</h4><div class="mst"><div><span>분류</span><b>${esc(d.g || '-')}</b></div><div><span>키 · 몸무게</span><b class="num">${(d.h / 10).toFixed(1)}m · ${(d.w / 10).toFixed(1)}kg</b></div>
+      <div><span>티어</span><b><span class="tag" style="background:${TC(t)}">${t}티어</span>${D.tierOv?.[A.baseOf(sp)] ? ' <span class="mute small">작업본</span>' : ''}</b></div><div><span>진화 거리 등급</span><b>${GN[g]}</b></div><div class="w"><span>진화</span><b>${esc(fam)}</b></div></div></div>
+    <div class="msec"><h4>종족값 <span class="num">${tot}</span></h4>${d.bs.map((v, i) => `<div class="bsr"><span>${BSN[i]}</span><b class="num">${v}</b><i><em style="width:${Math.min(100, v / 1.8)}%"></em></i></div>`).join('')}</div>
+    ${d.fx ? `<div class="mdx">${esc(d.fx)}</div>` : ''}
+    <div class="chips"><button class="btn" id="toMap">맵에 풀어놓기</button></div>`;
   anim = { sp, name: 'Idle', raf: anim.raf, img: null, shiny: false };
   const im = new Image(); im.onload = () => { anim.img = im; if (pmd) $$('#anims canvas').forEach(c => { const a = P.a[c.dataset.f], g = c.getContext('2d'), k = Math.min(48 / a[1], 48 / a[2]); g.imageSmoothingEnabled = false; g.drawImage(im, 0, a[0], a[1], a[2], (48 - a[1] * k) / 2, (48 - a[2] * k) / 2, a[1] * k, a[2] * k); }); }; im.src = pmd ? P.i : P;
   $('#anims')?.addEventListener('click', e => { const b = e.target.closest('[data-a]'); if (!b) return; anim.name = b.dataset.a; anim.t0 = performance.now(); $$('#anims .am').forEach(c => c.classList.toggle('on', c === b)); });
   $('#shy').onclick = () => { anim.shiny = !anim.shiny; $('#shy').classList.toggle('on', anim.shiny); $('#mcv').style.filter = anim.shiny ? `hue-rotate(${A.shinyHue(sp)}deg)` : ''; };
   $('#toMap').onclick = async () => { go('map'); await A.drop(sp); };
+  $('#mPrev').onclick = () => monStep(-1); $('#mNext').onclick = () => monStep(1);
   anim.t0 = performance.now(); cancelAnimationFrame(anim.raf); anim.raf = requestAnimationFrame(drawAnim);
 }
+// v2.2 경완: 포켓몬 화면에서 ← → 로 이전·다음 포켓몬, ↑ ↓ 로 동작 넘기기
+function monStep(dlt) { const L = $$('#monGrid .mc'); if (!L.length) return; let i = L.findIndex(c => +c.dataset.sp === sel.mon); i = i < 0 ? 0 : (i + dlt + L.length) % L.length;
+  const b = L[i]; sel.mon = +b.dataset.sp; L.forEach(c => c.classList.toggle('on', c === b)); b.scrollIntoView({ block: 'nearest' }); showMon(sel.mon); }
+function animStep(dlt) { const L = $$('#anims .am'); if (!L.length) return; let i = L.findIndex(c => c.classList.contains('on')); i = (i + dlt + L.length) % L.length; L[i].click(); L[i].scrollIntoView({ block: 'nearest' }); }
+addEventListener('keydown', e => { if (view !== 'mon' || e.altKey || e.ctrlKey || e.metaKey || e.target.closest?.('input,textarea,select')) return;
+  const k = { ArrowLeft: () => monStep(-1), ArrowRight: () => monStep(1), ArrowUp: () => animStep(-1), ArrowDown: () => animStep(1) }[e.key]; if (k) { e.preventDefault(); k(); } });
 function drawAnim(now) {
   anim.raf = requestAnimationFrame(drawAnim);
   const c = $('#mcv'); if (!c || !anim.img || view !== 'mon') return; const g = c.getContext('2d'); g.imageSmoothingEnabled = false; g.clearRect(0, 0, c.width, c.height);
@@ -1129,6 +1148,7 @@ const BUBS = [
 ];
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.2', '10월 16일', ['포켓몬 화면: ← → 키로 이전·다음 포켓몬, ↑ ↓ 키로 동작 넘기기 (위쪽 ◀ ▶ 버튼도)', '포켓몬 정보 정리: 큰 미리보기에 이로치 버튼, 동작·정보·종족값 막대·도감 설명을 칸별로']],
   ['2.1', '10월 16일', ['포켓몬 넣기 창에서 누르기만 해도 맵에 나옴 (끌어다 놓기도 그대로). 나온 포켓몬은 바로 골라진 상태, 맵 빈 곳을 누르면 선택 풀림', '포켓몬 넣기 창에 포켓몬 이름 표시', '포켓몬 넣기 창·소품 창도 오른쪽 아래 모서리로 크기 조절 (떠 있는 창 모두 옮기기·크기 조절 가능)', '맵 화면 필드 포켓몬에 "무작위로 채우기" 버튼 (빈 칸을 채우고, 꽉 차 있으면 새로 뽑기)', '소품 창 기본 폭을 3칸으로 넓힘', '"맵에 하나뿐" 칸을 없애고 열매나무·횃대·모닥불 등도 같은 목록에 개수 1로 표시', '밸런스: 쓰다듬기 하루 횟수 대신 "즐거움 100 유지 시간(분)" (게임 v3.68 쓰다듬기 규칙 변경에 맞춤)']],
   ['2.0', '10월 16일', ['맵 소품 창을 "전체 소품 / 맵에 있는 소품" 탭으로 나눔. 맵에 있는 소품을 누르면 맵에서 그 소품이 골라지고 모양을 바꿀 수 있어요', '소품 창 오른쪽 끝을 끌어 너비 조절 (두 번 누르면 처음 너비)', '전체 소품에서 소품을 누르면 크기·색조·채도·밝기를 정해 "이 모양으로 맵에 추가"']],
   ['1.9', '10월 16일', ['세이프 존을 모든 기종 기준으로: 어느 폰에서든 잘리거나 가려지는 필드 칸을 주황 빗금으로, 남는 칸을 점선 상자로', '맵 편집 창은 휴대폰 오른쪽 아래에 넓게 뜨고, 편집하는 동안 오른쪽 칸은 숨김 (휴대폰 자리는 그대로)']],
