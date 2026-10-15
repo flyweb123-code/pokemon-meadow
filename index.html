@@ -2434,7 +2434,7 @@ const PET_N = 12, PET_LEN = 2500, PET_DAY = 2, WASH_DAY = 1;   // 쓰다듬기 �
 let petM = null;
 function petStart(m, wash = false) {
   select(null); if (!S.mons.includes(m) || m.held || m.evolving) return;
-  if (wash && (m.clean ?? 100) >= 95) { emote(m, '반짝반짝', 'heart', 1.5); log(`${J(m,'은/는')} 이미 깨끗하다.`, [m]); return; }
+  if (wash && (m.clean ?? 100) >= 95) { emote(m, '아직 안 씻어도 돼', '', 1.8); log(`${J(m,'은/는')} 아직 깨끗해서 빗질은 괜찮다고 한다.`, [m]); return; }
   userAct(m, 60);
   if (m.partner) { const o = m.partner; m.partner = null; o.partner = null; o.scene = null; setState(o, 'idle', 1); }
   if (m.state === 'sleep') wake(m, `${J(m,'이/가')} 손길에 눈을 떴다.`);
@@ -4528,7 +4528,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.26';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.27';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
