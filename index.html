@@ -4481,14 +4481,17 @@ const LKi = (k, key, v) => lkRes(ilk(key, v)) || lookOf(k), LZi = (k, key, v) =>
 const LKC = new Map();
 function lkUrl(id, L, mk) { const key = id + '|' + JSON.stringify(L); let u = LKC.get(key); if (!u) { u = mk(); LKC.set(key, u); if (LKC.size > 400) LKC.delete(LKC.keys().next().value); } return u; }
 const flwSz = (k, lk) => { const s = SPR.flw[k], L = lkRes(lk); if (!L) return s; const z = (+L.s || 1) / LS(k); return { w: Math.round(s.w * z), h: Math.round(s.h * z) }; };
-function tintCv(cv, L) {
+const PETAL = { sun: 1, tulip: 1, daisy: 1, bell: 1, pink: 1 };   // v3.65 경완: 꽃은 꽃잎 색만 바꾼다 (초록 줄기·잎은 그대로)
+function tintCv(cv, L, petal) {
   if (!L || (!L.h && (L.c ?? 100) == 100 && (L.b ?? 100) == 100)) return cv;
   const o = document.createElement('canvas'); o.width = cv.width; o.height = cv.height; const x = o.getContext('2d'); x.drawImage(cv, 0, 0);
   const d = x.getImageData(0, 0, o.width, o.height), a = d.data, hr = (L.h || 0) / 360, cs = (L.c ?? 100) / 100, bs = (L.b ?? 100) / 100;
   const f = (p, q, t) => { t = (t + 1) % 1; return t < 1 / 6 ? p + (q - p) * 6 * t : t < .5 ? q : t < 2 / 3 ? p + (q - p) * (2 / 3 - t) * 6 : p; };
   for (let i = 0; i < a.length; i += 4) { if (!a[i + 3]) continue; const r = a[i] / 255, g = a[i + 1] / 255, b = a[i + 2] / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b);
     let h = 0, sa = 0, l = (mx + mn) / 2; if (mx !== mn) { const dd = mx - mn; sa = l > .5 ? dd / (2 - mx - mn) : dd / (mx + mn); h = (mx === r ? (g - b) / dd + (g < b ? 6 : 0) : mx === g ? (b - r) / dd + 2 : (r - g) / dd + 4) / 6; }
-    h = (h + hr + 1) % 1; sa = Math.min(1, sa * cs); l = Math.min(1, l * bs);
+    if (petal && sa > .12 && h > .17 && h < .5) continue;
+    if (petal && sa <= .12 && hr && l > .55) { h = (hr + 1) % 1; sa = Math.min(1, .6 * cs); l = Math.min(.92, l * .82 * bs); }   // 흰 꽃잎도 색이 들게
+    else { h = (h + hr + 1) % 1; sa = Math.min(1, sa * cs); l = Math.min(1, l * bs); }
     if (!sa) { a[i] = a[i + 1] = a[i + 2] = Math.round(l * 255); continue; }
     const q = l < .5 ? l * (1 + sa) : l + sa - l * sa, pp = 2 * l - q; a[i] = Math.round(f(pp, q, h + 1 / 3) * 255); a[i + 1] = Math.round(f(pp, q, h) * 255); a[i + 2] = Math.round(f(pp, q, h - 1 / 3) * 255); }
   x.putImageData(d, 0, 0); return o;
@@ -4507,7 +4510,7 @@ function sprCanvas(w, h, draw, look) {
 const SPR = {};
 function makeSprites() {
   SPR.tree = sprURL(tintCv(ART.tree(), lookOf('tree'))); SPR.perch = sprURL(tintCv(ART.perch(), lookOf('perch'))); SPR.bush = sprURL(tintCv(ART.bush(), lookOf('bush')));
-  SPR.flw = {}; for (const k of ['sun', 'tulip', 'daisy', 'bell', 'pink', 'grass', 'tall', 'reed', 'cat']) { const cv = tintCv(ART.flower(k), lookOf(k)), z = LS(k); SPR.flw[k] = { src: sprURL(cv), w: Math.round(cv.width * 2 * z), h: Math.round(cv.height * 2 * z) }; }
+  SPR.flw = {}; for (const k of ['sun', 'tulip', 'daisy', 'bell', 'pink', 'grass', 'tall', 'reed', 'cat']) { const cv = tintCv(ART.flower(k), lookOf(k), PETAL[k]), z = LS(k); SPR.flw[k] = { src: sprURL(cv), w: Math.round(cv.width * 2 * z), h: Math.round(cv.height * 2 * z) }; }
   SPR.flame = sprCanvas(96, 22, (px) => {   /* v3.56 경완: 불 활활 — 6장 */
     for (let f = 0; f < 6; f++) { const Hf = 17 + [0, 3, 1, 4, 2, 3][f];
       for (let y = 0; y < 22; y++) { const t = (21 - y) / Hf; if (t > 1) continue;
@@ -4545,7 +4548,7 @@ function buildProps() {
   add('perch', PROPS.perch, SPR.perch, Math.round(52 * zP), Math.round(64 * zP));
   PROPS.bushEls = PROPS.bushes.map(b => { const L = lkRes(b.lk), z = L ? +L.s || 1 : zB; return add('bush', b, L ? lkUrl('bush', L, () => tintCv(ART.bush(), L).toDataURL()) : SPR.bush, Math.round(72 * z), Math.round(48 * z)); });
   /* v3.55: 꽃·풀은 바람에 살랑살랑 (하나씩 박자를 달리) */
-  FLOWERS.forEach(([k, x, y, lk], i) => { const L = lkRes(lk), f = L ? { src: lkUrl('f' + k, L, () => tintCv(ART.flower(k), L).toDataURL()), ...flwSz(k, lk) } : SPR.flw[k], e = document.createElement('div'); e.className = 'flw';
+  FLOWERS.forEach(([k, x, y, lk], i) => { const L = lkRes(lk), f = L ? { src: lkUrl('f' + k, L, () => tintCv(ART.flower(k), L, PETAL[k]).toDataURL()), ...flwSz(k, lk) } : SPR.flw[k], e = document.createElement('div'); e.className = 'flw';
     e.style.cssText = W2(f.src, f.w, f.h) + `;left:${x}px;top:${y}px;z-index:${Math.round(y)};--d:${(1.6 + ((i * 37) % 13) / 10).toFixed(2)}s;--dl:${(-((i * 53) % 29) / 10).toFixed(1)}s;--a:${k === 'grass' ? 7 : k === 'sun' ? 4 : 6}deg`; itemsEl.append(e); });
   for (const q of PROPS.puddles) { const e = document.createElement('div'); e.className = 'puddle'; const L = lkRes(q.lk), qw = Math.round(q.w * (L ? +L.s || 1 : LS('puddle'))); e.style.cssText = W2(L ? lkUrl('pud', L, () => SPR.pudArt(L)) : SPR.puddle, qw, Math.round(qw * .35)) + `;left:${q.x}px;top:${q.y}px`; itemsEl.append(e); puddleEls.push(e); }
   flameEl = document.createElement('div'); flameEl.className = 'flame'; flameEl.style.cssText = `background-image:url(${SPR.flame});left:${FIRE.x}px;top:${FIRE.y}px;z-index:${Math.round(FIRE.y) + 1}` + (LS('fire') !== 1 ? `;transform:scale(${LS('fire')});transform-origin:50% 100%` : ''); itemsEl.append(flameEl);   /* v3.61 경완: 불꽃도 높이 순서대로 → 앞에 선 포켓몬이 불을 가린다 */
@@ -5106,7 +5109,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.64';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.65';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7651,7 +7654,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     L.puddles.forEach((q, i) => { const zQ = LZi('puddle', 'puddles', q); o('puddles', i, [q.x - q.w * zQ / 2, q.y - q.w * zQ * .175, q.w * zQ, q.w * zQ * .35], (dx, dy) => { q.x += dx; q.y += dy; }); });
     L.rocks.forEach((r, i) => { const zR = LZi('rock', 'rocks', r); o('rocks', i, [r[0] - r[2] * zR, r[1] - r[3] * 2 * zR, r[2] * 2 * zR, r[3] * 2 * zR], (dx, dy) => { r[0] += dx; r[1] += dy; }); });
     L.mush.forEach((m, i) => o('mush', i, [m[0] - 8, m[1] - 14, 16, 16], (dx, dy) => { m[0] += dx; m[1] += dy; }));
-    L.flowers.forEach((f, i) => { const s = flwSz(f[0], f[3]), w = Math.max(s.w, 18), hh = Math.max(s.h, 18); o('flowers', i, [f[1] - w / 2, f[2] - hh, w, hh], (dx, dy) => { f[1] += dx; f[2] += dy; }); });
+    L.flowers.forEach((f, i) => { const s = flwSz(f[0], f[3]), w = Math.max(s.w, 26), hh = Math.max(s.h, 26); o('flowers', i, [f[1] - w / 2, f[2] - hh, w, hh], (dx, dy) => { f[1] += dx; f[2] += dy; }); });
     return out;
   }
   function selInfo() {
@@ -7706,7 +7709,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   const kindCount = id => { let n = 0; eachInst((key, v) => { if (ilk(key, v) === id) n++; }); return n; };
   api.look = k => ({ s: 1, h: 0, c: 100, b: 100, ...(lookOf(k) || {}) });
   api.setLook = (k, v) => { undo.push(snap()); if (undo.length > 60) undo.shift(); const L = { ...api.look(k), ...v }; if (L.s === 1 && !L.h && L.c === 100 && L.b === 100) delete LAYOUT.look[k]; else LAYOUT.look[k] = L; changed(LOOKBG.has(k) ? 'rocks' : 'flowers'); };
-  api.lookIcon = (k, LL) => { if (LAYOUT.kinds?.[k]) { const K = LAYOUT.kinds[k]; return api.lookIcon(K.b, K.lk); } const cv = k === 'tree' ? ART.tree() : k === 'perch' ? ART.perch() : k === 'bush' ? ART.bush() : k === 'stump' ? ART.stump() : k === 'rock' || k === 'rockS' ? ART.rock(10, 7, 13 * 977, 1) : k === 'rockL' ? ART.rock(16, 10, 17 * 977, 2) : SPR.flw[k] ? ART.flower(k) : null; const L = LL !== undefined ? LL : lookOf(k === 'rockS' || k === 'rockL' ? 'rock' : k); return cv ? tintCv(cv, L).toDataURL() : k === 'fire' ? (LL ? sprCanvasTint(SPR.flame, LL) : SPR.flame) : k === 'puddle' ? (LL ? SPR.pudArt(LL) : SPR.puddle) : ''; };
+  api.lookIcon = (k, LL) => { if (LAYOUT.kinds?.[k]) { const K = LAYOUT.kinds[k]; return api.lookIcon(K.b, K.lk); } const cv = k === 'tree' ? ART.tree() : k === 'perch' ? ART.perch() : k === 'bush' ? ART.bush() : k === 'stump' ? ART.stump() : k === 'rock' || k === 'rockS' ? ART.rock(10, 7, 13 * 977, 1) : k === 'rockL' ? ART.rock(16, 10, 17 * 977, 2) : SPR.flw[k] ? ART.flower(k) : null; const L = LL !== undefined ? LL : lookOf(k === 'rockS' || k === 'rockL' ? 'rock' : k); return cv ? tintCv(cv, L, PETAL[k]).toDataURL() : k === 'fire' ? (LL ? sprCanvasTint(SPR.flame, LL) : SPR.flame) : k === 'puddle' ? (LL ? SPR.pudArt(LL) : SPR.puddle) : ''; };
   const sprCanvasTint = (src, L) => src;   // 모닥불 불꽃 그림은 6장 묶음이라 미리보기는 그대로
   api.showPath = on => hands.classList.toggle('path', !!on);
   api.showHud = on => hud.classList.toggle('on', !!on);
