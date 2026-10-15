@@ -5106,7 +5106,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.63';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.64';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5956,6 +5956,7 @@ const TIER = {}, TIER_SPS = Array.from({ length: 11 }, () => []), TIER_Z = {}, F
   for (const b of base) TIER_SPS[TIER[b]].push(b);
   for (const L of TIER_SPS) { if (!L.length) continue; const lo = Math.min(...L.map(b => FAM_BST[b])), hi = Math.max(...L.map(b => FAM_BST[b])); for (const b of L) TIER_Z[b] = hi > lo ? (FAM_BST[b] - lo) / (hi - lo) : .5; } }
 // 알 등급마다 나오는 티어 비율(%). 1~3 티어는 에픽·전설 알에서만. 각 등급의 가장 낮은 티어(일반 제외)는 '아래로 넘친' 칸이라 그 티어 안에서 강한 종이 잘 나온다
+const EGG_LIST = [null, null, null, null, null, null];   // v3.64 작업실: 알 등급마다 [[번호, 기본 확률], …] 을 직접 정하면 티어 대신 이걸로 뽑는다
 const EGG_TIERS = [null, { 10: 55, 9: 30, 8: 15 }, { 9: 30, 8: 35, 7: 25, 6: 10 }, { 7: 30, 6: 35, 5: 25, 4: 10 }, { 4: 30, 3: 50, 2: 15, 1: 5 }, { 3: 25, 2: 40, 1: 35 }];
 const MAX_BUDS = 3;
 // 진화 조건(species ev): 없음 = 달린 거리로 진화, 'fr' = 친밀도도 높아야, 'fr:day/night' = 낮/밤에, 그 밖(돌·통신교환 등) = 거리로는 안 됨. eg 1 암컷만, 2 수컷만
@@ -6395,7 +6396,7 @@ const dayKey = (t = Date.now()) => { const d = new Date(t); return `${d.getFullY
 function today() { if (!S.today || S.today.d !== dayKey()) S.today = { d: dayKey(), walk: 0, eggs: 0 }; return S.today; }
 // 트레이너: 이름·성별(금·은·크리스탈의 주인공 그림)·등급(지금까지 달린 거리)
 const TR_OW = { m: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAABgCAYAAAAU0fKgAAACYUlEQVR4nO1YsZHCMBA8GAKXoNAhISVQgsughA8dUsKHlEAJhJRA6NAlONMH/IrzaU/ofxwwDDvDYMu61Uo6ne+8EoIQ2sjax3FY2basIYQ2XkLD7GU/ThnJutZYROQSmkzd2uuMEffjVOryILDM2tCS6L4bNirkeoQaKzAO517arpfh3Bclo0/b9TKOw2q2Btq47fi1HWAjct/ftusj68AUwCZNAcDigGQ4HO9G31/UWKxxCG2crqd4220j7vG77bZxup7SfWY8XU+pA65vu20ytM9Akm0jk457hjQX7wB5wDqsbcMlNJkT2Xa9iPQ0WlLW5hJYAya7SPBa8aAGbjwo4Wk8uIQmOREwHI40JmTxoAZV8aBknCmAiqrhf+G68nDuXVfG6NSV4QNYKCsV64M+M4fCOUfgwL/+6WfFeAAFdhul6/1thIrsaQGfePDA8vGglA9gazUJ3UamwvoFTmOVH2hCKCweJvzjGqkOm15VTNRkejCXQHe2p/KpI2Er9aLpUPdvT4QSrD7a6etd5BE4EkHhFU/hJR1WHVXApuDlR8XDpJNOdpAogaeAZmZL4B0Dih3xU3Dk17Tg0J3+WnAIpqBrgVK6b+uFLCo/S7ZKBytVLTWFRrYGmFcIbUxbWRGFquKBHaRIABLPYHG8ezyowafgUAqqhlbIciSdG3m5sjVOCpgKVnCwJCPtAo5yIqhMKNxs3St53CloApveMEOXQKvwjBbFO8aDT8HB8doFB4X9EKkTj+LrnW3lfpxmgcRi9l7QJf5+nPKPEJJ7Y/ZR1qsVrCr6VddOwy4Ynun2H+Nl5dP12W48AAAAAElFTkSuQmCC', f: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAABgCAYAAAAU0fKgAAAChklEQVR4nO1Yu5XbMBBc6l0RCFGCwisDIctwCSzFIUKWoVAlMEQJzuhAWmiwnAUpny+wHzc5CovP7G+AvUGIhBBXNl7KMtixzUAIcV3mST7ztRm/jXeJadpsMtjFYZzrAhTdsOTUbPJhEejCmCbRzUpOsszTYzw7JuDpJScJ4ywlp4fu+Y36jT9CiOv1x30NIa6/bj/rX/zGOa4PRKTCtRLTYxxPH3A3XBjT9LIbvnEjEZGL2hjGuVF4os5VfwwInSFhJqiUsgwfaJNu9JmvNQIqeiLObyc4Xveiousuu0bvCA2jhW3NacLITLELuxnIRG33fqNsislutHeYywdMGB80UUD7KaJx3qCiYbRs5I2JED64jXd3suowGhsn2sqzOmsi5USbOFX/1DWc2MTbUJeVqsvpxUjM8ywD8TfOa8q4KdleOT91pSyDW0zWkUgm9F7AG6nkREOpYY5pWt0wKjx7M8X81I0tsi4feIImXJgCWdf+/kf4wLviD78PdCGGEq99Nw/0ZE0aTCavxGkeaELFlOr47gNDUdgbmXEAljSlNEsqJSeXI7ph3MB/muTeTJbSGfyKiJlQyjJs3gAOdIoAkfQWucXUbGKg2wLbFfbgsI8LEScKzAT2xBN5433gvQ0OO/EQkfyJvBXG/7ThaE7XXuDIt66jqbzMUz0Vv5mcDQfkBOvMWBS68GyDsddsVB9YSEd8oeIW05FmoyuHbP4b8n18wORsOM6Gg5n2dsOhrzb3XihlqRzphdKK+0pjDQfjiS4fHOEClxzQH9/2NnARfJkPzoZjqijOhuM1uSdfbjgaH1h+VAQYGSvVBE0kXGhTWTfu/l/Z6xUsKjWDFhOzFXU4/hsxFxD0hqGbSAAAAABJRU5ErkJggg==' };
-const TR_LV = [[0, '견습 트레이너'], [10, '초보 트레이너'], [30, '신참 트레이너'], [60, '숙련 트레이너'], [100, '베테랑 트레이너'], [160, '엘리트 트레이너'], [250, '에이스 트레이너'], [400, '체육관 관장'], [600, '사천왕'], [850, '챔피언'], [1025, '포켓몬 마스터']];   // 모은 도감 수
+const TR_LV = [[0, '견습 트레이너'], [10, '초보 트레이너'], [30, '신참 트레이너'], [60, '숙련 트레이너'], [100, '베테랑 트레이너'], [160, '엘리트 트레이너'], [250, '에이스 트레이너'], [400, '체육관 관장'], [600, '챔피언'], [850, '사천왕'], [1025, '포켓몬 마스터']]   /* v3.64 경완: 사천왕을 챔피언 다음 단계로 */;   // 모은 도감 수
 const trOf = () => S.tr || (S.tr = { n: '', sex: 'm' });
 const TN = () => trOf().n || '트레이너';
 const TJ = p => J({ name: TN() }, p).replace(/<\/?b>/g, '');   /* 트레이너 이름은 굵게 하지 않는다 */
@@ -6765,8 +6766,15 @@ function hatchEgg(e, keep, ask) {
   S.recentHatch = [sp, ...(S.recentHatch || []).filter(x => x !== sp)].slice(0, 12);
   hatchQ.push({ g: e.g, sp, place: e.place, egg: keep ? e : null, ask }); save();
 }
+// 장소 테마 가중치: 기본 1, 타입 +12(밤 +4), 서식지 +4, 도감 낱말 +8, 특정 종 +20
+function themeW(sp, ths) { const d = SPECIES[sp]; let v = 1;
+  for (const th of ths) { if (d.t.some(t => th.t.includes(t))) v += th === NIGHT ? 4 : 12; if (d.hab && th.hab?.includes(d.hab)) v += 4; if (th.fx && d.fx && th.fx.test(d.fx)) v += 8; if (th.sp && th.sp.includes(sp)) v += 20; }
+  return v; }
 function rollEgg(e) {
   const tab = EGG_TIERS[e.g] || EGG_TIERS[1], ths = eggThemes(e).map(k => THEMES[k] || NIGHT);
+  const EL = EGG_LIST[e.g]; if (EL?.length) {   // 작업실에서 직접 정한 알: 정한 확률 × 장소 테마 × 최근 부화
+    const w = EL.map(([sp, p]) => p * themeW(sp, ths) * (S.recentHatch?.includes(sp) ? .3 : 1)); let q = Math.random() * w.reduce((a, b) => a + b, 0), i = 0;
+    while (i < EL.length - 1 && (q -= w[i]) > 0) i++; return EL[i][0]; }
   const ts = Object.keys(tab).map(Number).filter(t => TIER_SPS[t].length), spill = e.g >= 2 ? Math.max(...ts) : 0;
   let r = Math.random() * ts.reduce((a, t) => a + tab[t], 0), t = ts[ts.length - 1];
   for (const x of ts) if ((r -= tab[x]) <= 0) { t = x; break; }   // 1) 알 등급 비율로 티어를 고르고
@@ -7537,6 +7545,7 @@ function applyCfg(c) {
     if (Array.isArray(d.odds) && d.odds.length === 5) ODDS.splice(0, 5, ...d.odds);
     if (d.pity) { if (d.pity.e > 0) PITY_E = d.pity.e; if (d.pity.l > 0) PITY_L = d.pity.l; }
     if (d.eggTiers) for (let g = 1; g <= 5; g++) if (d.eggTiers[g]) EGG_TIERS[g] = d.eggTiers[g];
+    for (let g = 1; g <= 5; g++) { const L = d.eggList?.[g]; EGG_LIST[g] = Array.isArray(L) && L.length ? L.filter(r => Array.isArray(r) && SPECIES[r[0]] && r[1] > 0) : null; }
     retier(d.tierOv); if (d.bal) applyBal(d.bal); if (d.layout) setLayoutIn(d.layout);
     CFG = c; $('#appVer').textContent = 'v' + APP_VER + (c.ver ? ' · 데이터 ' + c.ver : '');
   } catch (e) { console.warn('config', e); }
@@ -7598,7 +7607,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   notiSoon = function () {};   // 작업실에선 '새 소식' 창을 띄우지 않는다
   if (GAL) { save = function () {}; document.documentElement.classList.add('st-gal'); }
   const api = window.__studio = {
-    SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, FAM_BST, CHILDREN, EGG_TIERS, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
+    SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
     get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, WASH_DAY, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]) }; },
     get cfg() { return CFG; },
     get SPRITES() { return SPRITES; }, ensureSprite, thumbOf, gradeOf, tierOf, shinyHue, tyIcon, scaleOf, baseOf, movesOf, eggHtml, propSpots,
@@ -7766,7 +7775,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
 <h3>랭크 배지</h3><p class="d">개체값 합계로 정하는 S~F 랭크. 상자·정보창·부화 창에 붙어요.</p>
 <div class="row rkbig">${RANKS.map(([r, v]) => `<div class="it"><div class="chk"><span class="rk ${r}">${r}</span></div>${r} · ${v}점 이상</div>`).join('')}</div>
 <h3>상자 칸 테두리</h3><p class="d">포켓몬 상자 한 칸. 랭크·친밀도·이로치·티어에 따라 테두리와 이름 색이 바뀌어요.</p>
-<div class="boxes">${[[25, '', 'C', 60, '보통'], [4, ' rkA', 'A', 60, 'A 랭크'], [7, ' rkS', 'S', 60, 'S 랭크'], [1, ' frMax', 'B', 255, '친밀도 만점'], [133, ' shiny', 'C', 102, '이로치'], [143, ' shiny rkS', 'S', 153, '이로치 + S'], [149, ' rkS frMax', 'S', 255, 'S + 친밀도 만점'], [150, ' t-leg', 'B', 51, '금 티어 이름'], [150, ' t-sil', 'B', 51, '은 티어 이름'], [150, ' t-brz', 'B', 51, '동 티어 이름']].map(a => cell(...a)).join('')}</div>
+<div class="boxes">${[[25, '', 'C', 60, '보통'], [4, ' rkA', 'A', 60, 'A 랭크'], [7, ' rkS', 'S', 60, 'S 랭크'], [1, ' frMax', 'B', 255, '친밀도 만점'], [133, ' shiny', 'C', 102, '이로치'], [143, ' shiny rkS', 'S', 153, '이로치 + S'], [149, ' rkS frMax', 'S', 255, 'S + 친밀도 만점'], [150, ' t-brz', 'B', 51, '3티어 이름'], [150, ' t-sil', 'B', 51, '2티어 이름'], [150, ' t-leg', 'B', 51, '1티어 이름']].map(a => cell(...a)).join('')}</div>
 <h3>프로필 등급 카드</h3><p class="d">프로필의 트레이너 카드. 모은 도감 수로 등급이 오르고 카드 색이 바뀌어요 (6단계부터 반짝임, 8단계부터 별가루).</p>
 <div class="cards">${TR_LV.map((_, i) => card(i)).join('')}</div>
 <h3>알</h3><p class="d">알 등급 5가지.</p>
@@ -7777,10 +7786,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
 <div class="row">${[0, 51, 102, 153, 204, 255].map(f => `<div class="it"><div class="chk"><span class="hearts">${hearts(f)}</span></div>${f}</div>`).join('')}</div>
 <h3>트레이너</h3>
 <div class="row">${['m', 'f'].map(s => pix(TR_OW[s], 32, 192, s === 'm' ? '남자' : '여자')).join('')}</div>
-<h3>맵 소품</h3><p class="d">맵에 놓이는 그림 (실제 크기의 2배로 보여요).</p>
-<div class="row">${pix(SPR.tree, 100, 116, '열매나무')}${pix(SPR.perch, 52, 64, '횃대')}${pix(SPR.bush, 72, 48, '덤불')}${pix(SPR.puddle, 58, 20, '웅덩이')}${pix(SPR.lily, 36, 24, '수련잎')}${pix(SPR.lilyF, 36, 32, '수련꽃')}
-${Object.entries(SPR.flw).map(([k, f]) => pix(f.src, f.w * 2, f.h * 2, FNAME[k] || k)).join('')}
-<div class="it"><div class="chk" style="width:90px;height:110px;position:relative"><div class="flame" style="background-image:url(${SPR.flame});left:45px;top:96px;position:absolute">${Array.from({ length: 8 }, (_, i) => `<i style="--x:${((i * 37) % 21) - 10}px;--d:${(.9 + ((i * 29) % 7) / 10).toFixed(1)}s;--dl:${(-i * .23).toFixed(2)}s"></i>`).join('')}</div></div>모닥불 (6장)</div></div>`;
+`;
   }
   const s0 = start;
   start = async function (d) {
