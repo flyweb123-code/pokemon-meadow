@@ -167,7 +167,8 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
     private func nearbyLandmark(_ loc: CLLocation, fallback: String?, done: @escaping (String?, Set<String>) -> Void) {
         let req = MKLocalPointsOfInterestRequest(center: loc.coordinate, radius: 400)
         req.pointOfInterestFilter = MKPointOfInterestFilter(including: Array(WalkTracker.landmarkKinds.union(WalkTracker.themeOf.keys)))
-        MKLocalSearch(request: req).start { res, _ in
+        MKLocalSearch(request: req).start { [weak self] res, _ in
+            guard let self else { return }
             var best: (String, CLLocationDistance)?
             var tags: Set<String> = []
             for item in res?.mapItems ?? [] {
@@ -179,9 +180,19 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
                 // 이름은 공원·역 같은 명소뿐 아니라 식당·카페·가게·건물까지 가장 가까운 곳으로 (예: "석촌동 ○○식당")
                 if let name = item.name, !name.isEmpty, d < (best?.1 ?? .infinity) { best = (name, d) }
             }
-            DispatchQueue.main.async { done(best?.0 ?? fallback, tags) }
+            // 지도 이름이 한국어가 아니면(영어 등) 그 자리를 한국어로 다시 찾아 본다
+            //   (한국어 이름을 못 찾으면 영어 이름 대신 동네 이름만 남긴다)
+            let name = best?.0 ?? fallback
+            let at = res?.mapItems.first(where: { $0.name == best?.0 })?.placemark.location ?? loc
+            guard let name, !WalkTracker.isKorean(name) else { DispatchQueue.main.async { done(name, tags) }; return }
+            self.koGeocoder.reverseGeocodeLocation(at, preferredLocale: Locale(identifier: "ko_KR")) { marks, _ in
+                let ko = marks?.first?.areasOfInterest?.first(where: WalkTracker.isKorean)
+                DispatchQueue.main.async { done(ko, tags) }
+            }
         }
     }
+    private let koGeocoder = CLGeocoder()
+    private static func isKorean(_ s: String) -> Bool { s.unicodeScalars.contains { (0xAC00...0xD7A3).contains($0.value) } }
 
     func locationManager(_ m: CLLocationManager, didFailWithError error: Error) {
         sync(place: nil, tags: [])
