@@ -477,7 +477,7 @@ ol.log li.big .txt{color:#c03838}
 .berry{touch-action:none;cursor:grab}.berry::before{content:"";position:absolute;inset:-14px;border-radius:50%}
 .berry.held{transform:scale(1.35) translateY(-6px);filter:drop-shadow(0 6px 2px rgba(0,0,0,.25));cursor:grabbing;transition:none}
 .berry.rot{opacity:.45;transition:opacity 30s linear;filter:saturate(.4)}
-@keyframes drop{from{transform:translateY(-30px);opacity:0}}
+@keyframes drop{from{transform:translateY(-30px);opacity:0}}.berry.new.hi{animation:dropHi .75s cubic-bezier(.45,0,.55,1)}@keyframes dropHi{0%{transform:translateY(-110px);opacity:0}12%{opacity:1}62%{transform:translateY(0)}78%{transform:translateY(-12px)}90%{transform:translateY(0)}95%{transform:translateY(-3px)}100%{transform:none}}
 
 .bubble{position:absolute;left:0;top:0;transform:translate(-50%,-100%);background:#f8f8f8;color:#282830;border:2px solid #383848;padding:1px 6px 2px;
   font:700 12px/1.3 var(--px);box-shadow:2px 2px 0 rgba(0,0,0,.3);white-space:nowrap;animation:pop .2s steps(2)}
@@ -1790,9 +1790,11 @@ async function playCry(sp, delay = 0) {
       const blob = await musicGet('cry' + sp); if (!blob) return;
       const ab = await blob.arrayBuffer();
       buf = await new Promise((res, rej) => a.decodeAudioData(ab, res, rej));
+      // v3.42 경완: 울음소리가 버튼 효과음보다 크다 → 종마다 소리 크기(RMS)를 재서 비슷한 크기(-24dB, 효과음보다 조금 큰 정도)로 맞춘다 (원본은 -8~-26dB로 들쑥날쑥)
+      { const d = buf.getChannelData(0); let q = 0, pk = 0; for (let i = 0; i < d.length; i++) { q += d[i] * d[i]; pk = Math.max(pk, Math.abs(d[i])); } const rms = Math.sqrt(q / Math.max(1, d.length)) || .1; buf.g = Math.min(.063 / rms, .9 / (pk || 1), 1.2); }
       cry.buf.set(sp, buf); if (cry.buf.size > 40) cry.buf.delete(cry.buf.keys().next().value);
     }
-    const src = a.createBufferSource(), g = a.createGain(); g.gain.value = .6 * volG(VOL.sfx);
+    const src = a.createBufferSource(), g = a.createGain(); g.gain.value = (buf.g ?? .25) * volG(VOL.sfx);
     src.buffer = buf; src.connect(g).connect(a.destination); src.start(a.currentTime + delay);
   } catch (e) {}
 }
@@ -2432,12 +2434,12 @@ function feedNow(m) {
   if (m.partner) { const o = m.partner; m.partner = null; o.partner = null; o.scene = null; setState(o, 'idle', 1); }
   m.goal = null; m.scene = null; setState(m, 'idle', 2);
   const x = m.x + (m.face || 1) * Math.max(14, m.w * .3), y = m.y + 2, el = document.createElement('div');
-  el.className = 'berry new' + (Math.random() < .4 ? ' red' : ''); Object.assign(el.style, { left: x + 'px', top: y + 'px', zIndex: Math.round(y) + 1, pointerEvents: 'none' }); itemsEl.append(el);
+  el.className = 'berry new hi' + (Math.random() < .4 ? ' red' : ''); Object.assign(el.style, { left: x + 'px', top: y + 'px', zIndex: Math.round(y) + 1, pointerEvents: 'none' }); itemsEl.append(el);   // v3.42: 정보창에서 준 열매는 더 높이서 떨어진다 (잘 보이게)
   emote(m, '!', '', .8);
   setTimeout(() => { el.remove(); if (!S.mons.includes(m)) return;
     if (berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - BERRY_FILL); berryBoost(m, true);
     if (isFull(m)) { m.hunger = 0; setTimeout(() => emote(m, '배불러!', 'heart', 2), 3200); }
-    setState(m, 'eat', m.sp === 143 ? 8 : 5); log(`${J(m,'이/가')} 떨어진 열매를 바로 냠냠 먹었다.`, [m]); save(); }, 520);
+    setState(m, 'eat', m.sp === 143 ? 8 : 5); log(`${J(m,'이/가')} 떨어진 열매를 바로 냠냠 먹었다.`, [m]); save(); }, 950);
 }
 // 쓰다듬기: 정보창·상태창을 숨기고 그 포켓몬 위를 문지른다. PET_N 번 문지르면 아주 좋아하며 끝 (친밀도 +3 은 하루 3번까지, 즐거움 +20)
 const PET_N = 12, PET_LEN = 2500, PET_DAY = 2, WASH_DAY = 1;   // 쓰다듬기 친밀도 +3 하루 2번, 빗질(씻기기) +3 하루 1번
@@ -4543,7 +4545,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.41';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.42';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
