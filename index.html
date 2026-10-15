@@ -2387,7 +2387,7 @@ const JOY_RATE = 100 / 7200, BERRY_FR_DAY = 5;   // 즐거움은 깨어 있으�
 const gaugeAvg = m => ((m.clean ?? 100) + (100 - m.hunger) + (m.joy ?? 60)) / 3;   // 청결·배부름·즐거움 (기력은 포켓몬이 알아서 자고 깨며 채운다)
 // 청결: 아무것도 안 하면 3일에 100 → 0. 낮을수록 그림이 흙빛으로 탁해지고, 아주 더러우면 먼지·날파리
 const CLEAN_RATE = 100 / (3 * 86400);
-function dirtVis(m) { if (!m.dirtEl) return; const d = clamp((60 - (m.clean ?? 100)) / 60, 0, 1), k = Math.round(d * 20) / 20;   /* 청결 60까지는 원래 모습 */
+function dirtVis(m, c = m.clean ?? 100) { if (!m.dirtEl) return; const d = clamp((60 - c) / 60, 0, 1), k = Math.round(d * 20) / 20;   /* 청결 60까지는 원래 모습 */
   if (k && m.img.src && m.gSrc !== m.img.src) { m.gSrc = m.img.src; m.act.style.setProperty('--gsrc', `url("${m.img.src}")`); }
   if (k && !m.grimy) m.spr.style.setProperty('--bp', m.spr.style.backgroundPosition);
   if (m.dirtK === k) return; m.dirtK = k; m.grimy = k > 0; m.dirtEl.classList.toggle('grimy', m.grimy); m.dirtEl.style.setProperty('--g', (.85 * k).toFixed(2));
@@ -2465,7 +2465,7 @@ function petTick(ts) { const p = petM; if (!p) return; const dt = petTick.t ? Ma
   if (!p.done) { p.spd *= Math.pow(.02, dt); if (performance.now() - p.mvT > 120 && p.v > 0) { p.v = Math.max(0, p.v - .45 * dt); p.n = Math.min(p.n, Math.floor(p.v * PET_N)); } petDots(); }
   requestAnimationFrame(petTick); }
 function petEnd() {
-  if (!petM) return; const m = petM.m; m.pet = false; if (S.mons.includes(m) && m.state === 'idle') setState(m, 'idle', 1.5);
+  if (!petM) return; const m = petM.m; m.pet = false; if (petM.wash && !petM.done) dirtVis(m);   // 중간에 그만두면 겉모습도 원래대로 if (S.mons.includes(m) && m.state === 'idle') setState(m, 'idle', 1.5);
   m.washing = false; petM = null; document.body.classList.remove('petting'); $('#petBar').hidden = true; $('#washBrush').hidden = true; queueMicrotask(dlgBound);
 }
 // 후광 있는 포켓몬(S·A 랭크): 문지를 때마다 후광이 번쩍, 다 쓰다듬어 좋아할 때는 반짝반짝
@@ -2510,7 +2510,7 @@ addEventListener('pointermove', e => { const p = petM; if (!p || p.done || !p.ru
   /* 빠르기(px/초)를 부드럽게 재서, 빠를수록 한 번 문지른 거리가 게이지에 더 크게 들어간다 (느리면 0.5배, 아주 빠르면 2배) */
   const dtm = Math.max(8, now - (p.mvT || now - 16)); p.mvT = now; p.spd = p.spd * .8 + (d / dtm * 1000) * .2;
   p.v += d / PET_LEN * clamp(p.spd / 700, .5, 2) * (p.wash ? WASH_SPD : 1); petDots();
-  if (p.wash) { p.m.clean = Math.max(p.m.clean ?? 100, p.c0 + (100 - p.c0) * Math.min(1, p.v)); dirtVis(p.m); }
+  if (p.wash) { p.cv = Math.max(p.cv ?? p.c0, p.c0 + (100 - p.c0) * Math.min(1, p.v)); dirtVis(p.m, p.cv); }   // v3.41: 빗는 동안은 겉모습만 깨끗해지고, 청결은 게이지를 다 채웠을 때만 회복
   if (p.v >= 1) return petDone();
   const n = Math.floor(p.v * PET_N); if (n > p.n) { p.n = n; p.dvv = (p.dvv || 0) + .9; const bb = $('#petN'); bb.classList.remove('pop'); void bb.offsetWidth; bb.classList.add('pop'); emote(p.m, p.wash ? (n % 3 === 0 ? '♪' : '✧') : n % 3 === 0 ? '♪' : '♥', 'heart', .9); p.rub.ht = now; haptic(2); } }, true);
 ['pointerup', 'pointercancel'].forEach(t => addEventListener(t, e => { const rb = petM?.rub; if (rb && e.pointerId === rb.id) { petM.rub = null; if (petM.wash) $('#washBrush').classList.remove('on');
@@ -4543,7 +4543,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.40';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.41';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6930,7 +6930,7 @@ function frameIn(now) {
   for (const m of S.mons) { if (m.held && drag?.m !== m) { m.held = false; m.el.classList.remove('held'); settle(m); setState(m, 'idle', 1); }   /* 손에서 놓쳤는데 들린 채 남은 포켓몬 풀어 주기 */
     if (m.bubT > 0) m.bubT -= real; m.realDt = real * Math.min(S.speed || 0, 3); try { render(m, now); } catch (e) { frameErr(e, m); } }
   nightHoles(); tickFlies(now); tickBugs(now, real);
-  acc += real; if (acc > .5) { acc = 0; S.mons.forEach(m => { dirtVis(m); dirtFx(m); }); sky(); rotBerries(); for (const g of [...$('#glows').children]) if (!S.mons.some(m => m.gl === g || m.glA === g)) g.remove(); }   /* 필드에서 빠진 포켓몬의 빛이 남지 않게 */
+  acc += real; if (acc > .5) { acc = 0; S.mons.forEach(m => { if (!m.washing) dirtVis(m); dirtFx(m); }); sky(); rotBerries(); for (const g of [...$('#glows').children]) if (!S.mons.some(m => m.gl === g || m.glA === g)) g.remove(); }   /* 필드에서 빠진 포켓몬의 빛이 남지 않게 */
   try { tickMoves(real); } catch (e) { frameErr(e); }
   infoT -= real; if (infoT <= 0 && S.sel) { infoT = .5; renderInfo(); }
   S.mons.forEach(m => { if (!m.hidden && !m.washing) m.clean = Math.max(0, (m.clean ?? 100) - real * CLEAN_RATE); m.frT = (m.frT || 0) + real * frRate(m); if (m.frT >= 3600) { m.frT -= 3600; if (dayCap(m, 'fld', FLD_FR_DAY)) addFr(m.pid, 1); } });   /* 필드에 있는 시간: 세 게이지가 찰수록 빨리 (FR_TABLE) */
