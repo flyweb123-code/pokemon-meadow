@@ -155,6 +155,8 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 #safeZ{position:absolute;inset:0;pointer-events:none;z-index:5}
 #safeZ i{position:absolute;left:0;right:0;background:repeating-linear-gradient(135deg,rgba(240,112,112,.34) 0 6px,rgba(240,112,112,.16) 6px 12px);border:0 dashed #f07070}
 #safeZ .st{top:0;border-bottom-width:2px}#safeZ .sb{bottom:0;border-top-width:2px}
+#safeZ .sa{position:absolute;background:repeating-linear-gradient(135deg,rgba(240,176,80,.32) 0 6px,rgba(240,176,80,.12) 6px 12px)}
+#safeZ .safeR{position:absolute;border:2px dashed #f0b050;box-sizing:border-box}#safeZ .safeR span{left:4px;right:auto;top:4px;bottom:auto;font-size:10px;background:rgba(0,0,0,.55);padding:2px 5px;border-radius:3px;white-space:nowrap}
 #safeZ span{position:absolute;right:8px;bottom:2px;font:600 11px var(--ui);color:#fff;text-shadow:0 1px 2px #000}#safeZ .sb span{bottom:auto;top:2px}
 #safeZ .isl{position:absolute;left:50%;top:11px;width:124px;height:36px;margin-left:-62px;border-radius:20px;background:#000}
 #safeZ .nch{position:absolute;left:50%;top:0;width:160px;height:32px;margin-left:-80px;border-radius:0 0 18px 18px;background:#000}
@@ -374,7 +376,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '1.8';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '1.9';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -436,8 +438,23 @@ $('#goWork').onclick = () => go('work');
 const DEVS = [['ip17p', '아이폰 17 Pro', 402, 874, 62, 34, 'i'], ['ip17pm', '아이폰 17 Pro Max', 440, 956, 62, 34, 'i'], ['ip17', '아이폰 17', 402, 874, 62, 34, 'i'], ['ipair', '아이폰 Air', 420, 912, 68, 34, 'i'], ['ip16', '아이폰 16·15', 393, 852, 59, 34, 'i'], ['ip16e', '아이폰 16e·14', 390, 844, 47, 34, 'n'], ['ipmini', '아이폰 13 mini', 375, 812, 50, 34, 'n'], ['ipse', '아이폰 SE', 375, 667, 20, 0, ''], ['s25', '갤럭시 S25', 360, 780, 32, 24, 'p'], ['s25u', '갤럭시 S25 울트라', 384, 832, 32, 24, 'p'], ['fold', '갤럭시 Z 폴드 (펼침)', 768, 904, 32, 24, 'p'], ['ipadm', '아이패드 mini', 744, 1133, 24, 20, '']];
 let dev = DEVS.find(d => d[0] === store.get('st-dev')) || DEVS[0];
 $$('.devSel').forEach(s => { s.innerHTML = DEVS.map(d => `<option value="${d[0]}">${d[1]} · ${d[2]}×${d[3]}</option>`).join(''); s.value = dev[0]; s.onchange = () => { dev = DEVS.find(d => d[0] === s.value) || DEVS[0]; store.set('st-dev', dev[0]); $$('.devSel').forEach(o => o.value = dev[0]); fitPhone(); }; });
-function safeZ() { const [, , w, , t, bt, k] = dev, on = $('#eSafe').classList.contains('on'); $('#safeZ').hidden = !on; if (!on) return;
-  $('#safeZ').innerHTML = `<i class="st" style="height:${t}px"><span>상단바 ${t}px</span></i>${bt ? `<i class="sb" style="height:${bt}px"><span>홈 막대 ${bt}px</span></i>` : ''}`; }
+// v1.8 경완: 세이프 존은 모든 기종을 합쳐서. 기종마다 필드가 잘리는 곳(양옆·위 가림)을 계산해 어느 폰에서든 보이는 칸만 남긴다
+let MENU_H = 69;   // 게임 아래 메뉴 높이 (홈 막대 빼고). 폰 모양일 때 실제로 재서 고친다
+function fieldView(D) { const [, , w, H0, t, bt] = D, nar = w <= 760, h = nar ? H0 - MENU_H - bt : H0, FW = 360, FH = 600;
+  const k = nar ? Math.max(w / FW, h / FH) : Math.min(w / FW, h / FH), vis = Math.min(FW, w / k), XL = nar ? (FW - vis) / 2 : 0, oy = (h - FH * k) / 2;
+  return { x0: XL, x1: FW - XL, y0: Math.max(0, (t - oy) / k), y1: Math.min(FH, (h - oy) / k) }; }
+function safeAll() { const R = DEVS.map(d => [d, fieldView(d)]), pick = (f, cmp) => R.reduce((a, b) => cmp(f(b[1]), f(a[1])) ? b : a);
+  const L = pick(v => v.x0, (a, b) => a > b), Rt = pick(v => v.x1, (a, b) => a < b), T = pick(v => v.y0, (a, b) => a > b), B = pick(v => v.y1, (a, b) => a < b);
+  return { x0: L[1].x0, x1: Rt[1].x1, y0: T[1].y0, y1: B[1].y1, side: L[0][1], top: T[0][1], bot: B[0][1] }; }
+function safeZ() { const [, , w, , t, bt] = dev, on = $('#eSafe').classList.contains('on'); $('#safeZ').hidden = !on; if (!on) return;
+  let html = `<i class="st" style="height:${t}px"><span>상단바 ${t}px</span></i>${bt ? `<i class="sb" style="height:${bt}px"><span>홈 막대 ${bt}px</span></i>` : ''}`;
+  try { const G = $('#game').contentDocument, wr = G.querySelector('#wrap').getBoundingClientRect(), sr = G.querySelector('#stage').getBoundingClientRect();
+    if (w <= 760 && wr.height > 100) MENU_H = Math.round(dev[3] - wr.bottom - bt);
+    const S = safeAll(), kx = sr.width / 360, ky = sr.height / 600, X0 = Math.max(wr.left, sr.left + S.x0 * kx), X1 = Math.min(wr.right, sr.left + S.x1 * kx), Y0 = Math.max(wr.top, sr.top + S.y0 * ky), Y1 = Math.min(wr.bottom, sr.top + S.y1 * ky);
+    const box = (l, tp, ww, hh) => ww > 0.5 && hh > 0.5 ? `<i class="sa" style="left:${l}px;top:${tp}px;width:${ww}px;height:${hh}px"></i>` : '';
+    html += box(wr.left, wr.top, wr.width, Y0 - wr.top) + box(wr.left, Y1, wr.width, wr.bottom - Y1) + box(wr.left, Y0, X0 - wr.left, Y1 - Y0) + box(X1, Y0, wr.right - X1, Y1 - Y0)
+      + `<b class="safeR" style="left:${X0}px;top:${Y0}px;width:${X1 - X0}px;height:${Y1 - Y0}px"><span>모든 기종 세이프 존 · 양옆은 ${esc(S.side)}, 위는 ${esc(S.top)} 기준</span></b>`; } catch (e) {}
+  $('#safeZ').innerHTML = html; }
 // v1.7 경완: 기종별 휴대폰 상단바 (시간·아일랜드/노치/카메라 구멍·신호·와이파이·배터리)
 const SB_SIG = '<svg width="18" height="12" viewBox="0 0 18 12"><rect y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" width="3" height="12" rx="1"/></svg>';
 const SB_WIFI = '<svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 11.6 5.5 9a3.5 3.5 0 0 1 5 0z"/><path d="M3.4 6.9a6.5 6.5 0 0 1 9.2 0l-1.4 1.4a4.5 4.5 0 0 0-6.4 0z"/><path d="M1.2 4.7a9.6 9.6 0 0 1 13.6 0l-1.4 1.4a7.6 7.6 0 0 0-10.8 0z"/></svg>';
@@ -452,7 +469,7 @@ function statusBar() { const [, , w, , t, , k] = dev, h = sbHour(), H = Math.flo
   e.style.fontSize = ''; }
 setInterval(statusBar, 20000);
 function applyInsets() { try { const r = $('#game').contentDocument.documentElement.style; r.setProperty('--si-top', dev[4] + 'px'); r.setProperty('--si-bottom', dev[5] + 'px'); r.setProperty('--si-left', '0px'); r.setProperty('--si-right', '0px'); $('#game').contentWindow.dispatchEvent(new Event('resize')); } catch (e) {} }
-function fitPhone() { safeZ(); statusBar(); applyInsets(); const b = $('#mapBox'), p = $('#phone'), [, , w, h] = dev, m = mobile();
+function fitPhone() { safeZ(); setTimeout(safeZ, 200); statusBar(); applyInsets(); const b = $('#mapBox'), p = $('#phone'), [, , w, h] = dev, m = mobile();
   p.style.width = w + 'px'; p.style.height = h + 'px'; p.style.borderRadius = (h / w > 1.9 ? 44 : h / w > 1.6 ? 20 : 26) + 'px';
   if (m) { const want = Math.round(Math.min(innerHeight * .72, (b.clientWidth - 16) * h / w + 16)); if (Math.abs(b.clientHeight - want) > 1) b.style.height = want + 'px'; } else b.style.height = '';
   const pad = m ? 12 : 24, k = Math.min((b.clientHeight - pad) / h, (b.clientWidth - pad) / w, 1.2); p.style.transform = `scale(${k}) translate(-50%,-50%)`; p.dataset.k = k; ebarPos(); }
@@ -1062,6 +1079,7 @@ const BUBS = [
 ];
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['1.9', '10월 16일', ['세이프 존을 모든 기종 기준으로: 어느 폰에서든 잘리거나 가려지는 필드 칸을 주황 빗금으로, 남는 칸을 점선 상자로']],
   ['1.8', '10월 16일', ['밸런스 메뉴에 게임 아이콘 (골드·하트·열매·빗·손·알…)', '알 수집 확률과 알 등급별 포켓몬을 "알" 메뉴 하나로, 위쪽 탭으로 나눔', '알 메뉴 곳곳에 등급별 알 그림', '메뉴 이름 바꾸기: 메뉴에 마우스를 올리면 나오는 연필을 눌러요 (포켓몬·모션 → 포켓몬)', '포켓몬 모션을 그림이 있는 칸으로 가지런히', '필드 포켓몬 칸: 오른쪽 위 X 로 빼기, 누르면 테두리만 표시', '포켓몬 넣기 창은 오른쪽 칸 바로 왼쪽에', '떠 있는 창(포켓몬 넣기·소품·맵 편집)은 머리를 잡고 옮기고, 오른쪽 아래 모서리로 크기 바꾸기 (머리를 두 번 누르면 제자리)', '맵 편집 창을 더 넓게']],
   ['1.7', '10월 16일', ['버전 기록 메뉴와 지금 버전 카드', '처음 열 때 더 빨리 뜨게 (글꼴·그림 모음 따로 받고 저장해 둠)', '기종별 휴대폰 상단바 (시간·다이내믹 아일랜드·노치·와이파이·배터리)', '소품을 눌러도 화면 배치 그대로, 편집 버튼은 휴대폰 오른쪽 작은 창에', '꽃 소품 꽃잎 색 바꾸기', '말풍선 메뉴를 말풍선마다 한 줄로', '알 등급별 포켓몬: 줄을 잡고 끌어 순서 바꾸기', '티어 표를 티어마다 한 줄로, 포켓몬 이름 표시']],
   ['1.6', '10월 15일', ['말풍선 메뉴 (말풍선마다 나오는 상황)', '알마다 포켓몬 목록 직접 정하기: 순서 끌기, 다른 알로 옮기기, 확률 자동 맞춤', '배포하기의 바뀐 곳 되돌리기', '그림 모음 상자 칸 이름을 3·2·1티어로', '프로필 등급 카드: 챔피언 다음 사천왕']],
@@ -1098,7 +1116,7 @@ function hook() {
   A.edit(editing); if (!$('#hrNow').classList.contains('on')) A.setHour(+$('#hr').value); $('#hrNow').classList.contains('on') && $('#hrNow').onclick();
   const w0 = $('#wx .on')?.dataset.w; if (w0) A.setWx(w0);
   $('#addp').innerHTML = A.ADD.map(([k, n]) => { const s = A.addIcon(k); return `<button data-k="${k}">${s ? `<img alt="" src="${s}">` : `<span class="ph">${k === 'mush' ? '🍄' : '●'}</span>`}${n}</button>`; }).join('');
-  renderNav(); renderReact(null); renderPal(); renderDock(); dstat(); RENDER[view]?.(); statusBar(); setTimeout(thumbsReady, 2500);
+  renderNav(); renderReact(null); renderPal(); renderDock(); dstat(); RENDER[view]?.(); statusBar(); setTimeout(safeZ, 300); setTimeout(thumbsReady, 2500);
 }
 addEventListener('message', e => { if (e.data?.studio === 'ready' && !e.data.gal) hook(); if (e.data?.studio === 'ready' && e.data.gal) $('#galLoad').hidden = true; });
 (async () => { try { db = await window.claude?.use?.('db'); if (!db) return; const doc = await db.doc('studio/draft').get(); const v = doc?.data ? doc.data() : doc;
