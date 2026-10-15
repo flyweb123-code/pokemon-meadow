@@ -4254,13 +4254,13 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, joy: m.joy, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, dexNew: [...(S.dexNew || [])] };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, dexNew: [...(S.dexNew || [])] };
 }
 let saveFrozen = false;
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
+  S.lockT = d.lockT || 0; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
@@ -4279,7 +4279,7 @@ async function restore(d) {
 async function fresh() {
   S.base = midnight(); S.clock = realClock(); S.rel = {}; S.log = [];
   logEl.innerHTML = '';
-  S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked.clear(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1; S.undo1 = true;
+  S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked.clear(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1; S.undo1 = true;
   // 처음 시작: 부화기에 바로 부화시킬 수 있는 일반 알 하나, 가방에 일반·희귀·레어·에픽·전설 알 하나씩 (안의 포켓몬은 부화할 때 정해진다)
   const t = Date.now(); S.eggs.push({ id: S.eid++, g: 1, km: GRADE[1].km, need: GRADE[1].km, isNew: true, t });
   for (const g of [1, 2, 3, 4, 5]) S.bag.push({ id: S.eid++, g, t, isNew: true });
@@ -4477,7 +4477,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.20';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.21';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5736,7 +5736,7 @@ function migrateBox() {
   for (const sp of S.unlocked) if (!S.box.some(p => p.sp === sp)) newPoke(sp, { shiny: false });
   for (const b of S.buds) if (b.pid == null || !boxOf(b.pid)) b.pid = (S.box.filter(p => p.sp === b.sp).sort((x, y) => ivSum(y) - ivSum(x))[0] || newPoke(b.sp, { shiny: false })).id;
 }
-S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.unlocked = new Set(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1;
+S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked = new Set(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1;
 const hatchQ = [];
 
 function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); (S.dexNew ||= new Set()).add(sp); if (dexBtns[sp]) { lockDexBtn(sp); dexCellReady(sp); } } }
@@ -5803,8 +5803,11 @@ const WALK_LIVE = 20000; let walkOffT = 0;
 window.pokeRunToday = (km, dayMs) => {
   km = +km; if (!(km >= 0)) return false; const d = dayKey(+dayMs || Date.now()), o = S.ped;
   pedDiag.n++; pedDiag.at = Date.now(); pedDiag.km = km; pedDiag.err = '';
-  const up = o && o.d === d && km > o.km + 1e-4;
-  S.ped = { d, km, at: up ? Date.now() : (o && o.d === d ? o.at || 0 : 0) };
+  const up = o && o.d === d && km > o.km + 1e-4, now = Date.now();
+  // 늘어난 만큼을 바로 알·짝꿍에 쌓는다 (날이 바뀌면 0시부터 센 거리 전부)
+  if (o && o.d !== d && km > 0) walkFeed(km, Math.max(o.ts || now, +dayMs || now), now);
+  else if (up) walkFeed(km - o.km, Math.min(o.ts || now, now), now);
+  S.ped = { d, km, at: up ? now : (o && o.d === d ? o.at || 0 : 0), ts: now };
   if (up) { clearTimeout(walkOffT); walkOffT = setTimeout(() => { if (!setEl.hidden) renderProfile(); }, WALK_LIVE + 50); }
   if (!setEl.hidden) renderProfile(); return true;
 };
@@ -5839,18 +5842,32 @@ function incubate(e) {
   save(); return true;
 }
 // distance from any source goes to every egg and the buddy
-function applyKm(km, t0 = 0, t1 = 0) {
-  if (!(km > 0)) return [];
+// 알·짝꿍에 거리를 쌓는다 (걸은 거리는 걷는 동안 실시간으로, 런닝은 걸음으로 이미 쌓인 만큼을 뺀 나머지만)
+function feedKm(km) {
+  if (!(km > 0)) return;
   S.totalKm += km;
   // 거리가 다 찬 알은 저절로 깨지지 않고 '부화 준비'가 된다 → 부화기에서 눌러 부화
   let ready = 0;
   for (const e of S.eggs) { const was = e.km >= e.need; e.km += km; if (!was && e.km >= e.need) ready++; }
   if (ready) log(`알 ${ready}개가 움직이기 시작했다! 부화기에서 부화시켜 보자.`, [], true);
+  for (const b of S.buds) { const P = boxOf(b.pid); if (evoKids(b.sp, P).length) b.km += km; if (P) { P.km = b.km; P.runKm = (P.runKm || 0) + km; } b.frAcc = (b.frAcc || 0) + km * 5; const n = Math.floor(b.frAcc); if (n) { b.frAcc -= n; addFr(b.pid, n); } }
+}
+// 걸음으로 쌓은 거리 기록 [시작ms, 끝ms, km] (런닝과 겹치는 만큼을 알아내려고, 8일치)
+function noteFed(t0, t1, km) {
+  const L = S.fedLog, z = L[L.length - 1];
+  if (z && t0 - z[1] < 90e3 && t1 - z[0] < 5 * 60e3) { z[1] = t1; z[2] = Math.round((z[2] + km) * 1e4) / 1e4; }
+  else L.push([t0, t1, Math.round(km * 1e4) / 1e4]);
+  while (L.length && L[0][1] < Date.now() - 8 * 864e5) L.shift();
+}
+function fedIn(t0, t1) { let k = 0; for (const [a, b, km] of S.fedLog) { const o = Math.min(b, t1) - Math.max(a, t0); if (o > 0) k += b > a ? km * o / (b - a) : km; else if (b === a && a >= t0 && a <= t1) k += km; } return k; }
+function walkFeed(km, t0, t1) { if (!(km > 0)) return; feedKm(km); noteFed(t0, t1, km); S.fedPend += km; if (!walkFeed.t) walkFeed.t = setTimeout(() => { walkFeed.t = 0; save(); }, 10000); if (!runEl.hidden) renderRun(); else if (!mgr.hidden) renderBuddy(); postNative(); }
+function applyKm(km, t0 = 0, t1 = 0, feed = km) {
+  if (!(km > 0)) return [];
+  feedKm(feed);
   // 아이폰 앱이 걸음(만보기)으로 알을 줍고 있으면 런닝 거리로는 줍지 않는다 (같은 거리를 두 번 세지 않게)
   // 알마다 달린 길(지나간 곳 기록) 중 한 곳을 골라 주운 곳으로 남긴다
   let got = [];
   if (!S.walkSync) { got = collectEggs(km, '', null, () => routePlace(t0, t1)); const ps = [...new Set(got.eggs.map(e => e.place).filter(Boolean))]; gotLog(got, `${fmtKm(km)}km를 움직이며`, ps.length === 1 ? ps[0] : ''); }
-  for (const b of S.buds) { const P = boxOf(b.pid); if (evoKids(b.sp, P).length) b.km += km; if (P) { P.km = b.km; P.runKm = (P.runKm || 0) + km; } b.frAcc = (b.frAcc || 0) + km * 5; const n = Math.floor(b.frAcc); if (n) { b.frAcc -= n; addFr(b.pid, n); } }
   return got.eggs || [];
 }
 // 아이폰 앱(워치 연동)에서 열렸을 때: 알 현황을 앱으로 보내고, 워치에서 달린 거리를 받는다
@@ -5892,6 +5909,8 @@ function cleanPlaces() {   // 예전에 저장된 알·포켓몬·기록의 장�
 window.pokeRunWalk = (km, place, tags) => {
   place = cleanPlace(place); km = +km; if (!(km > 0 && km <= 200)) return false;
   S.walkSync = true; S.walkKm += km; today().walk += km;
+  // 걷는 동안 이미 쌓은 만큼은 빼고 나머지만 알·짝꿍에 (앱이 꺼져 있던 동안 걸은 거리 등)
+  const rest = km - S.fedPend; S.fedPend = Math.max(0, S.fedPend - km); if (rest > .005) { const n = Date.now(); feedKm(rest); noteFed(n, n, rest); }
   tags = String(tags || '').split(',').filter(k => THEMES[k]);
   if (place) { S.lastPlace = { n: String(place), tags, t: Date.now() }; notePlace(place, tags, Date.now()); }
   gotLog(collectEggs(km, place || '', tags), `걸어서 ${fmtKm(km)}km`, place || '');
@@ -5903,7 +5922,9 @@ window.pokeRunAddKm = (km, t0, src = 'watch', t1 = 0) => {
   t0 = +t0 || 0; t1 = +t1 || 0; src = ['auto', 'health'].includes(src) ? src : 'watch';
   // 같은 달리기가 여러 길(워치 앱·건강 앱·자동 감지·잠금 런닝)로 들어오면 시간이 겹치는 두 번째부터 건너뛴다
   if (t0 && S.runs.some(r => r.t0 && r.t0 < (t1 || t0) + 60000 && (r.t || r.t0) > t0 - 60000)) return true;
-  addRun(km, src, t0, t1, applyKm(km, t0, t1)); return true;
+  // 걸음(만보기)으로 이미 쌓인 거리는 빼고 나머지만 쌓는다 (자동 감지 런닝은 만보기 거리라 전부 쌓여 있다)
+  const feed = src === 'auto' ? 0 : t0 ? Math.max(0, km - fedIn(t0, t1 || Date.now())) : km;
+  addRun(km, src, t0, t1, applyKm(km, t0, t1, feed)); return true;
 };
 // 지나간 곳 기록 (아이폰 앱이 보낸 동네·운동 경로의 몇 곳)
 function notePlace(n, tags, t) { if (!n) return; S.places.push({ n: String(n), tags: tags || [], t }); S.places.sort((a, b) => a.t - b.t); if (S.places.length > 300) S.places.splice(0, S.places.length - 300); }
