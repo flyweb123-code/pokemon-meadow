@@ -2438,10 +2438,15 @@ function feedNow(m) {
   const x = m.x + (m.face || 1) * Math.max(14, m.w * .3), y = m.y + 2, el = document.createElement('div');
   el.className = 'berry' + (Math.random() < .4 ? ' red' : ''); Object.assign(el.style, { left: x + 'px', top: y + 'px', zIndex: Math.round(y) + 1, pointerEvents: 'none' }); itemsEl.append(el);   // v3.42: 정보창에서 준 열매는 더 높이서 떨어진다 (잘 보이게)
   emote(m, '!', '', .8);
-  berryBounce(el, 110, () => { el.remove(); if (!S.mons.includes(m)) return;
+  berryBounce(el, 110, bx => { if (!S.mons.includes(m)) { el.remove(); return; }
     if (berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - BERRY_FILL); berryBoost(m, true);
     if (isFull(m)) { m.hunger = 0; setTimeout(() => emote(m, '배불러!', 'heart', 2), 3200); }
-    setState(m, 'eat', m.sp === 143 ? 8 : 5); log(`${J(m,'이/가')} 떨어진 열매를 바로 냠냠 먹었다.`, [m]); save(); });
+    const dur = m.sp === 143 ? 8 : 5; if (Math.abs(x + bx - m.x) > 2) m.face = Math.sign(x + bx - m.x);
+    setState(m, 'eat', dur); log(`${J(m,'이/가')} 떨어진 열매를 바로 냠냠 먹었다.`, [m]); save();
+    // v3.44 경완: 떨어진 열매가 바로 없어지지 않고, 먹는 동안 한 입씩 작아지다 사라진다
+    const tr = el.style.transform.replace(/scale\([^)]*\)/, ''); let k = 4;
+    const bite = () => { if (!el.isConnected) return; if (--k <= 0 || m.state !== 'eat') { el.remove(); return; } el.style.transform = `${tr} scale(${(k / 4 * .85 + .15).toFixed(2)})`; setTimeout(bite, dur * 1000 / 4); };
+    el.style.transition = 'transform .15s'; setTimeout(bite, dur * 1000 / 4); });
 }
 // v3.43 경완: 열매가 실제처럼 튄다 — 중력으로 떨어지고, 땅에 닿으면 탄성(0.42)만큼 다시 튀어 오르며 납작해졌다 돌아온다. 살짝 옆으로 구르며 멈춘다
 function berryBounce(el, h, done) {
@@ -2454,7 +2459,7 @@ function berryBounce(el, h, done) {
     el.style.opacity = Math.min(1, (h + y) / 25 + .2);
     el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${rot.toFixed(0)}deg) scale(${(1 + sq).toFixed(3)},${(1 - sq).toFixed(3)})`;
     el.style.transformOrigin = '50% 100%';
-    if (rest > .18) return done();
+    if (rest > .18) return done(x);
     requestAnimationFrame(step); };
   requestAnimationFrame(step);
 }
@@ -4562,7 +4567,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.43';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.44';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
