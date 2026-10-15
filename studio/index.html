@@ -137,19 +137,23 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 .bal .wide{grid-column:1/-1;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:6px}.bal .wide label{display:grid;gap:2px;font-size:11px;color:var(--mute);text-align:center}
 /* 왼쪽 소품 창 (접었다 폈다) */
 .view[data-v=map]{grid-template-columns:auto minmax(0,1fr) 300px}
-.dock{background:var(--panel);border-right:1px solid var(--line);width:212px;display:grid;grid-template-rows:auto minmax(0,1fr);min-height:0}
+.dock{position:relative;background:var(--panel);border-right:1px solid var(--line);width:var(--dw,212px);display:grid;grid-template-rows:auto auto minmax(0,1fr);min-height:0}
+.dock .dtab{display:flex;gap:4px;padding:0 10px 10px}.dock .dtab button{flex:1;min-width:0;padding:6px 4px;font-size:11.5px;background:var(--deep);border:1px solid var(--chip);border-radius:4px;color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dock .dtab button.on{background:var(--chip);border-color:var(--acc);color:var(--fg)}.dock .dtab .n{font-family:var(--px);font-size:10px;color:var(--mute);margin-left:3px}
+.dock .drz{position:absolute;top:0;right:-4px;width:8px;height:100%;cursor:ew-resize;z-index:5;touch-action:none}.dock .drz:hover,.dock .drz.on{background:linear-gradient(90deg,transparent 3px,var(--acc) 3px,var(--acc) 5px,transparent 5px)}
+.dock .it .k{font-size:10px;color:var(--mute);margin-top:-2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dock .dh{display:flex;align-items:center;gap:6px;padding:10px 10px 8px 12px}
 .dock .dh b{font-family:var(--px);font-weight:400;font-size:12px;color:var(--acc);flex:1;white-space:nowrap}
 .dock .dt{width:28px;height:28px;background:var(--chip);border:1px solid var(--chipb);border-radius:4px;color:var(--soft);display:grid;place-items:center;padding:0;font-size:12px}
 .dock .db{overflow:auto;padding:0 10px 14px;display:grid;gap:12px;align-content:start}
-.dock .sg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.dock .sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px}
 .dock .it{position:relative;display:grid;justify-items:center;align-content:end;gap:3px;padding:8px 4px 6px;background:var(--deep);border:1px solid var(--chip);border-radius:4px;font-size:11.5px;color:var(--soft);min-height:84px;touch-action:none;user-select:none;-webkit-user-select:none}
 .dock .it.dr{cursor:grab}.dock .it.dr:hover{border-color:var(--acc)}
 .dock .it img{height:46px;width:auto;max-width:76px;object-fit:contain;image-rendering:pixelated;pointer-events:none}
 .dock .it .fl{width:32px;height:44px;background-size:600% 100%;background-position:0 0;image-rendering:pixelated}
 .dock .it .ph{font-size:22px;line-height:1;opacity:.7}
 .dock .it .c{position:absolute;top:3px;right:5px;font-family:var(--px);font-size:10px;color:var(--mute)}
-.dock.fold{width:44px}.dock.fold .db,.dock.fold .dh b{display:none}.dock.fold .dh{flex-direction:column;padding:10px 8px}
+.dock.fold{width:44px}.dock.fold .db,.dock.fold .dh b,.dock.fold .dtab,.dock.fold .drz{display:none}.dock.fold .dh{flex-direction:column;padding:10px 8px}
 .dock.fold .dv{display:block;writing-mode:vertical-rl;font-family:var(--px);font-size:11px;color:var(--soft);letter-spacing:.2em;margin-top:6px;cursor:pointer}
 .dock .dv{display:none}
 #safeZ{position:absolute;inset:0;pointer-events:none;z-index:5}
@@ -237,7 +241,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
   .vc{padding:10px 12px;display:grid;overflow:visible;grid-template-rows:auto}
   .vi{border-left:0;border-top:1px solid var(--line);padding:14px 12px 24px}
   .view[data-v=map] .canvas{height:min(72vh,640px)}
-  .dock{width:auto;border-right:0;border-bottom:1px solid var(--line);grid-template-rows:auto auto}
+  .dock{width:auto;border-right:0;border-bottom:1px solid var(--line);grid-template-rows:auto auto auto}.dock .drz{display:none}.dock .dtab{padding:0 12px 8px}
   .dock .db{display:block;overflow-x:auto;overflow-y:hidden;padding:0 12px 10px}
   #spx{position:fixed;left:8px;right:8px;top:auto;bottom:calc(8px + env(safe-area-inset-bottom,0px));width:auto;height:42vh}
   #zoom{resize:none;left:12px!important;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));top:auto!important;width:auto}
@@ -269,7 +273,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
   <main id="main">
     <!-- 맵 편집 -->
     <section class="view" data-v="map">
-      <aside class="dock" id="dock"><div class="dh"><b>맵 소품</b><button class="dt" id="dockT" aria-label="소품 창 접기">◀</button><span class="dv" id="dockV">맵 소품</span></div><div class="db" id="dockB"></div></aside>
+      <aside class="dock" id="dock"><div class="dh"><b>맵 소품</b><button class="dt" id="dockT" aria-label="소품 창 접기">◀</button><span class="dv" id="dockV">맵 소품</span></div><div class="dtab" id="dockTab" role="tablist"><button data-t="all" role="tab">전체 소품</button><button data-t="map" role="tab">맵에 있는 소품</button></div><div class="db" id="dockB"></div><div class="drz" id="dockRz" title="끌어서 창 너비 바꾸기 · 두 번 누르면 처음 너비"></div></aside>
       <div class="vc">
         <div class="tools">
           <b>시간</b><input type="range" id="hr" min="0" max="23.75" step=".25" value="14"><span class="num" id="hrT" style="min-width:7.5em">지금</span><button class="chip on" id="hrNow">지금</button>
@@ -377,7 +381,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '1.9';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.0';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -571,7 +575,7 @@ $$('.nudge [data-n]').forEach(b => b.onclick = () => { const [x, y] = b.dataset.
 $('#addp').onclick = e => { const b = e.target.closest('[data-k]'); if (b) A?.add(b.dataset.k); };
 function onSel(s, nUndo) {
   $('#eUndo').disabled = !nUndo;
-  $('#propPane').hidden = !s; if (!s) { if (editing) renderReact(null); return; }
+  dockMark(s); $('#propPane').hidden = !s; if (!s) { if (editing) renderReact(null); return; }
   $('#pName').textContent = s.name; $('#pPos').textContent = `${s.x}, ${s.y}` + (s.size ? ` · 크기 ${s.size[0]}×${s.size[1]}` : ''); $('#pDel').disabled = !s.del;
   renderReact(KEY2R[s.key] || null);
 }
@@ -619,14 +623,41 @@ $('#dockT').onclick = () => dockFold(!$('#dock').classList.contains('fold'));
 $('#dockV').onclick = () => dockFold(false);
 dockFold(store.get('st-dock') === '1' || (mobile() && store.get('st-dock') !== ''));
 const icon = (src, fr) => src ? (fr ? `<span class="fl" style="background-image:url(${src})"></span>` : `<img alt="" src="${src}">`) : '<span class="ph">●</span>';
+// v2.0 경완: 소품 창을 "전체 소품 / 맵에 있는 소품" 탭으로 나눔. 창 오른쪽 끝을 끌어 너비를 바꾼다
+let dockTab = store.get('st-dock-tab') === 'map' ? 'map' : 'all';
+const dockW = w => { w = Math.max(150, Math.min(480, Math.round(w))); $('#dock').style.setProperty('--dw', w + 'px'); return w; };
+if (+store.get('st-dock-w')) dockW(+store.get('st-dock-w'));
+$('#dockTab').onclick = e => { const b = e.target.closest('[data-t]'); if (!b || b.dataset.t === dockTab) return; dockTab = b.dataset.t; store.set('st-dock-tab', dockTab); closeZoom(); renderDock(); $('#dockB').scrollTop = 0; };
+$('#dockRz').addEventListener('pointerdown', e => { if (e.button) return; e.preventDefault(); const rz = e.currentTarget, x0 = e.clientX, w0 = $('#dock').offsetWidth; rz.classList.add('on'); document.body.classList.add('wdrag');
+  const mv = ev => { dockW(w0 + ev.clientX - x0); fitPhone(); };
+  const up = () => { rz.classList.remove('on'); document.body.classList.remove('wdrag'); removeEventListener('pointermove', mv); removeEventListener('pointerup', up); store.set('st-dock-w', String(dockW($('#dock').offsetWidth))); requestAnimationFrame(fitPhone); };
+  addEventListener('pointermove', mv); addEventListener('pointerup', up); });
+$('#dockRz').ondblclick = () => { $('#dock').style.removeProperty('--dw'); store.set('st-dock-w', ''); requestAnimationFrame(fitPhone); };
+function dockMark(s) { const id = s ? s.key + ':' + s.i : ''; $$('.dock [data-ik]').forEach(x => x.classList.toggle('on', x.dataset.ik === id)); }
 function renderDock() {
+  $$('#dockTab [data-t]').forEach(b => { b.classList.toggle('on', b.dataset.t === dockTab); b.setAttribute('aria-selected', b.dataset.t === dockTab); });
+  if (A?.cat && A.insts) { const n = A.insts().length; $('#dockTab [data-t="map"]').innerHTML = `맵에 있는 소품<span class="n">${n}</span>`; }
+  if (A?.cat && dockTab === 'map') return renderDockMap();
+  renderDockAll(); }
+function renderDockMap() {
+  if (!A.insts) { $('#dockB').innerHTML = '<div class="small mute">게임을 새 버전(v3.67)으로 올리면 맵에 있는 소품을 하나씩 볼 수 있어요.</div>'; return; }
+  const G = []; for (const o of A.insts()) { let g = G.find(x => x.key === o.key); if (!g) G.push(g = { key: o.key, name: o.key === 'flowers' ? '꽃' : o.name, L: [] }); g.L.push(o); }
+  const sl = A.selInfo?.(), sid = sl ? sl.key + ':' + sl.i : '';
+  const cell = o => { const id = o.key + ':' + o.i; return `<div class="it${id === sid ? ' on' : ''}" data-ik="${id}" title="${esc(o.name)}${o.kindName ? ' · ' + esc(o.kindName) : ''}">${o.key === 'mush' ? '<span class="ph">🍄</span>' : icon(o.icon, o.fr)}${esc(o.name)}${o.kindName ? `<span class="k">${esc(o.kindName)}</span>` : ''}</div>`; };
+  $('#dockB').innerHTML = `<h4>누르면 맵에서 골라 모양을 바꿔요</h4>` + (mobile() ? `<div class="sg">${G.flatMap(g => g.L).map(cell).join('')}</div>`   // 휴대폰은 한 줄로 옆으로 넘긴다
+    : G.map(g => `<h4>${esc(g.name)} <span class="num mute">${g.L.length}</span></h4><div class="sg">${g.L.map(cell).join('')}</div>`).join(''));
+}
+function renderDockAll() {
   if (!A?.cat) { $('#dockB').innerHTML = '<div class="small mute">게임을 새 버전(v3.61)으로 올리면 여기서 소품을 끌어다 놓을 수 있어요.</div>'; return; }
   const C = A.cat();
   $('#dockB').innerHTML = `<h4>끌어다 놓기 · 누르면 크게</h4><div class="sg">${C.add.map(([k, n, src, c]) => `<div class="it dr" data-k="${k}" title="${esc(n)} · 맵에 ${c}개">${c ? `<span class="c">${c}</span>` : ''}${k === 'mush' ? '<span class="ph">🍄</span>' : icon(src)}${esc(n)}</div>`).join('')}</div>
     ${(C.mine || []).length ? `<h4>내 소품</h4><div class="sg">${C.mine.map(([k, n, src, c]) => `<div class="it dr mine" data-k="${k}" title="${esc(n)} · 맵에 ${c}개">${c ? `<span class="c">${c}</span>` : ''}${icon(src)}${esc(n)}</div>`).join('')}</div>` : ''}
     <h4 class="one">맵에 하나뿐</h4><div class="sg one">${C.one.map(([k, n, src, fr]) => `<div class="it" data-one="${k}">${icon(src, fr)}${esc(n)}</div>`).join('')}</div>`;
 }
+$('#dockB').addEventListener('click', e => {   // 맵에 있는 소품: 누르면 맵에서 그 소품을 고른다 (휴대폰에서 옆으로 넘길 때는 안 골라지게 click 으로)
+  const ik = e.target.closest('[data-ik]'); if (!ik || !A) return; const [key, i] = ik.dataset.ik.split(':'); if (!editing) setEdit(true); A.pick(key, +i); const s = A.selInfo?.(); if (s?.lk) openInst(s, ik); else closeZoom(); dockMark(s); });
 $('#dockB').addEventListener('pointerdown', e => {
+  if (e.target.closest('[data-ik]')) return;
   const one = e.target.closest('[data-one]'); if (one) { const k = one.dataset.one; if (!editing) setEdit(true); A.pick(k); $$('.dock .it').forEach(x => x.classList.toggle('on', x === one)); openInst(A.selInfo?.() || null, one); return; }
   const it = e.target.closest('.it.dr'); if (!it || e.button > 0 || !A) return; if (e.pointerType === 'mouse') e.preventDefault();
   const k = it.dataset.k, x0 = e.clientX, y0 = e.clientY; let moved = false, last = null, g = null, cv = null;
@@ -689,18 +720,21 @@ function openZoom(k, el) {
   const z = $('#zoom'); z.hidden = false;
   z.innerHTML = `<div class="zh"><b>${esc(row[1])}</b><button class="chip" id="zX" aria-label="닫기">✕</button></div><div class="zv" id="zV"></div>
     ${mine ? `${SL}<div class="kname"><input id="zName" maxlength="12" value="${esc(row[1])}" aria-label="분류 이름"><button class="chip" id="zRen">이름 바꾸기</button></div><div class="small mute">이 분류로 놓은 소품 ${row[3]}개가 모두 같이 바뀌어요.</div>`
-      : `<div class="small mute">${NOLOOK.has(k) ? '이 소품은 아직 크기·색을 바꿀 수 없어요.' : '맵에서 소품을 누르면 그 소품 하나만 크기·색을 바꿀 수 있어요. 바꾼 모양은 "소품 목록에 추가"로 내 소품이 돼요.'}</div>`}
-    <div class="chips"><button class="chip" id="zAdd">맵 가운데에 놓기</button>${mine ? '<button class="chip" id="zDel">분류 지우기</button>' : ''}</div>`;
+      : NOLOOK.has(k) ? '<div class="small mute">이 소품은 아직 크기·색을 바꿀 수 없어요.</div>' : `${SL}<div class="small mute">크기·색을 정한 뒤 맵에 추가하면 그 모양으로 놓여요. 끌어다 놓으면 원래 모양이에요.</div>`}
+    <div class="chips">${mine || NOLOOK.has(k) ? '<button class="chip" id="zAdd">맵 가운데에 놓기</button>' : '<button class="btn" id="zAdd">이 모양으로 맵에 추가</button><button class="chip" id="zR0">원래대로</button>'}${mine ? '<button class="chip" id="zDel">분류 지우기</button>' : ''}</div>`;
   zoomPos(z, el);
-  const paint = () => { if (mine) { const K = A.kind(k); zPaint(z, A.lookIcon(k), { ...K.lk, s: K.lk.s }, 0); } else zPaint(z, A.lookIcon(k) || row[2], { s: 1, h: 0, c: 100, b: 100 }, 0); };
+  const L0 = { s: 1, h: 0, c: 100, b: 100 }; let LKz = { ...L0 };
+  const paint = () => { if (mine) { const K = A.kind(k); zPaint(z, A.lookIcon(k), { ...K.lk, s: K.lk.s }, 0); } else zPaint(z, (NOLOOK.has(k) ? '' : A.lookIcon(k, LKz)) || row[2], LKz, 0); };
   paint();
+  if (!mine && !NOLOOK.has(k)) zSliders(z, () => { z.querySelectorAll('[data-l]').forEach(i => { LKz[i.dataset.l] = i.dataset.l === 's' ? +i.value / 100 : +i.value; }); paint(); });
   if (mine) zSliders(z, v => { A.setKind(k, { lk: v }); if (!editing) setEdit(true); setTimeout(() => { paint(); renderDock(); }, 80); });
   let armed = false;
   z.onclick = e => { const b = e.target.closest('button'); if (!b) return;
     if (b.id === 'zX') closeZoom();
     else if (b.id === 'zRen') { A.setKind(k, { n: $('#zName').value.trim() }); renderDock(); z.querySelector('.zh b').textContent = A.kind(k).n; toast('이름을 바꿨어요'); }
     else if (b.id === 'zDel') { if (!armed) { armed = true; b.textContent = '정말 지울까요? 한 번 더'; return; } A.delKind(k); closeZoom(); renderDock(); toast('분류를 지웠어요. 맵의 소품은 모양 그대로 남아요'); }
-    else if (b.id === 'zAdd') { if (!editing) setEdit(true); A.add(k); renderDock(); toast('가운데에 놓았어요. 끌어서 옮겨요'); } };
+    else if (b.id === 'zR0') { LKz = { ...L0 }; paint(); }
+    else if (b.id === 'zAdd') { if (!editing) setEdit(true); A.add(k); if (!mine && !NOLOOK.has(k) && JSON.stringify(LKz) !== JSON.stringify(L0)) A.setSelLook?.(LKz); renderDock(); dockMark(A.selInfo?.()); toast('가운데에 놓았어요. 끌어서 옮겨요'); } };
 }
 // 맵에서 고른 소품 하나: 이 소품만 모양을 바꾸고, 원하면 내 소품(분류)으로 저장
 function openInst(s, el) {
@@ -1082,6 +1116,7 @@ const BUBS = [
 ];
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.0', '10월 16일', ['맵 소품 창을 "전체 소품 / 맵에 있는 소품" 탭으로 나눔. 맵에 있는 소품을 누르면 맵에서 그 소품이 골라지고 모양을 바꿀 수 있어요', '소품 창 오른쪽 끝을 끌어 너비 조절 (두 번 누르면 처음 너비)', '전체 소품에서 소품을 누르면 크기·색조·채도·밝기를 정해 "이 모양으로 맵에 추가"']],
   ['1.9', '10월 16일', ['세이프 존을 모든 기종 기준으로: 어느 폰에서든 잘리거나 가려지는 필드 칸을 주황 빗금으로, 남는 칸을 점선 상자로', '맵 편집 창은 휴대폰 오른쪽 아래에 넓게 뜨고, 편집하는 동안 오른쪽 칸은 숨김 (휴대폰 자리는 그대로)']],
   ['1.8', '10월 16일', ['밸런스 메뉴에 게임 아이콘 (골드·하트·열매·빗·손·알…)', '알 수집 확률과 알 등급별 포켓몬을 "알" 메뉴 하나로, 위쪽 탭으로 나눔', '알 메뉴 곳곳에 등급별 알 그림', '메뉴 이름 바꾸기: 메뉴에 마우스를 올리면 나오는 연필을 눌러요 (포켓몬·모션 → 포켓몬)', '포켓몬 모션을 그림이 있는 칸으로 가지런히', '필드 포켓몬 칸: 오른쪽 위 X 로 빼기, 누르면 테두리만 표시', '포켓몬 넣기 창은 오른쪽 칸 바로 왼쪽에', '떠 있는 창(포켓몬 넣기·소품·맵 편집)은 머리를 잡고 옮기고, 오른쪽 아래 모서리로 크기 바꾸기 (머리를 두 번 누르면 제자리)', '맵 편집 창을 더 넓게']],
   ['1.7', '10월 16일', ['버전 기록 메뉴와 지금 버전 카드', '처음 열 때 더 빨리 뜨게 (글꼴·그림 모음 따로 받고 저장해 둠)', '기종별 휴대폰 상단바 (시간·다이내믹 아일랜드·노치·와이파이·배터리)', '소품을 눌러도 화면 배치 그대로, 편집 버튼은 휴대폰 오른쪽 작은 창에', '꽃 소품 꽃잎 색 바꾸기', '말풍선 메뉴를 말풍선마다 한 줄로', '알 등급별 포켓몬: 줄을 잡고 끌어 순서 바꾸기', '티어 표를 티어마다 한 줄로, 포켓몬 이름 표시']],

@@ -5109,7 +5109,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.66';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.67';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7733,6 +7733,9 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     else if (k === 'puddle') { LAYOUT.puddles.push({ x: cx, y: cy, w: 58 }); sel = { key: 'puddles', i: LAYOUT.puddles.length - 1 }; }
     if (KD && sel) setIlk(sel.key, LAYOUT[sel.key][sel.i], k0);
     changed(SPR.flw[k] ? 'flowers' : k === 'bush' ? 'bushes' : k === 'puddle' ? 'puddles' : 'rocks'); };
+  // v3.67 경완: 맵에 놓인 소품 하나하나 (작업실 "맵에 있는 소품" 탭)
+  api.insts = () => { const C = api.cat(), oneI = Object.fromEntries(C.one.map(r => [r[0], r[2]])); return items().map(({ key, i }) => { const v = i >= 0 ? LAYOUT[key][i] : LAYOUT[key], k = LKK(key, v), id = k ? ilk(key, v) : null;
+    return { key, i, name: key === 'flowers' ? FNAME[v[0]] : NAME[key], kindName: typeof id === 'string' ? LAYOUT.kinds?.[id]?.n || null : null, icon: key === 'fire' ? SPR.flame : k ? api.lookIcon(k, LKi(k, key, v)) : oneI[key] || '', fr: key === 'fire' ? 6 : 0 }; }); };
   api.pick = (key, i = -1) => { if (!(key in LAYOUT)) return; sel = { key, i }; renderHands(); api.onSel?.(selInfo(), undo.length); };
   api.cat = () => { const n = k => LAYOUT[k].length, nf = k => LAYOUT.flowers.filter(f => f[0] === k).length, nr = sz => LAYOUT.rocks.filter(r => r[4] === sz).length;
     return { one: [['tree', '열매나무', SPR.tree], ['perch', '횃대', SPR.perch], ['fire', '모닥불', SPR.flame, 6], ['bed', '꽃밭', SPR.flw.sun.src], ['stump', '그루터기', api.lookIcon('stump')], ['pond', '연못', SPR.lilyF]],
