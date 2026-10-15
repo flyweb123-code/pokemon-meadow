@@ -4539,7 +4539,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.33';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.34';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5820,7 +5820,7 @@ function drawEgg() {
 }
 // 가방: 움직인 거리만큼 알을 줍는다. 250m마다 0~2개라 2.5km면 대개 5~15개, 등급 확률은 알 뽑기와 같다.
 const MAX_BAG = 999, BAG_STEP = .25;
-const PITY_E = 100, PITY_L = 200;   // v3.33 경완: 천장 (에픽 100km, 전설 200km)
+const PITY_E = 75, PITY_L = 150;   // v3.34 경완: 천장은 평균 거리의 1.5배 (에픽 75km, 전설 150km)
 const rollGrade = () => { const r = Math.random(); return r < .6825 ? 1 : r < .9325 ? 2 : r < .9925 ? 3 : r < .9975 ? 4 : 5; };   // v3.32 경완: 알은 1km에 약 4개, 전설 100km·에픽 50km·레어 4km에 1개꼴 → 68.25/25/6/0.5/0.25 (예전 45/30/15/8/2)
 // 오늘 기록: 걸은 거리(만보기), 주운 알. 날짜가 바뀌면 새로
 const dayKey = (t = Date.now()) => { const d = new Date(t); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
