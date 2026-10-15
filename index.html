@@ -432,10 +432,28 @@ ol.log li.big .txt{color:#c03838}
 .mon.aura img,.mon.aura .spr{filter:drop-shadow(0 0 3px #e0a0ff) drop-shadow(0 0 7px #b070ff)}
 .act.hop{animation:hop .45s ease-out}.act.phop{animation:phop .3s ease-out}@keyframes phop{0%,100%{transform:translateX(-50%) translateY(0)}45%{transform:translateX(-50%) translateY(-7px)}}
 .act.shake{animation:shake .25s linear 3}
-.act.burrow{animation:burrow .9s ease-in forwards}
-.act.emerge{animation:emerge .7s ease-out}
+/* v3.47 경완: 구멍파기 — 크기·투명도는 그대로, 땅선 아래는 잘리고 드드득 떨며 아래로 박혀 들어간다 */
+.mon.dig .act{clip-path:polygon(-999px -999px,999px -999px,999px 0,-999px 0)}
+.mon.dig .dirt{animation:judder .08s steps(1) infinite}
+@keyframes judder{0%{transform:translateX(-1.5px)}50%{transform:translateX(1.5px)}}
+.mon.dig.down .act>*{animation:digDown var(--dd,.9s) steps(9,end) forwards}
+.mon.dig.up .act>*{animation:digUp var(--dd,.6s) steps(7,end) both}
+@keyframes digDown{to{transform:translateY(var(--dh,40px))}}
+@keyframes digUp{from{transform:translateY(var(--dh,40px))}to{transform:none}}
+.hole{position:absolute;left:0;top:0;width:var(--hw,30px);height:calc(var(--hw,30px)*.42);pointer-events:none;border-radius:50%;transform:translate(-50%,-50%);
+  background:radial-gradient(ellipse closest-side,#1e140b 0 52%,#3f2a17 66%,#6e4e2c 80%,#9a7546 92%,transparent 100%);animation:holeIn .9s steps(4,end) both}
+.hole::before,.hole::after{content:"";position:absolute;width:4px;height:3px;background:#7a5530;box-shadow:0 1px 0 #4a3018}
+.hole::before{left:-5px;top:30%;box-shadow:0 1px 0 #4a3018,3px -3px 0 #8a6538,-2px 4px 0 #6e4e2c}
+.hole::after{right:-5px;top:20%;box-shadow:0 1px 0 #4a3018,-3px 4px 0 #8a6538,2px -2px 0 #6e4e2c}
+.hole.out{animation:holeOut .5s ease-in forwards}
+@keyframes holeIn{from{transform:translate(-50%,-50%) scale(.25)}}
+@keyframes holeOut{to{transform:translate(-50%,-50%) scale(.4);opacity:0}}
+.pt.clod{width:4px;height:4px;background:#7a5530;animation:clod .55s cubic-bezier(.2,.6,.6,1) forwards}
+@keyframes clod{0%{transform:translate(0,0)}45%{transform:translate(calc(var(--dx,6px)*.6),var(--dy,-14px))}100%{transform:translate(var(--dx,6px),2px);opacity:.2}}
 .act.vanish{animation:vanish .8s ease-in forwards}
 .act.appear{animation:appear .8s ease-out}
+.act.burrow{animation:burrow .9s ease-in forwards}
+.act.emerge{animation:emerge .7s ease-out}
 .act.breathe{animation:breathe 2.6s ease-in-out infinite;transform-origin:50% 100%}
 .act.doze{animation:doze 2.4s ease-in-out,snooze 3s ease-in-out 2.4s infinite;transform-origin:50% 100%}
 .act.sleeping{animation:snooze 3s ease-in-out infinite;transform-origin:50% 100%}
@@ -482,7 +500,7 @@ ol.log li.big .txt{color:#c03838}
 .bubble{position:absolute;left:0;top:0;transform:translate(-50%,-100%);background:#f8f8f8;color:#282830;border:2px solid #383848;padding:1px 6px 2px;
   font:700 12px/1.3 var(--px);box-shadow:2px 2px 0 rgba(0,0,0,.3);white-space:nowrap;animation:pop .2s steps(2)}
 .bubble::after{content:"";position:absolute;left:50%;bottom:-7px;margin-left:-4px;border:4px solid transparent;border-bottom:0;border-top:5px solid #383848}
-.bubble.heart{color:#e0405a}.bubble.anger{color:#d62f2f}.bubble.note{color:#2b6cc4}.bubble.zz{color:#5560a8;background:#e8eaff}
+.bubble.heart{color:#e0405a}.bubble.happy{font-size:15px;padding:0 4px 1px}.bubble.anger{color:#d62f2f}.bubble.note{color:#2b6cc4}.bubble.zz{color:#5560a8;background:#e8eaff}
 @keyframes pop{from{transform:translate(-50%,-80%) scale(.5)}}
 .tag{position:absolute;left:0;top:0;transform:translate(-50%,6px);font:400 12px/1 var(--px);color:#f8f8f8;background:#383848;padding:3px 6px;white-space:nowrap}
 .pt{position:absolute;left:0;top:0;font:700 15px/1 var(--body,var(--px));animation:rise 1.2s ease-out forwards;transform:translate(-50%,-50%)}
@@ -2445,10 +2463,7 @@ function feedNow(m) {
     if (isFull(m)) { m.hunger = 0; setTimeout(() => emote(m, '배불러!', 'heart', 2), 3200); }
     const dur = m.sp === 143 ? 8 : 5; if (Math.abs(x + bx - m.x) > 2) m.face = Math.sign(x + bx - m.x);
     setState(m, 'eat', dur); log(`${J(m,'이/가')} 떨어진 열매를 바로 냠냠 먹었다.`, [m]); save();
-    // v3.44 경완: 떨어진 열매가 바로 없어지지 않고, 먹는 동안 한 입씩 작아지다 사라진다
-    const tr = el.style.transform.replace(/scale\([^)]*\)/, ''); let k = 4;
-    const bite = () => { if (!el.isConnected) return; if (--k <= 0 || m.state !== 'eat') { el.remove(); return; } el.style.transform = `${tr} scale(${(k / 4 * .85 + .15).toFixed(2)})`; setTimeout(bite, dur * 1000 / 4); };
-    el.style.transition = 'transform .15s'; setTimeout(bite, dur * 1000 / 4); });
+    biteBerry(el, m, dur, x + bx, y); });
 }
 // v3.43 경완: 열매가 실제처럼 튄다 — 중력으로 떨어지고, 땅에 닿으면 탄성(0.42)만큼 다시 튀어 오르며 납작해졌다 돌아온다. 살짝 옆으로 구르며 멈춘다
 function berryBounce(el, h, done) {
@@ -2601,6 +2616,19 @@ const endBdrag = e => {
   noticeBerry(d.b);
 };
 window.addEventListener('pointerup', endBdrag); window.addEventListener('pointercancel', endBdrag);
+// v3.47 경완: 먹는 동안 열매에 한 입씩 베어 먹은 자국이 생기고, 마지막 입에 부스러기를 남기고 사라진다. 먹기 시작하면 행복한 말풍선
+const BITES = [['105% 25%', 5], ['98% 60%', 4], ['-5% 45%', 5], ['8% 76%', 3.5], ['55% -8%', 5.5], ['22% 4%', 4]];
+function biteBerry(el, m, dur, x, y) {
+  el.style.pointerEvents = 'none'; el.classList.remove('rot', 'new'); emote(m, '😋', 'happy', 2.4);
+  const col = el.classList.contains('red') ? '#e2414b' : '#3a7fd6', n = 4; let k = 0;
+  const crumbs = c => { for (let i = 0; i < c; i++) particle(x + rnd(-5, 5), y - 6, 'clod', '', d => { d.style.background = col; d.style.width = d.style.height = '3px'; d.style.setProperty('--dx', rnd(-12, 12).toFixed(0) + 'px'); d.style.setProperty('--dy', rnd(-10, -4).toFixed(0) + 'px'); }); };
+  const bite = () => { if (!el.isConnected) return; k++;
+    if (k >= n || m.state !== 'eat' || !S.mons.includes(m)) { if (k >= n) crumbs(4); el.remove(); return; }
+    const L = BITES.slice(0, k * 2).map(([at, r]) => `radial-gradient(circle at ${at},#0000 ${r}px,#000 ${r + .5}px)`).join(',');
+    el.style.webkitMaskImage = el.style.maskImage = L; el.style.webkitMaskComposite = 'source-in'; el.style.maskComposite = 'intersect';
+    crumbs(2); setTimeout(bite, dur * 1000 / n); };
+  setTimeout(bite, dur * 1000 / n);
+}
 function eatBerry(b) { b.el.remove(); S.berries = S.berries.filter(x => x !== b); }
 function rotBerries() {
   const now = Date.now();
@@ -2747,9 +2775,9 @@ function arrive(m) {
     }
     if (isFull(m)) { emote(m, '배불러'); return setState(m, 'idle', 2); }
     const mine = b.for === m || !b.nat;   /* 내가 풀밭에 둔 열매도 내가 준 열매 (나무에서 떨어진 열매는 아님) */
-    b.eater = m; eatBerry(b); if (mine && berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - BERRY_FILL); berryBoost(m, mine);
+    b.eater = m; S.berries = S.berries.filter(x => x !== b); if (mine && berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - BERRY_FILL); berryBoost(m, mine);
     if (isFull(m)) { m.hunger = 0; setTimeout(() => emote(m, '배불러!', 'heart', 2), 3200); if (Math.random() < .5) log(`${J(m,'이/가')} 배가 가득 찼다.`, [m]); }
-    setState(m, 'eat', m.sp === 143 ? 8 : 5); 
+    setState(m, 'eat', m.sp === 143 ? 8 : 5); if (Math.abs(b.x - m.x) > 2) m.face = Math.sign(b.x - m.x); biteBerry(b.el, m, m.t, b.x, b.y);
     if (b.for === m || Math.random() < .45) log(pick([`${J(m,'이/가')} 나무열매를 냠냠 먹었다.`, `${J(m,'이/가')} 열매를 맛있게 먹는다.`]), [m]);
     return;
   }
@@ -3699,7 +3727,7 @@ function doSpecial(m) {
     return true;
   }
   if (sp === 'dig') {
-    setState(m, 'special', 5.5); m.special = 'dig'; m.phase = 0; m.act.classList.add('burrow'); dustAt(m);
+    setState(m, 'special', 5.5); m.special = 'dig'; m.phase = 0; digDown(m, 1000);
     if (Math.random() < .5) log(`${J(m,'이/가')} 땅속으로 쏙 들어갔다.`, [m]);
     return true;
   }
@@ -3844,15 +3872,14 @@ function tickSpecial(m, dt) {
     slept.forEach(o => addRel(o, m, 2));
   }
   if (s === 'dig' || s === 'teleport') {
-    const out = s === 'dig' ? 'burrow' : 'vanish', inn = s === 'dig' ? 'emerge' : 'appear';
     if (m.phase === 0 && m.t < (s === 'dig' ? 4.4 : 3.1)) { m.phase = 1; m.hidden = true; m.el.style.visibility = 'hidden'; }
+    if (s === 'dig' && m.phase === 1 && m.t < 1.5) holeOff(m);   /* 다시 나올 때쯤 구멍이 메워진다 */
     if (m.phase === 1 && m.t < 1) {
       m.phase = 2; m.hidden = false; m.el.style.visibility = '';
       const p = s === 'teleport' ? { x: rnd(XL + 60, XR - 60), y: rnd(MIN_Y + 20, MAX_Y - 10) } : randLand();
       m.x = m.tx = p.x; m.y = m.ty = p.y;
-      m.act.classList.remove(out); anim(m, inn);
-      if (s === 'dig') { dustAt(m); const near = S.mons.filter(o => o !== m && awake(o) && dist(o, m) < 60); near.forEach(o => { emote(o, '!'); }); if (near.length) log(`${J(m,'이/가')} ${N(near[0])} 바로 앞에서 쑥 튀어나왔다!`, [m, near[0]]); }
-      else log(`${J(m,'이/가')} 엉뚱한 곳에 다시 나타났다.`, [m]);
+      if (s === 'dig') { digUp(m, 650); const near = S.mons.filter(o => o !== m && awake(o) && dist(o, m) < 60); near.forEach(o => { emote(o, '!'); }); if (near.length) log(`${J(m,'이/가')} ${N(near[0])} 바로 앞에서 쑥 튀어나왔다!`, [m, near[0]]); }
+      else { m.act.classList.remove('vanish'); anim(m, 'appear'); log(`${J(m,'이/가')} 엉뚱한 곳에 다시 나타났다.`, [m]); }
     }
   }
   if (s === 'sun') m.energy = clamp(m.energy + dt * .8);
@@ -3860,7 +3887,7 @@ function tickSpecial(m, dt) {
   if (s === 'train' && Math.random() < dt * 2) anim(m, 'hop');
   if (s === 'moon' && Math.random() < dt * 2) { m.face *= -1; if (Math.random() < .4) anim(m, 'hop'); }
   if (s === 'splash' && Math.random() < dt * 1.5) { anim(m, 'hop'); splashAt(m); }
-  if (m.t <= 0) { m.special = null; m.act.classList.remove('burrow', 'vanish'); think(m); }
+  if (m.t <= 0) { m.special = null; m.act.classList.remove('burrow', 'vanish'); if (m.el.classList.contains('down')) digClear(m); think(m); }
 }
 function ghostScare(g, o) {
   if (!S.mons.includes(o) || !awake(o)) return think(g);
@@ -3892,6 +3919,21 @@ function revert(m) {
   log(`${J(m,'이/가')} 변신이 풀려 원래 모습으로 돌아왔다.`, [m]);
 }
 function dustAt(m) { for (let i = 0; i < 4; i++) particle(m.x + rnd(-14, 14), m.y + rnd(-4, 4), 'dust'); }
+// v3.47 경완: 구멍파기 — 아래부터 잘리며 드드드득 박혀 들어가고 흙먼지·흙덩이가 튄다. 들어간 자리엔 파인 구멍이 잠깐 남는다
+function digFx(m, ms) { const w = Math.max(14, (m.w || 30) * .4), n = Math.max(3, Math.round(ms / 110));
+  for (let i = 0; i < n; i++) setTimeout(() => { if (!S.mons.includes(m)) return;
+    particle(m.x + rnd(-w, w), m.y + rnd(-3, 3), 'dust');
+    if (i % 2 === 0) particle(m.x + rnd(-w * .5, w * .5), m.y - 2, 'clod', '', d => { d.style.setProperty('--dx', rnd(-26, 26).toFixed(0) + 'px'); d.style.setProperty('--dy', rnd(-22, -10).toFixed(0) + 'px'); });
+  }, i * 110); }
+function digSnd(sec) { if (!sfxOn) return; const a = audio(); if (!a) return; const t = a.currentTime + .01; for (let i = 0; i * .07 < sec; i++) noise(t + i * .07, .05, .05, 220 + (i % 2) * 120); }
+function digDown(m, ms = 900) { const e = m.el; e.style.setProperty('--dh', Math.round((m.h || 40) + 8) + 'px'); e.style.setProperty('--dd', ms + 'ms');
+  e.classList.remove('up'); void e.offsetWidth; e.classList.add('dig', 'down'); digFx(m, ms); digSnd(ms / 1000);
+  holeOff(m); const h = document.createElement('i'); h.className = 'hole'; Object.assign(h.style, { left: m.x + 'px', top: m.y + 'px', zIndex: Math.round(m.y) - 2 }); h.style.setProperty('--hw', Math.round(Math.max(24, Math.min(70, (m.w || 30) * .8))) + 'px'); itemsEl.append(h); m.hole = h; setTimeout(() => { if (m.hole === h) holeOff(m); }, 8000); }
+function holeOff(m) { const h = m.hole; if (!h) return; m.hole = null; h.classList.add('out'); setTimeout(() => h.remove(), 600); }
+function digUp(m, ms = 600) { const e = m.el; e.style.setProperty('--dh', Math.round((m.h || 40) + 8) + 'px'); e.style.setProperty('--dd', ms + 'ms');
+  e.classList.remove('down'); void e.offsetWidth; e.classList.add('dig', 'up'); holeOff(m); digFx(m, ms); digSnd(ms / 1000);
+  clearTimeout(m.digT); m.digT = setTimeout(() => e.classList.remove('dig', 'up'), ms + 30); }
+function digClear(m) { clearTimeout(m.digT); m.el?.classList.remove('dig', 'up', 'down'); holeOff(m); }
 function splashAt(m) { for (let i = 0; i < 5; i++) particle(m.x + rnd(-6, 6), m.y - 6, 'splash', '', d => d.style.setProperty('--dx', rnd(-26, 26) + 'px')); }
 
 
@@ -3922,8 +3964,8 @@ function drawSprite(m, dt) {
   if (m.state === 'sleep') m.sleepAge = (m.sleepAge || 0) + dt;
   if (m.one) { m.one.t += dt; name = m.one.name; t = m.one.t; }
   if (!A[name]) name = name === 'WalkUp' ? 'Walk' : 'Idle';
-  // v3.46 경완: 먹는 그림(Eat)이 없는 종(745종, 파르빗 등)은 서 있는 그림으로 고개를 꾸벅이며 오물오물 먹는다
-  { const nib = m.state === 'eat' && !A.Eat && !m.one; if (nib !== !!m.nib) { m.nib = nib; m.el.classList.toggle('nib', nib); } }
+  // v3.46/3.47 경완: 먹는 동안은 고개를 꾸벅이며 오물오물 (파르빗처럼 Eat 그림 움직임이 작은 종도 잘 보이게 모든 종)
+  { const nib = m.state === 'eat' && !m.one; if (nib !== !!m.nib) { m.nib = nib; m.el.classList.toggle('nib', nib); } }
   const a = A[name], durs = a[6];
   let total = 0; for (const d of durs) total += d; total /= 60;
   let f;
@@ -3931,7 +3973,7 @@ function drawSprite(m, dt) {
     if (m.one.hold) f = t >= (durs.slice(0, a[7] + 1).reduce((s, d) => s + d, 0) / 60) ? a[7] : null;
     else if (t >= total) { m.one = null; return drawSprite(m, 0); }
     if (f == null) f = null;
-  } else { if (m.sprKey !== name) { m.sprKey = name; m.at = 0; } m.at += dt * (name === 'Eat' ? .45 : 1); t = m.at % total; }   // 먹는 동작은 천천히 오물오물
+  } else { if (m.sprKey !== name) { m.sprKey = name; m.at = 0; } m.at += dt * (name === 'Eat' ? .75 : 1); t = m.at % total; }   // 먹는 동작은 천천히 오물오물
   if (f == null) { let acc = 0; f = durs.length - 1; for (let i = 0; i < durs.length; i++) { acc += durs[i] / 60; if (t < acc) { f = i; break; } } }
   const key = name + ':' + f;
   if (m.frameKey === key) return;
@@ -4571,7 +4613,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.46';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.47';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5729,14 +5771,14 @@ function moveMotion(m, mo, f, fire, dc) {
   m.goal = null; setState(m, 'special', dur + .4); m.special = 'mvmo'; m.mvBusy = true; setTimeout(() => { m.mvBusy = false; }, (dur + .4) * 1000);
   if (mo === 'dig' || mo === 'dive' || mo === 'vanish' || mo === 'tele') {
     const under = mo === 'dig' || mo === 'dive', out = under ? 'burrow' : 'vanish', inn = under ? 'emerge' : 'appear';
-    if (mo === 'dig') dustAt(m); else if (mo === 'dive') splashAt(m); else for (let i = 0; i < 4; i++) particle(m.x + rnd(-14, 14), m.y - m.h / 2 + rnd(-14, 14), 'smoke');
-    m.act.classList.add(out);
+    if (mo === 'dig') digDown(m, 780); else { if (mo === 'dive') splashAt(m); else for (let i = 0; i < 4; i++) particle(m.x + rnd(-14, 14), m.y - m.h / 2 + rnd(-14, 14), 'smoke');
+      m.act.classList.add(out); }
     setTimeout(() => { if (!S.mons.includes(m)) return; m.hidden = true; m.el.style.visibility = 'hidden';
       const step = mo === 'tele' ? rnd(90, 150) : rnd(60, 90);
       m.x = m.tx = clamp(m.x + f * step, XL + 30, XR - 30); m.y = m.ty = clamp(m.y + rnd(-10, 10), MIN_Y, MAX_Y); if (mo !== 'dive') settle(m); m.home = { x: m.x, y: m.y };
     }, 800);
-    setTimeout(() => { if (!S.mons.includes(m)) return; m.hidden = false; m.el.style.visibility = ''; m.act.classList.remove(out); anim(m, inn);
-      if (mo === 'dig') dustAt(m); else if (mo === 'dive') splashAt(m);
+    setTimeout(() => { if (!S.mons.includes(m)) return; m.hidden = false; m.el.style.visibility = '';
+      if (mo === 'dig') digUp(m, 450); else { m.act.classList.remove(out); anim(m, inn); if (mo === 'dive') splashAt(m); }
       setTimeout(() => { strike(m); fire(); }, 250);
     }, 1250);
     return;
