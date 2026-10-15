@@ -298,6 +298,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .lily::after{content:"";position:absolute;left:-4px;right:-4px;top:30%;bottom:-6px;border:1px solid rgba(220,240,255,.55);border-radius:50%;animation:lilyR var(--d) ease-out var(--dl) infinite;z-index:-1}@keyframes lilyR{0%{transform:scale(.8);opacity:.8}100%{transform:scale(1.35);opacity:0}}
 .flame.out{display:none}
 .flame.big{scale:1.45;translate:0 -6px;transition:scale .4s,translate .4s}.flame{transition:scale 1.2s,translate 1.2s}
+.prop.tree{transition:opacity .3s}.prop.tree.see{opacity:.5}
 #propHot{position:absolute;pointer-events:none;z-index:1040;translate:-50% -50%;border:2px dashed #ffe066;border-radius:50%;background:rgba(255,230,100,.16);box-shadow:0 0 10px rgba(255,220,90,.6);display:none}
 #propHot.on{display:block;animation:phot .6s ease-in-out infinite alternate}@keyframes phot{to{background:rgba(255,230,100,.3)}}
 #propHot b{position:absolute;left:50%;bottom:100%;translate:-50% -4px;white-space:nowrap;font:inherit;font-size:11px;color:#fff;background:rgba(32,32,48,.85);padding:1px 6px;border-radius:3px}
@@ -4361,16 +4362,28 @@ function drawBg() {
     const b1 = ART.treeS(51, -.28), b2 = ART.treeS(83, -.28), f1 = ART.treeS(117, -.05), f2 = ART.treeS(201, -.05), T = [b1, flip(b2), flip(b1), b2, f1, flip(f2), flip(f1), f2];
     // v3.58 경완: 숲 속으로 들어가는 느낌 — 나무 사이 그늘은 안쪽(위)으로 갈수록 짙어지고, 맨 뒤 줄 나무는 그늘에 묻힌다
     const shade = (cv, a) => { const c2 = document.createElement('canvas'); c2.width = cv.width; c2.height = cv.height; const q = c2.getContext('2d'); q.drawImage(cv, 0, 0); q.globalCompositeOperation = 'source-atop'; q.fillStyle = `rgba(6,18,8,${a})`; q.fillRect(0, 0, cv.width, cv.height); return c2; };
-    const DEEP = ['#08140a', '#0c1c0e', '#112614', '#173219', '#1e3e20', '#264c28'];
-    for (let x = 0; x < PW; x++) { const top = 26 + Math.round(Math.sin(x * .5) * 2 + Math.sin(x * .17) * 1.5);
-      for (let y = top; y < 58; y++) { const k = (y - top) / (58 - top) * (DEEP.length - 1), i = Math.floor(k), f = k - i; px(x, y, 1, 1, DEEP[Math.min(DEEP.length - 1, i + ((x + y) & 1 && f > .5 ? 1 : 0))]); } }
-    const d1 = shade(b1, .55), d2 = shade(flip(b2), .55);
-    for (let x = 4, i = 0; x < PW + 14; x += 11 + (i % 2) * 3, i++) put(i % 2 ? d1 : d2, x, 45 + (i % 3));
-    const m1 = shade(T[0], .3), m2 = shade(T[1], .3), m3 = shade(T[2], .3), m4 = shade(T[3], .3), M = [m1, m2, m3, m4];
-    for (let x = 0; x < PW; x++) for (let y = 40; y < 54; y++) if (((x + y) & 1) && y > 47) px(x, y, 1, 1, 'rgba(6,18,8,.25)');
-    for (let x = -6, i = 0; x < PW + 14; x += 13 + (i % 3) * 2, i++) put(M[i % 4], x, 50 + (i % 2));
-    for (let x = 1, i = 0; x < PW + 14; x += 17 + (i % 2) * 3, i++) put(T[4 + (i % 4)], x, 56 + (i % 3));
-    for (let x = 0; x < PW; x++) { px(x, 56 + Math.round(Math.sin(x * .3)), 1, 2, 'rgba(15,40,15,.35)'); px(x, 58 + Math.round(Math.sin(x * .3)), 1, 2, 'rgba(15,40,15,.15)'); }
+    // v3.61 경완: 하늘이 더 보이게 뒤 줄 나무는 작게(멀리), 숲과 필드 경계는 그늘이 서서히 옅어지게, 앞 줄 밑동은 풀숲으로 덮는다
+    const sc = (cv, k) => { const c2 = document.createElement('canvas'); c2.width = Math.round(cv.width * k); c2.height = Math.round(cv.height * k); const q = c2.getContext('2d'); q.imageSmoothingEnabled = false; q.drawImage(cv, 0, 0, c2.width, c2.height); return c2; };
+    const BAY = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]], dith = (x, y, a) => a * 16 > BAY[y & 3][x & 3] + .5;   // 도트 느낌 그라데이션
+    const edge = x => 57 + Math.round(Math.sin(x * .37) * 1.2 + Math.sin(x * .11 + 1) * 1.4);   // 숲 밑동 선 (들쭉날쭉)
+    // 숲 안 그늘: 위(안쪽)로 갈수록 짙게
+    const DEEP = ['#0a170c', '#0e1f10', '#132a15', '#19351b', '#204222', '#2a5229'];
+    for (let x = 0; x < PW; x++) { const top = 33 + Math.round(Math.sin(x * .5) * 1.5 + Math.sin(x * .17) * 1.5), bot = edge(x);
+      for (let y = top; y < bot; y++) { const k = (y - top) / (bot - top) * (DEEP.length - 1), i = Math.floor(k); px(x, y, 1, 1, DEEP[Math.min(DEEP.length - 1, i + (dith(x, y, k - i) ? 1 : 0))]); } }
+    const d1 = shade(sc(b1, .62), .6), d2 = shade(sc(flip(b2), .62), .6);
+    for (let x = 3, i = 0; x < PW + 10; x += 8 + (i % 2) * 2, i++) put(i % 2 ? d1 : d2, x, 47 + (i % 3));
+    const M = [T[0], T[1], T[2], T[3]].map(t => shade(sc(t, .8), .32));
+    for (let x = -4, i = 0; x < PW + 12; x += 11 + (i % 3) * 2, i++) put(M[i % 4], x, 52 + (i % 2));
+    for (let x = 1, i = 0; x < PW + 14; x += 17 + (i % 2) * 3, i++) put(T[4 + (i % 4)], x, 55 + (i % 2));
+    // 경계: 숲 그늘이 풀밭으로 번지며 서서히 옅어진다 (14줄)
+    for (let x = 0; x < PW; x++) { const e = edge(x); for (let y = e; y < e + 18; y++) { const t = (y - e) / 18; if (R() < (1 - t) ** 1.6 * .85) px(x, y, 1, 1, t < .3 ? '#3f8a34' : t < .6 ? '#4f9a3c' : '#62ac44'); } }
+    // 밑동: 고사리·풀숲이 나무 아래를 덮는다
+    const UG = ['#2c5e26', '#3a7a30', '#4c9038', '#5ea844'];
+    for (let x = -2; x < PW + 2; x++) { const e = edge(x), h = 3 + Math.floor(R() * 4) + (Math.sin(x * .9) > .6 ? 2 : 0);
+      for (let y = 0; y < h; y++) px(x, e + 1 - y, 1, 1, UG[Math.min(3, Math.floor((y / h) * 3 + (R() < .3 ? 1 : 0)))]); }
+    for (let i = 0; i < 26; i++) { const cx = R() * PW, e = edge(Math.round(cx)) + 1, rw = 3 + R() * 4, rh = 2 + R() * 2.5;
+      for (let y = -rh; y <= 0; y++) for (let x = -rw; x <= rw; x++) if ((x / rw) ** 2 + (y / rh) ** 2 < 1) px(cx + x, e + y, 1, 1, y < -rh * .5 ? (x < 0 ? UG[3] : UG[2]) : (x + y) & 1 ? UG[1] : UG[2]); }
+    for (let i = 0; i < 60; i++) { const x = R() * PW, e = edge(Math.round(x)) + 2 + R() * 6; px(x, e, 1, 2, R() < .5 ? '#3f8a34' : '#5aa23a'); }
     const bigT = ART.tree(7373, 0); put(bigT, -14, 92); put(flip(bigT), PW + 12, 98); }
   // 흙길: 아래 왼쪽에서 모닥불 쪽으로, 가장자리에 풀이 덮이고 자갈이 박힘
   const bez = (t, a, b, c2, d) => (1 - t) ** 3 * a + 3 * (1 - t) ** 2 * t * b + 3 * (1 - t) * t * t * c2 + t ** 3 * d;
@@ -4421,7 +4434,7 @@ const PROPS = { tree: LAYOUT.tree, perch: LAYOUT.perch, bushes: LAYOUT.bushes, p
 const bedFlowers = (B) => [...[[-15, -2], [-5, -4], [5, -3], [15, -1]].map(([dx, dy]) => ['sun', B.x + dx * 2, B.y + dy * 2]),
   ...[[-16, 4], [-8, 7], [0, 5], [8, 8], [16, 4], [-12, 11], [4, 12], [12, 11]].map(([dx, dy], i) => [['tulip', 'daisy', 'pink', 'bell'][i % 4], B.x + dx * 2, B.y + dy * 2])];
 const FLOWERS = [...bedFlowers(FLOWERBED), ...LAYOUT.flowers];
-const TREE_SLOTS = [[13, 24], [22, 13], [33, 17], [18, 33], [30, 31], [41, 26]], TREE_REGROW = 15 * 60e3;
+const TREE_SLOTS = [[13, 24], [22, 13], [33, 17], [18, 33], [30, 31], [41, 26]], TREE_REGROW = 10 * 60e3;   // 10분마다 한 알씩 다시 열린다 (6알 다 열리는 데 1시간)
 const sprURL = (cv) => cv.toDataURL();
 function sprCanvas(w, h, draw) {
   const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
@@ -4468,7 +4481,7 @@ function buildProps() {
   FLOWERS.forEach(([k, x, y], i) => { const f = SPR.flw[k], e = document.createElement('div'); e.className = 'flw';
     e.style.cssText = W2(f.src, f.w, f.h) + `;left:${x}px;top:${y}px;z-index:${Math.round(y)};--d:${(1.6 + ((i * 37) % 13) / 10).toFixed(2)}s;--dl:${(-((i * 53) % 29) / 10).toFixed(1)}s;--a:${k === 'grass' ? 7 : k === 'sun' ? 4 : 6}deg`; itemsEl.append(e); });
   for (const q of PROPS.puddles) { const e = document.createElement('div'); e.className = 'puddle'; e.style.cssText = W2(SPR.puddle, q.w, Math.round(q.w * .35)) + `;left:${q.x}px;top:${q.y}px`; itemsEl.append(e); puddleEls.push(e); }
-  flameEl = document.createElement('div'); flameEl.className = 'flame'; flameEl.style.cssText = `background-image:url(${SPR.flame});left:${FIRE.x}px;top:${FIRE.y}px`; $('#propFx').append(flameEl);
+  flameEl = document.createElement('div'); flameEl.className = 'flame'; flameEl.style.cssText = `background-image:url(${SPR.flame});left:${FIRE.x}px;top:${FIRE.y}px;z-index:${Math.round(FIRE.y) + 1}`; itemsEl.append(flameEl);   /* v3.61 경완: 불꽃도 높이 순서대로 → 앞에 선 포켓몬이 불을 가린다 */
   { const dl = -(document.timeline.currentTime % 540) + 'ms'; flameEl.style.animationDelay = dl; $('#night').style.animationDelay = dl; }   /* 불꽃 그림과 밤 불빛 범위를 같은 박자로 */
   flameEl.innerHTML = Array.from({ length: 8 }, (_, i) => `<i style="--x:${((i * 37) % 21) - 10}px;--d:${(.9 + ((i * 29) % 7) / 10).toFixed(1)}s;--dl:${(-i * .23).toFixed(2)}s"></i>`).join('');
   /* v3.56: 연못 뒤쪽 갈대·부들도 살랑살랑 */
@@ -4563,9 +4576,11 @@ function propReact(m, p) {
     settle(m); faceTo(m, POND.x); setState(m, 'idle', 5); emote(m, '♪'); return log(pick([`${J(m,'이/가')} 연못가에서 물을 홀짝 마신다.`, `${J(m,'이/가')} 연못에 비친 자기 얼굴을 들여다본다.`]), [m]);
   }
 }
+// v3.61 경완: 포켓몬이 열매나무 뒤에 있으면 나무를 반투명하게
+setInterval(() => { if (!treeEl) return; const T = PROPS.tree, see = S.mons.some(m => !m.hidden && m.y < T.y - 6 && m.y > T.y - 110 && Math.abs(m.x - T.x) < 48); treeEl.classList.toggle('see', see); }, 150);
 function shakeTree(m) {
   treeEl.classList.remove('shake'); void treeEl.offsetWidth; treeEl.classList.add('shake'); haptic(1);
-  const L = [...treeEl.querySelectorAll('.tb')], k = Math.min(L.length, 1 + Math.floor(Math.random() * 2));
+  const L = [...treeEl.querySelectorAll('.tb')], k = L.length;   // v3.61 경완: 한 번 흔들면 달린 열매가 모두 떨어진다
   if (!k) { emote(m, '…'); log(`${J(m,'이/가')} 열매나무를 흔들었지만 열매가 하나도 없었다.`, [m]); return false; }
   const r = treeEl.getBoundingClientRect(), sc = r.width / 100;
   L.slice(-k).forEach((b, i) => { S.tree.n--; const bx = PROPS.tree.x - 50 + parseFloat(b.style.left), by = PROPS.tree.y - 116 + parseFloat(b.style.top), gx = bx + rnd(-10, 10), gy = PROPS.tree.y + rnd(6, 26);
@@ -4622,7 +4637,7 @@ function nightHoles() {
   const parts = L.map(m => { const A = !m.lit, br = m.br ?? .5;   /* 후광 숨쉬기(2초)에 맞춰 밝히는 범위가 커졌다 작아졌다 */
     const k = Math.max(.75, Math.min(1.6, (m.w || 50) / 55)) * (A ? .7 : 1) * (.82 + .3 * br), rx = Math.round(100 * k), ry = Math.round(54 * k), a = (1 - (A ? .38 : .62) * k0).toFixed(2), b = (1 - (A ? .22 : .4) * k0).toFixed(2), c = (1 - (A ? .08 : .15) * k0).toFixed(2);
     return `radial-gradient(${rx}px ${ry}px at ${Math.round(m.x)}px ${Math.round(m.y - 6)}px,rgba(0,0,0,${a}) 0,rgba(0,0,0,${b}) 35%,rgba(0,0,0,${c}) 70%,#000 100%)`; });
-  if (flameEl && !flameEl.classList.contains('out') && k0 > .05) { const a = (1 - .6 * k0).toFixed(2), b = (1 - .3 * k0).toFixed(2); parts.push(`radial-gradient(calc(90px * var(--fk)) calc(56px * var(--fk)) at ${FIRE.x}px ${FIRE.y - 8}px,rgba(0,0,0,${a}) 0,rgba(0,0,0,${b}) 45%,#000 100%)`); }   /* 모닥불 둘레는 밤에도 밝다 */
+  if (flameEl && !flameEl.classList.contains('out') && k0 > .05) { const a = (1 - .6 * k0).toFixed(2), b = (1 - .3 * k0).toFixed(2); parts.push(`radial-gradient(calc(90px * var(--fk)) calc(56px * var(--fk)) at ${FIRE.x}px ${FIRE.y - 8}px,rgba(0,0,0,${a}) 0,rgba(0,0,0,${b}) 45%,#000 100%)`, `radial-gradient(calc(20px * var(--fk)) calc(32px * var(--fk)) at ${FIRE.x}px ${FIRE.y - 22}px,rgba(0,0,0,0) 0,rgba(0,0,0,0) 62%,#000 100%)`); }   /* 모닥불 둘레는 밤에도 밝다. 불꽃 자리는 밤 그늘을 아예 걷어 불이 그대로 빛난다 */
   const key = parts.join(','); if (key === holeKey) return; holeKey = key;
   const st = nightEl.style; st.webkitMaskImage = st.maskImage = key || ''; st.webkitMaskComposite = parts.length > 1 ? 'source-in' : ''; st.maskComposite = parts.length > 1 ? 'intersect' : '';
 }
@@ -5023,7 +5038,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.60';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.61';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7492,7 +7507,7 @@ if (/[?&]studio/.test(location.search)) {
 #stHud i{position:absolute;border:1.5px dashed rgba(255,255,255,.85);background:rgba(20,30,60,.35);border-radius:4px;font:600 9px system-ui;color:#fff;font-style:normal;display:flex;align-items:center;justify-content:center}
 #stHud b{position:absolute;left:0;right:0;border-top:1.5px dashed rgba(255,90,90,.9);font:600 9px system-ui;color:#fff;text-shadow:0 0 2px #000;padding-left:4px}
 #stGal{position:fixed;inset:0;z-index:99999;overflow:auto;background:#262932;color:#e4e7ee;font:14px/1.5 system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif;padding:16px 16px 60px;-webkit-user-select:text;user-select:text}
-#stGal h3{font-family:Galmuri11,monospace;font-size:13px;color:#7fd7ef;letter-spacing:.06em;margin:22px 0 4px}
+#stGal h3{font-family:Galmuri11,monospace;font-size:13px;color:#7fd7ef;letter-spacing:.06em;margin:26px 0 4px;padding-top:18px;border-top:2px solid #3b4152}#stGal h3:first-child{margin-top:4px;padding-top:0;border-top:0}
 #stGal p.d{margin:0 0 10px;color:#8e95a6;font-size:12.5px}
 #stGal .row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
 #stGal .it{display:grid;justify-items:center;gap:6px;font-size:11.5px;color:#b8bdc9;text-align:center}
@@ -7594,7 +7609,8 @@ if (/[?&]studio/.test(location.search)) {
   api.nudge = (dx, dy) => { const t = sel && items().find(t => t.key === sel.key && t.i === sel.i); if (!t) return; undo.push(snap()); t.mv(dx, dy); changed(sel.key); };
   api.ADD = [['daisy', '데이지'], ['pink', '분홍꽃'], ['tulip', '튤립'], ['bell', '파랑꽃'], ['sun', '해바라기'], ['grass', '풀'], ['tall', '키 큰 풀'], ['rockS', '작은 바위'], ['rockL', '큰 바위'], ['mush', '버섯'], ['bush', '덤불'], ['puddle', '웅덩이']];
   api.addIcon = k => SPR.flw[k]?.src || (k === 'bush' ? SPR.bush : k === 'puddle' ? SPR.puddle : '');
-  api.add = k => { const cx = Math.round((XL + XR) / 2), cy = 330; undo.push(snap());
+  // v3.61 작업실: 소품 창에서 끌어 온 자리(화면 좌표)에 놓는다. 좌표가 없으면 가운데
+  api.add = (k, X, Y) => { const p = X == null ? null : toField(X, Y), cx = p ? clamp(Math.round(p.x), XL + 8, XR - 8) : Math.round((XL + XR) / 2), cy = p ? clamp(Math.round(p.y), MIN_Y - 40, H - 8) : 330; undo.push(snap());
     if (SPR.flw[k]) { LAYOUT.flowers.push([k, cx, cy]); sel = { key: 'flowers', i: LAYOUT.flowers.length - 1 }; }
     else if (k === 'rockS') { LAYOUT.rocks.push([cx, cy, 10, 7, 1, 13 + LAYOUT.rocks.length * 2]); sel = { key: 'rocks', i: LAYOUT.rocks.length - 1 }; }
     else if (k === 'rockL') { LAYOUT.rocks.push([cx, cy, 16, 10, 2, 17 + LAYOUT.rocks.length * 2]); sel = { key: 'rocks', i: LAYOUT.rocks.length - 1 }; }
@@ -7602,6 +7618,10 @@ if (/[?&]studio/.test(location.search)) {
     else if (k === 'bush') { LAYOUT.bushes.push({ x: cx, y: cy }); sel = { key: 'bushes', i: LAYOUT.bushes.length - 1 }; }
     else if (k === 'puddle') { LAYOUT.puddles.push({ x: cx, y: cy, w: 58 }); sel = { key: 'puddles', i: LAYOUT.puddles.length - 1 }; }
     changed(SPR.flw[k] ? 'flowers' : k === 'bush' ? 'bushes' : k === 'puddle' ? 'puddles' : 'rocks'); };
+  api.pick = (key, i = -1) => { if (!(key in LAYOUT)) return; sel = { key, i }; renderHands(); api.onSel?.(selInfo(), undo.length); };
+  api.cat = () => { const n = k => LAYOUT[k].length, nf = k => LAYOUT.flowers.filter(f => f[0] === k).length, nr = sz => LAYOUT.rocks.filter(r => r[4] === sz).length;
+    return { one: [['tree', '열매나무', SPR.tree], ['perch', '횃대', SPR.perch], ['fire', '모닥불', SPR.flame, 6], ['bed', '꽃밭', SPR.flw.sun.src], ['stump', '그루터기', ''], ['pond', '연못', SPR.lilyF]],
+      add: api.ADD.map(([k, nm]) => [k, nm, api.addIcon(k), SPR.flw[k] ? nf(k) : k === 'bush' ? n('bushes') : k === 'puddle' ? n('puddles') : k === 'mush' ? n('mush') : nr(k === 'rockS' ? 1 : 2)]) }; };
   // ---------- 포켓몬 풀어놓기: 작업실 목록에서 끌어 온 포켓몬. 소품 위면 빛나고, 놓으면 그 소품 반응 ----------
   const toField = (cx, cy) => { const r = stage.getBoundingClientRect(); return { x: (cx - r.left) / scale, y: (cy - r.top) / scale }; };
   api.hover = (cx, cy) => { if (cx == null) { markProp(null); return null; } const p = toField(cx, cy), pr = propAt(p.x, p.y); markProp(pr); return pr ? pr.n : null; };
