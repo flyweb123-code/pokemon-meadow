@@ -2368,13 +2368,15 @@ function feedOne(m) {
 }
 // ---------- 친밀도 (2026-10-14) ----------
 // 필드에 있는 동안: 기력·배부름·즐거움 평균에 따라 1시간에 오르는 양이 달라진다 (친구와 함께면 +0.5)
-const FR_TABLE = [[80, 3], [60, 2], [40, 1], [20, .5], [0, 0]];   // [평균 이상, 시간당 친밀도]
+const FR_TABLE = [[80, 3], [60, 1.5], [40, .6], [0, .12]];   // 방치(게이지 40 아래)면 시간당 0.12 = 하루 약 2.9 → 만점까지 약 3개월   // [평균 이상, 시간당 친밀도]
 const JOY_RATE = 100 / 7200, BERRY_FR_DAY = 5;   // 즐거움은 깨어 있으면 2시간에 100 → 0, 열매 친밀도는 하루 5개까지
 const gaugeAvg = m => (m.energy + (100 - m.hunger) + (m.joy ?? 60)) / 3;
-const frRate = m => { if (!m.pid || m.hidden) return 0; const a = gaugeAvg(m); return FR_TABLE.find(([v]) => a >= v)[1] + (withFriend(m) ? .5 : 0); };
-// 앱이 꺼져 있던(화면을 떠나 있던) 동안의 필드 친밀도: 떠날 때 게이지 기준 속도로 쌓는다
+const frRate = m => { if (!m.pid || m.hidden) return 0; const a = gaugeAvg(m); return FR_TABLE.find(([v]) => a >= v)[1] + (a >= 40 && withFriend(m) ? .5 : 0); };   // 친구 보너스는 돌봐 줄 때만
+const FR_NEGLECT = .12;
+// 앱이 꺼져 있던(화면을 떠나 있던) 동안의 필드 친밀도
 const FLD_FR_DAY = 10;   // 필드에 있는 시간으로 받는 친밀도는 하루 10까지
-function offFr(m, sec) { if (!(sec > 1)) return; sec = Math.min(sec, 30 * 864e2); m.frT = (m.frT || 0) + sec * frRate(m); let n = Math.floor(m.frT / 3600); if (n <= 0) return; m.frT -= n * 3600;
+// 떠날 때 게이지 속도는 처음 2시간만, 그 뒤로는 돌봐 주는 사람이 없으니 방치 속도로
+function offFr(m, sec) { if (!(sec > 1)) return; sec = Math.min(sec, 120 * 864e2); const r = frRate(m); m.frT = (m.frT || 0) + Math.min(sec, 7200) * r + Math.max(0, sec - 7200) * Math.min(r, FR_NEGLECT); let n = Math.floor(m.frT / 3600); if (n <= 0) return; m.frT -= n * 3600;
   // 지난 날들 몫(하루 10까지)을 먼저 주고, 남은 건 오늘 몫으로
   const t0 = new Date(Date.now() - sec * 1000); t0.setHours(0, 0, 0, 0); const k0 = new Date(); k0.setHours(0, 0, 0, 0); const past = Math.round((k0 - t0) / 864e5);
   if (past > 0) { const g = Math.min(n, past * FLD_FR_DAY); addFr(m.pid, g); n -= g; }
@@ -4486,7 +4488,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.23';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.24';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
