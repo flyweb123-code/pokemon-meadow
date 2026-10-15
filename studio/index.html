@@ -215,6 +215,7 @@ h2.ih{display:flex;align-items:center;gap:8px}
   #spx .zh,#zoom .zh,#ebar .eh{cursor:move}
 }
 body.wdrag iframe{pointer-events:none}
+@media (min-width:821px){body.editing #mapI{visibility:hidden}}   /* 편집 중엔 오른쪽 칸을 숨기되 자리는 그대로 (휴대폰이 움직이지 않게) */
 .vers{display:grid;gap:8px}.vers .vr{display:grid;grid-template-columns:64px minmax(0,1fr);gap:4px 12px;border-top:1px solid var(--chip);padding-top:8px}
 .vers .vr b{font-family:var(--px);font-weight:400;color:var(--fg);font-size:15px}.vers .vr.now b{color:var(--acc)}.vers ul{margin:0;padding-left:1.1em;font-size:13px;line-height:1.6}
 .vcard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center}.vcard .big{font-family:var(--px);font-size:30px;color:var(--acc);line-height:1}
@@ -473,7 +474,8 @@ function fitPhone() { safeZ(); setTimeout(safeZ, 200); statusBar(); applyInsets(
   p.style.width = w + 'px'; p.style.height = h + 'px'; p.style.borderRadius = (h / w > 1.9 ? 44 : h / w > 1.6 ? 20 : 26) + 'px';
   if (m) { const want = Math.round(Math.min(innerHeight * .72, (b.clientWidth - 16) * h / w + 16)); if (Math.abs(b.clientHeight - want) > 1) b.style.height = want + 'px'; } else b.style.height = '';
   const pad = m ? 12 : 24, k = Math.min((b.clientHeight - pad) / h, (b.clientWidth - pad) / w, 1.2); p.style.transform = `scale(${k}) translate(-50%,-50%)`; p.dataset.k = k; ebarPos(); }
-function ebarPos() { const e = $('#ebar'); if (mobile()) { e.style.left = e.style.top = ''; return; } if (winApply(e)) return; const r = $('#phone').getBoundingClientRect(); e.style.left = Math.min(innerWidth - e.offsetWidth - 8, r.right + 12) + 'px'; e.style.top = Math.max(8, r.top) + 'px'; }
+function ebarPos() { const e = $('#ebar'); if (mobile()) { e.style.left = e.style.top = ''; return; } if (winApply(e)) return; const r = $('#phone').getBoundingClientRect(), l = r.right + 20, wd = Math.max(240, Math.min(560, innerWidth - 16 - l));   // v1.9 경완: 휴대폰 오른쪽, 아래 끝을 휴대폰에 맞춰 넓게
+  e.style.width = wd + 'px'; e.style.left = Math.min(innerWidth - wd - 8, l) + 'px'; e.style.top = Math.max(8, r.bottom - e.offsetHeight) + 'px'; }
 new ResizeObserver(fitPhone).observe($('#mapBox'));
 
 // ---------- 작업본: 바꾼 값만 모아 둔다. Claude 가 읽고 게임에 넣는다 ----------
@@ -552,7 +554,7 @@ $('#wx').onclick = e => { const b = e.target.closest('[data-w]'); if (!b) return
 let editing = false;
 // 편집하기 (v1.7 경완): 화면 배치는 그대로, 편집 버튼은 휴대폰 오른쪽 작은 창에
 let preEdit = null;
-function setEdit(on) { if (on === editing) return; editing = on; A?.edit(on); $('#ebar').hidden = !on; if (on) ebarPos(); $('#eMode').classList.toggle('on', on);
+function setEdit(on) { if (on === editing) return; editing = on; A?.edit(on); $('#ebar').hidden = !on; document.body.classList.toggle('editing', on); if (on) ebarPos(); $('#eMode').classList.toggle('on', on);
   if (on) { preEdit = { now: $('#hrNow').classList.contains('on'), h: +$('#hr').value, w: $('#wx .on')?.dataset.w || '' }; A?.setHour(12); A?.setWx('clear'); }   // 편집할 땐 맑은 한낮으로
   else if (preEdit) { if (preEdit.now) A?.setHour(null); else A?.setHour(preEdit.h); A?.setWx(preEdit.w); preEdit = null; closeZoom(); } if (!on) { $('#propPane').hidden = true; renderReact(null); } requestAnimationFrame(fitPhone); }
 $('#eMode').onclick = () => setEdit(!editing);
@@ -721,15 +723,16 @@ function openInst(s, el) {
 addEventListener('keydown', e => { if (e.key === 'Escape' && zoomK) closeZoom(); });
 // v1.8 경완: 떠 있는 창(포켓몬 목록·소품 창·편집 창)은 머리를 잡고 옮기고 오른쪽 아래 모서리로 크기를 바꾼다. 머리를 두 번 누르면 제자리
 const WINS = { spx: '.zh', zoom: '.zh', ebar: '.eh' };
-const winGet = id => { try { return JSON.parse(store.get('st-win-' + id) || 'null'); } catch (e) { return null; } };
+const WKEY = id => 'st-win-' + id + (id === 'ebar' ? '2' : '');
+const winGet = id => { try { return JSON.parse(store.get(WKEY(id)) || 'null'); } catch (e) { return null; } };
 function winApply(el) { const w = winGet(el.id); if (!w || mobile()) return false; const W = Math.min(w.w || el.offsetWidth, innerWidth - 16);
   Object.assign(el.style, { left: Math.max(8, Math.min(innerWidth - W - 8, w.l)) + 'px', top: Math.max(8, Math.min(innerHeight - 60, w.t)) + 'px', right: 'auto', bottom: 'auto' }); if (w.w) el.style.width = W + 'px'; if (w.h) el.style.height = Math.min(w.h, innerHeight - 16) + 'px'; return true; }
-const winSave = el => { const r = el.getBoundingClientRect(); store.set('st-win-' + el.id, JSON.stringify({ l: Math.round(r.left), t: Math.round(r.top), w: el.style.width ? Math.round(r.width) : 0, h: el.dataset.rz || el.id === 'spx' ? Math.round(r.height) : 0 })); };
+const winSave = el => { const r = el.getBoundingClientRect(); store.set(WKEY(el.id), JSON.stringify({ l: Math.round(r.left), t: Math.round(r.top), w: el.style.width ? Math.round(r.width) : 0, h: el.dataset.rz || el.id === 'spx' ? Math.round(r.height) : 0 })); };
 for (const id in WINS) { const el = $('#' + id);
   el.addEventListener('pointerdown', e => { if (mobile() || e.button) return; const h = e.target.closest(WINS[id]); if (!h || e.target.closest('button,input,select,textarea')) return; e.preventDefault(); document.body.classList.add('wdrag'); const r = el.getBoundingClientRect(), dx = e.clientX - r.left, dy = e.clientY - r.top;
     const mv = ev => { el.style.left = Math.max(0, Math.min(innerWidth - 60, ev.clientX - dx)) + 'px'; el.style.top = Math.max(0, Math.min(innerHeight - 40, ev.clientY - dy)) + 'px'; el.style.right = el.style.bottom = 'auto'; };
     const up = () => { document.body.classList.remove('wdrag'); removeEventListener('pointermove', mv); removeEventListener('pointerup', up); winSave(el); }; addEventListener('pointermove', mv); addEventListener('pointerup', up); });
-  el.addEventListener('dblclick', e => { if (mobile() || !e.target.closest(WINS[id]) || e.target.closest('button,input')) return; store.set('st-win-' + id, ''); el.style.width = el.style.height = el.dataset.rz = ''; ({ spx: spxPos, ebar: ebarPos, zoom: () => zoomPos(el) })[id](); toast('창을 제자리로 돌렸어요'); });
+  el.addEventListener('dblclick', e => { if (mobile() || !e.target.closest(WINS[id]) || e.target.closest('button,input')) return; store.set(WKEY(id), ''); el.style.width = el.style.height = el.dataset.rz = ''; ({ spx: spxPos, ebar: ebarPos, zoom: () => zoomPos(el) })[id](); toast('창을 제자리로 돌렸어요'); });
   let sz = ''; el.addEventListener('pointerdown', () => { sz = el.offsetWidth + 'x' + el.offsetHeight; document.body.classList.add('wdrag'); }); addEventListener('pointerup', () => { document.body.classList.remove('wdrag'); setTimeout(() => { sz = ''; }, 300); });
   new ResizeObserver(() => { if (!mobile() && sz && sz !== el.offsetWidth + 'x' + el.offsetHeight) { el.dataset.rz = 1; clearTimeout(el._rs); el._rs = setTimeout(() => winSave(el), 200); } }).observe(el); el.addEventListener('pointerup', () => { if (!mobile() && sz && sz !== el.offsetWidth + 'x' + el.offsetHeight) { el.dataset.rz = 1; winSave(el); } sz = ''; }); }
 
@@ -1079,7 +1082,7 @@ const BUBS = [
 ];
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
-  ['1.9', '10월 16일', ['세이프 존을 모든 기종 기준으로: 어느 폰에서든 잘리거나 가려지는 필드 칸을 주황 빗금으로, 남는 칸을 점선 상자로']],
+  ['1.9', '10월 16일', ['세이프 존을 모든 기종 기준으로: 어느 폰에서든 잘리거나 가려지는 필드 칸을 주황 빗금으로, 남는 칸을 점선 상자로', '맵 편집 창은 휴대폰 오른쪽 아래에 넓게 뜨고, 편집하는 동안 오른쪽 칸은 숨김 (휴대폰 자리는 그대로)']],
   ['1.8', '10월 16일', ['밸런스 메뉴에 게임 아이콘 (골드·하트·열매·빗·손·알…)', '알 수집 확률과 알 등급별 포켓몬을 "알" 메뉴 하나로, 위쪽 탭으로 나눔', '알 메뉴 곳곳에 등급별 알 그림', '메뉴 이름 바꾸기: 메뉴에 마우스를 올리면 나오는 연필을 눌러요 (포켓몬·모션 → 포켓몬)', '포켓몬 모션을 그림이 있는 칸으로 가지런히', '필드 포켓몬 칸: 오른쪽 위 X 로 빼기, 누르면 테두리만 표시', '포켓몬 넣기 창은 오른쪽 칸 바로 왼쪽에', '떠 있는 창(포켓몬 넣기·소품·맵 편집)은 머리를 잡고 옮기고, 오른쪽 아래 모서리로 크기 바꾸기 (머리를 두 번 누르면 제자리)', '맵 편집 창을 더 넓게']],
   ['1.7', '10월 16일', ['버전 기록 메뉴와 지금 버전 카드', '처음 열 때 더 빨리 뜨게 (글꼴·그림 모음 따로 받고 저장해 둠)', '기종별 휴대폰 상단바 (시간·다이내믹 아일랜드·노치·와이파이·배터리)', '소품을 눌러도 화면 배치 그대로, 편집 버튼은 휴대폰 오른쪽 작은 창에', '꽃 소품 꽃잎 색 바꾸기', '말풍선 메뉴를 말풍선마다 한 줄로', '알 등급별 포켓몬: 줄을 잡고 끌어 순서 바꾸기', '티어 표를 티어마다 한 줄로, 포켓몬 이름 표시']],
   ['1.6', '10월 15일', ['말풍선 메뉴 (말풍선마다 나오는 상황)', '알마다 포켓몬 목록 직접 정하기: 순서 끌기, 다른 알로 옮기기, 확률 자동 맞춤', '배포하기의 바뀐 곳 되돌리기', '그림 모음 상자 칸 이름을 3·2·1티어로', '프로필 등급 카드: 챔피언 다음 사천왕']],
