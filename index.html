@@ -863,6 +863,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .bslot .prog.sm{width:80%;height:7px;border-width:2px;margin:1px 0}.bslot .km{font-size:9px;letter-spacing:-.3px}
 #eggOut{display:block;padding:7px 10px;font-size:13px}
 .incu-btns{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin-top:8px}
+.bag-pity{margin:-4px 0 10px;font-size:12px;color:var(--dim);text-align:center}.bag-pity b{color:var(--win-ink)}
 .bag-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:0 0 10px}
 @media (max-width:560px){.bag-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .bag-tabs button{font:inherit;font-size:13px;border:3px solid var(--inner);background:#fff;color:var(--win-ink);padding:6px 4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:2px;white-space:nowrap;position:relative}
@@ -1414,6 +1415,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
         <div class="bag-mbar" id="bagMBar" hidden><span class="n" id="bagMN"></span><button id="bagMAll">전체 선택</button><button id="bagMIn">부화기에</button><button id="bagMDel">버리기</button></div>
         <div class="bag-test"><button id="bagTest" class="test-btn">알 추가 (테스트)</button><span id="bagTestG" hidden></span></div>
         <div class="bag-tabs" id="bagTabs" role="tablist"></div>
+        <div class="bag-pity" id="bagPity"></div>
         <div class="bag-grid" id="bagGrid"></div>
       </section>
     </div>
@@ -4313,13 +4315,13 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, joy: m.joy, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, dexNew: [...(S.dexNew || [])] };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, pity: S.pity, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, dexNew: [...(S.dexNew || [])] };
 }
 let saveFrozen = false;
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
+  S.lockT = d.lockT || 0; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
@@ -4339,7 +4341,7 @@ async function restore(d) {
 async function fresh() {
   S.base = midnight(); S.clock = realClock(); S.rel = {}; S.log = [];
   logEl.innerHTML = '';
-  S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked.clear(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1; S.undo1 = true;
+  S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.pity = { e: 0, l: 0 }; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked.clear(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1; S.undo1 = true;
   // 처음 시작: 부화기에 바로 부화시킬 수 있는 일반 알 하나, 가방에 일반·희귀·레어·에픽·전설 알 하나씩 (안의 포켓몬은 부화할 때 정해진다)
   const t = Date.now(); S.eggs.push({ id: S.eid++, g: 1, km: GRADE[1].km, need: GRADE[1].km, isNew: true, t });
   for (const g of [1, 2, 3, 4, 5]) S.bag.push({ id: S.eid++, g, t, isNew: true });
@@ -4537,7 +4539,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.32';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.33';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5796,7 +5798,7 @@ function migrateBox() {
   for (const sp of S.unlocked) if (!S.box.some(p => p.sp === sp)) newPoke(sp, { shiny: false });
   for (const b of S.buds) if (b.pid == null || !boxOf(b.pid)) b.pid = (S.box.filter(p => p.sp === b.sp).sort((x, y) => ivSum(y) - ivSum(x))[0] || newPoke(b.sp, { shiny: false })).id;
 }
-S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked = new Set(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1;
+S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.pity = { e: 0, l: 0 }; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked = new Set(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1;
 const hatchQ = [];
 
 function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); (S.dexNew ||= new Set()).add(sp); if (dexBtns[sp]) { lockDexBtn(sp); dexCellReady(sp); } } }
@@ -5818,6 +5820,7 @@ function drawEgg() {
 }
 // 가방: 움직인 거리만큼 알을 줍는다. 250m마다 0~2개라 2.5km면 대개 5~15개, 등급 확률은 알 뽑기와 같다.
 const MAX_BAG = 999, BAG_STEP = .25;
+const PITY_E = 100, PITY_L = 200;   // v3.33 경완: 천장 (에픽 100km, 전설 200km)
 const rollGrade = () => { const r = Math.random(); return r < .6825 ? 1 : r < .9325 ? 2 : r < .9925 ? 3 : r < .9975 ? 4 : 5; };   // v3.32 경완: 알은 1km에 약 4개, 전설 100km·에픽 50km·레어 4km에 1개꼴 → 68.25/25/6/0.5/0.25 (예전 45/30/15/8/2)
 // 오늘 기록: 걸은 거리(만보기), 주운 알. 날짜가 바뀌면 새로
 const dayKey = (t = Date.now()) => { const d = new Date(t); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
@@ -5872,13 +5875,17 @@ window.pokeRunToday = (km, dayMs) => {
   if (!setEl.hidden) renderProfile(); return true;
 };
 function collectEggs(km, place, tags, pf) {
-  S.bagAcc += km; let n = 0;
+  S.bagAcc += km; let n = 0; const P = S.pity || (S.pity = { e: 0, l: 0 }); P.e += km; P.l += km;
   while (S.bagAcc >= BAG_STEP) { S.bagAcc -= BAG_STEP; n += Math.floor(Math.random() * 3); }
   n = Math.min(n, MAX_BAG - S.bag.length);
   const t = Date.now(), got = [];
   got.eggs = [];
   today().eggs += n;
-  for (let i = 0; i < n; i++) { const g = rollGrade(); const e = { id: S.eid++, g, t, isNew: true }; const pl = pf ? pf() : place ? { n: place, tags } : null; if (pl?.n) e.place = pl.n; if (pl?.tags?.length) e.tags = pl.tags; S.bag.push(e); got.push(g); got.eggs.push(e); }
+  for (let i = 0; i < n; i++) { let g = rollGrade();
+    // 천장: 전설 알 없이 PITY_L km, 에픽 이상 없이 PITY_E km를 움직이면 다음 알은 그 등급으로 (나오면 다시 0부터)
+    if (P.l >= PITY_L) g = 5; else if (P.e >= PITY_E) g = Math.max(g, 4);
+    if (g === 5) P.l = 0; if (g >= 4) P.e = 0;
+    const e = { id: S.eid++, g, t, isNew: true }; const pl = pf ? pf() : place ? { n: place, tags } : null; if (pl?.n) e.place = pl.n; if (pl?.tags?.length) e.tags = pl.tags; S.bag.push(e); got.push(g); got.eggs.push(e); }
   return got;
 }
 function gotLog(got, how, place) {
@@ -6583,9 +6590,10 @@ function renderBag() {
   const tb = document.querySelector('.runtab[data-tab="bag"]'); tb.innerHTML = '가방' + (hasNew ? '<i class="dot" aria-label="새 알"></i>' : '');
   const te = document.querySelector('.runtab[data-tab="egg"]'), rdy = S.eggs.some(e => (e.km >= e.need && !e.rs) || e.nwI); if (!!te.querySelector('.dot') !== rdy) te.innerHTML = '부화기' + (rdy ? '<i class="dot" aria-label="새 알"></i>' : '');
   if (runTab !== 'bag') { $('#bagPop').hidden = true; bagSel = null; bagMul = null; return; }
-  const sig = [bagG, bagSort, bagSel?.id, bagMul ? 'm' + [...bagMul].join('.') : '', delArm, S.bag.length, S.bag.filter(e => e.isNew).length, S.eggs.length].join();
+  const sig = [Math.floor(S.pity?.e || 0), Math.floor(S.pity?.l || 0), bagG, bagSort, bagSel?.id, bagMul ? 'm' + [...bagMul].join('.') : '', delArm, S.bag.length, S.bag.filter(e => e.isNew).length, S.eggs.length].join();
   if (sig === renderBag.sig) return; renderBag.sig = sig;
   $('#bagCount').innerHTML = `전체 <b>${S.bag.length}</b>개`;
+  { const P = S.pity || { e: 0, l: 0 }, left = (c, v) => Math.max(0, Math.ceil(c - v - 1e-6)); $('#bagPity').innerHTML = `천장까지 에픽 <b>${left(PITY_E, P.e)}</b>km · 전설 <b>${left(PITY_L, P.l)}</b>km`; }
   const cnt = g => S.bag.filter(e => !g || e.g === g).length, nw = g => S.bag.some(e => e.isNew && (!g || e.g === g));
   $('#bagTabs').innerHTML = [0, 1, 2, 3, 4, 5].map(g => `<button role="tab" data-g="${g}" aria-selected="${g === bagG}">${g ? GRADE[g].n : '전체'}<b>${cnt(g)}</b>${nw(g) ? '<i class="dot"></i>' : ''}</button>`).join('');
   document.querySelectorAll('#bagSort [data-sort]').forEach(b => b.setAttribute('aria-pressed', b.dataset.sort === bagSort));
