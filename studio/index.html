@@ -154,6 +154,15 @@ body.editing #ebar .addp,body.editing #ebar #editPane h4{display:none}
 #safeZ .nch{position:absolute;left:50%;top:0;width:160px;height:32px;margin-left:-80px;border-radius:0 0 18px 18px;background:#000}
 #safeZ .pch{position:absolute;left:50%;top:10px;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:#000}
 #hotPop{position:fixed;z-index:55;width:236px;background:var(--panel);border:1px solid var(--acc);border-radius:6px;box-shadow:0 10px 26px rgba(0,0,0,.45);padding:10px 12px;display:grid;gap:6px;pointer-events:none}
+.slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;max-width:300px}
+.slots .sl{position:relative;aspect-ratio:1;display:grid;place-items:center;background:var(--chip);border:1px solid var(--chipb);border-radius:4px;padding:0;overflow:hidden}
+.slots .sl img{max-width:82%;max-height:70%;image-rendering:pixelated}.slots .sl .nm{position:absolute;left:0;right:0;bottom:2px;font-size:10.5px;color:var(--soft);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 3px}
+.slots .sl.empty{background:none;border-style:dashed;color:var(--soft);font-size:22px}.slots .sl.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+#spx{position:absolute;z-index:56;left:8px;top:8px;bottom:8px;width:252px;background:var(--panel);border:1px solid var(--chipb);border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:10px;display:grid;grid-template-rows:auto auto auto minmax(0,1fr);gap:8px}
+#spx .zh{display:flex;align-items:center;gap:8px}#spx .zh b{flex:1;font-family:var(--px);font-weight:400;color:var(--acc);font-size:13px}
+#spx .grid{overflow:auto;align-content:start;grid-auto-rows:56px;grid-template-columns:repeat(auto-fill,minmax(52px,1fr))}#spx .mc{aspect-ratio:auto;height:56px}
+.react .chip.rx{cursor:pointer}.react .chip.rx.on{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
+#zoom .kname{display:flex;gap:6px}#zoom .kname input{flex:1;min-width:0}
 #hotPop h4{color:var(--acc)}#hotPop .r{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 8px;align-items:start;font-size:12.5px}#hotPop .r .chip{min-height:22px;padding:1px 6px;font-size:11px}
 .chg .cr{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center}.chg .cr .cv{min-width:0;overflow-wrap:anywhere}
 #zoom{position:fixed;z-index:60;width:264px;background:var(--panel);border:1px solid var(--chipb);border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:12px;display:grid;gap:10px}
@@ -190,6 +199,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
   .view[data-v=map] .canvas{height:min(72vh,640px)}
   .dock{width:auto;border-right:0;border-bottom:1px solid var(--line);grid-template-rows:auto auto}
   .dock .db{display:block;overflow-x:auto;overflow-y:hidden;padding:0 12px 10px}
+  #spx{position:fixed;left:8px;right:8px;top:auto;bottom:calc(8px + env(safe-area-inset-bottom,0px));width:auto;height:42vh}
   #zoom{left:12px!important;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));top:auto!important;width:auto}
   .dock .sg{display:flex;gap:6px}.dock .sg .it{flex:none;width:76px;min-height:76px;touch-action:pan-x}
   .dock .it img{height:38px}
@@ -235,14 +245,13 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
           <span class="vsep"></span>
           <span class="chips"><button class="chip" id="eMode">편집하기</button><button class="chip" id="eHud">화면 가림</button><button class="chip" id="eSafe">세이프 존</button></span>
         </div>
-        <div class="canvas" id="mapBox"><div class="phone" id="phone"><iframe id="game" title="게임 화면" src="about:blank"></iframe><div id="safeZ" hidden></div></div><div id="hotPop" hidden></div><div class="load" id="gLoad">게임 불러오는 중…</div></div>
+        <div class="canvas" id="mapBox"><div class="phone" id="phone"><iframe id="game" title="게임 화면" src="about:blank"></iframe><div id="safeZ" hidden></div></div><div id="hotPop" hidden></div><div id="spx" hidden></div><div class="load" id="gLoad">게임 불러오는 중…</div></div>
       </div>
       <aside class="vi" id="mapI">
         <div style="display:grid;gap:8px">
-          <h4>포켓몬 풀어놓기</h4>
-          <div class="small mute">끌어서 맵에 놓아요. 소품 위에 놓으면 그 소품에 반응해요. 누르기만 하면 빈 곳에 나와요.</div>
-          <div class="search"><input id="palQ" placeholder="이름이나 번호" autocomplete="off" enterkeyhint="search"></div>
-          <div class="grid" id="pal"></div>
+          <h4>필드 포켓몬</h4>
+          <div class="small mute">지금 맵에 나와 있는 포켓몬이에요. 빈 칸을 누르면 왼쪽에 포켓몬 목록이 떠요. 목록에서 끌어 맵에 놓아야 나와요.</div>
+          <div class="slots" id="slots"></div>
           <div class="chips"><button class="chip" id="clearMons">맵 포켓몬 모두 빼기</button></div>
         </div>
         <div id="monPane" hidden style="display:grid;gap:8px">
@@ -324,7 +333,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '1.4';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '1.5';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -437,8 +446,20 @@ const KEY2R = { tree: 'tree', perch: 'perch', fire: 'fire', bed: 'bed', bushes: 
 function renderReact(k) {
   $('#rkHint').textContent = k ? '· ' + RNAME[k] : '';
   const list = k ? [k] : Object.keys(REACT);
-  $('#react').innerHTML = list.map(r => (k ? '' : `<div style="grid-template-columns:1fr"><b style="font-size:12px;color:var(--soft)">${RNAME[r]}</b></div>`) + REACT[r].map(([a, b]) => `<div><span class="chip">${a}</span><span>${b}</span></div>`).join('')).join('');
+  $('#react').innerHTML = list.map(r => (k ? '' : `<div style="grid-template-columns:1fr"><b style="font-size:12px;color:var(--soft)">${RNAME[r]}</b></div>`) + REACT[r].map(([a, b], i) => `<div><button class="chip rx${spxKey === r + ':' + i ? ' on' : ''}" data-rk="${r}" data-ri="${i}">${a}</button><span>${b}</span></div>`).join('')).join('');
 }
+// v1.5 경완: 반응 분류를 누르면 왼쪽에 그 분류 포켓몬 목록. 끌어서 맵에 놓는다. 한 번 더 누르면 닫힌다
+let spxKey = null, spxL = [], spxQ = '';
+function openSpx(key, title, L) { spxKey = key; spxL = L; spxQ = ''; const e = $('#spx'); e.hidden = false;
+  e.innerHTML = `<div class="zh"><b>${esc(title)}</b><button class="chip" id="spxX" aria-label="닫기">✕</button></div><div class="small mute">${L.length}종 · 끌어서 맵에 놓아요</div><div class="search"><input id="spxQ" placeholder="이름이나 번호" autocomplete="off" enterkeyhint="search"></div><div class="grid" id="spxG"></div>`;
+  $('#spxX').onclick = closeSpx; spxPos(); if (mobile()) $('#mapBox').scrollIntoView({ behavior: 'smooth', block: 'start' }); $('#spxQ').oninput = ev => { spxQ = ev.target.value; fillSpx(); }; fillSpx(); $$('.react .rx').forEach(c => c.classList.toggle('on', c.dataset.rk + ':' + c.dataset.ri === key)); }
+function spxPos() { const e = $('#spx'); if (mobile()) { e.style.left = ''; return; } const p = $('#phone').getBoundingClientRect(), m = $('#mapBox').getBoundingClientRect(); e.style.left = (p.left - m.left > 276 ? p.left - m.left - 266 : 8) + 'px'; }
+function fillSpx() { const q = spxQ.trim(), L = q ? spxL.filter(sp => String(sp) === q || spName(sp).includes(q)) : spxL;
+  $('#spxG').innerHTML = L.slice(0, 400).map(sp => `<button class="mc" data-sp="${sp}" title="${esc(spName(sp))}"><span class="no">${sp}</span><img alt="" data-th="${sp}"></button>`).join('') + (L.length > 400 ? `<div class="small mute" style="grid-column:1/-1">앞의 400종만 보여요. 이름으로 찾아 주세요.</div>` : '') || '<div class="empty">찾는 포켓몬이 없어요</div>'; fillThumbs($('#spxG')); }
+function closeSpx() { spxKey = null; $('#spx').hidden = true; $$('.react .rx').forEach(c => c.classList.remove('on')); }
+$('#react').onclick = e => { const b = e.target.closest('.rx'); if (!b || !A?.reactSps) return; const key = b.dataset.rk + ':' + b.dataset.ri; if (spxKey === key) return closeSpx();
+  const L = A.reactSps(b.dataset.rk, +b.dataset.ri); if (!L) { toast('비 올 때 저절로 나오는 반응이에요'); return; } openSpx(key, `${RNAME[b.dataset.rk]} · ${b.textContent}`, L); };
+$('#spx').addEventListener('pointerdown', e => { const b = e.target.closest('.mc'); if (b && e.button === 0) startPalDrag(e, +b.dataset.sp); });
 function hourTxt(h) { const H = Math.floor(h), M = Math.round((h - H) * 60); const ph = h < 4 ? '한밤' : h < 5.5 ? '새벽' : h < 7 ? '해돋이' : h < 10 ? '아침' : h < 14 ? '한낮' : h < 16.5 ? '오후' : h < 18.6 ? '노을' : h < 20 ? '저녁' : '밤'; return `${String(H).padStart(2, '0')}:${String(M).padStart(2, '0')} ${ph}`; }
 $('#hr').oninput = e => { const h = +e.target.value; A?.setHour(h); $('#hrT').textContent = hourTxt(h); $('#hrNow').classList.remove('on'); };
 $('#hrNow').onclick = () => { A?.setHour(null); $('#hrNow').classList.add('on'); const h = A ? A.hour() : 12; $('#hr').value = Math.round(h * 4) / 4; $('#hrT').textContent = '지금 · ' + hourTxt(h).slice(0, 5); };
@@ -468,15 +489,15 @@ function onSel(s, nUndo) {
   renderReact(KEY2R[s.key] || null);
 }
 function onLayout(L) { renderDock(); const same = JSON.stringify(L) === JSON.stringify(ORIG.layout); if (same) delete D.layout; else D.layout = L; saveDraft(); }
-// 팔레트: 끌어서 맵에 놓기
-let palQ = '';
-function renderPal() {
-  const q = palQ.trim(), all = Object.keys(A.SPECIES).map(Number);
-  const L = q ? all.filter(sp => String(sp) === q || spName(sp).includes(q)).slice(0, 40) : [25, 1, 4, 7, 133, 143, 16, 54, 129, 39, 92, 66, 74, 37, 58, 175];
-  $('#pal').innerHTML = L.map(sp => `<button class="mc" data-sp="${sp}" title="${esc(spName(sp))}"><span class="no">${sp}</span><img alt="" data-th="${sp}"></button>`).join('') || '<div class="empty">찾는 포켓몬이 없어요</div>';
-  fillThumbs($('#pal'));
-}
-$('#palQ').oninput = e => { palQ = e.target.value; renderPal(); };
+// v1.5 경완: 필드 포켓몬 3×3 칸. 빈 칸을 누르면 왼쪽에 전체 포켓몬 목록
+const SLOTS = 9; let slotSig = '';
+function renderPal() { if (!A?.mons) return; const M = A.mons().slice(0, SLOTS), sig = M.map(m => m.uid + ':' + m.sp).join() + '|' + sel.monUid; if (sig === slotSig && $('#slots').children.length) return; slotSig = sig;
+  $('#slots').innerHTML = M.map(m => `<button class="sl${m.uid === sel.monUid ? ' on' : ''}" data-uid="${m.uid}" title="${esc(m.name)}"><img alt="" data-th="${m.sp}"><span class="nm">${esc(m.name)}</span></button>`).join('') + Array.from({ length: SLOTS - M.length }, () => '<button class="sl empty" aria-label="포켓몬 넣기">+</button>').join('');
+  fillThumbs($('#slots')); }
+$('#slots').onclick = e => { const b = e.target.closest('.sl'); if (!b) return;
+  if (b.classList.contains('empty')) { if (spxKey === 'all') return closeSpx(); openSpx('all', '포켓몬 넣기', Object.keys(A.SPECIES).map(Number).sort((a, c) => a - c)); return; }
+  A.selMon?.(+b.dataset.uid); };
+setInterval(() => { if (view === 'map' && A) renderPal(); }, 1500);
 function fillThumbs(root) { root.querySelectorAll('img[data-th]').forEach(im => { const sp = +im.dataset.th; im.removeAttribute('data-th'); thumbIO.observe(im); im.dataset.sp = sp; }); }
 const thumbIO = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; const im = e.target; thumbIO.unobserve(im); const sp = +im.dataset.sp; const put = (n = 0) => ensureTh(sp).then(() => { im.src = thumb(sp); }).catch(() => { if (n < 3) setTimeout(() => put(n + 1), 1500 * (n + 1)); }); put(); }), { rootMargin: '200px' });
 function startPalDrag(ev, sp) {
@@ -487,18 +508,19 @@ function startPalDrag(ev, sp) {
   const inGame = (x, y) => { const f = $('#game').getBoundingClientRect(); if (x < f.left || x > f.right || y < f.top || y > f.bottom) return null; const k = f.width / $('#game').offsetWidth; return [(x - f.left) / k, (y - f.top) / k]; };
   const move = e => { g.style.left = e.clientX + 'px'; g.style.top = e.clientY + 'px'; if (Math.hypot(e.clientX - x0, e.clientY - y0) > 6) moved = true; last = inGame(e.clientX, e.clientY); const n = last ? A.hover(...last) : A.hover(null); const b = g.querySelector('b'); b.hidden = !n; if (n) b.textContent = n + '에 놓기'; };
   const up = async e => { cv.remove(); g.remove(); removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up);
-    if (!moved) { await A.drop(sp); toast(spName(sp) + ' 풀어놓음'); return; }
-    if (last) await A.drop(sp, ...last); else A.hover(null); };
+    if (!moved) { toast('끌어서 맵에 놓아요'); return; }
+    if (!last) { A.hover(null); return; }
+    if (A.mons().length >= SLOTS) { A.hover(null); toast(`필드가 가득 찼어요 (${SLOTS}마리). 먼저 한 마리를 빼 주세요`); return; }
+    await A.drop(sp, ...last); renderPal(); };
   move(ev); addEventListener('pointermove', move); addEventListener('pointerup', up); addEventListener('pointercancel', up);
 }
-$('#pal').addEventListener('pointerdown', e => { const b = e.target.closest('.mc'); if (b && e.button === 0) startPalDrag(e, +b.dataset.sp); });
-$('#clearMons').onclick = () => { A?.clearMons(); $('#monPane').hidden = true; };
+$('#clearMons').onclick = () => { A?.clearMons(); $('#monPane').hidden = true; renderPal(); };
 const ACTS = [['Attack', '공격'], ['Hurt', '아파함'], ['Hop', '깡충'], ['Eat', '먹기'], ['sleep', '자기·깨기'], ['move', '기술'], ['remove', '빼기']];
 function onMon(m) {
-  $('#monPane').hidden = !m; if (!m) return; sel.monUid = m.uid; $('#mName').textContent = `${m.name} · No.${m.sp}`;
+  $('#monPane').hidden = !m; sel.monUid = m ? m.uid : null; renderPal(); if (!m) return; $('#mName').textContent = `${m.name} · No.${m.sp}`;
   $('#mActs').innerHTML = ACTS.map(([k, n]) => `<button class="chip" data-a="${k}">${n}</button>`).join('');
 }
-$('#mActs').onclick = e => { const b = e.target.closest('[data-a]'); if (!b) return; A.act(sel.monUid, b.dataset.a); if (b.dataset.a === 'remove') $('#monPane').hidden = true; };
+$('#mActs').onclick = e => { const b = e.target.closest('[data-a]'); if (!b) return; A.act(sel.monUid, b.dataset.a); if (b.dataset.a === 'remove') { $('#monPane').hidden = true; sel.monUid = null; renderPal(); } };
 const logs = [];
 function onLog(t) { logs.unshift(t); logs.length = Math.min(logs.length, 30); $('#logl').innerHTML = logs.map(l => `<div>${esc(l)}</div>`).join(''); }
 
@@ -512,10 +534,11 @@ function renderDock() {
   if (!A?.cat) { $('#dockB').innerHTML = '<div class="small mute">게임을 새 버전(v3.61)으로 올리면 여기서 소품을 끌어다 놓을 수 있어요.</div>'; return; }
   const C = A.cat();
   $('#dockB').innerHTML = `<h4>끌어다 놓기 · 누르면 크게</h4><div class="sg">${C.add.map(([k, n, src, c]) => `<div class="it dr" data-k="${k}" title="${esc(n)} · 맵에 ${c}개">${c ? `<span class="c">${c}</span>` : ''}${k === 'mush' ? '<span class="ph">🍄</span>' : icon(src)}${esc(n)}</div>`).join('')}</div>
+    ${(C.mine || []).length ? `<h4>내 소품</h4><div class="sg">${C.mine.map(([k, n, src, c]) => `<div class="it dr mine" data-k="${k}" title="${esc(n)} · 맵에 ${c}개">${c ? `<span class="c">${c}</span>` : ''}${icon(src)}${esc(n)}</div>`).join('')}</div>` : ''}
     <h4 class="one">맵에 하나뿐</h4><div class="sg one">${C.one.map(([k, n, src, fr]) => `<div class="it" data-one="${k}">${icon(src, fr)}${esc(n)}</div>`).join('')}</div>`;
 }
 $('#dockB').addEventListener('pointerdown', e => {
-  const one = e.target.closest('[data-one]'); if (one) { openZoom(one.dataset.one, one); return; }
+  const one = e.target.closest('[data-one]'); if (one) { const k = one.dataset.one; if (!editing) setEdit(true); A.pick(k); $$('.dock .it').forEach(x => x.classList.toggle('on', x === one)); openInst(A.selInfo?.() || null, one); return; }
   const it = e.target.closest('.it.dr'); if (!it || e.button > 0 || !A) return; if (e.pointerType === 'mouse') e.preventDefault();
   const k = it.dataset.k, x0 = e.clientX, y0 = e.clientY; let moved = false, last = null, g = null, cv = null;
   const inGame = (x, y) => { const f = $('#game').getBoundingClientRect(); if (x < f.left || x > f.right || y < f.top || y > f.bottom) return null; const s = f.width / $('#game').offsetWidth; return [(x - f.left) / s, (y - f.top) / s]; };
@@ -543,31 +566,56 @@ function onHot(k) {
 }
 
 // 소품 확대창: 누르면 옆에 크게 보이고, 종류별 크기·색을 바꾼다 (맵에 있는 같은 종류가 모두 바뀜)
-const LOOKK = k => k === 'rockS' || k === 'rockL' ? 'rock' : k, NOLOOK = new Set(['mush', 'bed', 'pond']);
+const NOLOOK = new Set(['mush', 'bed', 'pond']);
 let zoomK = null;
 const iga = w => { const c = w.charCodeAt(w.length - 1) - 0xAC00; return c >= 0 && c < 11172 && c % 28 ? '이' : '가'; };
 function closeZoom() { $('#zoom').hidden = true; zoomK = null; $$('.dock .it.on').forEach(e => e.classList.remove('on')); }
+function zoomPos(z, el) { if (mobile()) return; const r = $('#dock').getBoundingClientRect(), t = (el || $('#dock')).getBoundingClientRect(); z.style.left = (r.width > 40 ? r.right : r.left + 44) + 8 + 'px'; z.style.top = Math.max(8, Math.min(innerHeight - z.offsetHeight - 8, t.top - 20)) + 'px'; }
+const SL = `<label>크기<input type="range" data-l="s" min="50" max="200" step="5"><span></span></label><label>색조<input type="range" data-l="h" min="-180" max="180" step="5"><span></span></label><label>채도<input type="range" data-l="c" min="0" max="200" step="5"><span></span></label><label>밝기<input type="range" data-l="b" min="50" max="150" step="5"><span></span></label>`;
+function zPaint(z, src, L, fr) {
+  z.querySelectorAll('[data-l]').forEach(i => { const v = i.dataset.l === 's' ? Math.round(L.s * 100) : L[i.dataset.l]; i.value = v; i.nextElementSibling.textContent = i.dataset.l === 'h' ? v + '°' : v + '%'; });
+  if (!src) { $('#zV').innerHTML = '<span class="ph">●</span>'; return; }
+  const im = new Image(); im.onload = () => { const base = Math.min(3, 70 / im.naturalHeight, 118 * (fr || 1) / im.naturalWidth), w = im.naturalWidth / (fr || 1) * base * L.s, h = im.naturalHeight * base * L.s;
+    $('#zV').innerHTML = fr ? `<span class="fl" style="display:block;background-image:url(${src});width:${w}px;height:${h}px"></span>` : `<img alt="" src="${src}" style="width:${w}px;height:${h}px">`; }; im.src = src; }
+function zSliders(z, apply) { let t = 0; z.oninput = e => { const i = e.target.closest('[data-l]'); if (!i) return; const v = +i.value; i.nextElementSibling.textContent = i.dataset.l === 'h' ? v + '°' : v + '%';
+  clearTimeout(t); t = setTimeout(() => apply({ [i.dataset.l]: i.dataset.l === 's' ? v / 100 : v }), 90); }; }
+// 소품 창의 종류를 누르면: 기본 소품은 그림과 놓기만, 내 소품(분류)은 그 분류 모양을 고친다
 function openZoom(k, el) {
   if (!A?.cat) return; zoomK = k; $$('.dock .it').forEach(e => e.classList.toggle('on', e === el));
-  const C = A.cat(), row = C.add.find(r => r[0] === k) || C.one.find(r => r[0] === k), one = !!C.one.find(r => r[0] === k), lk = LOOKK(k), can = !NOLOOK.has(k) && A.look;
+  const C = A.cat(), row = C.add.find(r => r[0] === k) || (C.mine || []).find(r => r[0] === k); if (!row) return; const mine = !!(C.mine || []).find(r => r[0] === k);
   const z = $('#zoom'); z.hidden = false;
   z.innerHTML = `<div class="zh"><b>${esc(row[1])}</b><button class="chip" id="zX" aria-label="닫기">✕</button></div><div class="zv" id="zV"></div>
-    ${can ? `<label>크기<input type="range" data-l="s" min="50" max="200" step="5"><span></span></label><label>색조<input type="range" data-l="h" min="-180" max="180" step="5"><span></span></label><label>채도<input type="range" data-l="c" min="0" max="200" step="5"><span></span></label><label>밝기<input type="range" data-l="b" min="50" max="150" step="5"><span></span></label>
-    <div class="small mute">맵에 있는 ${esc(row[1].replace(/ .*/, ''))}${k === 'rockS' || k === 'rockL' ? '(작은·큰 바위 모두)' : ''}${k === 'rockS' || k === 'rockL' ? '가' : iga(row[1].replace(/ .*/, ''))} 모두 같이 바뀌어요.</div>` : '<div class="small mute">이 소품은 아직 크기·색을 바꿀 수 없어요.</div>'}
-    <div class="chips">${can ? '<button class="chip" id="zReset">원래대로</button>' : ''}${one ? '<button class="chip" id="zPick">맵에서 고르기</button>' : '<button class="chip" id="zAdd">맵 가운데에 놓기</button>'}</div>`;
-  if (!mobile()) { const r = $('#dock').getBoundingClientRect(), t = el.getBoundingClientRect(); z.style.left = r.right + 8 + 'px'; z.style.top = Math.max(8, Math.min(innerHeight - z.offsetHeight - 8, t.top - 20)) + 'px'; }
-  const paint = () => { if (!can) { $('#zV').innerHTML = icon(row[2], one ? row[3] : 0); return; } const L = A.look(lk), src = A.lookIcon(k) || row[2], fr = one ? row[3] : 0;
-    z.querySelectorAll('[data-l]').forEach(i => { const v = i.dataset.l === 's' ? Math.round(L.s * 100) : L[i.dataset.l]; i.value = v; i.nextElementSibling.textContent = i.dataset.l === 'h' ? v + '°' : v + '%'; });
-    const im = new Image(); im.onload = () => { const base = Math.min(3, 70 / im.naturalHeight, 118 * (fr || 1) / im.naturalWidth), w = im.naturalWidth / (fr || 1) * base * L.s, h = im.naturalHeight * base * L.s;
-      $('#zV').innerHTML = fr ? `<span class="fl" style="display:block;background-image:url(${src});width:${w}px;height:${h}px"></span>` : `<img alt="" src="${src}" style="width:${w}px;height:${h}px">`; }; im.src = src; };
+    ${mine ? `${SL}<div class="kname"><input id="zName" maxlength="12" value="${esc(row[1])}" aria-label="분류 이름"><button class="chip" id="zRen">이름 바꾸기</button></div><div class="small mute">이 분류로 놓은 소품 ${row[3]}개가 모두 같이 바뀌어요.</div>`
+      : `<div class="small mute">${NOLOOK.has(k) ? '이 소품은 아직 크기·색을 바꿀 수 없어요.' : '맵에서 소품을 누르면 그 소품 하나만 크기·색을 바꿀 수 있어요. 바꾼 모양은 "소품 목록에 추가"로 내 소품이 돼요.'}</div>`}
+    <div class="chips"><button class="chip" id="zAdd">맵 가운데에 놓기</button>${mine ? '<button class="chip" id="zDel">분류 지우기</button>' : ''}</div>`;
+  zoomPos(z, el);
+  const paint = () => { if (mine) { const K = A.kind(k); zPaint(z, A.lookIcon(k), { ...K.lk, s: K.lk.s }, 0); } else zPaint(z, A.lookIcon(k) || row[2], { s: 1, h: 0, c: 100, b: 100 }, 0); };
   paint();
-  let t = 0; z.oninput = e => { const i = e.target.closest('[data-l]'); if (!i) return; const v = +i.value; i.nextElementSibling.textContent = i.dataset.l === 'h' ? v + '°' : v + '%';
-    clearTimeout(t); t = setTimeout(() => { A.setLook(lk, { [i.dataset.l]: i.dataset.l === 's' ? v / 100 : v }); if (!editing) setEdit(true); setTimeout(paint, 80); }, 90); };
+  if (mine) zSliders(z, v => { A.setKind(k, { lk: v }); if (!editing) setEdit(true); setTimeout(() => { paint(); renderDock(); }, 80); });
+  let armed = false;
   z.onclick = e => { const b = e.target.closest('button'); if (!b) return;
     if (b.id === 'zX') closeZoom();
-    else if (b.id === 'zReset') { A.setLook(lk, { s: 1, h: 0, c: 100, b: 100 }); setTimeout(paint, 80); }
-    else if (b.id === 'zPick') { if (!editing) setEdit(true); A.pick(k); }
+    else if (b.id === 'zRen') { A.setKind(k, { n: $('#zName').value.trim() }); renderDock(); z.querySelector('.zh b').textContent = A.kind(k).n; toast('이름을 바꿨어요'); }
+    else if (b.id === 'zDel') { if (!armed) { armed = true; b.textContent = '정말 지울까요? 한 번 더'; return; } A.delKind(k); closeZoom(); renderDock(); toast('분류를 지웠어요. 맵의 소품은 모양 그대로 남아요'); }
     else if (b.id === 'zAdd') { if (!editing) setEdit(true); A.add(k); renderDock(); toast('가운데에 놓았어요. 끌어서 옮겨요'); } };
+}
+// 맵에서 고른 소품 하나: 이 소품만 모양을 바꾸고, 원하면 내 소품(분류)으로 저장
+function openInst(s, el) {
+  if (!s || !s.lk || !A.selLook) { closeZoom(); return; } zoomK = 'inst';
+  const z = $('#zoom'); z.hidden = false;
+  z.innerHTML = `<div class="zh"><b>${esc(s.name)}${s.kindName ? ' · ' + esc(s.kindName) : ''}</b><button class="chip" id="zX" aria-label="닫기">✕</button></div><div class="zv" id="zV"></div>${SL}
+    <div class="small mute">${s.kind ? `"${esc(s.kindName)}" 분류 소품이에요. 여기서 바꾸면 이 소품만 분류에서 떨어져 따로 바뀌어요.` : '이 소품 하나만 바뀌어요.'}</div>
+    <div class="chips"><button class="chip" id="zReset">원래대로</button>${s.canKind ? '<button class="chip" id="zKind">소품 목록에 추가</button>' : ''}</div>
+    <div class="kname" id="zKN" hidden><input id="zName" maxlength="12" placeholder="분류 이름 (예: 노란 덤불)"><button class="btn" id="zSave">추가</button></div>`;
+  zoomPos(z, el);
+  const fr = s.key === 'fire' ? 6 : 0, paint = () => zPaint(z, s.key === 'fire' ? null : A.selIcon(), A.selLook(), fr);
+  paint(); if (s.key === 'fire') { $('#zV').innerHTML = '<span class="small mute">모닥불 돌 자리 모양이 바뀌어요</span>'; }
+  zSliders(z, v => { A.setSelLook(v); setTimeout(() => { if (s.key !== 'fire') paint(); }, 80); });
+  z.onclick = e => { const b = e.target.closest('button'); if (!b) return;
+    if (b.id === 'zX') closeZoom();
+    else if (b.id === 'zReset') { A.setSelLook({ s: 1, h: 0, c: 100, b: 100 }); setTimeout(paint, 80); }
+    else if (b.id === 'zKind') { $('#zKN').hidden = false; $('#zName').focus(); }
+    else if (b.id === 'zSave') { const id = A.saveKind($('#zName').value.trim()); if (!id) return; renderDock(); toast('소품 목록에 추가했어요'); openInst(A.selInfo(), el); } };
 }
 addEventListener('keydown', e => { if (e.key === 'Escape' && zoomK) closeZoom(); });
 
@@ -740,7 +788,7 @@ function changes() {
   if (!ORIG) return []; const out = [];
   // 넷째 칸 = 되돌리기 열쇠 (배포하기 화면에서 항목별로 취소)
   if (D.layout) { const noLook = L => JSON.stringify({ ...L, look: undefined });
-    if (noLook(D.layout) !== noLook(ORIG.layout)) out.push(['맵 배치', '소품 위치가 바뀌었어요', '', 'layout']);
+    if (noLook(D.layout) !== noLook(ORIG.layout)) out.push(['맵 배치', '소품 위치·모양이 바뀌었어요', '', 'layout']);
     const a = ORIG.layout.look || {}, b = D.layout.look || {}; for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) if (JSON.stringify(a[k]) !== JSON.stringify(b[k])) out.push([`${LOOKNAME(k)} 모양`, lookTxt(a[k]), lookTxt(b[k]), 'look:' + k]); }
   (D.odds || []).forEach((p, i) => { if (Math.abs(p - ORIG.odds[i]) > 1e-9) out.push([`${GN[i + 1]} 알 확률`, +(ORIG.odds[i] * 100).toFixed(4) + '%', +(p * 100).toFixed(4) + '%', 'odds:' + i]); });
   if (D.pity) for (const [k, v] of Object.entries(D.pity)) out.push([k === 'e' ? '에픽 천장' : '전설 천장', ORIG.pity[k] + 'km', v + 'km', 'pity:' + k]);
@@ -863,7 +911,7 @@ function hook() {
         CLEAN_DAYS: Math.round(100 / K.CLEAN_RATE / 86400 * 100) / 100, HUNGER_RATE: K.HUNGER_RATE, JOY_HOURS: Math.round(100 / K.JOY_RATE / 3600 * 100) / 100, MAX_EGGS: K.MAX_EGGS, MAX_BAG: K.MAX_BAG, BAG_STEP: K.BAG_STEP, SHINY_N: Math.round(1 / K.SHINY_RATE) } };
     A.ensureSprite(1).then(() => { $('#logoI').src = thumb(25) || ''; A.ensureSprite(25).then(() => $('#logoI').src = thumb(25)); });
   }
-  A.onSel = onSel; A.onMon = onMon; A.onLog = onLog; A.onLayout = onLayout; A.onHot = onHot; applyInsets();
+  A.onTap = s => { if (s && s.lk) openInst(s); }; A.onSel = onSel; A.onMon = onMon; A.onLog = onLog; A.onLayout = onLayout; A.onHot = onHot; applyInsets();
   if (D.layout) A.setLayout(D.layout);
   A.edit(editing); if (!$('#hrNow').classList.contains('on')) A.setHour(+$('#hr').value); $('#hrNow').classList.contains('on') && $('#hrNow').onclick();
   const w0 = $('#wx .on')?.dataset.w; if (w0) A.setWx(w0);
