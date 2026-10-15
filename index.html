@@ -452,7 +452,7 @@ ol.log li.big .txt{color:#c03838}
 .bubble.star{color:#c08000;background:#fff6c8}
 .mon.wet img,.mon.wet .spr{clip-path:inset(0 0 38% 0)}
 .mon .ripple{position:absolute;left:0;top:0;width:60px;height:14px;margin:-7px 0 0 -30px;border-radius:50%;border:2px solid rgba(255,255,255,.55);display:none}
-.mon.wet .ripple{display:block;animation:ripple 1.6s ease-in-out infinite}
+.mon.wet .ripple{display:none}
 .mon.wet .shadow{display:none}
 .mon.flop .act>img,.mon.flop .act>.spr{transform-origin:50% 100%;animation:flop .55s ease-in-out infinite}
 @keyframes flop{0%,100%{transform:none}25%{transform:translateY(-5px) rotate(-14deg)}50%{transform:translateY(0) rotate(0)}75%{transform:translateY(-3px) rotate(12deg)}}
@@ -1885,11 +1885,12 @@ document.addEventListener('click', e => {
 const LAYOUT = {
   pond: { x: 214, y: 484, rx: 102, ry: 50 }, fire: { x: 276, y: 240 }, bed: { x: 132, y: 300 },
   path: [[-16, 340], [100, 368], [220, 292], [372, 300]],
-  tree: { x: 96, y: 244 }, perch: { x: 300, y: 392 }, stump: { x: 308, y: 446 },
+  tree: { x: 96, y: 244, b: [[12, 21], [30, 12], [36, 28]] }, perch: { x: 300, y: 392 }, stump: { x: 308, y: 446 },
   bushes: [{ x: 312, y: 574 }, { x: 44, y: 520 }], puddles: [{ x: 150, y: 340, w: 60 }, { x: 150, y: 572, w: 56 }],
   rocks: [[40, 264, 12, 8, 1, 3], [336, 372, 16, 10, 2, 5], [280, 596, 10, 7, 1, 7], [108, 504, 14, 9, 2, 9], [232, 196, 9, 6, 1, 11]],
   mush: [[44, 272], [256, 592], [340, 236]],
   look: {},   // v3.62 작업실: 소품 종류별 크기(s)·색조(h°)·채도(c%)·밝기(b%)
+  kinds: {},   // v3.63 작업실: 내가 만든 소품 분류 { 이름표: { b 바탕 소품, n 이름, lk 모양 } }
   flowers: [
     ['daisy', 186, 200], ['pink', 198, 206], ['daisy', 208, 198], ['bell', 30, 300], ['tulip', 40, 306], ['daisy', 330, 352], ['pink', 342, 358],
     ['tulip', 200, 392], ['daisy', 212, 398], ['bell', 86, 576], ['pink', 98, 582], ['daisy', 236, 580], ['pink', 344, 470], ['daisy', 170, 268],
@@ -2705,6 +2706,18 @@ function biteBerry(el, m, dur, x, y) {
     crumbs(2); setTimeout(bite, dur * 1000 / n); };
   setTimeout(bite, dur * 1000 / n / 2);
 }
+// v3.63 경완: 나무에서 떨어진 열매는 배고픈 포켓몬(배부름 60 이하)이 알아채고 주우러 온다. 열매마다 가장 가까운 한 마리
+const HUNGRY = 40;
+function callHungry(b) {
+  let best = null, bd = 460;
+  for (const m of S.mons) {
+    if (!awake(m) || m.held || m.evolving || m.hidden || m.pet || T(m).mv === 'swim' || m.hunger <= HUNGRY) continue;
+    if (!(m.state === 'idle' || m.state === 'move')) continue;
+    if (m.goal?.kind === 'berry' && S.berries.includes(m.goal.berry) && m.goal.berry !== b) continue;   // 이미 다른 열매로 가는 중
+    const d = dist(m, b); if (d < bd) { bd = d; best = m; }
+  }
+  if (best) { emote(best, '!', '', 1); moveTo(best, b, { kind: 'berry', berry: b }, 1.3); }
+}
 function eatBerry(b) { b.el.remove(); S.berries = S.berries.filter(x => x !== b); }
 function rotBerries() {
   const now = Date.now();
@@ -2716,7 +2729,7 @@ function rotBerries() {
 function nearestBerry(m) {
   let best = null, bd = 1e9;
   // 숲 가장자리에 저절로 떨어진 열매는 꽤 배고플 때만 줍는다 (내가 준 열매는 배가 덜 찼으면 먹는다)
-  for (const b of S.berries) { if (b.nat && m.hunger <= SELF_FEED) continue; if (b.for && b.for !== m && S.mons.includes(b.for)) continue;   // 다른 포켓몬 몫으로 준 열매는 건드리지 않는다
+  for (const b of S.berries) { if (b.no?.has(m.uid)) continue; if (b.nat && m.hunger <= (b.shk ? HUNGRY : SELF_FEED)) continue; if (b.for && b.for !== m && S.mons.includes(b.for)) continue;   // 다른 포켓몬 몫으로 준 열매는 건드리지 않는다
  const d = dist(m, b); if (d < bd) { bd = d; best = b; } }
   return T(m).mv === 'swim' ? null : best;
 }
@@ -2745,8 +2758,16 @@ function outOfHud(m, q) {
 const eatSpot = (m, p) => { const side = m.x >= p.x ? 1 : -1; return { x: p.x + side * Math.max(5, (m.w || 30) * .18), y: p.y - 3 }; };
 // v3.62 경완: 열매나무 뒤(나무에 가려지는 곳)는 지나갈 수만 있고 멈추지 않는다
 const behindTree = (x, y) => { const T = LAYOUT.tree, z = LS('tree'); return y < T.y - 6 && y > T.y - 110 * z && Math.abs(x - T.x) < 48 * z; };
+function treeWp(m, tx, ty) {   // v3.63 경완: 나무 뒤 ↔ 앞을 오갈 때 나무를 뚫지 않고 옆으로 돌아간다
+  if (!treeEl || T(m).mv === 'swim' || m.land) return null; const Tr = LAYOUT.tree, z = LS('tree'), ly = Tr.y - 3;
+  if ((m.y - ly) * (ty - ly) >= 0) return null;
+  const hw = 46 * z + Math.min(18, (m.w || 40) * .3), cx = m.x + (tx - m.x) * (ly - m.y) / (ty - m.y); if (Math.abs(cx - Tr.x) > hw) return null;
+  let sd = (m.x + tx) / 2 < Tr.x ? -1 : 1; const ok = sd => Tr.x + sd * (hw + 8) > XL + 24 && Tr.x + sd * (hw + 8) < XR - 24; if (!ok(sd)) sd = -sd;
+  return { x: Tr.x + sd * (hw + 8), y: ly };
+}
 function outOfTree(p) { if (!behindTree(p.x, p.y)) return p; const T = LAYOUT.tree, z = LS('tree'); return { x: p.x, y: T.y + 8 + Math.random() * 14 * z }; }
 function moveTo(m, p, goal, spdMul = 1) {
+  m.wp = null;
   if (goal && (goal.kind === 'berry' || goal.kind === 'feedb')) p = eatSpot(m, p);
   if (T(m).mv !== 'swim') p = outOfTree(p);
   m.tx = clamp(p.x, XL + 30, XR - 30); m.ty = clamp(p.y, MIN_Y, MAX_Y);
@@ -4101,10 +4122,11 @@ function update(m, dt) {
         if (T(m).mv === 'swim' && pondVal(m.tx, m.ty) > .85) { const q = { x: m.tx, y: m.ty }; projectOut(q, .82); m.tx = q.x; m.ty = q.y; }
       }
       if (g && g.kind === 'berry' && !S.berries.includes(g.berry)) { arrive(m); break; }
-      const dx = m.tx - m.x, dy = m.ty - m.y, d = Math.hypot(dx, dy);
+      if (!m.wp) m.wp = treeWp(m, m.tx, m.ty); else if (Math.hypot(m.wp.x - m.x, m.wp.y - m.y) < 6) m.wp = null;
+      const gx = m.wp ? m.wp.x : m.tx, gy = m.wp ? m.wp.y : m.ty, dx = gx - m.x, dy = gy - m.y, d = Math.hypot(dx, dy) || .001;
       const sp = t.spd * (m.spdMul || 1) * (m.energy < 20 ? .6 : 1) * (pondVal(m.x, m.y) < 1 && t.mv === 'amph' ? .8 : 1);
       const reach = g && (g.kind === 'meet' || g.kind === 'scare' || g.kind === 'heal' || g.kind === 'chase') ? 10 : 4;
-      if (d < reach || (g && g.kind === 'meet' && dist(m, g.mon) < 60 && pondVal(g.mon.x, g.mon.y) < 1.15)) { arrive(m); break; }
+      if (!m.wp && (d < reach || (g && g.kind === 'meet' && dist(m, g.mon) < 60 && pondVal(g.mon.x, g.mon.y) < 1.15))) { arrive(m); break; }
       const step = Math.min(d, sp * dt);
       let vx = dx / d * step, vy = dy / d * step;
       /* 호숫가: 물 쪽(걷는 포켓몬)·뭍 쪽(헤엄치는 포켓몬)으로 들어가는 성분만 빼고 물가를 따라 미끄러지게 (밀어냈다 들어갔다 반복하며 덜덜 떠는 것 방지) */
@@ -4118,9 +4140,14 @@ function update(m, dt) {
       if (t.mv === 'swim' && !m.land && pondVal(m.x, m.y) > .9) projectOut(m, .9);
       m.x = clamp(m.x, XL + 20, XR - 20); m.y = clamp(m.y, MIN_Y, MAX_Y);
       // 길이 막혀(호수·화면 끝) 거의 못 나아가면 1초쯤 뒤 왔던 쪽으로 돌아 나간다
-      { const gain = d - Math.hypot(m.tx - m.x, m.ty - m.y);
+      { const gain = d - Math.hypot(gx - m.x, gy - m.y);
         m.stk = gain < step * .3 ? (m.stk || 0) + dt : Math.max(0, (m.stk || 0) - dt);
-        if (m.stk > 1 && t.mv !== 'swim') { m.stk = 0; const back = { x: clamp(m.x - dx / d * rnd(90, 170) + rnd(-40, 40), XL + 30, XR - 30), y: clamp(m.y - dy / d * rnd(50, 110) + rnd(-30, 30), MIN_Y + 5, MAX_Y - 5) };
+        if (m.stk > 1 && t.mv !== 'swim') { m.stk = 0; m.wp = null;
+          // v3.63 경완: 못 가는 곳(열매·소품)은 포기하고, 금방 또 막히면 제자리에서 쉰다 (걷는 동작만 되풀이하지 않게)
+          if (g?.kind === 'berry' && g.berry) (g.berry.no || (g.berry.no = new Set())).add(m.uid);
+          if (g?.kind === 'prop') m.propCd = rnd(120, 300);
+          const now = performance.now(); if (now - (m.stkAt || -1e9) < 15000) { m.stkAt = 0; m.goal = null; setState(m, 'idle', rnd(3, 6)); break; } m.stkAt = now;
+          const back = { x: clamp(m.x - dx / d * rnd(90, 170) + rnd(-40, 40), XL + 30, XR - 30), y: clamp(m.y - dy / d * rnd(50, 110) + rnd(-30, 30), MIN_Y + 5, MAX_Y - 5) };
           if (t.mv === 'walk' && pondVal(back.x, back.y) < 1.15) projectOut(back, 1.2);
           m.goal = null; m.tx = back.x; m.ty = back.y; m.t = Math.min(m.t, 4); break; } }
       if (m.t <= 0) { if (g && g.kind === 'chase') chaseEnd(m); else think(m); }
@@ -4428,7 +4455,7 @@ function drawBg() {
   // 그림 소품: 모닥불 자리·그루터기·바위
   put(lookCv(ART.campfire(), 'fire'), FIRE.x / 2, FIRE.y / 2 + 9);
   put(lookCv(ART.stump(), 'stump'), LAYOUT.stump.x / 2, LAYOUT.stump.y / 2);
-  for (const [x, y, w, h, n, s] of LAYOUT.rocks) put(lookCv(ART.rock(w, h, s * 977, n), 'rock'), x / 2, y / 2);
+  for (const [x, y, w, h, n, s, lk] of LAYOUT.rocks) { const L = lkRes(lk); put(L ? scaleCv(tintCv(ART.rock(w, h, s * 977, n), L), +L.s || 1) : lookCv(ART.rock(w, h, s * 977, n), 'rock'), x / 2, y / 2); }
   // 버섯
   for (const [x, y] of LAYOUT.mush.map(([a, b]) => [a / 2, b / 2])) { px(x, y - 2, 2, 3, '#f0e8d8'); px(x - 2, y - 4, 6, 2, '#d83838'); px(x - 1, y - 5, 4, 1, '#e85050'); px(x - 1, y - 4, 1, 1, '#fff'); px(x + 2, y - 4, 1, 1, '#fff'); px(x - 2, y - 2, 6, 1, 'rgba(0,0,0,.15)'); }
   // 꽃밭: 갈아 놓은 두둑 (꽃은 흔들리는 그림으로 따로)
@@ -4442,10 +4469,18 @@ const PROPS = { tree: LAYOUT.tree, perch: LAYOUT.perch, bushes: LAYOUT.bushes, p
 const bedFlowers = (B) => [...[[-15, -2], [-5, -4], [5, -3], [15, -1]].map(([dx, dy]) => ['sun', B.x + dx * 2, B.y + dy * 2]),
   ...[[-16, 4], [-8, 7], [0, 5], [8, 8], [16, 4], [-12, 11], [4, 12], [12, 11]].map(([dx, dy], i) => [['tulip', 'daisy', 'pink', 'bell'][i % 4], B.x + dx * 2, B.y + dy * 2])];
 const FLOWERS = [...bedFlowers(FLOWERBED), ...LAYOUT.flowers];
-const TREE_SLOTS = [[13, 24], [22, 13], [33, 17], [18, 33], [30, 31], [41, 26]], TREE_REGROW = 10 * 60e3;   // 10분마다 한 알씩 다시 열린다 (6알 다 열리는 데 1시간)
+const TREE_B0 = [[12, 21], [30, 12], [36, 28]], TSL = () => (Array.isArray(LAYOUT.tree.b) && LAYOUT.tree.b.length ? LAYOUT.tree.b : TREE_B0), TREE_REGROW = 10 * 60e3;   // v3.63 경완: 열매는 3알 (자리는 작업실 맵에서 끌어 옮긴다). 10분마다 한 알씩 다시 열린다
 const sprURL = (cv) => cv.toDataURL();
 // v3.62 작업실: 소품 모양 조절. LAYOUT.look[종류] = { s 크기 배수, h 색조(도), c 채도 %, b 밝기 % }
-const lookOf = k => (LAYOUT.look && LAYOUT.look[k]) || null, LS = k => +(lookOf(k)?.s) || 1;
+// v3.63 경완: 소품 하나하나에 모양(lk)을 줄 수 있다. lk = {s,h,c,b} 또는 LAYOUT.kinds 에 저장한 내 분류 이름. 하나뿐인 소품(나무·횃대·그루터기·모닥불)은 그 lk 가 곧 종류 모양
+const lkRes = v => !v ? null : typeof v === 'string' ? (LAYOUT.kinds?.[v]?.lk || null) : v;
+const ONE_LK = { tree: 1, perch: 1, stump: 1, fire: 1 };
+const lookOf = k => (ONE_LK[k] && lkRes(LAYOUT[k]?.lk)) || (LAYOUT.look && LAYOUT.look[k]) || null, LS = k => +(lookOf(k)?.s) || 1;
+const ilk = (key, v) => !v ? null : key === 'rocks' ? v[6] : key === 'mush' ? null : key === 'flowers' ? v[3] : v.lk;
+const LKi = (k, key, v) => lkRes(ilk(key, v)) || lookOf(k), LZi = (k, key, v) => +(LKi(k, key, v)?.s) || 1;
+const LKC = new Map();
+function lkUrl(id, L, mk) { const key = id + '|' + JSON.stringify(L); let u = LKC.get(key); if (!u) { u = mk(); LKC.set(key, u); if (LKC.size > 400) LKC.delete(LKC.keys().next().value); } return u; }
+const flwSz = (k, lk) => { const s = SPR.flw[k], L = lkRes(lk); if (!L) return s; const z = (+L.s || 1) / LS(k); return { w: Math.round(s.w * z), h: Math.round(s.h * z) }; };
 function tintCv(cv, L) {
   if (!L || (!L.h && (L.c ?? 100) == 100 && (L.b ?? 100) == 100)) return cv;
   const o = document.createElement('canvas'); o.width = cv.width; o.height = cv.height; const x = o.getContext('2d'); x.drawImage(cv, 0, 0);
@@ -4486,7 +4521,7 @@ function makeSprites() {
     L.forEach((row, y) => [...row].forEach((c, x) => { if (C[c]) px(x, y, 1, 1, C[c]); })); });
   SPR.lilyF = sprCanvas(9, 8, (px) => { const L = ['...pPp...', '..pPWPp..', '..gpypg..', '.gGGGgg..', 'gGGgg.ggg', 'ggggg.ggd', '.ggggggd.', '..dddd...'], C = { g: '#4fa03c', G: '#7cc85a', d: '#2e7a2c', p: '#ff9ec4', P: '#ffc8dc', W: '#fff0f6', y: '#ffe066' };
     L.forEach((row, y) => [...row].forEach((c, x) => { if (C[c]) px(x, y, 1, 1, C[c]); })); });
-  SPR.puddle = sprCanvas(40, 14, (px, blob) => { blob(20, 7, 19, 6, '#6e4e30', '#8a6640', '#5a3e24', '#4a3018'); blob(21, 7, 14, 4, '#7c6a5a', '#a89c8c', '#6a5a4a', '#5a4a3a'); px(14, 5, 6, 1, '#c8c0b4'); px(25, 8, 4, 1, '#b8b0a4'); }, lookOf('puddle'));
+  SPR.pudArt = L => sprCanvas(40, 14, (px, blob) => { blob(20, 7, 19, 6, '#6e4e30', '#8a6640', '#5a3e24', '#4a3018'); blob(21, 7, 14, 4, '#7c6a5a', '#a89c8c', '#6a5a4a', '#5a4a3a'); px(14, 5, 6, 1, '#c8c0b4'); px(25, 8, 4, 1, '#b8b0a4'); }, L); SPR.puddle = SPR.pudArt(lookOf('puddle'));
   SPR.sun = sprCanvas(15, 15, (px, blob) => { blob(7.5, 7.5, 7, 7, '#ffd23c', '#fff0a0', '#ffb020', '#f08a1c'); px(5, 4, 2, 1, '#fffbe0'); });
   SPR.moon = sprCanvas(12, 12, (px) => { const M = ['...oooo.....', '.ooyyyo.....', '.oyyyo......', 'oyyyo.......', 'oyyo........', 'oyyo........', 'oyyo........', 'oyyyo.......', '.oyyyyo..oo.', '..ooyyyyyo..', '....ooooo...', '............'], C = { o: '#d8c890', y: '#fff6c8' };
     M.forEach((row, y) => [...row].forEach((c, x) => { if (C[c]) px(x, y, 1, 1, C[c]); })); });
@@ -4499,8 +4534,8 @@ let treeEl = null, flameEl = null, puddleEls = [], rainEl = null;
 function onProp(x, y) {
   const L = LAYOUT, inB = (cx, by, w, h) => Math.abs(x - cx) < w / 2 && y < by + 6 && y > by - h, zT = LS('tree'), zP = LS('perch'), zF = LS('fire'), zS = LS('stump'), zB = LS('bush'), zR = LS('rock'), zQ = LS('puddle');
   return inB(L.tree.x, L.tree.y, 100 * zT, 116 * zT) || inB(L.perch.x, L.perch.y, 52 * zP, 64 * zP) || inB(L.fire.x, L.fire.y + 14, 72 * zF, 64 * zF) || inB(L.stump.x, L.stump.y, 44 * zS, 32 * zS) || inB(L.bed.x, L.bed.y + 22, 100, 54)
-    || L.bushes.some(b => inB(b.x, b.y, 72 * zB, 48 * zB)) || L.rocks.some(r => inB(r[0], r[1], r[2] * 2 * zR + 4, r[3] * 2 * zR + 4)) || L.mush.some(m => inB(m[0], m[1], 16, 16))
-    || L.puddles.some(q => inB(q.x, q.y + q.w * zQ * .175, q.w * zQ, q.w * zQ * .35)) || L.flowers.some(f => { const k = SPR.flw?.[f[0]]; return inB(f[1], f[2], Math.max(16, k?.w || 16), Math.max(18, k?.h || 18)); });
+    || L.bushes.some(b => { const z = LZi('bush', 'bushes', b); return inB(b.x, b.y, 72 * z, 48 * z); }) || L.rocks.some(r => { const z = LZi('rock', 'rocks', r); return inB(r[0], r[1], r[2] * 2 * z + 4, r[3] * 2 * z + 4); }) || L.mush.some(m => inB(m[0], m[1], 16, 16))
+    || L.puddles.some(q => { const z = LZi('puddle', 'puddles', q); return inB(q.x, q.y + q.w * z * .175, q.w * z, q.w * z * .35); }) || L.flowers.some(f => { const k = SPR.flw?.[f[0]] && flwSz(f[0], f[3]); return inB(f[1], f[2], Math.max(16, k?.w || 16), Math.max(18, k?.h || 18)); });
 }
 function buildProps() {
   makeSprites();
@@ -4508,11 +4543,11 @@ function buildProps() {
   const zT = LS('tree'), zP = LS('perch'), zB = LS('bush');
   treeEl = add('tree', PROPS.tree, SPR.tree, Math.round(100 * zT), Math.round(116 * zT));
   add('perch', PROPS.perch, SPR.perch, Math.round(52 * zP), Math.round(64 * zP));
-  PROPS.bushEls = PROPS.bushes.map(b => add('bush', b, SPR.bush, Math.round(72 * zB), Math.round(48 * zB)));
+  PROPS.bushEls = PROPS.bushes.map(b => { const L = lkRes(b.lk), z = L ? +L.s || 1 : zB; return add('bush', b, L ? lkUrl('bush', L, () => tintCv(ART.bush(), L).toDataURL()) : SPR.bush, Math.round(72 * z), Math.round(48 * z)); });
   /* v3.55: 꽃·풀은 바람에 살랑살랑 (하나씩 박자를 달리) */
-  FLOWERS.forEach(([k, x, y], i) => { const f = SPR.flw[k], e = document.createElement('div'); e.className = 'flw';
+  FLOWERS.forEach(([k, x, y, lk], i) => { const L = lkRes(lk), f = L ? { src: lkUrl('f' + k, L, () => tintCv(ART.flower(k), L).toDataURL()), ...flwSz(k, lk) } : SPR.flw[k], e = document.createElement('div'); e.className = 'flw';
     e.style.cssText = W2(f.src, f.w, f.h) + `;left:${x}px;top:${y}px;z-index:${Math.round(y)};--d:${(1.6 + ((i * 37) % 13) / 10).toFixed(2)}s;--dl:${(-((i * 53) % 29) / 10).toFixed(1)}s;--a:${k === 'grass' ? 7 : k === 'sun' ? 4 : 6}deg`; itemsEl.append(e); });
-  for (const q of PROPS.puddles) { const e = document.createElement('div'); e.className = 'puddle'; const qw = Math.round(q.w * LS('puddle')); e.style.cssText = W2(SPR.puddle, qw, Math.round(qw * .35)) + `;left:${q.x}px;top:${q.y}px`; itemsEl.append(e); puddleEls.push(e); }
+  for (const q of PROPS.puddles) { const e = document.createElement('div'); e.className = 'puddle'; const L = lkRes(q.lk), qw = Math.round(q.w * (L ? +L.s || 1 : LS('puddle'))); e.style.cssText = W2(L ? lkUrl('pud', L, () => SPR.pudArt(L)) : SPR.puddle, qw, Math.round(qw * .35)) + `;left:${q.x}px;top:${q.y}px`; itemsEl.append(e); puddleEls.push(e); }
   flameEl = document.createElement('div'); flameEl.className = 'flame'; flameEl.style.cssText = `background-image:url(${SPR.flame});left:${FIRE.x}px;top:${FIRE.y}px;z-index:${Math.round(FIRE.y) + 1}` + (LS('fire') !== 1 ? `;transform:scale(${LS('fire')});transform-origin:50% 100%` : ''); itemsEl.append(flameEl);   /* v3.61 경완: 불꽃도 높이 순서대로 → 앞에 선 포켓몬이 불을 가린다 */
   { const dl = -(document.timeline.currentTime % 3150) + 'ms'; flameEl.style.animationDelay = dl; $('#night').style.animationDelay = dl; }   /* 불꽃 그림과 밤 불빛 범위를 같은 박자로 */
   flameEl.innerHTML = Array.from({ length: 8 }, (_, i) => `<i style="--x:${((i * 37) % 21) - 10}px;--d:${(.9 + ((i * 29) % 7) / 10).toFixed(1)}s;--dl:${(-i * .23).toFixed(2)}s"></i>`).join('');
@@ -4532,10 +4567,10 @@ function buildProps() {
 }
 // 열매나무: 15분마다 한 알씩 열려 6알까지. 포켓몬이 와서 흔들면 실제로 떨어진다
 function treeBerries() {
-  const T = S.tree || (S.tree = { n: 4, t: Date.now() }); const k = Math.floor((Date.now() - T.t) / TREE_REGROW);
-  if (k > 0) { T.n = Math.min(TREE_SLOTS.length, T.n + k); T.t += k * TREE_REGROW; } if (T.n >= TREE_SLOTS.length) T.t = Date.now();
+  const T = S.tree || (S.tree = { n: 3, t: Date.now() }); if (T.n > TSL().length) T.n = TSL().length; const k = Math.floor((Date.now() - T.t) / TREE_REGROW);
+  if (k > 0) { T.n = Math.min(TSL().length, T.n + k); T.t += k * TREE_REGROW; } if (T.n >= TSL().length) T.t = Date.now();
   if (!treeEl) return; const L = [...treeEl.querySelectorAll('.tb')]; L.slice(T.n).forEach(b => b.remove()); const have = Math.min(L.length, T.n);
-  for (let i = have; i < T.n; i++) { const [x, y] = TREE_SLOTS[i], b = document.createElement('i'); b.className = 'tb' + ((i * 7) % 3 === 0 ? ' red' : ''); b.style.left = Math.round(x * 2 * LS('tree')) + 'px'; b.style.top = Math.round(y * 2 * LS('tree')) + 'px'; treeEl.append(b); }
+  for (let i = have; i < T.n; i++) { const [x, y] = TSL()[i], b = document.createElement('i'); b.className = 'tb' + ((i * 7) % 3 === 0 ? ' red' : ''); b.style.left = Math.round(x * 2 * LS('tree')) + 'px'; b.style.top = Math.round(y * 2 * LS('tree')) + 'px'; treeEl.append(b); }
 }
 // ---------- v3.58 경완: 소품 반응. 포켓몬을 소품에 끌어다 놓거나, 포켓몬이 스스로 찾아가면 소품마다 다른 행동을 한다 ----------
 // 소품 자리: [종류, 이름, 가운데 x, y, 반지름 rx, ry, 덤불·바위 번호]
@@ -4619,8 +4654,8 @@ function shakeTree(m) {
   L.slice(-k).forEach((b, i) => { S.tree.n--; const bx = PROPS.tree.x - 50 * LS('tree') + parseFloat(b.style.left), by = PROPS.tree.y - 116 * LS('tree') + parseFloat(b.style.top), gx = bx + rnd(-10, 10), gy = PROPS.tree.y + rnd(6, 26);
     b.remove(); const f = document.createElement('i'); f.className = 'tb fall' + (b.classList.contains('red') ? ' red' : ''); f.style.left = bx + 'px'; f.style.top = by + 'px'; fxEl.append(f);
     f.animate([{ transform: 'translate(0,0)' }, { transform: `translate(${gx - bx}px,${gy - by}px)` }], { duration: 420 + i * 90, easing: 'cubic-bezier(.5,0,1,1)', delay: 120 + i * 140, fill: 'forwards' })
-      .finished.then(() => { f.remove(); addBerry(gx, gy, true); }); });
-  S.tree.t = S.tree.n === TREE_SLOTS.length - k ? Date.now() : S.tree.t; save();
+      .finished.then(() => { f.remove(); const nb = addBerry(gx, gy, true); if (nb) { nb.shk = true; callHungry(nb); } }); });
+  S.tree.t = S.tree.n === TSL().length - k ? Date.now() : S.tree.t; save();
   log(`${J(m,'이/가')} 열매나무를 흔들어 열매를 떨어뜨렸다.`, [m]); return true;
 }
 // 날씨: 3시간 단위로 정해진다 (맑음 50% · 흐림 30% · 비 20%). S.wxT 가 있으면 그걸로 (테스트)
@@ -4841,7 +4876,7 @@ const KEY = /[?&]studio/.test(location.search) ? 'pk-studio-v2' : 'pk-meadow-v2'
 function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, joy: m.joy, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
-    berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat })), lockT: S.lockT,
+    berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk })), lockT: S.lockT,
     gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, dexNew: [...(S.dexNew || [])] };
 }
 let saveFrozen = false;
@@ -4861,7 +4896,7 @@ async function restore(d) {
   for (const m of S.mons) { const sw = T(m).mv === 'swim', pv = pondVal(m.x, m.y);
     if (m.x < XL + 20 || m.x > XR - 20 || m.y < MIN_Y || m.y > MAX_Y || (sw ? pv > 1 : pv < 1.05)) { const p = sw ? randPond(.6) : randLand(); m.x = m.tx = p.x; m.y = m.ty = p.y; m.goal = null; m.home = randLand(); } }
   if (d.savedAt > 0) S.mons.forEach(m => offFr(m, (Date.now() - d.savedAt) / 1000));
-  for (const b of d.berries || []) addBerry(b.x, b.y, !!b.nat, b.t || Date.now());
+  for (const b of d.berries || []) { const nb = addBerry(b.x, b.y, !!b.nat, b.t || Date.now()); if (nb && b.shk) nb.shk = true; }
   rotBerries();
   S.uid = Math.max(S.uid, d.uid || 1);
   { const u2p = {}; for (const o of d.mons || []) if (o.pid != null) u2p[o.uid] = 'p' + o.pid;
@@ -5071,7 +5106,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.62';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.63';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7482,7 +7517,8 @@ function retier(ov) {
   for (const L of TIER_SPS) { if (!L.length) continue; const lo = Math.min(...L.map(b => FAM_BST[b])), hi = Math.max(...L.map(b => FAM_BST[b])); for (const b of L) TIER_Z[b] = hi > lo ? (FAM_BST[b] - lo) / (hi - lo) : .5; }
 }
 function setLayoutIn(L) {
-  for (const k of ['pond', 'fire', 'bed', 'tree', 'perch', 'stump']) if (L[k]) Object.assign(LAYOUT[k], L[k]);
+  for (const k of ['pond', 'fire', 'bed', 'tree', 'perch', 'stump']) if (L[k]) { delete LAYOUT[k].lk; Object.assign(LAYOUT[k], L[k]); }
+  LAYOUT.kinds = L.kinds && typeof L.kinds === 'object' ? JSON.parse(JSON.stringify(L.kinds)) : {};
   for (const k of ['path', 'bushes', 'puddles', 'rocks', 'mush', 'flowers']) if (Array.isArray(L[k])) LAYOUT[k].splice(0, LAYOUT[k].length, ...JSON.parse(JSON.stringify(L[k])));
   LAYOUT.look = L.look && typeof L.look === 'object' ? JSON.parse(JSON.stringify(L.look)) : {};
   FLOWERS.splice(0, FLOWERS.length, ...bedFlowers(FLOWERBED), ...LAYOUT.flowers);
@@ -7536,6 +7572,7 @@ if (/[?&]studio/.test(location.search)) {
 #stHands .h.sel{outline:2px solid #7fd7ef;outline-offset:1px;background:rgba(127,215,239,.14)}
 #stHands .dot{width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#c08850;border:2px solid #fff;box-sizing:border-box;display:none}
 #stHands.path .dot{display:block}
+#stHands .bh{width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;border:2px dashed #fff;background:rgba(255,255,255,.12);box-sizing:border-box;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
 #stHands .knob{width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#7fd7ef;border:2px solid #11202a;box-sizing:border-box}
 #stHud{position:absolute;inset:0;z-index:2999;pointer-events:none;display:none}#stHud.on{display:block}
 #stHud i{position:absolute;border:1.5px dashed rgba(255,255,255,.85);background:rgba(20,30,60,.35);border-radius:4px;font:600 9px system-ui;color:#fff;font-style:normal;display:flex;align-items:center;justify-content:center}
@@ -7577,8 +7614,8 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   const KEYS_OBJ = ['pond', 'fire', 'bed', 'tree', 'perch', 'stump'], KEYS_ARR = ['path', 'bushes', 'puddles', 'rocks', 'mush', 'flowers'];
   const NAME = { pond: '연못', fire: '모닥불', bed: '꽃밭', tree: '열매나무', perch: '횃대', stump: '그루터기', bushes: '덤불', puddles: '웅덩이(비 올 때)', rocks: '바위', mush: '버섯', path: '길', flowers: '꽃·풀' };
   const FNAME = { daisy: '데이지', pink: '분홍꽃', tulip: '튤립', bell: '파랑꽃', sun: '해바라기', grass: '풀', tall: '키 큰 풀', reed: '갈대', cat: '부들' };
-  const BAKED = new Set(['pond', 'fire', 'bed', 'stump', 'rocks', 'mush', 'path']);
-  function setLayout(L) { for (const k of KEYS_OBJ) if (L[k]) Object.assign(LAYOUT[k], L[k]); for (const k of KEYS_ARR) if (L[k]) LAYOUT[k].splice(0, LAYOUT[k].length, ...JSON.parse(JSON.stringify(L[k]))); LAYOUT.look = JSON.parse(JSON.stringify(L.look || {})); }
+  const BAKED = new Set(['pond', 'fire', 'bed', 'stump', 'rocks', 'mush', 'path', 'kinds']);
+  function setLayout(L) { for (const k of KEYS_OBJ) if (L[k]) { delete LAYOUT[k].lk; Object.assign(LAYOUT[k], L[k]); } LAYOUT.kinds = JSON.parse(JSON.stringify(L.kinds || {})); for (const k of KEYS_ARR) if (L[k]) LAYOUT[k].splice(0, LAYOUT[k].length, ...JSON.parse(JSON.stringify(L[k]))); LAYOUT.look = JSON.parse(JSON.stringify(L.look || {})); }
   let bgQ = false, propQ = false;
   function rebuild(bg) {
     if (bg) { if (!bgQ) { bgQ = true; requestAnimationFrame(() => { bgQ = false; drawBg(); document.querySelectorAll('.glint').forEach(g => g.remove()); addGlints(); }); } }
@@ -7601,18 +7638,19 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     o('fire', -1, [L.fire.x - 34 * zF, L.fire.y - 36 * zF, 68 * zF, 56 * zF], (dx, dy) => { L.fire.x += dx; L.fire.y += dy; });
     o('perch', -1, [L.perch.x - 26 * zP, L.perch.y - 64 * zP, 52 * zP, 64 * zP], (dx, dy) => { L.perch.x += dx; L.perch.y += dy; });
     o('stump', -1, [L.stump.x - 22 * zS, L.stump.y - 32 * zS, 44 * zS, 32 * zS], (dx, dy) => { L.stump.x += dx; L.stump.y += dy; });
-    L.bushes.forEach((b, i) => o('bushes', i, [b.x - 36 * zB, b.y - 48 * zB, 72 * zB, 48 * zB], (dx, dy) => { b.x += dx; b.y += dy; }));
-    L.puddles.forEach((q, i) => o('puddles', i, [q.x - q.w * zQ / 2, q.y - q.w * zQ * .175, q.w * zQ, q.w * zQ * .35], (dx, dy) => { q.x += dx; q.y += dy; }));
-    L.rocks.forEach((r, i) => o('rocks', i, [r[0] - r[2] * zR, r[1] - r[3] * 2 * zR, r[2] * 2 * zR, r[3] * 2 * zR], (dx, dy) => { r[0] += dx; r[1] += dy; }));
+    L.bushes.forEach((b, i) => { const zB = LZi('bush', 'bushes', b); o('bushes', i, [b.x - 36 * zB, b.y - 48 * zB, 72 * zB, 48 * zB], (dx, dy) => { b.x += dx; b.y += dy; }); });
+    L.puddles.forEach((q, i) => { const zQ = LZi('puddle', 'puddles', q); o('puddles', i, [q.x - q.w * zQ / 2, q.y - q.w * zQ * .175, q.w * zQ, q.w * zQ * .35], (dx, dy) => { q.x += dx; q.y += dy; }); });
+    L.rocks.forEach((r, i) => { const zR = LZi('rock', 'rocks', r); o('rocks', i, [r[0] - r[2] * zR, r[1] - r[3] * 2 * zR, r[2] * 2 * zR, r[3] * 2 * zR], (dx, dy) => { r[0] += dx; r[1] += dy; }); });
     L.mush.forEach((m, i) => o('mush', i, [m[0] - 8, m[1] - 14, 16, 16], (dx, dy) => { m[0] += dx; m[1] += dy; }));
-    L.flowers.forEach((f, i) => { const s = SPR.flw[f[0]], w = Math.max(s.w, 18), hh = Math.max(s.h, 18); o('flowers', i, [f[1] - w / 2, f[2] - hh, w, hh], (dx, dy) => { f[1] += dx; f[2] += dy; }); });
+    L.flowers.forEach((f, i) => { const s = flwSz(f[0], f[3]), w = Math.max(s.w, 18), hh = Math.max(s.h, 18); o('flowers', i, [f[1] - w / 2, f[2] - hh, w, hh], (dx, dy) => { f[1] += dx; f[2] += dy; }); });
     return out;
   }
   function selInfo() {
     if (!sel) return null;
     const v = sel.key === 'path' ? LAYOUT.path[sel.i] : sel.i >= 0 ? LAYOUT[sel.key][sel.i] : LAYOUT[sel.key];
     const nm = sel.key === 'flowers' ? FNAME[v[0]] : NAME[sel.key], pos = Array.isArray(v) ? (sel.key === 'flowers' ? [v[1], v[2]] : [v[0], v[1]]) : [v.x, v.y];
-    return { key: sel.key, i: sel.i, name: nm, x: pos[0], y: pos[1], del: ['bushes', 'puddles', 'rocks', 'mush', 'flowers'].includes(sel.key), size: sel.key === 'pond' ? [POND.rx * 2, POND.ry * 2] : null };
+    const lkK = LKK(sel.key, v), id = lkK ? ilk(sel.key, v) : null;
+    return { lk: lkK, kind: typeof id === 'string' && LAYOUT.kinds?.[id] ? id : null, kindName: typeof id === 'string' ? LAYOUT.kinds?.[id]?.n || null : null, canKind: !!lkK && !ONE_LK[sel.key], key: sel.key, i: sel.i, name: nm, x: pos[0], y: pos[1], del: ['bushes', 'puddles', 'rocks', 'mush', 'flowers'].includes(sel.key), size: sel.key === 'pond' ? [POND.rx * 2, POND.ry * 2] : null };
   }
   function renderHands() {
     hands.innerHTML = '';
@@ -7621,6 +7659,9 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
       e.style.cssText = `left:${x}px;top:${y}px;width:${w}px;height:${h}px`; e.onpointerdown = ev => startDrag(ev, t); hands.append(e);
     }
     LAYOUT.path.forEach((p, i) => { const e = document.createElement('div'); e.className = 'h dot'; e.style.left = p[0] + 'px'; e.style.top = p[1] + 'px'; e.onpointerdown = ev => startDrag(ev, { key: 'path', i, mv: (dx, dy) => { p[0] += dx; p[1] += dy; } }); hands.append(e); });
+    { const T = LAYOUT.tree, z = LS('tree'); if (!Array.isArray(T.b)) T.b = TREE_B0.map(a => [...a]);   // v3.63 경완: 열매 자리도 끌어서 옮긴다
+      T.b.forEach((b, i) => { const e = document.createElement('div'); e.className = 'h bh'; e.title = '열매 자리'; e.style.left = (T.x - 50 * z + b[0] * 2 * z) + 'px'; e.style.top = (T.y - 116 * z + b[1] * 2 * z) + 'px';
+        e.onpointerdown = ev => startDrag(ev, { key: 'tree', i: -1, berry: true, mv: (dx, dy) => { b[0] = Math.round((b[0] + dx / (2 * z)) * 2) / 2; b[1] = Math.round((b[1] + dy / (2 * z)) * 2) / 2; } }); hands.append(e); }); }
     if (sel?.key === 'pond') { const e = document.createElement('div'); e.className = 'h knob'; e.style.left = POND.x + POND.rx + 'px'; e.style.top = POND.y + POND.ry + 'px';
       e.onpointerdown = ev => startDrag(ev, { key: 'pond', i: -1, mv: (dx, dy) => { POND.rx = Math.max(30, POND.rx + dx); POND.ry = Math.max(16, POND.ry + dy); } }); hands.append(e); }
     api.onSel?.(selInfo(), undo.length);
@@ -7631,14 +7672,33 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   }
   hands.addEventListener('pointermove', ev => { if (!drag) return; const dx = Math.round((ev.clientX - drag.x) / scale), dy = Math.round((ev.clientY - drag.y) / scale); if (!dx && !dy) return;
     drag.x += dx * scale; drag.y += dy * scale; drag.moved = true; drag.t.mv(dx, dy); changed(drag.t.key); });
-  hands.addEventListener('pointerup', () => { if (drag && !drag.moved) undo.pop(); drag = null; renderHands(); });
+  hands.addEventListener('pointerup', () => { const tap = drag && !drag.moved && !drag.t.berry; if (drag && !drag.moved) undo.pop(); drag = null; renderHands(); if (tap) api.onTap?.(selInfo()); });
   hands.addEventListener('pointerdown', ev => { if (ev.target === hands) { sel = null; renderHands(); } });
   function changed(key) { rebuild(BAKED.has(key)); renderHands(); api.onLayout?.(JSON.parse(snap())); }
-  api.edit = on => { hands.classList.toggle('on', !!on); document.body.classList.toggle('stEdit', !!on); if (!on) { sel = null; } renderHands(); };   // v3.62: 편집 중엔 맵만 (포켓몬·상태창 숨김)
+  api.edit = on => { hands.classList.toggle('on', !!on); document.body.classList.toggle('stEdit', !!on); if (!on) { sel = null; } else if (S.tree) { S.tree.n = TSL().length; treeBerries(); } renderHands(); };   // v3.62: 편집 중엔 맵만 (포켓몬·상태창 숨김)
   const LOOKBG = new Set(['fire', 'stump', 'rock']);
+  // v3.63: 고른 소품 하나만 모양 바꾸기 · 내 분류로 저장
+  const LKK = (key, v) => key === 'tree' || key === 'perch' || key === 'stump' || key === 'fire' ? key : key === 'bushes' ? 'bush' : key === 'puddles' ? 'puddle' : key === 'rocks' ? 'rock' : key === 'flowers' && v ? v[0] : null;
+  const selV = () => !sel ? null : sel.i >= 0 ? LAYOUT[sel.key]?.[sel.i] : LAYOUT[sel.key];
+  const setIlk = (key, v, lk) => { if (key === 'rocks' || key === 'flowers') { const j = key === 'rocks' ? 6 : 3; if (lk == null) { if (v.length > j) v.length = j; } else { while (v.length < j) v.push(0); v[j] = lk; } } else if (lk == null) delete v.lk; else v.lk = lk; };
+  const plain = L => !L || ((+L.s || 1) === 1 && !+L.h && (L.c ?? 100) == 100 && (L.b ?? 100) == 100);
+  const full = L => ({ s: 1, h: 0, c: 100, b: 100, ...(L || {}) });
+  const bakeKey = key => key === 'flowers' || key === 'bushes' || key === 'puddles' ? key : 'rocks';
+  api.selLook = () => { const v = selV(), k = sel && LKK(sel.key, v); return k ? full(LKi(k, sel.key, v)) : null; };
+  api.setSelLook = nv => { const v = selV(), k = sel && LKK(sel.key, v); if (!k) return; undo.push(snap()); if (undo.length > 60) undo.shift(); const L = { ...full(LKi(k, sel.key, v)), ...nv }; setIlk(sel.key, v, plain(L) ? null : L); changed(bakeKey(sel.key)); };
+  api.selIcon = () => { const v = selV(), k = sel && LKK(sel.key, v); return k ? api.lookIcon(k, LKi(k, sel.key, v)) : ''; };
+  const ADDK = (key, v) => key === 'bushes' ? 'bush' : key === 'puddles' ? 'puddle' : key === 'rocks' ? (v[4] === 1 ? 'rockS' : 'rockL') : key === 'flowers' ? v[0] : null;
+  api.saveKind = name => { const v = selV(); if (!v || !sel || ONE_LK[sel.key]) return null; const b = ADDK(sel.key, v), k = LKK(sel.key, v); if (!b) return null; undo.push(snap());
+    LAYOUT.kinds = LAYOUT.kinds || {}; const id = 'k' + Date.now().toString(36); LAYOUT.kinds[id] = { b, n: String(name || '').slice(0, 12) || '내 소품', lk: full(LKi(k, sel.key, v)) }; setIlk(sel.key, v, id); changed('kinds'); return id; };
+  api.kind = id => LAYOUT.kinds?.[id] ? { ...LAYOUT.kinds[id], lk: full(LAYOUT.kinds[id].lk) } : null;
+  api.setKind = (id, nv) => { const K = LAYOUT.kinds?.[id]; if (!K) return; undo.push(snap()); if (nv.n != null) K.n = String(nv.n).slice(0, 12) || K.n; if (nv.lk) K.lk = { ...full(K.lk), ...nv.lk }; changed('kinds'); };
+  const eachInst = f => { for (const key of ['bushes', 'puddles', 'rocks', 'flowers']) for (const v of LAYOUT[key]) f(key, v); };
+  api.delKind = id => { const K = LAYOUT.kinds?.[id]; if (!K) return; undo.push(snap()); eachInst((key, v) => { if (ilk(key, v) === id) setIlk(key, v, plain(K.lk) ? null : { ...K.lk }); }); delete LAYOUT.kinds[id]; changed('kinds'); };   // 지운 분류의 소품은 모양을 그대로 갖는다
+  const kindCount = id => { let n = 0; eachInst((key, v) => { if (ilk(key, v) === id) n++; }); return n; };
   api.look = k => ({ s: 1, h: 0, c: 100, b: 100, ...(lookOf(k) || {}) });
   api.setLook = (k, v) => { undo.push(snap()); if (undo.length > 60) undo.shift(); const L = { ...api.look(k), ...v }; if (L.s === 1 && !L.h && L.c === 100 && L.b === 100) delete LAYOUT.look[k]; else LAYOUT.look[k] = L; changed(LOOKBG.has(k) ? 'rocks' : 'flowers'); };
-  api.lookIcon = k => { const cv = k === 'tree' ? ART.tree() : k === 'perch' ? ART.perch() : k === 'bush' ? ART.bush() : k === 'stump' ? ART.stump() : k === 'rock' || k === 'rockS' ? ART.rock(10, 7, 13 * 977, 1) : k === 'rockL' ? ART.rock(16, 10, 17 * 977, 2) : SPR.flw[k] ? ART.flower(k) : null; return cv ? tintCv(cv, lookOf(k === 'rockS' || k === 'rockL' ? 'rock' : k)).toDataURL() : k === 'fire' ? SPR.flame : k === 'puddle' ? SPR.puddle : ''; };
+  api.lookIcon = (k, LL) => { if (LAYOUT.kinds?.[k]) { const K = LAYOUT.kinds[k]; return api.lookIcon(K.b, K.lk); } const cv = k === 'tree' ? ART.tree() : k === 'perch' ? ART.perch() : k === 'bush' ? ART.bush() : k === 'stump' ? ART.stump() : k === 'rock' || k === 'rockS' ? ART.rock(10, 7, 13 * 977, 1) : k === 'rockL' ? ART.rock(16, 10, 17 * 977, 2) : SPR.flw[k] ? ART.flower(k) : null; const L = LL !== undefined ? LL : lookOf(k === 'rockS' || k === 'rockL' ? 'rock' : k); return cv ? tintCv(cv, L).toDataURL() : k === 'fire' ? (LL ? sprCanvasTint(SPR.flame, LL) : SPR.flame) : k === 'puddle' ? (LL ? SPR.pudArt(LL) : SPR.puddle) : ''; };
+  const sprCanvasTint = (src, L) => src;   // 모닥불 불꽃 그림은 6장 묶음이라 미리보기는 그대로
   api.showPath = on => hands.classList.toggle('path', !!on);
   api.showHud = on => hud.classList.toggle('on', !!on);
   api.layout = () => JSON.parse(snap());
@@ -7650,18 +7710,20 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   api.ADD = [['daisy', '데이지'], ['pink', '분홍꽃'], ['tulip', '튤립'], ['bell', '파랑꽃'], ['sun', '해바라기'], ['grass', '풀'], ['tall', '키 큰 풀'], ['rockS', '작은 바위'], ['rockL', '큰 바위'], ['mush', '버섯'], ['bush', '덤불'], ['puddle', '웅덩이']];
   api.addIcon = k => SPR.flw[k]?.src || (k === 'bush' ? SPR.bush : k === 'puddle' ? SPR.puddle : '');
   // v3.61 작업실: 소품 창에서 끌어 온 자리(화면 좌표)에 놓는다. 좌표가 없으면 가운데
-  api.add = (k, X, Y) => { const p = X == null ? null : toField(X, Y), cx = p ? clamp(Math.round(p.x), XL + 8, XR - 8) : Math.round((XL + XR) / 2), cy = p ? clamp(Math.round(p.y), MIN_Y - 40, H - 8) : 330; undo.push(snap());
+  api.add = (k0, X, Y) => { const KD = LAYOUT.kinds?.[k0], k = KD ? KD.b : k0; const p = X == null ? null : toField(X, Y), cx = p ? clamp(Math.round(p.x), XL + 8, XR - 8) : Math.round((XL + XR) / 2), cy = p ? clamp(Math.round(p.y), MIN_Y - 40, H - 8) : 330; undo.push(snap());
     if (SPR.flw[k]) { LAYOUT.flowers.push([k, cx, cy]); sel = { key: 'flowers', i: LAYOUT.flowers.length - 1 }; }
     else if (k === 'rockS') { LAYOUT.rocks.push([cx, cy, 10, 7, 1, 13 + LAYOUT.rocks.length * 2]); sel = { key: 'rocks', i: LAYOUT.rocks.length - 1 }; }
     else if (k === 'rockL') { LAYOUT.rocks.push([cx, cy, 16, 10, 2, 17 + LAYOUT.rocks.length * 2]); sel = { key: 'rocks', i: LAYOUT.rocks.length - 1 }; }
     else if (k === 'mush') { LAYOUT.mush.push([cx, cy]); sel = { key: 'mush', i: LAYOUT.mush.length - 1 }; }
     else if (k === 'bush') { LAYOUT.bushes.push({ x: cx, y: cy }); sel = { key: 'bushes', i: LAYOUT.bushes.length - 1 }; }
     else if (k === 'puddle') { LAYOUT.puddles.push({ x: cx, y: cy, w: 58 }); sel = { key: 'puddles', i: LAYOUT.puddles.length - 1 }; }
+    if (KD && sel) setIlk(sel.key, LAYOUT[sel.key][sel.i], k0);
     changed(SPR.flw[k] ? 'flowers' : k === 'bush' ? 'bushes' : k === 'puddle' ? 'puddles' : 'rocks'); };
   api.pick = (key, i = -1) => { if (!(key in LAYOUT)) return; sel = { key, i }; renderHands(); api.onSel?.(selInfo(), undo.length); };
   api.cat = () => { const n = k => LAYOUT[k].length, nf = k => LAYOUT.flowers.filter(f => f[0] === k).length, nr = sz => LAYOUT.rocks.filter(r => r[4] === sz).length;
     return { one: [['tree', '열매나무', SPR.tree], ['perch', '횃대', SPR.perch], ['fire', '모닥불', SPR.flame, 6], ['bed', '꽃밭', SPR.flw.sun.src], ['stump', '그루터기', api.lookIcon('stump')], ['pond', '연못', SPR.lilyF]],
-      add: api.ADD.map(([k, nm]) => [k, nm, api.lookIcon(k) || api.addIcon(k), SPR.flw[k] ? nf(k) : k === 'bush' ? n('bushes') : k === 'puddle' ? n('puddles') : k === 'mush' ? n('mush') : nr(k === 'rockS' ? 1 : 2)]) }; };
+      add: api.ADD.map(([k, nm]) => [k, nm, api.lookIcon(k) || api.addIcon(k), SPR.flw[k] ? nf(k) : k === 'bush' ? n('bushes') : k === 'puddle' ? n('puddles') : k === 'mush' ? n('mush') : nr(k === 'rockS' ? 1 : 2)]),
+      mine: Object.entries(LAYOUT.kinds || {}).map(([id, K]) => [id, K.n, api.lookIcon(id), kindCount(id), K.b]) }; };
   // ---------- 포켓몬 풀어놓기: 작업실 목록에서 끌어 온 포켓몬. 소품 위면 빛나고, 놓으면 그 소품 반응 ----------
   const toField = (cx, cy) => { const r = stage.getBoundingClientRect(); return { x: (cx - r.left) / scale, y: (cy - r.top) / scale }; };
   api.hover = (cx, cy) => { if (cx == null) { markProp(null); return null; } const p = toField(cx, cy), pr = propAt(p.x, p.y); markProp(pr); return pr ? pr.n : null; };
@@ -7673,6 +7735,15 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     return m.uid;
   };
   api.mons = () => S.mons.map(m => ({ uid: m.uid, sp: m.sp, name: m.name }));
+  api.selInfo = () => selInfo();
+  api.selMon = uid => { const m = monOf(uid); if (m) select(m); };
+  // v3.63 작업실: 소품 반응 분류(작업실 REACT 줄 순서)에 드는 포켓몬 번호. 먼저 맞는 줄이 이긴다
+  const RX = { tree: [() => 1], perch: [m => winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover' || isSmall(m), () => 1], fire: [m => tyOf(m).includes(FIR), m => tyOf(m).includes(WAT) || tyOf(m).includes(ICE), () => 1, null],
+    bed: [m => tyOf(m).includes(BUG), m => tyOf(m).includes(GRA) || tyOf(m).includes(FAI), m => (SPD(m.sp).w || 0) > 1000, () => 1], bush: [() => 1], stump: [() => 1],
+    rock: [m => tyOf(m).includes(ROC) || tyOf(m).includes(GRO) || tyOf(m).includes(FIG), () => 1], puddle: [m => tyOf(m).includes(FIR), () => 1], pond: [m => T(m).mv === 'swim' || T(m).mv === 'amph' || tyOf(m).includes(WAT), () => 1] };
+  api.reactSps = (k, i) => { const F = RX[k]; if (!F || !F[i]) return null; const out = [];
+    for (const sp of Object.keys(SPECIES).map(Number).sort((a, b) => a - b)) { if (!DEX[sp]) continue; const m = { sp, form: sp }; let j = -1; try { j = F.findIndex(f => f && f(m)); } catch (e) {} if (j === i) out.push(sp); }
+    return out; };
   api.clearMons = () => { for (const m of [...S.mons]) if (!m.pid) removeMon(m, true); save(); };
   const monOf = uid => S.mons.find(m => m.uid === uid);
   api.act = (uid, what) => { const m = monOf(uid); if (!m) return;
@@ -7721,7 +7792,7 @@ ${Object.entries(SPR.flw).map(([k, f]) => pix(f.src, f.w * 2, f.h * 2, FNAME[k] 
   };
 }
 
-if (/[?&]debug/.test(location.search)) window.__meadow = { scaleOf, sizeT, SPRITES, loadChunk, padAtlas, useMove, save, evoMus, bgm, bgmPos, feedOne, tense, hatchEgg, playHatch, TIER, TIER_SPS, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates, propReact, propSpots, propAt };   // test hook
+if (/[?&]debug/.test(location.search)) window.__meadow = { scaleOf, sizeT, SPRITES, loadChunk, padAtlas, useMove, save, evoMus, bgm, bgmPos, feedOne, tense, hatchEgg, playHatch, TIER, TIER_SPS, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates, propReact, propSpots, propAt, shakeTree, moveTo, LAYOUT };   // test hook
 if (/[?&]debug/.test(location.search)) Object.assign(window, { __drag: () => drag, __log: log, __save: save, __bgm: bgm, __actx: () => actx, __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf, __thoughtOf: thoughtOf, __addRel: addRel, __tyIcon: tyIcon, __evoKids: evoKids, __friendsAll: friendsAll, __renameBox: renameBox });
 window.claude?.hot?.snapshot?.(() => serialize());
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
