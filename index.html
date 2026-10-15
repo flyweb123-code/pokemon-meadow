@@ -2372,6 +2372,9 @@ const FR_TABLE = [[80, 3], [60, 2], [40, 1], [20, .5], [0, 0]];   // [평균 이
 const JOY_RATE = 100 / 7200, BERRY_FR_DAY = 5;   // 즐거움은 깨어 있으면 2시간에 100 → 0, 열매 친밀도는 하루 5개까지
 const gaugeAvg = m => (m.energy + (100 - m.hunger) + (m.joy ?? 60)) / 3;
 const frRate = m => { if (!m.pid || m.hidden) return 0; const a = gaugeAvg(m); return FR_TABLE.find(([v]) => a >= v)[1] + (withFriend(m) ? .5 : 0); };
+// 앱이 꺼져 있던(화면을 떠나 있던) 동안의 필드 친밀도: 떠날 때 게이지 기준 속도로 쌓는다
+function offFr(m, sec) { if (!(sec > 1)) return; m.frT = (m.frT || 0) + Math.min(sec, 30 * 864e2) * frRate(m); const n = Math.floor(m.frT / 3600); if (n > 0) { m.frT -= n * 3600; addFr(m.pid, n); } }
+{ let hidAt = 0; document.addEventListener('visibilitychange', () => { if (document.hidden) hidAt = Date.now(); else if (hidAt) { const sec = (Date.now() - hidAt) / 1000; hidAt = 0; S.mons.forEach(m => offFr(m, sec)); save(); } }); }
 function dayCap(m, k, max) { const P = boxOf(m.pid); if (!P) return false; const d = dayKey(); if (P[k + 'D'] !== d) { P[k + 'D'] = d; P[k + 'N'] = 0; } if (P[k + 'N'] >= max) return false; P[k + 'N']++; return true; }
 function berryFr(m) { if (!dayCap(m, 'ber', BERRY_FR_DAY)) return false; addFr(m.pid, 1); return true; }   // 열매 친밀도 +1 (하루 5개까지)
 function berryBoost(m, mine) { m.energy = clamp(m.energy + 8); if (mine) m.joy = clamp((m.joy ?? 60) + 5); }   // 열매: 기력 +8, 내가 준 열매면 즐거움 +5
@@ -4267,6 +4270,7 @@ async function restore(d) {
   cleanPlaces();
   S.dexNew = new Set(d.dexNew || []); S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
   for (const o of [...(d.mons || [])].sort((a, b) => (b.uid === d.buddy) - (a.uid === d.buddy)).slice(0, MAX_MONS)) { const m = await spawn(o.sp, { ...o, quiet: true }); m.notes = o.notes || [];
+    if (d.savedAt > 0) offFr(m, (Date.now() - d.savedAt) / 1000);   // 앱을 닫아 둔 동안에도 필드에 있던 만큼 친밀도
     // 앱을 닫아 둔 동안에도 서서히 배고파진다. 다만 80까지만 (켰을 때 먹여 줄 틈이 있게)
     if (d.savedAt > 0 && m.hunger < 80) m.hunger = Math.min(80, m.hunger + Math.max(0, Date.now() - d.savedAt) / 1000 * HUNGER_RATE * (T(m).hun || 1) * .6); if (o.asleep) sleep(m, false); }
   for (const b of d.berries || []) addBerry(b.x, b.y, !!b.nat, b.t || Date.now());
@@ -4477,7 +4481,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.21';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.22';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
