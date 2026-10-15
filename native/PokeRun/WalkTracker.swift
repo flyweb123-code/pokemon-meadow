@@ -163,7 +163,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
         .postOffice: "postoffice", .bank: "bank", .atm: "bank", .hotel: "hotel", .brewery: "pub", .winery: "pub"
     ]
 
-    // 반경 400m 안에서 가장 가까운 공원·명소·학교·역 같은 장소 이름 + 반경 250m 안 장소 종류의 테마들
+    // 반경 400m 안에서 가장 가까운 명소·건물·식당·가게 이름 + 반경 250m 안 장소 종류의 테마들
     private func nearbyLandmark(_ loc: CLLocation, fallback: String?, done: @escaping (String?, Set<String>) -> Void) {
         let req = MKLocalPointsOfInterestRequest(center: loc.coordinate, radius: 400)
         req.pointOfInterestFilter = MKPointOfInterestFilter(including: Array(WalkTracker.landmarkKinds.union(WalkTracker.themeOf.keys)))
@@ -175,8 +175,9 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
                 let d = c.distance(from: loc)
                 if let cat = item.pointOfInterestCategory {
                     if d <= 250, let t = WalkTracker.themeOf[cat] { tags.insert(t) }
-                    if WalkTracker.landmarkKinds.contains(cat), let name = item.name, d < (best?.1 ?? .infinity) { best = (name, d) }
                 }
+                // 이름은 공원·역 같은 명소뿐 아니라 식당·카페·가게·건물까지 가장 가까운 곳으로 (예: "석촌동 ○○식당")
+                if let name = item.name, !name.isEmpty, d < (best?.1 ?? .infinity) { best = (name, d) }
             }
             DispatchQueue.main.async { done(best?.0 ?? fallback, tags) }
         }
