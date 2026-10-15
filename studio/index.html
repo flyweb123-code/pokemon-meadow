@@ -137,7 +137,7 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 .bal .wide{grid-column:1/-1;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:6px}.bal .wide label{display:grid;gap:2px;font-size:11px;color:var(--mute);text-align:center}
 /* 왼쪽 소품 창 (접었다 폈다) */
 .view[data-v=map]{grid-template-columns:auto minmax(0,1fr) 300px}
-.dock{position:relative;background:var(--panel);border-right:1px solid var(--line);width:var(--dw,212px);display:grid;grid-template-rows:auto auto minmax(0,1fr);min-height:0}
+.dock{position:relative;background:var(--panel);border-right:1px solid var(--line);width:var(--dw,272px);display:grid;grid-template-rows:auto auto minmax(0,1fr);min-height:0}
 .dock .dtab{display:flex;gap:4px;padding:0 10px 10px}.dock .dtab button{flex:1;min-width:0;padding:6px 4px;font-size:11.5px;background:var(--deep);border:1px solid var(--chip);border-radius:4px;color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dock .dtab button.on{background:var(--chip);border-color:var(--acc);color:var(--fg)}.dock .dtab .n{font-family:var(--px);font-size:10px;color:var(--mute);margin-left:3px}
 .dock .drz{position:absolute;top:0;right:-4px;width:8px;height:100%;cursor:ew-resize;z-index:5;touch-action:none}.dock .drz:hover,.dock .drz.on{background:linear-gradient(90deg,transparent 3px,var(--acc) 3px,var(--acc) 5px,transparent 5px)}
@@ -146,7 +146,7 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 .dock .dh b{font-family:var(--px);font-weight:400;font-size:12px;color:var(--acc);flex:1;white-space:nowrap}
 .dock .dt{width:28px;height:28px;background:var(--chip);border:1px solid var(--chipb);border-radius:4px;color:var(--soft);display:grid;place-items:center;padding:0;font-size:12px}
 .dock .db{overflow:auto;padding:0 10px 14px;display:grid;gap:12px;align-content:start}
-.dock .sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px}
+.dock .sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px}
 .dock .it{position:relative;display:grid;justify-items:center;align-content:end;gap:3px;padding:8px 4px 6px;background:var(--deep);border:1px solid var(--chip);border-radius:4px;font-size:11.5px;color:var(--soft);min-height:84px;touch-action:none;user-select:none;-webkit-user-select:none}
 .dock .it.dr{cursor:grab}.dock .it.dr:hover{border-color:var(--acc)}
 .dock .it img{height:46px;width:auto;max-width:76px;object-fit:contain;image-rendering:pixelated;pointer-events:none}
@@ -172,7 +172,7 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 .slots .sl.empty{background:none;border-style:dashed;color:var(--soft);font-size:22px}.slots .sl.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
 #spx{position:fixed;z-index:56;left:8px;top:8px;height:400px;width:252px;background:var(--panel);border:1px solid var(--chipb);border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:10px;display:grid;grid-template-rows:auto auto auto minmax(0,1fr);gap:8px}
 #spx .zh{display:flex;align-items:center;gap:8px}#spx .zh b{flex:1;font-family:var(--px);font-weight:400;color:var(--acc);font-size:13px}
-#spx .grid{overflow:auto;align-content:start;grid-auto-rows:56px;grid-template-columns:repeat(auto-fill,minmax(52px,1fr))}#spx .mc{aspect-ratio:auto;height:56px}
+#spx .grid{overflow:auto;align-content:start;grid-auto-rows:70px;grid-template-columns:repeat(auto-fill,minmax(60px,1fr))}#spx .mc{aspect-ratio:auto;height:70px}#spx .mc img{bottom:14px;max-height:50px}
 .react .chip.rx{cursor:pointer}.react .chip.rx.on{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
 #zoom .kname{display:flex;gap:6px}#zoom .kname input{flex:1;min-width:0}
 #hotPop h4{color:var(--acc)}#hotPop .r{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 8px;align-items:start;font-size:12.5px}#hotPop .r .chip{min-height:22px;padding:1px 6px;font-size:11px}
@@ -216,6 +216,7 @@ h2.ih{display:flex;align-items:center;gap:8px}
   .view[data-v=odds] .seg .chip,.view[data-v=pool] .seg .chip{border-radius:6px 6px 0 0;border-bottom:0;min-height:36px;padding:4px 14px}
   .seg .chip[data-v=tier]{display:none}
   #spx,#zoom,#ebar{resize:both;min-width:190px;min-height:110px}
+  #spx{overflow:hidden}#zoom{overflow:auto;max-height:calc(100vh - 16px)}   /* v2.1: resize 는 overflow 가 visible 이면 안 먹는다 */
   #spx .zh,#zoom .zh,#ebar .eh{cursor:move}
 }
 body.wdrag iframe{pointer-events:none}
@@ -302,9 +303,9 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
       <aside class="vi" id="mapI">
         <div style="display:grid;gap:8px">
           <h4>필드 포켓몬</h4>
-          <div class="small mute">지금 맵에 나와 있는 포켓몬이에요. 빈 칸을 누르면 왼쪽에 포켓몬 목록이 떠요. 목록에서 끌어 맵에 놓아야 나와요.</div>
+          <div class="small mute">지금 맵에 나와 있는 포켓몬이에요. 빈 칸을 누르면 왼쪽에 포켓몬 목록이 떠요. 목록에서 누르거나 끌어 맵에 놓으면 나와요.</div>
           <div class="slots" id="slots"></div>
-          <div class="chips"><button class="chip" id="clearMons">맵 포켓몬 모두 빼기</button></div>
+          <div class="chips"><button class="chip" id="randMons">무작위로 채우기</button><button class="chip" id="clearMons">맵 포켓몬 모두 빼기</button></div>
         </div>
         <div id="monPane" hidden style="display:grid;gap:8px">
           <h4>고른 포켓몬 동작</h4>
@@ -381,7 +382,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.0';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.1';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -542,11 +543,11 @@ function renderReact(k) {
 // v1.5 경완: 반응 분류를 누르면 왼쪽에 그 분류 포켓몬 목록. 끌어서 맵에 놓는다. 한 번 더 누르면 닫힌다
 let spxKey = null, spxL = [], spxQ = '';
 function openSpx(key, title, L) { spxKey = key; spxL = L; spxQ = ''; const e = $('#spx'); e.hidden = false;
-  e.innerHTML = `<div class="zh"><b>${esc(title)}</b><button class="chip" id="spxX" aria-label="닫기">✕</button></div><div class="small mute">${L.length}종 · 끌어서 맵에 놓아요</div><div class="search"><input id="spxQ" placeholder="이름이나 번호" autocomplete="off" enterkeyhint="search"></div><div class="grid" id="spxG"></div>`;
+  e.innerHTML = `<div class="zh"><b>${esc(title)}</b><button class="chip" id="spxX" aria-label="닫기">✕</button></div><div class="small mute">${L.length}종 · 누르면 맵에 나와요 (끌어서 원하는 곳에 놓아도 돼요)</div><div class="search"><input id="spxQ" placeholder="이름이나 번호" autocomplete="off" enterkeyhint="search"></div><div class="grid" id="spxG"></div>`;
   $('#spxX').onclick = closeSpx; spxPos(); if (mobile()) $('#mapBox').scrollIntoView({ behavior: 'smooth', block: 'start' }); $('#spxQ').oninput = ev => { spxQ = ev.target.value; fillSpx(); }; fillSpx(); $$('.react .rx').forEach(c => c.classList.toggle('on', c.dataset.rk + ':' + c.dataset.ri === key)); }
 function spxPos() { const e = $('#spx'); if (mobile()) { e.style.left = e.style.top = e.style.height = e.style.width = ''; return; } if (winApply(e)) return; const s = $('#mapI').getBoundingClientRect(), m = $('#mapBox').getBoundingClientRect(); e.style.width = '252px'; e.style.left = (s.left - 260) + 'px'; e.style.top = (m.top + 8) + 'px'; e.style.height = (m.height - 16) + 'px'; }   // v1.8 경완: 오른쪽 칸 바로 왼쪽
 function fillSpx() { const q = spxQ.trim(), L = q ? spxL.filter(sp => String(sp) === q || spName(sp).includes(q)) : spxL;
-  $('#spxG').innerHTML = L.slice(0, 400).map(sp => `<button class="mc" data-sp="${sp}" title="${esc(spName(sp))}"><span class="no">${sp}</span><img alt="" data-th="${sp}"></button>`).join('') + (L.length > 400 ? `<div class="small mute" style="grid-column:1/-1">앞의 400종만 보여요. 이름으로 찾아 주세요.</div>` : '') || '<div class="empty">찾는 포켓몬이 없어요</div>'; fillThumbs($('#spxG')); }
+  $('#spxG').innerHTML = L.slice(0, 400).map(sp => `<button class="mc" data-sp="${sp}" title="${esc(spName(sp))}"><span class="no">${sp}</span><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('') + (L.length > 400 ? `<div class="small mute" style="grid-column:1/-1">앞의 400종만 보여요. 이름으로 찾아 주세요.</div>` : '') || '<div class="empty">찾는 포켓몬이 없어요</div>'; fillThumbs($('#spxG')); }
 function closeSpx() { spxKey = null; $('#spx').hidden = true; $$('.react .rx').forEach(c => c.classList.remove('on')); }
 $('#react').onclick = e => { const b = e.target.closest('.rx'); if (!b || !A?.reactSps) return; const key = b.dataset.rk + ':' + b.dataset.ri; if (spxKey === key) return closeSpx();
   const L = A.reactSps(b.dataset.rk, +b.dataset.ri); if (!L) { toast('비 올 때 저절로 나오는 반응이에요'); return; } openSpx(key, `${RNAME[b.dataset.rk]} · ${b.textContent}`, L); };
@@ -601,12 +602,24 @@ function startPalDrag(ev, sp) {
   const inGame = (x, y) => { const f = $('#game').getBoundingClientRect(); if (x < f.left || x > f.right || y < f.top || y > f.bottom) return null; const k = f.width / $('#game').offsetWidth; return [(x - f.left) / k, (y - f.top) / k]; };
   const move = e => { g.style.left = e.clientX + 'px'; g.style.top = e.clientY + 'px'; if (Math.hypot(e.clientX - x0, e.clientY - y0) > 6) moved = true; last = inGame(e.clientX, e.clientY); const n = last ? A.hover(...last) : A.hover(null); const b = g.querySelector('b'); b.hidden = !n; if (n) b.textContent = n + '에 놓기'; };
   const up = async e => { cv.remove(); g.remove(); removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up);
-    if (!moved) { toast('끌어서 맵에 놓아요'); return; }
-    if (!last) { A.hover(null); return; }
+    if (!moved) last = null;   // v2.1 경완: 그냥 누르면 맵 아무 곳에 바로 나온다
+    else if (!last) { A.hover(null); return; }
     if (A.mons().length >= SLOTS) { A.hover(null); toast(`필드가 가득 찼어요 (${SLOTS}마리). 먼저 한 마리를 빼 주세요`); return; }
-    await A.drop(sp, ...last); renderPal(); };
+    const u = await (last ? A.drop(sp, ...last) : A.drop(sp)); markNew(u); };
   move(ev); addEventListener('pointermove', move); addEventListener('pointerup', up); addEventListener('pointercancel', up);
 }
+// v2.1 경완: 빈 칸을 무작위 포켓몬으로 채운다 (꽉 차 있으면 모두 바꿔서 새로 채운다)
+$('#randMons').onclick = async e => { if (!A?.drop) return; const b = e.target; if (b.disabled) return; b.disabled = true; b.textContent = '채우는 중…';
+  try { if (A.mons().length >= SLOTS) { A.clearMons(); sel.monUid = null; $('#monPane').hidden = true; }
+    const all = Object.keys(A.SPECIES).map(Number), have = new Set(A.mons().map(m => m.sp));
+    while (A.mons().length < SLOTS) { let sp; do sp = all[Math.floor(Math.random() * all.length)]; while (have.has(sp)); have.add(sp); await A.drop(sp); }
+  } catch (err) { toast('포켓몬을 넣지 못했어요'); }
+  b.disabled = false; b.textContent = '무작위로 채우기'; slotSig = ''; renderPal(); };
+function unmarkMon() { if (sel.monUid == null) return; sel.monUid = null; A?.markMon?.(null); $('#monPane').hidden = true; slotSig = ''; renderPal(); }
+$('#mapBox').addEventListener('pointerdown', e => { if (!e.target.closest('#phone, #ebar, #zoom, #spx, button, input, select')) unmarkMon(); });
+// v2.1 경완: 새로 넣은 포켓몬은 바로 골라진(테두리) 상태로
+function markNew(u) { if (u == null) { slotSig = ''; renderPal(); return; } sel.monUid = u; A.markMon?.(u); const m = A.mons().find(o => o.uid === u);
+  $('#monPane').hidden = !m; if (m) { $('#mName').textContent = `${m.name} · No.${m.sp}`; $('#mActs').innerHTML = ACTS.map(([k, n]) => `<button class="chip" data-a="${k}">${n}</button>`).join(''); } slotSig = ''; renderPal(); }
 $('#clearMons').onclick = () => { A?.clearMons(); $('#monPane').hidden = true; renderPal(); };
 const ACTS = [['Attack', '공격'], ['Hurt', '아파함'], ['Hop', '깡충'], ['Eat', '먹기'], ['sleep', '자기·깨기'], ['move', '기술'], ['remove', '빼기']];
 function onMon(m) {
@@ -650,9 +663,9 @@ function renderDockMap() {
 function renderDockAll() {
   if (!A?.cat) { $('#dockB').innerHTML = '<div class="small mute">게임을 새 버전(v3.61)으로 올리면 여기서 소품을 끌어다 놓을 수 있어요.</div>'; return; }
   const C = A.cat();
-  $('#dockB').innerHTML = `<h4>끌어다 놓기 · 누르면 크게</h4><div class="sg">${C.add.map(([k, n, src, c]) => `<div class="it dr" data-k="${k}" title="${esc(n)} · 맵에 ${c}개">${c ? `<span class="c">${c}</span>` : ''}${k === 'mush' ? '<span class="ph">🍄</span>' : icon(src)}${esc(n)}</div>`).join('')}</div>
+  $('#dockB').innerHTML = `<h4>끌어다 놓기 · 누르면 크게</h4><div class="sg">${C.add.map(([k, n, src, c]) => `<div class="it dr" data-k="${k}" title="${esc(n)} · 맵에 ${c}개">${c ? `<span class="c">${c}</span>` : ''}${k === 'mush' ? '<span class="ph">🍄</span>' : icon(src)}${esc(n)}</div>`).join('')}${C.one.map(([k, n, src, fr]) => `<div class="it" data-one="${k}" title="${esc(n)} · 맵에 1개 (하나만 놓을 수 있어요)"><span class="c">1</span>${icon(src, fr)}${esc(n)}</div>`).join('')}</div>
     ${(C.mine || []).length ? `<h4>내 소품</h4><div class="sg">${C.mine.map(([k, n, src, c]) => `<div class="it dr mine" data-k="${k}" title="${esc(n)} · 맵에 ${c}개">${c ? `<span class="c">${c}</span>` : ''}${icon(src)}${esc(n)}</div>`).join('')}</div>` : ''}
-    <h4 class="one">맵에 하나뿐</h4><div class="sg one">${C.one.map(([k, n, src, fr]) => `<div class="it" data-one="${k}">${icon(src, fr)}${esc(n)}</div>`).join('')}</div>`;
+`;
 }
 $('#dockB').addEventListener('click', e => {   // 맵에 있는 소품: 누르면 맵에서 그 소품을 고른다 (휴대폰에서 옆으로 넘길 때는 안 골라지게 click 으로)
   const ik = e.target.closest('[data-ik]'); if (!ik || !A) return; const [key, i] = ik.dataset.ik.split(':'); if (!editing) setEdit(true); A.pick(key, +i); const s = A.selInfo?.(); if (s?.lk) openInst(s, ik); else closeZoom(); dockMark(s); });
@@ -947,12 +960,12 @@ function showTierSp(sp) {
 // ---------- 밸런스 ----------
 const BAL = [
   ['보상 골드', [['DUP_G', '이미 만난 포켓몬 부화 골드', '알 등급별 (일반~전설)', 5], ['NEW_EGG_G', '새로 만난 포켓몬 부화 골드', '알 등급별 (일반~전설)', 5], ['NEW_G', '진화로 새로 만났을 때 골드'], ['RUN_G', '런닝 1번 골드']]],
-  ['친밀도', [['FR_TABLE', '시간당 친밀도 (게이지 평균 기준)', '칸마다 "게이지 평균, 시간당 친밀도"', 'tbl'], ['BERRY_FR_DAY', '열매로 오르는 친밀도 하루 한도'], ['PET_DAY', '쓰다듬기 하루 횟수 (+3씩)'], ['WASH_DAY', '빗질 하루 횟수 (+3씩)'], ['FLD_FR_DAY', '필드 시간 친밀도 하루 한도'], ['WALK_FR', '짝꿍 1km당 친밀도'], ['FR_EVO', '친밀도 진화 기준'], ['FR_MAX', '친밀도 만점']]],
+  ['친밀도', [['FR_TABLE', '시간당 친밀도 (게이지 평균 기준)', '칸마다 "게이지 평균, 시간당 친밀도"', 'tbl'], ['BERRY_FR_DAY', '열매로 오르는 친밀도 하루 한도'], ['JOY_HOLD', '즐거움 100 유지 시간 (분) · 쓰다듬기로 채우면 친밀도 +1'], ['WASH_DAY', '빗질 하루 횟수 (+3씩)'], ['FLD_FR_DAY', '필드 시간 친밀도 하루 한도'], ['WALK_FR', '짝꿍 1km당 친밀도'], ['FR_EVO', '친밀도 진화 기준'], ['FR_MAX', '친밀도 만점']]],
   ['상태 게이지', [['CLEAN_DAYS', '청결 100 → 0 걸리는 날', '', 'cd'], ['HUNGER_RATE', '배고픔 오르는 속도 (초당)'], ['JOY_HOURS', '즐거움 100 → 0 걸리는 시간 (깨어 있을 때)', '', 'jh']]],
   ['알·기타', [['MAX_EGGS', '부화기 칸 수'], ['MAX_BAG', '가방 최대 알 수'], ['BAG_STEP', '알 줍는 거리 단위 (km)', '단위마다 0~2개'], ['SHINY_N', '이로치 확률 1/N', '', 'sh']]],
 ];
 // v1.8 경완: 줄마다 게임 아이콘
-const BICO = { DUP_G: 'coin', NEW_EGG_G: 'egg', NEW_G: 'star', RUN_G: 'shoe', FR_TABLE: 'clock', BERRY_FR_DAY: 'berry', PET_DAY: 'hand', WASH_DAY: 'brush', FLD_FR_DAY: 'note', WALK_FR: 'shoe', FR_EVO: 'star', FR_MAX: 'heart', CLEAN_DAYS: 'brush', HUNGER_RATE: 'berry', JOY_HOURS: 'note', MAX_EGGS: 'egg', MAX_BAG: 'bag', BAG_STEP: 'shoe', SHINY_N: 'star' }, SICO = ['coin', 'heart', 'clock', 'egg'];
+const BICO = { DUP_G: 'coin', NEW_EGG_G: 'egg', NEW_G: 'star', RUN_G: 'shoe', FR_TABLE: 'clock', BERRY_FR_DAY: 'berry', JOY_HOLD: 'hand', WASH_DAY: 'brush', FLD_FR_DAY: 'note', WALK_FR: 'shoe', FR_EVO: 'star', FR_MAX: 'heart', CLEAN_DAYS: 'brush', HUNGER_RATE: 'berry', JOY_HOURS: 'note', MAX_EGGS: 'egg', MAX_BAG: 'bag', BAG_STEP: 'shoe', SHINY_N: 'star' }, SICO = ['coin', 'heart', 'clock', 'egg'];
 const bico = k => BICO[k] === 'egg' ? `<span class="gi">${eggI(1)}</span>` : gi(BICO[k]);
 function renderBal() {
   $('#balC').innerHTML = BAL.map(([h, L], si) => `<div class="card"><h2 class="ih">${SICO[si] === 'egg' ? `<span class="gi">${eggI(3)}</span>` : gi(SICO[si])}${h}</h2><div class="bal2">${L.map(([k, n, sub, kind]) => {
@@ -1116,6 +1129,7 @@ const BUBS = [
 ];
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.1', '10월 16일', ['포켓몬 넣기 창에서 누르기만 해도 맵에 나옴 (끌어다 놓기도 그대로). 나온 포켓몬은 바로 골라진 상태, 맵 빈 곳을 누르면 선택 풀림', '포켓몬 넣기 창에 포켓몬 이름 표시', '포켓몬 넣기 창·소품 창도 오른쪽 아래 모서리로 크기 조절 (떠 있는 창 모두 옮기기·크기 조절 가능)', '맵 화면 필드 포켓몬에 "무작위로 채우기" 버튼 (빈 칸을 채우고, 꽉 차 있으면 새로 뽑기)', '소품 창 기본 폭을 3칸으로 넓힘', '"맵에 하나뿐" 칸을 없애고 열매나무·횃대·모닥불 등도 같은 목록에 개수 1로 표시', '밸런스: 쓰다듬기 하루 횟수 대신 "즐거움 100 유지 시간(분)" (게임 v3.68 쓰다듬기 규칙 변경에 맞춤)']],
   ['2.0', '10월 16일', ['맵 소품 창을 "전체 소품 / 맵에 있는 소품" 탭으로 나눔. 맵에 있는 소품을 누르면 맵에서 그 소품이 골라지고 모양을 바꿀 수 있어요', '소품 창 오른쪽 끝을 끌어 너비 조절 (두 번 누르면 처음 너비)', '전체 소품에서 소품을 누르면 크기·색조·채도·밝기를 정해 "이 모양으로 맵에 추가"']],
   ['1.9', '10월 16일', ['세이프 존을 모든 기종 기준으로: 어느 폰에서든 잘리거나 가려지는 필드 칸을 주황 빗금으로, 남는 칸을 점선 상자로', '맵 편집 창은 휴대폰 오른쪽 아래에 넓게 뜨고, 편집하는 동안 오른쪽 칸은 숨김 (휴대폰 자리는 그대로)']],
   ['1.8', '10월 16일', ['밸런스 메뉴에 게임 아이콘 (골드·하트·열매·빗·손·알…)', '알 수집 확률과 알 등급별 포켓몬을 "알" 메뉴 하나로, 위쪽 탭으로 나눔', '알 메뉴 곳곳에 등급별 알 그림', '메뉴 이름 바꾸기: 메뉴에 마우스를 올리면 나오는 연필을 눌러요 (포켓몬·모션 → 포켓몬)', '포켓몬 모션을 그림이 있는 칸으로 가지런히', '필드 포켓몬 칸: 오른쪽 위 X 로 빼기, 누르면 테두리만 표시', '포켓몬 넣기 창은 오른쪽 칸 바로 왼쪽에', '떠 있는 창(포켓몬 넣기·소품·맵 편집)은 머리를 잡고 옮기고, 오른쪽 아래 모서리로 크기 바꾸기 (머리를 두 번 누르면 제자리)', '맵 편집 창을 더 넓게']],
@@ -1143,9 +1157,10 @@ const RENDER = { ver: renderVer, bub: renderBub, map: () => {}, mon: renderMon, 
 function hook() {
   const w = $('#game').contentWindow; A = w.__studio; if (!A || !A.ready) { A = null; return; }
   $('#gLoad').hidden = true;
+  if (!w.document.__unmk) { w.document.__unmk = 1; w.addEventListener('pointerdown', e => { if (!e.target.closest?.('.mon')) unmarkMon(); }, true); }   // v2.1 경완: 맵 빈 곳을 누르면 포켓몬 선택(테두리) 풀기
   if (!ORIG) {
     const K = A.K; LIVE = A.cfg || { ver: 0 }; ORIG = { odds: K.ODDS, pity: { e: K.PITY_E, l: K.PITY_L }, eggTiers: JSON.parse(JSON.stringify(A.EGG_TIERS)), eggList: JSON.parse(JSON.stringify(A.EGG_LIST || [])), layout: A.defaultLayout(),
-      bal: { DUP_G: K.DUP_G, NEW_EGG_G: K.NEW_EGG_G, NEW_G: K.NEW_G, RUN_G: K.RUN_G, FR_TABLE: K.FR_TABLE, BERRY_FR_DAY: K.BERRY_FR_DAY, PET_DAY: K.PET_DAY, WASH_DAY: K.WASH_DAY, FLD_FR_DAY: K.FLD_FR_DAY, WALK_FR: K.WALK_FR, FR_EVO: K.FR_EVO, FR_MAX: K.FR_MAX,
+      bal: { DUP_G: K.DUP_G, NEW_EGG_G: K.NEW_EGG_G, NEW_G: K.NEW_G, RUN_G: K.RUN_G, FR_TABLE: K.FR_TABLE, BERRY_FR_DAY: K.BERRY_FR_DAY, JOY_HOLD: K.JOY_HOLD, WASH_DAY: K.WASH_DAY, FLD_FR_DAY: K.FLD_FR_DAY, WALK_FR: K.WALK_FR, FR_EVO: K.FR_EVO, FR_MAX: K.FR_MAX,
         CLEAN_DAYS: Math.round(100 / K.CLEAN_RATE / 86400 * 100) / 100, HUNGER_RATE: K.HUNGER_RATE, JOY_HOURS: Math.round(100 / K.JOY_RATE / 3600 * 100) / 100, MAX_EGGS: K.MAX_EGGS, MAX_BAG: K.MAX_BAG, BAG_STEP: K.BAG_STEP, SHINY_N: Math.round(1 / K.SHINY_RATE) } };
     A.ensureSprite(1).then(() => { $('#logoI').src = thumb(25) || ''; A.ensureSprite(25).then(() => $('#logoI').src = thumb(25)); });
   }
