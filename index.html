@@ -1914,6 +1914,8 @@ const TYPE_C = ['', '#a8a878', '#c03028', '#a890f0', '#a040a0', '#e0c068', '#b8a
 const TYPE_KO = ['', '노말', '격투', '비행', '독', '땅', '바위', '벌레', '고스트', '강철', '불꽃', '물', '풀', '전기', '에스퍼', '얼음', '드래곤', '악', '페어리'];
 const NIGHT_IDS = new Set([35, 36, 41, 42, 169, 43, 44, 45, 163, 164, 197, 198, 430, 215, 461, 359, 302, 353, 354, 355, 356, 477, 425, 426, 491]);
 const SING_IDS = new Set([39, 40, 174, 131, 648, 301, 300]);
+// v3.44 경완: 땅속으로 들어가는 포켓몬 다시 검토 — 도감에 땅을 파거나 모래·진흙에 숨는다고 나오는 종만 (예전엔 땅 타입 전부라 탕구리·코코리 등도 들어갔고, 파르토·바다그다처럼 빠진 종이 있었다)
+const DIG_IDS = new Set([27, 28, 50, 51, 290, 328, 449, 450, 529, 530, 551, 552, 553, 618, 659, 660, 843, 844, 960, 961, 968]);
 function deriveTraits(sp) {
   const d = SPECIES[sp]; const t = d.t, H = x => t.includes(x);
   const legend = d.leg || d.my;
@@ -1930,12 +1932,12 @@ function deriveTraits(sp) {
   let special = null;
   const prim = t[0];
   if (SING_IDS.has(sp)) special = 'sing';
+  else if (DIG_IDS.has(sp)) special = 'dig';
   else if (prim === 13 || (H(13) && !special)) special = 'spark';
   else if (prim === 10 || H(10)) special = 'flame';
   else if (prim === 12) special = noct ? null : 'sun';
   else if (prim === 11) special = mv === 'swim' ? 'splash' : 'bubble';
   else if (H(8)) special = 'ghost';
-  else if (prim === 5 && d.w < 600 && mv === 'walk') special = 'dig';
   else if (prim === 18) special = 'moon';
   else if (prim === 2) special = 'train';
   else if (prim === 14) special = legend ? 'teleport' : 'psy';
@@ -1962,7 +1964,7 @@ const FX_FIX = {
   // 잠꾸러기 (언제나 선잠, 죽을 때까지 잠듦)
   518: { slp: 2.5 }, 775: { slp: 3 },
   // 땅속에 숨음
-  290: { sp: 'dig' }, 659: { sp: 'dig' },
+  960: { mv: 'walk' }, 961: { mv: 'walk' },   // 바다그다: 모래사장 모래 속을 다닌다
   // 무리 / 혼자
   161: { soc: 1.5 }, 971: { soc: 1.6 }, 398: { soc: .5 }, 394: { soc: .5 }, 903: { soc: .5 },
   // 얌전함·겁 많음 / 난폭함
