@@ -1962,7 +1962,7 @@ const chunkLoads = {};
 // ---------- 업데이트 받기 로딩창 ----------
 // 스프라이트 청크가 캐시에 없으면(처음 설치, 또는 sw.js 의 CACHE 가 올라 새 청크가 나왔을 때) 피카츄가 달리는 게이지 바를 띄우고
 // s0…s20.json 을 받아 서비스 워커와 같은 캐시에 넣는다. 크기는 빌드 때 채운다(압축 풀린 바이트).
-const CHUNK_CACHE = 'meadow-v19', CHUNK_SZ = [1152284,1077297,1397456,1074319,1295987,1115366,1317751,1435041,1536461,1677789,1166304,1172665,1460727,1280871,1250053,1655705,1248046,1540407,1292842,1475673,925565];
+const CHUNK_CACHE = 'meadow-v6', CHUNK_SZ = [1152284,1077297,1397456,1074319,1295987,1115366,1317751,1435041,1536461,1677789,1105629,1127217,1437944,1255247,1228175,1593219,1210755,1448196,1183379,1363292,683879];
 const PIKA_RUN = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFwAAAAbCAYAAADxsuiMAAADJ0lEQVR4nNWZPXbbMAzHoU71LdwbdMxmj+kN2ilH0JobJGtPodxAHjN67OZuyi3UDRkoUCAFgh8WbZXv6cW2yD9+BEEQUgDCDZV7W26b5v4S+H3T0Eq7FXexHcnh10BjYPwtHFGDe207coR3bZEW4qjfL1LNGFeJu4hFGCeOxa4FxDFrxQEMtDYOIS+KNFDxt0rcTt+hN1eJDRqziPCHxwypWTDeaQQYevMxVTfHVi1u6jv0APsjwPm0rg3EcbGSUnRK97QotpGUGk1du9DTxtfiXvAzrlhLmjMOvduRJsId0LXz5PjvWkoh3RSnCFs3Bl+L2+HxgkAd47NIfW0eDF3+pDhEQuQmOYUvDHeIAr8J7lxnB4W1SXDoyGGS7RSuXRLdt+QO7NjoTkBEFCcpGQFIhi5ySqKz786dGf2ucOqKkhA3FouUXKf4Ewk5eyvcPNqFXL8UvhwUMc+o75QYdEWnbIIbx6WTQ/rik2az8743TfAp7uMd4NsP0y0ADv9eAXAE+Pkq3PyK1t7+aGt1p7Hf1XLsXtwA83PA0JsxIX3r8D/fZxD0inUy+ncSpeL/fIpD+y3HKdQ052yRO2UxAdhWo3rV2TYvT3g5uNuM+kHk4KEtqR1AlBpoa1IuzDnYtsCd8WAUAJ4MXg7z/QLxIqck6v+X3M7BQKdtaBLcQIpDeLTGnJIJX5Pb6ociPMSdom1XkQOGtlGus6WJa/oZ8LW4Abxqyef2qyivHAw2OjSbZue+cdsf3Y5vz+bvx3sCKmv7oxlD40nX1+c2qCr59duwKfK1uBGnt5t00Grc1CfljaVTFp5PcbDzyYAkvg5tmp09sW0j6Lfn2SEAxsH+wqS0CtwiA+fmnx8ejX7Oq1v9cBjdrZu6fUI2JC0/z7LrXtxOqvD16OJpJdcnzkR5+eTn1wJnA3gHEIflB0+Bfk1up7LRzpxUfS0/2oG8wJ/yamysqDf0Jr10rdEZpv+iNLv5CfN8Ssrdqp21ufmXrpXT0grcrlFePVyjA140ChXJNfoLeytxO5og7KgV9Y2RlaGtbsqbtWv0K3HfRL8adEVt0q/ZsvQ/AULNuNvtaaCpAAAAAElFTkSuQmCC';
 const gateLoads = {};
 const gateReady = (async () => {
@@ -4477,7 +4477,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.17';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.18';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5835,7 +5835,7 @@ function unincubate(e) {
 function incubate(e) {
   if (S.eggs.length >= MAX_EGGS || !S.bag.includes(e)) return false;
   S.bag = S.bag.filter(x => x !== e);
-  const x = { id: e.id, g: e.g, km: e.km || 0, need: GRADE[e.g].km, isNew: true, t: e.t, place: e.place, tags: e.tags, sp: e.sp }; S.eggs.push(x);
+  const x = { id: e.id, g: e.g, km: e.km || 0, need: GRADE[e.g].km, isNew: true, nwI: true, t: e.t, place: e.place, tags: e.tags, sp: e.sp }; S.eggs.push(x);
   save(); return true;
 }
 // distance from any source goes to every egg and the buddy
@@ -6485,13 +6485,13 @@ try { bagSort = localStorage.getItem('pk-bag-sort') || 'new'; } catch (e) {}
 function seeBag(closing) { if (runTab !== 'bag' || (runEl.hidden && !closing)) return; let ch = false; S.bag.forEach(e => { if (e.isNew) { e.isNew = false; ch = true; } }); if (ch) { save(); renderBag.sig = ''; renderRun(); } }
 // 가방 탭을 본 채로 창이 닫히면(하단 메뉴 이동·바깥 누름·다른 창 열림 등 어떤 길이든) NEW 표시를 지운다
 // 부화 준비된 알: 부화기를 봤다가 떠나면 빨간 점을 지운다
-function seeReady() { let ch = false; for (const e of S.eggs) if (e.km >= e.need && !e.rs) { e.rs = true; ch = true; } if (ch) { save(); renderRun(); } }
+function seeReady() { let ch = false; for (const e of S.eggs) { if (e.km >= e.need && !e.rs) { e.rs = true; ch = true; } if (e.nwI) { delete e.nwI; ch = true; } } if (ch) { save(); renderRun(); } }
 { let was = !runEl.hidden; new MutationObserver(() => { const now = !runEl.hidden; if (was && !now) { seeBag(true); if (runTab === 'egg') seeReady(); } was = now; }).observe(runEl, { attributes: true, attributeFilter: ['hidden'] }); }   // 열려 있다가 닫힐 때만
 function fmtWhen(t) { const d = new Date(t); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; }
 function renderBag() {
   const hasNew = S.bag.some(e => e.isNew);
   const tb = document.querySelector('.runtab[data-tab="bag"]'); tb.innerHTML = '가방' + (hasNew ? '<i class="dot" aria-label="새 알"></i>' : '');
-  const te = document.querySelector('.runtab[data-tab="egg"]'), rdy = S.eggs.some(e => e.km >= e.need && !e.rs); if (!!te.querySelector('.dot') !== rdy) te.innerHTML = '부화기' + (rdy ? '<i class="dot" aria-label="부화 준비"></i>' : '');
+  const te = document.querySelector('.runtab[data-tab="egg"]'), rdy = S.eggs.some(e => (e.km >= e.need && !e.rs) || e.nwI); if (!!te.querySelector('.dot') !== rdy) te.innerHTML = '부화기' + (rdy ? '<i class="dot" aria-label="새 알"></i>' : '');
   if (runTab !== 'bag') { $('#bagPop').hidden = true; bagSel = null; bagMul = null; return; }
   const sig = [bagG, bagSort, bagSel?.id, bagMul ? 'm' + [...bagMul].join('.') : '', delArm, S.bag.length, S.bag.filter(e => e.isNew).length, S.eggs.length].join();
   if (sig === renderBag.sig) return; renderBag.sig = sig;
@@ -6574,9 +6574,9 @@ function renderRun() {
     const x = S.eggs[i], b = document.createElement('button'); b.className = 'eslot';
     if (x) {
       const rd = x.km >= x.need; b.classList.toggle('ready', rd);
-      b.innerHTML = `${rd && !x.rs ? '<i class="edot"></i>' : ''}<span class="tag2">${rd ? '부화 준비' : '부화 중'}</span>${eggHtml(x.g, rd ? 'wob shake' : 'wob')}<span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div><span class="ekm">${(Math.floor(x.km * 10) / 10).toFixed(1)}/${x.need}km</span>`;
+      b.innerHTML = `${(rd && !x.rs) || x.nwI ? '<i class="edot"></i>' : ''}<span class="tag2">${rd ? '부화 준비' : '부화 중'}</span>${eggHtml(x.g, rd ? 'wob shake' : 'wob')}<span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div><span class="ekm">${(Math.floor(x.km * 10) / 10).toFixed(1)}/${x.need}km</span>`;
       b.setAttribute('aria-current', x === e); if (x.isNew) { b.classList.add('new'); x.isNew = false; }
-      b.onclick = () => { eggSel = x; eggNone = false; if (x.km >= x.need && !hatching && !evolving && !hatchQ.length) pressGo(b, () => { hatchEgg(x, true, true); playHatch(); renderRun(); }); else renderRun(); };   // 준비된 알은 칸이 눌렸다가 창이 뜬다
+      b.onclick = () => { eggSel = x; eggNone = false; if (x.nwI) { delete x.nwI; save(); } if (x.km >= x.need && !hatching && !evolving && !hatchQ.length) pressGo(b, () => { hatchEgg(x, true, true); playHatch(); renderRun(); }); else renderRun(); };   // 준비된 알은 칸이 눌렸다가 창이 뜬다
     } else { b.classList.add('empty', 'add'); b.innerHTML = '+'; b.setAttribute('aria-label', '가방에서 알 가져오기'); b.onclick = () => setRunTab('bag'); }
     box.append(b);
   }
