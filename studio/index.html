@@ -304,7 +304,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '1.2';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '1.3';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -600,7 +600,7 @@ function renderPool() {
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px 12px">${Array.from({ length: 10 }, (_, i) => i + 1).map(t => `<label class="odd" style="grid-template-columns:auto minmax(0,1fr);gap:6px"><span class="tag" style="background:${TC(t)}">${t}티어</span><input class="inp${ch && (tab[t] || 0) !== (ORIG.eggTiers[g][t] || 0) ? ' ch' : ''}" data-t="${t}" inputmode="decimal" value="${tab[t] || 0}" aria-label="${t}티어 %"></label>`).join('')}</div>
     <div class="sum${Math.abs(tot - 100) > 1e-6 ? ' bad' : ''}">합계 <span class="num">${+tot.toFixed(3)}%</span>${Math.abs(tot - 100) > 1e-6 ? ' · 게임은 합계로 나눠서 써요 (100이 아니어도 비율대로)' : ''}${g >= 2 ? ` · 가장 낮은 ${Math.max(...Object.keys(tab).filter(t => tab[t] > 0).map(Number))}티어는 '아래로 넘친 칸'이라 강한 종이 잘 나와요` : ''}</div>
   </div>
-  <div class="card"><div class="row" style="flex-wrap:wrap"><h2 style="flex:1">나오는 포켓몬 ${rows.length}종</h2><div class="search" style="min-width:160px"><input id="poolQ" value="${esc(poolQ)}" placeholder="찾기" autocomplete="off"></div></div>
+  <div class="card"><div class="row" style="flex-wrap:wrap"><h2 style="flex:1">나오는 포켓몬 ${rows.length}종 <span class="small mute" style="font-family:var(--ui)">· 합계 ${+(rows.reduce((a, r) => a + r[1], 0) * 100).toFixed(2)}% (칸마다 반올림해서 더하면 조금 모자라요)</span></h2><div class="search" style="min-width:160px"><input id="poolQ" value="${esc(poolQ)}" placeholder="찾기" autocomplete="off"></div></div>
     <div class="small mute">장소 테마와 최근 부화 효과는 빼고 본 기본 확률이에요. 진화 전 모습만 알에서 나와요.</div>
     <div class="plist" id="plist">${rows.filter(([sp]) => !q || sp === q || spName(+sp).includes(q)).map(([sp, p], i) => `<button class="pr${+sp === sel.pool ? ' on' : ''}" data-sp="${sp}"><span class="num mute small">${i + 1}</span><img alt="" data-th="${sp}"><span>${esc(spName(+sp))}<span class="tb" style="width:${p / max * 100}%"></span></span><span class="tag" style="background:${TC(tierOfSp(+sp))};justify-self:start">${tierOfSp(+sp)}</span><span class="p">${pct(p)}</span></button>`).join('')}</div>
   </div>`;
