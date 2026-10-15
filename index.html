@@ -2555,9 +2555,10 @@ function petDone() {
 const BRISTLE = [[-2, -14], [14, -17], [31, -21]], WASH_SPD = 1.6;   // 빗질 게이지는 쓰다듬기보다 1.6배 빨리 찬다
 const brushHit = (m, x, y) => BRISTLE.some(([dx, dy]) => petHit(m, x + dx, y + dy, 6));
 const petHit = (m, x, y, p = 22) => { const r = [m.spr, m.img].map(e => e?.getBoundingClientRect()).find(r => r && r.width) || m.el.getBoundingClientRect();    /* m.el 은 발밑 점이라 그림 크기로 판정 */ return x > r.left - p && x < r.right + p && y > r.top - p && y < r.bottom + p; };
-addEventListener('pointerdown', e => { if (!petM || e.target.closest('#petBar')) return; if (petM.done) { e.stopPropagation(); e.preventDefault(); return; }
+addEventListener('pointerdown', e => { if (!petM || e.target.closest('#petBar')) return;
+  if (e.target.closest('.menuwin, #cmd, #side')) { petQuit(); return; }   /* v3.53 경완: 쓰다듬기·씻기 중 아래 메뉴 버튼을 누르면 그만두고 그 메뉴가 열린다 */ if (petM.done) { e.stopPropagation(); e.preventDefault(); return; }
   e.stopPropagation(); e.preventDefault(); if (petM.wash) { petM.off = { x: brushPos.x - e.clientX, y: brushPos.y - e.clientY }; brushAt(brushPos.x, brushPos.y, true); }   /* v3.51 경완: 빗은 손가락으로 순간이동하지 않고 있던 자리에서 손가락이 움직인 만큼만 움직인다 */
-  petM.rub = { id: e.pointerId, x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, t0: performance.now(), on: petM.wash ? brushHit(petM.m, brushPos.x, brushPos.y) : petHit(petM.m, e.clientX, e.clientY), far: 0, tx: 0, ht: 0 }; petTrail(e.clientX, e.clientY, true);   /* 바깥에서 시작해 문질러 들어와도 된다 (빈 곳을 톡 누르면 떼는 순간 그만둔다) */ }, true);
+  petM.rub = { id: e.pointerId, x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, t0: performance.now(), on: petHit(petM.m, e.clientX, e.clientY), far: 0, tx: 0, ht: 0 }; petTrail(e.clientX, e.clientY, true);   /* 바깥에서 시작해 문질러 들어와도 된다 (빈 곳을 톡 누르면 떼는 순간 그만둔다) */ }, true);
 addEventListener('pointermove', e => { const p = petM; if (!p || p.done || !p.rub || e.pointerId !== p.rub.id) return; e.stopPropagation();
   const d = Math.hypot(e.clientX - p.rub.x, e.clientY - p.rub.y); p.rub.x = e.clientX; p.rub.y = e.clientY; p.rub.far = Math.max(p.rub.far, Math.hypot(e.clientX - p.rub.x0, e.clientY - p.rub.y0)); petTrail(e.clientX, e.clientY); const bxp = p.wash ? clamp(e.clientX + p.off.x, 8, innerWidth - 8) : e.clientX, byp = p.wash ? clamp(e.clientY + p.off.y, 30, innerHeight - 8) : e.clientY; if (p.wash) brushAt(bxp, byp, true);
   if (p.wash ? !brushHit(p.m, bxp, byp) : !petHit(p.m, e.clientX, e.clientY)) return;
@@ -4633,7 +4634,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.52';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.53';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
