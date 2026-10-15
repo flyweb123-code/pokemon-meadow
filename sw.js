@@ -14,9 +14,10 @@ self.addEventListener('message', e => {
 self.addEventListener('fetch', e => {
   const u = new URL(e.request.url);
   if (e.request.method !== 'GET' || u.origin !== location.origin) return;
+  if (u.pathname.includes('/studio/') || u.pathname.includes('/config/')) return;   // 작업실과 배포 데이터는 늘 네트워크로
   if (/\/s\d+\.json$/.test(u.pathname) || /\.png$/.test(u.pathname)) {
     e.respondWith(caches.open(CACHE).then(async c => (await c.match(e.request)) || fetch(e.request).then(r => { if (r.ok) c.put(e.request, r.clone()); return r; })));
-  } else if (e.request.mode === 'navigate') {
+  } else if (e.request.mode === 'navigate' && !u.pathname.includes('/studio/')) {   // 작업실(/studio/) 화면은 게임 첫 화면으로 담지 않는다
     e.respondWith(fetch(e.request.url, { cache: 'no-cache' }).then(r => { caches.open(CACHE).then(c => c.put('index.html', r.clone())); return r; }).catch(() => caches.match('index.html')));
   }
 });
