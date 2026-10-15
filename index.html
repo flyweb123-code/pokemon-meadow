@@ -2372,15 +2372,24 @@ const FR_TABLE = [[80, 3], [60, 1.5], [40, .6], [0, .12]];   // 방치(게이지
 const JOY_RATE = 100 / 7200, BERRY_FR_DAY = 5;   // 즐거움은 깨어 있으면 2시간에 100 → 0, 열매 친밀도는 하루 5개까지
 const gaugeAvg = m => (m.energy + (100 - m.hunger) + (m.joy ?? 60)) / 3;
 const frRate = m => { if (!m.pid || m.hidden) return 0; const a = gaugeAvg(m); return FR_TABLE.find(([v]) => a >= v)[1] + (a >= 40 && withFriend(m) ? .5 : 0); };   // 친구 보너스는 돌봐 줄 때만
-const FR_NEGLECT = .12;
 // 앱이 꺼져 있던(화면을 떠나 있던) 동안의 필드 친밀도
 const FLD_FR_DAY = 10;   // 필드에 있는 시간으로 받는 친밀도는 하루 10까지
-// 떠날 때 게이지 속도는 처음 2시간만, 그 뒤로는 돌봐 주는 사람이 없으니 방치 속도로
-function offFr(m, sec) { if (!(sec > 1)) return; sec = Math.min(sec, 120 * 864e2); const r = frRate(m); m.frT = (m.frT || 0) + Math.min(sec, 7200) * r + Math.max(0, sec - 7200) * Math.min(r, FR_NEGLECT); let n = Math.floor(m.frT / 3600); if (n <= 0) return; m.frT -= n * 3600;
-  // 지난 날들 몫(하루 10까지)을 먼저 주고, 남은 건 오늘 몫으로
-  const t0 = new Date(Date.now() - sec * 1000); t0.setHours(0, 0, 0, 0); const k0 = new Date(); k0.setHours(0, 0, 0, 0); const past = Math.round((k0 - t0) / 864e5);
-  if (past > 0) { const g = Math.min(n, past * FLD_FR_DAY); addFr(m.pid, g); n -= g; }
-  while (n-- > 0 && dayCap(m, 'fld', FLD_FR_DAY)) addFr(m.pid, 1); }
+// 꺼져 있던 시간을 1분씩 따라가며 배부름·즐거움이 떨어지는 대로 친밀도를 쌓는다 (기력은 자고 깨기를 반복하니 그대로 둔다)
+// 배고픔은 80까지만 오른다 (켰을 때 먹여 줄 틈이 있게). 필드 몫은 날마다 10까지.
+function offFr(m, sec) {
+  if (!(sec > 1)) return; sec = Math.min(sec, 120 * 864e2);
+  const hun = HUNGER_RATE * (T(m).hun || 1) * .6 * 60, joy = JOY_RATE * .65 * 60, fr0 = m.pid && !m.hidden && withFriend(m);
+  const end = Date.now(), steps = Math.min(20000, Math.ceil(sec / 60)), dt = sec / steps; let t = end - sec * 1000, day = dayKey(t), got = 0, acc = m.frT || 0; const nm = x => { const q = new Date(x); q.setHours(24, 0, 0, 0); return +q; }; let mid = nm(t);
+  const flush = () => { if (day === dayKey()) { while (got-- > 0 && dayCap(m, 'fld', FLD_FR_DAY)) addFr(m.pid, 1); } else if (got > 0) addFr(m.pid, Math.min(got, FLD_FR_DAY)); got = 0; };
+  for (let k = 0; k < steps; k++) {
+    if (m.hunger < 80) m.hunger = Math.min(80, m.hunger + hun * dt / 60);
+    m.joy = Math.max(0, (m.joy ?? 60) - joy * dt / 60);
+    const a = gaugeAvg(m), r = m.pid && !m.hidden ? FR_TABLE.find(([v]) => a >= v)[1] + (a >= 40 && fr0 ? .5 : 0) : 0;
+    acc += r * dt; while (acc >= 3600) { acc -= 3600; got++; }
+    t += dt * 1000; if (t >= mid) { flush(); day = dayKey(t); mid = nm(t); }
+  }
+  flush(); m.frT = acc;
+}
 { let hidAt = 0; document.addEventListener('visibilitychange', () => { if (document.hidden) hidAt = Date.now(); else if (hidAt) { const sec = (Date.now() - hidAt) / 1000; hidAt = 0; S.mons.forEach(m => offFr(m, sec)); save(); } }); }
 function dayCap(m, k, max) { const P = boxOf(m.pid); if (!P) return false; const d = dayKey(); if (P[k + 'D'] !== d) { P[k + 'D'] = d; P[k + 'N'] = 0; } if (P[k + 'N'] >= max) return false; P[k + 'N']++; return true; }
 function berryFr(m) { if (!dayCap(m, 'ber', BERRY_FR_DAY)) return false; addFr(m.pid, 1); return true; }   // 열매 친밀도 +1 (하루 5개까지)
@@ -4277,9 +4286,9 @@ async function restore(d) {
   cleanPlaces();
   S.dexNew = new Set(d.dexNew || []); S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
   for (const o of [...(d.mons || [])].sort((a, b) => (b.uid === d.buddy) - (a.uid === d.buddy)).slice(0, MAX_MONS)) { const m = await spawn(o.sp, { ...o, quiet: true }); m.notes = o.notes || [];
-    if (d.savedAt > 0) offFr(m, (Date.now() - d.savedAt) / 1000);   // 앱을 닫아 둔 동안에도 필드에 있던 만큼 친밀도
-    // 앱을 닫아 둔 동안에도 서서히 배고파진다. 다만 80까지만 (켰을 때 먹여 줄 틈이 있게)
-    if (d.savedAt > 0 && m.hunger < 80) m.hunger = Math.min(80, m.hunger + Math.max(0, Date.now() - d.savedAt) / 1000 * HUNGER_RATE * (T(m).hun || 1) * .6); if (o.asleep) sleep(m, false); }
+    if (o.asleep) sleep(m, false); }
+  // 앱을 닫아 둔 동안: 배고파지고 심심해지면서 그만큼 필드 친밀도 (친구가 옆에 있었는지 보려고 다 불러온 뒤에)
+  if (d.savedAt > 0) S.mons.forEach(m => offFr(m, (Date.now() - d.savedAt) / 1000));
   for (const b of d.berries || []) addBerry(b.x, b.y, !!b.nat, b.t || Date.now());
   rotBerries();
   S.uid = Math.max(S.uid, d.uid || 1);
@@ -4488,7 +4497,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.24';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.25';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
