@@ -5110,7 +5110,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.68';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.69';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7522,11 +7522,16 @@ function frameIn(now) {
 // 못 받으면(오프라인) 마지막으로 받은 것을 쓴다. 데이터 버전은 프로필 앱 버전 옆에 보인다
 const TIER0 = { ...TIER };
 let CFG = { ver: 0 };
-function retier(ov) {
+const TIER_ORD = {};   // v3.69 작업실: 티어마다 순서를 직접 정하면 [번호…] (앞일수록 드물게). 없으면 가족 최고 종족값 순
+function retier(ov, ord) {
+  if (ord !== undefined) { for (const k of Object.keys(TIER_ORD)) delete TIER_ORD[k]; for (const [t, L] of Object.entries(ord || {})) if (Array.isArray(L)) TIER_ORD[t] = L.map(Number); }
   for (const k of Object.keys(TIER)) TIER[k] = TIER0[k];
   for (const [k, t] of Object.entries(ov || {})) if (TIER[k] != null && t >= 1 && t <= 10) TIER[k] = t;
   TIER_SPS.forEach(L => L.length = 0); for (const k of Object.keys(TIER)) TIER_SPS[TIER[k]].push(+k);
-  for (const L of TIER_SPS) { if (!L.length) continue; const lo = Math.min(...L.map(b => FAM_BST[b])), hi = Math.max(...L.map(b => FAM_BST[b])); for (const b of L) TIER_Z[b] = hi > lo ? (FAM_BST[b] - lo) / (hi - lo) : .5; }
+  TIER_SPS.forEach((L, t) => { if (!L.length) return; const O = TIER_ORD[t];
+    if (O?.length) { const have = new Set(L), q = O.filter(b => have.has(b)), rest = L.filter(b => !q.includes(b)).sort((a, b) => FAM_BST[b] - FAM_BST[a]), all = [...q, ...rest];   // 정한 순서: 맨 앞 = 가장 드묾(z 1) ~ 맨 뒤 = 가장 흔함(z 0)
+      all.forEach((b, i) => { TIER_Z[b] = all.length > 1 ? 1 - i / (all.length - 1) : .5; }); return; }
+    const lo = Math.min(...L.map(b => FAM_BST[b])), hi = Math.max(...L.map(b => FAM_BST[b])); for (const b of L) TIER_Z[b] = hi > lo ? (FAM_BST[b] - lo) / (hi - lo) : .5; });
 }
 function setLayoutIn(L) {
   for (const k of ['pond', 'fire', 'bed', 'tree', 'perch', 'stump']) if (L[k]) { delete LAYOUT[k].lk; Object.assign(LAYOUT[k], L[k]); }
@@ -7550,7 +7555,7 @@ function applyCfg(c) {
     if (d.pity) { if (d.pity.e > 0) PITY_E = d.pity.e; if (d.pity.l > 0) PITY_L = d.pity.l; }
     if (d.eggTiers) for (let g = 1; g <= 5; g++) if (d.eggTiers[g]) EGG_TIERS[g] = d.eggTiers[g];
     for (let g = 1; g <= 5; g++) { const L = d.eggList?.[g]; EGG_LIST[g] = Array.isArray(L) && L.length ? L.filter(r => Array.isArray(r) && SPECIES[r[0]] && r[1] > 0) : null; }
-    retier(d.tierOv); if (d.bal) applyBal(d.bal); if (d.layout) setLayoutIn(d.layout);
+    retier(d.tierOv, d.tierOrd || {}); if (d.bal) applyBal(d.bal); if (d.layout) setLayoutIn(d.layout);
     CFG = c; $('#appVer').textContent = 'v' + APP_VER + (c.ver ? ' · 데이터 ' + c.ver : '');
   } catch (e) { console.warn('config', e); }
 }
@@ -7612,7 +7617,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   notiSoon = function () {};   // 작업실에선 '새 소식' 창을 띄우지 않는다
   if (GAL) { save = function () {}; document.documentElement.classList.add('st-gal'); }
   const api = window.__studio = {
-    SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
+    SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
     ICO: { berry: ICO_BERRY, brush: ICO_BRUSH, hand: ICO_HAND, pen: PEN, egg: EGG_SVG },   // v3.66: 작업실이 게임 아이콘을 그대로 쓴다
     get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]) }; },
     get cfg() { return CFG; },
@@ -7765,7 +7770,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   api.reactSps = (k, i) => { const F = RX[k]; if (!F || !F[i]) return null; const out = [];
     for (const sp of Object.keys(SPECIES).map(Number).sort((a, b) => a - b)) { if (!DEX[sp]) continue; const m = { sp, form: sp }; let j = -1; try { j = F.findIndex(f => f && f(m)); } catch (e) {} if (j === i) out.push(sp); }
     return out; };
-  api.clearMons = () => { for (const m of [...S.mons]) if (!m.pid) removeMon(m, true); save(); };
+  api.clearMons = () => { for (const m of [...S.mons]) removeMon(m, true); save(); };   // v3.69 경완: 작업실 미리보기(따로 저장)에서는 원래 있던 포켓몬도 모두 뺀다
   const monOf = uid => S.mons.find(m => m.uid === uid);
   api.act = (uid, what) => { const m = monOf(uid); if (!m) return;
     if (what === 'sleep') return m.state === 'sleep' ? wake(m) : sleep(m);
