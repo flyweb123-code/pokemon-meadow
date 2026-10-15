@@ -500,7 +500,7 @@ ol.log li.big .txt{color:#c03838}
 .bubble{position:absolute;left:0;top:0;transform:translate(-50%,-100%);background:#f8f8f8;color:#282830;border:2px solid #383848;padding:1px 6px 2px;
   font:700 12px/1.3 var(--px);box-shadow:2px 2px 0 rgba(0,0,0,.3);white-space:nowrap;animation:pop .2s steps(2)}
 .bubble::after{content:"";position:absolute;left:50%;bottom:-7px;margin-left:-4px;border:4px solid transparent;border-bottom:0;border-top:5px solid #383848}
-.bubble.heart{color:#e0405a}.bubble.happy{font-size:15px;padding:0 4px 1px}.bubble.anger{color:#d62f2f}.bubble.note{color:#2b6cc4}.bubble.zz{color:#5560a8;background:#e8eaff}
+.bubble.heart{color:#e0405a}.bubble .pxe{display:block;width:16px;height:16px;margin:1px 0 0}.bubble.anger{color:#d62f2f}.bubble.note{color:#2b6cc4}.bubble.zz{color:#5560a8;background:#e8eaff}
 @keyframes pop{from{transform:translate(-50%,-80%) scale(.5)}}
 .tag{position:absolute;left:0;top:0;transform:translate(-50%,6px);font:400 12px/1 var(--px);color:#f8f8f8;background:#383848;padding:3px 6px;white-space:nowrap}
 .pt{position:absolute;left:0;top:0;font:700 15px/1 var(--body,var(--px));animation:rise 1.2s ease-out forwards;transform:translate(-50%,-50%)}
@@ -2308,8 +2308,17 @@ function ring(x, y, cls = '') { const d = document.createElement('div'); d.class
 // v3.49 경완: 필드에 두어 친밀도가 1 오를 때, 필드를 보고 있으면 '♥+1' 이 뜬다 (메뉴가 열렸거나 앱이 꺼져 있으면 조용히)
 const fieldSeen = m => !document.hidden && !m.hidden && !document.body.classList.contains('sheet-open') && $('#set').hidden;
 function frPop(m, n = 1) { const d = document.createElement('div'); d.className = 'frpop'; d.innerHTML = '<b>♥</b>+' + n; d.style.left = m.x + 'px'; d.style.top = (m.y - m.h - m.lift - 6) + 'px'; d.addEventListener('animationend', () => d.remove()); fxEl.append(d); }
+// v3.50 경완: 말풍선 그림 이모지는 도트 그림으로 (😋 냠냠 · 💦 땀 · ☀ 햇볕 · ☾ 달)
+const PIXE = (() => { const P = { k: '#4a3010', y: '#ffd23c', e: '#3a2410', m: '#8a3a10', t: '#e8506a', b: '#4aa8f0', l: '#d8f0ff', K: '#1f5a9a', o: '#f08a1c', w: '#fff6b0', Y: '#ffe27a', O: '#b88a20' };
+  const M = {
+    '😋': ['...kkkkkk...', '..kyyyyyyk..', '.kyyyyyyyyk.', 'kyyeyyyyeyyk', 'kyeyeyyeyeyk', 'kyyyyyyyyyyk', 'kyymyyyymyyk', 'kyyymmmmyyyk', '.kyyyttyyyk.', '..kkkttkkk..', '....kttk....', '.....kk.....'],
+    '💦': ['...K........', '..KbK.......', '..KbK.......', '.KblbK......', 'KblbbbK..K..', 'KbbbbbK.KbK.', 'KbbbbbK.KbK.', '.KbbbK.KblbK', '..KKK..KbbbK', '.......KbbbK', '........KKK.', '............'],
+    '☀': ['.....oo.....', '.o...oo...o.', '..o......o..', '....oooo....', '...oyyyyo...', 'oo.oywyyo.oo', 'oo.oyyyyo.oo', '...oyyyyo...', '....oooo....', '..o......o..', '.o...oo...o.', '.....oo.....'],
+    '☾': ['...OOOO.....', '.OOYYYO...w.', '.OYYYO......', 'OYYYO.......', 'OYYO........', 'OYYO.....w..', 'OYYO........', 'OYYYO.......', '.OYYYYO..OO.', '..OOYYYYYO..', '....OOOOO...', '............'] };
+  const R = {}; for (const [k, rows] of Object.entries(M)) { let r = ''; rows.forEach((row, y) => [...row].forEach((c, x) => { if (P[c]) r += `<rect x="${x}" y="${y}" width="1" height="1" fill="${P[c]}"/>`; }));
+    R[k] = `<svg class="pxe" viewBox="0 0 12 12" shape-rendering="crispEdges">${r}</svg>`; } return R; })();
 function emote(m, text, cls = '', dur = 2.2) {
-  m.bub.className = 'bubble ' + cls; m.bub.textContent = text; m.bub.hidden = false; m.bubT = dur;
+  m.bub.className = 'bubble ' + cls; if (PIXE[text]) m.bub.innerHTML = PIXE[text]; else m.bub.textContent = text; m.bub.hidden = false; m.bubT = dur;
   m.bub.style.animation = 'none'; void m.bub.offsetWidth; m.bub.style.animation = '';
 }
 function anim(m, cls) { m.act.classList.remove('hop', 'phop', 'shake', 'emerge', 'appear', 'stretch'); void m.act.offsetWidth; m.act.classList.add(cls); if (cls === 'hop' && m.spr && !m.one) playOnce(m, 'Hop'); }
@@ -4614,7 +4623,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.49';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.50';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
