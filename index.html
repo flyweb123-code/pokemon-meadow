@@ -2466,15 +2466,19 @@ function feedNow(m) {
   if (isFull(m)) { emote(m, '배불러'); log(`${J(m,'은/는')} 배가 불러서 열매를 사양했다.`, [m]); return; }
   if (m.partner) { const o = m.partner; m.partner = null; o.partner = null; o.scene = null; setState(o, 'idle', 1); }
   m.goal = null; m.scene = null; setState(m, 'idle', 2);
-  const x = m.x + (m.face || 1) * Math.max(14, m.w * .3), y = m.y + 2, el = document.createElement('div');
+  const x = m.x - (m.face || 1) * Math.max(14, m.w * .3), y = m.y + 2, el = document.createElement('div');
   el.className = 'berry' + (Math.random() < .4 ? ' red' : ''); Object.assign(el.style, { left: x + 'px', top: y + 'px', zIndex: Math.round(y) + 1, pointerEvents: 'none' }); itemsEl.append(el);   // v3.42: 정보창에서 준 열매는 더 높이서 떨어진다 (잘 보이게)
   emote(m, '!', '', .8);
   berryBounce(el, 110, bx => { if (!S.mons.includes(m)) { el.remove(); return; }
-    if (berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - BERRY_FILL); berryBoost(m, true);
-    if (isFull(m)) { m.hunger = 0; setTimeout(() => emote(m, '배불러!', 'heart', 2), 3200); }
-    const dur = m.sp === 143 ? 8 : 5; if (Math.abs(x + bx - m.x) > 2) m.face = Math.sign(x + bx - m.x);
-    setState(m, 'eat', dur); log(`${J(m,'이/가')} 떨어진 열매를 바로 냠냠 먹었다.`, [m]); save();
-    biteBerry(el, m, dur, x + bx, y); });
+    let ate = false; const bxp = x + bx;
+    const go = () => { if (ate || !el.isConnected) return; ate = true; if (!S.mons.includes(m) || m.held) { el.remove(); return; }
+      if (berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - BERRY_FILL); berryBoost(m, true);
+      if (isFull(m)) { m.hunger = 0; setTimeout(() => emote(m, '배불러!', 'heart', 2), 3200); }
+      const dur = m.sp === 143 ? 8 : 5; faceTo(m, bxp);
+      setState(m, 'eat', dur); log(`${J(m,'이/가')} 떨어진 열매를 바로 냠냠 먹었다.`, [m]); save();
+      biteBerry(el, m, dur, bxp, y); };
+    const sp = eatSpot(m, { x: bxp, y });   /* 굴러간 열매 앞까지 몇 걸음 다가가서 먹는다 */
+    if (Math.hypot(sp.x - m.x, sp.y - m.y) < 4) go(); else { moveTo(m, { x: bxp, y }, { kind: 'feedb', go }, .8); setTimeout(() => { if (!ate) { if (m.goal?.go === go) go(); else { ate = true; el.remove(); } } }, 5000); } });
 }
 // v3.43 경완: 열매가 실제처럼 튄다 — 중력으로 떨어지고, 땅에 닿으면 탄성(0.42)만큼 다시 튀어 오르며 납작해졌다 돌아온다. 살짝 옆으로 구르며 멈춘다
 function berryBounce(el, h, done) {
@@ -2630,17 +2634,17 @@ const endBdrag = e => {
 };
 window.addEventListener('pointerup', endBdrag); window.addEventListener('pointercancel', endBdrag);
 // v3.47 경완: 먹는 동안 열매에 한 입씩 베어 먹은 자국이 생기고, 마지막 입에 부스러기를 남기고 사라진다. 먹기 시작하면 행복한 말풍선
-const BITES = [['105% 25%', 5], ['98% 60%', 4], ['-5% 45%', 5], ['8% 76%', 3.5], ['55% -8%', 5.5], ['22% 4%', 4]];
+const BITES = [['108% 30%', 6], ['96% 66%', 4.5], ['-8% 50%', 6], ['10% 80%', 4]];
 function biteBerry(el, m, dur, x, y) {
   el.style.pointerEvents = 'none'; el.classList.remove('rot', 'new'); emote(m, '😋', 'happy', 2.4);
-  const col = el.classList.contains('red') ? '#e2414b' : '#3a7fd6', n = 4; let k = 0;
+  const col = el.classList.contains('red') ? '#e2414b' : '#3a7fd6', n = 3; let k = 0;   /* v3.52: 세 입 — 한 입·두 입은 자국, 세 번째에 다 먹음 */
   const crumbs = c => { for (let i = 0; i < c; i++) particle(x + rnd(-5, 5), y - 6, 'clod', '', d => { d.style.background = col; d.style.width = d.style.height = '3px'; d.style.setProperty('--dx', rnd(-12, 12).toFixed(0) + 'px'); d.style.setProperty('--dy', rnd(-10, -4).toFixed(0) + 'px'); }); };
   const bite = () => { if (!el.isConnected) return; k++;
     if (k >= n || m.state !== 'eat' || !S.mons.includes(m)) { if (k >= n) crumbs(4); el.remove(); return; }
     const L = BITES.slice(0, k * 2).map(([at, r]) => `radial-gradient(circle at ${at},#0000 ${r}px,#000 ${r + .5}px)`).join(',');
     el.style.webkitMaskImage = el.style.maskImage = L; el.style.webkitMaskComposite = 'source-in'; el.style.maskComposite = 'intersect';
     crumbs(2); setTimeout(bite, dur * 1000 / n); };
-  setTimeout(bite, dur * 1000 / n);
+  setTimeout(bite, dur * 1000 / n / 2);
 }
 function eatBerry(b) { b.el.remove(); S.berries = S.berries.filter(x => x !== b); }
 function rotBerries() {
@@ -2678,7 +2682,10 @@ function outOfHud(m, q) {
   }
   return q;
 }
+// v3.52 경완: 열매를 먹으러 갈 때는 열매와 겹칠 만큼 바짝 붙어 (열매가 입 앞에 오게, 살짝 뒤쪽에 서서) 열매 쪽을 보고 먹는다
+const eatSpot = (m, p) => { const side = m.x >= p.x ? 1 : -1; return { x: p.x + side * Math.max(5, (m.w || 30) * .18), y: p.y - 3 }; };
 function moveTo(m, p, goal, spdMul = 1) {
+  if (goal && (goal.kind === 'berry' || goal.kind === 'feedb')) p = eatSpot(m, p);
   m.tx = clamp(p.x, XL + 30, XR - 30); m.ty = clamp(p.y, MIN_Y, MAX_Y);
   { const q = outOfHud(m, { x: m.tx, y: m.ty }); m.tx = clamp(q.x, XL + 30, XR - 30); m.ty = clamp(q.y, MIN_Y, MAX_Y); }
   const mv = T(m).mv;
@@ -2775,6 +2782,7 @@ function think(m) {
 
 function arrive(m) {
   const g = m.goal || { kind: 'wander' };
+  if (g.kind === 'feedb') { m.goal = null; return g.go(); }
   if (g.kind === 'berry') {
     const b = g.berry;
     if (!S.berries.includes(b)) {
@@ -2790,7 +2798,7 @@ function arrive(m) {
     const mine = b.for === m || !b.nat;   /* 내가 풀밭에 둔 열매도 내가 준 열매 (나무에서 떨어진 열매는 아님) */
     b.eater = m; S.berries = S.berries.filter(x => x !== b); if (mine && berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - BERRY_FILL); berryBoost(m, mine);
     if (isFull(m)) { m.hunger = 0; setTimeout(() => emote(m, '배불러!', 'heart', 2), 3200); if (Math.random() < .5) log(`${J(m,'이/가')} 배가 가득 찼다.`, [m]); }
-    setState(m, 'eat', m.sp === 143 ? 8 : 5); if (Math.abs(b.x - m.x) > 2) m.face = Math.sign(b.x - m.x); biteBerry(b.el, m, m.t, b.x, b.y);
+    setState(m, 'eat', m.sp === 143 ? 8 : 5); faceTo(m, b.x); biteBerry(b.el, m, m.t, b.x, b.y);
     if (b.for === m || Math.random() < .45) log(pick([`${J(m,'이/가')} 나무열매를 냠냠 먹었다.`, `${J(m,'이/가')} 열매를 맛있게 먹는다.`]), [m]);
     return;
   }
@@ -4625,7 +4633,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.51';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.52';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
