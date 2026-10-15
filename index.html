@@ -4564,8 +4564,8 @@ function buildProps() {
   for (let i = 0; i < 80; i++) h += `<i style="left:${(Math.random() * (W + 150)).toFixed(0)}px;animation-delay:${(-Math.random() * .62).toFixed(2)}s;animation-duration:${(.5 + Math.random() * .25).toFixed(2)}s"></i>`;
   for (let i = 0; i < 26; i++) { let x, y, n = 0; do { x = Math.random() * W; y = MIN_Y + Math.random() * (600 - MIN_Y); } while (onProp(x, y) && ++n < 20); h += `<b style="left:${x.toFixed(0)}px;top:${y.toFixed(0)}px;animation-delay:${(-Math.random() * 2).toFixed(2)}s;animation-duration:${(1.2 + Math.random()).toFixed(2)}s"></b>`; }
   rainEl.innerHTML = h; fxEl.append(rainEl);
-  const sf = $('#skyFx'); sf.innerHTML = '<i class="sun"></i><i class="moon"></i>' + Array.from({ length: 22 }, () => `<i class="star" style="left:${(Math.random() * W).toFixed(0)}px;top:${(3 + Math.random() * 78).toFixed(0)}px;animation-delay:${(-Math.random() * 2.6).toFixed(2)}s"></i>`).join('');
-  sf.querySelector('.sun').style.backgroundImage = `url(${SPR.sun})`; sf.querySelector('.moon').style.backgroundImage = `url(${SPR.moon})`;
+  const sf = $('#skyFx'); if (!sf.querySelector('.sun')) { sf.innerHTML = '<i class="sun"></i><i class="moon"></i>' + Array.from({ length: 22 }, () => `<i class="star" style="left:${(Math.random() * W).toFixed(0)}px;top:${(3 + Math.random() * 78).toFixed(0)}px;animation-delay:${(-Math.random() * 2.6).toFixed(2)}s"></i>`).join('');
+  sf.querySelector('.sun').style.backgroundImage = `url(${SPR.sun})`; sf.querySelector('.moon').style.backgroundImage = `url(${SPR.moon})`; }   // v3.66 경완: 소품을 옮겨 다시 그릴 때 하늘(구름·별)은 그대로 둔다
   treeBerries();
 }
 // 열매나무: 15분마다 한 알씩 열려 6알까지. 포켓몬이 와서 흔들면 실제로 떨어진다
@@ -5109,7 +5109,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.65';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.66';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7582,6 +7582,7 @@ if (/[?&]studio/.test(location.search)) {
 #stHands .h{position:absolute;border-radius:4px;touch-action:none;cursor:grab}
 #stHands .h:hover{outline:1px dashed rgba(127,215,239,.7)}
 #stHands .h.sel{outline:2px solid #7fd7ef;outline-offset:1px;background:rgba(127,215,239,.14)}
+.mon.stMark{filter:drop-shadow(2px 0 0 #7fd7ef) drop-shadow(-2px 0 0 #7fd7ef) drop-shadow(0 2px 0 #7fd7ef) drop-shadow(0 -2px 0 #7fd7ef) drop-shadow(0 0 5px #7fd7ef)}
 #stHands .dot{width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#c08850;border:2px solid #fff;box-sizing:border-box;display:none}
 #stHands.path .dot{display:block}
 #stHands .bh{width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;border:2px dashed #fff;background:rgba(255,255,255,.12);box-sizing:border-box;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
@@ -7611,6 +7612,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   if (GAL) { save = function () {}; document.documentElement.classList.add('st-gal'); }
   const api = window.__studio = {
     SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
+    ICO: { berry: ICO_BERRY, brush: ICO_BRUSH, hand: ICO_HAND, pen: PEN, egg: EGG_SVG },   // v3.66: 작업실이 게임 아이콘을 그대로 쓴다
     get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, WASH_DAY, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]) }; },
     get cfg() { return CFG; },
     get SPRITES() { return SPRITES; }, ensureSprite, thumbOf, gradeOf, tierOf, shinyHue, tyIcon, scaleOf, baseOf, movesOf, eggHtml, propSpots,
@@ -7749,6 +7751,9 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   api.mons = () => S.mons.map(m => ({ uid: m.uid, sp: m.sp, name: m.name }));
   api.selInfo = () => selInfo();
   api.selMon = uid => { const m = monOf(uid); if (m) select(m); };
+  // v3.66 경완: 작업실 필드 칸 — 누르면 테두리만, X 로 빼기
+  api.markMon = uid => { for (const m of S.mons) m.el.classList.toggle('stMark', m.uid === uid); };
+  api.removeMon = uid => { const m = monOf(uid); if (!m) return; removeMon(m, true); save(); };
   // v3.63 작업실: 소품 반응 분류(작업실 REACT 줄 순서)에 드는 포켓몬 번호. 먼저 맞는 줄이 이긴다
   const RX = { tree: [() => 1], perch: [m => winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover' || isSmall(m), () => 1], fire: [m => tyOf(m).includes(FIR), m => tyOf(m).includes(WAT) || tyOf(m).includes(ICE), () => 1, null],
     bed: [m => tyOf(m).includes(BUG), m => tyOf(m).includes(GRA) || tyOf(m).includes(FAI), m => (SPD(m.sp).w || 0) > 1000, () => 1], bush: [() => 1], stump: [() => 1],

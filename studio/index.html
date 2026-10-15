@@ -88,7 +88,7 @@ input[type=range]{accent-color:var(--acc);flex:1;min-width:120px;max-width:260px
 .addp .ph{height:22px;display:grid;place-items:center;font-size:14px}
 .card{background:var(--panel);border:1px solid var(--chip);border-radius:6px;padding:12px 14px;display:grid;gap:10px}
 .cards{display:grid;gap:12px;max-width:980px}
-.odd{display:grid;grid-template-columns:48px minmax(0,1fr) 96px;align-items:center;gap:10px}
+.odd{display:grid;grid-template-columns:76px minmax(0,1fr) 96px;align-items:center;gap:10px}
 .odd b{font-weight:600}
 .bar{height:10px;display:flex;overflow:hidden;border-radius:3px;background:rgba(128,128,128,.2)}
 .bar i{display:block;height:100%}
@@ -164,7 +164,7 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 .slots .sl{position:relative;aspect-ratio:1;display:grid;place-items:center;background:var(--chip);border:1px solid var(--chipb);border-radius:4px;padding:0;overflow:hidden}
 .slots .sl img{max-width:82%;max-height:70%;image-rendering:pixelated}.slots .sl .nm{position:absolute;left:0;right:0;bottom:2px;font-size:10.5px;color:var(--soft);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 3px}
 .slots .sl.empty{background:none;border-style:dashed;color:var(--soft);font-size:22px}.slots .sl.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
-#spx{position:absolute;z-index:56;left:8px;top:8px;bottom:8px;width:252px;background:var(--panel);border:1px solid var(--chipb);border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:10px;display:grid;grid-template-rows:auto auto auto minmax(0,1fr);gap:8px}
+#spx{position:fixed;z-index:56;left:8px;top:8px;height:400px;width:252px;background:var(--panel);border:1px solid var(--chipb);border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:10px;display:grid;grid-template-rows:auto auto auto minmax(0,1fr);gap:8px}
 #spx .zh{display:flex;align-items:center;gap:8px}#spx .zh b{flex:1;font-family:var(--px);font-weight:400;color:var(--acc);font-size:13px}
 #spx .grid{overflow:auto;align-content:start;grid-auto-rows:56px;grid-template-columns:repeat(auto-fill,minmax(52px,1fr))}#spx .mc{aspect-ratio:auto;height:56px}
 .react .chip.rx{cursor:pointer}.react .chip.rx.on{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
@@ -180,7 +180,7 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 #zoom label{display:grid;grid-template-columns:3.2em minmax(0,1fr) 3.4em;align-items:center;gap:8px;font-size:12.5px}
 #zoom label input{max-width:none;min-width:0}#zoom label span:last-child{font-family:var(--px);font-size:11px;text-align:right;color:var(--soft)}
 .dock .it.on{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
-#ebar{position:fixed;z-index:57;top:8px;left:auto;right:8px;width:184px;max-height:calc(100% - 16px);overflow:auto;background:var(--panel);border:1px solid var(--acc);border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:10px 12px;display:grid;align-content:start;gap:12px}
+#ebar{position:fixed;z-index:57;top:8px;left:auto;right:8px;width:270px;max-height:calc(100% - 16px);overflow:auto;background:var(--panel);border:1px solid var(--acc);border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:10px 12px;display:grid;align-content:start;gap:12px}
 #ebar[hidden]{display:none}#ebar #addp,#ebar #editPane h4{display:none}#ebar h4{margin:0}
 #sbar{position:absolute;left:0;right:0;top:0;z-index:6;pointer-events:none;display:flex;align-items:center;color:#fff;font:600 16px/1 -apple-system,system-ui,"Apple SD Gothic Neo",sans-serif;letter-spacing:-.01em;text-shadow:0 1px 2px rgba(0,0,0,.35)}
 #sbar .sd{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;white-space:nowrap}#sbar svg{display:block;fill:currentColor;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
@@ -188,6 +188,31 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 #sbar .nch{position:absolute;left:50%;top:0;width:160px;height:32px;margin-left:-80px;border-radius:0 0 18px 18px;background:#000}
 #sbar .pch{position:absolute;left:50%;top:9px;width:13px;height:13px;margin-left:-6.5px;border-radius:50%;background:#000}
 #sbar.and{font:500 13px/1 system-ui,sans-serif;padding:0 18px}#sbar.and .sd{flex:none}#sbar.and .sp{flex:1}
+.gi{display:inline-grid;place-items:center;width:22px;height:22px;flex:none}.gi svg{width:100%;height:100%;display:block}
+.coin{display:inline-block;width:12px;height:12px;background:#ffc830;box-shadow:inset -2px -2px 0 #d08a00,inset 2px 2px 0 #fff2a0,0 0 0 2px #6a4400}
+.egg{--ec:#f6f4ea;--es:#6cc070;--esh:#d6d2c2;--eo:#383848;display:inline-block;flex:none;width:18px;height:22px;vertical-align:middle}.egg svg{display:block;width:100%;height:100%}
+.egg.g2{--es:#f0a040}.egg.g3{--es:#4f95dc}.egg.g4{--es:#a070d8}.egg.g5{--ec:#fff1b8;--esh:#e8d48a;--es:#e0a020;filter:drop-shadow(0 0 3px #ffe680)}
+h2.ih{display:flex;align-items:center;gap:8px}
+.bal2{display:grid;gap:6px}.br{display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:8px 12px;align-items:center;padding:8px 10px;background:var(--deep);border:1px solid var(--chip);border-radius:6px;font-size:13px}
+.br .bi{display:flex;align-items:center;gap:10px;min-width:0}.br small{display:block;color:var(--mute);font-size:11.5px}.br .bi.span{grid-column:1/-1}
+.br .wide{grid-column:1/-1;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:6px}.br .wide label{display:grid;justify-items:center;gap:3px;font-size:11.5px;color:var(--soft);text-align:center}.br .wide label input{width:100%}
+.odd .gn{display:flex;align-items:center;gap:6px;font-weight:600}
+.nav a .lb{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.nav a .n{margin-left:0}
+.nav a .ren{opacity:0;width:22px;height:22px;padding:4px;background:none;border:0;color:var(--soft);display:grid;place-items:center;border-radius:3px;flex:none;cursor:pointer}.nav a:hover .ren,.nav a .ren:focus-visible{opacity:1}.nav a .ren:hover{background:var(--chipb);color:#fff}.nav a .ren svg{width:12px;height:12px}
+.nav a input{flex:1;min-width:0;font:inherit;background:var(--deep);border:1px solid var(--acc);color:#fff;border-radius:3px;padding:2px 5px}
+.anims{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:6px}.am{display:grid;justify-items:center;gap:2px;padding:6px 4px 5px;background:var(--deep);border:1px solid var(--chip);border-radius:6px;color:var(--soft);font-size:12px;cursor:pointer}
+.am canvas{width:48px;height:48px;image-rendering:pixelated}.am b{font-weight:600;color:var(--fg);white-space:nowrap}.am span{font-size:10.5px}.am:hover{border-color:var(--chipb)}.am.on{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
+.slots .sl .x{position:absolute;top:2px;right:2px;width:18px;height:18px;display:grid;place-items:center;font-size:10px;line-height:1;background:rgba(0,0,0,.45);color:#fff;border-radius:3px;opacity:.7;cursor:pointer}.slots .sl .x:hover{background:var(--bad);opacity:1}
+.slots .sl.on{box-shadow:0 0 0 2px var(--acc)!important}
+@media (min-width:821px){
+  .view[data-v=odds],.view[data-v=pool]{grid-template-rows:auto minmax(0,1fr)}
+  .view[data-v=odds] .seg,.view[data-v=pool] .seg{display:flex;grid-column:1/-1;gap:4px;padding:10px 12px 0;border-bottom:1px solid var(--line)}
+  .view[data-v=odds] .seg .chip,.view[data-v=pool] .seg .chip{border-radius:6px 6px 0 0;border-bottom:0;min-height:36px;padding:4px 14px}
+  .seg .chip[data-v=tier]{display:none}
+  #spx,#zoom,#ebar{resize:both;min-width:190px;min-height:110px}
+  #spx .zh,#zoom .zh,#ebar .eh{cursor:move}
+}
+body.wdrag iframe{pointer-events:none}
 .vers{display:grid;gap:8px}.vers .vr{display:grid;grid-template-columns:64px minmax(0,1fr);gap:4px 12px;border-top:1px solid var(--chip);padding-top:8px}
 .vers .vr b{font-family:var(--px);font-weight:400;color:var(--fg);font-size:15px}.vers .vr.now b{color:var(--acc)}.vers ul{margin:0;padding-left:1.1em;font-size:13px;line-height:1.6}
 .vcard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center}.vcard .big{font-family:var(--px);font-size:30px;color:var(--acc);line-height:1}
@@ -212,7 +237,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
   .dock{width:auto;border-right:0;border-bottom:1px solid var(--line);grid-template-rows:auto auto}
   .dock .db{display:block;overflow-x:auto;overflow-y:hidden;padding:0 12px 10px}
   #spx{position:fixed;left:8px;right:8px;top:auto;bottom:calc(8px + env(safe-area-inset-bottom,0px));width:auto;height:42vh}
-  #zoom{left:12px!important;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));top:auto!important;width:auto}
+  #zoom{resize:none;left:12px!important;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));top:auto!important;width:auto}
   .dock .sg{display:flex;gap:6px}.dock .sg .it{flex:none;width:76px;min-height:76px;touch-action:pan-x}
   .dock .it img{height:38px}
   .dock .db h4{margin:6px 0}
@@ -230,7 +255,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
   .tabs a.on{color:var(--acc)}
   .tabs svg{width:22px;height:22px}
   .tiers{grid-template-columns:minmax(0,1fr)}
-  .odd{grid-template-columns:40px minmax(0,1fr) 84px}
+  .odd{grid-template-columns:72px minmax(0,1fr) 84px}.odd .gn{white-space:nowrap}
   .pr{grid-template-columns:40px 36px minmax(0,1fr) 44px 64px;gap:6px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -349,7 +374,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '1.7';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '1.8';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -363,10 +388,10 @@ const ICO = {
   bub: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M2 1h8v1h1v5h-1v1H6v1H5v1H4v1H3V8H2V7H1V2h1zm0 1v5h2v2h1V8h5V2z"/></svg>',
   more: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 5h2v2H1zm4 0h2v2H5zm4 0h2v2H9z"/></svg>',
 };
-const VIEWS = { map: ['맵', 'map'], mon: ['포켓몬·모션', 'poke'], odds: ['알 수집 확률', 'egg'], pool: ['알 등급별 포켓몬', 'egg'], bub: ['말풍선', 'bub'], ver: ['버전 기록', 'doc'], tier: ['티어', 'tier'], bal: ['밸런스', 'bal'], art: ['그림 모음', 'art'], work: ['배포하기', 'doc'], test: ['테스트 도구', 'tool'] };
-const NAV = [['게임 화면', ['map', 'mon', 'bub']], ['데이터', ['odds', 'pool', 'tier', 'bal']], ['기타', ['art', 'work', 'ver', 'test']]];
+const VIEWS = { map: ['맵', 'map'], mon: ['포켓몬', 'poke'], odds: ['알 수집 확률', 'egg'], pool: ['알 등급별 포켓몬', 'egg'], bub: ['말풍선', 'bub'], ver: ['버전 기록', 'doc'], egg: ['알', 'egg'], tier: ['티어', 'tier'], bal: ['밸런스', 'bal'], art: ['그림 모음', 'art'], work: ['배포하기', 'doc'], test: ['테스트 도구', 'tool'] };
+const NAV = [['게임 화면', ['map', 'mon', 'bub']], ['데이터', ['egg', 'tier', 'bal']], ['기타', ['art', 'work', 'ver', 'test']]];
 const MTABS = [['map', '맵', 'map', ['map']], ['mon', '포켓몬', 'poke', ['mon']], ['egg', '알', 'egg', ['odds', 'pool', 'tier']], ['art', '그림', 'art', ['art']], ['more', '더보기', 'more', ['bal', 'work', 'test', 'bub', 'ver']]];
-const SEGS = { egg: [['odds', '확률'], ['pool', '등급별 포켓몬'], ['tier', '티어']], more: [['bal', '밸런스'], ['work', '배포하기'], ['test', '테스트'], ['bub', '말풍선'], ['ver', '버전']] };
+const SEGS = { egg: [['odds', '수집 확률'], ['pool', '등급별 포켓몬'], ['tier', '티어']], more: [['bal', '밸런스'], ['work', '배포하기'], ['test', '테스트'], ['bub', '말풍선'], ['ver', '버전']] };
 const GN = ['', '일반', '희귀', '레어', '에픽', '전설'], GC = ['', '#9aa0a8', '#4aa8f0', '#8a6ae0', '#e0a020', '#e05050'];
 const TC = t => `hsl(${(t - 1) * 26} 60% ${t < 4 ? 58 : 66}%)`;
 let A = null, view = 'map';
@@ -375,13 +400,23 @@ function toast(t) { const e = $('#toast'); e.textContent = t; e.classList.add('o
 async function copy(text) { try { await navigator.clipboard.writeText(text); toast('복사했어요'); return true; } catch (e) { return false; } }
 
 // ---------- 화면 전환 ----------
-$('#nav').innerHTML = NAV.map(([s, L]) => `<div class="sec">${s}</div>` + L.map(v => `<a data-v="${v}">${ICO[VIEWS[v][1]]}${VIEWS[v][0]}<span class="n" data-n="${v}"></span></a>`).join('')).join('');
-$('#tabs').innerHTML = MTABS.map(([k, n, i]) => `<a data-t="${k}">${ICO[i]}${n}</a>`).join('');
-$$('.seg').forEach(s => s.innerHTML = SEGS[s.dataset.g].map(([v, n]) => `<button class="chip" data-v="${v}">${n}</button>`).join(''));
+// v1.8 경완: 메뉴 이름은 연필을 눌러 바꿀 수 있다 (이 기기에만 저장)
+let NAMES = {}; try { NAMES = JSON.parse(store.get('st-names') || '{}') || {}; } catch (e) { NAMES = {}; }
+const vname = v => NAMES[v] || VIEWS[v][0];
+function renderNav() { $('#nav').innerHTML = NAV.map(([s, L]) => `<div class="sec">${s}</div>` + L.map(v => `<a data-v="${v}">${ICO[VIEWS[v][1]]}<span class="lb">${esc(vname(v))}</span><button class="ren" data-ren="${v}" aria-label="메뉴 이름 바꾸기" title="이름 바꾸기">${PEN}</button><span class="n" data-n="${v}"></span></a>`).join('')).join('');
+  $('#tabs').innerHTML = MTABS.map(([k, n, i, L]) => `<a data-t="${k}">${ICO[i]}${esc(L.length === 1 && NAMES[L[0]] || n)}</a>`).join('');
+  $$('.seg').forEach(s => s.innerHTML = SEGS[s.dataset.g].map(([v, n]) => `<button class="chip" data-v="${v}">${s.dataset.g === 'egg' && v !== 'tier' ? eggI(v === 'odds' ? 3 : 5) : ''}${esc(NAMES[v] || n)}</button>`).join(''));
+  if (typeof view !== 'undefined' && view) { $$('.nav a').forEach(a => a.classList.toggle('on', a.dataset.v === view || (a.dataset.v === 'egg' && EGGV.includes(view)))); $$('.seg .chip').forEach(c => c.classList.toggle('on', c.dataset.v === view)); $$('.tabs a').forEach(a => a.classList.toggle('on', MTABS.find(t => t[0] === a.dataset.t)[3].includes(view))); $('#crumb').textContent = vname(view); }
+  if (typeof dstat === 'function' && ORIG) dstat(); }
+const EGGV = ['odds', 'pool'];
+function startRename(v) { const a = $(`.nav a[data-v="${v}"]`); if (!a) return; const lb = a.querySelector('.lb'), inp = document.createElement('input'); inp.value = vname(v); inp.maxLength = 16; inp.setAttribute('aria-label', '메뉴 이름'); lb.replaceWith(inp); a.querySelector('.ren').hidden = true; inp.focus(); inp.select();
+  let done = false; const end = ok => { if (done) return; done = true; if (ok) { const t = inp.value.trim(); if (t && t !== VIEWS[v][0]) NAMES[v] = t; else delete NAMES[v]; store.set('st-names', JSON.stringify(NAMES)); } renderNav(); if (ok) toast(NAMES[v] ? '메뉴 이름을 바꿨어요' : '원래 이름으로 돌렸어요'); };
+  inp.onkeydown = e => { if (e.key === 'Enter') end(true); else if (e.key === 'Escape') end(false); e.stopPropagation(); }; inp.onblur = () => end(true); inp.onclick = e => e.stopPropagation(); }
 const lastOf = {};
 function go(v) {
-  view = v; $$('.view').forEach(s => s.hidden = s.dataset.v !== v); $('#crumb').textContent = VIEWS[v][0];
-  $$('.nav a').forEach(a => a.classList.toggle('on', a.dataset.v === v));
+  if (v === 'egg') v = EGGV.includes(store.get('st-egg')) ? store.get('st-egg') : 'odds'; if (EGGV.includes(v)) store.set('st-egg', v);
+  view = v; $$('.view').forEach(s => s.hidden = s.dataset.v !== v); $('#crumb').textContent = vname(v);
+  $$('.nav a').forEach(a => a.classList.toggle('on', a.dataset.v === v || (a.dataset.v === 'egg' && EGGV.includes(v))));
   const mt = MTABS.find(t => t[3].includes(v)); lastOf[mt[0]] = v; $$('.tabs a').forEach(a => a.classList.toggle('on', a.dataset.t === mt[0]));
   $$('.seg .chip').forEach(c => c.classList.toggle('on', c.dataset.v === v));
   store.set('st-view', v); if (location.hash !== '#' + v) history.replaceState(null, '', '#' + v);
@@ -389,7 +424,8 @@ function go(v) {
   if (v === 'art' && $('#gal').src === 'about:blank') $('#gal').src = GAME + '?studio=gallery';
   if (v === 'map') requestAnimationFrame(fitPhone);
 }
-$('#nav').onclick = e => { const a = e.target.closest('a'); if (a) go(a.dataset.v); };
+$('#nav').onclick = e => { const r = e.target.closest('.ren'); if (r) { e.preventDefault(); startRename(r.dataset.ren); return; } if (e.target.closest('input')) return; const a = e.target.closest('a'); if (a) go(a.dataset.v); };
+$('#nav').ondblclick = e => { const a = e.target.closest('a'); if (a && !e.target.closest('input')) startRename(a.dataset.v); };
 $('#tabs').onclick = e => { const a = e.target.closest('a'); if (!a) return; const t = MTABS.find(x => x[0] === a.dataset.t); go(lastOf[t[0]] || t[3][0]); };
 document.addEventListener('click', e => { const c = e.target.closest('.seg .chip'); if (c) go(c.dataset.v); });
 $('#goWork').onclick = () => go('work');
@@ -420,7 +456,7 @@ function fitPhone() { safeZ(); statusBar(); applyInsets(); const b = $('#mapBox'
   p.style.width = w + 'px'; p.style.height = h + 'px'; p.style.borderRadius = (h / w > 1.9 ? 44 : h / w > 1.6 ? 20 : 26) + 'px';
   if (m) { const want = Math.round(Math.min(innerHeight * .72, (b.clientWidth - 16) * h / w + 16)); if (Math.abs(b.clientHeight - want) > 1) b.style.height = want + 'px'; } else b.style.height = '';
   const pad = m ? 12 : 24, k = Math.min((b.clientHeight - pad) / h, (b.clientWidth - pad) / w, 1.2); p.style.transform = `scale(${k}) translate(-50%,-50%)`; p.dataset.k = k; ebarPos(); }
-function ebarPos() { const e = $('#ebar'); if (mobile()) { e.style.left = e.style.top = ''; return; } const r = $('#phone').getBoundingClientRect(); e.style.left = Math.min(innerWidth - 192, r.right + 12) + 'px'; e.style.top = Math.max(8, r.top) + 'px'; }
+function ebarPos() { const e = $('#ebar'); if (mobile()) { e.style.left = e.style.top = ''; return; } if (winApply(e)) return; const r = $('#phone').getBoundingClientRect(); e.style.left = Math.min(innerWidth - e.offsetWidth - 8, r.right + 12) + 'px'; e.style.top = Math.max(8, r.top) + 'px'; }
 new ResizeObserver(fitPhone).observe($('#mapBox'));
 
 // ---------- 작업본: 바꾼 값만 모아 둔다. Claude 가 읽고 게임에 넣는다 ----------
@@ -485,7 +521,7 @@ let spxKey = null, spxL = [], spxQ = '';
 function openSpx(key, title, L) { spxKey = key; spxL = L; spxQ = ''; const e = $('#spx'); e.hidden = false;
   e.innerHTML = `<div class="zh"><b>${esc(title)}</b><button class="chip" id="spxX" aria-label="닫기">✕</button></div><div class="small mute">${L.length}종 · 끌어서 맵에 놓아요</div><div class="search"><input id="spxQ" placeholder="이름이나 번호" autocomplete="off" enterkeyhint="search"></div><div class="grid" id="spxG"></div>`;
   $('#spxX').onclick = closeSpx; spxPos(); if (mobile()) $('#mapBox').scrollIntoView({ behavior: 'smooth', block: 'start' }); $('#spxQ').oninput = ev => { spxQ = ev.target.value; fillSpx(); }; fillSpx(); $$('.react .rx').forEach(c => c.classList.toggle('on', c.dataset.rk + ':' + c.dataset.ri === key)); }
-function spxPos() { const e = $('#spx'); if (mobile()) { e.style.left = ''; return; } const p = $('#phone').getBoundingClientRect(), m = $('#mapBox').getBoundingClientRect(); e.style.left = (p.left - m.left > 276 ? p.left - m.left - 266 : 8) + 'px'; }
+function spxPos() { const e = $('#spx'); if (mobile()) { e.style.left = e.style.top = e.style.height = e.style.width = ''; return; } if (winApply(e)) return; const s = $('#mapI').getBoundingClientRect(), m = $('#mapBox').getBoundingClientRect(); e.style.width = '252px'; e.style.left = (s.left - 260) + 'px'; e.style.top = (m.top + 8) + 'px'; e.style.height = (m.height - 16) + 'px'; }   // v1.8 경완: 오른쪽 칸 바로 왼쪽
 function fillSpx() { const q = spxQ.trim(), L = q ? spxL.filter(sp => String(sp) === q || spName(sp).includes(q)) : spxL;
   $('#spxG').innerHTML = L.slice(0, 400).map(sp => `<button class="mc" data-sp="${sp}" title="${esc(spName(sp))}"><span class="no">${sp}</span><img alt="" data-th="${sp}"></button>`).join('') + (L.length > 400 ? `<div class="small mute" style="grid-column:1/-1">앞의 400종만 보여요. 이름으로 찾아 주세요.</div>` : '') || '<div class="empty">찾는 포켓몬이 없어요</div>'; fillThumbs($('#spxG')); }
 function closeSpx() { spxKey = null; $('#spx').hidden = true; $$('.react .rx').forEach(c => c.classList.remove('on')); }
@@ -524,11 +560,13 @@ function onLayout(L) { renderDock(); const same = JSON.stringify(L) === JSON.str
 // v1.5 경완: 필드 포켓몬 3×3 칸. 빈 칸을 누르면 왼쪽에 전체 포켓몬 목록
 const SLOTS = 9; let slotSig = '';
 function renderPal() { if (!A?.mons) return; const M = A.mons().slice(0, SLOTS), sig = M.map(m => m.uid + ':' + m.sp).join() + '|' + sel.monUid; if (sig === slotSig && $('#slots').children.length) return; slotSig = sig;
-  $('#slots').innerHTML = M.map(m => `<button class="sl${m.uid === sel.monUid ? ' on' : ''}" data-uid="${m.uid}" title="${esc(m.name)}"><img alt="" data-th="${m.sp}"><span class="nm">${esc(m.name)}</span></button>`).join('') + Array.from({ length: SLOTS - M.length }, () => '<button class="sl empty" aria-label="포켓몬 넣기">+</button>').join('');
+  $('#slots').innerHTML = M.map(m => `<button class="sl${m.uid === sel.monUid ? ' on' : ''}" data-uid="${m.uid}" title="${esc(m.name)}"><img alt="" data-th="${m.sp}"><span class="nm">${esc(m.name)}</span><span class="x" data-x="${m.uid}" role="button" aria-label="${esc(m.name)} 빼기" title="맵에서 빼기">✕</span></button>`).join('') + Array.from({ length: SLOTS - M.length }, () => '<button class="sl empty" aria-label="포켓몬 넣기">+</button>').join('');
   fillThumbs($('#slots')); }
 $('#slots').onclick = e => { const b = e.target.closest('.sl'); if (!b) return;
   if (b.classList.contains('empty')) { if (spxKey === 'all') return closeSpx(); openSpx('all', '포켓몬 넣기', Object.keys(A.SPECIES).map(Number).sort((a, c) => a - c)); return; }
-  A.selMon?.(+b.dataset.uid); };
+  const x = e.target.closest('[data-x]'); if (x) { const u = +x.dataset.x; A.removeMon?.(u); if (sel.monUid === u) { sel.monUid = null; $('#monPane').hidden = true; } slotSig = ''; setTimeout(renderPal, 50); return; }
+  const u = +b.dataset.uid; sel.monUid = sel.monUid === u ? null : u; A.markMon?.(sel.monUid); const m = A.mons().find(o => o.uid === sel.monUid);   // v1.8 경완: 누르면 테두리만 (게임 상태창은 안 띄움)
+  $('#monPane').hidden = !m; if (m) { $('#mName').textContent = `${m.name} · No.${m.sp}`; $('#mActs').innerHTML = ACTS.map(([k, n]) => `<button class="chip" data-a="${k}">${n}</button>`).join(''); } slotSig = ''; renderPal(); };
 setInterval(() => { if (view === 'map' && A) renderPal(); }, 1500);
 function fillThumbs(root) { root.querySelectorAll('img[data-th]').forEach(im => { const sp = +im.dataset.th; im.removeAttribute('data-th'); thumbIO.observe(im); im.dataset.sp = sp; }); }
 const thumbIO = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; const im = e.target; thumbIO.unobserve(im); const sp = +im.dataset.sp; const q = !TH[sp] && A?.thumbOf?.(sp); if (q) { im.src = q; return; } const put = (n = 0) => ensureTh(sp).then(() => { im.src = thumb(sp); }).catch(() => { if (n < 3) setTimeout(() => put(n + 1), 1500 * (n + 1)); }); put(); }), { rootMargin: '200px' });
@@ -600,9 +638,23 @@ function onHot(k) {
 // 소품 확대창: 누르면 옆에 크게 보이고, 종류별 크기·색을 바꾼다 (맵에 있는 같은 종류가 모두 바뀜)
 const NOLOOK = new Set(['mush', 'bed', 'pond']);
 let zoomK = null;
+// v1.8 경완: 게임 그림으로 된 작은 아이콘. 게임에 없는 것(하트·음표·별·신발·시계·가방)은 같은 도트 모양으로 그렸다
+const PXI = (rows, pal) => { let r = ''; rows.forEach((row, y) => [...row].forEach((c, x) => { if (pal[c]) r += `<rect x="${x}" y="${y}" width="1" height="1" fill="${pal[c]}"/>`; })); return `<svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`; };
+const PK = { k: '#20202c', r: '#e04858', p: '#ff9aa8', y: '#ffd23c', w: '#f4f4f4', n: '#4a8ad8', g: '#b07a3a', o: '#f08a1c' };
+const GI = {
+  heart: PXI(['............', '..kkk..kkk..', '.krrrkkrrrk.', 'kpprrrrrrrrk', 'kpprrrrrrrrk', 'krrrrrrrrrrk', '.krrrrrrrrk.', '..krrrrrrk..', '...krrrrk...', '....krrk....', '.....kk.....', '............'], PK),
+  note: PXI(['............', '.....kkkk...', '.....knnnk..', '.....knkknk.', '.....knk.kk.', '.....knk....', '..kkkknk....', '.knnnnnk....', 'knnnnnnk....', 'knnnnnk.....', '.kkkkk......', '............'], PK),
+  star: PXI(['.....kk.....', '....kyyk....', '....kyyk....', 'kkkkkyykkkkk', 'kyyyyyyyyyyk', '.kyywyyyyyk.', '..kyyyyyyk..', '..kyyyyyyk..', '.kyyykkyyyk.', '.kyyk..kyyk.', 'kyyk....kyyk', 'kkk......kkk'], PK),
+  shoe: PXI(['............', '............', '...kkkk.....', '...krrk.....', '...krrkk....', '...krrrrk...', '..krrrrrrk..', '.krrwrrrrrk.', 'krrrrrrrrrrk', 'kwwwwwwwwwwk', '.kkkkkkkkkk.', '............'], PK),
+  clock: PXI(['...kkkkkk...', '..kwwwwwwk..', '.kwwwkwwwwk.', 'kwwwwkwwwwwk', 'kwwwwkwwwwwk', 'kwwwwkkkwwwk', 'kwwwwwwwwwwk', 'kwwwwwwwwwwk', '.kwwwwwwwwk.', '..kwwwwwwk..', '...kkkkkk...', '............'], PK),
+  bag: PXI(['....kkkk....', '...k....k...', '..kkkkkkkk..', '.kggggggggk.', 'kggggggggggk', 'kgggkkkkgggk', 'kgggkyykgggk', 'kgggkkkkgggk', 'kggggggggggk', 'kggggggggggk', '.kkkkkkkkkk.', '............'], PK),
+};
+const PEN = '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M8 0h2v1h-2zM7 1h4v1h-4zM6 2h1v1h-1zM9 2h3v1h-3zM5 3h1v1h-1zM8 3h3v1h-3zM4 4h1v1h-1zM7 4h3v1h-3zM3 5h1v1h-1zM6 5h3v1h-3zM2 6h1v1h-1zM5 6h3v1h-3zM2 7h1v1h-1zM4 7h3v1h-3zM1 8h1v1h-1zM3 8h3v1h-3zM1 9h1v1h-1zM4 9h1v1h-1zM1 10h3v1h-3z"/></svg>';
+const gi = k => `<span class="gi">${k === 'coin' ? '<i class="coin"></i>' : (A?.ICO?.[k] || GI[k] || '')}</span>`;
+const eggI = g => A?.ICO?.egg ? `<span class="egg g${g}">${A.ICO.egg}</span>` : '';
 const iga = w => { const c = w.charCodeAt(w.length - 1) - 0xAC00; return c >= 0 && c < 11172 && c % 28 ? '이' : '가'; };
 function closeZoom() { $('#zoom').hidden = true; zoomK = null; $$('.dock .it.on').forEach(e => e.classList.remove('on')); }
-function zoomPos(z, el) { if (mobile()) return; const r = $('#dock').getBoundingClientRect(), t = (el || $('#dock')).getBoundingClientRect(); z.style.left = (r.width > 40 ? r.right : r.left + 44) + 8 + 'px'; z.style.top = Math.max(8, Math.min(innerHeight - z.offsetHeight - 8, t.top - 20)) + 'px'; }
+function zoomPos(z, el) { if (mobile() || winApply(z)) return; const r = $('#dock').getBoundingClientRect(), t = (el || $('#dock')).getBoundingClientRect(); z.style.left = (r.width > 40 ? r.right : r.left + 44) + 8 + 'px'; z.style.top = Math.max(8, Math.min(innerHeight - z.offsetHeight - 8, t.top - 20)) + 'px'; }
 const SL = `<label>크기<input type="range" data-l="s" min="50" max="200" step="5"><span></span></label><label>색조<input type="range" data-l="h" min="-180" max="180" step="5"><span></span></label><label>채도<input type="range" data-l="c" min="0" max="200" step="5"><span></span></label><label>밝기<input type="range" data-l="b" min="50" max="150" step="5"><span></span></label>`;
 function zPaint(z, src, L, fr) {
   z.querySelectorAll('[data-l]').forEach(i => { const v = i.dataset.l === 's' ? Math.round(L.s * 100) : L[i.dataset.l]; i.value = v; i.nextElementSibling.textContent = i.dataset.l === 'h' ? v + '°' : v + '%'; });
@@ -650,6 +702,19 @@ function openInst(s, el) {
     else if (b.id === 'zSave') { const id = A.saveKind($('#zName').value.trim()); if (!id) return; renderDock(); toast('소품 목록에 추가했어요'); openInst(A.selInfo(), el); } };
 }
 addEventListener('keydown', e => { if (e.key === 'Escape' && zoomK) closeZoom(); });
+// v1.8 경완: 떠 있는 창(포켓몬 목록·소품 창·편집 창)은 머리를 잡고 옮기고 오른쪽 아래 모서리로 크기를 바꾼다. 머리를 두 번 누르면 제자리
+const WINS = { spx: '.zh', zoom: '.zh', ebar: '.eh' };
+const winGet = id => { try { return JSON.parse(store.get('st-win-' + id) || 'null'); } catch (e) { return null; } };
+function winApply(el) { const w = winGet(el.id); if (!w || mobile()) return false; const W = Math.min(w.w || el.offsetWidth, innerWidth - 16);
+  Object.assign(el.style, { left: Math.max(8, Math.min(innerWidth - W - 8, w.l)) + 'px', top: Math.max(8, Math.min(innerHeight - 60, w.t)) + 'px', right: 'auto', bottom: 'auto' }); if (w.w) el.style.width = W + 'px'; if (w.h) el.style.height = Math.min(w.h, innerHeight - 16) + 'px'; return true; }
+const winSave = el => { const r = el.getBoundingClientRect(); store.set('st-win-' + el.id, JSON.stringify({ l: Math.round(r.left), t: Math.round(r.top), w: el.style.width ? Math.round(r.width) : 0, h: el.dataset.rz || el.id === 'spx' ? Math.round(r.height) : 0 })); };
+for (const id in WINS) { const el = $('#' + id);
+  el.addEventListener('pointerdown', e => { if (mobile() || e.button) return; const h = e.target.closest(WINS[id]); if (!h || e.target.closest('button,input,select,textarea')) return; e.preventDefault(); document.body.classList.add('wdrag'); const r = el.getBoundingClientRect(), dx = e.clientX - r.left, dy = e.clientY - r.top;
+    const mv = ev => { el.style.left = Math.max(0, Math.min(innerWidth - 60, ev.clientX - dx)) + 'px'; el.style.top = Math.max(0, Math.min(innerHeight - 40, ev.clientY - dy)) + 'px'; el.style.right = el.style.bottom = 'auto'; };
+    const up = () => { document.body.classList.remove('wdrag'); removeEventListener('pointermove', mv); removeEventListener('pointerup', up); winSave(el); }; addEventListener('pointermove', mv); addEventListener('pointerup', up); });
+  el.addEventListener('dblclick', e => { if (mobile() || !e.target.closest(WINS[id]) || e.target.closest('button,input')) return; store.set('st-win-' + id, ''); el.style.width = el.style.height = el.dataset.rz = ''; ({ spx: spxPos, ebar: ebarPos, zoom: () => zoomPos(el) })[id](); toast('창을 제자리로 돌렸어요'); });
+  let sz = ''; el.addEventListener('pointerdown', () => { sz = el.offsetWidth + 'x' + el.offsetHeight; document.body.classList.add('wdrag'); }); addEventListener('pointerup', () => { document.body.classList.remove('wdrag'); setTimeout(() => { sz = ''; }, 300); });
+  new ResizeObserver(() => { if (!mobile() && sz && sz !== el.offsetWidth + 'x' + el.offsetHeight) { el.dataset.rz = 1; clearTimeout(el._rs); el._rs = setTimeout(() => winSave(el), 200); } }).observe(el); el.addEventListener('pointerup', () => { if (!mobile() && sz && sz !== el.offsetWidth + 'x' + el.offsetHeight) { el.dataset.rz = 1; winSave(el); } sz = ''; }); }
 
 // ---------- 포켓몬·모션 ----------
 let monQ = '', monTy = 0;
@@ -671,13 +736,13 @@ async function showMon(sp) {
   const fam = d.fr ? `${spName(d.fr)}에서 진화` : (A.CHILDREN[sp]?.length ? `${A.CHILDREN[sp].map(spName).join('·')}(으)로 진화` : '진화 없음');
   $('#monI').innerHTML = `<div class="row"><h2>${esc(d.n)}</h2><span class="num mute">No.${sp}</span></div>
     <div class="prev"><canvas id="mcv" width="200" height="200"></canvas></div>
-    ${pmd ? `<div class="chips" id="anims">${Object.keys(P.a).map(n => `<button class="chip${n === 'Idle' ? ' on' : ''}" data-a="${n}">${ANIM_KO[n] || n} <span class="mute num">${P.a[n][3]}</span></button>`).join('')}</div>` : '<div class="small mute">이 포켓몬은 움직이는 그림이 없어 한 장 그림을 써요.</div>'}
+    ${pmd ? `<div class="anims" id="anims">${Object.keys(P.a).map(n => `<button class="am${n === 'Idle' ? ' on' : ''}" data-a="${n}"><canvas width="48" height="48" data-f="${n}"></canvas><b>${ANIM_KO[n] || n}</b><span class="num mute">${P.a[n][3]}장</span></button>`).join('')}</div>` : '<div class="small mute">이 포켓몬은 움직이는 그림이 없어 한 장 그림을 써요.</div>'}
     <div class="chips"><button class="chip" id="shy">이로치로 보기</button><button class="chip" id="toMap">맵에 풀어놓기</button></div>
     <div class="kv"><span>타입</span><b>${ty}</b><span>분류</span><b>${esc(d.g || '')}</b><span>키·몸무게</span><b class="num">${(d.h / 10).toFixed(1)}m · ${(d.w / 10).toFixed(1)}kg</b><span>종족값</span><b class="num">${d.bs.reduce((a, b) => a + b, 0)} (${d.bs.join('/')})</b><span>진화</span><b>${esc(fam)}</b><span>티어</span><b><span class="tag" style="background:${TC(t)}">${t}티어</span>${D.tierOv?.[A.baseOf(sp)] ? ' <span class="mute small">작업본에서 옮김</span>' : ''}</b><span>진화 거리 등급</span><b>${GN[g]}</b></div>
     ${d.fx ? `<div class="small mute">${esc(d.fx)}</div>` : ''}`;
   anim = { sp, name: 'Idle', raf: anim.raf, img: null, shiny: false };
-  const im = new Image(); im.onload = () => { anim.img = im; }; im.src = pmd ? P.i : P;
-  $('#anims')?.addEventListener('click', e => { const b = e.target.closest('[data-a]'); if (!b) return; anim.name = b.dataset.a; anim.t0 = performance.now(); $$('#anims .chip').forEach(c => c.classList.toggle('on', c === b)); });
+  const im = new Image(); im.onload = () => { anim.img = im; if (pmd) $$('#anims canvas').forEach(c => { const a = P.a[c.dataset.f], g = c.getContext('2d'), k = Math.min(48 / a[1], 48 / a[2]); g.imageSmoothingEnabled = false; g.drawImage(im, 0, a[0], a[1], a[2], (48 - a[1] * k) / 2, (48 - a[2] * k) / 2, a[1] * k, a[2] * k); }); }; im.src = pmd ? P.i : P;
+  $('#anims')?.addEventListener('click', e => { const b = e.target.closest('[data-a]'); if (!b) return; anim.name = b.dataset.a; anim.t0 = performance.now(); $$('#anims .am').forEach(c => c.classList.toggle('on', c === b)); });
   $('#shy').onclick = () => { anim.shiny = !anim.shiny; $('#shy').classList.toggle('on', anim.shiny); $('#mcv').style.filter = anim.shiny ? `hue-rotate(${A.shinyHue(sp)}deg)` : ''; };
   $('#toMap').onclick = async () => { go('map'); await A.drop(sp); };
   anim.t0 = performance.now(); cancelAnimationFrame(anim.raf); anim.raf = requestAnimationFrame(drawAnim);
@@ -699,16 +764,16 @@ function renderOdds() {
   $('#oddsC').innerHTML = `
   <div class="card"><h2>등급별 확률</h2>
     <div class="small mute">250m마다 알을 0~2개 주워요 (1km에 평균 4개). 주운 알마다 아래 확률로 등급이 정해져요.</div>
-    ${O.map((p, i) => `<div class="odd"><b style="color:${GC[i + 1]}">${GN[i + 1]}</b><div class="bar"><i style="width:${Math.max(.6, p * 100)}%;background:${GC[i + 1]}"></i></div><input class="inp${oc(i)}" data-o="${i}" inputmode="decimal" value="${+(p * 100).toFixed(4)}" aria-label="${GN[i + 1]} 확률 %"></div>`).join('')}
+    ${O.map((p, i) => `<div class="odd"><span class="gn">${eggI(i + 1)}<b style="color:${GC[i + 1]}">${GN[i + 1]}</b></span><div class="bar"><i style="width:${Math.max(.6, p * 100)}%;background:${GC[i + 1]}"></i></div><input class="inp${oc(i)}" data-o="${i}" inputmode="decimal" value="${+(p * 100).toFixed(4)}" aria-label="${GN[i + 1]} 확률 %"></div>`).join('')}
     <div class="sum${Math.abs(tot - 1) > 1e-6 ? ' bad' : ''}">합계 <span class="num">${+(tot * 100).toFixed(4)}%</span>${Math.abs(tot - 1) > 1e-6 ? ' · 100%가 되어야 해요 (게임에선 마지막 등급이 나머지를 가져가요)' : ''}</div>
   </div>
   <div class="card"><h2>몇 km에 한 개꼴?</h2>
-    <div class="tw"><table class="t"><tr><th>등급</th><th>알 1개당</th><th>평균 거리</th><th>100km에</th></tr>${O.map((p, i) => `<tr><td style="color:${GC[i + 1]}">${GN[i + 1]}</td><td class="num">${pct(p)}</td><td class="num">${fmtKm(kmPer(p))}</td><td class="num">${(p * 400).toFixed(1)}개</td></tr>`).join('')}</table></div>
+    <div class="tw"><table class="t"><tr><th>등급</th><th>알 1개당</th><th>평균 거리</th><th>100km에</th></tr>${O.map((p, i) => `<tr><td><span class="gn" style="display:inline-flex;align-items:center;gap:6px;color:${GC[i + 1]}">${eggI(i + 1)}${GN[i + 1]}</span></td><td class="num">${pct(p)}</td><td class="num">${fmtKm(kmPer(p))}</td><td class="num">${(p * 400).toFixed(1)}개</td></tr>`).join('')}</table></div>
   </div>
   <div class="card"><h2>천장</h2>
     <div class="small mute">이 거리를 움직이는 동안 그 등급이 한 번도 안 나오면 다음 알은 그 등급으로 나와요. 남은 거리는 게임 화면에 안 보여요.</div>
-    <div class="odd" style="grid-template-columns:minmax(0,1fr) 96px"><span>에픽 이상 (km)</span><input class="inp${D.pity?.e != null && D.pity.e !== ORIG.pity.e ? ' ch' : ''}" data-p="e" inputmode="decimal" value="${pt.e}"></div>
-    <div class="odd" style="grid-template-columns:minmax(0,1fr) 96px"><span>전설 (km)</span><input class="inp${D.pity?.l != null && D.pity.l !== ORIG.pity.l ? ' ch' : ''}" data-p="l" inputmode="decimal" value="${pt.l}"></div>
+    <div class="odd" style="grid-template-columns:minmax(0,1fr) 96px"><span class="gn">${eggI(4)}에픽 이상 (km)</span><input class="inp${D.pity?.e != null && D.pity.e !== ORIG.pity.e ? ' ch' : ''}" data-p="e" inputmode="decimal" value="${pt.e}"></div>
+    <div class="odd" style="grid-template-columns:minmax(0,1fr) 96px"><span class="gn">${eggI(5)}전설 (km)</span><input class="inp${D.pity?.l != null && D.pity.l !== ORIG.pity.l ? ' ch' : ''}" data-p="l" inputmode="decimal" value="${pt.l}"></div>
   </div>
   <div class="card"><h2>달려 보기 (시뮬레이션)</h2>
     <div class="row" style="flex-wrap:wrap"><span>거리</span><span class="chips" id="simKm">${[100, 500, 1000, 5000].map(k => `<button class="chip${k === 1000 ? ' on' : ''}" data-k="${k}">${k}km</button>`).join('')}</span><button class="btn" id="simGo">달리기</button></div>
@@ -757,9 +822,9 @@ function renderPool() {
   const g = sel.poolG, tab = eggTiers()[g], L = tierLists(), prob = probOf(g, L), EX = !!eggList(g), ch = D.eggTiers && JSON.stringify(D.eggTiers[g]) !== JSON.stringify(ORIG.eggTiers[g]);
   const tot = Object.values(tab).reduce((a, b) => a + b, 0), rows = Object.entries(prob).sort((a, b) => b[1] - a[1]), max = rows[0]?.[1] || 1, q = poolQ.trim();
   $('#poolC').innerHTML = `
-  <div class="card"><div class="chips">${[1, 2, 3, 4, 5].map(i => `<button class="chip${i === g ? ' on' : ''}" data-g="${i}">${GN[i]} 알</button>`).join('')}</div>
+  <div class="card"><div class="chips">${[1, 2, 3, 4, 5].map(i => `<button class="chip${i === g ? ' on' : ''}" data-g="${i}">${eggI(i)}${GN[i]} 알</button>`).join('')}</div>
     ${EX ? `<div class="sum" style="color:var(--warn)">이 알은 포켓몬과 순서를 직접 정해서 아래 티어 비율은 쓰지 않아요. <button class="chip" id="elReset">티어 비율로 되돌리기</button></div>` : ''}
-    <h2>${GN[g]} 알에서 나오는 티어</h2>
+    <h2 class="ih">${eggI(g)}${GN[g]} 알에서 나오는 티어</h2>
     <div class="bar" style="height:14px">${Object.keys(tab).map(Number).sort((a, b) => a - b).map(t => `<i style="width:${tab[t] / tot * 100}%;background:${TC(t)}" title="${t}티어 ${tab[t]}%"></i>`).join('')}</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px 12px">${Array.from({ length: 10 }, (_, i) => i + 1).map(t => `<label class="odd" style="grid-template-columns:auto minmax(0,1fr);gap:6px"><span class="tag" style="background:${TC(t)}">${t}티어</span><input class="inp${ch && (tab[t] || 0) !== (ORIG.eggTiers[g][t] || 0) ? ' ch' : ''}" data-t="${t}" inputmode="decimal" value="${tab[t] || 0}" aria-label="${t}티어 %"></label>`).join('')}</div>
     <div class="sum${Math.abs(tot - 100) > 1e-6 ? ' bad' : ''}">합계 <span class="num">${+tot.toFixed(3)}%</span>${Math.abs(tot - 100) > 1e-6 ? ' · 게임은 합계로 나눠서 써요 (100이 아니어도 비율대로)' : ''}${g >= 2 ? ` · 가장 낮은 ${Math.max(...Object.keys(tab).filter(t => tab[t] > 0).map(Number))}티어는 '아래로 넘친 칸'이라 강한 종이 잘 나와요` : ''}</div>
@@ -792,7 +857,7 @@ $('#poolC').addEventListener('change', e => { const t = e.target.dataset.t; if (
 function showPoolSp(sp) {
   const L = tierLists(), Z = tierZ(L), O = odds(), per = [1, 2, 3, 4, 5].map(g => probOf(g, L, Z)[sp] || 0), all = per.reduce((a, p, i) => a + p * O[i], 0);
   $('#poolI').innerHTML = `<div class="row"><img src="${thumb(sp)}" alt="" style="width:56px;height:56px;object-fit:contain;image-rendering:pixelated"><div><h2>${esc(spName(sp))}</h2><span class="tag" style="background:${TC(tierOfSp(sp))}">${tierOfSp(sp)}티어</span> <span class="small mute">가족 최고 종족값 ${A.FAM_BST[sp]}</span></div></div>
-    <h4>알 등급마다 나올 확률</h4><div class="tw"><table class="t"><tr><th>알</th><th>그 알에서</th></tr>${per.map((p, i) => `<tr><td style="color:${GC[i + 1]}">${GN[i + 1]}</td><td class="num">${p ? pct(p) : '-'}</td></tr>`).join('')}</table></div>
+    <h4>알 등급마다 나올 확률</h4><div class="tw"><table class="t"><tr><th>알</th><th>그 알에서</th></tr>${per.map((p, i) => `<tr><td><span class="gn" style="display:inline-flex;align-items:center;gap:6px;color:${GC[i + 1]}">${eggI(i + 1)}${GN[i + 1]}</span></td><td class="num">${p ? pct(p) : '-'}</td></tr>`).join('')}</table></div>
     <div class="kv"><span>알 1개당</span><b class="num">${pct(all)}</b><span>평균 거리</span><b class="num">${fmtKm(kmPer(all))}마다 1번</b></div>
     ${per[sel.poolG - 1] ? `<h4>${GN[sel.poolG]} 알에서 순서</h4><div class="chips"><button class="chip" data-ro="top">맨 위로</button><button class="chip" data-ro="-1">▲ 한 칸</button><button class="chip" data-ro="1">▼ 한 칸</button><button class="chip" data-ro="end">맨 아래로</button></div>
     <h4>다른 알로 옮기기</h4><div class="chips">${[1, 2, 3, 4, 5].filter(g => g !== sel.poolG).map(g => `<button class="chip" data-mv="${g}" style="color:${GC[g]}">${GN[g]} 알${per[g - 1] ? ' (이미 나옴)' : ''}</button>`).join('')}</div>
@@ -832,13 +897,16 @@ const BAL = [
   ['상태 게이지', [['CLEAN_DAYS', '청결 100 → 0 걸리는 날', '', 'cd'], ['HUNGER_RATE', '배고픔 오르는 속도 (초당)'], ['JOY_HOURS', '즐거움 100 → 0 걸리는 시간 (깨어 있을 때)', '', 'jh']]],
   ['알·기타', [['MAX_EGGS', '부화기 칸 수'], ['MAX_BAG', '가방 최대 알 수'], ['BAG_STEP', '알 줍는 거리 단위 (km)', '단위마다 0~2개'], ['SHINY_N', '이로치 확률 1/N', '', 'sh']]],
 ];
+// v1.8 경완: 줄마다 게임 아이콘
+const BICO = { DUP_G: 'coin', NEW_EGG_G: 'egg', NEW_G: 'star', RUN_G: 'shoe', FR_TABLE: 'clock', BERRY_FR_DAY: 'berry', PET_DAY: 'hand', WASH_DAY: 'brush', FLD_FR_DAY: 'note', WALK_FR: 'shoe', FR_EVO: 'star', FR_MAX: 'heart', CLEAN_DAYS: 'brush', HUNGER_RATE: 'berry', JOY_HOURS: 'note', MAX_EGGS: 'egg', MAX_BAG: 'bag', BAG_STEP: 'shoe', SHINY_N: 'star' }, SICO = ['coin', 'heart', 'clock', 'egg'];
+const bico = k => BICO[k] === 'egg' ? `<span class="gi">${eggI(1)}</span>` : gi(BICO[k]);
 function renderBal() {
-  $('#balC').innerHTML = BAL.map(([h, L]) => `<div class="card"><h2>${h}</h2><div class="bal">${L.map(([k, n, sub, kind]) => {
-    const v = bal(k), c = D.bal && k in D.bal ? ' ch' : '';
-    const lab = `<div${Array.isArray(v) ? ' style="grid-column:1/-1"' : ''}>${n}${sub ? `<small>${sub}</small>` : ''}</div>`;
-    if (!Array.isArray(v)) return lab + `<input class="inp${c}" data-b="${k}" inputmode="decimal" value="${v}">`;
-    const cells = kind === 'tbl' ? v.map((r, i) => `<label>평균 ${r[0]} 이상<input class="inp${c}" data-b="${k}" data-i="${i}" value="${r.join(', ')}"></label>`) : v.map((x, i) => i ? `<label style="color:${GC[i]}">${GN[i]}<input class="inp${c}" data-b="${k}" data-i="${i}" inputmode="decimal" value="${x}"></label>` : '').filter(Boolean);
-    return lab + `<div class="wide" style="--n:${cells.length}">${cells.join('')}</div>`; }).join('')}</div></div>`).join('');
+  $('#balC').innerHTML = BAL.map(([h, L], si) => `<div class="card"><h2 class="ih">${SICO[si] === 'egg' ? `<span class="gi">${eggI(3)}</span>` : gi(SICO[si])}${h}</h2><div class="bal2">${L.map(([k, n, sub, kind]) => {
+    const v = bal(k), c = D.bal && k in D.bal ? ' ch' : '', arr = Array.isArray(v);
+    const lab = `<div class="bi${arr ? ' span' : ''}">${bico(k)}<div>${n}${sub ? `<small>${sub}</small>` : ''}</div></div>`;
+    if (!arr) return `<div class="br">${lab}<input class="inp${c}" data-b="${k}" inputmode="decimal" value="${v}"></div>`;
+    const cells = kind === 'tbl' ? v.map((r, i) => `<label>평균 ${r[0]} 이상<input class="inp${c}" data-b="${k}" data-i="${i}" value="${r.join(', ')}"></label>`) : v.map((x, i) => i ? `<label>${eggI(i)}<span style="color:${GC[i]}">${GN[i]}</span><input class="inp${c}" data-b="${k}" data-i="${i}" inputmode="decimal" value="${x}"></label>` : '').filter(Boolean);
+    return `<div class="br">${lab}<div class="wide" style="--n:${cells.length}">${cells.join('')}</div></div>`; }).join('')}</div></div>`).join('');
   $('#balI').innerHTML = `<h4>밸런스</h4><div class="small mute">게임 곳곳에 있는 숫자들이에요. 고친 칸은 주황색이 되고 작업본에 모여요.</div><div class="chips"><button class="chip" id="balReset"${D.bal ? '' : ' disabled'}>모두 게임 값으로</button></div>`;
   $('#balReset').onclick = () => { delete D.bal; saveDraft(); renderBal(); };
 }
@@ -994,6 +1062,7 @@ const BUBS = [
 ];
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['1.8', '10월 16일', ['밸런스 메뉴에 게임 아이콘 (골드·하트·열매·빗·손·알…)', '알 수집 확률과 알 등급별 포켓몬을 "알" 메뉴 하나로, 위쪽 탭으로 나눔', '알 메뉴 곳곳에 등급별 알 그림', '메뉴 이름 바꾸기: 메뉴에 마우스를 올리면 나오는 연필을 눌러요 (포켓몬·모션 → 포켓몬)', '포켓몬 모션을 그림이 있는 칸으로 가지런히', '필드 포켓몬 칸: 오른쪽 위 X 로 빼기, 누르면 테두리만 표시', '포켓몬 넣기 창은 오른쪽 칸 바로 왼쪽에', '떠 있는 창(포켓몬 넣기·소품·맵 편집)은 머리를 잡고 옮기고, 오른쪽 아래 모서리로 크기 바꾸기 (머리를 두 번 누르면 제자리)', '맵 편집 창을 더 넓게']],
   ['1.7', '10월 16일', ['버전 기록 메뉴와 지금 버전 카드', '처음 열 때 더 빨리 뜨게 (글꼴·그림 모음 따로 받고 저장해 둠)', '기종별 휴대폰 상단바 (시간·다이내믹 아일랜드·노치·와이파이·배터리)', '소품을 눌러도 화면 배치 그대로, 편집 버튼은 휴대폰 오른쪽 작은 창에', '꽃 소품 꽃잎 색 바꾸기', '말풍선 메뉴를 말풍선마다 한 줄로', '알 등급별 포켓몬: 줄을 잡고 끌어 순서 바꾸기', '티어 표를 티어마다 한 줄로, 포켓몬 이름 표시']],
   ['1.6', '10월 15일', ['말풍선 메뉴 (말풍선마다 나오는 상황)', '알마다 포켓몬 목록 직접 정하기: 순서 끌기, 다른 알로 옮기기, 확률 자동 맞춤', '배포하기의 바뀐 곳 되돌리기', '그림 모음 상자 칸 이름을 3·2·1티어로', '프로필 등급 카드: 챔피언 다음 사천왕']],
   ['1.5', '10월 15일', ['필드 포켓몬 3×3 칸, 끌어 놓아야 추가', '소품 반응 분류를 누르면 왼쪽에 그 포켓몬 목록', '소품 하나씩 크기·색 바꾸기, 내 소품으로 저장', '열매나무 열매 3개 위치 옮기기']],
@@ -1029,12 +1098,13 @@ function hook() {
   A.edit(editing); if (!$('#hrNow').classList.contains('on')) A.setHour(+$('#hr').value); $('#hrNow').classList.contains('on') && $('#hrNow').onclick();
   const w0 = $('#wx .on')?.dataset.w; if (w0) A.setWx(w0);
   $('#addp').innerHTML = A.ADD.map(([k, n]) => { const s = A.addIcon(k); return `<button data-k="${k}">${s ? `<img alt="" src="${s}">` : `<span class="ph">${k === 'mush' ? '🍄' : '●'}</span>`}${n}</button>`; }).join('');
-  renderReact(null); renderPal(); renderDock(); dstat(); RENDER[view]?.(); statusBar(); setTimeout(thumbsReady, 2500);
+  renderNav(); renderReact(null); renderPal(); renderDock(); dstat(); RENDER[view]?.(); statusBar(); setTimeout(thumbsReady, 2500);
 }
 addEventListener('message', e => { if (e.data?.studio === 'ready' && !e.data.gal) hook(); if (e.data?.studio === 'ready' && e.data.gal) $('#galLoad').hidden = true; });
 (async () => { try { db = await window.claude?.use?.('db'); if (!db) return; const doc = await db.doc('studio/draft').get(); const v = doc?.data ? doc.data() : doc;
   if (v?.json && (!D.at || v.at > D.at)) { D = JSON.parse(v.json); store.set('st-draft', JSON.stringify(D)); if (A && D.layout) A.setLayout(D.layout); dstat(); RENDER[view]?.(); } } catch (e) { db = null; } })();
 const start = (location.hash.slice(1) in VIEWS) ? location.hash.slice(1) : (store.get('st-view') in VIEWS ? store.get('st-view') : 'map');
+renderNav();
 try { if ($('#game').contentWindow.__studio?.ready) hook(); } catch (e) {}
 go(start); fitPhone();
 </script>
