@@ -22,6 +22,7 @@ button{cursor:pointer}
 .dstat{color:var(--mute);font-size:12.5px;white-space:nowrap;flex:none}
 .dstat b{font-family:var(--px);color:var(--warn);font-weight:400}
 .btn{background:var(--acc);color:var(--accfg);border:0;border-radius:4px;padding:6px 12px;font-weight:700;white-space:nowrap;min-height:32px}
+.rvi{font:600 15px/1 system-ui,sans-serif;margin-right:4px;display:inline-block;vertical-align:-1px}
 .sbx{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px;margin-top:4px}.sbx .st{margin-right:auto;font-size:12px;color:var(--mute)}.sbx.dirty .st{color:var(--bad);font-weight:600}.sbx .btn:disabled{opacity:.4}.card>.sbx{border-top:1px solid var(--chip);padding-top:10px}#tierC>.sbx{margin:0 0 10px}#eSave .sbx{margin:0}
 .btn.stop{background:var(--bad);color:#2a0d0d}
 .btn.ghost{background:var(--chip);color:var(--fg);border:1px solid var(--chipb);font-weight:500}
@@ -448,7 +449,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.31';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.32';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -608,7 +609,7 @@ const boxSaved = id => ORIG && boxPaths(id).some(p => !same(effP(D._sv || {}, p)
 const ALLBOX = () => ['bagstep', 'odds', 'pity', 'hatch', 'tier', 'layout', 'bub', 'monsc', ...[1, 2, 3, 4, 5].map(g => 'pool:' + g), ...BAL.map((_, i) => 'bal:' + i)];
 const unsaved = () => ORIG ? ALLBOX().filter(boxDirty).length : 0;
 function boxBar(id, lab = '') { const d = boxDirty(id), sv = boxSaved(id);
-  return `<div class="sbx${d ? ' dirty' : ''}" data-box="${id}"><span class="st">${d ? '● 저장 안 함' : sv ? '✓ 저장됨 · 배포 대기' : '게임 값 그대로'}</span><button class="chip" data-bd${boxDef(id) ? ' disabled' : ''} title="지금 게임에 들어 있는 값으로 (저장해야 반영)">기본값으로</button><button class="btn" data-bs${d ? '' : ' disabled'}>${lab || '저장'}</button></div>`; }
+  return `<div class="sbx${d ? ' dirty' : ''}" data-box="${id}"><span class="st">${d ? '● 저장 안 함' : sv ? '✓ 저장됨 · 배포 대기' : '게임 값 그대로'}</span><button class="chip" data-bd${boxDef(id) ? ' disabled' : ''} title="지금 게임에 들어 있는 값으로 (저장해야 반영)"><span class="rvi">↺</span>기본값으로</button><button class="btn" data-bs${d ? '' : ' disabled'}>${lab || '저장'}</button></div>`; }
 function boxAct(id, save) { const P = boxPaths(id);
   if (save) { const W = D; W._sv = W._sv || {}; for (const p of P) putP(W._sv, p, W); if (!Object.keys(W._sv).length) delete W._sv; toast('저장했어요. 배포하기에 들어갔어요'); }
   else { for (const p of P) putP(D, p, null); if (id === 'layout') A?.setLayout(ORIG.layout); if (id === 'bub') bubLive(); if (id === 'monsc') { scLive(); szPane(); } toast('기본값으로 돌렸어요. 저장을 눌러야 반영돼요'); }
@@ -639,10 +640,10 @@ $('#safePop').onclick = e => { const b = e.target.closest('[data-sb]'); if (!b) 
 document.addEventListener('pointerdown', e => { if (!e.target.closest('#safeW')) $('#safePop').hidden = true; });
 // v2.17 경완: 저장 안 하고 다른 화면으로 넘어간 박스는 그대로 두고 위쪽 막대에 경고. 누르면 목록, 항목을 누르면 그 화면으로
 const BOXINFO = id => { const [t, x] = id.split(':'); return t === 'pool' ? [`${GN[x]} 알 · 등급별 포켓몬`, 'pool', () => { sel.poolG = +x; }] : t === 'bal' ? [`밸런스 · ${BAL[x][0]}`, 'bal'] : ({ bagstep: ['알 · 1km 알 개수', 'odds'], odds: ['알 · 수집 확률', 'odds'], pity: ['알 · 천장', 'odds'], hatch: ['알 · 부화 거리', 'hatch'], tier: ['티어', 'tier'], layout: ['맵 배치', 'map'], monsc: ['맵 · 필드 크기', 'map'], bub: ['말풍선', 'bub'] })[t] || [id, 'map']; };
-function unsvBar() { const b = $('#unsv'); if (!b || !ORIG) return; const here = VIEW_BOX(view).map(String), ids = ALLBOX().filter(id => !here.includes(id) && boxDirty(id));
-  b.hidden = !ids.length; b.innerHTML = `⚠ 저장 안 함 <b>${ids.length}</b>`; b.title = '저장하지 않고 다른 화면으로 넘어간 곳이 있어요';
+function unsvBar() { const b = $('#unsv'); if (!b || !ORIG) return; const here = VIEW_BOX(view).map(String), ids = ALLBOX().filter(boxDirty);   // v2.32 경완: 그 화면에 와도 버튼이 사라지지 않게 (지금 화면은 '여기' 표시)
+  b.hidden = !ids.length; b.innerHTML = `⚠ 저장 안 함 <b>${ids.length}</b>`; b.title = '저장하지 않은 곳이 있어요';
   const P = $('#unsvPop'); if (!ids.length) { P.hidden = true; return; }
-  P.innerHTML = `<div class="small mute">저장하지 않고 넘어간 곳이에요. 누르면 그 화면으로 가요.</div>${ids.map(id => { const [n, v] = BOXINFO(id); return `<button data-ub="${id}"><span>${esc(n)}</span><em>${esc(vname(v))} ›</em></button>`; }).join('')}`; }
+  P.innerHTML = `<div class="small mute">저장하지 않은 곳이에요. 누르면 그 화면으로 가요.</div>${ids.map(id => { const [n, v] = BOXINFO(id); return `<button data-ub="${id}"><span>${esc(n)}</span><em>${here.includes(id) ? '지금 화면' : esc(vname(v)) + ' ›'}</em></button>`; }).join('')}`; }
 $('#unsv').onclick = e => { e.stopPropagation(); $('#unsvPop').hidden = !$('#unsvPop').hidden; };
 $('#unsvPop').onclick = e => { const b = e.target.closest('[data-ub]'); if (!b) return; const [, v, pre] = BOXINFO(b.dataset.ub); pre?.(); $('#unsvPop').hidden = true; go(v); };
 document.addEventListener('pointerdown', e => { if (!e.target.closest('#unsvW')) $('#unsvPop').hidden = true; });
@@ -682,20 +683,20 @@ function tovFit(ET0, goal) { const ET = JSON.parse(JSON.stringify(ET0));   // �
   for (let it = 0; it < 300; it++) { const T = tovOf(ET); let err = 0; for (const t in goal) { if (!T[t]) continue; const f = goal[t] / T[t]; err = Math.max(err, Math.abs(f - 1)); for (let g = 1; g <= 5; g++) if (ET[g]?.[t]) ET[g][t] *= f; }
     for (let g = 1; g <= 5; g++) { const r = ET[g], tot = Object.values(r).reduce((a, b) => a + b, 0) || 1; for (const t in r) r[t] = r[t] / tot * 100; } if (err < 1e-6) break; }
   for (let g = 1; g <= 5; g++) for (const t in ET[g]) ET[g][t] = Math.round(ET[g][t] * 100) / 100; return ET; }
-function tovBar(T, WF) { const TS = Array.from({ length: 10 }, (_, i) => 10 - i).filter(t => T[t] > 0), q = TS.map(t => Math.sqrt(T[t])), qs = q.reduce((a, b) => a + b, 0) || 1, W = WF || q.map(v => v / qs * 100); let c = 0; const cum = W.map(v => c += v);
+function tovBar(T, WF) { const TS = Array.from({ length: 10 }, (_, i) => i + 1).filter(t => T[t] > 0), q = TS.map(t => Math.sqrt(T[t])), qs = q.reduce((a, b) => a + b, 0) || 1, W = WF || q.map(v => v / qs * 100); let c = 0; const cum = W.map(v => c += v);
   return `<div class="tsb" id="tovb">${TS.map((t, i) => `<div class="sg" data-t="${t}" style="width:${W[i]}%;background:${TC(t)}" title="${t}티어 ${pct(T[t])}"><span class="sl"${W[i] < 7 ? ' hidden' : ''}>${t}<b class="num">${pct(T[t])}</b></span></div>`).join('')}${TS.slice(0, -1).map((t, i) => `<b class="bk" data-i="${i}" style="left:${cum[i]}%" title="끌어서 ${t}·${TS[i + 1]}티어 전체 확률 바꾸기"></b>`).join('')}</div>`; }
 function tovCard() { const T = tovOf(eggTiers()), anyD = [1, 2, 3, 4, 5].some(g => boxDirty('pool:' + g));
-  return `<div class="card" id="tovC"><div class="row" style="flex-wrap:wrap;gap:8px"><h2 style="flex:1">티어별 전체 출현 확률 <span class="small mute">알 1개당 · 모든 알 합</span></h2><button class="chip" id="tovDef"${D.eggTiers && JSON.stringify(D.eggTiers) !== JSON.stringify(ORIG.eggTiers) ? '' : ' disabled'} title="티어별 비율을 지금 배포된 값으로">기본값으로</button><button class="btn" id="tovSave"${anyD ? '' : ' disabled'}>알 5개 모두 저장</button></div>
+  return `<div class="card" id="tovC"><div class="row" style="flex-wrap:wrap;gap:8px"><h2 style="flex:1">티어별 전체 출현 확률 <span class="small mute">알 1개당 · 모든 알 합</span></h2><button class="chip" id="tovDef"${D.eggTiers && JSON.stringify(D.eggTiers) !== JSON.stringify(ORIG.eggTiers) ? '' : ' disabled'} title="티어별 비율을 지금 배포된 값으로"><span class="rvi">↺</span>기본값으로</button><button class="btn" id="tovSave"${anyD ? '' : ' disabled'}>알 5개 모두 저장</button></div>
     ${tovBar(T)}<div class="tsl" id="tovl">${tovLeg(T)}</div><div class="small mute">손잡이를 끌면 양옆 두 티어의 전체 확률이 바뀌고, 그에 맞춰 알 등급마다 티어 비율이 알아서 조절돼요 (알 수집 확률은 그대로). 칸 너비는 보기 쉽게 확률의 제곱근으로 그려요. "실제"는 티어 경계 보장(낮은 티어 포켓몬이 높은 티어보다 흔해지지 않게)을 거친 게임 값이에요.</div></div>`; }
-function tovLeg(T) { const E = tovOf(effTiers()); return Array.from({ length: 10 }, (_, i) => 10 - i).filter(t => T[t] > 0).map(t => `<span><i style="background:${TC(t)}"></i>${t}티어 <b class="num">${pct(T[t])}</b>${Math.abs((E[t] || 0) - T[t]) > T[t] * .02 ? `<em>실제 ${pct(E[t] || 0)}</em>` : ''}</span>`).join(''); }
+function tovLeg(T) { const E = tovOf(effTiers()); return Array.from({ length: 10 }, (_, i) => i + 1).filter(t => T[t] > 0).map(t => `<span><i style="background:${TC(t)}"></i>${t}티어 <b class="num">${pct(T[t])}</b>${Math.abs((E[t] || 0) - T[t]) > T[t] * .02 ? `<em>실제 ${pct(E[t] || 0)}</em>` : ''}</span>`).join(''); }
 $('#poolC').addEventListener('click', e => { if (e.target.closest('#tovDef')) { delete D.eggTiers; saveDraft(); renderPool(); toast('티어별 확률을 기본값으로 돌렸어요. 저장해야 반영돼요'); return; }   // v2.29 경완: 막대 그래프 기본값으로
   if (!e.target.closest('#tovSave')) return; for (let g = 1; g <= 5; g++) if (boxDirty('pool:' + g)) boxAct('pool:' + g, true); renderPool(); });
 $('#poolC').addEventListener('pointerdown', e => { const k = e.target.closest('#tovb .bk'); if (!k || e.button > 0) return; e.preventDefault(); e.stopPropagation();
-  const ET0 = JSON.parse(JSON.stringify(eggTiers())), T0 = tovOf(ET0), TS = Array.from({ length: 10 }, (_, i) => 10 - i).filter(t => T0[t] > 0), i = +k.dataset.i, a = TS[i], b = TS[i + 1], S = T0[a] + T0[b];
+  const ET0 = JSON.parse(JSON.stringify(eggTiers())), T0 = tovOf(ET0), TS = Array.from({ length: 10 }, (_, i) => i + 1).filter(t => T0[t] > 0), i = +k.dataset.i, a = TS[i], b = TS[i + 1], S = T0[a] + T0[b];
   const q = TS.map(t => Math.sqrt(T0[t])), qs = q.reduce((x, y) => x + y, 0), lo = q.slice(0, i).reduce((x, y) => x + y, 0) / qs, span = (q[i] + q[i + 1]) / qs; let ET = null; k.classList.add('on');
   const W0 = q.map(v => v / qs * 100), rlo = Math.sqrt(.04) / (Math.sqrt(.04) + Math.sqrt(.96)), rhi = 1 - rlo;   // 한쪽이 둘 합의 4% 아래로는 안 내려간다
   const mv = ev => { const R = $('#tovb').getBoundingClientRect(), r = Math.min(rhi, Math.max(rlo, ((ev.clientX - R.left) / R.width - lo) / span)), ra = r * r, rb = (1 - r) * (1 - r);
-    const goal = { ...T0, [a]: S * ra / (ra + rb), [b]: S * rb / (ra + rb) }; ET = tovFit(ET0, goal); const WF = [...W0]; WF[i] = span * 100 * r; WF[i + 1] = span * 100 * (1 - r); const TT = tovOf(ET); $('#tovb').outerHTML = tovBar(TT, WF); $('#tovl').innerHTML = Array.from({ length: 10 }, (_, j) => 10 - j).filter(t => TT[t] > 0).map(t => `<span><i style="background:${TC(t)}"></i>${t}티어 <b class="num">${pct(TT[t])}</b></span>`).join(''); $$('#tovb .bk')[i]?.classList.add('on'); };
+    const goal = { ...T0, [a]: S * ra / (ra + rb), [b]: S * rb / (ra + rb) }; ET = tovFit(ET0, goal); const WF = [...W0]; WF[i] = span * 100 * r; WF[i + 1] = span * 100 * (1 - r); const TT = tovOf(ET); $('#tovb').outerHTML = tovBar(TT, WF); $('#tovl').innerHTML = Array.from({ length: 10 }, (_, j) => j + 1).filter(t => TT[t] > 0).map(t => `<span><i style="background:${TC(t)}"></i>${t}티어 <b class="num">${pct(TT[t])}</b></span>`).join(''); $$('#tovb .bk')[i]?.classList.add('on'); };
   const end = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', end); removeEventListener('pointercancel', end); if (!ET) { k.classList.remove('on'); return; }
     D.eggTiers = ET; if (JSON.stringify(ET) === JSON.stringify(ORIG.eggTiers)) delete D.eggTiers; saveDraft(); renderPool(); };
   addEventListener('pointermove', mv); addEventListener('pointerup', end); addEventListener('pointercancel', end); });
@@ -1250,7 +1251,7 @@ function renderPool() {
   </div>
   <div class="card pside"><h2>티어별 전체 출현 확률</h2><div class="small mute">알을 1개 주웠을 때 (어느 등급이든) 그 티어 포켓몬이 나올 확률이에요.</div>
     ${(() => { const TT = {}, TN = {}; for (const k in ALLP) { const t = tierOfSp(+k); TT[t] = (TT[t] || 0) + ALLP[k]; TN[t] = (TN[t] || 0) + 1; }
-      return `<table class="t tov"><tr><th>티어</th><th class="r">알 1개당</th><th class="r">거리</th></tr>${Array.from({ length: 10 }, (_, i) => 10 - i).map(t => `<tr><td><span class="tag" style="background:${TC(t)}">${t}</span> <span class="small mute">${TN[t] || 0}종</span></td><td class="num r">${TT[t] ? pct(TT[t]) : '-'}</td><td class="num r">${TT[t] ? fmtKm(kmPer(TT[t])) + '마다' : '-'}</td></tr>`).join('')}</table>`; })()}</div>`;
+      return `<table class="t tov"><tr><th>티어</th><th class="r">알 1개당</th><th class="r">거리</th></tr>${Array.from({ length: 10 }, (_, i) => i + 1).map(t => `<tr><td><span class="tag" style="background:${TC(t)}">${t}</span> <span class="small mute">${TN[t] || 0}종</span></td><td class="num r">${TT[t] ? pct(TT[t]) : '-'}</td><td class="num r">${TT[t] ? fmtKm(kmPer(TT[t])) + '마다' : '-'}</td></tr>`).join('')}</table>`; })()}</div>`;
   fillThumbs($('#plist'));
   $('#poolQ').oninput = e => { poolQ = e.target.value; const p = e.target.selectionStart; renderPool(); const i = $('#poolQ'); i.focus(); i.setSelectionRange(p, p); };
   if (sel.pool) showPoolSp(sel.pool);
@@ -1616,6 +1617,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.32', '10월 16일', ['"⚠ 저장 안 함" 버튼이 그 화면에 가도 사라지지 않음 (지금 화면은 "지금 화면" 표시)', '티어별 전체 출현 확률을 1티어부터 순서대로', '기본값으로 버튼에 ↺ 아이콘']],
   ['2.31', '10월 16일', ['위 막대에 "되돌리기" 버튼: 저장 안 한 수정을 모두 마지막으로 저장한 상태로 되돌림 (두 번 눌러 확인)']],
   ['2.30', '10월 16일', ['휴대폰 티어 화면: 카드 위에서도 위아래 스크롤, 메뉴(저장·찾기·화면 크기)는 아래로, 포켓몬 정보는 아래 창으로 뜨고 같은 포켓몬을 다시 누르면 닫힘']],
   ['2.29', '10월 16일', ['알 › 등급별 포켓몬: 티어별 전체 출현 확률 막대에 "기본값으로" 버튼']],
