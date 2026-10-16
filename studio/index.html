@@ -248,7 +248,7 @@ h2.ih{display:flex;align-items:center;gap:8px}
 .od2,.odh{grid-template-columns:76px minmax(0,1fr) 104px 64px}.odh{display:grid;gap:10px;margin-bottom:-4px}.odh span:nth-child(2){text-align:center}.odh span:nth-child(3),.odh span:nth-child(4){text-align:right}
 .odb{position:relative;height:12px;cursor:ew-resize;touch-action:none;overflow:visible}.odb i{border-radius:6px}.odb.auto{cursor:default;opacity:.75}
 .odb .knob{position:absolute;top:50%;width:14px;height:20px;margin:-10px 0 0 -7px;background:var(--fg);border:2px solid var(--panel);border-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.5);pointer-events:none}
-.gpb{display:flex;height:14px;border-radius:4px;overflow:hidden;background:var(--line);margin:8px 0}.gpb i{display:block;height:100%}.gpr{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:6px}.gpi{display:flex;flex-direction:column;gap:4px;min-width:0}.gpi .gn{display:flex;align-items:center;gap:4px;white-space:nowrap}.gpi .kmi input{width:100%}
+.gpb{position:relative;display:flex;height:34px;border-radius:4px;background:var(--line);margin:12px 0 10px}.gpb i{display:grid;place-items:center;height:100%;min-width:0;overflow:hidden}.gpb i:first-child{border-radius:4px 0 0 4px}.gpb i:nth-child(5){border-radius:0 4px 4px 0}.gpb i span{font-size:12px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)}.gpb .bk{position:absolute;top:-6px;bottom:-6px;width:22px;margin-left:-11px;cursor:ew-resize;touch-action:none;z-index:2;display:grid;place-items:center}.gpb .bk::after{content:"";width:6px;height:100%;background:#fff;border:2px solid var(--deep);border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.4)}.gpb .bk:hover::after,.gpb .bk.on::after{background:var(--acc)}.gst .stp{display:flex;flex-direction:column;gap:2px}.gst .stp button{width:22px;height:15px;padding:0;font-size:8px;line-height:1;border:1px solid var(--line);background:var(--panel);color:var(--fg,inherit);border-radius:3px;cursor:pointer}.gst .stp button:hover{background:var(--acc);color:var(--deep)}.gpr{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:6px}.gpi{display:flex;flex-direction:column;gap:4px;min-width:0}.gpi .gn{display:flex;align-items:center;gap:4px;white-space:nowrap}.gpi .kmi input{width:100%}
 @media (max-width:640px){.gpr{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .kmi{display:flex;align-items:center;gap:4px}.kmi input{min-width:0;flex:1}.kmi span{font-size:12px;color:var(--mute)}.kmi.auto{justify-content:flex-end;font-family:var(--px);padding-right:2px}.od2 .pc{text-align:right;font-size:12px}
 body.odrag{cursor:ew-resize;user-select:none}
@@ -454,7 +454,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.40';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.41';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -1271,13 +1271,30 @@ function moveEgg(sp, g1, g2) { const A1 = listOf(g1), i = A1.findIndex(r => r[0]
   const A2 = listOf(g2); let added = false; if (!A2.some(r => r[0] === sp)) { const j = Math.round(i / Math.max(1, A1.length) * A2.length), q = A2[Math.min(j, A2.length - 1)]?.[1] ?? p; A2.splice(j, 0, [sp, q]); added = true; }   // 원래 알에서의 순위 비율과 같은 자리에, 그 자리 확률로
   setList(g1, norm(A1)); setList(g2, norm(A2)); return added; }
 // v2.40 경완: 알 등급별 출현 확률(%)을 등급별 포켓몬 화면 위에서도 정함 (일반 알은 나머지)
+const GPE = .5, gpW = O => { const w = O.map(p => Math.pow(Math.max(p, 0), GPE)), t = w.reduce((a, b) => a + b, 0) || 1; return w.map(x => x / t * 100); };   // v2.41: 막대 칸 너비는 √확률 (드문 등급도 끌 수 있게)
+function gpoBar(O) { const W = gpW(O); let c = 0; return `<div class="gpb" id="gpb">${O.map((p, i) => `<i style="width:${W[i]}%;background:${GC[i + 1]}" title="${GN[i + 1]} ${+(p * 100).toPrecision(4)}%">${W[i] > 9 ? `<span class="num">${+(p * 100).toPrecision(3)}%</span>` : ''}</i>`).join('')}${W.slice(0, -1).map((w, i) => `<b class="bk" data-gk="${i}" style="left:${c += w}%" title="끌어서 ${GN[i + 1]}·${GN[i + 2]} 비율 바꾸기"></b>`).join('')}</div>`; }
 function gpoCard() { const O = odds(), oc = i => D.odds && Math.abs(D.odds[i] - ORIG.odds[i]) > 1e-12 ? ' ch' : '', pv = p => +(p * 100).toPrecision(4);
   return `<div class="card gpo"><div class="row" style="flex-wrap:wrap;gap:8px"><h2 class="ih" style="flex:1">${eggI(3)}알 등급별 출현 확률</h2></div>
-    <div class="gpb">${O.map((p, i) => `<i style="width:${Math.max(p * 100, p > 0 ? .4 : 0)}%;background:${GC[i + 1]}" title="${GN[i + 1]} ${pv(p)}%"></i>`).join('')}</div>
-    <div class="gpr">${O.map((p, i) => `<label class="gpi"><span class="gn">${eggI(i + 1)}<b style="color:${GC[i + 1]}">${GN[i + 1]}</b></span>${i ? `<span class="kmi"><input class="inp${oc(i)}" data-gp="${i}" inputmode="decimal" value="${pv(p)}" aria-label="${GN[i + 1]} 알 출현 확률 %"><span>%</span></span>` : `<span class="kmi auto num">${pv(p)}<span>%</span></span>`}<span class="small mute num">${fmtKm(kmPer(p))}마다</span></label>`).join('')}</div>
-    <div class="small mute">알을 1개 주웠을 때 그 등급일 확률이에요. 일반 알은 나머지를 가져가요. 바꾸면 알별 티어 비율도 티어별 전체 확률에 맞춰 다시 정해져요.</div>
+    ${gpoBar(O)}
+    <div class="gpr" id="gpr">${gpoRows(O)}</div>
+    <div class="small mute">알을 1개 주웠을 때 그 등급일 확률이에요. 막대 경계선을 끌면 양옆 두 등급끼리 나눠 갖고, ▲▼는 1%씩 바꿔요(일반 알이 나머지). 바꾸면 알별 티어 비율도 티어별 전체 확률에 맞춰 다시 정해져요.</div>
     ${boxBar('odds', '확률 저장')}</div>`; }
+function gpoRows(O) { const oc = i => D.odds && Math.abs(D.odds[i] - ORIG.odds[i]) > 1e-12 ? ' ch' : '', pv = p => +(p * 100).toPrecision(4);
+  return O.map((p, i) => `<label class="gpi"><span class="gn">${eggI(i + 1)}<b style="color:${GC[i + 1]}">${GN[i + 1]}</b></span>${i ? `<span class="kmi gst"><input class="inp${oc(i)}" data-gp="${i}" inputmode="decimal" value="${pv(p)}" aria-label="${GN[i + 1]} 알 출현 확률 %"><span>%</span><span class="stp"><button type="button" data-gs="${i}" data-d="1" aria-label="${GN[i + 1]} 1% 올리기">▲</button><button type="button" data-gs="${i}" data-d="-1" aria-label="${GN[i + 1]} 1% 내리기">▼</button></span></span>` : `<span class="kmi auto num">${pv(p)}<span>%</span></span>`}<span class="small mute num">${fmtKm(kmPer(p))}마다</span></label>`).join(''); }
 $('#poolC').addEventListener('change', e => { const i = +e.target.dataset.gp; if (!i) return; const v = parseFloat(e.target.value); if (v > 0) { setOdd(i, v / 100, true); saveDraft(); } renderPool(); });
+$('#poolC').addEventListener('click', e => { const b = e.target.closest('[data-gs]'); if (!b) return; e.preventDefault(); const i = +b.dataset.gs, d = +b.dataset.d, p = odds()[i] * 100;
+  const n = d > 0 ? Math.floor(p + 1e-6) + 1 : Math.ceil(p - 1e-6) - 1;   // 1% 단위로 맞춰 올리고 내림 (1.33 → 2 / 0)
+  if (d > 0 && n / 100 > capP(i) + 1e-9) { toast('더 자주 나오게 할 수 없어요. 일반 알 몫이 거의 다 찼어요'); return; }
+  setOdd(i, Math.max(.01, n) / 100); saveDraft(); renderPool(); });
+// 경계선 끌기: 양옆 두 등급의 합은 그대로, 나누는 비율만 (다른 등급은 그대로)
+$('#poolC').addEventListener('pointerdown', e => { const k = e.target.closest('#gpb .bk'); if (!k || e.button > 0) return; e.preventDefault(); e.stopPropagation();
+  const i = +k.dataset.gk, T0 = tovOf(eggTiers()), O0 = [...odds()], S = O0[i] + O0[i + 1], W0 = gpW(O0), lo = W0.slice(0, i).reduce((a, b) => a + b, 0), span = W0[i] + W0[i + 1], mn = j => j ? 1e-4 : .005;
+  const at = x => { const r = $('#gpb').getBoundingClientRect(), f = Math.max(0, Math.min(1, ((x - r.left) / r.width * 100 - lo) / span));
+    let a = 0, b = S; for (let it = 0; it < 50; it++) { const m = (a + b) / 2, ra = Math.pow(m, GPE), rb = Math.pow(S - m, GPE); if (ra / (ra + rb) < f) a = m; else b = m; }   // √너비 비율 f 가 되는 확률
+    let pa = Math.round((a + b) / 2 * 1e4) / 1e4; pa = Math.max(mn(i), Math.min(S - mn(i + 1), pa)); const O = [...O0]; O[i] = pa; O[i + 1] = +(S - pa).toFixed(6);
+    D.odds = O; if (O.every((q, j) => Math.abs(q - ORIG.odds[j]) < 1e-9)) delete D.odds; $('#gpb').outerHTML = gpoBar(O); $$('#gpb .bk')[i]?.classList.add('on'); $('#gpr').innerHTML = gpoRows(O); };
+  document.body.classList.add('odrag'); at(e.clientX); const mv = ev => at(ev.clientX), up = () => { document.body.classList.remove('odrag'); removeEventListener('pointermove', mv); removeEventListener('pointerup', up); reTier(T0); saveDraft(); renderPool(); };
+  addEventListener('pointermove', mv); addEventListener('pointerup', up); });
 function renderPool() {
   const g = sel.poolG, tab = eggTiers()[g], L = tierLists(), prob = probOf(g, L), EX = !!eggList(g), ch = D.eggTiers && JSON.stringify(D.eggTiers[g]) !== JSON.stringify(ORIG.eggTiers[g]);
   const ALLP = {}; { const Z = tierZ(L), O = odds(); for (let h = 1; h <= 5; h++) { const P = probOf(h, L, Z); for (const k in P) ALLP[k] = (ALLP[k] || 0) + P[k] * O[h - 1]; } }
@@ -1680,6 +1697,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.41', '10월 16일', ['알 등급별 출현 확률: 막대 경계선을 끌어 양옆 등급 비율 조절, 숫자 옆 ▲▼로 1%씩']],
   ['2.40', '10월 16일', ['알 › 등급별 포켓몬: 맨 위에 알 등급별 출현 확률(%) 칸 (일반 알은 나머지, 저장 버튼 따로)']],
   ['2.39', '10월 16일', ['크기 조절 모드를 다시 켜면 배경 투명도·선택이 기본값으로', '크기 조절 모드 배경 투명도를 내리면 소품·나비도 같이 흐려짐 (게임 v3.95)', '알에서 나오는 티어: 10~1티어 버튼을 모두 두고 눌러서 켜고 끄기 (티어 더 넣기·× 대신)', '켰다 끄면 원래 비율로 돌아옴']],
   ['2.38', '10월 16일', ['맵에 있는 소품 칸에 마우스를 올리면 칸이 밝아지고 손가락 커서, 시뮬레이터의 그 소품에도 노란 테두리']],
