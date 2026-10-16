@@ -31,6 +31,8 @@ targets:
         UIViewControllerBasedStatusBarAppearance: false
         UIStatusBarStyle: UIStatusBarStyleLightContent
         LSApplicationQueriesSchemes: [shortcuts]
+        # 걷거나 뛰는 동안 휴대폰이 잠겨 있어도 250m마다 장소 이름을 받는다 (WalkTracker.setTracking)
+        UIBackgroundModes: [location]
         ITSAppUsesNonExemptEncryption: false
         NSMotionUsageDescription: 걸은 거리만큼 가방에 알을 넣으려고 걸음 기록을 읽어요.
         NSLocationWhenInUseUsageDescription: 알을 어느 동네에서 주웠는지 남기려고 위치를 써요.

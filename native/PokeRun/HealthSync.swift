@@ -75,7 +75,8 @@ final class HealthSync {
         store.execute(q)
     }
 
-    // 경로에서 고르게 몇 곳(최대 5)을 뽑아 동네 이름으로 바꿔 게임에 보낸다
+    // 경로에서 250m마다 한 곳(최대 40)을 뽑아 장소 이름으로 바꿔 게임에 보낸다 (2026-10-16: 예전엔 고르게 5곳, 동네 이름만)
+    // 게임은 그 런닝에서 주운 알을 주운 순서대로 경로 앞쪽부터 나눠 준다
     private var geoQueue: [(CLLocation, (String, String) -> Void)] = []
     private var geoBusy = false
     private let geocoder = CLGeocoder()
@@ -89,8 +90,9 @@ final class HealthSync {
                 locs.append(contentsOf: batch ?? [])
                 guard done, let self else { return }
                 guard !locs.isEmpty else { return }
-                let n = min(5, locs.count)
-                let picks = (0..<n).map { locs[min(locs.count - 1, Int(Double($0) + 0.5) * locs.count / n)] }
+                var picks: [CLLocation] = [locs[0]], run: CLLocationDistance = 0
+                for i in 1..<locs.count { run += locs[i].distance(from: locs[i - 1]); if run >= 250 { picks.append(locs[i]); run = 0 } }
+                if picks.count > 40 { let n = picks.count; picks = (0..<40).map { picks[$0 * n / 40] } }
                 DispatchQueue.main.async { self.geocodeAll(picks, start: w.startDate, end: w.endDate) }
             }
             self.store.execute(lq)
@@ -111,22 +113,14 @@ final class HealthSync {
         nextGeo()
     }
 
-    // 지오코더는 한 번에 하나씩 (너무 자주 부르면 막힌다)
+    // 지오코더·지도 검색은 한 번에 하나씩 (너무 자주 부르면 막힌다)
     private func nextGeo() {
         guard !geoBusy, !geoQueue.isEmpty else { return }
         geoBusy = true
         let (loc, done) = geoQueue.removeFirst()
-        geocoder.reverseGeocodeLocation(loc, preferredLocale: Locale(identifier: "ko_KR")) { [weak self] marks, _ in
-            let p = marks?.first
-            var city = p?.administrativeArea ?? ""
-            for suffix in ["특별자치시", "특별자치도", "특별시", "광역시", "도"] where city.hasSuffix(suffix) && city.count > suffix.count { city = String(city.dropLast(suffix.count)); break }
-            var parts: [String] = []
-            for x in [city, p?.subAdministrativeArea ?? p?.locality ?? "", p?.subLocality ?? "", p?.areasOfInterest?.first ?? ""] where !x.isEmpty && !parts.contains(x) { parts.append(x) }
-            var tags: [String] = []
-            if p?.inlandWater != nil { tags.append("water") }
-            if p?.ocean != nil { tags.append("sea") }
-            done(parts.joined(separator: " "), tags.joined(separator: ","))
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { self?.geoBusy = false; self?.nextGeo() }
+        WalkTracker.lookup(loc, geocoder: geocoder) { [weak self] place, tags in
+            done(place ?? "", tags.joined(separator: ","))
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { self?.geoBusy = false; self?.nextGeo() }
         }
     }
 }
