@@ -5230,7 +5230,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.14';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.15';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6698,7 +6698,7 @@ function applyKm(km, t0 = 0, t1 = 0, feed = km) {
   // 아이폰 앱이 걸음(만보기)으로 알을 줍고 있으면 런닝 거리로는 줍지 않는다 (같은 거리를 두 번 세지 않게)
   // 알마다 달린 길(지나간 곳 기록) 중 한 곳을 골라 주운 곳으로 남긴다
   let got = [];
-  if (!S.walkSync) { got = collectEggs(km, '', null, () => routePlace(t0, t1)); const ps = [...new Set(got.eggs.map(e => e.place).filter(Boolean))]; gotLog(got, `${fmtKm(km)}km를 움직이며`, ps.length === 1 ? ps[0] : ''); }
+  if (!S.walkSync) { got = collectEggs(km, '', null, () => routePlace(t0, t1)); const ps = [...new Set(got.eggs.map(e => e.place).filter(Boolean))]; gotLog(got, '', ps.length === 1 ? ps[0] : ''); }
   return got.eggs || [];
 }
 // 아이폰 앱(워치 연동)에서 열렸을 때: 알 현황을 앱으로 보내고, 워치에서 달린 거리를 받는다
