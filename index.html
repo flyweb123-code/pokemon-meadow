@@ -299,9 +299,9 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .flame.out{display:none}
 .flame.big{scale:1.45;translate:0 -6px;transition:scale .4s,translate .4s}.flame{transition:scale 1.2s,translate 1.2s}
 .prop.tree{transition:opacity .3s}.prop.tree.see{opacity:.5}
-#propHot{position:absolute;pointer-events:none;z-index:1040;translate:-50% -50%;border:2px dashed #ffe066;border-radius:50%;background:rgba(255,230,100,.16);box-shadow:0 0 10px rgba(255,220,90,.6);display:none}
+#propHot{position:absolute;pointer-events:none;z-index:1040;box-sizing:border-box;border:2px solid #ffe070;border-radius:6px;background:rgba(255,224,112,.1);box-shadow:0 0 0 1px rgba(0,0,0,.35),0 0 10px rgba(255,224,112,.6);display:none}
 #propHot.on{display:block;animation:phot .6s ease-in-out infinite alternate}@keyframes phot{to{background:rgba(255,230,100,.3)}}
-#propHot b{position:absolute;left:50%;bottom:100%;translate:-50% -4px;white-space:nowrap;font:inherit;font-size:11px;color:#fff;background:rgba(32,32,48,.85);padding:1px 6px;border-radius:3px}
+#propHot b{display:none;position:absolute;left:50%;bottom:100%;translate:-50% -4px;white-space:nowrap;font:inherit;font-size:11px;color:#fff;background:rgba(32,32,48,.85);padding:1px 6px;border-radius:3px}
 .prop.rustle{animation:rustle .3s steps(3) 4}@keyframes rustle{0%,100%{transform:translate(-50%,-100%)}33%{transform:translate(calc(-50% - 2px),-100%) skewX(-3deg)}66%{transform:translate(calc(-50% + 2px),-100%) skewX(3deg)}}
 .flw{position:absolute;pointer-events:none;image-rendering:pixelated;background-size:100% 100%;translate:-50% -100%;transform-origin:50% 100%;animation:sway var(--d) ease-in-out var(--dl) infinite alternate}@keyframes sway{from{rotate:calc(var(--a) * -1)}to{rotate:var(--a)}}
 @media (prefers-reduced-motion:reduce){.flw,.lily,.lily::after{animation:none}}
@@ -822,7 +822,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .slot .mini i{display:block;height:100%;background:var(--hunger)}
 .slot .gg{width:88%;display:grid;gap:2px}.slot .gr{display:flex;align-items:center;gap:3px;min-width:0}.slot .gr svg{width:9px;height:9px;flex:none}.slot .gr .mini{flex:1;width:auto;min-width:0;height:3px;border-width:2px}
 .slot .gr.cl .mini i{background:var(--clean)}.slot .gr.jo .mini i{background:var(--lonely)}.slot .gr.low .mini i{background:var(--low)}.bar.low>span:first-child,.bar.low .num{color:var(--low)}.slot .gr .gi{display:flex;flex:none}.slot .gr.low .gi{animation:lowp 1.2s steps(2) infinite}.gr.low .mini{animation:lowglow 1.8s ease-in-out infinite}@keyframes lowglow{0%,100%{box-shadow:0 0 2px rgba(240,80,60,.35)}50%{box-shadow:0 0 6px 1px rgba(240,80,60,.75)}}.gr.low .gi svg{filter:drop-shadow(0 0 1.5px rgba(240,80,60,.7))}   /* v4.05 경완: 빨간 게이지는 은은하게 빛난다 */@keyframes lowp{50%{transform:translateY(-1px)}}
-.slot .sl-tags{position:absolute;left:4px;top:4px;display:flex;gap:3px;pointer-events:none}.slot .sl-tags .st{position:static}.slot .sl-bud{font-size:11px;padding:1px 4px;line-height:normal;background:#e8679a;color:#fff}.slot.bud{background:#fcdde9}.slot.bud .mini{border-color:#9a3462}
+.slot .sl-tags{position:absolute;left:4px;top:4px;display:flex;gap:3px;pointer-events:none}.slot .sl-tags .st{position:static}.slot .sl-bud{font-size:11px;padding:1px 4px;line-height:normal;background:#e8679a;color:#fff}.slot.bud{background:#fcdde9}.slot.bud.bud:not([aria-current="true"]){border-color:#f4b4cc}   /* v4.06 경완: 짝꿍 슬롯 테두리 연한 분홍 */.slot.bud .mini{border-color:#9a3462}
 .slot.empty{border-style:dashed;color:var(--dim);justify-content:center;background:transparent}
 .slot.empty .plus{font-size:24px;line-height:1}
 .slot .no{position:absolute;right:5px;top:4px;font-size:10px;color:var(--dim)}.slot .sl-x{position:absolute;right:0;top:0;font-size:15px;line-height:1;padding:5px 6px 8px 10px;color:var(--dim);z-index:1}.slot .sl-x:active{color:var(--frame)}
@@ -4663,8 +4663,21 @@ function markProp(p) {
   if (window.__studio?.onHot) { const k = p ? p.k : null; if (k !== markProp.k) { markProp.k = k; window.__studio.onHot(k); } }
   if (!propHotEl.isConnected) fxEl.append(propHotEl);
   propHotEl.classList.toggle('on', !!p); if (!p) return;
-  Object.assign(propHotEl.style, { left: p.x + 'px', top: p.y + 'px', width: p.rx * 2 + 'px', height: p.ry * 2 + 'px' }); propHotEl.firstChild.textContent = p.n;
+  const [x, y, w, h] = propBox(p); Object.assign(propHotEl.style, { left: x - 3 + 'px', top: y - 3 + 'px', width: w + 6 + 'px', height: h + 6 + 'px' });   /* v4.06 경완: 점선 원·이름 대신 소품 테두리만 */
 }
+// 소품이 그려진 네모 칸 (작업실 편집 손잡이와 같은 크기)
+function propBox(p) { const L = LAYOUT;
+  switch (p.k) {
+    case 'tree': { const z = LS('tree'); return [L.tree.x - 50 * z, L.tree.y - 116 * z, 100 * z, 116 * z]; }
+    case 'bed': return [L.bed.x - 48, L.bed.y - 22, 96, 50];
+    case 'fire': { const z = LS('fire'); return [L.fire.x - 34 * z, L.fire.y - 36 * z, 68 * z, 56 * z]; }
+    case 'perch': { const z = LS('perch'); return [L.perch.x - 26 * z, L.perch.y - 64 * z, 52 * z, 64 * z]; }
+    case 'stump': { const z = LS('stump'); return [L.stump.x - 22 * z, L.stump.y - 32 * z, 44 * z, 32 * z]; }
+    case 'bush': { const b = L.bushes[p.i], z = LZi('bush', 'bushes', b); return [b.x - 36 * z, b.y - 48 * z, 72 * z, 48 * z]; }
+    case 'rock': { const r = L.rocks[p.i], z = LZi('rock', 'rocks', r); return [r[0] - r[2] * z, r[1] - r[3] * 2 * z, r[2] * 2 * z, r[3] * 2 * z]; }
+    case 'puddle': { const q = L.puddles[p.i], z = LZi('puddle', 'puddles', q); return [q.x - q.w * z / 2, q.y - q.w * z * .175, q.w * z, q.w * z * .35]; }
+    default: return [p.x - p.rx, p.y - p.ry, p.rx * 2, p.ry * 2];
+  } }
 const propSit = (m, lift) => { m.propSit = true; m.xl = lift; };
 const tyOf = m => SPD(m.form || m.sp).t || [];
 function propReact(m, p) {
@@ -5196,7 +5209,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.05';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.06';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7766,7 +7779,7 @@ if (/[?&]studio/.test(location.search)) {
 #stHands{position:absolute;inset:0;z-index:3000;display:none;touch-action:none}#stHands.on{display:block}
 #stHands .h{position:absolute;border-radius:4px;touch-action:none;cursor:grab}
 body.szMode :is(#items,#propFx,#bg,#skyC,#skyFx,.bfly,.firefly){opacity:var(--szA,1)}
-#stHov{position:absolute;z-index:3001;pointer-events:none;border:2px solid #ffe070;border-radius:6px;box-shadow:0 0 0 1px rgba(0,0,0,.45),0 0 10px rgba(255,224,112,.6);background:rgba(255,224,112,.1)}#stHov[hidden]{display:none}
+#stHov,.stMk{position:absolute;z-index:3001;pointer-events:none;border:2px solid #ffe070;border-radius:6px;box-shadow:0 0 0 1px rgba(0,0,0,.45),0 0 10px rgba(255,224,112,.6);background:rgba(255,224,112,.1)}#stHov[hidden]{display:none}
 #stHands .h:hover{outline:1px dashed rgba(127,215,239,.7)}
 #stHands .h.sel{outline:2px solid #7fd7ef;outline-offset:1px;background:rgba(127,215,239,.14)}
 .mon.stMark:has(.stbox.hov),.mon.stMark:has(.stbox.on){z-index:99999!important}body.szMode #wrap{overflow:auto}body.szMode .app>:not(.stage-wrap):not(#glows){display:none!important}body.szMode .stage{box-shadow:none}body.szMode #night,body.szMode #skyFx,body.szMode #skyC,body.szMode #bg{display:none}body.szMode .mon.szb img,body.szMode .mon.szb .spr{clip-path:none!important}body.szMode .mon.szb .spr{cursor:move}body.szMode #wrap{background:#1c2028}#szLasso{position:absolute;border:1px dashed #fff;background:rgba(127,215,239,.14);z-index:99998;pointer-events:none}.mon.szDrag{z-index:99999!important}body.szMode .mon .shadow{opacity:.5}
@@ -7831,6 +7844,8 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   const hands = document.createElement('div'); hands.id = 'stHands'; stage.append(hands);
   // v3.94 경완: 작업실 소품 칸에 마우스를 올리면 맵의 그 소품에 테두리 (편집 모드가 아니어도)
   const hovB = document.createElement('div'); hovB.id = 'stHov'; hovB.hidden = true; stage.append(hovB);
+  /* v4.06 경완: 작업실 소품 반응 카드를 누르면 그 소품들에 테두리 (null = 지우기) */
+  api.markInsts = L => { stage.querySelectorAll('.stMk').forEach(e => e.remove()); for (const { key, i } of L || []) { const t = items().find(o => o.key === key && o.i === +i); if (!t) continue; const [x, y, w, h] = t.box, e = document.createElement('div'); e.className = 'stMk'; e.style.cssText = `left:${x - 3}px;top:${y - 3}px;width:${w + 6}px;height:${h + 6}px`; stage.append(e); } };
   api.hoverInst = (key, i) => { const t = key == null ? null : items().find(o => o.key === key && o.i === +i); hovB.hidden = !t; if (!t) return; const [x, y, w, h] = t.box; hovB.style.cssText = `left:${x - 3}px;top:${y - 3}px;width:${w + 6}px;height:${h + 6}px`; };
   const hud = document.createElement('div'); hud.id = 'stHud'; stage.append(hud);
   hud.innerHTML = '<b style="top:' + MIN_Y + 'px">포켓몬은 이 선 아래로만 다녀요</b>';
@@ -7859,7 +7874,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     const lkK = LKK(sel.key, v), id = lkK ? ilk(sel.key, v) : null;
     return { lk: lkK, kind: typeof id === 'string' && LAYOUT.kinds?.[id] ? id : null, kindName: typeof id === 'string' ? LAYOUT.kinds?.[id]?.n || null : null, canKind: !!lkK && !ONE_LK[sel.key], key: sel.key, i: sel.i, name: nm, x: pos[0], y: pos[1], del: ['bushes', 'puddles', 'rocks', 'mush', 'flowers'].includes(sel.key), size: sel.key === 'pond' ? [POND.rx * 2, POND.ry * 2] : null };
   }
-  function renderHands() {
+  function renderHands(quiet) {
     hands.innerHTML = '';
     for (const t of items().sort((a, b) => b.box[2] * b.box[3] - a.box[2] * a.box[3])) {
       const e = document.createElement('div'); e.className = 'h' + (sel && sel.key === t.key && sel.i === t.i ? ' sel' : ''); const [x, y, w, h] = t.box;
@@ -7874,15 +7889,19 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
       e.onpointerdown = ev => startDrag(ev, { key: 'minY', i: -1, line: true, mv: (dx, dy) => { MIN_Y = LAYOUT.minY = clamp(MIN_Y + dy, 60, 420); if (MIN_Y === 150) delete LAYOUT.minY; } }); hands.append(e); }
     if (sel?.key === 'pond') { const e = document.createElement('div'); e.className = 'h knob'; e.style.left = POND.x + POND.rx + 'px'; e.style.top = POND.y + POND.ry + 'px';
       e.onpointerdown = ev => startDrag(ev, { key: 'pond', i: -1, mv: (dx, dy) => { POND.rx = Math.max(30, POND.rx + dx); POND.ry = Math.max(16, POND.ry + dy); } }); hands.append(e); }
-    api.onSel?.(selInfo(), undo.length);
+    if (!quiet) api.onSel?.(selInfo(), undo.length);
   }
   function startDrag(ev, t) {
     ev.preventDefault(); ev.stopPropagation(); undo.push(snap()); if (undo.length > 60) undo.shift();
     sel = t.line ? null : { key: t.key, i: t.i }; drag = { t, x: ev.clientX, y: ev.clientY, moved: false }; hands.setPointerCapture?.(ev.pointerId); renderHands();
   }
+  /* v4.06 경완: 끄는 동안엔 한 프레임에 한 번만 다시 그리고, 작업실에 알리는 건 손을 뗄 때 한 번 (예전엔 1칸 움직일 때마다 작업실이 저장·검사까지 해서 버벅였다) */
+  let dragRaf = 0;
+  const dragPaint = () => { dragRaf = 0; if (!drag) return; if (drag.t.key !== 'minY') rebuild(BAKED.has(drag.t.key)); renderHands(true); };
   hands.addEventListener('pointermove', ev => { if (!drag) return; const dx = Math.round((ev.clientX - drag.x) / scale), dy = Math.round((ev.clientY - drag.y) / scale); if (!dx && !dy) return;
-    drag.x += dx * scale; drag.y += dy * scale; drag.moved = true; drag.t.mv(dx, dy); changed(drag.t.key); });
-  hands.addEventListener('pointerup', () => { const tap = drag && !drag.moved && !drag.t.berry && !drag.t.line; if (drag && !drag.moved) undo.pop(); drag = null; renderHands(); if (tap) api.onTap?.(selInfo()); });
+    drag.x += dx * scale; drag.y += dy * scale; drag.moved = true; drag.t.mv(dx, dy); if (!dragRaf) dragRaf = requestAnimationFrame(dragPaint); });
+  hands.addEventListener('pointerup', () => { const tap = drag && !drag.moved && !drag.t.berry && !drag.t.line, moved = drag?.moved, key = drag?.t.key; if (drag && !drag.moved) undo.pop(); if (dragRaf) { cancelAnimationFrame(dragRaf); dragRaf = 0; } drag = null;
+    if (moved) { if (key !== 'minY') rebuild(BAKED.has(key)); renderHands(); api.onLayout?.(JSON.parse(snap()), undo.length); } else renderHands(); if (tap) api.onTap?.(selInfo()); });
   hands.addEventListener('pointerdown', ev => { if (ev.target === hands) { sel = null; renderHands(); } });
   function changed(key) { if (key !== 'minY') rebuild(BAKED.has(key)); renderHands(); api.onLayout?.(JSON.parse(snap()), undo.length); }
   for (const k in UI_EL) { const el = $(UI_EL[k]); if (!el) continue;   // v3.88 경완: 편집 중엔 날짜 박스·열매 버튼·골드도 보이고, 끌어서 자리를 옮긴다
