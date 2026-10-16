@@ -299,8 +299,8 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .flame.out{display:none}
 .flame.big{scale:1.45;translate:0 -6px;transition:scale .4s,translate .4s}.flame{transition:scale 1.2s,translate 1.2s}
 .prop.tree{transition:opacity .3s}.prop.tree.see{opacity:.5}
-#propHot{position:absolute;pointer-events:none;z-index:1040;box-sizing:border-box;border:2px solid #ffe070;border-radius:6px;background:rgba(255,224,112,.1);box-shadow:0 0 0 1px rgba(0,0,0,.35),0 0 10px rgba(255,224,112,.6);display:none}
-#propHot.on{display:block;animation:phot .6s ease-in-out infinite alternate}@keyframes phot{to{background:rgba(255,230,100,.3)}}
+#propHot{position:absolute;pointer-events:none;z-index:1040;box-sizing:border-box;border-radius:50%;background:radial-gradient(closest-side,rgba(255,230,128,0) 70%,rgba(255,230,128,.55) 88%,rgba(255,230,128,0));display:none}#propHot.shape{border-radius:0;background:none;background-size:100% 100%;background-repeat:no-repeat;image-rendering:pixelated;filter:drop-shadow(0 0 3px rgba(255,210,80,.85))}
+#propHot.on{display:block;animation:phot 1.2s ease-in-out infinite alternate}@keyframes phot{from{opacity:.55}to{opacity:1}}
 #propHot b{display:none;position:absolute;left:50%;bottom:100%;translate:-50% -4px;white-space:nowrap;font:inherit;font-size:11px;color:#fff;background:rgba(32,32,48,.85);padding:1px 6px;border-radius:3px}
 .prop.rustle{animation:rustle .3s steps(3) 4}@keyframes rustle{0%,100%{transform:translate(-50%,-100%)}33%{transform:translate(calc(-50% - 2px),-100%) skewX(-3deg)}66%{transform:translate(calc(-50% + 2px),-100%) skewX(3deg)}}
 .flw{position:absolute;pointer-events:none;image-rendering:pixelated;background-size:100% 100%;translate:-50% -100%;transform-origin:50% 100%;animation:sway var(--d) ease-in-out var(--dl) infinite alternate}@keyframes sway{from{rotate:calc(var(--a) * -1)}to{rotate:var(--a)}}
@@ -4662,9 +4662,29 @@ const propHotEl = (() => { const e = document.createElement('div'); e.id = 'prop
 function markProp(p) {
   if (window.__studio?.onHot) { const k = p ? p.k : null; if (k !== markProp.k) { markProp.k = k; window.__studio.onHot(k); } }
   if (!propHotEl.isConnected) fxEl.append(propHotEl);
-  propHotEl.classList.toggle('on', !!p); if (!p) return;
-  const [x, y, w, h] = propBox(p); Object.assign(propHotEl.style, { left: x - 3 + 'px', top: y - 3 + 'px', width: w + 6 + 'px', height: h + 6 + 'px' });   /* v4.06 경완: 점선 원·이름 대신 소품 테두리만 */
+  propHotEl.classList.toggle('on', !!p); if (!p) { markProp.key = ''; return; }
+  const key = p.k + ':' + (p.i ?? ''); if (key === markProp.key) return; markProp.key = key;
+  const A = propArt(p); propHotEl.classList.toggle('shape', !!A); propHotEl.style.backgroundImage = '';
+  if (!A) { const [x, y, w, h] = propBox(p); Object.assign(propHotEl.style, { left: x - 3 + 'px', top: y - 3 + 'px', width: w + 6 + 'px', height: h + 6 + 'px' }); return; }   /* 그림이 따로 없는 소품(꽃밭 등)은 둥근 빛 */
+  const done = src => { if (markProp.key !== key) return; const P = 4, c = document.createElement('canvas'); c.width = Math.round(A.w) + P * 2; c.height = Math.round(A.h) + P * 2; const g = c.getContext('2d'); g.imageSmoothingEnabled = false;
+    for (let a = 0; a < 16; a++) g.drawImage(src, P + Math.round(Math.cos(a / 8 * Math.PI) * 2), P + Math.round(Math.sin(a / 8 * Math.PI) * 2), c.width - P * 2, c.height - P * 2);
+    g.globalCompositeOperation = 'source-in'; g.fillStyle = '#ffe680'; g.fillRect(0, 0, c.width, c.height);
+    g.globalCompositeOperation = 'destination-out'; g.drawImage(src, P, P, c.width - P * 2, c.height - P * 2);
+    Object.assign(propHotEl.style, { left: A.x - P + 'px', top: A.y - P + 'px', width: c.width + 'px', height: c.height + 'px', backgroundImage: `url(${c.toDataURL()})` }); };
+  if (A.cv) done(A.cv); else { const im = new Image(); im.onload = () => done(im); im.src = A.url; }
 }
+// v4.07 경완: 끌어온 포켓몬이 닿은 소품은 네모가 아니라 소품 모양을 따라 은은한 빛 테두리
+function propArt(p) { const L = LAYOUT, dom = e => { if (!e) return null; const u = (e.style.backgroundImage.match(/url\("?(.*?)"?\)$/) || [])[1]; if (!u) return null; const w = e.offsetWidth, h = e.offsetHeight, l = parseFloat(e.style.left), t = parseFloat(e.style.top), pud = e.classList.contains('puddle'); return { url: u, x: l - w / 2, y: pud ? t - h / 2 : t - h, w, h }; },
+    cvAt = (cv, bx, by) => cv && { cv, x: bx - cv.width, y: by - cv.height * 2, w: cv.width * 2, h: cv.height * 2 };
+  switch (p.k) {
+    case 'tree': return dom(treeEl);
+    case 'perch': return dom(itemsEl.querySelector('.prop.perch'));
+    case 'bush': return dom(PROPS.bushEls?.[p.i]);
+    case 'puddle': return dom(puddleEls[p.i]);
+    case 'fire': return cvAt(lookCv(ART.campfire(), 'fire'), FIRE.x, FIRE.y + 18);
+    case 'stump': return cvAt(lookCv(ART.stump(), 'stump'), L.stump.x, L.stump.y);
+    case 'rock': { const r = L.rocks[p.i]; if (!r) return null; const [x, y, w, h, n, s, lk] = r, K = lkRes(lk); return cvAt(K ? scaleCv(tintCv(ART.rock(w, h, s * 977, n), K), +K.s || 1) : lookCv(ART.rock(w, h, s * 977, n), 'rock'), x, y); }
+  } return null; }
 // 소품이 그려진 네모 칸 (작업실 편집 손잡이와 같은 크기)
 function propBox(p) { const L = LAYOUT;
   switch (p.k) {
@@ -5209,7 +5229,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.07';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.08';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
