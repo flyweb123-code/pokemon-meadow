@@ -4586,7 +4586,7 @@ function makeSprites() {
   SPR.flame = sprCanvas(96, 22, (px) => {   /* v3.56 경완: 불 활활 — 6장 */
     for (let f = 0; f < 6; f++) { const Hf = 17 + [0, 3, 1, 4, 2, 3][f];
       for (let y = 0; y < 22; y++) { const t = (21 - y) / Hf; if (t > 1) continue;
-        const cx = 8 + Math.sin(t * 3.3 + f * 1.05) * t * 2.4, hw = 6.4 * Math.pow(1 - t, .75) * (.86 + .14 * Math.sin(f * 2.1 + t * 7)) + (t < .12 ? .6 : 0);
+        const a = f * Math.PI / 3, cx = 8 + Math.sin(a) * t * t * 2.6 + Math.sin(t * 6 + a * 2) * t * .8,   /* v4.17 경완: 한쪽으로 흘러가던 불꽃 → 제자리에서 좌우로 일렁 */ hw = 6.4 * Math.pow(1 - t, .75) * (.86 + .14 * Math.sin(f * 2.1 + t * 7)) + (t < .12 ? .6 : 0);
         for (let x = 0; x < 16; x++) { const d = Math.abs(x + .5 - cx) / hw; if (d > 1) continue;
           px(f * 16 + x, y, 1, 1, d < .32 && t < .5 ? '#fff6c8' : d < .58 && t < .72 ? '#ffd040' : d < .84 && t < .9 ? '#ff8a1c' : '#d8401c'); } }
       const tx = f * 16 + 8 + Math.round(Math.sin(f * 2.3) * 3), ty = 21 - Hf - 2 - (f % 3);   /* 떨어져 나가는 불혀 */
@@ -5231,7 +5231,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.16';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.17';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
