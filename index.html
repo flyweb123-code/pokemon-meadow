@@ -176,7 +176,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .hatch>.hdark{background:radial-gradient(circle at 50% 45%,rgba(0,0,0,.55),#000 75%);opacity:0;transition:opacity 1.2s}
 .hatch.legend>.hdark{opacity:calc(.55 + var(--dk,0) * .45);transition:opacity .5s}
 .hatch.legend .win{filter:brightness(calc(1 - var(--dk,0) * .28));transition:filter .5s}
-.hatch>.hwhite{background:#fff;opacity:0;z-index:3}
+.hatch>.hwhite{background:#fff;opacity:0;z-index:3;will-change:opacity}
 .hatch>.hwhite.go{animation:hwhite 1.3s ease-out forwards}
 @keyframes hwhite{0%{opacity:var(--wl,0)}16%{opacity:1}38%{opacity:1}100%{opacity:0}}
 .hatch>.hwhite.big{animation-duration:2.2s}
@@ -5184,7 +5184,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.91';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.92';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7018,7 +7018,7 @@ function tapEgg(egg, g0, msg, g = g0) {   /* g0 알 등급, g 연출 등급(나�
         if (g >= 4) { hatchEl.classList.add('surge'); raysSpin(g === 4 ? 260 : 420); for (let k = 0; k < 6; k++) setTimeout(() => hSparks(g === 6 ? 10 : g === 5 ? 7 : 4, g, true), k * 140); }
         else if (g === 3) for (let k = 0; k < 3; k++) setTimeout(() => hSparks(3, 3, true), k * 160);   /* 레어: 깨지기 직전 반짝이 한 번 */   // 깨지기 직전: 빛줄기가 빨라지고 반짝이가 쏟아진다
         hatchEl.onclick = null;
-        clearInterval(ringT); { const wh = hatchEl.querySelector('.hwhite'); wh.style.transition = 'opacity .9s ease-in'; void wh.offsetWidth; wh.style.opacity = g >= 4 ? .9 : .75; }   // 깨지기 직전까지 화면이 점점 하얘진다
+        clearInterval(ringT); { const wh = hatchEl.querySelector('.hwhite'); const o0 = getComputedStyle(wh).opacity; wh.style.transition = 'none'; wh.style.opacity = o0; void wh.offsetWidth; wh.style.transition = 'opacity .9s linear'; wh.style.opacity = g >= 4 ? .9 : .75; }   // 깨지기 직전까지 화면이 점점 하얘진다 (v3.92: ease-in 은 처음이 느려 밝아지다 멈춘 듯 보였다 → 일정하게)
         setTimeout(() => { win.removeEventListener('pointerdown', down); win.removeEventListener('click', up); hatchStage.classList.remove('tapme'); done(true); }, 900);
       } else nudge();
     };
@@ -7387,11 +7387,12 @@ $('#buddy').addEventListener('click', e => {
   else if (a === 'evo') { if (budReady(S.buds[i])) evolvePoke(boxOf(S.buds[i].pid)); }
   else if (S.buds[i]) { log(`${J({ name: SPECIES[S.buds[i].sp].n },'과/와')} 같이 달리기를 그만뒀다.`); S.buds.splice(i, 1); save(); renderRun(); }
 });
+let eggSelI = 0;   // 선택한 부화기 칸 번호
 function renderRun() {
   eggSpAll();
   if (!mgr.hidden) renderBuddy();
   if (runEl.hidden) { if (!$('#bagPop').hidden) { $('#bagPop').hidden = true; bagSel = null; } return; }
-  if (!eggNone && !S.eggs.includes(eggSel)) eggSel = S.eggs[0] || null; else if (eggNone) eggSel = null;
+  if (!eggNone && !S.eggs.includes(eggSel)) eggSel = S.eggs[Math.min(eggSelI, S.eggs.length - 1)] || null;   // v3.92: 부화로 빠진 알 자리(같은 칸)로 선택이 남는다 else if (eggNone) eggSel = null;
   const e = eggSel;
   $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? `${fmtKm(e.km)} / ${e.need}km` : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}<div class="egg-detail"><span class="epl">${e.place ? `${esc(shortPlace(e.place))} 근처에서 주운 알` : '어디서 주웠는지 기록이 없는 알'}</span>${themeHint(e)}</div><div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
     : `<p class="incu-empty">${S.eggs.length ? '알을 눌러 보자' : '부화 중인 알이 없습니다'}</p>`;
@@ -7407,7 +7408,7 @@ function renderRun() {
       b.innerHTML = `${(rd && !x.rs) || x.nwI ? '<i class="edot"></i>' : ''}<span class="tag2">${rd ? '부화 준비' : '부화 중'}</span>${eggHtml(x.g, rd ? 'wob shake' : 'wob')}<span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div><span class="ekm">${(Math.floor(x.km * 10) / 10).toFixed(1)}/${x.need}km</span>`;
       b.setAttribute('aria-current', x === e); if (x.isNew) { b.classList.add('new'); x.isNew = false; }
       b.onclick = () => { if (x === eggSel && x.km < x.need) { eggSel = null; eggNone = true; renderRun(); return; }   // v3.43: 선택된 알을 다시 누르면 선택 해제
-        eggSel = x; eggNone = false; if (x.nwI) { delete x.nwI; save(); } if (x.km >= x.need && !hatching && !evolving && !hatchQ.length) pressGo(b, () => { hatchEgg(x, true, true); playHatch(); renderRun(); }); else renderRun(); };   // 준비된 알은 칸이 눌렸다가 창이 뜬다
+        eggSel = x; eggSelI = i; eggNone = false; box.querySelectorAll('.eslot').forEach(s => s.setAttribute('aria-current', s === b)); if (x.nwI) { delete x.nwI; save(); } if (x.km >= x.need && !hatching && !evolving && !hatchQ.length) pressGo(b, () => { hatchEgg(x, true, true); playHatch(); renderRun(); }); else renderRun(); };   // 준비된 알은 칸이 눌렸다가 창이 뜬다
     } else { b.classList.add('empty', 'add'); b.innerHTML = '+'; b.setAttribute('aria-label', '가방에서 알 가져오기'); b.onclick = () => setRunTab('bag'); }
     box.append(b);
   }
