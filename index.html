@@ -837,7 +837,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .mgr-detail .pic::after{content:"";position:absolute;left:0;right:0;bottom:0;height:18px;background:#7cb85a;border-top:3px solid #5a9a40}
 .mgr-detail .pic img{position:relative;z-index:1;margin-bottom:8px;image-rendering:pixelated;max-height:96px}
 .namerow{display:flex;gap:8px;align-items:center}
-.nm-edit{flex:1;min-width:0;display:flex;align-items:center;gap:2px;cursor:text}
+.nm-edit{flex:1;min-width:0;display:flex;align-items:center;gap:2px;cursor:text}#info.night .nm-edit .pen-b{color:#c8c8e8}
 .namerow input{flex:0 1 auto;max-width:100%;min-width:0;font:inherit;font-size:20px;font-weight:700;color:var(--win-ink);background:none;border:0;border-bottom:2px solid transparent;padding:2px 0;border-radius:0;outline:0}
 .namerow input:focus{border-bottom-color:var(--frame)}
 .nm-edit .pen-b{flex:none;width:13px;height:13px;margin-left:1px;color:var(--frame);display:inline-flex}.nm-edit .pen-b svg{width:100%;height:100%}.sx{font-weight:normal;margin-left:2px}.sx.m{color:#3070d0}.sx.f{color:#e04870}.namerow .sx,.pp-nm .sx{font-size:18px}.pp-nm{flex:0 1 auto}.pp-nm input{font:inherit;font-weight:700;font-size:16px;color:var(--win-ink);background:none;border:0;border-bottom:2px solid transparent;padding:1px 0;width:6.2em;min-width:0;outline:0;border-radius:0}.pp-nm input:focus{border-bottom-color:var(--frame)}.pp-nm .pen-b{width:11px;height:11px}.st-tag[hidden]{display:none}
@@ -4899,12 +4899,13 @@ function renderInfo() {
     box.dataset.uid = m.uid;
     // 다른 포켓몬 정보창과 같은 차림: 랭크(좌상단) · 이름/분류/만난 곳 · 청결~친밀도 · 친구/상태/생각
     box.innerHTML = `<div class="dp-head m-head"><span class="bud-tag" id="infoBud" hidden>짝꿍</span><span class="inf-acts"><button class="inf-ico" id="infWash" aria-label="씻기기">${ICO_BRUSH}</button><button class="inf-ico" id="infPet" aria-label="쓰다듬기">${ICO_HAND}</button><button class="inf-ico" id="infFeed" aria-label="나무열매 주기">${ICO_BERRY}</button></span></div>
-      <div class="ihead"><div class="ih-top"><span class="nm-plain${tnCls(m.sp)}" id="pname">${esc(m.name)}</span>${sexHtml(sexOf(m))}${P?.shiny ? '<b class="sh" data-tip="이로치">✦</b>' : ''}<span class="ih-r">${tyIcons(m.sp)}${esc(d.g || '')}</span></div></div>
+      <div class="ihead"><div class="ih-top${tnCls(m.sp)}">${nameEdit('iName', m.name, sexOf(m))}${P?.shiny ? '<b class="sh" data-tip="이로치">✦</b>' : ''}<span class="ih-r">${tyIcons(m.sp)}${esc(d.g || '')}</span></div></div>
       <div class="pbody"><div class="pf" id="pPf" data-rk="${P ? rankOf(P) : ''}"><div class="pf-in"></div><div class="pf-in"></div><span class="pf-rk">${rkBadge(P)}</span><span class="pf-z"></span></div><div class="bars" id="pbars"></div></div>
       <div class="memo" id="pMemo"></div>
       <div id="pMoves"></div>`;
   }
-  $('#pname').textContent = m.name;
+  { const inp = $('#iName'); if (inp && !inp.dataset.w) { inp.dataset.w = 1; inp.addEventListener('input', () => { inp.style.width = (Math.max(1, inp.value.length) + .15) + 'em'; }); inp.addEventListener('change', () => { const mm = S.mons.find(x => String(x.uid) === box.dataset.uid); if (mm) renameMon(mm, inp.value); }); inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); }); }   /* v4.12 경완: 필드 정보창에서도 이름 바꾸기 */
+    if (inp && document.activeElement !== inp && inp.value !== m.name) { inp.value = m.name; inp.style.width = (Math.max(1, m.name.length) + .15) + 'em'; } }
   { const bud = !!m.pid && S.buds.some(b => b.pid === m.pid); box.classList.toggle('bud', bud); box.classList.toggle('night', !bud && uiNight()); $('#infoBud').hidden = !bud; }   /* 짝꿍은 밤에도 분홍 그대로 */
   { const h = rkBadge(P), el = box.querySelector('.pf-rk'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
   $('#pbars').innerHTML = bar('청결', m.clean ?? 100, 'var(--clean)') + bar('배부름', 100 - m.hunger, 'var(--hunger)') + bar('즐거움', m.joy ?? 60, 'var(--lonely)') + (P ? `<div class="bar frbar"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>` : '');
@@ -5229,7 +5230,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.11';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.12';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6055,7 +6056,7 @@ function renameMon(m, v) {
   if (name === m.name) return;
   const old = m.name; m.name = name; { const P = boxOf(m.pid); if (P) P.nm = name === DEX[m.sp].n ? undefined : name; } m.tag.textContent = name; m.img.alt = name; m.spr.setAttribute('aria-label', name);
   log(`${esc(old)}에게 <b>${esc(name)}</b>라는 이름을 지어 주었다.`, [m]);
-  if ($('#mName')) $('#mName').value = name;
+  if ($('#mName')) $('#mName').value = name; if ($('#iName') && document.activeElement !== $('#iName')) $('#iName').value = name;
   renderMgr(true); save();
 }
 function feedNear(m) {
