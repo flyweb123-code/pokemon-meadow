@@ -252,7 +252,7 @@ html{touch-action:manipulation}img{-webkit-user-drag:none}*{-webkit-user-select:
 :root{
   --win:#f8f8f8; --win-ink:#282830; --frame:#383848; --inner:#c8c8d8; --inner-blue:#68a0d0;
   --card:#f8f8e0; --card-frame:#384838; --dim:#8888a0; --cursor:#e05040;
-  --hp-track:#506858; --hp:#70f8a8; --hunger:#f8d030; --lonely:#58c8f0; --clean:#c8a8ff; --forest:#24482a;
+  --hp-track:#506858; --hp:#70f8a8; --hunger:#f8d030; --lonely:#58c8f0; --clean:#c8a8ff; --low:#e04838; --forest:#24482a;
   --px:"Galmuri11","Galmuri",ui-monospace,monospace;
   color-scheme:light;
 }
@@ -315,7 +315,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .win.blue{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px var(--inner-blue),6px 6px 0 rgba(0,0,0,.35)}
 .hud{position:absolute;z-index:20}
 .goldbar{right:170px;top:20px;height:78px;display:flex;align-items:center;gap:8px}
-.berrybar{left:20px;top:92px}
+.berrybar{right:330px;bottom:136px;align-items:flex-end}
 .gold{display:flex;align-items:center;gap:6px;font-size:20px;color:#fff;text-shadow:2px 0 0 #20202c,-2px 0 0 #20202c,0 2px 0 #20202c,0 -2px 0 #20202c,2px 2px 0 #20202c}
 .gold b{color:#ffd84a!important}
 .gold span{color:#fff!important;font-size:15px!important}
@@ -640,7 +640,7 @@ ol.log li.big .txt{color:#c03838}
 .tr-sex.m{color:#3870d0}.tr-sex.f{color:#e05888}.tr-sex:active{transform:scale(.88)}
 .tr-badge{align-self:flex-start;display:inline-flex;align-items:center;padding:3px 10px;border:2px solid #c8962a;background:#fff7e0;color:#6a4a10;box-shadow:2px 2px 0 rgba(0,0,0,.15);font-size:13px}.tr-badge b{font-weight:700;white-space:nowrap}
 /* 트레이너 카드 등급(r0~r10): 높을수록 화려하게 */
-.inf-acts{display:flex;gap:6px;align-items:center}.inf-ico{width:34px;height:34px;padding:0;display:grid;place-items:center;background:#fff;border:2px solid var(--card-frame);box-shadow:2px 2px 0 rgba(0,0,0,.18);cursor:pointer;-webkit-tap-highlight-color:transparent}.inf-ico:active{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.18)}.inf-ico svg{display:block}
+.inf-acts{display:flex;gap:6px;align-items:center;margin-left:auto}.inf-ico{width:34px;height:34px;padding:0;display:grid;place-items:center;background:#fff;border:2px solid var(--card-frame);box-shadow:2px 2px 0 rgba(0,0,0,.18);cursor:pointer;-webkit-tap-highlight-color:transparent}.inf-ico:active{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.18)}.inf-ico svg{display:block}
 #info.bud .inf-ico{border-color:#e9a3bf}
 .pf .pf-rk{position:absolute;left:2px;top:2px;z-index:3;line-height:1}.pf .pf-rk .rk{font-size:10px;min-width:12px;padding:0 3px;line-height:13px;border-width:1px}
 body.petting #dlg,body.petting #info{display:none!important}
@@ -821,7 +821,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .slot .mini{width:80%;height:6px;background:var(--hp-track);border:2px solid var(--frame);box-sizing:content-box}
 .slot .mini i{display:block;height:100%;background:var(--hunger)}
 .slot .gg{width:88%;display:grid;gap:2px}.slot .gr{display:flex;align-items:center;gap:3px;min-width:0}.slot .gr svg{width:9px;height:9px;flex:none}.slot .gr .mini{flex:1;width:auto;min-width:0;height:3px;border-width:2px}
-.slot .gr.cl .mini i{background:var(--clean)}.slot .gr.jo .mini i{background:var(--lonely)}
+.slot .gr.cl .mini i{background:var(--clean)}.slot .gr.jo .mini i{background:var(--lonely)}.slot .gr.low .mini i{background:var(--low)}.bar.low>span:first-child,.bar.low .num{color:var(--low)}.slot .gr .gi{display:flex;flex:none}.slot .gr.low .gi{animation:lowp 1.2s steps(2) infinite}@keyframes lowp{50%{transform:translateY(-1px)}}
 .slot .sl-tags{position:absolute;left:4px;top:4px;display:flex;gap:3px;pointer-events:none}.slot .sl-tags .st{position:static}.slot .sl-bud{font-size:11px;padding:1px 4px;line-height:normal;background:#e8679a;color:#fff}.slot.bud{background:linear-gradient(#fff 55%,#fde6ef)}.slot.bud .mini{border-color:#9a3462}
 .slot.empty{border-style:dashed;color:var(--dim);justify-content:center;background:transparent}
 .slot.empty .plus{font-size:24px;line-height:1}
@@ -1214,7 +1214,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
   .goldbar{grid-area:stage;align-self:start;justify-self:end;z-index:25;height:auto;margin:calc(var(--si-top,env(safe-area-inset-top)) + 8px) calc(var(--si-right,env(safe-area-inset-right)) + 8px) 0 0;flex-direction:column;align-items:flex-end;gap:8px}
   .gold{font-size:18px;height:42px}
   .shop-gold{position:fixed;top:calc(var(--si-top,env(safe-area-inset-top)) + 8px);right:calc(var(--si-right,env(safe-area-inset-right)) + 8px);z-index:10}
-  .berrybar{grid-area:stage;align-self:start;justify-self:start;z-index:25;margin:calc(var(--si-top,env(safe-area-inset-top)) + 60px) 0 0 calc(var(--si-left,env(safe-area-inset-left)) + 8px)}
+  .berrybar{grid-row:1;grid-column:1/-1;align-self:end;justify-self:end;align-items:flex-end;z-index:25;margin:0 calc(var(--si-right,env(safe-area-inset-right)) + 8px) 8px 0}   /* v4.00 경완: 우하단 상태창 바로 위 */
   .clockwin .d{font-size:12px}
   .card{grid-row:1;grid-column:1/-1;position:relative;align-self:end;z-index:30;width:auto;margin:0 8px 8px;max-height:62%;overflow-y:auto;left:auto!important;top:auto!important;padding:10px 14px 12px}
   .card .close{position:absolute;right:4px;top:4px;border:0;padding:8px 12px;font-size:16px}
@@ -1314,7 +1314,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 
   <nav class="hud win menuwin" aria-label="메뉴">
     <button class="opt" id="openMgr">포켓몬</button>
-    <button class="opt" id="openRun">알</button>
+    <button class="opt wide" id="openShop" aria-pressed="false">상점</button>
     <button class="opt" id="openFld">필드 <span id="capBadge">0/9</span></button>
   </nav>
 
@@ -1346,7 +1346,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 
 
   <div class="hud win cmdwin" id="cmd" role="group" aria-label="명령">
-    <button class="opt wide" id="openShop" aria-pressed="false">상점</button>
+    <button class="opt" id="openRun">알</button>
     <button class="opt wide" id="openSet" aria-pressed="false">프로필</button>
   </div>
 
@@ -4836,8 +4836,10 @@ function doingText(m) {
   if (m.state === 'special') return { sing: '노래하는 중', sun: '햇볕을 쬐는 중', moon: '달빛 아래 춤추는 중', fish: '연못가에서 멍때리는 중', train: '단련하는 중', headache: '두통에 시달리는 중', splash: '팔딱팔딱 튀어오르는 중', spark: '전기를 모으는 중', flame: '불꽃을 내뿜는 중', bubble: '거품을 부는 중', powder: '가루를 뿌리는 중' }[m.special] || '무언가 하는 중';
   return STATE_TXT[m.state] || '쉬는 중';
 }
+const LOW_G = 20;
 function bar(label, v, color) {
-  return `<div class="bar"><span>${label}</span><div class="track"><div class="fill" style="width:${(Math.round(v / 12.5) * 12.5).toFixed(1)}%;background:${color}"></div></div><span class="num">${v.toFixed(0)}</span></div>`;
+  const low = v < LOW_G;   // v4.00 경완: 20% 밑으로 떨어진 게이지는 빨간색
+  return `<div class="bar${low ? ' low' : ''}"><span>${label}</span><div class="track"><div class="fill" style="width:${(Math.round(v / 12.5) * 12.5).toFixed(1)}%;background:${low ? 'var(--low)' : color}"></div></div><span class="num">${v.toFixed(0)}</span></div>`;
 }
 function relsHtml(m, nGood, nBad) {
   const fr = friendsOf(m).filter(x => Math.abs(x.r) >= 1);
@@ -4860,7 +4862,7 @@ function renderInfo() {
   if (box.dataset.uid !== String(m.uid)) {
     box.dataset.uid = m.uid;
     // 다른 포켓몬 정보창과 같은 차림: 랭크(좌상단) · 이름/분류/만난 곳 · 청결~친밀도 · 친구/상태/생각
-    box.innerHTML = `<div class="dp-head m-head"><span class="inf-acts"><button class="inf-ico" id="infFeed" aria-label="나무열매 주기">${ICO_BERRY}</button><button class="inf-ico" id="infPet" aria-label="쓰다듬기">${ICO_HAND}</button><button class="inf-ico" id="infWash" aria-label="빗겨 주기">${ICO_BRUSH}</button></span><span class="bud-tag" id="infoBud" hidden>짝꿍</span><button class="pp-x" id="infoX" aria-label="닫기">✕</button></div>
+    box.innerHTML = `<div class="dp-head m-head"><span class="bud-tag" id="infoBud" hidden>짝꿍</span><span class="inf-acts"><button class="inf-ico" id="infWash" aria-label="씻기기">${ICO_BRUSH}</button><button class="inf-ico" id="infPet" aria-label="쓰다듬기">${ICO_HAND}</button><button class="inf-ico" id="infFeed" aria-label="나무열매 주기">${ICO_BERRY}</button></span></div>
       <div class="ihead"><div class="ih-top"><span class="nm-plain${tnCls(m.sp)}" id="pname">${esc(m.name)}</span>${sexHtml(sexOf(m))}${P?.shiny ? '<b class="sh" data-tip="이로치">✦</b>' : ''}<span class="ih-r">${tyIcons(m.sp)}${esc(d.g || '')}</span></div></div>
       <div class="pbody"><div class="pf" id="pPf" data-rk="${P ? rankOf(P) : ''}"><div class="pf-in"></div><div class="pf-in"></div><span class="pf-rk">${rkBadge(P)}</span><span class="pf-z"></span></div><div class="bars" id="pbars"></div></div>
       <div class="memo" id="pMemo"></div>
@@ -5191,7 +5193,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.99';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.00';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5794,9 +5796,11 @@ function slotState(m) {
 }
 const dayOf = c => Math.floor(c / 1440);
 // 필드 슬롯 건강 게이지 앞 작은 아이콘: 물방울(청결) · 열매(배부름) · 웃는 얼굴(즐거움)
-const GG = [['cl', '<svg viewBox="0 0 7 7" shape-rendering="crispEdges" aria-label="청결"><path fill="#8a6ad8" d="M3 0h1v1h1v1h1v3H5v1H2V5H1V2h1V1h1z"/><path fill="#fff" d="M2 3h1v1H2z"/></svg>'],
-  ['hu', '<svg viewBox="0 0 7 7" shape-rendering="crispEdges" aria-label="배부름"><path fill="#3a7a2a" d="M3 0h2v1H3z"/><path fill="#e8a020" d="M1 1h2v1h2V1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1z"/><path fill="#fff4c0" d="M1 2h1v1H1z"/></svg>'],
-  ['jo', '<svg viewBox="0 0 7 7" shape-rendering="crispEdges" aria-label="즐거움"><path fill="#38a8e0" d="M2 0h3v1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1V1h1z"/><path fill="#20202c" d="M2 2h1v1H2zM4 2h1v1H4zM1 4h1v1H1zM5 4h1v1H5zM2 5h3v1H2z"/></svg>']];
+// v4.00: 20% 밑이면 막대는 빨간색, 아이콘은 더러운 물방울 · 먹다 남은 열매 속 · 우는 얼굴로
+const GSVG = b => `<svg viewBox="0 0 7 7" shape-rendering="crispEdges" aria-hidden="true">${b}</svg>`;
+const GG = [['cl', GSVG('<path fill="#8a6ad8" d="M3 0h1v1h1v1h1v3H5v1H2V5H1V2h1V1h1z"/><path fill="#fff" d="M2 3h1v1H2z"/>'), GSVG('<path fill="#8a6a48" d="M3 0h1v1h1v1h1v3H5v1H2V5H1V2h1V1h1z"/><path fill="#4a3424" d="M2 3h1v1H2zM4 2h1v1H4zM3 4h1v1H3z"/>')],
+  ['hu', GSVG('<path fill="#3a7a2a" d="M3 0h2v1H3z"/><path fill="#e8a020" d="M1 1h2v1h2V1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1z"/><path fill="#fff4c0" d="M1 2h1v1H1z"/>'), GSVG('<path fill="#8a5a2a" d="M3 0h1v1H3z"/><path fill="#c87818" d="M2 1h3v1H2zM2 5h3v1H2zM2 6h3v1H2z"/><path fill="#f4e4b0" d="M3 2h1v3H3z"/>')],
+  ['jo', GSVG('<path fill="#38a8e0" d="M2 0h3v1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1V1h1z"/><path fill="#20202c" d="M2 2h1v1H2zM4 2h1v1H4zM1 4h1v1H1zM5 4h1v1H5zM2 5h3v1H2z"/>'), GSVG('<path fill="#7888a8" d="M2 0h3v1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1V1h1z"/><path fill="#20202c" d="M2 2h1v1H2zM4 2h1v1H4zM2 4h3v1H2zM1 5h1v1H1zM5 5h1v1H5z"/><path fill="#9ad8ff" d="M1 3h1v1H1z"/>')]];
 function renderMgr(force) { refreshCap();
   if (mgr.hidden) return;
   if (mgrSel && !S.mons.includes(mgrSel)) mgrSel = null;
@@ -5810,7 +5814,7 @@ function renderMgr(force) { refreshCap();
       const m = S.mons[i], b = document.createElement('button'); b.className = 'slot';
       if (m) {
         b.dataset.uid = m.uid; b.setAttribute('aria-current', m === mgrSel); if (isBud(m)) b.classList.add('bud'); setTier(b, m.sp);
-        b.innerHTML = `<span class="sl-tags"><span class="st"></span>${isBud(m) ? '<span class="sl-bud">짝꿍</span>' : ''}</span><span class="sl-x" role="button" aria-label="필드에서 빼기">✕</span><span class="ph${pkCls(boxOf(m.pid))}"><img alt="" src="${thumbOf(m.sk || m.form)}"></span><span class="nmw"><span class="nm${tnCls(m.sp)}">${esc(m.name)}</span>${sexHtml(sexOf(m))}</span><span class="gg">${GG.map(([k, ic]) => `<span class="gr ${k}">${ic}<span class="mini"><i></i></span></span>`).join('')}</span>`;
+        b.innerHTML = `<span class="sl-tags"><span class="st"></span>${isBud(m) ? '<span class="sl-bud">짝꿍</span>' : ''}</span><span class="sl-x" role="button" aria-label="필드에서 빼기">✕</span><span class="ph${pkCls(boxOf(m.pid))}"><img alt="" src="${thumbOf(m.sk || m.form)}"></span><span class="nmw"><span class="nm${tnCls(m.sp)}">${esc(m.name)}</span>${sexHtml(sexOf(m))}</span><span class="gg">${GG.map(([k, ic]) => `<span class="gr ${k}"><i class="gi">${ic}</i><span class="mini"><i></i></span></span>`).join('')}</span>`;
         b.onclick = e => { if (e.target.closest('.sl-x')) { sfx('tap'); removeMon(m); if (mgrSel === m) mgrSel = null; renderMgr(true); refreshCap(); save(); return; } openMon(m); };   // 우상단 ✕ = 바로 상자로
       } else {
         b.classList.add('empty'); b.innerHTML = '<span class="plus">+</span><span>빈 자리</span>';
@@ -5824,7 +5828,7 @@ function renderMgr(force) { refreshCap();
     const m = S.mons.find(x => x.uid === +b.dataset.uid); if (!m) return;
     const [cls, txt] = slotState(m), st = b.querySelector('.st');
     st.className = 'st ' + cls; st.textContent = txt;
-    const w = { cl: m.clean ?? 100, hu: 100 - m.hunger, jo: m.joy ?? 60 }; for (const k in w) b.querySelector(`.gr.${k} .mini i`).style.width = Math.round(w[k]) + '%';   // v3.99 경완: 칸 아래 건강 게이지 3개 (청결·배부름·즐거움)
+    const w = { cl: m.clean ?? 100, hu: 100 - m.hunger, jo: m.joy ?? 60 }; for (const [k, ok, bad] of GG) { const g = b.querySelector(`.gr.${k}`), low = w[k] < LOW_G; g.querySelector('.mini i').style.width = Math.round(w[k]) + '%'; if (g.classList.contains('low') !== low) { g.classList.toggle('low', low); g.querySelector('.gi').innerHTML = low ? bad : ok; } }   // v3.99 경완: 칸 아래 건강 게이지 3개 (청결·배부름·즐거움)
     b.title = `${m.name} · ${doingText(m)}`;
   });
   renderMgrDetail(key !== mgrKey || force);
