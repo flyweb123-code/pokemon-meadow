@@ -5187,7 +5187,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.93';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.94';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7734,6 +7734,7 @@ if (/[?&]studio/.test(location.search)) {
   st.textContent = `
 #stHands{position:absolute;inset:0;z-index:3000;display:none;touch-action:none}#stHands.on{display:block}
 #stHands .h{position:absolute;border-radius:4px;touch-action:none;cursor:grab}
+#stHov{position:absolute;z-index:3001;pointer-events:none;border:2px solid #ffe070;border-radius:6px;box-shadow:0 0 0 1px rgba(0,0,0,.45),0 0 10px rgba(255,224,112,.6);background:rgba(255,224,112,.1)}#stHov[hidden]{display:none}
 #stHands .h:hover{outline:1px dashed rgba(127,215,239,.7)}
 #stHands .h.sel{outline:2px solid #7fd7ef;outline-offset:1px;background:rgba(127,215,239,.14)}
 .mon.stMark:has(.stbox.hov),.mon.stMark:has(.stbox.on){z-index:99999!important}body.szMode #wrap{overflow:auto}body.szMode .app>:not(.stage-wrap):not(#glows){display:none!important}body.szMode .stage{box-shadow:none}body.szMode #night,body.szMode #skyFx,body.szMode #skyC,body.szMode #bg{display:none}body.szMode .mon.szb img,body.szMode .mon.szb .spr{clip-path:none!important}body.szMode .mon.szb .spr{cursor:move}body.szMode #wrap{background:#1c2028}#szLasso{position:absolute;border:1px dashed #fff;background:rgba(127,215,239,.14);z-index:99998;pointer-events:none}.mon.szDrag{z-index:99999!important}body.szMode .mon .shadow{opacity:.5}
@@ -7796,6 +7797,9 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
       FLOWERS.splice(0, FLOWERS.length, ...bedFlowers(FLOWERBED), ...LAYOUT.flowers); buildProps(); skyKey = ''; sky(); });
   }
   const hands = document.createElement('div'); hands.id = 'stHands'; stage.append(hands);
+  // v3.94 경완: 작업실 소품 칸에 마우스를 올리면 맵의 그 소품에 테두리 (편집 모드가 아니어도)
+  const hovB = document.createElement('div'); hovB.id = 'stHov'; hovB.hidden = true; stage.append(hovB);
+  api.hoverInst = (key, i) => { const t = key == null ? null : items().find(o => o.key === key && o.i === +i); hovB.hidden = !t; if (!t) return; const [x, y, w, h] = t.box; hovB.style.cssText = `left:${x - 3}px;top:${y - 3}px;width:${w + 6}px;height:${h + 6}px`; };
   const hud = document.createElement('div'); hud.id = 'stHud'; stage.append(hud);
   hud.innerHTML = '<b style="top:' + MIN_Y + 'px">포켓몬은 이 선 아래로만 다녀요</b>';
   let sel = null, undo = [], drag = null;
