@@ -251,6 +251,7 @@ h2.ih{display:flex;align-items:center;gap:8px}
 .gpb{position:relative;display:flex;height:34px;border-radius:4px;background:var(--line);margin:12px 0 10px}.gpb i{display:grid;place-items:center;height:100%;min-width:0;overflow:hidden}.gpb i:first-child{border-radius:4px 0 0 4px}.gpb i:nth-child(5){border-radius:0 4px 4px 0}.gpb i span{font-size:12px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)}.gpb .bk{position:absolute;top:-6px;bottom:-6px;width:22px;margin-left:-11px;cursor:ew-resize;touch-action:none;z-index:2;display:grid;place-items:center}.gpb .bk::after{content:"";width:6px;height:100%;background:#fff;border:2px solid var(--deep);border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.4)}.gpb .bk:hover::after,.gpb .bk.on::after{background:var(--acc)}.gst .stp{display:flex;flex-direction:column;gap:2px}.gst .stp button{width:22px;height:15px;padding:0;font-size:8px;line-height:1;border:1px solid var(--line);background:var(--panel);color:var(--fg,inherit);border-radius:3px;cursor:pointer}.gst .stp button:hover{background:var(--acc);color:var(--deep)}.gpr{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:6px}.gpi{display:flex;flex-direction:column;gap:4px;min-width:0}.gpi .gn{display:flex;align-items:center;gap:4px;white-space:nowrap}.gpi .kmi input{width:100%}
 @media (max-width:640px){.gpr{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .gsel .gpp{font-style:normal;font-size:11px;margin-left:auto;padding-left:6px;opacity:.85}.tkt td,.tkt th{padding:5px 8px}.tkt .kmi{justify-content:flex-end}.tkt .kmi input{width:92px;flex:none;text-align:right}
+.tcol h3 .tsrt{display:inline-flex;gap:4px;margin-left:6px}.tcol h3 .tsrt .chip{padding:2px 7px;font-size:11px}
 .kmi{display:flex;align-items:center;gap:4px}.kmi input{min-width:0;flex:1}.kmi span{font-size:12px;color:var(--mute)}.kmi.auto{justify-content:flex-end;font-family:var(--px);padding-right:2px}.od2 .pc{text-align:right;font-size:12px}
 body.odrag{cursor:ew-resize;user-select:none}
 .nav a .lb{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.nav a .n{margin-left:0}
@@ -455,7 +456,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.43';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.44';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -606,7 +607,7 @@ function putP(o, p, src) {   // src(작업본) 의 p 값을 o 에 그대로 옮�
   if (a === 'eggTiers') { const v = src ? effP(src, p) : ORIG.eggTiers[b]; o.eggTiers = cl(o.eggTiers || ORIG.eggTiers); o.eggTiers[b] = cl(v); if (JSON.stringify(o.eggTiers) === JSON.stringify(ORIG.eggTiers)) delete o.eggTiers; return; }
   if (b != null) { const has = src && src[a] && b in src[a]; o[a] = { ...(o[a] || {}) }; if (has) o[a][b] = cl(src[a][b]); else delete o[a][b]; if (!Object.keys(o[a]).length) delete o[a]; return; }
   if (src && a in src) o[a] = cl(src[a]); else delete o[a]; }
-const BOXES = { bagstep: () => ['bal.BAG_STEP'], monsc: () => ['monSc', 'monRot', 'monFly'], bub: () => ['bub'], odds: () => ['odds', 'pity', ...[1, 2, 3, 4, 5].map(g => 'eggTiers.' + g)], pity: () => ['pity'], hatch: () => ['bal.HATCH_KM'], tier: () => ['tierOv', 'tierOrd'], layout: () => ['layout'] };
+const BOXES = { bagstep: () => ['bal.BAG_STEP'], monsc: () => ['monSc', 'monRot', 'monFly'], bub: () => ['bub'], odds: () => ['odds', 'pity', 'tierK', ...[1, 2, 3, 4, 5].map(g => 'eggTiers.' + g)], pity: () => ['pity'], hatch: () => ['bal.HATCH_KM'], tier: () => ['tierOv', 'tierOrd'], layout: () => ['layout'] };
 const boxPaths = id => { const [t, x] = id.split(':'); return t === 'pool' ? ['eggList.' + x, 'eggEx.' + x] : t === 'bal' ? BAL[x][1].map(r => 'bal.' + r[0]) : BOXES[t](); };
 const same = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
 const boxDirty = id => ORIG && boxPaths(id).some(p => !same(effP(D, p), effP(D._sv || {}, p)));
@@ -627,7 +628,7 @@ async function pushDb() { if (!db) return; try { await db.doc('studio/draft').se
 const gameVer = () => { try { return ($('#game').contentDocument.getElementById('appVer').textContent.match(/v[\d.]+/) || [''])[0]; } catch (e) { return ''; } };
 // v2.23 경완: 확률 안전장치 — 알에서 나오는 모든 포켓몬이 SAFE_KM 안에 1번은 나와야 한다 (안 나오는 포켓몬도 안 됨)
 // 바꿀 때마다 검사해서, 새로 한도를 넘거나 이미 넘은 포켓몬을 더 드물게 만드는 변경은 저장 전에 되돌린다
-const SAFE_KM = 40000, SAFE_KEYS = ['odds', 'eggTiers', 'eggList', 'eggEx', 'tierOv', 'tierOrd', 'bal'];
+const SAFE_KM = 40000, SAFE_KEYS = ['odds', 'eggTiers', 'eggList', 'eggEx', 'tierOv', 'tierOrd', 'bal', 'tierK'];
 let safeSnap = null, safeBad = [];
 const safeKey = () => JSON.stringify(SAFE_KEYS.map(k => D[k] ?? null));
 function safeScan() { if (!ORIG || !A?.SPECIES) return []; const L = tierLists(), Z = tierZ(L), O = odds(), P = {};
@@ -675,13 +676,25 @@ function tierLists() { const L = Array.from({ length: 11 }, () => []); for (cons
 // v2.3 경완: 티어 안 순서. 직접 정한 티어는 앞일수록 드물게(z 1 → 0), 안 정한 티어는 가족 최고 종족값 기준 (게임 retier 와 같은 계산)
 const tierOrdOf = t => D.tierOrd && t in D.tierOrd ? D.tierOrd[t] : ORIG?.tierOrd?.[t] || null;
 function orderTier(t, T) { const O = tierOrdOf(t), byB = (a, b) => b - a; /* v2.13 경완: 정한 순서가 없으면 도감 번호 높은 순 */ if (!O?.length) return [...T].sort(byB); const have = new Set(T), q = O.filter(b => have.has(b)); return [...q, ...T.filter(b => !q.includes(b)).sort(byB)]; }
-function tierZ(L) { const Z = {}; L.forEach((T, t) => { if (!T.length) return; if (tierOrdOf(t)?.length) { const all = orderTier(t, T); all.forEach((b, i) => { Z[b] = all.length > 1 ? 1 - i / (all.length - 1) : .5; }); return; }
-  const v = T.map(b => A.FAM_BST[b]), lo = Math.min(...v), hi = Math.max(...v); for (const b of T) Z[b] = hi > lo ? (A.FAM_BST[b] - lo) / (hi - lo) : .5; }); return Z; }
+function tierZ(L) { const Z = {}; L.forEach((T, t) => { if (!T.length) return; const all = orderTier(t, T); all.forEach((b, i) => { Z[b] = all.length > 1 ? 1 - i / (all.length - 1) : .5; }); }); return Z; }   // v2.44: 보이는 순서 그대로 (앞일수록 드물게, 기본 = 도감 번호 높은 순)
 // 알 등급 g 에서 종마다 나올 확률 (장소 테마·최근 부화는 빼고 기본값)
 // v2.4 경완: 티어 경계 보장 (게임 tierGuard 와 같은 계산). 실제로 뽑을 때 쓰는 티어 비율
 let effK = '', effV = null, effKt = null;
-function effTiers(L = tierLists(), Z = tierZ(L)) { if (!A?.tierGuard) return eggTiers(); const EL = [null, 1, 2, 3, 4, 5].map(g => g && eggList(g)), k = JSON.stringify([eggTiers(), odds(), EL, D.tierOv || 0, D.tierOrd || 0, ORIG?.tierOrd || 0]);
-  if (k !== effK) { effK = k; const E = A.tierGuard(eggTiers(), odds(), L, Z, EL); effV = [null, 1, 2, 3, 4, 5].map(g => g && (E[g] || eggTiers()[g])); effKt = E.K || null; } return effV; }
+// v2.44 경완: 같은 티어 안에서도 앞쪽 포켓몬일수록 드물게. 맨 앞은 맨 뒤보다 R배 드물게(가중치 e^-K·z). 티어 합계는 그대로이고,
+// 낮은 티어 한 마리가 다음 티어 한 마리보다 흔해지지 않도록 티어마다 K를 줄여 맞춘다(티어 경계 보장이 비율을 건드리지 않게)
+const kR = () => Math.max(1, +(D.tierK?.r ?? ORIG?.tierK?.r ?? 1) || 1);
+let kKey = '', kVal = {};
+function kOf(L = tierLists(), Z = tierZ(L)) { const R = kR(), T = tovOf(eggTiers()), key = JSON.stringify([R, T, L.map(x => x.length), D.tierOrd || 0, D.tierOv || 0]); if (key === kKey) return kVal;
+  const K = {}; for (let t = 1; t <= 10; t++) if (L[t]?.length && T[t] > 0) K[t] = Math.log(R);
+  const ext = t => { const w = L[t].map(sp => Math.exp(-K[t] * (Z[sp] ?? .5))), s = w.reduce((a, b) => a + b, 0); return [T[t] * Math.min(...w) / s, T[t] * Math.max(...w) / s]; };
+  const ts = Object.keys(K).map(Number).sort((a, b) => a - b);
+  for (let it = 0; it < 400 && R > 1; it++) { let bad = 0; for (let i = 0; i + 1 < ts.length; i++) { const t = ts[i], u = ts[i + 1]; if (t === 1 && u === 2) continue;
+      if (ext(t)[1] > ext(u)[0] * .95 && (K[t] > 1e-3 || K[u] > 1e-3)) { bad++; K[t] *= .97; K[u] *= .97; } }
+    for (const t of ts) if (K[t] > 1e-3 && kmPer(ext(t)[0]) > SAFE_KM * .98) { bad++; K[t] *= .97; }   // 가장 드문 포켓몬도 확률 한도 안에
+    if (!bad) break; }
+  for (const t in K) K[t] = +K[t].toFixed(4); kKey = key; kVal = K; return K; }
+function effTiers(L = tierLists(), Z = tierZ(L)) { if (!A?.tierGuard) return eggTiers(); const EL = [null, 1, 2, 3, 4, 5].map(g => g && eggList(g)), KI = kOf(L, Z), k = JSON.stringify([eggTiers(), odds(), EL, D.tierOv || 0, D.tierOrd || 0, ORIG?.tierOrd || 0, KI]);
+  if (k !== effK) { effK = k; const E = A.tierGuard(eggTiers(), odds(), L, Z, EL, KI); effV = [null, 1, 2, 3, 4, 5].map(g => g && (E[g] || eggTiers()[g])); effKt = E.K || null; } return effV; }
 // v2.21 경완: 티어별 전체 출현 확률(알 1개당, 모든 알 합)을 가로 막대로 끌어 정한다. 끌면 알 등급마다 티어 비율이 알아서 맞춰진다
 // 막대 칸 너비는 확률의 제곱근에 비례 (1티어처럼 작은 확률도 손잡이를 잡을 수 있게)
 function tovOf(ET) { const O = odds(), T = {}; for (let g = 1; g <= 5; g++) { const r = ET[g] || {}, tot = Object.values(r).reduce((a, b) => a + b, 0) || 1; for (const t in r) T[t] = (T[t] || 0) + O[g - 1] * r[t] / tot; } return T; }
@@ -733,7 +746,7 @@ function exWs(L = tierLists(), Z = tierZ(L)) { const T = effTiers(L, Z), EX = [n
   if (k !== exK) { exK = k; exV = A?.exBoost ? A.exBoost(T, odds(), L, Z, effKt || {}, EX, EL) : [null, {}, {}, {}, {}, {}]; } return exV; }
 function poolProb(g, L = tierLists(), Z = tierZ(L)) {
   const tab = effTiers(L, Z)[g], ts = Object.keys(tab).map(Number).filter(t => L[t]?.length && tab[t] > 0), spill = g >= 2 ? Math.max(...ts) : 0, tot = ts.reduce((a, t) => a + tab[t], 0), out = {};
-  const X = new Set(exOf(g)), XW = exWs(L, Z)[g] || {}; for (const t of ts) { const U = L[t].some(sp => !X.has(sp)) ? L[t].filter(sp => !X.has(sp)) : L[t], w = U.map(sp => Math.exp((t === spill ? 1 : -1) * (effKt?.[t] ?? 0) * Z[sp]) * (XW[sp] || 1)), s = w.reduce((a, b) => a + b, 0); U.forEach((sp, i) => out[sp] = tab[t] / tot * w[i] / s); }
+  const X = new Set(exOf(g)), XW = exWs(L, Z)[g] || {}; for (const t of ts) { const U = L[t].some(sp => !X.has(sp)) ? L[t].filter(sp => !X.has(sp)) : L[t], w = U.map(sp => Math.exp(-(effKt?.[t] ?? 0) * Z[sp]) * (XW[sp] || 1)), s = w.reduce((a, b) => a + b, 0); U.forEach((sp, i) => out[sp] = tab[t] / tot * w[i] / s); }
   return out;
 }
 const pct = p => p >= .001 ? (p * 100).toFixed(2) + '%' : p > 0 ? (p * 100).toFixed(3) + '%' : '0%';
@@ -1276,16 +1289,19 @@ function tkApply(T) { const O = [], ET = [null];
 function tkSet(K) { const T = [0]; let s = 0; for (let t = 1; t <= 9; t++) { T[t] = 1 / (EPK() * K[t]); s += T[t]; } T[10] = 1 - s;
   for (let t = 1; t < 10; t++) if (!(T[t] < T[t + 1])) return `${t}티어는 ${t + 1}티어보다 드물어야 해요${t + 1 === 10 ? ' (10티어는 나머지 몫이라 너무 작아졌어요)' : ''}`;
   tkApply(T); return ''; }
-function tkCard() { const K = tkOf(), L = tierLists(), E = tovOf(effTiers(L)), O = odds(), pt = pity(), ch = t => D.odds || D.eggTiers ? ' ch' : '';
+function tkCard() { const K = tkOf(), L = tierLists(), KK = kOf(L), E = tovOf(effTiers(L)), O = odds(), pt = pity(), ch = t => D.odds || D.eggTiers ? ' ch' : '';
   return `<div class="card tkc"><div class="row" style="flex-wrap:wrap;gap:8px"><h2 class="ih" style="flex:1">티어별 출현 거리</h2></div>
     <div class="small mute">알을 주우며 걸을 때 그 티어 포켓몬이 평균 몇 km마다 1번 나올지 정해요. 1티어로 갈수록 거리가 길어야 해요(10티어는 나머지 몫이라 자동). 알 등급 확률·알별 티어 비율·천장은 여기에 맞춰 자동으로 정해져요.</div>
-    <div class="tw"><table class="t tkt"><tr><th>티어</th><th class="r">몇 km마다</th><th class="r">알 1개당</th><th class="r">한 마리당</th></tr>${Array.from({ length: 10 }, (_, i) => i + 1).map(t => { const n = L[t].length, km = K[t], ek = kmPer(E[t] || 0), dif = isFinite(km) && Math.abs(ek - km) / km > .01;
-      return `<tr><td><span class="tag" style="background:${TC(t)}">${t}</span> <span class="small mute">${n}종</span></td><td class="r">${t < 10 ? `<label class="kmi"><input class="inp" data-tk="${t}" inputmode="decimal" value="${kmTx(km)}" aria-label="${t}티어 몇 km마다"><span>km</span></label>` : `<span class="num">${kmTx(km)}<span class="small mute"> km · 자동</span></span>`}${dif ? `<div class="small" style="color:var(--warn)" title="티어 경계 보장(낮은 티어 한 마리가 다음 티어 한 마리보다 드물게)으로 실제로는 이렇게 나와요">실제 ${fmtKm(ek)}</div>` : ''}</td><td class="num r">${pct(1 / (EPK() * km))}</td><td class="num r">${n ? fmtKm(km * n) : '-'}</td></tr>`; }).join('')}</table></div>
+    <div class="tw"><table class="t tkt"><tr><th>티어</th><th class="r">몇 km마다</th><th class="r">알 1개당</th><th class="r">한 마리당</th><th class="r" title="같은 티어에서 맨 앞 포켓몬이 맨 뒤보다 몇 배 드물게 나오는지">앞·뒤 차이</th></tr>${Array.from({ length: 10 }, (_, i) => i + 1).map(t => { const n = L[t].length, km = K[t], ek = kmPer(E[t] || 0), dif = isFinite(km) && Math.abs(ek - km) / km > .01;
+      return `<tr><td><span class="tag" style="background:${TC(t)}">${t}</span> <span class="small mute">${n}종</span></td><td class="r">${t < 10 ? `<label class="kmi"><input class="inp" data-tk="${t}" inputmode="decimal" value="${kmTx(km)}" aria-label="${t}티어 몇 km마다"><span>km</span></label>` : `<span class="num">${kmTx(km)}<span class="small mute"> km · 자동</span></span>`}${dif ? `<div class="small" style="color:var(--warn)" title="티어 경계 보장(낮은 티어 한 마리가 다음 티어 한 마리보다 드물게)으로 실제로는 이렇게 나와요">실제 ${fmtKm(ek)}</div>` : ''}</td><td class="num r">${pct(1 / (EPK() * km))}</td><td class="num r">${n ? fmtKm(km * n) : '-'}</td><td class="num r">${KK[t] ? '×' + +Math.exp(KK[t]).toFixed(2) : '같음'}</td></tr>`; }).join('')}</table></div>
+    <div class="row tkr" style="flex-wrap:wrap;gap:8px;margin-top:10px"><span>같은 티어 안: 맨 앞 포켓몬은 맨 뒤보다</span><label class="kmi"><input class="inp${D.tierK ? ' ch' : ''}" data-tkr inputmode="decimal" value="${kR()}" aria-label="맨 앞이 맨 뒤보다 몇 배 드물게" style="width:64px;flex:none;text-align:right"><span>배 드물게</span></label></div>
+    <div class="small mute">티어 박스(티어 화면)의 순서대로, 앞쪽일수록 조금씩 드물게 나와요. 1이면 모두 같아요. 티어 합계는 그대로이고, 낮은 티어 한 마리가 다음 티어 한 마리보다 흔해지면 안 돼서 티어마다 차이가 줄어들 수 있어요(오른쪽 칸이 실제 배수).</div>
     <h4 style="margin:12px 0 4px">자동으로 정해진 값</h4>
     <div class="gpb">${O.map((p, i) => `<i style="width:${Math.max(p * 100, .6)}%;background:${GC[i + 1]}" title="${GN[i + 1]} ${pct(p)}">${p > .09 ? `<span class="num">${pct(p)}</span>` : ''}</i>`).join('')}</div>
     <div class="small mute">알 등급 확률: ${O.map((p, i) => `<b style="color:${GC[i + 1]}">${GN[i + 1]}</b> ${pct(p)}`).join(' · ')}<br>천장: 에픽 이상 ${pt.e}km · 전설 ${pt.l}km (평균 거리의 ${PITY_X}배)</div>
     ${boxBar('odds', '저장')}</div>`; }
-$('#poolC').addEventListener('change', e => { const t = +e.target.dataset.tk; if (!t) return; const v = parseFloat(e.target.value), K = tkOf(); if (!(v > 0)) { renderPool(); return; } K[t] = v;
+$('#poolC').addEventListener('change', e => { if (e.target.dataset.tkr != null) { const v = parseFloat(e.target.value); if (v >= 1 && v <= 100) { D.tierK = { r: +v.toFixed(2) }; if (D.tierK.r === (ORIG.tierK?.r ?? 1)) delete D.tierK; saveDraft(); } renderPool(); return; }
+  const t = +e.target.dataset.tk; if (!t) return; const v = parseFloat(e.target.value), K = tkOf(); if (!(v > 0)) { renderPool(); return; } K[t] = v;
   const err = tkSet(K); if (err) { toast(err, true); renderPool(); return; } saveDraft(); renderPool(); });
 function renderPool() {
   const g = sel.poolG, tab = eggTiers()[g], L = tierLists(), prob = probOf(g, L), EX = !!eggList(g), ch = D.eggTiers && JSON.stringify(D.eggTiers[g]) !== JSON.stringify(ORIG.eggTiers[g]);
@@ -1356,8 +1372,8 @@ const tierEggs = (t, T) => [1, 2, 3, 4, 5].filter(g => { const el = eggList(g); 
 function renderTier() {
   const L = tierLists(), ov = D.tierOv || {}; if (sel.tier && tSel.size <= 1) { tSel.clear(); tSel.add(sel.tier); }
   const tz = tzOf(); $('#tierC').style.setProperty('--tzz', tz / 100);
-  $('#tierC').innerHTML = `<div class="thd">${boxBar('tier', '티어 저장')}<div class="tzc"><div class="search tq"><input id="tQ" placeholder="포켓몬 찾기 (이름·번호)" autocomplete="off" enterkeyhint="search" value="${esc(tQv)}"><span class="num mute" id="tQn"></span></div><span class="tzl">화면 크기</span><button class="chip" data-tz="-10" aria-label="작게">−</button><input type="range" id="tz" min="50" max="250" step="10" value="${tz}" aria-label="화면 크기"><button class="chip" data-tz="10" aria-label="크게">+</button><span class="num">${tz}%</span><button class="chip${tMulti ? ' on' : ''}" id="tMulti" title="켜면 누르는 카드마다 더해져요 (PC는 Ctrl+누르기, Shift+누르기)">여러 마리 고르기</button>${tSel.size > 1 ? `<span class="num" style="color:var(--acc)">${tSel.size}마리 고름</span><button class="chip" id="tSelX">고르기 풀기</button>` : ''}</div></div><div class="small mute" style="margin-bottom:10px">진화 전 모습으로 묶어요. 1~3티어는 특별한 포켓몬(전설·환상 가족), 4~10티어는 나머지를 가족 최고 종족값 순서로 나눈 거예요. <b>카드를 끌어서</b> 순서를 바꾸거나 다른 티어로 옮겨요 (휴대폰은 꾹 누른 뒤). ${(effKt && Object.values(effKt).some(k => k > 0)) ? '티어 안에서는 <b>앞일수록 알에서 드물게</b> 나와요.' : '같은 티어 안의 포켓몬은 <b>모두 같은 확률</b>로 나와요 (순서는 보기용).'} 단, 알 › 등급별 포켓몬에서 순서를 직접 정한 알은 그 확률을 따라요. 주황 점은 작업본에서 옮긴 포켓몬이에요.</div>
-  <div class="tiers">${L.map((T, t) => t ? `<div class="tcol" data-tt="${t}"><h3><span class="tag" style="background:${TC(t)}">${t}티어</span>${(eg => eg.length ? `<span class="teg" title="${eg.map(g => GN[g]).join('·')} 알에서 나와요">${eg.map(eggI).join('')}</span>` : '<span class="teg small mute">알에서 안 나옴</span>')(tierEggs(t, T))}<span class="num mute">${T.length}종 · ${tierOrdOf(t)?.length ? '직접 정한 순서' : '도감 번호 순'}${tierOrdOf(t)?.length ? ` <button class="chip tr0" data-tr0="${t}">종족값 순으로</button>` : ''}</span></h3><div class="grid">${orderTier(t, T).map(sp => `<button class="mc${ov[sp] ? ' ov' : ''}${tSel.has(sp) ? ' on' : ''}" data-sp="${sp}" title="${esc(spName(sp))} · ${A.FAM_BST[sp]}"><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('')}</div></div>` : '').join('')}</div>`;
+  $('#tierC').innerHTML = `<div class="thd">${boxBar('tier', '티어 저장')}<div class="tzc"><div class="search tq"><input id="tQ" placeholder="포켓몬 찾기 (이름·번호)" autocomplete="off" enterkeyhint="search" value="${esc(tQv)}"><span class="num mute" id="tQn"></span></div><span class="tzl">화면 크기</span><button class="chip" data-tz="-10" aria-label="작게">−</button><input type="range" id="tz" min="50" max="250" step="10" value="${tz}" aria-label="화면 크기"><button class="chip" data-tz="10" aria-label="크게">+</button><span class="num">${tz}%</span><button class="chip${tMulti ? ' on' : ''}" id="tMulti" title="켜면 누르는 카드마다 더해져요 (PC는 Ctrl+누르기, Shift+누르기)">여러 마리 고르기</button>${tSel.size > 1 ? `<span class="num" style="color:var(--acc)">${tSel.size}마리 고름</span><button class="chip" id="tSelX">고르기 풀기</button>` : ''}</div></div><div class="small mute" style="margin-bottom:10px">진화 전 모습으로 묶어요. 1~3티어는 특별한 포켓몬(전설·환상 가족), 4~10티어는 나머지를 가족 최고 종족값 순서로 나눈 거예요. <b>카드를 끌어서</b> 순서를 바꾸거나 다른 티어로 옮겨요 (휴대폰은 꾹 누른 뒤). ${kR() > 1 ? `티어 안에서는 <b>앞일수록 알에서 드물게</b> 나와요 (맨 앞이 맨 뒤보다 최대 ${kR()}배, 알 › 등급별 포켓몬에서 정해요).` : '같은 티어 안의 포켓몬은 <b>모두 같은 확률</b>로 나와요 (순서는 보기용, 알 › 등급별 포켓몬에서 앞쪽을 드물게 할 수 있어요).'} 단, 알 › 등급별 포켓몬에서 순서를 직접 정한 알은 그 확률을 따라요. 주황 점은 작업본에서 옮긴 포켓몬이에요.</div>
+  <div class="tiers">${L.map((T, t) => t ? `<div class="tcol" data-tt="${t}"><h3><span class="tag" style="background:${TC(t)}">${t}티어</span>${(eg => eg.length ? `<span class="teg" title="${eg.map(g => GN[g]).join('·')} 알에서 나와요">${eg.map(eggI).join('')}</span>` : '<span class="teg small mute">알에서 안 나옴</span>')(tierEggs(t, T))}<span class="num mute">${T.length}종 · ${ordName(t, T)}</span><span class="tsrt"><button class="chip${ordName(t, T) === '종족값 순' ? ' on' : ''}" data-tsort="bst" data-t="${t}" title="가족 최고 종족값 높은 순 (앞일수록 드물게)">종족값 순</button><button class="chip${ordName(t, T) === '도감 번호 순' ? ' on' : ''}" data-tsort="dex" data-t="${t}" title="도감 번호 높은 순 (앞일수록 드물게)">도감 번호 순</button></span></h3><div class="grid">${orderTier(t, T).map(sp => `<button class="mc${ov[sp] ? ' ov' : ''}${tSel.has(sp) ? ' on' : ''}" data-sp="${sp}" title="${esc(spName(sp))} · ${A.FAM_BST[sp]}"><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('')}</div></div>` : '').join('')}</div>`;
   fillThumbs($('#tierC'));
   $('.view[data-v=tier]').classList.toggle('tsel', !!(tSel.size || sel.tier));
   if (tSel.size > 1) showTierMulti(); else if (sel.tier) showTierSp(sel.tier);
@@ -1374,7 +1390,12 @@ document.addEventListener('input', e => { if (e.target.id === 'tQ') { tQv = e.ta
 document.addEventListener('keydown', e => { if (e.target.id === 'tQ' && e.key === 'Enter') { e.preventDefault(); tFind(e.shiftKey ? -1 : 1); } });
 const tSelOrd = () => $$('#tierC .tcol .mc').map(c => +c.dataset.sp).filter(sp => tSel.has(sp));
 addEventListener('keydown', e => { if (e.key === 'Escape' && tSel.size > 1 && !$('#tierC').closest('[hidden]')) { tSel.clear(); if (sel.tier) tSel.add(sel.tier); renderTier(); } });
-$('#tierC').addEventListener('click', e => { const r0 = e.target.closest('[data-tr0]'); if (r0) { D.tierOrd = { ...(D.tierOrd || {}) }; const t = +r0.dataset.tr0; if (ORIG.tierOrd[t]) D.tierOrd[t] = null; else delete D.tierOrd[t]; if (!Object.keys(D.tierOrd).length) delete D.tierOrd; saveDraft(); renderTier(); return; }
+// v2.44 경완: 티어 박스 정렬 버튼 (둘 다 높은 것부터 = 앞일수록 드물게)
+const bstOrd = T => [...T].sort((a, b) => (A.FAM_BST[b] ?? 0) - (A.FAM_BST[a] ?? 0) || b - a), dexOrd = T => [...T].sort((a, b) => b - a);
+function ordName(t, T) { const O = orderTier(t, T).join(); return O === bstOrd(T).join() ? '종족값 순' : O === dexOrd(T).join() ? '도감 번호 순' : '직접 정한 순서'; }
+$('#tierC').addEventListener('click', e => { const so = e.target.closest('[data-tsort]'); if (so) { const t = +so.dataset.t, T = tierLists()[t]; D.tierOrd = { ...(D.tierOrd || {}) };
+    if (so.dataset.tsort === 'dex') { if (ORIG.tierOrd[t]) D.tierOrd[t] = null; else delete D.tierOrd[t]; } else D.tierOrd[t] = bstOrd(T);
+    if (!Object.keys(D.tierOrd).length) delete D.tierOrd; saveDraft(); renderTier(); toast(`${t}티어를 ${so.dataset.tsort === 'dex' ? '도감 번호' : '종족값'} 높은 순으로 정렬했어요`); return; }
   if (e.target.closest('#tMulti')) { tMulti = !tMulti; renderTier(); return; }
   if (e.target.closest('#tSelX')) { tSel.clear(); if (sel.tier) tSel.add(sel.tier); renderTier(); return; }
   if (Date.now() - tcDragAt < 300) return; const b = e.target.closest('.tcol .mc');
@@ -1542,6 +1563,7 @@ function changesOf() {
   if (D.eggTiers) for (let g = 1; g <= 5; g++) { const a = ORIG.eggTiers[g], b = D.eggTiers[g]; if (JSON.stringify(a) !== JSON.stringify(b)) out.push([`${GN[g]} 알 티어 비율`, fmtTab(a), fmtTab(b), 'egg:' + g]); }
   if (D.eggEx) for (const g of Object.keys(D.eggEx)) { const a = ORIG.eggEx?.[g] || [], b = D.eggEx[g] || [], nm = L => L.length ? L.map(sp => spName(+sp)).join('·') : '없음'; out.push([`${GN[g]} 알에서 뺀 포켓몬`, nm(a), nm(b), 'ex:' + g]); }
   if (D.eggList) for (const g of Object.keys(D.eggList)) out.push([`${GN[g]} 알 포켓몬`, ORIG.eggList?.[g] ? '직접 정한 목록' : '티어 비율', D.eggList[g] ? `직접 정함 (${D.eggList[g].length}종)` : '티어 비율', 'elist:' + g]);
+  if (D.tierK && kR() !== (ORIG.tierK?.r ?? 1)) out.push(['같은 티어 안 차이', `맨 앞 ${ORIG.tierK?.r ?? 1}배 드물게`, `맨 앞 ${kR()}배 드물게`, 'tierk']);
   if (D.tierOv) for (const [sp, t] of Object.entries(D.tierOv)) out.push([`${spName(+sp)} 티어`, A.TIER[sp] + '티어', t + '티어', 'tier:' + sp]);
   if (D.tierOrd) for (const [t, O] of Object.entries(D.tierOrd)) out.push([`${t}티어 순서`, ORIG.tierOrd[t] ? '직접 정한 순서' : '도감 번호 순', O ? '직접 정한 순서' : '도감 번호 순', 'tord:' + t]);
   if (D.bub && A?.SCN) { const a = ORIG.bub || {}, b = D.bub; for (const [id, def, lab] of A.SCN) { const x = id in a ? a[id] : def, y = id in b ? b[id] : def; if (x !== y) out.push([`말풍선 · ${lab}`, x || '지움', y || '지움', 'bub:' + id]); } }
@@ -1566,6 +1588,7 @@ function undoCore(key, live) {
   else if (t === 'egg') { D.eggTiers = JSON.parse(JSON.stringify(D.eggTiers)); D.eggTiers[a] = JSON.parse(JSON.stringify(ORIG.eggTiers[a])); if (JSON.stringify(D.eggTiers) === JSON.stringify(ORIG.eggTiers)) delete D.eggTiers; }
   else if (t === 'elist') { delete D.eggList[a]; if (!Object.keys(D.eggList).length) delete D.eggList; }
   else if (t === 'tier') { delete D.tierOv[a]; if (!Object.keys(D.tierOv).length) delete D.tierOv; }
+  else if (t === 'tierk') { delete D.tierK; }
   else if (t === 'tord') { delete D.tierOrd[a]; if (!Object.keys(D.tierOrd).length) delete D.tierOrd; }
   else if (t === 'bub') { const o = { ...(D.bub || {}) }, og = ORIG.bub || {}; if (a in og) o[a] = og[a]; else delete o[a]; D.bub = o; if (JSON.stringify(o) === JSON.stringify(og)) delete D.bub; if (live) bubLive(); }
   else if (t === 'ex') { setEx(+a, [...(ORIG.eggEx?.[a] || [])]); }
@@ -1611,7 +1634,7 @@ function snapshotOf() {
   const eggL = {}; for (let g = 1; g <= 5; g++) { const E = eggList(g); if (E) eggL[g] = E; }
   const tierOrd = { ...(ORIG.tierOrd || {}), ...(D.tierOrd || {}) }; for (const t of Object.keys(tierOrd)) if (!tierOrd[t]?.length) delete tierOrd[t];
   const eggEx = {}; for (let g = 1; g <= 5; g++) { const X = exOf(g); if (X.length) eggEx[g] = X; }
-  return { layout: D.layout || ORIG.layout, odds: odds(), pity: pity(), eggTiers: eggTiers(), eggList: eggL, eggEx, tierOv, tierOrd, bub: effP(D, 'bub'), monSc: effP(D, 'monSc'), monRot: effP(D, 'monRot'), monFly: effP(D, 'monFly'), bal: { ...ORIG.bal, ...(D.bal || {}) } };
+  return { layout: D.layout || ORIG.layout, odds: odds(), pity: pity(), eggTiers: eggTiers(), eggList: eggL, eggEx, tierOv, tierOrd, bub: effP(D, 'bub'), monSc: effP(D, 'monSc'), monRot: effP(D, 'monRot'), monFly: effP(D, 'monFly'), tierK: { r: kR(), k: kOf() }, bal: { ...ORIG.bal, ...(D.bal || {}) } };
 }
 const ghErr = e => e.status === 401 ? '열쇠가 맞지 않거나 만료됐어요' : e.status === 403 || e.status === 404 ? '저장소에 쓸 권한이 없어요 (pokemon-meadow, Contents 쓰기)' : e.message || String(e);
 async function gh(path, opt = {}, tok = store.get('st-gh-token')) {
@@ -1676,6 +1699,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.44', '10월 16일', ['같은 티어 안에서 앞쪽 포켓몬일수록 드물게: 맨 앞이 맨 뒤보다 몇 배 드물지 정함 (티어 합계는 그대로, 게임 v3.96)', '티어 박스마다 종족값 순·도감 번호 순 정렬 버튼 (높은 것부터)', '정한 순서가 없는 티어도 보이는 순서(도감 번호 높은 순) 그대로 확률에 씀']],
   ['2.43', '10월 16일', ['알: 티어별 출현 거리(km)만 정하면 알 등급 확률·알별 티어 비율·천장은 자동 (직접 조절하는 막대·버튼·칸은 모두 뺌)', '티어 거리는 1티어로 갈수록 길어야 함 (10티어는 나머지 몫)', '등급별 포켓몬 알 버튼에 등급 확률 표시']],
   ['2.42', '10월 16일', ['알 등급별 출현 확률 ▲▼는 0.01%씩', '티어별 전체 출현 확률 조절 박스와 기능을 뺌: 알 확률을 바꿔도 알마다 티어 비율은 그대로', '알에서 나오는 티어 막대 경계선을 끌어 비율 조절, 티어를 빼면 그 알 안에서만 나눔']],
   ['2.41', '10월 16일', ['알 등급별 출현 확률: 막대 경계선을 끌어 양옆 등급 비율 조절, 숫자 옆 ▲▼로 1%씩']],
@@ -1775,7 +1799,7 @@ function hook() {
   $('#gLoad').hidden = true;
   if (!w.document.__unmk) { w.document.__unmk = 1; w.addEventListener('pointerdown', e => { if (!e.target.closest?.('.mon')) unmarkMon(); }, true); }   // v2.1 경완: 맵 빈 곳을 누르면 포켓몬 선택(테두리) 풀기
   if (!ORIG) {
-    const K = A.K; LIVE = A.cfg || { ver: 0 }; ORIG = { odds: K.ODDS, pity: { e: K.PITY_E, l: K.PITY_L }, eggTiers: JSON.parse(JSON.stringify(A.EGG_TIERS)), eggList: JSON.parse(JSON.stringify(A.EGG_LIST || [])), eggEx: JSON.parse(JSON.stringify(A.EGG_EX || [])), tierOrd: JSON.parse(JSON.stringify(A.TIER_ORD || {})), bub: { ...(A.BUB_OV || {}) }, monSc: { ...(A.MON_SC || {}) }, monRot: { ...(A.MON_ROT || {}) }, monFly: { ...(A.MON_FLY || {}) }, layout: A.defaultLayout(),
+    const K = A.K; LIVE = A.cfg || { ver: 0 }; ORIG = { odds: K.ODDS, pity: { e: K.PITY_E, l: K.PITY_L }, eggTiers: JSON.parse(JSON.stringify(A.EGG_TIERS)), eggList: JSON.parse(JSON.stringify(A.EGG_LIST || [])), eggEx: JSON.parse(JSON.stringify(A.EGG_EX || [])), tierOrd: JSON.parse(JSON.stringify(A.TIER_ORD || {})), tierK: { r: A.cfg?.data?.tierK?.r ?? 1, k: { ...(A.TIER_KT || {}) } }, bub: { ...(A.BUB_OV || {}) }, monSc: { ...(A.MON_SC || {}) }, monRot: { ...(A.MON_ROT || {}) }, monFly: { ...(A.MON_FLY || {}) }, layout: A.defaultLayout(),
       bal: { ...(K.HATCH_KM ? { HATCH_KM: K.HATCH_KM } : {}), DUP_G: K.DUP_G, NEW_EGG_G: K.NEW_EGG_G, NEW_G: K.NEW_G, RUN_G: K.RUN_G, FR_TABLE: K.FR_TABLE, BERRY_FR_DAY: K.BERRY_FR_DAY, JOY_HOLD: K.JOY_HOLD, PET_FR: K.PET_FR ?? 1, PET_DAY: K.PET_DAY, WASH_FR: K.WASH_FR ?? 3, FLD_FR_DAY: K.FLD_FR_DAY, WALK_FR: K.WALK_FR, FR_EVO: K.FR_EVO, FR_MAX: K.FR_MAX,
         CLEAN_DAYS: Math.round(100 / K.CLEAN_RATE / 86400 * 100) / 100, HUNGER_RATE: K.HUNGER_RATE, JOY_HOURS: Math.round(100 / K.JOY_RATE / 3600 * 100) / 100, MAX_EGGS: K.MAX_EGGS, MAX_BAG: K.MAX_BAG, BAG_STEP: K.BAG_STEP, SHINY_N: Math.round(1 / K.SHINY_RATE) } };
     A.ensureSprite(1).then(() => { $('#logoI').src = thumb(25) || ''; A.ensureSprite(25).then(() => $('#logoI').src = thumb(25)); });

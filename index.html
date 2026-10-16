@@ -5187,7 +5187,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.95';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.96';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6039,25 +6039,26 @@ const TIER = {}, TIER_SPS = Array.from({ length: 11 }, () => []), TIER_Z = {}, F
   const sc = {}; for (const b of rest) sc[b] = .35 * bR[b] + .35 * gpos(b) + .3 * (1 - (SPECIES[b].cr ?? 45) / 255);
   rest.sort((a, b) => sc[b] - sc[a] || a - b); rest.forEach((b, i) => TIER[b] = 4 + Math.floor(i * 7 / rest.length));
   for (const b of base) TIER_SPS[TIER[b]].push(b);
-  for (const L of TIER_SPS) { if (!L.length) continue; const lo = Math.min(...L.map(b => FAM_BST[b])), hi = Math.max(...L.map(b => FAM_BST[b])); for (const b of L) TIER_Z[b] = hi > lo ? (FAM_BST[b] - lo) / (hi - lo) : .5; } }
+  for (const L of TIER_SPS) { if (!L.length) continue; const all = [...L].sort((a, b) => b - a); all.forEach((b, i) => { TIER_Z[b] = all.length > 1 ? 1 - i / (all.length - 1) : .5; }); } }   // v3.96 경완: 정한 순서가 없으면 도감 번호 높은 순 (앞일수록 드물게) }
 // 알 등급마다 나오는 티어 비율(%). 1~3 티어는 에픽·전설 알에서만. 각 등급의 가장 낮은 티어(일반 제외)는 '아래로 넘친' 칸이라 그 티어 안에서 강한 종이 잘 나온다
 const EGG_LIST = [null, null, null, null, null, null];
 const EGG_EX = [null, [], [], [], [], []];   // v3.82 작업실: 알 등급마다 나오지 않게 뺀 포켓몬 번호   // v3.64 작업실: 알 등급마다 [[번호, 기본 확률], …] 을 직접 정하면 티어 대신 이걸로 뽑는다
 // v3.72 경완: 가장 드문 포켓몬이 약 1,000km에 1번. 티어 안 포켓몬은 모두 같은 확률이고, 한 마리당 평균 거리는 1티어 1000 · 2티어 750 · 3티어 550 · 4티어 400 → 10티어 50km (4티어부터 약 1.41배씩)
 const EGG_TIERS = [null, { 10: 57.3, 9: 28.4, 8: 14.3 }, { 9: 26.2, 8: 30.9, 7: 30.6, 6: 12.3 }, { 7: 20.4, 6: 28.8, 5: 34, 4: 16.8 }, { 4: 31.2, 3: 38, 2: 24.1, 1: 6.7 }, { 3: 26.7, 2: 45.1, 1: 28.2 }];
-let TIER_K = 0;   // 티어 안 차이 (0 = 모두 같은 확률, 1.4 = 약 4배였던 v3.71까지의 값)
+let TIER_K = 0, TIER_KT = {};   // v3.96 경완: 티어마다 티어 안 차이 (작업실이 티어 경계를 넘지 않게 정해 보냄)
+   // 티어 안 차이 (0 = 모두 같은 확률, 1.4 = 약 4배였던 v3.71까지의 값)
 // v3.70 경완: 티어 경계 보장. 알 1개를 주웠을 때의 전체 확률로 보면, 어느 티어의 가장 흔한 종도 바로 다음(더 흔한) 티어의 가장 드문 종보다 드물게 나온다.
 // 정한 티어 비율에서 넘치는 티어 몫만 줄이고, 줄인 만큼은 그 알의 다른 티어가 나눠 가진다. 돌려주는 값이 실제로 뽑을 때 쓰는 비율
-function tierGuard(ET, O, SPS, Z, EL) {
+function tierGuard(ET, O, SPS, Z, EL, KI) {
   // 티어마다 두 값을 찾는다: m(티어 몫 배수, 모든 알에 똑같이 곱하고 알마다 합을 원래대로) · k(티어 안 차이, 처음 1.4 = 약 4배). 겹치는 두 티어가 있으면 드문 쪽 몫은 낮추고 흔한 쪽은 올리며, 두 티어 안 차이를 조금씩 줄인다
   const G = [1, 2, 3, 4, 5].filter(g => !EL?.[g]?.length), T0 = [], fixed = {}, m = {}, K = {};
   for (let g = 1; g <= 5; g++) { const L = EL?.[g]; if (!L?.length) continue; const s = L.reduce((a, r) => a + r[1], 0); if (s > 0) for (const [sp, p] of L) fixed[sp] = (fixed[sp] || 0) + O[g - 1] * p / s; }
   for (const g of G) { T0[g] = {}; for (const t in ET[g] || {}) if (ET[g][t] > 0 && SPS[t]?.length) T0[g][t] = +ET[g][t]; }
-  const tiers = []; for (let t = 1; t < SPS.length; t++) if (SPS[t]?.length && G.some(g => T0[g][t])) { tiers.push(t); m[t] = 1; K[t] = TIER_K; }
+  const tiers = []; for (let t = 1; t < SPS.length; t++) if (SPS[t]?.length && G.some(g => T0[g][t])) { tiers.push(t); m[t] = 1; K[t] = KI?.[t] ?? TIER_KT[t] ?? TIER_K; }
   const spill = g => { const ts = Object.keys(T0[g]).map(Number); return g >= 2 && ts.length ? Math.max(...ts) : 0; };
   const eff = () => { const E = [null]; for (let g = 1; g <= 5; g++) { if (!T0[g]) { E[g] = null; continue; } const tot0 = Object.values(T0[g]).reduce((a, b) => a + b, 0), raw = {}; let tot = 0; for (const t in T0[g]) { raw[t] = T0[g][t] * m[t]; tot += raw[t]; } for (const t in raw) raw[t] *= tot0 / tot; E[g] = raw; } return E; };
   const prob = E => { const P = { ...fixed }; for (const g of G) { const tot = Object.values(E[g]).reduce((a, b) => a + b, 0), sl = spill(g); if (!tot) continue;
-    for (const t in E[g]) { const w = SPS[t].map(sp => Math.exp((+t === sl ? 1 : -1) * K[t] * (Z[sp] ?? .5))), s = w.reduce((a, b) => a + b, 0); SPS[t].forEach((sp, i) => { P[sp] = (P[sp] || 0) + O[g - 1] * E[g][t] / tot * w[i] / s; }); } } return P; };
+    for (const t in E[g]) { const w = SPS[t].map(sp => Math.exp(-K[t] * (Z[sp] ?? .5))), s = w.reduce((a, b) => a + b, 0); SPS[t].forEach((sp, i) => { P[sp] = (P[sp] || 0) + O[g - 1] * E[g][t] / tot * w[i] / s; }); } } return P; };
   for (let it = 0; it < 400; it++) { const P = prob(eff()); let bad = 0;
     for (let k = 0; k < tiers.length - 1; k++) { const t = tiers[k], u = tiers[k + 1]; if (t === 1 && u === 2) continue; let minU = Infinity, maxT = 0;   /* v3.93 경완(B): 1티어(2종)는 티어 전체 500km라 한 종이 2티어 한 종보다 흔해도 된다 */
       for (const sp of SPS[u]) if (P[sp] > 0) minU = Math.min(minU, P[sp]); for (const sp of SPS[t]) maxT = Math.max(maxT, P[sp] || 0);
@@ -6074,7 +6075,7 @@ function exBoost(TAB, O, SPS, Z, KT, EX, EL) {
   const B = [...new Set(gs.flatMap(g => [...XS[g]]))]; if (!B.length) return W;
   const tierOf = {}, tot = {}, spill = {}; SPS.forEach((L, t) => L && L.forEach(sp => tierOf[sp] = t));
   for (const g of gs) { const ts = Object.keys(TAB[g]).map(Number).filter(t => SPS[t]?.length && TAB[g][t] > 0); tot[g] = ts.reduce((a, t) => a + TAB[g][t], 0) || 1; spill[g] = g >= 2 ? Math.max(...ts) : 0; }
-  const bw = (g, t, sp) => Math.exp((t === spill[g] ? 1 : -1) * (KT?.[t] ?? 0) * (Z[sp] || 0));
+  const bw = (g, t, sp) => Math.exp(-(KT?.[t] ?? 0) * (Z[sp] || 0));   // v3.96: 넘친 칸 반대 규칙 없앰 (앞일수록 드물게)
   const P = (sp, ex) => { const t = tierOf[sp]; let p = 0; for (const g of gs) { const s = TAB[g][t]; if (!s || (ex && XS[g].has(sp))) continue; const U = ex && SPS[t].some(x => !XS[g].has(x)) ? SPS[t].filter(x => !XS[g].has(x)) : SPS[t];
     let sum = 0, me = 0; for (const x of U) { const v = bw(g, t, x) * (ex ? W[g][x] || 1 : 1); sum += v; if (x === sp) me = v; } p += O[g - 1] * s / tot[g] * me / sum; } return p; };
   const L = B.filter(sp => tierOf[sp]), T0 = Object.fromEntries(L.map(sp => [sp, P(sp, false)]));
@@ -6920,7 +6921,7 @@ function rollEgg(e) {
       if (th.fx && d.fx && th.fx.test(d.fx)) v += 8;
       if (th.sp && th.sp.includes(sp)) v += 20;
     }
-    v *= Math.exp((t === spill ? 1 : -1) * (eggEffK()?.[t] ?? TIER_K) * TIER_Z[sp]);   // v3.70: 티어 안 차이도 경계 보장 값으로
+    v *= Math.exp(-(eggEffK()?.[t] ?? TIER_KT[t] ?? TIER_K) * TIER_Z[sp]);   // v3.70: 티어 안 차이도 경계 보장 값으로
     v *= exW(e.g)[sp] || 1;   // v3.84: 다른 알에서 뺀 포켓몬은 여기서 더 잘 나온다
     if (S.recentHatch?.includes(sp)) v *= .3;   // 최근 부화한 12종은 덜 나온다
     return v;
@@ -7662,7 +7663,7 @@ function retier(ov, ord) { EGG_EFF = null;
   TIER_SPS.forEach((L, t) => { if (!L.length) return; const O = TIER_ORD[t];
     if (O?.length) { const have = new Set(L), q = O.filter(b => have.has(b)), rest = L.filter(b => !q.includes(b)).sort((a, b) => b - a), all = [...q, ...rest];   // 정한 순서: 맨 앞 = 가장 드묾(z 1) ~ 맨 뒤 = 가장 흔함(z 0)
       all.forEach((b, i) => { TIER_Z[b] = all.length > 1 ? 1 - i / (all.length - 1) : .5; }); return; }
-    const lo = Math.min(...L.map(b => FAM_BST[b])), hi = Math.max(...L.map(b => FAM_BST[b])); for (const b of L) TIER_Z[b] = hi > lo ? (FAM_BST[b] - lo) / (hi - lo) : .5; });
+    const all = [...L].sort((a, b) => b - a); all.forEach((b, i) => { TIER_Z[b] = all.length > 1 ? 1 - i / (all.length - 1) : .5; }); });
 }
 function setLayoutIn(L) {
   for (const k of ['pond', 'fire', 'bed', 'tree', 'perch', 'stump']) if (L[k]) { delete LAYOUT[k].lk; Object.assign(LAYOUT[k], L[k]); }
@@ -7703,6 +7704,7 @@ function applyCfg(c) {
     MON_SC = {}; if (d.monSc && typeof d.monSc === 'object') for (const [k, v] of Object.entries(d.monSc)) if (SPECIES[k] && typeof v === 'number' && v >= .3 && v <= 3) MON_SC[k] = v;
     MON_ROT = {}; if (d.monRot && typeof d.monRot === 'object') for (const [k, v] of Object.entries(d.monRot)) if (SPECIES[k] && typeof v === 'number' && Math.abs(v) <= 90 && v) MON_ROT[k] = v;
     MON_FLY = {}; if (d.monFly && typeof d.monFly === 'object') for (const [k, v] of Object.entries(d.monFly)) if (SPECIES[k] && typeof v === 'number' && v > 0 && v <= 300) MON_FLY[k] = v;
+    TIER_KT = {}; if (d.tierK?.k && typeof d.tierK.k === 'object') for (const [t, k] of Object.entries(d.tierK.k)) if (k >= 0 && k <= 5) TIER_KT[t] = +k;
     retier(d.tierOv, d.tierOrd || {}); if (d.bal) applyBal(d.bal); if (d.layout) setLayoutIn(d.layout);
     EGG_EFF = null; CFG = c; $('#appVer').textContent = 'v' + APP_VER + (c.ver ? ' · 데이터 ' + c.ver : '');
   } catch (e) { console.warn('config', e); }
@@ -7770,7 +7772,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   notiSoon = function () {};   // 작업실에선 '새 소식' 창을 띄우지 않는다
   if (GAL) { save = function () {}; document.documentElement.classList.add('st-gal'); }
   const api = window.__studio = {
-    BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, get MON_ROT() { return MON_ROT; }, get MON_FLY() { return MON_FLY; }, setMonPose(r, f) { MON_ROT = { ...(r || {}) }; MON_FLY = { ...(f || {}) }; }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
+    BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, get MON_ROT() { return MON_ROT; }, get MON_FLY() { return MON_FLY; }, setMonPose(r, f) { MON_ROT = { ...(r || {}) }; MON_FLY = { ...(f || {}) }; }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, get TIER_KT() { return TIER_KT; }, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
     ICO: { berry: ICO_BERRY, brush: ICO_BRUSH, hand: ICO_HAND, pen: PEN, egg: EGG_SVG },   // v3.66: 작업실이 게임 아이콘을 그대로 쓴다
     get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, PET_FR, WASH_FR, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]), HATCH_KM: [0, ...GRADE.slice(1).map(G => G.km)] }; },
     get cfg() { return CFG; },
