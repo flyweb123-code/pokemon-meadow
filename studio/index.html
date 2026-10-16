@@ -212,6 +212,9 @@ h2.ih{display:flex;align-items:center;gap:8px}
 .balg{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-items:start}.balg .card{margin:0}.balg .bal2{grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr));column-gap:28px}.balg .bal2 .br{border-top:1px solid var(--chip)}.balg .bal2 .br.full{grid-column:1/-1}
 .frt{display:grid;gap:6px;grid-column:1/-1;padding-left:32px}.frt .fr{display:grid;grid-template-columns:auto 64px auto 64px auto minmax(0,1fr);gap:6px;align-items:center;font-size:12.5px;color:var(--soft)}.frt .fr input{text-align:right}.frt .fr .dd{color:var(--mute);font-size:11.5px;justify-self:end}
 .bal2{display:grid}.br{display:grid;grid-template-columns:minmax(0,1fr) 128px;gap:8px 12px;align-items:center;padding:9px 2px;border-top:1px solid var(--chip);font-size:13px}.bal2 .br:first-child{border-top:0}
+.br .wide .gw{display:flex;align-items:center;gap:3px;width:100%}.br .wide .gw input{flex:1;min-width:0}.br .wide .gw .u{min-width:0;font-size:11px;color:var(--mute)}
+@media (max-width:820px){.frt{padding-left:0}.frt .fr{grid-template-columns:auto 56px auto 56px auto}.frt .fr .dd{grid-column:1/-1;justify-self:start}}
+.br.sn{grid-template-columns:22px minmax(0,1fr);gap:10px}.br.sn .bic{display:flex}.br .st{display:grid;gap:2px;min-width:0}.br .st label{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.br .st input{width:84px;text-align:right}.br .st small{color:var(--mute);font-size:11.5px}
 .br .uw{display:flex;align-items:center;gap:6px}.br .uw input{min-width:0;flex:1}.br .u{font-size:11.5px;color:var(--mute);min-width:24px}
 .br .wide input{text-align:center}
 .br .bi{display:flex;align-items:center;gap:10px;min-width:0}.br small{display:block;color:var(--mute);font-size:11.5px}.br .bi.span{grid-column:1/-1}
@@ -406,7 +409,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.4';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.5';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -1075,22 +1078,34 @@ function showTierSp(sp) {
 
 // ---------- 밸런스 ----------
 const BAL = [
-  ['보상 골드', [['DUP_G', '이미 만난 포켓몬 부화 골드', '알 등급별 (일반~전설)', 5], ['NEW_EGG_G', '새로 만난 포켓몬 부화 골드', '알 등급별 (일반~전설)', 5], ['NEW_G', '진화로 새로 만났을 때 골드'], ['RUN_G', '런닝 1번 골드']]],
+  ['보상 골드', [['DUP_G', '이미 만난 포켓몬이 알에서 나오면 받는 골드', '알 등급마다', 5], ['NEW_EGG_G', '새 포켓몬이 알에서 나오면 받는 골드', '알 등급마다', 5], ['NEW_G', '진화로 새로 만났을 때 골드'], ['RUN_G', '런닝 1번 골드']]],
   ['친밀도', [['FR_TABLE', '필드에 있을 때 오르는 친밀도', '', 'tbl'], ['BERRY_FR_DAY', '열매로 오르는 친밀도 하루 한도'], ['JOY_HOLD', '즐거움 100 유지 시간 (분) · 쓰다듬기로 채우면 친밀도 +1'], ['WASH_DAY', '빗질 하루 횟수 (+3씩)'], ['FLD_FR_DAY', '필드 시간 친밀도 하루 한도'], ['WALK_FR', '짝꿍 1km당 친밀도'], ['FR_EVO', '친밀도 진화 기준'], ['FR_MAX', '친밀도 만점']]],
   ['상태 게이지', [['CLEAN_DAYS', '청결 100 → 0 걸리는 날', '', 'cd'], ['HUNGER_RATE', '배고픔 오르는 속도 (초당)'], ['JOY_HOURS', '즐거움 100 → 0 걸리는 시간 (깨어 있을 때)', '', 'jh']]],
   ['알·기타', [['MAX_EGGS', '부화기 칸 수'], ['MAX_BAG', '가방 최대 알 수'], ['BAG_STEP', '알 줍는 거리 단위 (km)', '단위마다 0~2개'], ['SHINY_N', '이로치 확률 1/N', '', 'sh']]],
 ];
 // v1.8 경완: 줄마다 게임 아이콘
 const BICO = { DUP_G: 'coin', NEW_EGG_G: 'egg', NEW_G: 'star', RUN_G: 'shoe', FR_TABLE: 'clock', BERRY_FR_DAY: 'berry', JOY_HOLD: 'hand', WASH_DAY: 'brush', FLD_FR_DAY: 'note', WALK_FR: 'shoe', FR_EVO: 'star', FR_MAX: 'heart', CLEAN_DAYS: 'brush', HUNGER_RATE: 'berry', JOY_HOURS: 'note', MAX_EGGS: 'egg', MAX_BAG: 'bag', BAG_STEP: 'shoe', SHINY_N: 'star' }, SICO = ['coin', 'heart', 'clock', 'egg'];
-const BUNIT = { NEW_G: 'G', RUN_G: 'G', BERRY_FR_DAY: '/일', JOY_HOLD: '분', WASH_DAY: '회/일', FLD_FR_DAY: '/일', WALK_FR: '/km', FR_EVO: '점', FR_MAX: '점', CLEAN_DAYS: '일', HUNGER_RATE: '/초', JOY_HOURS: '시간', MAX_EGGS: '칸', MAX_BAG: '개', BAG_STEP: 'km', SHINY_N: '분의 1' };
+const BUNIT = { DUP_G: 'G', NEW_EGG_G: 'G', NEW_G: 'G', RUN_G: 'G', BERRY_FR_DAY: '/일', JOY_HOLD: '분', WASH_DAY: '회/일', FLD_FR_DAY: '/일', WALK_FR: '/km', FR_EVO: '점', FR_MAX: '점', CLEAN_DAYS: '일', HUNGER_RATE: '/초', JOY_HOURS: '시간', MAX_EGGS: '칸', MAX_BAG: '개', BAG_STEP: 'km', SHINY_N: '분의 1' };
+// v2.4 경완: 숫자 칸을 문장 안에 넣어 읽히게 ([앞 글, 뒤 글, 덧붙임(값으로 계산)])
+const SENT = {
+  NEW_G: ['진화로 새 포켓몬을 만나면', 'G'], RUN_G: ['런닝을 1번 할 때마다', 'G'],
+  BERRY_FR_DAY: ['열매를 줘서 오르는 친밀도는 하루에 최대', '까지'], JOY_HOLD: ['쓰다듬기로 즐거움을 100 채우면', '분 동안 안 떨어짐', () => '채울 때마다 친밀도 +1 (이미 100이면 안 오름)'],
+  WASH_DAY: ['빗질로 친밀도 +3 은 하루에', '번까지'], FLD_FR_DAY: ['필드에 있어서 오르는 친밀도는 하루에 최대', '까지'],
+  WALK_FR: ['짝꿍은 1km 걸을 때마다 친밀도', '씩 오름', v => `걷기·달리기 같음 · 10km면 +${+(v * 10).toFixed(1)}`],
+  FR_EVO: ['친밀도가', '이상이면 친밀도 진화'], FR_MAX: ['친밀도 만점은', ''],
+  CLEAN_DAYS: ['청결 100이 0이 되기까지', '일'], HUNGER_RATE: ['배고픔은 1초에', '씩 오름', v => `0 → 100 까지 약 ${+(100 / v / 3600).toFixed(1)}시간`],
+  JOY_HOURS: ['즐거움 100이 0이 되기까지', '시간', () => '깨어 있을 때'],
+  MAX_EGGS: ['부화기에 알을', '칸까지'], MAX_BAG: ['가방에 알을', '개까지'], BAG_STEP: ['', 'km 걸을 때마다 알 0~2개', v => `1km에 평균 ${+(1 / v).toFixed(1)}개`], SHINY_N: ['이로치는', '마리 중 1마리 꼴'],
+};
 const bico = k => BICO[k] === 'egg' ? `<span class="gi">${eggI(1)}</span>` : gi(BICO[k]);
 function renderBal() {
   $('#balC').innerHTML = '<div class="balg">' + BAL.map(([h, L], si) => `<div class="card"><h2 class="ih">${SICO[si] === 'egg' ? `<span class="gi">${eggI(3)}</span>` : gi(SICO[si])}${h}</h2><div class="bal2">${L.map(([k, n, sub, kind]) => {
     const v = bal(k), c = D.bal && k in D.bal ? ' ch' : '', arr = Array.isArray(v);
     const lab = `<div class="bi${arr ? ' span' : ''}">${bico(k)}<div>${n}${sub ? `<small>${sub}</small>` : ''}</div></div>`;
+    const T = SENT[k]; if (!arr && T) return `<div class="br sn"><span class="bic">${bico(k)}</span><div class="st"><label>${T[0] ? `<span>${T[0]}</span>` : ''}<input class="inp${c}" data-b="${k}" inputmode="decimal" value="${v}" aria-label="${esc(n)}">${T[1] ? `<span>${T[1]}</span>` : ''}</label>${T[2] ? `<small>${esc(T[2](v))}</small>` : ''}</div></div>`;
     if (!arr) return `<div class="br">${lab}<span class="uw"><input class="inp${c}" data-b="${k}" inputmode="decimal" value="${v}"><span class="u">${BUNIT[k] || ''}</span></span></div>`;
-    if (kind === 'tbl') return `<div class="br full">${lab}<div class="frt"><div class="small mute">세 게이지(배부름·즐거움·청결) 평균이 높을수록 필드에 있는 동안 친밀도가 빨리 올라요. 위에서부터 맞는 첫 줄을 써요. 하루에는 "필드 시간 친밀도 하루 한도"까지만 올라요.</div>${v.map((r, i) => `<div class="fr"><span>평균</span><input class="inp${c}" data-b="${k}" data-i="${i}" data-j="0" inputmode="decimal" value="${r[0]}" aria-label="게이지 평균"><span>이상이면 1시간에</span><input class="inp${c}" data-b="${k}" data-i="${i}" data-j="1" inputmode="decimal" value="${r[1]}" aria-label="시간당 친밀도"><span>오름</span><span class="dd">${(() => { const d = Math.min(r[1] * 24, bal('FLD_FR_DAY') || Infinity); return `하루 ${+d.toFixed(1)} · 만점까지 ${Math.ceil((bal('FR_MAX') || 255) / d)}일`; })()}</span></div>`).join('')}</div></div>`;
-    const cells = v.map((x, i) => i ? `<label>${eggI(i)}<span style="color:${GC[i]}">${GN[i]}</span><input class="inp${c}" data-b="${k}" data-i="${i}" inputmode="decimal" value="${x}"></label>` : '').filter(Boolean);
+    if (kind === 'tbl') return `<div class="br full">${lab}<div class="frt"><div class="small mute">세 게이지(배부름·즐거움·청결) 평균이 높을수록 필드에 있는 동안 친밀도가 빨리 올라요. 위에서부터 맞는 첫 줄을 써요. 하루에는 아래 "필드에 있어서 오르는 친밀도는 하루에 최대" 값까지만 올라요.</div>${v.map((r, i) => `<div class="fr"><span>평균</span><input class="inp${c}" data-b="${k}" data-i="${i}" data-j="0" inputmode="decimal" value="${r[0]}" aria-label="게이지 평균"><span>이상이면 1시간에</span><input class="inp${c}" data-b="${k}" data-i="${i}" data-j="1" inputmode="decimal" value="${r[1]}" aria-label="시간당 친밀도"><span>오름</span><span class="dd">${(() => { const d = Math.min(r[1] * 24, bal('FLD_FR_DAY') || Infinity); return `하루 ${+d.toFixed(1)} · 만점까지 ${Math.ceil((bal('FR_MAX') || 255) / d)}일`; })()}</span></div>`).join('')}</div></div>`;
+    const cells = v.map((x, i) => i ? `<label>${eggI(i)}<span style="color:${GC[i]}">${GN[i]}</span><span class="gw"><input class="inp${c}" data-b="${k}" data-i="${i}" inputmode="decimal" value="${x}">${BUNIT[k] ? `<span class="u">${BUNIT[k]}</span>` : ''}</span></label>` : '').filter(Boolean);
     return `<div class="br">${lab}<div class="wide" style="--n:${cells.length}">${cells.join('')}</div></div>`; }).join('')}</div></div>`).join('') + '</div>';
   $('#balI').innerHTML = `<h4>밸런스</h4><div class="small mute">게임 곳곳에 있는 숫자들이에요. 고친 칸은 주황색이 되고 작업본에 모여요.</div><div class="chips"><button class="chip" id="balReset"${D.bal ? '' : ' disabled'}>모두 게임 값으로</button></div>`;
   $('#balReset').onclick = () => { delete D.bal; saveDraft(); renderBal(); };
@@ -1250,7 +1265,8 @@ const BUBS = [
 ];
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
-  ['2.4', '10월 16일', ['소품 세부 창을 더 크게 (334×440), "새로운 소품으로 저장"·"삭제" 버튼. 전체 소품에서 지우면 그 소품 종류가 맵과 게임 데이터에서 모두 빠짐 (한 번 더 물어봄, 되살리기 가능)', '맵에 있는 소품을 누르면 그 소품 하나만 바꾸는 세부 창', '편집하기 버튼을 위 막대 맨 오른쪽 색 버튼으로, 편집 중엔 빨간 "편집 종료"', '위 막대의 화면 가림·세이프 존 버튼은 편집 창으로만. "화면 가림"은 "포켓몬 경계선"으로 이름 바꾸고 안내 글이 잘리지 않게', '맵이 바뀌면 되돌리기가 늘 켜짐 (Ctrl/⌘+Z 도)', '밸런스: 상자마다 한 줄, 필드 친밀도를 "평균 몇 이상이면 1시간에 몇" 표로', '티어 경계 보장: 낮은 티어는 어느 포켓몬이든 다음 티어보다 드물게 (게임 v3.70)', '편집 창 버튼을 칸에 맞춰 정리, 편집 중 오른쪽 빈 칸은 도트 배경', '포켓몬 화면에 "동작 빠짐"·"먹기 동작 없음"·"그림 바꿈" 거르기', '티어 화면에서 포켓몬을 누르면 오른쪽에 포켓몬 정보와 알마다 나올 확률', '알 아이콘을 게임 알에서 금만 뺀 모양으로', '그림 모음을 더 빨리 열리게 (게임 파일을 다시 받지 않음)']],
+  ['2.5', '10월 16일', ['밸런스 숫자를 문장 안에 넣어 정리: "짝꿍은 1km 걸을 때마다 친밀도 [2]씩 오름"처럼 무엇이 얼마나인지 바로 읽히게, 아래에 계산된 값 (10km면 +20 등)', '골드 칸은 모두 G 단위 표시']],
+  ['2.4', '10월 16일', ['소품 세부 창을 더 크게 (334×440), "새로운 소품으로 저장"·"삭제" 버튼. 전체 소품에서 지우면 그 소품 종류가 맵과 게임 데이터에서 모두 빠짐 (한 번 더 물어봄, 되살리기 가능)', '맵에 있는 소품을 누르면 그 소품 하나만 바꾸는 세부 창', '편집하기 버튼을 위 막대 맨 오른쪽 색 버튼으로, 편집 중엔 빨간 "편집 종료"', '위 막대의 화면 가림·세이프 존 버튼은 편집 창으로만. "화면 가림"은 "포켓몬 경계선"으로 이름 바꾸고 안내 글이 잘리지 않게', '맵이 바뀌면 되돌리기가 늘 켜짐 (Ctrl/⌘+Z 도)', '밸런스: 상자마다 한 줄, 숫자마다 "1km 걸을 때마다 친밀도 [2]씩 오름"처럼 문장으로, 필드 친밀도는 "평균 몇 이상이면 1시간에 몇" 표로', '티어 경계 보장: 낮은 티어는 어느 포켓몬이든 다음 티어보다 드물게 (게임 v3.70)', '편집 창 버튼을 칸에 맞춰 정리, 편집 중 오른쪽 빈 칸은 도트 배경', '포켓몬 화면에 "동작 빠짐"·"먹기 동작 없음"·"그림 바꿈" 거르기', '티어 화면에서 포켓몬을 누르면 오른쪽에 포켓몬 정보와 알마다 나올 확률', '알 아이콘을 게임 알에서 금만 뺀 모양으로', '그림 모음을 더 빨리 열리게 (게임 파일을 다시 받지 않음)']],
   ['2.3', '10월 16일', ['알 아이콘을 무늬 없는 매끈한 알로', '수집 확률: 등급마다 "알 1개 나오는 평균 거리(km)"로 정하고, 막대를 끌어서도 바꿈 (일반 알은 나머지)', '등급별 포켓몬 정리: 알 고르기 칸, 티어별 막대·% 줄, 포켓몬 목록 칸 정렬', '티어: 카드를 끌어서 순서·티어 옮기기. 앞일수록 알에서 드물게 (알별로 직접 정한 순서가 있으면 그걸 따름)', '밸런스를 두 줄 칸으로 정리하고 단위 표시', '맵 포켓몬 모두 빼기가 원래 있던 포켓몬도 뺌 (게임 v3.69)']],
   ['2.2', '10월 16일', ['포켓몬 화면: ← → 키로 이전·다음 포켓몬, ↑ ↓ 키로 동작 넘기기 (위쪽 ◀ ▶ 버튼도)', '포켓몬 정보 정리: 큰 미리보기에 이로치 버튼, 동작·정보·종족값 막대·도감 설명을 칸별로']],
   ['2.1', '10월 16일', ['포켓몬 넣기 창에서 누르기만 해도 맵에 나옴 (끌어다 놓기도 그대로). 나온 포켓몬은 바로 골라진 상태, 맵 빈 곳을 누르면 선택 풀림', '포켓몬 넣기 창에 포켓몬 이름 표시', '포켓몬 넣기 창·소품 창도 오른쪽 아래 모서리로 크기 조절 (떠 있는 창 모두 옮기기·크기 조절 가능)', '맵 화면 필드 포켓몬에 "무작위로 채우기" 버튼 (빈 칸을 채우고, 꽉 차 있으면 새로 뽑기)', '소품 창 기본 폭을 3칸으로 넓힘', '"맵에 하나뿐" 칸을 없애고 열매나무·횃대·모닥불 등도 같은 목록에 개수 1로 표시', '밸런스: 쓰다듬기 하루 횟수 대신 "즐거움 100 유지 시간(분)" (게임 v3.68 쓰다듬기 규칙 변경에 맞춤)']],
