@@ -443,7 +443,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.28';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.29';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -678,10 +678,11 @@ function tovFit(ET0, goal) { const ET = JSON.parse(JSON.stringify(ET0));   // �
 function tovBar(T, WF) { const TS = Array.from({ length: 10 }, (_, i) => 10 - i).filter(t => T[t] > 0), q = TS.map(t => Math.sqrt(T[t])), qs = q.reduce((a, b) => a + b, 0) || 1, W = WF || q.map(v => v / qs * 100); let c = 0; const cum = W.map(v => c += v);
   return `<div class="tsb" id="tovb">${TS.map((t, i) => `<div class="sg" data-t="${t}" style="width:${W[i]}%;background:${TC(t)}" title="${t}티어 ${pct(T[t])}"><span class="sl"${W[i] < 7 ? ' hidden' : ''}>${t}<b class="num">${pct(T[t])}</b></span></div>`).join('')}${TS.slice(0, -1).map((t, i) => `<b class="bk" data-i="${i}" style="left:${cum[i]}%" title="끌어서 ${t}·${TS[i + 1]}티어 전체 확률 바꾸기"></b>`).join('')}</div>`; }
 function tovCard() { const T = tovOf(eggTiers()), anyD = [1, 2, 3, 4, 5].some(g => boxDirty('pool:' + g));
-  return `<div class="card" id="tovC"><div class="row" style="flex-wrap:wrap;gap:8px"><h2 style="flex:1">티어별 전체 출현 확률 <span class="small mute">알 1개당 · 모든 알 합</span></h2><button class="btn" id="tovSave"${anyD ? '' : ' disabled'}>알 5개 모두 저장</button></div>
+  return `<div class="card" id="tovC"><div class="row" style="flex-wrap:wrap;gap:8px"><h2 style="flex:1">티어별 전체 출현 확률 <span class="small mute">알 1개당 · 모든 알 합</span></h2><button class="chip" id="tovDef"${D.eggTiers && JSON.stringify(D.eggTiers) !== JSON.stringify(ORIG.eggTiers) ? '' : ' disabled'} title="티어별 비율을 지금 배포된 값으로">기본값으로</button><button class="btn" id="tovSave"${anyD ? '' : ' disabled'}>알 5개 모두 저장</button></div>
     ${tovBar(T)}<div class="tsl" id="tovl">${tovLeg(T)}</div><div class="small mute">손잡이를 끌면 양옆 두 티어의 전체 확률이 바뀌고, 그에 맞춰 알 등급마다 티어 비율이 알아서 조절돼요 (알 수집 확률은 그대로). 칸 너비는 보기 쉽게 확률의 제곱근으로 그려요. "실제"는 티어 경계 보장(낮은 티어 포켓몬이 높은 티어보다 흔해지지 않게)을 거친 게임 값이에요.</div></div>`; }
 function tovLeg(T) { const E = tovOf(effTiers()); return Array.from({ length: 10 }, (_, i) => 10 - i).filter(t => T[t] > 0).map(t => `<span><i style="background:${TC(t)}"></i>${t}티어 <b class="num">${pct(T[t])}</b>${Math.abs((E[t] || 0) - T[t]) > T[t] * .02 ? `<em>실제 ${pct(E[t] || 0)}</em>` : ''}</span>`).join(''); }
-$('#poolC').addEventListener('click', e => { if (!e.target.closest('#tovSave')) return; for (let g = 1; g <= 5; g++) if (boxDirty('pool:' + g)) boxAct('pool:' + g, true); renderPool(); });
+$('#poolC').addEventListener('click', e => { if (e.target.closest('#tovDef')) { delete D.eggTiers; saveDraft(); renderPool(); toast('티어별 확률을 기본값으로 돌렸어요. 저장해야 반영돼요'); return; }   // v2.29 경완: 막대 그래프 기본값으로
+  if (!e.target.closest('#tovSave')) return; for (let g = 1; g <= 5; g++) if (boxDirty('pool:' + g)) boxAct('pool:' + g, true); renderPool(); });
 $('#poolC').addEventListener('pointerdown', e => { const k = e.target.closest('#tovb .bk'); if (!k || e.button > 0) return; e.preventDefault(); e.stopPropagation();
   const ET0 = JSON.parse(JSON.stringify(eggTiers())), T0 = tovOf(ET0), TS = Array.from({ length: 10 }, (_, i) => 10 - i).filter(t => T0[t] > 0), i = +k.dataset.i, a = TS[i], b = TS[i + 1], S = T0[a] + T0[b];
   const q = TS.map(t => Math.sqrt(T0[t])), qs = q.reduce((x, y) => x + y, 0), lo = q.slice(0, i).reduce((x, y) => x + y, 0) / qs, span = (q[i] + q[i + 1]) / qs; let ET = null; k.classList.add('on');
@@ -1606,6 +1607,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.29', '10월 16일', ['알 › 등급별 포켓몬: 티어별 전체 출현 확률 막대에 "기본값으로" 버튼']],
   ['2.28', '10월 16일', ['크기 조절 모드에서 Ctrl/⌘+S 로 크기 저장']],
   ['2.27', '10월 16일', ['크기 저장 버튼은 크기 조절 모드 막대에만, "크기 기본값"은 한 단계씩 되돌리는 "되돌리기"로 (Ctrl/⌘+Z 도)']],
   ['2.26', '10월 16일', ['크기 조절 모드: 포켓몬 크기에 맞춘 칸 너비로 겹치지 않게, 가운데 줄이 화면 아래까지 차면 맵을 늘리지 않고 양옆 빈 곳에 채움 (게임 v3.89)', '크기 조절 모드 중엔 위쪽 시간·날씨·기종·편집 버튼을 잠그고 크기 조절 모드 버튼만 켜진 모습, 배경 투명도 막대를 막대 맨 앞으로']],
