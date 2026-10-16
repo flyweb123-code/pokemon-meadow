@@ -115,7 +115,7 @@ table.t th{font-family:var(--px);font-size:11px;font-weight:400;color:var(--mute
 .gb{position:relative;display:inline-block;background:#f8f8f8;color:#282830;border:2px solid #383848;padding:1px 6px 2px;font:13px/1.25 var(--px);white-space:nowrap}
 .gb::after{content:"";position:absolute;left:50%;bottom:-7px;margin-left:-4px;border:4px solid transparent;border-bottom:0;border-top:5px solid #383848}
 .gb.heart{color:#e0405a}.gb.anger{color:#d62f2f}.gb.note{color:#2b6cc4}.gb.zz{color:#5560a8;background:#e8eaff}.gb.star{color:#c08000;background:#fff6c8}.gb svg{display:block;width:16px;height:16px;margin:1px 0 0}
-.bubs ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;align-items:flex-start;gap:4px}.bubs li{background:var(--chip);border-radius:4px;padding:3px 8px;font-size:12.5px;line-height:1.4;color:var(--fg)}.bubs .bn{font-size:13px;font-weight:600;color:var(--fg)}
+.bubs ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;align-items:flex-start;gap:4px}.bubs li{background:var(--chip);border-radius:4px;padding:3px 8px;font-size:12.5px;line-height:1.4;color:var(--fg)}.nmg{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}.nmc{display:grid;gap:4px;justify-items:start;background:var(--deep);border:1px solid var(--chip);border-radius:6px;padding:8px;color:var(--fg);font:inherit;text-align:left;cursor:pointer}.nmc:hover{border-color:var(--acc)}.nmc .cv{display:flex;gap:6px}.nmc canvas{width:96px;height:96px;background:#5d9a3e;border-radius:4px}.nmc canvas[data-o]{opacity:.75}.bubs .bn{font-size:13px;font-weight:600;color:var(--fg)}.bubs li.bch{display:flex;align-items:center;gap:6px;cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:pan-y}.bubs li.bch.mv{background:#a2581d;color:#fff}.bubs li.bch.drag{opacity:.35;filter:grayscale(1)}.bch .bx{background:none;border:0;color:inherit;opacity:.6;cursor:pointer;font:inherit;font-size:15px;line-height:1;padding:0 2px}.bch .bx:hover{opacity:1;color:var(--bad)}.bubs li.bem{background:none;color:var(--soft);font-size:12px}.bubs .bc.drop{box-shadow:inset 0 0 0 2px var(--acc)}.bubs .bc.gone .bw{background:#5a4a4a}li.prg.bch{background:var(--chip);color:var(--fg);padding:3px 8px;font-size:12.5px;display:flex;gap:6px}
 .plist{display:grid;gap:2px}
 .pr,.prh{display:grid;grid-template-columns:44px 40px minmax(90px,170px) 40px minmax(0,1fr) 64px 92px;align-items:center;gap:10px;padding:3px 8px;border-radius:4px;background:none;border:0;text-align:left;color:inherit}
 .prh{font-size:11px;color:var(--mute);padding-bottom:0}.plist .pr:nth-child(even){background:rgba(128,128,128,.06)}
@@ -255,7 +255,7 @@ body.odrag{cursor:ew-resize;user-select:none}
   #spx .zh,#zoom .zh,#ebar .eh{cursor:move}
 }
 body.wdrag iframe{pointer-events:none}
-@media (min-width:821px){body.editing #mapI{background:repeating-conic-gradient(#2b2e37 0 25%,#262932 0 50%) 0 0/16px 16px}body.editing #mapI>*{visibility:hidden}}   /* v2.4 경완: 편집 중 오른쪽 칸은 도트 배경 */   /* 편집 중엔 오른쪽 칸을 숨기되 자리는 그대로 (휴대폰이 움직이지 않게) */
+body.editing #mapI>:not(#ebar){display:none!important}#ebar.inside{position:static;width:auto!important;height:auto!important;max-height:none;resize:none;box-shadow:none;border:0;border-radius:0;padding:0;background:none;z-index:auto}#ebar.inside .eh{cursor:default}   /* v2.4 경완: 편집 중 오른쪽 칸은 도트 배경 */   /* 편집 중엔 오른쪽 칸을 숨기되 자리는 그대로 (휴대폰이 움직이지 않게) */
 .vers{display:grid;gap:8px}.vers .vr{display:grid;grid-template-columns:64px minmax(0,1fr);gap:4px 12px;border-top:1px solid var(--chip);padding-top:8px}
 .vers .vr b{font-family:var(--px);font-weight:400;color:var(--fg);font-size:15px}.vers .vr.now b{color:var(--acc)}.vers ul{margin:0;padding-left:1.1em;font-size:13px;line-height:1.6}
 .vcard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center}.vcard .big{font-family:var(--px);font-size:30px;color:var(--acc);line-height:1}
@@ -346,6 +346,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
         <div><h4>필드 일지</h4><div class="logl" id="logl" style="margin-top:8px"><div class="mute" style="border:0;padding:0">아직 없어요</div></div></div>
       </aside>
     </section>
+    <!-- v2.11 경완: 새로 만든 동작 모아 보기 -->
+    <section class="view" data-v="newmo" hidden>
+      <div class="vc scroll"><div class="cards" id="newmoC"></div></div>
+      <aside class="vi" id="newmoI"><h4>새 모션</h4><div class="small mute">원래 가져온 스프라이트에 없어서 새로 만들어 넣은 동작만 모았어요. 카드를 누르면 포켓몬 화면에서 그 포켓몬을 열어요.</div></aside>
+    </section>
     <!-- 포켓몬·모션 -->
     <section class="view" data-v="mon" hidden>
       <div class="vc">
@@ -369,7 +374,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
     <section class="view" data-v="bub" hidden>
       <div class="seg" data-g="more"></div>
       <div class="vc scroll"><div class="cards" id="bubC"></div></div>
-      <aside class="vi" id="bubI"><h4>말풍선</h4><div class="small mute">필드 포켓몬 머리 위에 뜨는 말풍선이 어느 상황에 나오는지 모아 뒀어요. 같은 말풍선이 여러 상황에 나올 수 있어요.</div></aside>
+      <aside class="vi" id="bubI"><h4>말풍선</h4><div class="small mute">필드 포켓몬 머리 위에 뜨는 말풍선이 어느 장면에 나오는지 모아 뒀어요. 칩을 끌어 다른 말풍선으로 옮기거나 × 로 지울 수 있어요. 바꾼 건 미리보기 게임에 바로 들어가고, 저장·배포하면 진짜 게임에도 들어가요.</div></aside>
     </section>
     <section class="view" data-v="ver" hidden>
       <div class="seg" data-g="more"></div>
@@ -417,7 +422,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.10';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.11';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -431,10 +436,10 @@ const ICO = {
   bub: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M2 1h8v1h1v5h-1v1H6v1H5v1H4v1H3V8H2V7H1V2h1zm0 1v5h2v2h1V8h5V2z"/></svg>',
   more: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 5h2v2H1zm4 0h2v2H5zm4 0h2v2H9z"/></svg>',
 };
-const VIEWS = { map: ['맵', 'map'], mon: ['포켓몬', 'poke'], odds: ['알 수집 확률', 'egg'], pool: ['알 등급별 포켓몬', 'egg'], hatch: ['알 부화 거리', 'egg'], bub: ['말풍선', 'bub'], ver: ['버전 기록', 'doc'], egg: ['알', 'egg'], tier: ['티어', 'tier'], bal: ['밸런스', 'bal'], art: ['그림 모음', 'art'], work: ['배포하기', 'doc'], test: ['테스트 도구', 'tool'] };
-const NAV = [['게임 화면', ['map', 'mon', 'bub']], ['데이터', ['egg', 'tier', 'bal']], ['기타', ['art', 'work', 'ver', 'test']]];
-const MTABS = [['map', '맵', 'map', ['map']], ['mon', '포켓몬', 'poke', ['mon']], ['egg', '알', 'egg', ['odds', 'pool', 'hatch', 'tier']], ['art', '그림', 'art', ['art']], ['more', '더보기', 'more', ['bal', 'work', 'test', 'bub', 'ver']]];
-const SEGS = { egg: [['odds', '수집 확률'], ['pool', '등급별 포켓몬'], ['hatch', '부화 거리'], ['tier', '티어']], more: [['bal', '밸런스'], ['work', '배포하기'], ['test', '테스트'], ['bub', '말풍선'], ['ver', '버전']] };
+const VIEWS = { map: ['맵', 'map'], mon: ['포켓몬', 'poke'], newmo: ['새 모션', 'poke'], odds: ['알 수집 확률', 'egg'], pool: ['알 등급별 포켓몬', 'egg'], hatch: ['알 부화 거리', 'egg'], bub: ['말풍선', 'bub'], ver: ['버전 기록', 'doc'], egg: ['알', 'egg'], tier: ['티어', 'tier'], bal: ['밸런스', 'bal'], art: ['그림 모음', 'art'], work: ['배포하기', 'doc'], test: ['테스트 도구', 'tool'] };
+const NAV = [['게임 화면', ['map', 'mon', 'newmo', 'bub']], ['데이터', ['egg', 'tier', 'bal']], ['기타', ['art', 'work', 'ver', 'test']]];
+const MTABS = [['map', '맵', 'map', ['map']], ['mon', '포켓몬', 'poke', ['mon']], ['egg', '알', 'egg', ['odds', 'pool', 'hatch', 'tier']], ['art', '그림', 'art', ['art']], ['more', '더보기', 'more', ['bal', 'work', 'test', 'bub', 'newmo', 'ver']]];
+const SEGS = { egg: [['odds', '수집 확률'], ['pool', '등급별 포켓몬'], ['hatch', '부화 거리'], ['tier', '티어']], more: [['bal', '밸런스'], ['work', '배포하기'], ['test', '테스트'], ['bub', '말풍선'], ['newmo', '새 모션'], ['ver', '버전']] };
 const GN = ['', '일반', '희귀', '레어', '에픽', '전설'], GC = ['', '#9aa0a8', '#4aa8f0', '#8a6ae0', '#e0a020', '#e05050'];
 const TC = t => `hsl(${(t - 1) * 26} 60% ${t < 4 ? 58 : 66}%)`;
 let A = null, view = 'map';
@@ -457,9 +462,9 @@ function startRename(v) { const a = $(`.nav a[data-v="${v}"]`); if (!a) return; 
   inp.onkeydown = e => { if (e.key === 'Enter') end(true); else if (e.key === 'Escape') end(false); e.stopPropagation(); }; inp.onblur = () => end(true); inp.onclick = e => e.stopPropagation(); }
 const lastOf = {};
 // v2.10 경완: 저장 안 하고 다른 화면으로 가면 그 화면에서 고친 것은 마지막으로 저장한 상태로 되돌린다
-const VIEW_BOX = v => v === 'odds' ? ['odds', 'pity'] : v === 'pool' ? [1, 2, 3, 4, 5].map(g => 'pool:' + g) : v === 'hatch' ? ['hatch'] : v === 'tier' ? ['tier'] : v === 'bal' ? BAL.map((_, i) => 'bal:' + i) : v === 'map' ? ['layout'] : [];
+const VIEW_BOX = v => v === 'odds' ? ['odds', 'pity'] : v === 'pool' ? [1, 2, 3, 4, 5].map(g => 'pool:' + g) : v === 'hatch' ? ['hatch'] : v === 'tier' ? ['tier'] : v === 'bal' ? BAL.map((_, i) => 'bal:' + i) : v === 'map' ? ['layout'] : v === 'bub' ? ['bub'] : [];
 function discardView(v) { if (!ORIG) return; const ids = VIEW_BOX(v).filter(boxDirty); if (!ids.length) return;
-  for (const id of ids) { for (const p of boxPaths(id)) putP(D, p, D._sv || {}); if (id === 'layout') { try { A?.setLayout(D.layout || ORIG.layout); } catch (e) {} } }
+  for (const id of ids) { for (const p of boxPaths(id)) putP(D, p, D._sv || {}); if (id === 'layout') { try { A?.setLayout(D.layout || ORIG.layout); } catch (e) {} } if (id === 'bub') bubLive(); }
   saveDraft(); toast(`저장 안 한 수정 ${ids.length}곳을 되돌렸어요`); }
 function go(v) {
   if (v === 'egg') v = EGGV.includes(store.get('st-egg')) ? store.get('st-egg') : 'odds'; if (EGGV.includes(v)) store.set('st-egg', v);
@@ -520,7 +525,10 @@ function fitPhone() { safeZ(); setTimeout(safeZ, 200); statusBar(); applyInsets(
   p.style.width = w + 'px'; p.style.height = h + 'px'; p.style.borderRadius = (h / w > 1.9 ? 44 : h / w > 1.6 ? 20 : 26) + 'px';
   if (m) { const want = Math.round(Math.min(innerHeight * .72, (b.clientWidth - 16) * h / w + 16)); if (Math.abs(b.clientHeight - want) > 1) b.style.height = want + 'px'; } else b.style.height = '';
   const pad = m ? 12 : 24, k = Math.min((b.clientHeight - pad) / h, (b.clientWidth - pad) / w, 1.2); p.style.transform = `scale(${k}) translate(-50%,-50%)`; p.dataset.k = k; ebarPos(); }
-function ebarPos() { const e = $('#ebar'); if (mobile()) { e.style.left = e.style.top = ''; return; } if (winApply(e)) return; const r = $('#phone').getBoundingClientRect(), l = r.right + 20, wd = Math.max(240, Math.min(560, innerWidth - 16 - l));   // v1.9 경완: 휴대폰 오른쪽, 아래 끝을 휴대폰에 맞춰 넓게
+// v2.11 경완: 편집 중엔 오른쪽 칸이 편집 창이 된다 (떠 있는 편집 창 대신). 휴대폰은 그대로 아래쪽 창
+function ebarHome() { const e = $('#ebar'), inS = editing && !mobile(); e.classList.toggle('inside', inS); if (inS && e.parentElement !== $('#mapI')) { e.style.cssText = ''; $('#mapI').prepend(e); } else if (!inS && e.parentElement !== $('#mapBox')) $('#mapBox').append(e); }
+addEventListener('resize', () => { if (editing) ebarHome(); });
+function ebarPos() { const e = $('#ebar'); if (e.classList.contains('inside')) return; if (mobile()) { e.style.left = e.style.top = ''; return; } if (winApply(e)) return; const r = $('#phone').getBoundingClientRect(), l = r.right + 20, wd = Math.max(240, Math.min(560, innerWidth - 16 - l));   // v1.9 경완: 휴대폰 오른쪽, 아래 끝을 휴대폰에 맞춰 넓게
   e.style.width = wd + 'px'; e.style.left = Math.min(innerWidth - wd - 8, l) + 'px'; e.style.top = Math.max(8, r.bottom - e.offsetHeight) + 'px'; }
 new ResizeObserver(fitPhone).observe($('#mapBox'));
 
@@ -534,25 +542,25 @@ const cl = v => v === undefined ? undefined : JSON.parse(JSON.stringify(v));
 function effP(o, p) { const [a, b] = p.split('.');
   if (a === 'eggTiers') return (o.eggTiers || ORIG.eggTiers)[b]; if (a === 'eggList') return o.eggList && b in o.eggList ? o.eggList[b] : (ORIG.eggList?.[b] || null);
   if (a === 'bal') return o.bal && b in o.bal ? o.bal[b] : ORIG.bal[b]; if (a === 'pity') return { ...ORIG.pity, ...(o.pity || {}) };
-  if (a === 'tierOv' || a === 'tierOrd') return o[a] || {}; return o[a] ?? ORIG[a]; }
+  if (a === 'tierOv' || a === 'tierOrd') return o[a] || {}; if (a === 'bub') return o.bub ?? ORIG.bub ?? {}; return o[a] ?? ORIG[a]; }
 function putP(o, p, src) {   // src(작업본) 의 p 값을 o 에 그대로 옮긴다 (src 가 없으면 게임 값으로)
   const [a, b] = p.split('.');
   if (a === 'eggTiers') { const v = src ? effP(src, p) : ORIG.eggTiers[b]; o.eggTiers = cl(o.eggTiers || ORIG.eggTiers); o.eggTiers[b] = cl(v); if (JSON.stringify(o.eggTiers) === JSON.stringify(ORIG.eggTiers)) delete o.eggTiers; return; }
   if (b != null) { const has = src && src[a] && b in src[a]; o[a] = { ...(o[a] || {}) }; if (has) o[a][b] = cl(src[a][b]); else delete o[a][b]; if (!Object.keys(o[a]).length) delete o[a]; return; }
   if (src && a in src) o[a] = cl(src[a]); else delete o[a]; }
-const BOXES = { odds: () => ['odds'], pity: () => ['pity'], hatch: () => ['bal.HATCH_KM'], tier: () => ['tierOv', 'tierOrd'], layout: () => ['layout'] };
+const BOXES = { bub: () => ['bub'], odds: () => ['odds'], pity: () => ['pity'], hatch: () => ['bal.HATCH_KM'], tier: () => ['tierOv', 'tierOrd'], layout: () => ['layout'] };
 const boxPaths = id => { const [t, x] = id.split(':'); return t === 'pool' ? ['eggTiers.' + x, 'eggList.' + x] : t === 'bal' ? BAL[x][1].map(r => 'bal.' + r[0]) : BOXES[t](); };
 const same = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
 const boxDirty = id => ORIG && boxPaths(id).some(p => !same(effP(D, p), effP(D._sv || {}, p)));
 const boxDef = id => ORIG && boxPaths(id).every(p => same(effP(D, p), effP({}, p)));
 const boxSaved = id => ORIG && boxPaths(id).some(p => !same(effP(D._sv || {}, p), effP({}, p)));
-const ALLBOX = () => ['odds', 'pity', 'hatch', 'tier', 'layout', ...[1, 2, 3, 4, 5].map(g => 'pool:' + g), ...BAL.map((_, i) => 'bal:' + i)];
+const ALLBOX = () => ['odds', 'pity', 'hatch', 'tier', 'layout', 'bub', ...[1, 2, 3, 4, 5].map(g => 'pool:' + g), ...BAL.map((_, i) => 'bal:' + i)];
 const unsaved = () => ORIG ? ALLBOX().filter(boxDirty).length : 0;
 function boxBar(id, lab = '') { const d = boxDirty(id), sv = boxSaved(id);
   return `<div class="sbx${d ? ' dirty' : ''}" data-box="${id}"><span class="st">${d ? '● 저장 안 함' : sv ? '✓ 저장됨 · 배포 대기' : '게임 값 그대로'}</span><button class="chip" data-bd${boxDef(id) ? ' disabled' : ''} title="지금 게임에 들어 있는 값으로 (저장해야 반영)">기본값으로</button><button class="btn" data-bs${d ? '' : ' disabled'}>${lab || '저장'}</button></div>`; }
 function boxAct(id, save) { const P = boxPaths(id);
   if (save) { const W = D; W._sv = W._sv || {}; for (const p of P) putP(W._sv, p, W); if (!Object.keys(W._sv).length) delete W._sv; toast('저장했어요. 배포하기에 들어갔어요'); }
-  else { for (const p of P) putP(D, p, null); if (id === 'layout') A?.setLayout(ORIG.layout); toast('기본값으로 돌렸어요. 저장을 눌러야 반영돼요'); }
+  else { for (const p of P) putP(D, p, null); if (id === 'layout') A?.setLayout(ORIG.layout); if (id === 'bub') bubLive(); toast('기본값으로 돌렸어요. 저장을 눌러야 반영돼요'); }
   saveDraft(); if (id === 'layout') layoutBar(); else RENDER[view]?.(); }
 document.addEventListener('click', e => { const b = e.target.closest('[data-bs],[data-bd]'), x = b?.closest('[data-box]'); if (!x || b.disabled) return; boxAct(x.dataset.box, b.hasAttribute('data-bs')); });
 function layoutBar() { const e = $('#eSave'); if (e) e.innerHTML = boxBar('layout', '배치 저장'); }
@@ -637,7 +645,7 @@ $('#wx').onclick = e => { const b = e.target.closest('[data-w]'); if (!b) return
 let editing = false;
 // 편집하기 (v1.7 경완): 화면 배치는 그대로, 편집 버튼은 휴대폰 오른쪽 작은 창에
 let preEdit = null;
-function setEdit(on) { if (on === editing) return; editing = on; A?.edit(on); $('#ebar').hidden = !on; document.body.classList.toggle('editing', on); if (on) ebarPos(); $('#eMode').classList.toggle('stop', on); $('#eMode').textContent = on ? '편집 종료' : '편집하기'; $('#eUndo').disabled = !(A?.undoN?.() ?? 0);
+function setEdit(on) { if (on === editing) return; editing = on; A?.edit(on); $('#ebar').hidden = !on; document.body.classList.toggle('editing', on); ebarHome(); if (on) ebarPos(); $('#eMode').classList.toggle('stop', on); $('#eMode').textContent = on ? '편집 종료' : '편집하기'; $('#eUndo').disabled = !(A?.undoN?.() ?? 0);
   if (on) { preEdit = { now: $('#hrNow').classList.contains('on'), h: +$('#hr').value, w: $('#wx .on')?.dataset.w || '' }; A?.setHour(12); A?.setWx('clear'); }   // 편집할 땐 맑은 한낮으로
   else if (preEdit) { if (preEdit.now) A?.setHour(null); else A?.setHour(preEdit.h); A?.setWx(preEdit.w); preEdit = null; closeZoom(); } if (!on) { $('#propPane').hidden = true; renderReact(null); } requestAnimationFrame(fitPhone); }
 $('#eMode').onclick = () => setEdit(!editing);
@@ -838,6 +846,9 @@ function openZoom(k, el) {
     else if (b.id === 'zAdd') { if (!editing) setEdit(true); A.add(k); if (!mine && !nol && JSON.stringify(LKz) !== JSON.stringify(L0)) A.setSelLook?.(LKz); renderDock(); dockMark(A.selInfo?.()); toast('가운데에 놓았어요. 끌어서 옮겨요'); } };
 }
 // 맵에 놓인 소품 하나: 여기서 바꾸는 건 이 소품만 (전체 소품에는 안 퍼짐)
+// v2.11 경완: 맵에서 소품을 누르면 왼쪽 소품 창도 "맵에 있는 소품" 탭으로 바꾸고 그 소품 칸에 테두리
+function mapTap(s) { if (A?.insts && dockTab !== 'map') { dockTab = 'map'; store.set('st-dock-tab', 'map'); renderDock(); }
+  dockMark(s); const c = $(`.dock [data-ik="${s.key}:${s.i}"]`); c?.scrollIntoView({ block: 'nearest', inline: 'nearest' }); openInst(s, c || undefined); }
 function openInst(s, el) {
   if (!s) { closeZoom(); return; } zoomK = 'inst'; const look = !!(s.lk && A.selLook);
   const z = $('#zoom'); z.hidden = false;
@@ -865,17 +876,17 @@ function winApply(el) { const w = winGet(el.id); if (!w || mobile()) return fals
   Object.assign(el.style, { left: Math.max(8, Math.min(innerWidth - W - 8, w.l)) + 'px', top: Math.max(8, Math.min(innerHeight - 60, w.t)) + 'px', right: 'auto', bottom: 'auto' }); if (w.w) el.style.width = W + 'px'; if (w.h) el.style.height = Math.min(w.h, innerHeight - 16) + 'px'; return true; }
 const winSave = el => { const r = el.getBoundingClientRect(); store.set(WKEY(el.id), JSON.stringify({ l: Math.round(r.left), t: Math.round(r.top), w: el.style.width ? Math.round(r.width) : 0, h: el.dataset.rz || el.id === 'spx' ? Math.round(r.height) : 0 })); };
 for (const id in WINS) { const el = $('#' + id);
-  el.addEventListener('pointerdown', e => { if (mobile() || e.button) return; const h = e.target.closest(WINS[id]); if (!h || e.target.closest('button,input,select,textarea')) return; e.preventDefault(); document.body.classList.add('wdrag'); const r = el.getBoundingClientRect(), dx = e.clientX - r.left, dy = e.clientY - r.top;
+  el.addEventListener('pointerdown', e => { if (mobile() || e.button || el.classList.contains('inside')) return; const h = e.target.closest(WINS[id]); if (!h || e.target.closest('button,input,select,textarea')) return; e.preventDefault(); document.body.classList.add('wdrag'); const r = el.getBoundingClientRect(), dx = e.clientX - r.left, dy = e.clientY - r.top;
     const mv = ev => { el.style.left = Math.max(0, Math.min(innerWidth - 60, ev.clientX - dx)) + 'px'; el.style.top = Math.max(0, Math.min(innerHeight - 40, ev.clientY - dy)) + 'px'; el.style.right = el.style.bottom = 'auto'; };
     const up = () => { document.body.classList.remove('wdrag'); removeEventListener('pointermove', mv); removeEventListener('pointerup', up); winSave(el); }; addEventListener('pointermove', mv); addEventListener('pointerup', up); });
-  el.addEventListener('dblclick', e => { if (mobile() || !e.target.closest(WINS[id]) || e.target.closest('button,input')) return; store.set(WKEY(id), ''); el.style.width = el.style.height = el.dataset.rz = ''; ({ spx: spxPos, ebar: ebarPos, zoom: () => zoomPos(el) })[id](); toast('창을 제자리로 돌렸어요'); });
-  let sz = ''; el.addEventListener('pointerdown', () => { sz = el.offsetWidth + 'x' + el.offsetHeight; document.body.classList.add('wdrag'); }); addEventListener('pointerup', () => { document.body.classList.remove('wdrag'); setTimeout(() => { sz = ''; }, 300); });
+  el.addEventListener('dblclick', e => { if (mobile() || el.classList.contains('inside') || !e.target.closest(WINS[id]) || e.target.closest('button,input')) return; store.set(WKEY(id), ''); el.style.width = el.style.height = el.dataset.rz = ''; ({ spx: spxPos, ebar: ebarPos, zoom: () => zoomPos(el) })[id](); toast('창을 제자리로 돌렸어요'); });
+  let sz = ''; el.addEventListener('pointerdown', () => { if (el.classList.contains('inside')) return; sz = el.offsetWidth + 'x' + el.offsetHeight; document.body.classList.add('wdrag'); }); addEventListener('pointerup', () => { document.body.classList.remove('wdrag'); setTimeout(() => { sz = ''; }, 300); });
   new ResizeObserver(() => { if (!mobile() && sz && sz !== el.offsetWidth + 'x' + el.offsetHeight) { el.dataset.rz = 1; clearTimeout(el._rs); el._rs = setTimeout(() => winSave(el), 200); } }).observe(el); el.addEventListener('pointerup', () => { if (!mobile() && sz && sz !== el.offsetWidth + 'x' + el.offsetHeight) { el.dataset.rz = 1; winSave(el); } sz = ''; }); }
 
 // ---------- 포켓몬·모션 ----------
 let monQ = '', monTy = 0, monF = '';
 // v2.4 경완: 그림 거르기. 동작 빠짐 = 가만히·걷기·잠·공격·아파함·깡충 중 없는 게 있거나 가만히가 한 장, 먹기 없음, 그림 바꿈 = 움직이는 그림이 없어 새로 그려 넣은 포켓몬
-const META = {"m":{},"eat":[2,3,6,8,9,10,11,12,13,14,15,17,18,19,20,21,22,24,29,30,31,32,33,34,35,36,40,41,42,43,44,45,46,47,49,50,51,53,54,55,56,57,59,60,61,62,64,65,67,68,69,70,71,72,73,74,75,76,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,95,96,97,98,99,502,503,504,505,507,508,509,510,511,512,513,515,517,518,519,521,524,525,526,527,528,529,532,533,534,535,536,537,539,540,541,542,544,545,546,547,550,551,552,553,554,555,556,560,561,562,563,566,567,569,571,574,575,576,578,579,580,581,583,584,586,588,589,590,593,594,595,596,598,599,600,601,602,603,604,606,608,609,611,612,613,614,615,617,620,621,623,628,629,630,631,632,634,635,636,637,638,639,640,641,642,644,645,646,647,649,651,652,655,657,658,659,660,661,663,664,665,671,673,674,675,676,680,681,682,685,686,687,688,689,690,691,692,693,695,696,697,699,700,701,702,703,704,705,706,707,708,709,711,712,713,715,716,717,718,720,721,723,724,726,727,729,730,731,734,736,737,738,739,740,741,743,746,747,748,749,750,751,752,754,755,758,759,760,761,763,764,766,767,768,769,770,771,774,776,778,779,780,781,783,784,785,787,788,789,790,791,792,793,794,795,796,797,798,799,800,801,803,804,805,806,807,808,809,811,812,815,817,818,819,820,821,823,824,825,826,828,829,830,832,833,834,836,841,842,843,844,845,846,847,848,849,850,851,853,854,855,856,857,858,859,860,861,862,863,864,867,868,871,872,873,874,875,876,877,880,881,882,883,885,886,887,888,889,890,891,892,894,895,896,897,898,899,900,901,902,903,904,905,907,908,910,911,913,914,915,916,917,918,919,920,922,923,924,925,927,928,932,933,934,936,937,938,939,940,941,946,948,951,952,953,955,957,958,959,960,961,963,964,965,966,967,968,969,970,971,972,974,975,976,977,978,979,980,981,982,983,984,985,987,988,989,991,992,994,995,996,997,998,1000,101,102,103,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,134,137,138,139,141,142,143,144,145,146,147,148,149,1004,1005,1006,1007,1009,1011,1012,1013,1015,1017,1018,1019,1024,1025,153,154,159,160,162,163,166,167,168,169,170,173,174,175,178,181,182,184,185,186,187,188,189,192,193,195,196,199,201,202,204,205,208,210,211,212,213,214,216,217,218,219,221,222,223,224,226,227,229,230,232,233,234,237,239,241,242,243,244,245,247,248,249,250,254,256,257,259,264,265,266,267,268,269,270,271,272,273,275,276,277,278,279,282,283,284,285,287,288,289,290,291,292,293,295,297,298,299,302,303,305,306,307,308,313,314,316,317,318,319,320,321,322,323,324,325,326,329,330,331,332,336,337,338,339,340,342,343,344,345,347,348,349,350,351,354,355,356,360,362,363,364,365,366,367,368,369,370,372,374,375,376,377,378,379,381,382,383,384,386,388,389,391,392,394,395,397,398,400,401,402,405,408,409,410,411,413,414,415,416,419,420,421,422,423,424,425,426,428,429,430,432,435,436,437,438,442,443,444,445,449,450,451,452,454,455,457,458,459,460,461,462,463,464,465,466,467,468,469,472,473,474,475,476,478,479,480,482,483,484,485,486,487,494,496,497,499,500],"one":[],"rd":[514,516,520,522,523,538,558,564,565,591,592,616,618,626,668,683,732,733,735,756,765,837,838,839,865,866,870,878,879,893,929,931,942,943,944,945,947,949,950,954,956,962,973,986,990,993,999,1001,1002,1003,1008,1014,1020,1021,1022,1023]}, MSET = { miss: new Set([...Object.keys(META.m).map(Number), ...META.one]), eat: new Set(META.eat), rd: new Set(META.rd) };
+const META = {"m":{},"eat":[2,3,6,8,9,10,11,12,13,14,15,17,18,19,20,21,22,24,29,30,31,32,33,34,35,36,40,41,42,43,44,45,46,47,49,50,51,53,54,55,56,57,59,60,61,62,64,65,67,68,69,70,71,72,73,74,75,76,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,95,96,97,98,99,502,503,504,505,507,508,509,510,511,512,513,515,517,518,519,521,524,525,526,527,528,529,532,533,534,535,536,537,539,540,541,542,544,545,546,547,550,551,552,553,554,555,556,560,561,562,563,566,567,569,571,574,575,576,578,579,580,581,583,584,586,588,589,590,593,594,595,596,598,599,600,601,602,603,604,606,608,609,611,612,613,614,615,617,620,621,623,628,629,630,631,632,634,635,636,637,638,639,640,641,642,644,645,646,647,649,651,652,655,657,658,659,660,661,663,664,665,671,673,674,675,676,680,681,682,685,686,687,688,689,690,691,692,693,695,696,697,699,700,701,702,703,704,705,706,707,708,709,711,712,713,715,716,717,718,720,721,723,724,726,727,729,730,731,734,736,737,738,739,740,741,743,746,747,748,749,750,751,752,754,755,758,759,760,761,763,764,766,767,768,769,770,771,774,776,778,779,780,781,783,784,785,787,788,789,790,791,792,793,794,795,796,797,798,799,800,801,803,804,805,806,807,808,809,811,812,815,817,818,819,820,821,823,824,825,826,828,829,830,832,833,834,836,841,842,843,844,845,846,847,848,849,850,851,853,854,855,856,857,858,859,860,861,862,863,864,867,868,871,872,873,874,875,876,877,880,881,882,883,885,886,887,888,889,890,891,892,894,895,896,897,898,899,900,901,902,903,904,905,907,908,910,911,913,914,915,916,917,918,919,920,922,923,924,925,927,928,932,933,934,936,937,938,939,940,941,946,948,951,952,953,955,957,958,959,960,961,963,964,965,966,967,968,969,970,971,972,974,975,976,977,978,979,980,981,982,983,984,985,987,988,989,991,992,994,995,996,997,998,1000,101,102,103,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,134,137,138,139,141,142,143,144,145,146,147,148,149,1004,1005,1006,1007,1009,1011,1012,1013,1015,1017,1018,1019,1024,1025,153,154,159,160,162,163,166,167,168,169,170,173,174,175,178,181,182,184,185,186,187,188,189,192,193,195,196,199,201,202,204,205,208,210,211,212,213,214,216,217,218,219,221,222,223,224,226,227,229,230,232,233,234,237,239,241,242,243,244,245,247,248,249,250,254,256,257,259,264,265,266,267,268,269,270,271,272,273,275,276,277,278,279,282,283,284,285,287,288,289,290,291,292,293,295,297,298,299,302,303,305,306,307,308,313,314,316,317,318,319,320,321,322,323,324,325,326,329,330,331,332,336,337,338,339,340,342,343,344,345,347,348,349,350,351,354,355,356,360,362,363,364,365,366,367,368,369,370,372,374,375,376,377,378,379,381,382,383,384,386,388,389,391,392,394,395,397,398,400,401,402,405,408,409,410,411,413,414,415,416,419,420,421,422,423,424,425,426,428,429,430,432,435,436,437,438,442,443,444,445,449,450,451,452,454,455,457,458,459,460,461,462,463,464,465,466,467,468,469,472,473,474,475,476,478,479,480,482,483,484,485,486,487,494,496,497,499,500],"one":[],"rd":[514,516,520,522,523,538,558,564,565,591,592,616,618,626,668,683,732,733,735,756,765,837,838,839,865,866,870,878,879,893,929,931,942,943,944,945,947,949,950,954,956,962,973,986,990,993,999,1001,1002,1003,1008,1014,1020,1021,1022,1023],"gen":{"53":["Idle"],"59":["Idle"],"510":["Idle"],"514":["Attack","Idle"],"516":["Attack"],"520":["Attack"],"522":["Attack"],"523":["Attack"],"538":["Attack"],"558":["Attack"],"564":["Attack"],"565":["Attack"],"591":["Attack","Idle"],"592":["Attack"],"593":["Attack","Hop","Hurt"],"616":["Attack"],"618":["Attack","Idle","Sleep"],"626":["Attack"],"668":["Attack"],"677":["Idle"],"683":["Attack"],"688":["Sleep"],"732":["Attack"],"733":["Attack"],"735":["Attack"],"756":["Attack"],"765":["Attack"],"805":["Sleep"],"812":["Idle"],"837":["Attack"],"838":["Attack"],"839":["Attack"],"865":["Attack"],"866":["Attack"],"867":["Sleep"],"870":["Attack"],"874":["Hop","Hurt","Sleep"],"878":["Attack"],"879":["Attack"],"883":["Hop","Hurt","Sleep"],"893":["Attack"],"917":["Hop"],"929":["Attack"],"931":["Attack"],"942":["Attack"],"943":["Attack"],"944":["Attack"],"945":["Attack"],"947":["Attack"],"948":["Attack","Hop","Hurt","Idle"],"949":["Attack"],"950":["Attack"],"954":["Attack"],"956":["Attack"],"962":["Attack"],"968":["Hurt"],"973":["Attack"],"986":["Attack"],"990":["Attack","Sleep"],"992":["Sleep"],"993":["Attack"],"995":["Idle","Sleep"],"999":["Attack"],"1001":["Attack"],"1002":["Attack"],"1003":["Attack"],"1008":["Attack"],"1014":["Attack"],"1020":["Attack"],"1021":["Attack"],"1022":["Attack"],"1023":["Attack"],"1025":["Attack","Hop"],"185":["Idle"],"499":["Hop"]}}, MSET = { miss: new Set([...Object.keys(META.m).map(Number), ...META.one]), eat: new Set(META.eat), rd: new Set(META.rd) };
 const MF = [['', '모든 그림'], ['miss', '동작 빠짐'], ['eat', '먹기 동작 없음'], ['rd', '그림 바꿈']];
 function renderMon() {
   if (!$('#monTy').dataset.done) { $('#monTy').dataset.done = 1; $('#monTy').innerHTML = `<button class="chip on" data-t="0">모든 타입</button>` + A.TYPE_KO.slice(1).map((n, i) => `<button class="chip" data-t="${i + 1}" style="--c:${A.TYPE_C[i + 1]}">${n}</button>`).join(''); }
@@ -920,6 +931,25 @@ function monStep(dlt) { const L = $$('#monGrid .mc'); if (!L.length) return; let
 function animStep(dlt) { const L = $$('#anims .am'); if (!L.length) return; let i = L.findIndex(c => c.classList.contains('on')); i = (i + dlt + L.length) % L.length; L[i].click(); L[i].scrollIntoView({ block: 'nearest' }); }
 addEventListener('keydown', e => { if (view !== 'mon' || e.altKey || e.ctrlKey || e.metaKey || e.target.closest?.('input,textarea,select')) return;
   const k = { ArrowLeft: () => monStep(-1), ArrowRight: () => monStep(1), ArrowUp: () => animStep(-1), ArrowDown: () => animStep(1) }[e.key]; if (k) { e.preventDefault(); k(); } });
+// v2.11 경완: 새로 만든 동작(META.gen)만 한 화면에 모두 움직여 보기
+const GENW = { Idle: '숨쉬기 프레임 추가', Sleep: '잠 프레임 추가', Attack: '대기 그림 돌진', Hurt: '대기 그림 깜빡임', Hop: '대기 그림 깡충' };
+let nmRaf = 0;
+async function renderNewmo() {
+  const G = META.gen || {}, L = Object.keys(G).map(Number).sort((a, b) => a - b), cnt = L.reduce((a, sp) => a + G[sp].length, 0);
+  $('#newmoC').innerHTML = `<div class="card"><h2>새로 만든 동작 ${cnt}개 <span class="num mute small">${L.length}종</span></h2><div class="small mute">원래 스프라이트에 없거나 멈춰 있어서, 원래 대기 그림으로 만들어 넣은 동작이에요. 바로 옆에 원래 가만히 동작을 같이 보여 줘요.</div>
+    <div class="nmg">${L.map(sp => G[sp].map(n => `<button class="nmc" data-sp="${sp}"><span class="cv"><canvas width="96" height="96" data-a="Idle" data-sp="${sp}" data-o="1" title="원래 가만히"></canvas><canvas width="96" height="96" data-a="${n}" data-sp="${sp}"></canvas></span><b>${esc(spName(sp))} <span class="num mute">No.${sp}</span></b><span class="small"><span class="tag" style="background:#6a5acd">${ANIM_KO[n] || n}</span> ${GENW[n] || ''}</span></button>`).join('')).join('')}</div></div>`;
+  for (const sp of L) A.ensureSprite(sp).catch(() => {});
+  const IM = {}; cancelAnimationFrame(nmRaf); const t0 = performance.now();
+  const tick = now => { nmRaf = requestAnimationFrame(tick); if (view !== 'newmo') return;
+    for (const c of $$('#newmoC canvas')) { const sp = +c.dataset.sp, P = A.SPRITES[sp]; if (typeof P !== 'object') continue;
+      if (!IM[sp]) { IM[sp] = new Image(); IM[sp].src = P.i; } const im = IM[sp]; if (!im.complete || !im.naturalWidth) continue;
+      const a = P.a[c.dataset.a]; if (!a) continue; const durs = a[6], tot = durs.reduce((x, y) => x + y, 0), t = ((now - t0) / 1000 * 60) % tot; let f = 0, acc = 0; for (let i = 0; i < durs.length; i++) { acc += durs[i]; if (t < acc) { f = i; break; } }
+      const g = c.getContext('2d'); g.imageSmoothingEnabled = false; g.clearRect(0, 0, 96, 96); const I = P.a.Idle, k = Math.max(1, Math.floor(Math.min(64 / I[1], 64 / I[2])));   // 두 칸 같은 배율
+      // 기준점(cx, cy)을 칸 가운데 아래쪽에 맞춰 원래 동작과 새 동작이 같은 자리에 서게
+      g.drawImage(im, f * (a[1] + (P.G || 0)), a[0], a[1], a[2], Math.round(48 - a[4] * k), Math.round(70 - a[5] * k), a[1] * k, a[2] * k); } };
+  nmRaf = requestAnimationFrame(tick);
+}
+$('#newmoC').addEventListener('click', e => { const b = e.target.closest('.nmc'); if (!b) return; sel.mon = +b.dataset.sp; go('mon'); showMon(sel.mon); });
 function drawAnim(now) {
   anim.raf = requestAnimationFrame(drawAnim);
   const c = $('#mcv'); if (!c || !anim.img || view !== 'mon') return; const g = c.getContext('2d'); g.imageSmoothingEnabled = false; g.clearRect(0, 0, c.width, c.height);
@@ -1219,6 +1249,7 @@ function changesOf() {
   if (D.eggList) for (const g of Object.keys(D.eggList)) out.push([`${GN[g]} 알 포켓몬`, ORIG.eggList?.[g] ? '직접 정한 목록' : '티어 비율', D.eggList[g] ? `직접 정함 (${D.eggList[g].length}종)` : '티어 비율', 'elist:' + g]);
   if (D.tierOv) for (const [sp, t] of Object.entries(D.tierOv)) out.push([`${spName(+sp)} 티어`, A.TIER[sp] + '티어', t + '티어', 'tier:' + sp]);
   if (D.tierOrd) for (const [t, O] of Object.entries(D.tierOrd)) out.push([`${t}티어 순서`, ORIG.tierOrd[t] ? '직접 정한 순서' : '종족값 순', O ? '직접 정한 순서' : '종족값 순', 'tord:' + t]);
+  if (D.bub && A?.SCN) { const a = ORIG.bub || {}, b = D.bub; for (const [id, def, lab] of A.SCN) { const x = id in a ? a[id] : def, y = id in b ? b[id] : def; if (x !== y) out.push([`말풍선 · ${lab}`, x || '지움', y || '지움', 'bub:' + id]); } }
   if (D.bal) for (const [k, v] of Object.entries(D.bal)) out.push([balName(k), JSON.stringify(ORIG.bal[k]), JSON.stringify(v), 'bal:' + k]);
   return out;
 }
@@ -1239,6 +1270,7 @@ function undoCore(key, live) {
   else if (t === 'elist') { delete D.eggList[a]; if (!Object.keys(D.eggList).length) delete D.eggList; }
   else if (t === 'tier') { delete D.tierOv[a]; if (!Object.keys(D.tierOv).length) delete D.tierOv; }
   else if (t === 'tord') { delete D.tierOrd[a]; if (!Object.keys(D.tierOrd).length) delete D.tierOrd; }
+  else if (t === 'bub') { const o = { ...(D.bub || {}) }, og = ORIG.bub || {}; if (a in og) o[a] = og[a]; else delete o[a]; D.bub = o; if (JSON.stringify(o) === JSON.stringify(og)) delete D.bub; if (live) bubLive(); }
   else if (t === 'bal') { delete D.bal[a]; if (!Object.keys(D.bal).length) delete D.bal; }
   } catch (e) {}   // 작업 중 값에 그 항목이 없으면 그냥 지나간다
 }
@@ -1278,7 +1310,7 @@ function snapshotOf() {
   const tierOv = { ...(LIVE.data?.tierOv || {}) }; for (const [sp, t] of Object.entries(D.tierOv || {})) tierOv[sp] = t; for (const sp of Object.keys(tierOv)) if (tierOv[sp] === A.TIER0[sp]) delete tierOv[sp];
   const eggL = {}; for (let g = 1; g <= 5; g++) { const E = eggList(g); if (E) eggL[g] = E; }
   const tierOrd = { ...(ORIG.tierOrd || {}), ...(D.tierOrd || {}) }; for (const t of Object.keys(tierOrd)) if (!tierOrd[t]?.length) delete tierOrd[t];
-  return { layout: D.layout || ORIG.layout, odds: odds(), pity: pity(), eggTiers: eggTiers(), eggList: eggL, tierOv, tierOrd, bal: { ...ORIG.bal, ...(D.bal || {}) } };
+  return { layout: D.layout || ORIG.layout, odds: odds(), pity: pity(), eggTiers: eggTiers(), eggList: eggL, tierOv, tierOrd, bub: effP(D, 'bub'), bal: { ...ORIG.bal, ...(D.bal || {}) } };
 }
 const ghErr = e => e.status === 401 ? '열쇠가 맞지 않거나 만료됐어요' : e.status === 403 || e.status === 404 ? '저장소에 쓸 권한이 없어요 (pokemon-meadow, Contents 쓰기)' : e.message || String(e);
 async function gh(path, opt = {}, tok = store.get('st-gh-token')) {
@@ -1331,34 +1363,9 @@ function renderTest() {
 }
 function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#game').src = GAME + '?studio&r=' + Date.now(); go('map'); }
 
-// v1.6 경완: 말풍선마다 어느 상황에 뜨는지 (게임 코드에서 emote 를 부르는 곳을 모아 정리)
-const BUBS = [
-  ['!', '', '놀람·알아챔', ['내가 놓은 열매를 알아챘을 때', '나무에서 떨어진 열매를 배고픈 포켓몬이 알아챘을 때', '손가락으로 집어 들었을 때', '덤불에 숨었다가 튀어나올 때', '바위·땅·격투 타입이 바위 위에서 포즈를 잡을 때', '유령이 바로 앞에 쑥 나타났을 때', '시끄러운 소리에 깨어날 때']],
-  ['!!', 'anger', '깜짝·화남', ['싸움에서 공격받거나 놀래킴을 당했을 때', '물·얼음 타입이 모닥불에 놀라 물러날 때', '불꽃 타입이 물웅덩이에 발이 닿았을 때', '전기를 모으다 스스로 감전됐을 때', '다른 포켓몬의 기술·전설 기술에 놀랐을 때', '특수 장면에서 깜짝 놀라는 순간']],
-  ['!?', '', '당황', ['땅 위에 놓인 잉어킹이 파닥거릴 때', '갑자기 놀라 깼을 때']],
-  ['?', '', '궁금함', ['먹으러 간 열매를 다른 포켓몬이 먼저 먹었을 때', '쓰다듬기를 시작할 때', '혼자 서 있다가 가끔', '말을 걸었는데 상대가 반응하지 않을 때', '고라파덕이 두통으로 머리를 감쌀 때', '특수 장면에서 무슨 일인지 궁금해할 때']],
-  ['…?', '', '어리둥절', ['빗질을 시작할 때', '특수 장면에서 늦게 눈치챘을 때']],
-  ['…', '', '멍·머쓱', ['혼자 멍하니 있을 때', '쓰다듬다가 그만뒀을 때', '열매나무를 흔들었는데 열매가 없을 때', '비에 꺼진 모닥불 재를 맡을 때', '무거운 포켓몬이 꽃밭 앞에서 멈칫할 때', '바위에 기대 쉴 때', '쫓아가다 놓쳤을 때', '단단해지기·사이코 같은 특기를 쓸 때']],
-  ['♪', 'note', '기분 좋음', ['쓰다듬기·빗질을 마쳤을 때', '횃대·그루터기·연못·웅덩이에서 놀 때', '꽃밭 냄새를 맡거나 벌레 타입이 꿀을 모을 때', '낮에 모닥불을 쬘 때', '잠든 친구 얼굴에 장난을 쳤을 때', '싸움에서 이기거나 화해했을 때', '진화했을 때']],
-  ['♪♪', 'note', '노래', ['푸린처럼 노래하는 특기를 쓸 때']],
-  ['♥', 'heart', '좋아함', ['내가 준 열매를 받아먹었을 때', '친한 친구를 만났을 때', '지친 친구를 돌봐 줄 때', '풀·페어리 타입이 꽃밭에서 행복할 때', '특수 장면에서 사이가 좋아졌을 때']],
-  ['…♥', 'heart', '수줍음', ['좋아하는 친구를 만났을 때 가끔']],
-  ['😋', '', '냠냠', ['열매를 먹는 동안']],
-  ['배불러', '', '배부름', ['배가 불러서 열매를 사양할 때', '열매를 먹다가 배가 가득 찼을 때 (배불러!)']],
-  ['꼬르륵', '', '배고픔', ['배부름이 50 아래로 떨어지면 가끔 (배고파…)']],
-  ['💦', '', '헐떡임', ['땅 위의 잉어킹 (헉…헉…, 파닥파닥, …!)']],
-  ['#', 'anger', '짜증', ['싸움에서 도발할 때 (흥!, …!)', '찬 바람·독가스 특기에 주변이 움츠릴 때', '다들 잠든 걸 보고 볼을 부풀릴 때']],
-  ['☀', '', '햇빛', ['낮에 햇빛을 쬐는 특기 (뚜벅쵸는 ☾)']],
-  ['☾', '', '달빛', ['밤에 달빛을 받는 특기']],
-  ['z Z', 'zz', '잠듦', ['노래·하품 같은 특기에 잠들 때']],
-  ['드르렁', 'zz', '코골이', ['잠이 많은 포켓몬이 잘 때 가끔']],
-  ['★', 'star', '특별 장면', ['포켓몬을 끌어 다른 포켓몬에 겹쳤을 때, 특수 장면이 있는 상대 위에']],
-  ['✧', '', '반짝', ['빗질하는 동안 깨끗해질 때']],
-  ['아직 안 씻어도 돼', '', '빗질 거절', ['아직 깨끗한데 빗질하려 할 때']],
-  ['외침', '', '기술 외침', ['친밀도 만점 포켓몬이 기술을 쓸 때. 포켓몬마다 외치는 말이 달라요']],
-];
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.11', '10월 16일', ['말풍선: 장면 칩 × 로 지우기, 칩을 끌어 다른 말풍선으로 옮기기. 저장·배포하면 게임에서도 그 장면에 그 말풍선 (게임 v3.77)', '새 모션 화면: 새로 만들어 넣은 동작만 원래 가만히 동작과 나란히', '티어 4~10 을 본가 등장 순서·포획률도 넣어 다시 나눔 (게임 v3.77)', '그림 바꾼 포켓몬 56종 공격 동작을 원래 대기 그림 돌진으로']],
   ['2.10', '10월 16일', ['게임 v3.74 친밀도: 열심히 관리하면(필드·열매·쓰다듬기·빗질·짝꿍 걷기 합) 만점까지 약 7일', '밸런스: 필드 친밀도 위에 "열심히 관리하면 하루 얼마 · 며칠" 계산', '빗질 친밀도는 씻긴 청결만큼 비례', '필드 친밀도: 그래프 구간 아래 칸에서 바로 고침 (1시간에 오르는 양 · 구간 시작값)', '쓰다듬기 친밀도 하루 횟수(기본 5번) 다시 생김', '저장 안 하고 다른 화면으로 가면 그 화면에서 고친 것은 마지막 저장 상태로 되돌림', '등급별 포켓몬: 순위 머리글을 누르면 오름차순·내림차순']],
   ['2.9', '10월 16일', ['밸런스: 즐거움 유지 시간과 쓰다듬기 친밀도를 따로, 빗질 하루 횟수 대신 빗질 한 번 친밀도', '밸런스: 알 줍는 거리 단위 뺌 (알 메뉴에 있음)', '세 게이지 → 건강 게이지', '필드 친밀도 그래프를 건강 게이지 막대로 다시', '알 › 등급별 포켓몬: 순위 옆 ≡ 지움, 줄을 끌면 반투명한 줄이 따라오고 원래 줄은 흐리게', '티어: 카드 크기 → 화면 크기(50~250%, 카드·그림·글자 함께 커지고 줄 칸 수 자동)', '게임 v3.73: 필드 친밀도 하루 한도 10 → 36']],
   ['2.8', '10월 16일', ['게임 v3.72 확률에 맞춤: 같은 티어 안은 모두 같은 확률', '티어: 카드 크기 조절 (− · 막대 · +, 이 기기에 기억)', '밸런스: 필드 친밀도 위에 건강 게이지 0~100 가로 막대(구간별), 그 아래 구간마다 오르는 친밀도']],
@@ -1386,11 +1393,38 @@ function renderVer() { const n = changes().length, gv = gameVer();
     <div class="kv"><span>작업실</span><b class="num">v${STUDIO_VER}</b><span>게임</span><b class="num">${gv || '불러오는 중'}</b><span>데이터</span><b class="num">v${LIVE.ver || 0}${LIVE.at ? ' · ' + new Date(LIVE.at).toLocaleDateString('ko-KR') : ''}</b><span>배포 안 한 바뀐 곳</span><b class="num">${n}개</b><span>휴대폰 틀</span><b>${esc(dev[1])}</b></div></div>
     <div class="card"><h2>버전 기록</h2><div class="vers">${SVERS.map(([v, d, L]) => `<div class="vr${v === STUDIO_VER ? ' now' : ''}"><div><b>v${v}</b><div class="small mute">${esc(d)}</div></div><ul>${L.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`).join('')}</div></div>`;
 }
+// v2.11 경완: 장면 칩 x 로 지우기, 칩을 끌어 다른 말풍선으로 옮기기. 저장·배포하면 게임에서도 그 장면에 그 말풍선이 뜬다
+function bubOf(id) { const E = effP(D, 'bub'), r = A.SCN.find(x => x[0] === id); return id in E ? E[id] : r[1]; }
+function bubLive() { try { A?.setBub(effP(D, 'bub')); } catch (e) {} }
+function setBubOf(id, k) { const og = ORIG.bub || {}, def = A.SCN.find(x => x[0] === id)[1], o = { ...effP(D, 'bub') }; if (k === def) delete o[id]; else o[id] = k;
+  if (og[id] === undefined && k === def) delete o[id]; D.bub = o; if (JSON.stringify(o) === JSON.stringify(og)) delete D.bub; saveDraft(); bubLive(); renderBub(); }
 function renderBub() {
-  const PX = A?.PIXE || {};
-  $('#bubC').innerHTML = `<div class="card"><h2>말풍선 ${BUBS.length}가지</h2><div class="small mute">특수 장면(포켓몬 둘이 만나는 장면)에는 장면마다 정해 둔 말풍선이 따로 더 있어요.</div><div class="bubs">${BUBS.map(([t, c, n, L]) => `<div class="bc"><div class="bw"><span class="gb ${c}">${PX[t] || esc(t)}</span></div><div class="bn">${esc(n)}</div><ul>${L.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`).join('')}</div></div>`;
+  const PX = A?.PIXE || {}; if (!A?.SCN) { $('#bubC').innerHTML = '<div class="card"><div class="empty">게임을 불러오는 중…</div></div>'; return; }
+  const by = {}; for (const [id, def] of A.SCN) { const k = bubOf(id); (by[k] = by[k] || []).push(id); }
+  const lab = id => A.SCN.find(x => x[0] === id)[2], moved = id => bubOf(id) !== A.SCN.find(x => x[0] === id)[1];
+  const chip = (id, gone) => `<li class="bch${moved(id) ? ' mv' : ''}" data-sc="${id}"><span>${esc(lab(id))}</span>${gone ? `<button class="bx" data-bre="${id}" title="원래 말풍선으로 되돌리기" aria-label="되돌리기">↶</button>` : `<button class="bx" data-bdel="${id}" title="이 장면에선 말풍선 안 띄우기" aria-label="지우기">×</button>`}</li>`;
+  const gone = by[''] || [];
+  $('#bubC').innerHTML = `<div class="card"><div class="row"><h2 style="flex:1">말풍선 ${A.BUBK.length}가지</h2></div><div class="small mute">장면 칩의 × 로 그 장면의 말풍선을 지우고, 칩을 끌어 다른 말풍선 칸에 놓으면 그 장면에 그 말풍선이 떠요. 주황 칩 = 바꾼 장면. 저장한 뒤 배포하면 게임에도 들어가요. 특수 장면마다 따로 정해 둔 말풍선은 여기 없어요.</div>${boxBar('bub')}
+    <div class="bubs">${A.BUBK.map(([k, t, c, n]) => `<div class="bc" data-bk="${esc(k)}"><div class="bw"><span class="gb ${c}">${t == null ? '외침' : PX[t] || esc(t)}</span></div><div class="bn">${esc(n)}</div><ul>${(by[k] || []).map(id => chip(id)).join('') || '<li class="bem">여기로 장면 칩을 끌어 오세요</li>'}</ul></div>`).join('')}
+    <div class="bc gone" data-bk=""><div class="bw"><span class="gb">✕</span></div><div class="bn">지운 장면 ${gone.length}개</div><ul>${gone.map(id => chip(id, 1)).join('') || '<li class="bem">지운 장면이 없어요</li>'}</ul></div></div></div>`;
 }
-const RENDER = { ver: renderVer, bub: renderBub, map: () => {}, mon: renderMon, odds: renderOdds, pool: renderPool, hatch: renderHatch, tier: renderTier, bal: renderBal, work: renderWork, test: renderTest };
+$('#bubC').addEventListener('click', e => { if (Date.now() - bubDragAt < 300) return; const d = e.target.closest('[data-bdel]'); if (d) { setBubOf(d.dataset.bdel, ''); toast('이 장면 말풍선을 지웠어요. 저장해야 반영돼요'); return; }
+  const r = e.target.closest('[data-bre]'); if (r) setBubOf(r.dataset.bre, A.SCN.find(x => x[0] === r.dataset.bre)[1]); });
+let bubDragAt = 0;
+$('#bubC').addEventListener('pointerdown', e => { const ch = e.target.closest('.bch'); if (!ch || e.target.closest('.bx') || e.button > 0) return; const touch = e.pointerType !== 'mouse'; if (!touch) e.preventDefault();
+  const id = ch.dataset.sc, x0 = e.clientX, y0 = e.clientY, R0 = ch.getBoundingClientRect(); let on = false, over = null, lp = 0, gh = null, lx = x0, ly = y0;
+  const place = () => { if (gh) { gh.style.left = (R0.left + lx - x0) + 'px'; gh.style.top = (R0.top + ly - y0) + 'px'; } };
+  const begin = () => { on = true; gh = ch.cloneNode(true); gh.classList.add('prg', 'bch'); gh.style.width = R0.width + 'px'; gh.style.listStyle = 'none'; document.body.append(gh); place(); ch.classList.add('drag'); navigator.vibrate?.(8); };
+  if (touch) lp = setTimeout(begin, 300);
+  const mv = ev => { lx = ev.clientX; ly = ev.clientY; if (!on) { if (Math.hypot(ev.clientX - x0, ev.clientY - y0) < 6) return; if (touch) return end(); begin(); }
+    place(); const el = document.elementFromPoint(ev.clientX, ev.clientY)?.closest('#bubC .bc'); if (over && over !== el) over.classList.remove('drop'); over = el || null; over?.classList.add('drop');
+    const pl = $('#bubC').closest('.scroll'), r = pl?.getBoundingClientRect(); if (r) { if (ev.clientY < r.top + 40) pl.scrollTop -= 12; else if (ev.clientY > r.bottom - 40) pl.scrollTop += 12; } };
+  const tm = ev => { if (on) ev.preventDefault(); };
+  const end = () => { clearTimeout(lp); removeEventListener('pointermove', mv); removeEventListener('pointerup', end); removeEventListener('pointercancel', end); removeEventListener('touchmove', tm); ch.classList.remove('drag'); gh?.remove();
+    if (!on) return; bubDragAt = Date.now(); if (!over) return; over.classList.remove('drop'); const k = over.dataset.bk; if (k !== bubOf(id)) { setBubOf(id, k); toast(k ? '옮겼어요. 저장해야 반영돼요' : '지웠어요. 저장해야 반영돼요'); } };
+  addEventListener('pointermove', mv); addEventListener('pointerup', end); addEventListener('pointercancel', end); addEventListener('touchmove', tm, { passive: false }); });
+$('#bubC').addEventListener('contextmenu', e => { if (e.target.closest('.bch')) e.preventDefault(); });
+const RENDER = { ver: renderVer, bub: renderBub, newmo: renderNewmo, map: () => {}, mon: renderMon, odds: renderOdds, pool: renderPool, hatch: renderHatch, tier: renderTier, bal: renderBal, work: renderWork, test: renderTest };
 
 // ---------- 게임과 연결 ----------
 function hook() {
@@ -1398,13 +1432,13 @@ function hook() {
   $('#gLoad').hidden = true;
   if (!w.document.__unmk) { w.document.__unmk = 1; w.addEventListener('pointerdown', e => { if (!e.target.closest?.('.mon')) unmarkMon(); }, true); }   // v2.1 경완: 맵 빈 곳을 누르면 포켓몬 선택(테두리) 풀기
   if (!ORIG) {
-    const K = A.K; LIVE = A.cfg || { ver: 0 }; ORIG = { odds: K.ODDS, pity: { e: K.PITY_E, l: K.PITY_L }, eggTiers: JSON.parse(JSON.stringify(A.EGG_TIERS)), eggList: JSON.parse(JSON.stringify(A.EGG_LIST || [])), tierOrd: JSON.parse(JSON.stringify(A.TIER_ORD || {})), layout: A.defaultLayout(),
+    const K = A.K; LIVE = A.cfg || { ver: 0 }; ORIG = { odds: K.ODDS, pity: { e: K.PITY_E, l: K.PITY_L }, eggTiers: JSON.parse(JSON.stringify(A.EGG_TIERS)), eggList: JSON.parse(JSON.stringify(A.EGG_LIST || [])), tierOrd: JSON.parse(JSON.stringify(A.TIER_ORD || {})), bub: { ...(A.BUB_OV || {}) }, layout: A.defaultLayout(),
       bal: { ...(K.HATCH_KM ? { HATCH_KM: K.HATCH_KM } : {}), DUP_G: K.DUP_G, NEW_EGG_G: K.NEW_EGG_G, NEW_G: K.NEW_G, RUN_G: K.RUN_G, FR_TABLE: K.FR_TABLE, BERRY_FR_DAY: K.BERRY_FR_DAY, JOY_HOLD: K.JOY_HOLD, PET_FR: K.PET_FR ?? 1, PET_DAY: K.PET_DAY, WASH_FR: K.WASH_FR ?? 3, FLD_FR_DAY: K.FLD_FR_DAY, WALK_FR: K.WALK_FR, FR_EVO: K.FR_EVO, FR_MAX: K.FR_MAX,
         CLEAN_DAYS: Math.round(100 / K.CLEAN_RATE / 86400 * 100) / 100, HUNGER_RATE: K.HUNGER_RATE, JOY_HOURS: Math.round(100 / K.JOY_RATE / 3600 * 100) / 100, MAX_EGGS: K.MAX_EGGS, MAX_BAG: K.MAX_BAG, BAG_STEP: K.BAG_STEP, SHINY_N: Math.round(1 / K.SHINY_RATE) } };
     A.ensureSprite(1).then(() => { $('#logoI').src = thumb(25) || ''; A.ensureSprite(25).then(() => $('#logoI').src = thumb(25)); });
   }
-  A.onTap = s => { if (s) openInst(s); }; A.onSel = onSel; A.onMon = onMon; A.onLog = onLog; A.onLayout = onLayout; A.onHot = onHot; applyInsets();
-  if (D.layout) A.setLayout(D.layout);
+  A.onTap = s => { if (s) mapTap(s); }; A.onSel = onSel; A.onMon = onMon; A.onLog = onLog; A.onLayout = onLayout; A.onHot = onHot; applyInsets();
+  if (D.layout) A.setLayout(D.layout); bubLive();
   A.edit(editing); if (!$('#hrNow').classList.contains('on')) A.setHour(+$('#hr').value); $('#hrNow').classList.contains('on') && $('#hrNow').onclick();
   const w0 = $('#wx .on')?.dataset.w; if (w0) A.setWx(w0);
   $('#addp').innerHTML = A.ADD.map(([k, n]) => { const s = A.addIcon(k); return `<button data-k="${k}">${s ? `<img alt="" src="${s}">` : `<span class="ph">${k === 'mush' ? '🍄' : '●'}</span>`}${n}</button>`; }).join('');
