@@ -451,7 +451,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.34';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.35';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -686,20 +686,24 @@ function tovFit(ET0, goal) { const ET = JSON.parse(JSON.stringify(ET0));   // �
     for (let g = 1; g <= 5; g++) { const r = ET[g], tot = Object.values(r).reduce((a, b) => a + b, 0) || 1; for (const t in r) r[t] = r[t] / tot * 100; } if (err < 1e-6) break; }
   for (let g = 1; g <= 5; g++) for (const t in ET[g]) ET[g][t] = Math.round(ET[g][t] * 100) / 100; return ET; }
 // v2.33 경완: 알별 티어 비율은 직접 안 고친다. 티어별 전체 확률(막대)과 알 수집 확률에 맞춰 알아서 — 알마다 드문(번호 낮은) 티어일수록 적게
-function autoET(T0, O) {   // 티어별 전체 확률 T(알 1개당) + 알 수집 확률 O → 알마다 티어 비율. 알 안에서는 드문(번호 낮은) 티어일수록 적게
-  const TS = Object.keys(T0).map(Number).filter(t => T0[t] > 0).sort((a, b) => b - a), ts = TS.reduce((a, t) => a + T0[t], 0), T = {}; TS.forEach(t => T[t] = T0[t] / ts);
+// v2.35 경완: SUP[g] = 그 알에 넣은 티어 목록 (빼고 넣기는 직접). 주면 그 티어들 안에서만 비율을 맞춘다
+function autoET(T0, O, SUP) {   // 티어별 전체 확률 T(알 1개당) + 알 수집 확률 O → 알마다 티어 비율. 알 안에서는 드문(번호 낮은) 티어일수록 적게
+  const inS = t => !SUP || [1, 2, 3, 4, 5].some(g => SUP[g]?.includes(t) && O[g - 1] > 0);
+  const TS = Object.keys(T0).map(Number).filter(t => T0[t] > 0 && inS(t)).sort((a, b) => b - a), ts = TS.reduce((a, t) => a + T0[t], 0), T = {}; TS.forEach(t => T[t] = T0[t] / ts);
   const G = [1, 2, 3, 4, 5].filter(g => O[g - 1] > 0), os = G.reduce((a, g) => a + O[g - 1], 0), Og = {}; G.forEach(g => Og[g] = O[g - 1] / os);
-  const M = {}; let c0 = 0; for (const g of G) { M[g] = {}; const a = c0, b = c0 + Og[g]; let s = 0; for (const t of TS) { const lo = Math.max(a, s), hi = Math.min(b, s + T[t]); if (hi - lo > 1e-12) M[g][t] = hi - lo; s += T[t]; } c0 = b; }
+  const M = {}; let c0 = 0; for (const g of G) { M[g] = {}; const a = c0, b = c0 + Og[g]; let s = 0; for (const t of TS) { const lo = Math.max(a, s), hi = Math.min(b, s + T[t]); if (hi - lo > 1e-12 && (!SUP || SUP[g]?.includes(t))) M[g][t] = hi - lo; s += T[t]; } if (SUP) for (const t of SUP[g] || []) if (T[t]) M[g][t] = (M[g][t] || 0) + 1e-3 * Og[g]; c0 = b; }
+  if (!SUP) {
   for (let i = 1; i < G.length; i++) { const g = G[i], p = M[G[i - 1]]; let k = Object.keys(M[g]).map(Number).sort((a, b) => b - a); while (k.length > 1 && M[g][k[0]] < M[g][k[1]] && p[k[0]] != null) { p[k[0]] += M[g][k[0]]; delete M[g][k[0]]; k.shift(); } }
   for (const g of G) { const k = Object.keys(M[g]).map(Number), lo = Math.min(...k), hi = Math.max(...k); for (const t of [lo - 1, hi + 1]) if (T[t] && M[g][t] == null) M[g][t] = 1e-4 * Og[g]; }   // 이웃 티어도 조금 열어 둔다 (알 경계에서 맞추기 쉽게)
+  }
   const pav = (g) => { const k = Object.keys(M[g]).map(Number).sort((a, b) => b - a), bl = []; for (const t of k) { bl.push({ v: M[g][t], n: 1, t: [t] }); while (bl.length > 1 && bl[bl.length - 2].v / bl[bl.length - 2].n < bl[bl.length - 1].v / bl[bl.length - 1].n) { const x = bl.pop(), y = bl[bl.length - 1]; y.v += x.v; y.n += x.n; y.t.push(...x.t); } } for (const b of bl) for (const t of b.t) M[g][t] = b.v / b.n; };
-  let err = 0; for (let it = 0; it < 4000; it++) { if (it === 2000) for (const g of G) for (const t in M[g]) if (M[g][t] < .01 * Og[g] && Object.keys(M[g]).length > 1) delete M[g][t];   // 알의 1% 안 되는 부스러기 티어는 빼고 다시 맞춘다
+  let err = 0; for (let it = 0; it < 4000; it++) { if (it === 2000 && !SUP) for (const g of G) for (const t in M[g]) if (M[g][t] < .01 * Og[g] && Object.keys(M[g]).length > 1) delete M[g][t];   // 알의 1% 안 되는 부스러기 티어는 빼고 다시 맞춘다
  const C = {}; for (const g of G) for (const t in M[g]) C[t] = (C[t] || 0) + M[g][t]; err = 0;
     for (const t of TS) { if (!C[t]) continue; const f = T[t] / C[t]; err = Math.max(err, Math.abs(f - 1)); for (const g of G) if (M[g][t] != null) M[g][t] *= f; }
     for (const g of G) { const s = Object.values(M[g]).reduce((a, b) => a + b, 0); for (const t in M[g]) M[g][t] *= Og[g] / s; pav(g); }
     if (err < 1e-7 && it > 2000) break; }
   { const C = {}; for (const g of G) for (const t in M[g]) C[t] = (C[t] || 0) + M[g][t]; err = Math.max(...TS.map(t => Math.abs((C[t] || 0) / T[t] - 1))); }
-  const ET = [null]; for (let g = 1; g <= 5; g++) { ET[g] = {}; if (!M[g]) continue; for (const t in M[g]) { const v = Math.round(M[g][t] / Og[g] * 1e6) / 1e4; if (v > 0) ET[g][t] = v; } } ET.err = err; return ET; }
+  const ET = [null]; for (let g = 1; g <= 5; g++) { ET[g] = {}; if (!M[g]) continue; for (const t in M[g]) { const v = Math.round(M[g][t] / Og[g] * 1e6) / 1e4; if (v > 0 || SUP) ET[g][t] = Math.max(v, 1e-4); } } ET.err = err; return ET; }
 // v2.34 경완: 크게 보기 = 창 전체를 채우는 막대 (칸 너비 확률^0.3 이라 드문 티어도 넓게, 거리까지 표시)
 let tovBig = false; const TOVE = () => tovBig ? .3 : .5;
 function tovBar(T, WF) { const TS = Array.from({ length: 10 }, (_, i) => 10 - i).filter(t => T[t] > 0), q = TS.map(t => Math.pow(T[t], TOVE())), qs = q.reduce((a, b) => a + b, 0) || 1, W = WF || q.map(v => v / qs * 100); let c = 0; const cum = W.map(v => c += v);
@@ -715,7 +719,7 @@ $('#poolC').addEventListener('pointerdown', e => { const k = e.target.closest('#
   const E = TOVE(), q = TS.map(t => Math.pow(T0[t], E)), qs = q.reduce((x, y) => x + y, 0), lo = q.slice(0, i).reduce((x, y) => x + y, 0) / qs, span = (q[i] + q[i + 1]) / qs; let ET = null; k.classList.add('on');
   const W0 = q.map(v => v / qs * 100), rlo = Math.pow(.04, E) / (Math.pow(.04, E) + Math.pow(.96, E)), rhi = 1 - rlo;   // 한쪽이 둘 합의 4% 아래로는 안 내려간다
   const mv = ev => { const R = $('#tovb').getBoundingClientRect(), r = Math.min(rhi, Math.max(rlo, ((ev.clientX - R.left) / R.width - lo) / span)), ra = Math.pow(r, 1 / E), rb = Math.pow(1 - r, 1 / E);
-    const goal = { ...T0, [a]: S * ra / (ra + rb), [b]: S * rb / (ra + rb) }; ET = autoET(goal, odds()); const WF = [...W0]; WF[i] = span * 100 * r; WF[i + 1] = span * 100 * (1 - r); const TT = tovOf(ET); $('#tovb').outerHTML = tovBar(TT, WF); $('#tovl').innerHTML = Array.from({ length: 10 }, (_, j) => 10 - j).filter(t => TT[t] > 0).map(t => `<span><i style="background:${TC(t)}"></i>${t}티어 <b class="num">${pct(TT[t])}</b>${tovBig ? ` <small class="num mute">${fmtKm(kmPer(TT[t]))}마다</small>` : ''}</span>`).join(''); $$('#tovb .bk')[i]?.classList.add('on'); };
+    const goal = { ...T0, [a]: S * ra / (ra + rb), [b]: S * rb / (ra + rb) }; ET = autoET(goal, odds(), supOf()); const WF = [...W0]; WF[i] = span * 100 * r; WF[i + 1] = span * 100 * (1 - r); const TT = tovOf(ET); $('#tovb').outerHTML = tovBar(TT, WF); $('#tovl').innerHTML = Array.from({ length: 10 }, (_, j) => 10 - j).filter(t => TT[t] > 0).map(t => `<span><i style="background:${TC(t)}"></i>${t}티어 <b class="num">${pct(TT[t])}</b>${tovBig ? ` <small class="num mute">${fmtKm(kmPer(TT[t]))}마다</small>` : ''}</span>`).join(''); $$('#tovb .bk')[i]?.classList.add('on'); };
   const end = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', end); removeEventListener('pointercancel', end); if (!ET) { k.classList.remove('on'); return; }
     D.eggTiers = ET; if (JSON.stringify(ET) === JSON.stringify(ORIG.eggTiers)) delete D.eggTiers; saveDraft(); renderPool(); };
   addEventListener('pointermove', mv); addEventListener('pointerup', end); addEventListener('pointercancel', end); });
@@ -1191,7 +1195,8 @@ const nice = km => { const e = Math.pow(10, Math.floor(Math.log10(km)) - 1); ret
 const capP = i => .995 - odds().reduce((a, q, j) => a + (j && j !== i ? q : 0), 0), capF = i => oddF(Math.max(1e-5, capP(i)));
 function setOdd(i, p, say) { const T0 = tovOf(eggTiers()); if (say && p > capP(i) + 1e-9) toast('더 자주 나오게 할 수 없어요. 일반 알 몫이 거의 다 찼어요'); const O = [...odds()], rest = O.reduce((a, q, j) => a + (j && j !== i ? q : 0), 0); O[i] = Math.max(1e-5, Math.min(p, .995 - rest)); O[0] = Math.max(0, 1 - O.slice(1).reduce((a, b) => a + b, 0));
   D.odds = O; if (O.every((q, j) => Math.abs(q - ORIG.odds[j]) < 1e-9)) delete D.odds; reTier(T0); }
-function reTier(T0) { const ET = autoET(T0, odds()); delete ET.err; D.eggTiers = ET; if (JSON.stringify(ET) === JSON.stringify(ORIG.eggTiers)) delete D.eggTiers; }   // v2.33: 알 확률이 바뀌면 티어별 전체 확률은 그대로, 알별 비율만 다시
+const supOf = (ET = eggTiers()) => [null, 1, 2, 3, 4, 5].map(g => g && Object.keys(ET[g] || {}).map(Number));
+function reTier(T0, SUP = supOf()) { const ET = autoET(T0, odds(), SUP); delete ET.err; D.eggTiers = ET; if (JSON.stringify(ET) === JSON.stringify(ORIG.eggTiers)) delete D.eggTiers; }   // v2.33: 알 확률이 바뀌면 티어별 전체 확률은 그대로, 알별 비율만 다시
 $('#oddsC').addEventListener('pointerdown', e => { const b = e.target.closest('.odb[data-ob]'); if (!b || b.classList.contains('auto') || e.button > 0) return; e.preventDefault(); const i = +b.dataset.ob;
   const at = x => { const r = $(`.odb[data-ob="${i}"]`).getBoundingClientRect(), f = Math.max(0, Math.min(capF(i), (x - r.left) / r.width)); setOdd(i, 1 / (EPK() * nice(1 / (EPK() * Math.pow(10, f * 4 - 4))))); renderOdds(); };
   document.body.classList.add('odrag'); at(e.clientX); const mv = ev => at(ev.clientX), up = () => { document.body.classList.remove('odrag'); removeEventListener('pointermove', mv); removeEventListener('pointerup', up); saveDraft(); renderOdds(); };
@@ -1261,9 +1266,10 @@ function renderPool() {
     <div class="row" style="flex-wrap:wrap;gap:8px"><h2 class="ih" style="flex:1">${eggI(g)}${GN[g]} 알에서 나오는 티어 <span class="small mute">자동</span></h2>${boxDirty('pool:' + g) ? '<span class="small" style="color:var(--warn)">● 저장 안 함</span>' : ''}</div>
     ${(() => { const TS = Object.keys(tab).map(Number).sort((a, b) => b - a), P = TS.map(t => tab[t] / tot * 100); let c = 0; const cum = P.map(v => c += v);
       const effP = t => effG && Math.abs((effG[t] || 0) / effT - tab[t] / tot) > .0005 ? +((effG[t] || 0) / effT * 100).toFixed(2) : null;
-      return `<div class="tsb${EX ? ' ex' : ''}" id="tsb">${TS.map((t, i) => `<div class="sg" data-t="${t}" style="width:${P[i]}%;background:${TC(t)}" title="${t}티어 ${+P[i].toFixed(1)}%"><span class="sl"${P[i] < 9 ? ' hidden' : ''}>${t}티어<b class="num">${+P[i].toFixed(1)}%</b></span></div>`).join('')}</div>
+      return `<div class="tsb${EX ? ' ex' : ''}" id="tsb">${TS.map((t, i) => `<div class="sg" data-t="${t}" style="width:${P[i]}%;background:${TC(t)}" title="${t}티어 ${+P[i].toFixed(1)}%"><span class="sl"${P[i] < 9 ? ' hidden' : ''}>${t}티어<b class="num">${+P[i].toFixed(1)}%</b></span>${EX || TS.length < 2 ? '' : `<button class="sx" data-tx="${t}" title="${t}티어 빼기 (비율은 남은 티어로 다시 맞춤)" aria-label="${t}티어 빼기">×</button>`}</div>`).join('')}</div>
       <div class="tsl">${TS.map((t, i) => `<span data-tl="${t}"><i style="background:${TC(t)}"></i>${t}티어 <b class="num">${+P[i].toFixed(1)}%</b>${effP(t) != null ? `<em title="티어 경계 보장으로 실제로 뽑을 때 쓰는 비율">실제 ${effP(t)}%</em>` : ''}</span>`).join('')}</div>
-      ${EX ? '' : '<div class="small mute">아래 티어별 전체 출현 확률과 알 수집 확률에 맞춰 알아서 정해져요. 알 안에서는 드문 티어일수록 적게 나와요.</div>'}`; })()}
+      ${EX ? '' : '<div class="small mute">어느 티어가 나올지는 × 로 빼고 아래에서 넣어요. 비율은 티어별 전체 출현 확률과 알 수집 확률에 맞춰 알아서 정해지고, 알 안에서는 드문 티어일수록 적게 나와요.</div>'}
+    ${EX || Object.keys(tab).length >= 10 ? '' : `<div class="tadd"><span class="small mute">티어 더 넣기</span>${Array.from({ length: 10 }, (_, i) => 10 - i).filter(t => !tab[t]).map(t => `<button class="chip" data-ta="${t}"><span class="tag" style="background:${TC(t)}">${t}</span></button>`).join('')}</div>`}`; })()}
     ${!EX && effG && Object.keys(tab).some(t => Math.abs((effG[t] || 0) / effT - tab[t] / tot) > .0005) ? '<div class="small mute">티어 경계 보장: 낮은 티어의 가장 흔한 포켓몬도 다음 티어의 가장 드문 포켓몬보다 드물게 나오도록, 넘치는 티어 몫을 줄여 나머지 티어에 나눠 줘요. "실제"가 게임에서 쓰는 비율이에요.</div>' : ''}
     
     <div class="sum${Math.abs(tot - 100) > 1e-6 ? ' bad' : ''}">합계 <span class="num">${+tot.toFixed(3)}%</span>${Math.abs(tot - 100) > 1e-6 ? ' · 게임은 합계로 나눠서 써요 (100이 아니어도 비율대로)' : ''}${g >= 2 && effKt && Object.values(effKt).some(k => k > 0) ? ` · 가장 낮은 ${Math.max(...Object.keys(tab).filter(t => tab[t] > 0).map(Number))}티어는 '아래로 넘친 칸'이라 강한 종이 잘 나와요` : ''}</div>
@@ -1281,7 +1287,11 @@ function renderPool() {
   $('#poolQ').oninput = e => { poolQ = e.target.value; const p = e.target.selectionStart; renderPool(); const i = $('#poolQ'); i.focus(); i.setSelectionRange(p, p); };
   if (sel.pool) showPoolSp(sel.pool);
 }
-$('#poolC').addEventListener('click', e => { if (e.target.closest('#elReset')) { setList(sel.poolG, null); renderPool(); toast('티어 비율로 되돌렸어요'); return; } if (Date.now() - prDragAt < 300) return; const c = e.target.closest('[data-g]'); if (c) { sel.poolG = +c.dataset.g; renderPool(); return; } const r = e.target.closest('.pr'); if (r) { sel.pool = +r.dataset.sp; $$('.pr').forEach(x => x.classList.toggle('on', x === r)); showPoolSp(sel.pool); toInsp('#poolI'); } });
+$('#poolC').addEventListener('click', e => { const tx = e.target.closest('[data-tx]'), ta = e.target.closest('[data-ta]');
+  if (tx || ta) { e.preventDefault(); const g = sel.poolG, t = +(tx || ta).dataset[tx ? 'tx' : 'ta'], T0 = tovOf(eggTiers()), SUP = supOf();   // v2.35 경완: 티어 빼고 넣기. 비율은 자동으로 다시
+    if (tx) SUP[g] = SUP[g].filter(x => x !== t); else { SUP[g] = [...SUP[g], t]; if (!(T0[t] > 0)) { const r = eggTiers()[g], tot = Object.values(r).reduce((a, b) => a + b, 0) || 1; T0[t] = odds()[g - 1] * Math.min(...Object.values(r)) / tot / 2; } }
+    reTier(T0, SUP); saveDraft(); renderPool(); toast(`${GN[g]} 알에 ${t}티어를 ${tx ? '뺐어요' : '넣었어요'}. 비율은 다시 맞췄어요`); return; }
+  if (e.target.closest('#elReset')) { setList(sel.poolG, null); renderPool(); toast('티어 비율로 되돌렸어요'); return; } if (Date.now() - prDragAt < 300) return; const c = e.target.closest('[data-g]'); if (c) { sel.poolG = +c.dataset.g; renderPool(); return; } const r = e.target.closest('.pr'); if (r) { sel.pool = +r.dataset.sp; $$('.pr').forEach(x => x.classList.toggle('on', x === r)); showPoolSp(sel.pool); toInsp('#poolI'); } });
 // v2.18 경완: 순서 끌기·다른 알로 옮기기는 뺐다 (알 켜고 끄기로 충분, 티어 안은 모두 같은 확률)
 let prDragAt = 0, poolDesc = store.get('st-pool-desc') === '1';   // v2.10 경완: 순위 오름차순/내림차순
 $('#poolC').addEventListener('click', e => { if (!e.target.closest('[data-psort]')) return; poolDesc = !poolDesc; store.set('st-pool-desc', poolDesc ? '1' : ''); renderPool(); });
@@ -1588,7 +1598,16 @@ async function readHist() {
   if (store.get('st-gh-token')) { try { return JSON.parse(await gh('/contents/config/history.json?ref=main', { raw: true })); } catch (e) { if (e.status !== 404) throw e; return []; } }
   const r = await fetch('../config/history.json?t=' + Date.now(), { cache: 'no-store' }); return r.ok ? r.json() : [];
 }
-async function deploy(data, note, chg, tries = 2) {
+// v2.35 경완: 작업실을 연 뒤에 다른 곳에서 새 버전이 배포됐으면, 이 작업실에서 안 고친 값은 새 버전 값을 그대로 쓴다 (예전 값으로 되돌리지 않게)
+const isObj = v => v && typeof v === 'object' && !Array.isArray(v);
+function rebase(data, base, remote) { const out = { ...remote };
+  for (const k of new Set([...Object.keys(data), ...Object.keys(base)])) { const d = data[k], b = base[k], r = remote[k];
+    if (JSON.stringify(d) === JSON.stringify(b)) continue;   // 여기서 안 고침 → 새 버전 값
+    if (isObj(d) && isObj(b) && isObj(r)) { const o = { ...r }; for (const e of new Set([...Object.keys(d), ...Object.keys(b)])) if (JSON.stringify(d[e]) !== JSON.stringify(b[e])) { if (e in d) o[e] = d[e]; else delete o[e]; } out[k] = o; }
+    else if (d === undefined) delete out[k]; else out[k] = d; }
+  return out; }
+async function deploy(data, note, chg, tries = 2, raw = false) {
+  if (!raw && store.get('st-gh-token')) { try { const R = JSON.parse(await gh('/contents/config/live.json?ref=main', { raw: true })); if ((R.ver || 0) > (LIVE.ver || 0) && R.data) { const base = withSaved(() => { const W = D; D = {}; try { return snapshotOf(); } finally { D = W; } }); data = rebase(data, base, R.data); toast(`v${R.ver}이 먼저 올라와 있어서 그 위에 합쳤어요`); } } catch (e) { if (e.status !== 404) throw e; } }
   const H = await readHist(), ver = Math.max(LIVE.ver || 0, ...H.map(h => h.ver), 0) + 1, at = Date.now();
   const live = { ver, at, note, data }, H2 = [{ ver, at, note, chg: chg.slice(0, 40) }, ...H];
   const ref = await gh('/git/ref/heads/main'), base = await gh('/git/commits/' + ref.object.sha);
@@ -1598,7 +1617,8 @@ async function deploy(data, note, chg, tries = 2) {
     { path: 'config/history.json', mode: '100644', type: 'blob', content: JSON.stringify(H2, null, 1) }] }) });
   const cm = await gh('/git/commits', { method: 'POST', body: JSON.stringify({ message: `데이터 v${ver}${note ? ': ' + note : ''} (작업실 배포)`, tree: tree.sha, parents: [ref.object.sha] }) });
   try { await gh('/git/refs/heads/main', { method: 'PATCH', body: JSON.stringify({ sha: cm.sha }) }); }
-  catch (e) { if (e.status === 422 && tries > 1) return deploy(data, note, chg, tries - 1); throw e; }   // 그 사이 다른 커밋이 올라왔으면 한 번 더
+  catch (e) { if (e.status === 422 && tries > 1) return deploy(data, note, chg, tries - 1, raw); throw e; }
+  LIVE = { ver, at, note, data };   // 그 사이 다른 커밋이 올라왔으면 한 번 더
   try { $('#game').contentWindow.localStorage.setItem('pk-cfg', JSON.stringify(live)); } catch (e) {}   // 작업실 미리보기는 바로 새 버전으로
   return ver;
 }
@@ -1609,7 +1629,7 @@ async function renderHist() {
   $('#hist').onclick = async e => { const b = e.target.closest('[data-rb]'); if (!b) return; e.preventDefault(); const v = +b.dataset.rb;
     if (!b.dataset.arm) { b.dataset.arm = 1; b.textContent = `v${v}로 되돌릴까요? 한 번 더`; return; }
     b.disabled = true; b.textContent = '되돌리는 중…';
-    try { const old = JSON.parse(await gh(`/contents/config/v${v}.json?ref=main`, { raw: true })); const nv = await deploy(old.data, `v${v}로 되돌림`, [`v${v} 내용으로 되돌림`]); toast(`v${v} 내용으로 v${nv} 배포했어요`); reloadGame(); go('work'); }
+    try { const old = JSON.parse(await gh(`/contents/config/v${v}.json?ref=main`, { raw: true })); const nv = await deploy(old.data, `v${v}로 되돌림`, [`v${v} 내용으로 되돌림`], 2, true); toast(`v${v} 내용으로 v${nv} 배포했어요`); reloadGame(); go('work'); }
     catch (err) { b.textContent = '되돌리지 못했어요: ' + ghErr(err); } };
 }
 
@@ -1630,6 +1650,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.35', '10월 16일', ['알별 티어 빼기(×)·넣기(티어 더 넣기, 10티어부터) 되살림. 비율은 계속 자동', '배포할 때 그 사이 새 버전이 있으면 안 고친 값은 새 버전 값으로 (예전 값으로 되돌리지 않음)']],
   ['2.34', '10월 16일', ['티어별 전체 출현 확률 막대 "⤢ 크게": 창 전체로 펼쳐 세밀하게 조절 (드문 티어 칸도 넓게, 티어마다 거리 표시, Esc로 닫기)']],
   ['2.33', '10월 16일', ['알별 티어 비율은 자동: 티어별 전체 출현 확률과 알 수집 확률에 맞춰 알마다 드문 티어일수록 적게 (직접 조절·티어 더 넣기 뺌)', '티어별 전체 출현 확률 막대는 10티어부터', '티어 화면 카드 제목 옆에 그 티어가 나오는 알 아이콘', '크기 조절 모드에서 기울기·떠 있는 높이', '확률 안전장치 한도 20,000km']],
   ['2.32', '10월 16일', ['"⚠ 저장 안 함" 버튼이 그 화면에 가도 사라지지 않음 (지금 화면은 "지금 화면" 표시)', '티어별 전체 출현 확률을 1티어부터 순서대로', '기본값으로 버튼에 ↺ 아이콘']],
