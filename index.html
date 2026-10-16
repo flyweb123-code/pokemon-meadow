@@ -308,7 +308,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .puddle{position:absolute;left:0;top:0;pointer-events:none;image-rendering:pixelated;background-size:100% 100%;transform:translate(-50%,-50%);opacity:0;transition:opacity 6s;z-index:2!important}.puddle.on{opacity:1}
 #rain{position:absolute;inset:0;overflow:hidden;pointer-events:none;display:none}#rain.on{display:block}
 #rain i{position:absolute;top:-24px;width:2px;height:12px;background:rgba(210,228,255,.7);transform:rotate(14deg);animation:rd .62s linear infinite}@keyframes rd{to{translate:-150px 640px}}
-#rain b{position:absolute;width:10px;height:4px;margin:-2px 0 0 -5px;border:1px solid rgba(220,236,255,.8);border-radius:50%;animation:rsp .5s ease-out infinite;opacity:0}@keyframes rsp{0%{transform:scale(.3);opacity:.9}100%{transform:scale(1.4);opacity:0}}
+#rainG{position:absolute;inset:0;pointer-events:none;z-index:1;display:none}#rainG.on{display:block}#rainG b{position:absolute;width:10px;height:4px;margin:-2px 0 0 -5px;border:1px solid rgba(220,236,255,.8);border-radius:50%;animation:rsp .5s ease-out infinite;opacity:0}@keyframes rsp{0%{transform:scale(.3);opacity:.9}100%{transform:scale(1.4);opacity:0}}
 
 /* RPG window */
 .win{background:var(--win);border:4px solid var(--frame);box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px var(--inner),6px 6px 0 rgba(0,0,0,.35);padding:14px 20px}
@@ -4604,7 +4604,7 @@ function makeSprites() {
   SPR.cloudG = sprCanvas(28, 10, (px, blob) => { blob(8, 6, 7, 4, '#a8b0b8', '#b8c0c8', '#909aa4', '#7c8690'); blob(17, 5, 9, 5, '#a8b0b8', '#b8c0c8', '#909aa4', '#7c8690'); blob(23, 7, 5, 3, '#a8b0b8', '#b8c0c8', '#909aa4', '#7c8690'); });
 }
 const W2 = (src, w, h) => `background-image:url(${src});width:${w}px;height:${h}px`;
-let treeEl = null, flameEl = null, puddleEls = [], rainEl = null;
+let treeEl = null, flameEl = null, puddleEls = [], rainEl = null, rainGEl = null;
 // v3.62 경완: 비 올 때 소품 위에는 물방울이 튀지 않게 — 소품이 차지한 자리인지
 function onProp(x, y) {
   const L = LAYOUT, inB = (cx, by, w, h) => Math.abs(x - cx) < w / 2 && y < by + 6 && y > by - h, zT = LS('tree'), zP = LS('perch'), zF = LS('fire'), zS = LS('stump'), zB = LS('bush'), zR = LS('rock'), zQ = LS('puddle');
@@ -4632,10 +4632,11 @@ function buildProps() {
   /* v3.56: 수련잎은 물 위에 둥둥 */
   [[-.5, -.25, 1], [.2, -.45, 0], [.55, .1, 1], [-.1, .4, 0], [-.7, .25, 0], [.35, .5, 1]].forEach(([u, v, fl], i) => { const e = document.createElement('div'); e.className = 'lily';
     e.style.cssText = W2(fl ? SPR.lilyF : SPR.lily, 18, fl ? 16 : 12) + `;left:${Math.round(POND.x + u * POND.rx)}px;top:${Math.round(POND.y + v * POND.ry)}px;--d:${(2.6 + i * .37).toFixed(2)}s;--dl:${(-i * .9).toFixed(1)}s;--a:${2 + (i % 3)}deg`; itemsEl.append(e); });
-  rainEl = document.createElement('div'); rainEl.id = 'rain'; let h = '';
+  rainEl = document.createElement('div'); rainEl.id = 'rain'; let h = '', hg = '';
   for (let i = 0; i < 80; i++) h += `<i style="left:${(Math.random() * (W + 150)).toFixed(0)}px;animation-delay:${(-Math.random() * .62).toFixed(2)}s;animation-duration:${(.5 + Math.random() * .25).toFixed(2)}s"></i>`;
-  for (let i = 0; i < 26; i++) { let x, y, n = 0; do { x = Math.random() * W; y = MIN_Y + Math.random() * (600 - MIN_Y); } while (onProp(x, y) && ++n < 20); h += `<b style="left:${x.toFixed(0)}px;top:${y.toFixed(0)}px;animation-delay:${(-Math.random() * 2).toFixed(2)}s;animation-duration:${(1.2 + Math.random()).toFixed(2)}s"></b>`; }
+  for (let i = 0; i < 26; i++) { let x, y, n = 0; do { x = Math.random() * W; y = MIN_Y + Math.random() * (600 - MIN_Y); } while (onProp(x, y) && ++n < 20); hg += `<b style="left:${x.toFixed(0)}px;top:${y.toFixed(0)}px;animation-delay:${(-Math.random() * 2).toFixed(2)}s;animation-duration:${(1.2 + Math.random()).toFixed(2)}s"></b>`; }
   rainEl.innerHTML = h; fxEl.append(rainEl);
+  rainGEl?.remove(); rainGEl = document.createElement('div'); rainGEl.id = 'rainG'; rainGEl.innerHTML = hg; itemsEl.append(rainGEl); rainGEl.classList.toggle('on', rainEl.classList.contains('on'));   /* v4.16 경완: 땅에 튀는 물방울은 포켓몬·소품 아래 (빗줄기만 위) */
   const sf = $('#skyFx'); if (!sf.querySelector('.sun')) { sf.innerHTML = '<i class="sun"></i><i class="moon"></i>' + Array.from({ length: 22 }, () => `<i class="star" style="left:${(Math.random() * W).toFixed(0)}px;top:${(3 + Math.random() * 78).toFixed(0)}px;animation-delay:${(-Math.random() * 2.6).toFixed(2)}s"></i>`).join('');
   sf.querySelector('.sun').style.backgroundImage = `url(${SPR.sun})`; sf.querySelector('.moon').style.backgroundImage = `url(${SPR.moon})`; }   // v3.66 경완: 소품을 옮겨 다시 그릴 때 하늘(구름·별)은 그대로 둔다
   treeBerries();
@@ -4826,7 +4827,7 @@ function sky() {
     const wx = weather(), wk = wx === 'rain' ? .8 : wx === 'cloud' ? .92 : 1;   /* 비·흐림이면 필드가 조금 더 어둡다 */
     const col = c0.map((v, j) => Math.round((v + (c1[j] - v) * e) * wk)); nightEl.style.backgroundColor = `rgb(${col.join(',')})`; { const [r, g, b] = col.map(v => (v / 255).toFixed(3)); $('#nightM')?.setAttribute('values', `${r} 0 0 0 0 0 ${g} 0 0 0 0 0 ${b} 0 0 0 0 0 1 0`); }
     skyDark = clamp((1 - (col[0] + col[1] + col[2]) / 765) * 1.6, 0, 1);   /* 어두운 정도: S 랭크 포켓몬이 스스로 빛나는지 */
-    drawSky(h, col, wx); skyBodies(h, wx, skyDark); rainEl?.classList.toggle('on', wx === 'rain'); puddleEls.forEach(p => p.classList.toggle('on', wx === 'rain')); if (flameEl) flameEl.classList.toggle('out', wx === 'rain'); treeBerries(); }
+    drawSky(h, col, wx); skyBodies(h, wx, skyDark); rainEl?.classList.toggle('on', wx === 'rain'); rainGEl?.classList.toggle('on', wx === 'rain'); puddleEls.forEach(p => p.classList.toggle('on', wx === 'rain')); if (flameEl) flameEl.classList.toggle('out', wx === 'rain'); treeBerries(); }
   const phase = h < 4 ? '한밤' : h < 5.5 ? '새벽' : h < 7 ? '해돋이' : h < 10 ? '아침' : h < 14 ? '한낮' : h < 16.5 ? '오후' : h < 18.6 ? '노을' : h < 20 ? '저녁' : '밤';
   $('#phase').textContent = phase + (weather() !== 'clear' ? ' · ' + WX_TXT[weather()] : '');
   { const d = new Date(); $('#day').textContent = `${d.getMonth() + 1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})`; }
@@ -5230,7 +5231,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.15';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.16';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7861,7 +7862,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     if (bg) { if (!bgQ) { bgQ = true; requestAnimationFrame(() => { bgQ = false; drawBg(); document.querySelectorAll('.glint').forEach(g => g.remove()); addGlints(); }); } }
     if (propQ) return; propQ = true;
     requestAnimationFrame(() => { propQ = false;
-      itemsEl.querySelectorAll('.prop,.flw,.puddle,.lily,.flame').forEach(e => e.remove()); $('#propFx').innerHTML = ''; puddleEls.length = 0; rainEl?.remove();
+      itemsEl.querySelectorAll('.prop,.flw,.puddle,.lily,.flame').forEach(e => e.remove()); $('#propFx').innerHTML = ''; puddleEls.length = 0; rainEl?.remove(); rainGEl?.remove();
       FLOWERS.splice(0, FLOWERS.length, ...bedFlowers(FLOWERBED), ...LAYOUT.flowers); buildProps(); skyKey = ''; sky(); });
   }
   const hands = document.createElement('div'); hands.id = 'stHands'; stage.append(hands);
