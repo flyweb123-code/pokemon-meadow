@@ -103,7 +103,7 @@ table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--chip);text-a
 table.t th:first-child,table.t td:first-child{text-align:left}
 table.t th{font-family:var(--px);font-size:11px;font-weight:400;color:var(--mute)}
 .tw{overflow-x:auto}
-.tiers{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.tiers{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}.tiers .grid{grid-template-columns:repeat(auto-fill,minmax(var(--tz,58px),1fr))}.tiers .mc .nm{font-size:clamp(9px,calc(var(--tz,58px) * .17),14px)}.tzc{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mute);margin:0 0 10px}.tzc input{flex:0 1 200px;min-width:80px}.tzc button{width:30px;padding:4px 0;text-align:center}.tzc .num{min-width:44px}
 .tcol{background:var(--panel);border:1px solid var(--chip);border-radius:6px;padding:8px;display:grid;align-content:start;gap:8px;min-width:0}
 .tcol h3{margin:0;font-family:var(--px);font-size:13px;font-weight:400;display:flex;justify-content:space-between}
 .tcol .grid{grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:4px}.tcol .mc{aspect-ratio:auto;height:72px}.tcol .mc img{bottom:14px;max-height:72%}
@@ -417,7 +417,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.7';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.8';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -584,7 +584,7 @@ function effTiers(L = tierLists(), Z = tierZ(L)) { if (!A?.tierGuard) return egg
   if (k !== effK) { effK = k; const E = A.tierGuard(eggTiers(), odds(), L, Z, EL); effV = [null, 1, 2, 3, 4, 5].map(g => g && (E[g] || eggTiers()[g])); effKt = E.K || null; } return effV; }
 function poolProb(g, L = tierLists(), Z = tierZ(L)) {
   const tab = effTiers(L, Z)[g], ts = Object.keys(tab).map(Number).filter(t => L[t]?.length && tab[t] > 0), spill = g >= 2 ? Math.max(...ts) : 0, tot = ts.reduce((a, t) => a + tab[t], 0), out = {};
-  for (const t of ts) { const w = L[t].map(sp => Math.exp((t === spill ? 1 : -1) * (effKt?.[t] ?? 1.4) * Z[sp])), s = w.reduce((a, b) => a + b, 0); L[t].forEach((sp, i) => out[sp] = tab[t] / tot * w[i] / s); }
+  for (const t of ts) { const w = L[t].map(sp => Math.exp((t === spill ? 1 : -1) * (effKt?.[t] ?? 0) * Z[sp])), s = w.reduce((a, b) => a + b, 0); L[t].forEach((sp, i) => out[sp] = tab[t] / tot * w[i] / s); }
   return out;
 }
 const pct = p => p >= .001 ? (p * 100).toFixed(2) + '%' : p > 0 ? (p * 100).toFixed(3) + '%' : '0%';
@@ -1027,7 +1027,7 @@ function renderPool() {
     <div class="trs">${Object.keys(tab).map(Number).sort((a, b) => a - b).map(t => `<label class="trw"><span class="tag" style="background:${TC(t)}">${t}티어</span><div class="bar${EX ? '' : ' tdr'}" data-tb="${t}" title="끌어서 비율 바꾸기"><i style="width:${tab[t] / tot * 100}%;background:${TC(t)}"></i></div><span class="iw"><input class="inp${ch && (tab[t] || 0) !== (ORIG.eggTiers[g][t] || 0) ? ' ch' : ''}" data-t="${t}" inputmode="decimal" value="${tab[t] || 0}" aria-label="${t}티어 %"><span>%</span></span>${effG && Math.abs((effG[t] || 0) / effT - tab[t] / tot) > .0005 ? `<span class="eff" title="티어 경계 보장으로 실제로 뽑을 때 쓰는 비율">실제 ${+((effG[t] || 0) / effT * 100).toFixed(2)}%</span>` : ''}</label>`).join('')}</div>
     ${!EX && effG && Object.keys(tab).some(t => Math.abs((effG[t] || 0) / effT - tab[t] / tot) > .0005) ? '<div class="small mute">티어 경계 보장: 낮은 티어의 가장 흔한 포켓몬도 다음 티어의 가장 드문 포켓몬보다 드물게 나오도록, 넘치는 티어 몫을 줄여 나머지 티어에 나눠 줘요. "실제"가 게임에서 쓰는 비율이에요.</div>' : ''}
     ${Object.keys(tab).length < 10 ? `<div class="tadd"><span class="small mute">티어 더 넣기</span>${Array.from({ length: 10 }, (_, i) => i + 1).filter(t => !tab[t]).map(t => `<button class="chip" data-ta="${t}"><span class="tag" style="background:${TC(t)}">${t}</span></button>`).join('')}</div>` : ''}
-    <div class="sum${Math.abs(tot - 100) > 1e-6 ? ' bad' : ''}">합계 <span class="num">${+tot.toFixed(3)}%</span>${Math.abs(tot - 100) > 1e-6 ? ' · 게임은 합계로 나눠서 써요 (100이 아니어도 비율대로)' : ''}${g >= 2 ? ` · 가장 낮은 ${Math.max(...Object.keys(tab).filter(t => tab[t] > 0).map(Number))}티어는 '아래로 넘친 칸'이라 강한 종이 잘 나와요` : ''}</div>
+    <div class="sum${Math.abs(tot - 100) > 1e-6 ? ' bad' : ''}">합계 <span class="num">${+tot.toFixed(3)}%</span>${Math.abs(tot - 100) > 1e-6 ? ' · 게임은 합계로 나눠서 써요 (100이 아니어도 비율대로)' : ''}${g >= 2 && effKt && Object.values(effKt).some(k => k > 0) ? ` · 가장 낮은 ${Math.max(...Object.keys(tab).filter(t => tab[t] > 0).map(Number))}티어는 '아래로 넘친 칸'이라 강한 종이 잘 나와요` : ''}</div>
   </div>
   <div class="card"><div class="row" style="flex-wrap:wrap"><h2 style="flex:1">나오는 포켓몬 <span class="num mute">${rows.length}종</span></h2><div class="search" style="min-width:160px"><input id="poolQ" value="${esc(poolQ)}" placeholder="이름 찾기" autocomplete="off"></div></div>
     <div class="small mute">줄을 잡고 끌면 순서가 바뀌어요 (휴대폰은 꾹 누른 뒤). 위일수록 자주 나와요. "이 알에서"는 이 알이 나왔을 때 그 포켓몬일 확률, "알 1개당 전체"는 알을 하나 주웠을 때 (어느 등급이든) 그 포켓몬일 확률이에요. 다른 알로 옮기려면 포켓몬을 누르고 오른쪽에서 골라요. 장소 테마·최근 부화 효과는 뺀 기본 확률이에요.</div>
@@ -1089,7 +1089,8 @@ function showPoolSp(sp) {
 // ---------- 티어 ----------
 function renderTier() {
   const L = tierLists(), ov = D.tierOv || {};
-  $('#tierC').innerHTML = `${boxBar('tier', '티어 저장')}<div class="small mute" style="margin-bottom:10px">진화 전 모습으로 묶어요. 1~3티어는 특별한 포켓몬(전설·환상 가족), 4~10티어는 나머지를 가족 최고 종족값 순서로 나눈 거예요. <b>카드를 끌어서</b> 순서를 바꾸거나 다른 티어로 옮겨요 (휴대폰은 꾹 누른 뒤). 티어 안에서는 <b>앞일수록 알에서 드물게</b> 나와요. 단, 알 › 등급별 포켓몬에서 순서를 직접 정한 알은 그 확률을 따라요. 주황 점은 작업본에서 옮긴 포켓몬이에요.</div>
+  const tz = tzOf(); $('#tierC').style.setProperty('--tz', tz + 'px');
+  $('#tierC').innerHTML = `${boxBar('tier', '티어 저장')}<div class="tzc">카드 크기<button class="chip" data-tz="-8" aria-label="작게">−</button><input type="range" id="tz" min="36" max="160" step="4" value="${tz}" aria-label="카드 크기"><button class="chip" data-tz="8" aria-label="크게">+</button><span class="num">${tz}px</span></div><div class="small mute" style="margin-bottom:10px">진화 전 모습으로 묶어요. 1~3티어는 특별한 포켓몬(전설·환상 가족), 4~10티어는 나머지를 가족 최고 종족값 순서로 나눈 거예요. <b>카드를 끌어서</b> 순서를 바꾸거나 다른 티어로 옮겨요 (휴대폰은 꾹 누른 뒤). ${(effKt && Object.values(effKt).some(k => k > 0)) ? '티어 안에서는 <b>앞일수록 알에서 드물게</b> 나와요.' : '같은 티어 안의 포켓몬은 <b>모두 같은 확률</b>로 나와요 (순서는 보기용).'} 단, 알 › 등급별 포켓몬에서 순서를 직접 정한 알은 그 확률을 따라요. 주황 점은 작업본에서 옮긴 포켓몬이에요.</div>
   <div class="tiers">${L.map((T, t) => t ? `<div class="tcol" data-tt="${t}"><h3><span class="tag" style="background:${TC(t)}">${t}티어</span><span class="num mute">${T.length}종 · ${tierOrdOf(t)?.length ? '직접 정한 순서' : '종족값 순'}${tierOrdOf(t)?.length ? ` <button class="chip tr0" data-tr0="${t}">종족값 순으로</button>` : ''}</span></h3><div class="grid">${orderTier(t, T).map(sp => `<button class="mc${ov[sp] ? ' ov' : ''}${sel.tier === sp ? ' on' : ''}" data-sp="${sp}" title="${esc(spName(sp))} · ${A.FAM_BST[sp]}"><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('')}</div></div>` : '').join('')}</div>`;
   fillThumbs($('#tierC'));
   if (sel.tier) showTierSp(sel.tier);
@@ -1132,6 +1133,11 @@ function infoHtml(sp) {
     <div class="msec"><h4>종족값 <span class="num">${tot}</span></h4>${d.bs.map((v, i) => `<div class="bsr"><span>${BSN[i]}</span><b class="num">${v}</b><i><em style="width:${Math.min(100, v / 1.8)}%"></em></i></div>`).join('')}</div>
     ${d.fx ? `<div class="mdx">${esc(d.fx)}</div>` : ''}`;
 }
+// v2.8 경완: 티어 화면 카드 크기 조절 (이 기기에 기억)
+const tzOf = () => { const v = +store.get('st-tz'); return v >= 36 && v <= 160 ? v : 58; };
+const setTz = v => { v = Math.max(36, Math.min(160, Math.round(v / 4) * 4)); store.set('st-tz', v); $('#tierC').style.setProperty('--tz', v + 'px'); const i = $('#tz'); if (i) { i.value = v; i.nextElementSibling.nextElementSibling.textContent = v + 'px'; } };
+document.addEventListener('input', e => { if (e.target.id === 'tz') setTz(+e.target.value); });
+document.addEventListener('click', e => { const b = e.target.closest('[data-tz]'); if (b) setTz(tzOf() + +b.dataset.tz); });
 function showTierSp(sp) {
   const t = tierOfSp(sp), o = A.TIER[sp], d = A.SPECIES[sp], fam = [sp, ...(A.CHILDREN[sp] || [])].map(spName).join(' → ');
   $('#tierI').innerHTML = `<div class="row"><img src="${thumb(sp)}" alt="" style="width:64px;height:64px;object-fit:contain;image-rendering:pixelated"><div style="display:grid;gap:4px"><div class="mh"><h2>${esc(spName(sp))}</h2><span class="no">No.${sp}</span></div><div class="mtys">${d.t.map(x => `<span class="tag" style="background:${A.TYPE_C[x]}">${A.TYPE_KO[x]}</span>`).join(' ')}</div></div></div>
@@ -1335,6 +1341,7 @@ const BUBS = [
 ];
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.8', '10월 16일', ['게임 v3.72 확률에 맞춤: 같은 티어 안은 모두 같은 확률', '티어: 카드 크기 조절 (− · 막대 · +, 이 기기에 기억)']],
   ['2.7', '10월 16일', ['고친 값은 박스마다 "저장"을 눌러야 배포하기의 바뀐 곳에 들어감. 박스마다 "기본값으로"(지금 게임 값) 버튼, 저장 안 한 박스는 "저장 안 함" 표시', '알 등급별 확률: 일반 알 몫이 다 차서 더 늘릴 수 없는 곳은 막대에 빗금, 그 너머로는 끌리지 않음', '등급별 포켓몬: 확률을 "이 알에서"와 "알 1개당 전체"(평균 몇 km마다) 두 가지로', '알에서 나오는 티어: % 막대를 끌어서 바로 조절 (나머지 티어는 비율대로 맞춰 합계 100)', '알 고르는 칸에 티어 개수 대신 나오는 티어 이름(예: 10·9·8티어)', '말풍선: 장면 칩을 한 줄에 하나씩', '티어: 오른쪽 칸의 티어 옮기기 버튼을 없앰 (카드를 끌어서 옮기기)']],
   ['2.6', '10월 16일', ['알 메뉴에 "부화 거리" 탭: 알 등급마다 몇 km 걸으면 부화하는지 정함. 부화기에 있는 알도 새 거리로 바뀌고 쌓인 km 는 그대로 (게임 v3.71)']],
   ['2.5', '10월 16일', ['밸런스 숫자를 문장 안에 넣어 정리: "짝꿍은 1km 걸을 때마다 친밀도 [2]씩 오름"처럼 무엇이 얼마나인지 바로 읽히게, 아래에 계산된 값 (10km면 +20 등)', '골드 칸은 모두 G 단위 표시']],
