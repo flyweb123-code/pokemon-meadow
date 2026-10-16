@@ -103,7 +103,7 @@ table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--chip);text-a
 table.t th:first-child,table.t td:first-child{text-align:left}
 table.t th{font-family:var(--px);font-size:11px;font-weight:400;color:var(--mute)}
 .tw{overflow-x:auto}
-.tiers{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}.tiers .grid{grid-template-columns:repeat(auto-fill,minmax(var(--tz,58px),1fr))}.tiers .mc .nm{font-size:clamp(9px,calc(var(--tz,58px) * .17),14px)}.tzc{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mute);margin:0 0 10px}.tzc input{flex:0 1 200px;min-width:80px}.tzc button{width:30px;padding:4px 0;text-align:center}.tzc .num{min-width:44px}
+.tiers{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;zoom:var(--tzz,1)}.tzc{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mute);margin:0 0 10px}.tzc input{flex:0 1 200px;min-width:80px}.tzc button{width:30px;padding:4px 0;text-align:center}.tzc .num{min-width:44px}
 .tcol{background:var(--panel);border:1px solid var(--chip);border-radius:6px;padding:8px;display:grid;align-content:start;gap:8px;min-width:0}
 .tcol h3{margin:0;font-family:var(--px);font-size:13px;font-weight:400;display:flex;justify-content:space-between}
 .tcol .grid{grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:4px}.tcol .mc{aspect-ratio:auto;height:72px}.tcol .mc img{bottom:14px;max-height:72%}
@@ -213,10 +213,10 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 .egg.g2{--es:#f0a040}.egg.g3{--es:#4f95dc}.egg.g4{--es:#a070d8}.egg.g5{--ec:#fff1b8;--esh:#e8d48a;--es:#e0a020;filter:drop-shadow(0 0 3px #ffe680)}
 h2.ih{display:flex;align-items:center;gap:8px}
 .balg{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-items:start}.balg .card{margin:0}.balg .bal2{grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr));column-gap:28px}.balg .bal2 .br{border-top:1px solid var(--chip)}.balg .bal2 .br.full{grid-column:1/-1}
-.frt{display:grid;gap:6px;grid-column:1/-1;padding-left:32px}.frg{display:grid;gap:5px;margin:4px 0 8px}.frgr{display:grid;grid-template-columns:76px minmax(0,1fr) 76px;gap:8px;align-items:center;font-size:12px;color:var(--soft)}.frgr .tr{position:relative;height:22px;background:rgba(128,128,128,.18);border-radius:3px;overflow:hidden}.frgr .tr i{position:absolute;inset:0 auto 0 0;background:var(--good);opacity:.75}.frgr .tr b{position:relative;display:block;padding:0 8px;line-height:22px;font-weight:600;color:var(--fg);text-shadow:0 1px 2px rgba(0,0,0,.6);white-space:nowrap}.frgr .dd{color:var(--mute);text-align:right}.frgr.hd{font-size:11px;color:var(--mute)}.frgr .dd.cap{color:var(--warn)}.frgr .dd.cap::after{content:' 한도';font-size:10px}.frt .fr{display:grid;grid-template-columns:auto 64px auto 64px auto minmax(0,1fr);gap:6px;align-items:center;font-size:12.5px;color:var(--soft)}.frt .fr input{text-align:right}.frt .fr .dd{color:var(--mute);font-size:11.5px;justify-self:end}
+.frt{display:grid;gap:6px;grid-column:1/-1;padding-left:32px}.frg{display:grid;gap:4px;margin:4px 0 10px}.frbar{display:grid;height:28px;border-radius:4px;overflow:hidden;gap:2px}.frbar .sg{position:relative;display:grid;place-items:center;background:rgba(128,128,128,.18)}.frbar .sg::before{content:'';position:absolute;inset:0;background:var(--good);opacity:var(--a)}.frbar .sg span{position:relative;font-size:12px;font-weight:600;color:var(--fg);text-shadow:0 1px 2px rgba(0,0,0,.6);white-space:nowrap}.frinf{display:grid;gap:2px}.frinf>div{display:grid;justify-items:center;text-align:center;gap:1px;padding:4px 2px;font-size:11px;color:var(--mute);min-width:0}.frinf b{font-size:15px;color:var(--fg)}.frinf em{font-style:normal;color:var(--soft)}.frinf em.cap,.frinf span.cap{color:var(--warn)}.frt .fr{display:grid;grid-template-columns:auto 64px auto 64px auto minmax(0,1fr);gap:6px;align-items:center;font-size:12.5px;color:var(--soft)}.frt .fr input{text-align:right}.frt .fr .dd{color:var(--mute);font-size:11.5px;justify-self:end}
 .bal2{display:grid}.br{display:grid;grid-template-columns:minmax(0,1fr) 128px;gap:8px 12px;align-items:center;padding:9px 2px;border-top:1px solid var(--chip);font-size:13px}.bal2 .br:first-child{border-top:0}
 .br .wide .gw{display:flex;align-items:center;gap:3px;width:100%}.br .wide .gw input{flex:1;min-width:0}.br .wide .gw .u{min-width:0;font-size:11px;color:var(--mute)}
-@media (max-width:820px){.frgr{grid-template-columns:58px minmax(0,1fr) 64px}.frt{padding-left:0}.frt .fr{grid-template-columns:auto 56px auto 56px auto}.frt .fr .dd{grid-column:1/-1;justify-self:start}}
+@media (max-width:820px){.frinf>div{font-size:10px}.frinf b{font-size:13px}.frt{padding-left:0}.frt .fr{grid-template-columns:auto 56px auto 56px auto}.frt .fr .dd{grid-column:1/-1;justify-self:start}}
 .br.sn{grid-template-columns:22px minmax(0,1fr);gap:10px}.br.sn .bic{display:flex}.br .st{display:grid;gap:2px;min-width:0}.br .st label{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.br .st input{width:84px;text-align:right}.br .st small{color:var(--mute);font-size:11.5px}
 .br .uw{display:flex;align-items:center;gap:6px}.br .uw input{min-width:0;flex:1}.br .u{font-size:11.5px;color:var(--mute);min-width:24px}
 .br .wide input{text-align:center}
@@ -385,7 +385,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
     <section class="view" data-v="tier" hidden>
       <div class="seg" data-g="egg"></div>
       <div class="vc scroll"><div id="tierC"></div></div>
-      <aside class="vi" id="tierI"><div class="empty">포켓몬을 누르면 티어를 옮길 수 있어요.</div></aside>
+      <aside class="vi" id="tierI"><div class="empty">포켓몬을 누르면 정보와 알에서 나올 확률이 보여요. 티어는 카드를 끌어서 옮겨요.</div></aside>
     </section>
     <!-- 밸런스 -->
     <section class="view" data-v="bal" hidden>
@@ -1089,8 +1089,8 @@ function showPoolSp(sp) {
 // ---------- 티어 ----------
 function renderTier() {
   const L = tierLists(), ov = D.tierOv || {};
-  const tz = tzOf(); $('#tierC').style.setProperty('--tz', tz + 'px');
-  $('#tierC').innerHTML = `${boxBar('tier', '티어 저장')}<div class="tzc">카드 크기<button class="chip" data-tz="-8" aria-label="작게">−</button><input type="range" id="tz" min="36" max="160" step="4" value="${tz}" aria-label="카드 크기"><button class="chip" data-tz="8" aria-label="크게">+</button><span class="num">${tz}px</span></div><div class="small mute" style="margin-bottom:10px">진화 전 모습으로 묶어요. 1~3티어는 특별한 포켓몬(전설·환상 가족), 4~10티어는 나머지를 가족 최고 종족값 순서로 나눈 거예요. <b>카드를 끌어서</b> 순서를 바꾸거나 다른 티어로 옮겨요 (휴대폰은 꾹 누른 뒤). ${(effKt && Object.values(effKt).some(k => k > 0)) ? '티어 안에서는 <b>앞일수록 알에서 드물게</b> 나와요.' : '같은 티어 안의 포켓몬은 <b>모두 같은 확률</b>로 나와요 (순서는 보기용).'} 단, 알 › 등급별 포켓몬에서 순서를 직접 정한 알은 그 확률을 따라요. 주황 점은 작업본에서 옮긴 포켓몬이에요.</div>
+  const tz = tzOf(); $('#tierC').style.setProperty('--tzz', tz / 100);
+  $('#tierC').innerHTML = `${boxBar('tier', '티어 저장')}<div class="tzc">화면 크기<button class="chip" data-tz="-10" aria-label="작게">−</button><input type="range" id="tz" min="50" max="250" step="10" value="${tz}" aria-label="화면 크기"><button class="chip" data-tz="10" aria-label="크게">+</button><span class="num">${tz}%</span></div><div class="small mute" style="margin-bottom:10px">진화 전 모습으로 묶어요. 1~3티어는 특별한 포켓몬(전설·환상 가족), 4~10티어는 나머지를 가족 최고 종족값 순서로 나눈 거예요. <b>카드를 끌어서</b> 순서를 바꾸거나 다른 티어로 옮겨요 (휴대폰은 꾹 누른 뒤). ${(effKt && Object.values(effKt).some(k => k > 0)) ? '티어 안에서는 <b>앞일수록 알에서 드물게</b> 나와요.' : '같은 티어 안의 포켓몬은 <b>모두 같은 확률</b>로 나와요 (순서는 보기용).'} 단, 알 › 등급별 포켓몬에서 순서를 직접 정한 알은 그 확률을 따라요. 주황 점은 작업본에서 옮긴 포켓몬이에요.</div>
   <div class="tiers">${L.map((T, t) => t ? `<div class="tcol" data-tt="${t}"><h3><span class="tag" style="background:${TC(t)}">${t}티어</span><span class="num mute">${T.length}종 · ${tierOrdOf(t)?.length ? '직접 정한 순서' : '종족값 순'}${tierOrdOf(t)?.length ? ` <button class="chip tr0" data-tr0="${t}">종족값 순으로</button>` : ''}</span></h3><div class="grid">${orderTier(t, T).map(sp => `<button class="mc${ov[sp] ? ' ov' : ''}${sel.tier === sp ? ' on' : ''}" data-sp="${sp}" title="${esc(spName(sp))} · ${A.FAM_BST[sp]}"><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('')}</div></div>` : '').join('')}</div>`;
   fillThumbs($('#tierC'));
   if (sel.tier) showTierSp(sel.tier);
@@ -1133,9 +1133,9 @@ function infoHtml(sp) {
     <div class="msec"><h4>종족값 <span class="num">${tot}</span></h4>${d.bs.map((v, i) => `<div class="bsr"><span>${BSN[i]}</span><b class="num">${v}</b><i><em style="width:${Math.min(100, v / 1.8)}%"></em></i></div>`).join('')}</div>
     ${d.fx ? `<div class="mdx">${esc(d.fx)}</div>` : ''}`;
 }
-// v2.8 경완: 티어 화면 카드 크기 조절 (이 기기에 기억)
-const tzOf = () => { const v = +store.get('st-tz'); return v >= 36 && v <= 160 ? v : 58; };
-const setTz = v => { v = Math.max(36, Math.min(160, Math.round(v / 4) * 4)); store.set('st-tz', v); $('#tierC').style.setProperty('--tz', v + 'px'); const i = $('#tz'); if (i) { i.value = v; i.nextElementSibling.nextElementSibling.textContent = v + 'px'; } };
+// v2.8 경완: 티어 화면 크기 조절 (v2.9: 카드·그림·글자 모두 함께 확대, 한 줄 칸 수는 저절로. 이 기기에 기억)
+const tzOf = () => { const v = +store.get('st-tzz'); return v >= 50 && v <= 250 ? v : 100; };
+const setTz = v => { v = Math.max(50, Math.min(250, Math.round(v / 10) * 10)); store.set('st-tzz', v); $('#tierC').style.setProperty('--tzz', v / 100); const i = $('#tz'); if (i) { i.value = v; i.nextElementSibling.nextElementSibling.textContent = v + '%'; } };
 document.addEventListener('input', e => { if (e.target.id === 'tz') setTz(+e.target.value); });
 document.addEventListener('click', e => { const b = e.target.closest('[data-tz]'); if (b) setTz(tzOf() + +b.dataset.tz); });
 function showTierSp(sp) {
@@ -1158,9 +1158,10 @@ const BAL = [
 ];
 // v1.8 경완: 줄마다 게임 아이콘
 // v2.8 경완: 필드 친밀도를 가로 그래프로 (게이지 평균 구간마다 1시간에 오르는 양)
-function frGraph(v) { const S = [...v].sort((a, b) => b[0] - a[0]), mx = Math.max(...S.map(r => r[1]), .01), cap = bal('FLD_FR_DAY') || Infinity;
-  return `<div class="frg"><div class="frgr hd"><span>건강 평균</span><span>1시간에 오르는 친밀도</span><span class="dd">하루에</span></div>${S.map((r, i) => { const hi = i ? S[i - 1][0] : 100, d = Math.min(r[1] * 24, cap);
-    return `<div class="frgr"><span class="lb num">${r[0]}${r[0] < hi ? '~' + hi : ''}</span><div class="tr"><i style="width:${Math.max(2, r[1] / mx * 100)}%"></i><b class="num">+${r[1]}</b></div><span class="dd num${d < r[1] * 24 ? ' cap' : ''}"${d < r[1] * 24 ? ' title="하루 한도에 걸림"' : ''}>+${+d.toFixed(1)}</span></div>`; }).join('')}</div>`; }
+function frGraph(v) { const S = [...v].sort((a, b) => a[0] - b[0]), mx = Math.max(...S.map(r => r[1]), .01), cap = bal('FLD_FR_DAY') || Infinity;
+  const seg = S.map((r, i) => ({ lo: Math.max(0, r[0]), hi: i < S.length - 1 ? S[i + 1][0] : 100, r: r[1] })).filter(x => x.hi > x.lo), cols = seg.map(x => `${x.hi - x.lo}fr`).join(' ');
+  return `<div class="frg"><div class="small mute">건강 게이지 평균</div><div class="frbar" style="grid-template-columns:${cols}">${seg.map(x => `<div class="sg" style="--a:${(.25 + .75 * x.r / mx).toFixed(2)}"><span class="num">${x.lo}~${x.hi}</span></div>`).join('')}</div>
+    <div class="frinf" style="grid-template-columns:${cols}">${seg.map(x => { const d = Math.min(x.r * 24, cap), c = d < x.r * 24; return `<div><b class="num">+${x.r}</b><span>1시간에</span><em class="num${c ? ' cap' : ''}"${c ? ' title="하루 한도에 걸림"' : ''}>하루 +${+d.toFixed(1)}</em>${c ? '<span class="cap">하루 한도</span>' : ''}</div>`; }).join('')}</div></div>`; }
 const BICO = { DUP_G: 'coin', NEW_EGG_G: 'egg', NEW_G: 'star', RUN_G: 'shoe', FR_TABLE: 'clock', BERRY_FR_DAY: 'berry', JOY_HOLD: 'note', PET_FR: 'hand', WASH_FR: 'brush', FLD_FR_DAY: 'note', WALK_FR: 'shoe', FR_EVO: 'star', FR_MAX: 'heart', CLEAN_DAYS: 'brush', HUNGER_RATE: 'berry', JOY_HOURS: 'note', MAX_EGGS: 'egg', MAX_BAG: 'bag', BAG_STEP: 'shoe', SHINY_N: 'star' }, SICO = ['coin', 'heart', 'clock', 'egg'];
 const BUNIT = { DUP_G: 'G', NEW_EGG_G: 'G', NEW_G: 'G', RUN_G: 'G', BERRY_FR_DAY: '/일', JOY_HOLD: '분', PET_FR: '점', WASH_FR: '점', FLD_FR_DAY: '/일', WALK_FR: '/km', FR_EVO: '점', FR_MAX: '점', CLEAN_DAYS: '일', HUNGER_RATE: '/초', JOY_HOURS: '시간', MAX_EGGS: '칸', MAX_BAG: '개', BAG_STEP: 'km', SHINY_N: '분의 1' };
 // v2.4 경완: 숫자 칸을 문장 안에 넣어 읽히게 ([앞 글, 뒤 글, 덧붙임(값으로 계산)])
@@ -1345,8 +1346,8 @@ const BUBS = [
 ];
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
-  ['2.9', '10월 16일', ['밸런스: 즐거움 유지 시간과 쓰다듬기 친밀도를 따로, 빗질 하루 횟수 대신 빗질 한 번 친밀도', '밸런스: 알 줍는 거리 단위 뺌 (알 메뉴에 있음)', '세 게이지 → 건강 게이지', '게임 v3.73: 필드 친밀도 하루 한도 10 → 36']],
-  ['2.8', '10월 16일', ['게임 v3.72 확률에 맞춤: 같은 티어 안은 모두 같은 확률', '티어: 카드 크기 조절 (− · 막대 · +, 이 기기에 기억)', '밸런스: 필드 친밀도를 게이지 평균 구간별 가로 그래프로']],
+  ['2.9', '10월 16일', ['밸런스: 즐거움 유지 시간과 쓰다듬기 친밀도를 따로, 빗질 하루 횟수 대신 빗질 한 번 친밀도', '밸런스: 알 줍는 거리 단위 뺌 (알 메뉴에 있음)', '세 게이지 → 건강 게이지', '필드 친밀도 그래프를 건강 게이지 막대로 다시', '티어: 카드 크기 → 화면 크기(50~250%, 카드·그림·글자 함께 커지고 줄 칸 수 자동)', '게임 v3.73: 필드 친밀도 하루 한도 10 → 36']],
+  ['2.8', '10월 16일', ['게임 v3.72 확률에 맞춤: 같은 티어 안은 모두 같은 확률', '티어: 카드 크기 조절 (− · 막대 · +, 이 기기에 기억)', '밸런스: 필드 친밀도 위에 건강 게이지 0~100 가로 막대(구간별), 그 아래 구간마다 오르는 친밀도']],
   ['2.7', '10월 16일', ['고친 값은 박스마다 "저장"을 눌러야 배포하기의 바뀐 곳에 들어감. 박스마다 "기본값으로"(지금 게임 값) 버튼, 저장 안 한 박스는 "저장 안 함" 표시', '알 등급별 확률: 일반 알 몫이 다 차서 더 늘릴 수 없는 곳은 막대에 빗금, 그 너머로는 끌리지 않음', '등급별 포켓몬: 확률을 "이 알에서"와 "알 1개당 전체"(평균 몇 km마다) 두 가지로', '알에서 나오는 티어: % 막대를 끌어서 바로 조절 (나머지 티어는 비율대로 맞춰 합계 100)', '알 고르는 칸에 티어 개수 대신 나오는 티어 이름(예: 10·9·8티어)', '말풍선: 장면 칩을 한 줄에 하나씩', '티어: 오른쪽 칸의 티어 옮기기 버튼을 없앰 (카드를 끌어서 옮기기)']],
   ['2.6', '10월 16일', ['알 메뉴에 "부화 거리" 탭: 알 등급마다 몇 km 걸으면 부화하는지 정함. 부화기에 있는 알도 새 거리로 바뀌고 쌓인 km 는 그대로 (게임 v3.71)']],
   ['2.5', '10월 16일', ['밸런스 숫자를 문장 안에 넣어 정리: "짝꿍은 1km 걸을 때마다 친밀도 [2]씩 오름"처럼 무엇이 얼마나인지 바로 읽히게, 아래에 계산된 값 (10km면 +20 등)', '골드 칸은 모두 G 단위 표시']],
