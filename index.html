@@ -699,7 +699,7 @@ body.petting #dlg,body.petting #info{display:none!important}
 @keyframes trRb{to{background-position:0 0,300% 0}}@keyframes trRbB{to{background-position:-200% 0}}   /* 배지 무지개: 한 판(200%)만큼 밀고 처음으로 → 이음매 없이 */
 @keyframes trGlowR{0%,100%{box-shadow:inset 0 0 0 3px #2a1658,inset 0 0 0 5px #ffd86a,0 0 8px rgba(180,120,255,.5),3px 3px 0 rgba(0,0,0,.2)}50%{box-shadow:inset 0 0 0 3px #2a1658,inset 0 0 0 5px #fff1b0,0 0 18px rgba(255,180,90,.85),3px 3px 0 rgba(0,0,0,.2)}}
 .tr-card.r10 .tr-badge{border-color:#6a3ab8;background:linear-gradient(90deg,#ff8a9a,#ffd36a,#8ae89a,#7ac8ff,#b89aff,#ff8a9a) 0 0/200% 100% repeat-x;animation:trRbB 4s linear infinite;color:#2a1050;text-shadow:0 1px 0 rgba(255,255,255,.6)}
-.pf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}.pf-sec{padding-bottom:14px}
+.pf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}.pf-note{margin:8px 0 0;font-size:12px;color:var(--dim);text-align:center}.pf-sec{padding-bottom:14px}
 .pf-box{border:3px solid var(--frame);background:var(--win);padding:12px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
 .pf-box span{font-size:12px;color:var(--dim)}.pf-box b{font-size:24px;line-height:1.1;color:var(--win-ink)}.pf-box i{font-style:normal;font-size:12px;color:var(--dim)}
 .pf-box b{transition:color .3s}
@@ -745,7 +745,7 @@ body.petting #dlg,body.petting #info{display:none!important}
 @keyframes joyS{0%{filter:brightness(1.3) drop-shadow(0 0 5px #fffbe0) drop-shadow(0 0 22px #ffb000)}50%{filter:drop-shadow(0 0 0 transparent)}}@keyframes joyA{0%{filter:brightness(1.3) drop-shadow(0 0 5px #ffe0e0) drop-shadow(0 0 22px #ff2020)}50%{filter:drop-shadow(0 0 0 transparent)}}   /* 좋아할 때: 켜졌다 꺼졌다 점멸 */
 .hspk{position:absolute;transform:translate(-50%,-50%);line-height:1;pointer-events:none;color:#fff6b0;text-shadow:0 0 4px #ffb000,0 0 2px #fff;animation:hspk .7s ease-out forwards}.hspk.A{color:#ffe0e0;text-shadow:0 0 4px #ff3a3a,0 0 2px #fff}
 @keyframes hspk{0%{opacity:0;scale:.3}25%{opacity:1;scale:1.25}60%{opacity:1;scale:.9}100%{opacity:0;scale:.4;translate:0 -10px}}
-.mon.rkS .flip{animation:sglow 4s ease-in-out infinite}.mon.rkA .flip{animation:aglowM 4s ease-in-out infinite}@keyframes aglowM{0%,100%{filter:drop-shadow(0 0 2px #ff9090) drop-shadow(0 0 6px #ff3a3a)}50%{filter:drop-shadow(0 0 3px #ffa0a0) drop-shadow(0 0 11px #ff2828)}}   /* A 랭크: 박스와 같은 붉은 후광 */.mon.nightf .act,.mon.nightf .shadow{filter:url(#nightF)}.mon.selflit .flip{animation:sglowN 4s ease-in-out infinite}@keyframes sglowN{0%,100%{filter:brightness(.6) sepia(.15) drop-shadow(0 0 2px rgba(255,224,140,.75)) drop-shadow(0 0 6px rgba(255,176,32,.7))}50%{filter:brightness(.66) sepia(.15) drop-shadow(0 0 3px rgba(255,232,160,.9)) drop-shadow(0 0 11px rgba(255,170,20,.85))}}#glows{position:absolute;inset:0;pointer-events:none}.gl{position:absolute;left:0;top:0;z-index:1050;border-radius:50%;mix-blend-mode:screen;pointer-events:none;width:200px;height:96px;margin:-48px 0 0 -100px;background:radial-gradient(closest-side,rgba(255,214,130,.1),rgba(255,200,110,.05) 40%,rgba(255,190,90,0) 70%,rgba(255,170,50,0))}@keyframes glp{50%{opacity:.85}}.gl.a{background:radial-gradient(closest-side,rgba(255,60,50,.75),rgba(255,50,40,.38) 45%,rgba(255,40,30,0) 75%)}.mon.selflit .shadow{opacity:.35}
+.mon.rkS .flip{animation:sglow 4s ease-in-out infinite}.mon.rkA .flip{animation:aglowM 4s ease-in-out infinite}@keyframes aglowM{0%,100%{filter:drop-shadow(0 0 2px #ff9090) drop-shadow(0 0 6px #ff3a3a)}50%{filter:drop-shadow(0 0 3px #ffa0a0) drop-shadow(0 0 11px #ff2828)}}   /* A 랭크: 박스와 같은 붉은 후광 */.mon.nightf .act,.mon.nightf .shadow{filter:url(#nightF)}.mon.selflit .flip{animation:sglowN 4s ease-in-out infinite}@keyframes sglowN{0%,100%{filter:brightness(.6) sepia(.15) drop-shadow(0 0 2px rgba(255,224,140,.75)) drop-shadow(0 0 6px rgba(255,176,32,.7))}50%{filter:brightness(.66) sepia(.15) drop-shadow(0 0 3px rgba(255,232,160,.9)) drop-shadow(0 0 11px rgba(255,170,20,.85))}}#glows{position:absolute;inset:0;pointer-events:none}.gl{position:absolute;left:0;top:0;z-index:2;border-radius:50%;mix-blend-mode:screen;pointer-events:none;width:200px;height:96px;margin:-48px 0 0 -100px;background:radial-gradient(closest-side,rgba(255,214,130,.1),rgba(255,200,110,.05) 40%,rgba(255,190,90,0) 70%,rgba(255,170,50,0))}@keyframes glp{50%{opacity:.85}}.gl.a{background:radial-gradient(closest-side,rgba(255,60,50,.75),rgba(255,50,40,.38) 45%,rgba(255,40,30,0) 75%)}.mon.selflit .shadow{opacity:.35}
 @keyframes sglow{0%,100%{filter:drop-shadow(0 0 1px #fff6c0) drop-shadow(0 0 3px #ffc830)}50%{filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 7px #ffb000)}}
 .pk.rkA{background:radial-gradient(circle 40px at 50% 42px,rgba(255,120,120,.38),rgba(255,120,120,0))}.pk.rkA img,.dp-pic.rkA img,.bd-pic.rkA img{animation:aglowI 2s ease-in-out infinite}@keyframes aglowI{0%,100%{filter:drop-shadow(0 0 1px #ffd0d0) drop-shadow(0 0 3px #ff5050)}50%{filter:drop-shadow(0 0 2px #ffd0d0) drop-shadow(0 0 7px #ff3838)}}
 .mon.rkS .lift::before{content:'✦';position:absolute;left:0;bottom:calc(var(--mh,60px) * .55);color:#fff3a0;font-size:20px;text-shadow:0 0 4px #ffb000,0 0 2px #fff;animation:spk 1.6s steps(1) infinite;pointer-events:none;z-index:3}
@@ -873,7 +873,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .run-body:has(>.rtab[data-tab="egg"]:not([hidden])){padding-bottom:8px}
 .run-body .rtab[hidden]{display:none}
 .runtabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:3px solid var(--frame)}.runtabs.eggtabs{grid-template-columns:repeat(2,minmax(0,1fr))}
-.runtab{padding:10px 4px;font-size:16px;text-align:center;border-left:3px solid var(--frame);background:var(--win)}
+.runtab{position:relative;padding:10px 4px;font-size:16px;text-align:center;border-left:3px solid var(--frame);background:var(--win)}.runtabs .runtab .dot{position:absolute;top:6px;right:7px;margin:0}   /* v4.04 경완: 빨간 점이 글자를 밀지 않게 모서리에 */
 .runtab:first-child{border-left:0}
 .runtab[aria-selected="true"]{background:var(--frame);color:var(--win);font-weight:700}
 .incu-box .egg-detail{font-size:13px;color:var(--dim);margin-top:4px;line-height:1.5}
@@ -1405,6 +1405,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
           <div class="pf-box"><span>이동 거리</span><b id="pfWalk">0.00</b><i>km</i></div>
           <div class="pf-box"><span>주운 알</span><b id="pfEggs">0</b><i>개</i></div>
         </div>
+        <p class="pf-note" id="pfNote"></p>
       </section>
       <button class="pf-link" id="pfRunBtn" type="button"><span class="pf-lt">런닝 기록</span><span class="tcount" id="runTotal"></span><span class="pf-arr">▶</span></button>
       <p class="pf-diag test-only" id="pfDiag"></p></div>
@@ -4775,7 +4776,7 @@ function breathOf(m) {
   const ct = a && a.currentTime != null ? +a.currentTime : null; if (ct == null) return null; const d = a.effect.getTiming().duration || 2000; return .5 - .5 * Math.cos((ct % d) / d * Math.PI * 2);
 }
 function nightHoles() {
-  const L = S.mons.filter(m => m.lit && m.el.isConnected)   /* v4.03 경완: A 랭크는 밤 그늘을 뚫지 않고 붉은 빛(.gl.a)만 — 그늘을 뚫으면 흰 빛처럼 보였다 */, k0 = Math.min(1, skyDark * 1.2), now = performance.now();
+  const L = S.mons.filter(m => (m.lit || m.litA) && m.el.isConnected)   /* v4.04: 발밑 빛(.gl)은 포켓몬들 아래에 깔고 그늘 구멍으로 보이게 — 앞에 선 포켓몬을 덮지 않는다. A 는 붉게 물든 땅만 조금 밝힌다 */, k0 = Math.min(1, skyDark * 1.2), now = performance.now();
   const parts = L.map(m => { const A = !m.lit, br = m.br ?? .5;   /* 후광 숨쉬기(2초)에 맞춰 밝히는 범위가 커졌다 작아졌다 */
     const k = Math.max(.75, Math.min(1.6, (m.w || 50) / 55)) * (A ? .7 : 1) * (.82 + .3 * br), rx = Math.round(100 * k), ry = Math.round(54 * k), a = (1 - (A ? .38 : .62) * k0).toFixed(2), b = (1 - (A ? .22 : .4) * k0).toFixed(2), c = (1 - (A ? .08 : .15) * k0).toFixed(2);
     return `radial-gradient(${rx}px ${ry}px at ${Math.round(m.x)}px ${Math.round(m.y - 6)}px,rgba(0,0,0,${a}) 0,rgba(0,0,0,${b}) 35%,rgba(0,0,0,${c}) 70%,#000 100%)`; });
@@ -5195,7 +5196,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.03';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.04';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5766,7 +5767,7 @@ $('#ppBud').onclick = () => {
 new MutationObserver(() => { if (mgr.hidden) { closePoke(); if (mgrTab === 'buddy') seeBuds(); } }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
 function pokeOpen() { return (!mgr.hidden && mgrG === 'poke') || (!sheet.hidden && dexMode !== 'buddy'); }
 function fldOpen() { return !mgr.hidden && mgrG === 'fld'; }
-function menuTo(isOpen, g) { const was = isOpen(); closeToggles(); hideSheets(); if (was) return; if (budPick != null) { budPick = null; closePoke(); } if (lastTab[g] === 'dex') { setMgrTab('dex'); return; } openMgr(); setMgrTab(lastTab[g]); }
+function menuTo(isOpen, g) { const was = isOpen(); closeToggles(); hideSheets(); if (was) return; if (budPick != null) { budPick = null; closePoke(); } const t = g === 'poke' ? 'box' : lastTab[g];   /* v4.04 경완: 포켓몬 메뉴는 늘 포켓몬(박스) 탭부터 */ if (t === 'dex') { setMgrTab('dex'); return; } openMgr(); setMgrTab(t); }
 $('#openMgr').onclick = () => menuTo(pokeOpen, 'poke');
 $('#openFld').onclick = () => menuTo(fldOpen, 'fld');   // 짝꿍 고르다 나갔으면 고르기 상태를 푼다
 $('#closeMgr').onclick = closeMgr;
@@ -6573,6 +6574,7 @@ function renderProfile() {
   // 이동 거리: 만보기(걷기·달리기 다 들어간다)가 오면 그 값, 아니면 걸은 거리 + 달린 기록 (둘 중 큰 쪽)
   $('#pfWalk').textContent = fmtKm(live ? Math.max(S.ped.km, runKm) : T.walk + runKm); $('#pfWalk').parentNode.classList.toggle('walking', !!live && Date.now() - (S.ped.at || 0) < WALK_LIVE);
   $('#pfEggs').textContent = T.eggs;
+  { const n = 1 / BAG_STEP, sd = Math.sqrt(n * 2 / 3), lo = Math.max(0, Math.round(n - 1.2 * sd)), hi = Math.round(n + 1.2 * sd); $('#pfNote').textContent = `1km를 움직이면 알을 보통 ${lo}~${hi}개 줍는다 (평균 ${Math.round(n)}개)`; }   /* v4.04 경완: 250m마다 0~2개 */
   // 테스트: 아이폰 앱 만보기 신호 (언제·몇 번·얼마) — 이동 거리가 안 늘 때 어디서 막히는지 보려고
   const D = pedDiag, ago = D.at ? Math.round((Date.now() - D.at) / 1000) : -1;
   $('#pfDiag').textContent = !window.webkit?.messageHandlers?.pokeRun ? '' : D.err ? `만보기 오류: ${D.err}` : D.n ? `만보기 신호 ${D.n}번 · 마지막 ${ago}초 전 · ${D.km.toFixed(3)}km` : '만보기 신호를 아직 못 받았어요';
@@ -7140,7 +7142,7 @@ async function playHatch() {
   { const wh = hatchEl.querySelector('.hwhite'), L = fg >= 5; wh.style.setProperty('--wl', parseFloat(wh.style.opacity) || (parseFloat(hatchEl.style.getPropertyValue(L ? '--lg' : '--lit')) || 0) * .55); wh.classList.remove('go', 'big'); wh.style.transition = ''; wh.style.opacity = '';   /* 밝아진 만큼에서 이어서 하얗게 */ void wh.offsetWidth; wh.classList.add('go'); if (L) wh.classList.add('big');
     setTimeout(() => { hatchBg(fg); { const w = hatchEl.querySelector('.win'); w.classList.remove('jolt'); setTier(w, sp); } }, L ? 500 : 300);
     if (L) { tenseStop(.25); setTimeout(() => { if (hatching) bgmDuck(1, 3); }, 3200); } }
-  if (src) { S.eggs = S.eggs.filter(x => x !== src); autoInc(); renderBag.sig = ''; renderRun(); }
+  if (src) { S.eggs = S.eggs.filter(x => x !== src); setTimeout(() => { autoInc(); renderBag.sig = ''; renderRun(); }, 1500); }   /* v4.04 경완: 부화기 다시 그리기는 번쩍임이 끝난 뒤 — 깨지는 순간 화면이 멈췄다가 확 밝아졌다 */
   hatchStage.querySelectorAll('.shard').forEach(x => { x.style.setProperty('--ec', getComputedStyle(egg).getPropertyValue('--ec')); x.classList.add('go'); });
   haptic(2); await wait(300); await spReady; egg.remove();
   const B = bornPoke({ g, sp, place }), { P, isNew } = B;
@@ -7213,7 +7215,7 @@ async function notiDone(got, rdy) {
   if (fl.length) await wait(fl.length * step + 450);
   notiOpen = false; if (fl.length) bagNext = true; renderRun();   // 알이 '알' 메뉴로 날아갔으면 다음에 열 때 가방부터
   // 부화 준비 알림은 주운 게 아니라 날아가는 모션 없이 부화기 창만 연다
-  if (rdy.length && !fl.length && !hatching && !evolving) { closeToggles(); hideSheets(); runTab = 'egg'; bagNext = false; openRun(); }   /* 주운 알이 날아갔으면 메뉴는 열지 않는다 (알 메뉴 점으로만 알림) */
+  if (rdy.length && !fl.length && !hatching && !evolving) { closeToggles(); hideSheets(); runTab = 'egg'; bagNext = false; { const i = S.eggs.findIndex(e => e.km >= e.need); if (i >= 0) { eggSel = S.eggs[i]; eggSelI = i; eggNone = false; } } openRun(); }   /* v4.04 경완: 부화 준비된 알 중 맨 앞 칸을 골라 둔 채로 연다 */   /* 주운 알이 날아갔으면 메뉴는 열지 않는다 (알 메뉴 점으로만 알림) */
 }
 async function hatchAll() {
   if (hatching) return;
