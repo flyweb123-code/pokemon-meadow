@@ -92,7 +92,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
     // 앱을 열 때마다 한 번 더 확인한다
     func refresh() {
         if manager.authorizationStatus == .authorizedAlways || manager.authorizationStatus == .authorizedWhenInUse {
-            manager.requestLocation()
+            if tracking, let loc = manager.location { lookAt = nil; place(for: loc) } else { manager.requestLocation() }
         } else {
             sync(place: nil)
         }
@@ -102,8 +102,57 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
         if CLLocationManager.significantLocationChangeMonitoringAvailable() {
             manager.startMonitoringSignificantLocationChanges()
         }
+        watchMotion()
         manager.requestLocation()
     }
+
+    // MARK: 걷거나 뛰는 동안만 정밀 위치 (2026-10-16 경완: 그동안 주운 알이 모두 같은 장소 이름을 받는 게 싫다)
+    // 평소에는 '주요 위치 변경'(약 500m)만 켜 두고, 걷거나 뛰기 시작하면 10m 단위 위치를 켠다.
+    // 장소 이름은 알을 줍는 단위(250m)마다 한 번 찾는다 (지도 검색은 자주 부르면 막힌다).
+    // 멈추거나 차·자전거를 타면 iOS 가 위치를 잠시 멈추거나(pause) 우리가 끈다.
+    private var tracking = false
+    private var motionOn = false
+    private var lookAt: CLLocation?
+    private var lookBusy = false
+    private static let lookStep: CLLocationDistance = 250
+    private func watchMotion() {
+        guard CMMotionActivityManager.isActivityAvailable(), !motionOn else { return }
+        motionOn = true
+        activity.startActivityUpdates(to: .main) { [weak self] a in
+            guard let self, let a else { return }
+            if (a.walking || a.running) && a.confidence != .low { self.setTracking(true) }
+            else if (a.automotive || a.cycling) && a.confidence != .low { self.setTracking(false) }
+        }
+    }
+    // 주요 위치 변경으로 깨어났을 때: 최근 2분 안에 걷거나 뛰었으면 정밀 위치를 켠다
+    private func checkMoving() {
+        guard CMMotionActivityManager.isActivityAvailable(), !tracking else { return }
+        let now = Date()
+        activity.queryActivityStarting(from: now.addingTimeInterval(-120), to: now, to: .main) { [weak self] acts, _ in
+            if (acts ?? []).contains(where: { ($0.walking || $0.running) && $0.confidence != .low }) { self?.setTracking(true) }
+        }
+    }
+    private func setTracking(_ on: Bool) {
+        guard on != tracking else { return }
+        let st = manager.authorizationStatus
+        if on && !(st == .authorizedAlways || st == .authorizedWhenInUse) { return }
+        tracking = on
+        if on {
+            manager.allowsBackgroundLocationUpdates = st == .authorizedAlways   // Info.plist UIBackgroundModes: location
+            manager.activityType = .fitness
+            manager.pausesLocationUpdatesAutomatically = true
+            manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+            manager.distanceFilter = 10
+            lookAt = nil
+            manager.startUpdatingLocation()
+        } else {
+            manager.stopUpdatingLocation()
+            manager.allowsBackgroundLocationUpdates = false
+            manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+            manager.distanceFilter = kCLDistanceFilterNone
+        }
+    }
+    func locationManagerDidPauseLocationUpdates(_ m: CLLocationManager) { setTracking(false) }
 
     func locationManagerDidChangeAuthorization(_ m: CLLocationManager) {
         if m.authorizationStatus == .authorizedAlways || m.authorizationStatus == .authorizedWhenInUse { begin() }
@@ -111,8 +160,23 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
 
     func locationManager(_ m: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let loc = locations.last else { return }
-        geocoder.reverseGeocodeLocation(loc, preferredLocale: Locale(identifier: "ko_KR")) { [weak self] marks, _ in
-            guard let self else { return }
+        if !tracking { checkMoving() }
+        if tracking, let at = lookAt, loc.distance(from: at) < WalkTracker.lookStep { return }   // 정밀 위치는 250m마다 한 번만 이름을 찾는다
+        place(for: loc)
+    }
+
+    private func place(for loc: CLLocation) {
+        guard !lookBusy else { return }
+        lookBusy = true; lookAt = loc
+        WalkTracker.lookup(loc, geocoder: geocoder) { [weak self] place, tags in
+            self?.lookBusy = false
+            self?.sync(place: place, tags: tags)
+        }
+    }
+
+    // 좌표 → "서울 석촌동 석촌호수" 같은 이름 + 알 테마 태그. 런닝 경로(HealthSync)도 같이 쓴다
+    static func lookup(_ loc: CLLocation, geocoder: CLGeocoder, done: @escaping (String?, [String]) -> Void) {
+        geocoder.reverseGeocodeLocation(loc, preferredLocale: Locale(identifier: "ko_KR")) { marks, _ in
             let p = marks?.first
             // 예: "서울 송파구 석촌동"
             let city = p?.administrativeArea.map(WalkTracker.shortCity)
@@ -126,11 +190,20 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
             if p?.inlandWater != nil { tags.insert("water") }
             if p?.ocean != nil { tags.insert("sea") }
             // 근처 건물·랜드마크를 하나 붙이고, 주변 장소 종류로 알의 테마를 정한다 (예: "석촌호수", 주유소 → gas)
-            self.nearbyLandmark(loc, fallback: p?.areasOfInterest?.first) { mark, near in
+            // 지도에 장소가 없으면: 그 자리 명소(areasOfInterest) → 주소가 아닌 건물 이름 순
+            var fb = p?.areasOfInterest?.first(where: WalkTracker.isKorean)
+            if fb == nil, let n = p?.name, WalkTracker.isKorean(n), !WalkTracker.isAddress(n, p) { fb = n }
+            WalkTracker.nearbyLandmark(loc, fallback: fb) { mark, near in
                 let place = [area, mark ?? ""].filter { !$0.isEmpty }.joined(separator: " ")
-                self.sync(place: place.isEmpty ? nil : place, tags: Array(tags.union(near)).sorted())
+                done(place.isEmpty ? nil : place, Array(tags.union(near)).sorted())
             }
         }
+    }
+    // "석촌동 123-4" 처럼 주소만 있는 이름은 장소 이름으로 쓰지 않는다
+    private static func isAddress(_ n: String, _ p: CLPlacemark?) -> Bool {
+        if let sub = p?.subThoroughfare, !sub.isEmpty, n.contains(sub) { return true }
+        if let th = p?.thoroughfare, !th.isEmpty, n.hasPrefix(th) { return true }
+        return n.range(of: #"\d+(-\d+)?(번지)?$"#, options: .regularExpression) != nil
     }
 
     // "서울특별시" → "서울", "경기도" → "경기"
@@ -143,11 +216,6 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
         return s
     }
 
-    // 장소 이름으로 쓸 종류
-    private static let landmarkKinds: Set<MKPointOfInterestCategory> = [
-        .park, .nationalPark, .museum, .stadium, .university, .school, .library, .publicTransport,
-        .amusementPark, .zoo, .aquarium, .beach, .marina, .theater, .movieTheater, .hospital, .fitnessCenter
-    ]
     // 장소 종류 → 게임의 알 테마(app.html THEMES 키)
     private static let themeOf: [MKPointOfInterestCategory: String] = [
         .park: "park", .nationalPark: "mountain", .campground: "park",
@@ -163,12 +231,12 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
         .postOffice: "postoffice", .bank: "bank", .atm: "bank", .hotel: "hotel", .brewery: "pub", .winery: "pub"
     ]
 
-    // 반경 400m 안에서 가장 가까운 명소·건물·식당·가게 이름 + 반경 250m 안 장소 종류의 테마들
-    private func nearbyLandmark(_ loc: CLLocation, fallback: String?, done: @escaping (String?, Set<String>) -> Void) {
+    // 반경 400m 안에서 가장 가까운 장소 이름(애플 지도에 있는 모든 종류: 명소·건물·식당·가게 등) + 반경 250m 안 장소 종류의 테마들
+    // 2026-10-16 경완: 장소 종류 목록에 없어도 이름은 넣는다 (예전엔 약 40종류만 봤다)
+    private static func nearbyLandmark(_ loc: CLLocation, fallback: String?, done: @escaping (String?, Set<String>) -> Void) {
         let req = MKLocalPointsOfInterestRequest(center: loc.coordinate, radius: 400)
-        req.pointOfInterestFilter = MKPointOfInterestFilter(including: Array(WalkTracker.landmarkKinds.union(WalkTracker.themeOf.keys)))
-        MKLocalSearch(request: req).start { [weak self] res, _ in
-            guard let self else { return }
+        req.pointOfInterestFilter = .includingAll
+        MKLocalSearch(request: req).start { res, _ in
             var best: (String, CLLocationDistance)?
             var tags: Set<String> = []
             for item in res?.mapItems ?? [] {
@@ -185,14 +253,14 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
             let name = best?.0 ?? fallback
             let at = res?.mapItems.first(where: { $0.name == best?.0 })?.placemark.location ?? loc
             guard let name, !WalkTracker.isKorean(name) else { DispatchQueue.main.async { done(name, tags) }; return }
-            self.koGeocoder.reverseGeocodeLocation(at, preferredLocale: Locale(identifier: "ko_KR")) { marks, _ in
-                let ko = marks?.first?.areasOfInterest?.first(where: WalkTracker.isKorean)
+            WalkTracker.koGeocoder.reverseGeocodeLocation(at, preferredLocale: Locale(identifier: "ko_KR")) { marks, _ in
+                let ko = marks?.first?.areasOfInterest?.first(where: WalkTracker.isKorean) ?? (fallback.flatMap { WalkTracker.isKorean($0) ? $0 : nil })
                 DispatchQueue.main.async { done(ko, tags) }
             }
         }
     }
-    private let koGeocoder = CLGeocoder()
-    private static func isKorean(_ s: String) -> Bool { s.unicodeScalars.contains { (0xAC00...0xD7A3).contains($0.value) } }
+    private static let koGeocoder = CLGeocoder()
+    static func isKorean(_ s: String) -> Bool { s.unicodeScalars.contains { (0xAC00...0xD7A3).contains($0.value) } }
 
     func locationManager(_ m: CLLocationManager, didFailWithError error: Error) {
         sync(place: nil, tags: [])

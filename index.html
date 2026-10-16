@@ -991,7 +991,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .dexpop .boxbtn.off{background:var(--win);color:var(--frame)}
 .dexpop .boxbtn[hidden]{display:none}
 .bagpop{position:fixed;inset:0;z-index:5600;background:rgba(10,14,30,.6);display:grid;place-items:center;padding:16px}
-.bagpop .win{width:min(400px,100%);position:relative}.bag-hd{display:flex;align-items:center;justify-content:space-between;margin:-4px 0 8px;font-size:15px}.bp-btns.two{grid-template-columns:1fr 2fr}   /* v3.97 경완: 닫기 버튼 대신 우상단 ×, 버리기 왼쪽·부화기에 넣기 오른쪽 */
+.bagpop .win{width:min(400px,100%);position:relative}.bag-hd{display:flex;align-items:center;justify-content:space-between;margin:-4px 0 8px;font-size:15px}.bp-btns.two{grid-template-columns:1fr 2fr}#bagIn{background:#e8a020;border-color:var(--frame);color:#fff}#bagIn[disabled]{background:#b8b0a0}   /* v3.97 경완: 닫기 버튼 대신 우상단 ×, 버리기 왼쪽·부화기에 넣기 오른쪽 */
 .bagpop .incu-box{margin-bottom:12px}
 .bp-btns{display:grid;grid-template-columns:2fr 1fr;gap:8px}
 .bp-btns .lk-btn[disabled]{opacity:.55}
@@ -5188,7 +5188,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.97';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.98';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6725,14 +6725,16 @@ window.pokeRunPlaces = (t0, t1, list) => {
   const pts = list.map(x => ({ n: String(x[0] || ''), tags: String(x[1] || '').split(',').filter(k => THEMES[k]), t: +x[2] || t0 })).filter(p => p.n);
   if (!pts.length) return true;
   if (!S.places.some(p => p.t >= t0 && p.t <= t1)) pts.forEach(p => notePlace(p.n, p.tags, p.t));
-  const all = [...S.bag, ...S.eggs], fill = e => { if (e.place) return; const p = pick(pts); e.place = p.n; if (p.tags.length) e.tags = p.tags; delete e.sp; eggSp(e); };
+  // v3.98 경완: 무작위 대신 주운 순서대로 경로 앞쪽부터 (i번째 알 = 경로의 i/n 지점)
+  pts.sort((a, b) => a.t - b.t); const at = (i, n) => pts[Math.min(pts.length - 1, Math.floor(i * pts.length / Math.max(1, n)))];
+  const all = [...S.bag, ...S.eggs], fill = (e, p) => { if (e.place) return; e.place = p.n; if (p.tags.length) e.tags = p.tags; delete e.sp; eggSp(e); };
   for (const r of S.runs) {
     if (!(r.t0 && r.t0 < t1 + 60000 && r.t > t0 - 60000)) continue;
-    if (r.eggs) for (const x of r.eggs) { const e = all.find(y => y.id === x.id); if (e) { fill(e); x.place = e.place; } else if (!x.place) x.place = pick(pts).n; }
+    if (r.eggs) r.eggs.forEach((x, i, L) => { const p = at(i, L.length), e = all.find(y => y.id === x.id); if (e) { fill(e, p); x.place = e.place; } else if (!x.place) x.place = p.n; });
   }
   // 예전 알(런닝과 이어져 있지 않은 것): 그 운동이 끝난 뒤 6시간 안에 주웠으면 그 길에서 주운 걸로
   const old = all.filter(e => e.t >= t0 && e.t <= t1 + 6 * 3600e3 && !S.runs.some(r => r.eggs?.some(x => x.id === e.id)));
-  old.forEach(fill);
+  old.sort((a, b) => a.id - b.id).forEach((e, i) => fill(e, at(i, old.length)));
   const run = S.runs.find(r => !r.eggs && r.t0 && r.t0 < t1 + 60000 && r.t > t0 - 60000);
   if (run && old.length) run.eggs = old.map(e => ({ id: e.id, g: e.g, place: e.place || '' }));
   save(); renderRun(); return true;
