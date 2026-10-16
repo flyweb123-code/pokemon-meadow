@@ -5174,7 +5174,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.85';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.86';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7899,7 +7899,8 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   let stM = null, stB = null, stDrag = null;
   const stFit = () => { if (!stM || !stB) return; const w = stM.w || 50, h = stM.h || 60; Object.assign(stB.style, { width: w + 'px', height: h + 'px', left: -w / 2 + 'px' }); };
   // v3.81 경완: 크기 조절 모드 — 화면 가득 맵, 포켓몬은 제한 없이 줄지어(등장 효과·움직임 없이) 세워 두고 크기를 맞춘다
-  SZB.rows = () => { const L = S.mons.filter(m => m.szb), gap = 22, x0 = XL + 18, x1 = XR - 14; let rows = [], row = [], x = x0;
+  // v3.86 경완: 줄은 시뮬레이터 핸드폰에 보이던 자리(SZB.win) 왼쪽부터, 넘치면 아래 줄로
+  SZB.rows = () => { const L = S.mons.filter(m => m.szb), gap = 22, [wl, wr] = SZB.win || [XL, XR], x0 = Math.max(XL, wl) + 18, x1 = Math.min(XR, wr) - 14; let rows = [], row = [], x = x0;
     for (const m of L) { const w = m.w || 50; if (x + w > x1 && row.length) { rows.push(row); row = []; x = x0; } row.push(m); x += w + gap; } if (row.length) rows.push(row);
     let by = Math.max(70, (60 - S.oy) / scale); for (const r of rows) { by += Math.max(...r.map(m => m.h || 60)); let cx = x0; for (const m of r) { const w = m.w || 50; m.x = m.tx = cx + w / 2; m.y = m.ty = by; cx += w + gap; } by += 30; }
     stage.style.height = Math.max(H, by + 20) + 'px'; $('#szSp') && ($('#szSp').style.height = S.oy + Math.max(H, by + 20) * scale + 'px'); SZB.paint(); };
@@ -7907,13 +7908,13 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
       AW = Math.ceil((wrap.clientWidth - S.ox) / u) + ox + 2, AH = Math.max(Math.ceil((wrap.clientHeight - S.oy) / u), Math.ceil(sh / 2)) + oy + 2, key = [AW, AH, ox, oy, scale].join();
     if (SZB.key !== key) { SZB.key = key; drawBg({ c, w: AW, h: AH, ox, oy }); } Object.assign(c.style, { left: S.ox - ox * u + 'px', top: S.oy - oy * u + 'px', width: AW * u + 'px', height: AH * u + 'px' }); };
   api.sizeMode = async (on, fix) => { SZB.fix = fix || null; if (!!on === !!SZB.on) return;
-    if (on) { SZB.on = true; SZB.keep = S.mons.map(m => ({ sp: m.sp, x: m.x, y: m.y, pid: m.pid, name: m.name, uid: m.uid })); SZB.sf = saveFrozen; saveFrozen = true; api.markMon(null);
+    if (on) { SZB.win = [XL, XR]; SZB.on = true; SZB.keep = S.mons.map(m => ({ sp: m.sp, x: m.x, y: m.y, pid: m.pid, name: m.name, uid: m.uid })); SZB.sf = saveFrozen; saveFrozen = true; api.markMon(null);
       for (const m of [...S.mons]) removeMon(m, true); SZB.key = null;
       const cv = document.createElement('canvas'); cv.id = 'szBg'; cv.style.cssText = 'position:absolute;left:0;top:0;image-rendering:pixelated;pointer-events:none'; wrap.insertBefore(cv, stage);
       const sp = document.createElement('div'); sp.id = 'szSp'; sp.style.cssText = 'position:absolute;left:0;top:0;width:1px;pointer-events:none'; wrap.append(sp); document.body.classList.add('szMode'); fit(); return; }
     api.markMon(null); for (const m of [...S.mons]) removeMon(m, true); SZB.on = false; document.body.classList.remove('szMode'); $('#szSp')?.remove(); $('#szBg')?.remove(); stage.style.height = ''; wrap.scrollTop = 0; fit();
     saveFrozen = SZB.sf; const K = SZB.keep || []; SZB.keep = null; for (const o of K) { const m = await spawn(o.sp, { ...o, quiet: true }); m.studio = true; } save(); };
-  api.szAdd = async sp => { if (!SZB.on) return null; const m = await spawn(sp, { x: XL + 30, y: 200, quiet: true }); if (!SZB.on) { removeMon(m, true); return null; } m.szb = m.pin = m.frz = true; m.studio = true; m.el.classList.add('szb'); m.state = 'idle'; SZB.rows(); return m.uid; };
+  api.szAdd = async sp => { if (!SZB.on || S.mons.some(m => m.szb && m.sp === sp)) return null; const m = await spawn(sp, { x: XL + 30, y: 200, quiet: true }); if (!SZB.on) { removeMon(m, true); return null; } m.szb = m.pin = m.frz = true; m.studio = true; m.el.classList.add('szb'); m.state = 'idle'; SZB.rows(); return m.uid; };
   api.szList = () => S.mons.filter(m => m.szb).map(m => ({ uid: m.uid, sp: m.sp, name: m.name }));
   api.szRemove = uid => { const m = monOf(uid); if (!m) return; if (stM === m) api.markMon(null); removeMon(m, true); SZB.rows(); };
   api.szClear = () => { api.markMon(null); for (const m of S.mons.filter(m => m.szb)) removeMon(m, true); SZB.rows(); };
