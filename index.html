@@ -5133,7 +5133,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.78';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.79';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7581,7 +7581,7 @@ function retier(ov, ord) { EGG_EFF = null;
   for (const [k, t] of Object.entries(ov || {})) if (TIER[k] != null && t >= 1 && t <= 10) TIER[k] = t;
   TIER_SPS.forEach(L => L.length = 0); for (const k of Object.keys(TIER)) TIER_SPS[TIER[k]].push(+k);
   TIER_SPS.forEach((L, t) => { if (!L.length) return; const O = TIER_ORD[t];
-    if (O?.length) { const have = new Set(L), q = O.filter(b => have.has(b)), rest = L.filter(b => !q.includes(b)).sort((a, b) => FAM_BST[b] - FAM_BST[a]), all = [...q, ...rest];   // 정한 순서: 맨 앞 = 가장 드묾(z 1) ~ 맨 뒤 = 가장 흔함(z 0)
+    if (O?.length) { const have = new Set(L), q = O.filter(b => have.has(b)), rest = L.filter(b => !q.includes(b)).sort((a, b) => b - a), all = [...q, ...rest];   // 정한 순서: 맨 앞 = 가장 드묾(z 1) ~ 맨 뒤 = 가장 흔함(z 0)
       all.forEach((b, i) => { TIER_Z[b] = all.length > 1 ? 1 - i / (all.length - 1) : .5; }); return; }
     const lo = Math.min(...L.map(b => FAM_BST[b])), hi = Math.max(...L.map(b => FAM_BST[b])); for (const b of L) TIER_Z[b] = hi > lo ? (FAM_BST[b] - lo) / (hi - lo) : .5; });
 }

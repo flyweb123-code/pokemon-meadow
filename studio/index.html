@@ -115,7 +115,7 @@ table.t th{font-family:var(--px);font-size:11px;font-weight:400;color:var(--mute
 .gb{position:relative;display:inline-block;background:#f8f8f8;color:#282830;border:2px solid #383848;padding:1px 6px 2px;font:13px/1.25 var(--px);white-space:nowrap}
 .gb::after{content:"";position:absolute;left:50%;bottom:-7px;margin-left:-4px;border:4px solid transparent;border-bottom:0;border-top:5px solid #383848}
 .gb.heart{color:#e0405a}.gb.anger{color:#d62f2f}.gb.note{color:#2b6cc4}.gb.zz{color:#5560a8;background:#e8eaff}.gb.star{color:#c08000;background:#fff6c8}.gb svg{display:block;width:16px;height:16px;margin:1px 0 0}
-.bubs ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;align-items:flex-start;gap:4px}.bubs li{background:var(--chip);border-radius:4px;padding:3px 8px;font-size:12.5px;line-height:1.4;color:var(--fg)}.nmg{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}.nmc{display:grid;gap:4px;justify-items:start;background:var(--deep);border:1px solid var(--chip);border-radius:6px;padding:8px;color:var(--fg);font:inherit;text-align:left;cursor:pointer}.nmc:hover{border-color:var(--acc)}.nmc .cv{display:flex;gap:6px}.nmc canvas{width:96px;height:96px;background:#5d9a3e;border-radius:4px}.nmc canvas[data-o]{opacity:.75}.seg .chip{touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.seg .chip.drag{opacity:.35}.bubs .bn{font-size:13px;font-weight:600;color:var(--fg)}.bubs li.bch{display:flex;align-items:center;gap:6px;cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:pan-y}.bubs li.bch.mv{background:#a2581d;color:#fff}.bubs li.bch.drag{opacity:.35;filter:grayscale(1)}.bch .bx{background:none;border:0;color:inherit;opacity:.6;cursor:pointer;font:inherit;font-size:15px;line-height:1;padding:0 2px}.bch .bx:hover{opacity:1;color:var(--bad)}.bubs li.bem{background:none;color:var(--soft);font-size:12px}.bubs .bc.drop{box-shadow:inset 0 0 0 2px var(--acc)}.bubs .bc.gone .bw{background:#5a4a4a}li.prg.bch{background:var(--chip);color:var(--fg);padding:3px 8px;font-size:12.5px;display:flex;gap:6px}
+.bubs ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;align-items:flex-start;gap:4px}.bubs li{background:var(--chip);border-radius:4px;padding:3px 8px;font-size:12.5px;line-height:1.4;color:var(--fg)}.nmg{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}.nmc{display:grid;gap:4px;justify-items:start;background:var(--deep);border:1px solid var(--chip);border-radius:6px;padding:8px;color:var(--fg);font:inherit;text-align:left;cursor:pointer}.nmc:hover{border-color:var(--acc)}.nmc .cv{display:flex;gap:6px}.nmc canvas{width:96px;height:96px;background:#5d9a3e;border-radius:4px}.nmc canvas[data-o]{opacity:.75}.seg .chip{touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.seg .chip.drag{opacity:.35}.tmv .chip{padding:2px 4px;min-width:0}.tmv .chip.on{outline:2px solid var(--acc)}.tmv .chip .tag{min-width:22px;text-align:center}.bubs .bn{font-size:13px;font-weight:600;color:var(--fg)}.bubs li.bch{display:flex;align-items:center;gap:6px;cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:pan-y}.bubs li.bch.mv{background:#a2581d;color:#fff}.bubs li.bch.drag{opacity:.35;filter:grayscale(1)}.bch .bx{background:none;border:0;color:inherit;opacity:.6;cursor:pointer;font:inherit;font-size:15px;line-height:1;padding:0 2px}.bch .bx:hover{opacity:1;color:var(--bad)}.bubs li.bem{background:none;color:var(--soft);font-size:12px}.bubs .bc.drop{box-shadow:inset 0 0 0 2px var(--acc)}.bubs .bc.gone .bw{background:#5a4a4a}li.prg.bch{background:var(--chip);color:var(--fg);padding:3px 8px;font-size:12.5px;display:flex;gap:6px}
 .plist{display:grid;gap:2px}
 .pr,.prh{display:grid;grid-template-columns:44px 40px minmax(90px,170px) 40px minmax(0,1fr) 64px 92px;align-items:center;gap:10px;padding:3px 8px;border-radius:4px;background:none;border:0;text-align:left;color:inherit}
 .prh{font-size:11px;color:var(--mute);padding-bottom:0}.plist .pr:nth-child(even){background:rgba(128,128,128,.06)}
@@ -477,7 +477,7 @@ function startRename(v) { const a = $(`.nav a[data-v="${v}"]`); if (!a) return; 
   inp.onkeydown = e => { if (e.key === 'Enter') end(true); else if (e.key === 'Escape') end(false); e.stopPropagation(); }; inp.onblur = () => end(true); inp.onclick = e => e.stopPropagation(); }
 const lastOf = {};
 // v2.10 경완: 저장 안 하고 다른 화면으로 가면 그 화면에서 고친 것은 마지막으로 저장한 상태로 되돌린다
-const VIEW_BOX = v => v === 'odds' ? ['odds', 'pity'] : v === 'pool' ? [1, 2, 3, 4, 5].map(g => 'pool:' + g) : v === 'hatch' ? ['hatch'] : v === 'tier' ? ['tier'] : v === 'bal' ? BAL.map((_, i) => 'bal:' + i) : v === 'map' ? ['layout', 'monsc'] : v === 'bub' ? ['bub'] : [];
+const VIEW_BOX = v => v === 'odds' ? ['bagstep', 'odds', 'pity'] : v === 'pool' ? [1, 2, 3, 4, 5].map(g => 'pool:' + g) : v === 'hatch' ? ['hatch'] : v === 'tier' ? ['tier'] : v === 'bal' ? BAL.map((_, i) => 'bal:' + i) : v === 'map' ? ['layout', 'monsc'] : v === 'bub' ? ['bub'] : [];
 function discardView(v) { if (!ORIG) return; const ids = VIEW_BOX(v).filter(boxDirty); if (!ids.length) return;
   for (const id of ids) { for (const p of boxPaths(id)) putP(D, p, D._sv || {}); if (id === 'layout') { try { A?.setLayout(D.layout || ORIG.layout); } catch (e) {} } if (id === 'bub') bubLive(); if (id === 'monsc') scLive(); }
   saveDraft(); scBar(); toast(`저장 안 한 수정 ${ids.length}곳을 되돌렸어요`); }
@@ -563,13 +563,13 @@ function putP(o, p, src) {   // src(작업본) 의 p 값을 o 에 그대로 옮�
   if (a === 'eggTiers') { const v = src ? effP(src, p) : ORIG.eggTiers[b]; o.eggTiers = cl(o.eggTiers || ORIG.eggTiers); o.eggTiers[b] = cl(v); if (JSON.stringify(o.eggTiers) === JSON.stringify(ORIG.eggTiers)) delete o.eggTiers; return; }
   if (b != null) { const has = src && src[a] && b in src[a]; o[a] = { ...(o[a] || {}) }; if (has) o[a][b] = cl(src[a][b]); else delete o[a][b]; if (!Object.keys(o[a]).length) delete o[a]; return; }
   if (src && a in src) o[a] = cl(src[a]); else delete o[a]; }
-const BOXES = { monsc: () => ['monSc'], bub: () => ['bub'], odds: () => ['odds'], pity: () => ['pity'], hatch: () => ['bal.HATCH_KM'], tier: () => ['tierOv', 'tierOrd'], layout: () => ['layout'] };
+const BOXES = { bagstep: () => ['bal.BAG_STEP'], monsc: () => ['monSc'], bub: () => ['bub'], odds: () => ['odds'], pity: () => ['pity'], hatch: () => ['bal.HATCH_KM'], tier: () => ['tierOv', 'tierOrd'], layout: () => ['layout'] };
 const boxPaths = id => { const [t, x] = id.split(':'); return t === 'pool' ? ['eggTiers.' + x, 'eggList.' + x] : t === 'bal' ? BAL[x][1].map(r => 'bal.' + r[0]) : BOXES[t](); };
 const same = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
 const boxDirty = id => ORIG && boxPaths(id).some(p => !same(effP(D, p), effP(D._sv || {}, p)));
 const boxDef = id => ORIG && boxPaths(id).every(p => same(effP(D, p), effP({}, p)));
 const boxSaved = id => ORIG && boxPaths(id).some(p => !same(effP(D._sv || {}, p), effP({}, p)));
-const ALLBOX = () => ['odds', 'pity', 'hatch', 'tier', 'layout', 'bub', 'monsc', ...[1, 2, 3, 4, 5].map(g => 'pool:' + g), ...BAL.map((_, i) => 'bal:' + i)];
+const ALLBOX = () => ['bagstep', 'odds', 'pity', 'hatch', 'tier', 'layout', 'bub', 'monsc', ...[1, 2, 3, 4, 5].map(g => 'pool:' + g), ...BAL.map((_, i) => 'bal:' + i)];
 const unsaved = () => ORIG ? ALLBOX().filter(boxDirty).length : 0;
 function boxBar(id, lab = '') { const d = boxDirty(id), sv = boxSaved(id);
   return `<div class="sbx${d ? ' dirty' : ''}" data-box="${id}"><span class="st">${d ? '● 저장 안 함' : sv ? '✓ 저장됨 · 배포 대기' : '게임 값 그대로'}</span><button class="chip" data-bd${boxDef(id) ? ' disabled' : ''} title="지금 게임에 들어 있는 값으로 (저장해야 반영)">기본값으로</button><button class="btn" data-bs${d ? '' : ' disabled'}>${lab || '저장'}</button></div>`; }
@@ -603,7 +603,7 @@ function tierOfSp(sp) { return D.tierOv?.[sp] ?? A.TIER[sp]; }
 function tierLists() { const L = Array.from({ length: 11 }, () => []); for (const sp of Object.keys(A.TIER)) L[tierOfSp(+sp)].push(+sp); return L; }
 // v2.3 경완: 티어 안 순서. 직접 정한 티어는 앞일수록 드물게(z 1 → 0), 안 정한 티어는 가족 최고 종족값 기준 (게임 retier 와 같은 계산)
 const tierOrdOf = t => D.tierOrd && t in D.tierOrd ? D.tierOrd[t] : ORIG?.tierOrd?.[t] || null;
-function orderTier(t, T) { const O = tierOrdOf(t), byB = (a, b) => A.FAM_BST[b] - A.FAM_BST[a]; if (!O?.length) return [...T].sort(byB); const have = new Set(T), q = O.filter(b => have.has(b)); return [...q, ...T.filter(b => !q.includes(b)).sort(byB)]; }
+function orderTier(t, T) { const O = tierOrdOf(t), byB = (a, b) => b - a; /* v2.13 경완: 정한 순서가 없으면 도감 번호 높은 순 */ if (!O?.length) return [...T].sort(byB); const have = new Set(T), q = O.filter(b => have.has(b)); return [...q, ...T.filter(b => !q.includes(b)).sort(byB)]; }
 function tierZ(L) { const Z = {}; L.forEach((T, t) => { if (!T.length) return; if (tierOrdOf(t)?.length) { const all = orderTier(t, T); all.forEach((b, i) => { Z[b] = all.length > 1 ? 1 - i / (all.length - 1) : .5; }); return; }
   const v = T.map(b => A.FAM_BST[b]), lo = Math.min(...v), hi = Math.max(...v); for (const b of T) Z[b] = hi > lo ? (A.FAM_BST[b] - lo) / (hi - lo) : .5; }); return Z; }
 // 알 등급 g 에서 종마다 나올 확률 (장소 테마·최근 부화는 빼고 기본값)
@@ -617,7 +617,9 @@ function poolProb(g, L = tierLists(), Z = tierZ(L)) {
   return out;
 }
 const pct = p => p >= .001 ? (p * 100).toFixed(2) + '%' : p > 0 ? (p * 100).toFixed(3) + '%' : '0%';
-const kmPer = p => p > 0 ? (1 / (4 * p)) : Infinity;   // 250m 마다 0~2개 → 1km 에 평균 4개
+// v2.13 경완: 1km 에 줍는 알 개수(EPK)는 알 메뉴에서 정한다. 게임은 BAG_STEP km 마다 0~2개 → 1km 에 평균 1/BAG_STEP 개
+const EPK = () => { const v = ORIG ? bal('BAG_STEP') : .25; return v > 0 ? 1 / v : 4; };
+const kmPer = p => p > 0 ? (1 / (EPK() * p)) : Infinity;
 const fmtKm = v => !isFinite(v) ? '-' : v >= 100 ? Math.round(v) + 'km' : v >= 10 ? v.toFixed(1) + 'km' : v.toFixed(2) + 'km';
 const mobile = () => matchMedia('(max-width:820px)').matches, toInsp = id => { if (mobile()) setTimeout(() => $(id).scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); };
 const sel = { mon: null, pool: null, poolG: 1, tier: null, prop: null, monUid: null };
@@ -987,8 +989,14 @@ function drawAnim(now) {
 function renderOdds() {
   const O = odds(), tot = O.reduce((a, b) => a + b, 0), pt = pity(), oc = (i) => D.odds && D.odds[i] !== ORIG.odds[i] ? ' ch' : '';
   $('#oddsC').innerHTML = `
+  <div class="card"><h2>알 줍는 양</h2>
+    <div class="small mute">걸을 때 일정 거리마다 알을 0~2개(평균 1개) 주워요. 1km에 평균 몇 개 주울지 정해요. 바꾸면 아래 등급별 "몇 km에 1개"도 같이 바뀌어요.</div>
+    <div class="odd" style="grid-template-columns:minmax(0,1fr) 96px"><span class="gn">${eggI(1)}1km에 평균 (개)</span><input class="inp${D.bal?.BAG_STEP != null ? ' ch' : ''}" data-epk inputmode="decimal" value="${+EPK().toFixed(2)}" aria-label="1km에 줍는 알 개수"></div>
+    <div class="small mute">${+(bal('BAG_STEP') * 1000).toFixed(0)}m 걸을 때마다 0~2개씩</div>
+    ${boxBar('bagstep')}
+  </div>
   <div class="card"><h2>등급별 확률</h2>
-    <div class="small mute">1km에 알을 평균 4개 주워요. 등급마다 "평균 몇 km 걸으면 1개 나오는지"로 정해요. 막대를 끌거나 km를 적어요. 일반 알은 나머지를 가져가요.</div>
+    <div class="small mute">1km에 알을 평균 ${+EPK().toFixed(2)}개 주워요. 등급마다 "평균 몇 km 걸으면 1개 나오는지"로 정해요. 막대를 끌거나 km를 적어요. 일반 알은 나머지를 가져가요.</div>
     <div class="odh"><span></span><span class="small mute">← 드물게 · 자주 →</span><span class="small mute">1개에</span><span class="small mute">알 1개당</span></div>
     ${O.map((p, i) => `<div class="odd od2"><span class="gn">${eggI(i + 1)}<b style="color:${GC[i + 1]}">${GN[i + 1]}</b></span><div class="bar odb${i ? '' : ' auto'}${i && capF(i) < 1 ? ' capd' : ''}" data-ob="${i}"><i style="width:${(oddF(p) * 100).toFixed(2)}%;background:${GC[i + 1]}"></i>${i && capF(i) < 1 ? `<span class="cap" style="left:${(capF(i) * 100).toFixed(2)}%" title="일반 알 몫이 다 차서 더 자주 나오게 할 수 없어요"></span>` : ''}${i ? '<b class="knob" style="left:' + (oddF(p) * 100).toFixed(2) + '%"></b>' : ''}</div>
       ${i ? `<label class="kmi"><input class="inp${oc(i)}" data-km="${i}" inputmode="decimal" value="${kmTx(kmPer(p))}" aria-label="${GN[i + 1]} 알 1개 나오는 거리 km"><span>km</span></label>` : `<span class="kmi auto num">${kmTx(kmPer(p))}<span>km</span></span>`}<span class="num mute pc">${pct(p)}</span></div>`).join('')}
@@ -996,7 +1004,7 @@ function renderOdds() {
     ${boxBar('odds')}
   </div>
   <div class="card"><h2>몇 km에 한 개꼴?</h2>
-    <div class="tw"><table class="t"><tr><th>등급</th><th>알 1개당</th><th>평균 거리</th><th>100km에</th></tr>${O.map((p, i) => `<tr><td><span class="gn" style="display:inline-flex;align-items:center;gap:6px;color:${GC[i + 1]}">${eggI(i + 1)}${GN[i + 1]}</span></td><td class="num">${pct(p)}</td><td class="num">${fmtKm(kmPer(p))}</td><td class="num">${(p * 400).toFixed(1)}개</td></tr>`).join('')}</table></div>
+    <div class="tw"><table class="t"><tr><th>등급</th><th>알 1개당</th><th>평균 거리</th><th>100km에</th></tr>${O.map((p, i) => `<tr><td><span class="gn" style="display:inline-flex;align-items:center;gap:6px;color:${GC[i + 1]}">${eggI(i + 1)}${GN[i + 1]}</span></td><td class="num">${pct(p)}</td><td class="num">${fmtKm(kmPer(p))}</td><td class="num">${(p * 100 * EPK()).toFixed(1)}개</td></tr>`).join('')}</table></div>
   </div>
   <div class="card"><h2>천장</h2>
     <div class="small mute">이 거리를 움직이는 동안 그 등급이 한 번도 안 나오면 다음 알은 그 등급으로 나와요. 남은 거리는 게임 화면에 안 보여요.</div>
@@ -1020,12 +1028,13 @@ const capP = i => .995 - odds().reduce((a, q, j) => a + (j && j !== i ? q : 0), 
 function setOdd(i, p, say) { if (say && p > capP(i) + 1e-9) toast('더 자주 나오게 할 수 없어요. 일반 알 몫이 거의 다 찼어요'); const O = [...odds()], rest = O.reduce((a, q, j) => a + (j && j !== i ? q : 0), 0); O[i] = Math.max(1e-5, Math.min(p, .995 - rest)); O[0] = Math.max(0, 1 - O.slice(1).reduce((a, b) => a + b, 0));
   D.odds = O; if (O.every((q, j) => Math.abs(q - ORIG.odds[j]) < 1e-9)) delete D.odds; }
 $('#oddsC').addEventListener('pointerdown', e => { const b = e.target.closest('.odb[data-ob]'); if (!b || b.classList.contains('auto') || e.button > 0) return; e.preventDefault(); const i = +b.dataset.ob;
-  const at = x => { const r = $(`.odb[data-ob="${i}"]`).getBoundingClientRect(), f = Math.max(0, Math.min(capF(i), (x - r.left) / r.width)); setOdd(i, 1 / (4 * nice(1 / (4 * Math.pow(10, f * 4 - 4))))); renderOdds(); };
+  const at = x => { const r = $(`.odb[data-ob="${i}"]`).getBoundingClientRect(), f = Math.max(0, Math.min(capF(i), (x - r.left) / r.width)); setOdd(i, 1 / (EPK() * nice(1 / (EPK() * Math.pow(10, f * 4 - 4))))); renderOdds(); };
   document.body.classList.add('odrag'); at(e.clientX); const mv = ev => at(ev.clientX), up = () => { document.body.classList.remove('odrag'); removeEventListener('pointermove', mv); removeEventListener('pointerup', up); saveDraft(); renderOdds(); };
   addEventListener('pointermove', mv); addEventListener('pointerup', up); });
 $('#oddsC').addEventListener('change', e => {
   const t = e.target, v = parseFloat(t.value); if (isNaN(v) || v < 0) { renderOdds(); return; }
-  if (t.dataset.km != null) { if (!(v > 0)) { renderOdds(); return; } setOdd(+t.dataset.km, 1 / (4 * v), true); }
+  if (t.dataset.km != null) { if (!(v > 0)) { renderOdds(); return; } setOdd(+t.dataset.km, 1 / (EPK() * v), true); }
+  if (t.dataset.epk != null) { if (!(v > 0)) { renderOdds(); return; } const st = Math.round(1 / v * 10000) / 10000; D.bal = { ...(D.bal || {}), BAG_STEP: st }; if (st === ORIG.bal.BAG_STEP) delete D.bal.BAG_STEP; if (!Object.keys(D.bal).length) delete D.bal; }
   if (t.dataset.p) { D.pity = { ...(D.pity || {}), [t.dataset.p]: v }; if (D.pity.e === ORIG.pity.e) delete D.pity.e; if (D.pity.l === ORIG.pity.l) delete D.pity.l; if (!Object.keys(D.pity).length) delete D.pity; }
   saveDraft(); renderOdds();
 });
@@ -1033,10 +1042,10 @@ $('#oddsC').addEventListener('click', e => {
   const k = e.target.closest('#simKm [data-k]'); if (k) { $$('#simKm .chip').forEach(c => c.classList.toggle('on', c === k)); return; }
   if (!e.target.closest('#simGo')) return;
   const km = +($('#simKm .on')?.dataset.k || 1000), O = odds(), pt = pity(), cnt = [0, 0, 0, 0, 0, 0], gaps = { 4: [], 5: [] }, lastAt = { 4: 0, 5: 0 }; let pe = 0, pl = 0, hitE = 0, hitL = 0;
-  for (let s = 1; s <= km / .25; s++) { pe += .25; pl += .25; const n = Math.floor(Math.random() * 3);
+  const ST = bal('BAG_STEP') || .25; for (let s = 1; s <= km / ST; s++) { pe += ST; pl += ST; const n = Math.floor(Math.random() * 3);
     for (let i = 0; i < n; i++) { let r = Math.random(), g = 5; for (let j = 0; j < 5; j++) { if ((r -= O[j]) < 0) { g = j + 1; break; } }
       if (pl >= pt.l) { if (g !== 5) hitL++; g = 5; } else if (pe >= pt.e) { if (g < 4) hitE++; g = Math.max(g, 4); }
-      if (g === 5) pl = 0; if (g >= 4) pe = 0; cnt[g]++; const at = s * .25; for (const q of [4, 5]) if (g >= q && (q === 4 || g === 5)) { gaps[q].push(at - lastAt[q]); lastAt[q] = at; } } }
+      if (g === 5) pl = 0; if (g >= 4) pe = 0; cnt[g]++; const at = s * ST; for (const q of [4, 5]) if (g >= q && (q === 4 || g === 5)) { gaps[q].push(at - lastAt[q]); lastAt[q] = at; } } }
   const tot = cnt.reduce((a, b) => a + b, 0), avg = L => L.length ? L.reduce((a, b) => a + b, 0) / L.length : NaN, mx = L => L.length ? Math.max(...L) : NaN;
   $('#simOut').classList.remove('mute');
   $('#simOut').innerHTML = `<div class="tw"><table class="t"><tr><th>${km}km</th><th>나온 수</th><th>비율</th></tr>${[1, 2, 3, 4, 5].map(g => `<tr><td style="color:${GC[g]}">${GN[g]}</td><td class="num">${cnt[g]}</td><td class="num">${pct(cnt[g] / tot)}</td></tr>`).join('')}<tr><td>모두</td><td class="num">${tot}</td><td class="num">1km에 ${(tot / km).toFixed(2)}개</td></tr></table></div>
@@ -1155,7 +1164,7 @@ function renderTier() {
   const L = tierLists(), ov = D.tierOv || {};
   const tz = tzOf(); $('#tierC').style.setProperty('--tzz', tz / 100);
   $('#tierC').innerHTML = `${boxBar('tier', '티어 저장')}<div class="tzc">화면 크기<button class="chip" data-tz="-10" aria-label="작게">−</button><input type="range" id="tz" min="50" max="250" step="10" value="${tz}" aria-label="화면 크기"><button class="chip" data-tz="10" aria-label="크게">+</button><span class="num">${tz}%</span></div><div class="small mute" style="margin-bottom:10px">진화 전 모습으로 묶어요. 1~3티어는 특별한 포켓몬(전설·환상 가족), 4~10티어는 나머지를 가족 최고 종족값 순서로 나눈 거예요. <b>카드를 끌어서</b> 순서를 바꾸거나 다른 티어로 옮겨요 (휴대폰은 꾹 누른 뒤). ${(effKt && Object.values(effKt).some(k => k > 0)) ? '티어 안에서는 <b>앞일수록 알에서 드물게</b> 나와요.' : '같은 티어 안의 포켓몬은 <b>모두 같은 확률</b>로 나와요 (순서는 보기용).'} 단, 알 › 등급별 포켓몬에서 순서를 직접 정한 알은 그 확률을 따라요. 주황 점은 작업본에서 옮긴 포켓몬이에요.</div>
-  <div class="tiers">${L.map((T, t) => t ? `<div class="tcol" data-tt="${t}"><h3><span class="tag" style="background:${TC(t)}">${t}티어</span><span class="num mute">${T.length}종 · ${tierOrdOf(t)?.length ? '직접 정한 순서' : '종족값 순'}${tierOrdOf(t)?.length ? ` <button class="chip tr0" data-tr0="${t}">종족값 순으로</button>` : ''}</span></h3><div class="grid">${orderTier(t, T).map(sp => `<button class="mc${ov[sp] ? ' ov' : ''}${sel.tier === sp ? ' on' : ''}" data-sp="${sp}" title="${esc(spName(sp))} · ${A.FAM_BST[sp]}"><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('')}</div></div>` : '').join('')}</div>`;
+  <div class="tiers">${L.map((T, t) => t ? `<div class="tcol" data-tt="${t}"><h3><span class="tag" style="background:${TC(t)}">${t}티어</span><span class="num mute">${T.length}종 · ${tierOrdOf(t)?.length ? '직접 정한 순서' : '도감 번호 순'}${tierOrdOf(t)?.length ? ` <button class="chip tr0" data-tr0="${t}">종족값 순으로</button>` : ''}</span></h3><div class="grid">${orderTier(t, T).map(sp => `<button class="mc${ov[sp] ? ' ov' : ''}${sel.tier === sp ? ' on' : ''}" data-sp="${sp}" title="${esc(spName(sp))} · ${A.FAM_BST[sp]}"><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('')}</div></div>` : '').join('')}</div>`;
   fillThumbs($('#tierC'));
   if (sel.tier) showTierSp(sel.tier);
 }
@@ -1206,12 +1215,22 @@ function showTierSp(sp) {
   const t = tierOfSp(sp), o = A.TIER[sp], d = A.SPECIES[sp], fam = [sp, ...(A.CHILDREN[sp] || [])].map(spName).join(' → ');
   $('#tierI').innerHTML = `<div class="row"><img src="${thumb(sp)}" alt="" style="width:64px;height:64px;object-fit:contain;image-rendering:pixelated"><div style="display:grid;gap:4px"><div class="mh"><h2>${esc(spName(sp))}</h2><span class="no">No.${sp}</span></div><div class="mtys">${d.t.map(x => `<span class="tag" style="background:${A.TYPE_C[x]}">${A.TYPE_KO[x]}</span>`).join(' ')}</div></div></div>
     <div class="small">${esc(fam)}</div>
-    <div class="msec"><h4>티어</h4><div class="small mute">왼쪽 카드를 끌어서 다른 티어로 옮겨요. 게임 값: ${o}티어${t !== o ? ` → 작업본: <b style="color:var(--warn)">${t}티어</b>` : ''}</div>
+    <div class="msec"><h4>티어</h4><div class="small mute">티어 번호를 누르거나 왼쪽 카드를 끌어서 옮겨요. 게임 값: ${o}티어${t !== o ? ` → 작업본: <b style="color:var(--warn)">${t}티어</b>` : ''}</div>
+    <div class="chips tmv">${Array.from({ length: 10 }, (_, i) => i + 1).map(x => `<button class="chip${x === t ? ' on' : ''}" data-tmv="${x}"${x === t ? ' disabled' : ''}><span class="tag" style="background:${TC(x)}">${x}</span></button>`).join('')}</div>
     <div class="chips"><button class="chip" id="tBack"${t !== o ? '' : ' disabled'}>게임 값으로</button><button class="chip" id="tMon">포켓몬 화면에서 보기</button></div></div>
     ${probHtml(sp)}${infoHtml(sp)}`;
   $('#tBack').onclick = () => { if (D.tierOv) { delete D.tierOv[sp]; if (!Object.keys(D.tierOv).length) delete D.tierOv; } saveDraft(); renderTier(); };
   $('#tMon').onclick = () => { sel.mon = sp; go('mon'); showMon(sp); };
+  $$('#tierI [data-tmv]').forEach(b => b.onclick = () => moveTierTo(sp, +b.dataset.tmv));
 }
+// v2.13 경완: 오른쪽 창에서 티어 번호를 눌러 옮긴다. 옮긴 티어 안에서는 도감 번호 순 자리에 들어간다
+function moveTierTo(sp, tt) { const tf = tierOfSp(sp); if (tf === tt) return;
+  D.tierOv = { ...(D.tierOv || {}) }; if (tt === A.TIER[sp]) delete D.tierOv[sp]; else D.tierOv[sp] = tt; if (!Object.keys(D.tierOv).length) delete D.tierOv;
+  const O = tierOrdOf(tf), P = tierOrdOf(tt); if (O?.length || P?.length) D.tierOrd = { ...(D.tierOrd || {}) };
+  if (O?.length) D.tierOrd[tf] = O.filter(b => b !== sp);
+  if (P?.length) { const L = P.filter(b => b !== sp), i = L.findIndex(b => b < sp); L.splice(i < 0 ? L.length : i, 0, sp); D.tierOrd[tt] = L; }
+  if (D.tierOrd) { for (const k of Object.keys(D.tierOrd)) if (JSON.stringify(D.tierOrd[k]) === JSON.stringify(ORIG.tierOrd[k])) delete D.tierOrd[k]; if (!Object.keys(D.tierOrd).length) delete D.tierOrd; }
+  sel.tier = sp; saveDraft(); renderTier(); showTierSp(sp); toast(`${spName(sp)} → ${tt}티어`); }
 
 // ---------- 밸런스 ----------
 const BAL = [
@@ -1282,7 +1301,7 @@ function changesOf() {
   if (D.eggTiers) for (let g = 1; g <= 5; g++) { const a = ORIG.eggTiers[g], b = D.eggTiers[g]; if (JSON.stringify(a) !== JSON.stringify(b)) out.push([`${GN[g]} 알 티어 비율`, fmtTab(a), fmtTab(b), 'egg:' + g]); }
   if (D.eggList) for (const g of Object.keys(D.eggList)) out.push([`${GN[g]} 알 포켓몬`, ORIG.eggList?.[g] ? '직접 정한 목록' : '티어 비율', D.eggList[g] ? `직접 정함 (${D.eggList[g].length}종)` : '티어 비율', 'elist:' + g]);
   if (D.tierOv) for (const [sp, t] of Object.entries(D.tierOv)) out.push([`${spName(+sp)} 티어`, A.TIER[sp] + '티어', t + '티어', 'tier:' + sp]);
-  if (D.tierOrd) for (const [t, O] of Object.entries(D.tierOrd)) out.push([`${t}티어 순서`, ORIG.tierOrd[t] ? '직접 정한 순서' : '종족값 순', O ? '직접 정한 순서' : '종족값 순', 'tord:' + t]);
+  if (D.tierOrd) for (const [t, O] of Object.entries(D.tierOrd)) out.push([`${t}티어 순서`, ORIG.tierOrd[t] ? '직접 정한 순서' : '도감 번호 순', O ? '직접 정한 순서' : '도감 번호 순', 'tord:' + t]);
   if (D.bub && A?.SCN) { const a = ORIG.bub || {}, b = D.bub; for (const [id, def, lab] of A.SCN) { const x = id in a ? a[id] : def, y = id in b ? b[id] : def; if (x !== y) out.push([`말풍선 · ${lab}`, x || '지움', y || '지움', 'bub:' + id]); } }
   if (D.monSc) { const a = ORIG.monSc || {}, b = D.monSc; for (const sp of new Set([...Object.keys(a), ...Object.keys(b)])) if ((a[sp] || 1) !== (b[sp] || 1)) out.push([`${spName(+sp)} 필드 크기`, Math.round((a[sp] || 1) * 100) + '%', Math.round((b[sp] || 1) * 100) + '%', 'msc:' + sp]); }
   if (D.bal) for (const [k, v] of Object.entries(D.bal)) out.push([balName(k), JSON.stringify(ORIG.bal[k]), JSON.stringify(v), 'bal:' + k]);
@@ -1311,7 +1330,7 @@ function undoCore(key, live) {
   } catch (e) {}   // 작업 중 값에 그 항목이 없으면 그냥 지나간다
 }
 const fmtTab = T => Object.keys(T).map(Number).sort((a, b) => b - a).map(t => `T${t} ${T[t]}`).join(' · ');
-const balName = k => { if (k === 'HATCH_KM') return '알 부화 거리'; for (const [, L] of BAL) for (const r of L) if (r[0] === k) return r[1]; return k; };
+const balName = k => { if (k === 'HATCH_KM') return '알 부화 거리'; if (k === 'BAG_STEP') return '알 줍는 거리 단위(km)'; for (const [, L] of BAL) for (const r of L) if (r[0] === k) return r[1]; return k; };
 function renderWork() {
   const C = changes(), tok = store.get('st-gh-token');
   $('#workC').innerHTML = `<div class="card"><div class="row"><h2 style="flex:1">바뀐 곳 ${C.length}개</h2><span class="num mute">지금 데이터 v${LIVE.ver || 0}</span></div>
@@ -1401,7 +1420,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
-  ['2.13', '10월 16일', ['등급별 포켓몬: 티어 줄 오른쪽 × 로 티어 빼기 (그 몫은 남은 티어에 비율대로)', '티어 % 막대 끝에 잡는 손잡이', '메뉴 안 탭(알·더보기)을 끌어서 순서 바꾸기']],
+  ['2.13', '10월 16일', ['등급별 포켓몬: 티어 줄 오른쪽 × 로 티어 빼기 (그 몫은 남은 티어에 비율대로)', '티어 % 막대 끝에 잡는 손잡이', '메뉴 안 탭(알·더보기)을 끌어서 순서 바꾸기', '알 › 수집 확률: 1km에 줍는 알 개수 정하기', '티어 칸 안 기본 순서: 종족값 순 → 도감 번호 높은 순', '티어: 오른쪽 창에서 티어 번호를 눌러 옮기기 (옮긴 티어 안에선 도감 번호 순 자리)']],
   ['2.12', '10월 16일', ['맵: 필드 포켓몬 칸을 누르면 그 포켓몬 필드 크기 조절 (50~200%). 바꾸면 편집하기 옆에 크기 저장, 배포하면 게임에도 (게임 v3.78)', '배포하기·위쪽 막대의 저장 안 함 경고 없앰', '밸런스 건강 게이지 구간 경계를 막대 위 손잡이를 끌어서 정함']],
   ['2.11', '10월 16일', ['말풍선: 장면 칩 × 로 지우기, 칩을 끌어 다른 말풍선으로 옮기기. 저장·배포하면 게임에서도 그 장면에 그 말풍선 (게임 v3.77)', '새 모션 화면: 새로 만들어 넣은 동작만 원래 가만히 동작과 나란히', '티어 4~10 을 본가 등장 순서·포획률도 넣어 다시 나눔 (게임 v3.77)', '그림 바꾼 포켓몬 56종 공격 동작을 원래 대기 그림 돌진으로']],
   ['2.10', '10월 16일', ['게임 v3.74 친밀도: 열심히 관리하면(필드·열매·쓰다듬기·빗질·짝꿍 걷기 합) 만점까지 약 7일', '밸런스: 필드 친밀도 위에 "열심히 관리하면 하루 얼마 · 며칠" 계산', '빗질 친밀도는 씻긴 청결만큼 비례', '필드 친밀도: 그래프 구간 아래 칸에서 바로 고침 (1시간에 오르는 양 · 구간 시작값)', '쓰다듬기 친밀도 하루 횟수(기본 5번) 다시 생김', '저장 안 하고 다른 화면으로 가면 그 화면에서 고친 것은 마지막 저장 상태로 되돌림', '등급별 포켓몬: 순위 머리글을 누르면 오름차순·내림차순']],
