@@ -208,7 +208,8 @@ body.szmode #mapI>:not(#szPane){display:none!important}body.szmode #mapI{display
 #hotPop h4{color:var(--acc)}#hotPop .r{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 8px;align-items:start;font-size:12.5px}#hotPop .r .chip{min-height:22px;padding:1px 6px;font-size:11px}
 .chg .undo{background:none;border:0;padding:4px 2px;color:var(--acc);font:inherit;font-size:12.5px;cursor:pointer;white-space:nowrap}.chg .undo:hover{text-decoration:underline}
 .chg .cr{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center}.chg .cr .cv{min-width:0;overflow-wrap:anywhere}
-#zoom{position:fixed;z-index:60;width:334px;height:440px;flex-direction:column;background:var(--panel);border:1px solid var(--chipb);border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:12px;display:flex;gap:10px}
+#zoom .zre{display:grid;gap:6px;padding-top:10px;border-top:1px solid var(--line)}#zoom .zre h4{margin:0}#zoom .zre .react{display:grid;gap:4px}
+#zoom{position:fixed;z-index:60;width:334px;height:440px;overflow:auto;flex-direction:column;background:var(--panel);border:1px solid var(--chipb);border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:12px;display:flex;gap:10px}
 #zoom .zh{display:flex;align-items:center;gap:8px}#zoom .zh b{flex:1;font-family:var(--px);font-weight:400;color:var(--acc)}
 #zoom>*{flex:none}#zoom .zv{flex:1 1 90px;min-height:90px;height:auto;display:grid;place-items:center;background:repeating-conic-gradient(#2b2e37 0 25%,#262932 0 50%) 0 0/12px 12px;border-radius:4px;overflow:hidden}
 #zoom .zv img{image-rendering:pixelated;max-width:none}
@@ -338,7 +339,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
       <aside class="dock" id="dock"><div class="dh"><b>맵 소품</b><button class="dt" id="dockT" aria-label="소품 창 접기">◀</button><span class="dv" id="dockV">맵 소품</span></div><div class="dtab" id="dockTab" role="tablist"><button data-t="all" role="tab">전체 소품</button><button data-t="map" role="tab">맵에 있는 소품</button></div><div class="db" id="dockB"></div><div class="drz" id="dockRz" title="끌어서 창 너비 바꾸기 · 두 번 누르면 처음 너비"></div></aside>
       <div class="vc">
         <div class="tools">
-          <b>시간</b><input type="range" id="hr" min="0" max="23.75" step=".25" value="14"><span class="num" id="hrT" style="min-width:7.5em">지금</span><button class="chip on" id="hrNow">지금</button>
+          <b>시간</b><input type="range" id="hr" min="0" max="23.75" step=".25" value="14"><span class="num" id="hrT" style="min-width:7.5em">지금</span><button class="chip" id="hrNow" disabled title="지금 시각으로 돌아가기">지금</button>
           <span class="vsep"></span>
           <span class="chips" id="wx"><button class="chip on" data-w="">날씨 그대로</button><button class="chip" data-w="clear">맑음</button><button class="chip" data-w="cloud">흐림</button><button class="chip" data-w="rain">비</button></span>
           <span class="vsep"></span>
@@ -451,7 +452,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.35';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.36';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -564,7 +565,7 @@ function safeZ() { const [, , w, , t, bt] = dev, on = $('#eSafe2').classList.con
 const SB_SIG = '<svg width="18" height="12" viewBox="0 0 18 12"><rect y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" width="3" height="12" rx="1"/></svg>';
 const SB_WIFI = '<svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 11.6 5.5 9a3.5 3.5 0 0 1 5 0z"/><path d="M3.4 6.9a6.5 6.5 0 0 1 9.2 0l-1.4 1.4a4.5 4.5 0 0 0-6.4 0z"/><path d="M1.2 4.7a9.6 9.6 0 0 1 13.6 0l-1.4 1.4a7.6 7.6 0 0 0-10.8 0z"/></svg>';
 const SB_BAT = (w = 27) => `<svg width="${w}" height="${Math.round(w * 13 / 27)}" viewBox="0 0 27 13"><rect x=".5" y=".5" width="22" height="12" rx="3.5" fill="none" stroke="currentColor" opacity=".5"/><rect x="2" y="2" width="15" height="9" rx="2"/><path d="M24 4.5v4c.8-.3 1.5-1.1 1.5-2s-.7-1.7-1.5-2z" opacity=".5"/></svg>`;
-function sbHour() { return A && !$('#hrNow').classList.contains('on') ? +$('#hr').value : new Date().getHours() + new Date().getMinutes() / 60; }
+function sbHour() { return A && !$('#hrNow').disabled ? +$('#hr').value : new Date().getHours() + new Date().getMinutes() / 60; }
 function statusBar() { const [, , w, , t, , k] = dev, h = sbHour(), H = Math.floor(h), M = String(Math.round((h - H) * 60) % 60).padStart(2, '0'), h12 = (H % 12 || 12) + ':' + M, ap = H < 12 ? '오전' : '오후', e = $('#sbar'); e.className = '';
   if (k === 'i') { e.style.height = '54px'; e.innerHTML = `<span class="sd">${h12}</span><b class="isl"></b><span style="width:128px"></span><span class="sd">${SB_SIG}${SB_WIFI}${SB_BAT()}</span>`; }
   else if (k === 'n') { e.style.height = '44px'; e.innerHTML = `<span class="sd">${h12}</span><b class="nch"></b><span style="width:164px"></span><span class="sd">${SB_SIG}${SB_WIFI}${SB_BAT(25)}</span>`; }
@@ -623,7 +624,7 @@ async function pushDb() { if (!db) return; try { await db.doc('studio/draft').se
 const gameVer = () => { try { return ($('#game').contentDocument.getElementById('appVer').textContent.match(/v[\d.]+/) || [''])[0]; } catch (e) { return ''; } };
 // v2.23 경완: 확률 안전장치 — 알에서 나오는 모든 포켓몬이 SAFE_KM 안에 1번은 나와야 한다 (안 나오는 포켓몬도 안 됨)
 // 바꿀 때마다 검사해서, 새로 한도를 넘거나 이미 넘은 포켓몬을 더 드물게 만드는 변경은 저장 전에 되돌린다
-const SAFE_KM = 20000, SAFE_KEYS = ['odds', 'eggTiers', 'eggList', 'eggEx', 'tierOv', 'tierOrd', 'bal'];
+const SAFE_KM = 30000, SAFE_KEYS = ['odds', 'eggTiers', 'eggList', 'eggEx', 'tierOv', 'tierOrd', 'bal'];
 let safeSnap = null, safeBad = [];
 const safeKey = () => JSON.stringify(SAFE_KEYS.map(k => D[k] ?? null));
 function safeScan() { if (!ORIG || !A?.SPECIES) return []; const L = tierLists(), Z = tierZ(L), O = odds(), P = {};
@@ -754,9 +755,14 @@ const REACT = {
 };
 const RNAME = { tree: '열매나무', perch: '횃대', fire: '모닥불', bed: '꽃밭', bush: '덤불', stump: '그루터기', rock: '바위', puddle: '웅덩이', pond: '연못' };
 const KEY2R = { tree: 'tree', perch: 'perch', fire: 'fire', bed: 'bed', bushes: 'bush', stump: 'stump', rocks: 'rock', puddles: 'puddle', pond: 'pond' };
+// v2.36 경완: 소품 반응은 소품 상세 창 아래에. 오른쪽 사이드 바는 지금 시뮬레이터 맵에 있는 소품의 반응만
+const rOf = k => !k ? null : REACT[k] ? k : k === 'rockS' || k === 'rockL' ? 'rock' : KEY2R[k] || (A?.kind?.(k)?.b ? rOf(A.kind(k).b) : null);
+const rxHtml = r => `<section class="rg">${REACT[r].map(([a, b], i) => `<div><button class="chip rx${spxKey === r + ':' + i ? ' on' : ''}" data-rk="${r}" data-ri="${i}">${a}</button><span>${b}</span></div>`).join('')}</section>`;
+function zReact(z, k) { const r = rOf(k); if (!r) return; z.insertAdjacentHTML('beforeend', `<div class="zre"><h4>소품 반응 · ${RNAME[r]}</h4><div class="react">${rxHtml(r)}</div></div>`); }
+const onMap = () => { const S = new Set(); try { for (const o of A?.insts?.() || []) { const r = rOf(o.key) || rOf(o.kind); if (r) S.add(r); } } catch (e) {} return S; };
 function renderReact(k) {
-  $('#rkHint').textContent = k ? '· ' + RNAME[k] : '';
-  const list = k ? [k] : Object.keys(REACT);
+  $('#rkHint').textContent = k ? '· ' + RNAME[k] : '· 지금 맵에 있는 소품';
+  const M = onMap(), list = k ? [k] : Object.keys(REACT).filter(r => !A?.insts || M.has(r));
   $('#react').innerHTML = list.map(r => `<section class="rg">${k ? '' : `<b>${RNAME[r]}</b>`}${REACT[r].map(([a, b], i) => `<div><button class="chip rx${spxKey === r + ':' + i ? ' on' : ''}" data-rk="${r}" data-ri="${i}">${a}</button><span>${b}</span></div>`).join('')}</section>`).join('');   // v2.24 경완: 소품마다 칸으로 묶어 줄 맞춤
 }
 // v1.5 경완: 반응 분류를 누르면 왼쪽에 그 분류 포켓몬 목록. 끌어서 맵에 놓는다. 한 번 더 누르면 닫힌다
@@ -768,19 +774,21 @@ function spxPos() { const e = $('#spx'); document.body.classList.toggle('szspx',
 function fillSpx() { const q = spxQ.trim(), L = q ? spxL.filter(sp => String(sp) === q || spName(sp).includes(q)) : spxL;
   $('#spxG').innerHTML = L.slice(0, 400).map(sp => `<button class="mc" data-sp="${sp}" title="${esc(spName(sp))}"><span class="no">${sp}</span><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('') + (L.length > 400 ? `<div class="small mute" style="grid-column:1/-1">앞의 400종만 보여요. 이름으로 찾아 주세요.</div>` : '') || '<div class="empty">찾는 포켓몬이 없어요</div>'; fillThumbs($('#spxG')); szMarks(); }
 function closeSpx() { spxKey = null; $('#spx').hidden = true; $('#spx').innerHTML = $('#szPane').innerHTML = ''; document.body.classList.remove('szspx'); $$('.react .rx').forEach(c => c.classList.remove('on')); }
-$('#react').onclick = e => { const b = e.target.closest('.rx'); if (!b || !A?.reactSps) return; const key = b.dataset.rk + ':' + b.dataset.ri; if (spxKey === key) return closeSpx();
-  const L = A.reactSps(b.dataset.rk, +b.dataset.ri); if (!L) { toast('비 올 때 저절로 나오는 반응이에요'); return; } openSpx(key, `${RNAME[b.dataset.rk]} · ${b.textContent}`, L); };
+$('#zoom').addEventListener('click', e => { const b = e.target.closest('.rx'); if (b) { e.stopImmediatePropagation(); rxClick(b); } }, true);
+$('#react').onclick = e => { const b = e.target.closest('.rx'); if (b) rxClick(b); };
+function rxClick(b) { if (!A?.reactSps) return; const key = b.dataset.rk + ':' + b.dataset.ri; if (spxKey === key) return closeSpx();
+  const L = A.reactSps(b.dataset.rk, +b.dataset.ri); if (!L) { toast('비 올 때 저절로 나오는 반응이에요'); return; } openSpx(key, `${RNAME[b.dataset.rk]} · ${b.textContent}`, L); }
 $('#szPane').addEventListener('pointerdown', e => { const b = e.target.closest('.mc'); if (b && !b.disabled && e.button === 0) startPalDrag(e, +b.dataset.sp); });
 $('#spx').addEventListener('pointerdown', e => { const b = e.target.closest('.mc'); if (b && e.button === 0) startPalDrag(e, +b.dataset.sp); });
 function hourTxt(h) { const H = Math.floor(h), M = Math.round((h - H) * 60); const ph = h < 4 ? '한밤' : h < 5.5 ? '새벽' : h < 7 ? '해돋이' : h < 10 ? '아침' : h < 14 ? '한낮' : h < 16.5 ? '오후' : h < 18.6 ? '노을' : h < 20 ? '저녁' : '밤'; return `${String(H).padStart(2, '0')}:${String(M).padStart(2, '0')} ${ph}`; }
-$('#hr').oninput = e => { const h = +e.target.value; A?.setHour(h); $('#hrT').textContent = hourTxt(h); $('#hrNow').classList.remove('on'); statusBar(); };
-$('#hrNow').onclick = () => { A?.setHour(null); $('#hrNow').classList.add('on'); const h = A ? A.hour() : 12; $('#hr').value = Math.round(h * 4) / 4; $('#hrT').textContent = '지금 · ' + hourTxt(h).slice(0, 5); statusBar(); };
+$('#hr').oninput = e => { const h = +e.target.value; A?.setHour(h); $('#hrT').textContent = hourTxt(h); $('#hrNow').disabled = false; $('#hrNow').classList.add('on'); statusBar(); };   // v2.36 경완: 시간을 옮기면 지금 버튼이 켜진다
+$('#hrNow').onclick = () => { A?.setHour(null); $('#hrNow').disabled = true; $('#hrNow').classList.remove('on'); const h = A ? A.hour() : 12; $('#hr').value = Math.round(h * 4) / 4; $('#hrT').textContent = '지금 · ' + hourTxt(h).slice(0, 5); statusBar(); };
 $('#wx').onclick = e => { const b = e.target.closest('[data-w]'); if (!b) return; A?.setWx(b.dataset.w); $$('#wx .chip').forEach(c => c.classList.toggle('on', c === b)); };
 let editing = false;
 // 편집하기 (v1.7 경완): 화면 배치는 그대로, 편집 버튼은 휴대폰 오른쪽 작은 창에
 let preEdit = null;
 function setEdit(on) { if (on === editing) return; editing = on; A?.edit(on); $('#ebar').hidden = !on; document.body.classList.toggle('editing', on); ebarHome(); if (on) ebarPos(); $('#eMode').classList.toggle('stop', on); $('#eMode').textContent = on ? '편집 종료' : '편집하기'; $('#eUndo').disabled = !(A?.undoN?.() ?? 0);
-  if (on) { preEdit = { now: $('#hrNow').classList.contains('on'), h: +$('#hr').value, w: $('#wx .on')?.dataset.w || '' }; A?.setHour(12); A?.setWx('clear'); }   // 편집할 땐 맑은 한낮으로
+  if (on) { preEdit = { now: $('#hrNow').disabled, h: +$('#hr').value, w: $('#wx .on')?.dataset.w || '' }; A?.setHour(12); A?.setWx('clear'); }   // 편집할 땐 맑은 한낮으로
   else if (preEdit) { if (preEdit.now) A?.setHour(null); else A?.setHour(preEdit.h); A?.setWx(preEdit.w); preEdit = null; closeZoom(); } if (!on) { $('#propPane').hidden = true; renderReact(null); edOff(); } requestAnimationFrame(fitPhone); }
 // v2.25 경완: 편집 종료하면 편집에서 켰던 것(길 모양·포켓몬 경계선·세이프 존·고른 소품·세부 창)도 모두 끈다
 function edOff() { closeZoom(); dockMark(null); for (const id of ['ePath', 'eHud2', 'eSafe2']) $('#' + id).classList.remove('on'); store.set('st-safe', ''); A?.showPath?.(false); A?.showHud?.(false); A?.unpick?.(); safeZ(); }
@@ -803,7 +811,7 @@ function onSel(s, nUndo) {
   $('#eUndo').disabled = !nUndo;
   dockMark(s); $('#propPane').hidden = !s; if (!s) { if (zoomK === 'inst') closeZoom(); if (editing) renderReact(null); return; }
   $('#pName').textContent = s.name; $('#pPos').textContent = `${s.x}, ${s.y}` + (s.size ? ` · 크기 ${s.size[0]}×${s.size[1]}` : ''); $('#pDel').disabled = !s.del;
-  renderReact(KEY2R[s.key] || null);
+  renderReact(null);
 }
 // v2.12 경완: 필드 포켓몬 칸을 누르면 그 포켓몬 종의 필드 크기를 바꾼다. 바꾸면 편집하기 옆에 저장 버튼
 // v2.15 경완: 맵에서 고른 포켓몬 상자 모서리를 끌어 크기 (게임 쪽이 비율 그대로 바꿔 알려 줌)
@@ -856,7 +864,7 @@ function szPane() { const m = A?.mons?.().find(o => o.uid === sel.monUid); if (!
 $('#mSz').oninput = e => { scPush();  const m = A?.mons?.().find(o => o.uid === sel.monUid); if (!m) return; const v = +e.target.value / 100, o = { ...effP(D, 'monSc') }; if (v === 1) delete o[m.sp]; else o[m.sp] = v;
   D.monSc = o; if (JSON.stringify(o) === JSON.stringify(ORIG.monSc || {})) delete D.monSc; $('#mSzV').textContent = e.target.value + '%'; scLive(); saveDraft(); scBar(); };
 $('#mSz0').onclick = () => { $('#mSz').value = 100; $('#mSz').oninput({ target: $('#mSz') }); };
-function onLayout(L, nUndo) { if (nUndo != null) $('#eUndo').disabled = !nUndo; renderDock(); const same = JSON.stringify(L) === JSON.stringify(ORIG.layout); if (same) delete D.layout; else D.layout = L; saveDraft(); layoutBar(); }
+function onLayout(L, nUndo) { if (nUndo != null) $('#eUndo').disabled = !nUndo; renderDock(); renderReact(null); const same = JSON.stringify(L) === JSON.stringify(ORIG.layout); if (same) delete D.layout; else D.layout = L; saveDraft(); layoutBar(); }
 // v1.5 경완: 필드 포켓몬 3×3 칸. 빈 칸을 누르면 왼쪽에 전체 포켓몬 목록
 const SLOTS = 9; let slotSig = '';
 function renderPal() { if (!A?.mons) return; const M = A.mons().slice(0, SLOTS), sig = M.map(m => m.uid + ':' + m.sp).join() + '|' + sel.monUid; if (sig === slotSig && $('#slots').children.length) return; slotSig = sig;
@@ -1019,7 +1027,7 @@ function openZoom(k, el) {
       : nol ? '<div class="small mute">이 소품은 아직 크기·색을 바꿀 수 없어요.</div>' : `${SL}<div class="small mute">크기·색을 정한 뒤 맵에 추가하면 그 모양으로 놓여요. 끌어다 놓으면 원래 모양이에요.</div>`}
     <div class="zb">${mine || nol ? '<button class="btn w" id="zAdd">맵 가운데에 놓기</button>' : '<button class="btn" id="zAdd">이 모양으로 맵에 추가</button><button class="chip" id="zR0">원래대로</button>'}
       ${nol ? '' : '<button class="chip" id="zNew">새로운 소품으로 저장</button>'}<button class="chip del${nol ? '' : ''}" id="zDel"${nol ? ' style="grid-column:1/-1"' : ''}>삭제</button></div>${ZB_SAVE}`;
-  zoomPos(z, el);
+  zReact(z, k); zoomPos(z, el);
   const L0 = { s: 1, h: 0, c: 100, b: 100 }; let LKz = { ...L0 };
   const paint = () => { if (mine) { const K = A.kind(k); zPaint(z, A.lookIcon(k), { ...K.lk, s: K.lk.s }, 0); } else zPaint(z, (nol ? '' : A.lookIcon(k, LKz)) || row[2], LKz, 0); };
   paint();
@@ -1047,7 +1055,7 @@ function openInst(s, el) {
     <div class="small mute">${!look ? '이 소품은 크기·색을 바꿀 수 없어요. 맵에서 끌어서 옮겨요.' : s.kind ? `"${esc(s.kindName)}" 소품이에요. 여기서 바꾸면 맵의 이 소품 하나만 따로 바뀌어요.` : '맵에 있는 이 소품 하나만 바뀌어요. 전체 소품에는 그대로예요.'}</div>
     <div class="zb">${look ? '<button class="chip w" id="zReset">원래대로</button>' : ''}${s.canKind ? '<button class="chip" id="zKind">새로운 소품으로 저장</button>' : ''}<button class="chip del${s.canKind ? '' : ' w'}" id="zDel"${s.del ? '' : ' disabled title="하나뿐인 소품이라 지울 수 없어요"'}>${s.del ? '삭제' : '삭제 (하나뿐인 소품)'}</button></div>
     ${ZB_SAVE}`;
-  zoomPos(z, el);
+  zReact(z, s.key); zoomPos(z, el);
   const fr = s.key === 'fire' ? 6 : 0, paint = () => look ? zPaint(z, s.key === 'fire' ? null : A.selIcon(), A.selLook(), fr) : zPaint(z, A.insts?.().find(o => o.key === s.key && o.i === s.i)?.icon || '', { s: 1, h: 0, c: 100, b: 100 }, 0);
   const fireP = () => A.fireArt ? A.fireArt(look ? A.selLook() : null).then(src => { if (src && zoomK === 'inst') { zPaint(z, src, look ? A.selLook() : { s: 1, h: 0, c: 100, b: 100 }, 6); } }) : null;   // v2.25 경완: 모닥불도 미리보기 (불꽃이 타오름)
   paint(); if (s.key === 'fire') { $('#zV').innerHTML = ''; fireP(); } else if (s.key === 'mush') $('#zV').innerHTML = '<span class="ph" style="font-size:40px">🍄</span>';
@@ -1650,6 +1658,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.36', '10월 16일', ['소품 반응은 소품 상세 창 아래에, 오른쪽 사이드 바에는 지금 맵에 있는 소품 반응만', '맵 시간 "지금" 버튼은 시간을 옮겼을 때만 켜짐', '확률 안전장치 한도 30,000km (2티어 108종 × 250km)']],
   ['2.35', '10월 16일', ['알별 티어 빼기(×)·넣기(티어 더 넣기, 10티어부터) 되살림. 비율은 계속 자동', '배포할 때 그 사이 새 버전이 있으면 안 고친 값은 새 버전 값으로 (예전 값으로 되돌리지 않음)']],
   ['2.34', '10월 16일', ['티어별 전체 출현 확률 막대 "⤢ 크게": 창 전체로 펼쳐 세밀하게 조절 (드문 티어 칸도 넓게, 티어마다 거리 표시, Esc로 닫기)']],
   ['2.33', '10월 16일', ['알별 티어 비율은 자동: 티어별 전체 출현 확률과 알 수집 확률에 맞춰 알마다 드문 티어일수록 적게 (직접 조절·티어 더 넣기 뺌)', '티어별 전체 출현 확률 막대는 10티어부터', '티어 화면 카드 제목 옆에 그 티어가 나오는 알 아이콘', '크기 조절 모드에서 기울기·떠 있는 높이', '확률 안전장치 한도 20,000km']],
@@ -1748,7 +1757,7 @@ function hook() {
   }
   A.onTap = s => { if (s) mapTap(s); }; A.onSel = onSel; A.onMon = onMon; A.onLog = onLog; A.onLayout = onLayout; A.onHot = onHot; A.onMonSc = onMonSc; A.onSzSel = m => { szCur = m; szInfo(); }; applyInsets();
   if (D.layout) A.setLayout(D.layout); bubLive(); if (D.monSc || D.monRot || D.monFly) scLive(); scBar(); safeInit();
-  A.edit(editing); if (!$('#hrNow').classList.contains('on')) A.setHour(+$('#hr').value); $('#hrNow').classList.contains('on') && $('#hrNow').onclick();
+  A.edit(editing); if (!$('#hrNow').disabled) A.setHour(+$('#hr').value); $('#hrNow').disabled && $('#hrNow').onclick();
   const w0 = $('#wx .on')?.dataset.w; if (w0) A.setWx(w0);
   $('#addp').innerHTML = A.ADD.map(([k, n]) => { const s = A.addIcon(k); return `<button data-k="${k}">${s ? `<img alt="" src="${s}">` : `<span class="ph">${k === 'mush' ? '🍄' : '●'}</span>`}${n}</button>`; }).join('');
   renderNav(); renderReact(null); renderPal(); renderDock(); dstat(); RENDER[view]?.(); statusBar(); setTimeout(safeZ, 300); setTimeout(thumbsReady, 2500);
