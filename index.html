@@ -2429,8 +2429,8 @@ async function spawn(sp, opts = {}) {
   m.el = el; m.liftEl = el.querySelector('.lift'); m.flipEl = el.querySelector('.flip'); m.act = el.querySelector('.act'); m.img = el.querySelector('img'); m.spr = el.querySelector('.spr'); m.snot = el.querySelector('.snot'); m.dirtEl = el.querySelector('.dirt');
   m.img.src = SPRITES[sp]; m.img.width = m.w; m.img.height = m.h; m.img.alt = m.name; m.img.draggable = false;
   for (const el2 of [m.img, m.spr]) {
-    el2.addEventListener('click', ev => { ev.stopPropagation(); if (m.szb) { window.__studio?.szPick?.(m.uid); return; } if (performance.now() - suppressClick > 300) { if (S.tool === 'berry') feedOne(m); else select(S.sel === m ? null : m); } });
-    el2.addEventListener('pointerdown', ev => { if (!m.szb) grab(m, ev); });
+    el2.addEventListener('click', ev => { ev.stopPropagation(); if (m.szb) { if (performance.now() - suppressClick > 300) window.__studio?.szPick?.(m.uid); return; } if (performance.now() - suppressClick > 300) { if (S.tool === 'berry') feedOne(m); else select(S.sel === m ? null : m); } });
+    el2.addEventListener('pointerdown', ev => { if (m.szb) SZB.grab?.(m, ev); else grab(m, ev); });
   }
   setMode(m);
   shadowFit(m);
@@ -4074,7 +4074,7 @@ function splashAt(m) { for (let i = 0; i < 5; i++) particle(m.x + rnd(-6, 6), m.
 function setMode(m) {
   const pm = isPmd(m.form);
   m.img.hidden = pm; m.spr.hidden = !pm; m.act.classList.toggle('pm', pm); m.el.classList.toggle('pmd', pm);
-  m.sprKey = null; m.one = null;
+  m.sprKey = null; m.one = null; m.frameKey = null;   // v3.87: 크기가 바뀌면 프레임 칸도 다시 (멈춘 포켓몬이 잘려 보이던 것)
   if (pm) { const k = m.sk || m.form, [w, h] = atlasSize(k); m.spr.style.backgroundImage = `url("${SPRITES[k].i}")`; m.spr.style.backgroundSize = `${w * scaleOf(k)}px ${h * scaleOf(k)}px`; m.spr.style.setProperty('--bi', m.spr.style.backgroundImage); m.spr.style.setProperty('--bs', m.spr.style.backgroundSize); }
   m.spr.setAttribute('aria-label', m.name);
 }
@@ -4407,7 +4407,9 @@ const ART = (() => {
 
 // v3.83 경완: 작업실 크기 조절 모드에서는 원래 맵을 가운데 두고 양옆·아래로 이어 그린다 (X = {c, w, h, ox} 반 해상도 크기, 원래 맵 왼쪽 위치)
 // 가운데 원래 맵은 같은 난수 순서(R)로 그대로, 늘어난 부분은 다른 난수(R2)로 그려서 시뮬레이터 화면과 똑같이 보인다
+let BGX = null;   // v3.87 경완: 폴드·아이패드처럼 넓은 화면은 맵을 옆으로 이어 그려 좌우 여백 없이 ({ox, w} 반 해상도)
 function drawBg(X) {
+  if (!X && BGX) X = { c: $('#bg'), w: BGX.w, h: H / 2, ox: BGX.ox, oy: 0, keepSky: true };
   const PW = W / 2, PH = H / 2, c = X ? X.c : $('#bg'); c.width = X ? X.w : PW; c.height = X ? X.h : PH;
   const g = c.getContext('2d'); g.imageSmoothingEnabled = false; const OX = X ? X.ox : 0, OY = X ? X.oy || 0 : 0, AW = X ? X.w : PW, AH = X ? X.h : PH, xa = -OX, xb = AW - OX, ya = -OY, yb = AH - OY;
   if (X) g.setTransform(1, 0, 0, 1, OX, OY);
@@ -4419,7 +4421,7 @@ function drawBg(X) {
   const P = { x: POND.x / 2, y: POND.y / 2, rx: POND.rx / 2, ry: POND.ry / 2 };
   const pv = (x, y) => ((x - P.x) / P.rx) ** 2 + ((y - P.y) / P.ry) ** 2;
   const put = (cv, x, y) => g.drawImage(cv, Math.round(x - cv.width / 2), Math.round(y - cv.height));   // 아래 가운데 기준
-  if (X) { const T = [74, 160, 240], B = [200, 232, 255]; px(xa, ya, AW, Math.max(0, -ya), `rgb(${T.join(',')})`); for (let y = 0; y < 60; y++) { const t = Math.min(1, Math.floor(y / 4) * 4 / 48); px(xa, y, AW, 1, `rgb(${T.map((v, j) => Math.round(v + (B[j] - v) * t)).join(',')})`); } }
+  if (X && !X.keepSky) { const T = [74, 160, 240], B = [200, 232, 255]; px(xa, ya, AW, Math.max(0, -ya), `rgb(${T.join(',')})`); for (let y = 0; y < 60; y++) { const t = Math.min(1, Math.floor(y / 4) * 4 / 48); px(xa, y, AW, 1, `rgb(${T.map((v, j) => Math.round(v + (B[j] - v) * t)).join(',')})`); } }
   // 땅: 세 가지 초록을 큰 얼룩으로 섞고 잔디 결
   px(0, 44, PW, PH - 44, '#74bc4c'); if (X) { px(xa, 44, OX, yb - 44, '#74bc4c'); px(PW, 44, xb - PW, yb - 44, '#74bc4c'); px(0, PH, PW, yb - PH, '#74bc4c'); }
   const xy2 = () => { for (;;) { const x = xa + R2() * AW, y = 48 + R2() * (yb - 48); if (x < 0 || x >= PW || y >= PH) return [x, y]; } };   // 원래 맵 밖 자리
@@ -4994,10 +4996,17 @@ function fit() {
     // 호수가 오른쪽에 통째로 보이게 창을 잡는다
     XL = Math.max(0, (W - vis) / 2); XR = XL + vis;   /* v3.55: 맵이 화면 폭에 맞으니 가운데 */
     S.ox = -XL * scale; S.oy = (h - H * scale) / 2;
-  } else { XL = 0; XR = W; scale = Math.min(w / W, h / H); S.ox = (w - W * scale) / 2; S.oy = (h - H * scale) / 2; }
+  } else { XL = 0; XR = W; scale = Math.min(w / W, h / H); S.ox = (w - W * scale) / 2; S.oy = (h - H * scale) / 2; if (w / scale > W + 4) { XL = -S.ox / scale; XR = XL + w / scale; } }
+  wideBg();
   stage.style.transform = `translate(${S.ox}px,${S.oy}px) scale(${scale})`;
   keepInside(); queueMicrotask(dlgBound);
 }
+// v3.87 경완: 화면이 맵보다 넓으면(XL<0) 맵 그림·하늘·밤 그늘을 화면 끝까지 늘린다. 가운데 원래 맵은 그대로
+function wideBg() { const ox = XL < 0 ? Math.ceil(-XL / 2) : 0, aw = ox ? ox + W / 2 + Math.ceil((XR - W) / 2) + 1 : 0, key = ox + ',' + aw;
+  const ext = el => { if (!el) return; if (ox) { el.style.left = XL + 'px'; el.style.right = 'auto'; el.style.width = (XR - XL) + 'px'; } else el.style.left = el.style.right = el.style.width = ''; };
+  ext($('#skyC')); ext($('#skyFx')); ext($('#night'));
+  const c = $('#bg'); if (ox) Object.assign(c.style, { left: -ox * 2 + 'px', right: 'auto', width: aw * 2 + 'px' }); else c.style.left = c.style.right = c.style.width = '';
+  if (key === (BGX ? BGX.ox + ',' + BGX.w : '0,0')) return; BGX = ox ? { ox, w: aw } : null; try { if (SPR.tree) drawBg(); } catch (e) {} }
 // after the window changes, bring everyone (and fallen berries) back into view
 function keepInside() {
   for (const m of S.mons || []) {
@@ -5174,7 +5183,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.86';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.87';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7707,9 +7716,9 @@ if (/[?&]studio/.test(location.search)) {
 #stHands .h{position:absolute;border-radius:4px;touch-action:none;cursor:grab}
 #stHands .h:hover{outline:1px dashed rgba(127,215,239,.7)}
 #stHands .h.sel{outline:2px solid #7fd7ef;outline-offset:1px;background:rgba(127,215,239,.14)}
-.mon.stMark:has(.stbox.hov),.mon.stMark:has(.stbox.on){z-index:99999!important}body.szMode #wrap{overflow:auto}body.szMode .app>:not(.stage-wrap):not(#glows){display:none!important}body.szMode .stage{box-shadow:none}body.szMode #night,body.szMode #skyFx,body.szMode #skyC,body.szMode #bg,body.szMode #items,body.szMode #propFx{display:none}body.szMode #wrap{background:#74bc4c}body.szMode .mon .shadow{opacity:.5}
-.stbox{position:absolute;bottom:0;border:1px dashed rgba(127,215,239,0);pointer-events:none;z-index:5;transition:border-color .12s}.stbox.hov,.stbox.on{border-color:rgba(127,215,239,.9)}.stbox i{position:absolute;width:12px;height:12px;background:#7fd7ef;border:2px solid #10303a;opacity:0;pointer-events:none}.stbox.hov i,.stbox.on i{opacity:1;pointer-events:auto}.stbox i[data-c=tl]{left:-7px;top:-7px;cursor:nwse-resize}.stbox i[data-c=tr]{right:-7px;top:-7px;cursor:nesw-resize}.stbox i[data-c=bl]{left:-7px;bottom:-7px;cursor:nesw-resize}.stbox i[data-c=br]{right:-7px;bottom:-7px;cursor:nwse-resize}
-.mon.stMark{filter:drop-shadow(2px 0 0 #7fd7ef) drop-shadow(-2px 0 0 #7fd7ef) drop-shadow(0 2px 0 #7fd7ef) drop-shadow(0 -2px 0 #7fd7ef) drop-shadow(0 0 5px #7fd7ef)}
+.mon.stMark:has(.stbox.hov),.mon.stMark:has(.stbox.on){z-index:99999!important}body.szMode #wrap{overflow:auto}body.szMode .app>:not(.stage-wrap):not(#glows){display:none!important}body.szMode .stage{box-shadow:none}body.szMode #night,body.szMode #skyFx,body.szMode #skyC,body.szMode #bg{display:none}body.szMode .mon.szb img,body.szMode .mon.szb .spr{clip-path:none!important}body.szMode .mon.szb .spr{cursor:move}body.szMode #wrap{background:#74bc4c}body.szMode .mon .shadow{opacity:.5}
+.stbox{position:absolute;bottom:0;border:1px solid rgba(255,255,255,0);pointer-events:none;z-index:5;transition:border-color .12s}.stbox.hov,.stbox.on{border-color:rgba(255,255,255,.55)}.stbox i{position:absolute;width:8px;height:8px;margin:2px;background:#fff;border:1px solid rgba(0,0,0,.35);border-radius:1px;opacity:0;pointer-events:none}.stbox.hov i,.stbox.on i{opacity:1;pointer-events:auto}.stbox i[data-c=tl]{left:-7px;top:-7px;cursor:nwse-resize}.stbox i[data-c=tr]{right:-7px;top:-7px;cursor:nesw-resize}.stbox i[data-c=bl]{left:-7px;bottom:-7px;cursor:nesw-resize}.stbox i[data-c=br]{right:-7px;bottom:-7px;cursor:nwse-resize}
+.mon.stMark{filter:drop-shadow(1px 0 0 rgba(127,215,239,.85)) drop-shadow(-1px 0 0 rgba(127,215,239,.85)) drop-shadow(0 1px 0 rgba(127,215,239,.85)) drop-shadow(0 -1px 0 rgba(127,215,239,.85))}
 #stHands .dot{width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#c08850;border:2px solid #fff;box-sizing:border-box;display:none}
 #stHands.path .dot{display:block}
 #stHands .bh{width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;border:2px dashed #fff;background:rgba(255,255,255,.12);box-sizing:border-box;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
@@ -7900,10 +7909,15 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   const stFit = () => { if (!stM || !stB) return; const w = stM.w || 50, h = stM.h || 60; Object.assign(stB.style, { width: w + 'px', height: h + 'px', left: -w / 2 + 'px' }); };
   // v3.81 경완: 크기 조절 모드 — 화면 가득 맵, 포켓몬은 제한 없이 줄지어(등장 효과·움직임 없이) 세워 두고 크기를 맞춘다
   // v3.86 경완: 줄은 시뮬레이터 핸드폰에 보이던 자리(SZB.win) 왼쪽부터, 넘치면 아래 줄로
-  SZB.rows = () => { const L = S.mons.filter(m => m.szb), gap = 22, [wl, wr] = SZB.win || [XL, XR], x0 = Math.max(XL, wl) + 18, x1 = Math.min(XR, wr) - 14; let rows = [], row = [], x = x0;
+  // v3.87 경완: 크기 조절 모드 포켓몬도 끌어서 옮긴다 (옮긴 포켓몬은 줄 세우기에서 빠지고 그 자리에 둔다)
+  SZB.grab = (m, e) => { if (e.button > 0 || e.target.closest?.('.stbox i')) return; e.preventDefault(); const x0 = e.clientX, y0 = e.clientY, mx = m.x, my = m.y; let mv = false;
+    const move = ev => { if (!mv && Math.hypot(ev.clientX - x0, ev.clientY - y0) < 5) return; mv = true; m.x = m.tx = mx + (ev.clientX - x0) / scale; m.y = m.ty = Math.max(20, my + (ev.clientY - y0) / scale); m.szMv = true; };
+    const up = () => { removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up); if (!mv) return; suppressClick = performance.now(); if (stM !== m) api.szPick(m.uid); SZB.rows(); };
+    addEventListener('pointermove', move); addEventListener('pointerup', up); addEventListener('pointercancel', up); };
+  SZB.rows = () => { const L = S.mons.filter(m => m.szb && !m.szMv), gap = 22, [wl, wr] = SZB.win || [XL, XR], x0 = Math.max(XL, wl) + 18, x1 = Math.min(XR, wr) - 14; let rows = [], row = [], x = x0;
     for (const m of L) { const w = m.w || 50; if (x + w > x1 && row.length) { rows.push(row); row = []; x = x0; } row.push(m); x += w + gap; } if (row.length) rows.push(row);
-    let by = Math.max(70, (60 - S.oy) / scale); for (const r of rows) { by += Math.max(...r.map(m => m.h || 60)); let cx = x0; for (const m of r) { const w = m.w || 50; m.x = m.tx = cx + w / 2; m.y = m.ty = by; cx += w + gap; } by += 30; }
-    stage.style.height = Math.max(H, by + 20) + 'px'; $('#szSp') && ($('#szSp').style.height = S.oy + Math.max(H, by + 20) * scale + 'px'); SZB.paint(); };
+    let by = Math.max(250, (60 - S.oy) / scale); for (const r of rows) { by += Math.max(...r.map(m => m.h || 60)); let cx = x0; for (const m of r) { const w = m.w || 50; m.x = m.tx = cx + w / 2; m.y = m.ty = by; cx += w + gap; } by += 30; }
+    by = Math.max(by, ...S.mons.filter(m => m.szMv).map(m => m.y + 10)); stage.style.height = Math.max(H, by + 20) + 'px'; $('#szSp') && ($('#szSp').style.height = S.oy + Math.max(H, by + 20) * scale + 'px'); SZB.paint(); };
   SZB.paint = () => { const c = $('#szBg'); if (!c) return; const sh = Math.max(H, parseFloat(stage.style.height) || H), u = 2 * scale, ox = Math.max(0, Math.ceil(S.ox / u)), oy = Math.max(0, Math.ceil(S.oy / u)),
       AW = Math.ceil((wrap.clientWidth - S.ox) / u) + ox + 2, AH = Math.max(Math.ceil((wrap.clientHeight - S.oy) / u), Math.ceil(sh / 2)) + oy + 2, key = [AW, AH, ox, oy, scale].join();
     if (SZB.key !== key) { SZB.key = key; drawBg({ c, w: AW, h: AH, ox, oy }); } Object.assign(c.style, { left: S.ox - ox * u + 'px', top: S.oy - oy * u + 'px', width: AW * u + 'px', height: AH * u + 'px' }); };
