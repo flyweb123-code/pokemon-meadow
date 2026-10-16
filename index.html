@@ -2737,8 +2737,9 @@ function biteBerry(el, m, dur, x, y) {
     if (k >= n || m.state !== 'eat' || !S.mons.includes(m)) { if (k >= n) crumbs(4); el.remove(); return; }
     const L = BITES.slice(0, k * 2).map(([at, r]) => `radial-gradient(circle at ${at},#0000 ${r}px,#000 ${r + .5}px)`).join(',');
     el.style.webkitMaskImage = el.style.maskImage = L; el.style.webkitMaskComposite = 'source-in'; el.style.maskComposite = 'intersect';
-    crumbs(2); setTimeout(bite, dur * 1000 / n); };
-  setTimeout(bite, dur * 1000 / n / 2);
+    crumbs(2); setTimeout(bite, bd * 1000 / n); };
+  const bd = dur * .5;   /* v4.22 경완: 먹는 모션은 그대로(dur), 열매는 절반 시간에 다 먹는다 */
+  setTimeout(bite, bd * 1000 / n / 2);
 }
 // v3.63 경완: 나무에서 떨어진 열매는 배고픈 포켓몬(배부름 60 이하)이 알아채고 주우러 온다. 열매마다 가장 가까운 한 마리
 const HUNGRY = 40;
@@ -5231,7 +5232,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.21';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.22';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
