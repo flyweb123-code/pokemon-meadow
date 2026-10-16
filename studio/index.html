@@ -220,7 +220,7 @@ body.szmode #mapI>:not(#szPane){display:none!important}body.szmode #mapI{display
 .dock .it.on{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
 #ebar{position:fixed;z-index:57;top:8px;left:auto;right:8px;width:270px;max-height:calc(100% - 16px);overflow:auto;background:var(--panel);border:1px solid var(--acc);border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:10px 12px;display:grid;align-content:start;gap:12px}
 #ebar[hidden]{display:none}#ebar h4{margin:0}
-#ebar .eg{display:flex;flex-wrap:wrap;gap:6px}#ebar .eg .chip{justify-content:center;min-height:34px}#eTop{display:inline-flex;gap:6px;align-items:center}#eTop[hidden]{display:none}#eTop #eUndo:not(:disabled){border-color:var(--acc);color:var(--acc)}#eTop .btn:disabled{opacity:.4}
+#ebar .eg{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}#ebar .eg>*{width:100%}#ebar .eg .chip{justify-content:center;min-height:34px}.ewrap{position:relative;display:inline-flex}#eWarn{position:absolute;right:0;top:calc(100% + 6px);z-index:80;width:260px;background:var(--panel);border:1px solid #e8a020;border-radius:6px;box-shadow:0 10px 26px rgba(0,0,0,.45);padding:10px 12px;display:grid;gap:8px;font-size:13px}#eWarn[hidden]{display:none}#eWarn .row{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}#eTop{display:inline-flex;gap:6px;align-items:center}#eTop[hidden]{display:none}#eTop #eUndo:not(:disabled){border-color:var(--acc);color:var(--acc)}#eTop .btn:disabled{opacity:.4}
 #propPane{display:grid;gap:8px;border-top:1px solid var(--chip);padding-top:10px}#propPane[hidden]{display:none}#propPane .kv{margin:0}#ebar .pmv{align-items:center;gap:10px}#ebar .pmv #pDel{margin-left:auto}
 #sbar{position:absolute;left:0;right:0;top:0;z-index:6;pointer-events:none;display:flex;align-items:center;color:#fff;font:600 16px/1 -apple-system,system-ui,"Apple SD Gothic Neo",sans-serif;letter-spacing:-.01em;text-shadow:0 1px 2px rgba(0,0,0,.35)}
 #sbar .sd{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;white-space:nowrap}#sbar svg{display:block;fill:currentColor;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
@@ -349,7 +349,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
           <span class="chips" id="wx"><button class="chip on" data-w="">날씨 그대로</button><button class="chip" data-w="clear">맑음</button><button class="chip" data-w="cloud">흐림</button><button class="chip" data-w="rain">비</button></span>
           <span class="vsep"></span>
           <b>기종</b><select class="devSel" aria-label="휴대폰 기종"></select>
-          <span class="sp"></span><span id="scSave"></span><button class="chip" id="szMode" title="화면 가득한 맵에 포켓몬을 줄지어 세워 두고 크기를 맞춰요">크기 조절 모드</button><button class="btn" id="eMode">편집하기</button><span id="eTop" hidden><span id="eSave"></span><button class="chip" id="eUndo" title="방금 전으로 (Ctrl/⌘+Z)">↶ 되돌리기</button></span>
+          <span class="sp"></span><span id="scSave"></span><button class="chip" id="szMode" title="화면 가득한 맵에 포켓몬을 줄지어 세워 두고 크기를 맞춰요">크기 조절 모드</button><span id="eTop" hidden><button class="chip" id="eUndo" title="방금 전으로 (Ctrl/⌘+Z)">↶ 되돌리기</button><span id="eSave"></span></span><span class="ewrap"><button class="btn" id="eMode">편집하기</button><div id="eWarn" hidden role="alertdialog"><div>배치를 저장하지 않았어요. 그냥 끝내면 원래대로 돌아가요.</div><div class="row"><button class="chip" data-ew="0">계속 편집</button><button class="chip" data-ew="1">그냥 종료</button><button class="btn" data-ew="2">저장하고 종료</button></div></div></span>
         </div>
         <div class="canvas" id="mapBox"><div id="szBar" hidden><b>크기 조절 모드</b><label class="szal" title="맵 배경 진하기 (0%면 맵이 안 보여요)">배경 투명도<input type="range" id="szA" min="0" max="100" step="5" value="100" aria-label="배경 투명도"><span class="num" id="szAV">100%</span></label><button class="chip" id="szAdd">포켓몬 넣기</button><button class="chip" id="szRand">무작위 10마리</button><button class="chip" id="szClr">모두 빼기</button><span class="num mute" id="szN"></span><span class="sp"></span><span id="szSel" class="small"></span><span id="szSave"></span><button class="btn" id="szExit">끝내기</button></div><div class="phone" id="phone"><iframe id="game" title="게임 화면" src="../index.html?studio"></iframe><div id="sbar"></div><div id="safeZ" hidden></div></div><div id="hotPop" hidden></div><div id="spx" hidden></div><div id="ebar" hidden role="dialog" aria-label="맵 편집">
 <div class="eh"><b>맵 편집</b></div>
@@ -457,7 +457,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.47';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.48';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -756,7 +756,7 @@ function poolProb(g, L = tierLists(), Z = tierZ(L)) {
   return out;
 }
 const pct = p => p >= .001 ? (p * 100).toFixed(2) + '%' : p > 0 ? (p * 100).toFixed(3) + '%' : '0%';
-// v2.13 경완: 1km 에 줍는 알 개수(EPK)는 알 메뉴에서 정한다. 게임은 BAG_STEP km 마다 0~2개 → 1km 에 평균 1/BAG_STEP 개
+// v2.13 경완: 1km 에 줍는 알 개수(EPK)는 알 메뉴에서 정한다. 게임(v4.07~)은 250m마다 확률 0.25/BAG_STEP 로 줍는다 → 1km 에 평균 1/BAG_STEP 개
 const EPK = () => { const v = ORIG ? bal('BAG_STEP') : .25; return v > 0 ? 1 / v : 4; };
 const kmPer = p => p > 0 ? (1 / (EPK() * p)) : Infinity;
 const fmtKm = v => !isFinite(v) ? '-' : v >= 100 ? Math.round(v) + 'km' : v >= 10 ? v.toFixed(1) + 'km' : v.toFixed(2) + 'km';
@@ -810,12 +810,16 @@ $('#wx').onclick = e => { const b = e.target.closest('[data-w]'); if (!b) return
 let editing = false;
 // 편집하기 (v1.7 경완): 화면 배치는 그대로, 편집 버튼은 휴대폰 오른쪽 작은 창에
 let preEdit = null;
-function setEdit(on) { if (on === editing) return; editing = on; A?.edit(on); $('#ebar').hidden = !on; document.body.classList.toggle('editing', on); ebarHome(); if (on) ebarPos(); $('#eMode').classList.toggle('stop', on); $('#eTop').hidden = !on; $('#szMode').hidden = on; if (on) layoutBar(); $('#eMode').textContent = on ? '편집 종료' : '편집하기'; $('#eUndo').disabled = !(A?.undoN?.() ?? 0);
+function setEdit(on) { if (on === editing) return; editing = on; $('#eWarn').hidden = true; A?.edit(on); $('#ebar').hidden = !on; document.body.classList.toggle('editing', on); ebarHome(); if (on) ebarPos(); $('#eMode').classList.toggle('stop', on); $('#eTop').hidden = !on; $('#szMode').hidden = on; if (on) layoutBar(); $('#eMode').textContent = on ? '편집 종료' : '편집하기'; $('#eUndo').disabled = !(A?.undoN?.() ?? 0);
   if (on) { preEdit = { now: $('#hrNow').disabled, h: +$('#hr').value, w: $('#wx .on')?.dataset.w || '' }; A?.setHour(12); A?.setWx('clear'); }   // 편집할 땐 맑은 한낮으로
   else if (preEdit) { if (preEdit.now) A?.setHour(null); else A?.setHour(preEdit.h); A?.setWx(preEdit.w); preEdit = null; closeZoom(); } if (!on) { $('#propPane').hidden = true; renderReact(null); edOff(); } requestAnimationFrame(fitPhone); }
 // v2.25 경완: 편집 종료하면 편집에서 켰던 것(길 모양·포켓몬 경계선·세이프 존·고른 소품·세부 창)도 모두 끈다
 function edOff() { closeZoom(); dockMark(null); for (const id of ['ePath', 'eHud2', 'eSafe2']) $('#' + id).classList.remove('on'); store.set('st-safe', ''); A?.showPath?.(false); A?.showHud?.(false); A?.unpick?.(); safeZ(); }
-$('#eMode').onclick = () => setEdit(!editing);
+// v2.48 경완: 배치를 저장 안 하고 편집 종료 → 경고 한 번. 그냥 종료하면 마지막 저장 상태로 돌아간다
+$('#eMode').onclick = () => { if (editing && boxDirty('layout')) { $('#eWarn').hidden = !$('#eWarn').hidden; return; } setEdit(!editing); };
+$('#eWarn').onclick = e => { const b = e.target.closest('[data-ew]'); if (!b) return; $('#eWarn').hidden = true; const k = +b.dataset.ew; if (!k) return;
+  if (k === 2) boxAct('layout', true); else { putP(D, 'layout', D._sv || {}); try { A?.setLayout(D.layout || ORIG.layout); } catch (e) {} saveDraft(); toast('저장 안 한 배치를 되돌렸어요'); }
+  setEdit(false); };
 // v2.25 경완: 맵 화면에서 빈 곳(버튼·칸·창이 아닌 곳)을 누르면 고른 소품·세부 창·반응 고르기를 취소
 const BLANK_NOT = 'button,input,select,textarea,label,a,summary,[data-k],[data-ik],[data-one],[data-rs],[data-sp],[data-uid],.it,.mc,.chip,.rx,#zoom,#propPane,#ebar,#spx,#szPane,#hotPop,iframe,.phone,#szBar,.top,.nav,#unsv,#safePop,#dockRz';
 document.addEventListener('pointerdown', e => { if (view !== 'map' || e.button > 0 || e.target.closest(BLANK_NOT) || !e.target.closest('#v-map,.view')) return;
@@ -1196,7 +1200,7 @@ function renderOdds() {
   <div class="card"><h2>알 줍는 양</h2>
     <div class="small mute">걸을 때 일정 거리마다 알을 0~2개(평균 1개) 주워요. 1km에 평균 몇 개 주울지 정해요. 바꾸면 아래 등급별 "몇 km에 1개"도 같이 바뀌어요.</div>
     <div class="odd" style="grid-template-columns:minmax(0,1fr) 96px"><span class="gn">${eggI(1)}1km에 평균 (개)</span><input class="inp${D.bal?.BAG_STEP != null ? ' ch' : ''}" data-epk inputmode="decimal" value="${+EPK().toFixed(2)}" aria-label="1km에 줍는 알 개수"></div>
-    <div class="small mute">${+(bal('BAG_STEP') * 1000).toFixed(0)}m 걸을 때마다 0~2개씩</div>
+    <div class="small mute">250m 걸을 때마다 확률로 줍기 (보통 1km에 ${Math.max(1, Math.round(EPK() / 2))}~${Math.max(Math.max(1, Math.round(EPK() / 2)) + 1, Math.ceil(EPK() * 1.5))}개)</div>
     ${boxBar('bagstep')}
   </div>
   <div class="card"><h2>등급별 확률</h2>
@@ -1239,7 +1243,7 @@ $('#oddsC').addEventListener('click', e => {
   const k = e.target.closest('#simKm [data-k]'); if (k) { $$('#simKm .chip').forEach(c => c.classList.toggle('on', c === k)); return; }
   if (!e.target.closest('#simGo')) return;
   const km = +($('#simKm .on')?.dataset.k || 1000), O = odds(), pt = pity(), cnt = [0, 0, 0, 0, 0, 0], gaps = { 4: [], 5: [] }, lastAt = { 4: 0, 5: 0 }; let pe = 0, pl = 0, hitE = 0, hitL = 0;
-  const ST = bal('BAG_STEP') || .25; for (let s = 1; s <= km / ST; s++) { pe += ST; pl += ST; const n = Math.floor(Math.random() * 3);
+  const ST = .25, RR = ST / (bal('BAG_STEP') || .25); for (let s = 1; s <= km / ST; s++) { pe += ST; pl += ST; const n = RR < 1 ? (Math.random() < RR ? 1 : 0) : Math.floor(Math.random() * (2 * RR + 1));   // v2.48: 게임과 같이 250m마다 확률로
     for (let i = 0; i < n; i++) { let r = Math.random(), g = 5; for (let j = 0; j < 5; j++) { if ((r -= O[j]) < 0) { g = j + 1; break; } }
       if (pl >= pt.l) { if (g !== 5) hitL++; g = 5; } else if (pe >= pt.e) { if (g < 4) hitE++; g = Math.max(g, 4); }
       if (g === 5) pl = 0; if (g >= 4) pe = 0; cnt[g]++; const at = s * ST; for (const q of [4, 5]) if (g >= q && (q === 4 || g === 5)) { gaps[q].push(at - lastAt[q]); lastAt[q] = at; } } }
@@ -1516,7 +1520,7 @@ const SENT = {
   FR_EVO: ['친밀도가', '이상이면 친밀도 진화'], FR_MAX: ['친밀도 만점은', ''],
   CLEAN_DAYS: ['청결 100이 0이 되기까지', '일'], HUNGER_RATE: ['배부름이 떨어지는 속도', '', v => `배부름 100 → 0 약 ${+(100 / v / 3600).toFixed(1)}시간 (깨어 있을 때, 자는 동안은 더 느려요)`],
   JOY_HOURS: ['즐거움 100이 0이 되기까지', '시간', () => '깨어 있을 때'],
-  MAX_EGGS: ['부화기에 알을', '칸까지'], MAX_BAG: ['가방에 알을', '개까지'], BAG_STEP: ['', 'km 걸을 때마다 알 0~2개', v => `1km에 평균 ${+(1 / v).toFixed(1)}개`], SHINY_N: ['이로치는', '마리 중 1마리 꼴'],
+  MAX_EGGS: ['부화기에 알을', '칸까지'], MAX_BAG: ['가방에 알을', '개까지'], BAG_STEP: ['알 1개를 평균', 'km마다 줍기', v => `1km에 평균 ${+(1 / v).toFixed(1)}개`], SHINY_N: ['이로치는', '마리 중 1마리 꼴'],
 };
 // v2.15 경완: 밸런스 레이아웃 정리 — 왼쪽 설명, 오른쪽 숫자 칸(+단위)으로 줄 맞춤
 const BLBL = { NEW_G: ['진화로 새 포켓몬을 만나면', 'G'], RUN_G: ['런닝 1번 할 때마다', 'G'], FLD_FR_DAY: ['필드에 있어서 오르는 친밀도 하루 최대', '/일'], BERRY_FR_DAY: ['열매로 오르는 친밀도 하루 최대', '/일'],
@@ -1705,6 +1709,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.48', '10월 16일', ['맵 편집: 버튼 순서 되돌리기·배치 저장·편집 종료, 저장 안 하고 편집 종료하면 경고 (그냥 종료하면 원래대로), 맵 편집 창 버튼은 한 줄에 하나씩', '1km 알 개수: 게임처럼 250m마다 확률로 줍기 (게임 v4.07)']],
   ['2.47', '10월 16일', ['맵 편집: 배치 저장·되돌리기를 편집 종료 옆으로, 기본값으로·완료 버튼 빼고 남은 버튼은 가로로, 저장 안 함 안내는 위쪽 막대에서', '소품을 끌 때 버벅이지 않게 (게임 v4.06)', '오른쪽 소품 반응 카드를 누르면 그 소품이 시뮬레이터에 테두리로 보여요']],
   ['2.46', '10월 16일', ['티어 박스에서 포켓몬 카드를 누르면 꺼짐(회색): 게임 알에서 안 나오고 그 몫은 같은 티어 다른 포켓몬이 나눠 가짐, 다시 누르면 켜짐 (게임 v3.97)']],
   ['2.45', '10월 16일', ['같은 티어 안 차이는 자동: 박스 순서대로 앞일수록 조금씩 드물게 (티어 합계·경계 보장은 그대로, 배수 입력 칸 뺌)']],
