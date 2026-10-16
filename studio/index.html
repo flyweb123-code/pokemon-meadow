@@ -442,7 +442,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.18';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.19';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -648,9 +648,13 @@ function tierZ(L) { const Z = {}; L.forEach((T, t) => { if (!T.length) return; i
 let effK = '', effV = null, effKt = null;
 function effTiers(L = tierLists(), Z = tierZ(L)) { if (!A?.tierGuard) return eggTiers(); const EL = [null, 1, 2, 3, 4, 5].map(g => g && eggList(g)), k = JSON.stringify([eggTiers(), odds(), EL, D.tierOv || 0, D.tierOrd || 0, ORIG?.tierOrd || 0]);
   if (k !== effK) { effK = k; const E = A.tierGuard(eggTiers(), odds(), L, Z, EL); effV = [null, 1, 2, 3, 4, 5].map(g => g && (E[g] || eggTiers()[g])); effKt = E.K || null; } return effV; }
+// v2.19 경완: 알에서 뺀 포켓몬도 알 1개당 전체 확률은 그대로 — 남은 알에서 배수만큼 더 잘 나온다 (게임 exBoost 와 같은 계산)
+let exK = '', exV = null;
+function exWs(L = tierLists(), Z = tierZ(L)) { const T = effTiers(L, Z), EX = [null, 1, 2, 3, 4, 5].map(g => g && exOf(g)), EL = [null, 1, 2, 3, 4, 5].map(g => g && eggList(g)), k = JSON.stringify([T, EX, EL, effKt, odds(), D.tierOv || 0, D.tierOrd || 0]);
+  if (k !== exK) { exK = k; exV = A?.exBoost ? A.exBoost(T, odds(), L, Z, effKt || {}, EX, EL) : [null, {}, {}, {}, {}, {}]; } return exV; }
 function poolProb(g, L = tierLists(), Z = tierZ(L)) {
   const tab = effTiers(L, Z)[g], ts = Object.keys(tab).map(Number).filter(t => L[t]?.length && tab[t] > 0), spill = g >= 2 ? Math.max(...ts) : 0, tot = ts.reduce((a, t) => a + tab[t], 0), out = {};
-  const X = new Set(exOf(g)); for (const t of ts) { const U = L[t].some(sp => !X.has(sp)) ? L[t].filter(sp => !X.has(sp)) : L[t], w = U.map(sp => Math.exp((t === spill ? 1 : -1) * (effKt?.[t] ?? 0) * Z[sp])), s = w.reduce((a, b) => a + b, 0); U.forEach((sp, i) => out[sp] = tab[t] / tot * w[i] / s); }
+  const X = new Set(exOf(g)), XW = exWs(L, Z)[g] || {}; for (const t of ts) { const U = L[t].some(sp => !X.has(sp)) ? L[t].filter(sp => !X.has(sp)) : L[t], w = U.map(sp => Math.exp((t === spill ? 1 : -1) * (effKt?.[t] ?? 0) * Z[sp]) * (XW[sp] || 1)), s = w.reduce((a, b) => a + b, 0); U.forEach((sp, i) => out[sp] = tab[t] / tot * w[i] / s); }
   return out;
 }
 const pct = p => p >= .001 ? (p * 100).toFixed(2) + '%' : p > 0 ? (p * 100).toFixed(3) + '%' : '0%';
@@ -1209,10 +1213,10 @@ $('#poolC').addEventListener('pointerdown', e => { const bar = e.target.closest(
     if (JSON.stringify(ET) === JSON.stringify(ORIG.eggTiers)) delete D.eggTiers; saveDraft(); renderPool(); };
   addEventListener('pointermove', set); addEventListener('pointerup', end); addEventListener('pointercancel', end); });
 function showPoolSp(sp) {
-  const L = tierLists(), Z = tierZ(L), O = odds(), per = [1, 2, 3, 4, 5].map(g => probOf(g, L, Z)[sp] || 0), all = per.reduce((a, p, i) => a + p * O[i], 0);
+  const L = tierLists(), Z = tierZ(L), O = odds(), XW = exWs(L, Z), per = [1, 2, 3, 4, 5].map(g => probOf(g, L, Z)[sp] || 0), all = per.reduce((a, p, i) => a + p * O[i], 0);
   $('#poolI').innerHTML = `<div class="row"><img src="${thumb(sp)}" alt="" style="width:56px;height:56px;object-fit:contain;image-rendering:pixelated"><div><h2>${esc(spName(sp))}</h2><span class="tag" style="background:${TC(tierOfSp(sp))}">${tierOfSp(sp)}티어</span> <span class="small mute">가족 최고 종족값 ${A.FAM_BST[sp]}</span></div></div>
-    <h4>나오는 알</h4><div class="small mute">켜진 알에서 나와요. 눌러서 끄면 그 알에서는 안 나와요 (그 몫은 같은 티어의 다른 포켓몬에게). 흐린 알은 이 포켓몬 티어가 없는 알이에요.</div>
-    <div class="egt">${[5, 4, 3, 2, 1].map(g => { const nat = inEgg(g, sp), ex = exOf(g).includes(sp); return `<button class="${nat && !ex ? 'on' : ''}${ex ? ' ex' : ''}" data-ex="${g}"${nat ? '' : ' disabled'} title="${nat ? (ex ? '눌러서 다시 나오게' : '눌러서 이 알에서 빼기') : '이 알의 티어에 없어요'}" style="--gc:${GC[g]}">${eggI(g)}<b>${GN[g]}</b><span>${!nat ? '없음' : ex ? '뺌' : '나옴'}</span></button>`; }).join('')}</div>
+    <h4>나오는 알</h4><div class="small mute">켜진 알에서 나와요. 눌러서 끄면 그 알에서는 안 나오는 대신, 남은 알에서 그만큼 더 잘 나와서 알 1개당 전체 확률은 그대로예요 (같은 티어 다른 포켓몬이 조금씩 덜 나와요). 흐린 알은 이 포켓몬 티어가 없는 알이에요.</div>
+    <div class="egt">${[5, 4, 3, 2, 1].map(g => { const nat = inEgg(g, sp), ex = exOf(g).includes(sp); return `<button class="${nat && !ex ? 'on' : ''}${ex ? ' ex' : ''}" data-ex="${g}"${nat ? '' : ' disabled'} title="${nat ? (ex ? '눌러서 다시 나오게' : '눌러서 이 알에서 빼기') : '이 알의 티어에 없어요'}" style="--gc:${GC[g]}">${eggI(g)}<b>${GN[g]}</b><span>${!nat ? '없음' : ex ? '뺌' : (XW[g]?.[sp] || 1) > 1.01 ? `×${+(XW[g][sp]).toFixed(1)}` : '나옴'}</span></button>`; }).join('')}</div>
     <h4>알 등급마다 나올 확률</h4><div class="tw"><table class="t"><tr><th>알</th><th>그 알에서</th></tr>${per.map((p, i) => `<tr><td><span class="gn" style="display:inline-flex;align-items:center;gap:6px;color:${GC[i + 1]}">${eggI(i + 1)}${GN[i + 1]}</span></td><td class="num">${p ? pct(p) : '-'}</td></tr>`).reverse().join('')}</table></div>
     <div class="kv"><span>알 1개당</span><b class="num">${pct(all)}</b><span>평균 거리</span><b class="num">${fmtKm(kmPer(all))}마다 1번</b></div>
     <div class="chips"><button class="chip" id="poolTier">티어에서 보기</button></div>`;
@@ -1530,6 +1534,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.19', '10월 16일', ['알 › 등급별 포켓몬: 알을 끄면 그 포켓몬은 남은 알에서 그만큼 더 잘 나와서 알 1개당 전체 확률은 그대로 (오른쪽 알 칸에 ×배수 표시, 게임 v3.84)']],
   ['2.18', '10월 16일', ['맵: 크기 조절 모드는 가운데 맵 칸만 채우고, 포켓몬 넣기 목록은 오른쪽 창에', '크기 조절 모드 맵은 원래 화면을 가운데 두고 양옆으로 숲·풀밭이 이어지게 새로 그림 (게임 v3.83)', '알 › 등급별 포켓몬: 순서 끌기·다른 알로 옮기기 뺌, 옆에 티어별 전체 출현 확률 표', '티어·알 오른쪽 창의 알별 확률은 전설 알부터', '밸런스: 배부름이 떨어지는 속도를 매우 빠름~매우 느림 중에서 고르기']],
   ['2.17', '10월 16일', ['티어: 빈 곳을 누르면 고른 카드 모두 풀기, 위쪽 저장·찾기·화면 크기 칸은 스크롤해도 고정', '알 › 등급별 포켓몬: 포켓몬을 누르면 오른쪽에 나오는 알이 켜져 있고, 눌러서 끄면 그 알에서 안 나옴 (게임 v3.82)', '저장 안 하고 다른 화면으로 가도 고친 것은 남고, 위쪽 막대에 저장 안 함 경고. 누르면 목록, 항목을 누르면 그 화면으로', '등급별 포켓몬 가로 막대: 10티어(낮은 티어)부터', '위쪽 배포하기: 화면을 넘기지 않고 바로 배포', '배포 기록: 버전 줄을 눌러야 세부 내용이 보임']],
   ['2.16', '10월 16일', ['맵: 크기 조절 모드 버튼. 켜면 화면 가득한 맵에 포켓몬을 제한 없이 줄지어 세워 두고(등장 효과·움직임 없음) 모서리를 끌어 크기 조절, 크기 저장 → 배포하면 게임에도 (게임 v3.81)']],
