@@ -745,7 +745,7 @@ body.petting #dlg,body.petting #info{display:none!important}
 @keyframes joyS{0%{filter:brightness(1.3) drop-shadow(0 0 5px #fffbe0) drop-shadow(0 0 22px #ffb000)}50%{filter:drop-shadow(0 0 0 transparent)}}@keyframes joyA{0%{filter:brightness(1.3) drop-shadow(0 0 5px #ffe0e0) drop-shadow(0 0 22px #ff2020)}50%{filter:drop-shadow(0 0 0 transparent)}}   /* 좋아할 때: 켜졌다 꺼졌다 점멸 */
 .hspk{position:absolute;transform:translate(-50%,-50%);line-height:1;pointer-events:none;color:#fff6b0;text-shadow:0 0 4px #ffb000,0 0 2px #fff;animation:hspk .7s ease-out forwards}.hspk.A{color:#ffe0e0;text-shadow:0 0 4px #ff3a3a,0 0 2px #fff}
 @keyframes hspk{0%{opacity:0;scale:.3}25%{opacity:1;scale:1.25}60%{opacity:1;scale:.9}100%{opacity:0;scale:.4;translate:0 -10px}}
-.mon.rkS .flip{animation:sglow 4s ease-in-out infinite}.mon.rkA .flip{animation:aglowM 4s ease-in-out infinite}@keyframes aglowM{0%,100%{filter:drop-shadow(0 0 2px #ff9090) drop-shadow(0 0 6px #ff3a3a)}50%{filter:drop-shadow(0 0 3px #ffa0a0) drop-shadow(0 0 11px #ff2828)}}   /* A 랭크: 박스와 같은 붉은 후광 */.mon.nightf .act,.mon.nightf .shadow{filter:url(#nightF)}.mon.selflit .flip{animation:sglowN 4s ease-in-out infinite}@keyframes sglowN{0%,100%{filter:brightness(.6) sepia(.15) drop-shadow(0 0 2px rgba(255,224,140,.75)) drop-shadow(0 0 6px rgba(255,176,32,.7))}50%{filter:brightness(.66) sepia(.15) drop-shadow(0 0 3px rgba(255,232,160,.9)) drop-shadow(0 0 11px rgba(255,170,20,.85))}}#glows{position:absolute;inset:0;pointer-events:none}.gl{position:absolute;left:0;top:0;z-index:1050;border-radius:50%;mix-blend-mode:screen;pointer-events:none;width:200px;height:96px;margin:-48px 0 0 -100px;background:radial-gradient(closest-side,rgba(255,214,130,.1),rgba(255,200,110,.05) 40%,rgba(255,190,90,0) 70%,rgba(255,170,50,0))}@keyframes glp{50%{opacity:.85}}.gl.a{background:radial-gradient(closest-side,rgba(255,70,70,.6),rgba(255,60,60,.3) 45%,rgba(255,50,50,0) 75%)}.mon.selflit .shadow{opacity:.35}
+.mon.rkS .flip{animation:sglow 4s ease-in-out infinite}.mon.rkA .flip{animation:aglowM 4s ease-in-out infinite}@keyframes aglowM{0%,100%{filter:drop-shadow(0 0 2px #ff9090) drop-shadow(0 0 6px #ff3a3a)}50%{filter:drop-shadow(0 0 3px #ffa0a0) drop-shadow(0 0 11px #ff2828)}}   /* A 랭크: 박스와 같은 붉은 후광 */.mon.nightf .act,.mon.nightf .shadow{filter:url(#nightF)}.mon.selflit .flip{animation:sglowN 4s ease-in-out infinite}@keyframes sglowN{0%,100%{filter:brightness(.6) sepia(.15) drop-shadow(0 0 2px rgba(255,224,140,.75)) drop-shadow(0 0 6px rgba(255,176,32,.7))}50%{filter:brightness(.66) sepia(.15) drop-shadow(0 0 3px rgba(255,232,160,.9)) drop-shadow(0 0 11px rgba(255,170,20,.85))}}#glows{position:absolute;inset:0;pointer-events:none}.gl{position:absolute;left:0;top:0;z-index:1050;border-radius:50%;mix-blend-mode:screen;pointer-events:none;width:200px;height:96px;margin:-48px 0 0 -100px;background:radial-gradient(closest-side,rgba(255,214,130,.1),rgba(255,200,110,.05) 40%,rgba(255,190,90,0) 70%,rgba(255,170,50,0))}@keyframes glp{50%{opacity:.85}}.gl.a{background:radial-gradient(closest-side,rgba(255,60,50,.75),rgba(255,50,40,.38) 45%,rgba(255,40,30,0) 75%)}.mon.selflit .shadow{opacity:.35}
 @keyframes sglow{0%,100%{filter:drop-shadow(0 0 1px #fff6c0) drop-shadow(0 0 3px #ffc830)}50%{filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 7px #ffb000)}}
 .pk.rkA{background:radial-gradient(circle 40px at 50% 42px,rgba(255,120,120,.38),rgba(255,120,120,0))}.pk.rkA img,.dp-pic.rkA img,.bd-pic.rkA img{animation:aglowI 2s ease-in-out infinite}@keyframes aglowI{0%,100%{filter:drop-shadow(0 0 1px #ffd0d0) drop-shadow(0 0 3px #ff5050)}50%{filter:drop-shadow(0 0 2px #ffd0d0) drop-shadow(0 0 7px #ff3838)}}
 .mon.rkS .lift::before{content:'✦';position:absolute;left:0;bottom:calc(var(--mh,60px) * .55);color:#fff3a0;font-size:20px;text-shadow:0 0 4px #ffb000,0 0 2px #fff;animation:spk 1.6s steps(1) infinite;pointer-events:none;z-index:3}
@@ -1214,7 +1214,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
   .goldbar{grid-area:stage;align-self:start;justify-self:end;z-index:25;height:auto;margin:calc(var(--si-top,env(safe-area-inset-top)) + 8px) calc(var(--si-right,env(safe-area-inset-right)) + 8px) 0 0;flex-direction:column;align-items:flex-end;gap:8px}
   .gold{font-size:18px;height:42px}
   .shop-gold{position:fixed;top:calc(var(--si-top,env(safe-area-inset-top)) + 8px);right:calc(var(--si-right,env(safe-area-inset-right)) + 8px);z-index:10}
-  .berrybar{grid-row:1;grid-column:1/-1;align-self:center;justify-self:end;align-items:flex-end;z-index:25;margin:0 calc(var(--si-right,env(safe-area-inset-right)) + 8px) 0 0}   /* v4.02 경완: 오른쪽 가운데 */
+  .berrybar{position:absolute;grid-area:auto;top:62%;right:calc(var(--si-right,env(safe-area-inset-right)) + 8px);bottom:auto;align-items:flex-end;z-index:25;margin:0}   /* v4.03 경완: 오른쪽 가운데보다 조금 아래(엄지 닿는 곳), 상태창 접기와 상관없이 화면 기준 고정 */
   .clockwin .d{font-size:12px}
   .card{grid-row:1;grid-column:1/-1;position:relative;align-self:end;z-index:30;width:auto;margin:0 8px 8px;max-height:62%;overflow-y:auto;left:auto!important;top:auto!important;padding:10px 14px 12px}
   .card .close{position:absolute;right:4px;top:4px;border:0;padding:8px 12px;font-size:16px}
@@ -2284,6 +2284,7 @@ let CLOCK_OFF = 0;   // 작업실에서 시간 미리보기 (분)
 const realClock = () => (Date.now() - S.base) / 60000 + CLOCK_OFF;
 S.base = midnight();
 const isNight = () => { const h = hour(); return h >= 19.5 || h < 5.5; };
+const uiNight = () => skyDark >= .6;   /* v4.03 경완: 창들의 밤 디자인은 시각이 아니라 맵이 어두워진 정도로 (해 질 녘 18시 반쯤부터) */
 const wrongTime = m => DEX[m.sp].noct ? !isNight() : isNight();
 const T = m => DEX[m.sp];
 const awake = m => m.state !== 'sleep' && !m.hidden;
@@ -4774,7 +4775,7 @@ function breathOf(m) {
   const ct = a && a.currentTime != null ? +a.currentTime : null; if (ct == null) return null; const d = a.effect.getTiming().duration || 2000; return .5 - .5 * Math.cos((ct % d) / d * Math.PI * 2);
 }
 function nightHoles() {
-  const L = S.mons.filter(m => (m.lit || m.litA) && m.el.isConnected), k0 = Math.min(1, skyDark * 1.2), now = performance.now();
+  const L = S.mons.filter(m => m.lit && m.el.isConnected)   /* v4.03 경완: A 랭크는 밤 그늘을 뚫지 않고 붉은 빛(.gl.a)만 — 그늘을 뚫으면 흰 빛처럼 보였다 */, k0 = Math.min(1, skyDark * 1.2), now = performance.now();
   const parts = L.map(m => { const A = !m.lit, br = m.br ?? .5;   /* 후광 숨쉬기(2초)에 맞춰 밝히는 범위가 커졌다 작아졌다 */
     const k = Math.max(.75, Math.min(1.6, (m.w || 50) / 55)) * (A ? .7 : 1) * (.82 + .3 * br), rx = Math.round(100 * k), ry = Math.round(54 * k), a = (1 - (A ? .38 : .62) * k0).toFixed(2), b = (1 - (A ? .22 : .4) * k0).toFixed(2), c = (1 - (A ? .08 : .15) * k0).toFixed(2);
     return `radial-gradient(${rx}px ${ry}px at ${Math.round(m.x)}px ${Math.round(m.y - 6)}px,rgba(0,0,0,${a}) 0,rgba(0,0,0,${b}) 35%,rgba(0,0,0,${c}) 70%,#000 100%)`; });
@@ -4796,7 +4797,7 @@ function sky() {
   $('#phase').textContent = phase + (weather() !== 'clear' ? ' · ' + WX_TXT[weather()] : '');
   { const d = new Date(); $('#day').textContent = `${d.getMonth() + 1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})`; }
   $('#time').textContent = clockStr();
-  { const nt = isNight(); $('#clock').classList.toggle('night', nt); $('#dlg').classList.toggle('night', nt); infoEl.classList.toggle('night', nt && !infoEl.classList.contains('bud')); $('#btnBerry').classList.toggle('night', nt); $('#hint').classList.toggle('night', nt); }
+  { const nt = uiNight(); $('#clock').classList.toggle('night', nt); $('#dlg').classList.toggle('night', nt); infoEl.classList.toggle('night', nt && !infoEl.classList.contains('bud')); $('#btnBerry').classList.toggle('night', nt); $('#hint').classList.toggle('night', nt); }
   const wantFlies = isNight() ? 14 : 0;
   while (flies.length < wantFlies) { const f = document.createElement('div'); f.className = 'firefly'; fxEl.append(f); flies.push({ el: f, x: rnd(0, W), y: rnd(150, 580), p: rnd(0, 6) }); }
   while (flies.length > wantFlies) flies.pop().el.remove();
@@ -4870,7 +4871,7 @@ function renderInfo() {
       <div id="pMoves"></div>`;
   }
   $('#pname').textContent = m.name;
-  { const bud = !!m.pid && S.buds.some(b => b.pid === m.pid); box.classList.toggle('bud', bud); box.classList.toggle('night', !bud && isNight()); $('#infoBud').hidden = !bud; }   /* 짝꿍은 밤에도 분홍 그대로 */
+  { const bud = !!m.pid && S.buds.some(b => b.pid === m.pid); box.classList.toggle('bud', bud); box.classList.toggle('night', !bud && uiNight()); $('#infoBud').hidden = !bud; }   /* 짝꿍은 밤에도 분홍 그대로 */
   { const h = rkBadge(P), el = box.querySelector('.pf-rk'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
   $('#pbars').innerHTML = bar('청결', m.clean ?? 100, 'var(--clean)') + bar('배부름', 100 - m.hunger, 'var(--hunger)') + bar('즐거움', m.joy ?? 60, 'var(--lonely)') + (P ? `<div class="bar frbar"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>` : '');
   { const h = memoHtml(m), el = $('#pMemo'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
@@ -5194,7 +5195,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.02';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.03';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
