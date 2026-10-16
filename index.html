@@ -1142,6 +1142,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 .op-sw[aria-checked="true"]{background:#4ccf5a}.op-sw[aria-checked="true"] i{left:auto;right:2px}
 #openRun,#openMgr,#openDex{position:relative}.mdot{position:absolute;top:6px;right:7px;width:6px;height:6px;background:#e04838;pointer-events:none}
 @keyframes tbump{50%{transform:scale(1.25)}}
+#eggAuto{font:inherit;font-size:12px;display:inline-flex;align-items:center;gap:6px;padding:3px 6px 3px 8px;background:#fff;color:var(--dim);border:3px solid var(--inner);cursor:pointer;-webkit-tap-highlight-color:transparent}#eggAuto i{position:relative;width:26px;height:14px;background:#b8b8b8;border:2px solid var(--frame)}#eggAuto i::after{content:'';position:absolute;top:0;left:0;width:10px;height:10px;background:#fff;border-right:2px solid var(--frame)}#eggAuto[aria-pressed=true]{color:var(--win-ink);border-color:#48a048}#eggAuto[aria-pressed=true] i{background:#48b048}#eggAuto[aria-pressed=true] i::after{left:12px;border-right:0;border-left:2px solid var(--frame)}
 #eggAll{font:inherit;font-size:13px;padding:3px 10px;background:#e8a020;color:#fff;border:3px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.25);cursor:pointer}
 @keyframes hpop{0%{transform:scale(.25)}50%{transform:scale(1.1)}100%{transform:none}}
 .hatch-stage.evo{background:#1e2340;box-shadow:inset 0 0 0 3px #46508a;transition:background-color .3s}
@@ -1465,7 +1466,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
     <div class="run-body">
       <section class="rtab" data-tab="egg">
         <div class="incu-box" id="incu"></div>
-        <div class="mgr-tools"><button id="eggAll" hidden></button><button id="eggTest" class="test-btn">준비로(테스트)</button><button id="eggTestAll" class="test-btn">모두 준비로</button><span class="tcount" id="eggCount"></span></div>
+        <div class="mgr-tools"><button id="eggAuto" class="eauto" aria-pressed="false" title="부화기가 비면 가방에서 높은 등급 알부터 채워요">자동 채우기<i></i></button><button id="eggAll" hidden></button><button id="eggTest" class="test-btn">준비로(테스트)</button><button id="eggTestAll" class="test-btn">모두 준비로</button><span class="tcount" id="eggCount"></span></div>
         <div class="eggs" id="eggs"></div>
       </section>
       <section class="rtab" data-tab="bag">
@@ -5183,7 +5184,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.89';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.90';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6578,7 +6579,7 @@ function collectEggs(km, place, tags, pf) {
     if (P.l >= PITY_L) g = 5; else if (P.e >= PITY_E) g = Math.max(g, 4);
     if (g === 5) P.l = 0; if (g >= 4) P.e = 0;
     const e = { id: S.eid++, g, t, isNew: true }; const pl = pf ? pf() : place ? { n: place, tags } : null; if (pl?.n) e.place = pl.n; if (pl?.tags?.length) e.tags = pl.tags; S.bag.push(e); got.push(g); got.eggs.push(e); }
-  return got;
+  autoInc(); return got;
 }
 function gotLog(got, how, place) {
   if (!got.length) return;
@@ -6600,6 +6601,10 @@ function incubate(e) {
   const x = { id: e.id, g: e.g, km: e.km || 0, need: GRADE[e.g].km, isNew: true, nwI: true, t: e.t, place: e.place, tags: e.tags, sp: e.sp }; S.eggs.push(x);
   save(); return true;
 }
+// v3.90 경완: 자동 채우기를 켜 두면 부화기가 빌 때 가방에서 높은 등급 → 많이 간 거리 → 먼저 주운 알 순으로 채운다 (처음엔 꺼짐)
+function autoInc() { if (!S.autoInc) return 0; let n = 0;
+  while (S.eggs.length < MAX_EGGS && S.bag.length) { const b = S.bag.reduce((a, x) => (x.g - a.g || (x.km || 0) - (a.km || 0) || (a.t || 0) - (x.t || 0)) > 0 ? x : a); if (!incubate(b)) break; n++; }
+  if (n) renderBag.sig = ''; return n; }
 // distance from any source goes to every egg and the buddy
 // 알·짝꿍에 거리를 쌓는다 (걸은 거리는 걷는 동안 실시간으로, 런닝은 걸음으로 이미 쌓인 만큼을 뺀 나머지만)
 function feedKm(km, fr = km * WALK_FR) {
@@ -6884,7 +6889,7 @@ const eggSp = e => e.sp || (e.sp = rollEgg(e));
 function eggSpAll() { if (S.eggV !== 2) { for (const e of [...S.bag, ...S.eggs]) delete e.sp; S.eggV = 2; }   /* 티어 방식으로 바꾼 뒤 아직 안 깬 알 속 포켓몬을 한 번 다시 정한다 */
   for (const e of S.bag) if (!e.sp) eggSp(e); for (const e of S.eggs) if (!e.sp) eggSp(e); }
 function hatchEgg(e, keep, ask) {
-  if (!keep) S.eggs = S.eggs.filter(x => x !== e);
+  if (!keep) { S.eggs = S.eggs.filter(x => x !== e); autoInc(); }
   const sp = eggSp(e);
   S.recentHatch = [sp, ...(S.recentHatch || []).filter(x => x !== sp)].slice(0, 12);
   hatchQ.push({ g: e.g, sp, place: e.place, egg: keep ? e : null, ask }); save();
@@ -7106,7 +7111,7 @@ async function playHatch() {
   { const wh = hatchEl.querySelector('.hwhite'), L = fg >= 5; wh.style.setProperty('--wl', parseFloat(wh.style.opacity) || (parseFloat(hatchEl.style.getPropertyValue(L ? '--lg' : '--lit')) || 0) * .55); wh.classList.remove('go', 'big'); wh.style.transition = ''; wh.style.opacity = '';   /* 밝아진 만큼에서 이어서 하얗게 */ void wh.offsetWidth; wh.classList.add('go'); if (L) wh.classList.add('big');
     setTimeout(() => { hatchBg(fg); { const w = hatchEl.querySelector('.win'); w.classList.remove('jolt'); setTier(w, sp); } }, L ? 500 : 300);
     if (L) { tenseStop(.25); setTimeout(() => { if (hatching) bgmDuck(1, 3); }, 3200); } }
-  if (src) { S.eggs = S.eggs.filter(x => x !== src); renderBag.sig = ''; renderRun(); }
+  if (src) { S.eggs = S.eggs.filter(x => x !== src); autoInc(); renderBag.sig = ''; renderRun(); }
   hatchStage.querySelectorAll('.shard').forEach(x => { x.style.setProperty('--ec', getComputedStyle(egg).getPropertyValue('--ec')); x.classList.add('go'); });
   haptic(2); await wait(300); await spReady; egg.remove();
   const B = bornPoke({ g, sp, place }), { P, isNew } = B;
@@ -7188,7 +7193,7 @@ async function hatchAll() {
   // 알은 결과 창이 뜰 때 부화기에서 뺀다 (그 전엔 목록에 그대로)
   const res = ready.map(e => { hatchEgg(e, true); return bornPoke(hatchQ.pop()); });
   await Promise.all(res.map(r => ensureSprite(r.sp).catch(() => {})));
-  S.eggs = S.eggs.filter(e => !ready.includes(e)); save();
+  S.eggs = S.eggs.filter(e => !ready.includes(e)); autoInc(); save();
   const strip = $('#hlStrip'), fieldBtn = $('#hatchField'), ok = $('#hatchOk');
   strip.innerHTML = res.map((r, k) => `<button data-k="${k}" aria-label="${esc(SPECIES[r.sp].n)}"><img src="${thumbOf(r.sp)}" alt="">${r.isNew ? '<b>N</b>' : ''}</button>`).join('');
   hatchStage.classList.remove('evo', 'tapme'); hatchEl.classList.add('list'); hatchEl.hidden = false;
@@ -7392,7 +7397,7 @@ function renderRun() {
     : `<p class="incu-empty">${S.eggs.length ? '알을 눌러 보자' : '부화 중인 알이 없습니다'}</p>`;
   // 알이 있을 때 높이를 기억해 두고, 빈 부화기도 같은 높이로 둔다
   if (e) requestAnimationFrame(() => { const h = $('#incu').offsetHeight; if (h > 40) document.documentElement.style.setProperty('--incu-h', h + 'px'); });
-  $('#eggCount').innerHTML = `<b>${S.eggs.length}</b>/${MAX_EGGS}`;
+  $('#eggCount').innerHTML = `<b>${S.eggs.length}</b>/${MAX_EGGS}`; $('#eggAuto').setAttribute('aria-pressed', !!S.autoInc);
   const nReady = S.eggs.filter(x => x.km >= x.need).length, all = $('#eggAll'); all.hidden = nReady < 2; all.textContent = `모두 부화 (${nReady})`;
   const box = $('#eggs'); box.innerHTML = '';
   for (let i = 0; i < MAX_EGGS; i++) {
@@ -7408,6 +7413,7 @@ function renderRun() {
   }
   renderBag();
 }
+$('#eggAuto').onclick = () => { S.autoInc = !S.autoInc; sfx('tap'); autoInc(); save(); renderRun(); };
 // 테스트용: 부화기 알을 모두 부화 준비 상태로 (나중에 뺄 것)
 // 테스트용: 등급을 골라 지금 날짜·무작위 장소로 가방에 알을 넣는다 (나중에 뺄 것)
 const TEST_PLACES = ['한강공원', '동네 놀이터', '석촌호수', '해운대 해수욕장', '북한산 둘레길', '서울역', '김포공항', '노량진 수산시장', 'GS칼텍스 주유소', '동네 빵집', '어린이대공원 동물원', '잠실종합운동장', '대학병원', '초등학교', '봉은사', '공단 공장'];
