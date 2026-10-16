@@ -115,7 +115,7 @@ table.t th{font-family:var(--px);font-size:11px;font-weight:400;color:var(--mute
 .tcol h3{margin:0;font-family:var(--px);font-size:13px;font-weight:400;display:flex;justify-content:space-between}
 .tcol .grid{grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:4px}.tcol .mc{aspect-ratio:auto;height:72px}.tcol .mc img{bottom:14px;max-height:72%}
 .tcol .mc .no{font-size:8px}
-.tcol .mc{cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.tcol .mc.drag{opacity:.35}.tcol .mc.drop{box-shadow:inset 3px 0 0 var(--acc)}.tcol.drop{border-color:var(--acc)}.tcol .tr0{min-height:22px;padding:0 8px;font-size:11px;margin-left:6px}
+.tcol .mc{touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.tcol .mc.drag{opacity:.35}.tcol .mc.drop{box-shadow:inset 3px 0 0 var(--acc)}.tcol.drop{border-color:var(--acc)}.tcol .tr0{min-height:22px;padding:0 8px;font-size:11px;margin-left:6px}
 .bubs{display:grid;gap:6px}
 .bubs .bc{display:grid;grid-template-columns:96px 104px minmax(0,1fr);gap:8px 12px;align-items:center;background:var(--deep);border:1px solid var(--chip);border-radius:6px;padding:10px}
 .bubs .bw{display:grid;place-items:center;min-height:44px;background:#5d9a3e;border-radius:4px;padding:8px 2px 12px}
@@ -316,6 +316,10 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
   .tabs a.on{color:var(--acc)}
   .tabs svg{width:22px;height:22px}
   .tiers{grid-template-columns:minmax(0,1fr)}
+  #tierC{display:flex;flex-direction:column}#tierC>.thd{order:9;position:sticky;top:auto;bottom:0;margin:10px -12px -10px;padding:8px 12px calc(4px);border-bottom:0;border-top:1px solid var(--line);box-shadow:0 -4px 10px rgba(0,0,0,.25)}#tierC>.thd .tzc{margin-bottom:4px;flex-wrap:nowrap;gap:4px}#tierC>.thd>.sbx{margin:0 0 6px;flex-wrap:nowrap}#tierC>.thd .sbx .st{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}#tierC>.thd .sbx .btn{padding:6px 10px;font-size:13px;white-space:nowrap}#tierC>.thd .tq{flex:1 1 auto;min-width:0;margin:0 2px 0 0}#tierC>.thd #tz,#tierC>.thd .tzl{display:none}#tierC>.thd .tzc .num:not(.mute){min-width:34px;font-size:11px}#tierC>.thd #tMulti{white-space:nowrap;padding:4px 8px;font-size:12px}#tierC>.thd .tzc>span.num[style],#tierC>.thd #tSelX{white-space:nowrap;font-size:11px}
+  .view[data-v=tier] .vc.scroll{overflow:visible}
+  .view[data-v=tier] #tierI{display:none}
+  .view[data-v=tier].tsel #tierI{display:grid;position:fixed;left:8px;right:8px;bottom:calc(66px + env(safe-area-inset-bottom,0px));z-index:30;max-height:44vh;overflow:auto;border:1px solid var(--chipb);border-radius:8px;box-shadow:0 -6px 20px rgba(0,0,0,.45);padding:12px 12px 16px}
   .odd{grid-template-columns:72px minmax(0,1fr) 84px}.odd .gn{white-space:nowrap}.od2,.odh{grid-template-columns:64px minmax(0,1fr) 88px}.od2 .pc,.odh span:nth-child(4){display:none}
   .pr,.prh{grid-template-columns:30px 30px minmax(0,1fr) 28px 54px 66px;gap:5px}.pr .pb,.prh .pb{display:none}.gsel{grid-template-columns:repeat(5,minmax(56px,1fr));overflow-x:auto}.gsel button{grid-template-columns:1fr;justify-items:center;padding:6px 4px}.gsel button .egg{grid-row:auto}
 }
@@ -443,7 +447,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.29';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.30';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -1301,9 +1305,10 @@ function showPoolSp(sp) {
 function renderTier() {
   const L = tierLists(), ov = D.tierOv || {}; if (sel.tier && tSel.size <= 1) { tSel.clear(); tSel.add(sel.tier); }
   const tz = tzOf(); $('#tierC').style.setProperty('--tzz', tz / 100);
-  $('#tierC').innerHTML = `<div class="thd">${boxBar('tier', '티어 저장')}<div class="tzc"><div class="search tq"><input id="tQ" placeholder="포켓몬 찾기 (이름·번호)" autocomplete="off" enterkeyhint="search" value="${esc(tQv)}"><span class="num mute" id="tQn"></span></div>화면 크기<button class="chip" data-tz="-10" aria-label="작게">−</button><input type="range" id="tz" min="50" max="250" step="10" value="${tz}" aria-label="화면 크기"><button class="chip" data-tz="10" aria-label="크게">+</button><span class="num">${tz}%</span><button class="chip${tMulti ? ' on' : ''}" id="tMulti" title="켜면 누르는 카드마다 더해져요 (PC는 Ctrl+누르기, Shift+누르기)">여러 마리 고르기</button>${tSel.size > 1 ? `<span class="num" style="color:var(--acc)">${tSel.size}마리 고름</span><button class="chip" id="tSelX">고르기 풀기</button>` : ''}</div></div><div class="small mute" style="margin-bottom:10px">진화 전 모습으로 묶어요. 1~3티어는 특별한 포켓몬(전설·환상 가족), 4~10티어는 나머지를 가족 최고 종족값 순서로 나눈 거예요. <b>카드를 끌어서</b> 순서를 바꾸거나 다른 티어로 옮겨요 (휴대폰은 꾹 누른 뒤). ${(effKt && Object.values(effKt).some(k => k > 0)) ? '티어 안에서는 <b>앞일수록 알에서 드물게</b> 나와요.' : '같은 티어 안의 포켓몬은 <b>모두 같은 확률</b>로 나와요 (순서는 보기용).'} 단, 알 › 등급별 포켓몬에서 순서를 직접 정한 알은 그 확률을 따라요. 주황 점은 작업본에서 옮긴 포켓몬이에요.</div>
+  $('#tierC').innerHTML = `<div class="thd">${boxBar('tier', '티어 저장')}<div class="tzc"><div class="search tq"><input id="tQ" placeholder="포켓몬 찾기 (이름·번호)" autocomplete="off" enterkeyhint="search" value="${esc(tQv)}"><span class="num mute" id="tQn"></span></div><span class="tzl">화면 크기</span><button class="chip" data-tz="-10" aria-label="작게">−</button><input type="range" id="tz" min="50" max="250" step="10" value="${tz}" aria-label="화면 크기"><button class="chip" data-tz="10" aria-label="크게">+</button><span class="num">${tz}%</span><button class="chip${tMulti ? ' on' : ''}" id="tMulti" title="켜면 누르는 카드마다 더해져요 (PC는 Ctrl+누르기, Shift+누르기)">여러 마리 고르기</button>${tSel.size > 1 ? `<span class="num" style="color:var(--acc)">${tSel.size}마리 고름</span><button class="chip" id="tSelX">고르기 풀기</button>` : ''}</div></div><div class="small mute" style="margin-bottom:10px">진화 전 모습으로 묶어요. 1~3티어는 특별한 포켓몬(전설·환상 가족), 4~10티어는 나머지를 가족 최고 종족값 순서로 나눈 거예요. <b>카드를 끌어서</b> 순서를 바꾸거나 다른 티어로 옮겨요 (휴대폰은 꾹 누른 뒤). ${(effKt && Object.values(effKt).some(k => k > 0)) ? '티어 안에서는 <b>앞일수록 알에서 드물게</b> 나와요.' : '같은 티어 안의 포켓몬은 <b>모두 같은 확률</b>로 나와요 (순서는 보기용).'} 단, 알 › 등급별 포켓몬에서 순서를 직접 정한 알은 그 확률을 따라요. 주황 점은 작업본에서 옮긴 포켓몬이에요.</div>
   <div class="tiers">${L.map((T, t) => t ? `<div class="tcol" data-tt="${t}"><h3><span class="tag" style="background:${TC(t)}">${t}티어</span><span class="num mute">${T.length}종 · ${tierOrdOf(t)?.length ? '직접 정한 순서' : '도감 번호 순'}${tierOrdOf(t)?.length ? ` <button class="chip tr0" data-tr0="${t}">종족값 순으로</button>` : ''}</span></h3><div class="grid">${orderTier(t, T).map(sp => `<button class="mc${ov[sp] ? ' ov' : ''}${tSel.has(sp) ? ' on' : ''}" data-sp="${sp}" title="${esc(spName(sp))} · ${A.FAM_BST[sp]}"><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('')}</div></div>` : '').join('')}</div>`;
   fillThumbs($('#tierC'));
+  $('.view[data-v=tier]').classList.toggle('tsel', !!(tSel.size || sel.tier));
   if (tSel.size > 1) showTierMulti(); else if (sel.tier) showTierSp(sel.tier);
 }
 // v2.14 경완: 여러 장 고르기. Shift+누르기 = 마지막으로 누른 카드부터 이 카드까지 모두, Ctrl(⌘)+누르기 = 이 카드만 더하거나 빼기
@@ -1325,8 +1330,9 @@ $('#tierC').addEventListener('click', e => { const r0 = e.target.closest('[data-
   if (!b) { if (!e.target.closest('button,input,label,a,.thd') && (tSel.size || sel.tier)) { tSel.clear(); sel.tier = null; renderTier(); $('#tierI').innerHTML = '<div class="empty">포켓몬을 누르면 정보와 알마다 나올 확률이 나와요.</div>'; } return; } const sp = +b.dataset.sp, add = e.ctrlKey || e.metaKey || tMulti;
   if (e.shiftKey && sel.tier && sel.tier !== sp) { const all = $$('#tierC .tcol .mc').map(c => +c.dataset.sp); let i = all.indexOf(sel.tier), j = all.indexOf(sp); if (i < 0) i = j; if (i > j) [i, j] = [j, i]; if (!add) tSel.clear(); all.slice(i, j + 1).forEach(x => tSel.add(x)); }
   else if (add) { if (tSel.has(sp) && tSel.size > 1) tSel.delete(sp); else tSel.add(sp); sel.tier = sp; }
+  else if (sel.tier === sp && tSel.size <= 1) { tSel.clear(); sel.tier = null; renderTier(); $('#tierI').innerHTML = '<div class="empty">포켓몬을 누르면 정보와 알마다 나올 확률이 나와요.</div>'; return; }
   else { tSel.clear(); tSel.add(sp); sel.tier = sp; }
-  renderTier(); toInsp('#tierI'); });
+  renderTier(); });
 // 카드 끌기: 다른 카드 위에 놓으면 그 앞에, 티어 칸 빈 곳에 놓으면 맨 뒤에
 let tcDragAt = 0;
 $('#tierC').addEventListener('pointerdown', e => { const card = e.target.closest('.tcol .mc'); if (!card || e.button > 0) return; const touch = e.pointerType !== 'mouse'; if (!touch) e.preventDefault();
@@ -1338,7 +1344,7 @@ $('#tierC').addEventListener('pointerdown', e => { const card = e.target.closest
   const mv = ev => { if (!on) { if (Math.hypot(ev.clientX - x0, ev.clientY - y0) < 6) return; if (touch) return end(); begin(); }
     g.style.left = ev.clientX + 'px'; g.style.top = ev.clientY + 'px'; const el = document.elementFromPoint(ev.clientX, ev.clientY), c = el?.closest('#tierC .mc'), col = el?.closest('#tierC .tcol');
     over?.classList.remove('drop'); overC?.classList.remove('drop'); over = c && !grp.includes(+c.dataset.sp) ? c : null; overC = !over && col ? col : null; over?.classList.add('drop'); overC?.classList.add('drop');
-    const sc = $('#tierC').closest('.scroll') || $('#tierC'), r = sc.getBoundingClientRect(); if (ev.clientY < r.top + 40) sc.scrollTop -= 14; else if (ev.clientY > r.bottom - 40) sc.scrollTop += 14; };
+    const sc = mobile() ? $('#tierC').closest('.view') : ($('#tierC').closest('.scroll') || $('#tierC')), r = sc.getBoundingClientRect(); if (ev.clientY < r.top + 40) sc.scrollTop -= 14; else if (ev.clientY > r.bottom - 40) sc.scrollTop += 14; };
   const tm = ev => { if (on) ev.preventDefault(); };
   const end = () => { clearTimeout(lp); removeEventListener('pointermove', mv); removeEventListener('pointerup', end); removeEventListener('pointercancel', end); removeEventListener('touchmove', tm); cards.forEach(c => c.classList.remove('drag')); g?.remove();
     over?.classList.remove('drop'); overC?.classList.remove('drop'); if (!on) return; tcDragAt = Date.now(); if (!over && !overC) return;
@@ -1607,6 +1613,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.30', '10월 16일', ['휴대폰 티어 화면: 카드 위에서도 위아래 스크롤, 메뉴(저장·찾기·화면 크기)는 아래로, 포켓몬 정보는 아래 창으로 뜨고 같은 포켓몬을 다시 누르면 닫힘']],
   ['2.29', '10월 16일', ['알 › 등급별 포켓몬: 티어별 전체 출현 확률 막대에 "기본값으로" 버튼']],
   ['2.28', '10월 16일', ['크기 조절 모드에서 Ctrl/⌘+S 로 크기 저장']],
   ['2.27', '10월 16일', ['크기 저장 버튼은 크기 조절 모드 막대에만, "크기 기본값"은 한 단계씩 되돌리는 "되돌리기"로 (Ctrl/⌘+Z 도)']],
