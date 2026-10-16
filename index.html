@@ -374,7 +374,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 /* 밤(19:30~5:30)에는 시간 창과 상태창을 밤하늘 색으로 */
 .clockwin,.dlg{transition:background-color .6s,color .6s}
 .boot *,.boot *::before,.boot *::after{transition:none!important}
-.boot-night #night{background-color:rgb(48,57,110)}
+.boot-night #night{background-color:rgb(64,74,130)}
 .boot-night .clockwin,.boot-night .dlg,.boot-night .mapico,.clockwin.night,.dlg.night,.hint.night,.boot-night .hint{--win:#1e2340;--win-ink:#e4e2f6;--inner:#46508a;--inner-blue:#46508a;--dlg-in:#46508a;--dim:#8e96c4;--cursor:#ffd75e;--frame:#0e1024;color:var(--win-ink)}
 .dlg.night .now b,.dlg.night .journal b{color:#ffd75e}
 .clockwin.night .t{color:#ffe9a8;text-shadow:0 0 6px rgba(255,220,120,.35)}
@@ -4821,7 +4821,7 @@ function nightHoles() {
 }
 const nightEl = $('#night'); var skyDark = skyDark || 0; const flies = [];
 /* 필드 조명: 시각별 곱하기 색 (한밤→새벽 푸른 기운→해돋이 분홍·주황→아침 노란 빛→한낮→오후 금빛→노을 주황·붉은→저녁 보라→밤) */
-const SKY = [[0, [40, 48, 100]], [3.5, [42, 50, 104]], [4.8, [70, 68, 132]], [5.6, [150, 124, 176]], [6.4, [255, 184, 160]], [7.4, [255, 224, 190]], [9, [252, 248, 236]], [11, [255, 255, 255]], [14.5, [255, 252, 240]], [16.3, [255, 228, 182]], [17.6, [252, 186, 128]], [18.5, [214, 132, 132]], [19.3, [124, 94, 156]], [20.4, [58, 64, 120]], [22, [46, 54, 108]], [24, [40, 48, 100]]];
+const SKY = [[0, [62, 72, 128]], [3.5, [64, 74, 130]], [4.8, [82, 82, 144]], [5.6, [150, 124, 176]], [6.4, [255, 184, 160]], [7.4, [255, 224, 190]], [9, [252, 248, 236]], [11, [255, 255, 255]], [14.5, [255, 252, 240]], [16.3, [255, 228, 182]], [17.6, [252, 186, 128]], [18.5, [214, 132, 132]], [19.3, [124, 94, 156]], [20.4, [74, 82, 142]], [22, [66, 76, 132]], [24, [62, 72, 128]]];   /* v4.23 경완: 한밤이 너무 어두움 → 밤 색을 밝게 */
 function sky() {
   const h = hour();
   { let i = 0; while (i < SKY.length - 2 && h >= SKY[i + 1][0]) i++; const [h0, c0] = SKY[i], [h1, c1] = SKY[i + 1], k = Math.min(1, Math.max(0, (h - h0) / (h1 - h0))), e = k * k * (3 - 2 * k);
@@ -4990,13 +4990,13 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, energy: m.energy, hunger: m.hunger, social: m.social, joy: m.joy, joyH: m.joyH || 0, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, dexNew: [...(S.dexNew || [])] };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, dexNew: [...(S.dexNew || [])] };
 }
 let saveFrozen = false;
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.tree = d.tree || null; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
+  S.lockT = d.lockT || 0; S.tree = d.tree || null; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.autoInc = !!d.autoInc;   /* v4.23 경완: 부화기 자동 채우기가 다시 켜면 꺼지던 문제 — 저장에 빠져 있었다 */ S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
@@ -5232,7 +5232,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.22';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.23';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6646,7 +6646,7 @@ function collectEggs(km, place, tags, pf) {
     if (P.l >= PITY_L) g = 5; else if (P.e >= PITY_E) g = Math.max(g, 4);
     if (g === 5) P.l = 0; if (g >= 4) P.e = 0;
     const e = { id: S.eid++, g, t, isNew: true }; const pl = pf ? pf() : place ? { n: place, tags } : null; if (pl?.n) e.place = pl.n; if (pl?.tags?.length) e.tags = pl.tags; S.bag.push(e); got.push(g); got.eggs.push(e); }
-  autoInc(); return got;
+  autoInc(); if (n) try { notiSoon(400); } catch (e) {} return got;   /* v4.23 경완: 알을 주우면 앱을 다시 열지 않아도 바로 알림 */
 }
 function gotLog(got, how, place) {
   if (!got.length) return;
@@ -6680,7 +6680,7 @@ function feedKm(km, fr = km * WALK_FR) {
   S.totalKm += km;
   // 거리가 다 찬 알은 저절로 깨지지 않고 '부화 준비'가 된다 → 부화기에서 눌러 부화
   let ready = 0;
-  for (const e of S.eggs) { const was = e.km >= e.need; e.km += km; if (!was && e.km >= e.need) ready++; }
+  for (const e of S.eggs) { const was = e.km >= e.need; e.km += km; if (!was && e.km >= e.need) ready++; } if (ready) try { notiSoon(400); } catch (e) {}
   if (ready) log(`알 ${ready}개가 움직이기 시작했다! 부화기에서 부화시켜 보자.`, [], true);
   for (const b of S.buds) { const P = boxOf(b.pid); if (evoKids(b.sp, P).length) b.km = Math.max(b.km, Math.min(evoNeed(b), b.km + km)); if (P) { P.km = b.km; P.runKm = (P.runKm || 0) + km; } }   // v4.07 경완: 진화 거리를 채우면 진화하기 전까지 더 늘지 않는다 (같이 달린 거리 runKm 은 계속)
 }
@@ -7219,7 +7219,7 @@ function lookBorn(pid) { closeToggles(); hideSheets(); openMgr(); setMgrTab('box
 // ---------- 앱을 켰을 때 알림 ----------
 // 새로 주운 알(가방의 NEW, 아직 알리지 않은 것)과 부화 준비로 바뀐 알을 한 창에 보여 준다
 let notiT = 0, notiOpen = false;
-function notiSoon(ms = 1500) { clearTimeout(notiT); notiT = setTimeout(notiShow, ms); }
+function notiSoon(ms = 500) { clearTimeout(notiT); notiT = setTimeout(notiShow, ms); }
 function notiShow() {
   if (notiOpen || document.hidden) return;
   if (hatching || evolving) { notiSoon(2000); return; }
@@ -7790,7 +7790,7 @@ async function start(data) {
   if (d && d.mons && (d.mons.length || d.unlocked)) await restore(d); else await fresh();
   if (bgmOn && bgm.id !== S.bgm) bgmStart();
   Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp)); menuDots();
-  migrateBox(); undoAutoHatch(); syncNeed(); renderGold(); notiSoon(1800); sky(); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
+  migrateBox(); undoAutoHatch(); syncNeed(); renderGold(); notiSoon(700); sky(); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
   requestAnimationFrame(t => { last = t; frame(t); });
   // 아이폰 앱에 준비됐다고 알리고, 현재 알 현황을 바로 보낸다
   window.pokeRunReady = true; postNative();
