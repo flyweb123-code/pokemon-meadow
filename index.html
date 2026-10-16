@@ -5110,7 +5110,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.69';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.70';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5962,6 +5962,29 @@ const TIER = {}, TIER_SPS = Array.from({ length: 11 }, () => []), TIER_Z = {}, F
 // 알 등급마다 나오는 티어 비율(%). 1~3 티어는 에픽·전설 알에서만. 각 등급의 가장 낮은 티어(일반 제외)는 '아래로 넘친' 칸이라 그 티어 안에서 강한 종이 잘 나온다
 const EGG_LIST = [null, null, null, null, null, null];   // v3.64 작업실: 알 등급마다 [[번호, 기본 확률], …] 을 직접 정하면 티어 대신 이걸로 뽑는다
 const EGG_TIERS = [null, { 10: 55, 9: 30, 8: 15 }, { 9: 30, 8: 35, 7: 25, 6: 10 }, { 7: 30, 6: 35, 5: 25, 4: 10 }, { 4: 30, 3: 50, 2: 15, 1: 5 }, { 3: 25, 2: 40, 1: 35 }];
+// v3.70 경완: 티어 경계 보장. 알 1개를 주웠을 때의 전체 확률로 보면, 어느 티어의 가장 흔한 종도 바로 다음(더 흔한) 티어의 가장 드문 종보다 드물게 나온다.
+// 정한 티어 비율에서 넘치는 티어 몫만 줄이고, 줄인 만큼은 그 알의 다른 티어가 나눠 가진다. 돌려주는 값이 실제로 뽑을 때 쓰는 비율
+function tierGuard(ET, O, SPS, Z, EL) {
+  // 티어마다 두 값을 찾는다: m(티어 몫 배수, 모든 알에 똑같이 곱하고 알마다 합을 원래대로) · k(티어 안 차이, 처음 1.4 = 약 4배). 겹치는 두 티어가 있으면 드문 쪽 몫은 낮추고 흔한 쪽은 올리며, 두 티어 안 차이를 조금씩 줄인다
+  const G = [1, 2, 3, 4, 5].filter(g => !EL?.[g]?.length), T0 = [], fixed = {}, m = {}, K = {};
+  for (let g = 1; g <= 5; g++) { const L = EL?.[g]; if (!L?.length) continue; const s = L.reduce((a, r) => a + r[1], 0); if (s > 0) for (const [sp, p] of L) fixed[sp] = (fixed[sp] || 0) + O[g - 1] * p / s; }
+  for (const g of G) { T0[g] = {}; for (const t in ET[g] || {}) if (ET[g][t] > 0 && SPS[t]?.length) T0[g][t] = +ET[g][t]; }
+  const tiers = []; for (let t = 1; t < SPS.length; t++) if (SPS[t]?.length && G.some(g => T0[g][t])) { tiers.push(t); m[t] = 1; K[t] = 1.4; }
+  const spill = g => { const ts = Object.keys(T0[g]).map(Number); return g >= 2 && ts.length ? Math.max(...ts) : 0; };
+  const eff = () => { const E = [null]; for (let g = 1; g <= 5; g++) { if (!T0[g]) { E[g] = null; continue; } const tot0 = Object.values(T0[g]).reduce((a, b) => a + b, 0), raw = {}; let tot = 0; for (const t in T0[g]) { raw[t] = T0[g][t] * m[t]; tot += raw[t]; } for (const t in raw) raw[t] *= tot0 / tot; E[g] = raw; } return E; };
+  const prob = E => { const P = { ...fixed }; for (const g of G) { const tot = Object.values(E[g]).reduce((a, b) => a + b, 0), sl = spill(g); if (!tot) continue;
+    for (const t in E[g]) { const w = SPS[t].map(sp => Math.exp((+t === sl ? 1 : -1) * K[t] * (Z[sp] ?? .5))), s = w.reduce((a, b) => a + b, 0); SPS[t].forEach((sp, i) => { P[sp] = (P[sp] || 0) + O[g - 1] * E[g][t] / tot * w[i] / s; }); } } return P; };
+  for (let it = 0; it < 400; it++) { const P = prob(eff()); let bad = 0;
+    for (let k = 0; k < tiers.length - 1; k++) { const t = tiers[k], u = tiers[k + 1]; let minU = Infinity, maxT = 0;
+      for (const sp of SPS[u]) if (P[sp] > 0) minU = Math.min(minU, P[sp]); for (const sp of SPS[t]) maxT = Math.max(maxT, P[sp] || 0);
+      if (!isFinite(minU) || maxT <= minU * .95) continue; bad++; const r = Math.min(4, maxT / (minU * .95)) ** .25;
+      m[t] /= r; m[u] *= r; K[t] = Math.max(0, K[t] * .96 - .005); K[u] = Math.max(0, K[u] * .96 - .005); }
+    if (!bad) break; }
+  const out = eff(); out.K = K; return out;
+}
+let EGG_EFF = null;
+const eggEff = g => (EGG_EFF || (EGG_EFF = tierGuard(EGG_TIERS, ODDS, TIER_SPS, TIER_Z, EGG_LIST)))[g];
+const eggEffK = () => (eggEff(1), EGG_EFF.K);
 const MAX_BUDS = 3;
 // 진화 조건(species ev): 없음 = 달린 거리로 진화, 'fr' = 친밀도도 높아야, 'fr:day/night' = 낮/밤에, 그 밖(돌·통신교환 등) = 거리로는 안 됨. eg 1 암컷만, 2 수컷만
 let FR_EVO = 160;
@@ -6775,7 +6798,7 @@ function themeW(sp, ths) { const d = SPECIES[sp]; let v = 1;
   for (const th of ths) { if (d.t.some(t => th.t.includes(t))) v += th === NIGHT ? 4 : 12; if (d.hab && th.hab?.includes(d.hab)) v += 4; if (th.fx && d.fx && th.fx.test(d.fx)) v += 8; if (th.sp && th.sp.includes(sp)) v += 20; }
   return v; }
 function rollEgg(e) {
-  const tab = EGG_TIERS[e.g] || EGG_TIERS[1], ths = eggThemes(e).map(k => THEMES[k] || NIGHT);
+  const tab = eggEff(e.g) || EGG_TIERS[e.g] || EGG_TIERS[1], ths = eggThemes(e).map(k => THEMES[k] || NIGHT);
   const EL = EGG_LIST[e.g]; if (EL?.length) {   // 작업실에서 직접 정한 알: 정한 확률 × 장소 테마 × 최근 부화
     const w = EL.map(([sp, p]) => p * themeW(sp, ths) * (S.recentHatch?.includes(sp) ? .3 : 1)); let q = Math.random() * w.reduce((a, b) => a + b, 0), i = 0;
     while (i < EL.length - 1 && (q -= w[i]) > 0) i++; return EL[i][0]; }
@@ -6792,7 +6815,7 @@ function rollEgg(e) {
       if (th.fx && d.fx && th.fx.test(d.fx)) v += 8;
       if (th.sp && th.sp.includes(sp)) v += 20;
     }
-    v *= Math.exp((t === spill ? 1.4 : -1.4) * TIER_Z[sp]);
+    v *= Math.exp((t === spill ? 1 : -1) * (eggEffK()?.[t] ?? 1.4) * TIER_Z[sp]);   // v3.70: 티어 안 차이도 경계 보장 값으로
     if (S.recentHatch?.includes(sp)) v *= .3;   // 최근 부화한 12종은 덜 나온다
     return v;
   });
@@ -7523,7 +7546,7 @@ function frameIn(now) {
 const TIER0 = { ...TIER };
 let CFG = { ver: 0 };
 const TIER_ORD = {};   // v3.69 작업실: 티어마다 순서를 직접 정하면 [번호…] (앞일수록 드물게). 없으면 가족 최고 종족값 순
-function retier(ov, ord) {
+function retier(ov, ord) { EGG_EFF = null;
   if (ord !== undefined) { for (const k of Object.keys(TIER_ORD)) delete TIER_ORD[k]; for (const [t, L] of Object.entries(ord || {})) if (Array.isArray(L)) TIER_ORD[t] = L.map(Number); }
   for (const k of Object.keys(TIER)) TIER[k] = TIER0[k];
   for (const [k, t] of Object.entries(ov || {})) if (TIER[k] != null && t >= 1 && t <= 10) TIER[k] = t;
@@ -7538,6 +7561,7 @@ function setLayoutIn(L) {
   LAYOUT.kinds = L.kinds && typeof L.kinds === 'object' ? JSON.parse(JSON.stringify(L.kinds)) : {};
   for (const k of ['path', 'bushes', 'puddles', 'rocks', 'mush', 'flowers']) if (Array.isArray(L[k])) LAYOUT[k].splice(0, LAYOUT[k].length, ...JSON.parse(JSON.stringify(L[k])));
   LAYOUT.look = L.look && typeof L.look === 'object' ? JSON.parse(JSON.stringify(L.look)) : {};
+  if (Array.isArray(L.hide) && L.hide.length) LAYOUT.hide = [...L.hide]; else delete LAYOUT.hide;   // v3.70: 작업실에서 지운 소품 종류 (목록에서 숨김)
   FLOWERS.splice(0, FLOWERS.length, ...bedFlowers(FLOWERBED), ...LAYOUT.flowers);
 }
 function applyBal(b) {
@@ -7556,7 +7580,7 @@ function applyCfg(c) {
     if (d.eggTiers) for (let g = 1; g <= 5; g++) if (d.eggTiers[g]) EGG_TIERS[g] = d.eggTiers[g];
     for (let g = 1; g <= 5; g++) { const L = d.eggList?.[g]; EGG_LIST[g] = Array.isArray(L) && L.length ? L.filter(r => Array.isArray(r) && SPECIES[r[0]] && r[1] > 0) : null; }
     retier(d.tierOv, d.tierOrd || {}); if (d.bal) applyBal(d.bal); if (d.layout) setLayoutIn(d.layout);
-    CFG = c; $('#appVer').textContent = 'v' + APP_VER + (c.ver ? ' · 데이터 ' + c.ver : '');
+    EGG_EFF = null; CFG = c; $('#appVer').textContent = 'v' + APP_VER + (c.ver ? ' · 데이터 ' + c.ver : '');
   } catch (e) { console.warn('config', e); }
 }
 async function loadCfg() {
@@ -7581,7 +7605,7 @@ async function start(data) {
 }
 // ---------- 작업실: 게임 화면을 작업실 안에서 미리보기·편집할 때만 (?studio) ----------
 if (/[?&]studio/.test(location.search)) {
-  const GAL = /studio=gallery/.test(location.search);
+  const GAL = /studio=gallery/.test(location.search) || location.hash === '#gallery';   // v3.70: #gallery 면 게임 파일을 다시 받지 않는다 (같은 주소라 캐시)
   const st = document.createElement('style');
   st.textContent = `
 #stHands{position:absolute;inset:0;z-index:3000;display:none;touch-action:none}#stHands.on{display:block}
@@ -7617,7 +7641,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   notiSoon = function () {};   // 작업실에선 '새 소식' 창을 띄우지 않는다
   if (GAL) { save = function () {}; document.documentElement.classList.add('st-gal'); }
   const api = window.__studio = {
-    SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
+    tierGuard, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
     ICO: { berry: ICO_BERRY, brush: ICO_BRUSH, hand: ICO_HAND, pen: PEN, egg: EGG_SVG },   // v3.66: 작업실이 게임 아이콘을 그대로 쓴다
     get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]) }; },
     get cfg() { return CFG; },
@@ -7635,7 +7659,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   const NAME = { pond: '연못', fire: '모닥불', bed: '꽃밭', tree: '열매나무', perch: '횃대', stump: '그루터기', bushes: '덤불', puddles: '웅덩이(비 올 때)', rocks: '바위', mush: '버섯', path: '길', flowers: '꽃·풀' };
   const FNAME = { daisy: '데이지', pink: '분홍꽃', tulip: '튤립', bell: '파랑꽃', sun: '해바라기', grass: '풀', tall: '키 큰 풀', reed: '갈대', cat: '부들' };
   const BAKED = new Set(['pond', 'fire', 'bed', 'stump', 'rocks', 'mush', 'path', 'kinds']);
-  function setLayout(L) { for (const k of KEYS_OBJ) if (L[k]) { delete LAYOUT[k].lk; Object.assign(LAYOUT[k], L[k]); } LAYOUT.kinds = JSON.parse(JSON.stringify(L.kinds || {})); for (const k of KEYS_ARR) if (L[k]) LAYOUT[k].splice(0, LAYOUT[k].length, ...JSON.parse(JSON.stringify(L[k]))); LAYOUT.look = JSON.parse(JSON.stringify(L.look || {})); }
+  function setLayout(L) { for (const k of KEYS_OBJ) if (L[k]) { delete LAYOUT[k].lk; Object.assign(LAYOUT[k], L[k]); } LAYOUT.kinds = JSON.parse(JSON.stringify(L.kinds || {})); for (const k of KEYS_ARR) if (L[k]) LAYOUT[k].splice(0, LAYOUT[k].length, ...JSON.parse(JSON.stringify(L[k]))); LAYOUT.look = JSON.parse(JSON.stringify(L.look || {})); if (Array.isArray(L.hide) && L.hide.length) LAYOUT.hide = [...L.hide]; else delete LAYOUT.hide; }
   let bgQ = false, propQ = false;
   function rebuild(bg) {
     if (bg) { if (!bgQ) { bgQ = true; requestAnimationFrame(() => { bgQ = false; drawBg(); document.querySelectorAll('.glint').forEach(g => g.remove()); addGlints(); }); } }
@@ -7694,7 +7718,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     drag.x += dx * scale; drag.y += dy * scale; drag.moved = true; drag.t.mv(dx, dy); changed(drag.t.key); });
   hands.addEventListener('pointerup', () => { const tap = drag && !drag.moved && !drag.t.berry; if (drag && !drag.moved) undo.pop(); drag = null; renderHands(); if (tap) api.onTap?.(selInfo()); });
   hands.addEventListener('pointerdown', ev => { if (ev.target === hands) { sel = null; renderHands(); } });
-  function changed(key) { rebuild(BAKED.has(key)); renderHands(); api.onLayout?.(JSON.parse(snap())); }
+  function changed(key) { rebuild(BAKED.has(key)); renderHands(); api.onLayout?.(JSON.parse(snap()), undo.length); }
   api.edit = on => { hands.classList.toggle('on', !!on); document.body.classList.toggle('stEdit', !!on); if (!on) { sel = null; } else if (S.tree) { S.tree.n = TSL().length; treeBerries(); } renderHands(); };   // v3.62: 편집 중엔 맵만 (포켓몬·상태창 숨김)
   const LOOKBG = new Set(['fire', 'stump', 'rock']);
   // v3.63: 고른 소품 하나만 모양 바꾸기 · 내 분류로 저장
@@ -7714,17 +7738,30 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   api.setKind = (id, nv) => { const K = LAYOUT.kinds?.[id]; if (!K) return; undo.push(snap()); if (nv.n != null) K.n = String(nv.n).slice(0, 12) || K.n; if (nv.lk) K.lk = { ...full(K.lk), ...nv.lk }; changed('kinds'); };
   const eachInst = f => { for (const key of ['bushes', 'puddles', 'rocks', 'flowers']) for (const v of LAYOUT[key]) f(key, v); };
   api.delKind = id => { const K = LAYOUT.kinds?.[id]; if (!K) return; undo.push(snap()); eachInst((key, v) => { if (ilk(key, v) === id) setIlk(key, v, plain(K.lk) ? null : { ...K.lk }); }); delete LAYOUT.kinds[id]; changed('kinds'); };   // 지운 분류의 소품은 모양을 그대로 갖는다
+  // v3.70 경완: 소품 종류를 게임 데이터에서 아예 지운다 (맵의 그 소품 모두 + 목록에서 숨김). 되살리기는 restoreBase
+  const isBase = (k, key, v) => key === 'flowers' ? v[0] === k : key === 'rocks' ? (k === 'rockS' ? v[4] === 1 : k === 'rockL' ? v[4] !== 1 : false) : key === 'bushes' ? k === 'bush' : key === 'puddles' ? k === 'puddle' : key === 'mush' ? k === 'mush' : false;
+  api.delBase = k => { if (!api.ADD.some(r => r[0] === k)) return; undo.push(snap()); if (undo.length > 60) undo.shift();
+    for (const key of ['flowers', 'rocks', 'bushes', 'puddles', 'mush']) { const A0 = LAYOUT[key]; for (let i = A0.length - 1; i >= 0; i--) if (isBase(k, key, A0[i])) A0.splice(i, 1); }
+    for (const [id, K] of Object.entries(LAYOUT.kinds || {})) if (K.b === k) delete LAYOUT.kinds[id];
+    LAYOUT.hide = [...new Set([...(LAYOUT.hide || []), k])]; sel = null; rebuild(true); changed('kinds'); };
+  api.restoreBase = k => { if (!LAYOUT.hide?.includes(k)) return; undo.push(snap()); LAYOUT.hide = LAYOUT.hide.filter(x => x !== k); if (!LAYOUT.hide.length) delete LAYOUT.hide; changed('kinds'); };
+  api.delKindAll = id => { if (!LAYOUT.kinds?.[id]) return; undo.push(snap()); if (undo.length > 60) undo.shift();
+    for (const key of ['bushes', 'puddles', 'rocks', 'flowers']) { const A0 = LAYOUT[key]; for (let i = A0.length - 1; i >= 0; i--) if (ilk(key, A0[i]) === id) A0.splice(i, 1); }
+    delete LAYOUT.kinds[id]; sel = null; rebuild(true); changed('kinds'); };
+  api.addKind = (b, name, lk) => { if (!api.ADD.some(r => r[0] === b) || b === 'mush') return null; undo.push(snap()); LAYOUT.kinds = LAYOUT.kinds || {}; const id = 'k' + Date.now().toString(36);
+    LAYOUT.kinds[id] = { b, n: String(name || '').slice(0, 12) || '내 소품', lk: full(lk) }; changed('kinds'); return id; };
   const kindCount = id => { let n = 0; eachInst((key, v) => { if (ilk(key, v) === id) n++; }); return n; };
   api.look = k => ({ s: 1, h: 0, c: 100, b: 100, ...(lookOf(k) || {}) });
   api.setLook = (k, v) => { undo.push(snap()); if (undo.length > 60) undo.shift(); const L = { ...api.look(k), ...v }; if (L.s === 1 && !L.h && L.c === 100 && L.b === 100) delete LAYOUT.look[k]; else LAYOUT.look[k] = L; changed(LOOKBG.has(k) ? 'rocks' : 'flowers'); };
   api.lookIcon = (k, LL) => { if (LAYOUT.kinds?.[k]) { const K = LAYOUT.kinds[k]; return api.lookIcon(K.b, K.lk); } const cv = k === 'tree' ? ART.tree() : k === 'perch' ? ART.perch() : k === 'bush' ? ART.bush() : k === 'stump' ? ART.stump() : k === 'rock' || k === 'rockS' ? ART.rock(10, 7, 13 * 977, 1) : k === 'rockL' ? ART.rock(16, 10, 17 * 977, 2) : SPR.flw[k] ? ART.flower(k) : null; const L = LL !== undefined ? LL : lookOf(k === 'rockS' || k === 'rockL' ? 'rock' : k); return cv ? tintCv(cv, L, PETAL[k]).toDataURL() : k === 'fire' ? (LL ? sprCanvasTint(SPR.flame, LL) : SPR.flame) : k === 'puddle' ? (LL ? SPR.pudArt(LL) : SPR.puddle) : ''; };
   const sprCanvasTint = (src, L) => src;   // 모닥불 불꽃 그림은 6장 묶음이라 미리보기는 그대로
   api.showPath = on => hands.classList.toggle('path', !!on);
-  api.showHud = on => hud.classList.toggle('on', !!on);
+  api.showHud = on => { const b = hud.querySelector('b'); Object.assign(b.style, { left: XL + 'px', right: 'auto', width: (XR - XL) + 'px', textAlign: 'center', padding: '2px 0 0' }); hud.classList.toggle('on', !!on); };   // v3.70: 보이는 폭 가운데에 (글이 잘리지 않게)
   api.layout = () => JSON.parse(snap());
   api.defaultLayout = () => JSON.parse(JSON.stringify(DEFAULT || LAYOUT));
-  api.setLayout = L => { undo.push(snap()); setLayout(L); sel = null; rebuild(true); renderHands(); api.onLayout?.(JSON.parse(snap())); };
-  api.undo = () => { if (!undo.length) return; setLayout(JSON.parse(undo.pop())); sel = null; rebuild(true); renderHands(); api.onLayout?.(JSON.parse(snap())); };
+  api.setLayout = L => { undo.push(snap()); setLayout(L); sel = null; rebuild(true); renderHands(); api.onLayout?.(JSON.parse(snap()), undo.length); };
+  api.undo = () => { if (!undo.length) return; setLayout(JSON.parse(undo.pop())); sel = null; rebuild(true); renderHands(); api.onLayout?.(JSON.parse(snap()), undo.length); };
+  api.undoN = () => undo.length;
   api.del = () => { if (!sel || sel.i < 0 || sel.key === 'path') return; undo.push(snap()); const k = sel.key; LAYOUT[k].splice(sel.i, 1); sel = null; changed(k === 'flowers' || k === 'bushes' || k === 'puddles' ? k : 'rocks'); };
   api.nudge = (dx, dy) => { const t = sel && items().find(t => t.key === sel.key && t.i === sel.i); if (!t) return; undo.push(snap()); t.mv(dx, dy); changed(sel.key); };
   api.ADD = [['daisy', '데이지'], ['pink', '분홍꽃'], ['tulip', '튤립'], ['bell', '파랑꽃'], ['sun', '해바라기'], ['grass', '풀'], ['tall', '키 큰 풀'], ['rockS', '작은 바위'], ['rockL', '큰 바위'], ['mush', '버섯'], ['bush', '덤불'], ['puddle', '웅덩이']];
@@ -7745,7 +7782,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   api.pick = (key, i = -1) => { if (!(key in LAYOUT)) return; sel = { key, i }; renderHands(); api.onSel?.(selInfo(), undo.length); };
   api.cat = () => { const n = k => LAYOUT[k].length, nf = k => LAYOUT.flowers.filter(f => f[0] === k).length, nr = sz => LAYOUT.rocks.filter(r => r[4] === sz).length;
     return { one: [['tree', '열매나무', SPR.tree], ['perch', '횃대', SPR.perch], ['fire', '모닥불', SPR.flame, 6], ['bed', '꽃밭', SPR.flw.sun.src], ['stump', '그루터기', api.lookIcon('stump')], ['pond', '연못', SPR.lilyF]],
-      add: api.ADD.map(([k, nm]) => [k, nm, api.lookIcon(k) || api.addIcon(k), SPR.flw[k] ? nf(k) : k === 'bush' ? n('bushes') : k === 'puddle' ? n('puddles') : k === 'mush' ? n('mush') : nr(k === 'rockS' ? 1 : 2)]),
+      hid: [...(LAYOUT.hide || [])], add: api.ADD.filter(([k]) => !LAYOUT.hide?.includes(k)).map(([k, nm]) => [k, nm, api.lookIcon(k) || api.addIcon(k), SPR.flw[k] ? nf(k) : k === 'bush' ? n('bushes') : k === 'puddle' ? n('puddles') : k === 'mush' ? n('mush') : nr(k === 'rockS' ? 1 : 2)]),
       mine: Object.entries(LAYOUT.kinds || {}).map(([id, K]) => [id, K.n, api.lookIcon(id), kindCount(id), K.b]) }; };
   // ---------- 포켓몬 풀어놓기: 작업실 목록에서 끌어 온 포켓몬. 소품 위면 빛나고, 놓으면 그 소품 반응 ----------
   const toField = (cx, cy) => { const r = stage.getBoundingClientRect(); return { x: (cx - r.left) / scale, y: (cy - r.top) / scale }; };
@@ -7783,8 +7820,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   async function gallery() {
     const g = document.createElement('div'); g.id = 'stGal'; document.body.append(g);
     const reps = [25, 1, 4, 7, 133, 143, 149, 150];
-    await Promise.all(reps.map(sp => ensureSprite(sp).catch(() => {})));
-    const cell = (sp, cls, rk, fr, label) => `<div class="it"><button class="pk${cls}" style="--shue:${shinyHue(sp)}deg"><span class="rk ${rk}">${rk}</span><img alt="" src="${thumbOf(sp) || ''}"><span class="nm">${esc(DEX[sp].n)}${cls.includes('shiny') ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(fr)}</span></button>${label}</div>`;
+    const cell = (sp, cls, rk, fr, label) => `<div class="it"><button class="pk${cls}" style="--shue:${shinyHue(sp)}deg"><span class="rk ${rk}">${rk}</span><img alt="" data-gsp="${sp}" src="${thumbOf(sp) || ''}"><span class="nm">${esc(DEX[sp].n)}${cls.includes('shiny') ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(fr)}</span></button>${label}</div>`;
     const tr = $('#pfPage .tr-card');
     const card = i => { const c = tr.cloneNode(true); c.querySelectorAll('[id]').forEach(e => e.removeAttribute('id')); c.className = 'tr-card r' + i + (i >= 6 ? ' tr-shine' : '') + (i >= 8 ? ' tr-spark' : ''); c.querySelector('.tr-badge b').textContent = TR_LV[i][1]; const inp = c.querySelector('input'); if (inp) { inp.setAttribute('value', '경완'); inp.style.width = '3.3em'; } const ow = c.querySelector('.tr-ow'); if (ow) ow.style.backgroundImage = `url(${TR_OW.m})`; const sx = c.querySelector('.tr-sex'); if (sx) { sx.className = 'tr-sex m'; sx.textContent = '♂'; } return `<div class="it" style="justify-items:stretch;text-align:left">${c.outerHTML}<span>${i}단계 · 도감 ${TR_LV[i][0]}종부터</span></div>`; };
     const pix = (src, w, h, lab) => `<div class="it"><div class="chk"><div class="pix" style="background-image:url(${src});width:${w}px;height:${h}px"></div></div>${lab}</div>`;
@@ -7804,6 +7840,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
 <h3>트레이너</h3>
 <div class="row">${['m', 'f'].map(s => pix(TR_OW[s], 32, 192, s === 'm' ? '남자' : '여자')).join('')}</div>
 `;
+    for (const sp of reps) ensureSprite(sp).then(() => g.querySelectorAll(`img[data-gsp="${sp}"]`).forEach(i => { i.src = thumbOf(sp) || ''; })).catch(() => {});   // v3.70: 그림 모음을 먼저 보여 주고 포켓몬 그림은 받는 대로
   }
   const s0 = start;
   start = async function (d) {
