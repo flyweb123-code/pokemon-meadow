@@ -137,7 +137,7 @@ table.t th{font-family:var(--px);font-size:11px;font-weight:400;color:var(--mute
 .tsb .sx{position:absolute;top:2px;right:2px;width:16px;height:16px;padding:0;border:0;border-radius:3px;background:rgba(0,0,0,.4);color:#fff;font-size:11px;line-height:16px;cursor:pointer;opacity:0}.tsb .sg:hover .sx{opacity:.85}.tsb .sx:hover{background:var(--bad);opacity:1}@media (hover:none){.tsb .sx{opacity:.7}}
 .tsb .bk{position:absolute;top:-6px;bottom:-6px;width:18px;margin-left:-9px;cursor:ew-resize;touch-action:none;z-index:2;display:grid;place-items:center}.tsb .bk::after{content:"";width:6px;height:100%;background:#fff;border:2px solid var(--deep);border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.4)}.tsb .bk:hover::after,.tsb .bk.on::after{background:var(--acc)}
 .tsl{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--soft);margin:6px 0 4px}.tsl span{display:inline-flex;align-items:center;gap:5px}.tsl i{width:10px;height:10px;border-radius:2px}.tsl em{font-style:normal;color:var(--warn);font-size:11px}
-.trs{display:grid;gap:6px}.trw .bar.tdr{height:16px;cursor:ew-resize;touch-action:none}.trw .bar.tdr.on{outline:2px solid var(--acc)}.trw .eff{grid-column:2/-1;font-size:11px;color:var(--warn);justify-self:end;margin-top:-4px}.trw .bar.tdr{position:relative;overflow:visible}.trw .tk{position:absolute;top:50%;width:14px;height:22px;margin:-11px 0 0 -7px;background:#fff;border:2px solid var(--deep);border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.4);pointer-events:none}.trw .tk::after{content:'';position:absolute;inset:4px 3px;background:repeating-linear-gradient(90deg,#9aa 0 1px,transparent 1px 3px)}.trw .tx{background:none;border:0;color:var(--soft);font:inherit;font-size:17px;line-height:1;cursor:pointer;padding:2px 4px}.trw .tx:hover:not(:disabled){color:var(--bad)}.trw .tx:disabled{opacity:.3;cursor:default}.trw{display:grid;grid-template-columns:56px minmax(0,1fr) 92px 22px;align-items:center;gap:10px}.trw .iw{display:flex;align-items:center;gap:4px}.trw .iw input{min-width:0;flex:1}.trw .iw span{font-size:12px;color:var(--mute)}
+.tcol h3 .teg{display:inline-flex;gap:2px;align-items:center;margin:0 auto 0 8px}.tcol h3 .teg .egg{width:15px;height:18px}.trs{display:grid;gap:6px}.trw .bar.tdr{height:16px;cursor:ew-resize;touch-action:none}.trw .bar.tdr.on{outline:2px solid var(--acc)}.trw .eff{grid-column:2/-1;font-size:11px;color:var(--warn);justify-self:end;margin-top:-4px}.trw .bar.tdr{position:relative;overflow:visible}.trw .tk{position:absolute;top:50%;width:14px;height:22px;margin:-11px 0 0 -7px;background:#fff;border:2px solid var(--deep);border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.4);pointer-events:none}.trw .tk::after{content:'';position:absolute;inset:4px 3px;background:repeating-linear-gradient(90deg,#9aa 0 1px,transparent 1px 3px)}.trw .tx{background:none;border:0;color:var(--soft);font:inherit;font-size:17px;line-height:1;cursor:pointer;padding:2px 4px}.trw .tx:hover:not(:disabled){color:var(--bad)}.trw .tx:disabled{opacity:.3;cursor:default}.trw{display:grid;grid-template-columns:56px minmax(0,1fr) 92px 22px;align-items:center;gap:10px}.trw .iw{display:flex;align-items:center;gap:4px}.trw .iw input{min-width:0;flex:1}.trw .iw span{font-size:12px;color:var(--mute)}
 .tadd{display:flex;flex-wrap:wrap;align-items:center;gap:4px}.tadd .chip{min-height:26px;padding:0 4px}
 .pr:hover{background:#30343f}.pr.on{background:var(--chip);box-shadow:inset 3px 0 0 var(--acc)}
 .pr img{width:36px;height:36px;object-fit:contain;image-rendering:pixelated}
@@ -197,6 +197,7 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 body.szmode #mapBox{background:#10141a}body.szmode #szBar{background:rgba(22,25,32,.88);user-select:none;-webkit-user-select:none}body.szmode #phone{left:0;top:0;right:0;bottom:0;padding:0!important;border:0!important;width:auto!important;height:auto!important;transform:none!important;border-radius:0!important;box-shadow:none}
 body.szmode #mapI>:not(#szPane){display:none!important}body.szmode #mapI{display:grid;grid-template-rows:minmax(0,1fr);align-content:stretch;overflow:hidden}#szPane{display:none}body.szmode #szPane{display:grid;grid-template-rows:auto auto auto minmax(0,1fr);gap:8px;min-height:0}
 #szPane .grid{overflow:auto;align-content:start;grid-auto-rows:70px;grid-template-columns:repeat(auto-fill,minmax(60px,1fr))}#szPane .mc{aspect-ratio:auto;height:70px}#szPane .mc img{bottom:14px;max-height:50px}#szPane .mc.used{opacity:.4;filter:grayscale(.8);box-shadow:inset 0 2px 6px rgba(0,0,0,.6);transform:translateY(1px)}#szA{width:110px;accent-color:var(--acc)}.szal{color:var(--fg);font-size:12.5px;padding:4px 10px;border:1px solid var(--chipb);border-radius:6px;background:var(--deep)}body.szmode .tools>:not(#szMode):not(.sp){opacity:.35;pointer-events:none;filter:grayscale(.6)}body.szmode #szMode{background:var(--acc);color:var(--accfg);border-color:var(--acc)}#szBar label{display:inline-flex;align-items:center;gap:6px}#szR{width:110px;accent-color:var(--acc)}#szPane .zh b{font-family:var(--px);font-weight:400;color:var(--acc);font-size:13px}body.szmode #sbar,body.szmode #safeZ,body.szmode #hotPop,body.szmode #ebar,body.szmode #gLoad{display:none!important}
+.szp{display:inline-flex;align-items:center;gap:4px}.szp input{width:90px}
 #szBar{position:absolute;left:0;right:0;top:0;height:52px;display:flex;align-items:center;gap:8px;padding:0 12px;background:var(--panel);border-bottom:1px solid var(--line);z-index:2;overflow-x:auto;white-space:nowrap}#szBar>b{font-family:var(--px);font-weight:400;color:var(--acc);margin-right:6px}#szBar .sp{flex:1}#szSel{display:inline-flex;align-items:center;gap:6px}
 #spx{position:fixed;z-index:56;left:8px;top:8px;height:400px;width:252px;background:var(--panel);border:1px solid var(--chipb);border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:10px;display:grid;grid-template-rows:auto auto auto minmax(0,1fr);gap:8px}
 #spx .zh{display:flex;align-items:center;gap:8px}#spx .zh b{flex:1;font-family:var(--px);font-weight:400;color:var(--acc);font-size:13px}
@@ -449,7 +450,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.32';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.33';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -594,13 +595,13 @@ function effP(o, p) { const [a, b] = p.split('.');
   if (a === 'eggTiers') return (o.eggTiers || ORIG.eggTiers)[b]; if (a === 'eggList') return o.eggList && b in o.eggList ? o.eggList[b] : (ORIG.eggList?.[b] || null);
   if (a === 'bal') return o.bal && b in o.bal ? o.bal[b] : ORIG.bal[b]; if (a === 'pity') return { ...ORIG.pity, ...(o.pity || {}) };
   if (a === 'eggEx') return o.eggEx && b in o.eggEx ? o.eggEx[b] || [] : (ORIG.eggEx?.[b] || []);
-  if (a === 'tierOv' || a === 'tierOrd') return o[a] || {}; if (a === 'bub') return o.bub ?? ORIG.bub ?? {}; if (a === 'monSc') return o.monSc ?? ORIG.monSc ?? {}; return o[a] ?? ORIG[a]; }
+  if (a === 'tierOv' || a === 'tierOrd') return o[a] || {}; if (a === 'bub') return o.bub ?? ORIG.bub ?? {}; if (a === 'monSc' || a === 'monRot' || a === 'monFly') return o[a] ?? ORIG[a] ?? {}; return o[a] ?? ORIG[a]; }
 function putP(o, p, src) {   // src(작업본) 의 p 값을 o 에 그대로 옮긴다 (src 가 없으면 게임 값으로)
   const [a, b] = p.split('.');
   if (a === 'eggTiers') { const v = src ? effP(src, p) : ORIG.eggTiers[b]; o.eggTiers = cl(o.eggTiers || ORIG.eggTiers); o.eggTiers[b] = cl(v); if (JSON.stringify(o.eggTiers) === JSON.stringify(ORIG.eggTiers)) delete o.eggTiers; return; }
   if (b != null) { const has = src && src[a] && b in src[a]; o[a] = { ...(o[a] || {}) }; if (has) o[a][b] = cl(src[a][b]); else delete o[a][b]; if (!Object.keys(o[a]).length) delete o[a]; return; }
   if (src && a in src) o[a] = cl(src[a]); else delete o[a]; }
-const BOXES = { bagstep: () => ['bal.BAG_STEP'], monsc: () => ['monSc'], bub: () => ['bub'], odds: () => ['odds'], pity: () => ['pity'], hatch: () => ['bal.HATCH_KM'], tier: () => ['tierOv', 'tierOrd'], layout: () => ['layout'] };
+const BOXES = { bagstep: () => ['bal.BAG_STEP'], monsc: () => ['monSc', 'monRot', 'monFly'], bub: () => ['bub'], odds: () => ['odds', ...[1, 2, 3, 4, 5].map(g => 'eggTiers.' + g)], pity: () => ['pity'], hatch: () => ['bal.HATCH_KM'], tier: () => ['tierOv', 'tierOrd'], layout: () => ['layout'] };
 const boxPaths = id => { const [t, x] = id.split(':'); return t === 'pool' ? ['eggTiers.' + x, 'eggList.' + x, 'eggEx.' + x] : t === 'bal' ? BAL[x][1].map(r => 'bal.' + r[0]) : BOXES[t](); };
 const same = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
 const boxDirty = id => ORIG && boxPaths(id).some(p => !same(effP(D, p), effP(D._sv || {}, p)));
@@ -621,7 +622,7 @@ async function pushDb() { if (!db) return; try { await db.doc('studio/draft').se
 const gameVer = () => { try { return ($('#game').contentDocument.getElementById('appVer').textContent.match(/v[\d.]+/) || [''])[0]; } catch (e) { return ''; } };
 // v2.23 경완: 확률 안전장치 — 알에서 나오는 모든 포켓몬이 SAFE_KM 안에 1번은 나와야 한다 (안 나오는 포켓몬도 안 됨)
 // 바꿀 때마다 검사해서, 새로 한도를 넘거나 이미 넘은 포켓몬을 더 드물게 만드는 변경은 저장 전에 되돌린다
-const SAFE_KM = 1500, SAFE_KEYS = ['odds', 'eggTiers', 'eggList', 'eggEx', 'tierOv', 'tierOrd', 'bal'];
+const SAFE_KM = 20000, SAFE_KEYS = ['odds', 'eggTiers', 'eggList', 'eggEx', 'tierOv', 'tierOrd', 'bal'];
 let safeSnap = null, safeBad = [];
 const safeKey = () => JSON.stringify(SAFE_KEYS.map(k => D[k] ?? null));
 function safeScan() { if (!ORIG || !A?.SPECIES) return []; const L = tierLists(), Z = tierZ(L), O = odds(), P = {};
@@ -683,20 +684,35 @@ function tovFit(ET0, goal) { const ET = JSON.parse(JSON.stringify(ET0));   // �
   for (let it = 0; it < 300; it++) { const T = tovOf(ET); let err = 0; for (const t in goal) { if (!T[t]) continue; const f = goal[t] / T[t]; err = Math.max(err, Math.abs(f - 1)); for (let g = 1; g <= 5; g++) if (ET[g]?.[t]) ET[g][t] *= f; }
     for (let g = 1; g <= 5; g++) { const r = ET[g], tot = Object.values(r).reduce((a, b) => a + b, 0) || 1; for (const t in r) r[t] = r[t] / tot * 100; } if (err < 1e-6) break; }
   for (let g = 1; g <= 5; g++) for (const t in ET[g]) ET[g][t] = Math.round(ET[g][t] * 100) / 100; return ET; }
-function tovBar(T, WF) { const TS = Array.from({ length: 10 }, (_, i) => i + 1).filter(t => T[t] > 0), q = TS.map(t => Math.sqrt(T[t])), qs = q.reduce((a, b) => a + b, 0) || 1, W = WF || q.map(v => v / qs * 100); let c = 0; const cum = W.map(v => c += v);
+// v2.33 경완: 알별 티어 비율은 직접 안 고친다. 티어별 전체 확률(막대)과 알 수집 확률에 맞춰 알아서 — 알마다 드문(번호 낮은) 티어일수록 적게
+function autoET(T0, O) {   // 티어별 전체 확률 T(알 1개당) + 알 수집 확률 O → 알마다 티어 비율. 알 안에서는 드문(번호 낮은) 티어일수록 적게
+  const TS = Object.keys(T0).map(Number).filter(t => T0[t] > 0).sort((a, b) => b - a), ts = TS.reduce((a, t) => a + T0[t], 0), T = {}; TS.forEach(t => T[t] = T0[t] / ts);
+  const G = [1, 2, 3, 4, 5].filter(g => O[g - 1] > 0), os = G.reduce((a, g) => a + O[g - 1], 0), Og = {}; G.forEach(g => Og[g] = O[g - 1] / os);
+  const M = {}; let c0 = 0; for (const g of G) { M[g] = {}; const a = c0, b = c0 + Og[g]; let s = 0; for (const t of TS) { const lo = Math.max(a, s), hi = Math.min(b, s + T[t]); if (hi - lo > 1e-12) M[g][t] = hi - lo; s += T[t]; } c0 = b; }
+  for (let i = 1; i < G.length; i++) { const g = G[i], p = M[G[i - 1]]; let k = Object.keys(M[g]).map(Number).sort((a, b) => b - a); while (k.length > 1 && M[g][k[0]] < M[g][k[1]] && p[k[0]] != null) { p[k[0]] += M[g][k[0]]; delete M[g][k[0]]; k.shift(); } }
+  for (const g of G) { const k = Object.keys(M[g]).map(Number), lo = Math.min(...k), hi = Math.max(...k); for (const t of [lo - 1, hi + 1]) if (T[t] && M[g][t] == null) M[g][t] = 1e-4 * Og[g]; }   // 이웃 티어도 조금 열어 둔다 (알 경계에서 맞추기 쉽게)
+  const pav = (g) => { const k = Object.keys(M[g]).map(Number).sort((a, b) => b - a), bl = []; for (const t of k) { bl.push({ v: M[g][t], n: 1, t: [t] }); while (bl.length > 1 && bl[bl.length - 2].v / bl[bl.length - 2].n < bl[bl.length - 1].v / bl[bl.length - 1].n) { const x = bl.pop(), y = bl[bl.length - 1]; y.v += x.v; y.n += x.n; y.t.push(...x.t); } } for (const b of bl) for (const t of b.t) M[g][t] = b.v / b.n; };
+  let err = 0; for (let it = 0; it < 4000; it++) { if (it === 2000) for (const g of G) for (const t in M[g]) if (M[g][t] < .01 * Og[g] && Object.keys(M[g]).length > 1) delete M[g][t];   // 알의 1% 안 되는 부스러기 티어는 빼고 다시 맞춘다
+ const C = {}; for (const g of G) for (const t in M[g]) C[t] = (C[t] || 0) + M[g][t]; err = 0;
+    for (const t of TS) { if (!C[t]) continue; const f = T[t] / C[t]; err = Math.max(err, Math.abs(f - 1)); for (const g of G) if (M[g][t] != null) M[g][t] *= f; }
+    for (const g of G) { const s = Object.values(M[g]).reduce((a, b) => a + b, 0); for (const t in M[g]) M[g][t] *= Og[g] / s; pav(g); }
+    if (err < 1e-7 && it > 2000) break; }
+  { const C = {}; for (const g of G) for (const t in M[g]) C[t] = (C[t] || 0) + M[g][t]; err = Math.max(...TS.map(t => Math.abs((C[t] || 0) / T[t] - 1))); }
+  const ET = [null]; for (let g = 1; g <= 5; g++) { ET[g] = {}; if (!M[g]) continue; for (const t in M[g]) { const v = Math.round(M[g][t] / Og[g] * 1e6) / 1e4; if (v > 0) ET[g][t] = v; } } ET.err = err; return ET; }
+function tovBar(T, WF) { const TS = Array.from({ length: 10 }, (_, i) => 10 - i).filter(t => T[t] > 0), q = TS.map(t => Math.sqrt(T[t])), qs = q.reduce((a, b) => a + b, 0) || 1, W = WF || q.map(v => v / qs * 100); let c = 0; const cum = W.map(v => c += v);
   return `<div class="tsb" id="tovb">${TS.map((t, i) => `<div class="sg" data-t="${t}" style="width:${W[i]}%;background:${TC(t)}" title="${t}티어 ${pct(T[t])}"><span class="sl"${W[i] < 7 ? ' hidden' : ''}>${t}<b class="num">${pct(T[t])}</b></span></div>`).join('')}${TS.slice(0, -1).map((t, i) => `<b class="bk" data-i="${i}" style="left:${cum[i]}%" title="끌어서 ${t}·${TS[i + 1]}티어 전체 확률 바꾸기"></b>`).join('')}</div>`; }
 function tovCard() { const T = tovOf(eggTiers()), anyD = [1, 2, 3, 4, 5].some(g => boxDirty('pool:' + g));
   return `<div class="card" id="tovC"><div class="row" style="flex-wrap:wrap;gap:8px"><h2 style="flex:1">티어별 전체 출현 확률 <span class="small mute">알 1개당 · 모든 알 합</span></h2><button class="chip" id="tovDef"${D.eggTiers && JSON.stringify(D.eggTiers) !== JSON.stringify(ORIG.eggTiers) ? '' : ' disabled'} title="티어별 비율을 지금 배포된 값으로"><span class="rvi">↺</span>기본값으로</button><button class="btn" id="tovSave"${anyD ? '' : ' disabled'}>알 5개 모두 저장</button></div>
-    ${tovBar(T)}<div class="tsl" id="tovl">${tovLeg(T)}</div><div class="small mute">손잡이를 끌면 양옆 두 티어의 전체 확률이 바뀌고, 그에 맞춰 알 등급마다 티어 비율이 알아서 조절돼요 (알 수집 확률은 그대로). 칸 너비는 보기 쉽게 확률의 제곱근으로 그려요. "실제"는 티어 경계 보장(낮은 티어 포켓몬이 높은 티어보다 흔해지지 않게)을 거친 게임 값이에요.</div></div>`; }
-function tovLeg(T) { const E = tovOf(effTiers()); return Array.from({ length: 10 }, (_, i) => i + 1).filter(t => T[t] > 0).map(t => `<span><i style="background:${TC(t)}"></i>${t}티어 <b class="num">${pct(T[t])}</b>${Math.abs((E[t] || 0) - T[t]) > T[t] * .02 ? `<em>실제 ${pct(E[t] || 0)}</em>` : ''}</span>`).join(''); }
+    ${tovBar(T)}<div class="tsl" id="tovl">${tovLeg(T)}</div><div class="small mute">손잡이를 끌면 양옆 두 티어의 전체 확률이 바뀌고, 알 등급마다 티어 비율은 알아서 정해져요 (알마다 드문 티어일수록 적게, 알 수집 확률은 그대로). 알 수집 확률을 바꿔도 티어별 전체 확률은 그대로 두고 알별 비율만 다시 맞춰요. 칸 너비는 보기 쉽게 확률의 제곱근으로 그려요. "실제"는 티어 경계 보장(낮은 티어 포켓몬이 높은 티어보다 흔해지지 않게)을 거친 게임 값이에요.</div></div>`; }
+function tovLeg(T) { const E = tovOf(effTiers()); return Array.from({ length: 10 }, (_, i) => 10 - i).filter(t => T[t] > 0).map(t => `<span><i style="background:${TC(t)}"></i>${t}티어 <b class="num">${pct(T[t])}</b>${Math.abs((E[t] || 0) - T[t]) > T[t] * .02 ? `<em>실제 ${pct(E[t] || 0)}</em>` : ''}</span>`).join(''); }
 $('#poolC').addEventListener('click', e => { if (e.target.closest('#tovDef')) { delete D.eggTiers; saveDraft(); renderPool(); toast('티어별 확률을 기본값으로 돌렸어요. 저장해야 반영돼요'); return; }   // v2.29 경완: 막대 그래프 기본값으로
   if (!e.target.closest('#tovSave')) return; for (let g = 1; g <= 5; g++) if (boxDirty('pool:' + g)) boxAct('pool:' + g, true); renderPool(); });
 $('#poolC').addEventListener('pointerdown', e => { const k = e.target.closest('#tovb .bk'); if (!k || e.button > 0) return; e.preventDefault(); e.stopPropagation();
-  const ET0 = JSON.parse(JSON.stringify(eggTiers())), T0 = tovOf(ET0), TS = Array.from({ length: 10 }, (_, i) => i + 1).filter(t => T0[t] > 0), i = +k.dataset.i, a = TS[i], b = TS[i + 1], S = T0[a] + T0[b];
+  const ET0 = JSON.parse(JSON.stringify(eggTiers())), T0 = tovOf(ET0), TS = Array.from({ length: 10 }, (_, i) => 10 - i).filter(t => T0[t] > 0), i = +k.dataset.i, a = TS[i], b = TS[i + 1], S = T0[a] + T0[b];
   const q = TS.map(t => Math.sqrt(T0[t])), qs = q.reduce((x, y) => x + y, 0), lo = q.slice(0, i).reduce((x, y) => x + y, 0) / qs, span = (q[i] + q[i + 1]) / qs; let ET = null; k.classList.add('on');
   const W0 = q.map(v => v / qs * 100), rlo = Math.sqrt(.04) / (Math.sqrt(.04) + Math.sqrt(.96)), rhi = 1 - rlo;   // 한쪽이 둘 합의 4% 아래로는 안 내려간다
   const mv = ev => { const R = $('#tovb').getBoundingClientRect(), r = Math.min(rhi, Math.max(rlo, ((ev.clientX - R.left) / R.width - lo) / span)), ra = r * r, rb = (1 - r) * (1 - r);
-    const goal = { ...T0, [a]: S * ra / (ra + rb), [b]: S * rb / (ra + rb) }; ET = tovFit(ET0, goal); const WF = [...W0]; WF[i] = span * 100 * r; WF[i + 1] = span * 100 * (1 - r); const TT = tovOf(ET); $('#tovb').outerHTML = tovBar(TT, WF); $('#tovl').innerHTML = Array.from({ length: 10 }, (_, j) => j + 1).filter(t => TT[t] > 0).map(t => `<span><i style="background:${TC(t)}"></i>${t}티어 <b class="num">${pct(TT[t])}</b></span>`).join(''); $$('#tovb .bk')[i]?.classList.add('on'); };
+    const goal = { ...T0, [a]: S * ra / (ra + rb), [b]: S * rb / (ra + rb) }; ET = autoET(goal, odds()); const WF = [...W0]; WF[i] = span * 100 * r; WF[i + 1] = span * 100 * (1 - r); const TT = tovOf(ET); $('#tovb').outerHTML = tovBar(TT, WF); $('#tovl').innerHTML = Array.from({ length: 10 }, (_, j) => 10 - j).filter(t => TT[t] > 0).map(t => `<span><i style="background:${TC(t)}"></i>${t}티어 <b class="num">${pct(TT[t])}</b></span>`).join(''); $$('#tovb .bk')[i]?.classList.add('on'); };
   const end = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', end); removeEventListener('pointercancel', end); if (!ET) { k.classList.remove('on'); return; }
     D.eggTiers = ET; if (JSON.stringify(ET) === JSON.stringify(ORIG.eggTiers)) delete D.eggTiers; saveDraft(); renderPool(); };
   addEventListener('pointermove', mv); addEventListener('pointerup', end); addEventListener('pointercancel', end); });
@@ -800,7 +816,10 @@ async function szPut(sp) { if (szUsed().has(+sp)) { const m = A.szList().find(o 
   const uid = await A.szAdd(sp); szCount(); if (uid != null) A.szPick(uid); }   // 넣으면 바로 테두리
 const szSps = () => szCur ? (szCur.multi ? szCur.sps : [szCur.sp]) : [];
 function szInfo() { const e = $('#szSel'); if (!szCur) { e.innerHTML = '<span class="mute">포켓몬을 누르면 테두리, 빈 곳을 끌면 여러 마리를 묶어 골라 같이 옮겨요</span>'; return; }
-  const v = Math.round((effP(D, 'monSc')[szSps()[0]] || 1) * 100); e.innerHTML = `<b>${szCur.multi ? szCur.multi + '마리' : esc(spName(szCur.sp))}</b> <input type="range" id="szR" min="50" max="200" step="5" value="${v}" aria-label="크기"><span class="num" id="szV">${v}%</span> <button class="chip" id="szOne"${v === 100 ? ' disabled' : ''}>100%</button> <button class="chip" id="szDel">빼기</button>`; }
+  const v = Math.round((effP(D, 'monSc')[szSps()[0]] || 1) * 100), rt = effP(D, 'monRot')[szSps()[0]] || 0, fh = effP(D, 'monFly')[szSps()[0]] || 0; e.innerHTML = `<b>${szCur.multi ? szCur.multi + '마리' : esc(spName(szCur.sp))}</b> <input type="range" id="szR" min="50" max="200" step="5" value="${v}" aria-label="크기"><span class="num" id="szV">${v}%</span> <button class="chip" id="szOne"${v === 100 ? ' disabled' : ''}>100%</button> <span class="szp">기울기 <input type="range" id="szT" min="-60" max="60" step="1" value="${rt}" aria-label="기울기"><span class="num" id="szTV">${rt}°</span></span> <span class="szp">떠 있기 <input type="range" id="szH" min="0" max="160" step="2" value="${fh}" aria-label="땅에서 떠 있는 높이"><span class="num" id="szHV">${fh}</span></span>${rt || fh ? ' <button class="chip" id="szP0">자세 0</button>' : ''} <button class="chip" id="szDel">빼기</button>`; }
+// v2.33 경완: 크기 조절 모드에서 기울기(도, 바라보는 쪽 기준)·땅에서 떠 있는 높이(px). 고른 종 모두에
+function setPose(k, v) { scPush(); const o = { ...effP(D, k) }; for (const sp of szSps()) if (!v) delete o[sp]; else o[sp] = v; D[k] = o; if (JSON.stringify(o) === JSON.stringify(ORIG[k] || {})) delete D[k]; scLive(); saveDraft(); scBar(); }
+$('#szSel').addEventListener('input', e => { if (!szCur) return; if (e.target.id === 'szT') { setPose('monRot', +e.target.value); $('#szTV').textContent = e.target.value + '°'; } if (e.target.id === 'szH') { setPose('monFly', +e.target.value); $('#szHV').textContent = e.target.value; } });
 $('#szSel').oninput = e => { if (e.target.id !== 'szR' || !szCur) return; scPush(); const v = +e.target.value, o = { ...effP(D, 'monSc') }; for (const sp of szSps()) if (v === 100) delete o[sp]; else o[sp] = v / 100; D.monSc = o; if (JSON.stringify(o) === JSON.stringify(ORIG.monSc || {})) delete D.monSc;
   $('#szV').textContent = v + '%'; $('#szOne').disabled = v === 100; scLive(); saveDraft(); scBar(); };   // 막대로 크기 (모서리 끌기와 같은 값)
 $('#szMode').onclick = () => szSet(!szOn);
@@ -811,15 +830,16 @@ $('#szExit').onclick = () => szSet(false);
 $('#szAdd').onclick = () => { if (spxKey !== 'all') openSpx('all', '포켓몬 넣기', Object.keys(A.SPECIES).map(Number).sort((a, c) => a - c)); $('#spxQ')?.focus(); };
 $('#szRand').onclick = async () => { const U = szUsed(), all = Object.keys(A.SPECIES).map(Number).filter(sp => !U.has(sp)); for (let i = 0; i < 10 && all.length; i++) await A.szAdd(all.splice(Math.floor(Math.random() * all.length), 1)[0]); szCount(); };
 $('#szClr').onclick = () => { A.szClear(); szCur = null; szInfo(); szCount(); };
-$('#szSel').onclick = e => { if (!szCur) return; if (e.target.id === 'szDel') { for (const u of szCur.uids || [szCur.uid]) A.szRemove(u); szCur = null; szInfo(); szCount(); return; }
+$('#szSel').onclick = e => { if (!szCur) return; if (e.target.id === 'szP0') { setPose('monRot', 0); scAt = Date.now(); setPose('monFly', 0); szInfo(); return; } if (e.target.id === 'szDel') { for (const u of szCur.uids || [szCur.uid]) A.szRemove(u); szCur = null; szInfo(); szCount(); return; }
   if (e.target.id === 'szOne') { scPush(); const o = { ...effP(D, 'monSc') }; for (const sp of szSps()) delete o[sp]; D.monSc = o; if (JSON.stringify(o) === JSON.stringify(ORIG.monSc || {})) delete D.monSc; scLive(); saveDraft(); scBar(); szInfo(); } };
 addEventListener('keydown', e => { if (szOn && e.key === 'Escape' && !e.target.closest?.('input,textarea')) szSet(false); });
 function onMonSc(sp, k) { scPush(); const o = { ...effP(D, 'monSc') }; if (k === 1) delete o[sp]; else o[sp] = k; D.monSc = o; if (JSON.stringify(o) === JSON.stringify(ORIG.monSc || {})) delete D.monSc; saveDraft(); scBar(); szPane(); if (szOn) szInfo(); }
-function scLive() { try { A?.setMonSc(effP(D, 'monSc')); } catch (e) {} }
+function scLive() { try { A?.setMonPose?.(effP(D, 'monRot'), effP(D, 'monFly')); A?.setMonSc(effP(D, 'monSc')); } catch (e) {} }
 // v2.27 경완: 크기 저장·되돌리기 버튼은 크기 조절 모드 바에만. 되돌리기 = 크기를 바꾸기 전으로 한 단계씩 (빠르게 이어 바꾼 건 한 단계)
 const scHist = []; let scAt = 0;
-function scPush() { const now = Date.now(); if (now - scAt > 600) { scHist.push(JSON.stringify(effP(D, 'monSc') || {})); if (scHist.length > 80) scHist.shift(); } scAt = now; }
-function scUndo() { if (!scHist.length) return; const o = JSON.parse(scHist.pop()); scAt = 0; D.monSc = o; if (JSON.stringify(o) === JSON.stringify(ORIG.monSc || {})) delete D.monSc; scLive(); saveDraft(); scBar(); szInfo(); szPane(); }
+const POSEK = ['monSc', 'monRot', 'monFly'];
+function scPush() { const now = Date.now(); if (now - scAt > 600) { scHist.push(JSON.stringify(POSEK.map(k => effP(D, k) || {}))); if (scHist.length > 80) scHist.shift(); } scAt = now; }
+function scUndo() { if (!scHist.length) return; const v = JSON.parse(scHist.pop()), V = Array.isArray(v) ? v : [v, effP(D, 'monRot'), effP(D, 'monFly')]; scAt = 0; POSEK.forEach((k, i) => { D[k] = V[i]; if (JSON.stringify(V[i]) === JSON.stringify(ORIG[k] || {})) delete D[k]; }); scLive(); saveDraft(); scBar(); szInfo(); szPane(); }
 function scBar() { const d = ORIG && boxDirty('monsc'); $('#scSave').innerHTML = ''; if ($('#szSave')) $('#szSave').innerHTML = d || scHist.length ? `<span data-box="monsc" style="display:inline-flex;gap:6px"><button class="chip" id="scUndo"${scHist.length ? '' : ' disabled'}>되돌리기</button>${d ? '<button class="btn" data-bs>크기 저장</button>' : ''}</span>` : '<span class="small mute">크기를 바꾸면 여기 저장 버튼이 생겨요</span>'; }
 document.addEventListener('click', e => { if (e.target.closest('#scUndo')) scUndo(); });
 addEventListener('keydown', e => { if (szOn && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); if (ORIG && boxDirty('monsc')) { boxAct('monsc', true); } else toast('저장할 크기 변경이 없어요'); } });   // v2.28 경완: 크기 조절 모드 Ctrl/⌘+S = 크기 저장
@@ -1165,8 +1185,9 @@ const kmTx = km => !isFinite(km) ? '-' : km >= 100 ? String(Math.round(km)) : km
 const nice = km => { const e = Math.pow(10, Math.floor(Math.log10(km)) - 1); return Math.round(km / e) * e; };   // 끌 때는 두 자리 숫자로
 // 드문 등급이 가질 수 있는 최대 (일반 알 0.5% 는 남긴다)
 const capP = i => .995 - odds().reduce((a, q, j) => a + (j && j !== i ? q : 0), 0), capF = i => oddF(Math.max(1e-5, capP(i)));
-function setOdd(i, p, say) { if (say && p > capP(i) + 1e-9) toast('더 자주 나오게 할 수 없어요. 일반 알 몫이 거의 다 찼어요'); const O = [...odds()], rest = O.reduce((a, q, j) => a + (j && j !== i ? q : 0), 0); O[i] = Math.max(1e-5, Math.min(p, .995 - rest)); O[0] = Math.max(0, 1 - O.slice(1).reduce((a, b) => a + b, 0));
-  D.odds = O; if (O.every((q, j) => Math.abs(q - ORIG.odds[j]) < 1e-9)) delete D.odds; }
+function setOdd(i, p, say) { const T0 = tovOf(eggTiers()); if (say && p > capP(i) + 1e-9) toast('더 자주 나오게 할 수 없어요. 일반 알 몫이 거의 다 찼어요'); const O = [...odds()], rest = O.reduce((a, q, j) => a + (j && j !== i ? q : 0), 0); O[i] = Math.max(1e-5, Math.min(p, .995 - rest)); O[0] = Math.max(0, 1 - O.slice(1).reduce((a, b) => a + b, 0));
+  D.odds = O; if (O.every((q, j) => Math.abs(q - ORIG.odds[j]) < 1e-9)) delete D.odds; reTier(T0); }
+function reTier(T0) { const ET = autoET(T0, odds()); delete ET.err; D.eggTiers = ET; if (JSON.stringify(ET) === JSON.stringify(ORIG.eggTiers)) delete D.eggTiers; }   // v2.33: 알 확률이 바뀌면 티어별 전체 확률은 그대로, 알별 비율만 다시
 $('#oddsC').addEventListener('pointerdown', e => { const b = e.target.closest('.odb[data-ob]'); if (!b || b.classList.contains('auto') || e.button > 0) return; e.preventDefault(); const i = +b.dataset.ob;
   const at = x => { const r = $(`.odb[data-ob="${i}"]`).getBoundingClientRect(), f = Math.max(0, Math.min(capF(i), (x - r.left) / r.width)); setOdd(i, 1 / (EPK() * nice(1 / (EPK() * Math.pow(10, f * 4 - 4))))); renderOdds(); };
   document.body.classList.add('odrag'); at(e.clientX); const mv = ev => at(ev.clientX), up = () => { document.body.classList.remove('odrag'); removeEventListener('pointermove', mv); removeEventListener('pointerup', up); saveDraft(); renderOdds(); };
@@ -1233,14 +1254,14 @@ function renderPool() {
   <div class="gsel">${[1, 2, 3, 4, 5].map(i => `<button class="${i === g ? 'on' : ''}" data-g="${i}" style="--gc:${GC[i]}">${eggI(i)}<b>${GN[i]}</b><span class="num">${(eggList(i) || []).length ? '직접' : Object.keys(eggTiers()[i]).map(Number).sort((a, b) => b - a).join('·') + '티어'}</span></button>`).join('')}</div>
   <div class="card">
     ${EX ? `<div class="sum" style="color:var(--warn)">이 알은 포켓몬과 순서를 직접 정해서 아래 티어 비율은 쓰지 않아요. <button class="chip" id="elReset">티어 비율로 되돌리기</button></div>` : ''}
-    <div class="row" style="flex-wrap:wrap;gap:8px"><h2 class="ih" style="flex:1">${eggI(g)}${GN[g]} 알에서 나오는 티어</h2>${boxBar('pool:' + g, GN[g] + ' 알 저장')}</div>
+    <div class="row" style="flex-wrap:wrap;gap:8px"><h2 class="ih" style="flex:1">${eggI(g)}${GN[g]} 알에서 나오는 티어 <span class="small mute">자동</span></h2>${boxDirty('pool:' + g) ? '<span class="small" style="color:var(--warn)">● 저장 안 함</span>' : ''}</div>
     ${(() => { const TS = Object.keys(tab).map(Number).sort((a, b) => b - a), P = TS.map(t => tab[t] / tot * 100); let c = 0; const cum = P.map(v => c += v);
       const effP = t => effG && Math.abs((effG[t] || 0) / effT - tab[t] / tot) > .0005 ? +((effG[t] || 0) / effT * 100).toFixed(2) : null;
-      return `<div class="tsb${EX ? ' ex' : ''}" id="tsb">${TS.map((t, i) => `<div class="sg" data-t="${t}" style="width:${P[i]}%;background:${TC(t)}" title="${t}티어 ${+P[i].toFixed(1)}%"><span class="sl"${P[i] < 9 ? ' hidden' : ''}>${t}티어<b class="num">${+P[i].toFixed(1)}%</b></span>${EX || TS.length < 2 ? '' : `<button class="sx" data-tx="${t}" title="${t}티어 빼기 (확률은 남은 티어에 나눠 줌)" aria-label="${t}티어 빼기">×</button>`}</div>`).join('')}${EX ? '' : TS.slice(0, -1).map((t, i) => `<b class="bk" data-i="${i}" style="left:${cum[i]}%" title="끌어서 ${t}·${TS[i + 1]}티어 비율 바꾸기"></b>`).join('')}</div>
+      return `<div class="tsb${EX ? ' ex' : ''}" id="tsb">${TS.map((t, i) => `<div class="sg" data-t="${t}" style="width:${P[i]}%;background:${TC(t)}" title="${t}티어 ${+P[i].toFixed(1)}%"><span class="sl"${P[i] < 9 ? ' hidden' : ''}>${t}티어<b class="num">${+P[i].toFixed(1)}%</b></span></div>`).join('')}</div>
       <div class="tsl">${TS.map((t, i) => `<span data-tl="${t}"><i style="background:${TC(t)}"></i>${t}티어 <b class="num">${+P[i].toFixed(1)}%</b>${effP(t) != null ? `<em title="티어 경계 보장으로 실제로 뽑을 때 쓰는 비율">실제 ${effP(t)}%</em>` : ''}</span>`).join('')}</div>
-      ${EX ? '' : '<div class="small mute">막대 사이 손잡이를 좌우로 끌면 양옆 두 티어 비율이 바뀌어요. 칸에 마우스를 올리면 × 로 티어를 뺄 수 있어요.</div>'}`; })()}
+      ${EX ? '' : '<div class="small mute">아래 티어별 전체 출현 확률과 알 수집 확률에 맞춰 알아서 정해져요. 알 안에서는 드문 티어일수록 적게 나와요.</div>'}`; })()}
     ${!EX && effG && Object.keys(tab).some(t => Math.abs((effG[t] || 0) / effT - tab[t] / tot) > .0005) ? '<div class="small mute">티어 경계 보장: 낮은 티어의 가장 흔한 포켓몬도 다음 티어의 가장 드문 포켓몬보다 드물게 나오도록, 넘치는 티어 몫을 줄여 나머지 티어에 나눠 줘요. "실제"가 게임에서 쓰는 비율이에요.</div>' : ''}
-    ${Object.keys(tab).length < 10 ? `<div class="tadd"><span class="small mute">티어 더 넣기</span>${Array.from({ length: 10 }, (_, i) => i + 1).filter(t => !tab[t]).map(t => `<button class="chip" data-ta="${t}"><span class="tag" style="background:${TC(t)}">${t}</span></button>`).join('')}</div>` : ''}
+    
     <div class="sum${Math.abs(tot - 100) > 1e-6 ? ' bad' : ''}">합계 <span class="num">${+tot.toFixed(3)}%</span>${Math.abs(tot - 100) > 1e-6 ? ' · 게임은 합계로 나눠서 써요 (100이 아니어도 비율대로)' : ''}${g >= 2 && effKt && Object.values(effKt).some(k => k > 0) ? ` · 가장 낮은 ${Math.max(...Object.keys(tab).filter(t => tab[t] > 0).map(Number))}티어는 '아래로 넘친 칸'이라 강한 종이 잘 나와요` : ''}</div>
   </div>
   ${tovCard()}
@@ -1256,27 +1277,11 @@ function renderPool() {
   $('#poolQ').oninput = e => { poolQ = e.target.value; const p = e.target.selectionStart; renderPool(); const i = $('#poolQ'); i.focus(); i.setSelectionRange(p, p); };
   if (sel.pool) showPoolSp(sel.pool);
 }
-$('#poolC').addEventListener('click', e => { const tx = e.target.closest('[data-tx]'); if (tx) { e.preventDefault(); if (tx.disabled) return;   // v2.13 경완: 티어 빼기. 그 몫은 남은 티어에 비율대로
-    const ET = JSON.parse(JSON.stringify(eggTiers())), row = ET[sel.poolG], t = tx.dataset.tx; delete row[t]; const ks = Object.keys(row), sum = ks.reduce((a, k) => a + row[k], 0);
-    for (const k of ks) row[k] = Math.round((sum > 0 ? row[k] / sum : 1 / ks.length) * 1000) / 10; const diff = Math.round((100 - ks.reduce((a, k) => a + row[k], 0)) * 10) / 10; if (diff) { const k = ks.reduce((a, b) => row[a] >= row[b] ? a : b); row[k] = Math.round((row[k] + diff) * 10) / 10; }
-    D.eggTiers = ET; if (JSON.stringify(ET) === JSON.stringify(ORIG.eggTiers)) delete D.eggTiers; saveDraft(); renderPool(); toast(`${t}티어를 뺐어요. 저장해야 반영돼요`); return; }
-  const ta = e.target.closest('[data-ta]'); if (ta) { const ET = JSON.parse(JSON.stringify(eggTiers())); ET[sel.poolG][ta.dataset.ta] = 5; D.eggTiers = ET; saveDraft(); renderPool(); return; } if (e.target.closest('#elReset')) { setList(sel.poolG, null); renderPool(); toast('티어 비율로 되돌렸어요'); return; } if (Date.now() - prDragAt < 300) return; const c = e.target.closest('[data-g]'); if (c) { sel.poolG = +c.dataset.g; renderPool(); return; } const r = e.target.closest('.pr'); if (r) { sel.pool = +r.dataset.sp; $$('.pr').forEach(x => x.classList.toggle('on', x === r)); showPoolSp(sel.pool); toInsp('#poolI'); } });
+$('#poolC').addEventListener('click', e => { if (e.target.closest('#elReset')) { setList(sel.poolG, null); renderPool(); toast('티어 비율로 되돌렸어요'); return; } if (Date.now() - prDragAt < 300) return; const c = e.target.closest('[data-g]'); if (c) { sel.poolG = +c.dataset.g; renderPool(); return; } const r = e.target.closest('.pr'); if (r) { sel.pool = +r.dataset.sp; $$('.pr').forEach(x => x.classList.toggle('on', x === r)); showPoolSp(sel.pool); toInsp('#poolI'); } });
 // v2.18 경완: 순서 끌기·다른 알로 옮기기는 뺐다 (알 켜고 끄기로 충분, 티어 안은 모두 같은 확률)
 let prDragAt = 0, poolDesc = store.get('st-pool-desc') === '1';   // v2.10 경완: 순위 오름차순/내림차순
 $('#poolC').addEventListener('click', e => { if (!e.target.closest('[data-psort]')) return; poolDesc = !poolDesc; store.set('st-pool-desc', poolDesc ? '1' : ''); renderPool(); });
 $('#poolC').addEventListener('contextmenu', e => { if (e.target.closest('#plist .pr')) e.preventDefault(); });
-$('#poolC').addEventListener('change', e => { const t = e.target.dataset.t; if (!t) return; const v = parseFloat(e.target.value); if (isNaN(v) || v < 0) { renderPool(); return; }
-  const ET = JSON.parse(JSON.stringify(eggTiers())), row = ET[sel.poolG]; if (v) row[t] = v; else delete row[t]; D.eggTiers = ET; if (JSON.stringify(ET) === JSON.stringify(ORIG.eggTiers)) delete D.eggTiers; saveDraft(); renderPool(); });
-// v2.15 경완: 등급별 티어 비율은 위 가로 막대 경계(손잡이)를 끌어서. 양옆 두 티어만 바뀌고 합계 100
-$('#poolC').addEventListener('pointerdown', e => { const k = e.target.closest('#tsb .bk'); if (!k || e.button > 0) return; e.preventDefault(); e.stopPropagation();
-  const g = sel.poolG, bar = $('#tsb'), tab = eggTiers()[g], TS = Object.keys(tab).map(Number).sort((a, b) => b - a), tot = TS.reduce((a, t) => a + tab[t], 0) || 1, i = +k.dataset.i;
-  const P = TS.map(t => Math.round(tab[t] / tot * 1000) / 10), lo = P.slice(0, i).reduce((a, b) => a + b, 0), hi = lo + P[i] + P[i + 1]; let moved = false; k.classList.add('on');
-  const show = () => { let c = 0; $$('#tsb .sg').forEach((el, j) => { el.style.width = P[j] + '%'; el.title = `${TS[j]}티어 ${P[j]}%`; const sl = el.querySelector('.sl'); sl.hidden = P[j] < 9; sl.querySelector('b').textContent = P[j] + '%'; });
-    $$('#tsb .bk').forEach((b, j) => { c = P.slice(0, j + 1).reduce((a, v) => a + v, 0); b.style.left = c + '%'; }); $$('.tsl [data-tl]').forEach((el, j) => { el.querySelector('b').textContent = P[j] + '%'; el.querySelector('em')?.remove(); }); };
-  const mv = ev => { const R = bar.getBoundingClientRect(); let f = Math.round((ev.clientX - R.left) / R.width * 200) / 2; f = Math.min(hi, Math.max(lo, f)); P[i] = Math.round((f - lo) * 10) / 10; P[i + 1] = Math.round((hi - f) * 10) / 10; moved = true; show(); };
-  const end = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', end); removeEventListener('pointercancel', end); k.classList.remove('on'); if (!moved) return;
-    const ET = JSON.parse(JSON.stringify(eggTiers())); ET[g] = Object.fromEntries(TS.map((t, j) => [t, P[j]]).filter(([, v]) => v > 0)); D.eggTiers = ET; if (JSON.stringify(ET) === JSON.stringify(ORIG.eggTiers)) delete D.eggTiers; saveDraft(); renderPool(); };
-  addEventListener('pointermove', mv); addEventListener('pointerup', end); addEventListener('pointercancel', end); });
 // v2.7: 티어 % 막대를 끌어서 바로 조절 (나머지 티어는 비율대로 줄거나 늘어 합계 100)
 $('#poolC').addEventListener('click', e => { if (e.target.closest('.bar.tdr')) e.preventDefault(); });
 $('#poolC').addEventListener('pointerdown', e => { const bar = e.target.closest('.bar.tdr'); if (!bar || e.button > 0) return; e.preventDefault();
@@ -1306,11 +1311,13 @@ function showPoolSp(sp) {
 }
 
 // ---------- 티어 ----------
+// v2.33 경완: 티어 카드 옆에 그 티어가 나오는 알 아이콘
+const tierEggs = (t, T) => [1, 2, 3, 4, 5].filter(g => { const el = eggList(g); return el?.length ? el.some(r => T.includes(+r[0])) : effTiers()[g]?.[t] > 0 || eggTiers()[g]?.[t] > 0; });
 function renderTier() {
   const L = tierLists(), ov = D.tierOv || {}; if (sel.tier && tSel.size <= 1) { tSel.clear(); tSel.add(sel.tier); }
   const tz = tzOf(); $('#tierC').style.setProperty('--tzz', tz / 100);
   $('#tierC').innerHTML = `<div class="thd">${boxBar('tier', '티어 저장')}<div class="tzc"><div class="search tq"><input id="tQ" placeholder="포켓몬 찾기 (이름·번호)" autocomplete="off" enterkeyhint="search" value="${esc(tQv)}"><span class="num mute" id="tQn"></span></div><span class="tzl">화면 크기</span><button class="chip" data-tz="-10" aria-label="작게">−</button><input type="range" id="tz" min="50" max="250" step="10" value="${tz}" aria-label="화면 크기"><button class="chip" data-tz="10" aria-label="크게">+</button><span class="num">${tz}%</span><button class="chip${tMulti ? ' on' : ''}" id="tMulti" title="켜면 누르는 카드마다 더해져요 (PC는 Ctrl+누르기, Shift+누르기)">여러 마리 고르기</button>${tSel.size > 1 ? `<span class="num" style="color:var(--acc)">${tSel.size}마리 고름</span><button class="chip" id="tSelX">고르기 풀기</button>` : ''}</div></div><div class="small mute" style="margin-bottom:10px">진화 전 모습으로 묶어요. 1~3티어는 특별한 포켓몬(전설·환상 가족), 4~10티어는 나머지를 가족 최고 종족값 순서로 나눈 거예요. <b>카드를 끌어서</b> 순서를 바꾸거나 다른 티어로 옮겨요 (휴대폰은 꾹 누른 뒤). ${(effKt && Object.values(effKt).some(k => k > 0)) ? '티어 안에서는 <b>앞일수록 알에서 드물게</b> 나와요.' : '같은 티어 안의 포켓몬은 <b>모두 같은 확률</b>로 나와요 (순서는 보기용).'} 단, 알 › 등급별 포켓몬에서 순서를 직접 정한 알은 그 확률을 따라요. 주황 점은 작업본에서 옮긴 포켓몬이에요.</div>
-  <div class="tiers">${L.map((T, t) => t ? `<div class="tcol" data-tt="${t}"><h3><span class="tag" style="background:${TC(t)}">${t}티어</span><span class="num mute">${T.length}종 · ${tierOrdOf(t)?.length ? '직접 정한 순서' : '도감 번호 순'}${tierOrdOf(t)?.length ? ` <button class="chip tr0" data-tr0="${t}">종족값 순으로</button>` : ''}</span></h3><div class="grid">${orderTier(t, T).map(sp => `<button class="mc${ov[sp] ? ' ov' : ''}${tSel.has(sp) ? ' on' : ''}" data-sp="${sp}" title="${esc(spName(sp))} · ${A.FAM_BST[sp]}"><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('')}</div></div>` : '').join('')}</div>`;
+  <div class="tiers">${L.map((T, t) => t ? `<div class="tcol" data-tt="${t}"><h3><span class="tag" style="background:${TC(t)}">${t}티어</span>${(eg => eg.length ? `<span class="teg" title="${eg.map(g => GN[g]).join('·')} 알에서 나와요">${eg.map(eggI).join('')}</span>` : '<span class="teg small mute">알에서 안 나옴</span>')(tierEggs(t, T))}<span class="num mute">${T.length}종 · ${tierOrdOf(t)?.length ? '직접 정한 순서' : '도감 번호 순'}${tierOrdOf(t)?.length ? ` <button class="chip tr0" data-tr0="${t}">종족값 순으로</button>` : ''}</span></h3><div class="grid">${orderTier(t, T).map(sp => `<button class="mc${ov[sp] ? ' ov' : ''}${tSel.has(sp) ? ' on' : ''}" data-sp="${sp}" title="${esc(spName(sp))} · ${A.FAM_BST[sp]}"><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('')}</div></div>` : '').join('')}</div>`;
   fillThumbs($('#tierC'));
   $('.view[data-v=tier]').classList.toggle('tsel', !!(tSel.size || sel.tier));
   if (tSel.size > 1) showTierMulti(); else if (sel.tier) showTierSp(sel.tier);
@@ -1499,6 +1506,7 @@ function changesOf() {
   if (D.tierOrd) for (const [t, O] of Object.entries(D.tierOrd)) out.push([`${t}티어 순서`, ORIG.tierOrd[t] ? '직접 정한 순서' : '도감 번호 순', O ? '직접 정한 순서' : '도감 번호 순', 'tord:' + t]);
   if (D.bub && A?.SCN) { const a = ORIG.bub || {}, b = D.bub; for (const [id, def, lab] of A.SCN) { const x = id in a ? a[id] : def, y = id in b ? b[id] : def; if (x !== y) out.push([`말풍선 · ${lab}`, x || '지움', y || '지움', 'bub:' + id]); } }
   if (D.monSc) { const a = ORIG.monSc || {}, b = D.monSc; for (const sp of new Set([...Object.keys(a), ...Object.keys(b)])) if ((a[sp] || 1) !== (b[sp] || 1)) out.push([`${spName(+sp)} 필드 크기`, Math.round((a[sp] || 1) * 100) + '%', Math.round((b[sp] || 1) * 100) + '%', 'msc:' + sp]); }
+  for (const [k, lab, f, d] of [['monRot', '기울기', v => v + '°', 0], ['monFly', '떠 있는 높이', v => v + 'px', 0]]) if (D[k]) { const a = ORIG[k] || {}, b = D[k]; for (const sp of new Set([...Object.keys(a), ...Object.keys(b)])) if ((a[sp] || d) !== (b[sp] || d)) out.push([`${spName(+sp)} ${lab}`, f(a[sp] || d), f(b[sp] || d), (k === 'monRot' ? 'mrt:' : 'mfl:') + sp]); }
   if (D.bal) for (const [k, v] of Object.entries(D.bal)) out.push([balName(k), JSON.stringify(ORIG.bal[k]), JSON.stringify(v), 'bal:' + k]);
   return out;
 }
@@ -1513,7 +1521,7 @@ function undoCore(key, live) {
     let L; if (t === 'layout') L = { ...JSON.parse(JSON.stringify(ORIG.layout)), look: cur.look || {} };
     else { L = cur; L.look = { ...(L.look || {}) }; if (ORIG.layout.look?.[a]) L.look[a] = ORIG.layout.look[a]; else delete L.look[a]; }
     if (live) A?.setLayout(L); if (JSON.stringify(L) === JSON.stringify(ORIG.layout)) delete D.layout; else D.layout = L; }
-  else if (t === 'odds') { D.odds = D.odds.slice(); D.odds[+a] = ORIG.odds[+a]; if (D.odds.every((p, i) => Math.abs(p - ORIG.odds[i]) < 1e-9)) delete D.odds; }
+  else if (t === 'odds') { const T0 = tovOf(eggTiers()); D.odds = D.odds.slice(); D.odds[+a] = ORIG.odds[+a]; if (D.odds.every((p, i) => Math.abs(p - ORIG.odds[i]) < 1e-9)) delete D.odds; reTier(T0); }
   else if (t === 'pity') { delete D.pity[a]; D.pity = clean(D.pity); if (!D.pity) delete D.pity; }
   else if (t === 'egg') { D.eggTiers = JSON.parse(JSON.stringify(D.eggTiers)); D.eggTiers[a] = JSON.parse(JSON.stringify(ORIG.eggTiers[a])); if (JSON.stringify(D.eggTiers) === JSON.stringify(ORIG.eggTiers)) delete D.eggTiers; }
   else if (t === 'elist') { delete D.eggList[a]; if (!Object.keys(D.eggList).length) delete D.eggList; }
@@ -1522,6 +1530,7 @@ function undoCore(key, live) {
   else if (t === 'bub') { const o = { ...(D.bub || {}) }, og = ORIG.bub || {}; if (a in og) o[a] = og[a]; else delete o[a]; D.bub = o; if (JSON.stringify(o) === JSON.stringify(og)) delete D.bub; if (live) bubLive(); }
   else if (t === 'ex') { setEx(+a, [...(ORIG.eggEx?.[a] || [])]); }
   else if (t === 'msc') { const o = { ...(D.monSc || {}) }, og = ORIG.monSc || {}; if (a in og) o[a] = og[a]; else delete o[a]; D.monSc = o; if (JSON.stringify(o) === JSON.stringify(og)) delete D.monSc; if (live) scLive(); }
+  else if (t === 'mrt' || t === 'mfl') { const k = t === 'mrt' ? 'monRot' : 'monFly', o = { ...(D[k] || {}) }, og = ORIG[k] || {}; if (a in og) o[a] = og[a]; else delete o[a]; D[k] = o; if (JSON.stringify(o) === JSON.stringify(og)) delete D[k]; if (live) scLive(); }
   else if (t === 'bal') { delete D.bal[a]; if (!Object.keys(D.bal).length) delete D.bal; }
   } catch (e) {}   // 작업 중 값에 그 항목이 없으면 그냥 지나간다
 }
@@ -1562,7 +1571,7 @@ function snapshotOf() {
   const eggL = {}; for (let g = 1; g <= 5; g++) { const E = eggList(g); if (E) eggL[g] = E; }
   const tierOrd = { ...(ORIG.tierOrd || {}), ...(D.tierOrd || {}) }; for (const t of Object.keys(tierOrd)) if (!tierOrd[t]?.length) delete tierOrd[t];
   const eggEx = {}; for (let g = 1; g <= 5; g++) { const X = exOf(g); if (X.length) eggEx[g] = X; }
-  return { layout: D.layout || ORIG.layout, odds: odds(), pity: pity(), eggTiers: eggTiers(), eggList: eggL, eggEx, tierOv, tierOrd, bub: effP(D, 'bub'), monSc: effP(D, 'monSc'), bal: { ...ORIG.bal, ...(D.bal || {}) } };
+  return { layout: D.layout || ORIG.layout, odds: odds(), pity: pity(), eggTiers: eggTiers(), eggList: eggL, eggEx, tierOv, tierOrd, bub: effP(D, 'bub'), monSc: effP(D, 'monSc'), monRot: effP(D, 'monRot'), monFly: effP(D, 'monFly'), bal: { ...ORIG.bal, ...(D.bal || {}) } };
 }
 const ghErr = e => e.status === 401 ? '열쇠가 맞지 않거나 만료됐어요' : e.status === 403 || e.status === 404 ? '저장소에 쓸 권한이 없어요 (pokemon-meadow, Contents 쓰기)' : e.message || String(e);
 async function gh(path, opt = {}, tok = store.get('st-gh-token')) {
@@ -1617,6 +1626,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.33', '10월 16일', ['알별 티어 비율은 자동: 티어별 전체 출현 확률과 알 수집 확률에 맞춰 알마다 드문 티어일수록 적게 (직접 조절·티어 더 넣기 뺌)', '티어별 전체 출현 확률 막대는 10티어부터', '티어 화면 카드 제목 옆에 그 티어가 나오는 알 아이콘', '크기 조절 모드에서 기울기·떠 있는 높이', '확률 안전장치 한도 20,000km']],
   ['2.32', '10월 16일', ['"⚠ 저장 안 함" 버튼이 그 화면에 가도 사라지지 않음 (지금 화면은 "지금 화면" 표시)', '티어별 전체 출현 확률을 1티어부터 순서대로', '기본값으로 버튼에 ↺ 아이콘']],
   ['2.31', '10월 16일', ['위 막대에 "되돌리기" 버튼: 저장 안 한 수정을 모두 마지막으로 저장한 상태로 되돌림 (두 번 눌러 확인)']],
   ['2.30', '10월 16일', ['휴대폰 티어 화면: 카드 위에서도 위아래 스크롤, 메뉴(저장·찾기·화면 크기)는 아래로, 포켓몬 정보는 아래 창으로 뜨고 같은 포켓몬을 다시 누르면 닫힘']],
@@ -1705,13 +1715,13 @@ function hook() {
   $('#gLoad').hidden = true;
   if (!w.document.__unmk) { w.document.__unmk = 1; w.addEventListener('pointerdown', e => { if (!e.target.closest?.('.mon')) unmarkMon(); }, true); }   // v2.1 경완: 맵 빈 곳을 누르면 포켓몬 선택(테두리) 풀기
   if (!ORIG) {
-    const K = A.K; LIVE = A.cfg || { ver: 0 }; ORIG = { odds: K.ODDS, pity: { e: K.PITY_E, l: K.PITY_L }, eggTiers: JSON.parse(JSON.stringify(A.EGG_TIERS)), eggList: JSON.parse(JSON.stringify(A.EGG_LIST || [])), eggEx: JSON.parse(JSON.stringify(A.EGG_EX || [])), tierOrd: JSON.parse(JSON.stringify(A.TIER_ORD || {})), bub: { ...(A.BUB_OV || {}) }, monSc: { ...(A.MON_SC || {}) }, layout: A.defaultLayout(),
+    const K = A.K; LIVE = A.cfg || { ver: 0 }; ORIG = { odds: K.ODDS, pity: { e: K.PITY_E, l: K.PITY_L }, eggTiers: JSON.parse(JSON.stringify(A.EGG_TIERS)), eggList: JSON.parse(JSON.stringify(A.EGG_LIST || [])), eggEx: JSON.parse(JSON.stringify(A.EGG_EX || [])), tierOrd: JSON.parse(JSON.stringify(A.TIER_ORD || {})), bub: { ...(A.BUB_OV || {}) }, monSc: { ...(A.MON_SC || {}) }, monRot: { ...(A.MON_ROT || {}) }, monFly: { ...(A.MON_FLY || {}) }, layout: A.defaultLayout(),
       bal: { ...(K.HATCH_KM ? { HATCH_KM: K.HATCH_KM } : {}), DUP_G: K.DUP_G, NEW_EGG_G: K.NEW_EGG_G, NEW_G: K.NEW_G, RUN_G: K.RUN_G, FR_TABLE: K.FR_TABLE, BERRY_FR_DAY: K.BERRY_FR_DAY, JOY_HOLD: K.JOY_HOLD, PET_FR: K.PET_FR ?? 1, PET_DAY: K.PET_DAY, WASH_FR: K.WASH_FR ?? 3, FLD_FR_DAY: K.FLD_FR_DAY, WALK_FR: K.WALK_FR, FR_EVO: K.FR_EVO, FR_MAX: K.FR_MAX,
         CLEAN_DAYS: Math.round(100 / K.CLEAN_RATE / 86400 * 100) / 100, HUNGER_RATE: K.HUNGER_RATE, JOY_HOURS: Math.round(100 / K.JOY_RATE / 3600 * 100) / 100, MAX_EGGS: K.MAX_EGGS, MAX_BAG: K.MAX_BAG, BAG_STEP: K.BAG_STEP, SHINY_N: Math.round(1 / K.SHINY_RATE) } };
     A.ensureSprite(1).then(() => { $('#logoI').src = thumb(25) || ''; A.ensureSprite(25).then(() => $('#logoI').src = thumb(25)); });
   }
   A.onTap = s => { if (s) mapTap(s); }; A.onSel = onSel; A.onMon = onMon; A.onLog = onLog; A.onLayout = onLayout; A.onHot = onHot; A.onMonSc = onMonSc; A.onSzSel = m => { szCur = m; szInfo(); }; applyInsets();
-  if (D.layout) A.setLayout(D.layout); bubLive(); if (D.monSc) scLive(); scBar(); safeInit();
+  if (D.layout) A.setLayout(D.layout); bubLive(); if (D.monSc || D.monRot || D.monFly) scLive(); scBar(); safeInit();
   A.edit(editing); if (!$('#hrNow').classList.contains('on')) A.setHour(+$('#hr').value); $('#hrNow').classList.contains('on') && $('#hrNow').onclick();
   const w0 = $('#wx .on')?.dataset.w; if (w0) A.setWx(w0);
   $('#addp').innerHTML = A.ADD.map(([k, n]) => { const s = A.addIcon(k); return `<button data-k="${k}">${s ? `<img alt="" src="${s}">` : `<span class="ph">${k === 'mush' ? '🍄' : '●'}</span>`}${n}</button>`; }).join('');

@@ -2150,6 +2150,8 @@ const sizeT = sp => { const e = sizeEff(parseInt(sp)), x = 48 * Math.pow(e, .7);
 const sizeCls = sp => { const h = SPECIES[parseInt(sp)]?.h ?? 7; return h <= 5 ? 0 : h <= 13 ? 1 : 2; };
 // v3.78 경완: 작업실에서 종마다 필드 크기를 바꿀 수 있다 (MON_SC[종] = 배율, 배포 데이터 monSc)
 let MON_SC = {};
+// v3.93 경완: 종마다 기울기(MON_ROT[종] = 도, 바라보는 쪽 기준)·땅에서 떠 있는 높이(MON_FLY[종] = px). 선택·잡기는 그대로 스프라이트 몸통
+let MON_ROT = {}, MON_FLY = {};
 const scaleOf = k => scale0(k) * (MON_SC[parseInt(k)] || 1);
 const scale0 = sp => { const P = SPRITES[sp]; if (!isPmd(sp)) return SCALE * [.85, 1, 1.15][sizeCls(sp)]; if (!P.vh) return P.a.Idle[2] >= 40 ? 1.875 : PSCALE; const big = P.a.Idle[2] >= 40; let k = Math.round(sizeT(sp) / P.vh * 4) / 4; if (k > 2.75 && k < 3.5) k = 2.75; return Math.max(1.5, Math.min(big ? 3.5 : 4.5, k)); };   // v3.10: 도트가 너무 잘아 보이지 않게 최소 1.5배(비크티니, 경완). v3.08: 도트 한 칸은 아르세우스(2.75배)만큼까지(경완) — 조금 넘는 건 2.75로, 훨씬 커야 하는 건 Scale2x 로 고운 도트   // 픽셀이 고르게 보이도록 0.5배 단위, 원래 크기 근처에서만
 // 아틀라스 프레임 사이에 투명한 틈을 넣어 다시 만든다: 확대할 때 옆 프레임의 검은 테두리가 번져 보이던 것 막기.
@@ -4196,7 +4198,7 @@ function render(m, now) {
   const t = T(m), flyer = t.mv === 'fly' || t.mv === 'hover';
   const grounded = !m.held && (m.state === 'sleep' || m.state === 'eat' || (t.mv === 'fly' && SPm(m).sh === 9 && !FLAP_IDLE.has(m.sp) && m.state !== 'move'));   // v3.62 경완: 새는 날개를 접고 서 있을 땐 땅에, 날아갈 때만 떠 있다
   if (m.perch) { const p = m.perch; if (S.mons.includes(p) && p.state === 'sleep' && m.state === 'sleep') { m.x = p.x + m.perchDx; m.y = p.y + 1; m.xl = p.h * .45; } else { m.perch = null; m.xl = 0; } }
-  const targetLift = m.szb ? 0 : m.held ? 26 : (flyer ? (grounded ? (t.mv === 'hover' ? 6 : 0) : (t.mv === 'fly' ? 40 : 16)) : 0) + (m.xl || 0);   /* 들면 나는 포켓몬도 손가락(몸통) 기준: 그림자 위 높이를 더하지 않는다 */
+  const fly0 = MON_FLY[m.form] || 0, targetLift = m.szb ? fly0 : m.held ? 26 : (flyer ? (grounded ? (t.mv === 'hover' ? 6 : 0) : (t.mv === 'fly' ? 40 : 16)) : 0) + (m.xl || 0) + fly0;   /* 들면 나는 포켓몬도 손가락(몸통) 기준: 그림자 위 높이를 더하지 않는다 */
   m.lift += (targetLift - m.lift) * .08;
   const bob = flyer && !grounded ? Math.sin(now / 260 + m.uid) * 4 : 0;
   const pv = pondVal(m.x, m.y), wet = !flyer && (m.wet ? pv < 1.0 : pv < .94);   /* 물가 경계에서 젖음/마름이 번갈아 바뀌며 위아래로 튀지 않게 여유를 둔다 */
@@ -4219,6 +4221,7 @@ function render(m, now) {
   m.liftEl.style.transform = `translateY(${(wet ? m.h * .38 : m.flop ? m.h * .42 : 0) - m.lift - bob}px)`;   // 육지의 잉어킹은 그림자에 붙게 조금 내린다
   if (m.flop && now > (m.swT || 0)) { m.swT = now + rnd(180, 360); for (const s of [-1, 1]) if (Math.random() < .75) particle(m.x + s * rnd(6, m.w * .32), m.y - m.h * .2 - rnd(0, 10), 'sweat', '', d => d.style.setProperty('--dx', s * rnd(12, 26) + 'px')); }
   m.flipEl.style.transform = `scaleX(${m.face})`; m.flipEl.style.setProperty('--f', m.face);
+  { const r = (MON_ROT[m.form] || 0) * m.face, o = Math.round(m.h / 2); if (r !== m.rotV || o !== m.rotO) { m.rotV = r; m.rotO = o; m.flipEl.style.rotate = r ? r + 'deg' : ''; m.flipEl.style.transformOrigin = r ? `0 ${-o}px` : ''; } }   /* 기울기는 몸 가운데를 축으로 (transform 애니메이션과 따로 도는 rotate 속성) */
   if (isPmd(m.form)) drawSprite(m, m.frz ? 0 : m.realDt || 0);
   else { const want = m.state === 'sleep' ? (stillCache[m.form] || SPRITES[m.form]) : SPRITES[m.form]; if (m.curSrc !== want) { m.curSrc = want; m.img.src = want; } }
   const top = m.y - (wet ? m.h * .62 : m.h) - m.lift - bob;
@@ -5184,7 +5187,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.92';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.93';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6056,7 +6059,7 @@ function tierGuard(ET, O, SPS, Z, EL) {
   const prob = E => { const P = { ...fixed }; for (const g of G) { const tot = Object.values(E[g]).reduce((a, b) => a + b, 0), sl = spill(g); if (!tot) continue;
     for (const t in E[g]) { const w = SPS[t].map(sp => Math.exp((+t === sl ? 1 : -1) * K[t] * (Z[sp] ?? .5))), s = w.reduce((a, b) => a + b, 0); SPS[t].forEach((sp, i) => { P[sp] = (P[sp] || 0) + O[g - 1] * E[g][t] / tot * w[i] / s; }); } } return P; };
   for (let it = 0; it < 400; it++) { const P = prob(eff()); let bad = 0;
-    for (let k = 0; k < tiers.length - 1; k++) { const t = tiers[k], u = tiers[k + 1]; let minU = Infinity, maxT = 0;
+    for (let k = 0; k < tiers.length - 1; k++) { const t = tiers[k], u = tiers[k + 1]; if (t === 1 && u === 2) continue; let minU = Infinity, maxT = 0;   /* v3.93 경완(B): 1티어(2종)는 티어 전체 500km라 한 종이 2티어 한 종보다 흔해도 된다 */
       for (const sp of SPS[u]) if (P[sp] > 0) minU = Math.min(minU, P[sp]); for (const sp of SPS[t]) maxT = Math.max(maxT, P[sp] || 0);
       if (!isFinite(minU) || maxT <= minU * .95) continue; bad++; const r = Math.min(4, maxT / (minU * .95)) ** .25;
       m[t] /= r; m[u] *= r; K[t] = Math.max(0, K[t] * .96 - .005); K[u] = Math.max(0, K[u] * .96 - .005); }
@@ -7698,6 +7701,8 @@ function applyCfg(c) {
     for (let g = 1; g <= 5; g++) { const X = d.eggEx?.[g]; EGG_EX[g] = Array.isArray(X) ? X.map(Number).filter(sp => SPECIES[sp]) : []; }
     BUB_OV = d.bub && typeof d.bub === 'object' ? { ...d.bub } : {};
     MON_SC = {}; if (d.monSc && typeof d.monSc === 'object') for (const [k, v] of Object.entries(d.monSc)) if (SPECIES[k] && typeof v === 'number' && v >= .3 && v <= 3) MON_SC[k] = v;
+    MON_ROT = {}; if (d.monRot && typeof d.monRot === 'object') for (const [k, v] of Object.entries(d.monRot)) if (SPECIES[k] && typeof v === 'number' && Math.abs(v) <= 90 && v) MON_ROT[k] = v;
+    MON_FLY = {}; if (d.monFly && typeof d.monFly === 'object') for (const [k, v] of Object.entries(d.monFly)) if (SPECIES[k] && typeof v === 'number' && v > 0 && v <= 300) MON_FLY[k] = v;
     retier(d.tierOv, d.tierOrd || {}); if (d.bal) applyBal(d.bal); if (d.layout) setLayoutIn(d.layout);
     EGG_EFF = null; CFG = c; $('#appVer').textContent = 'v' + APP_VER + (c.ver ? ' · 데이터 ' + c.ver : '');
   } catch (e) { console.warn('config', e); }
@@ -7763,7 +7768,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   notiSoon = function () {};   // 작업실에선 '새 소식' 창을 띄우지 않는다
   if (GAL) { save = function () {}; document.documentElement.classList.add('st-gal'); }
   const api = window.__studio = {
-    BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
+    BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, get MON_ROT() { return MON_ROT; }, get MON_FLY() { return MON_FLY; }, setMonPose(r, f) { MON_ROT = { ...(r || {}) }; MON_FLY = { ...(f || {}) }; }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
     ICO: { berry: ICO_BERRY, brush: ICO_BRUSH, hand: ICO_HAND, pen: PEN, egg: EGG_SVG },   // v3.66: 작업실이 게임 아이콘을 그대로 쓴다
     get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, PET_FR, WASH_FR, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]), HATCH_KM: [0, ...GRADE.slice(1).map(G => G.km)] }; },
     get cfg() { return CFG; },
