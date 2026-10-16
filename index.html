@@ -4405,19 +4405,29 @@ const ART = (() => {
   return { tree, treeS, perch, bush, rock, stump, campfire, flower, G, B, ST };
 })();
 
-function drawBg() {
-  const PW = W / 2, PH = H / 2, c = $('#bg'); c.width = PW; c.height = PH;
-  const g = c.getContext('2d'); g.imageSmoothingEnabled = false;
+// v3.83 경완: 작업실 크기 조절 모드에서는 원래 맵을 가운데 두고 양옆·아래로 이어 그린다 (X = {c, w, h, ox} 반 해상도 크기, 원래 맵 왼쪽 위치)
+// 가운데 원래 맵은 같은 난수 순서(R)로 그대로, 늘어난 부분은 다른 난수(R2)로 그려서 시뮬레이터 화면과 똑같이 보인다
+function drawBg(X) {
+  const PW = W / 2, PH = H / 2, c = X ? X.c : $('#bg'); c.width = X ? X.w : PW; c.height = X ? X.h : PH;
+  const g = c.getContext('2d'); g.imageSmoothingEnabled = false; const OX = X ? X.ox : 0, AW = X ? X.w : PW, AH = X ? X.h : PH, xa = -OX, xb = AW - OX;
+  if (X) g.setTransform(1, 0, 0, 1, OX, 0);
   let seed = 11; const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  let seed2 = 977; const R2 = () => (seed2 = (seed2 * 16807) % 2147483647) / 2147483647;
+  const side = () => { const lw = OX, rw = xb - PW; const t = R2() * (lw + rw); return t < lw ? xa + t : PW + (t - lw); };   // 늘어난 양옆 중 한 곳의 x
+  const extra = (n, fn) => { if (!X) return; const k = ((AW * AH) - PW * PH) / (PW * PH); for (let i = 0, N = Math.round(n * k); i < N; i++) fn(); };
   const px = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(Math.round(x), Math.round(y), w, h); };
   const P = { x: POND.x / 2, y: POND.y / 2, rx: POND.rx / 2, ry: POND.ry / 2 };
   const pv = (x, y) => ((x - P.x) / P.rx) ** 2 + ((y - P.y) / P.ry) ** 2;
   const put = (cv, x, y) => g.drawImage(cv, Math.round(x - cv.width / 2), Math.round(y - cv.height));   // 아래 가운데 기준
+  if (X) { const T = [74, 160, 240], B = [200, 232, 255]; for (let y = 0; y < 60; y++) { const t = Math.min(1, Math.floor(y / 4) * 4 / 48); px(xa, y, AW, 1, `rgb(${T.map((v, j) => Math.round(v + (B[j] - v) * t)).join(',')})`); } }
   // 땅: 세 가지 초록을 큰 얼룩으로 섞고 잔디 결
-  px(0, 44, PW, PH - 44, '#74bc4c');
-  for (let i = 0; i < 26; i++) { const cx = R() * PW, cy = 50 + R() * (PH - 50), rx = 10 + R() * 18, ry = rx * .45, col = R() < .5 ? '#6cb446' : '#7cc254';
-    for (let y = -ry; y <= ry; y++) for (let x = -rx; x <= rx; x++) if ((x / rx) ** 2 + (y / ry) ** 2 < 1 && ((x + y + 99) & 1 || (x / rx) ** 2 + (y / ry) ** 2 < .6)) px(cx + x, cy + y, 1, 1, col); }
+  px(0, 44, PW, PH - 44, '#74bc4c'); if (X) { px(xa, 44, OX, AH - 44, '#74bc4c'); px(PW, 44, xb - PW, AH - 44, '#74bc4c'); px(0, PH, PW, AH - PH, '#74bc4c'); }
+  const xy2 = () => { for (;;) { const x = xa + R2() * AW, y = 48 + R2() * (AH - 48); if (x < 0 || x >= PW || y >= PH) return [x, y]; } };   // 원래 맵 밖 자리
+  const blot = (cx, cy, rx, col) => { const ry = rx * .45; for (let y = -ry; y <= ry; y++) for (let x = -rx; x <= rx; x++) if ((x / rx) ** 2 + (y / ry) ** 2 < 1 && ((x + y + 99) & 1 || (x / rx) ** 2 + (y / ry) ** 2 < .6)) px(cx + x, cy + y, 1, 1, col); };
+  for (let i = 0; i < 26; i++) { const cx = R() * PW, cy = 50 + R() * (PH - 50), rx = 10 + R() * 18, col = R() < .5 ? '#6cb446' : '#7cc254'; blot(cx, cy, rx, col); }
+  extra(26, () => { const [cx, cy] = xy2(); blot(cx, cy, 10 + R2() * 18, R2() < .5 ? '#6cb446' : '#7cc254'); });
   for (let i = 0; i < 900; i++) { const x = R() * PW, y = 48 + R() * (PH - 48); if (pv(x, y) < 1.3) continue; const k = R(); px(x, y, 1, 2, k < .5 ? '#5aa23a' : '#8ccc62'); if (k < .25) px(x + 1, y - 1, 1, 2, '#5aa23a'); }
+  extra(900, () => { const [x, y] = xy2(), k = R2(); px(x, y, 1, 2, k < .5 ? '#5aa23a' : '#8ccc62'); if (k < .25) px(x + 1, y - 1, 1, 2, '#5aa23a'); });
   // v3.56 경완: 먼 숲은 없애고 가까운 숲 줄만. 열매나무와 같은 방식의 작은 나무를 두 줄로 (하늘이 보이게 낮게)
   { const flip = (cv) => { const c2 = document.createElement('canvas'); c2.width = cv.width; c2.height = cv.height; const q = c2.getContext('2d'); q.translate(cv.width, 0); q.scale(-1, 1); q.drawImage(cv, 0, 0); return c2; };
     const b1 = ART.treeS(51, -.28), b2 = ART.treeS(83, -.28), f1 = ART.treeS(117, -.05), f2 = ART.treeS(201, -.05), T = [b1, flip(b2), flip(b1), b2, f1, flip(f2), flip(f1), f2];
@@ -4429,23 +4439,32 @@ function drawBg() {
     const edge = x => 57 + Math.round(Math.sin(x * .37) * 1.2 + Math.sin(x * .11 + 1) * 1.4);   // 숲 밑동 선 (들쭉날쭉)
     // 숲 안 그늘: 위(안쪽)로 갈수록 짙게
     const DEEP = ['#0a170c', '#0e1f10', '#132a15', '#19351b', '#204222', '#2a5229'];
-    for (let x = 0; x < PW; x++) { const top = 33 + Math.round(Math.sin(x * .5) * 1.5 + Math.sin(x * .17) * 1.5), bot = edge(x);
+    for (let x = xa; x < xb; x++) { const top = 33 + Math.round(Math.sin(x * .5) * 1.5 + Math.sin(x * .17) * 1.5), bot = edge(x);
       for (let y = top; y < bot; y++) { const k = (y - top) / (bot - top) * (DEEP.length - 1), i = Math.floor(k); px(x, y, 1, 1, DEEP[Math.min(DEEP.length - 1, i + (dith(x, y, k - i) ? 1 : 0))]); } }
     const d1 = shade(sc(b1, .62), .6), d2 = shade(sc(flip(b2), .62), .6);
-    for (let x = 3, i = 0; x < PW + 10; x += 8 + (i % 2) * 2, i++) put(i % 2 ? d1 : d2, x, 47 + (i % 3));
+    const row = (x0, st, xe, f) => { for (let x = x0, i = 0; x < Math.max(PW, xb) + xe; x += st(i), i++) f(x, i); if (X) for (let x = x0, i = 0; x > xa - xe;) { i--; x -= st(((i % 12) + 12) % 12); f(x, ((i % 12) + 12) % 12); } };   // 왼쪽으로도 같은 간격으로
+    row(3, i => 8 + (i % 2) * 2, 10, (x, i) => put(i % 2 ? d1 : d2, x, 47 + (i % 3)));
     const M = [T[0], T[1], T[2], T[3]].map(t => shade(sc(t, .8), .32));
-    for (let x = -4, i = 0; x < PW + 12; x += 11 + (i % 3) * 2, i++) put(M[i % 4], x, 52 + (i % 2));
-    for (let x = 1, i = 0; x < PW + 14; x += 17 + (i % 2) * 3, i++) put(T[4 + (i % 4)], x, 55 + (i % 2));
+    row(-4, i => 11 + (i % 3) * 2, 12, (x, i) => put(M[i % 4], x, 52 + (i % 2)));
+    row(1, i => 17 + (i % 2) * 3, 14, (x, i) => put(T[4 + (i % 4)], x, 55 + (i % 2)));
     // 경계: 숲 그늘이 풀밭으로 번지며 서서히 옅어진다 (14줄)
-    for (let x = 0; x < PW; x++) { const e = edge(x); for (let y = e; y < e + 18; y++) { const t = (y - e) / 18; if (R() < (1 - t) ** 1.6 * .85) px(x, y, 1, 1, t < .3 ? '#3f8a34' : t < .6 ? '#4f9a3c' : '#62ac44'); } }
+    const fade = (x, Rf) => { const e = edge(x); for (let y = e; y < e + 18; y++) { const t = (y - e) / 18; if (Rf() < (1 - t) ** 1.6 * .85) px(x, y, 1, 1, t < .3 ? '#3f8a34' : t < .6 ? '#4f9a3c' : '#62ac44'); } };
+    for (let x = 0; x < PW; x++) fade(x, R); if (X) { for (let x = xa; x < 0; x++) fade(x, R2); for (let x = PW; x < xb; x++) fade(x, R2); }
     // 밑동: 고사리·풀숲이 나무 아래를 덮는다
     const UG = ['#2c5e26', '#3a7a30', '#4c9038', '#5ea844'];
-    for (let x = -2; x < PW + 2; x++) { const e = edge(x), h = 3 + Math.floor(R() * 4) + (Math.sin(x * .9) > .6 ? 2 : 0);
-      for (let y = 0; y < h; y++) px(x, e + 1 - y, 1, 1, UG[Math.min(3, Math.floor((y / h) * 3 + (R() < .3 ? 1 : 0)))]); }
-    for (let i = 0; i < 26; i++) { const cx = R() * PW, e = edge(Math.round(cx)) + 1, rw = 3 + R() * 4, rh = 2 + R() * 2.5;
-      for (let y = -rh; y <= 0; y++) for (let x = -rw; x <= rw; x++) if ((x / rw) ** 2 + (y / rh) ** 2 < 1) px(cx + x, e + y, 1, 1, y < -rh * .5 ? (x < 0 ? UG[3] : UG[2]) : (x + y) & 1 ? UG[1] : UG[2]); }
-    for (let i = 0; i < 60; i++) { const x = R() * PW, e = edge(Math.round(x)) + 2 + R() * 6; px(x, e, 1, 2, R() < .5 ? '#3f8a34' : '#5aa23a'); }
-    const bigT = ART.tree(7373, 0); put(bigT, -14, 92); put(flip(bigT), PW + 12, 98); }
+    const ug = (x, Rf) => { const e = edge(x), h = 3 + Math.floor(Rf() * 4) + (Math.sin(x * .9) > .6 ? 2 : 0);
+      for (let y = 0; y < h; y++) px(x, e + 1 - y, 1, 1, UG[Math.min(3, Math.floor((y / h) * 3 + (Rf() < .3 ? 1 : 0)))]); };
+    for (let x = -2; x < PW + 2; x++) ug(x, R); if (X) { for (let x = xa; x < -2; x++) ug(x, R2); for (let x = PW + 2; x < xb; x++) ug(x, R2); }
+    const clump = (cx, Rf) => { const e = edge(Math.round(cx)) + 1, rw = 3 + Rf() * 4, rh = 2 + Rf() * 2.5;
+      for (let y = -rh; y <= 0; y++) for (let x = -rw; x <= rw; x++) if ((x / rw) ** 2 + (y / rh) ** 2 < 1) px(cx + x, e + y, 1, 1, y < -rh * .5 ? (x < 0 ? UG[3] : UG[2]) : (x + y) & 1 ? UG[1] : UG[2]); };
+    for (let i = 0; i < 26; i++) clump(R() * PW, R);
+    const tick = (x, Rf) => { const e = edge(Math.round(x)) + 2 + Rf() * 6; px(x, e, 1, 2, Rf() < .5 ? '#3f8a34' : '#5aa23a'); };
+    for (let i = 0; i < 60; i++) tick(R() * PW, R);
+    if (X) { const n = (xb - xa - PW) / PW; for (let i = 0; i < 26 * n; i++) clump(side(), R2); for (let i = 0; i < 60 * n; i++) tick(side(), R2); }
+    const bigT = ART.tree(7373, 0); put(bigT, -14, 92); put(flip(bigT), PW + 12, 98);
+    if (X) { // 늘어난 양옆: 숲 가장자리 큰 나무를 띄엄띄엄
+      for (let x = -14 - 70 - Math.round(R2() * 30); x > xa - 30; x -= 70 + Math.round(R2() * 40)) put(R2() < .5 ? bigT : flip(bigT), x, 88 + Math.round(R2() * 12));
+      for (let x = PW + 12 + 70 + Math.round(R2() * 30); x < xb + 30; x += 70 + Math.round(R2() * 40)) put(R2() < .5 ? bigT : flip(bigT), x, 88 + Math.round(R2() * 12)); } }
   // 흙길: 아래 왼쪽에서 모닥불 쪽으로, 가장자리에 풀이 덮이고 자갈이 박힘
   const bez = (t, a, b, c2, d) => (1 - t) ** 3 * a + 3 * (1 - t) ** 2 * t * b + 3 * (1 - t) * t * t * c2 + t ** 3 * d;
   const path = []; for (let t = 0; t <= 1; t += .003) { const Q = LAYOUT.path.map(([x, y]) => [x / 2, y / 2]); path.push([bez(t, Q[0][0], Q[1][0], Q[2][0], Q[3][0]), bez(t, Q[0][1], Q[1][1], Q[2][1], Q[3][1])]); }
@@ -4488,6 +4507,15 @@ function drawBg() {
   { const [cx, cy] = [FLOWERBED.x / 2, FLOWERBED.y / 2];
     for (let y = -6; y <= 6; y++) for (let x = -19; x <= 19; x++) { const q = (x / 19) ** 2 + (y / 6.5) ** 2; if (q > 1) continue; px(cx + x, cy + y, 1, 1, q > .8 ? '#5e3c20' : (y + 6) % 4 === 0 ? '#6e4626' : (y + 6) % 4 === 1 ? '#a8764a' : '#8a5c34'); }
     for (let x = -18; x <= 18; x++) if (R() < .4) px(cx + x, cy - 6 - (R() < .5 ? 1 : 0), 1, 1, '#5aa23a'); }
+  if (X) { // 늘어난 자리 장식: 덤불·바위·꽃·버섯·키 큰 풀 (아래로 갈수록 앞쪽이라 y 순서대로)
+    const D = [], FK = ['sun', 'tulip', 'daisy', 'pink', 'bell', 'grass', 'tall'];
+    extra(5, () => D.push(['bush', ...xy2()])); extra(6, () => D.push(['rock', ...xy2()])); extra(22, () => D.push(['flw', ...xy2()])); extra(4, () => D.push(['mush', ...xy2()])); extra(8, () => D.push(['tall', ...xy2()]));
+    D.filter(d => d[2] > 74).sort((a, b) => a[2] - b[2]).forEach(([k, x, y]) => {
+      if (k === 'bush') put(ART.bush(), x, y); else if (k === 'rock') put(ART.rock(8 + Math.round(R2() * 8), 6 + Math.round(R2() * 4), Math.round(R2() * 99) * 977, 1 + Math.round(R2())), x, y);
+      else if (k === 'flw') put(ART.flower(FK[Math.floor(R2() * FK.length)]), x, y);
+      else if (k === 'mush') { px(x, y - 2, 2, 3, '#f0e8d8'); px(x - 2, y - 4, 6, 2, '#d83838'); px(x - 1, y - 5, 4, 1, '#e85050'); px(x - 1, y - 4, 1, 1, '#fff'); px(x + 2, y - 4, 1, 1, '#fff'); }
+      else tall(x, y, 3 + Math.floor(R2() * 3)); });
+    g.setTransform(1, 0, 0, 1, 0, 0); }
 }
 const FIRE = LAYOUT.fire, FLOWERBED = LAYOUT.bed;
 const PROPS = { tree: LAYOUT.tree, perch: LAYOUT.perch, bushes: LAYOUT.bushes, puddles: LAYOUT.puddles };
@@ -4949,9 +4977,9 @@ let scale = 1;
 function fit() {
   const w = wrap.clientWidth, h = wrap.clientHeight;
   if (!w || !h) return;
-  if (document.body.classList.contains('szMode')) {   // v3.81 작업실 크기 조절 모드: 맵 높이를 화면에 맞추고 옆으로는 맵 그림을 이어 붙여 화면 가득
-    scale = h / H; XL = 0; XR = w / scale; S.ox = 0; S.oy = 0; stage.style.transform = `scale(${scale})`;
-    if (SZB.bg) wrap.style.background = `url(${SZB.bg}) 0 0/${W * scale}px ${H * scale}px repeat-x, #2f4a2c`, wrap.style.backgroundAttachment = 'local'; SZB.rows?.(); return;
+  if (document.body.classList.contains('szMode')) {   // v3.83 작업실 크기 조절 모드: 맵 높이를 화면에 맞추고, 원래 맵은 가운데·양옆은 이어 그린 맵 (SZB.paint)
+    scale = h / H; const vw = w / scale, ox = Math.max(0, Math.round((vw - W) / 4)); S.ox = ox * 2 * scale; S.oy = 0; XL = -ox * 2; XR = XL + vw;
+    stage.style.transform = `translate(${S.ox}px,0) scale(${scale})`; SZB.rows?.(); return;
   }
   if (narrow.matches) {
     // phones: the meadow fills the height; only a window of it is shown, and Pokémon keep to it
@@ -5139,7 +5167,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.82';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.83';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7655,7 +7683,7 @@ if (/[?&]studio/.test(location.search)) {
 #stHands .h{position:absolute;border-radius:4px;touch-action:none;cursor:grab}
 #stHands .h:hover{outline:1px dashed rgba(127,215,239,.7)}
 #stHands .h.sel{outline:2px solid #7fd7ef;outline-offset:1px;background:rgba(127,215,239,.14)}
-.mon.stMark:has(.stbox.hov),.mon.stMark:has(.stbox.on){z-index:99999!important}body.szMode #wrap{overflow:auto}body.szMode .app>:not(.stage-wrap):not(#glows){display:none!important}body.szMode .stage{box-shadow:none}body.szMode #night,body.szMode #skyFx,body.szMode #skyC,body.szMode #items,body.szMode #propFx{display:none}body.szMode .mon .shadow{opacity:.5}
+.mon.stMark:has(.stbox.hov),.mon.stMark:has(.stbox.on){z-index:99999!important}body.szMode #wrap{overflow:auto}body.szMode .app>:not(.stage-wrap):not(#glows){display:none!important}body.szMode .stage{box-shadow:none}body.szMode #night,body.szMode #skyFx,body.szMode #skyC,body.szMode #bg,body.szMode #items,body.szMode #propFx{display:none}body.szMode #wrap{background:#74bc4c}body.szMode .mon .shadow{opacity:.5}
 .stbox{position:absolute;bottom:0;border:1px dashed rgba(127,215,239,0);pointer-events:none;z-index:5;transition:border-color .12s}.stbox.hov,.stbox.on{border-color:rgba(127,215,239,.9)}.stbox i{position:absolute;width:12px;height:12px;background:#7fd7ef;border:2px solid #10303a;opacity:0;pointer-events:none}.stbox.hov i,.stbox.on i{opacity:1;pointer-events:auto}.stbox i[data-c=tl]{left:-7px;top:-7px;cursor:nwse-resize}.stbox i[data-c=tr]{right:-7px;top:-7px;cursor:nesw-resize}.stbox i[data-c=bl]{left:-7px;bottom:-7px;cursor:nesw-resize}.stbox i[data-c=br]{right:-7px;bottom:-7px;cursor:nwse-resize}
 .mon.stMark{filter:drop-shadow(2px 0 0 #7fd7ef) drop-shadow(-2px 0 0 #7fd7ef) drop-shadow(0 2px 0 #7fd7ef) drop-shadow(0 -2px 0 #7fd7ef) drop-shadow(0 0 5px #7fd7ef)}
 #stHands .dot{width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#c08850;border:2px solid #fff;box-sizing:border-box;display:none}
@@ -7850,12 +7878,15 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   SZB.rows = () => { const L = S.mons.filter(m => m.szb), gap = 22, x0 = XL + 18, x1 = XR - 14; let rows = [], row = [], x = x0;
     for (const m of L) { const w = m.w || 50; if (x + w > x1 && row.length) { rows.push(row); row = []; x = x0; } row.push(m); x += w + gap; } if (row.length) rows.push(row);
     let by = 70; for (const r of rows) { by += Math.max(...r.map(m => m.h || 60)); let cx = x0; for (const m of r) { const w = m.w || 50; m.x = m.tx = cx + w / 2; m.y = m.ty = by; cx += w + gap; } by += 30; }
-    stage.style.height = Math.max(H, by + 20) + 'px'; $('#szSp') && ($('#szSp').style.height = Math.max(H, by + 20) * scale + 'px'); };
+    stage.style.height = Math.max(H, by + 20) + 'px'; $('#szSp') && ($('#szSp').style.height = Math.max(H, by + 20) * scale + 'px'); SZB.paint(); };
+  SZB.paint = () => { const c = $('#szBg'); if (!c) return; const sh = Math.max(H, parseFloat(stage.style.height) || H), ox = Math.round(S.ox / scale / 2), AW = Math.ceil(wrap.clientWidth / scale / 2) + 1, AH = Math.ceil(sh / 2), key = [AW, AH, ox, scale].join();
+    if (SZB.key !== key) { SZB.key = key; drawBg({ c, w: AW, h: AH, ox }); } Object.assign(c.style, { width: AW * 2 * scale + 'px', height: AH * 2 * scale + 'px' }); };
   api.sizeMode = async on => { if (!!on === !!SZB.on) return;
     if (on) { SZB.on = true; SZB.keep = S.mons.map(m => ({ sp: m.sp, x: m.x, y: m.y, pid: m.pid, name: m.name, uid: m.uid })); SZB.sf = saveFrozen; saveFrozen = true; api.markMon(null);
-      for (const m of [...S.mons]) removeMon(m, true); try { SZB.bg = $('#bg').toDataURL('image/jpeg', .85); } catch (e) { SZB.bg = null; }
+      for (const m of [...S.mons]) removeMon(m, true); SZB.key = null;
+      const cv = document.createElement('canvas'); cv.id = 'szBg'; cv.style.cssText = 'position:absolute;left:0;top:0;image-rendering:pixelated;pointer-events:none'; wrap.insertBefore(cv, stage);
       const sp = document.createElement('div'); sp.id = 'szSp'; sp.style.cssText = 'position:absolute;left:0;top:0;width:1px;pointer-events:none'; wrap.append(sp); document.body.classList.add('szMode'); fit(); return; }
-    api.markMon(null); for (const m of [...S.mons]) removeMon(m, true); SZB.on = false; document.body.classList.remove('szMode'); $('#szSp')?.remove(); wrap.style.background = ''; stage.style.height = ''; wrap.scrollTop = 0; fit();
+    api.markMon(null); for (const m of [...S.mons]) removeMon(m, true); SZB.on = false; document.body.classList.remove('szMode'); $('#szSp')?.remove(); $('#szBg')?.remove(); stage.style.height = ''; wrap.scrollTop = 0; fit();
     saveFrozen = SZB.sf; const K = SZB.keep || []; SZB.keep = null; for (const o of K) { const m = await spawn(o.sp, { ...o, quiet: true }); m.studio = true; } save(); };
   api.szAdd = async sp => { if (!SZB.on) return null; const m = await spawn(sp, { x: XL + 30, y: 200, quiet: true }); if (!SZB.on) { removeMon(m, true); return null; } m.szb = m.pin = m.frz = true; m.studio = true; m.el.classList.add('szb'); m.state = 'idle'; SZB.rows(); return m.uid; };
   api.szList = () => S.mons.filter(m => m.szb).map(m => ({ uid: m.uid, sp: m.sp, name: m.name }));

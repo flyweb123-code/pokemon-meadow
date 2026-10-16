@@ -94,7 +94,8 @@ input[type=range]{accent-color:var(--acc);flex:1;min-width:120px;max-width:260px
 .addp img{height:22px;image-rendering:pixelated}
 .addp .ph{height:22px;display:grid;place-items:center;font-size:14px}
 .card{background:var(--panel);border:1px solid var(--chip);border-radius:6px;padding:12px 14px;display:grid;gap:10px}
-.cards{display:grid;gap:12px;max-width:980px}
+.cards{display:grid;gap:12px;max-width:980px}#poolC{max-width:1290px;grid-template-columns:minmax(0,980px) 280px;align-items:start}#poolC>*{grid-column:1}#poolC>.pside{grid-column:2;grid-row:1/span 3;position:sticky;top:0}.tov{width:100%}.tov td,.tov th{padding:4px 6px}.tov .r{text-align:right}
+.vc:has(>#poolC){container-type:inline-size}@container (max-width:1000px){#poolC{grid-template-columns:minmax(0,1fr)}#poolC>.pside{grid-column:1;grid-row:auto;position:static}}
 .odd{display:grid;grid-template-columns:76px minmax(0,1fr) 96px;align-items:center;gap:10px}
 .odd b{font-weight:600}
 .bar{height:10px;display:flex;overflow:hidden;border-radius:3px;background:rgba(128,128,128,.2)}
@@ -138,7 +139,7 @@ table.t th{font-family:var(--px);font-size:11px;font-weight:400;color:var(--mute
 .tadd{display:flex;flex-wrap:wrap;align-items:center;gap:4px}.tadd .chip{min-height:26px;padding:0 4px}
 .pr:hover{background:#30343f}.pr.on{background:var(--chip);box-shadow:inset 3px 0 0 var(--acc)}
 .pr img{width:36px;height:36px;object-fit:contain;image-rendering:pixelated}
-.pr{cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.pr .hd{display:flex;gap:4px;align-items:center;color:var(--soft)}.pr.drop{box-shadow:inset 0 2px 0 var(--acc)}.prs{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;text-align:left}.prs:hover{color:var(--acc)}.pr.drag{opacity:.35;filter:grayscale(1)}.prg{position:fixed;z-index:60;pointer-events:none;opacity:.6;box-shadow:0 8px 24px rgba(0,0,0,.45);background:var(--panel);border-radius:6px;margin:0}
+.pr{cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.pr .hd{display:flex;gap:4px;align-items:center;color:var(--soft)}.pr.drop{box-shadow:inset 0 2px 0 var(--acc)}.prs{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;text-align:left}.prs:hover{color:var(--acc)}.pr.drag{opacity:.35;filter:grayscale(1)}.prg{position:fixed;z-index:60;pointer-events:none;opacity:.6;box-shadow:0 8px 24px rgba(0,0,0,.45);background:var(--panel);border-radius:6px;margin:0}
 .pr .p{font-family:var(--px);text-align:right;font-size:12px}.pr .pa{display:grid;justify-items:end;font-family:var(--px);font-size:12px;color:var(--soft);line-height:1.2}.pr .pa small{font-size:10px;color:var(--mute)}.prh .r{text-align:right}
 
 .tag{font-family:var(--px);font-size:11px;font-weight:700;padding:1px 6px;border-radius:3px;color:#14161c;white-space:nowrap;text-shadow:0 1px 0 rgba(255,255,255,.35)}
@@ -191,7 +192,9 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 .slots .sl{position:relative;aspect-ratio:1;display:grid;place-items:center;background:var(--chip);border:1px solid var(--chipb);border-radius:4px;padding:0;overflow:hidden}
 .slots .sl img{max-width:82%;max-height:70%;image-rendering:pixelated}.slots .sl .nm{position:absolute;left:0;right:0;bottom:2px;font-size:10.5px;color:var(--soft);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 3px}
 .slots .sl.empty{background:none;border-style:dashed;color:var(--soft);font-size:22px}.slots .sl.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
-body.szmode #mapBox{position:fixed;inset:0;z-index:60;height:auto!important;background:#10141a;border:0}body.szmode #phone{left:0;top:52px;right:0;bottom:0;width:auto!important;height:auto!important;transform:none!important;border-radius:0!important;box-shadow:none}body.szmode #sbar,body.szmode #safeZ,body.szmode #hotPop,body.szmode #ebar,body.szmode #gLoad{display:none!important}body.szmode #spx{z-index:70}body.szmode.szspx #phone{left:268px}
+body.szmode #mapBox{background:#10141a}body.szmode #phone{left:0;top:52px;right:0;bottom:0;width:auto!important;height:auto!important;transform:none!important;border-radius:0!important;box-shadow:none}
+body.szmode #mapI>:not(#szPane){display:none!important}body.szmode #mapI{display:grid;grid-template-rows:minmax(0,1fr);align-content:stretch;overflow:hidden}#szPane{display:none}body.szmode #szPane{display:grid;grid-template-rows:auto auto auto minmax(0,1fr);gap:8px;min-height:0}
+#szPane .grid{overflow:auto;align-content:start;grid-auto-rows:70px;grid-template-columns:repeat(auto-fill,minmax(60px,1fr))}#szPane .mc{aspect-ratio:auto;height:70px}#szPane .mc img{bottom:14px;max-height:50px}#szPane .zh b{font-family:var(--px);font-weight:400;color:var(--acc);font-size:13px}body.szmode #sbar,body.szmode #safeZ,body.szmode #hotPop,body.szmode #ebar,body.szmode #gLoad{display:none!important}
 #szBar{position:absolute;left:0;right:0;top:0;height:52px;display:flex;align-items:center;gap:8px;padding:0 12px;background:var(--panel);border-bottom:1px solid var(--line);z-index:2;overflow-x:auto;white-space:nowrap}#szBar>b{font-family:var(--px);font-weight:400;color:var(--acc);margin-right:6px}#szBar .sp{flex:1}#szSel{display:inline-flex;align-items:center;gap:6px}
 #spx{position:fixed;z-index:56;left:8px;top:8px;height:400px;width:252px;background:var(--panel);border:1px solid var(--chipb);border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:10px;display:grid;grid-template-rows:auto auto auto minmax(0,1fr);gap:8px}
 #spx .zh{display:flex;align-items:center;gap:8px}#spx .zh b{flex:1;font-family:var(--px);font-weight:400;color:var(--acc);font-size:13px}
@@ -344,7 +347,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <div id="eSave"></div><div id="editPane" hidden><div class="addp" id="addp"></div></div>
 </div><div class="load" id="gLoad">게임 불러오는 중…</div></div>
       </div>
-      <aside class="vi" id="mapI">
+      <aside class="vi" id="mapI"><div id="szPane"></div>
         <div style="display:grid;gap:8px">
           <h4>필드 포켓몬</h4>
           <div class="small mute">지금 맵에 나와 있는 포켓몬이에요. 빈 칸을 누르면 왼쪽에 포켓몬 목록이 떠요. 목록에서 누르거나 끌어 맵에 놓으면 나와요.</div>
@@ -439,7 +442,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.17';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.18';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -679,15 +682,16 @@ function renderReact(k) {
 }
 // v1.5 경완: 반응 분류를 누르면 왼쪽에 그 분류 포켓몬 목록. 끌어서 맵에 놓는다. 한 번 더 누르면 닫힌다
 let spxKey = null, spxL = [], spxQ = '';
-function openSpx(key, title, L) { spxKey = key; spxL = L; spxQ = ''; const e = $('#spx'); e.hidden = false;
-  e.innerHTML = `<div class="zh"><b>${esc(title)}</b><button class="chip" id="spxX" aria-label="닫기">✕</button></div><div class="small mute">${L.length}종 · 누르면 맵에 나와요 (끌어서 원하는 곳에 놓아도 돼요)</div><div class="search"><input id="spxQ" placeholder="이름이나 번호" autocomplete="off" enterkeyhint="search"></div><div class="grid" id="spxG"></div>`;
-  $('#spxX').onclick = closeSpx; spxPos(); if (mobile()) $('#mapBox').scrollIntoView({ behavior: 'smooth', block: 'start' }); $('#spxQ').oninput = ev => { spxQ = ev.target.value; fillSpx(); }; fillSpx(); $$('.react .rx').forEach(c => c.classList.toggle('on', c.dataset.rk + ':' + c.dataset.ri === key)); }
+function openSpx(key, title, L) { spxKey = key; spxL = L; spxQ = ''; $('#spx').innerHTML = $('#szPane').innerHTML = ''; const e = szOn ? $('#szPane') : $('#spx'); e.hidden = false;   // v2.18 경완: 크기 조절 모드에서는 오른쪽 창에
+  e.innerHTML = `<div class="zh"><b>${esc(title)}</b>${szOn ? '' : '<button class="chip" id="spxX" aria-label="닫기">✕</button>'}</div><div class="small mute">${L.length}종 · 누르면 맵에 나와요 (끌어서 원하는 곳에 놓아도 돼요)</div><div class="search"><input id="spxQ" placeholder="이름이나 번호" autocomplete="off" enterkeyhint="search"></div><div class="grid" id="spxG"></div>`;
+  if ($('#spxX')) $('#spxX').onclick = closeSpx; if (!szOn) spxPos(); if (mobile()) $('#mapBox').scrollIntoView({ behavior: 'smooth', block: 'start' }); $('#spxQ').oninput = ev => { spxQ = ev.target.value; fillSpx(); }; fillSpx(); $$('.react .rx').forEach(c => c.classList.toggle('on', c.dataset.rk + ':' + c.dataset.ri === key)); }
 function spxPos() { const e = $('#spx'); document.body.classList.toggle('szspx', szOn && !e.hidden); if (szOn) { Object.assign(e.style, { left: '8px', top: '60px', width: '252px', height: (innerHeight - 68) + 'px' }); return; } if (mobile()) { e.style.left = e.style.top = e.style.height = e.style.width = ''; return; } if (winApply(e)) return; const s = $('#mapI').getBoundingClientRect(), m = $('#mapBox').getBoundingClientRect(); e.style.width = '252px'; e.style.left = (s.left - 260) + 'px'; e.style.top = (m.top + 8) + 'px'; e.style.height = (m.height - 16) + 'px'; }   // v1.8 경완: 오른쪽 칸 바로 왼쪽
 function fillSpx() { const q = spxQ.trim(), L = q ? spxL.filter(sp => String(sp) === q || spName(sp).includes(q)) : spxL;
   $('#spxG').innerHTML = L.slice(0, 400).map(sp => `<button class="mc" data-sp="${sp}" title="${esc(spName(sp))}"><span class="no">${sp}</span><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('') + (L.length > 400 ? `<div class="small mute" style="grid-column:1/-1">앞의 400종만 보여요. 이름으로 찾아 주세요.</div>` : '') || '<div class="empty">찾는 포켓몬이 없어요</div>'; fillThumbs($('#spxG')); }
-function closeSpx() { spxKey = null; $('#spx').hidden = true; document.body.classList.remove('szspx'); $$('.react .rx').forEach(c => c.classList.remove('on')); }
+function closeSpx() { spxKey = null; $('#spx').hidden = true; $('#spx').innerHTML = $('#szPane').innerHTML = ''; document.body.classList.remove('szspx'); $$('.react .rx').forEach(c => c.classList.remove('on')); }
 $('#react').onclick = e => { const b = e.target.closest('.rx'); if (!b || !A?.reactSps) return; const key = b.dataset.rk + ':' + b.dataset.ri; if (spxKey === key) return closeSpx();
   const L = A.reactSps(b.dataset.rk, +b.dataset.ri); if (!L) { toast('비 올 때 저절로 나오는 반응이에요'); return; } openSpx(key, `${RNAME[b.dataset.rk]} · ${b.textContent}`, L); };
+$('#szPane').addEventListener('pointerdown', e => { const b = e.target.closest('.mc'); if (b && e.button === 0) startPalDrag(e, +b.dataset.sp); });
 $('#spx').addEventListener('pointerdown', e => { const b = e.target.closest('.mc'); if (b && e.button === 0) startPalDrag(e, +b.dataset.sp); });
 function hourTxt(h) { const H = Math.floor(h), M = Math.round((h - H) * 60); const ph = h < 4 ? '한밤' : h < 5.5 ? '새벽' : h < 7 ? '해돋이' : h < 10 ? '아침' : h < 14 ? '한낮' : h < 16.5 ? '오후' : h < 18.6 ? '노을' : h < 20 ? '저녁' : '밤'; return `${String(H).padStart(2, '0')}:${String(M).padStart(2, '0')} ${ph}`; }
 $('#hr').oninput = e => { const h = +e.target.value; A?.setHour(h); $('#hrT').textContent = hourTxt(h); $('#hrNow').classList.remove('on'); statusBar(); };
@@ -718,7 +722,7 @@ function onSel(s, nUndo) {
 }
 // v2.12 경완: 필드 포켓몬 칸을 누르면 그 포켓몬 종의 필드 크기를 바꾼다. 바꾸면 편집하기 옆에 저장 버튼
 // v2.15 경완: 맵에서 고른 포켓몬 상자 모서리를 끌어 크기 (게임 쪽이 비율 그대로 바꿔 알려 줌)
-// v2.16 경완: 크기 조절 모드. 화면 가득한 맵에 포켓몬을 제한 없이 줄지어 세워 두고(움직임 없음) 모서리를 끌어 크기를 맞춘다. 크기 저장 → 배포하면 게임에도
+// v2.16 경완: 크기 조절 모드 (v2.18: 가운데 맵 칸만 채우고, 포켓몬 넣기 목록은 오른쪽 창). 화면 가득한 맵에 포켓몬을 제한 없이 줄지어 세워 두고(움직임 없음) 모서리를 끌어 크기를 맞춘다. 크기 저장 → 배포하면 게임에도
 let szOn = false, szCur = null;
 async function szSet(on) { if (on === szOn || !A?.sizeMode) return; szOn = on; if (on) { setEdit(false); unmarkMon(); }
   closeSpx(); document.body.classList.toggle('szmode', on); $('#szBar').hidden = !on; szCur = null; szInfo();
@@ -728,7 +732,7 @@ function szInfo() { const e = $('#szSel'); if (!szCur) { e.innerHTML = '<span cl
   const v = Math.round((effP(D, 'monSc')[szCur.sp] || 1) * 100); e.innerHTML = `<b>${esc(spName(szCur.sp))}</b> <span class="num">${v}%</span> <button class="chip" id="szOne"${v === 100 ? ' disabled' : ''}>100%</button> <button class="chip" id="szDel">빼기</button>`; }
 $('#szMode').onclick = () => szSet(!szOn);
 $('#szExit').onclick = () => szSet(false);
-$('#szAdd').onclick = () => { if (spxKey === 'all') return closeSpx(); openSpx('all', '포켓몬 넣기', Object.keys(A.SPECIES).map(Number).sort((a, c) => a - c)); };
+$('#szAdd').onclick = () => { if (spxKey !== 'all') openSpx('all', '포켓몬 넣기', Object.keys(A.SPECIES).map(Number).sort((a, c) => a - c)); $('#spxQ')?.focus(); };
 $('#szRand').onclick = async () => { const all = Object.keys(A.SPECIES).map(Number); for (let i = 0; i < 10; i++) await A.szAdd(all[Math.floor(Math.random() * all.length)]); szCount(); };
 $('#szClr').onclick = () => { A.szClear(); szCur = null; szInfo(); szCount(); };
 $('#szSel').onclick = e => { if (!szCur) return; if (e.target.id === 'szDel') { A.szRemove(szCur.uid); szCur = null; szInfo(); szCount(); return; }
@@ -1156,10 +1160,13 @@ function renderPool() {
     <div class="sum${Math.abs(tot - 100) > 1e-6 ? ' bad' : ''}">합계 <span class="num">${+tot.toFixed(3)}%</span>${Math.abs(tot - 100) > 1e-6 ? ' · 게임은 합계로 나눠서 써요 (100이 아니어도 비율대로)' : ''}${g >= 2 && effKt && Object.values(effKt).some(k => k > 0) ? ` · 가장 낮은 ${Math.max(...Object.keys(tab).filter(t => tab[t] > 0).map(Number))}티어는 '아래로 넘친 칸'이라 강한 종이 잘 나와요` : ''}</div>
   </div>
   <div class="card"><div class="row" style="flex-wrap:wrap"><h2 style="flex:1">나오는 포켓몬 <span class="num mute">${rows.length}종</span></h2><div class="search" style="min-width:160px"><input id="poolQ" value="${esc(poolQ)}" placeholder="이름 찾기" autocomplete="off"></div></div>
-    <div class="small mute">줄을 잡고 끌면 순서가 바뀌어요 (휴대폰은 꾹 누른 뒤). 위일수록 자주 나와요. "이 알에서"는 이 알이 나왔을 때 그 포켓몬일 확률, "알 1개당 전체"는 알을 하나 주웠을 때 (어느 등급이든) 그 포켓몬일 확률이에요. 다른 알로 옮기려면 포켓몬을 누르고 오른쪽에서 골라요. 장소 테마·최근 부화 효과는 뺀 기본 확률이에요.</div>
+    <div class="small mute">위일수록 자주 나와요. "이 알에서"는 이 알이 나왔을 때 그 포켓몬일 확률, "알 1개당 전체"는 알을 하나 주웠을 때 (어느 등급이든) 그 포켓몬일 확률이에요. 어느 알에서 나올지는 포켓몬을 누르고 오른쪽에서 켜고 꺼요. 장소 테마·최근 부화 효과는 뺀 기본 확률이에요.</div>
     <div class="prh"><button class="prs" data-psort title="순위 정렬 바꾸기">순위 ${poolDesc ? '▼' : '▲'}</button><span></span><span>포켓몬</span><span>티어</span><span class="pb"></span><span class="r">이 알에서</span><span class="r" title="알을 1개 주웠을 때 이 포켓몬일 확률 (모든 알 등급 합)">알 1개당 전체</span></div>
-    <div class="plist" id="plist">${(a => poolDesc ? a.reverse() : a)(rows.map((r, i) => [r[0], r[1], i]).filter(([sp]) => !q || sp === q || spName(+sp).includes(q))).map(([sp, p, i]) => `<button class="pr${+sp === sel.pool ? ' on' : ''}" data-sp="${sp}"><span class="hd" title="줄을 끌어서 순서 바꾸기"><span class="num mute small">${i + 1}</span></span><img alt="" data-th="${sp}"><span class="pn">${esc(spName(+sp))}</span><span class="tag" style="background:${TC(tierOfSp(+sp))};justify-self:start">${tierOfSp(+sp)}</span><span class="pb"><i style="width:${p / max * 100}%;background:${TC(tierOfSp(+sp))}"></i></span><span class="p">${pct(p)}</span><span class="pa">${pct(ALLP[sp] || 0)}<small>${fmtKm(kmPer(ALLP[sp] || 0))}마다</small></span></button>`).join('')}${exOf(g).filter(sp => !q || String(sp) === q || spName(+sp).includes(q)).map(sp => `<button class="pr off${+sp === sel.pool ? ' on' : ''}" data-sp="${sp}" title="이 알에서 뺀 포켓몬 (눌러서 오른쪽에서 다시 켜요)"><span class="hd"><span class="num mute small">-</span></span><img alt="" data-th="${sp}"><span class="pn">${esc(spName(+sp))}</span><span class="tag" style="background:${TC(tierOfSp(+sp))};justify-self:start">${tierOfSp(+sp)}</span><span class="pb"></span><span class="p">뺌</span><span class="pa">-</span></button>`).join('')}</div>
-  </div>`;
+    <div class="plist" id="plist">${(a => poolDesc ? a.reverse() : a)(rows.map((r, i) => [r[0], r[1], i]).filter(([sp]) => !q || sp === q || spName(+sp).includes(q))).map(([sp, p, i]) => `<button class="pr${+sp === sel.pool ? ' on' : ''}" data-sp="${sp}"><span class="hd"><span class="num mute small">${i + 1}</span></span><img alt="" data-th="${sp}"><span class="pn">${esc(spName(+sp))}</span><span class="tag" style="background:${TC(tierOfSp(+sp))};justify-self:start">${tierOfSp(+sp)}</span><span class="pb"><i style="width:${p / max * 100}%;background:${TC(tierOfSp(+sp))}"></i></span><span class="p">${pct(p)}</span><span class="pa">${pct(ALLP[sp] || 0)}<small>${fmtKm(kmPer(ALLP[sp] || 0))}마다</small></span></button>`).join('')}${exOf(g).filter(sp => !q || String(sp) === q || spName(+sp).includes(q)).map(sp => `<button class="pr off${+sp === sel.pool ? ' on' : ''}" data-sp="${sp}" title="이 알에서 뺀 포켓몬 (눌러서 오른쪽에서 다시 켜요)"><span class="hd"><span class="num mute small">-</span></span><img alt="" data-th="${sp}"><span class="pn">${esc(spName(+sp))}</span><span class="tag" style="background:${TC(tierOfSp(+sp))};justify-self:start">${tierOfSp(+sp)}</span><span class="pb"></span><span class="p">뺌</span><span class="pa">-</span></button>`).join('')}</div>
+  </div>
+  <div class="card pside"><h2>티어별 전체 출현 확률</h2><div class="small mute">알을 1개 주웠을 때 (어느 등급이든) 그 티어 포켓몬이 나올 확률이에요.</div>
+    ${(() => { const TT = {}, TN = {}; for (const k in ALLP) { const t = tierOfSp(+k); TT[t] = (TT[t] || 0) + ALLP[k]; TN[t] = (TN[t] || 0) + 1; }
+      return `<table class="t tov"><tr><th>티어</th><th class="r">알 1개당</th><th class="r">거리</th></tr>${Array.from({ length: 10 }, (_, i) => 10 - i).map(t => `<tr><td><span class="tag" style="background:${TC(t)}">${t}</span> <span class="small mute">${TN[t] || 0}종</span></td><td class="num r">${TT[t] ? pct(TT[t]) : '-'}</td><td class="num r">${TT[t] ? fmtKm(kmPer(TT[t])) + '마다' : '-'}</td></tr>`).join('')}</table>`; })()}</div>`;
   fillThumbs($('#plist'));
   $('#poolQ').oninput = e => { poolQ = e.target.value; const p = e.target.selectionStart; renderPool(); const i = $('#poolQ'); i.focus(); i.setSelectionRange(p, p); };
   if (sel.pool) showPoolSp(sel.pool);
@@ -1169,21 +1176,9 @@ $('#poolC').addEventListener('click', e => { const tx = e.target.closest('[data-
     for (const k of ks) row[k] = Math.round((sum > 0 ? row[k] / sum : 1 / ks.length) * 1000) / 10; const diff = Math.round((100 - ks.reduce((a, k) => a + row[k], 0)) * 10) / 10; if (diff) { const k = ks.reduce((a, b) => row[a] >= row[b] ? a : b); row[k] = Math.round((row[k] + diff) * 10) / 10; }
     D.eggTiers = ET; if (JSON.stringify(ET) === JSON.stringify(ORIG.eggTiers)) delete D.eggTiers; saveDraft(); renderPool(); toast(`${t}티어를 뺐어요. 저장해야 반영돼요`); return; }
   const ta = e.target.closest('[data-ta]'); if (ta) { const ET = JSON.parse(JSON.stringify(eggTiers())); ET[sel.poolG][ta.dataset.ta] = 5; D.eggTiers = ET; saveDraft(); renderPool(); return; } if (e.target.closest('#elReset')) { setList(sel.poolG, null); renderPool(); toast('티어 비율로 되돌렸어요'); return; } if (Date.now() - prDragAt < 300) return; const c = e.target.closest('[data-g]'); if (c) { sel.poolG = +c.dataset.g; renderPool(); return; } const r = e.target.closest('.pr'); if (r) { sel.pool = +r.dataset.sp; $$('.pr').forEach(x => x.classList.toggle('on', x === r)); showPoolSp(sel.pool); toInsp('#poolI'); } });
-// 순서 끌기: 줄을 잡고 위아래로 (v2.9: 잡은 줄의 반투명 그림자가 손가락·마우스를 따라오고, 원래 줄은 흐리게)
+// v2.18 경완: 순서 끌기·다른 알로 옮기기는 뺐다 (알 켜고 끄기로 충분, 티어 안은 모두 같은 확률)
 let prDragAt = 0, poolDesc = store.get('st-pool-desc') === '1';   // v2.10 경완: 순위 오름차순/내림차순
 $('#poolC').addEventListener('click', e => { if (!e.target.closest('[data-psort]')) return; poolDesc = !poolDesc; store.set('st-pool-desc', poolDesc ? '1' : ''); renderPool(); });
-$('#poolC').addEventListener('pointerdown', e => { const row = e.target.closest('#plist .pr'); if (!row || row.classList.contains('off') || e.button > 0) return; const touch = e.pointerType !== 'mouse'; if (!touch) e.preventDefault();
-  const sp = +row.dataset.sp, x0 = e.clientX, y0 = e.clientY, R0 = row.getBoundingClientRect(); let on = false, over = null, lp = 0, gh = null, lx = x0, ly = y0;
-  const place = () => { if (gh) { gh.style.left = (R0.left + lx - x0) + 'px'; gh.style.top = (R0.top + ly - y0) + 'px'; } };
-  const begin = () => { on = true; gh = row.cloneNode(true); gh.classList.add('prg'); gh.classList.remove('on'); gh.style.width = R0.width + 'px'; gh.style.height = R0.height + 'px'; document.body.append(gh); place(); row.classList.add('drag'); navigator.vibrate?.(8); };
-  if (touch) lp = setTimeout(begin, 300);
-  const mv = ev => { lx = ev.clientX; ly = ev.clientY; if (!on) { if (Math.hypot(ev.clientX - x0, ev.clientY - y0) < 6) return; if (touch) return end(); begin(); }
-    place(); const el = document.elementFromPoint(ev.clientX, ev.clientY)?.closest('#plist .pr'); if (over && over !== el) over.classList.remove('drop'); over = el && el !== row ? el : null; over?.classList.add('drop');
-    const pl = $('#plist').closest('.scroll') || $('#poolC').closest('.scroll'), r = pl?.getBoundingClientRect(); if (r) { if (ev.clientY < r.top + 40) pl.scrollTop -= 12; else if (ev.clientY > r.bottom - 40) pl.scrollTop += 12; } };
-  const tm = ev => { if (on) ev.preventDefault(); };
-  const end = () => { clearTimeout(lp); removeEventListener('pointermove', mv); removeEventListener('pointerup', end); removeEventListener('pointercancel', end); removeEventListener('touchmove', tm); row.classList.remove('drag'); gh?.remove();
-    if (!on) return; prDragAt = Date.now(); if (!over) return; const to = listOf(sel.poolG).findIndex(r => r[0] === +over.dataset.sp); over.classList.remove('drop'); reorder(sel.poolG, sp, to); renderPool(); };
-  addEventListener('pointermove', mv); addEventListener('pointerup', end); addEventListener('pointercancel', end); addEventListener('touchmove', tm, { passive: false }); });
 $('#poolC').addEventListener('contextmenu', e => { if (e.target.closest('#plist .pr')) e.preventDefault(); });
 $('#poolC').addEventListener('change', e => { const t = e.target.dataset.t; if (!t) return; const v = parseFloat(e.target.value); if (isNaN(v) || v < 0) { renderPool(); return; }
   const ET = JSON.parse(JSON.stringify(eggTiers())), row = ET[sel.poolG]; if (v) row[t] = v; else delete row[t]; D.eggTiers = ET; if (JSON.stringify(ET) === JSON.stringify(ORIG.eggTiers)) delete D.eggTiers; saveDraft(); renderPool(); });
@@ -1217,18 +1212,12 @@ function showPoolSp(sp) {
   const L = tierLists(), Z = tierZ(L), O = odds(), per = [1, 2, 3, 4, 5].map(g => probOf(g, L, Z)[sp] || 0), all = per.reduce((a, p, i) => a + p * O[i], 0);
   $('#poolI').innerHTML = `<div class="row"><img src="${thumb(sp)}" alt="" style="width:56px;height:56px;object-fit:contain;image-rendering:pixelated"><div><h2>${esc(spName(sp))}</h2><span class="tag" style="background:${TC(tierOfSp(sp))}">${tierOfSp(sp)}티어</span> <span class="small mute">가족 최고 종족값 ${A.FAM_BST[sp]}</span></div></div>
     <h4>나오는 알</h4><div class="small mute">켜진 알에서 나와요. 눌러서 끄면 그 알에서는 안 나와요 (그 몫은 같은 티어의 다른 포켓몬에게). 흐린 알은 이 포켓몬 티어가 없는 알이에요.</div>
-    <div class="egt">${[1, 2, 3, 4, 5].map(g => { const nat = inEgg(g, sp), ex = exOf(g).includes(sp); return `<button class="${nat && !ex ? 'on' : ''}${ex ? ' ex' : ''}" data-ex="${g}"${nat ? '' : ' disabled'} title="${nat ? (ex ? '눌러서 다시 나오게' : '눌러서 이 알에서 빼기') : '이 알의 티어에 없어요'}" style="--gc:${GC[g]}">${eggI(g)}<b>${GN[g]}</b><span>${!nat ? '없음' : ex ? '뺌' : '나옴'}</span></button>`; }).join('')}</div>
-    <h4>알 등급마다 나올 확률</h4><div class="tw"><table class="t"><tr><th>알</th><th>그 알에서</th></tr>${per.map((p, i) => `<tr><td><span class="gn" style="display:inline-flex;align-items:center;gap:6px;color:${GC[i + 1]}">${eggI(i + 1)}${GN[i + 1]}</span></td><td class="num">${p ? pct(p) : '-'}</td></tr>`).join('')}</table></div>
+    <div class="egt">${[5, 4, 3, 2, 1].map(g => { const nat = inEgg(g, sp), ex = exOf(g).includes(sp); return `<button class="${nat && !ex ? 'on' : ''}${ex ? ' ex' : ''}" data-ex="${g}"${nat ? '' : ' disabled'} title="${nat ? (ex ? '눌러서 다시 나오게' : '눌러서 이 알에서 빼기') : '이 알의 티어에 없어요'}" style="--gc:${GC[g]}">${eggI(g)}<b>${GN[g]}</b><span>${!nat ? '없음' : ex ? '뺌' : '나옴'}</span></button>`; }).join('')}</div>
+    <h4>알 등급마다 나올 확률</h4><div class="tw"><table class="t"><tr><th>알</th><th>그 알에서</th></tr>${per.map((p, i) => `<tr><td><span class="gn" style="display:inline-flex;align-items:center;gap:6px;color:${GC[i + 1]}">${eggI(i + 1)}${GN[i + 1]}</span></td><td class="num">${p ? pct(p) : '-'}</td></tr>`).reverse().join('')}</table></div>
     <div class="kv"><span>알 1개당</span><b class="num">${pct(all)}</b><span>평균 거리</span><b class="num">${fmtKm(kmPer(all))}마다 1번</b></div>
-    ${per[sel.poolG - 1] ? `<h4>${GN[sel.poolG]} 알에서 순서</h4><div class="chips"><button class="chip" data-ro="top">맨 위로</button><button class="chip" data-ro="-1">▲ 한 칸</button><button class="chip" data-ro="1">▼ 한 칸</button><button class="chip" data-ro="end">맨 아래로</button></div>
-    <h4>다른 알로 옮기기</h4><div class="chips">${[1, 2, 3, 4, 5].filter(g => g !== sel.poolG).map(g => `<button class="chip" data-mv="${g}" style="color:${GC[g]}">${GN[g]} 알${per[g - 1] ? ' (이미 나옴)' : ''}</button>`).join('')}</div>
-    <div class="small mute">옮기면 ${GN[sel.poolG]} 알에서는 빠지고, 옮긴 알에는 지금 순위와 비슷한 자리에 들어가요. 두 알 모두 합계 100%로 다시 맞춰요.</div>` : ''}
     <div class="chips"><button class="chip" id="poolTier">티어에서 보기</button></div>`;
   $('#poolTier').onclick = () => { sel.tier = sp; go('tier'); };
-  $('#poolI').onclick = e => { const x = e.target.closest('[data-ex]'); if (x && !x.disabled) { const g = +x.dataset.ex, L = exOf(g); setEx(g, L.includes(sp) ? L.filter(v => v !== sp) : [...L, sp]); renderPool(); showPoolSp(sp); toast(L.includes(sp) ? `${GN[g]} 알에서 다시 나와요. 저장해야 반영돼요` : `${GN[g]} 알에서 뺐어요. 저장해야 반영돼요`); return; }
-    const b = e.target.closest('[data-ro],[data-mv]'); if (!b) return; const g = sel.poolG;
-    if (b.dataset.mv) { const g2 = +b.dataset.mv, added = moveEgg(sp, g, g2); toast(added ? `${spName(sp)} → ${GN[g2]} 알로 옮겼어요` : `${GN[g2]} 알에는 이미 나와서 ${GN[g]} 알에서만 뺐어요`); sel.poolG = g2; renderPool(); return; }
-    const L = listOf(g), i = L.findIndex(r => r[0] === sp), r = b.dataset.ro; reorder(g, sp, r === 'top' ? 0 : r === 'end' ? L.length : i + +r); renderPool(); };
+  $('#poolI').onclick = e => { const x = e.target.closest('[data-ex]'); if (x && !x.disabled) { const g = +x.dataset.ex, L = exOf(g); setEx(g, L.includes(sp) ? L.filter(v => v !== sp) : [...L, sp]); renderPool(); showPoolSp(sp); toast(L.includes(sp) ? `${GN[g]} 알에서 다시 나와요. 저장해야 반영돼요` : `${GN[g]} 알에서 뺐어요. 저장해야 반영돼요`); return; } };
 }
 
 // ---------- 티어 ----------
@@ -1289,7 +1278,7 @@ $('#tierC').addEventListener('contextmenu', e => { if (e.target.closest('.tcol .
 // v2.4 경완: 티어에서 포켓몬을 누르면 오른쪽에 포켓몬 정보 + 알마다 나올 확률 (알 화면으로 넘어가지 않음)
 function probHtml(sp) {
   const L = tierLists(), Z = tierZ(L), O = odds(), per = [1, 2, 3, 4, 5].map(g => probOf(g, L, Z)[sp] || 0), all = per.reduce((a, p, i) => a + p * O[i], 0);
-  return `<div class="msec"><h4>알에서 나올 확률</h4><div class="tw"><table class="t"><tr><th>알</th><th>그 알에서</th><th>알 1개당</th></tr>${per.map((p, i) => `<tr><td><span class="gn" style="display:inline-flex;align-items:center;gap:6px;color:${GC[i + 1]}">${eggI(i + 1)}${GN[i + 1]}</span></td><td class="num">${p ? pct(p) : '-'}</td><td class="num">${p ? pct(p * O[i]) : '-'}</td></tr>`).join('')}</table></div>
+  return `<div class="msec"><h4>알에서 나올 확률</h4><div class="tw"><table class="t"><tr><th>알</th><th>그 알에서</th><th>알 1개당</th></tr>${per.map((p, i) => `<tr><td><span class="gn" style="display:inline-flex;align-items:center;gap:6px;color:${GC[i + 1]}">${eggI(i + 1)}${GN[i + 1]}</span></td><td class="num">${p ? pct(p) : '-'}</td><td class="num">${p ? pct(p * O[i]) : '-'}</td></tr>`).reverse().join('')}</table></div>
     <div class="kv"><span>알 1개당 모두</span><b class="num">${pct(all)}</b><span>평균 거리</span><b class="num">${fmtKm(kmPer(all))}마다 1번</b></div></div>`;
 }
 function infoHtml(sp) {
@@ -1343,7 +1332,7 @@ function mvTier(sp, tt) { const tf = tierOfSp(sp); if (tf === tt) return false;
 const BAL = [
   ['보상 골드', [['DUP_G', '이미 만난 포켓몬이 알에서 나오면 받는 골드', '알 등급마다', 5], ['NEW_EGG_G', '새 포켓몬이 알에서 나오면 받는 골드', '알 등급마다', 5], ['NEW_G', '진화로 새로 만났을 때 골드'], ['RUN_G', '런닝 1번 골드']]],
   ['친밀도', [['#', '필드에 있을 때'], ['FR_TABLE', '필드에 있을 때 오르는 친밀도', '', 'tbl'], ['FLD_FR_DAY', '필드 시간 친밀도 하루 한도'], ['#', '돌봐 주기'], ['BERRY_FR_DAY', '열매로 오르는 친밀도 하루 한도'], ['PET_FR', '쓰다듬기로 즐거움을 채우면 오르는 친밀도'], ['PET_DAY', '쓰다듬기 친밀도 하루 횟수'], ['JOY_HOLD', '즐거움 100 유지 시간 (분)'], ['WASH_FR', '빗질 친밀도 (청결 100만큼 씻길 때)'], ['#', '짝꿍 · 기준'], ['WALK_FR', '짝꿍 1km당 친밀도'], ['FR_EVO', '친밀도 진화 기준'], ['FR_MAX', '친밀도 만점']]],
-  ['상태 게이지', [['CLEAN_DAYS', '청결 100 → 0 걸리는 날', '', 'cd'], ['HUNGER_RATE', '배고픔 오르는 속도 (초당)'], ['JOY_HOURS', '즐거움 100 → 0 걸리는 시간 (깨어 있을 때)', '', 'jh']]],
+  ['상태 게이지', [['CLEAN_DAYS', '청결 100 → 0 걸리는 날', '', 'cd'], ['HUNGER_RATE', '배부름이 떨어지는 속도'], ['JOY_HOURS', '즐거움 100 → 0 걸리는 시간 (깨어 있을 때)', '', 'jh']]],
   ['알·기타', [['MAX_EGGS', '부화기 칸 수'], ['MAX_BAG', '가방 최대 알 수'], ['SHINY_N', '이로치 확률 1/N', '', 'sh']]],
 ];
 // v1.8 경완: 줄마다 게임 아이콘
@@ -1366,22 +1355,26 @@ const SENT = {
   WASH_FR: ['빗질로 청결을 100만큼 씻기면 친밀도', '오름', v => `씻긴 만큼 비례 (예: 청결 60 → 100 이면 +${Math.max(1, Math.round(v * .4))}), 최소 1. 청결이 95 아래면 언제든 빗질할 수 있어요`], FLD_FR_DAY: ['필드에 있어서 오르는 친밀도는 하루에 최대', '까지'],
   WALK_FR: ['짝꿍은 1km 걸을 때마다 친밀도', '씩 오름', v => `걷기·달리기 같음 · 10km면 +${+(v * 10).toFixed(1)}`],
   FR_EVO: ['친밀도가', '이상이면 친밀도 진화'], FR_MAX: ['친밀도 만점은', ''],
-  CLEAN_DAYS: ['청결 100이 0이 되기까지', '일'], HUNGER_RATE: ['배고픔은 1초에', '씩 오름', v => `0 → 100 까지 약 ${+(100 / v / 3600).toFixed(1)}시간`],
+  CLEAN_DAYS: ['청결 100이 0이 되기까지', '일'], HUNGER_RATE: ['배부름이 떨어지는 속도', '', v => `배부름 100 → 0 약 ${+(100 / v / 3600).toFixed(1)}시간 (깨어 있을 때, 자는 동안은 더 느려요)`],
   JOY_HOURS: ['즐거움 100이 0이 되기까지', '시간', () => '깨어 있을 때'],
   MAX_EGGS: ['부화기에 알을', '칸까지'], MAX_BAG: ['가방에 알을', '개까지'], BAG_STEP: ['', 'km 걸을 때마다 알 0~2개', v => `1km에 평균 ${+(1 / v).toFixed(1)}개`], SHINY_N: ['이로치는', '마리 중 1마리 꼴'],
 };
 // v2.15 경완: 밸런스 레이아웃 정리 — 왼쪽 설명, 오른쪽 숫자 칸(+단위)으로 줄 맞춤
 const BLBL = { NEW_G: ['진화로 새 포켓몬을 만나면', 'G'], RUN_G: ['런닝 1번 할 때마다', 'G'], FLD_FR_DAY: ['필드에 있어서 오르는 친밀도 하루 최대', '/일'], BERRY_FR_DAY: ['열매로 오르는 친밀도 하루 최대', '/일'],
   PET_FR: ['쓰다듬어 즐거움을 채우면 친밀도', '씩'], PET_DAY: ['쓰다듬기 친밀도 하루 횟수', '번'], JOY_HOLD: ['즐거움 100을 채우면 안 떨어지는 시간', '분'], WASH_FR: ['빗질로 청결 100만큼 씻기면 친밀도', ''], WALK_FR: ['짝꿍이 1km 걸을 때마다 친밀도', '씩'],
-  FR_EVO: ['친밀도 진화 기준', '이상'], FR_MAX: ['친밀도 만점', ''], CLEAN_DAYS: ['청결 100 → 0 걸리는 시간', '일'], HUNGER_RATE: ['배고픔이 1초에 오르는 양', ''], JOY_HOURS: ['즐거움 100 → 0 걸리는 시간', '시간'],
+  FR_EVO: ['친밀도 진화 기준', '이상'], FR_MAX: ['친밀도 만점', ''], CLEAN_DAYS: ['청결 100 → 0 걸리는 시간', '일'], HUNGER_RATE: ['배부름이 떨어지는 속도', ''], JOY_HOURS: ['즐거움 100 → 0 걸리는 시간', '시간'],
   MAX_EGGS: ['부화기 칸 수', '칸'], MAX_BAG: ['가방에 넣을 수 있는 알', '개'], SHINY_N: ['이로치 확률 (몇 마리 중 1마리)', '마리'] };
+// v2.18 경완: 배부름 속도는 숫자 대신 매우 빠름~매우 느림 중에서 고른다 (값 = 1초에 떨어지는 양)
+const HUN_LV = [['매우 빠름', .022], ['빠름', .0155], ['보통', .011], ['느림', .0078], ['매우 느림', .0055]];
 const bico = k => BICO[k] === 'egg' ? `<span class="gi">${eggI(1)}</span>` : gi(BICO[k]);
 function renderBal() {
   $('#balC').innerHTML = '<div class="balg">' + BAL.map(([h, L], si) => `<div class="card${L.some(r => r[3] === 'tbl') ? ' wide2' : ''}"><h2 class="ih">${SICO[si] === 'egg' ? `<span class="gi">${eggI(3)}</span>` : gi(SICO[si])}${h}</h2><div class="bal2">${L.map(([k, n, sub, kind]) => {
     if (k === '#') return `<div class="bsh">${n}</div>`;
     const v = bal(k), c = D.bal && k in D.bal ? ' ch' : '', arr = Array.isArray(v);
     const lab = `<div class="bi${arr ? ' span' : ''}">${bico(k)}<div>${n}${sub ? `<small>${sub}</small>` : ''}</div></div>`;
-    const T = SENT[k], LB = BLBL[k]; if (!arr && LB) return `<div class="br ln"><span class="bic">${bico(k)}</span><div class="lt">${LB[0]}${T?.[2] ? `<small>${esc(T[2](v))}</small>` : ''}</div><span class="uw"><input class="inp${c}" data-b="${k}" inputmode="decimal" value="${v}" aria-label="${esc(n)}"><span class="u">${LB[1]}</span></span></div>`;
+    const T = SENT[k], LB = BLBL[k];
+    if (k === 'HUNGER_RATE') { const hit = HUN_LV.some(([, x]) => Math.abs(x - v) < 1e-9); return `<div class="br ln"><span class="bic">${bico(k)}</span><div class="lt">${LB[0]}<small>${esc(T[2](v))}</small></div><span class="uw"><select class="inp${c}" data-b="${k}" aria-label="${esc(n)}">${hit ? '' : `<option value="${v}" selected>직접 정한 값</option>`}${HUN_LV.map(([nm, x]) => `<option value="${x}"${Math.abs(x - v) < 1e-9 ? ' selected' : ''}>${nm}</option>`).join('')}</select></span></div>`; }
+    if (!arr && LB) return `<div class="br ln"><span class="bic">${bico(k)}</span><div class="lt">${LB[0]}${T?.[2] ? `<small>${esc(T[2](v))}</small>` : ''}</div><span class="uw"><input class="inp${c}" data-b="${k}" inputmode="decimal" value="${v}" aria-label="${esc(n)}"><span class="u">${LB[1]}</span></span></div>`;
     if (!arr && T) return `<div class="br sn"><span class="bic">${bico(k)}</span><div class="st"><label>${T[0] ? `<span>${T[0]}</span>` : ''}<input class="inp${c}" data-b="${k}" inputmode="decimal" value="${v}" aria-label="${esc(n)}">${T[1] ? `<span>${T[1]}</span>` : ''}</label>${T[2] ? `<small>${esc(T[2](v))}</small>` : ''}</div></div>`;
     if (!arr) return `<div class="br">${lab}<span class="uw"><input class="inp${c}" data-b="${k}" inputmode="decimal" value="${v}"><span class="u">${BUNIT[k] || ''}</span></span></div>`;
     if (kind === 'tbl') return `<div class="br full">${lab}<div class="frt"><div class="small mute">건강 게이지(배부름·즐거움·청결) 평균이 높을수록 필드에 있는 동안 친밀도가 빨리 올라요. 구간 경계는 막대 위 손잡이를 끌어 옮기고, 구간마다 1시간에 오르는 양은 아래 칸에서 고쳐요. 하루에는 아래 "필드에 있어서 오르는 친밀도는 하루에 최대" 값까지만 올라요.</div>${frGraph(v, k, c)}${frWeek()}</div></div>`;
@@ -1537,6 +1530,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.18', '10월 16일', ['맵: 크기 조절 모드는 가운데 맵 칸만 채우고, 포켓몬 넣기 목록은 오른쪽 창에', '크기 조절 모드 맵은 원래 화면을 가운데 두고 양옆으로 숲·풀밭이 이어지게 새로 그림 (게임 v3.83)', '알 › 등급별 포켓몬: 순서 끌기·다른 알로 옮기기 뺌, 옆에 티어별 전체 출현 확률 표', '티어·알 오른쪽 창의 알별 확률은 전설 알부터', '밸런스: 배부름이 떨어지는 속도를 매우 빠름~매우 느림 중에서 고르기']],
   ['2.17', '10월 16일', ['티어: 빈 곳을 누르면 고른 카드 모두 풀기, 위쪽 저장·찾기·화면 크기 칸은 스크롤해도 고정', '알 › 등급별 포켓몬: 포켓몬을 누르면 오른쪽에 나오는 알이 켜져 있고, 눌러서 끄면 그 알에서 안 나옴 (게임 v3.82)', '저장 안 하고 다른 화면으로 가도 고친 것은 남고, 위쪽 막대에 저장 안 함 경고. 누르면 목록, 항목을 누르면 그 화면으로', '등급별 포켓몬 가로 막대: 10티어(낮은 티어)부터', '위쪽 배포하기: 화면을 넘기지 않고 바로 배포', '배포 기록: 버전 줄을 눌러야 세부 내용이 보임']],
   ['2.16', '10월 16일', ['맵: 크기 조절 모드 버튼. 켜면 화면 가득한 맵에 포켓몬을 제한 없이 줄지어 세워 두고(등장 효과·움직임 없음) 모서리를 끌어 크기 조절, 크기 저장 → 배포하면 게임에도 (게임 v3.81)']],
   ['2.15', '10월 16일', ['맵: 필드 칸을 눌러 고른 포켓몬은 돌아다니지 않고 제자리에 (게임 v3.80)', '고른 포켓몬에 마우스를 올리면 크기 상자, 모서리를 끌면 비율 그대로 크기 조절', '다른 화면에 갔다 오면 등장 효과가 다시 나오던 것 고침', '새 모션: 왼쪽 메뉴 대신 포켓몬 화면 안 탭으로', '티어: 찾기 칸 (찾은 포켓몬 테두리 + 그 자리로 스크롤, 엔터 = 다음)', '등급별 포켓몬: 위 가로 막대 경계를 끌어 티어 비율 조절, 아래 티어별 줄 없앰', '밸런스 레이아웃 정리: 설명은 왼쪽·숫자 칸은 오른쪽 줄 맞춤, 친밀도는 필드·돌봐 주기·짝꿍 묶음, 넓은 화면은 두 줄']],
