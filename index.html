@@ -5110,7 +5110,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.70';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.71';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7564,12 +7564,15 @@ function setLayoutIn(L) {
   if (Array.isArray(L.hide) && L.hide.length) LAYOUT.hide = [...L.hide]; else delete LAYOUT.hide;   // v3.70: 작업실에서 지운 소품 종류 (목록에서 숨김)
   FLOWERS.splice(0, FLOWERS.length, ...bedFlowers(FLOWERBED), ...LAYOUT.flowers);
 }
+// 부화기 알의 필요 거리를 지금 등급 거리로 (쌓인 km 는 그대로)
+function syncNeed() { S.eggs?.forEach(e => { if (GRADE[e.g]) e.need = GRADE[e.g].km; }); }
 function applyBal(b) {
   const num = v => typeof v === 'number' && isFinite(v), arr = (A, v) => { if (Array.isArray(v) && v.length === A.length) A.splice(0, A.length, ...v); };
   arr(DUP_G, b.DUP_G); arr(NEW_EGG_G, b.NEW_EGG_G); if (Array.isArray(b.FR_TABLE) && b.FR_TABLE.every(r => r.length === 2)) FR_TABLE.splice(0, FR_TABLE.length, ...b.FR_TABLE);
   if (num(b.NEW_G)) NEW_G = b.NEW_G; if (num(b.RUN_G)) RUN_G = b.RUN_G; if (num(b.BERRY_FR_DAY)) BERRY_FR_DAY = b.BERRY_FR_DAY; if (num(b.PET_DAY)) PET_DAY = b.PET_DAY; if (num(b.JOY_HOLD)) JOY_HOLD = b.JOY_HOLD; if (num(b.WASH_DAY)) WASH_DAY = b.WASH_DAY;
   if (num(b.FLD_FR_DAY)) FLD_FR_DAY = b.FLD_FR_DAY; if (num(b.WALK_FR)) WALK_FR = b.WALK_FR; if (num(b.FR_EVO)) FR_EVO = b.FR_EVO; if (num(b.FR_MAX)) FR_MAX = b.FR_MAX; if (num(b.HUNGER_RATE)) HUNGER_RATE = b.HUNGER_RATE;
   if (num(b.CLEAN_DAYS) && b.CLEAN_DAYS > 0) CLEAN_RATE = 100 / (b.CLEAN_DAYS * 86400); if (num(b.JOY_HOURS) && b.JOY_HOURS > 0) JOY_RATE = 100 / (b.JOY_HOURS * 3600);
+  if (Array.isArray(b.HATCH_KM) && b.HATCH_KM.length === 6) { for (let g = 1; g <= 5; g++) if (num(b.HATCH_KM[g]) && b.HATCH_KM[g] > 0) GRADE[g].km = b.HATCH_KM[g]; syncNeed(); }   // v3.71 경완: 작업실 알 › 부화 거리
   if (num(b.MAX_EGGS)) MAX_EGGS = b.MAX_EGGS; if (num(b.MAX_BAG)) MAX_BAG = b.MAX_BAG; if (num(b.BAG_STEP) && b.BAG_STEP > 0) BAG_STEP = b.BAG_STEP; if (num(b.SHINY_N) && b.SHINY_N > 0) SHINY_RATE = 1 / b.SHINY_N;
 }
 function applyCfg(c) {
@@ -7597,7 +7600,7 @@ async function start(data) {
   if (d && d.mons && (d.mons.length || d.unlocked)) await restore(d); else await fresh();
   if (bgmOn && bgm.id !== S.bgm) bgmStart();
   Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp)); menuDots();
-  migrateBox(); undoAutoHatch(); renderGold(); notiSoon(1800); sky(); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
+  migrateBox(); undoAutoHatch(); syncNeed(); renderGold(); notiSoon(1800); sky(); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
   requestAnimationFrame(t => { last = t; frame(t); });
   // 아이폰 앱에 준비됐다고 알리고, 현재 알 현황을 바로 보낸다
   window.pokeRunReady = true; postNative();
@@ -7643,7 +7646,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   const api = window.__studio = {
     tierGuard, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
     ICO: { berry: ICO_BERRY, brush: ICO_BRUSH, hand: ICO_HAND, pen: PEN, egg: EGG_SVG },   // v3.66: 작업실이 게임 아이콘을 그대로 쓴다
-    get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]) }; },
+    get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]), HATCH_KM: [0, ...GRADE.slice(1).map(G => G.km)] }; },
     get cfg() { return CFG; },
     get SPRITES() { return SPRITES; }, ensureSprite, thumbOf, gradeOf, tierOf, shinyHue, tyIcon, scaleOf, baseOf, movesOf, eggHtml, propSpots,
     ready: false, onSel: null, onLayout: null, onMon: null, onLog: null,
