@@ -307,7 +307,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.flw,.lily,.lily::after{animation:none}}
 .puddle{position:absolute;left:0;top:0;pointer-events:none;image-rendering:pixelated;background-size:100% 100%;transform:translate(-50%,-50%);opacity:0;transition:opacity 6s;z-index:2!important}.puddle.on{opacity:1}
 #rain{position:absolute;inset:0;overflow:hidden;pointer-events:none;display:none}#rain.on{display:block}
-#rain i{position:absolute;top:-24px;width:2px;height:12px;background:rgba(210,228,255,.7);transform:rotate(14deg);animation:rd .62s linear infinite}@keyframes rd{to{translate:-150px 640px}}
+#rain i{position:absolute;top:-24px;width:2px;height:12px;background:rgba(210,228,255,.7);transform:translate3d(0,0,0) rotate(14deg);animation:rd .62s linear infinite;will-change:transform}@keyframes rd{from{transform:translate3d(0,0,0) rotate(14deg)}to{transform:translate3d(-150px,640px,0) rotate(14deg)}}/* v4.24 경완: 빗줄기가 아이폰에서 안 보이고 땅 물방울만 → translate 속성 대신 transform 으로 */
 #rainG{position:absolute;inset:0;pointer-events:none;z-index:1;display:none}#rainG.on{display:block}#rainG b{position:absolute;width:10px;height:4px;margin:-2px 0 0 -5px;border:1px solid rgba(220,236,255,.8);border-radius:50%;animation:rsp .5s ease-out infinite;opacity:0}@keyframes rsp{0%{transform:scale(.3);opacity:.9}100%{transform:scale(1.4);opacity:0}}
 
 /* RPG window */
@@ -4826,7 +4826,7 @@ function sky() {
   const h = hour();
   { let i = 0; while (i < SKY.length - 2 && h >= SKY[i + 1][0]) i++; const [h0, c0] = SKY[i], [h1, c1] = SKY[i + 1], k = Math.min(1, Math.max(0, (h - h0) / (h1 - h0))), e = k * k * (3 - 2 * k);
     const wx = weather(), wk = wx === 'rain' ? .8 : wx === 'cloud' ? .92 : 1;   /* 비·흐림이면 필드가 조금 더 어둡다 */
-    const col = c0.map((v, j) => Math.round((v + (c1[j] - v) * e) * wk)); nightEl.style.backgroundColor = `rgb(${col.join(',')})`; { const [r, g, b] = col.map(v => (v / 255).toFixed(3)); $('#nightM')?.setAttribute('values', `${r} 0 0 0 0 0 ${g} 0 0 0 0 0 ${b} 0 0 0 0 0 1 0`); }
+    const c = c0.map((v, j) => v + (c1[j] - v) * e), lum = (c[0] + c[1] + c[2]) / 765, wk2 = 1 - (1 - wk) * lum, col = c.map(v => Math.round(v * wk2));   /* v4.24 경완: 비·흐림 어둡게는 낮에만 그대로, 밤에는 거의 안 어둡게 */ nightEl.style.backgroundColor = `rgb(${col.join(',')})`; { const [r, g, b] = col.map(v => (v / 255).toFixed(3)); $('#nightM')?.setAttribute('values', `${r} 0 0 0 0 0 ${g} 0 0 0 0 0 ${b} 0 0 0 0 0 1 0`); }
     skyDark = clamp((1 - (col[0] + col[1] + col[2]) / 765) * 1.6, 0, 1);   /* 어두운 정도: S 랭크 포켓몬이 스스로 빛나는지 */
     drawSky(h, col, wx); skyBodies(h, wx, skyDark); rainEl?.classList.toggle('on', wx === 'rain'); rainGEl?.classList.toggle('on', wx === 'rain'); puddleEls.forEach(p => p.classList.toggle('on', wx === 'rain')); if (flameEl) flameEl.classList.toggle('out', wx === 'rain'); treeBerries(); }
   const phase = h < 4 ? '한밤' : h < 5.5 ? '새벽' : h < 7 ? '해돋이' : h < 10 ? '아침' : h < 14 ? '한낮' : h < 16.5 ? '오후' : h < 18.6 ? '노을' : h < 20 ? '저녁' : '밤';
@@ -5232,7 +5232,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.23';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.24';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
