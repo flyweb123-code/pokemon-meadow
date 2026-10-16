@@ -719,7 +719,7 @@ body.petting #dlg,body.petting #info{display:none!important}
 .vol-v{text-align:right;font-variant-numeric:tabular-nums}
 .lk-btn.danger{grid-column:1 / -1;color:#b03030;border-color:#b03030}
 #mgrRandom{padding:10px 18px}
-.runtabs.mtabs{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:10px}
+.runtabs.mtabs{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:10px}.runtabs.mtabs [hidden]{display:none}.pick-buddy #dexTabs{display:none}
 .mtab:not([hidden]){flex:1;min-height:0;display:flex;flex-direction:column}
 .mtab .mgr-body{flex:1}
 .box-tools{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
@@ -820,6 +820,8 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .slot .st.sleep{background:#4a5098}.slot .st.play{background:#c04870}.slot .st.eat{background:#a07020}.slot .st.away{background:#888}
 .slot .mini{width:80%;height:6px;background:var(--hp-track);border:2px solid var(--frame);box-sizing:content-box}
 .slot .mini i{display:block;height:100%;background:var(--hunger)}
+.slot .gg{width:88%;display:grid;gap:2px}.slot .gr{display:flex;align-items:center;gap:3px;min-width:0}.slot .gr svg{width:9px;height:9px;flex:none}.slot .gr .mini{flex:1;width:auto;min-width:0;height:3px;border-width:2px}
+.slot .gr.cl .mini i{background:var(--clean)}.slot .gr.jo .mini i{background:var(--lonely)}
 .slot .sl-tags{position:absolute;left:4px;top:4px;display:flex;gap:3px;pointer-events:none}.slot .sl-tags .st{position:static}.slot .sl-bud{font-size:11px;padding:1px 4px;line-height:normal;background:#e8679a;color:#fff}.slot.bud{background:linear-gradient(#fff 55%,#fde6ef)}.slot.bud .mini{border-color:#9a3462}
 .slot.empty{border-style:dashed;color:var(--dim);justify-content:center;background:transparent}
 .slot.empty .plus{font-size:24px;line-height:1}
@@ -1140,7 +1142,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 .op-sw{flex:none;width:58px;height:30px;padding:0;border:3px solid var(--frame);background:#b9b9c6;cursor:pointer;position:relative;box-shadow:inset 0 3px 0 rgba(0,0,0,.2)}
 .op-sw i{position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border:2px solid var(--frame)}
 .op-sw[aria-checked="true"]{background:#4ccf5a}.op-sw[aria-checked="true"] i{left:auto;right:2px}
-#openRun,#openMgr,#openDex{position:relative}.mdot{position:absolute;top:6px;right:7px;width:6px;height:6px;background:#e04838;pointer-events:none}
+#openRun,#openMgr,#openFld{position:relative}.mdot{position:absolute;top:6px;right:7px;width:6px;height:6px;background:#e04838;pointer-events:none}
 @keyframes tbump{50%{transform:scale(1.25)}}
 #eggAuto{font:inherit;font-size:12px;display:inline-flex;align-items:center;gap:6px;padding:3px 6px 3px 8px;background:#fff;color:var(--dim);border:3px solid var(--inner);cursor:pointer;-webkit-tap-highlight-color:transparent}#eggAuto i{position:relative;width:26px;height:14px;background:#b8b8b8;border:2px solid var(--frame)}#eggAuto i::after{content:'';position:absolute;top:0;left:0;width:10px;height:10px;background:#fff;border-right:2px solid var(--frame)}#eggAuto[aria-pressed=true]{background:#48b048;color:#fff;border-color:var(--frame)}#eggAuto[aria-pressed=true] i{background:#2f7f2f}#eggAuto[aria-pressed=true] i::after{left:12px;border-right:0;border-left:2px solid var(--frame)}
 #eggAll{font:inherit;font-size:13px;padding:3px 10px;background:#e8a020;color:#fff;border:3px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.25);cursor:pointer}
@@ -1311,9 +1313,9 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
   <div class="hud win clockwin" id="clock"><span class="t" id="time">07:00</span><span class="d"><span id="day">1일째</span> · <span id="phase">아침</span></span></div>
 
   <nav class="hud win menuwin" aria-label="메뉴">
-    <button class="opt" id="openMgr">포켓몬 <span id="capBadge">0/9</span></button>
+    <button class="opt" id="openMgr">포켓몬</button>
     <button class="opt" id="openRun">알</button>
-    <button class="opt" id="openDex">도감</button>
+    <button class="opt" id="openFld">필드 <span id="capBadge">0/9</span></button>
   </nav>
 
   <div class="hud goldbar" id="goldbar">
@@ -1367,6 +1369,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
       <button class="opt" id="dexClear" hidden>선택 해제</button>
       <button class="opt go" id="dexGo" hidden>풀어놓기</button>
     </div>
+    <div class="runtabs mtabs" id="dexTabs" role="tablist"><button class="runtab" role="tab" data-t="box">박스</button><button class="runtab" role="tab" data-t="dex" aria-selected="true">도감</button></div>
   </div>
 </div>
 
@@ -1456,7 +1459,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
       <div class="mgr-tools"><div class="bag-sort" id="boxSort"><button data-sort="new">날짜</button><button data-sort="rank">랭크</button><button data-sort="bs">종족값</button><button data-sort="fr">친밀도</button><button data-sort="no">번호</button><button data-sort="field">필드</button></div><span class="tcount" id="boxCount"></span></div>
       <div class="boxgrid" id="boxGrid"></div>
     </div>
-    <div class="runtabs mtabs" id="mgrTabs" role="tablist"><button class="runtab" role="tab" data-t="box">박스</button><button class="runtab" role="tab" data-t="field">필드</button><button class="runtab" role="tab" data-t="buddy">짝꿍</button></div>
+    <div class="runtabs mtabs" id="mgrTabs" role="tablist"><button class="runtab" role="tab" data-t="box">박스</button><button class="runtab" role="tab" data-t="dex">도감</button><button class="runtab" role="tab" data-t="field">필드</button><button class="runtab" role="tab" data-t="buddy">짝꿍</button></div>
   </div>
 </div>
 
@@ -4889,7 +4892,7 @@ let clockTaps = [];
 $('#clock').addEventListener('click', () => {
   const now = Date.now(); clockTaps = clockTaps.filter(t => now - t < 800); clockTaps.push(now);
   if (clockTaps.length < 3) return; clockTaps = [];
-  const a = document.querySelector('.app').getBoundingClientRect(), b = $('#openDex').getBoundingClientRect();
+  const a = document.querySelector('.app').getBoundingClientRect(), b = $('#openFld').getBoundingClientRect();
   $('#dlgNow').textContent = `in ${innerHeight} out ${outerHeight} scr ${screen.height} vv ${Math.round(visualViewport?.height || 0)} doc ${document.documentElement.clientHeight} | vh ${vhPx('100vh')} dvh ${vhPx('100dvh')} lvh ${vhPx('100lvh')} svh ${vhPx('100svh')} | top ${envPx('top')} bot ${envPx('bottom')} | app ${Math.round(a.bottom)} tab ${Math.round(b.bottom)} ext ${getComputedStyle(document.documentElement).getPropertyValue('--ext')} sa ${navigator.standalone}`;
 });
 fitBottom(); addEventListener('resize', fitBottom); addEventListener('orientationchange', () => setTimeout(fitBottom, 300));
@@ -5153,7 +5156,7 @@ function openDex(mode = 'field') { dexMode = mode; dexSortReset(); sheet.classLi
 // the menu works like a tab bar: one window at a time, tapping the open one closes it
 function hideSheets() { sheet.hidden = true; $('#mgr').hidden = true; $('#run').hidden = true; $('#set').hidden = true; $('#shop').hidden = true; }
 function tabTo(el, open) { const was = !el.hidden; closeToggles(); hideSheets(); if (!was) open(); }
-$('#openDex').onclick = () => tabTo(sheet, openDex);
+$('#dexTabs').onclick = e => { const b = e.target.closest('[data-t="box"]'); if (!b) return; sfx('tap'); lastTab.poke = 'box'; hideSheets(); openMgr(); setMgrTab('box'); };
 // 하단 메뉴(포켓몬·알·도감·상점·프로필): 모양은 기본·활성 두 가지뿐. 닿는 순간 바로 창이 열리고(활성 모양), 뒤따르는 click 은 삼킨다 (키보드 click 은 그대로)
 document.querySelectorAll('.menuwin .opt,.cmdwin .opt').forEach(b => {
   let ate = 0;
@@ -5179,7 +5182,7 @@ document.addEventListener('click', e => {
   $('#testSw').onclick = () => { sfx('tap'); put('pk-tests', !get('pk-tests')); paint(); };
   let n = 0, t0 = 0; document.querySelector('.set-credit').addEventListener('click', () => { const now = Date.now(); n = now - t0 < 1500 ? n + 1 : 1; t0 = now;
     if (n >= 7) { n = 0; const on = !get('pk-op'); put('pk-op', on); if (!on) put('pk-tests', false); paint(); sfx(on ? 'pickup' : 'tap'); log(on ? '운영자 모드를 켰다.' : '운영자 모드를 껐다.', [], true); } }); }
-function syncTabs() { [['#openDex', '#sheet'], ['#openRun', '#run'], ['#openMgr', '#mgr'], ['#openSet', '#set'], ['#sideSet', '#set'], ['#openShop', '#shop']].forEach(([b, w]) => $(b).setAttribute('aria-pressed', !$(w).hidden)); document.body.classList.toggle('sheet-open', ['#sheet', '#run', '#mgr', '#shop'].some(w => !$(w).hidden)); }
+function syncTabs() { [['#openRun', '#run'], ['#openSet', '#set'], ['#sideSet', '#set'], ['#openShop', '#shop']].forEach(([b, w]) => $(b).setAttribute('aria-pressed', !$(w).hidden)); if (mgrReady) { $('#openMgr').setAttribute('aria-pressed', pokeOpen()); $('#openFld').setAttribute('aria-pressed', fldOpen()); } document.body.classList.toggle('sheet-open', ['#sheet', '#run', '#mgr', '#shop'].some(w => !$(w).hidden)); }
 new MutationObserver(syncTabs).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
 $('#closeDex').onclick = () => { sheet.hidden = true; };
 // 도감 창이 닫히면 그 위의 카드·필터 창도 닫는다
@@ -5188,7 +5191,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.98';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.99';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5499,7 +5502,12 @@ let mgrTab = 'field', boxSort = 'new', budPick = null, boxFromSlot = false;   //
 // 정렬 버튼은 다시 누를 때마다 내림차순 ↔ 오름차순 (boxDir: 1 = 큰 것/최근 먼저)
 let boxDir = 1;
 try { boxSort = localStorage.getItem('pk-box-sort') || 'new'; boxDir = localStorage.getItem('pk-box-dir') === '-1' ? -1 : 1; } catch (e) {}
+// v3.99 경완: 하단 메뉴 '포켓몬' = 박스·도감 탭, '필드' = 필드·짝꿍 탭 (도감은 따로 그려 둔 창이라 도감 탭을 누르면 그 창으로 바꿔 연다)
+const TAB_G = { box: 'poke', dex: 'poke', field: 'fld', buddy: 'fld' }; let mgrG = 'poke', lastTab = { poke: 'box', fld: 'field' }; var mgrReady = true;
 function setMgrTab(t) {
+  if (t === 'dex') { lastTab.poke = 'dex'; closeToggles(); hideSheets(); openDex(); return; }
+  mgrG = TAB_G[t] || 'poke'; lastTab[mgrG] = t;
+  document.querySelectorAll('#mgrTabs button').forEach(b => b.hidden = TAB_G[b.dataset.t] !== mgrG);
   if (mgrTab === 'box' && t !== 'box' && !mgr.hidden) seeBox();
   if (mgrTab === 'buddy' && t !== 'buddy') seeBuds();
   boxFromSlot = false; if (t !== 'box') budPick = null;
@@ -5617,8 +5625,8 @@ function seeBox() { let ch = false; S.box.forEach(p => { if (p.nw) { p.nw = fals
 { let was = !mgr.hidden; new MutationObserver(() => { const now = !mgr.hidden; if (was && !now && mgrTab === 'box') seeBox(); was = now; }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] }); }   // 열려 있다가 닫힐 때만
 // 하단 메뉴 알림 점: 알(가방에 새 알) · 포켓몬(박스에 새 포켓몬)
 function menuDots() { const set = (b, on) => { let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot" aria-label="새 소식"></i>'); else if (!on && d) d.remove(); };
-  set($('#openRun'), S.bag.some(e => e.isNew) || S.eggs.some(e => e.km >= e.need && !e.rs)); set($('#openDex'), !!S.dexNew?.size); set($('#openMgr'), S.box.some(p => p.nw) || S.buds.some(b => b.nw));
-  { const t = document.querySelector('#mgrTabs [data-t="buddy"]'), on = S.buds.some(b => b.nw), d = t && t.querySelector('.dot'); if (t && on && !d) t.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새 짝꿍"></i>'); else if (t && !on && d) d.remove(); } }
+  set($('#openRun'), S.bag.some(e => e.isNew) || S.eggs.some(e => e.km >= e.need && !e.rs)); set($('#openMgr'), S.box.some(p => p.nw) || !!S.dexNew?.size); set($('#openFld'), S.buds.some(b => b.nw));
+  for (const [t, on] of [['buddy', S.buds.some(b => b.nw)], ['dex', !!S.dexNew?.size]]) { const b = document.querySelector(`#mgrTabs [data-t="${t}"]`), d = b && b.querySelector('.dot'); if (b && on && !d) b.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새 소식"></i>'); else if (b && !on && d) d.remove(); } }
 function seeBuds() { if (S.buds.some(b => b.nw)) { S.buds.forEach(b => delete b.nw); save(); } }
 function renderBox() {
   document.querySelectorAll('#boxSort [data-sort]').forEach(b => { const on = b.dataset.sort === boxSort; b.setAttribute('aria-pressed', on); b.dataset.dir = on && boxSort !== 'field' ? (boxDir > 0 ? '▼' : '▲') : ''; });
@@ -5752,7 +5760,11 @@ $('#ppBud').onclick = () => {
   evoNotice(P.sp, P);
 };
 new MutationObserver(() => { if (mgr.hidden) { closePoke(); if (mgrTab === 'buddy') seeBuds(); } }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
-$('#openMgr').onclick = () => tabTo(mgr, () => { if (budPick != null) { budPick = null; closePoke(); } openMgr(); setMgrTab('box'); });   // 짝꿍 고르다 나갔으면 고르기 상태를 푼다
+function pokeOpen() { return (!mgr.hidden && mgrG === 'poke') || (!sheet.hidden && dexMode !== 'buddy'); }
+function fldOpen() { return !mgr.hidden && mgrG === 'fld'; }
+function menuTo(isOpen, g) { const was = isOpen(); closeToggles(); hideSheets(); if (was) return; if (budPick != null) { budPick = null; closePoke(); } if (lastTab[g] === 'dex') { setMgrTab('dex'); return; } openMgr(); setMgrTab(lastTab[g]); }
+$('#openMgr').onclick = () => menuTo(pokeOpen, 'poke');
+$('#openFld').onclick = () => menuTo(fldOpen, 'fld');   // 짝꿍 고르다 나갔으면 고르기 상태를 푼다
 $('#closeMgr').onclick = closeMgr;
 // fill up to six free spots with random species from the dex
 $('#mgrRandom').onclick = async () => {
@@ -5781,6 +5793,10 @@ function slotState(m) {
   return ['', '쉼'];
 }
 const dayOf = c => Math.floor(c / 1440);
+// 필드 슬롯 건강 게이지 앞 작은 아이콘: 물방울(청결) · 열매(배부름) · 웃는 얼굴(즐거움)
+const GG = [['cl', '<svg viewBox="0 0 7 7" shape-rendering="crispEdges" aria-label="청결"><path fill="#8a6ad8" d="M3 0h1v1h1v1h1v3H5v1H2V5H1V2h1V1h1z"/><path fill="#fff" d="M2 3h1v1H2z"/></svg>'],
+  ['hu', '<svg viewBox="0 0 7 7" shape-rendering="crispEdges" aria-label="배부름"><path fill="#3a7a2a" d="M3 0h2v1H3z"/><path fill="#e8a020" d="M1 1h2v1h2V1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1z"/><path fill="#fff4c0" d="M1 2h1v1H1z"/></svg>'],
+  ['jo', '<svg viewBox="0 0 7 7" shape-rendering="crispEdges" aria-label="즐거움"><path fill="#38a8e0" d="M2 0h3v1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1V1h1z"/><path fill="#20202c" d="M2 2h1v1H2zM4 2h1v1H4zM1 4h1v1H1zM5 4h1v1H5zM2 5h3v1H2z"/></svg>']];
 function renderMgr(force) { refreshCap();
   if (mgr.hidden) return;
   if (mgrSel && !S.mons.includes(mgrSel)) mgrSel = null;
@@ -5794,7 +5810,7 @@ function renderMgr(force) { refreshCap();
       const m = S.mons[i], b = document.createElement('button'); b.className = 'slot';
       if (m) {
         b.dataset.uid = m.uid; b.setAttribute('aria-current', m === mgrSel); if (isBud(m)) b.classList.add('bud'); setTier(b, m.sp);
-        b.innerHTML = `<span class="sl-tags"><span class="st"></span>${isBud(m) ? '<span class="sl-bud">짝꿍</span>' : ''}</span><span class="sl-x" role="button" aria-label="필드에서 빼기">✕</span><span class="ph${pkCls(boxOf(m.pid))}"><img alt="" src="${thumbOf(m.sk || m.form)}"></span><span class="nmw"><span class="nm${tnCls(m.sp)}">${esc(m.name)}</span>${sexHtml(sexOf(m))}</span><span class="mini"><i></i></span>`;
+        b.innerHTML = `<span class="sl-tags"><span class="st"></span>${isBud(m) ? '<span class="sl-bud">짝꿍</span>' : ''}</span><span class="sl-x" role="button" aria-label="필드에서 빼기">✕</span><span class="ph${pkCls(boxOf(m.pid))}"><img alt="" src="${thumbOf(m.sk || m.form)}"></span><span class="nmw"><span class="nm${tnCls(m.sp)}">${esc(m.name)}</span>${sexHtml(sexOf(m))}</span><span class="gg">${GG.map(([k, ic]) => `<span class="gr ${k}">${ic}<span class="mini"><i></i></span></span>`).join('')}</span>`;
         b.onclick = e => { if (e.target.closest('.sl-x')) { sfx('tap'); removeMon(m); if (mgrSel === m) mgrSel = null; renderMgr(true); refreshCap(); save(); return; } openMon(m); };   // 우상단 ✕ = 바로 상자로
       } else {
         b.classList.add('empty'); b.innerHTML = '<span class="plus">+</span><span>빈 자리</span>';
@@ -5808,7 +5824,7 @@ function renderMgr(force) { refreshCap();
     const m = S.mons.find(x => x.uid === +b.dataset.uid); if (!m) return;
     const [cls, txt] = slotState(m), st = b.querySelector('.st');
     st.className = 'st ' + cls; st.textContent = txt;
-    b.querySelector('.mini i').style.width = Math.round(100 - m.hunger) + '%';   // 칸 아래 막대 = 배부름
+    const w = { cl: m.clean ?? 100, hu: 100 - m.hunger, jo: m.joy ?? 60 }; for (const k in w) b.querySelector(`.gr.${k} .mini i`).style.width = Math.round(w[k]) + '%';   // v3.99 경완: 칸 아래 건강 게이지 3개 (청결·배부름·즐거움)
     b.title = `${m.name} · ${doingText(m)}`;
   });
   renderMgrDetail(key !== mgrKey || force);
