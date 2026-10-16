@@ -1214,7 +1214,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
   .goldbar{grid-area:stage;align-self:start;justify-self:end;z-index:25;height:auto;margin:calc(var(--si-top,env(safe-area-inset-top)) + 8px) calc(var(--si-right,env(safe-area-inset-right)) + 8px) 0 0;flex-direction:column;align-items:flex-end;gap:8px}
   .gold{font-size:18px;height:42px}
   .shop-gold{position:fixed;top:calc(var(--si-top,env(safe-area-inset-top)) + 8px);right:calc(var(--si-right,env(safe-area-inset-right)) + 8px);z-index:10}
-  .berrybar{position:absolute;grid-area:auto;top:62%;right:calc(var(--si-right,env(safe-area-inset-right)) + 8px);bottom:auto;align-items:flex-end;z-index:25;margin:0}   /* v4.03 경완: 오른쪽 가운데보다 조금 아래(엄지 닿는 곳), 상태창 접기와 상관없이 화면 기준 고정 */
+  .berrybar{position:absolute;grid-area:auto;top:auto;right:calc(var(--si-right,env(safe-area-inset-right)) + 8px);bottom:calc(314px + var(--si-bottom,env(safe-area-inset-bottom)));align-items:flex-end;z-index:25;margin:0}   /* v4.03 경완: 상태창 접기와 상관없이 화면 기준 고정. v4.27: 관찰 일지를 다 펼쳐도 그 위 (일지 윗변보다 12px 위) */
   .clockwin .d{font-size:12px}
   .card{grid-row:1;grid-column:1/-1;position:relative;align-self:end;z-index:30;width:auto;margin:0 8px 8px;max-height:62%;overflow-y:auto;left:auto!important;top:auto!important;padding:10px 14px 12px}
   .card .close{position:absolute;right:4px;top:4px;border:0;padding:8px 12px;font-size:16px}
@@ -5232,7 +5232,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.26';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.27';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
