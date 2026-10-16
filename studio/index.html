@@ -248,6 +248,8 @@ h2.ih{display:flex;align-items:center;gap:8px}
 .od2,.odh{grid-template-columns:76px minmax(0,1fr) 104px 64px}.odh{display:grid;gap:10px;margin-bottom:-4px}.odh span:nth-child(2){text-align:center}.odh span:nth-child(3),.odh span:nth-child(4){text-align:right}
 .odb{position:relative;height:12px;cursor:ew-resize;touch-action:none;overflow:visible}.odb i{border-radius:6px}.odb.auto{cursor:default;opacity:.75}
 .odb .knob{position:absolute;top:50%;width:14px;height:20px;margin:-10px 0 0 -7px;background:var(--fg);border:2px solid var(--panel);border-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.5);pointer-events:none}
+.gpb{display:flex;height:14px;border-radius:4px;overflow:hidden;background:var(--line);margin:8px 0}.gpb i{display:block;height:100%}.gpr{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:6px}.gpi{display:flex;flex-direction:column;gap:4px;min-width:0}.gpi .gn{display:flex;align-items:center;gap:4px;white-space:nowrap}.gpi .kmi input{width:100%}
+@media (max-width:640px){.gpr{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .kmi{display:flex;align-items:center;gap:4px}.kmi input{min-width:0;flex:1}.kmi span{font-size:12px;color:var(--mute)}.kmi.auto{justify-content:flex-end;font-family:var(--px);padding-right:2px}.od2 .pc{text-align:right;font-size:12px}
 body.odrag{cursor:ew-resize;user-select:none}
 .nav a .lb{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.nav a .n{margin-left:0}
@@ -452,7 +454,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.39';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.40';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -1268,6 +1270,14 @@ function reorder(g, sp, to) { const L = listOf(g), v = L.map(r => r[1]), S = L.m
 function moveEgg(sp, g1, g2) { const A1 = listOf(g1), i = A1.findIndex(r => r[0] === sp); if (i < 0 || g1 === g2) return; const p = A1[i][1]; A1.splice(i, 1);
   const A2 = listOf(g2); let added = false; if (!A2.some(r => r[0] === sp)) { const j = Math.round(i / Math.max(1, A1.length) * A2.length), q = A2[Math.min(j, A2.length - 1)]?.[1] ?? p; A2.splice(j, 0, [sp, q]); added = true; }   // 원래 알에서의 순위 비율과 같은 자리에, 그 자리 확률로
   setList(g1, norm(A1)); setList(g2, norm(A2)); return added; }
+// v2.40 경완: 알 등급별 출현 확률(%)을 등급별 포켓몬 화면 위에서도 정함 (일반 알은 나머지)
+function gpoCard() { const O = odds(), oc = i => D.odds && Math.abs(D.odds[i] - ORIG.odds[i]) > 1e-12 ? ' ch' : '', pv = p => +(p * 100).toPrecision(4);
+  return `<div class="card gpo"><div class="row" style="flex-wrap:wrap;gap:8px"><h2 class="ih" style="flex:1">${eggI(3)}알 등급별 출현 확률</h2></div>
+    <div class="gpb">${O.map((p, i) => `<i style="width:${Math.max(p * 100, p > 0 ? .4 : 0)}%;background:${GC[i + 1]}" title="${GN[i + 1]} ${pv(p)}%"></i>`).join('')}</div>
+    <div class="gpr">${O.map((p, i) => `<label class="gpi"><span class="gn">${eggI(i + 1)}<b style="color:${GC[i + 1]}">${GN[i + 1]}</b></span>${i ? `<span class="kmi"><input class="inp${oc(i)}" data-gp="${i}" inputmode="decimal" value="${pv(p)}" aria-label="${GN[i + 1]} 알 출현 확률 %"><span>%</span></span>` : `<span class="kmi auto num">${pv(p)}<span>%</span></span>`}<span class="small mute num">${fmtKm(kmPer(p))}마다</span></label>`).join('')}</div>
+    <div class="small mute">알을 1개 주웠을 때 그 등급일 확률이에요. 일반 알은 나머지를 가져가요. 바꾸면 알별 티어 비율도 티어별 전체 확률에 맞춰 다시 정해져요.</div>
+    ${boxBar('odds', '확률 저장')}</div>`; }
+$('#poolC').addEventListener('change', e => { const i = +e.target.dataset.gp; if (!i) return; const v = parseFloat(e.target.value); if (v > 0) { setOdd(i, v / 100, true); saveDraft(); } renderPool(); });
 function renderPool() {
   const g = sel.poolG, tab = eggTiers()[g], L = tierLists(), prob = probOf(g, L), EX = !!eggList(g), ch = D.eggTiers && JSON.stringify(D.eggTiers[g]) !== JSON.stringify(ORIG.eggTiers[g]);
   const ALLP = {}; { const Z = tierZ(L), O = odds(); for (let h = 1; h <= 5; h++) { const P = probOf(h, L, Z); for (const k in P) ALLP[k] = (ALLP[k] || 0) + P[k] * O[h - 1]; } }
@@ -1275,6 +1285,7 @@ function renderPool() {
   const tot = Object.values(tab).reduce((a, b) => a + b, 0), rows = Object.entries(prob).sort((a, b) => b[1] - a[1]), max = rows[0]?.[1] || 1, q = poolQ.trim();
   $('#poolC').innerHTML = `
   <div class="gsel">${[1, 2, 3, 4, 5].map(i => `<button class="${i === g ? 'on' : ''}" data-g="${i}" style="--gc:${GC[i]}">${eggI(i)}<b>${GN[i]}</b><span class="num">${(eggList(i) || []).length ? '직접' : Object.keys(eggTiers()[i]).map(Number).sort((a, b) => b - a).join('·') + '티어'}</span></button>`).join('')}</div>
+  ${gpoCard()}
   <div class="card">
     ${EX ? `<div class="sum" style="color:var(--warn)">이 알은 포켓몬과 순서를 직접 정해서 아래 티어 비율은 쓰지 않아요. <button class="chip" id="elReset">티어 비율로 되돌리기</button></div>` : ''}
     <div class="row" style="flex-wrap:wrap;gap:8px"><h2 class="ih" style="flex:1">${eggI(g)}${GN[g]} 알에서 나오는 티어 <span class="small mute">자동</span></h2>${boxDirty('pool:' + g) ? '<span class="small" style="color:var(--warn)">● 저장 안 함</span>' : ''}</div>
@@ -1669,6 +1680,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.40', '10월 16일', ['알 › 등급별 포켓몬: 맨 위에 알 등급별 출현 확률(%) 칸 (일반 알은 나머지, 저장 버튼 따로)']],
   ['2.39', '10월 16일', ['크기 조절 모드를 다시 켜면 배경 투명도·선택이 기본값으로', '크기 조절 모드 배경 투명도를 내리면 소품·나비도 같이 흐려짐 (게임 v3.95)', '알에서 나오는 티어: 10~1티어 버튼을 모두 두고 눌러서 켜고 끄기 (티어 더 넣기·× 대신)', '켰다 끄면 원래 비율로 돌아옴']],
   ['2.38', '10월 16일', ['맵에 있는 소품 칸에 마우스를 올리면 칸이 밝아지고 손가락 커서, 시뮬레이터의 그 소품에도 노란 테두리']],
   ['2.37', '10월 16일', ['알에 티어를 넣으면 이웃 티어 사이 몫으로 들어가고, 티어별 전체 확률도 그만큼 같이 늘어남 (0%로 묻히지 않음)', '막대 끌기·알 확률 바꾸기도 지금 알별 비율에서 조금씩만 움직임', '맵 소품 창에서 연 소품을 다시 누르면 세부 창 닫힘 (편집 모드는 그대로)', '확률 안전장치 한도 40,000km']],
