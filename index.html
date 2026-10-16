@@ -5230,7 +5230,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.13';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.14';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6650,7 +6650,7 @@ function gotLog(got, how, place) {
   if (!got.length) return;
   sfx('pickup');
   const by = [5, 4, 3, 2, 1].filter(g => got.includes(g)).map(g => `${GRADE[g].n} ${got.filter(x => x === g).length}`).join(', ');
-  log(`${how}${place ? ` ${place} 근처에서` : ''} 알 ${got.length}개를 주웠다! (${by})`, [], true);
+  log(`${[how, place ? `${place} 근처에서` : ''].filter(Boolean).join(' ')} 알 ${got.length}개를 주웠다! (${by})`.trim(), [], true);
 }
 // 부화기의 알을 가방으로 뺀다. 쌓인 거리는 그대로 남는다.
 function unincubate(e) {
@@ -6758,7 +6758,7 @@ window.pokeRunWalk = (km, place, tags) => {
   const rest = km - S.fedPend; S.fedPend = Math.max(0, S.fedPend - km); if (rest > .005) { const n = Date.now(); feedKm(rest); noteFed(n, n, rest); }
   tags = String(tags || '').split(',').filter(k => THEMES[k]);
   if (place) { S.lastPlace = { n: String(place), tags, t: Date.now() }; notePlace(place, tags, Date.now()); }
-  gotLog(collectEggs(km, place || '', tags), `걸어서 ${fmtKm(km)}km`, place || '');
+  gotLog(collectEggs(km, place || '', tags), '', place || '');   // v4.14 경완: 걸으며 주운 알은 '걸어서 ~km' 없이
   save(); renderRun(); return true;
 };
 // 아이폰 앱: 워치 런닝(watch), 또는 모션 기록에서 찾아낸 달리기(auto, 시작·끝 시각 포함)
