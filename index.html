@@ -5110,7 +5110,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.71';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.72';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5961,7 +5961,9 @@ const TIER = {}, TIER_SPS = Array.from({ length: 11 }, () => []), TIER_Z = {}, F
   for (const L of TIER_SPS) { if (!L.length) continue; const lo = Math.min(...L.map(b => FAM_BST[b])), hi = Math.max(...L.map(b => FAM_BST[b])); for (const b of L) TIER_Z[b] = hi > lo ? (FAM_BST[b] - lo) / (hi - lo) : .5; } }
 // 알 등급마다 나오는 티어 비율(%). 1~3 티어는 에픽·전설 알에서만. 각 등급의 가장 낮은 티어(일반 제외)는 '아래로 넘친' 칸이라 그 티어 안에서 강한 종이 잘 나온다
 const EGG_LIST = [null, null, null, null, null, null];   // v3.64 작업실: 알 등급마다 [[번호, 기본 확률], …] 을 직접 정하면 티어 대신 이걸로 뽑는다
-const EGG_TIERS = [null, { 10: 55, 9: 30, 8: 15 }, { 9: 30, 8: 35, 7: 25, 6: 10 }, { 7: 30, 6: 35, 5: 25, 4: 10 }, { 4: 30, 3: 50, 2: 15, 1: 5 }, { 3: 25, 2: 40, 1: 35 }];
+// v3.72 경완: 가장 드문 포켓몬이 약 1,000km에 1번. 티어 안 포켓몬은 모두 같은 확률이고, 한 마리당 평균 거리는 1티어 1000 · 2티어 750 · 3티어 550 · 4티어 400 → 10티어 50km (4티어부터 약 1.41배씩)
+const EGG_TIERS = [null, { 10: 57.3, 9: 28.4, 8: 14.3 }, { 9: 26.2, 8: 30.9, 7: 30.6, 6: 12.3 }, { 7: 20.4, 6: 28.8, 5: 34, 4: 16.8 }, { 4: 31.2, 3: 38, 2: 24.1, 1: 6.7 }, { 3: 26.7, 2: 45.1, 1: 28.2 }];
+let TIER_K = 0;   // 티어 안 차이 (0 = 모두 같은 확률, 1.4 = 약 4배였던 v3.71까지의 값)
 // v3.70 경완: 티어 경계 보장. 알 1개를 주웠을 때의 전체 확률로 보면, 어느 티어의 가장 흔한 종도 바로 다음(더 흔한) 티어의 가장 드문 종보다 드물게 나온다.
 // 정한 티어 비율에서 넘치는 티어 몫만 줄이고, 줄인 만큼은 그 알의 다른 티어가 나눠 가진다. 돌려주는 값이 실제로 뽑을 때 쓰는 비율
 function tierGuard(ET, O, SPS, Z, EL) {
@@ -5969,7 +5971,7 @@ function tierGuard(ET, O, SPS, Z, EL) {
   const G = [1, 2, 3, 4, 5].filter(g => !EL?.[g]?.length), T0 = [], fixed = {}, m = {}, K = {};
   for (let g = 1; g <= 5; g++) { const L = EL?.[g]; if (!L?.length) continue; const s = L.reduce((a, r) => a + r[1], 0); if (s > 0) for (const [sp, p] of L) fixed[sp] = (fixed[sp] || 0) + O[g - 1] * p / s; }
   for (const g of G) { T0[g] = {}; for (const t in ET[g] || {}) if (ET[g][t] > 0 && SPS[t]?.length) T0[g][t] = +ET[g][t]; }
-  const tiers = []; for (let t = 1; t < SPS.length; t++) if (SPS[t]?.length && G.some(g => T0[g][t])) { tiers.push(t); m[t] = 1; K[t] = 1.4; }
+  const tiers = []; for (let t = 1; t < SPS.length; t++) if (SPS[t]?.length && G.some(g => T0[g][t])) { tiers.push(t); m[t] = 1; K[t] = TIER_K; }
   const spill = g => { const ts = Object.keys(T0[g]).map(Number); return g >= 2 && ts.length ? Math.max(...ts) : 0; };
   const eff = () => { const E = [null]; for (let g = 1; g <= 5; g++) { if (!T0[g]) { E[g] = null; continue; } const tot0 = Object.values(T0[g]).reduce((a, b) => a + b, 0), raw = {}; let tot = 0; for (const t in T0[g]) { raw[t] = T0[g][t] * m[t]; tot += raw[t]; } for (const t in raw) raw[t] *= tot0 / tot; E[g] = raw; } return E; };
   const prob = E => { const P = { ...fixed }; for (const g of G) { const tot = Object.values(E[g]).reduce((a, b) => a + b, 0), sl = spill(g); if (!tot) continue;
@@ -6415,8 +6417,8 @@ function drawEgg() {
 }
 // 가방: 움직인 거리만큼 알을 줍는다. 250m마다 0~2개라 2.5km면 대개 5~15개, 등급 확률은 알 뽑기와 같다.
 let MAX_BAG = 999, BAG_STEP = .25;
-let PITY_E = 75, PITY_L = 150;   // v3.34 경완: 천장은 평균 거리의 1.5배 (에픽 75km, 전설 150km). v3.35: 남은 거리는 화면에 안 보인다
-const ODDS = [.6825, .25, .06, .005, .0025];   // 알 등급 확률 (작업실에서 배포하면 바뀐다)
+let PITY_E = 7.5, PITY_L = 28;   // v3.72: 평균 거리가 에픽 이상 5km·전설 19km 라 1.5배로 다시 맞춤. v3.34 경완: 천장은 평균 거리의 1.5배 (에픽 75km, 전설 150km). v3.35: 남은 거리는 화면에 안 보인다
+const ODDS = [.5382, .2501, .1611, .0373, .0133];   // v3.72: 일반 0.5·희귀 1·레어 1.6·에픽 6.7·전설 19km에 1개꼴   // 알 등급 확률 (작업실에서 배포하면 바뀐다)
 const rollGrade = () => { let r = Math.random(); for (let g = 1; g <= 5; g++) if ((r -= ODDS[g - 1]) < 0) return g; return 5; };   // v3.32 경완: 알은 1km에 약 4개, 전설 100km·에픽 50km·레어 4km에 1개꼴 → 68.25/25/6/0.5/0.25 (예전 45/30/15/8/2)
 // 오늘 기록: 걸은 거리(만보기), 주운 알. 날짜가 바뀌면 새로
 const dayKey = (t = Date.now()) => { const d = new Date(t); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
@@ -6815,7 +6817,7 @@ function rollEgg(e) {
       if (th.fx && d.fx && th.fx.test(d.fx)) v += 8;
       if (th.sp && th.sp.includes(sp)) v += 20;
     }
-    v *= Math.exp((t === spill ? 1 : -1) * (eggEffK()?.[t] ?? 1.4) * TIER_Z[sp]);   // v3.70: 티어 안 차이도 경계 보장 값으로
+    v *= Math.exp((t === spill ? 1 : -1) * (eggEffK()?.[t] ?? TIER_K) * TIER_Z[sp]);   // v3.70: 티어 안 차이도 경계 보장 값으로
     if (S.recentHatch?.includes(sp)) v *= .3;   // 최근 부화한 12종은 덜 나온다
     return v;
   });
@@ -7329,7 +7331,7 @@ frTestSync();
     S.mons.slice().forEach(m => removeMon(m, true)); S.buds = []; S.box = []; S.rel = {};
     log('포켓몬을 모두 초기화했다. (테스트)', [], true); sfx('open'); save(); refreshCap(); renderBox(); renderBuddy(); };
   /* 테스트 생성도 실제 부화와 같은 newPoke: 개체값 무작위 + 종족값 보정이라 포켓몬별 랭크 확률이 그대로다 */
-  // 테스트: 실제 알처럼 1,000마리 (알 등급 확률 68.25/25/6/0.5/0.25 → 등급·장소 테마별 종 뽑기 → 개체값 무작위). 골드는 주지 않는다
+  // 테스트: 실제 알처럼 1,000마리 (알 등급 확률 ODDS → 등급·장소 테마별 종 뽑기 → 개체값 무작위). 골드는 주지 않는다
   $('#boxGenEgg').onclick = () => {
     const places = [...new Set([...(S.places || []).map(p => p.n), ...Object.values(PLACES).map(p => p.n)].filter(Boolean))], now = Date.now(), cnt = [0, 0, 0, 0, 0, 0];
     for (let k = 0; k < 1000; k++) { const g = rollGrade(), place = places.length ? places[Math.floor(Math.random() * places.length)] : undefined, sp = rollEgg({ g, place, t: now });
