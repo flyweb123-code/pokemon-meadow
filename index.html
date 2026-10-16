@@ -2491,7 +2491,7 @@ function dirtFx(m) { const c = m.clean ?? 100; if (c >= 40 || m.hidden || !m.el)
   fxEl.append(i); setTimeout(() => i.remove(), 1700); }
 const frRate = m => { if (!m.pid || m.hidden) return 0; const a = gaugeAvg(m); return FR_TABLE.find(([v]) => a >= v)[1] + (a >= 40 && withFriend(m) ? .5 : 0); };   // 친구 보너스는 돌봐 줄 때만
 // 앱이 꺼져 있던(화면을 떠나 있던) 동안의 필드 친밀도
-let FLD_FR_DAY = 10;   // 필드에 있는 시간으로 받는 친밀도는 하루 10까지
+let FLD_FR_DAY = 36;   // 필드에 있는 시간으로 받는 친밀도는 하루 36까지 (v3.73 경완: 10이면 건강 게이지 40 이상이 다 같아져서. 36 = 평균 80 이상 12시간 · 60~80 하루 종일)
 // 꺼져 있던 시간을 1분씩 따라가며 배부름·즐거움·청결이 떨어지는 대로 친밀도를 쌓는다
 // 배고픔은 80까지만 오른다 (켰을 때 먹여 줄 틈이 있게). 필드 몫은 날마다 10까지.
 function offFr(m, sec) {
@@ -2554,7 +2554,7 @@ function berryBounce(el, h, done, fade = true) {
   requestAnimationFrame(step);
 }
 // 쓰다듬기: 정보창·상태창을 숨기고 그 포켓몬 위를 문지른다. PET_N 번 문지르면 아주 좋아하며 끝 (친밀도 +3 은 하루 3번까지, 즐거움 +20)
-let PET_N = 12, PET_LEN = 1500, PET_DAY = 2, WASH_DAY = 1, JOY_HOLD = 5;   // v3.68 경완: 쓰다듬기 게이지 더 빨리(2500→1500). 쓰다듬기는 즐거움을 가득 채우고, 가득 차 있지 않았으면 친밀도 +1 (하루 한도 없음). 빗질(씻기기) +3 하루 1번. JOY_HOLD = 즐거움 100 이 되면 안 떨어지는 분
+let PET_N = 12, PET_LEN = 1500, PET_DAY = 2, WASH_DAY = 1, JOY_HOLD = 5, PET_FR = 1, WASH_FR = 3;   // v3.73 경완: 쓰다듬기·빗질 친밀도 양을 따로 정함. 빗질은 하루 횟수 없이 더러울 때(청결 95 미만)마다.   // v3.68 경완: 쓰다듬기 게이지 더 빨리(2500→1500). 쓰다듬기는 즐거움을 가득 채우고, 가득 차 있지 않았으면 친밀도 +1 (하루 한도 없음). 빗질(씻기기) +3 하루 1번. JOY_HOLD = 즐거움 100 이 되면 안 떨어지는 분
    // 게이지 바: 보통 빠르기로 약 1700px 문지르면 가득. 빠르게 문지를수록 더 빨리 차고, 멈추면 줄어든다. PET_N 은 반응(하트·진동) 구간 수
 let petM = null;
 function petStart(m, wash = false) {
@@ -2596,7 +2596,7 @@ function haloJoy(m) {
 }
 function petDone() {
   const m = petM.m, P = boxOf(m.pid); haloJoy(m);
-  const wash = petM.wash; let fr = 0; if (P && (wash ? dayCap(m, 'wash', WASH_DAY) : (m.joy ?? 60) < 100)) { fr = wash ? 3 : 1; addFr(P.id, fr); }
+  const wash = petM.wash; let fr = 0; if (P && (wash || (m.joy ?? 60) < 100)) { fr = wash ? WASH_FR : PET_FR; if (fr > 0) addFr(P.id, fr); }
   if (wash) { m.clean = 100; dirtVis(m); m.joy = clamp((m.joy ?? 60) + 10); washShine(m); $('#washBrush').hidden = true; }
   else { m.social = clamp(m.social - 20); m.joy = 100; }
   haptic(2); setTimeout(() => haptic(2), 110); setTimeout(() => haptic(1), 220); sfx('pickup'); if (fr) frPop(m, fr);
@@ -5110,7 +5110,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.72';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.73';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7571,7 +7571,7 @@ function syncNeed() { S.eggs?.forEach(e => { if (GRADE[e.g]) e.need = GRADE[e.g]
 function applyBal(b) {
   const num = v => typeof v === 'number' && isFinite(v), arr = (A, v) => { if (Array.isArray(v) && v.length === A.length) A.splice(0, A.length, ...v); };
   arr(DUP_G, b.DUP_G); arr(NEW_EGG_G, b.NEW_EGG_G); if (Array.isArray(b.FR_TABLE) && b.FR_TABLE.every(r => r.length === 2)) FR_TABLE.splice(0, FR_TABLE.length, ...b.FR_TABLE);
-  if (num(b.NEW_G)) NEW_G = b.NEW_G; if (num(b.RUN_G)) RUN_G = b.RUN_G; if (num(b.BERRY_FR_DAY)) BERRY_FR_DAY = b.BERRY_FR_DAY; if (num(b.PET_DAY)) PET_DAY = b.PET_DAY; if (num(b.JOY_HOLD)) JOY_HOLD = b.JOY_HOLD; if (num(b.WASH_DAY)) WASH_DAY = b.WASH_DAY;
+  if (num(b.NEW_G)) NEW_G = b.NEW_G; if (num(b.RUN_G)) RUN_G = b.RUN_G; if (num(b.BERRY_FR_DAY)) BERRY_FR_DAY = b.BERRY_FR_DAY; if (num(b.PET_DAY)) PET_DAY = b.PET_DAY; if (num(b.JOY_HOLD)) JOY_HOLD = b.JOY_HOLD; if (num(b.WASH_DAY)) WASH_DAY = b.WASH_DAY; if (num(b.PET_FR)) PET_FR = b.PET_FR; if (num(b.WASH_FR)) WASH_FR = b.WASH_FR;
   if (num(b.FLD_FR_DAY)) FLD_FR_DAY = b.FLD_FR_DAY; if (num(b.WALK_FR)) WALK_FR = b.WALK_FR; if (num(b.FR_EVO)) FR_EVO = b.FR_EVO; if (num(b.FR_MAX)) FR_MAX = b.FR_MAX; if (num(b.HUNGER_RATE)) HUNGER_RATE = b.HUNGER_RATE;
   if (num(b.CLEAN_DAYS) && b.CLEAN_DAYS > 0) CLEAN_RATE = 100 / (b.CLEAN_DAYS * 86400); if (num(b.JOY_HOURS) && b.JOY_HOURS > 0) JOY_RATE = 100 / (b.JOY_HOURS * 3600);
   if (Array.isArray(b.HATCH_KM) && b.HATCH_KM.length === 6) { for (let g = 1; g <= 5; g++) if (num(b.HATCH_KM[g]) && b.HATCH_KM[g] > 0) GRADE[g].km = b.HATCH_KM[g]; syncNeed(); }   // v3.71 경완: 작업실 알 › 부화 거리
@@ -7648,7 +7648,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   const api = window.__studio = {
     tierGuard, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
     ICO: { berry: ICO_BERRY, brush: ICO_BRUSH, hand: ICO_HAND, pen: PEN, egg: EGG_SVG },   // v3.66: 작업실이 게임 아이콘을 그대로 쓴다
-    get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]), HATCH_KM: [0, ...GRADE.slice(1).map(G => G.km)] }; },
+    get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, PET_FR, WASH_FR, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]), HATCH_KM: [0, ...GRADE.slice(1).map(G => G.km)] }; },
     get cfg() { return CFG; },
     get SPRITES() { return SPRITES; }, ensureSprite, thumbOf, gradeOf, tierOf, shinyHue, tyIcon, scaleOf, baseOf, movesOf, eggHtml, propSpots,
     ready: false, onSel: null, onLayout: null, onMon: null, onLog: null,
