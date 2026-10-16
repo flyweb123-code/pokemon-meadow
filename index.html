@@ -35,7 +35,7 @@
 .ivs .fr-l{margin-top:4px}.ivs .hearts{margin-top:4px}
 .hearts.frtap{display:inline-flex;align-items:center;line-height:1;height:16px;color:#e04870;letter-spacing:1px;font-size:14px}.frbar>span:first-child,.ivs .fr-l{line-height:16px}
 .dexpop .boxbtn.white{background:#fff;color:var(--frame);border-color:var(--frame)}
-.dexpop .boxbtn.pink{background:#e8679a;border-color:#9a3462;color:#fff}.dexpop .boxbtn.pink.off{background:var(--win);color:#c0507e;border-color:#c0507e}
+.dexpop .boxbtn.pink{background:#e8679a;border-color:#9a3462;color:#fff}.dexpop .boxbtn.pink.off{background:var(--win);color:#c0507e;border-color:#c0507e}.boxbtn.pink.off:disabled{background:#dcdce0;color:#8e8e98;border-color:#a8a8b2;box-shadow:none;cursor:default}   /* v4.05 경완: 짝꿍 가득은 못 누르는 회색 */
 .mvcard{align-items:center!important;line-height:1}.mvcard>*{display:flex;align-items:center}.mvcard .mv-k{height:16px}.mvcard .mv-lock svg,.mvcard .tyi{display:block}.mvcard .mv-n,.mvcard .mv-h{height:16px;line-height:16px}
 .rk.S{position:relative;overflow:hidden;color:#5a3600!important;text-shadow:1px 1px 0 #fff3b0;border:2px solid #8a5a08!important;background:linear-gradient(180deg,#fff2a0 0 30%,#ffd028 30% 60%,#e8a010 60% 85%,#c07c08 85%)!important;box-shadow:inset 1px 1px 0 #fffbe0,inset -1px -1px 0 #a06a00,0 0 6px rgba(255,200,40,.7)}
 .rk.A{position:relative;overflow:hidden;color:#fff!important;text-shadow:1px 1px 0 #8a1c1c;border:2px solid #8a1c1c!important;background:linear-gradient(180deg,#ff9a9a 0 30%,#f05454 30% 60%,#d83838 60% 85%,#a82424 85%)!important;box-shadow:inset 1px 1px 0 #ffd0d0,inset -1px -1px 0 #901818,0 0 5px rgba(255,80,80,.6)}
@@ -821,8 +821,8 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .slot .mini{width:80%;height:6px;background:var(--hp-track);border:2px solid var(--frame);box-sizing:content-box}
 .slot .mini i{display:block;height:100%;background:var(--hunger)}
 .slot .gg{width:88%;display:grid;gap:2px}.slot .gr{display:flex;align-items:center;gap:3px;min-width:0}.slot .gr svg{width:9px;height:9px;flex:none}.slot .gr .mini{flex:1;width:auto;min-width:0;height:3px;border-width:2px}
-.slot .gr.cl .mini i{background:var(--clean)}.slot .gr.jo .mini i{background:var(--lonely)}.slot .gr.low .mini i{background:var(--low)}.bar.low>span:first-child,.bar.low .num{color:var(--low)}.slot .gr .gi{display:flex;flex:none}.slot .gr.low .gi{animation:lowp 1.2s steps(2) infinite}@keyframes lowp{50%{transform:translateY(-1px)}}
-.slot .sl-tags{position:absolute;left:4px;top:4px;display:flex;gap:3px;pointer-events:none}.slot .sl-tags .st{position:static}.slot .sl-bud{font-size:11px;padding:1px 4px;line-height:normal;background:#e8679a;color:#fff}.slot.bud{background:linear-gradient(#fff 55%,#fde6ef)}.slot.bud .mini{border-color:#9a3462}
+.slot .gr.cl .mini i{background:var(--clean)}.slot .gr.jo .mini i{background:var(--lonely)}.slot .gr.low .mini i{background:var(--low)}.bar.low>span:first-child,.bar.low .num{color:var(--low)}.slot .gr .gi{display:flex;flex:none}.slot .gr.low .gi{animation:lowp 1.2s steps(2) infinite}.gr.low .mini{animation:lowglow 1.8s ease-in-out infinite}@keyframes lowglow{0%,100%{box-shadow:0 0 2px rgba(240,80,60,.35)}50%{box-shadow:0 0 6px 1px rgba(240,80,60,.75)}}.gr.low .gi svg{filter:drop-shadow(0 0 1.5px rgba(240,80,60,.7))}   /* v4.05 경완: 빨간 게이지는 은은하게 빛난다 */@keyframes lowp{50%{transform:translateY(-1px)}}
+.slot .sl-tags{position:absolute;left:4px;top:4px;display:flex;gap:3px;pointer-events:none}.slot .sl-tags .st{position:static}.slot .sl-bud{font-size:11px;padding:1px 4px;line-height:normal;background:#e8679a;color:#fff}.slot.bud{background:#fcdde9}.slot.bud .mini{border-color:#9a3462}
 .slot.empty{border-style:dashed;color:var(--dim);justify-content:center;background:transparent}
 .slot.empty .plus{font-size:24px;line-height:1}
 .slot .no{position:absolute;right:5px;top:4px;font-size:10px;color:var(--dim)}.slot .sl-x{position:absolute;right:0;top:0;font-size:15px;line-height:1;padding:5px 6px 8px 10px;color:var(--dim);z-index:1}.slot .sl-x:active{color:var(--frame)}
@@ -5196,7 +5196,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.04';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.05';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
