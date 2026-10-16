@@ -2057,7 +2057,7 @@ const chunkLoads = {};
 // ---------- 업데이트 받기 로딩창 ----------
 // 스프라이트 청크가 캐시에 없으면(처음 설치, 또는 sw.js 의 CACHE 가 올라 새 청크가 나왔을 때) 피카츄가 달리는 게이지 바를 띄우고
 // s0…s20.json 을 받아 서비스 워커와 같은 캐시에 넣는다. 크기는 빌드 때 채운다(압축 풀린 바이트).
-const CHUNK_CACHE = 'meadow-v20', CHUNK_SZ = [1152284,1080349,1397456,1075246,1295987,1115366,1317751,1435041,1536461,1680129,1169132,1182678,1461367,1282246,1250053,1655705,1254226,1561572,1299384,1483088,927678];
+const CHUNK_CACHE = 'meadow-v21', CHUNK_SZ = [1152284,1080349,1397456,1075246,1295987,1115366,1317751,1435041,1536461,1680129,1183006,1193376,1466016,1286664,1253541,1665273,1262518,1584510,1322229,1504723,969479];
 const PIKA_RUN = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFwAAAAbCAYAAADxsuiMAAADJ0lEQVR4nNWZPXbbMAzHoU71LdwbdMxmj+kN2ilH0JobJGtPodxAHjN67OZuyi3UDRkoUCAFgh8WbZXv6cW2yD9+BEEQUgDCDZV7W26b5v4S+H3T0Eq7FXexHcnh10BjYPwtHFGDe207coR3bZEW4qjfL1LNGFeJu4hFGCeOxa4FxDFrxQEMtDYOIS+KNFDxt0rcTt+hN1eJDRqziPCHxwypWTDeaQQYevMxVTfHVi1u6jv0APsjwPm0rg3EcbGSUnRK97QotpGUGk1du9DTxtfiXvAzrlhLmjMOvduRJsId0LXz5PjvWkoh3RSnCFs3Bl+L2+HxgkAd47NIfW0eDF3+pDhEQuQmOYUvDHeIAr8J7lxnB4W1SXDoyGGS7RSuXRLdt+QO7NjoTkBEFCcpGQFIhi5ySqKz786dGf2ucOqKkhA3FouUXKf4Ewk5eyvcPNqFXL8UvhwUMc+o75QYdEWnbIIbx6WTQ/rik2az8743TfAp7uMd4NsP0y0ADv9eAXAE+Pkq3PyK1t7+aGt1p7Hf1XLsXtwA83PA0JsxIX3r8D/fZxD0inUy+ncSpeL/fIpD+y3HKdQ052yRO2UxAdhWo3rV2TYvT3g5uNuM+kHk4KEtqR1AlBpoa1IuzDnYtsCd8WAUAJ4MXg7z/QLxIqck6v+X3M7BQKdtaBLcQIpDeLTGnJIJX5Pb6ociPMSdom1XkQOGtlGus6WJa/oZ8LW4Abxqyef2qyivHAw2OjSbZue+cdsf3Y5vz+bvx3sCKmv7oxlD40nX1+c2qCr59duwKfK1uBGnt5t00Grc1CfljaVTFp5PcbDzyYAkvg5tmp09sW0j6Lfn2SEAxsH+wqS0CtwiA+fmnx8ejX7Oq1v9cBjdrZu6fUI2JC0/z7LrXtxOqvD16OJpJdcnzkR5+eTn1wJnA3gHEIflB0+Bfk1up7LRzpxUfS0/2oG8wJ/yamysqDf0Jr10rdEZpv+iNLv5CfN8Ssrdqp21ufmXrpXT0grcrlFePVyjA140ChXJNfoLeytxO5og7KgV9Y2RlaGtbsqbtWv0K3HfRL8adEVt0q/ZsvQ/AULNuNvtaaCpAAAAAElFTkSuQmCC';
 const gateLoads = {};
 const gateReady = (async () => {
@@ -2375,7 +2375,27 @@ const PIXE = (() => { const P = { k: '#4a3010', y: '#ffd23c', e: '#3a2410', m: '
     '☾': ['...OOOO.....', '.OOYYYO...w.', '.OYYYO......', 'OYYYO.......', 'OYYO........', 'OYYO.....w..', 'OYYO........', 'OYYYO.......', '.OYYYYO..OO.', '..OOYYYYYO..', '....OOOOO...', '............'] };
   const R = {}; for (const [k, rows] of Object.entries(M)) { let r = ''; rows.forEach((row, y) => [...row].forEach((c, x) => { if (P[c]) r += `<rect x="${x}" y="${y}" width="1" height="1" fill="${P[c]}"/>`; }));
     R[k] = `<svg class="pxe" viewBox="0 0 12 12" shape-rendering="crispEdges">${r}</svg>`; } return R; })();
-function emote(m, text, cls = '', dur = 2.2) {
+// v3.77 경완: 말풍선 종류(BUBK)와 그 말풍선이 뜨는 장면(SCN). 작업실에서 장면을 지우거나 다른 말풍선으로 옮기면 BUB_OV 에 담겨 배포된다
+// BUBK: [키, 보이는 글, 모양, 이름] · SCN: [장면 id, 기본 말풍선 키, 설명]
+const BUBK = [['!', '!', '', '놀람·알아챔'], ['!!', '!!', 'anger', '깜짝·화남'], ['!?', '!?', '', '당황'], ['?', '?', '', '궁금함'], ['…?', '…?', '', '어리둥절'], ['…', '…', '', '멍·머쓱'], ['♪', '♪', 'note', '기분 좋음'], ['♪♪', '♪♪', 'note', '노래'], ['♥', '♥', 'heart', '좋아함'], ['…♥', '…♥', 'heart', '수줍음'], ['😋', '😋', 'happy', '냠냠'], ['배불러', '배불러', '', '배부름'], ['꼬르륵', '꼬르륵', '', '배고픔'], ['💦', '💦', '', '헐떡임'], ['#', '#', 'anger', '짜증'], ['☀', '☀', 'note', '햇빛'], ['☾', '☾', 'note', '달빛'], ['z Z', 'z Z', 'zz', '잠듦'], ['드르렁', '드르렁', 'zz', '코골이'], ['★', '★', 'star', '특별 장면'], ['✧', '✧', '', '반짝'], ['아직 안 씻어도 돼', '아직 안 씻어도 돼', '', '빗질 거절'], ['외침', null, '', '기술 외침']];
+const SCN = [['berry-see', '!', '내가 놓은 열매를 알아챘을 때'], ['tree-see', '!', '나무에서 떨어진 열매를 배고픈 포켓몬이 알아챘을 때'], ['hold', '!', '손가락으로 집어 들었을 때'], ['bush-out', '!', '덤불에 숨었다가 튀어나올 때'], ['rock-pose', '!', '바위·땅·격투 타입이 바위 위에서 포즈를 잡을 때'], ['dig-near', '!', '땅속에서 바로 앞에 쑥 튀어나왔을 때'], ['roar', '!', '포효에 깜짝 놀랐을 때'], ['wake-noise', '!', '시끄러운 소리에 깨어날 때'], ['fight-chase', '!', '쫓아가기 시작할 때'],
+  ['fight-hit', '!!', '싸움에서 지거나 쫓길 때'], ['ghost-scared', '!!', '유령이 놀래켰을 때'], ['fire-back', '!!', '물·얼음 타입이 모닥불에 놀라 물러날 때'], ['puddle-fire', '!!', '불꽃 타입이 물웅덩이에 발이 닿았을 때'], ['self-shock', '!!', '전기를 모으다 스스로 감전됐을 때'], ['move-shock', '!!', '다른 포켓몬의 기술·전설 기술에 놀랐을 때'], ['sp-startle', '!!', '특수 장면에서 깜짝 놀라는 순간'],
+  ['karp-land', '!?', '땅 위에 놓인 잉어킹이 파닥거릴 때'],
+  ['late-berry', '?', '먹으러 간 열매를 다른 포켓몬이 먼저 먹었을 때'], ['pet-start', '?', '쓰다듬기를 시작할 때'], ['no-answer', '?', '좋아하는 마음을 받았는데 잘 모를 때'], ['fight-scare', '?', '상대를 겁줘서 도망가게 했을 때'], ['headache', '?', '고라파덕이 두통으로 머리를 감쌀 때'], ['sp-curious', '?', '특수 장면에서 무슨 일인지 궁금해할 때'],
+  ['wash-start', '…?', '빗질을 시작할 때'], ['sp-late', '…?', '특수 장면에서 늦게 눈치챘을 때'],
+  ['idle-alone', '…', '혼자 멍하니 서 있을 때 가끔'], ['pet-quit', '…', '쓰다듬다가 그만뒀을 때'], ['tree-empty', '…', '열매나무를 흔들었는데 열매가 없을 때'], ['tree-shake', '…', '열매나무를 흔들 때'], ['ash-sniff', '…', '비에 꺼진 모닥불 재를 맡을 때'], ['heavy-flower', '…', '무거운 포켓몬이 꽃밭 앞에서 멈칫할 때'], ['rock-lean', '…', '바위에 기대 쉴 때'], ['chase-lost', '…', '쫓아가다 놓쳤을 때'], ['meet-fail', '…', '만나러 갔는데 같이 놀 수 없을 때'], ['play-lose', '…', '장난 겨루기에서 졌을 때'], ['move-calm', '…', '단단해지기·사이코 같은 특기를 쓸 때'], ['sp-ponder', '…', '특수 장면에서 생각에 잠길 때'],
+  ['pet-done', '♪', '쓰다듬기·빗질을 마쳤을 때'], ['pet-ing', '♪', '쓰다듬는 동안'], ['prop-play', '♪', '횃대·그루터기·연못·웅덩이에서 놀 때'], ['flower-sniff', '♪', '꽃밭 냄새를 맡거나 벌레 타입이 꿀을 모을 때'], ['fire-warm', '♪', '모닥불을 쬘 때 (밤엔 Zz)'], ['prank', '♪', '잠든 친구 얼굴에 장난을 쳤을 때'], ['fight-win', '♪', '싸움·겨루기에서 이겼을 때'], ['ghost-scare', '♪', '유령이 놀래키는 데 성공했을 때'], ['chat', '♪', '친구와 수다 떠는 동안'], ['evolve', '♪', '진화했을 때'], ['sp-end', '♪', '특수 장면이 끝날 때'],
+  ['sing', '♪♪', '푸린처럼 노래하는 특기를 쓸 때'],
+  ['berry-given', '♥', '내가 준 열매를 받아먹었을 때'], ['friend-meet', '♥', '친한 친구를 만났을 때'], ['care', '♥', '지친 친구를 돌봐 줄 때'], ['flower-happy', '♥', '풀·페어리 타입이 꽃밭에서 행복할 때'], ['sp-love', '♥', '특수 장면에서 사이가 좋아졌을 때'],
+  ['shy-meet', '…♥', '좋아하는 친구를 만났을 때 가끔'],
+  ['eat', '😋', '열매를 먹는 동안'], ['full-refuse', '배불러', '배가 불러서 열매를 사양할 때'], ['full-eat', '배불러', '열매를 먹다가 배가 가득 찼을 때 (배불러!)'], ['hungry', '꼬르륵', '배부름이 50 아래로 떨어지면 가끔 (배고파…)'], ['karp-gasp', '💦', '땅 위의 잉어킹 (헉…헉…, 파닥파닥, …!)'],
+  ['taunt', '#', '싸움에서 도발할 때 (흥!, …!)'], ['move-annoy', '#', '찬 바람·독가스 특기에 주변이 움츠릴 때'], ['puff', '#', '다들 잠든 걸 보고 볼을 부풀릴 때'],
+  ['sun', '☀', '낮에 햇빛을 쬐는 특기 (뚜벅쵸는 ☾)'], ['moon', '☾', '밤에 달빛을 받는 특기'], ['sleep-move', 'z Z', '노래·하품 같은 특기에 잠들 때'], ['snore', '드르렁', '잠이 많은 포켓몬이 잘 때 가끔'],
+  ['drop-target', '★', '포켓몬을 끌어 다른 포켓몬에 겹쳤을 때, 특수 장면이 있는 상대 위에'], ['wash-ing', '✧', '빗질하는 동안 깨끗해질 때'], ['wash-no', '아직 안 씻어도 돼', '아직 깨끗한데 빗질하려 할 때'], ['shout', '외침', '친밀도 만점 포켓몬이 기술을 쓸 때 (포켓몬마다 다름)']];
+const BUBK_M = Object.fromEntries(BUBK.map(r => [r[0], r])), SCN_M = Object.fromEntries(SCN.map(r => [r[0], r]));
+let BUB_OV = {};   // 장면 id → 바꾼 말풍선 키 ('' = 이 장면엔 말풍선 없음)
+function emote(m, text, cls = '', dur = 2.2, sc = '') {
+  if (sc && sc in BUB_OV) { const k = BUB_OV[sc], B = BUBK_M[k]; if (!B) return; text = B[1] ?? shoutOf(m.sp); cls = B[2]; }
   m.bub.className = 'bubble ' + cls; if (PIXE[text]) m.bub.innerHTML = PIXE[text]; else m.bub.textContent = text; m.bub.hidden = false; m.bubT = dur;
   m.bub.style.animation = 'none'; void m.bub.offsetWidth; m.bub.style.animation = '';
 }
@@ -2456,7 +2476,7 @@ function noticeBerry(b) {
     if (b.for && b.for !== m) continue;
     if (!awake(m) || m.held || m.evolving || isFull(m) || T(m).mv === 'swim' || dist(m, b) > 300) continue;
     if (!(m.state === 'idle' || m.state === 'move') || (m.goal?.kind === 'berry' && m.goal.berry !== b && S.berries.includes(m.goal.berry) && dist(m, m.goal.berry) < dist(m, b))) continue;
-    emote(m, '!', '', 1); moveTo(m, b, { kind: 'berry', berry: b }, 1.3);
+    emote(m, '!', '', 1, 'berry-see'); moveTo(m, b, { kind: 'berry', berry: b }, 1.3);
   }
 }
 // 열매를 고른 채 포켓몬을 누르면: 그 포켓몬 바로 앞에 그 포켓몬 몫의 열매를 놓는다 (다른 포켓몬은 안 먹는다)
@@ -2464,14 +2484,14 @@ function feedOne(m) {
   setTool('look'); sfx('tap');
   userAct(m);
   if (m.state === 'sleep') wake(m, `${J(m,'이/가')} 열매 냄새에 눈을 번쩍 떴다.`);   // 자고 있어도 직접 주면 바로 깬다
-  if (isFull(m)) { emote(m, '배불러'); log(`${J(m,'은/는')} 배가 불러서 열매를 사양했다.`, [m]); return; }
+  if (isFull(m)) { emote(m, '배불러', '', 2.2, 'full-refuse'); log(`${J(m,'은/는')} 배가 불러서 열매를 사양했다.`, [m]); return; }
   const tries = [m.face, -m.face].map(f => ({ x: clamp(m.x + f * Math.max(26, m.w * .45), XL + 30, XR - 30), y: clamp(m.y + 4, MIN_Y, MAX_Y) }));
   const p = T(m).mv === 'swim' ? null : tries.find(q => pondVal(q.x, q.y) >= 1.05);
   if (!p) {   // 물 위의 포켓몬에게는 바로 던져 준다
-    userAct(m); if (berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - BERRY_FILL); berryBoost(m, true); emote(m, '♥', 'heart'); log(`${J(m,'이/가')} 던져 준 열매를 받아먹었다.`, [m]); return;
+    userAct(m); if (berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - BERRY_FILL); berryBoost(m, true); emote(m, '♥', 'heart', 2.2, 'berry-given'); log(`${J(m,'이/가')} 던져 준 열매를 받아먹었다.`, [m]); return;
   }
   const b = addBerry(p.x, p.y); if (!b) return; b.for = m; userAct(m, 20);
-  if (awake(m) && !m.held && !m.evolving && (m.state === 'idle' || m.state === 'move')) { emote(m, '!', '', 1); moveTo(m, b, { kind: 'berry', berry: b }, 1.3); }
+  if (awake(m) && !m.held && !m.evolving && (m.state === 'idle' || m.state === 'move')) { emote(m, '!', '', 1, 'berry-see'); moveTo(m, b, { kind: 'berry', berry: b }, 1.3); }
 }
 // ---------- 친밀도 (2026-10-14) ----------
 // 필드에 있는 동안: 청결·배부름·즐거움 평균에 따라 1시간에 오르는 양이 달라진다 (친구와 함께면 +0.5)
@@ -2521,17 +2541,17 @@ function feedNow(m) {
   select(null); userAct(m, 20);
   if (!S.mons.includes(m) || m.held || m.evolving) return;
   if (m.state === 'sleep') wake(m, `${J(m,'이/가')} 열매 냄새에 눈을 번쩍 떴다.`);
-  if (isFull(m)) { emote(m, '배불러'); log(`${J(m,'은/는')} 배가 불러서 열매를 사양했다.`, [m]); return; }
+  if (isFull(m)) { emote(m, '배불러', '', 2.2, 'full-refuse'); log(`${J(m,'은/는')} 배가 불러서 열매를 사양했다.`, [m]); return; }
   if (m.partner) { const o = m.partner; m.partner = null; o.partner = null; o.scene = null; setState(o, 'idle', 1); }
   m.goal = null; m.scene = null; setState(m, 'idle', 2);
   const x = m.x - (m.face || 1) * Math.max(14, m.w * .3), y = m.y + 2, el = document.createElement('div');
   el.className = 'berry' + (Math.random() < .4 ? ' red' : ''); Object.assign(el.style, { left: x + 'px', top: y + 'px', zIndex: Math.round(y) + 1, pointerEvents: 'none' }); itemsEl.append(el);   // v3.42: 정보창에서 준 열매는 더 높이서 떨어진다 (잘 보이게)
-  emote(m, '!', '', .8);
+  emote(m, '!', '', .8, 'berry-see');
   berryBounce(el, 110, bx => { if (!S.mons.includes(m)) { el.remove(); return; }
     let ate = false; const bxp = x + bx;
     const go = () => { if (ate || !el.isConnected) return; ate = true; if (!S.mons.includes(m) || m.held) { el.remove(); return; }
       if (berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - BERRY_FILL); berryBoost(m, true);
-      if (isFull(m)) { m.hunger = 0; setTimeout(() => emote(m, '배불러!', 'heart', 2), 3200); }
+      if (isFull(m)) { m.hunger = 0; setTimeout(() => emote(m, '배불러!', 'heart', 2, 'full-eat'), 3200); }
       const dur = m.sp === 143 ? 8 : 5; faceTo(m, bxp);
       setState(m, 'eat', dur); log(`${J(m,'이/가')} 떨어진 열매를 바로 냠냠 먹었다.`, [m]); save();
       biteBerry(el, m, dur, bxp, y); };
@@ -2559,13 +2579,13 @@ let PET_N = 12, PET_LEN = 1500, PET_DAY = 5, WASH_DAY = 1, JOY_HOLD = 5, PET_FR 
 let petM = null;
 function petStart(m, wash = false) {
   select(null); if (!S.mons.includes(m) || m.held || m.evolving) return;
-  if (wash && (m.clean ?? 100) >= 95) { emote(m, '아직 안 씻어도 돼', '', 1.8); log(`${J(m,'은/는')} 아직 깨끗해서 빗질은 괜찮다고 한다.`, [m]); return; }
+  if (wash && (m.clean ?? 100) >= 95) { emote(m, '아직 안 씻어도 돼', '', 1.8, 'wash-no'); log(`${J(m,'은/는')} 아직 깨끗해서 빗질은 괜찮다고 한다.`, [m]); return; }
   userAct(m, 60);
   if (m.partner) { const o = m.partner; m.partner = null; o.partner = null; o.scene = null; setState(o, 'idle', 1); }
   if (m.state === 'sleep') wake(m, `${J(m,'이/가')} 손길에 눈을 떴다.`);
   m.goal = null; m.scene = null; m.pet = true; setState(m, 'idle', 1);
   petM = { m, n: 0, v: 0, spd: 0, mvT: 0, rub: null, wash, c0: m.clean ?? 100, bx: 0 }; m.washing = wash; petTick.t = 0; requestAnimationFrame(petTick); petTrail(-99, -99, true);
-  document.body.classList.add('petting'); $('#petBar').hidden = false; $('#petBar').classList.toggle('wash', !!wash); petBarSide(); $('#petIc').innerHTML = wash ? ICO_BRUSH : ICO_HAND; $('#petTx').textContent = wash ? '빗을 움직여 포켓몬을 빗겨 주세요' : '포켓몬을 문질러서 쓰다듬어 보세요'; petDots(); emote(m, wash ? '…?' : '?', '', 1);
+  document.body.classList.add('petting'); $('#petBar').hidden = false; $('#petBar').classList.toggle('wash', !!wash); petBarSide(); $('#petIc').innerHTML = wash ? ICO_BRUSH : ICO_HAND; $('#petTx').textContent = wash ? '빗을 움직여 포켓몬을 빗겨 주세요' : '포켓몬을 문질러서 쓰다듬어 보세요'; petDots(); emote(m, wash ? '…?' : '?', '', 1, wash ? 'wash-start' : 'pet-start');
   if (wash) { const b = $('#washBrush'); if (!b.firstChild) b.innerHTML = ICO_BRUSH; const r = [m.spr, m.img].map(e => e?.getBoundingClientRect()).find(r => r && r.width) || m.el.getBoundingClientRect(); brushAt(Math.min(innerWidth - 40, r.right + 18), r.top + r.height * .55); b.hidden = false; }
 }
 /* 포켓몬이 화면 아래쪽에 있으면 안내 바를 위로 올려 포켓몬을 가리지 않게 (바는 터치를 막지 않는다) */
@@ -2605,8 +2625,8 @@ function petDone() {
   holdLog(S.log[0], 1000 + USER_LOG_HOLD); m.petMood = performance.now() + 31000;   /* 좋아하는 춤(1초)이 끝난 뒤 상태창 5초 유지, 정보창 '상태'는 30초 동안 기분 좋음 */
   /* 기뻐서 왼쪽·오른쪽을 번갈아 보며 춤춘다 (그동안은 제자리) */
   petM.done = true; $('#petBar').hidden = true; const f0 = m.face || 1;
-  if (haloOf(m)) { emote(m, '♪', 'heart', 1); setTimeout(() => { petEnd(); save(); }, 1000); return; }   /* 후광 포켓몬은 춤 없이 제자리에서 바로 점멸 */
-  const NB = 5; for (let k = 0; k < NB; k++) setTimeout(() => { if (!S.mons.includes(m)) return; m.face = k % 2 ? f0 : -f0; if (k % 2 === 0) anim(m, 'phop'); if (k === 1) emote(m, '♪', 'heart', 1); }, k * 190);
+  if (haloOf(m)) { emote(m, '♪', 'heart', 1, 'pet-done'); setTimeout(() => { petEnd(); save(); }, 1000); return; }   /* 후광 포켓몬은 춤 없이 제자리에서 바로 점멸 */
+  const NB = 5; for (let k = 0; k < NB; k++) setTimeout(() => { if (!S.mons.includes(m)) return; m.face = k % 2 ? f0 : -f0; if (k % 2 === 0) anim(m, 'phop'); if (k === 1) emote(m, '♪', 'heart', 1, 'pet-done'); }, k * 190);
   setTimeout(() => { m.face = f0; petEnd(); save(); }, NB * 190 + 50);
 }
 // 빗질 판정은 손끝이 아니라 빗의 솔 부분으로 (v3.40 경완). 문지르는 중 빗(.wash-brush.on: -12° 기울기·1.06배) 솔 줄의 왼쪽·가운데·오른쪽이 손끝에서 떨어진 거리
@@ -2628,7 +2648,7 @@ addEventListener('pointermove', e => { const p = petM; if (!p || p.done || !p.ru
   p.v += d / PET_LEN * clamp(p.spd / 700, .5, 2) * (p.wash ? WASH_SPD : 1); petDots();
   if (p.wash) { p.cv = Math.max(p.cv ?? p.c0, p.c0 + (100 - p.c0) * Math.min(1, p.v)); dirtVis(p.m, p.cv); }   // v3.41: 빗는 동안은 겉모습만 깨끗해지고, 청결은 게이지를 다 채웠을 때만 회복
   if (p.v >= 1) return petDone();
-  const n = Math.floor(p.v * PET_N); if (n > p.n) { p.n = n; p.dvv = (p.dvv || 0) + .9; const bb = $('#petN'); bb.classList.remove('pop'); void bb.offsetWidth; bb.classList.add('pop'); emote(p.m, p.wash ? (n % 3 === 0 ? '♪' : '✧') : n % 3 === 0 ? '♪' : '♥', 'heart', .9); p.rub.ht = now; haptic(2); } }, true);
+  const n = Math.floor(p.v * PET_N); if (n > p.n) { p.n = n; p.dvv = (p.dvv || 0) + .9; const bb = $('#petN'); bb.classList.remove('pop'); void bb.offsetWidth; bb.classList.add('pop'); emote(p.m, p.wash ? (n % 3 === 0 ? '♪' : '✧') : n % 3 === 0 ? '♪' : '♥', 'heart', .9, p.wash ? 'wash-ing' : 'pet-ing'); p.rub.ht = now; haptic(2); } }, true);
 ['pointerup', 'pointercancel'].forEach(t => addEventListener(t, e => { const rb = petM?.rub; if (rb && e.pointerId === rb.id) { petM.rub = null; if (petM.wash) $('#washBrush').classList.remove('on');
     /* 포켓몬이 아닌 곳을 문지르지 않고 톡 누르고 떼면 그만둔다 */
     if (t === 'pointerup' && !rb.on && rb.far < 12 && performance.now() - rb.t0 < 450 && !petM.done) { petCancelAt = performance.now(); petQuit(); e.stopPropagation(); return; } } if ((petM || performance.now() - petCancelAt < 700) && !drag) e.stopPropagation(); }, true));
@@ -2664,7 +2684,7 @@ function drawTrail() {
     if (petM?.wash) { shape(34, .22, 'rgba(170,215,255,A)'); shape(14, .5, 'rgba(255,255,255,A)'); } else { shape(30, .28, 'rgba(255,138,180,A)'); shape(12, .45, 'rgba(255,255,255,A)'); } }
   trRaf = trPts.length ? requestAnimationFrame(drawTrail) : 0;
 }
-function petQuit() { if (!petM || petM.done) return; const m = petM.m; emote(m, '…', '', 1); petEnd(); }
+function petQuit() { if (!petM || petM.done) return; const m = petM.m; emote(m, '…', '', 1, 'pet-quit'); petEnd(); }
 // 빗질: 손가락을 따라 빗이 움직이고, 포켓몬 위를 빗으면 거품이 일며 그만큼 깨끗해진다
 let brushPos = { x: 0, y: 0 };
 function brushAt(x, y, on) { brushPos = { x, y }; const b = $('#washBrush'); b.style.left = x + 'px'; b.style.top = y + 'px'; b.classList.toggle('on', !!on); }
@@ -2696,7 +2716,7 @@ window.addEventListener('pointerup', endBdrag); window.addEventListener('pointer
 const BITES = [['108% 30%', 6], ['96% 66%', 4.5], ['-8% 50%', 6], ['10% 80%', 4]];
 function biteBerry(el, m, dur, x, y) {
   el.style.zIndex = Math.round(Math.max(m.y, y)) + 6;   // v3.62 경완: 먹는 동안 열매는 포켓몬 앞에
-  el.style.pointerEvents = 'none'; el.classList.remove('rot', 'new'); emote(m, '😋', 'happy', 2.4);
+  el.style.pointerEvents = 'none'; el.classList.remove('rot', 'new'); emote(m, '😋', 'happy', 2.4, 'eat');
   const col = el.classList.contains('red') ? '#e2414b' : '#3a7fd6', n = 3; let k = 0;   /* v3.52: 세 입 — 한 입·두 입은 자국, 세 번째에 다 먹음 */
   const crumbs = c => { for (let i = 0; i < c; i++) particle(x + rnd(-5, 5), y - 6, 'clod', '', d => { d.style.background = col; d.style.width = d.style.height = '3px'; d.style.setProperty('--dx', rnd(-12, 12).toFixed(0) + 'px'); d.style.setProperty('--dy', rnd(-10, -4).toFixed(0) + 'px'); }); };
   const bite = () => { if (!el.isConnected) return; k++;
@@ -2716,7 +2736,7 @@ function callHungry(b) {
     if (m.goal?.kind === 'berry' && S.berries.includes(m.goal.berry) && m.goal.berry !== b) continue;   // 이미 다른 열매로 가는 중
     const d = dist(m, b); if (d < bd) { bd = d; best = m; }
   }
-  if (best) { emote(best, '!', '', 1); moveTo(best, b, { kind: 'berry', berry: b }, 1.3); }
+  if (best) { emote(best, '!', '', 1, 'tree-see'); moveTo(best, b, { kind: 'berry', berry: b }, 1.3); }
 }
 function eatBerry(b) { b.el.remove(); S.berries = S.berries.filter(x => x !== b); }
 function rotBerries() {
@@ -2794,7 +2814,7 @@ function wake(m, why) {
   anim(m, 'stretch');
   m.awakeT = S.clock + rnd(8, 14);   /* 깨면 적어도 8~14분은 놀다가 잔다 */
   setState(m, 'idle', rnd(1, 3));
-  if (why) { emote(m, '!'); log(why, [m]); }
+  if (why) { emote(m, '!', '', 2.2, 'wake-noise'); log(why, [m]); }
   else if (Math.random() < .35) log(`${J(m,'이/가')} 기지개를 켜며 일어났다.`, [m]);
 }
 function friendsOf(m) {
@@ -2828,7 +2848,7 @@ function think(m) {
   m.goal = null; m.partner = null; m.spdMul = 1;
   if (m.hidden) return;
   if (m.land) {   // 육지의 잉어킹: 숨을 헐떡이며 쉬엄쉬엄 호수로 파닥파닥
-    if (Math.random() < .3) { setState(m, 'idle', rnd(1, 2.2)); emote(m, pick(['헉…헉…', '💦', '파닥파닥', '…!']), '', 1.6); return; }
+    if (Math.random() < .3) { setState(m, 'idle', rnd(1, 2.2)); emote(m, pick(['헉…헉…', '💦', '파닥파닥', '…!']), '', 1.6, 'karp-gasp'); return; }
     return moveTo(m, randPond(.45), { kind: 'wander' }, .3);
   }
   const t = T(m);
@@ -2841,7 +2861,7 @@ function think(m) {
     if (treeEl && Math.random() < .7) { const sd = m.x < PROPS.tree.x ? -1 : 1; return moveTo(m, { x: PROPS.tree.x + sd * rnd(18, 30), y: PROPS.tree.y + rnd(2, 10) }, { kind: 'forage', tree: true }); }   /* v3.54: 열매나무에 가서 흔든다 */
     return moveTo(m, { x: rnd(XL + 60, XR - 60), y: MIN_Y + rnd(0, 18) }, { kind: 'forage' });
   }
-  if (m.hunger > 50 && !(m.hungryCd > 0) && Math.random() < .25) { m.hungryCd = rnd(40, 90); emote(m, pick(['꼬르륵', '배고파…'])); }
+  if (m.hunger > 50 && !(m.hungryCd > 0) && Math.random() < .25) { m.hungryCd = rnd(40, 90); emote(m, pick(['꼬르륵', '배고파…']), '', 2.2, 'hungry'); }
   if (S.clock >= (m.awakeT || 0) && (m.energy < 15 || (wrongTime(m) && Math.random() < .55)) || m.energy < 4) return goToBed(m);
   { const lv = likeOf(m) && relWho(likeOf(m))?.m;
     if (lv && lv !== m && !lv.hidden && awake(lv) && lv.state !== 'interact' && !(m.likeCd > 0) && t.mv !== 'swim' && Math.random() < .3) {
@@ -2858,7 +2878,7 @@ function think(m) {
     if (o) return moveTo(m, o, { kind: 'meet', mon: o });
   }
   if (t.mv !== 'swim' && !(m.propCd > 0) && Math.random() < .12) { m.propCd = rnd(120, 300); const L = propSpots().filter(q => q.k !== 'tree' && q.k !== 'puddle'), q = L.length && pick(L); if (q) return moveTo(m, { x: q.x + (m.x < q.x ? -1 : 1) * q.rx * .6, y: q.y + q.ry * .5 }, { kind: 'prop', p: q }); }
-  if (Math.random() < .35) { setState(m, 'idle', rnd(2, 6)); if (Math.random() < .12) emote(m, pick(['…', '♪', '?'])); return; }
+  if (Math.random() < .35) { setState(m, 'idle', rnd(2, 6)); if (Math.random() < .12) emote(m, pick(['…', '♪', '?']), '', 2.2, 'idle-alone'); return; }
   let p;
   if (t.mv === 'swim') p = randPond(.8);
   else if (t.mv === 'amph' && Math.random() < .5) p = randPond(.7);
@@ -2874,17 +2894,17 @@ function arrive(m) {
     const b = g.berry;
     if (!S.berries.includes(b)) {
       if (b.eater && b.eater !== m && dist(m, b) < 40) {
-        emote(m, '?');
+        emote(m, '?', '', 2.2, 'late-berry');
         if (!m.lateCd || S.clock - m.lateCd > 240) { m.lateCd = S.clock; log(`${J(m,'이/가')} 한발 늦었다. ${J(b.eater,'이/가')} 열매를 먼저 먹어 버렸다.`, [m, b.eater]); addRel(m, b.eater, -3); }
       }
       const nb = nearestBerry(m);
       if (nb && !isFull(m)) return moveTo(m, nb, { kind: 'berry', berry: nb }, 1.25);
       return setState(m, 'idle', 1.5);
     }
-    if (isFull(m)) { emote(m, '배불러'); return setState(m, 'idle', 2); }
+    if (isFull(m)) { emote(m, '배불러', '', 2.2, 'full-refuse'); return setState(m, 'idle', 2); }
     const mine = b.for === m || !b.nat;   /* 내가 풀밭에 둔 열매도 내가 준 열매 (나무에서 떨어진 열매는 아님) */
     b.eater = m; S.berries = S.berries.filter(x => x !== b); if (mine && berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - BERRY_FILL); berryBoost(m, mine);
-    if (isFull(m)) { m.hunger = 0; setTimeout(() => emote(m, '배불러!', 'heart', 2), 3200); if (Math.random() < .5) log(`${J(m,'이/가')} 배가 가득 찼다.`, [m]); }
+    if (isFull(m)) { m.hunger = 0; setTimeout(() => emote(m, '배불러!', 'heart', 2, 'full-eat'), 3200); if (Math.random() < .5) log(`${J(m,'이/가')} 배가 가득 찼다.`, [m]); }
     setState(m, 'eat', m.sp === 143 ? 8 : 5); faceTo(m, b.x); biteBerry(b.el, m, m.t, b.x, b.y);
     if (b.for === m || Math.random() < .45) log(pick([`${J(m,'이/가')} 나무열매를 냠냠 먹었다.`, `${J(m,'이/가')} 열매를 맛있게 먹는다.`]), [m]);
     return;
@@ -2892,7 +2912,7 @@ function arrive(m) {
   if (g.kind === 'prop') return propReact(m, g.p);
   if (g.kind === 'forage' && g.tree) { setState(m, 'idle', 2.5); faceTo(m, PROPS.tree.x); anim(m, 'hop'); setTimeout(() => { if (S.mons.includes(m)) shakeTree(m); }, 250); return; }
   if (g.kind === 'forage') {
-    setState(m, 'idle', 2.5); emote(m, '…');
+    setState(m, 'idle', 2.5); emote(m, '…', '', 2.2, 'tree-shake');
     if (Math.random() < .55) { const b = addBerry(m.x + rnd(-24, 24), m.y + rnd(4, 14), true); if (b) { log(`${J(m,'이/가')} 나무를 흔들어 열매를 떨어뜨렸다.`, [m]); anim(m, 'hop'); } }
     return;
   }
@@ -2900,12 +2920,12 @@ function arrive(m) {
     const o = g.mon; if (!S.mons.includes(o) || o.hidden) return think(m);
     m.face = o.x > m.x ? -1 : 1; setState(m, 'idle', rnd(3, 5));
     if (likes(o, m)) {
-      emote(m, '♥', 'heart'); addRel(m, o, 2);
-      if (awake(o) && o.state !== 'interact' && o.state !== 'move') { o.face = -m.face; emote(o, '♥', 'heart'); setState(o, 'idle', rnd(3, 5)); }
+      emote(m, '♥', 'heart', 2.2, 'friend-meet'); addRel(m, o, 2);
+      if (awake(o) && o.state !== 'interact' && o.state !== 'move') { o.face = -m.face; emote(o, '♥', 'heart', 2.2, 'friend-meet'); setState(o, 'idle', rnd(3, 5)); }
       if (Math.random() < .35) log(pick([`${J(m,'과/와')} ${J(o,'이/가')} 나란히 앉아 있다. 사이가 좋아 보인다.`, `${J(m,'이/가')} ${N(o)} 곁에 슬쩍 다가가 앉았다.`]), [m, o]);
     } else {
-      emote(m, pick(['♥', '…♥']), 'heart');
-      setTimeout(() => { if (S.mons.includes(o) && awake(o)) emote(o, pick(['…', '?'])); }, 900);
+      emote(m, pick(['♥', '…♥']), 'heart', 2.2, 'shy-meet');
+      setTimeout(() => { if (S.mons.includes(o) && awake(o)) emote(o, pick(['…', '?']), '', 2.2, 'no-answer'); }, 900);
       if (Math.random() < .3) log(pick([`${J(m,'이/가')} ${N(o)} 곁을 맴돌지만 ${J(o,'은/는')} 관심이 없어 보인다.`, `${J(m,'이/가')} ${N(o)}에게 잘 보이려 애쓰는데 ${J(o,'은/는')} 딴청이다.`]), [m, o]);
       if (Math.random() < .3 && o.state === 'idle') moveTo(o, { x: o.x + (o.x - m.x) * 1.5, y: o.y + rnd(-20, 20) });
     }
@@ -2922,12 +2942,12 @@ function arrive(m) {
     const o = g.mon;
     if (!S.mons.includes(o) || o.hidden) return think(m);
     if (o.state === 'sleep') {
-      if ([39, 40, 174].includes(m.sp) && Math.random() < .6) { emote(m, '♪', 'note'); log(`${J(m,'이/가')} 잠든 ${N(o)}의 얼굴에 몰래 낙서를 했다! ${J(o,'은/는')} 아무것도 모르고 쿨쿨 잔다.`, [m, o], true); addRel(o, m, -3); setState(m, 'idle', 2); return; }
+      if ([39, 40, 174].includes(m.sp) && Math.random() < .6) { emote(m, '♪', 'note', 2.2, 'prank'); log(`${J(m,'이/가')} 잠든 ${N(o)}의 얼굴에 몰래 낙서를 했다! ${J(o,'은/는')} 아무것도 모르고 쿨쿨 잔다.`, [m, o], true); addRel(o, m, -3); setState(m, 'idle', 2); return; }
       if (getRel(m, o) > 30 && S.clock >= (m.awakeT || 0) && (wrongTime(m) || m.energy < 50)) { sleep(m, false); log(`${J(m,'이/가')} 잠든 ${N(o)} 옆에서 같이 잠들었다.`, [m, o]); addRel(m, o, 4); }
-      else { emote(m, '…'); setState(m, 'idle', 2); }
+      else { emote(m, '…', '', 2.2, 'meet-fail'); setState(m, 'idle', 2); }
       return;
     }
-    if (!canMeet(m, o) && o.partner !== m) { emote(m, '…'); return setState(m, 'idle', 1.5); }
+    if (!canMeet(m, o) && o.partner !== m) { emote(m, '…', '', 2.2, 'meet-fail'); return setState(m, 'idle', 1.5); }
     return interact(m, o);
   }
   if (g.kind === 'scare') return ghostScare(m, g.mon);
@@ -3441,7 +3461,7 @@ const MOT = {
     init(sc, a, b) { a.el.classList.add('aura'); b.el.classList.add('aura'); b.xl = 36; sc.c = { x: clamp(a.x, XL + 90, XR - 90), y: clamp(a.y, MIN_Y + 40, MAX_Y - 30) }; },
     tick(sc, a, b) {
       place(a, sc.c.x, sc.c.y); orbit(b, { x: sc.c.x, y: sc.c.y + 2 }, sc.mt * 1.7, 78, 26); faceTo(a, b.x);
-      if (every(sc, 'e', 2.2)) { emote(a, '…', '', 1.2); setTimeout(() => S.mons.includes(b) && emote(b, '?', 'note', 1.2), 700); }
+      if (every(sc, 'e', 2.2)) { emote(a, '…', '', 1.2, 'sp-ponder'); setTimeout(() => S.mons.includes(b) && emote(b, '?', 'note', 1.2, 'sp-curious'), 700); }
       if (every(sc, 'p', .3)) particle(b.x + rnd(-8, 8), b.y - b.lift - b.h * .5, 'psy', '·');
     } },
   'gyarados-magikarp': { dur: 8,
@@ -3466,7 +3486,7 @@ const MOT = {
     tick(sc, a, b) {
       place(a, sc.c.x - 34, sc.c.y); place(b, sc.c.x + 34, sc.c.y); a.face = b.face = 1;
       if (sc.mt < 5.2 && every(sc, 'h', 1.2)) { anim(a, 'hop'); setTimeout(() => S.mons.includes(b) && anim(b, 'hop'), 120); particle(sc.c.x + rnd(-30, 30), sc.c.y - 70, 'note', '♪'); }
-      if (once(sc, 'blast', 5.6)) { anim(a, 'hop'); anim(b, 'hop'); particle(sc.c.x, sc.c.y - 60, 'star', '★'); emote(a, '!!', 'anger', 1.4); emote(b, '!!', 'anger', 1.4); }
+      if (once(sc, 'blast', 5.6)) { anim(a, 'hop'); anim(b, 'hop'); particle(sc.c.x, sc.c.y - 60, 'star', '★'); emote(a, '!!', 'anger', 1.4, 'sp-startle'); emote(b, '!!', 'anger', 1.4, 'sp-startle'); }
     } },
   'kanto-starters': { dur: 7,
     init(sc, a, b) { sc.c = sceneCenter(a, b, 50); },
@@ -3482,7 +3502,7 @@ const MOT = {
       place(a, a.x + clamp(tx - a.x, -7 * sc.dt, 7 * sc.dt), a.y + clamp(b.y - a.y, -5 * sc.dt, 5 * sc.dt)); faceTo(a, b.x); faceTo(b, a.x);
       if (every(sc, 'h', 1.1)) { anim(b, 'hop'); particle(b.x, b.y - b.h, 'spark', '✦'); sc.echo = .35; }
       if (sc.echo > 0) { sc.echo -= sc.dt; if (sc.echo <= 0) { a.act.classList.remove('wiggle'); anim(a, 'hop'); setTimeout(() => a.partner === b && a.act.classList.add('wiggle'), 460); } }
-      if (once(sc, 'q', 4.5)) emote(b, '?', 'note', 1.6);
+      if (once(sc, 'q', 4.5)) emote(b, '?', 'note', 1.6, 'sp-curious');
     } },
   'shellder-slowpoke': { dur: 9,
     init(sc, a, b) { sc.home = { x: a.x, y: a.y }; sc.dir = b.x < 480 ? 1 : -1; a.zAdd = -1; if (!playOnce(a, 'Attack', true)) { a.act.classList.add('clamp'); anim(a, 'hop'); } },
@@ -3491,7 +3511,7 @@ const MOT = {
       const tail = b.x + b.face * b.w * .34;
       a.x = tail; a.y = b.y - 1; a.face = b.face; a.xl = b.h * (isPmd(b.form) ? .3 : .1);
       if (every(sc, 'd', .9) && sc.mt > 1.2 && sc.mt < 7.6) dustAt(b);
-      if (once(sc, 'late', 8.1)) emote(b, '…?', 'note', 1.5);
+      if (once(sc, 'late', 8.1)) emote(b, '…?', 'note', 1.5, 'sp-late');
     },
     end(sc, a, b) { a.one = null; hurt(b); if (T(a).mv === 'swim') { place(a, sc.home.x, sc.home.y); splashAt(a); } } },
   'magnet': { dur: 7,
@@ -3544,7 +3564,7 @@ const TPL = {
       place(a, a.x + clamp(sc.tx - a.x, -40 * sc.dt, 40 * sc.dt), a.y + clamp(b.y - a.y, -30 * sc.dt, 30 * sc.dt)); faceTo(a, b.x); faceTo(b, a.x);
       if (every(sc, 'k', sc.p.gap || .75)) { strike(a); for (let i = 0; i < (sc.p.n || 2); i++) particle(b.x + rnd(-b.w * .3, b.w * .3), b.y - b.h * (sc.p.y || .9) + rnd(-6, 6), sc.p.cls || 'leaf', pick([].concat(sc.p.t || '❦'))); }
       if (every(sc, 'r', 1.6)) { if (sc.p.hurt) hurt(b); else anim(b, 'nod'); }
-      if (once(sc, 'end', 6.2)) { anim(b, 'hop'); emote(b, sc.p.after || '♪', 'note', 1.6); }
+      if (once(sc, 'end', 6.2)) { anim(b, 'hop'); emote(b, sc.p.after || '♪', 'note', 1.6, 'sp-end'); }
     } },
   // the partner (b) rides on the actor's (a) head or back while a strolls, or flies when p.fly; p.rev swaps who rides
   perch: { dur: 8,
@@ -3560,7 +3580,7 @@ const TPL = {
     end(sc, a, b) { const [m, r] = sc.p.rev ? [b, a] : [a, b]; place(r, m.x + (r.x < m.x ? -1 : 1) * Math.max(30, (r.w + m.w) * .35), m.y + 4); dustAt(r); } },
   // a chases b round and round
   tag: { dur: 7,
-    init(sc, a, b) { sc.c = sceneCenter(a, b, 90); emote(b, '!!', 'anger', 1.2); },
+    init(sc, a, b) { sc.c = sceneCenter(a, b, 90); emote(b, '!!', 'anger', 1.2, 'sp-startle'); },
     tick(sc, a, b) {
       const g = sc.mt * (sc.p.spd || 2);
       orbit(b, sc.c, g, 90, 32); orbit(a, sc.c, g - .9, 90, 32);
@@ -3612,7 +3632,7 @@ const TPL = {
     tick(sc, a, b) {
       place(a, a.x + clamp(b.x + sc.side * Math.max(40, (a.w + b.w) * .4) - a.x, -20 * sc.dt, 20 * sc.dt), a.y + clamp(b.y - a.y, -15 * sc.dt, 15 * sc.dt)); faceTo(a, b.x); faceTo(b, a.x);
       if (every(sc, 'k', 1.3)) { const act = pick(['hop', 'atk', 'nod']); const run = m => act === 'hop' ? anim(m, 'hop') : act === 'atk' ? strike(m) : anim(m, 'nod'); run(b); setTimeout(() => S.mons.includes(a) && a.partner === b && run(a), 420); }
-      if (once(sc, 'q', 4)) emote(b, '?', 'note', 1.6);
+      if (once(sc, 'q', 4)) emote(b, '?', 'note', 1.6, 'sp-curious');
       if (sc.p.t && every(sc, 'p', 1.1)) particle(a.x, a.y - a.h, sc.p.cls || 'psy', pick([].concat(sc.p.t)));
     } },
   // both just stand there and stare
@@ -3627,7 +3647,7 @@ const TPL = {
     init(sc, a, b) { anim(a, 'vanish'); sc.side = b.face; },
     tick(sc, a, b) {
       if (once(sc, 'pop', 1.4)) { place(a, b.x + sc.side * Math.max(30, (a.w + b.w) * .35), b.y - 2); faceTo(a, b.x); a.act.classList.remove('vanish'); anim(a, 'appear'); strike(a); particle(a.x, a.y - a.h, sc.p.cls || 'smoke', ''); }
-      if (once(sc, 'jump', 1.7)) { emote(b, '!!', 'anger', 1.5); anim(b, 'hop'); hurt(b); sc.run = (b.x < a.x ? -1 : 1); }
+      if (once(sc, 'jump', 1.7)) { emote(b, '!!', 'anger', 1.5, 'sp-startle'); anim(b, 'hop'); hurt(b); sc.run = (b.x < a.x ? -1 : 1); }
       if (sc.run && sc.mt < 3) { place(b, b.x + sc.run * 90 * sc.dt, b.y); b.face = sc.run > 0 ? -1 : 1; }
       if (sc.mt > 3 && every(sc, 'l', 1)) particle(a.x + rnd(-10, 10), a.y - a.h, 'note', pick(['♪', '¶']));
     } },
@@ -3666,7 +3686,7 @@ const TPL = {
       if (every(sc, 'p', .18)) particle(b.x + rnd(-b.w * .4, b.w * .4), b.y - b.h - rnd(0, 20), sc.p.cls || 'spark', pick([].concat(sc.p.t || ['✧', '✦'])));
       if (every(sc, 'k', 1.5)) strike(a);
       b.energy = clamp(b.energy + sc.dt * 4);
-      if (once(sc, 'ok', 4.5)) { anim(b, 'hop'); emote(b, '♥', 'heart', 1.5); }
+      if (once(sc, 'ok', 4.5)) { anim(b, 'hop'); emote(b, '♥', 'heart', 1.5, 'sp-love'); }
     } },
   // a sniffs around b in small circles
   sniff: { dur: 7,
@@ -3699,7 +3719,7 @@ function interact(a, b, forced) {
   const firstMeet = !(relKey(a, b) in S.rel);
   if (mirror) {
     for (const [m, o] of [[a, b], [b, a]]) { m.goal = null; m.partner = o; m.kind = 'mirror'; m.scene = null; setState(m, 'interact', rnd(4, 7)); m.beat = 0; }
-    emote(a, '?'); emote(b, '?');
+    emote(a, '?', '', 2.2, 'sp-curious'); emote(b, '?', '', 2.2, 'sp-curious');
     const real = a.sp === 132 ? b : a, fake = a.sp === 132 ? a : b;
     log(`${J(real,'이/가')} 자기와 똑같이 생긴 ${J(fake,'을/를')} 보고 어리둥절해한다. 사실은 메타몽이다!`, [a, b], true);
     return;
@@ -3720,7 +3740,7 @@ function interact(a, b, forced) {
   if (sc.kind === 'play' || sc.kind === 'care' || sc.kind === 'chat') for (const c of S.mons) {
     if (c === a || c === b || c.hidden || !awake(c) || c.state === 'interact') continue;
     const t = likes(c, a) ? a : likes(c, b) ? b : null; if (!t || dist(c, t) > 280 || Math.random() > .65) continue;
-    const other = t === a ? b : a; c.face = t.x > c.x ? -1 : 1; emote(c, pick(['#', '흥!', '…!']), 'anger'); addRel(c, other, -rnd(3, 6));
+    const other = t === a ? b : a; c.face = t.x > c.x ? -1 : 1; emote(c, pick(['#', '흥!', '…!']), 'anger', 2.2, 'taunt'); addRel(c, other, -rnd(3, 6));
     if (Math.random() < .5) log(`${J(c,'이/가')} ${J(t,'과/와')} ${N(other)} 사이를 질투하는 눈치다.`, [c, t, other]);
   }
   if (sc.kind === 'fight') S.mons.forEach(o => { if (o.state === 'sleep' && dist(o, a) < 130 && Math.random() < .6) { wake(o, `${J(o,'이/가')} 시끄러운 소리에 잠에서 깼다.`); addRel(o, a, -3); addRel(o, b, -3); } });
@@ -3730,11 +3750,11 @@ function resolveNow(a, b, sc) {
   const [actor, target] = sc.roles || [a, b];
   for (const m of [a, b]) { m.partner = null; m.social = clamp(m.social - 20); m.joy = clamp((m.joy ?? 60) + 3); }
   if (sc.kind === 'scared') {
-    emote(target, '!!', 'anger'); emote(actor, '?');
+    emote(target, '!!', 'anger', 2.2, 'fight-hit'); emote(actor, '?', '', 2.2, 'fight-scare');
     moveTo(target, { x: target.x + (target.x - actor.x) * 2.5, y: target.y + (target.y - actor.y) * 2.5 }, { kind: 'flee' }, 1.6);
     setState(actor, 'idle', 2); addRel(a, b, -rnd(2, 5));
   } else if (sc.kind === 'chase') {
-    emote(actor, '!', 'anger'); emote(target, '!!', 'anger');
+    emote(actor, '!', 'anger', 2.2, 'fight-chase'); emote(target, '!!', 'anger', 2.2, 'fight-hit');
     moveTo(target, { x: target.x + (target.x - actor.x) * 4, y: target.y + (target.y - actor.y) * 4 }, { kind: 'flee' }, 1.7);
     moveTo(actor, target, { kind: 'chase', mon: target, scene: sc }, 1.4); actor.t = 6;
     addRel(a, b, -rnd(2, 6));
@@ -3747,7 +3767,7 @@ function chaseEnd(m) {
   const g = m.goal || {}, sc = g.scene, o = g.mon;
   m.goal = null; setState(m, 'idle', 2);
   if (!o || !S.mons.includes(o)) return;
-  emote(m, '…');
+  emote(m, '…', '', 2.2, 'chase-lost');
   log(sc && sc.end ? sc.end() : `${J(m,'은/는')} 결국 ${J(o,'을/를')} 놓쳤다.`, [m, o]);
 }
 function tickInteract(m, dt) {
@@ -3762,7 +3782,7 @@ function tickInteract(m, dt) {
     if (m.kind === 'fight') { if (Math.random() < .5) strike(m); else hurt(m); particle((m.x + o.x) / 2 + rnd(-10, 10), (m.y + o.y) / 2 - 30, T(m).fire ? 'flame' : 'spark', T(m).fire ? '✹' : '✦'); }
     if (m.kind === 'show') { if (Math.random() < .6) { if (Math.random() < .5) anim(m, 'hop'); else strike(m); } }
     if (m.kind === 'care' && Math.random() < .5) particle(m.x + rnd(-10, 10), m.y - m.h * .8, 'heart', '♥');
-    if (m.kind === 'chat' && Math.random() < .3) emote(m, pick(['…', '♪', '♥']), '', 1.4);
+    if (m.kind === 'chat' && Math.random() < .3) emote(m, pick(['…', '♪', '♥']), '', 1.4, 'chat');
   }
   m.social = clamp(m.social - dt * 9);
   if (m.t <= 0 && m.uid < o.uid) finishInteract(m, o);
@@ -3798,7 +3818,7 @@ function finishInteract(a, b) {
     const pa = a.energy * (1 + (T(a).aggr || 0)) * (1 + SPD(a.sp).atk / 100), pb = b.energy * (1 + (T(b).aggr || 0)) * (1 + SPD(b.sp).atk / 100);
     const [w, l] = Math.random() < pa / (pa + pb) ? [a, b] : [b, a];
     addRel(a, b, relD ?? rnd(2, 6)); a.energy -= 8; b.energy -= 8;
-    emote(w, '♪', 'note'); emote(l, '…');
+    emote(w, '♪', 'note', 2.2, 'fight-win'); emote(l, '…', '', 2.2, 'play-lose');
     log(sc && sc.end ? sc.end(a, b, w, l) : pick([`${J(w,'이/가')} 근소하게 이겼다. 둘은 서로를 인정한 눈치다.`, `승부는 ${N(w)}의 승리! ${J(l,'은/는')} 다음엔 지지 않겠다는 표정이다.`]), [w, l]);
     setState(w, 'idle', 2); setState(l, 'idle', 2); anim(w, 'hop');
     return;
@@ -3807,7 +3827,7 @@ function finishInteract(a, b) {
     const pa = a.energy * (1 + (T(a).aggr || 0)) * (1 + SPD(a.sp).atk / 100), pb = b.energy * (1 + (T(b).aggr || 0)) * (1 + SPD(b.sp).atk / 100);
     const [w, l] = Math.random() < pa / (pa + pb) ? [a, b] : [b, a];
     addRel(a, b, relD ?? -rnd(8, 18)); w.energy -= 10; l.energy -= 22;
-    emote(w, '♪', 'note'); emote(l, '!!', 'anger'); hurt(l);
+    emote(w, '♪', 'note', 2.2, 'fight-win'); emote(l, '!!', 'anger', 2.2, 'fight-hit'); hurt(l);
     log(sc && sc.end ? sc.end(a, b, w, l) : pick([`${J(w,'이/가')} 이겼다. ${J(l,'은/는')} 쪼르르 도망쳤다.`, `${J(w,'이/가')} 승리의 포즈를 취한다. ${J(l,'은/는')} 분해하며 물러났다.`]), [w, l]);
     setState(w, 'idle', 2); anim(w, 'hop');
     const away = { x: l.x + (l.x - w.x) * 3, y: l.y + (l.y - w.y) * 3 };
@@ -3823,7 +3843,7 @@ function doSpecial(m) {
   const t = T(m), sp = t.sp;
   if (sp === 'sing') {
     if (!S.mons.some(o => o !== m && awake(o) && dist(o, m) < 220)) return false;
-    setState(m, 'special', 5); m.special = 'sing'; emote(m, '♪♪', 'note', 5);
+    setState(m, 'special', 5); m.special = 'sing'; emote(m, '♪♪', 'note', 5, 'sing');
     log(`${J(m,'이/가')} 노래를 부르기 시작했다.`, [m]);
     return true;
   }
@@ -3858,7 +3878,7 @@ function doSpecial(m) {
   }
   if (sp === 'spark') {
     setState(m, 'special', 2.5); m.special = 'spark'; anim(m, 'shake'); burst(m, 'spark', '✦', 5);
-    if (m.sp === 172 && Math.random() < .4) { emote(m, '!!', 'anger'); m.energy -= 6; log(`${J(m,'이/가')} 전기를 모으다가 스스로 찌릿 감전됐다.`, [m]); }
+    if (m.sp === 172 && Math.random() < .4) { emote(m, '!!', 'anger', 2.2, 'self-shock'); m.energy -= 6; log(`${J(m,'이/가')} 전기를 모으다가 스스로 찌릿 감전됐다.`, [m]); }
     else {
       const near = S.mons.filter(o => o !== m && o.state === 'sleep' && dist(o, m) < 110);
       near.forEach(o => { wake(o, `${J(o,'이/가')} ${N(m)}의 전기에 놀라 깼다.`); addRel(o, m, -4); });
@@ -3875,13 +3895,13 @@ function doSpecial(m) {
   }
   if (sp === 'sun') {
     if (isNight() && m.sp !== 43) return false;
-    setState(m, 'special', rnd(6, 10)); m.special = 'sun'; emote(m, m.sp === 43 ? '☾' : '☀', 'note', 3);
+    setState(m, 'special', rnd(6, 10)); m.special = 'sun'; emote(m, m.sp === 43 ? '☾' : '☀', 'note', 3, 'sun');
     if (Math.random() < .5) log(m.sp === 43 ? `${J(m,'이/가')} 달빛 아래 잎사귀를 펼친다.` : `${J(m,'이/가')} 햇볕을 쬐며 광합성을 한다.`, [m]);
     return true;
   }
   if (sp === 'moon') {
     if (!isNight()) return false;
-    setState(m, 'special', 6); m.special = 'moon'; emote(m, '☾', 'note', 4);
+    setState(m, 'special', 6); m.special = 'moon'; emote(m, '☾', 'note', 4, 'moon');
     log(`${J(m,'이/가')} 달을 올려다보며 빙글빙글 춤을 춘다.`, [m]);
     return true;
   }
@@ -3892,7 +3912,7 @@ function doSpecial(m) {
   }
   if (sp === 'fish') { moveTo(m, shorePoint(m), { kind: 'fish' }, .8); return true; }
   if (sp === 'headache') {
-    setState(m, 'special', 5); m.special = 'headache'; emote(m, '?', '', 4);
+    setState(m, 'special', 5); m.special = 'headache'; emote(m, '?', '', 4, 'headache');
     log(`${J(m,'이/가')} 머리를 감싸 쥐고 있다. 두통이 또 시작된 것 같다.`, [m]);
     return true;
   }
@@ -3914,12 +3934,12 @@ function doSpecial(m) {
     setState(m, 'special', 3); m.special = 'powder';
     for (let i = 0; i < 6; i++) setTimeout(() => particle(m.x + rnd(-30, 30), m.y - m.lift - 10 + rnd(-10, 10), 'note', '·'), i * 120);
     const slept = near.filter(() => Math.random() < .4);
-    slept.forEach(o => { sleep(o, false); emote(o, 'z Z', 'zz', 3); });
+    slept.forEach(o => { sleep(o, false); emote(o, 'z Z', 'zz', 3, 'sleep-move'); });
     if (slept.length) log(`${J(m,'이/가')} 뿌린 수면가루에 ${NL(slept,'이/가')} 꾸벅 잠들었다.`, [m, ...slept]);
     return true;
   }
   if (sp === 'psy') {
-    setState(m, 'special', 4); m.special = 'psy'; emote(m, '…', '', 3);
+    setState(m, 'special', 4); m.special = 'psy'; emote(m, '…', '', 3, 'move-calm');
     const b = S.berries.find(b => dist(b, m) < 220 && dist(b, m) > 40);
     if (b) { b.x += (m.x - b.x) * .6; b.y = clamp(b.y + (m.y - b.y) * .6, MIN_Y, MAX_Y); b.el.style.left = b.x + 'px'; b.el.style.top = b.y + 'px'; log(`${J(m,'이/가')} 염력으로 열매를 둥실 끌어왔다.`, [m]); }
     else if (Math.random() < .4) log(`${J(m,'이/가')} 눈을 감고 명상에 잠겼다.`, [m]);
@@ -3929,12 +3949,12 @@ function doSpecial(m) {
     setState(m, 'special', 3); m.special = 'ice';
     for (let i = 0; i < 6; i++) setTimeout(() => particle(m.x + rnd(-30, 30), m.y - m.h * .8 + rnd(-10, 10), 'note', '❄'), i * 120);
     const near = S.mons.filter(o => o !== m && awake(o) && dist(o, m) < 120 && T(o).fire);
-    if (near.length) { near.forEach(o => { emote(o, '#', 'anger'); addRel(o, m, -2); }); log(`${J(m,'이/가')} 찬 바람을 일으키자 ${NL(near,'이/가')} 몸을 움츠린다.`, [m, ...near]); }
+    if (near.length) { near.forEach(o => { emote(o, '#', 'anger', 2.2, 'move-annoy'); addRel(o, m, -2); }); log(`${J(m,'이/가')} 찬 바람을 일으키자 ${NL(near,'이/가')} 몸을 움츠린다.`, [m, ...near]); }
     else if (Math.random() < .35) log(`${J(m,'이/가')} 주변에 눈송이를 흩날린다.`, [m]);
     return true;
   }
   if (sp === 'harden') {
-    setState(m, 'special', 6); m.special = 'harden'; emote(m, '…', '', 3);
+    setState(m, 'special', 6); m.special = 'harden'; emote(m, '…', '', 3, 'move-calm');
     if (Math.random() < .35) log(`${J(m,'이/가')} 몸을 단단하게 굳히고 꼼짝도 하지 않는다.`, [m]);
     return true;
   }
@@ -3946,7 +3966,7 @@ function doSpecial(m) {
   if (sp === 'roar') {
     setState(m, 'special', 2.5); m.special = 'roar'; anim(m, 'shake'); ring(m.x, m.y - 20);
     const near = S.mons.filter(o => o !== m && !o.hidden && dist(o, m) < 180);
-    near.forEach(o => { if (o.state === 'sleep') wake(o); emote(o, '!'); });
+    near.forEach(o => { if (o.state === 'sleep') wake(o); emote(o, '!', '', 2.2, 'roar'); });
     log(`${J(m,'이/가')} 우렁차게 포효했다!${near.length ? ` ${NL(near,'이/가')} 깜짝 놀랐다.` : ''}`, [m, ...near], near.length > 0);
     return true;
   }
@@ -3954,7 +3974,7 @@ function doSpecial(m) {
     setState(m, 'special', 3); m.special = 'poison';
     for (let i = 0; i < 4; i++) particle(m.x + rnd(-14, 14), m.y - m.h / 2 + rnd(-10, 10), 'smoke');
     const near = S.mons.filter(o => o !== m && awake(o) && dist(o, m) < 90 && !(SPECIES[o.sp].t || []).includes(4) && !(SPECIES[o.sp].t || []).includes(9));
-    if (near.length) { near.forEach(o => { emote(o, '#', 'anger'); addRel(o, m, -2); }); log(`${N(m)} 근처에서 ${NL(near,'이/가')} 콜록거린다.`, [m, ...near]); }
+    if (near.length) { near.forEach(o => { emote(o, '#', 'anger', 2.2, 'move-annoy'); addRel(o, m, -2); }); log(`${N(m)} 근처에서 ${NL(near,'이/가')} 콜록거린다.`, [m, ...near]); }
     else if (Math.random() < .3) log(`${J(m,'이/가')} 보랏빛 가스를 퐁 내뿜었다.`, [m]);
     return true;
   }
@@ -3974,10 +3994,10 @@ function tickSpecial(m, dt) {
     ring(m.x, m.y - 20);
     const near = S.mons.filter(o => o !== m && awake(o) && dist(o, m) < 220 && o.sp !== 39 && o.sp !== 131);
     const slept = near.filter(() => Math.random() < .65);
-    slept.forEach(o => { if (o.partner) { const p = o.partner; p.partner = null; think(p); } sleep(o, false); emote(o, 'z Z', 'zz', 3); });
+    slept.forEach(o => { if (o.partner) { const p = o.partner; p.partner = null; think(p); } sleep(o, false); emote(o, 'z Z', 'zz', 3, 'sleep-move'); });
     if (slept.length) {
       log(`${N(m)}의 노래를 듣고 ${NL(slept,'이/가')} 스르르 잠들었다.`, [m, ...slept], true);
-      if (m.sp === 39) { emote(m, '#', 'anger', 3); log(`${J(m,'은/는')} 다들 잠든 걸 보고 볼을 빵빵하게 부풀렸다.`, [m]); }
+      if (m.sp === 39) { emote(m, '#', 'anger', 3, 'puff'); log(`${J(m,'은/는')} 다들 잠든 걸 보고 볼을 빵빵하게 부풀렸다.`, [m]); }
     } else log(`${J(m,'이/가')} 노래를 마쳤다. 다들 귀를 기울였다.`, [m]);
     slept.forEach(o => addRel(o, m, 2));
   }
@@ -3987,7 +4007,7 @@ function tickSpecial(m, dt) {
       m.phase = 2; m.hidden = false; m.el.style.visibility = '';
       const p = s === 'teleport' ? { x: rnd(XL + 60, XR - 60), y: rnd(MIN_Y + 20, MAX_Y - 10) } : randLand();
       m.x = m.tx = p.x; m.y = m.ty = p.y;
-      if (s === 'dig') { digUp(m, 650); const near = S.mons.filter(o => o !== m && awake(o) && dist(o, m) < 60); near.forEach(o => { emote(o, '!'); }); if (near.length) log(`${J(m,'이/가')} ${N(near[0])} 바로 앞에서 쑥 튀어나왔다!`, [m, near[0]]); }
+      if (s === 'dig') { digUp(m, 650); const near = S.mons.filter(o => o !== m && awake(o) && dist(o, m) < 60); near.forEach(o => { emote(o, '!', '', 2.2, 'dig-near'); }); if (near.length) log(`${J(m,'이/가')} ${N(near[0])} 바로 앞에서 쑥 튀어나왔다!`, [m, near[0]]); }
       else { m.act.classList.remove('vanish'); anim(m, 'appear'); log(`${J(m,'이/가')} 엉뚱한 곳에 다시 나타났다.`, [m]); }
     }
   }
@@ -4000,7 +4020,7 @@ function tickSpecial(m, dt) {
 }
 function ghostScare(g, o) {
   if (!S.mons.includes(o) || !awake(o)) return think(g);
-  emote(g, '♪', 'note'); emote(o, '!!', 'anger'); anim(o, 'hop');
+  emote(g, '♪', 'note', 2.2, 'ghost-scare'); emote(o, '!!', 'anger', 2.2, 'ghost-scared'); anim(o, 'hop');
   for (let i = 0; i < 3; i++) particle(g.x + rnd(-14, 14), g.y - g.h / 2, 'smoke');
   if (o.partner) { const p = o.partner; p.partner = null; think(p); o.partner = null; }
   log(pick([`${J(g,'이/가')} ${J(o,'을/를')} 몰래 놀래켰다. ${J(o,'은/는')} 혼비백산!`, `${J(g,'이/가')} ${N(o)} 뒤에서 '왁!' 하고 나타났다.`]), [g, o]);
@@ -4010,7 +4030,7 @@ function ghostScare(g, o) {
 }
 function healArrive(m, o) {
   if (!S.mons.includes(o)) return think(m);
-  emote(m, '♥', 'heart'); burst(o, 'heart', '♥', 3);
+  emote(m, '♥', 'heart', 2.2, 'care'); burst(o, 'heart', '♥', 3);
   o.energy = clamp(o.energy + 30); addRel(m, o, 12);
   log(`${J(m,'이/가')} 지친 ${N(o)}에게 알을 나눠 주었다.`, [m, o]);
   setState(m, 'idle', 2);
@@ -4202,7 +4222,7 @@ function render(m, now) {
       m.zN = (m.zN || 0) + 1; m.zT = 1.1 + Math.random() * .5;
       const big = m.zN % 3 === 0, fx = m.x - m.face * m.w * .18;
       particle(fx, top + 6, 'zz' + (big ? ' big' : ''), big ? 'Z' : 'z', d => { d.style.setProperty('--dx', rnd(5, 11) + 'px'); });
-      if (T(m).slp > 1 && m.zN % 7 === 0 && m.bubT <= 0) emote(m, '드르렁', 'zz', 1.6);
+      if (T(m).slp > 1 && m.zN % 7 === 0 && m.bubT <= 0) emote(m, '드르렁', 'zz', 1.6, 'snore');
     }
   }
   if (m.state !== 'sleep' && m.bub.classList.contains('zz') && m.bubT > 50) { m.bubT = 0; }
@@ -4601,51 +4621,51 @@ function propReact(m, p) {
   faceTo(m, p.x); m.goal = null;
   if (p.k === 'tree') { at(m.x < p.x ? -32 : 32, 14); setState(m, 'idle', 2.5); anim(m, 'hop'); setTimeout(() => { if (S.mons.includes(m)) shakeTree(m); }, 250); return; }
   if (p.k === 'perch') {
-    if (flyer || small) { at(10, 10); propSit(m, 40); setState(m, 'idle', rnd(14, 24)); anim(m, 'hop'); emote(m, '♪');
+    if (flyer || small) { at(10, 10); propSit(m, 40); setState(m, 'idle', rnd(14, 24)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play');
       return log(pick([`${J(m,'이/가')} 횃대 가지에 폴짝 올라앉았다.`, `${J(m,'이/가')} 횃대 끝에 앉아 필드를 내려다본다.`, `${J(m,'이/가')} 횃대에 앉아 깃털을 고른다.`].slice(0, flyer ? 3 : 2)), [m]); }
-    at(-16, 16); setState(m, 'idle', rnd(5, 8)); anim(m, 'shake'); emote(m, '♪');
+    at(-16, 16); setState(m, 'idle', rnd(5, 8)); anim(m, 'shake'); emote(m, '♪', '', 2.2, 'prop-play');
     return log(pick([`${J(m,'이/가')} 횃대 기둥에 등을 벅벅 비빈다. 시원해 보인다.`, `${J(m,'이/가')} 횃대를 올려다보지만 너무 높아 보인다.`]), [m]);
   }
   if (p.k === 'fire') {
     const sd = m.x < p.x ? -1 : 1, gap = 22 + Math.min(60, (m.w || 40) * .55); at(sd * gap, 8); faceTo(m, p.x);   // v3.62 경완: 몸이 불에 겹치지 않게 몸 너비만큼 비켜 앉는다
-    if (flameEl?.classList.contains('out')) { setState(m, 'idle', 4); emote(m, '…'); return log(`${J(m,'이/가')} 비에 꺼진 모닥불 재를 킁킁 맡는다.`, [m]); }
+    if (flameEl?.classList.contains('out')) { setState(m, 'idle', 4); emote(m, '…', '', 2.2, 'ash-sniff'); return log(`${J(m,'이/가')} 비에 꺼진 모닥불 재를 킁킁 맡는다.`, [m]); }
     const ty = tyOf(m);
     if (ty.includes(FIR)) { setState(m, 'idle', 6); anim(m, 'hop'); burst(m, 'flame', '✹', 3); flameEl.classList.add('big'); clearTimeout(flameEl.bigT); flameEl.bigT = setTimeout(() => flameEl.classList.remove('big'), 6000);
       return log(pick([`${J(m,'이/가')} 모닥불에 불꽃을 불어 넣었다. 불이 활활 커졌다!`, `${J(m,'이/가')} 모닥불 앞에서 신이 나 꼬리를 흔든다. 불꽃이 더 커졌다.`]), [m]); }
-    if (ty.includes(WAT) || ty.includes(ICE)) { at(sd * (gap + 24), 14); setState(m, 'idle', 3); emote(m, '!!'); anim(m, 'shake');
+    if (ty.includes(WAT) || ty.includes(ICE)) { at(sd * (gap + 24), 14); setState(m, 'idle', 3); emote(m, '!!', '', 2.2, 'fire-back'); anim(m, 'shake');
       return log(ty.includes(ICE) ? `${J(m,'은/는')} 모닥불이 너무 뜨거워 녹을 것 같다며 물러났다.` : `${J(m,'이/가')} 모닥불에 깜짝 놀라 뒤로 물러났다.`, [m]); }
-    setState(m, 'idle', rnd(8, 12)); emote(m, isNight() ? 'Zz' : '♪');
+    setState(m, 'idle', rnd(8, 12)); emote(m, isNight() ? 'Zz' : '♪', '', 2.2, 'fire-warm');
     if (isNight() && Math.random() < .5) { setTimeout(() => { if (S.mons.includes(m) && m.state === 'idle') sleep(m, false); }, 2500); return log(`${J(m,'이/가')} 모닥불 앞에서 불을 쬐다 꾸벅꾸벅 졸기 시작한다.`, [m]); }
     return log(pick([`${J(m,'이/가')} 모닥불 앞에 앉아 불을 쬔다. 따뜻해 보인다.`, `${J(m,'이/가')} 타닥타닥 타는 모닥불을 가만히 바라본다.`]), [m]);
   }
   if (p.k === 'bed') {
     const ty = tyOf(m); at(rnd(-30, 30), 22); setState(m, 'idle', rnd(5, 9));
-    if (ty.includes(BUG)) { emote(m, '♪'); burst(m, 'heart', '♥', 2); return log(`${J(m,'이/가')} 꽃밭을 오가며 꿀을 모은다.`, [m]); }
-    if (ty.includes(GRA) || ty.includes(FAI)) { emote(m, '♥', 'heart'); burst(m, 'heart', '♥', 3); return log(pick([`${J(m,'이/가')} 꽃밭에 코를 묻고 향기를 맡는다. 무척 행복해 보인다.`, `${J(m,'이/가')} 꽃들 사이에서 햇볕을 쬔다.`]), [m]); }
-    if ((SPD(m.sp).w || 0) > 1000) { emote(m, '…'); return log(`${J(m,'이/가')} 꽃을 밟을까 봐 꽃밭 가장자리에서 조심조심 멈춰 섰다.`, [m]); }
-    emote(m, '♪'); return log(`${J(m,'이/가')} 꽃향기를 킁킁 맡는다.`, [m]);
+    if (ty.includes(BUG)) { emote(m, '♪', '', 2.2, 'flower-sniff'); burst(m, 'heart', '♥', 2); return log(`${J(m,'이/가')} 꽃밭을 오가며 꿀을 모은다.`, [m]); }
+    if (ty.includes(GRA) || ty.includes(FAI)) { emote(m, '♥', 'heart', 2.2, 'flower-happy'); burst(m, 'heart', '♥', 3); return log(pick([`${J(m,'이/가')} 꽃밭에 코를 묻고 향기를 맡는다. 무척 행복해 보인다.`, `${J(m,'이/가')} 꽃들 사이에서 햇볕을 쬔다.`]), [m]); }
+    if ((SPD(m.sp).w || 0) > 1000) { emote(m, '…', '', 2.2, 'heavy-flower'); return log(`${J(m,'이/가')} 꽃을 밟을까 봐 꽃밭 가장자리에서 조심조심 멈춰 섰다.`, [m]); }
+    emote(m, '♪', '', 2.2, 'flower-sniff'); return log(`${J(m,'이/가')} 꽃향기를 킁킁 맡는다.`, [m]);
   }
   if (p.k === 'bush') {
     const el = PROPS.bushEls?.[p.i]; at(rnd(-8, 8), -2); setState(m, 'idle', 6); m.el.style.visibility = 'hidden';
     if (el) { el.classList.remove('rustle'); void el.offsetWidth; el.classList.add('rustle'); }
     log(`${J(m,'이/가')} 덤불 속으로 쏙 숨었다.`, [m]);
-    setTimeout(() => { if (!S.mons.includes(m)) return; m.el.style.visibility = ''; m.y = Math.min(MAX_Y, p.y + 16); emote(m, '!'); anim(m, 'hop'); if (el) { el.classList.remove('rustle'); void el.offsetWidth; el.classList.add('rustle'); } }, 4200);
+    setTimeout(() => { if (!S.mons.includes(m)) return; m.el.style.visibility = ''; m.y = Math.min(MAX_Y, p.y + 16); emote(m, '!', '', 2.2, 'bush-out'); anim(m, 'hop'); if (el) { el.classList.remove('rustle'); void el.offsetWidth; el.classList.add('rustle'); } }, 4200);
     return;
   }
-  if (p.k === 'stump') { at(0, 10); propSit(m, 14); setState(m, 'idle', rnd(10, 16)); anim(m, 'hop'); emote(m, '♪'); return log(`${J(m,'이/가')} 그루터기 위에 올라앉아 쉰다.`, [m]); }
+  if (p.k === 'stump') { at(0, 10); propSit(m, 14); setState(m, 'idle', rnd(10, 16)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play'); return log(`${J(m,'이/가')} 그루터기 위에 올라앉아 쉰다.`, [m]); }
   if (p.k === 'rock') {
     const ty = tyOf(m);
-    if (ty.includes(ROC) || ty.includes(GRO) || ty.includes(FIG)) { at(0, p.ry - 4); propSit(m, 10); setState(m, 'idle', 8); anim(m, 'hop'); emote(m, '!'); return log(`${J(m,'이/가')} 바위 위에 올라가 늠름하게 포즈를 잡는다.`, [m]); }
-    at(m.x < p.x ? -26 : 26, 6); setState(m, 'idle', 6); emote(m, '…'); return log(`${J(m,'이/가')} 바위에 기대어 쉰다.`, [m]);
+    if (ty.includes(ROC) || ty.includes(GRO) || ty.includes(FIG)) { at(0, p.ry - 4); propSit(m, 10); setState(m, 'idle', 8); anim(m, 'hop'); emote(m, '!', '', 2.2, 'rock-pose'); return log(`${J(m,'이/가')} 바위 위에 올라가 늠름하게 포즈를 잡는다.`, [m]); }
+    at(m.x < p.x ? -26 : 26, 6); setState(m, 'idle', 6); emote(m, '…', '', 2.2, 'rock-lean'); return log(`${J(m,'이/가')} 바위에 기대어 쉰다.`, [m]);
   }
   if (p.k === 'puddle') {
     const ty = tyOf(m); at(0, 0); setState(m, 'idle', 5); splashAt(m);
-    if (ty.includes(FIR)) { emote(m, '!!'); anim(m, 'shake'); return log(`${J(m,'이/가')} 물웅덩이에 발이 닿자 질겁했다.`, [m]); }
-    anim(m, 'hop'); emote(m, '♪'); return log(pick([`${J(m,'이/가')} 물웅덩이에서 첨벙첨벙 뛰논다.`, `${J(m,'이/가')} 웅덩이 물을 튀기며 신이 났다.`]), [m]);
+    if (ty.includes(FIR)) { emote(m, '!!', '', 2.2, 'puddle-fire'); anim(m, 'shake'); return log(`${J(m,'이/가')} 물웅덩이에 발이 닿자 질겁했다.`, [m]); }
+    anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play'); return log(pick([`${J(m,'이/가')} 물웅덩이에서 첨벙첨벙 뛰논다.`, `${J(m,'이/가')} 웅덩이 물을 튀기며 신이 났다.`]), [m]);
   }
   if (p.k === 'pond') {
-    if (T(m).mv === 'swim' || T(m).mv === 'amph' || tyOf(m).includes(WAT)) { settle(m); setState(m, 'idle', 4); splashAt(m); emote(m, '♪'); return log(`${J(m,'이/가')} 연못에 첨벙 들어가 헤엄친다.`, [m]); }
-    settle(m); faceTo(m, POND.x); setState(m, 'idle', 5); emote(m, '♪'); return log(pick([`${J(m,'이/가')} 연못가에서 물을 홀짝 마신다.`, `${J(m,'이/가')} 연못에 비친 자기 얼굴을 들여다본다.`]), [m]);
+    if (T(m).mv === 'swim' || T(m).mv === 'amph' || tyOf(m).includes(WAT)) { settle(m); setState(m, 'idle', 4); splashAt(m); emote(m, '♪', '', 2.2, 'prop-play'); return log(`${J(m,'이/가')} 연못에 첨벙 들어가 헤엄친다.`, [m]); }
+    settle(m); faceTo(m, POND.x); setState(m, 'idle', 5); emote(m, '♪', '', 2.2, 'prop-play'); return log(pick([`${J(m,'이/가')} 연못가에서 물을 홀짝 마신다.`, `${J(m,'이/가')} 연못에 비친 자기 얼굴을 들여다본다.`]), [m]);
   }
 }
 // v3.61 경완: 포켓몬이 열매나무 뒤에 있으면 나무를 반투명하게
@@ -4653,7 +4673,7 @@ setInterval(() => { if (!treeEl) return; const T = PROPS.tree, see = S.mons.some
 function shakeTree(m) {
   treeEl.classList.remove('shake'); void treeEl.offsetWidth; treeEl.classList.add('shake'); haptic(1);
   const L = [...treeEl.querySelectorAll('.tb')], k = L.length;   // v3.61 경완: 한 번 흔들면 달린 열매가 모두 떨어진다
-  if (!k) { emote(m, '…'); log(`${J(m,'이/가')} 열매나무를 흔들었지만 열매가 하나도 없었다.`, [m]); return false; }
+  if (!k) { emote(m, '…', '', 2.2, 'tree-empty'); log(`${J(m,'이/가')} 열매나무를 흔들었지만 열매가 하나도 없었다.`, [m]); return false; }
   const r = treeEl.getBoundingClientRect(), sc = r.width / 100;
   L.slice(-k).forEach((b, i) => { S.tree.n--; const bx = PROPS.tree.x - 50 * LS('tree') + parseFloat(b.style.left), by = PROPS.tree.y - 116 * LS('tree') + parseFloat(b.style.top), gx = bx + rnd(-4, 4), gy = PROPS.tree.y + rnd(6, 26), red = b.classList.contains('red');
     /* v3.68 경완: 손으로 준 열매처럼 중력으로 떨어져 땅에서 통통 튀고 구르다 멈춘다 (달린 자리에 잠깐 남아 있다가 하나씩) */
@@ -5003,13 +5023,13 @@ function liftUp(m) {
   if (m.state === 'sleep') wake(m, `${J(m,'이/가')} 들어 올려지자 깜짝 놀라 깼다.`);
   m.goal = null; m.scene = null; setState(m, 'idle', 1); m.perch = null; m.xl = 0; m.propSit = false;
   if (m.lift > 26) { m.y = clamp(m.y - (m.lift - 26), MIN_Y, MAX_Y); m.lift = 26; }   /* 떠 있던 포켓몬: 몸통은 그대로, 그림자를 몸 아래로 끌어 올린다 */
-  m.held = true; m.el.classList.add('held'); emote(m, '!', '', 1.2); haptic(0);   // 들 때는 정보창 없이 살짝 진동만
+  m.held = true; m.el.classList.add('held'); emote(m, '!', '', 1.2, 'hold'); haptic(0);   // 들 때는 정보창 없이 살짝 진동만
 }
 function markTarget(o) {
   const d = drag; if (d.target === o) return;
   if (d.target) { d.target.el.classList.remove('drop-target'); if (d.target.bub.classList.contains('star')) d.target.bubT = 0; }
   d.target = o;
-  if (o) { o.el.classList.add('drop-target'); if (specialScenes(d.m, o).length) emote(o, '★', 'star', 99); }
+  if (o) { o.el.classList.add('drop-target'); if (specialScenes(d.m, o).length) emote(o, '★', 'star', 99, 'drop-target'); }
 }
 window.addEventListener('pointermove', e => {
   const d = drag; if (!d || e.pointerId !== d.id) return;
@@ -5032,7 +5052,7 @@ function endDrag(e) {
   if (d.prop) { userAct(m); m.home = { x: m.x, y: m.y }; if (m.state === 'sleep') wake(m); return propReact(m, d.prop); }
   settle(m);
   m.home = { x: m.x, y: m.y };
-  if (m.land) { setState(m, 'idle', 1.2); dustAt(m); userAct(m); emote(m, '!?'); return log(pick([`${J(m,'이/가')} 땅 위에서 파닥파닥 몸부림친다. 호수로 돌아가고 싶은 눈치다.`, `${J(m,'은/는')} 물 밖이 영 불편한지 펄떡펄떡 뛰며 호수 쪽을 바라본다.`]), [m]); }
+  if (m.land) { setState(m, 'idle', 1.2); dustAt(m); userAct(m); emote(m, '!?', '', 2.2, 'karp-land'); return log(pick([`${J(m,'이/가')} 땅 위에서 파닥파닥 몸부림친다. 호수로 돌아가고 싶은 눈치다.`, `${J(m,'은/는')} 물 밖이 영 불편한지 펄떡펄떡 뛰며 호수 쪽을 바라본다.`]), [m]); }
   setState(m, 'idle', rnd(4, 8)); dustAt(m); userAct(m);
   log(pick([`${J(m,'이/가')} 새 자리에서 두리번거린다.`, `${J(m,'이/가')} 내려놓인 자리를 킁킁 살핀다.`, `${J(m,'이/가')} 옮겨진 자리가 마음에 드는 눈치다.`]), [m]);
 }
@@ -5110,7 +5130,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.76';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.77';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5951,12 +5971,16 @@ for (const k of Object.keys(SPECIES)) { const sp = +k, d = SPECIES[sp]; if (!d.f
 // 등급마다 포획률이 높은(흔한) 종 1/4 을 골라 둔다 (같으면 번호 앞쪽)
 POOL.forEach(L => L.slice().sort((a, b) => (SPECIES[b].cr ?? 45) - (SPECIES[a].cr ?? 45) || a - b).slice(0, Math.max(1, Math.floor(L.length / 4))).forEach(sp => COMMON.add(sp)));
 // 티어 (랭크와 다른 개념): 진화 전 종을 그 가족(진화형 포함)의 능력으로 1~10 티어에 나눈다.
-// 1~3 티어 = 특별한 포켓몬 리스트(TIER_LEG/SIL/BRZ, 가족 중 하나라도 들면), 4~10 티어 = 나머지를 가족 최고 종족값 순으로 같은 수씩
+// 1~3 티어 = 특별한 포켓몬 리스트(TIER_LEG/SIL/BRZ, 가족 중 하나라도 들면), 4~10 티어 = 나머지를 점수(종족값·본가 등장 순서·포획률) 순으로 같은 수씩
 const famOf = sp => [sp, ...(CHILDREN[sp] || []).flatMap(famOf)], bstOf = sp => SPECIES[sp].bs.reduce((a, b) => a + b, 0);
 const TIER = {}, TIER_SPS = Array.from({ length: 11 }, () => []), TIER_Z = {}, FAM_BST = {};
 { const base = Object.keys(SPECIES).map(Number).filter(sp => !SPECIES[sp].fr), rest = [];
   for (const b of base) { const F = famOf(b); FAM_BST[b] = Math.max(...F.map(bstOf)); const t = Math.min(...F.map(x => TIER_LEG.has(x) ? 1 : TIER_SIL.has(x) ? 2 : TIER_BRZ.has(x) ? 3 : 99)); if (t < 4) TIER[b] = t; else rest.push(b); }
-  rest.sort((a, b) => FAM_BST[b] - FAM_BST[a] || a - b); rest.forEach((b, i) => TIER[b] = 4 + Math.floor(i * 7 / rest.length));
+  // v3.77: 가족 종족값 순위 35% + 본가에서 먼저 만나는 순서(세대 안 도감 위치, 스타팅은 중간) 35% + 잡기 어려움(포획률) 30%
+  const GS = [1, 152, 252, 387, 494, 650, 722, 810, 906, 1026], gpos = sp => { const i = GS.findIndex((g, j) => sp >= g && sp < GS[j + 1]); return i < 0 || sp - GS[i] < 9 ? .5 : (sp - GS[i]) / (GS[i + 1] - GS[i]); };
+  const br = rest.slice().sort((a, b) => FAM_BST[a] - FAM_BST[b] || a - b), bR = {}; br.forEach((b, i) => bR[b] = i / Math.max(1, br.length - 1));
+  const sc = {}; for (const b of rest) sc[b] = .35 * bR[b] + .35 * gpos(b) + .3 * (1 - (SPECIES[b].cr ?? 45) / 255);
+  rest.sort((a, b) => sc[b] - sc[a] || a - b); rest.forEach((b, i) => TIER[b] = 4 + Math.floor(i * 7 / rest.length));
   for (const b of base) TIER_SPS[TIER[b]].push(b);
   for (const L of TIER_SPS) { if (!L.length) continue; const lo = Math.min(...L.map(b => FAM_BST[b])), hi = Math.max(...L.map(b => FAM_BST[b])); for (const b of L) TIER_Z[b] = hi > lo ? (FAM_BST[b] - lo) / (hi - lo) : .5; } }
 // 알 등급마다 나오는 티어 비율(%). 1~3 티어는 에픽·전설 알에서만. 각 등급의 가장 낮은 티어(일반 제외)는 '아래로 넘친' 칸이라 그 티어 안에서 강한 종이 잘 나온다
@@ -6193,7 +6217,7 @@ function useMove(m, i = 0) {
   if (name === '변신') {
     const c = S.mons.filter(o => o !== m && o.sp !== 132 && !o.hidden).sort((a, b) => dist(a, m) - dist(b, m))[0];
     if (c && m.form === m.sp) {
-      emote(m, shoutOf(m.sp), '', 1.2); anim(m, 'shake'); mvSnd(1);
+      emote(m, shoutOf(m.sp), '', 1.2, 'shout'); anim(m, 'shake'); mvSnd(1);
       setTimeout(() => {
         if (!S.mons.includes(m)) return;
         for (let i = 0; i < 6; i++) particle(m.x + rnd(-16, 16), m.y - m.h / 2 + rnd(-16, 16), 'smoke');
@@ -6204,7 +6228,7 @@ function useMove(m, i = 0) {
     }
   }
   // 먼저 외치고(크앙!), 이어서 기술 모션·연출과 타입별 효과음
-  emote(m, shoutOf(m.sp), '', 1.4); anim(m, 'hop');
+  emote(m, shoutOf(m.sp), '', 1.4, 'shout'); anim(m, 'hop');
   const f = -m.face || 1, mo = MOVE_MO[name] || (T(m).sp === 'dig' ? 'dig' : null);
   const fire = () => { if (!S.mons.includes(m)) return; const o = { x: m.x, y: m.y - m.h * .5 - (m.lift || 0) }; mvSnd(t); setTimeout(() => (MV_FX[t] || MV_FX[1])(o, f, m), 120); };
   setTimeout(() => { if (!S.mons.includes(m)) return; if (mo) moveMotion(m, mo, f, fire, dc); else { moveAnim(m, dc); fire(); } }, 480);
@@ -6229,7 +6253,7 @@ function viewBox() {   // 지금 화면에 보이는 필드 범위 (필드 좌�
 function legendMove(m, name, t, dc) {
   const fx = LEG_FX[t] || LEG_FX[1], v = viewBox(), W = v.x1 - v.x0, H = v.y1 - v.y0, f = -m.face || 1;
   m.goal = null; setState(m, 'special', 4.6); m.special = 'mvmo'; m.mvBusy = true; setTimeout(() => { m.mvBusy = false; }, 4600);
-  emote(m, shoutOf(m.sp), '', 2); anim(m, 'hop'); bgmDuck(.2, .4);
+  emote(m, shoutOf(m.sp), '', 2, 'shout'); anim(m, 'hop'); bgmDuck(.2, .4);
   // 1) 필드가 어두워지고 전설만 밝게 남는다
   const dk = document.createElement('div'); dk.className = 'legdark'; dk.style.setProperty('--lc', fx.c);
   dk.style.setProperty('--lx', m.x + 'px'); dk.style.setProperty('--ly', (m.y - m.h * .5) + 'px'); stage.append(dk);
@@ -6257,7 +6281,7 @@ function legendMove(m, name, t, dc) {
     const near = S.mons.filter(x => x !== m && !x.hidden && !x.held && !x.evolving);
     near.forEach((x, k) => setTimeout(() => { if (!S.mons.includes(x) || x.held) return;
       if (x.state === 'sleep') wake(x); if (x.partner) { const q = x.partner; q.partner = null; x.partner = null; setState(q, 'idle', 1); }
-      anim(x, 'hop'); emote(x, pick(['!!', '!?', '…!']), '', 1.8); x.goal = null;
+      anim(x, 'hop'); emote(x, pick(['!!', '!?', '…!']), '', 1.8, 'move-shock'); x.goal = null;
       const d = Math.max(1, dist(x, m)); moveTo(x, { x: x.x + (x.x - m.x) / d * rnd(50, 90), y: x.y + (x.y - m.y) / d * 30 }, { kind: 'flee' }, 1.8);
     }, 200 + k * 60));
     setTimeout(() => log(`${J(m,'이/가')} ${J({ name },'을/를')} 썼다! 필드가 흔들리고 ${near.length ? '모든 포켓몬이 깜짝 놀랐다' : '하늘이 울렸다'}!`, [m, ...near], true), 300 + near.length * 60);   // 깨어난 포켓몬 기록보다 뒤에
@@ -6329,8 +6353,8 @@ function startle(m, name, loud) {
   if (!near.length) return false;
   near.forEach((o, k) => setTimeout(() => {
     if (!S.mons.includes(o) || o.held) return;
-    if (o.state === 'sleep') { wake(o); emote(o, '!!', 'anger'); return; }
-    anim(o, 'hop'); emote(o, pick(['!', '!!', '!?']), '', 1.4); o.goal = null;
+    if (o.state === 'sleep') { wake(o); emote(o, '!!', 'anger', 2.2, 'move-shock'); return; }
+    anim(o, 'hop'); emote(o, pick(['!', '!!', '!?']), '', 1.4, 'move-shock'); o.goal = null;
     const d = Math.max(1, dist(o, m)), k2 = 40 + Math.random() * 30;
     moveTo(o, { x: o.x + (o.x - m.x) / d * k2, y: o.y + (o.y - m.y) / d * k2 * .6 }, { kind: 'flee' }, 1.6);
   }, 260 + k * 90));
@@ -7176,7 +7200,7 @@ async function evolve(m) {
   if (m.name === oldName || m.name.startsWith(oldName + ' ')) { m.name = m.name.replace(oldName, DEX[to].n); m.tag.textContent = m.name; }
   unlock(to);
   log(`축하해! ${J({ name: oldName },'은/는')} ${J(m,'으로/로')} 진화했다!`, [m], true);
-  emote(m, '♪', 'note', 2); m.evolving = false; setState(m, 'idle', 3);
+  emote(m, '♪', 'note', 2, 'evolve'); m.evolving = false; setState(m, 'idle', 3);
   infoEl.dataset.uid = ''; renderInfo(); evolving = false; save(); setTimeout(() => veil.remove(), 700);
 }
 
@@ -7584,6 +7608,7 @@ function applyCfg(c) {
     if (d.pity) { if (d.pity.e > 0) PITY_E = d.pity.e; if (d.pity.l > 0) PITY_L = d.pity.l; }
     if (d.eggTiers) for (let g = 1; g <= 5; g++) if (d.eggTiers[g]) EGG_TIERS[g] = d.eggTiers[g];
     for (let g = 1; g <= 5; g++) { const L = d.eggList?.[g]; EGG_LIST[g] = Array.isArray(L) && L.length ? L.filter(r => Array.isArray(r) && SPECIES[r[0]] && r[1] > 0) : null; }
+    BUB_OV = d.bub && typeof d.bub === 'object' ? { ...d.bub } : {};
     retier(d.tierOv, d.tierOrd || {}); if (d.bal) applyBal(d.bal); if (d.layout) setLayoutIn(d.layout);
     EGG_EFF = null; CFG = c; $('#appVer').textContent = 'v' + APP_VER + (c.ver ? ' · 데이터 ' + c.ver : '');
   } catch (e) { console.warn('config', e); }
@@ -7646,7 +7671,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   notiSoon = function () {};   // 작업실에선 '새 소식' 창을 띄우지 않는다
   if (GAL) { save = function () {}; document.documentElement.classList.add('st-gal'); }
   const api = window.__studio = {
-    tierGuard, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
+    BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, tierGuard, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
     ICO: { berry: ICO_BERRY, brush: ICO_BRUSH, hand: ICO_HAND, pen: PEN, egg: EGG_SVG },   // v3.66: 작업실이 게임 아이콘을 그대로 쓴다
     get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, PET_FR, WASH_FR, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]), HATCH_KM: [0, ...GRADE.slice(1).map(G => G.km)] }; },
     get cfg() { return CFG; },
