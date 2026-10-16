@@ -5183,7 +5183,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.88';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.89';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7943,11 +7943,11 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   const szMons = () => S.mons.filter(m => m.szb);
   const szFree = T => { let i = 0; while (T.has(i)) i++; return i; };
   const szGeo = () => { const [wl, wr] = SZB.win || [XL, XR], x0 = Math.max(XL, wl) + 18, x1 = Math.min(XR, wr) - 14; return { x0, cw: (x1 - x0) / SZ_COLS }; };
-  const szCell = (x, y) => { const { x0, cw } = szGeo(), T = SZB.top || [0, 1]; let r = 0; while (r < T.length - 2 && y >= T[r + 1]) r++; return [r, clamp(Math.floor((x - x0) / cw), 0, SZ_COLS - 1)]; };
-  function szShift(G, dr, dc) { const rc = G.map(o => [Math.floor(o.szC / SZ_COLS), o.szC % SZ_COLS]);
-    dc = clamp(dc, -Math.min(...rc.map(a => a[1])), SZ_COLS - 1 - Math.max(...rc.map(a => a[1]))); dr = Math.max(dr, -Math.min(...rc.map(a => a[0]))); if (!dr && !dc) return;
-    const gs = new Set(G), old = G.map(o => o.szC), nw = rc.map(([r, c]) => (r + dr) * SZ_COLS + c + dc), ns = new Set(nw);
-    const O = szMons().filter(o => !gs.has(o) && ns.has(o.szC)).sort((a, b) => a.szC - b.szC), fr = old.filter(i => !ns.has(i)).sort((a, b) => a - b);
+  // v3.89 경완: 가운데(핸드폰 자리) 6열이 화면 아래까지 차면 맵을 늘리지 않고 오른쪽 → 왼쪽 빈 곳에 이어서 채운다 (모두 차면 그때만 아래로)
+  const szCell = (x, y) => { const R = SZB.geoRows || []; if (!R.length) return 0; const Bs = [...new Set(R.map(r => r.B))], dx = B => x < B.x0 ? B.x0 - x : x > B.e[B.n] ? x - B.e[B.n] : 0;
+    const B = Bs.reduce((a, b) => dx(b) < dx(a) ? b : a), rs = R.filter(r => r.B === B); let r = rs[0]; for (const q of rs) if (y >= q.top) r = q; let c = 0; while (c < B.n - 1 && x >= B.e[c + 1]) c++; return r.i0 + c; };
+  function szPlace(G) { const used = new Set(), nw = G.map(o => { let i = szCell(o.x, o.y - (o.h || 60) / 2); while (used.has(i)) i++; used.add(i); return i; }), gs = new Set(G), old = G.map(o => o.szC);
+    const O = szMons().filter(o => !gs.has(o) && used.has(o.szC)).sort((a, b) => a.szC - b.szC), fr = old.filter(i => !used.has(i)).sort((a, b) => a - b);
     G.forEach((o, k) => { o.szC = nw[k]; }); O.forEach((o, k) => { o.szC = fr[k]; }); }
   function szSelect(L) { SZB.sel = new Set(L); api.markMon(L.length === 1 ? L[0].uid : null); if (L.length > 1) for (const m of L) m.el.classList.add('stMark');
     api.onSzSel?.(L.length === 1 ? { uid: L[0].uid, sp: L[0].sp, name: L[0].name } : L.length ? { multi: L.length, sps: L.map(m => m.sp), uids: L.map(m => m.uid) } : null); }
@@ -7955,7 +7955,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     const move = ev => { if (!mv && Math.hypot(ev.clientX - x0, ev.clientY - y0) < 5) return; if (!mv) { mv = true; SZB.drag = new Set(G); G.forEach(o => o.el.classList.add('szDrag')); }
       const dx = (ev.clientX - x0) / scale, dy = (ev.clientY - y0) / scale; for (const [o, ox, oy] of P) { o.x = o.tx = ox + dx; o.y = o.ty = Math.max(20, oy + dy); } };
     const up = () => { removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up); if (!mv) return; suppressClick = performance.now(); SZB.drag = null; G.forEach(o => o.el.classList.remove('szDrag'));
-      const [r, c] = szCell(m.x, m.y - (m.h || 60) / 2); szShift(G, r - Math.floor(m.szC / SZ_COLS), c - m.szC % SZ_COLS); if (G.length === 1 && stM !== m) szSelect([m]); SZB.rows(); };
+      szPlace(G); if (G.length === 1 && stM !== m) szSelect([m]); SZB.rows(); };
     addEventListener('pointermove', move); addEventListener('pointerup', up); addEventListener('pointercancel', up); };
   wrap.addEventListener('pointerdown', e => { if (!SZB.on || e.button > 0 || e.target.closest?.('.mon')) return; e.preventDefault(); const sr = stage.getBoundingClientRect(), p = ev => [(ev.clientX - sr.left) / scale, (ev.clientY - sr.top) / scale], a = p(e); let box = null, b = a;
     const R = () => [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1])];
@@ -7966,9 +7966,21 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     addEventListener('pointermove', move); addEventListener('pointerup', up); addEventListener('pointercancel', up); });
   SZB.rows = () => { const L = szMons(), { x0, cw } = szGeo(), T = new Set();
     for (const m of L) if (m.szC != null && !T.has(m.szC)) T.add(m.szC); else m.szC = null; for (const m of L) if (m.szC == null) { m.szC = szFree(T); T.add(m.szC); }
-    const nR = L.length ? Math.max(...L.map(m => Math.floor(m.szC / SZ_COLS))) + 1 : 0, top = []; let y = Math.max(250, (60 - S.oy) / scale);
-    for (let r = 0; r <= nR; r++) { top.push(y); y += Math.max(60, ...L.filter(m => Math.floor(m.szC / SZ_COLS) === r).map(m => m.h || 60)) + 30; } top.push(y); SZB.top = top;
-    for (const m of L) { if (SZB.drag?.has(m)) continue; const r = Math.floor(m.szC / SZ_COLS), c = m.szC % SZ_COLS; m.x = m.tx = x0 + cw * (c + .5); m.y = m.ty = top[r + 1] - 30; }
+    const byC = new Map(L.map(m => [m.szC, m])), mx = L.length ? Math.max(...L.map(m => m.szC)) : -1, y0 = Math.max(250, (60 - S.oy) / scale), bot = (wrap.clientHeight - S.oy) / scale - 8;
+    const vl = -S.ox / scale + 8, vr = (wrap.clientWidth - S.ox) / scale - 8, [wl, wr] = SZB.win || [XL, XR], nR0 = Math.max(0, Math.min(SZ_COLS, Math.floor((vr - wr - 4) / cw))), nL0 = Math.max(0, Math.min(SZ_COLS, Math.floor((wl - 4 - vl) / cw)));
+    const rowH = (i0, n) => Math.max(60, ...Array.from({ length: n }, (_, k) => byC.get(i0 + k)?.h || 60)) + 30;
+    const lay = (nR, nL) => {
+    const B0 = { x0, cw, n: SZ_COLS }; let BR = null, BL = null; const Bs = [B0, { x0: wr + 4, cw, n: nR }, { x0: wl - 4 - nL * cw, cw, n: nL }].filter(B => B.n), R = []; let i = 0;
+    for (const B of Bs) { let top = y0; for (;;) { const h = rowH(i, B.n); if (top + h - 30 > bot && top > y0) break; R.push({ B, top, h, i0: i }); i += B.n; top += h; } }
+    { let top = Math.max(...R.filter(r => r.B === B0).map(r => r.top + r.h)); while (i <= mx || !R.some(r => r.i0 > mx)) { const h = rowH(i, SZ_COLS); R.push({ B: B0, top, h, i0: i }); i += SZ_COLS; top += h; } }   // 모두 차면 가운데 아래로
+    // v3.89 경완: 칸 너비는 그 열에서 가장 넓은 포켓몬에 맞춰서 옆 포켓몬과 겹치지 않게 (빈 열은 기본 너비)
+    for (const B of Bs) { const W = Array.from({ length: B.n }, (_, c) => { const ws = R.filter(r => r.B === B).map(r => byC.get(r.i0 + c)?.w || 0); const w = Math.max(...ws); return w ? Math.max(cw * .7, w + 12) : cw; }); B.W = W; }
+    { const sum = B => B.W.reduce((a, b) => a + b, 0), e = B => { B.e = [B.x0]; for (const w of B.W) B.e.push(B.e[B.e.length - 1] + w); }; e(B0); BR = Bs[1]?.x0 > x0 ? Bs[1] : null; BL = Bs.find(B => B !== B0 && B !== BR);
+      if (BR) { BR.x0 = Math.max(wr + 4, B0.e[B0.n] + 8); e(BR); } if (BL) { BL.x0 = Math.min(wl - 4, B0.x0 - 8) - sum(BL); e(BL); } }
+      return { R, BR, BL }; };
+    let nR = nR0, nL = nL0, R, BR, BL; for (let k = 0; k < 14; k++) { ({ R, BR, BL } = lay(nR, nL)); if (BR && BR.e[BR.n] > vr && nR > 0) nR--; else if (BL && BL.x0 < vl && nL > 0) nL--; else break; }   // 옆 칸이 화면 밖으로 나가면 열을 줄인다
+    SZB.geoRows = R; let y = y0;
+    for (const r of R) for (let c = 0; c < r.B.n; c++) { const m = byC.get(r.i0 + c); if (!m) continue; y = Math.max(y, r.top + r.h); if (SZB.drag?.has(m)) continue; m.x = m.tx = (r.B.e[c] + r.B.e[c + 1]) / 2; m.y = m.ty = r.top + r.h - 30; }
     stage.style.height = Math.max(H, y + 20) + 'px'; $('#szSp') && ($('#szSp').style.height = S.oy + Math.max(H, y + 20) * scale + 'px'); SZB.paint(); };
   api.szAlpha = v => { SZB.alpha = v; const c = $('#szBg'); if (c) c.style.opacity = v; };   // v3.88 경완: 크기 조절 모드 배경 투명도
   SZB.paint = () => { const c = $('#szBg'); if (!c) return; const sh = Math.max(H, parseFloat(stage.style.height) || H), u = 2 * scale, ox = Math.max(0, Math.ceil(S.ox / u)), oy = Math.max(0, Math.ceil(S.oy / u)),
