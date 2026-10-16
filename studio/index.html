@@ -822,7 +822,7 @@ async function szSet(on) { if (on === szOn || !A?.sizeMode) return; szOn = on; i
   const G = $('#game'); let fix = null; if (on) try { const gw = G.contentWindow, fr = G.getBoundingClientRect(), K = fr.width / gw.innerWidth, st = gw.document.querySelector('#stage').getBoundingClientRect(); fix = { sx: fr.left + st.left * K, sy: fr.top + st.top * K, ss: st.width * K }; } catch (e) { fix = null; }
   closeSpx(); document.body.classList.toggle('szmode', on); $('#szBar').hidden = !on; szCur = null; szInfo();
   if (fix) { const nr = G.getBoundingClientRect(); fix = { x: fix.sx - nr.left, y: fix.sy - nr.top, s: fix.ss / 360 }; }
-  await A.sizeMode(on, fix); if (on) { szAlpha(); scBar(); szCount(); openSpx('all', '포켓몬 넣기', Object.keys(A.SPECIES).map(Number).sort((a, c) => a - c)); } else { slotSig = ''; requestAnimationFrame(fitPhone); setTimeout(renderPal, 300); } }
+  await A.sizeMode(on, fix); if (on) { szAlpha(100); szCur = null; szInfo(); scBar(); szCount(); openSpx('all', '포켓몬 넣기', Object.keys(A.SPECIES).map(Number).sort((a, c) => a - c)); } else { slotSig = ''; requestAnimationFrame(fitPhone); setTimeout(renderPal, 300); } }
 // v2.22 경완: 종류마다 한 마리만. 넣은 포켓몬 칸은 눌린 모습(비활성), 빼면 다시 켜짐
 const szUsed = () => new Set((A?.szList?.() || []).map(m => +m.sp));
 const szMarks = () => { if (!szOn) return; const U = szUsed(); $$('#szPane .mc').forEach(b => { const on = U.has(+b.dataset.sp); b.classList.toggle('used', on); b.disabled = false; b.title = on ? `${spName(+b.dataset.sp)} · 다시 누르면 빼요` : spName(+b.dataset.sp); }); };
@@ -839,7 +839,8 @@ $('#szSel').oninput = e => { if (e.target.id !== 'szR' || !szCur) return; scPush
   $('#szV').textContent = v + '%'; $('#szOne').disabled = v === 100; scLive(); saveDraft(); scBar(); };   // 막대로 크기 (모서리 끌기와 같은 값)
 $('#szMode').onclick = () => szSet(!szOn);
 // v2.25 경완: 크기 조절 모드 배경 투명도 (기기에 기억)
-function szAlpha(v) { if (v == null) v = +(store.get('st-sz-a') || 100); else store.set('st-sz-a', String(v)); $('#szA').value = v; $('#szAV').textContent = v + '%'; A?.szAlpha?.(v / 100); }
+function szAlpha(v = 100) {   // v2.39 경완: 크기 조절 모드를 켤 때마다 기본값(100%)
+  $('#szA').value = v; $('#szAV').textContent = v + '%'; A?.szAlpha?.(v / 100); }
 $('#szA').oninput = e => szAlpha(+e.target.value);
 $('#szExit').onclick = () => szSet(false);
 $('#szAdd').onclick = () => { if (spxKey !== 'all') openSpx('all', '포켓몬 넣기', Object.keys(A.SPECIES).map(Number).sort((a, c) => a - c)); $('#spxQ')?.focus(); };
@@ -1668,7 +1669,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
-  ['2.39', '10월 16일', ['크기 조절 모드 배경 투명도를 내리면 소품·나비도 같이 흐려짐 (게임 v3.95)', '알에서 나오는 티어: 10~1티어 버튼을 모두 두고 눌러서 켜고 끄기 (티어 더 넣기·× 대신)', '켰다 끄면 원래 비율로 돌아옴']],
+  ['2.39', '10월 16일', ['크기 조절 모드를 다시 켜면 배경 투명도·선택이 기본값으로', '크기 조절 모드 배경 투명도를 내리면 소품·나비도 같이 흐려짐 (게임 v3.95)', '알에서 나오는 티어: 10~1티어 버튼을 모두 두고 눌러서 켜고 끄기 (티어 더 넣기·× 대신)', '켰다 끄면 원래 비율로 돌아옴']],
   ['2.38', '10월 16일', ['맵에 있는 소품 칸에 마우스를 올리면 칸이 밝아지고 손가락 커서, 시뮬레이터의 그 소품에도 노란 테두리']],
   ['2.37', '10월 16일', ['알에 티어를 넣으면 이웃 티어 사이 몫으로 들어가고, 티어별 전체 확률도 그만큼 같이 늘어남 (0%로 묻히지 않음)', '막대 끌기·알 확률 바꾸기도 지금 알별 비율에서 조금씩만 움직임', '맵 소품 창에서 연 소품을 다시 누르면 세부 창 닫힘 (편집 모드는 그대로)', '확률 안전장치 한도 40,000km']],
   ['2.36', '10월 16일', ['소품 반응은 소품 상세 창 아래에, 오른쪽 사이드 바에는 지금 맵에 있는 소품 반응만', '맵 시간 "지금" 버튼은 시간을 옮겼을 때만 켜짐', '확률 안전장치 한도 30,000km (2티어 108종 × 250km)']],
