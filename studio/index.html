@@ -173,7 +173,7 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 .dock .db{overflow:auto;padding:0 10px 14px;display:grid;gap:12px;align-content:start}
 .dock .sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px}
 .dock .it{position:relative;display:grid;justify-items:center;align-content:end;gap:3px;padding:8px 4px 6px;background:var(--deep);border:1px solid var(--chip);border-radius:4px;font-size:11.5px;color:var(--soft);min-height:84px;touch-action:none;user-select:none;-webkit-user-select:none}
-.dock .it.dr{cursor:grab}.dock .it.dr:hover{border-color:var(--acc)}
+.dock .it.dr{cursor:grab}.dock .it.dr:hover{border-color:var(--acc)}.dock .it[data-ik],.dock .it[data-one]{cursor:pointer}.dock .it[data-ik]:hover,.dock .it[data-one]:hover{border-color:var(--acc);background:var(--chip);color:var(--fg)}
 .dock .it img{height:46px;width:auto;max-width:76px;object-fit:contain;image-rendering:pixelated;pointer-events:none}
 .dock .it .fl{width:32px;height:44px;background-size:600% 100%;background-position:0 0;image-rendering:pixelated}
 .dock .it .ph{font-size:22px;line-height:1;opacity:.7}
@@ -452,7 +452,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.37';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.38';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -952,6 +952,9 @@ function renderDockAll() {
     ${(C.mine || []).length ? `<h4>내 소품</h4><div class="sg">${C.mine.map(([k, n, src, c]) => `<div class="it dr mine" data-k="${k}" title="${esc(n)} · 맵에 ${c}개">${c ? `<span class="c">${c}</span>` : ''}${icon(src)}${esc(n)}</div>`).join('')}</div>` : ''}
 `;
 }
+// v2.38 경완: 맵에 있는 소품 칸에 마우스를 올리면 시뮬레이터의 그 소품에도 테두리
+$('#dockB').addEventListener('pointerover', e => { if (e.pointerType === 'touch') return; const c = e.target.closest('[data-ik],[data-one]'); if (!c) return; const [k, i] = c.dataset.ik ? c.dataset.ik.split(':') : [c.dataset.one, -1]; A?.hoverInst?.(k, +i); });
+$('#dockB').addEventListener('pointerout', e => { const c = e.target.closest('[data-ik],[data-one]'); if (c && !c.contains(e.relatedTarget)) A?.hoverInst?.(null); });
 // v2.37 경완: 연 소품을 다시 누르면 세부 창을 닫는다 (편집 모드는 그대로)
 const reTap = el => el.classList.contains('on') && !$('#zoom').hidden, unTap = () => { closeZoom(); A?.unpick?.(); dockMark(null); };
 $('#dockB').addEventListener('click', e => { const rs = e.target.closest('[data-rs]'); if (rs) { A.restoreBase(rs.dataset.rs); renderDock(); toast('소품을 되살렸어요'); return; }   // 맵에 있는 소품: 누르면 맵에서 그 소품을 고른다 (휴대폰에서 옆으로 넘길 때는 안 골라지게 click 으로)
@@ -1664,6 +1667,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.38', '10월 16일', ['맵에 있는 소품 칸에 마우스를 올리면 칸이 밝아지고 손가락 커서, 시뮬레이터의 그 소품에도 노란 테두리']],
   ['2.37', '10월 16일', ['알에 티어를 넣으면 이웃 티어 사이 몫으로 들어가고, 티어별 전체 확률도 그만큼 같이 늘어남 (0%로 묻히지 않음)', '막대 끌기·알 확률 바꾸기도 지금 알별 비율에서 조금씩만 움직임', '맵 소품 창에서 연 소품을 다시 누르면 세부 창 닫힘 (편집 모드는 그대로)', '확률 안전장치 한도 40,000km']],
   ['2.36', '10월 16일', ['소품 반응은 소품 상세 창 아래에, 오른쪽 사이드 바에는 지금 맵에 있는 소품 반응만', '맵 시간 "지금" 버튼은 시간을 옮겼을 때만 켜짐', '확률 안전장치 한도 30,000km (2티어 108종 × 250km)']],
   ['2.35', '10월 16일', ['알별 티어 빼기(×)·넣기(티어 더 넣기, 10티어부터) 되살림. 비율은 계속 자동', '배포할 때 그 사이 새 버전이 있으면 안 고친 값은 새 버전 값으로 (예전 값으로 되돌리지 않음)']],
