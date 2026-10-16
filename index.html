@@ -699,14 +699,14 @@ body.petting #dlg,body.petting #info{display:none!important}
 @keyframes trRb{to{background-position:0 0,300% 0}}@keyframes trRbB{to{background-position:-200% 0}}   /* 배지 무지개: 한 판(200%)만큼 밀고 처음으로 → 이음매 없이 */
 @keyframes trGlowR{0%,100%{box-shadow:inset 0 0 0 3px #2a1658,inset 0 0 0 5px #ffd86a,0 0 8px rgba(180,120,255,.5),3px 3px 0 rgba(0,0,0,.2)}50%{box-shadow:inset 0 0 0 3px #2a1658,inset 0 0 0 5px #fff1b0,0 0 18px rgba(255,180,90,.85),3px 3px 0 rgba(0,0,0,.2)}}
 .tr-card.r10 .tr-badge{border-color:#6a3ab8;background:linear-gradient(90deg,#ff8a9a,#ffd36a,#8ae89a,#7ac8ff,#b89aff,#ff8a9a) 0 0/200% 100% repeat-x;animation:trRbB 4s linear infinite;color:#2a1050;text-shadow:0 1px 0 rgba(255,255,255,.6)}
-.pf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}.pf-note{margin:8px 0 0;font-size:12px;color:var(--dim);text-align:center}.pf-sec{padding-bottom:14px}
+.pf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}.pf-note{margin:18px 0 0;font-size:12px;color:var(--dim);text-align:center}.pf-sec{padding-bottom:14px}
 .pf-box{border:3px solid var(--frame);background:var(--win);padding:12px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
 .pf-box span{font-size:12px;color:var(--dim)}.pf-box b{font-size:24px;line-height:1.1;color:var(--win-ink)}.pf-box i{font-style:normal;font-size:12px;color:var(--dim)}
 .pf-box b{transition:color .3s}
 .pf-box.walking{border-color:#2a8a4a;animation:pfWalk 2.4s ease-in-out infinite}.pf-box.walking b{color:#2a8a4a}
 .pf-box{position:relative}.pf-box.walking::before{content:'';position:absolute;left:7px;top:7px;width:8px;height:8px;background:#3cb05a;animation:pfDot 1.2s steps(2) infinite}
 @keyframes pfWalk{0%,100%{box-shadow:0 0 0 0 rgba(60,176,90,0)}50%{box-shadow:0 0 0 3px rgba(60,176,90,.25)}}@keyframes pfDot{50%{opacity:.2}}
-.pf-note{margin:8px 0 0;font-size:12px;color:var(--dim)}
+.pf-note{margin:18px 0 0;font-size:12px;color:var(--dim)}
 .set-sec p{margin:0 0 12px;line-height:1.55;color:var(--dim);font-size:13px}
 .set-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .set-btns.one{grid-template-columns:1fr;margin-top:12px}
@@ -1012,7 +1012,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 /* 짝꿍 칸: 분홍색 계열 */
 #buddy .bd-card{border-color:#9a3462;background:#fff3f7;box-shadow:3px 3px 0 rgba(154,52,98,.25)}
 #buddy .bd-card .bd-pic{background:#fcd9e6;border-color:#e9a3bf}
-#buddy .bd-card .prog{border-color:#9a3462}#buddy .bd-card .prog i{background:#e8679a}
+#buddy .bd-card .prog{border-color:#9a3462}#buddy .bd-card .prog i{background:#e8679a}#buddy .bd-card.ready{border-color:#e8a020;animation:bdGlow 4s ease-in-out infinite}#buddy .bd-card.ready .prog{border-color:#e8a020;animation:barGlow 4s ease-in-out infinite}#buddy .bd-card.ready .prog i{background:#ffc840}   /* v4.07 경완: 진화하기가 켜지면 짝꿍 카드 테두리·게이지가 노랗게 은은히 빛난다 */
 #buddy .bd-card .bd-x{color:#c0507e}
 
 .bd-main{flex:1;min-width:0;display:grid;gap:8px}
@@ -4793,7 +4793,7 @@ function nightHoles() {
   const parts = L.map(m => { const A = !m.lit, br = m.br ?? .5;   /* 후광 숨쉬기(2초)에 맞춰 밝히는 범위가 커졌다 작아졌다 */
     const k = Math.max(.75, Math.min(1.6, (m.w || 50) / 55)) * (A ? .7 : 1) * (.82 + .3 * br), rx = Math.round(100 * k), ry = Math.round(54 * k), a = (1 - (A ? .38 : .62) * k0).toFixed(2), b = (1 - (A ? .22 : .4) * k0).toFixed(2), c = (1 - (A ? .08 : .15) * k0).toFixed(2);
     return `radial-gradient(${rx}px ${ry}px at ${Math.round(m.x)}px ${Math.round(m.y - 6)}px,rgba(0,0,0,${a}) 0,rgba(0,0,0,${b}) 35%,rgba(0,0,0,${c}) 70%,#000 100%)`; });
-  if (flameEl && !flameEl.classList.contains('out') && k0 > .05) { const a = (1 - .6 * k0).toFixed(2), b = (1 - .3 * k0).toFixed(2); parts.push(`radial-gradient(calc(90px * var(--fk)) calc(56px * var(--fk)) at ${FIRE.x}px ${FIRE.y - 8}px,rgba(0,0,0,${a}) 0,rgba(0,0,0,${b}) 45%,#000 100%)`, `radial-gradient(calc(20px * var(--fk)) calc(32px * var(--fk)) at ${FIRE.x}px ${FIRE.y - 22}px,rgba(0,0,0,0) 0,rgba(0,0,0,0) 62%,#000 100%)`); }   /* 모닥불 둘레는 밤에도 밝다. 불꽃 자리는 밤 그늘을 아예 걷어 불이 그대로 빛난다 */
+  if (flameEl && !flameEl.classList.contains('out') && k0 > .05) { const a = (1 - .6 * k0).toFixed(2), b = (1 - .3 * k0).toFixed(2); parts.push(`radial-gradient(calc(90px * var(--fk)) calc(56px * var(--fk)) at ${FIRE.x}px ${FIRE.y - 8}px,rgba(0,0,0,${a}) 0,rgba(0,0,0,${b}) 45%,#000 100%)`, `radial-gradient(calc(18px * var(--fk)) calc(30px * var(--fk)) at ${FIRE.x}px ${FIRE.y - 30}px,rgba(0,0,0,0) 0,rgba(0,0,0,0) 30%,rgba(0,0,0,.55) 70%,#000 100%)`); }   /* 모닥불 둘레는 밤에도 밝다. 불꽃 자리는 밤 그늘을 아예 걷어 불이 그대로 빛난다 */
   const key = parts.join(','); if (key === holeKey) return; holeKey = key;
   const st = nightEl.style; st.webkitMaskImage = st.maskImage = key || ''; st.webkitMaskComposite = parts.length > 1 ? 'source-in' : ''; st.maskComposite = parts.length > 1 ? 'intersect' : '';
 }
@@ -5209,7 +5209,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.06';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.07';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5713,7 +5713,7 @@ function setEvoBtn(btn, P) {
   const kids = CHILDREN[P.sp]; let cls = '', html = '진화하기', tip = '';
   if (!kids) { cls = 'fin'; html = `<span>같이 달린 거리</span><b>${fmtKm(P.runKm || 0)}</b><small>km</small>`; }
   else if (!evoKids(P.sp, P).length) { cls = 'spc'; html = `<span class="sp-tag">특별한 진화</span><span class="sp-why">${esc(spWhy(P))}</span>`; }   /* 달린 거리로는 진화하지 않는 포켓몬: 힌트를 바로 보여 준다 */
-  else if (!pokeReady(P)) { const ok = evoKids(P.sp, P), need = evoNeed(P), km = P.km || 0; cls = 'dis'; tip = km < need ? `진화까지 ${fmtKm(km)} / ${need}km` : evoWhy(ok[0]); }
+  else if (!pokeReady(P)) { const ok = evoKids(P.sp, P), need = evoNeed(P), km = P.km || 0; cls = 'dis'; tip = km < need ? `진화까지 ${fmtKm(Math.min(km, need))} / ${need}km` : evoWhy(ok[0]); }
   btn.classList.remove('fin', 'dis', 'spc'); if (cls) btn.classList.add(cls); if (btn.innerHTML !== html) btn.innerHTML = html;
   if (tip) { btn.dataset.tip = tip; btn.dataset.tipc = ''; } else { delete btn.dataset.tip; delete btn.dataset.tipc; }
 }
@@ -6552,7 +6552,7 @@ function drawEgg() {
   save(); return e;
 }
 // 가방: 움직인 거리만큼 알을 줍는다. 250m마다 0~2개라 2.5km면 대개 5~15개, 등급 확률은 알 뽑기와 같다.
-let MAX_BAG = 999, BAG_STEP = .25;
+let MAX_BAG = 999, BAG_STEP = .25; const BAG_SUB = .25;
 let PITY_E = 7.5, PITY_L = 28;   // v3.72: 평균 거리가 에픽 이상 5km·전설 19km 라 1.5배로 다시 맞춤. v3.34 경완: 천장은 평균 거리의 1.5배 (에픽 75km, 전설 150km). v3.35: 남은 거리는 화면에 안 보인다
 const ODDS = [.5382, .2501, .1611, .0373, .0133];   // v3.72: 일반 0.5·희귀 1·레어 1.6·에픽 6.7·전설 19km에 1개꼴   // 알 등급 확률 (작업실에서 배포하면 바뀐다)
 const rollGrade = () => { let r = Math.random(); for (let g = 1; g <= 5; g++) if ((r -= ODDS[g - 1]) < 0) return g; return 5; };   // v3.32 경완: 알은 1km에 약 4개, 전설 100km·에픽 50km·레어 4km에 1개꼴 → 68.25/25/6/0.5/0.25 (예전 45/30/15/8/2)
@@ -6587,7 +6587,7 @@ function renderProfile() {
   // 이동 거리: 만보기(걷기·달리기 다 들어간다)가 오면 그 값, 아니면 걸은 거리 + 달린 기록 (둘 중 큰 쪽)
   $('#pfWalk').textContent = fmtKm(live ? Math.max(S.ped.km, runKm) : T.walk + runKm); $('#pfWalk').parentNode.classList.toggle('walking', !!live && Date.now() - (S.ped.at || 0) < WALK_LIVE);
   $('#pfEggs').textContent = T.eggs;
-  { const n = 1 / BAG_STEP, sd = Math.sqrt(n * 2 / 3), lo = Math.max(0, Math.round(n - 1.2 * sd)), hi = Math.round(n + 1.2 * sd); $('#pfNote').textContent = `1km를 움직이면 알을 보통 ${lo}~${hi}개 줍는다 (평균 ${Math.round(n)}개)`; }   /* v4.04 경완: 250m마다 0~2개 */
+  { const n = 1 / BAG_STEP, lo = Math.max(1, Math.round(n / 2)), hi = Math.max(lo + 1, Math.ceil(n * 1.5)); $('#pfNote').textContent = `1km에 알 ${lo}~${hi}개를 주워요`; }   /* v4.04 경완: 250m마다 0~2개 */
   // 테스트: 아이폰 앱 만보기 신호 (언제·몇 번·얼마) — 이동 거리가 안 늘 때 어디서 막히는지 보려고
   const D = pedDiag, ago = D.at ? Math.round((Date.now() - D.at) / 1000) : -1;
   $('#pfDiag').textContent = !window.webkit?.messageHandlers?.pokeRun ? '' : D.err ? `만보기 오류: ${D.err}` : D.n ? `만보기 신호 ${D.n}번 · 마지막 ${ago}초 전 · ${D.km.toFixed(3)}km` : '만보기 신호를 아직 못 받았어요';
@@ -6611,7 +6611,7 @@ window.pokeRunToday = (km, dayMs) => {
 };
 function collectEggs(km, place, tags, pf) {
   S.bagAcc += km; let n = 0; const P = S.pity || (S.pity = { e: 0, l: 0 }); P.e += km; P.l += km;
-  while (S.bagAcc >= BAG_STEP) { S.bagAcc -= BAG_STEP; n += Math.floor(Math.random() * 3); }
+  while (S.bagAcc >= BAG_SUB) { S.bagAcc -= BAG_SUB; const r = BAG_SUB / BAG_STEP; n += r < 1 ? (Math.random() < r ? 1 : 0) : Math.floor(Math.random() * (2 * r + 1)); }   // v4.07 경완: 250m마다 확률로 줍는다 (1km에 평균 1/BAG_STEP 개, 보통 1~2개, 운 좋으면 3개)
   n = Math.min(n, MAX_BAG - S.bag.length);
   const t = Date.now(), got = [];
   got.eggs = [];
@@ -6657,7 +6657,7 @@ function feedKm(km, fr = km * WALK_FR) {
   let ready = 0;
   for (const e of S.eggs) { const was = e.km >= e.need; e.km += km; if (!was && e.km >= e.need) ready++; }
   if (ready) log(`알 ${ready}개가 움직이기 시작했다! 부화기에서 부화시켜 보자.`, [], true);
-  for (const b of S.buds) { const P = boxOf(b.pid); if (evoKids(b.sp, P).length) b.km += km; if (P) { P.km = b.km; P.runKm = (P.runKm || 0) + km; } }
+  for (const b of S.buds) { const P = boxOf(b.pid); if (evoKids(b.sp, P).length) b.km = Math.max(b.km, Math.min(evoNeed(b), b.km + km)); if (P) { P.km = b.km; P.runKm = (P.runKm || 0) + km; } }   // v4.07 경완: 진화 거리를 채우면 진화하기 전까지 더 늘지 않는다 (같이 달린 거리 runKm 은 계속)
 }
 let WALK_FR = 2;   // 짝꿍 친밀도: 같이 움직인 거리 1km에 2 (걷기·런닝 같음, 같은 거리는 한 번만)
 // 걸음으로 쌓은 거리 기록 [시작ms, 끝ms, km] (런닝과 겹치는 만큼을 알아내려고, 8일치)
@@ -7495,7 +7495,7 @@ frTestSync();
     if (Date.now() - arm > 3000) { arm = Date.now(); sfx('tap'); b.textContent = '한 번 더 누르면 모두 지워져요'; setTimeout(() => { if (Date.now() - arm >= 3000) b.textContent = '전체 초기화 (테스트)'; }, 3100); return; }
     saveFrozen = true; try { localStorage.removeItem(KEY); ['pk-mgr-tab', 'pk-run-tab'].forEach(k => localStorage.removeItem(k)); } catch (e) {} location.reload(); }; }
 // 테스트: 짝꿍들의 진화 거리를 다 채운다 (진화하기 버튼 확인용)
-$('#budFill').onclick = () => { let n = 0; for (const b of S.buds) { const P = boxOf(b.pid); n++; if (evoKids(b.sp, P).length) b.km += 5; if (P) { P.km = b.km; P.runKm = (P.runKm || 0) + 5; } }   // 테스트: 누를 때마다 5km 같이 달린 셈
+$('#budFill').onclick = () => { let n = 0; for (const b of S.buds) { const P = boxOf(b.pid); n++; if (evoKids(b.sp, P).length) b.km = Math.max(b.km, Math.min(evoNeed(b), b.km + 5)); if (P) { P.km = b.km; P.runKm = (P.runKm || 0) + 5; } }   // 테스트: 누를 때마다 5km 같이 달린 셈
   log(n ? `짝꿍 ${n}마리와 5km 달렸다. (테스트)` : '짝꿍이 없다. (테스트)', [], true); sfx('tap'); save(); renderBuddy(); };
 $('#bagTest').onclick = () => { $('#bagTestG').hidden = !$('#bagTestG').hidden; };
 $('#bagTestG').onclick = ev => { const b = ev.target.closest('[data-g]'); if (!b) return;
@@ -7511,7 +7511,7 @@ function renderBuddy() {
     if (!m) return `<button class="bd-empty" data-act="pick" data-i="${i}" aria-label="짝꿍 추가">+</button>`;
     const P = boxOf(m.pid);
     return `<div class="bd-card${budReady(m) ? ' ready' : ''}${tierOf(+m.sp) ? ' ' + tierOf(+m.sp) : ''}" data-i="${i}"><button class="bd-x" data-act="stop" aria-label="짝꿍에서 빼기">✕</button>${m.nw ? '<i class="bd-new" aria-label="새 짝꿍"></i>' : ''}<div class="bd-row"><div class="bd-pic${pkCls(P)}${P?.shiny ? ' shiny' : ''}" data-rk="${P ? rankOf(P) : ''}" style="--shue:${shinyHue(m.sp)}deg"><img alt="" src="${(P ? thumbP(P) : thumbOf(m.sp)) || ''}"><span class="bd-rk">${rkBadge(P)}</span></div><div class="bd-main"><div class="bd-name"><b class="${tnCls(m.sp)}">${esc(P ? nameOf(P) : SPECIES[m.sp].n)}</b>${sexHtml(P?.sex)}</div><div class="bd-ind">${indivHtml(m)}</div>`
-      + (!evoKids(m.sp, P).length && CHILDREN[m.sp] ? `<div><span class="bd-tag">특별한 진화</span> <span class="bd-why">${esc(spWhy(P || m))}</span></div><div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>` : CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) || m.km < evoNeed(m) ? `<button class="bd-evobtn" data-act="evo"${budReady(m) ? '' : ' disabled'}>진화하기</button>` : `<span class="bd-why">${esc(evoWhy(evoKids(m.sp, P)[0]))}</span>`}</span><span><b>${fmtKm(m.km)}</b> / ${evoNeed(m)}km</span></div></div>` : `<div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>`)
+      + (!evoKids(m.sp, P).length && CHILDREN[m.sp] ? `<div><span class="bd-tag">특별한 진화</span> <span class="bd-why">${esc(spWhy(P || m))}</span></div><div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>` : CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) || m.km < evoNeed(m) ? `<button class="bd-evobtn" data-act="evo"${budReady(m) ? '' : ' disabled'}>진화하기</button>` : `<span class="bd-why">${esc(evoWhy(evoKids(m.sp, P)[0]))}</span>`}</span><span><b>${fmtKm(Math.min(m.km, evoNeed(m)))}</b> / ${evoNeed(m)}km</span></div></div>` : `<div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>`)
       + `</div></div></div>`;
   }).join('');
   const be = $('#buddy'); if (be.dataset.h === bh) return; be.dataset.h = bh; be.innerHTML = bh;   /* 바뀐 게 없으면 다시 그리지 않는다 (테두리 빛이 처음부터 다시 돌지 않게) */
