@@ -991,7 +991,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .dexpop .boxbtn.off{background:var(--win);color:var(--frame)}
 .dexpop .boxbtn[hidden]{display:none}
 .bagpop{position:fixed;inset:0;z-index:5600;background:rgba(10,14,30,.6);display:grid;place-items:center;padding:16px}
-.bagpop .win{width:min(400px,100%)}
+.bagpop .win{width:min(400px,100%);position:relative}.bag-hd{display:flex;align-items:center;justify-content:space-between;margin:-4px 0 8px;font-size:15px}.bp-btns.two{grid-template-columns:1fr 2fr}   /* v3.97 경완: 닫기 버튼 대신 우상단 ×, 버리기 왼쪽·부화기에 넣기 오른쪽 */
 .bagpop .incu-box{margin-bottom:12px}
 .bp-btns{display:grid;grid-template-columns:2fr 1fr;gap:8px}
 .bp-btns .lk-btn[disabled]{opacity:.55}
@@ -1526,8 +1526,9 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 </div>
 <div class="bagpop" id="bagPop" hidden>
   <div class="win" role="dialog" aria-label="알 정보">
+    <div class="bag-hd"><b>알 정보</b><button class="pp-x" id="bagClose" aria-label="닫기">✕</button></div>
     <div class="incu-box bag-pick" id="bagPick"></div>
-    <div class="bp-btns three"><button class="lk-btn main" id="bagIn">부화기에 넣기</button><button class="lk-btn del" id="bagDel">버리기</button><button class="lk-btn" id="bagClose">닫기</button></div>
+    <div class="bp-btns two"><button class="lk-btn del" id="bagDel">버리기</button><button class="lk-btn main" id="bagIn">부화기에 넣기</button></div>
   </div>
 </div>
 <div class="noti" id="noti" hidden>
@@ -5187,7 +5188,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.96';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.97';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6889,7 +6890,7 @@ const NIGHT = { n: '밤', t: [8, 17], hab: [], fx: /밤|어둠|달/ };
 function themeHint(e) { const ks = eggThemes(e).filter(k => k !== 'night'); if (!ks.length) return '어떤 기운인지 잘 모르겠다'; const ty = [...new Set(ks.flatMap(k => THEMES[k].t.slice(0, 2)))].slice(0, 3).map(t => TYPE_KO[t]); return `${ty.join('·')} 기운이 느껴진다`; }
 // keep: 알은 부화기에 그대로 두고, 부화 연출에서 깨질 때 뺀다
 // 알 속 포켓몬은 알을 주울 때(또는 처음 볼 때) 정해져 e.sp 에 남는다. 장소가 나중에 채워지면 그때 한 번 다시 정한다
-const eggSp = e => e.sp || (e.sp = rollEgg(e));
+const eggSp = e => e.sp && !SP_OFF.has(e.sp) ? e.sp : (e.sp = rollEgg(e));   // v3.97: 꺼진 포켓몬이 들어 있던 알은 다시 정한다
 function eggSpAll() { if (S.eggV !== 2) { for (const e of [...S.bag, ...S.eggs]) delete e.sp; S.eggV = 2; }   /* 티어 방식으로 바꾼 뒤 아직 안 깬 알 속 포켓몬을 한 번 다시 정한다 */
   for (const e of S.bag) if (!e.sp) eggSp(e); for (const e of S.eggs) if (!e.sp) eggSp(e); }
 function hatchEgg(e, keep, ask) {
@@ -6904,7 +6905,7 @@ function themeW(sp, ths) { const d = SPECIES[sp]; let v = 1;
   return v; }
 function rollEgg(e) {
   const tab = eggEff(e.g) || EGG_TIERS[e.g] || EGG_TIERS[1], ths = eggThemes(e).map(k => THEMES[k] || NIGHT);
-  const EX = new Set(EGG_EX[e.g] || []);
+  const EX = new Set([...(EGG_EX[e.g] || []), ...SP_OFF]);
   const EL0 = EGG_LIST[e.g], EL = EL0 && EL0.some(r => !EX.has(r[0])) ? EL0.filter(r => !EX.has(r[0])) : EL0; if (EL?.length) {   // 작업실에서 직접 정한 알: 정한 확률 × 장소 테마 × 최근 부화
     const w = EL.map(([sp, p]) => p * themeW(sp, ths) * (S.recentHatch?.includes(sp) ? .3 : 1)); let q = Math.random() * w.reduce((a, b) => a + b, 0), i = 0;
     while (i < EL.length - 1 && (q -= w[i]) > 0) i++; return EL[i][0]; }
@@ -7398,7 +7399,7 @@ function renderRun() {
   if (runEl.hidden) { if (!$('#bagPop').hidden) { $('#bagPop').hidden = true; bagSel = null; } return; }
   if (!eggNone && !S.eggs.includes(eggSel)) eggSel = S.eggs[Math.min(eggSelI, S.eggs.length - 1)] || null;   // v3.92: 부화로 빠진 알 자리(같은 칸)로 선택이 남는다 else if (eggNone) eggSel = null;
   const e = eggSel;
-  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? `${fmtKm(e.km)} / ${e.need}km` : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}<div class="egg-detail"><span class="epl">${e.place ? `${esc(shortPlace(e.place))} 근처에서 주운 알` : '어디서 주웠는지 기록이 없는 알'}</span>${themeHint(e)}</div><div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
+  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? `${fmtKm(e.km)} / ${e.need}km` : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}<div class="egg-detail"><span class="epl">${e.place ? `${esc(shortPlace(e.place))} 근처` : '주운 곳 기록 없음'}</span>${themeHint(e)}</div><div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
     : `<p class="incu-empty">${S.eggs.length ? '알을 눌러 보자' : '부화 중인 알이 없습니다'}</p>`;
   // 알이 있을 때 높이를 기억해 두고, 빈 부화기도 같은 높이로 둔다
   if (e) requestAnimationFrame(() => { const h = $('#incu').offsetHeight; if (h > 40) document.documentElement.style.setProperty('--incu-h', h + 'px'); });
@@ -7655,11 +7656,12 @@ function frameIn(now) {
 const TIER0 = { ...TIER };
 let CFG = { ver: 0 };
 const TIER_ORD = {};   // v3.69 작업실: 티어마다 순서를 직접 정하면 [번호…] (앞일수록 드물게). 없으면 가족 최고 종족값 순
+let SP_OFF = new Set();   // v3.97 경완: 작업실 티어 박스에서 끈 포켓몬은 알에서 안 나온다 (그 몫은 같은 티어 다른 포켓몬이 나눠 갖는다)
 function retier(ov, ord) { EGG_EFF = null;
   if (ord !== undefined) { for (const k of Object.keys(TIER_ORD)) delete TIER_ORD[k]; for (const [t, L] of Object.entries(ord || {})) if (Array.isArray(L)) TIER_ORD[t] = L.map(Number); }
   for (const k of Object.keys(TIER)) TIER[k] = TIER0[k];
   for (const [k, t] of Object.entries(ov || {})) if (TIER[k] != null && t >= 1 && t <= 10) TIER[k] = t;
-  TIER_SPS.forEach(L => L.length = 0); for (const k of Object.keys(TIER)) TIER_SPS[TIER[k]].push(+k);
+  TIER_SPS.forEach(L => L.length = 0); for (const k of Object.keys(TIER)) if (!SP_OFF.has(+k)) TIER_SPS[TIER[k]].push(+k);
   TIER_SPS.forEach((L, t) => { if (!L.length) return; const O = TIER_ORD[t];
     if (O?.length) { const have = new Set(L), q = O.filter(b => have.has(b)), rest = L.filter(b => !q.includes(b)).sort((a, b) => b - a), all = [...q, ...rest];   // 정한 순서: 맨 앞 = 가장 드묾(z 1) ~ 맨 뒤 = 가장 흔함(z 0)
       all.forEach((b, i) => { TIER_Z[b] = all.length > 1 ? 1 - i / (all.length - 1) : .5; }); return; }
@@ -7705,6 +7707,7 @@ function applyCfg(c) {
     MON_ROT = {}; if (d.monRot && typeof d.monRot === 'object') for (const [k, v] of Object.entries(d.monRot)) if (SPECIES[k] && typeof v === 'number' && Math.abs(v) <= 90 && v) MON_ROT[k] = v;
     MON_FLY = {}; if (d.monFly && typeof d.monFly === 'object') for (const [k, v] of Object.entries(d.monFly)) if (SPECIES[k] && typeof v === 'number' && v > 0 && v <= 300) MON_FLY[k] = v;
     TIER_KT = {}; if (d.tierK?.k && typeof d.tierK.k === 'object') for (const [t, k] of Object.entries(d.tierK.k)) if (k >= 0 && k <= 5) TIER_KT[t] = +k;
+    SP_OFF = new Set((Array.isArray(d.off) ? d.off : []).map(Number).filter(sp => SPECIES[sp]));
     retier(d.tierOv, d.tierOrd || {}); if (d.bal) applyBal(d.bal); if (d.layout) setLayoutIn(d.layout);
     EGG_EFF = null; CFG = c; $('#appVer').textContent = 'v' + APP_VER + (c.ver ? ' · 데이터 ' + c.ver : '');
   } catch (e) { console.warn('config', e); }
@@ -7772,7 +7775,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   notiSoon = function () {};   // 작업실에선 '새 소식' 창을 띄우지 않는다
   if (GAL) { save = function () {}; document.documentElement.classList.add('st-gal'); }
   const api = window.__studio = {
-    BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, get MON_ROT() { return MON_ROT; }, get MON_FLY() { return MON_FLY; }, setMonPose(r, f) { MON_ROT = { ...(r || {}) }; MON_FLY = { ...(f || {}) }; }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, get TIER_KT() { return TIER_KT; }, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
+    BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, get MON_ROT() { return MON_ROT; }, get MON_FLY() { return MON_FLY; }, setMonPose(r, f) { MON_ROT = { ...(r || {}) }; MON_FLY = { ...(f || {}) }; }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, get SP_OFF() { return [...SP_OFF]; }, get TIER_KT() { return TIER_KT; }, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
     ICO: { berry: ICO_BERRY, brush: ICO_BRUSH, hand: ICO_HAND, pen: PEN, egg: EGG_SVG },   // v3.66: 작업실이 게임 아이콘을 그대로 쓴다
     get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, PET_FR, WASH_FR, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]), HATCH_KM: [0, ...GRADE.slice(1).map(G => G.km)] }; },
     get cfg() { return CFG; },
