@@ -220,7 +220,7 @@ body.szmode #mapI>:not(#szPane){display:none!important}body.szmode #mapI{display
 .dock .it.on{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
 #ebar{position:fixed;z-index:57;top:8px;left:auto;right:8px;width:270px;max-height:calc(100% - 16px);overflow:auto;background:var(--panel);border:1px solid var(--acc);border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:10px 12px;display:grid;align-content:start;gap:12px}
 #ebar[hidden]{display:none}#ebar h4{margin:0}
-#ebar .eg{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:6px}#ebar .eg .chip{width:100%;justify-content:center;min-height:34px}#ebar .eg #eUndo:not(:disabled){border-color:var(--acc);color:var(--acc)}
+#ebar .eg{display:flex;flex-wrap:wrap;gap:6px}#ebar .eg .chip{justify-content:center;min-height:34px}#eTop{display:inline-flex;gap:6px;align-items:center}#eTop[hidden]{display:none}#eTop #eUndo:not(:disabled){border-color:var(--acc);color:var(--acc)}#eTop .btn:disabled{opacity:.4}
 #propPane{display:grid;gap:8px;border-top:1px solid var(--chip);padding-top:10px}#propPane[hidden]{display:none}#propPane .kv{margin:0}#ebar .pmv{align-items:center;gap:10px}#ebar .pmv #pDel{margin-left:auto}
 #sbar{position:absolute;left:0;right:0;top:0;z-index:6;pointer-events:none;display:flex;align-items:center;color:#fff;font:600 16px/1 -apple-system,system-ui,"Apple SD Gothic Neo",sans-serif;letter-spacing:-.01em;text-shadow:0 1px 2px rgba(0,0,0,.35)}
 #sbar .sd{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;white-space:nowrap}#sbar svg{display:block;fill:currentColor;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
@@ -349,17 +349,17 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
           <span class="chips" id="wx"><button class="chip on" data-w="">날씨 그대로</button><button class="chip" data-w="clear">맑음</button><button class="chip" data-w="cloud">흐림</button><button class="chip" data-w="rain">비</button></span>
           <span class="vsep"></span>
           <b>기종</b><select class="devSel" aria-label="휴대폰 기종"></select>
-          <span class="sp"></span><span id="scSave"></span><button class="chip" id="szMode" title="화면 가득한 맵에 포켓몬을 줄지어 세워 두고 크기를 맞춰요">크기 조절 모드</button><button class="btn" id="eMode">편집하기</button>
+          <span class="sp"></span><span id="scSave"></span><button class="chip" id="szMode" title="화면 가득한 맵에 포켓몬을 줄지어 세워 두고 크기를 맞춰요">크기 조절 모드</button><button class="btn" id="eMode">편집하기</button><span id="eTop" hidden><span id="eSave"></span><button class="chip" id="eUndo" title="방금 전으로 (Ctrl/⌘+Z)">↶ 되돌리기</button></span>
         </div>
         <div class="canvas" id="mapBox"><div id="szBar" hidden><b>크기 조절 모드</b><label class="szal" title="맵 배경 진하기 (0%면 맵이 안 보여요)">배경 투명도<input type="range" id="szA" min="0" max="100" step="5" value="100" aria-label="배경 투명도"><span class="num" id="szAV">100%</span></label><button class="chip" id="szAdd">포켓몬 넣기</button><button class="chip" id="szRand">무작위 10마리</button><button class="chip" id="szClr">모두 빼기</button><span class="num mute" id="szN"></span><span class="sp"></span><span id="szSel" class="small"></span><span id="szSave"></span><button class="btn" id="szExit">끝내기</button></div><div class="phone" id="phone"><iframe id="game" title="게임 화면" src="../index.html?studio"></iframe><div id="sbar"></div><div id="safeZ" hidden></div></div><div id="hotPop" hidden></div><div id="spx" hidden></div><div id="ebar" hidden role="dialog" aria-label="맵 편집">
-<div class="eh"><b>맵 편집</b><button class="btn" id="eDone">완료</button></div>
-<div class="eg"><button class="chip" id="eUndo" title="방금 전으로 (Ctrl/⌘+Z)">↶ 되돌리기</button><button class="chip" id="ePath">길 모양</button><button class="chip" id="eHud2" title="포켓몬이 걸어 다닐 수 있는 위쪽 끝 선">포켓몬 경계선</button><button class="chip" id="eSafe2" title="기종마다 잘리거나 가려지는 곳">세이프 존</button></div>
+<div class="eh"><b>맵 편집</b></div>
+<div class="eg"><button class="chip" id="ePath">길 모양</button><button class="chip" id="eHud2" title="포켓몬이 걸어 다닐 수 있는 위쪽 끝 선">포켓몬 경계선</button><button class="chip" id="eSafe2" title="기종마다 잘리거나 가려지는 곳">세이프 존</button></div>
 <div id="propPane" hidden>
 <h4>선택한 소품</h4>
 <div class="kv" style="margin-top:8px"><span>이름</span><b id="pName">-</b><span>위치</span><b class="num" id="pPos">-</b></div>
 <div class="row pmv"><div class="nudge"><span></span><button data-n="0,-2" aria-label="위로">▲</button><span></span><button data-n="-2,0" aria-label="왼쪽으로">◀</button><button data-n="0,2" aria-label="아래로">▼</button><button data-n="2,0" aria-label="오른쪽으로">▶</button></div><span class="sp"></span><button class="chip" id="pDel">지우기</button></div>
 </div>
-<div id="eSave"></div><div id="editPane" hidden><div class="addp" id="addp"></div></div>
+<div id="editPane" hidden><div class="addp" id="addp"></div></div>
 </div><div class="load" id="gLoad">게임 불러오는 중…</div></div>
       </div>
       <aside class="vi" id="mapI"><div id="szPane"></div>
@@ -457,7 +457,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.46';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.47';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -623,7 +623,7 @@ function boxAct(id, save) { const P = boxPaths(id);
   else { for (const p of P) putP(D, p, null); if (id === 'layout') A?.setLayout(ORIG.layout); if (id === 'bub') bubLive(); if (id === 'monsc') { scLive(); szPane(); } toast('기본값으로 돌렸어요. 저장을 눌러야 반영돼요'); }
   saveDraft(); scBar(); if (id === 'layout') layoutBar(); else if (id !== 'monsc') RENDER[view]?.(); }
 document.addEventListener('click', e => { const b = e.target.closest('[data-bs],[data-bd]'), x = b?.closest('[data-box]'); if (!x || b.disabled) return; boxAct(x.dataset.box, b.hasAttribute('data-bs')); });
-function layoutBar() { const e = $('#eSave'); if (e) e.innerHTML = boxBar('layout', '배치 저장'); }
+function layoutBar() { const e = $('#eSave'); if (e) e.innerHTML = `<span data-box="layout"><button class="btn" data-bs${boxDirty('layout') ? '' : ' disabled'} title="배치를 저장해 배포하기에 넣어요">배치 저장</button></span>`; }   // v2.47 경완: 편집 종료 옆 배치 저장 (저장 안 함 안내는 위쪽 막대)
 function saveDraft() { if (SWAP) return; if (!safeGate()) return; D.at = Date.now(); store.set('st-draft', JSON.stringify(D)); dstat(); clearTimeout(saveDraft.t); saveDraft.t = setTimeout(pushDb, 1500); }
 async function pushDb() { if (!db) return; try { await db.doc('studio/draft').set({ json: JSON.stringify(D), at: Date.now() }); } catch (e) {} }
 const gameVer = () => { try { return ($('#game').contentDocument.getElementById('appVer').textContent.match(/v[\d.]+/) || [''])[0]; } catch (e) { return ''; } };
@@ -795,11 +795,12 @@ function openSpx(key, title, L) { spxKey = key; spxL = L; spxQ = ''; $('#spx').i
 function spxPos() { const e = $('#spx'); document.body.classList.toggle('szspx', szOn && !e.hidden); if (szOn) { Object.assign(e.style, { left: '8px', top: '60px', width: '252px', height: (innerHeight - 68) + 'px' }); return; } if (mobile()) { e.style.left = e.style.top = e.style.height = e.style.width = ''; return; } if (winApply(e)) return; const s = $('#mapI').getBoundingClientRect(), m = $('#mapBox').getBoundingClientRect(); e.style.width = '252px'; e.style.left = (s.left - 260) + 'px'; e.style.top = (m.top + 8) + 'px'; e.style.height = (m.height - 16) + 'px'; }   // v1.8 경완: 오른쪽 칸 바로 왼쪽
 function fillSpx() { const q = spxQ.trim(), L = q ? spxL.filter(sp => String(sp) === q || spName(sp).includes(q)) : spxL;
   $('#spxG').innerHTML = L.slice(0, 400).map(sp => `<button class="mc" data-sp="${sp}" title="${esc(spName(sp))}"><span class="no">${sp}</span><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('') + (L.length > 400 ? `<div class="small mute" style="grid-column:1/-1">앞의 400종만 보여요. 이름으로 찾아 주세요.</div>` : '') || '<div class="empty">찾는 포켓몬이 없어요</div>'; fillThumbs($('#spxG')); szMarks(); }
-function closeSpx() { spxKey = null; $('#spx').hidden = true; $('#spx').innerHTML = $('#szPane').innerHTML = ''; document.body.classList.remove('szspx'); $$('.react .rx').forEach(c => c.classList.remove('on')); }
+function closeSpx() { rxMark(null); spxKey = null; $('#spx').hidden = true; $('#spx').innerHTML = $('#szPane').innerHTML = ''; document.body.classList.remove('szspx'); $$('.react .rx').forEach(c => c.classList.remove('on')); }
 $('#zoom').addEventListener('click', e => { const b = e.target.closest('.rx'); if (b) { e.stopImmediatePropagation(); rxClick(b); } }, true);
 $('#react').onclick = e => { const b = e.target.closest('.rx'); if (b) rxClick(b); };
-function rxClick(b) { if (!A?.reactSps) return; const key = b.dataset.rk + ':' + b.dataset.ri; if (spxKey === key) return closeSpx();
-  const L = A.reactSps(b.dataset.rk, +b.dataset.ri); if (!L) { toast('비 올 때 저절로 나오는 반응이에요'); return; } openSpx(key, `${RNAME[b.dataset.rk]} · ${b.textContent}`, L); }
+function rxMark(r) { try { A?.markInsts?.(r ? (A.insts?.() || []).filter(o => (rOf(o.key) || rOf(o.kind)) === r).map(o => ({ key: o.key, i: o.i })) : null); } catch (e) {} }   // v2.47 경완: 반응 카드를 누르면 그 소품이 시뮬레이터에 테두리로
+function rxClick(b) { if (!A?.reactSps) return; const key = b.dataset.rk + ':' + b.dataset.ri; if (spxKey === key) return closeSpx(); rxMark(b.dataset.rk);
+  const L = A.reactSps(b.dataset.rk, +b.dataset.ri); if (!L) { rxMark(null); toast('비 올 때 저절로 나오는 반응이에요'); return; } openSpx(key, `${RNAME[b.dataset.rk]} · ${b.textContent}`, L); }
 $('#szPane').addEventListener('pointerdown', e => { const b = e.target.closest('.mc'); if (b && !b.disabled && e.button === 0) startPalDrag(e, +b.dataset.sp); });
 $('#spx').addEventListener('pointerdown', e => { const b = e.target.closest('.mc'); if (b && e.button === 0) startPalDrag(e, +b.dataset.sp); });
 function hourTxt(h) { const H = Math.floor(h), M = Math.round((h - H) * 60); const ph = h < 4 ? '한밤' : h < 5.5 ? '새벽' : h < 7 ? '해돋이' : h < 10 ? '아침' : h < 14 ? '한낮' : h < 16.5 ? '오후' : h < 18.6 ? '노을' : h < 20 ? '저녁' : '밤'; return `${String(H).padStart(2, '0')}:${String(M).padStart(2, '0')} ${ph}`; }
@@ -809,7 +810,7 @@ $('#wx').onclick = e => { const b = e.target.closest('[data-w]'); if (!b) return
 let editing = false;
 // 편집하기 (v1.7 경완): 화면 배치는 그대로, 편집 버튼은 휴대폰 오른쪽 작은 창에
 let preEdit = null;
-function setEdit(on) { if (on === editing) return; editing = on; A?.edit(on); $('#ebar').hidden = !on; document.body.classList.toggle('editing', on); ebarHome(); if (on) ebarPos(); $('#eMode').classList.toggle('stop', on); $('#eMode').textContent = on ? '편집 종료' : '편집하기'; $('#eUndo').disabled = !(A?.undoN?.() ?? 0);
+function setEdit(on) { if (on === editing) return; editing = on; A?.edit(on); $('#ebar').hidden = !on; document.body.classList.toggle('editing', on); ebarHome(); if (on) ebarPos(); $('#eMode').classList.toggle('stop', on); $('#eTop').hidden = !on; $('#szMode').hidden = on; if (on) layoutBar(); $('#eMode').textContent = on ? '편집 종료' : '편집하기'; $('#eUndo').disabled = !(A?.undoN?.() ?? 0);
   if (on) { preEdit = { now: $('#hrNow').disabled, h: +$('#hr').value, w: $('#wx .on')?.dataset.w || '' }; A?.setHour(12); A?.setWx('clear'); }   // 편집할 땐 맑은 한낮으로
   else if (preEdit) { if (preEdit.now) A?.setHour(null); else A?.setHour(preEdit.h); A?.setWx(preEdit.w); preEdit = null; closeZoom(); } if (!on) { $('#propPane').hidden = true; renderReact(null); edOff(); } requestAnimationFrame(fitPhone); }
 // v2.25 경완: 편집 종료하면 편집에서 켰던 것(길 모양·포켓몬 경계선·세이프 존·고른 소품·세부 창)도 모두 끈다
@@ -819,7 +820,6 @@ $('#eMode').onclick = () => setEdit(!editing);
 const BLANK_NOT = 'button,input,select,textarea,label,a,summary,[data-k],[data-ik],[data-one],[data-rs],[data-sp],[data-uid],.it,.mc,.chip,.rx,#zoom,#propPane,#ebar,#spx,#szPane,#hotPop,iframe,.phone,#szBar,.top,.nav,#unsv,#safePop,#dockRz';
 document.addEventListener('pointerdown', e => { if (view !== 'map' || e.button > 0 || e.target.closest(BLANK_NOT) || !e.target.closest('#v-map,.view')) return;
   if (zoomK) closeZoom(); A?.unpick?.(); dockMark(null); if (spxKey && !szOn) closeSpx(); }, true);
-$('#eDone').onclick = () => setEdit(false);
 $('#eSafe2').onclick = () => { const on = !$('#eSafe2').classList.contains('on'); $('#eSafe2').classList.toggle('on', on); store.set('st-safe', on ? '1' : ''); safeZ(); };
 if (store.get('st-safe') === '1') $('#eSafe2').classList.add('on');
 $('#ePath').onclick = () => { const on = !$('#ePath').classList.contains('on'); $('#ePath').classList.toggle('on', on); A?.showPath(on); };
@@ -1705,6 +1705,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.47', '10월 16일', ['맵 편집: 배치 저장·되돌리기를 편집 종료 옆으로, 기본값으로·완료 버튼 빼고 남은 버튼은 가로로, 저장 안 함 안내는 위쪽 막대에서', '소품을 끌 때 버벅이지 않게 (게임 v4.06)', '오른쪽 소품 반응 카드를 누르면 그 소품이 시뮬레이터에 테두리로 보여요']],
   ['2.46', '10월 16일', ['티어 박스에서 포켓몬 카드를 누르면 꺼짐(회색): 게임 알에서 안 나오고 그 몫은 같은 티어 다른 포켓몬이 나눠 가짐, 다시 누르면 켜짐 (게임 v3.97)']],
   ['2.45', '10월 16일', ['같은 티어 안 차이는 자동: 박스 순서대로 앞일수록 조금씩 드물게 (티어 합계·경계 보장은 그대로, 배수 입력 칸 뺌)']],
   ['2.44', '10월 16일', ['같은 티어 안에서 앞쪽 포켓몬일수록 드물게: 맨 앞이 맨 뒤보다 몇 배 드물지 정함 (티어 합계는 그대로, 게임 v3.96)', '티어 박스마다 종족값 순·도감 번호 순 정렬 버튼 (높은 것부터)', '정한 순서가 없는 티어도 보이는 순서(도감 번호 높은 순) 그대로 확률에 씀']],
