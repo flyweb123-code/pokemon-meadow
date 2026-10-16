@@ -5187,7 +5187,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.94';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.95';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7734,6 +7734,7 @@ if (/[?&]studio/.test(location.search)) {
   st.textContent = `
 #stHands{position:absolute;inset:0;z-index:3000;display:none;touch-action:none}#stHands.on{display:block}
 #stHands .h{position:absolute;border-radius:4px;touch-action:none;cursor:grab}
+body.szMode :is(#items,#propFx,#bg,#skyC,#skyFx,.bfly,.firefly){opacity:var(--szA,1)}
 #stHov{position:absolute;z-index:3001;pointer-events:none;border:2px solid #ffe070;border-radius:6px;box-shadow:0 0 0 1px rgba(0,0,0,.45),0 0 10px rgba(255,224,112,.6);background:rgba(255,224,112,.1)}#stHov[hidden]{display:none}
 #stHands .h:hover{outline:1px dashed rgba(127,215,239,.7)}
 #stHands .h.sel{outline:2px solid #7fd7ef;outline-offset:1px;background:rgba(127,215,239,.14)}
@@ -7998,7 +7999,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     SZB.geoRows = R; let y = y0;
     for (const r of R) for (let c = 0; c < r.B.n; c++) { const m = byC.get(r.i0 + c); if (!m) continue; y = Math.max(y, r.top + r.h); if (SZB.drag?.has(m)) continue; m.x = m.tx = (r.B.e[c] + r.B.e[c + 1]) / 2; m.y = m.ty = r.top + r.h - 30; }
     y = Math.max(y, ...szMons().filter(m => m.szMv).map(m => m.y + 10)); stage.style.height = Math.max(H, y + 20) + 'px'; $('#szSp') && ($('#szSp').style.height = S.oy + Math.max(H, y + 20) * scale + 'px'); SZB.paint(); };
-  api.szAlpha = v => { SZB.alpha = v; const c = $('#szBg'); if (c) c.style.opacity = v; };   // v3.88 경완: 크기 조절 모드 배경 투명도
+  api.szAlpha = v => { SZB.alpha = v; const c = $('#szBg'); if (c) c.style.opacity = v; document.body.style.setProperty('--szA', v); };   /* v3.95 경완: 소품·나비도 같이 흐리게 (포켓몬만 또렷하게) */   // v3.88 경완: 크기 조절 모드 배경 투명도
   SZB.paint = () => { const c = $('#szBg'); if (!c) return; const sh = Math.max(H, parseFloat(stage.style.height) || H), u = 2 * scale, ox = Math.max(0, Math.ceil(S.ox / u)), oy = Math.max(0, Math.ceil(S.oy / u)),
       AW = Math.ceil((wrap.clientWidth - S.ox) / u) + ox + 2, AH = Math.max(Math.ceil((wrap.clientHeight - S.oy) / u), Math.ceil(sh / 2)) + oy + 2, key = [AW, AH, ox, oy, scale].join();
     if (SZB.key !== key) { SZB.key = key; drawBg({ c, w: AW, h: AH, ox, oy }); } Object.assign(c.style, { opacity: SZB.alpha ?? 1, left: S.ox - ox * u + 'px', top: S.oy - oy * u + 'px', width: AW * u + 'px', height: AH * u + 'px' }); };
