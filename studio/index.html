@@ -456,8 +456,14 @@ function startRename(v) { const a = $(`.nav a[data-v="${v}"]`); if (!a) return; 
   let done = false; const end = ok => { if (done) return; done = true; if (ok) { const t = inp.value.trim(); if (t && t !== VIEWS[v][0]) NAMES[v] = t; else delete NAMES[v]; store.set('st-names', JSON.stringify(NAMES)); } renderNav(); if (ok) toast(NAMES[v] ? '메뉴 이름을 바꿨어요' : '원래 이름으로 돌렸어요'); };
   inp.onkeydown = e => { if (e.key === 'Enter') end(true); else if (e.key === 'Escape') end(false); e.stopPropagation(); }; inp.onblur = () => end(true); inp.onclick = e => e.stopPropagation(); }
 const lastOf = {};
+// v2.10 경완: 저장 안 하고 다른 화면으로 가면 그 화면에서 고친 것은 마지막으로 저장한 상태로 되돌린다
+const VIEW_BOX = v => v === 'odds' ? ['odds', 'pity'] : v === 'pool' ? [1, 2, 3, 4, 5].map(g => 'pool:' + g) : v === 'hatch' ? ['hatch'] : v === 'tier' ? ['tier'] : v === 'bal' ? BAL.map((_, i) => 'bal:' + i) : v === 'map' ? ['layout'] : [];
+function discardView(v) { if (!ORIG) return; const ids = VIEW_BOX(v).filter(boxDirty); if (!ids.length) return;
+  for (const id of ids) { for (const p of boxPaths(id)) putP(D, p, D._sv || {}); if (id === 'layout') { try { A?.setLayout(D.layout || ORIG.layout); } catch (e) {} } }
+  saveDraft(); toast(`저장 안 한 수정 ${ids.length}곳을 되돌렸어요`); }
 function go(v) {
   if (v === 'egg') v = EGGV.includes(store.get('st-egg')) ? store.get('st-egg') : 'odds'; if (EGGV.includes(v)) store.set('st-egg', v);
+  if (view && view !== v) discardView(view);
   view = v; $$('.view').forEach(s => s.hidden = s.dataset.v !== v); $('#crumb').textContent = vname(v);
   $$('.nav a').forEach(a => a.classList.toggle('on', a.dataset.v === v || (a.dataset.v === 'egg' && EGGV.includes(v))));
   const mt = MTABS.find(t => t[3].includes(v)); lastOf[mt[0]] = v; $$('.tabs a').forEach(a => a.classList.toggle('on', a.dataset.t === mt[0]));
@@ -1352,7 +1358,7 @@ const BUBS = [
 ];
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
-  ['2.10', '10월 16일', ['게임 v3.74 친밀도: 열심히 관리하면(필드·열매·쓰다듬기·빗질·짝꿍 걷기 합) 만점까지 약 7일', '밸런스: 필드 친밀도 위에 "열심히 관리하면 하루 얼마 · 며칠" 계산', '빗질 친밀도는 씻긴 청결만큼 비례', '필드 친밀도: 그래프 구간 아래 칸에서 바로 고침 (1시간에 오르는 양 · 구간 시작값)', '쓰다듬기 친밀도 하루 횟수(기본 5번) 다시 생김']],
+  ['2.10', '10월 16일', ['게임 v3.74 친밀도: 열심히 관리하면(필드·열매·쓰다듬기·빗질·짝꿍 걷기 합) 만점까지 약 7일', '밸런스: 필드 친밀도 위에 "열심히 관리하면 하루 얼마 · 며칠" 계산', '빗질 친밀도는 씻긴 청결만큼 비례', '필드 친밀도: 그래프 구간 아래 칸에서 바로 고침 (1시간에 오르는 양 · 구간 시작값)', '쓰다듬기 친밀도 하루 횟수(기본 5번) 다시 생김', '저장 안 하고 다른 화면으로 가면 그 화면에서 고친 것은 마지막 저장 상태로 되돌림']],
   ['2.9', '10월 16일', ['밸런스: 즐거움 유지 시간과 쓰다듬기 친밀도를 따로, 빗질 하루 횟수 대신 빗질 한 번 친밀도', '밸런스: 알 줍는 거리 단위 뺌 (알 메뉴에 있음)', '세 게이지 → 건강 게이지', '필드 친밀도 그래프를 건강 게이지 막대로 다시', '알 › 등급별 포켓몬: 순위 옆 ≡ 지움, 줄을 끌면 반투명한 줄이 따라오고 원래 줄은 흐리게', '티어: 카드 크기 → 화면 크기(50~250%, 카드·그림·글자 함께 커지고 줄 칸 수 자동)', '게임 v3.73: 필드 친밀도 하루 한도 10 → 36']],
   ['2.8', '10월 16일', ['게임 v3.72 확률에 맞춤: 같은 티어 안은 모두 같은 확률', '티어: 카드 크기 조절 (− · 막대 · +, 이 기기에 기억)', '밸런스: 필드 친밀도 위에 건강 게이지 0~100 가로 막대(구간별), 그 아래 구간마다 오르는 친밀도']],
   ['2.7', '10월 16일', ['고친 값은 박스마다 "저장"을 눌러야 배포하기의 바뀐 곳에 들어감. 박스마다 "기본값으로"(지금 게임 값) 버튼, 저장 안 한 박스는 "저장 안 함" 표시', '알 등급별 확률: 일반 알 몫이 다 차서 더 늘릴 수 없는 곳은 막대에 빗금, 그 너머로는 끌리지 않음', '등급별 포켓몬: 확률을 "이 알에서"와 "알 1개당 전체"(평균 몇 km마다) 두 가지로', '알에서 나오는 티어: % 막대를 끌어서 바로 조절 (나머지 티어는 비율대로 맞춰 합계 100)', '알 고르는 칸에 티어 개수 대신 나오는 티어 이름(예: 10·9·8티어)', '말풍선: 장면 칩을 한 줄에 하나씩', '티어: 오른쪽 칸의 티어 옮기기 버튼을 없앰 (카드를 끌어서 옮기기)']],
