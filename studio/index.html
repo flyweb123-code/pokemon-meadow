@@ -128,7 +128,7 @@ table.t th{font-family:var(--px);font-size:11px;font-weight:400;color:var(--mute
 .tadd{display:flex;flex-wrap:wrap;align-items:center;gap:4px}.tadd .chip{min-height:26px;padding:0 4px}
 .pr:hover{background:#30343f}.pr.on{background:var(--chip);box-shadow:inset 3px 0 0 var(--acc)}
 .pr img{width:36px;height:36px;object-fit:contain;image-rendering:pixelated}
-.pr{cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.pr .hd{display:flex;gap:4px;align-items:center;color:var(--soft)}.pr.drop{box-shadow:inset 0 2px 0 var(--acc)}.pr.drag{opacity:.35;filter:grayscale(1)}.prg{position:fixed;z-index:60;pointer-events:none;opacity:.6;box-shadow:0 8px 24px rgba(0,0,0,.45);background:var(--panel);border-radius:6px;margin:0}
+.pr{cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.pr .hd{display:flex;gap:4px;align-items:center;color:var(--soft)}.pr.drop{box-shadow:inset 0 2px 0 var(--acc)}.prs{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;text-align:left}.prs:hover{color:var(--acc)}.pr.drag{opacity:.35;filter:grayscale(1)}.prg{position:fixed;z-index:60;pointer-events:none;opacity:.6;box-shadow:0 8px 24px rgba(0,0,0,.45);background:var(--panel);border-radius:6px;margin:0}
 .pr .p{font-family:var(--px);text-align:right;font-size:12px}.pr .pa{display:grid;justify-items:end;font-family:var(--px);font-size:12px;color:var(--soft);line-height:1.2}.pr .pa small{font-size:10px;color:var(--mute)}.prh .r{text-align:right}
 
 .tag{font-family:var(--px);font-size:11px;font-weight:700;padding:1px 6px;border-radius:3px;color:#14161c;white-space:nowrap;text-shadow:0 1px 0 rgba(255,255,255,.35)}
@@ -1037,8 +1037,8 @@ function renderPool() {
   </div>
   <div class="card"><div class="row" style="flex-wrap:wrap"><h2 style="flex:1">나오는 포켓몬 <span class="num mute">${rows.length}종</span></h2><div class="search" style="min-width:160px"><input id="poolQ" value="${esc(poolQ)}" placeholder="이름 찾기" autocomplete="off"></div></div>
     <div class="small mute">줄을 잡고 끌면 순서가 바뀌어요 (휴대폰은 꾹 누른 뒤). 위일수록 자주 나와요. "이 알에서"는 이 알이 나왔을 때 그 포켓몬일 확률, "알 1개당 전체"는 알을 하나 주웠을 때 (어느 등급이든) 그 포켓몬일 확률이에요. 다른 알로 옮기려면 포켓몬을 누르고 오른쪽에서 골라요. 장소 테마·최근 부화 효과는 뺀 기본 확률이에요.</div>
-    <div class="prh"><span>순위</span><span></span><span>포켓몬</span><span>티어</span><span class="pb"></span><span class="r">이 알에서</span><span class="r" title="알을 1개 주웠을 때 이 포켓몬일 확률 (모든 알 등급 합)">알 1개당 전체</span></div>
-    <div class="plist" id="plist">${rows.filter(([sp]) => !q || sp === q || spName(+sp).includes(q)).map(([sp, p], i) => `<button class="pr${+sp === sel.pool ? ' on' : ''}" data-sp="${sp}"><span class="hd" title="줄을 끌어서 순서 바꾸기"><span class="num mute small">${i + 1}</span></span><img alt="" data-th="${sp}"><span class="pn">${esc(spName(+sp))}</span><span class="tag" style="background:${TC(tierOfSp(+sp))};justify-self:start">${tierOfSp(+sp)}</span><span class="pb"><i style="width:${p / max * 100}%;background:${TC(tierOfSp(+sp))}"></i></span><span class="p">${pct(p)}</span><span class="pa">${pct(ALLP[sp] || 0)}<small>${fmtKm(kmPer(ALLP[sp] || 0))}마다</small></span></button>`).join('')}</div>
+    <div class="prh"><button class="prs" data-psort title="순위 정렬 바꾸기">순위 ${poolDesc ? '▼' : '▲'}</button><span></span><span>포켓몬</span><span>티어</span><span class="pb"></span><span class="r">이 알에서</span><span class="r" title="알을 1개 주웠을 때 이 포켓몬일 확률 (모든 알 등급 합)">알 1개당 전체</span></div>
+    <div class="plist" id="plist">${(a => poolDesc ? a.reverse() : a)(rows.map((r, i) => [r[0], r[1], i]).filter(([sp]) => !q || sp === q || spName(+sp).includes(q))).map(([sp, p, i]) => `<button class="pr${+sp === sel.pool ? ' on' : ''}" data-sp="${sp}"><span class="hd" title="줄을 끌어서 순서 바꾸기"><span class="num mute small">${i + 1}</span></span><img alt="" data-th="${sp}"><span class="pn">${esc(spName(+sp))}</span><span class="tag" style="background:${TC(tierOfSp(+sp))};justify-self:start">${tierOfSp(+sp)}</span><span class="pb"><i style="width:${p / max * 100}%;background:${TC(tierOfSp(+sp))}"></i></span><span class="p">${pct(p)}</span><span class="pa">${pct(ALLP[sp] || 0)}<small>${fmtKm(kmPer(ALLP[sp] || 0))}마다</small></span></button>`).join('')}</div>
   </div>`;
   fillThumbs($('#plist'));
   $('#poolQ').oninput = e => { poolQ = e.target.value; const p = e.target.selectionStart; renderPool(); const i = $('#poolQ'); i.focus(); i.setSelectionRange(p, p); };
@@ -1046,7 +1046,8 @@ function renderPool() {
 }
 $('#poolC').addEventListener('click', e => { const ta = e.target.closest('[data-ta]'); if (ta) { const ET = JSON.parse(JSON.stringify(eggTiers())); ET[sel.poolG][ta.dataset.ta] = 5; D.eggTiers = ET; saveDraft(); renderPool(); return; } if (e.target.closest('#elReset')) { setList(sel.poolG, null); renderPool(); toast('티어 비율로 되돌렸어요'); return; } if (Date.now() - prDragAt < 300) return; const c = e.target.closest('[data-g]'); if (c) { sel.poolG = +c.dataset.g; renderPool(); return; } const r = e.target.closest('.pr'); if (r) { sel.pool = +r.dataset.sp; $$('.pr').forEach(x => x.classList.toggle('on', x === r)); showPoolSp(sel.pool); toInsp('#poolI'); } });
 // 순서 끌기: 줄을 잡고 위아래로 (v2.9: 잡은 줄의 반투명 그림자가 손가락·마우스를 따라오고, 원래 줄은 흐리게)
-let prDragAt = 0;
+let prDragAt = 0, poolDesc = store.get('st-pool-desc') === '1';   // v2.10 경완: 순위 오름차순/내림차순
+$('#poolC').addEventListener('click', e => { if (!e.target.closest('[data-psort]')) return; poolDesc = !poolDesc; store.set('st-pool-desc', poolDesc ? '1' : ''); renderPool(); });
 $('#poolC').addEventListener('pointerdown', e => { const row = e.target.closest('#plist .pr'); if (!row || e.button > 0) return; const touch = e.pointerType !== 'mouse'; if (!touch) e.preventDefault();
   const sp = +row.dataset.sp, x0 = e.clientX, y0 = e.clientY, R0 = row.getBoundingClientRect(); let on = false, over = null, lp = 0, gh = null, lx = x0, ly = y0;
   const place = () => { if (gh) { gh.style.left = (R0.left + lx - x0) + 'px'; gh.style.top = (R0.top + ly - y0) + 'px'; } };
@@ -1358,7 +1359,7 @@ const BUBS = [
 ];
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
-  ['2.10', '10월 16일', ['게임 v3.74 친밀도: 열심히 관리하면(필드·열매·쓰다듬기·빗질·짝꿍 걷기 합) 만점까지 약 7일', '밸런스: 필드 친밀도 위에 "열심히 관리하면 하루 얼마 · 며칠" 계산', '빗질 친밀도는 씻긴 청결만큼 비례', '필드 친밀도: 그래프 구간 아래 칸에서 바로 고침 (1시간에 오르는 양 · 구간 시작값)', '쓰다듬기 친밀도 하루 횟수(기본 5번) 다시 생김', '저장 안 하고 다른 화면으로 가면 그 화면에서 고친 것은 마지막 저장 상태로 되돌림']],
+  ['2.10', '10월 16일', ['게임 v3.74 친밀도: 열심히 관리하면(필드·열매·쓰다듬기·빗질·짝꿍 걷기 합) 만점까지 약 7일', '밸런스: 필드 친밀도 위에 "열심히 관리하면 하루 얼마 · 며칠" 계산', '빗질 친밀도는 씻긴 청결만큼 비례', '필드 친밀도: 그래프 구간 아래 칸에서 바로 고침 (1시간에 오르는 양 · 구간 시작값)', '쓰다듬기 친밀도 하루 횟수(기본 5번) 다시 생김', '저장 안 하고 다른 화면으로 가면 그 화면에서 고친 것은 마지막 저장 상태로 되돌림', '등급별 포켓몬: 순위 머리글을 누르면 오름차순·내림차순']],
   ['2.9', '10월 16일', ['밸런스: 즐거움 유지 시간과 쓰다듬기 친밀도를 따로, 빗질 하루 횟수 대신 빗질 한 번 친밀도', '밸런스: 알 줍는 거리 단위 뺌 (알 메뉴에 있음)', '세 게이지 → 건강 게이지', '필드 친밀도 그래프를 건강 게이지 막대로 다시', '알 › 등급별 포켓몬: 순위 옆 ≡ 지움, 줄을 끌면 반투명한 줄이 따라오고 원래 줄은 흐리게', '티어: 카드 크기 → 화면 크기(50~250%, 카드·그림·글자 함께 커지고 줄 칸 수 자동)', '게임 v3.73: 필드 친밀도 하루 한도 10 → 36']],
   ['2.8', '10월 16일', ['게임 v3.72 확률에 맞춤: 같은 티어 안은 모두 같은 확률', '티어: 카드 크기 조절 (− · 막대 · +, 이 기기에 기억)', '밸런스: 필드 친밀도 위에 건강 게이지 0~100 가로 막대(구간별), 그 아래 구간마다 오르는 친밀도']],
   ['2.7', '10월 16일', ['고친 값은 박스마다 "저장"을 눌러야 배포하기의 바뀐 곳에 들어감. 박스마다 "기본값으로"(지금 게임 값) 버튼, 저장 안 한 박스는 "저장 안 함" 표시', '알 등급별 확률: 일반 알 몫이 다 차서 더 늘릴 수 없는 곳은 막대에 빗금, 그 너머로는 끌리지 않음', '등급별 포켓몬: 확률을 "이 알에서"와 "알 1개당 전체"(평균 몇 km마다) 두 가지로', '알에서 나오는 티어: % 막대를 끌어서 바로 조절 (나머지 티어는 비율대로 맞춰 합계 100)', '알 고르는 칸에 티어 개수 대신 나오는 티어 이름(예: 10·9·8티어)', '말풍선: 장면 칩을 한 줄에 하나씩', '티어: 오른쪽 칸의 티어 옮기기 버튼을 없앰 (카드를 끌어서 옮기기)']],
