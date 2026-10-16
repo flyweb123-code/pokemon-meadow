@@ -4587,7 +4587,7 @@ function makeSprites() {
   SPR.flame = sprCanvas(96, 22, (px) => {   /* v3.56 경완: 불 활활 — 6장 */
     for (let f = 0; f < 6; f++) { const Hf = 17 + [0, 3, 1, 4, 2, 3][f];
       for (let y = 0; y < 22; y++) { const t = (21 - y) / Hf; if (t > 1) continue;
-        const a = f * Math.PI / 3, cx = 8 + Math.sin(a) * t * t * 2.6 + Math.sin(t * 6 + a * 2) * t * .8,   /* v4.17 경완: 한쪽으로 흘러가던 불꽃 → 제자리에서 좌우로 일렁 */ hw = 6.4 * Math.pow(1 - t, .75) * (.86 + .14 * Math.sin(f * 2.1 + t * 7)) + (t < .12 ? .6 : 0);
+        const a = f * Math.PI / 3, cx = 8 + Math.sin(a) * (t * t * 2.4 + t * .5) + Math.sin(t * 7) * t * .5 * Math.cos(a),   /* v4.31 경완: 또 왼쪽으로 흘러 보임 → 위로 흐르던 물결(t·6 + a·2) 대신 제자리 물결 */   /* v4.17 경완: 한쪽으로 흘러가던 불꽃 → 제자리에서 좌우로 일렁 */ hw = 6.4 * Math.pow(1 - t, .75) * (.86 + .14 * Math.sin(f * 2.1 + t * 7)) + (t < .12 ? .6 : 0);
         for (let x = 0; x < 16; x++) { const d = Math.abs(x + .5 - cx) / hw; if (d > 1) continue; if (21 - y < Math.floor(4.2 * d * d + ((x * 7 + f * 3) % 4) * .45)) continue;   /* v4.18 경완: 밑동이 일자로 잘려 보임 → 가장자리일수록 위에서 시작해 둥글고 들쭉날쭉 */
           px(f * 16 + x, y, 1, 1, d < .32 && t < .5 ? '#fff6c8' : d < .58 && t < .72 ? '#ffd040' : d < .84 && t < .9 ? '#ff8a1c' : '#d8401c'); } }
       const tx = f * 16 + 8 + Math.round(Math.sin(f * 2.3) * 3), ty = 21 - Hf - 2 - (f % 3);   /* 떨어져 나가는 불혀 */
@@ -4647,7 +4647,7 @@ function treeBerries() {
   const T = S.tree || (S.tree = { n: 3, t: Date.now() }); if (T.n > TSL().length) T.n = TSL().length; const k = Math.floor((Date.now() - T.t) / TREE_REGROW);
   if (k > 0) { T.n = Math.min(TSL().length, T.n + k); T.t += k * TREE_REGROW; } if (T.n >= TSL().length) T.t = Date.now();
   if (!treeEl) return; const L = [...treeEl.querySelectorAll('.tb')]; L.slice(T.n).forEach(b => b.remove()); const have = Math.min(L.length, T.n);
-  for (let i = have; i < T.n; i++) { const [x, y] = TSL()[i], b = document.createElement('i'); b.className = 'tb' + ((i * 7) % 3 === 0 ? ' red' : ''); b.style.left = Math.round(x * 2 * LS('tree')) + 'px'; b.style.top = Math.round(y * 2 * LS('tree')) + 'px'; treeEl.append(b); }
+  for (let i = have; i < T.n; i++) { const [x, y] = TSL()[i], b = document.createElement('i'); b.className = 'tb' + (Math.random() < .5 ? ' red' : '');   /* v4.31 경완: 새로 열리는 열매는 빨강·파랑 무작위 */ b.style.left = Math.round(x * 2 * LS('tree')) + 'px'; b.style.top = Math.round(y * 2 * LS('tree')) + 'px'; treeEl.append(b); }
 }
 // ---------- v3.58 경완: 소품 반응. 포켓몬을 소품에 끌어다 놓거나, 포켓몬이 스스로 찾아가면 소품마다 다른 행동을 한다 ----------
 // 소품 자리: [종류, 이름, 가운데 x, y, 반지름 rx, ry, 덤불·바위 번호]
@@ -5248,7 +5248,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.30';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.31';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
