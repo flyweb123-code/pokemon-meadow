@@ -195,7 +195,7 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 .slots .sl.empty{background:none;border-style:dashed;color:var(--soft);font-size:22px}.slots .sl.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
 body.szmode #mapBox{background:#10141a}body.szmode #szBar{background:rgba(22,25,32,.88);user-select:none;-webkit-user-select:none}body.szmode #phone{left:0;top:0;right:0;bottom:0;padding:0!important;border:0!important;width:auto!important;height:auto!important;transform:none!important;border-radius:0!important;box-shadow:none}
 body.szmode #mapI>:not(#szPane){display:none!important}body.szmode #mapI{display:grid;grid-template-rows:minmax(0,1fr);align-content:stretch;overflow:hidden}#szPane{display:none}body.szmode #szPane{display:grid;grid-template-rows:auto auto auto minmax(0,1fr);gap:8px;min-height:0}
-#szPane .grid{overflow:auto;align-content:start;grid-auto-rows:70px;grid-template-columns:repeat(auto-fill,minmax(60px,1fr))}#szPane .mc{aspect-ratio:auto;height:70px}#szPane .mc img{bottom:14px;max-height:50px}#szPane .mc.used{opacity:.4;filter:grayscale(.8);box-shadow:inset 0 2px 6px rgba(0,0,0,.6);transform:translateY(1px);cursor:default}#szR{width:110px;accent-color:var(--acc)}#szPane .zh b{font-family:var(--px);font-weight:400;color:var(--acc);font-size:13px}body.szmode #sbar,body.szmode #safeZ,body.szmode #hotPop,body.szmode #ebar,body.szmode #gLoad{display:none!important}
+#szPane .grid{overflow:auto;align-content:start;grid-auto-rows:70px;grid-template-columns:repeat(auto-fill,minmax(60px,1fr))}#szPane .mc{aspect-ratio:auto;height:70px}#szPane .mc img{bottom:14px;max-height:50px}#szPane .mc.used{opacity:.4;filter:grayscale(.8);box-shadow:inset 0 2px 6px rgba(0,0,0,.6);transform:translateY(1px)}#szA{width:90px;accent-color:var(--acc)}#szBar label{display:inline-flex;align-items:center;gap:6px}#szR{width:110px;accent-color:var(--acc)}#szPane .zh b{font-family:var(--px);font-weight:400;color:var(--acc);font-size:13px}body.szmode #sbar,body.szmode #safeZ,body.szmode #hotPop,body.szmode #ebar,body.szmode #gLoad{display:none!important}
 #szBar{position:absolute;left:0;right:0;top:0;height:52px;display:flex;align-items:center;gap:8px;padding:0 12px;background:var(--panel);border-bottom:1px solid var(--line);z-index:2;overflow-x:auto;white-space:nowrap}#szBar>b{font-family:var(--px);font-weight:400;color:var(--acc);margin-right:6px}#szBar .sp{flex:1}#szSel{display:inline-flex;align-items:center;gap:6px}
 #spx{position:fixed;z-index:56;left:8px;top:8px;height:400px;width:252px;background:var(--panel);border:1px solid var(--chipb);border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:10px;display:grid;grid-template-rows:auto auto auto minmax(0,1fr);gap:8px}
 #spx .zh{display:flex;align-items:center;gap:8px}#spx .zh b{flex:1;font-family:var(--px);font-weight:400;color:var(--acc);font-size:13px}
@@ -209,7 +209,7 @@ body.szmode #mapI>:not(#szPane){display:none!important}body.szmode #mapI{display
 #zoom .zh{display:flex;align-items:center;gap:8px}#zoom .zh b{flex:1;font-family:var(--px);font-weight:400;color:var(--acc)}
 #zoom>*{flex:none}#zoom .zv{flex:1 1 90px;min-height:90px;height:auto;display:grid;place-items:center;background:repeating-conic-gradient(#2b2e37 0 25%,#262932 0 50%) 0 0/12px 12px;border-radius:4px;overflow:hidden}
 #zoom .zv img{image-rendering:pixelated;max-width:none}
-#zoom .zv .fl{background-size:600% 100%;image-rendering:pixelated}
+#zoom .zv .fl{background-size:600% 100%;image-rendering:pixelated}#zoom .zv .fl.anim{animation:zfl 1.05s steps(6) infinite}@keyframes zfl{to{background-position:120% 0}}
 #zoom label{display:grid;grid-template-columns:3.2em minmax(0,1fr) 3.4em;align-items:center;gap:8px;font-size:12.5px}
 #zoom label input{max-width:none;min-width:0}#zoom label span:last-child{font-family:var(--px);font-size:11px;text-align:right;color:var(--soft)}
 .dock .it.on{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
@@ -337,7 +337,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
           <b>기종</b><select class="devSel" aria-label="휴대폰 기종"></select>
           <span class="sp"></span><span id="scSave"></span><button class="chip" id="szMode" title="화면 가득한 맵에 포켓몬을 줄지어 세워 두고 크기를 맞춰요">크기 조절 모드</button><button class="btn" id="eMode">편집하기</button>
         </div>
-        <div class="canvas" id="mapBox"><div id="szBar" hidden><b>크기 조절 모드</b><button class="chip" id="szAdd">포켓몬 넣기</button><button class="chip" id="szRand">무작위 10마리</button><button class="chip" id="szClr">모두 빼기</button><span class="num mute" id="szN"></span><span class="sp"></span><span id="szSel" class="small"></span><span id="szSave"></span><button class="btn" id="szExit">끝내기</button></div><div class="phone" id="phone"><iframe id="game" title="게임 화면" src="../index.html?studio"></iframe><div id="sbar"></div><div id="safeZ" hidden></div></div><div id="hotPop" hidden></div><div id="spx" hidden></div><div id="ebar" hidden role="dialog" aria-label="맵 편집">
+        <div class="canvas" id="mapBox"><div id="szBar" hidden><b>크기 조절 모드</b><button class="chip" id="szAdd">포켓몬 넣기</button><button class="chip" id="szRand">무작위 10마리</button><button class="chip" id="szClr">모두 빼기</button><span class="num mute" id="szN"></span><label class="small mute" title="크기 조절 모드 배경 진하기">배경<input type="range" id="szA" min="0" max="100" step="5" value="100" aria-label="배경 투명도"><span class="num" id="szAV">100%</span></label><span class="sp"></span><span id="szSel" class="small"></span><span id="szSave"></span><button class="btn" id="szExit">끝내기</button></div><div class="phone" id="phone"><iframe id="game" title="게임 화면" src="../index.html?studio"></iframe><div id="sbar"></div><div id="safeZ" hidden></div></div><div id="hotPop" hidden></div><div id="spx" hidden></div><div id="ebar" hidden role="dialog" aria-label="맵 편집">
 <div class="eh"><b>맵 편집</b><button class="btn" id="eDone">완료</button></div>
 <div class="eg"><button class="chip" id="eUndo" title="방금 전으로 (Ctrl/⌘+Z)">↶ 되돌리기</button><button class="chip" id="ePath">길 모양</button><button class="chip" id="eHud2" title="포켓몬이 걸어 다닐 수 있는 위쪽 끝 선">포켓몬 경계선</button><button class="chip" id="eSafe2" title="기종마다 잘리거나 가려지는 곳">세이프 존</button></div>
 <div id="propPane" hidden>
@@ -443,7 +443,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.24';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.25';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -749,8 +749,14 @@ let editing = false;
 let preEdit = null;
 function setEdit(on) { if (on === editing) return; editing = on; A?.edit(on); $('#ebar').hidden = !on; document.body.classList.toggle('editing', on); ebarHome(); if (on) ebarPos(); $('#eMode').classList.toggle('stop', on); $('#eMode').textContent = on ? '편집 종료' : '편집하기'; $('#eUndo').disabled = !(A?.undoN?.() ?? 0);
   if (on) { preEdit = { now: $('#hrNow').classList.contains('on'), h: +$('#hr').value, w: $('#wx .on')?.dataset.w || '' }; A?.setHour(12); A?.setWx('clear'); }   // 편집할 땐 맑은 한낮으로
-  else if (preEdit) { if (preEdit.now) A?.setHour(null); else A?.setHour(preEdit.h); A?.setWx(preEdit.w); preEdit = null; closeZoom(); } if (!on) { $('#propPane').hidden = true; renderReact(null); } requestAnimationFrame(fitPhone); }
+  else if (preEdit) { if (preEdit.now) A?.setHour(null); else A?.setHour(preEdit.h); A?.setWx(preEdit.w); preEdit = null; closeZoom(); } if (!on) { $('#propPane').hidden = true; renderReact(null); edOff(); } requestAnimationFrame(fitPhone); }
+// v2.25 경완: 편집 종료하면 편집에서 켰던 것(길 모양·포켓몬 경계선·세이프 존·고른 소품·세부 창)도 모두 끈다
+function edOff() { closeZoom(); dockMark(null); for (const id of ['ePath', 'eHud2', 'eSafe2']) $('#' + id).classList.remove('on'); store.set('st-safe', ''); A?.showPath?.(false); A?.showHud?.(false); A?.unpick?.(); safeZ(); }
 $('#eMode').onclick = () => setEdit(!editing);
+// v2.25 경완: 맵 화면에서 빈 곳(버튼·칸·창이 아닌 곳)을 누르면 고른 소품·세부 창·반응 고르기를 취소
+const BLANK_NOT = 'button,input,select,textarea,label,a,summary,[data-k],[data-ik],[data-one],[data-rs],[data-sp],[data-uid],.it,.mc,.chip,.rx,#zoom,#propPane,#ebar,#spx,#szPane,#hotPop,iframe,.phone,#szBar,.top,.nav,#unsv,#safePop,#dockRz';
+document.addEventListener('pointerdown', e => { if (view !== 'map' || e.button > 0 || e.target.closest(BLANK_NOT) || !e.target.closest('#v-map,.view')) return;
+  if (zoomK) closeZoom(); A?.unpick?.(); dockMark(null); if (spxKey && !szOn) closeSpx(); }, true);
 $('#eDone').onclick = () => setEdit(false);
 $('#eSafe2').onclick = () => { const on = !$('#eSafe2').classList.contains('on'); $('#eSafe2').classList.toggle('on', on); store.set('st-safe', on ? '1' : ''); safeZ(); };
 if (store.get('st-safe') === '1') $('#eSafe2').classList.add('on');
@@ -763,7 +769,7 @@ $$('.nudge [data-n]').forEach(b => b.onclick = () => { const [x, y] = b.dataset.
 $('#addp').onclick = e => { const b = e.target.closest('[data-k]'); if (b) A?.add(b.dataset.k); };
 function onSel(s, nUndo) {
   $('#eUndo').disabled = !nUndo;
-  dockMark(s); $('#propPane').hidden = !s; if (!s) { if (editing) renderReact(null); return; }
+  dockMark(s); $('#propPane').hidden = !s; if (!s) { if (zoomK === 'inst') closeZoom(); if (editing) renderReact(null); return; }
   $('#pName').textContent = s.name; $('#pPos').textContent = `${s.x}, ${s.y}` + (s.size ? ` · 크기 ${s.size[0]}×${s.size[1]}` : ''); $('#pDel').disabled = !s.del;
   renderReact(KEY2R[s.key] || null);
 }
@@ -776,23 +782,28 @@ async function szSet(on) { if (on === szOn || !A?.sizeMode) return; szOn = on; i
   const G = $('#game'); let fix = null; if (on) try { const gw = G.contentWindow, fr = G.getBoundingClientRect(), K = fr.width / gw.innerWidth, st = gw.document.querySelector('#stage').getBoundingClientRect(); fix = { sx: fr.left + st.left * K, sy: fr.top + st.top * K, ss: st.width * K }; } catch (e) { fix = null; }
   closeSpx(); document.body.classList.toggle('szmode', on); $('#szBar').hidden = !on; szCur = null; szInfo();
   if (fix) { const nr = G.getBoundingClientRect(); fix = { x: fix.sx - nr.left, y: fix.sy - nr.top, s: fix.ss / 360 }; }
-  await A.sizeMode(on, fix); if (on) { scBar(); szCount(); openSpx('all', '포켓몬 넣기', Object.keys(A.SPECIES).map(Number).sort((a, c) => a - c)); } else { slotSig = ''; requestAnimationFrame(fitPhone); setTimeout(renderPal, 300); } }
+  await A.sizeMode(on, fix); if (on) { szAlpha(); scBar(); szCount(); openSpx('all', '포켓몬 넣기', Object.keys(A.SPECIES).map(Number).sort((a, c) => a - c)); } else { slotSig = ''; requestAnimationFrame(fitPhone); setTimeout(renderPal, 300); } }
 // v2.22 경완: 종류마다 한 마리만. 넣은 포켓몬 칸은 눌린 모습(비활성), 빼면 다시 켜짐
 const szUsed = () => new Set((A?.szList?.() || []).map(m => +m.sp));
-const szMarks = () => { if (!szOn) return; const U = szUsed(); $$('#szPane .mc').forEach(b => { const on = U.has(+b.dataset.sp); b.classList.toggle('used', on); b.disabled = on; b.title = on ? `${spName(+b.dataset.sp)} · 이미 넣었어요` : spName(+b.dataset.sp); }); };
+const szMarks = () => { if (!szOn) return; const U = szUsed(); $$('#szPane .mc').forEach(b => { const on = U.has(+b.dataset.sp); b.classList.toggle('used', on); b.disabled = false; b.title = on ? `${spName(+b.dataset.sp)} · 다시 누르면 빼요` : spName(+b.dataset.sp); }); };
 const szCount = () => { const n = A?.szList?.().length || 0; $('#szN').textContent = n ? `${n}마리` : '누르거나 고르면 줄지어 나와요'; szMarks(); };
-async function szPut(sp) { if (szUsed().has(+sp)) return; const uid = await A.szAdd(sp); szCount(); if (uid != null) A.szPick(uid); }   // 넣으면 바로 테두리
-function szInfo() { const e = $('#szSel'); if (!szCur) { e.innerHTML = '<span class="mute">포켓몬을 누르면 테두리가 생기고, 마우스를 올려 모서리를 끌면 크기가 바뀌어요</span>'; return; }
-  const v = Math.round((effP(D, 'monSc')[szCur.sp] || 1) * 100); e.innerHTML = `<b>${esc(spName(szCur.sp))}</b> <input type="range" id="szR" min="50" max="200" step="5" value="${v}" aria-label="크기"><span class="num" id="szV">${v}%</span> <button class="chip" id="szOne"${v === 100 ? ' disabled' : ''}>100%</button> <button class="chip" id="szDel">빼기</button>`; }
-$('#szSel').oninput = e => { if (e.target.id !== 'szR' || !szCur) return; const v = +e.target.value, o = { ...effP(D, 'monSc') }; if (v === 100) delete o[szCur.sp]; else o[szCur.sp] = v / 100; D.monSc = o; if (JSON.stringify(o) === JSON.stringify(ORIG.monSc || {})) delete D.monSc;
+async function szPut(sp) { if (szUsed().has(+sp)) { const m = A.szList().find(o => +o.sp === +sp); if (m) { A.szRemove(m.uid); if (szCur && (szCur.uid === m.uid || szCur.uids?.includes(m.uid))) { szCur = null; szInfo(); } } szCount(); return; }   // v2.25 경완: 넣은 칸을 다시 누르면 뺀다 (빈 칸은 다음에 넣는 포켓몬이 채움)
+  const uid = await A.szAdd(sp); szCount(); if (uid != null) A.szPick(uid); }   // 넣으면 바로 테두리
+const szSps = () => szCur ? (szCur.multi ? szCur.sps : [szCur.sp]) : [];
+function szInfo() { const e = $('#szSel'); if (!szCur) { e.innerHTML = '<span class="mute">포켓몬을 누르면 테두리, 빈 곳을 끌면 여러 마리를 묶어 골라 같이 옮겨요</span>'; return; }
+  const v = Math.round((effP(D, 'monSc')[szSps()[0]] || 1) * 100); e.innerHTML = `<b>${szCur.multi ? szCur.multi + '마리' : esc(spName(szCur.sp))}</b> <input type="range" id="szR" min="50" max="200" step="5" value="${v}" aria-label="크기"><span class="num" id="szV">${v}%</span> <button class="chip" id="szOne"${v === 100 ? ' disabled' : ''}>100%</button> <button class="chip" id="szDel">빼기</button>`; }
+$('#szSel').oninput = e => { if (e.target.id !== 'szR' || !szCur) return; const v = +e.target.value, o = { ...effP(D, 'monSc') }; for (const sp of szSps()) if (v === 100) delete o[sp]; else o[sp] = v / 100; D.monSc = o; if (JSON.stringify(o) === JSON.stringify(ORIG.monSc || {})) delete D.monSc;
   $('#szV').textContent = v + '%'; $('#szOne').disabled = v === 100; scLive(); saveDraft(); scBar(); };   // 막대로 크기 (모서리 끌기와 같은 값)
 $('#szMode').onclick = () => szSet(!szOn);
+// v2.25 경완: 크기 조절 모드 배경 투명도 (기기에 기억)
+function szAlpha(v) { if (v == null) v = +(store.get('st-sz-a') || 100); else store.set('st-sz-a', String(v)); $('#szA').value = v; $('#szAV').textContent = v + '%'; A?.szAlpha?.(v / 100); }
+$('#szA').oninput = e => szAlpha(+e.target.value);
 $('#szExit').onclick = () => szSet(false);
 $('#szAdd').onclick = () => { if (spxKey !== 'all') openSpx('all', '포켓몬 넣기', Object.keys(A.SPECIES).map(Number).sort((a, c) => a - c)); $('#spxQ')?.focus(); };
 $('#szRand').onclick = async () => { const U = szUsed(), all = Object.keys(A.SPECIES).map(Number).filter(sp => !U.has(sp)); for (let i = 0; i < 10 && all.length; i++) await A.szAdd(all.splice(Math.floor(Math.random() * all.length), 1)[0]); szCount(); };
 $('#szClr').onclick = () => { A.szClear(); szCur = null; szInfo(); szCount(); };
-$('#szSel').onclick = e => { if (!szCur) return; if (e.target.id === 'szDel') { A.szRemove(szCur.uid); szCur = null; szInfo(); szCount(); return; }
-  if (e.target.id === 'szOne') { const o = { ...effP(D, 'monSc') }; delete o[szCur.sp]; D.monSc = o; if (JSON.stringify(o) === JSON.stringify(ORIG.monSc || {})) delete D.monSc; scLive(); saveDraft(); scBar(); szInfo(); } };
+$('#szSel').onclick = e => { if (!szCur) return; if (e.target.id === 'szDel') { for (const u of szCur.uids || [szCur.uid]) A.szRemove(u); szCur = null; szInfo(); szCount(); return; }
+  if (e.target.id === 'szOne') { const o = { ...effP(D, 'monSc') }; for (const sp of szSps()) delete o[sp]; D.monSc = o; if (JSON.stringify(o) === JSON.stringify(ORIG.monSc || {})) delete D.monSc; scLive(); saveDraft(); scBar(); szInfo(); } };
 addEventListener('keydown', e => { if (szOn && e.key === 'Escape' && !e.target.closest?.('input,textarea')) szSet(false); });
 function onMonSc(sp, k) { const o = { ...effP(D, 'monSc') }; if (k === 1) delete o[sp]; else o[sp] = k; D.monSc = o; if (JSON.stringify(o) === JSON.stringify(ORIG.monSc || {})) delete D.monSc; saveDraft(); scBar(); szPane(); if (szOn) szInfo(); }
 function scLive() { try { A?.setMonSc(effP(D, 'monSc')); } catch (e) {} }
@@ -949,7 +960,7 @@ function zPaint(z, src, L, fr) {
   z.querySelectorAll('[data-l]').forEach(i => { const v = i.dataset.l === 's' ? Math.round(L.s * 100) : L[i.dataset.l]; i.value = v; i.nextElementSibling.textContent = i.dataset.l === 'h' ? v + '°' : v + '%'; });
   if (!src) { $('#zV').innerHTML = '<span class="ph">●</span>'; return; }
   const im = new Image(); im.onload = () => { const base = Math.min(3, 70 / im.naturalHeight, 118 * (fr || 1) / im.naturalWidth), w = im.naturalWidth / (fr || 1) * base * L.s, h = im.naturalHeight * base * L.s;
-    $('#zV').innerHTML = fr ? `<span class="fl" style="display:block;background-image:url(${src});width:${w}px;height:${h}px"></span>` : `<img alt="" src="${src}" style="width:${w}px;height:${h}px">`; }; im.src = src; }
+    $('#zV').innerHTML = fr ? `<span class="fl anim" style="display:block;background-image:url(${src});width:${w}px;height:${h}px"></span>` : `<img alt="" src="${src}" style="width:${w}px;height:${h}px">`; }; im.src = src; }
 function zSliders(z, apply) { let t = 0; z.oninput = e => { const i = e.target.closest('[data-l]'); if (!i) return; const v = +i.value; i.nextElementSibling.textContent = i.dataset.l === 'h' ? v + '°' : v + '%';
   clearTimeout(t); t = setTimeout(() => apply({ [i.dataset.l]: i.dataset.l === 's' ? v / 100 : v }), 90); }; }
 // v2.4 경완: 소품 세부 창 아래 버튼 = [새로운 소품으로 저장] [삭제]. 전체 소품에서 삭제하면 그 종류가 게임 데이터에서 빠진다 (한 번 더 물어봄)
@@ -994,8 +1005,9 @@ function openInst(s, el) {
     ${ZB_SAVE}`;
   zoomPos(z, el);
   const fr = s.key === 'fire' ? 6 : 0, paint = () => look ? zPaint(z, s.key === 'fire' ? null : A.selIcon(), A.selLook(), fr) : zPaint(z, A.insts?.().find(o => o.key === s.key && o.i === s.i)?.icon || '', { s: 1, h: 0, c: 100, b: 100 }, 0);
-  paint(); if (s.key === 'fire') { $('#zV').innerHTML = '<span class="small mute">모닥불 돌 자리 모양이 바뀌어요</span>'; } else if (s.key === 'mush') $('#zV').innerHTML = '<span class="ph" style="font-size:40px">🍄</span>';
-  if (look) zSliders(z, v => { A.setSelLook(v); setTimeout(() => { if (s.key !== 'fire') paint(); }, 80); });
+  const fireP = () => A.fireArt ? A.fireArt(look ? A.selLook() : null).then(src => { if (src && zoomK === 'inst') { zPaint(z, src, look ? A.selLook() : { s: 1, h: 0, c: 100, b: 100 }, 6); } }) : null;   // v2.25 경완: 모닥불도 미리보기 (불꽃이 타오름)
+  paint(); if (s.key === 'fire') { $('#zV').innerHTML = ''; fireP(); } else if (s.key === 'mush') $('#zV').innerHTML = '<span class="ph" style="font-size:40px">🍄</span>';
+  if (look) zSliders(z, v => { A.setSelLook(v); setTimeout(() => { if (s.key !== 'fire') paint(); else fireP(); }, 80); });
   z.onclick = e => { const b = e.target.closest('button'); if (!b) return;
     if (b.id === 'zX') closeZoom();
     else if (b.id === 'zReset') { A.setSelLook({ s: 1, h: 0, c: 100, b: 100 }); setTimeout(paint, 80); }
@@ -1587,6 +1599,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.25', '10월 16일', ['크기 조절 모드: 6열 격자, 끌어 놓으면 가까운 칸으로, 빈 곳을 끌어 여러 마리 묶어 옮기기, 넣은 칸을 다시 누르면 빼기, 빈 칸부터 채우기, 배경 투명도 (게임 v3.88)', '맵 편집: 모닥불 세부 창 미리보기, 빈 곳을 누르면 고른 것 취소, 포켓몬 경계선을 끌어 위아래 조절, 날짜 박스·열매 버튼·골드 자리 옮기기, 편집 종료하면 켰던 것 모두 끄기', '작업실 미리보기에서 나무가 열매를 저절로 떨어뜨리지 않게']],
   ['2.24', '10월 16일', ['크기 조절 모드: 포켓몬을 끌어서 옮기기, 크게 해도 잘리지 않게, 테두리·모서리 덜 화려하게, 첫 줄은 길 근처부터, 맵 소품(열매나무·횃대·꽃밭 등) 그대로 (게임 v3.87)', '기기에 아이패드 Pro 13 추가. 폴드·아이패드처럼 넓은 화면은 맵이 양옆으로 이어져 여백 없음']],
   ['2.23', '10월 16일', ['확률 안전장치: 알에서 나오는 모든 포켓몬이 알 1개당 1,500km 안에 1번은 나와야 해요. 넘게 만드는 변경은 저장 전에 되돌리고 알려 줘요. 이미 넘은 포켓몬은 위쪽 "확률 한도 넘음"에 목록으로']],
   ['2.22', '10월 16일', ['크기 조절 모드: 넣은 포켓몬은 바로 테두리가 생기고 원래 핸드폰 자리 왼쪽부터 줄지어 나옴, 종류마다 한 마리만 (넣은 칸은 눌린 모습), 위쪽 바에 크기 막대 (게임 v3.86)']],

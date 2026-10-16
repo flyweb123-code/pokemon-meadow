@@ -1901,7 +1901,7 @@ const LAYOUT = {
 };
 /*LAYOUT-END*/
 const POND = LAYOUT.pond;   // v3.55: 360 폭 맵 아래쪽 가운데   // 2026-10-14 줄임 (원래 150×80): 아래로 지나갈 길이 생기게
-const MIN_Y = 150, MAX_Y0 = 580; let MAX_Y = MAX_Y0;   // MAX_Y: 상태창이 펴져 있으면 그 위까지만 (dlgBound)
+let MIN_Y = 150; const MAX_Y0 = 580; let MAX_Y = MAX_Y0;   // MAX_Y: 상태창이 펴져 있으면 그 위까지만 (dlgBound)
 // the part of the meadow Pokémon may use; phones show (and use) only a window of it
 let XL = 0, XR = W;
 
@@ -4960,7 +4960,7 @@ async function restore(d) {
   for (const m of S.mons) { const sw = T(m).mv === 'swim', pv = pondVal(m.x, m.y);
     if (m.x < XL + 20 || m.x > XR - 20 || m.y < MIN_Y || m.y > MAX_Y || (sw ? pv > 1 : pv < 1.05)) { const p = sw ? randPond(.6) : randLand(); m.x = m.tx = p.x; m.y = m.ty = p.y; m.goal = null; m.home = randLand(); } }
   if (d.savedAt > 0) S.mons.forEach(m => offFr(m, (Date.now() - d.savedAt) / 1000));
-  for (const b of d.berries || []) { const nb = addBerry(b.x, b.y, !!b.nat, b.t || Date.now()); if (nb && b.shk) nb.shk = true; }
+  for (const b of d.berries || []) { if (b.nat && KEY === 'pk-studio-v2') continue; const nb = addBerry(b.x, b.y, !!b.nat, b.t || Date.now()); if (nb && b.shk) nb.shk = true; }
   rotBerries();
   S.uid = Math.max(S.uid, d.uid || 1);
   { const u2p = {}; for (const o of d.mons || []) if (o.pid != null) u2p[o.uid] = 'p' + o.pid;
@@ -5183,7 +5183,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '3.87';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '3.88';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7623,7 +7623,7 @@ function frameIn(now) {
     const dt = Math.min(.1, sim); sim -= dt;
     for (const m of [...S.mons]) { try { update(m, dt); } catch (e) { frameErr(e, m); } }
     treeT -= dt;
-    if (treeT <= 0) { treeT = rnd(25, 50); if (!isNight() && S.berries.length < 10) { addBerry(rnd(XL + 60, XR - 60), MIN_Y + rnd(4, 26), true); } }
+    if (treeT <= 0) { treeT = rnd(25, 50); if (!isNight() && S.berries.length < 10 && KEY !== 'pk-studio-v2') { addBerry(rnd(XL + 60, XR - 60), MIN_Y + rnd(4, 26), true); } }
   }
   for (const m of S.mons) { if (m.held && drag?.m !== m) { m.held = false; m.el.classList.remove('held'); settle(m); setState(m, 'idle', 1); }   /* 손에서 놓쳤는데 들린 채 남은 포켓몬 풀어 주기 */
     if (m.bubT > 0) m.bubT -= real; m.realDt = real * Math.min(S.speed || 0, 3); try { render(m, now); } catch (e) { frameErr(e, m); } }
@@ -7661,7 +7661,15 @@ function setLayoutIn(L) {
   LAYOUT.look = L.look && typeof L.look === 'object' ? JSON.parse(JSON.stringify(L.look)) : {};
   if (Array.isArray(L.hide) && L.hide.length) LAYOUT.hide = [...L.hide]; else delete LAYOUT.hide;   // v3.70: 작업실에서 지운 소품 종류 (목록에서 숨김)
   FLOWERS.splice(0, FLOWERS.length, ...bedFlowers(FLOWERBED), ...LAYOUT.flowers);
+  uiIn(L);
 }
+// v3.88 경완: 포켓몬 경계선(MIN_Y)과 날짜 박스·열매 버튼·골드 자리도 작업실 맵 편집에서 옮긴다 (LAYOUT.minY, LAYOUT.ui = {clock|berry|gold: [dx, dy]})
+const UI_EL = { clock: '#clock', berry: '.berrybar', gold: '#goldbar' };
+function uiIn(L) {
+  if (+L.minY) LAYOUT.minY = clamp(Math.round(+L.minY), 60, 420); else delete LAYOUT.minY; MIN_Y = LAYOUT.minY || 150;
+  const U = {}; for (const k in UI_EL) { const v = L.ui?.[k]; if (Array.isArray(v) && (v[0] || v[1])) U[k] = [Math.round(+v[0] || 0), Math.round(+v[1] || 0)]; }
+  if (Object.keys(U).length) LAYOUT.ui = U; else delete LAYOUT.ui; applyUi(); }
+function applyUi() { for (const k in UI_EL) { const e = $(UI_EL[k]), v = LAYOUT.ui?.[k]; if (e) e.style.translate = v ? `${v[0]}px ${v[1]}px` : ''; } }
 // 부화기 알의 필요 거리를 지금 등급 거리로 (쌓인 km 는 그대로)
 function syncNeed() { S.eggs?.forEach(e => { if (GRADE[e.g]) e.need = GRADE[e.g].km; }); }
 function applyBal(b) {
@@ -7716,7 +7724,7 @@ if (/[?&]studio/.test(location.search)) {
 #stHands .h{position:absolute;border-radius:4px;touch-action:none;cursor:grab}
 #stHands .h:hover{outline:1px dashed rgba(127,215,239,.7)}
 #stHands .h.sel{outline:2px solid #7fd7ef;outline-offset:1px;background:rgba(127,215,239,.14)}
-.mon.stMark:has(.stbox.hov),.mon.stMark:has(.stbox.on){z-index:99999!important}body.szMode #wrap{overflow:auto}body.szMode .app>:not(.stage-wrap):not(#glows){display:none!important}body.szMode .stage{box-shadow:none}body.szMode #night,body.szMode #skyFx,body.szMode #skyC,body.szMode #bg{display:none}body.szMode .mon.szb img,body.szMode .mon.szb .spr{clip-path:none!important}body.szMode .mon.szb .spr{cursor:move}body.szMode #wrap{background:#74bc4c}body.szMode .mon .shadow{opacity:.5}
+.mon.stMark:has(.stbox.hov),.mon.stMark:has(.stbox.on){z-index:99999!important}body.szMode #wrap{overflow:auto}body.szMode .app>:not(.stage-wrap):not(#glows){display:none!important}body.szMode .stage{box-shadow:none}body.szMode #night,body.szMode #skyFx,body.szMode #skyC,body.szMode #bg{display:none}body.szMode .mon.szb img,body.szMode .mon.szb .spr{clip-path:none!important}body.szMode .mon.szb .spr{cursor:move}body.szMode #wrap{background:#1c2028}#szLasso{position:absolute;border:1px dashed #fff;background:rgba(127,215,239,.14);z-index:99998;pointer-events:none}.mon.szDrag{z-index:99999!important}body.szMode .mon .shadow{opacity:.5}
 .stbox{position:absolute;bottom:0;border:1px solid rgba(255,255,255,0);pointer-events:none;z-index:5;transition:border-color .12s}.stbox.hov,.stbox.on{border-color:rgba(255,255,255,.55)}.stbox i{position:absolute;width:8px;height:8px;margin:2px;background:#fff;border:1px solid rgba(0,0,0,.35);border-radius:1px;opacity:0;pointer-events:none}.stbox.hov i,.stbox.on i{opacity:1;pointer-events:auto}.stbox i[data-c=tl]{left:-7px;top:-7px;cursor:nwse-resize}.stbox i[data-c=tr]{right:-7px;top:-7px;cursor:nesw-resize}.stbox i[data-c=bl]{left:-7px;bottom:-7px;cursor:nesw-resize}.stbox i[data-c=br]{right:-7px;bottom:-7px;cursor:nwse-resize}
 .mon.stMark{filter:drop-shadow(1px 0 0 rgba(127,215,239,.85)) drop-shadow(-1px 0 0 rgba(127,215,239,.85)) drop-shadow(0 1px 0 rgba(127,215,239,.85)) drop-shadow(0 -1px 0 rgba(127,215,239,.85))}
 #stHands .dot{width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#c08850;border:2px solid #fff;box-sizing:border-box;display:none}
@@ -7726,7 +7734,8 @@ if (/[?&]studio/.test(location.search)) {
 #stHud{position:absolute;inset:0;z-index:2999;pointer-events:none;display:none}#stHud.on{display:block}
 #stHud i{position:absolute;border:1.5px dashed rgba(255,255,255,.85);background:rgba(20,30,60,.35);border-radius:4px;font:600 9px system-ui;color:#fff;font-style:normal;display:flex;align-items:center;justify-content:center}
 #stHud b{position:absolute;left:0;right:0;border-top:1.5px dashed rgba(255,90,90,.9);font:600 9px system-ui;color:#fff;text-shadow:0 0 2px #000;padding-left:4px}
-body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.stage-wrap){visibility:hidden!important}
+body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.stage-wrap):not(.stUi){visibility:hidden!important}body.stEdit .stUi{cursor:move;outline:1px dashed rgba(127,215,239,.75);outline-offset:3px}body.stEdit .stUi *{pointer-events:none}body.stEdit .stUi.stUiOn{outline:2px solid #7fd7ef}body.stEdit #frTest{display:none}
+#stHands .hudl{height:14px;cursor:ns-resize;border-radius:0}#stHands .hudl:hover{outline:0;background:rgba(255,90,90,.18)}
 #stGal{position:fixed;inset:0;z-index:99999;overflow:auto;background:#262932;color:#e4e7ee;font:14px/1.5 system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif;padding:16px 16px 60px;-webkit-user-select:text;user-select:text}
 #stGal h3{font-family:Galmuri11,monospace;font-size:13px;color:#7fd7ef;letter-spacing:.06em;margin:26px 0 4px;padding-top:18px;border-top:2px solid #3b4152}#stGal h3:first-child{margin-top:4px;padding-top:0;border-top:0}
 #stGal p.d{margin:0 0 10px;color:#8e95a6;font-size:12.5px}
@@ -7765,7 +7774,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   const NAME = { pond: '연못', fire: '모닥불', bed: '꽃밭', tree: '열매나무', perch: '횃대', stump: '그루터기', bushes: '덤불', puddles: '웅덩이(비 올 때)', rocks: '바위', mush: '버섯', path: '길', flowers: '꽃·풀' };
   const FNAME = { daisy: '데이지', pink: '분홍꽃', tulip: '튤립', bell: '파랑꽃', sun: '해바라기', grass: '풀', tall: '키 큰 풀', reed: '갈대', cat: '부들' };
   const BAKED = new Set(['pond', 'fire', 'bed', 'stump', 'rocks', 'mush', 'path', 'kinds']);
-  function setLayout(L) { for (const k of KEYS_OBJ) if (L[k]) { delete LAYOUT[k].lk; Object.assign(LAYOUT[k], L[k]); } LAYOUT.kinds = JSON.parse(JSON.stringify(L.kinds || {})); for (const k of KEYS_ARR) if (L[k]) LAYOUT[k].splice(0, LAYOUT[k].length, ...JSON.parse(JSON.stringify(L[k]))); LAYOUT.look = JSON.parse(JSON.stringify(L.look || {})); if (Array.isArray(L.hide) && L.hide.length) LAYOUT.hide = [...L.hide]; else delete LAYOUT.hide; }
+  function setLayout(L) { for (const k of KEYS_OBJ) if (L[k]) { delete LAYOUT[k].lk; Object.assign(LAYOUT[k], L[k]); } LAYOUT.kinds = JSON.parse(JSON.stringify(L.kinds || {})); for (const k of KEYS_ARR) if (L[k]) LAYOUT[k].splice(0, LAYOUT[k].length, ...JSON.parse(JSON.stringify(L[k]))); LAYOUT.look = JSON.parse(JSON.stringify(L.look || {})); if (Array.isArray(L.hide) && L.hide.length) LAYOUT.hide = [...L.hide]; else delete LAYOUT.hide; uiIn(L); }
   let bgQ = false, propQ = false;
   function rebuild(bg) {
     if (bg) { if (!bgQ) { bgQ = true; requestAnimationFrame(() => { bgQ = false; drawBg(); document.querySelectorAll('.glint').forEach(g => g.remove()); addGlints(); }); } }
@@ -7812,19 +7821,31 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     { const T = LAYOUT.tree, z = LS('tree'); if (!Array.isArray(T.b)) T.b = TREE_B0.map(a => [...a]);   // v3.63 경완: 열매 자리도 끌어서 옮긴다
       T.b.forEach((b, i) => { const e = document.createElement('div'); e.className = 'h bh'; e.title = '열매 자리'; e.style.left = (T.x - 50 * z + b[0] * 2 * z) + 'px'; e.style.top = (T.y - 116 * z + b[1] * 2 * z) + 'px';
         e.onpointerdown = ev => startDrag(ev, { key: 'tree', i: -1, berry: true, mv: (dx, dy) => { b[0] = Math.round((b[0] + dx / (2 * z)) * 2) / 2; b[1] = Math.round((b[1] + dy / (2 * z)) * 2) / 2; } }); hands.append(e); }); }
+    hud.querySelector('b').style.top = MIN_Y + 'px';
+    if (hud.classList.contains('on')) { const e = document.createElement('div'); e.className = 'h hudl'; e.title = '끌어서 포켓몬 경계선 올리기·내리기'; Object.assign(e.style, { left: XL + 'px', width: XR - XL + 'px', top: MIN_Y - 7 + 'px' });   // v3.88 경완: 경계선 위아래로 끌기
+      e.onpointerdown = ev => startDrag(ev, { key: 'minY', i: -1, line: true, mv: (dx, dy) => { MIN_Y = LAYOUT.minY = clamp(MIN_Y + dy, 60, 420); if (MIN_Y === 150) delete LAYOUT.minY; } }); hands.append(e); }
     if (sel?.key === 'pond') { const e = document.createElement('div'); e.className = 'h knob'; e.style.left = POND.x + POND.rx + 'px'; e.style.top = POND.y + POND.ry + 'px';
       e.onpointerdown = ev => startDrag(ev, { key: 'pond', i: -1, mv: (dx, dy) => { POND.rx = Math.max(30, POND.rx + dx); POND.ry = Math.max(16, POND.ry + dy); } }); hands.append(e); }
     api.onSel?.(selInfo(), undo.length);
   }
   function startDrag(ev, t) {
     ev.preventDefault(); ev.stopPropagation(); undo.push(snap()); if (undo.length > 60) undo.shift();
-    sel = { key: t.key, i: t.i }; drag = { t, x: ev.clientX, y: ev.clientY, moved: false }; hands.setPointerCapture?.(ev.pointerId); renderHands();
+    sel = t.line ? null : { key: t.key, i: t.i }; drag = { t, x: ev.clientX, y: ev.clientY, moved: false }; hands.setPointerCapture?.(ev.pointerId); renderHands();
   }
   hands.addEventListener('pointermove', ev => { if (!drag) return; const dx = Math.round((ev.clientX - drag.x) / scale), dy = Math.round((ev.clientY - drag.y) / scale); if (!dx && !dy) return;
     drag.x += dx * scale; drag.y += dy * scale; drag.moved = true; drag.t.mv(dx, dy); changed(drag.t.key); });
-  hands.addEventListener('pointerup', () => { const tap = drag && !drag.moved && !drag.t.berry; if (drag && !drag.moved) undo.pop(); drag = null; renderHands(); if (tap) api.onTap?.(selInfo()); });
+  hands.addEventListener('pointerup', () => { const tap = drag && !drag.moved && !drag.t.berry && !drag.t.line; if (drag && !drag.moved) undo.pop(); drag = null; renderHands(); if (tap) api.onTap?.(selInfo()); });
   hands.addEventListener('pointerdown', ev => { if (ev.target === hands) { sel = null; renderHands(); } });
-  function changed(key) { rebuild(BAKED.has(key)); renderHands(); api.onLayout?.(JSON.parse(snap()), undo.length); }
+  function changed(key) { if (key !== 'minY') rebuild(BAKED.has(key)); renderHands(); api.onLayout?.(JSON.parse(snap()), undo.length); }
+  for (const k in UI_EL) { const el = $(UI_EL[k]); if (!el) continue;   // v3.88 경완: 편집 중엔 날짜 박스·열매 버튼·골드도 보이고, 끌어서 자리를 옮긴다
+    el.addEventListener('click', e => { if (document.body.classList.contains('stEdit')) { e.stopPropagation(); e.preventDefault(); } }, true);
+    el.addEventListener('pointerdown', e => { if (!document.body.classList.contains('stEdit') || e.button > 0) return; e.preventDefault(); e.stopPropagation(); const x0 = e.clientX, y0 = e.clientY, v0 = LAYOUT.ui?.[k] || [0, 0], s0 = snap(); let mv = false;
+      sel = null; renderHands(); document.querySelectorAll('.stUi').forEach(o => o.classList.toggle('stUiOn', o === el));
+      const move = ev => { const dx = Math.round((ev.clientX - x0) / scale), dy = Math.round((ev.clientY - y0) / scale); if (!mv && Math.abs(dx) + Math.abs(dy) < 2) return; if (!mv) { mv = true; undo.push(s0); if (undo.length > 60) undo.shift(); }
+        LAYOUT.ui = { ...(LAYOUT.ui || {}), [k]: [v0[0] + dx, v0[1] + dy] }; applyUi(); };
+      const up = () => { removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up); if (mv) { uiIn(LAYOUT); api.onLayout?.(JSON.parse(snap()), undo.length); } };
+      addEventListener('pointermove', move); addEventListener('pointerup', up); addEventListener('pointercancel', up); }); el.classList.add('stUi'); }
+  addEventListener('pointerdown', e => { if (!e.target.closest?.('.stUi')) document.querySelectorAll('.stUiOn').forEach(o => o.classList.remove('stUiOn')); }, true);
   api.edit = on => { hands.classList.toggle('on', !!on); document.body.classList.toggle('stEdit', !!on); if (!on) { sel = null; } else if (S.tree) { S.tree.n = TSL().length; treeBerries(); } renderHands(); };   // v3.62: 편집 중엔 맵만 (포켓몬·상태창 숨김)
   const LOOKBG = new Set(['fire', 'stump', 'rock']);
   // v3.63: 고른 소품 하나만 모양 바꾸기 · 내 분류로 저장
@@ -7859,10 +7880,16 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   const kindCount = id => { let n = 0; eachInst((key, v) => { if (ilk(key, v) === id) n++; }); return n; };
   api.look = k => ({ s: 1, h: 0, c: 100, b: 100, ...(lookOf(k) || {}) });
   api.setLook = (k, v) => { undo.push(snap()); if (undo.length > 60) undo.shift(); const L = { ...api.look(k), ...v }; if (L.s === 1 && !L.h && L.c === 100 && L.b === 100) delete LAYOUT.look[k]; else LAYOUT.look[k] = L; changed(LOOKBG.has(k) ? 'rocks' : 'flowers'); };
+  // v3.88 경완: 모닥불 세부 창 미리보기 = 돌 자리(색 바뀜) 위에 불꽃 6장 (34×32 칸 6개를 옆으로 이은 그림)
+  let flameImg = null;
+  api.fireArt = LL => new Promise(res => { const go = im => { const L = LL || lookOf('fire'), st = tintCv(ART.campfire(), L), c = document.createElement('canvas'); c.width = 204; c.height = 32; const g = c.getContext('2d');
+      for (let f = 0; f < 6; f++) { g.drawImage(st, f * 34, 14); g.drawImage(im, f * 16, 0, 16, 22, f * 34 + 9, 0, 16, 22); } res(c.toDataURL()); };
+    if (flameImg?.complete) return go(flameImg); flameImg = new Image(); flameImg.onload = () => go(flameImg); flameImg.onerror = () => res(''); flameImg.src = SPR.flame; });
   api.lookIcon = (k, LL) => { if (LAYOUT.kinds?.[k]) { const K = LAYOUT.kinds[k]; return api.lookIcon(K.b, K.lk); } const cv = k === 'tree' ? ART.tree() : k === 'perch' ? ART.perch() : k === 'bush' ? ART.bush() : k === 'stump' ? ART.stump() : k === 'rock' || k === 'rockS' ? ART.rock(10, 7, 13 * 977, 1) : k === 'rockL' ? ART.rock(16, 10, 17 * 977, 2) : SPR.flw[k] ? ART.flower(k) : null; const L = LL !== undefined ? LL : lookOf(k === 'rockS' || k === 'rockL' ? 'rock' : k); return cv ? tintCv(cv, L, PETAL[k]).toDataURL() : k === 'fire' ? (LL ? sprCanvasTint(SPR.flame, LL) : SPR.flame) : k === 'puddle' ? (LL ? SPR.pudArt(LL) : SPR.puddle) : ''; };
   const sprCanvasTint = (src, L) => src;   // 모닥불 불꽃 그림은 6장 묶음이라 미리보기는 그대로
   api.showPath = on => hands.classList.toggle('path', !!on);
-  api.showHud = on => { const b = hud.querySelector('b'); Object.assign(b.style, { left: XL + 'px', right: 'auto', width: (XR - XL) + 'px', textAlign: 'center', padding: '2px 0 0' }); hud.classList.toggle('on', !!on); };   // v3.70: 보이는 폭 가운데에 (글이 잘리지 않게)
+  api.unpick = () => { if (!sel) return; sel = null; renderHands(); };
+  api.showHud = on => { const b = hud.querySelector('b'); Object.assign(b.style, { left: XL + 'px', right: 'auto', width: (XR - XL) + 'px', textAlign: 'center', padding: '2px 0 0' }); hud.classList.toggle('on', !!on); renderHands(); };   // v3.70: 보이는 폭 가운데에 (글이 잘리지 않게)
   api.layout = () => JSON.parse(snap());
   api.defaultLayout = () => JSON.parse(JSON.stringify(DEFAULT || LAYOUT));
   api.setLayout = L => { undo.push(snap()); setLayout(L); sel = null; rebuild(true); renderHands(); api.onLayout?.(JSON.parse(snap()), undo.length); };
@@ -7910,29 +7937,55 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   // v3.81 경완: 크기 조절 모드 — 화면 가득 맵, 포켓몬은 제한 없이 줄지어(등장 효과·움직임 없이) 세워 두고 크기를 맞춘다
   // v3.86 경완: 줄은 시뮬레이터 핸드폰에 보이던 자리(SZB.win) 왼쪽부터, 넘치면 아래 줄로
   // v3.87 경완: 크기 조절 모드 포켓몬도 끌어서 옮긴다 (옮긴 포켓몬은 줄 세우기에서 빠지고 그 자리에 둔다)
-  SZB.grab = (m, e) => { if (e.button > 0 || e.target.closest?.('.stbox i')) return; e.preventDefault(); const x0 = e.clientX, y0 = e.clientY, mx = m.x, my = m.y; let mv = false;
-    const move = ev => { if (!mv && Math.hypot(ev.clientX - x0, ev.clientY - y0) < 5) return; mv = true; m.x = m.tx = mx + (ev.clientX - x0) / scale; m.y = m.ty = Math.max(20, my + (ev.clientY - y0) / scale); m.szMv = true; };
-    const up = () => { removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up); if (!mv) return; suppressClick = performance.now(); if (stM !== m) api.szPick(m.uid); SZB.rows(); };
+  // v3.88 경완: 크기 조절 모드는 6열 격자. 포켓몬마다 칸(m.szC)이 있고, 끌어 놓으면 가장 가까운 칸으로 (그 칸에 있던 포켓몬은 비운 칸으로). 새 포켓몬은 빈칸부터
+  // 빈 곳을 끌면 네모로 여러 마리를 묶어 고르고, 묶인 포켓몬 하나를 끌면 같이 옮겨진다. 빈 곳을 누르기만 하면 고른 것 취소
+  const SZ_COLS = 6; SZB.sel = new Set();
+  const szMons = () => S.mons.filter(m => m.szb);
+  const szFree = T => { let i = 0; while (T.has(i)) i++; return i; };
+  const szGeo = () => { const [wl, wr] = SZB.win || [XL, XR], x0 = Math.max(XL, wl) + 18, x1 = Math.min(XR, wr) - 14; return { x0, cw: (x1 - x0) / SZ_COLS }; };
+  const szCell = (x, y) => { const { x0, cw } = szGeo(), T = SZB.top || [0, 1]; let r = 0; while (r < T.length - 2 && y >= T[r + 1]) r++; return [r, clamp(Math.floor((x - x0) / cw), 0, SZ_COLS - 1)]; };
+  function szShift(G, dr, dc) { const rc = G.map(o => [Math.floor(o.szC / SZ_COLS), o.szC % SZ_COLS]);
+    dc = clamp(dc, -Math.min(...rc.map(a => a[1])), SZ_COLS - 1 - Math.max(...rc.map(a => a[1]))); dr = Math.max(dr, -Math.min(...rc.map(a => a[0]))); if (!dr && !dc) return;
+    const gs = new Set(G), old = G.map(o => o.szC), nw = rc.map(([r, c]) => (r + dr) * SZ_COLS + c + dc), ns = new Set(nw);
+    const O = szMons().filter(o => !gs.has(o) && ns.has(o.szC)).sort((a, b) => a.szC - b.szC), fr = old.filter(i => !ns.has(i)).sort((a, b) => a - b);
+    G.forEach((o, k) => { o.szC = nw[k]; }); O.forEach((o, k) => { o.szC = fr[k]; }); }
+  function szSelect(L) { SZB.sel = new Set(L); api.markMon(L.length === 1 ? L[0].uid : null); if (L.length > 1) for (const m of L) m.el.classList.add('stMark');
+    api.onSzSel?.(L.length === 1 ? { uid: L[0].uid, sp: L[0].sp, name: L[0].name } : L.length ? { multi: L.length, sps: L.map(m => m.sp), uids: L.map(m => m.uid) } : null); }
+  SZB.grab = (m, e) => { if (e.button > 0 || e.target.closest?.('.stbox i')) return; e.preventDefault(); const G = SZB.sel.has(m) && SZB.sel.size > 1 ? [...SZB.sel] : [m], x0 = e.clientX, y0 = e.clientY, P = G.map(o => [o, o.x, o.y]); let mv = false;
+    const move = ev => { if (!mv && Math.hypot(ev.clientX - x0, ev.clientY - y0) < 5) return; if (!mv) { mv = true; SZB.drag = new Set(G); G.forEach(o => o.el.classList.add('szDrag')); }
+      const dx = (ev.clientX - x0) / scale, dy = (ev.clientY - y0) / scale; for (const [o, ox, oy] of P) { o.x = o.tx = ox + dx; o.y = o.ty = Math.max(20, oy + dy); } };
+    const up = () => { removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up); if (!mv) return; suppressClick = performance.now(); SZB.drag = null; G.forEach(o => o.el.classList.remove('szDrag'));
+      const [r, c] = szCell(m.x, m.y - (m.h || 60) / 2); szShift(G, r - Math.floor(m.szC / SZ_COLS), c - m.szC % SZ_COLS); if (G.length === 1 && stM !== m) szSelect([m]); SZB.rows(); };
     addEventListener('pointermove', move); addEventListener('pointerup', up); addEventListener('pointercancel', up); };
-  SZB.rows = () => { const L = S.mons.filter(m => m.szb && !m.szMv), gap = 22, [wl, wr] = SZB.win || [XL, XR], x0 = Math.max(XL, wl) + 18, x1 = Math.min(XR, wr) - 14; let rows = [], row = [], x = x0;
-    for (const m of L) { const w = m.w || 50; if (x + w > x1 && row.length) { rows.push(row); row = []; x = x0; } row.push(m); x += w + gap; } if (row.length) rows.push(row);
-    let by = Math.max(250, (60 - S.oy) / scale); for (const r of rows) { by += Math.max(...r.map(m => m.h || 60)); let cx = x0; for (const m of r) { const w = m.w || 50; m.x = m.tx = cx + w / 2; m.y = m.ty = by; cx += w + gap; } by += 30; }
-    by = Math.max(by, ...S.mons.filter(m => m.szMv).map(m => m.y + 10)); stage.style.height = Math.max(H, by + 20) + 'px'; $('#szSp') && ($('#szSp').style.height = S.oy + Math.max(H, by + 20) * scale + 'px'); SZB.paint(); };
+  wrap.addEventListener('pointerdown', e => { if (!SZB.on || e.button > 0 || e.target.closest?.('.mon')) return; e.preventDefault(); const sr = stage.getBoundingClientRect(), p = ev => [(ev.clientX - sr.left) / scale, (ev.clientY - sr.top) / scale], a = p(e); let box = null, b = a;
+    const R = () => [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1])];
+    const move = ev => { b = p(ev); if (!box) { if (Math.hypot(b[0] - a[0], b[1] - a[1]) * scale < 5) return; box = document.createElement('div'); box.id = 'szLasso'; stage.append(box); }
+      const [l, t, r, bt] = R(); Object.assign(box.style, { left: l + 'px', top: t + 'px', width: r - l + 'px', height: bt - t + 'px' }); };
+    const up = () => { removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up); if (!box) { szSelect([]); return; } box.remove(); const [l, t, r, bt] = R();
+      szSelect(szMons().filter(m => { const w = (m.w || 50) / 2, h = m.h || 60; return m.x + w > l && m.x - w < r && m.y > t && m.y - h < bt; })); };
+    addEventListener('pointermove', move); addEventListener('pointerup', up); addEventListener('pointercancel', up); });
+  SZB.rows = () => { const L = szMons(), { x0, cw } = szGeo(), T = new Set();
+    for (const m of L) if (m.szC != null && !T.has(m.szC)) T.add(m.szC); else m.szC = null; for (const m of L) if (m.szC == null) { m.szC = szFree(T); T.add(m.szC); }
+    const nR = L.length ? Math.max(...L.map(m => Math.floor(m.szC / SZ_COLS))) + 1 : 0, top = []; let y = Math.max(250, (60 - S.oy) / scale);
+    for (let r = 0; r <= nR; r++) { top.push(y); y += Math.max(60, ...L.filter(m => Math.floor(m.szC / SZ_COLS) === r).map(m => m.h || 60)) + 30; } top.push(y); SZB.top = top;
+    for (const m of L) { if (SZB.drag?.has(m)) continue; const r = Math.floor(m.szC / SZ_COLS), c = m.szC % SZ_COLS; m.x = m.tx = x0 + cw * (c + .5); m.y = m.ty = top[r + 1] - 30; }
+    stage.style.height = Math.max(H, y + 20) + 'px'; $('#szSp') && ($('#szSp').style.height = S.oy + Math.max(H, y + 20) * scale + 'px'); SZB.paint(); };
+  api.szAlpha = v => { SZB.alpha = v; const c = $('#szBg'); if (c) c.style.opacity = v; };   // v3.88 경완: 크기 조절 모드 배경 투명도
   SZB.paint = () => { const c = $('#szBg'); if (!c) return; const sh = Math.max(H, parseFloat(stage.style.height) || H), u = 2 * scale, ox = Math.max(0, Math.ceil(S.ox / u)), oy = Math.max(0, Math.ceil(S.oy / u)),
       AW = Math.ceil((wrap.clientWidth - S.ox) / u) + ox + 2, AH = Math.max(Math.ceil((wrap.clientHeight - S.oy) / u), Math.ceil(sh / 2)) + oy + 2, key = [AW, AH, ox, oy, scale].join();
-    if (SZB.key !== key) { SZB.key = key; drawBg({ c, w: AW, h: AH, ox, oy }); } Object.assign(c.style, { left: S.ox - ox * u + 'px', top: S.oy - oy * u + 'px', width: AW * u + 'px', height: AH * u + 'px' }); };
+    if (SZB.key !== key) { SZB.key = key; drawBg({ c, w: AW, h: AH, ox, oy }); } Object.assign(c.style, { opacity: SZB.alpha ?? 1, left: S.ox - ox * u + 'px', top: S.oy - oy * u + 'px', width: AW * u + 'px', height: AH * u + 'px' }); };
   api.sizeMode = async (on, fix) => { SZB.fix = fix || null; if (!!on === !!SZB.on) return;
     if (on) { SZB.win = [XL, XR]; SZB.on = true; SZB.keep = S.mons.map(m => ({ sp: m.sp, x: m.x, y: m.y, pid: m.pid, name: m.name, uid: m.uid })); SZB.sf = saveFrozen; saveFrozen = true; api.markMon(null);
       for (const m of [...S.mons]) removeMon(m, true); SZB.key = null;
       const cv = document.createElement('canvas'); cv.id = 'szBg'; cv.style.cssText = 'position:absolute;left:0;top:0;image-rendering:pixelated;pointer-events:none'; wrap.insertBefore(cv, stage);
       const sp = document.createElement('div'); sp.id = 'szSp'; sp.style.cssText = 'position:absolute;left:0;top:0;width:1px;pointer-events:none'; wrap.append(sp); document.body.classList.add('szMode'); fit(); return; }
-    api.markMon(null); for (const m of [...S.mons]) removeMon(m, true); SZB.on = false; document.body.classList.remove('szMode'); $('#szSp')?.remove(); $('#szBg')?.remove(); stage.style.height = ''; wrap.scrollTop = 0; fit();
+    SZB.sel.clear(); api.markMon(null); for (const m of [...S.mons]) removeMon(m, true); SZB.on = false; document.body.classList.remove('szMode'); $('#szSp')?.remove(); $('#szBg')?.remove(); stage.style.height = ''; wrap.scrollTop = 0; fit();
     saveFrozen = SZB.sf; const K = SZB.keep || []; SZB.keep = null; for (const o of K) { const m = await spawn(o.sp, { ...o, quiet: true }); m.studio = true; } save(); };
-  api.szAdd = async sp => { if (!SZB.on || S.mons.some(m => m.szb && m.sp === sp)) return null; const m = await spawn(sp, { x: XL + 30, y: 200, quiet: true }); if (!SZB.on) { removeMon(m, true); return null; } m.szb = m.pin = m.frz = true; m.studio = true; m.el.classList.add('szb'); m.state = 'idle'; SZB.rows(); return m.uid; };
+  api.szAdd = async sp => { if (!SZB.on || S.mons.some(m => m.szb && m.sp === sp)) return null; const m = await spawn(sp, { x: XL + 30, y: 200, quiet: true }); if (!SZB.on) { removeMon(m, true); return null; } m.szb = m.pin = m.frz = true; m.studio = true; m.el.classList.add('szb'); m.state = 'idle'; m.szC = szFree(new Set(szMons().filter(o => o !== m && o.szC != null).map(o => o.szC))); SZB.rows(); return m.uid; };
   api.szList = () => S.mons.filter(m => m.szb).map(m => ({ uid: m.uid, sp: m.sp, name: m.name }));
-  api.szRemove = uid => { const m = monOf(uid); if (!m) return; if (stM === m) api.markMon(null); removeMon(m, true); SZB.rows(); };
-  api.szClear = () => { api.markMon(null); for (const m of S.mons.filter(m => m.szb)) removeMon(m, true); SZB.rows(); };
-  api.szPick = uid => { api.markMon(stM?.uid === uid ? null : uid); api.onSzSel?.(stM ? { uid: stM.uid, sp: stM.sp, name: stM.name } : null); };
+  api.szRemove = uid => { const m = monOf(uid); if (!m) return; SZB.sel.delete(m); if (stM === m) api.markMon(null); removeMon(m, true); SZB.rows(); };
+  api.szClear = () => { SZB.sel.clear(); api.markMon(null); for (const m of S.mons.filter(m => m.szb)) removeMon(m, true); SZB.rows(); };
+  api.szPick = uid => { const m = monOf(uid); szSelect(!m || (stM === m && SZB.sel.size === 1) ? [] : [m]); };
   api.markMon = uid => { stB?.remove(); stB = null; stM = null;
     for (const m of S.mons) { const on = m.uid === uid; m.el.classList.toggle('stMark', on); m.pin = on; if (on) { stM = m; m.goal = null; if (m.state === 'move') setState(m, 'idle', 1); } }
     if (!stM) return; stB = document.createElement('div'); stB.className = 'stbox'; stB.innerHTML = '<i data-c="tl"></i><i data-c="tr"></i><i data-c="bl"></i><i data-c="br"></i>'; stM.liftEl.append(stB); stFit();
