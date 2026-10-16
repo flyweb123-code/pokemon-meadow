@@ -5230,7 +5230,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.12';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.13';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6046,6 +6046,8 @@ function infoHead(P, sp, nameHtml, extra = '') {
     + (P ? `<div class="ih-met"><span class="md">${metDay(P)}</span>${P.place ? `${esc(P.place)} 근처에서 만났다` : '만남'}${P.g ? ` · ${GRADE[P.g].n} 알` : ''}</div>` : '');
 }
 const nameEdit = (id, name, sex) => `<label class="nm-edit"><input id="${id}" maxlength="8" aria-label="이름 바꾸기" autocomplete="off" value="${esc(name)}" style="width:${Math.max(1, name.length) + .15}em"><span class="pen-b" aria-hidden="true">${PEN}</span>${sexHtml(sex)}</label>`;
+// v4.13 경완: 이름 칸을 누르면 커서는 맨 뒤에
+document.addEventListener('focusin', e => { const i = e.target; if (!i.matches?.('.nm-edit input')) return; const end = () => { const n = i.value.length; try { i.setSelectionRange(n, n); } catch (er) {} }; end(); setTimeout(end, 0); setTimeout(end, 60); });
 function renameBox(P, v) {
   const def = SPECIES[P.sp].n, name = v.trim().slice(0, 8) || def, m = S.mons.find(x => x.pid === P.id);
   if (m) { renameMon(m, name); P.nm = name === def ? undefined : name; } else if (name !== nameOf(P)) { const old = nameOf(P); P.nm = name === def ? undefined : name; log(`${esc(old)}에게 <b>${esc(name)}</b>라는 이름을 지어 주었다.`); save(); }
