@@ -5232,7 +5232,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.27';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.28';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8142,8 +8142,15 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
 <div class="row">${[0, 51, 102, 153, 204, 255].map(f => `<div class="it"><div class="chk"><span class="hearts">${hearts(f)}</span></div>${f}</div>`).join('')}</div>
 <h3>트레이너</h3>
 <div class="row">${['m', 'f'].map(s => pix(TR_OW[s], 32, 192, s === 'm' ? '남자' : '여자')).join('')}</div>
+<h3>청결도에 따른 모습</h3><p class="d">청결 60까지는 원래 모습. 60 아래부터 누렇게 바래고 발밑부터 흙·재 얼룩이 점점 진해져요. 40 아래면 먼지가 날리고, 20 아래면 파리도 꼬여요.</p>
+<style>.gcl{position:relative;width:72px;height:72px;margin:auto}.gcl .dirt{position:absolute;inset:0}.gcl img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+.gcl .grime{position:absolute;inset:0;pointer-events:none;opacity:var(--g,0);background:radial-gradient(circle,rgba(96,86,76,.75) 0 1px,transparent 1.5px) 4px 6px/19px 17px,radial-gradient(circle,rgba(130,122,112,.6) 0 1.2px,transparent 1.7px) 13px 2px/25px 21px,linear-gradient(to top,rgba(118,104,88,.55),rgba(118,104,88,.22) 40%,rgba(130,120,110,.08) 75%,transparent);-webkit-mask:var(--mi) center/contain no-repeat;mask:var(--mi) center/contain no-repeat}
+.gcl .gd{position:absolute;width:4px;height:4px;background:#8a6a3a;opacity:.85}.gcl .gf{position:absolute;width:3px;height:3px;background:#2a2a2a}</style>
+<div class="row" id="galClean">${[100, 60, 45, 30, 15, 0].map(c => { const d = Math.min(1, Math.max(0, (60 - c) / 60)), k = Math.round(d * 20) / 20;
+  const dust = c < 40 ? [[12, 50], [56, 44], [30, 60]].slice(0, c < 15 ? 3 : 2).map(([x, y]) => `<i class="gd" style="left:${x}px;top:${y}px"></i>`).join('') : '', fly = c < 20 ? [[14, 14], [60, 22]].map(([x, y]) => `<i class="gf" style="left:${x}px;top:${y}px"></i>`).join('') : '';
+  return `<div class="it"><div class="chk"><div class="gcl"><div class="dirt" style="${k ? `filter:sepia(${(.3 * k).toFixed(2)}) saturate(${(1 - .25 * k).toFixed(2)}) brightness(${(1 - .1 * k).toFixed(2)})` : ''}"><img alt="" data-gsp="25" src="${thumbOf(25) || ''}"><i class="grime" style="--g:${(.85 * k).toFixed(2)}"></i></div>${dust}${fly}</div></div>청결 ${c}</div>`; }).join('')}</div>
 `;
-    for (const sp of reps) ensureSprite(sp).then(() => g.querySelectorAll(`img[data-gsp="${sp}"]`).forEach(i => { i.src = thumbOf(sp) || ''; })).catch(() => {});   // v3.70: 그림 모음을 먼저 보여 주고 포켓몬 그림은 받는 대로
+    for (const sp of reps) ensureSprite(sp).then(() => g.querySelectorAll(`img[data-gsp="${sp}"]`).forEach(i => { i.src = thumbOf(sp) || ''; if (i.closest('.gcl')) i.nextElementSibling?.style.setProperty('--mi', `url("${i.src}")`); })).catch(() => {});   // v4.28: 청결 칸은 얼룩을 그림 모양대로   // v3.70: 그림 모음을 먼저 보여 주고 포켓몬 그림은 받는 대로
   }
   const s0 = start;
   start = async function (d) {
