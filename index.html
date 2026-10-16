@@ -2588,7 +2588,7 @@ function berryBounce(el, h, done, fade = true) {
   requestAnimationFrame(step);
 }
 // 쓰다듬기: 정보창·상태창을 숨기고 그 포켓몬 위를 문지른다. PET_N 번 문지르면 아주 좋아하며 끝 (친밀도 +3 은 하루 3번까지, 즐거움 +20)
-let PET_N = 12, PET_LEN = 900, PET_DAY = 5, WASH_DAY = 1, JOY_HOLD = 5, PET_FR = 1, WASH_FR = 15;   // v3.73 경완: 쓰다듬기·빗질 친밀도 양을 따로 정함. 빗질은 하루 횟수 없이 더러울 때(청결 95 미만)마다. v3.75 경완: 쓰다듬기 친밀도는 다시 하루 PET_DAY(5)번까지. v3.74: WASH_FR 는 청결 100만큼 씻겼을 때 양 (씻긴 만큼 비례, 최소 1)   // v3.68 경완: 쓰다듬기 게이지 더 빨리(2500→1500). 쓰다듬기는 즐거움을 가득 채우고, 가득 차 있지 않았으면 친밀도 +1 (하루 한도 없음). 빗질(씻기기) +3 하루 1번. JOY_HOLD = 즐거움 100 이 되면 안 떨어지는 분
+let PET_N = 12, PET_LEN = 900, PET_DAY = 5, WASH_DAY = 1, JOY_HOLD = 5, PET_FR = 1, WASH_FR = 3;   // v4.29 경완: 씻기면 친밀도 +3 (씻긴 양과 상관없이 한 번에 3). 설정 키는 WASH_FR1 (예전 WASH_FR 15 는 비례 방식이라 무시).  v3.73 경완: 쓰다듬기·빗질 친밀도 양을 따로 정함. 빗질은 하루 횟수 없이 더러울 때(청결 95 미만)마다. v3.75 경완: 쓰다듬기 친밀도는 다시 하루 PET_DAY(5)번까지. v3.74: WASH_FR 는 청결 100만큼 씻겼을 때 양 (씻긴 만큼 비례, 최소 1)   // v3.68 경완: 쓰다듬기 게이지 더 빨리(2500→1500). 쓰다듬기는 즐거움을 가득 채우고, 가득 차 있지 않았으면 친밀도 +1 (하루 한도 없음). 빗질(씻기기) +3 하루 1번. JOY_HOLD = 즐거움 100 이 되면 안 떨어지는 분
    // 게이지 바: 보통 빠르기로 약 1000px 문지르면 가득 (v4.10 경완: 1.7배 빠르게). 빠르게 문지를수록 더 빨리 차고, 멈추면 줄어든다. PET_N 은 반응(하트·진동) 구간 수
 let petM = null;
 function petStart(m, wash = false) {
@@ -2630,7 +2630,7 @@ function haloJoy(m) {
 }
 function petDone() {
   const m = petM.m, P = boxOf(m.pid); haloJoy(m);
-  const wash = petM.wash; let fr = 0; if (P && (wash || ((m.joy ?? 60) < 100 && dayCap(m, 'pet', PET_DAY)))) { fr = wash ? Math.max(1, Math.round(WASH_FR * (100 - (petM.c0 ?? 0)) / 100)) : PET_FR; if (fr > 0) addFr(P.id, fr); }
+  const wash = petM.wash; let fr = 0; if (P && (wash || ((m.joy ?? 60) < 100 && dayCap(m, 'pet', PET_DAY)))) { fr = wash ? WASH_FR : PET_FR; if (fr > 0) addFr(P.id, fr); }
   if (wash) { m.clean = 100; dirtVis(m); m.joy = clamp((m.joy ?? 60) + 10); washShine(m); $('#washBrush').hidden = true; }
   else { m.social = clamp(m.social - 20); m.joy = 100; }
   haptic(2); setTimeout(() => haptic(2), 110); setTimeout(() => haptic(1), 220); sfx('pickup'); if (fr) frPop(m, fr);
@@ -5232,7 +5232,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.28';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.29';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7752,7 +7752,7 @@ function syncNeed() { S.eggs?.forEach(e => { if (GRADE[e.g]) e.need = GRADE[e.g]
 function applyBal(b) {
   const num = v => typeof v === 'number' && isFinite(v), arr = (A, v) => { if (Array.isArray(v) && v.length === A.length) A.splice(0, A.length, ...v); };
   arr(DUP_G, b.DUP_G); arr(NEW_EGG_G, b.NEW_EGG_G); if (Array.isArray(b.FR_TABLE) && b.FR_TABLE.every(r => r.length === 2)) FR_TABLE.splice(0, FR_TABLE.length, ...b.FR_TABLE);
-  if (num(b.NEW_G)) NEW_G = b.NEW_G; if (num(b.RUN_G)) RUN_G = b.RUN_G; if (num(b.BERRY_FR_DAY)) BERRY_FR_DAY = b.BERRY_FR_DAY; if (num(b.PET_DAY)) PET_DAY = b.PET_DAY; if (num(b.JOY_HOLD)) JOY_HOLD = b.JOY_HOLD; if (num(b.WASH_DAY)) WASH_DAY = b.WASH_DAY; if (num(b.PET_FR)) PET_FR = b.PET_FR; if (num(b.WASH_FR)) WASH_FR = b.WASH_FR;
+  if (num(b.NEW_G)) NEW_G = b.NEW_G; if (num(b.RUN_G)) RUN_G = b.RUN_G; if (num(b.BERRY_FR_DAY)) BERRY_FR_DAY = b.BERRY_FR_DAY; if (num(b.PET_DAY)) PET_DAY = b.PET_DAY; if (num(b.JOY_HOLD)) JOY_HOLD = b.JOY_HOLD; if (num(b.WASH_DAY)) WASH_DAY = b.WASH_DAY; if (num(b.PET_FR)) PET_FR = b.PET_FR; if (num(b.WASH_FR1)) WASH_FR = b.WASH_FR1;
   if (num(b.FLD_FR_DAY)) FLD_FR_DAY = b.FLD_FR_DAY; if (num(b.WALK_FR)) WALK_FR = b.WALK_FR; if (num(b.FR_EVO)) FR_EVO = b.FR_EVO; if (num(b.FR_MAX)) FR_MAX = b.FR_MAX; if (num(b.HUNGER_RATE)) HUNGER_RATE = b.HUNGER_RATE;
   if (num(b.CLEAN_DAYS) && b.CLEAN_DAYS > 0) CLEAN_RATE = 100 / (b.CLEAN_DAYS * 86400); if (num(b.JOY_HOURS) && b.JOY_HOURS > 0) JOY_RATE = 100 / (b.JOY_HOURS * 3600);
   if (Array.isArray(b.HATCH_KM) && b.HATCH_KM.length === 6) { for (let g = 1; g <= 5; g++) if (num(b.HATCH_KM[g]) && b.HATCH_KM[g] > 0) GRADE[g].km = b.HATCH_KM[g]; syncNeed(); }   // v3.71 경완: 작업실 알 › 부화 거리
@@ -7841,7 +7841,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   const api = window.__studio = {
     BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, get MON_ROT() { return MON_ROT; }, get MON_FLY() { return MON_FLY; }, setMonPose(r, f) { MON_ROT = { ...(r || {}) }; MON_FLY = { ...(f || {}) }; }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, get SP_OFF() { return [...SP_OFF]; }, get TIER_KT() { return TIER_KT; }, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
     ICO: { berry: ICO_BERRY, brush: ICO_BRUSH, hand: ICO_HAND, pen: PEN, egg: EGG_SVG },   // v3.66: 작업실이 게임 아이콘을 그대로 쓴다
-    get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, PET_FR, WASH_FR, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]), HATCH_KM: [0, ...GRADE.slice(1).map(G => G.km)] }; },
+    get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, PET_FR, WASH_FR1: WASH_FR, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]), HATCH_KM: [0, ...GRADE.slice(1).map(G => G.km)] }; },
     get cfg() { return CFG; },
     get SPRITES() { return SPRITES; }, ensureSprite, thumbOf, gradeOf, tierOf, shinyHue, tyIcon, scaleOf, baseOf, movesOf, eggHtml, propSpots,
     ready: false, onSel: null, onLayout: null, onMon: null, onLog: null,

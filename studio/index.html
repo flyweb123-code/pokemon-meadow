@@ -457,7 +457,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.48';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.49';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -1494,14 +1494,14 @@ function mvTier(sp, tt) { const tf = tierOfSp(sp); if (tf === tt) return false;
 // ---------- 밸런스 ----------
 const BAL = [
   ['보상 골드', [['DUP_G', '이미 만난 포켓몬이 알에서 나오면 받는 골드', '알 등급마다', 5], ['NEW_EGG_G', '새 포켓몬이 알에서 나오면 받는 골드', '알 등급마다', 5], ['NEW_G', '진화로 새로 만났을 때 골드'], ['RUN_G', '런닝 1번 골드']]],
-  ['친밀도', [['#', '필드에 있을 때'], ['FR_TABLE', '필드에 있을 때 오르는 친밀도', '', 'tbl'], ['FLD_FR_DAY', '필드 시간 친밀도 하루 한도'], ['#', '돌봐 주기'], ['BERRY_FR_DAY', '열매로 오르는 친밀도 하루 한도'], ['PET_FR', '쓰다듬기로 즐거움을 채우면 오르는 친밀도'], ['PET_DAY', '쓰다듬기 친밀도 하루 횟수'], ['JOY_HOLD', '즐거움 100 유지 시간 (분)'], ['WASH_FR', '빗질 친밀도 (청결 100만큼 씻길 때)'], ['#', '짝꿍 · 기준'], ['WALK_FR', '짝꿍 1km당 친밀도'], ['FR_EVO', '친밀도 진화 기준'], ['FR_MAX', '친밀도 만점']]],
+  ['친밀도', [['#', '필드에 있을 때'], ['FR_TABLE', '필드에 있을 때 오르는 친밀도', '', 'tbl'], ['FLD_FR_DAY', '필드 시간 친밀도 하루 한도'], ['#', '돌봐 주기'], ['BERRY_FR_DAY', '열매로 오르는 친밀도 하루 한도'], ['PET_FR', '쓰다듬기로 즐거움을 채우면 오르는 친밀도'], ['PET_DAY', '쓰다듬기 친밀도 하루 횟수'], ['JOY_HOLD', '즐거움 100 유지 시간 (분)'], ['WASH_FR1', '빗질 친밀도 (씻길 때마다)'], ['#', '짝꿍 · 기준'], ['WALK_FR', '짝꿍 1km당 친밀도'], ['FR_EVO', '친밀도 진화 기준'], ['FR_MAX', '친밀도 만점']]],
   ['상태 게이지', [['CLEAN_DAYS', '청결 100 → 0 걸리는 날', '', 'cd'], ['HUNGER_RATE', '배부름이 떨어지는 속도'], ['JOY_HOURS', '즐거움 100 → 0 걸리는 시간 (깨어 있을 때)', '', 'jh']]],
   ['알·기타', [['MAX_EGGS', '부화기 칸 수'], ['MAX_BAG', '가방 최대 알 수'], ['SHINY_N', '이로치 확률 1/N', '', 'sh']]],
 ];
 // v1.8 경완: 줄마다 게임 아이콘
 // v2.8 경완: 필드 친밀도를 가로 그래프로 (게이지 평균 구간마다 1시간에 오르는 양)
 // v3.74 경완: 열심히 관리하면(필드 건강 80 이상 + 열매 + 쓰다듬기 5번 + 빗질 + 짝꿍 5km) 하루에 얼마, 만점까지 며칠
-function frWeek() { const T = bal('FR_TABLE') || [], top = Math.max(0, ...T.map(r => r[1])), fld = Math.min(top * 24, bal('FLD_FR_DAY') || Infinity), ber = bal('BERRY_FR_DAY') || 0, pet = (bal('PET_DAY') ?? 5) * (bal('PET_FR') ?? 1), wash = (bal('WASH_FR') ?? 0) / (bal('CLEAN_DAYS') || 3), walk = 5 * (bal('WALK_FR') || 0), sum = fld + ber + pet + wash + walk, mx = bal('FR_MAX') || 255;
+function frWeek() { const T = bal('FR_TABLE') || [], top = Math.max(0, ...T.map(r => r[1])), fld = Math.min(top * 24, bal('FLD_FR_DAY') || Infinity), ber = bal('BERRY_FR_DAY') || 0, pet = (bal('PET_DAY') ?? 5) * (bal('PET_FR') ?? 1), wash = bal('WASH_FR1') ?? 3, walk = 5 * (bal('WALK_FR') || 0), sum = fld + ber + pet + wash + walk, mx = bal('FR_MAX') || 255;
   const it = [['필드', fld], ['열매', ber], [`쓰다듬기 ${bal('PET_DAY') ?? 5}번`, pet], ['빗질', wash], ['짝꿍 5km', walk]];
   return `<div class="frwk"><b>열심히 관리하면 하루 +${+sum.toFixed(1)} → 만점(${mx})까지 약 ${(mx / sum).toFixed(1)}일</b><span>${it.map(([n, v]) => `${n} ${+v.toFixed(1)}`).join(' · ')}</span></div>`; }
 function frGraph(v, k = 'FR_TABLE', c = '') { const S = v.map((r, i) => [r[0], r[1], i]).sort((a, b) => a[0] - b[0]), mx = Math.max(...S.map(r => r[1]), .01), cap = bal('FLD_FR_DAY') || Infinity;
@@ -1509,13 +1509,13 @@ function frGraph(v, k = 'FR_TABLE', c = '') { const S = v.map((r, i) => [r[0], r
   // v2.10 경완: 구간마다 아래 칸에서 바로 고친다 (1시간에 오르는 양 · 구간 시작값)
   return `<div class="frg"><div class="small mute">건강 게이지 평균</div><div class="frw"><div class="frbar" style="grid-template-columns:${cols}">${seg.map(x => `<div class="sg" style="--a:${(.25 + .75 * x.r / mx).toFixed(2)}"><span class="num">${x.lo}~${x.hi}</span></div>`).join('')}</div>${seg.filter(x => x.lo > 0).map(x => `<b class="frk" data-fk="${k}" data-i="${x.i}" style="left:${x.lo}%" title="끌어서 구간 경계 옮기기 (${x.lo})" role="slider" aria-valuenow="${x.lo}" aria-valuemin="1" aria-valuemax="99" aria-label="구간 경계"></b>`).join('')}</div>
     <div class="frinf" style="grid-template-columns:${cols}">${seg.map(x => { const d = Math.min(x.r * 24, cap), cp = d < x.r * 24; return `<div><span>1시간에</span><label class="fi"><i class="pl">+</i><input class="inp${c}" data-b="${k}" data-i="${x.i}" data-j="1" inputmode="decimal" value="${x.r}" aria-label="${x.lo}~${x.hi} 1시간에 오르는 친밀도"></label><em class="num${cp ? ' cap' : ''}"${cp ? ' title="하루 한도에 걸림"' : ''}>하루 +${+d.toFixed(1)}</em>${cp ? '<span class="cap">하루 한도</span>' : ''}</div>`; }).join('')}</div></div>`; }
-const BICO = { DUP_G: 'coin', NEW_EGG_G: 'egg', NEW_G: 'star', RUN_G: 'shoe', FR_TABLE: 'clock', BERRY_FR_DAY: 'berry', JOY_HOLD: 'note', PET_FR: 'hand', PET_DAY: 'hand', WASH_FR: 'brush', FLD_FR_DAY: 'note', WALK_FR: 'shoe', FR_EVO: 'star', FR_MAX: 'heart', CLEAN_DAYS: 'brush', HUNGER_RATE: 'berry', JOY_HOURS: 'note', MAX_EGGS: 'egg', MAX_BAG: 'bag', BAG_STEP: 'shoe', SHINY_N: 'star' }, SICO = ['coin', 'heart', 'clock', 'egg'];
-const BUNIT = { DUP_G: 'G', NEW_EGG_G: 'G', NEW_G: 'G', RUN_G: 'G', BERRY_FR_DAY: '/일', JOY_HOLD: '분', PET_FR: '점', PET_DAY: '번', WASH_FR: '점', FLD_FR_DAY: '/일', WALK_FR: '/km', FR_EVO: '점', FR_MAX: '점', CLEAN_DAYS: '일', HUNGER_RATE: '/초', JOY_HOURS: '시간', MAX_EGGS: '칸', MAX_BAG: '개', BAG_STEP: 'km', SHINY_N: '분의 1' };
+const BICO = { DUP_G: 'coin', NEW_EGG_G: 'egg', NEW_G: 'star', RUN_G: 'shoe', FR_TABLE: 'clock', BERRY_FR_DAY: 'berry', JOY_HOLD: 'note', PET_FR: 'hand', PET_DAY: 'hand', WASH_FR1: 'brush', FLD_FR_DAY: 'note', WALK_FR: 'shoe', FR_EVO: 'star', FR_MAX: 'heart', CLEAN_DAYS: 'brush', HUNGER_RATE: 'berry', JOY_HOURS: 'note', MAX_EGGS: 'egg', MAX_BAG: 'bag', BAG_STEP: 'shoe', SHINY_N: 'star' }, SICO = ['coin', 'heart', 'clock', 'egg'];
+const BUNIT = { DUP_G: 'G', NEW_EGG_G: 'G', NEW_G: 'G', RUN_G: 'G', BERRY_FR_DAY: '/일', JOY_HOLD: '분', PET_FR: '점', PET_DAY: '번', WASH_FR1: '점', FLD_FR_DAY: '/일', WALK_FR: '/km', FR_EVO: '점', FR_MAX: '점', CLEAN_DAYS: '일', HUNGER_RATE: '/초', JOY_HOURS: '시간', MAX_EGGS: '칸', MAX_BAG: '개', BAG_STEP: 'km', SHINY_N: '분의 1' };
 // v2.4 경완: 숫자 칸을 문장 안에 넣어 읽히게 ([앞 글, 뒤 글, 덧붙임(값으로 계산)])
 const SENT = {
   NEW_G: ['진화로 새 포켓몬을 만나면', 'G'], RUN_G: ['런닝을 1번 할 때마다', 'G'],
   BERRY_FR_DAY: ['열매를 줘서 오르는 친밀도는 하루에 최대', '까지'], JOY_HOLD: ['쓰다듬기로 즐거움을 100 채우면', '분 동안 안 떨어짐'], PET_FR: ['쓰다듬기로 즐거움을 채울 때마다 친밀도', '씩 오름', () => '이미 즐거움이 100이면 안 올라요'], PET_DAY: ['쓰다듬기로 오르는 친밀도는 하루에', '번까지'],
-  WASH_FR: ['빗질로 청결을 100만큼 씻기면 친밀도', '오름', v => `씻긴 만큼 비례 (예: 청결 60 → 100 이면 +${Math.max(1, Math.round(v * .4))}), 최소 1. 청결이 95 아래면 언제든 빗질할 수 있어요`], FLD_FR_DAY: ['필드에 있어서 오르는 친밀도는 하루에 최대', '까지'],
+  WASH_FR1: ['빗질로 씻길 때마다 친밀도', '씩 오름', v => `씻긴 양과 상관없이 한 번에 +${v}. 청결이 95 아래면 언제든 빗질할 수 있어요`], FLD_FR_DAY: ['필드에 있어서 오르는 친밀도는 하루에 최대', '까지'],
   WALK_FR: ['짝꿍은 1km 걸을 때마다 친밀도', '씩 오름', v => `걷기·달리기 같음 · 10km면 +${+(v * 10).toFixed(1)}`],
   FR_EVO: ['친밀도가', '이상이면 친밀도 진화'], FR_MAX: ['친밀도 만점은', ''],
   CLEAN_DAYS: ['청결 100이 0이 되기까지', '일'], HUNGER_RATE: ['배부름이 떨어지는 속도', '', v => `배부름 100 → 0 약 ${+(100 / v / 3600).toFixed(1)}시간 (깨어 있을 때, 자는 동안은 더 느려요)`],
@@ -1524,7 +1524,7 @@ const SENT = {
 };
 // v2.15 경완: 밸런스 레이아웃 정리 — 왼쪽 설명, 오른쪽 숫자 칸(+단위)으로 줄 맞춤
 const BLBL = { NEW_G: ['진화로 새 포켓몬을 만나면', 'G'], RUN_G: ['런닝 1번 할 때마다', 'G'], FLD_FR_DAY: ['필드에 있어서 오르는 친밀도 하루 최대', '/일'], BERRY_FR_DAY: ['열매로 오르는 친밀도 하루 최대', '/일'],
-  PET_FR: ['쓰다듬어 즐거움을 채우면 친밀도', '씩'], PET_DAY: ['쓰다듬기 친밀도 하루 횟수', '번'], JOY_HOLD: ['즐거움 100을 채우면 안 떨어지는 시간', '분'], WASH_FR: ['빗질로 청결 100만큼 씻기면 친밀도', ''], WALK_FR: ['짝꿍이 1km 걸을 때마다 친밀도', '씩'],
+  PET_FR: ['쓰다듬어 즐거움을 채우면 친밀도', '씩'], PET_DAY: ['쓰다듬기 친밀도 하루 횟수', '번'], JOY_HOLD: ['즐거움 100을 채우면 안 떨어지는 시간', '분'], WASH_FR1: ['빗질로 씻길 때마다 친밀도', '씩'], WALK_FR: ['짝꿍이 1km 걸을 때마다 친밀도', '씩'],
   FR_EVO: ['친밀도 진화 기준', '이상'], FR_MAX: ['친밀도 만점', ''], CLEAN_DAYS: ['청결 100 → 0 걸리는 시간', '일'], HUNGER_RATE: ['배부름이 떨어지는 속도', ''], JOY_HOURS: ['즐거움 100 → 0 걸리는 시간', '시간'],
   MAX_EGGS: ['부화기 칸 수', '칸'], MAX_BAG: ['가방에 넣을 수 있는 알', '개'], SHINY_N: ['이로치 확률 (몇 마리 중 1마리)', '마리'] };
 // v2.18 경완: 배부름 속도는 숫자 대신 매우 빠름~매우 느림 중에서 고른다 (값 = 1초에 떨어지는 양)
@@ -1709,6 +1709,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.49', '10월 16일', ['밸런스: 빗질 친밀도는 씻길 때마다 고정 +3 (씻긴 양 비례 대신, 게임 v4.29)']],
   ['2.48', '10월 16일', ['맵 편집: 버튼 순서 되돌리기·배치 저장·편집 종료, 저장 안 하고 편집 종료하면 경고 (그냥 종료하면 원래대로), 맵 편집 창 버튼은 한 줄에 하나씩', '1km 알 개수: 게임처럼 250m마다 확률로 줍기 (게임 v4.07)']],
   ['2.47', '10월 16일', ['맵 편집: 배치 저장·되돌리기를 편집 종료 옆으로, 기본값으로·완료 버튼 빼고 남은 버튼은 가로로, 저장 안 함 안내는 위쪽 막대에서', '소품을 끌 때 버벅이지 않게 (게임 v4.06)', '오른쪽 소품 반응 카드를 누르면 그 소품이 시뮬레이터에 테두리로 보여요']],
   ['2.46', '10월 16일', ['티어 박스에서 포켓몬 카드를 누르면 꺼짐(회색): 게임 알에서 안 나오고 그 몫은 같은 티어 다른 포켓몬이 나눠 가짐, 다시 누르면 켜짐 (게임 v3.97)']],
@@ -1814,7 +1815,7 @@ function hook() {
   if (!w.document.__unmk) { w.document.__unmk = 1; w.addEventListener('pointerdown', e => { if (!e.target.closest?.('.mon')) unmarkMon(); }, true); }   // v2.1 경완: 맵 빈 곳을 누르면 포켓몬 선택(테두리) 풀기
   if (!ORIG) {
     const K = A.K; LIVE = A.cfg || { ver: 0 }; ORIG = { odds: K.ODDS, pity: { e: K.PITY_E, l: K.PITY_L }, eggTiers: JSON.parse(JSON.stringify(A.EGG_TIERS)), eggList: JSON.parse(JSON.stringify(A.EGG_LIST || [])), eggEx: JSON.parse(JSON.stringify(A.EGG_EX || [])), tierOrd: JSON.parse(JSON.stringify(A.TIER_ORD || {})), off: [...(A.SP_OFF || [])], tierK: { r: A.cfg?.data?.tierK?.r ?? 1, k: { ...(A.TIER_KT || {}) } }, bub: { ...(A.BUB_OV || {}) }, monSc: { ...(A.MON_SC || {}) }, monRot: { ...(A.MON_ROT || {}) }, monFly: { ...(A.MON_FLY || {}) }, layout: A.defaultLayout(),
-      bal: { ...(K.HATCH_KM ? { HATCH_KM: K.HATCH_KM } : {}), DUP_G: K.DUP_G, NEW_EGG_G: K.NEW_EGG_G, NEW_G: K.NEW_G, RUN_G: K.RUN_G, FR_TABLE: K.FR_TABLE, BERRY_FR_DAY: K.BERRY_FR_DAY, JOY_HOLD: K.JOY_HOLD, PET_FR: K.PET_FR ?? 1, PET_DAY: K.PET_DAY, WASH_FR: K.WASH_FR ?? 3, FLD_FR_DAY: K.FLD_FR_DAY, WALK_FR: K.WALK_FR, FR_EVO: K.FR_EVO, FR_MAX: K.FR_MAX,
+      bal: { ...(K.HATCH_KM ? { HATCH_KM: K.HATCH_KM } : {}), DUP_G: K.DUP_G, NEW_EGG_G: K.NEW_EGG_G, NEW_G: K.NEW_G, RUN_G: K.RUN_G, FR_TABLE: K.FR_TABLE, BERRY_FR_DAY: K.BERRY_FR_DAY, JOY_HOLD: K.JOY_HOLD, PET_FR: K.PET_FR ?? 1, PET_DAY: K.PET_DAY, WASH_FR1: K.WASH_FR1 ?? 3, FLD_FR_DAY: K.FLD_FR_DAY, WALK_FR: K.WALK_FR, FR_EVO: K.FR_EVO, FR_MAX: K.FR_MAX,
         CLEAN_DAYS: Math.round(100 / K.CLEAN_RATE / 86400 * 100) / 100, HUNGER_RATE: K.HUNGER_RATE, JOY_HOURS: Math.round(100 / K.JOY_RATE / 3600 * 100) / 100, MAX_EGGS: K.MAX_EGGS, MAX_BAG: K.MAX_BAG, BAG_STEP: K.BAG_STEP, SHINY_N: Math.round(1 / K.SHINY_RATE) } };
     A.ensureSprite(1).then(() => { $('#logoI').src = thumb(25) || ''; A.ensureSprite(25).then(() => $('#logoI').src = thumb(25)); });
   }
