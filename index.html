@@ -256,7 +256,7 @@ html{touch-action:manipulation}img{-webkit-user-drag:none}*{-webkit-user-select:
   --px:"Galmuri11","Galmuri",ui-monospace,monospace;
   color-scheme:light;
 }
-html,body{height:100%;touch-action:manipulation}
+html,body{height:100%;touch-action:manipulation}html:not(.ready) #app{visibility:hidden}   /* v4.02 경완: 처음 열 때 맵 크기를 맞추기 전 빈 틀(초록 바탕에 검은 테두리)이 보이지 않게 */
 button,.eslot,.slot,.lockrun{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 :root{--sab:min(var(--si-bottom,env(safe-area-inset-bottom)),34px)}
 :root.short{--sab:0px}
@@ -315,7 +315,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .win.blue{box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 8px var(--inner-blue),6px 6px 0 rgba(0,0,0,.35)}
 .hud{position:absolute;z-index:20}
 .goldbar{right:170px;top:20px;height:78px;display:flex;align-items:center;gap:8px}
-.berrybar{right:330px;bottom:136px;align-items:flex-end}
+.berrybar{right:330px;top:50%;translate:0 -50%;align-items:flex-end}
 .gold{display:flex;align-items:center;gap:6px;font-size:20px;color:#fff;text-shadow:2px 0 0 #20202c,-2px 0 0 #20202c,0 2px 0 #20202c,0 -2px 0 #20202c,2px 2px 0 #20202c}
 .gold b{color:#ffd84a!important}
 .gold span{color:#fff!important;font-size:15px!important}
@@ -1214,7 +1214,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
   .goldbar{grid-area:stage;align-self:start;justify-self:end;z-index:25;height:auto;margin:calc(var(--si-top,env(safe-area-inset-top)) + 8px) calc(var(--si-right,env(safe-area-inset-right)) + 8px) 0 0;flex-direction:column;align-items:flex-end;gap:8px}
   .gold{font-size:18px;height:42px}
   .shop-gold{position:fixed;top:calc(var(--si-top,env(safe-area-inset-top)) + 8px);right:calc(var(--si-right,env(safe-area-inset-right)) + 8px);z-index:10}
-  .berrybar{grid-row:1;grid-column:1/-1;align-self:end;justify-self:end;align-items:flex-end;z-index:25;margin:0 calc(var(--si-right,env(safe-area-inset-right)) + 8px) 8px 0}   /* v4.00 경완: 우하단 상태창 바로 위 */
+  .berrybar{grid-row:1;grid-column:1/-1;align-self:center;justify-self:end;align-items:flex-end;z-index:25;margin:0 calc(var(--si-right,env(safe-area-inset-right)) + 8px) 0 0}   /* v4.02 경완: 오른쪽 가운데 */
   .clockwin .d{font-size:12px}
   .card{grid-row:1;grid-column:1/-1;position:relative;align-self:end;z-index:30;width:auto;margin:0 8px 8px;max-height:62%;overflow-y:auto;left:auto!important;top:auto!important;padding:10px 14px 12px}
   .card .close{position:absolute;right:4px;top:4px;border:0;padding:8px 12px;font-size:16px}
@@ -1297,6 +1297,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 @media (prefers-reduced-motion: reduce){.mon.held .flip,.act,.bubble,.pt,.berry.new,.ring,.mon.wet .ripple,.sel-mark,.dlg .more,.snot,.bfly::before,.bfly::after,.glint{animation:none!important}.snot{transform:scale(1)}}
 </style>
 
+<script>setTimeout(() => document.documentElement.classList.add('ready'), 6000)</script>
 <div class="app" id="app">
   <div class="stage-wrap" id="wrap">
     <div class="stage" id="stage">
@@ -5193,7 +5194,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.01';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.02';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5798,9 +5799,9 @@ const dayOf = c => Math.floor(c / 1440);
 // 필드 슬롯 건강 게이지 앞 작은 아이콘: 물방울(청결) · 열매(배부름) · 웃는 얼굴(즐거움)
 // v4.00: 20% 밑이면 막대는 빨간색, 아이콘은 더러운 물방울 · 먹다 남은 열매 속 · 우는 얼굴로
 const GSVG = b => `<svg viewBox="0 0 7 7" shape-rendering="crispEdges" aria-hidden="true">${b}</svg>`;
-const GG = [['cl', GSVG('<path fill="#8a6ad8" d="M3 0h1v1h1v1h1v3H5v1H2V5H1V2h1V1h1z"/><path fill="#fff" d="M2 3h1v1H2z"/>'), GSVG('<path fill="#8a6a48" d="M3 0h1v1h1v1h1v3H5v1H2V5H1V2h1V1h1z"/><path fill="#4a3424" d="M2 3h1v1H2zM4 2h1v1H4zM3 4h1v1H3z"/>')],
-  ['hu', GSVG('<path fill="#3a7a2a" d="M3 0h2v1H3z"/><path fill="#e8a020" d="M1 1h2v1h2V1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1z"/><path fill="#fff4c0" d="M1 2h1v1H1z"/>'), GSVG('<path fill="#8a5a2a" d="M3 0h1v1H3z"/><path fill="#c87818" d="M2 1h3v1H2zM2 5h3v1H2zM2 6h3v1H2z"/><path fill="#f4e4b0" d="M3 2h1v3H3z"/>')],
-  ['jo', GSVG('<path fill="#38a8e0" d="M2 0h3v1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1V1h1z"/><path fill="#20202c" d="M2 2h1v1H2zM4 2h1v1H4zM1 4h1v1H1zM5 4h1v1H5zM2 5h3v1H2z"/>'), GSVG('<path fill="#7888a8" d="M2 0h3v1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1V1h1z"/><path fill="#20202c" d="M2 2h1v1H2zM4 2h1v1H4zM2 4h3v1H2zM1 5h1v1H1zM5 5h1v1H5z"/><path fill="#9ad8ff" d="M1 3h1v1H1z"/>')]];
+const GG = [['cl', GSVG('<path fill="#8a6ad8" d="M3 0h1v1h1v1h1v3H5v1H2V5H1V2h1V1h1z"/><path fill="#fff" d="M2 3h1v1H2z"/>'), GSVG('<path fill="#e04838" d="M3 0h1v1h1v1h1v3H5v1H2V5H1V2h1V1h1z"/><path fill="#fff" d="M2 3h1v1H2z"/>')],
+  ['hu', GSVG('<path fill="#3a7a2a" d="M3 0h2v1H3z"/><path fill="#e8a020" d="M1 1h2v1h2V1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1z"/><path fill="#fff4c0" d="M1 2h1v1H1z"/>'), GSVG('<path fill="#3a7a2a" d="M3 0h2v1H3z"/><path fill="#e04838" d="M1 1h2v1h2V1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1z"/><path fill="#fff4c0" d="M1 2h1v1H1z"/>')],
+  ['jo', GSVG('<path fill="#38a8e0" d="M2 0h3v1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1V1h1z"/><path fill="#20202c" d="M2 2h1v1H2zM4 2h1v1H4zM1 4h1v1H1zM5 4h1v1H5zM2 5h3v1H2z"/>'), GSVG('<path fill="#e04838" d="M2 0h3v1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1V1h1z"/><path fill="#20202c" d="M2 2h1v1H2zM4 2h1v1H4zM2 4h3v1H2zM1 5h1v1H1zM5 5h1v1H5z"/><path fill="#9ad8ff" d="M1 3h1v1H1z"/>')]];
 function renderMgr(force) { refreshCap();
   if (mgr.hidden) return;
   if (mgrSel && !S.mons.includes(mgrSel)) mgrSel = null;
@@ -7742,7 +7743,7 @@ async function loadCfg() {
 }
 async function start(data) {
   applyCfg(await loadCfg());
-  S.clock = realClock(); buildProps(); sky(); fxEl.append(selMark); drawBg(); addGlints(); fit();
+  S.clock = realClock(); buildProps(); sky(); fxEl.append(selMark); drawBg(); addGlints(); fit(); requestAnimationFrame(() => document.documentElement.classList.add('ready'));
   let d = data && data.mons ? data : null;
   if (!d) { try { d = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { d = null; } }
   if (d && d.mons && (d.mons.length || d.unlocked)) await restore(d); else await fresh();
