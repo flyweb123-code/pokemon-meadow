@@ -125,7 +125,7 @@
 #evoFull .ef-sp.big{width:10px;height:10px;animation-duration:1.3s}
 @keyframes efsp{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
 #evoFull .ef-bottom{position:absolute;left:0;right:0;bottom:0;padding:16px 16px calc(16px + var(--si-bottom,env(safe-area-inset-bottom)));display:flex;flex-direction:column;gap:10px;align-items:stretch;max-width:520px;margin:0 auto}
-#evoFull .ef-msg{background:var(--win);color:var(--win-ink);border:4px solid var(--frame);box-shadow:inset 0 0 0 3px var(--inner);padding:14px 18px;font-size:17px;line-height:1.5;min-height:3em}
+#evoFull .ef-msg{background:var(--win);color:var(--win-ink);border:3px solid var(--frame);box-shadow:inset 0 0 0 3px var(--inner),0 0 0 2px var(--inner);   /* v5.03 경완: 어두운 바탕에서 확인 버튼과 같은 폭으로 보이게 바깥 밝은 테두리 */padding:14px 18px;font-size:17px;line-height:1.5;min-height:3em}
 #evoFull .ef-msg .small{font-size:13px;color:var(--dim)}
 #evoFull .ef-card{color:var(--win-ink)}
 #evoFull .ef-ok.rise{animation:efokin .9s cubic-bezier(.33,0,.2,1)}@keyframes efokin{0%{max-height:0;padding-block:0;border-width:0 3px;margin-top:-10px;opacity:0;transform:translateY(8px)}55%{opacity:0}100%{max-height:60px;opacity:1;transform:none}}
@@ -5499,7 +5499,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.02';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.03';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6456,6 +6456,7 @@ function evoNotice(sp, P) {
 // 특별한 진화 힌트: 성별 조건이 먼저, 아니면 진화 조건 (진화해요 는 뺀다)
 function spWhy(P) { const L = CHILDREN[P.sp] || []; for (const c of L) { const d = SPECIES[c]; if (d.eqx && (d.eqx === 1 ? 'f' : 'm') !== P.sex) continue; return evoWhy(c); } const d = SPECIES[L[0]]; return d?.eqx ? `${d.eqx === 1 ? '암컷' : '수컷'}만 진화할 수 있어요` : evoWhy(L[0]); }
 const budReady = b => !!b && evoKids(b.sp, boxOf(b.pid), true).length > 0 && b.km >= evoNeed(b);
+const budKm = b => !!b && (CHILDREN[b.sp] || []).length > 0 && b.km >= evoNeed(b);   // v5.03 경완: 특수 조건이 남아도 거리만 차면 카드는 노랗게
 const budNew = b => budReady(b) && !b.es;   // 진화 준비가 됐는데 아직 짝꿍 탭에서 못 본 것 (빨간 점)
 // 짝꿍에서 빠져도 개체에 남은 거리(P.km)를 다 채웠으면 정보카드에서 진화할 수 있다
 const pokeReady = P => !!P && evoKids(P.sp, P, true).length > 0 && (P.km || 0) >= evoNeed(P);
@@ -8085,7 +8086,7 @@ function renderBuddy() {
     const i = S.buds.findIndex(b => b.slot === s), m = S.buds[i];
     if (!m) return `<button class="bd-empty" data-act="pick" data-i="${s}" aria-label="짝꿍 추가">+</button>`;
     const P = boxOf(m.pid);
-    return `<div class="bd-card${budReady(m) ? ' ready' : ''}${m.pid === budFocus ? ' focus' : ''}${tierOf(+m.sp) ? ' ' + tierOf(+m.sp) : ''}" data-i="${i}"><button class="bd-x" data-act="stop" aria-label="짝꿍에서 빼기">✕</button>${m.nw || budNew(m) ? '<i class="bd-new" aria-label="새 소식"></i>' : ''}<div class="bd-row"><div class="bd-pic${pkCls(P)}${P?.shiny ? ' shiny' : ''}" data-rk="${P ? rankOf(P) : ''}" style="--shue:${shinyHue(m.sp)}deg"><img alt="" src="${(P ? thumbP(P) : thumbOf(m.sp)) || ''}"><span class="bd-rk">${rkBadge(P)}</span></div><div class="bd-main"><div class="bd-name"><b class="${tnCls(m.sp)}">${esc(P ? nameOf(P) : SPECIES[m.sp].n)}</b>${sexHtml(P?.sex)}</div><div class="bd-ind">${indivHtml(m)}</div>`
+    return `<div class="bd-card${budKm(m) ? ' ready' : ''}${m.pid === budFocus ? ' focus' : ''}${tierOf(+m.sp) ? ' ' + tierOf(+m.sp) : ''}" data-i="${i}"><button class="bd-x" data-act="stop" aria-label="짝꿍에서 빼기">✕</button>${m.nw || budNew(m) ? '<i class="bd-new" aria-label="새 소식"></i>' : ''}<div class="bd-row"><div class="bd-pic${pkCls(P)}${P?.shiny ? ' shiny' : ''}" data-rk="${P ? rankOf(P) : ''}" style="--shue:${shinyHue(m.sp)}deg"><img alt="" src="${(P ? thumbP(P) : thumbOf(m.sp)) || ''}"><span class="bd-rk">${rkBadge(P)}</span></div><div class="bd-main"><div class="bd-name"><b class="${tnCls(m.sp)}">${esc(P ? nameOf(P) : SPECIES[m.sp].n)}</b>${sexHtml(P?.sex)}</div><div class="bd-ind">${indivHtml(m)}</div>`
       + (!evoKids(m.sp, P).length && CHILDREN[m.sp] ? `<div><span class="bd-tag">특별한 진화</span> <span class="bd-why">${esc(spWhy(P || m))}</span></div><div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>` : CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) || m.km < evoNeed(m) ? `<button class="bd-evobtn" data-act="evo"${budReady(m) ? '' : ' disabled'}>진화하기</button>` : `<span class="bd-why">${esc(evoWhy(evoKids(m.sp, P)[0]))}</span>`}</span><span><b>${fmtKm(Math.min(m.km, evoNeed(m)))}</b> / ${evoNeed(m)}km</span></div></div>` : `<div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>`)
       + `</div></div></div>`;
   }).join('');
@@ -8234,8 +8235,8 @@ async function evolveWin(P, card) {
   el.classList.remove('in'); bgmDuck(1, 1.2);
   await wait(350); el.hidden = true; el.className = ''; parts.innerHTML = ''; msg.hidden = false; ok.classList.remove('rise'); el.querySelector('.ef-bottom').classList.remove('gone');
   renderRun(); renderBox();
-  const rw = [P.fr > fr0 ? `<div class="ns ns-fr"><p><span style="color:#e04870">♥</span> 친밀도가 <b>${P.fr - fr0}</b> 올랐다!</p><div class="small">${esc(nameOf(P))} 친밀도 ${P.fr}/${FR_MAX}</div></div>` : '',
-    newTo ? `<div class="ns ns-g"><p><i class="coin" style="width:11px;height:11px;margin:0 6px 0 2px;vertical-align:-1px"></i><b>${NEW_G}G</b>를 받았다!</p><div class="small">도감에 새로 등록된 포켓몬 보너스</div></div>` : ''].filter(Boolean);
+  const rw = [P.fr > fr0 ? `<div class="ns ns-fr"><p style="display:flex;align-items:center;justify-content:center;gap:7px"><span style="color:#e04870">♥</span><span>친밀도가 <b>${P.fr - fr0}</b> 올랐다!</span></p><div class="small">${esc(nameOf(P))} 친밀도 ${P.fr}/${FR_MAX}</div></div>` : '',
+    newTo ? `<div class="ns ns-g"><p style="display:flex;align-items:center;justify-content:center;gap:7px"><i class="coin" style="width:11px;height:11px"></i><span><b>${NEW_G}G</b>를 받았다!</span></p><div class="small">도감에 새로 등록된 포켓몬 보너스</div></div>` : ''].filter(Boolean);
   if (rw.length && !notiOpen) {
     notiOpen = true; await wait(250);
     $('#notiBody').innerHTML = `<div class="noti-mons"><img alt="" src="${toSrc}"></div>` + rw.join('');
