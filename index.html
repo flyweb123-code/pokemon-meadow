@@ -5401,7 +5401,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.67';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.68';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8287,16 +8287,17 @@ api.szLoad = async L => { for (const o of L || []) { if (!SZB.on) return; const 
   api.szFocus = uid => { const m = monOf(uid); if (!m || !SZB.on) return false; szSelect([m]); wrap.scrollTo({ top: Math.max(0, S.oy + (m.y - (m.h || 60) / 2) * scale - wrap.clientHeight / 2), left: Math.max(0, S.ox + m.x * scale - wrap.clientWidth / 2), behavior: 'smooth' }); return true; };   /* v4.66 경완: 크기 조절 모드 찾기 → 그 포켓몬 자리로 스크롤 */
   api.szSel = uid => { const m = monOf(uid); if (m) szSelect([m]); };   /* v4.61 경완: 맵에서 누르면 늘 고른다 (다시 눌러도 크기 네모가 사라지지 않게, 취소는 빈 곳) */
   api.szPick = uid => { const m = monOf(uid); szSelect(!m || (stM === m && SZB.sel.size === 1) ? [] : [m]); };
-  api.markMon = uid => { stB?.remove(); stB = null; stM = null;
+  api.markMon = uid => { stB?.remove(); stB = null; stM = null; stDrag = null;
     for (const m of S.mons) { const on = m.uid === uid; m.el.classList.toggle('stMark', on); m.pin = on || !!m.szb; if (on) { stM = m; m.goal = null; if (m.state === 'move') setState(m, 'idle', 1); } }
     if (!stM) return; stB = document.createElement('div'); stB.className = 'stbox'; stB.innerHTML = '<i data-c="tl"></i><i data-c="tr"></i><i data-c="bl"></i><i data-c="br"></i>'; stM.liftEl.append(stB); stFit();
     stB.addEventListener('pointerdown', e => { const c = e.target.closest('i'); if (!c) return; e.preventDefault(); e.stopPropagation(); const r = stB.getBoundingClientRect(), top = c.dataset.c[0] === 't';
       const cx = r.left + r.width / 2, by = r.bottom, f = (x, y) => Math.abs(x - cx) + (top ? Math.max(0, by - y) : 0), d0 = Math.max(4, f(e.clientX, e.clientY)), sp = stM.sp, k0 = MON_SC[sp] || 1;
       stDrag = { id: e.pointerId, f, d0, sp, k0, k: k0 }; stB.classList.add('on'); try { stB.setPointerCapture(e.pointerId); } catch (er) {} });
-    stB.addEventListener('pointermove', e => { const d = stDrag; if (!d || e.pointerId !== d.id) return; const k = clamp(Math.round(d.k0 * d.f(e.clientX, e.clientY) / d.d0 * 20) / 20, .5, 2); if (k === d.k) return; d.k = k;
+    stB.addEventListener('pointermove', e => { const d = stDrag; if (!d || e.pointerId !== d.id) return; if (e.pointerType === 'mouse' && !(e.buttons & 1)) { stDrag = null; stB?.classList.remove('on'); return; }   /* v4.68 경완: 손을 뗐는데 끌기가 안 끝나 마우스만 올려도 커지던 문제 */ const k = clamp(Math.round(d.k0 * d.f(e.clientX, e.clientY) / d.d0 * 20) / 20, .5, 2); if (k === d.k) return; d.k = k;
       const o = { ...MON_SC }; if (k === 1) delete o[d.sp]; else o[d.sp] = k; api.setMonSc(o); stFit(); api.onMonSc?.(d.sp, k); });
     const up = e => { if (!stDrag || e.pointerId !== stDrag.id) return; stDrag = null; stB?.classList.remove('on'); suppressClick = performance.now(); };
     stB.addEventListener('pointerup', up); stB.addEventListener('pointercancel', up); stB.addEventListener('click', e => e.stopPropagation()); };
+  addEventListener('pointerup', e => { if (stDrag && e.pointerId === stDrag.id) { stDrag = null; stB?.classList.remove('on'); } }, true); addEventListener('pointercancel', () => { stDrag = null; stB?.classList.remove('on'); }, true);
   addEventListener('pointermove', e => { if (!stB || stDrag) return; const r = stB.getBoundingClientRect(), g = 16; stB.classList.toggle('hov', e.clientX > r.left - g && e.clientX < r.right + g && e.clientY > r.top - g && e.clientY < r.bottom + g); }, { passive: true });
   setInterval(() => { stFit(); if (SZB.on && !SZB.drag) { const k = szMons().map(m => (m.w | 0) + 'x' + (m.h | 0)).join(); if (k !== SZB.wk) { SZB.wk = k; SZB.rows(); } } }, 500);   /* v4.61 경완: 그림이 늦게 불려 크기가 바뀌면 격자 다시 맞추기 */
   api.removeMon = uid => { const m = monOf(uid); if (!m) return; removeMon(m, true); save(); };
