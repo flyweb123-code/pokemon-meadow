@@ -126,7 +126,9 @@
 #evoFull .ef-msg{background:var(--win);color:var(--win-ink);border:4px solid var(--frame);box-shadow:inset 0 0 0 3px var(--inner);padding:14px 18px;font-size:17px;line-height:1.5;min-height:3em}
 #evoFull .ef-msg .small{font-size:13px;color:var(--dim)}
 #evoFull .ef-card{color:var(--win-ink)}
-#evoFull .ef-ok{width:100%;display:block;font:inherit;font-size:16px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:11px 16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35),0 0 0 2px var(--inner);cursor:pointer}#evoFull .ef-ok[hidden]{display:none}
+#evoFull .ef-ok.rise{animation:efokin .38s cubic-bezier(.2,.9,.3,1)}@keyframes efokin{from{max-height:0;padding-block:0;border-width:0 3px;margin-top:-10px;opacity:0}to{max-height:60px;opacity:1}}
+#evoFull .ef-bottom.gone{opacity:0;transition:opacity .25s;pointer-events:none}#dexPop.evo{z-index:7100;background:rgba(5,6,14,.45)}
+#evoFull .ef-ok{width:100%;overflow:hidden;display:block;font:inherit;font-size:16px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:11px 16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35),0 0 0 2px var(--inner);cursor:pointer}#evoFull .ef-ok[hidden]{display:none}
 .pf-runs .runs{max-height:none}.pf-link{display:flex;align-items:center;gap:10px;width:100%;margin-top:14px;padding:14px 16px;border:3px solid var(--frame);background:var(--win);color:var(--win-ink);font:inherit;font-size:16px;text-align:left;cursor:pointer;box-shadow:3px 3px 0 rgba(0,0,0,.18)}.pf-link:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(0,0,0,.18)}.pf-link .pf-lt{font-weight:700;flex:1}.pf-link .pf-arr{font-size:12px;color:var(--dim)}
 .pf-runs .runs>:first-child{margin-top:0}
 .pf-diag{margin:14px 0 0;font-size:11px;line-height:1.4;color:#c03838;border:2px dashed #c03838;padding:3px 6px}.pf-diag:empty{display:none}
@@ -720,7 +722,7 @@ body.petting #dlg,body.petting #info{display:none!important}
 .pf-row .pf-arr{flex:none;font-size:10px;color:var(--dim)}
 #pfHatchBox{border-left-color:#4aa0e8}#pfEvoBox{border-left-color:#e86a9a}
 .pf-row.ready{border-color:#d8a020;border-left-color:#d8a020}.pf-row.ready .pr-km b{color:#c08010;font-size:14px}.pf-row.tk .pr-km b{color:#2a8a4a}
-.bd-card.focus{border-color:#f0a818;box-shadow:0 0 0 3px #ffe070,0 0 14px rgba(255,190,40,.7)}
+#mgr .bd-card.focus{outline:4px solid #ffc828;outline-offset:2px;box-shadow:0 0 0 2px #fff,0 0 18px 6px rgba(255,190,40,.75);animation:none}   /* v4.95 경완: 짝꿍 카드 기본 테두리·빛남에 가려 안 보이던 것 → outline 으로 */
 .pf-next .pf-box em{font-style:normal;font-size:12px;color:var(--dim);margin-top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pf-next .pf-box.ready{border-color:#d8a020}.pf-next .pf-box.ready b{color:#c08010;font-size:18px;padding:3px 0}
 .pf-next .pf-box.tk b{color:#2a8a4a}
@@ -5493,7 +5495,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.94';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.95';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5664,7 +5666,7 @@ Object.keys(SPECIES).map(Number).forEach(sp => {
 });
 const dexLocked = sp => !S.unlocked.has(+sp);
 // 도감 카드: 도감에서 누르면 새 창으로 뜨고, 좌우로 넘겨 이전·다음 포켓몬을 본다
-let cardSp = null;
+let cardSp = null, cardEvo = null;   // cardEvo: 진화 끝에 띄운 카드 — 넘기기 없이 확인만
 const dexOrd = sp => { const o = dexBtns[sp].style.order; return o === '' ? +sp : +o; };   // 등록순 맨 앞(order 0)도 그대로
 const cardList = () => Object.keys(dexBtns).filter(k => !dexBtns[k].hidden).map(Number).sort((a, b) => dexOrd(a) - dexOrd(b));
 async function openCard(sp, dir = 0) {
@@ -5674,7 +5676,7 @@ async function openCard(sp, dir = 0) {
   pop.hidden = false;
   const list = cardList(), i = list.indexOf(sp);
   $('#dpPos').textContent = `${i + 1} / ${list.length}`;
-  $('#dpHl').hidden = i <= 0; $('#dpHr').hidden = i < 0 || i >= list.length - 1;
+  $('#dpHl').hidden = !!cardEvo || i <= 0; $('#dpHr').hidden = !!cardEvo || i < 0 || i >= list.length - 1; $('#dpPos').hidden = !!cardEvo;
   const pic = $('#dpStage .dp-pic'), img = $('#dpImg');
   pic.classList.toggle('locked', lock);   // 넘길 때 그림은 그냥 바뀐다(슬라이드 없음)
   img.src = thumbOf(sp) || ''; img.alt = lock ? '???' : d.n;
@@ -5684,18 +5686,20 @@ async function openCard(sp, dir = 0) {
   $('#dpMeta').innerHTML = lock ? `<b class="cd-n">?????</b><span class="cd-g">??? 포켓몬</span><span class="cd-hw"><i>키</i>?.? m</span><span class="cd-hw"><i>몸무게</i>??.? kg</span>`
     : `<b class="cd-n">${esc(d.n)}</b><span class="cd-g">${esc(d.g || '')}</span><span class="cd-ty">${tyIcons(sp)}</span><span class="cd-hw"><i>키</i>${(d.h / 10).toFixed(1)} m</span><span class="cd-hw"><i>몸무게</i>${(d.w / 10).toFixed(1)} kg</span>`;
   $('#dpFx').innerHTML = lock ? '아직 만나지 못한 포켓몬이다.<br>알을 부화시켜 만나 보자.' : esc(d.fx || '');
-  const act = $('#dpAct'); act.hidden = dexMode !== 'buddy'; act.classList.toggle('vh', lock);   // 짝꿍 고르기 중엔 자리를 늘 차지해 창 크기가 그대로
+  const act = $('#dpAct'); act.hidden = dexMode !== 'buddy' && !cardEvo; act.classList.toggle('vh', lock && !cardEvo);
+  if (cardEvo) { act.textContent = '확인'; act.classList.remove('off'); return; }   // 짝꿍 고르기 중엔 자리를 늘 차지해 창 크기가 그대로
   if (!lock) {
     if (dexMode === 'buddy') { act.textContent = S.buds.some(b => b.sp === sp) ? '이미 짝꿍이에요' : '짝꿍으로 정하기'; act.classList.toggle('off', S.buds.some(b => b.sp === sp)); }
     else { const full = S.mons.length >= MAX_MONS, none = !freePoke(sp); act.textContent = full ? `필드가 꽉 찼어요 (${MAX_MONS}/${MAX_MONS})` : none ? '모두 필드에 나가 있어요' : '필드에 풀어놓기'; act.classList.toggle('off', full || none); }
   }
 }
-function cardStep(dir) { const list = cardList(), i = list.indexOf(cardSp), j = i + dir; if (j >= 0 && j < list.length) { sfx('tap'); openCard(list[j], dir); } }
-function closeCard() { $('#dexPop').hidden = true; cardSp = null; }
+function cardStep(dir) { if (cardEvo) return; const list = cardList(), i = list.indexOf(cardSp), j = i + dir; if (j >= 0 && j < list.length) { sfx('tap'); openCard(list[j], dir); } }
+function closeCard() { $('#dexPop').hidden = true; cardSp = null; if (cardEvo) { const r = cardEvo; cardEvo = null; $('#dexPop').classList.remove('evo'); r(); } }
 $('#dpClose').onclick = closeCard;
 $('#dexPop').addEventListener('click', e => { if (e.target.id !== 'dexPop') return; const d = sideTap($('#dexPop'), e); if (d) { const h = $(d < 0 ? '#dpHl' : '#dpHr'); if (!h.hidden) cardStep(d); return; } closeCard(); });
 $('#dpAct').onclick = async () => {
   const sp = cardSp; if (sp == null) return;
+  if (cardEvo) { closeCard(); return; }
   if (dexMode === 'buddy') { if (S.buds.some(b => b.sp === sp)) return; closeCard(); picked.clear(); picked.add(sp); await setBuddySp(sp); return; }
   // 바로 필드에 풀어놓는다
   const P = freePoke(sp); if (S.mons.length >= MAX_MONS || !P) return;
@@ -8188,14 +8192,16 @@ async function evolveWin(P, card) {
   // v4.89 경완: 축하 글만 먼저 → 확인 → 도감 카드 → 확인으로 끝. 친밀도·골드는 원래 화면 위 알림 창으로
   msg.innerHTML = `축하해! ${J({ name: nm }, '은/는')} ${J({ name: toN }, '으로/로')} 진화했다!`; msg.hidden = false;
   log(`축하해! ${b ? '짝꿍 ' : ''}${J({ name: nm },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`, [], true);
-  ok.hidden = false; ok.focus();
   const lift = () => { const bt = el.querySelector('.ef-bottom').getBoundingClientRect().top; el.style.setProperty('--sy', bt / 2 + 'px'); el.style.setProperty('--ss', Math.max(90, Math.min(220, bt - 50)) + 'px'); el.classList.add('fin'); };   // 새 모습은 아래 글 상자 위 빈 곳 가운데로
   lift(); save();
+  // v4.95 경완: 축하 글이 먼저 뜨고, 조금 있다가 글 상자가 밀려 올라가며 확인 버튼이 생긴다
+  await wait(1300); ok.hidden = false; ok.classList.remove('rise'); void ok.offsetWidth; ok.classList.add('rise'); ok.focus(); setTimeout(lift, 380);
   await new Promise(res => ok.onclick = res); sfx('tap');
-  msg.hidden = true; cardEl.innerHTML = dexInfoHtml(to); cardEl.hidden = false; requestAnimationFrame(lift);
-  await new Promise(res => ok.onclick = res);
+  // 그다음은 도감 메뉴의 그 도감 카드(빨간 도감)를 띄우고, 카드의 확인으로 끝
+  el.querySelector('.ef-bottom').classList.add('gone');
+  await new Promise(res => { cardEvo = res; $('#dexPop').classList.add('evo'); openCard(to); });
   shut = true; evoMusicFade(.8); sfx('tap'); el.classList.remove('in'); bgmDuck(1, 1.2);
-  await wait(350); el.hidden = true; el.className = ''; parts.innerHTML = ''; msg.hidden = false;
+  await wait(350); el.hidden = true; el.className = ''; parts.innerHTML = ''; msg.hidden = false; ok.classList.remove('rise'); el.querySelector('.ef-bottom').classList.remove('gone');
   open.forEach(x => x.hidden = false); if (!mgr.hidden) { renderBuddy(); renderMgr(true); } if (card) openPoke(P.id);   // 보던 창으로 돌아간다
   renderRun(); renderBox();
   const rw = [P.fr > fr0 ? `<div class="ns"><p><span style="color:#e04870">♥</span> 친밀도가 <b>${P.fr - fr0}</b> 올랐다!</p><div class="small">${esc(nameOf(P))} 친밀도 ${P.fr}/${FR_MAX}</div></div>` : '',
