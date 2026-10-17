@@ -5401,7 +5401,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.66';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.67';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8280,6 +8280,8 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     saveFrozen = SZB.sf; const K = SZB.keep || []; SZB.keep = null; for (const o of K) { const m = await spawn(o.sp, { ...o, quiet: true }); m.studio = true; } save(); };
   api.szAdd = async sp => { if (!SZB.on || S.mons.some(m => m.szb && m.sp === sp)) return null; const m = await spawn(sp, { x: XL + 30, y: 200, quiet: true }); if (!SZB.on) { removeMon(m, true); return null; } m.szb = m.pin = m.frz = true; m.studio = true; m.el.classList.add('szb'); m.state = 'idle'; m.szC = szFree(new Set(szMons().filter(o => o !== m && o.szC != null).map(o => o.szC))); SZB.rows(); return m.uid; };
   api.szList = () => S.mons.filter(m => m.szb).map(m => ({ uid: m.uid, sp: m.sp, name: m.name }));
+api.szDump = () => szMons().map(m => ({ sp: m.sp, c: m.szC ?? null, mv: m.szMv ? [Math.round(m.x), Math.round(m.y)] : null }));   /* v4.67 경완: 크기 조절 모드 작업을 다른 화면 갔다 와도 그대로 (작업실이 저장했다 다시 넣음) */
+api.szLoad = async L => { for (const o of L || []) { if (!SZB.on) return; const m = monOf(await api.szAdd(o.sp)); if (!m) continue; if (o.mv) { m.szMv = true; m.szC = null; m.x = o.mv[0]; m.y = o.mv[1]; } else if (o.c != null) m.szC = o.c; } SZB.rows(); };
   api.szRemove = uid => { const m = monOf(uid); if (!m) return; SZB.sel.delete(m); if (stM === m) api.markMon(null); removeMon(m, true); SZB.rows(); };
   api.szClear = () => { SZB.sel.clear(); api.markMon(null); for (const m of S.mons.filter(m => m.szb)) removeMon(m, true); SZB.rows(); };
   api.szFocus = uid => { const m = monOf(uid); if (!m || !SZB.on) return false; szSelect([m]); wrap.scrollTo({ top: Math.max(0, S.oy + (m.y - (m.h || 60) / 2) * scale - wrap.clientHeight / 2), left: Math.max(0, S.ox + m.x * scale - wrap.clientWidth / 2), behavior: 'smooth' }); return true; };   /* v4.66 경완: 크기 조절 모드 찾기 → 그 포켓몬 자리로 스크롤 */
