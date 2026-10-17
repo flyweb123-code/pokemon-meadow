@@ -707,6 +707,17 @@ body.petting #dlg,body.petting #info{display:none!important}
 .pf-box{border:3px solid var(--frame);background:var(--win);padding:12px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
 .pf-box span{font-size:12px;color:var(--dim)}.pf-box b{font-size:24px;line-height:1.1;color:var(--win-ink)}.pf-box i{font-style:normal;font-size:12px;color:var(--dim)}
 .pf-box b{transition:color .3s}
+.pf-rows{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.pf-row{display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box;padding:8px 10px 8px 8px;border:3px solid var(--frame);border-left-width:6px;background:var(--win);color:var(--win-ink);font:inherit;text-align:left;cursor:pointer}
+.pf-row:active{transform:translateY(1px)}.pf-row[disabled]{cursor:default;opacity:.85}
+.pr-pic{flex:none;width:44px;height:44px;display:grid;place-items:center;background:rgba(0,0,0,.05);box-shadow:inset 0 0 0 2px rgba(0,0,0,.08)}.pr-pic img{width:44px;height:44px;image-rendering:pixelated}.pr-pic .egg{width:26px;height:32px;margin:0}
+.pr-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.pr-t{font-size:12px;color:var(--dim)}.pr-mid em{font-style:normal;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr-bar{display:block;height:6px;background:rgba(0,0,0,.1);margin-top:3px}.pr-bar i{display:block;height:100%;width:0;background:#4aa0e8;transition:width .4s steps(6,end)}#pfEvoB{background:#e86a9a}
+.pr-km{flex:none;text-align:right;white-space:nowrap}.pr-km b{font-size:20px}.pr-km i{font-style:normal;font-size:12px;color:var(--dim);margin-left:2px}
+.pf-row .pf-arr{flex:none;font-size:10px;color:var(--dim)}
+#pfHatchBox{border-left-color:#4aa0e8}#pfEvoBox{border-left-color:#e86a9a}
+.pf-row.ready{border-color:#d8a020;border-left-color:#d8a020}.pf-row.ready .pr-km b{color:#c08010;font-size:14px}.pf-row.tk .pr-km b{color:#2a8a4a}
+.bd-card.focus{border-color:#f0a818;box-shadow:0 0 0 3px #ffe070,0 0 14px rgba(255,190,40,.7)}
 .pf-next .pf-box em{font-style:normal;font-size:12px;color:var(--dim);margin-top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pf-next .pf-box.ready{border-color:#d8a020}.pf-next .pf-box.ready b{color:#c08010;font-size:18px;padding:3px 0}
 .pf-next .pf-box.tk b{color:#2a8a4a}
@@ -1436,9 +1447,9 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
       </section>
       <section class="set-sec pf-sec pf-next">   <!-- v4.84 경완: 가장 빠른 부화·진화까지 남은 거리 (걸으면 실시간으로 줄어든다) -->
         <h4>다음까지</h4>
-        <div class="pf-grid">
-          <div class="pf-box" id="pfHatchBox"><span>부화까지</span><b id="pfHatch">-</b><i id="pfHatchU">km</i><em id="pfHatchW"></em></div>
-          <div class="pf-box" id="pfEvoBox"><span>진화까지</span><b id="pfEvo">-</b><i id="pfEvoU">km</i><em id="pfEvoW"></em></div>
+        <div class="pf-rows">   <!-- v4.92 경완: 오늘 박스와 다르게 한 줄씩, 알·포켓몬 그림 + 진행 막대, 누르면 그 알·짝꿍으로 -->
+          <button type="button" class="pf-row" id="pfHatchBox"><span class="pr-pic" id="pfHatchP"></span><span class="pr-mid"><span class="pr-t">부화까지</span><em id="pfHatchW"></em><span class="pr-bar"><i id="pfHatchB"></i></span></span><span class="pr-km"><b id="pfHatch">-</b><i id="pfHatchU">km</i></span><span class="pf-arr">▶</span></button>
+          <button type="button" class="pf-row" id="pfEvoBox"><span class="pr-pic" id="pfEvoP"></span><span class="pr-mid"><span class="pr-t">진화까지</span><em id="pfEvoW"></em><span class="pr-bar"><i id="pfEvoB"></i></span></span><span class="pr-km"><b id="pfEvo">-</b><i id="pfEvoU">km</i></span><span class="pf-arr">▶</span></button>
         </div>
       </section>
       <button class="pf-link" id="pfRunBtn" type="button"><span class="pf-lt">런닝 기록</span><span class="tcount" id="runTotal"></span><span class="pf-arr">▶</span></button>
@@ -2454,8 +2465,9 @@ function ring(x, y, cls = '') { const d = document.createElement('div'); d.class
 const fieldSeen = m => !document.hidden && !m.hidden && !document.body.classList.contains('sheet-open') && $('#set').hidden;
 function frPop(m, n = 1) { const d = document.createElement('div'); d.className = 'frpop'; d.innerHTML = '<b>♥</b>+' + n; d.style.left = m.x + 'px'; d.style.top = (m.y - m.h - m.lift - 6) + 'px'; d.addEventListener('animationend', () => d.remove()); fxEl.append(d); }
 // v3.50 경완: 말풍선 그림 이모지는 도트 그림으로 (😋 냠냠 · 💦 땀 · ☀ 햇볕 · ☾ 달)
-const PIXE = (() => { const P = { k: '#4a3010', y: '#ffd23c', e: '#3a2410', m: '#8a3a10', t: '#e8506a', b: '#4aa8f0', l: '#d8f0ff', K: '#1f5a9a', o: '#f08a1c', w: '#fff6b0', Y: '#ffe27a', O: '#b88a20' };
+const PIXE = (() => { const P = { k: '#4a3010', y: '#ffd23c', e: '#3a2410', m: '#8a3a10', t: '#e8506a', b: '#4aa8f0', l: '#d8f0ff', K: '#1f5a9a', o: '#f08a1c', w: '#fff6b0', Y: '#ffe27a', O: '#b88a20', R: '#ec3b3b', D: '#7a1418', H: '#ff9a8a' };
   const M = {
+    '💢': ['............', '.DDD....DDD.', '.DHRD..DRHD.', '..DRD..DRD..', '...DD..DD...', '............', '............', '...DD..DD...', '..DRD..DRD..', '.DHRD..DRHD.', '.DDD....DDD.', '............'],   // v4.92 경완: 짜증 말풍선 = 만화 빠직
     '😋': ['...kkkkkk...', '..kyyyyyyk..', '.kyyyyyyyyk.', 'kyyeyyyyeyyk', 'kyeyeyyeyeyk', 'kyyyyyyyyyyk', 'kyymyyyymyyk', 'kyyymmmmyyyk', '.kyyyttyyyk.', '..kkkttkkk..', '....kttk....', '.....kk.....'],
     '💦': ['...K........', '..KbK.......', '..KbK.......', '.KblbK......', 'KblbbbK..K..', 'KbbbbbK.KbK.', 'KbbbbbK.KbK.', '.KbbbK.KblbK', '..KKK..KbbbK', '.......KbbbK', '........KKK.', '............'],
     '☀': ['.....oo.....', '.o...oo...o.', '..o......o..', '....oooo....', '...oyyyyo...', 'oo.oywyyo.oo', 'oo.oyyyyo.oo', '...oyyyyo...', '....oooo....', '..o......o..', '.o...oo...o.', '.....oo.....'],
@@ -2483,6 +2495,7 @@ const BUBK_M = Object.fromEntries(BUBK.map(r => [r[0], r])), SCN_M = Object.from
 let BUB_OV = {};   // 장면 id → 바꾼 말풍선 키 ('' = 이 장면엔 말풍선 없음)
 function emote(m, text, cls = '', dur = 2.2, sc = '') {
   if (sc && sc in BUB_OV) { const k = BUB_OV[sc], B = BUBK_M[k]; if (!B) return; text = B[1] ?? shoutOf(m.sp); cls = B[2]; }
+  if (text === '#') text = '💢';
   m.bub.className = 'bubble ' + cls; if (PIXE[text]) m.bub.innerHTML = PIXE[text]; else m.bub.textContent = text; m.bub.hidden = false; m.bubT = dur;
   m.bub.style.animation = 'none'; void m.bub.offsetWidth; m.bub.style.animation = '';
 }
@@ -5455,7 +5468,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.91';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.92';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6024,7 +6037,7 @@ $('#ppBud').onclick = () => {
   if (slot == null) sfx('tap'); renderBox(); if (slot != null) { closePoke(); setMgrTab('buddy'); } else openPoke(P.id);   // 짝꿍 칸에서 왔으면 짝꿍 탭으로, 아니면 카드에 남아 버튼만 눌린 모양으로
   evoNotice(P.sp, P);
 };
-new MutationObserver(() => { if (mgr.hidden) { closePoke(); budPick = null; boxFromSlot = false; if (mgrTab === 'buddy') seeBuds(); } }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
+new MutationObserver(() => { if (mgr.hidden) { closePoke(); budPick = null; budFocus = null; boxFromSlot = false; if (mgrTab === 'buddy') seeBuds(); } }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
 function pokeOpen() { return (!mgr.hidden && mgrG === 'poke') || (!sheet.hidden && dexMode !== 'buddy'); }
 function fldOpen() { return !mgr.hidden && mgrG === 'fld'; }
 function menuTo(isOpen, g) { const was = isOpen(); closeToggles(); hideSheets(); if (was) return; if (g === 'poke') { boxSort = 'new'; boxDir = 1; try { localStorage.setItem('pk-box-sort', 'new'); localStorage.setItem('pk-box-dir', 1); } catch (e) {} }   /* v4.53 경완: 포켓몬 메뉴를 다시 열면 박스는 늘 날짜(최신)순 */ if (budPick != null) { budPick = null; closePoke(); } const t = g === 'poke' ? 'box' : g === 'fld' ? 'field' : lastTab[g];   /* v4.04 경완: 포켓몬 메뉴는 늘 포켓몬(박스) 탭부터. v4.48: 필드 메뉴도 늘 필드 탭부터 */ if (t === 'dex') { setMgrTab('dex'); return; } openMgr(); setMgrTab(t); }
@@ -6989,17 +7002,20 @@ $('#trSex').addEventListener('click', () => { const t = trOf(); t.sex = t.sex ==
 const kmUp = v => (Math.ceil(v * 100 - 1e-6) / 100).toFixed(2);   // 남은 거리는 올림 (다 차기 전엔 0.00 이 안 보이게)
 function renderNext() {
   if (!$('#pfHatch')) return;
-  const set = (k, v, unit, who, ready) => { const b = $('#pf' + k), box = $('#pf' + k + 'Box'), prev = b.textContent; b.textContent = v; $('#pf' + k + 'U').textContent = unit; $('#pf' + k + 'W').textContent = who; box.classList.toggle('ready', !!ready);
+  const set = (k, v, unit, who, ready, pic, pct, go) => { const b = $('#pf' + k), box = $('#pf' + k + 'Box'), prev = b.textContent; b.textContent = v; $('#pf' + k + 'U').textContent = unit; $('#pf' + k + 'W').textContent = who; box.classList.toggle('ready', !!ready);
+    const P = $('#pf' + k + 'P'); if (P.dataset.k !== pic) { P.dataset.k = pic; P.innerHTML = pic; } $('#pf' + k + 'B').style.width = Math.round(clamp(pct, 0, 1) * 100) + '%'; box.disabled = !go; box._go = go;
     if (prev !== v && prev !== '-' && !ready && unit) { box.classList.add('tk'); clearTimeout(box._t); box._t = setTimeout(() => box.classList.remove('tk'), 900); } };
-  const eg = S.eggs.map(e => ({ e, r: Math.max(0, e.need - e.km) })).sort((a, b) => a.r - b.r)[0];
-  if (!eg) set('Hatch', '-', '', '부화기에 알이 없어요');
-  else if (eg.r <= 0) set('Hatch', '부화 준비 완료!', '', `${GRADE[eg.e.g].n} 알`, true);
-  else set('Hatch', kmUp(eg.r), 'km', `${GRADE[eg.e.g].n} 알`);
+  const eg = S.eggs.map((e, i) => ({ e, i, r: Math.max(0, e.need - e.km) })).sort((a, b) => a.r - b.r)[0];
+  const goEgg = eg && (() => { closeToggles(); hideSheets(); runTab = 'egg'; bagNext = false; eggSel = eg.e; eggSelI = eg.i; eggNone = false; openRun(); });
+  if (!eg) set('Hatch', '-', '', '부화기에 알이 없어요', false, '', 0, null);
+  else set('Hatch', eg.r <= 0 ? '준비 완료!' : kmUp(eg.r), eg.r <= 0 ? '' : 'km', `${GRADE[eg.e.g].n} 알`, eg.r <= 0, eggHtml(eg.e.g), eg.e.km / eg.e.need, goEgg);
   const ev = S.buds.map(b => { const P = boxOf(b.pid); return evoKids(b.sp, P).length ? { b, P, r: Math.max(0, evoNeed(b) - (b.km || 0)) } : null; }).filter(Boolean).sort((a, b) => a.r - b.r)[0];
-  if (!ev) set('Evo', '-', '', S.buds.length ? '진화할 짝꿍이 없어요' : '짝꿍이 없어요');
-  else if (ev.r <= 0) set('Evo', '진화 준비 완료!', '', ev.P ? nameOf(ev.P) : SPECIES[ev.b.sp].n, true);
-  else set('Evo', kmUp(ev.r), 'km', ev.P ? nameOf(ev.P) : SPECIES[ev.b.sp].n);
+  const goEvo = ev && (() => { closeToggles(); hideSheets(); budFocus = ev.b.pid; menuTo(fldOpen, 'fld'); setMgrTab('buddy'); });
+  if (!ev) set('Evo', '-', '', S.buds.length ? '진화할 짝꿍이 없어요' : '짝꿍이 없어요', false, '', 0, null);
+  else { const src = (ev.P ? thumbP(ev.P) : thumbOf(ev.b.sp)) || ''; set('Evo', ev.r <= 0 ? '준비 완료!' : kmUp(ev.r), ev.r <= 0 ? '' : 'km', ev.P ? nameOf(ev.P) : SPECIES[ev.b.sp].n, ev.r <= 0, src ? `<img alt="" src="${src}">` : '', (ev.b.km || 0) / evoNeed(ev.b), goEvo); }
 }
+let budFocus = null;   // v4.92: 프로필에서 눌러 온 짝꿍 카드 테두리
+for (const k of ['Hatch', 'Evo']) $('#pf' + k + 'Box')?.addEventListener('click', e => { const g = e.currentTarget._go; if (g) { sfx('tap'); g(); } });
 function renderProfile() {
   renderTrainer();
   if (!$('#pfWalk')) return; const T = today(), live = S.ped && S.ped.d === T.d, k0 = new Date(); k0.setHours(0, 0, 0, 0);
@@ -8001,7 +8017,7 @@ function renderBuddy() {
     const i = S.buds.findIndex(b => b.slot === s), m = S.buds[i];
     if (!m) return `<button class="bd-empty" data-act="pick" data-i="${s}" aria-label="짝꿍 추가">+</button>`;
     const P = boxOf(m.pid);
-    return `<div class="bd-card${budReady(m) ? ' ready' : ''}${tierOf(+m.sp) ? ' ' + tierOf(+m.sp) : ''}" data-i="${i}"><button class="bd-x" data-act="stop" aria-label="짝꿍에서 빼기">✕</button>${m.nw ? '<i class="bd-new" aria-label="새 짝꿍"></i>' : ''}<div class="bd-row"><div class="bd-pic${pkCls(P)}${P?.shiny ? ' shiny' : ''}" data-rk="${P ? rankOf(P) : ''}" style="--shue:${shinyHue(m.sp)}deg"><img alt="" src="${(P ? thumbP(P) : thumbOf(m.sp)) || ''}"><span class="bd-rk">${rkBadge(P)}</span></div><div class="bd-main"><div class="bd-name"><b class="${tnCls(m.sp)}">${esc(P ? nameOf(P) : SPECIES[m.sp].n)}</b>${sexHtml(P?.sex)}</div><div class="bd-ind">${indivHtml(m)}</div>`
+    return `<div class="bd-card${budReady(m) ? ' ready' : ''}${m.pid === budFocus ? ' focus' : ''}${tierOf(+m.sp) ? ' ' + tierOf(+m.sp) : ''}" data-i="${i}"><button class="bd-x" data-act="stop" aria-label="짝꿍에서 빼기">✕</button>${m.nw ? '<i class="bd-new" aria-label="새 짝꿍"></i>' : ''}<div class="bd-row"><div class="bd-pic${pkCls(P)}${P?.shiny ? ' shiny' : ''}" data-rk="${P ? rankOf(P) : ''}" style="--shue:${shinyHue(m.sp)}deg"><img alt="" src="${(P ? thumbP(P) : thumbOf(m.sp)) || ''}"><span class="bd-rk">${rkBadge(P)}</span></div><div class="bd-main"><div class="bd-name"><b class="${tnCls(m.sp)}">${esc(P ? nameOf(P) : SPECIES[m.sp].n)}</b>${sexHtml(P?.sex)}</div><div class="bd-ind">${indivHtml(m)}</div>`
       + (!evoKids(m.sp, P).length && CHILDREN[m.sp] ? `<div><span class="bd-tag">특별한 진화</span> <span class="bd-why">${esc(spWhy(P || m))}</span></div><div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>` : CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) || m.km < evoNeed(m) ? `<button class="bd-evobtn" data-act="evo"${budReady(m) ? '' : ' disabled'}>진화하기</button>` : `<span class="bd-why">${esc(evoWhy(evoKids(m.sp, P)[0]))}</span>`}</span><span><b>${fmtKm(Math.min(m.km, evoNeed(m)))}</b> / ${evoNeed(m)}km</span></div></div>` : `<div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>`)
       + `</div></div></div>`;
   }).join('');
