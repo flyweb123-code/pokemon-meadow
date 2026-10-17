@@ -2632,7 +2632,7 @@ function petDone() {
   const m = petM.m, P = boxOf(m.pid); haloJoy(m);
   const wash = petM.wash; let fr = 0; if (P && (wash || ((m.joy ?? 60) < 100 && dayCap(m, 'pet', PET_DAY)))) { fr = wash ? WASH_FR : PET_FR; if (fr > 0) addFr(P.id, fr); }
   if (wash) { m.clean = 100; dirtVis(m); m.joy = clamp((m.joy ?? 60) + 10); washShine(m); $('#washBrush').hidden = true; }
-  else { m.social = clamp(m.social - 20); m.joy = 100; }
+  else { m.social = clamp(m.social - 20); m.joy = clamp((m.joy ?? 60) + 20); }   /* v4.35 경완: 쓰다듬기는 즐거움 +20 (예전엔 한 번에 100) */
   haptic(2); setTimeout(() => haptic(2), 110); setTimeout(() => haptic(1), 220); sfx('pickup'); if (fr) frPop(m, fr);
   log(wash ? (fr ? `${J(m,'을/를')} 깨끗하게 빗겨 주자 반짝반짝 윤이 나며 아주 좋아했다.` : `${J(m,'을/를')} 깨끗하게 빗겨 주었다. 반짝반짝!`)
     : fr ? `${J(m,'은/는')} 쓰다듬어 주자 아주 좋아했다.` : `${J(m,'은/는')} 쓰다듬어 주자 기분 좋은 듯 눈을 가늘게 떴다.`, [m]);
