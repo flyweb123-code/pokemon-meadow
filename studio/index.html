@@ -468,7 +468,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.51';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.52';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -1272,7 +1272,8 @@ const IVD = (() => { let d = [1]; for (let k = 0; k < 6; k++) { const n = new Ar
 const rkC = {}; const rkDist = b => rkC[b] || (rkC[b] = (() => { const o = {}, sh = (b - 400) / 8; RANKS.forEach(([r]) => o[r] = 0); IVD.forEach((p, s) => { const sc = s + sh; o[(RANKS.find(([, v]) => sc >= v) || RANKS[RANKS.length - 1])[0]] += p; }); return o; })());
 const bstOf = sp => (A.SPECIES[sp]?.bs || []).reduce((a, b) => a + b, 0);
 let rkKids = null; const rkFam = sp => { if (!rkKids) { rkKids = {}; for (const k in A.SPECIES) { const f = A.SPECIES[k].fr; if (f) (rkKids[f] = rkKids[f] || []).push(+k); } } return [sp, ...(rkKids[sp] || []).flatMap(rkFam)]; };
-const rkFamB = sp => { let r = sp; while (A.SPECIES[r]?.fr) r = A.SPECIES[r].fr; const F = rkFam(r); return Math.round(F.reduce((a, x) => a + bstOf(x), 0) / F.length * 10) / 10; };
+const RK_FORM = { 746: [175, 620], 774: [440, 500], 555: [480, 540] }, rkFormB = sp => RK_FORM[sp] ? (RK_FORM[sp][0] + RK_FORM[sp][1]) / 2 : bstOf(sp);   // 게임 FORM_BS 와 같음: 모습이 바뀌는 종은 두 모습 평균
+const rkFamB = sp => { let r = sp; while (A.SPECIES[r]?.fr) r = A.SPECIES[r].fr; const F = rkFam(r); return Math.round(F.reduce((a, x) => a + rkFormB(x), 0) / F.length * 10) / 10; };
 let rkSort = store.get('st-rk-sort') || 'p', rkQ = '';
 const rkBar = (d, big) => `<div class="rkbar${big ? ' big' : ''}">${RANKS.map(([r]) => d[r] > 0 ? `<i style="width:${d[r] * 100}%;background:${RKC[r]}" title="${r} ${pct(d[r])}"></i>` : '').join('')}</div>`;
 const rkChip = r => `<span class="rk" style="background:${RKC[r]}">${r}</span>`;
@@ -1781,6 +1782,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.52', '10월 17일', ['알 › 랭크: 모습이 바뀌는 약어리·메테노·불비달마는 두 모습 종족값 평균 (게임 v4.56)']],
   ['2.51', '10월 17일', ['알 › 랭크: 랭크는 진화 가족 평균 종족값으로 계산 (게임 v4.54, 진화해도 랭크 그대로), 부화/진화 전환 버튼 제거']],
   ['2.50', '10월 17일', ['알 › 랭크: 랭크별 전체 출현 확률, 포켓몬별 랭크 확률 (부화했을 때 / 끝까지 진화하면), 검토 요약']],
   ['2.49', '10월 16일', ['밸런스: 빗질 친밀도는 씻길 때마다 고정 +3 (씻긴 양 비례 대신, 게임 v4.29)']],

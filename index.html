@@ -5367,7 +5367,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.55';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.56';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6329,7 +6329,8 @@ const ivSum = p => p.iv.reduce((a, b) => a + b, 0);
 // 종족값: 종마다 정해진 기본 능력치 6개(본가 게임 데이터). 합계가 400보다 높을수록 랭크 점수에 더해진다(8당 1점)
 const bsOf = sp => SPECIES[sp]?.bs || [0, 0, 0, 0, 0, 0];
 const bsSum = sp => bsOf(sp).reduce((a, b) => a + b, 0);
-const FAM_AVG = {}, famBs = sp => { const r = baseOf(sp); if (FAM_AVG[r] == null) { const F = famOf(r); FAM_AVG[r] = F.reduce((a, x) => a + bsSum(x), 0) / F.length; } return FAM_AVG[r]; };   // v4.54 경완: 진화 가족(진화 전·진화형 전부) 종족값 합계 평균
+const FORM_BS = { 746: [175, 620], 774: [440, 500], 555: [480, 540] }, formBs = sp => FORM_BS[sp] ? (FORM_BS[sp][0] + FORM_BS[sp][1]) / 2 : bsSum(sp);   // v4.56 경완: 싸우다 모습이 바뀌는 종(약어리 단독·군집, 메테노 유성·코어, 불비달마 노말·달마)은 두 모습 종족값 평균
+const FAM_AVG = {}, famBs = sp => { const r = baseOf(sp); if (FAM_AVG[r] == null) { const F = famOf(r); FAM_AVG[r] = F.reduce((a, x) => a + formBs(x), 0) / F.length; } return FAM_AVG[r]; };   // v4.54 경완: 진화 가족(진화 전·진화형 전부) 종족값 합계 평균
 const rankScore = p => ivSum(p) + (famBs(p.sp) - 400) / 8;   // 랭크는 가족 평균 종족값으로 → 진화해도 랭크가 그대로
 const rankOf = p => (RANKS.find(([, v]) => rankScore(p) >= v) || RANKS[RANKS.length - 1])[0];   /* 종족값이 아주 낮으면 점수가 0 아래로 내려갈 수 있다 → F */
 // 능력치 = 개체값 + 종족값 한 줄로 (따로 보이지 않는다, 총합 줄 없음). 막대는 200 을 꽉 찬 것으로, 개체값 31 이면 금색
