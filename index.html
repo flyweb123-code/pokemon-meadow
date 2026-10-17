@@ -292,7 +292,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 @property --fk{syntax:'<number>';inherits:true;initial-value:1}
 @keyframes fireK{0%{--fk:.95}30%{--fk:1.05}55%{--fk:.99}80%{--fk:1.07}100%{--fk:.95}}
 #night{animation:fireK 3s ease-in-out infinite}
-.flame{position:absolute;width:32px;height:44px;margin:-46px 0 0 -16px;background-size:192px 44px;image-rendering:pixelated;animation:fireK 3s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(255,140,30,.9))}@keyframes flame{to{background-position:-192px 0}}
+.flame{position:absolute;width:32px;height:44px;margin:-40px 0 0 -16px;background-size:192px 44px;image-rendering:pixelated;animation:fireK 3s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(255,140,30,.9))}@keyframes flame{to{background-position:-192px 0}}
 .flame::before{content:"";position:absolute;left:50%;top:70%;width:96px;height:64px;margin:-32px 0 0 -48px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,180,70,.4),rgba(255,120,30,0));transform:scale(var(--fk));opacity:calc(var(--fk) - .15);z-index:-1}
 .flame i{position:absolute;left:50%;bottom:34%;width:2px;height:2px;background:#ffd060;box-shadow:0 0 3px #ff8a20;opacity:0;animation:ember var(--d) linear var(--dl) infinite}@keyframes ember{0%{transform:translate(0,0);opacity:1}70%{opacity:1}100%{transform:translate(var(--x),-50px);opacity:0}}
 .lily{position:absolute;pointer-events:none;image-rendering:pixelated;background-size:100% 100%;translate:-50% -50%;z-index:1;animation:lily var(--d) ease-in-out var(--dl) infinite}@keyframes lily{0%,100%{transform:translateY(0) rotate(calc(var(--a) * -1))}50%{transform:translateY(2px) rotate(var(--a))}}
@@ -452,7 +452,7 @@ ol.log li.big .txt{color:#c03838}
 @keyframes dangle{0%,100%{transform:scaleX(var(--f,1)) rotate(-6deg)}50%{transform:scaleX(var(--f,1)) rotate(6deg)}}
 .mon.drop-target img,.mon.drop-target .spr{filter:drop-shadow(0 0 1px #fff) drop-shadow(0 0 3px #f8d030) drop-shadow(0 0 6px #f8d030)}
 .bubble.star{color:#c08000;background:#fff6c8}
-.mon.wet img,.mon.wet .spr{clip-path:inset(-80px -80px 38% -80px)}   /* v4.70 경완: 물에 잠긴 아래쪽만 자른다 — 위·옆까지 그림 상자로 자르면 후광(쓰다듬기 점멸·랭크 빛)이 네모 상자로 잘려 보였다 */
+.mon.wet img,.mon.wet .spr{clip-path:polygon(-80px -80px,calc(100% + 80px) -80px,calc(100% + 80px) 62%,100.0% 62%,90.0% 62%,90.0% 63%,80.0% 63%,80.0% 62%,70.0% 62%,70.0% 61%,60.0% 61%,60.0% 60%,50.0% 60%,50.0% 61%,40.0% 61%,40.0% 63%,30.0% 63%,30.0% 64%,20.0% 64%,20.0% 63%,10.0% 63%,10.0% 61%,0.0% 61%,-80px 61%);animation:wline 1.6s steps(1,end) infinite}@keyframes wline{0%{clip-path:polygon(-80px -80px,calc(100% + 80px) -80px,calc(100% + 80px) 62%,100.0% 62%,90.0% 62%,90.0% 63%,80.0% 63%,80.0% 62%,70.0% 62%,70.0% 61%,60.0% 61%,60.0% 60%,50.0% 60%,50.0% 61%,40.0% 61%,40.0% 63%,30.0% 63%,30.0% 64%,20.0% 64%,20.0% 63%,10.0% 63%,10.0% 61%,0.0% 61%,-80px 61%)}50%{clip-path:polygon(-80px -80px,calc(100% + 80px) -80px,calc(100% + 80px) 61%,100.0% 61%,90.0% 61%,90.0% 60%,80.0% 60%,80.0% 61%,70.0% 61%,70.0% 63%,60.0% 63%,60.0% 64%,50.0% 64%,50.0% 63%,40.0% 63%,40.0% 62%,30.0% 62%,30.0% 61%,20.0% 61%,20.0% 62%,10.0% 62%,10.0% 63%,0.0% 63%,-80px 63%)}}   /* v4.70 경완: 물에 잠긴 아래쪽만 자른다 — 위·옆까지 그림 상자로 자르면 후광(쓰다듬기 점멸·랭크 빛)이 네모 상자로 잘려 보였다 */
 .mon .ripple{position:absolute;left:0;top:0;width:60px;height:14px;margin:-7px 0 0 -30px;border-radius:50%;border:2px solid rgba(255,255,255,.55);display:none}
 .mon.wet .ripple{display:none}
 .mon.wet .shadow{display:none}
@@ -1141,8 +1141,8 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .frmax .fm-hearts{color:#e04870;font-size:16px;letter-spacing:2px;margin:2px 0}
 .frmax .mvcard{margin:8px auto 2px;max-width:260px}
 @keyframes fmhop{50%{transform:translateY(-6px)}}
-.frpre{position:fixed;inset:0;z-index:9500;pointer-events:auto;touch-action:none;background:rgba(6,4,14,0);animation:fpdim 2.8s linear forwards}
-.frpre .fp-l{position:absolute;left:50%;top:46%;width:260px;height:260px;margin:-130px 0 0 -130px;border-radius:50%;background:radial-gradient(circle,#fff 0,#fff6fa 12%,rgba(255,200,226,.85) 26%,rgba(255,140,190,.35) 48%,rgba(255,120,180,0) 70%);opacity:0;transform:scale(.05);animation:fplight 2.8s linear forwards}
+.frpre{position:fixed;inset:0;z-index:9500;pointer-events:auto;touch-action:none;background:rgba(6,4,14,0);animation:fpdim 2s linear forwards}
+.frpre .fp-l{position:absolute;left:50%;top:46%;width:260px;height:260px;margin:-130px 0 0 -130px;border-radius:50%;background:radial-gradient(circle,#fff 0,#fff6fa 12%,rgba(255,200,226,.85) 26%,rgba(255,140,190,.35) 48%,rgba(255,120,180,0) 70%);opacity:0;transform:scale(.05);animation:fplight 2s linear forwards}
 .frpre .fp-l::after{content:"";position:absolute;inset:44%;border-radius:50%;background:#fff;box-shadow:0 0 18px 8px #fff;animation:fpcore .5s steps(2,end) infinite}
 .frpre .fp-fl{position:absolute;inset:0;background:#fff;opacity:0}
 .frpre .fp-fl.on{animation:fpflash .55s steps(5,end) forwards}
@@ -2578,7 +2578,7 @@ function noticeBerry(b) {
 }
 // 열매를 고른 채 포켓몬을 누르면: 그 포켓몬 바로 앞에 그 포켓몬 몫의 열매를 놓는다 (다른 포켓몬은 안 먹는다)
 function feedOne(m) {
-  setTool('look'); sfx('tap');
+  setTool('look'); sfx('tap'); m.fedT = performance.now() + 12000;
   userAct(m);
   if (m.state === 'sleep') wake(m, `${J(m,'이/가')} 열매 냄새에 눈을 번쩍 떴다.`);   // 자고 있어도 직접 주면 바로 깬다
   if (isFull(m)) { emote(m, '배불러', '', 2.2, 'full-refuse'); log(`${J(m,'은/는')} 배가 불러서 열매를 사양했다.`, [m]); return; }
@@ -2813,13 +2813,14 @@ const endBdrag = e => {
 window.addEventListener('pointerup', endBdrag); window.addEventListener('pointercancel', endBdrag);
 // v3.47 경완: 먹는 동안 열매에 한 입씩 베어 먹은 자국이 생기고, 마지막 입에 부스러기를 남기고 사라진다. 먹기 시작하면 행복한 말풍선
 const BITES = [['108% 30%', 6], ['96% 66%', 4.5], ['-8% 50%', 6], ['10% 80%', 4]];
-function biteBerry(el, m, dur, x, y) {
+function biteBerry(el, m, dur, x, y, perched = false, done) {
   el.style.zIndex = Math.round(Math.max(m.y, y)) + 6;   // v3.62 경완: 먹는 동안 열매는 포켓몬 앞에
   el.style.pointerEvents = 'none'; el.classList.remove('rot', 'new'); emote(m, '😋', 'happy', 2.4, 'eat');
   const col = el.classList.contains('red') ? '#e2414b' : '#3a7fd6', n = 3; let k = 0;   /* v3.52: 세 입 — 한 입·두 입은 자국, 세 번째에 다 먹음 */
   const crumbs = c => { for (let i = 0; i < c; i++) particle(x + rnd(-5, 5), y - 6, 'clod', '', d => { d.style.background = col; d.style.width = d.style.height = '3px'; d.style.setProperty('--dx', rnd(-12, 12).toFixed(0) + 'px'); d.style.setProperty('--dy', rnd(-10, -4).toFixed(0) + 'px'); }); };
   const bite = () => { if (!el.isConnected) return; k++;
-    if (k >= n || m.state !== 'eat' || !S.mons.includes(m)) { if (k >= n) crumbs(4); el.remove(); return; }
+    if (k >= n || (!perched && m.state !== 'eat') || !S.mons.includes(m)) { if (k >= n) crumbs(4); el.remove(); done?.(); return; }
+    if (perched) anim(m, 'hop');
     const L = BITES.slice(0, k * 2).map(([at, r]) => `radial-gradient(circle at ${at},#0000 ${r}px,#000 ${r + .5}px)`).join(',');
     el.style.webkitMaskImage = el.style.maskImage = L; el.style.webkitMaskComposite = 'source-in'; el.style.maskComposite = 'intersect';
     crumbs(2); setTimeout(bite, bd * 1000 / n); };
@@ -2931,7 +2932,10 @@ function goToBed(m) {
   } else if (T(m).mv === 'swim') sleep(m);
   else moveTo(m, { x: m.home.x + rnd(-30, 30), y: m.home.y + rnd(-20, 20) }, { kind: 'bed' }, .8);
 }
+// v4.91 경완: 사용자가 준 열매를 먹으러 가거나 먹는 동안은 다른 포켓몬과 어울리지 않는다
+const fedBusy = x => (x.fedT || 0) > performance.now() || ((x.goal?.kind === 'berry' || x.goal?.kind === 'feedb') && !x.goal.berry?.nat) || x.state === 'eat';
 function canMeet(m, o) {
+  if (fedBusy(m) || fedBusy(o)) return false;
   if (o === m || o.held || m.held || m.land || o.land || !awake(o) || o.state === 'interact' || o.state === 'special' || o.state === 'eat' || o.pet || m.pet || o.pin || m.pin) return false;
   const a = T(m).mv, b = T(o).mv;
   if (a === 'swim' && !['amph', 'fly', 'hover', 'swim'].includes(b)) return false;
@@ -2987,7 +2991,7 @@ function think(m) {
   let p;
   if (t.mv === 'swim') p = randPond(.8);
   else if (t.mv === 'amph' && Math.random() < .5) p = randPond(.7);
-  else if (t.mv === 'fly' || t.mv === 'hover') p = { x: rnd(XL + 40, XR - 40), y: rnd(MIN_Y + 10, MAX_Y - 10) };
+  else if (t.mv === 'fly' || t.mv === 'hover') { for (let k = 0; k < 10; k++) { p = { x: rnd(XL + 40, XR - 40), y: rnd(MIN_Y + 10, MAX_Y - 10) }; if (t.mv !== 'fly' || pondVal(p.x, p.y) >= 1.15) break; } }   // v4.91 경완: 새가 호수 위에 내려앉지 않게 땅 위로 날아간다
   else { const near = Math.random() < .6; p = near ? { x: m.x + rnd(-180, 180), y: m.y + rnd(-110, 110) } : randLand(); }
   moveTo(m, p);
 }
@@ -3043,7 +3047,7 @@ function arrive(m) {
     faceTo(m, o.x); setState(m, 'idle', rnd(2.5, 4)); anim(m, 'hop'); addRel(m, o, 1);
     const tx = pick(['?', '?', '♪', '!']); emote(m, tx, tx === '♪' ? 'note' : '', 2.2, 'new-greet');
     /* v4.39 경완: 인사받은 새 포켓몬도 하던 걸 멈추고 돌아봐 반응한다 (폴짝 + 말풍선, 가끔 한 걸음 다가감) */
-    const ok = () => S.mons.includes(o) && S.mons.includes(m) && awake(o) && !o.held && !o.pin && o.state !== 'interact' && o.state !== 'eat' && petM?.m !== o;
+    const ok = () => S.mons.includes(o) && S.mons.includes(m) && awake(o) && !o.held && !o.pin && o.state !== 'interact' && !fedBusy(o) && petM?.m !== o;
     if (ok()) { faceTo(o, m.x); if (o.state === 'move' || o.state === 'idle') setState(o, 'idle', rnd(3, 4.5)); }
     setTimeout(() => { if (!ok()) return; faceTo(o, m.x); anim(o, 'hop'); addRel(o, m, 1); const r = pick(['!', '♪', '?', '♥']); emote(o, r, r === '♥' ? 'heart' : r === '♪' ? 'note' : '', 2.2, 'new-greeted');
       if (T(o).mv !== 'swim' && dist(o, m) > 46 && Math.random() < .5) setTimeout(() => { if (ok() && o.state === 'idle') moveTo(o, { x: o.x + (m.x - o.x) * .35, y: o.y + (m.y - o.y) * .35 }, { kind: 'wander' }, .6); }, 900); }, 700);
@@ -4317,7 +4321,7 @@ function update(m, dt) {
 const FLAP_IDLE = new Set([41, 42, 169, 714, 715]);   // 가만히 있어도 늘 날갯짓하는 박쥐들은 계속 떠 있다
 function render(m, now) {
   const t = T(m), flyer = t.mv === 'fly' || t.mv === 'hover';
-  const grounded = !m.held && (m.state === 'sleep' || m.state === 'eat' || (t.mv === 'fly' && SPm(m).sh === 9 && !FLAP_IDLE.has(m.sp) && m.state !== 'move'));   // v3.62 경완: 새는 날개를 접고 서 있을 땐 땅에, 날아갈 때만 떠 있다
+  const grounded = !m.held && !(flyer && pondVal(m.x, m.y) < 1.05) && (m.state === 'sleep' || m.state === 'eat' || (t.mv === 'fly' && SPm(m).sh === 9 && !FLAP_IDLE.has(m.sp) && m.state !== 'move'));   /* v4.91: 호수 위에서는 앉지 않고 떠 있다 */   // v3.62 경완: 새는 날개를 접고 서 있을 땐 땅에, 날아갈 때만 떠 있다
   if (m.perch) { const p = m.perch; if (S.mons.includes(p) && p.state === 'sleep' && m.state === 'sleep') { m.x = p.x + m.perchDx; m.y = p.y + 1; m.xl = p.h * .45; } else { m.perch = null; m.xl = 0; } }
   if (m.ride) { const h = m.ride; if (S.mons.includes(h) && h.scene === m.rideSc && h.state === 'interact' && !m.held && m.state !== 'interact' && m.state !== 'special') { m.x = h.x + m.rideDx; m.y = h.y; m.xl = (h.xl || 0) + h.h * .62; m.face = h.face; m.zAdd = 2; m.goal = null; if (m.state === 'move') setState(m, 'idle', 30); m.t = Math.max(m.t, 1); }
     else { m.ride = null; m.rideSc = null; m.xl = 0; m.zAdd = 0; if (!m.held && S.mons.includes(h)) { place(m, h.x + (m.rideDx < 0 ? -1 : 1) * Math.max(34, (m.w + h.w) * .4) + rnd(-12, 12), h.y + rnd(4, 16)); dustAt(m); } } }
@@ -4876,7 +4880,7 @@ function campStart(c) {
 const CAMP_P = .35;
 const PROP_JOY = 3;
 function propReact(m, p) {
-  const flyer = winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover', small = isSmall(m), at = (dx, dy) => { m.x = clamp(p.x + dx, XL + 20, XR - 20); m.y = clamp(p.y + dy, MIN_Y, MAX_Y); };
+  const flyer = winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover', small = isSmall(m) && ![1, 2, 3, 5, 10, 11].includes(SPm(m).sh) && (SPm(m).spd || 0) >= 50, at = (dx, dy) =>   /* v4.91 경완: 우르 같은 느린 털뭉치·공·물고기 모양은 횃대에 못 올라간다 */ { m.x = clamp(p.x + dx, XL + 20, XR - 20); m.y = clamp(p.y + dy, MIN_Y, MAX_Y); };
   faceTo(m, p.x); m.goal = null; m.joy = clamp((m.joy ?? 60) + PROP_JOY);   /* v4.42 경완: 맵 소품과 놀면 즐거움도 조금 오른다 */
   if (p.k === 'tree') { at(m.x < p.x ? -32 : 32, 14); setState(m, 'idle', 2.5); anim(m, 'hop'); setTimeout(() => { if (S.mons.includes(m)) shakeTree(m); }, 250); return; }
   if (p.k === 'perch') {
@@ -4943,8 +4947,9 @@ function treePerch(m) {
   setTimeout(() => {
     if (!S.mons.includes(m) || !m.propSit || !(S.tree.n > 0)) return;
     const full = S.tree.n >= TSL().length, L = [...(treeEl?.querySelectorAll('.tb') || [])], b = L[S.tree.n - 1];
-    S.tree.n--; if (full) S.tree.t = Date.now(); if (b) { b.classList.add('pecked'); setTimeout(() => b.remove(), 260); }
-    anim(m, 'hop'); m.hunger = clamp(m.hunger - BERRY_FILL); emote(m, '♪', '', 2.2, 'tree-peck'); save();
+    m.hunger = clamp(m.hunger - BERRY_FILL); m.t = Math.max(m.t, 5);   // v4.91 경완: 땅 열매 먹을 때처럼 😋 말풍선 + 한 입씩 베어 먹어 없어진다 (가지에 앉은 채로)
+    const gone = () => { if (S.tree.n > 0) S.tree.n--; if (full) S.tree.t = Date.now(); save(); };
+    if (b) { const z = LS('tree'); b.dataset.eat = 1; biteBerry(b, m, 4, PROPS.tree.x - 50 * z + parseFloat(b.style.left), PROPS.tree.y - 116 * z + parseFloat(b.style.top), true, gone); } else { emote(m, '😋', 'happy', 2.4, 'eat'); gone(); }
     log(`${J(m,'이/가')} 열매나무에 달린 열매를 콕콕 쪼아 먹었다.`, [m]);
   }, 1400);
 }
@@ -5450,7 +5455,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.90';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.91';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6866,10 +6871,10 @@ function frMaxPre(P, then) {
   const stop = ev => { ev.preventDefault(); ev.stopPropagation(); };
   for (const t of ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchmove', 'touchend', 'mousedown', 'wheel', 'keydown']) ov.addEventListener(t, stop, { capture: true, passive: false });
   const key = ev => stop(ev); document.addEventListener('keydown', key, true);
-  document.body.append(ov);   // v4.85 경완: 어두워짐이 너무 빨라서 3.4초 동안 천천히, 빛과 같은 4단계로 함께 차오른다 (v4.86: 조금만 더 빠르게 2.8초)
-  setTimeout(() => sfx('rise'), 2100);
-  setTimeout(() => ov.querySelector('.fp-fl').classList.add('on'), 2800);
-  setTimeout(() => { then(); document.removeEventListener('keydown', key, true); ov.style.transition = 'opacity .25s'; ov.style.opacity = 0; ov.style.pointerEvents = 'none'; setTimeout(() => ov.remove(), 300); }, 3010);
+  document.body.append(ov);   // v4.85 경완: 어두워짐이 너무 빨라서 3.4초 동안 천천히, 빛과 같은 4단계로 함께 차오른다 (v4.86: 2.8초, v4.91 경완 최종: 2초)
+  setTimeout(() => sfx('rise'), 1300);
+  setTimeout(() => ov.querySelector('.fp-fl').classList.add('on'), 2000);
+  setTimeout(() => { then(); document.removeEventListener('keydown', key, true); ov.style.transition = 'opacity .25s'; ov.style.opacity = 0; ov.style.pointerEvents = 'none'; setTimeout(() => ov.remove(), 300); }, 2210);
 }
 // 축하 창 뒤로 도트 폭죽이 계속 터진다 (창을 닫으면 멈춤)
 function frMaxFw() {
