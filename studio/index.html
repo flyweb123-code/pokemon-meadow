@@ -468,7 +468,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.57';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.58';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -1459,7 +1459,7 @@ function renderTier() {
   const L = tierLists(true), OFF = offSet(), ov = D.tierOv || {}; if (sel.tier && tSel.size <= 1) { tSel.clear(); tSel.add(sel.tier); }
   const tz = tzOf(); $('#tierC').style.setProperty('--tzz', tz / 100);
   $('#tierC').innerHTML = `<div class="thd">${boxBar('tier', '티어 저장')}<div class="tzc"><div class="search tq"><input id="tQ" placeholder="포켓몬 찾기 (이름·번호)" autocomplete="off" enterkeyhint="search" value="${esc(tQv)}"><span class="num mute" id="tQn"></span></div><span class="tzl">화면 크기</span><button class="chip" data-tz="-10" aria-label="작게">−</button><input type="range" id="tz" min="50" max="250" step="10" value="${tz}" aria-label="화면 크기"><button class="chip" data-tz="10" aria-label="크게">+</button><span class="num">${tz}%</span><button class="chip${tMulti ? ' on' : ''}" id="tMulti" title="켜면 누르는 카드마다 더해져요 (PC는 Ctrl+누르기, Shift+누르기)">여러 마리 고르기</button>${tSel.size > 1 ? `<span class="num" style="color:var(--acc)">${tSel.size}마리 고름</span><button class="chip" id="tSelX">고르기 풀기</button>` : ''}</div></div><div class="small mute" style="margin-bottom:10px">진화 전 모습으로 묶어요. 1~3티어는 특별한 포켓몬(전설·환상 가족), 4~10티어는 나머지를 가족 최고 종족값 순서로 나눈 거예요. <b>카드를 끌어서</b> 순서를 바꾸거나 다른 티어로 옮겨요 (휴대폰은 꾹 누른 뒤). 티어 안에서는 <b>앞일수록 알에서 아주 조금씩 드물게</b> 나와요 (티어 합계는 그대로). 단, 알 › 등급별 포켓몬에서 순서를 직접 정한 알은 그 확률을 따라요. 주황 점은 작업본에서 옮긴 포켓몬이에요.</div>
-  <div class="tiers">${L.map((T, t) => t ? `<div class="tcol" data-tt="${t}"><h3><span class="tag" style="background:${TC(t)}">${t}티어</span>${(eg => eg.length ? `<span class="teg" title="${eg.map(g => GN[g]).join('·')} 알에서 나와요">${eg.map(eggI).join('')}</span>` : '<span class="teg small mute">알에서 안 나옴</span>')(tierEggs(t, T))}<span class="num mute">${T.length}종${(n => n ? ` (꺼짐 ${n})` : '')(T.filter(sp => OFF.has(sp)).length)} · ${ordName(t, T)}</span><span class="tsrt"><button class="chip${ordName(t, T) === '종족값 순' ? ' on' : ''}" data-tsort="bst" data-t="${t}" title="가족 최고 종족값 높은 순 (앞일수록 드물게)">종족값 순</button><button class="chip${ordName(t, T) === '도감 번호 순' ? ' on' : ''}" data-tsort="dex" data-t="${t}" title="도감 번호 높은 순 (앞일수록 드물게)">도감 번호 순</button></span></h3><div class="grid">${orderTier(t, T).map(sp => `<button class="mc${ov[sp] ? ' ov' : ''}${OFF.has(sp) ? ' off' : ''}${tSel.has(sp) ? ' on' : ''}" data-sp="${sp}" title="${esc(spName(sp))} · ${A.FAM_BST[sp]}"><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('')}</div></div>` : '').join('')}</div>`;
+  <div class="tiers">${L.map((T, t) => t ? `<div class="tcol" data-tt="${t}"><h3><span class="tag" style="background:${TC(t)}">${t}티어</span>${(eg => eg.length ? `<span class="teg" title="${eg.map(g => GN[g]).join('·')} 알에서 나와요">${eg.map(eggI).join('')}</span>` : '<span class="teg small mute">알에서 안 나옴</span>')(tierEggs(t, T))}<span class="num mute">${T.length}종${(n => n ? ` (꺼짐 ${n})` : '')(T.filter(sp => OFF.has(sp)).length)}</span><span class="tsrt">${(on => on || tCusOf(t) ? `<button class="chip${on ? ' on' : ''}" data-tsort="cus" data-t="${t}" title="카드를 끌어 직접 정한 순서 (누르면 마지막으로 저장한 순서로)">직접 정한 순</button>` : '')(ordName(t, T) === '직접 정한 순서')}<button class="chip${ordName(t, T) === '종족값 순' ? ' on' : ''}" data-tsort="bst" data-t="${t}" title="가족 최고 종족값 높은 순 (앞일수록 드물게)">종족값 순</button><button class="chip${ordName(t, T) === '도감 번호 순' ? ' on' : ''}" data-tsort="dex" data-t="${t}" title="도감 번호 높은 순 (앞일수록 드물게)">도감 번호 순</button></span></h3><div class="grid">${orderTier(t, T).map(sp => `<button class="mc${ov[sp] ? ' ov' : ''}${OFF.has(sp) ? ' off' : ''}${tSel.has(sp) ? ' on' : ''}" data-sp="${sp}" title="${esc(spName(sp))} · ${A.FAM_BST[sp]}"><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('')}</div></div>` : '').join('')}</div>`;
   fillThumbs($('#tierC'));
   $('.view[data-v=tier]').classList.toggle('tsel', !!(tSel.size || sel.tier));
   if (tSel.size > 1) showTierMulti(); else if (sel.tier) showTierSp(sel.tier);
@@ -1477,11 +1477,17 @@ document.addEventListener('keydown', e => { if (e.target.id === 'tQ' && e.key ==
 const tSelOrd = () => $$('#tierC .tcol .mc').map(c => +c.dataset.sp).filter(sp => tSel.has(sp));
 addEventListener('keydown', e => { if (e.key === 'Escape' && tSel.size > 1 && !$('#tierC').closest('[hidden]')) { tSel.clear(); if (sel.tier) tSel.add(sel.tier); renderTier(); } });
 // v2.44 경완: 티어 박스 정렬 버튼 (둘 다 높은 것부터 = 앞일수록 드물게)
+// v2.58 경완: 티어마다 마지막으로 저장한 '직접 정한 순서'를 기억해 두고 버튼으로 되돌린다 (이 기기에 기억)
+const tCus = () => { try { return JSON.parse(store.get('st-tcus') || '{}') || {}; } catch (e) { return {}; } };
+function tCusOf(t) { const C = tCus(); if (!A || !ORIG) return C[t] || null; const L = withSaved(() => tierLists(true)), T = L[t] || [], O = withSaved(() => orderTier(t, T));
+  if (T.length > 1 && O.join() !== bstOrd(T).join() && O.join() !== dexOrd(T).join() && O.join() !== (C[t] || []).join()) { C[t] = O; store.set('st-tcus', JSON.stringify(C)); } return C[t] || null; }
 const bstOrd = T => [...T].sort((a, b) => (A.FAM_BST[b] ?? 0) - (A.FAM_BST[a] ?? 0) || b - a), dexOrd = T => [...T].sort((a, b) => b - a);
 function ordName(t, T) { const O = orderTier(t, T).join(); return O === bstOrd(T).join() ? '종족값 순' : O === dexOrd(T).join() ? '도감 번호 순' : '직접 정한 순서'; }
 $('#tierC').addEventListener('click', e => { const so = e.target.closest('[data-tsort]'); if (so) { const t = +so.dataset.t, T = tierLists(true)[t]; D.tierOrd = { ...(D.tierOrd || {}) };
-    if (so.dataset.tsort === 'dex') { if (ORIG.tierOrd[t]) D.tierOrd[t] = null; else delete D.tierOrd[t]; } else D.tierOrd[t] = bstOrd(T);
-    if (!Object.keys(D.tierOrd).length) delete D.tierOrd; saveDraft(); renderTier(); toast(`${t}티어를 ${so.dataset.tsort === 'dex' ? '도감 번호' : '종족값'} 높은 순으로 정렬했어요`); return; }
+    if (so.dataset.tsort === 'cus') { const C = tCusOf(t); if (!C) return; const have = new Set(T), q = C.filter(b => have.has(b)); D.tierOrd[t] = [...q, ...dexOrd(T.filter(b => !q.includes(b)))]; }
+    else if (so.dataset.tsort === 'dex') { if (ORIG.tierOrd[t]) D.tierOrd[t] = null; else delete D.tierOrd[t]; } else D.tierOrd[t] = bstOrd(T);
+    if (JSON.stringify(D.tierOrd[t]) === JSON.stringify(ORIG.tierOrd[t])) delete D.tierOrd[t];
+    if (!Object.keys(D.tierOrd).length) delete D.tierOrd; saveDraft(); renderTier(); toast(so.dataset.tsort === 'cus' ? `${t}티어를 직접 정한 순서로 되돌렸어요` : `${t}티어를 ${so.dataset.tsort === 'dex' ? '도감 번호' : '종족값'} 높은 순으로 정렬했어요`); return; }
   if (e.target.closest('#tMulti')) { tMulti = !tMulti; renderTier(); return; }
   if (e.target.closest('#tSelX')) { tSel.clear(); if (sel.tier) tSel.add(sel.tier); renderTier(); return; }
   if (Date.now() - tcDragAt < 300) return; const b = e.target.closest('.tcol .mc');
@@ -1798,6 +1804,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.58', '10월 17일', ['티어: 카드를 끌어 순서를 정하면 \'직접 정한 순\' 버튼이 생기고, 누르면 마지막으로 저장한 순서로 정렬 (\'직접 정한 순서\' 글자는 없앰)']],
   ['2.57', '10월 17일', ['티어: 카드를 끌면 들어갈 자리가 카드 사이 틈에 세로 막대로 보여요', '티어: 순서만 바꿀 땐 안내 문구가 안 떠요', '크기 조절 모드: 포켓몬을 다시 눌러도 크기 네모가 사라지지 않고, 둥둥 뜨지 않고, 그림이 늦게 불려도 격자가 맞아요 (게임 v4.61)']],
   ['2.56', '10월 17일', ['크기 조절 모드: 포켓몬을 고르고 백스페이스(Delete)를 누르면 빠져요']],
   ['2.55', '10월 17일', ['티어: 카드를 같은 자리에 놓으면 그냥 취소 (안내 문구 없음)', '끌 때 카드 전체 모양이 따라와요', '칸 빈 곳·아래 여백에 놓으면 맨 뒤로, 마지막 카드 오른쪽에 표시']],
