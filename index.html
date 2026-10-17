@@ -5279,7 +5279,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.39';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.40';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7408,7 +7408,7 @@ const fmtT = t => { const d = new Date(t); return `${d.getFullYear()}-${pad2(d.g
 const runEl = $('#run');
 function openRun() { runEl.hidden = false; setRunTab(runTab); renderRun(); }
 let bagNext = false;
-$('#openRun').onclick = () => tabTo(runEl, () => { runTab = bagNext ? 'bag' : 'egg'; bagNext = false; openRun(); });
+$('#openRun').onclick = () => tabTo(runEl, () => { runTab = bagNext ? 'bag' : 'egg'; bagNext = false; if (S.bag.some(e => e.isNew)) bagG = 0; openRun();   /* v4.40 경완: 새로 주운 알이 있으면 가방은 전체 탭부터 */ });
 $('#closeRun').onclick = () => { seeBag(); runEl.hidden = true; };
 runEl.addEventListener('click', e => { if (e.target === runEl) runEl.hidden = true; });
 let eggNone = false;   // 빈 곳을 눌러 알 선택을 지운 상태
@@ -7489,6 +7489,7 @@ function setRunTab(t) {
   if (runTab === 'bag' && t !== 'bag') seeBag();
   if (runTab === 'egg' && t !== 'egg' && !runEl.hidden) seeReady();
   runTab = t; try { localStorage.setItem('pk-run-tab', t); } catch (e) {}
+  if (t === 'bag' && S.bag.some(e => e.isNew)) bagG = 0;
   if (t === 'egg' && !runEl.hidden && S.eggs.some(e => e.km >= e.need && !e.rs)) { const i = S.eggs.findIndex(e => e.km >= e.need); eggSel = S.eggs[i]; eggSelI = i; eggNone = false; }   // v4.34 경완: 새로 부화 준비된 알이 있으면 부화기 탭을 열 때 준비된 알 중 맨 앞 알을 고른다
   document.querySelectorAll('.runtab[data-tab]').forEach(b => { b.setAttribute('aria-selected', b.dataset.tab === t); if (b.dataset.tab === t) $('#runTitle').textContent = b.textContent; });
   document.querySelectorAll('.rtab').forEach(x => x.hidden = x.dataset.tab !== t);
