@@ -1123,6 +1123,9 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 @keyframes tapblink{50%{opacity:0}}
 .hatch-stage .egg.knock{animation:hknock .17s ease-out 1}
 .hatch-stage .egg.quake{animation:equake .08s steps(2,end) var(--qn,2)}
+/* v5.05 경완: 깨지기 직전(금 3단계)에는 계속 덜덜 떨리고, 두드려도 그 떨림이 멈추지 않는다 (translate·rotate 로 따로 겹친다) */
+.hatch-stage .egg.c3{animation:eshk .24s steps(1,end) infinite}.hatch-stage .egg.c3.knock{animation:hknock .17s ease-out 1,eshk .24s steps(1,end) infinite}.hatch-stage .egg.c3.quake{animation:equake .08s steps(2,end) var(--qn,2),eshk .24s steps(1,end) infinite}.hatch-stage .egg.c3.wig,.hatch-stage .egg.c3.wig2{animation:hwig .3s steps(1,end) infinite}
+@keyframes eshk{0%{translate:-2px 0;rotate:-2deg}25%{translate:0 0;rotate:0deg}50%{translate:2px 0;rotate:2deg}75%{translate:0 0;rotate:0deg}}
 @keyframes equake{0%,100%{transform:none}25%{transform:translateX(calc(var(--qx,3) * -1px)) rotate(calc(var(--qa,6) * -1deg))}75%{transform:translateX(calc(var(--qx,3) * 1px)) rotate(calc(var(--qa,6) * 1deg))}}
 .hatch .win.wquake{animation:wquake .08s steps(2,end) var(--qn,2)}
 @keyframes wquake{0%,100%{transform:none}33%{transform:translate(calc(var(--wx,2) * -1px),calc(var(--wx,2) * .5px))}66%{transform:translate(calc(var(--wx,2) * 1px),calc(var(--wx,2) * -.5px))}}
@@ -1155,7 +1158,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .noti .ns.ns-fr{background:linear-gradient(#fff0f5,#fcd6e4);border-color:#9a3462}.noti .ns.ns-g{background:linear-gradient(#fff8dc,#f8e09a);border-color:#8a6410}   /* v4.97 경완: 진화 보상 친밀도 분홍, 골드 금색 */
 .noti.frmax{z-index:9600}.frmax .ns{background:linear-gradient(#fff0f5,#fcd6e4)}
 .frmax .fm-pic{position:relative;height:96px;display:grid;place-items:end center;margin:2px 0 4px}.frmax .fm-pic img{height:76px;width:auto;image-rendering:pixelated;animation:fmhop 1.1s steps(2,end) infinite}
-.frmax.trup .ns{background:linear-gradient(#fff8dc,#f8e09a);border-color:#8a6410}.trup .tu-pic{width:84px;height:84px;margin:4px auto 8px;display:grid;place-items:center;background:#e4f2d0;border:3px solid var(--inner);box-shadow:inset 0 -12px 0 #cfe6b4;overflow:hidden}.trup .tu-pic .tr-ow{animation:trWalk .9s steps(1,end) infinite}.trup .tu-rank{font-size:20px;font-weight:700;color:#8a5a00;margin:4px 0 6px;text-shadow:0 1px 0 #fff6c8}
+.frmax.trup .ns{background:linear-gradient(#fff8dc,#f8e09a);border-color:#8a6410}.trup .tu-pic{width:84px;height:84px;margin:4px auto 8px;display:grid;place-items:center;background:#e4f2d0;border:3px solid var(--inner);box-shadow:inset 0 -12px 0 #cfe6b4;overflow:hidden}.trup .tu-pic .tr-ow{animation:trWalk .9s steps(1,end) infinite}.trup .tr-card.tu-bwrap{display:flex;justify-content:center;padding:0;margin:6px 0 8px;border:0;background:none;box-shadow:none;min-height:0}.trup .tu-bwrap::before,.trup .tu-bwrap::after{display:none}.trup .tu-bwrap .tr-badge{align-self:center;font-size:17px;padding:5px 14px}
 .frmax .fm-pic img.shiny{filter:hue-rotate(var(--shue,0deg)) saturate(1.3)}
 .frmax .fm-pic i{position:absolute;width:12px;height:11px;background:#ff5a8c;clip-path:polygon(0 18%,18% 0,50% 18%,82% 0,100% 18%,100% 45%,50% 100%,0 45%);opacity:0;animation:fmheart 1.8s steps(6,end) infinite}
 .frmax .fm-hearts{color:#e04870;font-size:16px;letter-spacing:2px;margin:2px 0}
@@ -5499,7 +5502,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.04';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.05';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7045,8 +7048,8 @@ function trUpShow() {
   const t = trOf();
   $('#frMax').classList.add('trup'); $('#frMaxT').textContent = '트레이너 등급 업!'; $('#frMax .win').setAttribute('aria-label', '트레이너 등급 업');
   $('#frMaxBody').innerHTML = `<div class="ns"><div class="tu-pic r${L.i}"><i class="tr-ow" style="background-image:url(${TR_OW[t.sex] || TR_OW.m})"></i></div>`
-    + `<p>축하해! 트레이너 등급이 올랐다!</p><div class="tu-rank">${esc(L.name)}</div>`
-    + `<div class="small">도감에 ${L.k}마리 등록${L.next ? ` · 다음 <b>${esc(L.next[1])}</b>까지 ${L.next[0] - L.k}마리` : ''}</div></div>`;
+    + `<p>축하해! 트레이너 등급이 올랐다!</p><div class="tr-card r${L.i} tu-bwrap"><div class="tr-badge"><b>${esc(L.name)}</b></div></div>`   /* v5.05 경완: 프로필 트레이너 배지 그대로 */
+    + `<div class="small">도감에 ${L.k}마리 등록${L.next ? `<br>다음 <b>${esc(L.next[1])}</b>까지 ${L.next[0] - L.k}마리` : ''}</div></div>`;
   $('#frMax').hidden = false; sfx('newdex'); haptic(1); frMaxFw(); renderTrainer();
   log(`트레이너 등급이 <b>${esc(L.name)}</b>${hasBat(L.name) ? '으' : ''}로 올랐다!`, [], true);
   const done = () => { $('#frMax').hidden = true; frMaxOpen = false; sfx('tap'); if (frMaxQ.length) { clearTimeout(frMaxT); frMaxT = setTimeout(frMaxShow, 400); } };
