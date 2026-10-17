@@ -201,11 +201,12 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 .slots .sl img{max-width:82%;max-height:70%;image-rendering:pixelated}.slots .sl .nm{position:absolute;left:0;right:0;bottom:2px;font-size:10.5px;color:var(--soft);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 3px}
 .slots .sl.empty{background:none;border-style:dashed;color:var(--soft);font-size:22px}.slots .sl.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
 body.szmode #mapBox{background:#10141a}body.szmode #szBar{background:rgba(22,25,32,.88);user-select:none;-webkit-user-select:none}body.szmode #phone{left:0;top:0;right:0;bottom:0;padding:0!important;border:0!important;width:auto!important;height:auto!important;transform:none!important;border-radius:0!important;box-shadow:none}
-body.szmode #mapI>:not(#szPane){display:none!important}body.szmode #mapI{display:grid;grid-template-rows:minmax(0,1fr);align-content:stretch;overflow:hidden}#szPane{display:none}body.szmode #szPane{display:grid;grid-template-rows:auto auto auto minmax(0,1fr);gap:8px;min-height:0}
+body.szmode #mapI>:not(#szPane){display:none!important}body.szmode #mapI{display:grid;grid-template-rows:minmax(0,1fr);align-content:stretch;overflow:hidden}#szPane{display:none}body.szmode #szPane{display:grid;grid-template-rows:auto auto auto auto minmax(0,1fr);gap:8px;min-height:0}
 #szPane .grid{overflow:auto;align-content:start;grid-auto-rows:70px;grid-template-columns:repeat(auto-fill,minmax(60px,1fr))}#szPane .mc{aspect-ratio:auto;height:70px}#szPane .mc img{bottom:14px;max-height:50px}#szPane .mc.used{opacity:.4;filter:grayscale(.8);box-shadow:inset 0 2px 6px rgba(0,0,0,.6);transform:translateY(1px)}#szA{width:110px;accent-color:var(--acc)}.szal{color:var(--fg);font-size:12.5px;padding:4px 10px;border:1px solid var(--chipb);border-radius:6px;background:var(--deep)}body.szmode .tools>:not(#szMode):not(.sp){opacity:.35;pointer-events:none;filter:grayscale(.6)}body.szmode #szMode{background:var(--acc);color:var(--accfg);border-color:var(--acc)}#szBar label{display:inline-flex;align-items:center;gap:6px}#szR{width:110px;accent-color:var(--acc)}#szPane .zh b{font-family:var(--px);font-weight:400;color:var(--acc);font-size:13px}body.szmode #sbar,body.szmode #safeZ,body.szmode #hotPop,body.szmode #ebar,body.szmode #gLoad{display:none!important}
 .szp{display:inline-flex;align-items:center;gap:4px}.szp input{width:90px}
 #szBar{position:absolute;left:0;right:0;top:0;height:52px;display:flex;align-items:center;gap:8px;padding:0 12px;background:var(--panel);border-bottom:1px solid var(--line);z-index:2;overflow-x:auto;white-space:nowrap}#szBar>b{font-family:var(--px);font-weight:400;color:var(--acc);margin-right:6px}#szBar .sp{flex:1}#szSel{display:inline-flex;align-items:center;gap:6px}
-#spx{position:fixed;z-index:56;left:8px;top:8px;height:400px;width:252px;background:var(--panel);border:1px solid var(--chipb);border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:10px;display:grid;grid-template-rows:auto auto auto minmax(0,1fr);gap:8px}
+#spx{position:fixed;z-index:56;left:8px;top:8px;height:400px;width:252px;background:var(--panel);border:1px solid var(--chipb);border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:10px;display:grid;grid-template-rows:auto auto auto auto minmax(0,1fr);gap:8px}
+.gtabs{display:flex;flex-wrap:wrap;gap:4px}.gtabs .chip{padding:3px 8px;font-size:12px;min-height:0}
 #spx .zh{display:flex;align-items:center;gap:8px}#spx .zh b{flex:1;font-family:var(--px);font-weight:400;color:var(--acc);font-size:13px}
 #spx .grid{overflow:auto;align-content:start;grid-auto-rows:70px;grid-template-columns:repeat(auto-fill,minmax(60px,1fr))}#spx .mc{aspect-ratio:auto;height:70px}#spx .mc img{bottom:14px;max-height:50px}
 .react .chip.rx{cursor:pointer}.react .chip.rx.on{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
@@ -468,7 +469,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.59';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.60';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -799,13 +800,16 @@ function renderReact(k) {
   $('#react').innerHTML = list.map(r => `<section class="rg">${k ? '' : `<b>${RNAME[r]}</b>`}${REACT[r].map(([a, b], i) => `<div><button class="chip rx${spxKey === r + ':' + i ? ' on' : ''}" data-rk="${r}" data-ri="${i}">${a}</button><span>${b}</span></div>`).join('')}</section>`).join('');   // v2.24 경완: 소품마다 칸으로 묶어 줄 맞춤
 }
 // v1.5 경완: 반응 분류를 누르면 왼쪽에 그 분류 포켓몬 목록. 끌어서 맵에 놓는다. 한 번 더 누르면 닫힌다
-let spxKey = null, spxL = [], spxQ = '';
+let spxKey = null, spxL = [], spxQ = '', spxGen = 0;   // v2.60 경완: 세대 탭 (0 = 전체)
+const GEN_END = [151, 251, 386, 493, 649, 721, 809, 905, 1025], genOf = sp => GEN_END.findIndex(e => sp <= e) + 1;
 function openSpx(key, title, L) { spxKey = key; spxL = L; spxQ = ''; $('#spx').innerHTML = $('#szPane').innerHTML = ''; const e = szOn ? $('#szPane') : $('#spx'); e.hidden = false;   // v2.18 경완: 크기 조절 모드에서는 오른쪽 창에
-  e.innerHTML = `<div class="zh"><b>${esc(title)}</b>${szOn ? '' : '<button class="chip" id="spxX" aria-label="닫기">✕</button>'}</div><div class="small mute">${L.length}종 · 누르면 맵에 나와요 (끌어서 원하는 곳에 놓아도 돼요)</div><div class="search"><input id="spxQ" placeholder="이름이나 번호" autocomplete="off" enterkeyhint="search"></div><div class="grid" id="spxG"></div>`;
+  e.innerHTML = `<div class="zh"><b>${esc(title)}</b>${szOn ? '' : '<button class="chip" id="spxX" aria-label="닫기">✕</button>'}</div><div class="small mute">${L.length}종 · 누르면 맵에 나와요 (끌어서 원하는 곳에 놓아도 돼요)</div><div class="search"><input id="spxQ" placeholder="이름이나 번호" autocomplete="off" enterkeyhint="search"></div><div class="gtabs" id="spxT"${new Set(L.map(genOf)).size < 2 ? ' hidden' : ''}>${[0, ...new Set(L.map(genOf))].sort((a, c) => a - c).map(g => `<button class="chip${g === spxGen ? ' on' : ''}" data-gen="${g}">${g ? g + '세대' : '전체'}</button>`).join('')}</div><div class="grid" id="spxG"></div>`;
+  if (!$(`#spxT [data-gen="${spxGen}"]`)) { spxGen = 0; $('#spxT [data-gen="0"]').classList.add('on'); }
+  $('#spxT').onclick = ev => { const b = ev.target.closest('[data-gen]'); if (!b) return; spxGen = +b.dataset.gen; $$('#spxT .chip').forEach(c => c.classList.toggle('on', c === b)); spxFi = 0; fillSpx(); $('#spxG').scrollTop = 0; };
   if ($('#spxX')) $('#spxX').onclick = closeSpx; if (!szOn) spxPos(); if (mobile()) $('#mapBox').scrollIntoView({ behavior: 'smooth', block: 'start' }); $('#spxQ').oninput = ev => { spxQ = ev.target.value; spxFi = 0; fillSpx(); }; $('#spxQ').onkeydown = ev => { if (ev.key !== 'Enter' || !szOn) return; ev.preventDefault(); spxFind(); }; fillSpx(); $$('.react .rx').forEach(c => c.classList.toggle('on', c.dataset.rk + ':' + c.dataset.ri === key)); }
 function spxPos() { const e = $('#spx'); document.body.classList.toggle('szspx', szOn && !e.hidden); if (szOn) { Object.assign(e.style, { left: '8px', top: '60px', width: '252px', height: (innerHeight - 68) + 'px' }); return; } if (mobile()) { e.style.left = e.style.top = e.style.height = e.style.width = ''; return; } if (winApply(e)) return; const s = $('#mapI').getBoundingClientRect(), m = $('#mapBox').getBoundingClientRect(); e.style.width = '252px'; e.style.left = (s.left - 260) + 'px'; e.style.top = (m.top + 8) + 'px'; e.style.height = (m.height - 16) + 'px'; }   // v1.8 경완: 오른쪽 칸 바로 왼쪽
-function fillSpx() { const q = spxQ.trim(), L = q ? spxL.filter(sp => String(sp) === q || spName(sp).includes(q)) : spxL;
-  $('#spxG').innerHTML = L.slice(0, 400).map(sp => `<button class="mc" data-sp="${sp}" title="${esc(spName(sp))}"><span class="no">${sp}</span><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('') + (L.length > 400 ? `<div class="small mute" style="grid-column:1/-1">앞의 400종만 보여요. 이름으로 찾아 주세요.</div>` : '') || '<div class="empty">찾는 포켓몬이 없어요</div>'; fillThumbs($('#spxG')); szMarks(); }
+function fillSpx() { const q = spxQ.trim(), L = spxL.filter(sp => (!spxGen || genOf(+sp) === spxGen) && (!q || String(sp) === q || spName(sp).includes(q)));
+  $('#spxG').innerHTML = L.map(sp => `<button class="mc" data-sp="${sp}" title="${esc(spName(sp))}"><span class="no">${sp}</span><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span></button>`).join('') || '<div class="empty">찾는 포켓몬이 없어요</div>'; fillThumbs($('#spxG')); szMarks(); }
 // v2.59 경완: 크기 조절 모드에서 찾고 엔터 → 맵에 있는 그 포켓몬 자리로 스크롤 (여러 번 누르면 다음 포켓몬)
 let spxFi = 0;
 function spxFind() { const q = spxQ.trim(); if (!q || !A?.szList) return; const on = A.szList(), hit = on.filter(o => String(o.sp) === q || spName(o.sp).includes(q));
@@ -1809,6 +1813,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.60', '10월 17일', ['크기 조절 모드 포켓몬 목록: 전체·1세대~9세대 탭, 400종 제한 없이 전체 종이 다 나옴']],
   ['2.59', '10월 17일', ['크기 조절 모드: 포켓몬 이름·번호를 찾고 엔터를 누르면 맵에 넣어 둔 그 포켓몬 자리로 스크롤 (게임 v4.66)']],
   ['2.58', '10월 17일', ['티어: 카드를 끌어 순서를 정하면 \'직접 정한 순\' 버튼이 생기고, 누르면 마지막으로 저장한 순서로 정렬 (\'직접 정한 순서\' 글자는 없앰)']],
   ['2.57', '10월 17일', ['티어: 카드를 끌면 들어갈 자리가 카드 사이 틈에 세로 막대로 보여요', '티어: 순서만 바꿀 땐 안내 문구가 안 떠요', '크기 조절 모드: 포켓몬을 다시 눌러도 크기 네모가 사라지지 않고, 둥둥 뜨지 않고, 그림이 늦게 불려도 격자가 맞아요 (게임 v4.61)']],
