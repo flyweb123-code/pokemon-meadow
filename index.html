@@ -705,6 +705,9 @@ body.petting #dlg,body.petting #info{display:none!important}
 .pf-box{border:3px solid var(--frame);background:var(--win);padding:12px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
 .pf-box span{font-size:12px;color:var(--dim)}.pf-box b{font-size:24px;line-height:1.1;color:var(--win-ink)}.pf-box i{font-style:normal;font-size:12px;color:var(--dim)}
 .pf-box b{transition:color .3s}
+.pf-next .pf-box em{font-style:normal;font-size:12px;color:var(--dim);margin-top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pf-next .pf-box.ready{border-color:#d8a020}.pf-next .pf-box.ready b{color:#c08010;font-size:18px;padding:3px 0}
+.pf-next .pf-box.tk b{color:#2a8a4a}
 .pf-box.walking{border-color:#2a8a4a;animation:pfWalk 2.4s ease-in-out infinite}.pf-box.walking b{color:#2a8a4a}
 .pf-box{position:relative}.pf-box.walking::before{content:'';position:absolute;left:7px;top:7px;width:8px;height:8px;background:#3cb05a;animation:pfDot 1.2s steps(2) infinite}
 @keyframes pfWalk{0%,100%{box-shadow:0 0 0 0 rgba(60,176,90,0)}50%{box-shadow:0 0 0 3px rgba(60,176,90,.25)}}@keyframes pfDot{50%{opacity:.2}}
@@ -1136,13 +1139,13 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .frmax .fm-hearts{color:#e04870;font-size:16px;letter-spacing:2px;margin:2px 0}
 .frmax .mvcard{margin:8px auto 2px;max-width:260px}
 @keyframes fmhop{50%{transform:translateY(-6px)}}
-.frpre{position:fixed;inset:0;z-index:9500;pointer-events:auto;touch-action:none;background:rgba(6,4,14,0);transition:background .7s steps(6,end)}
-.frpre.on{background:rgba(6,4,14,.86)}
-.frpre .fp-l{position:absolute;left:50%;top:46%;width:260px;height:260px;margin:-130px 0 0 -130px;border-radius:50%;background:radial-gradient(circle,#fff 0,#fff6fa 12%,rgba(255,200,226,.85) 26%,rgba(255,140,190,.35) 48%,rgba(255,120,180,0) 70%);opacity:0;transform:scale(.05);animation:fplight 2.2s cubic-bezier(.5,0,.9,.6) .35s forwards}
+.frpre{position:fixed;inset:0;z-index:9500;pointer-events:auto;touch-action:none;background:rgba(6,4,14,0);animation:fpdim 2.35s cubic-bezier(.33,0,.4,1) forwards}
+.frpre .fp-l{position:absolute;left:50%;top:46%;width:260px;height:260px;margin:-130px 0 0 -130px;border-radius:50%;background:radial-gradient(circle,#fff 0,#fff6fa 12%,rgba(255,200,226,.85) 26%,rgba(255,140,190,.35) 48%,rgba(255,120,180,0) 70%);opacity:0;transform:scale(.05);animation:fplight 2.35s cubic-bezier(.45,0,.75,.55) forwards}
 .frpre .fp-l::after{content:"";position:absolute;inset:44%;border-radius:50%;background:#fff;box-shadow:0 0 18px 8px #fff;animation:fpcore .5s steps(2,end) infinite}
 .frpre .fp-fl{position:absolute;inset:0;background:#fff;opacity:0}
 .frpre .fp-fl.on{animation:fpflash .55s steps(5,end) forwards}
-@keyframes fplight{0%{opacity:0;transform:scale(.05)}25%{opacity:.7;transform:scale(.25)}70%{opacity:.95;transform:scale(.8)}100%{opacity:1;transform:scale(2.6)}}
+@keyframes fpdim{0%{background:rgba(6,4,14,0)}55%{background:rgba(6,4,14,.78)}100%{background:rgba(6,4,14,.88)}}
+@keyframes fplight{0%{opacity:0;transform:scale(.04)}20%{opacity:.35;transform:scale(.14)}55%{opacity:.8;transform:scale(.5)}85%{opacity:1;transform:scale(1.2)}100%{opacity:1;transform:scale(2.6)}}
 @keyframes fpcore{50%{transform:scale(1.35)}}
 @keyframes fpflash{0%{opacity:0}35%{opacity:1}100%{opacity:0}}
 .frmax canvas.fw{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;image-rendering:pixelated}
@@ -1427,6 +1430,13 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
           <div class="pf-box"><span>주운 알</span><b id="pfEggs">0</b><i>개</i></div>
         </div>
         <p class="pf-note" id="pfNote"></p>
+      </section>
+      <section class="set-sec pf-sec pf-next">   <!-- v4.84 경완: 가장 빠른 부화·진화까지 남은 거리 (걸으면 실시간으로 줄어든다) -->
+        <h4>다음까지</h4>
+        <div class="pf-grid">
+          <div class="pf-box" id="pfHatchBox"><span>부화까지</span><b id="pfHatch">-</b><i id="pfHatchU">km</i><em id="pfHatchW"></em></div>
+          <div class="pf-box" id="pfEvoBox"><span>진화까지</span><b id="pfEvo">-</b><i id="pfEvoU">km</i><em id="pfEvoW"></em></div>
+        </div>
       </section>
       <button class="pf-link" id="pfRunBtn" type="button"><span class="pf-lt">런닝 기록</span><span class="tcount" id="runTotal"></span><span class="pf-arr">▶</span></button>
       <p class="pf-diag test-only" id="pfDiag"></p></div>
@@ -5437,7 +5447,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.83';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.84';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6751,8 +6761,8 @@ function frMaxPre(P, then) {
   const stop = ev => { ev.preventDefault(); ev.stopPropagation(); };
   for (const t of ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchmove', 'touchend', 'mousedown', 'wheel', 'keydown']) ov.addEventListener(t, stop, { capture: true, passive: false });
   const key = ev => stop(ev); document.addEventListener('keydown', key, true);
-  document.body.append(ov); requestAnimationFrame(() => ov.classList.add('on'));
-  setTimeout(() => sfx('rise'), 900);
+  document.body.append(ov);   // v4.84 경완: 어두워짐과 빛이 같은 2.35초 흐름으로 같이 차오른다
+  setTimeout(() => sfx('rise'), 1500);
   setTimeout(() => ov.querySelector('.fp-fl').classList.add('on'), 2350);
   setTimeout(() => { then(); document.removeEventListener('keydown', key, true); ov.style.transition = 'opacity .25s'; ov.style.opacity = 0; ov.style.pointerEvents = 'none'; setTimeout(() => ov.remove(), 300); }, 2560);
 }
@@ -6865,6 +6875,21 @@ $('#trName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preve
 $('#trName').addEventListener('change', e => { const v = e.target.value.trim().slice(0, 8), t = trOf(); if (v === t.n) return; t.n = v; e.target.value = v; S.mons.forEach(m => { m.th = null; }); save(); renderTrainer(); if (v) log(`트레이너 이름을 <b>${esc(v)}</b>(으)로 정했다.`); });
 document.querySelector('.tr-top').addEventListener('click', e => { if (!e.target.closest('.tr-sex, input')) $('#trName').focus(); });   /* 이름 칸 옆 빈 곳을 눌러도 바로 이름 고치기 */
 $('#trSex').addEventListener('click', () => { const t = trOf(); t.sex = t.sex === 'f' ? 'm' : 'f'; sfx('tap'); save(); renderTrainer(); });
+// 프로필 '다음까지': 부화기 알 중 가장 빨리 깨는 알, 짝꿍 중 가장 빨리 진화하는 포켓몬까지 남은 km. 줄어들면 잠깐 초록색
+const kmUp = v => (Math.ceil(v * 100 - 1e-6) / 100).toFixed(2);   // 남은 거리는 올림 (다 차기 전엔 0.00 이 안 보이게)
+function renderNext() {
+  if (!$('#pfHatch')) return;
+  const set = (k, v, unit, who, ready) => { const b = $('#pf' + k), box = $('#pf' + k + 'Box'), prev = b.textContent; b.textContent = v; $('#pf' + k + 'U').textContent = unit; $('#pf' + k + 'W').textContent = who; box.classList.toggle('ready', !!ready);
+    if (prev !== v && prev !== '-' && !ready && unit) { box.classList.add('tk'); clearTimeout(box._t); box._t = setTimeout(() => box.classList.remove('tk'), 900); } };
+  const eg = S.eggs.map(e => ({ e, r: Math.max(0, e.need - e.km) })).sort((a, b) => a.r - b.r)[0];
+  if (!eg) set('Hatch', '-', '', '부화기에 알이 없어요');
+  else if (eg.r <= 0) set('Hatch', '부화 준비 완료!', '', `${GRADE[eg.e.g].n} 알`, true);
+  else set('Hatch', kmUp(eg.r), 'km', `${GRADE[eg.e.g].n} 알`);
+  const ev = S.buds.map(b => { const P = boxOf(b.pid); return evoKids(b.sp, P).length ? { b, P, r: Math.max(0, evoNeed(b) - (b.km || 0)) } : null; }).filter(Boolean).sort((a, b) => a.r - b.r)[0];
+  if (!ev) set('Evo', '-', '', S.buds.length ? '진화할 짝꿍이 없어요' : '짝꿍이 없어요');
+  else if (ev.r <= 0) set('Evo', '진화 준비 완료!', '', ev.P ? nameOf(ev.P) : SPECIES[ev.b.sp].n, true);
+  else set('Evo', kmUp(ev.r), 'km', ev.P ? nameOf(ev.P) : SPECIES[ev.b.sp].n);
+}
 function renderProfile() {
   renderTrainer();
   if (!$('#pfWalk')) return; const T = today(), live = S.ped && S.ped.d === T.d, k0 = new Date(); k0.setHours(0, 0, 0, 0);
@@ -6872,6 +6897,7 @@ function renderProfile() {
   // 이동 거리: 만보기(걷기·달리기 다 들어간다)가 오면 그 값, 아니면 걸은 거리 + 달린 기록 (둘 중 큰 쪽)
   $('#pfWalk').textContent = fmtKm(live ? Math.max(S.ped.km, runKm) : T.walk + runKm); { const wk = !!live && Date.now() - (S.ped.at || 0) < WALK_LIVE; $('#pfWalk').parentNode.classList.toggle('walking', wk); $('#trPic').classList.toggle('walking', wk); }
   $('#pfEggs').textContent = T.eggs;
+  renderNext();
   { const n = 1 / BAG_STEP, lo = Math.max(1, Math.round(n / 2)), hi = Math.max(lo + 1, Math.ceil(n * 1.5)); $('#pfNote').textContent = `1km에 알 ${lo}~${hi}개를 주워요`; }   /* v4.04 경완: 250m마다 0~2개 */
   // 테스트: 아이폰 앱 만보기 신호 (언제·몇 번·얼마) — 이동 거리가 안 늘 때 어디서 막히는지 보려고
   const D = pedDiag, ago = D.at ? Math.round((Date.now() - D.at) / 1000) : -1;
@@ -6953,7 +6979,7 @@ function noteFed(t0, t1, km) {
   while (L.length && L[0][1] < Date.now() - 8 * 864e5) L.shift();
 }
 function fedIn(t0, t1) { let k = 0; for (const [a, b, km] of S.fedLog) { const o = Math.min(b, t1) - Math.max(a, t0); if (o > 0) k += b > a ? km * o / (b - a) : km; else if (b === a && a >= t0 && a <= t1) k += km; } return k; }
-function walkFeed(km, t0, t1) { if (!(km > 0)) return; feedKm(km); noteFed(t0, t1, km); S.fedPend += km; if (!walkFeed.t) walkFeed.t = setTimeout(() => { walkFeed.t = 0; save(); }, 10000); if (!runEl.hidden) renderRun(); else if (!mgr.hidden) renderBuddy(); postNative(); }
+function walkFeed(km, t0, t1) { if (!(km > 0)) return; feedKm(km); if (!setEl.hidden) renderNext(); noteFed(t0, t1, km); S.fedPend += km; if (!walkFeed.t) walkFeed.t = setTimeout(() => { walkFeed.t = 0; save(); }, 10000); if (!runEl.hidden) renderRun(); else if (!mgr.hidden) renderBuddy(); postNative(); }
 function applyKm(km, t0 = 0, t1 = 0, feed = km) {
   if (!(km > 0)) return [];
   feedKm(feed);
