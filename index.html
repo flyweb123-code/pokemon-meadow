@@ -5345,7 +5345,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.44';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.45';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7376,7 +7376,7 @@ async function hatchAll() {
   const res = ready.map(e => { hatchEgg(e, true); return bornPoke(hatchQ.pop()); });
   await Promise.all(res.map(r => ensureSprite(r.sp).catch(() => {})));
   S.eggs = S.eggs.filter(e => !ready.includes(e)); autoInc(); save();
-  const strip = $('#hlStrip'), fieldBtn = $('#hatchField'), ok = $('#hatchOk');
+  const strip = $('#hlStrip'), fieldBtn = $('#hatchField'), ok = $('#hatchOk'), sb = $('#hatchSend'); let sbBusy = false;
   strip.innerHTML = res.map((r, k) => `<button data-k="${k}" aria-label="${esc(SPECIES[r.sp].n)}"><img src="${thumbOf(r.sp)}" alt="">${r.isNew ? '<b>N</b>' : ''}</button>`).join('');
   hatchStage.classList.remove('evo', 'tapme'); hatchEl.classList.add('list'); hatchEl.hidden = false;
   let i = 0, ivMode = false;
@@ -7391,6 +7391,7 @@ async function hatchAll() {
     strip.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-current', j === i));
     if (!q) strip.children[i]?.scrollIntoView({ block: 'nearest', inline: 'center' });
     fieldBtn.hidden = true;
+    { const on = onField(r.P.id); sb.hidden = !on && S.mons.length >= MAX_MONS; sb.disabled = false; sb.classList.toggle('sunk', on); sb.textContent = on ? '필드에 나감' : '필드로'; }   /* v4.45 경완: 모두 부화 카드마다 '필드로' (한 마리 부화와 같이 누르면 눌린 채, 다시 누르면 빼기) */
     if (!q) playCry(r.sp, r.isNew ? 1.3 : .8);
   };
   $('#hlPrev').onclick = () => show(i - 1); $('#hlNext').onclick = () => show(i + 1);
@@ -7401,6 +7402,10 @@ async function hatchAll() {
   // 밀어서 넘기기는 포켓몬 정보 카드와 같은 cardPager (양옆 카드가 붙어 들어온다)
   hatchPg = { can: d => i + d >= 0 && i + d < res.length, snap: (d, w) => { const k = i; show(k + d, true); const g = w.cloneNode(true); show(k, true); return g; }, step: d => { sfx('tap'); show(i + d, false, true); } };
   fieldBtn.onclick = async () => { const r = res[i]; if (onField(r.P.id) || S.mons.length >= MAX_MONS) return; fieldBtn.hidden = true; const m = await spawn(r.sp, { pid: r.P.id }); m.born = S.clock; markNew(m); save(); refreshCap(); show(i); };
+  sb.onclick = async () => { if (sbBusy) return; const r = res[i], k = i; sfx('tap');
+    if (onField(r.P.id)) { const m = S.mons.find(x => x.pid === r.P.id); if (m) removeMon(m, true); r.sent = false; save(); refreshCap(); show(i, true); return; }
+    if (S.mons.length >= MAX_MONS) return; sbBusy = true; r.sent = true; sb.classList.add('sunk'); sb.textContent = '필드에 나감';
+    try { const m = await spawn(r.sp, { pid: r.P.id }); m.born = S.clock; markNew(m); } finally { sbBusy = false; } save(); refreshCap(); if (i === k) show(i, true); };
   // 상태창 보기: 창을 떠나지 않고 도감 정보 칸만 개체값으로 바꿔 본다 (다시 누르면 도감 정보)
   ok.hidden = false; ok.textContent = '확인'; const look = $('#hatchLook'); look.hidden = false; look.textContent = '상태창 보기';
   look.onclick = () => { ivMode = !ivMode; look.textContent = ivMode ? '도감 정보' : '상태창 보기'; showDexInfo(res[i].sp, res[i].P); if (ivMode) showIvInfo(res[i]); };
@@ -7411,7 +7416,7 @@ async function hatchAll() {
       if (w) { if (ev.target.closest('button,input,a,#hlStrip,[data-tip]')) return; const R = w.getBoundingClientRect(), E = Math.max(EDGE_IN, R.width * .3), d = ev.clientX < R.left + E ? -1 : ev.clientX > R.right - E ? 1 : 0;   /* 카드 좌우 30% (테두리 포함)를 눌러도 넘긴다, 가운데만 빼고 */
         if (d && !$(d < 0 ? '#hlHl' : '#hlHr').hidden) hatchPg?.step(d); return; }
       const d = sideTap(hatchEl, ev); if (d) { if (!$(d < 0 ? '#hlHl' : '#hlHr').hidden) show(i + d); return; } r(); }; });
-  hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatchFx(); hatchEl.classList.remove('list'); $('#hlHl').hidden = $('#hlHr').hidden = true; hatchPg = null; hw.style.transform = ''; hatching = false;
+  hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; sb.hidden = true; sb.onclick = null; look.textContent = '상태창 보기'; showDexInfo(null); hatchFx(); hatchEl.classList.remove('list'); $('#hlHl').hidden = $('#hlHr').hidden = true; hatchPg = null; hw.style.transform = ''; hatching = false;
   const nw = res.filter(r => r.isNew).length, sh = res.filter(r => r.P.shiny).length;
   log(`알 ${res.length}개가 한꺼번에 부화했다! ${res.map(r => SPECIES[r.sp].n).join(', ')}${nw ? ` (새로 만난 포켓몬 ${nw}마리)` : ''}${sh ? ` ✦ 색이 다른 포켓몬 ${sh}마리!` : ''}`, [], true);
   save(); renderRun(); refreshCap();
