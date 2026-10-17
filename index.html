@@ -5348,7 +5348,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.47';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.48';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5919,7 +5919,7 @@ $('#ppBud').onclick = () => {
 new MutationObserver(() => { if (mgr.hidden) { closePoke(); budPick = null; boxFromSlot = false; if (mgrTab === 'buddy') seeBuds(); } }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
 function pokeOpen() { return (!mgr.hidden && mgrG === 'poke') || (!sheet.hidden && dexMode !== 'buddy'); }
 function fldOpen() { return !mgr.hidden && mgrG === 'fld'; }
-function menuTo(isOpen, g) { const was = isOpen(); closeToggles(); hideSheets(); if (was) return; if (budPick != null) { budPick = null; closePoke(); } const t = g === 'poke' ? 'box' : lastTab[g];   /* v4.04 경완: 포켓몬 메뉴는 늘 포켓몬(박스) 탭부터 */ if (t === 'dex') { setMgrTab('dex'); return; } openMgr(); setMgrTab(t); }
+function menuTo(isOpen, g) { const was = isOpen(); closeToggles(); hideSheets(); if (was) return; if (budPick != null) { budPick = null; closePoke(); } const t = g === 'poke' ? 'box' : g === 'fld' ? 'field' : lastTab[g];   /* v4.04 경완: 포켓몬 메뉴는 늘 포켓몬(박스) 탭부터. v4.48: 필드 메뉴도 늘 필드 탭부터 */ if (t === 'dex') { setMgrTab('dex'); return; } openMgr(); setMgrTab(t); }
 $('#openMgr').onclick = () => menuTo(pokeOpen, 'poke');
 $('#openFld').onclick = () => menuTo(fldOpen, 'fld');   // 짝꿍 고르다 나갔으면 고르기 상태를 푼다
 $('#closeMgr').onclick = closeMgr;
