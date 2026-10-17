@@ -632,7 +632,7 @@ ol.log li.big .txt{color:#c03838}
 #setBack{padding:4px 10px}#set .sheet-head{min-height:44px;box-sizing:border-box}/* 프로필(톱니)과 하위 화면(◀) 머리 높이를 같게: 밀어서 뒤로 갈 때 들어오는 창이 끝난 모습과 같은 자리 */#set #closeSet{display:none}
 .tr-card{display:flex;gap:12px;align-items:stretch;margin:4px 0 14px;padding:10px;border:3px solid var(--frame);background:var(--win);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner)}
 .tr-pic{flex:none;width:112px;height:112px;position:relative;background:#e4f2d0;border:3px solid var(--inner);box-shadow:inset 0 -14px 0 #cfe6b4;overflow:hidden}
-.tr-pic{display:grid;place-items:center}.tr-ow{width:64px;height:64px;background-repeat:no-repeat;background-size:64px 384px;background-position:0 0;image-rendering:pixelated}
+.tr-pic{display:grid;place-items:center}.tr-pic.walking .tr-ow{animation:trWalk .9s steps(1,end) infinite}@keyframes trWalk{0%{background-position:0 0;transform:none}25%{background-position:0 -192px;transform:none}50%{background-position:0 0;transform:none}75%{background-position:0 -192px;transform:scaleX(-1)}}   /* v4.37 경완: 걷는 중이면 트레이너가 정면으로 걷는다 */.tr-ow{width:64px;height:64px;background-repeat:no-repeat;background-size:64px 384px;background-position:0 0;image-rendering:pixelated}
 .tr-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:10px}
 .tr-top{display:flex;align-items:center;gap:6px;min-width:0}
 .tr-nm{flex:1;min-width:0;display:flex;align-items:center;gap:4px;cursor:text}.tr-nm .pen-b{flex:none;width:14px;height:14px;color:var(--dim)}.tr-nm .pen-b svg{width:100%;height:100%;display:block}.tr-nm input{border:0;outline:0;background:none;padding:0;margin:0;color:var(--win-ink);font-family:inherit;font-size:20px;font-weight:700;max-width:100%}.tr-nm input::placeholder{color:var(--win-ink);opacity:1;font-weight:700}.tr-nm input:focus::placeholder{opacity:.3}.tr-nm input{caret-color:var(--win-ink)}
@@ -5275,7 +5275,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.36';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.37';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6653,7 +6653,7 @@ function renderProfile() {
   if (!$('#pfWalk')) return; const T = today(), live = S.ped && S.ped.d === T.d, k0 = new Date(); k0.setHours(0, 0, 0, 0);
   const runKm = S.runs.filter(r => r.t >= +k0).reduce((a, r) => a + r.km, 0);
   // 이동 거리: 만보기(걷기·달리기 다 들어간다)가 오면 그 값, 아니면 걸은 거리 + 달린 기록 (둘 중 큰 쪽)
-  $('#pfWalk').textContent = fmtKm(live ? Math.max(S.ped.km, runKm) : T.walk + runKm); $('#pfWalk').parentNode.classList.toggle('walking', !!live && Date.now() - (S.ped.at || 0) < WALK_LIVE);
+  $('#pfWalk').textContent = fmtKm(live ? Math.max(S.ped.km, runKm) : T.walk + runKm); { const wk = !!live && Date.now() - (S.ped.at || 0) < WALK_LIVE; $('#pfWalk').parentNode.classList.toggle('walking', wk); $('#trPic').classList.toggle('walking', wk); }
   $('#pfEggs').textContent = T.eggs;
   { const n = 1 / BAG_STEP, lo = Math.max(1, Math.round(n / 2)), hi = Math.max(lo + 1, Math.ceil(n * 1.5)); $('#pfNote').textContent = `1km에 알 ${lo}~${hi}개를 주워요`; }   /* v4.04 경완: 250m마다 0~2개 */
   // 테스트: 아이폰 앱 만보기 신호 (언제·몇 번·얼마) — 이동 거리가 안 늘 때 어디서 막히는지 보려고
