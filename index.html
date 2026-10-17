@@ -291,7 +291,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 @property --fk{syntax:'<number>';inherits:true;initial-value:1}
 @keyframes fireK{0%{--fk:.95}30%{--fk:1.05}55%{--fk:.99}80%{--fk:1.07}100%{--fk:.95}}
 #night{animation:fireK 3s ease-in-out infinite}
-.flame{position:absolute;width:32px;height:44px;margin:-46px 0 0 -16px;background-size:192px 44px;image-rendering:pixelated;animation:flame 1.05s steps(6) infinite,fireK 3s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(255,140,30,.9))}@keyframes flame{to{background-position:-192px 0}}
+.flame{position:absolute;width:32px;height:44px;margin:-46px 0 0 -16px;background-size:192px 44px;image-rendering:pixelated;animation:fireK 3s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(255,140,30,.9))}@keyframes flame{to{background-position:-192px 0}}
 .flame::before{content:"";position:absolute;left:50%;top:70%;width:96px;height:64px;margin:-32px 0 0 -48px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,180,70,.4),rgba(255,120,30,0));transform:scale(var(--fk));opacity:calc(var(--fk) - .15);z-index:-1}
 .flame i{position:absolute;left:50%;bottom:34%;width:2px;height:2px;background:#ffd060;box-shadow:0 0 3px #ff8a20;opacity:0;animation:ember var(--d) linear var(--dl) infinite}@keyframes ember{0%{transform:translate(0,0);opacity:1}70%{opacity:1}100%{transform:translate(var(--x),-50px);opacity:0}}
 .lily{position:absolute;pointer-events:none;image-rendering:pixelated;background-size:100% 100%;translate:-50% -50%;z-index:1;animation:lily var(--d) ease-in-out var(--dl) infinite}@keyframes lily{0%,100%{transform:translateY(0) rotate(calc(var(--a) * -1))}50%{transform:translateY(2px) rotate(var(--a))}}
@@ -5275,7 +5275,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.37';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.38';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7747,6 +7747,7 @@ function frameIn(now) {
   for (const m of S.mons) { if (m.held && drag?.m !== m) { m.held = false; m.el.classList.remove('held'); settle(m); setState(m, 'idle', 1); }   /* 손에서 놓쳤는데 들린 채 남은 포켓몬 풀어 주기 */
     if (m.bubT > 0) m.bubT -= real; m.realDt = real * Math.min(S.speed || 0, 3); try { render(m, now); } catch (e) { frameErr(e, m); } }
   nightHoles(); tickFlies(now); tickBugs(now, real);
+  if (flameEl) { const fi = Math.floor(now / 175) % 6; if (flameEl.fi !== fi) { flameEl.fi = fi; flameEl.style.backgroundPosition = -32 * fi + 'px 0'; } }   /* v4.38 경완: 불꽃 장면을 CSS steps 대신 직접 넘긴다 (오래 켜 두면 iPhone 에서 옆으로 미끄러지듯 보였다) */
   acc += real; if (acc > .5) { acc = 0; S.mons.forEach(m => { if (!m.washing) dirtVis(m); dirtFx(m); }); sky(); rotBerries(); for (const g of [...$('#glows').children]) if (!S.mons.some(m => m.gl === g || m.glA === g)) g.remove(); }   /* 필드에서 빠진 포켓몬의 빛이 남지 않게 */
   try { tickMoves(real); } catch (e) { frameErr(e); }
   infoT -= real; if (infoT <= 0 && S.sel) { infoT = .5; renderInfo(); }
