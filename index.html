@@ -2552,7 +2552,7 @@ function offFr(m, sec) {
 }
 { let hidAt = 0; document.addEventListener('visibilitychange', () => { if (document.hidden) hidAt = Date.now(); else if (hidAt) { const sec = (Date.now() - hidAt) / 1000; hidAt = 0; S.mons.forEach(m => offFr(m, sec)); save(); } }); }
 function dayCap(m, k, max) { const P = boxOf(m.pid); if (!P) return false; const d = dayKey(); if (P[k + 'D'] !== d) { P[k + 'D'] = d; P[k + 'N'] = 0; } if (P[k + 'N'] >= max) return false; P[k + 'N']++; return true; }
-function berryFr(m) { if (!dayCap(m, 'ber', BERRY_FR_DAY)) return false; addFr(m.pid, 1); return true; }   // 열매 친밀도 +1 (하루 5개까지)
+function berryFr(m) { if (!(m.hunger > 0)) return false; addFr(m.pid, 1); return true; }   // v4.42 경완: 내가 준 열매로 배부름이 오를 때마다 친밀도 +1, 하루 한도 없음 (이미 가득이면 없음)
 function berryBoost(m, mine) { m.energy = clamp(m.energy + 8); if (mine) m.joy = clamp((m.joy ?? 60) + 5); }   // 열매: 기력 +8, 내가 준 열매면 즐거움 +5
 // 필드 정보창의 아이콘 그림
 const ICO_BERRY = '<svg viewBox="0 0 12 12" width="26" height="26" shape-rendering="crispEdges" aria-hidden="true"><path fill="#3a7a2a" d="M6 0h2v1h1v1H7v1H6z"/><path fill="#5aa83a" d="M4 1h2v2H4z"/><path fill="#20202c" d="M3 3h6v1h1v1h1v4h-1v1H9v1H3v-1H2V9H1V5h1V4h1z"/><path fill="#d8344a" d="M3 4h6v1h1v4H9v1H3V9H2V5h1z"/><path fill="#ff7a8a" d="M3 5h2v2H3z"/><path fill="#fff" d="M3 5h1v1H3z"/><path fill="#9a1a30" d="M8 8h1v1H8zM4 9h4v1H4z"/></svg>';
@@ -2639,7 +2639,7 @@ function haloJoy(m) {
 }
 function petDone() {
   const m = petM.m, P = boxOf(m.pid); haloJoy(m);
-  const wash = petM.wash; let fr = 0; if (P && (wash || ((m.joy ?? 60) < 100 && dayCap(m, 'pet', PET_DAY)))) { fr = wash ? WASH_FR : PET_FR; if (fr > 0) addFr(P.id, fr); }
+  const wash = petM.wash; let fr = 0; if (P && (wash || (m.joy ?? 60) < 100)) { fr = wash ? WASH_FR : PET_FR; if (fr > 0) addFr(P.id, fr); }   /* v4.42 경완: 쓰다듬기로 즐거움이 오를 때마다 친밀도 +1, 하루 한도 없음 */
   if (wash) { m.clean = 100; dirtVis(m); m.joy = clamp((m.joy ?? 60) + 10); washShine(m); $('#washBrush').hidden = true; }
   else { m.social = clamp(m.social - 20); m.joy = clamp((m.joy ?? 60) + 20); }   /* v4.35 경완: 쓰다듬기는 즐거움 +20 (예전엔 한 번에 100) */
   haptic(2); setTimeout(() => haptic(2), 110); setTimeout(() => haptic(1), 220); sfx('pickup'); if (fr) frPop(m, fr);
@@ -5279,7 +5279,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.41';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.42';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
