@@ -4128,6 +4128,7 @@ function baseAnim(m) {
   if (m.state === 'sleep') return m.act.classList.contains('doze') && m.sleepAge < 2.3 ? 'Idle' : 'Sleep';
   if (m.state === 'move') return m.up ? 'WalkUp' : 'Walk';
   if (m.state === 'eat') return 'Eat';
+  if (m.backSit) return 'WalkUp';   // 뒷모습으로 앉아 있기 (걷는 첫 장면에 멈춘다)
   return 'Idle';
 }
 function drawSprite(m, dt) {
@@ -4147,6 +4148,7 @@ function drawSprite(m, dt) {
     if (f == null) f = null;
   } else { if (m.sprKey !== name) { m.sprKey = name; m.at = 0; } m.at += dt * (name === 'Eat' ? .75 : 1); t = m.at % total; }   // 먹는 동작은 천천히 오물오물
   if (f == null) { let acc = 0; f = durs.length - 1; for (let i = 0; i < durs.length; i++) { acc += durs[i] / 60; if (t < acc) { f = i; break; } } }
+  if (m.backSit && name === 'WalkUp' && !m.one) f = 0;
   const key = name + ':' + f;
   if (m.frameKey === key) return;
   m.frameKey = key;
@@ -4733,19 +4735,15 @@ const tyOf = m => SPD(m.form || m.sp).t || [];
 // v4.44 경완: 모닥불 노래 — 가끔 포켓몬들이 모닥불에 둘러앉아 다 같이 노래를 부른다 (2~5마리)
 let CAMP = null, CAMP_CD = 0;
 const campOk = o => S.mons.includes(o) && awake(o) && !o.hidden && !o.held && !o.pin && !o.evolving && !o.washing && !o.szb && !o.pet && !o.camp && (o.state === 'idle' || o.state === 'move') && !['berry', 'feedb', 'greet', 'bed'].includes(o.goal?.kind) && T(o).mv !== 'swim' && petM?.m !== o && !tyOf(o).some(t => t === WAT || t === ICE);
-function campSeats(G) {   // 불 둘레 타원에 고르게 앉되, 화면 밖·화면 버튼 밑·불 바로 앞(불을 가림)·바로 뒤 자리는 뺀 둘레에 나눠 앉는다
-  const n = G.length, w = Math.max(...G.map(o => o.w || 40)), x0 = XL + 30, x1 = XR - 30;
-  for (const k of [1, 1.2, 1.45]) {
-    const rx = Math.max(70, 34 + w * .55 + n * 10) * k, ry = rx * .45;
-    const at = a => ({ a: Math.atan2(Math.sin(a), Math.cos(a)), x: FIRE.x + Math.cos(a) * rx, y: FIRE.y + 8 + Math.sin(a) * ry });
-    const okq = q => q.x >= x0 && q.x <= x1 && q.y >= MIN_Y && q.y <= MAX_Y && Math.abs(q.x - FIRE.x) >= 34 && (h => Math.hypot(h.x - q.x, h.y - q.y) <= 4)(outOfHud(G[0], { x: q.x, y: q.y }));
-    const P = Array.from({ length: 72 }, (_, i) => at(Math.PI + i * Math.PI / 36)), ok = P.map(okq);
-    if (ok.every(Boolean)) { const off = n === 4 ? Math.PI / 4 : 0; return Array.from({ length: n }, (_, i) => at(Math.PI + off + i * 2 * Math.PI / n)); }
-    const d = ok.indexOf(false), A = []; for (let i = 1; i <= 72; i++) { const t = (d + i) % 72; if (ok[t]) A.push(P[t]); }
-    const span = A.length * 5;   // 쓸 수 있는 둘레(도)
-    if (A.length >= n && (span >= n * 40 || k === 1.45)) return n === 1 ? [A[A.length >> 1]] : Array.from({ length: n }, (_, i) => A[Math.round(i * (A.length - 1) / (n - 1))]);
-  }
-  return G.map((o, i) => ({ a: 0, x: clamp(FIRE.x - 60 - i * 30, x0, x1), y: FIRE.y + 10 }));
+function campSeats(G) {   // 불 둘레 타원에 고르게 앉되, 화면 밖·화면 버튼 밑 자리는 뺀 둘레에 나눠 앉는다. v4.49 경완: 마릿수가 늘어도 불과의 거리는 그대로 (좁으면 다닥다닥)
+  const n = G.length, w = G.reduce((a, o) => a + (o.w || 40), 0) / n, x0 = XL + 30, x1 = XR - 30, rx = 50 + w * .4, ry = rx * .42;
+  const at = a => ({ a: Math.atan2(Math.sin(a), Math.cos(a)), x: FIRE.x + Math.cos(a) * rx, y: FIRE.y + 6 + Math.sin(a) * ry });
+  const okq = q => q.x >= x0 && q.x <= x1 && q.y >= MIN_Y && q.y <= MAX_Y && (h => Math.hypot(h.x - q.x, h.y - q.y) <= 4)(outOfHud(G[0], { x: q.x, y: q.y }));
+  const P = Array.from({ length: 72 }, (_, i) => at(Math.PI + i * Math.PI / 36)), ok = P.map(okq);
+  if (ok.every(Boolean)) { const off = n === 4 ? Math.PI / 4 : 0;   /* 왼쪽부터 고르게: 홀수면 불 바로 뒤·바로 앞 한가운데 자리를 피한다 */ return Array.from({ length: n }, (_, i) => at(Math.PI + off + i * 2 * Math.PI / n)); }
+  const d = ok.indexOf(false), A = []; for (let i = 1; i <= 72; i++) { const t = (d + i) % 72; if (ok[t]) A.push(P[t]); }
+  if (A.length >= n) return n === 1 ? [A[A.length >> 1]] : Array.from({ length: n }, (_, i) => A[Math.round(i * (A.length - 1) / (n - 1))]);
+  return G.map((o, i) => ({ a: 0, x: clamp(FIRE.x - rx + (i % 3) * 18, x0, x1), y: FIRE.y + 6 + (i - n / 2) * 14 }));
 }
 function campSing(m, force) {   // force = 같이 앉을 다른 포켓몬 수 (테스트용)
   if (CAMP || KEY === 'pk-studio-v2' || !flameEl || flameEl.classList.contains('out')) return false;
@@ -4755,16 +4753,17 @@ function campSing(m, force) {   // force = 같이 앉을 다른 포켓몬 수 (�
   const G = [m, ...C.slice(0, Math.min(C.length, force ?? (1 + Math.floor(Math.random() * C.length))))], ang = o => Math.atan2(o.y - FIRE.y, o.x - FIRE.x);
   const others = G.slice(1), seats = campSeats(G).sort((a, b) => a.a - b.a); G.sort((a, b) => ang(a) - ang(b));
   CAMP = { G, ready: new Set(), on: false }; CAMP_CD = Date.now() + rnd(8, 15) * 60e3; const c = CAMP;
-  G.forEach((o, i) => { o.camp = c; o.partner = null; o.scene = null; if (o !== m) emote(o, '♪', 'note', 1.5, 'camp-call'); moveTo(o, seats[i], { kind: 'camp' }, .9); });
+  G.forEach((o, i) => { o.camp = c; o.campSeat = seats[i]; o.partner = null; o.scene = null; if (o !== m) emote(o, '♪', 'note', 1.5, 'camp-call'); moveTo(o, seats[i], { kind: 'camp' }, .9); });
   log(`${J(m,'이/가')} 모닥불 앞에서 콧노래를 흥얼거리자 ${NL(others,'이/가')} 하나둘 모여 둘러앉았다.`, G);
   setTimeout(() => { if (CAMP === c && !c.on) campStart(c); }, 15000);   // 늦는 포켓몬은 두고 시작
   return true;
 }
 function campSit(m) {
   const c = CAMP; faceTo(m, FIRE.x); m.goal = null; setState(m, 'special', 60); m.special = 'camp'; c.ready.add(m);
+  m.backSit = !!m.campSeat && m.campSeat.y > FIRE.y + 8;   /* v4.49 경완: 불 앞쪽(화면 아래)에 앉은 포켓몬은 뒷모습으로 불을 바라본다 */
   if (!c.on && c.G.every(o => c.ready.has(o) || !S.mons.includes(o))) setTimeout(() => { if (CAMP === c && !c.on) campStart(c); }, 600);
 }
-function campLeave(o) { o.camp = null; o.act.classList.remove('camp'); o.act.style.removeProperty('--cs'); o.act.style.removeProperty('--cd'); if (o.special === 'camp') { o.special = null; setState(o, 'idle', rnd(3, 6)); } }
+function campLeave(o) { o.camp = null; o.campSeat = null; o.backSit = false; o.act.classList.remove('camp'); o.act.style.removeProperty('--cs'); o.act.style.removeProperty('--cd'); if (o.special === 'camp') { o.special = null; setState(o, 'idle', rnd(3, 6)); } }
 function campStart(c) {
   const live = () => c.G.filter(o => S.mons.includes(o) && o.camp === c && c.ready.has(o) && !o.held && awake(o) && o.state === 'special');
   c.G.filter(o => !c.ready.has(o)).forEach(o => { o.camp = null; if (o.goal?.kind === 'camp') think(o); });
@@ -5348,7 +5347,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.48';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.49';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
