@@ -3146,6 +3146,7 @@ const EXTRA_PAIRS = [
   [[333, 334], SMALLW, 'care', 'perch', { h: .45, t: ['♥', 'zz'], cls: 'heart' }, (a, b) => `${J(b,'이/가')} ${N(a)}의 솜구름 날개 위에 폭 안겼다.`, 12],
   [[977], [978], 'care', 'perch', { h: .55, front: 1, t: ['!', '♪'] }, (a, b) => `${J(b,'이/가')} ${N(a)}의 입속에 쏙 들어가 자리를 잡았다. 명콤비다.`],
   [[527, 528], ANY, 'play', 'perch', { rev: 1, h: .9, t: '♥', cls: 'heart' }, (a, b) => `${J(a,'이/가')} 하트 모양 코로 ${N(b)}에게 철썩 달라붙었다.`, 6],
+  [[713], [712], 'care', 'perch', { h: .62, grp: 712, t: ['♪', '❄'] }, (a, b) => `${J(b,'이/가')} ${N(a)}의 얼음 등 위로 폴짝 올라탔다. 크레베이스는 천천히 걸어 준다.`, 40],   // v4.69 경완: 꽁어름이 크레베이스 등에 올라탄다, 꽁어름이 여럿이면 다 같이
   [[416], [415], 'care', 'perch', { h: .9, t: ['♪', '윙윙'] }, (a, b) => `${J(b,'이/가')} ${N(a)} 머리 위를 맴돌며 시중을 든다.`],
   // chasing
   [[52, 53, 431, 509], [19, 20, 504, 734], 'play', 'tag', { t: ['찍!', '!'] }, (a, b) => `${J(a,'이/가')} ${J(b,'을/를')} 보더니 사냥 본능이 깨어났다! 쫓고 쫓기는 추격전이 시작됐다.`],
@@ -3647,7 +3648,13 @@ const TPL = {
     } },
   // the partner (b) rides on the actor's (a) head or back while a strolls, or flies when p.fly; p.rev swaps who rides
   perch: { dur: 8,
-    init(sc, a, b) { const [m] = sc.p.rev ? [b, a] : [a, b]; sc.c = { x: clamp(m.x, XL + 90, XR - 90), y: clamp(m.y, MIN_Y + 30, MAX_Y - 20) }; sc.dx = rnd(-m.w * .1, m.w * .1); anim(sc.p.rev ? a : b, 'hop'); },
+    init(sc, a, b) { const [m, r] = sc.p.rev ? [b, a] : [a, b]; sc.c = { x: clamp(m.x, XL + 90, XR - 90), y: clamp(m.y, MIN_Y + 30, MAX_Y - 20) }; sc.dx = rnd(-m.w * .1, m.w * .1); anim(r, 'hop');
+      if (sc.p.grp) {   // 같은 종이 더 있으면 다 같이 등에 올라탄다 (c.ride = 태워 주는 포켓몬, render 가 자리를 맞춘다)
+        const X = S.mons.filter(c => c !== r && c.sp === sc.p.grp && !c.hidden && !c.held && !c.szb && !c.ride && c.state !== 'interact' && c.state !== 'special' && c.state !== 'sleep' && dist(c, m) < 420).slice(0, 3), n = X.length + 1, st = Math.min(r.w * .62, m.w * .95 / n);
+        sc.dx = -(n - 1) / 2 * st;
+        X.forEach((c, i) => { c.ride = m; c.rideSc = sc; c.rideDx = (i + 1 - (n - 1) / 2) * st; c.goal = null; setState(c, 'idle', 30); setTimeout(() => S.mons.includes(c) && anim(c, 'hop'), 250 * (i + 1)); });
+        if (X.length) log(X.length > 1 ? `${new Set(X.map(c => c.name)).size === 1 ? `${N(X[0])} ${X.length}마리` : X.map(c => N(c)).join(', ')}도 줄줄이 ${N(m)} 등에 올라탔다! 등 위가 꽉 찼다.` : `${J(X[0],'이/가')} 뒤따라 ${N(m)} 등에 올라탔다!`, [m, ...X]);
+      } },
     tick(sc, a, b) {
       const [m, r] = sc.p.rev ? [b, a] : [a, b];
       if (sc.p.fly) { m.xl = Math.min(50, sc.mt * 30); orbit(m, sc.c, sc.mt * .9, 120, 40); }
@@ -4272,6 +4279,8 @@ function render(m, now) {
   const t = T(m), flyer = t.mv === 'fly' || t.mv === 'hover';
   const grounded = !m.held && (m.state === 'sleep' || m.state === 'eat' || (t.mv === 'fly' && SPm(m).sh === 9 && !FLAP_IDLE.has(m.sp) && m.state !== 'move'));   // v3.62 경완: 새는 날개를 접고 서 있을 땐 땅에, 날아갈 때만 떠 있다
   if (m.perch) { const p = m.perch; if (S.mons.includes(p) && p.state === 'sleep' && m.state === 'sleep') { m.x = p.x + m.perchDx; m.y = p.y + 1; m.xl = p.h * .45; } else { m.perch = null; m.xl = 0; } }
+  if (m.ride) { const h = m.ride; if (S.mons.includes(h) && h.scene === m.rideSc && h.state === 'interact' && !m.held && m.state !== 'interact' && m.state !== 'special') { m.x = h.x + m.rideDx; m.y = h.y; m.xl = (h.xl || 0) + h.h * .62; m.face = h.face; m.zAdd = 2; m.goal = null; if (m.state === 'move') setState(m, 'idle', 30); m.t = Math.max(m.t, 1); }
+    else { m.ride = null; m.rideSc = null; m.xl = 0; m.zAdd = 0; if (!m.held && S.mons.includes(h)) { place(m, h.x + (m.rideDx < 0 ? -1 : 1) * Math.max(34, (m.w + h.w) * .4) + rnd(-12, 12), h.y + rnd(4, 16)); dustAt(m); } } }
   const fly0 = MON_FLY[m.form] || 0, targetLift = m.szb ? fly0 : m.held ? 26 : (flyer ? (grounded ? (t.mv === 'hover' ? 6 : 0) : (t.mv === 'fly' ? 40 : 16)) : 0) + (m.xl || 0) + fly0;   /* 들면 나는 포켓몬도 손가락(몸통) 기준: 그림자 위 높이를 더하지 않는다 */
   m.lift += (targetLift - m.lift) * .08;
   const bob = flyer && !grounded && !m.szb ? Math.sin(now / 260 + m.uid) * 4 : 0;   /* v4.61 경완: 크기 조절 모드에선 둥둥 안 뜬다 */
@@ -5401,7 +5410,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.68';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.69';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
