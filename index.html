@@ -1107,7 +1107,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .hatch-stage .egg{width:108px;height:132px;transform-origin:50% 92%}
 /* 도트 게임식 흔들림: 부드럽게 돌지 않고 칸 단위로 끊어서 움직인다 */
 .hatch-stage .egg.wig{animation:hwig .6s steps(1,end) 1}
-.hatch-stage .egg.wig2{animation:hwig .3s steps(1,end) infinite}
+.hatch-stage .egg.wig2{animation:hwigR .3s steps(1,end) infinite}
 @keyframes hwig{0%{transform:none}12%{transform:translateX(-6px) rotate(-6deg)}25%{transform:none}37%{transform:translateX(6px) rotate(6deg)}50%{transform:none}62%{transform:translateX(-6px) rotate(-6deg)}75%,100%{transform:none}}
 .hatch-stage .egg.hop{animation:hhop .35s steps(1,end) 1}
 @keyframes hhop{0%{transform:none}25%{transform:translateY(-12px)}50%{transform:translateY(-6px)}75%,100%{transform:none}}
@@ -1125,9 +1125,10 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .hatch-stage .egg.knock{animation:hknock .17s ease-out 1}
 .hatch-stage .egg.quake{animation:equake .08s steps(2,end) var(--qn,2)}
 /* v5.05 경완: 깨지기 직전(금 3단계)에는 계속 덜덜 떨리고, 두드려도 그 떨림이 멈추지 않는다 (translate·rotate 로 따로 겹친다) */
-.hatch-stage .egg.c3{animation:eshk .24s steps(1,end) infinite}.hatch-stage .egg.c3.knock{animation:hknock .17s ease-out 1,eshk .24s steps(1,end) infinite}.hatch-stage .egg.c3.quake{animation:equake .08s steps(2,end) var(--qn,2),eshk .24s steps(1,end) infinite}.hatch-stage .egg.c3.wig,.hatch-stage .egg.c3.wig2{animation:hwig .3s steps(1,end) infinite}
+.hatch-stage .egg.c3{animation:eshk .24s steps(1,end) infinite}.hatch-stage .egg.c3.knock{animation:hknock .17s ease-out 1,eshk .24s steps(1,end) infinite}.hatch-stage .egg.c3.quake{animation:equake .08s steps(2,end) var(--qn,2),eshk .24s steps(1,end) infinite}.hatch-stage .egg.c3.wig,.hatch-stage .egg.c3.wig2{animation:hwigR .3s steps(1,end) infinite}
+@keyframes hwigR{0%{translate:0 0;rotate:0deg}12%{translate:-6px 0;rotate:-6deg}25%{translate:0 0;rotate:0deg}37%{translate:6px 0;rotate:6deg}50%{translate:0 0;rotate:0deg}62%{translate:-6px 0;rotate:-6deg}75%,100%{translate:0 0;rotate:0deg}}   /* v5.15: 깨지기 직전 덜덜도 translate/rotate 로 — 두드릴 때 크기 펄스(인라인 transform)를 덮지 않게 */
 @keyframes eshk{0%{translate:-2px 0;rotate:-2deg}25%{translate:0 0;rotate:0deg}50%{translate:2px 0;rotate:2deg}75%{translate:0 0;rotate:0deg}}
-@keyframes equake{0%,100%{transform:none}25%{transform:translateX(calc(var(--qx,3) * -1px)) rotate(calc(var(--qa,6) * -1deg))}75%{transform:translateX(calc(var(--qx,3) * 1px)) rotate(calc(var(--qa,6) * 1deg))}}
+@keyframes equake{0%,100%{translate:0 0;rotate:0deg}25%{translate:calc(var(--qx,3) * -1px) 0;rotate:calc(var(--qa,6) * -1deg)}75%{translate:calc(var(--qx,3) * 1px) 0;rotate:calc(var(--qa,6) * 1deg)}}
 .hatch .win.wquake{animation:wquake .08s steps(2,end) var(--qn,2)}
 @keyframes wquake{0%,100%{transform:none}33%{transform:translate(calc(var(--wx,2) * -1px),calc(var(--wx,2) * .5px))}66%{transform:translate(calc(var(--wx,2) * 1px),calc(var(--wx,2) * -.5px))}}
 @keyframes hknock{0%{transform:translateX(calc(var(--kx,1) * -6px)) rotate(calc(var(--kx,1) * -8deg)) scale(1.24)}45%{transform:translateX(calc(var(--kx,1) * 3px)) rotate(calc(var(--kx,1) * 3deg)) scale(.9,.94)}100%{transform:none}}
@@ -5526,7 +5527,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.13';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.15';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5847,6 +5848,7 @@ try { boxSort = localStorage.getItem('pk-box-sort') || 'new'; boxDir = localStor
 const TAB_G = { box: 'poke', dex: 'poke', field: 'fld', buddy: 'fld' }; let mgrG = 'poke', lastTab = { poke: 'box', fld: 'field' }; var mgrReady = true;
 function setMgrTab(t) {
   if (t === 'dex') { lastTab.poke = 'dex'; closeToggles(); hideSheets(); openDex(); return; }
+  if (t !== 'buddy') clearBudFocus();
   mgrG = TAB_G[t] || 'poke'; lastTab[mgrG] = t;
   document.querySelectorAll('#mgrTabs button').forEach(b => b.hidden = TAB_G[b.dataset.t] !== mgrG);
   if (mgrTab === 'box' && t !== 'box' && !mgr.hidden) seeBox();
@@ -6101,7 +6103,7 @@ $('#ppBud').onclick = () => {
   renderBox(); if (slot != null) { closePoke(); setMgrTab('buddy'); } else openPoke(P.id);   // 짝꿍 칸에서 왔으면 짝꿍 탭으로, 아니면 카드에 남아 버튼만 눌린 모양으로
   evoNotice(P.sp, P);
 };
-new MutationObserver(() => { if (mgr.hidden) { closePoke(); budPick = null; budFocus = null; boxFromSlot = false; if (mgrTab === 'buddy') seeBuds(); } }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
+new MutationObserver(() => { if (mgr.hidden) { closePoke(); budPick = null; clearBudFocus(); boxFromSlot = false; if (mgrTab === 'buddy') seeBuds(); } }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
 function pokeOpen() { return (!mgr.hidden && mgrG === 'poke') || (!sheet.hidden && dexMode !== 'buddy'); }
 function fldOpen() { return !mgr.hidden && mgrG === 'fld'; }
 function menuTo(isOpen, g) { const was = isOpen(); closeToggles(); hideSheets(); if (was) return; if (g === 'poke') { boxSort = 'new'; boxDir = 1; try { localStorage.setItem('pk-box-sort', 'new'); localStorage.setItem('pk-box-dir', 1); } catch (e) {} }   /* v4.53 경완: 포켓몬 메뉴를 다시 열면 박스는 늘 날짜(최신)순 */ if (budPick != null) { budPick = null; closePoke(); } const t = g === 'poke' ? 'box' : g === 'fld' ? 'field' : lastTab[g];   /* v4.04 경완: 포켓몬 메뉴는 늘 포켓몬(박스) 탭부터. v4.48: 필드 메뉴도 늘 필드 탭부터 */ if (t === 'dex') { setMgrTab('dex'); return; } openMgr(); setMgrTab(t); }
@@ -7108,11 +7110,14 @@ function renderNext() {
   if (!eg) set('Hatch', '-', '', '부화기에 알이 없어요', false, '', 0, null);
   else set('Hatch', eg.r <= 0 ? '준비 완료!' : kmUp(eg.r), eg.r <= 0 ? '' : 'km', `${GRADE[eg.e.g].n} 알`, eg.r <= 0, eggHtml(eg.e.g), eg.e.km / eg.e.need, goEgg);
   const ev = S.buds.map(b => { const P = boxOf(b.pid); return evoKids(b.sp, P).length ? { b, P, r: Math.max(0, evoNeed(b) - (b.km || 0)) } : null; }).filter(Boolean).sort((a, b) => a.r - b.r)[0];
-  const goEvo = ev && (() => { closeToggles(); hideSheets(); budFocus = ev.b.pid; menuTo(fldOpen, 'fld'); setMgrTab('buddy'); });
+  const goEvo = ev && (() => { closeToggles(); hideSheets(); menuTo(fldOpen, 'fld'); budFocus = ev.b.pid; setMgrTab('buddy'); });
   if (!ev) set('Evo', '-', '', S.buds.length ? '진화할 짝꿍이 없어요' : '짝꿍이 없어요', false, '', 0, null);
   else { const src = (ev.P ? thumbP(ev.P) : thumbOf(ev.b.sp)) || ''; set('Evo', ev.r <= 0 ? '준비 완료!' : kmUp(ev.r), ev.r <= 0 ? '' : 'km', ev.P ? nameOf(ev.P) : SPECIES[ev.b.sp].n, ev.r <= 0, src ? `<img alt="" src="${src}">` : '', (ev.b.km || 0) / evoNeed(ev.b), goEvo); }
 }
 let budFocus = null;   // v4.92: 프로필에서 눌러 온 짝꿍 카드 테두리
+// v5.14 경완: 그 테두리는 빈 곳을 누르거나 짝꿍 화면을 벗어나면 바로 풀린다
+function clearBudFocus() { if (budFocus == null) return; budFocus = null; document.querySelectorAll('.bd-card.focus').forEach(c => c.classList.remove('focus')); }
+document.addEventListener('pointerdown', e => { if (budFocus != null && !e.target.closest('.bd-card.focus')) clearBudFocus(); }, true);
 for (const k of ['Hatch', 'Evo']) $('#pf' + k + 'Box')?.addEventListener('click', e => { const g = e.currentTarget._go; if (g) { sfx('tap'); g(); } });
 function renderProfile() {
   renderTrainer();
@@ -7591,6 +7596,7 @@ function tapEgg(egg, g0, msg, g = g0) {   /* g0 알 등급, g 연출 등급(나�
       ev.preventDefault(); lastTap = performance.now();
       if (n >= need) {   // 다 두드린 뒤 깨지기 직전까지도 계속 두드릴 수 있다 (흔들림은 유지)
         const r = hatchStage.getBoundingClientRect(), p = document.createElement('i'); p.className = 'tapfx'; p.style.left = ev.clientX - r.left + 'px'; p.style.top = ev.clientY - r.top + 'px'; hatchStage.append(p); setTimeout(() => p.remove(), 360);
+        { const rr = hatchStage.getBoundingClientRect(); eggKick(egg, ev.clientX - rr.left < rr.width / 2 ? -1 : 1); }   /* v5.15 경완: 깨지기 직전까지도 두드릴 때마다 쿵 커진다 */
         win.classList.remove('jolt'); void win.offsetWidth; win.classList.add('jolt'); sfx('knock', 3); sfx('charge', 1); pend = 2; haptic(2); return;
       }
       n++;
@@ -7598,7 +7604,7 @@ function tapEgg(egg, g0, msg, g = g0) {   /* g0 알 등급, g 연출 등급(나�
       egg.style.setProperty('--kx', x < r.width / 2 ? -1 : 1);
       const quaking = performance.now() < (egg.qUntil || 0);   // 쩌적 흔들림 중에는 톡톡 모션으로 끊지 않는다
       eggKick(egg, x < r.width / 2 ? -1 : 1);   /* v5.07 경완: 빠르게 두드려도 멈춰 보이지 않게, 톡톡은 처음부터 다시 틀지 않고 스프링에 힘을 더한다 */
-      if (!quaking) egg.classList.remove('wig');
+      egg.classList.remove('wig');
       const p = document.createElement('i'); p.className = 'tapfx'; p.style.left = x + 'px'; p.style.top = y + 'px'; hatchStage.append(p); setTimeout(() => p.remove(), 360);
       if (!quaking) { win.classList.remove('jolt', 'wquake'); void win.offsetWidth; win.classList.add('jolt'); }
       const f = g === 6 ? (n < 15 ? n / 60 : .25 + (n - 15) / (need - 15) * .75) : n / need, st = f >= .85 ? 3 : f >= .6 ? 2 : f >= .3 ? 1 : 0;   /* 1단계: 15번째까지는 2단계(60번)와 똑같은 속도로 진행 → 그다음 정체가 드러난다 */
