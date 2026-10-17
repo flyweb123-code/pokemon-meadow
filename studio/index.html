@@ -468,7 +468,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.50';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.51';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -1266,49 +1266,50 @@ $('#oddsC').addEventListener('click', e => {
 
 // ---------- 알 부화 거리 (v2.6 경완) ----------
 // ---------- 랭크 확률 (v2.50 경완) ----------
-// 게임과 같은 계산: 랭크 점수 = 개체값 6개 합(각 0~31 고르게) + (종족값 합 - 400) / 8, 경계는 게임 RANKS 표 그대로. 진화하면 종족값이 바뀌어 랭크도 바뀐다
+// 게임과 같은 계산: 랭크 점수 = 개체값 6개 합(각 0~31 고르게) + (진화 가족 종족값 합 평균 - 400) / 8, 경계는 게임 RANKS 표 그대로. v2.51: 가족 평균이라 진화해도 랭크가 그대로
 const RANKS = [['S', 140], ['A', 122], ['B', 105], ['C', 87], ['D', 69], ['E', 56], ['F', 0]], RKC = { S: '#e0a020', A: '#e05050', B: '#8a6ae0', C: '#4aa8f0', D: '#4caf6a', E: '#9aa0a8', F: '#6b7078' };
 const IVD = (() => { let d = [1]; for (let k = 0; k < 6; k++) { const n = new Array(d.length + 31).fill(0); d.forEach((v, i) => { for (let j = 0; j < 32; j++) n[i + j] += v / 32; }); d = n; } return d; })();
 const rkC = {}; const rkDist = b => rkC[b] || (rkC[b] = (() => { const o = {}, sh = (b - 400) / 8; RANKS.forEach(([r]) => o[r] = 0); IVD.forEach((p, s) => { const sc = s + sh; o[(RANKS.find(([, v]) => sc >= v) || RANKS[RANKS.length - 1])[0]] += p; }); return o; })());
 const bstOf = sp => (A.SPECIES[sp]?.bs || []).reduce((a, b) => a + b, 0);
-let rkKids = null; const rkFinB = sp => { if (!rkKids) { rkKids = {}; for (const k in A.SPECIES) { const f = A.SPECIES[k].fr; if (f) (rkKids[f] = rkKids[f] || []).push(+k); } } const ks = rkKids[sp]; return ks?.length ? Math.max(...ks.map(rkFinB)) : bstOf(sp); };
-let rkMode = store.get('st-rk-mode') === 'final' ? 'final' : 'hatch', rkSort = store.get('st-rk-sort') || 'p', rkQ = '';
+let rkKids = null; const rkFam = sp => { if (!rkKids) { rkKids = {}; for (const k in A.SPECIES) { const f = A.SPECIES[k].fr; if (f) (rkKids[f] = rkKids[f] || []).push(+k); } } return [sp, ...(rkKids[sp] || []).flatMap(rkFam)]; };
+const rkFamB = sp => { let r = sp; while (A.SPECIES[r]?.fr) r = A.SPECIES[r].fr; const F = rkFam(r); return Math.round(F.reduce((a, x) => a + bstOf(x), 0) / F.length * 10) / 10; };
+let rkSort = store.get('st-rk-sort') || 'p', rkQ = '';
 const rkBar = (d, big) => `<div class="rkbar${big ? ' big' : ''}">${RANKS.map(([r]) => d[r] > 0 ? `<i style="width:${d[r] * 100}%;background:${RKC[r]}" title="${r} ${pct(d[r])}"></i>` : '').join('')}</div>`;
 const rkChip = r => `<span class="rk" style="background:${RKC[r]}">${r}</span>`;
 const oneIn = p => p > 0 ? (1 / p >= 100 ? Math.round(1 / p).toLocaleString() : (1 / p).toFixed(1)) + '마리 중 1' : '-';
 function rkRows() {
   const L = tierLists(), Z = tierZ(L), O = odds(), ot = O.reduce((a, b) => a + b, 0) || 1, P = {};
   for (let h = 1; h <= 5; h++) { const Q = probOf(h, L, Z); for (const k in Q) P[k] = (P[k] || 0) + Q[k] * O[h - 1] / ot; }
-  return Object.entries(P).filter(([, p]) => p > 0).map(([sp, p]) => { sp = +sp; const b = bstOf(sp), fb = rkFinB(sp); return { sp, p, b, fb, d: rkDist(b), df: rkDist(fb) }; });
+  return Object.entries(P).filter(([, p]) => p > 0).map(([sp, p]) => { sp = +sp; const b = bstOf(sp), fb = rkFamB(sp), n = rkFam(sp).length; return { sp, p, b, fb, n, d: rkDist(fb) }; });
 }
 function renderRank() {
-  const rows = rkRows(), fin = rkMode === 'final', D_ = x => fin ? x.df : x.d, all = {}, allH = {}, allF = {};
-  RANKS.forEach(([r]) => { allH[r] = rows.reduce((a, x) => a + x.p * x.d[r], 0); allF[r] = rows.reduce((a, x) => a + x.p * x.df[r], 0); all[r] = fin ? allF[r] : allH[r]; });
+  const rows = rkRows(), D_ = x => x.d, all = {};
+  RANKS.forEach(([r]) => { all[r] = rows.reduce((a, x) => a + x.p * x.d[r], 0); });
   const base = rkDist(400), byS = [...rows].sort((a, b) => a.d.S - b.d.S), low = rows.filter(x => x.d.S < .001), lowP = low.reduce((a, x) => a + x.p, 0);
-  const com = [...rows].sort((a, b) => b.p - a.p).slice(0, 3), legS = rows.filter(x => x.d.S >= .2), jump = [...rows].sort((a, b) => (b.df.S - b.d.S) - (a.df.S - a.d.S)).slice(0, 3);
+  const com = [...rows].sort((a, b) => b.p - a.p).slice(0, 3), legS = rows.filter(x => x.d.S >= .2), up = [...rows].filter(x => x.n > 1).sort((a, b) => (b.fb - b.b) - (a.fb - a.b)).slice(0, 3);
   const q = rkQ.trim(), qn = +q;
   let list = rows.filter(x => !q || x.sp === qn || spName(x.sp).includes(q));
-  list.sort(rkSort === 'b' ? (a, b) => (fin ? b.fb - a.fb : b.b - a.b) : rkSort === 's' ? (a, b) => D_(b).S - D_(a).S : rkSort === 'f' ? (a, b) => D_(b).F - D_(a).F : (a, b) => b.p - a.p);
+  list.sort(rkSort === 'b' ? (a, b) => b.fb - a.fb : rkSort === 's' ? (a, b) => D_(b).S - D_(a).S : rkSort === 'f' ? (a, b) => D_(b).F - D_(a).F : (a, b) => b.p - a.p);
   $('#rankC').innerHTML = `
-  <div class="card"><div class="row" style="flex-wrap:wrap;gap:8px"><h2 style="flex:1">랭크별 전체 출현 확률</h2><span class="chips"><button class="chip${fin ? '' : ' on'}" data-rkm="hatch">부화했을 때</button><button class="chip${fin ? ' on' : ''}" data-rkm="final">끝까지 진화하면</button></span></div>
-    <div class="small mute">알을 하나 부화시켰을 때 그 포켓몬이 각 랭크일 확률이에요 (알 등급 확률 × 알별 포켓몬 확률 × 그 포켓몬의 랭크 확률). 랭크 점수는 개체값 6개 합에 종족값 보정((종족값 합 − 400) ÷ 8)을 더해요. ${fin ? '"끝까지 진화하면"은 부화한 포켓몬을 마지막 진화까지 시켰을 때예요 (갈래 진화는 종족값이 가장 높은 쪽).' : '진화하면 종족값이 올라 랭크도 올라가요.'}</div>
+  <div class="card"><div class="row" style="flex-wrap:wrap;gap:8px"><h2 style="flex:1">랭크별 전체 출현 확률</h2></div>
+    <div class="small mute">알을 하나 부화시켰을 때 그 포켓몬이 각 랭크일 확률이에요 (알 등급 확률 × 알별 포켓몬 확률 × 그 포켓몬의 랭크 확률). 랭크 점수는 개체값 6개 합에 종족값 보정((가족 평균 종족값 − 400) ÷ 8)을 더해요. 가족 평균은 진화 전과 진화형 전부(갈래 진화 포함)의 종족값 합 평균이라, 부화할 때 정해진 랭크가 진화해도 그대로예요.</div>
     ${rkBar(all, true)}
     <div class="rkt h"><span></span><span>랭크 점수</span><span class="r">확률</span><span class="r">몇 마리 중 1</span><span class="r b4" title="종족값 합이 400인 포켓몬 (보정 0)">종족값 400</span></div>
     ${RANKS.map(([r, v], i) => `<div class="rkt">${rkChip(r)}<span class="small mute">${i ? `${v} ~ ${RANKS[i - 1][1] - 1}점` : `${v}점 이상`}${r === 'F' ? ' (0 아래 포함)' : ''}</span><span class="r">${pct(all[r])}</span><span class="r small">${oneIn(all[r])}</span><span class="r small mute b4">${pct(base[r])}</span></div>`).join('')}
   </div>
   <div class="card"><h2>검토</h2>
     <ul class="rkn">
-      <li>${byS[0] && byS[0].d.S > 0 ? `<b>S가 아예 안 나오는 포켓몬은 없어요.</b> 가장 어려운 ${esc(spName(byS[0].sp))}(종족값 ${byS[0].b})도 S ${pct(byS[0].d.S)} (${oneIn(byS[0].d.S)})예요.` : '<b>S가 나올 수 없는 포켓몬이 있어요.</b>'}</li>
-      <li><b>S 확률 0.1% 미만: ${low.length}종</b>, 부화의 ${pct(lowP)}가 이 포켓몬들이에요. 대부분 종족값 200 안팎의 흔한 포켓몬이에요.</li>
-      <li><b>흔한 포켓몬은 F가 잦아요.</b> ${com.map(x => `${esc(spName(x.sp))}(종족값 ${x.b}) F ${pct(x.d.F)}`).join(', ')}.</li>
+      <li>${byS[0] && byS[0].d.S > 0 ? `<b>S가 아예 안 나오는 포켓몬은 없어요.</b> 가장 어려운 ${esc(spName(byS[0].sp))}(가족 평균 종족값 ${byS[0].fb})도 S ${pct(byS[0].d.S)} (${oneIn(byS[0].d.S)})예요.` : '<b>S가 나올 수 없는 포켓몬이 있어요.</b>'}</li>
+      <li><b>S 확률 0.1% 미만: ${low.length}종</b>, 부화의 ${pct(lowP)}가 이 포켓몬들이에요. 진화하지 않는 약한 포켓몬이에요.</li>
+      <li><b>흔한 포켓몬은 F가 잦아요.</b> ${com.map(x => `${esc(spName(x.sp))}(가족 평균 ${x.fb}) F ${pct(x.d.F)}`).join(', ')}.</li>
       <li><b>전설급은 S가 흔해요.</b> S 20% 이상 ${legS.length}종 (가장 높은 ${esc(spName([...rows].sort((a, b) => b.d.S - a.d.S)[0]?.sp))} ${pct(Math.max(...rows.map(x => x.d.S)))}).</li>
-      <li><b>진화하면 랭크가 올라가요.</b> 전체 S가 부화했을 때 ${pct(allH.S)} → 끝까지 진화하면 ${pct(allF.S)}. 가장 크게 오르는 포켓몬: ${jump.map(x => `${esc(spName(x.sp))} S ${pct(x.d.S)} → ${pct(x.df.S)}`).join(', ')}.</li>
+      <li><b>진화해도 랭크는 그대로예요.</b> 진화하는 포켓몬은 가족 평균 덕에 부화 때부터 보정이 올라가요. 가장 크게 오르는 포켓몬: ${up.map(x => `${esc(spName(x.sp))} 종족값 ${x.b} → 가족 평균 ${x.fb}`).join(', ')}.</li>
     </ul>
   </div>
   <div class="card"><div class="row" style="flex-wrap:wrap"><h2 style="flex:1">포켓몬별 랭크 확률 <span class="num mute">${rows.length}종</span></h2><div class="search" style="min-width:160px"><input id="rankQ" value="${esc(rkQ)}" placeholder="이름이나 번호" autocomplete="off"></div></div>
-    <div class="small mute">알에서 나오는 포켓몬만 (${fin ? '끝까지 진화했을 때 랭크' : '부화했을 때 랭크'}). 제목을 누르면 그 순서로 정렬해요.</div>
-    <div class="rkr h"><span></span><span class="nb"></span><button class="prs" data-rks="n" style="justify-self:start">포켓몬</button><button class="prs r" data-rks="b">종족값${rkSort === 'b' ? ' ▼' : ''}</button><button class="prs r rkh" data-rks="p">출현${rkSort === 'p' ? ' ▼' : ''}</button><span class="rkb"></span><button class="prs r" data-rks="s">S${rkSort === 's' ? ' ▼' : ''}</button><button class="prs r" data-rks="f">F${rkSort === 'f' ? ' ▼' : ''}</button></div>
-    <div class="rkl" id="rkl">${list.map((x, i) => `<button class="rkr${x.sp === sel.rank ? ' on' : ''}" data-rksp="${x.sp}"><span class="num mute small">${i + 1}</span><img alt="" data-th="${x.sp}" class="nb"><span>${esc(spName(x.sp))}</span><span class="r">${fin && x.fb !== x.b ? `<small class="mute">${x.b}→</small>${x.fb}` : x.b}</span><span class="r rkh">${pct(x.p)}</span><span class="rkb">${rkBar(D_(x))}</span><span class="r">${pct(D_(x).S)}</span><span class="r">${pct(D_(x).F)}</span></button>`).join('')}</div>
+    <div class="small mute">알에서 나오는 포켓몬만 (종족값 = 가족 평균). 제목을 누르면 그 순서로 정렬해요.</div>
+    <div class="rkr h"><span></span><span class="nb"></span><button class="prs" data-rks="n" style="justify-self:start">포켓몬</button><button class="prs r" data-rks="b">가족 평균${rkSort === 'b' ? ' ▼' : ''}</button><button class="prs r rkh" data-rks="p">출현${rkSort === 'p' ? ' ▼' : ''}</button><span class="rkb"></span><button class="prs r" data-rks="s">S${rkSort === 's' ? ' ▼' : ''}</button><button class="prs r" data-rks="f">F${rkSort === 'f' ? ' ▼' : ''}</button></div>
+    <div class="rkl" id="rkl">${list.map((x, i) => `<button class="rkr${x.sp === sel.rank ? ' on' : ''}" data-rksp="${x.sp}"><span class="num mute small">${i + 1}</span><img alt="" data-th="${x.sp}" class="nb"><span>${esc(spName(x.sp))}</span><span class="r">${x.fb}</span><span class="r rkh">${pct(x.p)}</span><span class="rkb">${rkBar(D_(x))}</span><span class="r">${pct(D_(x).S)}</span><span class="r">${pct(D_(x).F)}</span></button>`).join('')}</div>
   </div>`;
   fillThumbs($('#rkl'));
   $('#rankQ').oninput = e => { rkQ = e.target.value; const p = e.target.selectionStart; renderRank(); const i = $('#rankQ'); i.focus(); i.setSelectionRange(p, p); };
@@ -1318,12 +1319,10 @@ function showRankSp(sp, rows = rkRows()) {
   const x = rows.find(r => r.sp === sp); if (!x) { $('#rankI').innerHTML = '<div class="empty">포켓몬을 고르면 랭크별 확률이 나와요.</div>'; return; }
   const col = (d) => RANKS.map(([r]) => `<div class="rkt" style="grid-template-columns:34px minmax(0,1fr) 74px">${rkChip(r)}<span class="small mute">${oneIn(d[r])}</span><span class="r">${pct(d[r])}</span></div>`).join('');
   $('#rankI').innerHTML = `<h4><img alt="" src="${thumb(sp)}" style="width:40px;height:40px;image-rendering:pixelated;vertical-align:middle"> ${esc(spName(sp))} <span class="num mute">No.${sp}</span></h4>
-    <div class="small mute">알 1개당 출현 ${pct(x.p)} · 종족값 ${x.b} (보정 ${((x.b - 400) / 8 >= 0 ? '+' : '') + ((x.b - 400) / 8).toFixed(1)}점)</div>
-    <h4 style="margin-top:12px">부화했을 때</h4>${rkBar(x.d, true)}${col(x.d)}
-    ${x.fb !== x.b ? `<h4 style="margin-top:12px">끝까지 진화하면 <span class="num mute">종족값 ${x.fb}</span></h4>${rkBar(x.df, true)}${col(x.df)}` : '<div class="small mute" style="margin-top:10px">진화하지 않는 포켓몬이에요.</div>'}`;
+    <div class="small mute">알 1개당 출현 ${pct(x.p)} · 종족값 ${x.b}${x.n > 1 ? ` · 진화 가족 ${x.n}종 평균 ${x.fb}` : ' · 진화하지 않아요'} (보정 ${((x.fb - 400) / 8 >= 0 ? '+' : '') + ((x.fb - 400) / 8).toFixed(1)}점)</div>
+    <h4 style="margin-top:12px">랭크 확률 <span class="small mute">진화해도 그대로</span></h4>${rkBar(x.d, true)}${col(x.d)}`;
 }
 $('#rankC').addEventListener('click', e => {
-  const m = e.target.closest('[data-rkm]'); if (m) { rkMode = m.dataset.rkm; store.set('st-rk-mode', rkMode); renderRank(); return; }
   const s = e.target.closest('[data-rks]'); if (s) { rkSort = s.dataset.rks === 'n' ? 'p' : s.dataset.rks; store.set('st-rk-sort', rkSort); renderRank(); return; }
   const r = e.target.closest('[data-rksp]'); if (r) { sel.rank = +r.dataset.rksp; $$('.rkr').forEach(y => y.classList.toggle('on', y === r)); showRankSp(sel.rank); toInsp('#rankI'); }
 });
@@ -1782,6 +1781,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.51', '10월 17일', ['알 › 랭크: 랭크는 진화 가족 평균 종족값으로 계산 (게임 v4.54, 진화해도 랭크 그대로), 부화/진화 전환 버튼 제거']],
   ['2.50', '10월 17일', ['알 › 랭크: 랭크별 전체 출현 확률, 포켓몬별 랭크 확률 (부화했을 때 / 끝까지 진화하면), 검토 요약']],
   ['2.49', '10월 16일', ['밸런스: 빗질 친밀도는 씻길 때마다 고정 +3 (씻긴 양 비례 대신, 게임 v4.29)']],
   ['2.48', '10월 16일', ['맵 편집: 버튼 순서 되돌리기·배치 저장·편집 종료, 저장 안 하고 편집 종료하면 경고 (그냥 종료하면 원래대로), 맵 편집 창 버튼은 한 줄에 하나씩', '1km 알 개수: 게임처럼 250m마다 확률로 줍기 (게임 v4.07)']],
