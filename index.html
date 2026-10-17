@@ -2288,6 +2288,9 @@ S.base = midnight();
 const isNight = () => { const h = hour(); return h >= 19.5 || h < 5.5; };
 const uiNight = () => skyDark >= .6;   /* v4.03 경완: 창들의 밤 디자인은 시각이 아니라 맵이 어두워진 정도로 (해 질 녘 18시 반쯤부터) */
 const wrongTime = m => DEX[m.sp].noct ? !isNight() : isNight();
+// v4.47 경완: 너무 일찍 잔다 → 낮에 다니는 포켓몬이 스스로 잠자리에 드는 건 22시부터 (밤 화면은 19:30부터 그대로). 저녁에 졸다 깬 포켓몬도 22시 전이면 기력이 차면 다시 일어난다
+const BED_H = 22;
+const sleepyTime = m => { const h = hour(); return DEX[m.sp].noct ? !isNight() : (h >= BED_H || h < 5.5); };
 const T = m => DEX[m.sp];
 const awake = m => m.state !== 'sleep' && !m.hidden;
 
@@ -2888,7 +2891,7 @@ function think(m) {
     return moveTo(m, { x: rnd(XL + 60, XR - 60), y: MIN_Y + rnd(0, 18) }, { kind: 'forage' });
   }
   if (m.hunger > 50 && !(m.hungryCd > 0) && Math.random() < .25) { m.hungryCd = rnd(40, 90); emote(m, pick(['꼬르륵', '배고파…']), '', 2.2, 'hungry'); }
-  if (S.clock >= (m.awakeT || 0) && (m.energy < 15 || (wrongTime(m) && Math.random() < .55)) || m.energy < 4) return goToBed(m);
+  if (S.clock >= (m.awakeT || 0) && (m.energy < 15 || (sleepyTime(m) && Math.random() < .55)) || m.energy < 4) return goToBed(m);
   { const lv = likeOf(m) && relWho(likeOf(m))?.m;
     if (lv && lv !== m && !lv.hidden && awake(lv) && lv.state !== 'interact' && !(m.likeCd > 0) && t.mv !== 'swim' && Math.random() < .3) {
       m.likeCd = rnd(70, 160); const side = m.x < lv.x ? -1 : 1;
@@ -2982,7 +2985,7 @@ function arrive(m) {
     if (!S.mons.includes(o) || o.hidden) return think(m);
     if (o.state === 'sleep') {
       if ([39, 40, 174].includes(m.sp) && Math.random() < .6) { emote(m, '♪', 'note', 2.2, 'prank'); log(`${J(m,'이/가')} 잠든 ${N(o)}의 얼굴에 몰래 낙서를 했다! ${J(o,'은/는')} 아무것도 모르고 쿨쿨 잔다.`, [m, o], true); addRel(o, m, -3); setState(m, 'idle', 2); return; }
-      if (getRel(m, o) > 30 && S.clock >= (m.awakeT || 0) && (wrongTime(m) || m.energy < 50)) { sleep(m, false); log(`${J(m,'이/가')} 잠든 ${N(o)} 옆에서 같이 잠들었다.`, [m, o]); addRel(m, o, 4); }
+      if (getRel(m, o) > 30 && S.clock >= (m.awakeT || 0) && (sleepyTime(m) || m.energy < 50)) { sleep(m, false); log(`${J(m,'이/가')} 잠든 ${N(o)} 옆에서 같이 잠들었다.`, [m, o]); addRel(m, o, 4); }
       else { emote(m, '…', '', 2.2, 'meet-fail'); setState(m, 'idle', 2); }
       return;
     }
@@ -4166,7 +4169,7 @@ function update(m, dt) {
   if (!(m.joyH > Date.now())) m.joy = clamp((m.joy ?? 60) - dt * JOY_RATE * (asleep ? .3 : 1));   /* 즐거움: 깨어 있으면 약 4시간에 바닥 */
   if (m.spCd > 0) m.spCd -= dt;
   if (asleep) m.energy = clamp(m.energy + dt * 1.3);
-  else m.energy = clamp(m.energy - dt * (m.state === 'move' ? .26 : .1) * (t.slp || 1));
+  else m.energy = clamp(m.energy - dt * (m.state === 'move' ? .13 : .05) * (t.slp || 1));   /* v4.47 경완: 너무 빨리 지쳐 잔다 → 기력이 절반 속도로 준다 (가만히 있으면 약 28분, 돌아다니면 약 11분에 졸림) */
   if (m.form !== m.sp) { m.formT -= dt; if (m.formT <= 0 && m.state !== 'interact') revert(m); }
   m.t -= dt;
   if (m.pet) { m.goal = null; if (m.state !== 'idle' && m.state !== 'eat') setState(m, 'idle', 1); m.t = Math.max(m.t, 1); }
@@ -4216,8 +4219,8 @@ function update(m, dt) {
       break;
     }
     case 'sleep':
-      if (!wrongTime(m) && m.energy >= 92 && Math.random() < dt * .25) wake(m);
-      else if (m.energy >= 100 && wrongTime(m) && m.hunger > 90 && Math.random() < dt * .05) { const day = Math.floor(S.clock / 1440); if (m.hungerWake === day) wake(m); else { m.hungerWake = day; wake(m, `${J(m,'이/가')} 배가 고파서 잠에서 깼다.`); } }
+      if (!sleepyTime(m) && m.energy >= 92 && Math.random() < dt * .25) wake(m);
+      else if (m.energy >= 100 && sleepyTime(m) && m.hunger > 90 && Math.random() < dt * .05) { const day = Math.floor(S.clock / 1440); if (m.hungerWake === day) wake(m); else { m.hungerWake = day; wake(m, `${J(m,'이/가')} 배가 고파서 잠에서 깼다.`); } }
       break;
     case 'interact': tickInteract(m, dt); break;
     case 'special': tickSpecial(m, dt); break;
@@ -5345,7 +5348,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.46';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.47';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
