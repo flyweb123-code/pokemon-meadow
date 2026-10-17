@@ -1473,7 +1473,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
     <div class="run-body">
       <section class="rtab" data-tab="egg">
         <div class="incu-box" id="incu"></div>
-        <div class="mgr-tools"><button id="eggAuto" class="eauto" aria-pressed="false" title="부화기가 비면 가방에서 높은 등급 알부터 채워요">자동 채우기<i></i></button><button id="eggSort" title="부화 준비된 알, 그다음 많이 걸은 알부터 앞으로 모아요">순서 정리</button><button id="eggAll" hidden></button><button id="eggTest" class="test-btn">준비로(테스트)</button><button id="eggTestAll" class="test-btn">모두 준비로</button><span class="tcount" id="eggCount"></span></div>
+        <div class="mgr-tools"><button id="eggAuto" class="eauto" aria-pressed="false" title="부화기가 비면 가방에서 높은 등급 알부터 채워요">자동 채우기<i></i></button><button id="eggSort" title="부화 준비된 알, 그다음 부화까지 남은 거리가 적은 알부터 앞으로 모아요">순서 정리</button><button id="eggAll" hidden></button><button id="eggTest" class="test-btn">준비로(테스트)</button><button id="eggTestAll" class="test-btn">모두 준비로</button><span class="tcount" id="eggCount"></span></div>
         <div class="eggs" id="eggs"></div>
       </section>
       <section class="rtab" data-tab="bag">
@@ -5410,7 +5410,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.71';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.72';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7723,7 +7723,9 @@ function renderRun() {
   renderBag();
 }
 $('#eggAuto').onclick = () => { S.autoInc = !S.autoInc; sfx('tap'); autoInc(); save(); renderRun(); };
-$('#eggSort').onclick = () => { if (hatching || hatchQ.length || !S.eggs.length) return; const r = e => e.km >= e.need ? 1 : 0; S.eggs.sort((a, b) => r(b) - r(a) || b.km - a.km); eggSel = S.eggs[0]; eggSelI = 0; eggNone = false; sfx('tap'); save(); renderRun(); };   // v4.50 경완: 순서 정리 = 준비된 알 먼저, 그다음 걸은 거리순, 맨 앞 알 선택
+$('#eggSort').onclick = () => { if (hatching || hatchQ.length || !S.eggs.length) return; const r = e => e.km >= e.need ? 1 : 0, left = e => Math.max(0, e.need - e.km), was = S.eggs.map(e => e.id);
+  S.eggs.sort((a, b) => r(b) - r(a) || left(a) - left(b) || b.g - a.g || b.km - a.km); eggSel = S.eggs[0]; eggSelI = 0; eggNone = false; sfx('tap'); save(); renderRun();
+  const bt = $('#eggSort'); clearTimeout(bt._t); bt.textContent = S.eggs.some((e, i) => e.id !== was[i]) ? '정리했어요' : '이미 정리됨'; bt._t = setTimeout(() => bt.textContent = '순서 정리', 1200); };   // v4.72 경완: 걸은 거리순은 먼저 넣은 순서와 거의 같아 바뀌는 게 없었다 → 준비된 알, 그다음 부화까지 남은 거리가 적은 알부터, 맨 앞 알 선택
 // 테스트용: 부화기 알을 모두 부화 준비 상태로 (나중에 뺄 것)
 // 테스트용: 등급을 골라 지금 날짜·무작위 장소로 가방에 알을 넣는다 (나중에 뺄 것)
 const TEST_PLACES = ['한강공원', '동네 놀이터', '석촌호수', '해운대 해수욕장', '북한산 둘레길', '서울역', '김포공항', '노량진 수산시장', 'GS칼텍스 주유소', '동네 빵집', '어린이대공원 동물원', '잠실종합운동장', '대학병원', '초등학교', '봉은사', '공단 공장'];
