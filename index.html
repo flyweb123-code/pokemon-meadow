@@ -547,6 +547,7 @@ ol.log li.big .txt{color:#c03838}
 .pt.sweat{width:9px;height:13px;border-radius:50% 50% 50% 50%/35% 35% 65% 65%;background:#d4f0ff;border:2px solid #2f7fd8;box-shadow:inset 2px 2px 0 #fff;animation:sweat .8s ease-out forwards}
 @keyframes sweat{0%{transform:translate(0,0) scale(.5);opacity:0}10%{opacity:1}70%{opacity:1}45%{transform:translate(calc(var(--dx) * .7),-8px) scale(1)}100%{transform:translate(var(--dx),12px) scale(.9);opacity:0}}
 .pt.splash{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.85);animation:splash .8s ease-out forwards}
+.pt.steam{width:14px;height:14px;background:rgba(236,236,240,.75);box-shadow:4px -4px 0 -1px rgba(236,236,240,.6),-4px -2px 0 -2px rgba(236,236,240,.55);animation:dust 1.3s steps(6,end) forwards}   /* v4.90 요소 반응: 하얀 김·연기 (도트) */
 .pt.smoke{width:18px;height:18px;border-radius:50%;background:rgba(150,110,190,.55);animation:dust 1.2s ease-out forwards}
 @keyframes rise{to{transform:translate(-50%,-40px);opacity:0}}
 @keyframes dust{to{transform:translate(-50%,-50%) scale(2.4);opacity:0}}
@@ -5449,7 +5450,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.89';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.90';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6627,19 +6628,19 @@ function elemReact(m, t, dc, f) {
     if (p.k === 'fire') {
       if (flameEl?.classList.contains('out')) {
         if (t === FIR || t === DRA) { flameEl.classList.remove('out'); flame('big', 5000); setTimeout(() => { if (weather() === 'rain') flameEl.classList.add('out'); }, 5200); spr('fire', 4); return say(`${J(m,'이/가')} 비에 꺼진 모닥불에 불을 붙였다! 잠깐 활활 타올랐다.`); }
-        return pops('smoke', 3);
+        return pops('steam', 3);
       }
       if (t === FIR || t === DRA) { flame('big', 6000); spr('fire', 4); return say(`${J(m,'이/가')} 쓴 기술에 모닥불이 활활 타올랐다!`); }
-      if (t === WAT || t === ICE) { flame('small', 6000); pops('smoke', 7); if (t === ICE) spr('snow', 5); return say(t === ICE ? '모닥불에 찬 기운이 닿아 불꽃이 확 움츠러들었다.' : '모닥불이 치익 소리를 내며 작아졌다.'); }
+      if (t === WAT || t === ICE) { flame('small', 6000); pops('steam', 7); if (t === ICE) spr('snow', 5); return say(t === ICE ? '모닥불에 찬 기운이 닿아 불꽃이 확 움츠러들었다.' : '모닥불이 치익 소리를 내며 작아졌다.'); }
       if (t === FLY) { flame('big', 2500); pops('spark', 6); return say('바람에 모닥불 불씨가 확 날렸다!'); }
-      if (t === GRA) { flame('big', 3000); pops('smoke', 4); return say('풀잎이 타닥타닥 타면서 불꽃이 커졌다.'); }
+      if (t === GRA) { flame('big', 3000); pops('steam', 4); return say('풀잎이 타닥타닥 타면서 불꽃이 커졌다.'); }
       if (t === ELE) { spr('elec', 2); flameEl?.animate([{ opacity: 1 }, { opacity: .3 }, { opacity: 1 }, { opacity: .4 }, { opacity: 1 }], { duration: 500 }); return say('모닥불 불꽃이 찌릿 깜빡였다.'); }
       return pops('spark', 4);
     }
     if (p.k === 'tree') {
       const top = by + bh * .35;
       if (hard && S.tree?.n > 0) return shakeTree(m);
-      if (t === FIR) { tint('sepia(.6) brightness(.85)', 3000); pops('smoke', 5, bw * .7, bh * .4, top); return say('열매나무 잎 끝이 살짝 그을렸다.'); }
+      if (t === FIR) { tint('sepia(.6) brightness(.85)', 3000); pops('steam', 5, bw * .7, bh * .4, top); return say('열매나무 잎 끝이 살짝 그을렸다.'); }
       if (t === WAT) { spr('water', 6, bw * .7, bh * .4, top); tint('brightness(1.15) saturate(1.4)'); return say('열매나무가 물을 맞고 싱그럽게 반짝인다.'); }
       if (t === GRA) { jig(2); spr('leaf', 6, bw * .7, bh * .4, top); tint('saturate(1.6) brightness(1.1)'); return say('열매나무 잎이 살랑이며 생기가 돈다.'); }
       if (t === ELE) { spr('elec', 2, bw * .5, bh * .3, top, 3); tint('brightness(1.9)', 500); return say('열매나무에 찌릿 전기가 흘렀다.'); }
@@ -6653,7 +6654,7 @@ function elemReact(m, t, dc, f) {
     }
     if (p.k === 'bed') {
       if (t === GRA || t === WAT || t === FAI || t === BUG) { flwAnim([{ scale: '1' }, { scale: '1.35', translate: '0 -3px', offset: .4 }, { scale: '1' }], 900); pops(t === FAI ? 'star' : 'heart', 4); if (t === WAT) spr('water', 4); return say(t === WAT ? '꽃밭 꽃들이 물을 머금고 활짝 피었다.' : '꽃밭 꽃들이 기지개를 켜듯 쑥 자랐다.'); }
-      if (t === FIR) { flwAnim([{ rotate: '0deg', scale: '1' }, { rotate: '25deg', scale: '1 .75', offset: .2 }, { rotate: '25deg', scale: '1 .75', offset: .8 }, { rotate: '0deg', scale: '1' }], 2600); pops('smoke', 4); return say('꽃밭 꽃들이 뜨거워서 고개를 푹 숙였다.'); }
+      if (t === FIR) { flwAnim([{ rotate: '0deg', scale: '1' }, { rotate: '25deg', scale: '1 .75', offset: .2 }, { rotate: '25deg', scale: '1 .75', offset: .8 }, { rotate: '0deg', scale: '1' }], 2600); pops('steam', 4); return say('꽃밭 꽃들이 뜨거워서 고개를 푹 숙였다.'); }
       if (t === ICE) { flw().forEach(e => tint('brightness(1.4) hue-rotate(160deg) saturate(.4)', 4000, e)); spr('snow', 6); return say('꽃밭 꽃잎에 하얀 서리가 맺혔다.'); }
       if (t === FLY) { flwAnim([{ rotate: '0deg' }, { rotate: `${f * 30}deg`, offset: .3 }, { rotate: `${-f * 10}deg`, offset: .7 }, { rotate: '0deg' }], 1200); fall('leaf', 5); return say('꽃잎이 바람에 흩날렸다.'); }
       if (t === POI) { flw().forEach(e => tint('saturate(.3) brightness(.8)', 3000, e)); spr('poison', 4); return say('꽃들이 독 기운에 잠깐 시들시들해졌다.'); }
@@ -6669,14 +6670,14 @@ function elemReact(m, t, dc, f) {
         else tint('brightness(1.7) saturate(.3)', 5000);
         spr('ice', 5, bw * .6, 12, gy - 6); return say(big ? '연못 한쪽이 꽁꽁 얼었다가 천천히 녹았다.' : '물웅덩이가 꽁꽁 얼어붙었다.');
       }
-      if (t === FIR) { pops('smoke', 8, bw * .6, 10, gy - 8); return say(big ? '연못에서 김이 모락모락 피어올랐다.' : '물웅덩이에서 치익 김이 났다.'); }
+      if (t === FIR) { pops('steam', 8, bw * .6, 10, gy - 8); return say(big ? '연못에서 김이 모락모락 피어올랐다.' : '물웅덩이에서 치익 김이 났다.'); }
       if (t === GRA) { spr('leaf', 4, bw * .6, 10, gy - 4); ring('#9ad87a'); return say(big ? '연못 위에 나뭇잎이 동동 떠다닌다.' : ''); }
       if (hard || t === GRO || t === ROC) { ring('#d8eaff', 2); pops('splash', 10, bw * .6, 10, gy - 4); return say('첨벙! 물보라가 크게 일었다.'); }
       ring('#e8f4ff'); return;
     }
     if (p.k === 'bush' || p.k === 'perch') {
       p.k === 'bush' ? rustle() : jig(4);
-      if (t === FIR) { pops('smoke', 5); return say(p.k === 'bush' ? '덤불에서 연기가 폴폴 피어올랐다.' : '횃대 끝이 살짝 그을렸다.'); }
+      if (t === FIR) { pops('steam', 5); return say(p.k === 'bush' ? '덤불에서 연기가 폴폴 피어올랐다.' : '횃대 끝이 살짝 그을렸다.'); }
       if (t === WAT) { spr('water', 4); return; }
       if (t === GRA) { spr('leaf', 5); if (p.k === 'bush') tint('saturate(1.6) brightness(1.1)'); return say(p.k === 'bush' ? '덤불 잎이 더 풍성해 보인다.' : ''); }
       if (t === ELE) { spr('elec', 2, bw * .5, bh * .5, cy, 3); tint('brightness(1.9)', 500); return say(`${p.n}에 찌릿 전기가 튀었다.`); }
@@ -6688,7 +6689,7 @@ function elemReact(m, t, dc, f) {
     // 그루터기·바위 (바닥 그림이라 둘레에 연출만)
     if (hard || t === FIG) { spr('hit', 1, 4, 4, cy, 3); pops('dust', 6); ring('#c8b090'); return say(p.k === 'rock' ? '바위에서 돌가루가 후드득 튀었다.' : '그루터기에서 나무 부스러기가 튀었다.'); }
     if (t === ELE) { pops('spark', 6); return say(`${p.n}에 찌릿 불꽃이 튀었다.`); }
-    if (t === FIR) { pops('smoke', 5); return say(p.k === 'stump' ? '그루터기에서 연기가 피어올랐다.' : ''); }
+    if (t === FIR) { pops('steam', 5); return say(p.k === 'stump' ? '그루터기에서 연기가 피어올랐다.' : ''); }
     if (t === WAT) { pops('splash', 6, bw * .6, 8, gy - 4); return; }
     if (t === ICE) { spr('ice', 4); return say(`${p.n}에 고드름이 맺혔다.`); }
     if (t === PSY) { pops('psy', 4); return; }
