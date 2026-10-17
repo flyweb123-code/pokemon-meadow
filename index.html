@@ -1155,6 +1155,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .noti .ns.ns-fr{background:linear-gradient(#fff0f5,#fcd6e4);border-color:#9a3462}.noti .ns.ns-g{background:linear-gradient(#fff8dc,#f8e09a);border-color:#8a6410}   /* v4.97 경완: 진화 보상 친밀도 분홍, 골드 금색 */
 .noti.frmax{z-index:9600}.frmax .ns{background:linear-gradient(#fff0f5,#fcd6e4)}
 .frmax .fm-pic{position:relative;height:96px;display:grid;place-items:end center;margin:2px 0 4px}.frmax .fm-pic img{height:76px;width:auto;image-rendering:pixelated;animation:fmhop 1.1s steps(2,end) infinite}
+.frmax.trup .ns{background:linear-gradient(#fff8dc,#f8e09a);border-color:#8a6410}.trup .tu-pic{width:84px;height:84px;margin:4px auto 8px;display:grid;place-items:center;background:#e4f2d0;border:3px solid var(--inner);box-shadow:inset 0 -12px 0 #cfe6b4;overflow:hidden}.trup .tu-pic .tr-ow{animation:trWalk .9s steps(1,end) infinite}.trup .tu-rank{font-size:20px;font-weight:700;color:#8a5a00;margin:4px 0 6px;text-shadow:0 1px 0 #fff6c8}
 .frmax .fm-pic img.shiny{filter:hue-rotate(var(--shue,0deg)) saturate(1.3)}
 .frmax .fm-pic i{position:absolute;width:12px;height:11px;background:#ff5a8c;clip-path:polygon(0 18%,18% 0,50% 18%,82% 0,100% 18%,100% 45%,50% 100%,0 45%);opacity:0;animation:fmheart 1.8s steps(6,end) infinite}
 .frmax .fm-hearts{color:#e04870;font-size:16px;letter-spacing:2px;margin:2px 0}
@@ -1591,7 +1592,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 </div>
 <div class="noti frmax" id="frMax" hidden>
   <div class="win" role="dialog" aria-label="친밀도 만점">
-    <h3><i class="st s1"></i>친밀도 만점!<i class="st s2"></i></h3>
+    <h3><i class="st s1"></i><span id="frMaxT">친밀도 만점!</span><i class="st s2"></i></h3>
     <div id="frMaxBody"></div>
     <button class="boxbtn" id="frMaxOk">확인</button>
   </div>
@@ -3898,7 +3899,7 @@ function interact(a, b, forced) {
   if (firstMeet) { S.rel[relKey(a, b)] = 0; if (Math.random() < .5) log(`${J(a,'과/와')} ${J(b,'이/가')} 처음 만났다.`, [a, b]); }
   const sc = forced || chooseScene(a, b);
   (S.lastScene = S.lastScene || {})[relKey(a, b)] = sc.key;
-  log(sc.text(), [a, b], sc.kind === 'fight' || !!sc.rare);
+  log(sc.text(), [a, b]);   // v5.01 경완: 특별 장면·싸움은 일지에서 색 강조 안 함
   if (sc.start) sc.start(a, b);
   if (sc.kind === 'scared' || sc.kind === 'chase' || sc.kind === 'nap') return resolveNow(a, b, sc);
   const mot = motOf(sc);
@@ -5256,13 +5257,13 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, hunger: m.hunger, slpB: m.slpB, slpW: m.slpW, social: m.social, joy: m.joy, joyH: m.joyH || 0, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk, red: !!b.red })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, dexNew: [...(S.dexNew || [])] };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, dexNew: [...(S.dexNew || [])] };
 }
 let saveFrozen = false;
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.tree = d.tree || null; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.bagDry = d.bagDry || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.autoInc = !!d.autoInc;   /* v4.23 경완: 부화기 자동 채우기가 다시 켜면 꺼지던 문제 — 저장에 빠져 있었다 */ S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
+  S.lockT = d.lockT || 0; S.tree = d.tree || null; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.bagDry = d.bagDry || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.trI = d.trI ?? null; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.autoInc = !!d.autoInc;   /* v4.23 경완: 부화기 자동 채우기가 다시 켜면 꺼지던 문제 — 저장에 빠져 있었다 */ S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
@@ -5498,7 +5499,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.00';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.01';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6959,6 +6960,7 @@ function frMaxFw() {
   launch(); setTimeout(launch, 180); requestAnimationFrame(step);
 }
 function frMaxWin(P) {
+  $('#frMax').classList.remove('trup'); $('#frMaxT').textContent = '친밀도 만점!'; $('#frMax .win').setAttribute('aria-label', '친밀도 만점');
   const nm = nameOf(P), [mv, t] = movesOf(P.sp)[0] || [];
   $('#frMaxBody').innerHTML = `<div class="ns"><div class="fm-pic"><img alt="" class="${P.shiny ? 'shiny' : ''}" style="--shue:${shinyHue(P.sp)}deg">${[14, 30, 50, 70, 86].map((x, i) => `<i style="left:${x}%;bottom:${18 + (i % 2) * 14}px;animation-delay:${(i * .33).toFixed(2)}s"></i>`).join('')}</div>`
     + `<p>${J({ name: nm }, '과/와')} 마음이 완전히 통했다!</p><div class="fm-hearts">♥♥♥♥♥</div>`
@@ -7001,7 +7003,7 @@ function migrateBox() {
 S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.bagDry = 0; S.pity = { e: 0, l: 0 }; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked = new Set(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1;
 const hatchQ = [];
 
-function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); (S.dexNew ||= new Set()).add(sp); if (dexBtns[sp]) { lockDexBtn(sp); dexCellReady(sp); } } }
+function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); trUpCheck(); (S.dexNew ||= new Set()).add(sp); if (dexBtns[sp]) { lockDexBtn(sp); dexCellReady(sp); } } }
 // 새로 등록된 칸은 그림을 바로 넣고 순서도 미리 맞춰 둔다 → 도감을 열 때 없던 칸이 뒤늦게 생기는 모습이 안 보인다
 // v3.09: 작은 스프라이트(토중몬 등)를 칸 높이까지 늘리면 도트가 커 보인다(경완) → 도트 한 칸 최대 2배까지만 키우고 칸 높이는 그대로
 function dexImgFit(im, H = 56) { const h = Math.min(H, Math.round(im.naturalHeight * 2)); im.style.height = h + 'px'; im.style.marginTop = (H - h) + 'px'; }
@@ -7032,7 +7034,24 @@ const TR_LV = [[0, '견습 트레이너'], [10, '초보 트레이너'], [30, '�
 const trOf = () => S.tr || (S.tr = { n: '', sex: 'm' });
 const TN = () => trOf().n || '트레이너';
 const TJ = p => J({ name: TN() }, p).replace(/<\/?b>/g, '');   /* 트레이너 이름은 굵게 하지 않는다 */
-function trLevel() { const k = S.unlocked?.size || 0; let i = 0; while (i + 1 < TR_LV.length && k >= TR_LV[i + 1][0]) i++; return { i, k, name: TR_LV[i][1], next: TR_LV[i + 1] }; }
+// v5.01 경완: 트레이너 등급이 오르면 바로 축하 창 (예고 연출 없이, 친밀도 만점 창 틀·폭죽 재사용)
+let trUpT = 0;
+function trUpCheck() { const i = trLevel().i; if (S.trI == null) S.trI = trLevel(S.unlocked.size - 1).i;   /* 처음엔 방금 등록 전 등급을 기준으로 */ if (i > S.trI) { clearTimeout(trUpT); trUpT = setTimeout(trUpShow, 900); } }
+function trUpShow() {
+  const L = trLevel(); if (S.trI == null || L.i <= S.trI) return;
+  if (document.hidden || hatching || evolving || frMaxOpen || notiOpen) { clearTimeout(trUpT); trUpT = setTimeout(trUpShow, 1500); return; }
+  S.trI = L.i; save(); frMaxOpen = true;
+  const t = trOf();
+  $('#frMax').classList.add('trup'); $('#frMaxT').textContent = '트레이너 등급 업!'; $('#frMax .win').setAttribute('aria-label', '트레이너 등급 업');
+  $('#frMaxBody').innerHTML = `<div class="ns"><div class="tu-pic r${L.i}"><i class="tr-ow" style="background-image:url(${TR_OW[t.sex] || TR_OW.m})"></i></div>`
+    + `<p>축하해! 트레이너 등급이 올랐다!</p><div class="tu-rank">${esc(L.name)}</div>`
+    + `<div class="small">도감에 ${L.k}마리 등록${L.next ? ` · 다음 <b>${esc(L.next[1])}</b>까지 ${L.next[0] - L.k}마리` : ''}</div></div>`;
+  $('#frMax').hidden = false; sfx('newdex'); haptic(1); frMaxFw(); renderTrainer();
+  log(`트레이너 등급이 <b>${esc(L.name)}</b>${hasBat(L.name) ? '으' : ''}로 올랐다!`, [], true);
+  const done = () => { $('#frMax').hidden = true; frMaxOpen = false; sfx('tap'); if (frMaxQ.length) { clearTimeout(frMaxT); frMaxT = setTimeout(frMaxShow, 400); } };
+  $('#frMaxOk').onclick = done; $('#frMax').onclick = ev => { if (ev.target.id === 'frMax') done(); };
+}
+function trLevel(k = S.unlocked?.size || 0) { let i = 0; while (i + 1 < TR_LV.length && k >= TR_LV[i + 1][0]) i++; return { i, k, name: TR_LV[i][1], next: TR_LV[i + 1] }; }
 function renderTrainer() {
   const t = trOf(), L = trLevel(), inp = $('#trName'), pen = document.querySelector('.tr-nm .pen-b'); if (!pen.firstChild) pen.innerHTML = PEN;
   $('#trOw').style.backgroundImage = `url(${TR_OW[t.sex] || TR_OW.m})`;
@@ -8719,7 +8738,7 @@ api.szLoad = async L => { for (const o of L || []) { if (!SZB.on) return; const 
   };
 }
 
-if (/[?&]debug/.test(location.search)) window.__meadow = { addFr, frMaxHit, scaleOf, sizeT, SPRITES, loadChunk, padAtlas, useMove, save, evoMus, bgm, bgmPos, feedOne, tense, hatchEgg, playHatch, TIER, TIER_SPS, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates, propReact, propSpots, propAt, shakeTree, moveTo, LAYOUT };   // test hook
+if (/[?&]debug/.test(location.search)) window.__meadow = { unlock, addFr, frMaxHit, scaleOf, sizeT, SPRITES, loadChunk, padAtlas, useMove, save, evoMus, bgm, bgmPos, feedOne, tense, hatchEgg, playHatch, TIER, TIER_SPS, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates, propReact, propSpots, propAt, shakeTree, moveTo, LAYOUT };   // test hook
 if (/[?&]debug/.test(location.search)) Object.assign(window, { __drag: () => drag, __log: log, __save: save, __bgm: bgm, __actx: () => actx, __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf, __thoughtOf: thoughtOf, __addRel: addRel, __tyIcon: tyIcon, __evoKids: evoKids, __friendsAll: friendsAll, __renameBox: renameBox });
 window.claude?.hot?.snapshot?.(() => serialize());
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
