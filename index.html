@@ -2452,8 +2452,16 @@ async function spawn(sp, opts = {}) {
   if (m.uid % 3 === 0 && DEX[sp].mv !== 'swim') el.classList.add('snotty');
   monsEl.append(el);
   S.mons.push(m);
-  if (!opts.quiet) { log(`${J(m,'이/가')} 필드에 나타났다.`, [m]); anim(m, 'appear'); }
+  if (!opts.quiet) { log(`${J(m,'이/가')} 필드에 나타났다.`, [m]); anim(m, 'appear'); setTimeout(() => greetNew(m), 900); }
   return m;
+}
+/* v4.36 경완: 새 포켓몬이 필드에 오면 근처에 있던 포켓몬 1~3마리가 '!' 하고 다가가 살펴본다 (한꺼번에 여럿 오면 이미 인사하러 가는 포켓몬은 빠진다) */
+function greetNew(n) {
+  if (KEY === 'pk-studio-v2' || !S.mons.includes(n) || n.szb) return;
+  const ok = m => m !== n && S.mons.includes(m) && awake(m) && !m.held && !m.pin && !m.evolving && !m.washing && !m.szb && (m.state === 'idle' || m.state === 'move') && !['berry', 'feedb', 'greet', 'bed'].includes(m.goal?.kind) && T(m).mv !== 'swim' && petM?.m !== m;
+  const C = S.mons.filter(ok).sort((a, b) => dist(a, n) - dist(b, n)).slice(0, 4).sort(() => Math.random() - .5);
+  const k = Math.min(C.length, Math.random() < .45 ? 1 : Math.random() < .6 ? 2 : 3);
+  C.slice(0, k).forEach((m, i) => setTimeout(() => { if (!ok(m) || !S.mons.includes(n) || n.hidden) return; emote(m, '!', '', 1, 'new-see'); moveTo(m, n, { kind: 'greet', mon: n }, 1.15); }, i * 500));
 }
 // 필드에서 빼기: 상자로 돌아갈 뿐이라 친밀도·관계·이름·오늘 메모는 상자 쪽에 남는다
 function removeMon(m, quiet = false) {
@@ -2481,7 +2489,7 @@ function addBerry(x, y, natural = false, t = Date.now(), red = Math.random() < .
 // 배부름 = 100 - 배고픔. 열매를 안 먹으면 서서히 배고파지고(가득 찬 상태에서 바닥까지 약 2시간 반),
 // 열매 하나에 BERRY_FILL 만큼 차오른다. 가득 차면 더 못 먹는다.
 // 배고프면 스스로 나무를 흔들어 따 먹기도 하지만, 내가 먹여 줄 틈이 있게 아주 배고플 때만 가끔 그런다.
-let HUNGER_RATE = .011, BERRY_FILL = 10, SELF_FEED = 78, STARVING = 93;
+let HUNGER_RATE = .011, BERRY_FILL = 10, BERRY_FILL_MINE = 20,   /* v4.36 경완: 내가 준 열매는 배부름 +20, 나무에서 떨어진 열매는 +10 */ SELF_FEED = 78, STARVING = 93;
 const isFull = m => m.hunger <= 5;
 // 내가 놓은 열매: 근처(300)에 있는 배가 덜 찬 포켓몬이 알아채고(!) 먹으러 온다
 function noticeBerry(b) {
@@ -2502,7 +2510,7 @@ function feedOne(m) {
   const tries = [m.face, -m.face].map(f => ({ x: clamp(m.x + f * Math.max(26, m.w * .45), XL + 30, XR - 30), y: clamp(m.y + 4, MIN_Y, MAX_Y) }));
   const p = T(m).mv === 'swim' ? null : tries.find(q => pondVal(q.x, q.y) >= 1.05);
   if (!p) {   // 물 위의 포켓몬에게는 바로 던져 준다
-    userAct(m); if (berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - BERRY_FILL); berryBoost(m, true); emote(m, '♥', 'heart', 2.2, 'berry-given'); log(`${J(m,'이/가')} 던져 준 열매를 받아먹었다.`, [m]); return;
+    userAct(m); if (berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - BERRY_FILL_MINE); berryBoost(m, true); emote(m, '♥', 'heart', 2.2, 'berry-given'); log(`${J(m,'이/가')} 던져 준 열매를 받아먹었다.`, [m]); return;
   }
   const b = addBerry(p.x, p.y); if (!b) return; b.for = m; userAct(m, 20);
   if (awake(m) && !m.held && !m.pin && !m.evolving && (m.state === 'idle' || m.state === 'move')) { emote(m, '!', '', 1, 'berry-see'); moveTo(m, b, { kind: 'berry', berry: b }, 1.3); }
@@ -2564,7 +2572,7 @@ function feedNow(m) {
   berryBounce(el, 110, bx => { if (!S.mons.includes(m)) { el.remove(); return; }
     let ate = false; const bxp = x + bx;
     const go = () => { if (ate || !el.isConnected) return; ate = true; if (!S.mons.includes(m) || m.held) { el.remove(); return; }
-      if (berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - BERRY_FILL); berryBoost(m, true);
+      if (berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - BERRY_FILL_MINE); berryBoost(m, true);
       if (isFull(m)) { m.hunger = 0; setTimeout(() => emote(m, '배불러!', 'heart', 2, 'full-eat'), 3200); }
       const dur = m.sp === 143 ? 8 : 5; faceTo(m, bxp);
       setState(m, 'eat', dur); log(`${J(m,'이/가')} 떨어진 열매를 바로 냠냠 먹었다.`, [m]); save();
@@ -2580,10 +2588,11 @@ function berryBounce(el, h, done, fade = true) {
     if (y >= 0) { y = 0; if (v > 60) { sq = Math.min(.35, v / 1600); v = -v * E; vx *= .6; } else { v = 0; rest += dt; } }
     if (y === 0 && v === 0) vx *= Math.pow(.02, dt);   // 땅에선 구름이 금방 멈춘다
     x += vx * dt; rot += vx * dt * 2; sq *= Math.pow(.0005, dt);
+    if (y === 0 && v === 0) { const r0 = Math.round(rot / 360) * 360; rot += (r0 - rot) * Math.min(1, dt * 14); }   /* v4.36 경완: 멈출 땐 똑바로 선다 (기울어진 채 남지 않게) */
     if (fade) el.style.opacity = Math.min(1, (h + y) / 25 + .2);
     el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${rot.toFixed(0)}deg) scale(${(1 + sq).toFixed(3)},${(1 - sq).toFixed(3)})`;
     el.style.transformOrigin = '50% 100%';
-    if (rest > .18) return done(x);
+    if (rest > .18 && Math.abs(rot - Math.round(rot / 360) * 360) < 1.5) return done(x);
     requestAnimationFrame(step); };
   requestAnimationFrame(step);
 }
@@ -2873,7 +2882,7 @@ function think(m) {
   if (t.mv !== 'swim' && (m.hunger > STARVING || (m.hunger > SELF_FEED && !(m.forageCd > 0) && Math.random() < .2))) {
     m.forageCd = rnd(150, 300);
     if (b0) return moveTo(m, b0, { kind: 'berry', berry: b0 }, 1.25);
-    if (treeEl && Math.random() < .7) { const sd = m.x < PROPS.tree.x ? -1 : 1; return moveTo(m, { x: PROPS.tree.x + sd * rnd(18, 30), y: PROPS.tree.y + rnd(2, 10) }, { kind: 'forage', tree: true }); }   /* v3.54: 열매나무에 가서 흔든다 */
+    if (treeEl) { const sd = m.x < PROPS.tree.x ? -1 : 1; return moveTo(m, { x: PROPS.tree.x + sd * rnd(18, 30), y: PROPS.tree.y + rnd(2, 10) }, { kind: 'forage', tree: true }); }   /* v3.54: 열매나무에 가서 흔든다 */
     return moveTo(m, { x: rnd(XL + 60, XR - 60), y: MIN_Y + rnd(0, 18) }, { kind: 'forage' });
   }
   if (m.hunger > 50 && !(m.hungryCd > 0) && Math.random() < .25) { m.hungryCd = rnd(40, 90); emote(m, pick(['꼬르륵', '배고파…']), '', 2.2, 'hungry'); }
@@ -2918,7 +2927,7 @@ function arrive(m) {
     }
     if (isFull(m)) { emote(m, '배불러', '', 2.2, 'full-refuse'); return setState(m, 'idle', 2); }
     const mine = b.for === m || !b.nat;   /* 내가 풀밭에 둔 열매도 내가 준 열매 (나무에서 떨어진 열매는 아님) */
-    b.eater = m; S.berries = S.berries.filter(x => x !== b); if (mine && berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - BERRY_FILL); berryBoost(m, mine);
+    b.eater = m; S.berries = S.berries.filter(x => x !== b); if (mine && berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - (mine ? BERRY_FILL_MINE : BERRY_FILL)); berryBoost(m, mine);
     if (isFull(m)) { m.hunger = 0; setTimeout(() => emote(m, '배불러!', 'heart', 2, 'full-eat'), 3200); if (Math.random() < .5) log(`${J(m,'이/가')} 배가 가득 찼다.`, [m]); }
     setState(m, 'eat', m.sp === 143 ? 8 : 5); faceTo(m, b.x); biteBerry(b.el, m, m.t, b.x, b.y);
     if (b.for === m || Math.random() < .45) log(pick([`${J(m,'이/가')} 나무열매를 냠냠 먹었다.`, `${J(m,'이/가')} 열매를 맛있게 먹는다.`]), [m]);
@@ -2944,6 +2953,14 @@ function arrive(m) {
       if (Math.random() < .3) log(pick([`${J(m,'이/가')} ${N(o)} 곁을 맴돌지만 ${J(o,'은/는')} 관심이 없어 보인다.`, `${J(m,'이/가')} ${N(o)}에게 잘 보이려 애쓰는데 ${J(o,'은/는')} 딴청이다.`]), [m, o]);
       if (Math.random() < .3 && o.state === 'idle') moveTo(o, { x: o.x + (o.x - m.x) * 1.5, y: o.y + rnd(-20, 20) });
     }
+    return;
+  }
+  if (g.kind === 'greet') {
+    const o = g.mon; if (!S.mons.includes(o) || o.hidden) return think(m);
+    faceTo(m, o.x); setState(m, 'idle', rnd(2.5, 4)); anim(m, 'hop'); addRel(m, o, 1);
+    const tx = pick(['?', '?', '♪', '!']); emote(m, tx, tx === '♪' ? 'note' : '', 2.2, 'new-greet');
+    if (awake(o) && o.state !== 'interact' && !o.held) setTimeout(() => { if (!S.mons.includes(o) || !S.mons.includes(m) || !awake(o) || o.held || o.state === 'interact') return; faceTo(o, m.x); if (o.state === 'move') setState(o, 'idle', rnd(1.5, 3)); emote(o, pick(['!', '♪', '…']), '', 2.2, 'new-greeted'); }, 800);
+    if (!o.greetLog) { o.greetLog = 1; log(pick([`${J(m,'이/가')} 새로 온 ${J(o,'에게/에게')} 다가가 인사했다.`, `${J(m,'이/가')} 처음 보는 ${J(o,'을/를')} 신기한 듯 살펴본다.`, `${J(m,'이/가')} 새 친구 ${J(o,'이/가')} 궁금한지 주위를 맴돈다.`]), [m, o]); }
     return;
   }
   if (g.kind === 'bed') {
@@ -4150,7 +4167,7 @@ function update(m, dt) {
   switch (m.state) {
     case 'move': {
       const g = m.goal;
-      if (g && (g.kind === 'meet' || g.kind === 'scare' || g.kind === 'heal' || g.kind === 'chase')) {
+      if (g && (g.kind === 'meet' || g.kind === 'scare' || g.kind === 'heal' || g.kind === 'chase' || g.kind === 'greet')) {
         const o = g.mon;
         if (!S.mons.includes(o) || o.hidden) { think(m); break; }
         const side = m.x < o.x ? -1 : 1;
@@ -4162,7 +4179,7 @@ function update(m, dt) {
       if (!m.wp) m.wp = treeWp(m, m.tx, m.ty); else if (Math.hypot(m.wp.x - m.x, m.wp.y - m.y) < 6) m.wp = null;
       const gx = m.wp ? m.wp.x : m.tx, gy = m.wp ? m.wp.y : m.ty, dx = gx - m.x, dy = gy - m.y, d = Math.hypot(dx, dy) || .001;
       const sp = t.spd * (m.spdMul || 1) * (m.energy < 20 ? .6 : 1) * (pondVal(m.x, m.y) < 1 && t.mv === 'amph' ? .8 : 1);
-      const reach = g && (g.kind === 'meet' || g.kind === 'scare' || g.kind === 'heal' || g.kind === 'chase') ? 10 : 4;
+      const reach = g && (g.kind === 'meet' || g.kind === 'scare' || g.kind === 'heal' || g.kind === 'chase' || g.kind === 'greet') ? 10 : 4;
       if (!m.wp && (d < reach || (g && g.kind === 'meet' && dist(m, g.mon) < 60 && pondVal(g.mon.x, g.mon.y) < 1.15))) { arrive(m); break; }
       const step = Math.min(d, sp * dt);
       let vx = dx / d * step, vy = dy / d * step;
@@ -5258,7 +5275,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.35';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.36';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7726,7 +7743,6 @@ function frameIn(now) {
     const dt = Math.min(.1, sim); sim -= dt;
     for (const m of [...S.mons]) { try { update(m, dt); } catch (e) { frameErr(e, m); } }
     treeT -= dt;
-    if (treeT <= 0) { treeT = rnd(25, 50); if (!isNight() && S.berries.length < 10 && KEY !== 'pk-studio-v2') { addBerry(rnd(XL + 60, XR - 60), MIN_Y + rnd(4, 26), true); } }
   }
   for (const m of S.mons) { if (m.held && drag?.m !== m) { m.held = false; m.el.classList.remove('held'); settle(m); setState(m, 'idle', 1); }   /* 손에서 놓쳤는데 들린 채 남은 포켓몬 풀어 주기 */
     if (m.bubT > 0) m.bubT -= real; m.realDt = real * Math.min(S.speed || 0, 3); try { render(m, now); } catch (e) { frameErr(e, m); } }
