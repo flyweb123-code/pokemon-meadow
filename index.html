@@ -5499,7 +5499,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.03';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.04';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8070,7 +8070,7 @@ frTestSync();
     if (Date.now() - arm > 3000) { arm = Date.now(); sfx('tap'); b.textContent = '한 번 더 누르면 모두 지워져요'; setTimeout(() => { if (Date.now() - arm >= 3000) b.textContent = '전체 초기화 (테스트)'; }, 3100); return; }
     saveFrozen = true; try { localStorage.removeItem(KEY); ['pk-mgr-tab', 'pk-run-tab'].forEach(k => localStorage.removeItem(k)); } catch (e) {} location.reload(); }; }
 // 테스트: 짝꿍들의 진화 거리를 다 채운다 (진화하기 버튼 확인용)
-$('#budFill').onclick = () => { let n = 0; for (const b of S.buds) { const P = boxOf(b.pid); n++; if (evoKids(b.sp, P).length) b.km = Math.max(b.km, Math.min(evoNeed(b), b.km + 5)); if (P) { P.km = b.km; P.runKm = (P.runKm || 0) + 5; } }   // 테스트: 누를 때마다 5km 같이 달린 셈
+$('#budFill').onclick = () => { let n = 0; for (const b of S.buds) { const P = boxOf(b.pid); n++; if (evoKids(b.sp, P).length) b.km = Math.max(b.km, Math.min(evoNeed(b), b.km + 5)); if (P) { P.km = b.km; P.runKm = (P.runKm || 0) + 5; addFr(b.pid, Math.round(5 * WALK_FR)); } }   // 테스트: 누를 때마다 5km 같이 달린 셈 (v5.04 경완: 친밀도도 진짜처럼 1km에 WALK_FR)
   log(n ? `짝꿍 ${n}마리와 5km 달렸다. (테스트)` : '짝꿍이 없다. (테스트)', [], true); sfx('tap'); save(); renderBuddy(); };
 $('#bagTest').onclick = () => { $('#bagTestG').hidden = !$('#bagTestG').hidden; };
 $('#bagTestG').onclick = ev => { const b = ev.target.closest('[data-g]'); if (!b) return;
