@@ -4723,9 +4723,10 @@ function propBox(p) { const L = LAYOUT;
   } }
 const propSit = (m, lift) => { m.propSit = true; m.xl = lift; };
 const tyOf = m => SPD(m.form || m.sp).t || [];
+const PROP_JOY = 3;
 function propReact(m, p) {
   const flyer = winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover', small = isSmall(m), at = (dx, dy) => { m.x = clamp(p.x + dx, XL + 20, XR - 20); m.y = clamp(p.y + dy, MIN_Y, MAX_Y); };
-  faceTo(m, p.x); m.goal = null;
+  faceTo(m, p.x); m.goal = null; m.joy = clamp((m.joy ?? 60) + PROP_JOY);   /* v4.42 경완: 맵 소품과 놀면 즐거움도 조금 오른다 */
   if (p.k === 'tree') { at(m.x < p.x ? -32 : 32, 14); setState(m, 'idle', 2.5); anim(m, 'hop'); setTimeout(() => { if (S.mons.includes(m)) shakeTree(m); }, 250); return; }
   if (p.k === 'perch') {
     if (flyer || small) { at(10, 10); propSit(m, 40); setState(m, 'idle', rnd(14, 24)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play');
