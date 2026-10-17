@@ -2578,16 +2578,16 @@ function feedNow(m) {
       setState(m, 'eat', dur); log(`${J(m,'이/가')} 떨어진 열매를 바로 냠냠 먹었다.`, [m]); save();
       biteBerry(el, m, dur, bxp, y); };
     const sp = eatSpot(m, { x: bxp, y });   /* 굴러간 열매 앞까지 몇 걸음 다가가서 먹는다 */
-    if (Math.hypot(sp.x - m.x, sp.y - m.y) < 4) go(); else { moveTo(m, { x: bxp, y }, { kind: 'feedb', go }, .8); setTimeout(() => { if (!ate) { if (m.goal?.go === go) go(); else { ate = true; el.remove(); } } }, 5000); } });
+    if (Math.hypot(sp.x - m.x, sp.y - m.y) < 4) go(); else { moveTo(m, { x: bxp, y }, { kind: 'feedb', go }, .8); setTimeout(() => { if (!ate) { if (m.goal?.go === go) go(); else { ate = true; el.remove(); } } }, 5000); } }, true, false);
 }
 // v3.43 경완: 열매가 실제처럼 튄다 — 중력으로 떨어지고, 땅에 닿으면 탄성(0.42)만큼 다시 튀어 오르며 납작해졌다 돌아온다. 살짝 옆으로 구르며 멈춘다
-function berryBounce(el, h, done, fade = true) {
+function berryBounce(el, h, done, fade = true, spin = true) {
   const G = 1500, E = .42; let y = -h, v = 0, x = 0, vx = (Math.random() < .5 ? -1 : 1) * (14 + Math.random() * 10), sq = 0, rot = 0, t0 = 0, rest = 0;
   const step = ts => { if (!el.isConnected) return; const dt = t0 ? Math.min(.033, (ts - t0) / 1000) : 0; t0 = ts;
     v += G * dt; y += v * dt;
     if (y >= 0) { y = 0; if (v > 60) { sq = Math.min(.35, v / 1600); v = -v * E; vx *= .6; } else { v = 0; rest += dt; } }
     if (y === 0 && v === 0) vx *= Math.pow(.02, dt);   // 땅에선 구름이 금방 멈춘다
-    x += vx * dt; rot += vx * dt * 2; sq *= Math.pow(.0005, dt);
+    x += vx * dt; if (spin) rot += vx * dt * 2;   /* v4.42 경완: 직접 준 열매(spin=false)는 떨어질 때도 안 돈다 */ sq *= Math.pow(.0005, dt);
     if (y === 0 && v === 0) { const r0 = Math.round(rot / 360) * 360; rot += (r0 - rot) * Math.min(1, dt * 14); }   /* v4.36 경완: 멈출 땐 똑바로 선다 (기울어진 채 남지 않게) */
     if (fade) el.style.opacity = Math.min(1, (h + y) / 25 + .2);
     el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${rot.toFixed(0)}deg) scale(${(1 + sq).toFixed(3)},${(1 - sq).toFixed(3)})`;
