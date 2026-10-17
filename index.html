@@ -1519,7 +1519,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
     <div class="dp-pic" id="ppPic"><img alt="" id="ppImg"></div>
     <div class="pp-body" id="ppBody"></div>
     <div class="pp-evo" id="ppEvo" hidden><button class="boxbtn evobtn" id="ppEvoBtn">진화하기</button></div>
-    <div class="pp-btns"><button class="boxbtn pink" id="ppBud"></button><button class="boxbtn green" id="ppField"></button></div>
+    <div class="pp-btns"><button class="boxbtn green" id="ppField"></button><button class="boxbtn pink" id="ppBud"></button></div>
     <button class="pp-free" id="ppFree">놓아주기</button>
   </div>
 </div>
@@ -2461,7 +2461,7 @@ function greetNew(n) {
   const ok = m => m !== n && S.mons.includes(m) && awake(m) && !m.held && !m.pin && !m.evolving && !m.washing && !m.szb && (m.state === 'idle' || m.state === 'move') && !['berry', 'feedb', 'greet', 'bed'].includes(m.goal?.kind) && T(m).mv !== 'swim' && petM?.m !== m;
   const C = S.mons.filter(ok).sort((a, b) => dist(a, n) - dist(b, n)).slice(0, 4).sort(() => Math.random() - .5);
   const k = Math.min(C.length, Math.random() < .45 ? 1 : Math.random() < .6 ? 2 : 3);
-  C.slice(0, k).forEach((m, i) => setTimeout(() => { if (!ok(m) || !S.mons.includes(n) || n.hidden) return; emote(m, '!', '', 1, 'new-see'); moveTo(m, n, { kind: 'greet', mon: n }, 1.15); }, i * 500));
+  C.slice(0, k).forEach((m, i) => setTimeout(() => { if (!ok(m) || !S.mons.includes(n) || n.hidden) return; emote(m, '!', '', 1, 'new-see'); moveTo(m, n, { kind: 'greet', mon: n }, 1.15); if (n.state === 'idle' && !n.held) faceTo(n, m.x); }, i * 500));
 }
 // 필드에서 빼기: 상자로 돌아갈 뿐이라 친밀도·관계·이름·오늘 메모는 상자 쪽에 남는다
 function removeMon(m, quiet = false) {
@@ -2959,7 +2959,11 @@ function arrive(m) {
     const o = g.mon; if (!S.mons.includes(o) || o.hidden) return think(m);
     faceTo(m, o.x); setState(m, 'idle', rnd(2.5, 4)); anim(m, 'hop'); addRel(m, o, 1);
     const tx = pick(['?', '?', '♪', '!']); emote(m, tx, tx === '♪' ? 'note' : '', 2.2, 'new-greet');
-    if (awake(o) && o.state !== 'interact' && !o.held) setTimeout(() => { if (!S.mons.includes(o) || !S.mons.includes(m) || !awake(o) || o.held || o.state === 'interact') return; faceTo(o, m.x); if (o.state === 'move') setState(o, 'idle', rnd(1.5, 3)); emote(o, pick(['!', '♪', '…']), '', 2.2, 'new-greeted'); }, 800);
+    /* v4.39 경완: 인사받은 새 포켓몬도 하던 걸 멈추고 돌아봐 반응한다 (폴짝 + 말풍선, 가끔 한 걸음 다가감) */
+    const ok = () => S.mons.includes(o) && S.mons.includes(m) && awake(o) && !o.held && !o.pin && o.state !== 'interact' && o.state !== 'eat' && petM?.m !== o;
+    if (ok()) { faceTo(o, m.x); if (o.state === 'move' || o.state === 'idle') setState(o, 'idle', rnd(3, 4.5)); }
+    setTimeout(() => { if (!ok()) return; faceTo(o, m.x); anim(o, 'hop'); addRel(o, m, 1); const r = pick(['!', '♪', '?', '♥']); emote(o, r, r === '♥' ? 'heart' : r === '♪' ? 'note' : '', 2.2, 'new-greeted');
+      if (T(o).mv !== 'swim' && dist(o, m) > 46 && Math.random() < .5) setTimeout(() => { if (ok() && o.state === 'idle') moveTo(o, { x: o.x + (m.x - o.x) * .35, y: o.y + (m.y - o.y) * .35 }, { kind: 'wander' }, .6); }, 900); }, 700);
     if (!o.greetLog) { o.greetLog = 1; log(pick([`${J(m,'이/가')} 새로 온 ${J(o,'에게/에게')} 다가가 인사했다.`, `${J(m,'이/가')} 처음 보는 ${J(o,'을/를')} 신기한 듯 살펴본다.`, `${J(m,'이/가')} 새 친구 ${J(o,'이/가')} 궁금한지 주위를 맴돈다.`]), [m, o]); }
     return;
   }
@@ -5275,7 +5279,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.38';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.39';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5769,7 +5773,7 @@ function openPoke(id, dir = 0, quiet = false, noCry = false) {
   const on = onField(P.id), full = S.mons.length >= MAX_MONS, isBud = S.buds.some(b => b.pid === P.id);
   const pick = budPick != null || boxFromSlot;   /* 빈 짝꿍 칸·빈 필드 슬롯에서 왔으면 그 일 하는 버튼 하나만 */
   const rb = $('#ppFree'); rb.hidden = pick; if (freeArm !== id) { freeArm = null; rb.classList.remove('arm'); rb.textContent = '놓아주기'; }
-  const fb = $('#ppField'); fb.hidden = budPick != null; fb.textContent = on ? (boxFromSlot ? '이미 필드에 있어요' : '필드에서 빼기') : full ? '필드 가득 참' : '필드에 내보내기'; fb.disabled = (!on && full) || (boxFromSlot && on); fb.classList.toggle('sunk', on && !boxFromSlot); fb.classList.toggle('off', boxFromSlot && on); fb.classList.remove('popout');
+  const fb = $('#ppField'); fb.hidden = budPick != null; fb.textContent = on ? (boxFromSlot ? '이미 필드에 있어요' : '필드에 나감') : full ? '필드 가득 참' : '필드에 내보내기'; fb.disabled = (!on && full) || (boxFromSlot && on); fb.classList.toggle('sunk', on && !boxFromSlot); fb.classList.toggle('off', boxFromSlot && on); fb.classList.remove('popout');
   const noRoom = budPick == null && S.buds.length >= MAX_BUDS;
   { $('#ppEvo').hidden = pick; setEvoBtn($('#ppEvoBtn'), P); }
   const bb = $('#ppBud'); bb.hidden = boxFromSlot; bb.textContent = isBud ? '짝꿍 해제하기' : noRoom ? '짝꿍 자리 없음' : '짝꿍으로'; bb.disabled = !isBud && noRoom; bb.classList.toggle('off', !isBud && noRoom); bb.classList.toggle('sunk', isBud);   // 짝꿍이면 눌린 버튼(누르면 해제)
@@ -5826,7 +5830,7 @@ $('#ppField').onclick = async () => {
   if (m) { if (boxFromSlot) return; sfx('tap'); removeMon(m); }   // 눌려 있던 버튼이 중간 모션 없이 바로 '필드에 내보내기'로
   else if (S.mons.length < MAX_MONS) { const fb = $('#ppField'); if (fb.classList.contains('pressd') || fb.classList.contains('sunk')) return; sfx('tap');
     if (boxFromSlot) { fb.classList.add('pressd'); await wait(110); fb.classList.remove('pressd'); }   // 빈 슬롯에서 왔으면 바로 눌린 뒤 필드로
-    else { fb.classList.add('sunk'); fb.textContent = '필드에서 빼기'; }   // 그림을 불러오는 동안 기다리지 않고 먼저 눌린 모양으로
+    else { fb.classList.add('sunk'); fb.textContent = '필드에 나감'; }   /* v4.39 경완: 부화 창 '필드로' 처럼 눌린 채 '필드에 나감' (다시 누르면 빼기) */   // 그림을 불러오는 동안 기다리지 않고 먼저 눌린 모양으로
     try { markNew(await spawn(P.sp, { pid: P.id })); } catch (e) {} if (boxFromSlot && S.mons.some(x => x.pid === P.id)) { refreshCap(); save(); closePoke(); setMgrTab('field'); return; } }
   refreshCap(); renderBox(); openPoke(P.id); save();
 };
