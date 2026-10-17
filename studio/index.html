@@ -470,7 +470,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.64';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.65';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -867,12 +867,14 @@ function onSel(s, nUndo) {
 // v2.15 경완: 맵에서 고른 포켓몬 상자 모서리를 끌어 크기 (게임 쪽이 비율 그대로 바꿔 알려 줌)
 // v2.16 경완: 크기 조절 모드 (v2.18: 가운데 맵 칸만 채우고, 포켓몬 넣기 목록은 오른쪽 창). 화면 가득한 맵에 포켓몬을 제한 없이 줄지어 세워 두고(움직임 없음) 모서리를 끌어 크기를 맞춘다. 크기 저장 → 배포하면 게임에도
 let szOn = false, szCur = null;
+const szKeep = () => { try { const L = A?.szDump?.(); if (L) store.set('st-szb', JSON.stringify(L)); } catch (e) {} };   // v2.65 경완: 크기 조절 모드에 넣어 둔 포켓몬·자리를 저장해 두고 다시 켜면 그대로
+addEventListener('pagehide', () => { if (szOn) szKeep(); });
 async function szSet(on) { if (on === szOn || !A?.sizeMode) return; szOn = on; if (on) { setEdit(false); unmarkMon(); }
   // v2.20 경완: 시뮬레이터에서 보이던 맵 자리·크기 그대로 (핸드폰만 사라지는 느낌) — 켜기 전에 맵 위치를 재서 게임에 넘긴다
   const G = $('#game'); let fix = null; if (on) try { const gw = G.contentWindow, fr = G.getBoundingClientRect(), K = fr.width / gw.innerWidth, st = gw.document.querySelector('#stage').getBoundingClientRect(); fix = { sx: fr.left + st.left * K, sy: fr.top + st.top * K, ss: st.width * K }; } catch (e) { fix = null; }
   closeSpx(); document.body.classList.toggle('szmode', on); $('#szBar').hidden = !on; szCur = null; szInfo();
   if (fix) { const nr = G.getBoundingClientRect(); fix = { x: fix.sx - nr.left, y: fix.sy - nr.top, s: fix.ss / 360 }; }
-  await A.sizeMode(on, fix); if (on) { szAlpha(100); szCur = null; szInfo(); scBar(); szCount(); openSpx('all', '포켓몬 넣기', Object.keys(A.SPECIES).map(Number).sort((a, c) => a - c)); } else { slotSig = ''; requestAnimationFrame(fitPhone); setTimeout(renderPal, 300); } }
+  if (!on) szKeep(); await A.sizeMode(on, fix); if (on) { szAlpha(100); szCur = null; szInfo(); scBar(); try { await A.szLoad?.(JSON.parse(store.get('st-szb') || '[]')); } catch (e) {} szCount(); openSpx('all', '포켓몬 넣기', Object.keys(A.SPECIES).map(Number).sort((a, c) => a - c)); } else { slotSig = ''; requestAnimationFrame(fitPhone); setTimeout(renderPal, 300); } }
 // v2.22 경완: 종류마다 한 마리만. 넣은 포켓몬 칸은 눌린 모습(비활성), 빼면 다시 켜짐
 const szUsed = () => new Set((A?.szList?.() || []).map(m => +m.sp));
 const szMarks = () => { if (!szOn) return; const U = szUsed(); $$('#szPane .mc').forEach(b => { const on = U.has(+b.dataset.sp); b.classList.toggle('used', on); b.disabled = false; b.title = on ? `${spName(+b.dataset.sp)} · 다시 누르면 빼요` : spName(+b.dataset.sp); }); };
@@ -1817,6 +1819,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.65', '10월 17일', ['크기 조절 모드: 넣어 둔 포켓몬과 옮긴 자리를 기억해서, 다른 화면에 갔다 오거나 작업실을 다시 열어도 그대로 (게임 v4.67)']],
   ['2.64', '10월 17일', ['크기 조절 모드 포켓몬 목록: 검색창 옆 ✕ 버튼으로 검색어 한 번에 지우기']],
   ['2.63', '10월 17일', ['크기 조절 모드: 검색하고 엔터를 누르면 검색이 풀리고 오른쪽 카드 목록에서 그 포켓몬 카드 자리로 스크롤 (카드가 반짝임)']],
   ['2.62', '10월 17일', ['크기 조절 모드 포켓몬 목록: 전체 탭 없앰 (처음엔 전체 목록), 세대 탭을 다시 누르면 꺼지고 전체 목록, 세대 버튼 5칸씩 정렬']],
