@@ -2473,7 +2473,7 @@ function removeMon(m, quiet = false) {
   S.mons.forEach(o => { if (o.partner === m) { o.partner = null; think(o); } if (o.goal && o.goal.mon === m) think(o); });
   const P = boxOf(m.pid);
   if (P) P.notes = m.notes || []; else dropRel(relId(m));
-  if (!quiet) log(`${J(m,'이/가')} 포켓몬 상자로 돌아갔다.`, [m]);
+  if (!quiet) log(`${J(m,'이/가')} 포켓몬 박스로 돌아갔다.`, [m]);
   m.el.remove(); m.bub.remove(); m.tag.remove(); m.gl?.remove(); m.gl = null; m.glA?.remove(); m.glA = null; m.litA = false;
   S.mons = S.mons.filter(o => o !== m);
   if (S.sel === m) select(null);
@@ -5349,7 +5349,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.52';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.53';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5920,7 +5920,7 @@ $('#ppBud').onclick = () => {
 new MutationObserver(() => { if (mgr.hidden) { closePoke(); budPick = null; boxFromSlot = false; if (mgrTab === 'buddy') seeBuds(); } }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
 function pokeOpen() { return (!mgr.hidden && mgrG === 'poke') || (!sheet.hidden && dexMode !== 'buddy'); }
 function fldOpen() { return !mgr.hidden && mgrG === 'fld'; }
-function menuTo(isOpen, g) { const was = isOpen(); closeToggles(); hideSheets(); if (was) return; if (budPick != null) { budPick = null; closePoke(); } const t = g === 'poke' ? 'box' : g === 'fld' ? 'field' : lastTab[g];   /* v4.04 경완: 포켓몬 메뉴는 늘 포켓몬(박스) 탭부터. v4.48: 필드 메뉴도 늘 필드 탭부터 */ if (t === 'dex') { setMgrTab('dex'); return; } openMgr(); setMgrTab(t); }
+function menuTo(isOpen, g) { const was = isOpen(); closeToggles(); hideSheets(); if (was) return; if (g === 'poke') { boxSort = 'new'; boxDir = 1; try { localStorage.setItem('pk-box-sort', 'new'); localStorage.setItem('pk-box-dir', 1); } catch (e) {} }   /* v4.53 경완: 포켓몬 메뉴를 다시 열면 박스는 늘 날짜(최신)순 */ if (budPick != null) { budPick = null; closePoke(); } const t = g === 'poke' ? 'box' : g === 'fld' ? 'field' : lastTab[g];   /* v4.04 경완: 포켓몬 메뉴는 늘 포켓몬(박스) 탭부터. v4.48: 필드 메뉴도 늘 필드 탭부터 */ if (t === 'dex') { setMgrTab('dex'); return; } openMgr(); setMgrTab(t); }
 $('#openMgr').onclick = () => menuTo(pokeOpen, 'poke');
 $('#openFld').onclick = () => menuTo(fldOpen, 'fld');   // 짝꿍 고르다 나갔으면 고르기 상태를 푼다
 $('#closeMgr').onclick = closeMgr;
@@ -5939,7 +5939,7 @@ mgr.addEventListener('click', e => { if (e.target === mgr) closeMgr(); });
 $('#mgrClear').onclick = () => {
   if (!S.mons.length) return;
   const n = S.mons.length; for (const m of [...S.mons]) removeMon(m, true); sfx('tap');
-  mgrSel = null; log(`필드의 포켓몬 ${n}마리가 모두 포켓몬 상자로 돌아갔다.`); save(); refreshCap(); renderMgr(true);
+  mgrSel = null; log(`필드의 포켓몬 ${n}마리가 모두 포켓몬 박스로 돌아갔다.`); save(); refreshCap(); renderMgr(true);
 };
 function slotState(m) {
   if (m.hidden) return ['away', '숨음'];
@@ -7334,9 +7334,9 @@ async function playHatch() {
   const how = await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = ev => { if (!ev.target.closest('.win')) r(); }; });
   hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; sb.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatching = false;
   hatchFx(); if (fg >= 5) bgmDuck(1, 2.5);
-  if (!send) log(`${GRADE[g].n} 알에서 ${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어나 포켓몬 상자에 들어갔다.`, [], true);
+  if (!send) log(`${GRADE[g].n} 알에서 ${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어나 포켓몬 박스에 들어갔다.`, [], true);
   else { const m = S.mons.find(x => x.pid === P.id); log(`${GRADE[g].n} 알에서 ${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어나 필드에 나왔다!`, m ? [m] : [], true); }
-  if (0) log(`${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났지만 필드가 꽉 차서 포켓몬 상자에 들어갔다.`, [], true);
+  if (0) log(`${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났지만 필드가 꽉 차서 포켓몬 박스에 들어갔다.`, [], true);
   save(); renderRun(); refreshCap();
   if (how === 'look') lookBorn(P.id);
   if (hatchQ.length) playHatch();
@@ -8266,9 +8266,9 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     const card = i => { const c = tr.cloneNode(true); c.querySelectorAll('[id]').forEach(e => e.removeAttribute('id')); c.className = 'tr-card r' + i + (i >= 6 ? ' tr-shine' : '') + (i >= 8 ? ' tr-spark' : ''); c.querySelector('.tr-badge b').textContent = TR_LV[i][1]; const inp = c.querySelector('input'); if (inp) { inp.setAttribute('value', '경완'); inp.style.width = '3.3em'; } const ow = c.querySelector('.tr-ow'); if (ow) ow.style.backgroundImage = `url(${TR_OW.m})`; const sx = c.querySelector('.tr-sex'); if (sx) { sx.className = 'tr-sex m'; sx.textContent = '♂'; } return `<div class="it" style="justify-items:stretch;text-align:left">${c.outerHTML}<span>${i}단계 · 도감 ${TR_LV[i][0]}종부터</span></div>`; };
     const pix = (src, w, h, lab) => `<div class="it"><div class="chk"><div class="pix" style="background-image:url(${src});width:${w}px;height:${h}px"></div></div>${lab}</div>`;
     g.innerHTML = `
-<h3>랭크 배지</h3><p class="d">개체값 합계로 정하는 S~F 랭크. 상자·정보창·부화 창에 붙어요.</p>
+<h3>랭크 배지</h3><p class="d">개체값 합계로 정하는 S~F 랭크. 박스·정보창·부화 창에 붙어요.</p>
 <div class="row rkbig">${RANKS.map(([r, v]) => `<div class="it"><div class="chk"><span class="rk ${r}">${r}</span></div>${r} · ${v}점 이상</div>`).join('')}</div>
-<h3>상자 칸 테두리</h3><p class="d">포켓몬 상자 한 칸. 랭크·친밀도·이로치·티어에 따라 테두리와 이름 색이 바뀌어요.</p>
+<h3>박스 칸 테두리</h3><p class="d">포켓몬 박스 한 칸. 랭크·친밀도·이로치·티어에 따라 테두리와 이름 색이 바뀌어요.</p>
 <div class="boxes">${[[25, '', 'C', 60, '보통'], [4, ' rkA', 'A', 60, 'A 랭크'], [7, ' rkS', 'S', 60, 'S 랭크'], [1, ' frMax', 'B', 255, '친밀도 만점'], [133, ' shiny', 'C', 102, '이로치'], [143, ' shiny rkS', 'S', 153, '이로치 + S'], [149, ' rkS frMax', 'S', 255, 'S + 친밀도 만점'], [150, ' t-brz', 'B', 51, '3티어 이름'], [150, ' t-sil', 'B', 51, '2티어 이름'], [150, ' t-leg', 'B', 51, '1티어 이름']].map(a => cell(...a)).join('')}</div>
 <h3>프로필 등급 카드</h3><p class="d">프로필의 트레이너 카드. 모은 도감 수로 등급이 오르고 카드 색이 바뀌어요 (6단계부터 반짝임, 8단계부터 별가루).</p>
 <div class="cards">${TR_LV.map((_, i) => card(i)).join('')}</div>
