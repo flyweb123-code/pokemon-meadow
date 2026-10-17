@@ -5502,7 +5502,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.05';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.06';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6463,7 +6463,8 @@ const budKm = b => !!b && (CHILDREN[b.sp] || []).length > 0 && b.km >= evoNeed(b
 const budNew = b => budReady(b) && !b.es;   // 진화 준비가 됐는데 아직 짝꿍 탭에서 못 본 것 (빨간 점)
 // 짝꿍에서 빠져도 개체에 남은 거리(P.km)를 다 채웠으면 정보카드에서 진화할 수 있다
 const pokeReady = P => !!P && evoKids(P.sp, P, true).length > 0 && (P.km || 0) >= evoNeed(P);
-const evoNeed = m => { const g = gradeOf(baseOf(m.sp)), stage = evoStage(m.sp); return [0, 5, 10, 15, 20, 25][g] * (stage ? 1.5 : 1); };
+const EVO_KM = { 129: 100 };   // v5.06 경완: 종마다 따로 정한 진화 거리 (잉어킹 100km)
+const evoNeed = m => { if (EVO_KM[m.sp]) return EVO_KM[m.sp]; const g = gradeOf(baseOf(m.sp)), stage = evoStage(m.sp); return [0, 5, 10, 15, 20, 25][g] * (stage ? 1.5 : 1); };
 const fmtKm = v => (Math.floor(v * 100 + 1e-6) / 100).toFixed(2);
 const fmtKm1 = v => (Math.floor(v * 10 + 1e-6) / 10).toFixed(1);
 // ---------- 포켓몬 상자: 부화한 한 마리 한 마리 (개체값·이로치·친밀도) ----------
