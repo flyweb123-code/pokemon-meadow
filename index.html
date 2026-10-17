@@ -821,6 +821,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 /* 특별한 포켓몬 카드 테두리 3단계: leg 금지급 전설·환상(무지개 프리즘이 흐르는 굵은 테두리+색이 바뀌는 빛+반짝이) / sil 준전설(금빛 흐름+빛+반짝이) / brz 600족·울트라비스트·패러독스(보랏빛 흐름) */.hatch .win:is(.leg,.sil,.brz),:is(.pokepop,.monpop) .win:is(.leg,.sil,.brz){box-shadow:inset 0 0 0 4px var(--win),inset 0 0 0 6px var(--tl),6px 6px 0 rgba(0,0,0,.35)}:is(.pokepop,.monpop) .win.bud:is(.leg,.sil,.brz){box-shadow:inset 0 0 0 4px #fff3f7,inset 0 0 0 6px var(--tl),6px 6px 0 rgba(0,0,0,.35)}.hatch .win:is(.leg,.sil,.brz)::after,:is(.pokepop,.monpop) .win:is(.leg,.sil,.brz)::after{content:'';position:absolute;inset:var(--ti);padding:var(--tp);pointer-events:none;z-index:6;background:var(--tg);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);animation:tierSpin var(--ts) linear infinite}:is(.win,#info,.slot,.bd-card).leg{--tl:#fff;--ti:-5px;--tp:6px;--ts:6s;--tg:conic-gradient(from var(--ang),rgba(255,255,255,0) 0deg,rgba(255,255,255,0) 280deg,rgba(255,255,255,.95) 335deg,rgba(255,255,255,0) 360deg),conic-gradient(from calc(var(--ang) * -.5),#ff4d6d,#ffb13b,#fff36a,#5cf08a,#3cd0ff,#7a6cff,#e05cff,#ff4d6d);animation:legGlow 3s linear infinite}:is(.win,#info,.slot,.bd-card).sil{--tl:#ffe9a0;--ti:-5px;--tp:6px;--ts:3.4s;--tg:conic-gradient(from var(--ang),rgba(255,255,255,0) 0deg,rgba(255,255,255,0) 280deg,rgba(255,255,255,.95) 335deg,rgba(255,255,255,0) 360deg),conic-gradient(#b8801a,#f4c84a,#c88a1c,#f4c84a,#b8801a);animation:silGlow 2.8s ease-in-out infinite}:is(.win,#info,.slot,.bd-card).brz{--tl:#d8b8ff;--ti:-5px;--tp:6px;--ts:4s;--tg:conic-gradient(from var(--ang),rgba(255,255,255,0) 0deg,rgba(255,255,255,0) 280deg,rgba(255,255,255,.8) 335deg,rgba(255,255,255,0) 360deg),conic-gradient(#7848d0,#a274ec,#7848d0,#a274ec,#7848d0);animation:none}.hatch .win:is(.leg,.sil)::before,.pokepop .win:is(.leg,.sil)::before{content:'✦';position:absolute;right:-11px;top:-13px;z-index:7;font-size:22px;line-height:1;color:#fff;text-shadow:0 0 4px #fff,0 0 8px #ff6ad0,0 0 12px #5cd8ff;pointer-events:none;animation:spk 1.6s steps(1) infinite}.win.sil::before{font-size:17px;right:-9px;top:-11px;color:#fff6c0;text-shadow:0 0 4px #fff,0 0 8px #ffb000}/* 필드 정보창도 같은 단계 테두리: 테두리 칸을 흐르는 무늬로 채운다 (작은 화면에선 정보창이 스크롤되므로 바깥 덧칠 대신 배경 두 겹) */#info:is(.leg,.sil,.brz){border-color:transparent;background:linear-gradient(var(--ibg,var(--card)),var(--ibg,var(--card))),var(--tg);background-origin:border-box;background-clip:padding-box,border-box,border-box;background-repeat:no-repeat}   /* 모든 겹을 테두리 바깥 기준으로: 무늬가 바둑판처럼 반복되어 끊기던 것 해결 *//* 필드 정보창 S·A 프로필 테두리를 랭크 배지와 같은 차림으로: 진한 바깥선 + 밝은 줄 + 금빛/빨간 띠 + 어두운 안쪽선 */#info #pPf[data-rk="S"]{border:2px solid #8a5a08!important;box-shadow:inset 0 0 0 1px #fffbe0,inset 0 0 0 3px #ffd028,inset 0 0 0 4px #c07c08,0 0 8px rgba(255,200,40,.75)!important}#info #pPf[data-rk="A"]{border:2px solid #8a1c1c!important;box-shadow:inset 0 0 0 1px #ffd0d0,inset 0 0 0 3px #f05454,inset 0 0 0 4px #a82424,0 0 7px rgba(240,80,80,.7)!important}#info.bud{--ibg:#fff3f7}#info.bud.night{--ibg:#3a2446}#info.leg{animation:tierSpin2 var(--ts) linear infinite,legGlow 3s linear infinite}.hatch .win.leg::after,:is(.pokepop,.monpop) .win.leg::after{animation-name:tierSpin2}@keyframes tierSpin2{to{--ang:720deg}}   /* 1단계: 무지개 바탕이 반 바퀴씩 돌아 두 바퀴(6초)에 제자리 → 끊김 없음 */#info.sil{animation:tierSpin var(--ts) linear infinite,silGlow 2.8s ease-in-out infinite}#info.brz{animation:tierSpin var(--ts) linear infinite}/* 테두리 빛: 각도 변수를 돌려 흰 빛이 시계 방향으로 테두리를 훑는다 (끊김 없이) */@property --ang{syntax:'<angle>';inherits:true;initial-value:0deg}@keyframes tierSpin{to{--ang:360deg}}@keyframes legGlow{0%,100%{filter:drop-shadow(0 0 9px rgba(255,90,140,.7))}25%{filter:drop-shadow(0 0 13px rgba(255,210,60,.75))}50%{filter:drop-shadow(0 0 9px rgba(80,230,140,.7))}75%{filter:drop-shadow(0 0 13px rgba(90,160,255,.75))}}@keyframes silGlow{0%,100%{filter:drop-shadow(0 0 5px rgba(255,200,70,.45))}50%{filter:drop-shadow(0 0 11px rgba(255,210,80,.75))}}
 .win.bud{background:#fff3f7;border-color:#9a3462;box-shadow:inset 0 0 0 3px #fff3f7,inset 0 0 0 6px #e9a3bf,6px 6px 0 rgba(0,0,0,.35)}.win.bud .dp-pic{background:#fcd9e6;border-color:#e9a3bf;box-shadow:inset 0 -18px 0 #f6c3d6}.win.bud .mvcard:not(.on){border-color:#e9a3bf!important}.win.bud .pp-free{color:#c0507e}
 #info.night{--card:#232a4e;--card-frame:#0e1024;--win-ink:#e4e2f6;--dim:#8e96c4;--inner:#46508a;--hp-track:#141832;color:#e4e2f6}#info.night .inf-ico{background:#2e365f;border-color:#0e1024}#info.night .pp-x{color:#8e96c4}#info.night .pf{border-color:#0e1024;background:linear-gradient(#3a4478,#2a3260)}#info.night .mvcard,#info.night .mvuse.lock{background:#2a3158;color:#c8cbe8;border-color:#46508a}#info.night .mvuse{background:#2a3158;color:#e4e2f6;border-color:#46508a;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}#info.night .mvuse.on{background:color-mix(in srgb,var(--tc) 30%,#232a4e);border-color:color-mix(in srgb,var(--tc) 80%,#fff)}#info.night .mvuse.on b,#info.night .mvuse.on>span:last-child{color:#f2f0ff}#info.bud.night{background:#3a2446;border-color:#0e1024}#info.bud.night .pf{border-color:#9a5a86;background:linear-gradient(#5a3a6a,#43284f)}#info .dp-head{position:relative}#info .pbody{align-items:stretch}#info #pPf{height:auto;min-height:84px;width:92px;align-self:stretch}#info .ihead{margin-top:10px}#info .ih-top{margin-top:0;min-height:26px;align-items:center;gap:6px}#info .ih-top .sx{font-size:17px;line-height:1}#info .m-head{margin-bottom:0}#infoBud{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}.pf .pf-rk{left:0!important;top:0!important;z-index:6}.pf .pf-rk .rk{border:0!important;font-size:11px;padding:1px 0!important;width:16px;line-height:13px;display:block}.win .evobtn.spc{display:flex;align-items:center;gap:8px;justify-content:flex-start;padding:0 12px!important;background:#f6f0ff!important;color:#5a3a8a!important;border-color:#c8b0e8!important;box-shadow:none!important;animation:none;cursor:default;font-size:13px;text-align:left}.win .evobtn.spc:active{padding:0 12px!important}.evobtn.spc .sp-tag{flex:none;font-size:12px;line-height:1;padding:4px 7px;background:#7a5ab0;color:#fff}.evobtn.spc .sp-why{flex:1;min-width:0;line-height:1.3}#info.bud{background:#fff3f7;border-color:#9a3462;box-shadow:6px 6px 0 rgba(0,0,0,.35)}#info.bud .pf{border-color:#e9a3bf;background:linear-gradient(#fcd9e6,#f6c3d6)}#info.bud .mvcard:not(.on){border-color:#e9a3bf!important}#info.bud:is(.leg,.sil,.brz){border-color:transparent;background:linear-gradient(var(--ibg),var(--ibg)),var(--tg);background-origin:border-box;background-clip:padding-box,border-box,border-box;background-repeat:no-repeat}   /* 짝꿍이어도 단계 테두리 */
+.inf-bud{margin-left:6px;font:inherit;font-size:12px;line-height:1;padding:7px 9px;background:#fff;color:#c2457a;border:2px solid #e8679a;box-shadow:2px 2px 0 rgba(0,0,0,.18);cursor:pointer;-webkit-tap-highlight-color:transparent}.inf-bud:active{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.18)}.inf-bud[hidden]{display:none}#info.night .inf-bud{background:#2e365f;color:#ff9cc4;border-color:#e8679a}
 .bud-tag{margin-left:6px;font-size:12px;line-height:1;padding:4px 8px;background:#e8679a;color:#fff;border:2px solid #9a3462;box-shadow:2px 2px 0 rgba(0,0,0,.2)}.bud-tag[hidden]{display:none}.hd-rk:empty+.bud-tag{margin-left:0}
 #mStage,#pPf{cursor:pointer}
 /* 필드 슬롯·짝꿍 카드도 특별 단계 테두리 (빛 번짐 없이 테두리만 돈다) */#mgr :is(.slot,.bd-card):is(.leg,.sil,.brz){border-color:transparent;background:linear-gradient(var(--sbg,#fff),var(--sbg,#fff)),var(--tg);background-origin:border-box;background-clip:padding-box,border-box,border-box;background-repeat:no-repeat;animation:tierSpin var(--ts) linear infinite}#mgr :is(.slot,.bd-card).leg{animation-name:tierSpin2}#buddy .bd-card{--sbg:#fff3f7}
@@ -1661,6 +1662,27 @@ function noise(t0, dur, vol = .12, hp = 1200) {
   vol = Math.max(.002, vol * volG(VOL.sfx)); g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + dur);
   src.connect(f).connect(g).connect(a.destination); src.start(t0); src.stop(t0 + dur + .02);
 }
+// v5.09 경완: 폭죽 소리를 불꽃놀이답게 — 쉬익 올라가는 휘파람, 쿵 하는 낮은 폭발, 뒤이어 타닥타닥
+function fwNoise(t0, dur, vol, type, freq, q = .7) {
+  const a = actx; if (!noiseBuf) { noiseBuf = a.createBuffer(1, a.sampleRate * .5, a.sampleRate); const d = noiseBuf.getChannelData(0); let v = 0; for (let i = 0; i < d.length; i++) { if (i % 6 === 0) v = Math.random() * 2 - 1; d[i] = v; } }
+  const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
+  src.buffer = noiseBuf; src.loop = true; src.playbackRate.value = .6 + Math.random() * .5; f.type = type; f.frequency.value = freq; f.Q.value = q;
+  vol = Math.max(.002, vol * volG(VOL.sfx)); g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + .008); g.gain.exponentialRampToValueAtTime(.001, t0 + dur);
+  src.connect(f).connect(g).connect(a.destination); src.start(t0); src.stop(t0 + dur + .02);
+}
+function fwLaunchSnd(t, dur) {   // 쉬이익: 올라갈수록 높아지는 휘파람 + 바람 소리
+  const a = actx, o = a.createOscillator(), g = a.createGain(), f0 = 900 + Math.random() * 300, v = .025 * volG(VOL.sfx);
+  o.type = 'sine'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f0 * 2.1, t + dur);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .08); g.gain.setValueAtTime(v, t + dur * .75); g.gain.exponentialRampToValueAtTime(.0005, t + dur);
+  o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + .02);
+  fwNoise(t, dur, .05, 'bandpass', 2600, 1.4);
+}
+function fwBoomSnd(t) {   // 쿵! 낮은 폭발 + 펑 터지는 소리, 그리고 불꽃이 흩어지며 타닥타닥
+  fwNoise(t, .9, .55, 'lowpass', 320, .9); fwNoise(t, .28, .3, 'bandpass', 1400, .8);
+  tone(95, t, .45, { type: 'sine', vol: .22, to: 32 });
+  const n = 9 + Math.floor(Math.random() * 8);
+  for (let i = 0; i < n; i++) { const tt = t + .25 + Math.random() * 1.1; fwNoise(tt, .025 + Math.random() * .02, .06 + Math.random() * .1, 'highpass', 2500 + Math.random() * 2500, .5); }
+}
 const NOTE = n => 440 * Math.pow(2, (n - 69) / 12);
 function melody(t, notes, len, opt) { notes.forEach((n, i) => { if (n) tone(NOTE(n), t + i * len, len * .9, opt); }); return t + notes.length * len; }
 // 기술 외침: 타입·몸집에 어울리는 울음 글자. 종마다 늘 같은 소리
@@ -2465,7 +2487,7 @@ function dlgBound() {
 }
 new ResizeObserver(() => dlgBound()).observe(dlgEl);
 $('#dlgFold').addEventListener('click', e => { e.stopPropagation(); foldDlg(!dlgEl.classList.contains('folded')); });
-try { if (localStorage.getItem('pk-dlg-fold')) foldDlg(true); } catch (e) {}
+/* v5.10 경완: 게임을 켜면 상태창은 늘 펼친 채로 시작 (접었던 상태를 되살리지 않는다) */
 const stripHint = h => h.replace(/\s*\((런닝 · 알|알)\)$/, '');
 // 상호작용 중인 포켓몬을 누르면 그 상호작용 문장을 상태창 맨 앞에 붙잡아 둔다 (끝나거나 선택을 풀면 원래대로)
 let dlgPin = null;
@@ -5159,6 +5181,9 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 const infoEl = $('#info');
 infoEl.addEventListener('click', e => { if (e.target.closest('#infoX')) { e.stopPropagation(); sfx('tap'); select(null); return; }
   if (e.target.closest('#infFeed') && S.sel) { e.stopPropagation(); feedNow(S.sel); return; }
+  if (e.target.closest('#infBudGo') && S.sel) { e.stopPropagation(); const P = boxOf(S.sel.pid); if (!P) return; budNorm(); const keep = S.buds.filter(b => b.sp !== P.sp); if (keep.length >= MAX_BUDS) return;
+    keep.push({ sp: P.sp, km: P.km || 0, pid: P.id, nw: true, slot: budFree(keep) }); S.buds = keep; log(`${J({ name: SPECIES[P.sp].n }, '이/가')} 짝꿍이 되었다!`, [], true); evoNotice(P.sp, P);
+    save(); renderBox(); renderRun(); renderMgr(true); menuDots(); renderInfo(); return; }
   if (e.target.closest('#infPet') && S.sel) { e.stopPropagation(); petStart(S.sel); return; }
   if (e.target.closest('#infWash') && S.sel) { e.stopPropagation(); petStart(S.sel, true); return; }
   if (e.target.closest('#pPf') && S.sel?.pid && boxOf(S.sel.pid)) { e.stopPropagation(); sfx('tap'); ppBud = false; ppSolo = true; openPoke(S.sel.pid, 0, false, true); } });   /* 울음소리는 필드 정보창 열 때 이미 들었다 */   // 필드 정보창 그림을 누르면 그 포켓몬 정보 카드   // 필드 정보창 ✕ 로 닫기
@@ -5170,7 +5195,7 @@ function renderInfo() {
   if (box.dataset.uid !== String(m.uid)) {
     box.dataset.uid = m.uid;
     // 다른 포켓몬 정보창과 같은 차림: 랭크(좌상단) · 이름/분류/만난 곳 · 청결~친밀도 · 친구/상태/생각
-    box.innerHTML = `<div class="dp-head m-head"><span class="bud-tag" id="infoBud" hidden>짝꿍</span><span class="inf-acts"><button class="inf-ico" id="infWash" aria-label="씻기기">${ICO_BRUSH}</button><button class="inf-ico" id="infPet" aria-label="쓰다듬기">${ICO_HAND}</button><button class="inf-ico" id="infFeed" aria-label="나무열매 주기">${ICO_BERRY}</button></span></div>
+    box.innerHTML = `<div class="dp-head m-head"><span class="bud-tag" id="infoBud" hidden>짝꿍</span><button class="inf-bud" id="infBudGo" hidden>짝꿍으로</button><span class="inf-acts"><button class="inf-ico" id="infWash" aria-label="씻기기">${ICO_BRUSH}</button><button class="inf-ico" id="infPet" aria-label="쓰다듬기">${ICO_HAND}</button><button class="inf-ico" id="infFeed" aria-label="나무열매 주기">${ICO_BERRY}</button></span></div>
       <div class="ihead"><div class="ih-top${tnCls(m.sp)}">${nameEdit('iName', m.name, sexOf(m))}${P?.shiny ? '<b class="sh" data-tip="이로치">✦</b>' : ''}<span class="ih-r">${tyIcons(m.sp)}${esc(d.g || '')}</span></div></div>
       <div class="pbody"><div class="pf" id="pPf" data-rk="${P ? rankOf(P) : ''}"><div class="pf-in"></div><div class="pf-in"></div><span class="pf-rk">${rkBadge(P)}</span><span class="pf-z"></span></div><div class="bars" id="pbars"></div></div>
       <div class="memo" id="pMemo"></div>
@@ -5178,7 +5203,7 @@ function renderInfo() {
   }
   { const inp = $('#iName'); if (inp && !inp.dataset.w) { inp.dataset.w = 1; inp.addEventListener('input', () => { inp.style.width = (Math.max(1, inp.value.length) + .15) + 'em'; }); inp.addEventListener('change', () => { const mm = S.mons.find(x => String(x.uid) === box.dataset.uid); if (mm) renameMon(mm, inp.value); }); inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); }); }   /* v4.12 경완: 필드 정보창에서도 이름 바꾸기 */
     if (inp && document.activeElement !== inp && inp.value !== m.name) { inp.value = m.name; inp.style.width = (Math.max(1, m.name.length) + .15) + 'em'; } }
-  { const bud = !!m.pid && S.buds.some(b => b.pid === m.pid); box.classList.toggle('bud', bud); box.classList.toggle('night', !bud && uiNight()); $('#infoBud').hidden = !bud; }   /* 짝꿍은 밤에도 분홍 그대로 */
+  { const bud = !!m.pid && S.buds.some(b => b.pid === m.pid); box.classList.toggle('bud', bud); box.classList.toggle('night', !bud && uiNight()); $('#infoBud').hidden = !bud; $('#infBudGo').hidden = bud || !P || S.buds.length >= MAX_BUDS; }   /* v5.08 경완: 짝꿍 칸이 비어 있으면 좌상단에 '짝꿍으로' */   /* 짝꿍은 밤에도 분홍 그대로 */
   { const h = rkBadge(P), el = box.querySelector('.pf-rk'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
   $('#pbars').innerHTML = bar('청결', m.clean ?? 100, 'var(--clean)') + bar('배부름', 100 - m.hunger, 'var(--fullness)') + bar('즐거움', m.joy ?? 60, 'var(--lonely)') + (P ? `<div class="bar frbar"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>` : '');
   { const h = memoHtml(m), el = $('#pMemo'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
@@ -5293,7 +5318,6 @@ async function fresh() {
   // 처음 시작: 부화기에 바로 부화시킬 수 있는 일반 알 하나, 가방에 일반·희귀·레어 알 하나씩 (v4.44 경완: 에픽·전설은 빼기) (안의 포켓몬은 부화할 때 정해진다)
   const t = Date.now(); S.eggs.push({ id: S.eid++, g: 1, km: GRADE[1].km, need: GRADE[1].km, isNew: true, t });
   for (const g of [1, 2, 3]) S.bag.push({ id: S.eid++, g, t, isNew: true });
-  for (let i = 0; i < 4; i++) { const p = randLand(); addBerry(p.x, p.y); }
   log('필드가 텅 비어 있다. 알을 부화시켜 친구를 만들어 보자.', [], true);
 }
 
@@ -5502,7 +5526,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.07';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.10';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6950,9 +6974,10 @@ function frMaxFw() {
   const K = 3, W2 = cv.width = Math.ceil(innerWidth / K), H2 = cv.height = Math.ceil(innerHeight / K), g = cv.getContext('2d');
   const PAL = [['#fff4b0', '#ffd84a', '#ff9a2a'], ['#ffe0ec', '#ff8ab4', '#e04870'], ['#e0fbff', '#7ad8ff', '#3a8aff'], ['#f0ffe0', '#9ef07a', '#3ab04a'], ['#ffffff', '#d8b8ff', '#9a5aff']];
   const R = [], P = []; let next = 0, f = 0;
-  const launch = () => { const top = Math.random() < .55; R.push({ x: 10 + Math.random() * (W2 - 20), y: H2 + 2, ty: top ? 12 + Math.random() * H2 * .22 : H2 * .7 + Math.random() * H2 * .15, v: 3 + Math.random() * 1.2, c: PAL[Math.floor(Math.random() * PAL.length)] }); };
+  const launch = () => { const top = Math.random() < .55; const o = { x: 10 + Math.random() * (W2 - 20), y: H2 + 2, ty: top ? 12 + Math.random() * H2 * .22 : H2 * .7 + Math.random() * H2 * .15, v: 3 + Math.random() * 1.2, c: PAL[Math.floor(Math.random() * PAL.length)] }; R.push(o);
+    if (sfxOn) { const a = audio(); if (a) { let y = o.y, v = o.v, fr = 0; while (y > o.ty && fr < 400) { y -= v; v = Math.max(1.2, v * .985); fr++; } fwLaunchSnd(a.currentTime + .01, Math.max(.15, fr / 60)); } } };
   const boom = o => { const n = 34 + Math.floor(Math.random() * 16), sp = 1.7 + Math.random() * .8; for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2, s = sp * (.7 + Math.random() * .45); P.push({ x: o.x, y: o.y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, l: 0, L: 38 + Math.random() * 26, c: o.c }); }
-    if (sfxOn) { const a = audio(); if (a) { const t = a.currentTime + .01; noise(t, .25, .06, 900 + Math.random() * 900); tone(NOTE(84 + Math.floor(Math.random() * 8)), t + .05, .05, { vol: .02 }); } } };
+    if (sfxOn) { const a = audio(); if (a) fwBoomSnd(a.currentTime + .01); } };
   const step = () => { if (host.hidden) { g.clearRect(0, 0, W2, H2); return; } f++;
     if (f >= next) { launch(); if (Math.random() < .35) launch(); next = f + 16 + Math.floor(Math.random() * 20); }
     g.clearRect(0, 0, W2, H2);
@@ -7534,16 +7559,16 @@ function eggQuake(egg, win, st, g) {
 function eggKick(egg, kx) {
   const q = egg.kq || (egg.kq = { x: 0, a: 0, s: 0, vx: 0, va: 0, vs: 0, on: false });
   const m = .8 + Math.random() * .4;
-  q.x += -kx * 2.5 * m; q.a += -kx * 3.5 * m; q.vx += -kx * 260 * m; q.va += -kx * 340 * m; q.vs += 5.5;
-  q.x = Math.max(-9, Math.min(9, q.x)); q.a = Math.max(-12, Math.min(12, q.a));
+  q.x += -kx * 5 * m; q.a += -kx * 7 * m; q.vx += -kx * 430 * m; q.va += -kx * 560 * m; q.s = Math.min(.16, Math.max(q.s, 0) + .09);   /* v5.10 경완: 더 임팩트 있게 — 크게 밀리고 찌그러졌다 튕긴다 */
+  q.x = Math.max(-14, Math.min(14, q.x)); q.a = Math.max(-18, Math.min(18, q.a));
   if (q.on) return; q.on = true; let t0 = performance.now();
   const step = now => {
     const dt = Math.min(.033, (now - t0) / 1000); t0 = now;
-    q.vx += (-700 * q.x - 20 * q.vx) * dt; q.x += q.vx * dt;
-    q.va += (-700 * q.a - 20 * q.va) * dt; q.a += q.va * dt;
+    q.vx += (-700 * q.x - 15 * q.vx) * dt; q.x += q.vx * dt;
+    q.va += (-700 * q.a - 15 * q.va) * dt; q.a += q.va * dt;
     q.vs += (-900 * q.s - 26 * q.vs) * dt; q.s += q.vs * dt;
     if (!egg.isConnected || (Math.abs(q.x) + Math.abs(q.a) + Math.abs(q.s) * 40 + (Math.abs(q.vx) + Math.abs(q.va) + Math.abs(q.vs) * 40) * .02 < .05)) { q.on = false; q.x = q.a = q.s = q.vx = q.va = q.vs = 0; egg.style.transform = ''; return; }
-    egg.style.transform = `translateX(${q.x.toFixed(2)}px) rotate(${q.a.toFixed(2)}deg) scale(${(1 + q.s).toFixed(3)},${(1 + q.s * .8).toFixed(3)})`;
+    egg.style.transform = `translateX(${q.x.toFixed(2)}px) rotate(${q.a.toFixed(2)}deg) scale(${(1 + q.s).toFixed(3)},${(1 - q.s * .9).toFixed(3)})`;
     requestAnimationFrame(step);
   };
   requestAnimationFrame(step);
@@ -7596,14 +7621,12 @@ function tapEgg(egg, g0, msg, g = g0) {   /* g0 알 등급, g 연출 등급(나�
         else if (g === 3) for (let k = 0; k < 3; k++) setTimeout(() => hSparks(3, 3, true), k * 160);   /* 레어: 깨지기 직전 반짝이 한 번 */   // 깨지기 직전: 빛줄기가 빨라지고 반짝이가 쏟아진다
         hatchEl.onclick = null;
         clearInterval(ringT); { const wh = hatchEl.querySelector('.hwhite'); const o0 = getComputedStyle(wh).opacity; wh.style.transition = 'none'; wh.style.opacity = o0; void wh.offsetWidth; wh.style.transition = 'opacity .9s linear'; wh.style.opacity = g >= 4 ? .9 : .75; }   // 깨지기 직전까지 화면이 점점 하얘진다 (v3.92: ease-in 은 처음이 느려 밝아지다 멈춘 듯 보였다 → 일정하게)
-        setTimeout(() => { win.removeEventListener('pointerdown', down); win.removeEventListener('click', up); hatchStage.classList.remove('tapme'); done(true); }, 900);
+        setTimeout(() => { hatchEl.removeEventListener('pointerdown', down); hatchEl.removeEventListener('click', up); hatchStage.classList.remove('tapme'); done(true); }, 900);
       } else nudge();
     };
     // 터치에선 손을 뗄 때만 '사용자 동작'으로 쳐서, iOS 사파리 진동은 click 에서 한 번 더 시도한다
     const up = () => { if (pend >= 0 && !window.webkit?.messageHandlers?.haptic && !navigator.vibrate) haptic(pend); pend = -1; };
-    win.addEventListener('pointerdown', down); win.addEventListener('click', up); nudge();
-    // 다 두드리기 전에 창 바깥을 누르면 그만둔다 (알은 부화기에 그대로)
-    hatchEl.onclick = ev => { if (ev.target.closest('.win') || n >= need) return; clearTimeout(idle); clearInterval(ringT); win.removeEventListener('pointerdown', down); win.removeEventListener('click', up); hatchStage.classList.remove('tapme'); hatchEl.onclick = null; hatchFx(); if (g >= 5) { tenseStop(.6); bgmDuck(1, 1.5); } done(false); };
+    hatchEl.addEventListener('pointerdown', down); hatchEl.addEventListener('click', up); nudge();   /* v5.10 경완: 부화시키기를 누르면 취소 없이, 창 바깥을 눌러도 두드린다 */
   });
 }
 // hatch cutscene: wobble, crack, flash, reveal
