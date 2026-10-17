@@ -2518,7 +2518,7 @@ function feedOne(m) {
 // ---------- 친밀도 (2026-10-14) ----------
 // 필드에 있는 동안: 청결·배부름·즐거움 평균에 따라 1시간에 오르는 양이 달라진다 (친구와 함께면 +0.5)
 const FR_TABLE = [[80, .5], [60, .3], [40, .18], [0, .12]];   // v3.74 경완: 열심히 관리(필드 12 + 열매 5 + 쓰다듬기 약 5 + 빗질 5 + 짝꿍 5km 10 = 하루 약 37) → 만점까지 약 7일   // 방치(게이지 40 아래)면 시간당 0.12 = 하루 약 2.9 → 만점까지 약 3개월   // [평균 이상, 시간당 친밀도]
-let JOY_RATE = 100 / 7200, BERRY_FR_DAY = 5;   // 즐거움은 깨어 있으면 2시간에 100 → 0, 열매 친밀도는 하루 5개까지
+let JOY_RATE = 100 / 14400, BERRY_FR_DAY = 5;   // v4.41 경완: 즐거움이 너무 빨리 떨어져서 깨어 있으면 4시간에 100 → 0 (예전 2시간), 열매 친밀도는 하루 5개까지
 const gaugeAvg = m => ((m.clean ?? 100) + (100 - m.hunger) + (m.joy ?? 60)) / 3;   // 청결·배부름·즐거움 (기력은 포켓몬이 알아서 자고 깨며 채운다)
 // 청결: 아무것도 안 하면 3일에 100 → 0. 낮을수록 그림이 흙빛으로 탁해지고, 아주 더러우면 먼지·날파리
 let CLEAN_RATE = 100 / (3 * 86400);
@@ -4159,7 +4159,7 @@ function update(m, dt) {
   if (m.forageCd > 0) m.forageCd -= dt; if (m.propCd > 0) m.propCd -= dt; if (m.hungryCd > 0) m.hungryCd -= dt; if (m.likeCd > 0) m.likeCd -= dt;
   if (!asleep) m.social = clamp(m.social + dt * .4 * (t.soc || 1));
   if (m.joy >= 100) { if (!(m.joyH > 0)) m.joyH = Date.now() + JOY_HOLD * 60000; } else m.joyH = 0;   /* v3.68: 즐거움이 100 이 되면 JOY_HOLD 분 동안은 안 떨어진다 */
-  if (!(m.joyH > Date.now())) m.joy = clamp((m.joy ?? 60) - dt * JOY_RATE * (asleep ? .3 : 1));   /* 즐거움: 깨어 있으면 약 2시간에 바닥 */
+  if (!(m.joyH > Date.now())) m.joy = clamp((m.joy ?? 60) - dt * JOY_RATE * (asleep ? .3 : 1));   /* 즐거움: 깨어 있으면 약 4시간에 바닥 */
   if (m.spCd > 0) m.spCd -= dt;
   if (asleep) m.energy = clamp(m.energy + dt * 1.3);
   else m.energy = clamp(m.energy - dt * (m.state === 'move' ? .26 : .1) * (t.slp || 1));
@@ -5279,7 +5279,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.40';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.41';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
