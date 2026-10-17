@@ -722,7 +722,7 @@ body.petting #dlg,body.petting #info{display:none!important}
 .pf-row .pf-arr{flex:none;font-size:10px;color:var(--dim)}
 #pfHatchBox{border-left-color:#4aa0e8}#pfEvoBox{border-left-color:#e86a9a}
 .pf-row.ready{border-color:#d8a020;border-left-color:#d8a020}.pf-row.ready .pr-km b{color:#c08010;font-size:14px}.pf-row.tk .pr-km b{color:#2a8a4a}
-#mgr .bd-card.focus{outline:4px solid #ffc828;outline-offset:2px;box-shadow:0 0 0 2px #fff,0 0 18px 6px rgba(255,190,40,.75);animation:none}   /* v4.95 경완: 짝꿍 카드 기본 테두리·빛남에 가려 안 보이던 것 → outline 으로 */
+#mgr #buddy .bd-card.focus,#mgr .bd-card.focus{border-color:#f0b020!important;box-shadow:inset 0 0 0 2px #ffe070,3px 3px 0 rgba(154,52,98,.25)!important;animation:none!important}   /* v4.99 경완: 금색 테두리는 바깥이 아니라 기존 테두리 자리에 */
 .pf-next .pf-box em{font-style:normal;font-size:12px;color:var(--dim);margin-top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pf-next .pf-box.ready{border-color:#d8a020}.pf-next .pf-box.ready b{color:#c08010;font-size:18px;padding:3px 0}
 .pf-next .pf-box.tk b{color:#2a8a4a}
@@ -5496,7 +5496,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.98';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.99';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
