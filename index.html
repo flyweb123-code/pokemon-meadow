@@ -823,7 +823,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .slot .mini{width:80%;height:6px;background:var(--hp-track);border:2px solid var(--frame);box-sizing:content-box}
 .slot .mini i{display:block;height:100%;background:var(--hunger)}
 .slot .gg{width:88%;display:grid;gap:2px}.slot .gr{display:flex;align-items:center;gap:3px;min-width:0}.slot .gr svg{width:9px;height:9px;flex:none}.slot .gr .mini{flex:1;width:auto;min-width:0;height:3px;border-width:2px}
-.slot .gr.cl .mini i{background:var(--clean)}.slot .gr.jo .mini i{background:var(--lonely)}.slot .gr.low .mini i{background:var(--low)}.bar.low>span:first-child,.bar.low .num{color:var(--low)}.slot .gr .gi{display:flex;flex:none}.slot .gr.low .gi{animation:lowp 1.2s steps(2) infinite}.gr.low .mini{animation:lowglow 1.8s ease-in-out infinite}@keyframes lowglow{0%,100%{box-shadow:0 0 2px rgba(240,80,60,.35)}50%{box-shadow:0 0 6px 1px rgba(240,80,60,.75)}}.gr.low .gi svg{filter:drop-shadow(0 0 1.5px rgba(240,80,60,.7))}   /* v4.05 경완: 빨간 게이지는 은은하게 빛난다 */@keyframes lowp{50%{transform:translateY(-1px)}}
+.slot .gr.hu .mini i{background:#58c848}.slot .gr.cl .mini i{background:#4a9cf0}.slot .gr.jo .mini i{background:#f8d030}.slot .gr.low .mini i{background:var(--low)}.bar.low>span:first-child,.bar.low .num{color:var(--low)}.slot .gr .gi{display:flex;flex:none}.slot .gr.low .gi{animation:lowp 1.2s steps(2) infinite}.gr.low .mini{animation:lowglow 1.8s ease-in-out infinite}@keyframes lowglow{0%,100%{box-shadow:0 0 2px rgba(240,80,60,.35)}50%{box-shadow:0 0 6px 1px rgba(240,80,60,.75)}}.gr.low .gi svg{filter:drop-shadow(0 0 1.5px rgba(240,80,60,.7))}   /* v4.05 경완: 빨간 게이지는 은은하게 빛난다 */@keyframes lowp{50%{transform:translateY(-1px)}}
 .slot .sl-tags{position:absolute;left:4px;top:4px;display:flex;gap:3px;pointer-events:none}.slot .sl-tags .st{position:static}.slot .sl-bud{font-size:11px;padding:1px 4px;line-height:normal;background:#e8679a;color:#fff}.slot.bud{background:#fcdde9}.slot.bud.bud:not([aria-current="true"]){border-color:#f4b4cc}   /* v4.06 경완: 짝꿍 슬롯 테두리 연한 분홍 */.slot.bud .mini{border-color:#9a3462}
 .slot.empty{border-style:dashed;color:var(--dim);justify-content:center;background:transparent}
 .slot.empty .plus{font-size:24px;line-height:1}
@@ -1990,6 +1990,33 @@ function projectOut(m, k) { // push a point out of (k>1) / into (k<1) the pond e
   const dx = (m.x - POND.x) / POND.rx, dy = (m.y - POND.y) / POND.ry, v = Math.hypot(dx, dy) || 1e-3;
   m.x = POND.x + dx / v * k * POND.rx; m.y = POND.y + dy / v * k * POND.ry;
 }
+// v4.60 경완: 상태창을 펴면 호수 아래 길이 거의 막힌다 → 그 띠에 갇히지 않게 호수 옆으로 비켜서고, 호수 아래를 가로지르려 하면 호수 위로 돌아간다
+const pondGap = () => MAX_Y - (POND.y + POND.ry * 1.08) < 30;
+function pondSide(q, k = 1.08) {   // 위아래가 막혀 있으면 옆으로 민다 (y 는 그대로)
+  if (pondVal(q.x, q.y) >= k) return q; const dy = (q.y - POND.y) / POND.ry;
+  if (dy * dy < k && q.y > POND.y && pondGap()) { q.x = POND.x + (q.x < POND.x ? -1 : 1) * POND.rx * Math.sqrt(k - dy * dy); return q; }
+  projectOut(q, k); return q;
+}
+function pondWp(m, tx, ty) {
+  if (T(m).mv !== 'walk' || !pondGap() || (m.y < POND.y && ty < POND.y)) return null;
+  let hit = false; for (let i = 1; i < 12 && !hit; i++) { const u = i / 12; hit = pondVal(m.x + (tx - m.x) * u, m.y + (ty - m.y) * u) < 1.1; }
+  if (!hit) return null; const sd = m.x < POND.x ? -1 : 1, st = tx < POND.x ? -1 : 1;
+  if (m.y < POND.y - POND.ry * .6) return { x: POND.x + st * POND.rx * 1.2, y: POND.y };   // 위에서 → 목표 쪽 옆으로
+  if (m.y > POND.y && Math.abs(m.x - POND.x) < POND.rx * 1.1) return { x: POND.x + sd * POND.rx * 1.2, y: POND.y };   // 아래 띠 안 → 내 쪽 옆으로
+  return sd !== st ? { x: POND.x, y: POND.y - POND.ry * 1.3 } : null;   // 옆에서 반대편 아래로 → 위로 돌아서
+}
+// v4.60 경완: 불은 뜨겁다 — 걷는 포켓몬은 모닥불을 뚫고 지나가지 않고 둘레를 돌아간다
+const fireBox = m => { const z = LS('fire'); return { x: FIRE.x, y: FIRE.y + 4, rx: 20 * z + Math.min(16, (m.w || 40) * .3), ry: 9 * z + 5 }; };
+const fireBlk = m => { const t = T(m).mv; return t !== 'fly' && t !== 'hover' && t !== 'swim' && !m.held; };
+const fireVal = (m, x, y, B = fireBox(m)) => ((x - B.x) / B.rx) ** 2 + ((y - B.y) / B.ry) ** 2;
+function fireOut(m, q, k = 1.05) { if (!fireBlk(m) || fireVal(m, q.x, q.y) >= k) return q; const B = fireBox(m), dx = (q.x - B.x) / B.rx, dy = (q.y - B.y) / B.ry, v = Math.hypot(dx, dy) || 1e-3; q.x = B.x + dx / v * k * B.rx; q.y = B.y + (v < .01 ? k : dy / v * k) * B.ry; return q; }
+function fireWp(m, tx, ty) {
+  if (!fireBlk(m)) return null; const B = fireBox(m), ax = m.x - B.x, ay = (m.y - B.y) * B.rx / B.ry, bx = tx - B.x, by = (ty - B.y) * B.rx / B.ry;   // 원으로 펴서 선분과 거리
+  const ex = bx - ax, ey = by - ay, L = ex * ex + ey * ey || 1, u = clamp(-(ax * ex + ay * ey) / L, 0, 1), cx = ax + ex * u, cy = ay + ey * u, d = Math.hypot(cx, cy);
+  if (d > B.rx * 1.05 || u <= 0 || u >= 1) return null;
+  let nx = -ey, ny = ex; const nl = Math.hypot(nx, ny) || 1; nx /= nl; ny /= nl; if (nx * cx + ny * cy < 0) { nx = -nx; ny = -ny; }
+  return { x: B.x + nx * B.rx * 1.35, y: B.y + ny * B.rx * 1.35 * B.ry / B.rx };
+}
 
 // ---------- traits for every species ----------
 // SPECIES holds Korean name, genus, types, stats, size and evolution data for No.1–1025.
@@ -2349,7 +2376,7 @@ function dlgBound() {
   if (y === MAX_Y) return; MAX_Y = y;
   for (const m of S.mons || []) {
     if (m.y <= MAX_Y || m.szb || m.held || !awake(m) || m.evolving || T(m).mv === 'swim') continue;
-    if (m.state === 'idle' || m.state === 'move') moveTo(m, { x: m.x + rnd(-40, 40), y: MAX_Y - rnd(10, 50) });
+    if (m.state === 'idle' || m.state === 'move') moveTo(m, T(m).mv === 'walk' ? pondSide({ x: m.x + rnd(-40, 40), y: MAX_Y - rnd(10, 50) }, 1.15) : { x: m.x + rnd(-40, 40), y: MAX_Y - rnd(10, 50) });
   }
 }
 new ResizeObserver(() => dlgBound()).observe(dlgEl);
@@ -2827,7 +2854,8 @@ function moveTo(m, p, goal, spdMul = 1) {
   { const q = outOfHud(m, { x: m.tx, y: m.ty }); m.tx = clamp(q.x, XL + 30, XR - 30); m.ty = clamp(q.y, MIN_Y, MAX_Y); }
   const mv = T(m).mv;
   if (mv === 'swim') { const v = pondVal(m.tx, m.ty); if (v > .8) { const q = { x: m.tx, y: m.ty }; projectOut(q, .78); m.tx = q.x; m.ty = q.y; } }
-  else if ((mv === 'walk') && pondVal(m.tx, m.ty) < 1.1) { const q = shorePoint({ x: m.tx, y: m.ty }); m.tx = q.x; m.ty = q.y; }
+  else if ((mv === 'walk') && pondVal(m.tx, m.ty) < 1.1) { const q = pondGap() && m.ty > POND.y ? pondSide({ x: m.tx, y: m.ty }, 1.12) : shorePoint({ x: m.tx, y: m.ty }); m.tx = q.x; m.ty = q.y; }
+  { const q = fireOut(m, { x: m.tx, y: m.ty }, 1.1); m.tx = q.x; m.ty = q.y; }
   if (m.propSit) { m.propSit = false; m.xl = 0; }
   m.goal = goal || { kind: 'wander' }; m.spdMul = spdMul;
   setState(m, 'move', 30);
@@ -4192,7 +4220,7 @@ function update(m, dt) {
         if (T(m).mv === 'swim' && pondVal(m.tx, m.ty) > .85) { const q = { x: m.tx, y: m.ty }; projectOut(q, .82); m.tx = q.x; m.ty = q.y; }
       }
       if (g && g.kind === 'berry' && !S.berries.includes(g.berry)) { arrive(m); break; }
-      if (!m.wp) m.wp = treeWp(m, m.tx, m.ty); else if (Math.hypot(m.wp.x - m.x, m.wp.y - m.y) < 6) m.wp = null;
+      if (!m.wp) m.wp = treeWp(m, m.tx, m.ty) || pondWp(m, m.tx, m.ty) || fireWp(m, m.tx, m.ty); else if (Math.hypot(m.wp.x - m.x, m.wp.y - m.y) < 6) m.wp = null;
       const gx = m.wp ? m.wp.x : m.tx, gy = m.wp ? m.wp.y : m.ty, dx = gx - m.x, dy = gy - m.y, d = Math.hypot(dx, dy) || .001;
       const sp = t.spd * (m.spdMul || 1) * (pondVal(m.x, m.y) < 1 && t.mv === 'amph' ? .8 : 1);
       const reach = g && (g.kind === 'meet' || g.kind === 'scare' || g.kind === 'heal' || g.kind === 'chase' || g.kind === 'greet') ? 10 : 4;
@@ -4203,12 +4231,15 @@ function update(m, dt) {
       if ((t.mv === 'walk' && pondVal(m.x + vx, m.y + vy) < 1.08) || (t.mv === 'swim' && !m.land && pondVal(m.x + vx, m.y + vy) > .9)) {
         let nx = (m.x - POND.x) / POND.rx ** 2, ny = (m.y - POND.y) / POND.ry ** 2; const nl = Math.hypot(nx, ny) || 1; nx /= nl; ny /= nl;
         const dot = vx * nx + vy * ny, inward = t.mv === 'walk' ? dot < 0 : dot > 0; if (inward) { vx -= dot * nx; vy -= dot * ny; } }
+      if (fireBlk(m) && fireVal(m, m.x + vx, m.y + vy) < 1) { const B = fireBox(m); let nx = (m.x - B.x) / B.rx ** 2, ny = (m.y - B.y) / B.ry ** 2; const nl = Math.hypot(nx, ny) || 1; nx /= nl; ny /= nl; const dot = vx * nx + vy * ny; if (dot < 0) { vx -= dot * nx; vy -= dot * ny; } }
       m.x += vx; m.y += vy;
       if (Math.abs(vx) > step * .25 && Math.abs(dx) > 2) m.face = vx > 0 ? -1 : 1;
       m.up = dy < -Math.abs(dx) * .8;
       if (t.mv === 'walk' && pondVal(m.x, m.y) < 1.08) projectOut(m, 1.08);
       if (t.mv === 'swim' && !m.land && pondVal(m.x, m.y) > .9) projectOut(m, .9);
       m.x = clamp(m.x, XL + 20, XR - 20); m.y = clamp(m.y, MIN_Y, MAX_Y);
+      if (t.mv === 'walk' && pondVal(m.x, m.y) < 1.08) pondSide(m);   /* 호수 아래 띠가 막혀 아래로 밀었다 위로 당겼다 하며 갇히지 않게 옆으로 */
+      fireOut(m, m, 1);
       // 길이 막혀(호수·화면 끝) 거의 못 나아가면 1초쯤 뒤 왔던 쪽으로 돌아 나간다
       { const gain = d - Math.hypot(gx - m.x, gy - m.y);
         m.stk = gain < step * .3 ? (m.stk || 0) + dt : Math.max(0, (m.stk || 0) - dt);
@@ -4218,7 +4249,7 @@ function update(m, dt) {
           if (g?.kind === 'prop') m.propCd = rnd(120, 300);
           const now = performance.now(); if (now - (m.stkAt || -1e9) < 15000) { m.stkAt = 0; m.goal = null; setState(m, 'idle', rnd(3, 6)); break; } m.stkAt = now;
           const back = { x: clamp(m.x - dx / d * rnd(90, 170) + rnd(-40, 40), XL + 30, XR - 30), y: clamp(m.y - dy / d * rnd(50, 110) + rnd(-30, 30), MIN_Y + 5, MAX_Y - 5) };
-          if (t.mv === 'walk' && pondVal(back.x, back.y) < 1.15) projectOut(back, 1.2);
+          if (t.mv === 'walk' && pondVal(back.x, back.y) < 1.15) pondSide(back, 1.2);
           m.goal = null; m.tx = back.x; m.ty = back.y; m.t = Math.min(m.t, 4); break; } }
       if (m.t <= 0) { if (g && g.kind === 'chase') chaseEnd(m); else think(m); }
       break;
@@ -4805,7 +4836,7 @@ function propReact(m, p) {
     return log(pick([`${J(m,'이/가')} 횃대 기둥에 등을 벅벅 비빈다. 시원해 보인다.`, `${J(m,'이/가')} 횃대를 올려다보지만 너무 높아 보인다.`]), [m]);
   }
   if (p.k === 'fire') {
-    const sd = m.x < p.x ? -1 : 1, gap = 22 + Math.min(60, (m.w || 40) * .55); at(sd * gap, 8); faceTo(m, p.x);   // v3.62 경완: 몸이 불에 겹치지 않게 몸 너비만큼 비켜 앉는다
+    let sd = m.x < p.x ? -1 : 1; const gap = 22 + Math.min(60, (m.w || 40) * .55); at(sd * gap, 8); if (inHud(m)) { sd = -sd; at(sd * gap, 8); } faceTo(m, p.x);   // v4.60 경완: 열매 버튼 밑 자리면 반대쪽에 앉는다 (밑으로 밀려 뛰어가던 것)   // v3.62 경완: 몸이 불에 겹치지 않게 몸 너비만큼 비켜 앉는다
     if (flameEl?.classList.contains('out')) { setState(m, 'idle', 4); emote(m, '…', '', 2.2, 'ash-sniff'); return log(`${J(m,'이/가')} 비에 꺼진 모닥불 재를 킁킁 맡는다.`, [m]); }
     const ty = tyOf(m);
     if (ty.includes(FIR)) { setState(m, 'idle', 6); anim(m, 'hop'); burst(m, 'flame', '✹', 3); flameEl.classList.add('big'); clearTimeout(flameEl.bigT); flameEl.bigT = setTimeout(() => flameEl.classList.remove('big'), 6000);
@@ -4814,7 +4845,7 @@ function propReact(m, p) {
       return log(ty.includes(ICE) ? `${J(m,'은/는')} 모닥불이 너무 뜨거워 녹을 것 같다며 물러났다.` : `${J(m,'이/가')} 모닥불에 깜짝 놀라 뒤로 물러났다.`, [m]); }
     if (campSing(m)) return;   /* v4.44 경완: 가끔 다 같이 둘러앉아 노래 */
     setState(m, 'idle', rnd(8, 12)); emote(m, isNight() ? 'Zz' : '♪', '', 2.2, 'fire-warm');
-    if (isNight() && Math.random() < .5) { setTimeout(() => { if (S.mons.includes(m) && m.state === 'idle') sleep(m, false); }, 2500); return log(`${J(m,'이/가')} 모닥불 앞에서 불을 쬐다 꾸벅꾸벅 졸기 시작한다.`, [m]); }
+    if (isNight() && Math.random() < .5) { setTimeout(() => { if (S.mons.includes(m) && m.state === 'idle' && !m.goal) { sleep(m, false); log(`${J(m,'이/가')} 모닥불 앞에서 불을 쬐다 꾸벅꾸벅 졸기 시작한다.`, [m]); } }, 2500); return log(`${J(m,'이/가')} 모닥불 앞에 앉아 불을 쬔다. 따뜻해 보인다.`, [m]); }
     return log(pick([`${J(m,'이/가')} 모닥불 앞에 앉아 불을 쬔다. 따뜻해 보인다.`, `${J(m,'이/가')} 타닥타닥 타는 모닥불을 가만히 바라본다.`]), [m]);
   }
   if (p.k === 'bed') {
@@ -5369,7 +5400,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.59';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.60';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5974,9 +6005,9 @@ const dayOf = c => Math.floor(c / 1440);
 // 필드 슬롯 건강 게이지 앞 작은 아이콘: 물방울(청결) · 열매(배부름) · 웃는 얼굴(즐거움)
 // v4.00: 20% 밑이면 막대는 빨간색, 아이콘은 더러운 물방울 · 먹다 남은 열매 속 · 우는 얼굴로
 const GSVG = b => `<svg viewBox="0 0 7 7" shape-rendering="crispEdges" aria-hidden="true">${b}</svg>`;
-const GG = [['cl', GSVG('<path fill="#8a6ad8" d="M3 0h1v1h1v1h1v3H5v1H2V5H1V2h1V1h1z"/><path fill="#fff" d="M2 3h1v1H2z"/>'), GSVG('<path fill="#e04838" d="M3 0h1v1h1v1h1v3H5v1H2V5H1V2h1V1h1z"/><path fill="#fff" d="M2 3h1v1H2z"/>')],
-  ['hu', GSVG('<path fill="#3a7a2a" d="M3 0h2v1H3z"/><path fill="#e8a020" d="M1 1h2v1h2V1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1z"/><path fill="#fff4c0" d="M1 2h1v1H1z"/>'), GSVG('<path fill="#3a7a2a" d="M3 0h2v1H3z"/><path fill="#e04838" d="M1 1h2v1h2V1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1z"/><path fill="#fff4c0" d="M1 2h1v1H1z"/>')],
-  ['jo', GSVG('<path fill="#38a8e0" d="M2 0h3v1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1V1h1z"/><path fill="#20202c" d="M2 2h1v1H2zM4 2h1v1H4zM1 4h1v1H1zM5 4h1v1H5zM2 5h3v1H2z"/>'), GSVG('<path fill="#e04838" d="M2 0h3v1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1V1h1z"/><path fill="#20202c" d="M2 2h1v1H2zM4 2h1v1H4zM2 4h3v1H2zM1 5h1v1H1zM5 5h1v1H5z"/><path fill="#9ad8ff" d="M1 3h1v1H1z"/>')]];
+const GG = [['cl', GSVG('<path fill="#3a8ae8" d="M3 0h1v1h1v1h1v3H5v1H2V5H1V2h1V1h1z"/><path fill="#fff" d="M2 3h1v1H2z"/>'), GSVG('<path fill="#e04838" d="M3 0h1v1h1v1h1v3H5v1H2V5H1V2h1V1h1z"/><path fill="#fff" d="M2 3h1v1H2z"/>')],
+  ['hu', GSVG('<path fill="#3a7a2a" d="M3 0h2v1H3z"/><path fill="#d8344a" d="M1 1h2v1h2V1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1z"/><path fill="#ff9aa8" d="M1 2h1v1H1z"/>'), GSVG('<path fill="#3a7a2a" d="M3 0h2v1H3z"/><path fill="#e04838" d="M1 1h2v1h2V1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1z"/><path fill="#fff4c0" d="M1 2h1v1H1z"/>')],
+  ['jo', GSVG('<path fill="#f0c020" d="M2 0h3v1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1V1h1z"/><path fill="#20202c" d="M2 2h1v1H2zM4 2h1v1H4zM1 4h1v1H1zM5 4h1v1H5zM2 5h3v1H2z"/>'), GSVG('<path fill="#e04838" d="M2 0h3v1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1V1h1z"/><path fill="#20202c" d="M2 2h1v1H2zM4 2h1v1H4zM2 4h3v1H2zM1 5h1v1H1zM5 5h1v1H5z"/><path fill="#9ad8ff" d="M1 3h1v1H1z"/>')]];
 function renderMgr(force) { refreshCap();
   if (mgr.hidden) return;
   if (mgrSel && !S.mons.includes(mgrSel)) mgrSel = null;
