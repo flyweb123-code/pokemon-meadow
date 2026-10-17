@@ -156,7 +156,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .hearts.frtap{justify-self:start;width:max-content;cursor:pointer}
 .dexpop,.fpop,.bagpop,.hatch,.noti{-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .frtip,.frtip.sm{border:0!important;box-shadow:0 3px 8px rgba(0,0,0,.28)!important;padding:5px 9px}.frtip.sm{padding:3px 7px}.frtip::after,.frtip.sm::after{bottom:-8px!important;margin-left:-5px!important;border-width:4px 5px!important;border-top-color:#fff!important}
-.hatch-btns{display:flex;gap:8px}.hatch-btns .boxbtn{flex:1 1 0;min-width:0}.hatch .boxbtn.white{background:#fff;color:var(--frame)}
+.hatch-btns{display:flex;gap:8px}.hatch .boxbtn{touch-action:manipulation}.hatch-btns .boxbtn{flex:1 1 0;min-width:0}.hatch .boxbtn.white{background:#fff;color:var(--frame)}
 .fopts.two{grid-template-columns:1fr 1fr}.fopts.two button.all{grid-column:auto}.fopts.two button{text-align:center}
 .bag-test{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:0 0 6px}.bag-test [data-g]{font:inherit;font-size:11px;padding:3px 6px;border:2px solid var(--frame);background:#fff;color:var(--win-ink);cursor:pointer}
 .bp-btns.three{grid-template-columns:2fr 1fr 1fr}.lk-btn.del{color:#c03838;border-color:#c03838}.lk-btn.del.arm{background:#c03838;color:#fff}
@@ -921,7 +921,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .small{font-size:12px;color:var(--dim)}
 .egg{--ec:#f6f4ea;--es:#6cc070;--esh:#d6d2c2;--eo:#383848;flex:none;width:54px;height:66px;position:relative;display:block}
 .egg svg{display:block;width:100%;height:100%}
-.egg .ck{display:none}.egg.c1 .k1,.egg.c2 .k2,.egg.c3 .k3{display:inline}
+.egg .ck{display:none}.egg .eglow .kx{fill:#fff3a0}.egg.c1 .k1,.egg.c2 .k2,.egg.c3 .k3{display:inline}
 .egg.g2{--es:#f0a040}.egg.g3{--es:#4f95dc}.egg.g4{--es:#a070d8}.egg.g5{--ec:#fff1b8;--esh:#e8d48a;--es:#e0a020;filter:drop-shadow(0 0 5px #ffe680)}
 .egg.big{width:72px;height:88px}
 .egg.wob{animation:wob 1.6s ease-in-out infinite;transform-origin:50% 90%}
@@ -1194,6 +1194,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 .op-sw{flex:none;width:58px;height:30px;padding:0;border:3px solid var(--frame);background:#b9b9c6;cursor:pointer;position:relative;box-shadow:inset 0 3px 0 rgba(0,0,0,.2)}
 .op-sw i{position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border:2px solid var(--frame)}
 .op-sw[aria-checked="true"]{background:#4ccf5a}.op-sw[aria-checked="true"] i{left:auto;right:2px}
+#notiSec .op-row+.op-row{margin-top:10px}#notiSec .noti-sub{padding-left:12px;font-size:14px}#notiSec.off .noti-sub{opacity:.45}#notiSec.off .noti-sub .op-sw{pointer-events:none}
 #openRun,#openMgr,#openFld{position:relative}.mdot{position:absolute;top:6px;right:7px;width:6px;height:6px;background:#e04838;pointer-events:none}
 @keyframes tbump{50%{transform:scale(1.25)}}
 #eggAuto{font:inherit;font-size:12px;display:inline-flex;align-items:center;gap:6px;padding:3px 6px 3px 8px;background:#fff;color:var(--dim);border:3px solid var(--inner);cursor:pointer;-webkit-tap-highlight-color:transparent}#eggAuto i{position:relative;width:26px;height:14px;background:#b8b8b8;border:2px solid var(--frame)}#eggAuto i::after{content:'';position:absolute;top:0;left:0;width:10px;height:10px;background:#fff;border-right:2px solid var(--frame)}#eggAuto[aria-pressed=true]{background:#48b048;color:#fff;border-color:var(--frame)}#eggAuto[aria-pressed=true] i{background:#2f7f2f}#eggAuto[aria-pressed=true] i::after{left:12px;border-right:0;border-left:2px solid var(--frame)}#eggSort{font:inherit;font-size:12px;padding:3px 8px;background:var(--win);color:var(--frame);border:3px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.2);cursor:pointer;transition:transform .06s,box-shadow .06s;-webkit-tap-highlight-color:transparent}#eggSort:active{transform:translate(2px,2px);box-shadow:0 0 0 rgba(0,0,0,0)}
@@ -1479,6 +1480,14 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
         <div class="vol" data-k="bgm"><span class="vol-n">배경 음악</span><button class="vol-b" data-d="-1" aria-label="배경 음악 작게">◀</button><div class="vol-bar" role="slider" aria-label="배경 음악 볼륨" aria-valuemin="0" aria-valuemax="10"></div><button class="vol-b" data-d="1" aria-label="배경 음악 크게">▶</button><b class="vol-v"></b></div>
         <div class="vol" data-k="sfx"><span class="vol-n">효과음</span><button class="vol-b" data-d="-1" aria-label="효과음 작게">◀</button><div class="vol-bar" role="slider" aria-label="효과음 볼륨" aria-valuemin="0" aria-valuemax="10"></div><button class="vol-b" data-d="1" aria-label="효과음 크게">▶</button><b class="vol-v"></b></div>
         <div class="set-btns one"><button class="lk-btn main" id="musicImport">곡 파일 가져오기</button><input type="file" id="musicFile" accept="audio/*,.mp3" multiple hidden><button class="lk-btn main" id="cryImport">울음소리 가져오기</button><input type="file" id="cryFile" accept=".zip,application/zip" hidden></div>
+      </section>
+      <section class="set-sec" id="notiSec">   <!-- v5.16 경완: 알림 설정 (전체 끄기 + 항목별) -->
+        <h4>알림</h4>
+        <p>아이폰 앱에서 화면이 꺼져 있을 때 진동과 함께 알려 줘요. 앱이 켜져 있을 땐 진동만 울려요.</p>
+        <div class="op-row noti-all"><span>알림 받기</span><button class="op-sw" data-n="on" role="switch" aria-checked="true"><i></i></button></div>
+        <div class="op-row noti-sub"><span>알을 주웠을 때</span><button class="op-sw" data-n="egg" role="switch" aria-checked="true"><i></i></button></div>
+        <div class="op-row noti-sub"><span>알이 부화할 준비가 됐을 때</span><button class="op-sw" data-n="hatch" role="switch" aria-checked="true"><i></i></button></div>
+        <div class="op-row noti-sub"><span>짝꿍이 진화할 준비가 됐을 때</span><button class="op-sw" data-n="evo" role="switch" aria-checked="true"><i></i></button></div>
       </section>
       <section class="set-sec">
         <h4>백업</h4>
@@ -5286,13 +5295,13 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, hunger: m.hunger, slpB: m.slpB, slpW: m.slpW, social: m.social, joy: m.joy, joyH: m.joyH || 0, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk, red: !!b.red })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, dexNew: [...(S.dexNew || [])] };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], dexNew: [...(S.dexNew || [])] };
 }
 let saveFrozen = false;
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.tree = d.tree || null; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.bagDry = d.bagDry || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.trI = d.trI ?? null; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.autoInc = !!d.autoInc;   /* v4.23 경완: 부화기 자동 채우기가 다시 켜면 꺼지던 문제 — 저장에 빠져 있었다 */ S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
+  S.lockT = d.lockT || 0; S.tree = d.tree || null; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.bagDry = d.bagDry || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.trI = d.trI ?? null; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.autoInc = !!d.autoInc; S.noti = { on: true, egg: true, hatch: true, evo: true, ...(d.noti || {}) }; S.bagQ = Array.isArray(d.bagQ) ? d.bagQ : [];   /* v4.23 경완: 부화기 자동 채우기가 다시 켜면 꺼지던 문제 — 저장에 빠져 있었다 */ S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
@@ -5515,6 +5524,9 @@ document.addEventListener('click', e => {
 { const de = document.documentElement, get = k => { try { return localStorage.getItem(k) === '1'; } catch (e) { return false; } }, put = (k, v) => { try { v ? localStorage.setItem(k, '1') : localStorage.removeItem(k); } catch (e) {} };
   const paint = () => { const op = get('pk-op'), t = op && get('pk-tests'); de.classList.toggle('op', op); de.classList.toggle('tests', t); $('#testSw').setAttribute('aria-checked', t); };
   paint();
+  { const sec = $('#notiSec'), paintN = () => { const N = S.noti || (S.noti = { on: true, egg: true, hatch: true, evo: true }); sec.classList.toggle('off', N.on === false); sec.querySelectorAll('.op-sw').forEach(b => b.setAttribute('aria-checked', N[b.dataset.n] !== false)); };
+    sec.addEventListener('click', e => { const b = e.target.closest('.op-sw'); if (!b) return; const N = S.noti, k = b.dataset.n; if (k !== 'on' && N.on === false) return; N[k] = N[k] === false; paintN(); save(); });   /* 누르는 소리는 버튼 공통 틱 */
+    window.paintNoti = paintN; }
   $('#testSw').onclick = () => { sfx('tap'); put('pk-tests', !get('pk-tests')); paint(); };
   let n = 0, t0 = 0; document.querySelector('.set-credit').addEventListener('click', () => { const now = Date.now(); n = now - t0 < 1500 ? n + 1 : 1; t0 = now;
     if (n >= 7) { n = 0; const on = !get('pk-op'); put('pk-op', on); if (!on) put('pk-tests', false); paint(); sfx(on ? 'pickup' : 'tap'); log(on ? '운영자 모드를 켰다.' : '운영자 모드를 껐다.', [], true); } }); }
@@ -5527,11 +5539,11 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.15';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.16';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
-function setPage(on) { if (on === true) on = 'set'; $('#setPage').hidden = on !== 'set'; $('#runPage').hidden = on !== 'runs'; $('#pfPage').hidden = !!on; $('#pfGear').hidden = !!on; $('#setBack').hidden = !on; $('#setTitle').textContent = on === 'set' ? '설정' : on === 'runs' ? '런닝 기록' : '프로필'; setEl.querySelector('.set-body').scrollTop = 0; }
+function setPage(on) { if (on === true) on = 'set'; $('#setPage').hidden = on !== 'set'; if (on === 'set') window.paintNoti?.(); $('#runPage').hidden = on !== 'runs'; $('#pfPage').hidden = !!on; $('#pfGear').hidden = !!on; $('#setBack').hidden = !on; $('#setTitle').textContent = on === 'set' ? '설정' : on === 'runs' ? '런닝 기록' : '프로필'; setEl.querySelector('.set-body').scrollTop = 0; }
 $('#pfGear').onclick = () => { sfx('tap'); setPage(true); };
 $('#setBack').onclick = () => { sfx('tap'); setPage(false); };
 $('#pfRunBtn').onclick = () => { sfx('tap'); renderRunLog(); setPage('runs'); };
@@ -7149,9 +7161,17 @@ window.pokeRunToday = (km, dayMs) => {
   if (up) { clearTimeout(walkOffT); walkOffT = setTimeout(() => { if (!setEl.hidden) renderProfile(); }, WALK_LIVE + 50); }
   if (!setEl.hidden) renderProfile(); return true;
 };
+const bagRoll = () => { const r = BAG_SUB / BAG_STEP; return r < 1 ? (Math.random() < r ? 1 : 0) : Math.floor(Math.random() * (2 * r + 1)); };
+// 앞으로 알을 줍는 지점들: [남은 km, 개수] (미리 굴린 칸 + 1km 보정을 그대로 따라 계산)
+function nextPickups(max = 4) {
+  const Q = S.bagQ || (S.bagQ = []); while (Q.length < 24) Q.push(bagRoll());
+  const out = []; let dry = S.bagDry || 0, at = BAG_SUB - (S.bagAcc || 0), room = MAX_BAG - S.bag.length;
+  for (let i = 0; i < Q.length && out.length < max && room > 0; i++, at += BAG_SUB) { let k = Q[i]; if (!k && dry >= 1 - 1e-6) k = 1; dry = k ? 0 : dry + BAG_SUB; if (k) { k = Math.min(k, room); room -= k; out.push([Math.max(.001, at), k]); } }
+  return out;
+}
 function collectEggs(km, place, tags, pf) {
   S.bagAcc += km; let n = 0; const P = S.pity || (S.pity = { e: 0, l: 0 }); P.e += km; P.l += km;
-  while (S.bagAcc >= BAG_SUB) { S.bagAcc -= BAG_SUB; const r = BAG_SUB / BAG_STEP; let k = r < 1 ? (Math.random() < r ? 1 : 0) : Math.floor(Math.random() * (2 * r + 1));
+  while (S.bagAcc >= BAG_SUB) { S.bagAcc -= BAG_SUB; let k = (S.bagQ && S.bagQ.length) ? S.bagQ.shift() : bagRoll();   /* v5.16: 다음 칸들은 미리 굴려 둔다 (앱 알림이 다음에 알을 줍는 거리를 알 수 있게) */
     if (!k && (S.bagDry || 0) >= 1 - 1e-6) k = 1;   // v4.85 경완 '보정': 1km 동안 알을 하나도 못 주웠으면 다음 250m엔 꼭 1개
     S.bagDry = k ? 0 : (S.bagDry || 0) + BAG_SUB; n += k; }   // v4.07 경완: 250m마다 확률로 줍는다 (1km에 평균 1/BAG_STEP 개, 보통 1~2개, 운 좋으면 3개)
   n = Math.min(n, MAX_BAG - S.bag.length);
@@ -7163,7 +7183,7 @@ function collectEggs(km, place, tags, pf) {
     if (P.l >= PITY_L) g = 5; else if (P.e >= PITY_E) g = Math.max(g, 4);
     if (g === 5) P.l = 0; if (g >= 4) P.e = 0;
     const e = { id: S.eid++, g, t, isNew: true }; const pl = pf ? pf() : place ? { n: place, tags } : null; if (pl?.n) e.place = pl.n; if (pl?.tags?.length) e.tags = pl.tags; S.bag.push(e); got.push(g); got.eggs.push(e); }
-  autoInc(); if (n) try { notiSoon(400); } catch (e) {} return got;   /* v4.23 경완: 알을 주우면 앱을 다시 열지 않아도 바로 알림 */
+  autoInc(); if (n) { try { notiSoon(400); } catch (e) {} notiBuzz('egg'); } return got;   /* v4.23 경완: 알을 주우면 앱을 다시 열지 않아도 바로 알림 */
 }
 function gotLog(got, how, place) {
   if (!got.length) return;
@@ -7197,11 +7217,11 @@ function feedKm(km, fr = km * WALK_FR) {
   S.totalKm += km;
   // 거리가 다 찬 알은 저절로 깨지지 않고 '부화 준비'가 된다 → 부화기에서 눌러 부화
   let ready = 0;
-  for (const e of S.eggs) { const was = e.km >= e.need; e.km += km; if (!was && e.km >= e.need) ready++; } if (ready) try { notiSoon(400); } catch (e) {}
+  for (const e of S.eggs) { const was = e.km >= e.need; e.km += km; if (!was && e.km >= e.need) ready++; } if (ready) { try { notiSoon(400); } catch (e) {} notiBuzz('hatch'); }
   if (ready) log(`알 ${ready}개가 움직이기 시작했다! 부화기에서 부화시켜 보자.`, [], true);
   const evo0 = S.buds.filter(budReady);
   for (const b of S.buds) { const P = boxOf(b.pid); if (evoKids(b.sp, P).length) b.km = Math.max(b.km, Math.min(evoNeed(b), b.km + km)); if (P) { P.km = b.km; P.runKm = (P.runKm || 0) + km; } }
-  if (S.buds.some(b => budReady(b) && !evo0.includes(b))) { S.buds.forEach(b => { if (budReady(b) && !evo0.includes(b)) { b.en = false; delete b.es; } }); log('짝꿍이 진화할 준비가 됐다! 짝꿍 탭에서 진화시켜 보자.', [], true); try { notiSoon(400); } catch (e) {} }   // v4.87 경완: 진화 준비되면 알림창. v4.07 경완: 진화 거리를 채우면 진화하기 전까지 더 늘지 않는다 (같이 달린 거리 runKm 은 계속)
+  if (S.buds.some(b => budReady(b) && !evo0.includes(b))) { S.buds.forEach(b => { if (budReady(b) && !evo0.includes(b)) { b.en = false; delete b.es; } }); log('짝꿍이 진화할 준비가 됐다! 짝꿍 탭에서 진화시켜 보자.', [], true); try { notiSoon(400); } catch (e) {} notiBuzz('evo'); }   // v4.87 경완: 진화 준비되면 알림창. v4.07 경완: 진화 거리를 채우면 진화하기 전까지 더 늘지 않는다 (같이 달린 거리 runKm 은 계속)
 }
 let WALK_FR = 2;   // 짝꿍 친밀도: 같이 움직인 거리 1km에 2 (걷기·런닝 같음, 같은 거리는 한 번만)
 // 걸음으로 쌓은 거리 기록 [시작ms, 끝ms, km] (런닝과 겹치는 만큼을 알아내려고, 8일치)
@@ -7222,6 +7242,18 @@ function applyKm(km, t0 = 0, t1 = 0, feed = km) {
   if (!S.walkSync) { got = collectEggs(km, '', null, () => routePlace(t0, t1)); const ps = [...new Set(got.eggs.map(e => e.place).filter(Boolean))]; gotLog(got, '', ps.length === 1 ? ps[0] : ''); }
   return got.eggs || [];
 }
+// v5.16 경완: 앱 푸시 알림 — 앞으로 걸으면 생길 일(알 줍기·부화 준비·진화 준비)을 '몇 km 더 걸으면'으로 앱에 넘긴다.
+// 앱은 화면이 꺼져 있는 동안 걸은 거리를 세다가 그 거리를 넘으면 진동과 함께 알림을 띄운다
+function notiPlan() {
+  const N = S.noti || {}, items = [];
+  if (N.on !== false) {
+    if (N.egg !== false) { let id = S.eid; for (const [km, k] of nextPickups()) { items.push({ id: 'egg-' + id, km: +km.toFixed(4), n: k, title: '알을 주웠어요!', body: `걷다가 알 ${k}개를 주웠어요. 가방을 확인해 보세요.` }); id += k; } }
+    if (N.hatch !== false) for (const e of S.eggs) { const r = e.need - e.km; if (r > 0) items.push({ id: 'hatch-' + e.id, km: +r.toFixed(4), title: '알이 부화할 준비가 됐어요!', body: `${GRADE[e.g].n} 알이 움직이기 시작했어요. 부화기에서 부화시켜 보세요.` }); }
+    if (N.evo !== false) for (const b of S.buds) { const P = boxOf(b.pid); if (!evoKids(b.sp, P).length || budKm(b)) continue; const r = evoNeed(b) - b.km; if (r > 0) items.push({ id: 'evo-' + b.pid + '-' + b.sp, km: +r.toFixed(4), title: '짝꿍이 진화할 준비가 됐어요!', body: `${SPECIES[b.sp].n}이(가) 진화할 수 있어요. 짝꿍 탭에서 진화시켜 보세요.` }); }
+  }
+  return { on: N.on !== false && items.length > 0, items };
+}
+function notiBuzz(k) { const N = S.noti || {}; if (N.on !== false && N[k] !== false) haptic(2); }   // 앱이 켜져 있을 땐 게임 알림창과 함께 진동만
 // 아이폰 앱(워치 연동)에서 열렸을 때: 알 현황을 앱으로 보내고, 워치에서 달린 거리를 받는다
 var nativeT = 0;
 function postNative() {
@@ -7230,7 +7262,7 @@ function postNative() {
   nativeT = setTimeout(() => {
     const b = S.buds[0], img = b ? thumbOf(b.sp) || '' : '';
     const buddy = b ? { name: SPECIES[b.sp].n, species: SPECIES[b.sp].n, km: Math.round(b.km * 100) / 100, need: evoKids(b.sp, boxOf(b.pid)).length ? evoNeed(b) : 0, ready: budReady(b), img: img.length < 60000 ? img : '' } : null;
-    try { h.postMessage({ eggs: S.eggs.map(e => ({ id: e.id, grade: GRADE[e.g].n, km: Math.round(e.km * 100) / 100, need: e.need })), buddy, total: Math.round(S.totalKm * 100) / 100 }); } catch (e) {}
+    try { h.postMessage({ eggs: S.eggs.map(e => ({ id: e.id, grade: GRADE[e.g].n, km: Math.round(e.km * 100) / 100, need: e.need })), buddy, total: Math.round(S.totalKm * 100) / 100, noti: notiPlan() }); } catch (e) {}
   }, 300);
 }
 // 아이폰 앱: 잠금 중에도 걸은 거리(만보기)와 그 근처 동네 이름을 보낸다. 알 줍기에만 쓴다.
@@ -7608,6 +7640,7 @@ function tapEgg(egg, g0, msg, g = g0) {   /* g0 알 등급, g 연출 등급(나�
       const p = document.createElement('i'); p.className = 'tapfx'; p.style.left = x + 'px'; p.style.top = y + 'px'; hatchStage.append(p); setTimeout(() => p.remove(), 360);
       if (!quaking) { win.classList.remove('jolt', 'wquake'); void win.offsetWidth; win.classList.add('jolt'); }
       const f = g === 6 ? (n < 15 ? n / 60 : .25 + (n - 15) / (need - 15) * .75) : n / need, st = f >= .85 ? 3 : f >= .6 ? 2 : f >= .3 ? 1 : 0;   /* 1단계: 15번째까지는 2단계(60번)와 똑같은 속도로 진행 → 그다음 정체가 드러난다 */
+      if (f >= .85) eggCrackX(egg, Math.min(1, f));
       if (st > stage) { stage = st; egg.classList.add('c' + st); sfx(st === 3 ? 'crack2' : 'crack'); pend = 2;
         const gl = egg.querySelector('.eglow'); if (gl) { gl.classList.remove('zap'); void gl.offsetWidth; gl.classList.add('zap'); }
         hatchStage.querySelector('.ehalo')?.classList.add('s' + st); rumble(st, g); eggQuake(egg, win, st, g); if (st === 1) msg.textContent = '…!'; if (st === 3) msg.textContent = '알이 깨지려고 한다!'; }
@@ -7640,6 +7673,14 @@ function tapEgg(egg, g0, msg, g = g0) {   /* g0 알 등급, g 연출 등급(나�
 // hatch cutscene: wobble, crack, flash, reveal
 // 도트 알: 18×22 칸 그림 하나를 목록·세부·부화 창에서 같이 쓴다 (색은 등급별 CSS 변수)
 let EGG_CK = '';
+// v5.16 경완: 금 3단계(85%) 뒤에도 부화 직전까지 두드릴수록 금이 조금씩 더 번진다 (이 순서대로 한 칸씩)
+const EGG_CKX = [[9, 7], [8, 7], [7, 8], [12, 9], [13, 10], [14, 10], [2, 12], [2, 13], [3, 14], [15, 13], [14, 14], [15, 15], [4, 15], [5, 16], [13, 16], [12, 17], [6, 17], [7, 18], [11, 18], [10, 19], [8, 19], [9, 20]];
+function eggCrackX(egg, f) {
+  const n = Math.max(0, Math.min(EGG_CKX.length, Math.round((f - .85) / .15 * EGG_CKX.length)));
+  if (egg.ckxN === n) return; egg.ckxN = n;
+  const d = EGG_CKX.slice(0, n).map(([x, y]) => `M${x} ${y}h1v1h-1z`).join('');
+  egg.querySelectorAll('.ckx,.kx').forEach(p => p.setAttribute('d', d));
+}
 const EGG_SVG = (() => {
   const W = 18, H = 22, half = [2, 4, 5, 6, 7, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 8, 8, 7, 6, 5, 3];
   const inside = (x, y) => y >= 0 && y < H && x >= 9 - half[y] && x < 9 + half[y];
@@ -7659,12 +7700,21 @@ const EGG_SVG = (() => {
   const k1 = crack([[9, 3], [10, 4], [9, 5], [9, 6], [10, 7]]);
   const k2 = crack([[8, 8], [9, 9], [10, 9], [11, 10], [7, 9], [6, 10]]);
   const k3 = crack([[3, 11], [4, 12], [5, 11], [12, 11], [13, 12], [14, 11], [15, 12]]);
-  EGG_CK = `<div class="eglow"><svg viewBox="0 0 ${W} ${H}" shape-rendering="crispEdges" aria-hidden="true"><path class="k1" d="${k1}"/><path class="k2" d="${k2}"/><path class="k3" d="${k3}"/></svg></div>`;
+  EGG_CK = `<div class="eglow"><svg viewBox="0 0 ${W} ${H}" shape-rendering="crispEdges" aria-hidden="true"><path class="k1" d="${k1}"/><path class="k2" d="${k2}"/><path class="k3" d="${k3}"/><path class="kx" d=""/></svg></div>`;
   return `<svg viewBox="0 0 ${W} ${H}" shape-rendering="crispEdges" aria-hidden="true">`
     + `<path d="${rows.c}" style="fill:var(--ec)"/><path d="${rows.sh}" style="fill:var(--esh)"/><path d="${rows.hl}" fill="#fff"/>`
     + `<path d="${rows.s}" style="fill:var(--es)"/><path d="${rows.o}" style="fill:var(--eo)"/>`
-    + `<path class="ck k1" d="${k1}" style="fill:var(--eo)"/><path class="ck k2" d="${k2}" style="fill:var(--eo)"/><path class="ck k3" d="${k3}" style="fill:var(--eo)"/></svg>`;
+    + `<path class="ck k1" d="${k1}" style="fill:var(--eo)"/><path class="ck k2" d="${k2}" style="fill:var(--eo)"/><path class="ck k3" d="${k3}" style="fill:var(--eo)"/><path class="ckx" d="" style="fill:var(--eo)"/></svg>`;
 })();
+// v5.16 경완: 부화 카드 '필드로'를 빠르게 누르면 눌린 모양만 나오고 안 되던 것 — 손을 뗄 때 바로 처리하고, 뒤따르는 click·연타(350ms 안)는 무시
+function fastBtn(b, fn) {
+  b._fn = fn; if (b._fast) return; b._fast = true; let upT = 0;
+  const go = () => { const now = performance.now(); if (!b._fn || b.disabled || now - (b._last || 0) < 350) return; b._last = now; b._fn(); };
+  let downOn = false; b.addEventListener('pointerdown', () => { downOn = true; });
+  b.addEventListener('pointerup', ev => { if (ev.button > 0 || !downOn) return; downOn = false; upT = performance.now(); go(); });
+  b.addEventListener('pointercancel', () => { downOn = false; });
+  b.addEventListener('click', () => { if (performance.now() - upT > 600) go(); });   // 키보드·접근성 클릭
+}
 const eggHtml = (g, cls = '') => `<div class="egg g${g} ${cls}">${EGG_SVG}</div>`;
 const hatchEl = $('#hatch'), hatchStage = $('#hatchStage');
 // 부화시키기·가방으로 빼기: 누르는 동안 버튼이 쑥 들어간다 (iOS 는 touchstart 가 있어야 :active 가 먹는다)
@@ -7752,12 +7802,12 @@ async function playHatch() {
   // 필드에 빈 칸이 있으면 바로 내보낼 수 있다 (누르면 눌린 채로 남고, 포켓몬은 뒤에서 필드에 나온다)
   const sb = $('#hatchSend'); let send = false; sb.hidden = S.mons.length >= MAX_MONS; sb.classList.remove('sunk'); sb.disabled = false; sb.textContent = '필드로';
   let sm = null, busy = false;   // 다시 누르면 필드에서 빼서 상자로 (토글)
-  sb.onclick = async () => { if (busy) return; sfx('tap');
+  fastBtn(sb, async () => { if (busy) return;
     if (send) { const m = sm && S.mons.includes(sm) ? sm : S.mons.find(x => x.pid === P.id); if (m) removeMon(m, true); send = false; sm = null; sb.classList.remove('sunk'); sb.textContent = '필드로'; save(); refreshCap(); return; }
     if (S.mons.length >= MAX_MONS) return; send = true; busy = true; sb.classList.add('sunk'); sb.textContent = '필드에 나감';
-    try { sm = await spawn(sp, { pid: P.id }); sm.born = S.clock; markNew(sm); } finally { busy = false; } save(); refreshCap(); };
+    try { sm = await spawn(sp, { pid: P.id }); sm.born = S.clock; markNew(sm); } finally { busy = false; } save(); refreshCap(); });
   ok.focus();
-  const how = await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = ev => { if (!ev.target.closest('.win')) r(); }; });
+  const how = await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = null; });   /* v5.16 경완: 두드리다 바깥을 눌러 정보를 못 보고 닫히지 않게, 확인으로만 닫는다 */
   hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; sb.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatching = false;
   hatchFx(); if (fg >= 5) bgmDuck(1, 2.5);
   if (!send) log(`${GRADE[g].n} 알에서 ${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어나 포켓몬 박스에 들어갔다.`, [], true);
@@ -7846,10 +7896,10 @@ async function hatchAll() {
   // 밀어서 넘기기는 포켓몬 정보 카드와 같은 cardPager (양옆 카드가 붙어 들어온다)
   hatchPg = { can: d => i + d >= 0 && i + d < res.length, snap: (d, w) => { const k = i; show(k + d, true); const g = w.cloneNode(true); show(k, true); return g; }, step: d => { sfx('tap'); show(i + d, false, true); } };
   fieldBtn.onclick = async () => { const r = res[i]; if (onField(r.P.id) || S.mons.length >= MAX_MONS) return; fieldBtn.hidden = true; const m = await spawn(r.sp, { pid: r.P.id }); m.born = S.clock; markNew(m); save(); refreshCap(); show(i); };
-  sb.onclick = async () => { if (sbBusy) return; const r = res[i], k = i; sfx('tap');
+  fastBtn(sb, async () => { if (sbBusy) return; const r = res[i], k = i;
     if (onField(r.P.id)) { const m = S.mons.find(x => x.pid === r.P.id); if (m) removeMon(m, true); r.sent = false; save(); refreshCap(); show(i, true); return; }
     if (S.mons.length >= MAX_MONS) return; sbBusy = true; r.sent = true; sb.classList.add('sunk'); sb.textContent = '필드에 나감';
-    try { const m = await spawn(r.sp, { pid: r.P.id }); m.born = S.clock; markNew(m); } finally { sbBusy = false; } save(); refreshCap(); if (i === k) show(i, true); };
+    try { const m = await spawn(r.sp, { pid: r.P.id }); m.born = S.clock; markNew(m); } finally { sbBusy = false; } save(); refreshCap(); if (i === k) show(i, true); });
   // 상태창 보기: 창을 떠나지 않고 도감 정보 칸만 개체값으로 바꿔 본다 (다시 누르면 도감 정보)
   ok.hidden = false; ok.textContent = '확인'; const look = $('#hatchLook'); look.hidden = false; look.textContent = '상태창 보기';
   look.onclick = () => { ivMode = !ivMode; look.textContent = ivMode ? '도감 정보' : '상태창 보기'; showDexInfo(res[i].sp, res[i].P); if (ivMode) showIvInfo(res[i]); };
@@ -7859,8 +7909,8 @@ async function hatchAll() {
   await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = ev => { const w = ev.target.closest('.win');
       if (w) { if (ev.target.closest('button,input,a,#hlStrip,[data-tip]')) return; const R = w.getBoundingClientRect(), E = Math.max(EDGE_IN, R.width * .3), d = ev.clientX < R.left + E ? -1 : ev.clientX > R.right - E ? 1 : 0;   /* 카드 좌우 30% (테두리 포함)를 눌러도 넘긴다, 가운데만 빼고 */
         if (d && !$(d < 0 ? '#hlHl' : '#hlHr').hidden) hatchPg?.step(d); return; }
-      const d = sideTap(hatchEl, ev); if (d) { if (!$(d < 0 ? '#hlHl' : '#hlHr').hidden) show(i + d); return; } r(); }; });
-  hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; sb.hidden = true; sb.onclick = null; look.textContent = '상태창 보기'; showDexInfo(null); hatchFx(); hatchEl.classList.remove('list'); $('#hlHl').hidden = $('#hlHr').hidden = true; hatchPg = null; hw.style.transform = ''; hatching = false;
+      const d = sideTap(hatchEl, ev); if (d) { if (!$(d < 0 ? '#hlHl' : '#hlHr').hidden) show(i + d); return; } }; });   /* v5.16: 바깥을 눌러도 닫지 않는다 (확인으로만) */
+  hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; sb.hidden = true; fastBtn(sb, null); look.textContent = '상태창 보기'; showDexInfo(null); hatchFx(); hatchEl.classList.remove('list'); $('#hlHl').hidden = $('#hlHr').hidden = true; hatchPg = null; hw.style.transform = ''; hatching = false;
   const nw = res.filter(r => r.isNew).length, sh = res.filter(r => r.P.shiny).length;
   log(`알 ${res.length}개가 한꺼번에 부화했다! ${res.map(r => SPECIES[r.sp].n).join(', ')}${nw ? ` (새로 만난 포켓몬 ${nw}마리)` : ''}${sh ? ` ✦ 색이 다른 포켓몬 ${sh}마리!` : ''}`, [], true);
   save(); renderRun(); refreshCap();

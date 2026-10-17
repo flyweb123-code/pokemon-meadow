@@ -30,7 +30,10 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
             gameReady = true
             return
         }
-        guard let data = try? JSONSerialization.data(withJSONObject: body) else { return }
+        // 알림 계획은 앱에서만 쓰고 워치에는 보내지 않는다 (NotiCenter)
+        var state = body
+        if let noti = state.removeValue(forKey: "noti") as? [String: Any] { NotiCenter.shared.update(noti, pendingKm: pendingWalkKm()) }
+        guard let data = try? JSONSerialization.data(withJSONObject: state) else { return }
         UserDefaults.standard.set(data, forKey: stateKey)
         sendState(data)
     }
@@ -111,7 +114,13 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
         web.evaluateJavaScript("window.pokeRunPedErr && window.pokeRunPedErr(\(arg)[0])")
     }
 
+    // 아직 게임에 넘기지 못한 걸음 거리 합
+    func pendingWalkKm() -> Double {
+        (UserDefaults.standard.array(forKey: walkKey) as? [[String: Any]] ?? []).reduce(0) { $0 + ($1["km"] as? Double ?? 0) }
+    }
+
     func enqueueWalk(km: Double, place: String, tags: [String] = []) {
+        NotiCenter.shared.walked(km)   // 화면이 꺼져 있으면 알·부화·진화 알림을 확인한다
         var list = UserDefaults.standard.array(forKey: walkKey) as? [[String: Any]] ?? []
         list.append(["km": km, "place": place, "tags": tags.joined(separator: ",")])
         UserDefaults.standard.set(list, forKey: walkKey)
