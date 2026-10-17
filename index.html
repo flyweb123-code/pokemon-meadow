@@ -1129,29 +1129,22 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .noti p{margin:6px 0;font-size:16px}
 .noti .ns{background:linear-gradient(#e8f4ff,#cfe4f8);border:3px solid var(--frame);padding:8px 10px 10px;margin-bottom:10px}
 .noti .ns.rd{background:linear-gradient(#fff6dc,#fde7b0)}
-.noti.frmax{z-index:5900}.frmax .ns{background:linear-gradient(#fff0f5,#fcd6e4)}
+.noti.frmax{z-index:9600}.frmax .ns{background:linear-gradient(#fff0f5,#fcd6e4)}
 .frmax .fm-pic{position:relative;height:96px;display:grid;place-items:end center;margin:2px 0 4px}.frmax .fm-pic img{height:76px;width:auto;image-rendering:pixelated;animation:fmhop 1.1s steps(2,end) infinite}
 .frmax .fm-pic img.shiny{filter:hue-rotate(var(--shue,0deg)) saturate(1.3)}
 .frmax .fm-pic i{position:absolute;width:12px;height:11px;background:#ff5a8c;clip-path:polygon(0 18%,18% 0,50% 18%,82% 0,100% 18%,100% 45%,50% 100%,0 45%);opacity:0;animation:fmheart 1.8s steps(6,end) infinite}
 .frmax .fm-hearts{color:#e04870;font-size:16px;letter-spacing:2px;margin:2px 0}
 .frmax .mvcard{margin:8px auto 2px;max-width:260px}
 @keyframes fmhop{50%{transform:translateY(-6px)}}
-.frpre{position:fixed;inset:0;z-index:5850;pointer-events:none;background:radial-gradient(circle at var(--px) var(--py),rgba(255,120,170,.28) 0,rgba(255,120,170,.1) 70px,rgba(12,6,22,.68) 180px,rgba(12,6,22,.88) 100%);opacity:0;transition:opacity .6s}
-.frpre.on{opacity:1}
-.frpre .fp-ring{position:absolute;left:var(--px);top:var(--py);width:120px;height:120px;margin:-60px 0 0 -60px;border:4px solid #ff8ab4;border-radius:50%;opacity:0;animation:fpring .55s steps(5,end) infinite}
-.frpre .fp-ring.r2{animation-delay:.27s;border-color:#ffd0e2}
-.frpre .fp-h{position:absolute;left:var(--px);top:var(--py);width:14px;height:13px;margin:-6px 0 0 -7px;background:#ff5a8c;clip-path:polygon(0 18%,18% 0,50% 18%,82% 0,100% 18%,100% 45%,50% 100%,0 45%);opacity:0;animation:fpin 1s steps(8,end) forwards}
-.frpre .fp-t{position:absolute;left:var(--tx);top:var(--py);transform:translate(-50%,-150px);font-size:18px;color:#fff;text-shadow:2px 0 #c03068,-2px 0 #c03068,0 2px #c03068,0 -2px #c03068;white-space:nowrap;opacity:0}
-.frpre .fp-t.on{animation:fpbeat .5s steps(3,end) forwards}
+.frpre{position:fixed;inset:0;z-index:9500;pointer-events:auto;touch-action:none;background:rgba(6,4,14,0);transition:background .7s steps(6,end)}
+.frpre.on{background:rgba(6,4,14,.86)}
+.frpre .fp-l{position:absolute;left:50%;top:46%;width:260px;height:260px;margin:-130px 0 0 -130px;border-radius:50%;background:radial-gradient(circle,#fff 0,#fff6fa 12%,rgba(255,200,226,.85) 26%,rgba(255,140,190,.35) 48%,rgba(255,120,180,0) 70%);opacity:0;transform:scale(.05);animation:fplight 2.2s cubic-bezier(.5,0,.9,.6) .35s forwards}
+.frpre .fp-l::after{content:"";position:absolute;inset:44%;border-radius:50%;background:#fff;box-shadow:0 0 18px 8px #fff;animation:fpcore .5s steps(2,end) infinite}
 .frpre .fp-fl{position:absolute;inset:0;background:#fff;opacity:0}
-.frpre .fp-fl.on{animation:fpflash .5s steps(4,end) forwards}
-.frpre.mon-glow .fp-ring{border-width:5px}
-.mon.frGlow img,.mon.frGlow .spr{filter:drop-shadow(0 0 4px #ff8ab4) drop-shadow(0 0 10px #ff5a8c) brightness(1.15);animation:fpglow .45s steps(2,end) infinite}
-@keyframes fpring{0%{opacity:.9;transform:scale(1.2)}100%{opacity:0;transform:scale(.25)}}
-@keyframes fpin{0%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.3)}15%{opacity:1}85%{opacity:1}100%{opacity:0;transform:translate(0,0) scale(.4)}}
-@keyframes fpbeat{0%{opacity:0;transform:translate(-50%,-140px) scale(.6)}50%{opacity:1;transform:translate(-50%,-150px) scale(1.15)}100%{opacity:1;transform:translate(-50%,-150px) scale(1)}}
-@keyframes fpflash{0%{opacity:0}40%{opacity:.95}100%{opacity:0}}
-@keyframes fpglow{50%{filter:drop-shadow(0 0 6px #ffd0e2) drop-shadow(0 0 14px #ff5a8c) brightness(1.35)}}
+.frpre .fp-fl.on{animation:fpflash .55s steps(5,end) forwards}
+@keyframes fplight{0%{opacity:0;transform:scale(.05)}25%{opacity:.7;transform:scale(.25)}70%{opacity:.95;transform:scale(.8)}100%{opacity:1;transform:scale(2.6)}}
+@keyframes fpcore{50%{transform:scale(1.35)}}
+@keyframes fpflash{0%{opacity:0}35%{opacity:1}100%{opacity:0}}
 .frmax canvas.fw{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;image-rendering:pixelated}
 .frmax .win{position:relative}
 @keyframes fmheart{0%{opacity:0;transform:translateY(10px)}20%{opacity:1}100%{opacity:0;transform:translateY(-46px)}}
@@ -5444,7 +5437,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.82';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.83';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6748,26 +6741,20 @@ const frMaxQ = []; let frMaxT = 0, frMaxOpen = false;
 function frMaxHit(P, f0) { if (f0 < FR_MAX && (P.fr || 0) >= FR_MAX && !frMaxQ.includes(P.id)) { frMaxQ.push(P.id); clearTimeout(frMaxT); frMaxT = setTimeout(frMaxShow, 900); } }
 function frMaxShow() {
   if (frMaxOpen || !frMaxQ.length) return;
-  if (document.hidden || hatching || evolving || notiOpen || !$('#hatch').hidden) { clearTimeout(frMaxT); frMaxT = setTimeout(frMaxShow, 1500); return; }
+  if (document.hidden || hatching || evolving) { clearTimeout(frMaxT); frMaxT = setTimeout(frMaxShow, 1500); return; }   // v4.83 경완: 메뉴·창이 열려 있어도 그 위로 뜬다 (부화·진화 연출 중에만 끝나길 기다림)
   const P = boxOf(frMaxQ.shift()); if (!P) return frMaxShow();
   frMaxOpen = true; frMaxPre(P, () => frMaxWin(P));
 }
-// 친밀도 만점 직전 연출 (경완 2026-10-17): 화면이 어두워지고 하트가 포켓몬에게 모여들며 두근두근 → 번쩍 하고 축하 창
+// 친밀도 만점 직전 연출 (경완 2026-10-17): 어느 화면 위에서든 화면이 어두워지고 가운데 빛이 점점 밝아지다 번쩍 → 축하 창. 그동안은 화면을 눌러도 아무 반응 없게 잠근다
 function frMaxPre(P, then) {
-  const m = S.mons.find(o => o.pid === P.id), r = m && [m.spr, m.img].map(e => e?.getBoundingClientRect()).find(r => r && r.width && r.bottom > 0 && r.top < innerHeight);
-  const px = r ? r.left + r.width / 2 : innerWidth / 2, py = r ? r.top + r.height / 2 : innerHeight * .42;
-  const ov = document.createElement('div'); ov.className = 'frpre' + (r ? ' mon-glow' : ''); ov.style.setProperty('--px', px + 'px'); ov.style.setProperty('--py', py + 'px'); ov.style.setProperty('--tx', clamp(px, 110, innerWidth - 110) + 'px');
-  const nm = nameOf(P);
-  ov.innerHTML = `<i class="fp-ring"></i><i class="fp-ring r2"></i>` + Array.from({ length: 14 }, (_, i) => { const a = i / 14 * Math.PI * 2 + Math.random() * .4, d = 150 + Math.random() * 90; return `<i class="fp-h" style="--dx:${Math.round(Math.cos(a) * d)}px;--dy:${Math.round(Math.sin(a) * d)}px;animation-delay:${(.25 + i * .1).toFixed(2)}s"></i>`; }).join('')
-    + `<b class="fp-t t1">두근…</b><b class="fp-t t2">${esc(nm)}의 마음이…!</b><i class="fp-fl"></i>`;
+  const ov = document.createElement('div'); ov.className = 'frpre'; ov.innerHTML = '<i class="fp-l"></i><i class="fp-fl"></i>';
+  const stop = ev => { ev.preventDefault(); ev.stopPropagation(); };
+  for (const t of ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchmove', 'touchend', 'mousedown', 'wheel', 'keydown']) ov.addEventListener(t, stop, { capture: true, passive: false });
+  const key = ev => stop(ev); document.addEventListener('keydown', key, true);
   document.body.append(ov); requestAnimationFrame(() => ov.classList.add('on'));
-  if (r) { m.el.classList.add('frGlow'); m.pet = true; }
-  const beat = (t, f) => setTimeout(() => { if (!sfxOn) return; const a = audio(); if (!a) return; const n = a.currentTime + .01; tone(f, n, .09, { type: 'triangle', vol: .16, to: f * .5 }); tone(f * .8, n + .14, .08, { type: 'triangle', vol: .12, to: f * .4 }); haptic(0); }, t);
-  beat(350, 110); beat(900, 130); beat(1400, 150); beat(1800, 175);
-  setTimeout(() => ov.querySelector('.t1').classList.add('on'), 450);
-  setTimeout(() => { ov.querySelector('.t1').remove(); ov.querySelector('.t2').classList.add('on'); sfx('rise'); }, 1450);
+  setTimeout(() => sfx('rise'), 900);
   setTimeout(() => ov.querySelector('.fp-fl').classList.add('on'), 2350);
-  setTimeout(() => { if (m) { m.el?.classList.remove('frGlow'); m.pet = false; } then(); ov.classList.remove('on'); setTimeout(() => ov.remove(), 600); }, 2550);
+  setTimeout(() => { then(); document.removeEventListener('keydown', key, true); ov.style.transition = 'opacity .25s'; ov.style.opacity = 0; ov.style.pointerEvents = 'none'; setTimeout(() => ov.remove(), 300); }, 2560);
 }
 // 축하 창 뒤로 도트 폭죽이 계속 터진다 (창을 닫으면 멈춤)
 function frMaxFw() {
