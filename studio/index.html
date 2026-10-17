@@ -117,7 +117,7 @@ table.t th{font-family:var(--px);font-size:11px;font-weight:400;color:var(--mute
 .tcol h3{margin:0;font-family:var(--px);font-size:13px;font-weight:400;display:flex;justify-content:space-between}
 .tcol .grid{grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:4px}.tcol .mc{aspect-ratio:auto;height:72px}.tcol .mc img{bottom:14px;max-height:72%}
 .tcol .mc .no{font-size:8px}
-.tcol .mc{touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.tcol .mc.drag{opacity:.35}.tcol .mc.drop{box-shadow:inset 3px 0 0 var(--acc)}.tcol .mc.dropR{box-shadow:inset -3px 0 0 var(--acc)}.tghost{position:fixed;z-index:9999;pointer-events:none;opacity:.85;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5))}.tghost>.mc{position:relative}.tghost .gcnt{position:absolute;right:-6px;top:-6px;min-width:22px;height:22px;border-radius:11px;background:var(--acc);color:#fff;font-size:12px;display:grid;place-items:center;padding:0 5px}.tcol.drop{border-color:var(--acc)}.tcol .tr0{min-height:22px;padding:0 8px;font-size:11px;margin-left:6px}
+.tcol .mc{touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.tcol .mc.drag{opacity:.35}.tgap{position:fixed;z-index:9998;width:4px;border-radius:2px;background:var(--acc);box-shadow:0 0 6px var(--acc);pointer-events:none}.tghost{position:fixed;z-index:9999;pointer-events:none;opacity:.85;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5))}.tghost>.mc{position:relative}.tghost .gcnt{position:absolute;right:-6px;top:-6px;min-width:22px;height:22px;border-radius:11px;background:var(--acc);color:#fff;font-size:12px;display:grid;place-items:center;padding:0 5px}.tcol.drop{border-color:var(--acc)}.tcol .tr0{min-height:22px;padding:0 8px;font-size:11px;margin-left:6px}
 .bubs{display:grid;gap:6px}
 .bubs .bc{display:grid;grid-template-columns:96px 104px minmax(0,1fr);gap:8px 12px;align-items:center;background:var(--deep);border:1px solid var(--chip);border-radius:6px;padding:10px}
 .bubs .bw{display:grid;place-items:center;min-height:44px;background:#5d9a3e;border-radius:4px;padding:8px 2px 12px}
@@ -468,7 +468,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.56';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.57';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -1506,9 +1506,13 @@ $('#tierC').addEventListener('pointerdown', e => { const card = e.target.closest
     g.style.left = ev.clientX - gdx + 'px'; g.style.top = ev.clientY - gdy + 'px'; const el = document.elementFromPoint(ev.clientX, ev.clientY), c = el?.closest('#tierC .mc'), col = c ? null : el?.closest('#tierC .tcol') || (el?.closest('#tierC') && !el.closest('.thd') ? nearCol(ev.clientY) : null);
     over?.classList.remove('drop', 'dropR'); overC?.classList.remove('drop'); over = c && !grp.includes(+c.dataset.sp) ? c : null; overC = !over && !c && col ? col : null; over?.classList.add('drop');
     if (overC) { const lc = lastOf(overC); if (lc) { over = lc; over.classList.add('dropR'); } else overC.classList.add('drop'); }   /* 빈 곳(아래 여백 포함) = 맨 뒤 → 마지막 카드 오른쪽에 표시 */
-    const sc = mobile() ? $('#tierC').closest('.view') : ($('#tierC').closest('.scroll') || $('#tierC')), r = sc.getBoundingClientRect(); if (ev.clientY < r.top + 40) sc.scrollTop -= 14; else if (ev.clientY > r.bottom - 40) sc.scrollTop += 14; };
+    const sc = mobile() ? $('#tierC').closest('.view') : ($('#tierC').closest('.scroll') || $('#tierC')), r = sc.getBoundingClientRect(); if (ev.clientY < r.top + 40) sc.scrollTop -= 14; else if (ev.clientY > r.bottom - 40) sc.scrollTop += 14;
+    gapBar(over, !!overC); };
+  // v2.57 경완: 들어갈 자리는 카드 테두리가 아니라 카드와 카드 사이 틈에 세로 막대로
+  let bar = null; const gapBar = (c, after) => { if (!c) { bar && (bar.hidden = true); return; } if (!bar) { bar = document.createElement('div'); bar.className = 'tgap'; document.body.append(bar); } const r = c.getBoundingClientRect(), gs = getComputedStyle(c.parentElement), g = (parseFloat(gs.columnGap) || 6) * tzOf() / 100;
+    const x = after ? r.right + g / 2 : r.left - g / 2; Object.assign(bar.style, { left: x - 2 + 'px', top: r.top + 'px', height: r.height + 'px' }); bar.hidden = false; };
   const tm = ev => { if (on) ev.preventDefault(); };
-  const end = () => { clearTimeout(lp); removeEventListener('pointermove', mv); removeEventListener('pointerup', end); removeEventListener('pointercancel', end); removeEventListener('touchmove', tm); cards.forEach(c => c.classList.remove('drag')); g?.remove();
+  const end = () => { clearTimeout(lp); removeEventListener('pointermove', mv); removeEventListener('pointerup', end); removeEventListener('pointercancel', end); removeEventListener('touchmove', tm); cards.forEach(c => c.classList.remove('drag')); g?.remove(); bar?.remove();
     const toEnd = !!overC; over?.classList.remove('drop', 'dropR'); overC?.classList.remove('drop'); if (!on) return; tcDragAt = Date.now(); if (!over && !overC) return;
     const tt = +(over || overC).closest('.tcol').dataset.tt, L = tierLists(true), tfs = grp.map(tierOfSp), cur = orderTier(tt, L[tt]);
     const dst = cur.filter(b => !grp.includes(b)), at = over && !toEnd ? dst.indexOf(+over.dataset.sp) : dst.length; dst.splice(at < 0 ? dst.length : at, 0, ...grp);
@@ -1518,7 +1522,7 @@ $('#tierC').addEventListener('pointerdown', e => { const card = e.target.closest
     if (!Object.keys(D.tierOv).length) delete D.tierOv;
     D.tierOrd[tt] = dst; for (const k of Object.keys(D.tierOrd)) if (JSON.stringify(D.tierOrd[k]) === JSON.stringify(ORIG.tierOrd[k])) delete D.tierOrd[k]; if (!Object.keys(D.tierOrd).length) delete D.tierOrd;
     const moved = tfs.filter(tf => tf !== tt).length; if (grp.length === 1) { sel.tier = sp; tSel.clear(); tSel.add(sp); }
-    saveDraft(); renderTier(); toast(moved ? (grp.length > 1 ? `${grp.length}마리 → ${tt}티어` : `${spName(sp)} → ${tt}티어`) : '순서를 바꿨어요'); };
+    saveDraft(); renderTier(); if (moved) toast(grp.length > 1 ? `${grp.length}마리 → ${tt}티어` : `${spName(sp)} → ${tt}티어`); };   // v2.57 경완: 순서만 바꾸면 안내 문구 없음
   addEventListener('pointermove', mv); addEventListener('pointerup', end); addEventListener('pointercancel', end); addEventListener('touchmove', tm, { passive: false }); });
 $('#tierC').addEventListener('contextmenu', e => { if (e.target.closest('.tcol .mc')) e.preventDefault(); });
 // v2.4 경완: 티어에서 포켓몬을 누르면 오른쪽에 포켓몬 정보 + 알마다 나올 확률 (알 화면으로 넘어가지 않음)
@@ -1794,6 +1798,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.57', '10월 17일', ['티어: 카드를 끌면 들어갈 자리가 카드 사이 틈에 세로 막대로 보여요', '티어: 순서만 바꿀 땐 안내 문구가 안 떠요', '크기 조절 모드: 포켓몬을 다시 눌러도 크기 네모가 사라지지 않고, 둥둥 뜨지 않고, 그림이 늦게 불려도 격자가 맞아요 (게임 v4.61)']],
   ['2.56', '10월 17일', ['크기 조절 모드: 포켓몬을 고르고 백스페이스(Delete)를 누르면 빠져요']],
   ['2.55', '10월 17일', ['티어: 카드를 같은 자리에 놓으면 그냥 취소 (안내 문구 없음)', '끌 때 카드 전체 모양이 따라와요', '칸 빈 곳·아래 여백에 놓으면 맨 뒤로, 마지막 카드 오른쪽에 표시']],
   ['2.54', '10월 17일', ['티어: 카드를 눌러도 꺼지지 않고, 오른쪽 창 \'알에서 나오기\'의 끄기·켜기 버튼으로 바꿔요']],

@@ -253,7 +253,7 @@ html{touch-action:manipulation}img{-webkit-user-drag:none}*{-webkit-user-select:
 :root{
   --win:#f8f8f8; --win-ink:#282830; --frame:#383848; --inner:#c8c8d8; --inner-blue:#68a0d0;
   --card:#f8f8e0; --card-frame:#384838; --dim:#8888a0; --cursor:#e05040;
-  --hp-track:#506858; --hp:#70f8a8; --hunger:#f8d030; --lonely:#58c8f0; --clean:#c8a8ff; --low:#e04838; --forest:#24482a;
+  --hp-track:#506858; --hp:#70f8a8; --hunger:#f8d030; --fullness:#58c848; --lonely:#f8d030; --clean:#4a9cf0;   /* v4.61 경완: 건강 게이지 색은 이 세 값 하나로 모든 화면에 (배부름 초록·청결 파랑·즐거움 노랑) */ --low:#e04838; --forest:#24482a;
   --px:"Galmuri11","Galmuri",ui-monospace,monospace;
   color-scheme:light;
 }
@@ -823,7 +823,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .slot .mini{width:80%;height:6px;background:var(--hp-track);border:2px solid var(--frame);box-sizing:content-box}
 .slot .mini i{display:block;height:100%;background:var(--hunger)}
 .slot .gg{width:88%;display:grid;gap:2px}.slot .gr{display:flex;align-items:center;gap:3px;min-width:0}.slot .gr svg{width:9px;height:9px;flex:none}.slot .gr .mini{flex:1;width:auto;min-width:0;height:3px;border-width:2px}
-.slot .gr.hu .mini i{background:#58c848}.slot .gr.cl .mini i{background:#4a9cf0}.slot .gr.jo .mini i{background:#f8d030}.slot .gr.low .mini i{background:var(--low)}.bar.low>span:first-child,.bar.low .num{color:var(--low)}.slot .gr .gi{display:flex;flex:none}.slot .gr.low .gi{animation:lowp 1.2s steps(2) infinite}.gr.low .mini{animation:lowglow 1.8s ease-in-out infinite}@keyframes lowglow{0%,100%{box-shadow:0 0 2px rgba(240,80,60,.35)}50%{box-shadow:0 0 6px 1px rgba(240,80,60,.75)}}.gr.low .gi svg{filter:drop-shadow(0 0 1.5px rgba(240,80,60,.7))}   /* v4.05 경완: 빨간 게이지는 은은하게 빛난다 */@keyframes lowp{50%{transform:translateY(-1px)}}
+.slot .gr.hu .mini i{background:var(--fullness)}.slot .gr.cl .mini i{background:var(--clean)}.slot .gr.jo .mini i{background:var(--lonely)}.slot .gr.low .mini i{background:var(--low)}.bar.low>span:first-child,.bar.low .num{color:var(--low)}.slot .gr .gi{display:flex;flex:none}.slot .gr.low .gi{animation:lowp 1.2s steps(2) infinite}.gr.low .mini{animation:lowglow 1.8s ease-in-out infinite}@keyframes lowglow{0%,100%{box-shadow:0 0 2px rgba(240,80,60,.35)}50%{box-shadow:0 0 6px 1px rgba(240,80,60,.75)}}.gr.low .gi svg{filter:drop-shadow(0 0 1.5px rgba(240,80,60,.7))}   /* v4.05 경완: 빨간 게이지는 은은하게 빛난다 */@keyframes lowp{50%{transform:translateY(-1px)}}
 .slot .sl-tags{position:absolute;left:4px;top:4px;display:flex;gap:3px;pointer-events:none}.slot .sl-tags .st{position:static}.slot .sl-bud{font-size:11px;padding:1px 4px;line-height:normal;background:#e8679a;color:#fff}.slot.bud{background:#fcdde9}.slot.bud.bud:not([aria-current="true"]){border-color:#f4b4cc}   /* v4.06 경완: 짝꿍 슬롯 테두리 연한 분홍 */.slot.bud .mini{border-color:#9a3462}
 .slot.empty{border-style:dashed;color:var(--dim);justify-content:center;background:transparent}
 .slot.empty .plus{font-size:24px;line-height:1}
@@ -2007,7 +2007,7 @@ function pondWp(m, tx, ty) {
 }
 // v4.60 경완: 불은 뜨겁다 — 걷는 포켓몬은 모닥불을 뚫고 지나가지 않고 둘레를 돌아간다
 const fireBox = m => { const z = LS('fire'); return { x: FIRE.x, y: FIRE.y + 4, rx: 20 * z + Math.min(16, (m.w || 40) * .3), ry: 9 * z + 5 }; };
-const fireBlk = m => { const t = T(m).mv; return t !== 'fly' && t !== 'hover' && t !== 'swim' && !m.held; };
+const fireBlk = m => T(m).mv !== 'swim' && !m.held;   /* v4.61 경완: 날거나 떠 있는 포켓몬도 불 위로 지나가지 않는다 */
 const fireVal = (m, x, y, B = fireBox(m)) => ((x - B.x) / B.rx) ** 2 + ((y - B.y) / B.ry) ** 2;
 function fireOut(m, q, k = 1.05) { if (!fireBlk(m) || fireVal(m, q.x, q.y) >= k) return q; const B = fireBox(m), dx = (q.x - B.x) / B.rx, dy = (q.y - B.y) / B.ry, v = Math.hypot(dx, dy) || 1e-3; q.x = B.x + dx / v * k * B.rx; q.y = B.y + (v < .01 ? k : dy / v * k) * B.ry; return q; }
 function fireWp(m, tx, ty) {
@@ -2473,7 +2473,7 @@ async function spawn(sp, opts = {}) {
   m.el = el; m.liftEl = el.querySelector('.lift'); m.flipEl = el.querySelector('.flip'); m.act = el.querySelector('.act'); m.img = el.querySelector('img'); m.spr = el.querySelector('.spr'); m.snot = el.querySelector('.snot'); m.dirtEl = el.querySelector('.dirt');
   m.img.src = SPRITES[sp]; m.img.width = m.w; m.img.height = m.h; m.img.alt = m.name; m.img.draggable = false;
   for (const el2 of [m.img, m.spr]) {
-    el2.addEventListener('click', ev => { ev.stopPropagation(); if (m.szb) { if (performance.now() - suppressClick > 300) window.__studio?.szPick?.(m.uid); return; } if (performance.now() - suppressClick > 300) { if (S.tool === 'berry') feedOne(m); else select(S.sel === m ? null : m); } });
+    el2.addEventListener('click', ev => { ev.stopPropagation(); if (m.szb) { if (performance.now() - suppressClick > 300) window.__studio?.szSel?.(m.uid); return; } if (performance.now() - suppressClick > 300) { if (S.tool === 'berry') feedOne(m); else select(S.sel === m ? null : m); } });
     el2.addEventListener('pointerdown', ev => { if (m.szb) SZB.grab?.(m, ev); else grab(m, ev); });
   }
   setMode(m);
@@ -2822,15 +2822,16 @@ function hudZone() {
   const now = performance.now(); if (now - hudZt < 1000) return hudZ; hudZt = now; hudZ = [];
   let sr; try { sr = stage.getBoundingClientRect(); } catch (e) { return hudZ; } if (!sr.width || !scale) return hudZ;
   for (const el of [$('#clock'), $('#btnBerry'), $('#frTest')]) { if (!el || el.closest('[hidden]') || getComputedStyle(el).display === 'none') continue; const r = el.getBoundingClientRect(); if (!r.width) continue;
-    hudZ.push({ x0: (r.left - sr.left) / scale, x1: (r.right - sr.left) / scale, y1: (r.bottom - sr.top) / scale }); }
+    hudZ.push({ x0: (r.left - sr.left) / scale, x1: (r.right - sr.left) / scale, y0: el.id === 'clock' ? -1e9 : (r.top - sr.top) / scale, y1: (r.bottom - sr.top) / scale }); }   /* v4.61 경완: 열매 버튼을 옮기면 그 버튼 자리만 피한다 (예전엔 버튼 위쪽 세로 줄 전체를 피했다) */
   return hudZ;
 }
-const hudHit = (m, x, y) => hudZone().find(z => x > z.x0 - (m.w || 60) * .5 && x < z.x1 + (m.w || 60) * .5 + 8 && y < z.y1 + (m.h || 60) * .85);
+const hudHit = (m, x, y) => hudZone().find(z => x > z.x0 - (m.w || 60) * .5 && x < z.x1 + (m.w || 60) * .5 + 8 && y > z.y0 && y < z.y1 + (m.h || 60) * .85);
 const inHud = (m, x = m.x, y = m.y) => !!hudHit(m, x, y);
 function outOfHud(m, q) {
   for (let k = 0, z; k < 4 && (z = hudHit(m, q.x, q.y)); k++) {
-    const a = { x: z.x1 + (m.w || 60) * .5 + 14, y: q.y }, b = { x: q.x, y: z.y1 + (m.h || 60) * .85 + 10 };
-    q = b.y <= MAX_Y && (b.y - q.y < a.x - q.x || a.x > XR - 30) ? b : a;
+    const a = { x: z.x1 + (m.w || 60) * .5 + 14, y: q.y }, b = { x: q.x, y: z.y1 + (m.h || 60) * .85 + 10 }, c = { x: z.x0 - (m.w || 60) * .5 - 10, y: q.y }, u = { x: q.x, y: z.y0 - 6 };
+    const C = [b.y <= MAX_Y && b, a.x <= XR - 30 && a, z.y0 > -1e8 && c.x >= XL + 30 && c, z.y0 > -1e8 && u.y >= MIN_Y && u].filter(Boolean);
+    q = C.length ? C.reduce((p, o) => Math.hypot(o.x - q.x, o.y - q.y) < Math.hypot(p.x - q.x, p.y - q.y) ? o : p) : a;
   }
   return q;
 }
@@ -4273,7 +4274,7 @@ function render(m, now) {
   if (m.perch) { const p = m.perch; if (S.mons.includes(p) && p.state === 'sleep' && m.state === 'sleep') { m.x = p.x + m.perchDx; m.y = p.y + 1; m.xl = p.h * .45; } else { m.perch = null; m.xl = 0; } }
   const fly0 = MON_FLY[m.form] || 0, targetLift = m.szb ? fly0 : m.held ? 26 : (flyer ? (grounded ? (t.mv === 'hover' ? 6 : 0) : (t.mv === 'fly' ? 40 : 16)) : 0) + (m.xl || 0) + fly0;   /* 들면 나는 포켓몬도 손가락(몸통) 기준: 그림자 위 높이를 더하지 않는다 */
   m.lift += (targetLift - m.lift) * .08;
-  const bob = flyer && !grounded ? Math.sin(now / 260 + m.uid) * 4 : 0;
+  const bob = flyer && !grounded && !m.szb ? Math.sin(now / 260 + m.uid) * 4 : 0;   /* v4.61 경완: 크기 조절 모드에선 둥둥 안 뜬다 */
   const pv = pondVal(m.x, m.y), wet = !flyer && (m.wet ? pv < 1.0 : pv < .94);   /* 물가 경계에서 젖음/마름이 번갈아 바뀌며 위아래로 튀지 않게 여유를 둔다 */
   if (wet !== m.wet) { m.wet = wet; m.el.classList.toggle('wet', wet); }
   if (m.land && (m.sp !== 129 || pondVal(m.x, m.y) < .85)) { m.land = false; if (!m.held) { splashAt(m); log(`${J(m,'이/가')} 겨우 호수로 돌아와 첨벙! 한결 편안해 보인다.`, [m]); } }
@@ -4860,7 +4861,7 @@ function propReact(m, p) {
     const rs = () => { if (el) { el.classList.remove('rustle'); void el.offsetWidth; el.classList.add('rustle'); } }; rs();
     { let n = 0; const sh = () => { if (!S.mons.includes(m) || m.el.style.visibility !== 'hidden' || ++n > 6) return; rs(); setTimeout(sh, rnd(700, 1300)); }; setTimeout(sh, rnd(900, 1300)); }   // v4.52 경완: 숨어 있는 동안 덤불이 가끔 바스락 흔들려 안에 누가 있는 걸 알 수 있게
     log(`${J(m,'이/가')} 덤불 속으로 쏙 숨었다.`, [m]);
-    setTimeout(() => { if (!S.mons.includes(m)) return; m.el.style.visibility = ''; m.y = Math.min(MAX_Y, p.y + 16); emote(m, '!', '', 2.2, 'bush-out'); anim(m, 'hop'); if (el) { el.classList.remove('rustle'); void el.offsetWidth; el.classList.add('rustle'); } }, 4200);
+    setTimeout(() => { if (!S.mons.includes(m)) return; m.el.style.visibility = ''; m.y = Math.min(MAX_Y, p.y + 16); emote(m, '!', '', 2.2, 'bush-out'); anim(m, 'hop'); el?.classList.remove('rustle'); }, 4200);   /* v4.61 경완: 튀어나오면 덤불은 멈춘다 */
     return;
   }
   if (p.k === 'stump') { at(0, 10); propSit(m, 14); faceTo(m, POND.x);   /* v4.26 경완: 그루터기에 앉으면 호수 쪽을 바라본다 */ setState(m, 'idle', rnd(10, 16)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play'); return log(`${J(m,'이/가')} 그루터기 위에 올라앉아 쉰다.`, [m]); }
@@ -5078,7 +5079,7 @@ function renderInfo() {
     if (inp && document.activeElement !== inp && inp.value !== m.name) { inp.value = m.name; inp.style.width = (Math.max(1, m.name.length) + .15) + 'em'; } }
   { const bud = !!m.pid && S.buds.some(b => b.pid === m.pid); box.classList.toggle('bud', bud); box.classList.toggle('night', !bud && uiNight()); $('#infoBud').hidden = !bud; }   /* 짝꿍은 밤에도 분홍 그대로 */
   { const h = rkBadge(P), el = box.querySelector('.pf-rk'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
-  $('#pbars').innerHTML = bar('청결', m.clean ?? 100, 'var(--clean)') + bar('배부름', 100 - m.hunger, 'var(--hunger)') + bar('즐거움', m.joy ?? 60, 'var(--lonely)') + (P ? `<div class="bar frbar"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>` : '');
+  $('#pbars').innerHTML = bar('청결', m.clean ?? 100, 'var(--clean)') + bar('배부름', 100 - m.hunger, 'var(--fullness)') + bar('즐거움', m.joy ?? 60, 'var(--lonely)') + (P ? `<div class="bar frbar"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>` : '');
   { const h = memoHtml(m), el = $('#pMemo'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
   { const h = moveBtn(m), el = $('#pMoves'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; el.hidden = !h; } }
 }
@@ -5400,7 +5401,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.60';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.61';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6074,7 +6075,7 @@ function renderMgrDetail(rebuild) {
   if (pic.getAttribute('src') !== want) pic.src = want;
   { const [c, tx] = slotState(m), el = $('#mSt'); el.className = 'st-tag st ' + c; el.textContent = tx; el.hidden = tx === '이동'; }
   { const P = boxOf(m.pid), st = $('#mStage'); st.className = 'dp-pic' + pkCls(P) + (P?.shiny ? ' shiny' : ''); st.dataset.rk = P ? rankOf(P) : ''; st.style.setProperty('--shue', shinyHue(m.sp) + 'deg'); }
-  { const P = boxOf(m.pid); $('#mBars').innerHTML = bar('청결', m.clean ?? 100, 'var(--clean)') + bar('배부름', 100 - m.hunger, 'var(--hunger)') + bar('즐거움', m.joy ?? 60, 'var(--lonely)') + (P ? `<div class="bar frbar"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>` : ''); }
+  { const P = boxOf(m.pid); $('#mBars').innerHTML = bar('청결', m.clean ?? 100, 'var(--clean)') + bar('배부름', 100 - m.hunger, 'var(--fullness)') + bar('즐거움', m.joy ?? 60, 'var(--lonely)') + (P ? `<div class="bar frbar"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>` : ''); }
   { const h = memoHtml(m), el = $('#mMemo'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
   { const P = boxOf(m.pid), el = $('#mPg2');
     const h = (P ? `<div class="ivs">${ivRows(P)}</div>`
@@ -8000,7 +8001,7 @@ body.szMode :is(#items,#propFx,#bg,#skyC,#skyFx,.bfly,.firefly){opacity:var(--sz
 #stHands .h:hover{outline:1px dashed rgba(127,215,239,.7)}
 #stHands .h.sel{outline:2px solid #7fd7ef;outline-offset:1px;background:rgba(127,215,239,.14)}
 .mon.stMark:has(.stbox.hov),.mon.stMark:has(.stbox.on){z-index:99999!important}body.szMode #wrap{overflow:auto}body.szMode .app>:not(.stage-wrap):not(#glows){display:none!important}body.szMode .stage{box-shadow:none}body.szMode #night,body.szMode #skyFx,body.szMode #skyC,body.szMode #bg{display:none}body.szMode .mon.szb img,body.szMode .mon.szb .spr{clip-path:none!important}body.szMode .mon.szb .spr{cursor:move}body.szMode #wrap{background:#1c2028}#szLasso{position:absolute;border:1px dashed #fff;background:rgba(127,215,239,.14);z-index:99998;pointer-events:none}.mon.szDrag{z-index:99999!important}body.szMode .mon .shadow{opacity:.5}
-.stbox{position:absolute;bottom:0;border:1px solid rgba(255,255,255,0);pointer-events:none;z-index:5;transition:border-color .12s}.stbox.hov,.stbox.on{border-color:rgba(255,255,255,.55)}.stbox i{position:absolute;width:8px;height:8px;margin:2px;background:#fff;border:1px solid rgba(0,0,0,.35);border-radius:1px;opacity:0;pointer-events:none}.stbox.hov i,.stbox.on i{opacity:1;pointer-events:auto}.stbox i[data-c=tl]{left:-7px;top:-7px;cursor:nwse-resize}.stbox i[data-c=tr]{right:-7px;top:-7px;cursor:nesw-resize}.stbox i[data-c=bl]{left:-7px;bottom:-7px;cursor:nesw-resize}.stbox i[data-c=br]{right:-7px;bottom:-7px;cursor:nwse-resize}
+.stbox{position:absolute;bottom:0;border:1px solid rgba(255,255,255,0);pointer-events:none;z-index:5;transition:border-color .12s}.stbox.hov,.stbox.on,body.szMode .stbox{border-color:rgba(255,255,255,.55)}body.szMode .stbox i{opacity:1;pointer-events:auto}.stbox i{position:absolute;width:8px;height:8px;margin:2px;background:#fff;border:1px solid rgba(0,0,0,.35);border-radius:1px;opacity:0;pointer-events:none}.stbox.hov i,.stbox.on i{opacity:1;pointer-events:auto}.stbox i[data-c=tl]{left:-7px;top:-7px;cursor:nwse-resize}.stbox i[data-c=tr]{right:-7px;top:-7px;cursor:nesw-resize}.stbox i[data-c=bl]{left:-7px;bottom:-7px;cursor:nesw-resize}.stbox i[data-c=br]{right:-7px;bottom:-7px;cursor:nwse-resize}
 .mon.stMark{filter:drop-shadow(1px 0 0 rgba(127,215,239,.85)) drop-shadow(-1px 0 0 rgba(127,215,239,.85)) drop-shadow(0 1px 0 rgba(127,215,239,.85)) drop-shadow(0 -1px 0 rgba(127,215,239,.85))}
 #stHands .dot{width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#c08850;border:2px solid #fff;box-sizing:border-box;display:none}
 #stHands.path .dot{display:block}
@@ -8281,9 +8282,10 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   api.szList = () => S.mons.filter(m => m.szb).map(m => ({ uid: m.uid, sp: m.sp, name: m.name }));
   api.szRemove = uid => { const m = monOf(uid); if (!m) return; SZB.sel.delete(m); if (stM === m) api.markMon(null); removeMon(m, true); SZB.rows(); };
   api.szClear = () => { SZB.sel.clear(); api.markMon(null); for (const m of S.mons.filter(m => m.szb)) removeMon(m, true); SZB.rows(); };
+  api.szSel = uid => { const m = monOf(uid); if (m) szSelect([m]); };   /* v4.61 경완: 맵에서 누르면 늘 고른다 (다시 눌러도 크기 네모가 사라지지 않게, 취소는 빈 곳) */
   api.szPick = uid => { const m = monOf(uid); szSelect(!m || (stM === m && SZB.sel.size === 1) ? [] : [m]); };
   api.markMon = uid => { stB?.remove(); stB = null; stM = null;
-    for (const m of S.mons) { const on = m.uid === uid; m.el.classList.toggle('stMark', on); m.pin = on; if (on) { stM = m; m.goal = null; if (m.state === 'move') setState(m, 'idle', 1); } }
+    for (const m of S.mons) { const on = m.uid === uid; m.el.classList.toggle('stMark', on); m.pin = on || !!m.szb; if (on) { stM = m; m.goal = null; if (m.state === 'move') setState(m, 'idle', 1); } }
     if (!stM) return; stB = document.createElement('div'); stB.className = 'stbox'; stB.innerHTML = '<i data-c="tl"></i><i data-c="tr"></i><i data-c="bl"></i><i data-c="br"></i>'; stM.liftEl.append(stB); stFit();
     stB.addEventListener('pointerdown', e => { const c = e.target.closest('i'); if (!c) return; e.preventDefault(); e.stopPropagation(); const r = stB.getBoundingClientRect(), top = c.dataset.c[0] === 't';
       const cx = r.left + r.width / 2, by = r.bottom, f = (x, y) => Math.abs(x - cx) + (top ? Math.max(0, by - y) : 0), d0 = Math.max(4, f(e.clientX, e.clientY)), sp = stM.sp, k0 = MON_SC[sp] || 1;
@@ -8293,7 +8295,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     const up = e => { if (!stDrag || e.pointerId !== stDrag.id) return; stDrag = null; stB?.classList.remove('on'); suppressClick = performance.now(); };
     stB.addEventListener('pointerup', up); stB.addEventListener('pointercancel', up); stB.addEventListener('click', e => e.stopPropagation()); };
   addEventListener('pointermove', e => { if (!stB || stDrag) return; const r = stB.getBoundingClientRect(), g = 16; stB.classList.toggle('hov', e.clientX > r.left - g && e.clientX < r.right + g && e.clientY > r.top - g && e.clientY < r.bottom + g); }, { passive: true });
-  setInterval(stFit, 500);
+  setInterval(() => { stFit(); if (SZB.on && !SZB.drag) { const k = szMons().map(m => (m.w | 0) + 'x' + (m.h | 0)).join(); if (k !== SZB.wk) { SZB.wk = k; SZB.rows(); } } }, 500);   /* v4.61 경완: 그림이 늦게 불려 크기가 바뀌면 격자 다시 맞추기 */
   api.removeMon = uid => { const m = monOf(uid); if (!m) return; removeMon(m, true); save(); };
   // v3.63 작업실: 소품 반응 분류(작업실 REACT 줄 순서)에 드는 포켓몬 번호. 먼저 맞는 줄이 이긴다
   const RX = { tree: [() => 1], perch: [m => winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover' || isSmall(m), () => 1], fire: [m => tyOf(m).includes(FIR), m => tyOf(m).includes(WAT) || tyOf(m).includes(ICE), () => 1, null],
