@@ -146,7 +146,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .card .ih-top{flex-wrap:nowrap}.card .ih-r{margin-left:auto;display:flex;align-items:center;gap:4px;font-size:12px;color:var(--dim);white-space:nowrap;min-width:0;overflow:hidden}.card .ih-r .tyi{width:18px;height:18px}
 .born-pic{position:relative;display:inline-block;line-height:0}.born-new{position:absolute;right:-14px;top:-6px;font:700 11px/1 var(--px);color:#fff;background:#e04848;border:2px solid #7a1c1c;padding:2px 4px;letter-spacing:1px;animation:jbob 1s steps(2,end) infinite}
 .hatch .win{position:relative}.hatch.list #hlPrev,.hatch.list #hlNext{display:none!important}.hatch.list .hl-nav{display:contents}.hatch.list #hlPrev,.hatch.list #hlNext{position:absolute;margin-top:-18px;z-index:2}.hatch.list #hlPrev{left:10px}.hatch.list #hlNext{right:10px}.hatch.list #hlNum{position:absolute;top:10px;right:14px;font-size:13px;color:var(--dim)}
-#hatchMsg.ev{font-size:15px;line-height:1.6;margin-top:6px}#hatchMsg.ev .evg{font-size:18px}#hatchMsg.ev .prog{height:10px;margin:8px auto;width:min(240px,90%);background:var(--inner);border:2px solid var(--frame)}#hatchMsg.ev .prog i{display:block;height:100%;background:#f0c030}#hatchMsg.ev .evd{font-size:13px;color:var(--dim)}#hatchOut{flex:1 1 auto}.hatch .hatch-btns #hatchOut{flex:0 0 auto;width:auto;margin-left:auto;padding:7px 14px;font-size:14px}.hatch .hatch-btns #hatchOut:active{padding:9px 14px 5px}/* v4.77 경완: 알 상태 창의 가방으로 빼기는 오른쪽 아래 작은 버튼 */
+#hatchMsg.ev{font-size:15px;line-height:1.6;margin-top:6px}#hatchMsg.ev .evg{font-size:18px}#hatchMsg.ev .prog{height:10px;margin:8px auto;width:min(240px,90%);background:var(--inner);border:2px solid var(--frame)}#hatchMsg.ev .prog i{display:block;height:100%;background:#f0c030}#hatchMsg.ev .evd{font-size:13px;color:var(--dim)}#hatchOut{flex:1 1 auto}
 #hatchMsg .rkline{margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px}
 .mtab[data-t="field"] .mgr-tools{padding:0 4px}#mgrClear{background:#c83838!important;border-color:#7a1c1c!important;color:#fff!important}
 .hearts.frtap{justify-self:start;width:max-content;cursor:pointer}
@@ -919,7 +919,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .bag-sort button[aria-pressed="true"]{border-color:var(--frame);background:var(--frame);color:var(--win);position:relative}
 .bslot .prog.sm{width:80%;height:7px;border-width:2px;margin:1px 0}.bslot .km{font-size:9px;letter-spacing:-.3px}
 #eggOut{display:block;padding:7px 10px;font-size:13px}
-.incu-btns{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin-top:8px}
+.incu-btns{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin-top:8px;justify-content:flex-end}/* v4.79 경완: 부화기 위 알 박스의 버튼은 오른쪽 아래 */
 #bagGrid .bslot{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .incu-box .info{min-width:0}.egg-detail .epl{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bag-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:0 0 10px}
@@ -1146,7 +1146,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 .op-sw[aria-checked="true"]{background:#4ccf5a}.op-sw[aria-checked="true"] i{left:auto;right:2px}
 #openRun,#openMgr,#openFld{position:relative}.mdot{position:absolute;top:6px;right:7px;width:6px;height:6px;background:#e04838;pointer-events:none}
 @keyframes tbump{50%{transform:scale(1.25)}}
-#eggAuto{font:inherit;font-size:12px;display:inline-flex;align-items:center;gap:6px;padding:3px 6px 3px 8px;background:#fff;color:var(--dim);border:3px solid var(--inner);cursor:pointer;-webkit-tap-highlight-color:transparent}#eggAuto i{position:relative;width:26px;height:14px;background:#b8b8b8;border:2px solid var(--frame)}#eggAuto i::after{content:'';position:absolute;top:0;left:0;width:10px;height:10px;background:#fff;border-right:2px solid var(--frame)}#eggAuto[aria-pressed=true]{background:#48b048;color:#fff;border-color:var(--frame)}#eggAuto[aria-pressed=true] i{background:#2f7f2f}#eggAuto[aria-pressed=true] i::after{left:12px;border-right:0;border-left:2px solid var(--frame)}#eggSort{font:inherit;font-size:12px;padding:3px 8px;background:var(--win);color:var(--frame);border:3px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.2);cursor:pointer;transition:transform .06s,box-shadow .06s;-webkit-tap-highlight-color:transparent}#eggSort:active{transform:translate(2px,2px);box-shadow:0 0 0 rgba(0,0,0,0)}
+#eggAuto{font:inherit;font-size:12px;display:inline-flex;align-items:center;gap:6px;padding:3px 6px 3px 8px;background:#fff;color:var(--dim);border:3px solid var(--inner);cursor:pointer;-webkit-tap-highlight-color:transparent}#eggAuto i{position:relative;width:26px;height:14px;background:#b8b8b8;border:2px solid var(--frame)}#eggAuto i::after{content:'';position:absolute;top:0;left:0;width:10px;height:10px;background:#fff;border-right:2px solid var(--frame)}#eggAuto[aria-pressed=true]{background:#48b048;color:#fff;border-color:var(--frame)}#eggAuto[aria-pressed=true] i{background:#2f7f2f}#eggAuto[aria-pressed=true] i::after{left:12px;border-right:0;border-left:2px solid var(--frame)}#eggSort{font:inherit;font-size:12px;padding:3px 8px;background:#4a8fd8;color:#fff;border:3px solid #24508a;box-shadow:2px 2px 0 rgba(0,0,0,.2);cursor:pointer;transition:transform .06s,box-shadow .06s;-webkit-tap-highlight-color:transparent}#eggSort:active{transform:translate(2px,2px);box-shadow:0 0 0 rgba(0,0,0,0)}
 #eggAll{font:inherit;font-size:13px;padding:3px 10px;background:#e8a020;color:#fff;border:3px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.25);cursor:pointer}
 @keyframes hpop{0%{transform:scale(.25)}50%{transform:scale(1.1)}100%{transform:none}}
 .hatch-stage.evo{background:#1e2340;box-shadow:inset 0 0 0 3px #46508a;transition:background-color .3s}
@@ -1473,7 +1473,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
     <div class="run-body">
       <section class="rtab" data-tab="egg">
         <div class="incu-box" id="incu"></div>
-        <div class="mgr-tools"><button id="eggAuto" class="eauto" aria-pressed="false" title="부화기가 비면 가방에서 높은 등급 알부터 채워요">자동 채우기<i></i></button><button id="eggSort" title="부화까지 남은 거리가 적은 알부터 앞으로 모아요">순서 정리</button><button id="eggAll" hidden></button><button id="eggTest" class="test-btn">준비로(테스트)</button><button id="eggTestAll" class="test-btn">모두 준비로</button><span class="tcount" id="eggCount"></span></div>
+        <div class="mgr-tools"><button id="eggAuto" class="eauto" aria-pressed="false" title="부화기가 비면 가방에서 높은 등급 알부터 채워요">자동 채우기<i></i></button><button id="eggSort" title="부화까지 남은 거리가 적은 알부터 앞으로 모아요">남은 거리 순</button><button id="eggAll" hidden></button><button id="eggTest" class="test-btn">준비로(테스트)</button><button id="eggTestAll" class="test-btn">모두 준비로</button><span class="tcount" id="eggCount"></span></div>
         <div class="eggs" id="eggs"></div>
       </section>
       <section class="rtab" data-tab="bag">
@@ -5410,7 +5410,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.78';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.79';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
