@@ -2552,7 +2552,7 @@ function offFr(m, sec) {
 }
 { let hidAt = 0; document.addEventListener('visibilitychange', () => { if (document.hidden) hidAt = Date.now(); else if (hidAt) { const sec = (Date.now() - hidAt) / 1000; hidAt = 0; S.mons.forEach(m => offFr(m, sec)); save(); } }); }
 function dayCap(m, k, max) { const P = boxOf(m.pid); if (!P) return false; const d = dayKey(); if (P[k + 'D'] !== d) { P[k + 'D'] = d; P[k + 'N'] = 0; } if (P[k + 'N'] >= max) return false; P[k + 'N']++; return true; }
-function berryFr(m) { if (!dayCap(m, 'ber', BERRY_FR_DAY)) return false; addFr(m.pid, 1); return true; }   // 열매 친밀도 +1 (하루 5개까지)
+function berryFr(m) { if (!(m.hunger > 0)) return false; addFr(m.pid, 1); return true; }   // v4.42 경완: 내가 준 열매로 배부름이 오를 때마다 친밀도 +1, 하루 한도 없음 (이미 가득이면 없음)
 function berryBoost(m, mine) { m.energy = clamp(m.energy + 8); if (mine) m.joy = clamp((m.joy ?? 60) + 5); }   // 열매: 기력 +8, 내가 준 열매면 즐거움 +5
 // 필드 정보창의 아이콘 그림
 const ICO_BERRY = '<svg viewBox="0 0 12 12" width="26" height="26" shape-rendering="crispEdges" aria-hidden="true"><path fill="#3a7a2a" d="M6 0h2v1h1v1H7v1H6z"/><path fill="#5aa83a" d="M4 1h2v2H4z"/><path fill="#20202c" d="M3 3h6v1h1v1h1v4h-1v1H9v1H3v-1H2V9H1V5h1V4h1z"/><path fill="#d8344a" d="M3 4h6v1h1v4H9v1H3V9H2V5h1z"/><path fill="#ff7a8a" d="M3 5h2v2H3z"/><path fill="#fff" d="M3 5h1v1H3z"/><path fill="#9a1a30" d="M8 8h1v1H8zM4 9h4v1H4z"/></svg>';
@@ -2578,16 +2578,16 @@ function feedNow(m) {
       setState(m, 'eat', dur); log(`${J(m,'이/가')} 떨어진 열매를 바로 냠냠 먹었다.`, [m]); save();
       biteBerry(el, m, dur, bxp, y); };
     const sp = eatSpot(m, { x: bxp, y });   /* 굴러간 열매 앞까지 몇 걸음 다가가서 먹는다 */
-    if (Math.hypot(sp.x - m.x, sp.y - m.y) < 4) go(); else { moveTo(m, { x: bxp, y }, { kind: 'feedb', go }, .8); setTimeout(() => { if (!ate) { if (m.goal?.go === go) go(); else { ate = true; el.remove(); } } }, 5000); } });
+    if (Math.hypot(sp.x - m.x, sp.y - m.y) < 4) go(); else { moveTo(m, { x: bxp, y }, { kind: 'feedb', go }, .8); setTimeout(() => { if (!ate) { if (m.goal?.go === go) go(); else { ate = true; el.remove(); } } }, 5000); } }, true, false);
 }
 // v3.43 경완: 열매가 실제처럼 튄다 — 중력으로 떨어지고, 땅에 닿으면 탄성(0.42)만큼 다시 튀어 오르며 납작해졌다 돌아온다. 살짝 옆으로 구르며 멈춘다
-function berryBounce(el, h, done, fade = true) {
+function berryBounce(el, h, done, fade = true, spin = true) {
   const G = 1500, E = .42; let y = -h, v = 0, x = 0, vx = (Math.random() < .5 ? -1 : 1) * (14 + Math.random() * 10), sq = 0, rot = 0, t0 = 0, rest = 0;
   const step = ts => { if (!el.isConnected) return; const dt = t0 ? Math.min(.033, (ts - t0) / 1000) : 0; t0 = ts;
     v += G * dt; y += v * dt;
     if (y >= 0) { y = 0; if (v > 60) { sq = Math.min(.35, v / 1600); v = -v * E; vx *= .6; } else { v = 0; rest += dt; } }
     if (y === 0 && v === 0) vx *= Math.pow(.02, dt);   // 땅에선 구름이 금방 멈춘다
-    x += vx * dt; rot += vx * dt * 2; sq *= Math.pow(.0005, dt);
+    x += vx * dt; if (spin) rot += vx * dt * 2;   /* v4.42 경완: 직접 준 열매(spin=false)는 떨어질 때도 안 돈다 */ sq *= Math.pow(.0005, dt);
     if (y === 0 && v === 0) { const r0 = Math.round(rot / 360) * 360; rot += (r0 - rot) * Math.min(1, dt * 14); }   /* v4.36 경완: 멈출 땐 똑바로 선다 (기울어진 채 남지 않게) */
     if (fade) el.style.opacity = Math.min(1, (h + y) / 25 + .2);
     el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${rot.toFixed(0)}deg) scale(${(1 + sq).toFixed(3)},${(1 - sq).toFixed(3)})`;
@@ -2639,7 +2639,7 @@ function haloJoy(m) {
 }
 function petDone() {
   const m = petM.m, P = boxOf(m.pid); haloJoy(m);
-  const wash = petM.wash; let fr = 0; if (P && (wash || ((m.joy ?? 60) < 100 && dayCap(m, 'pet', PET_DAY)))) { fr = wash ? WASH_FR : PET_FR; if (fr > 0) addFr(P.id, fr); }
+  const wash = petM.wash; let fr = 0; if (P && (wash || (m.joy ?? 60) < 100)) { fr = wash ? WASH_FR : PET_FR; if (fr > 0) addFr(P.id, fr); }   /* v4.42 경완: 쓰다듬기로 즐거움이 오를 때마다 친밀도 +1, 하루 한도 없음 */
   if (wash) { m.clean = 100; dirtVis(m); m.joy = clamp((m.joy ?? 60) + 10); washShine(m); $('#washBrush').hidden = true; }
   else { m.social = clamp(m.social - 20); m.joy = clamp((m.joy ?? 60) + 20); }   /* v4.35 경완: 쓰다듬기는 즐거움 +20 (예전엔 한 번에 100) */
   haptic(2); setTimeout(() => haptic(2), 110); setTimeout(() => haptic(1), 220); sfx('pickup'); if (fr) frPop(m, fr);
@@ -4723,9 +4723,10 @@ function propBox(p) { const L = LAYOUT;
   } }
 const propSit = (m, lift) => { m.propSit = true; m.xl = lift; };
 const tyOf = m => SPD(m.form || m.sp).t || [];
+const PROP_JOY = 3;
 function propReact(m, p) {
   const flyer = winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover', small = isSmall(m), at = (dx, dy) => { m.x = clamp(p.x + dx, XL + 20, XR - 20); m.y = clamp(p.y + dy, MIN_Y, MAX_Y); };
-  faceTo(m, p.x); m.goal = null;
+  faceTo(m, p.x); m.goal = null; m.joy = clamp((m.joy ?? 60) + PROP_JOY);   /* v4.42 경완: 맵 소품과 놀면 즐거움도 조금 오른다 */
   if (p.k === 'tree') { at(m.x < p.x ? -32 : 32, 14); setState(m, 'idle', 2.5); anim(m, 'hop'); setTimeout(() => { if (S.mons.includes(m)) shakeTree(m); }, 250); return; }
   if (p.k === 'perch') {
     if (flyer || small) { at(10, 10); propSit(m, 40); setState(m, 'idle', rnd(14, 24)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play');
@@ -5279,7 +5280,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.41';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.42';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
