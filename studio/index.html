@@ -117,7 +117,7 @@ table.t th{font-family:var(--px);font-size:11px;font-weight:400;color:var(--mute
 .tcol h3{margin:0;font-family:var(--px);font-size:13px;font-weight:400;display:flex;justify-content:space-between}
 .tcol .grid{grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:4px}.tcol .mc{aspect-ratio:auto;height:72px}.tcol .mc img{bottom:14px;max-height:72%}
 .tcol .mc .no{font-size:8px}
-.tcol .mc{touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.tcol .mc.drag{opacity:.35}.tcol .mc.drop{box-shadow:inset 3px 0 0 var(--acc)}.tcol.drop{border-color:var(--acc)}.tcol .tr0{min-height:22px;padding:0 8px;font-size:11px;margin-left:6px}
+.tcol .mc{touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.tcol .mc.drag{opacity:.35}.tcol .mc.drop{box-shadow:inset 3px 0 0 var(--acc)}.tcol .mc.dropR{box-shadow:inset -3px 0 0 var(--acc)}.tghost{position:fixed;z-index:9999;pointer-events:none;opacity:.85;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5))}.tghost>.mc{position:relative}.tghost .gcnt{position:absolute;right:-6px;top:-6px;min-width:22px;height:22px;border-radius:11px;background:var(--acc);color:#fff;font-size:12px;display:grid;place-items:center;padding:0 5px}.tcol.drop{border-color:var(--acc)}.tcol .tr0{min-height:22px;padding:0 8px;font-size:11px;margin-left:6px}
 .bubs{display:grid;gap:6px}
 .bubs .bc{display:grid;grid-template-columns:96px 104px minmax(0,1fr);gap:8px 12px;align-items:center;background:var(--deep);border:1px solid var(--chip);border-radius:6px;padding:10px}
 .bubs .bw{display:grid;place-items:center;min-height:44px;background:#5d9a3e;border-radius:4px;padding:8px 2px 12px}
@@ -468,7 +468,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.54';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.55';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -1493,17 +1493,23 @@ $('#tierC').addEventListener('pointerdown', e => { const card = e.target.closest
   if (e.shiftKey || e.ctrlKey || e.metaKey) return;   // 고르기 누름은 끌기 아님
   const sp = +card.dataset.sp, x0 = e.clientX, y0 = e.clientY; let on = false, over = null, overC = null, lp = 0, g = null;
   const grp = tSel.has(sp) && tSel.size > 1 ? tSelOrd() : [sp], cards = $$('#tierC .tcol .mc').filter(c => grp.includes(+c.dataset.sp));
-  const begin = () => { on = true; cards.forEach(c => c.classList.add('drag')); navigator.vibrate?.(8); g = document.createElement('div'); g.className = 'ghost'; g.innerHTML = `<img alt="" src="${thumb(sp)}">${grp.length > 1 ? `<b class="gcnt">${grp.length}</b>` : ''}`; document.body.append(g); };
+  const R0 = card.getBoundingClientRect(), gdx = x0 - R0.left, gdy = y0 - R0.top, zz = tzOf() / 100;
+  const begin = () => { on = true; navigator.vibrate?.(8); g = document.createElement('div'); g.className = 'tghost'; Object.assign(g.style, { width: R0.width + 'px', height: R0.height + 'px', left: R0.left + 'px', top: R0.top + 'px' });   // v2.55 경완: 카드 전체 모양이 잡은 자리 그대로 따라온다
+    const cl = card.cloneNode(true); cl.classList.remove('drop', 'flash'); Object.assign(cl.style, { zoom: zz, width: R0.width / zz + 'px', height: R0.height / zz + 'px', margin: 0 }); g.append(cl); if (grp.length > 1) g.insertAdjacentHTML('beforeend', `<b class="gcnt">${grp.length}</b>`); document.body.append(g); cards.forEach(c => c.classList.add('drag')); };
+  const lastOf = col => [...col.querySelectorAll('.mc')].filter(c => !grp.includes(+c.dataset.sp)).pop();
+  const nearCol = y => { let best = null, bd = 1e9; for (const c of $$('#tierC .tcol')) { const r = c.getBoundingClientRect(); const d = y < r.top ? r.top - y : y > r.bottom ? y - r.bottom : 0; if (d < bd) { bd = d; best = c; } } return bd < 160 ? best : null; };
   if (touch) lp = setTimeout(begin, 300);
   const mv = ev => { if (!on) { if (Math.hypot(ev.clientX - x0, ev.clientY - y0) < 6) return; if (touch) return end(); begin(); }
-    g.style.left = ev.clientX + 'px'; g.style.top = ev.clientY + 'px'; const el = document.elementFromPoint(ev.clientX, ev.clientY), c = el?.closest('#tierC .mc'), col = el?.closest('#tierC .tcol');
-    over?.classList.remove('drop'); overC?.classList.remove('drop'); over = c && !grp.includes(+c.dataset.sp) ? c : null; overC = !over && col ? col : null; over?.classList.add('drop'); overC?.classList.add('drop');
+    g.style.left = ev.clientX - gdx + 'px'; g.style.top = ev.clientY - gdy + 'px'; const el = document.elementFromPoint(ev.clientX, ev.clientY), c = el?.closest('#tierC .mc'), col = c ? null : el?.closest('#tierC .tcol') || (el?.closest('#tierC') && !el.closest('.thd') ? nearCol(ev.clientY) : null);
+    over?.classList.remove('drop', 'dropR'); overC?.classList.remove('drop'); over = c && !grp.includes(+c.dataset.sp) ? c : null; overC = !over && !c && col ? col : null; over?.classList.add('drop');
+    if (overC) { const lc = lastOf(overC); if (lc) { over = lc; over.classList.add('dropR'); } else overC.classList.add('drop'); }   /* 빈 곳(아래 여백 포함) = 맨 뒤 → 마지막 카드 오른쪽에 표시 */
     const sc = mobile() ? $('#tierC').closest('.view') : ($('#tierC').closest('.scroll') || $('#tierC')), r = sc.getBoundingClientRect(); if (ev.clientY < r.top + 40) sc.scrollTop -= 14; else if (ev.clientY > r.bottom - 40) sc.scrollTop += 14; };
   const tm = ev => { if (on) ev.preventDefault(); };
   const end = () => { clearTimeout(lp); removeEventListener('pointermove', mv); removeEventListener('pointerup', end); removeEventListener('pointercancel', end); removeEventListener('touchmove', tm); cards.forEach(c => c.classList.remove('drag')); g?.remove();
-    over?.classList.remove('drop'); overC?.classList.remove('drop'); if (!on) return; tcDragAt = Date.now(); if (!over && !overC) return;
-    const tt = +(over || overC).closest('.tcol').dataset.tt, L = tierLists(true), tfs = grp.map(tierOfSp);
-    const dst = orderTier(tt, L[tt]).filter(b => !grp.includes(b)), at = over ? dst.indexOf(+over.dataset.sp) : dst.length; dst.splice(at < 0 ? dst.length : at, 0, ...grp);
+    const toEnd = !!overC; over?.classList.remove('drop', 'dropR'); overC?.classList.remove('drop'); if (!on) return; tcDragAt = Date.now(); if (!over && !overC) return;
+    const tt = +(over || overC).closest('.tcol').dataset.tt, L = tierLists(true), tfs = grp.map(tierOfSp), cur = orderTier(tt, L[tt]);
+    const dst = cur.filter(b => !grp.includes(b)), at = over && !toEnd ? dst.indexOf(+over.dataset.sp) : dst.length; dst.splice(at < 0 ? dst.length : at, 0, ...grp);
+    if (tfs.every(tf => tf === tt) && dst.join() === cur.join()) return;   // v2.55 경완: 같은 자리에 놓으면 아무 일 없이 취소
     D.tierOrd = { ...(D.tierOrd || {}) }; D.tierOv = { ...(D.tierOv || {}) };
     grp.forEach((b, i) => { const tf = tfs[i]; if (tf === tt) return; if (tt === A.TIER[b]) delete D.tierOv[b]; else D.tierOv[b] = tt; if (tierOrdOf(tf)?.length) D.tierOrd[tf] = tierOrdOf(tf).filter(x => x !== b); });
     if (!Object.keys(D.tierOv).length) delete D.tierOv;
@@ -1785,6 +1791,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.55', '10월 17일', ['티어: 카드를 같은 자리에 놓으면 그냥 취소 (안내 문구 없음)', '끌 때 카드 전체 모양이 따라와요', '칸 빈 곳·아래 여백에 놓으면 맨 뒤로, 마지막 카드 오른쪽에 표시']],
   ['2.54', '10월 17일', ['티어: 카드를 눌러도 꺼지지 않고, 오른쪽 창 \'알에서 나오기\'의 끄기·켜기 버튼으로 바꿔요']],
   ['2.53', '10월 17일', ['알 › 랭크: 티어 보너스 (10 − 티어) × 2점을 랭크 점수에 더함 (게임 v4.58)', '알 › 랭크 화면에서 위쪽 탭이 사라지던 것']],
   ['2.52', '10월 17일', ['알 › 랭크: 모습이 바뀌는 약어리·메테노·불비달마는 두 모습 종족값 평균 (게임 v4.56)']],
