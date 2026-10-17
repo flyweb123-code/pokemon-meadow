@@ -231,31 +231,43 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
         .postOffice: "postoffice", .bank: "bank", .atm: "bank", .hotel: "hotel", .brewery: "pub", .winery: "pub"
     ]
 
-    // 반경 400m 안에서 가장 가까운 장소 이름(애플 지도에 있는 모든 종류: 명소·건물·식당·가게 등) + 반경 250m 안 장소 종류의 테마들
+    // 가까운 장소 이름(애플 지도에 있는 모든 종류: 명소·건물·식당·가게 등) + 반경 250m 안 장소 종류의 테마들
     // 2026-10-16 경완: 장소 종류 목록에 없어도 이름은 넣는다 (예전엔 약 40종류만 봤다)
+    // 2026-10-17 경완: 한국어 이름이 없으면 동 이름만 남기지 말고 반경을 400m → 800m → 1.5km 로 넓혀 한국어 이름이 있는 가장 가까운 곳을 붙인다
+    private static let landmarkRadii: [CLLocationDistance] = [400, 800, 1500]
     private static func nearbyLandmark(_ loc: CLLocation, fallback: String?, done: @escaping (String?, Set<String>) -> Void) {
-        let req = MKLocalPointsOfInterestRequest(center: loc.coordinate, radius: 400)
+        searchLandmark(loc, fallback: fallback, step: 0, tags: [], done: done)
+    }
+    private static func searchLandmark(_ loc: CLLocation, fallback: String?, step: Int, tags: Set<String>, done: @escaping (String?, Set<String>) -> Void) {
+        let finish: (String?, Set<String>) -> Void = { n, t in DispatchQueue.main.async { done(n, t) } }
+        guard step < landmarkRadii.count else {
+            // 끝까지 못 찾으면: 그 자리 한국어 명소·건물 이름, 그것도 없으면 동네 이름만
+            finish(fallback.flatMap { WalkTracker.isKorean($0) ? $0 : nil }, tags); return
+        }
+        let req = MKLocalPointsOfInterestRequest(center: loc.coordinate, radius: landmarkRadii[step])
         req.pointOfInterestFilter = .includingAll
         MKLocalSearch(request: req).start { res, _ in
-            var best: (String, CLLocationDistance)?
-            var tags: Set<String> = []
+            var tags = tags
+            var bestKo: (String, CLLocationDistance)?
+            var bestAny: (MKMapItem, CLLocationDistance)?
             for item in res?.mapItems ?? [] {
                 guard let c = item.placemark.location else { continue }
                 let d = c.distance(from: loc)
-                if let cat = item.pointOfInterestCategory {
-                    if d <= 250, let t = WalkTracker.themeOf[cat] { tags.insert(t) }
-                }
-                // 이름은 공원·역 같은 명소뿐 아니라 식당·카페·가게·건물까지 가장 가까운 곳으로 (예: "석촌동 ○○식당")
-                if let name = item.name, !name.isEmpty, d < (best?.1 ?? .infinity) { best = (name, d) }
+                if step == 0, let cat = item.pointOfInterestCategory, d <= 250, let t = WalkTracker.themeOf[cat] { tags.insert(t) }
+                guard let name = item.name, !name.isEmpty else { continue }
+                if WalkTracker.isKorean(name) { if d < (bestKo?.1 ?? .infinity) { bestKo = (name, d) } }
+                else if d < (bestAny?.1 ?? .infinity) { bestAny = (item, d) }
             }
-            // 지도 이름이 한국어가 아니면(영어 등) 그 자리를 한국어로 다시 찾아 본다
-            //   (한국어 이름을 못 찾으면 영어 이름 대신 동네 이름만 남긴다)
-            let name = best?.0 ?? fallback
-            let at = res?.mapItems.first(where: { $0.name == best?.0 })?.placemark.location ?? loc
-            guard let name, !WalkTracker.isKorean(name) else { DispatchQueue.main.async { done(name, tags) }; return }
+            // 첫 반경에 한국어 이름이 없고 그 자리 한국어 명소·건물 이름(fallback)이 있으면 그걸 쓴다
+            if step == 0, bestKo == nil, let fb = fallback, WalkTracker.isKorean(fb) { finish(fb, tags); return }
+            if let ko = bestKo { finish(ko.0, tags); return }
+            // 이름이 영어뿐이면 그 자리를 한국어로 다시 찾아 보고, 없으면 반경을 넓힌다
+            guard let any = bestAny, let at = any.0.placemark.location else {
+                searchLandmark(loc, fallback: fallback, step: step + 1, tags: tags, done: done); return
+            }
             WalkTracker.koGeocoder.reverseGeocodeLocation(at, preferredLocale: Locale(identifier: "ko_KR")) { marks, _ in
-                let ko = marks?.first?.areasOfInterest?.first(where: WalkTracker.isKorean) ?? (fallback.flatMap { WalkTracker.isKorean($0) ? $0 : nil })
-                DispatchQueue.main.async { done(ko, tags) }
+                if let ko = marks?.first?.areasOfInterest?.first(where: WalkTracker.isKorean) { finish(ko, tags) }
+                else { searchLandmark(loc, fallback: fallback, step: step + 1, tags: tags, done: done) }
             }
         }
     }
