@@ -5410,7 +5410,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.70';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.71';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7505,7 +7505,7 @@ async function hatchAll() {
 }
 let hatchPg = null;   // 모두 부화 목록일 때만
 cardPager(hatchEl, { can: d => !!hatchPg?.can(d), snap: (d, w) => hatchPg.snap(d, w), step: d => hatchPg?.step(d), skip: e => !hatchPg || !!e.target.closest('#hlStrip') });
-// v4.70 경완: 포켓몬 정보 카드는 아래로 끌어내리면 손가락을 따라 내려가다가, 충분히 내리면 화면 밖으로 미끄러져 내려가며 닫힌다
+// v4.70 경완: 포켓몬 정보 카드는 아래로 (v4.71: 부화 결과 카드는 빼 달라고 함) 끌어내리면 손가락을 따라 내려가다가, 충분히 내리면 화면 밖으로 미끄러져 내려가며 닫힌다
 let dragT = 0;   // 끌어내린 직후의 click 은 버튼·닫기·넘기기로 치지 않는다
 addEventListener('click', e => { if (e.isTrusted && performance.now() - dragT < 400) { e.stopImmediatePropagation(); e.preventDefault(); } }, true);
 function dragClose(pop, o) {   // o.can(): 지금 끌어 닫을 수 있나, o.close(): 닫기, o.skip(e): 여기서 시작하면 끌지 않는다
@@ -7543,7 +7543,6 @@ dragClose($('#pokePop'), { can: () => true, close: () => closePoke() });
 dragClose(monPop, { can: () => true, skip: t => !!t.closest('#mPages'), close: () => closeMon() });
 dragClose($('#dexPop'), { can: () => true, close: () => closeCard() });
 dragClose(infoEl, { can: () => !!S.sel, close: () => select(null) });
-dragClose(hatchEl, { can: () => !$('#hatchOk').hidden, skip: t => !!t.closest('#hlStrip'), close: () => $('#hatchOk').click() });   // 부화 결과 카드: '확인'과 같다
 // 부화·진화 창의 도감 정보: 번호, 이름, 분류, 타입, 키·몸무게, 도감 설명
 function dexInfoHtml(sp, P) {   // 한 줄: 이름·성별 …… 타입 아이콘·분류 / 다음 줄 키·몸무게(왼쪽)
   const d = SPECIES[sp];
