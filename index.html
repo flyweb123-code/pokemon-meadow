@@ -5499,7 +5499,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.01';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.02';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8222,7 +8222,7 @@ async function evolveWin(P, card) {
   msg.innerHTML = `축하해! ${J({ name: nm }, '은/는')} ${J({ name: toN }, '으로/로')} 진화했다!`; msg.hidden = false;
   log(`축하해! ${b ? '짝꿍 ' : ''}${J({ name: nm },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`, [], true);
   const lift = () => { const bt = el.querySelector('.ef-bottom').getBoundingClientRect().top - (ok.hidden ? 60 : 0);   /* v4.97: 확인 버튼 자리를 미리 비워 둬 버튼이 나와도 그림이 안 움직인다 */ el.style.setProperty('--sy', bt / 2 + 'px'); el.style.setProperty('--ss', Math.max(90, Math.min(220, bt - 50)) + 'px'); el.classList.add('fin'); };   // 새 모습은 아래 글 상자 위 빈 곳 가운데로
-  lift(); save();
+  save();   // v5.02 경완: 새 모습은 공개된 자리 그대로 (위로 올리지 않는다)
   // v4.95 경완: 축하 글이 먼저 뜨고, 조금 있다가 글 상자가 밀려 올라가며 확인 버튼이 생긴다
   await wait(1300); ok.hidden = false; ok.classList.remove('rise'); void ok.offsetWidth; ok.classList.add('rise'); ok.focus();
   await new Promise(res => ok.onclick = res); sfx('tap');
