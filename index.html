@@ -2483,11 +2483,12 @@ function removeMon(m, quiet = false) {
 
 // ---------- berries ----------
 const BERRY_LIFE = 10 * 60e3;   // 놓인 열매는 실제 시간 10분 뒤 사라짐
+const BERRY_Z = 40;   // 발이 열매보다 40px 안쪽 아래에 있는 포켓몬보다 앞에 그린다 (훨씬 앞에 선 포켓몬은 그대로 열매를 가린다)
 function addBerry(x, y, natural = false, t = Date.now(), red = Math.random() < .4, landed = false) {
   if (pondVal(x, y) < 1.05) return null;
   const b = { id: S.bid++, x, y: clamp(y, MIN_Y, MAX_Y), claimed: null, t, nat: natural, red: !!red };
   b.el = document.createElement('div'); b.el.className = 'berry' + (landed ? '' : ' new') + (red ? ' red' : '');   // v4.33 경완: 나무에서 떨어진 열매는 떨어질 때 색 그대로, 다시 떨어지는 연출 없이
-  b.el.style.left = b.x + 'px'; b.el.style.top = b.y + 'px'; b.el.style.zIndex = Math.round(b.y);
+  b.el.style.left = b.x + 'px'; b.el.style.top = b.y + 'px'; b.el.style.zIndex = Math.round(b.y) + BERRY_Z;   // v4.57 경완: 바닥 열매는 바로 위에 선 포켓몬보다 앞 (깔고 앉은 것처럼 보였다)
   itemsEl.append(b.el); S.berries.push(b);
   if (!natural) b.el.addEventListener('pointerdown', e => { if (e.button > 0) return; e.stopPropagation(); bdrag = { b, id: e.pointerId, start: worldPt(e), on: false }; });
   if (S.berries.length > 24) eatBerry(S.berries[0]);
@@ -2732,7 +2733,7 @@ window.addEventListener('pointermove', e => {
   const p = worldPt(e);
   if (!d.on) { if (Math.hypot(p.x - d.start.x, p.y - d.start.y) * scale < 6) return; d.on = true; d.b.el.classList.remove('new', 'rot'); d.b.el.classList.add('held'); }
   const x = clamp(p.x, XL + 20, XR - 20), y = clamp(p.y, MIN_Y, MAX_Y);
-  if (pondVal(x, y) >= 1.05) { d.b.x = x; d.b.y = y; d.b.el.style.left = x + 'px'; d.b.el.style.top = y + 'px'; d.b.el.style.zIndex = Math.round(y); }
+  if (pondVal(x, y) >= 1.05) { d.b.x = x; d.b.y = y; d.b.el.style.left = x + 'px'; d.b.el.style.top = y + 'px'; d.b.el.style.zIndex = Math.round(y) + BERRY_Z; }
   e.preventDefault();
 }, { passive: false });
 const endBdrag = e => {
@@ -5367,7 +5368,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.56';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.57';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
