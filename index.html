@@ -1076,7 +1076,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .hatch .win{text-align:center;width:min(420px,100%)}
 .hatch-stage{height:180px;display:grid;place-items:center;position:relative}
 /* 부화 창 크기 고정: 알 단계에도 태어난 뒤 크기만큼 자리를 잡고, 알은 그 가운데 */
-.hatch:not(.list) .win{min-height:min(360px,calc(100dvh - 40px));display:flex;flex-direction:column}.hatch:not(.list) .hatch-stage{flex:1 0 180px;height:auto}
+.hatch:not(.list) .win{min-height:min(460px,calc(100dvh - 40px));display:flex;flex-direction:column}.hatch:not(.list) .hatch-stage{flex:1 0 180px;height:auto}
 .h-no{position:absolute;left:18px;top:16px;z-index:2;font-size:14px;color:var(--dim)}.h-no[hidden]{display:none}#hatchDex .dx-no{display:none}
 .hatch-stage .egg{width:108px;height:132px;transform-origin:50% 92%}
 /* 도트 게임식 흔들림: 부드럽게 돌지 않고 칸 단위로 끊어서 움직인다 */
@@ -5258,7 +5258,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.33';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.34';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7468,6 +7468,7 @@ function setRunTab(t) {
   if (runTab === 'bag' && t !== 'bag') seeBag();
   if (runTab === 'egg' && t !== 'egg' && !runEl.hidden) seeReady();
   runTab = t; try { localStorage.setItem('pk-run-tab', t); } catch (e) {}
+  if (t === 'egg' && !runEl.hidden && S.eggs.some(e => e.km >= e.need && !e.rs)) { const i = S.eggs.findIndex(e => e.km >= e.need); eggSel = S.eggs[i]; eggSelI = i; eggNone = false; }   // v4.34 경완: 새로 부화 준비된 알이 있으면 부화기 탭을 열 때 준비된 알 중 맨 앞 알을 고른다
   document.querySelectorAll('.runtab[data-tab]').forEach(b => { b.setAttribute('aria-selected', b.dataset.tab === t); if (b.dataset.tab === t) $('#runTitle').textContent = b.textContent; });
   document.querySelectorAll('.rtab').forEach(x => x.hidden = x.dataset.tab !== t);
   $('.run-body').scrollTop = 0;
