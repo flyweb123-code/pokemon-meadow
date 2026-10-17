@@ -298,6 +298,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .lily{position:absolute;pointer-events:none;image-rendering:pixelated;background-size:100% 100%;translate:-50% -50%;z-index:1;animation:lily var(--d) ease-in-out var(--dl) infinite}@keyframes lily{0%,100%{transform:translateY(0) rotate(calc(var(--a) * -1))}50%{transform:translateY(2px) rotate(var(--a))}}
 .lily::after{content:"";position:absolute;left:-4px;right:-4px;top:30%;bottom:-6px;border:1px solid rgba(220,240,255,.55);border-radius:50%;animation:lilyR var(--d) ease-out var(--dl) infinite;z-index:-1}@keyframes lilyR{0%{transform:scale(.8);opacity:.8}100%{transform:scale(1.35);opacity:0}}
 .flame.out{display:none}
+.flame.small{scale:.5;translate:0 5px;transition:scale .4s,translate .4s}.pice{position:absolute;transform:translate(-50%,-50%);border-radius:50%;background:rgba(228,246,255,.6);box-shadow:inset 0 0 0 2px rgba(255,255,255,.75),inset 4px 4px 0 rgba(255,255,255,.5);z-index:1;pointer-events:none;animation:pice 5s steps(10,end) forwards}@keyframes pice{0%{opacity:0;scale:.3}12%{opacity:1;scale:1}75%{opacity:1;scale:1}100%{opacity:0;scale:.9}}
 .flame.big{scale:1.45;translate:0 -6px;transition:scale .4s,translate .4s}.flame{transition:scale 1.2s,translate 1.2s}
 .prop.tree{transition:opacity .3s}.prop.tree.see{opacity:.5}
 #propHot{position:absolute;pointer-events:none;z-index:1040;box-sizing:border-box;border-radius:50%;background:radial-gradient(closest-side,rgba(255,230,128,0) 70%,rgba(255,230,128,.55) 88%,rgba(255,230,128,0));display:none}#propHot.shape{border-radius:0;background:none;background-size:100% 100%;background-repeat:no-repeat;image-rendering:pixelated;filter:drop-shadow(0 0 3px rgba(255,210,80,.85))}
@@ -5448,7 +5449,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.87';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.89';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6010,8 +6011,8 @@ $('#ppBud').onclick = () => {
   { const i = S.buds.findIndex(b => b.pid === P.id); if (i >= 0) { sfx('tap'); log(`${J({ name: SPECIES[P.sp].n },'과/와')} 같이 달리기를 그만뒀다.`); S.buds.splice(i, 1); save(); renderBox(); openPoke(P.id); renderRun(); return; } }   // 짝꿍 해제
   const slot = budPick; if (slot == null && S.buds.length >= MAX_BUDS) return;
   if (slot != null && !$('#ppBud').dataset.go) { const b = $('#ppBud'); b.dataset.go = 1; pressBtn(b, () => { b.click(); delete b.dataset.go; }, 160); return; }   // 빈 짝꿍 칸에서 왔으면 눌린 모양을 잠깐 보여 준 뒤 짝꿍 탭으로
-  const keep = S.buds.filter((b, k) => k !== slot && b.sp !== P.sp), nb = { sp: P.sp, km: P.km || 0, pid: P.id, nw: true };   // 새 짝꿍 빨간 점 (짝꿍 탭을 보고 나가거나 그 칸을 누르면 지움)
-  if (slot != null) keep.splice(Math.min(slot, keep.length), 0, nb); else keep.push(nb);
+  budNorm(); const keep = S.buds.filter(b => b.slot !== slot && b.sp !== P.sp), nb = { sp: P.sp, km: P.km || 0, pid: P.id, nw: true };   // 새 짝꿍 빨간 점 (짝꿍 탭을 보고 나가거나 그 칸을 누르면 지움)
+  nb.slot = slot != null ? slot : budFree(keep); keep.push(nb);
   S.buds = keep;
   log(`${J({ name: SPECIES[P.sp].n },'이/가')} 런닝 짝꿍이 되었다!`, [], true); save();
   if (slot == null) sfx('tap'); renderBox(); if (slot != null) { closePoke(); setMgrTab('buddy'); } else openPoke(P.id);   // 짝꿍 칸에서 왔으면 짝꿍 탭으로, 아니면 카드에 남아 버튼만 눌린 모양으로
@@ -6109,7 +6110,7 @@ function renderMgrDetail(rebuild) {
     $('#mLook').onclick = ev => pressBtn(ev.currentTarget, () => { closeMgr(); if (S.sel) select(null); lookMon = m; });
     $('#mBud').onclick = () => { const P = boxOf(m.pid); if (!P) return; const i = S.buds.findIndex(b => b.pid === P.id); sfx('tap');   /* 필드 개체 정보에서 바로 짝꿍 등록·해제 */
       if (i >= 0) { S.buds.splice(i, 1); log(`${J({ name: SPECIES[P.sp].n }, '과/와')} 같이 달리기를 그만뒀다.`); }
-      else { const keep = S.buds.filter(b => b.sp !== P.sp); if (keep.length >= MAX_BUDS) return; keep.push({ sp: P.sp, km: P.km || 0, pid: P.id, nw: true }); S.buds = keep;   /* v4.35 경완: 필드 슬롯에서 정한 짝꿍도 빨간 점 */ log(`${J({ name: SPECIES[P.sp].n }, '이/가')} 런닝 짝꿍이 되었다!`, [], true); evoNotice(P.sp, P); }
+      else { budNorm(); const keep = S.buds.filter(b => b.sp !== P.sp); if (keep.length >= MAX_BUDS) return; keep.push({ sp: P.sp, km: P.km || 0, pid: P.id, nw: true, slot: budFree(keep) }); S.buds = keep;   /* v4.35 경완: 필드 슬롯에서 정한 짝꿍도 빨간 점 */ log(`${J({ name: SPECIES[P.sp].n }, '이/가')} 런닝 짝꿍이 되었다!`, [], true); evoNotice(P.sp, P); }
       save(); renderBox(); renderRun(); renderMgr(true); renderMgrDetail(true); };
     { const i = S.mons.indexOf(m); $('#mHl').hidden = i <= 0; $('#mHr').hidden = i >= S.mons.length - 1; $('#mRk').innerHTML = rkBadge(boxOf(m.pid)); const bud = !!m.pid && S.buds.some(b => b.pid === m.pid); $('#monPop .win').classList.toggle('bud', bud); $('#mBudTag').hidden = !bud;
       const bb = $('#mBud'), P = boxOf(m.pid), full = !bud && S.buds.filter(b => b.sp !== m.sp).length >= MAX_BUDS; bb.hidden = !P; bb.textContent = bud ? '짝꿍 해제' : full ? '짝꿍 가득' : '짝꿍으로'; bb.disabled = full; bb.classList.toggle('off', full); bb.classList.toggle('sunk', bud); }
@@ -6366,6 +6367,9 @@ let EXW = null; const exW = g => (EXW || (EXW = exBoost([null, 1, 2, 3, 4, 5].ma
 const eggEff = g => (EGG_EFF || (EXW = null, EGG_EFF = tierGuard(EGG_TIERS, ODDS, TIER_SPS, TIER_Z, EGG_LIST)))[g];
 const eggEffK = () => (eggEff(1), EGG_EFF.K);
 const MAX_BUDS = 3;
+// v4.89 경완: 짝꿍은 자기 칸(slot)에 고정 — 하나를 빼도 나머지는 그 자리에 남고 뺀 칸만 빈다
+function budNorm() { const used = new Set(); for (const b of S.buds) { if (b.slot == null || used.has(b.slot) || b.slot >= MAX_BUDS) b.slot = undefined; else used.add(b.slot); } for (const b of S.buds) if (b.slot === undefined) { let k = 0; while (used.has(k)) k++; b.slot = k; used.add(k); } }
+const budFree = L => { const u = new Set(L.map(b => b.slot)); let k = 0; while (u.has(k)) k++; return k; };
 // 진화 조건(species ev): 없음 = 달린 거리로 진화, 'fr' = 친밀도도 높아야, 'fr:day/night' = 낮/밤에, 그 밖(돌·통신교환 등) = 거리로는 안 됨. eg 1 암컷만, 2 수컷만
 let FR_EVO = 160;
 const isDay = () => { const h = new Date().getHours(); return h >= 6 && h < 18; };
@@ -6587,11 +6591,110 @@ function useMove(m, i = 0) {
   // 먼저 외치고(크앙!), 이어서 기술 모션·연출과 타입별 효과음
   emote(m, shoutOf(m.sp), '', 1.4, 'shout'); anim(m, 'hop');
   const f = -m.face || 1, mo = MOVE_MO[name] || (T(m).sp === 'dig' ? 'dig' : null);
-  const fire = () => { if (!S.mons.includes(m)) return; const o = { x: m.x, y: m.y - m.h * .5 - (m.lift || 0) }; mvSnd(t); setTimeout(() => (MV_FX[t] || MV_FX[1])(o, f, m), 120); };
+  const fire = () => { if (!S.mons.includes(m)) return; const o = { x: m.x, y: m.y - m.h * .5 - (m.lift || 0) }; mvSnd(t); setTimeout(() => { (MV_FX[t] || MV_FX[1])(o, f, m); try { elemReact(m, t, dc, f); } catch (e) {} }, 120); };
   setTimeout(() => { if (!S.mons.includes(m)) return; if (mo) moveMotion(m, mo, f, fire, dc); else { moveAnim(m, dc); fire(); } }, 480);
   const by = watching(m), seen = startle(m, name, by);
   if (!seen && (by || Math.random() < .5)) log(`${J(m,'이/가')} ${J({ name },'을/를')} 썼다!`, [m]);
   return true;
+}
+// v4.88 경완: 기술이 닿는 앞쪽(없으면 바로 옆) 요소(맵 소품)가 기술 타입에 따라 반응한다
+function elemTarget(m, f) {
+  const L = propSpots(), hit = (x, y) => { for (const p of L) if (((x - p.x) / (p.rx + 14)) ** 2 + ((y - p.y) / (p.ry + 18)) ** 2 < 1) return p;
+    if (pondVal(x, y) < 1.1) return { k: 'pond', n: '연못', x: clamp(x, POND.x - POND.rx * .75, POND.x + POND.rx * .75), y: clamp(y, POND.y - POND.ry * .55, POND.y + POND.ry * .55) }; return null; };
+  for (let d = 18; d <= 170; d += 12) { const p = hit(m.x + f * d, m.y); if (p) return p; }
+  for (let d = 0; d <= 60; d += 12) for (const s of [-f, f]) { const p = hit(m.x + s * d, m.y + 6); if (p) return p; }
+  return null;
+}
+function elemReact(m, t, dc, f) {
+  if (!S.mons.includes(m) || m.hidden) return;
+  const p = elemTarget(m, f); if (!p) return;
+  const el = p.k === 'tree' ? treeEl : p.k === 'perch' ? itemsEl.querySelector('.prop.perch') : p.k === 'bush' ? PROPS.bushEls?.[p.i] : p.k === 'puddle' ? puddleEls[p.i] : p.k === 'fire' ? flameEl : null;
+  const B = p.k === 'pond' ? [p.x - 46, p.y - 18, 92, 36] : propBox(p); if (!B) return;
+  const [bx, by, bw, bh] = B, cx = bx + bw / 2, cy = by + bh * .5, gy = p.k === 'pond' ? p.y : by + bh - 6;
+  const pops = (cls, n, w = bw * .8, h = bh * .7, y0 = cy) => { for (let i = 0; i < n; i++) setTimeout(() => particle(cx + rnd(-w / 2, w / 2), y0 + rnd(-h / 2, h / 2), cls), i * 70); };
+  const spr = (k, n, w = bw * .8, h = bh * .7, y0 = cy, px = 2) => { for (let i = 0; i < n; i++) mvSprite(k, cx + rnd(-w / 2, w / 2), y0 + rnd(-h / 2, h / 2), [[0, 0, .3, 0, 1], [rnd(-6, 6), -8, 1, rnd(-30, 30), 1], [rnd(-10, 10), -18, .5, rnd(-60, 60), 0]], 800, i * 80, px); };
+  const fall = (k, n) => { for (let i = 0; i < n; i++) { const x = cx + rnd(-bw * .4, bw * .4), y = by + rnd(bh * .1, bh * .5); mvSprite(k, x, y, [[0, 0, .6, 0, 1], [f * rnd(10, 30), rnd(14, 24), .9, rnd(90, 200), 1], [f * rnd(30, 70), gy - y, .8, rnd(250, 400), 0]], rnd(1100, 1600), i * 90, 2); } };
+  const jig = (a = 3) => el?.animate([{ rotate: '0deg' }, { rotate: `${-a}deg` }, { rotate: `${a}deg` }, { rotate: `${-a * .6}deg` }, { rotate: `${a * .3}deg` }, { rotate: '0deg' }], { duration: 560 });
+  const tint = (fl, d = 2600, e = el) => e?.animate([{ filter: 'none' }, { filter: fl, offset: .15 }, { filter: fl, offset: .7 }, { filter: 'none' }], { duration: d });
+  const ring = (c, n = 1) => { for (let i = 0; i < n; i++) mvRing(cx, gy, c, 800, i * 220, 3); };
+  const rustle = () => { if (!el) return; el.classList.remove('rustle'); void el.offsetWidth; el.classList.add('rustle'); };
+  const flw = () => [...itemsEl.querySelectorAll('.flw')].filter(e => { const x = parseFloat(e.style.left), y = parseFloat(e.style.top); return x > bx - 6 && x < bx + bw + 6 && y > by - 6 && y < by + bh + 14; });
+  const flwAnim = (kf, d) => flw().forEach((e, i) => e.animate(kf, { duration: d, delay: i * 25 }));
+  const flame = (c, ms) => { if (!flameEl) return; flameEl.classList.remove('big', 'small'); flameEl.classList.add(c); clearTimeout(flameEl.bigT); flameEl.bigT = setTimeout(() => flameEl.classList.remove(c), ms); };
+  const say = s => { if (s && (watching(m) || Math.random() < .5)) log(s, [m]); };
+  const hard = dc === 2 && [NOR, FIG, ROC, GRO, STE, DRA].includes(t);
+  setTimeout(() => {   // 기술이 그쪽까지 날아갈 시간
+    if (p.k === 'fire') {
+      if (flameEl?.classList.contains('out')) {
+        if (t === FIR || t === DRA) { flameEl.classList.remove('out'); flame('big', 5000); setTimeout(() => { if (weather() === 'rain') flameEl.classList.add('out'); }, 5200); spr('fire', 4); return say(`${J(m,'이/가')} 비에 꺼진 모닥불에 불을 붙였다! 잠깐 활활 타올랐다.`); }
+        return pops('smoke', 3);
+      }
+      if (t === FIR || t === DRA) { flame('big', 6000); spr('fire', 4); return say(`${J(m,'이/가')} 쓴 기술에 모닥불이 활활 타올랐다!`); }
+      if (t === WAT || t === ICE) { flame('small', 6000); pops('smoke', 7); if (t === ICE) spr('snow', 5); return say(t === ICE ? '모닥불에 찬 기운이 닿아 불꽃이 확 움츠러들었다.' : '모닥불이 치익 소리를 내며 작아졌다.'); }
+      if (t === FLY) { flame('big', 2500); pops('spark', 6); return say('바람에 모닥불 불씨가 확 날렸다!'); }
+      if (t === GRA) { flame('big', 3000); pops('smoke', 4); return say('풀잎이 타닥타닥 타면서 불꽃이 커졌다.'); }
+      if (t === ELE) { spr('elec', 2); flameEl?.animate([{ opacity: 1 }, { opacity: .3 }, { opacity: 1 }, { opacity: .4 }, { opacity: 1 }], { duration: 500 }); return say('모닥불 불꽃이 찌릿 깜빡였다.'); }
+      return pops('spark', 4);
+    }
+    if (p.k === 'tree') {
+      const top = by + bh * .35;
+      if (hard && S.tree?.n > 0) return shakeTree(m);
+      if (t === FIR) { tint('sepia(.6) brightness(.85)', 3000); pops('smoke', 5, bw * .7, bh * .4, top); return say('열매나무 잎 끝이 살짝 그을렸다.'); }
+      if (t === WAT) { spr('water', 6, bw * .7, bh * .4, top); tint('brightness(1.15) saturate(1.4)'); return say('열매나무가 물을 맞고 싱그럽게 반짝인다.'); }
+      if (t === GRA) { jig(2); spr('leaf', 6, bw * .7, bh * .4, top); tint('saturate(1.6) brightness(1.1)'); return say('열매나무 잎이 살랑이며 생기가 돈다.'); }
+      if (t === ELE) { spr('elec', 2, bw * .5, bh * .3, top, 3); tint('brightness(1.9)', 500); return say('열매나무에 찌릿 전기가 흘렀다.'); }
+      if (t === ICE) { spr('snow', 8, bw * .8, bh * .5, top); tint('brightness(1.25) hue-rotate(150deg) saturate(.45)', 4000); return say('열매나무에 하얗게 서리가 내려앉았다.'); }
+      if (t === FLY) { jig(4); fall('leaf', 8); return say('바람에 열매나무 잎이 우수수 날렸다.'); }
+      if (t === PSY) { el?.animate([{ translate: '0 0' }, { translate: '0 -8px', offset: .3 }, { translate: '0 -8px', offset: .7 }, { translate: '0 0' }], { duration: 1600, easing: 'ease-in-out' }); pops('psy', 4, bw * .6, bh * .5); return say('열매나무가 잠깐 둥실 떠올랐다?!'); }
+      if (t === GHO || t === DAR) { jig(2); tint('brightness(.5) saturate(.4)', 2000); return say('열매나무가 으스스하게 흔들렸다.'); }
+      if (t === FAI || t === BUG) { spr(t === FAI ? 'fairy' : 'gold', 6, bw * .8, bh * .5, top); return say('열매나무 주위에 반짝이가 흩날렸다.'); }
+      if (t === POI) { spr('poison', 5, bw * .7, bh * .4, top); tint('hue-rotate(70deg) saturate(1.3)', 2400); return say('열매나무 잎에 보랏빛 독이 묻었다가 금세 말랐다.'); }
+      jig(3); fall('leaf', 3); return;
+    }
+    if (p.k === 'bed') {
+      if (t === GRA || t === WAT || t === FAI || t === BUG) { flwAnim([{ scale: '1' }, { scale: '1.35', translate: '0 -3px', offset: .4 }, { scale: '1' }], 900); pops(t === FAI ? 'star' : 'heart', 4); if (t === WAT) spr('water', 4); return say(t === WAT ? '꽃밭 꽃들이 물을 머금고 활짝 피었다.' : '꽃밭 꽃들이 기지개를 켜듯 쑥 자랐다.'); }
+      if (t === FIR) { flwAnim([{ rotate: '0deg', scale: '1' }, { rotate: '25deg', scale: '1 .75', offset: .2 }, { rotate: '25deg', scale: '1 .75', offset: .8 }, { rotate: '0deg', scale: '1' }], 2600); pops('smoke', 4); return say('꽃밭 꽃들이 뜨거워서 고개를 푹 숙였다.'); }
+      if (t === ICE) { flw().forEach(e => tint('brightness(1.4) hue-rotate(160deg) saturate(.4)', 4000, e)); spr('snow', 6); return say('꽃밭 꽃잎에 하얀 서리가 맺혔다.'); }
+      if (t === FLY) { flwAnim([{ rotate: '0deg' }, { rotate: `${f * 30}deg`, offset: .3 }, { rotate: `${-f * 10}deg`, offset: .7 }, { rotate: '0deg' }], 1200); fall('leaf', 5); return say('꽃잎이 바람에 흩날렸다.'); }
+      if (t === POI) { flw().forEach(e => tint('saturate(.3) brightness(.8)', 3000, e)); spr('poison', 4); return say('꽃들이 독 기운에 잠깐 시들시들해졌다.'); }
+      if (t === ELE) { pops('spark', 5); flwAnim([{ translate: '0 0' }, { translate: '1px 0' }, { translate: '-1px 0' }, { translate: '0 0' }], 300); return; }
+      flwAnim([{ rotate: '0deg' }, { rotate: '-12deg' }, { rotate: '12deg' }, { rotate: '0deg' }], 600); return;
+    }
+    if (p.k === 'pond' || p.k === 'puddle') {
+      const big = p.k === 'pond';
+      if (t === WAT) { ring('#8ac8ff', 3); pops('splash', 8, bw * .6, 10, gy - 4); spr('bubble', 6); return say(big ? '연못에 물기둥이 솟았다가 첨벙 떨어졌다.' : '물웅덩이 물이 높이 튀어 올랐다.'); }
+      if (t === ELE) { ring('#ffe040', 2); spr('elec', 3, bw * .6, 12, gy - 6); return say(big ? '연못 물 위로 전기가 찌릿찌릿 퍼졌다.' : '물웅덩이에 전기가 찌릿 번졌다.'); }
+      if (t === ICE) {
+        if (big) { const d = document.createElement('div'); d.className = 'pice'; d.style.cssText = `left:${cx}px;top:${gy}px;width:${Math.round(POND.rx * .9)}px;height:${Math.round(POND.ry * .7)}px`; itemsEl.append(d); setTimeout(() => d.remove(), 5200); }
+        else tint('brightness(1.7) saturate(.3)', 5000);
+        spr('ice', 5, bw * .6, 12, gy - 6); return say(big ? '연못 한쪽이 꽁꽁 얼었다가 천천히 녹았다.' : '물웅덩이가 꽁꽁 얼어붙었다.');
+      }
+      if (t === FIR) { pops('smoke', 8, bw * .6, 10, gy - 8); return say(big ? '연못에서 김이 모락모락 피어올랐다.' : '물웅덩이에서 치익 김이 났다.'); }
+      if (t === GRA) { spr('leaf', 4, bw * .6, 10, gy - 4); ring('#9ad87a'); return say(big ? '연못 위에 나뭇잎이 동동 떠다닌다.' : ''); }
+      if (hard || t === GRO || t === ROC) { ring('#d8eaff', 2); pops('splash', 10, bw * .6, 10, gy - 4); return say('첨벙! 물보라가 크게 일었다.'); }
+      ring('#e8f4ff'); return;
+    }
+    if (p.k === 'bush' || p.k === 'perch') {
+      p.k === 'bush' ? rustle() : jig(4);
+      if (t === FIR) { pops('smoke', 5); return say(p.k === 'bush' ? '덤불에서 연기가 폴폴 피어올랐다.' : '횃대 끝이 살짝 그을렸다.'); }
+      if (t === WAT) { spr('water', 4); return; }
+      if (t === GRA) { spr('leaf', 5); if (p.k === 'bush') tint('saturate(1.6) brightness(1.1)'); return say(p.k === 'bush' ? '덤불 잎이 더 풍성해 보인다.' : ''); }
+      if (t === ELE) { spr('elec', 2, bw * .5, bh * .5, cy, 3); tint('brightness(1.9)', 500); return say(`${p.n}에 찌릿 전기가 튀었다.`); }
+      if (t === ICE) { spr('snow', 6); tint('brightness(1.3) hue-rotate(150deg) saturate(.45)', 3500); return say(`${p.n}에 하얗게 서리가 앉았다.`); }
+      if (t === FLY) { fall('leaf', 5); return; }
+      if (t === FAI || t === BUG) { spr(t === FAI ? 'fairy' : 'gold', 4); return; }
+      return pops('dust', 3);
+    }
+    // 그루터기·바위 (바닥 그림이라 둘레에 연출만)
+    if (hard || t === FIG) { spr('hit', 1, 4, 4, cy, 3); pops('dust', 6); ring('#c8b090'); return say(p.k === 'rock' ? '바위에서 돌가루가 후드득 튀었다.' : '그루터기에서 나무 부스러기가 튀었다.'); }
+    if (t === ELE) { pops('spark', 6); return say(`${p.n}에 찌릿 불꽃이 튀었다.`); }
+    if (t === FIR) { pops('smoke', 5); return say(p.k === 'stump' ? '그루터기에서 연기가 피어올랐다.' : ''); }
+    if (t === WAT) { pops('splash', 6, bw * .6, 8, gy - 4); return; }
+    if (t === ICE) { spr('ice', 4); return say(`${p.n}에 고드름이 맺혔다.`); }
+    if (t === PSY) { pops('psy', 4); return; }
+    if (t === GRA) { spr('leaf', 4); return say(p.k === 'stump' ? '그루터기 틈에서 새싹이 쏙 고개를 내밀었다.' : ''); }
+    pops('dust', 3);
+  }, 520);
 }
 // ---------- 전설 포켓몬 기술: 필드가 어두워지고, 타입에 맞는 거대한 연출이 화면을 덮는다. 필드의 모든 포켓몬이 놀란다 ----------
 const LEG_FX = {   // k: 그림, mode: 펼치는 방식, c: 타입 색
@@ -7447,7 +7550,7 @@ function raysSpin(v) { raysV = v; if (raysRaf || !v) return; raysT = performance
   raysRaf = requestAnimationFrame(step); }
 let eggClose = null;   // 알 상태 창이 떠 있을 때만 닫기 함수
 // v4.82 경완: 알 상태 창에 주운 날짜도 (올해가 아니면 연도까지)
-const eggGotDay = e => { if (!e.t) return ''; const d = new Date(e.t), y = d.getFullYear() !== new Date().getFullYear() ? `${d.getFullYear()}년 ` : ''; return `<b>${y}${d.getMonth() + 1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})</b>에 `; };
+const eggGotDay = e => { if (!e.t) return ''; const d = new Date(e.t), y = d.getFullYear() !== new Date().getFullYear() ? `${d.getFullYear()}/` : ''; return `${y}${d.getMonth() + 1}/${d.getDate()} (${'일월화수목금토'[d.getDay()]}) `; };   // v4.89 경완: 굵게 말고 10/17 (토) 처럼 짧게
 function eggView(e) {   // v4.51 경완: 부화기에서 고른 알을 한 번 더 누르면 뜨는 알 상태 창 (부화 창과 같은 크기), 아래 '가방으로 빼기'
   if (hatching || evolving || hatchQ.length) return;
   sfx('tap'); hatchFx(); hatchEl.classList.remove('list'); showDexInfo(null); hatchStage.classList.remove('evo');
@@ -7887,9 +7990,10 @@ $('#eggTest').onclick = () => { const e = eggSel || S.eggs[0]; if (!e) return; e
 function renderBuddy() {
   for (const m of S.buds) if (!thumbOf(m.sp)) ensureSprite(m.sp).then(renderBuddy).catch(() => {});
   $('#budCount').innerHTML = `<b>${S.buds.length}</b>/${MAX_BUDS}`;
-  const bh = Array.from({ length: MAX_BUDS }, (_, i) => {
-    const m = S.buds[i];
-    if (!m) return `<button class="bd-empty" data-act="pick" data-i="${i}" aria-label="짝꿍 추가">+</button>`;
+  budNorm();
+  const bh = Array.from({ length: MAX_BUDS }, (_, s) => {
+    const i = S.buds.findIndex(b => b.slot === s), m = S.buds[i];
+    if (!m) return `<button class="bd-empty" data-act="pick" data-i="${s}" aria-label="짝꿍 추가">+</button>`;
     const P = boxOf(m.pid);
     return `<div class="bd-card${budReady(m) ? ' ready' : ''}${tierOf(+m.sp) ? ' ' + tierOf(+m.sp) : ''}" data-i="${i}"><button class="bd-x" data-act="stop" aria-label="짝꿍에서 빼기">✕</button>${m.nw ? '<i class="bd-new" aria-label="새 짝꿍"></i>' : ''}<div class="bd-row"><div class="bd-pic${pkCls(P)}${P?.shiny ? ' shiny' : ''}" data-rk="${P ? rankOf(P) : ''}" style="--shue:${shinyHue(m.sp)}deg"><img alt="" src="${(P ? thumbP(P) : thumbOf(m.sp)) || ''}"><span class="bd-rk">${rkBadge(P)}</span></div><div class="bd-main"><div class="bd-name"><b class="${tnCls(m.sp)}">${esc(P ? nameOf(P) : SPECIES[m.sp].n)}</b>${sexHtml(P?.sex)}</div><div class="bd-ind">${indivHtml(m)}</div>`
       + (!evoKids(m.sp, P).length && CHILDREN[m.sp] ? `<div><span class="bd-tag">특별한 진화</span> <span class="bd-why">${esc(spWhy(P || m))}</span></div><div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>` : CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) || m.km < evoNeed(m) ? `<button class="bd-evobtn" data-act="evo"${budReady(m) ? '' : ' disabled'}>진화하기</button>` : `<span class="bd-why">${esc(evoWhy(evoKids(m.sp, P)[0]))}</span>`}</span><span><b>${fmtKm(Math.min(m.km, evoNeed(m)))}</b> / ${evoNeed(m)}km</span></div></div>` : `<div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>`)
@@ -7916,8 +8020,8 @@ function renderRunLog() {
 }
 let budSlot = 0;
 async function setBuddySp(sp) {
-  const i = Math.min(budSlot, S.buds.length);
-  if (S.buds[i]?.sp !== sp && !S.buds.some(b => b.sp === sp)) { const P = S.box.filter(p => p.sp === sp).sort((a, b) => ivSum(b) - ivSum(a))[0] || newPoke(sp, { shiny: false }); S.buds[i] = { sp, km: P.km || 0, pid: P.id, nw: true }; log(`${J({ name: SPECIES[sp].n },'이/가')} 런닝 짝꿍이 되었다!`, [], true); setTimeout(() => evoNotice(sp, P), 300); }
+  budNorm(); let i = S.buds.findIndex(b => b.slot === budSlot); if (i < 0) i = S.buds.length;
+  if (S.buds[i]?.sp !== sp && !S.buds.some(b => b.sp === sp)) { const P = S.box.filter(p => p.sp === sp).sort((a, b) => ivSum(b) - ivSum(a))[0] || newPoke(sp, { shiny: false }); S.buds[i] = { sp, km: P.km || 0, pid: P.id, nw: true, slot: budSlot }; log(`${J({ name: SPECIES[sp].n },'이/가')} 런닝 짝꿍이 되었다!`, [], true); setTimeout(() => evoNotice(sp, P), 300); }
   try { await ensureSprite(sp); } catch (e) {}
   save(); picked.clear(); sheet.hidden = true; mgr.hidden = false; openMgr(); setMgrTab('buddy');
 }
@@ -8020,16 +8124,29 @@ async function evolveWin(P, card) {
   await wait(700);
   sfx('evolve'); playCry(to, .9);
   let shut = false; setTimeout(() => { if (!shut && evoMus.have) evoMusicStart(2.5, evoMus.pos || 0).then(t => { if (shut && t != null) evoMusicFade(.3); }); }, 1800);   // 울음소리가 끝나면 진화 곡이 다시 흐른다
-  msg.innerHTML = `축하해! ${J({ name: nm }, '은/는')} ${J({ name: toN }, '으로/로')} 진화했다!${(x => x ? `<br><span class="small">${x}</span>` : '')([P.fr > fr0 ? `<span style="color:#e04870">♥</span> 친밀도가 <b>${P.fr - fr0}</b> 올랐다! (${P.fr}/${FR_MAX})` : '', newTo ? `새로 만난 포켓몬이라 <b>${NEW_G}G</b>를 받았다` : ''].filter(Boolean).join(' · '))}`;
+  // v4.89 경완: 축하 글만 먼저 → 확인 → 도감 카드 → 확인으로 끝. 친밀도·골드는 원래 화면 위 알림 창으로
+  msg.innerHTML = `축하해! ${J({ name: nm }, '은/는')} ${J({ name: toN }, '으로/로')} 진화했다!`; msg.hidden = false;
   log(`축하해! ${b ? '짝꿍 ' : ''}${J({ name: nm },'은/는')} ${J({ name: toN },'으로/로')} 진화했다!`, [], true);
-  cardEl.innerHTML = dexInfoHtml(to); cardEl.hidden = false; ok.hidden = false; ok.focus();
-  { const bt = el.querySelector('.ef-bottom').getBoundingClientRect().top; el.style.setProperty('--sy', bt / 2 + 'px'); el.style.setProperty('--ss', Math.max(90, Math.min(220, bt - 50)) + 'px'); el.classList.add('fin'); }   // 새 모습은 아래 글 상자 위 빈 곳 가운데로
-  save();
+  ok.hidden = false; ok.focus();
+  const lift = () => { const bt = el.querySelector('.ef-bottom').getBoundingClientRect().top; el.style.setProperty('--sy', bt / 2 + 'px'); el.style.setProperty('--ss', Math.max(90, Math.min(220, bt - 50)) + 'px'); el.classList.add('fin'); };   // 새 모습은 아래 글 상자 위 빈 곳 가운데로
+  lift(); save();
+  await new Promise(res => ok.onclick = res); sfx('tap');
+  msg.hidden = true; cardEl.innerHTML = dexInfoHtml(to); cardEl.hidden = false; requestAnimationFrame(lift);
   await new Promise(res => ok.onclick = res);
   shut = true; evoMusicFade(.8); sfx('tap'); el.classList.remove('in'); bgmDuck(1, 1.2);
-  await wait(350); el.hidden = true; el.className = ''; parts.innerHTML = '';
-  evolving = false; save(); renderRun(); renderBox();
+  await wait(350); el.hidden = true; el.className = ''; parts.innerHTML = ''; msg.hidden = false;
   open.forEach(x => x.hidden = false); if (!mgr.hidden) { renderBuddy(); renderMgr(true); } if (card) openPoke(P.id);   // 보던 창으로 돌아간다
+  renderRun(); renderBox();
+  const rw = [P.fr > fr0 ? `<div class="ns"><p><span style="color:#e04870">♥</span> 친밀도가 <b>${P.fr - fr0}</b> 올랐다!</p><div class="small">${esc(nameOf(P))} 친밀도 ${P.fr}/${FR_MAX}</div></div>` : '',
+    newTo ? `<div class="ns"><p><b>${NEW_G}G</b>를 받았다!</p><div class="small">도감에 새로 등록된 포켓몬 보너스</div></div>` : ''].filter(Boolean);
+  if (rw.length && !notiOpen) {
+    notiOpen = true; await wait(250);
+    $('#notiBody').innerHTML = `<div class="noti-mons"><img alt="" src="${toSrc}"></div>` + rw.join('');
+    $('#noti').hidden = false; sfx('newdex'); haptic(1);
+    await new Promise(res => { const done = () => { $('#noti').hidden = true; $('#noti').onclick = null; notiOpen = false; res(); }; $('#notiOk').onclick = done; $('#noti').onclick = ev => { if (ev.target.id === 'noti') done(); }; });
+  }
+  evolving = false; save();
+  notiSoon(600);   // 진화하는 동안 미뤄 둔 알림이 있으면
 }
 // the dex only lets you release species you have met
 function lockDexBtn(sp) {
