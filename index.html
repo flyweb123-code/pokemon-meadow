@@ -2597,6 +2597,7 @@ function berryBounce(el, h, done, fade = true, spin = true) {
   requestAnimationFrame(step);
 }
 // 쓰다듬기: 정보창·상태창을 숨기고 그 포켓몬 위를 문지른다. PET_N 번 문지르면 아주 좋아하며 끝 (친밀도 +3 은 하루 3번까지, 즐거움 +20)
+let PET_FR_MAXJ = 95;   // v4.43 경완: 즐거움 95 이상에서 쓰다듬으면 친밀도는 안 오른다
 let PET_N = 12, PET_LEN = 900, PET_DAY = 5, WASH_DAY = 1, JOY_HOLD = 5, PET_FR = 1, WASH_FR = 3;   // v4.29 경완: 씻기면 친밀도 +3 (씻긴 양과 상관없이 한 번에 3). 설정 키는 WASH_FR1 (예전 WASH_FR 15 는 비례 방식이라 무시).  v3.73 경완: 쓰다듬기·빗질 친밀도 양을 따로 정함. 빗질은 하루 횟수 없이 더러울 때(청결 95 미만)마다. v3.75 경완: 쓰다듬기 친밀도는 다시 하루 PET_DAY(5)번까지. v3.74: WASH_FR 는 청결 100만큼 씻겼을 때 양 (씻긴 만큼 비례, 최소 1)   // v3.68 경완: 쓰다듬기 게이지 더 빨리(2500→1500). 쓰다듬기는 즐거움을 가득 채우고, 가득 차 있지 않았으면 친밀도 +1 (하루 한도 없음). 빗질(씻기기) +3 하루 1번. JOY_HOLD = 즐거움 100 이 되면 안 떨어지는 분
    // 게이지 바: 보통 빠르기로 약 1000px 문지르면 가득 (v4.10 경완: 1.7배 빠르게). 빠르게 문지를수록 더 빨리 차고, 멈추면 줄어든다. PET_N 은 반응(하트·진동) 구간 수
 let petM = null;
@@ -2639,7 +2640,7 @@ function haloJoy(m) {
 }
 function petDone() {
   const m = petM.m, P = boxOf(m.pid); haloJoy(m);
-  const wash = petM.wash; let fr = 0; if (P && (wash || (m.joy ?? 60) < 100)) { fr = wash ? WASH_FR : PET_FR; if (fr > 0) addFr(P.id, fr); }   /* v4.42 경완: 쓰다듬기로 즐거움이 오를 때마다 친밀도 +1, 하루 한도 없음 */
+  const wash = petM.wash; let fr = 0; if (P && (wash || (m.joy ?? 60) < PET_FR_MAXJ)) { fr = wash ? WASH_FR : PET_FR; if (fr > 0) addFr(P.id, fr); }   /* v4.42 경완: 쓰다듬기로 즐거움이 오를 때마다 친밀도 +1, 하루 한도 없음 */
   if (wash) { m.clean = 100; dirtVis(m); m.joy = clamp((m.joy ?? 60) + 10); washShine(m); $('#washBrush').hidden = true; }
   else { m.social = clamp(m.social - 20); m.joy = clamp((m.joy ?? 60) + 20); }   /* v4.35 경완: 쓰다듬기는 즐거움 +20 (예전엔 한 번에 100) */
   haptic(2); setTimeout(() => haptic(2), 110); setTimeout(() => haptic(1), 220); sfx('pickup'); if (fr) frPop(m, fr);
@@ -4666,7 +4667,7 @@ function buildProps() {
 // 열매나무: 15분마다 한 알씩 열려 6알까지. 포켓몬이 와서 흔들면 실제로 떨어진다
 function treeBerries() {
   const T = S.tree || (S.tree = { n: 3, t: Date.now() }); if (T.n > TSL().length) T.n = TSL().length; const k = Math.floor((Date.now() - T.t) / TREE_REGROW);
-  if (k > 0) { T.n = Math.min(TSL().length, T.n + k); T.t += k * TREE_REGROW; } if (T.n >= TSL().length) T.t = Date.now();
+  if (k > 0) { T.n = TSL().length; T.t = Date.now(); }   /* v4.43 경완: 10분 지나면 한꺼번에 다 열린다 (예전엔 10분에 한 알씩) */ if (T.n >= TSL().length) T.t = Date.now();
   if (!treeEl) return; const L = [...treeEl.querySelectorAll('.tb')]; L.slice(T.n).forEach(b => b.remove()); const have = Math.min(L.length, T.n);
   for (let i = have; i < T.n; i++) { const [x, y] = TSL()[i], b = document.createElement('i'); b.className = 'tb' + (Math.random() < .5 ? ' red' : '');   /* v4.31 경완: 새로 열리는 열매는 빨강·파랑 무작위 */ b.style.left = Math.round(x * 2 * LS('tree')) + 'px'; b.style.top = Math.round(y * 2 * LS('tree')) + 'px'; treeEl.append(b); }
 }
@@ -5280,7 +5281,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.42';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.43';   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
