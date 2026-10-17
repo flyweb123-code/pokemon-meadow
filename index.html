@@ -1139,13 +1139,13 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .frmax .fm-hearts{color:#e04870;font-size:16px;letter-spacing:2px;margin:2px 0}
 .frmax .mvcard{margin:8px auto 2px;max-width:260px}
 @keyframes fmhop{50%{transform:translateY(-6px)}}
-.frpre{position:fixed;inset:0;z-index:9500;pointer-events:auto;touch-action:none;background:rgba(6,4,14,0);animation:fpdim 2.35s cubic-bezier(.33,0,.4,1) forwards}
-.frpre .fp-l{position:absolute;left:50%;top:46%;width:260px;height:260px;margin:-130px 0 0 -130px;border-radius:50%;background:radial-gradient(circle,#fff 0,#fff6fa 12%,rgba(255,200,226,.85) 26%,rgba(255,140,190,.35) 48%,rgba(255,120,180,0) 70%);opacity:0;transform:scale(.05);animation:fplight 2.35s cubic-bezier(.45,0,.75,.55) forwards}
+.frpre{position:fixed;inset:0;z-index:9500;pointer-events:auto;touch-action:none;background:rgba(6,4,14,0);animation:fpdim 3.4s linear forwards}
+.frpre .fp-l{position:absolute;left:50%;top:46%;width:260px;height:260px;margin:-130px 0 0 -130px;border-radius:50%;background:radial-gradient(circle,#fff 0,#fff6fa 12%,rgba(255,200,226,.85) 26%,rgba(255,140,190,.35) 48%,rgba(255,120,180,0) 70%);opacity:0;transform:scale(.05);animation:fplight 3.4s linear forwards}
 .frpre .fp-l::after{content:"";position:absolute;inset:44%;border-radius:50%;background:#fff;box-shadow:0 0 18px 8px #fff;animation:fpcore .5s steps(2,end) infinite}
 .frpre .fp-fl{position:absolute;inset:0;background:#fff;opacity:0}
 .frpre .fp-fl.on{animation:fpflash .55s steps(5,end) forwards}
-@keyframes fpdim{0%{background:rgba(6,4,14,0)}55%{background:rgba(6,4,14,.78)}100%{background:rgba(6,4,14,.88)}}
-@keyframes fplight{0%{opacity:0;transform:scale(.04)}20%{opacity:.35;transform:scale(.14)}55%{opacity:.8;transform:scale(.5)}85%{opacity:1;transform:scale(1.2)}100%{opacity:1;transform:scale(2.6)}}
+@keyframes fpdim{0%{background:rgba(6,4,14,0)}25%{background:rgba(6,4,14,.12)}50%{background:rgba(6,4,14,.32)}75%{background:rgba(6,4,14,.58)}100%{background:rgba(6,4,14,.82)}}
+@keyframes fplight{0%{opacity:0;transform:scale(.04)}25%{opacity:.2;transform:scale(.12)}50%{opacity:.45;transform:scale(.3)}75%{opacity:.75;transform:scale(.7)}90%{opacity:.95;transform:scale(1.3)}100%{opacity:1;transform:scale(2.4)}}
 @keyframes fpcore{50%{transform:scale(1.35)}}
 @keyframes fpflash{0%{opacity:0}35%{opacity:1}100%{opacity:0}}
 .frmax canvas.fw{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;image-rendering:pixelated}
@@ -5205,13 +5205,13 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, hunger: m.hunger, slpB: m.slpB, slpW: m.slpW, social: m.social, joy: m.joy, joyH: m.joyH || 0, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk, red: !!b.red })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, dexNew: [...(S.dexNew || [])] };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, dexNew: [...(S.dexNew || [])] };
 }
 let saveFrozen = false;
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.tree = d.tree || null; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.autoInc = !!d.autoInc;   /* v4.23 경완: 부화기 자동 채우기가 다시 켜면 꺼지던 문제 — 저장에 빠져 있었다 */ S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
+  S.lockT = d.lockT || 0; S.tree = d.tree || null; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.bagDry = d.bagDry || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.autoInc = !!d.autoInc;   /* v4.23 경완: 부화기 자동 채우기가 다시 켜면 꺼지던 문제 — 저장에 빠져 있었다 */ S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
@@ -5234,7 +5234,7 @@ async function restore(d) {
 async function fresh() {
   S.base = midnight(); S.clock = realClock(); S.rel = {}; S.log = [];
   logEl.innerHTML = '';
-  S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.pity = { e: 0, l: 0 }; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked.clear(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1; S.undo1 = true;
+  S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.bagDry = 0; S.pity = { e: 0, l: 0 }; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked.clear(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1; S.undo1 = true;
   // 처음 시작: 부화기에 바로 부화시킬 수 있는 일반 알 하나, 가방에 일반·희귀·레어 알 하나씩 (v4.44 경완: 에픽·전설은 빼기) (안의 포켓몬은 부화할 때 정해진다)
   const t = Date.now(); S.eggs.push({ id: S.eid++, g: 1, km: GRADE[1].km, need: GRADE[1].km, isNew: true, t });
   for (const g of [1, 2, 3]) S.bag.push({ id: S.eid++, g, t, isNew: true });
@@ -5447,7 +5447,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '4.84';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '4.85';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6761,10 +6761,10 @@ function frMaxPre(P, then) {
   const stop = ev => { ev.preventDefault(); ev.stopPropagation(); };
   for (const t of ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchmove', 'touchend', 'mousedown', 'wheel', 'keydown']) ov.addEventListener(t, stop, { capture: true, passive: false });
   const key = ev => stop(ev); document.addEventListener('keydown', key, true);
-  document.body.append(ov);   // v4.84 경완: 어두워짐과 빛이 같은 2.35초 흐름으로 같이 차오른다
-  setTimeout(() => sfx('rise'), 1500);
-  setTimeout(() => ov.querySelector('.fp-fl').classList.add('on'), 2350);
-  setTimeout(() => { then(); document.removeEventListener('keydown', key, true); ov.style.transition = 'opacity .25s'; ov.style.opacity = 0; ov.style.pointerEvents = 'none'; setTimeout(() => ov.remove(), 300); }, 2560);
+  document.body.append(ov);   // v4.85 경완: 어두워짐이 너무 빨라서 3.4초 동안 천천히, 빛과 같은 4단계로 함께 차오른다
+  setTimeout(() => sfx('rise'), 2550);
+  setTimeout(() => ov.querySelector('.fp-fl').classList.add('on'), 3400);
+  setTimeout(() => { then(); document.removeEventListener('keydown', key, true); ov.style.transition = 'opacity .25s'; ov.style.opacity = 0; ov.style.pointerEvents = 'none'; setTimeout(() => ov.remove(), 300); }, 3610);
 }
 // 축하 창 뒤로 도트 폭죽이 계속 터진다 (창을 닫으면 멈춤)
 function frMaxFw() {
@@ -6826,7 +6826,7 @@ function migrateBox() {
   for (const sp of S.unlocked) if (!S.box.some(p => p.sp === sp)) newPoke(sp, { shiny: false });
   for (const b of S.buds) if (b.pid == null || !boxOf(b.pid)) b.pid = (S.box.filter(p => p.sp === b.sp).sort((x, y) => ivSum(y) - ivSum(x))[0] || newPoke(b.sp, { shiny: false })).id;
 }
-S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.pity = { e: 0, l: 0 }; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked = new Set(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1;
+S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.bagDry = 0; S.pity = { e: 0, l: 0 }; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked = new Set(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1;
 const hatchQ = [];
 
 function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); (S.dexNew ||= new Set()).add(sp); if (dexBtns[sp]) { lockDexBtn(sp); dexCellReady(sp); } } }
@@ -6922,7 +6922,9 @@ window.pokeRunToday = (km, dayMs) => {
 };
 function collectEggs(km, place, tags, pf) {
   S.bagAcc += km; let n = 0; const P = S.pity || (S.pity = { e: 0, l: 0 }); P.e += km; P.l += km;
-  while (S.bagAcc >= BAG_SUB) { S.bagAcc -= BAG_SUB; const r = BAG_SUB / BAG_STEP; n += r < 1 ? (Math.random() < r ? 1 : 0) : Math.floor(Math.random() * (2 * r + 1)); }   // v4.07 경완: 250m마다 확률로 줍는다 (1km에 평균 1/BAG_STEP 개, 보통 1~2개, 운 좋으면 3개)
+  while (S.bagAcc >= BAG_SUB) { S.bagAcc -= BAG_SUB; const r = BAG_SUB / BAG_STEP; let k = r < 1 ? (Math.random() < r ? 1 : 0) : Math.floor(Math.random() * (2 * r + 1));
+    if (!k && (S.bagDry || 0) >= 1 - 1e-6) k = 1;   // v4.85 경완 '보정': 1km 동안 알을 하나도 못 주웠으면 다음 250m엔 꼭 1개
+    S.bagDry = k ? 0 : (S.bagDry || 0) + BAG_SUB; n += k; }   // v4.07 경완: 250m마다 확률로 줍는다 (1km에 평균 1/BAG_STEP 개, 보통 1~2개, 운 좋으면 3개)
   n = Math.min(n, MAX_BAG - S.bag.length);
   const t = Date.now(), got = [];
   got.eggs = [];
