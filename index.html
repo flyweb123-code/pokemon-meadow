@@ -5539,7 +5539,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.17';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.18';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7169,7 +7169,34 @@ function nextPickups(max = 4) {
   for (let i = 0; i < Q.length && out.length < max && room > 0; i++, at += BAG_SUB) { let k = Q[i]; if (!k && dry >= 1 - 1e-6) k = 1; dry = k ? 0 : dry + BAG_SUB; if (k) { k = Math.min(k, room); room -= k; out.push([Math.max(.001, at), k]); } }
   return out;
 }
-function collectEggs(km, place, tags, pf) {
+// v5.18 경완: 출현 지역 — 작업실 지도에 포켓몬을 놓으면(SPOTS: {sp, la, lo, r 미터, x 배}) 그 반경 안에서 주운 알이 그 포켓몬일 확률이 x배
+// 그 포켓몬이 들어 있는 등급의 알(라프라스면 에픽·전설)이 그만큼 더 나온다. 원래 확률 b → x·b (최대 95%)
+let SPOTS = [];
+const distM = (a, b) => { const R = 6371e3, r = Math.PI / 180, dLa = (b[0] - a[0]) * r, dLo = (b[1] - a[1]) * r, h = Math.sin(dLa / 2) ** 2 + Math.cos(a[0] * r) * Math.cos(b[0] * r) * Math.sin(dLo / 2) ** 2; return 2 * R * Math.asin(Math.min(1, Math.sqrt(h))); };
+// 알 등급 g 에서 sp 가 나올 기본 확률 (장소 테마·최근 부화 빼고, rollEgg 와 같은 계산)
+function spInEgg(g, sp) {
+  const EX = new Set([...(EGG_EX[g] || []), ...SP_OFF]); if (EX.has(sp)) return 0;
+  const EL0 = EGG_LIST[g], EL = EL0 && EL0.some(r => !EX.has(r[0])) ? EL0.filter(r => !EX.has(r[0])) : EL0;
+  if (EL?.length) { const r = EL.find(r => r[0] === sp); return r ? r[1] / (EL.reduce((a, x) => a + x[1], 0) || 1) : 0; }
+  const tab = eggEff(g) || EGG_TIERS[g] || {}, t = TIER[sp]; if (!t || !tab[t] || !TIER_SPS[t]?.includes(sp)) return 0;
+  const tot = Object.keys(tab).map(Number).filter(x => TIER_SPS[x].length).reduce((a, x) => a + tab[x], 0) || 1, pool = TIER_SPS[t].filter(x => !EX.has(x)); if (!pool.length) return 0;
+  const K = eggEffK()?.[t] ?? TIER_KT[t] ?? TIER_K, w = x => Math.exp(-K * TIER_Z[x]) * (exW(g)[x] || 1);
+  return tab[t] / tot * w(sp) / (pool.reduce((a, x) => a + w(x), 0) || 1);
+}
+function spotHit(ll) {
+  if (!SPOTS.length || !Array.isArray(ll) || !isFinite(ll[0]) || !isFinite(ll[1])) return null;
+  const near = SPOTS.filter(s => distM(ll, [s.la, s.lo]) <= s.r).sort(() => Math.random() - .5);
+  for (const s of near) {
+    const sp = TIER[s.sp] ? s.sp : baseOf(s.sp), G = [1, 2, 3, 4, 5].map(g => ODDS[g - 1] * spInEgg(g, sp)), b = G.reduce((a, x) => a + x, 0);
+    if (!(b > 0)) continue;
+    const q = Math.max(0, (Math.min(s.x * b, .95) - b) / (1 - b));   // 원래 b 에 더해 q 만큼은 그 포켓몬 알로 → 합쳐서 x·b
+    if (Math.random() >= q) continue;
+    let r = Math.random() * b, g = 5; for (let i = 0; i < 5; i++) if ((r -= G[i]) <= 0) { g = i + 1; break; }
+    return { sp, g };
+  }
+  return null;
+}
+function collectEggs(km, place, tags, pf, ll) {
   S.bagAcc += km; let n = 0; const P = S.pity || (S.pity = { e: 0, l: 0 }); P.e += km; P.l += km;
   while (S.bagAcc >= BAG_SUB) { S.bagAcc -= BAG_SUB; let k = (S.bagQ && S.bagQ.length) ? S.bagQ.shift() : bagRoll();   /* v5.16: 다음 칸들은 미리 굴려 둔다 (앱 알림이 다음에 알을 줍는 거리를 알 수 있게) */
     if (!k && (S.bagDry || 0) >= 1 - 1e-6) k = 1;   // v4.85 경완 '보정': 1km 동안 알을 하나도 못 주웠으면 다음 250m엔 꼭 1개
@@ -7181,8 +7208,9 @@ function collectEggs(km, place, tags, pf) {
   for (let i = 0; i < n; i++) { let g = rollGrade();
     // 천장: 전설 알 없이 PITY_L km, 에픽 이상 없이 PITY_E km를 움직이면 다음 알은 그 등급으로 (나오면 다시 0부터)
     if (P.l >= PITY_L) g = 5; else if (P.e >= PITY_E) g = Math.max(g, 4);
+    const pl = pf ? pf() : place ? { n: place, tags, ll } : null, hit = spotHit(pl?.ll || ll); if (hit) g = hit.g;   // v5.18 경완: 작업실 지도에 놓은 포켓몬 근처면 그 포켓몬 알이 더 잘 나온다
     if (g === 5) P.l = 0; if (g >= 4) P.e = 0;
-    const e = { id: S.eid++, g, t, isNew: true }; const pl = pf ? pf() : place ? { n: place, tags } : null; if (pl?.n) e.place = pl.n; if (pl?.tags?.length) e.tags = pl.tags; S.bag.push(e); got.push(g); got.eggs.push(e); }
+    const e = { id: S.eid++, g, t, isNew: true }; if (pl?.n) e.place = pl.n; if (pl?.tags?.length) e.tags = pl.tags; if (hit) { e.sp = hit.sp; e.spot = 1; } S.bag.push(e); got.push(g); got.eggs.push(e); }
   autoInc(); if (n) { try { notiSoon(400); } catch (e) {} notiBuzz('egg'); } return got;   /* v4.23 경완: 알을 주우면 앱을 다시 열지 않아도 바로 알림 */
 }
 function gotLog(got, how, place) {
@@ -7304,14 +7332,15 @@ function cleanPlaces() {   // 예전에 저장된 알·포켓몬·기록의 장�
   (S.runs || []).forEach(r => (r.eggs || []).forEach(fix));
   (S.places || []).forEach(p => { p.n = cleanPlace(p.n); }); if (S.lastPlace) S.lastPlace.n = cleanPlace(S.lastPlace.n);
 }
-window.pokeRunWalk = (km, place, tags) => {
+window.pokeRunWalk = (km, place, tags, la, lo) => {
   place = cleanPlace(place); km = +km; if (!(km > 0 && km <= 200)) return false;
+  const ll = isFinite(la) && isFinite(lo) && la !== null && lo !== null && (+la || +lo) ? [+(+la).toFixed(5), +(+lo).toFixed(5)] : null;   // v5.18: 아이폰 앱이 걸은 곳 좌표도 보낸다 (출현 지역)
   S.walkSync = true; S.walkKm += km; today().walk += km;
   // 걷는 동안 이미 쌓은 만큼은 빼고 나머지만 알·짝꿍에 (앱이 꺼져 있던 동안 걸은 거리 등)
   const rest = km - S.fedPend; S.fedPend = Math.max(0, S.fedPend - km); if (rest > .005) { const n = Date.now(); feedKm(rest); noteFed(n, n, rest); }
   tags = String(tags || '').split(',').filter(k => THEMES[k]);
-  if (place) { S.lastPlace = { n: String(place), tags, t: Date.now() }; notePlace(place, tags, Date.now()); }
-  gotLog(collectEggs(km, place || '', tags), '', place || '');   // v4.14 경완: 걸으며 주운 알은 '걸어서 ~km' 없이
+  if (place) { S.lastPlace = { n: String(place), tags, t: Date.now() }; if (ll) S.lastPlace.ll = ll; notePlace(place, tags, Date.now(), ll); }
+  gotLog(collectEggs(km, place || '', tags, null, ll), '', place || '');   // v4.14 경완: 걸으며 주운 알은 '걸어서 ~km' 없이
   save(); renderRun(); return true;
 };
 // 아이폰 앱: 워치 런닝(watch), 또는 모션 기록에서 찾아낸 달리기(auto, 시작·끝 시각 포함)
@@ -7325,7 +7354,7 @@ window.pokeRunAddKm = (km, t0, src = 'watch', t1 = 0) => {
   addRun(km, src, t0, t1, applyKm(km, t0, t1, feed)); return true;
 };
 // 지나간 곳 기록 (아이폰 앱이 보낸 동네·운동 경로의 몇 곳)
-function notePlace(n, tags, t) { if (!n) return; S.places.push({ n: String(n), tags: tags || [], t }); S.places.sort((a, b) => a.t - b.t); if (S.places.length > 300) S.places.splice(0, S.places.length - 300); }
+function notePlace(n, tags, t, ll) { if (!n) return; S.places.push(ll ? { n: String(n), tags: tags || [], t, ll } : { n: String(n), tags: tags || [], t }); S.places.sort((a, b) => a.t - b.t); if (S.places.length > 300) S.places.splice(0, S.places.length - 300); }
 function routePlace(t0, t1) {
   const L = t0 ? S.places.filter(p => p.t >= t0 - 10 * 60e3 && p.t <= (t1 || t0) + 10 * 60e3) : [];
   if (L.length) return pick(L);
@@ -7335,12 +7364,12 @@ function routePlace(t0, t1) {
 // 그 런닝에서 주웠는데 주운 곳이 비어 있는 알은 경로 중 한 곳으로 채운다
 window.pokeRunPlaces = (t0, t1, list) => {
   t0 = +t0 || 0; t1 = +t1 || t0; if (!Array.isArray(list) || !t0) return false;
-  const pts = list.map(x => ({ n: String(x[0] || ''), tags: String(x[1] || '').split(',').filter(k => THEMES[k]), t: +x[2] || t0 })).filter(p => p.n);
+  const pts = list.map(x => ({ n: String(x[0] || ''), tags: String(x[1] || '').split(',').filter(k => THEMES[k]), t: +x[2] || t0, ll: isFinite(x[3]) && isFinite(x[4]) && x[3] != null ? [+x[3], +x[4]] : undefined })).filter(p => p.n);
   if (!pts.length) return true;
-  if (!S.places.some(p => p.t >= t0 && p.t <= t1)) pts.forEach(p => notePlace(p.n, p.tags, p.t));
+  if (!S.places.some(p => p.t >= t0 && p.t <= t1)) pts.forEach(p => notePlace(p.n, p.tags, p.t, p.ll));
   // v3.98 경완: 무작위 대신 주운 순서대로 경로 앞쪽부터 (i번째 알 = 경로의 i/n 지점)
   pts.sort((a, b) => a.t - b.t); const at = (i, n) => pts[Math.min(pts.length - 1, Math.floor(i * pts.length / Math.max(1, n)))];
-  const all = [...S.bag, ...S.eggs], fill = (e, p) => { if (e.place) return; e.place = p.n; if (p.tags.length) e.tags = p.tags; delete e.sp; eggSp(e); };
+  const all = [...S.bag, ...S.eggs], fill = (e, p) => { if (e.place) return; e.place = p.n; if (p.tags.length) e.tags = p.tags; if (!e.spot) { delete e.sp; eggSp(e); } };
   for (const r of S.runs) {
     if (!(r.t0 && r.t0 < t1 + 60000 && r.t > t0 - 60000)) continue;
     if (r.eggs) r.eggs.forEach((x, i, L) => { const p = at(i, L.length), e = all.find(y => y.id === x.id); if (e) { fill(e, p); x.place = e.place; } else if (!x.place) x.place = p.n; });
@@ -8447,6 +8476,7 @@ function applyCfg(c) {
     MON_FLY = {}; if (d.monFly && typeof d.monFly === 'object') for (const [k, v] of Object.entries(d.monFly)) if (SPECIES[k] && typeof v === 'number' && v > 0 && v <= 300) MON_FLY[k] = v;
     TIER_KT = {}; if (d.tierK?.k && typeof d.tierK.k === 'object') for (const [t, k] of Object.entries(d.tierK.k)) if (k >= 0 && k <= 5) TIER_KT[t] = +k;
     SP_OFF = new Set((Array.isArray(d.off) ? d.off : []).map(Number).filter(sp => SPECIES[sp]));
+    SPOTS = (Array.isArray(d.spots) ? d.spots : []).filter(o => o && SPECIES[o.sp] && isFinite(o.la) && isFinite(o.lo) && o.r >= 30 && o.r <= 50000 && o.x >= 1 && o.x <= 1000).map(o => ({ sp: +o.sp, la: +o.la, lo: +o.lo, r: +o.r, x: +o.x }));
     retier(d.tierOv, d.tierOrd || {}); if (d.bal) applyBal(d.bal); if (d.layout) setLayoutIn(d.layout);
     EGG_EFF = null; CFG = c; $('#appVer').textContent = 'v' + APP_VER + (c.ver ? ' · 데이터 ' + c.ver : '');
   } catch (e) { console.warn('config', e); }
@@ -8518,7 +8548,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, get MON_ROT() { return MON_ROT; }, get MON_FLY() { return MON_FLY; }, setMonPose(r, f) { MON_ROT = { ...(r || {}) }; MON_FLY = { ...(f || {}) }; }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, get SP_OFF() { return [...SP_OFF]; }, get TIER_KT() { return TIER_KT; }, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
     ICO: { berry: ICO_BERRY, brush: ICO_BRUSH, hand: ICO_HAND, pen: PEN, egg: EGG_SVG },   // v3.66: 작업실이 게임 아이콘을 그대로 쓴다
     get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, PET_FR, WASH_FR1: WASH_FR, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]), HATCH_KM: [0, ...GRADE.slice(1).map(G => G.km)] }; },
-    get cfg() { return CFG; },
+    get cfg() { return CFG; }, get SPOTS() { return SPOTS; },
     get SPRITES() { return SPRITES; }, ensureSprite, thumbOf, gradeOf, tierOf, shinyHue, tyIcon, scaleOf, baseOf, movesOf, eggHtml, propSpots,
     ready: false, onSel: null, onLayout: null, onMon: null, onLog: null,
   };

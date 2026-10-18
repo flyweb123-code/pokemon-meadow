@@ -1,3 +1,4 @@
+import CoreLocation
 import Foundation
 import WatchConnectivity
 import WebKit
@@ -119,10 +120,12 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
         (UserDefaults.standard.array(forKey: walkKey) as? [[String: Any]] ?? []).reduce(0) { $0 + ($1["km"] as? Double ?? 0) }
     }
 
-    func enqueueWalk(km: Double, place: String, tags: [String] = []) {
+    func enqueueWalk(km: Double, place: String, tags: [String] = [], at: CLLocationCoordinate2D? = nil) {
         NotiCenter.shared.walked(km)   // 화면이 꺼져 있으면 알·부화·진화 알림을 확인한다
         var list = UserDefaults.standard.array(forKey: walkKey) as? [[String: Any]] ?? []
-        list.append(["km": km, "place": place, "tags": tags.joined(separator: ",")])
+        var item: [String: Any] = ["km": km, "place": place, "tags": tags.joined(separator: ",")]
+        if let at { item["la"] = at.latitude; item["lo"] = at.longitude }   // 출현 지역(작업실 지도) 확인용 좌표
+        list.append(item)
         UserDefaults.standard.set(list, forKey: walkKey)
         flushPending()
     }
@@ -138,7 +141,8 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
             guard let placeJSON = try? JSONSerialization.data(withJSONObject: [place, tags]),
                   let arg = String(data: placeJSON, encoding: .utf8) else { continue }
             // arg 는 ["동네", "water,park"] 모양이라 [0], [1] 로 꺼낸다 (따옴표가 섞여도 안전)
-            web.evaluateJavaScript("window.pokeRunWalk(\(km), \(arg)[0], \(arg)[1])") { [weak self] result, error in
+            let ll = (item["la"] as? Double).flatMap { la in (item["lo"] as? Double).map { ", \(la), \($0)" } } ?? ""
+            web.evaluateJavaScript("window.pokeRunWalk(\(km), \(arg)[0], \(arg)[1]\(ll))") { [weak self] result, error in
                 if error != nil || (result as? Bool) == false, let self {
                     var back = UserDefaults.standard.array(forKey: self.walkKey) as? [[String: Any]] ?? []
                     back.append(item)

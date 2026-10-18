@@ -105,7 +105,7 @@ final class HealthSync {
         var left = picks.count
         for loc in picks {
             geoQueue.append((loc, { name, tags in
-                if !name.isEmpty { out.append([name, tags, loc.timestamp.timeIntervalSince1970 * 1000]) }
+                if !name.isEmpty { out.append([name, tags, loc.timestamp.timeIntervalSince1970 * 1000, loc.coordinate.latitude, loc.coordinate.longitude]) }
                 left -= 1
                 if left == 0, !out.isEmpty { PhoneBridge.shared.enqueuePlaces(start: start.timeIntervalSince1970, end: end.timeIntervalSince1970, places: out) }
             }))
