@@ -2301,7 +2301,10 @@ function padAtlas(k) {
         const a = A.Idle, d = x.getImageData(0, ny.Idle, a[1], a[2]).data; let cnt = 0, t = a[2], b = -1, l = a[1], r = -1;
         for (let yy = 0; yy < a[2]; yy++) for (let xx = 0; xx < a[1]; xx++) if (d[(yy * a[1] + xx) * 4 + 3] > 40) { cnt++; t = Math.min(t, yy); b = Math.max(b, yy); l = Math.min(l, xx); r = Math.max(r, xx); }
         const vh = cnt ? Math.sqrt(cnt / .55) : 0;
-        { let fl = a[1], fr = -1; for (let yy = Math.max(t, b - 3); yy <= b; yy++) for (let xx = 0; xx < a[1]; xx++) if (d[(yy * a[1] + xx) * 4 + 3] > 40) { fl = Math.min(fl, xx); fr = Math.max(fr, xx); } if (fr >= fl) P.fw = Math.max(fr - fl + 1, (r - l + 1) * .55); }   // 발 폭 (그림자용)   // 보이는 몸 크기 = 실제로 칠해진 칸 수 기준 (옆으로 길거나 똬리 튼 포켓몬도 덩치만큼)
+        { // v5.20 경완: 발 = 세로줄마다 가장 아래 칠해진 칸이 발 선(b) 근처인 줄. 네발 포켓몬은 뒷발이 조금 위에 있어서 키의 18%까지 본다 → 그림자 폭·가운데·두께를 뒷발까지
+          const D = Math.max(3, Math.round((b - t + 1) * .18)); let fl = a[1], fr = -1, top = b;
+          for (let xx = 0; xx < a[1]; xx++) { let cb = -1; for (let yy = b; yy >= t; yy--) if (d[(yy * a[1] + xx) * 4 + 3] > 40) { cb = yy; break; } if (cb >= b - D) { fl = Math.min(fl, xx); fr = Math.max(fr, xx); top = Math.min(top, cb); } }
+          if (fr >= fl) { P.fw = Math.max(fr - fl + 1, (r - l + 1) * .55); P.fx = (fl + fr + 1) / 2 - a[1] / 2; P.fh = b - top; } }   // 발 폭 (그림자용)   // 보이는 몸 크기 = 실제로 칠해진 칸 수 기준 (옆으로 길거나 똬리 튼 포켓몬도 덩치만큼)
         for (const n of names) A[n][0] = ny[n]; P.G = G; if (vh) P.vh = vh; delete atlasDims[k];
         // 크게 확대되는 포켓몬은 도트가 굵어 보이므로 Scale2x 로 두 배 고운 도트로 다시 찍는다 (좌표는 그대로, 그림만 고해상도 → 화면 도트 크기 절반)
         let cv = c; const sc = scale0(k); if (sc >= 3.5) cv = scale2x(cv);   // v3.07: 2.5배부터 하니 픽셀 느낌이 사라진다(경완) → 4배 이상만
@@ -2318,8 +2321,9 @@ const atlasDims = {};
 function shadowFit(m) {
   const sh = m.el.querySelector('.shadow'); if (!sh) return;
   const k = m.sk || m.form, P = SPRITES[k], s = scaleOf(k);
-  const w = clamp(isPmd(k) && P.fw ? P.fw * s * 1.12 : m.w * .62, 14, 220), h = Math.max(5, Math.round(w * .3));
-  sh.style.transform = ''; sh.style.width = Math.round(w) + 'px'; sh.style.height = h + 'px'; sh.style.margin = `${-Math.round(h * .62)}px 0 0 ${-Math.round(w / 2)}px`;
+  const pm = isPmd(k) && P.fw, fh = pm ? (P.fh || 0) * s : 0, w = clamp(pm ? P.fw * s * 1.12 : m.w * .62, 14, 220), h = Math.max(5, Math.round(Math.max(w * .3, fh + 5)));
+  sh.style.transform = ''; sh.style.width = Math.round(w) + 'px'; sh.style.height = h + 'px'; sh.style.margin = `${-Math.round(h * .62 + fh * .3)}px 0 0 ${-Math.round(w / 2)}px`;
+  m.shEl = sh; m.shX = pm ? (P.fx || 0) * s : 0; m.shF = null;   // 발 가운데가 몸 가운데와 다르면 그쪽으로 (바라보는 쪽 따라 뒤집힘)
 }
 function scale2x(src) {
   const w = src.width, h = src.height, s = new Uint32Array(src.getContext('2d').getImageData(0, 0, w, h).data.buffer);
@@ -4397,13 +4401,15 @@ function update(m, dt) {
 
 // ---------- render ----------
 const FLAP_IDLE = new Set([41, 42, 169, 714, 715]);   // 가만히 있어도 늘 날갯짓하는 박쥐들은 계속 떠 있다
+// v5.20 경완: 가만히 서 있을 때 원래 떠 있는 높이 (크기 조절 모드 떠있기 게이지의 0 이 아니라 이 값에서 시작). 날개 접고 서는 새·걷는 포켓몬은 0
+const liftBase = sp => { const t = DEX[sp]; if (!t || (t.mv !== 'fly' && t.mv !== 'hover')) return 0; return t.mv === 'fly' && SPECIES[sp]?.sh === 9 && !FLAP_IDLE.has(sp) ? 0 : t.mv === 'fly' ? 40 : 16; };
 function render(m, now) {
   const t = T(m), flyer = t.mv === 'fly' || t.mv === 'hover';
   const grounded = !m.held && !(flyer && pondVal(m.x, m.y) < 1.05) && (m.state === 'sleep' || m.state === 'eat' || (t.mv === 'fly' && SPm(m).sh === 9 && !FLAP_IDLE.has(m.sp) && m.state !== 'move'));   /* v4.91: 호수 위에서는 앉지 않고 떠 있다 */   // v3.62 경완: 새는 날개를 접고 서 있을 땐 땅에, 날아갈 때만 떠 있다
   if (m.perch) { const p = m.perch; if (S.mons.includes(p) && p.state === 'sleep' && m.state === 'sleep') { m.x = p.x + m.perchDx; m.y = p.y + 1; m.xl = p.h * .45; } else { m.perch = null; m.xl = 0; } }
   if (m.ride) { const h = m.ride; if (S.mons.includes(h) && h.scene === m.rideSc && h.state === 'interact' && !m.held && m.state !== 'interact' && m.state !== 'special') { m.x = h.x + m.rideDx; m.y = h.y; m.xl = (h.xl || 0) + h.h * .62; m.face = h.face; m.zAdd = 2; m.goal = null; if (m.state === 'move') setState(m, 'idle', 30); m.t = Math.max(m.t, 1); }
     else { m.ride = null; m.rideSc = null; m.xl = 0; m.zAdd = 0; if (!m.held && S.mons.includes(h)) { place(m, h.x + (m.rideDx < 0 ? -1 : 1) * Math.max(34, (m.w + h.w) * .4) + rnd(-12, 12), h.y + rnd(4, 16)); dustAt(m); } } }
-  const fly0 = MON_FLY[m.form] || 0, targetLift = m.szb ? fly0 : m.held ? 26 : (flyer ? (grounded ? (t.mv === 'hover' ? 6 : 0) : (t.mv === 'fly' ? 40 : 16)) : 0) + (m.xl || 0) + fly0;   /* 들면 나는 포켓몬도 손가락(몸통) 기준: 그림자 위 높이를 더하지 않는다 */
+  const fly0 = MON_FLY[m.form] || 0, targetLift = Math.max(0, m.szb ? liftBase(m.sp) + fly0 : m.held ? 26 : (flyer ? (grounded ? (t.mv === 'hover' ? 6 : 0) : (t.mv === 'fly' ? 40 : 16)) : 0) + (m.xl || 0) + fly0);   /* v5.20: MON_FLY 는 원래 높이에 더하는 값 (음수면 낮게) */   /* 들면 나는 포켓몬도 손가락(몸통) 기준: 그림자 위 높이를 더하지 않는다 */
   m.lift += (targetLift - m.lift) * .08;
   const bob = flyer && !grounded && !m.szb ? Math.sin(now / 260 + m.uid) * 4 : 0;   /* v4.61 경완: 크기 조절 모드에선 둥둥 안 뜬다 */
   const pv = pondVal(m.x, m.y), wet = !flyer && (m.wet ? pv < 1.0 : pv < .94);   /* 물가 경계에서 젖음/마름이 번갈아 바뀌며 위아래로 튀지 않게 여유를 둔다 */
@@ -4426,6 +4432,7 @@ function render(m, now) {
   m.liftEl.style.transform = `translateY(${(wet ? m.h * .38 : m.flop ? m.h * .42 : 0) - m.lift - bob}px)`;   // 육지의 잉어킹은 그림자에 붙게 조금 내린다
   if (m.flop && now > (m.swT || 0)) { m.swT = now + rnd(180, 360); for (const s of [-1, 1]) if (Math.random() < .75) particle(m.x + s * rnd(6, m.w * .32), m.y - m.h * .2 - rnd(0, 10), 'sweat', '', d => d.style.setProperty('--dx', s * rnd(12, 26) + 'px')); }
   m.flipEl.style.transform = `scaleX(${m.face})`; m.flipEl.style.setProperty('--f', m.face);
+  if (m.shEl && m.shF !== m.face) { m.shF = m.face; m.shEl.style.translate = m.shX ? `${(m.shX * m.face).toFixed(1)}px 0` : ''; }
   { const r = (MON_ROT[m.form] || 0) * m.face, o = Math.round(m.h / 2); if (r !== m.rotV || o !== m.rotO) { m.rotV = r; m.rotO = o; m.flipEl.style.rotate = r ? r + 'deg' : ''; m.flipEl.style.transformOrigin = r ? `0 ${-o}px` : ''; } }   /* 기울기는 몸 가운데를 축으로 (transform 애니메이션과 따로 도는 rotate 속성) */
   if (isPmd(m.form)) drawSprite(m, m.frz ? 0 : m.realDt || 0);
   else { const want = m.state === 'sleep' ? (stillCache[m.form] || SPRITES[m.form]) : SPRITES[m.form]; if (m.curSrc !== want) { m.curSrc = want; m.img.src = want; } }
@@ -5539,7 +5546,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.19';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.20';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6557,7 +6564,7 @@ const movesOf = sp => MOVE_OVR[sp] ? [MOVE_OVR[sp]] : (LEARN.sp[sp] || []).map(i
 const canMove = m => { const P = boxOf(m.pid); return !!P && (P.fr || 0) >= FR_MAX; };
 // 타입 아이콘: 동그란 타입 색 바탕에 흰 심볼 (15x15 도트, 본가 타입 심볼 모양을 따라 직접 그림). 누르면 타입 이름 말풍선
 const TY_BG = 'M5 0h5v1h-5zM3 1h9v1h-9zM2 2h11v1h-11zM1 3h13v1h-13zM1 4h13v1h-13zM0 5h15v1h-15zM0 6h15v1h-15zM0 7h15v1h-15zM0 8h15v1h-15zM0 9h15v1h-15zM1 10h13v1h-13zM1 11h13v1h-13zM2 12h11v1h-11zM3 13h9v1h-9zM5 14h5v1h-5z', TY_SH = 'M2 12h11v1h-11zM3 13h9v1h-9zM5 14h5v1h-5z', TY_GL = {1:'M5 3h5v1h-5zM4 4h7v1h-7zM3 5h3v1h-3zM9 5h3v1h-3zM3 6h2v1h-2zM10 6h2v1h-2zM3 7h2v1h-2zM10 7h2v1h-2zM3 8h2v1h-2zM10 8h2v1h-2zM3 9h3v1h-3zM9 9h3v1h-3zM4 10h7v1h-7zM5 11h5v1h-5z',2:'M4 3h2v1h-2zM7 3h2v1h-2zM10 3h2v1h-2zM3 4h3v1h-3zM7 4h2v1h-2zM10 4h3v1h-3zM3 5h10v1h-10zM3 6h10v1h-10zM2 7h2v1h-2zM9 7h4v1h-4zM2 8h11v1h-11zM2 9h11v1h-11zM3 10h9v1h-9zM4 11h7v1h-7z',3:'M12 3h1v1h-1zM9 4h3v1h-3zM4 5h7v1h-7zM3 6h6v1h-6zM10 6h2v1h-2zM2 7h9v1h-9zM2 8h8v1h-8zM2 9h7v1h-7zM2 10h7v1h-7zM3 11h5v1h-5z',4:'M5 2h5v1h-5zM3 3h9v1h-9zM3 4h9v1h-9zM2 5h3v1h-3zM10 5h3v1h-3zM2 6h2v1h-2zM11 6h2v1h-2zM2 7h2v1h-2zM11 7h2v1h-2zM2 8h3v1h-3zM10 8h3v1h-3zM3 9h9v1h-9zM4 10h7v1h-7zM4 11h7v1h-7z',5:'M7 3h3v1h-3zM7 4h4v1h-4zM6 5h5v1h-5zM4 6h7v1h-7zM3 7h9v1h-9zM3 8h9v1h-9zM3 9h9v1h-9zM2 10h11v1h-11zM2 11h2v1h-2zM5 11h7v1h-7z',6:'M5 3h5v1h-5zM4 4h6v1h-6zM11 4h1v1h-1zM4 5h6v1h-6zM11 5h1v1h-1zM3 6h7v1h-7zM11 6h2v1h-2zM2 7h7v1h-7zM11 7h2v1h-2zM2 8h6v1h-6zM9 8h4v1h-4zM2 9h4v1h-4zM7 9h4v1h-4zM3 10h2v1h-2zM6 10h4v1h-4zM7 11h2v1h-2z',7:'M5 2h1v1h-1zM9 2h1v1h-1zM5 3h2v1h-2zM8 3h2v1h-2zM5 4h5v1h-5zM4 5h1v1h-1zM6 5h3v1h-3zM10 5h1v1h-1zM3 6h3v1h-3zM9 6h3v1h-3zM3 7h4v1h-4zM8 7h4v1h-4zM3 8h4v1h-4zM8 8h4v1h-4zM3 9h4v1h-4zM8 9h4v1h-4zM3 10h4v1h-4zM8 10h4v1h-4zM4 11h3v1h-3zM8 11h3v1h-3zM5 12h1v1h-1zM9 12h1v1h-1z',8:'M5 2h5v1h-5zM4 3h7v1h-7zM3 4h9v1h-9zM2 5h11v1h-11zM2 6h3v1h-3zM6 6h3v1h-3zM10 6h3v1h-3zM2 7h11v1h-11zM2 8h11v1h-11zM2 9h11v1h-11zM3 10h9v1h-9zM4 11h8v1h-8zM5 12h7v1h-7z',9:'M4 3h7v1h-7zM4 4h7v1h-7zM3 5h3v1h-3zM9 5h3v1h-3zM2 6h3v1h-3zM10 6h3v1h-3zM2 7h3v1h-3zM10 7h3v1h-3zM3 8h2v1h-2zM10 8h2v1h-2zM3 9h3v1h-3zM9 9h3v1h-3zM4 10h7v1h-7zM4 11h7v1h-7z',10:'M7 2h1v1h-1zM7 3h2v1h-2zM6 4h4v1h-4zM5 5h5v1h-5zM4 6h7v1h-7zM3 7h4v1h-4zM8 7h4v1h-4zM3 8h3v1h-3zM9 8h3v1h-3zM3 9h3v1h-3zM9 9h3v1h-3zM4 10h3v1h-3zM8 10h3v1h-3zM5 11h5v1h-5z',11:'M7 2h1v1h-1zM6 3h3v1h-3zM6 4h3v1h-3zM5 5h5v1h-5zM5 6h5v1h-5zM4 7h7v1h-7zM4 8h7v1h-7zM4 9h3v1h-3zM8 9h3v1h-3zM4 10h2v1h-2zM7 10h4v1h-4zM5 11h5v1h-5zM6 12h3v1h-3z',12:'M9 2h3v1h-3zM5 3h7v1h-7zM4 4h8v1h-8zM3 5h9v1h-9zM3 6h4v1h-4zM8 6h4v1h-4zM2 7h5v1h-5zM9 7h3v1h-3zM2 8h6v1h-6zM9 8h3v1h-3zM3 9h3v1h-3zM7 9h5v1h-5zM3 10h2v1h-2zM6 10h6v1h-6zM5 11h6v1h-6zM6 12h3v1h-3z',13:'M5 3h4v1h-4zM6 4h4v1h-4zM6 5h4v1h-4zM4 6h6v1h-6zM5 7h6v1h-6zM6 8h5v1h-5zM6 9h3v1h-3zM7 10h2v1h-2zM8 11h1v1h-1z',14:'M5 2h5v1h-5zM4 3h8v1h-8zM3 4h4v1h-4zM9 4h3v1h-3zM3 5h2v1h-2zM6 5h3v1h-3zM10 5h3v1h-3zM2 6h3v1h-3zM6 6h2v1h-2zM9 6h4v1h-4zM2 7h11v1h-11zM2 8h3v1h-3zM6 8h6v1h-6zM3 9h2v1h-2zM6 9h6v1h-6zM3 10h3v1h-3zM7 10h3v1h-3zM4 11h3v1h-3zM11 11h1v1h-1zM6 12h5v1h-5z',15:'M5 3h1v1h-1zM9 3h1v1h-1zM5 4h5v1h-5zM5 5h5v1h-5zM4 6h7v1h-7zM3 7h4v1h-4zM8 7h4v1h-4zM4 8h7v1h-7zM5 9h5v1h-5zM5 10h5v1h-5zM5 11h1v1h-1zM9 11h1v1h-1z',16:'M8 2h1v1h-1zM7 3h1v1h-1zM6 4h4v1h-4zM4 5h7v1h-7zM4 6h8v1h-8zM3 7h9v1h-9zM3 8h1v1h-1zM9 8h3v1h-3zM9 9h3v1h-3zM4 10h3v1h-3zM8 10h4v1h-4zM4 11h7v1h-7zM6 12h4v1h-4z',17:'M5 2h5v1h-5zM4 3h7v1h-7zM3 4h5v1h-5zM10 4h2v1h-2zM2 5h7v1h-7zM11 5h2v1h-2zM2 6h7v1h-7zM12 6h1v1h-1zM2 7h7v1h-7zM12 7h1v1h-1zM2 8h7v1h-7zM12 8h1v1h-1zM2 9h7v1h-7zM11 9h2v1h-2zM3 10h5v1h-5zM10 10h2v1h-2zM4 11h4v1h-4zM9 11h2v1h-2zM5 12h5v1h-5z',18:'M7 2h1v1h-1zM7 3h1v1h-1zM4 4h7v1h-7zM5 5h5v1h-5zM4 6h3v1h-3zM8 6h3v1h-3zM2 7h4v1h-4zM9 7h4v1h-4zM4 8h3v1h-3zM8 8h3v1h-3zM4 9h7v1h-7zM6 10h3v1h-3zM7 11h1v1h-1zM7 12h1v1h-1z'};
-const tyIcon = t => `<svg class="tyi" data-tip="${TYPE_KO[t]}" viewBox="0 0 15 15" shape-rendering="crispEdges" role="img" aria-label="${TYPE_KO[t]}"><path fill="${TYPE_C[t]}" d="${TY_BG}"/><path fill="rgba(0,0,0,.2)" d="${TY_SH}"/><path fill="#fff" d="${TY_GL[t]}"/></svg>`;
+const tyIcon = t => `<svg class="tyi" data-tip="${TYPE_KO[t]}" viewBox="0 0 15 15" shape-rendering="crispEdges" role="img" aria-label="${TYPE_KO[t]}"><path fill="${TYPE_C[t]}" d="${TY_BG}"/><path fill="#fff" d="${TY_GL[t]}"/></svg>`;
 const PEN = `<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M8 0h2v1h-2zM7 1h4v1h-4zM6 2h1v1h-1zM9 2h3v1h-3zM5 3h1v1h-1zM8 3h3v1h-3zM4 4h1v1h-1zM7 4h3v1h-3zM3 5h1v1h-1zM6 5h3v1h-3zM2 6h1v1h-1zM5 6h3v1h-3zM2 7h1v1h-1zM4 7h3v1h-3zM1 8h1v1h-1zM3 8h3v1h-3zM1 9h1v1h-1zM4 9h1v1h-1zM1 10h3v1h-3z"/></svg>`;
 const LOCK = `<svg viewBox="0 0 10 10" shape-rendering="crispEdges"><path fill="currentColor" d="M3 0h4v1h-4zM2 1h1v1h-1zM7 1h1v1h-1zM1 2h1v1h-1zM8 2h1v1h-1zM1 3h1v1h-1zM8 3h1v1h-1zM0 4h10v1h-10zM0 5h10v1h-10zM0 6h4v1h-4zM6 6h4v1h-4zM0 7h4v1h-4zM6 7h4v1h-4zM0 8h5v1h-5zM6 8h4v1h-4zM0 9h10v1h-10z"/></svg>`;
 // 기술 카드: 잠겨 있으면 타입만 살짝 보여 주고 친밀도 진행 막대, 만점이면 해금
@@ -8477,7 +8484,7 @@ function applyCfg(c) {
     BUB_OV = d.bub && typeof d.bub === 'object' ? { ...d.bub } : {};
     MON_SC = {}; if (d.monSc && typeof d.monSc === 'object') for (const [k, v] of Object.entries(d.monSc)) if (SPECIES[k] && typeof v === 'number' && v >= .3 && v <= 3) MON_SC[k] = v;
     MON_ROT = {}; if (d.monRot && typeof d.monRot === 'object') for (const [k, v] of Object.entries(d.monRot)) if (SPECIES[k] && typeof v === 'number' && Math.abs(v) <= 90 && v) MON_ROT[k] = v;
-    MON_FLY = {}; if (d.monFly && typeof d.monFly === 'object') for (const [k, v] of Object.entries(d.monFly)) if (SPECIES[k] && typeof v === 'number' && v > 0 && v <= 300) MON_FLY[k] = v;
+    MON_FLY = {}; if (d.monFly && typeof d.monFly === 'object') for (const [k, v] of Object.entries(d.monFly)) if (SPECIES[k] && typeof v === 'number' && v && v >= -300 && v <= 300) MON_FLY[k] = v;
     TIER_KT = {}; if (d.tierK?.k && typeof d.tierK.k === 'object') for (const [t, k] of Object.entries(d.tierK.k)) if (k >= 0 && k <= 5) TIER_KT[t] = +k;
     SP_OFF = new Set((Array.isArray(d.off) ? d.off : []).map(Number).filter(sp => SPECIES[sp]));
     SPOTS = (Array.isArray(d.spots) ? d.spots : []).filter(o => o && SPECIES[o.sp] && isFinite(o.la) && isFinite(o.lo) && o.r >= 30 && o.r <= 50000 && o.x >= 1 && o.x <= 1000).map(o => ({ sp: +o.sp, la: +o.la, lo: +o.lo, r: +o.r, x: +o.x, r2: o.r2 >= 30 && o.r2 <= 50000 ? +o.r2 : 0, rot: Math.abs(+o.rot) <= 180 ? +o.rot || 0 : 0 }));
@@ -8549,7 +8556,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   notiSoon = function () {};   // 작업실에선 '새 소식' 창을 띄우지 않는다
   if (GAL) { save = function () {}; document.documentElement.classList.add('st-gal'); }
   const api = window.__studio = {
-    BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, get MON_ROT() { return MON_ROT; }, get MON_FLY() { return MON_FLY; }, setMonPose(r, f) { MON_ROT = { ...(r || {}) }; MON_FLY = { ...(f || {}) }; }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, get SP_OFF() { return [...SP_OFF]; }, get TIER_KT() { return TIER_KT; }, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
+    BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, get MON_ROT() { return MON_ROT; }, get MON_FLY() { return MON_FLY; }, liftBase, setMonPose(r, f) { MON_ROT = { ...(r || {}) }; MON_FLY = { ...(f || {}) }; }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, get SP_OFF() { return [...SP_OFF]; }, get TIER_KT() { return TIER_KT; }, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
     ICO: { berry: ICO_BERRY, brush: ICO_BRUSH, hand: ICO_HAND, pen: PEN, egg: EGG_SVG },   // v3.66: 작업실이 게임 아이콘을 그대로 쓴다
     get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, PET_FR, WASH_FR1: WASH_FR, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]), HATCH_KM: [0, ...GRADE.slice(1).map(G => G.km)] }; },
     get cfg() { return CFG; }, get SPOTS() { return SPOTS; },
