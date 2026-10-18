@@ -5550,7 +5550,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.30';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.31';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7429,7 +7429,7 @@ const THEMES = {
   sports:  { n: '운동장', kw: /운동장|경기장|체육관|스타디움|헬스|피트니스|야구장|축구장|트랙|육상/, t: [2, 1, 13], hab: [], fx: /단련|근육|펀치|킥|격투/ },
   shrine:  { n: '절·묘지', kw: /절$|사찰|암자|묘지|추모|성당|교회|사당|궁$|궁궐|능$/, t: [8, 14, 17], hab: [], fx: /영혼|유령|저주|무덤|혼/ },
   factory: { n: '공장', kw: /공장|공단|산업|발전소|변전소|공사|창고|물류/, t: [9, 13, 4], hab: [8], fx: /쇠|금속|강철|전기|기계/ },
-  zoo:     { n: '동물원', kw: /동물원|목장|농장|아쿠아리움|수족관/, t: [1, 11, 12], hab: [3], fx: /무리|목장|우유/ },
+  zoo:     { n: '동물원', kw: /동물원|목장|농장/, t: [1, 11, 12], hab: [3], fx: /무리|목장|우유/ },
 };
 // 더 구체적인 장소 106곳 (2026-10-13 추가)
 const PLACES = {
@@ -7539,15 +7539,16 @@ const PLACES = {
   royaltomb: { n: '왕릉·고분', kw: /왕릉|고분|천마총|능$|릉$/, t: [8, 5, 6], fx: /무덤|고대|옛날|유적/, sp: [343, 622, 562, 355, 201] },
   ruins: { n: '유적지', kw: /유적|사적지|석탑|석불|마애불|고인돌|지석묘|비석|당간지주|선사|화석/, t: [6, 8, 14], fx: /고대|화석|옛날|유적/, sp: [138, 140, 345, 347, 566, 564] },
   hanok: { n: '한옥마을', kw: /한옥|민속촌|전통마을|고택|향교|서원|종가|민속마을|생가/, t: [1, 12, 8], fx: /옛날|전통|오래된|풍경/, sp: [83, 708, 433, 200, 1012] },
+  aquarium: { n: '아쿠아리움', kw: /아쿠아리움|수족관|아쿠아플라넷|씨라이프|해양관|오셔나리움/, t: [11, 15], hab: [7], fx: /바다|물고기|헤엄|깊은|산호/, sp: [129, 118, 170, 222, 363, 369, 456, 594, 72, 90, 366, 131] },   // v5.31 경완
 };
 Object.assign(THEMES, PLACES);
 // v5.25 경완: 작업실 '장소 특성' 탭에서 특성마다 잘 나오는 포켓몬(th.sp, 가중치 +20)을 정한다. 배포 데이터 thSp[특성] = [종…] (없으면 원래 목록)
 const TH_SP0 = Object.fromEntries(Object.entries(THEMES).map(([k, v]) => [k, [...(v.sp || [])]])); let TH_SP_OV = {};
-/* v5.26 경완: 작업실에서 장소 특성의 타입·키워드를 고치거나 특성을 지울 수 있다. TH_ALL = 원래 특성 전부(객체 그대로라 sp 도 유지), thOv = { 키: { t: [타입], kw: [낱말], fx: [도감 설명 낱말, v5.29], del: 1 } } */
-const TH_ALL = { ...THEMES }, TH_BASE = Object.fromEntries(Object.entries(THEMES).map(([k, v]) => [k, { t: [...(v.t || [])], kw: v.kw, fx: v.fx }])); let TH_OV = {};
+/* v5.26 경완: 작업실에서 장소 특성의 타입·키워드를 고치거나 특성을 지울 수 있다. TH_ALL = 원래 특성 전부(객체 그대로라 sp 도 유지), thOv = { 키: { t: [타입], kw: [낱말], fx: [도감 설명 낱말, v5.29], n: 이름 (v5.31), del: 1 } } */
+const TH_ALL = { ...THEMES }, TH_BASE = Object.fromEntries(Object.entries(THEMES).map(([k, v]) => [k, { n: v.n, t: [...(v.t || [])], kw: v.kw, fx: v.fx }])); let TH_OV = {};
 const thRe = L => { const w = (L || []).map(x => String(x).trim()).filter(Boolean).map(x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')); return w.length ? new RegExp(w.join('|')) : /(?!)/; };
 function applyThOv(o) { TH_OV = o && typeof o === 'object' ? o : {}; for (const k in THEMES) delete THEMES[k];
-  for (const [k, th] of Object.entries(TH_ALL)) { const v = TH_OV[k] || {}; th.t = Array.isArray(v.t) ? v.t.map(Number).filter(t => TYPE_KO[t] && t > 0) : [...TH_BASE[k].t]; th.kw = Array.isArray(v.kw) ? thRe(v.kw) : TH_BASE[k].kw; th.fx = Array.isArray(v.fx) ? (v.fx.length ? thRe(v.fx) : null) : TH_BASE[k].fx; th.ex = Array.isArray(v.ex) ? v.ex.map(Number) : []; if (!v.del) THEMES[k] = th; } }   // ex: 이 특성에서 뺀 포켓몬 (특성 가중치를 안 받음)
+  for (const [k, th] of Object.entries(TH_ALL)) { const v = TH_OV[k] || {}; th.n = typeof v.n === 'string' && v.n.trim() ? v.n.trim().slice(0, 20) : TH_BASE[k].n; th.t = Array.isArray(v.t) ? v.t.map(Number).filter(t => TYPE_KO[t] && t > 0) : [...TH_BASE[k].t]; th.kw = Array.isArray(v.kw) ? thRe(v.kw) : TH_BASE[k].kw; th.fx = Array.isArray(v.fx) ? (v.fx.length ? thRe(v.fx) : null) : TH_BASE[k].fx; th.ex = Array.isArray(v.ex) ? v.ex.map(Number) : []; if (!v.del) THEMES[k] = th; } }   // ex: 이 특성에서 뺀 포켓몬 (특성 가중치를 안 받음)
 function applyThSp(o) { TH_SP_OV = {}; for (const k in THEMES) { const L = o?.[k]; if (Array.isArray(L)) { TH_SP_OV[k] = [...new Set(L.map(Number).filter(sp => SPECIES[sp]))].slice(0, 60); THEMES[k].sp = TH_SP_OV[k]; } else THEMES[k].sp = [...TH_SP0[k]]; } }
 // 알 하나의 테마 목록: 아이폰이 보낸 주변 장소 종류(tags) + 장소 이름에서 찾은 낱말 + 밤에 주운 알
 function eggThemes(e) {
