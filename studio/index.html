@@ -493,7 +493,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.71';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.72';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -1980,7 +1980,7 @@ const gKey = o => [o.la, o.lo, o.r, o.r2 || o.r, o.rot || 0].join();
 const grpOf = (S, i) => { if (!S[i]) return []; const k = gKey(S[i]); return S.map((s, j) => gKey(s) === k ? j : -1).filter(j => j >= 0); };
 const grpsOf = S => { const seen = new Set(), out = []; S.forEach((s, i) => { if (seen.has(i)) return; const G = grpOf(S, i); G.forEach(j => seen.add(j)); out.push(G); }); return out; };
 const SHAPE = ['la', 'lo', 'r', 'r2', 'rot'];
-let geoJoin = -1, geoSugArm = false;   // 이 칸의 반경에 넣는 중 (목록에서 누르면 그 반경으로)
+let geoJoin = -1, geoClrArm = false;   // 이 칸의 반경에 넣는 중 (목록에서 누르면 그 반경으로)
 const geoHist = [];   // v2.70 경완: Ctrl(⌘)+Z = 지도에서 방금 바꾼 것 되돌리기
 function setSpots(L, noHist) { if (!noHist) { const cur = cl(spotsOf()); if (!same(cur, L)) { geoHist.push(cur); if (geoHist.length > 60) geoHist.shift(); } } if (same(L, ORIG.spots || [])) delete D.spots; else D.spots = L; saveDraft(); }
 addEventListener('keydown', e => { if (view === 'geo' && e.key === 'Escape' && geoJoin >= 0) { geoJoin = -1; geoSide(); } });
@@ -2129,7 +2129,7 @@ function geoPut(i, p) { const L2 = cl(spotsOf()), sk = SHAPE.filter(k => k in p)
   setSpots(L2); geoDraw(); geoSide(); }
 function geoDel(i) { const L2 = cl(spotsOf()), G = grpOf(L2, i).filter(j => j !== i).map(j => j > i ? j - 1 : j), [d] = L2.splice(i, 1); setSpots(L2); geoSel.i = G.length ? G[0] : -1; if (!G.length) geoJoin = -1; else if (geoJoin >= 0) geoJoin = G[0]; geoDraw(); geoSide(); toast(`${spName(d.sp)}${eul(spName(d.sp))} 지도에서 뺐어요`); }
 geoDraw.z = 0;
-function geoPick(i, fly) { if (geoJoin >= 0 && !grpOf(spotsOf(), geoJoin).includes(i)) geoJoin = -1; geoSel.i = i; geoDraw(); geoSide(); const o = spotsOf()[i]; if (fly && o) geoM.flyToBounds(L.latLng(o.la, o.lo).toBounds(o.r * 2.6), { duration: .6, maxZoom: 17 }); toInsp('#geoI'); }
+function geoPick(i, fly) { if (geoJoin >= 0 && !grpOf(spotsOf(), geoJoin).includes(i)) geoJoin = -1; geoSel.i = i; geoDraw(); geoSide(); const o = spotsOf()[i]; if (fly && o) geoM.flyToBounds(L.latLng(o.la, o.lo).toBounds(o.r * 2.6), { duration: .6, maxZoom: 17 }); if (fly && mobile()) $('#geoBox').scrollIntoView({ behavior: 'smooth', block: 'start' }); }   // v2.72 경완: 지도에서 누를 땐 화면이 안 넘어가게
 function geoAddTo(sp, i) { const L2 = cl(spotsOf()), b = L2[i]; if (!b) return;
   if (grpOf(L2, i).some(j => geoSp(L2[j].sp) === geoSp(sp))) { toast(`${spName(sp)}${spName(sp) && eul(spName(sp)) === '을' ? '은' : '는'} 이미 이 반경에 있어요`); return; }
   const n = { sp, la: b.la, lo: b.lo, r: b.r, x: 20 }; if (b.r2 && b.r2 !== b.r) n.r2 = b.r2; if (b.rot) n.rot = b.rot; L2.push(n); setSpots(L2); geoSel.i = L2.length - 1; if (geoJoin >= 0) geoJoin = geoSel.i; geoDraw(); geoSide();
@@ -2169,8 +2169,8 @@ function geoSide() {
       <div class="gsl"><span>크기</span><input id="gsRi" type="range" min="0" max="100" step="1" value="${vOfR(o.r)}" aria-label="크기"><b id="gsR">${geoSz(o)}</b></div>
       <div class="gsl"><span>세기</span><input id="gsXi" type="range" min="15" max="100" step="1" value="${vOfX(o.x)}" aria-label="세기"><b id="gsX">×${o.x}</b></div>
       <div class="gst" id="gsStat">${geoStat(o)}</div>`}${join}${help}${isEll(o) ? '<button class="chip" id="gsCir">동그라미로 되돌리기</button>' : ''}</div>` : `<div class="small mute">아래 포켓몬을 지도로 끌어다 놓으세요. 누르기만 하면 지도 가운데에 놓여요. 놓은 곳 반경 안에서 주운 알은 그 포켓몬일 확률이 세기만큼 올라가요. 지도 위 포켓몬 위에 끌어다 놓으면 같은 반경에 들어가요.</div>
-      <div class="card" style="gap:6px"><b>전국 추천 배치</b><div class="small mute">알에서 나오는 포켓몬마다 타입에 맞는 실제 장소(전국 ${GEO_PLACES.length}곳)에 1~3곳씩 놓아요. 흔한 포켓몬 ×5, 드문 티어 ×4, 전설·환상 ×3. 작업본에만 들어가니 둘러보고 고친 다음 저장하세요. Ctrl(⌘)+Z 로 되돌릴 수 있어요.</div>
-      <button class="chip${geoSugArm ? ' on' : ''}" id="gsSug">${geoSugArm ? `지금 놓은 ${S.length}마리를 바꿔요. 한 번 더 누르면 불러와요` : '추천 배치 불러오기'}</button></div>`)
+      <div class="card" style="gap:6px"><b>전국 추천 배치</b><div class="small mute">알에서 나오는 포켓몬마다 타입에 맞는 실제 장소(전국 ${GEO_PLACES.length}곳)에 1~3곳씩 놓아요. 흔한 포켓몬 ×5, 드문 티어 ×4, 전설·환상 ×3. 지금 놓아 둔 포켓몬은 그대로 두고 더하기만 해요. 작업본에만 들어가니 둘러보고 고친 다음 저장하세요. 모두 빼려면 초기화.</div>
+      <div class="row" style="gap:6px;flex-wrap:wrap"><button class="chip" id="gsSug">추천 배치 불러오기</button>${S.length ? `<button class="chip${geoClrArm ? ' on' : ''}" id="gsClr">${geoClrArm ? `${S.length}마리를 모두 빼요. 한 번 더 누르면 초기화` : '초기화'}</button>` : ''}</div></div>`)
     + (S.length ? (() => { const R = grpsOf(S); return `<div><h4 style="margin:0 0 6px">놓은 포켓몬 <span class="num mute">${S.length}</span>${R.length !== S.length ? ` <span class="small mute">· ${R.length}곳</span>` : ''}</h4><div class="gsp">${R.map(g => { const on = g.includes(geoSel.i); return `<button data-gs="${on ? geoSel.i : g[0]}" class="${on ? 'on' : ''}"><span class="gim">${g.slice(0, 4).map(j => `<img alt="" src="${thumb(S[j].sp)}">`).join('')}</span><span>${geoPlace(S[g[0]]) ? `<b>${esc(geoPlace(S[g[0]]))}</b> ` : ''}${g.map(j => esc(spName(S[j].sp))).join(', ')}</span><em>${geoSz(S[g[0]])} · ${g.length > 3 ? g.length + '마리' : g.map(j => '×' + S[j].x).join(' ')}</em></button>`; }).join('')}</div></div>`; })() : '')
     + `<div><h4 style="margin:0 0 6px">포켓몬 <span class="small mute">${geoSide.sps.length}종 · 진화한 포켓몬은 진화 전 알로</span></h4><div class="search" style="margin-bottom:6px"><input id="gpQ" value="${esc(geoQ)}" placeholder="이름이나 번호" autocomplete="off"></div>
       <div class="gsort"><span class="small mute">정렬</span><div class="seg2">${[['gen', '세대'], ['tier', '티어']].map(([k, n]) => `<button class="chip${geoSort === k ? ' on' : ''}" data-gso="${k}" aria-pressed="${geoSort === k}">${n}</button>`).join('')}</div></div>
@@ -2178,7 +2178,10 @@ function geoSide() {
       <div class="grid" id="gpal"></div></div>`;
   geoPal();
   $('#gpQ').oninput = e => { geoQ = e.target.value; geoPal(); };   // v2.68 경완: 목록만 다시 그린다 (입력칸을 다시 만들면 한글 자음·모음이 떨어진다)
-  if ($('#gsSug')) $('#gsSug').onclick = () => { if (S.length && !geoSugArm) { geoSugArm = true; geoSide(); return; } geoSugArm = false; const L2 = geoSuggest(); setSpots(L2); geoSel.i = -1; geoDraw(); geoSide(); toast(`추천 배치 ${L2.length}마리 · ${grpsOf(L2).length}곳을 작업본에 넣었어요. 둘러보고 저장해 주세요`); geoM.flyTo([36.4, 127.8], 7, { duration: .6 }); };
+  // v2.72 경완: 추천 배치는 지금 놓은 것에 더하기만 (같은 포켓몬이 같은 곳에 이미 있으면 건너뜀). 지도는 그 자리 그대로. 다 지우기는 '초기화'로만
+  if ($('#gsSug')) $('#gsSug').onclick = () => { const cur = cl(spotsOf()), have = new Set(cur.map(o => [o.sp, o.la, o.lo].join())), add = geoSuggest().filter(o => !have.has([o.sp, o.la, o.lo].join()));
+    if (!add.length) { toast('추천 배치가 이미 다 들어 있어요'); return; } setSpots([...cur, ...add]); geoSel.i = -1; geoDraw(); geoSide(); toast(`추천 배치 ${add.length}마리를 더했어요${cur.length ? ` (놓아 둔 ${cur.length}마리는 그대로)` : ''}. 둘러보고 저장해 주세요`); };
+  if ($('#gsClr')) $('#gsClr').onclick = () => { if (!geoClrArm) { geoClrArm = true; geoSide(); setTimeout(() => { if (geoClrArm) { geoClrArm = false; if (view === 'geo') geoSide(); } }, 4000); return; } geoClrArm = false; setSpots([]); geoSel.i = -1; geoJoin = -1; geoDraw(); geoSide(); toast('지도의 포켓몬을 모두 뺐어요. Ctrl(⌘)+Z 로 되돌릴 수 있어요'); };
   if (!o) return;
   const ri = $('#gsRi'), xi = $('#gsXi'), lay = geoLay[geoSel.i];
   $('#gsJoin').onclick = () => { geoJoin = J ? -1 : geoSel.i; geoSide(); };
