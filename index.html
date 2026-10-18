@@ -5550,7 +5550,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.29';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.30';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7562,7 +7562,7 @@ function eggThemes(e) {
 }
 const NIGHT = { n: '밤', t: [8, 17], hab: [], fx: /밤|어둠|달/ };
 const eggPlace = e => e.spN || shortPlace(e.place || '');   // v5.27: 작업실 반경 안에서 주운 알은 반경 이름으로
-const TH_HINT_MIN = 13;   // v5.28 경완: 힌트는 알 속 포켓몬에게 가장 크게 작용한 특성 하나만, 가중치 ×13 이상(타입이 맞거나 직접 넣은 포켓몬)일 때만
+const TH_HINT_MIN = 20;   // v5.28 경완: 힌트는 알 속 포켓몬에게 가장 크게 작용한 특성 하나만 / v5.30: 가중치 ×20 이상일 때만 (직접 넣은 포켓몬, 또는 타입+도감 낱말처럼 여러 개가 겹칠 때)
 function themeHint(e) { const ks = eggThemes(e); if (!ks.length) return '어떤 기운인지 잘 모르겠다'; const sp = eggSp(e); let best = null, bw = 0;
   for (const k of ks) { const th = k === 'night' ? NIGHT : THEMES[k]; if (!th) continue; const w = themeW(sp, [th]); if (w > bw) { bw = w; best = th; } }
   return best && bw >= TH_HINT_MIN ? `${best.n}의 기운이 느껴지는 것 같다` : '어떤 기운인지 잘 모르겠다'; }
