@@ -1,5 +1,5 @@
-# 포켓몬 키우기 아이폰 앱 + 애플워치 앱. Mac 에서 `xcodegen` 을 실행하면 PokeRun.xcodeproj 가 만들어진다.
-name: PokeRun
+# 포켓몬 키우기 아이폰 앱 + 애플워치 앱. Mac 에서 `xcodegen` 을 실행하면 PokeGrow.xcodeproj 가 만들어진다.
+name: PokeGrow
 options:
   bundleIdPrefix: com.flyweb123
   deploymentTarget:
@@ -16,12 +16,12 @@ settings:
     SWIFT_VERSION: "5.0"
     ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
 targets:
-  PokeRun:
+  PokeGrow:
     type: application
     platform: iOS
-    sources: [PokeRun]
+    sources: [PokeGrow]
     info:
-      path: PokeRun/Info.plist
+      path: PokeGrow/Info.plist
       properties:
         CFBundleDisplayName: 포켓몬 키우기
         CFBundleDevelopmentRegion: ko
@@ -39,7 +39,7 @@ targets:
         NSLocationAlwaysAndWhenInUseUsageDescription: 휴대폰이 잠겨 있어도 걸으면 알을 줍고, 주운 동네를 남기려고 위치를 써요.
         NSHealthShareUsageDescription: 애플워치나 다른 앱으로 달린 기록을 런닝 기록과 알에 반영하려고 건강 앱의 운동 기록을 읽어요.
     entitlements:
-      path: PokeRun/PokeRun.entitlements
+      path: PokeGrow/PokeGrow.entitlements
       properties:
         com.apple.developer.healthkit: true
         com.apple.developer.healthkit.access: []
@@ -48,14 +48,14 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.flyweb123.pokerun
         TARGETED_DEVICE_FAMILY: "1"
     dependencies:
-      - target: PokeRunWatch
+      - target: PokeGrowWatch
 
-  PokeRunWatch:
+  PokeGrowWatch:
     type: application
     platform: watchOS
-    sources: [PokeRunWatch]
+    sources: [PokeGrowWatch]
     info:
-      path: PokeRunWatch/Info.plist
+      path: PokeGrowWatch/Info.plist
       properties:
         CFBundleDisplayName: 포켓몬 키우기
         CFBundleDevelopmentRegion: ko
@@ -67,7 +67,7 @@ targets:
         NSHealthUpdateUsageDescription: 런닝을 운동 기록으로 저장해요.
         ITSAppUsesNonExemptEncryption: false
     entitlements:
-      path: PokeRunWatch/PokeRunWatch.entitlements
+      path: PokeGrowWatch/PokeGrowWatch.entitlements
       properties:
         com.apple.developer.healthkit: true
         com.apple.developer.healthkit.access: []
