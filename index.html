@@ -5558,7 +5558,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.48';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.49';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8746,8 +8746,8 @@ async function tutFlow() {
     { c: '부화', t: '#hatchStage', allow: '#hatch', hideOnTap: 1, until: () => el('#hatchOk'), after: 4500, s: '알을 톡톡 두드려서\n깨 보렴!' },
     { c: '부화', t: '#hatchStage', s: () => `와! ${J2(born2(), '이', '가')} 태어났구나!\n새 포켓몬을 만나면\n골드도 받는단다.` },
     { c: '부화', t: '#hatchSend', tap: '#hatchSend', until: () => S.mons.length > 0, s: '\'필드로\'를 누르면\n포켓몬이 필드에\n나간단다.' },
-    { c: '부화', t: '#hatchOk', tap: '#hatchOk', until: () => $('#hatch').hidden, s: '\'확인\'을 눌러\n창을 닫아 보렴.' },
-    { c: '필드', pre: async () => { sheetsOff(); await wait(300); const m = mon(); if (m) { try { const cx = ($('#wrap').clientWidth / 2 - S.ox) / scale, wt = $('#wrap').getBoundingClientRect().top, ys = 72 + 158 + 22 + (m.h || 48) * scale; place(m, cx, clamp((ys - wt - S.oy) / scale, MIN_Y + 10, MAX_Y - 5));   /* 맨 위 박사 창 바로 아래, 정보창에 가리지 않는 곳 */ } catch (e) { m.y = 330; } m.tx = m.x; m.ty = m.y; m.goal = null; pin = { x: m.x, y: m.y }; } await wait(300); }, t: monEl, s: () => `${J2(born(), '이', '가')} 필드에 나왔어!\n포켓몬들은 필드에서\n놀고, 먹고, 자고, 어울린단다.` },
+    { c: '부화', run: () => { placeMon(); return null; }, t: '#hatchOk', tap: '#hatchOk', until: () => $('#hatch').hidden, s: '\'확인\'을 눌러\n창을 닫아 보렴.' },
+    { c: '필드', pre: async () => { if (!pin) placeMon(); sheetsOff(); await wait(600); }, t: monEl, s: () => `${J2(born(), '이', '가')} 필드에 나왔어!\n포켓몬들은 필드에서\n놀고, 먹고, 자고, 어울린단다.` },
     { c: '필드', t: monEl, tap: () => monEl(), until: () => S.sel === mon(), s: () => `${J2(born(), '을', '를')} 눌러 보렴!` },
     { c: '친밀도', t: frRow, s: () => `먼저 친밀도란다.\n${J2(born(), '이', '가')} ${nm}${hasBat(nm) ? '이' : ''}를\n얼마나 좋아하는지 보여 주지.` },
     { c: '친밀도', t: '#pMoves', s: '친밀도가 만점이 되면\n그 포켓몬만의\n특별한 기술을 쓸 수 있단다!' },
@@ -8782,6 +8782,8 @@ async function tutFlow() {
     { c: '끝', pre: async () => { sheetsOff(); await wait(300); }, s: `설명은 여기까지란다!\n이제 밖으로 나가 걸어 보렴.\n걸을수록 알이 자란단다.` },
     { c: '끝', s: `많이 걷고 돌봐 줘서\n연구에 필요한 도감을\n채워 주면 좋겠구나!\n잘 부탁한다, ${nm}!` },
   ];
+  // v5.49 경완: 필드로 나간 포켓몬은 부화 창이 닫히기 전에 미리 자리를 잡는다 (창이 닫힌 뒤 옮기면 위치가 튀어 보였다)
+  function placeMon() { const m = mon(); if (!m) return; try { const cx = ($('#wrap').clientWidth / 2 - S.ox) / scale, wt = $('#wrap').getBoundingClientRect().top, ys = 72 + 158 + 22 + (m.h || 48) * scale; place(m, cx, clamp((ys - wt - S.oy) / scale, MIN_Y + 10, MAX_Y - 5));   /* 맨 위 박사 창 바로 아래, 정보창에 가리지 않는 곳 */ } catch (e) { m.y = 330; } m.tx = m.x; m.ty = m.y; m.goal = null; pin = { x: m.x, y: m.y }; }
   function joyDance(m) { if (!m) return; const f0 = m.face || 1; try { emote(m, '♥', 'heart', 2.2); } catch (e) {} for (let k = 0; k < 5; k++) setTimeout(() => { m.face = k % 2 ? f0 : -f0; if (k % 2 === 0) try { anim(m, 'phop'); } catch (e) {} }, 300 + k * 190); setTimeout(() => { m.face = f0; }, 300 + 5 * 190 + 50); try { sfx('newdex'); } catch (e) {} }
   // 문지르는 손 예시: 손 그림이 포켓몬 위를 좌우로 오가며 빛줄기를 남기고, 한 번 오갈 때마다 포켓몬이 좋아한다
   function rubDemo() { const h = document.createElement('i'); h.className = 'tu-hand'; h.innerHTML = ICO_HAND; document.body.append(h); let on = true, t0 = performance.now(), last = -1, raf2 = 0;
