@@ -2465,6 +2465,7 @@ let dlgHold = null;   // 쓰다듬기처럼 잠시 상태창에 붙잡아 둘 �
 const USER_LOG_HOLD = 5000;
 function holdLog(e, ms) { dlgHold = { e, until: performance.now() + ms }; clearTimeout(holdLog.t); holdLog.t = setTimeout(renderDlg, ms + 50); }
 function log(html, who = [], big = false) {
+  if (logMute) return;   // v5.44: 타이틀 구경 포켓몬
   const dg = $('#dlg'); if (dg && dg.classList.contains('folded') && who.some(watching)) foldDlg(false, true);
   const e = { t: S.clock, html, who: who.map(m => m.uid), big };
   S.log.unshift(e); while (S.log.length > LOG_MAX) S.log.pop();
@@ -5557,7 +5558,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.43';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.44';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8250,7 +8251,7 @@ frTestSync();
 { let arm = 0;
   $('#allReset').onclick = () => { const b = $('#allReset');
     if (Date.now() - arm > 3000) { arm = Date.now(); sfx('tap'); b.textContent = '한 번 더 누르면 모두 지워져요'; setTimeout(() => { if (Date.now() - arm >= 3000) b.textContent = '전체 초기화 (테스트)'; }, 3100); return; }
-    saveFrozen = true; try { localStorage.removeItem(KEY); ['pk-mgr-tab', 'pk-run-tab'].forEach(k => localStorage.removeItem(k)); } catch (e) {} location.reload(); }; }
+    saveFrozen = true; try { localStorage.removeItem(KEY); ['pk-mgr-tab', 'pk-run-tab', 'pk-tests'].forEach(k => localStorage.removeItem(k));   /* v5.44 경완: 초기화하면 테스트 버튼은 꺼진 채로 시작 */ } catch (e) {} location.reload(); }; }
 // 테스트: 짝꿍들의 진화 거리를 다 채운다 (진화하기 버튼 확인용)
 $('#budFill').onclick = () => { let n = 0; for (const b of S.buds) { const P = boxOf(b.pid); n++; if (evoKids(b.sp, P).length) b.km = Math.max(b.km, Math.min(evoNeed(b), b.km + 5)); if (P) { P.km = b.km; P.runKm = (P.runKm || 0) + 5; addFr(b.pid, Math.round(5 * WALK_FR)); } }   // 테스트: 누를 때마다 5km 같이 달린 셈 (v5.04 경완: 친밀도도 진짜처럼 1km에 WALK_FR)
   log(n ? `짝꿍 ${n}마리와 5km 달렸다. (테스트)` : '짝꿍이 없다. (테스트)', [], true); sfx('tap'); save(); renderBuddy(); };
@@ -8540,7 +8541,7 @@ async function loadCfg() {
 }
 // ---------- v5.38 경완: 처음 시작 오프닝 (포켓몬스터 골드 오프닝 패러디 — Mr.강) + 첫 화면 튜토리얼 ----------
 const KANG = 'data:image/png;base64,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';
-let tutOn = false;   // v5.39 경완: 오프닝·튜토리얼 동안은 알림창이 저절로 뜨지 않는다 (튜토리얼이 직접 띄운다)
+let tutOn = false, logMute = false;   // logMute: 타이틀 구경 포켓몬이 한 일은 일지에 남기지 않는다   // v5.39 경완: 오프닝·튜토리얼 동안은 알림창이 저절로 뜨지 않는다 (튜토리얼이 직접 띄운다)
 const INTRO_ON = () => /[?&]intro/.test(location.search) || !/[?&]studio/.test(location.search);
 function introCss() { if ($('#introCss')) return; const st = document.createElement('style'); st.id = 'introCss'; st.textContent = `
 #intro{position:fixed;inset:0;z-index:6500;background:#fff;display:flex;flex-direction:column;align-items:center;font-family:var(--px);color:var(--win-ink);-webkit-user-select:none;user-select:none;touch-action:manipulation;transition:background-color .5s steps(4,end),opacity .6s steps(5,end);padding-top:env(safe-area-inset-top)}
@@ -8574,7 +8575,7 @@ body.inTitle,body.inTitle #app{background:#24482a!important}body.inTitle #app{ov
 #tut.hide{background:none!important}#tut.hide .tu-box,#tut.hide .tu-mark{visibility:hidden}#tut.hide .tu-hole{opacity:0}
 #tut .tu-box{position:fixed;left:50%;transform:translateX(-50%);width:min(560px,calc(100% - 24px));display:flex;align-items:flex-end;gap:8px}
 #tut .tu-box img{flex:none;width:76px;height:116px;image-rendering:pixelated;margin-bottom:-4px;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35))}
-#tut .tu-box .win{flex:1;min-width:0;height:158px;overflow:hidden;box-sizing:border-box;padding:14px 16px 20px;font-size:15px;line-height:1.6;white-space:pre-wrap;position:relative}
+#tut .tu-box .win{flex:1;min-width:0;height:158px;box-sizing:border-box;padding:14px 16px 20px;font-size:15px;line-height:1.6;white-space:pre-wrap;position:relative}
 #tut.do{pointer-events:none}#tut.do .tu-box{pointer-events:none}#tut .tu-box{transition:top .25s steps(4,end)}#tut .tu-n{position:absolute;left:14px;top:-14px;background:var(--frame);color:#fff;font-size:12px;padding:2px 8px}
 `; document.head.append(st); }
 // 글자를 한 자씩 띄우고(누르면 바로 끝까지), 다 뜨면 ▼ 깜빡이며 누를 때까지 기다린다
@@ -8601,6 +8602,8 @@ function sleepAnim(el, sp, px) {
 async function titleFlow() {
   introCss(); const wait = ms => new Promise(r => setTimeout(r, ms));
   const keepLog = S.log.slice(), keepHtml = logEl.innerHTML, fz0 = saveFrozen; saveFrozen = true; document.body.classList.add('inTitle');
+  // v5.44 경완: 타이틀에서 생긴 일(일지·관계·떨어진 열매)은 필드에 남기지 않는다
+  logMute = true; const rel0 = JSON.stringify(S.rel || {}), last0 = JSON.stringify(S.lastScene || {}), ber0 = new Set(S.berries);
   const tv = document.createElement('div'); tv.id = 'title'; tv.innerHTML = `<div class="ti-logo"><b>포켓몬 키우기</b><span>PokeGrow</span></div><button class="ti-go" type="button">게임 시작하기</button><i class="ti-white"></i>`;
   document.body.append(tv);
   // 음악 (27. Professor Oak, 가져온 파일 'title'이 있을 때만): 브라우저는 한 번 누르기 전엔 소리를 막을 수 있어서, 막혀 있으면 첫 터치 때 이어서 나온다
@@ -8645,6 +8648,8 @@ async function titleFlow() {
   removeEventListener('pointerdown', wake, true); pan.cancel(); wrap.style.transform = ''; wrap.style.transformOrigin = ''; S.wxT = wx0; CLOCK_OFF = off0; sky0();
   demoOff = true; demo.forEach(m => { if (S.mons.includes(m)) removeMon(m, true); });
   S.log = keepLog; logEl.innerHTML = keepHtml; saveFrozen = fz0; document.body.classList.remove('inTitle');
+  S.rel = JSON.parse(rel0); S.lastScene = JSON.parse(last0); S.berries.filter(b => !ber0.has(b)).forEach(b => { try { eatBerry(b); } catch (e) {} });
+  try { renderDlg(); } catch (e) {} setTimeout(() => { logMute = false; }, 3000);   // 기술 뒤늦은 말(0.5~3초 뒤)까지 막는다 (그동안은 오프닝 화면이 덮고 있다)
   return () => tv.remove();   // 오프닝 화면이 위에 깔린 뒤에 지운다 (그 사이 필드가 비치지 않게)
 }
 async function introFlow() {
@@ -8704,19 +8709,22 @@ async function tutFlow() {
   const el = t => { const e = typeof t === 'function' ? t() : t && document.querySelector(t); if (e && !e.closest) return e; return e && !e.closest('[hidden]') && e.getClientRects().length ? e : null; };
   const mon = () => S.mons[0], monEl = () => { const m = mon(); if (!m || !m.el.isConnected) return null; const w = $('#wrap').getBoundingClientRect(), k = scale, mw = (m.w || 48) * k, mh = (m.h || 48) * k, x = w.left + S.ox + m.x * k, y = w.top + S.oy + (m.y - (m.lift || 0)) * k; const r = { left: x - mw / 2, top: y - mh, width: mw, height: mh, right: x + mw / 2, bottom: y }; return { getBoundingClientRect: () => r, contains: e => m.el.contains(e) }; }, born = () => { const m = mon(); return m ? m.name : '포켓몬'; };
   const J2 = (w, a, b) => w + (hasBat(w) ? a : b), sheetsOff = () => { try { select(null); } catch (e) {} closeToggles(); hideSheets(); };
+  const inInfo = e => !!(e && (e.closest ? e.closest('#info') : e.inInfo));
+  // 친밀도 줄만 (글자와 하트를 감싸는 칸만 비춘다)
+  const frRow = () => { const f = document.querySelector('#pbars .frbar'); if (!f || f.closest('[hidden]') || !f.getClientRects().length) return null; const A = f.firstElementChild.getBoundingClientRect(), B = f.lastElementChild.getBoundingClientRect(), r = { left: Math.min(A.left, B.left), top: Math.min(A.top, B.top), right: Math.max(A.right, B.right), bottom: Math.max(A.bottom, B.bottom) }; r.width = r.right - r.left; r.height = r.bottom - r.top; return { getBoundingClientRect: () => r, inInfo: true }; };
   const barOf = n => [...document.querySelectorAll('#pbars .bar')].find(b => b.firstElementChild?.textContent.trim() === n) || null;
   const bag1 = () => { const e = S.bag.find(x => x.g === 1); return e && document.querySelector(`#bagGrid .bslot[data-id="${e.id}"]`); };
   const inc1 = () => S.eggs.find(x => x.g === 1), incSlot = () => { const i = S.eggs.indexOf(inc1()); return i >= 0 ? document.querySelectorAll('#eggs .eslot')[i] : null; };
   const T = [
     { c: '시작', hold: 1800, clear: 1, s: `여기가 ${nm}의 필드란다!\n지금은 아무도 없지만\n곧 포켓몬들로 북적일 거야.` },
     { c: '알 받기', pre: () => notiShow(true), hold: 1600, t: '#noti .win', s: '오, 마침 알이 도착했구나!\n내가 보낸 선물이란다.' },
-    { c: '알 받기', t: '#notiOk', tap: '#notiOk', until: () => !notiOpen, after: 1500, s: '\'확인\'을 눌러서\n알을 받아 보렴!' },
+    { c: '알 받기', t: '#notiOk', tap: '#notiOk', until: () => !notiOpen, after: 1900, s: '\'확인\'을 눌러서\n알을 받아 보렴!' },
     { c: '알 받기', t: '#openRun', tap: '#openRun', until: () => !$('#run').hidden, s: '받은 알은 \'알\' 메뉴에\n들어갔단다.\n\'알\'을 눌러 보렴!' },
     { c: '가방', pre: () => setRunTab('bag'), t: '#bagGrid', s: '여기는 \'가방\'이야.\n걷다가 주운 알은\n전부 여기에 모인단다.' },
     { c: '가방', t: '#bagGrid', s: '알에는 등급이 있어.\n일반·희귀·레어·에픽·전설!\n좋은 알일수록 부화시키려면\n오래 걸어야 해.' },
     { c: '가방', t: '#bagGrid', s: '그리고 어디를 걸었느냐에\n따라 알에서 나오는\n포켓몬이 달라진단다.' },
     { c: '가방', t: '#bagGrid', s: '호수 근처에서 주운 알에서는\n라프라스 같은 물 포켓몬이\n자주 나온다고 하더구나.\n여기저기 많이 걸어 보렴!' },
-    { c: '가방', t: bag1, tap: bag1, until: () => el('#bagIn'), s: '가방의 알은 부화기에\n넣어야 자란단다.\n일반 알을 눌러 보렴.' },
+    { c: '가방', t: bag1, tap: bag1, until: () => el('#bagIn'), after: 1800, s: '가방의 알은 부화기에\n넣어야 자란단다.\n일반 알을 눌러 보렴.' },
     { c: '가방', t: '#bagIn', tap: '#bagIn', until: () => !el('#bagIn'), s: '\'부화기에 넣기\'를\n눌러 보렴!' },
     { c: '부화기', t: '.eggtabs [data-tab="egg"]', tap: '.eggtabs [data-tab="egg"]', until: () => el('#eggs'), s: '잘했어! 이제 \'부화기\'를\n눌러서 확인해 보자.' },
     { c: '부화기', t: '#eggs', s: '부화기에는 알을\n15개까지 넣을 수 있단다.' },
@@ -8724,17 +8732,17 @@ async function tutFlow() {
     { c: '부화기', t: incSlot, s: '알 아래 숫자가\n지금까지 걸은 거리야.\n일반 알은 2.5km를 걸으면\n부화한단다.' },
     { c: '부화', t: incSlot, s: '원래는 직접 걸어야 하지만…\n이번만 특별히\n내가 도와주마!' },
     { c: '부화', pre: () => { const e = inc1(); if (e) { e.km = e.need; const i = S.eggs.indexOf(e); eggSel = e; eggSelI = i; eggNone = false; renderRun(); notiShow(true); } }, hold: 1600, t: '#noti .win', s: '자, 됐다!\n이 알은 이제 부화할\n준비가 됐단다.' },
-    { c: '부화', t: '#notiOk', tap: '#notiOk', until: () => !notiOpen, after: 1000, s: '\'확인\'을 눌러 보렴!' },
-    { c: '부화', t: '#eggHatch', tap: '#eggHatch', until: () => !$('#hatch').hidden, after: 900, s: '\'부화시키기\'를\n눌러 보렴!' },
-    { c: '부화', t: '#hatchStage', allow: '#hatch', until: () => el('#hatchOk'), after: 1600, s: '알을 톡톡 두드려서\n깨 보렴!' },
+    { c: '부화', t: '#notiOk', tap: '#notiOk', until: () => !notiOpen, after: 1600, s: '\'확인\'을 눌러 보렴!' },
+    { c: '부화', t: '#eggHatch', tap: '#eggHatch', until: () => !$('#hatch').hidden, after: 1400, s: '\'부화시키기\'를\n눌러 보렴!' },
+    { c: '부화', t: '#hatchStage', allow: '#hatch', hideOnTap: 1, until: () => el('#hatchOk'), after: 2200, s: '알을 톡톡 두드려서\n깨 보렴!' },
     { c: '부화', t: '#hatchStage', s: () => `와! ${J2(born2(), '이', '가')} 태어났구나!\n새 포켓몬을 만나면\n골드도 받는단다.` },
     { c: '부화', t: '#hatchSend', tap: '#hatchSend', until: () => S.mons.length > 0, s: '\'필드로\'를 누르면\n포켓몬이 필드에\n나간단다.' },
     { c: '부화', t: '#hatchOk', tap: '#hatchOk', until: () => $('#hatch').hidden, s: '\'확인\'을 눌러\n창을 닫아 보렴.' },
-    { c: '필드', pre: async () => { sheetsOff(); await wait(300); const m = mon(); if (m) { try { const cx = ($('#wrap').clientWidth / 2 - S.ox) / scale; place(m, cx, 330); } catch (e) { m.y = 330; } m.tx = m.x; m.ty = m.y; m.goal = null; pin = { x: m.x, y: m.y }; } await wait(300); }, t: monEl, s: () => `${J2(born(), '이', '가')} 필드에 나왔어!\n포켓몬들은 필드에서\n놀고, 먹고, 자고, 어울린단다.` },
+    { c: '필드', pre: async () => { sheetsOff(); await wait(300); const m = mon(); if (m) { try { const cx = ($('#wrap').clientWidth / 2 - S.ox) / scale, wt = $('#wrap').getBoundingClientRect().top, ys = 72 + 158 + 22 + (m.h || 48) * scale; place(m, cx, clamp((ys - wt - S.oy) / scale, MIN_Y + 10, MAX_Y - 5));   /* 맨 위 박사 창 바로 아래, 정보창에 가리지 않는 곳 */ } catch (e) { m.y = 330; } m.tx = m.x; m.ty = m.y; m.goal = null; pin = { x: m.x, y: m.y }; } await wait(300); }, t: monEl, s: () => `${J2(born(), '이', '가')} 필드에 나왔어!\n포켓몬들은 필드에서\n놀고, 먹고, 자고, 어울린단다.` },
     { c: '필드', t: monEl, tap: () => monEl(), allow: '#wrap', until: () => S.sel === mon(), s: () => `${J2(born(), '을', '를')} 눌러 보렴!` },
-    { c: '친밀도', t: '#pbars .frbar', s: () => `먼저 친밀도란다.\n${J2(born(), '이', '가')} ${nm}${hasBat(nm) ? '이' : ''}를\n얼마나 좋아하는지 보여 주지.` },
+    { c: '친밀도', t: frRow, s: () => `먼저 친밀도란다.\n${J2(born(), '이', '가')} ${nm}${hasBat(nm) ? '이' : ''}를\n얼마나 좋아하는지 보여 주지.` },
     { c: '친밀도', t: '#pMoves', s: '친밀도가 만점이 되면\n그 포켓몬만의\n특별한 기술을 쓸 수 있단다!' },
-    { c: '친밀도', t: '#pbars .frbar', s: '필드에 나와 있기만 해도\n친밀도는 조금씩 오른단다.' },
+    { c: '친밀도', t: frRow, s: '필드에 나와 있기만 해도\n친밀도는 조금씩 오른단다.' },
     { c: '건강 게이지', t: '#pbars', s: '이건 건강 게이지야.\n청결·즐거움·배부름\n세 가지가 있지.' },
     { c: '건강 게이지', t: '#pbars', s: '건강 게이지가 높을수록\n친밀도가 더 빨리\n오른단다.' },
     { c: '건강 게이지', t: '#pbars', s: '게이지는 시간이 지나면\n조금씩 줄어드니\n잘 돌봐 주렴.' },
@@ -8743,14 +8751,14 @@ async function tutFlow() {
     { c: '건강 게이지', t: '#infWash', t2: () => barOf('청결'), s: '뛰어놀다 더러워지면\n솔로 문질러 씻겨 주렴.\n청결이 가득 찬단다.' },
     { c: '짝꿍', t: '#infBudGo', s: '다음은 짝꿍이야!\n짝꿍은 너와 함께 걷는\n특별한 포켓몬이란다.' },
     { c: '짝꿍', t: '#infBudGo', s: '포켓몬을 진화시키려면\n꼭 짝꿍으로 정해야 해.\n짝꿍만 함께 걸은 거리만큼\n진화에 가까워지거든.' },
-    { c: '짝꿍', t: '#infBudGo', tap: '#infBudGo', until: () => S.buds.length > 0, s: () => `${J2(born(), '을', '를')} 짝꿍으로\n정해 보자.\n'짝꿍으로'를 눌러 보렴!` },
+    { c: '짝꿍', t: '#infBudGo', tap: '#infBudGo', until: () => S.buds.length > 0, after: 1800, s: () => `${J2(born(), '을', '를')} 짝꿍으로\n정해 보자.\n'짝꿍으로'를 눌러 보렴!` },
     { c: '짝꿍', when: () => notiOpen && !$('#noti').hidden, t: '#notiOk', tap: '#notiOk', until: () => !notiOpen, s: '이 포켓몬은 진화 조건이\n조금 특별하구나.\n\'확인\'을 눌러 보렴.' },
     { c: '짝꿍', t: '#infoBud', s: () => `좋아! 이제 ${J2(born(), '은', '는')}\n${nm}의 짝꿍이야.\n분홍 카드가 짝꿍 표시란다.` },
     { c: '필드 메뉴', pre: async () => { pin = null; sheetsOff(); await wait(300); }, t: '#openFld', tap: '#openFld', until: () => !$('#mgr').hidden, s: '이번엔 \'필드\' 메뉴를\n눌러 보렴.' },
     { c: '필드 메뉴', pre: () => setMgrTab('field'), t: '#slots', s: '필드에 나간 포켓몬이야.\n한 번에 9마리까지\n내보낼 수 있단다.' },
     { c: '필드 메뉴', t: '#slots .slot', s: '칸 아래 막대 세 개가\n건강 게이지란다.\n여기서 한눈에 볼 수 있지.' },
     { c: '필드 메뉴', t: '#mgrTabs [data-t="buddy"]', tap: '#mgrTabs [data-t="buddy"]', until: () => el('#buddy'), s: '\'짝꿍\' 탭을\n눌러 보렴.' },
-    { c: '필드 메뉴', t: '#buddy .bd-card', s: () => `여기서는 아까 짝꿍으로 정한\n${J2(born(), '을', '를')} 확인할 수 있단다.` },
+    { c: '필드 메뉴', t: '#buddy .bd-card', s: '여기서는 아까 짝꿍으로\n정한 포켓몬들을\n확인할 수 있단다.' },
     { c: '필드 메뉴', t: '#buddy', s: '짝꿍이 진화하기까지\n얼마나 걸어야 하는지\n여기서 볼 수 있단다.' },
     { c: '필드 메뉴', t: '#buddy', s: '짝꿍은 3마리까지\n정할 수 있단다.\n빈 칸의 +를 누르면\n짝꿍을 고를 수 있지.' },
     { c: '프로필', pre: async () => { sheetsOff(); await wait(300); }, t: '#openSet', tap: '#openSet', until: () => !$('#set').hidden, s: '마지막으로 \'프로필\'이야.\n눌러 보렴.' },
@@ -8772,38 +8780,40 @@ async function tutFlow() {
   const block = e => { e.stopPropagation(); if (e.cancelable) e.preventDefault(); };
   const guard = e => { if (lock) return block(e);
     if (!allow) { if (e.target.closest && e.target.closest('#tut')) return; block(e); if (e.type === 'pointerup') say.poke(); return; }
-    if (hit(e, allow) || hit(e, tapSel)) { if ((e.type === 'click' || e.type === 'pointerup') && hit(e, tapSel)) tapped = true; return; } block(e); };
+    if (hit(e, allow) || hit(e, tapSel)) { if (cur && cur.hideOnTap && e.type === 'pointerdown') ov.classList.add('hide');   // v5.44 경완: 알을 두드리기 시작하면 박사 창과 강조를 치운다
+      if ((e.type === 'click' || e.type === 'pointerup') && hit(e, tapSel)) tapped = true; return; } block(e); };
   const EV = ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchend', 'mousedown', 'mouseup'];
   EV.forEach(t => addEventListener(t, guard, { capture: true, passive: false }));
   let cur = null, raf = 0, pin = null;
-  const place = (r, first) => {   // 상자는 비춘 곳 바로 위나 아래 (빈 곳이 더 넓은 쪽), 시계·골드 줄은 가리지 않는다
+  const placeBox = (r, first, top) => {   // (게임의 place(m, x, y) 와 이름이 겹쳐 포켓몬이 안 옮겨지던 것)   // 상자는 비춘 곳 바로 위나 아래 (빈 곳이 더 넓은 쪽), 시계·골드 줄은 가리지 않는다
     const H = innerHeight, top0 = 72, bh = bx.offsetHeight || 130;
     if (!r) { bx.style.top = Math.round(H * .5 - bh / 2) + 'px'; return; }
     const up = r.top - 14 - bh, dn = r.bottom + 14;
     let y = (r.top + r.bottom) / 2 > H * .35 ? (up >= top0 ? up : dn) : (dn + bh <= H - 10 ? dn : up);
-    if (r.height > H * .5) y = r.bottom - bh - 12;   // 창 전체를 비출 때는 창 아래쪽 안에 (내용은 보통 위에서부터 차니까)
+    if (r.height > H * .5) y = r.bottom - bh - 12;
+    if (top) y = top0;   // v5.44 경완: 필드 정보창 설명은 박사가 정보창을 가리지 않게 맨 위로 (포켓몬은 그 아래에 세워 둔다)   // 창 전체를 비출 때는 창 아래쪽 안에 (내용은 보통 위에서부터 차니까)
     y = Math.max(top0, Math.min(H - bh - 10, y)); if (first || Math.abs(parseFloat(bx.style.top || 0) - y) > 40) bx.style.top = Math.round(y) + 'px';
   };
-  const track = () => { { const m = mon(); if (pin && m) { m.x = m.tx = pin.x; m.y = m.ty = pin.y; m.goal = null; } } const e = cur && el(cur.t); let r = e ? e.getBoundingClientRect() : null; if (r && r.width && (r.width < 44 || r.height < 44)) { const cx = r.left + r.width / 2, cy = r.top + r.height / 2, w = Math.max(44, r.width), h = Math.max(44, r.height); r = { left: cx - w / 2, top: cy - h / 2, width: w, height: h, right: cx + w / 2, bottom: cy + h / 2 }; }
+  const track = () => { { const m = mon(); if (pin && m) { m.x = m.tx = pin.x; m.y = m.ty = pin.y; m.goal = null; } } const e = cur && el(cur.t); let r = e ? e.getBoundingClientRect() : null; if (r && r.width && cur.tap && (r.width < 44 || r.height < 44)) {   /* 누르는 곳만 44px 로 넓힌다 (설명만 할 때는 딱 그 줄만) */ const cx = r.left + r.width / 2, cy = r.top + r.height / 2, w = Math.max(44, r.width), h = Math.max(44, r.height); r = { left: cx - w / 2, top: cy - h / 2, width: w, height: h, right: cx + w / 2, bottom: cy + h / 2 }; }
     const marks = ov.querySelectorAll('.tu-mark'), e2 = r && cur.t2 && el(cur.t2), r2 = e2 ? e2.getBoundingClientRect() : null;   // 버튼과 그 버튼이 올리는 게이지를 같이 비춘다
     marks.forEach(x => x.hidden = !r2); hole.classList.toggle('multi', !!r2);
     if (r2) { [r, r2].forEach((q, i) => Object.assign(marks[i].style, { left: q.left - 4 + 'px', top: q.top - 4 + 'px', width: q.width + 8 + 'px', height: q.height + 8 + 'px' })); const L = Math.min(r.left, r2.left), T = Math.min(r.top, r2.top), Rr = Math.max(r.right ?? r.left + r.width, r2.right), B = Math.max(r.bottom ?? r.top + r.height, r2.bottom); r = { left: L, top: T, width: Rr - L, height: B - T, right: Rr, bottom: B }; }
     if (r && r.width) { const p = 6; Object.assign(hole.style, { left: r.left - p + 'px', top: r.top - p + 'px', width: r.width + p * 2 + 'px', height: r.height + p * 2 + 'px' }); hole.classList.remove('none'); ov.classList.remove('dim'); }
     else { hole.classList.add('none'); ov.classList.toggle('dim', !cur?.allow && !cur?.tap && !cur?.clear); }
-    place(r && r.width ? r : null, false); raf = requestAnimationFrame(track); };
+    placeBox(r && r.width ? r : null, false, inInfo(e)); raf = requestAnimationFrame(track); };
   for (const st of T) {
     if (st.when && !st.when()) continue;
     // 창이 뜨거나 화면이 바뀌는 연출은 박사 창을 치우고 화면을 잠근 채 충분히 보여 준다
-    if (st.pre || st.hold) { lock = true; ov.classList.add('hide'); if (st.pre) await st.pre(); await wait(st.hold || 500); }
+    if (st.pre || st.hold) { lock = true; ov.classList.add('hide'); if (st.pre) await st.pre(); await wait(st.hold || 800); }
     cur = st; ov.classList.toggle('clear', !!st.clear); lock = false; ov.classList.remove('hide'); ov.querySelector('.tu-n').textContent = st.c;
-    { const e = el(st.t); place(e ? e.getBoundingClientRect() : null, true); }
+    { const e = el(st.t); placeBox(e ? e.getBoundingClientRect() : null, true, inInfo(e)); }
     cancelAnimationFrame(raf); track();
     const s = typeof st.s === 'function' ? st.s() : st.s;
     if (st.tap || st.allow) {
       ov.classList.add('do'); tapped = false; tapSel = st.tap || null; allow = st.allow || st.tap;
       await say(s, false);
       for (let n = 0; ; n++) { await wait(100); if (st.until ? st.until() : tapped) break; }
-      allow = tapSel = null; ov.classList.remove('do'); lock = true; ov.classList.add('hide'); await wait(st.after || 700); lock = false; ov.classList.remove('hide');
+      allow = tapSel = null; ov.classList.remove('do'); lock = true; ov.classList.add('hide'); await wait(st.after || 1400); lock = false; ov.classList.remove('hide');
     } else await say(s);
   }
   cancelAnimationFrame(raf); EV.forEach(t => removeEventListener(t, guard, { capture: true }));
