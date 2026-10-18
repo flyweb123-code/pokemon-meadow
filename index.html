@@ -5010,7 +5010,9 @@ function propReact(m, p) {
   if (p.k === 'rock') {
     const ty = tyOf(m);
     if (ty.includes(ROC) || ty.includes(GRO) || ty.includes(FIG)) { at(0, p.ry - 4); propSit(m, 10); setState(m, 'idle', 8); anim(m, 'hop'); emote(m, '!', '', 2.2, 'rock-pose'); return log(`${J(m,'이/가')} 바위 위에 올라가 늠름하게 포즈를 잡는다.`, [m]); }
-    at(m.x < p.x ? -26 : 26, 6); setState(m, 'idle', 6); emote(m, '…', '', 2.2, 'rock-lean'); return log(`${J(m,'이/가')} 바위에 기대어 쉰다.`, [m]);
+    { const sd = m.x < p.x ? -1 : 1, dry = ([dx, dy]) => pondVal(clamp(p.x + dx, XL + 20, XR - 20), clamp(p.y + dy, MIN_Y, MAX_Y)) > 1.2;   /* v5.36 경완: 호숫가 바위에 기대면 몸이 물에 잠기던 것 → 물 밖인 쪽(반대편·아래·위)에 기댄다 */
+      const c = [[sd * 26, 6], [-sd * 26, 6], [0, 18], [0, -12]].find(dry); at(...(c || [sd * 26, 6])); if (!c && pondVal(m.x, m.y) <= 1.2) projectOut(m, 1.2); }
+    setState(m, 'idle', 6); emote(m, '…', '', 2.2, 'rock-lean'); return log(`${J(m,'이/가')} 바위에 기대어 쉰다.`, [m]);
   }
   if (p.k === 'puddle') {
     const ty = tyOf(m); at(0, 0); setState(m, 'idle', 5); splashAt(m);
@@ -5550,7 +5552,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.35';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.36';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
