@@ -5550,7 +5550,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.27';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.28';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7562,7 +7562,10 @@ function eggThemes(e) {
 }
 const NIGHT = { n: '밤', t: [8, 17], hab: [], fx: /밤|어둠|달/ };
 const eggPlace = e => e.spN || shortPlace(e.place || '');   // v5.27: 작업실 반경 안에서 주운 알은 반경 이름으로
-function themeHint(e) { const all = eggThemes(e), ks = all.filter(k => k !== 'night' && THEMES[k]).slice(0, 2).map(k => THEMES[k].n); if (all.includes('night')) ks.push('밤'); if (!ks.length) return '어떤 기운인지 잘 모르겠다'; return `${ks.join(', ')}의 기운이 느껴지는 것 같다`; }   // v5.27 경완: 타입 대신 장소 특성 이름으로 (예: 공항의 기운이 느껴지는 것 같다)
+const TH_HINT_MIN = 13;   // v5.28 경완: 힌트는 알 속 포켓몬에게 가장 크게 작용한 특성 하나만, 가중치 ×13 이상(타입이 맞거나 직접 넣은 포켓몬)일 때만
+function themeHint(e) { const ks = eggThemes(e); if (!ks.length) return '어떤 기운인지 잘 모르겠다'; const sp = eggSp(e); let best = null, bw = 0;
+  for (const k of ks) { const th = k === 'night' ? NIGHT : THEMES[k]; if (!th) continue; const w = themeW(sp, [th]); if (w > bw) { bw = w; best = th; } }
+  return best && bw >= TH_HINT_MIN ? `${best.n}의 기운이 느껴지는 것 같다` : '어떤 기운인지 잘 모르겠다'; }
 // keep: 알은 부화기에 그대로 두고, 부화 연출에서 깨질 때 뺀다
 // 알 속 포켓몬은 알을 주울 때(또는 처음 볼 때) 정해져 e.sp 에 남는다. 장소가 나중에 채워지면 그때 한 번 다시 정한다
 const eggSp = e => e.sp && !SP_OFF.has(e.sp) ? e.sp : (e.sp = rollEgg(e));   // v3.97: 꺼진 포켓몬이 들어 있던 알은 다시 정한다
