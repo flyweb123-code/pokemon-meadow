@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="작업실"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><style>[hidden]{display:none!important}</style></head><body><title>포켓런닝 작업실</title>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="작업실"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><style>[hidden]{display:none!important}</style></head><body><title>포켓몬 키우기 작업실</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#1d2027">
 <!--PWA-->
@@ -503,7 +503,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.05';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.06';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -1917,6 +1917,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.06', '10월 18일', ['게임 이름을 포켓런닝 → 포켓몬 키우기로 (게임 v5.37)']],
   ['3.05', '10월 18일', ['지도: 반경·손잡이를 끈 뒤 빈 곳을 끌어도 지도가 안 움직이던 것', '작업실을 탭 여러 개로 열었을 때 예전 탭이 예전 작업본으로 덮어써서 반경 이름이 되돌아가던 것 (다른 탭에서 저장하면 이 탭도 바로 따라감)', '바뀐 곳 목록에 반경 이름 바뀐 수도 보여요']],
   ['3.04', '10월 18일', ['장소 특성: 묘지 새로 추가, 절·묘지는 절로 (게임 v5.35)']],
   ['3.03', '10월 18일', ['지도: 반경 포켓몬 세기 배수를 숫자로 직접 입력 (1~1000배, Enter 로 저장)']],
