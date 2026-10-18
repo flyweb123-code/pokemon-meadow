@@ -5555,7 +5555,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.40';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.41';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8562,7 +8562,7 @@ body.inTitle,body.inTitle #app{background:#24482a!important}body.inTitle #app{ov
 #title .ti-logo{position:absolute;left:0;right:0;top:30%;display:grid;justify-items:center;gap:4px;opacity:0;transform:translateY(-14px);transition:opacity 1s steps(6,end),transform 1s steps(6,end)}#title.show .ti-logo{opacity:1;transform:none}
 #title .ti-logo b{font-size:44px;line-height:1.1;color:#ffd84a;letter-spacing:.04em;text-shadow:3px 0 #2a3a8a,-3px 0 #2a3a8a,0 3px #2a3a8a,0 -3px #2a3a8a,3px 3px #2a3a8a,-3px 3px #2a3a8a,3px -3px #2a3a8a,-3px -3px #2a3a8a,6px 6px 0 rgba(0,0,0,.35)}
 #title .ti-logo span{font-size:15px;color:#fff;letter-spacing:.3em;text-shadow:2px 2px 0 #2a3a8a}
-#title .ti-go{pointer-events:auto;position:absolute;left:50%;bottom:calc(9% + env(safe-area-inset-bottom));transform:translateX(-50%);font:inherit;font-size:20px;color:var(--win-ink);background:var(--win);border:4px solid var(--frame);box-shadow:4px 4px 0 rgba(0,0,0,.35);padding:14px 30px 14px 22px;cursor:pointer;white-space:nowrap;opacity:0;visibility:hidden;transition:opacity .8s .5s steps(5,end),visibility 0s 1.3s}#title.show .ti-go{opacity:1;visibility:visible;transition:opacity .8s .5s steps(5,end),visibility 0s .5s}
+#title .ti-go{pointer-events:auto;position:absolute;left:50%;bottom:calc(17% + env(safe-area-inset-bottom));transform:translateX(-50%);font:inherit;font-size:20px;color:var(--win-ink);background:var(--win);border:4px solid var(--frame);box-shadow:4px 4px 0 rgba(0,0,0,.35);padding:14px 30px 14px 22px;cursor:pointer;white-space:nowrap;opacity:0;visibility:hidden;transition:opacity .8s .5s steps(5,end),visibility 0s 1.3s}#title.show .ti-go{opacity:1;visibility:visible;transition:opacity .8s .5s steps(5,end),visibility 0s .5s}
 #title .ti-go::before{content:'▶ ';font-size:15px;animation:inBlink .8s steps(1) infinite}
 #title .ti-white{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .6s steps(5,end)}#title.go .ti-white{opacity:1}
 @keyframes tiIn{from{opacity:0}to{opacity:1}}
@@ -8610,34 +8610,33 @@ async function titleFlow() {
   S.wxT = 'clear'; CLOCK_OFF = 12.5 * 60 - (Date.now() - S.base) / 60000; sky0();
   // v5.40 경완: 아래에서 위로 일직선으로 훑고, 화면 가운데를 지날 때마다 정해 둔 포켓몬들이 어울리거나 기술을 쓴다 (매번 똑같이)
   // 확대한 필드가 화면 전체(아래 회색 여백·메뉴 자리까지)를 덮도록 화면 크기 기준으로 맞춘다
-  const wrap = $('#wrap'), k = 1.75, D = 15000, w = wrap.clientWidth, h = wrap.clientHeight, r0 = wrap.getBoundingClientRect(), VW = innerWidth, VH = innerHeight;
+  const wrap = $('#wrap'), k = 1.75, D = 10000, w = wrap.clientWidth, h = wrap.clientHeight, r0 = wrap.getBoundingClientRect(), VW = innerWidth, VH = innerHeight;
   const tx = (VW / 2 - r0.left) / k - w / 2, ty1 = -r0.top / k, ty0 = Math.min(ty1, (VH - r0.top) / k - h);
   wrap.style.transformOrigin = '0 0';
   const K0 = `scale(${k}) translate(${tx.toFixed(1)}px,${ty0.toFixed(1)}px)`, K1 = `scale(${k}) translate(${tx.toFixed(1)}px,${ty1.toFixed(1)}px)`; wrap.style.transform = K0;
   const at = (f, dx) => { const px = (VW / 2 + dx * VW - r0.left) / k - tx, py = (VH * .6 - r0.top) / k - (ty0 + (ty1 - ty0) * f); let x = (px - S.ox) / scale, y = (py - S.oy) / scale;   // f: 0 맨 아래 → 1 맨 위 (그때 화면 가운데보다 조금 아래)
     y = clamp(y, MIN_Y + 10, MAX_Y - 5); for (let d = 0; d < 160; d += 8) for (const s of [1, -1]) { const q = x + s * d; if (q > XL + 30 && q < XR - 30 && pondVal(q, y) > 1.35) return { x: q, y }; } return { x, y }; };
   const G = [   // [위치, 종, 옆으로(화면 너비 비율)]
-    [.04, 25, -.07], [.04, 172, .12],
+    [.15, 25, -.1], [.15, 172, .12],
     [.36, 133, -.15], [.36, 37, .13],
     [.68, 39, -.14], [.68, 175, .15],
     [1, 1, -.22], [1, 4, 0], [1, 7, .22],
   ];
   const demo = []; let demoOff = false;
-  await Promise.all(G.map(async ([f, sp, dx]) => { try { const p = at(f, dx), m = await spawn(sp, { quiet: true, x: p.x, y: p.y }); m.demo = 1; m.home = { x: m.x, y: m.y }; m.goal = null; demo.push(m); } catch (e) {} }));   // 다 불러온 뒤에 훑기 시작 (매번 같은 때 같은 장면)
+  await Promise.all(G.map(async ([f, sp, dx]) => { try { const p = at(f, dx), m = await spawn(sp, { quiet: true, x: p.x, y: p.y }); m.demo = 1; m.pin = true; m.goal = null; demo.push(m); } catch (e) {} }));   // 다 불러온 뒤에 훑기 시작 (매번 같은 때 같은 장면)
   const pan = wrap.animate([{ transform: K0 }, { transform: K1 }], { duration: D, easing: 'linear', fill: 'forwards' });
   const dm = sp => demo.find(m => m && m.sp === sp && S.mons.includes(m));
-  // 서 있을 때는 제자리에 (돌아다니다 화면 밖으로 나가지 않게)
-  const pinT = setInterval(() => { for (const m of demo) if (m && S.mons.includes(m) && m.state !== 'interact' && !m.mvBusy && !m.held) { m.x = m.tx = m.home.x; m.y = m.ty = m.home.y; m.goal = null; } }, 120);
-  const mv = sp => { const m = dm(sp); if (m) try { useMove(m); } catch (e) {} }, meet = (a, b) => { const x = dm(a), y = dm(b); if (x && y) try { meetByHand(x, y); x.home = { x: x.x, y: x.y }; } catch (e) {} };
-  const T0 = performance.now(), cues = [[500, () => mv(25)], [1800, () => meet(172, 25)], [4800, () => meet(37, 133)], [8800, () => mv(39)], [9900, () => meet(175, 39)], [12600, () => mv(4)], [13700, () => mv(7)], [14800, () => mv(1)]];
+  // 제자리에 서 있게: 게임의 고정(pin)을 쓴다 (v5.41 경완: 위치를 계속 되돌리던 방식은 스프라이트가 드드득 떨렸다)
+  const mv = sp => { const m = dm(sp); if (m) try { useMove(m); } catch (e) {} }, meet = (a, b) => { const x = dm(a), y = dm(b); if (x && y) try { meetByHand(x, y); } catch (e) {} };
+  const T0 = performance.now(), cues = [[300, () => mv(25)], [1200, () => meet(172, 25)], [3200, () => meet(37, 133)], [5800, () => mv(39)], [6600, () => meet(175, 39)], [8400, () => mv(4)], [9200, () => mv(7)], [10000, () => mv(1)]];
   const cueT = cues.map(([ms, fn]) => setTimeout(fn, ms));
   const showTitle = () => tv.classList.add('show');
-  const tT = setTimeout(showTitle, 12500), skip = () => { if (tv.classList.contains('show')) return; pan.finish(); showTitle(); };
+  const tT = setTimeout(showTitle, D - 2000), skip = () => { if (tv.classList.contains('show')) return; pan.finish(); showTitle(); };
   tv.addEventListener('pointerup', skip);
   // 다 훑은 뒤에는 맨 위 포켓몬들이 번갈아 기술을 쓴다
   let tk = 0; const mvT = setInterval(() => { if (performance.now() - T0 < D) return; const m = [dm(4), dm(7), dm(1)][tk++ % 3]; if (m && m.state === 'idle' && !m.mvBusy) try { useMove(m); } catch (e) {} }, 2800);
   await new Promise(r => { tv.querySelector('.ti-go').onclick = r; });
-  clearTimeout(tT); clearInterval(mvT); clearInterval(pinT); cueT.forEach(clearTimeout);
+  clearTimeout(tT); clearInterval(mvT); cueT.forEach(clearTimeout);
   wake(); try { sfx('start'); haptic(1); } catch (e) {} tv.classList.add('go');
   { const { src, g } = mus; if (src && a) { const t = a.currentTime; g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + .7); setTimeout(() => { try { src.stop(); src.disconnect(); g.disconnect(); } catch (e) {} }, 800); } }
   await wait(700);
