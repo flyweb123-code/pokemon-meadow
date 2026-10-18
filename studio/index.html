@@ -503,7 +503,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.99';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.00';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -1911,6 +1911,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.00', '10월 18일', ['장소 특성 목록 가나다순', '주황 점은 배포 안 한 특성에만 (배포하면 사라져요)']],
   ['2.99', '10월 18일', ['지도 반경 139곳에 장소 특성을 붙였어요 (데이터 v42). 작업본에 남은 같은 반경에도 한 번 옮겨 줘요']],
   ['2.98', '10월 18일', ['장소 특성 › 카드 위 이름을 눌러 바꿀 수 있어요 (게임 v5.31)', '아쿠아리움 특성 새로 (아쿠아리움·수족관 낱말은 동물원에서 옮김)', '지도 › 저장해도 오른쪽 창이 접히지 않아요']],
   ['2.97', '10월 18일', ['장소 특성 › 지운 특성은 왼쪽 위 \'지운 특성\' 탭에서 보고 살려요', '도감 설명 낱말은 다시 한 번 누르면 바로 빠져요', '포켓몬 목록 세대·티어·타입 탭에서 누른 버튼 글자가 안 보이던 것 고침 (장소 특성·지도)']],
@@ -2730,6 +2731,7 @@ document.addEventListener('pointerdown', e => { if (!e.target.closest('#geoQ')) 
 let thSel = '', thQ = '', thAQ = '';
 const thList = k => [...(effP(D, 'thSp')[k] ?? A.TH_SP0?.[k] ?? [])];
 const thOvOf = k => effP(D, 'thOv')[k] || {};
+const thDirty = k => !same(effP(D, 'thSp')[k], ORIG?.thSp?.[k]) || !same(effP(D, 'thOv')[k], ORIG?.thOv?.[k]);   // v3.00 경완: 주황 점은 배포 안 한 것만
 const thChanged = k => JSON.stringify(thList(k)) !== JSON.stringify(A.TH_SP0?.[k] || []) || Object.keys(thOvOf(k)).length > 0;
 const thW0 = k => thSrc(A.TH_BASE?.[k]?.kw).split(' · ').filter(Boolean);
 const thWords = k => { const v = thOvOf(k); return Array.isArray(v.kw) ? [...v.kw] : thW0(k); };
@@ -2743,7 +2745,7 @@ function thPutOv(k, patch, quiet) { const o = { ...effP(D, 'thOv') }, v = { ...(
 function thSet(k, L) { const o = { ...effP(D, 'thSp') }; L = [...new Set(L)]; if (JSON.stringify(L) === JSON.stringify(A.TH_SP0?.[k] || [])) delete o[k]; else o[k] = L; D.thSp = o; if (JSON.stringify(o) === JSON.stringify(ORIG.thSp || {})) delete D.thSp; A.setThSp?.(effP(D, 'thSp')); saveDraft(); thGrid(); thSide(); }
 const thSrc = re => re ? String(re.source).replace(/\[[^\]]*\]\*?|\(\?[!<=][^)]*\)/g, '').replace(/\\/g, '').replace(/[\^$()?:!*+]/g, '').split('|').map(x => x.trim()).filter(Boolean).join(' · ') : '';
 function renderThm() { if (!A?.THEMES) return; A.setThSp?.(effP(D, 'thSp')); const T = A.THEMES, keys = Object.keys(T), q = thQ.trim();
-  if (!thSel || !T[thSel]) thSel = keys[0];
+  if (!thSel || !T[thSel]) thSel = [...keys].sort((a, b) => T[a].n.localeCompare(T[b].n, 'ko'))[0];
   const c = $('#thC'), y0 = c.parentElement.scrollTop;
   c.innerHTML = `<div class="thw"><div class="thtop"><div class="search"><input id="thQ" value="${esc(thQ)}" placeholder="특성 이름·키워드·포켓몬으로 찾기" autocomplete="off"></div><span class="small mute" id="thCnt"></span></div><div class="seg2 thlt" id="thLT"></div>
     <div class="small mute">아이폰이 보낸 주변 장소·장소 이름이 키워드에 맞으면 그 특성이 붙어요. 알을 주우면 특성의 타입 +12, 서식지 +4, 도감 낱말 +8, 아래 정한 포켓몬 +20 만큼 그 포켓몬이 잘 나와요 (같은 티어 안에서).</div>
@@ -2752,12 +2754,12 @@ function renderThm() { if (!A?.THEMES) return; A.setThSp?.(effP(D, 'thSp')); con
   $('#thQ').oninput = e => { thQ = e.target.value; thGrid(); };   // 입력칸은 그대로 두고 목록만 (한글 입력이 끊기지 않게)
   thSide(); }
 function thGrid() { const T = A.THEMES, keys = Object.keys(T), q = thQ.trim(), ty = th => (th.t || []).map(t => `<span style="--c:${A.TYPE_C[t]}">${A.TYPE_KO[t]}</span>`).join('');
-  const vis = keys.filter(k => !q || T[k].n.includes(q) || thSrc(T[k].kw).includes(q) || thList(k).some(sp => spName(sp).includes(q)));
-  const dels = Object.keys(A.TH_ALL || {}).filter(k => !T[k]); if (!dels.length) thLT = 'on'; $('#thCnt').textContent = `바꾼 것 ${keys.filter(thChanged).length}`;
+  const ko = (a, b) => T[a].n.localeCompare(T[b].n, 'ko'), vis = keys.filter(k => !q || T[k].n.includes(q) || thSrc(T[k].kw).includes(q) || thList(k).some(sp => spName(sp).includes(q)));
+  const dels = Object.keys(A.TH_ALL || {}).filter(k => !T[k]); if (!dels.length) thLT = 'on'; $('#thCnt').textContent = `배포 안 한 것 ${keys.filter(thDirty).length + dels.filter(thDirty).length}`;
   $('#thLT').innerHTML = [['on', `특성 ${keys.length}`], ['del', `지운 특성 ${dels.length}`]].map(([x, n]) => `<button class="chip${thLT === x ? ' on' : ''}" data-thlt="${x}" aria-pressed="${thLT === x}"${x === 'del' && !dels.length ? ' disabled' : ''}>${n}</button>`).join('');
-  if (thLT === 'del') { const TA = A.TH_ALL, dv = dels.filter(k => !q || TA[k].n.includes(q) || thSrc(TA[k].kw).includes(q));   // v2.97 경완: 지운 특성은 칩 말고 따로 탭에서 보고 살린다
+  if (thLT === 'del') { const TA = A.TH_ALL, dv = dels.filter(k => !q || TA[k].n.includes(q) || thSrc(TA[k].kw).includes(q)).sort((a, b) => TA[a].n.localeCompare(TA[b].n, 'ko'));   // v2.97 경완: 지운 특성은 칩 말고 따로 탭에서 보고 살린다
     $('#thG').innerHTML = dv.map(k => `<div class="thc thdel"><div class="thn">${esc(TA[k].n)}<small>${thList(k).length}종</small></div><div class="thty">${ty(TA[k])}</div><div class="thkw">${esc(thSrc(TA[k].kw))}</div><button class="chip" data-thrs="${k}">↺ 다시 살리기</button></div>`).join('') || '<div class="empty">찾는 특성이 없어요</div>'; return; }
-  $('#thG').innerHTML = `${vis.map(k => `<button class="thc${k === thSel ? ' on' : ''}" data-th="${k}"><div class="thn">${thChanged(k) ? '<i class="chg" title="바꿈"></i>' : ''}${esc(T[k].n)}<small>${thList(k).length}종</small></div><div class="thty">${ty(T[k])}</div><div class="thkw">${esc(thSrc(T[k].kw))}</div><div class="thsp">${thList(k).slice(0, 7).map(sp => `<img alt="" data-th="${sp}" title="${esc(spName(sp))}">`).join('')}</div></button>`).join('') || '<div class="empty">찾는 특성이 없어요</div>'}`; fillThumbs($('#thG')); }
+  $('#thG').innerHTML = `${vis.sort(ko).map(k => `<button class="thc${k === thSel ? ' on' : ''}" data-th="${k}"><div class="thn">${thDirty(k) ? '<i class="chg" title="배포 안 함"></i>' : ''}${esc(T[k].n)}<small>${thList(k).length}종</small></div><div class="thty">${ty(T[k])}</div><div class="thkw">${esc(thSrc(T[k].kw))}</div><div class="thsp">${thList(k).slice(0, 7).map(sp => `<img alt="" data-th="${sp}" title="${esc(spName(sp))}">`).join('')}</div></button>`).join('') || '<div class="empty">찾는 특성이 없어요</div>'}`; fillThumbs($('#thG')); }
 // v2.91 경완: 장소 특성 오른쪽 창 = 위 특성 카드(타입·키워드·포켓몬) + 아래 지도 탭과 같은 포켓몬 목록 (끌어 넣기·여러 장 고르기, 반경 표시는 없음)
 let thPick = 0;
 // v2.93 경완: 넣은 포켓몬을 누르면 원래 몇 km 마다였는지 → 이 특성이 붙은 알에서는 몇 km 마다인지
