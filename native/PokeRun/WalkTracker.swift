@@ -170,7 +170,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
         lookBusy = true; lookAt = loc
         WalkTracker.lookup(loc, geocoder: geocoder) { [weak self] place, tags in
             self?.lookBusy = false
-            self?.sync(place: place, tags: tags)
+            self?.sync(place: place, tags: tags, at: loc.coordinate)
         }
     }
 
@@ -279,7 +279,8 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
     }
 
     // 지난번 이후 걸은 거리를 만보기에서 읽는다 (만보기는 최근 7일치만 갖고 있다)
-    private func sync(place: String?, tags: [String] = []) {
+    // at: 걸은 곳 좌표 (작업실 지도의 출현 지역 확인용). 위치를 모르면 nil
+    private func sync(place: String?, tags: [String] = [], at: CLLocationCoordinate2D? = nil) {
         detectRuns()
         guard !busy, CMPedometer.isDistanceAvailable() else { return }
         busy = true
@@ -294,7 +295,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
                 guard error == nil, let meters = data?.distance?.doubleValue else { return }
                 UserDefaults.standard.set(now.timeIntervalSince1970, forKey: self.lastKey)
                 let km = meters / 1000
-                if km >= 0.01 { PhoneBridge.shared.enqueueWalk(km: km, place: place ?? "", tags: tags) }
+                if km >= 0.01 { PhoneBridge.shared.enqueueWalk(km: km, place: place ?? "", tags: tags, at: at) }
             }
         }
     }
