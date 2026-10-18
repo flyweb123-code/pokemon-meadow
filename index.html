@@ -5347,7 +5347,8 @@ function fit() {
   if (document.body.classList.contains('szMode')) {   // v3.83 작업실 크기 조절 모드: 맵 높이를 화면에 맞추고, 원래 맵은 가운데·양옆은 이어 그린 맵 (SZB.paint)
     // v3.85 경완: 작업실이 알려 준 자리(SZB.fix: 시뮬레이터에서 보이던 맵의 위치·배율)를 그대로 — 핸드폰만 사라지는 느낌
     const F = SZB.fix; if (F && F.s > 0) { scale = F.s; S.ox = F.x; S.oy = F.y; } else { scale = h / H; S.ox = Math.max(0, (w - W * scale) / 2); S.oy = 0; }
-    XL = -S.ox / scale; XR = XL + w / scale;
+    XL = -S.ox / scale; XR = XL + w / scale; SZB.b = { s: scale, x: S.ox, y: S.oy };
+    const zk = SZB.zk || 1; if (zk !== 1) { scale *= zk; S.ox = SZB.px + SZB.b.x * zk; S.oy = SZB.py + SZB.b.y * zk; }   // v5.22 경완: 크기 조절 모드 마우스 휠 확대 (격자 배치는 확대 전 화면 기준 그대로)
     stage.style.transform = `translate(${S.ox}px,${S.oy}px) scale(${scale})`; SZB.rows?.(); return;
   }
   if (narrow.matches) {
@@ -5546,7 +5547,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.22';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.23';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8777,8 +8778,8 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     addEventListener('pointermove', move); addEventListener('pointerup', up); addEventListener('pointercancel', up); });
   SZB.rows = () => { const L = szMons().filter(m => !m.szMv), { x0, cw } = szGeo(), T = new Set();   // v3.89 경완: 처음 나올 땐 격자, 끌어 옮긴 포켓몬(szMv)은 놓은 자리 그대로
     for (const m of L) if (m.szC != null && !T.has(m.szC)) T.add(m.szC); else m.szC = null; for (const m of L) if (m.szC == null) { m.szC = szFree(T); T.add(m.szC); }
-    const byC = new Map(L.map(m => [m.szC, m])), mx = L.length ? Math.max(...L.map(m => m.szC)) : -1, y0 = Math.max(250, (60 - S.oy) / scale), bot = (wrap.clientHeight - S.oy) / scale - 8;
-    const vl = -S.ox / scale + 8, vr = (wrap.clientWidth - S.ox) / scale - 8, [wl, wr] = SZB.win || [XL, XR], nR0 = Math.max(0, Math.min(SZ_COLS, Math.floor((vr - wr - 4) / cw))), nL0 = Math.max(0, Math.min(SZ_COLS, Math.floor((wl - 4 - vl) / cw)));
+    const byC = new Map(L.map(m => [m.szC, m])), mx = L.length ? Math.max(...L.map(m => m.szC)) : -1, ZB = SZB.b || { s: scale, x: S.ox, y: S.oy }, y0 = Math.max(250, (60 - ZB.y) / ZB.s), bot = (wrap.clientHeight - ZB.y) / ZB.s - 8;
+    const vl = -ZB.x / ZB.s + 8, vr = (wrap.clientWidth - ZB.x) / ZB.s - 8, [wl, wr] = SZB.win || [XL, XR], nR0 = Math.max(0, Math.min(SZ_COLS, Math.floor((vr - wr - 4) / cw))), nL0 = Math.max(0, Math.min(SZ_COLS, Math.floor((wl - 4 - vl) / cw)));
     const rowH = (i0, n) => Math.max(60, ...Array.from({ length: n }, (_, k) => byC.get(i0 + k)?.h || 60)) + 30;
     const lay = (nR, nL) => {
     const B0 = { x0, cw, n: SZ_COLS }; let BR = null, BL = null; const Bs = [B0, { x0: wr + 4, cw, n: nR }, { x0: wl - 4 - nL * cw, cw, n: nL }].filter(B => B.n), R = []; let i = 0;
@@ -8793,6 +8794,14 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     SZB.geoRows = R; let y = y0;
     for (const r of R) for (let c = 0; c < r.B.n; c++) { const m = byC.get(r.i0 + c); if (!m) continue; y = Math.max(y, r.top + r.h); if (SZB.drag?.has(m)) continue; m.x = m.tx = (r.B.e[c] + r.B.e[c + 1]) / 2; m.y = m.ty = r.top + r.h - 30; }
     y = Math.max(y, ...szMons().filter(m => m.szMv).map(m => m.y + 10)); stage.style.height = Math.max(H, y + 20) + 'px'; $('#szSp') && ($('#szSp').style.height = S.oy + Math.max(H, y + 20) * scale + 'px'); SZB.paint(); };
+  // v5.22 경완: 크기 조절 모드에서 마우스 휠 = 확대·축소 (마우스 자리 기준), 옆으로 굴리기·Shift+휠 = 옮기기, 가운데 버튼 끌기 = 옮기기
+  wrap.addEventListener('wheel', e => { if (!SZB.on || !SZB.b) return; e.preventDefault(); const r = wrap.getBoundingClientRect(), cx = e.clientX - r.left + wrap.scrollLeft, cy = e.clientY - r.top + wrap.scrollTop, zk = SZB.zk || 1, b = SZB.b;
+    if (SZB.px == null) { SZB.px = 0; SZB.py = 0; }
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.shiftKey) { if (zk === 1) return; SZB.px -= e.shiftKey && !e.deltaX ? 0 : e.deltaX; SZB.py -= e.shiftKey && !e.deltaX ? e.deltaY : 0; }
+    else { const z2 = clamp(zk * Math.exp(-e.deltaY * (e.ctrlKey ? .01 : .0018)), 1, 4), ox = S.ox, oy = S.oy, nox = cx - (cx - ox) * z2 / zk, noy = cy - (cy - oy) * z2 / zk; SZB.zk = z2; if (z2 === 1) { SZB.px = SZB.py = 0; } else { SZB.px = nox - b.x * z2; SZB.py = noy - b.y * z2; } }
+    fit(); }, { passive: false });
+  wrap.addEventListener('pointerdown', e => { if (!SZB.on || e.button !== 1 || (SZB.zk || 1) === 1) return; e.preventDefault(); const x0 = e.clientX, y0 = e.clientY, px = SZB.px, py = SZB.py;
+    const mv = e2 => { SZB.px = px + e2.clientX - x0; SZB.py = py + e2.clientY - y0; fit(); }, up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); }; addEventListener('pointermove', mv); addEventListener('pointerup', up); });
   api.szAlpha = v => { SZB.alpha = v; const c = $('#szBg'); if (c) c.style.opacity = v; document.body.style.setProperty('--szA', v); };   /* v3.95 경완: 소품·나비도 같이 흐리게 (포켓몬만 또렷하게) */   // v3.88 경완: 크기 조절 모드 배경 투명도
   SZB.paint = () => { const c = $('#szBg'); if (!c) return; const sh = Math.max(H, parseFloat(stage.style.height) || H), u = 2 * scale, ox = Math.max(0, Math.ceil(S.ox / u)), oy = Math.max(0, Math.ceil(S.oy / u)),
       AW = Math.ceil((wrap.clientWidth - S.ox) / u) + ox + 2, AH = Math.max(Math.ceil((wrap.clientHeight - S.oy) / u), Math.ceil(sh / 2)) + oy + 2, key = [AW, AH, ox, oy, scale].join();
@@ -8802,7 +8811,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
       for (const m of [...S.mons]) removeMon(m, true); SZB.key = null;
       const cv = document.createElement('canvas'); cv.id = 'szBg'; cv.style.cssText = 'position:absolute;left:0;top:0;image-rendering:pixelated;pointer-events:none'; wrap.insertBefore(cv, stage);
       const sp = document.createElement('div'); sp.id = 'szSp'; sp.style.cssText = 'position:absolute;left:0;top:0;width:1px;pointer-events:none'; wrap.append(sp); document.body.classList.add('szMode'); fit(); return; }
-    SZB.sel.clear(); api.markMon(null); for (const m of [...S.mons]) removeMon(m, true); SZB.on = false; document.body.classList.remove('szMode'); $('#szSp')?.remove(); $('#szBg')?.remove(); stage.style.height = ''; wrap.scrollTop = 0; fit();
+    SZB.zk = 1; SZB.px = SZB.py = 0; SZB.sel.clear(); api.markMon(null); for (const m of [...S.mons]) removeMon(m, true); SZB.on = false; document.body.classList.remove('szMode'); $('#szSp')?.remove(); $('#szBg')?.remove(); stage.style.height = ''; wrap.scrollTop = 0; fit();
     saveFrozen = SZB.sf; const K = SZB.keep || []; SZB.keep = null; for (const o of K) { const m = await spawn(o.sp, { ...o, quiet: true }); m.studio = true; } save(); };
   api.szAdd = async sp => { if (!SZB.on || S.mons.some(m => m.szb && m.sp === sp)) return null; const m = await spawn(sp, { x: XL + 30, y: 200, quiet: true }); if (!SZB.on) { removeMon(m, true); return null; } m.szb = m.pin = m.frz = true; m.studio = true; m.el.classList.add('szb'); m.state = 'idle'; m.szC = szFree(new Set(szMons().filter(o => o !== m && o.szC != null).map(o => o.szC))); SZB.rows(); return m.uid; };
   api.szList = () => S.mons.filter(m => m.szb).map(m => ({ uid: m.uid, sp: m.sp, name: m.name }));
