@@ -541,7 +541,7 @@ ol.log li.big .txt{color:#c03838}
 @keyframes drop{from{transform:translateY(-30px);opacity:0}}.berry.new.hi{animation:dropHi .75s cubic-bezier(.45,0,.55,1)}@keyframes dropHi{0%{transform:translateY(-110px);opacity:0}12%{opacity:1}62%{transform:translateY(0)}78%{transform:translateY(-12px)}90%{transform:translateY(0)}95%{transform:translateY(-3px)}100%{transform:none}}
 
 .bubble{position:absolute;left:0;top:0;transform:translate(-50%,-100%);background:#f8f8f8;color:#282830;border:2px solid #383848;padding:1px 6px 2px;
-  font:700 12px/1.3 var(--px);box-shadow:2px 2px 0 rgba(0,0,0,.3);white-space:nowrap;animation:pop .2s steps(2)}
+  font:700 12px/1.3 var(--px);box-shadow:2px 2px 0 rgba(0,0,0,.3);width:max-content;max-width:132px;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;text-align:center;animation:pop .2s steps(2)}
 .bubble::after{content:"";position:absolute;left:50%;bottom:-7px;margin-left:-4px;border:4px solid transparent;border-bottom:0;border-top:5px solid #383848}
 .bubble.heart{color:#e0405a}.bubble .pxe{display:block;width:16px;height:16px;margin:1px 0 0}.bubble.anger{color:#d62f2f}.bubble.note{color:#2b6cc4}.bubble.zz{color:#5560a8;background:#e8eaff}
 @keyframes pop{from{transform:translate(-50%,-80%) scale(.5)}}
@@ -2283,6 +2283,8 @@ const sizeCls = sp => { const h = SPECIES[parseInt(sp)]?.h ?? 7; return h <= 5 ?
 let MON_SC = {};
 // v3.93 경완: 종마다 기울기(MON_ROT[종] = 도, 바라보는 쪽 기준)·땅에서 떠 있는 높이(MON_FLY[종] = px). 선택·잡기는 그대로 스프라이트 몸통
 let MON_ROT = {}, MON_FLY = {};
+// v5.24 경완: 종마다 그림자 크기·자리(MON_SH[종] = [배율, 좌우 px, 위아래 px], 좌우는 바라보는 쪽 기준). 작업실 크기 조절 모드에서 바꾼다
+let MON_SH = {};
 const scaleOf = k => scale0(k) * (MON_SC[parseInt(k)] || 1);
 const scale0 = sp => { const P = SPRITES[sp]; if (!isPmd(sp)) return SCALE * [.85, 1, 1.15][sizeCls(sp)]; if (!P.vh) return P.a.Idle[2] >= 40 ? 1.875 : PSCALE; const big = P.a.Idle[2] >= 40; let k = Math.round(sizeT(sp) / P.vh * 4) / 4; if (k > 2.75 && k < 3.5) k = 2.75; return Math.max(1.5, Math.min(big ? 3.5 : 4.5, k)); };   // v3.10: 도트가 너무 잘아 보이지 않게 최소 1.5배(비크티니, 경완). v3.08: 도트 한 칸은 아르세우스(2.75배)만큼까지(경완) — 조금 넘는 건 2.75로, 훨씬 커야 하는 건 Scale2x 로 고운 도트   // 픽셀이 고르게 보이도록 0.5배 단위, 원래 크기 근처에서만
 // 아틀라스 프레임 사이에 투명한 틈을 넣어 다시 만든다: 확대할 때 옆 프레임의 검은 테두리가 번져 보이던 것 막기.
@@ -2322,8 +2324,9 @@ function shadowFit(m) {
   const sh = m.el.querySelector('.shadow'); if (!sh) return;
   const k = m.sk || m.form, P = SPRITES[k], s = scaleOf(k);
   const pm = isPmd(k) && P.fw, fh = pm ? (P.fh || 0) * s : 0, w = clamp(pm ? P.fw * s * 1.12 : m.w * .62, 14, 220), h = Math.max(5, Math.round(Math.max(w * .3, fh + 5)));
-  sh.style.transform = ''; sh.style.width = Math.round(w) + 'px'; sh.style.height = h + 'px'; sh.style.margin = `${-Math.round(h * .62 + fh * .3)}px 0 0 ${-Math.round(w / 2)}px`;
-  m.shEl = sh; m.shX = pm ? (P.fx || 0) * s : 0; m.shF = null;   // 발 가운데가 몸 가운데와 다르면 그쪽으로 (바라보는 쪽 따라 뒤집힘)
+  const [sk, sx, sy] = MON_SH[m.form] || [1, 0, 0], W = w * sk, Hh = Math.max(3, Math.round(h * sk));
+  sh.style.transform = ''; sh.style.width = Math.round(W) + 'px'; sh.style.height = Hh + 'px'; sh.style.margin = `${-Math.round(h * .62 + fh * .3 + (Hh - h) / 2) + sy}px 0 0 ${-Math.round(W / 2)}px`;
+  m.shEl = sh; m.shX = (pm ? (P.fx || 0) * s : 0) + sx; m.shF = null;   // 발 가운데가 몸 가운데와 다르면 그쪽으로 (바라보는 쪽 따라 뒤집힘)
 }
 function scale2x(src) {
   const w = src.width, h = src.height, s = new Uint32Array(src.getContext('2d').getImageData(0, 0, w, h).data.buffer);
@@ -2536,13 +2539,13 @@ function frPop(m, n = 1) { const d = document.createElement('div'); d.className 
 // v3.50 경완: 말풍선 그림 이모지는 도트 그림으로 (😋 냠냠 · 💦 땀 · ☀ 햇볕 · ☾ 달)
 const PIXE = (() => { const P = { k: '#4a3010', y: '#ffd23c', e: '#3a2410', m: '#8a3a10', t: '#e8506a', b: '#4aa8f0', l: '#d8f0ff', K: '#1f5a9a', o: '#f08a1c', w: '#fff6b0', Y: '#ffe27a', O: '#b88a20', R: '#ec3b3b', D: '#7a1418', H: '#ff9a8a' };
   const M = {
-    '💢': ['............', '.DDD....DDD.', '.DHRD..DRHD.', '..DRD..DRD..', '...DD..DD...', '............', '............', '...DD..DD...', '..DRD..DRD..', '.DHRD..DRHD.', '.DDD....DDD.', '............'],   // v4.92 경완: 짜증 말풍선 = 만화 빠직
+    '💢': ['...DRRD..DRRD...', '...DRRD..DRRD...', '...DRRD..DRRD...', 'DDDRRD....DRRDDD', 'RRRRD......DRRRR', 'RRRD........DRRR', 'DDD..........DDD', '................', '................', 'DDD..........DDD', 'RRRD........DRRR', 'RRRRD......DRRRR', 'DDDRRD....DRRDDD', '...DRRD..DRRD...', '...DRRD..DRRD...', '...DRRD..DRRD...'],   // v4.92 경완: 짜증 말풍선 = 만화 빠직
     '😋': ['...kkkkkk...', '..kyyyyyyk..', '.kyyyyyyyyk.', 'kyyeyyyyeyyk', 'kyeyeyyeyeyk', 'kyyyyyyyyyyk', 'kyymyyyymyyk', 'kyyymmmmyyyk', '.kyyyttyyyk.', '..kkkttkkk..', '....kttk....', '.....kk.....'],
     '💦': ['...K........', '..KbK.......', '..KbK.......', '.KblbK......', 'KblbbbK..K..', 'KbbbbbK.KbK.', 'KbbbbbK.KbK.', '.KbbbK.KblbK', '..KKK..KbbbK', '.......KbbbK', '........KKK.', '............'],
     '☀': ['.....oo.....', '.o...oo...o.', '..o......o..', '....oooo....', '...oyyyyo...', 'oo.oywyyo.oo', 'oo.oyyyyo.oo', '...oyyyyo...', '....oooo....', '..o......o..', '.o...oo...o.', '.....oo.....'],
     '☾': ['...OOOO.....', '.OOYYYO...w.', '.OYYYO......', 'OYYYO.......', 'OYYO........', 'OYYO.....w..', 'OYYO........', 'OYYYO.......', '.OYYYYO..OO.', '..OOYYYYYO..', '....OOOOO...', '............'] };
   const R = {}; for (const [k, rows] of Object.entries(M)) { let r = ''; rows.forEach((row, y) => [...row].forEach((c, x) => { if (P[c]) r += `<rect x="${x}" y="${y}" width="1" height="1" fill="${P[c]}"/>`; }));
-    R[k] = `<svg class="pxe" viewBox="0 0 12 12" shape-rendering="crispEdges">${r}</svg>`; } return R; })();
+    R[k] = `<svg class="pxe" viewBox="0 0 ${rows.length} ${rows.length}" shape-rendering="crispEdges">${r}</svg>`; } return R; })();
 // v3.77 경완: 말풍선 종류(BUBK)와 그 말풍선이 뜨는 장면(SCN). 작업실에서 장면을 지우거나 다른 말풍선으로 옮기면 BUB_OV 에 담겨 배포된다
 // BUBK: [키, 보이는 글, 모양, 이름] · SCN: [장면 id, 기본 말풍선 키, 설명]
 const BUBK = [['!', '!', '', '놀람·알아챔'], ['!!', '!!', 'anger', '깜짝·화남'], ['!?', '!?', '', '당황'], ['?', '?', '', '궁금함'], ['…?', '…?', '', '어리둥절'], ['…', '…', '', '멍·머쓱'], ['♪', '♪', 'note', '기분 좋음'], ['♪♪', '♪♪', 'note', '노래'], ['♥', '♥', 'heart', '좋아함'], ['…♥', '…♥', 'heart', '수줍음'], ['😋', '😋', 'happy', '냠냠'], ['배불러', '배불러', '', '배부름'], ['꼬르륵', '꼬르륵', '', '배고픔'], ['💦', '💦', '', '헐떡임'], ['#', '#', 'anger', '짜증'], ['☀', '☀', 'note', '햇빛'], ['☾', '☾', 'note', '달빛'], ['z Z', 'z Z', 'zz', '잠듦'], ['드르렁', '드르렁', 'zz', '코골이'], ['★', '★', 'star', '특별 장면'], ['✧', '✧', '', '반짝'], ['아직 안 씻어도 돼', '아직 안 씻어도 돼', '', '빗질 거절'], ['외침', null, '', '기술 외침']];
@@ -5547,7 +5550,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.23';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.24';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8487,6 +8490,7 @@ function applyCfg(c) {
     BUB_OV = d.bub && typeof d.bub === 'object' ? { ...d.bub } : {};
     MON_SC = {}; if (d.monSc && typeof d.monSc === 'object') for (const [k, v] of Object.entries(d.monSc)) if (SPECIES[k] && typeof v === 'number' && v >= .3 && v <= 3) MON_SC[k] = v;
     MON_ROT = {}; if (d.monRot && typeof d.monRot === 'object') for (const [k, v] of Object.entries(d.monRot)) if (SPECIES[k] && typeof v === 'number' && Math.abs(v) <= 90 && v) MON_ROT[k] = v;
+    MON_SH = {}; if (d.monSh && typeof d.monSh === 'object') for (const [k, v] of Object.entries(d.monSh)) if (SPECIES[k] && Array.isArray(v) && v.length === 3 && v[0] >= .2 && v[0] <= 4 && Math.abs(v[1]) <= 200 && Math.abs(v[2]) <= 200) MON_SH[k] = v.map(Number);
     MON_FLY = {}; if (d.monFly && typeof d.monFly === 'object') for (const [k, v] of Object.entries(d.monFly)) if (SPECIES[k] && typeof v === 'number' && v && v >= -300 && v <= 300) MON_FLY[k] = v;
     TIER_KT = {}; if (d.tierK?.k && typeof d.tierK.k === 'object') for (const [t, k] of Object.entries(d.tierK.k)) if (k >= 0 && k <= 5) TIER_KT[t] = +k;
     SP_OFF = new Set((Array.isArray(d.off) ? d.off : []).map(Number).filter(sp => SPECIES[sp]));
@@ -8559,7 +8563,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   notiSoon = function () {};   // 작업실에선 '새 소식' 창을 띄우지 않는다
   if (GAL) { save = function () {}; document.documentElement.classList.add('st-gal'); }
   const api = window.__studio = {
-    BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, get MON_ROT() { return MON_ROT; }, get MON_FLY() { return MON_FLY; }, liftBase, THEMES, themeW, setMonPose(r, f) { MON_ROT = { ...(r || {}) }; MON_FLY = { ...(f || {}) }; }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, get SP_OFF() { return [...SP_OFF]; }, get TIER_KT() { return TIER_KT; }, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
+    BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, get MON_ROT() { return MON_ROT; }, get MON_FLY() { return MON_FLY; }, get MON_SH() { return MON_SH; }, setMonSh(o) { MON_SH = { ...(o || {}) }; for (const m of S.mons) shadowFit(m); }, liftBase, THEMES, themeW, setMonPose(r, f) { MON_ROT = { ...(r || {}) }; MON_FLY = { ...(f || {}) }; }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, get SP_OFF() { return [...SP_OFF]; }, get TIER_KT() { return TIER_KT; }, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
     ICO: { berry: ICO_BERRY, brush: ICO_BRUSH, hand: ICO_HAND, pen: PEN, egg: EGG_SVG },   // v3.66: 작업실이 게임 아이콘을 그대로 쓴다
     get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, PET_FR, WASH_FR1: WASH_FR, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]), HATCH_KM: [0, ...GRADE.slice(1).map(G => G.km)] }; },
     get cfg() { return CFG; }, get SPOTS() { return SPOTS; },
