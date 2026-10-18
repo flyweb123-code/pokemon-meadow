@@ -5550,7 +5550,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.26';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.27';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7200,6 +7200,10 @@ function inPolyN(P, x, y) { let c = false; for (let i = 0, j = P.length - 1; i <
 function inSpot(ll, s) { if (!s.r2 && !s.rot && !s.sh) return distM(ll, [s.la, s.lo]) <= s.r;
   const x = (ll[1] - s.lo) * 111320 * Math.cos(s.la * Math.PI / 180), y = (ll[0] - s.la) * 110540, t = (s.rot || 0) * Math.PI / 180, u = x * Math.cos(t) + y * Math.sin(t), v = -x * Math.sin(t) + y * Math.cos(t), p = u / s.r, q = v / (s.r2 || s.r);
   return s.sh === 'rect' ? Math.abs(p) <= 1 && Math.abs(q) <= 1 : s.sh === 'poly' ? inPolyN(s.pts, p, q) : p * p + q * q <= 1; }
+// v5.27 경완: 알을 주운 곳이 작업실 반경 안이면 그 반경의 장소(이름·장소 특성)를 알에 적는다 — 알 힌트와 주운 곳이 같은 장소를 가리키게
+function spotPlace(ll) { if (!SPOTS.length || !Array.isArray(ll) || !isFinite(ll[0]) || !isFinite(ll[1])) return null;
+  let best = null, bd = 1e18; for (const s of SPOTS) { const ks = (s.th || s.tha || []).filter(k => THEMES[k]); if (!ks.length && !s.pn) continue; if (!inSpot(ll, s)) continue; const a = s.r * (s.r2 || s.r); if (a < bd) { bd = a; best = { n: s.pn, ks }; } }   // 겹치면 더 작은(구체적인) 반경
+  return best; }
 function spotHit(ll) {
   if (!SPOTS.length || !Array.isArray(ll) || !isFinite(ll[0]) || !isFinite(ll[1])) return null;
   const near = SPOTS.filter(s => inSpot(ll, s)).sort(() => Math.random() - .5);
@@ -7227,7 +7231,7 @@ function collectEggs(km, place, tags, pf, ll) {
     if (P.l >= PITY_L) g = 5; else if (P.e >= PITY_E) g = Math.max(g, 4);
     const pl = pf ? pf() : place ? { n: place, tags, ll } : null, hit = spotHit(pl?.ll || ll); if (hit) g = hit.g;   // v5.18 경완: 작업실 지도에 놓은 포켓몬 근처면 그 포켓몬 알이 더 잘 나온다
     if (g === 5) P.l = 0; if (g >= 4) P.e = 0;
-    const e = { id: S.eid++, g, t, isNew: true }; if (pl?.n) e.place = pl.n; if (pl?.tags?.length) e.tags = pl.tags; if (hit) { e.sp = hit.sp; e.spot = 1; } S.bag.push(e); got.push(g); got.eggs.push(e); }
+    const e = { id: S.eid++, g, t, isNew: true }; if (pl?.n) e.place = pl.n; if (pl?.tags?.length) e.tags = pl.tags; const spl = spotPlace(pl?.ll || ll); if (spl) { if (spl.n) e.spN = spl.n; if (spl.ks.length) e.spT = spl.ks; } if (hit) { e.sp = hit.sp; e.spot = 1; } S.bag.push(e); got.push(g); got.eggs.push(e); }
   autoInc(); if (n) { try { notiSoon(400); } catch (e) {} notiBuzz('egg'); } return got;   /* v4.23 경완: 알을 주우면 앱을 다시 열지 않아도 바로 알림 */
 }
 function gotLog(got, how, place) {
@@ -7240,14 +7244,14 @@ function gotLog(got, how, place) {
 function unincubate(e) {
   if (!S.eggs.includes(e) || S.bag.length >= MAX_BAG) return false;
   S.eggs = S.eggs.filter(x => x !== e);
-  const b = { id: e.id, g: e.g, t: e.t || Date.now(), km: e.km || 0, sp: e.sp }; if (e.place) b.place = e.place; if (e.tags) b.tags = e.tags; S.bag.push(b);
+  const b = { id: e.id, g: e.g, t: e.t || Date.now(), km: e.km || 0, sp: e.sp }; if (e.place) b.place = e.place; if (e.tags) b.tags = e.tags; if (e.spN) b.spN = e.spN; if (e.spT) b.spT = e.spT; S.bag.push(b);
   save(); return true;
 }
 // 가방의 알을 부화기로 옮긴다
 function incubate(e) {
   if (S.eggs.length >= MAX_EGGS || !S.bag.includes(e)) return false;
   S.bag = S.bag.filter(x => x !== e);
-  const x = { id: e.id, g: e.g, km: e.km || 0, need: GRADE[e.g].km, isNew: true, nwI: true, t: e.t, place: e.place, tags: e.tags, sp: e.sp }; S.eggs.push(x);
+  const x = { id: e.id, g: e.g, km: e.km || 0, need: GRADE[e.g].km, isNew: true, nwI: true, t: e.t, place: e.place, tags: e.tags, sp: e.sp, ...(e.spN ? { spN: e.spN } : {}), ...(e.spT ? { spT: e.spT } : {}) }; S.eggs.push(x);
   save(); return true;
 }
 // v3.90 경완: 자동 채우기를 켜 두면 부화기가 빌 때 가방에서 높은 등급 → 많이 간 거리 → 먼저 주운 알 순으로 채운다 (처음엔 꺼짐)
@@ -7386,7 +7390,7 @@ window.pokeRunPlaces = (t0, t1, list) => {
   if (!S.places.some(p => p.t >= t0 && p.t <= t1)) pts.forEach(p => notePlace(p.n, p.tags, p.t, p.ll));
   // v3.98 경완: 무작위 대신 주운 순서대로 경로 앞쪽부터 (i번째 알 = 경로의 i/n 지점)
   pts.sort((a, b) => a.t - b.t); const at = (i, n) => pts[Math.min(pts.length - 1, Math.floor(i * pts.length / Math.max(1, n)))];
-  const all = [...S.bag, ...S.eggs], fill = (e, p) => { if (e.place) return; e.place = p.n; if (p.tags.length) e.tags = p.tags; if (!e.spot) { delete e.sp; eggSp(e); } };
+  const all = [...S.bag, ...S.eggs], fill = (e, p) => { if (e.place) return; e.place = p.n; if (p.tags.length) e.tags = p.tags; const spl = spotPlace(p.ll); if (spl) { if (spl.n) e.spN = spl.n; if (spl.ks.length) e.spT = spl.ks; } if (!e.spot) { delete e.sp; eggSp(e); } };
   for (const r of S.runs) {
     if (!(r.t0 && r.t0 < t1 + 60000 && r.t > t0 - 60000)) continue;
     if (r.eggs) r.eggs.forEach((x, i, L) => { const p = at(i, L.length), e = all.find(y => y.id === x.id); if (e) { fill(e, p); x.place = e.place; } else if (!x.place) x.place = p.n; });
@@ -7543,10 +7547,11 @@ const TH_SP0 = Object.fromEntries(Object.entries(THEMES).map(([k, v]) => [k, [..
 const TH_ALL = { ...THEMES }, TH_BASE = Object.fromEntries(Object.entries(THEMES).map(([k, v]) => [k, { t: [...(v.t || [])], kw: v.kw }])); let TH_OV = {};
 const thRe = L => { const w = (L || []).map(x => String(x).trim()).filter(Boolean).map(x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')); return w.length ? new RegExp(w.join('|')) : /(?!)/; };
 function applyThOv(o) { TH_OV = o && typeof o === 'object' ? o : {}; for (const k in THEMES) delete THEMES[k];
-  for (const [k, th] of Object.entries(TH_ALL)) { const v = TH_OV[k] || {}; th.t = Array.isArray(v.t) ? v.t.map(Number).filter(t => TYPE_KO[t] && t > 0) : [...TH_BASE[k].t]; th.kw = Array.isArray(v.kw) ? thRe(v.kw) : TH_BASE[k].kw; if (!v.del) THEMES[k] = th; } }
+  for (const [k, th] of Object.entries(TH_ALL)) { const v = TH_OV[k] || {}; th.t = Array.isArray(v.t) ? v.t.map(Number).filter(t => TYPE_KO[t] && t > 0) : [...TH_BASE[k].t]; th.kw = Array.isArray(v.kw) ? thRe(v.kw) : TH_BASE[k].kw; th.ex = Array.isArray(v.ex) ? v.ex.map(Number) : []; if (!v.del) THEMES[k] = th; } }   // ex: 이 특성에서 뺀 포켓몬 (특성 가중치를 안 받음)
 function applyThSp(o) { TH_SP_OV = {}; for (const k in THEMES) { const L = o?.[k]; if (Array.isArray(L)) { TH_SP_OV[k] = [...new Set(L.map(Number).filter(sp => SPECIES[sp]))].slice(0, 60); THEMES[k].sp = TH_SP_OV[k]; } else THEMES[k].sp = [...TH_SP0[k]]; } }
 // 알 하나의 테마 목록: 아이폰이 보낸 주변 장소 종류(tags) + 장소 이름에서 찾은 낱말 + 밤에 주운 알
 function eggThemes(e) {
+  if (e.spT?.some(k => THEMES[k])) { const h = new Date(e.t || Date.now()).getHours(), o = e.spT.filter(k => THEMES[k]); if (h >= 21 || h < 5) o.push('night'); return o; }   // v5.27: 작업실 반경 안에서 주운 알은 그 반경의 장소 특성만
   const out = new Set((e.tags || []).filter(k => THEMES[k]));
   // 시·구·동 같은 행정 이름(마포'구' 등)은 빼고 장소 이름만 본다
   const words = String(e.place || '').split(/\s+/).filter((w, i) => i > 0 && !/(시|구|군|동|읍|면|리|가|로|길)$/.test(w) && !/^\d/.test(w));
@@ -7556,7 +7561,8 @@ function eggThemes(e) {
   return [...out];
 }
 const NIGHT = { n: '밤', t: [8, 17], hab: [], fx: /밤|어둠|달/ };
-function themeHint(e) { const ks = eggThemes(e).filter(k => k !== 'night'); if (!ks.length) return '어떤 기운인지 잘 모르겠다'; const ty = [...new Set(ks.flatMap(k => THEMES[k].t.slice(0, 2)))].slice(0, 3).map(t => TYPE_KO[t]); return `${ty.join('·')} 기운이 느껴진다`; }
+const eggPlace = e => e.spN || shortPlace(e.place || '');   // v5.27: 작업실 반경 안에서 주운 알은 반경 이름으로
+function themeHint(e) { const all = eggThemes(e), ks = all.filter(k => k !== 'night' && THEMES[k]).slice(0, 2).map(k => THEMES[k].n); if (all.includes('night')) ks.push('밤'); if (!ks.length) return '어떤 기운인지 잘 모르겠다'; return `${ks.join(', ')}의 기운이 느껴지는 것 같다`; }   // v5.27 경완: 타입 대신 장소 특성 이름으로 (예: 공항의 기운이 느껴지는 것 같다)
 // keep: 알은 부화기에 그대로 두고, 부화 연출에서 깨질 때 뺀다
 // 알 속 포켓몬은 알을 주울 때(또는 처음 볼 때) 정해져 e.sp 에 남는다. 장소가 나중에 채워지면 그때 한 번 다시 정한다
 const eggSp = e => e.sp && !SP_OFF.has(e.sp) ? e.sp : (e.sp = rollEgg(e));   // v3.97: 꺼진 포켓몬이 들어 있던 알은 다시 정한다
@@ -7566,11 +7572,11 @@ function hatchEgg(e, keep, ask) {
   if (!keep) { S.eggs = S.eggs.filter(x => x !== e); autoInc(); }
   const sp = eggSp(e);
   S.recentHatch = [sp, ...(S.recentHatch || []).filter(x => x !== sp)].slice(0, 12);
-  hatchQ.push({ g: e.g, sp, place: e.place, egg: keep ? e : null, ask }); save();
+  hatchQ.push({ g: e.g, sp, place: e.spN || e.place, egg: keep ? e : null, ask }); save();
 }
 // 장소 테마 가중치: 기본 1, 타입 +12(밤 +4), 서식지 +4, 도감 낱말 +8, 특정 종 +20
 function themeW(sp, ths) { const d = SPECIES[sp]; let v = 1;
-  for (const th of ths) { if (d.t.some(t => th.t.includes(t))) v += th === NIGHT ? 4 : 12; if (d.hab && th.hab?.includes(d.hab)) v += 4; if (th.fx && d.fx && th.fx.test(d.fx)) v += 8; if (th.sp && th.sp.includes(sp)) v += 20; }
+  for (const th of ths) { if (th.ex?.includes(sp)) continue; if (d.t.some(t => th.t.includes(t))) v += th === NIGHT ? 4 : 12; if (d.hab && th.hab?.includes(d.hab)) v += 4; if (th.fx && d.fx && th.fx.test(d.fx)) v += 8; if (th.sp && th.sp.includes(sp)) v += 20; }
   return v; }
 function rollEgg(e) {
   const tab = eggEff(e.g) || EGG_TIERS[e.g] || EGG_TIERS[1], ths = eggThemes(e).map(k => THEMES[k] || NIGHT);
@@ -7806,7 +7812,7 @@ function eggView(e) {   // v4.51 경완: 부화기에서 고른 알을 한 번 �
   ['#hatchOk', '#hatchGo', '#hatchLook', '#hatchSend'].forEach(q => $(q).hidden = true);
   hatchStage.innerHTML = '<i class="ehalo"></i>' + eggHtml(e.g, 'wob');
   const m = $('#hatchMsg'); m.classList.add('ev'); m.style.visibility = '';
-  m.innerHTML = `<b class="evg">${GRADE[e.g].n} 알</b> <span class="state">부화 중</span><div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km<div class="evd">${e.place ? `${eggGotDay(e)}${esc(shortPlace(e.place))} 근처에서 주운 알` : e.t ? `${eggGotDay(e)}주운 알` : '주운 곳 기록 없음'}<br>${themeHint(e)}</div>`;
+  m.innerHTML = `<b class="evg">${GRADE[e.g].n} 알</b> <span class="state">부화 중</span><div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km<div class="evd">${e.place || e.spN ? `${eggGotDay(e)}${esc(eggPlace(e))} 근처에서 주운 알` : e.t ? `${eggGotDay(e)}주운 알` : '주운 곳 기록 없음'}<br>${themeHint(e)}</div>`;
   const out = $('#hatchOut'), hx = $('#hatchX'); out.hidden = false; hx.hidden = false; hatchEl.hidden = false;
   const close = () => { hatchEl.hidden = true; out.hidden = true; hx.hidden = true; m.classList.remove('ev'); hatchEl.onclick = null; out.onclick = null; hx.onclick = null; eggClose = null; };
   eggClose = close; hx.onclick = () => { sfx('tap'); close(); };   /* v4.73 경완: 알 상태 창 우상단 ✕, 아래로 끌어내려도 닫힌다 (dragClose) */
@@ -8105,7 +8111,7 @@ function renderBag() {
   $('#bagPop').hidden = !e;
   if (e) { $('#bagDel').classList.toggle('arm', delArm === 1); $('#bagDel').textContent = delArm === 1 ? '정말?' : '버리기'; }
   if (e) { $('#bagIn').disabled = full; $('#bagIn').textContent = full ? `부화기가 꽉 찼어요` : '부화기에 넣기'; }
-  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${GRADE[e.g].km}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움<span class="epl">주운 곳: ${e.place ? `${esc(shortPlace(e.place))} 근처` : '기록 없음'}</span>${themeHint(e)}</div></div>`;
+  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${GRADE[e.g].km}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움<span class="epl">주운 곳: ${e.place || e.spN ? `${esc(eggPlace(e))} 근처` : '기록 없음'}</span>${themeHint(e)}</div></div>`;
 }
 // 가방: 알을 꾹 누르면(0.45초) 여러 개 고르기 모드가 켜지고 그 알이 골라진다 (v3.36 경완)
 { let lp = null, lpDone = 0;
@@ -8170,7 +8176,7 @@ function renderRun() {
   if (runEl.hidden) { if (!$('#bagPop').hidden) { $('#bagPop').hidden = true; bagSel = null; } return; }
   if (!eggNone && !S.eggs.includes(eggSel)) eggSel = S.eggs[Math.min(eggSelI, S.eggs.length - 1)] || null;   // v3.92: 부화로 빠진 알 자리(같은 칸)로 선택이 남는다 else if (eggNone) eggSel = null;
   const e = eggSel;
-  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? `${fmtKm(e.km)} / ${e.need}km` : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}<div class="egg-detail"><span class="epl">${e.place ? `${esc(shortPlace(e.place))} 근처` : '주운 곳 기록 없음'}</span>${themeHint(e)}</div><div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
+  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? `${fmtKm(e.km)} / ${e.need}km` : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}<div class="egg-detail"><span class="epl">${e.place || e.spN ? `${esc(eggPlace(e))} 근처` : '주운 곳 기록 없음'}</span>${themeHint(e)}</div><div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
     : `<p class="incu-empty">${S.eggs.length ? '알을 눌러 보자' : '부화 중인 알이 없습니다'}</p>`;
   // 알이 있을 때 높이를 기억해 두고, 빈 부화기도 같은 높이로 둔다
   if (e) requestAnimationFrame(() => { const h = $('#incu').offsetHeight; if (h > 40) document.documentElement.style.setProperty('--incu-h', h + 'px'); });
@@ -8503,7 +8509,7 @@ function applyCfg(c) {
     MON_FLY = {}; if (d.monFly && typeof d.monFly === 'object') for (const [k, v] of Object.entries(d.monFly)) if (SPECIES[k] && typeof v === 'number' && v && v >= -300 && v <= 300) MON_FLY[k] = v;
     TIER_KT = {}; if (d.tierK?.k && typeof d.tierK.k === 'object') for (const [t, k] of Object.entries(d.tierK.k)) if (k >= 0 && k <= 5) TIER_KT[t] = +k;
     SP_OFF = new Set((Array.isArray(d.off) ? d.off : []).map(Number).filter(sp => SPECIES[sp]));
-    SPOTS = (Array.isArray(d.spots) ? d.spots : []).filter(o => o && SPECIES[o.sp] && isFinite(o.la) && isFinite(o.lo) && o.r >= 30 && o.r <= 50000 && o.x >= 1 && o.x <= 1000).map(o => ({ sp: +o.sp, la: +o.la, lo: +o.lo, r: +o.r, x: +o.x, r2: o.r2 >= 30 && o.r2 <= 50000 ? +o.r2 : 0, rot: Math.abs(+o.rot) <= 180 ? +o.rot || 0 : 0, ...(o.sh === 'rect' ? { sh: 'rect' } : o.sh === 'poly' && Array.isArray(o.pts) && o.pts.length >= 3 && o.pts.length <= 64 && o.pts.every(q => Array.isArray(q) && Math.abs(q[0]) <= 2 && Math.abs(q[1]) <= 2) ? { sh: 'poly', pts: o.pts.map(q => [+q[0], +q[1]]) } : {}), ...(Array.isArray(o.th) ? { th: o.th.filter(k => typeof k === 'string').slice(0, 6) } : {}) }));   // th: 작업실 계산용 장소 특성 (게임 확률엔 안 씀 — 실제 특성은 아이폰이 보낸 주변 장소·장소 이름)
+    SPOTS = (Array.isArray(d.spots) ? d.spots : []).filter(o => o && SPECIES[o.sp] && isFinite(o.la) && isFinite(o.lo) && o.r >= 30 && o.r <= 50000 && o.x >= 1 && o.x <= 1000).map(o => ({ sp: +o.sp, la: +o.la, lo: +o.lo, r: +o.r, x: +o.x, r2: o.r2 >= 30 && o.r2 <= 50000 ? +o.r2 : 0, rot: Math.abs(+o.rot) <= 180 ? +o.rot || 0 : 0, ...(o.sh === 'rect' ? { sh: 'rect' } : o.sh === 'poly' && Array.isArray(o.pts) && o.pts.length >= 3 && o.pts.length <= 64 && o.pts.every(q => Array.isArray(q) && Math.abs(q[0]) <= 2 && Math.abs(q[1]) <= 2) ? { sh: 'poly', pts: o.pts.map(q => [+q[0], +q[1]]) } : {}), ...(Array.isArray(o.th) ? { th: o.th.filter(k => typeof k === 'string').slice(0, 6) } : {}), ...(Array.isArray(o.tha) ? { tha: o.tha.filter(k => typeof k === 'string').slice(0, 6) } : {}), ...(typeof o.pn === 'string' && o.pn.trim() ? { pn: o.pn.trim().slice(0, 24) } : {}) }));   // th: 작업실 계산용 장소 특성 (게임 확률엔 안 씀 — 실제 특성은 아이폰이 보낸 주변 장소·장소 이름)
     retier(d.tierOv, d.tierOrd || {}); if (d.bal) applyBal(d.bal); if (d.layout) setLayoutIn(d.layout);
     EGG_EFF = null; CFG = c; $('#appVer').textContent = 'v' + APP_VER + (c.ver ? ' · 데이터 ' + c.ver : '');
   } catch (e) { console.warn('config', e); }
@@ -8909,7 +8915,7 @@ api.szLoad = async L => { for (const o of L || []) { if (!SZB.on) return; const 
 }
 
 if (/[?&]debug/.test(location.search)) window.__meadow = { unlock, addFr, frMaxHit, scaleOf, sizeT, SPRITES, loadChunk, padAtlas, useMove, save, evoMus, bgm, bgmPos, feedOne, tense, hatchEgg, playHatch, TIER, TIER_SPS, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates, propReact, propSpots, propAt, shakeTree, moveTo, LAYOUT };   // test hook
-if (/[?&]debug/.test(location.search)) Object.assign(window, { __drag: () => drag, __log: log, __save: save, __bgm: bgm, __actx: () => actx, __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf, __thoughtOf: thoughtOf, __addRel: addRel, __tyIcon: tyIcon, __evoKids: evoKids, __friendsAll: friendsAll, __renameBox: renameBox });
+if (/[?&]debug/.test(location.search)) Object.assign(window, { __spotPlace: spotPlace, __themeHint: themeHint, __eggPlace: e => eggPlace(e), __eggThemes: eggThemes, __setSpots: L => { SPOTS = L; }, __drag: () => drag, __log: log, __save: save, __bgm: bgm, __actx: () => actx, __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf, __thoughtOf: thoughtOf, __addRel: addRel, __tyIcon: tyIcon, __evoKids: evoKids, __friendsAll: friendsAll, __renameBox: renameBox });
 window.claude?.hot?.snapshot?.(() => serialize());
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
 })();
