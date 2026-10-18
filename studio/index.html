@@ -503,7 +503,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.95';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.96';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -1911,6 +1911,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.96', '10월 18일', ['장소 특성 › 도감 설명 낱말은 한 번 더 눌러야 빠져요']],
   ['2.95', '10월 18일', ['장소 특성 › 도감 설명 낱말도 넣고 뺄 수 있어요 (게임 v5.29)']],
   ['2.94', '10월 18일', ['장소 특성 › 넣은 포켓몬을 누르면 원래 몇 km 마다 → 이 특성 알에서 몇 km 마다인지']],
   ['2.93', '10월 18일', ['배포할 때 반경마다 자동으로 찾은 장소 특성과 장소 이름도 같이 보내요 (게임 v5.27 이 알 힌트·주운 곳에 씀)', '장소 특성 › 지금 잘 나오는 순: ✕ 로 그 특성에서 빼기 (뒤 순위가 채워져요, ↺ 로 다시 넣기)']],
@@ -2757,7 +2758,7 @@ let thPick = 0;
 function thStat(k, L) { if (!L.includes(thPick)) return L.length ? '<div class="small mute">포켓몬을 누르면 원래와 이 특성 알에서 몇 km 마다 나오는지 보여요</div>' : ''; const sp = thPick, { b } = geoBase(sp), bt = geoBaseT(sp, [k]);
   if (!(b > 0)) return `<div class="gst"><b>${esc(spName(sp))}</b><span class="w">지금 알에서 안 나와서 효과 없음</span></div>`;
   return `<div class="gst"><b>${esc(spName(sp))}</b><span>원래 알 1개당 ${pct(b)} · 평균 <b>${fmtKm(kmPer(b))}</b>마다 1번</span><span>이 특성이 붙은 알에서는 ${pct(bt)} · 평균 <b>${fmtKm(kmPer(bt))}</b>마다 1번 (×${(bt / b).toFixed(1)})</span></div>`; }
-let thPS = 'gen', thPG = 0, thPT = null, thPY = 0, thPvOpen = false, thDelArm = '';
+let thPS = 'gen', thPG = 0, thPT = null, thPY = 0, thPvOpen = false, thDelArm = '', thFxArm = '';   // thFxArm: 한 번 누른 도감 설명 낱말 (v2.96 경완: 한 번 더 눌러야 빠짐)
 const thMul = new Set(); let thMulLast = 0;
 const thSps = () => (thSps.c ||= eggSps().filter(sp => A.SPECIES[sp]).sort((a, b) => a - b));
 function thTabs() { if (thPS === 'type') return A.TYPE_KO.slice(1).map((n, i) => `<button class="chip${i + 1 === thPY ? ' on' : ''}" data-tgy="${i + 1}" aria-pressed="${i + 1 === thPY}" style="--c:${A.TYPE_C[i + 1]}">${n}</button>`).join('');
@@ -2783,7 +2784,7 @@ function thSide() { const T = A.THEMES, k = thSel, th = T[k], I = $('#thI'); thS
     <div class="thsec"><h4>잘 나오는 포켓몬 <small>+20 · ${L.length}종</small></h4><div class="thsel" id="thDrop">${L.map(sp => `<div class="mc${sp === thPick ? ' on' : ''}" data-thpk="${sp}" title="${esc(spName(sp))}${egg.has(sp) ? '' : ' (알에서 안 나옴)'}"${egg.has(sp) ? '' : ' style="opacity:.45"'}><span class="no">${sp}</span><img alt="" data-th="${sp}"><span class="nm">${esc(spName(sp))}</span><button class="x" data-thx="${sp}" aria-label="${esc(spName(sp))} 빼기">✕</button></div>`).join('') || '<div class="small mute thdh">아래 목록에서 누르거나 여기로 끌어다 놓아요</div>'}</div>${thStat(k, L)}${L.some(sp => !egg.has(sp)) ? '<div class="small mute">흐린 칸은 지금 알에서 안 나오는 포켓몬이라 효과가 없어요</div>' : ''}</div>
     <div class="thsec"><h4>타입 <small>+12 · 앞의 두 타입이 알 힌트에 나와요</small></h4><div class="thchips">${ty.map(t => `<button class="chip thtyc" style="--c:${A.TYPE_C[t]}" data-thtx="${t}" title="빼기">${A.TYPE_KO[t]} ✕</button>`).join('') || '<span class="small mute">없음</span>'}<select id="thTyAdd" aria-label="타입 더하기"><option value="">＋ 타입</option>${A.TYPE_KO.map((n, i) => i && !ty.includes(i) ? `<option value="${i}">${n}</option>` : '').join('')}</select></div></div>
     <div class="thsec"><h4>키워드 <small>장소 이름에 이 낱말이 들어 있으면 이 특성</small></h4><div class="thchips">${W.map((w, i) => `<button class="chip" data-thkx="${i}" title="빼기">${esc(w)} ✕</button>`).join('') || '<span class="small mute">없음 (장소 이름으로는 안 붙어요)</span>'}<input id="thKwAdd" class="thkin" placeholder="＋ 낱말 넣고 Enter" maxlength="20" autocomplete="off"></div></div>
-    <div class="thsec"><h4>도감 설명 낱말 <small>+8 · 도감 설명에 이 낱말이 있는 포켓몬 ${FX.length ? egs.filter(sp => th.fx?.test(A.SPECIES[sp]?.fx || '')).length : 0}종</small></h4><div class="thchips">${FX.map((w, i) => `<button class="chip" data-thfx="${i}" title="빼기">${esc(w)} ✕</button>`).join('') || '<span class="small mute">없음</span>'}<input id="thFxAdd" class="thkin" placeholder="＋ 낱말 넣고 Enter" maxlength="20" autocomplete="off"></div></div>
+    <div class="thsec"><h4>도감 설명 낱말 <small>+8 · 도감 설명에 이 낱말이 있는 포켓몬 ${FX.length ? egs.filter(sp => th.fx?.test(A.SPECIES[sp]?.fx || '')).length : 0}종</small></h4><div class="thchips">${FX.map((w, i) => thFxArm === k + ':' + w ? `<button class="chip gdel on" data-thfx="${i}">${esc(w)} · 한 번 더 누르면 빼기</button>` : `<button class="chip" data-thfx="${i}" title="한 번 더 누르면 빠져요">${esc(w)} ✕</button>`).join('') || '<span class="small mute">없음</span>'}<input id="thFxAdd" class="thkin" placeholder="＋ 낱말 넣고 Enter" maxlength="20" autocomplete="off"></div></div>
     <details class="thsec" id="thPvD"${thPvOpen ? ' open' : ''}><summary><h4 style="display:inline-flex">지금 잘 나오는 순 <small>가중치 합 · 누르면 넣기 · ✕ 빼기</small></h4></summary><div class="thpv">${pv.map(([sp, w]) => `<span class="thpc"><button data-tha="${sp}" class="${L.includes(sp) ? 'in' : ''}" title="${L.includes(sp) ? '이미 넣음' : '누르면 넣기'}"><img alt="" data-th="${sp}">${esc(spName(sp))} <span class="num mute">×${w}</span></button><button class="thpx" data-thpx="${sp}" title="이 특성에서 빼기 (특성 가중치를 안 받아요)" aria-label="${esc(spName(sp))} 빼기">✕</button></span>`).join('')}</div>${EX.length ? `<div class="thchips"><span class="small mute">뺀 포켓몬</span>${EX.map(sp => `<button class="chip" data-thpr="${sp}" title="다시 넣기">${esc(spName(sp))} ↺</button>`).join('')}</div>` : ''}</details></div>
     <div class="gsplit" title="끌어서 위 칸 높이 조절 (두 번 누르면 원래대로)" aria-hidden="true"></div>
     <div class="gpw"><h4 style="margin:0 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="Ctrl(⌘)+클릭 하나씩, Shift+클릭 사이 전부 골라서 한꺼번에 넣어요">포켓몬 <span class="small mute">알에서 나오는 ${thSps().length}종 · Ctrl·Shift+클릭 여러 장</span></h4><div class="search" style="margin-bottom:6px"><input id="thAQ" value="${esc(thAQ)}" placeholder="이름이나 번호 (진화형 이름도)" autocomplete="off"></div>
@@ -2805,7 +2806,7 @@ $('#thI').addEventListener('click', e => { const x = e.target.closest('[data-thx
   const px = e.target.closest('[data-thpx]'); if (px) { const sp = +px.dataset.thpx; if (thList(thSel).includes(sp)) thSet(thSel, thList(thSel).filter(x => x !== sp)); else thPutOv(thSel, { ex: [...(thOvOf(thSel).ex || []), sp] }); toast(`${spName(sp)}${eul(spName(sp))} 이 특성에서 뺐어요`); return; }   // v2.93 경완: 잘 나오는 순에서 빼기
   const pr = e.target.closest('[data-thpr]'); if (pr) { thPutOv(thSel, { ex: (thOvOf(thSel).ex || []).filter(x => x !== +pr.dataset.thpr) }); return; }
   const tx = e.target.closest('[data-thtx]'); if (tx) { thPutOv(thSel, { t: (A.THEMES[thSel]?.t || []).filter(t => t !== +tx.dataset.thtx) }); return; }
-  const fx = e.target.closest('[data-thfx]'); if (fx) { const L = thFx(thSel); L.splice(+fx.dataset.thfx, 1); thPutOv(thSel, { fx: L }); return; }
+  const fx = e.target.closest('[data-thfx]'); if (fx) { const L = thFx(thSel), a = thSel + ':' + L[+fx.dataset.thfx]; if (thFxArm !== a) { thFxArm = a; thSide(); setTimeout(() => { if (thFxArm === a) { thFxArm = ''; if (view === 'thm') thSide(); } }, 4000); return; } thFxArm = ''; L.splice(+fx.dataset.thfx, 1); thPutOv(thSel, { fx: L }); return; }
   const kx = e.target.closest('[data-thkx]'); if (kx) { const W = thWords(thSel); W.splice(+kx.dataset.thkx, 1); thPutOv(thSel, { kw: W }); return; }
   if (e.target.closest('#thMsX')) { thMul.clear(); thMulUI(); return; } if (e.target.closest('#thMsAdd')) { thAddMany($$('#thPal .mc').map(c => +c.dataset.tp).filter(sp => thMul.has(sp))); return; }
   const so = e.target.closest('[data-tso]'); if (so) { thPS = so.dataset.tso; $$('#thI [data-tso]').forEach(c => { const on = c.dataset.tso === thPS; c.classList.toggle('on', on); c.setAttribute('aria-pressed', on); }); $('#thTab').innerHTML = thTabs(); thPal(); return; }
