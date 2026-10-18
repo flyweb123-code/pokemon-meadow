@@ -1,6 +1,6 @@
 import SwiftUI
 
-// 아이폰 앱: 포켓런닝 웹 게임을 화면 가득 띄우고, 워치와 게임 사이를 이어 준다.
+// 아이폰 앱: 포켓몬 키우기 웹 게임을 화면 가득 띄우고, 워치와 게임 사이를 이어 준다.
 @main
 struct PokeRunApp: App {
     @StateObject private var bridge = PhoneBridge.shared

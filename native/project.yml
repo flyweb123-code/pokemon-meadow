@@ -1,4 +1,4 @@
-# 포켓런닝 아이폰 앱 + 애플워치 앱. Mac 에서 `xcodegen` 을 실행하면 PokeRun.xcodeproj 가 만들어진다.
+# 포켓몬 키우기 아이폰 앱 + 애플워치 앱. Mac 에서 `xcodegen` 을 실행하면 PokeRun.xcodeproj 가 만들어진다.
 name: PokeRun
 options:
   bundleIdPrefix: com.flyweb123
@@ -23,7 +23,7 @@ targets:
     info:
       path: PokeRun/Info.plist
       properties:
-        CFBundleDisplayName: 포켓런닝
+        CFBundleDisplayName: 포켓몬 키우기
         CFBundleDevelopmentRegion: ko
         CFBundleLocalizations: [ko]
         UILaunchScreen: {}
@@ -57,7 +57,7 @@ targets:
     info:
       path: PokeRunWatch/Info.plist
       properties:
-        CFBundleDisplayName: 포켓런닝
+        CFBundleDisplayName: 포켓몬 키우기
         CFBundleDevelopmentRegion: ko
         CFBundleLocalizations: [ko]
         WKApplication: true

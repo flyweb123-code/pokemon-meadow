@@ -22,7 +22,7 @@ struct ContentView: View {
                     if let eggs = model.state?.eggs, !eggs.isEmpty {
                         ForEach(eggs) { EggRow(egg: $0) }
                     } else {
-                        Text(model.state == nil ? "아이폰에서 포켓런닝을 한 번 열어 주세요" : "알이 없어요")
+                        Text(model.state == nil ? "아이폰에서 포켓몬 키우기을 한 번 열어 주세요" : "알이 없어요")
                             .font(.footnote).foregroundStyle(.secondary)
                     }
                 }
@@ -32,7 +32,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .navigationTitle("포켓런닝")
+            .navigationTitle("포켓몬 키우기")
         }
         .onAppear { model.refresh() }
     }

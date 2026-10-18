@@ -1,6 +1,6 @@
 {
-  "name": "포켓런닝",
-  "short_name": "포켓런닝",
+  "name": "포켓몬 키우기",
+  "short_name": "포켓몬 키우기",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
