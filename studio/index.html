@@ -503,7 +503,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.91';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.92';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -1911,6 +1911,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.92', '10월 18일', ['지도: 손대지 않은 추천 반경 지우기 버튼 (반경을 안 고른 상태의 오른쪽 창)', '새로 그린 반경도 이름·반경 안 추천 장소·안쪽 반경에서 장소 특성을 자동으로 찾아 표시하고 확률에 반영']],
   ['2.91', '10월 18일', ['모든 화면에서 Ctrl(⌘)+Z = 한 단계 되돌리기, Ctrl(⌘)+Shift+Z (또는 Ctrl+Y) = 다시 실행. 글자 칸 안에서는 글자 되돌리기', '장소 특성 오른쪽 창 새로 정리: 타입 더하기·빼기, 키워드 고치기, 특성 삭제(위 \'지운 특성\'에서 살리기)', '장소 특성 포켓몬 넣기를 지도 탭 목록처럼: 세대·티어·타입 정렬, 끌어 놓기, Ctrl·Shift 로 여러 장', '장소 특성 오른쪽 창이 항상 화면 아래까지 차요']],
   ['2.90', '10월 18일', ['지도 › 장소 특성 탭 오른쪽 창도 경계선을 끌어 폭을 조절할 수 있어요 (두 번 누르면 기본 폭)', '모든 검색창에 검색어를 한 번에 지우는 ✕ 버튼', '지도 오른쪽 창 왼쪽 가장자리에 접기 ▶ 버튼']],
   ['2.89', '10월 18일', ['올가미·사각형 반경에 포켓몬을 끌어 놓으면 새 반경이 생기던 것 (모양이 안 따라갔어요)', '지도 포켓몬 칸 여러 장 고르기: Ctrl(⌘)+클릭 하나씩, Shift+클릭 사이 전부 → 끌어 놓으면 한꺼번에 반경에', '어느 화면에서든 Ctrl(⌘)+S = 그 화면 저장']],
@@ -2305,6 +2306,11 @@ const GEO_PICK = {
 };
 const geoName = o => o.nm || geoPlace(o);   // v2.79 경완: 반경 이름 (없으면 추천 장소 이름)
 const geoWhy = o => GEO_PICK[geoPlace(o)]?.find(r => r[0] === o.sp)?.[1] || '';
+// v2.92 경완: 추천 배치에서 하나도 안 바꾼 반경(모양·포켓몬 구성·세기·이름·특성 그대로) 찾기 — 반경 단위로, 한 마리라도 바꾸거나 더하고 뺐으면 그 반경은 남긴다
+let geoUtArm = false;
+function geoUntouched() { if (!A?.SPECIES) return []; const n2 = o => o.r2 && o.r2 !== o.r ? o.r2 : null, gk = o => JSON.stringify([o.la, o.lo, o.r, n2(o), o.rot || null, o.sh || null, o.pts || null]), kk = o => JSON.stringify([o.sp, o.x, o.nm || null, o.th || null]);
+  const SG = {}; for (const o of geoSuggest()) (SG[gk(o)] ||= []).push(kk(o)); const L = spotsOf(), G = {}; L.forEach((o, i) => (G[gk(o)] ||= []).push(i));
+  const out = []; for (const [k, I] of Object.entries(G)) { const s = SG[k]; if (!s || s.length !== I.length) continue; const a = I.map(i => kk(L[i])).sort(), b = [...s].sort(); if (a.every((x, j) => x === b[j])) out.push(...I); } return out; }
 function geoSuggest() {
   const out = [];
   for (const [n, la, lo, r] of GEO_PLACES) for (const [sp] of GEO_PICK[n] || []) { const d = A.SPECIES[sp]; if (!d) continue; const t = tierOfSp(sp) ?? 6, rare = t <= 2 || d.leg || d.my; out.push({ sp, la, lo, r, x: rare ? 3 : t <= 4 ? 4 : 5 }); }
@@ -2446,7 +2452,11 @@ function geoLive(w, x) { const o = spotsOf()[geoSel.i]; if (!o) return; const n 
   if (x != null && $('#gsX')) $('#gsX').textContent = '×' + x; const st = $('#gsStat'); if (st) st.innerHTML = geoStat(n); }
 const geoSz = o => rA(o) !== rB(o) ? `${fmtR(rA(o))}×${fmtR(rB(o))}${o.rot ? ` · ${o.rot}°` : ''}` : fmtR(o.r);
 // v2.75 경완: 장소 특성(호수·공원 등)까지 넣은 확률. 반경 칸 th(작업실 계산용) — 없으면 장소 이름에서 찾는다. 게임은 실제로 아이폰이 보낸 주변 장소·장소 이름으로 정한다
-const geoThAuto = o => { const n = geoPlace(o); return n && A?.THEMES ? Object.entries(A.THEMES).filter(([, th]) => th.kw?.test(n)).map(([k]) => k).slice(0, 3) : []; };
+// v2.92 경완: 새로 그린 반경도 장소 특성을 자동으로 — 반경 이름, 같은 가운데 추천 장소, 반경 안에 있는 추천 장소 이름에서 찾고, 반경 안에 가운데가 있는 다른 반경에 직접 고른 특성도 이어받는다
+const geoThWhy = o => { const n = [o.nm, geoPlace(o)].filter(Boolean); if (!n.length) for (const p of GEO_PLACES) if (geoIn(o, { lat: p[1], lng: p[2] })) n.push(p[0]); return [...new Set(n)]; };
+const geoThAuto = o => { if (!A?.THEMES) return []; const N = geoThWhy(o), out = Object.entries(A.THEMES).filter(([, th]) => N.some(n => th.kw?.test(n))).map(([k]) => k);
+  if (!o.nm && !geoPlace(o)) for (const q of spotsOf()) if (q !== o && Array.isArray(q.th) && (q.la !== o.la || q.lo !== o.lo) && geoIn(o, { lat: q.la, lng: q.lo })) out.push(...q.th.filter(k => A.THEMES[k]));
+  return [...new Set(out)].slice(0, 3); };
 const geoTh = o => Array.isArray(o.th) ? o.th : geoThAuto(o);
 function geoBaseT(sp, keys) { sp = geoSp(sp); const ths = (keys || []).map(k => A?.THEMES?.[k]).filter(Boolean); if (!ths.length || !A.themeW) return geoBase(sp).b;
   const L = tierLists(), Z = tierZ(L), O = odds(), ot = O.reduce((a, x) => a + x, 0) || 1, ts = tierOfSp(sp); let tot = 0;
@@ -2464,7 +2474,7 @@ function geoStat(o) { const { b, G, bt, p, cap } = geoPr(o); if (!(b > 0)) retur
 function geoStat1(o) { const { b, bt, p } = geoPr(o); if (!(b > 0)) return '<span class="w">지금 알에서 안 나와서 효과 없음</span>'; return `알 1개당 ${pct(bt)} → <b>${pct(p)}</b> · 평균 ${fmtKm(kmPer(bt))} → <b>${fmtKm(kmPer(p))}</b>마다`; }   // v2.79 경완: 원래 몇 km 마다였는지도
 // 장소 특성 고르기 (반경 하나에 공통)
 function geoThUI(o) { const th = geoTh(o), T = A?.THEMES || {}, auto = !Array.isArray(o.th);
-  return `<div class="gthm"><span class="small mute">장소 특성${auto && th.length ? ' (이름에서 찾음)' : ''}</span>${th.map(k => `<button class="chip on" data-thx="${esc(k)}" title="빼기">${esc(T[k]?.n || k)} ✕</button>`).join('')}<select id="gsTh" aria-label="장소 특성 더하기"><option value="">＋ 더하기</option>${Object.entries(T).filter(([k]) => !th.includes(k)).sort((a, b) => a[1].n.localeCompare(b[1].n, 'ko')).map(([k, v]) => `<option value="${esc(k)}">${esc(v.n)}</option>`).join('')}</select></div>`; }
+  return `<div class="gthm"><span class="small mute" title="${auto && th.length ? esc('자동으로 찾은 곳: ' + (geoThWhy(o).join(', ') || '반경 안 다른 반경')) : ''}">장소 특성${auto && th.length ? ` (${esc((geoThWhy(o)[0] || '안쪽 반경') + (geoThWhy(o).length > 1 ? ` 외 ${geoThWhy(o).length - 1}곳` : ''))}에서 찾음)` : auto ? ' (자동으로 찾은 게 없어요)' : ''}</span>${th.map(k => `<button class="chip on" data-thx="${esc(k)}" title="빼기">${esc(T[k]?.n || k)} ✕</button>`).join('')}<select id="gsTh" aria-label="장소 특성 더하기"><option value="">＋ 더하기</option>${Object.entries(T).filter(([k]) => !th.includes(k)).sort((a, b) => a[1].n.localeCompare(b[1].n, 'ko')).map(([k, v]) => `<option value="${esc(k)}">${esc(v.n)}</option>`).join('')}</select></div>`; }
 function geoTabs() { if (geoSort === 'type') return A.TYPE_KO.slice(1).map((n, i) => `<button class="chip${i + 1 === geoType ? ' on' : ''}" data-gty="${i + 1}" aria-pressed="${i + 1 === geoType}" style="--c:${A.TYPE_C[i + 1]}">${n}</button>`).join('');   // v2.78 경완: 타입별 (같은 타입을 다시 누르면 전체)
   if (geoSort === 'gen') return [1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => `<button class="chip${g === geoGen ? ' on' : ''}" data-gg="${g}" aria-pressed="${g === geoGen}">${g}세대</button>`).join('');
   const T = [...new Set(geoSide.sps.map(geoTierOf))].sort((a, b) => (a < 0) - (b < 0) || a - b); return T.map(t => `<button class="chip${t === geoTier ? ' on' : ''}" data-gt="${t}" aria-pressed="${t === geoTier}">${t < 0 ? '알 없음' : t + '티어'}</button>`).join(''); }
@@ -2509,7 +2519,7 @@ function geoSide0() {
       <div class="gsbody"><div class="gsctl"><div class="gsl"><span>크기</span><input id="gsRi" type="range" min="0" max="100" step="1" value="${vOfR(o.r)}" aria-label="크기"><b id="gsR">${geoSz(o)}</b></div>${many ? `<div class="gsl" title="반경은 같이 쓰고 세기는 포켓몬마다 따로예요. 움직이면 각자 세기가 같은 비율로 바뀌어요"><span>전체 세기</span><input id="gsXa" type="range" min="0" max="100" step="1" value="50" aria-label="전체 세기 (각자 비율 그대로)"><b id="gsXaV">×1</b></div>` : ''}</div>
       <div class="gml">${G.map(j => { const m = S[j]; return `<div class="gmr${many && j === geoSel.i ? ' on' : ''}" data-gm="${j}"><img alt="" src="${thumb(m.sp)}"><div class="gmh"><b>${esc(spName(m.sp))}</b><span class="num mute small">No.${m.sp}</span><button class="gx" data-gd="${j}" title="이 포켓몬만 빼기" aria-label="${esc(spName(m.sp))} 빼기">✕</button></div>${geoWhy(m) ? `<div class="gwy">${esc(geoWhy(m))}</div>` : ''}<div class="gsl"><span>세기</span><input data-gx="${j}" type="range" min="15" max="100" step="1" value="${vOfX(m.x)}" aria-label="${esc(spName(m.sp))} 세기"><b id="gx${j}">×${m.x}</b></div><div class="gms" id="gst${j}">${geoStat1(m)}</div></div>`; }).join('')}</div>
       ${join}${geoThUI(o)}
-      <div class="gact">${isEll(o) ? '<button class="chip" id="gsCir">동그라미로 되돌리기</button>' : ''}<span style="flex:1"></span><button class="chip gdel" id="gsDelR"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>반경 삭제${many ? ` (${G.length}마리)` : ''}</button></div></div></div>` : `<div class="row" style="gap:6px;flex-wrap:wrap"><button class="chip" id="gsSug">추천 배치 불러오기</button><span class="small mute" style="align-self:center" title="장소마다 그 장소에 어울리는 포켓몬을 직접 고르고 이유를 적은 기준">기준 v${GEO_SUG_VER}</span>${S.length ? `<button class="chip${geoClrArm ? ' on' : ''}" id="gsClr">${geoClrArm ? `${S.length}마리를 모두 빼요. 한 번 더 누르면 초기화` : '초기화'}</button>` : ''}</div>`)
+      <div class="gact">${isEll(o) ? '<button class="chip" id="gsCir">동그라미로 되돌리기</button>' : ''}<span style="flex:1"></span><button class="chip gdel" id="gsDelR"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>반경 삭제${many ? ` (${G.length}마리)` : ''}</button></div></div></div>` : `<div class="row" style="gap:6px;flex-wrap:wrap"><button class="chip" id="gsSug">추천 배치 불러오기</button><span class="small mute" style="align-self:center" title="장소마다 그 장소에 어울리는 포켓몬을 직접 고르고 이유를 적은 기준">기준 v${GEO_SUG_VER}</span>${geoUntouched().length ? `<button class="chip${geoUtArm ? ' on' : ''}" id="gsUt" title="추천 배치를 불러온 뒤 크기·모양·포켓몬·세기·이름·특성을 하나도 안 바꾼 반경만 지워요">${geoUtArm ? `${new Set(geoUntouched().map(i => gKey(S[i]))).size}곳(${geoUntouched().length}마리) 지워요. 한 번 더 누르면 지우기` : `손대지 않은 추천 반경 지우기 (${new Set(geoUntouched().map(i => gKey(S[i]))).size}곳)`}</button>` : ''}${S.length ? `<button class="chip${geoClrArm ? ' on' : ''}" id="gsClr">${geoClrArm ? `${S.length}마리를 모두 빼요. 한 번 더 누르면 초기화` : '초기화'}</button>` : ''}</div>`)
     + (o ? '<div class="gsplit" title="끌어서 반경 칸 높이 조절 (두 번 누르면 원래대로)" aria-hidden="true"></div>' : '') + `<div class="gpw"><h4 style="margin:0 0 6px">포켓몬 <span class="small mute">알에서 나오는 ${geoSide.sps.length}종</span></h4><div class="search" style="margin-bottom:6px"><input id="gpQ" value="${esc(geoQ)}" placeholder="이름이나 번호" autocomplete="off"></div>
       <div class="gsort"><span class="small mute">정렬</span><div class="seg2">${[['gen', '세대'], ['tier', '티어'], ['type', '타입']].map(([k, n]) => `<button class="chip${geoSort === k ? ' on' : ''}" data-gso="${k}" aria-pressed="${geoSort === k}">${n}</button>`).join('')}</div></div>
       <div class="gtabs ggen" id="gtab">${geoTabs()}</div>
@@ -2520,6 +2530,8 @@ function geoSide0() {
   if ($('#gsSug')) $('#gsSug').onclick = () => { const cur = cl(spotsOf()), have = new Set(cur.map(o => [o.sp, o.la, o.lo].join())), add = geoSuggest().filter(o => !have.has([o.sp, o.la, o.lo].join()));
     if (!add.length) { toast('추천 배치가 이미 다 들어 있어요'); return; } setSpots([...cur, ...add]); geoSel.i = -1; geoDraw(); geoSide(); toast(`추천 배치 ${add.length}마리를 더했어요${cur.length ? ` (놓아 둔 ${cur.length}마리는 그대로)` : ''}. 둘러보고 저장해 주세요`); };
   if ($('#gsClr')) $('#gsClr').onclick = () => { if (!geoClrArm) { geoClrArm = true; geoSide(); setTimeout(() => { if (geoClrArm) { geoClrArm = false; if (view === 'geo') geoSide(); } }, 4000); return; } geoClrArm = false; setSpots([]); geoSel.i = -1; geoJoin = -1; geoDraw(); geoSide(); toast('지도의 포켓몬을 모두 뺐어요. Ctrl(⌘)+Z 로 되돌릴 수 있어요'); };
+  if ($('#gsUt')) $('#gsUt').onclick = () => { if (!geoUtArm) { geoUtArm = true; geoSide(); setTimeout(() => { if (geoUtArm) { geoUtArm = false; if (view === 'geo') geoSide(); } }, 4000); return; } geoUtArm = false;
+    const D0 = new Set(geoUntouched()), L0 = spotsOf(), g = new Set([...D0].map(i => gKey(L0[i]))).size; setSpots(L0.filter((o, i) => !D0.has(i))); geoSel.i = -1; geoJoin = -1; geoDraw(); geoSide(); toast(`손대지 않은 추천 반경 ${g}곳(${D0.size}마리)을 지웠어요. 남은 건 ${spotsOf().length}마리. Ctrl(⌘)+Z 로 되돌릴 수 있어요`); };
   if ($('#gsNewX')) $('#gsNewX').onclick = () => geoNewSet(null);
   if (!o) return;
   $('#gsStT').onclick = e => { geoStOpen = !geoStOpen; try { localStorage.setItem('st-geo-st', geoStOpen ? '1' : '0'); } catch (er) {} e.currentTarget.closest('.card').classList.toggle('nost', !geoStOpen); e.currentTarget.textContent = geoStOpen ? '접기 ▴' : '펴기 ▾'; e.currentTarget.setAttribute('aria-expanded', geoStOpen); };   // v2.76 경완: 확률 칸 접기 (이 기기에 기억)
