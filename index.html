@@ -5550,7 +5550,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.33';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.34';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7206,7 +7206,7 @@ function spotPlace(ll) { if (!SPOTS.length || !Array.isArray(ll) || !isFinite(ll
   return best; }
 function spotHit(ll) {
   if (!SPOTS.length || !Array.isArray(ll) || !isFinite(ll[0]) || !isFinite(ll[1])) return null;
-  const near = SPOTS.filter(s => inSpot(ll, s)).sort(() => Math.random() - .5);
+  const near = SPOTS.filter(s => s.sp && inSpot(ll, s)).sort(() => Math.random() - .5);   // v5.34: 포켓몬 없는 반경(sp 0)은 장소 특성만
   for (const s of near) {
     const sp = TIER[s.sp] ? s.sp : baseOf(s.sp), G = [1, 2, 3, 4, 5].map(g => ODDS[g - 1] * spInEgg(g, sp)), b = G.reduce((a, x) => a + x, 0);
     if (!(b > 0)) continue;
@@ -8519,7 +8519,7 @@ function applyCfg(c) {
     MON_FLY = {}; if (d.monFly && typeof d.monFly === 'object') for (const [k, v] of Object.entries(d.monFly)) if (SPECIES[k] && typeof v === 'number' && v && v >= -300 && v <= 300) MON_FLY[k] = v;
     TIER_KT = {}; if (d.tierK?.k && typeof d.tierK.k === 'object') for (const [t, k] of Object.entries(d.tierK.k)) if (k >= 0 && k <= 5) TIER_KT[t] = +k;
     SP_OFF = new Set((Array.isArray(d.off) ? d.off : []).map(Number).filter(sp => SPECIES[sp]));
-    SPOTS = (Array.isArray(d.spots) ? d.spots : []).filter(o => o && SPECIES[o.sp] && isFinite(o.la) && isFinite(o.lo) && o.r >= 30 && o.r <= 50000 && o.x >= 1 && o.x <= 1000).map(o => ({ sp: +o.sp, la: +o.la, lo: +o.lo, r: +o.r, x: +o.x, r2: o.r2 >= 30 && o.r2 <= 50000 ? +o.r2 : 0, rot: Math.abs(+o.rot) <= 180 ? +o.rot || 0 : 0, ...(o.sh === 'rect' ? { sh: 'rect' } : o.sh === 'poly' && Array.isArray(o.pts) && o.pts.length >= 3 && o.pts.length <= 64 && o.pts.every(q => Array.isArray(q) && Math.abs(q[0]) <= 2 && Math.abs(q[1]) <= 2) ? { sh: 'poly', pts: o.pts.map(q => [+q[0], +q[1]]) } : {}), ...(Array.isArray(o.th) ? { th: o.th.filter(k => typeof k === 'string').slice(0, 6) } : {}), ...(Array.isArray(o.tha) ? { tha: o.tha.filter(k => typeof k === 'string').slice(0, 6) } : {}), ...(typeof o.pn === 'string' && o.pn.trim() ? { pn: o.pn.trim().slice(0, 24) } : {}) }));   // th: 작업실 계산용 장소 특성 (게임 확률엔 안 씀 — 실제 특성은 아이폰이 보낸 주변 장소·장소 이름)
+    SPOTS = (Array.isArray(d.spots) ? d.spots : []).filter(o => o && (SPECIES[o.sp] || +o.sp === 0) && isFinite(o.la) && isFinite(o.lo) && o.r >= 30 && o.r <= 50000 && o.x >= 1 && o.x <= 1000).map(o => ({ sp: +o.sp, la: +o.la, lo: +o.lo, r: +o.r, x: +o.x, r2: o.r2 >= 30 && o.r2 <= 50000 ? +o.r2 : 0, rot: Math.abs(+o.rot) <= 180 ? +o.rot || 0 : 0, ...(o.sh === 'rect' ? { sh: 'rect' } : o.sh === 'poly' && Array.isArray(o.pts) && o.pts.length >= 3 && o.pts.length <= 64 && o.pts.every(q => Array.isArray(q) && Math.abs(q[0]) <= 2 && Math.abs(q[1]) <= 2) ? { sh: 'poly', pts: o.pts.map(q => [+q[0], +q[1]]) } : {}), ...(Array.isArray(o.th) ? { th: o.th.filter(k => typeof k === 'string').slice(0, 6) } : {}), ...(Array.isArray(o.tha) ? { tha: o.tha.filter(k => typeof k === 'string').slice(0, 6) } : {}), ...(typeof o.pn === 'string' && o.pn.trim() ? { pn: o.pn.trim().slice(0, 24) } : {}) }));   // th: 작업실 계산용 장소 특성 (게임 확률엔 안 씀 — 실제 특성은 아이폰이 보낸 주변 장소·장소 이름)
     retier(d.tierOv, d.tierOrd || {}); if (d.bal) applyBal(d.bal); if (d.layout) setLayoutIn(d.layout);
     EGG_EFF = null; CFG = c; $('#appVer').textContent = 'v' + APP_VER + (c.ver ? ' · 데이터 ' + c.ver : '');
   } catch (e) { console.warn('config', e); }
