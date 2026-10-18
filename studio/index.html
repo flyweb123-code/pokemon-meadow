@@ -503,7 +503,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.04';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.05';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -694,6 +694,10 @@ function histGo(back) { const from = back ? hUndo : hRedo, to = back ? hRedo : h
 addEventListener('keydown', e => { if (!(e.ctrlKey || e.metaKey) || e.altKey) return; const k = e.key.toLowerCase(); if (k !== 'z' && k !== 'y') return;
   if (e.target.closest?.('textarea,[contenteditable=""],[contenteditable=true],input:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=button]):not([type=color])')) return;   // 글자 칸 안에서는 브라우저 기본 되돌리기
   e.preventDefault(); histGo(k === 'z' && !e.shiftKey); }, true);
+// v3.05 경완: 작업실을 탭 두 개로 열었을 때, 예전 탭이 예전 작업본으로 덮어써서 반경 이름 등이 되돌아가던 것 → 다른 탭이 저장하면 이 탭도 그 작업본을 받는다
+function draftSync() { let n; try { n = JSON.parse(store.get('st-draft') || 'null'); } catch (e) { return; } if (!n || (n.at || 0) <= (D.at || 0)) return; D = n; histReset(); if (A && D.layout) A.setLayout(D.layout); dstat(); RENDER[view]?.(); }
+addEventListener('storage', e => { if (e.key === 'st-draft') draftSync(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) draftSync(); });
 function saveDraft() { if (SWAP) return; if (!safeGate()) return; histRec(); D.at = Date.now(); store.set('st-draft', JSON.stringify(D)); dstat(); clearTimeout(saveDraft.t); saveDraft.t = setTimeout(pushDb, 1500); }
 async function pushDb() { if (!db) return; try { await db.doc('studio/draft').set({ json: JSON.stringify(D), at: Date.now() }); } catch (e) {} }
 const gameVer = () => { try { return ($('#game').contentDocument.getElementById('appVer').textContent.match(/v[\d.]+/) || [''])[0]; } catch (e) { return ''; } };
@@ -1775,6 +1779,8 @@ function changesOf() {
   if (D.monSh) { const a = ORIG.monSh || {}, b = D.monSh, f = v => v ? `${Math.round(v[0] * 100)}% ${v[1]},${v[2]}` : '기본'; for (const sp of new Set([...Object.keys(a), ...Object.keys(b)])) if (JSON.stringify(a[sp] || null) !== JSON.stringify(b[sp] || null)) out.push([`${spName(+sp)} 그림자`, f(a[sp]), f(b[sp]), 'msh:' + sp]); }
   for (const [k, lab, f, d] of [['monRot', '기울기', v => v + '°', 0], ['monFly', '떠 있는 높이', (v, sp) => Math.max(0, flyB(+sp) + v) + 'px', 0]]) if (D[k]) { const a = ORIG[k] || {}, b = D[k]; for (const sp of new Set([...Object.keys(a), ...Object.keys(b)])) if ((a[sp] || d) !== (b[sp] || d)) out.push([`${spName(+sp)} ${lab}`, f(a[sp] || d, sp), f(b[sp] || d, sp), (k === 'monRot' ? 'mrt:' : 'mfl:') + sp]); }
   if (D.spots) { const fm = o => `${o.sp ? spName(o.sp) : '빈 반경'} ${fmtR(o.r)}${isEll(o) ? '×' + fmtR(rB(o)) : ''} ×${o.x}`, a = (ORIG.spots || []).map(fm), b = D.spots.map(fm);
+    { const gk = o => [o.sp, o.la, o.lo, o.r].join(','), OM = new Map((ORIG.spots || []).map(o => [gk(o), o.nm || ''])), nn = D.spots.filter(o => OM.has(gk(o)) && OM.get(gk(o)) !== (o.nm || '')).length;   // v3.05: 반경 이름이 바뀐 것도 보이게
+      if (nn) out.push(['반경 이름', `${nn}곳 바뀜`, '', '']); }
     if (JSON.stringify(ORIG.spots || []) !== JSON.stringify(D.spots)) out.push(['출현 지역', a.length ? `${a.length}곳` : '없음', b.length ? `${b.length}곳 (${b.slice(0, 3).join(', ')}${b.length > 3 ? ' …' : ''})` : '없음', 'spots']); }
   if (D.bal) for (const [k, v] of Object.entries(D.bal)) out.push([balName(k), JSON.stringify(ORIG.bal[k]), JSON.stringify(v), 'bal:' + k]);
   return out;
@@ -1911,6 +1917,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.05', '10월 18일', ['지도: 반경·손잡이를 끈 뒤 빈 곳을 끌어도 지도가 안 움직이던 것', '작업실을 탭 여러 개로 열었을 때 예전 탭이 예전 작업본으로 덮어써서 반경 이름이 되돌아가던 것 (다른 탭에서 저장하면 이 탭도 바로 따라감)', '바뀐 곳 목록에 반경 이름 바뀐 수도 보여요']],
   ['3.04', '10월 18일', ['장소 특성: 묘지 새로 추가, 절·묘지는 절로 (게임 v5.35)']],
   ['3.03', '10월 18일', ['지도: 반경 포켓몬 세기 배수를 숫자로 직접 입력 (1~1000배, Enter 로 저장)']],
   ['3.02', '10월 18일', ['지도: 새 반경을 그리면 \'포켓몬 없이 저장\'으로 장소 특성만 정하는 반경을 만들 수 있어요 (게임 v5.34)', '그린 점선 반경을 바로 끌어서 옮길 수 있어요']],
@@ -2678,10 +2685,13 @@ function geoShapeOf(k, P) { if (P.length < 2) return null; const a = P[0], la0 =
   if (w < 15 || h < 15) return null; const r = geoClampR(w), r2 = geoClampR(h), o = { la: la0 + cy / M_LA, lo: lo0 + cx / mLo(la0), r, ...(r2 !== r ? { r2 } : {}), sh: k === 'rect' ? 'rect' : 'poly' };
   if (k === 'lasso') { if (Q.length < 6) return null; const st = Math.max(1, Math.ceil(Q.length / 48)); o.pts = Q.filter((_, i) => i % st === 0).map(([x, y]) => [+((x - cx) / w).toFixed(3), +((y - cy) / h).toFixed(3)]); if (o.pts.length < 4) return null; }
   return o; }
+// v3.05 경완: 손잡이·반경을 끄는 도중 그 칸이 다시 그려지면 손을 떼도 지도 끌기가 꺼진 채로 남던 것 → 손을 떼면 늘 다시 켜고, 빈 곳을 누르면 바로 켠다
+['pointerup', 'pointercancel', 'mouseup', 'touchend', 'lostpointercapture', 'blur'].forEach(t => addEventListener(t, () => setTimeout(() => { if (geoM && !geoTool) geoM.dragging.enable(); }), true));
+addEventListener('pointerdown', e => { if (!geoM || geoTool || e.button > 0 || !e.target.closest?.('#geoMap') || e.target.closest('.leaflet-interactive,.leaflet-marker-icon,.leaflet-control,.leaflet-popup,.ghd,.gedge')) return; geoM.dragging.enable(); }, true);
 function geoNewSet(o) { geoNewL?.remove(); geoNewL = null; geoNew = o;
   if (o && geoPalSel) { geoAddNew(geoPalSel); return; }
   if (o) { geoSel.i = -1; geoJoin = -1; geoNewL = L.polygon(ellPts(o), { color: '#1d6fd8', weight: 2.5, dashArray: '7 6', fillColor: '#3a8af0', fillOpacity: .14, interactive: true, bubblingMouseEvents: false, className: 'gnewp', pane: geoM.getPane('gnew') ? 'gnew' : (geoM.createPane('gnew').style.zIndex = 450, 'gnew') }).addTo(geoM);   // 다른 반경 위에 (잡을 수 있게)
-    geoNewL.on('mousedown', e => { L.DomEvent.stop(e); const st = e.latlng, la0 = o.la, lo0 = o.lo; geoM.dragging.disable();   // v3.02 경완: 그리자마자 점선 반경을 끌어 옮기기
+    geoNewL.on('mousedown', e => { if (e.originalEvent?.button > 0) return; L.DomEvent.stop(e); const st = e.latlng, la0 = o.la, lo0 = o.lo; geoM.dragging.disable();   // v3.02 경완: 그리자마자 점선 반경을 끌어 옮기기
       const mv = ev => { o.la = la0 + ev.latlng.lat - st.lat; o.lo = lo0 + ev.latlng.lng - st.lng; geoNewL?.setLatLngs(ellPts(o)); };
       const up = () => { geoM.off('mousemove', mv); geoM.off('mouseup', up); document.removeEventListener('mouseup', up, true); geoM.dragging.enable(); };
       geoM.on('mousemove', mv); geoM.on('mouseup', up); document.addEventListener('mouseup', up, true); });
