@@ -5550,7 +5550,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.28';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.29';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7543,11 +7543,11 @@ const PLACES = {
 Object.assign(THEMES, PLACES);
 // v5.25 경완: 작업실 '장소 특성' 탭에서 특성마다 잘 나오는 포켓몬(th.sp, 가중치 +20)을 정한다. 배포 데이터 thSp[특성] = [종…] (없으면 원래 목록)
 const TH_SP0 = Object.fromEntries(Object.entries(THEMES).map(([k, v]) => [k, [...(v.sp || [])]])); let TH_SP_OV = {};
-/* v5.26 경완: 작업실에서 장소 특성의 타입·키워드를 고치거나 특성을 지울 수 있다. TH_ALL = 원래 특성 전부(객체 그대로라 sp 도 유지), thOv = { 키: { t: [타입], kw: [낱말], del: 1 } } */
-const TH_ALL = { ...THEMES }, TH_BASE = Object.fromEntries(Object.entries(THEMES).map(([k, v]) => [k, { t: [...(v.t || [])], kw: v.kw }])); let TH_OV = {};
+/* v5.26 경완: 작업실에서 장소 특성의 타입·키워드를 고치거나 특성을 지울 수 있다. TH_ALL = 원래 특성 전부(객체 그대로라 sp 도 유지), thOv = { 키: { t: [타입], kw: [낱말], fx: [도감 설명 낱말, v5.29], del: 1 } } */
+const TH_ALL = { ...THEMES }, TH_BASE = Object.fromEntries(Object.entries(THEMES).map(([k, v]) => [k, { t: [...(v.t || [])], kw: v.kw, fx: v.fx }])); let TH_OV = {};
 const thRe = L => { const w = (L || []).map(x => String(x).trim()).filter(Boolean).map(x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')); return w.length ? new RegExp(w.join('|')) : /(?!)/; };
 function applyThOv(o) { TH_OV = o && typeof o === 'object' ? o : {}; for (const k in THEMES) delete THEMES[k];
-  for (const [k, th] of Object.entries(TH_ALL)) { const v = TH_OV[k] || {}; th.t = Array.isArray(v.t) ? v.t.map(Number).filter(t => TYPE_KO[t] && t > 0) : [...TH_BASE[k].t]; th.kw = Array.isArray(v.kw) ? thRe(v.kw) : TH_BASE[k].kw; th.ex = Array.isArray(v.ex) ? v.ex.map(Number) : []; if (!v.del) THEMES[k] = th; } }   // ex: 이 특성에서 뺀 포켓몬 (특성 가중치를 안 받음)
+  for (const [k, th] of Object.entries(TH_ALL)) { const v = TH_OV[k] || {}; th.t = Array.isArray(v.t) ? v.t.map(Number).filter(t => TYPE_KO[t] && t > 0) : [...TH_BASE[k].t]; th.kw = Array.isArray(v.kw) ? thRe(v.kw) : TH_BASE[k].kw; th.fx = Array.isArray(v.fx) ? (v.fx.length ? thRe(v.fx) : null) : TH_BASE[k].fx; th.ex = Array.isArray(v.ex) ? v.ex.map(Number) : []; if (!v.del) THEMES[k] = th; } }   // ex: 이 특성에서 뺀 포켓몬 (특성 가중치를 안 받음)
 function applyThSp(o) { TH_SP_OV = {}; for (const k in THEMES) { const L = o?.[k]; if (Array.isArray(L)) { TH_SP_OV[k] = [...new Set(L.map(Number).filter(sp => SPECIES[sp]))].slice(0, 60); THEMES[k].sp = TH_SP_OV[k]; } else THEMES[k].sp = [...TH_SP0[k]]; } }
 // 알 하나의 테마 목록: 아이폰이 보낸 주변 장소 종류(tags) + 장소 이름에서 찾은 낱말 + 밤에 주운 알
 function eggThemes(e) {
