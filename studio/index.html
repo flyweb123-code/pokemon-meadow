@@ -499,7 +499,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.87';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.88';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -1868,6 +1868,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.88', '10월 18일', ['반경 안 포켓몬 그림 정렬: 사각형·올가미·타원·기울인 반경에서도 모양 안쪽에 가운데 맞춰 바둑판으로, 반경 크기에 맞게 그림 크기']],
   ['2.87', '10월 18일', ['지도 메뉴에 \'장소 특성\' 탭: 특성(물가·공원·편의점 …)마다 잘 나오는 포켓몬(가중치 +20)을 직접 넣고 빼요. 키워드·타입과 잘 나오는 포켓몬 미리보기도']],
   ['2.86', '10월 18일', ['지도에서 저장하면 오른쪽 창이 접혀요. 반경을 누르거나 오른쪽 끝 ◀ 를 누르면 다시 열려요']],
   ['2.85', '10월 18일', ['반경 편집: 반경을 고르고 Ctrl(⌘)+C → Ctrl(⌘)+V 하면 바로 옆에 같은 모양·크기·포켓몬 반경이 하나 더 생겨요']],
@@ -2315,8 +2316,11 @@ function geoDraw() {
     if (!on) { c.on('mouseover', () => c.setStyle({ weight: 3.5, color: '#1d6fd8', fillColor: '#3a8af0', fillOpacity: .24 })); c.on('mouseout', () => c.setStyle(st0)); c.on('click', e => { L.DomEvent.stopPropagation(e); geoPick(G[0], false); });   // v2.73 경완: 반경에 마우스를 올리면 강조, 누르면 그 반경 선택
       const ue = geoEdge(o, () => c.setLatLngs(ellPts(o)), mv => { geoPick(i, false); if (mv) geoPut(i, { r: o.r, r2: o.r2, rot: o.rot }); }); ue.on('mouseover', () => c.setStyle({ weight: 3.5, color: '#1d6fd8', fillColor: '#3a8af0', fillOpacity: .24 })); ue.on('mouseout', () => c.setStyle(st0)); UE.push(ue); }
     const V = geoFoc && !on ? G.filter(j => S[j].sp === geoFoc) : on ? G : z < 10 ? G.slice(0, 1) : G.length <= 4 ? G : G.slice(0, 3);   // 안 고른 큰 반경은 3마리 + 남은 수만
-    const cols = Math.min(V.length, Math.ceil(Math.sqrt(V.length * 1.8))), rows = Math.ceil(V.length / cols), mpp = 156543.03 * Math.cos(o.la * Math.PI / 180) / Math.pow(2, z), rPx = Math.min(rA(o), rB(o)) / mpp,
-      sz = on && V.length > 1 ? Math.round(Math.max(22, Math.min(px, rPx * 1.3 / Math.max(cols, rows) / 1.06))) : px, gap = sz * 1.06;   // v2.74 경완: 고른 반경은 테두리가 보이게 포켓몬 그림을 반경 안쪽 크기로 줄인다. v2.73 경완: 같은 반경 포켓몬은 겹치지 않게 가운데에 바둑판으로
+    // v2.88 경완: 반경 모양(동그라미·타원·사각형·올가미)과 기울기에 맞춘 안쪽 칸에 바둑판 — 가로세로 비율에 맞게 줄·칸 수를 고르고, 칸에 맞게 그림 크기
+    const mpp = 156543.03 * Math.cos(o.la * Math.PI / 180) / Math.pow(2, z), kIn = o.sh === 'rect' ? .96 : o.sh === 'poly' ? .6 : Math.SQRT1_2, W0 = 2 * rA(o) / mpp * kIn, H0 = 2 * rB(o) / mpp * kIn,
+      tR = (o.rot || 0) * Math.PI / 180, cs = Math.abs(Math.cos(tR)) + Math.abs(Math.sin(tR)), [IW, IH] = Math.abs(Math.sin(2 * tR)) < .05 ? (Math.abs(Math.cos(tR)) > .5 ? [W0, H0] : [H0, W0]) : [Math.min(W0, H0) / cs, Math.min(W0, H0) / cs];
+    let cols = 1, best = 0; for (let c = 1; c <= V.length; c++) { const f = Math.min(IW / c, IH / Math.ceil(V.length / c)); if (f > best + .01) { best = f; cols = c; } }
+    const rows = Math.ceil(V.length / cols), sz = Math.round(Math.max(22, Math.min(px, best / 1.14))), gap = Math.max(sz * 1.08, Math.min(IW / cols, IH / rows, sz * 1.3));   // v2.74 경완: 고른 반경은 테두리가 보이게 포켓몬 그림을 반경 안쪽 크기로 줄인다. v2.73 경완: 같은 반경 포켓몬은 겹치지 않게 가운데에 바둑판으로
     const M = V.map((j, k) => { const me = j === geoSel.i, row = Math.floor(k / cols), inRow = row < rows - 1 ? cols : V.length - (rows - 1) * cols, dx = Math.round((k % cols - (inRow - 1) / 2) * gap), dy = Math.round((row - (rows - 1) / 2) * gap);
       const m = L.marker([o.la, o.lo], { draggable: true, autoPan: true, keyboard: false, riseOnHover: true, zIndexOffset: me ? 1100 : on ? 1000 : 0,
         icon: L.divIcon({ className: '', iconSize: [sz, sz], iconAnchor: [sz / 2 - dx, sz / 2 - dy], html: `<div class="gmk${me ? ' on' : on && G.length > 1 ? ' grp' : ''}" data-gi="${j}" title="${esc(geoName(o) || spName(S[j].sp))}" style="width:${sz}px;height:${sz}px;position:relative"><img alt="" src="${thumb(S[j].sp)}">${me ? '<b class="gmx" title="지우기" aria-label="지우기">✕</b>' : ''}${V !== G && !geoFoc && k === V.length - 1 ? `<i class="gmn">+${G.length - V.length}</i>` : ''}</div>` }) }).addTo(geoL);
