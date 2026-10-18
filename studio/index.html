@@ -166,7 +166,7 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 .empty{color:var(--mute);font-size:13px}
 .bal .wide{grid-column:1/-1;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:6px}.bal .wide label{display:grid;gap:2px;font-size:11px;color:var(--mute);text-align:center}
 /* 왼쪽 소품 창 (접었다 폈다) */
-.view[data-v=map]{grid-template-columns:auto minmax(0,1fr) 300px}.view[data-v=geo]{grid-template-columns:minmax(0,1fr) var(--geoW,300px)}.view[data-v=geo].gside0{grid-template-columns:minmax(0,1fr) 0}.gside0 #geoI,.gside0 .geoRs{display:none}.geoOpen{display:none}.gside0 .geoOpen{display:grid;place-items:center;position:absolute;right:0;top:50%;transform:translateY(-50%);width:22px;height:64px;border:1px solid var(--chipb);border-right:0;border-radius:8px 0 0 8px;background:var(--panel);color:var(--fg);cursor:pointer;z-index:900}.gside0 .geoOpen:hover{background:var(--acc);color:var(--deep)}.geoRs{position:absolute;top:0;bottom:0;right:calc(var(--geoW,300px) - 5px);width:10px;cursor:col-resize;z-index:900;touch-action:none}.geoRs::after{content:'';position:absolute;left:4px;top:0;bottom:0;width:2px;background:transparent;transition:background .12s}.geoRs:hover::after,.geoRs.on::after{background:var(--acc)}
+.view[data-v=map]{grid-template-columns:auto minmax(0,1fr) 300px}.view[data-v=geo],.view[data-v=thm]{grid-template-columns:minmax(0,1fr) var(--geoW,300px)}.view[data-v=geo].gside0{grid-template-columns:minmax(0,1fr) 0}.gside0 #geoI,.gside0 .geoRs{display:none}.geoOpen{display:none}.gside0 .geoOpen{display:grid;place-items:center;position:absolute;right:0;top:50%;transform:translateY(-50%);width:22px;height:64px;border:1px solid var(--chipb);border-right:0;border-radius:8px 0 0 8px;background:var(--panel);color:var(--fg);cursor:pointer;z-index:900}.gside0 .geoOpen:hover{background:var(--acc);color:var(--deep)}.geoClose{display:grid;place-items:center;position:absolute;right:var(--geoW,300px);top:50%;transform:translateY(-50%);width:22px;height:64px;border:1px solid var(--chipb);border-right:0;border-radius:8px 0 0 8px;background:var(--panel);color:var(--fg);cursor:pointer;z-index:901;padding:0}.geoClose:hover{background:var(--acc);color:var(--deep)}.gside0 .geoClose{display:none}.geoRs{position:absolute;top:0;bottom:0;right:calc(var(--geoW,300px) - 5px);width:10px;cursor:col-resize;z-index:900;touch-action:none}.geoRs::after{content:'';position:absolute;left:4px;top:0;bottom:0;width:2px;background:transparent;transition:background .12s}.geoRs:hover::after,.geoRs.on::after{background:var(--acc)}
 .dock{position:relative;background:var(--panel);border-right:1px solid var(--line);width:var(--dw,272px);display:grid;grid-template-rows:auto auto minmax(0,1fr);min-height:0}
 .dock .dtab{display:flex;gap:4px;padding:0 10px 10px}.dock .dtab button{flex:1;min-width:0;padding:6px 4px;font-size:11.5px;background:var(--deep);border:1px solid var(--chip);border-radius:4px;color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dock .dtab button.on{background:var(--chip);border-color:var(--acc);color:var(--fg)}.dock .dtab .n{font-family:var(--px);font-size:10px;color:var(--mute);margin-left:3px}
@@ -320,7 +320,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
   #unAll{font-size:0;padding:4px 10px;min-height:32px}#unAll::before{content:'↺';font:600 20px/1 system-ui,sans-serif}#unAll[data-arm]{font-size:12px}#unAll[data-arm]::before{content:none}
   .crumb{display:none}.dstat{font-size:10.5px;letter-spacing:-.02em}.dstat .chg{display:none}.logo .lt{display:none}.tbar{gap:8px}
   .nav{display:none}
-  .view{display:block;overflow:auto;-webkit-overflow-scrolling:touch}.geoRs{display:none}.gsplit{display:none}#geoI>.gsc{max-height:none!important}
+  .view{display:block;overflow:auto;-webkit-overflow-scrolling:touch}.geoRs,.geoClose{display:none}.gsplit{display:none}#geoI>.gsc{max-height:none!important}
   .view[hidden]{display:none}
   .vc{padding:10px 12px;display:grid;overflow:visible;grid-template-rows:auto}
   .vi{border-left:0;border-top:1px solid var(--line);padding:14px 12px 24px}
@@ -355,6 +355,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
   .pr,.prh{grid-template-columns:30px 30px minmax(0,1fr) 28px 54px 66px;gap:5px}.pr .pb,.prh .pb{display:none}.gsel{grid-template-columns:repeat(5,minmax(56px,1fr));overflow-x:auto}.gsel button{grid-template-columns:1fr;justify-items:center;padding:6px 4px}.gsel button .egg{grid-row:auto}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.qxw{position:relative;display:block;min-width:0}.qxw>input{width:100%;margin:0;padding-right:32px}.qxw>input::-webkit-search-cancel-button{-webkit-appearance:none;display:none}.qxb{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:26px;height:26px;border:0;border-radius:50%;background:none;color:var(--mute,#8a8fa3);font-size:15px;line-height:26px;padding:0;cursor:pointer}.qxb:hover{color:inherit;background:rgba(127,127,127,.18)}.qxw>input:placeholder-shown~.qxb{display:none}
 </style>
 <div id="app">
   <header class="tbar"><div class="logo"><img id="logoI" alt=""><span class="lt">작업실</span></div><span class="crumb" id="crumb">맵</span><span class="sp"></span><span class="unsv" id="safeW"><button id="safeB" class="safeb" hidden></button><div id="safePop" class="safep" hidden></div></span><span class="unsv" id="unsvW"><button id="unsv" hidden></button><div id="unsvPop" hidden></div></span><span class="dstat" id="dstat">바뀐 곳 없음</span><button class="chip" id="unAll" disabled title="저장하지 않은 수정을 모두 마지막으로 저장한 상태로 되돌려요">되돌리기</button><button class="btn" id="goWork">배포하기</button></header>
@@ -428,7 +429,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
         <form class="geoQ" id="geoQ" autocomplete="off"><div class="search"><input id="geoQi" type="search" placeholder="주소·장소 검색 (예: 석촌호수, 올림픽로 240)" enterkeyhint="search"><button class="btn" type="submit">검색</button></div><div class="geoR" id="geoR" hidden></div></form>
         <div class="full" id="geoBox"><div id="geoMap"></div><div class="grl" id="geoRL" hidden></div><div class="load" id="geoLoad">지도 불러오는 중…</div></div>
       </div>
-      <aside class="vi" id="geoI"></aside><button type="button" class="geoOpen" id="geoOpen" title="오른쪽 창 열기" aria-label="오른쪽 창 열기">◀</button><div class="geoRs" id="geoRs" title="끌어서 오른쪽 창 폭 조절 (두 번 누르면 기본)" aria-hidden="true"></div>
+      <aside class="vi" id="geoI"></aside><button type="button" class="geoOpen" id="geoOpen" title="오른쪽 창 열기" aria-label="오른쪽 창 열기">◀</button><button type="button" class="geoClose" id="geoClose" title="오른쪽 창 접기" aria-label="오른쪽 창 접기">▶</button><div class="geoRs" id="geoRs" title="끌어서 오른쪽 창 폭 조절 (두 번 누르면 기본)" aria-hidden="true"></div>
     </section>
     <!-- v2.50 랭크 확률 -->
     <section class="view" data-v="rank" hidden>
@@ -467,7 +468,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
     <section class="view" data-v="thm" hidden>
       <div class="seg" data-g="more"></div>
       <div class="vc scroll"><div class="gvt"><button class="chip" data-gv="geo">지도</button><button class="chip on" data-gv="thm">장소 특성</button></div><div id="thC"></div></div>
-      <aside class="vi" id="thI"></aside>
+      <aside class="vi" id="thI"></aside><div class="geoRs" id="thRs" title="끌어서 오른쪽 창 폭 조절 (두 번 누르면 기본)" aria-hidden="true"></div>
     </section>
     <!-- 밸런스 -->
     <section class="view" data-v="bal" hidden>
@@ -499,7 +500,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.89';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.90';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -953,6 +954,16 @@ function scPush() { const now = Date.now(); if (now - scAt > 600) { scHist.push(
 function scUndo() { if (!scHist.length) return; const v = JSON.parse(scHist.pop()), V = Array.isArray(v) ? v : [v, effP(D, 'monRot'), effP(D, 'monFly')]; scAt = 0; POSEK.forEach((k, i) => { D[k] = V[i] ?? effP(D, k); if (JSON.stringify(V[i]) === JSON.stringify(ORIG[k] || {})) delete D[k]; }); scLive(); saveDraft(); scBar(); szInfo(); szPane(); }
 function scBar() { const d = ORIG && boxDirty('monsc'); $('#scSave').innerHTML = ''; if ($('#szSave')) $('#szSave').innerHTML = d || scHist.length ? `<span data-box="monsc" style="display:inline-flex;gap:6px"><button class="chip" id="scUndo"${scHist.length ? '' : ' disabled'}>되돌리기</button>${d ? '<button class="btn" data-bs>크기 저장</button>' : ''}</span>` : '<span class="small mute">크기를 바꾸면 여기 저장 버튼이 생겨요</span>'; }
 document.addEventListener('click', e => { if (e.target.closest('#scUndo')) scUndo(); });
+// v2.90 경완: 모든 검색창에 검색어 한 번에 지우는 × — 다시 그려지는 검색창도 MutationObserver 로 감싼다
+{ const QX = 'input[type=search],input[enterkeyhint=search],input[id$=Q]';
+  const wrap = inp => { if (inp.parentElement?.classList.contains('qxw') || inp.type === 'hidden') return; const cs = getComputedStyle(inp), w = document.createElement('span'), foc = document.activeElement === inp, a = inp.selectionStart, b = inp.selectionEnd;
+    w.className = 'qxw'; for (const k of ['flex', 'margin', 'gridColumn', 'alignSelf', 'order']) w.style[k] = cs[k]; if (cs.display.startsWith('inline')) w.style.display = 'inline-block'; if (inp.style.width) w.style.width = inp.style.width; if (cs.minWidth !== '0px' && cs.minWidth !== 'auto') w.style.minWidth = cs.minWidth; if (cs.maxWidth !== 'none') w.style.maxWidth = cs.maxWidth;
+    inp.before(w); w.append(inp); const x = document.createElement('button'); x.type = 'button'; x.className = 'qxb'; x.textContent = '✕'; x.title = x.ariaLabel = '검색어 지우기'; x.tabIndex = -1; w.append(x);
+    if (foc) { inp.focus(); try { inp.setSelectionRange(a, b); } catch (e) {} } };
+  const scan = r => { if (r.matches?.(QX)) wrap(r); r.querySelectorAll?.(QX).forEach(wrap); };
+  scan(document.body); new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1) scan(n); }).observe(document.body, { childList: true, subtree: true });
+  document.addEventListener('pointerdown', e => { if (e.target.closest('.qxb')) e.preventDefault(); }, true);
+  document.addEventListener('click', e => { const x = e.target.closest('.qxb'); if (!x) return; e.preventDefault(); e.stopPropagation(); const inp = x.parentElement.querySelector('input'); inp.value = ''; inp.dispatchEvent(new Event('input', { bubbles: true })); inp.dispatchEvent(new Event('change', { bubbles: true })); inp.dispatchEvent(new Event('search', { bubbles: true })); (document.querySelector('.qxw>input[id="' + inp.id + '"]') || inp).focus(); }, true); }
 // v2.89 경완: 어느 화면에서든 Ctrl(⌘)+S = 지금 화면의 저장 버튼 (크기 조절 모드는 아래 크기 저장)
 addEventListener('keydown', e => { if (szOn || !(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey || e.key.toLowerCase() !== 's') return; e.preventDefault();
   const sec = document.querySelector(`.view[data-v="${view}"]`), B = [...(sec?.querySelectorAll('[data-box] [data-bs]') || [])].filter(b => !b.disabled && b.offsetParent);
@@ -1873,6 +1884,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.90', '10월 18일', ['지도 › 장소 특성 탭 오른쪽 창도 경계선을 끌어 폭을 조절할 수 있어요 (두 번 누르면 기본 폭)', '모든 검색창에 검색어를 한 번에 지우는 ✕ 버튼', '지도 오른쪽 창 왼쪽 가장자리에 접기 ▶ 버튼']],
   ['2.89', '10월 18일', ['올가미·사각형 반경에 포켓몬을 끌어 놓으면 새 반경이 생기던 것 (모양이 안 따라갔어요)', '지도 포켓몬 칸 여러 장 고르기: Ctrl(⌘)+클릭 하나씩, Shift+클릭 사이 전부 → 끌어 놓으면 한꺼번에 반경에', '어느 화면에서든 Ctrl(⌘)+S = 그 화면 저장']],
   ['2.88', '10월 18일', ['반경 안 포켓몬 그림 정렬: 사각형·올가미·타원·기울인 반경에서도 모양 안쪽에 가운데 맞춰 바둑판으로, 반경 크기에 맞게 그림 크기']],
   ['2.87', '10월 18일', ['지도 메뉴에 \'장소 특성\' 탭: 특성(물가·공원·편의점 …)마다 잘 나오는 포켓몬(가중치 +20)을 직접 넣고 빼요. 키워드·타입과 잘 나오는 포켓몬 미리보기도']],
@@ -2450,15 +2462,16 @@ $('#geoI').addEventListener('pointerdown', e => { const h = e.target.closest('.g
 $('#geoI').addEventListener('dblclick', e => { if (!e.target.closest('.gsplit')) return; $('#geoI').style.removeProperty('--gsH'); try { localStorage.removeItem('st-geo-h'); } catch (er) {} });
 // v2.86 경완: 지도에서 저장하면 오른쪽 창을 접고, 반경을 누르거나 ◀ 탭을 누르면 다시 연다
 function geoHide(on) { const sec = document.querySelector('.view[data-v=geo]'); if (!sec || sec.classList.contains('gside0') === !!on) return; sec.classList.toggle('gside0', !!on); setTimeout(() => geoM?.invalidateSize(), 0); }
-$('#geoOpen').onclick = () => geoHide(false);
+$('#geoOpen').onclick = () => geoHide(false); $('#geoClose').onclick = () => geoHide(true);   // v2.90 경완: 펴는 버튼이 있으면 접는 버튼도
 // v2.82 경완: 지도 오른쪽 창 폭을 왼쪽 가장자리를 끌어서 (이 기기에 기억)
-{ const sec = document.querySelector('.view[data-v=geo]'), h = $('#geoRs'), setW = w => { sec.style.setProperty('--geoW', w + 'px'); geoM?.invalidateSize(); };
-  try { const w = +localStorage.getItem('st-geo-w'); if (w >= 260 && w <= 900) sec.style.setProperty('--geoW', w + 'px'); } catch (e) {}
+// v2.90 경완: 장소 특성 탭 오른쪽 창도 같은 손잡이로 폭 조절 (폭은 탭마다 따로 기억)
+for (const [v, hid, key] of [['geo', '#geoRs', 'st-geo-w'], ['thm', '#thRs', 'st-thm-w']]) { const sec = document.querySelector(`.view[data-v=${v}]`), h = $(hid), setW = w => { sec.style.setProperty('--geoW', w + 'px'); geoM?.invalidateSize(); };
+  try { const w = +localStorage.getItem(key); if (w >= 260 && w <= 900) sec.style.setProperty('--geoW', w + 'px'); } catch (e) {}
   h.addEventListener('pointerdown', e => { if (e.button > 0) return; e.preventDefault(); h.setPointerCapture?.(e.pointerId); h.classList.add('on'); let w = 300;
     const mv = ev => { const r = sec.getBoundingClientRect(); w = Math.round(Math.max(260, Math.min(Math.min(900, r.width - 360), r.right - ev.clientX))); setW(w); };
-    const up = () => { h.removeEventListener('pointermove', mv); h.removeEventListener('pointerup', up); h.removeEventListener('pointercancel', up); h.classList.remove('on'); try { localStorage.setItem('st-geo-w', w); } catch (er) {} };
+    const up = () => { h.removeEventListener('pointermove', mv); h.removeEventListener('pointerup', up); h.removeEventListener('pointercancel', up); h.classList.remove('on'); try { localStorage.setItem(key, w); } catch (er) {} };
     h.addEventListener('pointermove', mv); h.addEventListener('pointerup', up); h.addEventListener('pointercancel', up); });
-  h.addEventListener('dblclick', () => { setW(300); try { localStorage.removeItem('st-geo-w'); } catch (er) {} }); }
+  h.addEventListener('dblclick', () => { setW(300); try { localStorage.removeItem(key); } catch (er) {} }); }
 function geoSide0() {
   const S = spotsOf(), o = S[geoSel.i];
   if (!geoSide.sps) geoSide.sps = eggSps().filter(sp => A.SPECIES[sp]).sort((a, b) => a - b);   // v2.79 경완: 알에서 나오는 포켓몬만
