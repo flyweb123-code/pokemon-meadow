@@ -5558,7 +5558,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.47';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.48';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8740,7 +8740,7 @@ async function tutFlow() {
     { c: '부화기', t: '#incu', s: `${nm}${hasBat(nm) ? '이' : ''}가 걷거나 달리면\n그 거리가 부화기의 모든 알에\n똑같이 쌓인단다.` },
     { c: '부화기', t: incSlot, s: '알 아래 숫자가\n지금까지 걸은 거리야.\n일반 알은 2.5km를 걸으면\n부화한단다.' },
     { c: '부화', t: incSlot, s: '원래는 직접 걸어야 하지만…\n이번만 특별히\n내가 도와주마!' },
-    { c: '부화', pre: () => { const e = inc1(); if (e) { e.km = e.need; const i = S.eggs.indexOf(e); eggSel = e; eggSelI = i; eggNone = false; renderRun(); notiShow(true); } }, hold: 1600, t: '#noti .win', s: '자, 됐다!\n이 알은 이제 부화할\n준비가 됐단다.' },
+    { c: '부화', pre: () => { const e = inc1(); if (e) { e.km = e.need; { const odd = sp => (CHILDREN[sp] || []).some(c => SPECIES[c].ev || SPECIES[c].eqx); for (let k = 0; k < 80; k++) { if (!odd(eggSp(e))) break; delete e.sp; } eggSp(e); }   /* v5.48 경완: 튜토리얼 알에서는 특별한 조건으로 진화하는 포켓몬이 나오지 않게 */ const i = S.eggs.indexOf(e); eggSel = e; eggSelI = i; eggNone = false; renderRun(); notiShow(true); } }, hold: 1600, t: '#noti .win', s: '자, 됐다!\n이 알은 이제 부화할\n준비가 됐단다.' },
     { c: '부화', t: '#notiOk', tap: '#notiOk', until: () => !notiOpen, after: 1600, dismiss: 1, s: '\'확인\'을 눌러 보렴!' },
     { c: '부화', t: '#eggHatch', tap: '#eggHatch', until: () => !$('#hatch').hidden, after: 1400, s: '\'부화시키기\'를\n눌러 보렴!' },
     { c: '부화', t: '#hatchStage', allow: '#hatch', hideOnTap: 1, until: () => el('#hatchOk'), after: 4500, s: '알을 톡톡 두드려서\n깨 보렴!' },
