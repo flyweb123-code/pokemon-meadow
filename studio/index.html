@@ -503,7 +503,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.03';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.04';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -1911,6 +1911,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.04', '10월 18일', ['장소 특성: 묘지 새로 추가, 절·묘지는 절로 (게임 v5.35)']],
   ['3.03', '10월 18일', ['지도: 반경 포켓몬 세기 배수를 숫자로 직접 입력 (1~1000배, Enter 로 저장)']],
   ['3.02', '10월 18일', ['지도: 새 반경을 그리면 \'포켓몬 없이 저장\'으로 장소 특성만 정하는 반경을 만들 수 있어요 (게임 v5.34)', '그린 점선 반경을 바로 끌어서 옮길 수 있어요']],
   ['3.01', '10월 18일', ['지도 반경 목록: 포켓몬 그림 칸 너비를 같게 해서 이름이 모두 같은 자리에서 시작']],
