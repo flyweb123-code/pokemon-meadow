@@ -1963,6 +1963,8 @@ async function importMusic(files) {
   for (const f of files) {
     const name = f.name.replace(/[_]+/g, ' ');
     if (/evolution|진화/i.test(name)) { try { await musicPut('evo', f); evoMus.have = true; evoMus.buf = null; ok++; } catch (e) { miss.push(f.name); } continue; }   // 진화 음악
+    { const k = /hurry.?along/i.test(name) ? 'intro' : /professor.?oak/i.test(name) ? 'title' : null;   // v5.38 경완: 처음 시작 오프닝(Hurry Along 2)·타이틀(Professor Oak) 음악
+      if (k) { try { await musicPut(k, f); ok++; } catch (e) { miss.push(f.name); } continue; } }
     const t = TRACKS.find(x => x.key.test(name));
     if (!t) { miss.push(f.name); continue; }
     try { await musicPut(t.id, f); bgm.have.add(t.id); ok++; bgm.cache.delete(t.id); if (bgm.id === t.id) bgm.id = null; } catch (e) { miss.push(f.name); }
@@ -5227,7 +5229,7 @@ function renderInfo() {
     if (inp && document.activeElement !== inp && inp.value !== m.name) { inp.value = m.name; inp.style.width = (Math.max(1, m.name.length) + .15) + 'em'; } }
   { const bud = !!m.pid && S.buds.some(b => b.pid === m.pid); box.classList.toggle('bud', bud); box.classList.toggle('night', !bud && uiNight()); $('#infoBud').hidden = !bud; $('#infBudGo').hidden = bud || !P || S.buds.length >= MAX_BUDS; }   /* v5.08 경완: 짝꿍 칸이 비어 있으면 좌상단에 '짝꿍으로' */   /* 짝꿍은 밤에도 분홍 그대로 */
   { const h = rkBadge(P), el = box.querySelector('.pf-rk'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
-  $('#pbars').innerHTML = bar('청결', m.clean ?? 100, 'var(--clean)') + bar('배부름', 100 - m.hunger, 'var(--fullness)') + bar('즐거움', m.joy ?? 60, 'var(--lonely)') + (P ? `<div class="bar frbar"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>` : '');
+  $('#pbars').innerHTML = bar('청결', m.clean ?? 100, 'var(--clean)') + bar('즐거움', m.joy ?? 60, 'var(--lonely)') + bar('배부름', 100 - m.hunger, 'var(--fullness)') + (P ? `<div class="bar frbar"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>` : '');
   { const h = memoHtml(m), el = $('#pMemo'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
   { const h = moveBtn(m), el = $('#pMoves'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; el.hidden = !h; } }
 }
@@ -5337,8 +5339,8 @@ async function fresh() {
   S.base = midnight(); S.clock = realClock(); S.rel = {}; S.log = [];
   logEl.innerHTML = '';
   S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.bagDry = 0; S.pity = { e: 0, l: 0 }; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked.clear(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1; S.undo1 = true;
-  // 처음 시작: 부화기에 바로 부화시킬 수 있는 일반 알 하나, 가방에 일반·희귀·레어 알 하나씩 (v4.44 경완: 에픽·전설은 빼기) (안의 포켓몬은 부화할 때 정해진다)
-  const t = Date.now(); S.eggs.push({ id: S.eid++, g: 1, km: GRADE[1].km, need: GRADE[1].km, isNew: true, t });
+  // 처음 시작: 가방에 일반·희귀·레어 알 하나씩 (v4.44 경완: 에픽·전설은 빼기) (안의 포켓몬은 부화할 때 정해진다)
+  const t = Date.now();   // v5.38 경완: 처음부터 부화 준비된 알은 주지 않는다 (튜토리얼에서 Mr.강이 가방의 일반 알 하나를 부화 준비로 바꿔 준다)
   for (const g of [1, 2, 3]) S.bag.push({ id: S.eid++, g, t, isNew: true });
   log('필드가 텅 비어 있다. 알을 부화시켜 친구를 만들어 보자.', [], true);
 }
@@ -5552,7 +5554,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.37';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.38';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6162,12 +6164,12 @@ function slotState(m) {
   return ['', '쉼'];
 }
 const dayOf = c => Math.floor(c / 1440);
-// 필드 슬롯 건강 게이지 앞 작은 아이콘: 물방울(청결) · 열매(배부름) · 웃는 얼굴(즐거움)
+// 필드 슬롯 건강 게이지 앞 작은 아이콘: 물방울(청결) · 웃는 얼굴(즐거움) · 열매(배부름) (v5.38 경완: 즐거움을 배부름 앞으로)
 // v4.00: 20% 밑이면 막대는 빨간색, 아이콘은 더러운 물방울 · 먹다 남은 열매 속 · 우는 얼굴로
 const GSVG = b => `<svg viewBox="0 0 7 7" shape-rendering="crispEdges" aria-hidden="true">${b}</svg>`;
 const GG = [['cl', GSVG('<path fill="#3a8ae8" d="M3 0h1v2h1v1h2v1H5v1H4v2H3V5H2V4H0V3h2V2h1z"/>'), GSVG('<path fill="#e04838" d="M3 0h1v2h1v1h2v1H5v1H4v2H3V5H2V4H0V3h2V2h1z"/>')],   /* v4.62 경완: 청결 아이콘 = 반짝임 */
-  ['hu', GSVG('<path fill="#3a7a2a" d="M3 0h2v1H3z"/><path fill="#d8344a" d="M1 1h2v1h2V1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1z"/><path fill="#ff9aa8" d="M1 2h1v1H1z"/>'), GSVG('<path fill="#3a7a2a" d="M3 0h2v1H3z"/><path fill="#e04838" d="M1 1h2v1h2V1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1z"/><path fill="#fff4c0" d="M1 2h1v1H1z"/>')],
-  ['jo', GSVG('<path fill="#f0c020" d="M2 0h3v1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1V1h1z"/><path fill="#20202c" d="M2 2h1v1H2zM4 2h1v1H4zM1 4h1v1H1zM5 4h1v1H5zM2 5h3v1H2z"/>'), GSVG('<path fill="#e04838" d="M2 0h3v1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1V1h1z"/><path fill="#20202c" d="M2 2h1v1H2zM4 2h1v1H4zM2 4h3v1H2zM1 5h1v1H1zM5 5h1v1H5z"/><path fill="#9ad8ff" d="M1 3h1v1H1z"/>')]];
+  ['jo', GSVG('<path fill="#f0c020" d="M2 0h3v1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1V1h1z"/><path fill="#20202c" d="M2 2h1v1H2zM4 2h1v1H4zM1 4h1v1H1zM5 4h1v1H5zM2 5h3v1H2z"/>'), GSVG('<path fill="#e04838" d="M2 0h3v1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1V1h1z"/><path fill="#20202c" d="M2 2h1v1H2zM4 2h1v1H4zM2 4h3v1H2zM1 5h1v1H1zM5 5h1v1H5z"/><path fill="#9ad8ff" d="M1 3h1v1H1z"/>')],
+  ['hu', GSVG('<path fill="#3a7a2a" d="M3 0h2v1H3z"/><path fill="#d8344a" d="M1 1h2v1h2V1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1z"/><path fill="#ff9aa8" d="M1 2h1v1H1z"/>'), GSVG('<path fill="#3a7a2a" d="M3 0h2v1H3z"/><path fill="#e04838" d="M1 1h2v1h2V1h1v1h1v3H6v1H5v1H2V6H1V5H0V2h1z"/><path fill="#fff4c0" d="M1 2h1v1H1z"/>')]];
 function renderMgr(force) { refreshCap();
   if (mgr.hidden) return;
   if (mgrSel && !S.mons.includes(mgrSel)) mgrSel = null;
@@ -6234,7 +6236,7 @@ function renderMgrDetail(rebuild) {
   if (pic.getAttribute('src') !== want) pic.src = want;
   { const [c, tx] = slotState(m), el = $('#mSt'); el.className = 'st-tag st ' + c; el.textContent = tx; el.hidden = tx === '이동'; }
   { const P = boxOf(m.pid), st = $('#mStage'); st.className = 'dp-pic' + pkCls(P) + (P?.shiny ? ' shiny' : ''); st.dataset.rk = P ? rankOf(P) : ''; st.style.setProperty('--shue', shinyHue(m.sp) + 'deg'); }
-  { const P = boxOf(m.pid); $('#mBars').innerHTML = bar('청결', m.clean ?? 100, 'var(--clean)') + bar('배부름', 100 - m.hunger, 'var(--fullness)') + bar('즐거움', m.joy ?? 60, 'var(--lonely)') + (P ? `<div class="bar frbar"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>` : ''); }
+  { const P = boxOf(m.pid); $('#mBars').innerHTML = bar('청결', m.clean ?? 100, 'var(--clean)') + bar('즐거움', m.joy ?? 60, 'var(--lonely)') + bar('배부름', 100 - m.hunger, 'var(--fullness)') + (P ? `<div class="bar frbar"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>` : ''); }
   { const h = memoHtml(m), el = $('#mMemo'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
   { const P = boxOf(m.pid), el = $('#mPg2');
     const h = (P ? `<div class="ivs">${ivRows(P)}</div>`
@@ -8533,15 +8535,264 @@ async function loadCfg() {
   const n = await Promise.race([net, new Promise(r => setTimeout(r, 2500))]);   // 늦으면 지난번 것으로 시작하고, 받은 건 다음에 쓴다
   return n && n.data && (n.ver || 0) >= (c?.ver || 0) ? n : c;   // 배포 직후 CDN 이 옛 것을 주면 더 새 버전을 쓴다
 }
+// ---------- v5.38 경완: 처음 시작 오프닝 (포켓몬스터 골드 오프닝 패러디 — Mr.강) + 첫 화면 튜토리얼 ----------
+const KANG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAA6CAYAAADcKStOAAAJ9UlEQVR4nK1ab4xU1RX/nfvufW8gwH4QTdUa/WJiFlr2S4El60LNGhtjY4K2tlmTVtoAxkZaYAtNikmhVXBhuzRpVBqWpEI0hiy1GNOtCWV16yx+aCLIxKRfEGFtlBZX6O68N+/d0w937p33Zt7szmBPMjPv3T/v/t455/7OufcOMTOYGUSEGxWlFItU/zAKKfAD1swQRNDMqFQq1M44sl0Q9uHMjEIQMACsWXY7OjsiAEBp2odSPqfLACDwfQaAchhSK+CImdvFBgDwPcndX/tqZvDStN/QLl0PAIeKnyGJKvMiax8YA0Hg84bupbnVpWm/AUy9jBSvYDYskyDRtE3zmiaifMUbupdi1cre3Pq5QNk+G7qXYkFQyGikXkEir7BZGQBYJz/z3ttYtbIXq1b2NpgwfZ++PvPe201Bp/2OmQ2wVpyRmaGUypjwzHtvNwx2eOJTFM9dagBX/wIbupci8H3OUwARNTdlPVgiQpJoN5CVkeIVTJamXPmhrY/i0NZHcf6TGQDAROmye4nOjsj1LU370HPQR1s+pqSXuR8pXsFLW9ZD1731A2u7ce3q5yhN+9jYfXOuBoGaW3xpYDE488ZWLp7Yj5HilUzbC6ODmCxNOS3a63pp6svtAONYZ++T2r0FUg/u1V//DADw0pb1DfXp/vVC7YQky/arO28DADxx/2oceWsSAByAevneL3/rrp+4fzW2//EUlt26EJOlKcRgxGHUEAnampW2nWZ2b/7A2m580XE3vui4Gw8OvtHQ/sHBN1x9GvhkaQqa80E5PFZjrX6klDx1cph7V9zJXb19rCvafGYS7urt46mTwzx1cpi7evuYQ1PHszF39fZxV28f33TLzTx1cpillDznOC2pKiWWMornLmFZz90gDXDCOHZon9NS5u1jjaMvPe/ur1393JTruUNh+yFJehgbL4IFYeFNqzKgAODNgYfw5sBDAAzgNKg3Bx4CJxpj40WQN/fQTZ3fTuP6UAEAgVTMgnDxxP6MhiwgK3l1dz68DQBQjiMSJJqOfUNpj52dF0YHG+p2D+7DMwM7cvuNjRex6eDovJkF8CXyMTDgS8kfvX6gaZOx8SIeWNvtrjcOHXeamk9uHBgAzRoLgoLTnB08ZoaSHtLlmw6OohyGBLRGT/MCm8v/CkHAlr2bac6CZUEQRC2n1mBmaK0beGSuMl8pJhJMJFjPJOwrxb5SfGT7Y47Hjmx/jJXw2LbVMwm/PPwsEwn2lWL7LK117liyVdVaLQnhcRLFQKVGEzEYgoGNQ8eBoeMA4NIfANh0cNQRUxLFQMLwq4uTKGrC/u34WOD7XJ4JgYRx7MV96N+8A0QEb5EPwcAffvpIQ5+NQ8dBnkD5WhlEhKMv7EX/UzuBhAGPUFgYIIyiBmQtM79SiqPZCKQBWI5jBqpvu/LbO7Dp4PPgRIOFKSPN+MbDO1H803MAsikOEQEaKM+EUEpxpZJdObWsscD3ObweAto4OxPh2IvGlE9sfwbRbISe7+5q6Pf3V/cgWBTg8OCvAACPb/o5WArzggBYAP4CH/XA6py75thpB5VSumDMs7EJzmXjzBxqFkqynklYlxPXzl7rmYSllM75Xx5+1tSVE+ZQu7L0eM75A99nmx5fPLEfuweNJgKpmDyBI/t3g2LttNT/1E4c+/0+9D/9C3CkwbFGT/8zTbVtA7bpt9et5G0ZaaN1OwmYGcL3JF8YHQRpxo/X3Izdg/tweOJTAMCPem4BJ9o4q7E7Doyeqg1YYUAD3nwB2dZXUm6jgaMv7HUmja6HbhuBiCBZkMsWDk98ChaE6HoEf0kAABCeMA/0RM15vao7aA1UiXPild1mMgCAEGABM/MAFBY/D6IaKBYAoaYdIgI8QiVOXBsZRiEtCAqcJBrJfysodBQQLPIRXTcratkRQHYESL4og4SoaaoKAALQzOj5fnNTVuIELIUDauXA6CljDW20ObLtO9CsIUhACBKYDcsEAIWOAsrTZYRVUP6SAJdG9+PwlkegFheMFmDyrP6NO3D0hb1AhedchgHVZV+FnX/a5BIwM9LKD3/zChYEBXbOr4KAL/95CGPjRQSLfJAnoJlx8cR+3LV+ABdGByEOjjp/IC8LRDNj4rU9DRoBqqvqwnOO+UkD0NrSH5LEzEQIY1ZrTmm+avsRH71+AGPjxczS/86HtyGciYyGHBrtQJLmXA5rVdIhyfOEcX4ACMOIvECxlzBWrSy6RmPj5npkaI8j07T0bzbmnC9NVtJzZkTdUpJkrS8z12ZnmmCV8FhK6bICJTxHgJYE7erHkq0uJ4ZgK7pGnJZgq9e+UqxnEkfMtm9Xb5/rO3Vy2P0q4XEmVsbM8EAYGdrjyDAtlTjBP/46ZqZ4qlyC5jUleWR8y2qHCNvW34cfFE/jX3/5Hb7yrafdL3kDxpSWS5IkNrOzureaBrdh6y4o6VWDb80exIwYc8fb+k0XCAEC8PiTO7Fh6y7c2vcTfFIFJRf6iMOIchebWmv4SrGUkn2lTHzT2sXMtDl4NjaxsGq6PHMSiUx8tL8c6oYE01eqRhcNaifKzZHSWmIix/SCCIXFBVTiBJ4nIIicFiUIMtUWqXh47MV9bmPlrvUDAMxENP3aEEGU8bv+zTtAzNDMWL5mHQDg/MTf0NmzLtPvbPG0iRJaZykHxq83HRxtUERbwFxAr6bVROQ0MG/fVFLpMliYrMJGnpaA5a2OYmYTTuagLZu91gvVTYD0PaExR2x5DxaopTfNFi/vv3Mqt1zMMWmTROfu97a9qQJkc/f09Yp778PyNevwwbunW35Ws1yubWD1Zmxl6afJECqnN2jm6de+xhJuiHd5UiqO1wZh41PWr0hXfUwI6Cb4MsyfloalFqp0UQ3mNiDnrbKSRCOpK2MiEBEef3JnhjIkKHf8tha8nq84uR4BijL5uyhIrLj3PgDAxx++j/989m8AcGUfvHsa0fWwtgjxCBRrBEsWNN3LaIvH4jCiIDAHpKTZBH1POAAAcPXqVSRRTIWFgUO+fM06FBYXYPvZNGk2LDfdYGkLGFV3a3zf52U938xtIxggSQ2Bu7N7LZZM/9PdF89dwv/1WJCIUKlU6GzxdKb84w/fd9fM5qi5VBzPlKclnseF5tRY3j6sLbenJHbgO+5ZASBLmJxo3HHPigw4e/hgU6xm4zSdlc0AASZfs35lAdW3IyIXnmwba8rVnbfB8yQnSUxUna25D2n3QyQyKbiUkrt6+1hKyUSC0+3soYNQ0uV3QmXb5Y5xI3uwSim2e2FH3prEu+cvQxPQ03k73jn7MbROCKj9cwAwh1z23AlApl2etA1MKcVrlt2eWzdRugzByPzHQgiP7/36HbntJ0tTTXmsLWDMDAa7g3ZLCfZPH2EUEiHrM/ZMoP5Ztn0zyvgfwKBDwoMDzYoAAAAASUVORK5CYII=';
+const INTRO_ON = () => /[?&]intro/.test(location.search) || !/[?&]studio/.test(location.search);
+function introCss() { if ($('#introCss')) return; const st = document.createElement('style'); st.id = 'introCss'; st.textContent = `
+#intro{position:fixed;inset:0;z-index:6500;background:#fff;display:flex;flex-direction:column;align-items:center;font-family:var(--px);color:var(--win-ink);-webkit-user-select:none;user-select:none;touch-action:manipulation;transition:background-color .5s steps(4,end),opacity .6s steps(5,end);padding-top:env(safe-area-inset-top)}
+#intro.lit{background:#f8f8f8}#intro .in-press{position:absolute;left:0;right:0;top:46%;text-align:center;color:#f8f8f8;font-size:16px;letter-spacing:.12em;animation:inBlink 1.1s steps(1) infinite}#intro.lit .in-press{display:none}#intro:not(.lit) .in-box{visibility:hidden}#intro.flash{background:#fff}#intro.out{opacity:0}
+#intro .in-stage{position:relative;flex:1;width:100%;min-height:0;display:grid;place-items:center}
+#intro .in-pic{grid-area:1/1;image-rendering:pixelated;opacity:0;transition:opacity .45s steps(4,end),transform .9s steps(6,end)}#intro .in-pic.on{opacity:1}
+#intro .kang{width:152px;height:232px}#intro .in-mon{position:relative;background-repeat:no-repeat}#intro .in-mon .zz{position:absolute;right:-8px;top:8px;font-size:20px;color:#7a8ab8;animation:inZz 2.4s steps(6,end) infinite}#intro .in-mon .z2{font-size:14px;animation-delay:1.2s}@keyframes inZz{0%{transform:translate(0,10px);opacity:0}25%{opacity:1}100%{transform:translate(14px,-26px);opacity:0}}
+#intro .in-tr{width:128px;height:128px;background-repeat:no-repeat;background-size:128px 768px;background-position:0 0}
+#intro .in-pic.shrink{transform:scale(.18)}#intro .in-two{grid-area:1/1;display:flex;gap:28px;opacity:0;transition:opacity .45s steps(4,end)}#intro .in-two.on{opacity:1}#intro .in-two i{width:96px;height:96px;background-repeat:no-repeat;background-size:96px 576px;image-rendering:pixelated;opacity:.45;transition:opacity .15s}#intro .in-two i.sel{opacity:1}
+#intro .in-box{box-sizing:border-box;width:min(560px,calc(100% - 24px));min-height:122px;margin:0 12px calc(14px + env(safe-area-inset-bottom));padding:16px 22px 20px;font-size:18px;line-height:1.65;white-space:pre-wrap;position:relative}
+#intro .cur,#tut .cur{position:absolute;right:18px;bottom:10px;font-size:13px;animation:inBlink .8s steps(1) infinite}@keyframes inBlink{50%{opacity:0}}
+#intro .in-menu{position:absolute;right:max(12px,calc(50% - 268px));bottom:calc(148px + env(safe-area-inset-bottom));display:grid;gap:2px;padding:12px 18px 12px 12px;font-size:18px;min-width:132px;box-sizing:border-box}
+#intro .in-menu button{display:flex;gap:6px;align-items:center;background:none;border:0;font:inherit;color:inherit;padding:7px 4px;cursor:pointer;text-align:left;white-space:nowrap}
+#intro .in-menu button::before{content:'▶';font-size:13px;visibility:hidden}#intro .in-menu button.sel::before,#intro .in-menu button:hover::before{visibility:visible}
+#intro .in-name{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(148px + env(safe-area-inset-bottom));width:min(360px,calc(100% - 24px));box-sizing:border-box;display:grid;gap:10px;padding:16px 20px;font-size:17px}
+#intro .in-name>*{min-width:0}#intro .in-name .in-row{display:flex;gap:8px;min-width:0}#intro .in-name input{flex:1;min-width:0;font:inherit;font-size:20px;color:inherit;background:#fff;border:3px solid var(--frame);padding:6px 10px;border-radius:0;letter-spacing:.08em}
+#intro .in-name button{font:inherit;color:inherit;background:var(--win);border:3px solid var(--frame);padding:0 12px;cursor:pointer}
+#intro .in-skip{position:absolute;top:calc(10px + env(safe-area-inset-top));right:12px;font:inherit;font-size:13px;color:#9a9aa8;background:none;border:0;padding:8px;cursor:pointer}#intro:not(.lit) .in-skip{color:#555}
+body.inTitle .hud,body.inTitle #side,body.inTitle #edge,body.inTitle #info{visibility:hidden}
+#title{position:fixed;inset:0;z-index:6450;font-family:var(--px)}
+#title .ti-logo{position:absolute;left:0;right:0;top:30%;display:grid;justify-items:center;gap:4px;opacity:0;transform:translateY(-14px);transition:opacity 1s steps(6,end),transform 1s steps(6,end)}#title.show .ti-logo{opacity:1;transform:none}
+#title .ti-logo b{font-size:44px;line-height:1.1;color:#ffd84a;letter-spacing:.04em;text-shadow:3px 0 #2a3a8a,-3px 0 #2a3a8a,0 3px #2a3a8a,0 -3px #2a3a8a,3px 3px #2a3a8a,-3px 3px #2a3a8a,3px -3px #2a3a8a,-3px -3px #2a3a8a,6px 6px 0 rgba(0,0,0,.35)}
+#title .ti-logo span{font-size:15px;color:#fff;letter-spacing:.3em;text-shadow:2px 2px 0 #2a3a8a}
+#title .ti-go{pointer-events:auto;position:absolute;left:50%;bottom:calc(9% + env(safe-area-inset-bottom));transform:translateX(-50%);font:inherit;font-size:20px;color:var(--win-ink);background:var(--win);border:4px solid var(--frame);box-shadow:4px 4px 0 rgba(0,0,0,.35);padding:14px 30px 14px 22px;cursor:pointer;white-space:nowrap;bottom:auto;top:calc(30% + 118px);opacity:0;visibility:hidden;transition:opacity .8s .5s steps(5,end),visibility 0s 1.3s}#title.show .ti-go{opacity:1;visibility:visible;transition:opacity .8s .5s steps(5,end),visibility 0s .5s}
+#title .ti-go::before{content:'▶ ';font-size:15px;animation:inBlink .8s steps(1) infinite}
+#title .ti-white{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .6s steps(5,end)}#title.go .ti-white{opacity:1}
+@keyframes tiIn{from{opacity:0}to{opacity:1}}
+#tut{position:fixed;inset:0;z-index:6400;font-family:var(--px);color:var(--win-ink);-webkit-user-select:none;user-select:none;touch-action:manipulation}
+#tut .tu-hole{position:fixed;border-radius:10px;box-shadow:0 0 0 200vmax rgba(10,14,30,.6);outline:3px solid #ffe070;outline-offset:2px;transition:left .3s steps(4,end),top .3s steps(4,end),width .3s steps(4,end),height .3s steps(4,end);pointer-events:none;animation:tuGlow 1.2s steps(2) infinite}@keyframes tuGlow{50%{outline-color:#fff6c0}}
+#tut.dim{background:rgba(10,14,30,.6)}#tut .tu-hole.multi{outline:0;animation:none}#tut .tu-mark{position:fixed;border-radius:8px;outline:3px solid #ffe070;outline-offset:2px;pointer-events:none;animation:tuGlow 1.2s steps(2) infinite}#tut .tu-hole.none{left:50%!important;top:40%!important;width:0!important;height:0!important;outline:0}
+#tut .tu-box{position:fixed;left:50%;transform:translateX(-50%);width:min(560px,calc(100% - 24px));display:flex;align-items:flex-end;gap:8px}
+#tut .tu-box img{flex:none;width:76px;height:116px;image-rendering:pixelated;margin-bottom:-4px;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35))}
+#tut .tu-box .win{flex:1;min-width:0;min-height:134px;box-sizing:border-box;padding:14px 16px 20px;font-size:15px;line-height:1.6;white-space:pre-wrap;position:relative}
+#tut.do{pointer-events:none}#tut.do .tu-box{pointer-events:none}#tut .tu-box{transition:top .25s steps(4,end)}#tut .tu-n{position:absolute;left:14px;top:-14px;background:var(--frame);color:#fff;font-size:12px;padding:2px 8px}
+`; document.head.append(st); }
+// 글자를 한 자씩 띄우고(누르면 바로 끝까지), 다 뜨면 ▼ 깜빡이며 누를 때까지 기다린다
+function inTyper(root, tEl, curEl) {
+  let typing = false, skip = false, wake = null;
+  root.addEventListener('pointerup', e => { if (e.target.closest('.in-menu,.in-name,.in-skip')) return; if (typing) skip = true; else if (wake) { const w = wake; wake = null; try { sfx('tap'); } catch (er) {} w(); } });
+  const say = async (s, wait = true) => { typing = true; skip = false; curEl.hidden = true; tEl.textContent = '';
+    for (const ch of [...s]) { if (skip) { tEl.textContent = s; break; } tEl.textContent += ch; await new Promise(r => setTimeout(r, ch === '\n' ? 90 : 38)); }
+    typing = false; if (!wait) return; curEl.hidden = false; await new Promise(r => { wake = r; }); curEl.hidden = true; };
+  return say;
+}
+// 오프닝 나룸퍼프(684): 필드와 같은 불가사의 던전 그림의 자는 모션(Sleep, 앉아서 눈 감은 그림)을 한 칸씩 돌린다
+function sleepAnim(el, sp, px) {
+  const P = SPRITES[sp], a = P && P.a && (P.a.Sleep || P.a.Idle);
+  if (!a) { el.style.cssText = `width:${px}px;height:${px}px;background:url("${thumbOf(sp)}") center/contain no-repeat`; return; }
+  const [w, h] = atlasSize(sp), s = px / Math.max(a[1], a[2]), d = a[6]; let f = 0;
+  Object.assign(el.style, { width: a[1] * s + 'px', height: a[2] * s + 'px', backgroundImage: `url("${P.i}")`, backgroundSize: `${w * s}px ${h * s}px` });
+  const tick = () => { if (!el.isConnected) return; el.style.backgroundPosition = `${-f * (a[1] + (P.G || 0)) * s}px ${-a[0] * s}px`; const ms = d[f] * 1000 / 60; f = (f + 1) % d.length; setTimeout(tick, ms); };
+  tick();
+}
+// 타이틀 (v5.38 3차 경완): 골드 버전 타이틀처럼 필드를 천천히 훑는 연출 + 귀여운 포켓몬들 + '게임 시작하기' (27. Professor Oak)
+// 구경용 포켓몬은 잠깐만 띄웠다가 지우고, 그동안은 저장하지 않는다
+async function titleFlow() {
+  introCss(); const wait = ms => new Promise(r => setTimeout(r, ms));
+  const keepLog = S.log.slice(), keepHtml = logEl.innerHTML, fz0 = saveFrozen; saveFrozen = true; document.body.classList.add('inTitle');
+  const tv = document.createElement('div'); tv.id = 'title'; tv.innerHTML = `<div class="ti-logo"><b>포켓몬 키우기</b><span>PokeGrow</span></div><button class="ti-go" type="button">게임 시작하기</button><i class="ti-white"></i>`;
+  document.body.append(tv);
+  // 음악 (27. Professor Oak, 가져온 파일 'title'이 있을 때만): 브라우저는 한 번 누르기 전엔 소리를 막을 수 있어서, 막혀 있으면 첫 터치 때 이어서 나온다
+  const mus = { src: null, g: null }, a = bgmOn ? audio() : null;
+  (async () => { if (!a) return; try { const buf = await a.decodeAudioData(await (await musicGet('title')).arrayBuffer()); if (!tv.isConnected) return; bgmSrcStop(); const g = a.createGain(); g.gain.value = .55 * volG(VOL.bgm); g.connect(a.destination); const x = a.createBufferSource(); x.buffer = buf; x.loop = true; x.connect(g); x.start(); mus.src = x; mus.g = g; } catch (e) {} })();
+  const wake = () => { try { a?.resume(); } catch (e) {} }; addEventListener('pointerdown', wake, true);
+  const demo = [];
+  let demoOff = false; (async () => { for (const sp of [25, 133, 183, 39, 175, 1, 4, 7, 52]) { if (demoOff) break; try { const m = await spawn(sp, { quiet: true }); if (demoOff) { removeMon(m, true); break; } m.demo = 1; demo.push(m); } catch (e) {} } })();
+  // 맑은 한낮으로 고정 (끝나면 원래 시각·날씨로)
+  const wx0 = S.wxT, off0 = CLOCK_OFF, sky0 = () => { S.clock = realClock(); skyKey = ''; sky(); };
+  S.wxT = 'clear'; CLOCK_OFF = 12.5 * 60 - (Date.now() - S.base) / 60000; sky0();
+  // 아래에서 위로 한 번 훑고, 끝날 즈음 제목과 '게임 시작하기'가 나온다 (누르면 바로 끝으로)
+  const wrap = $('#wrap'), k = 1.75, w = wrap.clientWidth, h = wrap.clientHeight, X = -(w - w / k), Y = -(h - h / k);
+  wrap.style.transformOrigin = '0 0';
+  const P = [[.5, 1], [.15, .72], [.8, .42], [.45, .14], [.5, 0]].map(([x, y]) => ({ transform: `scale(${k}) translate(${(X * x).toFixed(1)}px,${(Y * y).toFixed(1)}px)` }));
+  const pan = wrap.animate(P, { duration: 15000, easing: 'cubic-bezier(.3,0,.45,1)', fill: 'forwards' });
+  const showTitle = () => tv.classList.add('show');
+  const tT = setTimeout(showTitle, 12500), skip = () => { if (tv.classList.contains('show')) return; pan.finish(); showTitle(); };
+  tv.addEventListener('pointerup', skip);
+  // 포켓몬들이 가끔 기술을 쓴다
+  const mvT = setInterval(() => { const L = demo.filter(m => S.mons.includes(m) && m.state === 'idle' && !m.mvBusy); if (L.length) try { useMove(L[Math.floor(Math.random() * L.length)]); } catch (e) {} }, 2600);
+  await new Promise(r => { tv.querySelector('.ti-go').onclick = r; });
+  clearTimeout(tT); clearInterval(mvT);
+  wake(); try { sfx('tap'); } catch (e) {} tv.classList.add('go');
+  { const { src, g } = mus; if (src && a) { const t = a.currentTime; g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + .7); setTimeout(() => { try { src.stop(); src.disconnect(); g.disconnect(); } catch (e) {} }, 800); } }
+  await wait(700);
+  removeEventListener('pointerdown', wake, true); pan.cancel(); wrap.style.transformOrigin = ''; S.wxT = wx0; CLOCK_OFF = off0; sky0();
+  demoOff = true; demo.forEach(m => { if (S.mons.includes(m)) removeMon(m, true); });
+  S.log = keepLog; logEl.innerHTML = keepHtml; saveFrozen = fz0; document.body.classList.remove('inTitle');
+  return () => tv.remove();   // 오프닝 화면이 위에 깔린 뒤에 지운다 (그 사이 필드가 비치지 않게)
+}
+async function introFlow() {
+  const dropTitle = await titleFlow(); introCss(); const tr = trOf(), wait = ms => new Promise(r => setTimeout(r, ms));
+  const ov = document.createElement('div'); ov.id = 'intro'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', '오프닝');
+  ov.innerHTML = `<button class="in-skip" type="button">건너뛰기</button><div class="in-stage"><img class="in-pic kang" alt="Mr.강" src="${KANG}"><i class="in-pic in-mon" role="img" aria-label="나룸퍼프"><b class="zz">Z</b><b class="zz z2">z</b></i><i class="in-pic in-tr"></i><div class="in-two"><i style="background-image:url(${TR_OW.m})"></i><i style="background-image:url(${TR_OW.f || TR_OW.m})"></i></div></div><div class="win in-menu" hidden></div><div class="win in-name" hidden></div><div class="win in-box" aria-live="polite"><span class="in-t"></span><b class="cur" hidden>▼</b></div>`;
+  document.body.append(ov); dropTitle?.();
+  const $o = s => ov.querySelector(s), kang = $o('.kang'), mon = $o('.in-mon'), trEl = $o('.in-tr'), menu = $o('.in-menu'), box = $o('.in-box');
+  const say = inTyper(ov, $o('.in-t'), $o('.cur')), show = (el, on) => el.classList.toggle('on', on);
+  let skipped = false; const done = new Promise(r => { $o('.in-skip').onclick = () => { skipped = true; r(); }; });
+  const choose = opts => new Promise(r => { menu.innerHTML = opts.map((o, i) => `<button type="button" data-i="${i}"${i ? '' : ' class="sel"'}>${esc(o)}</button>`).join(''); menu.hidden = false;
+    menu.onpointerover = e => { const b = e.target.closest('button'); if (b) menu.querySelectorAll('button').forEach(x => x.classList.toggle('sel', x === b)); };
+    menu.onclick = e => { const b = e.target.closest('button'); if (!b) return; menu.hidden = true; r(+b.dataset.i); }; });
+  const askName = () => new Promise(r => { const w = $o('.in-name'); w.innerHTML = `<span>이름은?</span><div class="in-row"><input maxlength="8" autocomplete="off" enterkeyhint="done" aria-label="이름"><button type="button">결정</button></div>`; w.hidden = false;
+    const inp = w.querySelector('input'), ok = () => { const v = inp.value.trim().slice(0, 8); if (!v) { inp.focus(); return; } w.hidden = true; inp.blur(); r(v); };
+    w.querySelector('button').onclick = ok; inp.onkeydown = e => { if (e.key === 'Enter') ok(); }; setTimeout(() => inp.focus(), 50); });
+  // 오프닝 음악 (22. Hurry Along 2): 저작권 때문에 사이트에 올리지 않고, 설정 › 소리 '곡 파일 가져오기'로 넣은 파일('intro')이 있을 때만 튼다
+  const mus = { src: null, g: null };
+  const musStart = async () => { if (!bgmOn) return; const a = audio(); if (!a) return; try { const buf = await a.decodeAudioData(await (await musicGet('intro')).arrayBuffer()); if (!ov.isConnected) return; bgmSrcStop(); const g = a.createGain(); g.gain.value = .55 * volG(VOL.bgm); g.connect(a.destination); const x = a.createBufferSource(); x.buffer = buf; x.loop = true; x.connect(g); x.start(); mus.src = x; mus.g = g; } catch (e) {} };
+  const musStop = () => { const { src, g } = mus; if (!src) return; const a = audio(), t = a.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + .8); setTimeout(() => { try { src.stop(); src.disconnect(); g.disconnect(); } catch (e) {} }, 900); mus.src = null; };
+  const run = (async () => {
+    musStart(); ov.classList.add('lit'); await wait(700); show(kang, true); await wait(600);
+    await say('안녕!\n만나서 정말 반갑구나!');
+    await say('포켓몬스터의 세계에\n온 것을 환영한단다!');
+    await say('내 이름은 Mr.강.\n모두들 강박사라고 부르지.');
+    show(kang, false); await ensureSprite(685).catch(() => {}); sleepAnim(mon, 684, 116); await wait(450); show(mon, true); 
+    await say('이 세계에는 포켓몬스터라\n불리는 생명체들이\n곳곳에 살고 있단다.');
+    await say('사람들은 포켓몬과 함께\n걷고, 달리고,\n같이 살아가지.');
+    await say('나는 포켓몬들이 하루를\n어떻게 보내는지 관찰하는\n연구를 하고 있단다.');
+    show(mon, false); await wait(450); show(kang, true);
+    await say('그럼 이제 너에 대해\n알려 주겠니?');
+    show(kang, false); await wait(450);
+    const two = $o('.in-two'), tw = [...two.children], pick = i => tw.forEach((x, j) => x.classList.toggle('sel', j === i)); pick(0); two.classList.add('on');
+    menu.addEventListener('pointerover', e => { const b = e.target.closest('button'); if (b && two.classList.contains('on')) pick(+b.dataset.i); });
+    say('너는 남자니?\n여자니?', false); const sx = await choose(['남자', '여자']); tr.sex = sx ? 'f' : 'm'; two.classList.remove('on'); await wait(300);
+    trEl.style.backgroundImage = `url(${TR_OW[tr.sex] || TR_OW.m})`; show(trEl, true); await wait(350);
+    say('네 이름은 뭐니?', false);
+    const pre = tr.sex === 'f' ? ['크리스', '코토네', '리프'] : ['골드', '히비키', '레드'], k = await choose(['직접 정하기', ...pre]);
+    const nm = k ? pre[k - 1] : (box.hidden = true, await askName()); box.hidden = false; tr.n = nm;
+    await say(`그래, ${nm}${hasBat(nm) ? '이' : ''}구나!`);
+    show(trEl, false); await wait(450); show(kang, true);
+    await say(`${nm}! 준비는 됐니?`);
+    await say('이제 드디어 너만의\n포켓몬 이야기가\n시작된단다!');
+    await say('알을 부화시키고, 함께 걷고,\n포켓몬들과 즐거운\n하루하루를 보내렴!');
+    await say('포켓몬들이 기다리고 있단다!\n자, 가자!');
+    show(kang, false); await wait(450); show(trEl, true); await wait(500); box.style.visibility = 'hidden'; trEl.classList.add('shrink'); await wait(1000);
+  })();
+  await Promise.race([run, done]);
+  if (!tr.n) tr.n = tr.sex === 'f' ? '크리스' : '골드';
+  musStop(); ov.classList.add('flash'); await wait(250); ov.classList.add('out'); await wait(650); ov.remove(); try { bgmStart(); } catch (e) {}
+  try { renderTrainer(); } catch (e) {} save(); return !skipped;
+}
+// 첫 화면 튜토리얼 (v5.38 2차 경완: 훨씬 친절하게): Mr.강이 실제 메뉴를 열어 보이며 설명하고, 알 받기 → 부화 → 필드로 → 건강 게이지 → 짝꿍까지 직접 눌러 보게 한다
+// 단계: { c: 장 이름, t: 비출 곳(선택자·함수), s: 대사, tap: 눌러야 넘어가는 곳, allow: 그동안 눌러도 되는 곳, until: 넘어갈 조건, pre: 시작 전에 할 일 }
+async function tutFlow() {
+  introCss(); const nm = TN(), wait = ms => new Promise(r => setTimeout(r, ms));
+  const el = t => { const e = typeof t === 'function' ? t() : t && document.querySelector(t); if (e && !e.closest) return e; return e && !e.closest('[hidden]') && e.getClientRects().length ? e : null; };
+  const mon = () => S.mons[0], monEl = () => { const m = mon(); if (!m || !m.el.isConnected) return null; const w = $('#wrap').getBoundingClientRect(), k = scale, mw = (m.w || 48) * k, mh = (m.h || 48) * k, x = w.left + S.ox + m.x * k, y = w.top + S.oy + (m.y - (m.lift || 0)) * k; const r = { left: x - mw / 2, top: y - mh, width: mw, height: mh, right: x + mw / 2, bottom: y }; return { getBoundingClientRect: () => r, contains: e => m.el.contains(e) }; }, born = () => { const m = mon(); return m ? m.name : '포켓몬'; };
+  const J2 = (w, a, b) => w + (hasBat(w) ? a : b), sheetsOff = () => { try { select(null); } catch (e) {} closeToggles(); hideSheets(); };
+  const barOf = n => [...document.querySelectorAll('#pbars .bar')].find(b => b.firstElementChild?.textContent.trim() === n) || null;
+  const bag1 = () => { const e = S.bag.find(x => x.g === 1); return e && document.querySelector(`#bagGrid .bslot[data-id="${e.id}"]`); };
+  const inc1 = () => S.eggs.find(x => x.g === 1), incSlot = () => { const i = S.eggs.indexOf(inc1()); return i >= 0 ? document.querySelectorAll('#eggs .eslot')[i] : null; };
+  const T = [
+    { c: '시작', s: `여기가 ${nm}의 필드란다!\n지금은 아무도 없지만\n곧 포켓몬들로 북적일 거야.` },
+    { c: '알 받기', s: '오, 마침 알이 도착했구나!\n내가 보낸 선물이란다.' },
+    { c: '알 받기', pre: () => notiShow(), t: '#notiOk', tap: '#notiOk', until: () => !notiOpen, s: '\'확인\'을 눌러서\n알을 받아 보렴!' },
+    { c: '알 받기', t: '#openRun', tap: '#openRun', until: () => !$('#run').hidden, s: '받은 알은 \'알\' 메뉴에\n들어갔단다.\n\'알\'을 눌러 보렴!' },
+    { c: '가방', pre: () => setRunTab('bag'), t: '#bagGrid', s: '여기는 \'가방\'이야.\n걷다가 주운 알은\n전부 여기에 모인단다.' },
+    { c: '가방', t: '#bagGrid', s: '알에는 등급이 있어.\n일반·희귀·레어·에픽·전설!\n좋은 알일수록 부화시키려면\n오래 걸어야 해.' },
+    { c: '가방', t: '#bagGrid', s: '그리고 어디를 걸었느냐에\n따라 알에서 나오는\n포켓몬이 달라진단다.' },
+    { c: '가방', t: '#bagGrid', s: '호수 근처에서 주운 알에서는\n라프라스 같은 물 포켓몬이\n자주 나온다고 하더구나.\n여기저기 많이 걸어 보렴!' },
+    { c: '가방', t: bag1, tap: bag1, until: () => el('#bagIn'), s: '가방의 알은 부화기에\n넣어야 자란단다.\n일반 알을 눌러 보렴.' },
+    { c: '가방', t: '#bagIn', tap: '#bagIn', until: () => !el('#bagIn'), s: '\'부화기에 넣기\'를\n눌러 보렴!' },
+    { c: '부화기', t: '.eggtabs [data-tab="egg"]', tap: '.eggtabs [data-tab="egg"]', until: () => el('#eggs'), s: '잘했어! 이제 \'부화기\'를\n눌러서 확인해 보자.' },
+    { c: '부화기', t: '#eggs', s: '부화기에는 알을\n15개까지 넣을 수 있단다.' },
+    { c: '부화기', t: '#incu', s: `${nm}${hasBat(nm) ? '이' : ''}가 걷거나 달리면\n그 거리가 부화기의 모든 알에\n똑같이 쌓인단다.` },
+    { c: '부화기', t: incSlot, s: '알 아래 숫자가\n지금까지 걸은 거리야.\n일반 알은 2.5km를 걸으면\n부화한단다.' },
+    { c: '부화', t: incSlot, s: '원래는 직접 걸어야 하지만…\n이번만 특별히\n내가 도와주마!' },
+    { c: '부화', pre: async () => { const e = inc1(); if (e) { e.km = e.need; const i = S.eggs.indexOf(e); eggSel = e; eggSelI = i; eggNone = false; renderRun(); try { sfx('newdex'); haptic(1); } catch (er) {} } await wait(300); }, t: '#incu', s: '자, 됐다!\n이 알은 이제 부화할\n준비가 됐단다.' },
+    { c: '부화', t: '#eggHatch', tap: '#eggHatch', until: () => !$('#hatch').hidden, s: '\'부화시키기\'를\n눌러 보렴!' },
+    { c: '부화', t: '#hatchStage', allow: '#hatch', until: () => el('#hatchOk'), s: '알을 톡톡 두드려서\n깨 보렴!' },
+    { c: '부화', t: '#hatchStage', s: () => `와! ${J2(born2(), '이', '가')} 태어났구나!\n새 포켓몬을 만나면\n골드도 받는단다.` },
+    { c: '부화', t: '#hatchSend', tap: '#hatchSend', until: () => S.mons.length > 0, s: '\'필드로\'를 누르면\n포켓몬이 필드에\n나간단다.' },
+    { c: '부화', t: '#hatchOk', tap: '#hatchOk', until: () => $('#hatch').hidden, s: '\'확인\'을 눌러\n창을 닫아 보렴.' },
+    { c: '필드', pre: async () => { sheetsOff(); await wait(300); const m = mon(); if (m) { try { const cx = ($('#wrap').clientWidth / 2 - S.ox) / scale; place(m, cx, 330); } catch (e) { m.y = 330; } m.tx = m.x; m.ty = m.y; m.goal = null; pin = { x: m.x, y: m.y }; } await wait(300); }, t: monEl, s: () => `${J2(born(), '이', '가')} 필드에 나왔어!\n포켓몬들은 필드에서\n놀고, 먹고, 자고, 어울린단다.` },
+    { c: '필드', t: monEl, tap: () => monEl(), allow: '#wrap', until: () => S.sel === mon(), s: () => `${J2(born(), '을', '를')} 눌러 보렴!` },
+    { c: '친밀도', t: '#pbars .frbar', s: () => `먼저 친밀도란다.\n${J2(born(), '이', '가')} ${nm}${hasBat(nm) ? '이' : ''}를\n얼마나 좋아하는지 보여 주지.` },
+    { c: '친밀도', t: '#pMoves', s: '친밀도가 만점이 되면\n그 포켓몬만의\n특별한 기술을 쓸 수 있단다!' },
+    { c: '친밀도', t: '#pbars .frbar', s: '필드에 나와 있기만 해도\n친밀도는 조금씩 오른단다.' },
+    { c: '건강 게이지', t: '#pbars', s: '이건 건강 게이지야.\n청결·즐거움·배부름\n세 가지가 있지.' },
+    { c: '건강 게이지', t: '#pbars', s: '건강 게이지가 높을수록\n친밀도가 더 빨리\n오른단다.' },
+    { c: '건강 게이지', t: '#pbars', s: '게이지는 시간이 지나면\n조금씩 줄어드니\n잘 돌봐 주렴.' },
+    { c: '건강 게이지', t: '#infFeed', t2: () => barOf('배부름'), s: '배부름이 줄면\n열매를 주렴.\n배고픈 포켓몬이 냠냠 먹지.' },
+    { c: '건강 게이지', t: '#infPet', t2: () => barOf('즐거움'), s: '손으로 쓰다듬어 주면\n즐거움이 올라간단다.' },
+    { c: '건강 게이지', t: '#infWash', t2: () => barOf('청결'), s: '뛰어놀다 더러워지면\n솔로 문질러 씻겨 주렴.\n청결이 가득 찬단다.' },
+    { c: '짝꿍', t: '#infBudGo', s: '다음은 짝꿍이야!\n짝꿍은 너와 함께 걷는\n특별한 포켓몬이란다.' },
+    { c: '짝꿍', t: '#infBudGo', s: '포켓몬을 진화시키려면\n꼭 짝꿍으로 정해야 해.\n짝꿍만 함께 걸은 거리만큼\n진화에 가까워지거든.' },
+    { c: '짝꿍', t: '#infBudGo', tap: '#infBudGo', until: () => S.buds.length > 0, s: () => `${J2(born(), '을', '를')} 짝꿍으로\n정해 보자.\n'짝꿍으로'를 눌러 보렴!` },
+    { c: '짝꿍', when: () => notiOpen && !$('#noti').hidden, t: '#notiOk', tap: '#notiOk', until: () => !notiOpen, s: '이 포켓몬은 진화 조건이\n조금 특별하구나.\n\'확인\'을 눌러 보렴.' },
+    { c: '짝꿍', t: '#infoBud', s: () => `좋아! 이제 ${J2(born(), '은', '는')}\n${nm}의 짝꿍이야.\n분홍 카드가 짝꿍 표시란다.` },
+    { c: '필드 메뉴', pre: async () => { pin = null; sheetsOff(); await wait(300); }, t: '#openFld', tap: '#openFld', until: () => !$('#mgr').hidden, s: '이번엔 \'필드\' 메뉴를\n눌러 보렴.' },
+    { c: '필드 메뉴', pre: () => setMgrTab('field'), t: '#slots', s: '필드에 나간 포켓몬이야.\n한 번에 9마리까지\n내보낼 수 있단다.' },
+    { c: '필드 메뉴', t: '#slots .slot', s: '칸 아래 막대 세 개가\n건강 게이지란다.\n여기서 한눈에 볼 수 있지.' },
+    { c: '필드 메뉴', t: '#mgrTabs [data-t="buddy"]', tap: '#mgrTabs [data-t="buddy"]', until: () => el('#buddy'), s: '\'짝꿍\' 탭을\n눌러 보렴.' },
+    { c: '필드 메뉴', t: '#buddy .bd-card', s: () => `여기서는 아까 짝꿍으로 정한\n${J2(born(), '을', '를')} 확인할 수 있단다.` },
+    { c: '필드 메뉴', t: '#buddy', s: '짝꿍이 진화하기까지\n얼마나 걸어야 하는지\n여기서 볼 수 있단다.' },
+    { c: '필드 메뉴', t: '#buddy', s: '짝꿍은 3마리까지\n정할 수 있단다.\n빈 칸의 +를 누르면\n짝꿍을 고를 수 있지.' },
+    { c: '프로필', pre: async () => { sheetsOff(); await wait(300); }, t: '#openSet', tap: '#openSet', until: () => !$('#set').hidden, s: '마지막으로 \'프로필\'이야.\n눌러 보렴.' },
+    { c: '프로필', t: '#pfPage .tr-card', s: () => `${nm}의 트레이너 카드란다.\n도감을 채울수록 등급이\n올라가고, 등급에 따라\n특별한 카드로 바뀐단다.` },
+    { c: '프로필', t: '#pfPage .pf-sec', s: '\'오늘\'에는 오늘 걸은 거리와\n주운 알 개수가 나온단다.' },
+    { c: '프로필', t: '#pfPage .pf-next', s: '\'다음까지\'에는 가장 먼저\n부화할 알과 진화할 짝꿍까지\n남은 거리가 나와.\n누르면 바로 볼 수 있지.' },
+    { c: '끝', pre: async () => { sheetsOff(); await wait(300); }, s: `설명은 여기까지란다!\n이제 밖으로 나가 걸어 보렴.\n걸을수록 알이 자란단다.` },
+    { c: '끝', s: `많이 걷고 돌봐 줘서\n연구에 필요한 도감을\n채워 주면 좋겠구나!\n잘 부탁한다, ${nm}!` },
+  ];
+  function born2() { const P = S.box[S.box.length - 1]; return P ? SPECIES[P.sp].n : '포켓몬'; }
+  const ov = document.createElement('div'); ov.id = 'tut'; ov.innerHTML = `<i class="tu-hole none"></i><i class="tu-mark" hidden></i><i class="tu-mark" hidden></i><div class="tu-box"><img alt="Mr.강" src="${KANG}"><div class="win"><span class="tu-n"></span><span class="tu-t"></span><b class="cur" hidden>▼</b></div></div>`;
+  document.body.append(ov);
+  const hole = ov.querySelector('.tu-hole'), bx = ov.querySelector('.tu-box'), say = inTyper(ov, ov.querySelector('.tu-t'), ov.querySelector('.cur'));
+  // 직접 눌러 보는 단계: 비춘 곳(과 allow)만 눌리고 나머지는 막는다
+  let allow = null, tapSel = null, tapped = false;
+  const hit = (e, s) => s && e.target.closest && (typeof s === 'function' ? (x => x && x.contains(e.target))(s()) : e.target.closest(s));
+  const guard = e => { if (!allow) return; if (hit(e, allow) || hit(e, tapSel)) { if ((e.type === 'click' || e.type === 'pointerup') && hit(e, tapSel)) tapped = true; return; } e.stopPropagation(); if (e.cancelable) e.preventDefault(); };
+  const EV = ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchend', 'mousedown', 'mouseup'];
+  EV.forEach(t => addEventListener(t, guard, { capture: true, passive: false }));
+  let cur = null, raf = 0, pin = null;
+  const place = (r, first) => {   // 상자는 비춘 곳 바로 위나 아래 (빈 곳이 더 넓은 쪽), 시계·골드 줄은 가리지 않는다
+    const H = innerHeight, top0 = 72, bh = bx.offsetHeight || 130;
+    if (!r) { bx.style.top = Math.round(H * .5 - bh / 2) + 'px'; return; }
+    const up = r.top - 14 - bh, dn = r.bottom + 14;
+    let y = (r.top + r.bottom) / 2 > H * .35 ? (up >= top0 ? up : dn) : (dn + bh <= H - 10 ? dn : up);
+    if (r.height > H * .5) y = r.bottom - bh - 12;   // 창 전체를 비출 때는 창 아래쪽 안에 (내용은 보통 위에서부터 차니까)
+    y = Math.max(top0, Math.min(H - bh - 10, y)); if (first || Math.abs(parseFloat(bx.style.top || 0) - y) > 40) bx.style.top = Math.round(y) + 'px';
+  };
+  const track = () => { { const m = mon(); if (pin && m) { m.x = m.tx = pin.x; m.y = m.ty = pin.y; m.goal = null; } } const e = cur && el(cur.t); let r = e ? e.getBoundingClientRect() : null; if (r && r.width && (r.width < 44 || r.height < 44)) { const cx = r.left + r.width / 2, cy = r.top + r.height / 2, w = Math.max(44, r.width), h = Math.max(44, r.height); r = { left: cx - w / 2, top: cy - h / 2, width: w, height: h, right: cx + w / 2, bottom: cy + h / 2 }; }
+    const marks = ov.querySelectorAll('.tu-mark'), e2 = r && cur.t2 && el(cur.t2), r2 = e2 ? e2.getBoundingClientRect() : null;   // 버튼과 그 버튼이 올리는 게이지를 같이 비춘다
+    marks.forEach(x => x.hidden = !r2); hole.classList.toggle('multi', !!r2);
+    if (r2) { [r, r2].forEach((q, i) => Object.assign(marks[i].style, { left: q.left - 4 + 'px', top: q.top - 4 + 'px', width: q.width + 8 + 'px', height: q.height + 8 + 'px' })); const L = Math.min(r.left, r2.left), T = Math.min(r.top, r2.top), Rr = Math.max(r.right ?? r.left + r.width, r2.right), B = Math.max(r.bottom ?? r.top + r.height, r2.bottom); r = { left: L, top: T, width: Rr - L, height: B - T, right: Rr, bottom: B }; }
+    if (r && r.width) { const p = 6; Object.assign(hole.style, { left: r.left - p + 'px', top: r.top - p + 'px', width: r.width + p * 2 + 'px', height: r.height + p * 2 + 'px' }); hole.classList.remove('none'); ov.classList.remove('dim'); }
+    else { hole.classList.add('none'); ov.classList.toggle('dim', !cur?.allow && !cur?.tap); }
+    place(r && r.width ? r : null, false); raf = requestAnimationFrame(track); };
+  for (const st of T) {
+    if (st.when && !st.when()) continue;
+    if (st.pre) { ov.style.visibility = 'hidden'; await st.pre(); await wait(350); ov.style.visibility = ''; }
+    cur = st; ov.querySelector('.tu-n').textContent = st.c;
+    { const e = el(st.t); place(e ? e.getBoundingClientRect() : null, true); }
+    cancelAnimationFrame(raf); track();
+    const s = typeof st.s === 'function' ? st.s() : st.s;
+    if (st.tap || st.allow) {
+      ov.classList.add('do'); tapped = false; tapSel = st.tap || null; allow = st.allow || st.tap;
+      await say(s, false);
+      for (let n = 0; ; n++) { await wait(100); if (st.until ? st.until() : tapped) break; }
+      allow = tapSel = null; ov.classList.remove('do'); await wait(450);
+    } else await say(s);
+  }
+  cancelAnimationFrame(raf); EV.forEach(t => removeEventListener(t, guard, { capture: true }));
+  ov.remove();
+}
 async function start(data) {
   applyCfg(await loadCfg());
   S.clock = realClock(); buildProps(); sky(); fxEl.append(selMark); drawBg(); addGlints(); fit(); requestAnimationFrame(() => document.documentElement.classList.add('ready'));
   let d = data && data.mons ? data : null;
   if (!d) { try { d = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { d = null; } }
-  if (d && d.mons && (d.mons.length || d.unlocked)) await restore(d); else await fresh();
+  const isNew = !(d && d.mons && (d.mons.length || d.unlocked));
+  const introPrev = !isNew && /[?&]intro/.test(location.search);   // v5.38: ?intro 는 저장이 있어도 새 게임처럼 오프닝·튜토리얼을 미리 보기만 한다 (원래 저장은 건드리지 않게 이번 실행은 저장 안 함)
+  if (introPrev) saveFrozen = true;
+  if (!isNew && !introPrev) await restore(d); else await fresh();
   if (bgmOn && bgm.id !== S.bgm) bgmStart();
   Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp)); menuDots();
-  migrateBox(); undoAutoHatch(); syncNeed(); renderGold(); notiSoon(700); sky(); fetchWx(false, 10 * 60e3); setInterval(fetchWx, 10 * 60e3); document.addEventListener('visibilitychange', () => { if (document.hidden) return;   /* v4.33 경완: 다시 켜면 시간·날씨를 바로 (서서히 바뀌는 연출 없이) */
+  migrateBox(); undoAutoHatch(); syncNeed(); renderGold(); if ((isNew && INTRO_ON()) || /[?&]intro/.test(location.search)) introFlow().then(() => tutFlow()).then(() => notiSoon(300)); else notiSoon(700); sky(); fetchWx(false, 10 * 60e3); setInterval(fetchWx, 10 * 60e3); document.addEventListener('visibilitychange', () => { if (document.hidden) return;   /* v4.33 경완: 다시 켜면 시간·날씨를 바로 (서서히 바뀌는 연출 없이) */
     const c = document.documentElement.classList; c.add('boot'); S.clock = realClock(); skyKey = ''; sky(); requestAnimationFrame(() => requestAnimationFrame(() => c.remove('boot'))); fetchWx(false, 10 * 60e3); }); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
   requestAnimationFrame(t => { last = t; frame(t); });
   // 아이폰 앱에 준비됐다고 알리고, 현재 알 현황을 바로 보낸다
