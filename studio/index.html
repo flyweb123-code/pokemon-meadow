@@ -503,7 +503,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '2.98';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '2.99';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
@@ -1911,6 +1911,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['2.99', '10월 18일', ['지도 반경 139곳에 장소 특성을 붙였어요 (데이터 v42). 작업본에 남은 같은 반경에도 한 번 옮겨 줘요']],
   ['2.98', '10월 18일', ['장소 특성 › 카드 위 이름을 눌러 바꿀 수 있어요 (게임 v5.31)', '아쿠아리움 특성 새로 (아쿠아리움·수족관 낱말은 동물원에서 옮김)', '지도 › 저장해도 오른쪽 창이 접히지 않아요']],
   ['2.97', '10월 18일', ['장소 특성 › 지운 특성은 왼쪽 위 \'지운 특성\' 탭에서 보고 살려요', '도감 설명 낱말은 다시 한 번 누르면 바로 빠져요', '포켓몬 목록 세대·티어·타입 탭에서 누른 버튼 글자가 안 보이던 것 고침 (장소 특성·지도)']],
   ['2.96', '10월 18일', ['장소 특성 › 도감 설명 낱말은 한 번 더 눌러야 빠져요']],
@@ -2867,6 +2868,10 @@ function hook() {
     A.ensureSprite(1).then(() => { $('#logoI').src = thumb(25) || ''; A.ensureSprite(25).then(() => $('#logoI').src = thumb(25)); });
   }
   A.onTap = s => { if (s) mapTap(s); }; A.onSel = onSel; A.onMon = onMon; A.onLog = onLog; A.onLayout = onLayout; A.onHot = onHot; A.onMonSc = onMonSc; A.onSzSel = m => { szCur = m; szInfo(); }; applyInsets();
+  // v2.99 경완: 데이터 v42 에서 지도 반경마다 장소 특성(th)을 붙였다. 작업본에 예전 반경이 남아 있으면 같은 모양의 반경에 한 번만 옮겨 준다
+  if (store.get('st-thfill42') !== '1' && ORIG.spots?.some(o => Array.isArray(o.th))) { const gk = o => [o.la, o.lo, o.r, o.r2 || 0, o.rot || 0].join(','), TM = new Map(ORIG.spots.filter(o => Array.isArray(o.th)).map(o => [gk(o), o.th])); let n = 0;
+    for (const W of [D, D._sv]) if (W && Array.isArray(W.spots)) for (const o of W.spots) if (!Array.isArray(o.th) && TM.has(gk(o))) { o.th = [...TM.get(gk(o))]; n++; }
+    store.set('st-thfill42', '1'); if (n) { saveDraft(); histReset(); } }
   if (D.layout) A.setLayout(D.layout); bubLive(); if (D.monSc || D.monRot || D.monFly || D.monSh) scLive(); if (D.thOv) A.setThOv?.(effP(D, 'thOv')); if (D.thSp || D.thOv) A.setThSp?.(effP(D, 'thSp')); scBar(); safeInit();
   A.edit(editing); if (!$('#hrNow').disabled) A.setHour(+$('#hr').value); $('#hrNow').disabled && $('#hrNow').onclick();
   const w0 = $('#wx .on')?.dataset.w; if (w0) A.setWx(w0);
