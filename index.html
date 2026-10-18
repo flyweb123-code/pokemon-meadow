@@ -921,7 +921,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .small{font-size:12px;color:var(--dim)}
 .egg{--ec:#f6f4ea;--es:#6cc070;--esh:#d6d2c2;--eo:#383848;flex:none;width:54px;height:66px;position:relative;display:block}
 .egg svg{display:block;width:100%;height:100%}
-.egg .ck{display:none}.egg .eglow .kx{fill:#fff3a0}.egg.c1 .k1,.egg.c2 .k2,.egg.c3 .k3{display:inline}
+.egg .ck{display:none}.egg .eglow .kx{fill:#fff3a0}.egg .epc{position:absolute;left:0;top:0;width:100%;height:100%;transition:transform .12s steps(2,end)}.egg .epc.tl{transform-origin:5% 52%}.egg .epc.tr{transform-origin:95% 57%}.egg .elk{position:absolute;left:50%;top:30%;width:calc(30% + var(--lk,0) * 50%);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(#fffbe0 0 22%,#ffe066 40%,rgba(255,190,40,.55) 58%,transparent 72%);filter:drop-shadow(0 0 6px #ffc400);pointer-events:none;opacity:0}.egg.splitting .eglow .k1{display:none}.egg.c1 .k1,.egg.c2 .k2,.egg.c3 .k3{display:inline}
 .egg.g2{--es:#f0a040}.egg.g3{--es:#4f95dc}.egg.g4{--es:#a070d8}.egg.g5{--ec:#fff1b8;--esh:#e8d48a;--es:#e0a020;filter:drop-shadow(0 0 5px #ffe680)}
 .egg.big{width:72px;height:88px}
 .egg.wob{animation:wob 1.6s ease-in-out infinite;transform-origin:50% 90%}
@@ -5210,7 +5210,7 @@ const infoEl = $('#info');
 infoEl.addEventListener('click', e => { if (e.target.closest('#infoX')) { e.stopPropagation(); sfx('tap'); select(null); return; }
   if (e.target.closest('#infFeed') && S.sel) { e.stopPropagation(); feedNow(S.sel); return; }
   if (e.target.closest('#infBudGo') && S.sel) { e.stopPropagation(); const P = boxOf(S.sel.pid); if (!P) return; budNorm(); const keep = S.buds.filter(b => b.sp !== P.sp); if (keep.length >= MAX_BUDS) return;
-    keep.push({ sp: P.sp, km: P.km || 0, pid: P.id, nw: true, slot: budFree(keep) }); S.buds = keep; log(`${J({ name: SPECIES[P.sp].n }, '이/가')} 짝꿍이 되었다!`, [], true); evoNotice(P.sp, P);
+    keep.push({ sp: P.sp, km: P.km || 0, pid: P.id, nw: true, slot: budFree(keep) }); S.buds = keep; log(`${J({ name: SPECIES[P.sp].n }, '이/가')} 짝꿍이 되어 기뻐하고 있다!`, [], true); evoNotice(P.sp, P);
     save(); renderBox(); renderRun(); renderMgr(true); menuDots(); renderInfo(); return; }
   if (e.target.closest('#infPet') && S.sel) { e.stopPropagation(); petStart(S.sel); return; }
   if (e.target.closest('#infWash') && S.sel) { e.stopPropagation(); petStart(S.sel, true); return; }
@@ -5558,7 +5558,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.46';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.47';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6130,7 +6130,7 @@ $('#ppBud').onclick = () => {
   budNorm(); const keep = S.buds.filter(b => b.slot !== slot && b.sp !== P.sp), nb = { sp: P.sp, km: P.km || 0, pid: P.id, nw: true };   // 새 짝꿍 빨간 점 (짝꿍 탭을 보고 나가거나 그 칸을 누르면 지움)
   nb.slot = slot != null ? slot : budFree(keep); keep.push(nb);
   S.buds = keep;
-  log(`${J({ name: SPECIES[P.sp].n },'이/가')} 짝꿍이 되었다!`, [], true); save();
+  log(`${J({ name: SPECIES[P.sp].n },'이/가')} 짝꿍이 되어 기뻐하고 있다!`, [], true); save();
   renderBox(); if (slot != null) { closePoke(); setMgrTab('buddy'); } else openPoke(P.id);   // 짝꿍 칸에서 왔으면 짝꿍 탭으로, 아니면 카드에 남아 버튼만 눌린 모양으로
   evoNotice(P.sp, P);
 };
@@ -6226,7 +6226,7 @@ function renderMgrDetail(rebuild) {
     $('#mLook').onclick = ev => pressBtn(ev.currentTarget, () => { closeMgr(); if (S.sel) select(null); lookMon = m; });
     $('#mBud').onclick = () => { const P = boxOf(m.pid); if (!P) return; const i = S.buds.findIndex(b => b.pid === P.id); sfx('tap');   /* 필드 개체 정보에서 바로 짝꿍 등록·해제 */
       if (i >= 0) { S.buds.splice(i, 1); log(`${J({ name: SPECIES[P.sp].n }, '과/와')} 짝꿍을 해제했다.`); }
-      else { budNorm(); const keep = S.buds.filter(b => b.sp !== P.sp); if (keep.length >= MAX_BUDS) return; keep.push({ sp: P.sp, km: P.km || 0, pid: P.id, nw: true, slot: budFree(keep) }); S.buds = keep;   /* v4.35 경완: 필드 슬롯에서 정한 짝꿍도 빨간 점 */ log(`${J({ name: SPECIES[P.sp].n }, '이/가')} 짝꿍이 되었다!`, [], true); evoNotice(P.sp, P); }
+      else { budNorm(); const keep = S.buds.filter(b => b.sp !== P.sp); if (keep.length >= MAX_BUDS) return; keep.push({ sp: P.sp, km: P.km || 0, pid: P.id, nw: true, slot: budFree(keep) }); S.buds = keep;   /* v4.35 경완: 필드 슬롯에서 정한 짝꿍도 빨간 점 */ log(`${J({ name: SPECIES[P.sp].n }, '이/가')} 짝꿍이 되어 기뻐하고 있다!`, [], true); evoNotice(P.sp, P); }
       save(); renderBox(); renderRun(); renderMgr(true); renderMgrDetail(true); };
     { const i = S.mons.indexOf(m); $('#mHl').hidden = i <= 0; $('#mHr').hidden = i >= S.mons.length - 1; $('#mRk').innerHTML = rkBadge(boxOf(m.pid)); const bud = !!m.pid && S.buds.some(b => b.pid === m.pid); $('#monPop .win').classList.toggle('bud', bud); $('#mBudTag').hidden = !bud;
       const bb = $('#mBud'), P = boxOf(m.pid), full = !bud && S.buds.filter(b => b.sp !== m.sp).length >= MAX_BUDS; bb.hidden = !P; bb.textContent = bud ? '짝꿍 해제' : full ? '짝꿍 가득' : '짝꿍으로'; bb.disabled = full; bb.classList.toggle('off', full); bb.classList.toggle('sunk', bud); }
@@ -7263,7 +7263,7 @@ function incubate(e) {
   save(); return true;
 }
 // v3.90 경완: 자동 채우기를 켜 두면 부화기가 빌 때 가방에서 높은 등급 → 많이 간 거리 → 먼저 주운 알 순으로 채운다 (처음엔 꺼짐)
-function autoInc() { if (!S.autoInc) return 0; let n = 0;
+function autoInc() { if (!S.autoInc || document.getElementById('tut')) return 0;   /* v5.47 경완: 튜토리얼에서 켜 보기만 하고 알은 안 넣는다 */ let n = 0;
   while (S.eggs.length < MAX_EGGS && S.bag.length) { const b = S.bag.reduce((a, x) => (x.g - a.g || (x.km || 0) - (a.km || 0) || (a.t || 0) - (x.t || 0)) > 0 ? x : a); if (!incubate(b)) break; n++; }
   if (n) renderBag.sig = ''; return n; }
 // distance from any source goes to every egg and the buddy
@@ -7752,13 +7752,19 @@ function tapEgg(egg, g0, msg, g = g0) {   /* g0 알 등급, g 연출 등급(나�
 // hatch cutscene: wobble, crack, flash, reveal
 // 도트 알: 18×22 칸 그림 하나를 목록·세부·부화 창에서 같이 쓴다 (색은 등급별 CSS 변수)
 let EGG_CK = '';
-// v5.16 경완: 금 3단계(85%) 뒤에도 부화 직전까지 두드릴수록 금이 조금씩 더 번진다 (이 순서대로 한 칸씩)
-const EGG_CKX = [[9, 7], [8, 7], [7, 8], [12, 9], [13, 10], [14, 10], [2, 12], [2, 13], [3, 14], [15, 13], [14, 14], [15, 15], [4, 15], [5, 16], [13, 16], [12, 17], [6, 17], [7, 18], [11, 18], [10, 19], [8, 19], [9, 20]];
+// v5.47 경완: 금 3단계(85%) 뒤에는 새 금을 긋지 않고, 원래 금을 따라 알 윗부분이 좌우로 조금씩 벌어지며 틈으로 빛이 새어 나온다
+const EGG_SPLIT = (() => { const P = a => 'polygon(' + a.map(([x, y]) => `${(x / 18 * 100).toFixed(2)}% ${(y / 22 * 100).toFixed(2)}%`).join(',') + ')';
+  const seam = [[9.5, 0], [9.5, 3.5], [10.5, 4.5], [9.5, 5.5], [9.5, 6.5], [10.5, 7.5], [9.5, 8.5]], L = [[8, 8.5], [7, 9.5], [6, 10.5], [4, 11.5], [0, 11.5]], R = [[10.5, 9.5], [11.5, 10.5], [12.5, 11.5], [14, 12.5], [18, 12.5]];
+  return { tl: P([[0, 0], ...seam, ...L]), tr: P([[18, 0], [18, 12.5], ...R.slice(0, -1).reverse(), [9.5, 8.5], ...seam.slice().reverse()]), bot: P([[0, 11.5], ...L.slice(0, -1).reverse(), [9.5, 8.5], ...R, [18, 22], [0, 22]]) }; })();
 function eggCrackX(egg, f) {
-  const n = Math.max(0, Math.min(EGG_CKX.length, Math.round((f - .85) / .15 * EGG_CKX.length)));
-  if (egg.ckxN === n) return; egg.ckxN = n;
-  const d = EGG_CKX.slice(0, n).map(([x, y]) => `M${x} ${y}h1v1h-1z`).join('');
-  egg.querySelectorAll('.ckx,.kx').forEach(p => p.setAttribute('d', d));
+  const p = Math.max(0, Math.min(1, (f - .85) / .15)), q = Math.round(p * 12) / 12;   // 열두 걸음으로 끊어서 (도트 느낌)
+  if (egg.ckxQ === q) return; egg.ckxQ = q;
+  if (!egg.split) { const sv = egg.querySelector(':scope > svg'); if (!sv) return;
+    const lk = document.createElement('i'); lk.className = 'elk'; const tl = sv.cloneNode(true), tr = sv.cloneNode(true); tl.classList.add('epc', 'tl'); tr.classList.add('epc', 'tr');
+    tl.style.clipPath = EGG_SPLIT.tl; tr.style.clipPath = EGG_SPLIT.tr; sv.style.clipPath = EGG_SPLIT.bot; sv.after(lk, tl, tr); egg.split = { lk, tl, tr }; egg.classList.add('splitting'); }
+  const { lk, tl, tr } = egg.split, a = q * 13, d = q * 4;
+  tl.style.transform = `translate(${-d}%,${-d * .4}%) rotate(${-a}deg)`; tr.style.transform = `translate(${d}%,${-d * .4}%) rotate(${a}deg)`;
+  lk.style.opacity = (.25 + q * .75).toFixed(2); lk.style.setProperty('--lk', q.toFixed(2));
 }
 const EGG_SVG = (() => {
   const W = 18, H = 22, half = [2, 4, 5, 6, 7, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 8, 8, 7, 6, 5, 3];
@@ -8295,7 +8301,7 @@ function renderRunLog() {
 let budSlot = 0;
 async function setBuddySp(sp) {
   budNorm(); let i = S.buds.findIndex(b => b.slot === budSlot); if (i < 0) i = S.buds.length;
-  if (S.buds[i]?.sp !== sp && !S.buds.some(b => b.sp === sp)) { const P = S.box.filter(p => p.sp === sp).sort((a, b) => ivSum(b) - ivSum(a))[0] || newPoke(sp, { shiny: false }); S.buds[i] = { sp, km: P.km || 0, pid: P.id, nw: true, slot: budSlot }; log(`${J({ name: SPECIES[sp].n },'이/가')} 짝꿍이 되었다!`, [], true); setTimeout(() => evoNotice(sp, P), 300); }
+  if (S.buds[i]?.sp !== sp && !S.buds.some(b => b.sp === sp)) { const P = S.box.filter(p => p.sp === sp).sort((a, b) => ivSum(b) - ivSum(a))[0] || newPoke(sp, { shiny: false }); S.buds[i] = { sp, km: P.km || 0, pid: P.id, nw: true, slot: budSlot }; log(`${J({ name: SPECIES[sp].n },'이/가')} 짝꿍이 되어 기뻐하고 있다!`, [], true); setTimeout(() => evoNotice(sp, P), 300); }
   try { await ensureSprite(sp); } catch (e) {}
   save(); picked.clear(); sheet.hidden = true; mgr.hidden = false; openMgr(); setMgrTab('buddy');
 }
@@ -8572,7 +8578,7 @@ body.inTitle,body.inTitle #app{background:#24482a!important}body.inTitle #app{ov
 #tut{position:fixed;inset:0;z-index:6400;font-family:var(--px);color:var(--win-ink);-webkit-user-select:none;user-select:none;touch-action:manipulation}
 #tut .tu-hole{position:fixed;border-radius:10px;box-shadow:0 0 8px 2px rgba(255,232,150,.5),0 0 0 200vmax rgba(10,14,30,.6);transition:left .3s steps(4,end),top .3s steps(4,end),width .3s steps(4,end),height .3s steps(4,end),opacity .3s;pointer-events:none;animation:tuGlow 2s ease-in-out infinite}@keyframes tuGlow{50%{box-shadow:0 0 18px 6px rgba(255,232,150,.85),0 0 0 200vmax rgba(10,14,30,.6)}}
 #tut.dim{background:rgba(10,14,30,.6)}#tut .tu-hole.multi{animation:none;box-shadow:none}#tut .tu-mask{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none}#tut.hide .tu-mask{visibility:hidden}#tut .tu-mask[hidden]{display:none}#tut .tu-mark{position:fixed;border-radius:8px;pointer-events:none;box-shadow:0 0 8px 2px rgba(255,232,150,.5);animation:tuMark 2s ease-in-out infinite}@keyframes tuMark{50%{box-shadow:0 0 18px 6px rgba(255,232,150,.85)}}#tut .tu-hole.none{left:50%!important;top:40%!important;width:0!important;height:0!important;animation:none;box-shadow:none}
-#tut.nobox .tu-box{visibility:hidden}#tut.hide{background:none!important}#tut.hide .tu-box,#tut.hide .tu-mark{visibility:hidden}#tut.hide .tu-hole{opacity:0}
+#tut.nobox .tu-box{visibility:hidden}.tu-hand{position:fixed;left:0;top:0;z-index:2147483001;pointer-events:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.35))}#tut.hide{background:none!important}#tut.hide .tu-box,#tut.hide .tu-mark{visibility:hidden}#tut.hide .tu-hole{opacity:0}
 #tut .tu-box{position:fixed;left:50%;transform:translateX(-50%);width:min(560px,calc(100% - 24px));display:flex;align-items:flex-end;gap:8px}
 #tut .tu-box img{flex:none;width:76px;height:116px;image-rendering:pixelated;margin-bottom:-4px;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35))}
 #tut .tu-box .win{flex:1;min-width:0;height:158px;box-sizing:border-box;padding:14px 16px 20px;font-size:15px;line-height:1.6;white-space:pre-wrap;position:relative}
@@ -8636,8 +8642,8 @@ async function titleFlow() {
   const T0 = performance.now(), cues = [[300, () => mv(25)], [1200, () => meet(172, 25)], [3200, () => meet(37, 133)], [5800, () => mv(39)], [6600, () => meet(175, 39)], [8400, () => mv(4)], [9200, () => mv(7)], [10000, () => mv(1)]];
   const cueT = cues.map(([ms, fn]) => setTimeout(fn, ms));
   const showTitle = () => tv.classList.add('show');
-  const tT = setTimeout(showTitle, D - 2000), skip = () => { if (tv.classList.contains('show')) return; pan.finish(); showTitle(); };
-  tv.addEventListener('pointerup', skip);
+  const tT = setTimeout(showTitle, D - 2000);
+  // v5.47 경완: 오프닝(훑어 올라가는 화면)은 눌러도 건너뛰지 않는다
   // 다 훑은 뒤에는 맨 위 포켓몬들이 번갈아 기술을 쓴다
   let tk = 0; const mvT = setInterval(() => { if (performance.now() - T0 < D) return; const m = [dm(4), dm(7), dm(1)][tk++ % 3]; if (m && m.state === 'idle' && !m.mvBusy) try { useMove(m); } catch (e) {} }, 2800);
   await new Promise(r => { tv.querySelector('.ti-go').onclick = r; });
@@ -8709,10 +8715,12 @@ async function tutFlow() {
   const el = t => { const e = typeof t === 'function' ? t() : t && document.querySelector(t); if (e && !e.closest) return e; return e && !e.closest('[hidden]') && e.getClientRects().length ? e : null; };
   const mon = () => S.mons[0], monEl = () => { const m = mon(); if (!m || !m.el.isConnected) return null; const w = $('#wrap').getBoundingClientRect(), k = scale, mw = (m.w || 48) * k, mh = (m.h || 48) * k, x = w.left + S.ox + m.x * k, y = w.top + S.oy + (m.y - (m.lift || 0)) * k; const r = { left: x - mw / 2, top: y - mh, width: mw, height: mh, right: x + mw / 2, bottom: y }; return { getBoundingClientRect: () => r, contains: e => m.el.contains(e) }; }, born = () => { const m = mon(); return m ? m.name : '포켓몬'; };
   const J2 = (w, a, b) => w + (hasBat(w) ? a : b), sheetsOff = () => { try { select(null); } catch (e) {} closeToggles(); hideSheets(); };
-  const winOf = e => { const w = e && e.closest && e.closest('#noti .win, #hatch .win, #dexPop .win, #pokePop .win, #monPop .win, #evoPop .win'); return w ? w.getBoundingClientRect() : null; };
+  const winOf = e => { const w = e && e.closest && e.closest('#noti .win, #hatch .win, #bagPop .win, #dexPop .win, #pokePop .win, #monPop .win, #evoPop .win'); return w ? w.getBoundingClientRect() : null; };
   const inInfo = e => (e && (e.closest ? e.closest('#info') : e.inInfo)) ? $('#info').getBoundingClientRect() : null;
   // 친밀도 줄만 (글자와 하트를 감싸는 칸만 비춘다)
   const frRow = () => { const f = document.querySelector('#pbars .frbar'); if (!f || f.closest('[hidden]') || !f.getClientRects().length) return null; const A = f.firstElementChild.getBoundingClientRect(), B = f.lastElementChild.getBoundingClientRect(), r = { left: Math.min(A.left, B.left), top: Math.min(A.top, B.top), right: Math.max(A.right, B.right), bottom: Math.max(A.bottom, B.bottom) }; r.width = r.right - r.left; r.height = r.bottom - r.top; return { getBoundingClientRect: () => r, inInfo: true }; };
+  // v5.47 경완: 건강 게이지 설명은 세 게이지만 (친밀도 줄은 비추지 않는다)
+  const gauges = () => { const bs = [...document.querySelectorAll('#pbars .bar')].filter(b => !b.closest('.frbar') && !b.classList.contains('frbar') && b.getClientRects().length); if (!bs.length) return null; const rs = bs.map(b => b.getBoundingClientRect()), r = { left: Math.min(...rs.map(q => q.left)), top: Math.min(...rs.map(q => q.top)), right: Math.max(...rs.map(q => q.right)), bottom: Math.max(...rs.map(q => q.bottom)) }; r.width = r.right - r.left; r.height = r.bottom - r.top; return { getBoundingClientRect: () => r, inInfo: true }; };
   const barOf = n => [...document.querySelectorAll('#pbars .bar')].find(b => b.firstElementChild?.textContent.trim() === n) || null;
   const bag1 = () => { const e = S.bag.find(x => x.g === 1); return e && document.querySelector(`#bagGrid .bslot[data-id="${e.id}"]`); };
   const inc1 = () => S.eggs.find(x => x.g === 1), incSlot = () => { const i = S.eggs.indexOf(inc1()); return i >= 0 ? document.querySelectorAll('#eggs .eslot')[i] : null; };
@@ -8740,21 +8748,26 @@ async function tutFlow() {
     { c: '부화', t: '#hatchSend', tap: '#hatchSend', until: () => S.mons.length > 0, s: '\'필드로\'를 누르면\n포켓몬이 필드에\n나간단다.' },
     { c: '부화', t: '#hatchOk', tap: '#hatchOk', until: () => $('#hatch').hidden, s: '\'확인\'을 눌러\n창을 닫아 보렴.' },
     { c: '필드', pre: async () => { sheetsOff(); await wait(300); const m = mon(); if (m) { try { const cx = ($('#wrap').clientWidth / 2 - S.ox) / scale, wt = $('#wrap').getBoundingClientRect().top, ys = 72 + 158 + 22 + (m.h || 48) * scale; place(m, cx, clamp((ys - wt - S.oy) / scale, MIN_Y + 10, MAX_Y - 5));   /* 맨 위 박사 창 바로 아래, 정보창에 가리지 않는 곳 */ } catch (e) { m.y = 330; } m.tx = m.x; m.ty = m.y; m.goal = null; pin = { x: m.x, y: m.y }; } await wait(300); }, t: monEl, s: () => `${J2(born(), '이', '가')} 필드에 나왔어!\n포켓몬들은 필드에서\n놀고, 먹고, 자고, 어울린단다.` },
-    { c: '필드', t: monEl, tap: () => monEl(), allow: '#wrap', until: () => S.sel === mon(), s: () => `${J2(born(), '을', '를')} 눌러 보렴!` },
+    { c: '필드', t: monEl, tap: () => monEl(), until: () => S.sel === mon(), s: () => `${J2(born(), '을', '를')} 눌러 보렴!` },
     { c: '친밀도', t: frRow, s: () => `먼저 친밀도란다.\n${J2(born(), '이', '가')} ${nm}${hasBat(nm) ? '이' : ''}를\n얼마나 좋아하는지 보여 주지.` },
     { c: '친밀도', t: '#pMoves', s: '친밀도가 만점이 되면\n그 포켓몬만의\n특별한 기술을 쓸 수 있단다!' },
     { c: '친밀도', t: frRow, s: '필드에 나와 있기만 해도\n친밀도는 조금씩 오른단다.' },
-    { c: '건강 게이지', t: '#pbars', s: '이건 건강 게이지야.\n청결·즐거움·배부름\n세 가지가 있지.' },
-    { c: '건강 게이지', t: '#pbars', s: '건강 게이지가 높을수록\n친밀도가 더 빨리\n오른단다.' },
-    { c: '건강 게이지', t: '#pbars', s: '게이지는 시간이 지나면\n조금씩 줄어드니\n잘 돌봐 주렴.' },
+    { c: '건강 게이지', t: gauges, s: '이건 건강 게이지야.\n청결·즐거움·배부름\n세 가지가 있지.' },
+    { c: '건강 게이지', t: gauges, s: '건강 게이지가 높을수록\n친밀도가 더 빨리\n오른단다.' },
+    { c: '건강 게이지', t: gauges, s: '게이지는 시간이 지나면\n조금씩 줄어드니\n잘 돌봐 주렴.' },
     { c: '건강 게이지', t: '#infFeed', t2: () => barOf('배부름'), s: '배부름이 줄면\n열매를 주렴.\n배고픈 포켓몬이 냠냠 먹지.' },
     { c: '건강 게이지', t: '#infPet', t2: () => barOf('즐거움'), s: '손으로 쓰다듬어 주면\n즐거움이 올라간단다.' },
     { c: '건강 게이지', t: '#infWash', t2: () => barOf('청결'), s: '뛰어놀다 더러워지면\n솔로 문질러 씻겨 주렴.\n청결이 가득 찬단다.' },
-    { c: '짝꿍', t: '#infBudGo', s: '다음은 짝꿍이야!\n짝꿍은 너와 함께 걷는\n특별한 포켓몬이란다.' },
+    // v5.47 경완: 정보카드를 잠깐 닫고, 필드에서 바로 문질러 쓰다듬는 예시를 보여 준다
+    { c: '쓰다듬기', pre: async () => { sheetsOff(); await wait(300); }, hold: 900, t: monEl, run: rubDemo, s: '정보카드를 닫고 필드에서\n포켓몬을 손가락으로\n문질러도 바로\n쓰다듬어 줄 수 있단다.' },
+    { c: '쓰다듬기', t: monEl, run: rubDemo, s: '이렇게 문질러 주면\n즐거움이 올라가고\n포켓몬이 아주 좋아하지.' },
+    { c: '짝꿍', pre: async () => { try { select(mon()); } catch (e) {} await wait(400); }, hold: 900, t: '#infBudGo', s: '다음은 짝꿍이야!\n짝꿍은 너와 함께 걷는\n특별한 포켓몬이란다.' },
     { c: '짝꿍', t: '#infBudGo', s: '포켓몬을 진화시키려면\n꼭 짝꿍으로 정해야 해.\n짝꿍만 함께 걸은 거리만큼\n진화에 가까워지거든.' },
     { c: '짝꿍', t: '#infBudGo', tap: '#infBudGo', until: () => S.buds.length > 0, after: 1800, s: () => `${J2(born(), '을', '를')} 짝꿍으로\n정해 보자.\n'짝꿍으로'를 눌러 보렴!` },
     { c: '짝꿍', when: () => notiOpen && !$('#noti').hidden, t: '#notiOk', tap: '#notiOk', until: () => !notiOpen, s: '이 포켓몬은 진화 조건이\n조금 특별하구나.\n\'확인\'을 눌러 보렴.' },
     { c: '짝꿍', t: '#infoBud', s: () => `좋아! 이제 ${J2(born(), '은', '는')}\n${nm}의 짝꿍이야.\n분홍 카드가 짝꿍 표시란다.` },
+    // v5.47 경완: 튜토리얼에서는 짝꿍이 되면 정보카드를 닫고, 하트 말풍선과 좋아하는 춤을 한 번 보여 준다
+    { c: '짝꿍', pre: async () => { sheetsOff(); await wait(500); joyDance(mon()); }, hold: 2400, clear: 1, t: monEl, s: () => `${J2(born(), '이', '가')} 짝꿍이 되어서\n아주 기뻐하는구나!` },
     { c: '필드 메뉴', pre: async () => { pin = null; sheetsOff(); await wait(300); }, t: '#openFld', tap: '#openFld', until: () => !$('#mgr').hidden, s: '이번엔 \'필드\' 메뉴를\n눌러 보렴.' },
     { c: '필드 메뉴', pre: () => setMgrTab('field'), t: '#slots', s: '필드에 나간 포켓몬이야.\n한 번에 9마리까지\n내보낼 수 있단다.' },
     { c: '필드 메뉴', t: '#slots .slot', s: '칸 아래 막대 세 개가\n건강 게이지란다.\n여기서 한눈에 볼 수 있지.' },
@@ -8769,6 +8782,12 @@ async function tutFlow() {
     { c: '끝', pre: async () => { sheetsOff(); await wait(300); }, s: `설명은 여기까지란다!\n이제 밖으로 나가 걸어 보렴.\n걸을수록 알이 자란단다.` },
     { c: '끝', s: `많이 걷고 돌봐 줘서\n연구에 필요한 도감을\n채워 주면 좋겠구나!\n잘 부탁한다, ${nm}!` },
   ];
+  function joyDance(m) { if (!m) return; const f0 = m.face || 1; try { emote(m, '♥', 'heart', 2.2); } catch (e) {} for (let k = 0; k < 5; k++) setTimeout(() => { m.face = k % 2 ? f0 : -f0; if (k % 2 === 0) try { anim(m, 'phop'); } catch (e) {} }, 300 + k * 190); setTimeout(() => { m.face = f0; }, 300 + 5 * 190 + 50); try { sfx('newdex'); } catch (e) {} }
+  // 문지르는 손 예시: 손 그림이 포켓몬 위를 좌우로 오가며 빛줄기를 남기고, 한 번 오갈 때마다 포켓몬이 좋아한다
+  function rubDemo() { const h = document.createElement('i'); h.className = 'tu-hand'; h.innerHTML = ICO_HAND; document.body.append(h); let on = true, t0 = performance.now(), last = -1, raf2 = 0;
+    const step = now => { if (!on) return; const e = monEl(), m = mon(); if (e && m) { const r = e.getBoundingClientRect(), u = ((now - t0) % 1400) / 1400, ph = Math.floor((now - t0) / 700), x = r.left + r.width * (.2 + .6 * (ph % 2 ? 1 - (u * 2 % 1) : u * 2 % 1)), y = r.top + r.height * .45 + Math.sin(u * Math.PI * 4) * 4;
+        h.style.transform = `translate(${x - 4}px,${y - 2}px)`; h.hidden = false; try { petTrail(x, y, ph !== last); } catch (e) {} if (ph !== last) { last = ph; if (ph % 2 === 1) { try { emote(m, '♪', 'heart', 1); anim(m, 'phop'); sfx('pet'); } catch (e) {} } } } else h.hidden = true; raf2 = requestAnimationFrame(step); };
+    raf2 = requestAnimationFrame(step); return () => { on = false; cancelAnimationFrame(raf2); h.remove(); try { petTrail(-99, -99, true); } catch (e) {} }; }
   function born2() { const P = S.box[S.box.length - 1]; return P ? SPECIES[P.sp].n : '포켓몬'; }
   const ov = document.createElement('div'); ov.id = 'tut'; ov.innerHTML = `<svg class="tu-mask" hidden><path fill="rgba(10,14,30,.6)" fill-rule="evenodd"/></svg><i class="tu-hole none"></i><i class="tu-mark" hidden></i><i class="tu-mark" hidden></i><div class="tu-box"><img alt="Mr.강" src="${KANG}"><div class="win"><span class="tu-n"></span><span class="tu-t"></span><b class="cur" hidden>▼</b></div></div>`;
   ov.classList.add('hide'); document.body.append(ov);
@@ -8812,26 +8831,39 @@ async function tutFlow() {
     cur = st; ov.classList.toggle('clear', !!st.clear); lock = false; ov.classList.remove('hide'); ov.querySelector('.tu-n').textContent = st.c;
     { const e = el(st.t); placeBox(e ? e.getBoundingClientRect() : null, true, inInfo(e), winOf(e)); }
     cancelAnimationFrame(raf); track();
-    const s = typeof st.s === 'function' ? st.s() : st.s;
+    const s = typeof st.s === 'function' ? st.s() : st.s; const stopRun = st.run ? st.run() : null;
     if (st.tap || st.allow) {
       // dismiss: 말을 다 듣고 한 번 누르면 박사 창이 사라진 뒤에야 비춘 곳을 누를 수 있다 (v5.45 경완: 알림 '확인'이 바로 눌리지 않게)
       const dis = st.dismiss ?? true;   // v5.45 경완: '눌러 보렴' 단계는 모두 — 한 번 누르면 박사 창만 꺼지고, 그다음에 누를 수 있다
-      if (dis) { await say(s); ov.classList.add('nobox'); await wait(250); }
+      if (dis) { await say(s); lock = true; ov.classList.add('hide'); await wait(300); lock = false; }   // v5.47 경완: 누르기 전에 박사 창과 테두리를 모두 치운다
       ov.classList.add('do'); tapped = false; tapSel = st.tap || null; allow = st.allow || st.tap;
       if (!dis) await say(s, false);
       for (let n = 0; ; n++) { await wait(100); if (st.until ? st.until() : tapped) break; }
-      allow = tapSel = null; ov.classList.remove('do'); lock = true; ov.classList.add('hide'); ov.classList.remove('nobox'); await wait(st.after || 1400); lock = false; ov.classList.remove('hide');
+      allow = tapSel = null; ov.classList.remove('do'); lock = true; ov.classList.add('hide'); await wait(st.after || 1400); lock = false; ov.classList.remove('hide');
     } else await say(s);
+    if (stopRun) stopRun();
   }
   cancelAnimationFrame(raf); EV.forEach(t => removeEventListener(t, guard, { capture: true }));
   ov.remove();
   // v5.45 경완: 튜토리얼이 끝나면 환영 창 + 100골드 (알림 창 모양을 빌려 쓴다)
-  await new Promise(res => { const h3 = $('#noti h3'), h0 = h3.innerHTML; notiOpen = true;
-    h3.innerHTML = '<i class="st s1"></i>환영합니다!<i class="st s2"></i>';
-    $('#notiBody').innerHTML = `<div class="ns"><p>포켓몬 키우기에<br>오신 것을 환영합니다!</p><div class="small">자유롭게 알을 모으고 부화시켜 보세요.</div></div><div class="ns ns-g"><p>선물로 <b>100</b> 골드를 받았다!</p></div>`;
-    $('#noti').hidden = false; try { sfx('newdex'); haptic(1); } catch (e) {}
-    const done = () => { $('#noti').hidden = true; $('#noti').onclick = null; notiOpen = false; h3.innerHTML = h0; S.gold = (S.gold || 0) + 100; renderGold(); try { sfx('pickup'); } catch (e) {} save(); res(); };
-    $('#notiOk').onclick = done; $('#noti').onclick = ev => { if (ev.target.id === 'noti') done(); }; });
+  // v5.47 경완: 남은 알(가방)에 새 알 표시를 다시 달고, '알' 메뉴에도 알림 점 — 직접 부화기에 넣어 보게
+  S.bag.forEach(e => { e.isNew = true; }); bagNext = true; renderBag.sig = ''; try { renderRun(); menuDots(); } catch (e) {} save();
+  // 환영 창 (축하 창 틀을 빌려 쓰고, 뒤로 폭죽이 터진다) + 100골드
+  await new Promise(res => { frMaxOpen = true; const fm = $('#frMax'); fm.classList.remove('trup'); $('#frMaxT').textContent = '환영합니다!'; fm.querySelector('.win').setAttribute('aria-label', '환영합니다');
+    $('#frMaxBody').innerHTML = `<div class="ns"><p>포켓몬 키우기에<br>오신 것을 환영합니다!</p><div class="small">자유롭게 알을 모으고 부화시켜 보세요.</div></div><div class="ns ns-g"><p>선물로 <b>100</b> 골드를 받았다!</p></div>`;
+    fm.hidden = false; try { sfx('newdex'); haptic(1); frMaxFw(); } catch (e) {}
+    const done = () => { fm.hidden = true; fm.onclick = null; frMaxOpen = false; S.gold = (S.gold || 0) + 100; renderGold(); try { sfx('pickup'); } catch (e) {} save(); res(); };
+    $('#frMaxOk').onclick = done; fm.onclick = ev => { if (ev.target.id === 'frMax') done(); }; });
+  // v5.47 경완: 환영 창을 닫으면 바로 '견습 트레이너' 등급 창 (다음 등급까지 남은 도감 수)
+  await wait(350);
+  await new Promise(res => { const L = trLevel(), t = trOf(), fm = $('#frMax'); S.trI = L.i; frMaxOpen = true;
+    fm.classList.add('trup'); $('#frMaxT').textContent = '트레이너 등급'; fm.querySelector('.win').setAttribute('aria-label', '트레이너 등급');
+    $('#frMaxBody').innerHTML = `<div class="ns"><div class="tu-pic r${L.i}"><i class="tr-ow" style="background-image:url(${TR_OW[t.sex] || TR_OW.m})"></i></div>`
+      + `<p>${esc(t.n || nm)}${hasBat(t.n || nm) ? '은' : '는'} 이제 <b>${esc(L.name)}</b>${hasBat(L.name) ? '이' : '가'} 되었다!</p><div class="tr-card r${L.i} tu-bwrap"><div class="tr-badge"><b>${esc(L.name)}</b></div></div>`
+      + `<div class="small">도감에 ${L.k}마리 등록${L.next ? `<br>다음 <b>${esc(L.next[1])}</b>까지 ${L.next[0] - L.k}마리` : ''}</div></div>`;
+    fm.hidden = false; try { sfx('newdex'); haptic(1); frMaxFw(); renderTrainer(); } catch (e) {} save();
+    const done = () => { fm.hidden = true; fm.onclick = null; frMaxOpen = false; try { sfx('tap'); } catch (e) {} res(); };
+    $('#frMaxOk').onclick = done; fm.onclick = ev => { if (ev.target.id === 'frMax') done(); }; });
   tutOn = false;
 }
 async function start(data) {
