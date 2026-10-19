@@ -2346,14 +2346,19 @@ function padAtlas(k) {
 const thumbOf = sp => { const s = SPRITES[sp]; return !s ? '' : typeof s === 'string' ? s : s.th; };
 const atlasDims = {};
 // 그림자: 발이 닿는 폭(아래쪽 몇 줄의 칠해진 폭)에 맞추고, 발 선보다 살짝 위에 중심을 둬 발밑에 붙어 보이게
+// v5.73: 그림자 모양 계산은 shGeo 하나로 (작업실 동작별 떠 있기 창도 같은 값으로 그린다). 단위 = 화면 px, 기준 = 발 자리
+function shGeo(k, form, mw) {
+  const P = SPRITES[k], s = scaleOf(k);
+  const pm = isPmd(k) && P.fw, fh = pm ? (P.fh || 0) * s : 0, w = clamp(pm ? P.fw * s * 1.12 : (mw || 0) * .62, 14, 220), h = Math.max(5, Math.round(Math.max(w * .3, fh + 5)));
+  const g = MON_SH[0] || [1, 0, 0, 0], o = MON_SH[form] || [1, 0, 0, 0], sk = g[0] * o[0], sx = g[1] + o[1], sy = g[2] + o[2], W = w * sk, Hh = Math.max(3, Math.round(h * sk));
+  const up = pm ? (P.fy || 0) * s * .35 : 0;   // v5.72 경완(노고치·단단지·헤라크로스 등 그림자가 몸에서 떨어져 보임): 던전 그림의 그림자 자리(fy) 쪽으로 35% 올린다
+  return { W: Math.round(W), H: Hh, top: -Math.round(h * .62 + fh * .3 + up + (Hh - h) / 2) + sy, x: (pm ? (P.fx || 0) * s : 0) + sx, r: (g[3] || 0) + (o[3] || 0), s };   // x·r 은 오른쪽을 볼 때(face 1) 값
+}
 function shadowFit(m) {
   const sh = m.el.querySelector('.shadow'); if (!sh) return;
-  const k = m.sk || m.form, P = SPRITES[k], s = scaleOf(k);
-  const pm = isPmd(k) && P.fw, fh = pm ? (P.fh || 0) * s : 0, w = clamp(pm ? P.fw * s * 1.12 : m.w * .62, 14, 220), h = Math.max(5, Math.round(Math.max(w * .3, fh + 5)));
-  const g = MON_SH[0] || [1, 0, 0, 0], o = MON_SH[m.form] || [1, 0, 0, 0], sk = g[0] * o[0], sx = g[1] + o[1], sy = g[2] + o[2], W = w * sk, Hh = Math.max(3, Math.round(h * sk));
-  const up = pm ? (P.fy || 0) * s * .35 : 0;   // v5.72 경완(노고치·단단지·헤라크로스 등 그림자가 몸에서 떨어져 보임): 던전 그림의 그림자 자리(fy) 쪽으로 35% 올린다
-  sh.style.transform = ''; sh.style.width = Math.round(W) + 'px'; sh.style.height = Hh + 'px'; sh.style.margin = `${-Math.round(h * .62 + fh * .3 + up + (Hh - h) / 2) + sy}px 0 0 ${-Math.round(W / 2)}px`;
-  m.shEl = sh; m.shX = (pm ? (P.fx || 0) * s : 0) + sx; m.shR = (g[3] || 0) + (o[3] || 0); m.shF = null;   // 발 가운데가 몸 가운데와 다르면 그쪽으로 (바라보는 쪽 따라 뒤집힘)
+  const G = shGeo(m.sk || m.form, m.form, m.w);
+  sh.style.transform = ''; sh.style.width = G.W + 'px'; sh.style.height = G.H + 'px'; sh.style.margin = `${G.top}px 0 0 ${-Math.round(G.W / 2)}px`;
+  m.shEl = sh; m.shX = G.x; m.shR = G.r; m.shF = null;   // 발 가운데가 몸 가운데와 다르면 그쪽으로 (바라보는 쪽 따라 뒤집힘)
 }
 function scale2x(src) {
   const w = src.width, h = src.height, s = new Uint32Array(src.getContext('2d').getImageData(0, 0, w, h).data.buffer);
@@ -5584,7 +5589,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.72';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.73';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9022,7 +9027,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   notiSoon = function () {};   // 작업실에선 '새 소식' 창을 띄우지 않는다
   if (GAL) { save = function () {}; document.documentElement.classList.add('st-gal'); }
   const api = window.__studio = {
-    BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, get MON_ROT() { return MON_ROT; }, get MON_FLY() { return MON_FLY; }, get MON_SH() { return MON_SH; }, TH_SP0, get TH_SP_OV() { return TH_SP_OV; }, setThSp: applyThSp, TH_ALL, TH_BASE, get TH_OV() { return TH_OV; }, setThOv(o) { applyThOv(o); applyThSp(TH_SP_OV); }, setMonSh(o) { MON_SH = { ...(o || {}) }; for (const m of S.mons) shadowFit(m); }, liftBase, THEMES, themeW, setMonPose(r, f, fa) { MON_ROT = { ...(r || {}) }; MON_FLY = { ...(f || {}) }; if (fa !== undefined) MON_FLYA = JSON.parse(JSON.stringify(fa || {})); }, get MON_FLYA() { return MON_FLYA; }, szAnim(uid, n) { const m = S.mons.find(o => o.uid === uid); if (m) { m.szAn = n || null; m.frameKey = null; } }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, get SP_OFF() { return [...SP_OFF]; }, get TIER_KT() { return TIER_KT; }, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
+    BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, get MON_ROT() { return MON_ROT; }, get MON_FLY() { return MON_FLY; }, get MON_SH() { return MON_SH; }, TH_SP0, get TH_SP_OV() { return TH_SP_OV; }, setThSp: applyThSp, TH_ALL, TH_BASE, get TH_OV() { return TH_OV; }, setThOv(o) { applyThOv(o); applyThSp(TH_SP_OV); }, setMonSh(o) { MON_SH = { ...(o || {}) }; for (const m of S.mons) shadowFit(m); }, liftBase, shGeo: sp => shGeo(sp, sp), THEMES, themeW, setMonPose(r, f, fa) { MON_ROT = { ...(r || {}) }; MON_FLY = { ...(f || {}) }; if (fa !== undefined) MON_FLYA = JSON.parse(JSON.stringify(fa || {})); }, get MON_FLYA() { return MON_FLYA; }, szAnim(uid, n) { const m = S.mons.find(o => o.uid === uid); if (m) { m.szAn = n || null; m.frameKey = null; } }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, get SP_OFF() { return [...SP_OFF]; }, get TIER_KT() { return TIER_KT; }, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
     ICO: { berry: ICO_BERRY, brush: ICO_BRUSH, hand: ICO_HAND, pen: PEN, egg: EGG_SVG },   // v3.66: 작업실이 게임 아이콘을 그대로 쓴다
     get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, PET_FR, WASH_FR1: WASH_FR, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]), HATCH_KM: [0, ...GRADE.slice(1).map(G => G.km)] }; },
     get cfg() { return CFG; }, get SPOTS() { return SPOTS; },
