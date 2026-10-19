@@ -2111,6 +2111,10 @@ const fireBox = m => { const z = LS('fire'); return { x: FIRE.x, y: FIRE.y + 4, 
 const fireBlk = m => T(m).mv !== 'swim' && !m.held;   /* v4.61 경완: 날거나 떠 있는 포켓몬도 불 위로 지나가지 않는다 */
 const fireVal = (m, x, y, B = fireBox(m)) => ((x - B.x) / B.rx) ** 2 + ((y - B.y) / B.ry) ** 2;
 function fireOut(m, q, k = 1.05) { if (!fireBlk(m) || fireVal(m, q.x, q.y) >= k) return q; const B = fireBox(m), dx = (q.x - B.x) / B.rx, dy = (q.y - B.y) / B.ry, v = Math.hypot(dx, dy) || 1e-3; q.x = B.x + dx / v * k * B.rx; q.y = B.y + (v < .01 ? k : dy / v * k) * B.ry; return q; }
+// v5.50 경완: 불 바로 옆에서는 자지 않는다 — 잠자리가 모닥불 가까이면 조금 떨어진 곳으로 옮겨 눕는다
+const fireSlp = m => { const B = fireBox(m); return { x: B.x, y: B.y, rx: B.rx * 2.6, ry: 40 + Math.min(30, (m.h || 40) * .4) }; };   // 누운 몸이 불꽃에 겹치지 않게 위아래로도 넉넉히
+const fireNear = (m, x = m.x, y = m.y) => { if (!fireBlk(m)) return false; const B = fireSlp(m); return ((x - B.x) / B.rx) ** 2 + ((y - B.y) / B.ry) ** 2 < 1; };
+const bedSafe = (m, q) => { if (!fireNear(m, q.x, q.y)) return q; const B = fireSlp(m), dx = (q.x - B.x) / B.rx, dy = (q.y - B.y) / B.ry, v = Math.hypot(dx, dy) || 1e-3; return { x: B.x + (v < .01 ? 1.08 : dx / v * 1.08) * B.rx, y: B.y + (v < .01 ? 0 : dy / v * 1.08) * B.ry }; };
 function fireWp(m, tx, ty) {
   if (!fireBlk(m)) return null; const B = fireBox(m), ax = m.x - B.x, ay = (m.y - B.y) * B.rx / B.ry, bx = tx - B.x, by = (ty - B.y) * B.rx / B.ry;   // 원으로 펴서 선분과 거리
   const ex = bx - ax, ey = by - ay, L = ex * ex + ey * ey || 1, u = clamp(-(ax * ex + ay * ey) / L, 0, 1), cx = ax + ex * u, cy = ay + ey * u, d = Math.hypot(cx, cy);
@@ -3019,9 +3023,9 @@ function friendsOf(m) {
 function goToBed(m) {
   const best = friendsOf(m)[0];
   if (best && best.r > 35 && T(best.o).mv !== 'swim' && T(m).mv !== 'swim' && !best.o.hidden && (best.o.state === 'sleep' || Math.random() < .5)) {
-    moveTo(m, { x: best.o.x + pick([-36, 36]), y: best.o.y + rnd(-8, 8) }, { kind: 'bed', mon: best.o }, .8);
+    moveTo(m, bedSafe(m, { x: best.o.x + pick([-36, 36]), y: best.o.y + rnd(-8, 8) }), { kind: 'bed', mon: best.o }, .8);
   } else if (T(m).mv === 'swim') sleep(m);
-  else moveTo(m, { x: m.home.x + rnd(-30, 30), y: m.home.y + rnd(-20, 20) }, { kind: 'bed' }, .8);
+  else moveTo(m, bedSafe(m, { x: m.home.x + rnd(-30, 30), y: m.home.y + rnd(-20, 20) }), { kind: 'bed' }, .8);
 }
 // v4.91 경완: 사용자가 준 열매를 먹으러 가거나 먹는 동안은 다른 포켓몬과 어울리지 않는다
 const fedBusy = x => (x.fedT || 0) > performance.now() || ((x.goal?.kind === 'berry' || x.goal?.kind === 'feedb') && !x.goal.berry?.nat) || x.state === 'eat';
@@ -3147,6 +3151,7 @@ function arrive(m) {
   }
   if (g.kind === 'bed') {
     const f = g.mon;
+    if (fireNear(m) && (g.tries || 0) < 2) { moveTo(m, bedSafe(m, { x: m.x, y: m.y }), { kind: 'bed', mon: f, tries: (g.tries || 0) + 1 }, .6); return; }   // 밀려서 불 가까이 섰으면 한 번 더 비켜 눕는다
     sleep(m, false);
     if (f && dist(m, f) < 70 && Math.random() < .7) log(`${J(m,'이/가')} ${N(f)} 곁에 몸을 붙이고 잠들었다.`, [m, f]);
     else if (Math.random() < .4) log(`${J(m,'이/가')} 잠자리에 누웠다.`, [m]);
@@ -3157,7 +3162,7 @@ function arrive(m) {
     if (!S.mons.includes(o) || o.hidden) return think(m);
     if (o.state === 'sleep') {
       if ([39, 40, 174].includes(m.sp) && Math.random() < .6) { emote(m, '♪', 'note', 2.2, 'prank'); log(`${J(m,'이/가')} 잠든 ${N(o)}의 얼굴에 몰래 낙서를 했다! ${J(o,'은/는')} 아무것도 모르고 쿨쿨 잔다.`, [m, o], true); addRel(o, m, -3); setState(m, 'idle', 2); return; }
-      if (getRel(m, o) > 30 && S.clock >= (m.awakeT || 0) && sleepyTime(m)) { sleep(m, false); log(`${J(m,'이/가')} 잠든 ${N(o)} 옆에서 같이 잠들었다.`, [m, o]); addRel(m, o, 4); }
+      if (getRel(m, o) > 30 && S.clock >= (m.awakeT || 0) && sleepyTime(m) && !fireNear(m)) { sleep(m, false); log(`${J(m,'이/가')} 잠든 ${N(o)} 옆에서 같이 잠들었다.`, [m, o]); addRel(m, o, 4); }
       else { emote(m, '…', '', 2.2, 'meet-fail'); setState(m, 'idle', 2); }
       return;
     }
@@ -4994,7 +4999,7 @@ function propReact(m, p) {
       return log(ty.includes(ICE) ? `${J(m,'은/는')} 모닥불이 너무 뜨거워 녹을 것 같다며 물러났다.` : `${J(m,'이/가')} 모닥불에 깜짝 놀라 뒤로 물러났다.`, [m]); }
     if (campSing(m)) return;   /* v4.44 경완: 가끔 다 같이 둘러앉아 노래 */
     setState(m, 'idle', rnd(8, 12)); emote(m, isNight() ? 'Zz' : '♪', '', 2.2, 'fire-warm');
-    if (isNight() && Math.random() < .5) { setTimeout(() => { if (S.mons.includes(m) && m.state === 'idle' && !m.goal) { sleep(m, false); log(`${J(m,'이/가')} 모닥불 앞에서 불을 쬐다 꾸벅꾸벅 졸기 시작한다.`, [m]); } }, 2500); return log(`${J(m,'이/가')} 모닥불 앞에 앉아 불을 쬔다. 따뜻해 보인다.`, [m]); }
+    if (isNight() && Math.random() < .5) { setTimeout(() => { if (S.mons.includes(m) && m.state === 'idle' && !m.goal) { moveTo(m, bedSafe(m, { x: m.x, y: m.y }), { kind: 'bed' }, .5); log(`${J(m,'이/가')} 모닥불을 쬐다 꾸벅꾸벅 졸려서 조금 떨어진 곳에 누웠다.`, [m]); } }, 2500); return log(`${J(m,'이/가')} 모닥불 앞에 앉아 불을 쬔다. 따뜻해 보인다.`, [m]); }
     return log(pick([`${J(m,'이/가')} 모닥불 앞에 앉아 불을 쬔다. 따뜻해 보인다.`, `${J(m,'이/가')} 타닥타닥 타는 모닥불을 가만히 바라본다.`]), [m]);
   }
   if (p.k === 'bed') {
@@ -5558,7 +5563,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.49';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.50';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
