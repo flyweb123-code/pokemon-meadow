@@ -31,6 +31,7 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
             gameReady = true
             return
         }
+        if body["probe"] as? Bool == true { WalkTracker.shared.probe(); return }   // 설정 › 운영자 › 장소 찾기 시험
         // 알림 계획은 앱에서만 쓰고 워치에는 보내지 않는다 (NotiCenter)
         var state = body
         if let noti = state.removeValue(forKey: "noti") as? [String: Any] { NotiCenter.shared.update(noti, pendingKm: pendingWalkKm()) }
@@ -104,6 +105,12 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
     private func flushToday() {
         guard gameReady, let web = webView, let km = todayKm else { return }
         web.evaluateJavaScript("window.pokeRunToday && window.pokeRunToday(\(km), \(todayDay * 1000))")
+    }
+
+    // 장소 찾기 시험 결과 (줄 목록) 를 게임 설정 화면에 보여 준다
+    func sendProbe(_ lines: [String]) {
+        guard let web = webView, let data = try? JSONSerialization.data(withJSONObject: lines), let arg = String(data: data, encoding: .utf8) else { return }
+        web.evaluateJavaScript("window.pokeRunProbe && window.pokeRunProbe(\(arg))")
     }
 
     // 만보기 문제를 게임 프로필에 보여 준다 (이동 거리가 안 늘 때 원인 확인용)
