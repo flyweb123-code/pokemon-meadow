@@ -1351,7 +1351,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 </style>
 
 <script>setTimeout(() => document.documentElement.classList.add('ready'), 6000)</script>
-<style>html.bootBlk body::after{content:'';position:fixed;inset:0;z-index:6440;background:#000}</style>
+<style>html.bootBlk body::after{content:'';position:fixed;inset:0;z-index:6440;background:#000;pointer-events:none}html.bootOut body::after{opacity:0;transition:opacity .6s steps(5,end)}</style>
 <script>/* v5.54 경완: 처음 시작(저장 없음)이면 오프닝 전에 필드가 잠깐 보이지 않게 처음부터 검은 화면으로 덮는다 */
 try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(localStorage.getItem(st ? 'pk-studio-v2' : 'pk-meadow-v2') || 'null');
   if (/[?&]intro/.test(q) || (!st && !(d && d.mons && (d.mons.length || d.unlocked)))) document.documentElement.classList.add('bootBlk'); } catch (e) {}
@@ -5576,7 +5576,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.54';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.55';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8657,6 +8657,7 @@ async function titleFlow() {
   const demo = []; let demoOff = false;
   await Promise.all(G.map(async ([f, sp, dx, dy]) => { try { const p = at(f, dx, dy), m = await spawn(sp, { quiet: true, x: p.x, y: p.y }); m.demo = 1; m.pin = true; m.goal = null; demo.push(m); } catch (e) {} }));   // 다 불러온 뒤에 훑기 시작 (매번 같은 때 같은 장면)
   const pan = wrap.animate([{ transform: K0 }, { transform: K1 }], { duration: D, easing: 'linear', fill: 'forwards' });
+  { const h = document.documentElement; if (h.classList.contains('bootBlk')) { h.classList.add('bootOut'); setTimeout(() => h.classList.remove('bootBlk', 'bootOut'), 700); } }   // v5.55 경완: 확대한 필드가 준비된 뒤에 검은 막을 걷는다 (v5.54 는 오프닝까지 덮어 버렸다)
   const dm = sp => demo.find(m => m && m.sp === sp && S.mons.includes(m));
   // 제자리에 서 있게: 게임의 고정(pin)을 쓴다 (v5.41 경완: 위치를 계속 되돌리던 방식은 스프라이트가 드드득 떨렸다)
   const mv = sp => { const m = dm(sp); if (m) try { useMove(m); } catch (e) {} }, meet = (a, b) => { const x = dm(a), y = dm(b); if (x && y) try { meetByHand(x, y); } catch (e) {} };
