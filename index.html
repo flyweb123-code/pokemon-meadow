@@ -5576,7 +5576,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.55';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.56';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7273,14 +7273,14 @@ function gotLog(got, how, place) {
 function unincubate(e) {
   if (!S.eggs.includes(e) || S.bag.length >= MAX_BAG) return false;
   S.eggs = S.eggs.filter(x => x !== e);
-  const b = { id: e.id, g: e.g, t: e.t || Date.now(), km: e.km || 0, sp: e.sp }; if (e.place) b.place = e.place; if (e.tags) b.tags = e.tags; if (e.spN) b.spN = e.spN; if (e.spT) b.spT = e.spT; S.bag.push(b);
+  const b = { id: e.id, g: e.g, t: e.t || Date.now(), km: e.km || 0, sp: e.sp }; if (e.place) b.place = e.place; if (e.tags) b.tags = e.tags; if (e.spN) b.spN = e.spN; if (e.spT) b.spT = e.spT; if (e.nq && !e.nt) b.isNew = true; S.bag.push(b);
   save(); return true;
 }
 // 가방의 알을 부화기로 옮긴다
 function incubate(e) {
   if (S.eggs.length >= MAX_EGGS || !S.bag.includes(e)) return false;
   S.bag = S.bag.filter(x => x !== e);
-  const x = { id: e.id, g: e.g, km: e.km || 0, need: GRADE[e.g].km, isNew: true, nwI: true, t: e.t, place: e.place, tags: e.tags, sp: e.sp, ...(e.spN ? { spN: e.spN } : {}), ...(e.spT ? { spT: e.spT } : {}) }; S.eggs.push(x);
+  const x = { id: e.id, g: e.g, km: e.km || 0, need: GRADE[e.g].km, isNew: true, nwI: true, t: e.t, place: e.place, tags: e.tags, sp: e.sp, ...(e.spN ? { spN: e.spN } : {}), ...(e.spT ? { spT: e.spT } : {}) }; if (e.isNew && !e.nt) x.nq = 1; S.eggs.push(x);   // v5.56 경완: 알리기 전에 부화기로 옮겨진 알(자동 채우기)도 '새 소식'에 나오게
   save(); return true;
 }
 // v3.90 경완: 자동 채우기를 켜 두면 부화기가 빌 때 가방에서 높은 등급 → 많이 간 거리 → 먼저 주운 알 순으로 채운다 (처음엔 꺼짐)
@@ -7934,7 +7934,7 @@ function notiSoon(ms = 500) { clearTimeout(notiT); notiT = setTimeout(notiShow, 
 function notiShow(force) {
   if (notiOpen || document.hidden || (tutOn && !force)) return;   // v5.39 경완: 튜토리얼 중엔 튜토리얼이 부를 때만 (알이 먼저 받아지던 것)
   if (hatching || evolving) { notiSoon(2000); return; }
-  const got = S.bag.filter(e => e.isNew && !e.nt), rdy = S.eggs.filter(e => e.km >= e.need && !e.rn), evo = S.buds.filter(b => b.en === false && budReady(b));
+  const got = [...S.bag.filter(e => e.isNew && !e.nt), ...S.eggs.filter(e => e.nq && !e.nt)], rdy = S.eggs.filter(e => e.km >= e.need && !e.rn), evo = S.buds.filter(b => b.en === false && budReady(b));
   if (!got.length && !rdy.length && !evo.length) return;
   notiOpen = true;
   const MAXI = 24, row = (list, cls) => `<div class="noti-eggs ${cls}">${list.slice(0, MAXI).map((e, i) => eggHtml(e.g).replace('class="egg ', `style="--d:${i * 45}ms" class="egg `)).join('')}${list.length > MAXI ? `<span class="more">+${list.length - MAXI}</span>` : ''}</div>`;
