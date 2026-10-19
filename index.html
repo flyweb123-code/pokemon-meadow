@@ -1479,7 +1479,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
         <div class="bgm-pick"><span class="vol-n">곡</span><button class="fsel" id="bgmPick" aria-haspopup="listbox"></button></div>
         <div class="vol" data-k="bgm"><span class="vol-n">배경 음악</span><button class="vol-b" data-d="-1" aria-label="배경 음악 작게">◀</button><div class="vol-bar" role="slider" aria-label="배경 음악 볼륨" aria-valuemin="0" aria-valuemax="10"></div><button class="vol-b" data-d="1" aria-label="배경 음악 크게">▶</button><b class="vol-v"></b></div>
         <div class="vol" data-k="sfx"><span class="vol-n">효과음</span><button class="vol-b" data-d="-1" aria-label="효과음 작게">◀</button><div class="vol-bar" role="slider" aria-label="효과음 볼륨" aria-valuemin="0" aria-valuemax="10"></div><button class="vol-b" data-d="1" aria-label="효과음 크게">▶</button><b class="vol-v"></b></div>
-        <div class="set-btns one"><button class="lk-btn main" id="musicImport">곡 파일 가져오기</button><input type="file" id="musicFile" accept="audio/*,.mp3" multiple hidden><button class="lk-btn main" id="cryImport">울음소리 가져오기</button><input type="file" id="cryFile" accept=".zip,application/zip" hidden></div>
+        <div class="set-btns one"><button class="lk-btn main" id="musicImport">곡 파일 가져오기</button><input type="file" id="musicFile" accept="audio/*,.mp3,.zip,application/zip" multiple hidden><button class="lk-btn main" id="cryImport">울음소리 가져오기</button><input type="file" id="cryFile" accept=".zip,application/zip" hidden></div>
       </section>
       <section class="set-sec" id="notiSec">   <!-- v5.16 경완: 알림 설정 (전체 끄기 + 항목별) -->
         <h4>알림</h4>
@@ -1931,15 +1931,21 @@ addEventListener('focus', () => { if (!document.hidden) { bgmShow(); audioCheck(
 // 울음소리: 포켓몬 키우기-울음소리.zip(0001.mp3 ~ 1025.mp3, 압축 없이 묶음)을 이 기기에 저장해 둔다
 const cry = { have: new Set(), buf: new Map(), last: 0 };
 function cryLabel() { const b = $('#cryImport'); if (b) b.textContent = cry.have.size ? `울음소리 ${cry.have.size}종 연결됨` : '울음소리 가져오기'; }
-async function importCries(file) {
-  const u8 = new Uint8Array(await file.arrayBuffer()), dv = new DataView(u8.buffer), items = [];
+// v5.52 경완: 압축 없이 묶은 zip 을 파일들로 푼다 (곡 zip·울음소리 zip 둘 다)
+async function unzipFiles(file) {
+  const u8 = new Uint8Array(await file.arrayBuffer()), dv = new DataView(u8.buffer), out = [];
   for (let o = 0; o + 30 <= u8.length && dv.getUint32(o, true) === 0x04034b50;) {
     const method = dv.getUint16(o + 8, true), size = dv.getUint32(o + 18, true), nl = dv.getUint16(o + 26, true), xl = dv.getUint16(o + 28, true);
     const name = new TextDecoder().decode(u8.subarray(o + 30, o + 30 + nl)), at = o + 30 + nl + xl;
-    const m = /(\d{1,4})\.mp3$/i.exec(name);
-    if (m && method === 0) items.push([+m[1], new Blob([u8.subarray(at, at + size)], { type: 'audio/mpeg' })]);
+    if (method === 0 && /\.mp3$/i.test(name)) { const b = new Blob([u8.subarray(at, at + size)], { type: 'audio/mpeg' }); b.name = name.split('/').pop(); out.push(b); }
     o = at + size;
   }
+  return out;
+}
+const isZip = f => /\.zip$/i.test(f.name) || /zip/.test(f.type);
+const isCryName = n => /^\d{1,4}\.mp3$/i.test(n);
+async function importCries(file) {
+  const items = (await unzipFiles(file)).filter(b => isCryName(b.name)).map(b => [parseInt(b.name, 10), b]);
   const db = await musicDB();
   await new Promise((res, rej) => { const tx = db.transaction('t', 'readwrite'), st = tx.objectStore('t'); items.forEach(([sp, b]) => st.put(b, 'cry' + sp)); tx.oncomplete = res; tx.onerror = () => rej(tx.error); });
   items.forEach(([sp]) => cry.have.add(sp)); cry.buf.clear();
@@ -1963,10 +1969,11 @@ async function playCry(sp, delay = 0) {
 }
 async function importMusic(files) {
   let ok = 0; const miss = [];
+  { const fl = []; for (const f of files) { if (isZip(f)) fl.push(...(await unzipFiles(f)).filter(b => !isCryName(b.name))); else fl.push(f); } files = fl; }   // v5.52: 곡 zip 도 바로
   for (const f of files) {
     const name = f.name.replace(/[_]+/g, ' ');
     if (/evolution|진화/i.test(name)) { try { await musicPut('evo', f); evoMus.have = true; evoMus.buf = null; ok++; } catch (e) { miss.push(f.name); } continue; }   // 진화 음악
-    { const k = /hurry.?along/i.test(name) ? 'intro' : /professor.?oak/i.test(name) ? 'title' : null;   // v5.38 경완: 처음 시작 오프닝(Hurry Along 2)·타이틀(Professor Oak) 음악
+    { const k = /hurry.?along/i.test(name) ? 'intro' : /professor.?oak/i.test(name) && !/lab/i.test(name) ? 'title' : null;   // v5.38 경완: 처음 시작 오프닝(Hurry Along 2)·타이틀(Professor Oak) 음악
       if (k) { try { await musicPut(k, f); ok++; } catch (e) { miss.push(f.name); } continue; } }
     const t = TRACKS.find(x => x.key.test(name));
     if (!t) { miss.push(f.name); continue; }
@@ -5564,7 +5571,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.51';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.52';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5666,13 +5673,16 @@ $('#cryFile').onchange = async e => {
   const f = e.target.files[0]; e.target.value = ''; if (!f) return;
   $('#cryImport').textContent = '가져오는 중…';
   let n = 0; try { n = await importCries(f); } catch (err) {}
-  cryLabel(); if (!n) alert('울음소리 파일을 찾지 못했어요. pokerun-cries.zip 을 골라 주세요.'); else playCry(25);
+  if (!n && f) { try { const r = await importMusic([f]); if (r.ok) { $('#musicImport').textContent = `${TRACKS.filter(t => bgm.have.has(t.id)).length}/${TRACKS.length}곡 연결됨`; n = -1; } } catch (err) {} }   // v5.52: 곡 zip 을 골랐으면 곡으로
+  cryLabel(); if (!n) alert('울음소리 파일을 찾지 못했어요. pokerun-cries.zip 을 골라 주세요.'); else if (n > 0) playCry(25);
+  document.dispatchEvent(new Event('pk-imported'));
 };
 $('#musicFile').onchange = async e => {
   const files = [...e.target.files]; e.target.value = ''; if (!files.length) return;
   $('#musicImport').textContent = '가져오는 중…';
-  const r = await importMusic(files);
-  $('#musicImport').textContent = `${bgm.have.size}/${TRACKS.length}곡 연결됨`;
+  let r = { ok: 0, miss: [] }; try { r = await importMusic(files); } catch (err) {}
+  for (const f of files) if (isZip(f)) { try { if (await importCries(f)) cryLabel(); } catch (err) {} }   // v5.52: 울음소리 zip 을 골랐어도
+  $('#musicImport').textContent = `${TRACKS.filter(t => bgm.have.has(t.id)).length}/${TRACKS.length}곡 연결됨`; document.dispatchEvent(new Event('pk-imported'));
   if (r.miss.length) alert(`이 파일은 어느 곡인지 몰라 건너뛰었어요:\n${r.miss.join('\n')}`);
 };
 // 설정 › 소리: 도트 칸 10개 볼륨 바 (칸을 누르거나 끌거나 ◀▶)
@@ -8664,8 +8674,51 @@ async function titleFlow() {
   try { renderDlg(); } catch (e) {} setTimeout(() => { logMute = false; }, 3000);   // 기술 뒤늦은 말(0.5~3초 뒤)까지 막는다 (그동안은 오프닝 화면이 덮고 있다)
   return () => tv.remove();   // 오프닝 화면이 위에 깔린 뒤에 지운다 (그 사이 필드가 비치지 않게)
 }
+// v5.52 경완: 처음 시작하면 오프닝 전에 검은 화면에서 곡·울음소리부터 가져온다 (둘 다 되면 오프닝으로)
+const SETUP_MUS = () => [...TRACKS.map(t => t.id), 'evo', 'intro', 'title'];
+async function soundState() { let k = []; try { k = await musicKeys() || []; } catch (e) {} const ks = new Set(k), need = SETUP_MUS();
+  return { mus: need.filter(x => ks.has(x)).length, musN: need.length, cry: k.filter(x => /^cry\d+$/.test(x)).length }; }
+async function setupFlow() {
+  let s = await soundState(); const okM = s => s.mus >= s.musN, okC = s => s.cry >= 1000;
+  if (okM(s) && okC(s)) return;
+  if (!$('#setupCss')) { const st = document.createElement('style'); st.id = 'setupCss'; st.textContent = `
+#setup{position:fixed;inset:0;z-index:6500;background:#000;color:#f4f0e0;font-family:var(--px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px max(24px,env(safe-area-inset-left)) calc(24px + env(safe-area-inset-bottom));text-align:center;transition:opacity .6s}
+#setup.out{opacity:0;pointer-events:none}
+#setup h2{margin:0;font-size:18px;letter-spacing:1px}
+#setup p{margin:0;word-break:keep-all;font-size:12px;line-height:1.8;color:#b8b4a8;max-width:300px}
+#setup .su-row{display:flex;flex-direction:column;gap:6px;width:min(280px,100%)}
+#setup .su-row button{width:100%;min-height:48px;font-size:14px}
+#setup .su-row small{font-size:11px;color:#8a877e}
+#setup .su-row.ok small{color:#7ed07e}
+#setup .su-row.ok button{opacity:.55}
+#setup .su-later{background:none;border:0;color:#6e6b64;font:inherit;font-size:11px;text-decoration:underline;margin-top:6px;padding:8px}
+#setup .su-done{font-size:14px;color:#ffd75a;min-height:20px}`; document.head.append(st); }
+  const ov = document.createElement('div'); ov.id = 'setup'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', '소리 준비');
+  ov.innerHTML = `<h2>소리 준비</h2><p>게임 음악과 포켓몬 울음소리를 이 기기에 가져와 주세요.<br>파일은 이 기기에만 저장돼요.</p>
+<div class="su-row" data-k="m"><button class="lk-btn main" type="button">음악 가져오기</button><small></small></div>
+<div class="su-row" data-k="c"><button class="lk-btn main" type="button">울음소리 가져오기</button><small></small></div>
+<div class="su-done" aria-live="polite"></div><button class="su-later" type="button">나중에 하기</button>`;
+  document.body.append(ov);
+  const rm = ov.querySelector('[data-k=m]'), rc = ov.querySelector('[data-k=c]'), done = ov.querySelector('.su-done');
+  const paint = () => { rm.classList.toggle('ok', okM(s)); rc.classList.toggle('ok', okC(s));
+    rm.querySelector('small').textContent = okM(s) ? `완료 (${s.musN}곡)` : `${s.mus}/${s.musN}곡 · 곡 zip 이나 mp3 들을 골라요`;
+    rc.querySelector('small').textContent = okC(s) ? `완료 (${s.cry}종)` : s.cry ? `${s.cry}종 · 울음소리 zip 을 골라요` : '울음소리 zip 을 골라요'; };
+  paint();
+  rm.querySelector('button').onclick = () => $('#musicFile').click();
+  rc.querySelector('button').onclick = () => $('#cryFile').click();
+  const busy = e => { const r = e.target.id === 'musicFile' ? rm : rc; if (e.target.files?.length) r.querySelector('small').textContent = '가져오는 중…'; };
+  $('#musicFile').addEventListener('change', busy, true); $('#cryFile').addEventListener('change', busy, true);
+  await new Promise(res => {
+    let fin = false, ended = false; const end = () => { if (ended) return; ended = true; clearInterval(iv); document.removeEventListener('pk-imported', chk); res(); };
+    const chk = async () => { if (fin) return; s = await soundState(); paint(); if (okM(s) && okC(s) && !fin) { fin = true; done.textContent = '준비 완료!'; try { sfx('newdex'); } catch (e) {} setTimeout(end, 900); } };
+    const iv = setInterval(chk, 1500); document.addEventListener('pk-imported', chk);
+    ov.querySelector('.su-later').onclick = () => { fin = true; end(); };
+  });
+  $('#musicFile').removeEventListener('change', busy, true); $('#cryFile').removeEventListener('change', busy, true);
+  ov.classList.add('out'); await new Promise(r => setTimeout(r, 600)); ov.remove();
+}
 async function introFlow() {
-  tutOn = true;
+  tutOn = true; await setupFlow();
   const dropTitle = await titleFlow(); introCss(); const tr = trOf(), wait = ms => new Promise(r => setTimeout(r, ms));
   const ov = document.createElement('div'); ov.id = 'intro'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', '오프닝');
   ov.innerHTML = `<button class="in-skip" type="button">건너뛰기</button><div class="in-stage"><img class="in-pic kang" alt="Mr.강" src="${KANG}"><i class="in-pic in-mon" role="img" aria-label="나룸퍼프"><b class="zz">Z</b><b class="zz z2">z</b></i><i class="in-pic in-tr"></i><div class="in-two"><i style="background-image:url(${TR_OW.m})"></i><i style="background-image:url(${TR_OW.f || TR_OW.m})"></i></div></div><div class="win in-menu" hidden></div><div class="win in-name" hidden></div><div class="win in-box" aria-live="polite"><span class="in-t"></span><b class="cur" hidden>▼</b></div><i class="in-white"></i>`;
