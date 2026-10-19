@@ -243,6 +243,7 @@ h2.ih{display:flex;align-items:center;gap:8px}
 .balg{display:grid;grid-auto-flow:row dense;min-width:0;width:100%;grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr));gap:12px;align-items:start;max-width:1400px}.balg .card{min-width:0}.balg .card.wide2{grid-column:1/-1}.balg .card:not(.wide2) .bal2{grid-template-columns:minmax(0,1fr)!important}
 .bsh{grid-column:1/-1;font-size:11.5px;letter-spacing:.06em;color:var(--acc);padding:14px 2px 4px;border-top:0!important}.bal2 .bsh:first-child{padding-top:2px}.bal2 .bsh+.br{border-top:0!important}
 .br.ln{grid-template-columns:22px minmax(0,1fr) 150px;gap:10px}.br.ln .bic{display:flex}.br.ln .lt{display:grid;gap:2px;min-width:0;line-height:1.35}.br.ln .lt small{color:var(--mute);font-size:11.5px}.br.ln .uw{display:flex;align-items:center;gap:6px;justify-self:end}.br.ln .uw input{width:88px;text-align:right}.br.ln .u{min-width:36px;color:var(--soft);font-size:12px}.balg .card{margin:0}.balg .bal2{grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr));column-gap:28px}.balg .bal2 .br{border-top:1px solid var(--chip)}.balg .bal2 .br.full{grid-column:1/-1}
+.sic{width:32px;height:32px;image-rendering:pixelated;flex:none}.br.shop-r{display:flex;align-items:center;gap:8px;padding:6px 0}.shop-r .uw{width:140px;flex:none}.shop-r .lt{flex:1}.shtb{width:100%;border-collapse:collapse;margin:8px 0;font-size:13px}.shtb th,.shtb td{padding:4px 6px;text-align:right;border-top:1px solid var(--chip)}.shtb th:first-child,.shtb td:first-child{text-align:left}.shtb .inp.sm,.inp.sm{width:56px}
 .frt{display:grid;gap:6px;grid-column:1/-1;padding-left:32px}.frg{display:grid;gap:4px;margin:4px 0 10px}.msz{display:grid;grid-template-columns:auto minmax(0,1fr) 52px auto;gap:8px;align-items:center;font-size:13px}.msz input{width:100%;accent-color:var(--acc)}.frw{position:relative;padding:0 0 10px}.frk{position:absolute;top:-4px;width:14px;height:44px;margin-left:-7px;cursor:ew-resize;touch-action:none;display:grid;place-items:center}.frk::before{content:'';width:4px;height:100%;border-radius:2px;background:var(--acc);box-shadow:0 0 0 2px var(--panel)}.frk::after{content:'';position:absolute;bottom:0;width:14px;height:14px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 2px var(--panel)}.frk:hover::before,.frk:hover::after{filter:brightness(1.2)}.frbar{display:grid;height:28px;border-radius:4px;overflow:hidden;gap:2px}.frbar .sg{position:relative;display:grid;place-items:center;background:rgba(128,128,128,.18)}.frbar .sg::before{content:'';position:absolute;inset:0;background:var(--good);opacity:var(--a)}.frbar .sg span{position:relative;font-size:12px;font-weight:600;color:var(--fg);text-shadow:0 1px 2px rgba(0,0,0,.6);white-space:nowrap}.frinf{display:grid;gap:2px}.frwk{display:grid;gap:2px;padding:8px 10px;margin:0 0 8px;border-radius:4px;background:var(--chip);font-size:12px;color:var(--mute)}.frwk b{color:var(--fg);font-size:13px}.frinf>div{display:grid;justify-items:center;text-align:center;gap:1px;padding:4px 2px;font-size:11px;color:var(--mute);min-width:0}.frinf .pl{font-style:normal}.frinf .fi{display:flex;align-items:center;justify-content:center;gap:2px;width:100%;font-size:15px;color:var(--fg);font-weight:600}.frinf .fi input{flex:0 1 64px;min-width:0;width:64px;text-align:center;font-size:15px;padding:4px}.frinf .fs{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;font-size:10.5px;margin-top:2px}.frinf .fs input{flex:0 1 44px;min-width:0;width:44px;text-align:center;padding:2px;font-size:11px}.frinf em{font-style:normal;color:var(--soft)}.frinf em.cap,.frinf span.cap{color:var(--warn)}.frt .fr{display:grid;grid-template-columns:auto 64px auto 64px auto minmax(0,1fr);gap:6px;align-items:center;font-size:12.5px;color:var(--soft)}.frt .fr input{text-align:right}.frt .fr .dd{color:var(--mute);font-size:11.5px;justify-self:end}
 .bal2{display:grid}.br{display:grid;grid-template-columns:minmax(0,1fr) 128px;gap:8px 12px;align-items:center;padding:9px 2px;border-top:1px solid var(--chip);font-size:13px}.bal2 .br:first-child{border-top:0}
 .br .wide .gw{display:flex;align-items:center;gap:3px;width:100%}.br .wide .gw input{flex:1;min-width:0}.br .wide .gw .u{min-width:0;font-size:11px;color:var(--mute)}
@@ -475,6 +476,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
       <aside class="vi" id="thI"></aside><div class="geoRs" id="thRs" title="끌어서 오른쪽 창 폭 조절 (두 번 누르면 기본)" aria-hidden="true"></div>
     </section>
     <!-- 밸런스 -->
+    <section class="view" data-v="shop" hidden>
+      <div class="seg" data-g="more"></div>
+      <div class="vc scroll"><div class="cards" id="shopC"></div></div>
+      <aside class="vi" id="shopI"></aside>
+    </section>
     <section class="view" data-v="bal" hidden>
       <div class="seg" data-g="more"></div>
       <div class="vc scroll"><div class="cards" id="balC"></div></div>
@@ -504,10 +510,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.13';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.14';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
+  shop: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" fill-rule="evenodd" d="M4 1h4v1h1v2h2v7H1V4h2V2h1zm0 1v2h4V2zm-1 4v1h1V6zm5 0v1h1V6z"/></svg>',
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
   poke: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M4 1h4v1h1v1h1v2H7V4H5v1H2V3h1V2h1zM2 7h3v1h2V7h3v2H9v1H8v1H4v-1H3V9H2zM5 5h2v2H5z"/></svg>',
   egg: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M5 0h2v1h1v1h1v2h1v5h-1v2h-1v1H4v-1H3V9H2V4h1V2h1V1h1z"/></svg>',
@@ -519,10 +526,10 @@ const ICO = {
   bub: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M2 1h8v1h1v5h-1v1H6v1H5v1H4v1H3V8H2V7H1V2h1zm0 1v5h2v2h1V8h5V2z"/></svg>',
   more: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 5h2v2H1zm4 0h2v2H5zm4 0h2v2H9z"/></svg>',
 };
-const VIEWS = { map: ['맵', 'map'], mon: ['포켓몬', 'poke'], newmo: ['새 모션', 'poke'], odds: ['알 수집 확률', 'egg'], pool: ['알 등급별 포켓몬', 'egg'], hatch: ['알 부화 거리', 'egg'], rank: ['랭크 확률', 'egg'], geo: ['지도', 'map'], thm: ['장소 특성', 'map'], bub: ['말풍선', 'bub'], ver: ['버전 기록', 'doc'], egg: ['알', 'egg'], tier: ['티어', 'tier'], bal: ['밸런스', 'bal'], art: ['그림 모음', 'art'], work: ['배포하기', 'doc'], test: ['테스트 도구', 'tool'] };
-const NAV = [['게임 화면', ['map', 'mon', 'bub']], ['데이터', ['egg', 'geo', 'tier', 'bal']], ['기타', ['art', 'work', 'ver', 'test']]];
-const MTABS = [['map', '맵', 'map', ['map']], ['mon', '포켓몬', 'poke', ['mon', 'newmo']], ['egg', '알', 'egg', ['odds', 'pool', 'hatch', 'rank', 'tier']], ['art', '그림', 'art', ['art']], ['more', '더보기', 'more', ['geo', 'thm', 'bal', 'work', 'test', 'bub', 'ver']]];
-const SEGS = { egg: [['odds', '수집 확률'], ['pool', '등급별 포켓몬'], ['hatch', '부화 거리'], ['rank', '랭크'], ['tier', '티어']], more: [['geo', '지도'], ['thm', '장소 특성'], ['bal', '밸런스'], ['work', '배포하기'], ['test', '테스트'], ['bub', '말풍선'], ['ver', '버전']], mon: [['mon', '포켓몬'], ['newmo', '새 모션']] };
+const VIEWS = { map: ['맵', 'map'], mon: ['포켓몬', 'poke'], newmo: ['새 모션', 'poke'], odds: ['알 수집 확률', 'egg'], pool: ['알 등급별 포켓몬', 'egg'], hatch: ['알 부화 거리', 'egg'], rank: ['랭크 확률', 'egg'], geo: ['지도', 'map'], thm: ['장소 특성', 'map'], bub: ['말풍선', 'bub'], ver: ['버전 기록', 'doc'], egg: ['알', 'egg'], tier: ['티어', 'tier'], bal: ['밸런스', 'bal'], shop: ['상점', 'shop'], art: ['그림 모음', 'art'], work: ['배포하기', 'doc'], test: ['테스트 도구', 'tool'] };
+const NAV = [['게임 화면', ['map', 'mon', 'bub']], ['데이터', ['egg', 'geo', 'tier', 'bal', 'shop']], ['기타', ['art', 'work', 'ver', 'test']]];
+const MTABS = [['map', '맵', 'map', ['map']], ['mon', '포켓몬', 'poke', ['mon', 'newmo']], ['egg', '알', 'egg', ['odds', 'pool', 'hatch', 'rank', 'tier']], ['art', '그림', 'art', ['art']], ['more', '더보기', 'more', ['geo', 'thm', 'bal', 'shop', 'work', 'test', 'bub', 'ver']]];
+const SEGS = { egg: [['odds', '수집 확률'], ['pool', '등급별 포켓몬'], ['hatch', '부화 거리'], ['rank', '랭크'], ['tier', '티어']], more: [['geo', '지도'], ['thm', '장소 특성'], ['bal', '밸런스'], ['shop', '상점'], ['work', '배포하기'], ['test', '테스트'], ['bub', '말풍선'], ['ver', '버전']], mon: [['mon', '포켓몬'], ['newmo', '새 모션']] };
 const GN = ['', '일반', '희귀', '레어', '에픽', '전설'], GC = ['', '#9aa0a8', '#4aa8f0', '#8a6ae0', '#e0a020', '#e05050'];
 const TC = t => `hsl(${(t - 1) * 26} 60% ${t < 4 ? 58 : 66}%)`;
 let A = null, view = 'map';
@@ -559,7 +566,7 @@ function startRename(v) { const a = $(`.nav a[data-v="${v}"]`); if (!a) return; 
   inp.onkeydown = e => { if (e.key === 'Enter') end(true); else if (e.key === 'Escape') end(false); e.stopPropagation(); }; inp.onblur = () => end(true); inp.onclick = e => e.stopPropagation(); }
 const lastOf = {};
 // v2.10 경완: 저장 안 하고 다른 화면으로 가면 그 화면에서 고친 것은 마지막으로 저장한 상태로 되돌린다
-const VIEW_BOX = v => v === 'odds' ? ['bagstep'] : v === 'pool' ? ['odds', ...[1, 2, 3, 4, 5].map(g => 'pool:' + g)] : v === 'hatch' ? ['hatch'] : v === 'tier' ? ['tier'] : v === 'bal' ? BAL.map((_, i) => 'bal:' + i) : v === 'map' ? ['layout', 'monsc'] : v === 'bub' ? ['bub'] : v === 'geo' ? ['spots'] : [];
+const VIEW_BOX = v => v === 'odds' ? ['bagstep'] : v === 'pool' ? ['odds', ...[1, 2, 3, 4, 5].map(g => 'pool:' + g)] : v === 'hatch' ? ['hatch'] : v === 'tier' ? ['tier'] : v === 'bal' ? BAL.map((_, i) => 'bal:' + i) : v === 'map' ? ['layout', 'monsc'] : v === 'bub' ? ['bub'] : v === 'geo' ? ['spots'] : v === 'shop' ? ['shop'] : [];
 function discardView(v, all) { if (!ORIG) return; const ids = (all ? ALLBOX() : VIEW_BOX(v)).filter(boxDirty); if (!ids.length) return;
   for (const id of ids) { for (const p of boxPaths(id)) putP(D, p, D._sv || {}); if (id === 'layout') { try { A?.setLayout(D.layout || ORIG.layout); } catch (e) {} } if (id === 'bub') bubLive(); if (id === 'monsc') { scLive(); if (szOn) szPane(); } }
   saveDraft(); scBar(); if (all) { if (view === 'map') layoutBar(); RENDER[view]?.(); } toast(`저장 안 한 수정 ${ids.length}곳을 되돌렸어요`); }
@@ -659,13 +666,13 @@ function putP(o, p, src) {   // src(작업본) 의 p 값을 o 에 그대로 옮�
   if (a === 'eggTiers') { const v = src ? effP(src, p) : ORIG.eggTiers[b]; o.eggTiers = cl(o.eggTiers || ORIG.eggTiers); o.eggTiers[b] = cl(v); if (JSON.stringify(o.eggTiers) === JSON.stringify(ORIG.eggTiers)) delete o.eggTiers; return; }
   if (b != null) { const has = src && src[a] && b in src[a]; o[a] = { ...(o[a] || {}) }; if (has) o[a][b] = cl(src[a][b]); else delete o[a][b]; if (!Object.keys(o[a]).length) delete o[a]; return; }
   if (src && a in src) o[a] = cl(src[a]); else delete o[a]; }
-const BOXES = { bagstep: () => ['bal.BAG_STEP'], monsc: () => ['monSc', 'monRot', 'monFly', 'monFlyA', 'monSh'], bub: () => ['bub'], thsp: () => ['thSp', 'thOv'], odds: () => ['odds', 'pity', 'tierK', ...[1, 2, 3, 4, 5].map(g => 'eggTiers.' + g)], pity: () => ['pity'], hatch: () => ['bal.HATCH_KM'], tier: () => ['tierOv', 'tierOrd', 'off'], layout: () => ['layout'], spots: () => ['spots'] };
+const BOXES = { bagstep: () => ['bal.BAG_STEP'], monsc: () => ['monSc', 'monRot', 'monFly', 'monFlyA', 'monSh'], bub: () => ['bub'], thsp: () => ['thSp', 'thOv'], odds: () => ['odds', 'pity', 'tierK', ...[1, 2, 3, 4, 5].map(g => 'eggTiers.' + g)], pity: () => ['pity'], hatch: () => ['bal.HATCH_KM'], tier: () => ['tierOv', 'tierOrd', 'off'], layout: () => ['layout'], spots: () => ['spots'], shop: () => ['shop'] };
 const boxPaths = id => { const [t, x] = id.split(':'); return t === 'pool' ? ['eggList.' + x, 'eggEx.' + x] : t === 'bal' ? BAL[x][1].map(r => 'bal.' + r[0]) : BOXES[t](); };
 const same = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
 const boxDirty = id => ORIG && boxPaths(id).some(p => !same(effP(D, p), effP(D._sv || {}, p)));
 const boxDef = id => ORIG && boxPaths(id).every(p => same(effP(D, p), effP({}, p)));
 const boxSaved = id => ORIG && boxPaths(id).some(p => !same(effP(D._sv || {}, p), effP({}, p)));
-const ALLBOX = () => ['bagstep', 'odds', 'hatch', 'spots', 'tier', 'layout', 'bub', 'monsc', ...[1, 2, 3, 4, 5].map(g => 'pool:' + g), ...BAL.map((_, i) => 'bal:' + i)];
+const ALLBOX = () => ['bagstep', 'odds', 'hatch', 'spots', 'tier', 'layout', 'bub', 'monsc', 'shop', ...[1, 2, 3, 4, 5].map(g => 'pool:' + g), ...BAL.map((_, i) => 'bal:' + i)];
 const unsaved = () => ORIG ? ALLBOX().filter(boxDirty).length : 0;
 function boxBar(id, lab = '') { const d = boxDirty(id), sv = boxSaved(id);
   return `<div class="sbx${d ? ' dirty' : ''}" data-box="${id}"><span class="st">${d ? '● 저장 안 함' : sv ? '✓ 저장됨 · 배포 대기' : '게임 값 그대로'}</span><button class="chip" data-bd${boxDef(id) ? ' disabled' : ''} title="지금 게임에 들어 있는 값으로 (저장해야 반영)"><span class="rvi">↺</span>기본값으로</button><button class="btn" data-bs${d ? '' : ' disabled'}>${lab || '저장'}</button></div>`; }
@@ -724,7 +731,7 @@ $('#safeB').onclick = e => { e.stopPropagation(); $('#safePop').hidden = !$('#sa
 $('#safePop').onclick = e => { const b = e.target.closest('[data-sb]'); if (!b) return; $('#safePop').hidden = true; sel.tier = +b.dataset.sb; tSel.clear(); go('tier'); };
 document.addEventListener('pointerdown', e => { if (!e.target.closest('#safeW')) $('#safePop').hidden = true; });
 // v2.17 경완: 저장 안 하고 다른 화면으로 넘어간 박스는 그대로 두고 위쪽 막대에 경고. 누르면 목록, 항목을 누르면 그 화면으로
-const BOXINFO = id => { const [t, x] = id.split(':'); return t === 'pool' ? [`${GN[x]} 알 · 등급별 포켓몬`, 'pool', () => { sel.poolG = +x; }] : t === 'bal' ? [`밸런스 · ${BAL[x][0]}`, 'bal'] : ({ bagstep: ['알 · 1km 알 개수', 'odds'], odds: ['알 · 수집 확률', 'odds'], pity: ['알 · 천장', 'odds'], hatch: ['알 · 부화 거리', 'hatch'], tier: ['티어', 'tier'], layout: ['맵 배치', 'map'], monsc: ['맵 · 필드 크기', 'map'], bub: ['말풍선', 'bub'], spots: ['지도 · 출현 지역', 'geo'] })[t] || [id, 'map']; };
+const BOXINFO = id => { const [t, x] = id.split(':'); return t === 'pool' ? [`${GN[x]} 알 · 등급별 포켓몬`, 'pool', () => { sel.poolG = +x; }] : t === 'bal' ? [`밸런스 · ${BAL[x][0]}`, 'bal'] : ({ bagstep: ['알 · 1km 알 개수', 'odds'], odds: ['알 · 수집 확률', 'odds'], pity: ['알 · 천장', 'odds'], hatch: ['알 · 부화 거리', 'hatch'], tier: ['티어', 'tier'], layout: ['맵 배치', 'map'], monsc: ['맵 · 필드 크기', 'map'], bub: ['말풍선', 'bub'], spots: ['지도 · 출현 지역', 'geo'], shop: ['상점', 'shop'] })[t] || [id, 'map']; };
 function unsvBar() { const b = $('#unsv'); if (!b || !ORIG) return; const here = VIEW_BOX(view).map(String), ids = ALLBOX().filter(boxDirty);   // v2.32 경완: 그 화면에 와도 버튼이 사라지지 않게 (지금 화면은 '여기' 표시)
   b.hidden = !ids.length; b.innerHTML = `⚠ 저장 안 함 <b>${ids.length}</b>`; b.title = '저장하지 않은 곳이 있어요';
   const P = $('#unsvPop'); if (!ids.length) { P.hidden = true; return; }
@@ -1823,6 +1830,10 @@ function changesOf() {
   if (D.thSp) { const a = ORIG.thSp || {}, b = D.thSp, T = A.THEMES || {}, f = (o, k) => (o[k] ?? A.TH_SP0?.[k] ?? []).length + '종'; for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) if (JSON.stringify(a[k] ?? null) !== JSON.stringify(b[k] ?? null)) out.push([`${T[k]?.n || k} 장소 포켓몬`, f(a, k), f(b, k), 'thsp:' + k]); }
   if (D.thOv) { const a = ORIG.thOv || {}, b = D.thOv, T = A.TH_ALL || A.THEMES || {}, f = v => !v ? '원래대로' : v.del ? '지움' : [v.t && '타입 ' + v.t.map(t => A.TYPE_KO[t]).join('·'), v.kw && '키워드 ' + v.kw.length + '개', v.n && '이름 ' + v.n, v.fx && '도감 낱말 ' + v.fx.length + '개', v.ex && '뺀 포켓몬 ' + v.ex.length].filter(Boolean).join(', ') || '원래대로';
     for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) if (JSON.stringify(a[k] ?? null) !== JSON.stringify(b[k] ?? null)) out.push([`${T[k]?.n || k} 장소 특성`, f(a[k]), f(b[k]), 'thov:' + k]); }
+  if (D.shop) { const a = ORIG.shop || {}, b = D.shop, nm = id => A?.ITEMS?.find(o => o.id === id)?.n || A?.TRACKS?.find(t => 'bgm:' + t.id === id)?.n || id, g = v => v == null ? '기본' : v.toLocaleString() + 'G';
+    for (const id of new Set([...Object.keys(a.price || {}), ...Object.keys(b.price || {})])) if ((a.price || {})[id] !== (b.price || {})[id]) out.push([`${nm(id)} 가격`, g((a.price || {})[id]), g((b.price || {})[id]), 'shp:p:' + id]);
+    if (!same(a.inc, b.inc)) out.push(['향로 효과', a.inc ? `${a.inc.min}분 ×${a.inc.mul.join('/')}` : '기본', b.inc ? `${b.inc.min}분 ×${b.inc.mul.join('/')}` : '기본', 'shp:inc']);
+    if (!same(a.charm, b.charm)) out.push(['빛나는 부적 효과', a.charm ? `${a.charm.min}분 · 알 ${a.charm.n}개에 1개` : '기본', b.charm ? `${b.charm.min}분 · 알 ${b.charm.n}개에 1개` : '기본', 'shp:charm']); }
   if (D.monSh) { const a = ORIG.monSh || {}, b = D.monSh, f = v => v ? `${Math.round(v[0] * 100)}% ${v[1]},${v[2]}${v[3] ? ` ${v[3]}°` : ''}` : '기본'; for (const sp of new Set([...Object.keys(a), ...Object.keys(b)])) if (JSON.stringify(a[sp] || null) !== JSON.stringify(b[sp] || null)) out.push([sp === '0' ? '그림자 전체 기본' : `${spName(+sp)} 그림자`, f(a[sp]), f(b[sp]), 'msh:' + sp]); }
   for (const [k, lab, f, d] of [['monRot', '기울기', v => v + '°', 0], ['monFly', '떠 있는 높이', (v, sp) => Math.max(0, flyB(+sp) + v) + 'px', 0]]) if (D[k]) { const a = ORIG[k] || {}, b = D[k]; for (const sp of new Set([...Object.keys(a), ...Object.keys(b)])) if ((a[sp] || d) !== (b[sp] || d)) out.push([`${spName(+sp)} ${lab}`, f(a[sp] || d, sp), f(b[sp] || d, sp), (k === 'monRot' ? 'mrt:' : 'mfl:') + sp]); }
   if (D.monFlyA) { const a = ORIG.monFlyA || {}, b = D.monFlyA, f = o => Object.entries(o || {}).map(([n, v]) => `${ANIM_KO[n] || n} ${v > 0 ? '+' : ''}${v}`).join(', ') || '없음'; for (const sp of new Set([...Object.keys(a), ...Object.keys(b)])) if (JSON.stringify(a[sp] || {}) !== JSON.stringify(b[sp] || {})) out.push([`${spName(+sp)} 동작별 떠 있기`, f(a[sp]), f(b[sp]), 'mfa:' + sp]); }
@@ -1857,6 +1868,9 @@ function undoCore(key, live) {
   else if (t === 'msc') { const o = { ...(D.monSc || {}) }, og = ORIG.monSc || {}; if (a in og) o[a] = og[a]; else delete o[a]; D.monSc = o; if (JSON.stringify(o) === JSON.stringify(og)) delete D.monSc; if (live) scLive(); }
   else if (t === 'thov') { const o = { ...(D.thOv || {}) }, og = ORIG.thOv || {}; if (a in og) o[a] = og[a]; else delete o[a]; D.thOv = o; if (JSON.stringify(o) === JSON.stringify(og)) delete D.thOv; if (live) { A?.setThOv?.(effP(D, 'thOv')); A?.setThSp?.(effP(D, 'thSp')); } }
   else if (t === 'thsp') { const o = { ...(D.thSp || {}) }, og = ORIG.thSp || {}; if (a in og) o[a] = og[a]; else delete o[a]; D.thSp = o; if (JSON.stringify(o) === JSON.stringify(og)) delete D.thSp; if (live) A?.setThSp?.(effP(D, 'thSp')); }
+  else if (t === 'shp') { const o = JSON.parse(JSON.stringify(D.shop || {})), og = ORIG.shop || {}, rest = key.slice(4), k = rest.split(':')[0], id = rest.slice(2);
+    if (k === 'p') { o.price = { ...(o.price || {}) }; if (og.price && id in og.price) o.price[id] = og.price[id]; else delete o.price[id]; if (!Object.keys(o.price).length) delete o.price; } else { if (og[k]) o[k] = og[k]; else delete o[k]; }
+    D.shop = o; if (same(o, og)) delete D.shop; A?.applyShop?.(effP(D, 'shop')); }
   else if (t === 'msh') { const o = { ...(D.monSh || {}) }, og = ORIG.monSh || {}; if (a in og) o[a] = og[a]; else delete o[a]; D.monSh = o; if (JSON.stringify(o) === JSON.stringify(og)) delete D.monSh; if (live) scLive(); }
   else if (t === 'mfa') { const o = { ...(D.monFlyA || {}) }, og = ORIG.monFlyA || {}; if (a in og) o[a] = og[a]; else delete o[a]; D.monFlyA = o; if (JSON.stringify(o) === JSON.stringify(og)) delete D.monFlyA; if (live) scLive(); }
   else if (t === 'mrt' || t === 'mfl') { const k = t === 'mrt' ? 'monRot' : 'monFly', o = { ...(D[k] || {}) }, og = ORIG[k] || {}; if (a in og) o[a] = og[a]; else delete o[a]; D[k] = o; if (JSON.stringify(o) === JSON.stringify(og)) delete D[k]; if (live) scLive(); }
@@ -1901,7 +1915,7 @@ function snapshotOf() {
   const eggL = {}; for (let g = 1; g <= 5; g++) { const E = eggList(g); if (E) eggL[g] = E; }
   const tierOrd = { ...(ORIG.tierOrd || {}), ...(D.tierOrd || {}) }; for (const t of Object.keys(tierOrd)) if (!tierOrd[t]?.length) delete tierOrd[t];
   const eggEx = {}; for (let g = 1; g <= 5; g++) { const X = exOf(g); if (X.length) eggEx[g] = X; }
-  return { layout: D.layout || ORIG.layout, odds: odds(), pity: pity(), eggTiers: eggTiers(), eggList: eggL, eggEx, tierOv, tierOrd, bub: effP(D, 'bub'), monSc: effP(D, 'monSc'), monRot: effP(D, 'monRot'), monFly: effP(D, 'monFly'), monFlyA: effP(D, 'monFlyA'), monSh: effP(D, 'monSh'), thSp: effP(D, 'thSp'), thOv: effP(D, 'thOv'), tierK: { r: kR(), k: kOf() }, off: [...offSet()].sort((a, b) => a - b), bal: { ...ORIG.bal, ...(D.bal || {}) }, spots: (effP(D, 'spots') || []).map(o => { const n = { ...o }; delete n.tha; delete n.pn; if (!Array.isArray(o.th)) { const t = geoThAuto(o); if (t.length) n.tha = t; } const pn = geoName(o) || geoThWhy(o)[0]; if (pn) n.pn = pn; return n; }) };   // v2.93 경완: 게임이 알 주운 곳을 반경 이름·장소 특성과 맞추도록 자동 특성(tha)·장소 이름(pn)을 같이 보낸다
+  return { layout: D.layout || ORIG.layout, odds: odds(), pity: pity(), eggTiers: eggTiers(), eggList: eggL, eggEx, tierOv, tierOrd, bub: effP(D, 'bub'), monSc: effP(D, 'monSc'), monRot: effP(D, 'monRot'), monFly: effP(D, 'monFly'), monFlyA: effP(D, 'monFlyA'), monSh: effP(D, 'monSh'), shop: effP(D, 'shop') || {}, thSp: effP(D, 'thSp'), thOv: effP(D, 'thOv'), tierK: { r: kR(), k: kOf() }, off: [...offSet()].sort((a, b) => a - b), bal: { ...ORIG.bal, ...(D.bal || {}) }, spots: (effP(D, 'spots') || []).map(o => { const n = { ...o }; delete n.tha; delete n.pn; if (!Array.isArray(o.th)) { const t = geoThAuto(o); if (t.length) n.tha = t; } const pn = geoName(o) || geoThWhy(o)[0]; if (pn) n.pn = pn; return n; }) };   // v2.93 경완: 게임이 알 주운 곳을 반경 이름·장소 특성과 맞추도록 자동 특성(tha)·장소 이름(pn)을 같이 보낸다
 }
 const ghErr = e => e.status === 401 ? '열쇠가 맞지 않거나 만료됐어요' : e.status === 403 || e.status === 404 ? '저장소에 쓸 권한이 없어요 (pokemon-meadow, Contents 쓰기)' : e.message || String(e);
 async function gh(path, opt = {}, tok = store.get('st-gh-token')) {
@@ -1968,6 +1982,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.14', '10월 20일', ['상점 메뉴 (데이터): 도구·아이템·배경 음악 가격, 향로(시간·등급 배수)·빛나는 부적(시간·알 몇 개에 1개) 효과와 몇 km에 한 번꼴인지 계산 (베타 게임)']],
   ['3.13', '10월 20일', ['버전 화면에 베타 게임 보기 토글 (새 기능 시험판 beta.html 을 미리보기로)']],
   ['3.12', '10월 20일', ['동작별 떠 있기 창 그림에도 그림자(크기·자리·기울기)·떠 있기·몸 기울기를 맵과 똑같이 보여 줌 (게임 v5.73)']],
   ['3.11', '10월 20일', ['그림자: 기울기 조절, 칸마다 숫자 입력', "그림자 '전체 기본' — 모든 포켓몬 그림자의 크기·좌우·위아래·기울기 기본값 (포켓몬마다 바꾼 값은 여기에 더해짐)", '게임 v5.72: 그림자를 몸 쪽으로 조금 올리고 폭을 넓힘 (노고치·단단지·헤라크로스·링곰·마그카르고·꾸꾸리·메꾸리·코산호 등)']],
@@ -2979,7 +2994,44 @@ async function renderGeo() {
   if (view !== 'geo') return; geoInit(); geoM.invalidateSize({ pan: false }); geoDraw();
   if (!geoInit.z) { geoInit.z = 1; geoM.on('zoomend', geoDraw); }
 }
-const RENDER = { ver: renderVer, bub: renderBub, newmo: renderNewmo, map: () => {}, mon: renderMon, odds: renderOdds, pool: renderPool, hatch: renderHatch, rank: renderRank, geo: renderGeo, thm: renderThm, tier: renderTier, bal: renderBal, work: renderWork, test: renderTest };
+// ---------- v3.14 경완: 상점 — 물건 가격, 향로·빛나는 부적 효과 (데이터 shop) ----------
+const SHOP0 = { price: {}, inc: { min: 30, mul: [1, 1, 2.5, 4, 4] }, charm: { min: 60, n: 40 } };
+const shopEff = () => { const o = effP(D, 'shop') || {}; return { price: { ...(o.price || {}) }, inc: { ...SHOP0.inc, ...(o.inc || {}) }, charm: { ...SHOP0.charm, ...(o.charm || {}) } }; };
+let shopKmh = 5;   // 걷는 빠르기 가정 (화면 계산용, 저장 안 함)
+function shopPut(fn) { const o = JSON.parse(JSON.stringify(shopEff())); fn(o); if (!Object.keys(o.price).length) delete o.price; if (same(o.inc, SHOP0.inc)) delete o.inc; if (same(o.charm, SHOP0.charm)) delete o.charm;
+  D.shop = o; if (same(o, ORIG.shop || {})) delete D.shop; A?.applyShop?.(effP(D, 'shop')); saveDraft(); renderShop(); dstat(); }
+function renderShop() {
+  const I = A?.ITEMS, T = A?.TRACKS || [], sh = shopEff(), O = odds(), E = 1 / (bal('BAG_STEP') || .25), SN = bal('SHINY_N') || 4096;
+  if (!I) { $('#shopC').innerHTML = `<div class="card"><h2>상점</h2><p class="small mute">상점 도구·아이템은 아직 베타 게임에만 있어요. 버전 화면에서 <b>베타 게임으로 보기</b>를 켜면 여기서 가격과 효과를 고칠 수 있어요.</p></div>`; $('#shopI').innerHTML = ''; return; }
+  const pr = (id, p0) => { const v = sh.price[id] ?? p0, ch = (effP(D, 'shop')?.price || {})[id] !== (ORIG.shop?.price || {})[id]; return `<span class="uw"><input class="inp${ch ? ' ch' : ''}" data-sp="${id}" inputmode="numeric" value="${v}" aria-label="가격"><span class="u">G</span></span>`; };
+  const row = (img, n, id, p0) => `<div class="br shop-r">${img}<div class="lt">${esc(n)}${(sh.price[id] ?? p0) !== p0 ? `<small>기본 ${p0.toLocaleString()}G</small>` : ''}</div>${pr(id, p0)}</div>`;
+  const ic = o => `<img class="sic" src="${A.ITEM_ART[o.a]}" alt="">`;
+  const mul = sh.inc.mul, W = O.map((p, i) => p * mul[i]), Ws = W.reduce((a, b) => a + b, 0) || 1, OI = W.map(x => x / Ws);
+  const kmOf = p => p > 0 ? 1 / (E * p) : Infinity, fk = v => !isFinite(v) ? '—' : v >= 100 ? Math.round(v).toLocaleString() + 'km' : v >= 10 ? v.toFixed(1) + 'km' : v.toFixed(2) + 'km', pc = v => (v * 100 >= 10 ? (v * 100).toFixed(1) : (v * 100).toFixed(2)) + '%';
+  const kmI = sh.inc.min / 60 * shopKmh, nI = E * kmI, atLeast = (p, n) => 1 - Math.pow(1 - p, n);
+  const ep0 = O[3] + O[4], ep1 = OI[3] + OI[4], kmC = sh.charm.min / 60 * shopKmh, nC = E * kmC, pC = 1 / sh.charm.n + 1 / SN;
+  $('#shopC').innerHTML = `<div class="card"><h2 class="ih">${gi('coin')}향로 효과</h2>
+      <div class="br"><div class="lt">한 번 쓰면<small>그동안 걸으며 줍는 알의 등급 확률에 아래 배수를 곱해요</small></div><span class="uw"><input class="inp" data-si="min" inputmode="numeric" value="${sh.inc.min}"><span class="u">분</span></span></div>
+      <table class="shtb"><tr><th>등급</th><th>배수</th><th>평소</th><th>향로 중</th><th>평소 1개</th><th>향로 중 1개</th></tr>${[1, 2, 3, 4, 5].map(g => `<tr><td><span style="color:${GC[g]}">${GN[g]}</span></td><td><input class="inp sm${mul[g - 1] !== SHOP0.inc.mul[g - 1] ? ' ch' : ''}" data-sm="${g - 1}" inputmode="decimal" value="${mul[g - 1]}"></td><td>${pc(O[g - 1])}</td><td><b>${pc(OI[g - 1])}</b></td><td>${fk(kmOf(O[g - 1]))}</td><td><b>${fk(kmOf(OI[g - 1]))}</b></td></tr>`).join('')}</table>
+      <p class="small">1km에 알 약 ${E.toFixed(1)}개 · 시속 <input class="inp sm" id="shKmh" inputmode="decimal" value="${shopKmh}">km로 걸으면 향로 한 번(${sh.inc.min}분) 동안 약 ${kmI.toFixed(1)}km, 알 ${nI.toFixed(0)}개를 주워요. 그동안 <b>에픽 이상이 하나라도 나올 확률</b>: 평소 ${pc(atLeast(ep0, nI))} → 향로 ${pc(atLeast(ep1, nI))}, 전설: 평소 ${pc(atLeast(O[4], nI))} → 향로 ${pc(atLeast(OI[4], nI))}</p></div>
+    <div class="card"><h2 class="ih">${gi('coin')}빛나는 부적 효과</h2>
+      <div class="br"><div class="lt">한 번 쓰면</div><span class="uw"><input class="inp" data-sc="min" inputmode="numeric" value="${sh.charm.min}"><span class="u">분</span></span></div>
+      <div class="br"><div class="lt">그동안 이로치가 든 알<small>줍는 알 몇 개에 1개꼴</small></div><span class="uw"><input class="inp" data-sc="n" inputmode="numeric" value="${sh.charm.n}"><span class="u">개에 1개</span></span></div>
+      <p class="small">평소 이로치: 알 ${SN.toLocaleString()}개에 1마리 = <b>${fk(SN / E)}에 1번꼴</b> → 부적 중: <b>${fk(1 / (E * pC))}에 1번꼴</b>. 부적 한 번(${sh.charm.min}분, 약 ${kmC.toFixed(1)}km·알 ${nC.toFixed(0)}개) 동안 이로치 알이 하나라도 나올 확률 <b>${pc(atLeast(pC, nC))}</b> (평소 ${pc(atLeast(1 / SN, nC))})</p></div>
+    <div class="card"><h2 class="ih">${gi('coin')}아이템 가격</h2><div>${I.filter(o => o.k === 'item').map(o => row(ic(o), o.n, o.id, o.p)).join('')}</div></div>
+    <div class="card"><h2 class="ih">${gi('coin')}도구 가격 (특수 진화)</h2><div>${I.filter(o => o.k === 'tool').map(o => row(ic(o), o.n, o.id, o.p)).join('')}</div></div>
+    <div class="card"><h2 class="ih">${gi('coin')}배경 음악 가격</h2><div>${T.filter(t => t.price).map(t => row('', t.n, 'bgm:' + t.id, t.price)).join('')}</div></div>
+    ${boxBar('shop')}`;
+  $('#shopI').innerHTML = `<h4>상점</h4><div class="small mute">상점 물건 가격과 향로·빛나는 부적의 효과예요. 표는 지금 배포하려는 알 수집 확률과 1km 알 개수로 계산해요. 고친 뒤 저장을 눌러야 배포하기에 들어가요.</div>`;
+}
+$('#shopC').addEventListener('change', e => { const t = e.target, v = +t.value;
+  if (t.id === 'shKmh') { if (v > 0 && v < 40) shopKmh = v; renderShop(); return; }
+  if (!(v >= 0) || t.value === '') { renderShop(); return; }
+  if (t.dataset.sp) shopPut(o => { const id = t.dataset.sp, p0 = A.ITEMS.find(x => x.id === id)?.p ?? A.TRACKS.find(x => 'bgm:' + x.id === id)?.price; if (Math.round(v) === p0) delete o.price[id]; else o.price[id] = Math.round(v); });
+  else if (t.dataset.si) shopPut(o => { o.inc.min = Math.max(1, Math.min(1440, Math.round(v))); });
+  else if (t.dataset.sm) shopPut(o => { o.inc.mul = [...o.inc.mul]; o.inc.mul[+t.dataset.sm] = Math.min(100, v); });
+  else if (t.dataset.sc) shopPut(o => { o.charm[t.dataset.sc] = t.dataset.sc === 'min' ? Math.max(1, Math.min(1440, Math.round(v))) : Math.max(1, Math.round(v)); }); });
+const RENDER = { ver: renderVer, bub: renderBub, newmo: renderNewmo, map: () => {}, mon: renderMon, odds: renderOdds, pool: renderPool, hatch: renderHatch, rank: renderRank, geo: renderGeo, thm: renderThm, tier: renderTier, bal: renderBal, shop: renderShop, work: renderWork, test: renderTest };
 
 // ---------- 게임과 연결 ----------
 function hook() {
@@ -2987,7 +3039,7 @@ function hook() {
   $('#gLoad').hidden = true;
   if (!w.document.__unmk) { w.document.__unmk = 1; w.addEventListener('pointerdown', e => { if (!e.target.closest?.('.mon')) unmarkMon(); }, true); w.addEventListener('keydown', e => szKey(e)); }   // v2.1 경완: 맵 빈 곳을 누르면 포켓몬 선택(테두리) 풀기
   if (!ORIG) {
-    const K = A.K; LIVE = A.cfg || { ver: 0 }; ORIG = { odds: K.ODDS, pity: { e: K.PITY_E, l: K.PITY_L }, eggTiers: JSON.parse(JSON.stringify(A.EGG_TIERS)), eggList: JSON.parse(JSON.stringify(A.EGG_LIST || [])), eggEx: JSON.parse(JSON.stringify(A.EGG_EX || [])), tierOrd: JSON.parse(JSON.stringify(A.TIER_ORD || {})), off: [...(A.SP_OFF || [])], tierK: { r: A.cfg?.data?.tierK?.r ?? 1, k: { ...(A.TIER_KT || {}) } }, bub: { ...(A.BUB_OV || {}) }, monSc: { ...(A.MON_SC || {}) }, monRot: { ...(A.MON_ROT || {}) }, monFly: { ...(A.MON_FLY || {}) }, monFlyA: JSON.parse(JSON.stringify(A.MON_FLYA || {})), monSh: JSON.parse(JSON.stringify(A.MON_SH || {})), thSp: JSON.parse(JSON.stringify(A.TH_SP_OV || {})), thOv: JSON.parse(JSON.stringify(A.TH_OV || {})), spots: JSON.parse(JSON.stringify(A.SPOTS || [])).map(o => { delete o.tha; delete o.pn; return o; }), layout: A.defaultLayout(),
+    const K = A.K; LIVE = A.cfg || { ver: 0 }; ORIG = { odds: K.ODDS, pity: { e: K.PITY_E, l: K.PITY_L }, eggTiers: JSON.parse(JSON.stringify(A.EGG_TIERS)), eggList: JSON.parse(JSON.stringify(A.EGG_LIST || [])), eggEx: JSON.parse(JSON.stringify(A.EGG_EX || [])), tierOrd: JSON.parse(JSON.stringify(A.TIER_ORD || {})), off: [...(A.SP_OFF || [])], tierK: { r: A.cfg?.data?.tierK?.r ?? 1, k: { ...(A.TIER_KT || {}) } }, bub: { ...(A.BUB_OV || {}) }, monSc: { ...(A.MON_SC || {}) }, monRot: { ...(A.MON_ROT || {}) }, monFly: { ...(A.MON_FLY || {}) }, monFlyA: JSON.parse(JSON.stringify(A.MON_FLYA || {})), monSh: JSON.parse(JSON.stringify(A.MON_SH || {})), shop: JSON.parse(JSON.stringify(LIVE.data?.shop || {})), thSp: JSON.parse(JSON.stringify(A.TH_SP_OV || {})), thOv: JSON.parse(JSON.stringify(A.TH_OV || {})), spots: JSON.parse(JSON.stringify(A.SPOTS || [])).map(o => { delete o.tha; delete o.pn; return o; }), layout: A.defaultLayout(),
       bal: { ...(K.HATCH_KM ? { HATCH_KM: K.HATCH_KM } : {}), DUP_G: K.DUP_G, NEW_EGG_G: K.NEW_EGG_G, NEW_G: K.NEW_G, RUN_G: K.RUN_G, FR_TABLE: K.FR_TABLE, BERRY_FR_DAY: K.BERRY_FR_DAY, JOY_HOLD: K.JOY_HOLD, PET_FR: K.PET_FR ?? 1, PET_DAY: K.PET_DAY, WASH_FR1: K.WASH_FR1 ?? 3, FLD_FR_DAY: K.FLD_FR_DAY, WALK_FR: K.WALK_FR, FR_EVO: K.FR_EVO, FR_MAX: K.FR_MAX,
         CLEAN_DAYS: Math.round(100 / K.CLEAN_RATE / 86400 * 100) / 100, HUNGER_RATE: K.HUNGER_RATE, JOY_HOURS: Math.round(100 / K.JOY_RATE / 3600 * 100) / 100, MAX_EGGS: K.MAX_EGGS, MAX_BAG: K.MAX_BAG, BAG_STEP: K.BAG_STEP, SHINY_N: Math.round(1 / K.SHINY_RATE) } };
     A.ensureSprite(1).then(() => { $('#logoI').src = thumb(25) || ''; A.ensureSprite(25).then(() => $('#logoI').src = thumb(25)); });
@@ -2997,7 +3049,7 @@ function hook() {
   if (store.get('st-thfill42') !== '1' && ORIG.spots?.some(o => Array.isArray(o.th))) { const gk = o => [o.la, o.lo, o.r, o.r2 || 0, o.rot || 0].join(','), TM = new Map(ORIG.spots.filter(o => Array.isArray(o.th)).map(o => [gk(o), o.th])); let n = 0;
     for (const W of [D, D._sv]) if (W && Array.isArray(W.spots)) for (const o of W.spots) if (!Array.isArray(o.th) && TM.has(gk(o))) { o.th = [...TM.get(gk(o))]; n++; }
     store.set('st-thfill42', '1'); if (n) { saveDraft(); histReset(); } }
-  if (D.layout) A.setLayout(D.layout); bubLive(); if (D.monSc || D.monRot || D.monFly || D.monFlyA || D.monSh) scLive(); if (D.thOv) A.setThOv?.(effP(D, 'thOv')); if (D.thSp || D.thOv) A.setThSp?.(effP(D, 'thSp')); scBar(); safeInit();
+  if (D.layout) A.setLayout(D.layout); bubLive(); if (D.monSc || D.monRot || D.monFly || D.monFlyA || D.monSh) scLive(); if (D.shop) A?.applyShop?.(effP(D, 'shop')); if (D.thOv) A.setThOv?.(effP(D, 'thOv')); if (D.thSp || D.thOv) A.setThSp?.(effP(D, 'thSp')); scBar(); safeInit();
   A.edit(editing); if (!$('#hrNow').disabled) A.setHour(+$('#hr').value); $('#hrNow').disabled && $('#hrNow').onclick();
   const w0 = $('#wx .on')?.dataset.w; if (w0) A.setWx(w0);
   $('#addp').innerHTML = A.ADD.map(([k, n]) => { const s = A.addIcon(k); return `<button data-k="${k}">${s ? `<img alt="" src="${s}">` : `<span class="ph">${k === 'mush' ? '🍄' : '●'}</span>`}${n}</button>`; }).join('');

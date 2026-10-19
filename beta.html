@@ -341,7 +341,13 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .shopwin{max-width:560px;height:min(90vh,760px);display:flex;flex-direction:column}
 .shopwin .stab:not([hidden]){flex:1;min-height:0;display:flex;flex-direction:column}
 .shopwin .soon{margin:auto;color:var(--dim);font-size:16px;text-align:center}
-.runtabs.shoptabs{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:10px}
+.runtabs.shoptabs{grid-template-columns:repeat(5,minmax(0,1fr));margin-top:10px}
+.itm .vpic img{width:48px;height:48px;margin:4px;image-rendering:pixelated}.itm .icnt{position:absolute;top:3px;right:4px;font-style:normal;font-size:11px;background:var(--frame);color:var(--win);padding:0 5px;border-radius:8px}
+.sb-pic{width:40px;height:40px;image-rendering:pixelated;flex:none}.shop-bar .sb-name span{white-space:normal}
+#itemPop{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35)}#itemPop[hidden]{display:none}.ipwin{width:min(92vw,400px)}.iprow{display:flex;align-items:center;gap:10px;padding:8px 4px;border-top:2px dashed var(--inner)}.iprow img{width:40px;height:40px;image-rendering:pixelated}.iprow div{flex:1;min-width:0}.iprow b{display:block}.iprow span{font-size:12px;color:var(--dim)}
+.fxbar{display:flex;gap:6px}.fxbar:empty{display:none}.fxc{display:flex;align-items:center;gap:2px;font-size:12px;color:#fff;text-shadow:0 1px 0 #000,1px 0 0 #000,-1px 0 0 #000,0 -1px 0 #000}.fxc img{width:24px;height:24px;image-rendering:pixelated}
+.egg.shx::after{content:'✦';position:absolute;right:-2px;top:2px;color:#ffd84a;font-size:16px;text-shadow:0 0 4px #fff,0 0 2px #a86a00;animation:shxT 1.6s steps(4) infinite}@keyframes shxT{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.pp-evo .evobtn{flex:1;width:auto}.pp-evo .itembtn{flex:none;width:auto;height:40px;margin:0;padding:0 12px;font-size:14px;white-space:nowrap;writing-mode:horizontal-tb}.shoptabs .runtab{font-size:14px;padding:10px 2px;word-break:keep-all}
 .bgm-pick{display:grid;grid-template-columns:76px minmax(0,1fr);align-items:center;gap:6px;margin-bottom:10px;font-size:15px}
 .bgm-pick .fsel{width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #bgmPop{z-index:5800}#bgmOpts.fopts{grid-template-columns:1fr}#bgmOpts.fopts button{text-align:left;padding:9px 10px}
@@ -1382,7 +1388,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
   </nav>
 
   <div class="hud goldbar" id="goldbar">
-    <div class="gold" id="gold" aria-label="골드"><i class="coin" aria-hidden="true"></i><b id="goldN">0</b><span>G</span></div>
+    <div class="gold" id="gold" aria-label="골드"><i class="coin" aria-hidden="true"></i><b id="goldN">0</b><span>G</span></div><div class="fxbar" id="fxBar"></div>
   </div>
 
   <div class="hud berrybar">
@@ -1436,6 +1442,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
   </div>
 </div>
 
+<div id="itemPop" hidden></div>
 <div class="sheet" id="shop" hidden>
   <div class="win shopwin" role="dialog" aria-label="상점">
     <div class="sheet-head"><h3 id="shopTitle">상점</h3><span class="shop-gold gold"><i class="coin" aria-hidden="true"></i><b id="shopGold">0</b><span>G</span></span></div>
@@ -1444,9 +1451,11 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
       <div class="shop-bar" id="shopBar"></div>
       <p class="shop-msg" id="shopMsg"></p>
     </section>
+    <section class="stab" data-st="tool" hidden><div class="shop-inv" id="toolList"></div><div class="shop-bar" id="toolBar" hidden></div><p class="shop-msg" id="toolMsg"></p></section>
+    <section class="stab" data-st="item" hidden><div class="shop-inv" id="itemList"></div><div class="shop-bar" id="itemBar" hidden></div><p class="shop-msg" id="itemMsg"></p></section>
     <section class="stab" data-st="cloth" hidden><p class="soon">아직 준비중입니다</p></section>
     <section class="stab" data-st="acc" hidden><p class="soon">아직 준비중입니다</p></section>
-    <div class="runtabs shoptabs" id="shopTabs" role="tablist"><button class="runtab" role="tab" data-st="bgm">배경 음악</button><button class="runtab" role="tab" data-st="cloth">옷</button><button class="runtab" role="tab" data-st="acc">액세서리</button></div>
+    <div class="runtabs shoptabs" id="shopTabs" role="tablist"><button class="runtab" role="tab" data-st="bgm">배경 음악</button><button class="runtab" role="tab" data-st="tool">도구</button><button class="runtab" role="tab" data-st="item">아이템</button><button class="runtab" role="tab" data-st="cloth">옷</button><button class="runtab" role="tab" data-st="acc">액세서리</button></div>
   </div>
 </div>
 <div class="sheet" id="set" hidden>
@@ -1599,7 +1608,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
     <i class="sw-h l" id="ppHl"></i><i class="sw-h r" id="ppHr"></i><div class="dp-head m-head"><span class="hd-rk" id="ppRk"></span><span class="bud-tag" id="ppBudTag" hidden>짝꿍</span><button class="pp-x" id="ppX" aria-label="닫기">✕</button></div>
     <div class="dp-pic" id="ppPic"><img alt="" id="ppImg"></div>
     <div class="pp-body" id="ppBody"></div>
-    <div class="pp-evo" id="ppEvo" hidden><button class="boxbtn evobtn" id="ppEvoBtn">진화하기</button></div>
+    <div class="pp-evo" id="ppEvo" hidden><button class="boxbtn evobtn" id="ppEvoBtn">진화하기</button><button class="boxbtn itembtn" id="ppItem" hidden>도구 쓰기</button></div>
     <div class="pp-btns"><button class="boxbtn green" id="ppField"></button><button class="boxbtn pink" id="ppBud"></button></div>
     <button class="pp-free" id="ppFree">놓아주기</button>
   </div>
@@ -5348,7 +5357,7 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, hunger: m.hunger, slpB: m.slpB, slpW: m.slpW, social: m.social, joy: m.joy, joyH: m.joyH || 0, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk, red: !!b.red })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], dexNew: [...(S.dexNew || [])] };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])] };
 }
 let saveFrozen = false, tutFreeze = false;
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
@@ -5356,7 +5365,7 @@ async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
   S.lockT = d.lockT || 0; S.tree = d.tree || null; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.bagDry = d.bagDry || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.trI = d.trI ?? null; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.autoInc = !!d.autoInc; S.noti = { on: true, egg: true, hatch: true, evo: true, ...(d.noti || {}) }; S.bagQ = Array.isArray(d.bagQ) ? d.bagQ : [];   /* v4.23 경완: 부화기 자동 채우기가 다시 켜면 꺼지던 문제 — 저장에 빠져 있었다 */ S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
-  if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1;
+  if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1; S.items = d.items || {}; S.fx = d.fx || {}; S.colT = d.colT || 0;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
   cleanPlaces();
   S.dexNew = new Set(d.dexNew || []); S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
@@ -5603,7 +5612,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
 const IS_BETA = /beta\.html$/.test(location.pathname);   // v5.74: 새 기능 시험판(beta.html)인지
-const APP_VER = '5.74';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.75';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5644,6 +5653,100 @@ $('#pfRunBtn').onclick = () => { sfx('tap'); renderRunLog(); setPage('runs'); };
   setEl.addEventListener('click', e => { if (performance.now() - swEnd < 400) { e.stopPropagation(); e.preventDefault(); } }, true);   // 밀고 뗀 손이 바깥(닫기)으로 눌리지 않게
 }
 $('#openSet').onclick = () => tabTo(setEl, () => { renderProfile(); renderRunLog(); setPage(false); setEl.hidden = false; });
+// ---------- v5.75 경완: 상점 도구(특수 진화)·아이템(향로·빛나는 부적) 도트 그림 (16×16, 바깥 테두리는 자동) ----------
+const ITEM_ART = (() => {
+  const mk = draw => { const c = document.createElement('canvas'); c.width = c.height = 16; const x = c.getContext('2d'), G = Array.from({ length: 16 }, () => Array(16).fill(null));
+    const px = (i, j, col) => { i = Math.round(i); j = Math.round(j); if (i >= 1 && i <= 14 && j >= 1 && j <= 14 && col) G[j][i] = col; };
+    const disc = (cx, cy, rx, ry, col) => { for (let j = 1; j <= 14; j++) for (let i = 1; i <= 14; i++) if (((i - cx) / rx) ** 2 + ((j - cy) / ry) ** 2 <= 1) px(i, j, col(i, j)); };
+    const rect = (a, b, w, h, col) => { for (let j = b; j < b + h; j++) for (let i = a; i < a + w; i++) px(i, j, typeof col === 'function' ? col(i, j) : col); };
+    const bmp = (a, b, rows, pal) => rows.forEach((r, j) => [...r].forEach((ch, i) => { if (pal[ch]) px(a + i, b + j, pal[ch]); }));
+    draw({ px, disc, rect, bmp });
+    const O = '#262433';   // 테두리: 칠한 칸 바로 바깥
+    for (let j = 0; j < 16; j++) for (let i = 0; i < 16; i++) { const v = G[j][i]; if (v) { x.fillStyle = v; x.fillRect(i, j, 1, 1); continue; }
+      if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([a, b]) => G[j + b]?.[i + a] && G[j + b][i + a] !== O)) { x.fillStyle = O; x.fillRect(i, j, 1, 1); } }
+    return c.toDataURL(); };
+  // 진화의 돌: 둥근 보석 + 밝은 위왼쪽·어두운 아래오른쪽 + 가운데 무늬
+  const stone = (L, M, D, sym, pal) => mk(({ disc, bmp, px }) => {
+    disc(7.5, 8, 6.2, 5.6, (i, j) => { const t = (i - 7.5) + (j - 8); return t < -5 ? L : t > 3.5 ? D : M; });
+    if (sym) bmp(5, 5, sym, pal); px(4, 5, '#fff'); px(4, 6, '#fff'); px(5, 4, '#fff'); });
+  const S5 = s => s.split('|');
+  const A = {
+    fire: stone('#ffb27a', '#f06a3a', '#b8382a', S5('..y..|.yoy.|.yoy.|yoooy|.ooo.|.....'), { y: '#ffe25a', o: '#ffa020' }),
+    water: stone('#9fd8ff', '#3d8fe8', '#2a5cb0', S5('..w..|.wbw.|wbbbw|wbbbw|.www.|.....'), { w: '#e8f6ff', b: '#7fc4ff' }),
+    thunder: stone('#d8f59a', '#7fcf4a', '#3f8a3a', S5('...y.|..yy.|.yyyy|..yy.|.yy..|.y...'), { y: '#ffe830' }),
+    leaf: stone('#f0d39a', '#c98f4a', '#8a5a2a', S5('...g.|..ggg|.ggg.|gggg.|.g...|g....'), { g: '#4fbf4a' }),
+    moon: stone('#9a9aa8', '#5d5c6c', '#3a3948', S5('.c...|.....|...c.|.c...|....c|.....'), { c: '#c9c6d8' }),
+    sun: stone('#ffd07a', '#ff8a30', '#c4502a', S5('y.y.y|.yyy.|yyryy|.yyy.|y.y.y|.....'), { y: '#fff06a', r: '#ff5030' }),
+    shiny: stone('#ffffff', '#dfe8f0', '#a8b6c8', S5('..y..|..y..|yyyyy|..y..|..y..|.....'), { y: '#ffd84a' }),
+    dusk: stone('#8a6aa8', '#4a3270', '#2a1a48', S5('.....|.ppp.|prrrp|.ppp.|.....|.....'), { p: '#c88aff', r: '#ff4060' }),
+    ice: stone('#e6fbff', '#9ee2f0', '#5aaec8', S5('w.w.w|.www.|wwbww|.www.|w.w.w|.....'), { w: '#ffffff', b: '#5aaec8' }),
+    dawn: stone('#9af0d8', '#3ab8a0', '#24786a', S5('..w..|.wcw.|wcccw|.wcw.|..w..|.....'), { w: '#ffffff', c: '#bff6ff' }),
+    tartApple: mk(({ disc, rect, px }) => { disc(8, 9.5, 5.4, 4.8, (i, j) => i + j < 15 ? '#b4e05a' : '#6aa832'); rect(8, 2, 1, 3, '#7a4a2a'); px(9, 3, '#3f9a3a'); px(10, 3, '#3f9a3a'); px(10, 2, '#3f9a3a'); px(5, 7, '#efffc0'); }),
+    sweetApple: mk(({ disc, rect, px }) => { disc(8, 9.5, 5.4, 4.8, (i, j) => i + j < 15 ? '#ff7a6a' : '#c8343a'); rect(8, 2, 1, 3, '#7a4a2a'); px(9, 3, '#3f9a3a'); px(10, 3, '#3f9a3a'); px(10, 2, '#3f9a3a'); px(5, 7, '#ffd8d0'); }),
+    syrupyApple: mk(({ disc, rect, px }) => { disc(8, 9.5, 5.4, 4.8, (i, j) => i + j < 15 ? '#ffd860' : '#e08a20'); rect(8, 2, 1, 3, '#7a4a2a'); px(9, 3, '#3f9a3a'); px(10, 3, '#3f9a3a'); px(10, 2, '#3f9a3a'); px(5, 7, '#fff6c0'); px(9, 13, '#ffb030'); px(9, 14, '#ffb030'); }),
+    crackedPot: mk(({ disc, rect, px }) => { disc(8, 10, 5, 4, (i, j) => i < 8 ? '#b88ae0' : '#7d52b0'); rect(6, 4, 5, 2, '#9b6ed0'); rect(7, 3, 3, 1, '#7d52b0'); rect(2, 8, 2, 1, '#9b6ed0'); px(1, 7, '#9b6ed0'); rect(13, 8, 1, 3, '#7d52b0'); [[9, 8], [10, 9], [9, 10], [10, 11]].forEach(([a, b]) => px(a, b, '#3a2450')); }),
+    teacup: mk(({ rect, px }) => { rect(3, 7, 9, 2, '#c8e0b0'); rect(4, 9, 7, 2, '#a8c890'); rect(5, 11, 5, 2, '#88a870'); rect(4, 13, 7, 1, '#6a8a58'); rect(12, 8, 2, 1, '#a8c890'); rect(13, 9, 1, 2, '#a8c890'); rect(4, 6, 7, 1, '#6aa04a'); px(6, 3, '#e0e8f0'); px(7, 4, '#e0e8f0'); px(8, 2, '#e0e8f0'); px(9, 3, '#e0e8f0'); }),
+    blessArmor: mk(({ rect, px }) => { rect(4, 3, 8, 2, '#ffe07a'); rect(2, 4, 3, 3, '#f0b830'); rect(11, 4, 3, 3, '#f0b830'); rect(4, 5, 8, 7, (i, j) => i < 8 ? '#ffd040' : '#d89a20'); rect(5, 12, 6, 2, '#c08820'); rect(7, 6, 2, 4, '#fff6c0'); rect(6, 7, 4, 1, '#fff6c0'); }),
+    curseArmor: mk(({ rect }) => { rect(4, 3, 8, 2, '#8a6aa8'); rect(2, 4, 3, 3, '#5a3a80'); rect(11, 4, 3, 3, '#5a3a80'); rect(4, 5, 8, 7, (i, j) => i < 8 ? '#6a4a98' : '#45306a'); rect(5, 12, 6, 2, '#3a2458'); rect(6, 7, 1, 2, '#ff4060'); rect(9, 7, 1, 2, '#ff4060'); }),
+    darkScroll: mk(({ rect, px }) => { rect(4, 3, 8, 10, '#f2e2b8'); rect(3, 2, 10, 2, '#3a2a48'); rect(3, 12, 10, 2, '#3a2a48'); rect(6, 5, 4, 1, '#2a1a38'); rect(7, 6, 2, 4, '#2a1a38'); rect(6, 8, 4, 1, '#2a1a38'); px(2, 2, '#c8a040'); px(13, 2, '#c8a040'); px(2, 13, '#c8a040'); px(13, 13, '#c8a040'); }),
+    blackAug: mk(({ px }) => { const S = [[7, 2, 3, 10], [4, 5, 3, 7], [10, 6, 3, 6]]; for (const [a, b, w, h] of S) for (let j = b; j < b + h; j++) for (let i = a; i < a + w; i++) { const top = j - b < (i - a === 1 ? 0 : 1); if (!top) px(i, j, i === a ? '#5a5a6a' : i === a + w - 1 ? '#18181f' : '#33333f'); } px(8, 3, '#9a9ab0'); px(5, 6, '#9a9ab0'); }),
+    peatBlock: mk(({ rect, px }) => { rect(3, 5, 10, 8, (i, j) => (i + j * 3) % 5 === 0 ? '#5a3a20' : i > 9 ? '#6a4a2a' : '#8a6038'); rect(4, 3, 10, 2, '#a07848'); rect(13, 4, 1, 8, '#5a3a20'); px(6, 8, '#4a8a3a'); px(10, 10, '#4a8a3a'); }),
+    metalAlloy: mk(({ rect, px }) => { rect(2, 9, 12, 4, (i, j) => j === 9 ? '#e8eef6' : i > 10 ? '#7a8494' : '#b4bcc8'); rect(4, 5, 9, 4, (i, j) => j === 5 ? '#f4f8ff' : i > 10 ? '#8a94a4' : '#c8d0dc'); px(5, 6, '#fff'); px(6, 6, '#fff'); px(3, 10, '#fff'); }),
+    wreath: mk(({ px }) => { for (let a = 0; a < 24; a++) { const t = a / 24 * Math.PI * 2, i = 7.5 + Math.cos(t) * 5.2, j = 8 + Math.sin(t) * 4.6; px(i, j, a % 3 ? '#5aa8b8' : '#3a7a5a'); px(i + Math.cos(t) * .9, j + Math.sin(t) * .9, a % 2 ? '#2f6a7a' : '#7ac0a0'); } px(7, 3, '#ffd84a'); px(8, 3, '#ffd84a'); }),
+    linkCord: mk(({ px }) => { for (let a = 0; a < 20; a++) { const t = a / 20 * Math.PI * 2; px(5 + Math.cos(t) * 3.4, 8 + Math.sin(t) * 3.4, '#ff5a5a'); px(10.5 + Math.cos(t) * 3.4, 8 + Math.sin(t) * 3.4, '#4a8aff'); } px(7, 6, '#ffd84a'); px(8, 7, '#ffd84a'); px(7, 9, '#ffd84a'); px(8, 10, '#ffd84a'); }),
+    incense: mk(({ rect, disc, px }) => { disc(8, 10.5, 4.6, 3.2, (i, j) => i < 8 ? '#c890e8' : '#8a54b8'); rect(5, 7, 6, 1, '#6a3a98'); rect(4, 13, 8, 1, '#5a2e80'); px(7, 5, '#e8e0f8'); px(8, 4, '#e8e0f8'); px(7, 3, '#e8e0f8'); px(9, 2, '#e8e0f8'); px(6, 9, '#ffe2ff'); px(8, 10, '#ffd84a'); }),
+    charm: mk(({ px, rect }) => { const st = ['....y....', '....y....', '...yyy...', 'yyyyoyyyy', '.yyoooyy.', '..yyoyy..', '..yy.yy..', '.yy...yy.', '.y.....y.']; st.forEach((r, j) => [...r].forEach((ch, i) => { if (ch !== '.') px(3 + i, 4 + j, ch === 'o' ? '#ffb020' : '#ffe050'); })); rect(7, 1, 3, 2, '#ff5a8a'); px(5, 3, '#fff'); px(12, 6, '#fff'); px(2, 11, '#fff'); }),
+  };
+  return A;
+})();
+// 상점 물건: k tool = 특수 진화 도구, item = 쓰면 일정 시간 효과. 가격·효과는 작업실 상점 메뉴에서 바꾼다 (데이터 shop)
+const ITEMS = [
+  { id: 'fire', n: '불꽃의돌', k: 'tool', p: 1200, a: 'fire' }, { id: 'water', n: '물의돌', k: 'tool', p: 1200, a: 'water' }, { id: 'thunder', n: '천둥의돌', k: 'tool', p: 1200, a: 'thunder' },
+  { id: 'leaf', n: '리프의돌', k: 'tool', p: 1200, a: 'leaf' }, { id: 'moon', n: '달의돌', k: 'tool', p: 1200, a: 'moon' }, { id: 'sun', n: '태양의돌', k: 'tool', p: 1200, a: 'sun' },
+  { id: 'ice', n: '얼음의돌', k: 'tool', p: 1500, a: 'ice' }, { id: 'shiny', n: '빛의돌', k: 'tool', p: 1800, a: 'shiny' }, { id: 'dusk', n: '어둠의돌', k: 'tool', p: 1800, a: 'dusk' }, { id: 'dawn', n: '각성의돌', k: 'tool', p: 1800, a: 'dawn' },
+  { id: 'link', n: '연결의끈', k: 'tool', p: 1500, a: 'linkCord', d: '통신교환으로 진화하는 포켓몬에게 쓰면 바로 진화해요.' },
+  { id: 'tart', n: '새콤한사과', k: 'tool', p: 1500, a: 'tartApple' }, { id: 'sweet', n: '달콤한사과', k: 'tool', p: 1500, a: 'sweetApple' }, { id: 'syrupy', n: '꿀맛사과', k: 'tool', p: 1500, a: 'syrupyApple' },
+  { id: 'pot', n: '깨진포트', k: 'tool', p: 2000, a: 'crackedPot' }, { id: 'cup', n: '범작찻잔', k: 'tool', p: 2000, a: 'teacup' }, { id: 'wreath', n: '가라두구머리장식', k: 'tool', p: 2000, a: 'wreath' },
+  { id: 'scroll', n: '악의 족자', k: 'tool', p: 2500, a: 'darkScroll' }, { id: 'aug', n: '검은휘석', k: 'tool', p: 2500, a: 'blackAug' }, { id: 'peat', n: '피트블록', k: 'tool', p: 2500, a: 'peatBlock' },
+  { id: 'bless', n: '축복받은갑옷', k: 'tool', p: 2500, a: 'blessArmor' }, { id: 'curse', n: '저주받은갑옷', k: 'tool', p: 2500, a: 'curseArmor' }, { id: 'alloy', n: '복합금속', k: 'tool', p: 2500, a: 'metalAlloy' },
+  { id: 'incense', n: '향로', k: 'item', p: 600, a: 'incense' }, { id: 'charm', n: '빛나는 부적', k: 'item', p: 3000, a: 'charm' },
+];
+const ITEM = Object.fromEntries(ITEMS.map(o => [o.id, o])), ITEM_BY_N = Object.fromEntries(ITEMS.map(o => [o.n, o.id]));
+// 향로: 쓰고 min 분 동안 줍는 알의 등급 확률에 mul 을 곱한다 (다시 나눠 합 1). 빛나는 부적: min 분 동안 줍는 알 n 개에 1개꼴로 이로치가 든 알
+let SHOP = { price: {}, inc: { min: 30, mul: [1, 1, 2.5, 4, 4] }, charm: { min: 60, n: 40 } };
+function applyShop(o) { const D = { price: {}, inc: { min: 30, mul: [1, 1, 2.5, 4, 4] }, charm: { min: 60, n: 40 } }; o = o && typeof o === 'object' ? o : {};
+  for (const [k, v] of Object.entries(o.price || {})) if ((ITEM[k] || (k.startsWith('bgm:') && TRACKS.some(t => 'bgm:' + t.id === k))) && v >= 0 && v <= 1e7) D.price[k] = Math.round(+v);
+  if (o.inc) { if (o.inc.min >= 1 && o.inc.min <= 1440) D.inc.min = +o.inc.min; if (Array.isArray(o.inc.mul) && o.inc.mul.length === 5 && o.inc.mul.every(x => x >= 0 && x <= 100)) D.inc.mul = o.inc.mul.map(Number); }
+  if (o.charm) { if (o.charm.min >= 1 && o.charm.min <= 1440) D.charm.min = +o.charm.min; if (o.charm.n >= 1 && o.charm.n <= 100000) D.charm.n = +o.charm.n; }
+  SHOP = D; }
+const itemPrice = id => SHOP.price[id] ?? ITEM[id].p;
+const trackPrice = t => SHOP.price['bgm:' + t.id] ?? t.price;   // 배경 음악 가격도 작업실에서
+const itemsOf = () => S.items || (S.items = {});
+const itemDesc = o => o.d || (o.id === 'incense' ? `쓰면 ${SHOP.inc.min}분 동안 걸으며 줍는 알이 좋은 등급으로 더 잘 나와요.` : o.id === 'charm' ? `쓰면 ${SHOP.charm.min}분 동안 걸으며 줍는 알에 색이 다른 포켓몬이 훨씬 잘 들어 있어요.` : '쓰면 진화하는 포켓몬이 있어요. 포켓몬 정보 카드에서 써요.');
+// 효과 시간: S.fx[k] = { s, e } (ms). 쓰는 중에 또 쓰면 끝나는 시각이 늘어난다
+const fxMin = k => k === 'incense' ? SHOP.inc.min : SHOP.charm.min;
+const fxLeft = k => { const f = S.fx?.[k]; return f ? Math.max(0, f.e - Date.now()) : 0; };
+function useFx(k) { const F = S.fx || (S.fx = {}), now = Date.now(), d = fxMin(k) * 60e3, f = F[k]; if (f && f.e > now) f.e += d; else F[k] = { s: now, e: now + d }; renderFx(); }
+// 이번에 걸은 구간(t0~t1) 중 효과가 켜져 있던 비율. 앱이 나중에 한꺼번에 보내도 켜져 있던 만큼만
+function fxFrac(k, t0, t1) { const f = S.fx?.[k]; if (!f) return 0; if (t1 - t0 < 1000) return t1 >= f.s && t1 <= f.e ? 1 : 0; return Math.max(0, Math.min(f.e, t1) - Math.max(f.s, t0)) / (t1 - t0); }
+const incOdds = () => { const w = ODDS.map((p, i) => p * SHOP.inc.mul[i]), s = w.reduce((a, b) => a + b, 0) || 1; return w.map(x => x / s); };
+const rollGradeInc = () => { const O = incOdds(); let r = Math.random(); for (let g = 1; g <= 5; g++) if ((r -= O[g - 1]) < 0) return g; return 5; };
+// 지도 위 남은 효과 시간 (골드 아래 작은 칸)
+function renderFx() { const el = $('#fxBar'); if (!el) return; const h = ['incense', 'charm'].filter(k => fxLeft(k) > 0).map(k => `<span class="fxc" title="${ITEM[k].n}"><img src="${ITEM_ART[ITEM[k].a]}" alt=""><b>${Math.ceil(fxLeft(k) / 60e3)}분</b></span>`).join(''); if (el.innerHTML !== h) el.innerHTML = h; }
+setInterval(renderFx, 15e3);
+// 특수 진화 도구: 종의 진화 조건 글('불꽃의돌을 써야', '통신교환을 해야')에서 도구를 찾는다
+const evoItem = c => { const ev = SPECIES[c]?.ev || ''; if (ev === '통신교환을 해야') return 'link'; const m = ev.match(/^(.+?)[을를] 써야$/); return m && ITEM_BY_N[m[1]] || null; };
+const itemEvos = P => (CHILDREN[P.sp] || []).filter(c => { const d = SPECIES[c]; return evoItem(c) && !(d.eqx && (d.eqx === 1 ? 'f' : 'm') !== P.sex); }).map(c => ({ c, it: evoItem(c) }));
+function itemPop(P) {
+  const L = itemEvos(P); if (!L.length) return; const I = itemsOf(), el = $('#itemPop');
+  el.innerHTML = `<div class="win ipwin" role="dialog" aria-label="도구 쓰기"><div class="sheet-head"><h3>도구 쓰기</h3><button class="opt" data-x>닫기</button></div>`
+    + L.map(({ c, it }) => `<div class="iprow"><img src="${ITEM_ART[ITEM[it].a]}" alt=""><div><b>${ITEM[it].n}</b><span>→ ${esc(SPECIES[c].n)} · 가진 개수 ${I[it] || 0}</span></div><button class="lk-btn main" data-use="${it}" data-c="${c}"${I[it] ? '' : ' disabled'}>${I[it] ? '쓰기' : '상점에서 사요'}</button></div>`).join('') + `</div>`;
+  el.hidden = false; sfx('open');
+  el.onclick = e => { const u = e.target.closest('[data-use]'); if (e.target === el || e.target.closest('[data-x]')) { el.hidden = true; return; } if (!u || u.disabled) return;
+    const it = u.dataset.use, c = +u.dataset.c; if (!(I[it] > 0)) return; I[it]--; if (!I[it]) delete I[it]; save(); el.hidden = true;
+    log(`${esc(nameOf(P))}에게 ${J({ name: ITEM[it].n }, '을/를')} 썼다!`, [], true);
+    const card = !$('#pokePop').hidden; if (card) closePoke(); evolveWin(P, card, c); };
+}
 const shopEl = $('#shop');
 $('#openShop').onclick = () => tabTo(shopEl, () => { shopEl.hidden = false; shopSel = null; $('#shopMsg').textContent = ''; setShopTab('bgm'); renderShop(); });
 shopEl.addEventListener('click', e => { if (e.target === shopEl) shopEl.hidden = true; });
@@ -5652,7 +5755,7 @@ function renderShop() {
   $('#shopGold').textContent = S.gold.toLocaleString();
   $('#shopList').innerHTML = TRACKS.map(t => {
     const own = S.tracks.includes(t.id), cur = S.bgm === t.id, has = bgm.have.has(t.id);
-    return `<button class="vin${bgm.preview === t.id ? ' pre' : ''}${own ? ' own' : ''}${has ? '' : ' nofile'}" data-id="${t.id}" aria-current="${shopSel === t.id}"${own ? ' disabled' : ''}><span class="vpic">${vinylSvg(t.c)}</span><span class="vname">${t.n}</span><span class="vtag">${own ? '보유 중' : `${t.price.toLocaleString()}G`}</span></button>`;
+    return `<button class="vin${bgm.preview === t.id ? ' pre' : ''}${own ? ' own' : ''}${has ? '' : ' nofile'}" data-id="${t.id}" aria-current="${shopSel === t.id}"${own ? ' disabled' : ''}><span class="vpic">${vinylSvg(t.c)}</span><span class="vname">${t.n}</span><span class="vtag">${own ? '보유 중' : `${trackPrice(t).toLocaleString()}G`}</span></button>`;
   }).join('');
   const t = TRACKS.find(x => x.id === shopSel);
   $('#shopBar').hidden = !t; if (!t) return;
@@ -5668,8 +5771,8 @@ $('#shopBar').addEventListener('click', e => {
   const btn = e.target.closest('[data-act]'); if (!btn) return;
   const t = TRACKS.find(x => x.id === shopSel), act = btn.dataset.act;
   if (act === 'buy') {
-    if (S.gold < t.price) { $('#shopMsg').textContent = `골드가 ${(t.price - S.gold).toLocaleString()}G 모자라요.`; sfx('wob'); return; }
-    S.gold -= t.price; S.tracks.push(t.id); renderGold(); sfx('newdex');
+    if (S.gold < trackPrice(t)) { $('#shopMsg').textContent = `골드가 ${(trackPrice(t) - S.gold).toLocaleString()}G 모자라요.`; sfx('wob'); return; }
+    S.gold -= trackPrice(t); S.tracks.push(t.id); renderGold(); sfx('newdex');
     /* v4.94 경완: 사면 미리 듣던 곡이 끊기지 않고 그대로 이어진다. 무작위면 무작위 그대로(이 곡이 끝나면 다음 곡), 아니면 산 곡으로 바꾼다 */
     if (!S.bgmRand) S.bgm = t.id;
     if (bgm.preview === t.id) { clearTimeout(bgm.prevT); bgm.preview = null; bgm.ret = null; bgmDuck(1, .4); if (bgm.src) bgm.src.loop = !S.bgmRand; }
@@ -5684,6 +5787,25 @@ function setShopTab(t) {
   document.querySelectorAll('#shopTabs [data-st]').forEach(b => { b.setAttribute('aria-selected', b.dataset.st === t); if (b.dataset.st === t) $('#shopTitle').textContent = b.textContent; });
   document.querySelectorAll('.shopwin .stab').forEach(x => x.hidden = x.dataset.st !== t);
   if (t !== 'bgm' && bgm.preview) { bgmStopPreview(); renderShop(); }
+  if (t === 'tool' || t === 'item') { itemSel[t] = null; $(`#${t}Msg`).textContent = ''; renderItems(t); }
+}
+// 상점 도구·아이템 탭: 칸을 누르면 아래 막대에 설명과 사기(아이템은 쓰기도)
+let itemSel = { tool: null, item: null };
+function renderItems(k) {
+  const I = itemsOf(), L = ITEMS.filter(o => o.k === k), sel = itemSel[k];
+  $(`#${k}List`).innerHTML = L.map(o => `<button class="vin itm" data-it="${o.id}" aria-current="${sel === o.id}"><span class="vpic"><img src="${ITEM_ART[o.a]}" alt=""></span>${I[o.id] ? `<i class="icnt">${I[o.id]}</i>` : ''}<span class="vname">${o.n}</span><span class="vtag">${itemPrice(o.id).toLocaleString()}G</span></button>`).join('');
+  const o = ITEM[sel], bar = $(`#${k}Bar`); bar.hidden = !o; if (!o) return;
+  const left = o.k === 'item' ? fxLeft(o.id) : 0;
+  bar.innerHTML = `<img class="sb-pic" src="${ITEM_ART[o.a]}" alt=""><div class="sb-name"><b>${o.n}</b><span>${itemDesc(o)}${left ? ` · 남은 시간 ${Math.ceil(left / 60e3)}분` : ''}</span></div>`
+    + (o.k === 'item' && I[o.id] ? `<button class="lk-btn" data-act="use">${left ? '쓰기 (+' + fxMin(o.id) + '분)' : '쓰기'}</button>` : '') + `<button class="lk-btn main" data-act="buy">구매</button>`;
+}
+for (const k of ['tool', 'item']) {
+  $(`#${k}List`).addEventListener('click', e => { const v = e.target.closest('[data-it]'); if (!v) return; sfx('tap'); itemSel[k] = itemSel[k] === v.dataset.it ? null : v.dataset.it; $(`#${k}Msg`).textContent = ''; renderItems(k); });
+  $(`#${k}Bar`).addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (!b) return; const o = ITEM[itemSel[k]]; if (!o) return; const I = itemsOf(), msg = $(`#${k}Msg`);
+    if (b.dataset.act === 'buy') { const p = itemPrice(o.id); if (S.gold < p) { msg.textContent = `골드가 ${(p - S.gold).toLocaleString()}G 모자라요.`; sfx('wob'); return; }
+      S.gold -= p; I[o.id] = (I[o.id] || 0) + 1; renderGold(); sfx('newdex'); msg.innerHTML = `${J({ name: o.n }, '을/를')} 샀다! (가진 개수 ${I[o.id]})`; }
+    else if (b.dataset.act === 'use' && I[o.id] > 0) { I[o.id]--; if (!I[o.id]) delete I[o.id]; useFx(o.id); sfx('pickup'); msg.innerHTML = `${J({ name: o.n }, '을/를')} 썼다! ${Math.ceil(fxLeft(o.id) / 60e3)}분 동안 효과가 있어요.`; log(`${J({ name: o.n }, '을/를')} 썼다.`, [], true); }
+    save(); renderItems(k); });
 }
 document.querySelectorAll('#shopTabs [data-st]').forEach(b => b.onclick = () => setShopTab(b.dataset.st));
 setShopTab('bgm');
@@ -6110,7 +6232,7 @@ function openPoke(id, dir = 0, quiet = false, noCry = false) {
   const rb = $('#ppFree'); rb.hidden = pick; if (freeArm !== id) { freeArm = null; rb.classList.remove('arm'); rb.textContent = '놓아주기'; }
   const fb = $('#ppField'); fb.hidden = budPick != null; fb.textContent = on ? (boxFromSlot ? '이미 필드에 있어요' : '필드에 나감') : full ? '필드 가득 참' : '필드에 내보내기'; fb.disabled = (!on && full) || (boxFromSlot && on); fb.classList.toggle('sunk', on && !boxFromSlot); fb.classList.toggle('off', boxFromSlot && on); fb.classList.remove('popout');
   const noRoom = budPick == null && S.buds.length >= MAX_BUDS;
-  { $('#ppEvo').hidden = pick; setEvoBtn($('#ppEvoBtn'), P); }
+  { $('#ppEvo').hidden = pick; setEvoBtn($('#ppEvoBtn'), P); $('#ppItem').hidden = !itemEvos(P).length || $('#ppEvoBtn').classList.contains('spc'); }   /* 특별한 진화 버튼이면 그 버튼이 도구 쓰기 */
   const bb = $('#ppBud'); bb.hidden = boxFromSlot; bb.textContent = isBud ? '짝꿍 해제하기' : noRoom ? '짝꿍 자리 없음' : '짝꿍으로'; bb.disabled = !isBud && noRoom; bb.classList.toggle('off', !isBud && noRoom); bb.classList.toggle('sunk', isBud);   // 짝꿍이면 눌린 버튼(누르면 해제)
 }
 // 진화하기 버튼 (정보 카드·필드 개체 정보 공용): 가로로 긴 버튼. 아직이면 꺼진 모양이고 누르면 버튼 가운데 말풍선(진화까지 쌓인 km / 필요 km, 또는 조건). 최종 진화는 같은 자리에 같이 달린 거리
@@ -6169,7 +6291,8 @@ $('#ppField').onclick = async () => {
     try { markNew(await spawn(P.sp, { pid: P.id })); } catch (e) {} if (boxFromSlot && S.mons.some(x => x.pid === P.id)) { refreshCap(); save(); closePoke(); setMgrTab('field'); return; } }
   refreshCap(); renderBox(); openPoke(P.id); save();
 };
-$('#ppEvoBtn').onclick = () => { const b = $('#ppEvoBtn'); if (b.classList.contains('dis') || b.classList.contains('fin')) return; evolvePoke(boxOf(pokeId)); };
+$('#ppEvoBtn').onclick = () => { const b = $('#ppEvoBtn'), P = boxOf(pokeId); if (b.classList.contains('spc') && P && itemEvos(P).length) return itemPop(P); if (b.classList.contains('dis') || b.classList.contains('fin')) return; evolvePoke(P); };
+$('#ppItem').onclick = () => { const P = boxOf(pokeId); if (P) itemPop(P); };   // v5.75: 특수 진화 도구 쓰기
 $('#ppBud').onclick = () => {
   const P = boxOf(pokeId); if (!P) return;
   { const i = S.buds.findIndex(b => b.pid === P.id); if (i >= 0) { log(`${J({ name: SPECIES[P.sp].n },'과/와')} 짝꿍을 해제했다.`); S.buds.splice(i, 1); save(); renderBox(); openPoke(P.id); renderRun(); return; } }   // 짝꿍 해제
@@ -7187,7 +7310,7 @@ function renderNext() {
   const eg = S.eggs.map((e, i) => ({ e, i, r: Math.max(0, e.need - e.km) })).sort((a, b) => a.r - b.r)[0];
   const goEgg = eg && (() => { closeToggles(); hideSheets(); runTab = 'egg'; bagNext = false; eggSel = eg.e; eggSelI = eg.i; eggNone = false; openRun(); });
   if (!eg) set('Hatch', '-', '', '부화기에 알이 없어요', false, '', 0, null);
-  else set('Hatch', eg.r <= 0 ? '준비 완료!' : kmUp(eg.r), eg.r <= 0 ? '' : 'km', `${GRADE[eg.e.g].n} 알`, eg.r <= 0, eggHtml(eg.e.g), eg.e.km / eg.e.need, goEgg);
+  else set('Hatch', eg.r <= 0 ? '준비 완료!' : kmUp(eg.r), eg.r <= 0 ? '' : 'km', `${GRADE[eg.e.g].n} 알`, eg.r <= 0, eggHtml(eg.e.g, '' + (eg.e.sh ? ' shx' : '')), eg.e.km / eg.e.need, goEgg);
   const ev = S.buds.map(b => { const P = boxOf(b.pid); return evoKids(b.sp, P).length ? { b, P, r: Math.max(0, evoNeed(b) - (b.km || 0)) } : null; }).filter(Boolean).sort((a, b) => a.r - b.r)[0];
   const goEvo = ev && (() => { closeToggles(); hideSheets(); menuTo(fldOpen, 'fld'); budFocus = ev.b.pid; setMgrTab('buddy'); });
   if (!ev) set('Evo', '-', '', S.buds.length ? '진화할 짝꿍이 없어요' : '짝꿍이 없어요', false, '', 0, null);
@@ -7279,6 +7402,7 @@ function spotHit(ll) {
 }
 function collectEggs(km, place, tags, pf, ll) {
   S.bagAcc += km; let n = 0; const P = S.pity || (S.pity = { e: 0, l: 0 }); P.e += km; P.l += km;
+  const t1 = Date.now(), t0 = Math.max(S.colT || t1, t1 - 6 * 3600e3), fI = fxFrac('incense', t0, t1), fC = fxFrac('charm', t0, t1); S.colT = t1;   // v5.75: 향로·빛나는 부적이 켜져 있던 만큼
   while (S.bagAcc >= BAG_SUB) { S.bagAcc -= BAG_SUB; let k = (S.bagQ && S.bagQ.length) ? S.bagQ.shift() : bagRoll();   /* v5.16: 다음 칸들은 미리 굴려 둔다 (앱 알림이 다음에 알을 줍는 거리를 알 수 있게) */
     if (!k && (S.bagDry || 0) >= 1 - 1e-6) k = 1;   // v4.85 경완 '보정': 1km 동안 알을 하나도 못 주웠으면 다음 250m엔 꼭 1개
     S.bagDry = k ? 0 : (S.bagDry || 0) + BAG_SUB; n += k; }   // v4.07 경완: 250m마다 확률로 줍는다 (1km에 평균 1/BAG_STEP 개, 보통 1~2개, 운 좋으면 3개)
@@ -7286,32 +7410,33 @@ function collectEggs(km, place, tags, pf, ll) {
   const t = Date.now(), got = [];
   got.eggs = [];
   today().eggs += n;
-  for (let i = 0; i < n; i++) { let g = rollGrade();
+  got.sh = 0;
+  for (let i = 0; i < n; i++) { let g = fI && Math.random() < fI ? rollGradeInc() : rollGrade();
     // 천장: 전설 알 없이 PITY_L km, 에픽 이상 없이 PITY_E km를 움직이면 다음 알은 그 등급으로 (나오면 다시 0부터)
     if (P.l >= PITY_L) g = 5; else if (P.e >= PITY_E) g = Math.max(g, 4);
     const pl = pf ? pf() : place ? { n: place, tags, ll } : null, hit = spotHit(pl?.ll || ll); if (hit) g = hit.g;   // v5.18 경완: 작업실 지도에 놓은 포켓몬 근처면 그 포켓몬 알이 더 잘 나온다
     if (g === 5) P.l = 0; if (g >= 4) P.e = 0;
-    const e = { id: S.eid++, g, t, isNew: true }; if (pl?.n) e.place = pl.n; if (pl?.tags?.length) e.tags = pl.tags; const spl = spotPlace(pl?.ll || ll); if (spl) { if (spl.n) e.spN = spl.n; if (spl.ks.length) e.spT = spl.ks; } if (hit) { e.sp = hit.sp; e.spot = 1; } S.bag.push(e); got.push(g); got.eggs.push(e); }
+    const e = { id: S.eid++, g, t, isNew: true }; if (pl?.n) e.place = pl.n; if (pl?.tags?.length) e.tags = pl.tags; const spl = spotPlace(pl?.ll || ll); if (spl) { if (spl.n) e.spN = spl.n; if (spl.ks.length) e.spT = spl.ks; } if (hit) { e.sp = hit.sp; e.spot = 1; } if (fC && Math.random() < fC && Math.random() < 1 / SHOP.charm.n) { e.sh = 1; got.sh++; } S.bag.push(e); got.push(g); got.eggs.push(e); }
   autoInc(); if (n) { try { notiSoon(400); } catch (e) {} notiBuzz('egg'); } return got;   /* v4.23 경완: 알을 주우면 앱을 다시 열지 않아도 바로 알림 */
 }
 function gotLog(got, how, place) {
   if (!got.length) return;
   sfx('pickup');
   const by = [5, 4, 3, 2, 1].filter(g => got.includes(g)).map(g => `${GRADE[g].n} ${got.filter(x => x === g).length}`).join(', ');
-  log(`${[how, place ? `${place} 근처에서` : ''].filter(Boolean).join(' ')} 알 ${got.length}개를 주웠다! (${by})`.trim(), [], true);
+  log(`${[how, place ? `${place} 근처에서` : ''].filter(Boolean).join(' ')} 알 ${got.length}개를 주웠다! (${by})${got.sh ? ` ✦ 반짝이는 알 ${got.sh}개!` : ''}`.trim(), [], true);
 }
 // 부화기의 알을 가방으로 뺀다. 쌓인 거리는 그대로 남는다.
 function unincubate(e) {
   if (!S.eggs.includes(e) || S.bag.length >= MAX_BAG) return false;
   S.eggs = S.eggs.filter(x => x !== e);
-  const b = { id: e.id, g: e.g, t: e.t || Date.now(), km: e.km || 0, sp: e.sp }; if (e.place) b.place = e.place; if (e.tags) b.tags = e.tags; if (e.spN) b.spN = e.spN; if (e.spT) b.spT = e.spT; if (e.nq && !e.nt) b.isNew = true; S.bag.push(b);
+  const b = { id: e.id, g: e.g, t: e.t || Date.now(), km: e.km || 0, sp: e.sp }; if (e.place) b.place = e.place; if (e.tags) b.tags = e.tags; if (e.spN) b.spN = e.spN; if (e.spT) b.spT = e.spT; if (e.sh) b.sh = 1; if (e.nq && !e.nt) b.isNew = true; S.bag.push(b);
   save(); return true;
 }
 // 가방의 알을 부화기로 옮긴다
 function incubate(e) {
   if (S.eggs.length >= MAX_EGGS || !S.bag.includes(e)) return false;
   S.bag = S.bag.filter(x => x !== e);
-  const x = { id: e.id, g: e.g, km: e.km || 0, need: GRADE[e.g].km, isNew: true, nwI: true, t: e.t, place: e.place, tags: e.tags, sp: e.sp, ...(e.spN ? { spN: e.spN } : {}), ...(e.spT ? { spT: e.spT } : {}) }; if (e.isNew && !e.nt) x.nq = 1; S.eggs.push(x);   // v5.56 경완: 알리기 전에 부화기로 옮겨진 알(자동 채우기)도 '새 소식'에 나오게
+  const x = { id: e.id, g: e.g, km: e.km || 0, need: GRADE[e.g].km, isNew: true, nwI: true, t: e.t, place: e.place, tags: e.tags, sp: e.sp, ...(e.spN ? { spN: e.spN } : {}), ...(e.spT ? { spT: e.spT } : {}), ...(e.sh ? { sh: 1 } : {}) }; if (e.isNew && !e.nt) x.nq = 1; S.eggs.push(x);   // v5.56 경완: 알리기 전에 부화기로 옮겨진 알(자동 채우기)도 '새 소식'에 나오게
   save(); return true;
 }
 // v3.90 경완: 자동 채우기를 켜 두면 부화기가 빌 때 가방에서 높은 등급 → 많이 간 거리 → 먼저 주운 알 순으로 채운다 (처음엔 꺼짐)
@@ -7652,7 +7777,7 @@ function hatchEgg(e, keep, ask) {
   if (!keep) { S.eggs = S.eggs.filter(x => x !== e); autoInc(); }
   const sp = eggSp(e);
   S.recentHatch = [sp, ...(S.recentHatch || []).filter(x => x !== sp)].slice(0, 12);
-  hatchQ.push({ g: e.g, sp, place: e.spN || e.place, egg: keep ? e : null, ask }); save();
+  hatchQ.push({ g: e.g, sp, place: e.spN || e.place, egg: keep ? e : null, ask, sh: !!e.sh }); save();
 }
 // 장소 테마 가중치: 기본 1, 타입 +12(밤 +4), 서식지 +4, 도감 낱말 +8, 특정 종 +20
 function themeW(sp, ths) { const d = SPECIES[sp]; let v = 1;
@@ -7687,8 +7812,8 @@ function rollEgg(e) {
   return pool[i];
 }
 // 태어난 포켓몬을 상자에 넣고 도감 등록, 이미 만난 종이면 골드
-function bornPoke({ g, sp, place }) {
-  const P = newPoke(sp, { g, place }), isNew = !S.unlocked.has(sp); unlock(sp); P.nw = true;   // 박스에 새로 들어온 표시 (확인하면 지움)
+function bornPoke({ g, sp, place, sh }) {
+  const P = newPoke(sp, { g, place, ...(sh ? { shiny: true } : {}) }), isNew = !S.unlocked.has(sp); unlock(sp); P.nw = true;   // 박스에 새로 들어온 표시 (확인하면 지움)
   return { g, sp, place, P, isNew, dupG: addGold(isNew ? NEW_EGG_G[g] : DUP_G[g]) };
 }
 const bornMsg = ({ g, sp, P, isNew, dupG }) => `${GRADE[g].n} 알에서 <b>${esc(SPECIES[sp].n)}</b>${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났다!<br><span class="small">${isNew ? `새로 만난 포켓몬이라 <b>${dupG}G</b>를 받았다` : `이미 만난 포켓몬이라 <b>${dupG}G</b>를 받았다`}</span>`
@@ -7896,7 +8021,7 @@ function eggView(e) {   // v4.51 경완: 부화기에서 고른 알을 한 번 �
   if (hatching || evolving || hatchQ.length) return;
   sfx('tap'); hatchFx(); hatchEl.classList.remove('list'); showDexInfo(null); hatchStage.classList.remove('evo');
   ['#hatchOk', '#hatchGo', '#hatchLook', '#hatchSend'].forEach(q => $(q).hidden = true);
-  hatchStage.innerHTML = '<i class="ehalo"></i>' + eggHtml(e.g, 'wob');
+  hatchStage.innerHTML = '<i class="ehalo"></i>' + eggHtml(e.g, 'wob' + (e.sh ? ' shx' : ''));
   const m = $('#hatchMsg'); m.classList.add('ev'); m.style.visibility = '';
   m.innerHTML = `<b class="evg">${GRADE[e.g].n} 알</b> <span class="state">부화 중</span><div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km<div class="evd">${e.place || e.spN ? `${eggGotDay(e)}${esc(eggPlace(e))} 근처에서 주운 알` : e.t ? `${eggGotDay(e)}주운 알` : '주운 곳 기록 없음'}<br>${themeHint(e)}</div>`;
   const out = $('#hatchOut'), hx = $('#hatchX'); out.hidden = false; hx.hidden = false; hatchEl.hidden = false;
@@ -7911,7 +8036,7 @@ function hatchFx() { raysSpin(0); raysA = 0; for (const r of hatchEl.querySelect
 async function playHatch() {
   if (hatching || !hatchQ.length) return;
   hatching = true;
-  const { g, sp, place, egg: src, ask } = hatchQ.shift(), fg = fxGrade(sp, g);   /* 화려한 부화 연출은 특별한 포켓몬(3단계)이 나올 때만 */
+  const { g, sp, place, egg: src, ask, sh } = hatchQ.shift(), fg = fxGrade(sp, g);   /* 화려한 부화 연출은 특별한 포켓몬(3단계)이 나올 때만 */
   const spReady = ensureSprite(sp).catch(() => {});   // 그림은 알이 깨질 때까지 받아 두면 된다 → 창은 바로 뜬다 (예전엔 그림을 받는 동안 버튼이 먹통처럼 보였다)
   hatchEl.hidden = false; $('#hatchOk').hidden = true; showDexInfo(null); $('#hatchMsg').textContent = '어라…? 알의 모습이…!';
   hatchStage.classList.remove('evo'); hatchFx();
@@ -7934,7 +8059,7 @@ async function playHatch() {
   if (src) { S.eggs = S.eggs.filter(x => x !== src); setTimeout(() => { autoInc(); renderBag.sig = ''; renderRun(); }, 1500); }   /* v4.04 경완: 부화기 다시 그리기는 번쩍임이 끝난 뒤 — 깨지는 순간 화면이 멈췄다가 확 밝아졌다 */
   hatchStage.querySelectorAll('.shard').forEach(x => { x.style.setProperty('--ec', getComputedStyle(egg).getPropertyValue('--ec')); x.classList.add('go'); });
   haptic(2); await wait(300); await spReady; egg.remove();
-  const B = bornPoke({ g, sp, place }), { P, isNew } = B;
+  const B = bornPoke({ g, sp, place, sh }), { P, isNew } = B;
   hatchStage.append(bornImg(sp, P, isNew));
   // 태어난 포켓몬 뒤 후광: 개체 랭크 A 이상만 (S 는 더 크고 밝게 맥박), 그 아래는 사라진다
   { const ha = hatchStage.querySelector('.ehalo'), rk = rankOf(P); if (ha) { ha.classList.remove('s1', 's2', 's3'); ha.classList.remove('rkA', 'rkS');   /* 랭크 후광은 스프라이트 빛(.born-pic.rkS/rkA)으로만: 겹치지 않게 */ } }
@@ -7977,7 +8102,7 @@ function notiShow(force) {
   const got = [...S.bag.filter(e => e.isNew && !e.nt), ...S.eggs.filter(e => e.nq && !e.nt)], rdy = S.eggs.filter(e => e.km >= e.need && !e.rn), evo = S.buds.filter(b => b.en === false && budReady(b));
   if (!got.length && !rdy.length && !evo.length) return;
   notiOpen = true;
-  const MAXI = 24, row = (list, cls) => `<div class="noti-eggs ${cls}">${list.slice(0, MAXI).map((e, i) => eggHtml(e.g).replace('class="egg ', `style="--d:${i * 45}ms" class="egg `)).join('')}${list.length > MAXI ? `<span class="more">+${list.length - MAXI}</span>` : ''}</div>`;
+  const MAXI = 24, row = (list, cls) => `<div class="noti-eggs ${cls}">${list.slice(0, MAXI).map((e, i) => eggHtml(e.g, '' + (e.sh ? ' shx' : '')).replace('class="egg ', `style="--d:${i * 45}ms" class="egg `)).join('')}${list.length > MAXI ? `<span class="more">+${list.length - MAXI}</span>` : ''}</div>`;
   const by = list => [5, 4, 3, 2, 1].filter(g => list.some(e => e.g === g)).map(g => `${GRADE[g].n} ${list.filter(e => e.g === g).length}`).join(' · ');
   const places = [...new Set(got.map(e => e.place).filter(Boolean))];
   $('#notiBody').innerHTML = (got.length ? `<div class="ns"><p>알 <b>${got.length}</b>개를 주웠다!</p>${row(got.slice().reverse(), 'new')}<div class="small">${by(got)}${places.length ? `<br>${places.slice(0, 2).map(esc).join(', ')}${places.length > 2 ? ` 외 ${places.length - 2}곳` : ''} 근처` : ''}</div></div>` : '')
@@ -8188,7 +8313,7 @@ function renderBag() {
   if (bagSort === 'km') list.sort((a, b) => (b.km || 0) / GRADE[b.g].km - (a.km || 0) / GRADE[a.g].km || (b.km || 0) - (a.km || 0));
   if (bagSort === 'grade') list.sort((a, b) => b.g - a.g || b.t - a.t);
   if (!S.bag.includes(bagSel)) bagSel = null;
-  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot${bagMul?.has(e.id) ? ' on' : ''}" data-id="${e.id}" aria-current="${e === bagSel}">${bagMul ? '<i class="chk"></i>' : ''}${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g)}<span>${GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm1(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.replace(/^(\S+ )?\S+(동|읍|면|리|\d가) (?=\S)/, '')) : fmtWhen(e.t)}</span></button>`).join('')
+  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot${bagMul?.has(e.id) ? ' on' : ''}" data-id="${e.id}" aria-current="${e === bagSel}">${bagMul ? '<i class="chk"></i>' : ''}${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g, '' + (e.sh ? ' shx' : ''))}<span>${GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm1(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.replace(/^(\S+ )?\S+(동|읍|면|리|\d가) (?=\S)/, '')) : fmtWhen(e.t)}</span></button>`).join('')
     : `<div class="bag-empty">${S.bag.length ? '이 등급 알이 없어요' : '움직이면 알을 주울 수 있어요'}</div>`;
   document.querySelector('.rtab[data-tab="bag"]').classList.toggle('none', !S.bag.length);   // 알이 하나도 없으면 안내 문구를 남은 공간 정중앙에
   $('#bagMulti').setAttribute('aria-pressed', !!bagMul); $('#bagMulti').textContent = bagMul ? '취소' : '선택';
@@ -8199,7 +8324,7 @@ function renderBag() {
   $('#bagPop').hidden = !e;
   if (e) { $('#bagDel').classList.toggle('arm', delArm === 1); $('#bagDel').textContent = delArm === 1 ? '정말?' : '버리기'; }
   if (e) { $('#bagIn').disabled = full; $('#bagIn').textContent = full ? `부화기가 꽉 찼어요` : '부화기에 넣기'; }
-  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${GRADE[e.g].km}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움<span class="epl">주운 곳: ${e.place || e.spN ? `${esc(eggPlace(e))} 근처` : '기록 없음'}</span>${themeHint(e)}</div></div>`;
+  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big wob' + (e.sh ? ' shx' : ''))}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${GRADE[e.g].km}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움<span class="epl">주운 곳: ${e.place || e.spN ? `${esc(eggPlace(e))} 근처` : '기록 없음'}</span>${themeHint(e)}</div></div>`;
 }
 // 가방: 알을 꾹 누르면(0.45초) 여러 개 고르기 모드가 켜지고 그 알이 골라진다 (v3.36 경완)
 { let lp = null, lpDone = 0;
@@ -8264,7 +8389,7 @@ function renderRun() {
   if (runEl.hidden) { if (!$('#bagPop').hidden) { $('#bagPop').hidden = true; bagSel = null; } return; }
   if (!eggNone && !S.eggs.includes(eggSel)) eggSel = S.eggs[Math.min(eggSelI, S.eggs.length - 1)] || null;   // v3.92: 부화로 빠진 알 자리(같은 칸)로 선택이 남는다 else if (eggNone) eggSel = null;
   const e = eggSel;
-  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob')}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? `${fmtKm(e.km)} / ${e.need}km` : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}<div class="egg-detail"><span class="epl">${e.place || e.spN ? `${esc(eggPlace(e))} 근처` : '주운 곳 기록 없음'}</span>${themeHint(e)}</div><div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
+  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob' + (e.sh ? ' shx' : ''))}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? `${fmtKm(e.km)} / ${e.need}km` : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}<div class="egg-detail"><span class="epl">${e.place || e.spN ? `${esc(eggPlace(e))} 근처` : '주운 곳 기록 없음'}</span>${themeHint(e)}</div><div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
     : `<p class="incu-empty">${S.eggs.length ? '알을 눌러 보자' : '부화 중인 알이 없습니다'}</p>`;
   // 알이 있을 때 높이를 기억해 두고, 빈 부화기도 같은 높이로 둔다
   if (e) requestAnimationFrame(() => { const h = $('#incu').offsetHeight; if (h > 40) document.documentElement.style.setProperty('--incu-h', h + 'px'); });
@@ -8275,7 +8400,7 @@ function renderRun() {
     const x = S.eggs[i], b = document.createElement('button'); b.className = 'eslot';
     if (x) {
       const rd = x.km >= x.need; b.classList.toggle('ready', rd);
-      b.innerHTML = `${(rd && !x.rs) || x.nwI ? '<i class="edot"></i>' : ''}<span class="tag2">${rd ? '부화 준비' : '부화 중'}</span>${eggHtml(x.g, rd ? 'wob shake' : 'wob')}<span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div><span class="ekm">${(Math.floor(x.km * 10) / 10).toFixed(1)}/${x.need}km</span>`;
+      b.innerHTML = `${(rd && !x.rs) || x.nwI ? '<i class="edot"></i>' : ''}<span class="tag2">${rd ? '부화 준비' : '부화 중'}</span>${eggHtml(x.g, (rd ? 'wob shake' : 'wob') + (x.sh ? ' shx' : ''))}<span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div><span class="ekm">${(Math.floor(x.km * 10) / 10).toFixed(1)}/${x.need}km</span>`;
       b.setAttribute('aria-current', x === e); if (x.isNew) { b.classList.add('new'); x.isNew = false; }
       b.onclick = () => { if (x === eggSel && x.km < x.need) { eggView(x); return; }   // v4.51 경완: 선택된 알을 다시 누르면 선택 해제 대신 알 상태 창
         eggSel = x; eggSelI = i; eggNone = false; box.querySelectorAll('.eslot').forEach(s => s.setAttribute('aria-current', s === b)); if (x.nwI) { delete x.nwI; save(); } if (x.km >= x.need && !hatching && !evolving && !hatchQ.length) pressGo(b, () => { hatchEgg(x, true, true); playHatch(); renderRun(); }); else renderRun(); };   // 준비된 알은 칸이 눌렸다가 창이 뜬다
@@ -8414,8 +8539,8 @@ async function evoWhite(src) {
   x.shadowColor = '#9ab8ff'; x.shadowBlur = M * .12; x.drawImage(t, ox, oy); x.shadowColor = '#fff'; x.shadowBlur = M * .04; x.drawImage(t, ox, oy); x.shadowBlur = 0; x.drawImage(t, ox, oy);
   return c.toDataURL();
 }
-async function evolveWin(P, card) {
-  const kids = evoKids(P.sp, P, true); if (!kids.length || evolving || hatching) return;
+async function evolveWin(P, card, forceTo) {
+  const kids = forceTo ? [forceTo] : evoKids(P.sp, P, true); if (!kids.length || evolving || hatching) return;   // forceTo: 도구로 진화 (v5.75)
   const b = S.buds.find(x => x.pid === P.id);
   evolving = true;
   const from = P.sp, to = pick(kids), fromN = SPECIES[from].n, toN = SPECIES[to].n, nm = nameOf(P);
@@ -8593,6 +8718,7 @@ function applyCfg(c) {
     applyThOv(d.thOv && typeof d.thOv === 'object' ? d.thOv : null); applyThSp(d.thSp && typeof d.thSp === 'object' ? d.thSp : null);
     MON_SC = {}; if (d.monSc && typeof d.monSc === 'object') for (const [k, v] of Object.entries(d.monSc)) if (SPECIES[k] && typeof v === 'number' && v >= .3 && v <= 3) MON_SC[k] = v;
     MON_ROT = {}; if (d.monRot && typeof d.monRot === 'object') for (const [k, v] of Object.entries(d.monRot)) if (SPECIES[k] && typeof v === 'number' && Math.abs(v) <= 90 && v) MON_ROT[k] = v;
+    applyShop(d.shop);   // v5.75: 상점 가격·향로·빛나는 부적 (작업실 상점 메뉴)
     MON_SH = {}; if (d.monSh && typeof d.monSh === 'object') for (const [k, v] of Object.entries(d.monSh)) if (SPECIES[k] && Array.isArray(v) && (k === '0' || SPECIES[k]) && Array.isArray(v) && (v.length === 3 || v.length === 4) && v[0] >= .2 && v[0] <= 4 && Math.abs(v[1]) <= 200 && Math.abs(v[2]) <= 200 && Math.abs(v[3] || 0) <= 90) MON_SH[k] = v.map(Number);
     MON_FLY = {}; if (d.monFly && typeof d.monFly === 'object') for (const [k, v] of Object.entries(d.monFly)) if (SPECIES[k] && typeof v === 'number' && v && v >= -300 && v <= 300) MON_FLY[k] = v;
     MON_FLYA = {}; if (d.monFlyA && typeof d.monFlyA === 'object') for (const [k, o] of Object.entries(d.monFlyA)) if (SPECIES[k] && o && typeof o === 'object') { const r = {}; for (const [n, v] of Object.entries(o)) if (typeof v === 'number' && v && Math.abs(v) <= 400) r[n] = v; if (Object.keys(r).length) MON_FLYA[k] = r; }
@@ -9041,7 +9167,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   notiSoon = function () {};   // 작업실에선 '새 소식' 창을 띄우지 않는다
   if (GAL) { save = function () {}; document.documentElement.classList.add('st-gal'); }
   const api = window.__studio = {
-    BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, get MON_ROT() { return MON_ROT; }, get MON_FLY() { return MON_FLY; }, get MON_SH() { return MON_SH; }, TH_SP0, get TH_SP_OV() { return TH_SP_OV; }, setThSp: applyThSp, TH_ALL, TH_BASE, get TH_OV() { return TH_OV; }, setThOv(o) { applyThOv(o); applyThSp(TH_SP_OV); }, setMonSh(o) { MON_SH = { ...(o || {}) }; for (const m of S.mons) shadowFit(m); }, liftBase, shGeo: sp => shGeo(sp, sp), THEMES, themeW, setMonPose(r, f, fa) { MON_ROT = { ...(r || {}) }; MON_FLY = { ...(f || {}) }; if (fa !== undefined) MON_FLYA = JSON.parse(JSON.stringify(fa || {})); }, get MON_FLYA() { return MON_FLYA; }, szAnim(uid, n) { const m = S.mons.find(o => o.uid === uid); if (m) { m.szAn = n || null; m.frameKey = null; } }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, get SP_OFF() { return [...SP_OFF]; }, get TIER_KT() { return TIER_KT; }, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
+    BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, get MON_ROT() { return MON_ROT; }, get MON_FLY() { return MON_FLY; }, get MON_SH() { return MON_SH; }, ITEMS, TRACKS, ITEM_ART, get SHOP() { return SHOP; }, applyShop, get ODDS() { return ODDS; }, get BAG_STEP() { return BAG_STEP; }, get SHINY_RATE() { return SHINY_RATE; }, TH_SP0, get TH_SP_OV() { return TH_SP_OV; }, setThSp: applyThSp, TH_ALL, TH_BASE, get TH_OV() { return TH_OV; }, setThOv(o) { applyThOv(o); applyThSp(TH_SP_OV); }, setMonSh(o) { MON_SH = { ...(o || {}) }; for (const m of S.mons) shadowFit(m); }, liftBase, shGeo: sp => shGeo(sp, sp), THEMES, themeW, setMonPose(r, f, fa) { MON_ROT = { ...(r || {}) }; MON_FLY = { ...(f || {}) }; if (fa !== undefined) MON_FLYA = JSON.parse(JSON.stringify(fa || {})); }, get MON_FLYA() { return MON_FLYA; }, szAnim(uid, n) { const m = S.mons.find(o => o.uid === uid); if (m) { m.szAn = n || null; m.frameKey = null; } }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, get SP_OFF() { return [...SP_OFF]; }, get TIER_KT() { return TIER_KT; }, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
     ICO: { berry: ICO_BERRY, brush: ICO_BRUSH, hand: ICO_HAND, pen: PEN, egg: EGG_SVG },   // v3.66: 작업실이 게임 아이콘을 그대로 쓴다
     get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, PET_FR, WASH_FR1: WASH_FR, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]), HATCH_KM: [0, ...GRADE.slice(1).map(G => G.km)] }; },
     get cfg() { return CFG; }, get SPOTS() { return SPOTS; },
@@ -9377,7 +9503,7 @@ api.szLoad = async L => { for (const o of L || []) { if (!SZB.on) return; const 
   };
 }
 
-if (/[?&]debug/.test(location.search)) window.__meadow = { unlock, addFr, frMaxHit, scaleOf, sizeT, SPRITES, loadChunk, padAtlas, useMove, save, evoMus, bgm, bgmPos, feedOne, tense, hatchEgg, playHatch, TIER, TIER_SPS, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates, propReact, propSpots, propAt, shakeTree, moveTo, LAYOUT };   // test hook
+if (/[?&]debug/.test(location.search)) window.__meadow = { ev: src => eval(src), unlock, addFr, frMaxHit, scaleOf, sizeT, SPRITES, loadChunk, padAtlas, useMove, save, evoMus, bgm, bgmPos, feedOne, tense, hatchEgg, playHatch, TIER, TIER_SPS, addRel, withFriend, notiShow, select, foldDlg, S, DEX, OVR, NIGHT_IDS, SPECIES, newPoke, applyKm, addRun, evolve, drawEgg, hatchQ, interact, spawn, sleep, wake, PAIR_RULES, EXTRA_PAIRS, sceneCandidates, propReact, propSpots, propAt, shakeTree, moveTo, LAYOUT };   // test hook
 if (/[?&]debug/.test(location.search)) Object.assign(window, { __spotPlace: spotPlace, __themeHint: themeHint, __eggPlace: e => eggPlace(e), __eggThemes: eggThemes, __setSpots: L => { SPOTS = L; }, __drag: () => drag, __log: log, __save: save, __bgm: bgm, __actx: () => actx, __hatchEgg: hatchEgg, __SP: SPECIES, __hint: themeHint, __MVFX: MV_FX, __useMove: useMove, __movesOf: movesOf, __thoughtOf: thoughtOf, __addRel: addRel, __tyIcon: tyIcon, __evoKids: evoKids, __friendsAll: friendsAll, __renameBox: renameBox });
 window.claude?.hot?.snapshot?.(() => serialize());
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
