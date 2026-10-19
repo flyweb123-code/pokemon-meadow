@@ -287,7 +287,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
         "SW8": "station", "OL7": "gas", "SC4": "school", "HP8": "hospital", "PM9": "hospital",
         "CE7": "bakery", "FD6": "restaurant", "BK9": "bank", "AD5": "hotel", "MT1": "city", "CS2": "city", "PK6": "city", "공원": "park"
     ]
-    private struct KakaoPlace { let name: String; let cat: String; let d: Double }
+    private struct KakaoPlace { let name: String; let cat: String; let d: Double; var catName = "" }
     private static func kakaoGet(_ path: String, _ q: [URLQueryItem], key: String, done: @escaping ([[String: Any]], String?) -> Void) {
         var c = URLComponents(string: "https://dapi.kakao.com" + path)!
         c.queryItems = q
@@ -325,8 +325,9 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
                 let got = docs.compactMap { d -> KakaoPlace? in
                     guard let n = d["place_name"] as? String, !n.isEmpty, let ds = d["distance"] as? String, let dist = Double(ds) else { return nil }
                     // '공원' 낱말로 찾았어도 공원이 아니면(예: 공원부동산) 그 곳의 카테고리로
-                    if cat == "공원", !((d["category_name"] as? String) ?? "").contains("공원") { return KakaoPlace(name: n, cat: (d["category_group_code"] as? String) ?? "", d: dist) }
-                    return KakaoPlace(name: n, cat: cat, d: dist)
+                    let cn = (d["category_name"] as? String) ?? ""
+                    if cat == "공원", !cn.contains("공원") { return KakaoPlace(name: n, cat: (d["category_group_code"] as? String) ?? "", d: dist, catName: cn) }
+                    return KakaoPlace(name: n, cat: cat, d: dist, catName: cn)
                 }
                 lock.lock(); places += got; counts.append("\(cat) \(got.count)"); if let e { errs.append("\(cat): \(e)") }; lock.unlock(); group.leave()
             }
@@ -341,7 +342,12 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
             // 알 테마는 고른 장소 하나의 종류로만 (건물·명소 이름이면 게임이 이름 낱말로 정한다)
             if let b = building { finish(b, []); return }
             if let fb = fallback, WalkTracker.isKorean(fb) { finish(fb, []); return }
-            if let p = sorted.first { finish(p.name, kakaoTheme[p.cat].map { [$0] } ?? []); return }
+            if let p = sorted.first {
+                // 세부 종류(예: 여행 > 관광,명소 > 테마파크)도 'cat:' 으로 같이 보낸다 → 게임이 테마 낱말에 맞춰 본다 (태그는 쉼표로 나뉘니 쉼표는 · 로)
+                var t: Set<String> = kakaoTheme[p.cat].map { [$0] } ?? []
+                if !p.catName.isEmpty { t.insert("cat:" + p.catName.replacingOccurrences(of: " > ", with: ">").replacingOccurrences(of: ",", with: "·")) }
+                finish(p.name, t); return
+            }
             finish(nil, [])
         }
     }
