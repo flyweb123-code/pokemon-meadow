@@ -5576,7 +5576,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.56';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.57';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6021,7 +6021,7 @@ function seeBox() { let ch = false; S.box.forEach(p => { if (p.nw) { p.nw = fals
 { let was = !mgr.hidden; new MutationObserver(() => { const now = !mgr.hidden; if (was && !now && mgrTab === 'box') seeBox(); was = now; }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] }); }   // 열려 있다가 닫힐 때만
 // 하단 메뉴 알림 점: 알(가방에 새 알) · 포켓몬(박스에 새 포켓몬)
 function menuDots() { const set = (b, on) => { let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot" aria-label="새 소식"></i>'); else if (!on && d) d.remove(); };
-  set($('#openRun'), S.bag.some(e => e.isNew) || S.eggs.some(e => e.km >= e.need && !e.rs)); set($('#openMgr'), S.box.some(p => p.nw) || !!S.dexNew?.size); set($('#openFld'), S.buds.some(b => b.nw || budNew(b)));   /* v4.87 경완: 진화 준비된 짝꿍이 있으면 빨간 점 (진화할 때까지) */
+  set($('#openRun'), S.bag.some(e => e.isNew) || S.eggs.some(e => (e.km >= e.need && !e.rs) || e.nwI));   /* v5.57 경완: 자동 채우기로 부화기에 바로 들어간 새 알도 빨간 점 (부화기 탭 점과 같은 조건) */ set($('#openMgr'), S.box.some(p => p.nw) || !!S.dexNew?.size); set($('#openFld'), S.buds.some(b => b.nw || budNew(b)));   /* v4.87 경완: 진화 준비된 짝꿍이 있으면 빨간 점 (진화할 때까지) */
   for (const [t, on] of [['buddy', S.buds.some(b => b.nw || budNew(b))], ['dex', !!S.dexNew?.size]]) { const b = document.querySelector(`#mgrTabs [data-t="${t}"]`), d = b && b.querySelector('.dot'); if (b && on && !d) b.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새 소식"></i>'); else if (b && !on && d) d.remove(); } }
 function seeBuds() { if (S.buds.some(b => b.nw || budNew(b))) { S.buds.forEach(b => { delete b.nw; if (budReady(b)) b.es = true; }); save(); menuDots(); } }   // v5.00 경완: 진화 빨간 점도 짝꿍 탭을 보고 나면 모두 사라진다
 function renderBox() {
@@ -7963,7 +7963,7 @@ async function notiDone(got, rdy, evo = []) {
     a.onfinish = () => { f.remove(); tab.classList.remove('bump'); void tab.offsetWidth; tab.classList.add('bump'); haptic(i % 3 ? 0 : 1); sfx('tick', i); };
   });
   if (fl.length) await wait(fl.length * step + 450);
-  notiOpen = false; if (fl.length) bagNext = true; renderRun();   // 알이 '알' 메뉴로 날아갔으면 다음에 열 때 가방부터
+  notiOpen = false; if (fl.length) bagNext = got.some(e => S.bag.includes(e)); renderRun();   // 알이 '알' 메뉴로 날아갔으면 다음에 열 때 가방부터
   // 부화 준비 알림은 주운 게 아니라 날아가는 모션 없이 부화기 창만 연다
   if (evo.length && !rdy.length && !fl.length && !hatching && !evolving) { closeToggles(); hideSheets(); menuTo(fldOpen, 'fld'); setMgrTab('buddy'); }   // v4.87: 진화 알림 확인 → 짝꿍 탭
   if (rdy.length && !fl.length && !hatching && !evolving) { closeToggles(); hideSheets(); runTab = 'egg'; bagNext = false; { const i = S.eggs.findIndex(e => e.km >= e.need); if (i >= 0) { eggSel = S.eggs[i]; eggSelI = i; eggNone = false; } } openRun(); }   /* v4.04 경완: 부화 준비된 알 중 맨 앞 칸을 골라 둔 채로 연다 */   /* 주운 알이 날아갔으면 메뉴는 열지 않는다 (알 메뉴 점으로만 알림) */
