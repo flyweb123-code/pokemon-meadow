@@ -5226,7 +5226,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 const infoEl = $('#info');
 infoEl.addEventListener('click', e => { if (e.target.closest('#infoX')) { e.stopPropagation(); sfx('tap'); select(null); return; }
   if (e.target.closest('#infFeed') && S.sel) { e.stopPropagation(); feedNow(S.sel); return; }
-  if (e.target.closest('#infBudGo') && S.sel) { e.stopPropagation(); const P = boxOf(S.sel.pid); if (!P) return; budNorm(); const keep = S.buds.filter(b => b.sp !== P.sp); if (keep.length >= MAX_BUDS) return;
+  if (e.target.closest('#infBudGo') && S.sel) { e.stopPropagation(); const P = boxOf(S.sel.pid); if (!P) return; budNorm(); const keep = S.buds.filter(b => b.pid !== P.id); if (keep.length >= MAX_BUDS) return;
     keep.push({ sp: P.sp, km: P.km || 0, pid: P.id, nw: true, slot: budFree(keep) }); S.buds = keep; log(`${J({ name: SPECIES[P.sp].n }, '이/가')} 짝꿍이 되어 기뻐하고 있다!`, [], true); evoNotice(P.sp, P);
     save(); renderBox(); renderRun(); renderMgr(true); menuDots(); renderInfo(); return; }
   if (e.target.closest('#infPet') && S.sel) { e.stopPropagation(); petStart(S.sel); return; }
@@ -5576,7 +5576,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.58';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.59';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6148,8 +6148,8 @@ $('#ppBud').onclick = () => {
   { const i = S.buds.findIndex(b => b.pid === P.id); if (i >= 0) { log(`${J({ name: SPECIES[P.sp].n },'과/와')} 짝꿍을 해제했다.`); S.buds.splice(i, 1); save(); renderBox(); openPoke(P.id); renderRun(); return; } }   // 짝꿍 해제
   const slot = budPick; if (slot == null && S.buds.length >= MAX_BUDS) return;
   if (slot != null && !$('#ppBud').dataset.go) { const b = $('#ppBud'); b.dataset.go = 1; pressBtn(b, () => { b.onclick(); delete b.dataset.go; }, 160, true); return; }   /* v5.00 경완: 누르는 소리는 버튼 공통 틱 한 번만 */   // 빈 짝꿍 칸에서 왔으면 눌린 모양을 잠깐 보여 준 뒤 짝꿍 탭으로
-  budNorm(); const keep = S.buds.filter(b => b.slot !== slot && b.sp !== P.sp), nb = { sp: P.sp, km: P.km || 0, pid: P.id, nw: true };   // 새 짝꿍 빨간 점 (짝꿍 탭을 보고 나가거나 그 칸을 누르면 지움)
-  nb.slot = slot != null ? slot : budFree(keep); keep.push(nb);
+  budNorm(); const keep = S.buds.filter(b => b.slot !== slot && b.pid !== P.id), nb = { sp: P.sp, km: P.km || 0, pid: P.id, nw: true };   // 새 짝꿍 빨간 점 (짝꿍 탭을 보고 나가거나 그 칸을 누르면 지움)
+  nb.slot = slot != null ? slot : budFree(keep); keep.push(nb);   // v5.59 경완: 같은 종류 포켓몬도 다른 개체면 함께 짝꿍 (전엔 같은 종류가 있던 다른 칸 짝꿍이 사라졌다)
   S.buds = keep;
   log(`${J({ name: SPECIES[P.sp].n },'이/가')} 짝꿍이 되어 기뻐하고 있다!`, [], true); save();
   renderBox(); if (slot != null) { closePoke(); setMgrTab('buddy'); } else openPoke(P.id);   // 짝꿍 칸에서 왔으면 짝꿍 탭으로, 아니면 카드에 남아 버튼만 눌린 모양으로
@@ -6247,10 +6247,10 @@ function renderMgrDetail(rebuild) {
     $('#mLook').onclick = ev => pressBtn(ev.currentTarget, () => { closeMgr(); if (S.sel) select(null); lookMon = m; });
     $('#mBud').onclick = () => { const P = boxOf(m.pid); if (!P) return; const i = S.buds.findIndex(b => b.pid === P.id); sfx('tap');   /* 필드 개체 정보에서 바로 짝꿍 등록·해제 */
       if (i >= 0) { S.buds.splice(i, 1); log(`${J({ name: SPECIES[P.sp].n }, '과/와')} 짝꿍을 해제했다.`); }
-      else { budNorm(); const keep = S.buds.filter(b => b.sp !== P.sp); if (keep.length >= MAX_BUDS) return; keep.push({ sp: P.sp, km: P.km || 0, pid: P.id, nw: true, slot: budFree(keep) }); S.buds = keep;   /* v4.35 경완: 필드 슬롯에서 정한 짝꿍도 빨간 점 */ log(`${J({ name: SPECIES[P.sp].n }, '이/가')} 짝꿍이 되어 기뻐하고 있다!`, [], true); evoNotice(P.sp, P); }
+      else { budNorm(); const keep = S.buds.filter(b => b.pid !== P.id); if (keep.length >= MAX_BUDS) return; keep.push({ sp: P.sp, km: P.km || 0, pid: P.id, nw: true, slot: budFree(keep) }); S.buds = keep;   /* v4.35 경완: 필드 슬롯에서 정한 짝꿍도 빨간 점 */ log(`${J({ name: SPECIES[P.sp].n }, '이/가')} 짝꿍이 되어 기뻐하고 있다!`, [], true); evoNotice(P.sp, P); }
       save(); renderBox(); renderRun(); renderMgr(true); renderMgrDetail(true); };
     { const i = S.mons.indexOf(m); $('#mHl').hidden = i <= 0; $('#mHr').hidden = i >= S.mons.length - 1; $('#mRk').innerHTML = rkBadge(boxOf(m.pid)); const bud = !!m.pid && S.buds.some(b => b.pid === m.pid); $('#monPop .win').classList.toggle('bud', bud); $('#mBudTag').hidden = !bud;
-      const bb = $('#mBud'), P = boxOf(m.pid), full = !bud && S.buds.filter(b => b.sp !== m.sp).length >= MAX_BUDS; bb.hidden = !P; bb.textContent = bud ? '짝꿍 해제' : full ? '짝꿍 가득' : '짝꿍으로'; bb.disabled = full; bb.classList.toggle('off', full); bb.classList.toggle('sunk', bud); }
+      const bb = $('#mBud'), P = boxOf(m.pid), full = !bud && S.buds.filter(b => b.pid !== m.pid).length >= MAX_BUDS; bb.hidden = !P; bb.textContent = bud ? '짝꿍 해제' : full ? '짝꿍 가득' : '짝꿍으로'; bb.disabled = full; bb.classList.toggle('off', full); bb.classList.toggle('sunk', bud); }
     monPage(monPg, true);
     // 필드에서 빼기: 포켓몬 상자로 돌아간다 (떠나보내는 게 아님)
     $('#mOut').onclick = ev => pressBtn(ev.currentTarget, () => {
