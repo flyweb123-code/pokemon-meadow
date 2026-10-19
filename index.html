@@ -2308,7 +2308,8 @@ const sizeCls = sp => { const h = SPECIES[parseInt(sp)]?.h ?? 7; return h <= 5 ?
 let MON_SC = {};
 // v3.93 경완: 종마다 기울기(MON_ROT[종] = 도, 바라보는 쪽 기준)·땅에서 떠 있는 높이(MON_FLY[종] = px). 선택·잡기는 그대로 스프라이트 몸통
 let MON_ROT = {}, MON_FLY = {}, MON_FLYA = {};   // v5.69 경완: MON_FLYA[종][동작] = 그 동작일 때 MON_FLY 높이에 더하는 값 (px)
-// v5.24 경완: 종마다 그림자 크기·자리(MON_SH[종] = [배율, 좌우 px, 위아래 px], 좌우는 바라보는 쪽 기준). 작업실 크기 조절 모드에서 바꾼다
+// v5.24 경완: 종마다 그림자 크기·자리(MON_SH[종] = [배율, 좌우 px, 위아래 px, 기울기 도], 좌우·기울기는 바라보는 쪽 기준). 작업실 크기 조절 모드에서 바꾼다
+// v5.72 경완: MON_SH['0'] = 모든 포켓몬 기본값 (배율은 곱하고 나머지는 더한다)
 let MON_SH = {};
 const scaleOf = k => scale0(k) * (MON_SC[parseInt(k)] || 1);
 const scale0 = sp => { const P = SPRITES[sp]; if (!isPmd(sp)) return SCALE * [.85, 1, 1.15][sizeCls(sp)]; if (!P.vh) return P.a.Idle[2] >= 40 ? 1.875 : PSCALE; const big = P.a.Idle[2] >= 40; let k = Math.round(sizeT(sp) / P.vh * 4) / 4; if (k > 2.75 && k < 3.5) k = 2.75; return Math.max(1.5, Math.min(big ? 3.5 : 4.5, k)); };   // v3.10: 도트가 너무 잘아 보이지 않게 최소 1.5배(비크티니, 경완). v3.08: 도트 한 칸은 아르세우스(2.75배)만큼까지(경완) — 조금 넘는 건 2.75로, 훨씬 커야 하는 건 Scale2x 로 고운 도트   // 픽셀이 고르게 보이도록 0.5배 단위, 원래 크기 근처에서만
@@ -2331,7 +2332,7 @@ function padAtlas(k) {
         { // v5.20 경완: 발 = 세로줄마다 가장 아래 칠해진 칸이 발 선(b) 근처인 줄. 네발 포켓몬은 뒷발이 조금 위에 있어서 키의 18%까지 본다 → 그림자 폭·가운데·두께를 뒷발까지
           const D = Math.max(3, Math.round((b - t + 1) * .18)); let fl = a[1], fr = -1, top = b;
           for (let xx = 0; xx < a[1]; xx++) { let cb = -1; for (let yy = b; yy >= t; yy--) if (d[(yy * a[1] + xx) * 4 + 3] > 40) { cb = yy; break; } if (cb >= b - D) { fl = Math.min(fl, xx); fr = Math.max(fr, xx); top = Math.min(top, cb); } }
-          if (fr >= fl) { P.fw = Math.max(fr - fl + 1, (r - l + 1) * .55); P.fx = (fl + fr + 1) / 2 - a[1] / 2; P.fh = b - top; } }   // 발 폭 (그림자용)   // 보이는 몸 크기 = 실제로 칠해진 칸 수 기준 (옆으로 길거나 똬리 튼 포켓몬도 덩치만큼)
+          if (fr >= fl) { P.fw = Math.max(fr - fl + 1, (r - l + 1) * .7); P.fx = (fl + fr + 1) / 2 - a[4]; P.fh = b - top; } }   // 발 폭 (그림자용)   // 보이는 몸 크기 = 실제로 칠해진 칸 수 기준 (옆으로 길거나 똬리 튼 포켓몬도 덩치만큼)
         for (const n of names) A[n][0] = ny[n]; P.G = G; if (vh) P.vh = vh; delete atlasDims[k];
         // 크게 확대되는 포켓몬은 도트가 굵어 보이므로 Scale2x 로 두 배 고운 도트로 다시 찍는다 (좌표는 그대로, 그림만 고해상도 → 화면 도트 크기 절반)
         let cv = c; const sc = scale0(k); if (sc >= 3.5) cv = scale2x(cv);   // v3.07: 2.5배부터 하니 픽셀 느낌이 사라진다(경완) → 4배 이상만
@@ -2349,9 +2350,10 @@ function shadowFit(m) {
   const sh = m.el.querySelector('.shadow'); if (!sh) return;
   const k = m.sk || m.form, P = SPRITES[k], s = scaleOf(k);
   const pm = isPmd(k) && P.fw, fh = pm ? (P.fh || 0) * s : 0, w = clamp(pm ? P.fw * s * 1.12 : m.w * .62, 14, 220), h = Math.max(5, Math.round(Math.max(w * .3, fh + 5)));
-  const [sk, sx, sy] = MON_SH[m.form] || [1, 0, 0], W = w * sk, Hh = Math.max(3, Math.round(h * sk));
-  sh.style.transform = ''; sh.style.width = Math.round(W) + 'px'; sh.style.height = Hh + 'px'; sh.style.margin = `${-Math.round(h * .62 + fh * .3 + (Hh - h) / 2) + sy}px 0 0 ${-Math.round(W / 2)}px`;
-  m.shEl = sh; m.shX = (pm ? (P.fx || 0) * s : 0) + sx; m.shF = null;   // 발 가운데가 몸 가운데와 다르면 그쪽으로 (바라보는 쪽 따라 뒤집힘)
+  const g = MON_SH[0] || [1, 0, 0, 0], o = MON_SH[m.form] || [1, 0, 0, 0], sk = g[0] * o[0], sx = g[1] + o[1], sy = g[2] + o[2], W = w * sk, Hh = Math.max(3, Math.round(h * sk));
+  const up = pm ? (P.fy || 0) * s * .35 : 0;   // v5.72 경완(노고치·단단지·헤라크로스 등 그림자가 몸에서 떨어져 보임): 던전 그림의 그림자 자리(fy) 쪽으로 35% 올린다
+  sh.style.transform = ''; sh.style.width = Math.round(W) + 'px'; sh.style.height = Hh + 'px'; sh.style.margin = `${-Math.round(h * .62 + fh * .3 + up + (Hh - h) / 2) + sy}px 0 0 ${-Math.round(W / 2)}px`;
+  m.shEl = sh; m.shX = (pm ? (P.fx || 0) * s : 0) + sx; m.shR = (g[3] || 0) + (o[3] || 0); m.shF = null;   // 발 가운데가 몸 가운데와 다르면 그쪽으로 (바라보는 쪽 따라 뒤집힘)
 }
 function scale2x(src) {
   const w = src.width, h = src.height, s = new Uint32Array(src.getContext('2d').getImageData(0, 0, w, h).data.buffer);
@@ -4464,7 +4466,7 @@ function render(m, now) {
   m.liftEl.style.transform = `translateY(${(wet ? m.h * .38 : m.flop ? m.h * .42 : m.sp === 129 && !m.held ? m.h * .24 : 0) - Math.max(0, m.lift + (MON_FLYA[m.form]?.[m.anName] || 0)) - bob}px)`;   // 육지의 잉어킹은 그림자에 붙게 조금 내린다 (v5.68 경완: 작업실 크기 조절 모드처럼 땅에 놓인 잉어킹도)
   if (m.flop && now > (m.swT || 0)) { m.swT = now + rnd(180, 360); for (const s of [-1, 1]) if (Math.random() < .75) particle(m.x + s * rnd(6, m.w * .32), m.y - m.h * .2 - rnd(0, 10), 'sweat', '', d => d.style.setProperty('--dx', s * rnd(12, 26) + 'px')); }
   m.flipEl.style.transform = `scaleX(${m.face})`; m.flipEl.style.setProperty('--f', m.face);
-  if (m.shEl && m.shF !== m.face) { m.shF = m.face; m.shEl.style.translate = m.shX ? `${(m.shX * m.face).toFixed(1)}px 0` : ''; }
+  if (m.shEl && m.shF !== m.face) { m.shF = m.face; m.shEl.style.translate = m.shX ? `${(m.shX * m.face).toFixed(1)}px 0` : ''; m.shEl.style.rotate = m.shR ? m.shR * m.face + 'deg' : ''; }
   { const r = (MON_ROT[m.form] || 0) * m.face, o = Math.round(m.h / 2); if (r !== m.rotV || o !== m.rotO) { m.rotV = r; m.rotO = o; m.flipEl.style.rotate = r ? r + 'deg' : ''; m.flipEl.style.transformOrigin = r ? `0 ${-o}px` : ''; } }   /* 기울기는 몸 가운데를 축으로 (transform 애니메이션과 따로 도는 rotate 속성) */
   if (isPmd(m.form)) drawSprite(m, m.frz && !m.szAn ? 0 : m.realDt || 0);
   else { const want = m.state === 'sleep' ? (stillCache[m.form] || SPRITES[m.form]) : SPRITES[m.form]; if (m.curSrc !== want) { m.curSrc = want; m.img.src = want; } }
@@ -5582,7 +5584,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.71';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.72';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8572,7 +8574,7 @@ function applyCfg(c) {
     applyThOv(d.thOv && typeof d.thOv === 'object' ? d.thOv : null); applyThSp(d.thSp && typeof d.thSp === 'object' ? d.thSp : null);
     MON_SC = {}; if (d.monSc && typeof d.monSc === 'object') for (const [k, v] of Object.entries(d.monSc)) if (SPECIES[k] && typeof v === 'number' && v >= .3 && v <= 3) MON_SC[k] = v;
     MON_ROT = {}; if (d.monRot && typeof d.monRot === 'object') for (const [k, v] of Object.entries(d.monRot)) if (SPECIES[k] && typeof v === 'number' && Math.abs(v) <= 90 && v) MON_ROT[k] = v;
-    MON_SH = {}; if (d.monSh && typeof d.monSh === 'object') for (const [k, v] of Object.entries(d.monSh)) if (SPECIES[k] && Array.isArray(v) && v.length === 3 && v[0] >= .2 && v[0] <= 4 && Math.abs(v[1]) <= 200 && Math.abs(v[2]) <= 200) MON_SH[k] = v.map(Number);
+    MON_SH = {}; if (d.monSh && typeof d.monSh === 'object') for (const [k, v] of Object.entries(d.monSh)) if (SPECIES[k] && Array.isArray(v) && (k === '0' || SPECIES[k]) && Array.isArray(v) && (v.length === 3 || v.length === 4) && v[0] >= .2 && v[0] <= 4 && Math.abs(v[1]) <= 200 && Math.abs(v[2]) <= 200 && Math.abs(v[3] || 0) <= 90) MON_SH[k] = v.map(Number);
     MON_FLY = {}; if (d.monFly && typeof d.monFly === 'object') for (const [k, v] of Object.entries(d.monFly)) if (SPECIES[k] && typeof v === 'number' && v && v >= -300 && v <= 300) MON_FLY[k] = v;
     MON_FLYA = {}; if (d.monFlyA && typeof d.monFlyA === 'object') for (const [k, o] of Object.entries(d.monFlyA)) if (SPECIES[k] && o && typeof o === 'object') { const r = {}; for (const [n, v] of Object.entries(o)) if (typeof v === 'number' && v && Math.abs(v) <= 400) r[n] = v; if (Object.keys(r).length) MON_FLYA[k] = r; }
     TIER_KT = {}; if (d.tierK?.k && typeof d.tierK.k === 'object') for (const [t, k] of Object.entries(d.tierK.k)) if (k >= 0 && k <= 5) TIER_KT[t] = +k;
