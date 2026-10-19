@@ -265,7 +265,94 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
     // 2026-10-17 경완: 한국어 이름이 없으면 동 이름만 남기지 말고 반경을 400m → 800m → 1.5km 로 넓혀 한국어 이름이 있는 가장 가까운 곳을 붙인다
     private static let landmarkRadii: [CLLocationDistance] = [400, 800, 1500]
     private static func nearbyLandmark(_ loc: CLLocation, fallback: String?, log: ((String) -> Void)?, done: @escaping (String?, Set<String>) -> Void) {
-        searchLandmark(loc, fallback: fallback, step: 0, tags: [], log: log, done: done)
+        // 카카오 키가 있으면 카카오 지도로 먼저 찾고, 못 찾으면 애플 지도로
+        guard let key = kakaoKey else {
+            log?("카카오 키 없음 → 애플 지도로 찾음")
+            searchLandmark(loc, fallback: fallback, step: 0, tags: [], log: log, done: done); return
+        }
+        kakaoLandmark(loc, key: key, fallback: fallback, log: log) { name, tags in
+            if let name { done(name, tags); return }
+            searchLandmark(loc, fallback: fallback, step: 0, tags: tags, log: log, done: done)
+        }
+    }
+
+    // ── 카카오 지도 (2026-10-20 경완: 한국은 애플 지도가 주변 장소 목록을 주지 않아 카카오로) ──
+    // 키는 저장소에 올리지 않는다: native/PokeGrow/kakao-key.txt (gitignore) 에 REST API 키 한 줄
+    private static let kakaoKey: String? = {
+        guard let url = Bundle.main.url(forResource: "kakao-key", withExtension: "txt"),
+              let s = try? String(contentsOf: url, encoding: .utf8) else { return nil }
+        let k = s.trimmingCharacters(in: .whitespacesAndNewlines)
+        return k.isEmpty ? nil : k
+    }()
+    // 찾을 장소 종류 (카카오 카테고리 코드). 명소 쪽(landmark)은 같은 반경 안이면 식당·카페보다 먼저 고른다
+    private static let kakaoCats = ["AT4", "CT1", "SW8", "PO3", "SC4", "CE7", "FD6", "HP8", "BK9", "OL7", "MT1", "AD5", "PK6", "CS2"]
+    private static let kakaoLandmarkCats: Set<String> = ["AT4", "CT1", "SW8", "PO3", "SC4", "공원"]
+    private static let kakaoTheme: [String: String] = [
+        "SW8": "station", "OL7": "gas", "SC4": "school", "HP8": "hospital", "PM9": "hospital",
+        "CE7": "bakery", "FD6": "restaurant", "BK9": "bank", "AD5": "hotel", "MT1": "city", "CS2": "city", "PK6": "city", "공원": "park"
+    ]
+    private struct KakaoPlace { let name: String; let cat: String; let d: Double }
+    private static func kakaoGet(_ path: String, _ q: [URLQueryItem], key: String, done: @escaping ([[String: Any]], String?) -> Void) {
+        var c = URLComponents(string: "https://dapi.kakao.com" + path)!
+        c.queryItems = q
+        var req = URLRequest(url: c.url!, timeoutInterval: 8)
+        req.setValue("KakaoAK \(key)", forHTTPHeaderField: "Authorization")
+        URLSession.shared.dataTask(with: req) { data, res, err in
+            let code = (res as? HTTPURLResponse)?.statusCode ?? 0
+            let json = data.flatMap { try? JSONSerialization.jsonObject(with: $0) as? [String: Any] }
+            let docs = json?["documents"] as? [[String: Any]] ?? []
+            var e: String?
+            if let err { e = err.localizedDescription }
+            else if code != 200 { e = "HTTP \(code) \((json?["message"] as? String) ?? "")" }
+            done(docs, e)
+        }.resume()
+    }
+    private static func kakaoLandmark(_ loc: CLLocation, key: String, fallback: String?, log: ((String) -> Void)?, done: @escaping (String?, Set<String>) -> Void) {
+        let finish: (String?, Set<String>) -> Void = { n, t in DispatchQueue.main.async { done(n, t) } }
+        let x = String(loc.coordinate.longitude), y = String(loc.coordinate.latitude)
+        let r = String(Int(landmarkRadii.last ?? 1500))
+        let group = DispatchGroup(), lock = NSLock()
+        var places: [KakaoPlace] = [], building: String?, errs: [String] = [], counts: [String] = []
+        // 그 자리 건물 이름 (예: 롯데월드타워)
+        group.enter()
+        kakaoGet("/v2/local/geo/coord2address.json", [URLQueryItem(name: "x", value: x), URLQueryItem(name: "y", value: y)], key: key) { docs, e in
+            let b = (docs.first?["road_address"] as? [String: Any])?["building_name"] as? String
+            lock.lock(); if let b, WalkTracker.isKorean(b) { building = b }; if let e { errs.append("건물: \(e)") }; lock.unlock(); group.leave()
+        }
+        var reqs: [(String, String, [URLQueryItem])] = []
+        for cat in kakaoCats { reqs.append((cat, "/v2/local/search/category.json", [URLQueryItem(name: "category_group_code", value: cat)])) }
+        reqs.append(("공원", "/v2/local/search/keyword.json", [URLQueryItem(name: "query", value: "공원")]))
+        for (cat, path, q) in reqs {
+            group.enter()
+            let common: [URLQueryItem] = [URLQueryItem(name: "x", value: x), URLQueryItem(name: "y", value: y), URLQueryItem(name: "radius", value: r), URLQueryItem(name: "sort", value: "distance"), URLQueryItem(name: "size", value: "5")]
+            kakaoGet(path, q + common, key: key) { docs, e in
+                let got = docs.compactMap { d -> KakaoPlace? in
+                    guard let n = d["place_name"] as? String, !n.isEmpty, let ds = d["distance"] as? String, let dist = Double(ds) else { return nil }
+                    return KakaoPlace(name: n, cat: cat, d: dist)
+                }
+                lock.lock(); places += got; counts.append("\(cat) \(got.count)"); if let e { errs.append("\(cat): \(e)") }; lock.unlock(); group.leave()
+            }
+        }
+        group.notify(queue: .main) {
+            log?("카카오: " + counts.sorted().joined(separator: ", "))
+            if let e = errs.first { log?("카카오 오류: \(e)" + (errs.count > 1 ? " 외 \(errs.count - 1)건" : "")) }
+            log?("카카오 그 자리 건물: \(building ?? "없음")")
+            var tags: Set<String> = []
+            for p in places where p.d <= 250 { if let t = kakaoTheme[p.cat] { tags.insert(t) } }
+            let sorted = places.sorted { $0.d < $1.d }
+            log?("카카오 가까운 곳: " + (sorted.prefix(3).map { "\($0.name) \(Int($0.d))m" }.joined(separator: ", ").nilIfEmpty ?? "없음"))
+            // 400m 안 명소 → 그 자리 건물 → 400m 안 아무 곳 → 800m·1.5km 안 명소 → 아무 곳 → (애플 지도로)
+            let pick: String? = {
+                for (i, rad) in landmarkRadii.enumerated() {
+                    if let p = sorted.first(where: { $0.d <= rad && kakaoLandmarkCats.contains($0.cat) }) { return p.name }
+                    if i == 0, let b = building { return b }
+                    if i == 0, let fb = fallback, WalkTracker.isKorean(fb) { return fb }
+                    if let p = sorted.first(where: { $0.d <= rad }) { return p.name }
+                }
+                return nil
+            }()
+            finish(pick, tags)
+        }
     }
     private static func searchLandmark(_ loc: CLLocation, fallback: String?, step: Int, tags: Set<String>, log: ((String) -> Void)?, done: @escaping (String?, Set<String>) -> Void) {
         let finish: (String?, Set<String>) -> Void = { n, t in DispatchQueue.main.async { done(n, t) } }
