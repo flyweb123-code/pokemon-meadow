@@ -510,7 +510,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.14';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.15';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -974,10 +974,11 @@ function szMoUI() { const e = $('#szMo'); if (!e) return; const sp = szOn && szC
     // v3.12 경완: 맵과 같은 그림자(크기·자리·기울기)·떠 있기·몸 기울기로 그린다. 게임 화면 px → 칸 px = k / s
     const G = A?.shGeo?.(sp), s0 = G?.s || A?.scaleOf?.(sp) || 2, gg = flyG(sp), mu = Math.max(0, ...N.map(n => gg + flyA(sp, n))) / s0, k = Math.min(2, 44 / Math.max(I[1], I[2]), 54 / ((I[5] + (P.fy || 0)) + mu)), q = k / s0;   // 높이 떠도 칸 안에 들어오게 줄여 그린다
     rot = (effP(D, 'monRot')[sp] || 0) * Math.PI / 180, piv = Math.round((I[5] + (P.fy || 0)) * s0 / 2) * q;
+    const AW = Math.max(...N.map(n => P.a[n][3] * (P.a[n][1] + (P.G || 0)))), R = AW ? Math.max(1, Math.round(im.naturalWidth / AW)) : 1;   // v3.15: 크게 확대되는 포켓몬은 그림이 두 배 고운 도트(Scale2x)라 좌표도 두 배
     for (const c of e.querySelectorAll('canvas')) { const n = c.dataset.mo, a = P.a[n]; if (!a) continue; const durs = a[6], tot = durs.reduce((x, y) => x + y, 0), t = ((now - t0) / 1000 * 60) % tot; let f = 0, acc = 0; for (let i = 0; i < durs.length; i++) { acc += durs[i]; if (t < acc) { f = i; break; } }
       const x = c.getContext('2d'), up = Math.max(0, gg + flyA(sp, n)) * q; x.imageSmoothingEnabled = false; x.setTransform(1, 0, 0, 1, 0, 0); x.fillStyle = '#a9dc8a'; x.fillRect(0, 0, 64, 64);   // v3.10 경완: 그림자가 잘 보이게 밝은 풀밭 바탕
       if (G) { x.save(); x.translate(32 + G.x * q, 58 + (G.top + G.H / 2) * q); x.rotate(G.r * Math.PI / 180); x.scale(G.W / 2 * q, G.H / 2 * q); const gr = x.createRadialGradient(0, 0, 0, 0, 0, 1); gr.addColorStop(0, 'rgba(20,40,10,.5)'); gr.addColorStop(.7, 'rgba(20,40,10,.4)'); gr.addColorStop(1, 'rgba(20,40,10,0)'); x.fillStyle = gr; x.beginPath(); x.arc(0, 0, 1, 0, 7); x.fill(); x.restore(); }   // 게임과 같은 그림자 (조금 진하게)
-      x.save(); x.translate(32, 58 - up - piv); if (rot) x.rotate(rot); x.drawImage(im, f * (a[1] + (P.G || 0)), a[0], a[1], a[2], -a[4] * k, piv - (a[5] + (P.fy || 0)) * k, a[1] * k, a[2] * k); x.restore(); } };
+      x.save(); x.translate(32, 58 - up - piv); if (rot) x.rotate(rot); x.drawImage(im, f * (a[1] + (P.G || 0)) * R, a[0] * R, a[1] * R, a[2] * R, -a[4] * k, piv - (a[5] + (P.fy || 0)) * k, a[1] * k, a[2] * k); x.restore(); } };
   szMoRaf = requestAnimationFrame(tick); }
 function szMoVals() { const e = $('#szMo'), sp = szMoSp; if (!e || e.hidden || !sp) return; const g = flyG(sp), all = $('#szMoAll'); if (all && document.activeElement !== all) all.value = g;
   e.querySelectorAll('[data-mof]').forEach(i => { const d = flyA(sp, i.dataset.mof); if (document.activeElement !== i) i.value = Math.max(0, g + d); i.classList.toggle('ch', !!d); }); }
@@ -1982,6 +1983,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.15', '10월 20일', ['동작별 떠 있기 창: 딱구리처럼 크게 그려지는 포켓몬 그림이 조각나 보이던 것 고침']],
   ['3.14', '10월 20일', ['상점 메뉴 (데이터): 도구·아이템·배경 음악 가격, 향로(시간·등급 배수)·빛나는 부적(시간·알 몇 개에 1개) 효과와 몇 km에 한 번꼴인지 계산 (베타 게임)']],
   ['3.13', '10월 20일', ['버전 화면에 베타 게임 보기 토글 (새 기능 시험판 beta.html 을 미리보기로)']],
   ['3.12', '10월 20일', ['동작별 떠 있기 창 그림에도 그림자(크기·자리·기울기)·떠 있기·몸 기울기를 맵과 똑같이 보여 줌 (게임 v5.73)']],
