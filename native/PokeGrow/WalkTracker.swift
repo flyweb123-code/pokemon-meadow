@@ -2,6 +2,7 @@ import CoreLocation
 import CoreMotion
 import MapKit
 import Foundation
+import UIKit
 
 // 알 줍기: 휴대폰이 잠겨 있어도 걸은 거리만큼 가방에 알을 넣는다.
 // 동네를 옮길 만큼(약 500m) 움직이면 iOS 가 앱을 잠깐 깨워 준다(주요 위치 변경).
@@ -160,6 +161,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
 
     func locationManager(_ m: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let loc = locations.last else { return }
+        if probeWaiting { probeWaiting = false; runProbe(loc) }
         if !tracking { checkMoving() }
         if tracking, let at = lookAt, loc.distance(from: at) < WalkTracker.lookStep { return }   // 정밀 위치는 250m마다 한 번만 이름을 찾는다
         place(for: loc)
@@ -168,15 +170,40 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
     private func place(for loc: CLLocation) {
         guard !lookBusy else { return }
         lookBusy = true; lookAt = loc
-        WalkTracker.lookup(loc, geocoder: geocoder) { [weak self] place, tags in
+        let tr = PlaceTrace(auto: true)
+        WalkTracker.lookup(loc, geocoder: geocoder, log: tr.add) { [weak self] place, tags in
             self?.lookBusy = false
+            tr.save()
             self?.sync(place: place, tags: tags, at: loc.coordinate)
         }
     }
 
+    // MARK: 장소 찾기 시험 (2026-10-19 경완: 알 주운 곳이 동까지만 나와서 원인을 보려고)
+    // 게임 설정 › 운영자 › '장소 찾기 시험' → 지금 위치로 장소를 찾고, 단계마다 무엇을 받았는지 게임에 보여 준다.
+    // 자동으로 찾은 최근 기록(PlaceTrace)도 함께 보낸다. Xcode 의 위치 흉내(GPX)로 가짜 위치에서도 시험할 수 있다.
+    private var probeWaiting = false
+    func probe() {
+        let st = manager.authorizationStatus
+        guard st == .authorizedAlways || st == .authorizedWhenInUse else {
+            PhoneBridge.shared.sendProbe(["위치 권한이 없어요 (\(st.rawValue))"] + PlaceTrace.recent()); return
+        }
+        if let loc = manager.location, Date().timeIntervalSince(loc.timestamp) < 30 { runProbe(loc); return }
+        probeWaiting = true
+        manager.requestLocation()
+    }
+    private func runProbe(_ loc: CLLocation) {
+        let tr = PlaceTrace(auto: false)
+        tr.add(String(format: "위치 %.5f, %.5f (±%.0fm)", loc.coordinate.latitude, loc.coordinate.longitude, loc.horizontalAccuracy))
+        WalkTracker.lookup(loc, geocoder: CLGeocoder(), log: tr.add) { place, tags in
+            tr.add("테마: \(tags.isEmpty ? "없음" : tags.joined(separator: ", "))")
+            PhoneBridge.shared.sendProbe(tr.lines + ["", "── 최근 자동 장소 찾기 ──"] + PlaceTrace.recent())
+        }
+    }
+
     // 좌표 → "서울 석촌동 석촌호수" 같은 이름 + 알 테마 태그. 런닝 경로(HealthSync)도 같이 쓴다
-    static func lookup(_ loc: CLLocation, geocoder: CLGeocoder, done: @escaping (String?, [String]) -> Void) {
-        geocoder.reverseGeocodeLocation(loc, preferredLocale: Locale(identifier: "ko_KR")) { marks, _ in
+    static func lookup(_ loc: CLLocation, geocoder: CLGeocoder, log: ((String) -> Void)? = nil, done: @escaping (String?, [String]) -> Void) {
+        geocoder.reverseGeocodeLocation(loc, preferredLocale: Locale(identifier: "ko_KR")) { marks, err in
+            if let err { log?("동네 이름 오류: \(WalkTracker.errText(err))") }
             let p = marks?.first
             // 예: "서울 송파구 석촌동"
             let city = p?.administrativeArea.map(WalkTracker.shortCity)
@@ -193,8 +220,10 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
             // 지도에 장소가 없으면: 그 자리 명소(areasOfInterest) → 주소가 아닌 건물 이름 순
             var fb = p?.areasOfInterest?.first(where: WalkTracker.isKorean)
             if fb == nil, let n = p?.name, WalkTracker.isKorean(n), !WalkTracker.isAddress(n, p) { fb = n }
-            WalkTracker.nearbyLandmark(loc, fallback: fb) { mark, near in
+            log?("동네: \(area.isEmpty ? "(없음)" : area)" + (fb.map { " · 그 자리 이름: \($0)" } ?? ""))
+            WalkTracker.nearbyLandmark(loc, fallback: fb, log: log) { mark, near in
                 let place = [area, mark ?? ""].filter { !$0.isEmpty }.joined(separator: " ")
+                log?("보낸 이름: \(place.isEmpty ? "(없음)" : place)")
                 done(place.isEmpty ? nil : place, Array(tags.union(near)).sorted())
             }
         }
@@ -235,10 +264,10 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
     // 2026-10-16 경완: 장소 종류 목록에 없어도 이름은 넣는다 (예전엔 약 40종류만 봤다)
     // 2026-10-17 경완: 한국어 이름이 없으면 동 이름만 남기지 말고 반경을 400m → 800m → 1.5km 로 넓혀 한국어 이름이 있는 가장 가까운 곳을 붙인다
     private static let landmarkRadii: [CLLocationDistance] = [400, 800, 1500]
-    private static func nearbyLandmark(_ loc: CLLocation, fallback: String?, done: @escaping (String?, Set<String>) -> Void) {
-        searchLandmark(loc, fallback: fallback, step: 0, tags: [], done: done)
+    private static func nearbyLandmark(_ loc: CLLocation, fallback: String?, log: ((String) -> Void)?, done: @escaping (String?, Set<String>) -> Void) {
+        searchLandmark(loc, fallback: fallback, step: 0, tags: [], log: log, done: done)
     }
-    private static func searchLandmark(_ loc: CLLocation, fallback: String?, step: Int, tags: Set<String>, done: @escaping (String?, Set<String>) -> Void) {
+    private static func searchLandmark(_ loc: CLLocation, fallback: String?, step: Int, tags: Set<String>, log: ((String) -> Void)?, done: @escaping (String?, Set<String>) -> Void) {
         let finish: (String?, Set<String>) -> Void = { n, t in DispatchQueue.main.async { done(n, t) } }
         guard step < landmarkRadii.count else {
             // 끝까지 못 찾으면: 그 자리 한국어 명소·건물 이름, 그것도 없으면 동네 이름만
@@ -246,11 +275,19 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
         }
         let req = MKLocalPointsOfInterestRequest(center: loc.coordinate, radius: landmarkRadii[step])
         req.pointOfInterestFilter = .includingAll
-        MKLocalSearch(request: req).start { res, _ in
+        MKLocalSearch(request: req).start { res, err in
             var tags = tags
+            let items = res?.mapItems ?? []
+            if let log {
+                let ko = items.compactMap(\.name).filter(WalkTracker.isKorean)
+                var line = "\(Int(landmarkRadii[step]))m: 장소 \(items.count)곳 (한국어 이름 \(ko.count))"
+                if let err { line += " · 오류: \(WalkTracker.errText(err))" }
+                if let first = items.first?.name { line += " · 예: \(ko.first ?? first)" }
+                log(line)
+            }
             var bestKo: (String, CLLocationDistance)?
             var bestAny: (MKMapItem, CLLocationDistance)?
-            for item in res?.mapItems ?? [] {
+            for item in items {
                 guard let c = item.placemark.location else { continue }
                 let d = c.distance(from: loc)
                 if step == 0, let cat = item.pointOfInterestCategory, d <= 250, let t = WalkTracker.themeOf[cat] { tags.insert(t) }
@@ -263,18 +300,26 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
             if let ko = bestKo { finish(ko.0, tags); return }
             // 이름이 영어뿐이면 그 자리를 한국어로 다시 찾아 보고, 없으면 반경을 넓힌다
             guard let any = bestAny, let at = any.0.placemark.location else {
-                searchLandmark(loc, fallback: fallback, step: step + 1, tags: tags, done: done); return
+                searchLandmark(loc, fallback: fallback, step: step + 1, tags: tags, log: log, done: done); return
             }
             WalkTracker.koGeocoder.reverseGeocodeLocation(at, preferredLocale: Locale(identifier: "ko_KR")) { marks, _ in
+                log?("영어 이름(\(any.0.name ?? "")) 자리를 한국어로 다시 찾음 → \(marks?.first?.areasOfInterest?.first(where: WalkTracker.isKorean) ?? "없음")")
                 if let ko = marks?.first?.areasOfInterest?.first(where: WalkTracker.isKorean) { finish(ko, tags) }
-                else { searchLandmark(loc, fallback: fallback, step: step + 1, tags: tags, done: done) }
+                else { searchLandmark(loc, fallback: fallback, step: step + 1, tags: tags, log: log, done: done) }
             }
         }
     }
     private static let koGeocoder = CLGeocoder()
+    static func errText(_ e: Error) -> String {
+        let n = e as NSError
+        if n.domain == MKErrorDomain, n.code == Int(MKError.Code.loadingThrottled.rawValue) { return "요청이 너무 많아 애플 지도가 막음" }
+        if n.domain == kCLErrorDomain, n.code == CLError.Code.network.rawValue { return "네트워크 또는 요청 제한 (CLError.network)" }
+        return "\(n.domain) \(n.code) \(n.localizedDescription)"
+    }
     static func isKorean(_ s: String) -> Bool { s.unicodeScalars.contains { (0xAC00...0xD7A3).contains($0.value) } }
 
     func locationManager(_ m: CLLocationManager, didFailWithError error: Error) {
+        if probeWaiting { probeWaiting = false; PhoneBridge.shared.sendProbe(["위치를 못 받았어요: \(WalkTracker.errText(error))"] + PlaceTrace.recent()) }
         sync(place: nil, tags: [])
     }
 
@@ -355,5 +400,30 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
                 self.runBusy = false
             }
         }
+    }
+}
+
+
+// 장소 찾기 기록: 자동으로 찾을 때마다 단계별 결과를 남긴다 (최근 8번, 장소 찾기 시험에서 보여 준다)
+final class PlaceTrace {
+    private(set) var lines: [String] = []
+    private let auto: Bool
+    private static let key = "placeTrace"
+    init(auto: Bool) {
+        self.auto = auto
+        let f = DateFormatter(); f.dateFormat = "M/d HH:mm:ss"
+        let bg = UIApplication.shared.applicationState == .active ? "앱 켜짐" : "앱 꺼짐(백그라운드)"
+        lines.append("[\(f.string(from: Date())) · \(auto ? "자동" : "시험") · \(bg)]")
+    }
+    // 지도·위치 콜백은 메인 스레드로 오지만, 혹시 아니면 메인으로 옮겨 붙인다
+    func add(_ s: String) { if Thread.isMainThread { lines.append(s) } else { DispatchQueue.main.async { self.lines.append(s) } } }
+    func save() {
+        guard auto else { return }
+        let keep = { var all = UserDefaults.standard.array(forKey: PlaceTrace.key) as? [[String]] ?? []; all.append(self.lines); UserDefaults.standard.set(Array(all.suffix(8)), forKey: PlaceTrace.key) }
+        if Thread.isMainThread { keep() } else { DispatchQueue.main.async(execute: keep) }
+    }
+    static func recent() -> [String] {
+        let all = UserDefaults.standard.array(forKey: key) as? [[String]] ?? []
+        return all.isEmpty ? ["(아직 기록 없음)"] : all.reversed().flatMap { $0 + [""] }
     }
 }

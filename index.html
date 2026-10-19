@@ -1348,6 +1348,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
   .sheet .win{padding-right:14px;padding-bottom:calc(var(--sab) + 10px)}
 }
 @media (prefers-reduced-motion: reduce){.mon.held .flip,.act,.bubble,.pt,.berry.new,.ring,.mon.wet .ripple,.sel-mark,.dlg .more,.snot,.bfly::before,.bfly::after,.glint{animation:none!important}.snot{transform:scale(1)}}
+#probeOut{margin:8px 0 0;padding:8px;max-height:46vh;overflow:auto;white-space:pre-wrap;word-break:break-all;font:11px/1.45 ui-monospace,Menlo,monospace;background:rgba(0,0,0,.06);border:2px solid var(--inner)}
 </style>
 
 <script>setTimeout(() => document.documentElement.classList.add('ready'), 6000)</script>
@@ -1502,6 +1503,8 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
       <section class="set-sec op-only">
         <h4>운영자</h4>
         <div class="op-row"><span>테스트 버튼 보이기</span><button class="op-sw" id="testSw" role="switch" aria-checked="false"><i></i></button></div>
+        <div class="set-btns one" id="probeRow" hidden><button class="lk-btn main" id="placeProbe">장소 찾기 시험</button></div>
+        <pre class="probe-out" id="probeOut" hidden></pre>
       </section>
       <section class="set-sec test-only">
         <h4>테스트</h4>
@@ -5576,7 +5579,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.60';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.61';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7185,6 +7188,10 @@ function renderProfile() {
   $('#pfDiag').textContent = !window.webkit?.messageHandlers?.pokeRun ? '' : D.err ? `만보기 오류: ${D.err}` : D.n ? `만보기 신호 ${D.n}번 · 마지막 ${ago}초 전 · ${D.km.toFixed(3)}km` : '만보기 신호를 아직 못 받았어요';
 }
 const pedDiag = { n: 0, at: 0, km: 0, err: '' };
+// v5.61 경완: 운영자 › 장소 찾기 시험 — 아이폰 앱이 지금 위치로 장소 이름을 찾는 단계별 결과와 최근 자동 기록을 보여 준다 (알 주운 곳이 동까지만 나올 때 원인 확인용)
+{ const h = window.webkit?.messageHandlers?.pokeRun; $('#probeRow').hidden = !h;
+  $('#placeProbe').onclick = () => { const o = $('#probeOut'); o.hidden = false; o.textContent = '찾는 중…'; sfx('tap'); try { h.postMessage({ probe: true }); } catch (e) { o.textContent = '앱에 보내지 못했어요: ' + e; } };
+  window.pokeRunProbe = lines => { const o = $('#probeOut'); o.hidden = false; o.textContent = (Array.isArray(lines) ? lines : [String(lines)]).join('\n'); }; }
 window.pokeRunPedErr = msg => { pedDiag.err = String(msg); if (!setEl.hidden) renderProfile(); };
 setInterval(() => { if (!setEl.hidden && pedDiag.n) renderProfile(); }, 1000);
 // 아이폰 앱: 오늘 0시부터 걸은 거리(만보기)를 걷는 동안 계속 보낸다 (화면 표시용, 알 줍기는 pokeRunWalk)
