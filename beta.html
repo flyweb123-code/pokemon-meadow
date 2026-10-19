@@ -1199,7 +1199,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 #openRun.bump{animation:tbump .16s steps(2,end)}
 /* 운영자 모드(설정 맨 아래 출처 글을 7번 누르면 켜짐)에서만 운영자 칸이 보이고, 그 토글로 테스트 버튼들을 켜고 끈다 */
 html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,html:not(.tests) .bag-test{display:none!important}
-.op-row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:15px}
+.op-row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:15px}.op-note{margin:6px 0 0;font-size:13px;color:var(--dim)}
 .op-sw{flex:none;width:58px;height:30px;padding:0;border:3px solid var(--frame);background:#b9b9c6;cursor:pointer;position:relative;box-shadow:inset 0 3px 0 rgba(0,0,0,.2)}
 .op-sw i{position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border:2px solid var(--frame)}
 .op-sw[aria-checked="true"]{background:#4ccf5a}.op-sw[aria-checked="true"] i{left:auto;right:2px}
@@ -1558,6 +1558,8 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
         <h4>운영자</h4>
         <div class="op-row"><span>테스트 버튼 보이기</span><button class="op-sw" id="testSw" role="switch" aria-checked="false"><i></i></button></div>
         <div class="op-row"><span>베타 판 쓰기 (이 기기만)</span><button class="op-sw" id="betaSw" role="switch" aria-checked="false"><i></i></button></div>
+        <div class="set-btns one"><button class="lk-btn main" id="updNow">배포된 최신 판 바로 받기</button></div>
+        <p class="op-note" id="updMsg" hidden></p>
         <div class="set-btns one" id="betaBkRow" hidden><button class="lk-btn main" id="betaBk">베타 켜기 전 저장으로 되돌리기</button></div>
         <div class="set-btns one" id="probeRow" hidden><button class="lk-btn main" id="placeProbe">장소 찾기 시험</button></div>
         <pre class="probe-out" id="probeOut" hidden></pre>
@@ -5661,7 +5663,21 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
 const IS_BETA = /beta\.html$/.test(location.pathname);   // v5.74: 새 기능 시험판(beta.html)인지
-const APP_VER = '5.86';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+// v5.86 경완: 운영자 › 배포된 최신 판 바로 받기 — 배포 사이트(CDN)가 옛 판을 몇 분 동안 주는 걸 건너뛰려고 주소에 ?u=시각 을 붙여 새로 받는다
+try { if (/[?&]u=\d+/.test(location.search)) history.replaceState(null, '', location.pathname + location.search.replace(/([?&])u=\d+&?/, '$1').replace(/[?&]$/, '') + location.hash); } catch (e) {}
+$('#updNow').onclick = async () => {
+  const msg = $('#updMsg'), b = $('#updNow'), pg = IS_BETA ? 'beta.html' : 'index.html', u = Date.now(); sfx('tap'); b.disabled = true; msg.hidden = false; msg.textContent = '배포된 판을 확인하는 중…';
+  try {
+    const r = await fetch(pg + '?u=' + u, { cache: 'no-store' }); if (!r.ok) throw new Error(r.status);
+    const html = await r.text(), v = (html.match(/const APP_VER = '([\d.]+)'/) || [])[1] || '?';
+    if (v === APP_VER) { msg.textContent = `이미 최신 판이에요 (${v})`; b.disabled = false; return; }
+    msg.textContent = `${APP_VER} → ${v} 판으로 바꾸는 중…`;
+    try { const ks = await caches.keys(); await Promise.all(ks.map(k => caches.open(k).then(c => c.put(pg, new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } }))))); } catch (e) {}   // 오프라인 때 쓰는 사본도 새 판으로
+    try { const reg = await navigator.serviceWorker?.getRegistration(); await reg?.update(); } catch (e) {}
+    save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
+  } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
+};
+const APP_VER = '5.87';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9133,8 +9149,11 @@ function lockDexBtn(sp) {
 let last = performance.now(), acc = 0, treeT = 30, infoT = 0, saveT = 0;
 // 한 마리에서 오류가 나도 필드 전체가 멈추지 않게: 그 포켓몬만 건너뛰고 오류는 기록(pk-err)
 function frameErr(e, m) { try { console.error(e); const t = `${new Date().toISOString()} ${m ? 'sp' + m.sp + ' ' + m.state : ''} ${e && e.stack || e}`.slice(0, 600); const L = JSON.parse(localStorage.getItem('pk-err') || '[]'); if (L[0] !== t) { L.unshift(t); localStorage.setItem('pk-err', JSON.stringify(L.slice(0, 5))); } } catch (x) {} if (m) { try { m.partner = null; setState(m, 'idle', 1); } catch (x) {} } }
+// v5.86 경완: 배터리 — 필드는 1초에 30번만 그린다 (끌거나 쓰다듬는 동안은 손을 바로 따라오게 매번)
+let fLast = 0;
 function frame(now) {
   requestAnimationFrame(frame);
+  if (now - fLast < 31 && !drag && !petM) return; fLast = now;
   try { frameIn(now); } catch (e) { frameErr(e); }
 }
 function frameIn(now) {
