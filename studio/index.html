@@ -510,7 +510,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.15';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.16';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -1983,6 +1983,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.16', '10월 20일', ['알 출현 지역 지도: 카카오 지도의 장소 아이콘을 누르면 그 건물 모양대로 반경이 그려지고 이름이 장소 이름으로 들어간다', '원·사각형·올가미로 그린 반경도 가운데에서 가장 가까운 장소 이름이 자동으로 들어간다', '원은 누른 곳에서부터 그려진다 (가운데가 아니라)']],
   ['3.15', '10월 20일', ['동작별 떠 있기 창: 딱구리처럼 크게 그려지는 포켓몬 그림이 조각나 보이던 것 고침']],
   ['3.14', '10월 20일', ['상점 메뉴 (데이터): 도구·아이템·배경 음악 가격, 향로(시간·등급 배수)·빛나는 부적(시간·알 몇 개에 1개) 효과와 몇 km에 한 번꼴인지 계산 (베타 게임)']],
   ['3.13', '10월 20일', ['버전 화면에 베타 게임 보기 토글 (새 기능 시험판 beta.html 을 미리보기로)']],
@@ -2447,7 +2448,8 @@ function geoInit() {
   geoL = L.layerGroup().addTo(geoM);
   geoM.on('click', e => { if (geoLOpen) { geoLOpen = false; geoListR(); }   // v2.79 경완: 지도 빈 곳을 누르면 반경 목록 닫기
     const o = spotsOf()[geoSel.i]; if (o && geoIn(o, e.latlng)) return;   // v2.74 경완: 고른 반경 안을 누르면 그대로, 바깥을 누르면 해제
-    if (geoSel.i >= 0) { geoSel.i = -1; geoJoin = -1; geoDraw(); geoSide(); } });
+    if (geoSel.i >= 0) { geoSel.i = -1; geoJoin = -1; geoDraw(); geoSide(); return; }
+    if (!geoTool && !geoKT.ROADVIEW) geoPoiPick(e.latlng); });   // v3.16 경완: 지도에 있는 장소 아이콘을 누르면 그 건물 반경
   geoM.on('mousemove', e => geoHover?.(e.latlng)); geoM.getContainer().addEventListener('contextmenu', ev => { if (ev.target.closest?.('.leaflet-control,.leaflet-popup')) return; geoCtx({ originalEvent: ev, latlng: geoM.mouseEventToLatLng(ev) }); }, true);   // v2.82 경완: 반경 안 오른쪽 버튼 = 삭제 (안쪽 끌기용 disableClickPropagation 이 contextmenu 도 막아서 직접 받는다)
   new ResizeObserver(() => geoM.invalidateSize({ pan: false })).observe($('#geoBox'));
   geoCtl(); $('#geoMap').addEventListener('pointerdown', geoDrawStart, true); $('#geoLoad').hidden = true;
@@ -2640,7 +2642,7 @@ function geoSide0() {
   const G = o ? grpOf(S, geoSel.i) : [], many = G.length > 1, J = geoJoin >= 0 && G.includes(geoJoin);
   const helpT = `포켓몬을 끌면 반경째 옮겨져요. 테두리 아무 데나 잡고 끌면 모양 그대로 크기가 바뀌고, 잡은 채 돌리면 기울기도 바뀌어요. 흰 점을 끌면 그 방향으로만 늘어나 타원이 되고, Shift 를 누른 채 끌면 동그라미로 고르게 커지고 작아져요. Ctrl(⌘)+Z 는 방금 전으로. 마우스를 반경 근처에 올리면 파란 ⟳ 손잡이가 나와서 기울일 수 있어요 (Shift: 15도씩). 반경 안에서 오른쪽 버튼을 누르면 삭제. 왼쪽 목록에서 포켓몬을 끌어 반경 안에 놓으면 그 반경에 들어가요.`;
   const join = `<button class="chip gjoin${J ? ' on' : ''}" id="gsJoin" aria-pressed="${J}">${J ? '추가 끝내기' : '＋ 이 반경에 포켓몬 추가'}</button>${J ? '<div class="gjn">아래 목록에서 포켓몬을 누르면 이 반경에 들어가요. 지도 위 포켓몬 위로 끌어다 놓아도 돼요.</div>' : ''}`;
-  $('#geoI').innerHTML = boxBar('spots') + (geoNew ? `<div class="card gjn" style="gap:8px"><b>새 반경을 그렸어요</b><div class="small">아래 목록에서 포켓몬을 누르거나, 지도 위 점선 반경 안으로 끌어 놓으면 그 포켓몬 반경이 돼요.</div><div class="small mute">점선 반경은 끌어서 옮길 수 있어요.</div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="chip" id="gsNewE" title="포켓몬 없이 장소 특성만 정하는 반경">포켓몬 없이 저장</button><button class="chip" id="gsNewX">취소</button></div></div>` : '') + (o ? `<div class="card gsc${geoStOpen ? '' : ' nost'}"><div class="gsh"><button class="chip" id="gsBack" aria-label="반경 선택 풀기">← 뒤로</button><span class="ginf" tabindex="0" title="${esc(helpT)}" aria-label="도움말">ⓘ</span><span style="flex:1"></span><button class="chip" id="gsStT" aria-expanded="${geoStOpen}">${geoStOpen ? '접기 ▴' : '펴기 ▾'}</button></div>
+  $('#geoI').innerHTML = boxBar('spots') + (geoNew ? `<div class="card gjn" style="gap:8px"><b>새 반경을 그렸어요${geoNew.nm ? ` · ${esc(geoNew.nm)}` : ''}</b><div class="small">아래 목록에서 포켓몬을 누르거나, 지도 위 점선 반경 안으로 끌어 놓으면 그 포켓몬 반경이 돼요.</div><div class="small mute">점선 반경은 끌어서 옮길 수 있어요.</div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="chip" id="gsNewE" title="포켓몬 없이 장소 특성만 정하는 반경">포켓몬 없이 저장</button><button class="chip" id="gsNewX">취소</button></div></div>` : '') + (o ? `<div class="card gsc${geoStOpen ? '' : ' nost'}"><div class="gsh"><button class="chip" id="gsBack" aria-label="반경 선택 풀기">← 뒤로</button><span class="ginf" tabindex="0" title="${esc(helpT)}" aria-label="도움말">ⓘ</span><span style="flex:1"></span><button class="chip" id="gsStT" aria-expanded="${geoStOpen}">${geoStOpen ? '접기 ▴' : '펴기 ▾'}</button></div>
       <div class="gstl"><div class="gnmw" id="gsNmW"><h2>${esc(geoName(o) || geoCityOf(o) + ' 반경')}</h2><button class="gpen" id="gsNmE" type="button" title="반경 이름 바꾸기" aria-label="반경 이름 바꾸기"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button></div><div class="gmeta"><span class="gbdg">${G.filter(j => S[j].sp).length ? G.filter(j => S[j].sp).length + '마리' : '포켓몬 없음'}</span><span>${esc(geoCityOf(o))}${o.sh === 'poly' ? ' · 올가미' : o.sh === 'rect' ? ' · 사각형' : isEll(o) ? ' · 타원' : ''}</span></div></div>
       <div class="gsbody"><div class="gsctl"><div class="gsl"><span>크기</span><input id="gsRi" type="range" min="0" max="100" step="1" value="${vOfR(o.r)}" aria-label="크기"><b id="gsR">${geoSz(o)}</b></div>${many ? `<div class="gsl" title="반경은 같이 쓰고 세기는 포켓몬마다 따로예요. 움직이면 각자 세기가 같은 비율로 바뀌어요"><span>전체 세기</span><input id="gsXa" type="range" min="0" max="100" step="1" value="50" aria-label="전체 세기 (각자 비율 그대로)"><b id="gsXaV">×1</b></div>` : ''}</div>
       <div class="gml">${G.map(j => { const m = S[j]; if (!m.sp) return `<div class="gmr gmr0" data-gm="${j}"><div class="gmh"><b>포켓몬 없음</b><span class="small mute">장소 특성만 정하는 반경</span><button class="gx" data-gd="${j}" title="이 반경 지우기" aria-label="이 반경 지우기">✕</button></div><div class="small mute">아래 목록에서 포켓몬을 넣으면 그 포켓몬 반경이 돼요</div></div>`; return `<div class="gmr${many && j === geoSel.i ? ' on' : ''}" data-gm="${j}"><img alt="" src="${thumb(m.sp)}"><div class="gmh"><b>${esc(spName(m.sp))}</b><span class="num mute small">No.${m.sp}</span><button class="gx" data-gd="${j}" title="이 포켓몬만 빼기" aria-label="${esc(spName(m.sp))} 빼기">✕</button></div>${geoWhy(m) ? `<div class="gwy">${esc(geoWhy(m))}</div>` : ''}<div class="gsl"><span>세기</span><input data-gx="${j}" type="range" min="15" max="100" step="1" value="${vOfX(m.x)}" aria-label="${esc(spName(m.sp))} 세기"><label class="gxin" title="직접 입력 (1~1000배)">×<input id="gx${j}" data-gxn="${j}" class="num" type="number" inputmode="decimal" min="1" max="1000" step="any" value="${m.x}" aria-label="${esc(spName(m.sp))} 세기 배수"></label></div><div class="gms" id="gst${j}">${geoStat1(m)}</div></div>`; }).join('')}</div>
@@ -2787,21 +2789,21 @@ const POI = [['cafe', '☕', '카페', '#a0643c', '["amenity"="cafe"]'], ['conv'
 const poiOn = new Set(); let poiL = null, poiT = 0, poiAb = null, poiKey = '';
 // v2.79 경완: 그리기 도구 — 원(가운데에서 끌기), 사각형(모서리에서 모서리로), 올가미(손으로 그린 모양). 다 그리면 고른 포켓몬이 있으면 바로, 없으면 목록에서 고르면 들어간다
 const GTI = d => `<svg viewBox="0 0 18 18" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
-const GEO_TOOLS = [['circle', GTI('M9 2.5a6.5 6.5 0 1 1 0 13a6.5 6.5 0 1 1 0-13z'), '원으로 반경 그리기 (가운데에서 끌기)'], ['rect', GTI('M3 4.5h12v9H3z'), '사각형으로 반경 그리기'], ['lasso', GTI('M5 12.5C2 11 2.5 5.5 7 4.5s9 .5 8.5 4S10 13 7.5 12.5M7.5 12.5c-1 1.5-.5 3 1 3.5'), '올가미로 반경 그리기']];
+const GEO_TOOLS = [['circle', GTI('M9 2.5a6.5 6.5 0 1 1 0 13a6.5 6.5 0 1 1 0-13z'), '원으로 반경 그리기 (누른 곳에서 끌기)'], ['rect', GTI('M3 4.5h12v9H3z'), '사각형으로 반경 그리기'], ['lasso', GTI('M5 12.5C2 11 2.5 5.5 7 4.5s9 .5 8.5 4S10 13 7.5 12.5M7.5 12.5c-1 1.5-.5 3 1 3.5'), '올가미로 반경 그리기']];
 let geoTool = '', geoNew = null, geoNewL = null;
 function geoToolSet(k) { geoTool = geoTool === k ? '' : k; $$('[data-tool]').forEach(b => { const on = b.dataset.tool === geoTool; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }); $('#geoMap').classList.toggle('gdraw', !!geoTool);
-  if (geoTool) toast(geoTool === 'circle' ? '가운데를 누르고 끌어서 원을 그리세요' : geoTool === 'rect' ? '모서리를 누르고 반대쪽 모서리까지 끄세요' : '누른 채로 반경 모양을 따라 그리세요'); }
+  if (geoTool) toast(geoTool === 'circle' ? '원이 시작될 곳을 누르고 끌어서 그리세요' : geoTool === 'rect' ? '모서리를 누르고 반대쪽 모서리까지 끄세요' : '누른 채로 반경 모양을 따라 그리세요'); }
 const geoClampR = v => Math.max(30, Math.min(20000, Math.round(v / 10) * 10));
-function geoShapeOf(k, P) { if (P.length < 2) return null; const a = P[0], la0 = a.lat, lo0 = a.lng, X = ll => [(ll.lng - lo0) * mLo(la0), (ll.lat - la0) * M_LA];
-  if (k === 'circle') { const [x, y] = X(P[P.length - 1]), r = Math.hypot(x, y); return r < 20 ? null : { la: la0, lo: lo0, r: geoClampR(r) }; }
+function geoShapeOf(k, P, mn = 15) { if (P.length < 2) return null; const a = P[0], la0 = a.lat, lo0 = a.lng, X = ll => [(ll.lng - lo0) * mLo(la0), (ll.lat - la0) * M_LA];
+  if (k === 'circle') { const [x, y] = X(P[P.length - 1]), r = Math.hypot(x, y) / 2; return r < 15 ? null : { la: la0 + y / 2 / M_LA, lo: lo0 + x / 2 / mLo(la0), r: geoClampR(r) }; }   // v3.16 경완: 누른 곳에서부터 그려진다 (지름 끝)
   const Q = (k === 'rect' ? [a, P[P.length - 1]] : P).map(X), xs = Q.map(q => q[0]), ys = Q.map(q => q[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), w = (x1 - x0) / 2, h = (y1 - y0) / 2, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
-  if (w < 15 || h < 15) return null; const r = geoClampR(w), r2 = geoClampR(h), o = { la: la0 + cy / M_LA, lo: lo0 + cx / mLo(la0), r, ...(r2 !== r ? { r2 } : {}), sh: k === 'rect' ? 'rect' : 'poly' };
+  if (w < mn || h < mn) return null; const r = geoClampR(w), r2 = geoClampR(h), o = { la: la0 + cy / M_LA, lo: lo0 + cx / mLo(la0), r, ...(r2 !== r ? { r2 } : {}), sh: k === 'rect' ? 'rect' : 'poly' };
   if (k === 'lasso') { if (Q.length < 6) return null; const st = Math.max(1, Math.ceil(Q.length / 48)); o.pts = Q.filter((_, i) => i % st === 0).map(([x, y]) => [+((x - cx) / w).toFixed(3), +((y - cy) / h).toFixed(3)]); if (o.pts.length < 4) return null; }
   return o; }
 // v3.05 경완: 손잡이·반경을 끄는 도중 그 칸이 다시 그려지면 손을 떼도 지도 끌기가 꺼진 채로 남던 것 → 손을 떼면 늘 다시 켜고, 빈 곳을 누르면 바로 켠다
 ['pointerup', 'pointercancel', 'mouseup', 'touchend', 'lostpointercapture', 'blur'].forEach(t => addEventListener(t, () => setTimeout(() => { if (geoM && !geoTool) geoM.dragging.enable(); }), true));
 addEventListener('pointerdown', e => { if (!geoM || geoTool || e.button > 0 || !e.target.closest?.('#geoMap') || e.target.closest('.leaflet-interactive,.leaflet-marker-icon,.leaflet-control,.leaflet-popup,.ghd,.gedge')) return; geoM.dragging.enable(); }, true);
-function geoNewSet(o) { geoNewL?.remove(); geoNewL = null; geoNew = o;
+function geoNewSet(o) { if (!o?.pk) { geoPoiMk?.remove(); geoPoiMk = null; } geoNewL?.remove(); geoNewL = null; geoNew = o;
   if (o && geoPalSel) { geoAddNew(geoPalSel); return; }
   if (o) { geoSel.i = -1; geoJoin = -1; geoNewL = L.polygon(ellPts(o), { color: '#1d6fd8', weight: 2.5, dashArray: '7 6', fillColor: '#3a8af0', fillOpacity: .14, interactive: true, bubblingMouseEvents: false, className: 'gnewp', pane: geoM.getPane('gnew') ? 'gnew' : (geoM.createPane('gnew').style.zIndex = 450, 'gnew') }).addTo(geoM);   // 다른 반경 위에 (잡을 수 있게)
     geoNewL.on('mousedown', e => { if (e.originalEvent?.button > 0) return; L.DomEvent.stop(e); const st = e.latlng, la0 = o.la, lo0 = o.lo; geoM.dragging.disable();   // v3.02 경완: 그리자마자 점선 반경을 끌어 옮기기
@@ -2811,8 +2813,8 @@ function geoNewSet(o) { geoNewL?.remove(); geoNewL = null; geoNew = o;
     geoNewL.on('click', e => L.DomEvent.stop(e));
     geoDraw(); toast('점선 반경을 끌어 옮기고, 목록에서 포켓몬을 고르거나 \'포켓몬 없이 저장\'을 눌러요'); }
   geoSide(); }
-function geoAddNew(sp) { const o = geoNew; if (!o) return; geoNewL?.remove(); geoNewL = null; geoNew = null; const L2 = cl(spotsOf());
-  L2.push({ sp, la: +o.la.toFixed(5), lo: +o.lo.toFixed(5), r: o.r, ...(o.r2 ? { r2: o.r2 } : {}), ...(o.sh ? { sh: o.sh } : {}), ...(o.pts ? { pts: o.pts } : {}), x: 20 }); setSpots(L2); geoSel.i = L2.length - 1; geoDraw(); geoSide(); toast(sp ? `${spName(sp)}${eul(spName(sp))} 그린 반경에 놓았어요. 세기를 정하고 저장해 주세요` : '포켓몬 없는 반경을 만들었어요. 장소 특성을 고르고 저장해 주세요'); }
+function geoAddNew(sp) { const o = geoNew; if (!o) return; geoPoiMk?.remove(); geoPoiMk = null; geoNewL?.remove(); geoNewL = null; geoNew = null; const L2 = cl(spotsOf());
+  L2.push({ sp, la: +o.la.toFixed(5), lo: +o.lo.toFixed(5), r: o.r, ...(o.r2 ? { r2: o.r2 } : {}), ...(o.sh ? { sh: o.sh } : {}), ...(o.pts ? { pts: o.pts } : {}), ...(o.nm ? { nm: o.nm } : {}), x: 20 }); setSpots(L2); geoSel.i = L2.length - 1; o.at = L2.length - 1; geoDraw(); geoSide(); toast(sp ? `${spName(sp)}${eul(spName(sp))} 그린 반경에 놓았어요. 세기를 정하고 저장해 주세요` : '포켓몬 없는 반경을 만들었어요. 장소 특성을 고르고 저장해 주세요'); }
 // 포켓몬 칸을 지도 위로 끄는 동안: 고른 반경(없으면 그 자리의 가장 작은 반경)을 강조
 function geoDropAt(ev) { if (!geoM) return -1; const R = $('#geoMap').getBoundingClientRect(); if (ev.clientX < R.left || ev.clientX > R.right || ev.clientY < R.top || ev.clientY > R.bottom) return -1;
   const ll = geoM.containerPointToLatLng([ev.clientX - R.left, ev.clientY - R.top]), S = spotsOf(), so = S[geoSel.i];
@@ -2826,7 +2828,7 @@ function geoDrawStart(ev) { if (!geoTool || ev.button > 0 || ev.target.closest?.
   const mv = e2 => { e2.preventDefault(); const ll = geoM.mouseEventToLatLng(e2); if (k === 'lasso') { if (geoM.latLngToContainerPoint(ll).distanceTo(geoM.latLngToContainerPoint(P[P.length - 1])) >= 4) P.push(ll); pv.setLatLngs(P); }
     else { P[1] = ll; const o = geoShapeOf(k, P); pv.setLatLngs(o ? [...ellPts(o), ellPts(o)[0]] : []); } };
   const up = () => { el.removeEventListener('pointermove', mv, true); el.removeEventListener('pointerup', up, true); el.removeEventListener('pointercancel', up, true); geoM.dragging.enable(); pv.remove();
-    const o = geoShapeOf(k, P); geoToolSet(''); if (!o) { toast('조금 더 크게 그려 주세요'); return; } geoNewSet(o); };
+    const o = geoShapeOf(k, P); geoToolSet(''); if (!o) { toast('조금 더 크게 그려 주세요'); return; } geoNewSet(o); geoAutoName(o); };
   el.addEventListener('pointermove', mv, true); el.addEventListener('pointerup', up, true); el.addEventListener('pointercancel', up, true); }
 function geoCtl() {
   const C = L.Control.extend({ options: { position: 'topleft' }, onAdd() { const d = L.DomUtil.create('div', 'gctl leaflet-bar'); L.DomEvent.disableClickPropagation(d); L.DomEvent.disableScrollPropagation(d);
@@ -2848,6 +2850,32 @@ function geoCtl() {
     return d; } });
   new LC().addTo(geoM); geoListR(); geoM.on('moveend', () => { clearTimeout(poiT); poiT = setTimeout(() => poiLoad(false), 500); });
 }
+// v3.16 경완: 카카오 지도 장소 아이콘 누르기 → 그 장소를 켜고 건물 모양(OpenStreetMap 건물 윤곽, 없으면 원)으로 반경을 그린다. 이름은 장소 이름
+const KCAT = ['MT1', 'CS2', 'PS3', 'SC4', 'AC5', 'PK6', 'OL7', 'SW8', 'BK9', 'CT1', 'AG2', 'PO3', 'AT4', 'AD5', 'FD6', 'CE7', 'HP8', 'PM9'];
+function geoNearPlaces(ll, rad) { const S = window.kakao?.maps?.services; if (!S || !L.kakao) return Promise.resolve([]); const ps = new S.Places(), at = new kakao.maps.LatLng(ll.lat, ll.lng), r = Math.max(5, Math.min(20000, Math.round(rad)));
+  return Promise.all(KCAT.map(c => new Promise(ok => ps.categorySearch(c, (d, st) => ok(st === S.Status.OK ? d : []), { location: at, radius: r, sort: S.SortBy.DISTANCE, size: 5 }))))
+    .then(R => R.flat().map(x => ({ n: x.place_name, la: +x.y, lo: +x.x, d: +x.distance || 0, cat: (x.category_name || '').split('>').pop().trim() })).sort((a, b) => a.d - b.d)).catch(() => []); }
+// 건물 이름: 장소가 없으면 그 자리 도로명 주소의 건물 이름
+const geoBldName = ll => { const S = window.kakao?.maps?.services; if (!S) return Promise.resolve(''); return new Promise(ok => new S.Geocoder().coord2Address(ll.lng, ll.lat, (d, st) => ok(st === S.Status.OK ? d[0]?.road_address?.building_name || '' : ''))).catch(() => ''); };
+async function geoAutoName(o) { if (o.nm) return; const ll = { lat: o.la, lng: o.lo }, P = await geoNearPlaces(ll, Math.min(300, Math.max(30, o.r || 50)));
+  const n = P[0]?.n || await geoBldName(ll); if (!n) return; o.nm = n.slice(0, 24);
+  if (geoNew === o) { if (view === 'geo') geoSide(); return; } if (o.at != null && spotsOf()[o.at] && !spotsOf()[o.at].nm) geoPut(o.at, { nm: o.nm }); }
+async function geoBldg(la, lo) {   // 그 점을 품은(없으면 가장 가까운) 건물 윤곽
+  const q = `[out:json][timeout:10];way(around:12,${la},${lo})["building"];out geom 12;`;
+  try { const r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }); if (!r.ok) return null;
+    const W = ((await r.json()).elements || []).filter(w => w.geometry?.length > 3).map(w => w.geometry.map(g => [g.lat, g.lon])); if (!W.length) return null;
+    const inside = W.find(P => inPoly(P.map(([a, b]) => [b, a]), lo, la)); if (inside) return inside;
+    const d = P => Math.min(...P.map(([a, b]) => Math.hypot((a - la) * M_LA, (b - lo) * mLo(la)))); return W.sort((a, b) => d(a) - d(b))[0]; } catch (e) { return null; } }
+let geoPoiMk = null;
+async function geoPoiPick(ll) { if (!geoM || !L.kakao) return;
+  const mpp = 40075016 * Math.cos(ll.lat * Math.PI / 180) / Math.pow(2, geoM.getZoom() + 8), P = await geoNearPlaces(ll, Math.max(8, mpp * 22));   // 누른 곳 22px 안의 장소
+  const p = P[0]; if (!p) return;
+  geoPoiMk?.remove(); geoPoiMk = L.circleMarker([p.la, p.lo], { radius: 9, color: '#fff', weight: 3, fillColor: '#ff5a1f', fillOpacity: 1, interactive: false, pane: geoM.getPane('gnew') ? 'gnew' : (geoM.createPane('gnew').style.zIndex = 450, 'gnew') }).bindTooltip(esc(p.n), { permanent: true, direction: 'top', offset: [0, -10], className: 'gtip' }).addTo(geoM);
+  const B = await geoBldg(p.la, p.lo); let o = null;
+  if (B) { const pts = []; for (let i = 0; i < B.length - 1; i++) { const [a, b] = B[i], [c, d] = B[i + 1], n = Math.max(1, Math.ceil(Math.hypot((c - a) * M_LA, (d - b) * mLo(a)) / 4)); for (let j = 0; j < n; j++) pts.push(L.latLng(a + (c - a) * j / n, b + (d - b) * j / n)); }
+    o = geoShapeOf('lasso', pts, 3); }
+  if (!o) o = { la: p.la, lo: p.lo, r: 50 };
+  o.nm = p.n.slice(0, 24); o.pk = 1; geoSel.i = -1; geoJoin = -1; geoNewSet(o); geoSide(); toast(`${o.nm} ${B ? '건물 모양으로' : '둘레에'} 반경을 그렸어요. 포켓몬을 골라 놓아 주세요`); }
 let meM = null;
 function geoMe(b) { if (!navigator.geolocation) { toast('이 브라우저는 위치를 못 알려 줘요'); return; } b.disabled = true;
   navigator.geolocation.getCurrentPosition(p => { b.disabled = false; const ll = [p.coords.latitude, p.coords.longitude]; geoM.flyTo(ll, Math.max(geoM.getZoom(), 16), { duration: .7 });
