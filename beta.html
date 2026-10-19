@@ -1363,7 +1363,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 <script>setTimeout(() => document.documentElement.classList.add('ready'), 6000)</script>
 <style>html.bootBlk body::after{content:'';position:fixed;inset:0;z-index:6440;background:#000;pointer-events:none}html.bootOut body::after{opacity:0;transition:opacity .6s steps(5,end)}#mg{padding:0;place-items:stretch;background:#e9f4ff;inset:0;bottom:0;right:0;z-index:6000}#mg .mgwin{width:100%;max-width:none;height:100%;box-sizing:border-box;user-select:none;-webkit-user-select:none;border:0;box-shadow:none;display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top,0px) + 14px) 14px calc(env(safe-area-inset-bottom,0px) + 14px);overflow:auto}#mg section[data-mv]{width:100%;max-width:640px;margin:0 auto;display:flex;flex-direction:column;flex:1;min-height:0}#mg section[data-mv][hidden]{display:none}.mg-x{padding:5px 2px;font-size:14px}.mg-x::before{display:none}
 .mg-who{display:flex;gap:10px;align-items:center;padding:8px 10px;border:2px solid var(--frame);background:#fffbe8;margin-bottom:10px}.mg-who img{width:44px;height:44px;image-rendering:pixelated;object-fit:contain}.mg-who div{display:flex;flex-direction:column;gap:2px;min-width:0}.mg-who span{font-size:14px;color:#c2457a}.mg-who small{font-size:12px;color:#6a6a7a}
-.mg-list{display:grid;gap:8px}#mgPop{position:fixed;inset:0;z-index:125;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.4)}#mgPop[hidden]{display:none}.mg-popwin{width:min(92vw,420px);height:auto!important;max-height:88vh;overflow:auto;box-sizing:border-box}#mgPop .mg-det{display:flex;margin-top:0;padding-top:0;border-top:0}.mg-foes{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;font-size:12px;text-align:center}.mg-foes>b{grid-column:1/-1;text-align:left;font-size:13px}.mg-foes span{display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.2}.mg-foes img{width:40px;height:40px;image-rendering:pixelated;object-fit:contain}.mg-foes small{color:var(--dim);font-size:10px}#mg .mg-card .mg-car{font-size:20px}#mg .mg-card{flex-direction:column;align-items:stretch;cursor:default}.mg-ch{display:flex;gap:12px;align-items:center;cursor:pointer}.mg-car{margin-left:auto;font-style:normal;font-size:12px;color:#6a6a7a}.mg-det{display:none;flex-direction:column;gap:8px;margin-top:10px;padding-top:10px;border-top:2px dashed #d8d8e0}.mg-card.open .mg-det{display:flex}.mg-how{margin:0;font-size:13px;color:#4a4a5a;line-height:1.5}.mg-ab{display:flex;gap:8px;align-items:flex-start}.mg-ab em{font-style:normal;font-size:11px;padding:2px 6px;color:#fff;flex:none;margin-top:2px}.mg-ab em.act{background:#e8783c}.mg-ab em.pas{background:#4a7ad8}.mg-ab div{display:flex;flex-direction:column;gap:1px}.mg-det .mg-ab b{font-size:15px}.mg-ab small{font-size:11px;color:#8a8a9a}.mg-det .mg-ab span{font-size:12px;color:#5a5a6a}.mg-det .mg-rk>span:last-child{font-size:12px}.mg-card:active{transform:none;box-shadow:3px 3px 0 rgba(0,0,0,.15)}.mg-rks summary{font-size:13px;cursor:pointer;color:#4a7ad8}.mg-rk{display:grid;grid-template-columns:22px 86px 1fr;gap:6px;align-items:center;font-size:12px;padding:4px 2px;color:#5a5a6a}.mg-rk.on{background:#fff4c8}.mg-det .mg-rk b{font-size:13px;color:#20202c}.mg-go{margin:2px 0 0;justify-content:center;font-size:16px;padding:10px}.mg-card.soon .mg-ch{cursor:default}.mg-ty{display:flex;gap:4px}.mg-card{display:flex;gap:12px;align-items:center;padding:10px 12px;border:3px solid var(--frame);background:#fff;text-align:left;font:inherit;cursor:pointer;box-shadow:3px 3px 0 rgba(0,0,0,.15)}.mg-card:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(0,0,0,.15)}.mg-ch>div{display:flex;flex-direction:column;gap:2px}.mg-card b{font-size:17px}.mg-card span{font-size:13px;color:#6a6a7a}.mg-card.soon{opacity:.5;cursor:default;box-shadow:none}.mg-ic{width:40px;height:40px;display:grid;place-items:center;border:2px solid var(--frame);background:#eaf6ff;font-size:20px;flex:none}.mg-gift{font-size:13px;color:#6a6a7a;margin:10px 2px 0}.mg-gift b{color:#20202c}
+.mg-list{display:grid;gap:8px}#mgPop{position:fixed;inset:0;z-index:125;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.4)}#mgPop[hidden]{display:none}#mgPop .mg-popwin{width:min(92vw,400px);height:auto!important;min-height:0!important;max-height:80vh;overflow:auto;box-sizing:border-box;margin:0;padding:14px 16px 16px!important;border:4px solid var(--frame)!important;box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner),4px 4px 0 rgba(0,0,0,.35)!important;border-radius:0}#mgPop .mg-det{gap:6px}#mgPop .mg-how{font-size:12px}#mgPop .mg-det{display:flex;margin-top:0;padding-top:0;border-top:0}.mg-foes{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;font-size:12px;text-align:center}.mg-foes>b{grid-column:1/-1;text-align:left;font-size:13px}.mg-foes span{display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.2}.mg-foes img{width:40px;height:40px;image-rendering:pixelated;object-fit:contain}.mg-foes small{color:var(--dim);font-size:10px}#mg .mg-card .mg-car{font-size:20px}#mg .mg-card{flex-direction:column;align-items:stretch;cursor:default}.mg-ch{display:flex;gap:12px;align-items:center;cursor:pointer}.mg-car{margin-left:auto;font-style:normal;font-size:12px;color:#6a6a7a}.mg-det{display:none;flex-direction:column;gap:8px;margin-top:10px;padding-top:10px;border-top:2px dashed #d8d8e0}.mg-card.open .mg-det{display:flex}.mg-how{margin:0;font-size:13px;color:#4a4a5a;line-height:1.5}.mg-ab{display:flex;gap:8px;align-items:flex-start}.mg-ab em{font-style:normal;font-size:11px;padding:2px 6px;color:#fff;flex:none;margin-top:2px}.mg-ab em.act{background:#e8783c}.mg-ab em.pas{background:#4a7ad8}.mg-ab div{display:flex;flex-direction:column;gap:1px}.mg-det .mg-ab b{font-size:15px}.mg-ab small{font-size:11px;color:#8a8a9a}.mg-det .mg-ab span{font-size:12px;color:#5a5a6a}.mg-det .mg-rk>span:last-child{font-size:12px}.mg-card:active{transform:none;box-shadow:3px 3px 0 rgba(0,0,0,.15)}.mg-rks summary{font-size:13px;cursor:pointer;color:#4a7ad8}.mg-rk{display:grid;grid-template-columns:22px 86px 1fr;gap:6px;align-items:center;font-size:12px;padding:4px 2px;color:#5a5a6a}.mg-rk.on{background:#fff4c8}.mg-det .mg-rk b{font-size:13px;color:#20202c}.mg-go{margin:2px 0 0;justify-content:center;font-size:16px;padding:10px}.mg-card.soon .mg-ch{cursor:default}.mg-ty{display:flex;gap:4px}.mg-card{display:flex;gap:12px;align-items:center;padding:10px 12px;border:3px solid var(--frame);background:#fff;text-align:left;font:inherit;cursor:pointer;box-shadow:3px 3px 0 rgba(0,0,0,.15)}.mg-card:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(0,0,0,.15)}.mg-ch>div{display:flex;flex-direction:column;gap:2px}.mg-card b{font-size:17px}.mg-card span{font-size:13px;color:#6a6a7a}.mg-card.soon{opacity:.5;cursor:default;box-shadow:none}.mg-ic{width:40px;height:40px;display:grid;place-items:center;border:2px solid var(--frame);background:#eaf6ff;font-size:20px;flex:none}.mg-gift{font-size:13px;color:#6a6a7a;margin:10px 2px 0}.mg-gift b{color:#20202c}
 .mg-hud{display:flex;gap:10px;align-items:center;margin-bottom:6px;font-size:14px;white-space:nowrap}.mg-hud #mgM{font-size:18px;min-width:56px}.mg-hud #mgBest{color:#6a6a7a;font-size:12px}#mg section[data-mv="play"] .mg-hud :is(#mgPh,#mgM,#mgBest){color:#fff;text-shadow:-1px 0 #20202c,1px 0 #20202c,0 -1px #20202c,0 2px #20202c}.mg-life{color:#e8487a;margin-left:auto}
 .mg-stage{position:relative;border:3px solid var(--frame);touch-action:none;flex:1;min-height:220px}.mg-stage canvas{display:block;width:100%;height:100%;touch-action:none}.mg-ban{position:absolute;inset:0;margin:0;display:grid;place-items:center;font-size:18px;background:rgba(255,255,255,.6)}.mg-ban[hidden]{display:none}
 .mg-ctl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.mg-btn{font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:84px;border:3px solid var(--frame);background:#fff;box-shadow:3px 3px 0 rgba(0,0,0,.18);cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent;white-space:nowrap}.mg-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(0,0,0,.18)}.mg-btn b{font-size:17px}.mg-btn span{font-size:12px;color:#6a6a7a;letter-spacing:1px}.mg-btn.jump{background:#eaf6ff}.mg-btn.ab{background:#fff2d8}.mg-btn.ab span{color:#e8783c;font-size:14px}
@@ -5682,7 +5682,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '5.88';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.89';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5949,7 +5949,7 @@ function mgView(v) {
       const R = mgRec(), ab = mgAb(m.form), ps = MG_PASS[G.id][rk], nx = MG_GIFT.find(o => !R.ms.includes(o.m)), open = mgOpenG === G.id;
       const card = `<div class="mg-card" data-gc="${G.id}"><canvas class="mg-th" data-th="${G.id}" data-gt="${G.id}"></canvas><div class="mg-ch" data-gt="${G.id}"><div><b>${G.n}</b><span>${R.best ? `최고 기록 ${R.best.toLocaleString()}점` : '아직 기록이 없어요'}</span></div><i class="mg-car">›</i></div></div>`;
       // v5.88 경완: 카드를 펼치지 않고, 누르면 창 위 창(상세)에 설명·선물·시작하기
-      if (open) mgDet = `<div class="win mg-popwin" role="dialog" aria-label="${G.n}"><div class="sheet-head"><h3>${G.n}</h3><button class="opt" data-mgpx>닫기</button></div><div class="mg-det"><p class="mg-how">${G.how}</p><div class="mg-foes"><b>장애물 포켓몬</b>${Object.entries(MG_ROLE).map(([r, L]) => { const sp = L.find(v => v !== +m.form); return `<span><img src="${thumbOf(sp) || ''}" alt="">${esc(SPECIES[sp]?.n || '')}<small>${MG_ROLE_N[r]}</small></span>`; }).join('')}</div>
+      if (open) mgDet = `<div class="win mg-popwin" role="dialog" aria-label="${G.n}"><div class="sheet-head"><h3>${G.n}</h3><button class="opt" data-mgpx>닫기</button></div><div class="mg-det"><p class="mg-how">${G.how}</p>
           <div class="mg-ab"><em class="act">액티브</em><div><b>${ab.n}</b> <small class="mg-abn">${tyIcon(ty[0])}${TYPE_KO[ty[0]]} 타입</small><span>${ab.d}${ab.c ? ` · 쓰고 나면 ${+(ab.c * (ps.cdm || 1)).toFixed(1)}초 뒤 다시` : ''}</span></div></div>
           <div class="mg-ab"><em class="pas">패시브</em><div><b>${ps.n}</b> <small class="mg-abn"><span class="rk ${rk}">${rk}</span>${rk} 랭크</small><span>${ps.d}</span></div></div>
           <details class="mg-rks"><summary>랭크별 패시브 모두 보기</summary>${RANKS.map(([r]) => `<div class="mg-rk${r === rk ? ' on' : ''}"><span class="rk ${r}">${r}</span><b>${MG_PASS[G.id][r].n}</b><span>${MG_PASS[G.id][r].d}</span></div>`).join('')}</details>
@@ -5999,8 +5999,10 @@ function mgThumbs() {
     mgRender(g, cv);
   });
 }
-const MG_ROLE = { still: [74, 27], hop: [39, 1], pace: [7, 92], dash: [58, 4], wave: [16, 21] };   // 가만히·통통·왔다갔다·달려듦·날기 (앞 포켓몬이 주인공이면 뒤)
-const MG_ROLE_N = { still: '가만히 있어요', hop: '통통 뛰어요', pace: '앞뒤로 왔다 갔다', dash: '가까워지면 달려들어요', wave: '위아래로 날아요' };
+const MG_ROLE = { still: [74, 95], hop: [39, 1], wave: [16, 21], pace: [7, 92], dash: [58, 4], leap: [60, 118], dig: [50, 27], swoop: [41, 22] };   // 움직임마다 한 마리 (앞 포켓몬이 주인공이면 뒤)
+// v5.88 경완: 페이즈가 오를 때마다 새 움직임의 장애물이 하나씩 나온다
+const MG_UNLOCK = { still: 1, hop: 1, wave: 1, pace: 2, dash: 3, leap: 4, dig: 5, swoop: 6 }, MG_FLY = ['wave', 'swoop'];
+const MG_ROLE_N = { pace: '앞뒤로 왔다 갔다 해요', dash: '가까워지면 달려들어요', leap: '가까워지면 펄쩍 뛰어올라요', dig: '땅속에 숨어 있다가 튀어나와요', swoop: '하늘에서 내리꽂혀요' };
 async function mgPrep(me) {
   const want = [16, me, ...S.box.slice().sort(() => Math.random() - .5).slice(0, 3).map(P => P.sp)];
   await Promise.race([Promise.all(want.map(sp => ensureSprite(sp).catch(() => {}))), new Promise(r => setTimeout(r, 2500))]);
@@ -6008,7 +6010,7 @@ async function mgPrep(me) {
   await Promise.race([Promise.all(Object.values(MG_ROLE).flat().map(sp => ensureSprite(sp).catch(() => {}))), new Promise(r => setTimeout(r, 2500))]);
   const ok = k => SPRITES[k] && isPmd(k) && SPRITES[k].a?.Idle && SPECIES[k] && +k !== +me, roles = {};
   for (const [pat, L] of Object.entries(MG_ROLE)) { const k = L.find(sp => ok(sp)); if (k) roles[pat] = String(k); }
-  if (Object.keys(roles).length >= 4) { const fly = roles.wave; delete roles.wave; return { roles, gnd: Object.values(roles), fly: fly ? [fly] : Object.values(roles).slice(0, 1) }; }
+  if (Object.keys(roles).length >= 6) { const fr = {}; for (const r of MG_FLY) if (roles[r]) { fr[r] = roles[r]; delete roles[r]; } return { roles, froles: fr, gnd: Object.values(roles), fly: Object.values(fr) }; }
   const keys = Object.keys(SPRITES).filter(k => /^\d+$/.test(k) && +k !== +me && isPmd(k) && SPRITES[k].a?.Idle && SPECIES[k]);
   const fly = keys.filter(k => (SPECIES[k].t || []).includes(3) && SPRITES[k].a.Walk);
   const gnd = keys.filter(k => !(SPECIES[k].t || []).includes(3));
@@ -6087,13 +6089,16 @@ function mgMove(g, o, dt) {
   else if (o.pat === 'dash' && near) o.x -= (90 + 25 * g.phase) * dt;   // 가까워지면 달려든다
   else if (o.pat === 'pace') o.x += Math.sin(T * 2.4) * 110 * dt;   // 앞뒤로 왔다 갔다
   else if (o.pat === 'wave') o.y = o.by + Math.sin(T * 2.6) * 26;   // 위아래로 날아다님
+  else if (o.pat === 'leap') { if (!o.lp && o.x - g.PX < 210) o.lp = g.t; if (o.lp) { const k = (g.t - o.lp) / .75; o.y = k < 1 ? 4 * 95 * k * (1 - k) : 0; o.sq = k < .1 ? .8 : k >= 1 && k < 1.15 ? .82 : 1; } else o.sq = 1 + Math.sin(T * 9) * .05; }   // 가까워지면 펄쩍
+  else if (o.pat === 'dig') { const k = clamp((185 - (o.x - g.PX)) / 60, 0, 1); o.y = -o.h * (1 - k); o.up = k; }   // 땅속에서 튀어나옴
+  else if (o.pat === 'swoop') { const k = clamp((300 - (o.x - g.PX)) / 260, 0, 1); o.y = o.by - (o.by - 6) * Math.sin(k * Math.PI); }   // 하늘에서 내리꽂혔다 다시 올라감
 }
 function mgSpawn(g) {
   const ph = g.phase, pool = ['g', 'g', 'g', 'f'];
   if (ph >= 2) pool.push('gg', 'f'); if (ph >= 3) pool.push('gf', 'gg'); if (ph >= 4) pool.push('ggg', 'gf');
   const kind = pool[Math.floor(Math.random() * pool.length)], pick = L => L[Math.floor(Math.random() * L.length)], x0 = g.W + 50;
-  const add = (x, t) => { const f = t === 'f', rp = !f && g.pool.roles ? pick(Object.keys(g.pool.roles).filter(r => r !== 'dash' || ph >= 2)) : null, k = rp ? g.pool.roles[rp] : pick(f ? g.pool.fly : g.pool.gnd), B = mgBox(k), bh = B ? B.h : 28, sc = clamp(g.psc, 16 / bh, (f ? 46 : 64) / bh), w = Math.max(14, (B ? B.w * sc : 26) * .75);
-    const pat = f ? 'wave' : rp || MG_PAT[(SPECIES[k]?.t || [1])[0]] || 'still', by = f ? 62 + Math.random() * 30 : 0;
+  const add = (x, t) => { const f = t === 'f', RL = g.pool.roles && (f ? g.pool.froles : g.pool.roles), rp = RL ? pick(Object.keys(RL).filter(r => (MG_UNLOCK[r] || 1) <= ph)) : null, k = rp ? RL[rp] : pick(f ? g.pool.fly : g.pool.gnd), B = mgBox(k), bh = B ? B.h : 28, sc = clamp(g.psc, 16 / bh, (f ? 46 : 64) / bh), w = Math.max(14, (B ? B.w * sc : 26) * .75);
+    const pat = rp || (f ? 'wave' : MG_PAT[(SPECIES[k]?.t || [1])[0]] || 'still'), by = pat === 'swoop' ? 120 + Math.random() * 20 : f ? 62 + Math.random() * 30 : pat === 'dig' ? -200 : 0;
     g.obs.push({ x, t, k, sc, w, h: Math.round(bh * sc), y: by, by, ph: Math.random() * 6, pat, x0: x }); };
   if (kind === 'gg') { add(x0, 'g'); add(x0 + 46, 'g'); } else if (kind === 'ggg') { add(x0, 'g'); add(x0 + 46, 'g'); add(x0 + 92, 'g'); } else if (kind === 'gf') { add(x0, 'g'); add(x0 + 130, 'f'); } else add(x0, kind);
   const base = g.v * (.5 + Math.random() * .6) + 110 - Math.min(60, ph * 10);
@@ -6116,7 +6121,7 @@ function mgStep(g, dt) {
   if (g.overT <= 0 && !g.done) { g.done = true; mgEnd(g); } return; }
   if (g.cd > 0) { g.cd -= dt; const n = Math.ceil(g.cd - .6); if (n !== g.cdN) { g.cdN = n; if (n > 0) sfx('tick'); else { sfx('start'); g.ban = { t: 1.2, s: '페이즈 1' }; } } if (g.cd > .6) return; }   // v5.79 경완: 시작 전 3·2·1
   const meters = Math.floor(g.dist / 25), ph = 1 + Math.floor(meters / 250);
-  if (ph > g.phase) { g.phase = ph; g.ban = { t: 1.4, s: '페이즈 ' + ph }; sfx('rise'); mgHud(); }
+  if (ph > g.phase) { g.phase = ph; g.ban = { t: 1.4, s: '페이즈 ' + ph }; sfx('rise'); mgHud(); const nr = Object.keys(MG_UNLOCK).find(r => MG_UNLOCK[r] === ph && (g.pool.roles?.[r] || g.pool.froles?.[r])); if (nr) { const k = g.pool.roles?.[nr] || g.pool.froles[nr]; g.toast = { s: `새 장애물 ${SPECIES[k].n}: ${MG_ROLE_N[nr]}`, t: 2.6 }; } }
   g.v = Math.min(700, 315 + 44 * (g.phase - 1) + (meters % 250) * .13);   // v5.83 경완: 너무 쉬워서 더 빠르게 → v5.86 경완: 살짝만 쉽게
   const sp = g.v * (g.fx.ice > 0 ? .5 : 1) * (g.fx.bolt > 0 ? 1.6 : 1), dx = sp * dt;
   g.dist += dx; g.sinceSp += dx;
@@ -6186,7 +6191,7 @@ function mgCloud(p, cx, cy, s) { p.disc(cx, cy, 9 * s); p.disc(cx + 11 * s, cy -
 // 도트 그림판 두 장: 배경(포켓몬 뒤), 효과(포켓몬 앞)
 function mgBuf(g, key) { const P = MG_PX, w = Math.ceil(g.W / P) + 2, h = Math.ceil(g.H / P) + 2; let c = g[key]; if (!c || c.width !== w || c.height !== h) { c = g[key] = document.createElement('canvas'); c.width = w; c.height = h; } const x = c.getContext('2d'); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, w, h); x.globalAlpha = 1; return x; }
 function mgRender(g, cv = $('#mgCv')) {
-  const x = cv.getContext('2d'), { W, H, GY } = g, d = g.dist, thumb = !g.run, P = MG_PX;
+  const x = cv.getContext('2d'), { W, H, GY } = g, d = g.dist, thumb = !g.run, P = MG_PX, t0 = g.t;
   x.setTransform(g.dpr, 0, 0, g.dpr, 0, 0); x.imageSmoothingEnabled = false;
   if (g.shake > 0) { const a = (g.shA || 4) * Math.min(1, g.shake / .25); x.translate(Math.round((Math.random() - .5) * 2 * a / P) * P, Math.round((Math.random() - .5) * 2 * a / P) * P); }
   // 하늘 색: 페이즈 끝 40m 동안 다음 하늘로 천천히 넘어간다
@@ -6233,7 +6238,8 @@ function mgRender(g, cv = $('#mgCv')) {
   if (g.fx.ice > 0) { p.rect(-P, -P, W + 2 * P, H + 2 * P, 'rgba(160,220,255,.25)'); p.rect(-P, GY - 1, W + 2 * P, 4, 'rgba(240,250,255,.9)'); }
   // 그림자 (높이 뛸수록 작고 옅게)
   const shad = (cx, hgt, w) => { const k = 1 / (1 + Math.max(0, hgt) / 70); p.disc(cx, GY + 1, Math.max(P, w * k), Math.max(P * .6, 3 * k), `rgba(20,30,20,${.28 * k})`); };
-  for (const o of g.obs) if (!o.flee && !(o.dead && !o.stomp)) shad(o.x, o.t === 'f' ? o.y * 1.6 : o.y, o.w * .62);
+  for (const o of g.obs) { if (o.pat === 'dig' && !o.dead) { const sh = o.up < 1 && o.up > 0 ? (Math.floor(t0 * 30) % 2) * 2 : 0; p.disc(o.x + sh, GY + 1, o.w * .6, 6, '#7a5230', true); p.disc(o.x + sh, GY, o.w * .38, 3, '#a87440', true); if (o.up < .05) continue; }   // 디그다 흙더미
+    if (!o.flee && !(o.dead && !o.stomp)) shad(o.x, o.t === 'f' ? o.y * 1.6 : Math.max(0, o.y), o.w * .62); }
   if (!(g.fx.dig > 0)) shad(g.PX, g.y, (g.pw || 11) * 1.5);
   const py = GY - g.y, phh = g.phh || MG_PH;
   // 파도타기: 포켓몬 밑에 깔리는 물결
@@ -6246,6 +6252,7 @@ function mgRender(g, cv = $('#mgCv')) {
   for (const o of g.obs) { const a = o.dead ? Math.max(0, o.kt / .35) : o.flee ? Math.max(0, 1 - o.flee) : 1; const by = o.t === 'f' ? Math.sin(g.t * 5 + o.ph) * 4 : 0;
     if (o.stomp) { x.save(); x.translate(o.x, GY - o.y); x.scale(1 + (1 - o.kt / .35) * .5, Math.max(.2, o.kt / .35)); mgDraw(x, o.k, 'Hurt', g.t, 0, 0, o.sc, false, a); x.restore(); continue; }
     if (o.sq && o.sq !== 1) { x.save(); x.translate(o.x, GY - o.y); x.scale(2 - o.sq, o.sq); mgDraw(x, o.k, 'Idle', g.t + o.ph, 0, 0, o.sc, false, a); x.restore(); continue; }
+    if (o.pat === 'dig') { x.save(); x.beginPath(); x.rect(-20, -20, W + 40, GY + 21); x.clip(); mgDraw(x, o.k, 'Idle', g.t + o.ph, o.x, GY - o.y, o.sc, o.flee, a); x.restore(); continue; }   // 땅 위로 나온 만큼만
     mgDraw(x, o.k, o.t === 'f' ? 'Walk' : 'Idle', g.t + o.ph, o.x, GY - o.y + by, o.sc, o.flee, a); }
   const pa = g.fx.dig > 0 ? 0 : g.fx.ghost > 0 ? .45 : g.inv > 0 && Math.floor(g.t * 12) % 2 ? .3 : 1;
   const anim = g.over ? 'Hurt' : 'Walk';
