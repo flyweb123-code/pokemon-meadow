@@ -504,8 +504,9 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.12';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
-const GAME = '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
+const STUDIO_VER = '3.13';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
+const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
   poke: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M4 1h4v1h1v1h1v2H7V4H5v1H2V3h1V2h1zM2 7h3v1h2V7h3v2H9v1H8v1H4v-1H3V9H2zM5 5h2v2H5z"/></svg>',
@@ -731,7 +732,7 @@ function unsvBar() { const b = $('#unsv'); if (!b || !ORIG) return; const here =
 $('#unsv').onclick = e => { e.stopPropagation(); $('#unsvPop').hidden = !$('#unsvPop').hidden; };
 $('#unsvPop').onclick = e => { const b = e.target.closest('[data-ub]'); if (!b) return; const [, v, pre] = BOXINFO(b.dataset.ub); pre?.(); $('#unsvPop').hidden = true; go(v); };
 document.addEventListener('pointerdown', e => { if (!e.target.closest('#unsvW')) $('#unsvPop').hidden = true; });
-function dstat() { unsvBar(); if (ORIG) scBar(); const n = changes().length, gv = gameVer(); $('#dstat').innerHTML = `작업실 v${STUDIO_VER} · ` + (gv ? `게임 ${gv} · ` : '') + `데이터 v${LIVE.ver || 0}` + (n ? ` · 바뀐 곳 <b>${n}</b>` : ''); $('#dstat').title = '작업실 = 이 작업실 화면 버전, 게임 = 게임 코드 버전, 데이터 = 작업실에서 배포한 횟수'; $('#goWork').disabled = !n; { const u = $('#unAll'); if (u && !u.dataset.arm) u.disabled = !unsaved(); } $('#goWork').title = n ? '' : '바뀐 곳이 없어요'; const e = document.querySelector('.nav [data-n=work]'); if (e) e.textContent = n || ''; }
+function dstat() { unsvBar(); if (ORIG) scBar(); const n = changes().length, gv = gameVer(); $('#dstat').innerHTML = `작업실 v${STUDIO_VER} · ` + (gv ? `게임 ${gv}${BETA ? ' 베타' : ''} · ` : '') + `데이터 v${LIVE.ver || 0}` + (n ? ` · 바뀐 곳 <b>${n}</b>` : ''); $('#dstat').title = '작업실 = 이 작업실 화면 버전, 게임 = 게임 코드 버전, 데이터 = 작업실에서 배포한 횟수'; $('#goWork').disabled = !n; { const u = $('#unAll'); if (u && !u.dataset.arm) u.disabled = !unsaved(); } $('#goWork').title = n ? '' : '바뀐 곳이 없어요'; const e = document.querySelector('.nav [data-n=work]'); if (e) e.textContent = n || ''; }
 
 // ---------- 공통 계산 ----------
 let ORIG = null, LIVE = { ver: 0 };   // 지금 배포된 값 (게임이 불러온 데이터)
@@ -1961,10 +1962,13 @@ function renderTest() {
     try { $('#game').contentWindow.localStorage.setItem('pk-studio-v2', JSON.stringify(d)); } catch (e) { $('#tMsg').textContent = '넣지 못했어요: ' + e.message; return; }
     $('#tMsg').textContent = `포켓몬 ${d.box?.length || d.mons.length}마리를 불러왔어요.`; reloadGame(); };
 }
+$('#verC').addEventListener('click', e => { if (e.target.id !== 'betaT') return; if (changes().length && !confirm('저장 안 한 바뀐 곳은 작업본에 남아요. 게임을 바꿔 불러올까요?')) return; store.set('st-beta', BETA ? '' : '1'); location.reload(); });
+if (BETA) $('#game').src = GAME + '?studio';
 function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#game').src = GAME + '?studio&r=' + Date.now(); go('map'); }
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.13', '10월 20일', ['버전 화면에 베타 게임 보기 토글 (새 기능 시험판 beta.html 을 미리보기로)']],
   ['3.12', '10월 20일', ['동작별 떠 있기 창 그림에도 그림자(크기·자리·기울기)·떠 있기·몸 기울기를 맵과 똑같이 보여 줌 (게임 v5.73)']],
   ['3.11', '10월 20일', ['그림자: 기울기 조절, 칸마다 숫자 입력', "그림자 '전체 기본' — 모든 포켓몬 그림자의 크기·좌우·위아래·기울기 기본값 (포켓몬마다 바꾼 값은 여기에 더해짐)", '게임 v5.72: 그림자를 몸 쪽으로 조금 올리고 폭을 넓힘 (노고치·단단지·헤라크로스·링곰·마그카르고·꾸꾸리·메꾸리·코산호 등)']],
   ['3.10', '10월 20일', ['동작별 떠 있기 창: 왼쪽 아래 모서리를 끌어 크기 바꾸기 (칸이 넓으면 그림도 크게, 두 번 누르면 처음 크기)', '동작 그림 바탕을 밝은 풀밭으로 바꿔 그림자가 잘 보이게']],
@@ -2081,7 +2085,7 @@ const SVERS = [
   ['1.0', '10월 15일', ['작업실 처음 올림: 맵·포켓몬·알 확률·티어·밸런스·그림 모음·배포하기']],
 ];
 function renderVer() { const n = changes().length, gv = gameVer();
-  $('#verC').innerHTML = `<div class="card"><div class="vcard"><span class="big">v${STUDIO_VER}</span><div><h2 style="margin:0">지금 쓰는 작업실</h2><div class="small mute">${esc(SVERS[0][1])} 올림 · 최신 버전이에요</div></div></div>
+  $('#verC').innerHTML = `<div class="card"><h2>베타 게임</h2><p class="small mute">켜면 작업실 미리보기가 새 기능 시험판(beta.html)으로 바뀌어요. 배포하는 데이터는 같아요 (본 게임은 새 값을 무시해요).</p><button class="chip${BETA ? ' on' : ''}" id="betaT">${BETA ? '베타 게임으로 보는 중 · 끄기' : '베타 게임으로 보기'}</button></div><div class="card"><div class="vcard"><span class="big">v${STUDIO_VER}</span><div><h2 style="margin:0">지금 쓰는 작업실</h2><div class="small mute">${esc(SVERS[0][1])} 올림 · 최신 버전이에요</div></div></div>
     <div class="kv"><span>작업실</span><b class="num">v${STUDIO_VER}</b><span>게임</span><b class="num">${gv || '불러오는 중'}</b><span>데이터</span><b class="num">v${LIVE.ver || 0}${LIVE.at ? ' · ' + new Date(LIVE.at).toLocaleDateString('ko-KR') : ''}</b><span>배포 안 한 바뀐 곳</span><b class="num">${n}개</b><span>휴대폰 틀</span><b>${esc(dev[1])}</b></div></div>
     <div class="card"><h2>버전 기록</h2><div class="vers">${SVERS.map(([v, d, L]) => `<div class="vr${v === STUDIO_VER ? ' now' : ''}"><div><b>v${v}</b><div class="small mute">${esc(d)}</div></div><ul>${L.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`).join('')}</div></div>`;
 }
