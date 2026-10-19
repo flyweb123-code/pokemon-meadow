@@ -3148,7 +3148,7 @@ function goToBed(m) {
 const fedBusy = x => (x.fedT || 0) > performance.now() || ((x.goal?.kind === 'berry' || x.goal?.kind === 'feedb') && !x.goal.berry?.nat) || x.state === 'eat';
 function canMeet(m, o) {
   if (fedBusy(m) || fedBusy(o)) return false;
-  if (o === m || o.held || m.held || m.land || o.land || !awake(o) || o.state === 'interact' || o.state === 'special' || o.state === 'eat' || o.pet || m.pet || o.pin || m.pin) return false;
+  if (o === m || o.held || m.held || m.land || o.land || !awake(o) || o.state === 'interact' || o.state === 'special' || o.state === 'eat' || o.pet || m.pet || o.pin || m.pin || o.camp || m.camp) return false;   /* v5.93: 모닥불로 가는 중인 포켓몬은 건드리지 않는다 */
   const a = T(m).mv, b = T(o).mv;
   if (a === 'swim' && !['amph', 'fly', 'hover', 'swim'].includes(b)) return false;
   if (b === 'swim' && !['amph', 'fly', 'hover', 'swim'].includes(a)) return false;
@@ -3167,6 +3167,7 @@ function pickPartner(m) {
 function think(m) {
   m.goal = null; m.partner = null; m.spdMul = 1;
   if (m.hidden) return;
+  if (m.camp && CAMP === m.camp && !m.camp.on && m.campSeat && !m.camp.ready.has(m) && awake(m)) return moveTo(m, m.campSeat, { kind: 'camp' }, .9);   // v5.93: 모닥불 자리로 가던 중이면 다른 데로 새지 않고 다시 자리로
   if (m.land) {   // 육지의 잉어킹: 숨을 헐떡이며 쉬엄쉬엄 호수로 파닥파닥
     if (Math.random() < .3) { setState(m, 'idle', rnd(1, 2.2)); emote(m, pick(['헉…헉…', '💦', '파닥파닥', '…!']), '', 1.6, 'karp-gasp'); return; }
     return moveTo(m, randPond(.45), { kind: 'wander' }, .3);
@@ -5056,12 +5057,12 @@ function campSeats(G) {   // 불 둘레 타원에 고르게 앉되, 화면 밖·
   if (A.length >= n) return n === 1 ? [A[A.length >> 1]] : Array.from({ length: n }, (_, i) => A[Math.round(i * (A.length - 1) / (n - 1))]);
   return G.map((o, i) => ({ a: 0, x: clamp(FIRE.x - rx + (i % 3) * 18, x0, x1), y: FIRE.y + 6 + (i - n / 2) * 14 }));
 }
-function campSing(m, force) {   // force = 같이 앉을 다른 포켓몬 수 (테스트용)
+function campSing(m, force, grp) {   // force = 같이 앉을 다른 포켓몬 수 (테스트용), grp = 모닥불에 끌어다 놓은 포켓몬들 (v5.93 경완: 여러 마리를 놓으면 꼭 노래)
   if (CAMP || KEY === 'pk-studio-v2' || !flameEl || flameEl.classList.contains('out')) return false;
-  if (force == null && (Date.now() < CAMP_CD || Math.random() > CAMP_P)) return false;
-  const C = S.mons.filter(o => o !== m && campOk(o)).sort((a, b) => dist(a, FIRE) - dist(b, FIRE)).slice(0, 4);
+  if (!grp && force == null && (Date.now() < CAMP_CD || Math.random() > CAMP_P)) return false;
+  const C = grp || S.mons.filter(o => o !== m && campOk(o)).sort((a, b) => dist(a, FIRE) - dist(b, FIRE)).slice(0, 4);
   if (!C.length) return false;
-  const G = [m, ...C.slice(0, Math.min(C.length, force ?? (1 + Math.floor(Math.random() * C.length))))], ang = o => Math.atan2(o.y - FIRE.y, o.x - FIRE.x);
+  const G = grp ? [m, ...grp] : [m, ...C.slice(0, Math.min(C.length, force ?? (1 + Math.floor(Math.random() * C.length))))], ang = o => Math.atan2(o.y - FIRE.y, o.x - FIRE.x);
   const others = G.slice(1), seats = campSeats(G).sort((a, b) => a.a - b.a); G.sort((a, b) => ang(a) - ang(b));
   CAMP = { G, ready: new Set(), on: false }; CAMP_CD = Date.now() + rnd(8, 15) * 60e3; const c = CAMP;
   G.forEach((o, i) => { o.camp = c; o.campSeat = seats[i]; o.partner = null; o.scene = null; if (o !== m) emote(o, '♪', 'note', 1.5, 'camp-call'); moveTo(o, seats[i], { kind: 'camp' }, .9); });
@@ -5079,14 +5080,15 @@ function campStart(c) {
   const live = () => c.G.filter(o => S.mons.includes(o) && o.camp === c && c.ready.has(o) && !o.held && awake(o) && o.state === 'special');
   c.G.filter(o => !c.ready.has(o)).forEach(o => { o.camp = null; if (o.goal?.kind === 'camp') think(o); });
   if (live().length < 2) { c.G.forEach(campLeave); CAMP = null; return; }
-  c.on = true; const t0 = performance.now(), DUR = 15000;
-  live().forEach((o, i) => { faceTo(o, FIRE.x); o.act.style.setProperty('--cs', rnd(1.05, 1.3).toFixed(2) + 's'); o.act.style.setProperty('--cd', (-i * .35).toFixed(2) + 's'); o.act.classList.add('camp'); emote(o, '♪', 'note', 2, 'camp-sing'); });
+  c.on = true; const t0 = performance.now(), DUR = campBgm(true) ? 24000 : 15000;   // 곡이 나오면 한 곡(24초) 다 부른다
+  const sync = DUR > 15000;   // 곡이 나오면 다 같이 한 마디(1.5초)에 맞춰 좌우로 흔든다
+  live().forEach((o, i) => { faceTo(o, FIRE.x); o.act.style.setProperty('--cs', sync ? '1.5s' : rnd(1.05, 1.3).toFixed(2) + 's'); o.act.style.setProperty('--cd', sync ? '0s' : (-i * .35).toFixed(2) + 's'); o.act.classList.add('camp'); emote(o, '♪', 'note', 2, 'camp-sing'); });
   flameEl.classList.add('big'); clearTimeout(flameEl.bigT); flameEl.bigT = setTimeout(() => flameEl.classList.remove('big'), DUR);
   let chorus = false;
   const iv = setInterval(() => {
     const L = live(), el = performance.now() - t0;
     if (CAMP !== c || L.length < 2 || el > DUR) {
-      clearInterval(iv); if (CAMP !== c) return; CAMP = null;
+      clearInterval(iv); campBgm(false); if (CAMP !== c) return; CAMP = null;
       if (L.length >= 2) {
         L.forEach(o => { o.joy = clamp((o.joy ?? 60) + 8); L.forEach(p => { if (p !== o) addRel(o, p, 2); }); });
         L.forEach((o, i) => setTimeout(() => { campLeave(o); if (!S.mons.includes(o)) return; anim(o, 'hop'); emote(o, pick(['♥', '♪']), 'heart', 2, 'camp-end'); if (isNight() && Math.random() < .35) setTimeout(() => { if (S.mons.includes(o) && o.state === 'idle') sleep(o, false); }, 2500); }, i * 120));
@@ -5100,6 +5102,11 @@ function campStart(c) {
   }, 420);
 }
 const CAMP_P = .35;
+// v5.93 경완: 모닥불 노래 동안은 따로 만든 캠프송을 틀고, 끝나면 듣던 곡을 멈춘 자리부터 다시
+function campBgm(on) { try {
+  if (on) { if (!bgmOn || !mgEl.hidden || campMus.on) return false; bgm.camp = { id: bgm.id, pos: bgmPos() }; bgmSrcStop(); campMus.start('camp'); return campMus.on; }
+  if (!campMus.on && !bgm.camp) return false; campMus.stop(2); const r = bgm.camp; bgm.camp = null; if (!r || !mgEl.hidden || bgm.mg) return false;
+  setTimeout(() => { if (campMus.on || bgm.mg) return; bgm.fadeIn = 2; if (bgmOn && r.id && r.id !== 'intro') bgmPlay(r.id, r.pos); else bgmStart(); }, 1200); return false; } catch (e) { return false; } }
 const PROP_JOY = 3;
 function propReact(m, p) {
   const flyer = winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover', small = isSmall(m) && ![1, 2, 3, 5, 10, 11].includes(SPm(m).sh) && (SPm(m).spd || 0) >= 50, at = (dx, dy) =>   /* v4.91 경완: 우르 같은 느린 털뭉치·공·물고기 모양은 횃대에 못 올라간다 */ { m.x = clamp(p.x + dx, XL + 20, XR - 20); m.y = clamp(p.y + dy, MIN_Y, MAX_Y); };
@@ -5114,6 +5121,9 @@ function propReact(m, p) {
   if (p.k === 'fire') {
     let sd = m.x < p.x ? -1 : 1; const gap = 22 + Math.min(60, (m.w || 40) * .55); at(sd * gap, 8); if (inHud(m)) { sd = -sd; at(sd * gap, 8); } faceTo(m, p.x);   // v4.60 경완: 열매 버튼 밑 자리면 반대쪽에 앉는다 (밑으로 밀려 뛰어가던 것)   // v3.62 경완: 몸이 불에 겹치지 않게 몸 너비만큼 비켜 앉는다
     if (flameEl?.classList.contains('out')) { setState(m, 'idle', 4); emote(m, '…', '', 2.2, 'ash-sniff'); return log(`${J(m,'이/가')} 비에 꺼진 모닥불 재를 킁킁 맡는다.`, [m]); }
+    m.fireT = Date.now();   // v5.93 경완: 여러 마리를 모닥불에 끌어다 놓으면 다 같이 노래
+    { const grp = S.mons.filter(o => o !== m && o.fireT && Date.now() - o.fireT < 90e3 && dist(o, FIRE) < 140 && S.mons.includes(o) && awake(o) && !o.held && !o.camp && !o.pin && !o.evolving && !o.washing && o.state !== 'special');
+      if (grp.length && !CAMP) { [m, ...grp].forEach(o => { o.fireT = 0; }); if (campSing(m, null, grp.slice(0, 5))) return; } }
     const ty = tyOf(m);
     if (ty.includes(FIR)) { setState(m, 'idle', 6); anim(m, 'hop'); burst(m, 'flame', '✹', 3); flameEl.classList.add('big'); clearTimeout(flameEl.bigT); flameEl.bigT = setTimeout(() => flameEl.classList.remove('big'), 6000);
       return log(pick([`${J(m,'이/가')} 모닥불에 불꽃을 불어 넣었다. 불이 활활 커졌다!`, `${J(m,'이/가')} 모닥불 앞에서 신이 나 꼬리를 흔든다. 불꽃이 더 커졌다.`]), [m]); }
@@ -5711,7 +5721,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '5.92';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.93';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5983,7 +5993,7 @@ function mgDraw(x, k, anim, t, cx, footY, s, flip, alpha) {
 }
 function openMg(m) {
   if (!m?.pid || !boxOf(m.pid)) return;
-  mgMon = m; mgOpenG = ''; sfx('open'); mgEl.hidden = false; mgView('sel'); mgBgm(true);
+  mgMon = m; mgOpenG = ''; sfx('open'); if (campMus.on) { campMus.stop(.3); bgm.camp = null; } mgEl.hidden = false; mgView('sel'); mgBgm(true);
 }
 function mgView(v) {
   if (v !== 'sel') { mgPrevStop(); $('#mgPop').hidden = true; } else if (mgMus.on || (bgm.mg && !bgm.src)) { mgMus.stop(.3); if (bgm.mg) { bgm.fadeIn = .6; bgmStart(); } }   /* 게임 화면에서 나오면 메뉴 음악으로 */ mgEl.querySelectorAll('[data-mv]').forEach(s => s.hidden = s.dataset.mv !== v); mgEl.classList.toggle('mgfull', v === 'play');
@@ -6032,22 +6042,40 @@ const MG_MUS = { jump: { bpm: 152, ch: [48, 45, 41, 43, 48, 45, 41, 43, 41, 43, 
   [84, -1, 83, 84, 79, -1, 76, -1], [81, -1, 79, 81, 76, -1, 72, -1], [77, 79, 81, 77, 84, -1, 81, -1], [79, -1, -1, -1, 74, 76, 77, 79],
   [81, -1, 77, 81, 84, -1, 81, -1], [83, -1, 79, 83, 86, -1, 83, -1], [79, -1, 76, 79, 83, -1, 79, -1], [81, -1, 76, 81, 84, -1, 83, 81],
   [77, -1, 81, -1, 84, -1, 86, -1], [88, -1, 86, -1, 83, -1, 79, -1], [84, -1, 79, -1, 76, 79, 84, -1], [84, -1, -1, -1, 72, 74, 76, 79]] } };
-const mgMus = { on: false, g: null, iv: 0, step: 0, t: 0, id: 'jump',
-  start(id = 'jump') { this.stop(); const a = audio(); if (!a || !bgmOn || !MG_MUS[id]) return; this.id = id; this.on = true; this.step = 0; this.t = a.currentTime + .08;
-    this.g = a.createGain(); this.g.gain.value = .9 * volG(VOL.bgm); this.g.connect(a.destination); this.iv = setInterval(() => this.tick(), 60); this.tick(); },
+// 직접 만든 곡을 Web Audio 로 한 음씩 예약해서 트는 작은 연주기 (미니게임·모닥불 노래가 같이 쓴다)
+function chipSeq(songs) { return { on: false, g: null, iv: 0, step: 0, t: 0, id: null,
+  start(id) { this.stop(); const a = audio(); if (!a || !bgmOn || !songs[id]) return; this.id = id; this.on = true; this.step = 0; this.t = a.currentTime + .08;
+    this.g = a.createGain(); this.g.gain.value = (songs[id].vol || .9) * volG(VOL.bgm); this.g.connect(a.destination); this.iv = setInterval(() => this.tick(), 60); this.tick(); },
   stop(fade = 0) { clearInterval(this.iv); this.on = false; const g = this.g; this.g = null; if (!g) return; try { const t = actx.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + Math.max(.03, fade)); setTimeout(() => { try { g.disconnect(); } catch (e) {} }, (fade + .3) * 1000); } catch (e) {} },
   note(f, t0, dur, type, vol, to) { const a = actx, o = a.createOscillator(), g = a.createGain(); o.type = type; o.frequency.setValueAtTime(f, t0); if (to) o.frequency.exponentialRampToValueAtTime(to, t0 + dur);
     g.gain.setValueAtTime(vol, t0); g.gain.setValueAtTime(vol, t0 + dur * .7); g.gain.linearRampToValueAtTime(0, t0 + dur); o.connect(g).connect(this.g); o.start(t0); o.stop(t0 + dur + .02); },
+  pluck(f, t0, dur, type, vol) { const a = actx, o = a.createOscillator(), g = a.createGain(); o.type = type; o.frequency.setValueAtTime(f, t0);   // 기타처럼 퉁 하고 줄어드는 소리
+    g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + dur); o.connect(g).connect(this.g); o.start(t0); o.stop(t0 + dur + .02); },
   hit(t0, dur, vol, hp) { const a = actx; if (!noiseBuf) noise(t0, .001, 0); const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain(); src.buffer = noiseBuf; f.type = 'highpass'; f.frequency.value = hp;
     g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + dur); src.connect(f).connect(g).connect(this.g); src.start(t0); src.stop(t0 + dur + .02); },
-  tick() { if (!this.on || !this.g || !actx) return; const M = MG_MUS[this.id], ph = MGG?.phase || 1, e8 = 30 / (M.bpm + 6 * (ph - 1));
-    while (this.t < actx.currentTime + .3) { const i = this.step % 128, bar = i >> 3, b = i & 7, t = this.t, n = M.ld[bar][b];
-      if (n > 0) { let len = 1; while (b + len < 8 && M.ld[bar][b + len] === -1) len++; this.note(NOTE(n), t, e8 * len * .92, 'square', .045); this.note(NOTE(n + 12), t, e8 * .5, 'square', .008); }   // 멜로디 (+ 살짝 반짝이는 윗소리)
-      const r = M.ch[bar]; this.note(NOTE(b % 2 ? r + 12 : r), t, e8 * .85, 'triangle', .16);   // 베이스: 옥타브를 오가며 통통
-      if (b === 0 || b === 4) this.note(150, t, .12, 'triangle', .3, 40);   // 쿵
-      if (b === 2 || b === 6) this.hit(t, .12, .16, 1800);   // 짝
-      this.hit(t + (b % 2 ? 0 : e8 * .5), .03, .045, 7000);   // 치
-      this.step++; this.t += e8; } } };
+  tick() { if (!this.on || !this.g || !actx) return; const M = songs[this.id], nb = M.ld[0].length, e8 = M.e8();
+    while (this.t < actx.currentTime + .3) { const i = this.step % (nb * M.ld.length), bar = Math.floor(i / nb), b = i % nb, t = this.t, n = M.ld[bar][b];
+      let len = 1; if (n > 0) while (b + len < nb && M.ld[bar][b + len] === -1) len++;
+      M.play(this, { bar, b, t, e8, n, len, r: M.ch[bar] }); this.step++; this.t += e8; } } }; }
+const mgMus = chipSeq({ jump: { e8: () => 30 / (MG_MUS.jump.bpm + 6 * ((MGG?.phase || 1) - 1)), ch: MG_MUS.jump.ch, ld: MG_MUS.jump.ld,
+  play(s, { b, t, e8, n, len, r }) {
+    if (n > 0) { s.note(NOTE(n), t, e8 * len * .92, 'square', .045); s.note(NOTE(n + 12), t, e8 * .5, 'square', .008); }   // 멜로디 (+ 살짝 반짝이는 윗소리)
+    s.note(NOTE(b % 2 ? r + 12 : r), t, e8 * .85, 'triangle', .16);   // 베이스: 옥타브를 오가며 통통
+    if (b === 0 || b === 4) s.note(150, t, .12, 'triangle', .3, 40);   // 쿵
+    if (b === 2 || b === 6) s.hit(t, .12, .16, 1800);   // 짝
+    s.hit(t + (b % 2 ? 0 : e8 * .5), .03, .045, 7000); } } });   // 치
+// v5.93 경완: 모닥불 노래 동안만 나오는 곡 (6/8 박자 느긋한 캠프송, 직접 만든 곡). 화음 = [베이스, 기타 화음 3음]
+const CAMP_CH = { D: [38, [62, 66, 69]], G: [43, [62, 67, 71]], A: [33, [61, 64, 69]], Bm: [35, [62, 66, 71]] };
+const campMus = chipSeq({ camp: { vol: .8, e8: () => .25, ch: ['D', 'G', 'D', 'A', 'D', 'G', 'A', 'D', 'Bm', 'G', 'D', 'A', 'Bm', 'G', 'A', 'D'], ld: [
+  [74, -1, 76, 78, -1, 74], [79, -1, 78, 76, -1, 74], [78, -1, 76, 74, -1, 69], [71, -1, 73, 76, -1, -1],
+  [74, -1, 76, 78, -1, 81], [83, -1, 81, 79, -1, 78], [76, -1, 78, 76, -1, 73], [74, -1, -1, -1, 0, 69],
+  [71, -1, 74, 78, -1, 76], [74, -1, 71, 79, -1, 78], [78, -1, 81, 78, -1, 74], [76, -1, -1, 73, -1, 69],
+  [71, -1, 74, 78, -1, 81], [83, -1, 81, 79, -1, 76], [78, -1, 76, 73, -1, 76], [74, -1, -1, -1, -1, 0]],
+  play(s, { b, t, e8, n, len, r }) { const [bs, tri] = CAMP_CH[r];
+    if (n > 0) { s.note(NOTE(n), t, e8 * len * .95, 'triangle', .11); s.note(NOTE(n), t, e8 * len * .9, 'square', .012); }   // 다 같이 부르는 멜로디 (부드러운 세모파 + 살짝 네모파)
+    if (b === 0 || b === 3) s.pluck(NOTE(bs + (b === 3 ? 7 : 0)), t, e8 * 2.6, 'triangle', .2);   // 베이스 둥-
+    if (b !== 0 && b !== 3) s.pluck(NOTE(tri[(b % 3) - 1 + (b > 3 ? 1 : 0)] || tri[0]), t, e8 * 1.8, 'triangle', .05);   // 기타 아르페지오
+    if (b === 1 || b === 4) s.hit(t, .05, .025, 5000); } } });   // 찰찰 (흔드는 소리)
 
 // 장애물로 나올 포켓몬: 이미 불러온 던전 그림 중에서 (함께 뛰는 포켓몬과 같은 종은 빼고). 박스에 있는 포켓몬 그림도 몇 묶음 불러 둔다
 // v5.81 경완: 게임 카드 썸네일 — 장애물 넘기는 실제 게임 화면을 작게 돌려서 미리 보여 준다
@@ -7797,7 +7825,7 @@ function moveMotion(m, mo, f, fire, dc) {
 }
 // 기술을 쓰면 가까이 있던 포켓몬들이 깜짝 놀란다: 펄쩍 뛰고 조금 물러나거나, 자다가 깬다
 function startle(m, name, loud) {
-  const near = S.mons.filter(o => o !== m && !o.hidden && !o.held && !o.evolving && o.state !== 'interact' && dist(o, m) < 150 + m.w * .5);
+  const near = S.mons.filter(o => o !== m && !o.hidden && !o.held && !o.evolving && !o.camp && o.state !== 'interact' && dist(o, m) < 150 + m.w * .5);
   if (!near.length) return false;
   near.forEach((o, k) => setTimeout(() => {
     if (!S.mons.includes(o) || o.held) return;
