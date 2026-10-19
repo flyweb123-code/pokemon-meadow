@@ -1351,6 +1351,11 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 </style>
 
 <script>setTimeout(() => document.documentElement.classList.add('ready'), 6000)</script>
+<style>html.bootBlk body::after{content:'';position:fixed;inset:0;z-index:6440;background:#000}</style>
+<script>/* v5.54 경완: 처음 시작(저장 없음)이면 오프닝 전에 필드가 잠깐 보이지 않게 처음부터 검은 화면으로 덮는다 */
+try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(localStorage.getItem(st ? 'pk-studio-v2' : 'pk-meadow-v2') || 'null');
+  if (/[?&]intro/.test(q) || (!st && !(d && d.mons && (d.mons.length || d.unlocked)))) document.documentElement.classList.add('bootBlk'); } catch (e) {}
+{ let n = 0; const iv = setInterval(() => { const h = document.documentElement; if (!h.classList.contains('bootBlk')) return clearInterval(iv); n = document.querySelector('#setup,#title,#intro') ? 0 : n + 1; if (n >= 4) { h.classList.remove('bootBlk'); clearInterval(iv); } }, 2500); }   // 혹시 오프닝이 안 뜨면 10초 뒤 걷는다</script>
 <div class="app" id="app">
   <div class="stage-wrap" id="wrap">
     <div class="stage" id="stage">
@@ -5571,7 +5576,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.53';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.54';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8722,7 +8727,7 @@ async function introFlow() {
   const dropTitle = await titleFlow(); introCss(); const tr = trOf(), wait = ms => new Promise(r => setTimeout(r, ms));
   const ov = document.createElement('div'); ov.id = 'intro'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', '오프닝');
   ov.innerHTML = `<button class="in-skip" type="button">건너뛰기</button><div class="in-stage"><img class="in-pic kang" alt="Mr.강" src="${KANG}"><i class="in-pic in-mon" role="img" aria-label="나룸퍼프"><b class="zz">Z</b><b class="zz z2">z</b></i><i class="in-pic in-tr"></i><div class="in-two"><i style="background-image:url(${TR_OW.m})"></i><i style="background-image:url(${TR_OW.f || TR_OW.m})"></i></div></div><div class="win in-menu" hidden></div><div class="win in-name" hidden></div><div class="win in-box" aria-live="polite"><span class="in-t"></span><b class="cur" hidden>▼</b></div><i class="in-white"></i>`;
-  document.body.append(ov); dropTitle?.();
+  document.body.append(ov); dropTitle?.(); document.documentElement.classList.remove('bootBlk');
   const $o = s => ov.querySelector(s), kang = $o('.kang'), mon = $o('.in-mon'), trEl = $o('.in-tr'), menu = $o('.in-menu'), box = $o('.in-box');
   const say = inTyper(ov, $o('.in-t'), $o('.cur')), show = (el, on) => el.classList.toggle('on', on);
   let skipped = false; const done = new Promise(r => { $o('.in-skip').onclick = () => { skipped = true; r(); }; });
@@ -8941,7 +8946,8 @@ async function start(data) {
   if (!isNew && !introPrev) await restore(d); else await fresh();
   if (bgmOn && bgm.id !== S.bgm) bgmStart();
   Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp)); menuDots();
-  migrateBox(); undoAutoHatch(); syncNeed(); renderGold(); if ((isNew && INTRO_ON()) || /[?&]intro/.test(location.search)) introFlow().then(() => tutFlow()).finally(() => { if (tutFreeze) { tutFreeze = false; saveFrozen = false; save(); } }).then(() => notiSoon(300)); else notiSoon(700); sky(); fetchWx(false, 10 * 60e3); setInterval(fetchWx, 10 * 60e3); document.addEventListener('visibilitychange', () => { if (document.hidden) return;   /* v4.33 경완: 다시 켜면 시간·날씨를 바로 (서서히 바뀌는 연출 없이) */
+  migrateBox(); undoAutoHatch(); syncNeed(); renderGold(); if (!((isNew && INTRO_ON()) || /[?&]intro/.test(location.search))) document.documentElement.classList.remove('bootBlk');
+  if ((isNew && INTRO_ON()) || /[?&]intro/.test(location.search)) introFlow().then(() => tutFlow()).finally(() => { if (tutFreeze) { tutFreeze = false; saveFrozen = false; save(); } }).then(() => notiSoon(300)); else notiSoon(700); sky(); fetchWx(false, 10 * 60e3); setInterval(fetchWx, 10 * 60e3); document.addEventListener('visibilitychange', () => { if (document.hidden) return;   /* v4.33 경완: 다시 켜면 시간·날씨를 바로 (서서히 바뀌는 연출 없이) */
     const c = document.documentElement.classList; c.add('boot'); S.clock = realClock(); skyKey = ''; sky(); requestAnimationFrame(() => requestAnimationFrame(() => c.remove('boot'))); fetchWx(false, 10 * 60e3); }); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
   requestAnimationFrame(t => { last = t; frame(t); });
   // 아이폰 앱에 준비됐다고 알리고, 현재 알 현황을 바로 보낸다
