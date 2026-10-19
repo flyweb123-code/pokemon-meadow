@@ -1,5 +1,7 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="포켓몬 키우기"><meta name="theme-color" content="#24482a"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" type="image/png" href="icon-192.png"><style>img{max-width:100%}</style></head><body><title>포켓몬 키우기</title>
 <script>
+// v5.74 경완: 베타 판 — 운영자 칸 '베타 판 쓰기'를 켠 기기만 beta.html(새 기능 시험판)로 넘어간다. 저장은 본 게임과 같다
+(() => { try { const beta = /beta\.html$/.test(location.pathname), q = location.search; if (!beta && !/[?&]studio/.test(q) && localStorage.getItem('pk-beta') === '1') location.replace('beta.html' + q + location.hash); } catch (e) {} })();
 // 첫 화면부터 지금 시각의 밤낮으로 그린다 (낮으로 떴다가 밤으로 바뀌지 않게). 첫 sky() 뒤에 boot 를 뗀다.
 (() => { const d = new Date(), h = d.getHours() + d.getMinutes() / 60, c = document.documentElement.classList; c.add('boot'); if (h >= 19.5 || h < 5.5) c.add('boot-night'); })();
 </script>
@@ -1504,6 +1506,8 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
       <section class="set-sec op-only">
         <h4>운영자</h4>
         <div class="op-row"><span>테스트 버튼 보이기</span><button class="op-sw" id="testSw" role="switch" aria-checked="false"><i></i></button></div>
+        <div class="op-row"><span>베타 판 쓰기 (이 기기만)</span><button class="op-sw" id="betaSw" role="switch" aria-checked="false"><i></i></button></div>
+        <div class="set-btns one" id="betaBkRow" hidden><button class="lk-btn main" id="betaBk">베타 켜기 전 저장으로 되돌리기</button></div>
         <div class="set-btns one" id="probeRow" hidden><button class="lk-btn main" id="placeProbe">장소 찾기 시험</button></div>
         <pre class="probe-out" id="probeOut" hidden></pre>
       </section>
@@ -5578,6 +5582,15 @@ document.addEventListener('click', e => {
     sec.addEventListener('click', e => { const b = e.target.closest('.op-sw'); if (!b) return; const N = S.noti, k = b.dataset.n; if (k !== 'on' && N.on === false) return; N[k] = N[k] === false; paintN(); save(); });   /* 누르는 소리는 버튼 공통 틱 */
     window.paintNoti = paintN; }
   $('#testSw').onclick = () => { sfx('tap'); put('pk-tests', !get('pk-tests')); paint(); };
+  { const BETA = /beta\.html$/.test(location.pathname), BK = 'pk-meadow-v2-prebeta', bk = () => { try { return localStorage.getItem(BK); } catch (e) { return null; } };
+    const paintB = () => { $('#betaSw').setAttribute('aria-checked', BETA); $('#betaBkRow').hidden = !bk(); };
+    paintB();
+    $('#betaSw').onclick = () => { sfx('tap'); if (/[?&]studio/.test(location.search)) return;
+      if (!BETA) { save(); try { localStorage.setItem(BK, JSON.stringify({ at: Date.now(), d: localStorage.getItem(KEY) })); } catch (e) {} put('pk-beta', true); location.replace('beta.html'); }   // 켜기 전에 저장을 백업
+      else { put('pk-beta', false); location.replace('./'); } };
+    let armB = 0; $('#betaBk').onclick = () => { let o = null; try { o = JSON.parse(bk()); } catch (e) {} if (!o?.d) return; const b = $('#betaBk');
+      if (Date.now() - armB > 3000) { armB = Date.now(); sfx('tap'); b.textContent = `${new Date(o.at).toLocaleString('ko-KR')} 저장으로 · 한 번 더 누르기`; setTimeout(() => { if (Date.now() - armB >= 3000) b.textContent = '베타 켜기 전 저장으로 되돌리기'; }, 3100); return; }
+      saveFrozen = true; try { localStorage.setItem(KEY, o.d); } catch (e) {} location.reload(); }; }
   let n = 0, t0 = 0; document.querySelector('.set-credit').addEventListener('click', () => { const now = Date.now(); n = now - t0 < 1500 ? n + 1 : 1; t0 = now;
     if (n >= 7) { n = 0; const on = !get('pk-op'); put('pk-op', on); if (!on) put('pk-tests', false); paint(); sfx(on ? 'pickup' : 'tap'); log(on ? '운영자 모드를 켰다.' : '운영자 모드를 껐다.', [], true); } }); }
 function syncTabs() { [['#openRun', '#run'], ['#openSet', '#set'], ['#sideSet', '#set'], ['#openShop', '#shop']].forEach(([b, w]) => $(b).setAttribute('aria-pressed', !$(w).hidden)); if (mgrReady) { $('#openMgr').setAttribute('aria-pressed', pokeOpen()); $('#openFld').setAttribute('aria-pressed', fldOpen()); } document.body.classList.toggle('sheet-open', ['#sheet', '#run', '#mgr', '#shop'].some(w => !$(w).hidden)); }
@@ -5589,8 +5602,9 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.73';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
-$('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
+const IS_BETA = /beta\.html$/.test(location.pathname);   // v5.74: 새 기능 시험판(beta.html)인지
+const APP_VER = '5.74';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+$('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
 function setPage(on) { if (on === true) on = 'set'; $('#setPage').hidden = on !== 'set'; if (on === 'set') window.paintNoti?.(); $('#runPage').hidden = on !== 'runs'; $('#pfPage').hidden = !!on; $('#pfGear').hidden = !!on; $('#setBack').hidden = !on; $('#setTitle').textContent = on === 'set' ? '설정' : on === 'runs' ? '런닝 기록' : '프로필'; setEl.querySelector('.set-body').scrollTop = 0; }
@@ -8586,7 +8600,7 @@ function applyCfg(c) {
     SP_OFF = new Set((Array.isArray(d.off) ? d.off : []).map(Number).filter(sp => SPECIES[sp]));
     SPOTS = (Array.isArray(d.spots) ? d.spots : []).filter(o => o && (SPECIES[o.sp] || +o.sp === 0) && isFinite(o.la) && isFinite(o.lo) && o.r >= 30 && o.r <= 50000 && o.x >= 1 && o.x <= 1000).map(o => ({ sp: +o.sp, la: +o.la, lo: +o.lo, r: +o.r, x: +o.x, r2: o.r2 >= 30 && o.r2 <= 50000 ? +o.r2 : 0, rot: Math.abs(+o.rot) <= 180 ? +o.rot || 0 : 0, ...(o.sh === 'rect' ? { sh: 'rect' } : o.sh === 'poly' && Array.isArray(o.pts) && o.pts.length >= 3 && o.pts.length <= 64 && o.pts.every(q => Array.isArray(q) && Math.abs(q[0]) <= 2 && Math.abs(q[1]) <= 2) ? { sh: 'poly', pts: o.pts.map(q => [+q[0], +q[1]]) } : {}), ...(Array.isArray(o.th) ? { th: o.th.filter(k => typeof k === 'string').slice(0, 6) } : {}), ...(Array.isArray(o.tha) ? { tha: o.tha.filter(k => typeof k === 'string').slice(0, 6) } : {}), ...(typeof o.pn === 'string' && o.pn.trim() ? { pn: o.pn.trim().slice(0, 24) } : {}) }));   // th: 작업실 계산용 장소 특성 (게임 확률엔 안 씀 — 실제 특성은 아이폰이 보낸 주변 장소·장소 이름)
     retier(d.tierOv, d.tierOrd || {}); if (d.bal) applyBal(d.bal); if (d.layout) setLayoutIn(d.layout);
-    EGG_EFF = null; CFG = c; $('#appVer').textContent = 'v' + APP_VER + (c.ver ? ' · 데이터 ' + c.ver : '');
+    EGG_EFF = null; CFG = c; $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '') + (c.ver ? ' · 데이터 ' + c.ver : '');
   } catch (e) { console.warn('config', e); }
 }
 async function loadCfg() {
