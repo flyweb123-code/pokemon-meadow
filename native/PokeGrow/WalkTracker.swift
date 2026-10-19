@@ -285,6 +285,10 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
                 if let first = items.first?.name { line += " · 예: \(ko.first ?? first)" }
                 log(line)
             }
+            // 한국에서는 주변 장소 목록(POI) 요청이 '장소 없음'(MKError 4)으로 실패한다 → 낱말 검색으로 찾는다
+            if step == 0, items.isEmpty, err != nil {
+                keywordLandmark(loc, fallback: fallback, tags: tags, log: log, done: done); return
+            }
             var bestKo: (String, CLLocationDistance)?
             var bestAny: (MKMapItem, CLLocationDistance)?
             for item in items {
@@ -307,6 +311,53 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
                 if let ko = marks?.first?.areasOfInterest?.first(where: WalkTracker.isKorean) { finish(ko, tags) }
                 else { searchLandmark(loc, fallback: fallback, step: step + 1, tags: tags, log: log, done: done) }
             }
+        }
+    }
+    // 낱말 검색: 공원·역 같은 낱말로 1.5km 안을 한 번씩 찾아 모은 뒤, 400m → 800m → 1500m 안에서 가장 가까운 한국어 이름
+    private static let landmarkWords = ["공원", "역", "명소", "호수", "광장", "시장", "학교", "도서관"]
+    private static func keywordLandmark(_ loc: CLLocation, fallback: String?, tags: Set<String>, log: ((String) -> Void)?, done: @escaping (String?, Set<String>) -> Void) {
+        let finish: (String?, Set<String>) -> Void = { n, t in DispatchQueue.main.async { done(n, t) } }
+        let span = (landmarkRadii.last ?? 1500) * 2
+        let region = MKCoordinateRegion(center: loc.coordinate, latitudinalMeters: span, longitudinalMeters: span)
+        let group = DispatchGroup()
+        var found: [MKMapItem] = [], lines: [String] = []
+        let lock = NSLock()
+        for word in landmarkWords {
+            let req = MKLocalSearch.Request()
+            req.naturalLanguageQuery = word
+            req.region = region
+            req.resultTypes = .pointOfInterest
+            group.enter()
+            MKLocalSearch(request: req).start { res, err in
+                let items = res?.mapItems ?? []
+                lock.lock()
+                found += items
+                var line = "  '\(word)': \(items.count)곳"
+                if let err { line += " · 오류: \(WalkTracker.errText(err))" }
+                lines.append(line)
+                lock.unlock()
+                group.leave()
+            }
+        }
+        group.notify(queue: .main) {
+            log?("낱말로 다시 찾기 (\(Int(span / 2))m 안):")
+            lines.forEach { log?($0) }
+            var tags = tags
+            var near: [(String, CLLocationDistance)] = []
+            for item in found {
+                guard let c = item.placemark.location else { continue }
+                let d = c.distance(from: loc)
+                if let cat = item.pointOfInterestCategory, d <= 250, let t = WalkTracker.themeOf[cat] { tags.insert(t) }
+                if let name = item.name, WalkTracker.isKorean(name) { near.append((name, d)) }
+            }
+            near.sort { $0.1 < $1.1 }
+            log?("가까운 곳: " + (near.prefix(3).map { "\($0.0) \(Int($0.1))m" }.joined(separator: ", ").nilIfEmpty ?? "없음"))
+            for r in landmarkRadii {
+                // 400m 안에 없고 그 자리 한국어 명소·건물 이름(fallback)이 있으면 그걸 먼저 쓴다 (POI 요청 때와 같은 순서)
+                if r == landmarkRadii.first, !near.contains(where: { $0.1 <= r }), let fb = fallback, WalkTracker.isKorean(fb) { finish(fb, tags); return }
+                if let hit = near.first(where: { $0.1 <= r }) { finish(hit.0, tags); return }
+            }
+            finish(fallback.flatMap { WalkTracker.isKorean($0) ? $0 : nil }, tags)
         }
     }
     private static let koGeocoder = CLGeocoder()
@@ -426,4 +477,8 @@ final class PlaceTrace {
         let all = UserDefaults.standard.array(forKey: key) as? [[String]] ?? []
         return all.isEmpty ? ["(아직 기록 없음)"] : all.reversed().flatMap { $0 + [""] }
     }
+}
+
+private extension String {
+    var nilIfEmpty: String? { isEmpty ? nil : self }
 }
