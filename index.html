@@ -1746,7 +1746,8 @@ function mvSnd(ty) {
     default: for (let i = 0; i < 3; i++) hit(i * .14, 200);
   }
 }
-function sfx(name, k = 0) { if (window.__sfxLog) window.__sfxLog.push(name + ' ' + new Error().stack.split('\n')[2]?.trim());
+let sfxN = 0;
+function sfx(name, k = 0) { sfxN++; if (window.__sfxLog) window.__sfxLog.push(name + ' ' + new Error().stack.split('\n')[2]?.trim());
   if (!sfxOn) return; const a = audio(); if (!a) return;
   const t = a.currentTime + .01;
   switch (name) {
@@ -2006,7 +2007,8 @@ const vinylSvg = c => `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" ari
 document.addEventListener('click', e => {
   const b = e.target.closest('button,.eslot,.bslot,[role="button"],[role="tab"]'); if (!b || b.disabled) return;
   if (b.id === 'hatchOk') return;
-  sfx(b.closest('.menu,.cmd,.runtabs,.tabbar,nav') ? 'open' : 'tap');
+  // v5.85 경완: 버튼 자체가 소리를 내면 기본 '톡' 소리는 내지 않는다 (두 번 나던 소리)
+  const n = b.closest('.menu,.cmd,.runtabs,.tabbar,nav') ? 'open' : 'tap', c0 = sfxN; setTimeout(() => { if (sfxN === c0) sfx(n); }, 0);
 }, true);
 /*LAYOUT-START*/
 // v3.57 경완: 필드 배치는 전부 여기 (맵 편집 화면에서 만든 값을 붙여 넣는다). 좌표는 필드 css px, 소품은 아래 가운데 기준

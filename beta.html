@@ -344,7 +344,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .runtabs.shoptabs{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:10px}
 .itm .vpic img{width:48px;height:48px;margin:4px;image-rendering:pixelated}.itm .icnt{position:absolute;top:3px;right:4px;font-style:normal;font-size:11px;background:var(--frame);color:var(--win);padding:0 5px;border-radius:8px}
 .sb-pic{width:40px;height:40px;image-rendering:pixelated;flex:none}.shop-bar .sb-name span{white-space:normal}
-#itemPop{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35)}#itemPop[hidden]{display:none}.ipwin{width:min(92vw,400px)}.iprow{display:flex;align-items:center;gap:10px;padding:8px 4px;border-top:2px dashed var(--inner)}.iprow img{width:40px;height:40px;image-rendering:pixelated}.iprow div{flex:1;min-width:0}.iprow b{display:block}.iprow span{font-size:12px;color:var(--dim)}.bag-h{margin:10px 2px 2px;font-size:13px;color:var(--dim)}.bag-n{font-style:normal;font-size:13px;color:var(--dim)}.bag-none{text-align:center;margin:18px 0 10px;line-height:1.6}.bag-shop{display:block;margin:0 auto 6px}
+#itemPop{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35)}#itemPop[hidden]{display:none}.ipwin{width:min(92vw,400px)}.iprow{display:flex;align-items:center;gap:10px;padding:8px 4px;border-top:2px dashed var(--inner)}.iprow img{width:40px;height:40px;image-rendering:pixelated}.iprow div{flex:1;min-width:0}.iprow b{display:block}.iprow span{font-size:12px;color:var(--dim)}#mg .mg-card.open:active{transform:none;box-shadow:3px 3px 0 rgba(0,0,0,.15)}#mg .mg-abn{display:flex;align-items:center;gap:5px}#mg .mg-abn .tyi{width:16px!important;height:16px!important;flex:none}#mg .mg-abn .rk{flex:none;zoom:.8}.bagwin .bag-body{flex:1;min-height:0;overflow-y:auto}.bag-ask{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;width:min(84vw,300px)}.bag-ask img{width:56px;height:56px;image-rendering:pixelated}.bag-ask p{margin:4px 0 0;font-size:16px}.bag-ask span{font-size:12px;color:var(--dim)}.bag-yn{display:flex;gap:8px;margin-top:8px}.bag-yn .lk-btn{min-width:90px}.bag-h{margin:10px 2px 6px;font-size:13px;color:var(--dim)}.bag-n{font-style:normal;font-size:13px;color:var(--dim)}.bag-none{text-align:center;margin:18px 0 10px;line-height:1.6}.bag-shop{display:block;margin:0 auto 6px}
 .fxbar{display:flex;gap:6px}.fxbar:empty{display:none}.fxc{display:flex;align-items:center;gap:2px;font-size:12px;color:#fff;text-shadow:0 1px 0 #000,1px 0 0 #000,-1px 0 0 #000,0 -1px 0 #000}.fxc img{width:24px;height:24px;image-rendering:pixelated}
 .egg.shx::after{content:'✦';position:absolute;right:-2px;top:2px;color:#ffd84a;font-size:16px;text-shadow:0 0 4px #fff,0 0 2px #a86a00;animation:shxT 1.6s steps(4) infinite}@keyframes shxT{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
 .pp-evo .evobtn{flex:1;width:auto}.pp-evo .itembtn{flex:none;width:auto;height:40px;margin:0;padding:0 12px;font-size:14px;white-space:nowrap;writing-mode:horizontal-tb}.shoptabs .runtab{font-size:15px;padding:10px 0;white-space:nowrap;min-width:0;overflow:hidden}
@@ -1475,6 +1475,13 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
     <div class="runtabs shoptabs" id="shopTabs" role="tablist"><button class="runtab" role="tab" data-st="bgm">음악</button><button class="runtab" role="tab" data-st="tool">도구</button><button class="runtab" role="tab" data-st="item">아이템</button><button class="runtab" role="tab" data-st="fashion">패션</button></div>
   </div>
 </div>
+<div class="sheet" id="ibag" hidden>
+  <div class="win shopwin bagwin" role="dialog" aria-label="가방">
+    <div class="sheet-head"><h3>가방</h3><button class="opt" id="ibagX">닫기</button></div>
+    <div class="bag-body" id="ibagBody"></div>
+    <div class="shop-bar" id="ibagBar" hidden></div><p class="shop-msg" id="ibagMsg"></p>
+  </div>
+</div>
 <div class="sheet" id="mg" hidden>
   <div class="win mgwin" role="dialog" aria-label="미니게임">
     <section data-mv="sel">
@@ -1790,7 +1797,8 @@ function mvSnd(ty) {
     default: for (let i = 0; i < 3; i++) hit(i * .14, 200);
   }
 }
-function sfx(name, k = 0) { if (window.__sfxLog) window.__sfxLog.push(name + ' ' + new Error().stack.split('\n')[2]?.trim());
+let sfxN = 0;
+function sfx(name, k = 0) { sfxN++; if (window.__sfxLog) window.__sfxLog.push(name + ' ' + new Error().stack.split('\n')[2]?.trim());
   if (!sfxOn) return; const a = audio(); if (!a) return;
   const t = a.currentTime + .01;
   switch (name) {
@@ -2050,7 +2058,8 @@ const vinylSvg = c => `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" ari
 document.addEventListener('click', e => {
   const b = e.target.closest('button,.eslot,.bslot,[role="button"],[role="tab"]'); if (!b || b.disabled) return;
   if (b.id === 'hatchOk') return;
-  sfx(b.closest('.menu,.cmd,.runtabs,.tabbar,nav') ? 'open' : 'tap');
+  // v5.85 경완: 버튼 자체가 소리를 내면 기본 '톡' 소리는 내지 않는다 (두 번 나던 소리)
+  const n = b.closest('.menu,.cmd,.runtabs,.tabbar,nav') ? 'open' : 'tap', c0 = sfxN; setTimeout(() => { if (sfxN === c0) sfx(n); }, 0);
 }, true);
 /*LAYOUT-START*/
 // v3.57 경완: 필드 배치는 전부 여기 (맵 편집 화면에서 만든 값을 붙여 넣는다). 좌표는 필드 css px, 소품은 아래 가운데 기준
@@ -5602,7 +5611,7 @@ grid.addEventListener('load', e => { if (e.target.tagName === 'IMG') dexImgFit(e
 let dexMode = 'field';
 function openDex(mode = 'field') { dexMode = mode; dexSortReset(); sheet.classList.toggle('pick-buddy', mode === 'buddy'); $('#dexTitle').textContent = mode === 'buddy' ? '짝꿍 고르기' : '포켓몬 도감'; picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); sheet.hidden = false; $('#dexOwn').textContent = `${S.unlocked.size}/${Object.keys(SPECIES).length}`; refreshDexBadges(); filterDex(); if (!narrow.matches) $('#dexQ').focus(); }
 // the menu works like a tab bar: one window at a time, tapping the open one closes it
-function hideSheets() { sheet.hidden = true; $('#mgr').hidden = true; $('#run').hidden = true; $('#set').hidden = true; $('#shop').hidden = true; }
+function hideSheets() { sheet.hidden = true; $('#mgr').hidden = true; $('#run').hidden = true; $('#set').hidden = true; $('#shop').hidden = true; $('#ibag').hidden = true; }
 function tabTo(el, open) { const was = !el.hidden; closeToggles(); hideSheets(); if (!was) open(); }
 $('#dexTabs').onclick = e => { const b = e.target.closest('[data-t="box"]'); if (!b) return; sfx('tap'); lastTab.poke = 'box'; hideSheets(); openMgr(); setMgrTab('box'); };
 // 하단 메뉴(포켓몬·알·도감·상점·프로필): 모양은 기본·활성 두 가지뿐. 닿는 순간 바로 창이 열리고(활성 모양), 뒤따르는 click 은 삼킨다 (키보드 click 은 그대로)
@@ -5652,7 +5661,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
 const IS_BETA = /beta\.html$/.test(location.pathname);   // v5.74: 새 기능 시험판(beta.html)인지
-const APP_VER = '5.84';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.85';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5781,21 +5790,30 @@ setInterval(renderFx, 15e3);
 // 특수 진화 도구: 종의 진화 조건 글('불꽃의돌을 써야', '통신교환을 해야')에서 도구를 찾는다
 const evoItem = c => { const ev = SPECIES[c]?.ev || ''; if (ev === '통신교환을 해야') return 'link'; const m = ev.match(/^(.+?)[을를] 써야$/); return m && ITEM_BY_N[m[1]] || null; };
 const itemEvos = P => (CHILDREN[P.sp] || []).filter(c => { const d = SPECIES[c]; return evoItem(c) && !(d.eqx && (d.eqx === 1 ? 'f' : 'm') !== P.sex); }).map(c => ({ c, it: evoItem(c) }));
-// v5.84 경완: 필드의 가방 아이콘 — 가진 도구·아이템을 보고, 아이템은 여기서 바로 쓴다
-function bagPop() {
-  const I = itemsOf(), el = $('#itemPop'), L = ITEMS.filter(o => I[o.id] > 0);
-  const row = o => { const left = o.k === 'item' ? fxLeft(o.id) : 0;
-    return `<div class="iprow"><img src="${ITEM_ART[o.a]}" alt=""><div><b>${o.n} <i class="bag-n">×${I[o.id]}</i></b><span>${o.k === 'item' ? itemDesc(o) + (left ? ` · 남은 시간 ${Math.ceil(left / 60e3)}분` : '') : '포켓몬 정보 창의 진화 버튼에서 써요'}</span></div>${o.k === 'item' ? `<button class="lk-btn main" data-bag="${o.id}">${left ? '더 쓰기' : '쓰기'}</button>` : ''}</div>`; };
-  const sec = (k, t) => { const R = L.filter(o => o.k === k); return R.length ? `<h4 class="bag-h">${t}</h4>` + R.map(row).join('') : ''; };
-  el.innerHTML = `<div class="win ipwin" role="dialog" aria-label="도구 가방"><div class="sheet-head"><h3>도구 가방</h3><button class="opt" data-x>닫기</button></div>`
-    + (L.length ? sec('item', '아이템') + sec('tool', '진화 도구') : `<p class="bag-none">아직 가진 도구가 없어요.<br>상점에서 살 수 있어요.</p><button class="lk-btn main bag-shop" data-shop>상점 가기</button>`) + `</div>`;
-  el.hidden = false;
-  el.onclick = e => { if (e.target === el || e.target.closest('[data-x]')) { el.hidden = true; sfx('tap'); return; }
-    if (e.target.closest('[data-shop]')) { el.hidden = true; $('#openShop').click(); return; }
-    const u = e.target.closest('[data-bag]'); if (!u) return; const o = ITEM[u.dataset.bag]; if (!(I[o.id] > 0)) return;
-    I[o.id]--; if (!I[o.id]) delete I[o.id]; useFx(o.id); sfx('pickup'); log(`${J({ name: o.n }, '을/를')} 썼다.`, [], true); save(); bagPop(); };
+// v5.85 경완: 필드의 가방 아이콘 → 상점처럼 따로 뜨는 가방 창. 아이템은 쓰기 전에 창 위 창으로 한 번 더 묻는다
+const ibagEl = $('#ibag'); let ibagSel = null;
+function renderIBag() {
+  const I = itemsOf(), L = ITEMS.filter(o => I[o.id] > 0); if (ibagSel && !(I[ibagSel] > 0)) ibagSel = null;
+  const sec = (k, t) => { const R = L.filter(o => o.k === k); return R.length ? `<h4 class="bag-h">${t}</h4><div class="shop-inv">` + R.map(o => `<button class="vin itm" data-it="${o.id}" aria-current="${ibagSel === o.id}"><span class="vpic"><img src="${ITEM_ART[o.a]}" alt=""></span><i class="icnt">${I[o.id]}</i><span class="vname">${o.n}</span></button>`).join('') + '</div>' : ''; };
+  $('#ibagBody').innerHTML = L.length ? sec('item', '아이템') + sec('tool', '진화 도구') : `<p class="bag-none">아직 가진 도구가 없어요.<br>상점에서 살 수 있어요.</p><button class="lk-btn main bag-shop" data-shop>상점 가기</button>`;
+  const o = ITEM[ibagSel], bar = $('#ibagBar'); bar.hidden = !o; if (!o) return; const left = o.k === 'item' ? fxLeft(o.id) : 0;
+  bar.innerHTML = `<img class="sb-pic" src="${ITEM_ART[o.a]}" alt=""><div class="sb-name"><b>${o.n} ×${I[o.id]}</b><span>${o.k === 'item' ? itemDesc(o) + (left ? ` · 남은 시간 ${Math.ceil(left / 60e3)}분` : '') : (o.d || '진화 도구예요') + ' 포켓몬 정보 창의 진화 버튼에서 써요.'}</span></div>` + (o.k === 'item' ? `<button class="lk-btn main" data-use>${left ? '더 쓰기' : '쓰기'}</button>` : '');
 }
-$('#btnBag').onclick = () => { sfx('open'); bagPop(); };
+function ibagAsk(o) {
+  const el = $('#itemPop'), left = fxLeft(o.id);
+  el.innerHTML = `<div class="win ipwin bag-ask" role="dialog" aria-label="${o.n} 쓰기"><img src="${ITEM_ART[o.a]}" alt=""><p>${J({ name: o.n }, '을/를')} 쓸까요?</p><span>${left ? `지금 효과에 ${fxMin(o.id)}분이 더해져요` : `${fxMin(o.id)}분 동안 효과가 있어요`}</span><div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn main" data-yes>쓰기</button></div></div>`;
+  el.hidden = false;
+  el.onclick = e => { if (e.target === el || e.target.closest('[data-no]')) { el.hidden = true; return; } if (!e.target.closest('[data-yes]')) return;
+    const I = itemsOf(); el.hidden = true; if (!(I[o.id] > 0)) return; I[o.id]--; if (!I[o.id]) delete I[o.id]; useFx(o.id); sfx('pickup');
+    $('#ibagMsg').innerHTML = `${J({ name: o.n }, '을/를')} 썼다! ${Math.ceil(fxLeft(o.id) / 60e3)}분 동안 효과가 있어요.`; log(`${J({ name: o.n }, '을/를')} 썼다.`, [], true); save(); renderIBag(); };
+}
+$('#btnBag').onclick = () => tabTo(ibagEl, () => { ibagEl.hidden = false; ibagSel = null; $('#ibagMsg').textContent = ''; renderIBag(); });
+$('#ibagX').onclick = () => { ibagEl.hidden = true; };
+ibagEl.addEventListener('click', e => {
+  if (e.target.closest('[data-shop]')) { ibagEl.hidden = true; $('#openShop').click(); return; }
+  const v = e.target.closest('[data-it]'); if (v) { ibagSel = ibagSel === v.dataset.it ? null : v.dataset.it; $('#ibagMsg').textContent = ''; renderIBag(); return; }
+  if (e.target.closest('#ibagBar [data-use]') && ITEM[ibagSel]) ibagAsk(ITEM[ibagSel]);
+});
 function itemPop(P) {
   const L = itemEvos(P); if (!L.length) return; const I = itemsOf(), el = $('#itemPop');
   el.innerHTML = `<div class="win ipwin" role="dialog" aria-label="도구 쓰기"><div class="sheet-head"><h3>도구 쓰기</h3><button class="opt" data-x>닫기</button></div>`
@@ -5896,8 +5914,8 @@ function mgView(v) {
       const R = mgRec(), ab = mgAb(m.form), ps = MG_PASS[G.id][rk], nx = MG_GIFT.find(o => !R.ms.includes(o.m)), open = mgOpenG === G.id;
       return `<div class="mg-card${open ? ' open' : ''}" data-gc="${G.id}"><canvas class="mg-th" data-th="${G.id}" data-gt="${G.id}"></canvas><div class="mg-ch" data-gt="${G.id}"><div><b>${G.n}</b><span>${R.best ? `최고 기록 ${R.best.toLocaleString()}점` : '아직 기록이 없어요'}</span></div><i class="mg-car">${open ? '▲' : '▼'}</i></div>
         <div class="mg-det"><p class="mg-how">${G.how}</p>
-          <div class="mg-ab"><em class="act">액티브</em><div><b>${ab.n}</b> <small>${TYPE_KO[ty[0]]} 타입</small><span>${ab.d}${ab.c ? ` · 쓰고 나면 ${+(ab.c * (ps.cdm || 1)).toFixed(1)}초 뒤 다시` : ''}</span></div></div>
-          <div class="mg-ab"><em class="pas">패시브</em><div><b>${ps.n}</b> <small>${rk} 랭크</small><span>${ps.d}</span></div></div>
+          <div class="mg-ab"><em class="act">액티브</em><div><b>${ab.n}</b> <small class="mg-abn">${tyIcon(ty[0])}${TYPE_KO[ty[0]]} 타입</small><span>${ab.d}${ab.c ? ` · 쓰고 나면 ${+(ab.c * (ps.cdm || 1)).toFixed(1)}초 뒤 다시` : ''}</span></div></div>
+          <div class="mg-ab"><em class="pas">패시브</em><div><b>${ps.n}</b> <small class="mg-abn"><span class="rk ${rk}">${rk}</span>${rk} 랭크</small><span>${ps.d}</span></div></div>
           <details class="mg-rks"><summary>랭크별 패시브 모두 보기</summary>${RANKS.map(([r]) => `<div class="mg-rk${r === rk ? ' on' : ''}"><span class="rk ${r}">${r}</span><b>${MG_PASS[G.id][r].n}</b><span>${MG_PASS[G.id][r].d}</span></div>`).join('')}</details>
           <div class="mg-gl"><b>기록별 선물</b>${MG_GIFT.map(o => { const it = o.it === 'stone' ? MG_STONES[0] : o.it, got = R.ms.includes(o.m); return `<div class="mg-gi${got ? ' got' : o === nx ? ' nx' : ''}"><span>${o.m.toLocaleString()}점</span><img src="${ITEM_ART[ITEM[it].a]}" alt=""><em>${o.it === 'stone' ? '진화의 돌 (무작위)' : ITEM[it].n}${o.n > 1 ? ' ×' + o.n : ''}</em><i>${got ? '받음' : o === nx ? '다음' : ''}</i></div>`; }).join('')}<small>300점이 넘으면 가끔 향로나 진화의 돌을 덤으로 받아요</small></div>
           <button class="lk-btn main mg-go" data-g="${G.id}">시작하기</button></div></div>`; }).join('');
