@@ -212,10 +212,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
             var dedup: [String] = []
             for x in parts where !dedup.contains(x) { dedup.append(x) }
             let area = dedup.joined(separator: " ")
-            // 물가·바다 위인지 (호수·강 이름이 있으면 물가)
-            var tags: Set<String> = []
-            if p?.inlandWater != nil { tags.insert("water") }
-            if p?.ocean != nil { tags.insert("sea") }
+            // 2026-10-20 경완: 알 테마는 게임에 보이는 장소 하나로만 정한다 (예전엔 물가·바다·주변 250m 장소 종류를 다 붙였다)
             // 근처 건물·랜드마크를 하나 붙이고, 주변 장소 종류로 알의 테마를 정한다 (예: "석촌호수", 주유소 → gas)
             // 지도에 장소가 없으면: 그 자리 명소(areasOfInterest) → 주소가 아닌 건물 이름 순
             var fb = p?.areasOfInterest?.first(where: WalkTracker.isKorean)
@@ -224,7 +221,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
             WalkTracker.nearbyLandmark(loc, fallback: fb, log: log) { mark, near in
                 let place = [area, mark ?? ""].filter { !$0.isEmpty }.joined(separator: " ")
                 log?("보낸 이름: \(place.isEmpty ? "(없음)" : place)")
-                done(place.isEmpty ? nil : place, Array(tags.union(near)).sorted())
+                done(place.isEmpty ? nil : place, Array(near).sorted())
             }
         }
     }
@@ -272,7 +269,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
         }
         kakaoLandmark(loc, key: key, fallback: fallback, log: log) { name, tags in
             if let name { done(name, tags); return }
-            searchLandmark(loc, fallback: fallback, step: 0, tags: tags, log: log, done: done)
+            searchLandmark(loc, fallback: fallback, step: 0, tags: [], log: log, done: done)
         }
     }
 
@@ -284,9 +281,8 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
         let k = s.trimmingCharacters(in: .whitespacesAndNewlines)
         return k.isEmpty ? nil : k
     }()
-    // 찾을 장소 종류 (카카오 카테고리 코드). 명소 쪽(landmark)은 같은 반경 안이면 식당·카페보다 먼저 고른다
+    // 찾을 장소 종류 (카카오 카테고리 코드)
     private static let kakaoCats = ["AT4", "CT1", "SW8", "PO3", "SC4", "CE7", "FD6", "HP8", "BK9", "OL7", "MT1", "AD5", "PK6", "CS2"]
-    private static let kakaoLandmarkCats: Set<String> = ["AT4", "CT1", "SW8", "PO3", "SC4", "공원"]
     private static let kakaoTheme: [String: String] = [
         "SW8": "station", "OL7": "gas", "SC4": "school", "HP8": "hospital", "PM9": "hospital",
         "CE7": "bakery", "FD6": "restaurant", "BK9": "bank", "AD5": "hotel", "MT1": "city", "CS2": "city", "PK6": "city", "공원": "park"
@@ -328,6 +324,8 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
             kakaoGet(path, q + common, key: key) { docs, e in
                 let got = docs.compactMap { d -> KakaoPlace? in
                     guard let n = d["place_name"] as? String, !n.isEmpty, let ds = d["distance"] as? String, let dist = Double(ds) else { return nil }
+                    // '공원' 낱말로 찾았어도 공원이 아니면(예: 공원부동산) 그 곳의 카테고리로
+                    if cat == "공원", !((d["category_name"] as? String) ?? "").contains("공원") { return KakaoPlace(name: n, cat: (d["category_group_code"] as? String) ?? "", d: dist) }
                     return KakaoPlace(name: n, cat: cat, d: dist)
                 }
                 lock.lock(); places += got; counts.append("\(cat) \(got.count)"); if let e { errs.append("\(cat): \(e)") }; lock.unlock(); group.leave()
@@ -337,21 +335,14 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
             log?("카카오: " + counts.sorted().joined(separator: ", "))
             if let e = errs.first { log?("카카오 오류: \(e)" + (errs.count > 1 ? " 외 \(errs.count - 1)건" : "")) }
             log?("카카오 그 자리 건물: \(building ?? "없음")")
-            var tags: Set<String> = []
-            for p in places where p.d <= 250 { if let t = kakaoTheme[p.cat] { tags.insert(t) } }
             let sorted = places.sorted { $0.d < $1.d }
             log?("카카오 가까운 곳: " + (sorted.prefix(3).map { "\($0.name) \(Int($0.d))m" }.joined(separator: ", ").nilIfEmpty ?? "없음"))
-            // 400m 안 명소 → 그 자리 건물 → 400m 안 아무 곳 → 800m·1.5km 안 명소 → 아무 곳 → (애플 지도로)
-            let pick: String? = {
-                for (i, rad) in landmarkRadii.enumerated() {
-                    if let p = sorted.first(where: { $0.d <= rad && kakaoLandmarkCats.contains($0.cat) }) { return p.name }
-                    if i == 0, let b = building { return b }
-                    if i == 0, let fb = fallback, WalkTracker.isKorean(fb) { return fb }
-                    if let p = sorted.first(where: { $0.d <= rad }) { return p.name }
-                }
-                return nil
-            }()
-            finish(pick, tags)
+            // 2026-10-20 경완: 명소를 먼저 고르지 않는다. 그 자리 건물 → 그 자리 명소 이름(애플) → 1.5km 안 가장 가까운 곳 → (애플 지도로)
+            // 알 테마는 고른 장소 하나의 종류로만 (건물·명소 이름이면 게임이 이름 낱말로 정한다)
+            if let b = building { finish(b, []); return }
+            if let fb = fallback, WalkTracker.isKorean(fb) { finish(fb, []); return }
+            if let p = sorted.first { finish(p.name, kakaoTheme[p.cat].map { [$0] } ?? []); return }
+            finish(nil, [])
         }
     }
     private static func searchLandmark(_ loc: CLLocation, fallback: String?, step: Int, tags: Set<String>, log: ((String) -> Void)?, done: @escaping (String?, Set<String>) -> Void) {
@@ -363,7 +354,6 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
         let req = MKLocalPointsOfInterestRequest(center: loc.coordinate, radius: landmarkRadii[step])
         req.pointOfInterestFilter = .includingAll
         MKLocalSearch(request: req).start { res, err in
-            var tags = tags
             let items = res?.mapItems ?? []
             if let log {
                 let ko = items.compactMap(\.name).filter(WalkTracker.isKorean)
@@ -376,19 +366,18 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
             if step == 0, items.isEmpty, err != nil {
                 keywordLandmark(loc, fallback: fallback, tags: tags, log: log, done: done); return
             }
-            var bestKo: (String, CLLocationDistance)?
+            var bestKo: (String, CLLocationDistance, String?)?
             var bestAny: (MKMapItem, CLLocationDistance)?
             for item in items {
                 guard let c = item.placemark.location else { continue }
                 let d = c.distance(from: loc)
-                if step == 0, let cat = item.pointOfInterestCategory, d <= 250, let t = WalkTracker.themeOf[cat] { tags.insert(t) }
                 guard let name = item.name, !name.isEmpty else { continue }
-                if WalkTracker.isKorean(name) { if d < (bestKo?.1 ?? .infinity) { bestKo = (name, d) } }
+                if WalkTracker.isKorean(name) { if d < (bestKo?.1 ?? .infinity) { bestKo = (name, d, item.pointOfInterestCategory.flatMap { WalkTracker.themeOf[$0] }) } }
                 else if d < (bestAny?.1 ?? .infinity) { bestAny = (item, d) }
             }
             // 첫 반경에 한국어 이름이 없고 그 자리 한국어 명소·건물 이름(fallback)이 있으면 그걸 쓴다
             if step == 0, bestKo == nil, let fb = fallback, WalkTracker.isKorean(fb) { finish(fb, tags); return }
-            if let ko = bestKo { finish(ko.0, tags); return }
+            if let ko = bestKo { finish(ko.0, ko.2.map { [$0] } ?? []); return }
             // 이름이 영어뿐이면 그 자리를 한국어로 다시 찾아 보고, 없으면 반경을 넓힌다
             guard let any = bestAny, let at = any.0.placemark.location else {
                 searchLandmark(loc, fallback: fallback, step: step + 1, tags: tags, log: log, done: done); return
@@ -429,20 +418,18 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
         group.notify(queue: .main) {
             log?("낱말로 다시 찾기 (\(Int(span / 2))m 안):")
             lines.forEach { log?($0) }
-            var tags = tags
-            var near: [(String, CLLocationDistance)] = []
+            var near: [(String, CLLocationDistance, String?)] = []
             for item in found {
                 guard let c = item.placemark.location else { continue }
                 let d = c.distance(from: loc)
-                if let cat = item.pointOfInterestCategory, d <= 250, let t = WalkTracker.themeOf[cat] { tags.insert(t) }
-                if let name = item.name, WalkTracker.isKorean(name) { near.append((name, d)) }
+                if let name = item.name, WalkTracker.isKorean(name) { near.append((name, d, item.pointOfInterestCategory.flatMap { WalkTracker.themeOf[$0] })) }
             }
             near.sort { $0.1 < $1.1 }
             log?("가까운 곳: " + (near.prefix(3).map { "\($0.0) \(Int($0.1))m" }.joined(separator: ", ").nilIfEmpty ?? "없음"))
             for r in landmarkRadii {
                 // 400m 안에 없고 그 자리 한국어 명소·건물 이름(fallback)이 있으면 그걸 먼저 쓴다 (POI 요청 때와 같은 순서)
-                if r == landmarkRadii.first, !near.contains(where: { $0.1 <= r }), let fb = fallback, WalkTracker.isKorean(fb) { finish(fb, tags); return }
-                if let hit = near.first(where: { $0.1 <= r }) { finish(hit.0, tags); return }
+                if r == landmarkRadii.first, !near.contains(where: { $0.1 <= r }), let fb = fallback, WalkTracker.isKorean(fb) { finish(fb, []); return }
+                if let hit = near.first(where: { $0.1 <= r }) { finish(hit.0, hit.2.map { [$0] } ?? []); return }
             }
             finish(fallback.flatMap { WalkTracker.isKorean($0) ? $0 : nil }, tags)
         }
