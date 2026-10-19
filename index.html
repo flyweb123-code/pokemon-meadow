@@ -5580,7 +5580,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.66';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.67';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7390,13 +7390,20 @@ function cleanPlaces() {   // 예전에 저장된 알·포켓몬·기록의 장�
   (S.runs || []).forEach(r => (r.eggs || []).forEach(fix));
   (S.places || []).forEach(p => { p.n = cleanPlace(p.n); }); if (S.lastPlace) S.lastPlace.n = cleanPlace(S.lastPlace.n);
 }
+// 카카오 장소 종류 'cat:여행>관광·명소>테마파크' → 게임 테마 키들. 가장 세부 단계부터 보고, 낱말이 맞는 첫 단계의 테마만 쓴다
+function catThemes(c) {
+  if (!c) return [];
+  const lv = c.slice(4).split('>').map(x => x.trim()).filter(Boolean);
+  for (let i = lv.length - 1; i >= 0; i--) { const ws = lv[i].split(/[·,\s]+/).filter(Boolean), ks = Object.keys(THEMES).filter(k => ws.some(w => THEMES[k].kw.test(w))); if (ks.length) return ks; }
+  return [];
+}
 window.pokeRunWalk = (km, place, tags, la, lo) => {
   place = cleanPlace(place); km = +km; if (!(km > 0 && km <= 200)) return false;
   const ll = isFinite(la) && isFinite(lo) && la !== null && lo !== null && (+la || +lo) ? [+(+la).toFixed(5), +(+lo).toFixed(5)] : null;   // v5.18: 아이폰 앱이 걸은 곳 좌표도 보낸다 (출현 지역)
   S.walkSync = true; S.walkKm += km; today().walk += km;
   // 걷는 동안 이미 쌓은 만큼은 빼고 나머지만 알·짝꿍에 (앱이 꺼져 있던 동안 걸은 거리 등)
   const rest = km - S.fedPend; S.fedPend = Math.max(0, S.fedPend - km); if (rest > .005) { const n = Date.now(); feedKm(rest); noteFed(n, n, rest); }
-  tags = String(tags || '').split(',').filter(k => THEMES[k]);
+  { const raw = String(tags || '').split(','), ct = catThemes(raw.find(k => k.startsWith('cat:'))); tags = ct.length ? ct : raw.filter(k => THEMES[k]); }   // v5.67 경완: 카카오 세부 종류가 게임 테마 낱말에 맞으면 그걸로
   if (place) { S.lastPlace = { n: String(place), tags, t: Date.now() }; if (ll) S.lastPlace.ll = ll; notePlace(place, tags, Date.now(), ll); }
   gotLog(collectEggs(km, place || '', tags, null, ll), '', place || '');   // v4.14 경완: 걸으며 주운 알은 '걸어서 ~km' 없이
   save(); renderRun(); return true;
