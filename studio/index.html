@@ -510,7 +510,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.18';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.19';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -3036,7 +3036,7 @@ async function renderGeo() {
   if (!geoInit.z) { geoInit.z = 1; geoM.on('zoomend', geoDraw); }
 }
 // ---------- v3.14 경완: 상점 — 물건 가격, 향로·빛나는 부적 효과 (데이터 shop) ----------
-const SHOP0 = { price: {}, inc: { min: 30, mul: [1, 1, 2.5, 4, 4] }, charm: { min: 60, n: 40 } };
+const SHOP0 = { price: {}, inc: { min: 30, mul: [1, 1, 2.5, 8, 10] }, charm: { min: 60, n: 20 } };
 const shopEff = () => { const o = effP(D, 'shop') || {}; return { price: { ...(o.price || {}) }, inc: { ...SHOP0.inc, ...(o.inc || {}) }, charm: { ...SHOP0.charm, ...(o.charm || {}) } }; };
 let shopKmh = 5;   // 걷는 빠르기 가정 (화면 계산용, 저장 안 함)
 function shopPut(fn) { const o = JSON.parse(JSON.stringify(shopEff())); fn(o); if (!Object.keys(o.price).length) delete o.price; if (same(o.inc, SHOP0.inc)) delete o.inc; if (same(o.charm, SHOP0.charm)) delete o.charm;
