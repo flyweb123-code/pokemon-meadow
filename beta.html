@@ -341,13 +341,13 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .shopwin{max-width:560px;height:min(90vh,760px);display:flex;flex-direction:column}
 .shopwin .stab:not([hidden]){flex:1;min-height:0;display:flex;flex-direction:column}
 .shopwin .soon{margin:auto;color:var(--dim);font-size:16px;text-align:center}
-.runtabs.shoptabs{grid-template-columns:repeat(5,minmax(0,1fr));margin-top:10px}
+.runtabs.shoptabs{grid-template-columns:minmax(0,1.3fr) minmax(0,.8fr) minmax(0,1fr) minmax(0,.65fr) minmax(0,1.25fr);margin-top:10px}
 .itm .vpic img{width:48px;height:48px;margin:4px;image-rendering:pixelated}.itm .icnt{position:absolute;top:3px;right:4px;font-style:normal;font-size:11px;background:var(--frame);color:var(--win);padding:0 5px;border-radius:8px}
 .sb-pic{width:40px;height:40px;image-rendering:pixelated;flex:none}.shop-bar .sb-name span{white-space:normal}
 #itemPop{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35)}#itemPop[hidden]{display:none}.ipwin{width:min(92vw,400px)}.iprow{display:flex;align-items:center;gap:10px;padding:8px 4px;border-top:2px dashed var(--inner)}.iprow img{width:40px;height:40px;image-rendering:pixelated}.iprow div{flex:1;min-width:0}.iprow b{display:block}.iprow span{font-size:12px;color:var(--dim)}
 .fxbar{display:flex;gap:6px}.fxbar:empty{display:none}.fxc{display:flex;align-items:center;gap:2px;font-size:12px;color:#fff;text-shadow:0 1px 0 #000,1px 0 0 #000,-1px 0 0 #000,0 -1px 0 #000}.fxc img{width:24px;height:24px;image-rendering:pixelated}
 .egg.shx::after{content:'✦';position:absolute;right:-2px;top:2px;color:#ffd84a;font-size:16px;text-shadow:0 0 4px #fff,0 0 2px #a86a00;animation:shxT 1.6s steps(4) infinite}@keyframes shxT{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
-.pp-evo .evobtn{flex:1;width:auto}.pp-evo .itembtn{flex:none;width:auto;height:40px;margin:0;padding:0 12px;font-size:14px;white-space:nowrap;writing-mode:horizontal-tb}.shoptabs .runtab{font-size:14px;padding:10px 2px;word-break:keep-all}
+.pp-evo .evobtn{flex:1;width:auto}.pp-evo .itembtn{flex:none;width:auto;height:40px;margin:0;padding:0 12px;font-size:14px;white-space:nowrap;writing-mode:horizontal-tb}.shoptabs .runtab{font-size:13px;padding:10px 0;white-space:nowrap;letter-spacing:-.4px;min-width:0;overflow:hidden}
 .bgm-pick{display:grid;grid-template-columns:76px minmax(0,1fr);align-items:center;gap:6px;margin-bottom:10px;font-size:15px}
 .bgm-pick .fsel{width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #bgmPop{z-index:5800}#bgmOpts.fopts{grid-template-columns:1fr}#bgmOpts.fopts button{text-align:left;padding:9px 10px}
@@ -5612,7 +5612,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
 const IS_BETA = /beta\.html$/.test(location.pathname);   // v5.74: 새 기능 시험판(beta.html)인지
-const APP_VER = '5.75';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.76';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
