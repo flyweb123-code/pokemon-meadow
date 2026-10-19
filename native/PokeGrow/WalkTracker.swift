@@ -219,7 +219,10 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
             if fb == nil, let n = p?.name, WalkTracker.isKorean(n), !WalkTracker.isAddress(n, p) { fb = n }
             log?("동네: \(area.isEmpty ? "(없음)" : area)" + (fb.map { " · 그 자리 이름: \($0)" } ?? ""))
             WalkTracker.nearbyLandmark(loc, fallback: fb, log: log) { mark, near in
-                let place = [area, mark ?? ""].filter { !$0.isEmpty }.joined(separator: " ")
+                // 2026-10-20 경완: 알 장소엔 시·동이 꼭 나오게 — 애플이 동네 이름을 못 주면 카카오 주소의 시·구·동으로
+                let ar = area.isEmpty ? (WalkTracker.kakaoArea ?? "") : area
+                if area.isEmpty, !ar.isEmpty { log?("동네(카카오): \(ar)") }
+                let place = [ar, mark ?? ""].filter { !$0.isEmpty }.joined(separator: " ")
                 log?("보낸 이름: \(place.isEmpty ? "(없음)" : place)")
                 done(place.isEmpty ? nil : place, Array(near).sorted())
             }
@@ -287,6 +290,8 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
         "SW8": "station", "OL7": "gas", "SC4": "school", "HP8": "hospital", "PM9": "hospital",
         "CE7": "bakery", "FD6": "restaurant", "BK9": "bank", "AD5": "hotel", "MT1": "city", "CS2": "city", "PK6": "city", "공원": "park"
     ]
+    // 마지막 카카오 찾기에서 받은 그 자리 시·구·동 (예: "서울 송파구 석촌동")
+    private static var kakaoArea: String?
     private struct KakaoPlace { let name: String; let cat: String; let d: Double; var catName = "" }
     private static func kakaoGet(_ path: String, _ q: [URLQueryItem], key: String, done: @escaping ([[String: Any]], String?) -> Void) {
         var c = URLComponents(string: "https://dapi.kakao.com" + path)!
@@ -308,12 +313,19 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
         let x = String(loc.coordinate.longitude), y = String(loc.coordinate.latitude)
         let r = String(Int(landmarkRadii.last ?? 1500))
         let group = DispatchGroup(), lock = NSLock()
-        var places: [KakaoPlace] = [], building: String?, errs: [String] = [], counts: [String] = []
+        var places: [KakaoPlace] = [], building: String?, area: String?, errs: [String] = [], counts: [String] = []
+        kakaoArea = nil
         // 그 자리 건물 이름 (예: 롯데월드타워)
         group.enter()
         kakaoGet("/v2/local/geo/coord2address.json", [URLQueryItem(name: "x", value: x), URLQueryItem(name: "y", value: y)], key: key) { docs, e in
             let b = (docs.first?["road_address"] as? [String: Any])?["building_name"] as? String
-            lock.lock(); if let b, WalkTracker.isKorean(b) { building = b }; if let e { errs.append("건물: \(e)") }; lock.unlock(); group.leave()
+            let ad = docs.first?["address"] as? [String: Any]
+            var ws: [String] = []
+            let rs: [String?] = [(ad?["region_1depth_name"] as? String).map(WalkTracker.shortCity)] + ((ad?["region_2depth_name"] as? String) ?? "").split(separator: " ").map { Optional(String($0)) } + [ad?["region_3depth_name"] as? String]
+            for w in rs {
+                if let w, !w.isEmpty, !ws.contains(w) { ws.append(w) }
+            }
+            lock.lock(); if let b, WalkTracker.isKorean(b) { building = b }; if !ws.isEmpty { area = ws.joined(separator: " ") }; if let e { errs.append("건물: \(e)") }; lock.unlock(); group.leave()
         }
         var reqs: [(String, String, [URLQueryItem])] = []
         for cat in kakaoCats { reqs.append((cat, "/v2/local/search/category.json", [URLQueryItem(name: "category_group_code", value: cat)])) }
@@ -335,7 +347,8 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
         group.notify(queue: .main) {
             log?("카카오: " + counts.sorted().joined(separator: ", "))
             if let e = errs.first { log?("카카오 오류: \(e)" + (errs.count > 1 ? " 외 \(errs.count - 1)건" : "")) }
-            log?("카카오 그 자리 건물: \(building ?? "없음")")
+            log?("카카오 그 자리 건물: \(building ?? "없음") · 동네: \(area ?? "없음")")
+            kakaoArea = area
             let sorted = places.sorted { $0.d < $1.d }
             log?("카카오 가까운 곳: " + (sorted.prefix(3).map { "\($0.name) \(Int($0.d))m" }.joined(separator: ", ").nilIfEmpty ?? "없음"))
             // 2026-10-20 경완: 명소를 먼저 고르지 않는다. 그 자리 건물 → 그 자리 명소 이름(애플) → 1.5km 안 가장 가까운 곳 → (애플 지도로)
