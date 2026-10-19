@@ -70,7 +70,7 @@
 .win .evobtn.dis,.win .evobtn.fin{background:#e4e4ec;color:#a0a0b4;border-color:#c8c8d8;box-shadow:none;animation:none;cursor:default}
 .win .evobtn.dis:active,.win .evobtn.fin:active{box-shadow:none;padding:0 10px}#pokePop .win{touch-action:pan-y}.win .evobtn.fin{display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:#fff7e0;color:#6a4a10;border-color:#ecd39a;box-shadow:inset 0 0 0 2px #fff7e0,inset 0 0 0 4px #f0d38a;font-size:13px}.win .evobtn.fin,.win .evobtn.fin:active{padding:0 14px!important;box-shadow:none!important}.win .evobtn.dis,.win .evobtn.dis:active{padding:0 10px!important;box-shadow:none!important}.win .evobtn.fin b{margin-left:auto;font-size:17px;color:#a8660a}.win .evobtn.fin small{font-size:12px;margin-left:2px;color:#a8660a}
 .win .evobtn{display:block;flex:none;width:100%;min-width:0;margin:0;padding:0 10px;height:40px;background:#e8a020;border-color:#9a6410;color:#fff;animation:softGlow 4s ease-in-out infinite}
-.win .evobtn.dis.km{display:flex;align-items:center;padding:0 14px!important;font-size:13px}.win .evobtn.dis.km b{margin-left:auto;font-size:17px;color:#7a7a92}.win .evobtn.dis.km small{font-size:12px;margin-left:4px}
+.win .evobtn.dis.km{display:flex;align-items:center;padding:0 14px!important;font-size:13px;color:#6e6e88;background:linear-gradient(90deg,#f4d58c var(--p,0%),#e4e4ec var(--p,0%))}   /* v5.63 경완: 버튼 배경이 진화까지 걸은 만큼 차오르는 게이지 */.win .evobtn.dis.km b{margin-left:auto;font-size:17px;color:#5a5a74}.win .evobtn.dis.km small{font-size:12px;margin-left:4px}
 @media (prefers-reduced-motion: reduce){.bd-card.ready,.evobtn,.bd-evobtn,.bd-card.ready .prog.evo{animation:none}}
 
 /* 관찰 일지: 따로 뜬 상자가 아니라 상태창이 위로 늘어난 모양 (가운데 이음선 없이, 안쪽 테두리가 위아래로 이어진다) */
@@ -5580,7 +5580,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.62';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.63';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6095,7 +6095,7 @@ function setEvoBtn(btn, P) {
   const kids = CHILDREN[P.sp]; let cls = '', html = '진화하기', tip = '';
   if (!kids) { cls = 'fin'; html = `<span>같이 달린 거리</span><b>${fmtKm(P.runKm || 0)}</b><small>km</small>`; }
   else if (!evoKids(P.sp, P).length) { cls = 'spc'; html = `<span class="sp-tag">특별한 진화</span><span class="sp-why">${esc(spWhy(P))}</span>`; }   /* 달린 거리로는 진화하지 않는 포켓몬: 힌트를 바로 보여 준다 */
-  else if (!pokeReady(P)) { const ok = evoKids(P.sp, P), need = evoNeed(P), km = P.km || 0; cls = 'dis'; if (km < need) { cls = 'dis km'; html = `<span>진화하기</span><b>${fmtKm(km)}</b><small>/ ${need}km</small>`; } else tip = evoWhy(ok[0]); }   /* v5.62 경완: 남은 거리는 말풍선 말고 버튼에 바로 */
+  else if (!pokeReady(P)) { const ok = evoKids(P.sp, P), need = evoNeed(P), km = P.km || 0; cls = 'dis'; if (km < need) { cls = 'dis km'; btn.style.setProperty('--p', Math.min(100, km / need * 100).toFixed(1) + '%'); html = `<span>진화하기</span><b>${fmtKm(km)}</b><small>/ ${need}km</small>`; } else tip = evoWhy(ok[0]); }   /* v5.62 경완: 남은 거리는 말풍선 말고 버튼에 바로 */
   btn.classList.remove('fin', 'dis', 'spc', 'km'); if (cls) btn.classList.add(...cls.split(' ')); if (btn.innerHTML !== html) btn.innerHTML = html;
   if (tip) { btn.dataset.tip = tip; btn.dataset.tipc = ''; } else { delete btn.dataset.tip; delete btn.dataset.tipc; }
 }
