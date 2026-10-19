@@ -5328,7 +5328,7 @@ function serialize() {
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk, red: !!b.red })), lockT: S.lockT,
     gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], dexNew: [...(S.dexNew || [])] };
 }
-let saveFrozen = false;
+let saveFrozen = false, tutFreeze = false;
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
@@ -5571,7 +5571,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
 { let off = true; sheet.removeAttribute('hidden'); sheet.classList.add('off');
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
-const APP_VER = '5.52';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.53';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER;   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8908,6 +8908,7 @@ async function tutFlow() {
   ov.remove();
   // v5.45 경완: 튜토리얼이 끝나면 환영 창 + 100골드 (알림 창 모양을 빌려 쓴다)
   // v5.47 경완: 남은 알(가방)에 새 알 표시를 다시 달고, '알' 메뉴에도 알림 점 — 직접 부화기에 넣어 보게
+  if (tutFreeze) { tutFreeze = false; saveFrozen = false; }   // v5.53 경완: 튜토리얼을 끝까지 마쳐야 처음 저장한다
   S.bag.forEach(e => { e.isNew = true; }); bagNext = true; renderBag.sig = ''; try { renderRun(); menuDots(); } catch (e) {} save();
   // 환영 창 (축하 창 틀을 빌려 쓰고, 뒤로 폭죽이 터진다) + 100골드
   await new Promise(res => { frMaxOpen = true; const fm = $('#frMax'); fm.classList.remove('trup'); $('#frMaxT').textContent = '환영합니다!'; fm.querySelector('.win').setAttribute('aria-label', '환영합니다');
@@ -8935,10 +8936,12 @@ async function start(data) {
   const isNew = !(d && d.mons && (d.mons.length || d.unlocked));
   const introPrev = !isNew && /[?&]intro/.test(location.search);   // v5.38: ?intro 는 저장이 있어도 새 게임처럼 오프닝·튜토리얼을 미리 보기만 한다 (원래 저장은 건드리지 않게 이번 실행은 저장 안 함)
   if (introPrev) saveFrozen = true;
+  // v5.53 경완: 오프닝·튜토리얼 도중 앱을 껐다 켜면 튜토리얼이 통째로 건너뛰어지던 것 → 튜토리얼을 마칠 때까지 저장하지 않아 다시 켜면 처음부터
+  if (isNew && INTRO_ON()) { saveFrozen = true; tutFreeze = true; }
   if (!isNew && !introPrev) await restore(d); else await fresh();
   if (bgmOn && bgm.id !== S.bgm) bgmStart();
   Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp)); menuDots();
-  migrateBox(); undoAutoHatch(); syncNeed(); renderGold(); if ((isNew && INTRO_ON()) || /[?&]intro/.test(location.search)) introFlow().then(() => tutFlow()).then(() => notiSoon(300)); else notiSoon(700); sky(); fetchWx(false, 10 * 60e3); setInterval(fetchWx, 10 * 60e3); document.addEventListener('visibilitychange', () => { if (document.hidden) return;   /* v4.33 경완: 다시 켜면 시간·날씨를 바로 (서서히 바뀌는 연출 없이) */
+  migrateBox(); undoAutoHatch(); syncNeed(); renderGold(); if ((isNew && INTRO_ON()) || /[?&]intro/.test(location.search)) introFlow().then(() => tutFlow()).finally(() => { if (tutFreeze) { tutFreeze = false; saveFrozen = false; save(); } }).then(() => notiSoon(300)); else notiSoon(700); sky(); fetchWx(false, 10 * 60e3); setInterval(fetchWx, 10 * 60e3); document.addEventListener('visibilitychange', () => { if (document.hidden) return;   /* v4.33 경완: 다시 켜면 시간·날씨를 바로 (서서히 바뀌는 연출 없이) */
     const c = document.documentElement.classList; c.add('boot'); S.clock = realClock(); skyKey = ''; sky(); requestAnimationFrame(() => requestAnimationFrame(() => c.remove('boot'))); fetchWx(false, 10 * 60e3); }); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
   requestAnimationFrame(t => { last = t; frame(t); });
   // 아이폰 앱에 준비됐다고 알리고, 현재 알 현황을 바로 보낸다
