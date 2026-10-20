@@ -153,6 +153,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .card .ih-top{flex-wrap:nowrap}.card .ih-r{margin-left:auto;display:flex;align-items:center;gap:4px;font-size:12px;color:var(--dim);white-space:nowrap;min-width:0;overflow:hidden}.card .ih-r .tyi{width:18px;height:18px}
 .born-pic{position:relative;display:inline-block;line-height:0}.born-new{position:absolute;right:-14px;top:-6px;font:700 11px/1 var(--px);color:#fff;background:#e04848;border:2px solid #7a1c1c;padding:2px 4px;letter-spacing:1px;animation:jbob 1s steps(2,end) infinite}
 .hatch .win{position:relative}.hatch.list #hlPrev,.hatch.list #hlNext{display:none!important}.hatch.list .hl-nav{display:contents}.hatch.list #hlPrev,.hatch.list #hlNext{position:absolute;margin-top:-18px;z-index:2}.hatch.list #hlPrev{left:10px}.hatch.list #hlNext{right:10px}.hatch.list #hlNum{position:absolute;top:10px;right:14px;font-size:13px;color:var(--dim)}
+#hatchMsg,.evd,.re-pl{word-break:keep-all;overflow-wrap:anywhere}   /* v6.05 경완: 알 카드 장소가 길면 어절 단위로 줄 나눔 */
 #hatchMsg.ev{font-size:15px;line-height:1.6;margin-top:6px}#hatchMsg.ev .evg{font-size:18px}#hatchMsg.ev .prog{height:10px;margin:8px auto;width:min(240px,90%);background:var(--inner);border:2px solid var(--frame)}#hatchMsg.ev .prog i{display:block;height:100%;background:#f0c030}#hatchMsg.ev .evd{font-size:13px;color:var(--dim)}#hatchOut{flex:1 1 auto}#hatchIn{flex:1 1 0;width:auto}#hatchDel{flex:0 0 auto;width:auto;padding-left:16px;padding-right:16px;color:#c0392b}#hatchDel.arm{background:#e0555a;color:#fff}#hatchIn:disabled{background:#dcdce0;color:#8e8e98;border-color:#a8a8b2;box-shadow:none;cursor:default;pointer-events:none}
 #hatchMsg .rkline{margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px}
 .mtab[data-t="field"] .mgr-tools{padding:0 4px}#mgrClear{background:#c83838!important;border-color:#7a1c1c!important;color:#fff!important}
@@ -5722,7 +5723,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.04';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.05';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6258,8 +6259,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
       if (g.y <= 0) { const imp = -g.vy; g.y = 0; g.vy = 0; g.sq = Math.max(.68, 1 - imp / 2600); g.sqv = 0; g.spin = 0; if (imp > 260) mgDust(g, Math.min(14, 4 + imp / 120 | 0), 100 + imp * .14); if (imp > 650) { g.shake = Math.max(g.shake || 0, .08); g.shA = Math.max(g.shA || 0, 2); (g.rings || (g.rings = [])).push({ x: g.PX, y: g.GY, t: .3, c: 'rgba(232,214,170,.9)', flat: 1, z: 1.2 }); } } }
   }
   if (g.buf > 0) g.buf -= dt;
-  if (g.cT > 0) { g.cT -= dt; if (g.cT <= 0) { if (g.combo >= 3) mgToast(g, `${g.combo} 콤보!`); g.combo = 0; } }   // v5.92 경완: 콤보는 땅에 내려와도 이어지고 2.6초 안에 다시 밟아야 유지
-  if (g.y <= 0) { g.jn = 0; if (g.buf > 0 && !g.fx.flying && !(g.fx.dig > 0)) { g.buf = 0; mgJump(true); g.hold = false; g.cut = false; } }
+  if (g.y <= 0) { g.jn = 0; if (g.combo) { if (g.combo >= 3) mgToast(g, `${g.combo} 콤보!`); g.combo = 0; g.cT = 0; }   /* v6.05 경완: 콤보는 땅에 닿지 않고 이어 밟을 때만 쌓인다 */ if (g.buf > 0 && !g.fx.flying && !(g.fx.dig > 0)) { g.buf = 0; mgJump(true); g.hold = false; g.cut = false; } }
   if (g.sinceSp >= g.gap) { g.sinceSp = 0; mgSpawn(g); }
   for (const o of g.obs) { o.x -= dx * (o.t === 'f' ? 1.18 : 1); if (!o.dead && !o.flee && !o.stomp) mgMove(g, o, dt); if (o.flee) { o.x += 260 * dt; o.y += 200 * dt; o.flee += dt; } if (o.dead) o.kt -= dt; if (o.kb) { o.x += o.kb.vx * dt; o.y += o.kb.vy * dt; o.kb.vy -= 900 * dt; o.kb.r += o.kb.vr * dt; if (Math.random() < .5) g.parts.push({ x: o.x, y: g.GY - o.y - o.h / 2, vx: -80, vy: 0, t: .3, t0: .4, r: 2, c: Math.random() < .5 ? '#ffffff' : o.kb.c }); } }
   if (g.fx.str > 0 && MG_STR[g.ab.k]) { const k = g.ab.k, Z = MG_STR[k], L = Z.L || g.W, sy = g.GY - g.y - MG_PH / 2; g.strL = Math.min(L, (g.strL || 0) + 1300 * dt);   // 뿜는 줄기가 앞으로 쭉 뻗고, 닿는 장애물은 날아간다
@@ -6436,10 +6436,11 @@ function mgRender(g, cv = $('#mgCv')) {
   if (g.pop) { const k = .8 - g.pop.t, sc = k < .08 ? 1 + k / .08 * .8 : Math.max(1, 1.8 - (k - .08) / .12 * .8); x.save(); x.globalAlpha = Math.min(1, g.pop.t / .2); x.translate(g.pop.x, g.pop.y); x.scale(sc, sc); x.textAlign = 'center'; txt(g.pop.s, 0, 0, 16 + (g.pop.z || 0) * 2, g.pop.z >= 3 ? '#ff8a3a' : '#ffe14a'); x.restore(); }
   if (g.cd > 0) { const n = Math.ceil(g.cd - .6), s = n > 0 ? String(n) : '시작!', k = 1 + ((g.cd - .6) % 1 + 1) % 1 * .5; x.save(); x.textAlign = 'center'; x.textBaseline = 'middle'; x.translate(W / 2, H * .4); x.scale(k, k); txt(s, 0, 0, 56, n > 0 ? '#fff' : '#ffd84a', 8); x.restore(); }
   if (g.toast) { x.textAlign = 'center'; txt(g.toast.s, W / 2, 80, 15, '#fff'); x.textAlign = 'start'; }
+  if (g.abK && g.abK !== 'shield' && !g.over) { const L = mgAbLeft(g), k = clamp(L / (g.abD || 1), 0, 1), bw = 48, bx = Math.round(g.PX - bw / 2), by = Math.round(py - phh - 30), c = g.abW && Math.floor(g.t * 14) % 2 ? '#ffffff' : MG_ABC[g.abK] || '#ffe14a';   /* v6.05 경완: 남은 시간은 엄지에 가리지 않게 포켓몬 머리 위에 */
+    x.fillStyle = '#20202c'; x.fillRect(bx - 2, by - 2, bw + 4, 9); x.fillStyle = 'rgba(255,255,255,.35)'; x.fillRect(bx, by, bw, 5); x.fillStyle = c; x.fillRect(bx, by, Math.round(bw * k / 2) * 2, 5); x.textAlign = 'center'; txt(L.toFixed(1) + '초', g.PX, by - 6, 12, '#fff', 3); x.textAlign = 'start'; }
   if (g.combo >= 2 && g.cT > 0) { const sc = 1 + Math.max(0, g.cPop || 0) * 1.2, mul = Math.min(5, g.combo), cx = Math.round(W / 2), cy = Math.round(Math.max(130, H * .2)), c = g.combo >= 10 ? '#ff5a3a' : mul >= 5 ? '#ff8a30' : mul >= 3 ? '#ffb030' : '#ffe14a';   // v6.00 경완: 콤보를 화면 위 가운데에 크게 (숫자·배율·남은 시간·다음 10콤보까지)
     x.save(); x.translate(cx, cy); x.scale(sc, sc); x.textAlign = 'center'; txt(g.combo + '', 0, 0, 48, c, 7); x.restore(); x.textAlign = 'center'; txt(`콤보 ×${mul}`, cx, cy + 26, 15, '#fff', 4);
-    const bw = 120, k = g.cT / MG_COMBO_T, n10 = 10 - g.combo % 10; x.fillStyle = '#20202c'; x.fillRect(cx - bw / 2 - 2, cy + 36, bw + 4, 10); x.fillStyle = k < .3 && Math.floor(g.t * 10) % 2 ? '#ffffff' : c; x.fillRect(cx - bw / 2, cy + 38, Math.round(bw * k / 2) * 2, 6);
-    if (n10 <= 3) txt(`${n10}번 더 밟으면 ${g.combo + n10} 콤보!`, cx, cy + 62, 12, '#ffe14a', 3); x.textAlign = 'start'; }
+    const n10 = 10 - g.combo % 10; if (n10 <= 3) txt(`${n10}번 더 밟으면 ${g.combo + n10} 콤보!`, cx, cy + 46, 12, '#ffe14a', 3); x.textAlign = 'start'; }
   if (g.ban) { const k = 1.6 - g.ban.t, sc = k < .14 ? .5 + k / .14 * .7 : k < .28 ? 1.2 - (k - .14) / .14 * .2 : 1, cy = H * .42;   // 화면 가운데에 통 튀어나왔다가 사라짐
     x.save(); x.globalAlpha = Math.min(1, g.ban.t / .35); x.fillStyle = 'rgba(32,32,44,.55)'; x.fillRect(0, cy - 34 * Math.min(1, k / .14), W, 68 * Math.min(1, k / .14));
     x.translate(W / 2, cy + 13); x.scale(sc, sc); x.textAlign = 'center'; txt(g.ban.s, 0, 0, 38, '#ffd84a', 6); x.restore(); }
