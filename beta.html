@@ -823,7 +823,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .pp-free.arm{background:#c03838;color:#fff}#freeAsk{z-index:5700}#freeAsk .win{width:min(300px,100%);box-sizing:border-box;text-align:center;padding:16px}.ask-pic{display:grid;place-items:center;height:72px}.ask-pic img{width:72px;height:72px;image-rendering:pixelated;object-fit:contain}.ask-q{margin:8px 0 14px;font-size:16px;line-height:1.5;word-break:keep-all}.ask-btns{display:flex;gap:8px}.ask-btns[hidden]{display:none}.ask-pic img.bye{animation:byeGo 1.3s ease-in forwards}@keyframes byeGo{0%{transform:none;opacity:1}30%{transform:translateY(-4px)}100%{transform:translate(40px,-10px) scale(.6);opacity:0}}.ask-btns .boxbtn{flex:1 1 0;min-width:0;padding:10px 6px}#freeAsk .boxbtn.red{background:#c03838;border-color:#7a1f1f;color:#fff}.pp-free[hidden]{display:none}
 .pp-btns{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px}.pp-btns>.boxbtn{padding-left:4px;padding-right:4px;white-space:nowrap}.pp-btns>[hidden]{display:none}#dexPop.ovr{z-index:5650}
 #ppField[hidden]{display:none}
-.m-btns{margin-top:10px;grid-template-columns:repeat(3,minmax(0,1fr))}.m-btns:has(#mBud[hidden]){grid-template-columns:repeat(2,minmax(0,1fr))}#mBud[hidden]{display:none}#monPop .boxbtn.pink.sunk{background:#f7dfe8;border-color:#d9a9bc;color:#b0788f}#monPop .m-btns .boxbtn{min-width:0;font-size:14px;padding:10px 2px;white-space:nowrap}#pokePop .pp-btns .boxbtn{padding-left:2px;padding-right:2px}.pp-btns .boxbtn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:4px;padding-right:4px;font-size:clamp(12px,3.6vw,15px)}
+.m-btns{margin-top:10px;grid-template-columns:repeat(3,minmax(0,1fr))}.m-btns:has(#mBud[hidden]){grid-template-columns:repeat(2,minmax(0,1fr))}#mBud[hidden]{display:none}#monPop .boxbtn.pink.sunk{background:#f7dfe8;border-color:#d9a9bc;color:#b0788f}#monPop .m-btns .boxbtn,#pokePop .pp-btns .boxbtn{min-width:0;font-size:14px;padding:10px 2px;white-space:nowrap}.pp-btns .boxbtn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:4px;padding-right:4px}
 .pokepop .boxbtn{display:block;width:100%;font:inherit;font-size:15px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:10px 8px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
 .dexpop .boxbtn.red{background:#c83838;border-color:#7a1c1c;color:#fff}/* 눌린 버튼: 아래 그림자가 위로 옮겨가며 면이 4px 내려간다 → 글자도 padding 으로 같은 만큼 내려 함께 움직인다 */
 
@@ -5722,7 +5722,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.02';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.03';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6954,7 +6954,7 @@ function openPoke(id, dir = 0, quiet = false, noCry = false) {
   const fb = $('#ppField'); fb.hidden = budPick != null; fb.textContent = on ? (boxFromSlot ? '이미 필드에 있어요' : '필드에 나감') : full ? '필드 가득' : boxFromSlot ? '필드에 내보내기' : '필드로';   /* v6.00 경완: 아래 버튼은 도감·필드로·짝꿍으로 */ $('#ppDex').hidden = pick; fb.disabled = (!on && full) || (boxFromSlot && on); fb.classList.toggle('sunk', on && !boxFromSlot); fb.classList.toggle('off', boxFromSlot && on); fb.classList.remove('popout');
   const noRoom = budPick == null && S.buds.length >= MAX_BUDS;
   { $('#ppEvo').hidden = pick; setEvoBtn($('#ppEvoBtn'), P); $('#ppItem').hidden = !itemEvos(P).length || $('#ppEvoBtn').classList.contains('spc'); }   /* 특별한 진화 버튼이면 그 버튼이 도구 쓰기 */
-  const bb = $('#ppBud'); bb.hidden = boxFromSlot; bb.textContent = isBud ? '짝꿍 해제' : noRoom ? '짝꿍 꽉 참' : '짝꿍으로'; bb.disabled = !isBud && noRoom; bb.classList.toggle('off', !isBud && noRoom); bb.classList.toggle('sunk', isBud);   // 짝꿍이면 눌린 버튼(누르면 해제)
+  const bb = $('#ppBud'); bb.hidden = boxFromSlot; bb.textContent = isBud ? '짝꿍 해제' : noRoom ? '짝꿍 가득' : '짝꿍으로'; bb.disabled = !isBud && noRoom; bb.classList.toggle('off', !isBud && noRoom); bb.classList.toggle('sunk', isBud);   // 짝꿍이면 눌린 버튼(누르면 해제)
 }
 // 진화하기 버튼 (정보 카드·필드 개체 정보 공용): 가로로 긴 버튼. 아직이면 꺼진 모양이고 누르면 버튼 가운데 말풍선(진화까지 쌓인 km / 필요 km, 또는 조건). 최종 진화는 같은 자리에 같이 달린 거리
 function setEvoBtn(btn, P) {
