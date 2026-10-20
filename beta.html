@@ -5800,7 +5800,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.37';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.38';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9355,7 +9355,7 @@ function newsShow(pv) {   /* v7.28 경완: pv = 운영자 미리 보기 (봤다�
     ok.textContent = i < last ? '다음' : '확인'; pr.hidden = !i; W.classList.toggle('nw-s', i < 2); W.classList.toggle('nw-a', i === last || i === 3 || i === 5);   /* v7.34 경완: 4·6장도 내용 높이대로 (여백 없음) */
     const pg = B.firstChild; if (d) { pg.style.transform = `translateX(${d * 100}%)`; pg.style.opacity = '.3'; requestAnimationFrame(() => requestAnimationFrame(() => { pg.style.transition = 'transform .22s cubic-bezier(.2,.8,.3,1),opacity .22s'; pg.style.transform = ''; pg.style.opacity = ''; })); } };
   const turn = (d, pg) => { if (busy || i + d < 0 || i + d > last) return; busy = 1; sfx('tap'); pg = B.firstChild; pg.style.transition = 'transform .16s ease-in,opacity .16s'; pg.style.transform = `translateX(${-d * 100}%)`; pg.style.opacity = '.3'; setTimeout(() => { i += d; go(d); busy = 0; }, 150); };
-  go(); $('#news').hidden = false;
+  go(); $('#news').hidden = false; sfx('newdex'); haptic(1);   /* v7.38 경완: 열릴 때 알 주웠을 때 알림(notiShow)과 같은 소리 */
   ok.onclick = () => { if (i < last) return turn(1); sfx('tap'); $('#news').hidden = true; if (pv) return; try { localStorage.setItem('pk-news', NEWS_ID); } catch (e) {} };
   for (const bt of [ok, pr]) { bt.onpointerdown = () => bt.classList.add('prs'); bt.onpointerup = bt.onpointerleave = bt.onpointercancel = () => setTimeout(() => bt.classList.remove('prs'), 90); }
   pr.onclick = () => turn(-1);   /* v7.31 경완: 이전 버튼 + 옆으로 밀어 넘기기 */
