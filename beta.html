@@ -5795,7 +5795,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.11';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.12';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6319,7 +6319,7 @@ function mgCharmStep(g, o, dt) { const n = o.cm.n, R = 30 + Math.min(n, 8) * 2.5
   const sp = Math.hypot(C.vx, C.vy); o.sq = 1 - Math.min(.2, sp / 2600); if (o.pat === 'dig') o.up = 1; if (!C.st && Math.hypot(tx - o.x, ty - o.y) < 14) { C.st = 1; o.sq = .7; mgFx(g, o.x, g.GY - o.y - o.h / 2, '#ff90c8', 6, 140); sfx('ab', 'snap'); } }
 function mgCharmBoom(g) { const px = g.PX, py = g.GY - g.y - MG_PH / 2; g.obs.forEach(o => { if (o.cm && !o.dead) { mgKill(g, o, '#ff90c8'); o.sq = 1; if (o.kb) { o.kb.vx *= 1.5; o.kb.vy *= 1.3; o.kb.hrt = 1; if (o.x < px) o.kb.vx *= -1; } } delete o.cm; }); sfx('ab', 'heart');   /* 깜빡이다 한꺼번에 펑 */
   mgFx(g, px, py, '#ff90c8', 30, 340); mgFx(g, px, py, '#ffffff', 14, 260); mgFx(g, px, py, '#ffd84a', 10, 220); (g.rings || (g.rings = [])).push({ x: px, y: py, t: .3, c: 'rgba(255,144,200,.95)', z: 4 }, { x: px, y: py, t: .3, c: 'rgba(255,255,255,.9)', z: 2.6 }); (g.bursts || (g.bursts = [])).push({ x: px, y: py, t: .3, c: '#ff90c8', z: 2.6 });
-  g.flash = .1; g.hs = .06; g.shake = .3; g.shA = 7; g.inv = Math.max(g.inv || 0, .5); haptic(2); }
+  g.flash = .1; g.hs = .06; g.shake = .3; g.shA = 7; haptic(2); }
 function mgGasBoom(g, R0) {   /* v6.82 경완: 모은 독가스가 펑 — 오래 모을수록 넓게 (v7.07 R0 = 처음 누를 때 주변 펑) */
   const k = R0 ? 0 : Math.min(1, (g.gasS || 0) / 1.4), R = (R0 || 55 + 115 * k) * (g.pas?.pow ? 1.4 : 1), px = g.PX, py = g.GY - g.y - MG_PH / 2;
   g.obs.filter(o => !o.dead && !o.flee && Math.hypot(o.x - px, (g.GY - o.y - o.h / 2) - py) < R + o.w / 2).forEach(o => { mgKill(g, o, '#b47ae0'); if (o.kb) { o.kb.vx *= 1.2 + k * .4; o.kb.vy *= 1.1 + k * .3; } });
@@ -6469,7 +6469,7 @@ function mgAbStart(g, k) {
   const b = $('#mgAbBtn'); b.style.setProperty('--ac', c); b.classList.toggle('on', !!g.abK);
 }
 function mgAbEnd(g) {
-  const k = g.abK; g.abK = null; if (k === 'charm') { g.fx.cmW = 0; g.cmT = 0; mgCharmBoom(g); g.inv = Math.max(g.inv || 0, 1.3); mgCool(g); }   /* v6.94 경완: 터진 뒤 잠깐 무적 */
+  const k = g.abK; g.abK = null; if (k === 'charm') { g.fx.cmW = 0; g.cmT = 0; mgCharmBoom(g); mgCool(g); }   /* v7.12 경완: 폭파 뒤 무적 없음 */   /* v6.94 경완: 터진 뒤 잠깐 무적 */
   if (k === 'bolt') { mgBoltBlast(g); g.bst = -.7; mgDust(g, 12, 260); if (!g.over) { g.jn = 1; g.hold = false; mgLift(g, Math.max(MG_JUMP, g.vy), true); g.cut = true; g.inv = Math.max(g.inv || 0, .6); } else { g.sq = 1.22; g.sqv = 0; } }   /* v7.07 경완: 끝날 때 한 바퀴 돌며 점프 */   // 끝: 끽 멈추며 몸이 출렁
   if (k === 'surf' && !g.over && (g.sL || 0) > 10) { const h = g.sL; g.y += h; g.sL = 0; g.jn = 1; g.hold = false; mgLift(g, MG_JUMP, true); g.cut = true; mgFx(g, g.PX, g.GY - g.y + 10, '#5ab0ff', 14, 240); mgFx(g, g.PX, g.GY - g.y + 10, '#e8f6ff', 10, 180); sfx('jmp'); }   /* v6.54 경완: 파도타기를 떼면 파도 꼭대기에서 한 바퀴 돌며 뛰어오른다 */ if (k === 'beam' && !g.over) { g.bmUp = 0; g.jn = 1; g.hold = false; mgLift(g, MG_JUMP * .85, true); g.cut = true; mgFx(g, g.PX, g.GY - g.y, '#b48aff', 10, 200); mgRing(g, '#ffffff'); sfx('jmp2'); }   /* v6.96 경완: 빔이 끝나면 한 번 더 돌며 튀어 오른다 */ if (MG_STR[k] || k === 'bolt' || k === 'surf') { g.fx.surf = 0; g.fx.str = 0; g.fx.bolt = 0; mgCool(g); } if (k === 'silk') { mgSilkOff(g, false); g.fx.silkT = 0; mgCool(g); if (!g.over) { g.jn = 1; g.hold = false; mgLift(g, Math.max(MG_JUMP, g.vy), true); g.cut = true; g.inv = Math.max(g.inv || 0, .8); mgRing(g, '#ffffff'); mgFx(g, g.PX, g.GY - g.y, '#e8e8f0', 10, 200); sfx('jmp2'); } }   /* v7.07 경완: 실뿜기가 끝나면 한 바퀴 돌며 점프, 그동안 잠깐 무적 */ if (k === 'fly') { g.fx.flyT = 0; mgCool(g); } if (k === 'dig') { g.fx.dig = 0; mgDigOut(g); mgCool(g); } if (k === 'rock') { g.fx.rockT = 0; mgCool(g); } if (k === 'qaS') { g.fx.qaW = 0; mgCool(g); } if (k === 'scS') { g.fx.scW = 0; mgCool(g); } if (k === 'viS') { g.fx.viW = 0; mgCool(g); } if (k === 'gasW') { g.fx.gasW = 0; mgCool(g); } sfx('abEnd'); mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, '#d8d8e0', 10, 90); mgRing(g, '#9a9aaa'); $('#mgAbBtn').classList.remove('on');
 }
