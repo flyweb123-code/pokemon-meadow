@@ -142,6 +142,7 @@
 .run-row:has(+.run-eggs){border-bottom:0}.run-eggs .re-none{opacity:.3;filter:grayscale(1)}.run-eggs .re-row{flex-wrap:wrap}.run-eggs .re-eggs{flex-wrap:wrap;max-width:100%}
 .dex .here{display:none!important}.filters .fsel{flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
+body.fcov #wrap *{animation-play-state:paused!important}
 #sheet.off{opacity:0!important;pointer-events:none!important;z-index:-1!important}/* 닫힌 도감도 제자리에 투명하게 그려 두어 열 때 빈 칸이 깜빡이지 않게 */
 html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .mgr-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px}.mgr-two .lk-btn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mgr-two .lk-btn{min-width:84px;margin:0;justify-content:center;text-align:center}
@@ -2718,7 +2719,7 @@ async function spawn(sp, opts = {}) {
   // DOM
   const el = document.createElement('div'); el.className = 'mon';
   el.innerHTML = '<div class="shadow"></div><div class="ripple"></div><div class="lift"><div class="flip"><div class="dirt"><div class="act"><img alt=""><i class="grime gi"></i><div class="spr" role="img"><i class="grime"></i></div><span class="snot"></span></div></div></div></div>';
-  m.el = el; m.liftEl = el.querySelector('.lift'); m.flipEl = el.querySelector('.flip'); m.act = el.querySelector('.act'); m.img = el.querySelector('img'); m.spr = el.querySelector('.spr'); m.snot = el.querySelector('.snot'); m.dirtEl = el.querySelector('.dirt');
+  m.el = el; m.rTf = m.rZ = m.rLf = m.rFc = null; m.liftEl = el.querySelector('.lift'); m.flipEl = el.querySelector('.flip'); m.act = el.querySelector('.act'); m.img = el.querySelector('img'); m.spr = el.querySelector('.spr'); m.snot = el.querySelector('.snot'); m.dirtEl = el.querySelector('.dirt');
   m.img.src = SPRITES[sp]; m.img.width = m.w; m.img.height = m.h; m.img.alt = m.name; m.img.draggable = false;
   for (const el2 of [m.img, m.spr]) {
     el2.addEventListener('click', ev => { ev.stopPropagation(); if (m.szb) { if (performance.now() - suppressClick > 300) window.__studio?.szSel?.(m.uid); return; } if (performance.now() - suppressClick > 300) { if (S.tool === 'berry') feedOne(m); else select(S.sel === m ? null : m); } });
@@ -4547,7 +4548,7 @@ function render(m, now) {
   if (wet !== m.wet) { m.wet = wet; m.el.classList.toggle('wet', wet); }
   if (m.land && (m.sp !== 129 || pondVal(m.x, m.y) < .85)) { m.land = false; if (!m.held) { splashAt(m); log(`${J(m,'이/가')} 겨우 호수로 돌아와 첨벙! 한결 편안해 보인다.`, [m]); } }
   { const fl = !!m.land && !m.held; if (fl !== !!m.flop) { m.flop = fl; m.el.classList.toggle('flop', fl); } }
-  m.el.style.transform = `translate(${m.x.toFixed(1)}px,${m.y.toFixed(1)}px)`;
+  { const v = `translate(${m.x.toFixed(1)}px,${m.y.toFixed(1)}px)`; if (m.rTf !== v) { m.rTf = v; m.el.style.transform = v; } }   /* v6.07 발열: 바뀐 값만 다시 쓴다 */
   { const lit = skyDark > .25 && m.el.classList.contains('rkS') && !m.hidden; if (lit !== !!m.lit) { m.lit = lit; m.litT = performance.now(); m.el.classList.toggle('selflit', lit && !m.bright);
       if (lit) { m.gl = document.createElement('i'); m.gl.className = 'gl'; $('#glows').append(m.gl); } else { m.gl?.remove(); m.gl = null; } }
     if (m.gl) { if (!m.el.isConnected) { m.gl.remove(); m.gl = null; m.lit = false; } else { const k = Math.max(.75, Math.min(1.6, (m.w || 50) / 55)); m.gl.style.translate = `${m.x.toFixed(1)}px ${(m.y - 4).toFixed(1)}px`; m.br = breathOf(m) ?? .5; m.gl.style.transform = `scale(${(k * (.82 + .3 * m.br)).toFixed(3)})`;   /* 자리는 translate 로 (숨쉬는 scale 이 자리까지 늘이지 않게) */ m.gl.style.opacity = Math.min(1, skyDark * 1.2).toFixed(2); } } }
@@ -4559,11 +4560,11 @@ function render(m, now) {
   /* 밝게 보이는 포켓몬만 밤 그늘 위로 올린다. 그 바로 앞(아래쪽)에 겹친 포켓몬도 함께 올리되 밤빛 필터로 똑같이 어둡게 해서, 앞뒤 순서는 그대로 둔다 */
   const shade = !upOf(m) && !m.pet && skyDark > .25 && S.mons.some(o => o !== m && upOf(o) && !o.hidden && m.y > o.y && m.y - o.y < (o.h || 60) + (m.h || 60) && Math.abs(m.x - o.x) < ((o.w || 50) + (m.w || 50)) / 2 + 12);
   if (shade !== !!m.shade) { m.shade = shade; m.el.classList.toggle('nightf', shade); }
-  m.el.style.zIndex = Math.round(m.y) + (m.zAdd || 0) + (m.perch ? 2 : 0) + (m.pet ? 5000 : 0) + (upOf(m) || shade ? 1100 : 0);
+  { const z = Math.round(m.y) + (m.zAdd || 0) + (m.perch ? 2 : 0) + (m.pet ? 5000 : 0) + (upOf(m) || shade ? 1100 : 0); if (m.rZ !== z) { m.rZ = z; m.el.style.zIndex = z; } }
   { const oa = MON_OFFA[m.form]?.[m.anName] || 0, ox = Array.isArray(oa) ? oa[0] : 0, oy = Array.isArray(oa) ? oa[1] : oa;   // v5.79 경완: 동작별 그림 위치 [좌우, 위아래] (좌우는 기본 그림 = 왼쪽 볼 때 기준)
-  m.liftEl.style.transform = `translate(${ox * (m.face || 1)}px, ${(wet ? m.h * .38 : m.flop ? m.h * .42 : m.sp === 129 && !m.held ? m.h * .24 : 0) - Math.max(0, m.lift + (MON_FLYA[m.form]?.[m.anName] || 0)) - bob + oy}px)`; }   // 육지의 잉어킹은 그림자에 붙게 조금 내린다 (v5.68 경완: 작업실 크기 조절 모드처럼 땅에 놓인 잉어킹도)
+  const lv = `translate(${ox * (m.face || 1)}px, ${((wet ? m.h * .38 : m.flop ? m.h * .42 : m.sp === 129 && !m.held ? m.h * .24 : 0) - Math.max(0, m.lift + (MON_FLYA[m.form]?.[m.anName] || 0)) - bob + oy).toFixed(1)}px)`; if (m.rLf !== lv) { m.rLf = lv; m.liftEl.style.transform = lv; } }   // 육지의 잉어킹은 그림자에 붙게 조금 내린다 (v5.68 경완: 작업실 크기 조절 모드처럼 땅에 놓인 잉어킹도)
   if (m.flop && now > (m.swT || 0)) { m.swT = now + rnd(180, 360); for (const s of [-1, 1]) if (Math.random() < .75) particle(m.x + s * rnd(6, m.w * .32), m.y - m.h * .2 - rnd(0, 10), 'sweat', '', d => d.style.setProperty('--dx', s * rnd(12, 26) + 'px')); }
-  m.flipEl.style.transform = `scaleX(${m.face})`; m.flipEl.style.setProperty('--f', m.face);
+  if (m.rFc !== m.face || m.flipEl.style.transform === '') { m.rFc = m.face; m.flipEl.style.transform = `scaleX(${m.face})`; m.flipEl.style.setProperty('--f', m.face); }
   if (m.shEl && m.shF !== m.face) { m.shF = m.face; m.shEl.style.translate = m.shX ? `${(m.shX * m.face).toFixed(1)}px 0` : ''; m.shEl.style.rotate = m.shR ? m.shR * m.face + 'deg' : ''; }
   { const r = (MON_ROT[m.form] || 0) * m.face, o = Math.round(m.h / 2); if (r !== m.rotV || o !== m.rotO) { m.rotV = r; m.rotO = o; m.flipEl.style.rotate = r ? r + 'deg' : ''; m.flipEl.style.transformOrigin = r ? `0 ${-o}px` : ''; } }   /* 기울기는 몸 가운데를 축으로 (transform 애니메이션과 따로 도는 rotate 속성) */
   if (isPmd(m.form)) drawSprite(m, m.frz && !m.szAn ? 0 : m.realDt || 0);
@@ -5718,7 +5719,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.06';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.07';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9384,13 +9385,16 @@ let last = performance.now(), acc = 0, treeT = 30, infoT = 0, saveT = 0;
 // 한 마리에서 오류가 나도 필드 전체가 멈추지 않게: 그 포켓몬만 건너뛰고 오류는 기록(pk-err)
 function frameErr(e, m) { try { console.error(e); const t = `${new Date().toISOString()} ${m ? 'sp' + m.sp + ' ' + m.state : ''} ${e && e.stack || e}`.slice(0, 600); const L = JSON.parse(localStorage.getItem('pk-err') || '[]'); if (L[0] !== t) { L.unshift(t); localStorage.setItem('pk-err', JSON.stringify(L.slice(0, 5))); } } catch (x) {} if (m) { try { m.partner = null; setState(m, 'idle', 1); } catch (x) {} } }
 // v5.86 경완: 배터리 — 필드는 1초에 30번만 그린다 (끌거나 쓰다듬는 동안은 손을 바로 따라오게 매번)
-let fLast = 0;
+let fLast = 0, fCov = false;
+/* v6.07 경완: 발열 — 폰에서 창(포켓몬·알·상점·도감·미니게임 등)이 필드를 다 덮고 있으면 필드는 그리지 않고(시간은 흐름) 꽃 흔들림 같은 CSS 움직임도 멈춘다 */
+const fieldCovered = () => narrow.matches && !!document.querySelector('body > .sheet:not([hidden]):not(.off)');
 function frame(now) {
   requestAnimationFrame(frame);
-  if (now - fLast < 31 && !drag && !petM) return; fLast = now;
-  try { frameIn(now); } catch (e) { frameErr(e); }
+  const cov = fieldCovered(); if (cov !== fCov) { fCov = cov; document.body.classList.toggle('fcov', cov); }
+  if (now - fLast < (cov ? 100 : 31) && !drag && !petM) return; fLast = now;
+  try { frameIn(now, cov); } catch (e) { frameErr(e); }
 }
-function frameIn(now) {
+function frameIn(now, cov) {
   const real = Math.min(.1, (now - last) / 1000); last = now;
   S.clock = realClock();
   let sim = real * S.speed;
@@ -9400,16 +9404,16 @@ function frameIn(now) {
     treeT -= dt;
   }
   for (const m of S.mons) { if (m.held && drag?.m !== m) { m.held = false; m.el.classList.remove('held'); settle(m); setState(m, 'idle', 1); }   /* 손에서 놓쳤는데 들린 채 남은 포켓몬 풀어 주기 */
-    if (m.bubT > 0) m.bubT -= real; m.realDt = real * Math.min(S.speed || 0, 3); try { render(m, now); } catch (e) { frameErr(e, m); } }
-  nightHoles(); tickFlies(now); tickBugs(now, real);
-  if (flameEl) { const fi = Math.floor(now / 175) % 6; if (flameEl.fi !== fi) { flameEl.fi = fi; flameEl.style.backgroundPosition = -32 * fi + 'px 0'; } }   /* v4.38 경완: 불꽃 장면을 CSS steps 대신 직접 넘긴다 (오래 켜 두면 iPhone 에서 옆으로 미끄러지듯 보였다) */
+    if (m.bubT > 0) m.bubT -= real; m.realDt = real * Math.min(S.speed || 0, 3); if (!cov) try { render(m, now); } catch (e) { frameErr(e, m); } }
+  if (!cov) { nightHoles(); tickFlies(now); tickBugs(now, real); }
+  if (flameEl && !cov) { const fi = Math.floor(now / 175) % 6; if (flameEl.fi !== fi) { flameEl.fi = fi; flameEl.style.backgroundPosition = -32 * fi + 'px 0'; } }   /* v4.38 경완: 불꽃 장면을 CSS steps 대신 직접 넘긴다 (오래 켜 두면 iPhone 에서 옆으로 미끄러지듯 보였다) */
   acc += real; if (acc > .5) { acc = 0; S.mons.forEach(m => { if (!m.washing) dirtVis(m); dirtFx(m); }); sky(); rotBerries(); for (const g of [...$('#glows').children]) if (!S.mons.some(m => m.gl === g || m.glA === g)) g.remove(); }   /* 필드에서 빠진 포켓몬의 빛이 남지 않게 */
   try { tickMoves(real); } catch (e) { frameErr(e); }
   infoT -= real; if (infoT <= 0 && S.sel) { infoT = .5; renderInfo(); }
   S.mons.forEach(m => { if (!m.hidden && !m.washing) m.clean = Math.max(0, (m.clean ?? 100) - real * CLEAN_RATE); m.frT = (m.frT || 0) + real * frRate(m); if (m.frT >= 3600) { m.frT -= 3600; if (dayCap(m, 'fld', FLD_FR_DAY)) { addFr(m.pid, 1); if (fieldSeen(m)) frPop(m); } } });   /* 필드에 있는 시간: 세 게이지가 찰수록 빨리 (FR_TABLE) */
   mgrT -= real; if (mgrT <= 0) { mgrT = .5; refreshCap(); renderMgr(); renderRun();
     if (hatchQ.length && !hatching) playHatch(); }
-  placeInfo(); placeMark(); mirrorPf();
+  if (!cov) { placeInfo(); placeMark(); mirrorPf(); }
   saveT -= real; if (saveT <= 0) { saveT = 8; save(); }
 }
 
