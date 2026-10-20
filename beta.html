@@ -6000,7 +6000,7 @@ const MG_AB = {
    // v6.17 경완: 누른 만큼 실에 매달려 버티기 + 대롱대롱 + 떼면 솟구침
   8: { n: '놀래키기', c: 9, k: 'scare', d: '앞쪽 넓은 범위의 장애물이 모두 놀라 바로 도망가요' },   /* v6.55 경완: 고스트 = 놀래키기 (예전 투명해지기) */
   9: { n: '철벽', c: 12, k: 'iron', d: '5초 동안 몸이 강철처럼 단단하고 무거워져서, 부딪히는 포켓몬을 튕겨 날려 버려요' },   /* v6.27 경완: 강철 돌진 → 철벽 */
-  10: { n: '화염방사', c: 12, k: 'fire', d: '꾹 누르는 동안 불꽃을 뿜어 앞 장애물을 날려요 (1.6초). 누른 채 손가락을 위아래로 움직이면 불줄기 방향이 바뀌어요' },   /* v6.30 경완: 이름 화염방사, 쿨타임 8→12초, 손가락 위아래로 겨누기 */
+  10: { n: '화염방사', c: 12, k: 'fire', d: '꾹 누르는 동안 불꽃을 뿜어 앞 장애물을 날려요 (2.6초). 누른 채 손가락을 위아래로 움직이면 불줄기 방향이 바뀌어요' },   /* v6.30 경완: 이름 화염방사, 쿨타임 8→12초, 손가락 위아래로 겨누기 */
   11: { n: '파도타기', c: 12, k: 'surf', d: '꾹 누르는 동안 큰 파도에 올라타 앞의 장애물을 모두 쓸어 버려요 (최대 2.5초, 떼면 끝)' },   /* v6.37 경완: 실제 파도처럼 높은 파도에 올라탄다 */
   12: { n: '덩굴채찍', c: 6, k: 'vine', d: '채찍이 닿는 범위의 장애물을 모두 날려 버려요' },
   13: { n: '오버드라이브', c: 12, k: 'bolt', d: '꾹 누르는 동안 빠르게 달리며 무적이에요 (최대 2초). 떼면 몸 주변으로 전기가 폭발해 근처 장애물을 날려요' },   /* v6.32 경완: 볼트 대시 → 오버드라이브, 끝날 때 전기 폭발 */   // v6.17 경완: 누른 만큼 이어지고 떼면 끝
@@ -6344,11 +6344,11 @@ const MG_COMBO_T = 2.6;   // 콤보가 이어지는 시간 (초)
 const MG_ABC = { iron: '#c8d0e0', rock: '#b0a080', dbl: '#ffe14a', qa: '#ffffff', super: '#e8e8f0', punch: '#ffb060', vine: '#6ad06a', gas: '#b47ae0', beam: '#8a7aff', fire: '#ff7a3a', scare: '#5a3a80', tele: '#e88aff', lev: '#e88aff', silk: '#e8e8f0', dig: '#c08a50', shield: '#d0b070', ghost: '#b48aff', ram: '#c8d0e0', surf: '#5ab0ff', bolt: '#ffe14a', ice: '#a8e8ff', fly: '#9ad8ff', fairy: '#ff90c8' };
 const MG_DUR = { viS: 'viW', scS: 'scW', qaS: 'qaW', iron: 'iron', rock: 'rockT', fly: 'flyT', lev: 'flyT', silk: 'silkT', dig: 'dig', ghost: 'ghost', amb: 'ambT', ram: 'ram', surf: 'surf', bolt: 'bolt', ice: 'ice', fire: 'str', beam: 'str', gas: 'str' };
 // 꾹 눌러 뿜는 기술: T 최대 시간, L 닿는 거리(0 = 화면 끝까지), b 위아래로 닿는 폭, s 효과음 간격
-const MG_STR = { fire: { T: 1.6, L: 220, b: 26, s: .26, c: '#ff8a2a' }, beam: { T: 1.3, sT: 2.4, L: 0, b: 22, s: .45, c: '#8a7aff' }, gas: { T: 1.5, L: 200, b: 60, s: .5, c: '#b47ae0' } };
+const MG_STR = { fire: { T: 2.6, L: 220, b: 26, s: .26, c: '#ff8a2a' }, beam: { T: 1.3, sT: 2.4, L: 0, b: 22, s: .45, c: '#8a7aff' }, gas: { T: 1.5, L: 200, b: 60, s: .5, c: '#b47ae0' } };
 const mgAbLeft = g => { const k = g.abK; return !k ? 0 : k === 'shield' ? (g.fx.shield ? 1 : 0) : Math.max(0, g.fx[MG_DUR[k]] || 0); };
 function mgAbStart(g, k) {
   const c = g.pas?.pow ? '#ffd84a' : MG_ABC[k] || '#fff'; if (g.pas?.pow) { g.sDarkT = 1; g.shake = Math.max(g.shake || 0, .3); g.shA = Math.max(g.shA || 0, 5); }   // S 랭크 = 금빛, 배경이 어두워지며 강하게 g.tint = { c, t: .28 }; mgRing(g, c); setTimeout(() => MGG === g && mgRing(g, '#ffffff'), 90); g.shake = Math.max(g.shake || 0, .14); g.shA = Math.max(g.shA || 0, 3);
-  mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, c, 12, 150); haptic(2); mgToast(g, g.ab.n + '!');
+  mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, c, 12, 150); haptic(2); mgToast(g, (mgMon?.name ? mgMon.name + '! ' : '') + g.ab.n + '!');   // v6.69 경완: "피카츄! 오버드라이브!"
   if (MG_DUR[k] || k === 'shield') { g.abK = k; g.abD = k === 'shield' ? 1 : g.fx[MG_DUR[k]]; g.abW = false; }
   const b = $('#mgAbBtn'); b.style.setProperty('--ac', c); b.classList.toggle('on', !!g.abK);
 }
