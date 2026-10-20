@@ -5789,7 +5789,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.81';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.82';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5994,7 +5994,7 @@ const MG_AB = {
   1: { n: '전광석화', c: 7, k: 'qa', d: '앞쪽으로 번개처럼 돌진하며 닿는 포켓몬을 모두 날려 버려요' },   // v6.17 경완: 3단 점프 → 전광석화
   2: { n: '힘껏펀치', c: 4, k: 'punch', d: '바로 앞 범위의 장애물을 모두 날려 버려요' }   /* v6.23 경완: 범위 안 전부, 쿨타임 6 → 4초 */,
   3: { n: '공중날기', c: 12, k: 'fly', d: '4초 동안, 버튼을 칠 때마다 날갯짓하며 솟아올라요. 안 치면 떨어져요' },   /* v6.24 경완: 이름 공중날기, 누르는 만큼 떠오르고 중력은 계속 */
-  4: { n: '독가스', c: 12, k: 'gas', d: '꾹 누르는 동안 독가스를 뿜어 앞 장애물을 날려요 (1.5초)' },
+  4: { n: '독가스', c: 12, k: 'gas', d: '꾹 누르는 동안 독가스를 모아 몸이 부풀어요 (무적, 최대 2초). 떼면 펑! 터지며 모은 만큼 넓게 날려요' },   /* v6.82 경완: 뿜기 → 부풀었다 터지기 */
   5: { n: '구멍파기', c: 7, k: 'dig', d: '꾹 누르는 동안 땅속에 숨어 피해요 (최대 2.5초). 떼면 튀어나오며 그 자리 포켓몬을 날려 버려요' },   /* v6.24 경완: 누르는 만큼, 파고드는 모션, 떼면 튀어 오르며 날리기 */
   6: { n: '스톤샤워', c: 9, k: 'rock', d: '4초 동안, 누를 때마다 앞쪽에 돌이 우수수 떨어져 포켓몬을 날려 버려요' },   /* v6.25 경완: 바위 방패 → 스톤 샤워 */
   7: { n: '실뿜기', c: 8, k: 'silk', d: '누르면 실을 뿜어 매달려요. 4.5초 동안은 떼었다가 다시 눌러 실을 또 뿜으며 이어 탈 수 있어요. 올라가는 중에 떼면 위로 솟구쳐요. 계속 누르고만 있으면 천천히 내려와요' },   /* v6.18 경완: 실 뿜기 — 지속 시간 안에서 다시 눌러 실 타기, 3초 → 4.5초 */
@@ -6294,6 +6294,12 @@ function mgRing(g, c) { (g.rings || (g.rings = [])).push({ x: g.PX, y: g.GY - g.
 /* v6.04 경완: 기술에 맞은 장애물은 빙글빙글 날아간다 */
 const MG_KILL_P = 10;   // v6.74 경완: 기술로 날린 포켓몬 한 마리마다 점수
 function mgKill(g, o, c) { if (o.dead) return; o.dead = true; g.bonus += MG_KILL_P; (g.kps || (g.kps = [])).push({ x: o.x, y: g.GY - o.y - o.h - 4, t: .7 }); mgHud(); o.kt = 1; o.kb = { vx: 300 + Math.random() * 160, vy: 420 + Math.random() * 220, r: 0, vr: 9 + Math.random() * 7, c: c || '#fff' }; g.shake = Math.max(g.shake || 0, .08); g.shA = Math.max(g.shA || 0, 2); mgFx(g, o.x, g.GY - o.y - o.h / 2, c || '#fff', 12); (g.bursts || (g.bursts = [])).push({ x: o.x, y: g.GY - o.y - o.h / 2, t: .3, c: c || '#fff' }); }
+function mgGasBoom(g) {   /* v6.82 경완: 모은 독가스가 펑 — 오래 모을수록 넓게 */
+  const k = Math.min(1, (g.gasS || 0) / 1.4), R = (55 + 115 * k) * (g.pas?.pow ? 1.4 : 1), px = g.PX, py = g.GY - g.y - MG_PH / 2;
+  g.obs.filter(o => !o.dead && !o.flee && Math.hypot(o.x - px, (g.GY - o.y - o.h / 2) - py) < R + o.w / 2).forEach(o => { mgKill(g, o, '#b47ae0'); if (o.kb) { o.kb.vx *= 1.2 + k * .4; o.kb.vy *= 1.1 + k * .3; } });
+  mgFx(g, px, py, '#b47ae0', 16 + 16 * k, 200 + 160 * k); mgFx(g, px, py, '#6a3a90', 10 + 8 * k, 160); mgFx(g, px, py, '#e8d4ff', 8, 260);
+  (g.rings || (g.rings = [])).push({ x: px, y: py, t: .3, c: 'rgba(180,122,224,.95)', z: R / 30 }, { x: px, y: py, t: .3, c: 'rgba(232,212,255,.9)', z: R / 46 }); (g.bursts || (g.bursts = [])).push({ x: px, y: py, t: .3, c: '#b47ae0', z: 1.5 + k });
+  g.gcl = { t: .8, R, x: px, y: py }; g.flash = .04 + .06 * k; g.hs = .04 + .04 * k; g.shake = .2 + .2 * k; g.shA = 4 + 5 * k; g.inv = Math.max(g.inv || 0, .4); g.sq = .72; g.sqv = 0; haptic(2); sfx('ab', 'gas'); sfx('ab', 'punch'); }
 function mgAmbOut(g) {   /* v6.81 경완: 기습이 끝나면 뛰어오르며 나타나고 근처 포켓몬을 날린다 */
   const R = 110 * (g.pas?.pow ? 1.5 : 1), px = g.PX, py = g.GY - g.y - MG_PH / 2;
   g.obs.filter(o => !o.dead && !o.flee && o.x > px - 40 && Math.hypot(o.x - px, (g.GY - o.y - o.h / 2) - py) < R + o.w / 2).forEach(o => { mgKill(g, o, '#9a6ae0'); if (o.kb) { o.kb.vx *= 1.3; o.kb.vy *= 1.25; } });
@@ -6327,6 +6333,7 @@ function mgAbility(down) {
   if (k === 'bolt') { if (!down) { if (g.fx.bolt > 0) g.fx.bolt = 0; return; } if (g.cool > 0 || g.fx.bolt > 0) return; g.fx.bolt = 2 * (g.pas?.pow ? 1.5 : 1); mgAbStart(g, 'bolt'); sfx('ab', 'bolt'); mgDust(g, 14, 300); return; }   /* v6.69 경완: 움츠렸다 튀어 나가는 동작은 빼고 속도감만 (더 빠르게 + 뒷배경도 빠르게 흐름) */   // 떼면 mgAbEnd 에서 쿨타임
   if (k === 'silk') { if (!down) { if (g.fx.silk) mgSilkOff(g, true); return; } if (g.fx.silk) return; const again = g.abK === 'silk' && g.fx.silkT > 0; if (!again && g.cool > 0) return;
     const ay = 320; g.fx.silk = { ay, L: Math.max(40, ay - g.y) };   /* v6.21 경완: 다시 뿜을수록 더 높이 오르던 것 → 실 끝 높이 고정 */ g.spin = 0; g.cut = true; sfx('ab', 'super'); if (again) { mgRing(g, '#ffffff'); return; } g.fx.silkT = 4.5 * (g.pas?.pow ? 1.5 : 1); mgAbStart(g, 'silk'); return; }   // 지속 시간 안에서는 다시 눌러 실을 또 뿜는다
+  if (k === 'gas') { if (!down) { if (g.fx.gasH > 0) g.fx.gasH = 0; return; } if (g.cool > 0 || g.fx.gasH > 0) return; g.fx.gasH = 2 * (g.pas?.pow ? 1.5 : 1); g.gasS = 0; mgAbStart(g, 'gas'); sfx('ab', 'gas'); return; }   // 떼거나 시간이 끝나면 mgAbEnd → mgGasBoom
   if (MG_STR[k]) { if (!down) { if (g.fx.str > 0) g.fx.str = 0; return; } if (g.cool > 0 || g.fx.str > 0) return; g.fx.str = MG_STR[k].T * (g.pas?.pow ? MG_STR[k].sT || 1.4 : 1); g.strL = 0; g.strS = 0; g.aimA = 0; g.fl = []; mgAbStart(g, k); if (k === 'fire') mgAimHint(g); return; }   // v6.04 경완: 꾹 누르는 동안 앞으로 쭉 뿜는다 (떼면 멈추고 그때부터 쿨타임)
   if (!down || g.cool > 0) return;
   const use = () => { mgCool(g); sfx('ab', k); mgAbStart(g, k); }, px = g.PX, py = g.GY - g.y - MG_PH / 2, S = g.pas?.pow ? 1.5 : 1;   // S: 시간 ×1.5, 닿는 거리 ×1.6, 여러 마리
@@ -6370,7 +6377,7 @@ function mgAimMove(dy) { const k = $('#mgAim i'); if (k) { const y = clamp(dy, -
 const MG_COMBO_T = 2.6;   // 콤보가 이어지는 시간 (초)
 // v5.92 경완: 액티브 기술은 시작과 끝을 확실하게 (색 번쩍·고리·이름, 끝나면 뚝 소리와 연기, 끝나기 직전엔 깜빡)
 const MG_ABC = { iron: '#c8d0e0', rock: '#b0a080', dbl: '#ffe14a', qa: '#ffffff', super: '#e8e8f0', punch: '#ffb060', vine: '#6ad06a', gas: '#b47ae0', beam: '#8a7aff', fire: '#ff7a3a', scare: '#5a3a80', tele: '#e88aff', lev: '#e88aff', silk: '#e8e8f0', dig: '#c08a50', shield: '#d0b070', ghost: '#b48aff', ram: '#c8d0e0', surf: '#5ab0ff', bolt: '#ffe14a', ice: '#a8e8ff', fly: '#9ad8ff', fairy: '#ff90c8' };
-const MG_DUR = { viS: 'viW', scS: 'scW', qaS: 'qaW', iron: 'iron', rock: 'rockT', fly: 'flyT', lev: 'flyT', silk: 'silkT', dig: 'dig', ghost: 'ghost', amb: 'ambT', ram: 'ram', surf: 'surf', bolt: 'bolt', ice: 'ice', fire: 'str', beam: 'str', gas: 'str' };
+const MG_DUR = { viS: 'viW', scS: 'scW', qaS: 'qaW', iron: 'iron', rock: 'rockT', fly: 'flyT', lev: 'flyT', silk: 'silkT', dig: 'dig', ghost: 'ghost', amb: 'ambT', ram: 'ram', surf: 'surf', bolt: 'bolt', ice: 'ice', fire: 'str', beam: 'str', gas: 'gasH' };
 // 꾹 눌러 뿜는 기술: T 최대 시간, L 닿는 거리(0 = 화면 끝까지), b 위아래로 닿는 폭, s 효과음 간격
 const MG_STR = { fire: { T: 2.6, L: 220, b: 26, s: .26, c: '#ff8a2a' }, beam: { T: 1.3, sT: 2.4, L: 0, b: 22, s: .45, c: '#8a7aff' }, gas: { T: 1.5, L: 200, b: 60, s: .5, c: '#b47ae0' } };
 const mgAbLeft = g => { const k = g.abK; return !k ? 0 : k === 'shield' ? (g.fx.shield ? 1 : 0) : Math.max(0, g.fx[MG_DUR[k]] || 0); };
@@ -6381,7 +6388,7 @@ function mgAbStart(g, k) {
   const b = $('#mgAbBtn'); b.style.setProperty('--ac', c); b.classList.toggle('on', !!g.abK);
 }
 function mgAbEnd(g) {
-  const k = g.abK; g.abK = null; if (k === 'bolt') { mgBoltBlast(g); g.sq = 1.22; g.sqv = 0; g.bst = -.7; mgDust(g, 12, 260); }   // 끝: 끽 멈추며 몸이 출렁
+  const k = g.abK; g.abK = null; if (k === 'gas') mgGasBoom(g); if (k === 'bolt') { mgBoltBlast(g); g.sq = 1.22; g.sqv = 0; g.bst = -.7; mgDust(g, 12, 260); }   // 끝: 끽 멈추며 몸이 출렁
   if (k === 'surf' && !g.over && (g.sL || 0) > 10) { const h = g.sL; g.y += h; g.sL = 0; g.jn = 1; g.hold = false; mgLift(g, MG_JUMP, true); g.cut = true; mgFx(g, g.PX, g.GY - g.y + 10, '#5ab0ff', 14, 240); mgFx(g, g.PX, g.GY - g.y + 10, '#e8f6ff', 10, 180); sfx('jmp'); }   /* v6.54 경완: 파도타기를 떼면 파도 꼭대기에서 한 바퀴 돌며 뛰어오른다 */ if (MG_STR[k] || k === 'bolt' || k === 'surf') { g.fx.surf = 0; g.fx.str = 0; g.fx.bolt = 0; mgCool(g); } if (k === 'silk') { mgSilkOff(g, false); g.fx.silkT = 0; mgCool(g); } if (k === 'fly') { g.fx.flyT = 0; mgCool(g); } if (k === 'dig') { g.fx.dig = 0; mgDigOut(g); mgCool(g); } if (k === 'rock') { g.fx.rockT = 0; mgCool(g); } if (k === 'qaS') { g.fx.qaW = 0; mgCool(g); } if (k === 'scS') { g.fx.scW = 0; mgCool(g); } if (k === 'viS') { g.fx.viW = 0; mgCool(g); } sfx('abEnd'); mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, '#d8d8e0', 10, 90); mgRing(g, '#9a9aaa'); $('#mgAbBtn').classList.remove('on');
 }
 // v5.83 경완: 장애물은 주인공과 같은 배율(원래 크기 비율)로, 타입마다 움직임이 다르다
@@ -6423,7 +6430,8 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
   if (g.scP > 0 && (g.scP -= dt) <= 0) mgScareGo(g); if (g.scB > 0) g.scB -= dt;
   if (g.qaP && (g.qaPT -= dt) <= 0) { const A = [...new Set([...g.qaP, ...mgAhead(g, g.qaD + 30)])].filter(o => !o.dead && !o.flee); g.qaP = null; if (A.length) mgQaHit(g, A); }
   if (g.fx.dig > 0) g.digS = (g.digS || 0) + dt;
-  g.t += dt; if (g.scG > 0) g.scG -= dt; for (const k of ['str', 'qa', 'qaW', 'scW', 'viW', 'iron', 'rockT', 'silkT', 'flyT', 'dig', 'ghost', 'ambT', 'ram', 'surf', 'bolt', 'ice', 'gas', 'beam', 'scare', 'web']) if (g.fx[k] > 0) g.fx[k] -= dt;
+  g.t += dt; if (g.scG > 0) g.scG -= dt; for (const k of ['str', 'qa', 'qaW', 'scW', 'viW', 'iron', 'rockT', 'silkT', 'flyT', 'dig', 'ghost', 'ambT', 'ram', 'surf', 'bolt', 'ice', 'gas', 'gasH', 'beam', 'scare', 'web']) if (g.fx[k] > 0) g.fx[k] -= dt;
+  if (g.fx.gasH > 0) g.gasS = (g.gasS || 0) + dt; g.gasK = g.fx.gasH > 0 ? Math.min(1, g.gasS / 1.4) : Math.max(0, (g.gasK || 0) - dt * 9); if (g.gcl) { g.gcl.t -= dt; if (g.gcl.t <= 0) g.gcl = null; }
   for (const k of ['punch', 'vine']) if (g.fx[k]) { g.fx[k].t -= dt; if (g.fx[k].t <= 0) g.fx[k] = null; }
   if (g.tint) { g.tint.t -= dt; if (g.tint.t <= 0) g.tint = null; }
   if (g.abK) { const L = mgAbLeft(g); if (L <= 0) mgAbEnd(g); else if (!g.abW && g.abK !== 'shield' && L < .6) { g.abW = true; sfx('abWarn'); } }
@@ -6498,7 +6506,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
       if (big) { g.hs = .16; g.shake = .32; g.shA = 9; g.sq = .55; g.flash = .1; } else { g.hs = .03; g.shake = .06; g.shA = 2; g.sq = .82; } g.sqv = 0;
       const hy = g.GY - o.y - o.h; mgFx(g, o.x, hy, '#ffe14a', big ? 30 : 8, big ? 280 : 140); if (big) mgFx(g, o.x, hy, '#ffffff', 10, 240); (g.bursts || (g.bursts = [])).push({ x: o.x, y: hy, t: .3, c: '#ffe14a', z: big ? 2.2 : 1, rot: Math.PI / 8 }); (g.rings || (g.rings = [])).push({ x: o.x, y: hy, t: .3, c: '#ffffff', z: big ? 2.4 : 1.1, flat: 1 }); if (big) g.rings.push({ x: o.x, y: hy, t: .45, c: '#ffe14a', z: 3.2 });
       g.pop = { x: o.x, y: hy - 10, s: '+' + pts + (mul > 1 ? ' ×' + mul : ''), t: .8, z: big ? 3 : 0 }; haptic(big ? 2 : 0); sfx('stomp', big ? 4 : Math.min(2, g.combo - 1)); mgHud(); continue; }
-    if (g.fx.dig > 0 || g.fx.ghost > 0 || g.inv > 0 || g.amb) continue;
+    if (g.fx.dig > 0 || g.fx.ghost > 0 || g.inv > 0 || g.amb || g.fx.gasH > 0) continue;
     if (g.fx.lev) { mgKill(g, o, '#e88aff'); continue; }   // v6.18 경완: 부유 중엔 부딪혀도 안 죽고 포켓몬이 날아간다
     if (g.fx.surf > 0) { mgKill(g, o, '#5ab0ff'); mgFx(g, o.x, g.GY - 10, '#bfe6ff', 10, 200); continue; }   // v6.17 경완: 파도타기로 지나가면 포켓몬이 파도에 날아간다
     if (g.fx.ram > 0 || g.fx.bolt > 0) { mgKill(g, o, '#ffe14a'); if (g.fx.bolt > 0) { g.hs = Math.max(g.hs || 0, .03); g.sq = .84; g.sqv = 0; haptic(0); } continue; }   // 오버드라이브로 칠 때마다 멈칫·움찔
@@ -6622,7 +6630,7 @@ function mgRender(g, cv = $('#mgCv')) {
     const bo = g.bo || 0, bs = g.bst || 0; let ang = g.over ? 0 : g.bl || 0; if (g.spin > 0) ang = (1 - Math.pow(g.spin, 3)) * Math.PI * 2; else if (g.y > 0 && !g.fx.flying) ang += clamp(-g.vy / 2600, -.22, .22); if (g.over && !rv) ang = -.35;
     const ir = g.fx.iron > 0, X = ir ? mgIronCtx(g, x) : x;   /* v6.27 철벽: 따로 그린 뒤 강철빛을 입힌다 */
     if (g.bB > 0) for (let i = 1; i <= 4; i++) mgDraw(x, g.me, anim, (g.at ?? g.t * 1.25) - i * .03, g.PX + qo + bo - i * 15 * g.bB, py, g.psc, !qb, (.5 - i * .1) * g.bB);   /* 오버드라이브 잔상 */
-    X.save(); X.translate(g.PX + qo + bo, py - phh / 2); X.rotate(ang); X.translate(0, phh / 2); X.scale(sx * (1 + .32 * bs), sy * (1 - .2 * bs));
+    X.save(); X.translate(g.PX + qo + bo, py - phh / 2); X.rotate(ang); X.translate(0, phh / 2); const gk = g.gasK || 0, gw = gk ? 1 + gk * .6 + Math.sin(g.t * 34) * .035 * gk : 1; X.scale(sx * (1 + .32 * bs) * gw, sy * (1 - .2 * bs) * gw);   /* v6.82 독가스: 몸이 부풀며 부들부들 */
     mgDraw(X, g.me, anim, g.over ? g.t * .5 : (g.at ?? g.t * 1.25), 0, 0, g.psc, !qb, pa); X.restore();
     if (ir) { const c = X.canvas, D = g.dpr, bx = (g.PX + qo + bo) * D, top = (py - phh * 1.4) * D, hh = phh * 1.8 * D, k = (g.t * .9) % 1.3 - .3, fl = Math.max(0, g.irF || 0) / .35;
       X.setTransform(1, 0, 0, 1, 0, 0); X.globalCompositeOperation = 'source-atop'; X.fillStyle = `rgba(${Math.round(150 + 105 * fl)},${Math.round(164 + 91 * fl)},${Math.round(184 + 71 * fl)},${(.7 + .3 * fl).toFixed(2)})`; X.fillRect(0, 0, c.width, c.height);
@@ -6631,6 +6639,11 @@ function mgRender(g, cv = $('#mgCv')) {
       X.globalCompositeOperation = 'source-over'; x.save(); x.setTransform(1, 0, 0, 1, 0, 0); x.drawImage(c, 0, 0); x.restore(); } }
   // 효과 (도트)
   const e = mgBuf(g, 'fxc'), q = mgPen(e), t = g.t, cy = py - phh / 2;
+  { const gk = g.gasK || 0; if (gk > 0) { const r = phh * (.55 + .5 * gk);   /* v6.82 부푸는 동안 몸 둘레 보랏빛 가스 + 뽀글뽀글 */
+      q.disc(g.PX, cy - phh * .25 * gk, r, r * .92, `rgba(150,80,200,${(.2 * gk).toFixed(2)})`); q.ring(g.PX, cy - phh * .25 * gk, r, r * .92, `rgba(200,150,240,${(.55 * gk).toFixed(2)})`, 0, Math.PI * 2, 2);
+      for (let i = 0; i < 8; i++) { const a = (t * 1.3 + mgH(i * 5)) % 1, bx = g.PX + (mgH(i) - .5) * r * 1.6 + Math.sin(t * 5 + i) * 3; q.disc(bx, cy + r * .4 - a * r * 1.6, 2 + mgH(i + 2) * 3 * gk, 2 + mgH(i + 2) * 3 * gk, `rgba(${i % 2 ? '190,130,235' : '120,60,170'},${(.85 * (1 - a) * gk).toFixed(2)})`); } } }
+  if (g.gcl) { const u = 1 - g.gcl.t / .8, al = 1 - u;   /* 터진 뒤 퍼지며 옅어지는 독구름 */
+    for (let i = 0; i < 12; i++) { const an = i / 12 * Math.PI * 2 + mgH(i) * .4, d = g.gcl.R * (.25 + .75 * Math.sqrt(u)) * (.7 + mgH(i + 7) * .3), r = (8 + mgH(i + 3) * 10) * (1 + u); q.disc(g.gcl.x + Math.cos(an) * d, g.gcl.y + Math.sin(an) * d * .7 - u * 10, r, r * .8, `rgba(${i % 3 ? '150,90,200' : '200,160,240'},${(.55 * al).toFixed(2)})`); } }
   if (!thumb) for (const o of g.obs) {   /* v6.81 경완: 가디·윈디·디그다·뾰로롱 같은 움직이는 장애물은 들어오기 전부터 '!' 표시 */
     if (o.dead || o.flee || o.stomp || o.kb || !MG_WARN[o.pat] || o.x > W + 200) continue;
     if (o.pat === 'dash' ? o.ch : o.pat === 'leap' ? o.lp : o.pat === 'dig' ? o.up > .05 : o.x - g.PX < 230) continue;
