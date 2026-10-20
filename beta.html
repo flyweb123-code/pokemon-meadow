@@ -5788,7 +5788,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.74';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.75';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6178,11 +6178,7 @@ const mgFit = cv => { const W = cv.clientWidth || 300, H = cv.clientHeight || 11
 function mgThumbs() {
   mgPrevStop();
   mgEl.querySelectorAll('canvas.mg-th').forEach(cv => { const { W, H, dpr } = mgFit(cv), x = cv.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.imageSmoothingEnabled = false;
-    if (cv.dataset.th === 'jump') { x.fillStyle = '#d4f0ff'; x.fillRect(0, 0, W, H); return; }
-    const sky = x.createLinearGradient(0, 0, 0, H); sky.addColorStop(0, '#7cc8f8'); sky.addColorStop(1, '#d4f0ff'); x.fillStyle = sky; x.fillRect(0, 0, W, H);
-    x.fillStyle = '#5cb84a'; x.fillRect(0, H - 16, W, 16);
-    if (cv.dataset.th === 'balloon') { const C = ['#ff5a7a', '#ffd84a', '#5ab4ff', '#8ad85a', '#c87aff']; for (let i = 0; i < 7; i++) { const bx = 24 + i * (W - 48) / 6, by = 26 + (i * 23) % 40; x.strokeStyle = '#6a6a7a'; x.lineWidth = 1; x.beginPath(); x.moveTo(bx, by + 12); x.lineTo(bx + 3, by + 34); x.stroke(); x.fillStyle = C[i % 5]; x.beginPath(); x.ellipse(bx, by, 10, 12, 0, 0, Math.PI * 2); x.fill(); x.fillStyle = 'rgba(255,255,255,.6)'; x.fillRect(bx - 5, by - 6, 3, 4); } }
-    else { for (let i = 0; i < 8; i++) { const bx = 20 + (i * 53) % (W - 40), by = 14 + (i * 31) % 60; x.fillStyle = i % 3 ? '#e84a5a' : '#5a6ad8'; x.beginPath(); x.arc(bx, by, 6, 0, Math.PI * 2); x.fill(); x.fillStyle = '#3a8a3a'; x.fillRect(bx - 1, by - 9, 3, 4); } x.fillStyle = '#b07a3a'; x.fillRect(W / 2 - 26, H - 30, 52, 16); x.fillStyle = '#8a5a2a'; for (let i = 0; i < 4; i++) x.fillRect(W / 2 - 22 + i * 13, H - 28, 3, 12); }
+    x.fillStyle = '#d4f0ff'; x.fillRect(0, 0, W, H);
   });
   const cv = mgEl.querySelector('canvas.mg-th[data-th="jump"]'), m = mgMon; if (!cv || !m) return;
   const me = m.sk || m.form, tok = mgPrev = { raf: 0 };
@@ -6192,6 +6188,29 @@ function mgThumbs() {
     await Promise.race([Promise.all([me, ...ks].map(k => mgImgOf(k).p)), new Promise(r => setTimeout(r, 3000))]); if (mgPrev !== tok || !cv.isConnected) return;
     const g = { W, H, dpr, GY, PX, t: .3, dist: 140, y: 34, vy: 0, fx: {}, shots: [], parts: [], ab: mgAb(m.form), me, psc: mgScale(me, 30, 44), phh: 26, obs: ks.map((k, i) => mk(k, [6, W * .45, W * .8][i])) };
     mgRender(g, cv);
+  });
+  ['balloon', 'berry'].forEach(k => { const c = mgEl.querySelector(`canvas.mg-th[data-th="${k}"]`); if (c) mgThumbArt(c, k, m, me, tok); });
+}
+// v6.75 경완: 풍선 터뜨리기·나무열매 받기 썸네일도 장애물 넘기처럼 도트 배경 + 내 포켓몬 스프라이트
+function mgThumbArt(cv, kind, m, me, tok) {
+  mgPrep(+m.form).then(async () => { await Promise.race([mgImgOf(me).p, new Promise(r => setTimeout(r, 3000))]); if (mgPrev !== tok || !cv.isConnected) return;
+    const { W, H, dpr } = mgFit(cv), GY = H - 22, bal = kind === 'balloon', P = MG_PX;
+    const g = { W, H, dpr, GY, PX: bal ? W * .3 : W * .5, t: .3, dist: bal ? 900 : 2100, y: bal ? 38 : 0, vy: 0, fx: {}, shots: [], parts: [], ab: mgAb(m.form), me, psc: mgScale(me, 30, 44), phh: 26, obs: [] };
+    mgRender(g, cv);
+    const b = document.createElement('canvas'); b.width = Math.ceil(W / P); b.height = Math.ceil(H / P); const q = mgPen(b.getContext('2d')), O = '#20202c';
+    if (bal) { const C = [['#ff5a7a', '#ffb0c0'], ['#ffd84a', '#fff0a0'], ['#5ab4ff', '#b8e0ff'], ['#8ad85a', '#d0f4b0'], ['#c87aff', '#e8c8ff']];
+      [[.5, .3], [.62, .58], [.74, .26], [.86, .52], [.97, .22], [.12, .3]].forEach(([fx, fy], i) => { const bx = W * fx, by = H * fy, [c0, c1] = C[i % 5];
+        q.line(bx, by + 12, bx + 3, by + 30, '#6a6a7a'); q.disc(bx, by, 11, 13, O); q.disc(bx, by, 9, 11, c0); q.rect(bx - 6, by - 7, 3, 5, c1); q.rect(bx - 2, by + 11, 4, 3, O); });
+      const px = g.PX + 30, py = GY - g.y - 46;   // 막 터진 풍선
+      for (let a = 0; a < 8; a++) { const r0 = 8, r1 = a % 2 ? 15 : 20, an = a * Math.PI / 4; q.line(px + Math.cos(an) * r0, py + Math.sin(an) * r0, px + Math.cos(an) * r1, py + Math.sin(an) * r1, a % 2 ? '#ffffff' : '#ffd84a', 2); }
+      [[-14, -2], [13, 6], [-6, 13], [9, -12]].forEach(([dx, dy]) => q.rect(px + dx, py + dy, 4, 3, '#ff5a7a')); }
+    else { const C = [['#e84a5a', '#ff9aa4'], ['#5a6ad8', '#a8b4ff'], ['#f0a020', '#ffd890'], ['#e84a5a', '#ff9aa4'], ['#c060d0', '#eab0f4']];
+      [[.12, .2], [.28, .52], [.7, .16], [.84, .48], [.95, .28]].forEach(([fx, fy], i) => { const bx = W * fx, by = H * fy, [c0, c1] = C[i % 5];
+        q.rect(bx - 1, by - 22, 2, 8, 'rgba(255,255,255,.7)'); q.disc(bx, by, 8, 8, O); q.disc(bx, by, 6, 6, c0); q.rect(bx - 3, by - 3, 2, 2, c1); q.rect(bx - 1, by - 11, 3, 4, '#3a8a3a'); q.rect(bx + 2, by - 11, 4, 2, '#5ab84a'); });
+      const bx = g.PX + 4, by = GY - g.phh - 30;   // 머리 위로 막 받는 열매 + 반짝
+      q.disc(bx, by, 9, 9, O); q.disc(bx, by, 7, 7, '#e84a5a'); q.rect(bx - 4, by - 4, 3, 3, '#ff9aa4'); q.rect(bx - 1, by - 12, 3, 4, '#3a8a3a');
+      [[-16, -6], [16, -2], [0, -20]].forEach(([dx, dy]) => { q.rect(bx + dx - 1, by + dy - 4, 2, 8, '#fff6a0'); q.rect(bx + dx - 4, by + dy - 1, 8, 2, '#fff6a0'); }); }
+    const x = cv.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.imageSmoothingEnabled = false; x.drawImage(b, 0, 0, b.width * P, b.height * P);
   });
 }
 const MG_ROLE = { still: [74, 95], hop: [39, 1], wave: [16, 21], pace: [7, 92], dash: [58, 4], leap: [60, 118], dig: [50, 27], swoop: [41, 22] };   // 움직임마다 한 마리 (앞 포켓몬이 주인공이면 뒤)
