@@ -143,7 +143,7 @@
 .dex .here{display:none!important}.filters .fsel{flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 body.fcov #wrap *{animation-play-state:paused!important}
-#sheet.off{opacity:0!important;pointer-events:none!important;z-index:-1!important}/* 닫힌 도감도 제자리에 투명하게 그려 두어 열 때 빈 칸이 깜빡이지 않게 */
+#sheet.off{display:none!important}/* v6.08 경완: 발열·메모리 — 닫힌 도감은 완전히 숨긴다 *//* 닫힌 도감도 제자리에 투명하게 그려 두어 열 때 빈 칸이 깜빡이지 않게 */
 html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .mgr-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px}.mgr-two .lk-btn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mgr-two .lk-btn{min-width:84px;margin:0;justify-content:center;text-align:center}
 .nm-edit{flex:0 1 auto!important;max-width:100%}
@@ -315,7 +315,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 #propHot.on{display:block;animation:phot 1.2s ease-in-out infinite alternate}@keyframes phot{from{opacity:.55}to{opacity:1}}
 #propHot b{display:none;position:absolute;left:50%;bottom:100%;translate:-50% -4px;white-space:nowrap;font:inherit;font-size:11px;color:#fff;background:rgba(32,32,48,.85);padding:1px 6px;border-radius:3px}
 .prop.rustle{animation:rustle .3s steps(3) 4}@keyframes rustle{0%,100%{transform:translate(-50%,-100%)}33%{transform:translate(calc(-50% - 2px),-100%) skewX(-3deg)}66%{transform:translate(calc(-50% + 2px),-100%) skewX(3deg)}}
-.flw{position:absolute;pointer-events:none;image-rendering:pixelated;background-size:100% 100%;translate:-50% -100%;transform-origin:50% 100%;animation:sway var(--d) ease-in-out var(--dl) infinite alternate}@keyframes sway{from{rotate:calc(var(--a) * -1)}to{rotate:var(--a)}}
+.flw{position:absolute;pointer-events:none;image-rendering:pixelated;background-size:100% 100%;translate:-50% -100%;transform-origin:50% 100%}   /* v6.08 경완: 발열 — 꽃·풀 흔들림 없앰 */@keyframes sway{from{rotate:calc(var(--a) * -1)}to{rotate:var(--a)}}
 @media (prefers-reduced-motion:reduce){.flw,.lily,.lily::after{animation:none}}
 .puddle{position:absolute;left:0;top:0;pointer-events:none;image-rendering:pixelated;background-size:100% 100%;transform:translate(-50%,-50%);opacity:0;transition:opacity 6s;z-index:2!important}.puddle.on{opacity:1}
 #rain{position:absolute;inset:0;overflow:hidden;pointer-events:none;display:none}#rain.on{display:block}
@@ -5719,7 +5719,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.07';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.08';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9385,14 +9385,16 @@ let last = performance.now(), acc = 0, treeT = 30, infoT = 0, saveT = 0;
 // 한 마리에서 오류가 나도 필드 전체가 멈추지 않게: 그 포켓몬만 건너뛰고 오류는 기록(pk-err)
 function frameErr(e, m) { try { console.error(e); const t = `${new Date().toISOString()} ${m ? 'sp' + m.sp + ' ' + m.state : ''} ${e && e.stack || e}`.slice(0, 600); const L = JSON.parse(localStorage.getItem('pk-err') || '[]'); if (L[0] !== t) { L.unshift(t); localStorage.setItem('pk-err', JSON.stringify(L.slice(0, 5))); } } catch (x) {} if (m) { try { m.partner = null; setState(m, 'idle', 1); } catch (x) {} } }
 // v5.86 경완: 배터리 — 필드는 1초에 30번만 그린다 (끌거나 쓰다듬는 동안은 손을 바로 따라오게 매번)
-let fLast = 0, fCov = false;
+let fLast = 0, fCov = false, fCost = 0;
+/* v6.08 경완: 발열 — 필드에 포켓몬이 6마리 이상이거나 폰이 느리면(한 번 그리는 데 평균 9ms 넘게) 1초에 20번만 그린다 */
+const fGap = () => S.mons.length >= 6 || fCost > 9 ? 48 : 31;
 /* v6.07 경완: 발열 — 폰에서 창(포켓몬·알·상점·도감·미니게임 등)이 필드를 다 덮고 있으면 필드는 그리지 않고(시간은 흐름) 꽃 흔들림 같은 CSS 움직임도 멈춘다 */
 const fieldCovered = () => narrow.matches && !!document.querySelector('body > .sheet:not([hidden]):not(.off)');
 function frame(now) {
   requestAnimationFrame(frame);
   const cov = fieldCovered(); if (cov !== fCov) { fCov = cov; document.body.classList.toggle('fcov', cov); }
-  if (now - fLast < (cov ? 100 : 31) && !drag && !petM) return; fLast = now;
-  try { frameIn(now, cov); } catch (e) { frameErr(e); }
+  if (now - fLast < (cov ? 100 : fGap()) && !drag && !petM) return; fLast = now;
+  const t0 = performance.now(); try { frameIn(now, cov); } catch (e) { frameErr(e); } if (!cov) fCost += (performance.now() - t0 - fCost) * .05;
 }
 function frameIn(now, cov) {
   const real = Math.min(.1, (now - last) / 1000); last = now;
