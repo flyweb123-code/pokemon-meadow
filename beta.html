@@ -1384,7 +1384,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 .mg-abi b{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:11px;white-space:nowrap;background:rgba(255,255,255,.85);padding:1px 6px;border:2px solid var(--frame)}}.mg-btn[disabled]{opacity:.55}
 .mg-rec{text-align:center;padding:12px 0 8px}.mg-rec i{display:block;font-style:normal;color:#e8487a;font-size:15px}.mg-rec b{display:block;font-size:40px}.mg-rec span{font-size:13px;color:#6a6a7a}.mg-got{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:8px 0}.mg-got span{display:flex;align-items:center;justify-content:center;gap:4px;padding:8px 4px;border:2px solid var(--frame);background:#fff;font-size:13px;white-space:nowrap}
 .mg-th{display:block;width:calc(100% + 24px);height:110px;margin:-10px -12px 10px;border-bottom:3px solid var(--frame);image-rendering:pixelated;cursor:pointer;background:#d4f0ff}.mg-card.soon .mg-th{filter:grayscale(.35);cursor:default}
-.mg-gl{display:flex;flex-direction:column;gap:2px;margin-top:2px}.mg-gl>b{font-size:13px;margin-bottom:2px}.mg-gl small{font-size:11px;color:#8a8a9a;margin-top:2px}.mg-gi{display:grid;grid-template-columns:64px 24px 1fr auto;gap:6px;align-items:center;font-size:12px;padding:3px 4px;color:#4a4a5a}.mg-gi img{width:22px;height:22px;image-rendering:pixelated}.mg-gi em{font-style:normal}.mg-gi i{font-style:normal;font-size:11px}.mg-gi span{font-weight:bold;color:#20202c}.mg-gi.got{opacity:.5}.mg-gi.got i{color:#3a9a4a}.mg-gi.nx{background:#fff4c8}.mg-gi.nx i{color:#e8783c}
+.mg-gl{display:flex;flex-direction:column;gap:2px;margin-top:2px}.mg-gl>b .mg-gwk{font-weight:400;margin-left:6px}.mg-gl>b{font-size:13px;margin-bottom:2px}.mg-gl small{font-size:11px;color:#8a8a9a;margin-top:2px}.mg-gi{display:grid;grid-template-columns:64px 24px 1fr auto;gap:6px;align-items:center;font-size:12px;padding:3px 4px;color:#4a4a5a}.mg-gi img{width:22px;height:22px;image-rendering:pixelated}.mg-gi em{font-style:normal}.mg-gi i{font-style:normal;font-size:11px}.mg-gi span{font-weight:bold;color:#20202c}.mg-gi.got{opacity:.5}.mg-gi.got i{color:#3a9a4a}.mg-gi.nx{background:#fff4c8}.mg-gi.nx i{color:#e8783c}
 .mg-gifts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;padding:10px;border:2px dashed #e8a83c;background:#fff8e0;margin:6px 0}.mg-gifts b{width:100%;text-align:center;font-size:14px}.mg-gifts span{display:flex;align-items:center;gap:4px;font-size:14px}.mg-gifts img{width:28px;height:28px;image-rendering:pixelated}.mg-note{font-size:12px;color:#6a6a7a;text-align:center;margin:6px 0}.mg-ends{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.mg-ends .lk-btn{margin:0;justify-content:center}
 /* v6.37 경완: 장애물 넘기 화면 버튼·글자 정리 — 점수판(어두운 판), 그만하기·기술 버튼 도트 테두리, 기록 창 칩 줄바꿈 */
 #mg section[data-mv="play"] .mg-hud{align-items:flex-start}#mg .mg-sc{display:grid;grid-template-columns:auto auto;align-items:center;column-gap:8px;row-gap:2px;padding:6px 12px 6px 8px;background:rgba(28,28,46,.66);border:3px solid #20202c;box-shadow:inset 0 0 0 2px rgba(255,255,255,.16),3px 3px 0 rgba(0,0,0,.22)}
@@ -5768,7 +5768,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.49';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.50';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6018,7 +6018,8 @@ const MG_GIFT = [{ m: 500, it: 'incense', n: 1 }, { m: 1000, it: 'stone', n: 1 }
 const MG_STONES = ['fire', 'water', 'thunder', 'leaf', 'moon', 'sun', 'ice', 'shiny', 'dusk', 'dawn'];
 const MG_GOLD_DAY = 200;   // (v6.17 부터 안 씀: 하루 제한 없음)
 const mgS = () => S.mg || (S.mg = {});
-const mgRec = () => { const M = mgS(), R = M.jump || (M.jump = { best: 0, n: 0, ms: [], gv: 2 }); if (R.gv !== 2) { R.gv = 2; R.ms = []; } return R; };
+const MG_GIFT_WK = 7 * 864e5;   // v6.50 경완: 기록별 선물은 7일마다 다시 받을 수 있다 (처음 받은 날부터 7일)
+const mgRec = () => { const M = mgS(), R = M.jump || (M.jump = { best: 0, n: 0, ms: [], gv: 2 }); if (R.gv !== 2) { R.gv = 2; R.ms = []; } const now = Date.now(); if (!R.msT || now - R.msT >= MG_GIFT_WK) { if (R.msT) R.ms = []; R.msT = R.msT ? R.msT + Math.floor((now - R.msT) / MG_GIFT_WK) * MG_GIFT_WK : now; } return R; };
 const mgEl = $('#mg');
 let mgMon = null, MGG = null;
 const mgImg = {};
@@ -6077,10 +6078,10 @@ function mgView(v) {
       const card = `<div class="mg-card" data-gc="${G.id}"><canvas class="mg-th" data-th="${G.id}" data-gt="${G.id}"></canvas><div class="mg-ch" data-gt="${G.id}"><div><b>${G.n}</b><span>${R.best ? `최고 기록 ${R.best.toLocaleString()}점` : '아직 기록이 없어요'}</span></div><i class="mg-car">›</i></div></div>`;
       // v5.88 경완: 카드를 펼치지 않고, 누르면 창 위 창(상세)에 설명·선물·시작하기
       if (open) mgDet = `<div class="win mg-popwin" role="dialog" aria-label="${G.n}"><div class="sheet-head"><h3>${G.n}</h3><button class="opt" data-mgpx>닫기</button></div><div class="mg-det"><p class="mg-how">${G.how}</p>
-          <div class="mg-abs"><div class="mg-ab2 act"><em>액티브</em><i class="mg-abic">${tyIcon(ty[0])}</i><div><p><b>${ab.n}</b><small>${TYPE_KO[ty[0]]} 타입</small></p><span>${ab.d}</span>${ab.c ? `<u>쿨타임 ${+(ab.c * (ps.cdm || 1)).toFixed(1)}초</u>` : ''}</div></div>
-          <div class="mg-ab2 pas"><em>패시브</em><i class="mg-abic"><span class="rk ${rk}">${rk}</span></i><div><p><b>${ps.n}</b><small>${rk} 랭크</small></p><span>${ps.d}</span></div></div></div>
+          <div class="mg-abs"><div class="mg-ab2 act"><em>액티브</em><i class="mg-abic">${tyIcon(ty[0])}</i><div><p><b>${ab.n}</b></p><span>${ab.d}</span>${ab.c ? `<u>쿨타임 ${+(ab.c * (ps.cdm || 1)).toFixed(1)}초</u>` : ''}</div></div>
+          <div class="mg-ab2 pas"><em>패시브</em><i class="mg-abic"><span class="rk ${rk}">${rk}</span></i><div><p><b>${ps.n}</b></p><span>${ps.d}</span></div></div></div>
           <details class="mg-rks"><summary>랭크별 패시브 모두 보기</summary>${RANKS.map(([r]) => `<div class="mg-rk${r === rk ? ' on' : ''}"><span class="rk ${r}">${r}</span><b>${MG_PASS[G.id][r].n}</b><span>${MG_PASS[G.id][r].d}</span></div>`).join('')}</details>
-          <div class="mg-gl"><b>기록별 선물</b>${MG_GIFT.map(o => { const it = o.it === 'stone' ? MG_STONES[0] : o.it, got = R.ms.includes(o.m); return `<div class="mg-gi${got ? ' got' : o === nx ? ' nx' : ''}"><span>${o.m.toLocaleString()}점</span><img src="${ITEM_ART[ITEM[it].a]}" alt=""><em>${o.it === 'stone' ? '진화의 돌 (무작위)' : ITEM[it].n}${o.n > 1 ? ' ×' + o.n : ''}</em><i>${got ? '받음' : o === nx ? '다음' : ''}</i></div>`; }).join('')}<small>1,000점이 넘으면 가끔 향로나 진화의 돌을 덤으로 받아요</small></div>
+          <div class="mg-gl"><b>기록별 선물 <small class="mg-gwk">${Math.max(1, Math.ceil((R.msT + MG_GIFT_WK - Date.now()) / 864e5))}일 뒤 초기화</small></b>${MG_GIFT.map(o => { const it = o.it === 'stone' ? MG_STONES[0] : o.it, got = R.ms.includes(o.m); return `<div class="mg-gi${got ? ' got' : o === nx ? ' nx' : ''}"><span>${o.m.toLocaleString()}점</span><img src="${ITEM_ART[ITEM[it].a]}" alt=""><em>${o.it === 'stone' ? '진화의 돌 (무작위)' : ITEM[it].n}${o.n > 1 ? ' ×' + o.n : ''}</em><i>${got ? '받음' : o === nx ? '다음' : ''}</i></div>`; }).join('')}<small>1,000점이 넘으면 가끔 향로나 진화의 돌을 덤으로 받아요</small></div>
           <button class="lk-btn main mg-go" data-g="${G.id}">시작하기</button></div></div>`;
       return card; }).join('');
     const pop = $('#mgPop'); pop.innerHTML = mgDet; pop.hidden = !mgDet;
