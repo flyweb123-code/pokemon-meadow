@@ -5722,7 +5722,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.00';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.01';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8486,7 +8486,7 @@ function eggThemes(e) {
 }
 const NIGHT = { n: '밤', t: [8, 17], hab: [], fx: /밤|어둠|달/ };
 const eggPlace = e => { if (!e.spN) return shortPlace(e.place || ''); const a = placeArea(e.place); return a && !e.spN.includes(a.split(' ').pop()) ? a + ' ' + e.spN : e.spN; };   // v5.27: 작업실 반경 안에서 주운 알은 반경 이름으로 (v5.70 경완: 앞에 시·동)
-const TH_HINT_MIN = 20;   // v5.28 경완: 힌트는 알 속 포켓몬에게 가장 크게 작용한 특성 하나만 / v5.30: 가중치 ×20 이상일 때만 (직접 넣은 포켓몬, 또는 타입+도감 낱말처럼 여러 개가 겹칠 때)
+const TH_ROLL = .4, TH_HINT_MIN = 20;   // v5.28 경완: 힌트는 알 속 포켓몬에게 가장 크게 작용한 특성 하나만 / v5.30: 가중치 ×20 이상일 때만 (직접 넣은 포켓몬, 또는 타입+도감 낱말처럼 여러 개가 겹칠 때)
 function themeHint(e) { const ks = eggThemes(e); if (!ks.length) return '어떤 기운인지 잘 모르겠다'; const sp = eggSp(e); let best = null, bw = 0;
   for (const k of ks) { const th = k === 'night' ? NIGHT : THEMES[k]; if (!th) continue; const w = themeW(sp, [th]); if (w > bw) { bw = w; best = th; } }
   return best && bw >= TH_HINT_MIN ? `${best.n}의 기운이 느껴지는 것 같다` : '어떤 기운인지 잘 모르겠다'; }
@@ -8516,6 +8516,9 @@ function rollEgg(e) {
   let r = Math.random() * ts.reduce((a, t) => a + tab[t], 0), t = ts[ts.length - 1];
   for (const x of ts) if ((r -= tab[x]) <= 0) { t = x; break; }   // 1) 알 등급 비율로 티어를 고르고
   const pool = TIER_SPS[t].some(sp => !EX.has(sp)) ? TIER_SPS[t].filter(sp => !EX.has(sp)) : TIER_SPS[t];   // v3.82: 이 알에서 뺀 포켓몬은 안 나온다 (그 몫은 같은 티어 다른 포켓몬에게)
+  /* v6.01 경완: 장소 특성이 체감되게 — 티어는 등급 비율 그대로 고른 뒤, 특성이 붙은 알은 TH_ROLL 확률로 그 티어에서 특성에 크게 맞는 포켓몬(힌트가 뜨는 만큼: 지정 종, 또는 타입+도감 낱말)을 고른다. 그 티어에 없으면 평소대로 */
+  { const tt = ths.filter(th => th !== NIGHT); if (tt.length && Math.random() < TH_ROLL) { const L = pool.map(sp => [sp, themeW(sp, tt)]).filter(x => x[1] >= TH_HINT_MIN);
+    if (L.length) { const w = L.map(([sp, v]) => v * (S.recentHatch?.includes(sp) ? .3 : 1)); let k = Math.random() * w.reduce((a, b) => a + b, 0), i = 0; while (i < L.length - 1 && (k -= w[i]) > 0) i++; return L[i][0]; } } }
   // 2) 그 티어 안에서: 종족값이 높을수록 드물게 (아래로 넘친 티어면 반대로 강한 종이 잘 나옴) × 장소 테마(기본 1, 타입 +12, 서식지 +4, 도감 낱말 +8, 특정 종 +20) × 최근 부화 ×0.3
   const w = pool.map(sp => {
     const d = SPECIES[sp]; let v = 1;
