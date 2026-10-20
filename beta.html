@@ -1759,6 +1759,11 @@ function tone(f, t0, dur, { type = 'square', vol = .07, to = 0, steps = 0 } = {}
   vol *= volG(VOL.sfx); g.gain.setValueAtTime(vol, t0); g.gain.setValueAtTime(vol, t0 + dur * .8); g.gain.linearRampToValueAtTime(0, t0 + dur);
   o.connect(g).connect(a.destination); o.start(t0); o.stop(t0 + dur + .02);
 }
+function metalRing(f, t0, dur, vol = .05, type = 'sine') {   /* 금속처럼 확 울렸다가 길게 잦아드는 소리 (v6.65) */
+  const a = actx, o = a.createOscillator(), g = a.createGain(); o.type = type; o.frequency.setValueAtTime(f, t0);
+  vol *= volG(VOL.sfx); if (vol <= 0) return; g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + .004); g.gain.exponentialRampToValueAtTime(.0001, t0 + dur);
+  o.connect(g).connect(a.destination); o.start(t0); o.stop(t0 + dur + .02);
+}
 function noise(t0, dur, vol = .12, hp = 1200) {
   const a = actx;
   if (!noiseBuf) { noiseBuf = a.createBuffer(1, a.sampleRate * .5, a.sampleRate); const d = noiseBuf.getChannelData(0); let v = 0; for (let i = 0; i < d.length; i++) { if (i % 6 === 0) v = Math.random() * 2 - 1; d[i] = v; } }
@@ -1843,7 +1848,7 @@ function mgAbSfx(k, t) {
     case 'scare': tone(1200, t, .05, { vol: .05 }); tone(600, t + .06, .05, { vol: .05 }); tone(1500, t + .12, .12, { vol: .05, to: 900 }); break;   // 왁!
     case 'tele': case 'lev': arp([1568, 1047, 2093, 1319, 2637], .04, { type: 'triangle' }); break;   // 슝 (흩어졌다 나타남)
     case 'dig': noise(t, .2, .2, 300); tone(200, t, .25, { type: 'triangle', vol: .08, to: 70 }); break;   // 파바박
-    case 'iron': tone(1400, t, .05, { type: 'square', vol: .05 }); tone(2100, t + .03, .35, { type: 'triangle', vol: .05, to: 1900 }); tone(700, t, .2, { type: 'triangle', vol: .05 }); break;   // 쨍
+    case 'iron': noise(t, .05, .16, 4200); tone(180, t, .09, { type: 'square', vol: .08, to: 90 }); [[1830, .09, .9], [2655, .07, .75], [3480, .05, .6], [5130, .04, .45], [7010, .025, .3]].forEach(([f, v, d], i) => metalRing(f, t + .005, d, v, i ? 'sine' : 'triangle')); metalRing(2668, t + .005, .8, .04); break;   // v6.65 경완: 파칭! 금속이 울리는 소리
     case 'rock': noise(t, .12, .12, 500); tone(140, t, .18, { type: 'triangle', vol: .08, to: 70 }); break;   // 쿵
     case 'shield': tone(660, t, .06, { type: 'triangle', vol: .07 }); tone(990, t + .05, .25, { type: 'triangle', vol: .05 }); break;   // 챙
     case 'ghost': tone(500, t, .45, { type: 'sine', vol: .07, to: 250 }); tone(520, t + .05, .4, { type: 'sine', vol: .04, to: 260 }); break;   // 우우웅
@@ -5783,7 +5788,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.64';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.65';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5994,7 +5999,7 @@ const MG_AB = {
   7: { n: '실뿜기', c: 8, k: 'silk', d: '누르면 실을 뿜어 매달려요. 4.5초 동안은 떼었다가 다시 눌러 실을 또 뿜으며 이어 탈 수 있어요. 올라가는 중에 떼면 위로 솟구쳐요. 계속 누르고만 있으면 천천히 내려와요' },   /* v6.18 경완: 실 뿜기 — 지속 시간 안에서 다시 눌러 실 타기, 3초 → 4.5초 */
    // v6.17 경완: 누른 만큼 실에 매달려 버티기 + 대롱대롱 + 떼면 솟구침
   8: { n: '놀래키기', c: 9, k: 'scare', d: '앞쪽 넓은 범위의 장애물이 모두 놀라 바로 도망가요' },   /* v6.55 경완: 고스트 = 놀래키기 (예전 투명해지기) */
-  9: { n: '철벽', c: 12, k: 'iron', d: '3초 동안 몸이 강철처럼 단단해져서, 부딪히는 포켓몬을 튕겨 날려 버려요' },   /* v6.27 경완: 강철 돌진 → 철벽 */
+  9: { n: '철벽', c: 12, k: 'iron', d: '5초 동안 몸이 강철처럼 단단하고 무거워져서, 부딪히는 포켓몬을 튕겨 날려 버려요' },   /* v6.27 경완: 강철 돌진 → 철벽 */
   10: { n: '화염방사', c: 12, k: 'fire', d: '꾹 누르는 동안 불꽃을 뿜어 앞 장애물을 날려요 (1.6초). 누른 채 손가락을 위아래로 움직이면 불줄기 방향이 바뀌어요' },   /* v6.30 경완: 이름 화염방사, 쿨타임 8→12초, 손가락 위아래로 겨누기 */
   11: { n: '파도타기', c: 12, k: 'surf', d: '꾹 누르는 동안 큰 파도에 올라타 앞의 장애물을 모두 쓸어 버려요 (최대 2.5초, 떼면 끝)' },   /* v6.37 경완: 실제 파도처럼 높은 파도에 올라탄다 */
   12: { n: '덩굴채찍', c: 6, k: 'vine', d: '채찍이 닿는 범위의 장애물을 모두 날려 버려요' },
@@ -6306,7 +6311,7 @@ function mgAbility(down) {
     case 'amb': { if (g.amb) return; g.fx.ambT = 3 * S; g.amb = { t: 0, cl: [] }; mgFx(g, px, py, '#4a3070', 12, 120); mgFx(g, px, py, '#8a6ab0', 8, 90); use(); break; }   /* v6.55 경완: 기습 */
     case 'lev': if (g.fx.flying) return; g.fx.flying = true; g.fx.lev = 1; g.fx.flyT = 3 * S; g.spin = 0; use(); break;
     case 'ram': g.fx.ram = 2 * S; use(); break;
-    case 'iron': g.fx.iron = 3 * S; g.irF = .35; g.sq = .7; g.sqv = 0; mgRing(g, '#e8eef6'); mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, '#dfe6f0', 14, 180); g.shake = Math.max(g.shake || 0, .1); g.shA = Math.max(g.shA || 0, 3); use(); break;   // 쨍! 하고 몸이 굳는다
+    case 'iron': g.fx.iron = 5 * S;   /* v6.65 경완: 3 → 5초 */ g.irF = .35; g.sq = .7; g.sqv = 0; mgRing(g, '#e8eef6'); mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, '#dfe6f0', 14, 180); g.shake = Math.max(g.shake || 0, .1); g.shA = Math.max(g.shA || 0, 3); use(); break;   // 쨍! 하고 몸이 굳는다
     case 'ice': g.fx.ice = 4 * S; use(); break;
   }
 }
@@ -6566,7 +6571,7 @@ function mgRender(g, cv = $('#mgCv')) {
   { const on = g.pas?.pow && (g.abK || g.fx.str > 0 || g.sDarkT > 0); g.sDk = clamp((g.sDk || 0) + (on ? .12 : -.06), 0, 1); if (g.sDk > 0) { x.fillStyle = `rgba(14,10,36,${(.5 * g.sDk).toFixed(3)})`; x.fillRect(0, 0, W, H); } }   /* v6.17 경완: S 랭크 기술을 쓰는 동안 배경이 어두워진다 */
   // 포켓몬 (장애물 → 주인공)
   for (const o of g.obs) { const a = o.dead ? Math.max(0, o.kt / .35) : o.flee ? clamp(2.2 - o.flee, 0, 1) : 1; const by = o.t === 'f' ? Math.sin(g.t * 5 + o.ph) * 4 : 0;
-    if (o.kb) { x.save(); if (o.kb.dn) { x.beginPath(); x.rect(-20, -40, W + 40, GY + 42); x.clip(); }   /* 철벽 땅울림: 땅속으로 쑥 */ x.translate(o.x, GY - o.y - o.h / 2); x.rotate(o.kb.r); mgDraw(x, o.k, 'Hurt', g.t, 0, o.h / 2, o.sc, false, clamp(o.kt / .3, 0, 1)); x.restore(); continue; }
+    if (o.kb) { x.save(); x.translate(o.x, GY - o.y - o.h / 2); x.rotate(o.kb.r); mgDraw(x, o.k, 'Hurt', g.t, 0, o.h / 2, o.sc, false, clamp(o.kt / .3, 0, 1)); x.restore(); continue; }
     if (o.stomp) { x.save(); x.translate(o.x, GY - o.y); x.scale(1 + (1 - o.kt / .35) * .5, Math.max(.2, o.kt / .35)); mgDraw(x, o.k, 'Hurt', g.t, 0, 0, o.sc, false, a); x.restore(); continue; }
     if (o.sq && o.sq !== 1) { x.save(); x.translate(o.x, GY - o.y); x.scale(2 - o.sq, o.sq); mgDraw(x, o.k, 'Idle', g.t + o.ph, 0, 0, o.sc, false, a); x.restore(); continue; }
     if (o.pat === 'dig') { x.save(); x.beginPath(); x.rect(-20, -20, W + 40, GY + 21); x.clip(); mgDraw(x, o.k, 'Idle', g.t + o.ph, o.x, GY - o.y, o.sc, o.flee, a); x.restore(); continue; }   // 땅 위로 나온 만큼만
