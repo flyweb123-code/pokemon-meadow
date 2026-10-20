@@ -5783,7 +5783,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.62';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.63';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6446,7 +6446,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
     if (o.dead || o.flee) continue;
     const gz = g.pas.graze || 0, ol = o.x - o.w / 2 + 4 + gz, or = o.x + o.w / 2 - 4 - gz, ob = o.y, ot = o.y + o.h - 4 - gz;
     // v5.88 경완: 밟기 판정을 넉넉하게 — 떨어지는 중이고 발이 몸 위쪽 절반(또는 머리 16px 안)에서 내려왔으면 밟기, 옆으로도 8px 더 봐준다
-    const stp = g.vy < 0 && !g.fx.flying && g.y0 >= Math.min(ot - 16, o.y + o.h * .5), ex = stp ? 8 : 0;
+    const stp = g.vy < 0 && !g.fx.flying && !(g.fx.bolt > 0) && g.y0 >= Math.min(ot - 16, o.y + o.h * .5), ex = stp ? 8 : 0;
     if (pr + ex < ol || pl - ex > or || pt < ob || pb > ot + (stp ? 6 : 0)) continue;
     // v5.79 경완: 위에서 떨어지며 닿으면 밟기 → 튕겨 오르고 점수 (연속으로 밟으면 더)
     if (stp) { o.dead = true; o.kt = .35; o.stomp = 1; g.combo++; g.cT = MG_COMBO_T; g.cMax = Math.max(g.cMax || 0, g.combo); g.cPop = .25; const mul = Math.min(5, g.combo), pts = Math.round(20 * mul * (g.pas.stomp || 1)); g.bonus += pts;
