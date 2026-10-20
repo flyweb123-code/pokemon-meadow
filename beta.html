@@ -5800,7 +5800,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.36';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.37';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6919,7 +6919,7 @@ function mgCountUp(root) {
   const els = [...root.querySelectorAll('[data-cnt]')]; els.forEach((e, i) => {
     const n = +e.dataset.cnt, pre = e.dataset.pre || '', suf = e.dataset.suf || '', d0 = i === 0 ? 150 : 650 + (i - 1) * 380, dur = i === 0 ? 700 : 520;
     setTimeout(() => { const t0 = performance.now(), row = e.closest('.rw'); if (row) row.classList.add('in');
-      const f = now => { const k = Math.min(1, (now - t0) / dur), v = Math.round(n * (1 - (1 - k) ** 3)); e.textContent = pre + v.toLocaleString() + suf; if (k < 1) requestAnimationFrame(f); else if (row && n > 0) { row.classList.add('pop'); sfx(row.classList.contains('rw-g') ? 'pickup' : 'pop'); haptic(1); } };
+      const f = now => { const k = Math.min(1, (now - t0) / dur), v = Math.round(n * (1 - (1 - k) ** 3)); e.textContent = pre + v.toLocaleString() + suf; if (k < 1) requestAnimationFrame(f); else if (row && n > 0) { row.classList.add('pop'); sfx(row.classList.contains('rw-g') ? 'pickup' : 'heart');   /* v7.37 경완: 친밀도 줄은 펑(폭죽 같던 pop) 대신 하트 소리 */ haptic(1); } };
       requestAnimationFrame(f); }, d0);
   });
 }
@@ -6935,7 +6935,8 @@ function mgEnd(g) {
   if (!T) for (const o of MG_GIFT) if (dist >= o.m && !R.ms.includes(o.m)) { R.ms.push(o.m); give(o.it, o.n); }
   if (!T && dist >= 1000 && Math.random() < Math.min(.3, dist / 8000))   /* v6.16 경완: 1,000점부터 */ give(Math.random() < .7 ? 'incense' : 'stone', 1);
   if (T) for (const o of MG_GIFT.slice(0, 2)) gifts.push({ it: o.it === 'stone' ? MG_STONES[Math.floor(Math.random() * MG_STONES.length)] : o.it, n: o.n });   /* v7.33 경완: 시험 판은 점수 상관없이 선물 창을 보여 줌 (실제로 안 받음) */
-  save(); renderGold(); if (nb) sfx('newdex');
+  save(); renderGold(); if (nb) setTimeout(() => sfx('newdex'), 900);   /* v7.37: 최고 기록 소리는 점수 다 오른 뒤 */
+  const fmW = frMaxQ.length > 0; if (fmW) { clearTimeout(frMaxT); frMaxT = 0; }   /* v7.37 경완: 친밀도 만점 창(폭죽)은 기록·선물 연출이 끝난 뒤에 */
   const HEART = '<svg viewBox="0 0 7 6" width="20" height="18" shape-rendering="crispEdges" aria-hidden="true"><path fill="#2a1e28" d="M1 0h2v1h1V0h2v1h1v3H6v1H5v1H2V5H1V4H0V1h1z"/><path fill="#ff4a78" d="M1 1h2v1h1V1h2v2H5v1H4v1H3V4H2V3H1z"/><path fill="#ffc0d0" d="M1 1h1v1H1z"/></svg>';
   const res = `<div class="mg-rec">${nb && prev > 0 ? '<i class="mg-nb">최고 기록!</i>' : ''}<b><em data-cnt="${dist}">0</em>점</b></div>   <!-- v6.53 경완: 기록창 정리 + 보상 받는 연출 -->
     <div class="mg-st"><div><small>달리기</small><b>${Math.floor(g.dist / 25).toLocaleString()}m</b></div><div><small>밟기</small><b>${g.bonus.toLocaleString()}점</b></div><div><small>최대 콤보</small><b>${g.cMax >= 2 ? g.cMax : '-'}</b></div><div><small>페이즈</small><b>${g.phase}</b></div></div>
@@ -6945,9 +6946,12 @@ function mgEnd(g) {
   if (!T && (fr || joy)) log(`${J({ name: m.name }, '이/가')} 장애물 넘기에서 ${dist.toLocaleString()}점을 냈다!`, [], true);
   MGG.run = false; mgOpenG = '';   /* v6.48 경완: 기록은 게임이 끝난 그 화면 위에 팝업으로 (닫거나 게임 고르기 → 고르기 화면) */
   const pop = $('#mgPop'); pop.innerHTML = `<div class="win mg-popwin" role="dialog" aria-label="장애물 넘기 기록"><div class="sheet-head"><h3>장애물 넘기 기록</h3><button class="opt" data-mgpx>닫기</button></div><div id="mgRes">${res}</div><div class="mg-ends"><button class="lk-btn" data-mglist>게임 고르기</button><button class="lk-btn main" data-mgagain>다시 하기</button></div></div>`; pop.hidden = false; mgCountUp(pop);
+  const fmGo = () => { if (fmW && frMaxQ.length) frMaxT = setTimeout(frMaxShow, 300); };
+  if (!gifts.length) setTimeout(fmGo, 2100);
   if (gifts.length) { const lk = document.createElement('i'); lk.className = 'mg-lock'; pop.appendChild(lk);   /* v7.33 경완: 기록창·친밀도 연출이 다 끝난 뒤 선물 팝업 — 그 전엔 화면 잠금 (실수로 넘어가지 않게) */
-    setTimeout(() => { if (pop.hidden) return; const gp = document.createElement('div'); gp.className = 'mg-gpop'; gp.innerHTML = `<div class="win" role="dialog" aria-label="선물"><b class="mg-gt">선물을 받았어요!</b><div class="mg-gl2">${gifts.map(o => `<span><img src="${ITEM_ART[ITEM[o.it].a]}" alt="" data-fit><b>${ITEM[o.it].n}${o.n > 1 ? ' ×' + o.n : ''}</b></span>`).join('')}</div>${T ? '<p>시험 판이라 실제로 받지는 않아요</p>' : '<p>가방에 넣어 뒀어요</p>'}<button class="lk-btn main">확인</button></div>`;
-      lk.remove(); pop.appendChild(gp); if (typeof artFit === 'function') artFit(gp); sfx('shiny'); haptic(2); gp.querySelector('button').onclick = () => { sfx('tap'); gp.remove(); }; }, 2300); }
+    setTimeout(() => { if (pop.hidden) return fmGo(); const gp = document.createElement('div'); gp.className = 'mg-gpop'; gp.innerHTML = `<div class="win" role="dialog" aria-label="선물"><b class="mg-gt">선물을 받았어요!</b><div class="mg-gl2">${gifts.map(o => `<span><img src="${ITEM_ART[ITEM[o.it].a]}" alt="" data-fit><b>${ITEM[o.it].n}${o.n > 1 ? ' ×' + o.n : ''}</b></span>`).join('')}</div>${T ? '<p>시험 판이라 실제로 받지는 않아요</p>' : '<p>가방에 넣어 뒀어요</p>'}<button class="lk-btn main">확인</button></div>`;
+      lk.remove(); pop.appendChild(gp); if (typeof artFit === 'function') artFit(gp); sfx('shiny'); haptic(2); gp.style.pointerEvents = 'none'; setTimeout(() => { gp.style.pointerEvents = ''; }, 800);   /* v7.37 경완: 뜨자마자 바로 닫히지 않게 잠깐 잠금 */
+      gp.querySelector('button').onclick = () => { sfx('tap'); gp.remove(); fmGo(); }; }, 2300); }
 }
 // 조작: 화면·점프 버튼을 누르면 뛰고, 꾹 누르면 더 높이. 능력 버튼(날기는 꾹 누르는 동안)
 // v5.80 경완: 화면 아무 곳이나 누르면 점프, 능력은 오른쪽 아래 동그란 아이콘
