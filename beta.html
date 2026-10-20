@@ -663,7 +663,7 @@ ol.log li.big .txt{color:#c03838}
 .tr-nm{flex:1;min-width:0;display:flex;align-items:center;gap:4px;cursor:text}.tr-nm .pen-b{flex:none;width:14px;height:14px;color:var(--dim)}.tr-nm .pen-b svg{width:100%;height:100%;display:block}.tr-nm input{border:0;outline:0;background:none;padding:0;margin:0;color:var(--win-ink);font-family:inherit;font-size:20px;font-weight:700;max-width:100%}.tr-nm input::placeholder{color:var(--win-ink);opacity:1;font-weight:700}.tr-nm input:focus::placeholder{opacity:.3}.tr-nm input{caret-color:var(--win-ink)}
 .tr-sex{flex:none;margin-left:auto;width:32px;height:32px;padding:0;border:0;background:none;font:inherit;font-size:22px;line-height:1;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .tr-sex.m{color:#3870d0}.tr-sex.f{color:#e05888}.tr-sex:active{transform:scale(.88)}
-.tr-badge{align-self:flex-start;display:inline-flex;align-items:center;padding:3px 10px;border:2px solid #c8962a;background:#fff7e0;color:#6a4a10;box-shadow:2px 2px 0 rgba(0,0,0,.15);font-size:13px}.tr-badge b{font-weight:700;white-space:nowrap}
+.tr-badge{align-self:flex-start;display:inline-flex;align-items:center;padding:3px 10px;border:2px solid #c8962a;background:#fff7e0;color:#6a4a10;box-shadow:2px 2px 0 rgba(0,0,0,.15);font-size:13px}.tr-badge b{font-weight:700;white-space:nowrap}button.tr-badge{font:inherit;font-size:13px;cursor:pointer;gap:5px}.tr-bi{font-style:normal;font-size:10px;opacity:.7;transition:transform .15s}.tr-badge[aria-expanded=true] .tr-bi{transform:rotate(180deg)}.tr-next{margin-top:6px;font-size:12px;line-height:1.45;color:#5a4a30}.tr-next b{color:#b0701a}.tr-next .tr-bar{height:8px;margin-top:4px;border:2px solid #c8962a;background:#fff7e0;box-sizing:border-box}.tr-next .tr-bar i{display:block;height:100%;background:#f0b030}   /* v6.75 경완: 배지 누르면 다음 등급까지 도감 몇 마리 */.dex-pct{margin-left:auto;padding:2px 8px;border:2px solid #c8962a;background:#fff7e0;color:#6a4a10;font-size:13px;font-weight:700;white-space:nowrap}
 /* 트레이너 카드 등급(r0~r10): 높을수록 화려하게 */
 .inf-acts{display:flex;gap:6px;align-items:center;margin-left:auto}.inf-ico{width:34px;height:34px;padding:0;display:grid;place-items:center;background:#fff;border:2px solid var(--card-frame);box-shadow:2px 2px 0 rgba(0,0,0,.18);cursor:pointer;-webkit-tap-highlight-color:transparent}.inf-ico:active{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.18)}.inf-ico svg{display:block}
 #info.bud .inf-ico{border-color:#e9a3bf}
@@ -1466,7 +1466,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
 
 <div class="sheet" id="sheet" hidden>
   <div class="win dexwin" role="dialog" aria-label="포켓몬 도감">
-    <div class="sheet-head"><h3><span id="dexTitle">포켓몬 도감</span><span class="cap" id="dexOwn"></span></h3><button class="opt" id="closeDex">닫기</button></div>
+    <div class="sheet-head"><h3><span id="dexTitle">포켓몬 도감</span><span class="cap" id="dexOwn"></span></h3><span class="dex-pct" id="dexPct" title="도감 완성률"></span><button class="opt" id="closeDex">닫기</button></div>
     <div class="filters">
       <span class="qw"><input id="dexQ" type="search" placeholder="이름이나 번호" aria-label="이름이나 번호로 찾기" autocomplete="off"><svg class="qi" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10 10l4.5 4.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/></svg><button type="button" class="qx" aria-label="검색어 지우기">✕</button></span>
       <button class="fsel on" id="dexSort" data-v="0" aria-haspopup="listbox">등록순</button>
@@ -1530,7 +1530,8 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
         <div class="tr-info">
           <div class="tr-top"><label class="nm-edit tr-nm"><input id="trName" maxlength="8" aria-label="트레이너 이름" autocomplete="off" placeholder="트레이너"><span class="pen-b" aria-hidden="true"></span></label>
             <button type="button" class="tr-sex" id="trSex" aria-label="성별 바꾸기"></button></div>
-          <div class="tr-badge"><b id="trRank">견습 트레이너</b></div>
+          <button type="button" class="tr-badge" id="trBadge" aria-expanded="false"><b id="trRank">견습 트레이너</b><i class="tr-bi" aria-hidden="true">▾</i></button>
+          <div class="tr-next" id="trNext" hidden></div>
         </div>
       </section>
       <section class="set-sec pf-sec">
@@ -5722,7 +5723,7 @@ const picked = new Set();
 const grid = $('#dexGrid'), dexBtns = {};
 grid.addEventListener('load', e => { if (e.target.tagName === 'IMG') dexImgFit(e.target); }, true);
 let dexMode = 'field';
-function openDex(mode = 'field') { dexMode = mode; dexSortReset(); sheet.classList.toggle('pick-buddy', mode === 'buddy'); $('#dexTitle').textContent = mode === 'buddy' ? '짝꿍 고르기' : '포켓몬 도감'; picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); sheet.hidden = false; $('#dexOwn').textContent = `${S.unlocked.size}/${Object.keys(SPECIES).length}`; refreshDexBadges(); filterDex(); if (!narrow.matches) $('#dexQ').focus(); }
+function openDex(mode = 'field') { dexMode = mode; dexSortReset(); sheet.classList.toggle('pick-buddy', mode === 'buddy'); $('#dexTitle').textContent = mode === 'buddy' ? '짝꿍 고르기' : '포켓몬 도감'; picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); sheet.hidden = false; $('#dexOwn').textContent = `${S.unlocked.size}/${Object.keys(SPECIES).length}`; { const r = S.unlocked.size / Object.keys(SPECIES).length * 100; $('#dexPct').textContent = (r >= 100 ? 100 : r < 10 ? r.toFixed(1) : Math.floor(r * 10) / 10) + '%'; }   /* v6.75 경완: 도감 완성률 */ refreshDexBadges(); filterDex(); if (!narrow.matches) $('#dexQ').focus(); }
 // the menu works like a tab bar: one window at a time, tapping the open one closes it
 function hideSheets() { sheet.hidden = true; $('#mgr').hidden = true; $('#run').hidden = true; $('#set').hidden = true; $('#shop').hidden = true; $('#ibag').hidden = true; }
 function tabTo(el, open) { const was = !el.hidden; closeToggles(); hideSheets(); if (!was) open(); }
@@ -5788,7 +5789,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.75';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.76';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6686,7 +6687,7 @@ function mgRender(g, cv = $('#mgCv')) {
   if (g.pop) { const k = .8 - g.pop.t, sc = k < .08 ? 1 + k / .08 * .8 : Math.max(1, 1.8 - (k - .08) / .12 * .8); x.save(); x.globalAlpha = Math.min(1, g.pop.t / .2); x.translate(g.pop.x, g.pop.y); x.scale(sc, sc); x.textAlign = 'center'; txt(g.pop.s, 0, 0, 16 + (g.pop.z || 0) * 2, g.pop.z >= 3 ? '#ff8a3a' : '#ffe14a'); x.restore(); }
   if (g.cd > 0) { const n = Math.ceil(g.cd - .6), s = n > 0 ? String(n) : '시작!', k = 1 + ((g.cd - .6) % 1 + 1) % 1 * .5; x.save(); x.textAlign = 'center'; x.textBaseline = 'middle'; x.translate(W / 2, H * .4); x.scale(k, k); txt(s, 0, 0, 56, n > 0 ? '#fff' : '#ffd84a', 8); x.restore(); }
   if (g.aimG && !(g.fx.str > 0)) { g.aimG = 0; $('#mgAim').hidden = true; }
-  if (g.toast) { x.textAlign = 'center'; txt(g.toast.s, W / 2, g.tY || 80, 15, '#fff'); x.textAlign = 'start'; }
+  if (g.toast) { x.textAlign = 'center'; txt(g.toast.s, W / 2, Math.max(g.tY || 80, H * .3), 15, '#fff');   /* v6.76 경완: 안내 글은 화면 가운데 조금 위 */ x.textAlign = 'start'; }
   if (g.abK && g.abK !== 'shield' && !g.over) { const L = mgAbLeft(g), k = clamp(L / (g.abD || 1), 0, 1), bw = 48, bx = Math.round(g.PX - bw / 2), by = Math.round(py - phh - 30), c = g.abW && Math.floor(g.t * 14) % 2 ? '#ffffff' : MG_ABC[g.abK] || '#ffe14a';   /* v6.05 경완: 남은 시간은 엄지에 가리지 않게 포켓몬 머리 위에 */
     x.fillStyle = '#20202c'; x.fillRect(bx - 2, by - 2, bw + 4, 9); x.fillStyle = 'rgba(255,255,255,.35)'; x.fillRect(bx, by, bw, 5); x.fillStyle = c; x.fillRect(bx, by, Math.round(bw * k / 2) * 2, 5); x.textAlign = 'center'; txt(L.toFixed(1) + '초', g.PX, by - 6, 12, '#fff', 3); x.textAlign = 'start'; }
   if (g.combo >= 2 && g.cT > 0) { const sc = 1 + Math.max(0, g.cPop || 0) * 1.2, mul = Math.min(5, g.combo), cx = Math.round(g.PX + g.pw + 22), cy = Math.round(GY - g.y - (g.phh || 36) - 2), c = g.combo >= 10 ? '#ff5a3a' : mul >= 5 ? '#ff8a30' : mul >= 3 ? '#ffb030' : '#ffe14a';   // v6.16 경완: 콤보는 게임을 가리지 않게 캐릭터 옆에 작게
@@ -8291,12 +8292,14 @@ function renderTrainer() {
   inp.style.width = Math.max(2, (inp.value || inp.placeholder).length) + .3 + 'em';
   const sx = $('#trSex'); sx.className = 'tr-sex ' + t.sex; sx.textContent = t.sex === 'f' ? '♀' : '♂'; sx.setAttribute('aria-label', t.sex === 'f' ? '여자 (눌러서 바꾸기)' : '남자 (눌러서 바꾸기)');
   $('#trRank').textContent = L.name;
+  { const nx = $('#trNext'); nx.innerHTML = L.next ? `도감 <b>${L.k}</b>마리 모았어요.<br>다음 <b>${L.next[1]}</b>까지 <b>${L.next[0] - L.k}</b>마리 더 모으면 돼요.<div class="tr-bar"><i style="width:${Math.round((L.k - TR_LV[L.i][0]) / (L.next[0] - TR_LV[L.i][0]) * 100)}%"></i></div>` : `도감 <b>${L.k}</b>마리, 가장 높은 등급이에요!`; }
   document.querySelector('.tr-card').className = 'tr-card r' + L.i + (L.i >= 6 ? ' tr-shine' : '') + (L.i >= 8 ? ' tr-spark' : '');
 }
 $('#trName').addEventListener('input', e => { e.target.style.width = Math.max(2, (e.target.value || e.target.placeholder).length) + .3 + 'em'; });
 $('#trName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } });
 $('#trName').addEventListener('change', e => { const v = e.target.value.trim().slice(0, 8), t = trOf(); if (v === t.n) return; t.n = v; e.target.value = v; S.mons.forEach(m => { m.th = null; }); save(); renderTrainer(); if (v) log(`트레이너 이름을 <b>${esc(v)}</b>(으)로 정했다.`); });
 document.querySelector('.tr-top').addEventListener('click', e => { if (!e.target.closest('.tr-sex, input')) $('#trName').focus(); });   /* 이름 칸 옆 빈 곳을 눌러도 바로 이름 고치기 */
+$('#trBadge').addEventListener('click', e => { e.stopPropagation(); const nx = $('#trNext'), b = $('#trBadge'); nx.hidden = !nx.hidden; b.setAttribute('aria-expanded', String(!nx.hidden)); sfx('tap'); });
 $('#trSex').addEventListener('click', () => { const t = trOf(); t.sex = t.sex === 'f' ? 'm' : 'f'; sfx('tap'); save(); renderTrainer(); });
 // 프로필 '다음까지': 부화기 알 중 가장 빨리 깨는 알, 짝꿍 중 가장 빨리 진화하는 포켓몬까지 남은 km. 줄어들면 잠깐 초록색
 const kmUp = v => (Math.ceil(v * 100 - 1e-6) / 100).toFixed(2);   // 남은 거리는 올림 (다 차기 전엔 0.00 이 안 보이게)
