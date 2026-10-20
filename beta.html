@@ -633,6 +633,7 @@ ol.log li.big .txt{color:#c03838}
 .dex small{font-size:12px;color:var(--dim)}
 
 /* Meadow manager: 20 resident slots on the left, the chosen resident's sheet on the right. */
+#mgr.gfld,#mgr.gfld .mgrwin{--win:#e6f0da}   /* v6.12 경완: 필드·짝꿍 창 바탕은 연한 풀빛 */
 .mgrwin{max-width:980px;height:min(88vh,720px);display:flex;flex-direction:column}
 .sheet-head .cap{font-size:16px;font-weight:400;margin-left:10px;color:var(--dim)}
 .sheet-head .cap b{color:var(--win-ink)}
@@ -859,7 +860,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .slot .mini i{display:block;height:100%;background:var(--hunger)}
 .slot .gg{width:88%;display:grid;gap:2px}.slot .gr{display:flex;align-items:center;gap:3px;min-width:0}.slot .gr svg{width:9px;height:9px;flex:none}.slot .gr .mini{flex:1;width:auto;min-width:0;height:3px;border-width:2px}
 .slot .gr.hu .mini i{background:var(--fullness)}.slot .gr.cl .mini i{background:var(--clean)}.slot .gr.jo .mini i{background:var(--lonely)}.slot .gr.low .mini i{background:var(--low)}.bar.low>span:first-child,.bar.low .num{color:var(--low)}.slot .gr .gi{display:flex;flex:none}.slot .gr.low .gi{animation:lowp 1.2s steps(2) infinite}.gr.low .mini{animation:lowglow 1.8s ease-in-out infinite}@keyframes lowglow{0%,100%{box-shadow:0 0 2px rgba(240,80,60,.35)}50%{box-shadow:0 0 6px 1px rgba(240,80,60,.75)}}.gr.low .gi svg{filter:drop-shadow(0 0 1.5px rgba(240,80,60,.7))}   /* v4.05 경완: 빨간 게이지는 은은하게 빛난다 */@keyframes lowp{50%{transform:translateY(-1px)}}
-.slot .sl-tags{position:absolute;left:4px;top:4px;display:flex;gap:3px;pointer-events:none}.slot .sl-tags .st{position:static}.slot .sl-bud{font-size:11px;padding:1px 4px;line-height:normal;background:#e8679a;color:#fff}.slot.bud{background:#fcdde9}.slot.bud.bud:not([aria-current="true"]){border-color:#f4b4cc}   /* v4.06 경완: 짝꿍 슬롯 테두리 연한 분홍 */.slot.bud .mini{border-color:#9a3462}
+.slot .sl-tags{position:absolute;left:4px;top:4px;display:flex;gap:3px;align-items:center;pointer-events:none}.slot .sl-tags .rk{width:18px;font-size:11px;line-height:14px}.slot .sl-tags .st{position:static}.slot .sl-bud{font-size:11px;padding:1px 4px;line-height:normal;background:#e8679a;color:#fff}.slot.bud{background:#fcdde9}.slot.bud.bud:not([aria-current="true"]){border-color:#f4b4cc}   /* v4.06 경완: 짝꿍 슬롯 테두리 연한 분홍 */.slot.bud .mini{border-color:#9a3462}
 .slot.empty{border-style:dashed;color:var(--dim);justify-content:center;background:transparent}
 .slot.empty .plus{font-size:24px;line-height:1}
 .slot .no{position:absolute;right:5px;top:4px;font-size:10px;color:var(--dim)}.slot .sl-x{position:absolute;right:0;top:0;font-size:15px;line-height:1;padding:5px 6px 8px 10px;color:var(--dim);z-index:1}.slot .sl-x:active{color:var(--frame)}
@@ -1208,7 +1209,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 #notiSec .op-row+.op-row{margin-top:10px}#notiSec .noti-sub{padding-left:12px;font-size:14px}#notiSec.off .noti-sub{opacity:.45}#notiSec.off .noti-sub .op-sw{pointer-events:none}
 #openRun,#openMgr,#openFld{position:relative}.mdot{position:absolute;top:6px;right:7px;width:6px;height:6px;background:#e04838;pointer-events:none}
 @keyframes tbump{50%{transform:scale(1.25)}}
-#eggAuto{font:inherit;font-size:12px;display:inline-flex;align-items:center;gap:6px;padding:3px 6px 3px 8px;background:#fff;color:var(--dim);border:3px solid var(--inner);cursor:pointer;-webkit-tap-highlight-color:transparent}#eggAuto i{position:relative;width:26px;height:14px;background:#b8b8b8;border:2px solid var(--frame)}#eggAuto i::after{content:'';position:absolute;top:0;left:0;width:10px;height:10px;background:#fff;border-right:2px solid var(--frame)}#eggAuto[aria-pressed=true]{background:#48b048;color:#fff;border-color:var(--frame)}#eggAuto[aria-pressed=true] i{background:#2f7f2f}#eggAuto[aria-pressed=true] i::after{left:12px;border-right:0;border-left:2px solid var(--frame)}#eggSort,#eggNew{font:inherit;font-size:12px;padding:3px 8px;background:var(--win);color:var(--frame);border:3px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.2);cursor:pointer;transition:transform .06s,box-shadow .06s;-webkit-tap-highlight-color:transparent}#eggSort:active,#eggNew:active{transform:translate(2px,2px);box-shadow:0 0 0 rgba(0,0,0,0)}
+#eggAuto{font:inherit;font-size:12px;display:inline-flex;align-items:center;gap:6px;padding:3px 6px 3px 8px;background:#fff;color:var(--dim);border:3px solid var(--inner);cursor:pointer;-webkit-tap-highlight-color:transparent}#eggAuto i{position:relative;width:26px;height:14px;background:#b8b8b8;border:2px solid var(--frame)}#eggAuto i::after{content:'';position:absolute;top:0;left:0;width:10px;height:10px;background:#fff;border-right:2px solid var(--frame)}#eggAuto[aria-pressed=true]{background:#48b048;color:#fff;border-color:var(--frame)}#eggAuto[aria-pressed=true] i{background:#2f7f2f}#eggAuto[aria-pressed=true] i::after{left:12px;border-right:0;border-left:2px solid var(--frame)}#eggSortG button{white-space:nowrap}
 #eggAll{font:inherit;font-size:13px;padding:3px 10px;background:#e8a020;color:#fff;border:3px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.25);cursor:pointer}
 @keyframes hpop{0%{transform:scale(.25)}50%{transform:scale(1.1)}100%{transform:none}}
 .hatch-stage.evo{background:#1e2340;box-shadow:inset 0 0 0 3px #46508a;transition:background-color .3s}
@@ -1604,7 +1605,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
     <div class="run-body">
       <section class="rtab" data-tab="egg">
         <div class="incu-box" id="incu"></div>
-        <div class="mgr-tools"><button id="eggAuto" class="eauto" aria-pressed="false" title="부화기가 비면 가방에서 높은 등급 알부터 채워요">자동 채우기<i></i></button><button id="eggSort" title="부화까지 남은 거리가 적은 알부터 앞으로 모아요">남은 거리 순</button><button id="eggNew" title="가장 최근에 주운 알부터 앞으로 모아요">최신순</button><button id="eggAll" hidden></button><button id="eggTest" class="test-btn">준비로(테스트)</button><button id="eggTestAll" class="test-btn">모두 준비로</button><span class="tcount" id="eggCount"></span></div>
+        <div class="mgr-tools"><button id="eggAuto" class="eauto" aria-pressed="false" title="부화기가 비면 가방에서 높은 등급 알부터 채워요">자동 채우기<i></i></button><div class="bag-sort" id="eggSortG"><button data-es="km" title="부화까지 남은 거리가 적은 알부터 앞으로 모아요">거리순</button><button data-es="grade" title="높은 등급 알부터 앞으로 모아요">등급순</button><button data-es="new" title="가장 최근에 주운 알부터 앞으로 모아요">최신순</button></div><button id="eggAll" hidden></button><button id="eggTest" class="test-btn">준비로(테스트)</button><button id="eggTestAll" class="test-btn">모두 준비로</button><span class="tcount" id="eggCount"></span></div>
         <div class="eggs" id="eggs"></div>
       </section>
       <section class="rtab" data-tab="bag">
@@ -5725,7 +5726,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.11';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.12';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6786,7 +6787,7 @@ function setMgrTab(t) {
   if (t === 'dex') { lastTab.poke = 'dex'; closeToggles(); hideSheets(); openDex(); return; }
   if (t !== 'buddy') clearBudFocus();
   mgrG = TAB_G[t] || 'poke'; lastTab[mgrG] = t;
-  document.querySelectorAll('#mgrTabs button').forEach(b => b.hidden = TAB_G[b.dataset.t] !== mgrG);
+  document.querySelectorAll('#mgrTabs button').forEach(b => b.hidden = TAB_G[b.dataset.t] !== mgrG); mgr.classList.toggle('gfld', mgrG === 'fld');   /* v6.12 경완: 필드·짝꿍 창은 포켓몬(박스·도감) 창과 구분되는 바탕 */
   if (mgrTab === 'box' && t !== 'box' && !mgr.hidden) seeBox();
   if (mgrTab === 'buddy' && t !== 'buddy') seeBuds();
   boxFromSlot = false; if (t !== 'box') budPick = null;
@@ -7094,7 +7095,7 @@ function renderMgr(force) { refreshCap();
       const m = S.mons[i], b = document.createElement('button'); b.className = 'slot';
       if (m) {
         b.dataset.uid = m.uid; b.setAttribute('aria-current', m === mgrSel); if (isBud(m)) b.classList.add('bud'); setTier(b, m.sp);
-        b.innerHTML = `<span class="sl-tags"><span class="st"></span>${isBud(m) ? '<span class="sl-bud">짝꿍</span>' : ''}</span><span class="sl-x" role="button" aria-label="필드에서 빼기">✕</span><span class="ph${pkCls(boxOf(m.pid))}"><img alt="" src="${thumbOf(m.sk || m.form)}"></span><span class="nmw"><span class="nm${tnCls(m.sp)}">${esc(m.name)}</span>${sexHtml(sexOf(m)).replace(/ data-tip="[^"]*"/, '')}</span><span class="gg">${GG.map(([k, ic]) => `<span class="gr ${k}"><i class="gi">${ic}</i><span class="mini"><i></i></span></span>`).join('')}</span>`;
+        b.innerHTML = `<span class="sl-tags">${rkBadge(boxOf(m.pid))}${isBud(m) ? '<span class="sl-bud">짝꿍</span>' : ''}</span><span class="sl-x" role="button" aria-label="필드에서 빼기">✕</span><span class="ph${pkCls(boxOf(m.pid))}"><img alt="" src="${thumbOf(m.sk || m.form)}"></span><span class="nmw"><span class="nm${tnCls(m.sp)}">${esc(m.name)}</span>${sexHtml(sexOf(m)).replace(/ data-tip="[^"]*"/, '')}</span><span class="gg">${GG.map(([k, ic]) => `<span class="gr ${k}"><i class="gi">${ic}</i><span class="mini"><i></i></span></span>`).join('')}</span>`;
         b.onclick = e => { if (e.target.closest('.sl-x')) { sfx('tap'); removeMon(m); if (mgrSel === m) mgrSel = null; renderMgr(true); refreshCap(); save(); return; } openMon(m); };   // 우상단 ✕ = 바로 상자로
       } else {
         b.classList.add('empty'); b.innerHTML = '<span class="plus">+</span><span>빈 자리</span>';
@@ -7107,7 +7108,7 @@ function renderMgr(force) { refreshCap();
   slotsEl.querySelectorAll('.slot[data-uid]').forEach(b => {
     const m = S.mons.find(x => x.uid === +b.dataset.uid); if (!m) return;
     const [cls, txt] = slotState(m), st = b.querySelector('.st');
-    st.className = 'st ' + cls; st.textContent = txt;
+    if (st) { st.className = 'st ' + cls; st.textContent = txt; }   /* v6.12 경완: 슬롯 좌상단은 상태 대신 랭크 */
     const w = { cl: m.clean ?? 100, hu: 100 - m.hunger, jo: m.joy ?? 60 }; for (const [k, ok, bad] of GG) { const g = b.querySelector(`.gr.${k}`), low = w[k] < LOW_G; g.querySelector('.mini i').style.width = Math.round(w[k]) + '%'; if (g.classList.contains('low') !== low) { g.classList.toggle('low', low); g.querySelector('.gi').innerHTML = low ? bad : ok; } }   // v3.99 경완: 칸 아래 건강 게이지 3개 (청결·배부름·즐거움)
     b.title = `${m.name} · ${doingText(m)}`;
   });
@@ -9164,8 +9165,12 @@ function renderRun() {
   renderBag();
 }
 $('#eggAuto').onclick = () => { S.autoInc = !S.autoInc; sfx('tap'); autoInc(); save(); renderRun(); };
-$('#eggNew').onclick = () => { if (hatching || hatchQ.length || !S.eggs.length) return; S.eggs.sort((a, b) => (b.t || 0) - (a.t || 0)); eggSel = S.eggs[0]; eggSelI = 0; eggNone = false; sfx('tap'); save(); renderRun(); };   // v5.77 경완: 최신순 = 가장 최근에 주운 알부터
-$('#eggSort').onclick = () => { if (hatching || hatchQ.length || !S.eggs.length) return; S.eggs.sort((a, b) => Math.max(0, a.need - a.km) - Math.max(0, b.need - b.km) || b.km - a.km); eggSel = S.eggs[0]; eggSelI = 0; eggNone = false; sfx('tap'); save(); renderRun(); };   // v4.78 경완: 순서 정리 = 부화까지 남은 거리가 적은 알부터 (준비된 알은 0이라 맨 앞), 맨 앞 알 선택
+// v6.12 경완: 부화기 정렬 = 거리순·등급순·최신순 세 버튼 (가방 정렬처럼 한 줄로, 마지막에 누른 버튼이 눌린 채로)
+let eggSortK = ''; try { eggSortK = localStorage.getItem('pk-egg-sort') || ''; } catch (e) {}
+const EGG_SORT = { km: (a, b) => Math.max(0, a.need - a.km) - Math.max(0, b.need - b.km) || b.km - a.km, grade: (a, b) => b.g - a.g || Math.max(0, a.need - a.km) - Math.max(0, b.need - b.km), new: (a, b) => (b.t || 0) - (a.t || 0) };
+const eggSortPaint = () => document.querySelectorAll('#eggSortG [data-es]').forEach(b => b.setAttribute('aria-pressed', b.dataset.es === eggSortK));
+eggSortPaint();
+$('#eggSortG').onclick = ev => { const b = ev.target.closest('[data-es]'); if (!b || hatching || hatchQ.length || !S.eggs.length) return; eggSortK = b.dataset.es; try { localStorage.setItem('pk-egg-sort', eggSortK); } catch (x) {} eggSortPaint(); S.eggs.sort(EGG_SORT[eggSortK]); eggSel = S.eggs[0]; eggSelI = 0; eggNone = false; sfx('tap'); save(); renderRun(); };
 // 테스트용: 부화기 알을 모두 부화 준비 상태로 (나중에 뺄 것)
 // 테스트용: 등급을 골라 지금 날짜·무작위 장소로 가방에 알을 넣는다 (나중에 뺄 것)
 const TEST_PLACES = ['한강공원', '동네 놀이터', '석촌호수', '해운대 해수욕장', '북한산 둘레길', '서울역', '김포공항', '노량진 수산시장', 'GS칼텍스 주유소', '동네 빵집', '어린이대공원 동물원', '잠실종합운동장', '대학병원', '초등학교', '봉은사', '공단 공장'];
