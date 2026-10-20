@@ -5775,7 +5775,7 @@ document.addEventListener('click', e => {
       if (Date.now() - armB > 3000) { armB = Date.now(); sfx('tap'); b.textContent = `${new Date(o.at).toLocaleString('ko-KR')} 저장으로 · 한 번 더 누르기`; setTimeout(() => { if (Date.now() - armB >= 3000) b.textContent = '베타 켜기 전 저장으로 되돌리기'; }, 3100); return; }
       saveFrozen = true; try { localStorage.setItem(KEY, o.d); } catch (e) {} location.reload(); }; }
   let n = 0, t0 = 0; document.querySelector('.set-credit').addEventListener('click', () => { const now = Date.now(); n = now - t0 < 1500 ? n + 1 : 1; t0 = now;
-    if (n >= 7) { n = 0; const on = !get('pk-op'); put('pk-op', on); if (!on) put('pk-tests', false); paint(); sfx(on ? 'pickup' : 'tap'); log(on ? '운영자 모드를 켰다.' : '운영자 모드를 껐다.', [], true); } }); }
+    if (n >= 7) { n = 0; const on = !get('pk-op'); put('pk-op', on); if (!on) put('pk-tests', false); paint(); sfx(on ? 'pickup' : 'tap'); if (on) log('운영자 모드를 켰다.', [], true); } }); }   // v7.45 경완: 끈 것은 관찰일지에 안 남김
 function syncTabs() { [['#openRun', '#run'], ['#openSet', '#set'], ['#sideSet', '#set'], ['#openShop', '#shop']].forEach(([b, w]) => $(b).setAttribute('aria-pressed', !$(w).hidden)); if (mgrReady) { $('#openMgr').setAttribute('aria-pressed', pokeOpen()); $('#openFld').setAttribute('aria-pressed', fldOpen()); } document.body.classList.toggle('sheet-open', ['#sheet', '#run', '#mgr', '#shop'].some(w => !$(w).hidden)); }
 new MutationObserver(syncTabs).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
 $('#closeDex').onclick = () => { sheet.hidden = true; };
@@ -5800,7 +5800,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.44';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.45';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
