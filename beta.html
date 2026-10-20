@@ -5765,7 +5765,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.38';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.39';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5846,7 +5846,10 @@ const ITEM_ART = (() => {
     peatBlock: mk(({ rect, px }) => { rect(3, 5, 10, 8, (i, j) => (i + j * 3) % 5 === 0 ? '#5a3a20' : i > 9 ? '#6a4a2a' : '#8a6038'); rect(4, 3, 10, 2, '#a07848'); rect(13, 4, 1, 8, '#5a3a20'); px(6, 8, '#4a8a3a'); px(10, 10, '#4a8a3a'); }),
     metalAlloy: mk(({ rect, px }) => { rect(2, 9, 12, 4, (i, j) => j === 9 ? '#e8eef6' : i > 10 ? '#7a8494' : '#b4bcc8'); rect(4, 5, 9, 4, (i, j) => j === 5 ? '#f4f8ff' : i > 10 ? '#8a94a4' : '#c8d0dc'); px(5, 6, '#fff'); px(6, 6, '#fff'); px(3, 10, '#fff'); }),
     wreath: mk(({ px }) => { for (let a = 0; a < 24; a++) { const t = a / 24 * Math.PI * 2, i = 7.5 + Math.cos(t) * 5.2, j = 8 + Math.sin(t) * 4.6; px(i, j, a % 3 ? '#5aa8b8' : '#3a7a5a'); px(i + Math.cos(t) * .9, j + Math.sin(t) * .9, a % 2 ? '#2f6a7a' : '#7ac0a0'); } px(7, 3, '#ffd84a'); px(8, 3, '#ffd84a'); }),
-    linkCord: mk(({ px }) => { for (let a = 0; a < 20; a++) { const t = a / 20 * Math.PI * 2; px(5 + Math.cos(t) * 3.4, 8 + Math.sin(t) * 3.4, '#ff5a5a'); px(10.5 + Math.cos(t) * 3.4, 8 + Math.sin(t) * 3.4, '#4a8aff'); } px(7, 6, '#ffd84a'); px(8, 7, '#ffd84a'); px(7, 9, '#ffd84a'); px(8, 10, '#ffd84a'); }),
+    linkCord: mk(({ px, rect }) => {   /* v6.38 경완이 보내 준 그림: 감긴 회색 케이블 + 양쪽 플러그 (기존 아이콘 스타일로) */
+      for (let j = 1; j <= 14; j++) for (let i = 1; i <= 14; i++) { const dx = i - 7.5, dy = j - 9.5, r = Math.hypot(dx, dy * 1.1); if (r > 2.1 && r < 4.7) { const t = dx + dy; px(i, j, Math.abs(r - 3.4) < .45 ? '#3e3c4c' : t < -3 ? '#a8a6b6' : t > 2.5 ? '#4e4c5c' : '#76748a'); } }
+      px(4, 5, '#76748a'); px(3, 4, '#76748a'); rect(2, 1, 2, 3, (i, j) => i === 2 ? '#c8c6d4' : '#8a889c'); px(2, 1, '#e8e8f0');
+      px(11, 5, '#76748a'); px(12, 4, '#76748a'); rect(13, 2, 2, 2, '#8a889c'); px(13, 2, '#c8c6d4'); px(14, 1, '#c8c6d4'); }),
     incense: mk(({ rect, disc, px }) => { disc(8, 10.5, 4.6, 3.2, (i, j) => i < 8 ? '#c890e8' : '#8a54b8'); rect(5, 7, 6, 1, '#6a3a98'); rect(4, 13, 8, 1, '#5a2e80'); px(7, 5, '#e8e0f8'); px(8, 4, '#e8e0f8'); px(7, 3, '#e8e0f8'); px(9, 2, '#e8e0f8'); px(6, 9, '#ffe2ff'); px(8, 10, '#ffd84a'); }),
     charm: mk(({ px, rect }) => { const st = ['....y....', '....y....', '...yyy...', 'yyyyoyyyy', '.yyoooyy.', '..yyoyy..', '..yy.yy..', '.yy...yy.', '.y.....y.']; st.forEach((r, j) => [...r].forEach((ch, i) => { if (ch !== '.') px(3 + i, 4 + j, ch === 'o' ? '#ffb020' : '#ffe050'); })); rect(7, 1, 3, 2, '#ff5a8a'); px(5, 3, '#fff'); px(12, 6, '#fff'); px(2, 11, '#fff'); }),
   };
