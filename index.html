@@ -344,7 +344,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .shopwin .stab:not([hidden]){flex:1;min-height:0;display:flex;flex-direction:column}
 .shopwin .soon{margin:auto;color:var(--dim);font-size:16px;text-align:center}
 .runtabs.shoptabs{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:10px}
-.itm .vpic img{width:48px;height:48px;margin:4px;image-rendering:pixelated}.itm .icnt{position:absolute;top:2px;right:2px;font-style:normal;font-weight:700;font-size:12px;line-height:14px;min-width:10px;text-align:center;background:#ffe27a;color:#20202c;border:2px solid #20202c;border-radius:0;padding:0 3px;box-shadow:2px 2px 0 rgba(0,0,0,.25)}.itm .icnt::before{content:'×';font-weight:400;margin-right:1px}.runtabs.shoptabs.bagtabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+.itm .vpic img{width:48px;height:48px;margin:4px;image-rendering:pixelated}.itm .icnt{position:absolute;top:4px;right:6px;font-style:normal;font-weight:700;font-size:14px;line-height:16px;text-align:right;color:#20202c}   /* v7.53 경완: 가진 수량은 박스 없이 글자만 */.itm .icnt::before{content:'×';font-weight:400;margin-right:1px}.runtabs.shoptabs.bagtabs{grid-template-columns:repeat(2,minmax(0,1fr))}
 .sb-pic{width:40px;height:40px;image-rendering:pixelated;flex:none}.shop-bar .sb-name span{white-space:normal}
 #itemPop{position:fixed;inset:0;z-index:5900;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35)}#itemPop[hidden]{display:none}.ipwin{width:min(92vw,400px)}.iprow{display:flex;align-items:center;gap:10px;padding:8px 4px;border-top:2px dashed var(--inner)}.iprow img{width:40px;height:40px;image-rendering:pixelated}.iprow div{flex:1;min-width:0}.iprow b{display:block}.iprow span{font-size:12px;color:var(--dim)}#mg .mg-card.open:active{transform:none;box-shadow:3px 3px 0 rgba(0,0,0,.15)}#mg .mg-abn{display:flex;align-items:center;gap:5px}#mg .mg-abn .tyi{width:16px!important;height:16px!important;flex:none}#mg .mg-abn .rk{flex:none;zoom:.8}.bagwin .bag-body{flex:1;min-height:0;overflow-y:auto}.bag-ask{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;width:min(84vw,300px)}.bag-ask img{width:56px;height:56px;image-rendering:pixelated}.bag-ask p{margin:4px 0 0;font-size:16px}.bag-ask span{font-size:12px;color:var(--dim)}.bag-yn{display:flex;gap:8px;margin-top:8px}.bag-yn .lk-btn{min-width:90px}.ibag-hb{display:flex;gap:6px}#ibagMulti::before{display:none}.itm .ichk{position:absolute;top:2px;left:2px;width:14px;height:14px;border:2px solid #20202c;background:#fff;box-sizing:border-box}.itm[aria-current="true"] .ichk{background:#20202c;box-shadow:inset 0 0 0 2px #fff}.ibag-multi .itm[aria-current="true"]{border-color:var(--cursor)}.lk-btn.warn{background:#e0555a;color:#fff}#ibagBar{position:relative;padding-top:18px}#ibagBar .ibag-toss{position:absolute;right:6px;top:3px;border:0;background:none;padding:2px 4px;font:inherit;font-size:11px;color:var(--dim);text-decoration:underline;cursor:pointer}.bag-cnt{display:flex;align-items:center;gap:10px;margin-top:4px}.bag-cnt b{min-width:44px;font-size:18px}.bag-cnt .lk-btn{min-width:40px;padding:6px 0}.bag-h{margin:10px 2px 6px;font-size:13px;color:var(--dim)}.bag-n{font-style:normal;font-size:13px;color:var(--dim)}.bag-none{text-align:center;margin:18px 0 10px;line-height:1.6}.bag-shop{display:block;margin:0 auto 6px}
 .fxbar{display:flex;flex-direction:column;align-items:flex-end;gap:4px}.fxbar:empty{display:none}.fxc{display:flex;align-items:center;gap:4px;font-size:15px;color:#fff;text-shadow:0 1px 0 #000,1px 0 0 #000,-1px 0 0 #000,0 -1px 0 #000}.fxc img{width:40px;height:40px;image-rendering:pixelated}   /* v6.44 경완: 필드 효과 아이콘 크게, 여러 개면 아래로 줄줄이 */
@@ -5801,7 +5801,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.52';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.53';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6130,6 +6130,7 @@ function mgView(v) {
   }
 }
 mgEl.addEventListener('click', e => {
+  if ($('#mgPop').querySelector('.mg-gpop, .mg-lock') && !e.target.closest('.mg-gpop button')) return;   // v7.53 경완: 선물 창이 떠 있으면 바깥을 눌러도 안 닫힘 — 확인 버튼으로만
   if (e.target === mgEl && MGG?.run !== true) { mgClose(); return; }
   if (e.target.closest('[data-mgx]')) { mgClose(); return; }
   if (e.target.closest('[data-g="jump"]')) { sfx('tap'); mgPlay(); return; }
