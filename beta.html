@@ -1496,11 +1496,6 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
       <div class="mg-hud"><b id="mgPh">페이즈 1</b><b id="mgM">0점</b><span id="mgBest"></span><span class="mg-life" id="mgLife">♥</span><button class="opt mg-x" data-mgback>그만하기</button></div>
       <div class="mg-stage"><canvas id="mgCv"></canvas><p class="mg-ban" id="mgBan" hidden></p><button class="mg-abi" id="mgAbBtn" type="button"></button></div>
     </section>
-    <section data-mv="end" hidden>
-      <div class="sheet-head"><h3>장애물 넘기</h3><button class="opt mg-x" data-mgback>닫기</button></div>
-      <div id="mgRes"></div>
-      <div class="mg-ends"><button class="lk-btn" data-mglist>게임 고르기</button><button class="lk-btn main" data-mgagain>다시 하기</button></div>
-    </section>
   </div>
 </div>
 <div class="sheet" id="set" hidden>
@@ -5723,7 +5718,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.05';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.06';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6465,12 +6460,13 @@ function mgEnd(g) {
   if (dist >= 600 && Math.random() < Math.min(.3, dist / 8000)) give(Math.random() < .7 ? 'incense' : 'stone', 1);
   save(); renderGold(); if (gifts.length) sfx('shiny'); else if (nb) sfx('newdex');
   const left = MG_GOLD_DAY - M.gg;
-  $('#mgRes').innerHTML = `<div class="mg-rec">${nb && prev > 0 ? '<i>최고 기록!</i>' : ''}<b>${dist.toLocaleString()}점</b><span>${Math.floor(g.dist / 25).toLocaleString()}m 달리기 + 밟기 ${g.bonus.toLocaleString()}점${g.cMax >= 2 ? ` · 최대 ${g.cMax} 콤보` : ''} · 페이즈 ${g.phase} · 최고 ${R.best.toLocaleString()}점</span></div>
+  const res = `<div class="mg-rec">${nb && prev > 0 ? '<i>최고 기록!</i>' : ''}<b>${dist.toLocaleString()}점</b><span>${Math.floor(g.dist / 25).toLocaleString()}m 달리기 + 밟기 ${g.bonus.toLocaleString()}점${g.cMax >= 2 ? ` · 최대 ${g.cMax} 콤보` : ''} · 페이즈 ${g.phase} · 최고 ${R.best.toLocaleString()}점</span></div>
     <div class="mg-got"><span><i class="coin" aria-hidden="true"></i> +${gold.toLocaleString()} G</span><span>친밀도 ${fr ? '+' + fr : dist < 30 ? '+0' : '오늘 최대'}</span><span>즐거움 +${joy}</span></div>
     ${gifts.length ? `<div class="mg-gifts"><b>선물을 받았어요!</b>${gifts.map(o => `<span><img src="${ITEM_ART[ITEM[o.it].a]}" alt="">${ITEM[o.it].n}${o.n > 1 ? ' ×' + o.n : ''}</span>`).join('')}</div>` : ''}
     <p class="mg-note">${left > 0 ? `오늘 미니게임으로 ${left.toLocaleString()}G 더 벌 수 있어요` : '오늘 미니게임 골드는 다 받았어요'}</p>`;
   if (fr || joy) log(`${J({ name: m.name }, '이/가')} 장애물 넘기에서 ${dist.toLocaleString()}점을 냈다!`, [], true);
-  MGG.run = false; mgView('end');
+  MGG.run = false; mgOpenG = ''; mgView('sel');   /* v6.06 경완: 기록은 게임 고르기 화면 위 팝업으로, 닫으면 고르기 화면 */
+  const pop = $('#mgPop'); pop.innerHTML = `<div class="win mg-popwin" role="dialog" aria-label="장애물 넘기 기록"><div class="sheet-head"><h3>장애물 넘기 기록</h3><button class="opt" data-mgpx>닫기</button></div><div id="mgRes">${res}</div><div class="mg-ends"><button class="lk-btn" data-mgpx>게임 고르기</button><button class="lk-btn main" data-mgagain>다시 하기</button></div></div>`; pop.hidden = false;
 }
 // 조작: 화면·점프 버튼을 누르면 뛰고, 꾹 누르면 더 높이. 능력 버튼(날기는 꾹 누르는 동안)
 // v5.80 경완: 화면 아무 곳이나 누르면 점프, 능력은 오른쪽 아래 동그란 아이콘
