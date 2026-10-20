@@ -153,7 +153,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .card .ih-top{flex-wrap:nowrap}.card .ih-r{margin-left:auto;display:flex;align-items:center;gap:4px;font-size:12px;color:var(--dim);white-space:nowrap;min-width:0;overflow:hidden}.card .ih-r .tyi{width:18px;height:18px}
 .born-pic{position:relative;display:inline-block;line-height:0}.born-new{position:absolute;right:-14px;top:-6px;font:700 11px/1 var(--px);color:#fff;background:#e04848;border:2px solid #7a1c1c;padding:2px 4px;letter-spacing:1px;animation:jbob 1s steps(2,end) infinite}
 .hatch .win{position:relative}.hatch.list #hlPrev,.hatch.list #hlNext{display:none!important}.hatch.list .hl-nav{display:contents}.hatch.list #hlPrev,.hatch.list #hlNext{position:absolute;margin-top:-18px;z-index:2}.hatch.list #hlPrev{left:10px}.hatch.list #hlNext{right:10px}.hatch.list #hlNum{position:absolute;top:10px;right:14px;font-size:13px;color:var(--dim)}
-#hatchMsg.ev{font-size:15px;line-height:1.6;margin-top:6px}#hatchMsg.ev .evg{font-size:18px}#hatchMsg.ev .prog{height:10px;margin:8px auto;width:min(240px,90%);background:var(--inner);border:2px solid var(--frame)}#hatchMsg.ev .prog i{display:block;height:100%;background:#f0c030}#hatchMsg.ev .evd{font-size:13px;color:var(--dim)}#hatchOut{flex:1 1 auto}
+#hatchMsg.ev{font-size:15px;line-height:1.6;margin-top:6px}#hatchMsg.ev .evg{font-size:18px}#hatchMsg.ev .prog{height:10px;margin:8px auto;width:min(240px,90%);background:var(--inner);border:2px solid var(--frame)}#hatchMsg.ev .prog i{display:block;height:100%;background:#f0c030}#hatchMsg.ev .evd{font-size:13px;color:var(--dim)}#hatchOut{flex:1 1 auto}#hatchIn{flex:1 1 0;width:auto}#hatchDel{flex:0 0 auto;width:auto;padding-left:16px;padding-right:16px;color:#c0392b}#hatchDel.arm{background:#e0555a;color:#fff}
 #hatchMsg .rkline{margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px}
 .mtab[data-t="field"] .mgr-tools{padding:0 4px}#mgrClear{background:#c83838!important;border-color:#7a1c1c!important;color:#fff!important}
 .hearts.frtap{justify-self:start;width:max-content;cursor:pointer}
@@ -1639,7 +1639,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
     <div class="dexinfo" id="hatchDex" hidden></div>
     <div class="hl-strip hl-only" id="hlStrip"></div>
     <button class="boxbtn sub hl-only" id="hatchField">필드로 보내기</button>
-    <div class="hatch-btns"><button class="boxbtn go" id="hatchGo" hidden>부화시키기</button><button class="boxbtn white" id="hatchLook" hidden>상태창 보기</button><button class="boxbtn green" id="hatchSend" hidden>필드로</button><button class="boxbtn" id="hatchOk" hidden>확인</button><button class="boxbtn white" id="hatchOut" hidden>가방으로 빼기</button></div>
+    <div class="hatch-btns"><button class="boxbtn go" id="hatchGo" hidden>부화시키기</button><button class="boxbtn white" id="hatchLook" hidden>상태창 보기</button><button class="boxbtn green" id="hatchSend" hidden>필드로</button><button class="boxbtn" id="hatchOk" hidden>확인</button><button class="boxbtn white" id="hatchOut" hidden>가방으로 빼기</button><button class="boxbtn white" id="hatchDel" hidden>버리기</button><button class="boxbtn go" id="hatchIn" hidden>부화기에 넣기</button></div>
   </div>
 </div>
 
@@ -5609,7 +5609,7 @@ $('#closeDex').onclick = () => { sheet.hidden = true; };
   Object.defineProperty(sheet, 'hidden', { get: () => off, set(v) { v = !!v; if (v === off) return; off = v; sheet.classList.toggle('off', v); if (v) { $('#dexPop').hidden = true; $('#fPop').hidden = true; } syncTabs(); } }); }
 sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
 const IS_BETA = /beta\.html$/.test(location.pathname);   // v5.74: 새 기능 시험판(beta.html)인지
-const APP_VER = '5.79';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.80';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7898,18 +7898,32 @@ function raysSpin(v) { raysV = v; if (raysRaf || !v) return; raysT = performance
 let eggClose = null;   // 알 상태 창이 떠 있을 때만 닫기 함수
 // v4.82 경완: 알 상태 창에 주운 날짜도 (올해가 아니면 연도까지)
 const eggGotDay = e => { if (!e.t) return ''; const d = new Date(e.t), y = d.getFullYear() !== new Date().getFullYear() ? `${d.getFullYear()}/` : ''; return `${y}${d.getMonth() + 1}/${d.getDate()} (${'일월화수목금토'[d.getDay()]}) `; };   // v4.89 경완: 굵게 말고 10/17 (토) 처럼 짧게
-function eggView(e) {   // v4.51 경완: 부화기에서 고른 알을 한 번 더 누르면 뜨는 알 상태 창 (부화 창과 같은 크기), 아래 '가방으로 빼기'
+function eggView(e, bag) {   // v4.51 경완: 부화기에서 고른 알을 한 번 더 누르면 뜨는 알 상태 창 (부화 창과 같은 크기), 아래 '가방으로 빼기'. v5.94 경완: 가방 알도 같은 창 (bag = true → 버리기·부화기에 넣기)
   if (hatching || evolving || hatchQ.length) return;
   sfx('tap'); hatchFx(); hatchEl.classList.remove('list'); showDexInfo(null); hatchStage.classList.remove('evo');
   ['#hatchOk', '#hatchGo', '#hatchLook', '#hatchSend'].forEach(q => $(q).hidden = true);
-  hatchStage.innerHTML = '<i class="ehalo"></i>' + eggHtml(e.g, 'wob');
   const m = $('#hatchMsg'); m.classList.add('ev'); m.style.visibility = '';
-  m.innerHTML = `<b class="evg">${GRADE[e.g].n} 알</b> <span class="state">부화 중</span><div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km<div class="evd">${e.place || e.spN ? `${eggGotDay(e)}${esc(eggPlace(e))} 근처에서 주운 알` : e.t ? `${eggGotDay(e)}주운 알` : '주운 곳 기록 없음'}<br>${themeHint(e)}</div>`;
-  const out = $('#hatchOut'), hx = $('#hatchX'); out.hidden = false; hx.hidden = false; hatchEl.hidden = false;
-  const close = () => { hatchEl.hidden = true; out.hidden = true; hx.hidden = true; m.classList.remove('ev'); hatchEl.onclick = null; out.onclick = null; hx.onclick = null; eggClose = null; };
+  const L = bag ? [...$('#bagGrid').querySelectorAll('.bslot')].map(b => S.bag.find(x => x.id === +b.dataset.id)).filter(Boolean) : S.eggs, dl = $('#hatchDel'), inB = $('#hatchIn'); let arm = 0;
+  if (bag && !L.includes(e)) L.unshift(e);
+  let i = Math.max(0, L.indexOf(e));
+  // v5.77 경완: 정보 카드처럼 좌우로 밀거나 옆을 눌러 부화기의 다른 알로 넘긴다
+  const fill = k => { const x = L[k]; if (!x) return; const rd = !bag && x.km >= x.need; if (bag && x.isNew) { x.isNew = false; save(); }
+    hatchStage.innerHTML = '<i class="ehalo"></i>' + eggHtml(x.g, 'wob' + (x.sh ? ' shx' : ''));
+    const need = bag ? GRADE[x.g].km : x.need, km = x.km || 0;
+    m.innerHTML = `<b class="evg">${GRADE[x.g].n} 알</b> <span class="state${rd ? ' ready' : ''}">${bag ? '가방' : rd ? '부화 준비 완료' : '부화 중'}</span><div class="prog"><i style="width:${Math.min(100, km / need * 100)}%"></i></div>${fmtKm(km)} / ${need}km${bag ? ' 쌓임' : ` · 앞으로 <b>${fmtKm(Math.max(0, need - km))}</b>km`}<div class="evd">${x.place || x.spN ? `${eggGotDay(x)}${esc(eggPlace(x))} 근처에서 주운 알` : x.t ? `${eggGotDay(x)}주운 알` : '주운 곳 기록 없음'}<br>${themeHint(x)}</div>`;
+    $('#hlHl').hidden = k <= 0; $('#hlHr').hidden = k >= L.length - 1;
+    if (bag) { arm = 0; dl.classList.remove('arm'); dl.textContent = '버리기'; const full = S.eggs.length >= MAX_EGGS; inB.disabled = full; inB.textContent = full ? '부화기가 꽉 찼어요' : '부화기에 넣기'; } };
+  fill(i);
+  const out = $('#hatchOut'), hx = $('#hatchX'); out.hidden = !!bag; dl.hidden = inB.hidden = !bag; hx.hidden = false; hatchEl.hidden = false;
+  const close = () => { hatchEl.hidden = true; out.hidden = true; dl.hidden = inB.hidden = true; dl.onclick = inB.onclick = null; hx.hidden = true; m.classList.remove('ev'); hatchEl.onclick = null; out.onclick = null; hx.onclick = null; eggClose = null; hatchPg = null; $('#hlHl').hidden = $('#hlHr').hidden = true; };
+  hatchPg = { can: d => i + d >= 0 && i + d < L.length, snap: (d, w) => { fill(i + d); const g = w.cloneNode(true); fill(i); return g; },
+    step: d => { if (!hatchPg?.can(d)) return; sfx('tap'); i += d; fill(i); if (bag) return; eggSel = S.eggs[i]; eggSelI = i; eggNone = false; renderRun(); } };
   eggClose = close; hx.onclick = () => { sfx('tap'); close(); };   /* v4.73 경완: 알 상태 창 우상단 ✕, 아래로 끌어내려도 닫힌다 (dragClose) */
-  hatchEl.onclick = ev => { if (!ev.target.closest('.win')) { sfx('tap'); close(); } };
-  out.onclick = () => { if (unincubate(e)) { sfx('tap'); close(); eggSel = null; renderRun(); } };
+  hatchEl.onclick = ev => { if (ev.target.closest('.win')) return; const d = sideTap(hatchEl, ev); if (d) { hatchPg?.step(d); return; } sfx('tap'); close(); };
+  out.onclick = () => { if (unincubate(S.eggs[i])) { sfx('tap'); close(); eggSel = null; renderRun(); } };
+  if (bag) {   // 버리기는 한 번 더 눌러야 버려진다
+    dl.onclick = () => { const x = L[i]; if (!x) return; if (!arm) { arm = 1; dl.classList.add('arm'); dl.textContent = '정말?'; sfx('tap'); return; } S.bag = S.bag.filter(q => q !== x); sfx('tap'); save(); close(); renderBag.sig = ''; renderRun(); };
+    inB.onclick = () => { const x = L[i]; if (x && incubate(x)) { sfx('tap'); close(); renderBag.sig = ''; renderRun(); } }; }
 }
 function hatchBg(fg) { raysSpin(0); const c = hatchEl.classList; c.remove('surge'); c.toggle('done', fg >= 4); c.toggle('legend', fg >= 5); c.toggle('myth', fg === 6); c.toggle('g4t', fg === 4); c.toggle('rays', fg >= 5);
   hatchEl.style.setProperty('--dk', 0); hatchEl.style.setProperty('--lg', fg >= 5 ? .8 : 0); hatchEl.style.setProperty('--lit', fg === 4 ? .8 : 0); }
@@ -8224,7 +8238,7 @@ document.addEventListener('click', ev => {
   // 여러 개 고르는 중에 가방의 빈 곳(알·버튼이 아닌 곳)을 누르면 고르기 취소 (v3.37 경완)
   if (bagMul && !sl && ev.target.closest('.rtab[data-tab="bag"]') && !ev.target.closest('button, input, [role=tab]')) { bagMul = null; delArm = 0; renderBag(); return; }
   if (sl && bagMul) { const id = +sl.dataset.id; bagMul.has(id) ? bagMul.delete(id) : bagMul.add(id); delArm = 0; const e = S.bag.find(x => x.id === id); if (e && e.isNew) { e.isNew = false; save(); } renderBag(); return; }
-  if (sl) { delArm = 0; const e = S.bag.find(x => x.id === +sl.dataset.id); bagSel = e === bagSel ? null : e; if (e && e.isNew) { e.isNew = false; save(); } renderBag(); return; }
+  if (sl) { delArm = 0; const e = S.bag.find(x => x.id === +sl.dataset.id); bagSel = null; if (e) eggView(e, true); renderBag(); return; }   // v5.94 경완: 부화기 알 카드와 같은 창으로
   if (ev.target.closest('#eggAll')) { hatchAll(); return; }
   if (ev.target.closest('#eggHatch') && hatching && hatchEl.hidden) { hatching = false; hatchQ.length = 0; }   // 부화 창이 닫혔는데 '부화 중'으로 남아 있으면 풀어 준다
   if (ev.target.closest('#eggHatch') && eggSel && eggSel.km >= eggSel.need && !hatchQ.some(q => q.egg === eggSel)) { const e = eggSel; eggSel = null; hatchEgg(e, true); renderRun(); if (!hatching) playHatch(); return; }
