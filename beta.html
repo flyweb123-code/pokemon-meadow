@@ -5788,7 +5788,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.67';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.68';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6282,7 +6282,7 @@ function mgScare(g) { const r = 300 * (g.pas?.pow ? 1.6 : 1), A = mgAhead(g, r);
 function mgScareGo(g) { const py = g.GY - g.y - MG_PH / 2; mgAhead(g, (g.scR || 300) + 40).forEach(o => { o.flee = .001; o.fd = Math.max(0, o.x - g.PX) / 1400; o.fy = o.y; });   // 물결이 닿는 순서대로 놀란다
   g.fx.scare = .5; g.scB = .45; g.sq = 1.4; g.sqv = 0; g.bov = (g.bov || 0) + 520; g.tint = { c: '#5a3a80', t: .22 }; g.shake = Math.max(g.shake || 0, .22); g.shA = Math.max(g.shA || 0, 6); haptic(2);
   g.pop = { x: g.PX + 34, y: py - 46, s: '왁!', t: .7, z: 2 }; mgFx(g, g.PX + 20, py, '#b48aff', 16, 260); mgFx(g, g.PX + 20, py, '#3a2a50', 8, 160); mgRing(g, '#b48aff'); }
-function mgQa(g) { const D = 140 * (g.pas?.pow ? 1.4 : 1);   /* v6.22 화면 확대로 거리 줄임 */ g.qaP = mgAhead(g, D); g.qaPT = .12; g.fx.qa = .5; g.qaD = D; }
+function mgQa(g) { const D = 210 * (g.pas?.pow ? 1.4 : 1);   /* v6.22 화면 확대로 거리 줄임 → v6.68 경완: 맞는 범위 140 → 210 */ g.qaP = mgAhead(g, D); g.qaPT = .12; g.fx.qa = .5; g.qaD = D; }
 function mgQaHit(g, A) {   /* v6.31 경완: 전광석화 임팩트 — 멈칫·번쩍·크게 흔들림·센 진동·더 멀리 날아감 */
   for (const o of A) { mgKill(g, o, '#ffffff'); if (o.kb) { o.kb.vx *= 1.7; o.kb.vy *= 1.25; o.kb.vr *= 1.5; } const y = g.GY - o.y - o.h / 2; mgFx(g, o.x, y, '#fff6a0', 14, 260); (g.bursts || (g.bursts = [])).push({ x: o.x, y, t: .3, c: '#ffe14a', z: 1.9 }); (g.rings || (g.rings = [])).push({ x: o.x, y, t: .3, c: 'rgba(255,255,255,.95)', z: 2.2 }); }
   g.hs = .1; g.shake = .3; g.shA = 8; g.flash = .09; haptic(2); sfx('ab', 'punch'); if (A.length > 1) setTimeout(() => haptic(2), 90); }
@@ -6395,7 +6395,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
   if (g.hs > 0) { g.hs -= dt; return; }   // 밟는 순간 아주 잠깐 멈춤 (손맛)
   if (g.bW > 0 && (g.bW -= dt) <= 0) mgBoltGo(g);
   if (g.scP > 0 && (g.scP -= dt) <= 0) mgScareGo(g); if (g.scB > 0) g.scB -= dt;
-  if (g.qaP && (g.qaPT -= dt) <= 0) { const A = g.qaP.filter(o => !o.dead); g.qaP = null; if (A.length) mgQaHit(g, A); }
+  if (g.qaP && (g.qaPT -= dt) <= 0) { const A = [...new Set([...g.qaP, ...mgAhead(g, g.qaD + 30)])].filter(o => !o.dead && !o.flee); g.qaP = null; if (A.length) mgQaHit(g, A); }
   if (g.fx.dig > 0) g.digS = (g.digS || 0) + dt;
   g.t += dt; if (g.scG > 0) g.scG -= dt; for (const k of ['str', 'qa', 'qaW', 'scW', 'viW', 'iron', 'rockT', 'silkT', 'flyT', 'dig', 'ghost', 'ambT', 'ram', 'surf', 'bolt', 'ice', 'gas', 'beam', 'scare', 'web']) if (g.fx[k] > 0) g.fx[k] -= dt;
   for (const k of ['punch', 'vine']) if (g.fx[k]) { g.fx[k].t -= dt; if (g.fx[k].t <= 0) g.fx[k] = null; }
