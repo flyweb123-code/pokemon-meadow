@@ -5754,7 +5754,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.35';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.36';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5968,7 +5968,7 @@ const MG_AB = {
   15: { n: '얼어붙은바람', c: 15, k: 'ice', d: '4초 동안 모든 게 느려져요' },   /* v6.33 경완: 얼려 느리게 → 얼어붙은바람 */
   16: { n: '용의 숨결', c: 14, k: 'beam', d: '꾹 누르는 동안 숨결을 뿜어 앞을 쓸어 버려요 (1.3초)' },   /* v6.34 경완: S 랭크는 지속 ×2.4 (약 3.1초, MG_STR.beam.sT) */
   17: { n: '놀래키기', c: 9, k: 'scare', d: '앞쪽 넓은 범위의 장애물이 모두 놀라 바로 도망가요' },   /* v6.18 경완: 이름 놀래키기, 쓰자마자 바로 도망 */   // v6.17 경완: 한 마리가 아니라 범위 안 모두, 도망가는 모션
-  18: { n: '달빛', c: 0, k: 'fairy', d: '한 판에 한 번, 쓰러져도 달빛을 받아 다시 일어나요 (저절로)' },   /* v6.28 경완: 요정의 가호 → 달빛 (쓰러지는 모션 뒤 달빛으로 부활) */
+  18: { n: '달빛', c: 0, k: 'fairy', d: '한 판에 한 번, 쓰러져도 달빛을 받아 다시 일어나요 (저절로, 하트 1개 · S 랭크는 2개)' },   /* v6.28 경완: 요정의 가호 → 달빛 (쓰러지는 모션 뒤 달빛으로 부활) */
 };
 const mgAb = sp => MG_AB[(SPECIES[sp]?.t || [1])[0]] || MG_AB[1];
 /* v6.21 경완: 운영자 기술 시험 — 타입 대표 포켓몬(첫 타입이 그 타입인 가장 작은 번호)으로, 고른 랭크의 패시브를 써서 해 본다. 보상·기록·친밀도 없음 */
@@ -6322,7 +6322,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
   if (g.zap && (g.zap.t -= dt) <= 0) g.zap = null;
   if (g.over) { if (g.vy || g.y > 0) { g.vy -= MG_GRAV * MG_FALL * dt; g.y = Math.max(0, g.y + g.vy * dt); if (!g.y) g.vy = 0; } g.overT -= dt;   // 부딪히면 뒤로 튕겨 떨어진다
   if (g.overT <= 0 && !g.done) {
-    if (g.revT > 0) { g.revT -= dt; if (g.revT <= 0) { g.over = false; g.revT = 0; g.lives = 1; g.inv = 2; g.y = 0; g.vy = 0; g.spin = 0; g.sq = 1.25; g.sqv = 0; g.obs.forEach(o => { if (!o.dead && o.x - g.PX < 160) mgKill(g, o, '#e6e8ff'); }); mgRing(g, '#e6e8ff'); mgFx(g, g.PX, g.GY - MG_PH / 2, '#fff8d0', 20, 220); mgToast(g, '달빛을 받아 다시 일어났어요!'); mgHud(); } }   /* 달빛 부활 */
+    if (g.revT > 0) { g.revT -= dt; if (g.revT <= 0) { g.over = false; g.revT = 0; g.lives = g.pas?.pow ? 2 : 1; g.inv = 2;   /* v6.36 경완: S 랭크는 하트 2개로 부활 */ g.y = 0; g.vy = 0; g.spin = 0; g.sq = 1.25; g.sqv = 0; g.obs.forEach(o => { if (!o.dead && o.x - g.PX < 160) mgKill(g, o, '#e6e8ff'); }); mgRing(g, '#e6e8ff'); mgFx(g, g.PX, g.GY - MG_PH / 2, '#fff8d0', 20, 220); mgToast(g, '달빛을 받아 다시 일어났어요!'); mgHud(); } }   /* 달빛 부활 */
     else if (g.moon > 0) { g.moon = 0; g.revT = 1.8; sfx('ab', 'fairy'); }
     else { g.done = true; mgEnd(g); } } return; }
   if (g.cd > 0) { g.cd -= dt; const n = Math.ceil(g.cd - .6); if (n !== g.cdN) { g.cdN = n; if (n > 0) sfx('tick'); else { sfx('start'); g.ban = { t: 1.2, s: '페이즈 1' }; } } if (g.cd > .6) return; }   // v5.79 경완: 시작 전 3·2·1
