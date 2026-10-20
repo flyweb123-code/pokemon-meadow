@@ -2700,6 +2700,7 @@ let BUB_OV = {};   // 장면 id → 바꾼 말풍선 키 ('' = 이 장면엔 말
 function emote(m, text, cls = '', dur = 2.2, sc = '') {
   if (sc && sc in BUB_OV) { const k = BUB_OV[sc], B = BUBK_M[k]; if (!B) return; text = B[1] ?? shoutOf(m.sp); cls = B[2]; }
   if (text === '#') text = '💢';
+  if (cls !== 'feed' && m.bub.classList.contains('feed') && !m.bub.hidden && m.hunger > 50) return;   /* v6.31 경완: 열매 말풍선이 떠 있는 동안엔 다른 말풍선으로 덮지 않는다 */
   m.bub.className = 'bubble ' + cls; if (PIXE[text]) m.bub.innerHTML = PIXE[text]; else m.bub.textContent = text; m.bub.hidden = false; m.bubT = dur;
   m.bub.style.animation = 'none'; void m.bub.offsetWidth; m.bub.style.animation = '';
 }
@@ -2856,7 +2857,9 @@ document.addEventListener('click', e => { const g = e.target.closest('.ih-game')
 // v6.13 경완: 배고프면 '배고파' 글자 대신 열매 아이콘 말풍선 — 누르면 바로 열매를 먹인다 (feedNow)
 function hungryBub(m) { emote(m, '꼬르륵', 'feed', 8, 'hungry'); if (m.bub.classList.contains('feed')) m.bub.innerHTML = ICO_BERRY; }
 fxEl.addEventListener('pointerdown', e => { const b = e.target.closest('.bubble.feed'); if (!b || e.button > 0) return; e.stopPropagation(); e.preventDefault();
-  const m = S.mons.find(o => o.bub === b); b.hidden = true; if (!m) return; m.bubT = 0; sfx('tap'); haptic(1); feedNow(m); });   /* v6.29 경완: 누르면 진동 */
+  const m = S.mons.find(o => o.bub === b); b.hidden = true; if (!m) return; m.bubT = 0; feedTapAt = performance.now(); sfx('tap'); haptic(2); feedNow(m); });   /* v6.29 경완: 누르면 진동 (v6.31 더 세게) */
+/* v6.31 경완: 효과음 두 번 → 말풍선이 pointerdown 에서 숨으면 뒤따르는 click 이 밑의 필드로 가서 또 '탭' 소리·상태창 접기를 했다. 그 click 은 버린다 */
+let feedTapAt = 0; document.addEventListener('click', e => { if (performance.now() - feedTapAt < 600) { feedTapAt = 0; e.stopPropagation(); e.preventDefault(); } }, true);
 fxEl.addEventListener('click', e => { if (e.target.closest('.bubble.feed')) e.stopPropagation(); });
 // 필드 정보창의 열매 아이콘: 창을 닫고 그 포켓몬 앞에 열매가 떨어지자마자 먹는다 (다른 포켓몬은 못 가져간다)
 function feedNow(m) {
@@ -5751,7 +5754,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.30';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.31';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6218,9 +6221,14 @@ function mgDust(g, n, sp) { for (let i = 0; i < n; i++) g.parts.push({ x: g.PX +
 function mgRing(g, c) { (g.rings || (g.rings = [])).push({ x: g.PX, y: g.GY - g.y, t: .3, c }); }
 /* v6.04 경완: 기술에 맞은 장애물은 빙글빙글 날아간다 */
 function mgKill(g, o, c) { if (o.dead) return; o.dead = true; o.kt = 1; o.kb = { vx: 300 + Math.random() * 160, vy: 420 + Math.random() * 220, r: 0, vr: 9 + Math.random() * 7, c: c || '#fff' }; g.shake = Math.max(g.shake || 0, .08); g.shA = Math.max(g.shA || 0, 2); mgFx(g, o.x, g.GY - o.y - o.h / 2, c || '#fff', 12); (g.bursts || (g.bursts = [])).push({ x: o.x, y: g.GY - o.y - o.h / 2, t: .3, c: c || '#fff' }); }
+function mgQa(g) { const D = 140 * (g.pas?.pow ? 1.4 : 1);   /* v6.22 화면 확대로 거리 줄임 */ g.qaP = mgAhead(g, D); g.qaPT = .12; g.fx.qa = .5; g.qaD = D; }
+function mgQaHit(g, A) {   /* v6.31 경완: 전광석화 임팩트 — 멈칫·번쩍·크게 흔들림·센 진동·더 멀리 날아감 */
+  for (const o of A) { mgKill(g, o, '#ffffff'); if (o.kb) { o.kb.vx *= 1.7; o.kb.vy *= 1.25; o.kb.vr *= 1.5; } const y = g.GY - o.y - o.h / 2; mgFx(g, o.x, y, '#fff6a0', 14, 260); (g.bursts || (g.bursts = [])).push({ x: o.x, y, t: .3, c: '#ffe14a', z: 1.9 }); (g.rings || (g.rings = [])).push({ x: o.x, y, t: .3, c: 'rgba(255,255,255,.95)', z: 2.2 }); }
+  g.hs = .1; g.shake = .3; g.shA = 8; g.flash = .09; haptic(2); sfx('ab', 'punch'); if (A.length > 1) setTimeout(() => haptic(2), 90); }
 const mgAhead = (g, r) => g.obs.filter(o => !o.dead && !o.flee && o.x + o.w / 2 > g.PX - 6 && o.x - g.PX < r).sort((a, b) => a.x - b.x);
 function mgAbility(down) {
   const g = MGG; if (!g?.run || g.over || g.cd > .6) return; const k = g.ab.k;
+  if (k === 'qa' && g.pas?.pow) { if (!down) return; if (g.abK === 'qaS' && g.fx.qaW > 0) { if (!(g.fx.qa > .2)) { mgQa(g); sfx('ab', 'qa'); } return; } if (g.cool > 0) return; g.fx.qaW = 3; mgAbStart(g, 'qaS'); sfx('ab', 'qa'); mgQa(g); return; }   /* v6.31 경완: S 전광석화 = 3초 동안 누를 때마다 또 돌진, 쿨타임은 끝난 뒤 */
   if (k === 'rock') { if (!down) return; if (g.abK === 'rock' && g.fx.rockT > 0) { if (!g.rocks?.length) mgRocks(g); return; }   /* v6.29 경완: 떨어지던 돌이 다 닿은 뒤에만 다시 뿌린다 */ if (g.cool > 0) return; g.fx.rockT = 4 * (g.pas?.pow ? 1.5 : 1); mgAbStart(g, 'rock'); mgRocks(g); return; }   // 4초 안에서는 누를 때마다 돌이 또 떨어진다, 쿨타임은 끝난 뒤
   if (k === 'dig') { if (!down) { if (g.fx.dig > 0) g.fx.dig = 0; return; } if (g.cool > 0 || g.fx.dig > 0) return; if (g.y > 0) { mgToast(g, '땅에 있을 때 쓸 수 있어요'); return; } g.fx.dig = 2.5 * (g.pas?.pow ? 1.5 : 1); g.digS = 0; mgFx(g, g.PX, g.GY, '#9a6a3a', 10, 120); sfx('ab', 'dig'); mgAbStart(g, 'dig'); return; }   // 떼거나 시간이 끝나면 mgAbEnd → mgDigOut
   if (k === 'fly') { if (!down) return; const flap = () => { g.vy = Math.max(g.vy, 0) * .3 + (g.y > g.GY - 70 ? 0 : 330); g.y = Math.max(g.y, .5); g.flapT = .25; g.cut = true; g.jn = Math.max(g.jn, 1); mgFx(g, g.PX - 8, g.GY - g.y - MG_PH / 2 + 10, '#ffffff', 4, 80); };   /* v6.29 경완: 누르는 만큼이 아니라 칠 때마다 날갯짓 한 번씩 솟는다 */
@@ -6233,7 +6241,7 @@ function mgAbility(down) {
   if (!down || g.cool > 0) return;
   const use = () => { mgCool(g); sfx('ab', k); mgAbStart(g, k); }, px = g.PX, py = g.GY - g.y - MG_PH / 2, S = g.pas?.pow ? 1.5 : 1;   // S: 시간 ×1.5, 닿는 거리 ×1.6, 여러 마리
   switch (k) {
-    case 'qa': { const D = 140 * (g.pas?.pow ? 1.4 : 1);   /* v6.22 화면 확대로 거리 줄임 */ mgAhead(g, D).forEach(o => mgKill(g, o, '#ffffff')); g.fx.qa = .5; g.qaD = D; use(); break; }   // 전광석화: 앞 D 만큼 확 달려 나갔다가 제자리로 돌아온다 (v6.18 경완), 그 안의 장애물은 모두 날린다
+    case 'qa': { mgQa(g); use(); break; }   /* v6.31 경완: 부딪히는 순간(.12초 뒤)에 날리며 손맛 — mgQaHit */   // 전광석화: 앞 D 만큼 확 달려 나갔다가 제자리로 돌아온다 (v6.18 경완), 그 안의 장애물은 모두 날린다
     case 'super': mgLift(g, MG_JUMP * (g.pas?.pow ? 1.7 : 1.4)); g.cut = true; g.fx.web = .5; use(); break;
     case 'punch': case 'vine': { const R = (k === 'punch' ? 150 : 270) * (g.pas?.pow ? 1.6 : 1), A = mgAhead(g, R), o = A[0];   /* v6.23 정권 지르기도 범위 안 전부 */ if (!o) { mgToast(g, '닿는 장애물이 없어요'); return; } g.fx[k] = { t: g.pas?.pow ? .45 : .25, x: k === 'vine' ? g.PX + R : A[A.length - 1].x };   /* v6.20 경완: 덩굴 채찍은 끝까지 뻗어 범위 안 포켓몬을 모두 날린다 */ A.forEach(q => mgKill(g, q, k === 'punch' ? '#ffd27a' : '#6ad06a')); use(); break; }
     case 'scare': { const A = mgAhead(g, 300 * (g.pas?.pow ? 1.6 : 1)); if (!A.length) { mgToast(g, '닿는 장애물이 없어요'); return; } A.forEach((o, i) => { o.flee = .001; o.fd = 0; o.fy = o.y; }); g.fx.scare = .5; use(); break; }
@@ -6251,7 +6259,7 @@ function mgToast(g, s) { g.toast = { s, t: 1.2 }; }
 const MG_COMBO_T = 2.6;   // 콤보가 이어지는 시간 (초)
 // v5.92 경완: 액티브 기술은 시작과 끝을 확실하게 (색 번쩍·고리·이름, 끝나면 뚝 소리와 연기, 끝나기 직전엔 깜빡)
 const MG_ABC = { iron: '#c8d0e0', rock: '#b0a080', dbl: '#ffe14a', qa: '#ffffff', super: '#e8e8f0', punch: '#ffb060', vine: '#6ad06a', gas: '#b47ae0', beam: '#8a7aff', fire: '#ff7a3a', scare: '#5a3a80', tele: '#e88aff', lev: '#e88aff', silk: '#e8e8f0', dig: '#c08a50', shield: '#d0b070', ghost: '#b48aff', ram: '#c8d0e0', surf: '#5ab0ff', bolt: '#ffe14a', ice: '#a8e8ff', fly: '#9ad8ff', fairy: '#ff90c8' };
-const MG_DUR = { iron: 'iron', rock: 'rockT', fly: 'flyT', lev: 'flyT', silk: 'silkT', dig: 'dig', ghost: 'ghost', ram: 'ram', surf: 'surf', bolt: 'bolt', ice: 'ice', fire: 'str', beam: 'str', gas: 'str' };
+const MG_DUR = { qaS: 'qaW', iron: 'iron', rock: 'rockT', fly: 'flyT', lev: 'flyT', silk: 'silkT', dig: 'dig', ghost: 'ghost', ram: 'ram', surf: 'surf', bolt: 'bolt', ice: 'ice', fire: 'str', beam: 'str', gas: 'str' };
 // 꾹 눌러 뿜는 기술: T 최대 시간, L 닿는 거리(0 = 화면 끝까지), b 위아래로 닿는 폭, s 효과음 간격
 const MG_STR = { fire: { T: 1.6, L: 220, b: 26, s: .26, c: '#ff8a2a' }, beam: { T: 1.3, L: 0, b: 22, s: .45, c: '#8a7aff' }, gas: { T: 1.5, L: 200, b: 60, s: .5, c: '#b47ae0' } };
 const mgAbLeft = g => { const k = g.abK; return !k ? 0 : k === 'shield' ? (g.fx.shield ? 1 : 0) : Math.max(0, g.fx[MG_DUR[k]] || 0); };
@@ -6262,7 +6270,7 @@ function mgAbStart(g, k) {
   const b = $('#mgAbBtn'); b.style.setProperty('--ac', c); b.classList.toggle('on', !!g.abK);
 }
 function mgAbEnd(g) {
-  const k = g.abK; g.abK = null; if (MG_STR[k] || k === 'bolt' || k === 'surf') { g.fx.surf = 0; g.fx.str = 0; g.fx.bolt = 0; mgCool(g); } if (k === 'silk') { mgSilkOff(g, false); g.fx.silkT = 0; mgCool(g); } if (k === 'fly') { g.fx.flyT = 0; mgCool(g); } if (k === 'dig') { g.fx.dig = 0; mgDigOut(g); mgCool(g); } if (k === 'rock') { g.fx.rockT = 0; mgCool(g); } sfx('abEnd'); mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, '#d8d8e0', 10, 90); mgRing(g, '#9a9aaa'); mgToast(g, k === 'shield' ? '방패가 깨졌어요' : '효과 끝'); $('#mgAbBtn').classList.remove('on');
+  const k = g.abK; g.abK = null; if (MG_STR[k] || k === 'bolt' || k === 'surf') { g.fx.surf = 0; g.fx.str = 0; g.fx.bolt = 0; mgCool(g); } if (k === 'silk') { mgSilkOff(g, false); g.fx.silkT = 0; mgCool(g); } if (k === 'fly') { g.fx.flyT = 0; mgCool(g); } if (k === 'dig') { g.fx.dig = 0; mgDigOut(g); mgCool(g); } if (k === 'rock') { g.fx.rockT = 0; mgCool(g); } if (k === 'qaS') { g.fx.qaW = 0; mgCool(g); } sfx('abEnd'); mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, '#d8d8e0', 10, 90); mgRing(g, '#9a9aaa'); mgToast(g, k === 'shield' ? '방패가 깨졌어요' : '효과 끝'); $('#mgAbBtn').classList.remove('on');
 }
 // v5.83 경완: 장애물은 주인공과 같은 배율(원래 크기 비율)로, 타입마다 움직임이 다르다
 const MG_PAT = { 1: 'hop', 2: 'hop', 7: 'hop', 12: 'hop', 18: 'hop', 10: 'dash', 13: 'dash', 16: 'dash', 17: 'dash', 4: 'pace', 11: 'pace', 14: 'pace', 8: 'pace', 5: 'still', 6: 'still', 9: 'still', 15: 'still', 3: 'wave' };
@@ -6295,8 +6303,9 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
   if (g.rings) { g.rings.forEach(r => r.t -= dt); g.rings = g.rings.filter(r => r.t > 0); }
   if (g.bursts) { g.bursts.forEach(r => r.t -= dt); g.bursts = g.bursts.filter(r => r.t > 0); }
   if (g.hs > 0) { g.hs -= dt; return; }   // 밟는 순간 아주 잠깐 멈춤 (손맛)
+  if (g.qaP && (g.qaPT -= dt) <= 0) { const A = g.qaP.filter(o => !o.dead); g.qaP = null; if (A.length) mgQaHit(g, A); }
   if (g.fx.dig > 0) g.digS = (g.digS || 0) + dt;
-  g.t += dt; for (const k of ['str', 'qa', 'iron', 'rockT', 'silkT', 'flyT', 'dig', 'ghost', 'ram', 'surf', 'bolt', 'ice', 'gas', 'beam', 'scare', 'web']) if (g.fx[k] > 0) g.fx[k] -= dt;
+  g.t += dt; for (const k of ['str', 'qa', 'qaW', 'iron', 'rockT', 'silkT', 'flyT', 'dig', 'ghost', 'ram', 'surf', 'bolt', 'ice', 'gas', 'beam', 'scare', 'web']) if (g.fx[k] > 0) g.fx[k] -= dt;
   for (const k of ['punch', 'vine']) if (g.fx[k]) { g.fx[k].t -= dt; if (g.fx[k].t <= 0) g.fx[k] = null; }
   if (g.tint) { g.tint.t -= dt; if (g.tint.t <= 0) g.tint = null; }
   if (g.abK) { const L = mgAbLeft(g); if (L <= 0) mgAbEnd(g); else if (!g.abW && g.abK !== 'shield' && L < .6) { g.abW = true; sfx('abWarn'); } }
