@@ -3150,8 +3150,8 @@ function canMeet(m, o) {
   if (fedBusy(m) || fedBusy(o)) return false;
   if (o === m || o.held || m.held || m.land || o.land || !awake(o) || o.state === 'interact' || o.state === 'special' || o.state === 'eat' || o.pet || m.pet || o.pin || m.pin || o.camp || m.camp) return false;   /* v5.93: 모닥불로 가는 중인 포켓몬은 건드리지 않는다 */
   const a = T(m).mv, b = T(o).mv;
-  if (a === 'swim' && !['amph', 'fly', 'hover', 'swim'].includes(b)) return false;
-  if (b === 'swim' && !['amph', 'fly', 'hover', 'swim'].includes(a)) return false;
+  /* v5.99 경완: 물 포켓몬이 뭍 포켓몬과 거의 못 어울려 즐거움이 안 쌓이던 것 — 뭍 포켓몬은 물가로 찾아가 어울리고, 물 포켓몬은 물가 가까이 있는 뭍 포켓몬에게 다가간다 */
+  if (a === 'swim' && b === 'walk' && pondVal(o.x, o.y) > 1.8) return false;
   return dist(m, o) < 520;
 }
 function pickPartner(m) {
@@ -3191,6 +3191,7 @@ function think(m) {
     } }
   if (m.social > 42 && Math.random() < .85) {
     const o = pickPartner(m);
+    if (o && (T(m).mv === 'swim') !== (T(o).mv === 'swim') && !o.goal && (o.state === 'idle' || o.state === 'move') && !o.held && !o.pin) moveTo(o, m, { kind: 'meet', mon: m }, 1.1);   // v5.99: 물·뭍 사이는 서로 물가로 다가간다
     if (o) return moveTo(m, o, { kind: 'meet', mon: o }, 1.1);
   }
   if (t.sp && !(m.spCd > 0) && Math.random() < (t.sp === 'transform' ? .3 : .2) && doSpecial(m)) { m.spCd = t.sp === 'sing' ? rnd(120, 200) : rnd(40, 90); return; }
@@ -5721,7 +5722,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '5.98';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.99';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
