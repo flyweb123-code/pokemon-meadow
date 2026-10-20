@@ -1376,7 +1376,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 #mg section[data-mv="play"] .mg-hud{position:absolute;z-index:2;left:0;right:0;top:0;margin:0;padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 8px;pointer-events:none}#mg .mg-hud>*{text-shadow:0 1px 0 rgba(255,255,255,.8)}#mg .mg-hud .mg-x{pointer-events:auto;background:rgba(255,255,255,.85);padding:5px 10px;border:2px solid var(--frame)}
 #mg .mg-stage{border:0;min-height:0}
 .mg-abi{position:absolute;right:calc(env(safe-area-inset-right,0px) + 18px);bottom:calc(env(safe-area-inset-bottom,0px) + 22px);width:84px;height:84px;border-radius:50%;border:3px solid var(--frame);background:#fff2d8;box-shadow:3px 3px 0 rgba(0,0,0,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0;font:inherit;cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent}
-.mg-abi.on::before{content:'';position:absolute;inset:-13px;border-radius:50%;background:conic-gradient(var(--ac,#ffe14a) var(--du,100%),rgba(32,32,44,.35) 0);-webkit-mask:radial-gradient(circle,transparent 46px,#000 47px);mask:radial-gradient(circle,transparent 46px,#000 47px);pointer-events:none;filter:drop-shadow(0 0 4px var(--ac,#ffe14a))}.mg-abi.on:disabled{filter:none}.mg-abi.on{background:#fff;box-shadow:0 0 0 3px var(--frame),0 0 14px var(--ac,#ffe14a)}.mg-abi.rdy{animation:abRdy .5s ease-out}@keyframes abRdy{0%{transform:scale(1)}35%{transform:scale(1.16);box-shadow:0 0 0 5px #ffe14a,0 0 18px #ffe14a}100%{transform:scale(1)}}.mg-abi:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(0,0,0,.25)}.mg-abi:disabled{filter:grayscale(.8)}.mg-abi{overflow:visible}.mg-abi::after{content:'';position:absolute;inset:0;border-radius:50%;background:conic-gradient(rgba(32,32,44,.55) var(--cd,0%),transparent 0);pointer-events:none}.mg-abi i{position:relative;z-index:1}.mg-abi:disabled i{color:#fff;font-size:13px;text-shadow:0 1px 0 #20202c,1px 0 0 #20202c,-1px 0 0 #20202c,0 -1px 0 #20202c}
+.mg-abi.on::before{content:'';position:absolute;inset:-13px;border-radius:50%;background:conic-gradient(var(--ac,#ffe14a) var(--du,100%),rgba(32,32,44,.35) 0);-webkit-mask:radial-gradient(circle,transparent 46px,#000 47px);mask:radial-gradient(circle,transparent 46px,#000 47px);pointer-events:none;filter:drop-shadow(0 0 4px var(--ac,#ffe14a))}.mg-abi.on:disabled{filter:none}.mg-abi.on{background:#fff;box-shadow:0 0 0 3px var(--frame),0 0 14px var(--ac,#ffe14a)}.mg-abi.rdy{animation:abRdy .5s ease-out}@keyframes abRdy{0%{transform:scale(1)}35%{transform:scale(1.16);box-shadow:0 0 0 5px #ffe14a,0 0 18px #ffe14a}100%{transform:scale(1)}}.mg-abi:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(0,0,0,.25)}.mg-abi:disabled{filter:grayscale(.8)}.mg-abi{overflow:visible;bottom:calc(env(safe-area-inset-bottom,0px) + 122px)}.mg-abi .mg-x2{position:absolute;right:-6px;top:-6px;font:700 12px/1 var(--px);font-style:normal;background:#ffd84a;color:#3a2a00;border:2px solid var(--frame);padding:2px 4px}.mg-abi.gold{border-color:#c89a20;box-shadow:3px 3px 0 rgba(0,0,0,.25),0 0 0 3px #ffe58a}/* v6.16 경완: 기술 버튼 한 칸 위로, S 랭크는 금빛 테두리와 ×2 */.mg-abi::after{content:'';position:absolute;inset:0;border-radius:50%;background:conic-gradient(rgba(32,32,44,.55) var(--cd,0%),transparent 0);pointer-events:none}.mg-abi i{position:relative;z-index:1}.mg-abi:disabled i{color:#fff;font-size:13px;text-shadow:0 1px 0 #20202c,1px 0 0 #20202c,-1px 0 0 #20202c,0 -1px 0 #20202c}
 #mg .mg-abi .tyi{width:38px!important;height:38px!important}.mg-abi i{font-style:normal;font-size:10px;letter-spacing:1px;color:#e8783c;line-height:1}
 .mg-abi b{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:11px;white-space:nowrap;background:rgba(255,255,255,.85);padding:1px 6px;border:2px solid var(--frame)}}.mg-btn[disabled]{opacity:.55}
 .mg-rec{text-align:center;padding:12px 0 8px}.mg-rec i{display:block;font-style:normal;color:#e8487a;font-size:15px}.mg-rec b{display:block;font-size:40px}.mg-rec span{font-size:13px;color:#6a6a7a}.mg-got{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:8px 0}.mg-got span{display:flex;align-items:center;justify-content:center;gap:4px;padding:8px 4px;border:2px solid var(--frame);background:#fff;font-size:13px;white-space:nowrap}
@@ -5746,7 +5746,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.15';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.16';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5964,14 +5964,14 @@ const mgAb = sp => MG_AB[(SPECIES[sp]?.t || [1])[0]] || MG_AB[1];
 // v5.79 경완: 랭크에 따른 패시브 (게임마다 다름). 랭크가 높을수록 좋지만 게임이 너무 쉬워지지 않게 하나씩만
 const MG_GAMES = [{ id: 'jump', n: '장애물 넘기', on: 1, how: '저절로 달려요. 눌러서 뛰고 꾹 누르면 더 높이, 공중에서 한 번 더 누르면 2단 점프예요. 장애물을 위에서 밟으면 튕겨 오르며 점수가 붙어요.' }, { id: 'balloon', n: '풍선 터뜨리기' }, { id: 'berry', n: '나무열매 받기' }];
 const MG_PASS = { jump: {
-  // v6.15 경완: 랭크가 바로 느껴지게 — F·E 는 손해(약점), D~A 는 차례로 좋아지고, S 는 눈에 보이는 능력(언제나 3단 점프 + 버티기)
-  F: { n: '무거운 몸', d: '점프가 낮아요 (-10%)', jump: .9 },
-  E: { n: '느긋함', d: '능력을 다시 쓰기까지 오래 걸려요 (+25%)', cdm: 1.25 },
+  // v6.16 경완: F·E 는 손해 없이 작은 도움, D~A 차례로 좋아지고, S 는 액티브 기술이 달라진다 (두 번 연달아 + 금빛)
+  F: { n: '꾸준함', d: '받는 골드 +10%', gold: 1.1 },
+  E: { n: '가벼운 몸', d: '점프가 조금 더 높아요 (+5%)', jump: 1.05 },
   D: { n: '아슬아슬', d: '장애물 가장자리를 살짝 스치는 건 봐줘요', graze: 3 },
   C: { n: '밟기 달인', d: '밟기 점수 ×1.5', stomp: 1.5 },
   B: { n: '넉넉한 힘', d: '능력을 다시 쓰기까지 기다리는 시간 -25%', cdm: .75 },
   A: { n: '끈기', d: '한 판에 한 번, 부딪혀도 버텨요', guard: 1 },
-  S: { n: '전설의 기운', d: '언제나 3단 점프 (마지막은 금빛) + 한 판에 한 번 버티기', jumps: 3, guard: 1 },
+  S: { n: '전설의 기운', d: '액티브 기술을 연달아 두 번 쓸 수 있어요 (금빛 기술) + 한 판에 한 번 버티기', ch: 1, guard: 1 },
 } };
 const mgRank = m => { const P = boxOf(m?.pid); return P ? rankOf(P) : 'F'; };
 let mgOpenG = '';   // v5.82 경완: 처음엔 모든 게임 카드를 접어 둔다
@@ -5979,7 +5979,7 @@ let mgOpenG = '';   // v5.82 경완: 처음엔 모든 게임 카드를 접어 �
 // v5.86 경완: 선물 기준을 높였다 (예전 기준으로 받은 기록은 gv 2 에서 새로 센다)
 const MG_GIFT = [{ m: 500, it: 'incense', n: 1 }, { m: 1000, it: 'stone', n: 1 }, { m: 1800, it: 'link', n: 1 }, { m: 3000, it: 'incense', n: 2 }, { m: 5000, it: 'charm', n: 1 }];
 const MG_STONES = ['fire', 'water', 'thunder', 'leaf', 'moon', 'sun', 'ice', 'shiny', 'dusk', 'dawn'];
-const MG_GOLD_DAY = 600;   // 하루에 미니게임으로 벌 수 있는 골드
+const MG_GOLD_DAY = 200;   // 하루에 미니게임으로 벌 수 있는 골드
 const mgS = () => S.mg || (S.mg = {});
 const mgRec = () => { const M = mgS(), R = M.jump || (M.jump = { best: 0, n: 0, ms: [], gv: 2 }); if (R.gv !== 2) { R.gv = 2; R.ms = []; } return R; };
 const mgEl = $('#mg');
@@ -6036,7 +6036,7 @@ function mgView(v) {
           <div class="mg-abs"><div class="mg-ab2 act"><em>액티브</em><i class="mg-abic">${tyIcon(ty[0])}</i><div><p><b>${ab.n}</b><small>${TYPE_KO[ty[0]]} 타입</small></p><span>${ab.d}</span>${ab.c ? `<u>다시 쓰기 ${+(ab.c * (ps.cdm || 1)).toFixed(1)}초</u>` : ''}</div></div>
           <div class="mg-ab2 pas"><em>패시브</em><i class="mg-abic"><span class="rk ${rk}">${rk}</span></i><div><p><b>${ps.n}</b><small>${rk} 랭크</small></p><span>${ps.d}</span></div></div></div>
           <details class="mg-rks"><summary>랭크별 패시브 모두 보기</summary>${RANKS.map(([r]) => `<div class="mg-rk${r === rk ? ' on' : ''}"><span class="rk ${r}">${r}</span><b>${MG_PASS[G.id][r].n}</b><span>${MG_PASS[G.id][r].d}</span></div>`).join('')}</details>
-          <div class="mg-gl"><b>기록별 선물</b>${MG_GIFT.map(o => { const it = o.it === 'stone' ? MG_STONES[0] : o.it, got = R.ms.includes(o.m); return `<div class="mg-gi${got ? ' got' : o === nx ? ' nx' : ''}"><span>${o.m.toLocaleString()}점</span><img src="${ITEM_ART[ITEM[it].a]}" alt=""><em>${o.it === 'stone' ? '진화의 돌 (무작위)' : ITEM[it].n}${o.n > 1 ? ' ×' + o.n : ''}</em><i>${got ? '받음' : o === nx ? '다음' : ''}</i></div>`; }).join('')}<small>600점이 넘으면 가끔 향로나 진화의 돌을 덤으로 받아요</small></div>
+          <div class="mg-gl"><b>기록별 선물</b>${MG_GIFT.map(o => { const it = o.it === 'stone' ? MG_STONES[0] : o.it, got = R.ms.includes(o.m); return `<div class="mg-gi${got ? ' got' : o === nx ? ' nx' : ''}"><span>${o.m.toLocaleString()}점</span><img src="${ITEM_ART[ITEM[it].a]}" alt=""><em>${o.it === 'stone' ? '진화의 돌 (무작위)' : ITEM[it].n}${o.n > 1 ? ' ×' + o.n : ''}</em><i>${got ? '받음' : o === nx ? '다음' : ''}</i></div>`; }).join('')}<small>1,000점이 넘으면 가끔 향로나 진화의 돌을 덤으로 받아요</small></div>
           <button class="lk-btn main mg-go" data-g="${G.id}">시작하기</button></div></div>`;
       return card; }).join('');
     const pop = $('#mgPop'); pop.innerHTML = mgDet; pop.hidden = !mgDet;
@@ -6157,7 +6157,7 @@ async function mgPlay() {
   cv.width = W * dpr; cv.height = H * dpr;
   const ab = mgAb(m.form), pas = MG_PASS.jump[mgRank(m)] || {}; mgPlayed = m;
   MGG = { run: true, m, me, ab, pool, W, H, dpr, GY: Math.round(Math.min(H - 46, Math.max(234, H * .64))), PX: Math.min(90, W * .22), t: 0, dist: 0, v: 250, phase: 1, y: 0, vy: 0, hold: false, holdT: 0, air: 0,
-    psc: MG_WS, pas, jn: 0, guard: pas.guard || 0, cool: 0, lives: ab.k === 'fairy' ? 2 : 1, inv: 0, obs: [], gap: 420, sinceSp: 0, fx: {}, shots: [], parts: [], ban: null, cd: 3.6, cdN: 4, bonus: 0, combo: 0, last: performance.now(), m0: 0 };
+    psc: MG_WS, pas, jn: 0, guard: pas.guard || 0, cool: 0, chg: pas.ch || 0, lives: ab.k === 'fairy' ? 2 : 1, inv: 0, obs: [], gap: 420, sinceSp: 0, fx: {}, shots: [], parts: [], ban: null, cd: 3.6, cdN: 4, bonus: 0, combo: 0, last: performance.now(), m0: 0 };
   MGG.phh = MG_PH; MGG.pw = 11; mgFitMe(MGG);
   $('#mgBan').hidden = true; $('#mgAbBtn').classList.remove('on', 'rdy'); mgMus.start('jump'); mgHud();
   const loop = now => { const g = MGG; if (!g || !g.run) return; g.acc = (g.acc || 0) + Math.min(.1, (now - g.last) / 1000); g.last = now; while (g.acc >= MG_DT) { mgStep(g, MG_DT); g.acc -= MG_DT; } mgRender(g); if (g.run) g.raf = requestAnimationFrame(loop); };   // v5.86: 1/120초 고정 단계로 계산해서 기기마다 똑같이 움직인다
@@ -6176,11 +6176,11 @@ function mgJump(down) {
   if (g.fx.flying) return;
   // v5.83 경완: 누구나 2단 점프, 노말 타입은 3단 점프
   if (g.y <= 0) { mgLift(g, MG_JUMP * (g.pas.jump || 1)); g.sq = 1.36; g.air = 0; g.jn = 1; mgDust(g, 10, 170); (g.rings || (g.rings = [])).push({ x: g.PX, y: g.GY, t: .3, c: 'rgba(255,255,255,.9)', flat: 1, z: 1.3 }); haptic(0); sfx('jmp'); return; }   // v5.92 경완: 누르는 맛 (더 늘어나며 튀고, 발밑 충격파·진동)
-  if (g.jn >= (g.pas.jumps || 2) && g.ab.k === 'dbl') { if (g.cool <= 0) mgJ3(g); else g.buf = .14; return; }
-  if (g.jn < (g.pas.jumps || 2)) { g.jn++; mgLift(g, MG_JUMP * .86 * (g.pas.jump || 1), true); if (g.jn === 3) { mgRing(g, '#ffd84a'); mgFx(g, g.PX, g.GY - g.y, '#ffd84a', 10, 160); } mgRing(g, '#ffffff'); g.rings.push({ x: g.PX, y: g.GY - g.y, t: .3, c: 'rgba(255,255,255,.7)', z: 1.6, flat: 1 }); mgFx(g, g.PX, g.GY - g.y, '#ffffff', 6, 120); haptic(0); sfx('jmp2'); } else g.buf = .14;
+  if (g.jn >= 2 && g.ab.k === 'dbl') { if (g.cool <= 0) mgJ3(g); else g.buf = .14; return; }
+  if (g.jn < 2) { g.jn++; mgLift(g, MG_JUMP * .86 * (g.pas.jump || 1), true); mgRing(g, '#ffffff'); g.rings.push({ x: g.PX, y: g.GY - g.y, t: .3, c: 'rgba(255,255,255,.7)', z: 1.6, flat: 1 }); mgFx(g, g.PX, g.GY - g.y, '#ffffff', 6, 120); haptic(0); sfx('jmp2'); } else g.buf = .14;
 }
-function mgCool(g) { g.cool = g.ab.c * (g.pas.cdm || 1); g.coolN = -1; mgHud(); }
-function mgJ3(g) { g.jn = Math.max(g.jn + 1, 3); mgLift(g, MG_JUMP * .86 * (g.pas.jump || 1), true); mgRing(g, '#ffe14a'); sfx('ab', 'dbl'); mgCool(g); mgAbStart(g, 'dbl'); }
+function mgCool(g) { if (g.chg > 0) { g.chg--; g.cool = .6; } else { g.cool = g.ab.c * (g.pas.cdm || 1); g.chg = g.pas.ch || 0; } g.coolN = -1; mgHud(); }   // v6.16 경완: S 랭크는 기술을 연달아 두 번 (두 번째 뒤에 기다림)
+function mgJ3(g) { g.jn = 3; mgLift(g, MG_JUMP * .86 * (g.pas.jump || 1), true); mgRing(g, '#ffe14a'); sfx('ab', 'dbl'); mgCool(g); mgAbStart(g, 'dbl'); }
 function mgFx(g, x, y, c, n = 8, sp = 160) { for (let i = 0; i < n; i++) { const a = Math.random() * Math.PI * 2, s = sp * (.4 + Math.random()); g.parts.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, t: .5 + Math.random() * .3, t0: .8, r: 2 + Math.random() * 2.5, c }); } }
 // 발밑 흙먼지 (뒤로 흩날림)
 function mgDust(g, n, sp) { for (let i = 0; i < n; i++) g.parts.push({ x: g.PX + (Math.random() - .5) * g.pw * 2, y: g.GY - 2, vx: -sp * (.3 + Math.random()), vy: -sp * (.2 + Math.random() * .6), t: .35 + Math.random() * .25, t0: .6, r: 2.5 + Math.random() * 3, c: Math.random() < .5 ? 'rgba(232,214,170,.9)' : 'rgba(255,255,255,.85)', dust: 1 }); }
@@ -6220,7 +6220,7 @@ const MG_DUR = { fly: 'flyT', dig: 'dig', ghost: 'ghost', ram: 'ram', surf: 'sur
 const MG_STR = { fire: { T: 1.6, L: 220, b: 26, s: .26, c: '#ff8a2a' }, beam: { T: 1.3, L: 0, b: 22, s: .45, c: '#8a7aff' }, gas: { T: 1.5, L: 200, b: 60, s: .5, c: '#b47ae0' } };
 const mgAbLeft = g => { const k = g.abK; return !k ? 0 : k === 'shield' ? (g.fx.shield ? 1 : 0) : k === 'fly' && !g.fx.flying ? 0 : Math.max(0, g.fx[MG_DUR[k]] || 0); };
 function mgAbStart(g, k) {
-  const c = MG_ABC[k] || '#fff'; g.tint = { c, t: .28 }; mgRing(g, c); setTimeout(() => MGG === g && mgRing(g, '#ffffff'), 90); g.shake = Math.max(g.shake || 0, .14); g.shA = Math.max(g.shA || 0, 3);
+  const c = g.pas.ch ? '#ffd84a' : MG_ABC[k] || '#fff';   // S 랭크 = 금빛 기술 g.tint = { c, t: .28 }; mgRing(g, c); setTimeout(() => MGG === g && mgRing(g, '#ffffff'), 90); g.shake = Math.max(g.shake || 0, .14); g.shA = Math.max(g.shA || 0, 3);
   mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, c, 12, 150); haptic(2); mgToast(g, g.ab.n + '!');
   if (MG_DUR[k] || k === 'shield') { g.abK = k; g.abD = k === 'shield' ? 1 : g.fx[MG_DUR[k]]; g.abW = false; }
   const b = $('#mgAbBtn'); b.style.setProperty('--ac', c); b.classList.toggle('on', !!g.abK);
@@ -6285,7 +6285,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
   if (g.buf > 0) g.buf -= dt;
   if (g.y <= 0) { g.jn = 0; if (g.combo) { if (g.combo >= 3) mgToast(g, `${g.combo} 콤보!`); g.combo = 0; g.cT = 0; }   /* v6.05 경완: 콤보는 땅에 닿지 않고 이어 밟을 때만 쌓인다 */ if (g.buf > 0 && !g.fx.flying && !(g.fx.dig > 0)) { g.buf = 0; mgJump(true); g.hold = false; g.cut = false; } }
   if (g.sinceSp >= g.gap) { g.sinceSp = 0; mgSpawn(g); }
-  for (const o of g.obs) { o.x -= dx * (o.t === 'f' ? 1.18 : 1); if (!o.dead && !o.flee && !o.stomp) mgMove(g, o, dt); if (o.flee) { o.x += 260 * dt; o.y += 200 * dt; o.flee += dt; } if (o.dead) o.kt -= dt; if (o.kb) { o.x += o.kb.vx * dt; o.y += o.kb.vy * dt; o.kb.vy -= 900 * dt; o.kb.r += o.kb.vr * dt; if (Math.random() < .5) g.parts.push({ x: o.x, y: g.GY - o.y - o.h / 2, vx: -80, vy: 0, t: .3, t0: .4, r: 2, c: Math.random() < .5 ? '#ffffff' : o.kb.c }); } }
+  for (const o of g.obs) { o.x -= dx * (o.t === 'f' && o.pat !== 'wave' ? 1.18 : 1);   /* v6.16 경완: 구구(wave)는 제자리에서 위아래만 */ if (!o.dead && !o.flee && !o.stomp) mgMove(g, o, dt); if (o.flee) { o.x += 260 * dt; o.y += 200 * dt; o.flee += dt; } if (o.dead) o.kt -= dt; if (o.kb) { o.x += o.kb.vx * dt; o.y += o.kb.vy * dt; o.kb.vy -= 900 * dt; o.kb.r += o.kb.vr * dt; if (Math.random() < .5) g.parts.push({ x: o.x, y: g.GY - o.y - o.h / 2, vx: -80, vy: 0, t: .3, t0: .4, r: 2, c: Math.random() < .5 ? '#ffffff' : o.kb.c }); } }
   if (g.fx.str > 0 && MG_STR[g.ab.k]) { const k = g.ab.k, Z = MG_STR[k], L = Z.L || g.W, sy = g.GY - g.y - MG_PH / 2; g.strL = Math.min(L, (g.strL || 0) + 1300 * dt);   // 뿜는 줄기가 앞으로 쭉 뻗고, 닿는 장애물은 날아간다
     if ((g.strS -= dt) <= 0) { g.strS = Z.s; sfx('ab', k); }
     for (const o of g.obs) { if (o.dead || o.flee) continue; const ox = o.x - g.PX; if (ox + o.w / 2 < 0 || ox - o.w / 2 > g.strL + 10) continue; if (Math.abs(g.GY - o.y - o.h / 2 - sy) < o.h / 2 + Z.b) mgKill(g, o, Z.c); }
@@ -6382,8 +6382,7 @@ function mgRender(g, cv = $('#mgCv')) {
       b.fillStyle = C(6); p.disc(tx, ty - r * 1.4, r); p.disc(tx - r * .6, ty - r * .95, r * .7); p.disc(tx + r * .6, ty - r * .95, r * .7);
       b.fillStyle = C(7); p.disc(tx - r * .3, ty - r * 1.65, r * .55); p.rect(tx - r * .5, ty - r * 2, P * 2, P, C(8)); } }
   // 땅: 풀 띠 + 흙(두 단) + 들쭉날쭉한 풀 끝
-  { p.rect(-P, GY + 9, W + 2 * P, (H - GY) * .45, C(10)); p.rect(-P, GY + 9 + (H - GY) * .45, W + 2 * P, H, C(11));
-    for (let xx = 0; xx < b.canvas.width; xx += 2) { b.fillStyle = C(10); b.fillRect(xx + 1, p.q(GY + 9 + (H - GY) * .45), 1, 1); }
+  { p.rect(-P, GY + 9, W + 2 * P, H, C(10));   // v6.16 경완: 흙을 한 색으로
     p.rect(-P, GY - 1, W + 2 * P, 11, C(9)); p.rect(-P, GY - 1, W + 2 * P, P, C(8)); p.rect(-P, GY + 9, W + 2 * P, P, 'rgba(0,0,0,.18)');
     const s8 = 8, o = ((d % s8) + s8) % s8;
     for (let sx = -o - s8; sx < W + s8; sx += s8) { const j = Math.round((sx + d) / s8); p.rect(sx, GY + 10, 4, mgH(j) < .5 ? 2 : 4, C(9)); if (mgH(j + 5) < .45) p.rect(sx + 2, GY - 4, P, 4, C(8)); }
@@ -6462,9 +6461,8 @@ function mgRender(g, cv = $('#mgCv')) {
   if (g.toast) { x.textAlign = 'center'; txt(g.toast.s, W / 2, 80, 15, '#fff'); x.textAlign = 'start'; }
   if (g.abK && g.abK !== 'shield' && !g.over) { const L = mgAbLeft(g), k = clamp(L / (g.abD || 1), 0, 1), bw = 48, bx = Math.round(g.PX - bw / 2), by = Math.round(py - phh - 30), c = g.abW && Math.floor(g.t * 14) % 2 ? '#ffffff' : MG_ABC[g.abK] || '#ffe14a';   /* v6.05 경완: 남은 시간은 엄지에 가리지 않게 포켓몬 머리 위에 */
     x.fillStyle = '#20202c'; x.fillRect(bx - 2, by - 2, bw + 4, 9); x.fillStyle = 'rgba(255,255,255,.35)'; x.fillRect(bx, by, bw, 5); x.fillStyle = c; x.fillRect(bx, by, Math.round(bw * k / 2) * 2, 5); x.textAlign = 'center'; txt(L.toFixed(1) + '초', g.PX, by - 6, 12, '#fff', 3); x.textAlign = 'start'; }
-  if (g.combo >= 2 && g.cT > 0) { const sc = 1 + Math.max(0, g.cPop || 0) * 1.2, mul = Math.min(5, g.combo), cx = Math.round(W / 2), cy = Math.round(Math.max(130, H * .2)), c = g.combo >= 10 ? '#ff5a3a' : mul >= 5 ? '#ff8a30' : mul >= 3 ? '#ffb030' : '#ffe14a';   // v6.00 경완: 콤보를 화면 위 가운데에 크게 (숫자·배율·남은 시간·다음 10콤보까지)
-    x.save(); x.translate(cx, cy); x.scale(sc, sc); x.textAlign = 'center'; txt(g.combo + '', 0, 0, 48, c, 7); x.restore(); x.textAlign = 'center'; txt(`콤보 ×${mul}`, cx, cy + 26, 15, '#fff', 4);
-    const n10 = 10 - g.combo % 10; if (n10 <= 3) txt(`${n10}번 더 밟으면 ${g.combo + n10} 콤보!`, cx, cy + 46, 12, '#ffe14a', 3); x.textAlign = 'start'; }
+  if (g.combo >= 2 && g.cT > 0) { const sc = 1 + Math.max(0, g.cPop || 0) * 1.2, mul = Math.min(5, g.combo), cx = Math.round(g.PX + g.pw + 22), cy = Math.round(GY - g.y - (g.phh || 36) - 2), c = g.combo >= 10 ? '#ff5a3a' : mul >= 5 ? '#ff8a30' : mul >= 3 ? '#ffb030' : '#ffe14a';   // v6.16 경완: 콤보는 게임을 가리지 않게 캐릭터 옆에 작게
+    x.save(); x.translate(cx, cy); x.scale(sc, sc); x.textAlign = 'left'; txt(g.combo + ' 콤보', 0, 0, 14, c, 3); x.restore(); x.textAlign = 'start'; }
   if (g.ban) { const k = 1.6 - g.ban.t, sc = k < .14 ? .5 + k / .14 * .7 : k < .28 ? 1.2 - (k - .14) / .14 * .2 : 1, cy = H * .42;   // 화면 가운데에 통 튀어나왔다가 사라짐
     x.save(); x.globalAlpha = Math.min(1, g.ban.t / .35); x.fillStyle = 'rgba(32,32,44,.55)'; x.fillRect(0, cy - 34 * Math.min(1, k / .14), W, 68 * Math.min(1, k / .14));
     x.translate(W / 2, cy + 13); x.scale(sc, sc); x.textAlign = 'center'; txt(g.ban.s, 0, 0, 38, '#ffd84a', 6); x.restore(); }
@@ -6474,19 +6472,19 @@ function mgHud() {
   $('#mgPh').textContent = '페이즈 ' + g.phase; $('#mgBest').textContent = '최고 ' + mgRec().best.toLocaleString() + '점';
   $('#mgLife').textContent = '♥'.repeat(Math.max(0, g.lives - (g.over ? 1 : 0))) || '♡';
   const b = $('#mgAbBtn'), ty = (SPECIES[g.m.form]?.t || [1])[0], cl = Math.ceil(g.cool || 0);
-  b.innerHTML = `${tyIcon(ty)}<i>${!ab.c ? '저절로' : cl ? cl + '초' : '준비!'}</i><b>${ab.n}</b>`; b.setAttribute('aria-label', ab.n); b.disabled = !ab.c || cl > 0;
+  b.innerHTML = `${tyIcon(ty)}<i>${!ab.c ? '저절로' : cl ? cl + '초' : '준비!'}</i><b>${ab.n}</b>${g.chg > 0 && ab.c && !cl ? '<em class="mg-x2">×2</em>' : ''}`; b.classList.toggle('gold', !!g.pas.ch); b.setAttribute('aria-label', ab.n); b.disabled = !ab.c || cl > 0;
 }
 function mgEnd(g) {
   mgMus.stop(.6);
   const m = g.m, R = mgRec(), M = mgS(), dist = Math.round((Math.floor(g.dist / 25) + g.bonus) * (g.pas.score || 1)), prev = R.best, nb = dist > prev, P = boxOf(m.pid);
   R.n++; if (nb) R.best = dist;
   const d = dayKey(); if (M.gd !== d) { M.gd = d; M.gg = 0; }
-  let gold = Math.round((Math.min(150, Math.floor(dist / 10)) + (nb && prev > 0 ? 50 : 0)) * (g.pas.gold || 1)); gold = Math.max(0, Math.min(gold, MG_GOLD_DAY - M.gg)); M.gg += gold; addGold(gold);
+  let gold = Math.round((Math.min(60, Math.floor(dist / 25)) + (nb && prev > 0 ? 20 : 0)) * (g.pas.gold || 1));   // v6.16 경완: 골드가 너무 빨리 쌓여 빛나는 부적(5,000점)보다 사는 게 빨랐다 → 한 판 최대 60G(+최고 기록 20), 하루 200G gold = Math.max(0, Math.min(gold, MG_GOLD_DAY - M.gg)); M.gg += gold; addGold(gold);
   const fr = P && dist >= 30 && dayCap(m, 'mg', 3) ? Math.min(6, 1 + g.phase) : 0; if (fr) addFr(m.pid, fr);
   const j0 = m.joy ?? 60; m.joy = clamp(j0 + (dist >= 30 ? 6 + 4 * g.phase : 2)); const joy = Math.round(m.joy - j0);
   const gifts = [], I = itemsOf(), give = (it, n) => { if (it === 'stone') it = MG_STONES[Math.floor(Math.random() * MG_STONES.length)]; I[it] = (I[it] || 0) + n; gifts.push({ it, n }); };
   for (const o of MG_GIFT) if (dist >= o.m && !R.ms.includes(o.m)) { R.ms.push(o.m); give(o.it, o.n); }
-  if (dist >= 600 && Math.random() < Math.min(.3, dist / 8000)) give(Math.random() < .7 ? 'incense' : 'stone', 1);
+  if (dist >= 1000 && Math.random() < Math.min(.3, dist / 8000))   /* v6.16 경완: 1,000점부터 */ give(Math.random() < .7 ? 'incense' : 'stone', 1);
   save(); renderGold(); if (gifts.length) sfx('shiny'); else if (nb) sfx('newdex');
   const left = MG_GOLD_DAY - M.gg;
   const res = `<div class="mg-rec">${nb && prev > 0 ? '<i>최고 기록!</i>' : ''}<b>${dist.toLocaleString()}점</b><span>${Math.floor(g.dist / 25).toLocaleString()}m 달리기 + 밟기 ${g.bonus.toLocaleString()}점${g.cMax >= 2 ? ` · 최대 ${g.cMax} 콤보` : ''} · 페이즈 ${g.phase} · 최고 ${R.best.toLocaleString()}점</span></div>
