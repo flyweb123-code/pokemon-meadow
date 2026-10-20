@@ -821,8 +821,8 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .pp-meta{font-size:12px;color:var(--dim);margin-top:4px;line-height:1.5}
 .pp-free{display:block;margin:10px auto 0;font:inherit;font-size:13px;background:none;border:0;color:#c03838;padding:4px 10px;cursor:pointer}
 .pp-free.arm{background:#c03838;color:#fff}#freeAsk{z-index:5700}#freeAsk .win{width:min(300px,100%);box-sizing:border-box;text-align:center;padding:16px}.ask-pic{display:grid;place-items:center;height:72px}.ask-pic img{width:72px;height:72px;image-rendering:pixelated;object-fit:contain}.ask-q{margin:8px 0 14px;font-size:16px;line-height:1.5;word-break:keep-all}.ask-btns{display:flex;gap:8px}.ask-btns[hidden]{display:none}.ask-pic img.bye{animation:byeGo 1.3s ease-in forwards}@keyframes byeGo{0%{transform:none;opacity:1}30%{transform:translateY(-4px)}100%{transform:translate(40px,-10px) scale(.6);opacity:0}}.ask-btns .boxbtn{flex:1 1 0;min-width:0;padding:10px 6px}#freeAsk .boxbtn.red{background:#c03838;border-color:#7a1f1f;color:#fff}.pp-free[hidden]{display:none}
-.pp-btns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
-.pp-btns:has(#ppField[hidden]),.pp-btns:has(#ppBud[hidden]){grid-template-columns:1fr}#ppField[hidden]{display:none}
+.pp-btns{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px}.pp-btns>.boxbtn{padding-left:4px;padding-right:4px;white-space:nowrap}.pp-btns>[hidden]{display:none}#dexPop.ovr{z-index:5650}
+#ppField[hidden]{display:none}
 .m-btns{margin-top:10px;grid-template-columns:repeat(3,minmax(0,1fr))}.m-btns:has(#mBud[hidden]){grid-template-columns:repeat(2,minmax(0,1fr))}#mBud[hidden]{display:none}#monPop .boxbtn.pink.sunk{background:#f7dfe8;border-color:#d9a9bc;color:#b0788f}#monPop .m-btns .boxbtn{min-width:0;font-size:14px;padding:10px 2px;white-space:nowrap}#pokePop .pp-btns .boxbtn{padding-left:2px;padding-right:2px}.pp-btns .boxbtn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:4px;padding-right:4px;font-size:clamp(12px,3.6vw,15px)}
 .pokepop .boxbtn{display:block;width:100%;font:inherit;font-size:15px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:10px 8px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35);cursor:pointer}
 .dexpop .boxbtn.red{background:#c83838;border-color:#7a1c1c;color:#fff}/* 눌린 버튼: 아래 그림자가 위로 옮겨가며 면이 4px 내려간다 → 글자도 padding 으로 같은 만큼 내려 함께 움직인다 */
@@ -1655,7 +1655,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
     <div class="dp-pic" id="ppPic"><img alt="" id="ppImg"></div>
     <div class="pp-body" id="ppBody"></div>
     <div class="pp-evo" id="ppEvo" hidden><button class="boxbtn evobtn" id="ppEvoBtn">진화하기</button><button class="boxbtn itembtn" id="ppItem" hidden>도구 쓰기</button></div>
-    <div class="pp-btns"><button class="boxbtn green" id="ppField"></button><button class="boxbtn pink" id="ppBud"></button></div>
+    <div class="pp-btns"><button class="boxbtn white" id="ppDex">도감</button><button class="boxbtn green" id="ppField"></button><button class="boxbtn pink" id="ppBud"></button></div>
     <button class="pp-free" id="ppFree">놓아주기</button>
   </div>
 </div>
@@ -6640,7 +6640,7 @@ async function openCard(sp, dir = 0) {
   $('#dpMeta').innerHTML = lock ? `<b class="cd-n">?????</b><span class="cd-g">??? 포켓몬</span><span class="cd-hw"><i>키</i>?.? m</span><span class="cd-hw"><i>몸무게</i>??.? kg</span>`
     : `<b class="cd-n">${esc(d.n)}</b><span class="cd-g">${esc(d.g || '')}</span><span class="cd-ty">${tyIcons(sp)}</span><span class="cd-hw"><i>키</i>${(d.h / 10).toFixed(1)} m</span><span class="cd-hw"><i>몸무게</i>${(d.w / 10).toFixed(1)} kg</span>`;
   $('#dpFx').innerHTML = lock ? '아직 만나지 못한 포켓몬이다.<br>알을 부화시켜 만나 보자.' : esc(d.fx || '');
-  const act = $('#dpAct'); act.hidden = dexMode !== 'buddy' && !cardEvo; act.classList.toggle('vh', lock && !cardEvo);
+  const act = $('#dpAct'); act.hidden = (dexMode !== 'buddy' && !cardEvo) || pop.classList.contains('ovr'); act.classList.toggle('vh', lock && !cardEvo);
   if (cardEvo) { act.textContent = '확인'; act.classList.remove('off'); return; }   // 짝꿍 고르기 중엔 자리를 늘 차지해 창 크기가 그대로
   if (!lock) {
     if (dexMode === 'buddy') { act.textContent = S.buds.some(b => b.sp === sp) ? '이미 짝꿍이에요' : '짝꿍으로 정하기'; act.classList.toggle('off', S.buds.some(b => b.sp === sp)); }
@@ -6648,7 +6648,7 @@ async function openCard(sp, dir = 0) {
   }
 }
 function cardStep(dir) { if (cardEvo) return; const list = cardList(), i = list.indexOf(cardSp), j = i + dir; if (j >= 0 && j < list.length) { sfx('tap'); openCard(list[j], dir); } }
-function closeCard() { $('#dexPop').hidden = true; cardSp = null; if (cardEvo) { const r = cardEvo; cardEvo = null; $('#dexPop').classList.remove('evo'); r(); } }
+function closeCard() { $('#dexPop').hidden = true; $('#dexPop').classList.remove('ovr'); cardSp = null; if (cardEvo) { const r = cardEvo; cardEvo = null; $('#dexPop').classList.remove('evo'); r(); } }
 $('#dpClose').onclick = closeCard;
 $('#dexPop').addEventListener('click', e => { if (e.target.id !== 'dexPop') return; const d = sideTap($('#dexPop'), e); if (d) { const h = $(d < 0 ? '#dpHl' : '#dpHr'); if (!h.hidden) cardStep(d); return; } closeCard(); });
 $('#dpAct').onclick = async () => {
@@ -6951,10 +6951,10 @@ function openPoke(id, dir = 0, quiet = false, noCry = false) {
   const on = onField(P.id), full = S.mons.length >= MAX_MONS, isBud = S.buds.some(b => b.pid === P.id);
   const pick = budPick != null || boxFromSlot;   /* 빈 짝꿍 칸·빈 필드 슬롯에서 왔으면 그 일 하는 버튼 하나만 */
   const rb = $('#ppFree'); rb.hidden = pick; if (freeArm !== id) { freeArm = null; rb.classList.remove('arm'); rb.textContent = '놓아주기'; }
-  const fb = $('#ppField'); fb.hidden = budPick != null; fb.textContent = on ? (boxFromSlot ? '이미 필드에 있어요' : '필드에 나감') : full ? '필드 가득 참' : '필드에 내보내기'; fb.disabled = (!on && full) || (boxFromSlot && on); fb.classList.toggle('sunk', on && !boxFromSlot); fb.classList.toggle('off', boxFromSlot && on); fb.classList.remove('popout');
+  const fb = $('#ppField'); fb.hidden = budPick != null; fb.textContent = on ? (boxFromSlot ? '이미 필드에 있어요' : '필드에 나감') : full ? '필드 가득' : boxFromSlot ? '필드에 내보내기' : '필드로';   /* v6.00 경완: 아래 버튼은 도감·필드로·짝꿍으로 */ $('#ppDex').hidden = pick; fb.disabled = (!on && full) || (boxFromSlot && on); fb.classList.toggle('sunk', on && !boxFromSlot); fb.classList.toggle('off', boxFromSlot && on); fb.classList.remove('popout');
   const noRoom = budPick == null && S.buds.length >= MAX_BUDS;
   { $('#ppEvo').hidden = pick; setEvoBtn($('#ppEvoBtn'), P); $('#ppItem').hidden = !itemEvos(P).length || $('#ppEvoBtn').classList.contains('spc'); }   /* 특별한 진화 버튼이면 그 버튼이 도구 쓰기 */
-  const bb = $('#ppBud'); bb.hidden = boxFromSlot; bb.textContent = isBud ? '짝꿍 해제하기' : noRoom ? '짝꿍 자리 없음' : '짝꿍으로'; bb.disabled = !isBud && noRoom; bb.classList.toggle('off', !isBud && noRoom); bb.classList.toggle('sunk', isBud);   // 짝꿍이면 눌린 버튼(누르면 해제)
+  const bb = $('#ppBud'); bb.hidden = boxFromSlot; bb.textContent = isBud ? '짝꿍 해제' : noRoom ? '자리 없음' : '짝꿍으로'; bb.disabled = !isBud && noRoom; bb.classList.toggle('off', !isBud && noRoom); bb.classList.toggle('sunk', isBud);   // 짝꿍이면 눌린 버튼(누르면 해제)
 }
 // 진화하기 버튼 (정보 카드·필드 개체 정보 공용): 가로로 긴 버튼. 아직이면 꺼진 모양이고 누르면 버튼 가운데 말풍선(진화까지 쌓인 km / 필요 km, 또는 조건). 최종 진화는 같은 자리에 같이 달린 거리
 function setEvoBtn(btn, P) {
@@ -6965,6 +6965,7 @@ function setEvoBtn(btn, P) {
   btn.classList.remove('fin', 'dis', 'spc', 'km'); if (cls) btn.classList.add(...cls.split(' ')); if (btn.innerHTML !== html) btn.innerHTML = html;
   if (tip) { btn.dataset.tip = tip; btn.dataset.tipc = ''; } else { delete btn.dataset.tip; delete btn.dataset.tipc; }
 }
+$('#ppDex').onclick = () => { const P = boxOf(pokeId); if (!P) return; sfx('open'); $('#dexPop').classList.add('ovr'); openCard(P.sp); };   // v6.00 경완: 포켓몬 카드에서 도감 카드로 (카드 위에 뜬다)
 const closePoke = () => { $('#pokePop').hidden = true; pokeId = null; freeArm = null; ppBud = false; ppSolo = false; if (!monPop.hidden) { if (!S.mons.includes(mgrSel)) closeMon(); else renderMgr(true); } if (S.sel) { if (!S.mons.includes(S.sel)) select(null); else { infoEl.dataset.uid = ''; renderInfo(); } } };
 $('#monPop').addEventListener('click', e => { if (!e.target.closest('#mStage') || !mgrSel?.pid || !boxOf(mgrSel.pid)) return; sfx('tap'); ppBud = false; ppSolo = true; openPoke(mgrSel.pid, 0, false, true); });   // 필드 개체 정보의 그림을 누르면 그 포켓몬 정보 카드
 $('#ppX').onclick = () => { sfx('tap'); closePoke(); };
