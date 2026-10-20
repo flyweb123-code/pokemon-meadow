@@ -5783,7 +5783,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.58';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.59';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6221,7 +6221,7 @@ async function mgPlay() {
   MGG = { run: true, m, me, ab, pool, W, H, dpr, GY: Math.round(Math.min(H - 46, Math.max(234, H * .64))), PX: Math.min(90, W * .18), t: 0, dist: 0, v: 250, phase: 1, y: 0, vy: 0, hold: false, holdT: 0, air: 0,
     psc: MG_WS, pas, jn: 0, guard: pas.guard || 0, cool: 0, lives: 3, lmax: 3, moon: ab.k === 'fairy' ? 1 : 0,   /* v6.26 경완: 기본 목숨 3 · v6.28 요정은 하트 대신 달빛 부활 1번 */ inv: 0, obs: [], gap: 420, sinceSp: 0, fx: {}, shots: [], parts: [], ban: null, cd: 3.6, cdN: 4, bonus: 0, combo: 0, last: performance.now(), m0: 0 };
   MGG.phh = MG_PH; MGG.pw = 11; mgFitMe(MGG);
-  $('#mgBan').hidden = true; $('#mgAim').hidden = true; $('#mgAbBtn').classList.remove('on', 'rdy'); $('#mgM').textContent = '0점'; $('#mgG').querySelector('b').textContent = '0'; $('#mgG').hidden = !!m.test; mgMus.start('jump'); mgHud();   /* v6.48 경완: 다시 하기 때 지난 판 점수가 남던 것 */
+  $('#mgBan').hidden = true; $('#mgAim').hidden = true; $('#mgAbBtn').classList.remove('on', 'rdy'); $('#mgM').textContent = '0점'; $('#mgG').querySelector('b').textContent = '0'; $('#mgG').hidden = false; mgMus.start('jump'); mgHud();   /* v6.48 경완: 다시 하기 때 지난 판 점수가 남던 것 */
   const loop = now => { const g = MGG; if (!g || !g.run) return; g.acc = (g.acc || 0) + Math.min(.1, (now - g.last) / 1000); g.last = now; while (g.acc >= MG_DT) { mgStep(g, MG_DT); g.acc -= MG_DT; } mgRender(g); if (g.run) g.raf = requestAnimationFrame(loop); };   // v5.86: 1/120초 고정 단계로 계산해서 기기마다 똑같이 움직인다
   MGG.loop = loop; MGG.raf = requestAnimationFrame(loop);
 }
@@ -6296,7 +6296,7 @@ function mgAbility(down) {
   switch (k) {
     case 'qa': { mgQa(g); use(); break; }   /* v6.31 경완: 부딪히는 순간(.12초 뒤)에 날리며 손맛 — mgQaHit */   // 전광석화: 앞 D 만큼 확 달려 나갔다가 제자리로 돌아온다 (v6.18 경완), 그 안의 장애물은 모두 날린다
     case 'super': mgLift(g, MG_JUMP * (g.pas?.pow ? 1.7 : 1.4)); g.cut = true; g.fx.web = .5; use(); break;
-    case 'punch': case 'vine': { const R = (k === 'punch' ? 150 : 270) * (g.pas?.pow ? 1.6 : 1), A = mgAhead(g, R), o = A[0];   /* v6.23 정권 지르기도 범위 안 전부 */ if (!o) { mgToast(g, '닿는 장애물이 없어요'); return; } g.fx[k] = k === 'vine' ? { t: g.pas?.pow ? .5 : .4, T: g.pas?.pow ? .5 : .4, x: g.PX + R } : { t: g.pas?.pow ? .45 : .25, x: A[A.length - 1].x };   /* v6.20 경완: 덩굴 채찍은 끝까지 뻗어 범위 안 포켓몬을 모두 날린다 */ A.forEach(q => mgKill(g, q, k === 'punch' ? '#ffd27a' : '#6ad06a')); use(); break; }
+    case 'punch': case 'vine': { const R = (k === 'punch' ? 150 : 270) * (g.pas?.pow ? 1.6 : 1), A = mgAhead(g, R), o = A[0];   /* v6.23 정권 지르기도 범위 안 전부 */ if (!o && k === 'punch') { mgToast(g, '닿는 장애물이 없어요'); return; }   /* v6.59 경완: 덩굴채찍은 닿는 게 없어도 휘두른다 */ g.fx[k] = k === 'vine' ? { t: g.pas?.pow ? .5 : .4, T: g.pas?.pow ? .5 : .4, x: g.PX + R } : { t: g.pas?.pow ? .45 : .25, x: A[A.length - 1].x };   /* v6.20 경완: 덩굴 채찍은 끝까지 뻗어 범위 안 포켓몬을 모두 날린다 */ A.forEach(q => mgKill(g, q, k === 'punch' ? '#ffd27a' : '#6ad06a')); use(); break; }
     case 'scare': { if (!mgScare(g)) { mgToast(g, '닿는 장애물이 없어요'); return; } use(); break; }
     case 'tele': { const o = mgAhead(g, g.W)[0]; if (!o) { mgToast(g, '넘어갈 장애물이 없어요'); return; } const sh = o.x + o.w / 2 + 34 - px;
       mgFx(g, px, py, '#e88aff', 10); g.obs.forEach(q => { q.x -= sh; if (!q.dead && q.x + q.w / 2 > px - 20 && q.x - q.w / 2 < px + 20) q.dead = true; }); g.obs = g.obs.filter(q => q.x > -60); g.dist += sh; g.sinceSp += sh; mgFx(g, px, py, '#e88aff', 10); use(); break; }
@@ -6460,7 +6460,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
     if (g.lives > 1) { g.lives--; g.inv = 1.6; g.lHit = 1; mgKill(g, o, '#ffb0d8'); sfx('knock'); g.shake = .25; g.shA = 5; g.flash = .12; mgHud();   /* v6.55 경완: 글자 없이 하트가 흔들리며 사라진다 */ continue; }
     g.over = true; g.overT = 1.1; g.hitO = o; g.shake = .4; g.shA = 7; g.hs = .09; g.vy = 380; g.flash = .25; sfx('knock'); mgFx(g, g.PX, g.GY - g.y - 15, '#fff', 14); mgHud(); break;
   }
-  { const sc = Math.floor(g.dist / 25) + g.bonus; if (sc !== g.m0) { g.m0 = sc; $('#mgM').textContent = sc.toLocaleString() + '점'; const gd = g.m.test ? 0 : Math.round(Math.floor(Math.round(sc * (g.pas.score || 1)) / 30) * (g.pas.gold || 1)); if (gd !== g.g0) { const e = $('#mgG'); if (g.g0 != null) { e.classList.remove('up'); void e.offsetWidth; e.classList.add('up'); } g.g0 = gd; e.querySelector('b').textContent = gd.toLocaleString(); } } }   /* v6.53 경완: 게임 중에도 받을 골드가 오르는 게 보이게 */
+  { const sc = Math.floor(g.dist / 25) + g.bonus; if (sc !== g.m0) { g.m0 = sc; $('#mgM').textContent = sc.toLocaleString() + '점'; const gd = Math.round(Math.floor(Math.round(sc * (g.pas.score || 1)) / 30) * (g.pas.gold || 1)); if (gd !== g.g0) { const e = $('#mgG'); if (g.g0 != null) { e.classList.remove('up'); void e.offsetWidth; e.classList.add('up'); } g.g0 = gd; e.querySelector('b').textContent = gd.toLocaleString(); } } }   /* v6.53 경완: 게임 중에도 받을 골드가 오르는 게 보이게 */
 }
 // v5.86 경완: 그래픽 다듬기 — 먼 산·언덕·나무가 서로 다른 빠르기로 흐르고(시차), 페이즈마다 낮 → 오후 → 노을 → 밤으로 하늘이 바뀐다
 // v5.88 경완: 배경·효과를 모두 도트로 — 화면의 1/MG_PX 크기 그림판에 네모 칸으로만 그리고 그대로 키워 붙인다 (포켓몬 그림과 같은 도트 느낌)
@@ -6674,8 +6674,8 @@ function mgEnd(g) {
   const m = g.m, R = mgRec(), M = mgS(), dist = Math.round((Math.floor(g.dist / 25) + g.bonus) * (g.pas.score || 1)), prev = R.best, T = !!m.test, nb = !T && dist > prev, P = T ? null : boxOf(m.pid);   /* 시험 판은 기록·보상 없음 */
   if (!T) R.n++; if (nb) R.best = dist;
   const d = dayKey(); if (M.gd !== d) { M.gd = d; M.gg = 0; }
-  let gold = T ? 0 : Math.round((Math.floor(dist / 30) + (nb && prev > 0 ? 20 : 0)) * (g.pas.gold || 1)); M.gg += gold; addGold(gold);   // v6.17 경완: 하루·한 판 제한 없이 점수 30점마다 1G (+최고 기록 20G). 5,000점 ≈ 166G → 빛나는 부적 3000G 는 5,000점 약 18판 (6.16 은 주석이 코드를 덮어 골드가 안 들어갔다)
-  const fr = P && dist >= 100 ? (dayCap(m, 'mg', 5) ? Math.min(4, 1 + Math.floor(dist / 800)) : 1) : 0; if (fr) addFr(m.pid, fr);   /* v6.52 경완: 하루 제한 없음 — 100점부터 +1, 800점마다 +1 (최대 +4), 같은 포켓몬 하루 6판째부터는 +1 */
+  const goldV = Math.round((Math.floor(dist / 30) + (nb && prev > 0 ? 20 : 0)) * (g.pas.gold || 1)), gold = T ? 0 : goldV; M.gg += gold; addGold(gold);   /* v6.59: 시험 판도 받을 만큼 보여 주기만 (실제로는 안 받음) */   // v6.17 경완: 하루·한 판 제한 없이 점수 30점마다 1G (+최고 기록 20G). 5,000점 ≈ 166G → 빛나는 부적 3000G 는 5,000점 약 18판 (6.16 은 주석이 코드를 덮어 골드가 안 들어갔다)
+  const fr = P && dist >= 100 ? (dayCap(m, 'mg', 5) ? Math.min(4, 1 + Math.floor(dist / 800)) : 1) : 0; if (fr) addFr(m.pid, fr); const frV = T ? (dist >= 100 ? Math.min(4, 1 + Math.floor(dist / 800)) : 0) : fr;   /* v6.52 경완: 하루 제한 없음 — 100점부터 +1, 800점마다 +1 (최대 +4), 같은 포켓몬 하루 6판째부터는 +1 */
   const j0 = m.joy ?? 60; m.joy = clamp(j0 + (dist >= 30 ? 6 + 4 * g.phase : 2)); const joy = Math.round(m.joy - j0);
   const gifts = [], I = itemsOf(), give = (it, n) => { if (it === 'stone') it = MG_STONES[Math.floor(Math.random() * MG_STONES.length)]; I[it] = (I[it] || 0) + n; gifts.push({ it, n }); };
   if (!T) for (const o of MG_GIFT) if (dist >= o.m && !R.ms.includes(o.m)) { R.ms.push(o.m); give(o.it, o.n); }
@@ -6685,7 +6685,7 @@ function mgEnd(g) {
   const res = `<div class="mg-rec">${nb && prev > 0 ? '<i class="mg-nb">최고 기록!</i>' : ''}<b><em data-cnt="${dist}">0</em>점</b></div>   <!-- v6.53 경완: 기록창 정리 + 보상 받는 연출 -->
     <div class="mg-st"><div><small>달리기</small><b>${Math.floor(g.dist / 25).toLocaleString()}m</b></div><div><small>밟기</small><b>${g.bonus.toLocaleString()}점</b></div><div><small>최대 콤보</small><b>${g.cMax >= 2 ? g.cMax : '-'}</b></div><div><small>페이즈</small><b>${g.phase}</b></div></div>
     <p class="mg-bst">최고 기록 <b>${R.best.toLocaleString()}점</b></p>
-    ${T ? '' : `<div class="mg-rw"><div class="rw rw-g"><i class="coin" aria-hidden="true"></i><span>골드</span><em data-cnt="${gold}" data-pre="+" data-suf="G">+0G</em></div><div class="rw rw-f">${HEART}<span>친밀도</span><em data-cnt="${fr}" data-pre="+">+0</em></div></div>`}
+    <div class="mg-rw"><div class="rw rw-g"><i class="coin" aria-hidden="true"></i><span>골드</span><em data-cnt="${goldV}" data-pre="+" data-suf="G">+0G</em></div><div class="rw rw-f">${HEART}<span>친밀도</span><em data-cnt="${frV}" data-pre="+">+0</em></div></div>${T ? '<p class="mg-bst">시험 판이라 실제로 받지는 않아요</p>' : ''}
     ${gifts.length ? `<div class="mg-gifts"><b>선물을 받았어요!</b>${gifts.map(o => `<span><img src="${ITEM_ART[ITEM[o.it].a]}" alt="">${ITEM[o.it].n}${o.n > 1 ? ' ×' + o.n : ''}</span>`).join('')}</div>` : ''}`;
   if (!T && (fr || joy)) log(`${J({ name: m.name }, '이/가')} 장애물 넘기에서 ${dist.toLocaleString()}점을 냈다!`, [], true);
   MGG.run = false; mgOpenG = '';   /* v6.48 경완: 기록은 게임이 끝난 그 화면 위에 팝업으로 (닫거나 게임 고르기 → 고르기 화면) */
