@@ -5794,7 +5794,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.02';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.03';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6704,7 +6704,7 @@ function mgRender(g, cv = $('#mgCv')) {
   // 빨리 달릴 때 바람 줄
   if (!thumb && g.v > 420 && !g.over) { const n = Math.min(7, (g.v - 420) / 40 | 0); for (let i = 0; i < n; i++) { const fr = Math.floor(g.t * 9), ly = 16 + mgH(fr + i * 13) * (GY - 30), lx = ((mgH(i * 7 + fr) * W) - (g.t * 900) % W + W) % W; p.rect(lx, ly, 30 + mgH(i) * 50, P, 'rgba(255,255,255,.4)'); } }
   x.drawImage(b.canvas, 0, 0, b.canvas.width, b.canvas.height, 0, 0, b.canvas.width * P, b.canvas.height * P);
-  { g.bB = clamp((g.bB || 0) + (g.fx.bolt > 0 && !thumb ? .2 : -.12), 0, 1); if (g.bB > 0) { x.save(); for (let i = 1; i <= 6; i++) { x.globalAlpha = .17 * g.bB; x.drawImage(b.canvas, 0, 0, b.canvas.width, b.canvas.height, i * 7 * g.bB, 0, b.canvas.width * P, b.canvas.height * P); } x.restore(); } }   /* v6.54 경완: 오버드라이브 = 배경이 옆으로 번지는 동작 블러 */
+  { { const tg = g.fx.bolt > 0 && !thumb ? clamp(((g.bm || 0) - .45) / 1.3, 0, 1) : 0; g.bB = clamp((g.bB || 0) + clamp(tg - (g.bB || 0), -.12, .2), 0, 1); }   /* v7.03 경완: 처음엔 블러 없이, 빨라지는 만큼 점점 */ if (g.bB > 0) { x.save(); for (let i = 1; i <= 6; i++) { x.globalAlpha = .17 * g.bB; x.drawImage(b.canvas, 0, 0, b.canvas.width, b.canvas.height, i * 7 * g.bB, 0, b.canvas.width * P, b.canvas.height * P); } x.restore(); } }   /* v6.54 경완: 오버드라이브 = 배경이 옆으로 번지는 동작 블러 */
   { const on = g.pas?.pow && (g.abK || g.fx.str > 0 || g.sDarkT > 0); g.sDk = clamp((g.sDk || 0) + (on ? .12 : -.06), 0, 1); if (g.sDk > 0) { x.fillStyle = `rgba(14,10,36,${(.5 * g.sDk).toFixed(3)})`; x.fillRect(0, 0, W, H); } }   /* v6.17 경완: S 랭크 기술을 쓰는 동안 배경이 어두워진다 */
   // 포켓몬 (장애물 → 주인공)
   for (const o of g.obs) { const a = o.dead ? Math.max(0, o.kt / .35) : o.flee ? clamp(2.2 - o.flee, 0, 1) : 1; const by = o.t === 'f' ? Math.sin(g.t * 5 + o.ph) * 4 : 0;
