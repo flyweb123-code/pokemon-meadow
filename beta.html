@@ -5748,7 +5748,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.21';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.22';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6163,10 +6163,11 @@ async function mgPlay() {
   const me = m.sk || m.form, pool = await mgPrep(+m.form);
   const used = [me, ...pool.gnd, ...pool.fly]; await Promise.race([Promise.all([...new Set(used)].map(k => mgImgOf(k).p)), new Promise(r => setTimeout(r, 3000))]);
   if (mgEl.hidden) return;
-  const cv = $('#mgCv'), W = cv.clientWidth || 360, H = Math.max(220, Math.min(1000, cv.clientHeight || 280)), dpr = Math.min(3, window.devicePixelRatio || 1);
-  cv.width = W * dpr; cv.height = H * dpr;
+  const cv = $('#mgCv'), CW = cv.clientWidth || 360, CH = Math.max(220, Math.min(1000, cv.clientHeight || 280)), dpr0 = Math.min(3, window.devicePixelRatio || 1);
+  cv.width = CW * dpr0; cv.height = CH * dpr0;
+  const W = CW / MG_ZOOM, H = CH / MG_ZOOM, dpr = dpr0 * MG_ZOOM;   // 게임 안 좌표는 화면의 1/MG_ZOOM 크기 → 그대로 키워 그린다
   const ab = mgAb(m.form), pas = MG_PASS.jump[mgRank(m)] || {}; mgPlayed = m;
-  MGG = { run: true, m, me, ab, pool, W, H, dpr, GY: Math.round(Math.min(H - 46, Math.max(234, H * .64))), PX: Math.min(90, W * .22), t: 0, dist: 0, v: 250, phase: 1, y: 0, vy: 0, hold: false, holdT: 0, air: 0,
+  MGG = { run: true, m, me, ab, pool, W, H, dpr, GY: Math.round(Math.min(H - 46, Math.max(234, H * .64))), PX: Math.min(90, W * .18), t: 0, dist: 0, v: 250, phase: 1, y: 0, vy: 0, hold: false, holdT: 0, air: 0,
     psc: MG_WS, pas, jn: 0, guard: pas.guard || 0, cool: 0, lives: ab.k === 'fairy' ? 2 : 1, inv: 0, obs: [], gap: 420, sinceSp: 0, fx: {}, shots: [], parts: [], ban: null, cd: 3.6, cdN: 4, bonus: 0, combo: 0, last: performance.now(), m0: 0 };
   MGG.phh = MG_PH; MGG.pw = 11; mgFitMe(MGG);
   $('#mgBan').hidden = true; $('#mgAbBtn').classList.remove('on', 'rdy'); mgMus.start('jump'); mgHud();
@@ -6174,7 +6175,8 @@ async function mgPlay() {
   MGG.raf = requestAnimationFrame(loop);
 }
 // v5.86 경완: 물리 다듬기 — 올라갈 땐 가볍게, 떨어질 땐 빠르게. 일찍 손을 떼면 낮게 뛰고, 착지 직전에 누른 점프는 기억했다가 닿자마자 뛴다
-const MG_JUMP = 660, MG_GRAV = 1750, MG_FALL = 1.2,   /* v5.88 경완: 중력 살짝 약하게 (높이는 그대로, 더 오래 떠 있음) */ MG_PH = 30, MG_DT = 1 / 120;
+const MG_ZOOM = 1.7, MG_SPD = .6,   /* v6.22 경완: 화면 확대(캐릭터 크게) + 전체 속도 느리게 — 달리는 속도 ×0.6, 대신 점프는 같은 높이로 더 오래 떠서 같은 장애물을 넘는다 */
+  MG_JUMP = Math.round(660 / 1.35), MG_GRAV = Math.round(1750 / 1.35 / 1.35), MG_FALL = 1.2,   /* v5.88 경완: 중력 살짝 약하게 (높이는 그대로, 더 오래 떠 있음) */ MG_PH = 30, MG_DT = 1 / 120;
 /* v5.97 경완: 폭거북스처럼 그림이 큰 포켓몬으로 하면 장애물까지 다 작아지던 것 — 장애물은 늘 같은 배율(MG_WS), 내 포켓몬도 같은 배율로 그리되 너무 크거나 작을 때만 맞춘다. 그림이 늦게 오면 오는 대로 다시 맞춘다 */
 const MG_WS = 1.9;
 function mgFitMe(g) { const B = mgBox(g.me); if (!B) return; g.psc = clamp(MG_WS, 30 / B.h, Math.min(66 / B.h, 80 / B.w)); g.phh = Math.min(36, B.h * g.psc * .85); g.pw = Math.min(14, B.w * g.psc * .32); g.fit = 1; }
@@ -6216,7 +6218,7 @@ function mgAbility(down) {
   if (!down || g.cool > 0) return;
   const use = () => { mgCool(g); sfx('ab', k); mgAbStart(g, k); }, px = g.PX, py = g.GY - g.y - MG_PH / 2, S = g.pas?.pow ? 1.5 : 1;   // S: 시간 ×1.5, 닿는 거리 ×1.6, 여러 마리
   switch (k) {
-    case 'qa': { const D = 240 * (g.pas?.pow ? 1.6 : 1); mgAhead(g, D).forEach(o => mgKill(g, o, '#ffffff')); g.fx.qa = .5; g.qaD = D; use(); break; }   // 전광석화: 앞 D 만큼 확 달려 나갔다가 제자리로 돌아온다 (v6.18 경완), 그 안의 장애물은 모두 날린다
+    case 'qa': { const D = 140 * (g.pas?.pow ? 1.4 : 1);   /* v6.22 화면 확대로 거리 줄임 */ mgAhead(g, D).forEach(o => mgKill(g, o, '#ffffff')); g.fx.qa = .5; g.qaD = D; use(); break; }   // 전광석화: 앞 D 만큼 확 달려 나갔다가 제자리로 돌아온다 (v6.18 경완), 그 안의 장애물은 모두 날린다
     case 'super': mgLift(g, MG_JUMP * (g.pas?.pow ? 1.7 : 1.4)); g.cut = true; g.fx.web = .5; use(); break;
     case 'punch': case 'vine': { const R = (k === 'punch' ? 150 : 270) * (g.pas?.pow ? 1.6 : 1), A = mgAhead(g, R).slice(0, k === 'vine' ? 99 : g.pas?.pow ? 3 : 1), o = A[0]; if (!o) { mgToast(g, '닿는 장애물이 없어요'); return; } g.fx[k] = { t: g.pas?.pow ? .45 : .25, x: k === 'vine' ? g.PX + R : A[A.length - 1].x };   /* v6.20 경완: 덩굴 채찍은 끝까지 뻗어 범위 안 포켓몬을 모두 날린다 */ A.forEach(q => mgKill(g, q, k === 'punch' ? '#ffd27a' : '#6ad06a')); use(); break; }
     case 'scare': { const A = mgAhead(g, 300 * (g.pas?.pow ? 1.6 : 1)); if (!A.length) { mgToast(g, '닿는 장애물이 없어요'); return; } A.forEach((o, i) => { o.flee = .001; o.fd = 0; o.fy = o.y; }); g.fx.scare = .5; use(); break; }
@@ -6290,7 +6292,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
   if (g.cd > 0) { g.cd -= dt; const n = Math.ceil(g.cd - .6); if (n !== g.cdN) { g.cdN = n; if (n > 0) sfx('tick'); else { sfx('start'); g.ban = { t: 1.2, s: '페이즈 1' }; } } if (g.cd > .6) return; }   // v5.79 경완: 시작 전 3·2·1
   const meters = Math.floor(g.dist / 25), ph = 1 + Math.floor(meters / 250);
   if (ph > g.phase) { g.phase = ph; g.ban = { t: 1.6, s: '페이즈 ' + ph }; sfx('rise'); mgHud(); }   // v5.92 경완: 새 장애물 알림은 빼고 페이즈 글자만 화면 가운데에
-  g.v = Math.min(700, 315 + 44 * (g.phase - 1) + (meters % 250) * .13);   // v5.83 경완: 너무 쉬워서 더 빠르게 → v5.86 경완: 살짝만 쉽게
+  g.v = MG_SPD * Math.min(700, 315 + 44 * (g.phase - 1) + (meters % 250) * .13);   // v5.83 경완: 너무 쉬워서 더 빠르게 → v5.86 경완: 살짝만 쉽게
   const sp = g.v * (g.fx.ice > 0 ? .5 : 1) * (g.fx.bolt > 0 ? 1.6 : 1), dx = sp * dt;
   g.dist += dx; g.sinceSp += dx;
   g.at = (g.at || 0) + dt * 1.25 * (g.y > 0 ? .6 : sp / 340);   // 달리는 빠르기에 맞춰 발을 놀린다
