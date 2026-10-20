@@ -5856,7 +5856,7 @@ const ITEM_ART = (() => {
   Object.assign(A, PIC);
   // v5.88 경완: 빛나는 부적·향로도 다른 아이콘처럼 16칸 도트 + 진한 테두리 (향로는 받은 그림의 둥근 뚜껑·구멍·빨간 점·발 모양)
   A.charm = mk(({ bmp }) => bmp(1, 1, S5('..........BB..|.........B..B.|.........B..B.|..........BB..|.........G....|.........C....|........cWc...|.......cCWCc..|.....cCCWWWCCc|.......cCWCc..|.....b..cWc...|....B....C....|..BbB.........|.BBbb.........'), { B: '#4a7ae8', b: '#2a4ab0', C: '#9fe6ff', c: '#58b8f0', W: '#ffffff', G: '#7ad85a' }));
-  A.incense = mk(({ bmp }) => bmp(1, 1, S5('......RR......|.....LrrD.....|...LLYYYYYD...|..LYYYYYYYYD..|..LYYYKKYYYD..|.LYYKYKKYKYYD.|.YYYKYYYYKYYD.|DDDDDDDDDDDDDD|YLYYYYYYYYYYYD|RRYYRRYYRRYYrr|RRYYRRYYRRYYrr|.YYYYYYYYYYYD.|..DDDDDDDDDD..|..DD......DD..'), { Y: '#ffe23a', L: '#fff6a8', D: '#d0a414', R: '#e8485a', r: '#c8303a', K: '#3a2418' }));
+  A.incense = mk(({ bmp }) => bmp(1, 2, S5('......Rr......|....LLYYYD....|...LYYYYYYD...|..LYKYYYYKYD..|.LYKKYYYYKKYD.|.YYYYYKKYYYYD.|DDDDDDDDDDDDDD|YYRYYYYRYYYRYD|YRRRYYRRRYRRrD|YYRYYYYRYYYRYD|.YYYYYYYYYYYD.|..DDDDDDDDDD..|..KK......KK..'), { Y: '#ffe23a', L: '#fff6a8', D: '#d0a414', R: '#e8485a', r: '#c8303a', K: '#3a2418' }));   /* v6.38 경완이 다시 보내 준 향로 그림(노란 둥근 뚜껑·빨간 꼭지·구멍·빨간 십자 띠·발)을 기존 아이콘 스타일(16칸 도트·진한 테두리)로 */
   return A;
 })();
 // 상점 물건: k tool = 특수 진화 도구, item = 쓰면 일정 시간 효과. 가격·효과는 작업실 상점 메뉴에서 바꾼다 (데이터 shop)
