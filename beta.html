@@ -5801,7 +5801,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.50';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.51';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6038,7 +6038,7 @@ const mgAb = sp => MG_AB[(SPECIES[sp]?.t || [1])[0]] || MG_AB[1];
   $('#mgtGo').onclick = () => { const t = +ts.value, rk = rs.value, sp = +Object.keys(SPECIES).filter(k => (SPECIES[k].t || [])[0] === t).sort((a, b) => a - b)[0] || 1;
     openMg({ pid: 'mgtest', sp, form: sp, name: `${SPECIES[sp]?.n || '시험'} (시험)`, test: { rk } }); }; } }
 // v5.79 경완: 랭크에 따른 패시브 (게임마다 다름). 랭크가 높을수록 좋지만 게임이 너무 쉬워지지 않게 하나씩만
-const MG_GAMES = [{ id: 'jump', n: '장애물 넘기', on: 1, how: '저절로 달려요. 눌러서 뛰고 꾹 누르면 더 높이, 공중에서 한 번 더 누르면 2단 점프예요. 장애물을 위에서 밟으면 튕겨 오르며 점수가 붙어요.' }, { id: 'balloon', n: '풍선 터뜨리기' }, { id: 'berry', n: '나무열매 받기' }];
+const MG_GAMES = [{ id: 'jump', n: '장애물 넘기', on: 1, how: '저절로 달려요. 눌러서 뛰고, 공중에서 한 번 더 누르면 2단 점프예요. 장애물을 위에서 밟으면 튕겨 오르며 점수가 붙어요.' }, { id: 'balloon', n: '풍선 터뜨리기' }, { id: 'berry', n: '나무열매 받기' }];
 const MG_PASS = { jump: {
   // v6.78 경완: 이름은 본가 특성 이름 (A = 옹골참). v6.16 경완: F·E 는 손해 없이 작은 도움, D~A 차례로 좋아지고, S 는 액티브 기술이 달라진다 (두 번 연달아 + 금빛)
   F: { n: '픽업', d: '받는 골드 +10%', gold: 1.1 },
@@ -6281,7 +6281,7 @@ function mgFitMe(g) { const B = mgBox(g.me); if (!B) return; g.psc = clamp(MG_WS
 function mgLift(g, v, spin) { if (g.fx.iron > 0) v *= .62;   /* v6.60 경완: 철벽은 무거워서 낮게 뛴다 */ g.vy = v; g.cut = false; g.sq = 1.28; g.sqv = 0; if (spin) g.spin = 1; }
 function mgJump(down) {
   const g = MGG; if (!g?.run || g.over || g.cd > .6) return;
-  g.hold = down; if (!down) { if (g.vy > 0 && !g.cut && !g.fx.flying) { g.vy *= .5; g.cut = true; } return; }
+  g.hold = down; if (!down) return;   // v7.51 경완: 꾹 눌러 더 높이 뛰기 없앰 — 떼도 점프 높이 그대로 (점프·2단 점프만)
   if (g.fx.dig > 0 || g.amb) return;   /* v6.81 경완: 기습 중엔 점프 안 됨 */
   if (g.fx.flying || g.fx.silk) return;
   if (g.levD) g.levD = 0;   /* v7.04 경완: 천천히 내려오다 점프하면 원래 중력으로 */
@@ -6636,7 +6636,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
     // v7.32 경완: 기습으로 사라져 있는 동안엔 밟기 없음 (그냥 지나감) · v5.79 경완: 위에서 떨어지며 닿으면 밟기 → 튕겨 오르고 점수 (연속으로 밟으면 더)
     if (stp) { o.dead = true; o.kt = .35; o.stomp = 1; g.combo++; g.cT = MG_COMBO_T; g.cMax = Math.max(g.cMax || 0, g.combo); g.cPop = .25; const mul = Math.min(5, g.combo), pts = Math.round(20 * mul * (g.pas.stomp || 1)); g.bonus += pts;
       const big = g.combo % 10 === 0;   // v6.00 경완: 밟기는 가볍게, 10콤보마다만 크게 (멈칫·흔들림·번쩍·진동·현수막)
-      if (g.combo % 5 === 0) { const cbn = g.combo * 10; g.bonus += cbn; if (big) { g.ban = { t: 1.2, s: `${g.combo} 콤보! +${cbn}` }; sfx('abReady'); } } mgLift(g, MG_JUMP * (g.hold ? .92 : .74)); if (!g.hold) g.cut = true; g.jn = 1; g.y = Math.max(g.y, ot); if (!g.stP) g.pc = 0; g.stT = g.t; g.stP = false; if (g.stBuf > 0) mgPerfect(g); const cb = big ? 4 : 0;
+      if (g.combo % 5 === 0) { const cbn = g.combo * 10; g.bonus += cbn; if (big) { g.ban = { t: 1.2, s: `${g.combo} 콤보! +${cbn}` }; sfx('abReady'); } } mgLift(g, MG_JUMP * .74); g.cut = true;   /* v7.51: 밟고 튀는 높이도 누름과 상관없이 같게 */ g.jn = 1; g.y = Math.max(g.y, ot); if (!g.stP) g.pc = 0; g.stT = g.t; g.stP = false; if (g.stBuf > 0) mgPerfect(g); const cb = big ? 4 : 0;
       if (big) { g.hs = .16; g.shake = .32; g.shA = 9; g.sq = .55; g.flash = .1; } else { g.hs = .03; g.shake = .06; g.shA = 2; g.sq = .82; } g.sqv = 0;
       const hy = g.GY - o.y - o.h; mgFx(g, o.x, hy, '#ffe14a', big ? 30 : 8, big ? 280 : 140); if (big) mgFx(g, o.x, hy, '#ffffff', 10, 240); (g.bursts || (g.bursts = [])).push({ x: o.x, y: hy, t: .3, c: '#ffe14a', z: big ? 2.2 : 1, rot: Math.PI / 8 }); (g.rings || (g.rings = [])).push({ x: o.x, y: hy, t: .3, c: '#ffffff', z: big ? 2.4 : 1.1, flat: 1 }); if (big) g.rings.push({ x: o.x, y: hy, t: .45, c: '#ffe14a', z: 3.2 });
       g.pop = { x: o.x, y: hy - 10, s: '+' + pts + (mul > 1 ? ' ×' + mul : ''), t: .8, z: big ? 3 : 0 }; haptic(big ? 2 : 0); sfx('stomp', big ? 4 : Math.min(2, g.combo - 1)); mgHud(); continue; }
@@ -6969,7 +6969,7 @@ function mgEnd(g) {
       lk.remove(); pop.appendChild(gp); if (typeof artFit === 'function') artFit(gp); sfx('shiny'); haptic(2); gp.style.pointerEvents = 'none'; setTimeout(() => { gp.style.pointerEvents = ''; }, 800);   /* v7.37 경완: 뜨자마자 바로 닫히지 않게 잠깐 잠금 */
       gp.querySelector('button').onclick = () => { sfx('tap'); gp.remove(); fmGo(); }; }, 2300); }
 }
-// 조작: 화면·점프 버튼을 누르면 뛰고, 꾹 누르면 더 높이. 능력 버튼(날기는 꾹 누르는 동안)
+// 조작: 화면·점프 버튼을 누르면 뛰고, 공중에서 한 번 더 누르면 2단 점프. 능력 버튼(날기는 꾹 누르는 동안)
 // v5.80 경완: 화면 아무 곳이나 누르면 점프, 능력은 오른쪽 아래 동그란 아이콘
 { const st = $('#mg section[data-mv="play"]'), ab = $('#mgAbBtn');
   const on = (el, f) => { el.addEventListener('pointerdown', e => { if (e.target.closest('button') !== (el.tagName === 'BUTTON' ? el : null)) return; e.preventDefault(); if (el === ab) e.stopPropagation(); f(true); }); for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) el.addEventListener(ev, () => f(false)); };
