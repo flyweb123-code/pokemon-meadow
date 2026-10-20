@@ -373,6 +373,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .shop-inv{grid-auto-rows:1fr;flex:0 1 auto!important}.vin .vname{flex:1 0 auto}.vin .vtag{margin-top:auto}
 .vtag{font-size:10px;padding:1px 5px;background:var(--frame);color:var(--win)}
 .vin:not(.own) .vtag{background:#a86a00}
+.shopwin .stab .shop-bar{margin-top:auto;min-height:87px;box-sizing:border-box}   /* v7.28 경완: 구매 상자는 탭마다 항상 아래쪽 같은 자리 */
 .shop-bar{display:flex;align-items:center;gap:8px;margin-top:10px;border:3px solid var(--frame);background:var(--card);padding:8px}
 .sb-name{flex:1;min-width:0}.sb-name b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sb-name span{font-size:12px;color:var(--dim)}
 .shop-bar .lk-btn{padding:8px 10px;font-size:13px;flex:none}.shop-bar .lk-btn[disabled]{opacity:.5}
@@ -1497,7 +1498,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
     <section class="stab" data-st="tool" hidden><div class="shop-inv" id="toolList"></div><div class="shop-bar" id="toolBar" hidden></div><p class="shop-msg" id="toolMsg"></p></section>
     <section class="stab" data-st="item" hidden><div class="shop-inv" id="itemList"></div><div class="shop-bar" id="itemBar" hidden></div><p class="shop-msg" id="itemMsg"></p></section>
     <section class="stab" data-st="fashion" hidden><p class="soon">아직 준비중입니다</p></section>
-    <div class="runtabs shoptabs" id="shopTabs" role="tablist"><button class="runtab" role="tab" data-st="item">아이템</button><button class="runtab" role="tab" data-st="tool">도구</button><button class="runtab" role="tab" data-st="bgm">음악</button><button class="runtab" role="tab" data-st="fashion">패션</button></div>
+    <div class="runtabs shoptabs" id="shopTabs" role="tablist"><button class="runtab" role="tab" data-st="item">아이템</button><button class="runtab" role="tab" data-st="tool">도구</button><button class="runtab" role="tab" data-st="bgm">음악</button><button class="runtab" role="tab" data-st="fashion">필드</button></div>
   </div>
 </div>
 <div class="sheet" id="ibag" hidden>
