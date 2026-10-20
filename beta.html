@@ -5795,7 +5795,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.17';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.18';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6566,7 +6566,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
       for (let h = dt; h > 1e-6; h -= 1 / 120) { const st = Math.min(h, 1 / 120); g.bmV += (210 * (MG_BEAM_H - g.y) - 8.5 * g.bmV) * st; g.y += g.bmV * st; } if (g.y < 0) { g.y = 0; g.bmV = Math.max(0, g.bmV); } }   // 용수철: 넘쳤다가 출렁이며 자리 잡음
     g.vy = 0; g.jn = 2; }
   else if (!g.fx.flying && !g.fx.silk) {
-    if (g.y > 0 || g.vy > 0) { const gv = MG_GRAV * (g.vy < 0 ? MG_FALL : 1) * (g.vy > 0 && g.vy < 160 ? .7 : 1) * (g.fx.iron > 0 ? 1.5 : 1) * (g.abK === 'fly' && g.fx.flyT > 0 ? .38 : 1)   /* v6.99 경완: 공중날기 중력 세게 — 아주 빨리 연타해야 천장까지 */; g.vy = Math.max(-1500, g.vy - gv * dt); if (g.levD) g.vy = Math.max(g.vy, -55 - Math.sin(g.t * 5) * 15);   /* v7.04 경완: 더 천천히 내려앉음 */ g.y += g.vy * dt; if (g.abK === 'fly' && g.fx.flyT > 0) { const ty = mgTopY(g); if (g.y > ty) { g.y = ty; g.vy = Math.min(g.vy, 0); } }   // 꼭대기에선 살짝 떠 있는 느낌
+    if (g.y > 0 || g.vy > 0) { const gv = MG_GRAV * (g.vy < 0 ? MG_FALL : 1) * (g.vy > 0 && g.vy < 160 ? .7 : 1) * (g.fx.iron > 0 ? 1.5 : 1) * (g.abK === 'fly' && g.fx.flyT > 0 ? (g.vy < 0 ? .9 : .38) : 1)   /* v7.18 경완: 띄울 땐 가볍게, 떨어질 땐 무겁게 */   /* v6.99 경완: 공중날기 중력 세게 — 아주 빨리 연타해야 천장까지 */; g.vy = Math.max(-1500, g.vy - gv * dt); if (g.levD) g.vy = Math.max(g.vy, -55 - Math.sin(g.t * 5) * 15);   /* v7.04 경완: 더 천천히 내려앉음 */ g.y += g.vy * dt; if (g.abK === 'fly' && g.fx.flyT > 0) { const ty = mgTopY(g); if (g.y > ty) { g.y = ty; g.vy = Math.min(g.vy, 0); } }   // 꼭대기에선 살짝 떠 있는 느낌
       if (g.y <= 0) { const imp = -g.vy; g.y = 0; g.vy = 0; g.sq = Math.max(.68, 1 - imp / 2600); g.sqv = 0; g.spin = 0; if (g.fx.iron > 0 && imp > 200) mgQuake(g); if (imp > 260) mgDust(g, Math.min(14, 4 + imp / 120 | 0), 100 + imp * .14); if (imp > 650) { g.shake = Math.max(g.shake || 0, .08); g.shA = Math.max(g.shA || 0, 2); (g.rings || (g.rings = [])).push({ x: g.PX, y: g.GY, t: .3, c: 'rgba(232,214,170,.9)', flat: 1, z: 1.2 }); } } }
   }
   if (g.buf > 0) g.buf -= dt; if (g.stBuf > 0) g.stBuf -= dt;
