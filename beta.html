@@ -5746,7 +5746,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.19';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.20';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5953,7 +5953,7 @@ const MG_AB = {
   9: { n: '강철 돌진', c: 12, k: 'ram', d: '2초 동안 부딪히는 장애물을 부숴요' },
   10: { n: '불꽃 뿜기', c: 8, k: 'fire', d: '꾹 누르는 동안 불꽃을 뿜어 앞 장애물을 날려요 (1.6초)' },
   11: { n: '파도타기', c: 12, k: 'surf', d: '꾹 누르는 동안 파도를 타고 땅 위 장애물을 날려 버려요 (최대 2.5초, 떼면 끝)' },
-  12: { n: '덩굴 채찍', c: 6, k: 'vine', d: '멀리 있는 장애물도 채찍으로 치워요' },
+  12: { n: '덩굴 채찍', c: 6, k: 'vine', d: '채찍이 닿는 범위의 장애물을 모두 날려 버려요' },
   13: { n: '볼트 대시', c: 12, k: 'bolt', d: '꾹 누르는 동안 빠르게 달리며 무적이에요 (최대 2초, 떼면 끝)' },   // v6.17 경완: 누른 만큼 이어지고 떼면 끝
   14: { n: '부유', c: 10, k: 'lev', d: '한 번 누르면 3초 동안 높이 둥실 떠오르고, 닿는 포켓몬은 날려 버려요' },   // v6.18 경완: 이름 부유, 떠 있는 동안 맞아도 안 죽고 날린다
    // v6.17 경완: 순간이동 → 한 번 누르면 크게 부유
@@ -6210,7 +6210,7 @@ function mgAbility(down) {
   switch (k) {
     case 'qa': { const D = 240 * (g.pas?.pow ? 1.6 : 1); mgAhead(g, D).forEach(o => mgKill(g, o, '#ffffff')); g.fx.qa = .5; g.qaD = D; use(); break; }   // 전광석화: 앞 D 만큼 확 달려 나갔다가 제자리로 돌아온다 (v6.18 경완), 그 안의 장애물은 모두 날린다
     case 'super': mgLift(g, MG_JUMP * (g.pas?.pow ? 1.7 : 1.4)); g.cut = true; g.fx.web = .5; use(); break;
-    case 'punch': case 'vine': { const A = mgAhead(g, (k === 'punch' ? 150 : 270) * (g.pas?.pow ? 1.6 : 1)).slice(0, g.pas?.pow ? 3 : 1), o = A[0]; if (!o) { mgToast(g, '닿는 장애물이 없어요'); return; } g.fx[k] = { t: g.pas?.pow ? .45 : .25, x: A[A.length - 1].x }; A.forEach(q => mgKill(g, q, k === 'punch' ? '#ffd27a' : '#6ad06a')); use(); break; }
+    case 'punch': case 'vine': { const R = (k === 'punch' ? 150 : 270) * (g.pas?.pow ? 1.6 : 1), A = mgAhead(g, R).slice(0, k === 'vine' ? 99 : g.pas?.pow ? 3 : 1), o = A[0]; if (!o) { mgToast(g, '닿는 장애물이 없어요'); return; } g.fx[k] = { t: g.pas?.pow ? .45 : .25, x: k === 'vine' ? g.PX + R : A[A.length - 1].x };   /* v6.20 경완: 덩굴 채찍은 끝까지 뻗어 범위 안 포켓몬을 모두 날린다 */ A.forEach(q => mgKill(g, q, k === 'punch' ? '#ffd27a' : '#6ad06a')); use(); break; }
     case 'scare': { const A = mgAhead(g, 300 * (g.pas?.pow ? 1.6 : 1)); if (!A.length) { mgToast(g, '닿는 장애물이 없어요'); return; } A.forEach((o, i) => { o.flee = .001; o.fd = 0; o.fy = o.y; }); g.fx.scare = .5; use(); break; }
     case 'tele': { const o = mgAhead(g, g.W)[0]; if (!o) { mgToast(g, '넘어갈 장애물이 없어요'); return; } const sh = o.x + o.w / 2 + 34 - px;
       mgFx(g, px, py, '#e88aff', 10); g.obs.forEach(q => { q.x -= sh; if (!q.dead && q.x + q.w / 2 > px - 20 && q.x - q.w / 2 < px + 20) q.dead = true; }); g.obs = g.obs.filter(q => q.x > -60); g.dist += sh; g.sinceSp += sh; mgFx(g, px, py, '#e88aff', 10); use(); break; }
