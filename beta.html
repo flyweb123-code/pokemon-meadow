@@ -5721,7 +5721,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '5.96';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.97';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6131,14 +6131,17 @@ async function mgPlay() {
   cv.width = W * dpr; cv.height = H * dpr;
   const ab = mgAb(m.form), pas = MG_PASS.jump[mgRank(m)] || {}; mgPlayed = m;
   MGG = { run: true, m, me, ab, pool, W, H, dpr, GY: Math.round(Math.min(H - 46, Math.max(234, H * .64))), PX: Math.min(90, W * .22), t: 0, dist: 0, v: 250, phase: 1, y: 0, vy: 0, hold: false, holdT: 0, air: 0,
-    psc: mgScale(me, 40, 58), pas, jn: 0, guard: pas.guard || 0, cool: 0, lives: ab.k === 'fairy' ? 2 : 1, inv: 0, obs: [], gap: 420, sinceSp: 0, fx: {}, shots: [], parts: [], ban: null, cd: 3.6, cdN: 4, bonus: 0, combo: 0, last: performance.now(), m0: 0 };
-  { const B = mgBox(me); MGG.phh = B ? Math.min(36, B.h * MGG.psc * .85) : MG_PH; MGG.pw = B ? Math.min(14, B.w * MGG.psc * .32) : 11; }
+    psc: MG_WS, pas, jn: 0, guard: pas.guard || 0, cool: 0, lives: ab.k === 'fairy' ? 2 : 1, inv: 0, obs: [], gap: 420, sinceSp: 0, fx: {}, shots: [], parts: [], ban: null, cd: 3.6, cdN: 4, bonus: 0, combo: 0, last: performance.now(), m0: 0 };
+  MGG.phh = MG_PH; MGG.pw = 11; mgFitMe(MGG);
   $('#mgBan').hidden = true; $('#mgAbBtn').classList.remove('on', 'rdy'); mgMus.start('jump'); mgHud();
   const loop = now => { const g = MGG; if (!g || !g.run) return; g.acc = (g.acc || 0) + Math.min(.1, (now - g.last) / 1000); g.last = now; while (g.acc >= MG_DT) { mgStep(g, MG_DT); g.acc -= MG_DT; } mgRender(g); if (g.run) g.raf = requestAnimationFrame(loop); };   // v5.86: 1/120초 고정 단계로 계산해서 기기마다 똑같이 움직인다
   MGG.raf = requestAnimationFrame(loop);
 }
 // v5.86 경완: 물리 다듬기 — 올라갈 땐 가볍게, 떨어질 땐 빠르게. 일찍 손을 떼면 낮게 뛰고, 착지 직전에 누른 점프는 기억했다가 닿자마자 뛴다
 const MG_JUMP = 660, MG_GRAV = 1750, MG_FALL = 1.2,   /* v5.88 경완: 중력 살짝 약하게 (높이는 그대로, 더 오래 떠 있음) */ MG_PH = 30, MG_DT = 1 / 120;
+/* v5.97 경완: 폭거북스처럼 그림이 큰 포켓몬으로 하면 장애물까지 다 작아지던 것 — 장애물은 늘 같은 배율(MG_WS), 내 포켓몬도 같은 배율로 그리되 너무 크거나 작을 때만 맞춘다. 그림이 늦게 오면 오는 대로 다시 맞춘다 */
+const MG_WS = 1.9;
+function mgFitMe(g) { const B = mgBox(g.me); if (!B) return; g.psc = clamp(MG_WS, 30 / B.h, Math.min(66 / B.h, 80 / B.w)); g.phh = Math.min(36, B.h * g.psc * .85); g.pw = Math.min(14, B.w * g.psc * .32); g.fit = 1; }
 function mgLift(g, v, spin) { g.vy = v; g.cut = false; g.sq = 1.28; g.sqv = 0; if (spin) g.spin = 1; }
 function mgJump(down) {
   const g = MGG; if (!g?.run || g.over || g.cd > .6) return;
@@ -6214,14 +6217,14 @@ function mgSpawn(g) {
   const ph = g.phase, pool = ['g', 'g', 'g', 'f'];
   if (ph >= 2) pool.push('gg', 'f'); if (ph >= 3) pool.push('gf', 'gg'); if (ph >= 4) pool.push('ggg', 'gf');
   const kind = pool[Math.floor(Math.random() * pool.length)], pick = L => L[Math.floor(Math.random() * L.length)], x0 = g.W + 50;
-  const add = (x, t) => { const f = t === 'f', RL = g.pool.roles && (f ? g.pool.froles : g.pool.roles), rp = RL ? pick(Object.keys(RL).filter(r => (MG_UNLOCK[r] || 1) <= ph)) : null, k = rp ? RL[rp] : pick(f ? g.pool.fly : g.pool.gnd), B = mgBox(k), bh = B ? B.h : 28, sc = clamp(g.psc, 16 / bh, (f ? 46 : 64) / bh), w = Math.max(14, (B ? B.w * sc : 26) * .75);
+  const add = (x, t) => { const f = t === 'f', RL = g.pool.roles && (f ? g.pool.froles : g.pool.roles), rp = RL ? pick(Object.keys(RL).filter(r => (MG_UNLOCK[r] || 1) <= ph)) : null, k = rp ? RL[rp] : pick(f ? g.pool.fly : g.pool.gnd), B = mgBox(k), bh = B ? B.h : 28, sc = clamp(MG_WS, 16 / bh, (f ? 46 : 64) / bh), w = Math.max(14, (B ? B.w * sc : 26) * .75);
     const pat = rp || (f ? 'wave' : MG_PAT[(SPECIES[k]?.t || [1])[0]] || 'still'), by = pat === 'swoop' ? 120 + Math.random() * 20 : f ? Math.round((g.phh || 36) + 22) : pat === 'dig' ? -200 : 0;
     g.obs.push({ x, t, k, sc, w, h: Math.round(bh * sc), y: by, by, ph: Math.random() * 6, pat, x0: x }); };
   if (kind === 'gg') { add(x0, 'g'); add(x0 + 46, 'g'); } else if (kind === 'ggg') { add(x0, 'g'); add(x0 + 46, 'g'); add(x0 + 92, 'g'); } else if (kind === 'gf') { add(x0, 'g'); add(x0 + 130, 'f'); } else add(x0, kind);
   const base = g.v * (.5 + Math.random() * .6) + 110 - Math.min(60, ph * 10);
   g.gap = Math.max(g.v * .52 + 70, base + 20) + (kind.length > 1 ? 75 : 0);
 }
-function mgStep(g, dt) {
+function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
   // 화면 흔들림·찌그러짐(용수철)·회전은 멈춤 중에도 풀린다
   if (g.shake > 0) g.shake = Math.max(0, g.shake - dt);
   { const k = 520, d = 18; g.sqv = (g.sqv || 0) + ((1 - (g.sq || 1)) * k - g.sqv * d) * dt; g.sq = (g.sq || 1) + g.sqv * dt; }
