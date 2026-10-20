@@ -5800,7 +5800,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.29';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.30';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7000,12 +7000,12 @@ function setShopTab(t) {
 }
 // 상점 도구·아이템 탭: 칸을 누르면 아래 막대에 설명과 사기(아이템은 쓰기도)
 let itemSel = { tool: null, item: null };
-// v7.29 경완: 상점 도구 그림 크기 맞추기 — 그림마다 투명 여백을 재서 실제 그림이 같은 크기·가운데로 보이게
+// v7.29 경완: 상점 도구 그림 크기 맞추기 (v7.30 아이템 탭 향로·부적도) — 그림마다 투명 여백을 재서 실제 그림이 같은 크기·가운데로 보이게
 const ART_FIT = new Map();
 function artFit(box) { box.querySelectorAll('img[data-fit]').forEach(im => { const go = () => { let f = ART_FIT.get(im.src); if (!f) { const w = im.naturalWidth, h = im.naturalHeight; if (!w) return; const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(im, 0, 0); const d = x.getImageData(0, 0, w, h).data; let x0 = w, y0 = h, x1 = -1, y1 = -1; for (let y = 0; y < h; y++) for (let i = 0; i < w; i++) if (d[(y * w + i) * 4 + 3] > 20) { if (i < x0) x0 = i; if (i > x1) x1 = i; if (y < y0) y0 = y; if (y > y1) y1 = y; } if (x1 < 0) return; const k = Math.min(3, .86 * Math.min(w / (x1 - x0 + 1), h / (y1 - y0 + 1))); f = { k, dx: (w / 2 - (x0 + x1 + 1) / 2) / w, dy: (h / 2 - (y0 + y1 + 1) / 2) / h }; ART_FIT.set(im.src, f); } im.style.transform = `scale(${f.k.toFixed(3)}) translate(${(f.dx * 100).toFixed(1)}%,${(f.dy * 100).toFixed(1)}%)`; }; if (im.complete) go(); else im.addEventListener('load', go, { once: true }); }); }
 function renderItems(k) {
   const I = itemsOf(), L = ITEMS.filter(o => o.k === k), sel = itemSel[k];
-  $(`#${k}List`).innerHTML = L.map(o => `<button class="vin itm" data-it="${o.id}" aria-current="${sel === o.id}"><span class="vpic"><img src="${ITEM_ART[o.a]}" alt=""${k === 'tool' ? ' data-fit' : ''}></span>${I[o.id] ? `<i class="icnt">${I[o.id]}</i>` : ''}<span class="vname">${o.n}</span><span class="vtag">${itemPrice(o.id).toLocaleString()}G</span></button>`).join(''); artFit($(`#${k}List`));
+  $(`#${k}List`).innerHTML = L.map(o => `<button class="vin itm" data-it="${o.id}" aria-current="${sel === o.id}"><span class="vpic"><img src="${ITEM_ART[o.a]}" alt="" data-fit></span>${I[o.id] ? `<i class="icnt">${I[o.id]}</i>` : ''}<span class="vname">${o.n}</span><span class="vtag">${itemPrice(o.id).toLocaleString()}G</span></button>`).join(''); artFit($(`#${k}List`));
   const o = ITEM[sel], bar = $(`#${k}Bar`); bar.hidden = !o; if (!o) return;
   const left = o.k === 'item' ? fxLeft(o.id) : 0;
   bar.innerHTML = `<img class="sb-pic" src="${ITEM_ART[o.a]}" alt=""><div class="sb-name"><b>${o.n}</b><span>${itemDesc(o)}${left ? ` · 남은 시간 ${Math.ceil(left / 60e3)}분` : ''}</span></div>`
