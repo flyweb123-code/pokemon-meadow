@@ -5746,7 +5746,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.14';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.15';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5964,13 +5964,14 @@ const mgAb = sp => MG_AB[(SPECIES[sp]?.t || [1])[0]] || MG_AB[1];
 // v5.79 경완: 랭크에 따른 패시브 (게임마다 다름). 랭크가 높을수록 좋지만 게임이 너무 쉬워지지 않게 하나씩만
 const MG_GAMES = [{ id: 'jump', n: '장애물 넘기', on: 1, how: '저절로 달려요. 눌러서 뛰고 꾹 누르면 더 높이, 공중에서 한 번 더 누르면 2단 점프예요. 장애물을 위에서 밟으면 튕겨 오르며 점수가 붙어요.' }, { id: 'balloon', n: '풍선 터뜨리기' }, { id: 'berry', n: '나무열매 받기' }];
 const MG_PASS = { jump: {
-  F: { n: '꾸준함', d: '받는 골드 +30%', gold: 1.3 },   // v6.14 경완: F·E·S 가 아쉽다 → F 골드 +10%→+30%, E 점프 +6%→+12%, S 버티기 2번·점수 +20%·능력 대기 -20%
-  E: { n: '가벼운 몸', d: '점프가 더 높아요 (+12%)', jump: 1.12 },
+  // v6.15 경완: 랭크가 바로 느껴지게 — F·E 는 손해(약점), D~A 는 차례로 좋아지고, S 는 눈에 보이는 능력(언제나 3단 점프 + 버티기)
+  F: { n: '무거운 몸', d: '점프가 낮아요 (-10%)', jump: .9 },
+  E: { n: '느긋함', d: '능력을 다시 쓰기까지 오래 걸려요 (+25%)', cdm: 1.25 },
   D: { n: '아슬아슬', d: '장애물 가장자리를 살짝 스치는 건 봐줘요', graze: 3 },
   C: { n: '밟기 달인', d: '밟기 점수 ×1.5', stomp: 1.5 },
   B: { n: '넉넉한 힘', d: '능력을 다시 쓰기까지 기다리는 시간 -25%', cdm: .75 },
   A: { n: '끈기', d: '한 판에 한 번, 부딪혀도 버텨요', guard: 1 },
-  S: { n: '전설의 기운', d: '한 판에 두 번 버티기 + 점수 +20% + 능력 대기 -20%', guard: 2, score: 1.2, cdm: .8 },
+  S: { n: '전설의 기운', d: '언제나 3단 점프 (마지막은 금빛) + 한 판에 한 번 버티기', jumps: 3, guard: 1 },
 } };
 const mgRank = m => { const P = boxOf(m?.pid); return P ? rankOf(P) : 'F'; };
 let mgOpenG = '';   // v5.82 경완: 처음엔 모든 게임 카드를 접어 둔다
@@ -6175,11 +6176,11 @@ function mgJump(down) {
   if (g.fx.flying) return;
   // v5.83 경완: 누구나 2단 점프, 노말 타입은 3단 점프
   if (g.y <= 0) { mgLift(g, MG_JUMP * (g.pas.jump || 1)); g.sq = 1.36; g.air = 0; g.jn = 1; mgDust(g, 10, 170); (g.rings || (g.rings = [])).push({ x: g.PX, y: g.GY, t: .3, c: 'rgba(255,255,255,.9)', flat: 1, z: 1.3 }); haptic(0); sfx('jmp'); return; }   // v5.92 경완: 누르는 맛 (더 늘어나며 튀고, 발밑 충격파·진동)
-  if (g.jn >= 2 && g.ab.k === 'dbl') { if (g.cool <= 0) mgJ3(g); else g.buf = .14; return; }
-  if (g.jn < 2) { g.jn++; mgLift(g, MG_JUMP * .86 * (g.pas.jump || 1), true); mgRing(g, '#ffffff'); g.rings.push({ x: g.PX, y: g.GY - g.y, t: .3, c: 'rgba(255,255,255,.7)', z: 1.6, flat: 1 }); mgFx(g, g.PX, g.GY - g.y, '#ffffff', 6, 120); haptic(0); sfx('jmp2'); } else g.buf = .14;
+  if (g.jn >= (g.pas.jumps || 2) && g.ab.k === 'dbl') { if (g.cool <= 0) mgJ3(g); else g.buf = .14; return; }
+  if (g.jn < (g.pas.jumps || 2)) { g.jn++; mgLift(g, MG_JUMP * .86 * (g.pas.jump || 1), true); if (g.jn === 3) { mgRing(g, '#ffd84a'); mgFx(g, g.PX, g.GY - g.y, '#ffd84a', 10, 160); } mgRing(g, '#ffffff'); g.rings.push({ x: g.PX, y: g.GY - g.y, t: .3, c: 'rgba(255,255,255,.7)', z: 1.6, flat: 1 }); mgFx(g, g.PX, g.GY - g.y, '#ffffff', 6, 120); haptic(0); sfx('jmp2'); } else g.buf = .14;
 }
 function mgCool(g) { g.cool = g.ab.c * (g.pas.cdm || 1); g.coolN = -1; mgHud(); }
-function mgJ3(g) { g.jn = 3; mgLift(g, MG_JUMP * .86 * (g.pas.jump || 1), true); mgRing(g, '#ffe14a'); sfx('ab', 'dbl'); mgCool(g); mgAbStart(g, 'dbl'); }
+function mgJ3(g) { g.jn = Math.max(g.jn + 1, 3); mgLift(g, MG_JUMP * .86 * (g.pas.jump || 1), true); mgRing(g, '#ffe14a'); sfx('ab', 'dbl'); mgCool(g); mgAbStart(g, 'dbl'); }
 function mgFx(g, x, y, c, n = 8, sp = 160) { for (let i = 0; i < n; i++) { const a = Math.random() * Math.PI * 2, s = sp * (.4 + Math.random()); g.parts.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, t: .5 + Math.random() * .3, t0: .8, r: 2 + Math.random() * 2.5, c }); } }
 // 발밑 흙먼지 (뒤로 흩날림)
 function mgDust(g, n, sp) { for (let i = 0; i < n; i++) g.parts.push({ x: g.PX + (Math.random() - .5) * g.pw * 2, y: g.GY - 2, vx: -sp * (.3 + Math.random()), vy: -sp * (.2 + Math.random() * .6), t: .35 + Math.random() * .25, t0: .6, r: 2.5 + Math.random() * 3, c: Math.random() < .5 ? 'rgba(232,214,170,.9)' : 'rgba(255,255,255,.85)', dust: 1 }); }
