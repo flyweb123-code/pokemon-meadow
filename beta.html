@@ -3151,6 +3151,11 @@ function canMeet(m, o) {
   if (a === 'swim' && b === 'walk' && pondVal(o.x, o.y) > 1.8) return false;
   return dist(m, o) < 520;
 }
+/* v6.09 경완: 상호작용이 한꺼번에 여러 곳에서 짧게 일어나 알아보기 어렵던 것 — 필드 전체에서 한 번에 한 쌍만 어울리고, 끝나면 3~6초 쉬었다가 다음 쌍 */
+let sceneNext = 0;
+const sceneOn = (...ex) => S.mons.some(o => !ex.includes(o) && !o.hidden && ((o.state === 'interact' && o.partner?.partner === o && o.partner.state === 'interact') || (o.state === 'move' && o.goal?.kind === 'meet')));   // 서로 어울리는 중이거나 만나러 가는 중인 쌍만 센다 (어긋난 상태는 막지 않게)
+const sceneFree = m => performance.now() >= sceneNext && !sceneOn(m);
+const sceneDone = () => { sceneNext = performance.now() + rnd(3000, 6000); };
 function pickPartner(m) {
   const c = S.mons.filter(o => canMeet(m, o));
   if (!c.length) return null;
@@ -3186,13 +3191,13 @@ function think(m) {
       m.likeCd = rnd(70, 160); const side = m.x < lv.x ? -1 : 1;
       return moveTo(m, { x: lv.x + side * Math.max(34, (m.w + lv.w) * .35), y: lv.y + rnd(-6, 6) }, { kind: 'like', mon: lv });
     } }
-  if (m.social > 42 && Math.random() < .85) {
+  if (m.social > 42 && sceneFree(m) && Math.random() < .85) {
     const o = pickPartner(m);
     if (o && (T(m).mv === 'swim') !== (T(o).mv === 'swim') && !o.goal && (o.state === 'idle' || o.state === 'move') && !o.held && !o.pin) moveTo(o, m, { kind: 'meet', mon: m }, 1.1);   // v5.99: 물·뭍 사이는 서로 물가로 다가간다
     if (o) return moveTo(m, o, { kind: 'meet', mon: o }, 1.1);
   }
   if (t.sp && !(m.spCd > 0) && Math.random() < (t.sp === 'transform' ? .3 : .2) && doSpecial(m)) { m.spCd = t.sp === 'sing' ? rnd(120, 200) : rnd(40, 90); return; }
-  if (m.social > 20 && Math.random() < .3) { // say hi to whoever is close by
+  if (m.social > 20 && sceneFree(m) && Math.random() < .3) { // say hi to whoever is close by
     const o = S.mons.find(o => canMeet(m, o) && dist(m, o) < 140 && o.state !== 'move');
     if (o) return moveTo(m, o, { kind: 'meet', mon: o });
   }
@@ -3282,7 +3287,7 @@ function arrive(m) {
       else { emote(m, '…', '', 2.2, 'meet-fail'); setState(m, 'idle', 2); }
       return;
     }
-    if (!canMeet(m, o) && o.partner !== m) { emote(m, '…', '', 2.2, 'meet-fail'); return setState(m, 'idle', 1.5); }
+    if ((!canMeet(m, o) && o.partner !== m) || sceneOn(m, o)) { emote(m, '…', '', 2.2, 'meet-fail'); return setState(m, 'idle', 1.5); }   // 그새 다른 쌍이 먼저 어울리기 시작했으면 다음 기회에
     return interact(m, o);
   }
   if (g.kind === 'scare') return ghostScare(m, g.mon);
@@ -4072,7 +4077,7 @@ function interact(a, b, forced) {
   if (sc.start) sc.start(a, b);
   if (sc.kind === 'scared' || sc.kind === 'chase' || sc.kind === 'nap') return resolveNow(a, b, sc);
   const mot = motOf(sc);
-  const dur = sc.dur || (mot && mot.dur) || (sc.kind === 'fight' ? rnd(4, 6) : rnd(4, 8));
+  const dur = sc.dur || (mot && mot.dur) || (sc.kind === 'fight' ? rnd(6, 9) : rnd(7, 11));   // v6.09 경완: 한 장면을 더 오래 보여 준다 (예전 4~8초)
   for (const [m, o] of [[a, b], [b, a]]) { m.goal = null; m.partner = o; m.kind = sc.kind; m.scene = sc; setState(m, 'interact', dur); m.beat = 0; }
   const E = { play: ['♥', '♪'], chat: ['…', '♪'], care: ['♥', '♥'], show: ['!', '!'], fight: ['#', '!'] }[sc.kind] || ['…', '…'];
   emote(a, sc.ea || E[0], /♥/.test(sc.ea || E[0]) ? 'heart' : /[#!]/.test(sc.ea || E[0]) ? 'anger' : 'note');
@@ -4089,7 +4094,7 @@ function interact(a, b, forced) {
 // scenes that resolve at once: one runs away, a chase begins, or both doze off together
 function resolveNow(a, b, sc) {
   const [actor, target] = sc.roles || [a, b];
-  for (const m of [a, b]) { m.partner = null; m.social = clamp(m.social - 20); m.joy = clamp((m.joy ?? 60) + 3); }
+  sceneDone(); for (const m of [a, b]) { m.partner = null; m.social = clamp(m.social - 20); m.joy = clamp((m.joy ?? 60) + 3); }
   if (sc.kind === 'scared') {
     emote(target, '!!', 'anger', 2.2, 'fight-hit'); emote(actor, '?', '', 2.2, 'fight-scare');
     moveTo(target, { x: target.x + (target.x - actor.x) * 2.5, y: target.y + (target.y - actor.y) * 2.5 }, { kind: 'flee' }, 1.6);
@@ -4152,7 +4157,7 @@ function finishInteract(a, b) {
   else if (k === 'chat') { addRel(a, b, relD ?? rnd(4, 9)); }
   else if (k === 'care') { addRel(a, b, relD ?? rnd(10, 16)); b.joy = clamp((b.joy ?? 60) + 5); }
   else if (k === 'mirror') { addRel(a, b, 5); if (a.sp === 132) revert(a); if (b.sp === 132) revert(b); }
-  for (const m of [a, b]) { m.partner = null; m.scene = null; m.social = clamp(m.social - 30); m.joy = clamp((m.joy ?? 60) + 4); }
+  sceneDone(); for (const m of [a, b]) { m.partner = null; m.scene = null; m.social = clamp(m.social - 30); m.joy = clamp((m.joy ?? 60) + 4); }
   if (dlgPin) renderDlg();
   if (k === 'play' || k === 'chat' || k === 'care') { maybeLike(a, b); if (likes(a, b) && likes(b, a)) addRel(a, b, 3); }
   if (k === 'show') {
@@ -5719,7 +5724,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.08';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.09';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
