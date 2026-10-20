@@ -153,7 +153,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .card .ih-top{flex-wrap:nowrap}.card .ih-r{margin-left:auto;display:flex;align-items:center;gap:4px;font-size:12px;color:var(--dim);white-space:nowrap;min-width:0;overflow:hidden}.card .ih-r .tyi{width:18px;height:18px}
 .born-pic{position:relative;display:inline-block;line-height:0}.born-new{position:absolute;right:-14px;top:-6px;font:700 11px/1 var(--px);color:#fff;background:#e04848;border:2px solid #7a1c1c;padding:2px 4px;letter-spacing:1px;animation:jbob 1s steps(2,end) infinite}
 .hatch .win{position:relative}.hatch.list #hlPrev,.hatch.list #hlNext{display:none!important}.hatch.list .hl-nav{display:contents}.hatch.list #hlPrev,.hatch.list #hlNext{position:absolute;margin-top:-18px;z-index:2}.hatch.list #hlPrev{left:10px}.hatch.list #hlNext{right:10px}.hatch.list #hlNum{position:absolute;top:10px;right:14px;font-size:13px;color:var(--dim)}
-#hatchMsg.ev{font-size:15px;line-height:1.6;margin-top:6px}#hatchMsg.ev .evg{font-size:18px}#hatchMsg.ev .prog{height:10px;margin:8px auto;width:min(240px,90%);background:var(--inner);border:2px solid var(--frame)}#hatchMsg.ev .prog i{display:block;height:100%;background:#f0c030}#hatchMsg.ev .evd{font-size:13px;color:var(--dim)}#hatchOut{flex:1 1 auto}#hatchIn{flex:1 1 0;width:auto}#hatchDel{flex:0 0 auto;width:auto;padding-left:16px;padding-right:16px;color:#c0392b}#hatchDel.arm{background:#e0555a;color:#fff}
+#hatchMsg.ev{font-size:15px;line-height:1.6;margin-top:6px}#hatchMsg.ev .evg{font-size:18px}#hatchMsg.ev .prog{height:10px;margin:8px auto;width:min(240px,90%);background:var(--inner);border:2px solid var(--frame)}#hatchMsg.ev .prog i{display:block;height:100%;background:#f0c030}#hatchMsg.ev .evd{font-size:13px;color:var(--dim)}#hatchOut{flex:1 1 auto}#hatchIn{flex:1 1 0;width:auto}#hatchDel{flex:0 0 auto;width:auto;padding-left:16px;padding-right:16px;color:#c0392b}#hatchDel.arm{background:#e0555a;color:#fff}#hatchIn:disabled{background:#dcdce0;color:#8e8e98;border-color:#a8a8b2;box-shadow:none;cursor:default;pointer-events:none}
 #hatchMsg .rkline{margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px}
 .mtab[data-t="field"] .mgr-tools{padding:0 4px}#mgrClear{background:#c83838!important;border-color:#7a1c1c!important;color:#fff!important}
 .hearts.frtap{justify-self:start;width:max-content;cursor:pointer}
@@ -5721,7 +5721,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '5.95';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '5.96';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8899,9 +8899,9 @@ async function hatchAll() {
   hatchPg = { can: d => i + d >= 0 && i + d < res.length, snap: (d, w) => { const k = i; show(k + d, true); const g = w.cloneNode(true); show(k, true); return g; }, step: d => { sfx('tap'); show(i + d, false, true); } };
   fieldBtn.onclick = async () => { const r = res[i]; if (onField(r.P.id) || S.mons.length >= MAX_MONS) return; fieldBtn.hidden = true; const m = await spawn(r.sp, { pid: r.P.id }); m.born = S.clock; markNew(m); save(); refreshCap(); show(i); };
   fastBtn(sb, async () => { if (sbBusy) return; const r = res[i], k = i;
-    if (onField(r.P.id)) { const m = S.mons.find(x => x.pid === r.P.id); if (m) removeMon(m, true); r.sent = false; save(); refreshCap(); show(i, true); return; }
+    if (onField(r.P.id)) { const m = S.mons.find(x => x.pid === r.P.id); if (m) removeMon(m, true); r.sent = false; save(); refreshCap(); sb.classList.remove('sunk'); sb.textContent = '필드로'; return; }   /* 경완: 카드를 다시 그리면 스프라이트가 한 번 더 튕겨서 버튼만 바꾼다 */
     if (S.mons.length >= MAX_MONS) return; sbBusy = true; r.sent = true; sb.classList.add('sunk'); sb.textContent = '필드에 나감';
-    try { const m = await spawn(r.sp, { pid: r.P.id }); m.born = S.clock; markNew(m); } finally { sbBusy = false; } save(); refreshCap(); if (i === k) show(i, true); });
+    try { const m = await spawn(r.sp, { pid: r.P.id }); m.born = S.clock; markNew(m); } finally { sbBusy = false; } save(); refreshCap(); if (i !== k) { const on = onField(res[i].P.id); sb.classList.toggle('sunk', on); sb.textContent = on ? '필드에 나감' : '필드로'; } });
   // 상태창 보기: 창을 떠나지 않고 도감 정보 칸만 개체값으로 바꿔 본다 (다시 누르면 도감 정보)
   ok.hidden = false; ok.textContent = '확인'; const look = $('#hatchLook'); look.hidden = false; look.textContent = '상태창 보기';
   look.onclick = () => { ivMode = !ivMode; look.textContent = ivMode ? '도감 정보' : '상태창 보기'; showDexInfo(res[i].sp, res[i].P); if (ivMode) showIvInfo(res[i]); };
