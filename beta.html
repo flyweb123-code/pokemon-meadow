@@ -5789,7 +5789,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.77';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.78';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6022,14 +6022,14 @@ const mgAb = sp => MG_AB[(SPECIES[sp]?.t || [1])[0]] || MG_AB[1];
 // v5.79 경완: 랭크에 따른 패시브 (게임마다 다름). 랭크가 높을수록 좋지만 게임이 너무 쉬워지지 않게 하나씩만
 const MG_GAMES = [{ id: 'jump', n: '장애물 넘기', on: 1, how: '저절로 달려요. 눌러서 뛰고 꾹 누르면 더 높이, 공중에서 한 번 더 누르면 2단 점프예요. 장애물을 위에서 밟으면 튕겨 오르며 점수가 붙어요.' }, { id: 'balloon', n: '풍선 터뜨리기' }, { id: 'berry', n: '나무열매 받기' }];
 const MG_PASS = { jump: {
-  // v6.16 경완: F·E 는 손해 없이 작은 도움, D~A 차례로 좋아지고, S 는 액티브 기술이 달라진다 (두 번 연달아 + 금빛)
-  F: { n: '꾸준함', d: '받는 골드 +10%', gold: 1.1 },
-  E: { n: '가벼운 몸', d: '점프가 조금 더 높아요 (+5%)', jump: 1.05 },
-  D: { n: '아슬아슬', d: '장애물 가장자리를 살짝 스치는 건 봐줘요', graze: 3 },
-  C: { n: '밟기 달인', d: '밟기 점수 ×1.5', stomp: 1.5 },
-  B: { n: '넉넉한 힘', d: '기술 쿨타임 -25%', cdm: .75 },
-  A: { n: '끈기', d: '한 판에 한 번, 부딪혀도 버텨요', guard: 1 },
-  S: { n: '전설의 기운', d: '액티브 기술이 더 크고 길게 나가요 (배경이 어두워지며 강력하게) + 한 판에 한 번 버티기', pow: 1, guard: 1 },   // v6.17 경완: 연달아 쓰기 대신 범위·시간이 큰 강한 기술
+  // v6.78 경완: 이름은 본가 특성 이름 (A = 옹골참). v6.16 경완: F·E 는 손해 없이 작은 도움, D~A 차례로 좋아지고, S 는 액티브 기술이 달라진다 (두 번 연달아 + 금빛)
+  F: { n: '픽업', d: '받는 골드 +10%', gold: 1.1 },
+  E: { n: '곡예', d: '점프가 조금 더 높아요 (+5%)', jump: 1.05 },
+  D: { n: '매직가드', d: '장애물 가장자리를 살짝 스치는 건 봐줘요', graze: 3 },
+  C: { n: '우격다짐', d: '밟기 점수 ×1.5', stomp: 1.5 },
+  B: { n: '재생력', d: '기술 쿨타임 -25%', cdm: .75 },
+  A: { n: '옹골참', d: '한 판에 한 번, 부딪혀도 버텨요', guard: 1 },
+  S: { n: '프레셔', d: '액티브 기술이 더 크고 길게 나가요 (배경이 어두워지며 강력하게) + 한 판에 한 번 버티기', pow: 1, guard: 1 },   // v6.17 경완: 연달아 쓰기 대신 범위·시간이 큰 강한 기술
 } };
 const mgRank = m => { if (m?.test) return m.test.rk; const P = boxOf(m?.pid); return P ? rankOf(P) : 'F'; };
 let mgOpenG = '';   // v5.82 경완: 처음엔 모든 게임 카드를 접어 둔다
@@ -6497,7 +6497,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
     if (g.fx.iron > 0) { mgKill(g, o, '#dfe6f0'); sfx('knock'); g.irF = .2; g.shake = Math.max(g.shake || 0, .08); g.shA = Math.max(g.shA || 0, 3); mgFx(g, (g.PX + o.x) / 2, g.GY - g.y - MG_PH / 2, '#ffffff', 10, 220); continue; }   // 철벽: 부딪힌 포켓몬이 튕겨 날아간다
     if (g.combo) { g.combo = 0; g.cT = 0; }
     if (g.fx.shield) { g.fx.shield = false; mgKill(g, o, '#c8b08a'); sfx('knock'); continue; }
-    if (g.guard > 0) { g.guard--; g.inv = 1.4; g.gSh = .7; mgKill(g, o, '#ffd84a'); sfx('ab', 'shield'); mgToast(g, g.pas.n + '로 버텼어요!'); mgHud(); continue; }   /* v6.26 경완: 버티기 = 방어막이 생겼다 깨지며 사라진다 */
+    if (g.guard > 0) { g.guard--; g.inv = 1.4; g.gSh = .7; mgKill(g, o, '#ffd84a'); sfx('ab', 'shield'); mgToast(g, g.pas.n + ((c => c % 28 && c % 28 !== 8 ? '으로' : '로')(g.pas.n.charCodeAt(g.pas.n.length - 1) - 0xAC00)) + ' 버텼어요!'); mgHud(); continue; }   /* v6.26 경완: 버티기 = 방어막이 생겼다 깨지며 사라진다 */
     if (g.lives > 1) { g.lives--; g.inv = 1.6; g.lHit = 1; mgKill(g, o, '#ffb0d8'); sfx('knock'); g.shake = .25; g.shA = 5; g.flash = .12; mgHud();   /* v6.55 경완: 글자 없이 하트가 흔들리며 사라진다 */ continue; }
     g.over = true; g.overT = 1.1; g.hitO = o; g.shake = .4; g.shA = 7; g.hs = .09; g.vy = 380; g.flash = .25; sfx('knock'); mgFx(g, g.PX, g.GY - g.y - 15, '#fff', 14); mgHud(); break;
   }
