@@ -6007,7 +6007,7 @@ const MG_AB = {
   6: { n: '스톤샤워', c: 9, k: 'rock', d: '4초 동안, 누를 때마다 앞쪽에 돌이 우수수 떨어져 포켓몬을 날려 버려요' },   /* v6.25 경완: 바위 방패 → 스톤 샤워 */
   7: { n: '실뿜기', c: 8, k: 'silk', d: '앞쪽 위로 실을 쏴 그네처럼 휙 날아가요. 4.5초 동안은 떼었다가 다시 눌러 이어서 스윙할 수 있어요. 올라가는 중에 떼면 위로 솟구쳐요' },   /* v6.18 경완: 실 뿜기 — 지속 시간 안에서 다시 눌러 실 타기, 3초 → 4.5초 */
    // v6.17 경완: 누른 만큼 실에 매달려 버티기 + 대롱대롱 + 떼면 솟구침
-  8: { n: '놀래키기', c: 5, k: 'scare', d: '누르는 순간 주변을 "왁!" 날리고, 꾹 누른 만큼 파장이 넓어져요 (최대 2초). 떼면 파장에 닿은 장애물이 사방으로 날아가요' },   /* v6.55 경완: 고스트 = 놀래키기 (예전 투명해지기) */
+  8: { n: '놀래키기', c: 5, k: 'scare', d: '누르는 순간 주변 장애물을 날리고, 꾹 누른 만큼 파장이 넓어져요 (최대 2.5초). 떼면 파장에 닿은 장애물이 사방으로 날아가요' },   /* v6.55 경완: 고스트 = 놀래키기 (예전 투명해지기) */
   9: { n: '철벽', c: 12, k: 'iron', d: '5초 동안 몸이 강철처럼 단단하고 무거워져서, 부딪히는 포켓몬을 튕겨 날려 버려요' },   /* v6.27 경완: 강철 돌진 → 철벽 */
   10: { n: '화염방사', c: 12, k: 'fire', d: '꾹 누르는 동안 불꽃을 뿜어 앞 장애물을 날려요 (2.6초). 누른 채 손가락을 위아래로 움직이면 불줄기 방향이 바뀌어요' },   /* v6.30 경완: 이름 화염방사, 쿨타임 8→12초, 손가락 위아래로 겨누기 */
   11: { n: '파도타기', c: 12, k: 'surf', d: '꾹 누르는 동안 큰 파도에 올라타 앞의 장애물을 모두 쓸어 버려요 (최대 2.5초, 떼면 끝)' },   /* v6.37 경완: 실제 파도처럼 높은 파도에 올라탄다 */
@@ -6348,7 +6348,7 @@ function mgScareWave(g, R, quiet) { const py = g.GY - g.y - MG_PH / 2; g.scWv = 
 function mgScareWaveStep(g, dt) { const V = g.scWv; V.r += 1500 * dt; const cy0 = g.y + (g.phh || MG_PH) / 2;
   for (const o of g.obs) { if (o.dead || o.kb) continue; const dx = o.x - g.PX, dy = o.y + o.h / 2 - cy0, d = Math.hypot(dx, dy); if (d > V.R || d > V.r) continue; mgKill(g, o, '#b48aff'); if (o.kb) { const n = Math.max(1, d), sp = 560 + 300 * (1 - d / V.R); o.kb.vx = dx / n * sp + 120; o.kb.vy = 260 + Math.max(0, dy / n) * sp * .8; o.kb.vr = (dx >= 0 ? 1 : -1) * 12; } mgFx(g, o.x, g.GY - o.y - o.h / 2, '#d8c0ff', 6, 160); }
   if (V.r > V.R + 60) g.scWv = null; }
-const MG_SC_T = 2, mgScR = (g, k) => (30 + 350 * k) * (g.pas?.pow ? 1.4 : 1);   /* v7.07 경완: 2초 동안 같은 속도로 넓어짐 (v7.02 세제곱이었음) */   // 놀래키기: 이만큼 누르면 범위가 가장 넓다
+const MG_SC_T = 2.5, mgScR = (g, k) => (30 + 350 * k) * (g.pas?.pow ? 1.4 : 1);   /* v7.21 경완: 조금 더 천천히 2.5초 (v7.07 2초) —  같은 속도로 넓어짐 (v7.02 세제곱이었음) */   // 놀래키기: 이만큼 누르면 범위가 가장 넓다
 function mgScare(g, r = 300 * (g.pas?.pow ? 1.6 : 1)) { const A = mgAhead(g, r); if (!A.length) return 0; g.scP = .17; g.scR = r; g.sq = .6; g.sqv = 0; g.hs = Math.max(g.hs || 0, .04); return A.length; }   /* v6.67 경완: 쫀득하게 = 움츠렸다가(0.17초) "왁!" 하고 커지며 앞으로 덮친다 */
 function mgScareGo(g) { const py = g.GY - g.y - MG_PH / 2; mgAhead(g, (g.scR || 300) + 40).forEach(o => { o.flee = .001; o.fd = Math.max(0, o.x - g.PX) / 1400; o.fy = o.y; });   // 물결이 닿는 순서대로 놀란다
   g.fx.scare = .5; g.scB = .45; g.sq = 1.4; g.sqv = 0; g.bov = (g.bov || 0) + 520; g.tint = { c: '#5a3a80', t: .22 }; g.shake = Math.max(g.shake || 0, .22); g.shA = Math.max(g.shA || 0, 6); haptic(2);
