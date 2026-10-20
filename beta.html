@@ -1583,7 +1583,8 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
         <div class="op-row"><span>테스트 버튼 보이기</span><button class="op-sw" id="testSw" role="switch" aria-checked="false"><i></i></button></div>
         <div class="op-row"><span>베타 판 쓰기 (이 기기만)</span><button class="op-sw" id="betaSw" role="switch" aria-checked="false"><i></i></button></div>
         <div class="set-btns one"><button class="lk-btn main" id="updNow">배포된 최신 판 바로 받기</button></div>
-        <div class="set-btns one"><button class="lk-btn main" id="newsPv">업데이트 알림창 미리 보기</button></div>   <!-- v7.28 경완: 운영자 전용 — 봤다고 저장하지 않음 -->
+        <div class="set-btns one"><button class="lk-btn main" id="newsPv">업데이트 알림창 미리 보기</button></div>
+        <div class="mgt-row"><span>골드</span><input id="opGold" type="number" inputmode="numeric" min="0" aria-label="골드"><button class="lk-btn main" id="opGoldGo">맞추기</button></div><p class="op-note" id="opGoldNote"></p>   <!-- v7.46 경완: 운영자 전용 — 골드 직접 맞추기 (게임 전으로 되돌리기 등) -->   <!-- v7.28 경완: 운영자 전용 — 봤다고 저장하지 않음 -->
         <div class="mgt-row"><span>기술 시험</span><select id="mgtType" aria-label="타입 (액티브 기술)"></select><select id="mgtRk" aria-label="랭크 (패시브)"></select><button class="lk-btn main" id="mgtGo">해 보기</button></div>   <!-- v6.21 경완: 운영자 전용 미니게임 기술 시험 (보상·기록 없음) -->
         <p class="op-note" id="updMsg" hidden></p>
         <div class="set-btns one" id="betaBkRow" hidden><button class="lk-btn main" id="betaBk">베타 켜기 전 저장으로 되돌리기</button></div>
@@ -5775,7 +5776,7 @@ document.addEventListener('click', e => {
       if (Date.now() - armB > 3000) { armB = Date.now(); sfx('tap'); b.textContent = `${new Date(o.at).toLocaleString('ko-KR')} 저장으로 · 한 번 더 누르기`; setTimeout(() => { if (Date.now() - armB >= 3000) b.textContent = '베타 켜기 전 저장으로 되돌리기'; }, 3100); return; }
       saveFrozen = true; try { localStorage.setItem(KEY, o.d); } catch (e) {} location.reload(); }; }
   let n = 0, t0 = 0; document.querySelector('.set-credit').addEventListener('click', () => { const now = Date.now(); n = now - t0 < 1500 ? n + 1 : 1; t0 = now;
-    if (n >= 7) { n = 0; const on = !get('pk-op'); put('pk-op', on); if (!on) put('pk-tests', false); paint(); sfx(on ? 'pickup' : 'tap'); if (on) log('운영자 모드를 켰다.', [], true); } }); }   // v7.45 경완: 끈 것은 관찰일지에 안 남김
+    if (n >= 7) { n = 0; const on = !get('pk-op'); put('pk-op', on); if (!on) put('pk-tests', false); paint(); sfx(on ? 'pickup' : 'tap'); } }); }   // v7.46 경완: 운영자 모드 켜고 끄기는 관찰일지에 안 남김
 function syncTabs() { [['#openRun', '#run'], ['#openSet', '#set'], ['#sideSet', '#set'], ['#openShop', '#shop']].forEach(([b, w]) => $(b).setAttribute('aria-pressed', !$(w).hidden)); if (mgrReady) { $('#openMgr').setAttribute('aria-pressed', pokeOpen()); $('#openFld').setAttribute('aria-pressed', fldOpen()); } document.body.classList.toggle('sheet-open', ['#sheet', '#run', '#mgr', '#shop'].some(w => !$(w).hidden)); }
 new MutationObserver(syncTabs).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
 $('#closeDex').onclick = () => { sheet.hidden = true; };
@@ -5800,11 +5801,11 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.45';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.46';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
-function setPage(on) { if (on === true) on = 'set'; $('#setPage').hidden = on !== 'set'; if (on === 'set') window.paintNoti?.(); $('#runPage').hidden = on !== 'runs'; $('#pfPage').hidden = !!on; $('#pfGear').hidden = !!on; $('#setBack').hidden = !on; $('#setTitle').textContent = on === 'set' ? '설정' : on === 'runs' ? '런닝 기록' : '프로필'; setEl.querySelector('.set-body').scrollTop = 0; }
+function setPage(on) { if (on === true) on = 'set'; $('#setPage').hidden = on !== 'set'; if (on === 'set') { window.paintNoti?.(); try { opGoldPaint(); } catch (e) {} } $('#runPage').hidden = on !== 'runs'; $('#pfPage').hidden = !!on; $('#pfGear').hidden = !!on; $('#setBack').hidden = !on; $('#setTitle').textContent = on === 'set' ? '설정' : on === 'runs' ? '런닝 기록' : '프로필'; setEl.querySelector('.set-body').scrollTop = 0; }
 $('#pfGear').onclick = () => { sfx('tap'); setPage(true); };
 $('#setBack').onclick = () => { sfx('tap'); setPage(false); };
 $('#pfRunBtn').onclick = () => { sfx('tap'); renderRunLog(); setPage('runs'); };
@@ -6930,7 +6931,7 @@ function mgEnd(g) {
   const m = g.m, R = mgRec(), M = mgS(), dist = Math.round((Math.floor(g.dist / 25) + g.bonus) * (g.pas.score || 1)), prev = R.best, T = !!m.test, nb = !T && dist > prev, P = T ? null : boxOf(m.pid);   /* 시험 판은 기록·보상 없음 */
   if (!T) R.n++; if (nb) R.best = dist;
   const d = dayKey(); if (M.gd !== d) { M.gd = d; M.gg = 0; }
-  const goldV = Math.round((Math.floor(dist / 30) + (nb && prev > 0 ? 20 : 0)) * (g.pas.gold || 1)), gold = T ? 0 : goldV; M.gg += gold; addGold(gold);   /* v6.59: 시험 판도 받을 만큼 보여 주기만 (실제로는 안 받음) */   // v6.17 경완: 하루·한 판 제한 없이 점수 30점마다 1G (+최고 기록 20G). 5,000점 ≈ 166G → 빛나는 부적 3000G 는 5,000점 약 18판 (6.16 은 주석이 코드를 덮어 골드가 안 들어갔다)
+  const goldV = Math.round((Math.floor(dist / 30) + (nb && prev > 0 ? 20 : 0)) * (g.pas.gold || 1)), gold = T ? 0 : goldV; M.gg += gold; M.gT = (M.gT || 0) + gold;   /* v7.46: 게임으로 받은 골드 전체 (운영자 골드 칸에 표시) */ addGold(gold);   /* v6.59: 시험 판도 받을 만큼 보여 주기만 (실제로는 안 받음) */   // v6.17 경완: 하루·한 판 제한 없이 점수 30점마다 1G (+최고 기록 20G). 5,000점 ≈ 166G → 빛나는 부적 3000G 는 5,000점 약 18판 (6.16 은 주석이 코드를 덮어 골드가 안 들어갔다)
   const frB = dist >= 100 ? Math.min(6, 1 + Math.floor(dist / 500)) : 0, fr = P && frB ? (dayCap(m, 'mg', 5) ? frB : Math.ceil(frB / 2)) : 0; if (fr) addFr(m.pid, fr); const frV = T ? frB : fr;   /* v6.91 경완: 2259점에 +1 은 섭섭 — 100점부터 +1, 500점마다 +1 (최대 +6), 같은 포켓몬 하루 6판째부터는 절반 */   /* v6.52 경완: 하루 제한 없음 — 100점부터 +1, 800점마다 +1 (최대 +4), 같은 포켓몬 하루 6판째부터는 +1 */
   const j0 = m.joy ?? 60; m.joy = clamp(j0 + (dist >= 30 ? 6 + 4 * g.phase : 2)); const joy = Math.round(m.joy - j0);
   const gifts = [], I = itemsOf(), give = (it, n) => { if (it === 'stone') it = MG_STONES[Math.floor(Math.random() * MG_STONES.length)]; I[it] = (I[it] || 0) + n; gifts.push({ it, n }); };
@@ -9369,6 +9370,8 @@ function newsShow(pv) {   /* v7.28 경완: pv = 운영자 미리 보기 (봤다�
   W.onpointerup = up; W.onpointercancel = e => { e.clientX = sx; up(e); };
 }
 $('#newsPv').addEventListener('click', () => { sfx('tap'); newsShow(true); });
+function opGoldPaint() { const M = mgS(), d = dayKey(); $('#opGold').value = S.gold; $('#opGoldNote').textContent = `지금 ${S.gold.toLocaleString()}G · 오늘 게임으로 받은 골드 ${(M.gd === d ? M.gg || 0 : 0).toLocaleString()}G${M.gT ? ` · 지금까지 게임 골드 ${M.gT.toLocaleString()}G` : ''}`; }   // v7.46 경완
+$('#opGoldGo').addEventListener('click', () => { const v = Math.max(0, Math.floor(+$('#opGold').value)); if (!isFinite(v)) return; sfx('tap'); S.gold = v; save(); renderGold(); opGoldPaint(); });
 function newsDue() { try { return localStorage.getItem('pk-news') !== NEWS_ID; } catch (e) { return false; } }   // v7.44 경완: 업데이트 알림창 자동 표시 (한 번)
 function notiSoon(ms = 500) { clearTimeout(notiT); notiT = setTimeout(notiShow, ms); }
 function notiShow(force) {
