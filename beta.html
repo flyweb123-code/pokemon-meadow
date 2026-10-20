@@ -5722,7 +5722,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '5.99';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.00';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6274,9 +6274,11 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
     if (pr + ex < ol || pl - ex > or || pt < ob || pb > ot + (stp ? 6 : 0)) continue;
     // v5.79 경완: 위에서 떨어지며 닿으면 밟기 → 튕겨 오르고 점수 (연속으로 밟으면 더)
     if (stp) { o.dead = true; o.kt = .35; o.stomp = 1; g.combo++; g.cT = MG_COMBO_T; g.cMax = Math.max(g.cMax || 0, g.combo); g.cPop = .25; const mul = Math.min(5, g.combo), pts = Math.round(20 * mul * (g.pas.stomp || 1)); g.bonus += pts;
-      if (g.combo % 5 === 0) { const cbn = g.combo * 10; g.bonus += cbn; g.ban = { t: 1.2, s: `${g.combo} 콤보! +${cbn}` }; sfx('abReady'); } mgLift(g, MG_JUMP * (g.hold ? .92 : .74)); if (!g.hold) g.cut = true; g.jn = 1; g.y = Math.max(g.y, ot); const cb = Math.min(4, g.combo); g.hs = .07 + cb * .012; g.shake = .18 + cb * .03; g.shA = 4 + cb; g.sq = .62; g.sqv = 0;   // v5.92 경완: 밟는 맛 (멈칫·흔들림·납작, 연속일수록 세게)
-      const hy = g.GY - o.y - o.h; mgFx(g, o.x, hy, '#ffe14a', 14 + cb * 3, 170 + cb * 20); mgFx(g, o.x, hy, '#ffffff', 6, 220); (g.bursts || (g.bursts = [])).push({ x: o.x, y: hy, t: .3, c: '#ffe14a', z: 1.3 + cb * .15, rot: Math.PI / 8 }, { x: o.x, y: hy + 4, t: .3, c: '#ffffff', z: 1.8, flat: 1 }); (g.rings || (g.rings = [])).push({ x: o.x, y: hy, t: .3, c: '#ffffff', z: 1.4 + cb * .2, flat: 1 }); if (cb >= 3) g.flash = .07;
-      g.pop = { x: o.x, y: hy - 10, s: '+' + pts + (mul > 1 ? ' ×' + mul : ''), t: .8, z: cb }; haptic(cb >= 3 ? 2 : 1); sfx('stomp', cb); mgHud(); continue; }
+      const big = g.combo % 10 === 0;   // v6.00 경완: 밟기는 가볍게, 10콤보마다만 크게 (멈칫·흔들림·번쩍·진동·현수막)
+      if (g.combo % 5 === 0) { const cbn = g.combo * 10; g.bonus += cbn; if (big) { g.ban = { t: 1.2, s: `${g.combo} 콤보! +${cbn}` }; sfx('abReady'); } } mgLift(g, MG_JUMP * (g.hold ? .92 : .74)); if (!g.hold) g.cut = true; g.jn = 1; g.y = Math.max(g.y, ot); const cb = big ? 4 : 0;
+      if (big) { g.hs = .16; g.shake = .32; g.shA = 9; g.sq = .55; g.flash = .1; } else { g.hs = .03; g.shake = .06; g.shA = 2; g.sq = .82; } g.sqv = 0;
+      const hy = g.GY - o.y - o.h; mgFx(g, o.x, hy, '#ffe14a', big ? 30 : 8, big ? 280 : 140); if (big) mgFx(g, o.x, hy, '#ffffff', 10, 240); (g.bursts || (g.bursts = [])).push({ x: o.x, y: hy, t: .3, c: '#ffe14a', z: big ? 2.2 : 1, rot: Math.PI / 8 }); (g.rings || (g.rings = [])).push({ x: o.x, y: hy, t: .3, c: '#ffffff', z: big ? 2.4 : 1.1, flat: 1 }); if (big) g.rings.push({ x: o.x, y: hy, t: .45, c: '#ffe14a', z: 3.2 });
+      g.pop = { x: o.x, y: hy - 10, s: '+' + pts + (mul > 1 ? ' ×' + mul : ''), t: .8, z: big ? 3 : 0 }; haptic(big ? 2 : 0); sfx('stomp', big ? 4 : Math.min(2, g.combo - 1)); mgHud(); continue; }
     if (g.fx.dig > 0 || g.fx.ghost > 0 || g.inv > 0) continue;
     if (g.fx.surf > 0 && o.t !== 'f') continue;
     if (g.fx.ram > 0 || g.fx.bolt > 0) { mgKill(g, o, '#ffe14a'); continue; }
@@ -6423,10 +6425,11 @@ function mgRender(g, cv = $('#mgCv')) {
   if (fl) txt(fl.nx / 25 + 'm', fl.fx - 8, GY - 44, 10, '#fff', 3);
   if (g.pop) { const k = .8 - g.pop.t, sc = k < .08 ? 1 + k / .08 * .8 : Math.max(1, 1.8 - (k - .08) / .12 * .8); x.save(); x.globalAlpha = Math.min(1, g.pop.t / .2); x.translate(g.pop.x, g.pop.y); x.scale(sc, sc); x.textAlign = 'center'; txt(g.pop.s, 0, 0, 16 + (g.pop.z || 0) * 2, g.pop.z >= 3 ? '#ff8a3a' : '#ffe14a'); x.restore(); }
   if (g.cd > 0) { const n = Math.ceil(g.cd - .6), s = n > 0 ? String(n) : '시작!', k = 1 + ((g.cd - .6) % 1 + 1) % 1 * .5; x.save(); x.textAlign = 'center'; x.textBaseline = 'middle'; x.translate(W / 2, H * .4); x.scale(k, k); txt(s, 0, 0, 56, n > 0 ? '#fff' : '#ffd84a', 8); x.restore(); }
-  if (g.toast) { x.textAlign = 'center'; txt(g.toast.s, W / 2, 148, 15, '#fff'); x.textAlign = 'start'; }
-  if (g.combo >= 2 && g.cT > 0) { const sc = 1 + Math.max(0, g.cPop || 0) * 1.6, mul = Math.min(5, g.combo), cx = W - 18, cy = 128, c = mul >= 5 ? '#ff6a3a' : mul >= 3 ? '#ffb030' : '#ffe14a';   // 콤보 숫자와 남은 시간
-    x.save(); x.translate(cx, cy); x.scale(sc, sc); x.textAlign = 'right'; txt(g.combo + '', 0, 0, 30, c, 5); x.restore(); x.textAlign = 'right'; txt(`콤보 ×${mul}`, cx, cy + 18, 12, '#fff', 3); x.textAlign = 'start';
-    const bw = 64, k = g.cT / MG_COMBO_T; x.fillStyle = '#20202c'; x.fillRect(cx - bw - 2, cy + 25, bw + 4, 8); x.fillStyle = k < .3 && Math.floor(g.t * 10) % 2 ? '#ffffff' : c; x.fillRect(cx - bw, cy + 27, Math.round(bw * k / 2) * 2, 4); }
+  if (g.toast) { x.textAlign = 'center'; txt(g.toast.s, W / 2, 80, 15, '#fff'); x.textAlign = 'start'; }
+  if (g.combo >= 2 && g.cT > 0) { const sc = 1 + Math.max(0, g.cPop || 0) * 1.2, mul = Math.min(5, g.combo), cx = Math.round(W / 2), cy = Math.round(Math.max(130, H * .2)), c = g.combo >= 10 ? '#ff5a3a' : mul >= 5 ? '#ff8a30' : mul >= 3 ? '#ffb030' : '#ffe14a';   // v6.00 경완: 콤보를 화면 위 가운데에 크게 (숫자·배율·남은 시간·다음 10콤보까지)
+    x.save(); x.translate(cx, cy); x.scale(sc, sc); x.textAlign = 'center'; txt(g.combo + '', 0, 0, 48, c, 7); x.restore(); x.textAlign = 'center'; txt(`콤보 ×${mul}`, cx, cy + 26, 15, '#fff', 4);
+    const bw = 120, k = g.cT / MG_COMBO_T, n10 = 10 - g.combo % 10; x.fillStyle = '#20202c'; x.fillRect(cx - bw / 2 - 2, cy + 36, bw + 4, 10); x.fillStyle = k < .3 && Math.floor(g.t * 10) % 2 ? '#ffffff' : c; x.fillRect(cx - bw / 2, cy + 38, Math.round(bw * k / 2) * 2, 6);
+    if (n10 <= 3) txt(`${n10}번 더 밟으면 ${g.combo + n10} 콤보!`, cx, cy + 62, 12, '#ffe14a', 3); x.textAlign = 'start'; }
   if (g.ban) { const k = 1.6 - g.ban.t, sc = k < .14 ? .5 + k / .14 * .7 : k < .28 ? 1.2 - (k - .14) / .14 * .2 : 1, cy = H * .42;   // 화면 가운데에 통 튀어나왔다가 사라짐
     x.save(); x.globalAlpha = Math.min(1, g.ban.t / .35); x.fillStyle = 'rgba(32,32,44,.55)'; x.fillRect(0, cy - 34 * Math.min(1, k / .14), W, 68 * Math.min(1, k / .14));
     x.translate(W / 2, cy + 13); x.scale(sc, sc); x.textAlign = 'center'; txt(g.ban.s, 0, 0, 38, '#ffd84a', 6); x.restore(); }
