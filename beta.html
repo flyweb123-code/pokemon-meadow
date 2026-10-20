@@ -6617,9 +6617,9 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
     if (o.dead || o.flee || o.cm) continue;
     const gz = g.pas.graze || 0, ol = o.x - o.w / 2 + 4 + gz, or = o.x + o.w / 2 - 4 - gz, ob = o.y, ot = o.y + o.h - 4 - gz;
     // v5.88 경완: 밟기 판정을 넉넉하게 — 떨어지는 중이고 발이 몸 위쪽 절반(또는 머리 16px 안)에서 내려왔으면 밟기, 옆으로도 8px 더 봐준다
-    const stp = g.vy < 0 && !g.fx.flying && !(g.fx.bolt > 0) && !(g.fx.iron > 0) && g.y0 >= Math.min(ot - 16, o.y + o.h * .5), ex = stp ? 8 : 0;
+    const stp = g.vy < 0 && !g.amb && !g.fx.flying && !(g.fx.bolt > 0) && !(g.fx.iron > 0) && g.y0 >= Math.min(ot - 16, o.y + o.h * .5), ex = stp ? 8 : 0;
     if (pr + ex < ol || pl - ex > or || pt < ob || pb > ot + (stp ? 6 : 0)) continue;
-    // v5.79 경완: 위에서 떨어지며 닿으면 밟기 → 튕겨 오르고 점수 (연속으로 밟으면 더)
+    // v7.32 경완: 기습으로 사라져 있는 동안엔 밟기 없음 (그냥 지나감) · v5.79 경완: 위에서 떨어지며 닿으면 밟기 → 튕겨 오르고 점수 (연속으로 밟으면 더)
     if (stp) { o.dead = true; o.kt = .35; o.stomp = 1; g.combo++; g.cT = MG_COMBO_T; g.cMax = Math.max(g.cMax || 0, g.combo); g.cPop = .25; const mul = Math.min(5, g.combo), pts = Math.round(20 * mul * (g.pas.stomp || 1)); g.bonus += pts;
       const big = g.combo % 10 === 0;   // v6.00 경완: 밟기는 가볍게, 10콤보마다만 크게 (멈칫·흔들림·번쩍·진동·현수막)
       if (g.combo % 5 === 0) { const cbn = g.combo * 10; g.bonus += cbn; if (big) { g.ban = { t: 1.2, s: `${g.combo} 콤보! +${cbn}` }; sfx('abReady'); } } mgLift(g, MG_JUMP * (g.hold ? .92 : .74)); if (!g.hold) g.cut = true; g.jn = 1; g.y = Math.max(g.y, ot); if (!g.stP) g.pc = 0; g.stT = g.t; g.stP = false; if (g.stBuf > 0) mgPerfect(g); const cb = big ? 4 : 0;
