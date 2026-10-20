@@ -5783,7 +5783,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.56';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.57';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6340,7 +6340,7 @@ function mgAbStart(g, k) {
 }
 function mgAbEnd(g) {
   const k = g.abK; g.abK = null; if (k === 'bolt') mgBoltBlast(g);
-  if (k === 'surf' && !g.over && (g.sL || 0) > 10) { const h = g.sL; g.y += h; g.sL = 0; g.jn = 1; g.hold = false; mgLift(g, 760, true); g.cut = true; mgFx(g, g.PX, g.GY - g.y + 10, '#5ab0ff', 14, 240); mgFx(g, g.PX, g.GY - g.y + 10, '#e8f6ff', 10, 180); sfx('jmp'); }   /* v6.54 경완: 파도타기를 떼면 파도 꼭대기에서 한 바퀴 돌며 뛰어오른다 */ if (MG_STR[k] || k === 'bolt' || k === 'surf') { g.fx.surf = 0; g.fx.str = 0; g.fx.bolt = 0; mgCool(g); } if (k === 'silk') { mgSilkOff(g, false); g.fx.silkT = 0; mgCool(g); } if (k === 'fly') { g.fx.flyT = 0; mgCool(g); } if (k === 'dig') { g.fx.dig = 0; mgDigOut(g); mgCool(g); } if (k === 'rock') { g.fx.rockT = 0; mgCool(g); } if (k === 'qaS') { g.fx.qaW = 0; mgCool(g); } if (k === 'scS') { g.fx.scW = 0; mgCool(g); } if (k === 'viS') { g.fx.viW = 0; mgCool(g); } sfx('abEnd'); mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, '#d8d8e0', 10, 90); mgRing(g, '#9a9aaa'); mgToast(g, k === 'shield' ? '방패가 깨졌어요' : '효과 끝'); $('#mgAbBtn').classList.remove('on');
+  if (k === 'surf' && !g.over && (g.sL || 0) > 10) { const h = g.sL; g.y += h; g.sL = 0; g.jn = 1; g.hold = false; mgLift(g, MG_JUMP, true); g.cut = true; mgFx(g, g.PX, g.GY - g.y + 10, '#5ab0ff', 14, 240); mgFx(g, g.PX, g.GY - g.y + 10, '#e8f6ff', 10, 180); sfx('jmp'); }   /* v6.54 경완: 파도타기를 떼면 파도 꼭대기에서 한 바퀴 돌며 뛰어오른다 */ if (MG_STR[k] || k === 'bolt' || k === 'surf') { g.fx.surf = 0; g.fx.str = 0; g.fx.bolt = 0; mgCool(g); } if (k === 'silk') { mgSilkOff(g, false); g.fx.silkT = 0; mgCool(g); } if (k === 'fly') { g.fx.flyT = 0; mgCool(g); } if (k === 'dig') { g.fx.dig = 0; mgDigOut(g); mgCool(g); } if (k === 'rock') { g.fx.rockT = 0; mgCool(g); } if (k === 'qaS') { g.fx.qaW = 0; mgCool(g); } if (k === 'scS') { g.fx.scW = 0; mgCool(g); } if (k === 'viS') { g.fx.viW = 0; mgCool(g); } sfx('abEnd'); mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, '#d8d8e0', 10, 90); mgRing(g, '#9a9aaa'); mgToast(g, k === 'shield' ? '방패가 깨졌어요' : '효과 끝'); $('#mgAbBtn').classList.remove('on');
 }
 // v5.83 경완: 장애물은 주인공과 같은 배율(원래 크기 비율)로, 타입마다 움직임이 다르다
 const MG_PAT = { 1: 'hop', 2: 'hop', 7: 'hop', 12: 'hop', 18: 'hop', 10: 'dash', 13: 'dash', 16: 'dash', 17: 'dash', 4: 'pace', 11: 'pace', 14: 'pace', 8: 'pace', 5: 'still', 6: 'still', 9: 'still', 15: 'still', 3: 'wave' };
@@ -6550,7 +6550,6 @@ function mgRender(g, cv = $('#mgCv')) {
       p.rect(xx, GY - hh, P, hh, '#1c5fc0'); p.rect(xx, GY - hh, P, Math.min(hh, hh * .55 + 6), '#2f7fe6'); p.rect(xx, GY - hh, P, Math.min(hh, 10), '#5aaef8');
       if ((Math.floor((xx - t * 260) / 10) & 3) === 0 && hh > 24) p.rect(xx, GY - hh * .55, P, P, '#8fd0ff');
       p.rect(xx, GY - hh, P, P * 2, d > -20 ? '#ffffff' : '#d8f0ff'); }
-    { const L = 50 * (H / 95); for (let d = 0; d <= L; d += P) { const k = d / L, yT = GY - H - 6 + k * k * H * .5 + Math.sin(t * 12 + d * .2) * 1.5, th = 14 * (1 - k) + 5; p.rect(g.PX + 8 + d, yT, P, th, '#3a90f0'); p.rect(g.PX + 8 + d, yT + th - P, P, P, '#1c5fc0'); p.rect(g.PX + 8 + d, yT, P, P * 2, '#ffffff'); if (k > .6) p.rect(g.PX + 8 + d, yT + th, P, P, '#e8f6ff'); } }   // 앞으로 말려 넘어오는 파도 끝 (속이 빈 통로처럼 보이게)
     for (let i = 0; i < 8; i++) { const a = (t * 1.7 + i / 8) % 1; p.dot(g.PX + 40 + a * 60, GY - H - 6 - Math.sin(a * Math.PI) * 26 + mgH(i) * 10, 3 - a * 2, 'rgba(235,248,255,.9)'); }   // 물보라
     for (let i = 0; i < 6; i++) p.dot(X0 + 6 - i * 10 - (t * 140 % 10), GY - 4 - mgH(i + Math.floor(t * 10)) * 8, 3, '#e8f6ff'); }
   // 빨리 달릴 때 바람 줄
