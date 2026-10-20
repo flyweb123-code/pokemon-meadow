@@ -1384,6 +1384,17 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 .mg-th{display:block;width:calc(100% + 24px);height:110px;margin:-10px -12px 10px;border-bottom:3px solid var(--frame);image-rendering:pixelated;cursor:pointer;background:#d4f0ff}.mg-card.soon .mg-th{filter:grayscale(.35);cursor:default}
 .mg-gl{display:flex;flex-direction:column;gap:2px;margin-top:2px}.mg-gl>b{font-size:13px;margin-bottom:2px}.mg-gl small{font-size:11px;color:#8a8a9a;margin-top:2px}.mg-gi{display:grid;grid-template-columns:64px 24px 1fr auto;gap:6px;align-items:center;font-size:12px;padding:3px 4px;color:#4a4a5a}.mg-gi img{width:22px;height:22px;image-rendering:pixelated}.mg-gi em{font-style:normal}.mg-gi i{font-style:normal;font-size:11px}.mg-gi span{font-weight:bold;color:#20202c}.mg-gi.got{opacity:.5}.mg-gi.got i{color:#3a9a4a}.mg-gi.nx{background:#fff4c8}.mg-gi.nx i{color:#e8783c}
 .mg-gifts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;padding:10px;border:2px dashed #e8a83c;background:#fff8e0;margin:6px 0}.mg-gifts b{width:100%;text-align:center;font-size:14px}.mg-gifts span{display:flex;align-items:center;gap:4px;font-size:14px}.mg-gifts img{width:28px;height:28px;image-rendering:pixelated}.mg-note{font-size:12px;color:#6a6a7a;text-align:center;margin:6px 0}.mg-ends{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.mg-ends .lk-btn{margin:0;justify-content:center}
+/* v6.37 경완: 장애물 넘기 화면 버튼·글자 정리 — 점수판(어두운 판), 그만하기·기술 버튼 도트 테두리, 기록 창 칩 줄바꿈 */
+#mg section[data-mv="play"] .mg-hud{align-items:flex-start}#mg .mg-sc{display:grid;grid-template-columns:auto auto;align-items:center;column-gap:8px;row-gap:2px;padding:6px 12px 6px 8px;background:rgba(28,28,46,.66);border:3px solid #20202c;box-shadow:inset 0 0 0 2px rgba(255,255,255,.16),3px 3px 0 rgba(0,0,0,.22)}
+#mg section[data-mv="play"] .mg-hud .mg-sc #mgPh{font-size:11px;line-height:15px;padding:0 6px;color:#20202c;background:#ffe27a;border:2px solid #20202c;text-shadow:none;align-self:center}#mg section[data-mv="play"] .mg-hud .mg-sc #mgM{font-size:22px;line-height:1.1;min-width:0;color:#fff;text-shadow:0 2px 0 #20202c}#mg section[data-mv="play"] .mg-hud .mg-sc #mgBest{grid-column:1/-1;font-size:11px;color:#cfd0e6;text-shadow:none}#mg section[data-mv="play"] .mg-hud .mg-sc #mgBest:empty{display:none}
+#mg .mg-hud .mg-x{background:#fff;border:3px solid #20202c;box-shadow:3px 3px 0 rgba(0,0,0,.25);padding:6px 12px;font-size:13px;line-height:1.2;color:#20202c;text-shadow:none}#mg .mg-hud .mg-x:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(0,0,0,.25)}
+.mg-life{top:calc(env(safe-area-inset-top,0px) + 82px);left:14px}
+.mg-abi{width:82px;height:82px;border:4px solid #20202c;background:radial-gradient(circle at 50% 36%,#ffffff 0,#fff6e2 55%,#ffe7bd 100%);box-shadow:inset 0 -5px 0 rgba(0,0,0,.07),0 0 0 3px #ffffff,4px 5px 0 3px rgba(0,0,0,.22);gap:2px}
+#mg .mg-abi .tyi{width:40px!important;height:40px!important;filter:drop-shadow(0 2px 0 rgba(0,0,0,.18))}.mg-abi i{font-size:11px;letter-spacing:0;color:#2f8a3e}.mg-abi:disabled{filter:none;background:radial-gradient(circle at 50% 36%,#e8e8ee 0,#cfd0da 100%)}.mg-abi:disabled .tyi{filter:grayscale(1) opacity(.55)}.mg-abi:disabled i{font-size:16px}
+.mg-abi b{bottom:-24px;font-size:12px;line-height:16px;padding:1px 9px;color:#fff;background:#20202c;border:2px solid #fff;box-shadow:2px 2px 0 rgba(0,0,0,.3)}.mg-abi.spow{background:radial-gradient(circle at 50% 36%,#fffbe6 0,#fff0b0 60%,#ffd860 100%)}.mg-abi.spow b{background:#ffe58a;border-color:#a87a10;color:#4a3000}
+.mg-rec b{font-size:44px;line-height:1.1}.mg-got{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}.mg-got span{flex:1 1 auto;padding:7px 10px;background:#f6f6fb;border:2px solid #20202c;box-shadow:2px 2px 0 rgba(0,0,0,.12);font-size:13px}
+#eggSortG.egg-sort{gap:5px}#eggSortG.egg-sort button{margin:0;border:2px solid var(--frame);background:#fff;color:var(--win-ink);box-shadow:2px 2px 0 rgba(0,0,0,.18);padding:4px 8px}#eggSortG.egg-sort button:active{transform:translate(2px,2px);box-shadow:none;background:var(--frame);color:var(--win)}   /* v6.37 부화기 정렬 = 개별 버튼 */
+#hatch.hlock button{pointer-events:none!important}#hatch.hlock .win button{opacity:.55;transition:opacity .3s}   /* v6.37 hatchLock */
 </style>
 <script>/* v5.54 경완: 처음 시작(저장 없음)이면 오프닝 전에 필드가 잠깐 보이지 않게 처음부터 검은 화면으로 덮는다 */
 try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(localStorage.getItem(st ? 'pk-studio-v2' : 'pk-meadow-v2') || 'null');
@@ -1486,7 +1497,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
     <div class="sheet-head"><h3>가방</h3><span class="ibag-hb"><button class="opt" id="ibagMulti">여러 개 선택</button><button class="opt" id="ibagX">닫기</button></span></div>
     <div class="bag-body" id="ibagBody"></div>
     <div class="shop-bar" id="ibagBar" hidden></div><p class="shop-msg" id="ibagMsg"></p>
-    <div class="runtabs shoptabs bagtabs" id="ibagTabs" role="tablist"><button class="runtab" role="tab" data-bt="item">아이템</button><button class="runtab" role="tab" data-bt="tool">진화 도구</button></div>
+    <div class="runtabs shoptabs bagtabs" id="ibagTabs" role="tablist"><button class="runtab" role="tab" data-bt="item">아이템</button><button class="runtab" role="tab" data-bt="tool">도구</button></div>
   </div>
 </div>
 <div class="sheet" id="mg" hidden>
@@ -1498,7 +1509,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
     </section>
     <div class="mg-pop" id="mgPop" hidden></div>
     <section data-mv="play" hidden>
-      <div class="mg-life" id="mgLife" aria-label="목숨"></div><div class="mg-hud"><b id="mgPh">페이즈 1</b><b id="mgM">0점</b><span id="mgBest"></span><button class="opt mg-x" data-mgback>그만하기</button></div>
+      <div class="mg-life" id="mgLife" aria-label="목숨"></div><div class="mg-hud"><div class="mg-sc"><b id="mgPh">페이즈 1</b><b id="mgM">0점</b><span id="mgBest"></span></div><button class="opt mg-x" data-mgback>그만하기</button></div>
       <div class="mg-stage"><canvas id="mgCv"></canvas><p class="mg-ban" id="mgBan" hidden></p><button class="mg-abi" id="mgAbBtn" type="button"></button></div>
     </section>
   </div>
@@ -1609,7 +1620,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
     <div class="run-body">
       <section class="rtab" data-tab="egg">
         <div class="incu-box" id="incu"></div>
-        <div class="mgr-tools"><button id="eggAuto" class="eauto" aria-pressed="false" title="부화기가 비면 가방에서 높은 등급 알부터 채워요">자동 채우기<i></i></button><div class="bag-sort" id="eggSortG"><button data-es="km" title="부화까지 남은 거리가 적은 알부터 앞으로 모아요">거리순</button><button data-es="grade" title="높은 등급 알부터 앞으로 모아요">등급순</button><button data-es="new" title="가장 최근에 주운 알부터 앞으로 모아요">최신순</button></div><button id="eggAll" hidden></button><button id="eggTest" class="test-btn">준비로(테스트)</button><button id="eggTestAll" class="test-btn">모두 준비로</button><span class="tcount" id="eggCount"></span></div>
+        <div class="mgr-tools"><button id="eggAuto" class="eauto" aria-pressed="false" title="부화기가 비면 가방에서 높은 등급 알부터 채워요">자동 채우기<i></i></button><div class="bag-sort egg-sort" id="eggSortG"><button data-es="km" title="부화까지 남은 거리가 적은 알부터 앞으로 모아요">거리순</button><button data-es="grade" title="높은 등급 알부터 앞으로 모아요">등급순</button><button data-es="new" title="가장 최근에 주운 알부터 앞으로 모아요">최신순</button></div><button id="eggAll" hidden></button><button id="eggTest" class="test-btn">준비로(테스트)</button><button id="eggTestAll" class="test-btn">모두 준비로</button><span class="tcount" id="eggCount"></span></div>
         <div class="eggs" id="eggs"></div>
       </section>
       <section class="rtab" data-tab="bag">
@@ -5754,7 +5765,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.36';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.37';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5858,7 +5869,7 @@ const ITEMS = [
   { id: 'pot', n: '깨진포트', k: 'tool', p: 2000, a: 'crackedPot' }, { id: 'cup', n: '범작찻잔', k: 'tool', p: 2000, a: 'teacup' }, { id: 'wreath', n: '가라두구머리장식', k: 'tool', p: 2000, a: 'wreath' },
   { id: 'scroll', n: '악의 족자', k: 'tool', p: 2500, a: 'darkScroll' }, { id: 'aug', n: '검은휘석', k: 'tool', p: 2500, a: 'blackAug' }, { id: 'peat', n: '피트블록', k: 'tool', p: 2500, a: 'peatBlock' },
   { id: 'bless', n: '축복받은갑옷', k: 'tool', p: 2500, a: 'blessArmor' }, { id: 'curse', n: '저주받은갑옷', k: 'tool', p: 2500, a: 'curseArmor' }, { id: 'alloy', n: '복합금속', k: 'tool', p: 2500, a: 'metalAlloy' },
-  { id: 'incense', n: '향로', k: 'item', p: 600, a: 'incense' }, { id: 'charm', n: '빛나는 부적', k: 'item', p: 3000, a: 'charm' },
+  { id: 'incense', n: '향로', k: 'item', p: 600, a: 'incense' }, { id: 'charm', n: '빛나는 부적', k: 'item', p: 5000, a: 'charm' },   /* v6.37 경완: 3,000 → 5,000G */
 ];
 const ITEM = Object.fromEntries(ITEMS.map(o => [o.id, o])), ITEM_BY_N = Object.fromEntries(ITEMS.map(o => [o.n, o.id]));
 // 향로: 쓰고 min 분 동안 줍는 알의 등급 확률에 mul 을 곱한다 (다시 나눠 합 1). 빛나는 부적: min 분 동안 줍는 알 n 개에 1개꼴로 이로치가 든 알
@@ -5896,7 +5907,7 @@ function renderIBag() {
   // v5.88 경완: 가방도 아래 탭(아이템·진화 도구)으로 나눈다
   document.querySelectorAll('#ibagTabs [data-bt]').forEach(b => b.setAttribute('aria-selected', b.dataset.bt === ibagTab));
   const T = L.filter(o => o.k === ibagTab);
-  $('#ibagBody').innerHTML = T.length ? sec(ibagTab, '').replace('<h4 class="bag-h"></h4>', '') : L.length ? `<p class="bag-none">${ibagTab === 'item' ? '가진 아이템이 없어요' : '가진 진화 도구가 없어요'}.<br>상점에서 살 수 있어요.</p><button class="lk-btn main bag-shop" data-shop>상점 가기</button>` : `<p class="bag-none">아직 가진 도구가 없어요.<br>상점에서 살 수 있어요.</p><button class="lk-btn main bag-shop" data-shop>상점 가기</button>`;
+  $('#ibagBody').innerHTML = T.length ? sec(ibagTab, '').replace('<h4 class="bag-h"></h4>', '') : L.length ? `<p class="bag-none">${ibagTab === 'item' ? '가진 아이템이 없어요' : '가진 도구가 없어요'}.<br>상점에서 살 수 있어요.</p><button class="lk-btn main bag-shop" data-shop>상점 가기</button>` : `<p class="bag-none">아직 가진 도구가 없어요.<br>상점에서 살 수 있어요.</p><button class="lk-btn main bag-shop" data-shop>상점 가기</button>`;
   ibagEl.classList.toggle('ibag-multi', ibagMul); $('#ibagMulti').setAttribute('aria-pressed', ibagMul); $('#ibagMulti').textContent = ibagMul ? '선택 끝' : '여러 개 선택'; $('#ibagMulti').hidden = !L.length;
   if (ibagMul) { for (const k of [...ibagPick]) if (!(I[k] > 0) || ITEM[k].k !== ibagTab) ibagPick.delete(k); const bar = $('#ibagBar'), T2 = T.filter(o => ibagPick.has(o.id)); bar.hidden = false;
     bar.innerHTML = `<div class="sb-name"><b>${T2.length ? `${T2.length}종 ${T2.reduce((a, o) => a + I[o.id], 0)}개 골랐어요` : '버릴 것을 골라 주세요'}</b><span><button class="opt" data-all>${T2.length === T.length && T.length ? '모두 풀기' : '모두 고르기'}</button></span></div><button class="lk-btn warn" data-toss${T2.length ? '' : ' disabled'}>버리기</button>`; return; }
@@ -5960,7 +5971,7 @@ const MG_AB = {
   8: { n: '투명해지기', c: 12, k: 'ghost', d: '2.5초 동안 장애물을 통과해요' },
   9: { n: '철벽', c: 12, k: 'iron', d: '3초 동안 몸이 강철처럼 단단해져서, 부딪히는 포켓몬을 튕겨 날려 버려요' },   /* v6.27 경완: 강철 돌진 → 철벽 */
   10: { n: '화염방사', c: 12, k: 'fire', d: '꾹 누르는 동안 불꽃을 뿜어 앞 장애물을 날려요 (1.6초). 누른 채 손가락을 위아래로 움직이면 불줄기 방향이 바뀌어요' },   /* v6.30 경완: 이름 화염방사, 쿨타임 8→12초, 손가락 위아래로 겨누기 */
-  11: { n: '파도타기', c: 12, k: 'surf', d: '꾹 누르는 동안 파도를 타고 땅 위 장애물을 날려 버려요 (최대 2.5초, 떼면 끝)' },
+  11: { n: '파도타기', c: 12, k: 'surf', d: '꾹 누르는 동안 큰 파도에 올라타 앞의 장애물을 모두 쓸어 버려요 (최대 2.5초, 떼면 끝)' },   /* v6.37 경완: 실제 파도처럼 높은 파도에 올라탄다 */
   12: { n: '덩굴 채찍', c: 6, k: 'vine', d: '채찍이 닿는 범위의 장애물을 모두 날려 버려요' },
   13: { n: '오버드라이브', c: 12, k: 'bolt', d: '꾹 누르는 동안 빠르게 달리며 무적이에요 (최대 2초). 떼면 몸 주변으로 전기가 폭발해 근처 장애물을 날려요' },   /* v6.32 경완: 볼트 대시 → 오버드라이브, 끝날 때 전기 폭발 */   // v6.17 경완: 누른 만큼 이어지고 떼면 끝
   14: { n: '부유', c: 10, k: 'lev', d: '한 번 누르면 3초 동안 높이 둥실 떠오르고, 닿는 포켓몬은 날려 버려요' },   // v6.18 경완: 이름 부유, 떠 있는 동안 맞아도 안 죽고 날린다
@@ -6234,6 +6245,7 @@ function mgQaHit(g, A) {   /* v6.31 경완: 전광석화 임팩트 — 멈칫·�
 const mgAhead = (g, r) => g.obs.filter(o => !o.dead && !o.flee && o.x + o.w / 2 > g.PX - 6 && o.x - g.PX < r).sort((a, b) => a.x - b.x);
 function mgAbility(down) {
   const g = MGG; if (!g?.run || g.over || g.cd > .6) return; const k = g.ab.k;
+  if (k === 'vine' && g.pas?.pow) { if (!down) return; const whip = () => { const R = 270 * 1.6, A = mgAhead(g, R); g.fx.vine = { t: .45, x: g.PX + R }; A.forEach(q => mgKill(g, q, '#6ad06a')); sfx('ab', 'vine'); }; if (g.abK === 'viS' && g.fx.viW > 0) { if (!(g.fx.vine?.t > .1)) whip(); return; } if (g.cool > 0) return; g.fx.viW = 4; mgAbStart(g, 'viS'); whip(); return; }   /* v6.37 경완: S 덩굴 채찍 = 4초 동안 누를 때마다 또 휘두름 (휘두르는 중엔 안 됨), 쿨타임은 끝난 뒤 */
   if (k === 'scare' && g.pas?.pow) { if (!down) return; if (g.abK === 'scS' && g.fx.scW > 0) { if (!(g.scG > 0)) { g.scG = .6; if (mgScare(g)) { sfx('ab', 'scare'); haptic(1); mgRing(g, '#ffd84a'); } } return; } if (g.cool > 0) return; g.fx.scW = 4; g.scG = .6; mgAbStart(g, 'scS'); sfx('ab', 'scare'); mgScare(g); return; }   /* v6.35 경완: S 놀래키기 = 4초 동안 다시 눌러 또 놀래킴, 안전 장치로 한 번 쓰면 .6초는 다시 안 됨, 쿨타임은 끝난 뒤 */
   if (k === 'qa' && g.pas?.pow) { if (!down) return; if (g.abK === 'qaS' && g.fx.qaW > 0) { if (!(g.fx.qa > .2)) { mgQa(g); sfx('ab', 'qa'); } return; } if (g.cool > 0) return; g.fx.qaW = 3; mgAbStart(g, 'qaS'); sfx('ab', 'qa'); mgQa(g); return; }   /* v6.31 경완: S 전광석화 = 3초 동안 누를 때마다 또 돌진, 쿨타임은 끝난 뒤 */
   if (k === 'rock') { if (!down) return; if (g.abK === 'rock' && g.fx.rockT > 0) { if (!g.rocks?.length) mgRocks(g); return; }   /* v6.29 경완: 떨어지던 돌이 다 닿은 뒤에만 다시 뿌린다 */ if (g.cool > 0) return; g.fx.rockT = 4 * (g.pas?.pow ? 1.5 : 1); mgAbStart(g, 'rock'); mgRocks(g); return; }   // 4초 안에서는 누를 때마다 돌이 또 떨어진다, 쿨타임은 끝난 뒤
@@ -6266,7 +6278,7 @@ function mgToast(g, s) { g.toast = { s, t: 1.2 }; }
 const MG_COMBO_T = 2.6;   // 콤보가 이어지는 시간 (초)
 // v5.92 경완: 액티브 기술은 시작과 끝을 확실하게 (색 번쩍·고리·이름, 끝나면 뚝 소리와 연기, 끝나기 직전엔 깜빡)
 const MG_ABC = { iron: '#c8d0e0', rock: '#b0a080', dbl: '#ffe14a', qa: '#ffffff', super: '#e8e8f0', punch: '#ffb060', vine: '#6ad06a', gas: '#b47ae0', beam: '#8a7aff', fire: '#ff7a3a', scare: '#5a3a80', tele: '#e88aff', lev: '#e88aff', silk: '#e8e8f0', dig: '#c08a50', shield: '#d0b070', ghost: '#b48aff', ram: '#c8d0e0', surf: '#5ab0ff', bolt: '#ffe14a', ice: '#a8e8ff', fly: '#9ad8ff', fairy: '#ff90c8' };
-const MG_DUR = { scS: 'scW', qaS: 'qaW', iron: 'iron', rock: 'rockT', fly: 'flyT', lev: 'flyT', silk: 'silkT', dig: 'dig', ghost: 'ghost', ram: 'ram', surf: 'surf', bolt: 'bolt', ice: 'ice', fire: 'str', beam: 'str', gas: 'str' };
+const MG_DUR = { viS: 'viW', scS: 'scW', qaS: 'qaW', iron: 'iron', rock: 'rockT', fly: 'flyT', lev: 'flyT', silk: 'silkT', dig: 'dig', ghost: 'ghost', ram: 'ram', surf: 'surf', bolt: 'bolt', ice: 'ice', fire: 'str', beam: 'str', gas: 'str' };
 // 꾹 눌러 뿜는 기술: T 최대 시간, L 닿는 거리(0 = 화면 끝까지), b 위아래로 닿는 폭, s 효과음 간격
 const MG_STR = { fire: { T: 1.6, L: 220, b: 26, s: .26, c: '#ff8a2a' }, beam: { T: 1.3, sT: 2.4, L: 0, b: 22, s: .45, c: '#8a7aff' }, gas: { T: 1.5, L: 200, b: 60, s: .5, c: '#b47ae0' } };
 const mgAbLeft = g => { const k = g.abK; return !k ? 0 : k === 'shield' ? (g.fx.shield ? 1 : 0) : Math.max(0, g.fx[MG_DUR[k]] || 0); };
@@ -6277,7 +6289,7 @@ function mgAbStart(g, k) {
   const b = $('#mgAbBtn'); b.style.setProperty('--ac', c); b.classList.toggle('on', !!g.abK);
 }
 function mgAbEnd(g) {
-  const k = g.abK; g.abK = null; if (k === 'bolt') mgBoltBlast(g); if (MG_STR[k] || k === 'bolt' || k === 'surf') { g.fx.surf = 0; g.fx.str = 0; g.fx.bolt = 0; mgCool(g); } if (k === 'silk') { mgSilkOff(g, false); g.fx.silkT = 0; mgCool(g); } if (k === 'fly') { g.fx.flyT = 0; mgCool(g); } if (k === 'dig') { g.fx.dig = 0; mgDigOut(g); mgCool(g); } if (k === 'rock') { g.fx.rockT = 0; mgCool(g); } if (k === 'qaS') { g.fx.qaW = 0; mgCool(g); } if (k === 'scS') { g.fx.scW = 0; mgCool(g); } sfx('abEnd'); mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, '#d8d8e0', 10, 90); mgRing(g, '#9a9aaa'); mgToast(g, k === 'shield' ? '방패가 깨졌어요' : '효과 끝'); $('#mgAbBtn').classList.remove('on');
+  const k = g.abK; g.abK = null; if (k === 'bolt') mgBoltBlast(g); if (MG_STR[k] || k === 'bolt' || k === 'surf') { g.fx.surf = 0; g.fx.str = 0; g.fx.bolt = 0; mgCool(g); } if (k === 'silk') { mgSilkOff(g, false); g.fx.silkT = 0; mgCool(g); } if (k === 'fly') { g.fx.flyT = 0; mgCool(g); } if (k === 'dig') { g.fx.dig = 0; mgDigOut(g); mgCool(g); } if (k === 'rock') { g.fx.rockT = 0; mgCool(g); } if (k === 'qaS') { g.fx.qaW = 0; mgCool(g); } if (k === 'scS') { g.fx.scW = 0; mgCool(g); } if (k === 'viS') { g.fx.viW = 0; mgCool(g); } sfx('abEnd'); mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, '#d8d8e0', 10, 90); mgRing(g, '#9a9aaa'); mgToast(g, k === 'shield' ? '방패가 깨졌어요' : '효과 끝'); $('#mgAbBtn').classList.remove('on');
 }
 // v5.83 경완: 장애물은 주인공과 같은 배율(원래 크기 비율)로, 타입마다 움직임이 다르다
 const MG_PAT = { 1: 'hop', 2: 'hop', 7: 'hop', 12: 'hop', 18: 'hop', 10: 'dash', 13: 'dash', 16: 'dash', 17: 'dash', 4: 'pace', 11: 'pace', 14: 'pace', 8: 'pace', 5: 'still', 6: 'still', 9: 'still', 15: 'still', 3: 'wave' };
@@ -6312,7 +6324,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
   if (g.hs > 0) { g.hs -= dt; return; }   // 밟는 순간 아주 잠깐 멈춤 (손맛)
   if (g.qaP && (g.qaPT -= dt) <= 0) { const A = g.qaP.filter(o => !o.dead); g.qaP = null; if (A.length) mgQaHit(g, A); }
   if (g.fx.dig > 0) g.digS = (g.digS || 0) + dt;
-  g.t += dt; if (g.scG > 0) g.scG -= dt; for (const k of ['str', 'qa', 'qaW', 'scW', 'iron', 'rockT', 'silkT', 'flyT', 'dig', 'ghost', 'ram', 'surf', 'bolt', 'ice', 'gas', 'beam', 'scare', 'web']) if (g.fx[k] > 0) g.fx[k] -= dt;
+  g.t += dt; if (g.scG > 0) g.scG -= dt; for (const k of ['str', 'qa', 'qaW', 'scW', 'viW', 'iron', 'rockT', 'silkT', 'flyT', 'dig', 'ghost', 'ram', 'surf', 'bolt', 'ice', 'gas', 'beam', 'scare', 'web']) if (g.fx[k] > 0) g.fx[k] -= dt;
   for (const k of ['punch', 'vine']) if (g.fx[k]) { g.fx[k].t -= dt; if (g.fx[k].t <= 0) g.fx[k] = null; }
   if (g.tint) { g.tint.t -= dt; if (g.tint.t <= 0) g.tint = null; }
   if (g.abK) { const L = mgAbLeft(g); if (L <= 0) mgAbEnd(g); else if (!g.abW && g.abK !== 'shield' && L < .6) { g.abW = true; sfx('abWarn'); } }
@@ -6320,6 +6332,8 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
   g.parts.forEach(p => { const dr = Math.pow(p.dust ? .04 : .3, dt); p.vx *= dr; p.vy *= dr; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += (p.dust ? -40 : 420) * dt; p.t -= dt; }); g.parts = g.parts.filter(p => p.t > 0);
   if (g.flash > 0) g.flash -= dt;
   if (g.zap && (g.zap.t -= dt) <= 0) g.zap = null;
+  { const on = g.fx.surf > 0, WH = 95 * (g.pas?.pow ? 1.25 : 1); g.sL = Math.max(0, (g.sL || 0) + ((on ? WH : 0) - (g.sL || 0)) * Math.min(1, dt * (on ? 6 : 4))); if (g.sL < .5 && !on) g.sL = 0;   /* v6.37 경완: 파도타기 = 큰 파도가 솟아 그 꼭대기에 올라타고, 파도 앞면이 닿는 장애물은 모두 쓸려 날아간다 */
+    if (on && g.sL > 20) for (const o of g.obs) if (!o.dead && !o.flee && o.x - o.w / 2 < g.PX + 70 && o.x + o.w / 2 > g.PX - 40 && o.y < g.sL + 30) { mgKill(g, o, '#5ab0ff'); if (o.kb) { o.kb.vx *= 1.5; o.kb.vy *= 1.3; } mgFx(g, o.x, g.GY - Math.min(o.y + o.h / 2, g.sL), '#e8f6ff', 12, 240); g.shake = Math.max(g.shake || 0, .12); g.shA = Math.max(g.shA || 0, 4); haptic(1); } }
   if (g.over) { if (g.vy || g.y > 0) { g.vy -= MG_GRAV * MG_FALL * dt; g.y = Math.max(0, g.y + g.vy * dt); if (!g.y) g.vy = 0; } g.overT -= dt;   // 부딪히면 뒤로 튕겨 떨어진다
   if (g.overT <= 0 && !g.done) {
     if (g.revT > 0) { g.revT -= dt; if (g.revT <= 0) { g.over = false; g.revT = 0; g.lives = g.pas?.pow ? 2 : 1; g.inv = 2;   /* v6.36 경완: S 랭크는 하트 2개로 부활 */ g.y = 0; g.vy = 0; g.spin = 0; g.sq = 1.25; g.sqv = 0; g.obs.forEach(o => { if (!o.dead && o.x - g.PX < 160) mgKill(g, o, '#e6e8ff'); }); mgRing(g, '#e6e8ff'); mgFx(g, g.PX, g.GY - MG_PH / 2, '#fff8d0', 20, 220); mgToast(g, '달빛을 받아 다시 일어났어요!'); mgHud(); } }   /* 달빛 부활 */
@@ -6381,7 +6395,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
       g.pop = { x: o.x, y: hy - 10, s: '+' + pts + (mul > 1 ? ' ×' + mul : ''), t: .8, z: big ? 3 : 0 }; haptic(big ? 2 : 0); sfx('stomp', big ? 4 : Math.min(2, g.combo - 1)); mgHud(); continue; }
     if (g.fx.dig > 0 || g.fx.ghost > 0 || g.inv > 0) continue;
     if (g.fx.lev) { mgKill(g, o, '#e88aff'); continue; }   // v6.18 경완: 부유 중엔 부딪혀도 안 죽고 포켓몬이 날아간다
-    if (g.fx.surf > 0 && o.t !== 'f') { mgKill(g, o, '#5ab0ff'); mgFx(g, o.x, g.GY - 10, '#bfe6ff', 10, 200); continue; }   // v6.17 경완: 파도타기로 지나가면 포켓몬이 파도에 날아간다
+    if (g.fx.surf > 0) { mgKill(g, o, '#5ab0ff'); mgFx(g, o.x, g.GY - 10, '#bfe6ff', 10, 200); continue; }   // v6.17 경완: 파도타기로 지나가면 포켓몬이 파도에 날아간다
     if (g.fx.ram > 0 || g.fx.bolt > 0) { mgKill(g, o, '#ffe14a'); continue; }
     if (g.fx.iron > 0) { mgKill(g, o, '#dfe6f0'); sfx('knock'); g.irF = .2; g.shake = Math.max(g.shake || 0, .08); g.shA = Math.max(g.shA || 0, 3); mgFx(g, (g.PX + o.x) / 2, g.GY - g.y - MG_PH / 2, '#ffffff', 10, 220); continue; }   // 철벽: 부딪힌 포켓몬이 튕겨 날아간다
     if (g.combo) { g.combo = 0; g.cT = 0; }
@@ -6471,10 +6485,18 @@ function mgRender(g, cv = $('#mgCv')) {
   for (const o of g.obs) { if (o.pat === 'dig' && !o.dead) { const sh = o.up < 1 && o.up > 0 ? (Math.floor(t0 * 30) % 2) * 2 : 0; p.disc(o.x + sh, GY + 1, o.w * .6, 6, '#7a5230', true); p.disc(o.x + sh, GY, o.w * .38, 3, '#a87440', true); if (o.up < .05) continue; }   // 디그다 흙더미
     if (!o.flee && !(o.dead && !o.stomp)) shad(o.x, o.t === 'f' ? o.y * 1.6 : Math.max(0, o.y), o.w * .62); }
   if (!(g.fx.dig > 0)) shad(g.PX, g.y, (g.pw || 11) * 1.5);
-  const py = GY - g.y, phh = g.phh || MG_PH;
+  const sL = g.sL || 0, py = GY - g.y - sL, phh = g.phh || MG_PH;
   // 파도타기: 포켓몬 밑에 깔리는 물결
-  if (g.fx.surf > 0) { const t = g.t; for (let i = -40; i <= 40; i += P) { const hh = 10 + Math.cos(i / 40 * Math.PI / 2) * 10 + Math.sin(t * 14 + i * .3) * 2; p.rect(g.PX + i, GY - hh, P, hh, i % 6 ? '#3a90f0' : '#5ab0ff'); p.rect(g.PX + i, GY - hh, P, P, '#e8f6ff'); }
-    for (let i = 0; i < 5; i++) p.dot(g.PX - 40 - i * 9 - (t * 120 % 9), GY - 6 - mgH(i + Math.floor(t * 10)) * 10, 3, '#e8f6ff'); }
+  if (sL > 1) { const t = g.t, H = sL, X0 = g.PX - 150, X1 = g.PX + 62;   /* v6.37 큰 파도: 뒤는 완만, 앞은 가파르게 말려 내려온다 */
+    const hAt = xx => { const d = xx - g.PX; if (d < -150) return 0; if (d < 8) { const k = (d + 150) / 158; return H * (k * k * (3 - 2 * k)); } const k = (d - 8) / 54; return H * Math.max(0, 1 - k * k); };
+    for (let xx = X0; xx <= X1; xx += P) { const d = xx - g.PX, w = Math.sin(t * 10 + xx * .09) * 2.5 * (H / 95), hh = Math.max(0, hAt(xx) + (hAt(xx) > 6 ? w : 0)); if (hh < 1) continue;
+      p.rect(xx, GY - hh, P, hh, '#1c5fc0'); p.rect(xx, GY - hh, P, Math.min(hh, hh * .55 + 6), '#2f7fe6'); p.rect(xx, GY - hh, P, Math.min(hh, 10), '#5aaef8');
+      if ((Math.floor((xx - t * 260) / 10) & 3) === 0 && hh > 24) p.rect(xx, GY - hh * .55, P, P, '#8fd0ff');
+      p.rect(xx, GY - hh, P, P * 2, d > -20 ? '#ffffff' : '#d8f0ff'); }
+    { const L = 50 * (H / 95); for (let d = 0; d <= L; d += P) { const k = d / L, yT = GY - H - 6 + k * k * H * .5 + Math.sin(t * 12 + d * .2) * 1.5, th = 14 * (1 - k) + 5; p.rect(g.PX + 8 + d, yT, P, th, '#3a90f0'); p.rect(g.PX + 8 + d, yT + th - P, P, P, '#1c5fc0'); p.rect(g.PX + 8 + d, yT, P, P * 2, '#ffffff'); if (k > .6) p.rect(g.PX + 8 + d, yT + th, P, P, '#e8f6ff'); } }   // 앞으로 말려 넘어오는 파도 끝 (속이 빈 통로처럼 보이게)
+    for (let i = 0; i < 7; i++) { const a = (t * 2.4 + i / 7) % 1, lx = g.PX + 30 + a * 34 + Math.sin(i * 3) * 6, ly = GY - H + 4 + a * a * H * .7; p.rect(lx, ly, P * 2, P * 2, `rgba(255,255,255,${(1 - a * .8).toFixed(2)})`); }   // 앞으로 말려 쏟아지는 물거품
+    for (let i = 0; i < 8; i++) { const a = (t * 1.7 + i / 8) % 1; p.dot(g.PX + 40 + a * 60, GY - H - 6 - Math.sin(a * Math.PI) * 26 + mgH(i) * 10, 3 - a * 2, 'rgba(235,248,255,.9)'); }   // 물보라
+    for (let i = 0; i < 6; i++) p.dot(X0 + 6 - i * 10 - (t * 140 % 10), GY - 4 - mgH(i + Math.floor(t * 10)) * 8, 3, '#e8f6ff'); }
   // 빨리 달릴 때 바람 줄
   if (!thumb && g.v > 420 && !g.over) { const n = Math.min(7, (g.v - 420) / 40 | 0); for (let i = 0; i < n; i++) { const fr = Math.floor(g.t * 9), ly = 16 + mgH(fr + i * 13) * (GY - 30), lx = ((mgH(i * 7 + fr) * W) - (g.t * 900) % W + W) % W; p.rect(lx, ly, 30 + mgH(i) * 50, P, 'rgba(255,255,255,.4)'); } }
   x.drawImage(b.canvas, 0, 0, b.canvas.width, b.canvas.height, 0, 0, b.canvas.width * P, b.canvas.height * P);
@@ -6493,7 +6515,7 @@ function mgRender(g, cv = $('#mgCv')) {
   if (pa) { const sq = g.sq || 1, sy = clamp(sq, .6, 1.4), sx = clamp(1 + (1 - sq) * .8, .7, 1.35);
     let ang = 0; if (g.spin > 0) ang = (1 - Math.pow(g.spin, 3)) * Math.PI * 2; else if (g.y > 0 && !g.fx.flying) ang = clamp(-g.vy / 2600, -.22, .22); if (g.over && !rv) ang = -.35;
     const ir = g.fx.iron > 0, X = ir ? mgIronCtx(g, x) : x;   /* v6.27 철벽: 따로 그린 뒤 강철빛을 입힌다 */
-    X.save(); X.translate(g.PX + qo, py - (g.fx.surf > 0 ? 12 : 0) - phh / 2); X.rotate(ang); X.translate(0, phh / 2); X.scale(sx, sy);
+    X.save(); X.translate(g.PX + qo, py - phh / 2); X.rotate(ang); X.translate(0, phh / 2); X.scale(sx, sy);
     mgDraw(X, g.me, anim, g.over ? g.t * .5 : (g.at ?? g.t * 1.25), 0, 0, g.psc, !qb, pa); X.restore();
     if (ir) { const c = X.canvas, D = g.dpr, bx = (g.PX + qo) * D, top = (py - phh * 1.4) * D, hh = phh * 1.8 * D, k = (g.t * .9) % 1.3 - .3, fl = Math.max(0, g.irF || 0) / .35;
       X.setTransform(1, 0, 0, 1, 0, 0); X.globalCompositeOperation = 'source-atop'; X.fillStyle = `rgba(${Math.round(150 + 105 * fl)},${Math.round(164 + 91 * fl)},${Math.round(184 + 71 * fl)},${(.7 + .3 * fl).toFixed(2)})`; X.fillRect(0, 0, c.width, c.height);
@@ -8951,7 +8973,7 @@ async function playHatch() {
     if (send) { const m = sm && S.mons.includes(sm) ? sm : S.mons.find(x => x.pid === P.id); if (m) removeMon(m, true); send = false; sm = null; sb.classList.remove('sunk'); sb.textContent = '필드로'; save(); refreshCap(); return; }
     if (S.mons.length >= MAX_MONS) return; send = true; busy = true; sb.classList.add('sunk'); sb.textContent = '필드에 나감';
     try { sm = await spawn(sp, { pid: P.id }); sm.born = S.clock; markNew(sm); } finally { busy = false; } save(); refreshCap(); });
-  ok.focus();
+  ok.focus(); hatchLock();
   const how = await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = null; });   /* v5.16 경완: 두드리다 바깥을 눌러 정보를 못 보고 닫히지 않게, 확인으로만 닫는다 */
   hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; sb.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatching = false;
   hatchFx(); if (fg >= 5) bgmDuck(1, 2.5);
@@ -9009,6 +9031,8 @@ async function notiDone(got, rdy, evo = [], quiet = false) {
   if (evo.length && !rdy.length && !fl.length && !hatching && !evolving) { closeToggles(); hideSheets(); menuTo(fldOpen, 'fld'); setMgrTab('buddy'); }   // v4.87: 진화 알림 확인 → 짝꿍 탭
   if (rdy.length && !fl.length && !hatching && !evolving) { closeToggles(); hideSheets(); runTab = 'egg'; bagNext = false; { const i = S.eggs.findIndex(e => e.km >= e.need); if (i >= 0) { eggSel = S.eggs[i]; eggSelI = i; eggNone = false; } } openRun(); }   /* v4.04 경완: 부화 준비된 알 중 맨 앞 칸을 골라 둔 채로 연다 */   /* 주운 알이 날아갔으면 메뉴는 열지 않는다 (알 메뉴 점으로만 알림) */
 }
+/* v6.37 경완: 알을 마구 두드리다 카드가 뜨는 순간 '필드로'·'확인' 등을 잘못 눌러 취소되지 않게, 카드가 나오고 처음 1초는 창 버튼을 잠근다 */
+function hatchLock(ms = 1000) { hatchEl.classList.add('hlock'); clearTimeout(hatchLock.t); hatchLock.t = setTimeout(() => hatchEl.classList.remove('hlock'), ms); }
 async function hatchAll() {
   if (hatching) return;
   const ready = S.eggs.filter(e => e.km >= e.need); if (!ready.length) return;
@@ -9019,7 +9043,7 @@ async function hatchAll() {
   S.eggs = S.eggs.filter(e => !ready.includes(e)); autoInc(); save();
   const strip = $('#hlStrip'), fieldBtn = $('#hatchField'), ok = $('#hatchOk'), sb = $('#hatchSend'); let sbBusy = false;
   strip.innerHTML = res.map((r, k) => `<button data-k="${k}" aria-label="${esc(SPECIES[r.sp].n)}"><img src="${thumbOf(r.sp)}" alt="">${r.isNew ? '<b>N</b>' : ''}</button>`).join('');
-  hatchStage.classList.remove('evo', 'tapme'); hatchEl.classList.add('list'); hatchEl.hidden = false;
+  hatchStage.classList.remove('evo', 'tapme'); hatchEl.classList.add('list'); hatchEl.hidden = false; hatchLock();
   let i = 0, ivMode = false;
   const show = (k, q = false, still = false) => {   // q: 미리보기용(소리·효과 없이), still: 밀어서 넘긴 뒤(카드가 이미 제자리)
     if (k < 0 || k >= res.length) return;   // 처음·끝에서 더 넘기지 않는다
@@ -9287,7 +9311,7 @@ $('#eggAuto').onclick = () => { S.autoInc = !S.autoInc; sfx('tap'); autoInc(); s
 // v6.12 경완: 부화기 정렬 = 거리순·등급순·최신순 세 버튼 (가방 정렬처럼 한 줄로, 마지막에 누른 버튼이 눌린 채로)
 let eggSortK = ''; try { eggSortK = localStorage.getItem('pk-egg-sort') || ''; } catch (e) {}
 const EGG_SORT = { km: (a, b) => Math.max(0, a.need - a.km) - Math.max(0, b.need - b.km) || b.km - a.km, grade: (a, b) => b.g - a.g || Math.max(0, a.need - a.km) - Math.max(0, b.need - b.km), new: (a, b) => (b.t || 0) - (a.t || 0) };
-const eggSortPaint = () => document.querySelectorAll('#eggSortG [data-es]').forEach(b => b.setAttribute('aria-pressed', b.dataset.es === eggSortK));
+const eggSortPaint = () => {};   /* v6.37 경완: 거리순·등급순·최신순은 고른 상태가 남는 탭이 아니라 누를 때마다 한 번 정렬하는 따로따로 버튼 */
 eggSortPaint();
 $('#eggSortG').onclick = ev => { const b = ev.target.closest('[data-es]'); if (!b || hatching || hatchQ.length || !S.eggs.length) return; eggSortK = b.dataset.es; try { localStorage.setItem('pk-egg-sort', eggSortK); } catch (x) {} eggSortPaint(); S.eggs.sort(EGG_SORT[eggSortK]); eggSel = S.eggs[0]; eggSelI = 0; eggNone = false; sfx('tap'); save(); renderRun(); };
 // 테스트용: 부화기 알을 모두 부화 준비 상태로 (나중에 뺄 것)
