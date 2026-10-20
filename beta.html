@@ -47,7 +47,7 @@
 .berrybar{display:flex;flex-direction:column;align-items:flex-start;gap:6px}#frTest{background:rgba(255,255,255,.85)}#frTest[aria-pressed="true"]{background:#c03838;color:#fff}
 .fr-go[data-u],.fr-go[data-p]{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
 /* 긴 목록은 화면 밖 칸을 그리지 않는다 (도감 1025칸, 포켓몬 상자) */
-#dexGrid>button{content-visibility:auto;contain-intrinsic-size:auto 120px}
+#dexGrid>button{content-visibility:auto;contain-intrinsic-size:auto 120px}#dexGrid img:not([data-fit]){visibility:hidden}
 /* 도감 창은 닫혀도 배치를 기억해 둔다 (다시 열 때 1025칸을 새로 배치하지 않아 바로 뜬다) */
 #sheet[hidden]{display:grid!important;visibility:hidden;pointer-events:none;content-visibility:hidden}#sheet[hidden].warm{content-visibility:visible}
 /* 작은 화면(아이폰 SE 등): 버튼 글자가 잘리지 않게 */
@@ -553,6 +553,8 @@ ol.log li.big .txt{color:#c03838}
 
 .bubble{position:absolute;left:0;top:0;transform:translate(-50%,-100%);background:#f8f8f8;color:#282830;border:2px solid #383848;padding:1px 6px 2px;
   font:700 12px/1.3 var(--px);box-shadow:2px 2px 0 rgba(0,0,0,.3);width:max-content;max-width:132px;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;text-align:center;animation:pop .2s steps(2)}
+.ih-top .ih-game{margin-left:auto;flex:none;width:34px;height:34px;padding:0;display:grid;place-items:center;background:var(--win);border:3px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.2);cursor:pointer;-webkit-tap-highlight-color:transparent}.ih-top .ih-game:active{transform:translate(2px,2px);box-shadow:none}.ih-top .ih-game svg{width:22px;height:22px}
+.bubble.feed{pointer-events:auto;cursor:pointer;padding:3px 5px 2px;-webkit-tap-highlight-color:transparent}.bubble.feed svg{display:block;width:16px;height:16px}.bubble.feed::before{content:"";position:absolute;inset:-10px}/* v6.13 경완: 배고플 때 열매 말풍선 (누르면 먹이기), 손가락이 닿기 쉽게 둘레를 넓힘 */
 .bubble::after{content:"";position:absolute;left:50%;bottom:-7px;margin-left:-4px;border:4px solid transparent;border-bottom:0;border-top:5px solid #383848}
 .bubble.heart{color:#e0405a}.bubble .pxe{display:block;width:16px;height:16px;margin:1px 0 0}.bubble.anger{color:#d62f2f}.bubble.note{color:#2b6cc4}.bubble.zz{color:#5560a8;background:#e8eaff}
 @keyframes pop{from{transform:translate(-50%,-80%) scale(.5)}}
@@ -860,7 +862,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .slot .mini i{display:block;height:100%;background:var(--hunger)}
 .slot .gg{width:88%;display:grid;gap:2px}.slot .gr{display:flex;align-items:center;gap:3px;min-width:0}.slot .gr svg{width:9px;height:9px;flex:none}.slot .gr .mini{flex:1;width:auto;min-width:0;height:3px;border-width:2px}
 .slot .gr.hu .mini i{background:var(--fullness)}.slot .gr.cl .mini i{background:var(--clean)}.slot .gr.jo .mini i{background:var(--lonely)}.slot .gr.low .mini i{background:var(--low)}.bar.low>span:first-child,.bar.low .num{color:var(--low)}.slot .gr .gi{display:flex;flex:none}.slot .gr.low .gi{animation:lowp 1.2s steps(2) infinite}.gr.low .mini{animation:lowglow 1.8s ease-in-out infinite}@keyframes lowglow{0%,100%{box-shadow:0 0 2px rgba(240,80,60,.35)}50%{box-shadow:0 0 6px 1px rgba(240,80,60,.75)}}.gr.low .gi svg{filter:drop-shadow(0 0 1.5px rgba(240,80,60,.7))}   /* v4.05 경완: 빨간 게이지는 은은하게 빛난다 */@keyframes lowp{50%{transform:translateY(-1px)}}
-.slot .sl-tags{position:absolute;left:4px;top:4px;display:flex;gap:3px;align-items:center;pointer-events:none}.slot .sl-tags .rk{width:18px;font-size:11px;line-height:14px}.slot .sl-tags .st{position:static}.slot .sl-bud{font-size:11px;padding:1px 4px;line-height:normal;background:#e8679a;color:#fff}.slot.bud{background:#fcdde9}.slot.bud.bud:not([aria-current="true"]){border-color:#f4b4cc}   /* v4.06 경완: 짝꿍 슬롯 테두리 연한 분홍 */.slot.bud .mini{border-color:#9a3462}
+.slot .sl-tags{position:absolute;left:4px;top:4px;display:flex;gap:3px;align-items:center;pointer-events:none}.slot .sl-tags .rk{width:18px;font-size:11px;line-height:14px}.slot .sl-tags .st{position:static}.slot .sl-bud{position:absolute;left:50%;top:5px;transform:translateX(-50%);pointer-events:none;white-space:nowrap;font-size:11px;padding:1px 4px;line-height:normal;background:#e8679a;color:#fff}.slot.bud{background:#fcdde9}.slot.bud.bud:not([aria-current="true"]){border-color:#f4b4cc}   /* v4.06 경완: 짝꿍 슬롯 테두리 연한 분홍 */.slot.bud .mini{border-color:#9a3462}
 .slot.empty{border-style:dashed;color:var(--dim);justify-content:center;background:transparent}
 .slot.empty .plus{font-size:24px;line-height:1}
 .slot .no{position:absolute;right:5px;top:4px;font-size:10px;color:var(--dim)}.slot .sl-x{position:absolute;right:0;top:0;font-size:15px;line-height:1;padding:5px 6px 8px 10px;color:var(--dim);z-index:1}.slot .sl-x:active{color:var(--frame)}
@@ -1990,8 +1992,9 @@ function tenseStop(sec = 1) {
 }
 // 아이폰은 화면을 처음 누를 때 소리를 켤 수 있다. 앱을 내리면 쉬고, 돌아오면 다시 튼다.
 // 곡은 켜자마자 미리 불러 두고(재생 시도), 첫 터치 때 같은 터치 안에서 바로 play() 한다 (아이폰 자동 재생 제한)
+let mgGameOn = false;   // v6.13 경완: 미니게임 판이 도는 동안(준비·카운트다운 포함)은 화면을 눌러도 메뉴 곡을 다시 틀지 않는다 — 점프하려고 누를 때마다 메뉴 곡이 게임 음악 위에 겹쳐 나왔다
 function bgmKick() {
-  if (!bgmOn || document.hidden || bgm.preview) return;
+  if (!bgmOn || document.hidden || bgm.preview || mgGameOn) return;
   if (bgm.intro) { if (bgm.buf && bgm.id === bgm.intro) bgmSrcStart(); else if (bgm.id !== bgm.intro) bgmStart(); return; }   // v5.42: 타이틀·오프닝 동안 화면을 누르면 필드 곡으로 바뀌던 것
   if (bgm.buf && bgm.id === (S.bgm || 'azalea')) bgmSrcStart();
   else if (bgm.id !== (S.bgm || 'azalea')) bgmStart();
@@ -2843,6 +2846,14 @@ function berryBoost(m, mine) { if (mine) m.joy = clamp((m.joy ?? 60) + 5); }   /
 const ICO_BERRY = '<svg viewBox="0 0 12 12" width="26" height="26" shape-rendering="crispEdges" aria-hidden="true"><path fill="#3a7a2a" d="M6 0h2v1h1v1H7v1H6z"/><path fill="#5aa83a" d="M4 1h2v2H4z"/><path fill="#20202c" d="M3 3h6v1h1v1h1v4h-1v1H9v1H3v-1H2V9H1V5h1V4h1z"/><path fill="#d8344a" d="M3 4h6v1h1v4H9v1H3V9H2V5h1z"/><path fill="#ff7a8a" d="M3 5h2v2H3z"/><path fill="#fff" d="M3 5h1v1H3z"/><path fill="#9a1a30" d="M8 8h1v1H8zM4 9h4v1H4z"/></svg>';
 const ICO_BRUSH = '<svg viewBox="0 0 12 12" width="26" height="26" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M1 1h10v1h1v3h-1v1H1V5H0V2h1z"/><path fill="#f4d38a" d="M1 2h10v3H1z"/><path fill="#fff4cc" d="M2 2h3v1H2z"/><path fill="#c8963a" d="M1 4h10v1H1z"/><path fill="#20202c" d="M1 6h1v2H1zM3 6h1v2H3zM8 6h1v2H8zM10 6h1v2h-1z"/><path fill="#7a5a9a" d="M5 6h2v1H5z"/><path fill="#20202c" d="M4 7h1v5H4zM7 7h1v5H7zM4 11h4v1H4z"/><path fill="#b0743a" d="M5 7h2v4H5z"/><path fill="#d89a5a" d="M5 7h1v4H5z"/></svg>';
 const ICO_HAND = '<svg viewBox="0 0 12 12" width="26" height="26" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M1 2h1v1h-1zM1 3h1v1h-1zM1 4h1v1h-1zM1 5h1v1h-1zM1 6h1v1h-1zM1 7h1v1h-1zM1 8h1v1h-1zM2 1h1v1h-1zM2 9h1v1h-1zM2 10h1v1h-1zM3 1h1v1h-1zM3 2h1v1h-1zM3 3h1v1h-1zM3 4h1v1h-1zM3 11h1v1h-1zM4 0h1v1h-1zM4 11h1v1h-1zM5 1h1v1h-1zM5 2h1v1h-1zM5 3h1v1h-1zM5 4h1v1h-1zM5 11h1v1h-1zM6 0h1v1h-1zM6 11h1v1h-1zM7 1h1v1h-1zM7 2h1v1h-1zM7 3h1v1h-1zM7 4h1v1h-1zM7 11h1v1h-1zM8 1h1v1h-1zM8 9h1v1h-1zM8 10h1v1h-1zM9 2h1v1h-1zM9 3h1v1h-1zM9 4h1v1h-1zM9 5h1v1h-1zM9 8h1v1h-1zM10 4h1v1h-1zM10 7h1v1h-1zM11 5h1v1h-1zM11 6h1v1h-1z"/><path fill="#ffd2a8" d="M2 2h1v1h-1zM2 3h1v1h-1zM2 4h1v1h-1zM2 5h1v1h-1zM2 6h1v1h-1zM2 7h1v1h-1zM2 8h1v1h-1zM3 5h1v1h-1zM3 6h1v1h-1zM3 7h1v1h-1zM3 8h1v1h-1zM3 9h1v1h-1zM3 10h1v1h-1zM4 1h1v1h-1zM4 2h1v1h-1zM4 3h1v1h-1zM4 4h1v1h-1zM4 5h1v1h-1zM4 6h1v1h-1zM4 7h1v1h-1zM4 8h1v1h-1zM4 9h1v1h-1zM4 10h1v1h-1zM5 5h1v1h-1zM5 6h1v1h-1zM5 7h1v1h-1zM5 8h1v1h-1zM5 9h1v1h-1zM5 10h1v1h-1zM6 1h1v1h-1zM6 2h1v1h-1zM6 3h1v1h-1zM6 4h1v1h-1zM6 5h1v1h-1zM6 6h1v1h-1zM6 7h1v1h-1zM6 8h1v1h-1zM6 9h1v1h-1zM6 10h1v1h-1zM7 5h1v1h-1zM7 6h1v1h-1zM7 7h1v1h-1zM7 8h1v1h-1zM7 9h1v1h-1zM7 10h1v1h-1zM8 2h1v1h-1zM8 3h1v1h-1zM8 4h1v1h-1zM8 5h1v1h-1zM8 6h1v1h-1zM8 7h1v1h-1zM8 8h1v1h-1zM9 6h1v1h-1zM9 7h1v1h-1zM10 5h1v1h-1zM10 6h1v1h-1z"/><path fill="#e8a070" d="M3 8h1v1h-1zM4 9h1v1h-1zM5 9h1v1h-1zM6 9h1v1h-1zM7 9h1v1h-1zM8 8h1v1h-1zM9 7h1v1h-1z"/><path fill="#fff4e4" d="M2 2h1v1h-1zM4 1h1v1h-1zM6 1h1v1h-1z"/></svg>';
+// v6.13 경완: 상세 카드(필드 슬롯·포켓몬 상자) 이름 줄의 게임 버튼 → 그 포켓몬과 미니게임. 필드에 없으면 상자 정보로 함께 논다
+document.addEventListener('click', e => { const g = e.target.closest('.ih-game'); if (!g) return; e.stopPropagation(); const P = S.box.find(p => String(p.id) === g.dataset.mgp); if (!P) return;
+  openMg(S.mons.find(o => o.pid === P.id) || { pid: P.id, sp: P.sp, form: P.sp, sk: fKey(P.sp, P.sex), name: nameOf(P) }); }, true);
+// v6.13 경완: 배고프면 '배고파' 글자 대신 열매 아이콘 말풍선 — 누르면 바로 열매를 먹인다 (feedNow)
+function hungryBub(m) { emote(m, '꼬르륵', 'feed', 8, 'hungry'); if (m.bub.classList.contains('feed')) m.bub.innerHTML = ICO_BERRY; }
+fxEl.addEventListener('pointerdown', e => { const b = e.target.closest('.bubble.feed'); if (!b || e.button > 0) return; e.stopPropagation(); e.preventDefault();
+  const m = S.mons.find(o => o.bub === b); b.hidden = true; if (!m) return; m.bubT = 0; sfx('tap'); feedNow(m); });
+fxEl.addEventListener('click', e => { if (e.target.closest('.bubble.feed')) e.stopPropagation(); });
 // 필드 정보창의 열매 아이콘: 창을 닫고 그 포켓몬 앞에 열매가 떨어지자마자 먹는다 (다른 포켓몬은 못 가져간다)
 function feedNow(m) {
   select(null); userAct(m, 20);
@@ -3185,7 +3196,7 @@ function think(m) {
     if (treeEl) { const sd = m.x < PROPS.tree.x ? -1 : 1; return moveTo(m, { x: PROPS.tree.x + sd * rnd(18, 30), y: PROPS.tree.y + rnd(2, 10) }, { kind: 'forage', tree: true }); }   /* v3.54: 열매나무에 가서 흔든다 */
     return moveTo(m, { x: rnd(XL + 60, XR - 60), y: MIN_Y + rnd(0, 18) }, { kind: 'forage' });
   }
-  if (m.hunger > 50 && !(m.hungryCd > 0) && Math.random() < .25) { m.hungryCd = rnd(40, 90); emote(m, pick(['꼬르륵', '배고파…']), '', 2.2, 'hungry'); }
+  if (m.hunger > 50 && !(m.hungryCd > 0) && Math.random() < .25) { m.hungryCd = rnd(40, 90); hungryBub(m); }
   if (S.clock >= (m.awakeT || 0) && sleepyTime(m) && Math.random() < .55) return goToBed(m);
   { const lv = likeOf(m) && relWho(likeOf(m))?.m;
     if (lv && lv !== m && !lv.hidden && awake(lv) && lv.state !== 'interact' && !(m.likeCd > 0) && t.mv !== 'swim' && Math.random() < .3) {
@@ -3235,6 +3246,7 @@ function arrive(m) {
     if (b.for === m || Math.random() < .45) log(pick([`${J(m,'이/가')} 나무열매를 냠냠 먹었다.`, `${J(m,'이/가')} 열매를 맛있게 먹는다.`]), [m]);
     return;
   }
+  if (g.kind === 'warm') { const f = g.src; m.goal = null; if (S.mons.includes(f) && f.special === 'flame') { faceTo(m, f.x); setState(m, 'idle', rnd(5, 7)); emote(m, pick(['♨', '♪', '~']), 'note', 2.4, 'warm'); } else setState(m, 'idle', 1.5); return; }
   if (g.kind === 'prop') return propReact(m, g.p);
   if (g.kind === 'treePerch') { treePerch(m); m.propUntil = performance.now() + 10000; sceneNext = Math.max(sceneNext, m.propUntil + rnd(3000, 6000)); return; }
   if (g.kind === 'forage' && g.tree) { setState(m, 'idle', 2.5); faceTo(m, PROPS.tree.x); anim(m, 'hop'); setTimeout(() => { if (S.mons.includes(m)) shakeTree(m); }, 250); return; }
@@ -4234,9 +4246,17 @@ function doSpecial(m) {
     return true;
   }
   if (sp === 'flame') {
-    setState(m, 'special', 3); m.special = 'flame'; burst(m, 'flame', '✹', 4);
-    const cold = S.mons.filter(o => o !== m && awake(o) && dist(o, m) < 120 && !T(o).fire);
-    if (cold.length && isNight()) { log(`${J(m,'이/가')} 불꽃을 피우자 ${NL(cold,'이/가')} 모여들어 몸을 녹인다.`, [m, ...cold]); cold.forEach(o => addRel(o, m, 4)); }
+    setState(m, 'special', 5); m.special = 'flame'; burst(m, 'flame', '✹', 4);   // v6.13 경완: 불꽃 내는 모션이 너무 짧았다 → 3초에서 5초로, 불꽃 상태 동안 1.4초마다 다시 뿜는다
+    const fl = setInterval(() => { if (!S.mons.includes(m) || m.special !== 'flame' || m.state !== 'special') return clearInterval(fl); burst(m, 'flame', '✹', 3); }, 1400);
+    // v6.13 경완: '모여들어 몸을 녹인다'는 말만 나오고 실제로는 안 모였다 → 한가한 포켓몬이 불꽃 둘레로 걸어와 불을 바라보며 쬔다
+    const cold = isNight() ? S.mons.filter(o => o !== m && awake(o) && dist(o, m) < 220 && !T(o).fire && !o.held && !o.camp && !o.partner && !o.perch && T(o).mv !== 'swim' && (o.state === 'idle' || (o.state === 'move' && (o.goal?.kind || 'wander') === 'wander'))).sort((a, b) => dist(a, m) - dist(b, m)).slice(0, 3) : [];
+    if (cold.length) {
+      setState(m, 'special', 12);
+      const a0 = Math.random() * Math.PI * 2;
+      cold.forEach((o, i) => { const a = a0 + i / cold.length * Math.PI * 2, r = rnd(38, 48); moveTo(o, { x: m.x + Math.cos(a) * r, y: m.y + Math.sin(a) * r * .55 }, { kind: 'warm', src: m }, .9); addRel(o, m, 4); });
+      sceneNext = Math.max(sceneNext, performance.now() + 12000);
+      log(`${J(m,'이/가')} 불꽃을 피우자 ${NL(cold,'이/가')} 모여들어 몸을 녹인다.`, [m, ...cold]);
+    }
     else if (Math.random() < .4) log(`${J(m,'이/가')} 작은 불꽃을 훅 내뿜었다.`, [m]);
     return true;
   }
@@ -5726,7 +5746,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.12';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.13';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6001,7 +6021,7 @@ function openMg(m) {
   mgMon = m; mgOpenG = ''; sfx('open'); if (campMus.on) { campMus.stop(.3); bgm.camp = null; } mgEl.hidden = false; mgView('sel'); mgBgm(true);
 }
 function mgView(v) {
-  if (v !== 'sel') { mgPrevStop(); $('#mgPop').hidden = true; } else if (mgMus.on || (bgm.mg && !bgm.src)) { mgMus.stop(.3); if (bgm.mg) { bgm.fadeIn = .6; bgmStart(); } }   /* 게임 화면에서 나오면 메뉴 음악으로 */ mgEl.querySelectorAll('[data-mv]').forEach(s => s.hidden = s.dataset.mv !== v); mgEl.classList.toggle('mgfull', v === 'play');
+  if (v !== 'sel') { mgPrevStop(); $('#mgPop').hidden = true; } else if (mgGameOn || mgMus.on || (bgm.mg && !bgm.src)) { mgGameOn = false; mgMus.stop(.3); if (bgm.mg) { bgm.fadeIn = .6; bgmStart(); } }   /* 게임 화면에서 나오면 메뉴 음악으로 */ mgEl.querySelectorAll('[data-mv]').forEach(s => s.hidden = s.dataset.mv !== v); mgEl.classList.toggle('mgfull', v === 'play');
   if (v === 'sel') {
     const m = mgMon, P = boxOf(m.pid), rk = mgRank(m), ty = SPECIES[m.form]?.t || [1];
     $('#mgWho').dataset.rk = rk;   // v5.91 경완: 위쪽 내 포켓몬 카드를 게임 카드와 구분되게, 랭크는 정보 카드와 같은 배지로
@@ -6034,7 +6054,7 @@ mgEl.addEventListener('click', e => {
     sfx('tap'); mgOpenG = 'jump'; mgView('sel'); return; }   // v5.88 경완: 기록 화면 닫기 → 시작하기 버튼이 있는 고르기 화면(펼친 카드)
 });
 let mgPlayed = null;   // v5.92 경완: 같이 게임하고 나오면 자고 있던 포켓몬도 깨어 있다
-function mgClose() { mgMus.stop(.2); const pm = mgPlayed; mgPlayed = null; if (pm && S.mons.includes(pm) && pm.state === 'sleep') { wake(pm, `${J(pm, '이/가')} 신나게 놀고 와서 눈이 말똥말똥하다.`); pm.awakeT = S.clock + rnd(20, 30); }
+function mgClose() { mgGameOn = false; mgMus.stop(.2); const pm = mgPlayed; mgPlayed = null; if (pm && S.mons.includes(pm) && pm.state === 'sleep') { wake(pm, `${J(pm, '이/가')} 신나게 놀고 와서 눈이 말똥말똥하다.`); pm.awakeT = S.clock + rnd(20, 30); }
   mgPrevStop(); $('#mgPop').hidden = true; if (MGG) { MGG.run = false; cancelAnimationFrame(MGG.raf); MGG = null; } mgEl.hidden = true; mgBgm(false); renderInfo(); }
 // v5.79 경완: 미니게임 화면에서는 음악도 바꾼다 (Hurry Along), 나가면 듣던 곡을 듣던 자리부터
 function mgBgm(on) { try { if (on) { if (bgm.mg) return; bgm.mg = { id: bgm.id, pos: bgmPos() }; bgm.intro = 'intro'; bgmSrcStop(); bgm.fadeIn = .4; bgmStart(); }
@@ -6128,7 +6148,7 @@ async function mgPrep(me) {
 async function mgPlay() {
   const m = mgMon; if (!m) return;
   if (MGG) { MGG.run = false; cancelAnimationFrame(MGG.raf); }
-  mgView('play'); $('#mgBan').textContent = '준비 중…'; $('#mgBan').hidden = false; bgmStop(); mgMus.stop();   /* v6.11 경완: 메뉴 음악을 받아 오는 중에 게임을 시작하면 다 받은 뒤 게임 음악과 겹쳐 나오던 것 — 받던 곡까지 취소 */
+  mgView('play'); $('#mgBan').textContent = '준비 중…'; $('#mgBan').hidden = false; mgGameOn = true; bgmStop(); mgMus.stop();   /* v6.11 경완: 메뉴 음악을 받아 오는 중에 게임을 시작하면 다 받은 뒤 게임 음악과 겹쳐 나오던 것 — 받던 곡까지 취소 */
   const me = m.sk || m.form, pool = await mgPrep(+m.form);
   const used = [me, ...pool.gnd, ...pool.fly]; await Promise.race([Promise.all([...new Set(used)].map(k => mgImgOf(k).p)), new Promise(r => setTimeout(r, 3000))]);
   if (mgEl.hidden) return;
@@ -7095,7 +7115,7 @@ function renderMgr(force) { refreshCap();
       const m = S.mons[i], b = document.createElement('button'); b.className = 'slot';
       if (m) {
         b.dataset.uid = m.uid; b.setAttribute('aria-current', m === mgrSel); if (isBud(m)) b.classList.add('bud'); setTier(b, m.sp);
-        b.innerHTML = `<span class="sl-tags">${rkBadge(boxOf(m.pid))}${isBud(m) ? '<span class="sl-bud">짝꿍</span>' : ''}</span><span class="sl-x" role="button" aria-label="필드에서 빼기">✕</span><span class="ph${pkCls(boxOf(m.pid))}"><img alt="" src="${thumbOf(m.sk || m.form)}"></span><span class="nmw"><span class="nm${tnCls(m.sp)}">${esc(m.name)}</span>${sexHtml(sexOf(m)).replace(/ data-tip="[^"]*"/, '')}</span><span class="gg">${GG.map(([k, ic]) => `<span class="gr ${k}"><i class="gi">${ic}</i><span class="mini"><i></i></span></span>`).join('')}</span>`;
+        b.innerHTML = `<span class="sl-tags">${rkBadge(boxOf(m.pid))}</span>${isBud(m) ? '<span class="sl-bud">짝꿍</span>' : ''}<span class="sl-x" role="button" aria-label="필드에서 빼기">✕</span><span class="ph${pkCls(boxOf(m.pid))}"><img alt="" src="${thumbOf(m.sk || m.form)}"></span><span class="nmw"><span class="nm${tnCls(m.sp)}">${esc(m.name)}</span>${sexHtml(sexOf(m)).replace(/ data-tip="[^"]*"/, '')}</span><span class="gg">${GG.map(([k, ic]) => `<span class="gr ${k}"><i class="gi">${ic}</i><span class="mini"><i></i></span></span>`).join('')}</span>`;
         b.onclick = e => { if (e.target.closest('.sl-x')) { sfx('tap'); removeMon(m); if (mgrSel === m) mgrSel = null; renderMgr(true); refreshCap(); save(); return; } openMon(m); };   // 우상단 ✕ = 바로 상자로
       } else {
         b.classList.add('empty'); b.innerHTML = '<span class="plus">+</span><span>빈 자리</span>';
@@ -7122,7 +7142,7 @@ function renderMgrDetail(rebuild) {
   setTier($('#monPop .win'), m.sp);   /* 필드 슬롯 정보 카드도 단계 테두리 */
   if (rebuild || mgrDet.dataset.uid !== String(m.uid)) {
     mgrDet.dataset.uid = m.uid;
-    mgrDet.innerHTML = `<div class="dp-pic" id="mStage"><span class="st-tag st" id="mSt"></span><img alt="" id="mPic"></div>
+    mgrDet.innerHTML = `<div class="dp-pic" id="mStage"><img alt="" id="mPic"></div>
       <div class="ihead">${infoHead(boxOf(m.pid), m.sp, nameEdit('mName', m.name, sexOf(m)), (m.name !== d.n ? `<span class="ih-sp">${esc(d.n)}</span>` : '') + (t.noct ? '<span class="ih-sp">야행성</span>' : '') + (d.leg || d.my ? '<span class="ih-sp">전설</span>' : ''))}</div>
       <div class="m-pages" id="mPages"><div class="m-track"><div class="m-pg"><div class="bars" id="mBars"></div><div class="memo" id="mMemo"></div></div><div class="m-pg" id="mPg2"></div></div>
         <div class="m-dots"><i class="on"></i><i></i></div></div>
@@ -7146,7 +7166,6 @@ function renderMgrDetail(rebuild) {
   }
   const pic = $('#mPic'), want = isPmd(m.form) ? thumbOf(m.sk || m.form) : m.state === 'sleep' ? (stillCache[m.form] || SPRITES[m.form]) : SPRITES[m.form];
   if (pic.getAttribute('src') !== want) pic.src = want;
-  { const [c, tx] = slotState(m), el = $('#mSt'); el.className = 'st-tag st ' + c; el.textContent = tx; el.hidden = tx === '이동'; }
   { const P = boxOf(m.pid), st = $('#mStage'); st.className = 'dp-pic' + pkCls(P) + (P?.shiny ? ' shiny' : ''); st.dataset.rk = P ? rankOf(P) : ''; st.style.setProperty('--shue', shinyHue(m.sp) + 'deg'); }
   { const P = boxOf(m.pid); $('#mBars').innerHTML = bar('청결', m.clean ?? 100, 'var(--clean)') + bar('즐거움', m.joy ?? 60, 'var(--lonely)') + bar('배부름', 100 - m.hunger, 'var(--fullness)') + (P ? `<div class="bar frbar"><span>친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>` : ''); }
   { const h = memoHtml(m), el = $('#mMemo'); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } }
@@ -7285,7 +7304,7 @@ const rkBadge = P => { const rk = P ? rankOf(P) : ''; return rk ? `<span class="
 const tnCls = sp => '';   // 이름 단계 글자색은 박스 격자에서만 (2026-10-14 경완 결정). 다른 화면도 켜려면 tierOf(+sp) ? ' tn-' + tierOf(+sp) : ''
 function infoHead(P, sp, nameHtml, extra = '') {
   const d = SPECIES[sp], rk = P ? rankOf(P) : '';
-  return `<div class="ih-top${tnCls(sp)}">${nameHtml}${P?.shiny ? '<b class="sh" data-tip="이로치">✦</b>' : ''}</div>`
+  return `<div class="ih-top${tnCls(sp)}">${nameHtml}${P?.shiny ? '<b class="sh" data-tip="이로치">✦</b>' : ''}${P ? `<button class="ih-game" data-mgp="${P.id}" aria-label="같이 게임하기">${ICO_JOY}</button>` : ''}</div>`   // v6.13 경완: 상세 카드 이름 줄 오른쪽에 게임 버튼
     + `<div class="ih-sub">${tyIcons(sp)}${esc(d.g || '')}${extra}</div>`
     + (P ? `<div class="ih-met"><span class="md">${metDay(P)}</span>${P.place ? `${esc(P.place)} 근처에서 만났다` : '만남'}${P.g ? ` · ${GRADE[P.g].n} 알` : ''}</div>` : '');
 }
@@ -7977,7 +7996,7 @@ const hatchQ = [];
 function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); trUpCheck(); (S.dexNew ||= new Set()).add(sp); if (dexBtns[sp]) { lockDexBtn(sp); dexCellReady(sp); } } }
 // 새로 등록된 칸은 그림을 바로 넣고 순서도 미리 맞춰 둔다 → 도감을 열 때 없던 칸이 뒤늦게 생기는 모습이 안 보인다
 // v3.09: 작은 스프라이트(토중몬 등)를 칸 높이까지 늘리면 도트가 커 보인다(경완) → 도트 한 칸 최대 2배까지만 키우고 칸 높이는 그대로
-function dexImgFit(im, H = 56) { const h = Math.min(H, Math.round(im.naturalHeight * 2)); im.style.height = h + 'px'; im.style.marginTop = (H - h) + 'px'; }
+function dexImgFit(im, H = 56) { const h = Math.min(H, Math.round(im.naturalHeight * 2)); im.style.height = h + 'px'; im.style.marginTop = (H - h) + 'px'; im.dataset.fit = 1; }   // v6.13 경완: 크기를 맞추기 전 한 프레임 동안 원래 크기로 보였다가 줄어들던 것 → 맞추기 전엔 숨김 (CSS)
 $('#dpImg').addEventListener('load', e => { const im = e.target, h = Math.min(108, Math.round(im.naturalHeight * 3)); im.style.height = h + 'px'; });   // 도감 카드: 작은 포켓몬은 3배까지만 (v3.10)
 $('#slots').addEventListener('load', e => { const im = e.target; if (im.tagName === 'IMG' && im.closest('.ph')) im.style.maxHeight = Math.round(im.naturalHeight * 2) + 'px'; }, true);   // 필드 슬롯도 2배까지만 (v3.11)
 document.addEventListener('load', e => { const im = e.target; if (im.tagName !== 'IMG' || !im.closest('.bd-pic') || !im.naturalWidth) return; const k = Math.min(3, 84 / im.naturalWidth, 84 / im.naturalHeight); im.style.width = Math.round(im.naturalWidth * k) + 'px'; im.style.height = Math.round(im.naturalHeight * k) + 'px'; }, true);   // 짝꿍 카드 사진도 3배까지만 (v3.14)
