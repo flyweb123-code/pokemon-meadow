@@ -3153,7 +3153,7 @@ function canMeet(m, o) {
 }
 /* v6.09 경완: 상호작용이 한꺼번에 여러 곳에서 짧게 일어나 알아보기 어렵던 것 — 필드 전체에서 한 번에 한 쌍만 어울리고, 끝나면 3~6초 쉬었다가 다음 쌍 */
 let sceneNext = 0;
-const sceneOn = (...ex) => S.mons.some(o => !ex.includes(o) && !o.hidden && ((o.state === 'interact' && o.partner?.partner === o && o.partner.state === 'interact') || (o.state === 'move' && o.goal?.kind === 'meet')));   // 서로 어울리는 중이거나 만나러 가는 중인 쌍만 센다 (어긋난 상태는 막지 않게)
+const sceneOn = (...ex) => { const now = performance.now(); return S.mons.some(o => !ex.includes(o) && ((o.propUntil || 0) > now || (!o.hidden && ((o.state === 'interact' && o.partner?.partner === o && o.partner.state === 'interact') || (o.state === 'move' && ['meet', 'prop', 'treePerch'].includes(o.goal?.kind)))))); };   // v6.10 경완: 맵 소품과 노는 것도 한 번에 하나 (소품은 최대 10초까지만 차례를 잡는다)   // 서로 어울리는 중이거나 만나러 가는 중인 쌍만 센다 (어긋난 상태는 막지 않게)
 const sceneFree = m => performance.now() >= sceneNext && !sceneOn(m);
 const sceneDone = () => { sceneNext = performance.now() + rnd(3000, 6000); };
 function pickPartner(m) {
@@ -3201,8 +3201,8 @@ function think(m) {
     const o = S.mons.find(o => canMeet(m, o) && dist(m, o) < 140 && o.state !== 'move');
     if (o) return moveTo(m, o, { kind: 'meet', mon: o });
   }
-  if (winged(m) && !(m.treeCd > 0) && Math.random() < (m.hunger > 50 && S.tree?.n ? .12 : .05)) { m.treeCd = rnd(240, 480); return moveTo(m, { x: PROPS.tree.x + rnd(-24, 24) * LS('tree'), y: PROPS.tree.y + 4 }, { kind: 'treePerch' }); }   // v4.55 경완: 새 포켓몬은 가끔 열매나무에 날아올라 앉고, 배고프면 달린 열매를 쪼아 먹는다
-  if (t.mv !== 'swim' && !(m.propCd > 0) && Math.random() < .12) { m.propCd = rnd(120, 300); const L = propSpots().filter(q => q.k !== 'tree' && q.k !== 'puddle'), q = L.length && pick(L); if (q) return moveTo(m, { x: q.x + (m.x < q.x ? -1 : 1) * q.rx * .6, y: q.y + q.ry * .5 }, { kind: 'prop', p: q }); }
+  if (winged(m) && !(m.treeCd > 0) && sceneFree(m) && Math.random() < (m.hunger > 50 && S.tree?.n ? .12 : .05)) { m.treeCd = rnd(240, 480); return moveTo(m, { x: PROPS.tree.x + rnd(-24, 24) * LS('tree'), y: PROPS.tree.y + 4 }, { kind: 'treePerch' }); }   // v4.55 경완: 새 포켓몬은 가끔 열매나무에 날아올라 앉고, 배고프면 달린 열매를 쪼아 먹는다
+  if (t.mv !== 'swim' && !(m.propCd > 0) && sceneFree(m) && Math.random() < .12) { m.propCd = rnd(120, 300); const L = propSpots().filter(q => q.k !== 'tree' && q.k !== 'puddle'), q = L.length && pick(L); if (q) return moveTo(m, { x: q.x + (m.x < q.x ? -1 : 1) * q.rx * .6, y: q.y + q.ry * .5 }, { kind: 'prop', p: q }); }
   if (Math.random() < .35) { setState(m, 'idle', rnd(2, 6)); if (Math.random() < .12) emote(m, pick(['…', '♪', '?']), '', 2.2, 'idle-alone'); return; }
   let p;
   if (t.mv === 'swim') p = randPond(.8);
@@ -3235,7 +3235,7 @@ function arrive(m) {
     return;
   }
   if (g.kind === 'prop') return propReact(m, g.p);
-  if (g.kind === 'treePerch') return treePerch(m);
+  if (g.kind === 'treePerch') { treePerch(m); m.propUntil = performance.now() + 10000; sceneNext = Math.max(sceneNext, m.propUntil + rnd(3000, 6000)); return; }
   if (g.kind === 'forage' && g.tree) { setState(m, 'idle', 2.5); faceTo(m, PROPS.tree.x); anim(m, 'hop'); setTimeout(() => { if (S.mons.includes(m)) shakeTree(m); }, 250); return; }
   if (g.kind === 'forage') {
     setState(m, 'idle', 2.5); emote(m, '…', '', 2.2, 'tree-shake');
@@ -5111,7 +5111,8 @@ function campBgm(on) { try {
   if (!campMus.on && !bgm.camp) return false; campMus.stop(2); const r = bgm.camp; bgm.camp = null; if (!r || !mgEl.hidden || bgm.mg) return false;
   setTimeout(() => { if (campMus.on || bgm.mg) return; bgm.fadeIn = 2; if (bgmOn && r.id && r.id !== 'intro') bgmPlay(r.id, r.pos); else bgmStart(); }, 1200); return false; } catch (e) { return false; } }
 const PROP_JOY = 3;
-function propReact(m, p) {
+function propReact(m, p) { propReactIn(m, p); m.propUntil = performance.now() + clamp(m.t || 3, 3, 10) * 1000; sceneNext = Math.max(sceneNext, m.propUntil + rnd(3000, 6000)); }
+function propReactIn(m, p) {
   const flyer = winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover', small = isSmall(m) && ![1, 2, 3, 5, 10, 11].includes(SPm(m).sh) && (SPm(m).spd || 0) >= 50, at = (dx, dy) =>   /* v4.91 경완: 우르 같은 느린 털뭉치·공·물고기 모양은 횃대에 못 올라간다 */ { m.x = clamp(p.x + dx, XL + 20, XR - 20); m.y = clamp(p.y + dy, MIN_Y, MAX_Y); };
   faceTo(m, p.x); m.goal = null; m.joy = clamp((m.joy ?? 60) + PROP_JOY);   /* v4.42 경완: 맵 소품과 놀면 즐거움도 조금 오른다 */
   if (p.k === 'tree') { at(m.x < p.x ? -32 : 32, 14); setState(m, 'idle', 2.5); anim(m, 'hop'); setTimeout(() => { if (S.mons.includes(m)) shakeTree(m); }, 250); return; }
@@ -5724,7 +5725,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.09';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.10';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
