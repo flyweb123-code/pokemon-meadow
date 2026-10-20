@@ -5765,7 +5765,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.37';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.38';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6032,6 +6032,13 @@ const mgScale = (k, h, wmax) => { const B = mgBox(k); if (!B) return 1; let s = 
 const mgFrC = {};
 function mgFrame(k, im, anim, f, a, G, R) { const id = k + '|' + anim + '|' + f; let c = mgFrC[id]; if (c) return c;
   c = document.createElement('canvas'); c.width = a[1] * R; c.height = a[2] * R; c.getContext('2d').drawImage(im, f * (a[1] + G) * R, a[0] * R, a[1] * R, a[2] * R, 0, 0, a[1] * R, a[2] * R); return (mgFrC[id] = c); }
+/* v6.38 경완: 그림 가운데 = 그림자 가운데 — 동작(걷기·뛰기…)마다 모든 칸의 칠해진 범위를 합쳐 그 가로 가운데를 cx 에 맞춘다 (Idle 기준이면 걷기 그림이 옆으로 밀려 보였다) */
+const mgAnBC = {};
+function mgAnimBox(k, im, anim, a, G, R) { const id = k + '|' + anim; if (mgAnBC[id]) return mgAnBC[id];
+  let l = 1e9, r = -1; const n = a[6].length, w = a[1] * R, h = a[2] * R;
+  try { for (let f = 0; f < n; f++) { const c = mgFrame(k, im, anim, f, a, G, R), d = c.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, w, h).data;
+    for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < w; xx++) if (d[(yy * w + xx) * 4 + 3] > 40) { if (xx < l) l = xx; if (xx > r) r = xx; } } } catch (e) { return null; }
+  return (mgAnBC[id] = r < 0 ? null : { cx: (l + r + 1) / 2 / R }); }
 // 캔버스에 포켓몬 한 마리: (cx, footY) 가 Idle 그림의 발끝(칠해진 맨 아래), s 는 배율. 던전 그림은 왼쪽을 본다
 function mgDraw(x, k, anim, t, cx, footY, s, flip, alpha) {
   const im = mgImgOf(k).im, B = mgBox(k); if (!im.naturalWidth || !B) return;
@@ -6040,7 +6047,7 @@ function mgDraw(x, k, anim, t, cx, footY, s, flip, alpha) {
     const P = SPRITES[k], A = P.a, I = A.Idle, a = A[anim] || A.Walk || I, d = a[6], G = P.G || 0;
     const tot = d.reduce((q, v) => q + v, 0) / 60, tt = t % tot; let f = d.length - 1; for (let i = 0, acc = 0; i < d.length; i++) { acc += d[i] / 60; if (tt < acc) { f = i; break; } }
     const R = Math.max(1, Math.round(im.naturalWidth / atlasSize(k)[0])), ay = (I[5] + P.fy) - B.b, mx = (B.l + B.r) / 2 - I[4];   // 발끝·몸 가운데에 맞춘다
-    x.drawImage(mgFrame(k, im, anim, f, a, G, R), (-a[4] - mx) * s, (ay - a[5] - P.fy) * s, a[1] * s, a[2] * s);
+    const ub = mgAnimBox(k, im, anim, a, G, R); x.drawImage(mgFrame(k, im, anim, f, a, G, R), (ub ? -ub.cx : -a[4] - mx) * s, (ay - a[5] - P.fy) * s, a[1] * s, a[2] * s);
   } else x.drawImage(im, -(B.l + B.r) / 2 * s, -B.b * s, im.naturalWidth * s, im.naturalHeight * s);
   x.restore();
 }
