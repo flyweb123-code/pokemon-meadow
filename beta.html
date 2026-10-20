@@ -5788,7 +5788,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '6.68';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '6.69';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6000,7 +6000,7 @@ const MG_AB = {
    // v6.17 경완: 누른 만큼 실에 매달려 버티기 + 대롱대롱 + 떼면 솟구침
   8: { n: '놀래키기', c: 9, k: 'scare', d: '앞쪽 넓은 범위의 장애물이 모두 놀라 바로 도망가요' },   /* v6.55 경완: 고스트 = 놀래키기 (예전 투명해지기) */
   9: { n: '철벽', c: 12, k: 'iron', d: '5초 동안 몸이 강철처럼 단단하고 무거워져서, 부딪히는 포켓몬을 튕겨 날려 버려요' },   /* v6.27 경완: 강철 돌진 → 철벽 */
-  10: { n: '화염방사', c: 12, k: 'fire', d: '꾹 누르는 동안 불꽃을 뿜어 앞 장애물을 날려요 (1.6초). 누른 채 손가락을 위아래로 움직이면 불줄기 방향이 바뀌어요' },   /* v6.30 경완: 이름 화염방사, 쿨타임 8→12초, 손가락 위아래로 겨누기 */
+  10: { n: '화염방사', c: 12, k: 'fire', d: '꾹 누르는 동안 불꽃을 뿜어 앞 장애물을 날려요 (2.6초). 누른 채 손가락을 위아래로 움직이면 불줄기 방향이 바뀌어요' },   /* v6.30 경완: 이름 화염방사, 쿨타임 8→12초, 손가락 위아래로 겨누기 */
   11: { n: '파도타기', c: 12, k: 'surf', d: '꾹 누르는 동안 큰 파도에 올라타 앞의 장애물을 모두 쓸어 버려요 (최대 2.5초, 떼면 끝)' },   /* v6.37 경완: 실제 파도처럼 높은 파도에 올라탄다 */
   12: { n: '덩굴채찍', c: 6, k: 'vine', d: '채찍이 닿는 범위의 장애물을 모두 날려 버려요' },
   13: { n: '오버드라이브', c: 12, k: 'bolt', d: '꾹 누르는 동안 빠르게 달리며 무적이에요 (최대 2초). 떼면 몸 주변으로 전기가 폭발해 근처 장애물을 날려요' },   /* v6.32 경완: 볼트 대시 → 오버드라이브, 끝날 때 전기 폭발 */   // v6.17 경완: 누른 만큼 이어지고 떼면 끝
@@ -6272,7 +6272,6 @@ function mgDust(g, n, sp) { for (let i = 0; i < n; i++) g.parts.push({ x: g.PX +
 function mgRing(g, c) { (g.rings || (g.rings = [])).push({ x: g.PX, y: g.GY - g.y, t: .3, c }); }
 /* v6.04 경완: 기술에 맞은 장애물은 빙글빙글 날아간다 */
 function mgKill(g, o, c) { if (o.dead) return; o.dead = true; o.kt = 1; o.kb = { vx: 300 + Math.random() * 160, vy: 420 + Math.random() * 220, r: 0, vr: 9 + Math.random() * 7, c: c || '#fff' }; g.shake = Math.max(g.shake || 0, .08); g.shA = Math.max(g.shA || 0, 2); mgFx(g, o.x, g.GY - o.y - o.h / 2, c || '#fff', 12); (g.bursts || (g.bursts = [])).push({ x: o.x, y: g.GY - o.y - o.h / 2, t: .3, c: c || '#fff' }); }
-function mgBoltGo(g) { if (!(g.fx.bolt > 0)) return; g.bst = 1; g.sq = 1; g.sqv = 0; g.bov = (g.bov || 0) + 700; g.bmv = (g.bmv || 0) + 9; g.shake = Math.max(g.shake || 0, .16); g.shA = Math.max(g.shA || 0, 4); mgDust(g, 16, 320); mgRing(g, '#fff8b0'); (g.bursts || (g.bursts = [])).push({ x: g.PX - 10, y: g.GY - g.y - MG_PH / 2, t: .25, c: '#ffe14a', z: 1.6 }); haptic(1); sfx('jmp'); }   /* 움츠렸다가 튀어 나감 */
 function mgBoltBlast(g) {   /* v6.32 경완: 오버드라이브를 떼면(또는 시간이 다 되면) 몸 주변으로 전기 폭발 → 근처 장애물 날아감 */
   const R = 120 * (g.pas?.pow ? 1.6 : 1), px = g.PX + (g.bo || 0), py = g.GY - g.y - MG_PH / 2;
   g.obs.filter(o => !o.dead && !o.flee && Math.hypot(o.x - px, (g.GY - o.y - o.h / 2) - py) < R + o.w / 2).forEach(o => { mgKill(g, o, '#fff048'); if (o.kb) { o.kb.vx *= 1.4; o.kb.vy *= 1.2; } });
@@ -6297,7 +6296,7 @@ function mgAbility(down) {
   if (k === 'fly') { if (!down) return; const flap = () => { g.vy = Math.max(g.vy, 0) * .3 + (g.y > g.GY - 70 ? 0 : 330); g.y = Math.max(g.y, .5); g.flapT = .25; g.cut = true; g.jn = Math.max(g.jn, 1); mgFx(g, g.PX - 8, g.GY - g.y - MG_PH / 2 + 10, '#ffffff', 4, 80); };   /* v6.29 경완: 누르는 만큼이 아니라 칠 때마다 날갯짓 한 번씩 솟는다 */
     if (g.abK === 'fly' && g.fx.flyT > 0) { flap(); sfx('jmp2'); return; } if (g.cool > 0) return; g.fx.flyT = 4 * (g.pas?.pow ? 1.5 : 1); flap(); sfx('ab', 'fly'); mgAbStart(g, 'fly'); mgHud(); return; }   // 쿨타임은 3초가 끝난 뒤 (mgAbEnd)
   if (k === 'surf') { if (!down) { if (g.fx.surf > 0) g.fx.surf = 0; return; } if (g.cool > 0 || g.fx.surf > 0) return; g.fx.surf = 2.5 * (g.pas?.pow ? 1.5 : 1); mgAbStart(g, 'surf'); sfx('ab', 'surf'); return; }   // v6.18 경완: 파도타기도 꾹 누르는 동안만, 떼면 끝
-  if (k === 'bolt') { if (!down) { if (g.fx.bolt > 0) g.fx.bolt = 0; return; } if (g.cool > 0 || g.fx.bolt > 0) return; g.fx.bolt = 2 * (g.pas?.pow ? 1.5 : 1); g.bW = .13; g.sq = .7; g.sqv = 0; mgAbStart(g, 'bolt'); sfx('ab', 'bolt'); return; }   /* v6.66 경완: 쫀득하게 = 움츠렸다(0.13초) 튀어 나가고, 용수철처럼 출렁이며 멈춘다 */   // 떼면 mgAbEnd 에서 쿨타임
+  if (k === 'bolt') { if (!down) { if (g.fx.bolt > 0) g.fx.bolt = 0; return; } if (g.cool > 0 || g.fx.bolt > 0) return; g.fx.bolt = 2 * (g.pas?.pow ? 1.5 : 1); mgAbStart(g, 'bolt'); sfx('ab', 'bolt'); mgDust(g, 14, 300); return; }   /* v6.69 경완: 움츠렸다 튀어 나가는 동작은 빼고 속도감만 (더 빠르게 + 뒷배경도 빠르게 흐름) */   // 떼면 mgAbEnd 에서 쿨타임
   if (k === 'silk') { if (!down) { if (g.fx.silk) mgSilkOff(g, true); return; } if (g.fx.silk) return; const again = g.abK === 'silk' && g.fx.silkT > 0; if (!again && g.cool > 0) return;
     const ay = 320; g.fx.silk = { ay, L: Math.max(40, ay - g.y) };   /* v6.21 경완: 다시 뿜을수록 더 높이 오르던 것 → 실 끝 높이 고정 */ g.spin = 0; g.cut = true; sfx('ab', 'super'); if (again) { mgRing(g, '#ffffff'); return; } g.fx.silkT = 4.5 * (g.pas?.pow ? 1.5 : 1); mgAbStart(g, 'silk'); return; }   // 지속 시간 안에서는 다시 눌러 실을 또 뿜는다
   if (MG_STR[k]) { if (!down) { if (g.fx.str > 0) g.fx.str = 0; return; } if (g.cool > 0 || g.fx.str > 0) return; g.fx.str = MG_STR[k].T * (g.pas?.pow ? MG_STR[k].sT || 1.4 : 1); g.strL = 0; g.strS = 0; g.aimA = 0; g.fl = []; mgAbStart(g, k); if (k === 'fire') mgAimHint(g); return; }   // v6.04 경완: 꾹 누르는 동안 앞으로 쭉 뿜는다 (떼면 멈추고 그때부터 쿨타임)
@@ -6312,7 +6311,7 @@ function mgAbility(down) {
       mgFx(g, px, py, '#e88aff', 10); g.obs.forEach(q => { q.x -= sh; if (!q.dead && q.x + q.w / 2 > px - 20 && q.x - q.w / 2 < px + 20) q.dead = true; }); g.obs = g.obs.filter(q => q.x > -60); g.dist += sh; g.sinceSp += sh; mgFx(g, px, py, '#e88aff', 10); use(); break; }
     case 'shield': if (g.fx.shield) return; g.fx.shield = true; use(); break;
     case 'ghost': g.fx.ghost = 2.5 * S; use(); break;
-    case 'amb': { if (g.amb) return; g.fx.ambT = 3 * S; g.amb = { t: 0, cl: [] }; mgFx(g, px, py, '#4a3070', 12, 120); mgFx(g, px, py, '#8a6ab0', 8, 90); use(); break; }   /* v6.55 경완: 기습 */
+    case 'amb': { if (g.amb) return; g.fx.ambT = 3 * S; g.amb = { t: 0, cl: [] }; { const mid = g.PX + (g.W - g.PX) * .45; g.obs.forEach(o => { if (o.x <= mid) o.am = 1; }); }   /* v6.69 경완: 쓰는 순간 이미 중간을 넘어온 포켓몬은 날리지 않고 사라져서 피하기만 */ mgFx(g, px, py, '#4a3070', 12, 120); mgFx(g, px, py, '#8a6ab0', 8, 90); use(); break; }   /* v6.55 경완: 기습 */
     case 'lev': if (g.fx.flying) return; g.fx.flying = true; g.fx.lev = 1; g.fx.flyT = 3 * S; g.spin = 0; use(); break;
     case 'ram': g.fx.ram = 2 * S; use(); break;
     case 'iron': g.fx.iron = 5 * S;   /* v6.65 경완: 3 → 5초 */ g.irF = .35; g.sq = .7; g.sqv = 0; mgRing(g, '#e8eef6'); mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, '#dfe6f0', 14, 180); g.shake = Math.max(g.shake || 0, .1); g.shA = Math.max(g.shA || 0, 3); use(); break;   // 쨍! 하고 몸이 굳는다
@@ -6345,16 +6344,16 @@ const MG_COMBO_T = 2.6;   // 콤보가 이어지는 시간 (초)
 const MG_ABC = { iron: '#c8d0e0', rock: '#b0a080', dbl: '#ffe14a', qa: '#ffffff', super: '#e8e8f0', punch: '#ffb060', vine: '#6ad06a', gas: '#b47ae0', beam: '#8a7aff', fire: '#ff7a3a', scare: '#5a3a80', tele: '#e88aff', lev: '#e88aff', silk: '#e8e8f0', dig: '#c08a50', shield: '#d0b070', ghost: '#b48aff', ram: '#c8d0e0', surf: '#5ab0ff', bolt: '#ffe14a', ice: '#a8e8ff', fly: '#9ad8ff', fairy: '#ff90c8' };
 const MG_DUR = { viS: 'viW', scS: 'scW', qaS: 'qaW', iron: 'iron', rock: 'rockT', fly: 'flyT', lev: 'flyT', silk: 'silkT', dig: 'dig', ghost: 'ghost', amb: 'ambT', ram: 'ram', surf: 'surf', bolt: 'bolt', ice: 'ice', fire: 'str', beam: 'str', gas: 'str' };
 // 꾹 눌러 뿜는 기술: T 최대 시간, L 닿는 거리(0 = 화면 끝까지), b 위아래로 닿는 폭, s 효과음 간격
-const MG_STR = { fire: { T: 1.6, L: 220, b: 26, s: .26, c: '#ff8a2a' }, beam: { T: 1.3, sT: 2.4, L: 0, b: 22, s: .45, c: '#8a7aff' }, gas: { T: 1.5, L: 200, b: 60, s: .5, c: '#b47ae0' } };
+const MG_STR = { fire: { T: 2.6, L: 220, b: 26, s: .26, c: '#ff8a2a' }, beam: { T: 1.3, sT: 2.4, L: 0, b: 22, s: .45, c: '#8a7aff' }, gas: { T: 1.5, L: 200, b: 60, s: .5, c: '#b47ae0' } };
 const mgAbLeft = g => { const k = g.abK; return !k ? 0 : k === 'shield' ? (g.fx.shield ? 1 : 0) : Math.max(0, g.fx[MG_DUR[k]] || 0); };
 function mgAbStart(g, k) {
   const c = g.pas?.pow ? '#ffd84a' : MG_ABC[k] || '#fff'; if (g.pas?.pow) { g.sDarkT = 1; g.shake = Math.max(g.shake || 0, .3); g.shA = Math.max(g.shA || 0, 5); }   // S 랭크 = 금빛, 배경이 어두워지며 강하게 g.tint = { c, t: .28 }; mgRing(g, c); setTimeout(() => MGG === g && mgRing(g, '#ffffff'), 90); g.shake = Math.max(g.shake || 0, .14); g.shA = Math.max(g.shA || 0, 3);
-  mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, c, 12, 150); haptic(2); mgToast(g, g.ab.n + '!');
+  mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, c, 12, 150); haptic(2); mgToast(g, (mgMon?.name ? mgMon.name + '! ' : '') + g.ab.n + '!');   // v6.69 경완: "피카츄! 오버드라이브!"
   if (MG_DUR[k] || k === 'shield') { g.abK = k; g.abD = k === 'shield' ? 1 : g.fx[MG_DUR[k]]; g.abW = false; }
   const b = $('#mgAbBtn'); b.style.setProperty('--ac', c); b.classList.toggle('on', !!g.abK);
 }
 function mgAbEnd(g) {
-  const k = g.abK; g.abK = null; if (k === 'bolt') { mgBoltBlast(g); g.bW = 0; g.sq = 1.22; g.sqv = 0; g.bst = -.7; mgDust(g, 12, 260); }   // 끝: 끽 멈추며 몸이 출렁
+  const k = g.abK; g.abK = null; if (k === 'bolt') { mgBoltBlast(g); g.sq = 1.22; g.sqv = 0; g.bst = -.7; mgDust(g, 12, 260); }   // 끝: 끽 멈추며 몸이 출렁
   if (k === 'surf' && !g.over && (g.sL || 0) > 10) { const h = g.sL; g.y += h; g.sL = 0; g.jn = 1; g.hold = false; mgLift(g, MG_JUMP, true); g.cut = true; mgFx(g, g.PX, g.GY - g.y + 10, '#5ab0ff', 14, 240); mgFx(g, g.PX, g.GY - g.y + 10, '#e8f6ff', 10, 180); sfx('jmp'); }   /* v6.54 경완: 파도타기를 떼면 파도 꼭대기에서 한 바퀴 돌며 뛰어오른다 */ if (MG_STR[k] || k === 'bolt' || k === 'surf') { g.fx.surf = 0; g.fx.str = 0; g.fx.bolt = 0; mgCool(g); } if (k === 'silk') { mgSilkOff(g, false); g.fx.silkT = 0; mgCool(g); } if (k === 'fly') { g.fx.flyT = 0; mgCool(g); } if (k === 'dig') { g.fx.dig = 0; mgDigOut(g); mgCool(g); } if (k === 'rock') { g.fx.rockT = 0; mgCool(g); } if (k === 'qaS') { g.fx.qaW = 0; mgCool(g); } if (k === 'scS') { g.fx.scW = 0; mgCool(g); } if (k === 'viS') { g.fx.viW = 0; mgCool(g); } sfx('abEnd'); mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, '#d8d8e0', 10, 90); mgRing(g, '#9a9aaa'); $('#mgAbBtn').classList.remove('on');
 }
 // v5.83 경완: 장애물은 주인공과 같은 배율(원래 크기 비율)로, 타입마다 움직임이 다르다
@@ -6385,15 +6384,13 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
   if (g.shake > 0) g.shake = Math.max(0, g.shake - dt);
   { const k = 520, d = 18; g.sqv = (g.sqv || 0) + ((1 - (g.sq || 1)) * k - g.sqv * d) * dt; g.sq = (g.sq || 1) + g.sqv * dt; }
   if (g.spin > 0) g.spin = Math.max(0, g.spin - dt / .42);
-  { const on = g.fx.bolt > 0 && !g.over, w = on && g.bW > 0, T = on ? (w ? -14 : 36) : 0, L = on ? (w ? -.14 : .17) : 0, M = on ? (w ? -.35 : 1) : 0;   // 오버드라이브 몸 위치·기울기·빠르기 (용수철)
-    g.bov = (g.bov || 0) + ((T - (g.bo || 0)) * 230 - g.bov * 11) * dt; g.bo = (g.bo || 0) + g.bov * dt;
-    g.blv = (g.blv || 0) + ((L - (g.bl || 0)) * 320 - g.blv * 13) * dt; g.bl = (g.bl || 0) + g.blv * dt;
-    g.bmv = (g.bmv || 0) + ((M - (g.bm || 0)) * 70 - g.bmv * 8) * dt; g.bm = (g.bm || 0) + g.bmv * dt;
+  { const on = g.fx.bolt > 0 && !g.over, T = 0, L = on ? .1 : 0, M = on ? 1 : 0;   // 오버드라이브 몸 위치·기울기·빠르기 (용수철)
+    const sp = (k, v, x, tg, K, D) => { const h = Math.min(dt, 1 / 30); g[v] = (g[v] || 0) + ((tg - (g[x] || 0)) * K - (g[v] || 0) * D) * h; g[x] = (g[x] || 0) + g[v] * h; };   // v6.69: 처음 값이 없을 때 NaN 되던 것 + 큰 dt 에 튀지 않게
+    sp(0, 'bov', 'bo', T, 230, 11); sp(0, 'blv', 'bl', L, 320, 13); sp(0, 'bmv', 'bm', M, 140, 16);
     if (g.bst) g.bst = Math.sign(g.bst) * Math.max(0, Math.abs(g.bst) - dt * 3.2); }
   if (g.rings) { g.rings.forEach(r => r.t -= dt); g.rings = g.rings.filter(r => r.t > 0); }
   if (g.bursts) { g.bursts.forEach(r => r.t -= dt); g.bursts = g.bursts.filter(r => r.t > 0); }
   if (g.hs > 0) { g.hs -= dt; return; }   // 밟는 순간 아주 잠깐 멈춤 (손맛)
-  if (g.bW > 0 && (g.bW -= dt) <= 0) mgBoltGo(g);
   if (g.scP > 0 && (g.scP -= dt) <= 0) mgScareGo(g); if (g.scB > 0) g.scB -= dt;
   if (g.qaP && (g.qaPT -= dt) <= 0) { const A = [...new Set([...g.qaP, ...mgAhead(g, g.qaD + 30)])].filter(o => !o.dead && !o.flee); g.qaP = null; if (A.length) mgQaHit(g, A); }
   if (g.fx.dig > 0) g.digS = (g.digS || 0) + dt;
@@ -6422,7 +6419,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
   const meters = Math.floor(g.dist / 25), ph = 1 + Math.floor(meters / 250);
   if (ph > g.phase) { g.phase = ph; g.ban = { t: 1.6, s: '페이즈 ' + ph }; sfx('rise'); mgHud(); }   // v5.92 경완: 새 장애물 알림은 빼고 페이즈 글자만 화면 가운데에
   g.v = MG_SPD * Math.min(700, 315 + 44 * (g.phase - 1) + (meters % 250) * .13);   // v5.83 경완: 너무 쉬워서 더 빠르게 → v5.86 경완: 살짝만 쉽게
-  const sp = g.v * (g.fx.ice > 0 ? .5 : 1) * (1 + .6 * (g.bm || 0)), dx = sp * dt;
+  const sp = g.v * (g.fx.ice > 0 ? .5 : 1) * (1 + .95 * (g.bm || 0)), dx = sp * dt; g.bA = (g.bA || 0) + dx * Math.max(0, g.bm || 0);   // bA: 오버드라이브 동안 뒷배경을 더 빨리 흘리는 양
   g.dist += dx; g.sinceSp += dx;
   g.at = (g.at || 0) + dt * 1.25 * (g.y > 0 ? .6 : sp / 340);   // 달리는 빠르기에 맞춰 발을 놀린다
   g.y0 = g.y;
@@ -6475,7 +6472,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
     if (g.fx.dig > 0 || g.fx.ghost > 0 || g.inv > 0 || g.amb) continue;
     if (g.fx.lev) { mgKill(g, o, '#e88aff'); continue; }   // v6.18 경완: 부유 중엔 부딪혀도 안 죽고 포켓몬이 날아간다
     if (g.fx.surf > 0) { mgKill(g, o, '#5ab0ff'); mgFx(g, o.x, g.GY - 10, '#bfe6ff', 10, 200); continue; }   // v6.17 경완: 파도타기로 지나가면 포켓몬이 파도에 날아간다
-    if (g.fx.ram > 0 || g.fx.bolt > 0) { mgKill(g, o, '#ffe14a'); if (g.fx.bolt > 0) { g.hs = Math.max(g.hs || 0, .035); g.sq = .8; g.sqv = 0; g.bov -= 260; g.bst = .5; haptic(0); } continue; }   // 오버드라이브로 칠 때마다 멈칫·움찔
+    if (g.fx.ram > 0 || g.fx.bolt > 0) { mgKill(g, o, '#ffe14a'); if (g.fx.bolt > 0) { g.hs = Math.max(g.hs || 0, .03); g.sq = .84; g.sqv = 0; haptic(0); } continue; }   // 오버드라이브로 칠 때마다 멈칫·움찔
     if (g.fx.iron > 0) { mgKill(g, o, '#dfe6f0'); sfx('knock'); g.irF = .2; g.shake = Math.max(g.shake || 0, .08); g.shA = Math.max(g.shA || 0, 3); mgFx(g, (g.PX + o.x) / 2, g.GY - g.y - MG_PH / 2, '#ffffff', 10, 220); continue; }   // 철벽: 부딪힌 포켓몬이 튕겨 날아간다
     if (g.combo) { g.combo = 0; g.cT = 0; }
     if (g.fx.shield) { g.fx.shield = false; mgKill(g, o, '#c8b08a'); sfx('knock'); continue; }
@@ -6515,7 +6512,7 @@ function mgCloud(p, cx, cy, s) { p.disc(cx, cy, 9 * s); p.disc(cx + 11 * s, cy -
 // 도트 그림판 두 장: 배경(포켓몬 뒤), 효과(포켓몬 앞)
 function mgBuf(g, key) { const P = MG_PX, w = Math.ceil(g.W / P) + 2, h = Math.ceil(g.H / P) + 2; let c = g[key]; if (!c || c.width !== w || c.height !== h) { c = g[key] = document.createElement('canvas'); c.width = w; c.height = h; } const x = c.getContext('2d'); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, w, h); x.globalAlpha = 1; return x; }
 function mgRender(g, cv = $('#mgCv')) {
-  const x = cv.getContext('2d'), { W, H, GY } = g, d = g.dist, thumb = !g.run, P = MG_PX, t0 = g.t;
+  const x = cv.getContext('2d'), { W, H, GY } = g, d = g.dist, bA = g.bA || 0, bd = f => f * (d - .6 * bA) + .54 * bA, thumb = !g.run, P = MG_PX, t0 = g.t;
   x.setTransform(g.dpr, 0, 0, g.dpr, 0, 0); x.imageSmoothingEnabled = false;
   if (g.shake > 0) { const a = (g.shA || 4) * Math.min(1, g.shake / .25); x.translate(Math.round((Math.random() - .5) * 2 * a / P) * P, Math.round((Math.random() - .5) * 2 * a / P) * P); }
   // 하늘 색: 페이즈 끝 40m 동안 다음 하늘로 천천히 넘어간다
@@ -6532,18 +6529,18 @@ function mgRender(g, cv = $('#mgCv')) {
     p.disc(sx, sy, r * 2.2, null, mgRgb(sc, .12)); p.disc(sx, sy, r * 1.55, null, mgRgb(sc, .2)); p.disc(sx, sy, r, null, mgRgb(sc));
     if (night > .5) { p.rect(sx - 6, sy - 4, 4, 4, 'rgba(150,150,180,.45)'); p.rect(sx + 3, sy + 3, 4, 2, 'rgba(150,150,180,.45)'); } else p.rect(sx - r * .5, sy - r * .55, 4, 4, 'rgba(255,255,255,.7)'); }
   // 구름 두 겹
-  b.fillStyle = C(12, .6); for (let i = 0; i < 5; i++) { const cx = ((i * 190 - d * .03) % (W + 200) + W + 200) % (W + 200) - 100; mgCloud(p, cx, 26 + mgH(i) * GY * .25, .7); }
-  b.fillStyle = C(12, .95); for (let i = 0; i < 4; i++) { const cx = ((i * 240 + 90 - d * .1) % (W + 260) + W + 260) % (W + 260) - 130; mgCloud(p, cx, 40 + mgH(i + 20) * GY * .3, 1.15); }
+  b.fillStyle = C(12, .6); for (let i = 0; i < 5; i++) { const cx = ((i * 190 - bd(.03)) % (W + 200) + W + 200) % (W + 200) - 100; mgCloud(p, cx, 26 + mgH(i) * GY * .25, .7); }
+  b.fillStyle = C(12, .95); for (let i = 0; i < 4; i++) { const cx = ((i * 240 + 90 - bd(.1)) % (W + 260) + W + 260) % (W + 260) - 130; mgCloud(p, cx, 40 + mgH(i + 20) * GY * .3, 1.15); }
   // 산·언덕: 한 칸 폭 기둥으로 쌓는다. 맨 윗칸은 밝게
-  const ridge = (f, sc, base, amp, col, hi, seed) => { const gy = p.q(GY) + 1; for (let xx = 0; xx < b.canvas.width; xx++) { const w = xx * P + d * f, top = Math.round((base - (mgN(w / sc + seed) * .72 + mgN(w / (sc * .37) + seed * 2) * .28) * amp) / P);
+  const ridge = (f, sc, base, amp, col, hi, seed) => { const gy = p.q(GY) + 1; for (let xx = 0; xx < b.canvas.width; xx++) { const w = xx * P + bd(f), top = Math.round((base - (mgN(w / sc + seed) * .72 + mgN(w / (sc * .37) + seed * 2) * .28) * amp) / P);
     b.fillStyle = col; b.fillRect(xx, top, 1, gy - top); if (hi) { b.fillStyle = hi; b.fillRect(xx, top, 1, 1); } } };
   const mA = Math.min(120, GY * .42);
   ridge(.025, 160, GY - 30, mA, mgRgb(mgLerp(K(4), K(2), .45)), null, 3);
   ridge(.05, 120, GY - 14, mA * .8, C(4), mgRgb(mgLerp(K(4), [255, 255, 255], .25)), 11);
   ridge(.16, 80, GY - 4, Math.min(56, GY * .2), C(5), C(8), 40);
   // 나무 줄
-  { const f = .34, sp = 34, j0 = Math.floor((d * f - 40) / sp), j1 = Math.ceil((d * f + W + 40) / sp);
-    for (let j = j0; j <= j1; j++) { if (mgH(j * 3.1) > .58) continue; const tx = j * sp + mgH(j) * 18 - d * f, r = 9 + mgH(j + 9) * 9, ty = GY - 4;
+  { const f = .34, sp = 34, D = bd(f), j0 = Math.floor((D - 40) / sp), j1 = Math.ceil((D + W + 40) / sp);
+    for (let j = j0; j <= j1; j++) { if (mgH(j * 3.1) > .58) continue; const tx = j * sp + mgH(j) * 18 - D, r = 9 + mgH(j + 9) * 9, ty = GY - 4;
       p.rect(tx - 2, ty - r * 1.1, 4, r * 1.1 + 4, 'rgba(80,52,34,1)');
       b.fillStyle = C(6); p.disc(tx, ty - r * 1.4, r); p.disc(tx - r * .6, ty - r * .95, r * .7); p.disc(tx + r * .6, ty - r * .95, r * .7);
       b.fillStyle = C(7); p.disc(tx - r * .3, ty - r * 1.65, r * .55); p.rect(tx - r * .5, ty - r * 2, P * 2, P, C(8)); } }
