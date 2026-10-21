@@ -388,7 +388,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .shop-inv{grid-auto-rows:1fr;flex:0 1 auto!important}.vin .vname{flex:1 0 auto}.vin .vtag{margin-top:auto}
 .vtag{font-size:10px;padding:1px 5px;background:var(--frame);color:var(--win)}
 .vin:not(.own) .vtag{background:#a86a00}
-.shopwin .stab .shop-bar{margin-top:auto;min-height:87px;box-sizing:border-box}   /* v7.28 경완: 구매 상자는 탭마다 항상 아래쪽 같은 자리 */
+.shopwin .stab .shop-bar{margin-top:auto;min-height:87px;box-sizing:border-box;flex:none}   /* v7.28 경완: 구매 상자는 탭마다 항상 아래쪽 같은 자리 */
 .shop-bar{display:flex;align-items:center;gap:8px;margin-top:10px;border:3px solid var(--frame);background:var(--card);padding:8px}
 .sb-name{flex:1;min-width:0}.sb-name b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sb-name span{font-size:12px;color:var(--dim)}
 .shop-bar .lk-btn{padding:8px 10px;font-size:13px;flex:none}.shop-bar .lk-btn[disabled]{opacity:.5}
@@ -5844,7 +5844,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.05';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.06';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5945,14 +5945,14 @@ const ITEM_ART = (() => {
 })();
 // 상점 물건: k tool = 특수 진화 도구, item = 쓰면 일정 시간 효과. 가격·효과는 작업실 상점 메뉴에서 바꾼다 (데이터 shop)
 const ITEMS = [
-  { id: 'fire', n: '불꽃의돌', k: 'tool', p: 1200, a: 'fire' }, { id: 'water', n: '물의돌', k: 'tool', p: 1200, a: 'water' }, { id: 'thunder', n: '천둥의돌', k: 'tool', p: 1200, a: 'thunder' },
-  { id: 'leaf', n: '리프의돌', k: 'tool', p: 1200, a: 'leaf' }, { id: 'moon', n: '달의돌', k: 'tool', p: 1200, a: 'moon' }, { id: 'sun', n: '태양의돌', k: 'tool', p: 1200, a: 'sun' },
-  { id: 'ice', n: '얼음의돌', k: 'tool', p: 1500, a: 'ice' }, { id: 'shiny', n: '빛의돌', k: 'tool', p: 1800, a: 'shiny' }, { id: 'dusk', n: '어둠의돌', k: 'tool', p: 1800, a: 'dusk' }, { id: 'dawn', n: '각성의돌', k: 'tool', p: 1800, a: 'dawn' },
-  { id: 'link', n: '연결의끈', k: 'tool', p: 1500, a: 'linkCord', d: '통신교환으로 진화하는 포켓몬에게 쓰면 바로 진화해요.' },
-  { id: 'tart', n: '새콤한사과', k: 'tool', p: 1500, a: 'tartApple' }, { id: 'sweet', n: '달콤한사과', k: 'tool', p: 1500, a: 'sweetApple' }, { id: 'syrupy', n: '꿀맛사과', k: 'tool', p: 1500, a: 'syrupyApple' },
-  { id: 'pot', n: '깨진포트', k: 'tool', p: 2000, a: 'crackedPot' }, { id: 'cup', n: '범작찻잔', k: 'tool', p: 2000, a: 'teacup' }, { id: 'wreath', n: '가라두구머리장식', k: 'tool', p: 2000, a: 'wreath' },
-  { id: 'scroll', n: '악의 족자', k: 'tool', p: 2500, a: 'darkScroll' }, { id: 'aug', n: '검은휘석', k: 'tool', p: 2500, a: 'blackAug' }, { id: 'peat', n: '피트블록', k: 'tool', p: 2500, a: 'peatBlock' },
-  { id: 'bless', n: '축복받은갑옷', k: 'tool', p: 2500, a: 'blessArmor' }, { id: 'curse', n: '저주받은갑옷', k: 'tool', p: 2500, a: 'curseArmor' }, { id: 'alloy', n: '복합금속', k: 'tool', p: 2500, a: 'metalAlloy' },
+  { id: 'fire', n: '불꽃의돌', k: 'tool', p: 1200, a: 'fire', d: '특정 포켓몬을 진화시키는 신기한 돌. 돌 속에서 오렌지색 불꽃이 타오르고 있다.' }, { id: 'water', n: '물의돌', k: 'tool', p: 1200, a: 'water', d: '특정 포켓몬을 진화시키는 신기한 돌. 물방울처럼 맑고 옅은 푸른색을 띠고 있다.' }, { id: 'thunder', n: '천둥의돌', k: 'tool', p: 1200, a: 'thunder', d: '특정 포켓몬을 진화시키는 신기한 돌. 번개 모양의 무늬가 뚜렷하게 새겨져 있다.' },
+  { id: 'leaf', n: '리프의돌', k: 'tool', p: 1200, a: 'leaf', d: '특정 포켓몬을 진화시키는 신기한 돌. 나뭇잎 모양의 무늬가 선명하게 새겨져 있다.' }, { id: 'moon', n: '달의돌', k: 'tool', p: 1200, a: 'moon', d: '특정 포켓몬을 진화시키는 신기한 돌. 밤하늘처럼 새카맣다.' }, { id: 'sun', n: '태양의돌', k: 'tool', p: 1200, a: 'sun', d: '특정 포켓몬을 진화시키는 신기한 돌. 저녁노을처럼 새빨갛게 타오른다.' },
+  { id: 'ice', n: '얼음의돌', k: 'tool', p: 1500, a: 'ice', d: '특정 포켓몬을 진화시키는 신기한 돌. 눈 결정 모양의 무늬가 선명하게 새겨져 있다.' }, { id: 'shiny', n: '빛의돌', k: 'tool', p: 1800, a: 'shiny', d: '특정 포켓몬을 진화시키는 신기한 돌. 눈부신 빛을 내뿜고 있다.' }, { id: 'dusk', n: '어둠의돌', k: 'tool', p: 1800, a: 'dusk', d: '특정 포켓몬을 진화시키는 신기한 돌. 한없이 깊은 어둠을 품고 있다.' }, { id: 'dawn', n: '각성의돌', k: 'tool', p: 1800, a: 'dawn', d: '특정 포켓몬을 진화시키는 신기한 돌. 눈동자처럼 반짝반짝 빛난다.' },
+  { id: 'link', n: '연결의끈', k: 'tool', p: 1500, a: 'linkCord', d: '특정 포켓몬을 진화시키는 신기한 힘이 깃든 끈. 통신교환한 것과 같은 효과가 있다.' },
+  { id: 'tart', n: '새콤한사과', k: 'tool', p: 1500, a: 'tartApple', d: '특정 포켓몬을 진화시키는 신기한 사과. 아주 시큼한 맛이 난다.' }, { id: 'sweet', n: '달콤한사과', k: 'tool', p: 1500, a: 'sweetApple', d: '특정 포켓몬을 진화시키는 신기한 사과. 아주 달콤한 맛이 난다.' }, { id: 'syrupy', n: '꿀맛사과', k: 'tool', p: 1500, a: 'syrupyApple', d: '특정 포켓몬을 진화시키는 신기한 사과. 꿀처럼 진한 단맛이 난다.' },
+  { id: 'pot', n: '깨진포트', k: 'tool', p: 2000, a: 'crackedPot', d: '특정 포켓몬을 진화시키는 신기한 포트. 금이 가 있지만 이걸로 끓인 차는 맛있다.' }, { id: 'cup', n: '범작찻잔', k: 'tool', p: 2000, a: 'teacup', d: '특정 포켓몬을 진화시키는 신기한 찻잔. 평범해 보이지만 이걸로 마시는 차는 맛있다.' }, { id: 'wreath', n: '가라두구머리장식', k: 'tool', p: 2000, a: 'wreath', d: '가라두구 가지를 엮어 만든 머리장식. 특정 포켓몬에게 보여 주면 무척 기뻐한다.' },
+  { id: 'scroll', n: '악의 족자', k: 'tool', p: 2500, a: 'darkScroll', d: '악의 탑에서 수행하면 받을 수 있는 비전의 족자. 특정 포켓몬이 읽으면 진화한다.' }, { id: 'aug', n: '검은휘석', k: 'tool', p: 2500, a: 'blackAug', d: '쪼개면 날카로운 날이 생기는 검고 윤기 나는 돌. 특정 포켓몬이 무척 좋아한다.' }, { id: 'peat', n: '피트블록', k: 'tool', p: 2500, a: 'peatBlock', d: '말리면 땔감이 되는 진흙 덩어리. 특정 포켓몬이 무척 좋아한다.' },
+  { id: 'bless', n: '축복받은갑옷', k: 'tool', p: 2500, a: 'blessArmor', d: '좋은 기운이 깃든 갑옷. 특정 포켓몬을 진화시킨다.' }, { id: 'curse', n: '저주받은갑옷', k: 'tool', p: 2500, a: 'curseArmor', d: '원한이 깃든 갑옷. 특정 포켓몬을 진화시킨다.' }, { id: 'alloy', n: '복합금속', k: 'tool', p: 2500, a: 'metalAlloy', d: '특정 포켓몬을 진화시키는 신기한 금속. 여러 겹으로 겹쳐져 있다.' },
   { id: 'incense', n: '향로', k: 'item', p: 900, a: 'incense' }, { id: 'charm', n: '빛나는 부적', k: 'item', p: 5000, a: 'charm' },   /* v6.37 경완: 3,000 → 5,000G */
 ];
 const ITEM = Object.fromEntries(ITEMS.map(o => [o.id, o])), ITEM_BY_N = Object.fromEntries(ITEMS.map(o => [o.n, o.id]));
@@ -5966,7 +5966,7 @@ function applyShop(o) { const D = { price: {}, inc: { min: 30, mul: [1, 1, 2.5, 
 const itemPrice = id => SHOP.price[id] ?? ITEM[id].p;
 const trackPrice = t => SHOP.price['bgm:' + t.id] ?? t.price;   // 배경 음악 가격도 작업실에서
 const itemsOf = () => S.items || (S.items = {});
-const itemDesc = o => o.d || (o.id === 'incense' ? `쓰면 ${SHOP.inc.min}분 동안 걸으며 줍는 알이 좋은 등급으로 더 잘 나와요.` : o.id === 'charm' ? `쓰면 ${SHOP.charm.min}분 동안 걸으며 줍는 알에 색이 다른 포켓몬이 훨씬 잘 들어 있어요.` : '쓰면 진화하는 포켓몬이 있어요. 포켓몬 정보 카드에서 써요.');
+const itemDesc = o => o.k === 'tool' && o.d ? o.d + ' 포켓몬 정보 카드에서 써요.' : o.d || (o.id === 'incense' ? `쓰면 ${SHOP.inc.min}분 동안 걸으며 줍는 알이 좋은 등급으로 더 잘 나와요.` : o.id === 'charm' ? `가지고 있으면 색이 다른 포켓몬과 만나기 쉬워진다는 신기한 부적. 쓰면 ${SHOP.charm.min}분 동안 걸으며 줍는 알에 색이 다른 포켓몬이 훨씬 잘 들어 있어요.` : '쓰면 진화하는 포켓몬이 있어요. 포켓몬 정보 카드에서 써요.');
 // 효과 시간: S.fx[k] = { s, e } (ms). 쓰는 중에 또 쓰면 끝나는 시각이 늘어난다
 const fxMin = k => k === 'incense' ? SHOP.inc.min : SHOP.charm.min;
 const fxLeft = k => { const f = S.fx?.[k]; return f ? Math.max(0, f.e - Date.now()) : 0; };
