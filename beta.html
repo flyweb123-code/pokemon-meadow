@@ -5925,7 +5925,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.35';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.36';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -10829,7 +10829,7 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
     drag.x += dx * scale; drag.y += dy * scale; drag.moved = true; drag.t.mv(dx, dy); if (!dragRaf) dragRaf = requestAnimationFrame(dragPaint); });
   hands.addEventListener('pointerup', () => { const tap = drag && !drag.moved && !drag.t.berry && !drag.t.line, moved = drag?.moved, key = drag?.t.key; if (drag && !drag.moved) undo.pop(); if (dragRaf) { cancelAnimationFrame(dragRaf); dragRaf = 0; } drag = null;
     if (moved) { if (key !== 'minY') rebuild(BAKED.has(key)); renderHands(); api.onLayout?.(JSON.parse(snap()), undo.length); } else renderHands(); if (tap) api.onTap?.(selInfo()); });
-  hands.addEventListener('pointerdown', ev => { if (ev.target === hands) { sel = null; renderHands(); } });
+  hands.addEventListener('pointerdown', ev => { if (ev.target === hands) { const had = !!sel; sel = null; renderHands(); if (!had) api.onBlank?.(); } });   // v8.36: 아무것도 안 고른 채 빈 곳 = 작업실이 편집 종료
   function changed(key) { if (key !== 'minY') rebuild(BAKED.has(key)); renderHands(); api.onLayout?.(JSON.parse(snap()), undo.length); }
   for (const k in UI_EL) { const el = $(UI_EL[k]); if (!el) continue;   // v3.88 경완: 편집 중엔 날짜 박스·열매 버튼·골드도 보이고, 끌어서 자리를 옮긴다
     el.addEventListener('click', e => { if (document.body.classList.contains('stEdit')) { e.stopPropagation(); e.preventDefault(); } }, true);

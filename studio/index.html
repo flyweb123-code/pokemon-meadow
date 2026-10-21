@@ -547,7 +547,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.36';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.37';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -958,7 +958,9 @@ $('#eWarn').onclick = e => { const b = e.target.closest('[data-ew]'); if (!b) re
 // v2.25 경완: 맵 화면에서 빈 곳(버튼·칸·창이 아닌 곳)을 누르면 고른 소품·세부 창·반응 고르기를 취소
 const BLANK_NOT = 'button,input,select,textarea,label,a,summary,[data-k],[data-ik],[data-one],[data-rs],[data-sp],[data-uid],.it,.mc,.chip,.rx,#zoom,#propPane,#ebar,#spx,#szPane,#hotPop,iframe,.phone,#szBar,.top,.nav,#unsv,#safePop,#dockRz';
 document.addEventListener('pointerdown', e => { if (view !== 'map' || e.button > 0 || e.target.closest(BLANK_NOT) || !e.target.closest('#v-map,.view')) return;
-  if (zoomK) closeZoom(); A?.unpick?.(); dockMark(null); if (spxKey && !szOn) closeSpx(); }, true);
+  const open = !!(zoomK || A?.selInfo?.() || (spxKey && !szOn));   // v3.37 경완: 편집 중 빈 곳 = 열린 것부터 닫고, 아무것도 안 열려 있으면 편집 종료 (저장 안 한 배치가 있으면 편집 종료 버튼처럼 한 번 물어봄)
+  if (zoomK) closeZoom(); A?.unpick?.(); dockMark(null); if (spxKey && !szOn) closeSpx();
+  if (editing && !open && $('#eWarn').hidden) $('#eMode').click(); }, true);
 $('#eSafe2').onclick = () => { const on = !$('#eSafe2').classList.contains('on'); $('#eSafe2').classList.toggle('on', on); store.set('st-safe', on ? '1' : ''); safeZ(); };
 if (store.get('st-safe') === '1') $('#eSafe2').classList.add('on');
 $('#ePath').onclick = () => { const on = !$('#ePath').classList.contains('on'); $('#ePath').classList.toggle('on', on); A?.showPath(on); };
@@ -2092,6 +2094,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.37', '10월 22일', ['맵 편집 중 빈 곳을 누르면: 고른 소품·창이 열려 있으면 닫고, 아무것도 없으면 편집 종료 (저장 안 한 배치는 한 번 물어봄). 맵 안 빈 곳도 같음 (게임 v8.36)']],
   ['3.36', '10월 22일', ['소품 상세 창 [저장]: 창 자리 그대로, 저장하면 꺼졌다가 크기를 또 바꾸면 켜짐', '추가 소품 → 전체 소품 저장, 소품 [저장]·[다른 이름으로 저장]은 배치 저장까지 바로 (게임 v8.35: 오프닝 필드 봄, 시작 버튼 새 디자인, 미니게임 친밀도 하루 판수 제한 없음)']],
   ['3.35', '10월 22일', ['맵 소품 상세 창에 [저장]·[다른 이름으로 저장]: 모서리로 크기를 바꾼 뒤 저장하면 그 소품 종류가 그 크기로 고정(앞으로 끌어 놓는 것도), 다른 이름으로 저장하면 그 크기로 전체 소품에 새 소품 (게임 v8.33)']],
   ['3.34', '10월 22일', ['밸런스: 창을 오른쪽 빈 여백까지 옮길 수 있어요', '창을 옮기거나 크기를 바꿀 때 다른 창의 윗선·아랫선·옆선에 가까우면 딱 붙고 파란 가이드선이 떠요']],
@@ -3354,7 +3357,7 @@ function hook() {
         MG_PTS: K.MG_PTS ?? 30, MQ_DAY_G: K.MQ_DAY_G || [50, 150, 300], MQ_TY_G: K.MQ_TY_G || [60, 150, 300, 550, 1000], MQ_PH_G: K.MQ_PH_G || [100, 250, 500, 1000], MQ_PLAY_G: K.MQ_PLAY_G || [100, 300, 600, 1000, 2500], MQ_SUM_G: K.MQ_SUM_G || [150, 500, 1200, 3000], MQ_KILL_G: K.MQ_KILL_G || [150, 500, 1500, 3000] } };   // v3.25 경완: 미니게임·미션 골드
     A.ensureSprite(1).then(() => { $('#logoI').src = thumb(25) || ''; A.ensureSprite(25).then(() => $('#logoI').src = thumb(25)); });
   }
-  A.onTap = s => { if (s) mapTap(s); }; A.onSel = onSel; A.onMon = onMon; A.onLog = onLog; A.onLayout = onLayout; A.onHot = onHot; A.onMonSc = onMonSc; A.onSzSel = m => { szCur = m; szInfo(); }; applyInsets();
+  A.onTap = s => { if (s) mapTap(s); }; A.onBlank = () => { if (editing && !zoomK && $('#eWarn').hidden) $('#eMode').click(); else if (zoomK) closeZoom(); }; A.onSel = onSel; A.onMon = onMon; A.onLog = onLog; A.onLayout = onLayout; A.onHot = onHot; A.onMonSc = onMonSc; A.onSzSel = m => { szCur = m; szInfo(); }; applyInsets();
   // v2.99 경완: 데이터 v42 에서 지도 반경마다 장소 특성(th)을 붙였다. 작업본에 예전 반경이 남아 있으면 같은 모양의 반경에 한 번만 옮겨 준다
   if (store.get('st-thfill42') !== '1' && ORIG.spots?.some(o => Array.isArray(o.th))) { const gk = o => [o.la, o.lo, o.r, o.r2 || 0, o.rot || 0].join(','), TM = new Map(ORIG.spots.filter(o => Array.isArray(o.th)).map(o => [gk(o), o.th])); let n = 0;
     for (const W of [D, D._sv]) if (W && Array.isArray(W.spots)) for (const o of W.spots) if (!Array.isArray(o.th) && TM.has(gk(o))) { o.th = [...TM.get(gk(o))]; n++; }
