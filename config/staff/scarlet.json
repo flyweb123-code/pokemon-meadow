@@ -83,74 +83,6 @@
      "fit": "풀밭 가장자리·길목, 밤"
     },
     {
-     "id": "firefly-jar",
-     "n": "반딧불 병",
-     "k": "놀이",
-     "d": "코르크 뚜껑을 덮고 목에 노끈을 감은 유리병이에요. 안에 풀잎을 깔아 두었고 반딧불 다섯 마리가 연두색으로 깜빡여요. 몇 마리는 밖으로 빠져나왔어요.",
-     "px": [
-      "..................h..",
-      "..h..............hfh.",
-      ".hfh..............h..",
-      "..h..kkkkkkkkkkk.....",
-      "....kNNNNnnnnnnnk....",
-      "....knnnnnnnmmmmk....",
-      ".....kmmmmmmmmmk.....",
-      "....kkrRrRrRrRrkk....",
-      "...kgggggggggggggk.h.",
-      "..kgiiiiiiiiiiiGigkfh",
-      "..kgiGWiFiiiiiiiigkh.",
-      "..kgiGGFfFiiiiiiigk..",
-      "..kgiGiiFiiiiFiiigk..",
-      "..kgiGiiiiiiFfFiigk..",
-      "..kgiGiiiiiiiFiiigk..",
-      "..kgiGiiiiFiiiiiigk..",
-      "..kgiGiiiFfFiiiiigk..",
-      "..kgiGFiiiFiiiiiigk..",
-      "..kgiGfFiiiiieFiigk..",
-      "..kgiGEiieiiiEfFigk..",
-      "..kgieEiiEieiEFeigk..",
-      "..kgiEEieEiEiEeEigk..",
-      "..kgiEEiEEiEiEEEigk..",
-      "...kgggggggggggggk...",
-      "....kkkkkkkkkkkkk....",
-      "...zzzzzzzzzzzzzzz...",
-      ".....zzzzzzzzzzz....."
-     ],
-     "pal": {
-      "k": "#20202c",
-      "z": "#2c3a28",
-      "N": "#e8d090",
-      "n": "#c8a050",
-      "m": "#8a6a30",
-      "r": "#d8b878",
-      "R": "#a08050",
-      "g": "#5a8a98",
-      "G": "#a8d8e0",
-      "W": "#f0fcff",
-      "i": "#26404e",
-      "e": "#7ab84a",
-      "E": "#4a7a34",
-      "f": "#f4ff9a",
-      "F": "#b8e85a",
-      "h": "#c8f080"
-     },
-     "acts": [
-      {
-       "w": "벌레 타입 (볼비트·네오비트 등)",
-       "a": "병 옆에 앉아 꽁무니를 같이 반짝이며 기술을 써요"
-      },
-      {
-       "w": "작은 포켓몬",
-       "a": "병 앞에 앉아 반딧불을 올려다보다가 그대로 잠들어요"
-      },
-      {
-       "w": "야행성 포켓몬 (고스트·악 타입, 부우부 등)",
-       "a": "밤에 병 옆으로 날아오거나 다가와 곁에 머물러요"
-      }
-     ],
-     "fit": "그루터기·덤불 옆, 밤"
-    },
-    {
      "id": "camp-lantern",
      "n": "캠핑 랜턴",
      "k": "쉼터",
@@ -1277,6 +1209,77 @@
   }
  ],
  "trash": [
+  {
+   "id": "firefly-jar",
+   "n": "반딧불 병",
+   "k": "놀이",
+   "d": "코르크 뚜껑을 덮고 목에 노끈을 감은 유리병이에요. 안에 풀잎을 깔아 두었고 반딧불 다섯 마리가 연두색으로 깜빡여요. 몇 마리는 밖으로 빠져나왔어요.",
+   "px": [
+    "..................h..",
+    "..h..............hfh.",
+    ".hfh..............h..",
+    "..h..kkkkkkkkkkk.....",
+    "....kNNNNnnnnnnnk....",
+    "....knnnnnnnmmmmk....",
+    ".....kmmmmmmmmmk.....",
+    "....kkrRrRrRrRrkk....",
+    "...kgggggggggggggk.h.",
+    "..kgiiiiiiiiiiiGigkfh",
+    "..kgiGWiFiiiiiiiigkh.",
+    "..kgiGGFfFiiiiiiigk..",
+    "..kgiGiiFiiiiFiiigk..",
+    "..kgiGiiiiiiFfFiigk..",
+    "..kgiGiiiiiiiFiiigk..",
+    "..kgiGiiiiFiiiiiigk..",
+    "..kgiGiiiFfFiiiiigk..",
+    "..kgiGFiiiFiiiiiigk..",
+    "..kgiGfFiiiiieFiigk..",
+    "..kgiGEiieiiiEfFigk..",
+    "..kgieEiiEieiEFeigk..",
+    "..kgiEEieEiEiEeEigk..",
+    "..kgiEEiEEiEiEEEigk..",
+    "...kgggggggggggggk...",
+    "....kkkkkkkkkkkkk....",
+    "...zzzzzzzzzzzzzzz...",
+    ".....zzzzzzzzzzz....."
+   ],
+   "pal": {
+    "k": "#20202c",
+    "z": "#2c3a28",
+    "N": "#e8d090",
+    "n": "#c8a050",
+    "m": "#8a6a30",
+    "r": "#d8b878",
+    "R": "#a08050",
+    "g": "#5a8a98",
+    "G": "#a8d8e0",
+    "W": "#f0fcff",
+    "i": "#26404e",
+    "e": "#7ab84a",
+    "E": "#4a7a34",
+    "f": "#f4ff9a",
+    "F": "#b8e85a",
+    "h": "#c8f080"
+   },
+   "acts": [
+    {
+     "w": "벌레 타입 (볼비트·네오비트 등)",
+     "a": "병 옆에 앉아 꽁무니를 같이 반짝이며 기술을 써요"
+    },
+    {
+     "w": "작은 포켓몬",
+     "a": "병 앞에 앉아 반딧불을 올려다보다가 그대로 잠들어요"
+    },
+    {
+     "w": "야행성 포켓몬 (고스트·악 타입, 부우부 등)",
+     "a": "밤에 병 옆으로 날아오거나 다가와 곁에 머물러요"
+    }
+   ],
+   "fit": "그루터기·덤불 옆, 밤",
+   "del": 1792624346669,
+   "dayAt": 1792619438354,
+   "theme": "밤을 밝히는 조명"
+  },
   {
    "id": "paper-lantern",
    "n": "종이 등롱",
