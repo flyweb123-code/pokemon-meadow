@@ -958,9 +958,9 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .egg .ck,.egg .em{display:none}.egg .eglow .kx{fill:#fff3a0}.egg .epc{position:absolute;left:0;top:0;width:100%;height:100%;transition:transform .12s steps(2,end)}.egg .epc.tl{transform-origin:5% 52%}.egg .epc.tr{transform-origin:95% 57%}.egg .elk{position:absolute;left:50%;top:30%;width:calc(30% + var(--lk,0) * 50%);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(#fffbe0 0 22%,#ffe066 40%,rgba(255,190,40,.55) 58%,transparent 72%);filter:drop-shadow(0 0 6px #ffc400);pointer-events:none;opacity:0}.egg.splitting .eglow .k1{display:none}.egg.c1 .k1,.egg.c2 .k2,.egg.c3 .k3{display:inline}
 /* v7.83 경완: 등급이 오를수록 더 좋은 알 (띠 없이) — 우수 반짝임, 레어 푸른 껍질, 에픽 보랏빛 껍질·반짝임 둘·은은한 빛, 전설 금빛 껍질·후광 */
 .egg.g2{--es:#f0a040}.egg.g2 .etw{display:inline}
-.egg.g3{--ec:#e6f2ff;--esh:#b4cfee;--es:#3c86d8;--eo:#24426e}.egg.g3 .etw{display:inline}
+.egg.g3{--ec:#e6f2ff;--esh:#b4cfee;--es:#3c86d8;--eo:#24426e;filter:drop-shadow(0 0 3px rgba(80,150,235,.7))}   /* v8.12 경완: 레어 알도 에픽처럼 살짝 빛남 */.egg.g3 .etw{display:inline}
 .egg.g4{--ec:#f1e6ff;--esh:#c9b0ee;--es:#9a62dc;--eo:#3e2466;filter:drop-shadow(0 0 3px rgba(170,120,240,.75))}.egg.g4 .em{display:inline}
-.egg.g5{--ec:#fff1b8;--esh:#e8c868;--es:#e0a020;--eo:#6a4210;filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 6px #ffd84a)}.egg.g5 .em{display:inline}
+.egg.g5{--ec:#fff1b8;--esh:#e8c868;--es:#e0a020;--eo:#6a4210;filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 6px #ffd84a)}.egg.g5 .em{display:inline}.egg.g5::before,.egg.g5::after{content:'';position:absolute;z-index:2;width:38%;aspect-ratio:1;background:#ffffff;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);pointer-events:none;transform:scale(0);animation:eggSpk 1.6s ease-in-out infinite}.egg.g5::before{top:-6%;right:-16%}.egg.g5::after{width:28%;bottom:14%;left:-14%;animation-delay:-.8s}@keyframes eggSpk{0%,100%{transform:scale(0) rotate(0)}40%{transform:scale(1) rotate(45deg)}60%{transform:scale(.9) rotate(60deg)}80%{transform:scale(0) rotate(90deg)}}@media (prefers-reduced-motion:reduce){.egg.g5::before,.egg.g5::after{animation:none;transform:scale(.8)}}   /* v8.12 경완: 전설 알 반짝반짝 */
 .egg.big{width:72px;height:88px}
 .egg.wob{animation:wob 1.6s ease-in-out infinite;transform-origin:50% 90%}
 @keyframes wob{0%,70%,100%{transform:rotate(0)}76%{transform:rotate(-8deg)}84%{transform:rotate(8deg)}92%{transform:rotate(-4deg)}}
@@ -5844,7 +5844,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.11';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.12';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
