@@ -474,6 +474,8 @@ ol.log li.big .txt{color:#c03838}
 .mon{position:absolute;left:0;top:0;width:0;height:0}
 .mon .shadow{position:absolute;left:0;top:0;width:44px;height:12px;margin:-7px 0 0 -22px;border-radius:50%;background:radial-gradient(closest-side,rgba(20,40,10,.38),rgba(20,40,10,.3) 70%,rgba(20,40,10,0))}
 .mon .lift{position:absolute;left:0;bottom:0;width:0}
+.mon .levfx{position:absolute;left:0;width:0;height:0;pointer-events:none}.mon .levfx i{position:absolute;left:0;top:0;border:3px solid #e88aff;border-radius:50%;translate:-50% -50%;animation:levr .62s linear infinite}.mon .levfx i:nth-child(2){animation-delay:-.21s}.mon .levfx i:nth-child(3){animation-delay:-.41s}
+@keyframes levr{from{width:calc(var(--lw) * .39);height:calc(var(--lw) * .17);opacity:1}to{width:var(--lw);height:calc(var(--lw) * .42);opacity:0}}
 .mon .flip{position:absolute;left:0;bottom:0}
 .mon .act{position:absolute;bottom:0;left:0;transform:translateX(-50%)}
 .mon img{display:block;max-width:none;image-rendering:pixelated;cursor:pointer;-webkit-user-drag:none}
@@ -3575,7 +3577,7 @@ const EXTRA_PAIRS = [
   [[352], ANY, 'chat', 'scare', { cls: 'warp' }, (a, b) => `투명해진 ${J(a,'이/가')} ${N(b)} 바로 옆에서 모습을 드러냈다! ${J(b,'은/는')} 기겁했다.`, 10],
   [[778], [25, 172, 26], 'chat', 'scare', { cls: 'smoke' }, (a, b) => `${J(a,'이/가')} 천을 펄럭이며 ${N(b)} 뒤에서 튀어나왔다!`, 10],
   // lifting
-  [[64, 65, 196, 282, 475, 518], SMALL, 'play', 'float', { aura: 1, h: 55 }, (a, b) => `${J(a,'이/가')} 염력으로 ${J(b,'을/를')} 둥실 띄워 올렸다. ${J(b,'은/는')} 공중에서 허우적댄다.`, 10],
+  [[64, 65, 196, 282, 475, 518], SMALL, 'play', 'float', { aura: 1, h: 55 }, (a, b) => `${J(a,'이/가')} 염력으로 ${J(b,'을/를')} 둥실 띄워 올렸다. ${J(b,'은/는')} 공중에서 둥둥 떠다닌다.`, 10],
   [[66, 67, 68, 532, 533, 534], [74, 75, 524, 525, 95], 'show', 'float', { h: 40, pump: 1, cls: 'hit', t: ['영차!', '으쌰!'], bob: 6 }, (a, b) => `${J(a,'이/가')} ${J(b,'을/를')} 번쩍 들어 올려 역기 운동을 한다!`],
   [[214], SMALL, 'show', 'float', { h: 45, pump: 1, cls: 'hit', t: ['휙!', '!'] }, (a, b) => `${J(a,'이/가')} 뿔로 ${J(b,'을/를')} 번쩍 들어 올렸다!`, 12],
   [[425, 426], SMALL, 'play', 'float', { h: 70, bob: 1.5, cls: 'note', t: ['?', '두둥실'] }, (a, b) => `${J(a,'이/가')} ${J(b,'을/를')} 매달고 둥실 떠오른다. ${J(b,'은/는')} 바둥거린다.`, 12],
@@ -3645,8 +3647,8 @@ const TYPE_RULES = [
     text: () => `${J(a,'이/가')} 단단한 ${J(b,'을/를')} 상대로 수련을 시작했다!`, end: (x, y, w) => `${J(a,'은/는')} 주먹이 얼얼한지 손을 털었다. ${J(b,'은/는')} 꿈쩍도 하지 않았다.` })],
   [(a, b) => has(a, FIG) && has(b, NOR), 6, (a, b) => ({ key: 'fight-normal', kind: 'show',
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 팔씨름 한판 승부!` })],
-  [(a, b) => has(a, PSY) && has(b, FIG), 7, (a, b) => ({ key: 'psy-fight', kind: 'chat', ea: '♪', eb: '!!',
-    text: () => `${J(a,'이/가')} 염력으로 ${J(b,'을/를')} 둥실 띄워 올렸다! ${J(b,'은/는')} 허공에서 버둥거린다.`, rel: [-3, 2], start: () => anim(b, 'hop') })],
+  [(a, b) => has(a, PSY) && has(b, FIG), 7, (a, b) => ({ key: 'psy-fight', kind: 'chat', mo: 'float', p: { aura: 1, h: 45 }, ea: '♪', eb: '!!',
+    text: () => `${J(a,'이/가')} 염력으로 ${J(b,'을/를')} 둥실 띄워 올렸다! ${J(b,'은/는')} 허공에서 둥둥 떠 있다.`, rel: [-3, 2] })],
   [(a, b) => has(a, FAI) && has(b, DRA), 8, (a, b) => ({ key: 'fairy-dragon', kind: 'scared',
     text: () => `드래곤인 ${J(b,'이/가')} ${J(a,'을/를')} 보고 움찔 물러선다. 페어리는 상대하기 껄끄러운가 보다.` })],
   [(a, b) => has(a, POI) && has(b, FAI), 7, (a, b) => ({ key: 'poison-fairy', kind: 'scared',
@@ -4095,10 +4097,10 @@ const TPL = {
     } },
   // a lifts b into the air: psychic, horns, muscles, balloons
   float: { dur: 7,
-    init(sc, a, b) { faceTo(a, b.x); faceTo(b, a.x); if (sc.p.aura) a.el.classList.add('aura'); b.act.classList.add('wiggle'); strike(a); },
+    init(sc, a, b) { faceTo(a, b.x); faceTo(b, a.x); if (sc.p.aura) { a.el.classList.add('aura'); levFx(b); } else b.act.classList.add('wiggle'); strike(a); },   /* v8.05 경완: 염력으로 들린 포켓몬은 버둥대지 않고 미니게임 부유 고리를 두르고 둥둥 뜬다 */
     tick(sc, a, b) {
       const up = sc.mt < 5.5 ? Math.min(1, sc.mt / 1.2) : Math.max(0, 1 - (sc.mt - 5.5) / .6);
-      b.xl = up * (sc.p.h || 50) + Math.sin(sc.mt * (sc.p.bob || 3)) * 6 * up;
+      b.xl = up * (sc.p.h || 50) + (sc.p.aura ? Math.sin(sc.mt * 2.2) * 7 : Math.sin(sc.mt * (sc.p.bob || 3)) * 6) * up;
       if (every(sc, 'p', .3)) particle(b.x + rnd(-14, 14), b.y - b.xl - b.h * .2, sc.p.cls || 'psy', pick([].concat(sc.p.t || ['·', '✧'])));
       if (sc.p.pump && every(sc, 'k', 1)) strike(a);
       if (once(sc, 'land', 6.1)) dustAt(b);
@@ -4151,8 +4153,10 @@ function clearMotion(m) {
   m.xl = 0; m.zAdd = 0;
   if (m.one && m.one.hold) m.one = null;
   m.act.classList.remove('warp', 'wiggle', 'clamp', 'headache', 'vanish');
-  m.el.classList.remove('aura');
+  m.el.classList.remove('aura'); m.liftEl.querySelector('.levfx')?.remove();
 }
+// 미니게임 부유(fx.lev)와 같은 분홍보라 타원 고리 3개가 몸 가운데에서 퍼져 나간다
+function levFx(m) { m.liftEl.querySelector('.levfx')?.remove(); const e = document.createElement('div'); e.className = 'levfx'; e.innerHTML = '<i></i><i></i><i></i>'; e.style.bottom = Math.round(m.h * .45) + 'px'; e.style.setProperty('--lw', Math.round(Math.max(44, m.w * 1.15)) + 'px'); m.liftEl.appendChild(e); }
 
 function interact(a, b, forced) {
   a.face = b.x > a.x ? -1 : 1; b.face = -a.face;
@@ -5241,8 +5245,9 @@ function propReactIn(m, p) {
     if (ty.includes(WAT) || ty.includes(ICE)) { at(sd * (gap + 24), 14); setState(m, 'idle', 3); emote(m, '!!', '', 2.2, 'fire-back'); anim(m, 'shake');
       return log(ty.includes(ICE) ? `${J(m,'은/는')} 모닥불이 너무 뜨거워 녹을 것 같다며 물러났다.` : `${J(m,'이/가')} 모닥불에 깜짝 놀라 뒤로 물러났다.`, [m]); }
     if (campSing(m)) return;   /* v4.44 경완: 가끔 다 같이 둘러앉아 노래 */
-    setState(m, 'idle', rnd(8, 12)); emote(m, isNight() ? 'Zz' : '♪', '', 2.2, 'fire-warm');
-    if (isNight() && Math.random() < .5) { setTimeout(() => { if (S.mons.includes(m) && m.state === 'idle' && !m.goal) { moveTo(m, bedSafe(m, { x: m.x, y: m.y }), { kind: 'bed' }, .5); log(`${J(m,'이/가')} 모닥불을 쬐다 꾸벅꾸벅 졸려서 조금 떨어진 곳에 누웠다.`, [m]); } }, 2500); return log(`${J(m,'이/가')} 모닥불 앞에 앉아 불을 쬔다. 따뜻해 보인다.`, [m]); }
+    const dz = isNight() && !T(m).noct;   /* v8.05 경완: 야행성(쌔비냥 등)은 밤에 불을 쬐도 졸지 않는다 */
+    setState(m, 'idle', rnd(8, 12)); emote(m, dz ? 'Zz' : '♪', '', 2.2, 'fire-warm');
+    if (dz && Math.random() < .5) { setTimeout(() => { if (S.mons.includes(m) && m.state === 'idle' && !m.goal) { moveTo(m, bedSafe(m, { x: m.x, y: m.y }), { kind: 'bed' }, .5); log(`${J(m,'이/가')} 모닥불을 쬐다 꾸벅꾸벅 졸려서 조금 떨어진 곳에 누웠다.`, [m]); } }, 2500); return log(`${J(m,'이/가')} 모닥불 앞에 앉아 불을 쬔다. 따뜻해 보인다.`, [m]); }
     return log(pick([`${J(m,'이/가')} 모닥불 앞에 앉아 불을 쬔다. 따뜻해 보인다.`, `${J(m,'이/가')} 타닥타닥 타는 모닥불을 가만히 바라본다.`]), [m]);
   }
   if (p.k === 'bed') {
@@ -5839,7 +5844,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.04';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.05';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
