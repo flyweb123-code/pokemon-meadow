@@ -4514,7 +4514,7 @@ function setMode(m) {
   const pm = isPmd(m.form);
   m.img.hidden = pm; m.spr.hidden = !pm; m.act.classList.toggle('pm', pm); m.el.classList.toggle('pmd', pm);
   m.sprKey = null; m.one = null; m.frameKey = null;   // v3.87: 크기가 바뀌면 프레임 칸도 다시 (멈춘 포켓몬이 잘려 보이던 것)
-  if (pm) { const k = m.sk || m.form, [w, h] = atlasSize(k); m.spr.style.backgroundImage = `url("${SPRITES[k].i}")`; m.spr.style.backgroundSize = `${w * scaleOf(k)}px ${h * scaleOf(k)}px`; m.spr.style.setProperty('--bi', m.spr.style.backgroundImage); m.spr.style.setProperty('--bs', m.spr.style.backgroundSize); }
+  if (pm) { const k = m.sk || m.form, [w, h] = atlasSize(k); m.sprBi = SPRITES[k].i; m.spr.style.backgroundImage = `url("${m.sprBi}")`; m.spr.style.backgroundSize = `${w * scaleOf(k)}px ${h * scaleOf(k)}px`; m.spr.style.setProperty('--bi', m.spr.style.backgroundImage); m.spr.style.setProperty('--bs', m.spr.style.backgroundSize); }
   m.spr.setAttribute('aria-label', m.name);
 }
 // play an animation once (or hold its hit frame) before falling back to the state's own loop
@@ -5508,9 +5508,9 @@ fitBottom(); addEventListener('resize', fitBottom); addEventListener('orientatio
 // 프로필 칸: 맵의 스프라이트(그림·프레임·방향)를 매 프레임 그대로 옮겨 그린다.
 // 다른 포켓몬과 상호작용 중이면 상대도 맵에서 보이는 위치·크기 그대로 함께 그린다
 function pfSrc(m) {
-  if (isPmd(m.form) || isPmd(m.sk)) { const s = m.spr.style; return { el: m.spr, w: parseFloat(s.width) || 1, h: parseFloat(s.height) || 1, bg: `width:${s.width};height:${s.height};background-image:${s.backgroundImage};background-size:${s.backgroundSize};background-position:${s.backgroundPosition};` }; }
+  if (isPmd(m.form) || isPmd(m.sk)) { const s = m.spr.style; return { el: m.spr, w: parseFloat(s.width) || 1, h: parseFloat(s.height) || 1, sw: s.width, sh: s.height, bi: m.sprBi || '', bs: s.backgroundSize, bp: s.backgroundPosition }; }   /* v7.90: 그림(bi)은 문자열 그대로 넘겨 바뀔 때만 다시 넣는다 */
   const w = m.img.naturalWidth || 40, h = m.img.naturalHeight || 40;
-  return { el: m.img, w, h, bg: `width:${w}px;height:${h}px;`, src: m.img.src };
+  return { el: m.img, w, h, sw: w + 'px', sh: h + 'px', bi: '', bs: '', bp: '', src: m.img.currentSrc || m.img.src };
 }
 function mirrorPf() {
   const m = S.sel, box = !infoEl.hidden && m && $('#pPf'); if (!box) return;
@@ -5520,10 +5520,17 @@ function mirrorPf() {
   const L = Math.min(...fs.map(f => f.r.left)), R = Math.max(...fs.map(f => f.r.right)), T = Math.min(...fs.map(f => f.r.top)), B = Math.max(...fs.map(f => f.r.bottom));
   const k = Math.min(K / Math.max(1, R - L), K / Math.max(1, B - T), ...fs.map(f => 2.2 / f.si)), cx = (L + R) / 2, cy = (T + B) / 2;
   ins.forEach((inn, i) => {
-    const f = fs[i]; if (!f) { if (inn.style.display !== 'none') { inn.style.display = 'none'; inn.dataset.c = ''; } return; }
+    const f = fs[i]; if (!f) { if (inn.style.display !== 'none') inn.style.display = 'none'; return; }
     const dx = ((f.r.left + f.r.right) / 2 - cx) * k, dy = ((f.r.top + f.r.bottom) / 2 - cy) * k, q = k * f.si;
-    const css = `${f.bg}transform:translate(-50%,-50%) translate(${dx.toFixed(1)}px,${dy.toFixed(1)}px) scale(${(q * f.x.face).toFixed(3)},${q.toFixed(3)})`;
-    if (inn.dataset.c !== css + (f.src || '')) { inn.dataset.c = css + (f.src || ''); inn.style.cssText = css; inn.innerHTML = f.src ? `<img alt="" src="${f.src}">` : ''; }
+    // v7.90 경완(필드 정보창에서 몇몇 포켓몬 그림이 깜빡임): 예전엔 프레임이 바뀔 때마다 cssText 로 아틀라스 data URI(수백 KB)까지 통째로 다시 넣고,
+    // GIF 포켓몬은 <img> 를 새로 만들었다 → 폰(WebKit)에서 그림을 다시 풀어 그 사이 한 프레임 비었다. 이제 그림은 바뀔 때만, 매 프레임은 자리·크기·프레임 위치만
+    const st = inn.style, src = f.src || '', tf = `translate(-50%,-50%) translate(${dx.toFixed(1)}px,${dy.toFixed(1)}px) scale(${(q * f.x.face).toFixed(3)},${q.toFixed(3)})`;
+    if (st.display === 'none') st.display = '';
+    if (inn._bi !== f.bi) { inn._bi = f.bi; st.backgroundImage = f.bi ? `url("${f.bi}")` : ''; }
+    if (inn._src !== src) { inn._src = src; inn.innerHTML = src ? `<img alt="" src="${src}">` : ''; }
+    if (st.width !== f.sw) st.width = f.sw; if (st.height !== f.sh) st.height = f.sh;
+    if (st.backgroundSize !== f.bs) st.backgroundSize = f.bs; if (st.backgroundPosition !== f.bp) st.backgroundPosition = f.bp;
+    if (inn._tf !== tf) { inn._tf = tf; st.transform = tf; }
   });
   const z = m.state === 'sleep' ? 'Zz' : ''; if (box.lastChild.textContent !== z) box.lastChild.textContent = z;
 }
@@ -5827,7 +5834,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.89';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.90';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
