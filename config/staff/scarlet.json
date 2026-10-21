@@ -792,63 +792,6 @@
      "fit": "열매나무 옆, 가을"
     },
     {
-     "id": "mushroom-cluster",
-     "n": "가을 버섯 무리",
-     "k": "쉼터",
-     "d": "흰 점박이 빨간 버섯 두 개와 작은 갈색 버섯 하나가 이끼 위에 모여 있어요.",
-     "px": [
-      "..........................",
-      "..........................",
-      "................kkkk......",
-      "..............kkaaRRkk....",
-      ".....kkkkkk..kaaaaRRRRk...",
-      "...kkaaaRRRkkRRRPRRRRRRk..",
-      "..kaaaaaRPRRRRRRRRRPRRRk..",
-      ".kRRRRPRRRRRRrrrrrrrrrrk..",
-      ".kRRRRRRRRRPRRkkkwwWkkk...",
-      ".krrrPrrrrrrrrkkkwwWk.....",
-      "..kkkkkwwWkkeeDDkwwWk.....",
-      "......kwwWkDDDDDDwwWk.....",
-      "......kwwWkddddddwwWk.....",
-      "......kwwWkkkwwWkwwWk.....",
-      "......kwwWk.kwwWkwwWk.....",
-      "...k..kwwWk.kwwWkwwWkk....",
-      "..kGkkGwwGkkGwwGkwGWkGk...",
-      "..kggggggggggggggggggggk..",
-      "..kggggggggggggggggggggk..",
-      "...kkkkkkkkkkkkkkkkkkkk..."
-     ],
-     "pal": {
-      "k": "#20202c",
-      "a": "#ff8a7a",
-      "R": "#e0443a",
-      "r": "#b82c2c",
-      "d": "#7a1e24",
-      "e": "#c8946a",
-      "D": "#8a5a3a",
-      "w": "#f4ead0",
-      "W": "#c8b898",
-      "P": "#fff8ec",
-      "g": "#5a8a3a",
-      "G": "#7cb050"
-     },
-     "acts": [
-      {
-       "w": "풀·독 타입",
-       "a": "버섯 옆에 앉아 포자를 맞으며 잠들어요 (자기)"
-      },
-      {
-       "w": "벌레 타입 작은 포켓몬",
-       "a": "버섯 갓 위에 올라가 앉아요"
-      },
-      {
-       "w": "작은 포켓몬",
-       "a": "큰 버섯 갓 아래 그늘에 숨어요"
-      }
-     ],
-     "fit": "그루터기·덤불 옆 그늘"
-    },
-    {
      "id": "firewood-stack",
      "n": "장작 더미",
      "k": "쉼터",
@@ -911,6 +854,66 @@
   }
  ],
  "trash": [
+  {
+   "id": "mushroom-cluster",
+   "n": "가을 버섯 무리",
+   "k": "쉼터",
+   "d": "흰 점박이 빨간 버섯 두 개와 작은 갈색 버섯 하나가 이끼 위에 모여 있어요.",
+   "px": [
+    "..........................",
+    "..........................",
+    "................kkkk......",
+    "..............kkaaRRkk....",
+    ".....kkkkkk..kaaaaRRRRk...",
+    "...kkaaaRRRkkRRRPRRRRRRk..",
+    "..kaaaaaRPRRRRRRRRRPRRRk..",
+    ".kRRRRPRRRRRRrrrrrrrrrrk..",
+    ".kRRRRRRRRRPRRkkkwwWkkk...",
+    ".krrrPrrrrrrrrkkkwwWk.....",
+    "..kkkkkwwWkkeeDDkwwWk.....",
+    "......kwwWkDDDDDDwwWk.....",
+    "......kwwWkddddddwwWk.....",
+    "......kwwWkkkwwWkwwWk.....",
+    "......kwwWk.kwwWkwwWk.....",
+    "...k..kwwWk.kwwWkwwWkk....",
+    "..kGkkGwwGkkGwwGkwGWkGk...",
+    "..kggggggggggggggggggggk..",
+    "..kggggggggggggggggggggk..",
+    "...kkkkkkkkkkkkkkkkkkkk..."
+   ],
+   "pal": {
+    "k": "#20202c",
+    "a": "#ff8a7a",
+    "R": "#e0443a",
+    "r": "#b82c2c",
+    "d": "#7a1e24",
+    "e": "#c8946a",
+    "D": "#8a5a3a",
+    "w": "#f4ead0",
+    "W": "#c8b898",
+    "P": "#fff8ec",
+    "g": "#5a8a3a",
+    "G": "#7cb050"
+   },
+   "acts": [
+    {
+     "w": "풀·독 타입",
+     "a": "버섯 옆에 앉아 포자를 맞으며 잠들어요 (자기)"
+    },
+    {
+     "w": "벌레 타입 작은 포켓몬",
+     "a": "버섯 갓 위에 올라가 앉아요"
+    },
+    {
+     "w": "작은 포켓몬",
+     "a": "큰 버섯 갓 아래 그늘에 숨어요"
+    }
+   ],
+   "fit": "그루터기·덤불 옆 그늘",
+   "del": 1792624384288,
+   "dayAt": 1792618421339,
+   "theme": "가을 수확 축제"
+  },
   {
    "id": "corn-sheaf",
    "n": "옥수수 다발",
