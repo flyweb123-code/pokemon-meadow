@@ -176,6 +176,7 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 @media (max-width:1100px){.sc-g{grid-template-columns:repeat(3,minmax(0,1fr))}}@media (max-width:700px){.sc-g{grid-template-columns:repeat(2,minmax(0,1fr))}.sc-top{grid-template-columns:minmax(0,1fr)}}
 .sc-it{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--chip);border-radius:8px;padding:8px;min-width:0}.sc-it.pk{border-color:var(--acc)}
 .sc-pic{position:relative;display:grid;place-items:center;height:112px;background:repeating-conic-gradient(#3a3f4d 0 25%,#333846 0 50%) 0 0/12px 12px;border-radius:6px}
+.sc-wd{position:absolute;right:4px;top:4px;font-size:11px;line-height:1;padding:4px 7px;border-radius:4px;border:0;background:rgba(0,0,0,.55);color:#e4e7ee;cursor:pointer;opacity:.6}.sc-wd:hover{opacity:1}.sc-wd.arm,.sc-wdd.arm{background:#c0392b;color:#fff;opacity:1}.sc-wdd{margin-left:8px;font-size:11px;vertical-align:middle}
 .sc-k{position:absolute;left:4px;top:4px;font-size:10.5px;padding:0 6px;border-radius:4px;background:rgba(0,0,0,.55);color:#e4e7ee}
 .sc-hd{display:flex;align-items:center;gap:6px;justify-content:space-between}.sc-hd b{font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sc-pk{flex:none;min-height:24px!important;padding:1px 8px!important;font-size:11.5px!important}.sc-pk.on{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
@@ -396,7 +397,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
           <!-- v3.26 경완: 위쪽 막대는 한 줄이 더 좋다 (3.25 두 줄 정리 되돌림) -->
           <b>시간</b><input type="range" id="hr" min="0" max="23.75" step=".25" value="14"><span class="num" id="hrT" style="min-width:7.5em">지금</span><button class="chip" id="hrNow" disabled title="지금 시각으로 돌아가기">지금</button>
           <span class="vsep"></span>
-          <span class="chips" id="wx"><button class="chip on" data-w="">날씨 그대로</button><button class="chip" data-w="clear">맑음</button><button class="chip" data-w="cloud">흐림</button><button class="chip" data-w="rain">비</button></span>
+          <span class="chips" id="wx"><button class="chip on" data-w="">날씨 그대로</button><button class="chip" data-w="clear">맑음</button><button class="chip" data-w="cloud">흐림</button><button class="chip" data-w="rain">비</button><button class="chip" data-w="snow">눈</button></span>
           <select id="seaSel" aria-label="계절" title="계절 미리 보기 (게임은 날짜에 맞춰 바뀌어요)"><option value="">계절 그대로</option><option value="spring">봄</option><option value="summer">여름</option><option value="autumn">가을</option><option value="winter">겨울</option></select>
           <span class="vsep"></span>
           <b>기종</b><select class="devSel" aria-label="휴대폰 기종"></select>
@@ -545,7 +546,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.30';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.31';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2076,6 +2077,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.31', '10월 22일', ['스칼렛의 작업물: 소품 그림 오른쪽 위 × 로 작업물 하나씩, 날짜 옆 버튼으로 하루치를 지워요 (두 번 눌러 확인)', '맵 편집: 고른 소품 네 모서리 어디를 끌어도 크기 조절', '위쪽 막대 날씨에 \'눈\' (겨울 눈 내림은 실제로 눈이 올 때만)', '횃불처럼 불 붙은 소품은 모닥불과 같은 불꽃으로 타올라요']],
   ['3.30', '10월 22일', ['위쪽 막대에 계절 고르기 (봄·여름·가을·겨울 미리 보기, 편집 중에도 꽃잎·낙엽·눈이 보여요)']],
   ['3.29', '10월 22일', ['맵 편집 중에도 시간·날씨를 바꿔 볼 수 있어요', '편집 중 고른 소품 오른쪽 아래 손잡이를 끌어 크기 조절', '횃불처럼 불이 붙은 추가 소품은 모닥불처럼 불꽃이 흔들려요']],
   ['3.28', '10월 22일', ['맵 소품 창: 스칼렛 소품 칸 이름을 \'추가 소품\'으로, 위 전체 소품 칸에 끌어 놓고 소품 창 위 저장을 누르면 전체 소품으로 들어가요', '\'끌어다 놓기 · 누르면 크게\' 문구 지움']],
@@ -3235,15 +3237,19 @@ $('#neuC').addEventListener('click', e => { const t = e.target;
 // ---------- 스칼렛의 작업물 ----------
 // 소품 = { id, at, n, k(종류), d(설명), px(도트 줄들), pal{글자: 색}, acts[{w: 누가, a: 무엇을}], fit(어울리는 곳) }
 let SCA_R = null, scaQ = '', SCA_PK = null, PK_BUSY = false;
-async function scaLoad() { [SCA_R, SCA_PK] = await Promise.all([staffGet('config/staff/scarlet.json', { days: [] }), staffGet('config/staff/picks.json', { items: [] })]); if (view === 'sca') renderSca(); if (view === 'map') try { renderDock(); } catch (e) {} scaMig(); }
+async function scaLoad() { [SCA_R, SCA_PK] = await Promise.all([staffGet('config/staff/scarlet.json', { days: [] }), staffGet('config/staff/picks.json', { items: [] })]); if (view === 'sca') renderSca(); if (view === 'map') try { renderDock(); } catch (e) {} scaMig(); scaSync(); }
 // v3.26: 예전 picks.json 에 담아 둔 소품은 한 번만 맵 소품 목록으로 옮긴다
+// v3.31 경완: 스칼렛이 작업물을 다시 그리면(피드백 반영 등) 맵 소품 리스트의 같은 소품 그림도 새 그림으로 (작업본에 들어가요, 저장하면 게임에)
+function scaSync() { const art = (D.layout || ORIG?.layout)?.scArt; if (!A?.scDef || !SCA_R || !art) return; let n = 0;
+  for (const [id, a] of Object.entries(art)) { const o = scaItem(id); if (o?.px?.length && (JSON.stringify(o.px) !== JSON.stringify(a.px) || JSON.stringify(o.pal) !== JSON.stringify(a.pal))) { A.scDef(id, { ...o, n: a.n }); n++; } }
+  if (n) toast(`스칼렛이 다시 그린 소품 ${n}개를 맵 소품에 반영했어요 · 맵 메뉴에서 저장하면 게임에 들어가요`); }
 function scaMig() { if (store.get('st-pk-mig') || !A?.scDef || !SCA_R || !SCA_PK) return; store.set('st-pk-mig', '1'); for (const x of SCA_PK.items || []) { const o = scaItem(x.id); if (o?.px?.length && !scaPicked(x.id)) { A.scDef(x.id, o); const N = new Set(JSON.parse(store.get('st-sc-new') || '[]')); N.add(x.id); store.set('st-sc-new', JSON.stringify([...N])); } } scDot(); }
 const scaItem = id => (SCA_R?.days || []).flatMap(d => d.items).find(o => o.id === id);
 const scaPicked = id => !!(D.layout || ORIG?.layout)?.scArt?.[id];   // v3.26: 소품 리스트 = 맵 배치의 스칼렛 소품 목록 (저장하면 게임에 들어감)
 // v3.25 경완: 가운데 화면에 여백 없이 꽉 차게 5×2 · 상호작용은 맵 메뉴 소품 반응처럼 (누가 | 무엇을) · 피드백 칸은 어디서나 같은 모양 · 마음에 드는 소품은 바로 소품 리스트에
 function renderSca() {
   const days = SCA_R?.days || [], last = days[0];
-  const card = o => { const pk = scaPicked(o.id); return `<div class="sc-it${pk ? ' pk' : ''}" id="sc-${esc(o.id)}"><div class="sc-pic">${o.px?.length ? pxSvg(o.px, o.pal || {}, Math.max(2, Math.floor(96 / Math.max(o.px.length, o.px[0].length)))) : ''}${o.k ? `<span class="sc-k">${esc(o.k)}</span>` : ''}</div>
+  const card = o => { const pk = scaPicked(o.id); return `<div class="sc-it${pk ? ' pk' : ''}" id="sc-${esc(o.id)}"><div class="sc-pic">${o.px?.length ? pxSvg(o.px, o.pal || {}, Math.max(2, Math.floor(96 / Math.max(o.px.length, o.px[0].length)))) : ''}${o.k ? `<span class="sc-k">${esc(o.k)}</span>` : ''}<button class="sc-wd" data-swdel="${esc(o.id)}" title="이 작업물 지우기 (한 번 더 누르면 지워져요)">×</button></div>
     <div class="sc-hd"><b>${esc(o.n)}</b><button class="chip sc-pk${pk ? ' on' : ''}" data-pk="${esc(o.id)}"${PK_BUSY ? ' disabled' : ''} title="${pk ? '소품 리스트에서 빼기' : '맵 메뉴 소품 리스트에 추가'}">${pk ? '✓ 리스트에 있음' : '+ 소품 리스트'}</button></div>
     <div class="sc-d">${esc(o.d || '')}</div>
     ${o.acts?.length ? `<div class="react sc-rx"><section class="rg">${o.acts.map(a => `<div><span class="chip">${esc(a.w)}</span><span>${esc(a.a)}</span></div>`).join('')}</section></div>` : ''}${o.fit ? `<div class="sc-fit">어울리는 곳 · ${esc(o.fit)}</div>` : ''}
@@ -3253,7 +3259,7 @@ function renderSca() {
   $('#scaC').innerHTML = `<div class="sc-top"><div class="stf-hd sc-me">${face('sca', 4)}<div><h2 style="margin:0">스칼렛 <span class="small mute">소품 디자이너 · 매일 아침 7시 43분 시작, 보통 8시 전후에 올라와요</span></h2>${last ? `<div class="small mute">${when(last.at)} · 소품 ${last.items.length}개${last.theme ? ' · ' + esc(last.theme) : ''}</div>` : ''}<div class="stf-say"><p>${esc(last?.note || '매일 아침 필드에 놓을 소품 10개를 새로 그려서, 포켓몬들이 그 소품으로 뭘 할 수 있는지 같이 정리해 둘게요.')}</p></div></div></div>
     <div class="sc-side"><div class="search"><input id="scaQ" class="inp" placeholder="소품·포켓몬·상호작용 찾기" value="${esc(scaQ)}"></div>${fbBox('sca', 'all', '', '스칼렛에게 전체 피드백 (그림체·테마·상호작용 등)')}
     <div class="small mute">소품 리스트 ${pk.length}개 ${pk.length ? '· ' + pk.map(o => esc(o.n)).join(', ') : ''} — 넣으면 맵 메뉴 소품 칸 맨 아래에 바로 생겨요. 끌어다 맵에 놓고 저장하면 게임에서 포켓몬들이 놀러 와요.</div></div></div>
-    ${days.length ? days.map(d => { const L = d.items.filter(hit); return L.length ? `<div class="sc-day"><h2>${new Date(d.at).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })} <span class="small mute">${L.length}개${d.theme ? ' · ' + esc(d.theme) : ''}</span></h2><div class="sc-g">${L.map(card).join('')}</div></div>` : ''; }).join('') : '<div class="empty">아직 올린 작업물이 없어요. 내일 아침 첫 작업물이 올라와요.</div>'}`;
+    ${days.length ? days.map(d => { const L = d.items.filter(hit); return L.length ? `<div class="sc-day"><h2>${new Date(d.at).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })} <span class="small mute">${L.length}개${d.theme ? ' · ' + esc(d.theme) : ''}</span><button class="chip sc-wdd" data-swday="${d.at}" title="한 번 더 누르면 이 날 작업물이 모두 지워져요">이 날 작업물 지우기</button></h2><div class="sc-g">${L.map(card).join('')}</div></div>` : ''; }).join('') : '<div class="empty">아직 올린 작업물이 없어요. 내일 아침 첫 작업물이 올라와요.</div>'}`;
 }
 $('#scaC').addEventListener('input', e => { if (e.target.id !== 'scaQ') return; scaQ = e.target.value; clearTimeout(renderSca.t); renderSca.t = setTimeout(() => { renderSca(); const i = $('#scaQ'); i.focus(); i.setSelectionRange(scaQ.length, scaQ.length); }, 250); });
 // main 에 있는 JSON 파일 하나를 고쳐 바로 올린다 (경완 깃허브 열쇠, 부딪히면 다시 읽고 세 번까지)
@@ -3267,7 +3273,13 @@ function scaPick(id) { if (!A?.scDef) { toast('게임을 새 버전(v8.22)으로
   toast(on ? `${o?.n || '소품'}을(를) 소품 리스트에 넣었어요 · 맵 메뉴에서 저장하면 게임에 들어가요` : '소품 리스트에서 뺐어요'); renderSca(); }
 // v3.26 경완: 새로 넣은 스칼렛 소품이 있으면 맵 메뉴에 빨간 점 (맵 메뉴를 열면 사라짐)
 function scDot() { const a = $('.nav a[data-v="map"]'); if (a) a.classList.toggle('scnew', JSON.parse(store.get('st-sc-new') || '[]').length > 0); }
-$('#scaC').addEventListener('click', e => { const b = e.target.closest('[data-pk]'); if (b) scaPick(b.dataset.pk); });
+$('#scaC').addEventListener('click', e => { const b = e.target.closest('[data-pk]'); if (b) scaPick(b.dataset.pk); const x = e.target.closest('[data-swdel],[data-swday]'); if (x) scaDel(x); });
+// v3.31 경완: 작업물 메뉴에서 스칼렛 작업물을 소품마다·날마다 지운다 (× 한 번 → 빨갛게, 한 번 더 → main 의 config/staff/scarlet.json 에서 지움). 이미 소품 리스트에 넣은 건 맵에 그대로 남아요
+async function scaDel(b) { if (!b.classList.contains('arm')) { $$('#scaC .arm').forEach(e => e.classList.remove('arm')); b.classList.add('arm'); if (b.dataset.swday) b.textContent = '정말 지울까요?'; clearTimeout(scaDel.t); scaDel.t = setTimeout(() => renderSca(), 3000); return; }
+  clearTimeout(scaDel.t); const id = b.dataset.swdel, at = +b.dataset.swday || 0, drop = R => { R.days = (R.days || []).filter(d => d.at !== at).map(d => ({ ...d, items: d.items.filter(o => o.id !== id) })).filter(d => d.items.length); return R; };
+  if (!store.get('st-gh-token')) { toast('깃허브 열쇠가 있어야 지울 수 있어요 (설정)', true); return; } b.disabled = true;
+  try { SCA_R = await ghJsonEdit('config/staff/scarlet.json', drop, at ? '스칼렛 작업물 하루치 지우기 (작업실)' : `스칼렛 작업물 지우기: ${id} (작업실)`); toast(at ? '이 날 작업물을 지웠어요' : '작업물을 지웠어요'); }
+  catch (err) { toast('지우지 못했어요: ' + (err.message || err), true); } renderSca(); }
 
 // ---------- 작업물 피드백 (v3.22 경완: 직원 DM 대신 작업물에 남긴 피드백을 다음 아침 작업에 반영) ----------
 // 피드백 = config/staff/feedback.json (작업실이 main 에 바로 올림), 반영 기록 = config/staff/feedback-done.json (아침 루틴이 씀)
@@ -3313,7 +3325,7 @@ function hook() {
   A.edit(editing); if (!$('#hrNow').disabled) A.setHour(+$('#hr').value); $('#hrNow').disabled && $('#hrNow').onclick();
   const w0 = $('#wx .on')?.dataset.w; if (w0) A.setWx(w0); if ($('#seaSel').value) A.setSeason?.($('#seaSel').value);
   $('#addp').innerHTML = A.ADD.map(([k, n]) => { const s = A.addIcon(k); return `<button data-k="${k}">${s ? `<img alt="" src="${s}">` : `<span class="ph">${k === 'mush' ? '🍄' : '●'}</span>`}${n}</button>`; }).join('');
-  renderNav(); renderReact(null); renderPal(); renderDock(); dstat(); RENDER[view]?.(); statusBar(); setTimeout(safeZ, 300); setTimeout(thumbsReady, 2500);
+  renderNav(); renderReact(null); renderPal(); renderDock(); scaSync(); dstat(); RENDER[view]?.(); statusBar(); setTimeout(safeZ, 300); setTimeout(thumbsReady, 2500);
   if (szOn) { szOn = false; szSet(true); }   // v2.63: 크기 조절 모드 중에 게임 화면이 다시 불러와지면 게임도 다시 크기 조절 모드로
 }
 addEventListener('message', e => { if (e.data?.studio === 'ready' && !e.data.gal) hook(); if (e.data?.studio === 'ready' && e.data.gal) $('#galLoad').hidden = true; });
