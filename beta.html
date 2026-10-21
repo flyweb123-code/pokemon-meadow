@@ -5822,7 +5822,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.67';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.68';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6462,7 +6462,7 @@ function mgAimHint(g) {   /* v6.57 경완: 글·화살표 대신 누르는 동�
   const ab = $('#mgAbBtn'), h = $('#mgAim'), r = ab.getBoundingClientRect(), pr = h.offsetParent?.getBoundingClientRect() || { left: 0, top: 0 };
   h.style.left = (r.left - pr.left + r.width / 2) + 'px'; h.style.top = (r.top - pr.top + r.height / 2) + 'px'; const R = MG_AIM_R, d = `M${-MG_AIM_B} ${-R} Q${MG_AIM_B} 0 ${-MG_AIM_B} ${R}`; h.querySelectorAll('path').forEach(p => p.setAttribute('d', d)); h.querySelector('i').style.transform = ''; h.hidden = false; g.aimG = 1; }
 function mgAimMove(dy) { const k = $('#mgAim i'); if (k) { const y = clamp(dy, -MG_AIM_R, MG_AIM_R); k.style.transform = `translate(${mgAimX(y)}px,${y}px)`; } }
-const MG_COMBO_T = 1.5;   // 콤보가 이어지는 시간 (초) — v7.67 경완: 2.6은 너무 길다
+const MG_COMBO_T = .5;   // 콤보가 이어지는 시간 (초) — v7.68 경완: 0.5초 (2.6·1.5는 너무 길다)
 // v5.92 경완: 액티브 기술은 시작과 끝을 확실하게 (색 번쩍·고리·이름, 끝나면 뚝 소리와 연기, 끝나기 직전엔 깜빡)
 const MG_PC_T = 1.1;
 // v6.97 경완: 시작 카운트다운 대신 — 포켓몬 머리 위에 친밀도 하트가 떠올라 하나씩 왼쪽 위 게임 하트 칸으로 날아가 채워진다
@@ -6648,7 +6648,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
     g.rocks = g.rocks.filter(r => !r.dn); }
   for (const s of g.shots) { s.x += s.v * dt; const o = g.obs.find(q => !q.dead && !q.flee && Math.abs(q.x - s.x) < q.w / 2 + 8); if (o) { mgKill(g, o, '#ff8a2a'); s.x = 1e9; } else if (Math.random() < .6) g.parts.push({ x: s.x - 8, y: s.y + (Math.random() - .5) * 8, vx: -60, vy: -20, t: .25, c: '#ffb04a' }); }
   g.shots = g.shots.filter(s => s.x < g.W + 40); g.obs = g.obs.filter(o => o.x > -60 && !(o.dead && o.kt <= 0) && o.y < 400);
-  if (g.flapT > 0) g.flapT -= dt; if (g.gSh > 0) g.gSh -= dt; if (g.irF > 0) g.irF -= dt; if (g.sDarkT > 0) g.sDarkT -= dt; if (g.cPop > 0) g.cPop -= dt; if (g.combo && g.cT > 0) { g.cT -= dt; if (g.cT <= 0) { if (g.combo >= 3) mgToast(g, `${g.combo} 콤보!`); g.combo = 0; g.cT = 0; } }   /* v7.65 경완: 콤보는 시간제 — MG_COMBO_T 안에 또 밟거나 기술로 날려야 이어짐(땅에 닿아도 안 끊김) */ if (g.inv > 0) g.inv -= dt; if (g.npop) { g.npop.t -= dt; g.npop.y -= 34 * dt; if (g.npop.t <= 0) g.npop = null; } if (g.pop) { g.pop.t -= dt; g.pop.y -= 30 * dt; if (g.pop.t <= 0) g.pop = null; } if (g.kps) { g.kps.forEach(p => { p.t -= dt; p.y -= 40 * dt; }); g.kps = g.kps.filter(p => p.t > 0); }
+  if (g.flapT > 0) g.flapT -= dt; if (g.gSh > 0) g.gSh -= dt; if (g.irF > 0) g.irF -= dt; if (g.sDarkT > 0) g.sDarkT -= dt; if (g.cPop > 0) g.cPop -= dt; if (g.combo && g.cT > 0 && !(g.cSt && g.y > 0)) { g.cT -= dt;   /* v7.68: 밟고 공중에 있는 동안은 시간 안 줄어듦(밟기 콤보는 착지 때 끊김) */ if (g.cT <= 0) { if (g.combo >= 3) mgToast(g, `${g.combo} 콤보!`); g.combo = 0; g.cT = 0; } }   /* v7.65 경완: 콤보는 시간제 — MG_COMBO_T 안에 또 밟거나 기술로 날려야 이어짐(땅에 닿아도 안 끊김) */ if (g.inv > 0) g.inv -= dt; if (g.npop) { g.npop.t -= dt; g.npop.y -= 34 * dt; if (g.npop.t <= 0) g.npop = null; } if (g.pop) { g.pop.t -= dt; g.pop.y -= 30 * dt; if (g.pop.t <= 0) g.pop = null; } if (g.kps) { g.kps.forEach(p => { p.t -= dt; p.y -= 40 * dt; }); g.kps = g.kps.filter(p => p.t > 0); }
   // 부딪힘 (몸보다 조금 작게 봐서 아슬아슬하게 넘은 건 봐준다)
   const pl = g.PX - g.pw, pr = g.PX + g.pw + (g.fx.bolt > 0 ? Math.max(0, g.bo || 0) : 0), pb = g.y + 3, pt = g.y + g.phh - 2;
   if (g.pcH != null) { g.pcH += dt; const k = Math.min(1, g.pcH / MG_PC_T); g.sq = 1 - .22 * k + Math.sin(g.t * 60) * .02 * k; g.sqv = 0; if ((g.pcS -= dt) <= 0) { g.pcS = .16 - .07 * k; sfx('zap', k * .5); } }   // 힘 모으는 중: 몸 웅크림 + 지잉
@@ -6943,7 +6943,7 @@ q.disc(bx, cy, R0 + 7 + pu * 3, R0 + 5 + pu * 3, 'rgba(255,226,80,.15)'); q.disc
   if (g.abK && g.abK !== 'shield' && !g.over) { const L = mgAbLeft(g), k = clamp(L / (g.abD || 1), 0, 1), bw = 48, bx = Math.round(g.PX - bw / 2), by = Math.round(py - phh - 30), c = g.abW && Math.floor(g.t * 14) % 2 ? '#ffffff' : MG_ABC[g.abK] || '#ffe14a';   /* v6.05 경완: 남은 시간은 엄지에 가리지 않게 포켓몬 머리 위에 */
     x.fillStyle = '#20202c'; x.fillRect(bx - 2, by - 2, bw + 4, 9); x.fillStyle = 'rgba(255,255,255,.35)'; x.fillRect(bx, by, bw, 5); x.fillStyle = c; x.fillRect(bx, by, Math.round(bw * k / 2) * 2, 5); x.textAlign = 'center'; txt(L.toFixed(1) + '초', g.PX, by - 6, 12, '#fff', 3); x.textAlign = 'start'; }
   if (g.combo >= 2 && g.cT > 0) { const sc = 1 + Math.max(0, g.cPop || 0) * 1.2, mul = Math.min(5, g.combo), cx = Math.round(g.PX + g.pw + 22), cy = Math.round(GY - g.y - (g.phh || 36) - 2), c = g.combo >= 10 ? '#ff5a3a' : mul >= 5 ? '#ff8a30' : mul >= 3 ? '#ffb030' : '#ffe14a';   // v6.16 경완: 콤보는 게임을 가리지 않게 캐릭터 옆에 작게
-    x.save(); if (g.cT < .5 && Math.floor(g.t * 12) % 2) x.globalAlpha = .35; x.translate(cx, cy); x.scale(sc, sc); x.textAlign = 'left'; txt(g.combo + ' 콤보', 0, 0, 14, c, 3); x.restore();   /* v7.65: 콤보 유지되는 동안 계속 떠 있고, 끝나기 0.6초 전부터 깜빡 */ x.textAlign = 'start'; }
+    x.save(); x.translate(cx, cy); x.scale(sc, sc); x.textAlign = 'left'; txt(g.combo + ' 콤보', 0, 0, 14, c, 3); x.restore();   /* v7.65: 콤보 유지되는 동안 계속 떠 있다가 끊기면 바로 사라짐 (v7.68 깜빡임 없앰) */ x.textAlign = 'start'; }
   if (g.ban) { const k = 1.6 - g.ban.t, sc = k < .14 ? .5 + k / .14 * .7 : k < .28 ? 1.2 - (k - .14) / .14 * .2 : 1, cy = H * .42;   // 화면 가운데에 통 튀어나왔다가 사라짐
     x.save(); x.globalAlpha = Math.min(1, g.ban.t / .35); x.fillStyle = 'rgba(32,32,44,.55)'; x.fillRect(0, cy - 34 * Math.min(1, k / .14), W, 68 * Math.min(1, k / .14));
     x.translate(W / 2, cy + 13); x.scale(sc, sc); x.textAlign = 'center'; txt(g.ban.s, 0, 0, 38, '#ffd84a', 6); x.restore(); }
