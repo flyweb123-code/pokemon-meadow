@@ -354,7 +354,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .mapico{width:46px;height:46px;display:grid;place-items:center;border:3px solid var(--frame);background:var(--win);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner),3px 3px 0 rgba(0,0,0,.35);cursor:pointer;padding:0}
 .mapico .b-night{display:none!important}
 .mapico.night{--win:#1e2340;--inner:#46508a;--frame:#0e1024}.mapico.night svg path[fill="#20202c"],.boot-night .mapico svg path[fill="#20202c"]{fill:#9aa2d4}   /* v5.88 경완: 밤엔 가방 손잡이·테두리가 바탕에 묻혀서 밝게 */
-.mapico[aria-pressed="true"]{background:#ffe27a;box-shadow:inset 0 0 0 3px #ffe27a,inset 0 0 0 5px var(--frame),1px 1px 0 rgba(0,0,0,.35);transform:translate(2px,2px)}
+.mapico[aria-pressed="true"]{background:#ffe27a;box-shadow:inset 0 0 0 3px #ffe27a,inset 0 0 0 5px var(--frame),1px 1px 0 rgba(0,0,0,.35);transform:translate(2px,2px)}#btnBag.prs{transform:translate(2px,2px) scale(.94);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner),1px 1px 0 rgba(0,0,0,.35)}   /* v7.70 경완: 가방 버튼 누를 때 눌리는 모션 */
 .shopwin{max-width:560px;height:min(90vh,760px);display:flex;flex-direction:column}
 .shopwin .stab:not([hidden]){flex:1;min-height:0;display:flex;flex-direction:column}
 .shopwin .soon{margin:auto;color:var(--dim);font-size:16px;text-align:center}
@@ -5822,7 +5822,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.69';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.70';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6003,6 +6003,7 @@ function ibagToss(ids) {   /* ids 하나면 개수 고르기, 여럿이면 고�
     if (!c) return; sfx('tap'); ibagPick.clear(); if (!(I[ibagSel] > 0)) ibagSel = null;
     $('#ibagMsg').textContent = one ? `${one.n} ${c}개를 버렸어요.` : `${ids.length}종 ${c}개를 버렸어요.`; save(); renderIBag(); };
 }
+{ const w = $('#btnBag'); let t0 = 0; w.addEventListener('pointerdown', () => { t0 = performance.now(); w.classList.add('prs'); }); for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) w.addEventListener(ev, () => setTimeout(() => w.classList.remove('prs'), Math.max(0, 140 - (performance.now() - t0)))); }   /* v7.70 경완: 가방 버튼 눌림 (최소 0.14초 보임) */
 $('#btnBag').onclick = () => tabTo(ibagEl, () => { ibagEl.hidden = false; ibagFresh = new Set(); ibagTab = 'item'; ibagSel = null; ibagMul = false; ibagPick.clear(); $('#ibagMsg').textContent = ''; renderIBag(); });
 $('#ibagX').onclick = () => { ibagEl.hidden = true; };
 ibagEl.addEventListener('click', e => {
