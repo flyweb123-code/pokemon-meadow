@@ -3161,7 +3161,7 @@ function hudZone() {
   const now = performance.now(); if (now - hudZt < 1000) return hudZ; hudZt = now; hudZ = [];
   let sr; try { sr = stage.getBoundingClientRect(); } catch (e) { return hudZ; } if (!sr.width || !scale) return hudZ;
   for (const el of [$('#clock'), $('#btnBerry'), $('#btnBag'), $('#frTest')]) {   /* v6.47 경완: 가방 버튼 뒤에도 멈추지 않게 */ if (!el || el.closest('[hidden]') || getComputedStyle(el).display === 'none') continue; const r = el.getBoundingClientRect(); if (!r.width) continue;
-    hudZ.push({ x0: (r.left - sr.left) / scale, x1: (r.right - sr.left) / scale, y0: el.id === 'clock' ? -1e9 : (r.top - sr.top) / scale, y1: (r.bottom - sr.top) / scale }); }   /* v4.61 경완: 열매 버튼을 옮기면 그 버튼 자리만 피한다 (예전엔 버튼 위쪽 세로 줄 전체를 피했다) */
+    const vr = innerWidth - r.right < 70;   /* v7.94 경완: 화면 오른쪽 끝에 붙은 버튼은 버튼과 화면 끝 사이(반쯤 가려지는 자리)까지 피한다 */ hudZ.push({ vr, x0: (r.left - sr.left) / scale, x1: ((vr ? Math.max(r.right, innerWidth) : r.right) - sr.left) / scale, y0: el.id === 'clock' ? -1e9 : (r.top - sr.top) / scale, y1: (r.bottom - sr.top) / scale }); }   /* v4.61 경완: 열매 버튼을 옮기면 그 버튼 자리만 피한다 (예전엔 버튼 위쪽 세로 줄 전체를 피했다) */
   return hudZ;
 }
 const hudHit = (m, x, y) => hudZone().find(z => x > z.x0 - (m.w || 60) * .5 && x < z.x1 + (m.w || 60) * .5 + 8 && y > z.y0 && y < z.y1 + (m.h || 60) * .85);
@@ -3169,7 +3169,7 @@ const inHud = (m, x = m.x, y = m.y) => !!hudHit(m, x, y);
 function outOfHud(m, q) {
   for (let k = 0, z; k < 4 && (z = hudHit(m, q.x, q.y)); k++) {
     const a = { x: z.x1 + (m.w || 60) * .5 + 14, y: q.y }, b = { x: q.x, y: z.y1 + (m.h || 60) * .85 + 10 }, c = { x: z.x0 - (m.w || 60) * .5 - 10, y: q.y }, u = { x: q.x, y: z.y0 - 6 };
-    const C = [b.y <= MAX_Y && b, a.x <= XR - 30 && a, z.y0 > -1e8 && c.x >= XL + 30 && c, z.y0 > -1e8 && u.y >= MIN_Y && u].filter(Boolean);
+    const C = [b.y <= MAX_Y && b, !z.vr && a.x <= XR - 30 && a, z.y0 > -1e8 && c.x >= XL + 30 && c, z.y0 > -1e8 && u.y >= MIN_Y && u].filter(Boolean);
     q = C.length ? C.reduce((p, o) => Math.hypot(o.x - q.x, o.y - q.y) < Math.hypot(p.x - q.x, p.y - q.y) ? o : p) : a;
   }
   return q;
@@ -5834,7 +5834,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.94';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.95';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
