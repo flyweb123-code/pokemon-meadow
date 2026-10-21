@@ -158,79 +158,6 @@
      "fit": "모닥불·장작 더미 옆, 밤"
     },
     {
-     "id": "candle-stand",
-     "n": "세 갈래 촛대",
-     "k": "놀이",
-     "d": "노란 놋쇠로 된 세 갈래 촛대예요. 가운데 초가 제일 높고, 하얀 초마다 촛농이 조금 흘렀어요. 불꽃 셋이 각각 작게 빛나요.",
-     "px": [
-      "............h.h............",
-      "...........h.r.h...........",
-      "..........h.ror.h..........",
-      ".....h...h.royor.h...h.....",
-      "....hrh...hrywyrh...hrh....",
-      "...hrorh.h.rowor.h.hrorh...",
-      "..hroyorh.h.ror.h.hroyorh..",
-      ".h.rywyr.h.hkkkh.h.rywyr.h.",
-      "..hroworh..kwWVk..hroworh..",
-      "...hrorh...kwWVk...hrorh...",
-      "....kkk...kwwWVk....kkk....",
-      "...kwWVk..kWwWVk...kwWVk...",
-      "...kwWVk...kwWVk...kwWVk...",
-      "...kwWVk...kwWVk...kwWVVk..",
-      "...kwWVk...kwWVk...kwWVk...",
-      "...kwWVk..kkwWVkk..kwWVk...",
-      "...kwWVk.kAAaaabbk.kwWVk...",
-      "..kkwWVkk.kbbbbBk.kkwWVkk..",
-      ".kAAaaabbk.kAabk.kAAaaabbk.",
-      "..kbbbbBk..kAabk..kbbbbBk..",
-      "...kkakk...kAabk...kkakk...",
-      "....kbkkkkkkAabkkkkkkbk....",
-      "....kbaaaaaAAaaaaaaaabk....",
-      ".....kbbbbbbbbbbbbbbbk.....",
-      "......kkkkkkAabkkkkkk......",
-      "..........kkAabkk..........",
-      "........kkAAaaabbkk........",
-      ".......kAAAaaaaabbbk.......",
-      ".......kBBBBBBBBBBBk.......",
-      "........kkkkkkkkkkk........",
-      "......zzzzzzzzzzzzzzz......"
-     ],
-     "pal": {
-      "k": "#20202c",
-      "z": "#2c3a28",
-      "A": "#fff0a8",
-      "a": "#f0c850",
-      "b": "#c08a30",
-      "B": "#7a5420",
-      "w": "#fffaf0",
-      "W": "#ece2cc",
-      "V": "#bcae94",
-      "o": "#f89a30",
-      "y": "#ffd84a",
-      "r": "#c8502a",
-      "h": "#ffe08a"
-     },
-     "acts": [
-      {
-       "w": "불꽃 타입",
-       "a": "촛대 앞에서 기술을 써서 세 초에 한꺼번에 불을 붙여요"
-      },
-      {
-       "w": "고스트 타입 (불켜미 계열이면 더 좋아해요)",
-       "a": "촛대 옆에 떠서 촛불과 함께 흔들거리며 머물러요"
-      },
-      {
-       "w": "물 타입",
-       "a": "가까이 가서 기술을 써 촛불을 후 꺼 버려요 (장난)"
-      },
-      {
-       "w": "큰 포켓몬",
-       "a": "넘어뜨릴까 봐 촛대를 피해 돌아가요"
-      }
-     ],
-     "fit": "바위 위·그루터기 위, 밤"
-    },
-    {
      "id": "glow-mushroom",
      "n": "야광 버섯",
      "k": "쉼터",
@@ -854,6 +781,82 @@
   }
  ],
  "trash": [
+  {
+   "id": "candle-stand",
+   "n": "세 갈래 촛대",
+   "k": "놀이",
+   "d": "노란 놋쇠로 된 세 갈래 촛대예요. 가운데 초가 제일 높고, 하얀 초마다 촛농이 조금 흘렀어요. 불꽃 셋이 각각 작게 빛나요.",
+   "px": [
+    "............h.h............",
+    "...........h.r.h...........",
+    "..........h.ror.h..........",
+    ".....h...h.royor.h...h.....",
+    "....hrh...hrywyrh...hrh....",
+    "...hrorh.h.rowor.h.hrorh...",
+    "..hroyorh.h.ror.h.hroyorh..",
+    ".h.rywyr.h.hkkkh.h.rywyr.h.",
+    "..hroworh..kwWVk..hroworh..",
+    "...hrorh...kwWVk...hrorh...",
+    "....kkk...kwwWVk....kkk....",
+    "...kwWVk..kWwWVk...kwWVk...",
+    "...kwWVk...kwWVk...kwWVk...",
+    "...kwWVk...kwWVk...kwWVVk..",
+    "...kwWVk...kwWVk...kwWVk...",
+    "...kwWVk..kkwWVkk..kwWVk...",
+    "...kwWVk.kAAaaabbk.kwWVk...",
+    "..kkwWVkk.kbbbbBk.kkwWVkk..",
+    ".kAAaaabbk.kAabk.kAAaaabbk.",
+    "..kbbbbBk..kAabk..kbbbbBk..",
+    "...kkakk...kAabk...kkakk...",
+    "....kbkkkkkkAabkkkkkkbk....",
+    "....kbaaaaaAAaaaaaaaabk....",
+    ".....kbbbbbbbbbbbbbbbk.....",
+    "......kkkkkkAabkkkkkk......",
+    "..........kkAabkk..........",
+    "........kkAAaaabbkk........",
+    ".......kAAAaaaaabbbk.......",
+    ".......kBBBBBBBBBBBk.......",
+    "........kkkkkkkkkkk........",
+    "......zzzzzzzzzzzzzzz......"
+   ],
+   "pal": {
+    "k": "#20202c",
+    "z": "#2c3a28",
+    "A": "#fff0a8",
+    "a": "#f0c850",
+    "b": "#c08a30",
+    "B": "#7a5420",
+    "w": "#fffaf0",
+    "W": "#ece2cc",
+    "V": "#bcae94",
+    "o": "#f89a30",
+    "y": "#ffd84a",
+    "r": "#c8502a",
+    "h": "#ffe08a"
+   },
+   "acts": [
+    {
+     "w": "불꽃 타입",
+     "a": "촛대 앞에서 기술을 써서 세 초에 한꺼번에 불을 붙여요"
+    },
+    {
+     "w": "고스트 타입 (불켜미 계열이면 더 좋아해요)",
+     "a": "촛대 옆에 떠서 촛불과 함께 흔들거리며 머물러요"
+    },
+    {
+     "w": "물 타입",
+     "a": "가까이 가서 기술을 써 촛불을 후 꺼 버려요 (장난)"
+    },
+    {
+     "w": "큰 포켓몬",
+     "a": "넘어뜨릴까 봐 촛대를 피해 돌아가요"
+    }
+   ],
+   "fit": "바위 위·그루터기 위, 밤",
+   "del": 1792624391848,
+   "dayAt": 1792619438354,
+   "theme": "밤을 밝히는 조명"
+  },
   {
    "id": "mushroom-cluster",
    "n": "가을 버섯 무리",
