@@ -6,64 +6,6 @@
    "note": "오늘은 풀밭에 작은 바닷가를 옮겨 왔어요! 파라솔·튜브·비치볼처럼 물놀이 장난감은 빨강·파랑·노랑으로 쨍하게, 모래성·유목·소라는 모래색 3~4단계 명암으로 차분하게 나눠서 둘이 섞여 있어도 하나하나 또렷하게 읽혀요. 물 타입은 헤엄치고 물대포를 쏘고, 땅 타입은 모래를 파고, 불꽃 타입은 물을 피하는 식으로 반응도 바닷가에 맞췄어요.",
    "items": [
     {
-     "id": "beach-ball",
-     "n": "비치볼",
-     "k": "놀이",
-     "d": "파랑·노랑·빨강 조각이 하양과 번갈아 있는 비치볼이에요. 왼쪽 위에 동그란 반사광, 오른쪽 아래는 진하게 칠해 둥글게 보여요.",
-     "px": [
-      "........kkkkkk........",
-      "......kkbwwwwwkk......",
-      ".....kbbbwwwwwwwk.....",
-      "....kbbbbbwwwwwwwk....",
-      "...kbbhhbbwwwwwwyyk...",
-      "..kbbhhhhbwwwwwyyyyk..",
-      "..kbbhhhhbwwwwyyyyYk..",
-      ".kbbbbhhbbwwwyyyyYYYk.",
-      ".kbbbbbbbbwwyyyyYYYYk.",
-      ".kbbbbbbbwwwwyyYYYYYk.",
-      ".kwwwwwwwwwwwwWWWWWWk.",
-      ".kwwwwwwwwwwwWWWWWWWk.",
-      ".kwwwwwwwrrrWWWWWWWWk.",
-      "..kwwwwwrrrRWWWWWWWk..",
-      "..kwwwwrrrRRWWWWWWWk..",
-      "...kwwrrrRRRWWWWWWk...",
-      "....krrrRRRRWWWWWk....",
-      ".....krRRRRRRWWWk.....",
-      "......kkRRRRRWkk......",
-      "...zzzzzzzzzzzzzzzz...",
-      "...zzzzzzzzzzzzzzzz...",
-      "......................"
-     ],
-     "pal": {
-      "k": "#20202c",
-      "b": "#3c8ce8",
-      "B": "#245aa8",
-      "w": "#fffaf0",
-      "W": "#d4ccc0",
-      "y": "#ffd23c",
-      "Y": "#d29a1c",
-      "r": "#f0503c",
-      "R": "#a83228",
-      "h": "#ffffff",
-      "z": "#c9b27a"
-     },
-     "acts": [
-      {
-       "w": "작은 포켓몬",
-       "a": "비치볼에 부딪쳐 굴리며 뒤쫓아 달려요"
-      },
-      {
-       "w": "물 타입",
-       "a": "코(머리)로 공을 통통 튕겨요"
-      },
-      {
-       "w": "나는 포켓몬",
-       "a": "공 위에 내려앉았다가 굴러서 날아올라요"
-      }
-     ],
-     "fit": "풀밭 아무 데나, 여럿이 노는 곳"
-    },
-    {
      "id": "surfboard",
      "n": "서핑보드",
      "k": "놀이",
@@ -1792,6 +1734,67 @@
   }
  ],
  "trash": [
+  {
+   "id": "beach-ball",
+   "n": "비치볼",
+   "k": "놀이",
+   "d": "파랑·노랑·빨강 조각이 하양과 번갈아 있는 비치볼이에요. 왼쪽 위에 동그란 반사광, 오른쪽 아래는 진하게 칠해 둥글게 보여요.",
+   "px": [
+    "........kkkkkk........",
+    "......kkbwwwwwkk......",
+    ".....kbbbwwwwwwwk.....",
+    "....kbbbbbwwwwwwwk....",
+    "...kbbhhbbwwwwwwyyk...",
+    "..kbbhhhhbwwwwwyyyyk..",
+    "..kbbhhhhbwwwwyyyyYk..",
+    ".kbbbbhhbbwwwyyyyYYYk.",
+    ".kbbbbbbbbwwyyyyYYYYk.",
+    ".kbbbbbbbwwwwyyYYYYYk.",
+    ".kwwwwwwwwwwwwWWWWWWk.",
+    ".kwwwwwwwwwwwWWWWWWWk.",
+    ".kwwwwwwwrrrWWWWWWWWk.",
+    "..kwwwwwrrrRWWWWWWWk..",
+    "..kwwwwrrrRRWWWWWWWk..",
+    "...kwwrrrRRRWWWWWWk...",
+    "....krrrRRRRWWWWWk....",
+    ".....krRRRRRRWWWk.....",
+    "......kkRRRRRWkk......",
+    "...zzzzzzzzzzzzzzzz...",
+    "...zzzzzzzzzzzzzzzz...",
+    "......................"
+   ],
+   "pal": {
+    "k": "#20202c",
+    "b": "#3c8ce8",
+    "B": "#245aa8",
+    "w": "#fffaf0",
+    "W": "#d4ccc0",
+    "y": "#ffd23c",
+    "Y": "#d29a1c",
+    "r": "#f0503c",
+    "R": "#a83228",
+    "h": "#ffffff",
+    "z": "#c9b27a"
+   },
+   "acts": [
+    {
+     "w": "작은 포켓몬",
+     "a": "비치볼에 부딪쳐 굴리며 뒤쫓아 달려요"
+    },
+    {
+     "w": "물 타입",
+     "a": "코(머리)로 공을 통통 튕겨요"
+    },
+    {
+     "w": "나는 포켓몬",
+     "a": "공 위에 내려앉았다가 굴러서 날아올라요"
+    }
+   ],
+   "fit": "풀밭 아무 데나, 여럿이 노는 곳",
+   "del": 1792624161864,
+   "dayAt": 1792622829095,
+   "theme": "여름 바닷가 놀이"
+  },
   {
    "id": "swim-ring",
    "n": "수영 튜브",
