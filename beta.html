@@ -5834,7 +5834,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.00';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.01';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7011,7 +7011,7 @@ function mgEnd(g) {
   if (!T) R.n++; if (nb) R.best = dist;
   const d = dayKey(); if (M.gd !== d) { M.gd = d; M.gg = 0; }
   const goldV = Math.round((Math.floor(dist / 30) + (nb && prev > 0 ? 20 : 0)) * (g.pas.gold || 1)), gold = T ? 0 : goldV; M.gg += gold; M.gT = (M.gT || 0) + gold;   /* v7.46: 게임으로 받은 골드 전체 (운영자 골드 칸에 표시) */ addGold(gold);   /* v6.59: 시험 판도 받을 만큼 보여 주기만 (실제로는 안 받음) */   // v6.17 경완: 하루·한 판 제한 없이 점수 30점마다 1G (+최고 기록 20G). 5,000점 ≈ 166G → 빛나는 부적 3000G 는 5,000점 약 18판 (6.16 은 주석이 코드를 덮어 골드가 안 들어갔다)
-  const frB = dist >= 500 ? Math.min(5, 1 + Math.floor((dist - 500) / 1000)) : 0, fr = P && frB ? (dayCap(m, 'mg', 5) ? frB : 1) : 0;   /* v8.00 경완: 평균 2,500점 기준 — 500점 +1, 1,500 +2, 2,500 +3, 3,500 +4, 4,500 이상 +5 (최대), 같은 포켓몬 하루 6판째부터는 +1 (v7.98 300점부터·1,000점마다·최대 +4) */ if (fr) addFr(m.pid, fr); const frV = T ? frB : fr;   /* v6.91 경완: 2259점에 +1 은 섭섭 — 100점부터 +1, 500점마다 +1 (최대 +6), 같은 포켓몬 하루 6판째부터는 절반 */   /* v6.52 경완: 하루 제한 없음 — 100점부터 +1, 800점마다 +1 (최대 +4), 같은 포켓몬 하루 6판째부터는 +1 */
+  const frB = dist >= 300 ? 1 + Math.floor(dist / 1000) : 0, fr = P && frB ? (dayCap(m, 'mg', 5) ? frB : 1) : 0;   /* v8.01 경완: 300점 +1, 1,000점마다 +1, 최대 제한 없음 (2,500점 = +3), 같은 포켓몬 하루 6판째부터는 +1 */   /* v8.00 경완: 평균 2,500점 기준 — 500점 +1, 1,500 +2, 2,500 +3, 3,500 +4, 4,500 이상 +5 (최대), 같은 포켓몬 하루 6판째부터는 +1 (v7.98 300점부터·1,000점마다·최대 +4) */ if (fr) addFr(m.pid, fr); const frV = T ? frB : fr;   /* v6.91 경완: 2259점에 +1 은 섭섭 — 100점부터 +1, 500점마다 +1 (최대 +6), 같은 포켓몬 하루 6판째부터는 절반 */   /* v6.52 경완: 하루 제한 없음 — 100점부터 +1, 800점마다 +1 (최대 +4), 같은 포켓몬 하루 6판째부터는 +1 */
   const j0 = m.joy ?? 60; m.joy = clamp(j0 + (dist >= 30 ? 6 + 4 * g.phase : 2)); const joy = Math.round(m.joy - j0);
   const gifts = [], I = itemsOf(), give = (it, n) => { if (it === 'stone') it = MG_STONES[Math.floor(Math.random() * MG_STONES.length)]; I[it] = (I[it] || 0) + n; gifts.push({ it, n }); };
   if (!T) for (const o of MG_GIFT) if (dist >= o.m && !R.ms.includes(o.m)) { R.ms.push(o.m); give(o.it, o.n); }
