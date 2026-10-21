@@ -550,7 +550,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.38';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.39';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2098,6 +2098,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.39', '10월 22일', ['맵 편집에서 바꾼 게 없으면 배치 저장이 켜지지 않음 (스칼렛 다시 그린 그림 반영은 저장까지, 예전 picks 옮기기는 더 안 함)']],
   ['3.38', '10월 22일', ['소품 카드에 마우스를 올리면 오른쪽 위에 + → 누르면 맵 가운데에 추가']],
   ['3.37', '10월 22일', ['맵 편집 중 빈 곳을 누르면: 고른 소품·창이 열려 있으면 닫고, 아무것도 없으면 편집 종료 (저장 안 한 배치는 한 번 물어봄). 맵 안 빈 곳도 같음 (게임 v8.36)']],
   ['3.36', '10월 22일', ['소품 상세 창 [저장]: 창 자리 그대로, 저장하면 꺼졌다가 크기를 또 바꾸면 켜짐', '추가 소품 → 전체 소품 저장, 소품 [저장]·[다른 이름으로 저장]은 배치 저장까지 바로 (게임 v8.35: 오프닝 필드 봄, 시작 버튼 새 디자인, 미니게임 친밀도 하루 판수 제한 없음)']],
@@ -3265,12 +3266,13 @@ $('#neuC').addEventListener('click', e => { const t = e.target;
 // ---------- 스칼렛의 작업물 ----------
 // 소품 = { id, at, n, k(종류), d(설명), px(도트 줄들), pal{글자: 색}, acts[{w: 누가, a: 무엇을}], fit(어울리는 곳) }
 let SCA_R = null, scaQ = '', SCA_PK = null, PK_BUSY = false;
-async function scaLoad() { [SCA_R, SCA_PK] = await Promise.all([staffGet('config/staff/scarlet.json', { days: [] }), staffGet('config/staff/picks.json', { items: [] })]); if (view === 'sca') renderSca(); if (view === 'map') try { renderDock(); } catch (e) {} scaMig(); scaSync(); }
+async function scaLoad() { [SCA_R, SCA_PK] = await Promise.all([staffGet('config/staff/scarlet.json', { days: [] }), staffGet('config/staff/picks.json', { items: [] })]); if (view === 'sca') renderSca(); if (view === 'map') try { renderDock(); } catch (e) {} scaSync(); }   // v3.39: picks.json 옮기기(scaMig)는 끝났으니 더 안 함 (새 브라우저에서 지운 소품이 되살아나 '배치 저장'이 켜졌음)
 // v3.26: 예전 picks.json 에 담아 둔 소품은 한 번만 맵 소품 목록으로 옮긴다
 // v3.31 경완: 스칼렛이 작업물을 다시 그리면(피드백 반영 등) 맵 소품 리스트의 같은 소품 그림도 새 그림으로 (작업본에 들어가요, 저장하면 게임에)
-function scaSync() { const art = (D.layout || ORIG?.layout)?.scArt; if (!A?.scDef || !SCA_R || !art) return; let n = 0;
+function scaSync() { const art = (D.layout || ORIG?.layout)?.scArt; if (!A?.scDef || !SCA_R || !art) return; let n = 0; const clean = !boxDirty('layout');
   for (const [id, a] of Object.entries(art)) { const o = scaItem(id); if (o?.px?.length && (JSON.stringify(o.px) !== JSON.stringify(a.px) || JSON.stringify(o.pal) !== JSON.stringify(a.pal))) { A.scDef(id, { ...o, n: a.n }); n++; } }
-  if (n) toast(`스칼렛이 다시 그린 소품 ${n}개를 맵 소품에 반영했어요 · 맵 메뉴에서 저장하면 게임에 들어가요`); }
+  if (n && clean) { D._sv = D._sv || {}; putP(D._sv, 'layout', D); saveDraft(); layoutBar(); scBar(); }   // v3.39 경완: 바뀐 게 없는데 '배치 저장'이 켜지지 않게 — 다시 그린 그림 반영은 저장까지 해 둔다 (배포하면 게임에)
+  if (n) toast(`스칼렛이 다시 그린 소품 ${n}개를 맵 소품에 반영했어요 · 배포하면 게임에 들어가요`); }
 function scaMig() { if (store.get('st-pk-mig') || !A?.scDef || !SCA_R || !SCA_PK) return; store.set('st-pk-mig', '1'); for (const x of SCA_PK.items || []) { const o = scaItem(x.id); if (o?.px?.length && !scaPicked(x.id)) { A.scDef(x.id, o); const N = new Set(JSON.parse(store.get('st-sc-new') || '[]')); N.add(x.id); store.set('st-sc-new', JSON.stringify([...N])); } } scDot(); }
 const scaItem = id => (SCA_R?.days || []).flatMap(d => d.items).find(o => o.id === id);
 const scaPicked = id => !!(D.layout || ORIG?.layout)?.scArt?.[id];   // v3.26: 소품 리스트 = 맵 배치의 스칼렛 소품 목록 (저장하면 게임에 들어감)
