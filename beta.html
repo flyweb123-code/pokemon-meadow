@@ -334,6 +334,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.flw,.lily,.lily::after{animation:none}}
 .puddle{position:absolute;left:0;top:0;pointer-events:none;image-rendering:pixelated;background-size:100% 100%;transform:translate(-50%,-50%);opacity:0;transition:opacity 6s;z-index:2!important}.puddle.on{opacity:1}
 #rain{position:absolute;inset:0;overflow:hidden;pointer-events:none;display:none}#rain.on{display:block}
+/* v8.25 경완: 계절 날림 */#seaFx{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:2}#seaFx i{position:absolute;top:-12px;animation:seaF 8s linear infinite}#seaFx.sea-winter i{width:3px;height:3px;background:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.35)}#seaFx.sea-spring i{width:4px;height:3px;background:#ffc0d6;border-radius:2px 0}#seaFx.sea-autumn i{width:4px;height:4px;background:#e07a28;box-shadow:1px 1px 0 #a8461c}#seaFx.sea-autumn i:nth-child(3n){background:#e8b030}@keyframes seaF{0%{transform:translate3d(0,0,0) rotate(0)}25%{transform:translate3d(var(--sx),170px,0) rotate(calc(var(--r) * .25))}50%{transform:translate3d(0,340px,0) rotate(calc(var(--r) * .5))}75%{transform:translate3d(calc(var(--sx) * -1),510px,0) rotate(calc(var(--r) * .75))}100%{transform:translate3d(0,690px,0) rotate(var(--r))}}
 #rain i{position:absolute;top:-24px;width:2px;height:12px;background:rgba(210,228,255,.7);transform:translate3d(0,0,0) rotate(14deg);animation:rd .62s linear infinite;will-change:transform}@keyframes rd{from{transform:translate3d(0,0,0) rotate(14deg)}to{transform:translate3d(-150px,640px,0) rotate(14deg)}}/* v4.24 경완: 빗줄기가 아이폰에서 안 보이고 땅 물방울만 → translate 속성 대신 transform 으로 */
 #rainG{position:absolute;inset:0;pointer-events:none;z-index:1;display:none}#rainG.on{display:block}#rainG b{position:absolute;width:10px;height:4px;margin:-2px 0 0 -5px;border:1px solid rgba(220,236,255,.8);border-radius:50%;animation:rsp .5s ease-out infinite;opacity:0}@keyframes rsp{0%{transform:scale(.3);opacity:.9}100%{transform:scale(1.4);opacity:0}}
 
@@ -4879,6 +4880,43 @@ const ART = (() => {
 // v3.83 경완: 작업실 크기 조절 모드에서는 원래 맵을 가운데 두고 양옆·아래로 이어 그린다 (X = {c, w, h, ox} 반 해상도 크기, 원래 맵 왼쪽 위치)
 // 가운데 원래 맵은 같은 난수 순서(R)로 그대로, 늘어난 부분은 다른 난수(R2)로 그려서 시뮬레이터 화면과 똑같이 보인다
 let BGX = null;   // v3.87 경완: 폴드·아이패드처럼 넓은 화면은 맵을 옆으로 이어 그려 좌우 여백 없이 ({ox, w} 반 해상도)
+// ---------- v8.25 경완: 계절 (3~5월 봄, 6~8월 여름, 9~11월 가을, 12~2월 겨울) — 자연 소품과 필드 색이 바뀐다 ----------
+const SEASONS = ['spring', 'summer', 'autumn', 'winter'], SEASON_KO = { spring: '봄', summer: '여름', autumn: '가을', winter: '겨울' };
+const SEA_URL = new URLSearchParams(location.search).get('season');
+const SEA_DATE = new URLSearchParams(location.search).get('seaDate');
+// v8.28 경완: 중간 과정 없이, 한국 계절감이 확 바뀌는 때에 맞춰 바뀐다 — 봄 3/25(벚꽃 필 무렵) · 여름 6/1 · 가을 10/15(단풍 들 무렵) · 겨울 11/25(첫눈 올 무렵)
+const SEA_START = [[3, 25, 'spring'], [6, 1, 'summer'], [10, 15, 'autumn'], [11, 25, 'winter']];
+let SEA_PV = null;   // 작업실 미리 보기 날짜 'YYYY-MM-DD'
+function season(d = SEA_PV || SEA_DATE ? new Date((SEA_PV || SEA_DATE) + 'T12:00') : new Date()) {
+  if (S?.seaT && SEASONS.includes(S.seaT)) return S.seaT; if (SEASONS.includes(SEA_URL)) return SEA_URL;
+  const md = (d.getMonth() + 1) * 100 + d.getDate(); let se = 'winter'; for (const [m, dd, k] of SEA_START) if (md >= m * 100 + dd) se = k; return se; }
+function rgb2hsl(r, g, b) { r /= 255; g /= 255; b /= 255; const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2; if (mx === mn) return [0, 0, l]; const d = mx - mn, s = l > .5 ? d / (2 - mx - mn) : d / (mx + mn);
+  const h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; return [h * 60, s, l]; }
+function hsl2rgb(h, s, l) { h = ((h % 360) + 360) % 360 / 360; s = Math.max(0, Math.min(1, s)); l = Math.max(0, Math.min(1, l)); if (!s) return [l * 255, l * 255, l * 255].map(Math.round);
+  const q = l < .5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q, f = t => { t = (t + 1) % 1; return t < 1 / 6 ? p + (q - p) * 6 * t : t < .5 ? q : t < 2 / 3 ? p + (q - p) * (2 / 3 - t) * 6 : p; }; return [f(h + 1 / 3), f(h), f(h - 1 / 3)].map(v => Math.round(v * 255)); }
+const seaH = (x, y) => { let h = Math.imul(x * 374761393 + y * 668265263, 1274126177); h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
+const seaN = (x, y, c = 14) => { const gx = x / c, gy = y / c, ix = Math.floor(gx), iy = Math.floor(gy), sm = v => v * v * (3 - 2 * v), u = sm(gx - ix), v = sm(gy - iy), a = seaH(ix, iy), b = seaH(ix + 1, iy), d = seaH(ix, iy + 1), e = seaH(ix + 1, iy + 1);
+  return a + (b - a) * u + (d - a) * v + (a - b - d + e) * u * v; };   // v8.27 경완: 부드러운 덩어리 노이즈 (예전 2칸 점무늬는 지저분해 보였음)
+// part: 'bg' 땅(연못 포함) · 'leaf' 나무·덤불 잎 · 'grass' 풀·꽃 줄기 · 'tree' 열매나무(봄엔 꽃잎)
+function seasonCv(cv, part, o) { const se = season(); if (se === 'summer' || !cv?.getContext) return cv; const g = cv.getContext('2d'), w = cv.width, h = cv.height, D = g.getImageData(0, 0, w, h), A = D.data; let sd = 7;
+  const R = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = (y * w + x) * 4; if (A[i + 3] < 8) continue; let [H, Sa, L] = rgb2hsl(A[i], A[i + 1], A[i + 2]), out = null;
+    const bgY = part === 'bg' ? y - o.oy : 0, fx = part === 'bg' ? x - o.ox : 0;
+    const pt = part === 'bg' && bgY < 74 + Math.round((seaN(fx, 0, 9) - .5) * 18 + (seaH(fx >> 1, 3) - .5) * 4) ? 'leaf' : part;   // 맵 위쪽 숲은 잎처럼 (하늘은 초록이 아니라 그대로). v8.28 경완: 숲과 땅 경계를 일직선 말고 들쭉날쭉하게
+    const green = H >= 62 && H <= 170 && Sa > .14;
+    if (green) {
+      if (se === 'spring') out = pt === 'tree' && L > .5 && R() < .3 ? (R() < .5 ? [255, 176, 204] : [255, 214, 228]) : hsl2rgb(H - 18, Sa + .08, L + .07);
+      else if (se === 'autumn') out = pt === 'bg' ? hsl2rgb(40 - (L - .45) * 24, Math.min(.62, Sa * .9), L + .03) : pt === 'grass' ? hsl2rgb(34, .6, L + .02) : hsl2rgb(30 + (L - .4) * 70 + (R() - .5) * 10, .72, L + .02);
+      else { if (pt === 'bg') out = hsl2rgb(212, .22, .86 + (L - .5) * .25 + ((x + y) & 1 ? .015 : 0));
+        else out = L > .44 ? hsl2rgb(205, .25, .9 + (L - .6) * .2) : hsl2rgb(150, .18, L * .82); }
+    }   // v8.27 경완: 겨울에도 연못은 얼지 않음 (물 포켓몬이 다녀야 해서)
+    if (out) { A[i] = out[0]; A[i + 1] = out[1]; A[i + 2] = out[2]; } }
+  g.putImageData(D, 0, 0); return cv; }
+// 계절 날림: 봄 꽃잎, 가을 낙엽, 겨울 눈
+function seasonFx() { let e = $('#seaFx'); if (!e) { e = document.createElement('div'); e.id = 'seaFx'; fxEl.append(e); } const se = season(); if (e.dataset.s === se) return; e.dataset.s = se; e.className = 'sea-' + se;
+  const n = se === 'winter' ? 46 : se === 'summer' ? 0 : 16; let h = '';
+  for (let i = 0; i < n; i++) h += `<i style="left:${(Math.random() * (W + 120) - 60).toFixed(0)}px;animation-delay:${(-Math.random() * 9).toFixed(2)}s;animation-duration:${(se === 'winter' ? 6 + Math.random() * 5 : 8 + Math.random() * 5).toFixed(2)}s;--sx:${(Math.random() * 60 - 30).toFixed(0)}px;--r:${(Math.random() * 360).toFixed(0)}deg"></i>`;
+  e.innerHTML = h; }
 function drawBg(X) {
   if (!X && BGX) X = { c: $('#bg'), w: BGX.w, h: H / 2, ox: BGX.ox, oy: 0, keepSky: true };
   const PW = W / 2, PH = H / 2, c = X ? X.c : $('#bg'); c.width = X ? X.w : PW; c.height = X ? X.h : PH;
@@ -4995,6 +5033,7 @@ function drawBg(X) {
       else if (k === 'mush') { px(x, y - 2, 2, 3, '#f0e8d8'); px(x - 2, y - 4, 6, 2, '#d83838'); px(x - 1, y - 5, 4, 1, '#e85050'); px(x - 1, y - 4, 1, 1, '#fff'); px(x + 2, y - 4, 1, 1, '#fff'); }
       else tall(x, y, 3 + Math.floor(R2() * 3)); });
     g.setTransform(1, 0, 0, 1, 0, 0); }
+  seasonCv(c, 'bg', X ? { ox: OX, oy: OY } : { ox: 0, oy: 0 });   // v8.25 경완: 계절에 따라 땅·연못 색
 }
 const FIRE = LAYOUT.fire, FLOWERBED = LAYOUT.bed;
 const PROPS = { tree: LAYOUT.tree, perch: LAYOUT.perch, bushes: LAYOUT.bushes, puddles: LAYOUT.puddles };
@@ -5042,8 +5081,8 @@ function sprCanvas(w, h, draw, look) {
 }
 const SPR = {};
 function makeSprites() {
-  SPR.tree = sprURL(tintCv(ART.tree(), lookOf('tree'))); SPR.perch = sprURL(tintCv(ART.perch(), lookOf('perch'))); SPR.bush = sprURL(tintCv(ART.bush(), lookOf('bush')));
-  SPR.flw = {}; for (const k of ['sun', 'tulip', 'daisy', 'bell', 'pink', 'grass', 'tall', 'reed', 'cat']) { const cv = tintCv(ART.flower(k), lookOf(k), PETAL[k]), z = LS(k); SPR.flw[k] = { src: sprURL(cv), w: Math.round(cv.width * 2 * z), h: Math.round(cv.height * 2 * z) }; }
+  SPR.tree = sprURL(seasonCv(tintCv(ART.tree(), lookOf('tree')), 'tree')); SPR.perch = sprURL(seasonCv(tintCv(ART.perch(), lookOf('perch')), 'leaf')); SPR.bush = sprURL(seasonCv(tintCv(ART.bush(), lookOf('bush')), 'leaf'));
+  SPR.flw = {}; for (const k of ['sun', 'tulip', 'daisy', 'bell', 'pink', 'grass', 'tall', 'reed', 'cat']) { const cv = seasonCv(tintCv(ART.flower(k), lookOf(k), PETAL[k]), 'grass'), z = LS(k); SPR.flw[k] = { src: sprURL(cv), w: Math.round(cv.width * 2 * z), h: Math.round(cv.height * 2 * z) }; }
   SPR.flame = sprCanvas(96, 22, (px) => {   /* v3.56 경완: 불 활활 — 6장 */
     for (let f = 0; f < 6; f++) { const Hf = 17 + [0, 3, 1, 4, 2, 3][f];
       for (let y = 0; y < 22; y++) { const t = (21 - y) / Hf; if (t > 1) continue;
@@ -5094,7 +5133,8 @@ function buildProps() {
   (LAYOUT.sc || []).forEach(r => { const [id, x, y] = r, I = scImg(id), z = scS(r); if (!I) return; const e = add('sc', { x, y }, I.src, Math.round(I.w * z), Math.round(I.h * z)); if (I.fl) { const f = document.createElement('i'); f.className = 'scfl'; f.style.cssText = `background-image:url(${I.fl.src});--fo:${I.fl.o}%;animation-delay:${(-Math.random()).toFixed(2)}s`; e.append(f); } });
   PROPS.bushEls = PROPS.bushes.map(b => { const L = lkRes(b.lk), z = L ? +L.s || 1 : zB; return add('bush', b, L ? lkUrl('bush', L, () => tintCv(ART.bush(), L).toDataURL()) : SPR.bush, Math.round(72 * z), Math.round(48 * z)); });
   /* v3.55: 꽃·풀은 바람에 살랑살랑 (하나씩 박자를 달리) */
-  FLOWERS.forEach(([k, x, y, lk], i) => { const L = lkRes(lk), f = L ? { src: lkUrl('f' + k, L, () => tintCv(ART.flower(k), L, PETAL[k]).toDataURL()), ...flwSz(k, lk) } : SPR.flw[k], e = document.createElement('div'); e.className = 'flw';
+  const WIN = season() === 'winter'; seasonFx();   // 겨울엔 꽃이 지고 풀만
+  FLOWERS.forEach(([k, x, y, lk], i) => { if (WIN && !['grass', 'tall'].includes(k)) return; const L = lkRes(lk), f = L ? { src: lkUrl('f' + k, L, () => tintCv(ART.flower(k), L, PETAL[k]).toDataURL()), ...flwSz(k, lk) } : SPR.flw[k], e = document.createElement('div'); e.className = 'flw';
     e.style.cssText = W2(f.src, f.w, f.h) + `;left:${x}px;top:${y}px;z-index:${Math.round(y)};--d:${(1.6 + ((i * 37) % 13) / 10).toFixed(2)}s;--dl:${(-((i * 53) % 29) / 10).toFixed(1)}s;--a:${k === 'grass' ? 7 : k === 'sun' ? 4 : 6}deg`; itemsEl.append(e); });
   for (const q of PROPS.puddles) { const e = document.createElement('div'); e.className = 'puddle'; const L = lkRes(q.lk), qw = Math.round(q.w * (L ? +L.s || 1 : LS('puddle'))); e.style.cssText = W2(L ? lkUrl('pud', L, () => SPR.pudArt(L)) : SPR.puddle, qw, Math.round(qw * .35)) + `;left:${q.x}px;top:${q.y}px`; itemsEl.append(e); puddleEls.push(e); }
   flameEl = document.createElement('div'); flameEl.className = 'flame'; flameEl.style.cssText = `background-image:url(${SPR.flame});left:${FIRE.x}px;top:${FIRE.y}px;z-index:${Math.round(FIRE.y) + 1}` + (LS('fire') !== 1 ? `;transform:scale(${LS('fire')});transform-origin:50% 100%` : ''); itemsEl.append(flameEl);   /* v3.61 경완: 불꽃도 높이 순서대로 → 앞에 선 포켓몬이 불을 가린다 */
@@ -5872,7 +5912,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.27';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.28';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -10643,7 +10683,7 @@ body.szMode :is(#items,#propFx,#bg,#skyC,#skyFx,.bfly,.firefly){opacity:var(--sz
 #stHud{position:absolute;inset:0;z-index:2999;pointer-events:none;display:none}#stHud.on{display:block}
 #stHud i{position:absolute;border:1.5px dashed rgba(255,255,255,.85);background:rgba(20,30,60,.35);border-radius:4px;font:600 9px system-ui;color:#fff;font-style:normal;display:flex;align-items:center;justify-content:center}
 #stHud b{position:absolute;left:0;right:0;border-top:1.5px dashed rgba(255,90,90,.9);font:600 9px system-ui;color:#fff;text-shadow:0 0 2px #000;padding-left:4px}
-body.stEdit #fx #rain{visibility:visible!important}body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.stage-wrap):not(.stUi){visibility:hidden!important}body.stEdit .stUi{cursor:move;outline:1px dashed rgba(127,215,239,.75);outline-offset:3px}body.stEdit .stUi *{pointer-events:none}body.stEdit .stUi.stUiOn{outline:2px solid #7fd7ef}body.stEdit #frTest{display:none}
+body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.stage-wrap):not(.stUi){visibility:hidden!important}body.stEdit .stUi{cursor:move;outline:1px dashed rgba(127,215,239,.75);outline-offset:3px}body.stEdit .stUi *{pointer-events:none}body.stEdit .stUi.stUiOn{outline:2px solid #7fd7ef}body.stEdit #frTest{display:none}
 #stHands .hudl{height:14px;cursor:ns-resize;border-radius:0}#stHands .hudl:hover{outline:0;background:rgba(255,90,90,.18)}
 #stGal{position:fixed;inset:0;z-index:99999;overflow:auto;background:#262932;color:#e4e7ee;font:14px/1.5 system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif;padding:16px 16px 60px;-webkit-user-select:text;user-select:text}
 #stGal h3{font-family:Galmuri11,monospace;font-size:13px;color:#7fd7ef;letter-spacing:.06em;margin:26px 0 4px;padding-top:18px;border-top:2px solid #3b4152}#stGal h3:first-child{margin-top:4px;padding-top:0;border-top:0}
@@ -10676,6 +10716,9 @@ body.stEdit #fx #rain{visibility:visible!important}body.stEdit #mons,body.stEdit
   api.setHour = h => { CLOCK_OFF = h == null ? 0 : h * 60 - (Date.now() - S.base) / 60000; S.clock = realClock(); skyKey = ''; sky(); };
   api.hour = () => hour();
   api.setWx = w => { S.wxT = w || null; skyKey = ''; sky(); };
+  api.setSeaDate = d => { SEA_PV = d || null; S.seaT = null; buildProps.again?.(); rebuild(true); };   // v8.28: 날짜로 계절 미리 보기
+  api.setSeason = v => { S.seaT = SEASONS.includes(v) ? v : null; buildProps.again?.(); rebuild(true); };   // v8.25: 작업실 계절 미리 보기
+  api.season = () => season();
   api.wx = () => weather();
   // ---------- 소품 편집 (맵 편집기와 같은 손잡이) ----------
   let DEFAULT = null;   // 지금 배포된 배치 (설정을 불러온 뒤 정한다)

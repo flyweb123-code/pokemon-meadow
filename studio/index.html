@@ -397,6 +397,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
           <b>시간</b><input type="range" id="hr" min="0" max="23.75" step=".25" value="14"><span class="num" id="hrT" style="min-width:7.5em">지금</span><button class="chip" id="hrNow" disabled title="지금 시각으로 돌아가기">지금</button>
           <span class="vsep"></span>
           <span class="chips" id="wx"><button class="chip on" data-w="">날씨 그대로</button><button class="chip" data-w="clear">맑음</button><button class="chip" data-w="cloud">흐림</button><button class="chip" data-w="rain">비</button></span>
+          <select id="seaSel" aria-label="계절" title="계절 미리 보기 (게임은 날짜에 맞춰 바뀌어요)"><option value="">계절 그대로</option><option value="spring">봄</option><option value="summer">여름</option><option value="autumn">가을</option><option value="winter">겨울</option></select>
           <span class="vsep"></span>
           <b>기종</b><select class="devSel" aria-label="휴대폰 기종"></select>
           <span class="sp"></span><span id="scSave"></span><button class="chip" id="szMode" title="화면 가득한 맵에 포켓몬을 줄지어 세워 두고 크기를 맞춰요">크기 조절 모드</button><span id="eTop" hidden><button class="chip" id="eUndo" title="방금 전으로 (Ctrl/⌘+Z)">↺ 되돌리기</button><span id="eSave"></span></span><span class="ewrap"><button class="btn" id="eMode">편집하기</button><div id="eWarn" hidden role="alertdialog"><div>배치를 저장하지 않았어요. 그냥 끝내면 원래대로 돌아가요.</div><div class="row"><button class="chip" data-ew="0">계속 편집</button><button class="chip" data-ew="1">그냥 종료</button><button class="btn" data-ew="2">저장하고 종료</button></div></div></span>
@@ -544,7 +545,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.29';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.30';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -937,6 +938,7 @@ $('#spx').addEventListener('pointerdown', e => { const b = e.target.closest('.mc
 function hourTxt(h) { const H = Math.floor(h), M = Math.round((h - H) * 60); const ph = h < 4 ? '한밤' : h < 5.5 ? '새벽' : h < 7 ? '해돋이' : h < 10 ? '아침' : h < 14 ? '한낮' : h < 16.5 ? '오후' : h < 18.6 ? '노을' : h < 20 ? '저녁' : '밤'; return `${String(H).padStart(2, '0')}:${String(M).padStart(2, '0')} ${ph}`; }
 $('#hr').oninput = e => { const h = +e.target.value; A?.setHour(h); $('#hrT').textContent = hourTxt(h); $('#hrNow').disabled = false; $('#hrNow').classList.add('on'); statusBar(); };   // v2.36 경완: 시간을 옮기면 지금 버튼이 켜진다
 $('#hrNow').onclick = () => { A?.setHour(null); $('#hrNow').disabled = true; $('#hrNow').classList.remove('on'); const h = A ? A.hour() : 12; $('#hr').value = Math.round(h * 4) / 4; $('#hrT').textContent = '지금 · ' + hourTxt(h).slice(0, 5); statusBar(); };
+$('#seaSel').onchange = e => A?.setSeason?.(e.target.value);   // v3.30 경완: 계절 미리 보기
 $('#wx').onclick = e => { const b = e.target.closest('[data-w]'); if (!b) return; A?.setWx(b.dataset.w); $$('#wx .chip').forEach(c => c.classList.toggle('on', c === b)); };
 let editing = false;
 // 편집하기 (v1.7 경완): 화면 배치는 그대로, 편집 버튼은 휴대폰 오른쪽 작은 창에
@@ -2074,6 +2076,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.30', '10월 22일', ['위쪽 막대에 계절 고르기 (봄·여름·가을·겨울 미리 보기, 편집 중에도 꽃잎·낙엽·눈이 보여요)']],
   ['3.29', '10월 22일', ['맵 편집 중에도 시간·날씨를 바꿔 볼 수 있어요', '편집 중 고른 소품 오른쪽 아래 손잡이를 끌어 크기 조절', '횃불처럼 불이 붙은 추가 소품은 모닥불처럼 불꽃이 흔들려요']],
   ['3.28', '10월 22일', ['맵 소품 창: 스칼렛 소품 칸 이름을 \'추가 소품\'으로, 위 전체 소품 칸에 끌어 놓고 소품 창 위 저장을 누르면 전체 소품으로 들어가요', '\'끌어다 놓기 · 누르면 크게\' 문구 지움']],
   ['3.27', '10월 22일', ['밸런스: 창 제목을 끌어 화면 안에서 배치하고, 오른쪽 아래 모서리를 끌어 크기 조절 (겹치면 아래로 밀려요, \'처음 배치로\' 버튼)']],
@@ -3308,7 +3311,7 @@ function hook() {
     store.set('st-thfill42', '1'); if (n) { saveDraft(); histReset(); } }
   if (D.layout) A.setLayout(D.layout); bubLive(); if (D.monSc || D.monRot || D.monFly || D.monFlyA || D.monOffA || D.monSh) scLive(); if (D.shop) A?.applyShop?.(effP(D, 'shop')); if (D.thOv) A.setThOv?.(effP(D, 'thOv')); if (D.thSp || D.thOv) A.setThSp?.(effP(D, 'thSp')); scBar(); safeInit();
   A.edit(editing); if (!$('#hrNow').disabled) A.setHour(+$('#hr').value); $('#hrNow').disabled && $('#hrNow').onclick();
-  const w0 = $('#wx .on')?.dataset.w; if (w0) A.setWx(w0);
+  const w0 = $('#wx .on')?.dataset.w; if (w0) A.setWx(w0); if ($('#seaSel').value) A.setSeason?.($('#seaSel').value);
   $('#addp').innerHTML = A.ADD.map(([k, n]) => { const s = A.addIcon(k); return `<button data-k="${k}">${s ? `<img alt="" src="${s}">` : `<span class="ph">${k === 'mush' ? '🍄' : '●'}</span>`}${n}</button>`; }).join('');
   renderNav(); renderReact(null); renderPal(); renderDock(); dstat(); RENDER[view]?.(); statusBar(); setTimeout(safeZ, 300); setTimeout(thumbsReady, 2500);
   if (szOn) { szOn = false; szSet(true); }   // v2.63: 크기 조절 모드 중에 게임 화면이 다시 불러와지면 게임도 다시 크기 조절 모드로
