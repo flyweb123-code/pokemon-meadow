@@ -90,6 +90,21 @@
 }
 .frpop{position:absolute;transform:translate(-50%,-100%);white-space:nowrap;font:15px/1 var(--px);font-weight:bold;color:#e04870;text-shadow:1px 0 #fff,-1px 0 #fff,0 1px #fff,0 -1px #fff,1px 1px #fff,-1px -1px #fff,1px -1px #fff,-1px 1px #fff;z-index:2000;pointer-events:none;animation:frpop .9s steps(8) forwards}
 .frpop b{margin-right:2px;color:#ff5d8f}
+/* v7.62 경완: 열매 말풍선 누르면 쫀득하게 — 말풍선이 꾹 눌렸다 톡 터지고(도트 조각), 포켓몬이 말랑 찌그러졌다 튀고, 큰 하트가 띠용 커졌다 출렁이며 작은 하트들이 퐁퐁 */
+.bubble.bpop{pointer-events:none!important;animation:bpop .34s cubic-bezier(.3,1.6,.5,1) forwards!important}
+@keyframes bpop{0%{scale:1}30%{scale:1.32 .7}55%{scale:.86 1.22;opacity:1}100%{scale:1.7;opacity:0}}
+.bspk{position:absolute;width:5px;height:5px;margin:-2px 0 0 -2px;pointer-events:none;z-index:2001;background:var(--c,#ffd84a);box-shadow:0 0 0 1px rgba(56,56,72,.55);animation:bspk .42s cubic-bezier(.2,.8,.4,1) forwards}
+@keyframes bspk{0%{transform:translate(0,0) scale(1.2)}100%{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+.mon .act.yum{transform-origin:50% 100%;animation:yum .5s cubic-bezier(.3,1.5,.5,1)}
+@keyframes yum{0%{scale:1}18%{scale:1.22 .74}42%{scale:.86 1.2}64%{scale:1.08 .93}82%{scale:.97 1.03}100%{scale:1}}
+.frpop.juicy{font-size:15px;animation:frjOut 1.25s ease-in .05s forwards}
+.frpop.juicy b{display:inline-block;font-size:21px;vertical-align:-3px;transform-origin:50% 70%;animation:frjHeart .7s cubic-bezier(.25,1.8,.45,1) both}
+.frpop.juicy i{font-style:normal;display:inline-block;animation:frjNum .5s cubic-bezier(.25,1.8,.45,1) .12s both}
+@keyframes frjOut{0%,55%{translate:0 0;opacity:1}100%{translate:0 -26px;opacity:0}}
+@keyframes frjHeart{0%{scale:0}35%{scale:1.55 1.25}55%{scale:.82 1.12}72%{scale:1.14 .92}88%{scale:.97 1.03}100%{scale:1}}
+@keyframes frjNum{0%{scale:0;opacity:0}60%{scale:1.35;opacity:1}100%{scale:1}}
+.frmini{position:absolute;pointer-events:none;z-index:1999;font:13px/1 var(--px);color:#ff7aa0;text-shadow:1px 0 #fff,-1px 0 #fff,0 1px #fff,0 -1px #fff;animation:frmini .7s cubic-bezier(.2,.8,.4,1) var(--dl,0s) both}
+@keyframes frmini{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}20%,60%{opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1);opacity:0}}
 @keyframes frpop{0%{opacity:0;transform:translate(-50%,-80%)}15%{opacity:1;transform:translate(-50%,-100%)}75%{opacity:1;transform:translate(-50%,-150%)}100%{opacity:0;transform:translate(-50%,-170%)}}
 .boxq{margin:0 0 8px}.boxq input{flex:1 1 100%}
 #boxGrid>.pk{content-visibility:auto;contain-intrinsic-size:auto 118px}#boxGrid>.pk[hidden]{display:none}
@@ -2712,7 +2727,12 @@ function ring(x, y, cls = '') { const d = document.createElement('div'); d.class
 // 직접 준 열매를 먹으면 머리 위에 '친밀도 +1' 이 떠올랐다 사라진다
 // v3.49 경완: 필드에 두어 친밀도가 1 오를 때, 필드를 보고 있으면 '♥+1' 이 뜬다 (메뉴가 열렸거나 앱이 꺼져 있으면 조용히)
 const fieldSeen = m => !document.hidden && !m.hidden && !document.body.classList.contains('sheet-open') && $('#set').hidden;
-function frPop(m, n = 1) { const d = document.createElement('div'); d.className = 'frpop'; d.innerHTML = '<b>♥</b>+' + n; d.style.left = m.x + 'px'; d.style.top = (m.y - m.h - m.lift - 6) + 'px'; d.addEventListener('animationend', () => d.remove()); fxEl.append(d); }
+function frPop(m, n = 1, juicy = false) { const d = document.createElement('div'); d.className = 'frpop' + (juicy ? ' juicy' : ''); d.innerHTML = juicy ? '<b>♥</b><i>+' + n + '</i>' : '<b>♥</b>+' + n; const X = m.x, Y = m.y - m.h - m.lift - 6; d.style.left = X + 'px'; d.style.top = Y + 'px'; d.addEventListener('animationend', e => { if (e.target === d && e.animationName !== 'frjHeart') d.remove(); }); fxEl.append(d);
+  if (juicy) for (let i = 0; i < 5; i++) { const h = document.createElement('div'), a = -Math.PI / 2 + (i - 2) * .62 + (Math.random() - .5) * .3, r = 26 + Math.random() * 14; h.className = 'frmini'; h.textContent = '♥'; Object.assign(h.style, { left: X + 'px', top: (Y - 14) + 'px' }); h.style.setProperty('--dx', Math.cos(a) * r + 'px'); h.style.setProperty('--dy', Math.sin(a) * r + 'px'); h.style.setProperty('--dl', (.1 + i * .03) + 's'); h.addEventListener('animationend', () => h.remove()); fxEl.append(h); } }
+// v7.62 경완: 열매 말풍선을 누르면 꾹 눌렸다 톡 터지며 도트 조각이 튐
+function bubPop(b) { const c = b.cloneNode(true), r = b.getBoundingClientRect(), R = fxEl.getBoundingClientRect(), sx = R.width / (fxEl.offsetWidth || R.width || 1), cx = (r.left + r.width / 2 - R.left) / sx, cy = (r.top + r.height / 2 - R.top) / sx; c.classList.add('bpop'); c.removeAttribute('hidden'); c.addEventListener('animationend', () => c.remove()); b.after(c);
+  ['#ff5a7a', '#ffd84a', '#ffffff', '#ff9ab8', '#7ad06a', '#ffd84a'].forEach((col, i) => { const k = document.createElement('div'), a = i / 6 * Math.PI * 2 + Math.random() * .5, d = 18 + Math.random() * 10; k.className = 'bspk'; Object.assign(k.style, { left: cx + 'px', top: cy + 'px' }); k.style.setProperty('--c', col); k.style.setProperty('--dx', Math.cos(a) * d + 'px'); k.style.setProperty('--dy', Math.sin(a) * d + 'px'); k.addEventListener('animationend', () => k.remove()); fxEl.append(k); }); }
+function monYum(m) { const a = m.el?.querySelector('.act'); if (!a) return; a.classList.remove('yum'); void a.offsetWidth; a.classList.add('yum'); a.addEventListener('animationend', e => { if (e.animationName === 'yum') a.classList.remove('yum'); }, { once: true }); }
 // v3.50 경완: 말풍선 그림 이모지는 도트 그림으로 (😋 냠냠 · 💦 땀 · ☀ 햇볕 · ☾ 달)
 const PIXE = (() => { const P = { k: '#4a3010', y: '#ffd23c', e: '#3a2410', m: '#8a3a10', t: '#e8506a', b: '#4aa8f0', l: '#d8f0ff', K: '#1f5a9a', o: '#f08a1c', w: '#fff6b0', Y: '#ffe27a', O: '#b88a20', R: '#ec3b3b', D: '#7a1418', H: '#ff9a8a' };
   const M = {
@@ -2827,7 +2847,7 @@ function addBerry(x, y, natural = false, t = Date.now(), red = Math.random() < .
 // 배부름 = 100 - 배고픔. 열매를 안 먹으면 서서히 배고파지고(가득 찬 상태에서 바닥까지 약 2시간 반),
 // 열매 하나에 BERRY_FILL 만큼 차오른다. 가득 차면 더 못 먹는다.
 // 배고프면 스스로 나무를 흔들어 따 먹기도 하지만, 내가 먹여 줄 틈이 있게 아주 배고플 때만 가끔 그런다.
-const FEED_BUB = 80;   // v6.46 경완: 열매 말풍선은 배부름 20 아래(hunger > 80)일 때, 내가 준 열매는 배부름 +60
+const FEED_BUB = 50;   // v7.62 경완: 배부름 50 아래(hunger > 50)면 열매 말풍선. v6.46 경완: 열매 말풍선은 배부름 20 아래(hunger > 80)일 때, 내가 준 열매는 배부름 +60
 let HUNGER_RATE = .011, BERRY_FILL = 10, BERRY_FILL_MINE = 60,   /* v4.36 경완: 내가 준 열매는 배부름 +20, 나무에서 떨어진 열매는 +10 */ SELF_FEED = 78, STARVING = 93;
 const isFull = m => m.hunger <= 5;
 // 내가 놓은 열매: 근처(300)에 있는 배가 덜 찬 포켓몬이 알아채고(!) 먹으러 온다
@@ -2903,7 +2923,7 @@ document.addEventListener('click', e => { const g = e.target.closest('.ih-game')
 // v6.13 경완: 배고프면 '배고파' 글자 대신 열매 아이콘 말풍선 — 누르면 바로 열매를 먹인다 (feedNow)
 function hungryBub(m) { emote(m, '꼬르륵', 'feed', 8, 'hungry'); if (m.bub.classList.contains('feed')) m.bub.innerHTML = ICO_BERRY; }
 fxEl.addEventListener('pointerdown', e => { const b = e.target.closest('.bubble.feed'); if (!b || e.button > 0) return; e.stopPropagation(); e.preventDefault();
-  const m = S.mons.find(o => o.bub === b); b.hidden = true; if (!m) return; m.bubT = 0; feedTapAt = performance.now(); sfx('tap'); haptic(2); feedNow(m); });   /* v6.29 경완: 누르면 진동 (v6.31 더 세게) */
+  const m = S.mons.find(o => o.bub === b); bubPop(b); b.hidden = true; if (!m) return; monYum(m); m.bubT = 0; feedTapAt = performance.now(); sfx('tap'); haptic(2); feedNow(m); });   /* v6.29 경완: 누르면 진동 (v6.31 더 세게) */
 /* v6.31 경완: 효과음 두 번 → 말풍선이 pointerdown 에서 숨으면 뒤따르는 click 이 밑의 필드로 가서 또 '탭' 소리·상태창 접기를 했다. 그 click 은 버린다 */
 let feedTapAt = 0; document.addEventListener('click', e => { if (performance.now() - feedTapAt < 600) { feedTapAt = 0; e.stopPropagation(); e.preventDefault(); } }, true);
 fxEl.addEventListener('click', e => { if (e.target.closest('.bubble.feed')) e.stopPropagation(); });
@@ -2915,7 +2935,7 @@ function feedNow(m) {
   if (isFull(m)) { emote(m, '배불러', '', 2.2, 'full-refuse'); log(`${J(m,'은/는')} 배가 불러서 열매를 사양했다.`, [m]); return; }
   if (m.partner) { const o = m.partner; m.partner = null; o.partner = null; o.scene = null; setState(o, 'idle', 1); }
   m.goal = null; m.scene = null; setState(m, 'idle', 2);
-  if (berryFr(m)) { frPop(m); save(); }   // v7.54 경완: 열매를 주는 순간(말풍선·정보창 누름) 바로 친밀도 +1 효과
+  if (berryFr(m)) { setTimeout(() => { frPop(m, 1, true); sfx('heart'); haptic(1); }, 110); save(); }   // v7.62 쫀득한 하트 · v7.54 경완: 열매를 주는 순간(말풍선·정보창 누름) 바로 친밀도 +1 효과
   const x = m.x - (m.face || 1) * Math.max(14, m.w * .3), y = m.y + 2, el = document.createElement('div');
   el.className = 'berry' + (Math.random() < .4 ? ' red' : ''); Object.assign(el.style, { left: x + 'px', top: y + 'px', zIndex: Math.round(y) + 1, pointerEvents: 'none' }); itemsEl.append(el);   // v3.42: 정보창에서 준 열매는 더 높이서 떨어진다 (잘 보이게)
   emote(m, '!', '', .8, 'berry-see');
@@ -5802,7 +5822,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.61';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.62';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
