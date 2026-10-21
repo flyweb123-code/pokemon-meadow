@@ -5834,7 +5834,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.98';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.99';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6159,7 +6159,7 @@ function mgView(v) {
           <div class="mg-abs"><div class="mg-ab2 act"><em>액티브</em><i class="mg-abic">${tyIcon(ty[0])}</i><div><p><b>${ab.n}</b></p><span>${ab.d}</span>${ab.c ? `<u>쿨타임 ${+(ab.c * (ps.cdm || 1)).toFixed(1)}초</u>` : ''}</div></div>
           <div class="mg-ab2 pas"><em>패시브</em><i class="mg-abic"><span class="rk ${rk}">${rk}</span></i><div><p><b>${ps.n}</b></p><span>${ps.d}</span></div></div></div>
           <details class="mg-rks"><summary>랭크별 패시브 모두 보기</summary><div class="mg-rkb">${RANKS.map(([r]) => `<div class="mg-rk${r === rk ? ' on' : ''}"><span class="rk ${r}">${r}</span><b>${MG_PASS[G.id][r].n}</b><span>${MG_PASS[G.id][r].d}</span></div>`).join('')}</div></details>
-          <div class="mg-gl"><b>기록별 선물 <small class="mg-gwk">${Math.max(1, Math.ceil((R.msT + MG_GIFT_WK - Date.now()) / 864e5))}일 뒤 초기화</small></b>${MG_GIFT.map(o => { const it = o.it === 'stone' ? MG_STONES[0] : o.it, got = R.ms.includes(o.m); return `<div class="mg-gi${got ? ' got' : o === nx ? ' nx' : ''}"><span>${o.m.toLocaleString()}점</span><img src="${ITEM_ART[ITEM[it].a]}" alt=""><em>${o.it === 'stone' ? '진화의 돌 (무작위)' : ITEM[it].n}${o.n > 1 ? ' ×' + o.n : ''}</em><i>${got ? '받음' : o === nx ? '다음' : ''}</i></div>`; }).join('')}<small>1,000점이 넘으면 가끔 향로나 진화의 돌을 덤으로 받아요</small></div>
+          <div class="mg-gl"><b>기록별 선물 <small class="mg-gwk">${Math.max(1, Math.ceil((R.msT + MG_GIFT_WK - Date.now()) / 864e5))}일 뒤 초기화</small></b>${MG_GIFT.map(o => { const it = o.it === 'stone' ? MG_STONES[0] : o.it, got = R.ms.includes(o.m); return `<div class="mg-gi${got ? ' got' : o === nx ? ' nx' : ''}"><span>${o.m.toLocaleString()}점</span><img src="${ITEM_ART[ITEM[it].a]}" alt=""><em>${o.it === 'stone' ? '진화의 돌 (무작위)' : ITEM[it].n}${o.n > 1 ? ' ×' + o.n : ''}</em><i>${got ? '받음' : o === nx ? '다음' : ''}</i></div>`; }).join('')}<small>1,000점이 넘으면 가끔 진화의 돌을 덤으로 받아요</small></div>
           <button class="lk-btn main mg-go" data-g="${G.id}">시작하기</button></div></div>`;
       return card; }).join('');
     const pop = $('#mgPop'); pop.innerHTML = mgDet; pop.hidden = !mgDet;
@@ -7015,7 +7015,7 @@ function mgEnd(g) {
   const j0 = m.joy ?? 60; m.joy = clamp(j0 + (dist >= 30 ? 6 + 4 * g.phase : 2)); const joy = Math.round(m.joy - j0);
   const gifts = [], I = itemsOf(), give = (it, n) => { if (it === 'stone') it = MG_STONES[Math.floor(Math.random() * MG_STONES.length)]; I[it] = (I[it] || 0) + n; gifts.push({ it, n }); };
   if (!T) for (const o of MG_GIFT) if (dist >= o.m && !R.ms.includes(o.m)) { R.ms.push(o.m); give(o.it, o.n); }
-  if (!T && dist >= 1000 && Math.random() < Math.min(.3, dist / 8000))   /* v6.16 경완: 1,000점부터 */ give(Math.random() < .7 ? 'incense' : 'stone', 1);
+  if (!T && dist >= 1000 && Math.random() < Math.min(.3, dist / 8000))   /* v6.16 경완: 1,000점부터 */ give('stone', 1);   /* v7.99 경완: 덤은 도구(진화의 돌)만 — 향로 뺌 */
   if (T) for (const o of MG_GIFT.slice(0, 2)) gifts.push({ it: o.it === 'stone' ? MG_STONES[Math.floor(Math.random() * MG_STONES.length)] : o.it, n: o.n });   /* v7.33 경완: 시험 판은 점수 상관없이 선물 창을 보여 줌 (실제로 안 받음) */
   save(); renderGold(); if (nb) setTimeout(() => sfx('newdex'), 900);   /* v7.37: 최고 기록 소리는 점수 다 오른 뒤 */
   const fmW = frMaxQ.length > 0; if (fmW) { clearTimeout(frMaxT); frMaxT = 0; }   /* v7.37 경완: 친밀도 만점 창(폭죽)은 기록·선물 연출이 끝난 뒤에 */
