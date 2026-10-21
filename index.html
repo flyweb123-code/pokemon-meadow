@@ -1408,7 +1408,8 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 .mg-abi b{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:11px;white-space:nowrap;background:rgba(255,255,255,.85);padding:1px 6px;border:2px solid var(--frame)}}.mg-btn[disabled]{opacity:.55}
 .mg-rec{text-align:center;padding:12px 0 8px}.mg-rec i{display:block;font-style:normal;color:#e8487a;font-size:15px}.mg-rec b{display:block;font-size:40px}.mg-rec span{font-size:13px;color:#6a6a7a}.mg-got{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:8px 0}.mg-got span{display:flex;align-items:center;justify-content:center;gap:4px;padding:8px 4px;border:2px solid var(--frame);background:#fff;font-size:13px;white-space:nowrap}
 .mg-th{display:block;width:calc(100% + 24px);height:110px;margin:-10px -12px 10px;border-bottom:3px solid var(--frame);image-rendering:pixelated;cursor:pointer;background:#d4f0ff}.mg-card.soon .mg-th{filter:grayscale(.35);cursor:default}
-.mg-msb{position:relative;display:flex;align-items:center;gap:4px;margin-left:auto;padding:3px 8px 3px 5px;font:inherit;font-size:13px;font-weight:bold;color:#20202c;background:#fff4c8;border:2px solid var(--frame);box-shadow:inset 0 -3px 0 rgba(0,0,0,.12);cursor:pointer}.mg-msb:active{transform:translateY(1px)}.mg-msb svg{display:block}.mq-dot{position:absolute;top:-8px;right:-8px;min-width:18px;height:18px;padding:0 4px;box-sizing:border-box;border-radius:9px;background:#ff4a5a;color:#fff;font-size:11px;font-style:normal;line-height:18px;text-align:center;border:2px solid #fff;animation:mqDot 1.2s ease-in-out infinite}@keyframes mqDot{50%{transform:scale(1.15)}}.mgwin .sheet-head .mg-msb+.mg-x{margin-left:6px}
+.mq-tabs{position:sticky;top:0;z-index:2;display:flex;gap:4px;margin-bottom:4px;background:var(--win,#fff);padding-bottom:4px}.mq-tab{position:relative;flex:1;padding:7px 0;font:inherit;font-size:14px;font-weight:bold;color:#7a7a8a;background:#e8e8ee;border:2px solid #c8c8d4;cursor:pointer}.mq-tab.on{color:#20202c;background:#fff4c8;border-color:var(--frame)}.mq-tdot{position:absolute;top:-6px;right:-5px;width:12px;height:12px;box-sizing:border-box;border-radius:50%;background:#ff3a4a;border:2px solid #fff}.mq-pane{display:flex;flex-direction:column;gap:6px}.mq-tys{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}.mq-ty{position:relative;display:flex;align-items:center;justify-content:center;aspect-ratio:1;padding:0;background:#f4f4f8;border:2px solid #d8d8e0;cursor:pointer}.mq-ty svg{width:70%;height:70%}.mq-ty.on{background:#fff4c8;border-color:var(--frame)}.mq-ty.fin{opacity:.45}.mq-ty .mq-tdot{top:-5px;right:-5px}.mq.lock{opacity:.5}
+.mg-msb{position:relative;display:grid;place-items:center;width:40px;height:40px;margin-left:auto;padding:0;border:3px solid var(--frame);background:var(--win);box-shadow:inset 0 0 0 2px var(--win),inset 0 0 0 4px var(--inner),2px 2px 0 rgba(0,0,0,.3);cursor:pointer}.mg-msb:active{transform:translate(1px,1px);box-shadow:inset 0 0 0 2px var(--win),inset 0 0 0 4px var(--inner)}.mg-msb svg{display:block}.mq-dot{position:absolute;top:-6px;right:-6px;width:14px;height:14px;padding:0;box-sizing:border-box;border-radius:50%;background:#ff3a4a;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25);font-size:0;animation:mqDot 1.2s ease-in-out infinite}@keyframes mqDot{50%{transform:scale(1.2)}}.mq-dot[hidden]{display:none}.mgwin .sheet-head .mg-msb+.mg-x{margin-left:6px}
 .mq-list{gap:6px!important}.mq-hd{margin:6px 2px 0;font-size:13px;font-weight:bold;color:#20202c}.mq-hd small{font-weight:400;font-size:11px;color:#8a8a9a;margin-left:4px}.mq{display:grid;grid-template-columns:26px 1fr auto;gap:8px;align-items:center;padding:6px 8px;background:#f4f4f8;border:2px solid #d8d8e0}.mq.ok{background:#fff4c8;border-color:#e8b84a}.mq.done{opacity:.55}.mq-ic{display:flex;align-items:center;justify-content:center;width:26px;height:26px;font-style:normal}.mq-ic svg{width:24px;height:24px}.mq-tx{min-width:0}.mq-tx b{display:block;font-size:13px;color:#20202c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mq-tx small{font-size:11px;color:#7a7a8a}.mq-bar{height:6px;margin:3px 0 2px;background:#dcdce4;border:1px solid #b8b8c4}.mq-bar i{display:block;height:100%;background:#5ac85a}.mq.ok .mq-bar i{background:#f0b030}.mq-get{display:flex;align-items:center;gap:3px;padding:5px 8px;font:inherit;font-size:13px;font-weight:bold;color:#20202c;background:#ffd84a;border:2px solid var(--frame);box-shadow:inset 0 -3px 0 rgba(0,0,0,.15);cursor:pointer;animation:mqGet .9s ease-in-out infinite}.mq-get:disabled{background:#e4e4ea;color:#9a9aa8;box-shadow:none;animation:none;cursor:default}.mq-get .coin{width:12px;height:12px}@keyframes mqGet{50%{transform:scale(1.07)}}.mq-fin{font-size:12px;color:#3a9a4a;font-weight:bold}.mq-win{position:relative}.mq-fly{position:absolute;z-index:3;transform:translate(-50%,0);display:flex;align-items:center;gap:3px;font-style:normal;font-weight:bold;font-size:16px;color:#ffd84a;-webkit-text-stroke:1px #20202c;paint-order:stroke;pointer-events:none;animation:mqFly .9s ease-out forwards}.mq-fly .coin{width:14px;height:14px}@keyframes mqFly{0%{opacity:0;transform:translate(-50%,6px) scale(.6)}20%{opacity:1;transform:translate(-50%,-8px) scale(1.15)}100%{opacity:0;transform:translate(-50%,-40px) scale(1)}}
 .mg-gl{display:flex;flex-direction:column;gap:2px;margin-top:2px}.mg-gl>b .mg-gwk{font-weight:400;margin-left:6px}.mg-gl>b{font-size:13px;margin-bottom:2px}.mg-gl small{font-size:11px;color:#8a8a9a;margin-top:2px}.mg-gi{display:grid;grid-template-columns:64px 24px 1fr auto;gap:6px;align-items:center;font-size:12px;padding:3px 4px;color:#4a4a5a}.mg-gi img{width:22px;height:22px;image-rendering:pixelated}.mg-gi em{font-style:normal}.mg-gi i{font-style:normal;font-size:11px}.mg-gi span{font-weight:bold;color:#20202c}.mg-gi.got{opacity:.5}.mg-gi.got i{color:#3a9a4a}.mg-gi.nx{background:#fff4c8}.mg-gi.nx i{color:#e8783c}
 .mg-rec{padding:6px 0 2px}.mg-rec .mg-nb{display:inline-block;font-style:normal;font-size:13px;color:#fff;background:#e8487a;padding:2px 10px;margin-bottom:4px;animation:nbPop .5s steps(5) both,nbBlink 1.2s steps(2) .5s infinite}.mg-rec b{display:block;font-size:46px;line-height:1.1}.mg-rec b em{font-style:normal}.mg-aim{position:absolute;z-index:1;width:0;height:0;pointer-events:none;animation:aimIn .2s ease-out}.mg-aim svg{position:absolute;overflow:visible;left:0;top:0}.mg-aim i{position:absolute;left:0;top:0;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:rgba(255,176,46,.55);box-shadow:0 0 0 2px rgba(255,255,255,.7)}@keyframes aimIn{from{opacity:0}}
@@ -1534,7 +1535,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
 <div class="sheet" id="mg" hidden>
   <div class="win mgwin" role="dialog" aria-label="미니게임">
     <section data-mv="sel">
-      <div class="sheet-head"><h3>미니게임</h3><button class="mg-msb" id="mgMsB" data-mgms aria-label="미션"><svg viewBox="0 0 12 12" width="22" height="22" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 0h8v1h1v11H1V1h1z"/><path fill="#fff8e0" d="M2 1h8v10H2z"/><path fill="#c89a3a" d="M4 0h4v2H4z"/><path fill="#3a9a4a" d="M3 4h1v1h1v-1h1v-1h1v1H6v1H5v1H4V5H3z"/><path fill="#8a8a9a" d="M8 4h1v1H8zM3 7h6v1H3zM3 9h6v1H3z"/></svg><span>미션</span><i class="mq-dot" hidden></i></button><button class="opt mg-x" data-mgx>닫기</button></div>
+      <div class="sheet-head"><h3>미니게임</h3><button class="mg-msb" id="mgMsB" data-mgms aria-label="미션"><svg viewBox="0 0 14 14" width="28" height="28" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 1h9v1h1v1h1v2h-1v8H3v-1H2v-1H1V3h1z"/><path fill="#fff4d0" d="M3 2h8v1H3zM2 3h9v1h1v1h-1v7H3v-1H2z"/><path fill="#e8c878" d="M2 3h1v8H2zM11 4h1v1h-1z"/><path fill="#c89a3a" d="M3 11h8v1H3z"/><path fill="#ffd84a" d="M6 4h1v1h1v1h1v1H8v2H7V8H6v1H5V7H4V6h1V5h1z"/><path fill="#e8783c" d="M6 7h1v1H6zM5 9h1v1H5zM7 9h1v1H7z"/></svg><i class="mq-dot" hidden></i></button><button class="opt mg-x" data-mgx>닫기</button></div>
       <div class="mg-who" id="mgWho"></div>
       <div class="mg-list" id="mgList"></div>
     </section>
@@ -1606,6 +1607,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
         <div class="op-row"><span>베타 판 쓰기 (이 기기만)</span><button class="op-sw" id="betaSw" role="switch" aria-checked="false"><i></i></button></div>
         <div class="set-btns one"><button class="lk-btn main" id="updNow">배포된 최신 판 바로 받기</button></div>
         <div class="set-btns one"><button class="lk-btn main" id="newsPv">업데이트 알림창 미리 보기</button></div>
+        <div class="set-btns one"><button class="lk-btn main" id="tutPv">튜토리얼 미리 보기</button></div>   <!-- v8.04 경완: 오프닝·튜토리얼을 처음부터 (저장은 그대로) -->
         <div class="mgt-row"><span>골드</span><input id="opGold" type="number" inputmode="numeric" min="0" aria-label="골드"><button class="lk-btn main" id="opGoldGo">맞추기</button></div><p class="op-note" id="opGoldNote"></p>   <!-- v7.46 경완: 운영자 전용 — 골드 직접 맞추기 (게임 전으로 되돌리기 등) -->   <!-- v7.28 경완: 운영자 전용 — 봤다고 저장하지 않음 -->
         <div class="mgt-row"><span>기술 시험</span><select id="mgtType" aria-label="타입 (액티브 기술)"></select><select id="mgtRk" aria-label="랭크 (패시브)"></select><button class="lk-btn main" id="mgtGo">해 보기</button></div>   <!-- v6.21 경완: 운영자 전용 미니게임 기술 시험 (보상·기록 없음) -->
         <p class="op-note" id="updMsg" hidden></p>
@@ -5570,7 +5572,7 @@ function serialize() {
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk, red: !!b.red })), lockT: S.lockT,
     gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, mg: S.mg || {}, fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])] };
 }
-let saveFrozen = false, tutFreeze = false;
+let saveFrozen = false, tutFreeze = false, introPv = false;   // introPv: 튜토리얼 미리 보기 (끝나도 저장 안 함)
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
@@ -5837,7 +5839,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.03';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.04';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6120,24 +6122,38 @@ const MQ_IC = (() => { const sv = (b) => `<svg viewBox="0 0 12 12" shape-renderi
     sum: sv(P('#20202c', 'M2 1h8v10H2z') + P('#ffd84a', 'M3 2h6v2H3zM3 5h6v2H3zM3 8h6v2H3z') + P('#c89a3a', 'M3 3h6v1H3zM3 6h6v1H3zM3 9h6v1H3z')),
     kill: sv(P('#20202c', 'M5 0h2v3h1V1h2v2H9v1h3v2H9v1h1v2H8V8H7v4H5V8H4v1H2V7h1V6H0V4h3V3H2V1h2v2h1z') + P('#ff9a3a', 'M6 1v3h1V2h2L8 4h3v1H8v1h1v2H8L7 7v4H6V7H5L4 8H3V6h1V5H1V4h3L3 2h2v2h1z') + P('#fff6c0', 'M5 4h2v2H5z')),
     sp: sv(P('#20202c', 'M3 0h6v1h1v1h1v2h1v4h-1v2h-1v1H9v1H3v-1H2v-1H1V8H0V4h1V2h1V1h1z') + P('#ff4a5a', 'M3 1h6v1h1v1h1v2H1V3h1V2h1z') + P('#ffffff', 'M1 7h10v1h-1v1H9v1H3V9H2V8H1z') + P('#20202c', 'M1 5h10v1H1z') + P('#ffffff', 'M5 4h2v3H5z') + P('#20202c', 'M5 5h2v1H5z')) }; })();
-const MQ_TY = [[1500, 40], [3000, 90], [5000, 180]];   // 타입별 점수 기록 (그 타입 포켓몬으로 한 판 점수)
-const mqS = () => { const M = mgS(), q = M.q || (M.q = { n: mgRec().n || 0, sum: 0, best: mgRec().best || 0, cMax: 0, pcM: 0, ph: 0, kn: 0, sp: {}, tb: {}, c: {} }); return q; };
+const MQ_TY = [[1500, 40], [3000, 90], [5000, 180], [7000, 280], [10000, 450]];   // 타입별 점수 기록 (그 타입 포켓몬으로 한 판 점수) — v8.04 경완: 타입마다 단계가 이어짐
+// v8.04 경완: 일일 미션 (날마다 새로) — 게임 5판, 포켓몬 3종과 함께, 한 판 3,000점
+const MQ_DAY = [{ id: 'd_play', n: '게임 5판 하기', st: d => d.n, need: 5, gold: 50 }, { id: 'd_sp', n: '포켓몬 3종과 함께 하기', st: d => Object.keys(d.sp).length, need: 3, gold: 50 }, { id: 'd_best', n: '한 판 3,000점 넘기기', st: d => d.best, need: 3000, gold: 60 }];
+const mqS = () => { const M = mgS(), q = M.q || (M.q = { n: mgRec().n || 0, sum: 0, best: mgRec().best || 0, cMax: 0, pcM: 0, ph: 0, kn: 0, sp: {}, tb: {}, c: {}, cl: {} }); if (!q.cl) q.cl = {}; const k = dayKey(); if (!q.d || q.d.k !== k) q.d = { k, n: 0, sp: {}, best: 0, c: {} }; return q; };
+let mqTab = 'day', mqTy = 0;
 const mqList = () => { const q = mqS(), L = [];
-  for (const M of MQ) { const k = q.c[M.id] || 0, T = M.t[Math.min(k, M.t.length - 1)], v = M.st(q) || 0; L.push({ id: M.id, g: 'all', n: M.n(T[0]), v, need: T[0], gold: T[1], all: k >= M.t.length, ok: k < M.t.length && v >= T[0], k, K: M.t.length }); }
-  for (let ty = 1; ty < TYPE_KO.length; ty++) { const id = 'ty' + ty, k = q.c[id] || 0, T = MQ_TY[Math.min(k, MQ_TY.length - 1)], v = q.tb[ty] || 0; L.push({ id, ty, g: 'ty', n: `${TYPE_KO[ty]} 타입으로 ${T[0].toLocaleString()}점`, v, need: T[0], gold: T[1], all: k >= MQ_TY.length, ok: k < MQ_TY.length && v >= T[0], k, K: MQ_TY.length }); }
+  for (const D of MQ_DAY) { const v = D.st(q.d) || 0, g0 = !!q.d.c[D.id]; L.push({ id: D.id, mid: D.id, tab: 'day', n: D.n, v, need: D.need, gold: D.gold, all: g0, ok: !g0 && v >= D.need }); }
+  const got = (id, j) => !!q.cl[id + ':' + j] || j < (q.c[id] || 0);   /* v8.04 경완: 단계 없이 목표마다 따로 — 이룬 건 순서 상관없이 바로 받음 (q.c = 예전 단계 수) */
+  for (const M of MQ) { const v = M.st(q) || 0; M.t.forEach(([need, gold], j) => { const g0 = got(M.id, j); L.push({ id: M.id + ':' + j, mid: M.id, tab: 'all', n: M.n(need), v, need, gold, all: g0, ok: !g0 && v >= need }); }); }
+  for (let ty = 1; ty < TYPE_KO.length; ty++) { const id = 'ty' + ty, v = q.tb[ty] || 0; MQ_TY.forEach(([need, gold], j) => { const g0 = got(id, j); L.push({ id: id + ':' + j, mid: id, ty, tab: 'ty', n: `${TYPE_KO[ty]} 타입으로 ${need.toLocaleString()}점`, v, need, gold, all: g0, ok: !g0 && v >= need }); }); }
   return L; };
-const mqReady = () => mqList().filter(o => o.ok).length;
-function mqRec(g, m, dist) { const q = mqS(); q.n++; q.sum += dist; q.best = Math.max(q.best || 0, dist); q.cMax = Math.max(q.cMax || 0, g.cMax || 0); q.pcM = Math.max(q.pcM || 0, g.pcM || 0); q.ph = Math.max(q.ph || 0, g.phase || 0); q.kn += g.kn || 0; q.sp[m.sp || +m.form] = 1;
+const mqReady = (tab, ty) => mqList().filter(o => o.ok && (!tab || o.tab === tab) && (!ty || o.ty === ty)).length;
+function mqRec(g, m, dist) { const q = mqS(), sp = m.sp || +m.form; q.n++; q.sum += dist; q.best = Math.max(q.best || 0, dist); q.cMax = Math.max(q.cMax || 0, g.cMax || 0); q.pcM = Math.max(q.pcM || 0, g.pcM || 0); q.ph = Math.max(q.ph || 0, g.phase || 0); q.kn += g.kn || 0; q.sp[sp] = 1;
+  q.d.n++; q.d.sp[sp] = 1; q.d.best = Math.max(q.d.best, dist);
   for (const ty of SPECIES[m.form]?.t || []) q.tb[ty] = Math.max(q.tb[ty] || 0, dist); }
-function mqDot() { const n = mqReady(), b = $('#mgMsB'); if (!b) return; b.querySelector('.mq-dot').hidden = !n; b.querySelector('.mq-dot').textContent = n > 9 ? '9+' : n || ''; }
-function mqRow(o) { const pct = o.all ? 100 : Math.min(100, o.v / o.need * 100), ic = o.ty ? `<i class="mq-ic">${tyIcon(o.ty)}</i>` : `<i class="mq-ic">${MQ_IC[o.id] || ''}</i>`;
-  return `<div class="mq${o.ok ? ' ok' : ''}${o.all ? ' done' : ''}">${ic}<div class="mq-tx"><b>${o.n}</b><div class="mq-bar"><i style="width:${pct.toFixed(1)}%"></i></div><small>${o.all ? '모두 달성' : `${Math.min(o.v, o.need).toLocaleString()} / ${o.need.toLocaleString()}`} · ${Math.min(o.k + (o.all ? 0 : 1), o.K)}/${o.K}단계</small></div>${o.all ? '<span class="mq-fin">완료</span>' : `<button class="mq-get" data-mq="${o.id}"${o.ok ? '' : ' disabled'}><i class="coin" aria-hidden="true"></i>${o.gold}</button>`}</div>`; }
-function mqBody() { const L = mqList(), sort = A => A.sort((a, b) => (b.ok - a.ok) || (a.all - b.all) || (b.v / b.need - a.v / a.need));
-  return `<p class="mq-hd">공통</p>${sort(L.filter(o => o.g === 'all')).map(mqRow).join('')}<p class="mq-hd">타입별 점수 기록 <small>그 타입 포켓몬으로 한 판 점수</small></p>${sort(L.filter(o => o.g === 'ty')).map(mqRow).join('')}`; }
-function mqOpen() { const pop = $('#mgPop'); pop.innerHTML = `<div class="win mg-popwin mq-win" role="dialog" aria-label="미션"><div class="sheet-head"><h3>미션</h3><button class="opt" data-mgpx>닫기</button></div><div class="mg-det mq-list">${mqBody()}</div></div>`; pop.hidden = false; }
-function mqClaim(id, btn) { const o = mqList().find(x => x.id === id); if (!o?.ok) return; const q = mqS(); q.c[id] = (q.c[id] || 0) + 1; addGold(o.gold); save(); sfx('pickup'); haptic(1);
-  const w = $('#mgPop .mq-win'), L = w?.querySelector('.mq-list'); if (w && btn) { const r = btn.getBoundingClientRect(), wr = w.getBoundingClientRect(), f = document.createElement('i'); f.className = 'mq-fly'; f.innerHTML = `<i class="coin" aria-hidden="true"></i>+${o.gold}G`; f.style.left = (r.left - wr.left + r.width / 2) + 'px'; f.style.top = (r.top - wr.top) + 'px'; w.appendChild(f); setTimeout(() => f.remove(), 900); }
-  if (L) { const sc = L.scrollTop; L.innerHTML = mqBody(); L.scrollTop = sc; } mqDot(); }
+function mqDot() { const n = mqReady(), b = $('#mgMsB'); if (!b) return; b.querySelector('.mq-dot').hidden = !n; }
+function mqRow(o) { const pct = o.all ? 100 : Math.min(100, o.v / o.need * 100), ic = o.ty ? `<i class="mq-ic">${tyIcon(o.ty)}</i>` : `<i class="mq-ic">${MQ_IC[o.mid] || MQ_IC[o.mid.slice(2)] || ''}</i>`;
+  return `<div class="mq${o.ok ? ' ok' : ''}${o.all ? ' done' : ''}">${ic}<div class="mq-tx"><b>${o.n}</b><div class="mq-bar"><i style="width:${pct.toFixed(1)}%"></i></div><small>${o.all ? '받음' : `${Math.min(o.v, o.need).toLocaleString()} / ${o.need.toLocaleString()}`}</small></div>${o.all ? '<span class="mq-fin">완료</span>' : `<button class="mq-get" data-mq="${o.id}"${o.ok ? '' : ' disabled'}><i class="coin" aria-hidden="true"></i>${o.gold}</button>`}</div>`; }
+function mqBody() { const L = mqList(), sort = A => A.sort((a, b) => (b.ok - a.ok) || (a.all - b.all) || (b.v / b.need - a.v / a.need)), q = mqS();
+  const tabs = [['day', '일일'], ['all', '도전'], ['ty', '타입별']].map(([k, n]) => { const c = mqReady(k); return `<button class="mq-tab${mqTab === k ? ' on' : ''}" data-mqt="${k}">${n}${c ? '<i class="mq-tdot"></i>' : ''}</button>`; }).join('');
+  let body = '';
+  if (mqTab === 'day') { const h = new Date(), left = Math.max(1, Math.ceil((new Date(h.getFullYear(), h.getMonth(), h.getDate() + 1) - h) / 36e5)); body = `<p class="mq-hd">오늘의 미션 <small>${left}시간 뒤 새로 바뀌어요</small></p>${L.filter(o => o.tab === 'day').map(mqRow).join('')}`; }
+  else if (mqTab === 'all') { const A = L.filter(o => o.tab === 'all'); body = [...A.filter(o => o.ok), ...A.filter(o => !o.ok && !o.all), ...A.filter(o => o.all)].map(mqRow).join(''); }
+  else { if (!mqTy) mqTy = (L.find(o => o.tab === 'ty' && o.ok) || {}).ty || (SPECIES[mgMon?.form]?.t || [1])[0];
+    body = `<div class="mq-tys">${TYPE_KO.slice(1).map((n, i) => { const ty = i + 1, c = mqReady('ty', ty), fin = L.filter(o => o.tab === 'ty' && o.ty === ty).every(o => o.all); return `<button class="mq-ty${mqTy === ty ? ' on' : ''}${fin ? ' fin' : ''}" data-mqy="${ty}" aria-label="${n}">${tyIcon(ty)}${c ? '<i class="mq-tdot"></i>' : ''}</button>`; }).join('')}</div>
+      <p class="mq-hd">${TYPE_KO[mqTy]} 타입 <small>최고 ${(q.tb[mqTy] || 0).toLocaleString()}점 · 그 타입 포켓몬으로 한 판 점수</small></p>${L.filter(o => o.tab === 'ty' && o.ty === mqTy).map(mqRow).join('')}`; }
+  return `<div class="mq-tabs">${tabs}</div><div class="mq-pane">${body}</div>`; }
+function mqOpen() { const pop = $('#mgPop'); mqTy = 0; if (!mqReady(mqTab)) { const t = ['day', 'all', 'ty'].find(k => mqReady(k)); if (t) mqTab = t; } pop.innerHTML = `<div class="win mg-popwin mq-win" role="dialog" aria-label="미션"><div class="sheet-head"><h3>미션</h3><button class="opt" data-mgpx>닫기</button></div><div class="mg-det mq-list">${mqBody()}</div></div>`; pop.hidden = false; }
+function mqRedraw(top) { const L = $('#mgPop .mq-list'); if (!L) return; const sc = L.scrollTop; L.innerHTML = mqBody(); L.scrollTop = top ? 0 : sc; }
+function mqClaim(id, btn) { const o = mqList().find(x => x.id === id); if (!o?.ok) return; const q = mqS(); if (o.tab === 'day') q.d.c[id] = 1; else q.cl[id] = 1; addGold(o.gold); save(); sfx('pickup'); haptic(1);
+  const w = $('#mgPop .mq-win'); if (w && btn) { const r = btn.getBoundingClientRect(), wr = w.getBoundingClientRect(), f = document.createElement('i'); f.className = 'mq-fly'; f.innerHTML = `<i class="coin" aria-hidden="true"></i>+${o.gold}G`; f.style.left = (r.left - wr.left + r.width / 2) + 'px'; f.style.top = (r.top - wr.top) + 'px'; w.appendChild(f); setTimeout(() => f.remove(), 900); }
+  mqRedraw(); mqDot(); }
 const mgEl = $('#mg');
 let mgMon = null, MGG = null;
 const mgImg = {};
@@ -6212,6 +6228,7 @@ mgEl.addEventListener('click', e => {
   if ($('#mgPop').querySelector('.mg-gpop, .mg-lock') && !e.target.closest('.mg-gpop button')) return;   // v7.53 경완: 선물 창이 떠 있으면 바깥을 눌러도 안 닫힘 — 확인 버튼으로만
   if (e.target === mgEl && MGG?.run !== true) { mgClose(); return; }
   { const q = e.target.closest('[data-mq]'); if (q) { mqClaim(q.dataset.mq, q); return; } }
+  { const t = e.target.closest('[data-mqt]'); if (t) { sfx('tap'); mqTab = t.dataset.mqt; mqRedraw(true); return; } const y = e.target.closest('[data-mqy]'); if (y) { sfx('tap'); mqTy = +y.dataset.mqy; mqRedraw(); return; } }
   if (e.target.closest('[data-mgms]')) { sfx('open'); mgOpenG = ''; mqOpen(); return; }
   if (e.target.closest('[data-mgx]')) { mgClose(); return; }
   if (e.target.closest('[data-g="jump"]')) { sfx('tap'); mgPlay(); return; }
@@ -7167,7 +7184,7 @@ $('#bgmPick').onclick = () => {
 };
 $('#bgmPop').addEventListener('click', e => {
   const o = e.target.closest('[data-id]');
-  if (o) { const r = o.dataset.id === '__rand'; if (r !== !!S.bgmRand || !r) { S.bgmRand = r; if (!r) S.bgm = o.dataset.id; bgm.preview = null; if (r) { bgmStop(); } bgmStart(); save(); } renderBgmPick(); }
+  if (o) { const r = o.dataset.id === '__rand'; if (r !== !!S.bgmRand || !r) { S.bgmRand = r; if (!r) S.bgm = o.dataset.id; bgm.preview = null; if (r) { if (bgm.src) bgm.src.loop = false; else bgmStart(); } else bgmStart(); save(); } renderBgmPick(); }   /* v8.04 경완: 무작위 재생을 켜도 듣던 곡은 끊기지 않고 끝까지 — 끝나면(onended) 무작위 다음 곡 */
   if (o || e.target.id === 'bgmPop') $('#bgmPop').hidden = true;
 });
 renderBgmPick(); new MutationObserver(() => { if (!$('#set').hidden) renderBgmPick(); else $('#bgmPop').hidden = true; }).observe($('#set'), { attributes: true, attributeFilter: ['hidden'] });
@@ -9502,6 +9519,7 @@ function newsShow(pv) {   /* v7.28 경완: pv = 운영자 미리 보기 (봤다�
   W.onpointerup = up; W.onpointercancel = e => { e.clientX = sx; up(e); };
 }
 $('#newsPv').addEventListener('click', () => { sfx('tap'); newsShow(true); });
+$('#tutPv').addEventListener('click', () => { sfx('tap'); save(); location.href = location.pathname + '?intro'; });   // v8.04 경완: 운영자 — 튜토리얼 미리 보기 (?intro: 저장 안 하고 처음부터, 끝나면 원래대로)
 function opGoldPaint() { const M = mgS(), d = dayKey(); $('#opGold').value = S.gold; $('#opGoldNote').textContent = `지금 ${S.gold.toLocaleString()}G · 오늘 게임으로 받은 골드 ${(M.gd === d ? M.gg || 0 : 0).toLocaleString()}G${M.gT ? ` · 지금까지 게임 골드 ${M.gT.toLocaleString()}G` : ''}`; }   // v7.46 경완
 $('#opGoldGo').addEventListener('click', () => { const v = Math.max(0, Math.floor(+$('#opGold').value)); if (!isFinite(v)) return; sfx('tap'); S.gold = v; save(); renderGold(); opGoldPaint(); });
 function newsDue() { try { return localStorage.getItem('pk-news') !== NEWS_ID; } catch (e) { return false; } }   // v7.44 경완: 업데이트 알림창 자동 표시 (한 번)
@@ -10516,7 +10534,7 @@ async function tutFlow() {
   ov.remove();
   // v5.45 경완: 튜토리얼이 끝나면 환영 창 + 100골드 (알림 창 모양을 빌려 쓴다)
   // v5.47 경완: 남은 알(가방)에 새 알 표시를 다시 달고, '알' 메뉴에도 알림 점 — 직접 부화기에 넣어 보게
-  if (tutFreeze) { tutFreeze = false; saveFrozen = false; }   // v5.53 경완: 튜토리얼을 끝까지 마쳐야 처음 저장한다
+  if (tutFreeze && !introPv) { tutFreeze = false; saveFrozen = false; }   // v5.53 경완: 튜토리얼을 끝까지 마쳐야 처음 저장한다
   S.bag.forEach(e => { e.isNew = true; }); bagNext = true; renderBag.sig = ''; try { renderRun(); menuDots(); } catch (e) {} save();
   // 환영 창 (축하 창 틀을 빌려 쓰고, 뒤로 폭죽이 터진다) + 100골드
   await new Promise(res => { frMaxOpen = true; const fm = $('#frMax'); fm.classList.remove('trup'); $('#frMaxT').textContent = '환영합니다!'; fm.querySelector('.win').setAttribute('aria-label', '환영합니다');
@@ -10543,7 +10561,7 @@ async function start(data) {
   if (!d) { try { d = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { d = null; } }
   const isNew = !(d && d.mons && (d.mons.length || d.unlocked));
   const introPrev = !isNew && /[?&]intro/.test(location.search);   // v5.38: ?intro 는 저장이 있어도 새 게임처럼 오프닝·튜토리얼을 미리 보기만 한다 (원래 저장은 건드리지 않게 이번 실행은 저장 안 함)
-  if (introPrev) saveFrozen = true;
+  if (introPrev) { saveFrozen = true; introPv = true; }
   // v5.53 경완: 오프닝·튜토리얼 도중 앱을 껐다 켜면 튜토리얼이 통째로 건너뛰어지던 것 → 튜토리얼을 마칠 때까지 저장하지 않아 다시 켜면 처음부터
   if (isNew) try { localStorage.setItem('pk-news', NEWS_ID); } catch (e) {}   /* v7.44: 처음 시작한 사람은 업데이트 알림창 안 띄움 */
   if (isNew && INTRO_ON()) { saveFrozen = true; tutFreeze = true; }
@@ -10551,7 +10569,7 @@ async function start(data) {
   if (bgmOn && bgm.id !== S.bgm) bgmStart();
   Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp)); menuDots();
   migrateBox(); undoAutoHatch(); syncNeed(); renderGold(); if (!((isNew && INTRO_ON()) || /[?&]intro/.test(location.search))) document.documentElement.classList.remove('bootBlk');
-  if ((isNew && INTRO_ON()) || /[?&]intro/.test(location.search)) introFlow().then(() => tutFlow()).finally(() => { if (tutFreeze) { tutFreeze = false; saveFrozen = false; save(); } }).then(() => notiSoon(300)); else notiSoon(700); sky(); fetchWx(false, 10 * 60e3); setInterval(fetchWx, 10 * 60e3); document.addEventListener('visibilitychange', () => { if (document.hidden) return;   /* v4.33 경완: 다시 켜면 시간·날씨를 바로 (서서히 바뀌는 연출 없이) */
+  if ((isNew && INTRO_ON()) || /[?&]intro/.test(location.search)) introFlow().then(() => tutFlow()).finally(() => { if (introPrev) { tutFreeze = false; setTimeout(() => location.replace(location.pathname), 1500); return; }   /* v8.04 경완: 운영자 '튜토리얼 미리 보기' — 끝나면 원래 저장으로 돌아감 (미리 보기 중엔 저장 안 함) */ if (tutFreeze) { tutFreeze = false; saveFrozen = false; save(); } }).then(() => notiSoon(300)); else notiSoon(700); sky(); fetchWx(false, 10 * 60e3); setInterval(fetchWx, 10 * 60e3); document.addEventListener('visibilitychange', () => { if (document.hidden) return;   /* v4.33 경완: 다시 켜면 시간·날씨를 바로 (서서히 바뀌는 연출 없이) */
     const c = document.documentElement.classList; c.add('boot'); S.clock = realClock(); skyKey = ''; sky(); requestAnimationFrame(() => requestAnimationFrame(() => c.remove('boot'))); fetchWx(false, 10 * 60e3); }); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
   requestAnimationFrame(t => { last = t; frame(t); });
   // 아이폰 앱에 준비됐다고 알리고, 현재 알 현황을 바로 보낸다
