@@ -18,8 +18,9 @@
     { id: 'mg', n: 10, name: '미니게임 덕후', d: '많이는 안 걷고 미니게임을 하루 8판', wd: 2, we: 2.5, run: 0, care: .8, mg: 8, sc: 3500, on: .95 },
     { id: 'casual', n: 10, name: '가끔 접속', d: '사흘에 한 번쯤 켜고 3km', wd: 3, we: 3, run: 0, care: .2, mg: .5, sc: 1800, on: .4 },
   ];
-  const MQ_DAY = [[5, 50], [3, 50], [3000, 60]], MQ_TY = [[1500, 100], [3000, 220], [5000, 400], [7000, 650], [10000, 1000]];
-  const MQ_PLAY = [[5, 30], [20, 80], [50, 160], [100, 300], [300, 800]], MQ_SUM = [[20000, 60], [100000, 200], [300000, 500], [1000000, 1200]];
+  const MQ_DAY = [[5, 200], [3, 100], [3000, 300]], MQ_TY = [[1500, 100], [3000, 300], [5000, 600], [7000, 1000], [10000, 2000]];
+  const MQ_PLAY = [[5, 100], [20, 300], [50, 600], [100, 1000], [300, 2500]], MQ_SUM = [[20000, 150], [100000, 500], [300000, 1200], [1000000, 3000]];
+  const MQ_PH = [[3, 100], [5, 250], [7, 500], [10, 1000]], MQ_KILL = [[100, 150], [500, 500], [2000, 1500], [5000, 3000]];   // 3.25 경완: 도전 미션 페이즈·기술로 날리기도 (게임 MQ 와 같은 값)
   const EVO_FR = [0, 30, 60];
 
   // model = { odds[5], pity{e,l}, b{밸런스 전부}, probs{g: [[sp, p]]}, SP{sp: {t, fr, kids, ev, eqx, gb(바탕 종 등급), st(진화 단계)}}, price{도구 이름: G} }
@@ -35,7 +36,7 @@
     const r = rng(seed), b = model.b, odds = model.odds, HK = b.HATCH_KM, mul = .6 + r() * .9, scM = .75 + r() * .6;
     const sub = .25, per = sub / (b.BAG_STEP || .25), EVN = [0, 5, 10, 15, 20, 25];
     const U = { p: P.id, dex: new Set(), box: [], bag: [], inc: [], pe: 0, pl: 0, gold: 0, gs: { hatch: 0, run: 0, mg: 0, mq: 0, evo: 0 }, spent: 0, buy: 0, evo: 0, sh: 0, eggs: 0, hatched: 0, km: 0,
-      fE: null, fL: null, d: {}, bud: [], frD: {}, q: { n: 0, sum: 0, ty: {}, cl: {} } };
+      fE: null, fL: null, d: {}, bud: [], frD: {}, q: { n: 0, sum: 0, ph: 0, kn: 0, ty: {}, cl: {} } };
     const addG = (k, v) => { U.gold += v; U.gs[k] += v; };
     const getMon = (sp, day) => { const isNew = !U.dex.has(sp); U.dex.add(sp); const m = { sp, fr: 0, km: 0, sex: r() < .5 ? 'f' : 'm', d: day }; U.box.push(m); return [m, isNew]; };
     const kidsOk = (m, cond) => (model.SP[m.sp]?.kids || []).filter(c => { const d = model.SP[c]; if (!d) return false; if (d.eqx && (d.eqx === 1 ? 'f' : 'm') !== m.sex) return false; const w = evoWay(model, c); return w && cond(w, c); });
@@ -75,12 +76,12 @@
       // 미니게임: 골드는 점수 30점마다 1G, 친밀도는 첫째 짝꿍에게
       if (on && P.mg) { let n = Math.floor(P.mg) + (r() < P.mg % 1 ? 1 : 0), best = 0, cnt = 0;
         for (let i = 0; i < n; i++) { const s = Math.round(P.sc * scM * (.5 + r())), m = U.bud[i % Math.max(1, U.bud.length)] || U.box[0]; if (!m) break; cnt++;
-          addG('mg', Math.floor(s / 30)); best = Math.max(best, s); U.q.n++; U.q.sum += s;
+          addG('mg', Math.floor(s / 30)); best = Math.max(best, s); U.q.n++; U.q.sum += s; U.q.ph = Math.max(U.q.ph, 1 + Math.floor(s * .8 / 250)); U.q.kn += Math.round(2 + s / 500);   /* 짐작: 페이즈는 250m마다(점수의 8할이 거리), 기술로 날리는 수는 한 판에 2 + 점수/500 */
           const frB = s >= 2000 ? Math.floor(s / 1000) : s >= 300 ? 1 : 0; if (U.bud[0]) U.bud[0].fr = Math.min(b.FR_MAX, U.bud[0].fr + (i < 5 ? frB : frB ? 1 : 0));
           for (const t of model.SP[m.sp]?.t || []) U.q.ty[t] = Math.max(U.q.ty[t] || 0, s); }
         if (cnt >= MQ_DAY[0][0]) addG('mq', MQ_DAY[0][1]); if (cnt >= MQ_DAY[1][0] && new Set(U.box.map(o => o.sp)).size >= 3) addG('mq', MQ_DAY[1][1]); if (best >= MQ_DAY[2][0]) addG('mq', MQ_DAY[2][1]);
         const claim = (id, v, L) => L.forEach(([x, gG], j) => { const k = id + j; if (v >= x && !U.q.cl[k]) { U.q.cl[k] = 1; addG('mq', gG); } });
-        claim('play', U.q.n, MQ_PLAY); claim('sum', U.q.sum, MQ_SUM); for (const [t, v] of Object.entries(U.q.ty)) claim('ty' + t, v, MQ_TY); }
+        claim('play', U.q.n, MQ_PLAY); claim('sum', U.q.sum, MQ_SUM); claim('ph', U.q.ph, MQ_PH); claim('kill', U.q.kn, MQ_KILL); for (const [t, v] of Object.entries(U.q.ty)) claim('ty' + t, v, MQ_TY); }
       // 진화: 거리·친밀도 진화는 짝꿍, 도구 진화는 돈이 되면 상점에서 사서
       for (const m of [...U.bud]) { const L = kidsOk(m, (w, c) => w.k === 'km' || (w.k === 'fr' && m.fr >= b.FR_EVO)); if (L.length && m.km >= need(m)) { evolve(m, L.find(c => !U.dex.has(c)) ?? L[0], day);
           if (!kidsOk(m, (w, c) => w.k !== 'item' && !U.dex.has(c)).length && m !== U.bud[0]) U.bud.splice(U.bud.indexOf(m), 1); } }
