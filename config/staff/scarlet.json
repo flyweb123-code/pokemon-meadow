@@ -1,6 +1,743 @@
 {
  "days": [
   {
+   "at": 1792619438354,
+   "theme": "밤을 밝히는 조명",
+   "note": "경완 님이 부탁하신 밤 조명 세트예요! 쇠 가로등부터 종이 등롱, 석등, 연꽃 등까지 재질을 다 다르게 잡았고, 불빛은 유리·종이 안쪽을 가운데부터 밝게 칠한 다음 바깥에 옅은 빛 테두리를 점점이 찍어서 밤 풀밭에서도 테두리가 또렷하게 읽히게 했어요. 불꽃 타입이 켜고, 전기 타입이 밝히고, 고스트 타입은 그림자에 숨는 식으로 반응도 빛에 맞췄어요.",
+   "items": [
+    {
+     "id": "street-lamp",
+     "n": "가로등",
+     "k": "쉼터",
+     "d": "지붕 달린 쇠 가로등이에요. 네모 유리 안에서 노란 불이 켜지고, 기둥 가운데에 고리 장식을 하나 둘렀어요. 주위로 옅은 불빛 테두리를 찍었어요.",
+     "px": [
+      "..........k..........",
+      ".........kak.........",
+      "........kaabk........",
+      ".....h.kaabbbk.h.....",
+      "....hkkaaabbcckkh....",
+      "...hkbbbbbbbbbbbkh...",
+      "..h.hkccccccccckh.h..",
+      "...h.kbOOOOOOOck.h...",
+      "..h.HkbWOoooOOckH.h..",
+      ".h.hHkbOoywyoOckHh.h.",
+      "..h.HkbOyyWyyOckH.h..",
+      ".h.hHkbOywWwyOckHh.h.",
+      "..h.HkbOoyyyoOckH.h..",
+      "...hHkbOOoooOOckHh...",
+      "..h.kbbbbbbbbbbbk.h..",
+      "...h.kkaaacccckk.h...",
+      "....h.kbbbbccck.h....",
+      ".....h.kkabckk.h.....",
+      "......h.kabck.h......",
+      ".......hkabckh.......",
+      "........kabck........",
+      ".......kaabbck.......",
+      ".......kccccck.......",
+      "........kabck........",
+      "........kabck........",
+      "........kabck........",
+      "........kabck........",
+      "........kabck........",
+      "........kabck........",
+      ".......kaaccck.......",
+      "......kaaabbcck......",
+      ".....kaaabbbbcck.....",
+      ".....kccccccccck.....",
+      "......kkkkkkkkk......",
+      "....zzzzzzzzzzzzz....",
+      "......zzzzzzzzz......"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "z": "#2c3a28",
+      "a": "#6a7a8e",
+      "b": "#3e4a5e",
+      "c": "#262e3e",
+      "w": "#fffbe6",
+      "W": "#ffffff",
+      "y": "#ffe68a",
+      "o": "#f6be4c",
+      "O": "#d88a2c",
+      "H": "#fff0a0",
+      "h": "#f8e48a"
+     },
+     "acts": [
+      {
+       "w": "나는 벌레 타입",
+       "a": "불빛에 이끌려 날아와 유리 둘레를 빙빙 돌다가 지붕 위에 앉아요"
+      },
+      {
+       "w": "작은 비행 타입 / 날개 있는 작은 포켓몬",
+       "a": "지붕 꼭대기 장식에 날아와 앉아 밤새 자요"
+      },
+      {
+       "w": "고스트 타입",
+       "a": "불빛 반대편 기둥 그림자 속에 숨어 고개만 내밀어요"
+      },
+      {
+       "w": "전기 타입",
+       "a": "기둥에 몸을 붙이고 기술을 써서 불을 더 밝게 켜요"
+      }
+     ],
+     "fit": "풀밭 가장자리·길목, 밤"
+    },
+    {
+     "id": "paper-lantern",
+     "n": "종이 등롱",
+     "k": "놀이",
+     "d": "대나무 걸이에 매단 빨간 종이 등롱이에요. 살대 줄무늬 사이로 속불이 가운데부터 주황빛으로 번지고, 아래에 빨간 술이 달려 있어요.",
+     "px": [
+      "..........................",
+      "...kkkkkkkkkkkkkkkk.......",
+      "..kbbbbbbbbbbbbbbbbk......",
+      "..kbBBBBBBBBBBBBBBBk......",
+      "..kbBkkkkkkkkkkkkkk.......",
+      "..kbBk........kkkkkkk.....",
+      "..kbBk.......kGcccccck....",
+      "..kbBk......kGCCCCCCCCk...",
+      "..kbBk....h.hkkRRRRRkkh.h.",
+      "..knnk......kkRRRRRRRkk...",
+      "..kbBk....hkRRrrrrrrrRRkh.",
+      "..kbBk...h.kRrrrooorrrRk.h",
+      "..kbBk..h.kRRRrrrrrrrRRRk.",
+      "..kbBk....krrooooooooorrk.",
+      "..kbBk..hkRrrooooyoooorrRk",
+      "..kbBk...kRRrrrooooorrrRRk",
+      "..knnk..hkRroooywwwyooorRk",
+      "..kbBk...krroooywwwyooorrk",
+      "..kbBk..hkRRrrroyyyorrrRRk",
+      "..kbBk...kRroooyyyyyooorRk",
+      "..kbBk..hkRrrooooyoooorrRk",
+      "..kbBk....kRRrrrrrrrrrRRk.",
+      "..kbBk..h.kRrrooooooorrRk.",
+      "..knnk...h.kRrrrooorrrRk.h",
+      "..kbBk....hkRRRRRRRRRRRkh.",
+      "..kbBk......kkRRRRRRRkk...",
+      "..kbBk....h.hkkRRRRRkkh.h.",
+      "..kbBk......kCCCCCCCCCk...",
+      "..kbBk.......kccccccck....",
+      "..kbBk........kkkrkkk.....",
+      "..kbBk........h.krk.h.....",
+      ".kbbBBk........krrrk......",
+      "kBBBBBBk......hkRRRkh.....",
+      "zzzzzzzz........kkk......."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "z": "#2c3a28",
+      "b": "#c8a860",
+      "B": "#8a6a34",
+      "n": "#5e4626",
+      "c": "#3a2e2e",
+      "C": "#5a4440",
+      "G": "#7a6460",
+      "w": "#fff4c8",
+      "y": "#ffd27a",
+      "o": "#f6904a",
+      "r": "#d84a34",
+      "R": "#9a2a2a",
+      "h": "#ffb070"
+     },
+     "acts": [
+      {
+       "w": "불꽃 타입",
+       "a": "등롱 아래에 서서 기술을 써서 속에 불을 붙여요"
+      },
+      {
+       "w": "작은 고스트 타입",
+       "a": "등롱 뒤에 숨어 있다가 옆으로 쏙 고개를 내밀어요"
+      },
+      {
+       "w": "날개 있는 작은 포켓몬",
+       "a": "대나무 가로대에 날아와 나란히 앉아요"
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "늘어진 술을 앞발로 톡톡 치며(부딪치기) 놀아요"
+      }
+     ],
+     "fit": "모닥불·꽃밭 옆, 밤 축제"
+    },
+    {
+     "id": "firefly-jar",
+     "n": "반딧불 병",
+     "k": "놀이",
+     "d": "코르크 뚜껑을 덮고 목에 노끈을 감은 유리병이에요. 안에 풀잎을 깔아 두었고 반딧불 다섯 마리가 연두색으로 깜빡여요. 몇 마리는 밖으로 빠져나왔어요.",
+     "px": [
+      "..................h..",
+      "..h..............hfh.",
+      ".hfh..............h..",
+      "..h..kkkkkkkkkkk.....",
+      "....kNNNNnnnnnnnk....",
+      "....knnnnnnnmmmmk....",
+      ".....kmmmmmmmmmk.....",
+      "....kkrRrRrRrRrkk....",
+      "...kgggggggggggggk.h.",
+      "..kgiiiiiiiiiiiGigkfh",
+      "..kgiGWiFiiiiiiiigkh.",
+      "..kgiGGFfFiiiiiiigk..",
+      "..kgiGiiFiiiiFiiigk..",
+      "..kgiGiiiiiiFfFiigk..",
+      "..kgiGiiiiiiiFiiigk..",
+      "..kgiGiiiiFiiiiiigk..",
+      "..kgiGiiiFfFiiiiigk..",
+      "..kgiGFiiiFiiiiiigk..",
+      "..kgiGfFiiiiieFiigk..",
+      "..kgiGEiieiiiEfFigk..",
+      "..kgieEiiEieiEFeigk..",
+      "..kgiEEieEiEiEeEigk..",
+      "..kgiEEiEEiEiEEEigk..",
+      "...kgggggggggggggk...",
+      "....kkkkkkkkkkkkk....",
+      "...zzzzzzzzzzzzzzz...",
+      ".....zzzzzzzzzzz....."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "z": "#2c3a28",
+      "N": "#e8d090",
+      "n": "#c8a050",
+      "m": "#8a6a30",
+      "r": "#d8b878",
+      "R": "#a08050",
+      "g": "#5a8a98",
+      "G": "#a8d8e0",
+      "W": "#f0fcff",
+      "i": "#26404e",
+      "e": "#7ab84a",
+      "E": "#4a7a34",
+      "f": "#f4ff9a",
+      "F": "#b8e85a",
+      "h": "#c8f080"
+     },
+     "acts": [
+      {
+       "w": "벌레 타입 (볼비트·네오비트 등)",
+       "a": "병 옆에 앉아 꽁무니를 같이 반짝이며 기술을 써요"
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "병 앞에 앉아 반딧불을 올려다보다가 그대로 잠들어요"
+      },
+      {
+       "w": "야행성 포켓몬 (고스트·악 타입, 부우부 등)",
+       "a": "밤에 병 옆으로 날아오거나 다가와 곁에 머물러요"
+      }
+     ],
+     "fit": "그루터기·덤불 옆, 밤"
+    },
+    {
+     "id": "camp-lantern",
+     "n": "캠핑 랜턴",
+     "k": "쉼터",
+     "d": "빨간 법랑 몸통에 철사 손잡이가 달린 캠핑 랜턴이에요. 유리 안 하얀 심지(맨틀)가 밝게 타고, 옆구리에 연료 손잡이가 삐죽 나와 있어요.",
+     "px": [
+      ".....................",
+      "........kkkkk........",
+      "......kk.....kk......",
+      ".....k.........k.....",
+      ".....k...kkk...k.....",
+      ".....k.kkRRqkk.k.....",
+      ".....kkPPPRRRRkk.....",
+      "....kPPPPRRRRqqqk....",
+      "...kRRRRRRRRRqqqqk...",
+      "...kQQQQQQQQQQQQQk...",
+      "....kkOmOOOOOmOkk....",
+      "...hkOWmOoooOmOOkh...",
+      "..h.kOOmoyyyomOOk.h..",
+      "...hkOOmywWWymOOkh...",
+      "..h.kOOmyWWWymOOk.h..",
+      "...hkOOmyWWWymOOkh...",
+      "..h.kOOmyWWwymOOk.h..",
+      "...hkOOmoyyyomOOkh...",
+      "..h.kOOmOoooOmOOk.h..",
+      "...hkkOmOOOOOmOkkh...",
+      "...kQQQQQQQQQQQQQk...",
+      "..kPPPPPPPPPRRRRRQk..",
+      "..kPPSRRRRRRqqqqQQkk.",
+      "..kPPPRRRRRRqqqqQQnnk",
+      "..kPPPRRRRRRqqqqQQmk.",
+      "..kPPPRRRRRRqqqqQQk..",
+      "..kPPPRRRRRRqqqqQQk..",
+      "...kQQQQQQQQQQQQQk...",
+      "....kkkkkkkkkkkkk....",
+      "..zzzzzzzzzzzzzzzzz..",
+      "....zzzzzzzzzzzzz...."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "z": "#2c3a28",
+      "P": "#f07a62",
+      "R": "#d0423a",
+      "q": "#a02c2e",
+      "Q": "#6a1e26",
+      "S": "#ffd0c0",
+      "w": "#fffbe6",
+      "W": "#ffffff",
+      "y": "#ffe68a",
+      "o": "#f6be4c",
+      "O": "#d88a2c",
+      "m": "#3a3a48",
+      "n": "#c8c8d0",
+      "h": "#f8e48a"
+     },
+     "acts": [
+      {
+       "w": "노말·풀 타입 네 발 포켓몬",
+       "a": "랜턴 옆에 몸을 동그랗게 말고 자요"
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "랜턴 앞에 앉아 불을 쬐어요"
+      },
+      {
+       "w": "나는 벌레 타입",
+       "a": "유리에 날아와 붙어 불빛을 쬐어요"
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "랜턴 뒤 불빛 안 닿는 쪽에 숨어요"
+      }
+     ],
+     "fit": "모닥불·장작 더미 옆, 밤"
+    },
+    {
+     "id": "candle-stand",
+     "n": "세 갈래 촛대",
+     "k": "놀이",
+     "d": "노란 놋쇠로 된 세 갈래 촛대예요. 가운데 초가 제일 높고, 하얀 초마다 촛농이 조금 흘렀어요. 불꽃 셋이 각각 작게 빛나요.",
+     "px": [
+      "............h.h............",
+      "...........h.r.h...........",
+      "..........h.ror.h..........",
+      ".....h...h.royor.h...h.....",
+      "....hrh...hrywyrh...hrh....",
+      "...hrorh.h.rowor.h.hrorh...",
+      "..hroyorh.h.ror.h.hroyorh..",
+      ".h.rywyr.h.hkkkh.h.rywyr.h.",
+      "..hroworh..kwWVk..hroworh..",
+      "...hrorh...kwWVk...hrorh...",
+      "....kkk...kwwWVk....kkk....",
+      "...kwWVk..kWwWVk...kwWVk...",
+      "...kwWVk...kwWVk...kwWVk...",
+      "...kwWVk...kwWVk...kwWVVk..",
+      "...kwWVk...kwWVk...kwWVk...",
+      "...kwWVk..kkwWVkk..kwWVk...",
+      "...kwWVk.kAAaaabbk.kwWVk...",
+      "..kkwWVkk.kbbbbBk.kkwWVkk..",
+      ".kAAaaabbk.kAabk.kAAaaabbk.",
+      "..kbbbbBk..kAabk..kbbbbBk..",
+      "...kkakk...kAabk...kkakk...",
+      "....kbkkkkkkAabkkkkkkbk....",
+      "....kbaaaaaAAaaaaaaaabk....",
+      ".....kbbbbbbbbbbbbbbbk.....",
+      "......kkkkkkAabkkkkkk......",
+      "..........kkAabkk..........",
+      "........kkAAaaabbkk........",
+      ".......kAAAaaaaabbbk.......",
+      ".......kBBBBBBBBBBBk.......",
+      "........kkkkkkkkkkk........",
+      "......zzzzzzzzzzzzzzz......"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "z": "#2c3a28",
+      "A": "#fff0a8",
+      "a": "#f0c850",
+      "b": "#c08a30",
+      "B": "#7a5420",
+      "w": "#fffaf0",
+      "W": "#ece2cc",
+      "V": "#bcae94",
+      "o": "#f89a30",
+      "y": "#ffd84a",
+      "r": "#c8502a",
+      "h": "#ffe08a"
+     },
+     "acts": [
+      {
+       "w": "불꽃 타입",
+       "a": "촛대 앞에서 기술을 써서 세 초에 한꺼번에 불을 붙여요"
+      },
+      {
+       "w": "고스트 타입 (불켜미 계열이면 더 좋아해요)",
+       "a": "촛대 옆에 떠서 촛불과 함께 흔들거리며 머물러요"
+      },
+      {
+       "w": "물 타입",
+       "a": "가까이 가서 기술을 써 촛불을 후 꺼 버려요 (장난)"
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "넘어뜨릴까 봐 촛대를 피해 돌아가요"
+      }
+     ],
+     "fit": "바위 위·그루터기 위, 밤"
+    },
+    {
+     "id": "glow-mushroom",
+     "n": "야광 버섯",
+     "k": "쉼터",
+     "d": "밤이면 하늘색으로 빛나는 버섯 세 송이예요. 큰 갓에는 하얀 점이 박혀 있고, 이끼 위에 크기별로 모여 났어요. 갓 둘레에 빛 포자가 퍼져요.",
+     "px": [
+      "..........................",
+      ".........h.h.h...h........",
+      "......h.h..k..h.h.........",
+      "...h.h.kkkkckkkk.h.h......",
+      ".hh..kkWWWccWccCkk..h.....",
+      "....kcWWWWWccccCCdk.......",
+      "..hkcccWWWcccccCCddkh...h.",
+      ".h.kccccccWcccCWdddk.h....",
+      "..kCccWccccccCCCddDDk.....",
+      ".hkCCcccccccCCCddDDDkh....",
+      "...kkuuuuuuuuuuuuukkk.h.h.",
+      ".h.h.kkkkeeeeEkkkkkkckkk.h",
+      "..h.h.h.keeeeEk.kcWWccCdk.",
+      ".h..k..hkeeeeEk.kcccccWdk.",
+      "h.kkckk.keeeeEkkCccccCCdDk",
+      ".kcWccCkkeeeeEk.kkuuuuukk.",
+      "kccccCdDkeeeeEk.h.keeEk.h.",
+      ".kkuuukkkeeeeEk...keeEk...",
+      "h.keEkhkkeeeeEk.k.keeEkk..",
+      ".kmeEkkmkeeeeEkkmkkeeEkmk.",
+      "kmmMmmMmmMmmMmmMmmMmmMmmMk",
+      ".kkkkkkkkkkkkkkkkkkkkkkkk.",
+      ".zzzzzzzzzzzzzzzzzzzzzzzz.",
+      "...zzzzzzzzzzzzzzzzzzzz..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "z": "#2c3a28",
+      "W": "#eafffb",
+      "c": "#8ef2e6",
+      "C": "#3ccad2",
+      "d": "#2288aa",
+      "D": "#1a5a7c",
+      "u": "#2a3e6a",
+      "e": "#d8f4f0",
+      "E": "#92c6cc",
+      "m": "#4a7a44",
+      "M": "#355a34",
+      "h": "#9ef8ea"
+     },
+     "acts": [
+      {
+       "w": "풀·독 타입 (파라스 계열 등)",
+       "a": "큰 갓 아래에 들어가 웅크리고 자요"
+      },
+      {
+       "w": "페어리 타입",
+       "a": "버섯 사이를 맴돌며 기술을 써 빛 포자를 흩날려요"
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "큰 갓 아래에 숨어 눈만 내놓아요"
+      },
+      {
+       "w": "벌레 타입",
+       "a": "작은 갓 위에 올라가 갓 가장자리를 갉아 먹어요"
+      }
+     ],
+     "fit": "그루터기·덤불 옆 그늘, 밤"
+    },
+    {
+     "id": "star-string-lights",
+     "n": "별 꼬마전구 줄",
+     "k": "놀이",
+     "d": "나무 기둥 두 개 사이에 줄을 늘어뜨리고 노랑·분홍·하늘색 별 전구 다섯 개를 높낮이 다르게 매달았어요. 별마다 작은 반짝임이 튀어요.",
+     "px": [
+      "....................................",
+      "....................................",
+      ".kk..............................kk.",
+      "kPPk............................kPPk",
+      "kpqk............................kpqk",
+      "kpqk...........................kkpqk",
+      "kpqkk.........................kkkpqk",
+      "kpqk.k.......................kk.kpqk",
+      "kpqk..k.....................kk..kpqk",
+      "kqqk...kk.................kkk...kqqk",
+      "kpqk..kYkkk.............kkkkIk..kpqk",
+      "kpqk.kYYYk.kkk.......kkkk.kIIIk.kpqk",
+      "kpqkkYYWyykhk.kkkkkkkk.kHkIIWiikkpqk",
+      "kpqk.kyyvk..k...kBk....k..kiijk.kpqk",
+      "kpqk.kvkvk.kIk.kBBBk..kYk.kjkjk.kpqk",
+      "kqqk..k.k.kIIIkBBWbbkkYYYk.k.k..kqqk",
+      "kpqk...hHkIIWiikbbckkYYWyykhH...kpqk",
+      "kpqk......kiijkkckck.kyyvk......kpqk",
+      "kpqk......kjkjk.k.k..kvkvk......kpqk",
+      "GpqG.......k.k...g....k.k.......GpqG",
+      "GGGG........H..........h........GGGG",
+      "zzzzz..........................zzzzz"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "z": "#2c3a28",
+      "P": "#c89a62",
+      "p": "#9a6a3a",
+      "q": "#6a4424",
+      "G": "#5a8a3a",
+      "Y": "#fff6b0",
+      "y": "#ffd84a",
+      "v": "#d89a22",
+      "I": "#ffd6ec",
+      "i": "#ff8ac4",
+      "j": "#d0508e",
+      "B": "#d8f6ff",
+      "b": "#6ad0f6",
+      "c": "#2e8ac0",
+      "W": "#ffffff",
+      "h": "#fff0a0",
+      "H": "#ffc6e4",
+      "g": "#b8ecff"
+     },
+     "acts": [
+      {
+       "w": "전기 타입",
+       "a": "기둥에 기술을 써서 별 전구에 불을 켜요"
+      },
+      {
+       "w": "날개 있는 작은 포켓몬",
+       "a": "전구 줄 위에 날아와 나란히 앉아요"
+      },
+      {
+       "w": "페어리 타입",
+       "a": "별 전구 아래에서 빙글 돌며 기술을 써요"
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "줄 아래를 지나다 머리로 부딪쳐 전구를 흔들어요"
+      }
+     ],
+     "fit": "꽃밭 위·두 소품 사이, 밤"
+    },
+    {
+     "id": "garden-torch",
+     "n": "횃불",
+     "k": "쉼터",
+     "d": "천을 감은 머리에 불을 붙인 나무 횃불이에요. 바닥 돌 사이에 꽂아 세웠고, 불꽃이 바람에 살짝 기울며 불티가 튀어요.",
+     "px": [
+      "........R......",
+      ".....h.RoR..y..",
+      "..y.h.RrorR....",
+      "...h.RrorRRR...",
+      "..h..RroyorrR..",
+      ".h.RRroyorRrRh.",
+      "..RorroyorrR...",
+      ".h.RrooyoorR.h.",
+      "..RrroywyorrRy.",
+      ".yRrooywyoorRh.",
+      "..RrooywyoorR..",
+      "..RrooywyoorR..",
+      "...kTroorTTk...",
+      "...kUUUUVVVk...",
+      "...kTTtttUUk...",
+      "...kUUUUVVVk...",
+      "...kTTtttUUk...",
+      "....kkbBnkk....",
+      ".....kbBnk.....",
+      ".....kbBnk.....",
+      ".....kbBnk.....",
+      ".....kbBnk.....",
+      ".....kbBnk.....",
+      ".....kbBnk.....",
+      ".....kbBnk.....",
+      ".....kbBnk.....",
+      ".....kbBk......",
+      ".....kbBk......",
+      "....kkbBk.k....",
+      "...kSkbBkkSkk..",
+      ".kmsskbBk.smmk.",
+      "..kkkkkkkkkkk..",
+      ".zzzzzzzzzzzzz.",
+      "...zzzzzzzzz..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "z": "#2c3a28",
+      "w": "#fffbd8",
+      "y": "#ffd84a",
+      "o": "#f8902a",
+      "r": "#e0482a",
+      "R": "#9a2a1c",
+      "T": "#e8d2a0",
+      "t": "#c0a070",
+      "U": "#8a6a44",
+      "V": "#5e4630",
+      "b": "#b07a40",
+      "B": "#7a4e26",
+      "n": "#4e3018",
+      "S": "#c8c8c0",
+      "s": "#9a9a94",
+      "m": "#6a6a68",
+      "h": "#ffb060"
+     },
+     "acts": [
+      {
+       "w": "불꽃 타입",
+       "a": "횃불 옆에 앉아 불을 쬐고, 불이 꺼지면 기술로 다시 붙여요"
+      },
+      {
+       "w": "물·얼음 타입",
+       "a": "불꽃을 보고 멀찍이 피해 가요"
+      },
+      {
+       "w": "격투 타입",
+       "a": "횃불 앞에 서서 기술을 써 수련해요"
+      },
+      {
+       "w": "고스트 타입",
+       "a": "횃불 뒤 길게 진 그림자 속에 숨어요"
+      }
+     ],
+     "fit": "바위·모닥불 근처, 밤"
+    },
+    {
+     "id": "stone-lantern",
+     "n": "석등",
+     "k": "쉼터",
+     "d": "지붕돌·불창·연꽃 받침을 갖춘 돌 석등이에요. 네모 불창 안에서 촛불이 은은하게 비치고, 군데군데 이끼가 앉았어요.",
+     "px": [
+      "...........k...........",
+      "..........kSk..........",
+      ".........kSmMk.........",
+      ".........kSmMk.........",
+      "........kkkmkkk........",
+      "......kkSSsmmMMkk......",
+      ".k.kkkSSSssmmmmMMkkk.k.",
+      "kSkSSSggssmmmmmmmMMMkmk",
+      "kSSSSSssssmmmmmmmmMMMMk",
+      ".kMMMMMMMMMMMMMMMMMMMk.",
+      "..kkkkSSMMMMMMMMMkkkk..",
+      "...h.kSSMOOoOOMMMk.h...",
+      "....hkSSMOoyoOMMMkh....",
+      "...h.kSSMOywyOMMMk.h...",
+      "....hkSSMOywyOMMMkh....",
+      "...h.kSSMOoyoOMMMk.h...",
+      "....hkSSMOOoOOMMMkh....",
+      "....kkSSMMMMMMMMMkk....",
+      "...kSSSsssmmmmmmMgMk...",
+      "....kSmSsmmmmmmmMMk....",
+      ".....kkkkSsmmMkkkk.....",
+      "........kSsmmMk........",
+      "........kSsmmMk........",
+      ".......kmmmmmmmk.......",
+      "........kSsmmMk........",
+      "........kSsmmMk........",
+      "......kkkSsmmMkkk......",
+      "....kkSmSsmmmmmMmkk....",
+      "...kSSSsssmmmmmgMMMk...",
+      "..kSggSsssmmmmmmmMMMk..",
+      "..kgGSSsssmmmmmmmMMMk..",
+      ".kMMMMMMMMMMMMMMMMMMMk.",
+      ".zzzzzzzzzzzzzzzzzzzzz.",
+      "...zzzzzzzzzzzzzzzzz..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "z": "#2c3a28",
+      "S": "#e2e2d8",
+      "s": "#b8b8ae",
+      "m": "#8a8a84",
+      "M": "#5a5a5c",
+      "g": "#6e9a4a",
+      "G": "#4a7034",
+      "w": "#fffbe0",
+      "y": "#ffe07a",
+      "o": "#f6b048",
+      "O": "#c87a2c",
+      "h": "#f8dc80"
+     },
+     "acts": [
+      {
+       "w": "바위·땅 타입",
+       "a": "받침돌에 기대 앉아 자요"
+      },
+      {
+       "w": "고스트 타입",
+       "a": "불창 앞에 떠서 안을 들여다보다가 지붕돌 뒤로 숨어요"
+      },
+      {
+       "w": "작은 비행 타입",
+       "a": "지붕 꼭대기 구슬 장식에 날아와 앉아요"
+      },
+      {
+       "w": "작은 풀 타입",
+       "a": "받침돌에 붙은 이끼를 뜯어 먹어요"
+      }
+     ],
+     "fit": "연못가·바위 옆, 밤"
+    },
+    {
+     "id": "lotus-lantern",
+     "n": "연꽃 등",
+     "k": "놀이",
+     "d": "연잎 위에 분홍 꽃잎을 겹겹이 세운 연꽃 등이에요. 꽃 한가운데 촛불이 켜져 안쪽 꽃잎이 밝게 물들고, 물 위로 불빛이 일렁여요.",
+     "px": [
+      "............h.h............",
+      "...........h.r.h...........",
+      "..........h.ror.h..........",
+      ".......k.h..ryr..h.k.......",
+      "......kPk..royor..kPk......",
+      ".....kqPqk.rywyr.kqPqk.....",
+      "....kqPPpqkrrwrrkqPPpqk....",
+      "....kqPPppqooPooqPPppqk....",
+      "..k.kqPPppoQPppQoPPPpqk.k..",
+      ".kPkkQPppQQPppppQQPppQkkPk.",
+      "kQpQkQpppQQPppppQQpppQkQpQk",
+      "kQppQppppQppppppqQppppQppQk",
+      "kQppQppppQppppppqQpppqQppQk",
+      "kQppQppppQpppppqqQpppqQpqQk",
+      "kQppQpppqqQpppqqQpppqqQpqQk",
+      ".kQpQQppqQQpppqqQQppqQQpQk.",
+      ".kkeeeeeeeeeeeeeeeeeeeeekk.",
+      "kdddddeeeeeeeeeeeeeeelldddk",
+      "ddddLYLlllLLllllLYLlllllddd",
+      "kdddllllllllllllllllddddddk",
+      ".kkdddddllLYLlllddddLYLdkk.",
+      "...kkkkLYLddddddddddkkkk...",
+      ".......kkkkkkkkkkkkk......."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "P": "#ffe4f2",
+      "p": "#ffa8d2",
+      "q": "#e46aa8",
+      "Q": "#a83a78",
+      "w": "#fffbe0",
+      "y": "#ffe07a",
+      "o": "#f6a040",
+      "r": "#c8602a",
+      "e": "#5aa04a",
+      "L": "#4a6ab0",
+      "l": "#2e4a8a",
+      "d": "#1e2e5e",
+      "Y": "#ffe8a0",
+      "h": "#ffe8a0"
+     },
+     "acts": [
+      {
+       "w": "물 타입 / 헤엄치는 포켓몬",
+       "a": "연꽃 등 옆에서 헤엄치며 코끝으로 살살 밀어 띄워 보내요"
+      },
+      {
+       "w": "작은 풀·페어리 타입",
+       "a": "연잎 가장자리에 올라가 앉아요"
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "물에는 들어가지 않고 연못가에서 기술을 써 불을 붙여 줘요"
+      },
+      {
+       "w": "나는 벌레 타입",
+       "a": "꽃잎 끝에 날아와 앉아요"
+      }
+     ],
+     "fit": "연못 위, 밤"
+    }
+   ]
+  },
+  {
    "at": 1792618421339,
    "theme": "가을 수확 축제",
    "note": "첫날이라 계절부터 잡았어요! 10월 풀밭에 어울리게 수확한 것들(호박·사과·옥수수·도토리·밤)과 그걸 지키는 허수아비, 겨울 준비 장작까지 한 세트로 맞췄고, 색은 주황·빨강·노랑에 그림자는 풀밭 초록으로 깔아서 지금 필드에 바로 섞이게 했어요.",
