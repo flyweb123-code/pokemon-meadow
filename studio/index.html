@@ -263,7 +263,8 @@ body.szmode #mapI>:not(#szPane){display:none!important}body.szmode #mapI{display
 .egg{--ec:#f6f4ea;--es:#6cc070;--esh:#d6d2c2;--eo:#383848;display:inline-block;flex:none;width:15px;height:18px;vertical-align:middle}.egg svg{display:block;width:100%;height:100%}.egg .ck{display:none}
 .egg.g2{--es:#f0a040}.egg.g3{--es:#4f95dc}.egg.g4{--es:#a070d8}.egg.g5{--ec:#fff1b8;--esh:#e8d48a;--es:#e0a020;filter:drop-shadow(0 0 3px #ffe680)}
 h2.ih{display:flex;align-items:center;gap:8px}
-.balg{display:grid;grid-auto-flow:row dense;min-width:0;width:100%;grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr));gap:12px;align-items:start;max-width:1400px}.balg .card{min-width:0}.balg.free{display:block;position:relative;max-width:none}.balg.free .card{position:absolute;margin:0;overflow:hidden;box-sizing:border-box;display:flex;flex-direction:column}.balg.free .card>.bal2{flex:1 1 auto;min-height:0;overflow:auto}.balg.free .card.wide2{grid-column:auto}.balg.free .card>h2.ih{cursor:move;user-select:none}.balg.free .card.drag{z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.35);opacity:.96}.balg .bal-rz{display:none}.balg.free .bal-rz{display:block;position:absolute;right:2px;bottom:2px;width:14px;height:14px;z-index:2;cursor:nwse-resize;background:linear-gradient(135deg,transparent 50%,var(--mute,#9aa0ad) 50% 58%,transparent 58% 70%,var(--mute,#9aa0ad) 70% 78%,transparent 78%)}.balg .card.wide2{grid-column:1/-1}.balg .card:not(.wide2) .bal2{grid-template-columns:minmax(0,1fr)!important}
+.balg{display:grid;grid-auto-flow:row dense;min-width:0;width:100%;grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr));gap:12px;align-items:start;max-width:1400px}.balg .card{min-width:0}.balg.free{display:block;position:relative;max-width:none}.balg.free .card{position:absolute;margin:0;overflow:hidden;box-sizing:border-box;display:flex;flex-direction:column}.balg.free .card>.bal2{flex:1 1 auto;min-height:0;overflow:auto}.balg.free .card.wide2{grid-column:auto}.balg.free .card>h2.ih{cursor:move;user-select:none}.bal-gd{position:absolute;z-index:6;pointer-events:none;background:#4fd1ff;box-shadow:0 0 4px #4fd1ff}.bal-gd.h{left:0;right:0;height:1px}.bal-gd.v{top:0;bottom:0;width:1px}#balC{max-width:none}
+.balg.free .card.drag{z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.35);opacity:.96}.balg .bal-rz{display:none}.balg.free .bal-rz{display:block;position:absolute;right:2px;bottom:2px;width:14px;height:14px;z-index:2;cursor:nwse-resize;background:linear-gradient(135deg,transparent 50%,var(--mute,#9aa0ad) 50% 58%,transparent 58% 70%,var(--mute,#9aa0ad) 70% 78%,transparent 78%)}.balg .card.wide2{grid-column:1/-1}.balg .card:not(.wide2) .bal2{grid-template-columns:minmax(0,1fr)!important}
 .bsh{grid-column:1/-1;font-size:11.5px;letter-spacing:.06em;color:var(--acc);padding:14px 2px 4px;border-top:0!important}.bal2 .bsh:first-child{padding-top:2px}.bal2 .bsh+.br{border-top:0!important}
 .br.ln{grid-template-columns:22px minmax(0,1fr) 150px;gap:10px}.br.ln .bic{display:flex}.br.ln .lt{display:grid;gap:2px;min-width:0;line-height:1.35}.br.ln .lt small{color:var(--mute);font-size:11.5px}.br.ln .uw{display:flex;align-items:center;gap:6px;justify-self:end}.br.ln .uw input{width:88px;text-align:right}.br.ln .u{min-width:36px;color:var(--soft);font-size:12px}.balg .card{margin:0}.balg .bal2{grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr));column-gap:28px}.balg .bal2 .br{border-top:1px solid var(--chip)}.balg .bal2 .br.full{grid-column:1/-1}
 .sic{width:32px;height:32px;image-rendering:pixelated;flex:none}.br.shop-r{display:flex;align-items:center;gap:8px;padding:6px 0}.shop-r .uw{width:140px;flex:none}.shop-r .lt{flex:1}.shtb{width:100%;border-collapse:collapse;margin:8px 0;font-size:13px}.shtb th,.shtb td{padding:4px 6px;text-align:right;border-top:1px solid var(--chip)}.shtb th:first-child,.shtb td:first-child{text-align:left}.shtb .inp.sm,.inp.sm{width:56px}
@@ -546,7 +547,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.33';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.34';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -1863,28 +1864,37 @@ function renderBal() {
 }
 // v3.27 경완: 밸런스 창들을 화면 안에서 끌어 배치하고 크기를 바꾼다 (x·w = 너비 비율, y·h = px, h 없으면 내용 높이) — 겹치면 아래로 밀어 맞춘다
 const BL_SN = 8, clamp = (v, a, b) => Math.max(a, Math.min(b, v)), blGet = () => { try { return JSON.parse(store.get('st-bal-lay') || '{}'); } catch (e) { return {}; } };
+/* v3.34 경완: 오른쪽 빈 여백까지 옮길 수 있게 (#balC 폭 제한 없앰) — 배치는 이제 화면 px 로 기억한다 (예전 비율 값은 그때 폭 980px 기준으로 한 번 바꿔 둠) */
+const BL_W0 = 980;
+const blPx = L => { for (const o of Object.values(L)) if (o && !o.px) { o.x = Math.round(o.x * BL_W0); o.w = Math.round(o.w * BL_W0); o.px = 1; } return L; };
 function balLay(fit) { const g = $('#balC .balg'); if (!g) return; const C = [...g.children]; if (innerWidth < 760) { g.classList.remove('free'); g.style.height = ''; C.forEach(c => c.style.cssText = ''); return; }
-  const L = blGet(); if (C.some(c => !L[c.dataset.bk])) { g.classList.remove('free'); C.forEach(c => c.style.cssText = ''); const W = g.clientWidth;
-    const G = g.getBoundingClientRect(); for (const c of C) if (!L[c.dataset.bk]) { const R = c.getBoundingClientRect(); L[c.dataset.bk] = { x: (R.left - G.left) / W, y: Math.round(R.top - G.top), w: Math.min(R.width / W, 1 - (R.left - G.left) / W) }; } }
+  const L = blPx(blGet()); if (C.some(c => !L[c.dataset.bk])) { g.classList.remove('free'); C.forEach(c => c.style.cssText = '');
+    const G = g.getBoundingClientRect(); for (const c of C) if (!L[c.dataset.bk]) { const R = c.getBoundingClientRect(); L[c.dataset.bk] = { x: Math.round(R.left - G.left), y: Math.round(R.top - G.top), w: Math.round(R.width), px: 1 }; } }
   g.classList.add('free'); const W = g.clientWidth;
-  for (const c of C) { const o = L[c.dataset.bk]; c.style.left = Math.round(o.x * W) + 'px'; c.style.top = o.y + 'px'; c.style.width = Math.round(o.w * W) + 'px'; c.style.height = o.h ? o.h + 'px' : ''; if (!c.querySelector('.bal-rz')) c.insertAdjacentHTML('beforeend', '<i class="bal-rz" aria-hidden="true"></i>'); }
+  for (const c of C) { const o = L[c.dataset.bk], x = clamp(o.x, 0, Math.max(0, W - 320)); c.style.left = x + 'px'; c.style.top = o.y + 'px'; c.style.width = Math.min(o.w, W - x) + 'px'; c.style.height = o.h ? o.h + 'px' : ''; if (!c.querySelector('.bal-rz')) c.insertAdjacentHTML('beforeend', '<i class="bal-rz" aria-hidden="true"></i>'); }
   // 겹치면 위에 있는 창부터 차례로 아래로 민다
-  const S = C.map(c => ({ c, o: L[c.dataset.bk], h: c.offsetHeight })).sort((a, b) => a.o.y - b.o.y || a.o.x - b.o.x), done = [];
-  for (const it of S) { let y = it.o.y, moved = true; while (moved) { moved = false; for (const d of done) if (it.o.x < d.o.x + d.o.w - .001 && d.o.x < it.o.x + it.o.w - .001 && y < d.y + d.h + 12 && d.y < y + it.h + 12) { y = d.y + d.h + 12; moved = true; } }
+  const S = C.map(c => ({ c, o: { ...L[c.dataset.bk], x: c.offsetLeft, w: c.offsetWidth }, h: c.offsetHeight })).sort((a, b) => a.o.y - b.o.y || a.o.x - b.o.x), done = [];
+  for (const it of S) { let y = it.o.y, moved = true; while (moved) { moved = false; for (const d of done) if (it.o.x < d.o.x + d.o.w - 1 && d.o.x < it.o.x + it.o.w - 1 && y < d.y + d.h + 12 && d.y < y + it.h + 12) { y = d.y + d.h + 12; moved = true; } }
     it.y = y; it.c.style.top = y + 'px'; done.push(it); }
   g.style.height = Math.max(...S.map(it => it.y + it.h)) + 16 + 'px'; }
+// v3.34 경완: 끌 때 다른 창의 윗선·아랫선·왼쪽·오른쪽 선에 가까우면(8px) 딱 붙고 파란 가이드선이 뜬다
+function balSnap(g, c, l, t, w, h, rz) { g.querySelectorAll('.bal-gd').forEach(e => e.remove()); const E = { x: [], y: [] }, TH = 8;
+  for (const d of g.children) { if (d === c || !d.classList.contains('card')) continue; const L = d.offsetLeft, T = d.offsetTop, R = L + d.offsetWidth, B = T + d.offsetHeight; E.x.push(L, R, R + 12, L - 12); E.y.push(T, B, B + 12, T - 12); }
+  const best = (vals, list) => { let r = null; for (const [v, sh] of vals) for (const e of list) { const dd = Math.abs(e - v); if (dd <= TH && (!r || dd < r.d)) r = { d: dd, s: e - v, at: e, sh }; } return r; };
+  const bx = best(rz ? [[l + w, 0]] : [[l, 0], [l + w, 1]], E.x), by = best(rz ? [[t + h, 0]] : [[t, 0], [t + h, 1]], E.y), gd = (cls, v) => { const e = document.createElement('i'); e.className = 'bal-gd ' + cls; e.style[cls === 'h' ? 'top' : 'left'] = v + 'px'; g.append(e); };
+  if (bx) { if (rz) w += bx.s; else l += bx.s; gd('v', bx.at); } if (by) { if (rz) h += by.s; else t += by.s; gd('h', by.at); } return [l, t, w, h]; }
 addEventListener('resize', () => { if (view === 'bal') balLay(); });
 $('#balI').addEventListener('click', e => { if (e.target.id !== 'balLayR') return; store.set('st-bal-lay', ''); renderBal(); toast('창 배치를 처음대로 돌렸어요'); });
 $('#balC').addEventListener('pointerdown', e => { const g = $('#balC .balg.free'); if (!g || e.button > 0) return; const rz = e.target.closest('.bal-rz'), hd = !rz && e.target.closest('.card > h2.ih'); if (!rz && !hd) return;
-  const c = e.target.closest('.card'), k = c.dataset.bk, L = blGet(), W = g.clientWidth, o = L[k] || { x: c.offsetLeft / W, y: c.offsetTop, w: c.offsetWidth / W }, x0 = e.clientX, y0 = e.clientY, b0 = { l: c.offsetLeft, t: c.offsetTop, w: c.offsetWidth, h: c.offsetHeight };
+  const c = e.target.closest('.card'), k = c.dataset.bk, L = blPx(blGet()), W = g.clientWidth, o = L[k] || { x: c.offsetLeft, y: c.offsetTop, w: c.offsetWidth, px: 1 }, x0 = e.clientX, y0 = e.clientY, b0 = { l: c.offsetLeft, t: c.offsetTop, w: c.offsetWidth, h: c.offsetHeight };
   e.preventDefault(); c.classList.add('drag'); document.body.classList.add('wdrag'); const sn = v => Math.round(v / BL_SN) * BL_SN;
   const mv = ev => { const dx = ev.clientX - x0, dy = ev.clientY - y0;
-    if (rz) { const w = clamp(sn(b0.w + dx), 320, W - b0.l), h = Math.max(120, sn(b0.h + dy)); c.style.width = w + 'px'; c.style.height = h + 'px'; o.w = w / W; o.h = h; }
-    else { const l = clamp(sn(b0.l + dx), 0, W - b0.w), t = Math.max(0, sn(b0.t + dy)); c.style.left = l + 'px'; c.style.top = t + 'px'; o.x = l / W; o.y = t; } };
-  const up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); removeEventListener('pointercancel', up); c.classList.remove('drag'); document.body.classList.remove('wdrag');
+    if (rz) { let [, , w, h] = balSnap(g, c, b0.l, b0.t, clamp(sn(b0.w + dx), 320, W - b0.l), Math.max(120, sn(b0.h + dy)), 1); w = clamp(w, 320, W - b0.l); h = Math.max(120, h); c.style.width = w + 'px'; c.style.height = h + 'px'; o.w = w; o.h = h; }
+    else { let [l, t] = balSnap(g, c, clamp(sn(b0.l + dx), 0, W - b0.w), Math.max(0, sn(b0.t + dy)), b0.w, b0.h); l = clamp(l, 0, W - b0.w); t = Math.max(0, t); c.style.left = l + 'px'; c.style.top = t + 'px'; o.x = l; o.y = t; } };
+  const up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); removeEventListener('pointercancel', up); c.classList.remove('drag'); document.body.classList.remove('wdrag'); g.querySelectorAll('.bal-gd').forEach(e => e.remove());
     // 다른 창들도 지금 자리를 기억해 두고, 옮긴 창을 기준으로 겹친 창을 밀어낸다
-    for (const d of g.children) if (d !== c && !L[d.dataset.bk]) L[d.dataset.bk] = { x: d.offsetLeft / W, y: d.offsetTop, w: d.offsetWidth / W };
-    L[k] = o; for (const d of g.children) if (d !== c) L[d.dataset.bk].y = d.offsetTop;
+    for (const d of g.children) if (d !== c && d.dataset.bk && !L[d.dataset.bk]) L[d.dataset.bk] = { x: d.offsetLeft, y: d.offsetTop, w: d.offsetWidth, px: 1 };
+    L[k] = o; for (const d of g.children) if (d !== c && d.dataset.bk) L[d.dataset.bk].y = d.offsetTop;
     store.set('st-bal-lay', JSON.stringify(L)); const r = $('#balLayR'); if (r) r.disabled = false; balLay(); };
   addEventListener('pointermove', mv); addEventListener('pointerup', up); addEventListener('pointercancel', up); });
 
@@ -2077,6 +2087,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.34', '10월 22일', ['밸런스: 창을 오른쪽 빈 여백까지 옮길 수 있어요', '창을 옮기거나 크기를 바꿀 때 다른 창의 윗선·아랫선·옆선에 가까우면 딱 붙고 파란 가이드선이 떠요']],
   ['3.33', '10월 22일', ['스칼렛 작업물 지울 때 렉 없이 바로 사라져요 (여러 개를 빨리 지워도 되살아나지 않아요)']],
   ['3.32', '10월 22일', ['스칼렛 작업물 × 는 누르면 바로 휴지통으로', '휴지통 버튼: 지운 작업물 보기 · 되살리기 · 영구 삭제']],
   ['3.31', '10월 22일', ['스칼렛의 작업물: 소품 그림 오른쪽 위 × 로 작업물 하나씩, 날짜 옆 버튼으로 하루치를 지워요 (두 번 눌러 확인)', '맵 편집: 고른 소품 네 모서리 어디를 끌어도 크기 조절', '위쪽 막대 날씨에 \'눈\' (겨울 눈 내림은 실제로 눈이 올 때만)', '횃불처럼 불 붙은 소품은 모닥불과 같은 불꽃으로 타올라요']],
