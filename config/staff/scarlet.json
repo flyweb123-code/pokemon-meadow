@@ -6,62 +6,6 @@
    "note": "오늘은 풀밭에 작은 바닷가를 옮겨 왔어요! 파라솔·튜브·비치볼처럼 물놀이 장난감은 빨강·파랑·노랑으로 쨍하게, 모래성·유목·소라는 모래색 3~4단계 명암으로 차분하게 나눠서 둘이 섞여 있어도 하나하나 또렷하게 읽혀요. 물 타입은 헤엄치고 물대포를 쏘고, 땅 타입은 모래를 파고, 불꽃 타입은 물을 피하는 식으로 반응도 바닷가에 맞췄어요.",
    "items": [
     {
-     "id": "conch-shell",
-     "n": "큰 소라 껍데기",
-     "k": "놀이",
-     "d": "나선 무늬가 돌아 들어가는 커다란 분홍 소라예요. 입구 안쪽은 진한 분홍으로 칠했고, 나선 줄은 한 칸 어둡게 넣어 껍데기가 감겨 보여요.",
-     "px": [
-      "............................",
-      "............................",
-      "........kkkkkk..............",
-      "......kkppppppkk..kk........",
-      "....kkmppppppmpPkkppk.......",
-      "...kpppppppppPPmPPpppkk.....",
-      "...kppphppppPmPPmPpppppk....",
-      "..kppphppppPPPmPPPppppppk...",
-      ".kmpppppppPPmPPPPmpppppppk..",
-      ".kppmhpppPPPPmPmqqPPPPPPPPk.",
-      ".kppppmpPPPmPmPiiiiiIPPPPPPk",
-      ".kpppppPmPmPPiiiiiiiIIIPPPPk",
-      ".kppppmPmPPPPiiiiiiiIIIPPPk.",
-      ".kppmPPPPmPPqiiiiiiiIIIqkk..",
-      "..kPPPPmPPPqqiiiiiiiIIIk....",
-      "...kPmPPmPqqqqmiiiiiIkk.....",
-      "...kPPmPPqqqqqqqqqkkk.......",
-      "....kkPqmqqqqqqmkk..........",
-      "......kkqqqqqqkk............",
-      "...zzzzzzzzzzzzzzzzzzzzzz...",
-      "...zzzzzzzzzzzzzzzzzzzzzz...",
-      "............................"
-     ],
-     "pal": {
-      "k": "#20202c",
-      "p": "#ffe0cc",
-      "P": "#f0b49a",
-      "q": "#c8806c",
-      "m": "#b8705c",
-      "i": "#ff8aa0",
-      "I": "#d05a78",
-      "h": "#ffffff",
-      "z": "#c9b27a"
-     },
-     "acts": [
-      {
-       "w": "작은 물 타입",
-       "a": "소라 입구 안에 쏙 들어가 숨어요"
-      },
-      {
-       "w": "작은 포켓몬",
-       "a": "소라에 귀를 대고 가만히 앉아 소리를 들어요"
-      },
-      {
-       "w": "바위 타입",
-       "a": "소라 옆에 나란히 앉아 껍데기를 톡톡 쳐요"
-      }
-     ],
-     "fit": "연못 가장자리, 모래밭"
-    },
-    {
      "id": "driftwood",
      "n": "유목과 불가사리",
      "k": "놀이",
@@ -1529,6 +1473,65 @@
   }
  ],
  "trash": [
+  {
+   "id": "conch-shell",
+   "n": "큰 소라 껍데기",
+   "k": "놀이",
+   "d": "나선 무늬가 돌아 들어가는 커다란 분홍 소라예요. 입구 안쪽은 진한 분홍으로 칠했고, 나선 줄은 한 칸 어둡게 넣어 껍데기가 감겨 보여요.",
+   "px": [
+    "............................",
+    "............................",
+    "........kkkkkk..............",
+    "......kkppppppkk..kk........",
+    "....kkmppppppmpPkkppk.......",
+    "...kpppppppppPPmPPpppkk.....",
+    "...kppphppppPmPPmPpppppk....",
+    "..kppphppppPPPmPPPppppppk...",
+    ".kmpppppppPPmPPPPmpppppppk..",
+    ".kppmhpppPPPPmPmqqPPPPPPPPk.",
+    ".kppppmpPPPmPmPiiiiiIPPPPPPk",
+    ".kpppppPmPmPPiiiiiiiIIIPPPPk",
+    ".kppppmPmPPPPiiiiiiiIIIPPPk.",
+    ".kppmPPPPmPPqiiiiiiiIIIqkk..",
+    "..kPPPPmPPPqqiiiiiiiIIIk....",
+    "...kPmPPmPqqqqmiiiiiIkk.....",
+    "...kPPmPPqqqqqqqqqkkk.......",
+    "....kkPqmqqqqqqmkk..........",
+    "......kkqqqqqqkk............",
+    "...zzzzzzzzzzzzzzzzzzzzzz...",
+    "...zzzzzzzzzzzzzzzzzzzzzz...",
+    "............................"
+   ],
+   "pal": {
+    "k": "#20202c",
+    "p": "#ffe0cc",
+    "P": "#f0b49a",
+    "q": "#c8806c",
+    "m": "#b8705c",
+    "i": "#ff8aa0",
+    "I": "#d05a78",
+    "h": "#ffffff",
+    "z": "#c9b27a"
+   },
+   "acts": [
+    {
+     "w": "작은 물 타입",
+     "a": "소라 입구 안에 쏙 들어가 숨어요"
+    },
+    {
+     "w": "작은 포켓몬",
+     "a": "소라에 귀를 대고 가만히 앉아 소리를 들어요"
+    },
+    {
+     "w": "바위 타입",
+     "a": "소라 옆에 나란히 앉아 껍데기를 톡톡 쳐요"
+    }
+   ],
+   "fit": "연못 가장자리, 모래밭",
+   "del": 1792624335492,
+   "dayAt": 1792622829095,
+   "theme": "여름 바닷가 놀이"
+  },
   {
    "id": "palm-tree",
    "n": "야자수",
