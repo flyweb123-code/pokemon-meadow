@@ -546,7 +546,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.31';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.32';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2077,6 +2077,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.32', '10월 22일', ['스칼렛 작업물 × 는 누르면 바로 휴지통으로', '휴지통 버튼: 지운 작업물 보기 · 되살리기 · 영구 삭제']],
   ['3.31', '10월 22일', ['스칼렛의 작업물: 소품 그림 오른쪽 위 × 로 작업물 하나씩, 날짜 옆 버튼으로 하루치를 지워요 (두 번 눌러 확인)', '맵 편집: 고른 소품 네 모서리 어디를 끌어도 크기 조절', '위쪽 막대 날씨에 \'눈\' (겨울 눈 내림은 실제로 눈이 올 때만)', '횃불처럼 불 붙은 소품은 모닥불과 같은 불꽃으로 타올라요']],
   ['3.30', '10월 22일', ['위쪽 막대에 계절 고르기 (봄·여름·가을·겨울 미리 보기, 편집 중에도 꽃잎·낙엽·눈이 보여요)']],
   ['3.29', '10월 22일', ['맵 편집 중에도 시간·날씨를 바꿔 볼 수 있어요', '편집 중 고른 소품 오른쪽 아래 손잡이를 끌어 크기 조절', '횃불처럼 불이 붙은 추가 소품은 모닥불처럼 불꽃이 흔들려요']],
@@ -3247,9 +3248,15 @@ function scaMig() { if (store.get('st-pk-mig') || !A?.scDef || !SCA_R || !SCA_PK
 const scaItem = id => (SCA_R?.days || []).flatMap(d => d.items).find(o => o.id === id);
 const scaPicked = id => !!(D.layout || ORIG?.layout)?.scArt?.[id];   // v3.26: 소품 리스트 = 맵 배치의 스칼렛 소품 목록 (저장하면 게임에 들어감)
 // v3.25 경완: 가운데 화면에 여백 없이 꽉 차게 5×2 · 상호작용은 맵 메뉴 소품 반응처럼 (누가 | 무엇을) · 피드백 칸은 어디서나 같은 모양 · 마음에 드는 소품은 바로 소품 리스트에
+// v3.32 경완: 휴지통 = 지운 작업물 (되살리기 → 원래 날짜로, 영구 삭제)
+function scaBin() { const T = (SCA_R?.trash || []).filter(o => !scaQ.trim() || (o.n + (o.d || '')).includes(scaQ.trim()));
+  if (!T.length) return '<div class="empty">휴지통이 비어 있어요.</div>';
+  return `<div class="sc-day"><h2>휴지통 <span class="small mute">${T.length}개 · 스칼렛은 같은 소품을 다시 그리지 않아요</span></h2><div class="sc-g">${T.map(o => `<div class="sc-it"><div class="sc-pic">${o.px?.length ? pxSvg(o.px, o.pal || {}, Math.max(2, Math.floor(96 / Math.max(o.px.length, o.px[0].length)))) : ''}</div>
+    <div class="sc-hd"><b>${esc(o.n)}</b><span class="small mute">${o.dayAt ? new Date(o.dayAt).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' }) : ''} 작업 · ${when(o.del)} 지움</span></div><div class="sc-d">${esc(o.d || '')}</div>
+    <div class="row" style="display:flex;gap:6px"><button class="chip" data-swres="${esc(o.id)}">되살리기</button><button class="chip" data-swgone="${esc(o.id)}">영구 삭제</button></div></div>`).join('')}</div></div>`; }
 function renderSca() {
   const days = SCA_R?.days || [], last = days[0];
-  const card = o => { const pk = scaPicked(o.id); return `<div class="sc-it${pk ? ' pk' : ''}" id="sc-${esc(o.id)}"><div class="sc-pic">${o.px?.length ? pxSvg(o.px, o.pal || {}, Math.max(2, Math.floor(96 / Math.max(o.px.length, o.px[0].length)))) : ''}${o.k ? `<span class="sc-k">${esc(o.k)}</span>` : ''}<button class="sc-wd" data-swdel="${esc(o.id)}" title="이 작업물 지우기 (한 번 더 누르면 지워져요)">×</button></div>
+  const card = o => { const pk = scaPicked(o.id); return `<div class="sc-it${pk ? ' pk' : ''}" id="sc-${esc(o.id)}"><div class="sc-pic">${o.px?.length ? pxSvg(o.px, o.pal || {}, Math.max(2, Math.floor(96 / Math.max(o.px.length, o.px[0].length)))) : ''}${o.k ? `<span class="sc-k">${esc(o.k)}</span>` : ''}<button class="sc-wd" data-swdel="${esc(o.id)}" title="휴지통으로">×</button></div>
     <div class="sc-hd"><b>${esc(o.n)}</b><button class="chip sc-pk${pk ? ' on' : ''}" data-pk="${esc(o.id)}"${PK_BUSY ? ' disabled' : ''} title="${pk ? '소품 리스트에서 빼기' : '맵 메뉴 소품 리스트에 추가'}">${pk ? '✓ 리스트에 있음' : '+ 소품 리스트'}</button></div>
     <div class="sc-d">${esc(o.d || '')}</div>
     ${o.acts?.length ? `<div class="react sc-rx"><section class="rg">${o.acts.map(a => `<div><span class="chip">${esc(a.w)}</span><span>${esc(a.a)}</span></div>`).join('')}</section></div>` : ''}${o.fit ? `<div class="sc-fit">어울리는 곳 · ${esc(o.fit)}</div>` : ''}
@@ -3258,8 +3265,8 @@ function renderSca() {
   const pk = Object.keys((D.layout || ORIG?.layout)?.scArt || {}).map(id => scaItem(id) || { n: (D.layout || ORIG.layout).scArt[id].n });
   $('#scaC').innerHTML = `<div class="sc-top"><div class="stf-hd sc-me">${face('sca', 4)}<div><h2 style="margin:0">스칼렛 <span class="small mute">소품 디자이너 · 매일 아침 7시 43분 시작, 보통 8시 전후에 올라와요</span></h2>${last ? `<div class="small mute">${when(last.at)} · 소품 ${last.items.length}개${last.theme ? ' · ' + esc(last.theme) : ''}</div>` : ''}<div class="stf-say"><p>${esc(last?.note || '매일 아침 필드에 놓을 소품 10개를 새로 그려서, 포켓몬들이 그 소품으로 뭘 할 수 있는지 같이 정리해 둘게요.')}</p></div></div></div>
     <div class="sc-side"><div class="search"><input id="scaQ" class="inp" placeholder="소품·포켓몬·상호작용 찾기" value="${esc(scaQ)}"></div>${fbBox('sca', 'all', '', '스칼렛에게 전체 피드백 (그림체·테마·상호작용 등)')}
-    <div class="small mute">소품 리스트 ${pk.length}개 ${pk.length ? '· ' + pk.map(o => esc(o.n)).join(', ') : ''} — 넣으면 맵 메뉴 소품 칸 맨 아래에 바로 생겨요. 끌어다 맵에 놓고 저장하면 게임에서 포켓몬들이 놀러 와요.</div></div></div>
-    ${days.length ? days.map(d => { const L = d.items.filter(hit); return L.length ? `<div class="sc-day"><h2>${new Date(d.at).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })} <span class="small mute">${L.length}개${d.theme ? ' · ' + esc(d.theme) : ''}</span><button class="chip sc-wdd" data-swday="${d.at}" title="한 번 더 누르면 이 날 작업물이 모두 지워져요">이 날 작업물 지우기</button></h2><div class="sc-g">${L.map(card).join('')}</div></div>` : ''; }).join('') : '<div class="empty">아직 올린 작업물이 없어요. 내일 아침 첫 작업물이 올라와요.</div>'}`;
+    <div class="small mute">소품 리스트 ${pk.length}개 ${pk.length ? '· ' + pk.map(o => esc(o.n)).join(', ') : ''} — 넣으면 맵 메뉴 소품 칸 맨 아래에 바로 생겨요. 끌어다 맵에 놓고 저장하면 게임에서 포켓몬들이 놀러 와요.</div><div><button class="chip${scaTrash ? ' on' : ''}" id="scaBin">🗑 휴지통 ${(SCA_R?.trash || []).length}개${scaTrash ? ' · 작업물로 돌아가기' : ''}</button></div></div></div>
+    ${scaTrash ? scaBin() : days.length ? days.map(d => { const L = d.items.filter(hit); return L.length ? `<div class="sc-day"><h2>${new Date(d.at).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })} <span class="small mute">${L.length}개${d.theme ? ' · ' + esc(d.theme) : ''}</span><button class="chip sc-wdd" data-swday="${d.at}" title="한 번 더 누르면 이 날 작업물이 모두 휴지통으로 가요">이 날 작업물 지우기</button></h2><div class="sc-g">${L.map(card).join('')}</div></div>` : ''; }).join('') : '<div class="empty">아직 올린 작업물이 없어요. 내일 아침 첫 작업물이 올라와요.</div>'}`;
 }
 $('#scaC').addEventListener('input', e => { if (e.target.id !== 'scaQ') return; scaQ = e.target.value; clearTimeout(renderSca.t); renderSca.t = setTimeout(() => { renderSca(); const i = $('#scaQ'); i.focus(); i.setSelectionRange(scaQ.length, scaQ.length); }, 250); });
 // main 에 있는 JSON 파일 하나를 고쳐 바로 올린다 (경완 깃허브 열쇠, 부딪히면 다시 읽고 세 번까지)
@@ -3273,13 +3280,20 @@ function scaPick(id) { if (!A?.scDef) { toast('게임을 새 버전(v8.22)으로
   toast(on ? `${o?.n || '소품'}을(를) 소품 리스트에 넣었어요 · 맵 메뉴에서 저장하면 게임에 들어가요` : '소품 리스트에서 뺐어요'); renderSca(); }
 // v3.26 경완: 새로 넣은 스칼렛 소품이 있으면 맵 메뉴에 빨간 점 (맵 메뉴를 열면 사라짐)
 function scDot() { const a = $('.nav a[data-v="map"]'); if (a) a.classList.toggle('scnew', JSON.parse(store.get('st-sc-new') || '[]').length > 0); }
-$('#scaC').addEventListener('click', e => { const b = e.target.closest('[data-pk]'); if (b) scaPick(b.dataset.pk); const x = e.target.closest('[data-swdel],[data-swday]'); if (x) scaDel(x); });
+$('#scaC').addEventListener('click', e => { const b = e.target.closest('[data-pk]'); if (b) scaPick(b.dataset.pk); const x = e.target.closest('[data-swdel],[data-swday],[data-swres],[data-swgone]'); if (x) scaDel(x); if (e.target.closest('#scaBin')) { scaTrash = !scaTrash; renderSca(); } });
 // v3.31 경완: 작업물 메뉴에서 스칼렛 작업물을 소품마다·날마다 지운다 (× 한 번 → 빨갛게, 한 번 더 → main 의 config/staff/scarlet.json 에서 지움). 이미 소품 리스트에 넣은 건 맵에 그대로 남아요
-async function scaDel(b) { if (!b.classList.contains('arm')) { $$('#scaC .arm').forEach(e => e.classList.remove('arm')); b.classList.add('arm'); if (b.dataset.swday) b.textContent = '정말 지울까요?'; clearTimeout(scaDel.t); scaDel.t = setTimeout(() => renderSca(), 3000); return; }
-  clearTimeout(scaDel.t); const id = b.dataset.swdel, at = +b.dataset.swday || 0, drop = R => { R.days = (R.days || []).filter(d => d.at !== at).map(d => ({ ...d, items: d.items.filter(o => o.id !== id) })).filter(d => d.items.length); return R; };
-  if (!store.get('st-gh-token')) { toast('깃허브 열쇠가 있어야 지울 수 있어요 (설정)', true); return; } b.disabled = true;
-  try { SCA_R = await ghJsonEdit('config/staff/scarlet.json', drop, at ? '스칼렛 작업물 하루치 지우기 (작업실)' : `스칼렛 작업물 지우기: ${id} (작업실)`); toast(at ? '이 날 작업물을 지웠어요' : '작업물을 지웠어요'); }
-  catch (err) { toast('지우지 못했어요: ' + (err.message || err), true); } renderSca(); }
+// v3.32 경완: × 는 누르면 바로 지우고, 지운 작업물은 휴지통(scarlet.json 의 trash)으로 — 휴지통에서 되살리기·영구 삭제
+let scaTrash = false;
+const scaToTrash = (R, pick) => { const T = []; R.days = (R.days || []).map(d => ({ ...d, items: d.items.filter(o => { if (!pick(d, o)) return true; T.push({ ...o, del: Date.now(), dayAt: d.at, theme: d.theme || '' }); return false; }) })).filter(d => d.items.length); R.trash = [...T, ...(R.trash || [])].slice(0, 300); return R; };
+async function scaEdit(fn, msg, done) { if (!store.get('st-gh-token')) { toast('깃허브 열쇠가 있어야 고칠 수 있어요 (설정)', true); return; }
+  const old = SCA_R; SCA_R = fn(JSON.parse(JSON.stringify(SCA_R || { days: [] }))); renderSca();   // 화면은 바로, 올리기는 뒤에서
+  try { SCA_R = await ghJsonEdit('config/staff/scarlet.json', fn, msg); if (done) toast(done); } catch (err) { SCA_R = old; toast('올리지 못했어요: ' + (err.message || err), true); } renderSca(); }
+function scaDel(b) { const id = b.dataset.swdel, at = +b.dataset.swday || 0, tid = b.dataset.swres || b.dataset.swgone;
+  if (b.dataset.swres) return scaEdit(R => { const i = (R.trash || []).findIndex(o => o.id === tid); if (i < 0) return R; const [o] = R.trash.splice(i, 1), { del, dayAt, theme, ...it } = o; let d = (R.days || []).find(x => x.at === dayAt);
+    if (!d) { d = { at: dayAt || Date.now(), theme, note: '', items: [] }; R.days = [...(R.days || []), d].sort((a, b) => b.at - a.at); } d.items.push(it); return R; }, `스칼렛 작업물 되살리기: ${tid} (작업실)`, '되살렸어요');
+  if (b.dataset.swgone) return scaEdit(R => { R.trash = (R.trash || []).filter(o => o.id !== tid); return R; }, `스칼렛 작업물 영구 삭제: ${tid} (작업실)`);
+  if (at && !b.classList.contains('arm')) { b.classList.add('arm'); b.textContent = '한 번 더 누르면 휴지통으로'; clearTimeout(scaDel.t); scaDel.t = setTimeout(() => renderSca(), 3000); return; }   // 하루치는 한 번 더 확인
+  clearTimeout(scaDel.t); scaEdit(R => scaToTrash(R, (d, o) => at ? d.at === at : o.id === id), at ? '스칼렛 작업물 하루치 휴지통으로 (작업실)' : `스칼렛 작업물 휴지통으로: ${id} (작업실)`); }
 
 // ---------- 작업물 피드백 (v3.22 경완: 직원 DM 대신 작업물에 남긴 피드백을 다음 아침 작업에 반영) ----------
 // 피드백 = config/staff/feedback.json (작업실이 main 에 바로 올림), 반영 기록 = config/staff/feedback-done.json (아침 루틴이 씀)
