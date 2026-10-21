@@ -954,10 +954,10 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .egg{--ec:#f6f4ea;--es:#6cc070;--esh:#d6d2c2;--eo:#383848;flex:none;width:54px;height:66px;position:relative;display:block}
 .egg svg{display:block;width:100%;height:100%}
 .egg .ck,.egg .em{display:none}.egg .eglow .kx{fill:#fff3a0}.egg .epc{position:absolute;left:0;top:0;width:100%;height:100%;transition:transform .12s steps(2,end)}.egg .epc.tl{transform-origin:5% 52%}.egg .epc.tr{transform-origin:95% 57%}.egg .elk{position:absolute;left:50%;top:30%;width:calc(30% + var(--lk,0) * 50%);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(#fffbe0 0 22%,#ffe066 40%,rgba(255,190,40,.55) 58%,transparent 72%);filter:drop-shadow(0 0 6px #ffc400);pointer-events:none;opacity:0}.egg.splitting .eglow .k1{display:none}.egg.c1 .k1,.egg.c2 .k2,.egg.c3 .k3{display:inline}
-/* v7.81 경완: 등급이 오를수록 더 좋은 알 — 우수 띠, 레어 푸른 껍질·흰 띠·반짝, 에픽 보랏빛·보석·점선, 전설 금빛·붉은 띠·하늘 보석·점선 두 줄·후광 */
+/* v7.81 경완: 등급이 오를수록 더 좋은 알 — 우수 가운데 띠, 레어 푸른 껍질·흰 띠·반짝, 에픽 보랏빛·보석·점선, 전설 금빛·붉은 띠·하늘 보석·점선 두 줄·후광 */
 .egg.g2{--es:#f0a040;--eb:#d8603a;--ebs:#b04428;--egm:#d8603a;--ebd:var(--ec)}
 .egg.g2 .eb,.egg.g2 .egm,.egg.g2 .ebg,.egg.g2 .ebd{display:inline}
-.egg.g3{--ec:#eaf4ff;--esh:#bcd4ee;--es:#4f95dc;--eo:#24426e;--eb:#2a5aa8;--ebs:#1c4282;--egm:#ffffff;--ebd:#ffffff}
+.egg.g3{--ec:#eaf4ff;--esh:#bcd4ee;--es:#4f95dc;--eo:#24426e;--eb:#2a5aa8;--ebs:#1c4282;--egm:#8cc4f4;--ebd:#ffffff}
 .egg.g3 .em:not(.ed1):not(.ed2){display:inline}
 .egg.g4{--ec:#f3eaff;--esh:#cdb6ee;--es:#b48ae6;--eo:#3e2466;--eb:#6a36b0;--ebs:#4e2488;--egm:#ffd84a;--ebd:#ffffff;--ed:#6a36b0;filter:drop-shadow(0 0 3px rgba(170,120,240,.7))}
 .egg.g4 .em:not(.ed2){display:inline}
@@ -9245,9 +9245,9 @@ const EGG_SVG = (() => {
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     if (!inside(x, y)) continue;
     if (!inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1)) { px('o', x, y); continue; }
-    // v7.81 경완: 등급 무늬 층 (아래 무늬 위에 겹쳐 그리고, 등급마다 CSS 로 켠다) — 지그재그 띠·띠 뾰족 끝 보석·띠 위아래 틈·위아래 점선
-    const z = 11 + [0, 1, 2, 1][x % 4], shd = !inside(x + 2, y + 1) || !inside(x + 1, y + 2);
-    if (y === z) px(x % 4 === 2 ? 'gm' : shd ? 'bs' : 'b', x, y); else if (y === z + 1) px('bd', x, y); else if (y === z - 1) px('bg', x, y);
+    // v7.81 경완: 등급 무늬 층 (아래 무늬 위에 겹쳐 그리고, 등급마다 CSS 로 켠다) — 가운데 곧은 띠·띠 위 보석·띠 위아래 틈·위아래 점선
+    const shd = !inside(x + 2, y + 1) || !inside(x + 1, y + 2);
+    if (y === 11 || y === 12) px(x % 4 === 1 ? 'gm' : shd ? 'bs' : 'b', x, y); else if (y === 13) px('bd', x, y); else if (y === 10) px('bg', x, y);
     else if (y === 7 && x % 2) px('d1', x, y); else if (y === 17 && !(x % 2)) px('d2', x, y);
     if (spots.some(([sx, sy, r]) => (x + .5 - sx) ** 2 + (y + .5 - sy) ** 2 <= r * r)) { px('s', x, y); continue; }
     if (shd) { px('sh', x, y); continue; }
