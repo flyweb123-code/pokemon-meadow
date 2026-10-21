@@ -2991,7 +2991,7 @@ function petDone() {
   const m = petM.m, P = boxOf(m.pid); haloJoy(m);
   const wash = petM.wash; let fr = 0; if (P && (wash || (m.joy ?? 60) < PET_FR_MAXJ)) { fr = wash ? WASH_FR : PET_FR; if (fr > 0) addFr(P.id, fr); }   /* v4.42 경완: 쓰다듬기로 즐거움이 오를 때마다 친밀도 +1, 하루 한도 없음 */
   if (wash) { m.clean = 100; dirtVis(m); m.joy = clamp((m.joy ?? 60) + 10); washShine(m); $('#washBrush').hidden = true; }
-  else { m.social = clamp(m.social - 20); m.joy = clamp((m.joy ?? 60) + 20); }   /* v4.35 경완: 쓰다듬기는 즐거움 +20 (예전엔 한 번에 100) */
+  else { m.social = clamp(m.social - 20); m.joy = clamp((m.joy ?? 60) + 50); }   /* v7.55 경완: 쓰다듬기는 즐거움 +50 (v4.35 +20, 그 전엔 한 번에 100) */
   haptic(2); setTimeout(() => haptic(2), 110); setTimeout(() => haptic(1), 220); sfx('pickup'); if (fr) frPop(m, fr);
   log(wash ? (fr ? `${J(m,'을/를')} 깨끗하게 빗겨 주자 반짝반짝 윤이 나며 아주 좋아했다.` : `${J(m,'을/를')} 깨끗하게 빗겨 주었다. 반짝반짝!`)
     : fr ? `${J(m,'은/는')} 쓰다듬어 주자 아주 좋아했다.` : `${J(m,'은/는')} 쓰다듬어 주자 기분 좋은 듯 눈을 가늘게 떴다.`, [m]);
@@ -5802,7 +5802,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.54';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.55';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
