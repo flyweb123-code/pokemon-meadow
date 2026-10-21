@@ -262,7 +262,7 @@ body.szmode #mapI>:not(#szPane){display:none!important}body.szmode #mapI{display
 .egg{--ec:#f6f4ea;--es:#6cc070;--esh:#d6d2c2;--eo:#383848;display:inline-block;flex:none;width:15px;height:18px;vertical-align:middle}.egg svg{display:block;width:100%;height:100%}.egg .ck{display:none}
 .egg.g2{--es:#f0a040}.egg.g3{--es:#4f95dc}.egg.g4{--es:#a070d8}.egg.g5{--ec:#fff1b8;--esh:#e8d48a;--es:#e0a020;filter:drop-shadow(0 0 3px #ffe680)}
 h2.ih{display:flex;align-items:center;gap:8px}
-.balg{display:grid;grid-auto-flow:row dense;min-width:0;width:100%;grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr));gap:12px;align-items:start;max-width:1400px}.balg .card{min-width:0}.balg .card.wide2{grid-column:1/-1}.balg .card:not(.wide2) .bal2{grid-template-columns:minmax(0,1fr)!important}
+.balg{display:grid;grid-auto-flow:row dense;min-width:0;width:100%;grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr));gap:12px;align-items:start;max-width:1400px}.balg .card{min-width:0}.balg.free{display:block;position:relative;max-width:none}.balg.free .card{position:absolute;margin:0;overflow:hidden;box-sizing:border-box;display:flex;flex-direction:column}.balg.free .card>.bal2{flex:1 1 auto;min-height:0;overflow:auto}.balg.free .card.wide2{grid-column:auto}.balg.free .card>h2.ih{cursor:move;user-select:none}.balg.free .card.drag{z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.35);opacity:.96}.balg .bal-rz{display:none}.balg.free .bal-rz{display:block;position:absolute;right:2px;bottom:2px;width:14px;height:14px;z-index:2;cursor:nwse-resize;background:linear-gradient(135deg,transparent 50%,var(--mute,#9aa0ad) 50% 58%,transparent 58% 70%,var(--mute,#9aa0ad) 70% 78%,transparent 78%)}.balg .card.wide2{grid-column:1/-1}.balg .card:not(.wide2) .bal2{grid-template-columns:minmax(0,1fr)!important}
 .bsh{grid-column:1/-1;font-size:11.5px;letter-spacing:.06em;color:var(--acc);padding:14px 2px 4px;border-top:0!important}.bal2 .bsh:first-child{padding-top:2px}.bal2 .bsh+.br{border-top:0!important}
 .br.ln{grid-template-columns:22px minmax(0,1fr) 150px;gap:10px}.br.ln .bic{display:flex}.br.ln .lt{display:grid;gap:2px;min-width:0;line-height:1.35}.br.ln .lt small{color:var(--mute);font-size:11.5px}.br.ln .uw{display:flex;align-items:center;gap:6px;justify-self:end}.br.ln .uw input{width:88px;text-align:right}.br.ln .u{min-width:36px;color:var(--soft);font-size:12px}.balg .card{margin:0}.balg .bal2{grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr));column-gap:28px}.balg .bal2 .br{border-top:1px solid var(--chip)}.balg .bal2 .br.full{grid-column:1/-1}
 .sic{width:32px;height:32px;image-rendering:pixelated;flex:none}.br.shop-r{display:flex;align-items:center;gap:8px;padding:6px 0}.shop-r .uw{width:140px;flex:none}.shop-r .lt{flex:1}.shtb{width:100%;border-collapse:collapse;margin:8px 0;font-size:13px}.shtb th,.shtb td{padding:4px 6px;text-align:right;border-top:1px solid var(--chip)}.shtb th:first-child,.shtb td:first-child{text-align:left}.shtb .inp.sm,.inp.sm{width:56px}
@@ -544,7 +544,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.26';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.27';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -1834,7 +1834,7 @@ const BLBL = { NEW_G: ['진화로 새 포켓몬을 만나면', 'G'], RUN_G: ['�
 const HUN_LV = [['매우 빠름', .022], ['빠름', .0155], ['보통', .011], ['느림', .0078], ['매우 느림', .0055]];
 const bico = k => BICO[k] === 'egg' ? `<span class="gi">${eggI(1)}</span>` : gi(BICO[k]);
 function renderBal() {
-  $('#balC').innerHTML = '<div class="balg">' + BAL.map(([h, L], si) => `<div class="card${L.some(r => r[3] === 'tbl') ? ' wide2' : ''}"><h2 class="ih">${SICO[si] === 'egg' ? `<span class="gi">${eggI(3)}</span>` : gi(SICO[si])}${h}</h2><div class="bal2">${L.map(([k, n, sub, kind]) => {
+  $('#balC').innerHTML = '<div class="balg">' + BAL.map(([h, L], si) => `<div class="card${L.some(r => r[3] === 'tbl') ? ' wide2' : ''}" data-bk="${si}"><h2 class="ih">${SICO[si] === 'egg' ? `<span class="gi">${eggI(3)}</span>` : gi(SICO[si])}${h}</h2><div class="bal2">${L.map(([k, n, sub, kind]) => {
     if (k === '#') return `<div class="bsh">${n}</div>`;
     const v = bal(k), c = D.bal && k in D.bal ? ' ch' : '', arr = Array.isArray(v);
     const lab = `<div class="bi${arr ? ' span' : ''}">${bico(k)}<div>${n}${sub ? `<small>${sub}</small>` : ''}</div></div>`;
@@ -1848,8 +1848,36 @@ function renderBal() {
       return `<div class="br">${lab}<div class="wide" style="--n:${cl.length}">${cl.join('')}</div></div>`; }
     const cells = v.map((x, i) => i ? `<label>${eggI(i)}<span style="color:${GC[i]}">${GN[i]}</span><span class="gw"><input class="inp${c}" data-b="${k}" data-i="${i}" inputmode="decimal" value="${x}">${BUNIT[k] ? `<span class="u">${BUNIT[k]}</span>` : ''}</span></label>` : '').filter(Boolean);
     return `<div class="br">${lab}<div class="wide" style="--n:${cells.length}">${cells.join('')}</div></div>`; }).join('')}</div>${boxBar('bal:' + si)}</div>`).join('') + '</div>';
-  $('#balI').innerHTML = `<h4>밸런스</h4><div class="small mute">게임 곳곳에 있는 숫자들이에요. 고친 칸은 주황색이 되고, 박스의 저장을 눌러야 배포하기에 들어가요.</div>`;
+  $('#balI').innerHTML = `<h4>밸런스</h4><div class="small mute">게임 곳곳에 있는 숫자들이에요. 고친 칸은 주황색이 되고, 박스의 저장을 눌러야 배포하기에 들어가요.</div><h4>창 배치</h4><div class="small mute">창 제목을 끌어 옮기고, 오른쪽 아래 모서리를 끌어 크기를 바꿔요. 이 컴퓨터에 기억해요.</div><button class="chip" id="balLayR"${store.get('st-bal-lay') ? '' : ' disabled'}>처음 배치로</button>`;
+  balLay();
 }
+// v3.27 경완: 밸런스 창들을 화면 안에서 끌어 배치하고 크기를 바꾼다 (x·w = 너비 비율, y·h = px, h 없으면 내용 높이) — 겹치면 아래로 밀어 맞춘다
+const BL_SN = 8, clamp = (v, a, b) => Math.max(a, Math.min(b, v)), blGet = () => { try { return JSON.parse(store.get('st-bal-lay') || '{}'); } catch (e) { return {}; } };
+function balLay(fit) { const g = $('#balC .balg'); if (!g) return; const C = [...g.children]; if (innerWidth < 760) { g.classList.remove('free'); g.style.height = ''; C.forEach(c => c.style.cssText = ''); return; }
+  const L = blGet(); if (C.some(c => !L[c.dataset.bk])) { g.classList.remove('free'); C.forEach(c => c.style.cssText = ''); const W = g.clientWidth;
+    const G = g.getBoundingClientRect(); for (const c of C) if (!L[c.dataset.bk]) { const R = c.getBoundingClientRect(); L[c.dataset.bk] = { x: (R.left - G.left) / W, y: Math.round(R.top - G.top), w: Math.min(R.width / W, 1 - (R.left - G.left) / W) }; } }
+  g.classList.add('free'); const W = g.clientWidth;
+  for (const c of C) { const o = L[c.dataset.bk]; c.style.left = Math.round(o.x * W) + 'px'; c.style.top = o.y + 'px'; c.style.width = Math.round(o.w * W) + 'px'; c.style.height = o.h ? o.h + 'px' : ''; if (!c.querySelector('.bal-rz')) c.insertAdjacentHTML('beforeend', '<i class="bal-rz" aria-hidden="true"></i>'); }
+  // 겹치면 위에 있는 창부터 차례로 아래로 민다
+  const S = C.map(c => ({ c, o: L[c.dataset.bk], h: c.offsetHeight })).sort((a, b) => a.o.y - b.o.y || a.o.x - b.o.x), done = [];
+  for (const it of S) { let y = it.o.y, moved = true; while (moved) { moved = false; for (const d of done) if (it.o.x < d.o.x + d.o.w - .001 && d.o.x < it.o.x + it.o.w - .001 && y < d.y + d.h + 12 && d.y < y + it.h + 12) { y = d.y + d.h + 12; moved = true; } }
+    it.y = y; it.c.style.top = y + 'px'; done.push(it); }
+  g.style.height = Math.max(...S.map(it => it.y + it.h)) + 16 + 'px'; }
+addEventListener('resize', () => { if (view === 'bal') balLay(); });
+$('#balI').addEventListener('click', e => { if (e.target.id !== 'balLayR') return; store.set('st-bal-lay', ''); renderBal(); toast('창 배치를 처음대로 돌렸어요'); });
+$('#balC').addEventListener('pointerdown', e => { const g = $('#balC .balg.free'); if (!g || e.button > 0) return; const rz = e.target.closest('.bal-rz'), hd = !rz && e.target.closest('.card > h2.ih'); if (!rz && !hd) return;
+  const c = e.target.closest('.card'), k = c.dataset.bk, L = blGet(), W = g.clientWidth, o = L[k] || { x: c.offsetLeft / W, y: c.offsetTop, w: c.offsetWidth / W }, x0 = e.clientX, y0 = e.clientY, b0 = { l: c.offsetLeft, t: c.offsetTop, w: c.offsetWidth, h: c.offsetHeight };
+  e.preventDefault(); c.classList.add('drag'); document.body.classList.add('wdrag'); const sn = v => Math.round(v / BL_SN) * BL_SN;
+  const mv = ev => { const dx = ev.clientX - x0, dy = ev.clientY - y0;
+    if (rz) { const w = clamp(sn(b0.w + dx), 320, W - b0.l), h = Math.max(120, sn(b0.h + dy)); c.style.width = w + 'px'; c.style.height = h + 'px'; o.w = w / W; o.h = h; }
+    else { const l = clamp(sn(b0.l + dx), 0, W - b0.w), t = Math.max(0, sn(b0.t + dy)); c.style.left = l + 'px'; c.style.top = t + 'px'; o.x = l / W; o.y = t; } };
+  const up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); removeEventListener('pointercancel', up); c.classList.remove('drag'); document.body.classList.remove('wdrag');
+    // 다른 창들도 지금 자리를 기억해 두고, 옮긴 창을 기준으로 겹친 창을 밀어낸다
+    for (const d of g.children) if (d !== c && !L[d.dataset.bk]) L[d.dataset.bk] = { x: d.offsetLeft / W, y: d.offsetTop, w: d.offsetWidth / W };
+    L[k] = o; for (const d of g.children) if (d !== c) L[d.dataset.bk].y = d.offsetTop;
+    store.set('st-bal-lay', JSON.stringify(L)); const r = $('#balLayR'); if (r) r.disabled = false; balLay(); };
+  addEventListener('pointermove', mv); addEventListener('pointerup', up); addEventListener('pointercancel', up); });
+
 // v2.12 경완: 건강 게이지 구간 경계는 막대 위 손잡이를 끌어서 정한다
 $('#balC').addEventListener('pointerdown', e => { const kb = e.target.closest('.frk'); if (!kb || e.button > 0) return; e.preventDefault(); const k = kb.dataset.fk, i = +kb.dataset.i, bar = kb.parentElement.querySelector('.frbar').getBoundingClientRect();
   const T0 = bal(k), others = T0.filter((_, j) => j !== i).map(r => r[0]), lo = Math.max(0, ...others.filter(v => v < T0[i][0])) + 1, hi = Math.min(100, ...others.filter(v => v > T0[i][0])) - 1;
@@ -2039,6 +2067,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.27', '10월 22일', ['밸런스: 창 제목을 끌어 화면 안에서 배치하고, 오른쪽 아래 모서리를 끌어 크기 조절 (겹치면 아래로 밀려요, \'처음 배치로\' 버튼)']],
   ['3.26', '10월 22일', ['스칼렛 소품: \'+ 소품 리스트\' 를 누르면 맵 메뉴 소품 칸에 바로 생기고 맵에 끌어다 놓을 수 있어요. 저장하면 게임에서 포켓몬들이 놀러 와요', '맵 메뉴에 새 스칼렛 소품 빨간 점, 소품 칸의 × 로 목록에서 지우기', '맵 위쪽 막대를 다시 한 줄로']],
   ['3.25', '10월 22일', ['스칼렛의 작업물: 가운데 화면에 여백 없이 5×2로 꽉 차게, 상호작용은 맵 메뉴 소품 반응처럼(누가 | 무엇을), 피드백 칸 모양 통일, 소품마다 \'소품 리스트\' 버튼 (맵 메뉴 소품 칸에 모임)', '뉴트럴 시뮬레이터: 미션 골드 새 값, 도전 미션 페이즈·기술로 날리기도 계산', '맵 메뉴 위쪽 막대를 기능별로 묶어 정렬']],
   ['3.21', '10월 22일', ['크기 조절 모드 동작별 떠 있기 창: 필드에 있는 그 포켓몬 모습(암컷 모습 등) 그대로 그리고 그림자도 필드와 같게 (레디바 등)', '깡충 동작 칸에서 뛰어오를수록 그림자가 작아진다 (게임 v8.13)']],
