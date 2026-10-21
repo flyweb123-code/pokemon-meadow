@@ -1,1 +1,618 @@
-{"days":[]}
+{
+ "days": [
+  {
+   "at": 1792618421339,
+   "theme": "가을 수확 축제",
+   "note": "첫날이라 계절부터 잡았어요! 10월 풀밭에 어울리게 수확한 것들(호박·사과·옥수수·도토리·밤)과 그걸 지키는 허수아비, 겨울 준비 장작까지 한 세트로 맞췄고, 색은 주황·빨강·노랑에 그림자는 풀밭 초록으로 깔아서 지금 필드에 바로 섞이게 했어요.",
+   "items": [
+    {
+     "id": "harvest-pumpkin",
+     "n": "수확 호박",
+     "k": "먹이",
+     "d": "둥근 골이 세 개 진 큰 주황 호박이에요. 꼭지 옆으로 덩굴이 살짝 말려 있어요.",
+     "px": [
+      "..........................",
+      "................k.........",
+      "............kkkkgk........",
+      "...........khhggk.........",
+      "...........kghgk..........",
+      ".....kkkk.kkgggk.kkkk.....",
+      "...kkaaookaaggGokaaookk...",
+      "..kaaaaooaaaaooooaaooook..",
+      ".kaaaaooaapaoooopoooooook.",
+      ".kaaaaoaaapooooopopoooopk.",
+      "kaaaooaaaapooooopoppoooppk",
+      "kooooooooopoooooppppoopppk",
+      "koooooooooqoooooqpppoopppk",
+      "koooooooooqoooopqpppoppppk",
+      "koooooooooqoooppqppqppppqk",
+      "koooooooooqoppppqpqqppppqk",
+      ".koopppoopqpppppqqqppppqk.",
+      ".kppppppppqpppppqqppppqqk.",
+      "..kpppppqpqppppqqpppqqqk..",
+      "...kkpqqqkppqqqqkpqqqkk...",
+      "...zzkkkkzkkkkkkzkkkkzz...",
+      ".....zzzzzzzzzzzzzzzz....."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "z": "#3c4a2c",
+      "a": "#ffb060",
+      "o": "#f08a28",
+      "p": "#c85e1c",
+      "q": "#8a3a18",
+      "g": "#4e8a34",
+      "h": "#7cbc4a",
+      "G": "#2e5a24"
+     },
+     "acts": [
+      {
+       "w": "풀·벌레 타입 작은 포켓몬",
+       "a": "호박 앞에 앉아 조금씩 갉아 먹어요"
+      },
+      {
+       "w": "작은 포켓몬 (특히 고스트 타입)",
+       "a": "호박 뒤에 숨어 있다가 고개만 내밀어요"
+      },
+      {
+       "w": "격투·노말 타입 큰 포켓몬",
+       "a": "호박을 굴리듯 몸으로 부딪쳐 밀어요"
+      }
+     ],
+     "fit": "열매나무 옆, 가을"
+    },
+    {
+     "id": "hay-bale",
+     "n": "건초 더미",
+     "k": "쉼터",
+     "d": "네모나게 묶은 노란 건초 더미예요. 끈 두 줄로 단단히 묶었고 위로 지푸라기가 삐죽 나와 있어요.",
+     "px": [
+      "............................",
+      ".....k........k.............",
+      "...kkakk...k.kak...k..kk....",
+      "..kakkkakkkakkkakkkakkaakk..",
+      ".kaaaaaassaaaaaaaaassaaaaak.",
+      ".kaaaaaarraaaaabaaarraaaaak.",
+      ".kaaaaaarraaaaaaaaarraaabak.",
+      ".kbcbbbbrrbbbbbbbbcrrbbbbbk.",
+      ".kbbbbbbrrbbcbbbbbbrrbbbbbk.",
+      ".kbbbbcbrrbbbbbbbbbrrcbbbbk.",
+      ".kbbbbbbrrbbbbbcbbbrrbbbbbk.",
+      ".kbbbbbbrrbbbbbbbbbrrbbbcbk.",
+      ".kbcbbbbrrbbbbbbbbcrrbbbbbk.",
+      ".kbbbbbbrrbbcbbbbbbrrbbbbbk.",
+      ".kccccccrrcccccccccrrccccck.",
+      ".kccccccrrcccccccccrrccccck.",
+      ".kccccccrrcccccccccrrccccck.",
+      "..kkkkkkkkkkkkkkkkkkkkkkkk..",
+      ".zzzzzzzzzzzzzzzzzzzzzzzzzz.",
+      ".....zzzzzzzzzzzzzzzzzz....."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "z": "#3c4a2c",
+      "a": "#f6e08a",
+      "b": "#e0bc52",
+      "c": "#a8842e",
+      "r": "#a0442c",
+      "s": "#c8644a"
+     },
+     "acts": [
+      {
+       "w": "노말 타입 네 발 포켓몬",
+       "a": "건초 위에 올라가 몸을 말고 낮잠을 자요"
+      },
+      {
+       "w": "풀 먹는 포켓몬 (메리프·켄타로스 등 노말·풀)",
+       "a": "옆에 서서 지푸라기를 뽑아 먹어요"
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "건초와 땅 사이 틈에 숨어요"
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "불이 옮을까 봐 멀찍이 피해 가요"
+      }
+     ],
+     "fit": "풀밭 가장자리, 가을"
+    },
+    {
+     "id": "leaf-pile",
+     "n": "낙엽 더미",
+     "k": "놀이",
+     "d": "빨강·주황·노랑 낙엽을 소복이 쓸어 모은 더미예요. 위에 막 떨어진 잎이 몇 장 얹혀 있어요.",
+     "px": [
+      "............................",
+      "............................",
+      "............................",
+      "............................",
+      ".............k......k.......",
+      "......k.....kok....kyk......",
+      ".....krk.kkkkkkkkkk.k.......",
+      "......kkkaaaaabbrbRkkk......",
+      "....kkaRaRaaabbobbbbbRkk....",
+      "...kaoaaaaRaRobbOrbbyObckk..",
+      "..karraRaabbbbbbbbbrbboycRk.",
+      ".kbbObbbybbbbbbbbObbbccccck.",
+      ".kbbbbObbbbbbObbbybbcccccck.",
+      ".kbbbobObbbybbbobbcRrccrRck.",
+      ".kbOObbbbbbrbObccccyccccydk.",
+      "..kbbrrObbbccccyyccccccdok..",
+      "...kcyOcrccccrrcccocyoydk...",
+      "....kkcccccccccyccddRdkk...."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#e89a4a",
+      "b": "#c86c34",
+      "c": "#9a4a28",
+      "d": "#6a3020",
+      "r": "#d8402c",
+      "R": "#a02a24",
+      "y": "#f4c840",
+      "o": "#f08a28",
+      "O": "#b85a1c"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "더미 속으로 뛰어들어 숨고, 잎 사이로 눈만 내놓아요"
+      },
+      {
+       "w": "풀·벌레 타입",
+       "a": "낙엽 위에 웅크리고 자요"
+      },
+      {
+       "w": "비행 타입 / 바람 기술을 쓰는 포켓몬",
+       "a": "날갯짓(기술 쓰기)으로 낙엽을 흩날려요"
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "가까이 가지 않고 돌아가요"
+      }
+     ],
+     "fit": "열매나무·덤불 아래, 가을"
+    },
+    {
+     "id": "acorn-basket",
+     "n": "도토리 바구니",
+     "k": "먹이",
+     "d": "엮은 버들 바구니에 반질반질한 도토리가 수북해요. 도토리 모자는 오돌토돌하게 점을 찍었어요.",
+     "px": [
+      "..........................",
+      "..........................",
+      "............k.............",
+      "...........knkk...........",
+      ".......k..kmmmmk.k........",
+      "......knkkammmmcknkk......",
+      ".....kmmmmbbbbbcmmmmk.....",
+      "....kammmnbbbbnammmmck....",
+      "....kbbbmmmmcmmmmbbbck....",
+      "....kbbbmmmmbmmmmbbcck....",
+      "..kkkbccbbbbcbbbbcccckkk..",
+      ".kvvvvvvvvvvvvvvvvvvvvvvk.",
+      ".kvvvvvvvvvvvvvvvvvvvvvvk.",
+      "..kwvvwwvvwwvvwwvvwwvvwk..",
+      "..kvWWvvWWvvWWvvWWvvWWvk..",
+      "..kWvvWWvvWWvvWWvvWWvvWk..",
+      "..kWWWWWWWWWWWWWWWWWWWWk..",
+      "..kWWWWWWWWWWWWWWWWWWWWk..",
+      "..kWWWWWWWWWWWWWWWWWWWWk..",
+      "..kWVVVVVVVVVVVVVVVVVVWk..",
+      "...kkkkkkkkkkkkkkkkkkkk...",
+      "....zzzzzzzzzzzzzzzzzz...."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "z": "#3c4a2c",
+      "a": "#d89a5a",
+      "b": "#a8642c",
+      "c": "#6e3c1c",
+      "m": "#7a6a4a",
+      "n": "#4a3a26",
+      "w": "#c8945a",
+      "W": "#8a5a30",
+      "v": "#e8b878",
+      "V": "#5e3a20"
+     },
+     "acts": [
+      {
+       "w": "다람쥐·쥐 모양 작은 포켓몬 (노말)",
+       "a": "바구니 가장자리에 올라가 도토리를 두 손으로 먹어요"
+      },
+      {
+       "w": "풀 타입",
+       "a": "도토리 하나를 들고 가 옆에 묻어요"
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "바구니 안에 들어가 동그랗게 자요"
+      }
+     ],
+     "fit": "열매나무 아래, 가을"
+    },
+    {
+     "id": "scarecrow",
+     "n": "허수아비",
+     "k": "쉼터",
+     "d": "밀짚모자를 쓴 허수아비예요. 체크무늬 대신 단추 두 개 달린 초록 조끼를 입었고, 소매와 밑단으로 지푸라기가 삐져나와요.",
+     "px": [
+      ".........kkkkkkkk.........",
+      "........kHHHHHHHHk........",
+      "........khhhhhhhhk........",
+      "........khhhhhhhhk........",
+      "......kkkrrrrrrrrkkk......",
+      ".....kjjjjjjjjjjjjjjk.....",
+      "......kkkaaabbbbkkkk......",
+      "........kaabbbbck.........",
+      "........kbbkbbkck.........",
+      "........kbbbbbcck.........",
+      "........kbbccccck.........",
+      "........kccccccck.........",
+      "........kkkccckkkk........",
+      "...kkkkkSSssssssttkkkkk...",
+      "..kwwwwwSSssssssttwwwwwk..",
+      "..kWWWWWSSssPPssttWWWWWk..",
+      "..kyykkkSSssPPssttkkkyyk..",
+      "..kyyk.kSSssssssttk.kyyk..",
+      "...kk..kSSssssssttk..kk...",
+      ".......kSSssPPssttk.......",
+      ".......kSSssPPssttk.......",
+      ".......kSSssssssttk.......",
+      ".......kSSssssssttk.......",
+      ".......kSSssssssttk.......",
+      ".......kSSssssssttk.......",
+      ".......kykykwWkykyk.......",
+      "........k.kkwWkk.k........",
+      "...........kwWk...........",
+      "...........kwWk...........",
+      "...........kwWk...........",
+      "...........kwWk...........",
+      ".........zzkwWkzz.........",
+      "......zzzzzzkkzzzzzz......",
+      ".........zzzzzzzz........."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "z": "#3c4a2c",
+      "a": "#f4d8a0",
+      "b": "#d8b070",
+      "c": "#a8803e",
+      "w": "#a8743e",
+      "W": "#6e4a24",
+      "s": "#5aa04a",
+      "S": "#7cc060",
+      "t": "#3a7034",
+      "P": "#f4e8c8",
+      "y": "#f0d060",
+      "h": "#e8c050",
+      "H": "#f8e090",
+      "r": "#c0402c",
+      "j": "#a88a30"
+     },
+     "acts": [
+      {
+       "w": "날개 있는 작은 포켓몬 / 비행 타입",
+       "a": "팔 막대 끝에 날아와 앉아요 (횃대처럼)"
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "허수아비 발치에 앉아 그늘에서 쉬어요"
+      },
+      {
+       "w": "고스트 타입",
+       "a": "허수아비 뒤에서 나타났다 사라졌다 해요"
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "지푸라기에 불이 붙을까 봐 가까이 가지 않아요"
+      }
+     ],
+     "fit": "꽃밭·밭 가운데, 가을"
+    },
+    {
+     "id": "apple-crate",
+     "n": "사과 상자",
+     "k": "먹이",
+     "d": "나무 판자 상자 위로 빨간 사과가 수북해요. 사과마다 왼쪽 위에 하얀 빛 점을 찍었어요.",
+     "px": [
+      "..........................",
+      ".............k............",
+      "..........kkkgk...k.......",
+      ".........kaanrkkkkgk......",
+      ".....kkkkaarrrsaanrk......",
+      "....kaarrrrrrraarrrskkk...",
+      "...kaarrrrrrrsrrrrraarrk..",
+      "...krrrrarrssaarrraarrrsk.",
+      "...krrraarrraarrrsrrrrrsk.",
+      "...krssrrrrsrrrrrsrrrrssk.",
+      "..kkkssrrrssrrrrssrssssRk.",
+      ".kWWvvvvvvvvvvvvvvvvvvWWk.",
+      ".kWnwwwwwwwwwwwwwwwwwwnWk.",
+      ".kWWWWWWWWWWWWWWWWWWWWWWk.",
+      ".kWWvvvvvvvvvvvvvvvvvvWWk.",
+      ".kWWwwwwwwwwwwwwwwwwwwWWk.",
+      ".kWWWWWWWWWWWWWWWWWWWWWWk.",
+      ".kWWvvvvvvvvvvvvvvvvvvWWk.",
+      ".kWnwwwwwwwwwwwwwwwwwwnWk.",
+      ".kWWWWWWWWWWWWWWWWWWWWWWk.",
+      "..kkkkkkkkkkkkkkkkkkkkkk..",
+      "...zzzzzzzzzzzzzzzzzzzz..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "z": "#3c4a2c",
+      "a": "#ff9a8a",
+      "r": "#e04034",
+      "s": "#b02a28",
+      "R": "#7a1c20",
+      "n": "#5a3a20",
+      "g": "#5aa040",
+      "w": "#c89058",
+      "v": "#e8b47a",
+      "W": "#8a5a30"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬 (먹보)",
+       "a": "상자 앞에 와서 사과를 하나 집어 먹어요"
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "상자 위에 올라가 사과 사이에 앉아요"
+      },
+      {
+       "w": "풀 타입 (덩굴 기술)",
+       "a": "덩굴 채찍 기술로 사과를 하나 끌어와요"
+      }
+     ],
+     "fit": "열매나무 옆, 가을"
+    },
+    {
+     "id": "mushroom-cluster",
+     "n": "가을 버섯 무리",
+     "k": "쉼터",
+     "d": "흰 점박이 빨간 버섯 두 개와 작은 갈색 버섯 하나가 이끼 위에 모여 있어요.",
+     "px": [
+      "..........................",
+      "..........................",
+      "................kkkk......",
+      "..............kkaaRRkk....",
+      ".....kkkkkk..kaaaaRRRRk...",
+      "...kkaaaRRRkkRRRPRRRRRRk..",
+      "..kaaaaaRPRRRRRRRRRPRRRk..",
+      ".kRRRRPRRRRRRrrrrrrrrrrk..",
+      ".kRRRRRRRRRPRRkkkwwWkkk...",
+      ".krrrPrrrrrrrrkkkwwWk.....",
+      "..kkkkkwwWkkeeDDkwwWk.....",
+      "......kwwWkDDDDDDwwWk.....",
+      "......kwwWkddddddwwWk.....",
+      "......kwwWkkkwwWkwwWk.....",
+      "......kwwWk.kwwWkwwWk.....",
+      "...k..kwwWk.kwwWkwwWkk....",
+      "..kGkkGwwGkkGwwGkwGWkGk...",
+      "..kggggggggggggggggggggk..",
+      "..kggggggggggggggggggggk..",
+      "...kkkkkkkkkkkkkkkkkkkk..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#ff8a7a",
+      "R": "#e0443a",
+      "r": "#b82c2c",
+      "d": "#7a1e24",
+      "e": "#c8946a",
+      "D": "#8a5a3a",
+      "w": "#f4ead0",
+      "W": "#c8b898",
+      "P": "#fff8ec",
+      "g": "#5a8a3a",
+      "G": "#7cb050"
+     },
+     "acts": [
+      {
+       "w": "풀·독 타입",
+       "a": "버섯 옆에 앉아 포자를 맞으며 잠들어요 (자기)"
+      },
+      {
+       "w": "벌레 타입 작은 포켓몬",
+       "a": "버섯 갓 위에 올라가 앉아요"
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "큰 버섯 갓 아래 그늘에 숨어요"
+      }
+     ],
+     "fit": "그루터기·덤불 옆 그늘"
+    },
+    {
+     "id": "corn-sheaf",
+     "n": "옥수수 다발",
+     "k": "먹이",
+     "d": "말린 옥수숫대를 세워 빨간 끈으로 묶은 다발이에요. 가운데 노란 옥수수 두 자루가 껍질을 벌리고 있어요.",
+     "px": [
+      "........................",
+      "........................",
+      "...........k.k..........",
+      ".........kkhkhkk........",
+      ".......kkhkgkGkhkk......",
+      ".....kkhkGkgkGkgkhkk....",
+      "....khkgkyhgkGkyhGkhk...",
+      "....kGkkhYYgkGhYYkkgk...",
+      ".....kGkyYYgkGyYYkgk....",
+      ".....kGyYYYOkyYYYOgk....",
+      "......kYYYYOkYYYYOk.....",
+      "......kYYYOOkYYYOOk.....",
+      "......kYYYOOkYYYOOk.....",
+      ".......kOOOkGkOOOk......",
+      ".......kOOOGGgOOOk......",
+      "........kOgGGgGOk.......",
+      "........kGgGGgGgk.......",
+      ".........kGGGGgk........",
+      ".........kGGGGgk........",
+      "..........kgggk.........",
+      ".........kgGGGDk........",
+      ".........kgGGGDk........",
+      "........krrrrrrrk.......",
+      "........kRRRRRRRk.......",
+      ".........kgGGGDk........",
+      ".........kgGGGDk........",
+      ".........kgGGGDk........",
+      ".........kgGGGDk........",
+      ".........kgGGGDk........",
+      ".........kgGGGDk........",
+      "......zzzkgGGGDkzz......",
+      "........zzkkkkkz........"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "z": "#3c4a2c",
+      "g": "#a8b858",
+      "G": "#7a8a3a",
+      "D": "#55602a",
+      "h": "#e0d890",
+      "y": "#ffe070",
+      "Y": "#f0b830",
+      "O": "#b8801e",
+      "r": "#d04a34",
+      "R": "#8a2a20"
+     },
+     "acts": [
+      {
+       "w": "비행 타입 작은 새 포켓몬",
+       "a": "날아와 옥수수를 쪼아 먹어요"
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "다발 뒤에 숨어 꼬리만 내놓아요"
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "곁에서 불을 쬐듯 데워 팝콘을 튀겨요 (기술 쓰기)"
+      }
+     ],
+     "fit": "허수아비 옆, 밭"
+    },
+    {
+     "id": "chestnut-burr",
+     "n": "밤송이",
+     "k": "먹이",
+     "d": "가시가 사방으로 뻗은 초록 밤송이예요. 윗부분이 벌어져 반들반들한 밤톨이 보여요.",
+     "px": [
+      "........................",
+      "..........k..k..........",
+      "......k..kSkkSk..k......",
+      ".....kSk.kskksk.kSk.....",
+      "....k.kskkskkskksk.k....",
+      "...kSkkskkkkkkkkskkSk...",
+      "...ksk.kkaaaoookk.ksk...",
+      "..k.kskaaabbecoooksk.k..",
+      ".kSkkkaaabbecccoopkkkSk.",
+      "..ksskaaacecccdoopkssk..",
+      "...kkooooccccddopppkk...",
+      ".kkkkoooocdddddppppkkkk.",
+      "kSsskoooooddddpppppkssSk",
+      ".kkkkoooooooopppppqkkkk.",
+      "..ksskoooopppppppqkssk..",
+      ".kSkkkppppppppppqqkkkSk.",
+      "..k.kskpppppppqqqksk.k..",
+      "...ksk.kkpppqqqkk.ksk...",
+      "...kSkkskkkkkkkkskkSk...",
+      "....k..kzzzzzzzzk..k....",
+      ".....zzzzzzzzzzzzzz.....",
+      ".........zzzzzz........."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "z": "#3c4a2c",
+      "a": "#b8d070",
+      "o": "#8aa848",
+      "p": "#5e7a30",
+      "q": "#3e5424",
+      "s": "#c8d880",
+      "S": "#8aa050",
+      "b": "#c87a3a",
+      "c": "#8a4a22",
+      "d": "#5a2e18",
+      "e": "#f0c090"
+     },
+     "acts": [
+      {
+       "w": "풀·벌레 타입 작은 포켓몬",
+       "a": "가시를 피해 조심스럽게 밤톨만 꺼내 먹어요"
+      },
+      {
+       "w": "강철·바위 타입",
+       "a": "가시는 상관없다는 듯 밤송이 위에 앉아요"
+      },
+      {
+       "w": "작은 노말 타입",
+       "a": "가시에 콕 찔려 놀라 뒤로 펄쩍 물러나요"
+      }
+     ],
+     "fit": "열매나무 아래, 가을"
+    },
+    {
+     "id": "firewood-stack",
+     "n": "장작 더미",
+     "k": "쉼터",
+     "d": "통나무를 피라미드 모양으로 쌓은 장작 더미예요. 자른 면에 나이테를 그려 넣었어요.",
+     "px": [
+      ".........kkkk..kkkk.........",
+      "........kbbBBkkbbBBk........",
+      ".......kbbaABCbbaABCk.......",
+      ".......kBAAAACBAAAACk.......",
+      ".......kBAAcACBAAcACk.......",
+      ".......kBBAACCBBAACCk.......",
+      "......kkkCCCCkkCCCCkkk......",
+      ".....kbbBBkkbbBBkkbbBBk.....",
+      "....kbbaABCbbaABCbbaABCk....",
+      "....kBAAAACBAAAACBAAAACk....",
+      "....kBAAcACBAAcACBAAcACk....",
+      "....kBBAACCBBAACCBBAACCk....",
+      "...kkkCCCCkkCCCCkkCCCCkkk...",
+      "..kbbBBkkbbBBkkbbBBkkbbBBk..",
+      ".kbbaABCbbaABCbbaABCbbaABCk.",
+      ".kBAAAACBAAAACBAAAACBAAAACk.",
+      ".kBAAcACBAAcACBAAcACBAAcACk.",
+      ".kBBAACCBBAACCBBAACCBBAACCk.",
+      "..kCCCCkkCCCCkkCCCCkkCCCCk..",
+      "...kkkk..kkkkzzkkkk..kkkk...",
+      ".zzzzzzzzzzzzzzzzzzzzzzzzzz.",
+      ".....zzzzzzzzzzzzzzzzzz....."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "z": "#3c4a2c",
+      "a": "#f4d29a",
+      "A": "#d8a868",
+      "B": "#a8703a",
+      "b": "#8a5a2e",
+      "C": "#5a3a20",
+      "c": "#a8703a"
+     },
+     "acts": [
+      {
+       "w": "불꽃 타입",
+       "a": "장작 옆에 앉아 불을 붙이고 쬐어요 (모닥불처럼)"
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "장작 사이 틈에 쏙 들어가 숨어요"
+      },
+      {
+       "w": "격투 타입",
+       "a": "장작 앞에서 기술을 써서 통나무를 쪼개요"
+      },
+      {
+       "w": "물·얼음 타입",
+       "a": "불 냄새가 나서 피해 가요"
+      }
+     ],
+     "fit": "모닥불 옆"
+    }
+   ]
+  }
+ ]
+}
