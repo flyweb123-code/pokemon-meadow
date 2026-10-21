@@ -130,8 +130,9 @@
   const sc = (L, k, from = 1) => L.map((x, i) => i < from ? x : Math.round(x * k * 100) / 100);
   const scG = (L, k) => L.map((x, i) => i ? Math.max(5, Math.round(x * k / 5) * 5) : x);   // v8.15 경완: 골드는 5G 단위로
   const g5 = (x, k) => Math.max(5, Math.round(x * k / 5) * 5);
+  const gMQ = (x, k) => { const v = x * k; return v >= 1000 ? Math.round(v / 100) * 100 : Math.max(10, Math.round(v / 10) * 10); };   // v3.35 경완: 미션 골드는 10G 단위, 1,000G(4자리)부터는 100G 단위
   function allGold(b, k) { const o = { DUP_G: scG(b.DUP_G, k), NEW_EGG_G: scG(b.NEW_EGG_G, k), NEW_G: g5(b.NEW_G, k), RUN_G: Math.max(1, Math.round(b.RUN_G * k)), MG_PTS: Math.max(1, Math.round((b.MG_PTS || MQ_DEF.MG_PTS) / k)) };
-    for (const q of Object.keys(MQ_N)) o[q] = (Array.isArray(b[q]) ? b[q] : MQ_DEF[q]).map(x => g5(x, k)); return o; }
+    for (const q of Object.keys(MQ_N)) o[q] = (Array.isArray(b[q]) ? b[q] : MQ_DEF[q]).map(x => gMQ(x, k)); return o; }
   function propose(model, s) {
     const J = judge(s), b = model.b, out = [], has = id => J.find(j => j.id === id)?.lv;
     const add = (id, t, why, patch) => out.push({ id, t, why, patch });
