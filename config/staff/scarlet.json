@@ -655,63 +655,6 @@
      "fit": "열매나무 옆, 가을"
     },
     {
-     "id": "leaf-pile",
-     "n": "낙엽 더미",
-     "k": "놀이",
-     "d": "빨강·주황·노랑 낙엽을 소복이 쓸어 모은 더미예요. 위에 막 떨어진 잎이 몇 장 얹혀 있어요.",
-     "px": [
-      "............................",
-      "............................",
-      "............................",
-      "............................",
-      ".............k......k.......",
-      "......k.....kok....kyk......",
-      ".....krk.kkkkkkkkkk.k.......",
-      "......kkkaaaaabbrbRkkk......",
-      "....kkaRaRaaabbobbbbbRkk....",
-      "...kaoaaaaRaRobbOrbbyObckk..",
-      "..karraRaabbbbbbbbbrbboycRk.",
-      ".kbbObbbybbbbbbbbObbbccccck.",
-      ".kbbbbObbbbbbObbbybbcccccck.",
-      ".kbbbobObbbybbbobbcRrccrRck.",
-      ".kbOObbbbbbrbObccccyccccydk.",
-      "..kbbrrObbbccccyyccccccdok..",
-      "...kcyOcrccccrrcccocyoydk...",
-      "....kkcccccccccyccddRdkk...."
-     ],
-     "pal": {
-      "k": "#20202c",
-      "a": "#e89a4a",
-      "b": "#c86c34",
-      "c": "#9a4a28",
-      "d": "#6a3020",
-      "r": "#d8402c",
-      "R": "#a02a24",
-      "y": "#f4c840",
-      "o": "#f08a28",
-      "O": "#b85a1c"
-     },
-     "acts": [
-      {
-       "w": "작은 포켓몬",
-       "a": "더미 속으로 뛰어들어 숨고, 잎 사이로 눈만 내놓아요"
-      },
-      {
-       "w": "풀·벌레 타입",
-       "a": "낙엽 위에 웅크리고 자요"
-      },
-      {
-       "w": "비행 타입 / 바람 기술을 쓰는 포켓몬",
-       "a": "날갯짓(기술 쓰기)으로 낙엽을 흩날려요"
-      },
-      {
-       "w": "불꽃 타입",
-       "a": "가까이 가지 않고 돌아가요"
-      }
-     ],
-     "fit": "열매나무·덤불 아래, 가을"
-    },
-    {
      "id": "acorn-basket",
      "n": "도토리 바구니",
      "k": "먹이",
@@ -1153,6 +1096,66 @@
   }
  ],
  "trash": [
+  {
+   "id": "leaf-pile",
+   "n": "낙엽 더미",
+   "k": "놀이",
+   "d": "빨강·주황·노랑 낙엽을 소복이 쓸어 모은 더미예요. 위에 막 떨어진 잎이 몇 장 얹혀 있어요.",
+   "px": [
+    "............................",
+    "............................",
+    "............................",
+    "............................",
+    ".............k......k.......",
+    "......k.....kok....kyk......",
+    ".....krk.kkkkkkkkkk.k.......",
+    "......kkkaaaaabbrbRkkk......",
+    "....kkaRaRaaabbobbbbbRkk....",
+    "...kaoaaaaRaRobbOrbbyObckk..",
+    "..karraRaabbbbbbbbbrbboycRk.",
+    ".kbbObbbybbbbbbbbObbbccccck.",
+    ".kbbbbObbbbbbObbbybbcccccck.",
+    ".kbbbobObbbybbbobbcRrccrRck.",
+    ".kbOObbbbbbrbObccccyccccydk.",
+    "..kbbrrObbbccccyyccccccdok..",
+    "...kcyOcrccccrrcccocyoydk...",
+    "....kkcccccccccyccddRdkk...."
+   ],
+   "pal": {
+    "k": "#20202c",
+    "a": "#e89a4a",
+    "b": "#c86c34",
+    "c": "#9a4a28",
+    "d": "#6a3020",
+    "r": "#d8402c",
+    "R": "#a02a24",
+    "y": "#f4c840",
+    "o": "#f08a28",
+    "O": "#b85a1c"
+   },
+   "acts": [
+    {
+     "w": "작은 포켓몬",
+     "a": "더미 속으로 뛰어들어 숨고, 잎 사이로 눈만 내놓아요"
+    },
+    {
+     "w": "풀·벌레 타입",
+     "a": "낙엽 위에 웅크리고 자요"
+    },
+    {
+     "w": "비행 타입 / 바람 기술을 쓰는 포켓몬",
+     "a": "날갯짓(기술 쓰기)으로 낙엽을 흩날려요"
+    },
+    {
+     "w": "불꽃 타입",
+     "a": "가까이 가지 않고 돌아가요"
+    }
+   ],
+   "fit": "열매나무·덤불 아래, 가을",
+   "del": 1792624369852,
+   "dayAt": 1792618421339,
+   "theme": "가을 수확 축제"
+  },
   {
    "id": "hay-bale",
    "n": "건초 더미",
