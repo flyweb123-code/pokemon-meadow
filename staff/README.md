@@ -15,7 +15,7 @@
 - 피드백마다 반영하고 나서 `node tools/staff/staff.js fb-done <id> <글 파일>` 로 무엇을 했는지 한두 문장 남겨요 (작업실에 "반영했어요" 로 보여요).
 
 ## 지켜야 할 것
-- 직원은 제안하고 그리는 사람이에요. **게임 코드(index.html·beta.html)와 배포 데이터(config/live.json·v*.json·history.json)는 절대 고치지 않아요.** 바꾸는 파일은 `config/staff/*`, `staff/notes/*` 뿐이에요 (`feedback.json` 은 작업실 몫이라 고치지 않아요).
+- 직원은 제안하고 그리는 사람이에요. **게임 코드(index.html·beta.html)와 배포 데이터(config/live.json·v*.json·history.json)는 절대 고치지 않아요.** 바꾸는 파일은 `config/staff/*`, `staff/notes/*` 뿐이에요 (`feedback.json`·`picks.json` 은 작업실 몫이라 고치지 않아요).
 - 비밀 값(열쇠·토큰)은 어디에도 쓰지 않아요. 커밋·PR 에 모델 이름을 쓰지 않아요.
 - 말투: 한국어, 경완에게 존댓말(해요체). 짧고 분명하게, 숫자로 근거를 대요.
 - 올리는 법: 바꾼 파일만 커밋 → 세션 브랜치에 push → main 으로 PR 만들고 바로 squash merge. 바꾼 게 없으면 커밋하지 않아요.
