@@ -537,6 +537,7 @@ ol.log li.big .txt{color:#c03838}
 .mon.asleep.snotty .snot{display:none}   /* v4.93 경완: 콧방울 뺌 */
 .mon.asleep .act.doze .snot{display:none}
 @keyframes hop{0%,100%{transform:translateX(-50%) translateY(0)}40%{transform:translateX(-50%) translateY(-22px)}}
+.mon:has(.act.hop)>.shadow{animation:shHop .45s ease-out}.mon:has(.act.phop)>.shadow{animation:shPhop .3s ease-out}@keyframes shHop{0%,100%{scale:1;opacity:1}40%{scale:.62;opacity:.55}}@keyframes shPhop{0%,100%{scale:1}45%{scale:.86}}   /* v8.13 경완: 깡충 뛰면 그림자가 원근에 맞춰 작아졌다 돌아온다 */
 @keyframes shake{0%,100%{transform:translateX(-50%)}25%{transform:translateX(calc(-50% - 4px))}75%{transform:translateX(calc(-50% + 4px))}}
 @keyframes burrow{to{transform:translateX(-50%) translateY(60%) scaleY(.2);opacity:0}}
 @keyframes emerge{from{transform:translateX(-50%) translateY(60%) scaleY(.2);opacity:0}}
@@ -2506,6 +2507,9 @@ function padAtlas(k) {
         for (const n of names) A[n][0] = ny[n]; P.G = G; if (vh) P.vh = vh; delete atlasDims[k];
         // 크게 확대되는 포켓몬은 도트가 굵어 보이므로 Scale2x 로 두 배 고운 도트로 다시 찍는다 (좌표는 그대로, 그림만 고해상도 → 화면 도트 크기 절반)
         let cv = c; const sc = scale0(k); if (sc >= 3.5) cv = scale2x(cv);   // v3.07: 2.5배부터 하니 픽셀 느낌이 사라진다(경완) → 4배 이상만
+        if (A.Hop) { const h = A.Hop, B = [];   // v8.13 경완: 깡충 프레임마다 발이 땅에서 얼마나 떴는지 (그림자를 원근에 맞춰 줄였다 키운다)
+          for (let f = 0; f < h[3]; f++) { const dd = x.getImageData(f * (h[1] + G), ny.Hop, h[1], h[2]).data; let bb = -1; for (let yy = h[2] - 1; yy >= 0 && bb < 0; yy--) for (let xx = 0; xx < h[1]; xx++) if (dd[(yy * h[1] + xx) * 4 + 3] > 40) { bb = yy; break; } B.push(bb); }
+          const g0 = Math.max(...B); P.hopL = B.map(v => v < 0 ? 0 : g0 - v); }
         P.i = cv.toDataURL('image/png');
       } catch (e) { P.G = 0; }
       res();
@@ -4567,6 +4571,8 @@ function drawSprite(m, dt) {
   st.width = a[1] * s + 'px'; st.height = a[2] * s + 'px';
   st.left = (-a[4] * s) + 'px'; st.top = (-(a[5] + P.fy) * s) + 'px';
   st.backgroundPosition = `${-f * (a[1] + (P.G || 0)) * s}px ${-a[0] * s}px`; if (m.grimy) st.setProperty('--bp', st.backgroundPosition);
+  if (m.shEl) { const L = name === 'Hop' && P.hopL, k = L ? 1 - .42 * (L[f] || 0) / Math.max(4, ...L) : 1;   // v8.13 경완: 깡충 뛰어 높이 뜰수록 그림자가 작고 옅게
+    if (m.shK !== k) { m.shK = k; m.shEl.style.scale = k === 1 ? '' : k.toFixed(3); m.shEl.style.opacity = k === 1 ? '' : (.45 + .55 * k).toFixed(2); } }
   if (name === 'Sleep') { m.snot.style.left = (-a[4] * s + a[1] * s * .18) + 'px'; m.snot.style.bottom = (a[2] * s * .35) + 'px'; }
 }
 
@@ -4659,7 +4665,7 @@ function render(m, now) {
   const bob = flyer && !grounded && !m.szb ? Math.sin(now / 260 + m.uid) * 4 : 0;   /* v4.61 경완: 크기 조절 모드에선 둥둥 안 뜬다 */
   const pv = pondVal(m.x, m.y), wet = !flyer && (m.wet ? pv < 1.0 : pv < .94);   /* 물가 경계에서 젖음/마름이 번갈아 바뀌며 위아래로 튀지 않게 여유를 둔다 */
   if (wet !== m.wet) { m.wet = wet; m.el.classList.toggle('wet', wet); }
-  if (m.land && (m.sp !== 129 || pondVal(m.x, m.y) < .85)) { m.land = false; if (!m.held) { splashAt(m); log(`${J(m,'이/가')} 겨우 호수로 돌아와 첨벙! 한결 편안해 보인다.`, [m]); } }
+  if (m.land && (!isFish(m.sp) || pondVal(m.x, m.y) < .85)) { m.land = false; if (!m.held) { splashAt(m); log(`${J(m,'이/가')} 겨우 호수로 돌아와 첨벙! 한결 편안해 보인다.`, [m]); } }
   { const fl = !!m.land && !m.held; if (fl !== !!m.flop) { m.flop = fl; m.el.classList.toggle('flop', fl); } }
   { const v = `translate(${m.x.toFixed(1)}px,${m.y.toFixed(1)}px)`; if (m.rTf !== v) { m.rTf = v; m.el.style.transform = v; } }   /* v6.07 발열: 바뀐 값만 다시 쓴다 */
   { const lit = skyDark > .25 && m.el.classList.contains('rkS') && !m.hidden; if (lit !== !!m.lit) { m.lit = lit; m.litT = performance.now(); m.el.classList.toggle('selflit', lit && !m.bright);
@@ -5743,10 +5749,12 @@ function endDrag(e) {
   setState(m, 'idle', rnd(4, 8)); dustAt(m); userAct(m);
   log(pick([`${J(m,'이/가')} 새 자리에서 두리번거린다.`, `${J(m,'이/가')} 내려놓인 자리를 킁킁 살핀다.`, `${J(m,'이/가')} 옮겨진 자리가 마음에 드는 눈치다.`]), [m]);
 }
+// v8.13 경완: 물고기 포켓몬 = 물 타입 + 물고기 몸 모양 + 물고기 알 그룹(수중2) (빈티나는 알 그룹이 달라 따로)
+const isFish = sp => { const d = SPECIES[sp]; return !!d && d.t.includes(11) && d.sh === 3 && (d.eg?.includes(12) || sp === 349); };
 // keep each kind of mover somewhere it can stand
 function settle(m) {
   const mv = T(m).mv;
-  if (mv === 'swim' && m.sp === 129 && pondVal(m.x, m.y) > 1) { m.land = true; return; }   // 잉어킹만 육지에 내려놓을 수 있다 (호수로 힘겹게 돌아간다)
+  if (mv === 'swim' && isFish(m.sp) && pondVal(m.x, m.y) > 1) { m.land = true; return; }   // 물고기 포켓몬(잉어킹 등)은 육지에 내려놓을 수 있다 (호수로 힘겹게 돌아간다). v8.13 경완: 잉어킹만 → 물고기 모두
   if (mv === 'swim' && pondVal(m.x, m.y) > .9) { projectOut(m, .8); splashAt(m); }
   else if (mv === 'walk' && pondVal(m.x, m.y) < 1.08) { const q = shorePoint(m); m.x = q.x; m.y = q.y; }
 }
@@ -5844,7 +5852,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.12';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.13';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -10624,7 +10632,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   notiSoon = function () {};   // 작업실에선 '새 소식' 창을 띄우지 않는다
   if (GAL) { save = function () {}; document.documentElement.classList.add('st-gal'); }
   const api = window.__studio = {
-    BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, get MON_ROT() { return MON_ROT; }, get MON_FLY() { return MON_FLY; }, get MON_SH() { return MON_SH; }, ITEMS, TRACKS, ITEM_ART, get SHOP() { return SHOP; }, applyShop, get ODDS() { return ODDS; }, get BAG_STEP() { return BAG_STEP; }, get SHINY_RATE() { return SHINY_RATE; }, TH_SP0, get TH_SP_OV() { return TH_SP_OV; }, setThSp: applyThSp, TH_ALL, TH_BASE, get TH_OV() { return TH_OV; }, setThOv(o) { applyThOv(o); applyThSp(TH_SP_OV); }, setMonSh(o) { MON_SH = { ...(o || {}) }; for (const m of S.mons) shadowFit(m); }, liftBase, shGeo: sp => shGeo(sp, sp), THEMES, themeW, setMonPose(r, f, fa, oa) { MON_ROT = { ...(r || {}) }; MON_FLY = { ...(f || {}) }; if (fa !== undefined) MON_FLYA = JSON.parse(JSON.stringify(fa || {})); if (oa !== undefined) MON_OFFA = JSON.parse(JSON.stringify(oa || {})); }, get MON_FLYA() { return MON_FLYA; }, get MON_OFFA() { return MON_OFFA; }, szAnim(uid, n) { const m = S.mons.find(o => o.uid === uid); if (m) { m.szAn = n || null; m.frameKey = null; } }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, get SP_OFF() { return [...SP_OFF]; }, get TIER_KT() { return TIER_KT; }, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
+    BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, get MON_ROT() { return MON_ROT; }, get MON_FLY() { return MON_FLY; }, get MON_SH() { return MON_SH; }, ITEMS, TRACKS, ITEM_ART, get SHOP() { return SHOP; }, applyShop, get ODDS() { return ODDS; }, get BAG_STEP() { return BAG_STEP; }, get SHINY_RATE() { return SHINY_RATE; }, TH_SP0, get TH_SP_OV() { return TH_SP_OV; }, setThSp: applyThSp, TH_ALL, TH_BASE, get TH_OV() { return TH_OV; }, setThOv(o) { applyThOv(o); applyThSp(TH_SP_OV); }, setMonSh(o) { MON_SH = { ...(o || {}) }; for (const m of S.mons) shadowFit(m); }, liftBase, shGeo: (sp, uid) => { const m = uid != null ? S.mons.find(o => o.uid === uid) : null; return m ? shGeo(m.sk || m.form, m.form, m.w) : shGeo(sp, sp); }, monSk: uid => S.mons.find(o => o.uid === uid)?.sk,   /* v8.13 경완(레디바): 작업실 동작별 떠 있기 창도 필드와 같은 그림(암컷 모습 등)·그림자로 */ THEMES, themeW, setMonPose(r, f, fa, oa) { MON_ROT = { ...(r || {}) }; MON_FLY = { ...(f || {}) }; if (fa !== undefined) MON_FLYA = JSON.parse(JSON.stringify(fa || {})); if (oa !== undefined) MON_OFFA = JSON.parse(JSON.stringify(oa || {})); }, get MON_FLYA() { return MON_FLYA; }, get MON_OFFA() { return MON_OFFA; }, szAnim(uid, n) { const m = S.mons.find(o => o.uid === uid); if (m) { m.szAn = n || null; m.frameKey = null; } }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, get SP_OFF() { return [...SP_OFF]; }, get TIER_KT() { return TIER_KT; }, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
     ICO: { berry: ICO_BERRY, brush: ICO_BRUSH, hand: ICO_HAND, pen: PEN, egg: EGG_SVG },   // v3.66: 작업실이 게임 아이콘을 그대로 쓴다
     get K() { return { PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, PET_FR, WASH_FR1: WASH_FR, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]), HATCH_KM: [0, ...GRADE.slice(1).map(G => G.km)] }; },
     get cfg() { return CFG; }, get SPOTS() { return SPOTS; },
