@@ -6,68 +6,6 @@
    "note": "오늘은 풀밭에 작은 바닷가를 옮겨 왔어요! 파라솔·튜브·비치볼처럼 물놀이 장난감은 빨강·파랑·노랑으로 쨍하게, 모래성·유목·소라는 모래색 3~4단계 명암으로 차분하게 나눠서 둘이 섞여 있어도 하나하나 또렷하게 읽혀요. 물 타입은 헤엄치고 물대포를 쏘고, 땅 타입은 모래를 파고, 불꽃 타입은 물을 피하는 식으로 반응도 바닷가에 맞췄어요.",
    "items": [
     {
-     "id": "sandcastle",
-     "n": "모래성",
-     "k": "놀이",
-     "d": "탑 셋에 성문까지 있는 커다란 모래성이에요. 모래 알갱이를 점점이 찍고, 오른쪽 벽면을 진하게 칠해 입체감을 냈어요. 꼭대기엔 작은 빨간 깃발이 꽂혀 있어요.",
-     "px": [
-      "..............knfffk..........",
-      "..............knfffk..........",
-      "...........kk.knkkk...........",
-      "..........kssksskssk..........",
-      "..........kssksskssk..........",
-      "..........ksSsSSSTTk..........",
-      "....kkk.kkksssSSSTTkkk.kkk....",
-      "...kssSkssSsssSSSTTssSkssSk...",
-      "...kssSkssSsssddSTTssSkssSk...",
-      "...kSssSSTTsssddSTTsssSSTTk...",
-      "...ksssSSTTssSSSSTTsssSSTTk...",
-      "...ksssdSTTSssSSSTTsssdSTTk...",
-      "...ksssdSTTsssSSSTTsSsdSTTk...",
-      "..kksssTSTTsssSSSTTsssSSTTkk..",
-      ".ksssSssSTssssssTTssssssTTssk.",
-      ".kssssssSTssssssSTssssssTTssk.",
-      ".ksssssssssSTSSSSSSSSSTTTTTTk.",
-      ".kssssssssSSSSSSSSSSSTTTTTTTk.",
-      ".kssssssSssSSSddSSSTSSTTTTTTk.",
-      ".kssssSssssSSddDDTSSSSTTTTTTk.",
-      ".kssSssssssSSddDDSSSSSTTTTTTk.",
-      ".kSssssssssSSddDDSSSSSTTTTTTk.",
-      ".ksssssssssTSddDDSSSSSTTTTTTk.",
-      ".ksssssssSsSSddDDSSSTSTTTTTTk.",
-      ".ksssssSsssSSddDDSTSSSTTTTTTk.",
-      ".ksssSsssssSSddDDSSSSSTTTTTTk.",
-      "..zzzzzzzzzzzzzzzzzzzzzzzzzz..",
-      "..........zzzzzzzzzz.........."
-     ],
-     "pal": {
-      "k": "#20202c",
-      "s": "#f6e2a8",
-      "S": "#dcbe7c",
-      "T": "#b8965a",
-      "d": "#6a5034",
-      "D": "#4a3620",
-      "n": "#8a6a3a",
-      "f": "#e8483c",
-      "z": "#c9b27a"
-     },
-     "acts": [
-      {
-       "w": "땅 타입",
-       "a": "모래성 옆에 앉아 앞발로 모래를 토닥토닥 쌓아 올려요"
-      },
-      {
-       "w": "물 타입",
-       "a": "기술(물대포)을 써서 모래성을 무너뜨리고 신나서 뛰어요"
-      },
-      {
-       "w": "작은 포켓몬",
-       "a": "성문 안으로 쏙 들어가 숨어요"
-      }
-     ],
-     "fit": "해변, 모래 양동이 옆"
-    },
-    {
      "id": "swim-ring",
      "n": "수영 튜브",
      "k": "놀이",
