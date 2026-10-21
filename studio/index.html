@@ -201,7 +201,10 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 .dock .db{overflow:auto;padding:0 10px 14px;display:grid;gap:12px;align-content:start}
 .dock .sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px}
 .dock .it{position:relative;display:grid;justify-items:center;align-content:end;gap:3px;padding:8px 4px 6px;background:var(--deep);border:1px solid var(--chip);border-radius:4px;font-size:11.5px;color:var(--soft);min-height:84px;touch-action:none;user-select:none;-webkit-user-select:none}
-.dock .it.dr{cursor:grab}.dock .it.sc-dk{position:relative}.dock .it.sc-dk.pend{border-style:dashed;border-color:var(--acc)}.dock .sg.main.drop{outline:2px dashed var(--acc);outline-offset:3px;border-radius:6px}.dock .dh .dsv{margin-left:auto;padding:3px 12px;font-size:12px}.dock .dh .dsv+.dt{margin-left:6px}.dock .dh .dsv[hidden],.dock.fold .dh .dsv{display:none}.dock .sc-x{position:absolute;left:2px;top:2px;min-width:18px;height:18px;padding:0 4px;border:0;border-radius:4px;background:var(--chip);color:var(--mute,#9aa0ad);font-size:12px;line-height:18px;cursor:pointer;opacity:.75}.dock .sc-x:hover{opacity:1;color:var(--fg)}.dock .sc-x.arm{background:#e5484d;color:#fff;opacity:1}.nav a.scnew .lb::after{content:'';display:inline-block;width:8px;height:8px;margin-left:6px;vertical-align:middle;background:#e5484d;box-shadow:0 0 0 1px #8a1a1d}.dock .it.dr:hover{border-color:var(--acc)}.dock .it[data-ik],.dock .it[data-one]{cursor:pointer}.dock .it[data-ik]:hover,.dock .it[data-one]:hover{border-color:var(--acc);background:var(--chip);color:var(--fg)}
+.dock .it.dr{cursor:grab}.dock .it.sc-dk{position:relative}.dock .it.sc-dk.pend{border-style:dashed;border-color:var(--acc)}.dock .sg.main.drop{outline:2px dashed var(--acc);outline-offset:3px;border-radius:6px}.dock .dh .dsv{margin-left:auto;padding:3px 12px;font-size:12px}.dock .dh .dsv+.dt{margin-left:6px}.dock .dh .dsv[hidden],.dock.fold .dh .dsv{display:none}.dock .sc-x{position:absolute;left:2px;top:2px;min-width:18px;height:18px;padding:0 4px;border:0;border-radius:4px;background:var(--chip);color:var(--mute,#9aa0ad);font-size:12px;line-height:18px;cursor:pointer;opacity:.75}.dock .sc-x:hover{opacity:1;color:var(--fg)}.dock .sc-x.arm{background:#e5484d;color:#fff;opacity:1}.nav a.scnew .lb::after{content:'';display:inline-block;width:8px;height:8px;margin-left:6px;vertical-align:middle;background:#e5484d;box-shadow:0 0 0 1px #8a1a1d}.dock .it.dr:hover{border-color:var(--acc)}
+/* v3.38 경완: 소품 카드에 마우스를 올리면 오른쪽 위 + → 누르면 맵 가운데에 추가 */
+.it-add{position:absolute;right:2px;top:2px;z-index:2;width:20px;height:20px;padding:0;border:0;border-radius:4px;background:var(--acc);color:#fff;font-size:15px;font-weight:700;line-height:20px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .12s}
+.dock .it.dr:hover .it-add,.it-add:focus-visible{opacity:1;pointer-events:auto}@media (hover:none){.it-add{display:none}}.dock .it[data-ik],.dock .it[data-one]{cursor:pointer}.dock .it[data-ik]:hover,.dock .it[data-one]:hover{border-color:var(--acc);background:var(--chip);color:var(--fg)}
 .dock .it img{height:46px;width:auto;max-width:76px;object-fit:contain;image-rendering:pixelated;pointer-events:none}
 .dock .it .fl{width:32px;height:44px;background-size:600% 100%;background-position:0 0;image-rendering:pixelated}
 .dock .it .ph{font-size:22px;line-height:1;opacity:.7}
@@ -547,7 +550,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.37';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.38';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -1191,19 +1194,20 @@ function renderDockMap() {
 function renderDockAll() {
   if (!A?.cat) { $('#dockB').innerHTML = '<div class="small mute">게임을 새 버전(v3.61)으로 올리면 여기서 소품을 끌어다 놓을 수 있어요.</div>'; return; }
   const C = A.cat();
-  const SC = C.sc || [], scIt = ([k, n, src, c, id], pd) => `<div class="it dr sc-dk${pd ? ' pend' : ''}" data-k="${esc(k)}" title="${esc(n)}${pd ? ' · 저장 전' : ' · 맵에 ' + c + '개'}">${c ? `<span class="c">${c}</span>` : ''}${icon(src)}${esc(n)}<button class="sc-x" data-scdel="${esc(id)}" aria-label="${esc(n)} 소품 목록에서 지우기" title="소품 목록에서 지우기 (맵에 놓인 것도 사라져요)">×</button></div>`;
+  const SC = C.sc || [], scIt = ([k, n, src, c, id], pd) => `<div class="it dr sc-dk${pd ? ' pend' : ''}" data-k="${esc(k)}" title="${esc(n)}${pd ? ' · 저장 전' : ' · 맵에 ' + c + '개'}">${c ? `<span class="c">${c}</span>` : ''}${icon(src)}${esc(n)}<button class="it-add" data-addk="${esc(k)}" aria-label="${esc(n)} 맵에 추가" title="맵 가운데에 추가">+</button><button class="sc-x" data-scdel="${esc(id)}" aria-label="${esc(n)} 소품 목록에서 지우기" title="소품 목록에서 지우기 (맵에 놓인 것도 사라져요)">×</button></div>`;
   $('#dockSave').hidden = !SC.some(r => SC_PEND.has(r[4]) && !r[5]);
-  $('#dockB').innerHTML = `<div class="sg main">${C.add.map(([k, n, src, c]) => `<div class="it dr" data-k="${k}" title="${esc(n)} · 맵에 ${c}개">${c ? `<span class="c">${c}</span>` : ''}${k === 'mush' ? '<span class="ph">🍄</span>' : icon(src)}${esc(n)}</div>`).join('')}${C.one.map(([k, n, src, fr]) => `<div class="it" data-one="${k}" title="${esc(n)} · 맵에 1개 (하나만 놓을 수 있어요)"><span class="c">1</span>${icon(src, fr)}${esc(n)}</div>`).join('')}${SC.filter(r => r[5] || SC_PEND.has(r[4])).map(r => scIt(r, !r[5])).join('')}</div>
+  $('#dockB').innerHTML = `<div class="sg main">${C.add.map(([k, n, src, c]) => `<div class="it dr" data-k="${k}" title="${esc(n)} · 맵에 ${c}개">${c ? `<span class="c">${c}</span>` : ''}${k === 'mush' ? '<span class="ph">🍄</span>' : icon(src)}${esc(n)}<button class="it-add" data-addk="${esc(k)}" aria-label="${esc(n)} 맵에 추가" title="맵 가운데에 추가">+</button></div>`).join('')}${C.one.map(([k, n, src, fr]) => `<div class="it" data-one="${k}" title="${esc(n)} · 맵에 1개 (하나만 놓을 수 있어요)"><span class="c">1</span>${icon(src, fr)}${esc(n)}</div>`).join('')}${SC.filter(r => r[5] || SC_PEND.has(r[4])).map(r => scIt(r, !r[5])).join('')}</div>
     ${(C.hid || []).length ? `<h4>지운 소품</h4><div class="chips">${C.hid.map(k => `<button class="chip" data-rs="${k}">${esc((A.ADD.find(r => r[0] === k) || [k, k])[1])} 되살리기</button>`).join('')}</div>` : ''}
-    ${(C.mine || []).length ? `<h4>내 소품</h4><div class="sg">${C.mine.map(([k, n, src, c]) => `<div class="it dr mine" data-k="${k}" title="${esc(n)} · 맵에 ${c}개">${c ? `<span class="c">${c}</span>` : ''}${icon(src)}${esc(n)}</div>`).join('')}</div>` : ''}
+    ${(C.mine || []).length ? `<h4>내 소품</h4><div class="sg">${C.mine.map(([k, n, src, c]) => `<div class="it dr mine" data-k="${k}" title="${esc(n)} · 맵에 ${c}개">${c ? `<span class="c">${c}</span>` : ''}${icon(src)}${esc(n)}<button class="it-add" data-addk="${esc(k)}" aria-label="${esc(n)} 맵에 추가" title="맵 가운데에 추가">+</button></div>`).join('')}</div>` : ''}
     ${scDock()}`;
 }
 // v3.26 경완: 스칼렛의 작업물에서 '소품 리스트'에 넣은 소품 — 끌어다 맵에 놓고, × 로 목록에서 지운다 (게임 v8.22 LAYOUT.scArt)
 // v3.28 경완: 이름은 '추가 소품'. 위 전체 소품 칸으로 끌어 놓으면 '저장 전'이 되고, 소품 창 위 저장을 누르면 전체 소품으로 들어간다 (scArt[id].on)
 const SC_PEND = new Set();
 function scDock() { const L = (A?.cat?.().sc || []).filter(r => !r[5] && !SC_PEND.has(r[4])); if (!L.length) return '';
-  return `<h4>추가 소품 <span class="num mute">${L.length}</span></h4><div class="sg">${L.map(([k, n, src, c, id]) => `<div class="it dr sc-dk" data-k="${esc(k)}" title="${esc(n)} · 맵에 ${c}개 · 위 전체 소품 칸으로 끌어 놓고 저장하면 전체 소품이 돼요">${c ? `<span class="c">${c}</span>` : ''}${icon(src)}${esc(n)}<button class="sc-x" data-scdel="${esc(id)}" aria-label="${esc(n)} 소품 목록에서 지우기" title="소품 목록에서 지우기 (맵에 놓인 것도 사라져요)">×</button></div>`).join('')}</div>`; }
+  return `<h4>추가 소품 <span class="num mute">${L.length}</span></h4><div class="sg">${L.map(([k, n, src, c, id]) => `<div class="it dr sc-dk" data-k="${esc(k)}" title="${esc(n)} · 맵에 ${c}개 · 위 전체 소품 칸으로 끌어 놓고 저장하면 전체 소품이 돼요">${c ? `<span class="c">${c}</span>` : ''}${icon(src)}${esc(n)}<button class="it-add" data-addk="${esc(k)}" aria-label="${esc(n)} 맵에 추가" title="맵 가운데에 추가">+</button><button class="sc-x" data-scdel="${esc(id)}" aria-label="${esc(n)} 소품 목록에서 지우기" title="소품 목록에서 지우기 (맵에 놓인 것도 사라져요)">×</button></div>`).join('')}</div>`; }
 $('#dockSave').onclick = () => { const L = [...SC_PEND]; if (!L.length || !A?.scOn) return; A.scOn(L); SC_PEND.clear(); layAutoSave(); renderDock(); toast(`추가 소품 ${L.length}개를 전체 소품으로 저장했어요 · 배포하면 게임에도 들어가요`); };   // v3.36 경완: 배치 저장까지 바로
+$('#dockB').addEventListener('click', e => { const a = e.target.closest('[data-addk]'); if (!a || !A) return; e.stopPropagation(); const k = a.dataset.addk; if (!editing) setEdit(true); A.add(k); renderDock(); const s = A.selInfo?.(); dockMark(s); if (s) openInst(s); toast(`${a.closest('.it')?.title.split(' · ')[0] || '소품'}을(를) 맵 가운데에 놓았어요. 끌어서 옮겨요`); }, true);   // v3.38
 $('#dockB').addEventListener('click', e => { const b = e.target.closest('[data-scdel]'); if (!b) return; e.stopPropagation(); const id = b.dataset.scdel, n = A?.cat?.().sc.find(r => r[4] === id)?.[1] || '소품';
   if (b.classList.contains('arm')) { SC_PEND.delete(id); A.scUndef(id); toast(`${n}을(를) 소품 목록에서 지웠어요 · 저장해야 게임에 반영돼요`); return; }
   $$('.sc-x.arm').forEach(x => { x.classList.remove('arm'); x.textContent = '×'; }); b.classList.add('arm'); b.textContent = '지우기'; setTimeout(() => { if (b.isConnected) { b.classList.remove('arm'); b.textContent = '×'; } }, 3000); });
@@ -1217,7 +1221,7 @@ $('#dockB').addEventListener('click', e => { const rs = e.target.closest('[data-
 $('#dockB').addEventListener('pointerdown', e => {
   if (e.target.closest('[data-ik]')) return;
   const one = e.target.closest('[data-one]'); if (one) { if (reTap(one)) return unTap(); const k = one.dataset.one; if (!editing) setEdit(true); A.pick(k); $$('.dock .it').forEach(x => x.classList.toggle('on', x === one)); openInst(A.selInfo?.() || null, one); return; }
-  if (e.target.closest('[data-scdel]')) return; const it = e.target.closest('.it.dr'); if (!it || e.button > 0 || !A) return; if (e.pointerType === 'mouse') e.preventDefault();
+  if (e.target.closest('[data-scdel],[data-addk]')) return; const it = e.target.closest('.it.dr'); if (!it || e.button > 0 || !A) return; if (e.pointerType === 'mouse') e.preventDefault();
   const k = it.dataset.k, x0 = e.clientX, y0 = e.clientY; let moved = false, last = null, g = null, cv = null, toMain = false;
   const scAdd = k.startsWith('sc:') && !it.closest('.sg.main'), inMain = (x, y) => { const m = $('#dockB .sg.main')?.getBoundingClientRect(); return !!m && x >= m.left && x <= m.right && y >= m.top - 8 && y <= m.bottom + 8; };
   const inGame = (x, y) => { const f = $('#game').getBoundingClientRect(); if (x < f.left || x > f.right || y < f.top || y > f.bottom) return null; const s = f.width / $('#game').offsetWidth; return [(x - f.left) / s, (y - f.top) / s]; };
@@ -2094,6 +2098,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.38', '10월 22일', ['소품 카드에 마우스를 올리면 오른쪽 위에 + → 누르면 맵 가운데에 추가']],
   ['3.37', '10월 22일', ['맵 편집 중 빈 곳을 누르면: 고른 소품·창이 열려 있으면 닫고, 아무것도 없으면 편집 종료 (저장 안 한 배치는 한 번 물어봄). 맵 안 빈 곳도 같음 (게임 v8.36)']],
   ['3.36', '10월 22일', ['소품 상세 창 [저장]: 창 자리 그대로, 저장하면 꺼졌다가 크기를 또 바꾸면 켜짐', '추가 소품 → 전체 소품 저장, 소품 [저장]·[다른 이름으로 저장]은 배치 저장까지 바로 (게임 v8.35: 오프닝 필드 봄, 시작 버튼 새 디자인, 미니게임 친밀도 하루 판수 제한 없음)']],
   ['3.35', '10월 22일', ['맵 소품 상세 창에 [저장]·[다른 이름으로 저장]: 모서리로 크기를 바꾼 뒤 저장하면 그 소품 종류가 그 크기로 고정(앞으로 끌어 놓는 것도), 다른 이름으로 저장하면 그 크기로 전체 소품에 새 소품 (게임 v8.33)']],
