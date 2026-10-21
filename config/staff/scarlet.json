@@ -6,61 +6,6 @@
    "note": "오늘은 풀밭에 작은 바닷가를 옮겨 왔어요! 파라솔·튜브·비치볼처럼 물놀이 장난감은 빨강·파랑·노랑으로 쨍하게, 모래성·유목·소라는 모래색 3~4단계 명암으로 차분하게 나눠서 둘이 섞여 있어도 하나하나 또렷하게 읽혀요. 물 타입은 헤엄치고 물대포를 쏘고, 땅 타입은 모래를 파고, 불꽃 타입은 물을 피하는 식으로 반응도 바닷가에 맞췄어요.",
    "items": [
     {
-     "id": "swim-ring",
-     "n": "수영 튜브",
-     "k": "놀이",
-     "d": "빨강·하양 칸이 번갈아 있는 동그란 수영 튜브예요. 위쪽에 반짝 하이라이트를 넣어 비닐처럼 보이게 했고, 가운데 구멍으로 풀이 보여요.",
-     "px": [
-      "........kkkkkkkkkkkk........",
-      "......kkrrrrrrwwwwwwkk......",
-      "....kkrrrhhhhrwwwwwwwwkk....",
-      "...kWWrhhhhhhrwwwwwwwwRRk...",
-      "..kWWhhhhhhhrrwwwwwwwrRRRk..",
-      ".kWWhhhhhrrrrkkwwwwrrrRRRRk.",
-      ".kWWhhhhwwkkkkkkkkrrrRRRRRk.",
-      "kWWhhhhwwkk.kkkk.kkrrRRRRRRk",
-      "kWWWWWWWwkkkggggkkkrRRRRRRRk",
-      "kQRRRRRRkkggggggggkkWWWWWWVk",
-      "kQQRRRRRRggggggggggWWWWWWVVk",
-      ".kQQQRRRRRggggggggWWWWWVVVk.",
-      ".kQQQQQRRWWWggggRRRWWVVVVVk.",
-      "..kQQQQVVVVWWWRRRQQQQVVVVk..",
-      "...kQQVVVVVVVVQQQQQQQQVVk...",
-      "....kzVVVVVVVVQQQQQQQQzk....",
-      ".zzzzzzzVVVVVVQQQQQQzzzzzzz.",
-      ".zzzzzzzzzzzzzzzzzzzzzzzzzz.",
-      ".....zzzzzzzzzzzzzzzzzz.....",
-      "............................"
-     ],
-     "pal": {
-      "k": "#20202c",
-      "w": "#fffaf0",
-      "W": "#e2d8cc",
-      "V": "#b4a898",
-      "r": "#ff6a5a",
-      "R": "#d2403a",
-      "Q": "#902a2a",
-      "h": "#ffffff",
-      "g": "#5aa048",
-      "z": "#c9b27a"
-     },
-     "acts": [
-      {
-       "w": "헤엄치는 포켓몬",
-       "a": "튜브를 연못에 밀고 들어가 둥둥 떠서 쉬어요"
-      },
-      {
-       "w": "작은 포켓몬",
-       "a": "튜브 구멍에 쏙 들어가 앉아요"
-      },
-      {
-       "w": "큰 포켓몬",
-       "a": "튜브에 부딪쳐 데굴데굴 굴려요"
-      }
-     ],
-     "fit": "연못 가장자리"
-    },
-    {
      "id": "beach-ball",
      "n": "비치볼",
      "k": "놀이",
@@ -1844,6 +1789,66 @@
      "fit": "모닥불 옆"
     }
    ]
+  }
+ ],
+ "trash": [
+  {
+   "id": "swim-ring",
+   "n": "수영 튜브",
+   "k": "놀이",
+   "d": "빨강·하양 칸이 번갈아 있는 동그란 수영 튜브예요. 위쪽에 반짝 하이라이트를 넣어 비닐처럼 보이게 했고, 가운데 구멍으로 풀이 보여요.",
+   "px": [
+    "........kkkkkkkkkkkk........",
+    "......kkrrrrrrwwwwwwkk......",
+    "....kkrrrhhhhrwwwwwwwwkk....",
+    "...kWWrhhhhhhrwwwwwwwwRRk...",
+    "..kWWhhhhhhhrrwwwwwwwrRRRk..",
+    ".kWWhhhhhrrrrkkwwwwrrrRRRRk.",
+    ".kWWhhhhwwkkkkkkkkrrrRRRRRk.",
+    "kWWhhhhwwkk.kkkk.kkrrRRRRRRk",
+    "kWWWWWWWwkkkggggkkkrRRRRRRRk",
+    "kQRRRRRRkkggggggggkkWWWWWWVk",
+    "kQQRRRRRRggggggggggWWWWWWVVk",
+    ".kQQQRRRRRggggggggWWWWWVVVk.",
+    ".kQQQQQRRWWWggggRRRWWVVVVVk.",
+    "..kQQQQVVVVWWWRRRQQQQVVVVk..",
+    "...kQQVVVVVVVVQQQQQQQQVVk...",
+    "....kzVVVVVVVVQQQQQQQQzk....",
+    ".zzzzzzzVVVVVVQQQQQQzzzzzzz.",
+    ".zzzzzzzzzzzzzzzzzzzzzzzzzz.",
+    ".....zzzzzzzzzzzzzzzzzz.....",
+    "............................"
+   ],
+   "pal": {
+    "k": "#20202c",
+    "w": "#fffaf0",
+    "W": "#e2d8cc",
+    "V": "#b4a898",
+    "r": "#ff6a5a",
+    "R": "#d2403a",
+    "Q": "#902a2a",
+    "h": "#ffffff",
+    "g": "#5aa048",
+    "z": "#c9b27a"
+   },
+   "acts": [
+    {
+     "w": "헤엄치는 포켓몬",
+     "a": "튜브를 연못에 밀고 들어가 둥둥 떠서 쉬어요"
+    },
+    {
+     "w": "작은 포켓몬",
+     "a": "튜브 구멍에 쏙 들어가 앉아요"
+    },
+    {
+     "w": "큰 포켓몬",
+     "a": "튜브에 부딪쳐 데굴데굴 굴려요"
+    }
+   ],
+   "fit": "연못 가장자리",
+   "del": 1792624159434,
+   "dayAt": 1792622829095,
+   "theme": "여름 바닷가 놀이"
   }
  ]
 }
