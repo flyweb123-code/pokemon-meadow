@@ -1863,6 +1863,19 @@ function mvSnd(ty) {
   }
 }
 // 미니게임 액티브 기술 효과음 (k = MG_AB 의 k)
+// v8.37 경완: 화염방사 소리 = 탁탁 끊기는 소리 대신 쏘는 동안 이어지는 부드러운 '화아아' (낮게 거른 바람 소리 + 느린 일렁임 + 아주 낮은 울림). 매 프레임 켜 두고, 끊기면 0.3초 뒤 스르르 꺼짐
+let fireHum = null, fireHumT = 0, fireBuf = null;
+function mgFireHum(on) {
+  if (!on) { if (fireHum) { const a = actx, t = a.currentTime, H = fireHum; fireHum = null; H.g.gain.cancelScheduledValues(t); H.g.gain.setTargetAtTime(.0001, t, .09); try { H.src.stop(t + .5); H.lfo.stop(t + .5); H.rum.stop(t + .5); } catch (e) {} } return; }
+  clearTimeout(fireHumT); fireHumT = setTimeout(() => mgFireHum(false), 300); if (fireHum || !sfxOn) return; const a = audio(); if (!a) return; const t = a.currentTime + .01;
+  if (!fireBuf) { fireBuf = a.createBuffer(1, a.sampleRate * 2, a.sampleRate); const d = fireBuf.getChannelData(0); let v = 0; for (let i = 0; i < d.length; i++) { v = v * .6 + (Math.random() * 2 - 1) * .4; d[i] = v; } }
+  const src = a.createBufferSource(), lp = a.createBiquadFilter(), bp = a.createBiquadFilter(), g = a.createGain(), lfo = a.createOscillator(), lg = a.createGain(), rum = a.createOscillator(), rg = a.createGain();
+  src.buffer = fireBuf; src.loop = true; lp.type = 'lowpass'; lp.frequency.value = 1300; lp.Q.value = .4; bp.type = 'peaking'; bp.frequency.value = 420; bp.gain.value = 6;
+  lfo.frequency.value = 3.2; lg.gain.value = 380; lfo.connect(lg).connect(lp.frequency);   // 일렁이는 불길
+  rum.type = 'sine'; rum.frequency.value = 74; rg.gain.value = .35; rum.connect(rg).connect(g);
+  const vol = Math.max(.002, .13 * volG(VOL.sfx)); g.gain.setValueAtTime(.0001, t); g.gain.setTargetAtTime(vol, t, .07);
+  src.connect(lp).connect(bp).connect(g).connect(a.destination); src.start(t); lfo.start(t); rum.start(t); fireHum = { src, g, lfo, rum };
+}
 function mgAbSfx(k, t) {
   const arp = (L, d, o = {}) => L.forEach((f, i) => tone(f, t + i * d, d * 1.3, { vol: .045, ...o }));
   switch (k) {
@@ -5098,7 +5111,13 @@ function makeSprites() {
     L.forEach((row, y) => [...row].forEach((c, x) => { if (C[c]) px(x, y, 1, 1, C[c]); })); });
   SPR.lilyF = sprCanvas(9, 8, (px) => { const L = ['...pPp...', '..pPWPp..', '..gpypg..', '.gGGGgg..', 'gGGgg.ggg', 'ggggg.ggd', '.ggggggd.', '..dddd...'], C = { g: '#4fa03c', G: '#7cc85a', d: '#2e7a2c', p: '#ff9ec4', P: '#ffc8dc', W: '#fff0f6', y: '#ffe066' };
     L.forEach((row, y) => [...row].forEach((c, x) => { if (C[c]) px(x, y, 1, 1, C[c]); })); });
-  SPR.pudArt = L => sprCanvas(40, 14, (px, blob) => { blob(20, 7, 19, 6, '#6e4e30', '#8a6640', '#5a3e24', '#4a3018'); blob(21, 7, 14, 4, '#7c6a5a', '#a89c8c', '#6a5a4a', '#5a4a3a'); px(14, 5, 6, 1, '#c8c0b4'); px(25, 8, 4, 1, '#b8b0a4'); }, L); SPR.puddle = SPR.pudArt(lookOf('puddle'));
+  SPR.pudArt = L => sprCanvas(40, 14, px => {   /* v8.37 경완: 타원이 어색 → 가장자리가 들쭉날쭉한 자연스러운 웅덩이 (흙 테두리 + 물, 둘 다 물결 모양 반지름) */
+    const W = 40, H = 14, cx = 20, cy = 7.3, wob = (a, k) => 1 + .14 * Math.sin(2 * a + .7 + k) + .09 * Math.sin(3 * a + 2.1 + k * 1.7) + .05 * Math.sin(5 * a + .4 + k);
+    const mask = f => { const M = []; for (let y = 0; y < H; y++) { M[y] = []; for (let x = 0; x < W; x++) { const dx = (x + .5 - cx) / 19.5, dy = (y + .5 - cy) / 6.6, a = Math.atan2(dy, dx); M[y][x] = Math.hypot(dx, dy) <= f(a); } } return M; };
+    const O = mask(a => .8 * wob(a, 0)), I = mask(a => .64 * wob(a, .6)), edge = (M, x, y) => !(M[y - 1]?.[x] && M[y + 1]?.[x] && M[y][x - 1] && M[y][x + 1]);
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { if (!O[y][x]) continue; const u = (x - cx) / 19.5 + (y - cy) / 6.6;
+      px(x, y, 1, 1, edge(O, x, y) ? '#4a3018' : !I[y][x] ? (u < -.45 ? '#8a6640' : u > .35 ? '#5a3e24' : '#6e4e30') : edge(I, x, y) && y >= cy ? '#5a4a3a' : u < -.3 ? '#a89c8c' : '#7c6a5a'); }
+    for (const [x, y, w] of [[15, 5, 5], [23, 8, 3], [19, 7, 2]]) if (I[y]?.[x] && I[y][x + w - 1]) px(x, y, w, 1, y < 6 ? '#c8c0b4' : '#b8b0a4'); }, L); SPR.puddle = SPR.pudArt(lookOf('puddle'));
   SPR.sun = sprCanvas(15, 15, (px, blob) => { blob(7.5, 7.5, 7, 7, '#ffd23c', '#fff0a0', '#ffb020', '#f08a1c'); px(5, 4, 2, 1, '#fffbe0'); });
   SPR.moon = sprCanvas(12, 12, (px) => { const M = ['...oooo.....', '.ooyyyo.....', '.oyyyo......', 'oyyyo.......', 'oyyo........', 'oyyo........', 'oyyo........', 'oyyyo.......', '.oyyyyo..oo.', '..ooyyyyyo..', '....ooooo...', '............'], C = { o: '#d8c890', y: '#fff6c8' };
     M.forEach((row, y) => [...row].forEach((c, x) => { if (C[c]) px(x, y, 1, 1, C[c]); })); });
@@ -5111,7 +5130,7 @@ let scLights = [], scFlEls = [], treeEl = null, flameEl = null, puddleEls = [], 
 function onProp(x, y) {
   const L = LAYOUT, inB = (cx, by, w, h) => Math.abs(x - cx) < w / 2 && y < by + 6 && y > by - h, zT = LS('tree'), zP = LS('perch'), zF = LS('fire'), zS = LS('stump'), zB = LS('bush'), zR = LS('rock'), zQ = LS('puddle');
   return inB(L.tree.x, L.tree.y, 100 * zT, 116 * zT) || inB(L.perch.x, L.perch.y, 52 * zP, 64 * zP) || inB(L.fire.x, L.fire.y + 14, 72 * zF, 64 * zF) || inB(L.stump.x, L.stump.y, 44 * zS, 32 * zS) || inB(L.bed.x, L.bed.y + 22, 100, 54)
-    || L.bushes.some(b => { const z = LZi('bush', 'bushes', b); return inB(b.x, b.y, 72 * z, 48 * z); }) || L.rocks.some(r => { const z = LZi('rock', 'rocks', r); return inB(r[0], r[1], r[2] * 2 * z + 4, r[3] * 2 * z + 4); }) || L.mush.some(m => inB(m[0], m[1], 16, 16)) || (L.sc || []).some(r => { const I = scImg(r[0]), z = scS(r); return I && inB(r[1], r[2], I.w * z, I.h * z); })
+    || L.bushes.some(b => { const z = LZi('bush', 'bushes', b); return inB(b.x, b.y, 72 * z, 48 * z); }) || L.rocks.some(r => { const z = LZi('rock', 'rocks', r); return inB(r[0], r[1], r[2] * 2 * z + 4, r[3] * 2 * z + 4); }) || L.mush.some(m => inB(m[0], m[1], 16, 16)) || (L.sc || []).some(r => { const I = scImg(r[0]), z = scS(r); return I && inB(r[1], r[2], I.w * z, I.h * z * scSY(r)); })
     || L.puddles.some(q => { const z = LZi('puddle', 'puddles', q); return inB(q.x, q.y + q.w * z * .175, q.w * z, q.w * z * .35); }) || L.flowers.some(f => { const k = SPR.flw?.[f[0]] && flwSz(f[0], f[3]); return inB(f[1], f[2], Math.max(16, k?.w || 16), Math.max(18, k?.h || 18)); });
 }
 // v8.22 경완: 스칼렛 소품 그림 (도트 한 칸 = 2px)
@@ -5130,7 +5149,7 @@ function scImg(id) { const A = LAYOUT.scArt?.[id]; if (!A?.px?.length) return nu
 // v8.29 경완: 그려진 불꽃 칸 대신 모닥불과 같은 불꽃(SPR.flame 6장)을 그 자리에 크게 — 불꽃 칸 너비의 1.35배 (v8.32: 다시 그린 큰 횃불엔 1.8배가 너무 컸음), 밑동은 불꽃 칸 아래 끝
 function scFlBox(x0, x1, y0, y1, w, h) { const fw = Math.max(5, (x1 - x0 + 1) * 1.35), fh = Math.max(fw * 22 / 16, (y1 - y0 + 1) * 1.05), cx = (x0 + x1 + 1) / 2;
   return { l: (cx - fw / 2) / w * 100, t: (y1 + 1 - fh) / h * 100, w: fw / w * 100, h: fh / h * 100 }; }
-const scS = r => +(r?.[3] ?? LAYOUT.scArt?.[r?.[0]]?.s) || 1;   // v8.33: 놓인 소품 크기가 없으면 그 소품 종류의 기본 크기(scArt.s, 상세 창 [저장])
+const scS = r => +(r?.[3] ?? LAYOUT.scArt?.[r?.[0]]?.s) || 1, scSY = r => +(r?.[4] ?? LAYOUT.scArt?.[r?.[0]]?.sy) || 1;   // v8.37 경완: 위아래 테두리로 늘인 세로 배율 (r[4], 종류 기본 scArt.sy)   // v8.33: 놓인 소품 크기가 없으면 그 소품 종류의 기본 크기(scArt.s, 상세 창 [저장])
 // v8.31 경완: 불·조명처럼 빛을 내는 소품은 밤에 모닥불처럼 둘레를 밝힌다 (scArt.glow 가 있으면 그걸로, 없으면 이름으로)
 const SC_LIT = /횃불|촛불|초$|랜턴|램프|등불|등롱|등잔|가로등|석등|연꽃 ?등|화로|모닥|불꽃|조명|전구|반딧불|등대|호롱/;
 const scLit = A => A?.glow != null ? !!+A.glow : SC_LIT.test(A?.n || '');   // 놓인 스칼렛 소품 하나의 크기 배율
@@ -5140,7 +5159,7 @@ function buildProps() {
   const zT = LS('tree'), zP = LS('perch'), zB = LS('bush');
   treeEl = add('tree', PROPS.tree, SPR.tree, Math.round(100 * zT), Math.round(116 * zT));
   add('perch', PROPS.perch, SPR.perch, Math.round(52 * zP), Math.round(64 * zP));
-  scFlEls = []; scLights = []; (LAYOUT.sc || []).forEach(r => { const [id, x, y] = r, I = scImg(id), z = scS(r); if (!I) return; if (scLit(LAYOUT.scArt[id])) { const W = I.w * z, H = I.h * z, f = I.fl; const E = I.em; scLights.push({ x: Math.round(f ? x + ((f.l + f.w / 2) / 100 - .5) * W : E ? x + (E.cx - .5) * W : x), y: Math.round(f ? y - H + (f.t + f.h * .7) / 100 * H : E ? y - H + E.cy * H : y - H * .65), k: Math.max(.55, Math.min(1.4, W / 34)), fire: !!f, core: E ? { x: Math.round(x + (E.cx - .5) * W), y: Math.round(y - H + E.cy * H), rx: Math.max(5, Math.round(E.rw * W * .75)), ry: Math.max(5, Math.round(E.rh * H * .75)) } : null }); } const e = add('sc', { x, y }, I.src, Math.round(I.w * z), Math.round(I.h * z)); if (I.em && scLit(LAYOUT.scArt[id])) { const q = document.createElement('i'); q.className = 'scem'; q.style.backgroundImage = `url(${I.em.src})`; e.append(q); }   // v8.37 경완: 빛 나는 칸은 따로 얹어 은은하게 번지고, 밤에도 확실히 밝게 (nightHoles 의 core)
+  scFlEls = []; scLights = []; (LAYOUT.sc || []).forEach(r => { const [id, x, y] = r, I = scImg(id), z = scS(r), zy = z * scSY(r); if (!I) return; if (scLit(LAYOUT.scArt[id])) { const W = I.w * z, H = I.h * zy, f = I.fl; const E = I.em; scLights.push({ x: Math.round(f ? x + ((f.l + f.w / 2) / 100 - .5) * W : E ? x + (E.cx - .5) * W : x), y: Math.round(f ? y - H + (f.t + f.h * .7) / 100 * H : E ? y - H + E.cy * H : y - H * .65), k: Math.max(.55, Math.min(1.4, W / 34)), fire: !!f, core: E ? { x: Math.round(x + (E.cx - .5) * W), y: Math.round(y - H + E.cy * H), rx: Math.max(5, Math.round(E.rw * W * .75)), ry: Math.max(5, Math.round(E.rh * H * .75)) } : null }); } const e = add('sc', { x, y }, I.src, Math.round(I.w * z), Math.round(I.h * zy)); if (I.em && scLit(LAYOUT.scArt[id])) { const q = document.createElement('i'); q.className = 'scem'; q.style.backgroundImage = `url(${I.em.src})`; e.append(q); }   // v8.37 경완: 빛 나는 칸은 따로 얹어 은은하게 번지고, 밤에도 확실히 밝게 (nightHoles 의 core)
       if (I.fl) { const f = document.createElement('i'); f.className = 'scfl'; f.style.cssText = `background-image:url(${SPR.flame});left:${I.fl.l}%;top:${I.fl.t}%;width:${I.fl.w}%;height:${I.fl.h}%`; f.fi0 = Math.floor(Math.random() * 6); f.innerHTML = '<b></b><b></b><b></b>'; e.append(f); scFlEls.push(f); } });
   PROPS.bushEls = PROPS.bushes.map(b => { const L = lkRes(b.lk), z = L ? +L.s || 1 : zB; return add('bush', b, L ? lkUrl('bush', L, () => tintCv(ART.bush(), L).toDataURL()) : SPR.bush, Math.round(72 * z), Math.round(48 * z)); });
   /* v3.55: 꽃·풀은 바람에 살랑살랑 (하나씩 박자를 달리) */
@@ -5180,7 +5199,7 @@ function propSpots() {
     ['bed', '꽃밭', L.bed.x, L.bed.y + 2, 48, 20], ['stump', '그루터기', L.stump.x, L.stump.y - 8, 22, 14]];
   L.bushes.forEach((b, i) => out.push(['bush', '덤불', b.x, b.y - 10, 36, 18, i]));
   L.rocks.forEach((r, i) => { if (r[2] >= 12) out.push(['rock', '바위', r[0], r[1] - r[3], r[2] + 4, r[3] + 6, i]); });
-  (L.sc || []).forEach((r, i) => { const [id, x, y] = r, I = scImg(id), z = scS(r); if (I) out.push(['sc', L.scArt[id].n || '소품', x, y - Math.min(I.h * z * .3, 14), Math.max(18, I.w * z / 2 + 4), 14, i]); });
+  (L.sc || []).forEach((r, i) => { const [id, x, y] = r, I = scImg(id), z = scS(r); if (I) out.push(['sc', L.scArt[id].n || '소품', x, y - Math.min(I.h * z * scSY(r) * .3, 14), Math.max(18, I.w * z / 2 + 4), 14, i]); });
   if (weather() === 'rain') L.puddles.forEach((q, i) => out.push(['puddle', '물웅덩이', q.x, q.y, q.w / 2 + 4, q.w * .2 + 6, i]));
   return out.map(([k, n, x, y, rx, ry, i]) => ({ k, n, x, y, rx, ry, i }));
 }
@@ -6805,7 +6824,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
   if (g.fl?.length || (g.fx.str > 0 && g.ab.k === 'fire')) {   /* v6.30 경완: 화염방사 = 불 알갱이를 겨눈 방향으로 쏘고, 알갱이는 쏜 뒤엔 제 갈 길로 날아간다 → 손가락을 움직이면 줄기가 호스 물줄기처럼 휘며 따라온다 */
     const pw = g.pas?.pow ? 1.8 : 1, on = g.fx.str > 0 && g.ab.k === 'fire', sy = g.GY - g.y - MG_PH / 2 - 4; g.fl = g.fl || [];
     g.aimA = (g.aimA || 0) + (clamp(-(g.aimT || 0) * .8, -1.55, 1.55) - (g.aimA || 0)) * Math.min(1, dt * 12);
-    if (on) { if ((g.strS -= dt) <= 0) { g.strS = MG_STR.fire.s; sfx('ab', 'fire'); }
+    mgFireHum(on && !g.over); if (on) {
       for (let i = 0; i < 2; i++) { const a = g.aimA + (Math.random() - .5) * .08, v = 720 + Math.random() * 80; g.fl.push({ x: g.PX + 12, y: sy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, a: Math.random() * .01, l: .34 * pw * (.9 + Math.random() * .2), s: Math.random() }); } }
     for (const p of g.fl) { p.a += dt; p.vx *= Math.pow(.25, dt); p.vy = p.vy * Math.pow(.25, dt) - 260 * dt; p.x += p.vx * dt; p.y += p.vy * dt;   /* v6.99 경완: 아래로 겨누면 땅에서 튕기지 않고 그대로 뚫고 나간다 */
       const r = (4 + p.a / p.l * 16) * pw * .7; if (p.a < p.l * .85) for (const o of g.obs) if (!o.dead && !o.flee && Math.abs(o.x - p.x) < o.w / 2 + r && Math.abs(g.GY - o.y - o.h / 2 - p.y) < o.h / 2 + r) mgKill(g, o, '#ff8a2a'); }
@@ -7159,7 +7178,7 @@ function mgCountUp(root) {
       requestAnimationFrame(f); }, d0);
   });
 }
-function mgEnd(g) {
+function mgEnd(g) { mgFireHum(false);
   mgMus.stop(.6);
   const m = g.m, R = mgRec(), M = mgS(), dist = Math.round((Math.floor(g.dist / 25) + g.bonus) * (g.pas.score || 1)), prev = R.best, T = !!m.test, nb = !T && dist > prev, P = T ? null : boxOf(m.pid);   /* 시험 판은 기록·보상 없음 */
   if (!T) { mqS(); R.n++; mqRec(g, m, dist); } if (nb) R.best = dist;
@@ -10698,7 +10717,7 @@ if (/[?&]studio/.test(location.search)) {
 body.szMode :is(#items,#propFx,#bg,#skyC,#skyFx,.bfly,.firefly){opacity:var(--szA,1)}
 #stHov,.stMk{position:absolute;z-index:3001;pointer-events:none;border:2px solid #ffe070;border-radius:6px;box-shadow:0 0 0 1px rgba(0,0,0,.45),0 0 10px rgba(255,224,112,.6);background:rgba(255,224,112,.1)}#stHov[hidden]{display:none}
 #stHands .h:hover{outline:1px dashed rgba(127,215,239,.7)}
-#stHands .h.sel{outline:2px solid #7fd7ef;outline-offset:1px;background:rgba(127,215,239,.14)}#stHands .h .rz{position:absolute;z-index:9;width:12px;height:12px;background:#7fd7ef;border:2px solid #fff;border-radius:2px;cursor:nwse-resize;box-sizing:border-box}#stHands .h .rz.br{right:-7px;bottom:-7px}#stHands .h .rz.bl{left:-7px;bottom:-7px;cursor:nesw-resize}#stHands .h .rz.tr{right:-7px;top:-7px;cursor:nesw-resize}#stHands .h .rz.tl{left:-7px;top:-7px}
+#stHands .h.sel{outline:2px solid #7fd7ef;outline-offset:1px;background:rgba(127,215,239,.14)}#stHands .h .rz{position:absolute;z-index:9;width:12px;height:12px;background:#7fd7ef;border:2px solid #fff;border-radius:2px;cursor:nwse-resize;box-sizing:border-box}#stHands .h .rz.br{right:-7px;bottom:-7px}#stHands .h .rz.bl{left:-7px;bottom:-7px;cursor:nesw-resize}#stHands .h .rz.tr{right:-7px;top:-7px;cursor:nesw-resize}#stHands .h .rz.tl{left:-7px;top:-7px}#stHands .h .rz.et,#stHands .h .rz.eb{left:calc(50% - 6px);cursor:ns-resize;border-radius:6px}#stHands .h .rz.et{top:-7px}#stHands .h .rz.eb{bottom:-7px}#stHands .h .rz.el,#stHands .h .rz.er{top:calc(50% - 6px);cursor:ew-resize;border-radius:6px}#stHands .h .rz.el{left:-7px}#stHands .h .rz.er{right:-7px}
 .prop.sc .scem{position:absolute;inset:0;background-size:100% 100%;image-rendering:pixelated;pointer-events:none;filter:brightness(1.12) drop-shadow(0 0 2px rgba(255,246,206,.9)) drop-shadow(0 0 5px rgba(255,236,170,.55))}
 .scfl{position:absolute;background-size:600% 100%;image-rendering:pixelated;filter:drop-shadow(0 0 4px rgba(255,140,30,.85));pointer-events:none}.prop.sc .scfl b{position:absolute;left:50%;bottom:30%;width:2px;height:2px;background:#ffd060;box-shadow:0 0 3px #ff8a20;opacity:0;animation:ember 1.3s linear infinite;--x:-5px}.prop.sc .scfl b:nth-child(2){animation-delay:-.45s;--x:6px;animation-duration:1.1s}.prop.sc .scfl b:nth-child(3){animation-delay:-.9s;--x:2px;animation-duration:1.5s}
 .mon.stMark:has(.stbox.hov),.mon.stMark:has(.stbox.on){z-index:99999!important}body.szMode #wrap{overflow:auto}body.szMode .app>:not(.stage-wrap):not(#glows){display:none!important}body.szMode .stage{box-shadow:none}body.szMode #night,body.szMode #skyFx,body.szMode #skyC,body.szMode #bg{display:none}body.szMode .mon.szb img,body.szMode .mon.szb .spr{clip-path:none!important}body.szMode .mon.szb .spr{cursor:move}body.szMode #wrap{background:#1c2028}#szLasso{position:absolute;border:1px dashed #fff;background:rgba(127,215,239,.14);z-index:99998;pointer-events:none}.mon.szDrag{z-index:99999!important}body.szMode .mon .shadow{opacity:.5}
@@ -10786,7 +10805,7 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
     L.puddles.forEach((q, i) => { const zQ = LZi('puddle', 'puddles', q); o('puddles', i, [q.x - q.w * zQ / 2, q.y - q.w * zQ * .175, q.w * zQ, q.w * zQ * .35], (dx, dy) => { q.x += dx; q.y += dy; }); });
     L.rocks.forEach((r, i) => { const zR = LZi('rock', 'rocks', r); o('rocks', i, [r[0] - r[2] * zR, r[1] - r[3] * 2 * zR, r[2] * 2 * zR, r[3] * 2 * zR], (dx, dy) => { r[0] += dx; r[1] += dy; }); });
     L.mush.forEach((m, i) => o('mush', i, [m[0] - 8, m[1] - 14, 16, 16], (dx, dy) => { m[0] += dx; m[1] += dy; }));
-    (L.sc || []).forEach((r, i) => { const I = scImg(r[0]) || { w: 24, h: 24 }, z = scS(r); o('sc', i, [r[1] - I.w * z / 2, r[2] - I.h * z, I.w * z, I.h * z], (dx, dy) => { r[1] += dx; r[2] += dy; }); });
+    (L.sc || []).forEach((r, i) => { const I = scImg(r[0]) || { w: 24, h: 24 }, z = scS(r), zy = z * scSY(r); o('sc', i, [r[1] - I.w * z / 2, r[2] - I.h * zy, I.w * z, I.h * zy], (dx, dy) => { r[1] += dx; r[2] += dy; }); });
     L.flowers.forEach((f, i) => { const s = flwSz(f[0], f[3]), w = Math.max(s.w, 26), hh = Math.max(s.h, 26); o('flowers', i, [f[1] - w / 2, f[2] - hh, w, hh], (dx, dy) => { f[1] += dx; f[2] += dy; }); });
     return out;
   }
@@ -10803,6 +10822,7 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
       const e = document.createElement('div'); e.className = 'h' + (sel && sel.key === t.key && sel.i === t.i ? ' sel' : ''); const [x, y, w, h] = t.box;
       e.style.cssText = `left:${x}px;top:${y}px;width:${w}px;height:${h}px`; e.onpointerdown = ev => startDrag(ev, t); hands.append(e);
       if (sel && sel.key === t.key && sel.i === t.i && canSz(t)) for (const [c, sx, sy] of [['tl', -1, -1], ['tr', 1, -1], ['bl', -1, 1], ['br', 1, 1]]) { const z = document.createElement('i'); z.className = 'rz ' + c; z.title = '끌어서 크기 조절'; z.onpointerdown = ev => startSz(ev, t, sx, sy); e.append(z); }   // v8.29 경완: 네 모서리 모두
+      if (sel && sel.key === t.key && sel.i === t.i && canSz(t)) for (const [c, ax, d] of [['et', 'y', -1], ['eb', 'y', 1], ['el', 'x', -1], ['er', 'x', 1]]) { const z = document.createElement('i'); z.className = 'rz ' + c; z.title = t.key === 'sc' ? '끌어서 ' + (ax === 'x' ? '가로' : '세로') + '로 늘이기·줄이기' : '끌어서 크기 조절'; z.onpointerdown = ev => startEdge(ev, t, ax, d); e.append(z); }   // v8.37 경완: 위·아래·왼쪽·오른쪽 테두리 (스칼렛 소품은 그 방향으로만, 다른 소품은 전체 크기)
     }
     LAYOUT.path.forEach((p, i) => { const e = document.createElement('div'); e.className = 'h dot'; e.style.left = p[0] + 'px'; e.style.top = p[1] + 'px'; e.onpointerdown = ev => startDrag(ev, { key: 'path', i, mv: (dx, dy) => { p[0] += dx; p[1] += dy; } }); hands.append(e); });
     { const T = LAYOUT.tree, z = LS('tree'); if (!Array.isArray(T.b)) T.b = TREE_B0.map(a => [...a]);   // v3.63 경완: 열매 자리도 끌어서 옮긴다
@@ -10819,9 +10839,17 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
   const canSz = t => t.key === 'sc' || (t.key !== 'path' && t.key !== 'mush' && t.key !== 'pond' && t.key !== 'bed' && !!LKK(t.key, t.i >= 0 ? LAYOUT[t.key][t.i] : LAYOUT[t.key]));
   function startSz(ev, t, sx = 1, sy = 1) { ev.preventDefault(); ev.stopPropagation(); undo.push(snap()); if (undo.length > 60) undo.shift();
     const v = t.i >= 0 ? LAYOUT[t.key][t.i] : LAYOUT[t.key], k = LKK(t.key, v), s0 = t.key === 'sc' ? scS(v) : +full(LKi(k, t.key, v)).s || 1, w0 = t.box[2], h0 = t.box[3], x0 = ev.clientX, y0 = ev.clientY; let raf = 0;
-    const set = s => { s = Math.round(Math.max(.3, Math.min(4, s)) * 20) / 20; if (t.key === 'sc') { if (s === (+LAYOUT.scArt?.[v[0]]?.s || 1)) v.length = 3; else v[3] = s; } else setLk(t.key, v, { ...full(LKi(k, t.key, v)), s }); };
+    const set = s => { s = Math.round(Math.max(.3, Math.min(4, s)) * 20) / 20; if (t.key === 'sc') scSet(v, s, scSY(v)); else setLk(t.key, v, { ...full(LKi(k, t.key, v)), s }); };
     const mv = e => { const gx = sx * 2 * (e.clientX - x0) / scale / w0, gy = sy * (e.clientY - y0) / scale / h0; set(s0 * (1 + (Math.abs(gx) > Math.abs(gy) ? gx : gy)));   /* 바닥 가운데 기준: 옆은 양쪽으로, 위아래는 위로만 커져서 가로는 2배·세로는 1배로 잰다 */ if (!raf) raf = requestAnimationFrame(() => { raf = 0; rebuild(t.key !== 'sc' && BAKED.has(bakeKey(t.key))); renderHands(true); }); };
     const up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); removeEventListener('pointercancel', up); changed(t.key === 'sc' ? 'sc' : bakeKey(t.key)); };
+    addEventListener('pointermove', mv); addEventListener('pointerup', up); addEventListener('pointercancel', up); }
+  // v8.37: 스칼렛 소품 크기 = 가로 배율 s(r[3]) + 세로 배율 sy(r[4]). 종류 기본값과 같으면 비워 둔다
+  function scSet(v, s, sy) { const A = LAYOUT.scArt?.[v[0]] || {}, s0 = +A.s || 1, y0 = +A.sy || 1; sy = Math.round(sy * 20) / 20; if (s === s0 && sy === y0) { v.length = 3; return; } v[3] = s; if (sy === y0) v.length = 4; else v[4] = sy; }
+  function startEdge(ev, t, ax, d) { if (t.key !== 'sc') return startSz(ev, t, ax === 'x' ? d : 1, ax === 'y' ? d : 1); ev.preventDefault(); ev.stopPropagation(); undo.push(snap()); if (undo.length > 60) undo.shift();
+    const v = LAYOUT.sc[t.i], s0 = scS(v), y0 = scSY(v), w0 = t.box[2], h0 = t.box[3], x0 = ev.clientX, yy0 = ev.clientY; let raf = 0;
+    const mv = e => { const lim = q => Math.max(.3, Math.min(4, q)); if (ax === 'x') { const s = Math.round(lim(s0 * (1 + d * 2 * (e.clientX - x0) / scale / w0)) * 20) / 20; scSet(v, s, lim(y0 * s0 / s)); } else scSet(v, s0, lim(y0 * (1 + d * (e.clientY - yy0) / scale / h0)));   /* 가로는 바닥 가운데 기준 양쪽으로(2배로 잼), 세로는 위로 늘어남 — 가로만 바꾸면 세로 크기는 그대로 */
+      if (!raf) raf = requestAnimationFrame(() => { raf = 0; rebuild(false); renderHands(true); }); };
+    const up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); removeEventListener('pointercancel', up); changed('sc'); };
     addEventListener('pointermove', mv); addEventListener('pointerup', up); addEventListener('pointercancel', up); }
   function startDrag(ev, t) {
     ev.preventDefault(); ev.stopPropagation(); undo.push(snap()); if (undo.length > 60) undo.shift();
@@ -10866,7 +10894,7 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
     LAYOUT.kinds = LAYOUT.kinds || {}; const id = 'k' + Date.now().toString(36); const { kd: _k, ...lk } = full(LKi(k, sel.key, v)); LAYOUT.kinds[id] = { b, n: String(name || '').slice(0, 12) || '내 소품', lk }; setIlk(sel.key, v, id); changed('kinds'); return id; };
   // v8.33 경완: 맵 소품 상세 창 [저장] = 이 소품의 지금 크기(·색)를 그 소품 종류(전체 소품)의 기본으로 고정. 이 소품은 종류를 따라가고, 앞으로 끌어 놓는 것도 그 크기
   api.selSave = () => { const v = selV(); if (!v || !sel) return false;
-    if (sel.key === 'sc') { const A = LAYOUT.scArt?.[v[0]]; if (!A) return false; undo.push(snap()); const s = scS(v); if (s === 1) delete A.s; else A.s = s; v.length = 3; changed('sc'); return true; }
+    if (sel.key === 'sc') { const A = LAYOUT.scArt?.[v[0]]; if (!A) return false; undo.push(snap()); const s = scS(v), sy = scSY(v); if (s === 1) delete A.s; else A.s = s; if (sy === 1) delete A.sy; else A.sy = sy; v.length = 3; changed('sc'); return true; }
     const k = LKK(sel.key, v); if (!k || ONE_LK[sel.key]) return false; undo.push(snap()); if (undo.length > 60) undo.shift();
     const L = full(LKi(k, sel.key, v)), lk = { s: L.s, h: L.h, c: L.c, b: L.b }, kd = kdOf(sel.key, v);
     if (kd && LAYOUT.kinds?.[kd]) { LAYOUT.kinds[kd].lk = lk; setIlk(sel.key, v, kd); }
@@ -10875,8 +10903,8 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
   // [다른 이름으로 저장] = 지금 크기(·색) 그대로 전체 소품에 새 소품으로. 이 소품도 새 소품이 된다
   api.selSaveAs = name => { const v = selV(); if (!v || !sel) return null;
     if (sel.key !== 'sc') return api.saveKind(name);
-    const A = LAYOUT.scArt?.[v[0]]; if (!A) return null; undo.push(snap()); const id = v[0].replace(/-k[0-9a-z]+$/, '') + '-k' + Date.now().toString(36), s = scS(v);
-    const N = { ...JSON.parse(JSON.stringify(A)), n: String(name || '').slice(0, 16) || (A.n || '소품') + ' 2', on: 1 }; if (s === 1) delete N.s; else N.s = s;
+    const A = LAYOUT.scArt?.[v[0]]; if (!A) return null; undo.push(snap()); const id = v[0].replace(/-k[0-9a-z]+$/, '') + '-k' + Date.now().toString(36), s = scS(v), sy = scSY(v);
+    const N = { ...JSON.parse(JSON.stringify(A)), n: String(name || '').slice(0, 16) || (A.n || '소품') + ' 2', on: 1 }; if (s === 1) delete N.s; else N.s = s; if (sy === 1) delete N.sy; else N.sy = sy;
     LAYOUT.scArt[id] = N; v[0] = id; v.length = 3; changed('scArt'); return id; };
   api.kind = id => LAYOUT.kinds?.[id] ? { ...LAYOUT.kinds[id], lk: full(LAYOUT.kinds[id].lk) } : null;
   api.setKind = (id, nv) => { const K = LAYOUT.kinds?.[id]; if (!K) return; undo.push(snap()); if (nv.n != null) K.n = String(nv.n).slice(0, 12) || K.n; if (nv.lk) K.lk = { ...full(K.lk), ...nv.lk }; changed('kinds'); };
@@ -10914,7 +10942,7 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
   api.undoN = () => undo.length;
   api.del = () => { if (!sel || sel.i < 0 || sel.key === 'path') return; undo.push(snap()); const k = sel.key; LAYOUT[k].splice(sel.i, 1); sel = null; changed(k === 'flowers' || k === 'bushes' || k === 'puddles' || k === 'sc' ? k : 'rocks'); };
   // v8.22 경완: 스칼렛 소품을 소품 목록에 넣기 / 빼기 (빼면 맵에 놓인 것도 함께 사라짐)
-  api.scDef = (id, a) => { if (!id || !a?.px?.length) return; undo.push(snap()); LAYOUT.scArt = { ...(LAYOUT.scArt || {}), [id]: { n: String(a.n || '소품').slice(0, 16), px: a.px, pal: a.pal || {}, acts: (a.acts || []).map(o => ({ w: o.w, a: o.a })), ...(LAYOUT.scArt?.[id]?.on ? { on: 1 } : {}), ...(LAYOUT.scArt?.[id]?.s ? { s: LAYOUT.scArt[id].s } : {}), ...(a.glow != null ? { glow: +a.glow ? 1 : 0 } : {}) } };   /* v8.29: 다시 그린 그림으로 바꿔도 전체 소품(on)은 그대로 */ changed('scArt'); };
+  api.scDef = (id, a) => { if (!id || !a?.px?.length) return; undo.push(snap()); LAYOUT.scArt = { ...(LAYOUT.scArt || {}), [id]: { n: String(a.n || '소품').slice(0, 16), px: a.px, pal: a.pal || {}, acts: (a.acts || []).map(o => ({ w: o.w, a: o.a })), ...(LAYOUT.scArt?.[id]?.on ? { on: 1 } : {}), ...(LAYOUT.scArt?.[id]?.s ? { s: LAYOUT.scArt[id].s } : {}), ...(LAYOUT.scArt?.[id]?.sy ? { sy: LAYOUT.scArt[id].sy } : {}), ...(a.glow != null ? { glow: +a.glow ? 1 : 0 } : {}) } };   /* v8.29: 다시 그린 그림으로 바꿔도 전체 소품(on)은 그대로 */ changed('scArt'); };
   api.scOn = ids => { const L = (ids || []).filter(id => LAYOUT.scArt?.[id] && !LAYOUT.scArt[id].on); if (!L.length) return; undo.push(snap()); for (const id of L) LAYOUT.scArt[id] = { ...LAYOUT.scArt[id], on: 1 }; changed('scArt'); };   // v8.24 경완: 추가 소품 → 전체 소품으로 저장
   api.scUndef = id => { if (!LAYOUT.scArt?.[id]) return; undo.push(snap()); delete LAYOUT.scArt[id]; LAYOUT.sc = (LAYOUT.sc || []).filter(r => r[0] !== id); if (sel?.key === 'sc') sel = null; delete scCache[id]; changed('sc'); };
   api.nudge = (dx, dy) => { const t = sel && items().find(t => t.key === sel.key && t.i === sel.i); if (!t) return; undo.push(snap()); t.mv(dx, dy); changed(sel.key); };
