@@ -2180,6 +2180,7 @@ const LAYOUT = {
   rocks: [[40, 264, 12, 8, 1, 3], [336, 372, 16, 10, 2, 5], [280, 596, 10, 7, 1, 7], [108, 504, 14, 9, 2, 9], [232, 196, 9, 6, 1, 11]],
   mush: [[44, 272], [256, 592], [340, 236]],
   look: {},   // v3.62 작업실: 소품 종류별 크기(s)·색조(h°)·채도(c%)·밝기(b%)
+  sc: [], scArt: {},   // v8.22 경완: 스칼렛 소품 — sc = [[id, x, y]] 놓인 자리, scArt = { id: { n, px, pal, acts } } 그림 (작업실 '소품 리스트'에서 넣음)
   kinds: {},   // v3.63 작업실: 내가 만든 소품 분류 { 이름표: { b 바탕 소품, n 이름, lk 모양 } }
   flowers: [
     ['daisy', 186, 200], ['pink', 198, 206], ['daisy', 208, 198], ['bell', 30, 300], ['tulip', 40, 306], ['daisy', 330, 352], ['pink', 342, 358],
@@ -5069,15 +5070,22 @@ let treeEl = null, flameEl = null, puddleEls = [], rainEl = null, rainGEl = null
 function onProp(x, y) {
   const L = LAYOUT, inB = (cx, by, w, h) => Math.abs(x - cx) < w / 2 && y < by + 6 && y > by - h, zT = LS('tree'), zP = LS('perch'), zF = LS('fire'), zS = LS('stump'), zB = LS('bush'), zR = LS('rock'), zQ = LS('puddle');
   return inB(L.tree.x, L.tree.y, 100 * zT, 116 * zT) || inB(L.perch.x, L.perch.y, 52 * zP, 64 * zP) || inB(L.fire.x, L.fire.y + 14, 72 * zF, 64 * zF) || inB(L.stump.x, L.stump.y, 44 * zS, 32 * zS) || inB(L.bed.x, L.bed.y + 22, 100, 54)
-    || L.bushes.some(b => { const z = LZi('bush', 'bushes', b); return inB(b.x, b.y, 72 * z, 48 * z); }) || L.rocks.some(r => { const z = LZi('rock', 'rocks', r); return inB(r[0], r[1], r[2] * 2 * z + 4, r[3] * 2 * z + 4); }) || L.mush.some(m => inB(m[0], m[1], 16, 16))
+    || L.bushes.some(b => { const z = LZi('bush', 'bushes', b); return inB(b.x, b.y, 72 * z, 48 * z); }) || L.rocks.some(r => { const z = LZi('rock', 'rocks', r); return inB(r[0], r[1], r[2] * 2 * z + 4, r[3] * 2 * z + 4); }) || L.mush.some(m => inB(m[0], m[1], 16, 16)) || (L.sc || []).some(([id, sx, sy]) => { const I = scImg(id); return I && inB(sx, sy, I.w, I.h); })
     || L.puddles.some(q => { const z = LZi('puddle', 'puddles', q); return inB(q.x, q.y + q.w * z * .175, q.w * z, q.w * z * .35); }) || L.flowers.some(f => { const k = SPR.flw?.[f[0]] && flwSz(f[0], f[3]); return inB(f[1], f[2], Math.max(16, k?.w || 16), Math.max(18, k?.h || 18)); });
 }
+// v8.22 경완: 스칼렛 소품 그림 (도트 한 칸 = 2px)
+const SC_PX = 2, scCache = {};
+function scImg(id) { const A = LAYOUT.scArt?.[id]; if (!A?.px?.length) return null; const key = id + ':' + JSON.stringify(A.px).length + JSON.stringify(A.pal);
+  if (scCache[id]?.key === key) return scCache[id]; const h = A.px.length, w = A.px[0].length, c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
+  A.px.forEach((r, y) => { for (let x = 0; x < r.length; x++) { const col = A.pal?.[r[x]]; if (r[x] !== '.' && col) { g.fillStyle = col; g.fillRect(x, y, 1, 1); } } });
+  return scCache[id] = { key, src: c.toDataURL(), w: w * SC_PX, h: h * SC_PX }; }
 function buildProps() {
   makeSprites();
   const add = (cls, at, src, w, h, z) => { const e = document.createElement('div'); e.className = 'prop ' + cls; e.style.cssText = W2(src, w, h) + `;left:${at.x}px;top:${at.y}px;z-index:${z ?? Math.round(at.y)}`; itemsEl.append(e); return e; };
   const zT = LS('tree'), zP = LS('perch'), zB = LS('bush');
   treeEl = add('tree', PROPS.tree, SPR.tree, Math.round(100 * zT), Math.round(116 * zT));
   add('perch', PROPS.perch, SPR.perch, Math.round(52 * zP), Math.round(64 * zP));
+  (LAYOUT.sc || []).forEach(([id, x, y]) => { const I = scImg(id); if (I) add('sc', { x, y }, I.src, I.w, I.h); });
   PROPS.bushEls = PROPS.bushes.map(b => { const L = lkRes(b.lk), z = L ? +L.s || 1 : zB; return add('bush', b, L ? lkUrl('bush', L, () => tintCv(ART.bush(), L).toDataURL()) : SPR.bush, Math.round(72 * z), Math.round(48 * z)); });
   /* v3.55: 꽃·풀은 바람에 살랑살랑 (하나씩 박자를 달리) */
   FLOWERS.forEach(([k, x, y, lk], i) => { const L = lkRes(lk), f = L ? { src: lkUrl('f' + k, L, () => tintCv(ART.flower(k), L, PETAL[k]).toDataURL()), ...flwSz(k, lk) } : SPR.flw[k], e = document.createElement('div'); e.className = 'flw';
@@ -5115,6 +5123,7 @@ function propSpots() {
     ['bed', '꽃밭', L.bed.x, L.bed.y + 2, 48, 20], ['stump', '그루터기', L.stump.x, L.stump.y - 8, 22, 14]];
   L.bushes.forEach((b, i) => out.push(['bush', '덤불', b.x, b.y - 10, 36, 18, i]));
   L.rocks.forEach((r, i) => { if (r[2] >= 12) out.push(['rock', '바위', r[0], r[1] - r[3], r[2] + 4, r[3] + 6, i]); });
+  (L.sc || []).forEach(([id, x, y], i) => { const I = scImg(id); if (I) out.push(['sc', L.scArt[id].n || '소품', x, y - Math.min(I.h * .3, 14), Math.max(18, I.w / 2 + 4), 14, i]); });
   if (weather() === 'rain') L.puddles.forEach((q, i) => out.push(['puddle', '물웅덩이', q.x, q.y, q.w / 2 + 4, q.w * .2 + 6, i]));
   return out.map(([k, n, x, y, rx, ry, i]) => ({ k, n, x, y, rx, ry, i }));
 }
@@ -5233,6 +5242,10 @@ function propReact(m, p) { propReactIn(m, p); m.propUntil = performance.now() + 
 function propReactIn(m, p) {
   const flyer = winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover', small = isSmall(m) && ![1, 2, 3, 5, 10, 11].includes(SPm(m).sh) && (SPm(m).spd || 0) >= 50, at = (dx, dy) =>   /* v4.91 경완: 우르 같은 느린 털뭉치·공·물고기 모양은 횃대에 못 올라간다 */ { m.x = clamp(p.x + dx, XL + 20, XR - 20); m.y = clamp(p.y + dy, MIN_Y, MAX_Y); };
   faceTo(m, p.x); m.goal = null; m.joy = clamp((m.joy ?? 60) + PROP_JOY);   /* v4.42 경완: 맵 소품과 놀면 즐거움도 조금 오른다 */
+  if (p.k === 'sc') { const r = LAYOUT.sc[p.i], A = r && LAYOUT.scArt[r[0]], ty = tyOf(m).map(t => TYPE_KO[t]), mv = T(m).mv;   /* v8.22 경완: 스칼렛 소품 — 누가(w)에 맞는 행동을 골라 소품 곁에서 논다 */
+    const fit = a => { const w = a.w || ''; return ty.some(t => t && w.includes(t)) || ((flyer) && /나는|날개|새/.test(w)) || (mv === 'swim' && /헤엄|물고기/.test(w)) || (small && /작은/.test(w)) || (!small && /큰/.test(w)); };
+    const L = (A?.acts || []).filter(fit), a = L.length ? pick(L) : null; at(m.x < p.x ? -p.rx * .7 : p.rx * .7, 8); setState(m, 'idle', rnd(5, 9)); anim(m, 'hop'); emote(m, a ? '♪' : '…', '', 2.2, 'prop-play');
+    return log(a ? `${J(m,'이/가')} ${esc(A.n)} 곁에서 놀고 있다. (${esc(a.a).replace(/[.。]?\s*$/, '')})` : `${J(m,'이/가')} ${esc(A?.n || '소품')}${hasBat(A?.n || '소품') ? '을' : '를'} 신기한 듯 바라본다.`, [m]); }
   if (p.k === 'tree') { at(m.x < p.x ? -32 : 32, 14); setState(m, 'idle', 2.5); anim(m, 'hop'); setTimeout(() => { if (S.mons.includes(m)) shakeTree(m); }, 250); return; }
   if (p.k === 'perch') {
     if (flyer || small) { at(10, 10); propSit(m, 40); setState(m, 'idle', rnd(14, 24)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play');
@@ -5853,7 +5866,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.21';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.22';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -10142,6 +10155,7 @@ function retier(ov, ord) { EGG_EFF = null;
 function setLayoutIn(L) {
   for (const k of ['pond', 'fire', 'bed', 'tree', 'perch', 'stump']) if (L[k]) { delete LAYOUT[k].lk; Object.assign(LAYOUT[k], L[k]); }
   LAYOUT.kinds = L.kinds && typeof L.kinds === 'object' ? JSON.parse(JSON.stringify(L.kinds)) : {};
+  LAYOUT.scArt = L.scArt && typeof L.scArt === 'object' ? JSON.parse(JSON.stringify(L.scArt)) : {}; LAYOUT.sc = Array.isArray(L.sc) ? JSON.parse(JSON.stringify(L.sc)).filter(r => LAYOUT.scArt[r[0]]) : [];
   for (const k of ['path', 'bushes', 'puddles', 'rocks', 'mush', 'flowers']) if (Array.isArray(L[k])) LAYOUT[k].splice(0, LAYOUT[k].length, ...JSON.parse(JSON.stringify(L[k])));
   LAYOUT.look = L.look && typeof L.look === 'object' ? JSON.parse(JSON.stringify(L.look)) : {};
   if (Array.isArray(L.hide) && L.hide.length) LAYOUT.hide = [...L.hide]; else delete LAYOUT.hide;   // v3.70: 작업실에서 지운 소품 종류 (목록에서 숨김)
@@ -10657,10 +10671,10 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   // ---------- 소품 편집 (맵 편집기와 같은 손잡이) ----------
   let DEFAULT = null;   // 지금 배포된 배치 (설정을 불러온 뒤 정한다)
   const KEYS_OBJ = ['pond', 'fire', 'bed', 'tree', 'perch', 'stump'], KEYS_ARR = ['path', 'bushes', 'puddles', 'rocks', 'mush', 'flowers'];
-  const NAME = { pond: '연못', fire: '모닥불', bed: '꽃밭', tree: '열매나무', perch: '횃대', stump: '그루터기', bushes: '덤불', puddles: '웅덩이(비 올 때)', rocks: '바위', mush: '버섯', path: '길', flowers: '꽃·풀' };
+  const NAME = { pond: '연못', fire: '모닥불', bed: '꽃밭', tree: '열매나무', perch: '횃대', stump: '그루터기', bushes: '덤불', puddles: '웅덩이(비 올 때)', rocks: '바위', mush: '버섯', path: '길', flowers: '꽃·풀', sc: '스칼렛 소품' };
   const FNAME = { daisy: '데이지', pink: '분홍꽃', tulip: '튤립', bell: '파랑꽃', sun: '해바라기', grass: '풀', tall: '키 큰 풀', reed: '갈대', cat: '부들' };
   const BAKED = new Set(['pond', 'fire', 'bed', 'stump', 'rocks', 'mush', 'path', 'kinds']);
-  function setLayout(L) { for (const k of KEYS_OBJ) if (L[k]) { delete LAYOUT[k].lk; Object.assign(LAYOUT[k], L[k]); } LAYOUT.kinds = JSON.parse(JSON.stringify(L.kinds || {})); for (const k of KEYS_ARR) if (L[k]) LAYOUT[k].splice(0, LAYOUT[k].length, ...JSON.parse(JSON.stringify(L[k]))); LAYOUT.look = JSON.parse(JSON.stringify(L.look || {})); if (Array.isArray(L.hide) && L.hide.length) LAYOUT.hide = [...L.hide]; else delete LAYOUT.hide; uiIn(L); }
+  function setLayout(L) { for (const k of KEYS_OBJ) if (L[k]) { delete LAYOUT[k].lk; Object.assign(LAYOUT[k], L[k]); } LAYOUT.kinds = JSON.parse(JSON.stringify(L.kinds || {})); LAYOUT.scArt = JSON.parse(JSON.stringify(L.scArt || {})); LAYOUT.sc = JSON.parse(JSON.stringify(L.sc || [])); for (const k of KEYS_ARR) if (L[k]) LAYOUT[k].splice(0, LAYOUT[k].length, ...JSON.parse(JSON.stringify(L[k]))); LAYOUT.look = JSON.parse(JSON.stringify(L.look || {})); if (Array.isArray(L.hide) && L.hide.length) LAYOUT.hide = [...L.hide]; else delete LAYOUT.hide; uiIn(L); }
   let bgQ = false, propQ = false;
   function rebuild(bg) {
     if (bg) { if (!bgQ) { bgQ = true; requestAnimationFrame(() => { bgQ = false; drawBg(); document.querySelectorAll('.glint').forEach(g => g.remove()); addGlints(); }); } }
@@ -10692,15 +10706,16 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     L.puddles.forEach((q, i) => { const zQ = LZi('puddle', 'puddles', q); o('puddles', i, [q.x - q.w * zQ / 2, q.y - q.w * zQ * .175, q.w * zQ, q.w * zQ * .35], (dx, dy) => { q.x += dx; q.y += dy; }); });
     L.rocks.forEach((r, i) => { const zR = LZi('rock', 'rocks', r); o('rocks', i, [r[0] - r[2] * zR, r[1] - r[3] * 2 * zR, r[2] * 2 * zR, r[3] * 2 * zR], (dx, dy) => { r[0] += dx; r[1] += dy; }); });
     L.mush.forEach((m, i) => o('mush', i, [m[0] - 8, m[1] - 14, 16, 16], (dx, dy) => { m[0] += dx; m[1] += dy; }));
+    (L.sc || []).forEach((r, i) => { const I = scImg(r[0]) || { w: 24, h: 24 }; o('sc', i, [r[1] - I.w / 2, r[2] - I.h, I.w, I.h], (dx, dy) => { r[1] += dx; r[2] += dy; }); });
     L.flowers.forEach((f, i) => { const s = flwSz(f[0], f[3]), w = Math.max(s.w, 26), hh = Math.max(s.h, 26); o('flowers', i, [f[1] - w / 2, f[2] - hh, w, hh], (dx, dy) => { f[1] += dx; f[2] += dy; }); });
     return out;
   }
   function selInfo() {
     if (!sel) return null;
     const v = sel.key === 'path' ? LAYOUT.path[sel.i] : sel.i >= 0 ? LAYOUT[sel.key][sel.i] : LAYOUT[sel.key];
-    const nm = sel.key === 'flowers' ? FNAME[v[0]] : NAME[sel.key], pos = Array.isArray(v) ? (sel.key === 'flowers' ? [v[1], v[2]] : [v[0], v[1]]) : [v.x, v.y];
+    const nm = sel.key === 'flowers' ? FNAME[v[0]] : sel.key === 'sc' ? LAYOUT.scArt[v[0]]?.n || NAME.sc : NAME[sel.key], pos = Array.isArray(v) ? (sel.key === 'flowers' || sel.key === 'sc' ? [v[1], v[2]] : [v[0], v[1]]) : [v.x, v.y];
     const lkK = LKK(sel.key, v), id = lkK ? ilk(sel.key, v) : null;
-    return { lk: lkK, kind: typeof id === 'string' && LAYOUT.kinds?.[id] ? id : null, kindName: typeof id === 'string' ? LAYOUT.kinds?.[id]?.n || null : null, canKind: !!lkK && !ONE_LK[sel.key], key: sel.key, i: sel.i, name: nm, x: pos[0], y: pos[1], del: ['bushes', 'puddles', 'rocks', 'mush', 'flowers'].includes(sel.key), size: sel.key === 'pond' ? [POND.rx * 2, POND.ry * 2] : null };
+    return { lk: lkK, kind: typeof id === 'string' && LAYOUT.kinds?.[id] ? id : null, kindName: typeof id === 'string' ? LAYOUT.kinds?.[id]?.n || null : null, canKind: !!lkK && !ONE_LK[sel.key], key: sel.key, i: sel.i, name: nm, x: pos[0], y: pos[1], del: ['bushes', 'puddles', 'rocks', 'mush', 'flowers', 'sc'].includes(sel.key), size: sel.key === 'pond' ? [POND.rx * 2, POND.ry * 2] : null };
   }
   function renderHands(quiet) {
     hands.innerHTML = '';
@@ -10790,12 +10805,17 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
   api.setLayout = L => { undo.push(snap()); setLayout(L); sel = null; rebuild(true); renderHands(); api.onLayout?.(JSON.parse(snap()), undo.length); };
   api.undo = () => { if (!undo.length) return; setLayout(JSON.parse(undo.pop())); sel = null; rebuild(true); renderHands(); api.onLayout?.(JSON.parse(snap()), undo.length); };
   api.undoN = () => undo.length;
-  api.del = () => { if (!sel || sel.i < 0 || sel.key === 'path') return; undo.push(snap()); const k = sel.key; LAYOUT[k].splice(sel.i, 1); sel = null; changed(k === 'flowers' || k === 'bushes' || k === 'puddles' ? k : 'rocks'); };
+  api.del = () => { if (!sel || sel.i < 0 || sel.key === 'path') return; undo.push(snap()); const k = sel.key; LAYOUT[k].splice(sel.i, 1); sel = null; changed(k === 'flowers' || k === 'bushes' || k === 'puddles' || k === 'sc' ? k : 'rocks'); };
+  // v8.22 경완: 스칼렛 소품을 소품 목록에 넣기 / 빼기 (빼면 맵에 놓인 것도 함께 사라짐)
+  api.scDef = (id, a) => { if (!id || !a?.px?.length) return; undo.push(snap()); LAYOUT.scArt = { ...(LAYOUT.scArt || {}), [id]: { n: String(a.n || '소품').slice(0, 16), px: a.px, pal: a.pal || {}, acts: (a.acts || []).map(o => ({ w: o.w, a: o.a })) } }; changed('scArt'); };
+  api.scUndef = id => { if (!LAYOUT.scArt?.[id]) return; undo.push(snap()); delete LAYOUT.scArt[id]; LAYOUT.sc = (LAYOUT.sc || []).filter(r => r[0] !== id); if (sel?.key === 'sc') sel = null; delete scCache[id]; changed('sc'); };
   api.nudge = (dx, dy) => { const t = sel && items().find(t => t.key === sel.key && t.i === sel.i); if (!t) return; undo.push(snap()); t.mv(dx, dy); changed(sel.key); };
   api.ADD = [['daisy', '데이지'], ['pink', '분홍꽃'], ['tulip', '튤립'], ['bell', '파랑꽃'], ['sun', '해바라기'], ['grass', '풀'], ['tall', '키 큰 풀'], ['rockS', '작은 바위'], ['rockL', '큰 바위'], ['mush', '버섯'], ['bush', '덤불'], ['puddle', '웅덩이']];
   api.addIcon = k => SPR.flw[k]?.src || (k === 'bush' ? SPR.bush : k === 'puddle' ? SPR.puddle : '');
   // v3.61 작업실: 소품 창에서 끌어 온 자리(화면 좌표)에 놓는다. 좌표가 없으면 가운데
-  api.add = (k0, X, Y) => { const KD = LAYOUT.kinds?.[k0], k = KD ? KD.b : k0; const p = X == null ? null : toField(X, Y), cx = p ? clamp(Math.round(p.x), XL + 8, XR - 8) : Math.round((XL + XR) / 2), cy = p ? clamp(Math.round(p.y), MIN_Y - 40, H - 8) : 330; undo.push(snap());
+  api.add = (k0, X, Y) => { const KD = LAYOUT.kinds?.[k0], k = KD ? KD.b : k0; const p = X == null ? null : toField(X, Y), cx = p ? clamp(Math.round(p.x), XL + 8, XR - 8) : Math.round((XL + XR) / 2), cy = p ? clamp(Math.round(p.y), MIN_Y - 40, H - 8) : 330;
+    if (typeof k0 === 'string' && k0.startsWith('sc:')) { const id = k0.slice(3); if (!LAYOUT.scArt?.[id]) return; undo.push(snap()); (LAYOUT.sc = LAYOUT.sc || []).push([id, cx, cy]); sel = { key: 'sc', i: LAYOUT.sc.length - 1 }; changed('sc'); return; }
+    undo.push(snap());
     if (SPR.flw[k]) { LAYOUT.flowers.push([k, cx, cy]); sel = { key: 'flowers', i: LAYOUT.flowers.length - 1 }; }
     else if (k === 'rockS') { LAYOUT.rocks.push([cx, cy, 10, 7, 1, 13 + LAYOUT.rocks.length * 2]); sel = { key: 'rocks', i: LAYOUT.rocks.length - 1 }; }
     else if (k === 'rockL') { LAYOUT.rocks.push([cx, cy, 16, 10, 2, 17 + LAYOUT.rocks.length * 2]); sel = { key: 'rocks', i: LAYOUT.rocks.length - 1 }; }
@@ -10806,12 +10826,14 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     changed(SPR.flw[k] ? 'flowers' : k === 'bush' ? 'bushes' : k === 'puddle' ? 'puddles' : 'rocks'); };
   // v3.67 경완: 맵에 놓인 소품 하나하나 (작업실 "맵에 있는 소품" 탭)
   api.insts = () => { const C = api.cat(), oneI = Object.fromEntries(C.one.map(r => [r[0], r[2]])); return items().map(({ key, i }) => { const v = i >= 0 ? LAYOUT[key][i] : LAYOUT[key], k = LKK(key, v), id = k ? ilk(key, v) : null;
+    if (key === 'sc') return { key, i, name: LAYOUT.scArt[v[0]]?.n || NAME.sc, kindName: null, icon: scImg(v[0])?.src || '', fr: 0 };
     return { key, i, name: key === 'flowers' ? FNAME[v[0]] : NAME[key], kindName: typeof id === 'string' ? LAYOUT.kinds?.[id]?.n || null : null, icon: key === 'fire' ? SPR.flame : k ? api.lookIcon(k, LKi(k, key, v)) : oneI[key] || '', fr: key === 'fire' ? 6 : 0 }; }); };
   api.pick = (key, i = -1) => { if (!(key in LAYOUT)) return; sel = { key, i }; renderHands(); api.onSel?.(selInfo(), undo.length); };
   api.cat = () => { const n = k => LAYOUT[k].length, nf = k => LAYOUT.flowers.filter(f => f[0] === k).length, nr = sz => LAYOUT.rocks.filter(r => r[4] === sz).length;
     return { one: [['tree', '열매나무', SPR.tree], ['perch', '횃대', SPR.perch], ['fire', '모닥불', SPR.flame, 6], ['bed', '꽃밭', SPR.flw.sun.src], ['stump', '그루터기', api.lookIcon('stump')], ['pond', '연못', SPR.lilyF]],
       hid: [...(LAYOUT.hide || [])], add: api.ADD.filter(([k]) => !LAYOUT.hide?.includes(k)).map(([k, nm]) => [k, nm, api.lookIcon(k) || api.addIcon(k), SPR.flw[k] ? nf(k) : k === 'bush' ? n('bushes') : k === 'puddle' ? n('puddles') : k === 'mush' ? n('mush') : nr(k === 'rockS' ? 1 : 2)]),
-      mine: Object.entries(LAYOUT.kinds || {}).map(([id, K]) => [id, K.n, api.lookIcon(id), kindCount(id), K.b]) }; };
+      mine: Object.entries(LAYOUT.kinds || {}).map(([id, K]) => [id, K.n, api.lookIcon(id), kindCount(id), K.b]),
+      sc: Object.entries(LAYOUT.scArt || {}).map(([id, A]) => ['sc:' + id, A.n, scImg(id)?.src || '', (LAYOUT.sc || []).filter(r => r[0] === id).length, id]) }; };
   // ---------- 포켓몬 풀어놓기: 작업실 목록에서 끌어 온 포켓몬. 소품 위면 빛나고, 놓으면 그 소품 반응 ----------
   const toField = (cx, cy) => { const r = stage.getBoundingClientRect(); return { x: (cx - r.left) / scale, y: (cy - r.top) / scale }; };
   api.hover = (cx, cy) => { if (cx == null) { markProp(null); return null; } const p = toField(cx, cy), pr = propAt(p.x, p.y); markProp(pr); return pr ? pr.n : null; };
