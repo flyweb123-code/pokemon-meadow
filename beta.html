@@ -5125,8 +5125,8 @@ function scImg(id) { const A = LAYOUT.scArt?.[id]; if (!A?.px?.length) return nu
   A.px.forEach((r, y) => { for (let x = 0; x < r.length; x++) { const col = A.pal?.[r[x]]; if (r[x] === '.' || !col) continue; if (flame(col, y)) { fg.fillStyle = col; fg.fillRect(x, y, 1, 1); nf++; fb = Math.max(fb, y); fx0 = Math.min(fx0, x); fx1 = Math.max(fx1, x); fy0 = Math.min(fy0, y); } else { g.fillStyle = col; g.fillRect(x, y, 1, 1); } } });
   if (fc && nf < 3) g.drawImage(fc, 0, 0);
   return scCache[id] = { key, src: c.toDataURL(), w: w * SC_PX, h: h * SC_PX, fl: fc && nf >= 3 ? scFlBox(fx0, fx1, fy0, fb, w, h) : null }; }
-// v8.29 경완: 그려진 불꽃 칸 대신 모닥불과 같은 불꽃(SPR.flame 6장)을 그 자리에 크게 — 불꽃 칸 너비의 1.8배, 밑동은 불꽃 칸 아래 끝
-function scFlBox(x0, x1, y0, y1, w, h) { const fw = Math.max(5, (x1 - x0 + 1) * 1.8), fh = Math.max(fw * 22 / 16, (y1 - y0 + 1) * 1.25), cx = (x0 + x1 + 1) / 2;
+// v8.29 경완: 그려진 불꽃 칸 대신 모닥불과 같은 불꽃(SPR.flame 6장)을 그 자리에 크게 — 불꽃 칸 너비의 1.35배 (v8.32: 다시 그린 큰 횃불엔 1.8배가 너무 컸음), 밑동은 불꽃 칸 아래 끝
+function scFlBox(x0, x1, y0, y1, w, h) { const fw = Math.max(5, (x1 - x0 + 1) * 1.35), fh = Math.max(fw * 22 / 16, (y1 - y0 + 1) * 1.05), cx = (x0 + x1 + 1) / 2;
   return { l: (cx - fw / 2) / w * 100, t: (y1 + 1 - fh) / h * 100, w: fw / w * 100, h: fh / h * 100 }; }
 const scS = r => +r?.[3] || 1;
 // v8.31 경완: 불·조명처럼 빛을 내는 소품은 밤에 모닥불처럼 둘레를 밝힌다 (scArt.glow 가 있으면 그걸로, 없으면 이름으로)
@@ -5925,7 +5925,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.31';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.32';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
