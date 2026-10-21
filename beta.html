@@ -5822,7 +5822,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.78';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.79';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6416,7 +6416,7 @@ function mgAbility(down) {
   if (k === 'lev' && g.abK === 'lev' && g.fx.flyT > 0) { if (!g.fx.flying) { g.fx.flying = true; g.fx.lev = 1; g.levV = 0; g.levD = 0; sfx('ab', 'lev'); } return; }   /* 지속시간 안에서는 다시 누르면 또 떠오름 */
   if (k === 'fly') { if (!down) return; const flap = () => { const top = g.y > g.GY - 70; g.vy = Math.max(g.vy, 0) * .45 + (top ? 0 : 70); g.flI = top ? 0 : MG_FLY_I; g.sq = .8; g.sqv = 0; g.y = Math.max(g.y, .5); g.flapT = .25;   /* v7.21 경완: 쫀득 날갯짓 — 꾹 눌렸다가 0.11초 동안 밀어 올림 */ g.cut = true; g.jn = Math.max(g.jn, 1); mgFx(g, g.PX - 8, g.GY - g.y - MG_PH / 2 + 10, '#ffffff', 4, 80); };   /* v6.29 경완: 누르는 만큼이 아니라 칠 때마다 날갯짓 한 번씩 솟는다 */
     if (g.abK === 'fly' && g.fx.flyT > 0) { flap(); sfx('jmp2'); return; } if (g.cool > 0) return; g.fx.flyT = 5.5 * (g.pas?.pow ? 1.5 : 1); g.flyE = 0; flap(); sfx('ab', 'fly');   /* v7.13 경완: 중력을 약하게(×0.38) — 한 번씩 톡 눌러 둥실 띄우는 느낌 */ mgAbStart(g, 'fly'); mgHud(); return; }   // 쿨타임은 3초가 끝난 뒤 (mgAbEnd)
-  if (k === 'surf') { if (!down) { if (g.fx.surf > 0) g.fx.surf = 0; return; } if (g.cool > 0 || g.fx.surf > 0) return; g.fx.surf = 2.5 * (g.pas?.pow ? 1.5 : 1); if (g.y > 0) { g.sL = Math.max(g.sL || 0, g.y); g.y = 0; g.vy = 0; g.jn = 0; mgFx(g, g.PX, g.GY - g.sL + 10, '#5ab0ff', 12, 220); mgFx(g, g.PX, g.GY - g.sL + 10, '#e8f6ff', 8, 160); }   /* v7.78 경완: 공중에서 쓰면 그 높이에서 바로 파도가 받쳐 올라탐 (높이를 파도로 옮기고 파도는 원래 높이로 천천히) */ mgAbStart(g, 'surf'); sfx('ab', 'surf'); return; }   // v6.18 경완: 파도타기도 꾹 누르는 동안만, 떼면 끝
+  if (k === 'surf') { if (!down) { if (g.fx.surf > 0) g.fx.surf = 0; return; } if (g.cool > 0 || g.fx.surf > 0) return; g.fx.surf = 2.5 * (g.pas?.pow ? 1.5 : 1); if (g.y > 0) { g.sL = Math.max(g.sL || 0, g.y); g.y = 0; g.vy = 0; g.jn = 0; mgFx(g, g.PX, g.GY - g.sL + 10, '#5ab0ff', 12, 220); mgFx(g, g.PX, g.GY - g.sL + 10, '#e8f6ff', 8, 160); }   /* v7.78 경완: 공중에서 쓰면 그 높이에서 바로 파도가 받쳐 올라탐 (높이를 파도로 옮기고 파도는 원래 높이로 천천히) */ g.y = .5; mgLift(g, 330, true); g.spinD = .27;   /* v7.79 경완: 파도에 올라탈 때 살짝 튀어 오르며 한 바퀴 */ mgAbStart(g, 'surf'); sfx('ab', 'surf'); return; }   // v6.18 경완: 파도타기도 꾹 누르는 동안만, 떼면 끝
   if (k === 'punch') { if (!down) { if (g.pcH != null) mgPunchRel(g); return; } if (g.cool > 0 || g.pcH != null || g.fx.punch) return; g.pcH = 0; g.pcS = 0; return; }   /* v6.96 경완: 꾹 모았다가 떼면 바로 앞 포켓몬을 볼링공처럼 (mgPunchRel → mgBowl) */
   if (k === 'charm') { if (!down) { if (g.fx.cmW > 0) g.fx.cmW = 0; return; } if (g.cool > 0 || g.fx.cmW > 0) return; g.fx.cmW = g.cmT = MG_CM_T * (g.pas?.pow ? 1.3 : 1); g.cmB = 0; mgCharmGrab(g); mgAbStart(g, 'charm'); return; }   /* v6.94 경완: 누르는 동안 나오는 포켓몬까지 다 붙고, 떼거나 시간이 다 되면 펑 (mgAbEnd) */
   if (k === 'bolt') { if (!down) { if (g.fx.bolt > 0) g.fx.bolt = 0; return; } if (g.cool > 0 || g.fx.bolt > 0) return; g.fx.bolt = g.boltT0 = 2 * (g.pas?.pow ? 1.5 : 1); g.zapT = 0; mgAbStart(g, 'bolt'); sfx('ab', 'bolt'); mgDust(g, 14, 300); return; }   /* v6.69 경완: 움츠렸다 튀어 나가는 동작은 빼고 속도감만 (더 빠르게 + 뒷배경도 빠르게 흐름) */   // 떼면 mgAbEnd 에서 쿨타임
@@ -6556,7 +6556,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
   if (g.shake > 0) g.shake = Math.max(0, g.shake - dt);
   if (g.fx.bolt > 0 && !g.over && (g.zapT = (g.zapT || 0) - dt) <= 0) { const bk = 1 - g.fx.bolt / (g.boltT0 || 2); g.zapT = .07 + Math.random() * .07 - bk * .03; sfx('zap', bk); }   // v6.94 경완: 누르는 동안 전기 지지직, 갈수록 촘촘하고 크게
   { const k = 520, d = 18, sT = g.fx.bolt > 0 && !g.over ? 1 - .36 * Math.min(1, (1 - g.fx.bolt / (g.boltT0 || 2)) * 1.4) + Math.sin(g.t * 70) * .015 : 1; for (let h = dt; h > 1e-6; h -= 1 / 60) { const e = Math.min(h, 1 / 60); g.sqv = (g.sqv || 0) + ((sT - (g.sq || 1)) * k - (g.sqv || 0) * d) * e; g.sq = (g.sq || 1) + g.sqv * e; } if (!isFinite(g.sq) || !isFinite(g.sqv)) { g.sq = 1; g.sqv = 0; } }   /* v6.94 경완: 오버드라이브 꾹 누르는 동안 몸이 점점 눌림 (sT). 큰 dt 에 용수철이 튀어 NaN 되던 것 → 잘게 나눔 */
-  if (g.spin > 0) g.spin = Math.max(0, g.spin - dt / .42);
+  if (g.spin > 0) g.spin = Math.max(0, g.spin - dt / (g.spinD || .42)); else g.spinD = 0;
   { const on = g.fx.bolt > 0 && !g.over, T = 0, L = on ? .1 : 0, M = on ? .3 + 1.6 * Math.min(1, (1 - g.fx.bolt / (g.boltT0 || 2)) * 1.25) ** 1.4 : 0;   /* v6.99 경완: 누를수록 점점 가속 (×1.3 → ×2.5) */   // 오버드라이브 몸 위치·기울기·빠르기 (용수철)
     const sp = (k, v, x, tg, K, D) => { const h = Math.min(dt, 1 / 30); g[v] = (g[v] || 0) + ((tg - (g[x] || 0)) * K - (g[v] || 0) * D) * h; g[x] = (g[x] || 0) + g[v] * h; };   // v6.69: 처음 값이 없을 때 NaN 되던 것 + 큰 dt 에 튀지 않게
     sp(0, 'bov', 'bo', T, 230, 11); sp(0, 'blv', 'bl', L, 320, 13); sp(0, 'bmv', 'bm', M, 140, 16);
