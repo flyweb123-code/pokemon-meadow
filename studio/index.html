@@ -529,7 +529,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.23';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.24';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2014,6 +2014,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
   ['3.21', '10월 22일', ['크기 조절 모드 동작별 떠 있기 창: 필드에 있는 그 포켓몬 모습(암컷 모습 등) 그대로 그리고 그림자도 필드와 같게 (레디바 등)', '깡충 동작 칸에서 뛰어오를수록 그림자가 작아진다 (게임 v8.13)']],
+  ['3.24', '10월 22일', ['뉴트럴: \'작업본으로 지금 돌려 보기\' 결과가 새로고침해도 남는다. 그 뒤로 값이 바뀌면 다시 돌려 보라고 알려 주고, 아침 분석이 새로 오면 그걸 보여 준다']],
   ['3.23', '10월 22일', ['뉴트럴의 골드 제안은 5G 단위로 떨어지게, 지금 부화 골드가 5G 단위가 아니면 맞추는 제안도 낸다']],
   ['3.22', '10월 22일', ['직원 DM 을 없애고, 뉴트럴·스칼렛 작업물에 바로 피드백을 남기면 다음 날 아침 작업에서 반영하고 "반영했어요" 를 달아 준다']],
   ['3.20', '10월 22일', ['직원 메뉴: 뉴트럴의 조언(100명이 90일 동안 게임을 하는 시뮬레이션으로 너무 쉬움·적당·너무 어려움을 보고 고칠 값을 제안, 작업본에 넣기), 스칼렛의 작업물(매일 소품 10개와 상호작용), 직원 DM', '직원은 Claude 가 맡는다: 매일 아침 일하고, DM 은 하루 네 번(9·13·17·21시) 확인해서 답장한다']],
@@ -3115,6 +3116,8 @@ const when = t => { const d = new Date(t), n = new Date(), same = d.toDateString
 
 // ---------- 뉴트럴의 조언 ----------
 let NEU_R = null, NEU_L = null, NEU_BUSY = false;
+try { NEU_L = JSON.parse(store.get('st-neu-l') || 'null'); } catch (e) {}   // v3.24 경완: '지금 돌려 보기' 결과는 새로고침해도 남는다 (이 기기)
+const neuSig = m => { const t = JSON.stringify({ o: m.odds, p: m.pity, b: m.b, q: m.probs, c: m.price }); let h = 0; for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) | 0; return h; };   // 이 결과를 낸 값 (작업본이 바뀌었는지 보려고)
 function neuModel() {
   const L = tierLists(), Z = tierZ(L), probs = {}; for (let g = 1; g <= 5; g++) probs[g] = Object.entries(probOf(g, L, Z)).filter(([, p]) => p > 0).map(([s, p]) => [+s, p]);
   const S = A.SPECIES, grade = sp => { const d = S[sp]; if (!d) return 1; if (d.leg || d.my) return 5; const c = d.cr ?? 45; return c >= 190 ? 1 : c >= 120 ? 2 : c >= 45 ? 3 : 4; },
@@ -3129,33 +3132,35 @@ function neuModel() {
 window.__neuRun = () => { const m = neuModel(), r = NEU.advise(m); return { at: Date.now(), app: gameVer(), data: LIVE.ver || 0, s: neuSlim(r.s), J: r.J, P: r.P }; };
 const neuSlim = s => ({ days: s.days, N: s.N, users: s.users, by: s.by, all: s.all, rare: s.rare && { ...s.rare, n: spName(s.rare.sp) } });
 async function neuLoad() { NEU_R = await staffGet('config/staff/neutral.json', { runs: [] }); if (view === 'neu') renderNeu(); }
-function neuRunLocal() { if (NEU_BUSY || !A) return; NEU_BUSY = true; renderNeu(); setTimeout(() => { try { const r = NEU.advise(neuModel()); NEU_L = { at: Date.now(), s: neuSlim(r.s), J: r.J, P: r.P, draft: changes().length }; } finally { NEU_BUSY = false; renderNeu(); } }, 30); }
+function neuRunLocal() { if (NEU_BUSY || !A) return; NEU_BUSY = true; renderNeu(); setTimeout(() => { try { const m = neuModel(), r = NEU.advise(m); NEU_L = { at: Date.now(), s: neuSlim(r.s), J: r.J, P: r.P, draft: changes().length, sig: neuSig(m) }; store.set('st-neu-l', JSON.stringify(NEU_L)); } finally { NEU_BUSY = false; renderNeu(); } }, 30); }
 const LVN = { easy: ['너무 쉬움', 'var(--warn)'], ok: ['적당', 'var(--good)'], hard: ['너무 어려움', 'var(--bad)'] };
 function neuPatch(p) { if (p.bal) { D.bal = { ...(D.bal || {}) }; for (const [k, v] of Object.entries(p.bal)) { if (JSON.stringify(v) === JSON.stringify(ORIG.bal[k])) delete D.bal[k]; else D.bal[k] = v; } if (!Object.keys(D.bal).length) delete D.bal; }
   if (p.pity) { D.pity = { ...(D.pity || {}), ...p.pity }; for (const k of Object.keys(D.pity)) if (D.pity[k] === ORIG.pity[k]) delete D.pity[k]; if (!Object.keys(D.pity).length) delete D.pity; }
   if (p.odds) { D.odds = p.odds; if (p.odds.every((x, i) => Math.abs(x - ORIG.odds[i]) < 1e-9)) delete D.odds; }
   saveDraft(); dstat(); toast('작업본에 넣었어요. 배포하기에서 확인하고 올려 주세요', true); NEU_L = null; neuRunLocal(); }
 function renderNeu() {
-  const runs = NEU_R?.runs || [], last = runs[0], R = NEU_L || last;
+  const runs = NEU_R?.runs || [], last = runs[0];
+  if (NEU_L && last && last.at > NEU_L.at) { NEU_L = null; store.set('st-neu-l', ''); }   // 아침 분석이 더 새것이면 그걸로
+  const R = NEU_L || last, stale = NEU_L && A && NEU_L.sig !== neuSig(neuModel());
   const bar = j => { const B = NEU.BANDS.find(b => b.id === j.id), lv = LVN[j.lv]; return `<div class="nb-r"><div class="nb-n">${esc(j.n)}<small>${esc(j.why)}</small></div><b class="num" style="color:${lv[1]}">${esc(j.txt)}</b><span class="tag" style="background:${lv[1]}">${lv[0]}</span><div class="nb-band small mute">적당 ${esc(j.lo)} ~ ${esc(j.hi)}</div></div>`; };
   const sugg = (P, live) => !P?.length ? '<div class="empty">지금은 고칠 거리가 없어요. 너무 쉽지도 어렵지도 않아요.</div>' : P.map((x, i) => `<div class="nb-s"><div><b>${esc(x.t)}</b><div class="small mute">${esc(x.why)}</div>${x.after?.length ? `<div class="small">고치면 ${x.after.map(a => `${esc(a.n)} ${esc(a.from)} → <b style="color:${LVN[a.lv][1]}">${esc(a.to)}</b>`).join(', ')}</div>` : ''}</div>${live && x.patch ? `<button class="btn" data-np="${i}">작업본에 넣기</button>` : ''}</div>`).join('');
   const per = s => `<div class="tblw"><table class="tov nb-t"><tr><th>생활 패턴</th><th class="r">하루 km</th><th class="r">30일 도감</th><th class="r">첫 에픽</th><th class="r">첫 전설</th><th class="r">하루 골드</th><th class="r">친밀도 만점</th><th class="r">가방(30일)</th></tr>${NEU.PERSONAS.map(P => { const o = s.by[P.id]; if (!o) return ''; const d = v => v > s.days ? `${s.days}일+` : Math.round(v) + '일';
     return `<tr><td><b>${esc(P.name)}</b> <span class="small mute">${o.n}명</span><div class="small mute">${esc(P.d)}</div></td><td class="r num">${o.km.toFixed(1)}</td><td class="r num">${Math.round(o.dex30 * 100)}%</td><td class="r num">${d(o.fE)}</td><td class="r num">${d(o.fL)}</td><td class="r num">${Math.round(o.gpd).toLocaleString()}G</td><td class="r num">${d(o.frMax)}</td><td class="r num">${Math.round(o.bag30)}</td></tr>`; }).join('')}</table></div>`;
   const text = last?.text ? `<div class="stf-say">${last.text.split(/\n+/).map(p => `<p>${esc(p)}</p>`).join('')}</div>` : '<div class="stf-say"><p>아직 아침 분석을 올리지 않았어요. 매일 아침에 100명이 90일 동안 게임하는 걸 돌려 보고 여기에 적어 둘게요. 지금 바로 보고 싶으면 아래 버튼을 눌러 주세요.</p></div>';
   $('#neuC').innerHTML = `<div class="card stf-hd">${face('neu', 5)}<div><h2 style="margin:0">뉴트럴 <span class="small mute">밸런스 담당</span></h2>${last ? `<div class="small mute">${when(last.at)} 분석 · 게임 ${esc(last.app || '')} · 데이터 v${last.data}</div>` : ''}${text}${fbBox('neu', 'all', '', '뉴트럴에게 피드백 남기기 (분석 방식·기준·말투 등)')}</div></div>
-    <div class="card"><h2>지금 상태 ${NEU_L ? `<span class="small mute">작업본 기준 (바뀐 곳 ${NEU_L.draft}개) · 방금 돌림</span>` : last ? '<span class="small mute">배포된 값 기준 · 아침 분석</span>' : ''}</h2>
+    <div class="card"><h2>지금 상태 ${NEU_L ? `<span class="small mute">작업본 기준 (바뀐 곳 ${NEU_L.draft}개) · ${when(NEU_L.at)}에 돌림</span>${stale ? ' <span class="tag" style="background:var(--warn)">그 뒤로 값이 바뀌었어요 · 다시 돌려 보세요</span>' : ''}` : last ? '<span class="small mute">배포된 값 기준 · 아침 분석</span>' : ''}</h2>
       ${R ? `<div class="nb">${R.J.map(bar).join('')}</div>` : '<div class="empty">아직 돌린 결과가 없어요.</div>'}
       <div class="chips"><button class="btn" id="neuRun"${NEU_BUSY || !A ? ' disabled' : ''}>${NEU_BUSY ? '100명이 90일 동안 노는 중…' : '작업본으로 지금 돌려 보기'}</button>${NEU_L && last ? '<button class="chip" id="neuBack">아침 분석으로 보기</button>' : ''}</div></div>
     <div class="card"><h2>고칠 거리</h2><div class="small mute">제안마다 그 값으로 한 번 더 돌려 본 결과를 붙였어요. 작업본에 넣어도 배포하기를 눌러야 게임에 들어가요.</div>${R ? sugg(R.P, !!A) : ''}</div>
     ${R ? `<div class="card wide2"><h2>생활 패턴별 <span class="small mute">가운데 사람 기준 · 도감 ${R.s.N}종 중 · 제일 드문 포켓몬 ${esc(R.s.rare?.n || '')} ${Math.round(R.s.rare?.km || 0).toLocaleString()}km에 하나꼴</span></h2>${per(R.s)}</div>` : ''}
     ${runs.length ? `<div class="card"><h2>기록</h2><div class="nb-h">${runs.slice(0, 30).map(r => { const c = { easy: 0, hard: 0 }; r.J.forEach(j => c[j.lv] = (c[j.lv] || 0) + 1); return `<details><summary><b>${new Date(r.at).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}</b><span class="small mute">게임 ${esc(r.app || '')} · v${r.data}</span><span class="sp"></span>${c.easy ? `<span class="tag" style="background:var(--warn)">쉬움 ${c.easy}</span>` : ''}${c.hard ? `<span class="tag" style="background:var(--bad)">어려움 ${c.hard}</span>` : ''}${!c.easy && !c.hard ? '<span class="tag" style="background:var(--good)">적당</span>' : ''}</summary>${r.text ? `<div class="small">${esc(r.text)}</div>` : ''}<div class="small mute">${r.J.map(j => `${esc(j.n)} ${esc(j.txt)}`).join(' · ')}</div></details>`; }).join('')}</div></div>` : ''}`;
-  $('#neuI').innerHTML = `<h4>뉴트럴은 이렇게 일해요</h4><div class="small mute">매일 아침, 생활 패턴이 다른 100명이 지금 버전 게임을 90일 동안 한다고 치고 돌려 봐요. 알 줍기·천장·부화기·골드·친밀도·짝꿍 진화·진화의 돌 사기·미니게임과 미션까지 게임 규칙 그대로예요.</div>
+  $('#neuI').innerHTML = `<h4>뉴트럴은 이렇게 일해요</h4><div class="small"><b>매일 아침 7시 43분</b>에 일을 시작해서, 보통 8시 전후에 새 분석이 올라와요.</div><div class="small mute">매일 아침, 생활 패턴이 다른 100명이 지금 버전 게임을 90일 동안 한다고 치고 돌려 봐요. 알 줍기·천장·부화기·골드·친밀도·짝꿍 진화·진화의 돌 사기·미니게임과 미션까지 게임 규칙 그대로예요.</div>
     <div class="small mute">정해 둔 목표치는 없어요. 칸마다 '너무 쉬움 · 적당 · 너무 어려움'으로만 보고, 치우친 칸이 있으면 고칠 값을 제안해요.</div>
     <h4>100명</h4><div class="small">${NEU.PERSONAS.map(P => `<div><b>${esc(P.name)}</b> ${P.n}명 <span class="mute">· ${esc(P.d)}</span></div>`).join('')}</div>
     <div class="small mute">같은 값이면 늘 같은 결과가 나오게 돌려서, 값을 바꾼 효과만 비교돼요.</div><div class="small mute">위 칸에 피드백을 남기면 다음 날 아침 분석부터 반영해요.</div>`;
 }
 $('#neuC').addEventListener('click', e => { const t = e.target;
-  if (t.id === 'neuRun') neuRunLocal(); else if (t.id === 'neuBack') { NEU_L = null; renderNeu(); }
+  if (t.id === 'neuRun') neuRunLocal(); else if (t.id === 'neuBack') { NEU_L = null; store.set('st-neu-l', ''); renderNeu(); }
   else if (t.dataset.np != null) { const P = (NEU_L || NEU_R?.runs?.[0])?.P?.[+t.dataset.np]; if (P) neuPatch(P.patch); } });
 
 // ---------- 스칼렛의 작업물 ----------
@@ -3171,7 +3176,7 @@ function renderSca() {
   $('#scaC').innerHTML = `<div class="card stf-hd">${face('sca', 5)}<div><h2 style="margin:0">스칼렛 <span class="small mute">소품 디자이너</span></h2>${last ? `<div class="small mute">${when(last.at)} · 소품 ${last.items.length}개</div>` : ''}<div class="stf-say"><p>${esc(last?.note || '매일 아침 필드에 놓을 소품 10개를 새로 그려서, 포켓몬들이 그 소품으로 뭘 할 수 있는지 같이 정리해 둘게요.')}</p></div>${fbBox('sca', 'all', '', '스칼렛에게 전체 피드백 남기기 (그림체·테마·상호작용 등)')}</div></div>
     <div class="card"><div class="search"><input id="scaQ" class="inp" placeholder="소품·포켓몬·상호작용 찾기" value="${esc(scaQ)}"></div></div>
     ${days.length ? days.map(d => { const L = d.items.filter(hit); return L.length ? `<div class="card wide2"><h2>${new Date(d.at).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })} <span class="small mute">${L.length}개${d.theme ? ' · ' + esc(d.theme) : ''}</span></h2><div class="sc-g">${L.map(card).join('')}</div></div>` : ''; }).join('') : '<div class="card"><div class="empty">아직 올린 작업물이 없어요. 내일 아침 첫 작업물이 올라와요.</div></div>'}`;
-  $('#scaI').innerHTML = `<h4>스칼렛은 이렇게 일해요</h4><div class="small mute">매일 아침 필드 소품 10개를 게임 그림과 같은 도트로 디자인해요. 소품마다 어떤 포켓몬이(타입·종) 어떻게 놀 수 있는지 상호작용을 같이 적어요.</div><div class="small mute">소품마다 아래 칸에 피드백을 남기면 다음 날 아침 스칼렛이 읽고 반영해요 (고쳐 그리기, 다음 작업에 적용). 게임에 넣는 건 따로 부탁해 주시면 돼요.</div>`;
+  $('#scaI').innerHTML = `<h4>스칼렛은 이렇게 일해요</h4><div class="small"><b>매일 아침 7시 43분</b>에 일을 시작해서, 보통 8시 전후에 새 작업물이 올라와요.</div><div class="small mute">매일 아침 필드 소품 10개를 게임 그림과 같은 도트로 디자인해요. 소품마다 어떤 포켓몬이(타입·종) 어떻게 놀 수 있는지 상호작용을 같이 적어요.</div><div class="small mute">소품마다 아래 칸에 피드백을 남기면 다음 날 아침 스칼렛이 읽고 반영해요 (고쳐 그리기, 다음 작업에 적용). 게임에 넣는 건 따로 부탁해 주시면 돼요.</div>`;
 }
 $('#scaC').addEventListener('input', e => { if (e.target.id !== 'scaQ') return; scaQ = e.target.value; clearTimeout(renderSca.t); renderSca.t = setTimeout(() => { renderSca(); const i = $('#scaQ'); i.focus(); i.setSelectionRange(scaQ.length, scaQ.length); }, 250); });
 
