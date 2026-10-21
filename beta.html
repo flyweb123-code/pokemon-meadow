@@ -211,7 +211,7 @@ html,.mon,.mon *,#stage,canvas{-webkit-tap-highlight-color:transparent}
 .hatch .win.aura.a2{--ac:240,160,64;--ar:.5}
 .hatch .win.aura.a3{--ac:79,149,220;--ar:.7}
 .hatch .win.aura.a4{--ac:160,112,216;--ar:.85}
-/* 등급이 오를수록 화려하게: 일반·희귀는 테두리 색만, 레어는 은은한 빛, 에픽은 두 겹 빛, 전설만 일렁이는 큰 후광 */
+/* 등급이 오를수록 화려하게: 일반·우수는 테두리 색만, 레어는 은은한 빛, 에픽은 두 겹 빛, 전설만 일렁이는 큰 후광 */
 .hatch .win.aura:not(.a5){animation:none}
 .hatch>.hrays{position:absolute;left:50%;top:50%;width:170vmax;height:170vmax;margin:-85vmax 0 0 -85vmax;pointer-events:none;opacity:0;transition:opacity .8s;
   background:repeating-conic-gradient(from 0deg,rgba(255,224,120,0) 0deg,rgba(255,224,120,.38) 6deg,rgba(255,224,120,.38) 9deg,rgba(255,224,120,0) 16deg,rgba(255,224,120,0) 24deg);-webkit-mask:radial-gradient(circle,#000 0,#000 18%,transparent 55%);mask:radial-gradient(circle,#000 0,#000 18%,transparent 55%);animation:hrays 14s linear infinite}
@@ -953,8 +953,16 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .small{font-size:12px;color:var(--dim)}
 .egg{--ec:#f6f4ea;--es:#6cc070;--esh:#d6d2c2;--eo:#383848;flex:none;width:54px;height:66px;position:relative;display:block}
 .egg svg{display:block;width:100%;height:100%}
-.egg .ck{display:none}.egg .eglow .kx{fill:#fff3a0}.egg .epc{position:absolute;left:0;top:0;width:100%;height:100%;transition:transform .12s steps(2,end)}.egg .epc.tl{transform-origin:5% 52%}.egg .epc.tr{transform-origin:95% 57%}.egg .elk{position:absolute;left:50%;top:30%;width:calc(30% + var(--lk,0) * 50%);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(#fffbe0 0 22%,#ffe066 40%,rgba(255,190,40,.55) 58%,transparent 72%);filter:drop-shadow(0 0 6px #ffc400);pointer-events:none;opacity:0}.egg.splitting .eglow .k1{display:none}.egg.c1 .k1,.egg.c2 .k2,.egg.c3 .k3{display:inline}
-.egg.g2{--es:#f0a040}.egg.g3{--es:#4f95dc}.egg.g4{--es:#a070d8}.egg.g5{--ec:#fff1b8;--esh:#e8d48a;--es:#e0a020;filter:drop-shadow(0 0 5px #ffe680)}
+.egg .ck,.egg .em{display:none}.egg .eglow .kx{fill:#fff3a0}.egg .epc{position:absolute;left:0;top:0;width:100%;height:100%;transition:transform .12s steps(2,end)}.egg .epc.tl{transform-origin:5% 52%}.egg .epc.tr{transform-origin:95% 57%}.egg .elk{position:absolute;left:50%;top:30%;width:calc(30% + var(--lk,0) * 50%);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(#fffbe0 0 22%,#ffe066 40%,rgba(255,190,40,.55) 58%,transparent 72%);filter:drop-shadow(0 0 6px #ffc400);pointer-events:none;opacity:0}.egg.splitting .eglow .k1{display:none}.egg.c1 .k1,.egg.c2 .k2,.egg.c3 .k3{display:inline}
+/* v7.81 경완: 등급이 오를수록 더 좋은 알 — 우수 띠, 레어 푸른 껍질·흰 띠·반짝, 에픽 보랏빛·보석·점선, 전설 금빛·붉은 띠·하늘 보석·점선 두 줄·후광 */
+.egg.g2{--es:#f0a040;--eb:#d8603a;--ebs:#b04428;--egm:#d8603a;--ebd:var(--ec)}
+.egg.g2 .eb,.egg.g2 .egm,.egg.g2 .ebg,.egg.g2 .ebd{display:inline}
+.egg.g3{--ec:#eaf4ff;--esh:#bcd4ee;--es:#4f95dc;--eo:#24426e;--eb:#2a5aa8;--ebs:#1c4282;--egm:#ffffff;--ebd:#ffffff}
+.egg.g3 .em:not(.ed1):not(.ed2){display:inline}
+.egg.g4{--ec:#f3eaff;--esh:#cdb6ee;--es:#b48ae6;--eo:#3e2466;--eb:#6a36b0;--ebs:#4e2488;--egm:#ffd84a;--ebd:#ffffff;--ed:#6a36b0;filter:drop-shadow(0 0 3px rgba(170,120,240,.7))}
+.egg.g4 .em:not(.ed2){display:inline}
+.egg.g5{--ec:#fff1b8;--esh:#e8c868;--es:#e0a020;--eo:#6a4210;--eb:#d02c3c;--ebs:#a01c2c;--egm:#6ae0ff;--ebd:#ffffff;--ed:#d08a10;filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 6px #ffd84a)}
+.egg.g5 .em{display:inline}
 .egg.big{width:72px;height:88px}
 .egg.wob{animation:wob 1.6s ease-in-out infinite;transform-origin:50% 90%}
 @keyframes wob{0%,70%,100%{transform:rotate(0)}76%{transform:rotate(-8deg)}84%{transform:rotate(8deg)}92%{transform:rotate(-4deg)}}
@@ -5583,7 +5591,7 @@ async function fresh() {
   S.base = midnight(); S.clock = realClock(); S.rel = {}; S.log = [];
   logEl.innerHTML = '';
   S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.bagDry = 0; S.pity = { e: 0, l: 0 }; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked.clear(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1; S.undo1 = true;
-  // 처음 시작: 가방에 일반·희귀·레어 알 하나씩 (v4.44 경완: 에픽·전설은 빼기) (안의 포켓몬은 부화할 때 정해진다)
+  // 처음 시작: 가방에 일반·우수·레어 알 하나씩 (v4.44 경완: 에픽·전설은 빼기) (안의 포켓몬은 부화할 때 정해진다)
   const t = Date.now();   // v5.38 경완: 처음부터 부화 준비된 알은 주지 않는다 (튜토리얼에서 Mr.강이 가방의 일반 알 하나를 부화 준비로 바꿔 준다)
   for (const g of [1, 2, 3]) S.bag.push({ id: S.eid++, g, t, isNew: true });
   log('필드가 텅 비어 있다. 알을 부화시켜 친구를 만들어 보자.', [], true);
@@ -7855,7 +7863,7 @@ function refreshCap() { $('#capBadge').textContent = `${S.mons.length}/${MAX_MON
 // distance typed in from the Health app. Eggs hold first-stage species; their grade follows the
 // species' rarity. Up to 3 buddies chosen in the dex evolve after running enough together.
 const GRADE = [null,
-  { n: '일반', km: 2.5 }, { n: '희귀', km: 5 }, { n: '레어', km: 7.5 }, { n: '에픽', km: 10 }, { n: '전설', km: 15 }];
+  { n: '일반', km: 2.5 }, { n: '우수', km: 5 }, { n: '레어', km: 7.5 }, { n: '에픽', km: 10 }, { n: '전설', km: 15 }];
 let MAX_EGGS = 15;
 const gradeOf = sp => { const d = SPECIES[sp]; if (d.leg || d.my) return 5; const c = d.cr ?? 45; return c >= 190 ? 1 : c >= 120 ? 2 : c >= 45 ? 3 : 4; };
 const baseOf = sp => { let s = sp; while (SPECIES[s] && SPECIES[s].fr) s = SPECIES[s].fr; return s; };
@@ -8527,7 +8535,7 @@ function drawEgg() {
 // 가방: 움직인 거리만큼 알을 줍는다. 250m마다 0~2개라 2.5km면 대개 5~15개, 등급 확률은 알 뽑기와 같다.
 let MAX_BAG = 999, BAG_STEP = .25; const BAG_SUB = .25;
 let PITY_E = 7.5, PITY_L = 28;   // v3.72: 평균 거리가 에픽 이상 5km·전설 19km 라 1.5배로 다시 맞춤. v3.34 경완: 천장은 평균 거리의 1.5배 (에픽 75km, 전설 150km). v3.35: 남은 거리는 화면에 안 보인다
-const ODDS = [.5382, .2501, .1611, .0373, .0133];   // v3.72: 일반 0.5·희귀 1·레어 1.6·에픽 6.7·전설 19km에 1개꼴   // 알 등급 확률 (작업실에서 배포하면 바뀐다)
+const ODDS = [.5382, .2501, .1611, .0373, .0133];   // v3.72: 일반 0.5·우수 1·레어 1.6·에픽 6.7·전설 19km에 1개꼴   // 알 등급 확률 (작업실에서 배포하면 바뀐다)
 const rollGrade = () => { let r = Math.random(); for (let g = 1; g <= 5; g++) if ((r -= ODDS[g - 1]) < 0) return g; return 5; };   // v3.32 경완: 알은 1km에 약 4개, 전설 100km·에픽 50km·레어 4km에 1개꼴 → 68.25/25/6/0.5/0.25 (예전 45/30/15/8/2)
 // 오늘 기록: 걸은 거리(만보기), 주운 알. 날짜가 바뀌면 새로
 const dayKey = (t = Date.now()) => { const d = new Date(t); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
@@ -9192,7 +9200,7 @@ function tapEgg(egg, g0, msg, g = g0) {   /* g0 알 등급, g 연출 등급(나�
         if (g >= 4) raysSpin(f * f * (g === 4 ? 140 : 220));   /* 두드릴수록 빛줄기가 점점 빨라진다 */
         if (g <= 3 && f >= .4) { const wh = hatchEl.querySelector('.hwhite'); wh.style.transition = 'opacity .35s'; wh.style.opacity = ((f - .4) / .6 * .55).toFixed(3); }   /* 평범한 알: 40%부터 화면이 서서히 밝아진다 */
         if (g >= 5) { hatchEl.style.setProperty('--dk', f.toFixed(3)); hatchEl.style.setProperty('--lg', lt.toFixed(3)); tense.f = f; }   // 전설: 어두워지다가 끝무렵 금빛이 터져 나온다
-        else hatchEl.style.setProperty('--lit', g <= 3 ? 0 : lt.toFixed(3));   // 일반·희귀·레어 알은 배경이 밝아지지 않는다
+        else hatchEl.style.setProperty('--lit', g <= 3 ? 0 : lt.toFixed(3));   // 일반·우수·레어 알은 배경이 밝아지지 않는다
         { const gv = g === 6 && f < .25 ? 5 : g; if (g >= 4 && lt > .12) hSparks(gv >= 5 ? 3 + Math.round(lt * (gv === 6 ? 6 : 4)) : 1 + Math.round(lt * 2), gv); }
         if (g === 3 && f >= .45) hSparks(1 + (f >= .85 ? 1 : 0), 3); }   /* 레어: 절반쯤부터 파란 반짝이가 조금씩 */
       haptic(pend);
@@ -9232,25 +9240,33 @@ const EGG_SVG = (() => {
   const W = 18, H = 22, half = [2, 4, 5, 6, 7, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 8, 8, 7, 6, 5, 3];
   const inside = (x, y) => y >= 0 && y < H && x >= 9 - half[y] && x < 9 + half[y];
   const spots = [[5.4, 7.6, 2.1], [11.9, 4.9, 1.6], [11.4, 13.4, 2.6], [5.2, 16.2, 1.3]];
-  const rows = { o: '', c: '', s: '', sh: '', hl: '' };
+  const rows = { o: '', c: '', s: '', sh: '', hl: '', b: '', bs: '', gm: '', bd: '', bg: '', d1: '', d2: '' };
   const px = (k, x, y) => { rows[k] += `M${x} ${y}h1v1h-1z`; };
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     if (!inside(x, y)) continue;
     if (!inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1)) { px('o', x, y); continue; }
+    // v7.81 경완: 등급 무늬 층 (아래 무늬 위에 겹쳐 그리고, 등급마다 CSS 로 켠다) — 지그재그 띠·띠 뾰족 끝 보석·띠 위아래 틈·위아래 점선
+    const z = 11 + [0, 1, 2, 1][x % 4], shd = !inside(x + 2, y + 1) || !inside(x + 1, y + 2);
+    if (y === z) px(x % 4 === 2 ? 'gm' : shd ? 'bs' : 'b', x, y); else if (y === z + 1) px('bd', x, y); else if (y === z - 1) px('bg', x, y);
+    else if (y === 7 && x % 2) px('d1', x, y); else if (y === 17 && !(x % 2)) px('d2', x, y);
     if (spots.some(([sx, sy, r]) => (x + .5 - sx) ** 2 + (y + .5 - sy) ** 2 <= r * r)) { px('s', x, y); continue; }
-    if (!inside(x + 2, y + 1) || !inside(x + 1, y + 2)) { px('sh', x, y); continue; }
+    if (shd) { px('sh', x, y); continue; }
     if ((x === 4 || x === 5) && (y >= 4 && y <= 5) || (x === 3 && y >= 6 && y <= 8)) { px('hl', x, y); continue; }
     px('c', x, y);
   }
-  // 금: 세 단계로 점점 길어진다
   const crack = pts => pts.map(([x, y]) => `M${x} ${y}h1v1h-1z`).join('');
+  const tw = crack([[13, 3], [12, 4], [13, 4], [14, 4], [13, 5]]);   // 반짝 (레어부터)
+  // 금: 세 단계로 점점 길어진다
   const k1 = crack([[9, 3], [10, 4], [9, 5], [9, 6], [10, 7]]);
   const k2 = crack([[8, 8], [9, 9], [10, 9], [11, 10], [7, 9], [6, 10]]);
   const k3 = crack([[3, 11], [4, 12], [5, 11], [12, 11], [13, 12], [14, 11], [15, 12]]);
   EGG_CK = `<div class="eglow"><svg viewBox="0 0 ${W} ${H}" shape-rendering="crispEdges" aria-hidden="true"><path class="k1" d="${k1}"/><path class="k2" d="${k2}"/><path class="k3" d="${k3}"/><path class="kx" d=""/></svg></div>`;
   return `<svg viewBox="0 0 ${W} ${H}" shape-rendering="crispEdges" aria-hidden="true">`
     + `<path d="${rows.c}" style="fill:var(--ec)"/><path d="${rows.sh}" style="fill:var(--esh)"/><path d="${rows.hl}" fill="#fff"/>`
-    + `<path d="${rows.s}" style="fill:var(--es)"/><path d="${rows.o}" style="fill:var(--eo)"/>`
+    + `<path d="${rows.s}" style="fill:var(--es)"/>`
+    + `<path class="em eb" d="${rows.b}" style="fill:var(--eb)"/><path class="em eb" d="${rows.bs}" style="fill:var(--ebs)"/><path class="em egm" d="${rows.gm}" style="fill:var(--egm)"/><path class="em ebg" d="${rows.bg}" style="fill:var(--ec)"/><path class="em ebd" d="${rows.bd}" style="fill:var(--ebd)"/>`
+    + `<path class="em ed1" d="${rows.d1}" style="fill:var(--ed)"/><path class="em ed2" d="${rows.d2}" style="fill:var(--ed)"/>`
+    + `<path d="${rows.o}" style="fill:var(--eo)"/><path class="em etw" d="${tw}" fill="#fff"/>`
     + `<path class="ck k1" d="${k1}" style="fill:var(--eo)"/><path class="ck k2" d="${k2}" style="fill:var(--eo)"/><path class="ck k3" d="${k3}" style="fill:var(--eo)"/><path class="ckx" d="" style="fill:var(--eo)"/></svg>`;
 })();
 // v5.16 경완: 부화 카드 '필드로'를 빠르게 누르면 눌린 모양만 나오고 안 되던 것 — 손을 뗄 때 바로 처리하고, 뒤따르는 click·연타(350ms 안)는 무시
@@ -9769,7 +9785,7 @@ frTestSync();
     const places = [...new Set([...(S.places || []).map(p => p.n), ...Object.values(PLACES).map(p => p.n)].filter(Boolean))], now = Date.now(), cnt = [0, 0, 0, 0, 0, 0];
     for (let k = 0; k < 1000; k++) { const g = rollGrade(), place = places.length ? places[Math.floor(Math.random() * places.length)] : undefined, sp = rollEgg({ g, place, t: now });
       const P = newPoke(sp, { g, place }); P.t = now - Math.floor(Math.random() * 30 * 864e5); unlock(sp); cnt[g]++; }
-    log(`알 1,000개를 부화시켰다. (테스트: 일반 ${cnt[1]} · 희귀 ${cnt[2]} · 레어 ${cnt[3]} · 에픽 ${cnt[4]} · 전설 ${cnt[5]})`, [], true); sfx('open'); save(); renderBox(); };
+    log(`알 1,000개를 부화시켰다. (테스트: 일반 ${cnt[1]} · 우수 ${cnt[2]} · 레어 ${cnt[3]} · 에픽 ${cnt[4]} · 전설 ${cnt[5]})`, [], true); sfx('open'); save(); renderBox(); };
   $('#boxGen').onclick = () => {
     const places = [...new Set([...(S.places || []).map(p => p.n), ...Object.values(PLACES).map(p => p.n)].filter(Boolean))], now = Date.now();
     for (const k of Object.keys(SPECIES)) { const sp = +k; const P = newPoke(sp); P.fr = Math.floor(Math.random() * 256); P.t = now - Math.floor(Math.random() * 30 * 864e5); if (places.length) P.place = places[Math.floor(Math.random() * places.length)]; unlock(sp); }
@@ -10307,7 +10323,7 @@ async function tutFlow() {
     { c: '알 받기', t: '#notiOk', tap: '#notiOk', until: () => !notiOpen, after: 1900, dismiss: 1, s: '\'확인\'을 눌러서\n알을 받아 보렴!' },
     { c: '알 받기', t: '#openRun', tap: '#openRun', until: () => !$('#run').hidden, s: '받은 알은 \'알\' 메뉴에\n들어갔단다.\n\'알\'을 눌러 보렴!' },
     { c: '가방', pre: () => setRunTab('bag'), t: '#bagGrid', s: '여기는 \'가방\'이야.\n걷다가 주운 알은\n전부 여기에 모인단다.' },
-    { c: '가방', t: '#bagGrid', s: '알에는 등급이 있어.\n일반·희귀·레어·에픽·전설!\n좋은 알일수록 부화시키려면\n오래 걸어야 해.' },
+    { c: '가방', t: '#bagGrid', s: '알에는 등급이 있어.\n일반·우수·레어·에픽·전설!\n좋은 알일수록 부화시키려면\n오래 걸어야 해.' },
     { c: '가방', t: '#bagGrid', s: '그리고 어디를 걸었느냐에\n따라 알에서 나오는\n포켓몬이 달라진단다.' },
     { c: '가방', t: '#bagGrid', s: '호수 근처에서 주운 알에서는\n라프라스 같은 물 포켓몬이\n자주 나온다고 하더구나.\n여기저기 많이 걸어 보렴!' },
     { c: '가방', t: bag1, tap: bag1, until: () => el('#bagIn'), after: 1800, s: '가방의 알은 부화기에\n넣어야 자란단다.\n일반 알을 눌러 보렴.' },
