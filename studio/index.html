@@ -546,7 +546,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.32';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.33';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2077,6 +2077,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.33', '10월 22일', ['스칼렛 작업물 지울 때 렉 없이 바로 사라져요 (여러 개를 빨리 지워도 되살아나지 않아요)']],
   ['3.32', '10월 22일', ['스칼렛 작업물 × 는 누르면 바로 휴지통으로', '휴지통 버튼: 지운 작업물 보기 · 되살리기 · 영구 삭제']],
   ['3.31', '10월 22일', ['스칼렛의 작업물: 소품 그림 오른쪽 위 × 로 작업물 하나씩, 날짜 옆 버튼으로 하루치를 지워요 (두 번 눌러 확인)', '맵 편집: 고른 소품 네 모서리 어디를 끌어도 크기 조절', '위쪽 막대 날씨에 \'눈\' (겨울 눈 내림은 실제로 눈이 올 때만)', '횃불처럼 불 붙은 소품은 모닥불과 같은 불꽃으로 타올라요']],
   ['3.30', '10월 22일', ['위쪽 막대에 계절 고르기 (봄·여름·가을·겨울 미리 보기, 편집 중에도 꽃잎·낙엽·눈이 보여요)']],
@@ -3285,15 +3286,20 @@ $('#scaC').addEventListener('click', e => { const b = e.target.closest('[data-pk
 // v3.32 경완: × 는 누르면 바로 지우고, 지운 작업물은 휴지통(scarlet.json 의 trash)으로 — 휴지통에서 되살리기·영구 삭제
 let scaTrash = false;
 const scaToTrash = (R, pick) => { const T = []; R.days = (R.days || []).map(d => ({ ...d, items: d.items.filter(o => { if (!pick(d, o)) return true; T.push({ ...o, del: Date.now(), dayAt: d.at, theme: d.theme || '' }); return false; }) })).filter(d => d.items.length); R.trash = [...T, ...(R.trash || [])].slice(0, 300); return R; };
-async function scaEdit(fn, msg, done) { if (!store.get('st-gh-token')) { toast('깃허브 열쇠가 있어야 고칠 수 있어요 (설정)', true); return; }
-  const old = SCA_R; SCA_R = fn(JSON.parse(JSON.stringify(SCA_R || { days: [] }))); renderSca();   // 화면은 바로, 올리기는 뒤에서
-  try { SCA_R = await ghJsonEdit('config/staff/scarlet.json', fn, msg); if (done) toast(done); } catch (err) { SCA_R = old; toast('올리지 못했어요: ' + (err.message || err), true); } renderSca(); }
+/* v3.33 경완: 지울 때 렉 — 예전엔 화면 전체(그림 수십 장)를 두 번 다시 그렸고, 빠르게 여러 개 지우면 늦게 온 저장 결과가 방금 지운 걸 되살렸다.
+   이제 누른 카드만 바로 빼고, 깃허브 저장은 뒤에서 한 줄로 차례차례. 실패하면 그때만 깃허브에서 다시 읽어 맞춘다 */
+let scaQue = Promise.resolve(), scaPend = 0, scaFail = false;
+function scaEdit(fn, msg, done, el) { if (!store.get('st-gh-token')) { toast('깃허브 열쇠가 있어야 고칠 수 있어요 (설정)', true); return; }
+  SCA_R = fn(JSON.parse(JSON.stringify(SCA_R || { days: [] })));
+  if (el) { const g = el.parentElement; el.remove(); if (g && !g.children.length) g.closest('.sc-day')?.remove(); const bn = $('#scaBin'); if (bn) bn.textContent = `🗑 휴지통 ${(SCA_R.trash || []).length}개${scaTrash ? ' · 작업물로 돌아가기' : ''}`; if (scaTrash && !$('#scaC .sc-g')?.children.length) renderSca(); } else renderSca();
+  scaPend++; scaQue = scaQue.then(() => ghJsonEdit('config/staff/scarlet.json', fn, msg)).then(() => { if (done) toast(done); }, err => { scaFail = true; toast('올리지 못했어요: ' + (err.message || err), true); })
+    .finally(() => { if (--scaPend === 0 && scaFail) { scaFail = false; scaLoad(); } }); }
 function scaDel(b) { const id = b.dataset.swdel, at = +b.dataset.swday || 0, tid = b.dataset.swres || b.dataset.swgone;
   if (b.dataset.swres) return scaEdit(R => { const i = (R.trash || []).findIndex(o => o.id === tid); if (i < 0) return R; const [o] = R.trash.splice(i, 1), { del, dayAt, theme, ...it } = o; let d = (R.days || []).find(x => x.at === dayAt);
-    if (!d) { d = { at: dayAt || Date.now(), theme, note: '', items: [] }; R.days = [...(R.days || []), d].sort((a, b) => b.at - a.at); } d.items.push(it); return R; }, `스칼렛 작업물 되살리기: ${tid} (작업실)`, '되살렸어요');
-  if (b.dataset.swgone) return scaEdit(R => { R.trash = (R.trash || []).filter(o => o.id !== tid); return R; }, `스칼렛 작업물 영구 삭제: ${tid} (작업실)`);
+    if (!d) { d = { at: dayAt || Date.now(), theme, note: '', items: [] }; R.days = [...(R.days || []), d].sort((a, b) => b.at - a.at); } d.items.push(it); return R; }, `스칼렛 작업물 되살리기: ${tid} (작업실)`, '되살렸어요', b.closest('.sc-it'));
+  if (b.dataset.swgone) return scaEdit(R => { R.trash = (R.trash || []).filter(o => o.id !== tid); return R; }, `스칼렛 작업물 영구 삭제: ${tid} (작업실)`, '', b.closest('.sc-it'));
   if (at && !b.classList.contains('arm')) { b.classList.add('arm'); b.textContent = '한 번 더 누르면 휴지통으로'; clearTimeout(scaDel.t); scaDel.t = setTimeout(() => renderSca(), 3000); return; }   // 하루치는 한 번 더 확인
-  clearTimeout(scaDel.t); scaEdit(R => scaToTrash(R, (d, o) => at ? d.at === at : o.id === id), at ? '스칼렛 작업물 하루치 휴지통으로 (작업실)' : `스칼렛 작업물 휴지통으로: ${id} (작업실)`); }
+  clearTimeout(scaDel.t); scaEdit(R => scaToTrash(R, (d, o) => at ? d.at === at : o.id === id), at ? '스칼렛 작업물 하루치 휴지통으로 (작업실)' : `스칼렛 작업물 휴지통으로: ${id} (작업실)`, '', at ? b.closest('.sc-day')?.querySelector('.sc-g') && b.closest('.sc-day') : b.closest('.sc-it')); }
 
 // ---------- 작업물 피드백 (v3.22 경완: 직원 DM 대신 작업물에 남긴 피드백을 다음 아침 작업에 반영) ----------
 // 피드백 = config/staff/feedback.json (작업실이 main 에 바로 올림), 반영 기록 = config/staff/feedback-done.json (아침 루틴이 씀)
