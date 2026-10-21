@@ -536,7 +536,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.20';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.21';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -992,21 +992,21 @@ function setFly(g) { scPush(); const o = { ...effP(D, 'monFly') }; for (const sp
 // 저장은 monFlyA[종][동작] = 전체 높이(떠 있기)와의 차이. 동작 칸을 누르면 맵의 그 포켓몬도 그 동작으로 움직인다 (다시 누르면 가만히)
 let szMoSp = 0, szMoUid = null, szMoAn = '', szMoRaf = 0;
 const flyA = (sp, n) => effP(D, 'monFlyA')[sp]?.[n] || 0, offA = (sp, n) => { const v = effP(D, 'monOffA')[sp]?.[n] || 0; return Array.isArray(v) ? v : [0, v]; };   // v3.17/3.18 경완: 동작마다 그림만 옮기기 (monOffA = 위아래 px 또는 [좌우, 위아래], +아래·+오른쪽)
-function szMoUI() { const e = $('#szMo'); if (!e) return; const sp = szOn && szCur && !szCur.multi ? +szCur.sp : 0, P = sp ? A?.SPRITES?.[sp] : null;
+function szMoUI() { const e = $('#szMo'); if (!e) return; const sp = szOn && szCur && !szCur.multi ? +szCur.sp : 0, sk = sp ? A?.monSk?.(szCur.uid) || sp : 0, P = sp ? A?.SPRITES?.[sk] : null;   // v3.20 경완(레디바): 필드에 있는 그 포켓몬 그림(암컷 모습 등)으로
   if (szMoUid != null && szMoUid !== szCur?.uid) { A?.szAnim?.(szMoUid, null); szMoUid = null; szMoAn = ''; }
   if (!P || typeof P !== 'object' || !P.a) { e.hidden = true; szMoSp = 0; cancelAnimationFrame(szMoRaf); return; }
   const g = flyG(sp), N = Object.keys(P.a); e.hidden = false;
-  if (szMoSp === sp && e.querySelector('.smg')) { szMoVals(); return; } szMoSp = sp;
+  if (szMoSp === sp && e.dataset.sk === String(sk) && e.querySelector('.smg')) { szMoVals(); return; } szMoSp = sp; e.dataset.sk = sk;
   e.innerHTML = `<div class="smh"><b>동작별 떠 있기</b><label class="small" title="모든 동작을 이 높이로 같게 (Enter)">전체 <input type="number" class="szn num" id="szMoAll" min="0" max="400" step="1" value="${g}" aria-label="모든 동작 떠 있는 높이">px</label></div><div class="smg">${N.map(n => `<div class="smc${n === szMoAn ? ' on' : ''}" data-mo="${n}" title="누르면 맵에서 이 동작으로"><canvas width="64" height="64" data-mo="${n}"></canvas><span>${esc(ANIM_KO[n] || n)}</span><label class="smi" title="떠 있기 (그림자 위 높이)">떠<input type="number" class="szn num" data-mof="${n}" min="0" max="400" step="1" aria-label="${esc(ANIM_KO[n] || n)} 떠 있는 높이"></label><div class="smpad" title="그림만 옮기기 (그림자·자리는 그대로). Shift 누르고 누르면 5px">${[['u', 0, -1, '▲', '위로'], ['l', -1, 0, '◀', '왼쪽으로'], ['r', 1, 0, '▶', '오른쪽으로'], ['d', 0, 1, '▼', '아래로']].map(([c, dx, dy, ic, lb]) => `<button type="button" class="smar ${c}" data-mon="${n}" data-dx="${dx}" data-dy="${dy}" aria-label="${esc(ANIM_KO[n] || n)} 그림 ${lb}">${ic}</button>`).join('')}<button type="button" class="smar z" data-moz="${n}" aria-label="${esc(ANIM_KO[n] || n)} 그림 위치 처음으로" title="처음 자리로">0</button></div><span class="smxy" data-moxy="${n}"></span></div>`).join('')}</div><div class="smrz" title="끌어서 창 크기 바꾸기 (두 번 누르면 처음 크기)"></div>`;
   szMoVals(); cancelAnimationFrame(szMoRaf); const im = new Image(); im.src = P.i; const t0 = performance.now(), I = P.a.Idle || P.a[N[0]];
   const tick = now => { szMoRaf = requestAnimationFrame(tick); if (e.hidden || szMoSp !== sp || !im.complete || !im.naturalWidth) return;
     // v3.12 경완: 맵과 같은 그림자(크기·자리·기울기)·떠 있기·몸 기울기로 그린다. 게임 화면 px → 칸 px = k / s
-    const G = A?.shGeo?.(sp), s0 = G?.s || A?.scaleOf?.(sp) || 2, gg = flyG(sp), mu = Math.max(0, ...N.map(n => gg + flyA(sp, n))) / s0, k = Math.min(2, 44 / Math.max(I[1], I[2]), 54 / ((I[5] + (P.fy || 0)) + mu)), q = k / s0;   // 높이 떠도 칸 안에 들어오게 줄여 그린다
+    const G = A?.shGeo?.(sp, szCur?.uid), s0 = G?.s || A?.scaleOf?.(sp) || 2, gg = flyG(sp), mu = Math.max(0, ...N.map(n => gg + flyA(sp, n))) / s0, k = Math.min(2, 44 / Math.max(I[1], I[2]), 54 / ((I[5] + (P.fy || 0)) + mu)), q = k / s0;   // 높이 떠도 칸 안에 들어오게 줄여 그린다
     rot = (effP(D, 'monRot')[sp] || 0) * Math.PI / 180, piv = Math.round((I[5] + (P.fy || 0)) * s0 / 2) * q;
     const AW = Math.max(...N.map(n => P.a[n][3] * (P.a[n][1] + (P.G || 0)))), R = AW ? Math.max(1, Math.round(im.naturalWidth / AW)) : 1;   // v3.15: 크게 확대되는 포켓몬은 그림이 두 배 고운 도트(Scale2x)라 좌표도 두 배
     for (const c of e.querySelectorAll('canvas')) { const n = c.dataset.mo, a = P.a[n]; if (!a) continue; const durs = a[6], tot = durs.reduce((x, y) => x + y, 0), t = ((now - t0) / 1000 * 60) % tot; let f = 0, acc = 0; for (let i = 0; i < durs.length; i++) { acc += durs[i]; if (t < acc) { f = i; break; } }
       const x = c.getContext('2d'), up = Math.max(0, gg + flyA(sp, n)) * q; x.imageSmoothingEnabled = false; x.setTransform(1, 0, 0, 1, 0, 0); x.fillStyle = '#a9dc8a'; x.fillRect(0, 0, 64, 64);   // v3.10 경완: 그림자가 잘 보이게 밝은 풀밭 바탕
-      if (G) { x.save(); x.translate(32 + G.x * q, 58 + (G.top + G.H / 2) * q); x.rotate(G.r * Math.PI / 180); x.scale(G.W / 2 * q, G.H / 2 * q); const gr = x.createRadialGradient(0, 0, 0, 0, 0, 1); gr.addColorStop(0, 'rgba(20,40,10,.5)'); gr.addColorStop(.7, 'rgba(20,40,10,.4)'); gr.addColorStop(1, 'rgba(20,40,10,0)'); x.fillStyle = gr; x.beginPath(); x.arc(0, 0, 1, 0, 7); x.fill(); x.restore(); }   // 게임과 같은 그림자 (조금 진하게)
+      if (G) { x.save(); x.translate(32 + G.x * q, 58 + (G.top + G.H / 2) * q); x.rotate(G.r * Math.PI / 180); const hk = n === 'Hop' && P.hopL ? 1 - .42 * (P.hopL[f] || 0) / Math.max(4, ...P.hopL) : 1; x.globalAlpha = .45 + .55 * hk; x.scale(G.W / 2 * q * hk, G.H / 2 * q * hk); const gr = x.createRadialGradient(0, 0, 0, 0, 0, 1); gr.addColorStop(0, 'rgba(20,40,10,.5)'); gr.addColorStop(.7, 'rgba(20,40,10,.4)'); gr.addColorStop(1, 'rgba(20,40,10,0)'); x.fillStyle = gr; x.beginPath(); x.arc(0, 0, 1, 0, 7); x.fill(); x.restore(); }   // 게임과 같은 그림자 (조금 진하게)
       x.save(); { const [ox, oy] = offA(sp, n); x.translate(32 + ox * q, 58 - up - piv + oy * q); } if (rot) x.rotate(rot); x.drawImage(im, f * (a[1] + (P.G || 0)) * R, a[0] * R, a[1] * R, a[2] * R, -a[4] * k, piv - (a[5] + (P.fy || 0)) * k, a[1] * k, a[2] * k); x.restore(); } };
   szMoRaf = requestAnimationFrame(tick); }
 function szMoVals() { const e = $('#szMo'), sp = szMoSp; if (!e || e.hidden || !sp) return; const g = flyG(sp), all = $('#szMoAll'); if (all && document.activeElement !== all) all.value = g;
@@ -2021,7 +2021,8 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
-  ['3.20', '10월 22일', ['직원 메뉴: 뉴트럴의 조언(100명이 90일 동안 게임을 하는 시뮬레이션으로 너무 쉬움·적당·너무 어려움을 보고 고칠 값을 제안, 작업본에 넣기), 스칼렛의 작업물(매일 소품 10개와 상호작용), 직원 DM', '직원은 Claude 가 맡는다: 매일 아침 일하고, DM 은 두 시간마다 확인해서 답장한다']],
+  ['3.21', '10월 22일', ['크기 조절 모드 동작별 떠 있기 창: 필드에 있는 그 포켓몬 모습(암컷 모습 등) 그대로 그리고 그림자도 필드와 같게 (레디바 등)', '깡충 동작 칸에서 뛰어오를수록 그림자가 작아진다 (게임 v8.13)']],
+  ['3.20', '10월 22일', ['직원 메뉴: 뉴트럴의 조언(100명이 90일 동안 게임을 하는 시뮬레이션으로 너무 쉬움·적당·너무 어려움을 보고 고칠 값을 제안, 작업본에 넣기), 스칼렛의 작업물(매일 소품 10개와 상호작용), 직원 DM', '직원은 Claude 가 맡는다: 매일 아침 일하고, DM 은 하루 네 번(9·13·17·21시) 확인해서 답장한다']],
   ['3.18', '10월 20일', ['동작별 떠 있기 창: 그림 옮기기를 상하좌우 동그란 화살표 버튼으로 (가운데 0 = 처음 자리, Shift 누르고 누르면 5px). 좌우도 옮길 수 있다 (게임 v5.79)']],
   ['3.17', '10월 20일', ['동작별 떠 있기 창: 동작마다 그림만 위아래로 옮기는 칸(↕, +아래). 그림자와 상호작용 자리는 그대로 (게임 v5.78)']],
   ['3.16', '10월 20일', ['알 출현 지역 지도: 카카오 지도의 장소 아이콘을 누르면 그 건물 모양대로 반경이 그려지고 이름이 장소 이름으로 들어간다', '원·사각형·올가미로 그린 반경도 가운데에서 가장 가까운 장소 이름이 자동으로 들어간다', '원은 누른 곳에서부터 그려진다 (가운데가 아니라)']],
@@ -3103,7 +3104,7 @@ $('#shopC').addEventListener('change', e => { const t = e.target, v = +t.value;
   else if (t.dataset.sm) shopPut(o => { o.inc.mul = [...o.inc.mul]; o.inc.mul[+t.dataset.sm] = Math.min(100, v); });
   else if (t.dataset.sc) shopPut(o => { o.charm[t.dataset.sc] = t.dataset.sc === 'min' ? Math.max(1, Math.min(1440, Math.round(v))) : Math.max(1, Math.round(v)); }); });
 // ---------- 직원 (v3.20 경완): 뉴트럴(밸런스) · 스칼렛(소품 디자인) · 직원 DM ----------
-// 직원들은 Claude 가 맡는다. 매일 아침 루틴이 일하고(config/staff/*.json), DM 은 두 시간마다 확인해서 답장한다 (staff/README.md).
+// 직원들은 Claude 가 맡는다. 매일 아침 루틴이 일하고(config/staff/*.json), DM 은 하루 네 번(9·13·17·21시) 확인해서 답장한다 (staff/README.md).
 // 경완이 보낸 DM 은 작업실이 config/staff/dm-in.json 에 바로 올리고, 답장은 루틴이 config/staff/dm-out.json 에 올린다 (서로 다른 파일이라 겹치지 않는다)
 const pxSvg = (R, P, s = 4) => `<svg viewBox="0 0 ${R[0].length} ${R.length}" width="${R[0].length * s}" height="${R.length * s}" shape-rendering="crispEdges" aria-hidden="true">${R.map((row, y) => [...row].map((c, x) => P[c] ? `<rect x="${x}" y="${y}" width="1" height="1" fill="${P[c]}"/>` : '').join('')).join('')}</svg>`;
 const STAFF = {
@@ -3191,12 +3192,12 @@ function renderDm() {
   store.set('st-dm-seen', String(Date.now())); dmBadge();
   $('#dmC').innerHTML = `<div class="card dm-w"><div class="chips">${Object.entries(STAFF).map(([k, s]) => `<button class="chip dm-who${k === dmWho ? ' on' : ''}" data-dw="${k}">${pxSvg(s.px, s.pal, 1.5)}${s.n}</button>`).join('')}</div>
     <div class="dm-l" id="dmL">${all.length ? all.map(m => `<div class="dm-m${m.me ? ' me' : ''}">${m.me ? '' : face(dmWho, 2)}<div><div class="dm-b">${m.ref ? `<div class="small mute">↪ ${esc(m.refn || m.ref)}</div>` : ''}${esc(m.t).replace(/\n/g, '<br>')}</div><div class="small mute">${when(m.at)}</div></div></div>`).join('') : `<div class="empty">${STAFF[dmWho].n}에게 하고 싶은 말을 보내 보세요. 일하는 방식이나 작업물에 대한 피드백을 주면 다음 작업부터 반영해요.</div>`}
-      ${wait ? `<div class="small mute dm-wait">${face(dmWho, 1.5)} ${STAFF[dmWho].n}가 메시지를 확인하면 답장해요 (두 시간마다 확인해요)</div>` : ''}</div>
+      ${wait ? `<div class="small mute dm-wait">${face(dmWho, 1.5)} ${STAFF[dmWho].n}가 메시지를 확인하면 답장해요 (9·13·17·21시에 확인해요)</div>` : ''}</div>
     ${dmRef ? `<div class="small dm-ref">↪ ${esc(dmRef.n)} <button class="chip" id="dmRefX">빼기</button></div>` : ''}
     <div class="dm-in"><textarea class="inp" id="dmT" rows="2" placeholder="${STAFF[dmWho].n}에게 메시지"></textarea><button class="btn" id="dmS"${DM_BUSY ? ' disabled' : ''}>${DM_BUSY ? '보내는 중…' : '보내기'}</button></div>
     ${store.get('st-gh-token') ? '' : '<div class="small mute">DM 을 보내려면 배포하기 화면에서 깃허브 열쇠를 먼저 연결해 주세요.</div>'}</div>`;
   const l = $('#dmL'); l.scrollTop = l.scrollHeight;
-  $('#dmI').innerHTML = `<h4>직원 DM</h4><div class="small mute">직원들은 Claude 가 맡아서 답장해요. 두 시간마다 새 메시지를 확인하고, 매일 아침 일할 때도 받은 피드백을 읽고 반영해요.</div>${Object.entries(STAFF).map(([k, s]) => `<div class="stf-mini">${face(k, 2)}<div><b>${s.n}</b><div class="small mute">${s.role}</div></div></div>`).join('')}`;
+  $('#dmI').innerHTML = `<h4>직원 DM</h4><div class="small mute">직원들은 Claude 가 맡아서 답장해요. 하루 네 번(9·13·17·21시) 새 메시지를 확인하고, 매일 아침 일할 때도 받은 피드백을 읽고 반영해요.</div>${Object.entries(STAFF).map(([k, s]) => `<div class="stf-mini">${face(k, 2)}<div><b>${s.n}</b><div class="small mute">${s.role}</div></div></div>`).join('')}`;
 }
 async function dmSend() { const t = $('#dmT').value.trim(); if (!t || DM_BUSY) return; if (!store.get('st-gh-token')) { toast('배포하기에서 깃허브 열쇠를 먼저 연결해 주세요', true); return; }
   DM_BUSY = true; const m = { id: 'm' + Date.now().toString(36), to: dmWho, t, at: Date.now(), ...(dmRef ? { ref: dmRef.id, refn: dmRef.n } : {}) }; renderDm();

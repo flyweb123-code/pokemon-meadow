@@ -24,7 +24,7 @@
 3. 스칼렛: [scarlet.md](scarlet.md) 의 '매일 할 일'.
 4. 한 커밋으로 올려요: `직원 아침 작업 (MM/DD)`.
 
-## DM 루틴 (두 시간마다)
+## DM 루틴 (하루 네 번: 9·13·17·21시)
 1. `node tools/staff/staff.js dm-pending`. "답장할 DM 이 없어요" 면 아무것도 하지 않고 끝내요.
 2. DM 마다 받는 직원의 성격으로 답장을 써서 `node tools/staff/staff.js dm-reply <id> <글 파일>`.
    - 소품(ref)을 짚은 DM 은 `config/staff/scarlet.json` 에서 그 소품을 찾아 보고 답해요.
