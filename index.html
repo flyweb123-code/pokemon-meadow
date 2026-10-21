@@ -2522,6 +2522,7 @@ const atlasDims = {};
 // 그림자: 발이 닿는 폭(아래쪽 몇 줄의 칠해진 폭)에 맞추고, 발 선보다 살짝 위에 중심을 둬 발밑에 붙어 보이게
 // v5.73: 그림자 모양 계산은 shGeo 하나로 (작업실 동작별 떠 있기 창도 같은 값으로 그린다). 단위 = 화면 px, 기준 = 발 자리
 function shGeo(k, form, mw) {
+  if (k !== form && isPmd(form) && SPRITES[form].fw) k = form;   // v8.14 경완: 암컷 모습(166f 등)도 그림자는 기본 모습 그림으로 재서 암수 그림자가 같게
   const P = SPRITES[k], s = scaleOf(k);
   const pm = isPmd(k) && P.fw, fh = pm ? (P.fh || 0) * s : 0, w = clamp(pm ? P.fw * s * 1.12 : (mw || 0) * .62, 14, 220), h = Math.max(5, Math.round(Math.max(w * .3, fh + 5)));
   const g = MON_SH[0] || [1, 0, 0, 0], o = MON_SH[form] || [1, 0, 0, 0], sk = g[0] * o[0], sx = g[1] + o[1], sy = g[2] + o[2], W = w * sk, Hh = Math.max(3, Math.round(h * sk));
@@ -2531,6 +2532,7 @@ function shGeo(k, form, mw) {
 function shadowFit(m) {
   const sh = m.el.querySelector('.shadow'); if (!sh) return;
   const G = shGeo(m.sk || m.form, m.form, m.w);
+  if (m.sk && m.sk !== m.form && isPmd(m.form) && SPRITES[m.form].G == null) padAtlas(m.form).then(() => { if (m.el?.isConnected) shadowFit(m); });   // 기본 모습 그림을 아직 안 불렀으면 불러서 다시 맞춘다
   sh.style.transform = ''; sh.style.width = G.W + 'px'; sh.style.height = G.H + 'px'; sh.style.margin = `${G.top}px 0 0 ${-Math.round(G.W / 2)}px`;
   m.shEl = sh; m.shX = G.x; m.shR = G.r; m.shF = null;   // 발 가운데가 몸 가운데와 다르면 그쪽으로 (바라보는 쪽 따라 뒤집힘)
 }
@@ -5852,7 +5854,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.13';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.14';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)

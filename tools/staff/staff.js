@@ -3,8 +3,8 @@
 //   node tools/staff/staff.js neutral-run            지금 배포된 값으로 100명 90일 시뮬레이션 → config/staff/neutral.json 맨 앞에 기록 (글은 비어 있음)
 //   node tools/staff/staff.js neutral-say <글 파일>   맨 앞 기록에 뉴트럴의 분석 글 넣기
 //   node tools/staff/staff.js scarlet-add <JSON 파일> 오늘 소품 10개 검사하고 config/staff/scarlet.json 맨 앞에 넣기
-//   node tools/staff/staff.js dm-pending              아직 답장 안 한 DM 보기
-//   node tools/staff/staff.js dm-reply <id> <글 파일> 그 DM 에 답장 (config/staff/dm-out.json)
+//   node tools/staff/staff.js fb-pending              아직 반영 안 한 작업물 피드백 보기
+//   node tools/staff/staff.js fb-done <id> <글 파일>  그 피드백을 반영했다고 기록 (무엇을 했는지 한두 문장, config/staff/feedback-done.json)
 const fs = require('fs'), path = require('path'), http = require('http');
 const ROOT = path.resolve(__dirname, '../..'), F = p => path.join(ROOT, 'config/staff', p);
 const rd = (p, d) => { try { return JSON.parse(fs.readFileSync(F(p), 'utf8')); } catch (e) { return d; } };
@@ -51,14 +51,13 @@ function scarletAdd(file) {
   console.log(`소품 ${L.length}개를 올렸어요`);
 }
 
-function dmPending() { const I = rd('dm-in.json', { msgs: [] }).msgs || [], O = rd('dm-out.json', { msgs: [] }).msgs || [], done = new Set(O.map(m => m.re)), P = I.filter(m => !done.has(m.id));
-  if (!P.length) { console.log('답장할 DM 이 없어요'); return; }
-  for (const m of P) { const hist = [...I.filter(x => x.to === m.to).map(x => ({ ...x, w: '경완' })), ...O.filter(x => x.from === m.to).map(x => ({ ...x, w: STAFF[m.to] }))].sort((a, b) => a.at - b.at).filter(x => x.at <= m.at).slice(-8);
-    console.log(`=== ${m.id} → ${STAFF[m.to] || m.to} (${new Date(m.at).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })})${m.ref ? ` [소품 ${m.ref} ${m.refn || ''}]` : ''}\n${m.t}\n--- 앞선 대화\n${hist.slice(0, -1).map(x => `${x.w}: ${x.t}`).join('\n') || '(없음)'}\n`); } }
-function dmReply(id, file) { const I = rd('dm-in.json', { msgs: [] }).msgs || [], m = I.find(x => x.id === id); if (!m) { console.error('그런 DM 이 없어요: ' + id); process.exit(1); }
-  const O = rd('dm-out.json', { msgs: [] }); O.msgs = [...(O.msgs || []), { id: 'r' + Date.now().toString(36), re: id, from: m.to, t: txt(file), at: Date.now() }].slice(-400); wr('dm-out.json', O); console.log(`${STAFF[m.to]} 답장을 넣었어요`); }
+function fbPending() { const I = rd('feedback.json', { items: [] }).items || [], D = new Set((rd('feedback-done.json', { items: [] }).items || []).map(d => d.id)), P = I.filter(f => !D.has(f.id));
+  if (!P.length) { console.log('반영할 피드백이 없어요'); return; }
+  for (const f of P) console.log(`=== ${f.id} → ${STAFF[f.to] || f.to} (${new Date(f.at).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}) ${f.ref === 'all' ? '[전체 작업]' : `[소품 ${f.ref} ${f.refn || ''}]`}\n${f.t}\n`); }
+function fbDone(id, file) { const f = (rd('feedback.json', { items: [] }).items || []).find(x => x.id === id); if (!f) { console.error('그런 피드백이 없어요: ' + id); process.exit(1); }
+  const D = rd('feedback-done.json', { items: [] }); D.items = [...(D.items || []).filter(d => d.id !== id), { id, at: Date.now(), note: txt(file) }].slice(-500); wr('feedback-done.json', D); console.log(`${STAFF[f.to]} 반영 기록을 넣었어요`); }
 
 const [cmd, a, b] = process.argv.slice(2);
 ({ 'neutral-run': () => neutralRun().catch(e => { console.error(e); process.exit(1); }),
   'neutral-say': () => { const R = rd('neutral.json', { runs: [] }); if (!R.runs?.[0]) { console.error('먼저 neutral-run'); process.exit(1); } R.runs[0].text = txt(a); wr('neutral.json', R); console.log('넣었어요'); },
-  'scarlet-add': () => scarletAdd(a), 'dm-pending': dmPending, 'dm-reply': () => dmReply(a, b) }[cmd] || (() => { console.log(fs.readFileSync(__filename, 'utf8').split('\n').slice(1, 8).join('\n')); }))();
+  'scarlet-add': () => scarletAdd(a), 'fb-pending': fbPending, 'fb-done': () => fbDone(a, b) }[cmd] || (() => { console.log(fs.readFileSync(__filename, 'utf8').split('\n').slice(1, 8).join('\n')); }))();
