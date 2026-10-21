@@ -2935,11 +2935,11 @@ function feedNow(m) {
   if (isFull(m)) { emote(m, '배불러', '', 2.2, 'full-refuse'); log(`${J(m,'은/는')} 배가 불러서 열매를 사양했다.`, [m]); return; }
   if (m.partner) { const o = m.partner; m.partner = null; o.partner = null; o.scene = null; setState(o, 'idle', 1); }
   m.goal = null; m.scene = null; setState(m, 'idle', 2);
-  if (berryFr(m)) { setTimeout(() => { frPop(m, 1, true); sfx('heart'); haptic(1); }, 110); save(); }   // v7.62 쫀득한 하트 · v7.54 경완: 열매를 주는 순간(말풍선·정보창 누름) 바로 친밀도 +1 효과
+  if (berryFr(m)) { setTimeout(() => { frPop({ x: m.x + (m.face || 1) * Math.max(16, m.w * .35), y: m.y, h: m.h, lift: m.lift || 0 }, 1, true); sfx('heart'); haptic(1); }, 110);   /* v7.63: 하트는 열매가 떨어지는 반대쪽(등 뒤)으로 비켜서 열매를 가리지 않게 */ save(); }   // v7.62 쫀득한 하트 · v7.54 경완: 열매를 주는 순간(말풍선·정보창 누름) 바로 친밀도 +1 효과
   const x = m.x - (m.face || 1) * Math.max(14, m.w * .3), y = m.y + 2, el = document.createElement('div');
   el.className = 'berry' + (Math.random() < .4 ? ' red' : ''); Object.assign(el.style, { left: x + 'px', top: y + 'px', zIndex: Math.round(y) + 1, pointerEvents: 'none' }); itemsEl.append(el);   // v3.42: 정보창에서 준 열매는 더 높이서 떨어진다 (잘 보이게)
   emote(m, '!', '', .8, 'berry-see');
-  berryBounce(el, 70, bx => { if (!S.mons.includes(m)) { el.remove(); return; }
+  berryBounce(el, 120, bx => { if (!S.mons.includes(m)) { el.remove(); return; }
     let ate = false; const bxp = x + bx;
     const go = () => { if (ate || !el.isConnected) return; ate = true; if (!S.mons.includes(m) || m.held) { el.remove(); return; }
       m.hunger = clamp(m.hunger - BERRY_FILL_MINE); berryBoost(m, true);
@@ -2947,7 +2947,7 @@ function feedNow(m) {
       const dur = m.sp === 143 ? 8 : 5; faceTo(m, bxp);
       setState(m, 'eat', dur); log(`${J(m,'이/가')} 떨어진 열매를 바로 냠냠 먹었다.`, [m]); save();
       biteBerry(el, m, dur, bxp, y); };
-    go(); }, true, false, true);   /* v7.56 경완: 말풍선·정보창 열매는 포켓몬 바로 앞에 톡 떨어져 곧바로 먹는다 (걸어가지 않음) */
+    go(); }, false, false, true);   /* v7.63 경완: 떨어지는 게 잘 안 보임 → 처음부터 진하게(fade 끔)·더 높이(120)에서 떨어지고 땅에서 잠깐 멈춘 뒤 먹음. v7.56 경완: 말풍선·정보창 열매는 포켓몬 바로 앞에 톡 떨어져 곧바로 먹는다 (걸어가지 않음) */
 }
 // v3.43 경완: 열매가 실제처럼 튄다 — 중력으로 떨어지고, 땅에 닿으면 탄성(0.42)만큼 다시 튀어 오르며 납작해졌다 돌아온다. 살짝 옆으로 구르며 멈춘다
 function berryBounce(el, h, done, fade = true, spin = true, still = false) {   // still: 굴러가지 않고 제자리에 톡 떨어짐 (v7.56 말풍선 열매)
@@ -2961,7 +2961,7 @@ function berryBounce(el, h, done, fade = true, spin = true, still = false) {   /
     if (fade) el.style.opacity = Math.min(1, (h + y) / 25 + .2);
     el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${rot.toFixed(0)}deg) scale(${(1 + sq).toFixed(3)},${(1 - sq).toFixed(3)})`;
     el.style.transformOrigin = '50% 100%';
-    if (rest > (still ? .04 : .18) && Math.abs(rot - Math.round(rot / 360) * 360) < 1.5) return done(x);
+    if (rest > (still ? .3 : .18) && Math.abs(rot - Math.round(rot / 360) * 360) < 1.5) return done(x);
     requestAnimationFrame(step); };
   requestAnimationFrame(step);
 }
@@ -5822,7 +5822,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.62';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.63';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
