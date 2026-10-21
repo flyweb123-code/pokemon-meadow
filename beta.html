@@ -6462,7 +6462,7 @@ function mgAimHint(g) {   /* v6.57 경완: 글·화살표 대신 누르는 동�
   const ab = $('#mgAbBtn'), h = $('#mgAim'), r = ab.getBoundingClientRect(), pr = h.offsetParent?.getBoundingClientRect() || { left: 0, top: 0 };
   h.style.left = (r.left - pr.left + r.width / 2) + 'px'; h.style.top = (r.top - pr.top + r.height / 2) + 'px'; const R = MG_AIM_R, d = `M${-MG_AIM_B} ${-R} Q${MG_AIM_B} 0 ${-MG_AIM_B} ${R}`; h.querySelectorAll('path').forEach(p => p.setAttribute('d', d)); h.querySelector('i').style.transform = ''; h.hidden = false; g.aimG = 1; }
 function mgAimMove(dy) { const k = $('#mgAim i'); if (k) { const y = clamp(dy, -MG_AIM_R, MG_AIM_R); k.style.transform = `translate(${mgAimX(y)}px,${y}px)`; } }
-const MG_COMBO_T = 2.6;   // 콤보가 이어지는 시간 (초)
+const MG_COMBO_T = 1.5;   // 콤보가 이어지는 시간 (초) — v7.67 경완: 2.6은 너무 길다
 // v5.92 경완: 액티브 기술은 시작과 끝을 확실하게 (색 번쩍·고리·이름, 끝나면 뚝 소리와 연기, 끝나기 직전엔 깜빡)
 const MG_PC_T = 1.1;
 // v6.97 경완: 시작 카운트다운 대신 — 포켓몬 머리 위에 친밀도 하트가 떠올라 하나씩 왼쪽 위 게임 하트 칸으로 날아가 채워진다
@@ -6943,7 +6943,7 @@ q.disc(bx, cy, R0 + 7 + pu * 3, R0 + 5 + pu * 3, 'rgba(255,226,80,.15)'); q.disc
   if (g.abK && g.abK !== 'shield' && !g.over) { const L = mgAbLeft(g), k = clamp(L / (g.abD || 1), 0, 1), bw = 48, bx = Math.round(g.PX - bw / 2), by = Math.round(py - phh - 30), c = g.abW && Math.floor(g.t * 14) % 2 ? '#ffffff' : MG_ABC[g.abK] || '#ffe14a';   /* v6.05 경완: 남은 시간은 엄지에 가리지 않게 포켓몬 머리 위에 */
     x.fillStyle = '#20202c'; x.fillRect(bx - 2, by - 2, bw + 4, 9); x.fillStyle = 'rgba(255,255,255,.35)'; x.fillRect(bx, by, bw, 5); x.fillStyle = c; x.fillRect(bx, by, Math.round(bw * k / 2) * 2, 5); x.textAlign = 'center'; txt(L.toFixed(1) + '초', g.PX, by - 6, 12, '#fff', 3); x.textAlign = 'start'; }
   if (g.combo >= 2 && g.cT > 0) { const sc = 1 + Math.max(0, g.cPop || 0) * 1.2, mul = Math.min(5, g.combo), cx = Math.round(g.PX + g.pw + 22), cy = Math.round(GY - g.y - (g.phh || 36) - 2), c = g.combo >= 10 ? '#ff5a3a' : mul >= 5 ? '#ff8a30' : mul >= 3 ? '#ffb030' : '#ffe14a';   // v6.16 경완: 콤보는 게임을 가리지 않게 캐릭터 옆에 작게
-    x.save(); if (g.cT < .6 && Math.floor(g.t * 12) % 2) x.globalAlpha = .35; x.translate(cx, cy); x.scale(sc, sc); x.textAlign = 'left'; txt(g.combo + ' 콤보', 0, 0, 14, c, 3); x.restore();   /* v7.65: 콤보 유지되는 동안 계속 떠 있고, 끝나기 0.6초 전부터 깜빡 */ x.textAlign = 'start'; }
+    x.save(); if (g.cT < .5 && Math.floor(g.t * 12) % 2) x.globalAlpha = .35; x.translate(cx, cy); x.scale(sc, sc); x.textAlign = 'left'; txt(g.combo + ' 콤보', 0, 0, 14, c, 3); x.restore();   /* v7.65: 콤보 유지되는 동안 계속 떠 있고, 끝나기 0.6초 전부터 깜빡 */ x.textAlign = 'start'; }
   if (g.ban) { const k = 1.6 - g.ban.t, sc = k < .14 ? .5 + k / .14 * .7 : k < .28 ? 1.2 - (k - .14) / .14 * .2 : 1, cy = H * .42;   // 화면 가운데에 통 튀어나왔다가 사라짐
     x.save(); x.globalAlpha = Math.min(1, g.ban.t / .35); x.fillStyle = 'rgba(32,32,44,.55)'; x.fillRect(0, cy - 34 * Math.min(1, k / .14), W, 68 * Math.min(1, k / .14));
     x.translate(W / 2, cy + 13); x.scale(sc, sc); x.textAlign = 'center'; txt(g.ban.s, 0, 0, 38, '#ffd84a', 6); x.restore(); }
