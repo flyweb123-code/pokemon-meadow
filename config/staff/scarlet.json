@@ -655,62 +655,6 @@
      "fit": "열매나무 옆, 가을"
     },
     {
-     "id": "hay-bale",
-     "n": "건초 더미",
-     "k": "쉼터",
-     "d": "네모나게 묶은 노란 건초 더미예요. 끈 두 줄로 단단히 묶었고 위로 지푸라기가 삐죽 나와 있어요.",
-     "px": [
-      "............................",
-      ".....k........k.............",
-      "...kkakk...k.kak...k..kk....",
-      "..kakkkakkkakkkakkkakkaakk..",
-      ".kaaaaaassaaaaaaaaassaaaaak.",
-      ".kaaaaaarraaaaabaaarraaaaak.",
-      ".kaaaaaarraaaaaaaaarraaabak.",
-      ".kbcbbbbrrbbbbbbbbcrrbbbbbk.",
-      ".kbbbbbbrrbbcbbbbbbrrbbbbbk.",
-      ".kbbbbcbrrbbbbbbbbbrrcbbbbk.",
-      ".kbbbbbbrrbbbbbcbbbrrbbbbbk.",
-      ".kbbbbbbrrbbbbbbbbbrrbbbcbk.",
-      ".kbcbbbbrrbbbbbbbbcrrbbbbbk.",
-      ".kbbbbbbrrbbcbbbbbbrrbbbbbk.",
-      ".kccccccrrcccccccccrrccccck.",
-      ".kccccccrrcccccccccrrccccck.",
-      ".kccccccrrcccccccccrrccccck.",
-      "..kkkkkkkkkkkkkkkkkkkkkkkk..",
-      ".zzzzzzzzzzzzzzzzzzzzzzzzzz.",
-      ".....zzzzzzzzzzzzzzzzzz....."
-     ],
-     "pal": {
-      "k": "#20202c",
-      "z": "#3c4a2c",
-      "a": "#f6e08a",
-      "b": "#e0bc52",
-      "c": "#a8842e",
-      "r": "#a0442c",
-      "s": "#c8644a"
-     },
-     "acts": [
-      {
-       "w": "노말 타입 네 발 포켓몬",
-       "a": "건초 위에 올라가 몸을 말고 낮잠을 자요"
-      },
-      {
-       "w": "풀 먹는 포켓몬 (메리프·켄타로스 등 노말·풀)",
-       "a": "옆에 서서 지푸라기를 뽑아 먹어요"
-      },
-      {
-       "w": "작은 포켓몬",
-       "a": "건초와 땅 사이 틈에 숨어요"
-      },
-      {
-       "w": "불꽃 타입",
-       "a": "불이 옮을까 봐 멀찍이 피해 가요"
-      }
-     ],
-     "fit": "풀밭 가장자리, 가을"
-    },
-    {
      "id": "leaf-pile",
      "n": "낙엽 더미",
      "k": "놀이",
@@ -1209,6 +1153,65 @@
   }
  ],
  "trash": [
+  {
+   "id": "hay-bale",
+   "n": "건초 더미",
+   "k": "쉼터",
+   "d": "네모나게 묶은 노란 건초 더미예요. 끈 두 줄로 단단히 묶었고 위로 지푸라기가 삐죽 나와 있어요.",
+   "px": [
+    "............................",
+    ".....k........k.............",
+    "...kkakk...k.kak...k..kk....",
+    "..kakkkakkkakkkakkkakkaakk..",
+    ".kaaaaaassaaaaaaaaassaaaaak.",
+    ".kaaaaaarraaaaabaaarraaaaak.",
+    ".kaaaaaarraaaaaaaaarraaabak.",
+    ".kbcbbbbrrbbbbbbbbcrrbbbbbk.",
+    ".kbbbbbbrrbbcbbbbbbrrbbbbbk.",
+    ".kbbbbcbrrbbbbbbbbbrrcbbbbk.",
+    ".kbbbbbbrrbbbbbcbbbrrbbbbbk.",
+    ".kbbbbbbrrbbbbbbbbbrrbbbcbk.",
+    ".kbcbbbbrrbbbbbbbbcrrbbbbbk.",
+    ".kbbbbbbrrbbcbbbbbbrrbbbbbk.",
+    ".kccccccrrcccccccccrrccccck.",
+    ".kccccccrrcccccccccrrccccck.",
+    ".kccccccrrcccccccccrrccccck.",
+    "..kkkkkkkkkkkkkkkkkkkkkkkk..",
+    ".zzzzzzzzzzzzzzzzzzzzzzzzzz.",
+    ".....zzzzzzzzzzzzzzzzzz....."
+   ],
+   "pal": {
+    "k": "#20202c",
+    "z": "#3c4a2c",
+    "a": "#f6e08a",
+    "b": "#e0bc52",
+    "c": "#a8842e",
+    "r": "#a0442c",
+    "s": "#c8644a"
+   },
+   "acts": [
+    {
+     "w": "노말 타입 네 발 포켓몬",
+     "a": "건초 위에 올라가 몸을 말고 낮잠을 자요"
+    },
+    {
+     "w": "풀 먹는 포켓몬 (메리프·켄타로스 등 노말·풀)",
+     "a": "옆에 서서 지푸라기를 뽑아 먹어요"
+    },
+    {
+     "w": "작은 포켓몬",
+     "a": "건초와 땅 사이 틈에 숨어요"
+    },
+    {
+     "w": "불꽃 타입",
+     "a": "불이 옮을까 봐 멀찍이 피해 가요"
+    }
+   ],
+   "fit": "풀밭 가장자리, 가을",
+   "del": 1792624367473,
+   "dayAt": 1792618421339,
+   "theme": "가을 수확 축제"
+  },
   {
    "id": "firefly-jar",
    "n": "반딧불 병",
