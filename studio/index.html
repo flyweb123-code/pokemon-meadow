@@ -530,7 +530,7 @@ const VIEWS = { map: ['맵', 'map'], mon: ['포켓몬', 'poke'], newmo: ['새 �
 const NAV = [['게임 화면', ['map', 'mon', 'bub']], ['데이터', ['egg', 'geo', 'tier', 'bal', 'shop']], ['기타', ['art', 'work', 'ver', 'test']]];
 const MTABS = [['map', '맵', 'map', ['map']], ['mon', '포켓몬', 'poke', ['mon', 'newmo']], ['egg', '알', 'egg', ['odds', 'pool', 'hatch', 'rank', 'tier']], ['art', '그림', 'art', ['art']], ['more', '더보기', 'more', ['geo', 'thm', 'bal', 'shop', 'work', 'test', 'bub', 'ver']]];
 const SEGS = { egg: [['odds', '수집 확률'], ['pool', '등급별 포켓몬'], ['hatch', '부화 거리'], ['rank', '랭크'], ['tier', '티어']], more: [['geo', '지도'], ['thm', '장소 특성'], ['bal', '밸런스'], ['shop', '상점'], ['work', '배포하기'], ['test', '테스트'], ['bub', '말풍선'], ['ver', '버전']], mon: [['mon', '포켓몬'], ['newmo', '새 모션']] };
-const GN = ['', '일반', '희귀', '레어', '에픽', '전설'], GC = ['', '#9aa0a8', '#4aa8f0', '#8a6ae0', '#e0a020', '#e05050'];
+const GN = ['', '일반', '우수', '레어', '에픽', '전설'], GC = ['', '#9aa0a8', '#4aa8f0', '#8a6ae0', '#e0a020', '#e05050'];
 const TC = t => `hsl(${(t - 1) * 26} 60% ${t < 4 ? 58 : 66}%)`;
 let A = null, view = 'map';
 const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
