@@ -83,83 +83,6 @@
      "fit": "풀밭 가장자리·길목, 밤"
     },
     {
-     "id": "paper-lantern",
-     "n": "종이 등롱",
-     "k": "놀이",
-     "d": "대나무 걸이에 매단 빨간 종이 등롱이에요. 살대 줄무늬 사이로 속불이 가운데부터 주황빛으로 번지고, 아래에 빨간 술이 달려 있어요.",
-     "px": [
-      "..........................",
-      "...kkkkkkkkkkkkkkkk.......",
-      "..kbbbbbbbbbbbbbbbbk......",
-      "..kbBBBBBBBBBBBBBBBk......",
-      "..kbBkkkkkkkkkkkkkk.......",
-      "..kbBk........kkkkkkk.....",
-      "..kbBk.......kGcccccck....",
-      "..kbBk......kGCCCCCCCCk...",
-      "..kbBk....h.hkkRRRRRkkh.h.",
-      "..knnk......kkRRRRRRRkk...",
-      "..kbBk....hkRRrrrrrrrRRkh.",
-      "..kbBk...h.kRrrrooorrrRk.h",
-      "..kbBk..h.kRRRrrrrrrrRRRk.",
-      "..kbBk....krrooooooooorrk.",
-      "..kbBk..hkRrrooooyoooorrRk",
-      "..kbBk...kRRrrrooooorrrRRk",
-      "..knnk..hkRroooywwwyooorRk",
-      "..kbBk...krroooywwwyooorrk",
-      "..kbBk..hkRRrrroyyyorrrRRk",
-      "..kbBk...kRroooyyyyyooorRk",
-      "..kbBk..hkRrrooooyoooorrRk",
-      "..kbBk....kRRrrrrrrrrrRRk.",
-      "..kbBk..h.kRrrooooooorrRk.",
-      "..knnk...h.kRrrrooorrrRk.h",
-      "..kbBk....hkRRRRRRRRRRRkh.",
-      "..kbBk......kkRRRRRRRkk...",
-      "..kbBk....h.hkkRRRRRkkh.h.",
-      "..kbBk......kCCCCCCCCCk...",
-      "..kbBk.......kccccccck....",
-      "..kbBk........kkkrkkk.....",
-      "..kbBk........h.krk.h.....",
-      ".kbbBBk........krrrk......",
-      "kBBBBBBk......hkRRRkh.....",
-      "zzzzzzzz........kkk......."
-     ],
-     "pal": {
-      "k": "#20202c",
-      "z": "#2c3a28",
-      "b": "#c8a860",
-      "B": "#8a6a34",
-      "n": "#5e4626",
-      "c": "#3a2e2e",
-      "C": "#5a4440",
-      "G": "#7a6460",
-      "w": "#fff4c8",
-      "y": "#ffd27a",
-      "o": "#f6904a",
-      "r": "#d84a34",
-      "R": "#9a2a2a",
-      "h": "#ffb070"
-     },
-     "acts": [
-      {
-       "w": "불꽃 타입",
-       "a": "등롱 아래에 서서 기술을 써서 속에 불을 붙여요"
-      },
-      {
-       "w": "작은 고스트 타입",
-       "a": "등롱 뒤에 숨어 있다가 옆으로 쏙 고개를 내밀어요"
-      },
-      {
-       "w": "날개 있는 작은 포켓몬",
-       "a": "대나무 가로대에 날아와 나란히 앉아요"
-      },
-      {
-       "w": "작은 포켓몬",
-       "a": "늘어진 술을 앞발로 톡톡 치며(부딪치기) 놀아요"
-      }
-     ],
-     "fit": "모닥불·꽃밭 옆, 밤 축제"
-    },
-    {
      "id": "firefly-jar",
      "n": "반딧불 병",
      "k": "놀이",
@@ -1354,6 +1277,86 @@
   }
  ],
  "trash": [
+  {
+   "id": "paper-lantern",
+   "n": "종이 등롱",
+   "k": "놀이",
+   "d": "대나무 걸이에 매단 빨간 종이 등롱이에요. 살대 줄무늬 사이로 속불이 가운데부터 주황빛으로 번지고, 아래에 빨간 술이 달려 있어요.",
+   "px": [
+    "..........................",
+    "...kkkkkkkkkkkkkkkk.......",
+    "..kbbbbbbbbbbbbbbbbk......",
+    "..kbBBBBBBBBBBBBBBBk......",
+    "..kbBkkkkkkkkkkkkkk.......",
+    "..kbBk........kkkkkkk.....",
+    "..kbBk.......kGcccccck....",
+    "..kbBk......kGCCCCCCCCk...",
+    "..kbBk....h.hkkRRRRRkkh.h.",
+    "..knnk......kkRRRRRRRkk...",
+    "..kbBk....hkRRrrrrrrrRRkh.",
+    "..kbBk...h.kRrrrooorrrRk.h",
+    "..kbBk..h.kRRRrrrrrrrRRRk.",
+    "..kbBk....krrooooooooorrk.",
+    "..kbBk..hkRrrooooyoooorrRk",
+    "..kbBk...kRRrrrooooorrrRRk",
+    "..knnk..hkRroooywwwyooorRk",
+    "..kbBk...krroooywwwyooorrk",
+    "..kbBk..hkRRrrroyyyorrrRRk",
+    "..kbBk...kRroooyyyyyooorRk",
+    "..kbBk..hkRrrooooyoooorrRk",
+    "..kbBk....kRRrrrrrrrrrRRk.",
+    "..kbBk..h.kRrrooooooorrRk.",
+    "..knnk...h.kRrrrooorrrRk.h",
+    "..kbBk....hkRRRRRRRRRRRkh.",
+    "..kbBk......kkRRRRRRRkk...",
+    "..kbBk....h.hkkRRRRRkkh.h.",
+    "..kbBk......kCCCCCCCCCk...",
+    "..kbBk.......kccccccck....",
+    "..kbBk........kkkrkkk.....",
+    "..kbBk........h.krk.h.....",
+    ".kbbBBk........krrrk......",
+    "kBBBBBBk......hkRRRkh.....",
+    "zzzzzzzz........kkk......."
+   ],
+   "pal": {
+    "k": "#20202c",
+    "z": "#2c3a28",
+    "b": "#c8a860",
+    "B": "#8a6a34",
+    "n": "#5e4626",
+    "c": "#3a2e2e",
+    "C": "#5a4440",
+    "G": "#7a6460",
+    "w": "#fff4c8",
+    "y": "#ffd27a",
+    "o": "#f6904a",
+    "r": "#d84a34",
+    "R": "#9a2a2a",
+    "h": "#ffb070"
+   },
+   "acts": [
+    {
+     "w": "불꽃 타입",
+     "a": "등롱 아래에 서서 기술을 써서 속에 불을 붙여요"
+    },
+    {
+     "w": "작은 고스트 타입",
+     "a": "등롱 뒤에 숨어 있다가 옆으로 쏙 고개를 내밀어요"
+    },
+    {
+     "w": "날개 있는 작은 포켓몬",
+     "a": "대나무 가로대에 날아와 나란히 앉아요"
+    },
+    {
+     "w": "작은 포켓몬",
+     "a": "늘어진 술을 앞발로 톡톡 치며(부딪치기) 놀아요"
+    }
+   ],
+   "fit": "모닥불·꽃밭 옆, 밤 축제",
+   "del": 1792624344581,
+   "dayAt": 1792619438354,
+   "theme": "밤을 밝히는 조명"
+  },
   {
    "id": "tide-pool",
    "n": "바위 웅덩이",
