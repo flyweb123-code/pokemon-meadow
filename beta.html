@@ -954,15 +954,11 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .egg{--ec:#f6f4ea;--es:#6cc070;--esh:#d6d2c2;--eo:#383848;flex:none;width:54px;height:66px;position:relative;display:block}
 .egg svg{display:block;width:100%;height:100%}
 .egg .ck,.egg .em{display:none}.egg .eglow .kx{fill:#fff3a0}.egg .epc{position:absolute;left:0;top:0;width:100%;height:100%;transition:transform .12s steps(2,end)}.egg .epc.tl{transform-origin:5% 52%}.egg .epc.tr{transform-origin:95% 57%}.egg .elk{position:absolute;left:50%;top:30%;width:calc(30% + var(--lk,0) * 50%);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(#fffbe0 0 22%,#ffe066 40%,rgba(255,190,40,.55) 58%,transparent 72%);filter:drop-shadow(0 0 6px #ffc400);pointer-events:none;opacity:0}.egg.splitting .eglow .k1{display:none}.egg.c1 .k1,.egg.c2 .k2,.egg.c3 .k3{display:inline}
-/* v7.81 경완: 등급이 오를수록 더 좋은 알 — 우수 가운데 띠, 레어 푸른 껍질·흰 띠·반짝, 에픽 보랏빛·보석·점선, 전설 금빛·붉은 띠·하늘 보석·점선 두 줄·후광 */
-.egg.g2{--es:#f0a040;--eb:#d8603a;--ebs:#b04428;--egm:#d8603a;--ebd:var(--ec)}
-.egg.g2 .eb,.egg.g2 .egm,.egg.g2 .ebg,.egg.g2 .ebd{display:inline}
-.egg.g3{--ec:#eaf4ff;--esh:#bcd4ee;--es:#4f95dc;--eo:#24426e;--eb:#2a5aa8;--ebs:#1c4282;--egm:#8cc4f4;--ebd:#ffffff}
-.egg.g3 .em:not(.ed1):not(.ed2){display:inline}
-.egg.g4{--ec:#f3eaff;--esh:#cdb6ee;--es:#b48ae6;--eo:#3e2466;--eb:#6a36b0;--ebs:#4e2488;--egm:#ffd84a;--ebd:#ffffff;--ed:#6a36b0;filter:drop-shadow(0 0 3px rgba(170,120,240,.7))}
-.egg.g4 .em:not(.ed2){display:inline}
-.egg.g5{--ec:#fff1b8;--esh:#e8c868;--es:#e0a020;--eo:#6a4210;--eb:#d02c3c;--ebs:#a01c2c;--egm:#6ae0ff;--ebd:#ffffff;--ed:#d08a10;filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 6px #ffd84a)}
-.egg.g5 .em{display:inline}
+/* v7.81 경완: 등급이 오를수록 더 좋은 알 (띠 없이) — 우수 반짝임, 레어 푸른 껍질, 에픽 보랏빛 껍질·반짝임 둘·은은한 빛, 전설 금빛 껍질·후광 */
+.egg.g2{--es:#f0a040}.egg.g2 .etw{display:inline}
+.egg.g3{--ec:#e6f2ff;--esh:#b4cfee;--es:#3c86d8;--eo:#24426e}.egg.g3 .etw{display:inline}
+.egg.g4{--ec:#f1e6ff;--esh:#c9b0ee;--es:#9a62dc;--eo:#3e2466;filter:drop-shadow(0 0 3px rgba(170,120,240,.75))}.egg.g4 .em{display:inline}
+.egg.g5{--ec:#fff1b8;--esh:#e8c868;--es:#e0a020;--eo:#6a4210;filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 6px #ffd84a)}.egg.g5 .em{display:inline}
 .egg.big{width:72px;height:88px}
 .egg.wob{animation:wob 1.6s ease-in-out infinite;transform-origin:50% 90%}
 @keyframes wob{0%,70%,100%{transform:rotate(0)}76%{transform:rotate(-8deg)}84%{transform:rotate(8deg)}92%{transform:rotate(-4deg)}}
@@ -9240,22 +9236,19 @@ const EGG_SVG = (() => {
   const W = 18, H = 22, half = [2, 4, 5, 6, 7, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 8, 8, 7, 6, 5, 3];
   const inside = (x, y) => y >= 0 && y < H && x >= 9 - half[y] && x < 9 + half[y];
   const spots = [[5.4, 7.6, 2.1], [11.9, 4.9, 1.6], [11.4, 13.4, 2.6], [5.2, 16.2, 1.3]];
-  const rows = { o: '', c: '', s: '', sh: '', hl: '', b: '', bs: '', gm: '', bd: '', bg: '', d1: '', d2: '' };
+  const rows = { o: '', c: '', s: '', sh: '', hl: '' };
   const px = (k, x, y) => { rows[k] += `M${x} ${y}h1v1h-1z`; };
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     if (!inside(x, y)) continue;
     if (!inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1)) { px('o', x, y); continue; }
-    // v7.81 경완: 등급 무늬 층 (아래 무늬 위에 겹쳐 그리고, 등급마다 CSS 로 켠다) — 가운데 곧은 띠·띠 위 보석·띠 위아래 틈·위아래 점선
-    const shd = !inside(x + 2, y + 1) || !inside(x + 1, y + 2);
-    if (y === 11 || y === 12) px(x % 4 === 1 ? 'gm' : shd ? 'bs' : 'b', x, y); else if (y === 13) px('bd', x, y); else if (y === 10) px('bg', x, y);
-    else if (y === 7 && x % 2) px('d1', x, y); else if (y === 17 && !(x % 2)) px('d2', x, y);
     if (spots.some(([sx, sy, r]) => (x + .5 - sx) ** 2 + (y + .5 - sy) ** 2 <= r * r)) { px('s', x, y); continue; }
-    if (shd) { px('sh', x, y); continue; }
+    if (!inside(x + 2, y + 1) || !inside(x + 1, y + 2)) { px('sh', x, y); continue; }
     if ((x === 4 || x === 5) && (y >= 4 && y <= 5) || (x === 3 && y >= 6 && y <= 8)) { px('hl', x, y); continue; }
     px('c', x, y);
   }
   const crack = pts => pts.map(([x, y]) => `M${x} ${y}h1v1h-1z`).join('');
-  const tw = crack([[13, 3], [12, 4], [13, 4], [14, 4], [13, 5]]);   // 반짝 (레어부터)
+  // v7.81 경완: 등급이 오를수록 반짝임이 늘어난다 (우수부터 하나, 에픽부터 둘)
+  const tw = crack([[13, 3], [12, 4], [13, 4], [14, 4], [13, 5]]), tw2 = crack([[13, 15], [12, 16], [13, 16], [14, 16], [13, 17]]);
   // 금: 세 단계로 점점 길어진다
   const k1 = crack([[9, 3], [10, 4], [9, 5], [9, 6], [10, 7]]);
   const k2 = crack([[8, 8], [9, 9], [10, 9], [11, 10], [7, 9], [6, 10]]);
@@ -9264,9 +9257,7 @@ const EGG_SVG = (() => {
   return `<svg viewBox="0 0 ${W} ${H}" shape-rendering="crispEdges" aria-hidden="true">`
     + `<path d="${rows.c}" style="fill:var(--ec)"/><path d="${rows.sh}" style="fill:var(--esh)"/><path d="${rows.hl}" fill="#fff"/>`
     + `<path d="${rows.s}" style="fill:var(--es)"/>`
-    + `<path class="em eb" d="${rows.b}" style="fill:var(--eb)"/><path class="em eb" d="${rows.bs}" style="fill:var(--ebs)"/><path class="em egm" d="${rows.gm}" style="fill:var(--egm)"/><path class="em ebg" d="${rows.bg}" style="fill:var(--ec)"/><path class="em ebd" d="${rows.bd}" style="fill:var(--ebd)"/>`
-    + `<path class="em ed1" d="${rows.d1}" style="fill:var(--ed)"/><path class="em ed2" d="${rows.d2}" style="fill:var(--ed)"/>`
-    + `<path d="${rows.o}" style="fill:var(--eo)"/><path class="em etw" d="${tw}" fill="#fff"/>`
+    + `<path d="${rows.o}" style="fill:var(--eo)"/><path class="em etw" d="${tw}" fill="#fff"/><path class="em etw2" d="${tw2}" fill="#fff"/>`
     + `<path class="ck k1" d="${k1}" style="fill:var(--eo)"/><path class="ck k2" d="${k2}" style="fill:var(--eo)"/><path class="ck k3" d="${k3}" style="fill:var(--eo)"/><path class="ckx" d="" style="fill:var(--eo)"/></svg>`;
 })();
 // v5.16 경완: 부화 카드 '필드로'를 빠르게 누르면 눌린 모양만 나오고 안 되던 것 — 손을 뗄 때 바로 처리하고, 뒤따르는 click·연타(350ms 안)는 무시
