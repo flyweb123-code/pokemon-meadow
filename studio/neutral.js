@@ -18,9 +18,10 @@
     { id: 'mg', n: 10, name: '미니게임 덕후', d: '많이는 안 걷고 미니게임을 하루 8판', wd: 2, we: 2.5, run: 0, care: .8, mg: 8, sc: 3500, on: .95 },
     { id: 'casual', n: 10, name: '가끔 접속', d: '사흘에 한 번쯤 켜고 3km', wd: 3, we: 3, run: 0, care: .2, mg: .5, sc: 1800, on: .4 },
   ];
-  const MQ_DAY = [[5, 50], [3, 150], [3000, 300]], MQ_TY = [[1500, 100], [3000, 300], [5000, 600], [7000, 1000], [10000, 2000]];
-  const MQ_PLAY = [[5, 100], [20, 300], [50, 600], [100, 1000], [300, 2500]], MQ_SUM = [[20000, 150], [100000, 500], [300000, 1200], [1000000, 3000]];
-  const MQ_PH = [[3, 100], [5, 250], [7, 500], [10, 1000]], MQ_KILL = [[100, 150], [500, 500], [2000, 1500], [5000, 3000]];   // 3.25 경완: 도전 미션 페이즈·기술로 날리기도 (게임 MQ 와 같은 값)
+  // 미션: 조건은 게임과 같고, 골드는 작업실 밸런스 값(b.MQ_*_G)을 쓴다 (없으면 게임 기본값)
+  const MQ_N = { MQ_DAY_G: [5, 3, 3000], MQ_TY_G: [1500, 3000, 5000, 7000, 10000], MQ_PLAY_G: [5, 20, 50, 100, 300], MQ_SUM_G: [20000, 100000, 300000, 1000000], MQ_PH_G: [3, 5, 7, 10], MQ_KILL_G: [100, 500, 2000, 5000] };
+  const MQ_DEF = { MG_PTS: 30, MQ_DAY_G: [50, 150, 300], MQ_TY_G: [60, 150, 300, 550, 1000], MQ_PLAY_G: [100, 300, 600, 1000, 2500], MQ_SUM_G: [150, 500, 1200, 3000], MQ_PH_G: [100, 250, 500, 1000], MQ_KILL_G: [150, 500, 1500, 3000] };
+  const mqL = (b, k) => MQ_N[k].map((x, i) => [x, (Array.isArray(b[k]) ? b[k] : MQ_DEF[k])[i] ?? 0]);
   const EVO_FR = [0, 30, 60];
 
   // model = { odds[5], pity{e,l}, b{밸런스 전부}, probs{g: [[sp, p]]}, SP{sp: {t, fr, kids, ev, eqx, gb(바탕 종 등급), st(진화 단계)}}, price{도구 이름: G} }
@@ -35,6 +36,7 @@
   function simUser(model, P, seed, days, R) {
     const r = rng(seed), b = model.b, odds = model.odds, HK = b.HATCH_KM, mul = .6 + r() * .9, scM = .75 + r() * .6;
     const sub = .25, per = sub / (b.BAG_STEP || .25), EVN = [0, 5, 10, 15, 20, 25];
+    const MQ_DAY = mqL(b, 'MQ_DAY_G'), MQ_TY = mqL(b, 'MQ_TY_G'), MQ_PLAY = mqL(b, 'MQ_PLAY_G'), MQ_SUM = mqL(b, 'MQ_SUM_G'), MQ_PH = mqL(b, 'MQ_PH_G'), MQ_KILL = mqL(b, 'MQ_KILL_G'), MG_PTS = b.MG_PTS || MQ_DEF.MG_PTS;
     const U = { p: P.id, dex: new Set(), box: [], bag: [], inc: [], pe: 0, pl: 0, gold: 0, gs: { hatch: 0, run: 0, mg: 0, mq: 0, evo: 0 }, spent: 0, buy: 0, evo: 0, sh: 0, eggs: 0, hatched: 0, km: 0,
       fE: null, fL: null, d: {}, bud: [], frD: {}, q: { n: 0, sum: 0, ph: 0, kn: 0, ty: {}, cl: {} } };
     const addG = (k, v) => { U.gold += v; U.gs[k] += v; };
@@ -76,7 +78,7 @@
       // 미니게임: 골드는 점수 30점마다 1G, 친밀도는 첫째 짝꿍에게
       if (on && P.mg) { let n = Math.floor(P.mg) + (r() < P.mg % 1 ? 1 : 0), best = 0, cnt = 0;
         for (let i = 0; i < n; i++) { const s = Math.round(P.sc * scM * (.5 + r())), m = U.bud[i % Math.max(1, U.bud.length)] || U.box[0]; if (!m) break; cnt++;
-          addG('mg', Math.floor(s / 30)); best = Math.max(best, s); U.q.n++; U.q.sum += s; U.q.ph = Math.max(U.q.ph, 1 + Math.floor(s * .8 / 250)); U.q.kn += Math.round(2 + s / 500);   /* 짐작: 페이즈는 250m마다(점수의 8할이 거리), 기술로 날리는 수는 한 판에 2 + 점수/500 */
+          addG('mg', Math.floor(s / MG_PTS)); best = Math.max(best, s); U.q.n++; U.q.sum += s; U.q.ph = Math.max(U.q.ph, 1 + Math.floor(s * .8 / 250)); U.q.kn += Math.round(2 + s / 500);   /* 짐작: 페이즈는 250m마다(점수의 8할이 거리), 기술로 날리는 수는 한 판에 2 + 점수/500 */
           const frB = s >= 2000 ? Math.floor(s / 1000) : s >= 300 ? 1 : 0; if (U.bud[0]) U.bud[0].fr = Math.min(b.FR_MAX, U.bud[0].fr + (i < 5 ? frB : frB ? 1 : 0));
           for (const t of model.SP[m.sp]?.t || []) U.q.ty[t] = Math.max(U.q.ty[t] || 0, s); }
         if (cnt >= MQ_DAY[0][0]) addG('mq', MQ_DAY[0][1]); if (cnt >= MQ_DAY[1][0] && new Set(U.box.map(o => o.sp)).size >= 3) addG('mq', MQ_DAY[1][1]); if (best >= MQ_DAY[2][0]) addG('mq', MQ_DAY[2][1]);
@@ -127,6 +129,9 @@
   // 고칠 거리: 치우친 칸마다 고칠 값(patch)을 만들고, 그 값으로 다시 돌려 본 결과를 함께 붙인다
   const sc = (L, k, from = 1) => L.map((x, i) => i < from ? x : Math.round(x * k * 100) / 100);
   const scG = (L, k) => L.map((x, i) => i ? Math.max(5, Math.round(x * k / 5) * 5) : x);   // v8.15 경완: 골드는 5G 단위로
+  const g5 = (x, k) => Math.max(5, Math.round(x * k / 5) * 5);
+  function allGold(b, k) { const o = { DUP_G: scG(b.DUP_G, k), NEW_EGG_G: scG(b.NEW_EGG_G, k), NEW_G: g5(b.NEW_G, k), RUN_G: Math.max(1, Math.round(b.RUN_G * k)), MG_PTS: Math.max(1, Math.round((b.MG_PTS || MQ_DEF.MG_PTS) / k)) };
+    for (const q of Object.keys(MQ_N)) o[q] = (Array.isArray(b[q]) ? b[q] : MQ_DEF[q]).map(x => g5(x, k)); return o; }
   function propose(model, s) {
     const J = judge(s), b = model.b, out = [], has = id => J.find(j => j.id === id)?.lv;
     const add = (id, t, why, patch) => out.push({ id, t, why, patch });
@@ -136,8 +141,10 @@
     if (has('fE') === 'easy') add('oddE', '에픽 알 확률 30% 낮추기', '에픽 알이 너무 흔해요', { odds: reOdds(model.odds, 3, .7) });
     if (has('fL') === 'hard') add('pityL', `전설 천장 ${model.pity.l} → ${Math.round(model.pity.l * .75)}km`, '전설 알을 거의 못 봐요', { pity: { l: Math.round(model.pity.l * .75) } });
     if (has('fL') === 'easy') add('oddL', '전설 알 확률 30% 낮추기', '전설 알이 너무 흔해요', { odds: reOdds(model.odds, 4, .7) });
-    if (has('gpd') === 'hard' || has('gpdH') === 'hard') add('goldU', '부화 골드 30% 올리기', '골드가 너무 안 모여요', { bal: { DUP_G: scG(b.DUP_G, 1.3), NEW_EGG_G: scG(b.NEW_EGG_G, 1.3) } });
-    if (has('gpd') === 'easy') add('goldD', '부화 골드 25% 내리기', '골드가 넘쳐요 (골드는 대부분 알 부화에서 나와요)', { bal: { DUP_G: scG(b.DUP_G, .75), NEW_EGG_G: scG(b.NEW_EGG_G, .75) } });
+    // v3.25 경완: 골드는 부화만이 아니라 받을 수 있는 곳 모두(부화·진화·런닝·미니게임 점수·미션)를 같은 비율로
+    { const src = s.by?.commute?.src || {}, tot = Object.values(src).reduce((a, x) => a + x, 0) || 1, share = Object.entries({ 부화: src.hatch, 미니게임: src.mg, 미션: src.mq, 진화: src.evo, 런닝: src.run }).filter(([, v]) => v > 0).sort((x, y) => y[1] - x[1]).map(([n, v]) => `${n} ${Math.round(v / tot * 100)}%`).join(' · ');
+      if (has('gpd') === 'hard' || has('gpdH') === 'hard') add('goldU', '모든 골드 30% 올리기', `골드가 너무 안 모여요 (출퇴근 골드: ${share})`, { bal: allGold(b, 1.3) });
+      if (has('gpd') === 'easy') add('goldD', '모든 골드 25% 내리기', `골드가 넘쳐요 (출퇴근 골드: ${share})`, { bal: allGold(b, .75) }); }
     if (has('fr160') === 'hard' || has('frMax') === 'hard') add('frU', `필드 친밀도 하루 최대 ${b.FLD_FR_DAY} → ${b.FLD_FR_DAY + 4}`, '친밀도가 너무 느려요', { bal: { FLD_FR_DAY: b.FLD_FR_DAY + 4 } });
     if (has('frMax') === 'easy') add('frD', `짝꿍 1km 친밀도 ${b.WALK_FR} → ${Math.max(1, b.WALK_FR - 1)}`, '친밀도가 너무 빨리 차요', { bal: { WALK_FR: Math.max(1, b.WALK_FR - 1) } });
     if (has('rare') === 'hard') add('rare', '티어 메뉴에서 드문 쪽 기울기 줄이기', `${s.rare?.g === 5 ? '전설' : '드문'} 알 안에서 제일 드문 종이 너무 안 나와요. 티어 안 순서 기울기는 작업실 티어 메뉴에서 직접 봐 주세요`, null);
