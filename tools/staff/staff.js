@@ -37,7 +37,7 @@ async function neutralRun() {
 function scarletAdd(file) {
   const d = JSON.parse(fs.readFileSync(file, 'utf8')), L = d.items || [], bad = [];
   if (L.length !== 10) bad.push(`소품이 ${L.length}개예요 (10개여야 해요)`);
-  const old = new Set((rd('scarlet.json', { days: [] }).days || []).flatMap(x => x.items.map(o => o.id)));
+  const R0 = rd('scarlet.json', { days: [] }), old = new Set([...(R0.days || []).flatMap(x => x.items.map(o => o.id)), ...(R0.trash || []).map(o => o.id)]);   // 휴지통(경완이 지운 것)의 id 도 다시 쓰지 않음
   L.forEach((o, i) => { const at = `${i + 1}번(${o.n || '?'})`;
     if (!o.id || !/^[a-z0-9-]+$/.test(o.id)) bad.push(`${at}: id 는 영문 소문자·숫자·- 만`); if (old.has(o.id)) bad.push(`${at}: id ${o.id} 는 이미 있어요`);
     if (!o.n || !o.d) bad.push(`${at}: 이름(n)과 설명(d)이 필요해요`);

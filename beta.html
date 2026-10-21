@@ -4902,7 +4902,7 @@ function seasonCv(cv, part, o) { const se = season(); if (se === 'summer' || !cv
   const R = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = (y * w + x) * 4; if (A[i + 3] < 8) continue; let [H, Sa, L] = rgb2hsl(A[i], A[i + 1], A[i + 2]), out = null;
     const bgY = part === 'bg' ? y - o.oy : 0, fx = part === 'bg' ? x - o.ox : 0;
-    const ln = 74 + (seaN(fx, 0, 9) - .5) * 18, kb = part === 'bg' ? Math.max(0, Math.min(1, (bgY - ln + 9) / 18)) : 1;   // 맵 위쪽 숲은 잎처럼 (하늘은 초록이 아니라 그대로). v8.28 경완: 경계를 들쭉날쭉하게, v8.29: 숲 색 → 땅 색 그라데이션 (18줄)
+    const kb = part === 'bg' ? Math.max(0, Math.min(1, (bgY - 56) / 40)) : 1;   // 맵 위쪽 숲은 잎처럼 (하늘은 초록이 아니라 그대로). v8.30 경완: 숲 색 → 땅 색을 가로 일자 40줄 그라데이션으로 (들쭉날쭉·삐죽 튀어나옴 없이)
     const green = H >= 62 && H <= 170 && Sa > .14;
     const col = pt => { let out = null;
       if (se === 'spring') out = pt === 'tree' && L > .5 && R() < .3 ? (R() < .5 ? [255, 176, 204] : [255, 214, 228]) : hsl2rgb(H - 18, Sa + .08, L + .07);
@@ -5920,7 +5920,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.29';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.30';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)

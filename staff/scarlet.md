@@ -10,6 +10,7 @@
 
 ## 매일 할 일
 1. `staff/notes/scarlet.md` (경완 피드백 메모) 와 `config/staff/scarlet.json` 의 지난 작업물을 읽어요 (같은 걸 또 그리지 않게).
+   `scarlet.json` 의 `trash` 는 경완이 작업실에서 지운 작업물이에요 — 마음에 안 든 것이니 같은 소품·비슷한 그림을 다시 내지 말고, 왜 지웠을지 생각해 오늘 작업에 반영해요. `trash` 는 고치지 않아요.
 2. 오늘의 테마를 하나 정하고(계절·날씨·장소·놀이 등) 소품 10개를 디자인해요. 날마다 테마를 바꿔요.
 3. 아래 모양의 JSON 파일을 쓰고 `node tools/staff/staff.js scarlet-add <파일>` (검사를 통과해야 올라가요).
 ```json
