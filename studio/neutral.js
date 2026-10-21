@@ -125,6 +125,7 @@
 
   // 고칠 거리: 치우친 칸마다 고칠 값(patch)을 만들고, 그 값으로 다시 돌려 본 결과를 함께 붙인다
   const sc = (L, k, from = 1) => L.map((x, i) => i < from ? x : Math.round(x * k * 100) / 100);
+  const scG = (L, k) => L.map((x, i) => i ? Math.max(5, Math.round(x * k / 5) * 5) : x);   // v8.15 경완: 골드는 5G 단위로
   function propose(model, s) {
     const J = judge(s), b = model.b, out = [], has = id => J.find(j => j.id === id)?.lv;
     const add = (id, t, why, patch) => out.push({ id, t, why, patch });
@@ -134,11 +135,12 @@
     if (has('fE') === 'easy') add('oddE', '에픽 알 확률 30% 낮추기', '에픽 알이 너무 흔해요', { odds: reOdds(model.odds, 3, .7) });
     if (has('fL') === 'hard') add('pityL', `전설 천장 ${model.pity.l} → ${Math.round(model.pity.l * .75)}km`, '전설 알을 거의 못 봐요', { pity: { l: Math.round(model.pity.l * .75) } });
     if (has('fL') === 'easy') add('oddL', '전설 알 확률 30% 낮추기', '전설 알이 너무 흔해요', { odds: reOdds(model.odds, 4, .7) });
-    if (has('gpd') === 'hard' || has('gpdH') === 'hard') add('goldU', '부화 골드 30% 올리기', '골드가 너무 안 모여요', { bal: { DUP_G: sc(b.DUP_G, 1.3), NEW_EGG_G: sc(b.NEW_EGG_G, 1.3) } });
-    if (has('gpd') === 'easy') add('goldD', '부화 골드 25% 내리기', '골드가 넘쳐요 (골드는 대부분 알 부화에서 나와요)', { bal: { DUP_G: sc(b.DUP_G, .75), NEW_EGG_G: sc(b.NEW_EGG_G, .75) } });
+    if (has('gpd') === 'hard' || has('gpdH') === 'hard') add('goldU', '부화 골드 30% 올리기', '골드가 너무 안 모여요', { bal: { DUP_G: scG(b.DUP_G, 1.3), NEW_EGG_G: scG(b.NEW_EGG_G, 1.3) } });
+    if (has('gpd') === 'easy') add('goldD', '부화 골드 25% 내리기', '골드가 넘쳐요 (골드는 대부분 알 부화에서 나와요)', { bal: { DUP_G: scG(b.DUP_G, .75), NEW_EGG_G: scG(b.NEW_EGG_G, .75) } });
     if (has('fr160') === 'hard' || has('frMax') === 'hard') add('frU', `필드 친밀도 하루 최대 ${b.FLD_FR_DAY} → ${b.FLD_FR_DAY + 4}`, '친밀도가 너무 느려요', { bal: { FLD_FR_DAY: b.FLD_FR_DAY + 4 } });
     if (has('frMax') === 'easy') add('frD', `짝꿍 1km 친밀도 ${b.WALK_FR} → ${Math.max(1, b.WALK_FR - 1)}`, '친밀도가 너무 빨리 차요', { bal: { WALK_FR: Math.max(1, b.WALK_FR - 1) } });
     if (has('rare') === 'hard') add('rare', '티어 메뉴에서 드문 쪽 기울기 줄이기', `${s.rare?.g === 5 ? '전설' : '드문'} 알 안에서 제일 드문 종이 너무 안 나와요. 티어 안 순서 기울기는 작업실 티어 메뉴에서 직접 봐 주세요`, null);
+    { const odd = ['DUP_G', 'NEW_EGG_G'].filter(k => Array.isArray(b[k]) && b[k].some((x, i) => i && x % 5)); if (odd.length && !out.some(x => x.id.startsWith('gold'))) add('gold5', '골드 값 5G 단위로 맞추기', '부화 골드에 5G 단위가 아닌 값이 있어요 (' + odd.map(k => b[k].slice(1).join('·')).join(' / ') + ')', { bal: Object.fromEntries(odd.map(k => [k, scG(b[k], 1)])) }); }
     if (has('bag') === 'hard') add('inc', `부화기 칸 ${b.MAX_EGGS} → ${b.MAX_EGGS + 5}`, '가방에 알이 계속 쌓여요', { bal: { MAX_EGGS: b.MAX_EGGS + 5 } });
     return out;
   }

@@ -529,7 +529,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.22';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.23';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2014,6 +2014,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
   ['3.21', '10월 22일', ['크기 조절 모드 동작별 떠 있기 창: 필드에 있는 그 포켓몬 모습(암컷 모습 등) 그대로 그리고 그림자도 필드와 같게 (레디바 등)', '깡충 동작 칸에서 뛰어오를수록 그림자가 작아진다 (게임 v8.13)']],
+  ['3.23', '10월 22일', ['뉴트럴의 골드 제안은 5G 단위로 떨어지게, 지금 부화 골드가 5G 단위가 아니면 맞추는 제안도 낸다']],
   ['3.22', '10월 22일', ['직원 DM 을 없애고, 뉴트럴·스칼렛 작업물에 바로 피드백을 남기면 다음 날 아침 작업에서 반영하고 "반영했어요" 를 달아 준다']],
   ['3.20', '10월 22일', ['직원 메뉴: 뉴트럴의 조언(100명이 90일 동안 게임을 하는 시뮬레이션으로 너무 쉬움·적당·너무 어려움을 보고 고칠 값을 제안, 작업본에 넣기), 스칼렛의 작업물(매일 소품 10개와 상호작용), 직원 DM', '직원은 Claude 가 맡는다: 매일 아침 일하고, DM 은 하루 네 번(9·13·17·21시) 확인해서 답장한다']],
   ['3.18', '10월 20일', ['동작별 떠 있기 창: 그림 옮기기를 상하좌우 동그란 화살표 버튼으로 (가운데 0 = 처음 자리, Shift 누르고 누르면 5px). 좌우도 옮길 수 있다 (게임 v5.79)']],
