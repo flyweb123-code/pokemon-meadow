@@ -354,7 +354,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .mapico{width:46px;height:46px;display:grid;place-items:center;border:3px solid var(--frame);background:var(--win);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner),3px 3px 0 rgba(0,0,0,.35);cursor:pointer;padding:0}
 .mapico .b-night{display:none!important}
 .mapico.night{--win:#1e2340;--inner:#46508a;--frame:#0e1024}.mapico.night svg path[fill="#20202c"],.boot-night .mapico svg path[fill="#20202c"]{fill:#9aa2d4}   /* v5.88 경완: 밤엔 가방 손잡이·테두리가 바탕에 묻혀서 밝게 */
-.mapico[aria-pressed="true"]{background:#ffe27a;box-shadow:inset 0 0 0 3px #ffe27a,inset 0 0 0 5px var(--frame),1px 1px 0 rgba(0,0,0,.35);transform:translate(2px,2px)}#btnBag.prs{transform:translate(2px,2px) scale(.94);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner),1px 1px 0 rgba(0,0,0,.35)}   /* v7.70 경완: 가방 버튼 누를 때 눌리는 모션 */
+.mapico[aria-pressed="true"]{background:#ffe27a;box-shadow:inset 0 0 0 3px #ffe27a,inset 0 0 0 5px var(--frame),1px 1px 0 rgba(0,0,0,.35);transform:translate(2px,2px)}#btnBag.tap{animation:bagTap .23s ease-out}@keyframes bagTap{0%{transform:none}35%{transform:translate(2px,2px) scale(.86);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner),0 0 0 rgba(0,0,0,.35)}75%{transform:scale(1.08)}100%{transform:none}}   /* v7.71 경완: 가방 버튼 눌렸다 나옴 */
 .shopwin{max-width:560px;height:min(90vh,760px);display:flex;flex-direction:column}
 .shopwin .stab:not([hidden]){flex:1;min-height:0;display:flex;flex-direction:column}
 .shopwin .soon{margin:auto;color:var(--dim);font-size:16px;text-align:center}
@@ -5822,7 +5822,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.70';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.71';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6003,8 +6003,9 @@ function ibagToss(ids) {   /* ids 하나면 개수 고르기, 여럿이면 고�
     if (!c) return; sfx('tap'); ibagPick.clear(); if (!(I[ibagSel] > 0)) ibagSel = null;
     $('#ibagMsg').textContent = one ? `${one.n} ${c}개를 버렸어요.` : `${ids.length}종 ${c}개를 버렸어요.`; save(); renderIBag(); };
 }
-{ const w = $('#btnBag'); let t0 = 0; w.addEventListener('pointerdown', () => { t0 = performance.now(); w.classList.add('prs'); }); for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) w.addEventListener(ev, () => setTimeout(() => w.classList.remove('prs'), Math.max(0, 140 - (performance.now() - t0)))); }   /* v7.70 경완: 가방 버튼 눌림 (최소 0.14초 보임) */
-$('#btnBag').onclick = () => tabTo(ibagEl, () => { ibagEl.hidden = false; ibagFresh = new Set(); ibagTab = 'item'; ibagSel = null; ibagMul = false; ibagPick.clear(); $('#ibagMsg').textContent = ''; renderIBag(); });
+/* v7.71 경완: 가방 버튼은 누르면 쏙 눌렸다가 톡 나온 뒤 가방이 열림 */
+let bagTapT = 0; $('#btnBag').onclick = () => { const w = $('#btnBag'); if (bagTapT) return; w.classList.remove('tap'); void w.offsetWidth; w.classList.add('tap'); bagTapT = setTimeout(() => { bagTapT = 0; w.classList.remove('tap'); bagOpen(); }, 230); };
+const bagOpen = () => tabTo(ibagEl, () => { ibagEl.hidden = false; ibagFresh = new Set(); ibagTab = 'item'; ibagSel = null; ibagMul = false; ibagPick.clear(); $('#ibagMsg').textContent = ''; renderIBag(); });
 $('#ibagX').onclick = () => { ibagEl.hidden = true; };
 ibagEl.addEventListener('click', e => {
   if (e.target.closest('[data-shop]')) { ibagEl.hidden = true; $('#openShop').click(); return; }
@@ -6649,7 +6650,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
     g.rocks = g.rocks.filter(r => !r.dn); }
   for (const s of g.shots) { s.x += s.v * dt; const o = g.obs.find(q => !q.dead && !q.flee && Math.abs(q.x - s.x) < q.w / 2 + 8); if (o) { mgKill(g, o, '#ff8a2a'); s.x = 1e9; } else if (Math.random() < .6) g.parts.push({ x: s.x - 8, y: s.y + (Math.random() - .5) * 8, vx: -60, vy: -20, t: .25, c: '#ffb04a' }); }
   g.shots = g.shots.filter(s => s.x < g.W + 40); g.obs = g.obs.filter(o => o.x > -60 && !(o.dead && o.kt <= 0) && o.y < 400);
-  if (g.flapT > 0) g.flapT -= dt; if (g.gSh > 0) g.gSh -= dt; if (g.irF > 0) g.irF -= dt; if (g.sDarkT > 0) g.sDarkT -= dt; if (g.cPop > 0) g.cPop -= dt; if (g.combo && g.cT > 0 && !(g.cSt && g.y > 0)) { g.cT -= dt;   /* v7.68: 밟고 공중에 있는 동안은 시간 안 줄어듦(밟기 콤보는 착지 때 끊김) */ if (g.cT <= 0) { if (g.combo >= 3) mgToast(g, `${g.combo} 콤보!`); g.combo = 0; g.cT = 0; } }   /* v7.65 경완: 콤보는 시간제 — MG_COMBO_T 안에 또 밟거나 기술로 날려야 이어짐(땅에 닿아도 안 끊김) */ if (g.inv > 0) g.inv -= dt; if (g.npop) { g.npop.t -= dt; g.npop.y -= 34 * dt; if (g.npop.t <= 0) g.npop = null; } if (g.pop) { g.pop.t -= dt; g.pop.y -= 30 * dt; if (g.pop.t <= 0) g.pop = null; } if (g.kps) { g.kps.forEach(p => { p.t -= dt; p.y -= 40 * dt; }); g.kps = g.kps.filter(p => p.t > 0); }
+  if (g.flapT > 0) g.flapT -= dt; if (g.gSh > 0) g.gSh -= dt; if (g.irF > 0) g.irF -= dt; if (g.sDarkT > 0) g.sDarkT -= dt; if (g.cPop > 0) g.cPop -= dt; if (g.combo && g.cT > 0 && !(g.y > 0)) { g.cT -= dt;   /* v7.71 경완: 공중에 있는 동안은 콤보 시간이 항상 멈춤 (밟기 콤보는 착지 때 끊김) */ if (g.cT <= 0) { if (g.combo >= 3) mgToast(g, `${g.combo} 콤보!`); g.combo = 0; g.cT = 0; } }   /* v7.65 경완: 콤보는 시간제 — MG_COMBO_T 안에 또 밟거나 기술로 날려야 이어짐(땅에 닿아도 안 끊김) */ if (g.inv > 0) g.inv -= dt; if (g.npop) { g.npop.t -= dt; g.npop.y -= 34 * dt; if (g.npop.t <= 0) g.npop = null; } if (g.pop) { g.pop.t -= dt; g.pop.y -= 30 * dt; if (g.pop.t <= 0) g.pop = null; } if (g.kps) { g.kps.forEach(p => { p.t -= dt; p.y -= 40 * dt; }); g.kps = g.kps.filter(p => p.t > 0); }
   // 부딪힘 (몸보다 조금 작게 봐서 아슬아슬하게 넘은 건 봐준다)
   const pl = g.PX - g.pw, pr = g.PX + g.pw + (g.fx.bolt > 0 ? Math.max(0, g.bo || 0) : 0), pb = g.y + 3, pt = g.y + g.phh - 2;
   if (g.pcH != null) { g.pcH += dt; const k = Math.min(1, g.pcH / MG_PC_T); g.sq = 1 - .22 * k + Math.sin(g.t * 60) * .02 * k; g.sqv = 0; if ((g.pcS -= dt) <= 0) { g.pcS = .16 - .07 * k; sfx('zap', k * .5); } }   // 힘 모으는 중: 몸 웅크림 + 지잉
