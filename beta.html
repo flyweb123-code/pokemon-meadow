@@ -5834,7 +5834,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.96';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.97';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -10350,8 +10350,9 @@ async function tutFlow() {
     { c: '가방', t: '#bagGrid', s: '알에는 등급이 있어.\n일반·우수·레어·에픽·전설!\n좋은 알일수록 부화시키려면\n오래 걸어야 해.' },
     { c: '가방', t: '#bagGrid', s: '그리고 어디를 걸었느냐에\n따라 알에서 나오는\n포켓몬이 달라진단다.' },
     { c: '가방', t: '#bagGrid', s: '호수 근처에서 주운 알에서는\n라프라스 같은 물 포켓몬이\n자주 나온다고 하더구나.\n여기저기 많이 걸어 보렴!' },
-    { c: '가방', t: bag1, tap: bag1, until: () => el('#bagIn'), after: 1800, s: '가방의 알은 부화기에\n넣어야 자란단다.\n일반 알을 눌러 보렴.' },
-    { c: '가방', t: '#bagIn', tap: '#bagIn', until: () => !el('#bagIn'), s: '\'부화기에 넣기\'를\n눌러 보렴!' },
+    // v7.97 경완: 가방 알을 누르면 이제 알 상태 창(#hatch)이 뜨고 버튼은 #hatchIn (예전 #bagPop·#bagIn 을 기다리다 튜토리얼이 멈췄다)
+    { c: '가방', t: bag1, tap: bag1, until: () => el('#hatchIn'), after: 1800, s: '가방의 알은 부화기에\n넣어야 자란단다.\n일반 알을 눌러 보렴.' },
+    { c: '가방', t: '#hatchIn', tap: '#hatchIn', until: () => !el('#hatchIn'), s: '\'부화기에 넣기\'를\n눌러 보렴!' },
     { c: '부화기', t: '.eggtabs [data-tab="egg"]', tap: '.eggtabs [data-tab="egg"]', until: () => el('#eggs'), s: '잘했어! 이제 \'부화기\'를\n눌러서 확인해 보자.' },
     { c: '부화기', t: '#eggs', s: '부화기에는 알을\n15개까지 넣을 수 있단다.' },
     { c: '부화기', t: '#incu', s: `${nm}${hasBat(nm) ? '이' : ''}가 걷거나 달리면\n그 거리가 부화기의 모든 알에\n똑같이 쌓인단다.` },
@@ -10378,7 +10379,11 @@ async function tutFlow() {
     // v5.47 경완: 정보카드를 잠깐 닫고, 필드에서 바로 문질러 쓰다듬는 예시를 보여 준다
     { c: '쓰다듬기', pre: async () => { sheetsOff(); await wait(300); }, hold: 900, t: monEl, run: rubDemo, s: '정보카드를 닫고 필드에서\n포켓몬을 손가락으로\n문질러도 바로\n쓰다듬어 줄 수 있단다.' },
     { c: '쓰다듬기', t: monEl, run: rubDemo, s: '이렇게 문질러 주면\n즐거움이 올라가고\n포켓몬이 아주 좋아하지.' },
-    { c: '짝꿍', pre: async () => { try { select(mon()); } catch (e) {} await wait(400); }, hold: 900, t: '#infBudGo', s: '다음은 짝꿍이야!\n짝꿍은 너와 함께 걷는\n특별한 포켓몬이란다.' },
+    // v7.97 경완: 짝꿍 전에 정보카드의 조이스틱(미니게임) 버튼도 알려 준다
+    { c: '미니게임', pre: async () => { try { select(mon()); } catch (e) {} await wait(400); }, hold: 900, t: '#infGame', s: '정보카드의 조이스틱 버튼을\n누르면 이 포켓몬과\n미니게임을 할 수 있단다.' },
+    { c: '미니게임', t: '#infGame', s: '함께 노는 포켓몬의 타입과\n랭크에 따라 쓸 수 있는\n능력이 달라진단다.' },
+    { c: '미니게임', t: '#infGame', s: '게임을 하면 골드와\n아이템도 얻을 수 있으니\n꼭 해 보렴!' },
+    { c: '짝꿍', t: '#infBudGo', s: '다음은 짝꿍이야!\n짝꿍은 너와 함께 걷는\n특별한 포켓몬이란다.' },
     { c: '짝꿍', t: '#infBudGo', s: '포켓몬을 진화시키려면\n꼭 짝꿍으로 정해야 해.\n짝꿍만 함께 걸은 거리만큼\n진화에 가까워지거든.' },
     { c: '짝꿍', t: '#infBudGo', tap: '#infBudGo', until: () => S.buds.length > 0, after: 1800, s: () => `${J2(born(), '을', '를')} 짝꿍으로\n정해 보자.\n'짝꿍으로'를 눌러 보렴!` },
     { c: '짝꿍', when: () => notiOpen && !$('#noti').hidden, t: '#notiOk', tap: '#notiOk', until: () => !notiOpen, s: '이 포켓몬은 진화 조건이\n조금 특별하구나.\n\'확인\'을 눌러 보렴.' },
