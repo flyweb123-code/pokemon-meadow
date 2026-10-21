@@ -164,6 +164,15 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--acc);color:var(--accfg);padding:8px 14px;border-radius:6px;font-weight:600;z-index:10000;pointer-events:none;opacity:0;transition:opacity .2s}
 .toast.on{opacity:1}
 .empty{color:var(--mute);font-size:13px}
+.stf{max-width:1100px}.stf .wide2{grid-column:1/-1}.stf-hd{grid-template-columns:auto minmax(0,1fr);align-items:start;gap:14px}.stf-face{display:inline-grid;place-items:center;background:var(--deep);border:2px solid var(--c);border-radius:8px;padding:4px;line-height:0;flex:none}
+.stf-say{background:var(--deep);border-radius:8px;padding:8px 12px;margin:8px 0;font-size:13.5px;line-height:1.6;max-width:68ch}.stf-say p{margin:4px 0}
+.nb{display:grid;gap:0 18px;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}.nb-r{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:2px 10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}.nb-n small{display:block;color:var(--mute);font-size:11.5px}.nb-band{grid-column:1/-1}
+.nb-s{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}.tblw{overflow-x:auto}.nb-t td{vertical-align:top}.nb-h{display:grid;gap:4px}.nb-h summary{display:flex;gap:8px;align-items:center;cursor:pointer;flex-wrap:wrap}.nb-h .sp{flex:1}
+.sc-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:10px}.sc-it{display:grid;grid-template-columns:112px minmax(0,1fr);gap:10px;background:var(--deep);border-radius:8px;padding:10px}.sc-pic{display:grid;place-items:center;background:repeating-conic-gradient(#3a3f4d 0 25%,#333846 0 50%) 0 0/12px 12px;border-radius:6px;min-height:112px}.sc-acts{margin:4px 0;padding-left:16px;font-size:12.5px;display:grid;gap:2px}.sc-it .chips{margin-top:4px}
+.dm-w{max-width:760px}.dm-who{display:inline-flex;align-items:center;gap:6px}.dm-l{display:flex;flex-direction:column;gap:10px;max-height:min(60vh,560px);min-height:200px;overflow:auto;padding:4px}.dm-m{display:flex;gap:8px;align-items:flex-end;max-width:85%}.dm-m.me{align-self:flex-end;flex-direction:row-reverse}.dm-m.me .small{text-align:right}
+.dm-b{background:var(--chip);border-radius:12px 12px 12px 3px;padding:8px 12px;font-size:13.5px;line-height:1.55;overflow-wrap:anywhere}.dm-m.me .dm-b{background:var(--acc);color:var(--accfg);border-radius:12px 12px 3px 12px}.dm-m.me .dm-b .mute{color:inherit;opacity:.7}
+.dm-in{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}.dm-in textarea,#scaQ{text-align:left}.dm-in textarea{resize:vertical;min-height:44px;font:inherit}.dm-wait{display:flex;gap:6px;align-items:center;align-self:center}.dm-ref{display:flex;gap:8px;align-items:center}.stf-mini{display:flex;gap:8px;align-items:center}
+
 .bal .wide{grid-column:1/-1;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:6px}.bal .wide label{display:grid;gap:2px;font-size:11px;color:var(--mute);text-align:center}
 /* 왼쪽 소품 창 (접었다 폈다) */
 .view[data-v=map]{grid-template-columns:auto minmax(0,1fr) 300px}.view[data-v=geo],.view[data-v=thm]{grid-template-columns:minmax(0,1fr) var(--geoW,300px)}.view[data-v=geo].gside0{grid-template-columns:minmax(0,1fr) 0}.gside0 #geoI,.gside0 .geoRs{display:none}.geoOpen{display:none}.gside0 .geoOpen{display:grid;place-items:center;position:absolute;right:0;top:50%;transform:translateY(-50%);width:22px;height:64px;border:1px solid var(--chipb);border-right:0;border-radius:8px 0 0 8px;background:var(--panel);color:var(--fg);cursor:pointer;z-index:900}.gside0 .geoOpen:hover{background:var(--acc);color:var(--deep)}.geoClose{display:grid;place-items:center;position:absolute;right:var(--geoW,300px);top:50%;transform:translateY(-50%);width:22px;height:64px;border:1px solid var(--chipb);border-right:0;border-radius:8px 0 0 8px;background:var(--panel);color:var(--fg);cursor:pointer;z-index:901;padding:0}.geoClose:hover{background:var(--acc);color:var(--deep)}.gside0 .geoClose{display:none}.geoRs{position:absolute;top:0;bottom:0;right:calc(var(--geoW,300px) - 5px);width:10px;cursor:col-resize;z-index:900;touch-action:none}.geoRs::after{content:'';position:absolute;left:4px;top:0;bottom:0;width:2px;background:transparent;transition:background .12s}.geoRs:hover::after,.geoRs.on::after{background:var(--acc)}
@@ -344,7 +353,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
   .view[data-v=mon] .grid{max-height:46vh;overflow:auto}
   .seg{display:flex;gap:6px;padding:10px 12px 0;overflow-x:auto;scrollbar-width:none}.seg .chip{flex:none}
   .seg .chip{flex:1;justify-content:center}
-  .tabs{display:grid;grid-template-columns:repeat(5,1fr);background:var(--deep);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+  .tabs{display:grid;grid-template-columns:repeat(6,1fr);background:var(--deep);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
   .tabs a{display:grid;justify-items:center;align-content:center;gap:2px;height:58px;color:var(--mute);font-size:11px;text-decoration:none;cursor:pointer}
   .tabs a.on{color:var(--acc)}
   .tabs svg{width:22px;height:22px}
@@ -475,6 +484,22 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
       <div class="vc scroll"><div class="gvt"><button class="chip" data-gv="geo">지도</button><button class="chip on" data-gv="thm">장소 특성</button></div><div id="thC"></div></div>
       <aside class="vi" id="thI"></aside><div class="geoRs" id="thRs" title="끌어서 오른쪽 창 폭 조절 (두 번 누르면 기본)" aria-hidden="true"></div>
     </section>
+    <!-- 직원 -->
+    <section class="view" data-v="neu" hidden>
+      <div class="seg" data-g="staff"></div>
+      <div class="vc scroll"><div class="cards stf" id="neuC"></div></div>
+      <aside class="vi" id="neuI"></aside>
+    </section>
+    <section class="view" data-v="sca" hidden>
+      <div class="seg" data-g="staff"></div>
+      <div class="vc scroll"><div class="cards stf" id="scaC"></div></div>
+      <aside class="vi" id="scaI"></aside>
+    </section>
+    <section class="view" data-v="dm" hidden>
+      <div class="seg" data-g="staff"></div>
+      <div class="vc scroll"><div class="cards stf" id="dmC"></div></div>
+      <aside class="vi" id="dmI"></aside>
+    </section>
     <!-- 밸런스 -->
     <section class="view" data-v="shop" hidden>
       <div class="seg" data-g="more"></div>
@@ -507,13 +532,17 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
+<script src="neutral.js"></script>
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.19';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.20';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
+  neu: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" fill-rule="evenodd" d="M1 1h10v8H7v2H5V9H1zm1 1v6h8V2zm1 4h1v1H3zm2-2h1v3H5zm2-1h1v4H7zm2 2h1v2H9z"/></svg>',
+  sca: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M9 0h2v1h1v2h-1v1h-1v1H9v1H8v1H6V5h1V4h1V3h1V2h1V1H9zM3 7h2v1h1v2H5v1H4v1H0v-1h1V9h1V8h1z"/></svg>',
+  dm: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" fill-rule="evenodd" d="M1 1h10v7H5l-2 2H3V8H1zm2 2v1h6V3zm0 2v1h4V5z"/></svg>',
   shop: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" fill-rule="evenodd" d="M4 1h4v1h1v2h2v7H1V4h2V2h1zm0 1v2h4V2zm-1 4v1h1V6zm5 0v1h1V6z"/></svg>',
   map: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 2h3v1h1v1h2V3h1V2h3v8H8V9H7V8H5v1H4v1H1zM2 3v6h1V3zm7 0v6h1V3z"/></svg>',
   poke: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M4 1h4v1h1v1h1v2H7V4H5v1H2V3h1V2h1zM2 7h3v1h2V7h3v2H9v1H8v1H4v-1H3V9H2zM5 5h2v2H5z"/></svg>',
@@ -526,10 +555,10 @@ const ICO = {
   bub: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M2 1h8v1h1v5h-1v1H6v1H5v1H4v1H3V8H2V7H1V2h1zm0 1v5h2v2h1V8h5V2z"/></svg>',
   more: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 5h2v2H1zm4 0h2v2H5zm4 0h2v2H9z"/></svg>',
 };
-const VIEWS = { map: ['맵', 'map'], mon: ['포켓몬', 'poke'], newmo: ['새 모션', 'poke'], odds: ['알 수집 확률', 'egg'], pool: ['알 등급별 포켓몬', 'egg'], hatch: ['알 부화 거리', 'egg'], rank: ['랭크 확률', 'egg'], geo: ['지도', 'map'], thm: ['장소 특성', 'map'], bub: ['말풍선', 'bub'], ver: ['버전 기록', 'doc'], egg: ['알', 'egg'], tier: ['티어', 'tier'], bal: ['밸런스', 'bal'], shop: ['상점', 'shop'], art: ['그림 모음', 'art'], work: ['배포하기', 'doc'], test: ['테스트 도구', 'tool'] };
-const NAV = [['게임 화면', ['map', 'mon', 'bub']], ['데이터', ['egg', 'geo', 'tier', 'bal', 'shop']], ['기타', ['art', 'work', 'ver', 'test']]];
-const MTABS = [['map', '맵', 'map', ['map']], ['mon', '포켓몬', 'poke', ['mon', 'newmo']], ['egg', '알', 'egg', ['odds', 'pool', 'hatch', 'rank', 'tier']], ['art', '그림', 'art', ['art']], ['more', '더보기', 'more', ['geo', 'thm', 'bal', 'shop', 'work', 'test', 'bub', 'ver']]];
-const SEGS = { egg: [['odds', '수집 확률'], ['pool', '등급별 포켓몬'], ['hatch', '부화 거리'], ['rank', '랭크'], ['tier', '티어']], more: [['geo', '지도'], ['thm', '장소 특성'], ['bal', '밸런스'], ['shop', '상점'], ['work', '배포하기'], ['test', '테스트'], ['bub', '말풍선'], ['ver', '버전']], mon: [['mon', '포켓몬'], ['newmo', '새 모션']] };
+const VIEWS = { map: ['맵', 'map'], mon: ['포켓몬', 'poke'], newmo: ['새 모션', 'poke'], odds: ['알 수집 확률', 'egg'], pool: ['알 등급별 포켓몬', 'egg'], hatch: ['알 부화 거리', 'egg'], rank: ['랭크 확률', 'egg'], geo: ['지도', 'map'], thm: ['장소 특성', 'map'], bub: ['말풍선', 'bub'], ver: ['버전 기록', 'doc'], egg: ['알', 'egg'], tier: ['티어', 'tier'], bal: ['밸런스', 'bal'], neu: ['뉴트럴의 조언', 'neu'], sca: ['스칼렛의 작업물', 'sca'], dm: ['직원 DM', 'dm'], shop: ['상점', 'shop'], art: ['그림 모음', 'art'], work: ['배포하기', 'doc'], test: ['테스트 도구', 'tool'] };
+const NAV = [['게임 화면', ['map', 'mon', 'bub']], ['데이터', ['egg', 'geo', 'tier', 'bal', 'shop']], ['직원', ['neu', 'sca', 'dm']], ['기타', ['art', 'work', 'ver', 'test']]];
+const MTABS = [['map', '맵', 'map', ['map']], ['mon', '포켓몬', 'poke', ['mon', 'newmo']], ['egg', '알', 'egg', ['odds', 'pool', 'hatch', 'rank', 'tier']], ['art', '그림', 'art', ['art']], ['staff', '직원', 'neu', ['neu', 'sca', 'dm']], ['more', '더보기', 'more', ['geo', 'thm', 'bal', 'shop', 'work', 'test', 'bub', 'ver']]];
+const SEGS = { egg: [['odds', '수집 확률'], ['pool', '등급별 포켓몬'], ['hatch', '부화 거리'], ['rank', '랭크'], ['tier', '티어']], more: [['geo', '지도'], ['thm', '장소 특성'], ['bal', '밸런스'], ['shop', '상점'], ['work', '배포하기'], ['test', '테스트'], ['bub', '말풍선'], ['ver', '버전']], mon: [['mon', '포켓몬'], ['newmo', '새 모션']], staff: [['neu', '뉴트럴의 조언'], ['sca', '스칼렛의 작업물'], ['dm', 'DM']] };
 const GN = ['', '일반', '우수', '레어', '에픽', '전설'], GC = ['', '#9aa0a8', '#4aa8f0', '#8a6ae0', '#e0a020', '#e05050'];
 const TC = t => `hsl(${(t - 1) * 26} 60% ${t < 4 ? 58 : 66}%)`;
 let A = null, view = 'map';
@@ -1992,6 +2021,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.20', '10월 22일', ['직원 메뉴: 뉴트럴의 조언(100명이 90일 동안 게임을 하는 시뮬레이션으로 너무 쉬움·적당·너무 어려움을 보고 고칠 값을 제안, 작업본에 넣기), 스칼렛의 작업물(매일 소품 10개와 상호작용), 직원 DM', '직원은 Claude 가 맡는다: 매일 아침 일하고, DM 은 두 시간마다 확인해서 답장한다']],
   ['3.18', '10월 20일', ['동작별 떠 있기 창: 그림 옮기기를 상하좌우 동그란 화살표 버튼으로 (가운데 0 = 처음 자리, Shift 누르고 누르면 5px). 좌우도 옮길 수 있다 (게임 v5.79)']],
   ['3.17', '10월 20일', ['동작별 떠 있기 창: 동작마다 그림만 위아래로 옮기는 칸(↕, +아래). 그림자와 상호작용 자리는 그대로 (게임 v5.78)']],
   ['3.16', '10월 20일', ['알 출현 지역 지도: 카카오 지도의 장소 아이콘을 누르면 그 건물 모양대로 반경이 그려지고 이름이 장소 이름으로 들어간다', '원·사각형·올가미로 그린 반경도 가운데에서 가장 가까운 장소 이름이 자동으로 들어간다', '원은 누른 곳에서부터 그려진다 (가운데가 아니라)']],
@@ -3072,7 +3102,117 @@ $('#shopC').addEventListener('change', e => { const t = e.target, v = +t.value;
   else if (t.dataset.si) shopPut(o => { o.inc.min = Math.max(1, Math.min(1440, Math.round(v))); });
   else if (t.dataset.sm) shopPut(o => { o.inc.mul = [...o.inc.mul]; o.inc.mul[+t.dataset.sm] = Math.min(100, v); });
   else if (t.dataset.sc) shopPut(o => { o.charm[t.dataset.sc] = t.dataset.sc === 'min' ? Math.max(1, Math.min(1440, Math.round(v))) : Math.max(1, Math.round(v)); }); });
-const RENDER = { ver: renderVer, bub: renderBub, newmo: renderNewmo, map: () => {}, mon: renderMon, odds: renderOdds, pool: renderPool, hatch: renderHatch, rank: renderRank, geo: renderGeo, thm: renderThm, tier: renderTier, bal: renderBal, shop: renderShop, work: renderWork, test: renderTest };
+// ---------- 직원 (v3.20 경완): 뉴트럴(밸런스) · 스칼렛(소품 디자인) · 직원 DM ----------
+// 직원들은 Claude 가 맡는다. 매일 아침 루틴이 일하고(config/staff/*.json), DM 은 두 시간마다 확인해서 답장한다 (staff/README.md).
+// 경완이 보낸 DM 은 작업실이 config/staff/dm-in.json 에 바로 올리고, 답장은 루틴이 config/staff/dm-out.json 에 올린다 (서로 다른 파일이라 겹치지 않는다)
+const pxSvg = (R, P, s = 4) => `<svg viewBox="0 0 ${R[0].length} ${R.length}" width="${R[0].length * s}" height="${R.length * s}" shape-rendering="crispEdges" aria-hidden="true">${R.map((row, y) => [...row].map((c, x) => P[c] ? `<rect x="${x}" y="${y}" width="1" height="1" fill="${P[c]}"/>` : '').join('')).join('')}</svg>`;
+const STAFF = {
+  neu: { n: '뉴트럴', role: '밸런스 담당', menu: 'neu', c: '#7fd7ef', px: ['....kkkkkkkk....', '...khhhhhhhhk...', '..khhhhhhhhhhk..', '..khhsssssshhk..', '..kskkksskkkssk.', '..kskllkkllkssk.', '..kskkksskkkssk.', '..kssssssssssk..', '...ksssrrsssk...', '....kssssssk....', '..kkwwkbbkwwkk..', '.kwwwwkbbkwwwwk.', '.kwwwwwbbwkcppck', '.kwwwwwbbwkcppck', '.kwwwwwwwwkcccck', '.kkkkkkkkkkkkkkk'],
+    pal: { k: '#20202c', h: '#8e95a6', s: '#f4c9a0', l: '#7fd7ef', r: '#c07060', w: '#eef1f6', b: '#3a7aa0', c: '#b07a40', p: '#ffffff' } },
+  sca: { n: '스칼렛', role: '소품 디자이너', menu: 'sca', c: '#f07070', px: ['.....kkkkkk.....', '...kknnnnnnkk...', '..knnnnnnnnnnk..', '..krrrrrrrrrrk..', '.krrssssssssrrk.', '.krskksssskksrk.', '.krssssssssssrk.', '.krsppssssppsrk.', '.krrsssmmsssrrk.', '.krrrksssskrrrk.', '.krrkaaaaaakrrk.', '..kkaaayaaaakk..', '..kaaaaaagaaak..', '..kaabaaaaaaak..', '..kaaaaaaaaaak..', '..kkkkkkkkkkkk..'],
+    pal: { k: '#20202c', n: '#2c3a6a', r: '#d0383a', s: '#f4c9a0', p: '#f08a8a', m: '#a03030', a: '#f2ead8', y: '#ffd84a', g: '#4aa8f0', b: '#6ad06a' } },
+};
+const face = (k, s = 4) => `<span class="stf-face" style="--c:${STAFF[k].c}">${pxSvg(STAFF[k].px, STAFF[k].pal, s)}</span>`;
+// 파일 읽기: 깃허브 열쇠가 있으면 main 에서 바로(방금 올린 것도), 없으면 게임 사이트에 올라간 것
+async function staffGet(path, def) {
+  try { if (store.get('st-gh-token')) return JSON.parse(await gh(`/contents/${path}?ref=main`, { raw: true })); const r = await fetch('../' + path + '?t=' + Date.now(), { cache: 'no-store' }); return r.ok ? await r.json() : def; }
+  catch (e) { return def; } }
+const when = t => { const d = new Date(t), n = new Date(), same = d.toDateString() === n.toDateString(); return same ? d.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' }) : d.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' }) + ' ' + d.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' }); };
+
+// ---------- 뉴트럴의 조언 ----------
+let NEU_R = null, NEU_L = null, NEU_BUSY = false;
+function neuModel() {
+  const L = tierLists(), Z = tierZ(L), probs = {}; for (let g = 1; g <= 5; g++) probs[g] = Object.entries(probOf(g, L, Z)).filter(([, p]) => p > 0).map(([s, p]) => [+s, p]);
+  const S = A.SPECIES, grade = sp => { const d = S[sp]; if (!d) return 1; if (d.leg || d.my) return 5; const c = d.cr ?? 45; return c >= 190 ? 1 : c >= 120 ? 2 : c >= 45 ? 3 : 4; },
+    base = sp => { let s = sp; while (S[s]?.fr) s = S[s].fr; return s; }, stage = sp => { let n = 0, c = S[sp]; while (c?.fr) { n++; c = S[c.fr]; } return n; }, SP = {};
+  for (const k of Object.keys(S)) { const sp = +k, d = S[k]; SP[sp] = { t: d.t || [], kids: (A.CHILDREN[sp] || []).map(Number), ev: d.ev || '', eqx: d.eqx || 0, gb: grade(base(sp)), st: stage(sp) }; }
+  if (SP[129]) SP[129].ek = 100;   // 게임 EVO_KM (잉어킹 100km)
+  const sh = effP(D, 'shop') || {}, price = {}; for (const o of A.ITEMS) if (o.k === 'tool') price[o.n] = sh.price?.[o.id] ?? o.p;
+  const b = { SHINY_N: 4096, CLEAN_DAYS: 3, MAX_BAG: 999, MAX_EGGS: 15, BAG_STEP: .25 }; for (const k of Object.keys(ORIG.bal)) b[k] = bal(k);
+  return { odds: odds(), pity: pity(), b, probs, SP, price };
+}
+// 루틴(헤드리스 작업실)도 이걸 부른다: 지금 배포된 값(작업본 없음)으로 돌린 결과
+window.__neuRun = () => { const m = neuModel(), r = NEU.advise(m); return { at: Date.now(), app: gameVer(), data: LIVE.ver || 0, s: neuSlim(r.s), J: r.J, P: r.P }; };
+const neuSlim = s => ({ days: s.days, N: s.N, users: s.users, by: s.by, all: s.all, rare: s.rare && { ...s.rare, n: spName(s.rare.sp) } });
+async function neuLoad() { NEU_R = await staffGet('config/staff/neutral.json', { runs: [] }); if (view === 'neu') renderNeu(); }
+function neuRunLocal() { if (NEU_BUSY || !A) return; NEU_BUSY = true; renderNeu(); setTimeout(() => { try { const r = NEU.advise(neuModel()); NEU_L = { at: Date.now(), s: neuSlim(r.s), J: r.J, P: r.P, draft: changes().length }; } finally { NEU_BUSY = false; renderNeu(); } }, 30); }
+const LVN = { easy: ['너무 쉬움', 'var(--warn)'], ok: ['적당', 'var(--good)'], hard: ['너무 어려움', 'var(--bad)'] };
+function neuPatch(p) { if (p.bal) { D.bal = { ...(D.bal || {}) }; for (const [k, v] of Object.entries(p.bal)) { if (JSON.stringify(v) === JSON.stringify(ORIG.bal[k])) delete D.bal[k]; else D.bal[k] = v; } if (!Object.keys(D.bal).length) delete D.bal; }
+  if (p.pity) { D.pity = { ...(D.pity || {}), ...p.pity }; for (const k of Object.keys(D.pity)) if (D.pity[k] === ORIG.pity[k]) delete D.pity[k]; if (!Object.keys(D.pity).length) delete D.pity; }
+  if (p.odds) { D.odds = p.odds; if (p.odds.every((x, i) => Math.abs(x - ORIG.odds[i]) < 1e-9)) delete D.odds; }
+  saveDraft(); dstat(); toast('작업본에 넣었어요. 배포하기에서 확인하고 올려 주세요', true); NEU_L = null; neuRunLocal(); }
+function renderNeu() {
+  const runs = NEU_R?.runs || [], last = runs[0], R = NEU_L || last;
+  const bar = j => { const B = NEU.BANDS.find(b => b.id === j.id), lv = LVN[j.lv]; return `<div class="nb-r"><div class="nb-n">${esc(j.n)}<small>${esc(j.why)}</small></div><b class="num" style="color:${lv[1]}">${esc(j.txt)}</b><span class="tag" style="background:${lv[1]}">${lv[0]}</span><div class="nb-band small mute">적당 ${esc(j.lo)} ~ ${esc(j.hi)}</div></div>`; };
+  const sugg = (P, live) => !P?.length ? '<div class="empty">지금은 고칠 거리가 없어요. 너무 쉽지도 어렵지도 않아요.</div>' : P.map((x, i) => `<div class="nb-s"><div><b>${esc(x.t)}</b><div class="small mute">${esc(x.why)}</div>${x.after?.length ? `<div class="small">고치면 ${x.after.map(a => `${esc(a.n)} ${esc(a.from)} → <b style="color:${LVN[a.lv][1]}">${esc(a.to)}</b>`).join(', ')}</div>` : ''}</div>${live && x.patch ? `<button class="btn" data-np="${i}">작업본에 넣기</button>` : ''}</div>`).join('');
+  const per = s => `<div class="tblw"><table class="tov nb-t"><tr><th>생활 패턴</th><th class="r">하루 km</th><th class="r">30일 도감</th><th class="r">첫 에픽</th><th class="r">첫 전설</th><th class="r">하루 골드</th><th class="r">친밀도 만점</th><th class="r">가방(30일)</th></tr>${NEU.PERSONAS.map(P => { const o = s.by[P.id]; if (!o) return ''; const d = v => v > s.days ? `${s.days}일+` : Math.round(v) + '일';
+    return `<tr><td><b>${esc(P.name)}</b> <span class="small mute">${o.n}명</span><div class="small mute">${esc(P.d)}</div></td><td class="r num">${o.km.toFixed(1)}</td><td class="r num">${Math.round(o.dex30 * 100)}%</td><td class="r num">${d(o.fE)}</td><td class="r num">${d(o.fL)}</td><td class="r num">${Math.round(o.gpd).toLocaleString()}G</td><td class="r num">${d(o.frMax)}</td><td class="r num">${Math.round(o.bag30)}</td></tr>`; }).join('')}</table></div>`;
+  const text = last?.text ? `<div class="stf-say">${last.text.split(/\n+/).map(p => `<p>${esc(p)}</p>`).join('')}</div>` : '<div class="stf-say"><p>아직 아침 분석을 올리지 않았어요. 매일 아침에 100명이 90일 동안 게임하는 걸 돌려 보고 여기에 적어 둘게요. 지금 바로 보고 싶으면 아래 버튼을 눌러 주세요.</p></div>';
+  $('#neuC').innerHTML = `<div class="card stf-hd">${face('neu', 5)}<div><h2 style="margin:0">뉴트럴 <span class="small mute">밸런스 담당</span></h2>${last ? `<div class="small mute">${when(last.at)} 분석 · 게임 ${esc(last.app || '')} · 데이터 v${last.data}</div>` : ''}${text}<div class="chips"><button class="chip" data-go="dm" data-dmw="neu">뉴트럴에게 DM</button></div></div></div>
+    <div class="card"><h2>지금 상태 ${NEU_L ? `<span class="small mute">작업본 기준 (바뀐 곳 ${NEU_L.draft}개) · 방금 돌림</span>` : last ? '<span class="small mute">배포된 값 기준 · 아침 분석</span>' : ''}</h2>
+      ${R ? `<div class="nb">${R.J.map(bar).join('')}</div>` : '<div class="empty">아직 돌린 결과가 없어요.</div>'}
+      <div class="chips"><button class="btn" id="neuRun"${NEU_BUSY || !A ? ' disabled' : ''}>${NEU_BUSY ? '100명이 90일 동안 노는 중…' : '작업본으로 지금 돌려 보기'}</button>${NEU_L && last ? '<button class="chip" id="neuBack">아침 분석으로 보기</button>' : ''}</div></div>
+    <div class="card"><h2>고칠 거리</h2><div class="small mute">제안마다 그 값으로 한 번 더 돌려 본 결과를 붙였어요. 작업본에 넣어도 배포하기를 눌러야 게임에 들어가요.</div>${R ? sugg(R.P, !!A) : ''}</div>
+    ${R ? `<div class="card wide2"><h2>생활 패턴별 <span class="small mute">가운데 사람 기준 · 도감 ${R.s.N}종 중 · 제일 드문 포켓몬 ${esc(R.s.rare?.n || '')} ${Math.round(R.s.rare?.km || 0).toLocaleString()}km에 하나꼴</span></h2>${per(R.s)}</div>` : ''}
+    ${runs.length ? `<div class="card"><h2>기록</h2><div class="nb-h">${runs.slice(0, 30).map(r => { const c = { easy: 0, hard: 0 }; r.J.forEach(j => c[j.lv] = (c[j.lv] || 0) + 1); return `<details><summary><b>${new Date(r.at).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}</b><span class="small mute">게임 ${esc(r.app || '')} · v${r.data}</span><span class="sp"></span>${c.easy ? `<span class="tag" style="background:var(--warn)">쉬움 ${c.easy}</span>` : ''}${c.hard ? `<span class="tag" style="background:var(--bad)">어려움 ${c.hard}</span>` : ''}${!c.easy && !c.hard ? '<span class="tag" style="background:var(--good)">적당</span>' : ''}</summary>${r.text ? `<div class="small">${esc(r.text)}</div>` : ''}<div class="small mute">${r.J.map(j => `${esc(j.n)} ${esc(j.txt)}`).join(' · ')}</div></details>`; }).join('')}</div></div>` : ''}`;
+  $('#neuI').innerHTML = `<h4>뉴트럴은 이렇게 일해요</h4><div class="small mute">매일 아침, 생활 패턴이 다른 100명이 지금 버전 게임을 90일 동안 한다고 치고 돌려 봐요. 알 줍기·천장·부화기·골드·친밀도·짝꿍 진화·진화의 돌 사기·미니게임과 미션까지 게임 규칙 그대로예요.</div>
+    <div class="small mute">정해 둔 목표치는 없어요. 칸마다 '너무 쉬움 · 적당 · 너무 어려움'으로만 보고, 치우친 칸이 있으면 고칠 값을 제안해요.</div>
+    <h4>100명</h4><div class="small">${NEU.PERSONAS.map(P => `<div><b>${esc(P.name)}</b> ${P.n}명 <span class="mute">· ${esc(P.d)}</span></div>`).join('')}</div>
+    <div class="small mute">같은 값이면 늘 같은 결과가 나오게 돌려서, 값을 바꾼 효과만 비교돼요.</div>`;
+}
+$('#neuC').addEventListener('click', e => { const t = e.target;
+  if (t.id === 'neuRun') neuRunLocal(); else if (t.id === 'neuBack') { NEU_L = null; renderNeu(); }
+  else if (t.dataset.np != null) { const P = (NEU_L || NEU_R?.runs?.[0])?.P?.[+t.dataset.np]; if (P) neuPatch(P.patch); } });
+
+// ---------- 스칼렛의 작업물 ----------
+// 소품 = { id, at, n, k(종류), d(설명), px(도트 줄들), pal{글자: 색}, acts[{w: 누가, a: 무엇을}], fit(어울리는 곳) }
+let SCA_R = null, scaQ = '';
+async function scaLoad() { SCA_R = await staffGet('config/staff/scarlet.json', { days: [] }); if (view === 'sca') renderSca(); }
+function renderSca() {
+  const days = SCA_R?.days || [], last = days[0];
+  const card = o => `<div class="sc-it" id="sc-${esc(o.id)}"><div class="sc-pic">${o.px?.length ? pxSvg(o.px, o.pal || {}, Math.max(3, Math.floor(96 / Math.max(o.px.length, o.px[0].length)))) : ''}</div><div class="sc-tx"><b>${esc(o.n)}</b>${o.k ? ` <span class="small mute">${esc(o.k)}</span>` : ''}<div class="small">${esc(o.d || '')}</div>
+    ${o.acts?.length ? `<ul class="sc-acts">${o.acts.map(a => `<li><b>${esc(a.w)}</b> ${esc(a.a)}</li>`).join('')}</ul>` : ''}${o.fit ? `<div class="small mute">어울리는 곳: ${esc(o.fit)}</div>` : ''}
+    <div class="chips"><button class="chip" data-go="dm" data-dmw="sca" data-ref="${esc(o.id)}" data-refn="${esc(o.n)}">이 소품 피드백</button></div></div></div>`;
+  const q = scaQ.trim(), hit = o => !q || (o.n + (o.d || '') + (o.acts || []).map(a => a.w + a.a).join('')).includes(q);
+  $('#scaC').innerHTML = `<div class="card stf-hd">${face('sca', 5)}<div><h2 style="margin:0">스칼렛 <span class="small mute">소품 디자이너</span></h2>${last ? `<div class="small mute">${when(last.at)} · 소품 ${last.items.length}개</div>` : ''}<div class="stf-say"><p>${esc(last?.note || '매일 아침 필드에 놓을 소품 10개를 새로 그려서, 포켓몬들이 그 소품으로 뭘 할 수 있는지 같이 정리해 둘게요.')}</p></div><div class="chips"><button class="chip" data-go="dm" data-dmw="sca">스칼렛에게 DM</button></div></div></div>
+    <div class="card"><div class="search"><input id="scaQ" class="inp" placeholder="소품·포켓몬·상호작용 찾기" value="${esc(scaQ)}"></div></div>
+    ${days.length ? days.map(d => { const L = d.items.filter(hit); return L.length ? `<div class="card wide2"><h2>${new Date(d.at).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })} <span class="small mute">${L.length}개${d.theme ? ' · ' + esc(d.theme) : ''}</span></h2><div class="sc-g">${L.map(card).join('')}</div></div>` : ''; }).join('') : '<div class="card"><div class="empty">아직 올린 작업물이 없어요. 내일 아침 첫 작업물이 올라와요.</div></div>'}`;
+  $('#scaI').innerHTML = `<h4>스칼렛은 이렇게 일해요</h4><div class="small mute">매일 아침 필드 소품 10개를 게임 그림과 같은 도트로 디자인해요. 소품마다 어떤 포켓몬이(타입·종) 어떻게 놀 수 있는지 상호작용을 같이 적어요.</div><div class="small mute">마음에 드는 소품은 '이 소품 피드백'으로 스칼렛에게 말해 주세요. 게임에 넣는 건 따로 부탁해 주시면 돼요.</div>`;
+}
+$('#scaC').addEventListener('input', e => { if (e.target.id !== 'scaQ') return; scaQ = e.target.value; clearTimeout(renderSca.t); renderSca.t = setTimeout(() => { renderSca(); const i = $('#scaQ'); i.focus(); i.setSelectionRange(scaQ.length, scaQ.length); }, 250); });
+
+// ---------- 직원 DM ----------
+let DM_IN = null, DM_OUT = null, dmWho = store.get('st-dmw') || 'neu', dmRef = null, DM_BUSY = false;
+async function dmLoad() { [DM_IN, DM_OUT] = await Promise.all([staffGet('config/staff/dm-in.json', { msgs: [] }), staffGet('config/staff/dm-out.json', { msgs: [] })]); dmBadge(); if (view === 'dm') renderDm(); }
+function dmBadge() { const seen = +(store.get('st-dm-seen') || 0), n = (DM_OUT?.msgs || []).filter(m => m.at > seen).length, e = $('[data-n="dm"]'); if (e) e.textContent = n ? String(n) : ''; }
+function renderDm() {
+  const ins = (DM_IN?.msgs || []).filter(m => m.to === dmWho).map(m => ({ ...m, me: 1 })), outs = (DM_OUT?.msgs || []).filter(m => m.from === dmWho), all = [...ins, ...outs].sort((a, b) => a.at - b.at);
+  const answered = new Set(outs.map(m => m.re)), wait = ins.some(m => !answered.has(m.id));
+  store.set('st-dm-seen', String(Date.now())); dmBadge();
+  $('#dmC').innerHTML = `<div class="card dm-w"><div class="chips">${Object.entries(STAFF).map(([k, s]) => `<button class="chip dm-who${k === dmWho ? ' on' : ''}" data-dw="${k}">${pxSvg(s.px, s.pal, 1.5)}${s.n}</button>`).join('')}</div>
+    <div class="dm-l" id="dmL">${all.length ? all.map(m => `<div class="dm-m${m.me ? ' me' : ''}">${m.me ? '' : face(dmWho, 2)}<div><div class="dm-b">${m.ref ? `<div class="small mute">↪ ${esc(m.refn || m.ref)}</div>` : ''}${esc(m.t).replace(/\n/g, '<br>')}</div><div class="small mute">${when(m.at)}</div></div></div>`).join('') : `<div class="empty">${STAFF[dmWho].n}에게 하고 싶은 말을 보내 보세요. 일하는 방식이나 작업물에 대한 피드백을 주면 다음 작업부터 반영해요.</div>`}
+      ${wait ? `<div class="small mute dm-wait">${face(dmWho, 1.5)} ${STAFF[dmWho].n}가 메시지를 확인하면 답장해요 (두 시간마다 확인해요)</div>` : ''}</div>
+    ${dmRef ? `<div class="small dm-ref">↪ ${esc(dmRef.n)} <button class="chip" id="dmRefX">빼기</button></div>` : ''}
+    <div class="dm-in"><textarea class="inp" id="dmT" rows="2" placeholder="${STAFF[dmWho].n}에게 메시지"></textarea><button class="btn" id="dmS"${DM_BUSY ? ' disabled' : ''}>${DM_BUSY ? '보내는 중…' : '보내기'}</button></div>
+    ${store.get('st-gh-token') ? '' : '<div class="small mute">DM 을 보내려면 배포하기 화면에서 깃허브 열쇠를 먼저 연결해 주세요.</div>'}</div>`;
+  const l = $('#dmL'); l.scrollTop = l.scrollHeight;
+  $('#dmI').innerHTML = `<h4>직원 DM</h4><div class="small mute">직원들은 Claude 가 맡아서 답장해요. 두 시간마다 새 메시지를 확인하고, 매일 아침 일할 때도 받은 피드백을 읽고 반영해요.</div>${Object.entries(STAFF).map(([k, s]) => `<div class="stf-mini">${face(k, 2)}<div><b>${s.n}</b><div class="small mute">${s.role}</div></div></div>`).join('')}`;
+}
+async function dmSend() { const t = $('#dmT').value.trim(); if (!t || DM_BUSY) return; if (!store.get('st-gh-token')) { toast('배포하기에서 깃허브 열쇠를 먼저 연결해 주세요', true); return; }
+  DM_BUSY = true; const m = { id: 'm' + Date.now().toString(36), to: dmWho, t, at: Date.now(), ...(dmRef ? { ref: dmRef.id, refn: dmRef.n } : {}) }; renderDm();
+  try { for (let k = 0; k < 3; k++) { let cur = { msgs: [] }, sha;
+      try { const f = await gh('/contents/config/staff/dm-in.json?ref=main'); sha = f.sha; cur = JSON.parse(decodeURIComponent(escape(atob(f.content.replace(/\n/g, ''))))); } catch (e) { if (e.status !== 404) throw e; }
+      cur.msgs = [...(cur.msgs || []), m]; const body = { message: `DM → ${STAFF[dmWho].n} (작업실)`, branch: 'main', content: btoa(unescape(encodeURIComponent(JSON.stringify(cur, null, 1)))), ...(sha ? { sha } : {}) };
+      try { await gh('/contents/config/staff/dm-in.json', { method: 'PUT', body: JSON.stringify(body) }); DM_IN = cur; dmRef = null; break; } catch (e) { if (e.status !== 409 || k === 2) throw e; } }
+    DM_BUSY = false; renderDm(); }
+  catch (e) { DM_BUSY = false; renderDm(); $('#dmT').value = t; toast('보내지 못했어요: ' + ghErr(e), true); } }
+$('#dmC').addEventListener('click', e => { const w = e.target.closest('[data-dw]'); if (w) { dmWho = w.dataset.dw; store.set('st-dmw', dmWho); dmRef = null; renderDm(); return; }
+  if (e.target.id === 'dmS') dmSend(); else if (e.target.id === 'dmRefX') { dmRef = null; renderDm(); } });
+$('#dmC').addEventListener('keydown', e => { if (e.target.id === 'dmT' && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); dmSend(); } });
+// 뉴트럴·스칼렛 화면의 'DM' 버튼
+document.addEventListener('click', e => { const b = e.target.closest('[data-go="dm"]'); if (!b) return; dmWho = b.dataset.dmw; store.set('st-dmw', dmWho); dmRef = b.dataset.ref ? { id: b.dataset.ref, n: b.dataset.refn } : null; go('dm'); setTimeout(() => $('#dmT')?.focus(), 50); });
+setTimeout(() => { neuLoad(); scaLoad(); dmLoad(); }, 1500); setInterval(() => { if (!document.hidden) dmLoad(); }, 5 * 60e3);
+const RENDER = { neu: renderNeu, sca: renderSca, dm: renderDm, ver: renderVer, bub: renderBub, newmo: renderNewmo, map: () => {}, mon: renderMon, odds: renderOdds, pool: renderPool, hatch: renderHatch, rank: renderRank, geo: renderGeo, thm: renderThm, tier: renderTier, bal: renderBal, shop: renderShop, work: renderWork, test: renderTest };
 
 // ---------- 게임과 연결 ----------
 function hook() {
