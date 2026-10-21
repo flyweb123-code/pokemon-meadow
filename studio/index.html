@@ -547,7 +547,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.35';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.36';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -970,6 +970,7 @@ $('#addp').onclick = e => { const b = e.target.closest('[data-k]'); if (b) A?.ad
 function onSel(s, nUndo) {
   $('#eUndo').disabled = !nUndo;
   dockMark(s); $('#propPane').hidden = !s; if (!s) { if (zoomK === 'inst') closeZoom(); if (editing) renderReact(null); return; }
+  if (zoomK === 'inst' && $('#zFix')) { $('#zFix').disabled = !s.own; const t = $('#zoom .small.mute'); if (s.key === 'sc' && t) t.textContent = `크기 ${Math.round((s.sz || 1) * 100)}%. 맵에서 모서리를 끌어 크기를 바꾼 뒤 [저장]하면 이 소품은 앞으로 이 크기로 놓여요.`; }   // v3.36: 크기를 또 바꾸면 [저장] 다시 켜짐
   $('#pName').textContent = s.name; $('#pPos').textContent = `${s.x}, ${s.y}` + (s.size ? ` · 크기 ${s.size[0]}×${s.size[1]}` : ''); $('#pDel').disabled = !s.del;
   renderReact(null);
 }
@@ -1200,7 +1201,7 @@ function renderDockAll() {
 const SC_PEND = new Set();
 function scDock() { const L = (A?.cat?.().sc || []).filter(r => !r[5] && !SC_PEND.has(r[4])); if (!L.length) return '';
   return `<h4>추가 소품 <span class="num mute">${L.length}</span></h4><div class="sg">${L.map(([k, n, src, c, id]) => `<div class="it dr sc-dk" data-k="${esc(k)}" title="${esc(n)} · 맵에 ${c}개 · 위 전체 소품 칸으로 끌어 놓고 저장하면 전체 소품이 돼요">${c ? `<span class="c">${c}</span>` : ''}${icon(src)}${esc(n)}<button class="sc-x" data-scdel="${esc(id)}" aria-label="${esc(n)} 소품 목록에서 지우기" title="소품 목록에서 지우기 (맵에 놓인 것도 사라져요)">×</button></div>`).join('')}</div>`; }
-$('#dockSave').onclick = () => { const L = [...SC_PEND]; if (!L.length || !A?.scOn) return; A.scOn(L); SC_PEND.clear(); renderDock(); toast(`추가 소품 ${L.length}개를 전체 소품으로 저장했어요 · 배포하면 게임에도 들어가요`); };
+$('#dockSave').onclick = () => { const L = [...SC_PEND]; if (!L.length || !A?.scOn) return; A.scOn(L); SC_PEND.clear(); layAutoSave(); renderDock(); toast(`추가 소품 ${L.length}개를 전체 소품으로 저장했어요 · 배포하면 게임에도 들어가요`); };   // v3.36 경완: 배치 저장까지 바로
 $('#dockB').addEventListener('click', e => { const b = e.target.closest('[data-scdel]'); if (!b) return; e.stopPropagation(); const id = b.dataset.scdel, n = A?.cat?.().sc.find(r => r[4] === id)?.[1] || '소품';
   if (b.classList.contains('arm')) { SC_PEND.delete(id); A.scUndef(id); toast(`${n}을(를) 소품 목록에서 지웠어요 · 저장해야 게임에 반영돼요`); return; }
   $$('.sc-x.arm').forEach(x => { x.classList.remove('arm'); x.textContent = '×'; }); b.classList.add('arm'); b.textContent = '지우기'; setTimeout(() => { if (b.isConnected) { b.classList.remove('arm'); b.textContent = '×'; } }, 3000); });
@@ -1307,12 +1308,15 @@ function openZoom(k, el) {
 // v2.11 경완: 맵에서 소품을 누르면 왼쪽 소품 창도 "맵에 있는 소품" 탭으로 바꾸고 그 소품 칸에 테두리
 function mapTap(s) { if (A?.insts && dockTab !== 'map') { dockTab = 'map'; store.set('st-dock-tab', 'map'); renderDock(); }
   dockMark(s); const c = $(`.dock [data-ik="${s.key}:${s.i}"]`); c?.scrollIntoView({ block: 'nearest', inline: 'nearest' }); openInst(s, c || undefined); }
+// v3.36 경완: 상세 창을 다시 그려도 창 자리는 그대로 / 소품 저장은 배치 저장까지 바로 (따로 배치 저장 안 눌러도 됨)
+function zKeep(f) { const z = $('#zoom'), l = z.style.left, t = z.style.top; f(); if (l) { z.style.left = l; z.style.top = t; } }
+function layAutoSave() { if (ORIG && boxDirty('layout')) boxAct('layout', true); }
 function openInst(s, el) {
   if (!s) { closeZoom(); return; } zoomK = 'inst'; const look = !!(s.lk && A.selLook), sv = !!(s.canSave && A.selSave);   // v3.35 경완: [저장] = 끌어 바꾼 크기를 그 소품 종류에 고정, [다른 이름으로 저장] = 그 크기로 전체 소품에 새 소품
   const z = $('#zoom'); z.hidden = false;
   z.innerHTML = `<div class="zh"><b>${esc(s.name)}${s.kindName ? ' · ' + esc(s.kindName) : ''}</b><button class="chip" id="zX" aria-label="닫기">✕</button></div><div class="zv" id="zV"></div>${look ? SL : ''}
     <div class="small mute">${s.key === 'sc' ? `크기 ${Math.round((s.sz || 1) * 100)}%. 맵에서 모서리를 끌어 크기를 바꾼 뒤 [저장]하면 이 소품은 앞으로 이 크기로 놓여요.` : !look ? '이 소품은 크기·색을 바꿀 수 없어요. 맵에서 끌어서 옮겨요.' : s.kind ? `"${esc(s.kindName)}" 소품이에요. 여기서 바꾸면 맵의 이 소품 하나만 따로 바뀌어요.` : '맵에 있는 이 소품 하나만 바뀌어요. 전체 소품에는 그대로예요.'}</div>
-    <div class="zb">${look ? '<button class="chip w" id="zReset">원래대로</button>' : ''}${sv ? '<button class="btn" id="zFix" title="이 크기·색을 이 소품 종류의 기본으로">저장</button><button class="chip" id="zKind" title="이 크기·색 그대로 전체 소품에 새 소품으로">다른 이름으로 저장</button>' : ''}<button class="chip del${sv ? ' w' : ' w'}" id="zDel"${s.del ? '' : ' disabled title="하나뿐인 소품이라 지울 수 없어요"'}>${s.del ? '삭제' : '삭제 (하나뿐인 소품)'}</button></div>
+    <div class="zb">${look ? '<button class="chip w" id="zReset">원래대로</button>' : ''}${sv ? '<button class="btn" id="zFix"' + (s.own ? '' : ' disabled') + ' title="이 크기·색을 이 소품 종류의 기본으로">저장</button><button class="chip" id="zKind" title="이 크기·색 그대로 전체 소품에 새 소품으로">다른 이름으로 저장</button>' : ''}<button class="chip del${sv ? ' w' : ' w'}" id="zDel"${s.del ? '' : ' disabled title="하나뿐인 소품이라 지울 수 없어요"'}>${s.del ? '삭제' : '삭제 (하나뿐인 소품)'}</button></div>
     ${ZB_SAVE}`;
   zReact(z, s.key); zoomPos(z, el);
   const fr = s.key === 'fire' ? 6 : 0, paint = () => look ? zPaint(z, s.key === 'fire' ? null : A.selIcon(), A.selLook(), fr) : zPaint(z, A.insts?.().find(o => o.key === s.key && o.i === s.i)?.icon || '', { s: 1, h: 0, c: 100, b: 100 }, 0);
@@ -1323,8 +1327,8 @@ function openInst(s, el) {
     if (b.id === 'zX') closeZoom();
     else if (b.id === 'zReset') { A.setSelLook({ s: 1, h: 0, c: 100, b: 100 }); setTimeout(paint, 80); }
     else if (b.id === 'zKind') { $('#zKN').hidden = false; $('#zName').value = s.name + ' 2'; $('#zName').focus(); $('#zName').select(); }
-    else if (b.id === 'zFix') { if (!A.selSave()) return; renderDock(); toast(`${s.kindName || s.name} 크기를 ${Math.round(A.selInfo().sz * 100)}%로 고정했어요 · 앞으로 끌어 놓는 것도 이 크기예요`); openInst(A.selInfo(), el); }
-    else if (b.id === 'zSave') { const id = (A.selSaveAs || A.saveKind)($('#zName').value.trim()); if (!id) return; renderDock(); toast(s.key === 'sc' ? '전체 소품에 새 소품으로 저장했어요' : '새로운 소품으로 저장했어요 (내 소품)'); openInst(A.selInfo(), el); }
+    else if (b.id === 'zFix') { if (!A.selSave()) return; layAutoSave(); renderDock(); toast(`${s.kindName || s.name} 크기를 ${Math.round(A.selInfo().sz * 100)}%로 고정해 저장했어요 · 앞으로 끌어 놓는 것도 이 크기예요`); zKeep(() => openInst(A.selInfo(), el)); }
+    else if (b.id === 'zSave') { const id = (A.selSaveAs || A.saveKind)($('#zName').value.trim()); if (!id) return; if (A.selSaveAs) layAutoSave(); renderDock(); toast(s.key === 'sc' ? '전체 소품에 새 소품으로 저장했어요' : '새로운 소품으로 저장했어요 (내 소품)'); zKeep(() => openInst(A.selInfo(), el)); }
     else if (b.id === 'zDel') { A.del(); closeZoom(); renderDock(); toast(`${s.name} 하나를 지웠어요`); } };
 }
 addEventListener('keydown', e => { if (e.key === 'Escape' && zoomK) closeZoom(); });
@@ -2088,6 +2092,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.36', '10월 22일', ['소품 상세 창 [저장]: 창 자리 그대로, 저장하면 꺼졌다가 크기를 또 바꾸면 켜짐', '추가 소품 → 전체 소품 저장, 소품 [저장]·[다른 이름으로 저장]은 배치 저장까지 바로 (게임 v8.35: 오프닝 필드 봄, 시작 버튼 새 디자인, 미니게임 친밀도 하루 판수 제한 없음)']],
   ['3.35', '10월 22일', ['맵 소품 상세 창에 [저장]·[다른 이름으로 저장]: 모서리로 크기를 바꾼 뒤 저장하면 그 소품 종류가 그 크기로 고정(앞으로 끌어 놓는 것도), 다른 이름으로 저장하면 그 크기로 전체 소품에 새 소품 (게임 v8.33)']],
   ['3.34', '10월 22일', ['밸런스: 창을 오른쪽 빈 여백까지 옮길 수 있어요', '창을 옮기거나 크기를 바꿀 때 다른 창의 윗선·아랫선·옆선에 가까우면 딱 붙고 파란 가이드선이 떠요']],
   ['3.33', '10월 22일', ['스칼렛 작업물 지울 때 렉 없이 바로 사라져요 (여러 개를 빨리 지워도 되살아나지 않아요)']],
