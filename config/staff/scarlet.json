@@ -6,74 +6,6 @@
    "note": "오늘은 풀밭에 작은 바닷가를 옮겨 왔어요! 파라솔·튜브·비치볼처럼 물놀이 장난감은 빨강·파랑·노랑으로 쨍하게, 모래성·유목·소라는 모래색 3~4단계 명암으로 차분하게 나눠서 둘이 섞여 있어도 하나하나 또렷하게 읽혀요. 물 타입은 헤엄치고 물대포를 쏘고, 땅 타입은 모래를 파고, 불꽃 타입은 물을 피하는 식으로 반응도 바닷가에 맞췄어요.",
    "items": [
     {
-     "id": "surfboard",
-     "n": "서핑보드",
-     "k": "놀이",
-     "d": "모래에 꽂아 세운 하늘색 서핑보드예요. 가운데 빨간 줄이 길게 내려오고, 왼쪽 가장자리에 반짝이는 빛을 찍었어요.",
-     "px": [
-      "......krrk......",
-      ".....kcrrDk.....",
-      "....kccrrDDk....",
-      "....kccrrDDk....",
-      "...kcccrrDDDk...",
-      "...kcccrrDDDk...",
-      "...kchcrrDDDk...",
-      "..kcchcrrDDDDk..",
-      "..kccccrrDDDDk..",
-      "..kchccrrDDDDk..",
-      "..kccccrrDDDDk..",
-      "..kccccrrDDDDk..",
-      "..kccccrrDDDDk..",
-      "..kccccrrDDDDk..",
-      "..kccccrrDDDDk..",
-      "..kccccrrDDDDk..",
-      "..kccccrrDDDDk..",
-      "..kccccrrDDDDk..",
-      "..kccccrrDDDDk..",
-      "..kccccrrDDDDk..",
-      "..kccccrrDDDDk..",
-      "..kccccrrDDDDk..",
-      "..kccccrrDDDDk..",
-      "...kcccrrDDDk...",
-      "...kcccrrDDDk...",
-      "...kcccrrDDDk...",
-      "...ksssssssssk..",
-      "...ksssssssssk..",
-      "...ksssssssssk..",
-      "..kSSSSSSSSSSSk.",
-      "..kSSSSSSSSSSSk.",
-      ".zzkkkkkkkkkkzz.",
-      ".zzzzzzzzzzzzzz.",
-      "................"
-     ],
-     "pal": {
-      "k": "#20202c",
-      "c": "#8ae0f0",
-      "C": "#4cb4d4",
-      "D": "#2c7ca0",
-      "r": "#f0503c",
-      "h": "#ffffff",
-      "s": "#f2dca0",
-      "S": "#c8a86a",
-      "z": "#c9b27a"
-     },
-     "acts": [
-      {
-       "w": "헤엄치는 포켓몬",
-       "a": "보드에 올라가 연못 위에서 균형을 잡고 서 있어요"
-      },
-      {
-       "w": "날개 있는 작은 포켓몬",
-       "a": "보드 끝에 날아와 앉아요"
-      },
-      {
-       "w": "전기 타입",
-       "a": "보드에 기대 앉아 쉬어요"
-      }
-     ],
-     "fit": "연못 옆, 파라솔 옆"
-    },
-    {
      "id": "sand-bucket",
      "n": "모래 양동이와 삽",
      "k": "놀이",
@@ -1734,6 +1666,77 @@
   }
  ],
  "trash": [
+  {
+   "id": "surfboard",
+   "n": "서핑보드",
+   "k": "놀이",
+   "d": "모래에 꽂아 세운 하늘색 서핑보드예요. 가운데 빨간 줄이 길게 내려오고, 왼쪽 가장자리에 반짝이는 빛을 찍었어요.",
+   "px": [
+    "......krrk......",
+    ".....kcrrDk.....",
+    "....kccrrDDk....",
+    "....kccrrDDk....",
+    "...kcccrrDDDk...",
+    "...kcccrrDDDk...",
+    "...kchcrrDDDk...",
+    "..kcchcrrDDDDk..",
+    "..kccccrrDDDDk..",
+    "..kchccrrDDDDk..",
+    "..kccccrrDDDDk..",
+    "..kccccrrDDDDk..",
+    "..kccccrrDDDDk..",
+    "..kccccrrDDDDk..",
+    "..kccccrrDDDDk..",
+    "..kccccrrDDDDk..",
+    "..kccccrrDDDDk..",
+    "..kccccrrDDDDk..",
+    "..kccccrrDDDDk..",
+    "..kccccrrDDDDk..",
+    "..kccccrrDDDDk..",
+    "..kccccrrDDDDk..",
+    "..kccccrrDDDDk..",
+    "...kcccrrDDDk...",
+    "...kcccrrDDDk...",
+    "...kcccrrDDDk...",
+    "...ksssssssssk..",
+    "...ksssssssssk..",
+    "...ksssssssssk..",
+    "..kSSSSSSSSSSSk.",
+    "..kSSSSSSSSSSSk.",
+    ".zzkkkkkkkkkkzz.",
+    ".zzzzzzzzzzzzzz.",
+    "................"
+   ],
+   "pal": {
+    "k": "#20202c",
+    "c": "#8ae0f0",
+    "C": "#4cb4d4",
+    "D": "#2c7ca0",
+    "r": "#f0503c",
+    "h": "#ffffff",
+    "s": "#f2dca0",
+    "S": "#c8a86a",
+    "z": "#c9b27a"
+   },
+   "acts": [
+    {
+     "w": "헤엄치는 포켓몬",
+     "a": "보드에 올라가 연못 위에서 균형을 잡고 서 있어요"
+    },
+    {
+     "w": "날개 있는 작은 포켓몬",
+     "a": "보드 끝에 날아와 앉아요"
+    },
+    {
+     "w": "전기 타입",
+     "a": "보드에 기대 앉아 쉬어요"
+    }
+   ],
+   "fit": "연못 옆, 파라솔 옆",
+   "del": 1792624164834,
+   "dayAt": 1792622829095,
+   "theme": "여름 바닷가 놀이"
+  },
   {
    "id": "beach-ball",
    "n": "비치볼",
