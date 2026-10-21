@@ -5822,7 +5822,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.81';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.82';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7423,7 +7423,7 @@ function boxList(all, keepAll) {
   const q = all ? '' : boxQ();
   const L = (boxSort === 'field' && !keepAll ? S.box.filter(p => onField(p.id)) : S.box.slice()).filter(p => boxHit(p, q));   // 필드: 필드에 나가 있는 포켓몬만
   const d = boxSort === 'field' ? 1 : boxDir, idx = new Map(S.box.map((p, i) => [p, i]));
-  const key = { field: p => (onField(p.id) ? 1e6 : 0) + idx.get(p), rank: rankScore, bs: p => bsSum(p.sp), fr: p => p.fr || 0, no: p => -p.sp }[boxSort] || (p => idx.get(p));   // 날짜: 상자에 들어온 순서
+  const key = { field: p => (onField(p.id) ? 1e6 : 0) + idx.get(p), rank: p => { const s = rankScore(p), i = RANKS.findIndex(([, v]) => s >= v); return (RANKS.length - (i < 0 ? RANKS.length - 1 : i)) * 1e4 + bsSum(p.sp); }, bs: p => bsSum(p.sp), fr: p => p.fr || 0, no: p => -p.sp }[boxSort] || (p => idx.get(p));   // 날짜: 상자에 들어온 순서. v7.82 경완: 랭크순은 같은 랭크 안에서 종족값 높은 순
   // 키는 한 번씩만 계산해 두고 정렬 (1000마리도 바로)
   const K = new Map(L.map(p => [p, [key(p), rankScore(p), idx.get(p)]]));
   L.sort((a, b) => { const x = K.get(a), y = K.get(b); return d * (y[0] - x[0]) || y[1] - x[1] || y[2] - x[2]; });
