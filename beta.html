@@ -5802,7 +5802,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '7.55';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '7.56';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -5949,7 +5949,7 @@ function itemSeenClamp() { const I = itemsOf(), Z = S.itemSeen; if (Z) for (cons
 let ibagFresh = new Set();
 const ibagEl = $('#ibag'); let ibagSel = null, ibagMul = false, ibagPick = new Set();   /* v5.90 경완: 가방 여러 개 선택·버리기 */
 let ibagTab = 'item';
-$('#ibagTabs').addEventListener('click', e => { const b = e.target.closest('[data-bt]'); if (!b || b.dataset.bt === ibagTab) return; ibagTab = b.dataset.bt; ibagSel = null; ibagPick.clear(); $('#ibagMsg').textContent = ''; renderIBag(); });
+$('#ibagTabs').addEventListener('click', e => { const b = e.target.closest('[data-bt]'); if (!b || b.dataset.bt === ibagTab) return; ibagFresh = new Set();   /* v7.56 경완: 보고 탭을 옮기면 칸의 빨간 점도 사라짐 */ ibagTab = b.dataset.bt; ibagSel = null; ibagPick.clear(); $('#ibagMsg').textContent = ''; renderIBag(); });
 function renderIBag() {
   itemSeenClamp(); itemSeeTab(ibagTab);
   const I = itemsOf(), L = ITEMS.filter(o => I[o.id] > 0); if (ibagSel && !(I[ibagSel] > 0)) ibagSel = null;
@@ -5988,7 +5988,7 @@ $('#ibagX').onclick = () => { ibagEl.hidden = true; };
 ibagEl.addEventListener('click', e => {
   if (e.target.closest('[data-shop]')) { ibagEl.hidden = true; $('#openShop').click(); return; }
   if (e.target.closest('#ibagMulti')) { ibagMul = !ibagMul; ibagPick.clear(); ibagSel = null; $('#ibagMsg').textContent = ''; renderIBag(); return; }
-  const v = e.target.closest('[data-it]'); if (v) { const k = v.dataset.it; if (ibagMul) ibagPick.has(k) ? ibagPick.delete(k) : ibagPick.add(k); else ibagSel = ibagSel === k ? null : k; $('#ibagMsg').textContent = ''; renderIBag(); return; }
+  const v = e.target.closest('[data-it]'); if (v) { const k = v.dataset.it; ibagFresh.delete(k);   /* v7.56 경완: 한 번 누르면 빨간 점 사라짐 */ if (ibagMul) ibagPick.has(k) ? ibagPick.delete(k) : ibagPick.add(k); else ibagSel = ibagSel === k ? null : k; $('#ibagMsg').textContent = ''; renderIBag(); return; }
   if (e.target.closest('#ibagBar [data-all]')) { const I = itemsOf(), T = ITEMS.filter(o => o.k === ibagTab && I[o.id] > 0); if (T.every(o => ibagPick.has(o.id))) ibagPick.clear(); else T.forEach(o => ibagPick.add(o.id)); renderIBag(); return; }
   if (e.target.closest('#ibagBar [data-toss]')) { const ids = ibagMul ? [...ibagPick] : ibagSel ? [ibagSel] : []; if (ids.length) ibagToss(ids); return; }
   if (e.target.closest('#ibagBar [data-use]') && ITEM[ibagSel]) ibagAsk(ITEM[ibagSel]);
