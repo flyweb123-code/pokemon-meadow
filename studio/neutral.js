@@ -79,7 +79,7 @@
       if (on && P.mg) { let n = Math.floor(P.mg) + (r() < P.mg % 1 ? 1 : 0), best = 0, cnt = 0;
         for (let i = 0; i < n; i++) { const s = Math.round(P.sc * scM * (.5 + r())), m = U.bud[i % Math.max(1, U.bud.length)] || U.box[0]; if (!m) break; cnt++;
           addG('mg', Math.floor(s / MG_PTS)); best = Math.max(best, s); U.q.n++; U.q.sum += s; U.q.ph = Math.max(U.q.ph, 1 + Math.floor(s * .8 / 250)); U.q.kn += Math.round(2 + s / 500);   /* 짐작: 페이즈는 250m마다(점수의 8할이 거리), 기술로 날리는 수는 한 판에 2 + 점수/500 */
-          const frB = s >= 2000 ? Math.floor(s / 1000) : s >= 300 ? 1 : 0; if (U.bud[0]) U.bud[0].fr = Math.min(b.FR_MAX, U.bud[0].fr + (i < 5 ? frB : frB ? 1 : 0));
+          const frB = Math.floor(s / 1000);   // v8.34 경완: 1,000점부터 +1 if (U.bud[0]) U.bud[0].fr = Math.min(b.FR_MAX, U.bud[0].fr + (i < 5 ? frB : frB ? 1 : 0));
           for (const t of model.SP[m.sp]?.t || []) U.q.ty[t] = Math.max(U.q.ty[t] || 0, s); }
         if (cnt >= MQ_DAY[0][0]) addG('mq', MQ_DAY[0][1]); if (cnt >= MQ_DAY[1][0] && new Set(U.box.map(o => o.sp)).size >= 3) addG('mq', MQ_DAY[1][1]); if (best >= MQ_DAY[2][0]) addG('mq', MQ_DAY[2][1]);
         const claim = (id, v, L) => L.forEach(([x, gG], j) => { const k = id + j; if (v >= x && !U.q.cl[k]) { U.q.cl[k] = 1; addG('mq', gG); } });
