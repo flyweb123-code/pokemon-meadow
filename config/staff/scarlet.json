@@ -6,57 +6,6 @@
    "note": "오늘은 풀밭에 작은 바닷가를 옮겨 왔어요! 파라솔·튜브·비치볼처럼 물놀이 장난감은 빨강·파랑·노랑으로 쨍하게, 모래성·유목·소라는 모래색 3~4단계 명암으로 차분하게 나눠서 둘이 섞여 있어도 하나하나 또렷하게 읽혀요. 물 타입은 헤엄치고 물대포를 쏘고, 땅 타입은 모래를 파고, 불꽃 타입은 물을 피하는 식으로 반응도 바닷가에 맞췄어요.",
    "items": [
     {
-     "id": "driftwood",
-     "n": "유목과 불가사리",
-     "k": "놀이",
-     "d": "파도에 밀려와 하얗게 바랜 통나무예요. 결 무늬와 잘린 가지, 끝 나이테까지 넣었고, 위에 주황 불가사리 한 마리가 붙어 있어요.",
-     "px": [
-      ".......k.......kk...............",
-      "......kWk.....kook..............",
-      "......kwwk...kkookk.............",
-      "......kwwwk.kooooOOk............",
-      "..kkkkkkwwkkkoooyOOkkkkkkkkkk...",
-      ".kwwwwwwwwwwwwoOOOwwwwwwwwwwek..",
-      ".kwwwwwwwwwwwwOOOOwwwwwwwwweeek.",
-      ".kwwwwwXwwwwwwOwwOwwwwwwwwweEek.",
-      ".kWWWXWWWWWWXWWWWWWXWWWWWWXeEek.",
-      ".kXXWWWWWWXWWWWWWXWWWWWWXWWeeek.",
-      ".kXXXXXXXXXXXXXXXXXXWXXXXXXXek..",
-      "..kkkXXXXXXXXXXXXXXXXWXXkkkkk...",
-      ".....kkkkkkkkkkkkkkkkkWk........",
-      "..zzzzzzzzzzzzzzzzzzzzzzzzzzzz..",
-      "..zzzzzzzzzzzzzzzzzzzzzzzzzzzz..",
-      "................................"
-     ],
-     "pal": {
-      "k": "#20202c",
-      "w": "#e8dcc4",
-      "W": "#b8a68a",
-      "X": "#8a7a62",
-      "e": "#d8c8a4",
-      "E": "#a8946e",
-      "o": "#ff9a5a",
-      "O": "#d8603a",
-      "y": "#fff0b0",
-      "z": "#c9b27a"
-     },
-     "acts": [
-      {
-       "w": "작은 포켓몬",
-       "a": "통나무에 올라가 줄지어 앉아요"
-      },
-      {
-       "w": "벌레 타입",
-       "a": "통나무 그늘 밑에 숨어요"
-      },
-      {
-       "w": "물 타입",
-       "a": "불가사리 옆에 앉아 기술(물대포)로 물을 뿌려 줘요"
-      }
-     ],
-     "fit": "연못 옆, 바위 옆"
-    },
-    {
      "id": "tide-pool",
      "n": "바위 웅덩이",
      "k": "놀이",
@@ -1473,6 +1422,60 @@
   }
  ],
  "trash": [
+  {
+   "id": "driftwood",
+   "n": "유목과 불가사리",
+   "k": "놀이",
+   "d": "파도에 밀려와 하얗게 바랜 통나무예요. 결 무늬와 잘린 가지, 끝 나이테까지 넣었고, 위에 주황 불가사리 한 마리가 붙어 있어요.",
+   "px": [
+    ".......k.......kk...............",
+    "......kWk.....kook..............",
+    "......kwwk...kkookk.............",
+    "......kwwwk.kooooOOk............",
+    "..kkkkkkwwkkkoooyOOkkkkkkkkkk...",
+    ".kwwwwwwwwwwwwoOOOwwwwwwwwwwek..",
+    ".kwwwwwwwwwwwwOOOOwwwwwwwwweeek.",
+    ".kwwwwwXwwwwwwOwwOwwwwwwwwweEek.",
+    ".kWWWXWWWWWWXWWWWWWXWWWWWWXeEek.",
+    ".kXXWWWWWWXWWWWWWXWWWWWWXWWeeek.",
+    ".kXXXXXXXXXXXXXXXXXXWXXXXXXXek..",
+    "..kkkXXXXXXXXXXXXXXXXWXXkkkkk...",
+    ".....kkkkkkkkkkkkkkkkkWk........",
+    "..zzzzzzzzzzzzzzzzzzzzzzzzzzzz..",
+    "..zzzzzzzzzzzzzzzzzzzzzzzzzzzz..",
+    "................................"
+   ],
+   "pal": {
+    "k": "#20202c",
+    "w": "#e8dcc4",
+    "W": "#b8a68a",
+    "X": "#8a7a62",
+    "e": "#d8c8a4",
+    "E": "#a8946e",
+    "o": "#ff9a5a",
+    "O": "#d8603a",
+    "y": "#fff0b0",
+    "z": "#c9b27a"
+   },
+   "acts": [
+    {
+     "w": "작은 포켓몬",
+     "a": "통나무에 올라가 줄지어 앉아요"
+    },
+    {
+     "w": "벌레 타입",
+     "a": "통나무 그늘 밑에 숨어요"
+    },
+    {
+     "w": "물 타입",
+     "a": "불가사리 옆에 앉아 기술(물대포)로 물을 뿌려 줘요"
+    }
+   ],
+   "fit": "연못 옆, 바위 옆",
+   "del": 1792624337621,
+   "dayAt": 1792622829095,
+   "theme": "여름 바닷가 놀이"
+  },
   {
    "id": "conch-shell",
    "n": "큰 소라 껍데기",
