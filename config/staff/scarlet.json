@@ -1,74 +1,6 @@
 {
  "days": [
   {
-   "at": 1792622829095,
-   "theme": "여름 바닷가 놀이",
-   "note": "오늘은 풀밭에 작은 바닷가를 옮겨 왔어요! 파라솔·튜브·비치볼처럼 물놀이 장난감은 빨강·파랑·노랑으로 쨍하게, 모래성·유목·소라는 모래색 3~4단계 명암으로 차분하게 나눠서 둘이 섞여 있어도 하나하나 또렷하게 읽혀요. 물 타입은 헤엄치고 물대포를 쏘고, 땅 타입은 모래를 파고, 불꽃 타입은 물을 피하는 식으로 반응도 바닷가에 맞췄어요.",
-   "items": [
-    {
-     "id": "tide-pool",
-     "n": "바위 웅덩이",
-     "k": "놀이",
-     "d": "회색 바위가 둥글게 감싼 바닷물 웅덩이예요. 물 위쪽에 하늘빛 반사를 넣고, 안에 분홍 말미잘, 바위 가장자리에 작은 빨간 게를 그렸어요.",
-     "px": [
-      "................................",
-      "...k..k....kkkkkkkkkk...........",
-      ".kkrkkrkkkkaaaaaaaaaakkkk.......",
-      "krkrkkraraaaaaaaaaaaaAAAAkk.....",
-      "kRrrrrrrRaaaaaaaaaaAAAAAAAak....",
-      ".krrrrrraaaaaaaaaAAAAAAAAAAAk...",
-      ".kRRRRRRaaahhhhhhhhhhAAAAAAAAk..",
-      ".kRaaaaRvvvhhhhhhhhhhvvvAAAAXXk.",
-      "kaaaaaavvvvvvvvvvvvvvvvvvAXXXXXk",
-      "kaaaaavvvvvhhvvvvvvvvvvvvvXXXXXk",
-      "kaaaavvvvvvvvvvvvvvMvMvvvvvXXXXk",
-      "kaaaaaVVVVVVVVVVVVmmmmVVVVXXXXXk",
-      ".kaaAAAVVVVVVVVVVVVVVVVVVXXXXXk.",
-      "..kAAAAAVVVVVVVVVVVVVVVVXXXXXk..",
-      "...kAAAAAAAVVVVVVVVVVXXXXXXXk...",
-      "...kaAAAAAAAAXXXXXXXXXXXXXXak...",
-      ".zzzzzzAAAAXXXXXXXXXXXXXXzzzzzz.",
-      ".zzzzzzzzzzXXXXXXXXXXzzzzzzzzzz.",
-      "......zzzzzzzzzzzzzzzzzzzz......",
-      "................................"
-     ],
-     "pal": {
-      "k": "#20202c",
-      "a": "#b4b8c0",
-      "A": "#848a96",
-      "X": "#5a5e6c",
-      "v": "#58b8e0",
-      "V": "#2c80b0",
-      "h": "#d8f4ff",
-      "m": "#ff7aa8",
-      "M": "#c84a7c",
-      "r": "#f05a3c",
-      "R": "#b03828",
-      "z": "#c9b27a"
-     },
-     "acts": [
-      {
-       "w": "헤엄치는 작은 포켓몬",
-       "a": "웅덩이에 들어가 헤엄쳐요"
-      },
-      {
-       "w": "바위 타입",
-       "a": "웅덩이 바위 위에 올라가 앉아요"
-      },
-      {
-       "w": "물 타입",
-       "a": "웅덩이 가에 앉아 꼬리를 물에 담가요"
-      },
-      {
-       "w": "불꽃 타입",
-       "a": "물을 피해 웅덩이에서 멀리 돌아가요"
-      }
-     ],
-     "fit": "연못 옆, 바위 사이"
-    }
-   ]
-  },
-  {
    "at": 1792619438354,
    "theme": "밤을 밝히는 조명",
    "note": "경완 님이 부탁하신 밤 조명 세트예요! 쇠 가로등부터 종이 등롱, 석등, 연꽃 등까지 재질을 다 다르게 잡았고, 불빛은 유리·종이 안쪽을 가운데부터 밝게 칠한 다음 바깥에 옅은 빛 테두리를 점점이 찍어서 밤 풀밭에서도 테두리가 또렷하게 읽히게 했어요. 불꽃 타입이 켜고, 전기 타입이 밝히고, 고스트 타입은 그림자에 숨는 식으로 반응도 빛에 맞췄어요.",
@@ -1422,6 +1354,70 @@
   }
  ],
  "trash": [
+  {
+   "id": "tide-pool",
+   "n": "바위 웅덩이",
+   "k": "놀이",
+   "d": "회색 바위가 둥글게 감싼 바닷물 웅덩이예요. 물 위쪽에 하늘빛 반사를 넣고, 안에 분홍 말미잘, 바위 가장자리에 작은 빨간 게를 그렸어요.",
+   "px": [
+    "................................",
+    "...k..k....kkkkkkkkkk...........",
+    ".kkrkkrkkkkaaaaaaaaaakkkk.......",
+    "krkrkkraraaaaaaaaaaaaAAAAkk.....",
+    "kRrrrrrrRaaaaaaaaaaAAAAAAAak....",
+    ".krrrrrraaaaaaaaaAAAAAAAAAAAk...",
+    ".kRRRRRRaaahhhhhhhhhhAAAAAAAAk..",
+    ".kRaaaaRvvvhhhhhhhhhhvvvAAAAXXk.",
+    "kaaaaaavvvvvvvvvvvvvvvvvvAXXXXXk",
+    "kaaaaavvvvvhhvvvvvvvvvvvvvXXXXXk",
+    "kaaaavvvvvvvvvvvvvvMvMvvvvvXXXXk",
+    "kaaaaaVVVVVVVVVVVVmmmmVVVVXXXXXk",
+    ".kaaAAAVVVVVVVVVVVVVVVVVVXXXXXk.",
+    "..kAAAAAVVVVVVVVVVVVVVVVXXXXXk..",
+    "...kAAAAAAAVVVVVVVVVVXXXXXXXk...",
+    "...kaAAAAAAAAXXXXXXXXXXXXXXak...",
+    ".zzzzzzAAAAXXXXXXXXXXXXXXzzzzzz.",
+    ".zzzzzzzzzzXXXXXXXXXXzzzzzzzzzz.",
+    "......zzzzzzzzzzzzzzzzzzzz......",
+    "................................"
+   ],
+   "pal": {
+    "k": "#20202c",
+    "a": "#b4b8c0",
+    "A": "#848a96",
+    "X": "#5a5e6c",
+    "v": "#58b8e0",
+    "V": "#2c80b0",
+    "h": "#d8f4ff",
+    "m": "#ff7aa8",
+    "M": "#c84a7c",
+    "r": "#f05a3c",
+    "R": "#b03828",
+    "z": "#c9b27a"
+   },
+   "acts": [
+    {
+     "w": "헤엄치는 작은 포켓몬",
+     "a": "웅덩이에 들어가 헤엄쳐요"
+    },
+    {
+     "w": "바위 타입",
+     "a": "웅덩이 바위 위에 올라가 앉아요"
+    },
+    {
+     "w": "물 타입",
+     "a": "웅덩이 가에 앉아 꼬리를 물에 담가요"
+    },
+    {
+     "w": "불꽃 타입",
+     "a": "물을 피해 웅덩이에서 멀리 돌아가요"
+    }
+   ],
+   "fit": "연못 옆, 바위 사이",
+   "del": 1792624339864,
+   "dayAt": 1792622829095,
+   "theme": "여름 바닷가 놀이"
+  },
   {
    "id": "driftwood",
    "n": "유목과 불가사리",
