@@ -5070,22 +5070,28 @@ let treeEl = null, flameEl = null, puddleEls = [], rainEl = null, rainGEl = null
 function onProp(x, y) {
   const L = LAYOUT, inB = (cx, by, w, h) => Math.abs(x - cx) < w / 2 && y < by + 6 && y > by - h, zT = LS('tree'), zP = LS('perch'), zF = LS('fire'), zS = LS('stump'), zB = LS('bush'), zR = LS('rock'), zQ = LS('puddle');
   return inB(L.tree.x, L.tree.y, 100 * zT, 116 * zT) || inB(L.perch.x, L.perch.y, 52 * zP, 64 * zP) || inB(L.fire.x, L.fire.y + 14, 72 * zF, 64 * zF) || inB(L.stump.x, L.stump.y, 44 * zS, 32 * zS) || inB(L.bed.x, L.bed.y + 22, 100, 54)
-    || L.bushes.some(b => { const z = LZi('bush', 'bushes', b); return inB(b.x, b.y, 72 * z, 48 * z); }) || L.rocks.some(r => { const z = LZi('rock', 'rocks', r); return inB(r[0], r[1], r[2] * 2 * z + 4, r[3] * 2 * z + 4); }) || L.mush.some(m => inB(m[0], m[1], 16, 16)) || (L.sc || []).some(([id, sx, sy]) => { const I = scImg(id); return I && inB(sx, sy, I.w, I.h); })
+    || L.bushes.some(b => { const z = LZi('bush', 'bushes', b); return inB(b.x, b.y, 72 * z, 48 * z); }) || L.rocks.some(r => { const z = LZi('rock', 'rocks', r); return inB(r[0], r[1], r[2] * 2 * z + 4, r[3] * 2 * z + 4); }) || L.mush.some(m => inB(m[0], m[1], 16, 16)) || (L.sc || []).some(r => { const I = scImg(r[0]), z = scS(r); return I && inB(r[1], r[2], I.w * z, I.h * z); })
     || L.puddles.some(q => { const z = LZi('puddle', 'puddles', q); return inB(q.x, q.y + q.w * z * .175, q.w * z, q.w * z * .35); }) || L.flowers.some(f => { const k = SPR.flw?.[f[0]] && flwSz(f[0], f[3]); return inB(f[1], f[2], Math.max(16, k?.w || 16), Math.max(18, k?.h || 18)); });
 }
 // v8.22 경완: 스칼렛 소품 그림 (도트 한 칸 = 2px)
 const SC_PX = 2, scCache = {};
+// v8.26 경완: 불 붙은 소품(횃불·촛불·랜턴…)은 불꽃 칸만 따로 떼어 모닥불처럼 흔든다
+const SC_FIRE = /횃불|촛불|초|랜턴|램프|등불|등잔|모닥|화로|불꽃|불/;
 function scImg(id) { const A = LAYOUT.scArt?.[id]; if (!A?.px?.length) return null; const key = id + ':' + JSON.stringify(A.px).length + JSON.stringify(A.pal);
   if (scCache[id]?.key === key) return scCache[id]; const h = A.px.length, w = A.px[0].length, c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
-  A.px.forEach((r, y) => { for (let x = 0; x < r.length; x++) { const col = A.pal?.[r[x]]; if (r[x] !== '.' && col) { g.fillStyle = col; g.fillRect(x, y, 1, 1); } } });
-  return scCache[id] = { key, src: c.toDataURL(), w: w * SC_PX, h: h * SC_PX }; }
+  const fire = SC_FIRE.test(A.n || ''), fc = fire ? document.createElement('canvas') : null, fg = fc?.getContext('2d'); if (fc) { fc.width = w; fc.height = h; } let nf = 0, fb = 0;
+  const flame = (col, y) => { if (!fire || y > h * .6) return false; const n = parseInt(col.slice(1), 16), r = n >> 16, gg = (n >> 8) & 255, b = n & 255; return r > 200 && b < 140 && r - b > 90 && gg > 60; };
+  A.px.forEach((r, y) => { for (let x = 0; x < r.length; x++) { const col = A.pal?.[r[x]]; if (r[x] === '.' || !col) continue; if (flame(col, y)) { fg.fillStyle = col; fg.fillRect(x, y, 1, 1); nf++; fb = Math.max(fb, y); } else { g.fillStyle = col; g.fillRect(x, y, 1, 1); } } });
+  if (fc && nf < 3) g.drawImage(fc, 0, 0);
+  return scCache[id] = { key, src: c.toDataURL(), w: w * SC_PX, h: h * SC_PX, fl: fc && nf >= 3 ? { src: fc.toDataURL(), o: Math.round((fb + 1) / h * 100) } : null }; }
+const scS = r => +r?.[3] || 1;   // 놓인 스칼렛 소품 하나의 크기 배율
 function buildProps() {
   makeSprites();
   const add = (cls, at, src, w, h, z) => { const e = document.createElement('div'); e.className = 'prop ' + cls; e.style.cssText = W2(src, w, h) + `;left:${at.x}px;top:${at.y}px;z-index:${z ?? Math.round(at.y)}`; itemsEl.append(e); return e; };
   const zT = LS('tree'), zP = LS('perch'), zB = LS('bush');
   treeEl = add('tree', PROPS.tree, SPR.tree, Math.round(100 * zT), Math.round(116 * zT));
   add('perch', PROPS.perch, SPR.perch, Math.round(52 * zP), Math.round(64 * zP));
-  (LAYOUT.sc || []).forEach(([id, x, y]) => { const I = scImg(id); if (I) add('sc', { x, y }, I.src, I.w, I.h); });
+  (LAYOUT.sc || []).forEach(r => { const [id, x, y] = r, I = scImg(id), z = scS(r); if (!I) return; const e = add('sc', { x, y }, I.src, Math.round(I.w * z), Math.round(I.h * z)); if (I.fl) { const f = document.createElement('i'); f.className = 'scfl'; f.style.cssText = `background-image:url(${I.fl.src});--fo:${I.fl.o}%;animation-delay:${(-Math.random()).toFixed(2)}s`; e.append(f); } });
   PROPS.bushEls = PROPS.bushes.map(b => { const L = lkRes(b.lk), z = L ? +L.s || 1 : zB; return add('bush', b, L ? lkUrl('bush', L, () => tintCv(ART.bush(), L).toDataURL()) : SPR.bush, Math.round(72 * z), Math.round(48 * z)); });
   /* v3.55: 꽃·풀은 바람에 살랑살랑 (하나씩 박자를 달리) */
   FLOWERS.forEach(([k, x, y, lk], i) => { const L = lkRes(lk), f = L ? { src: lkUrl('f' + k, L, () => tintCv(ART.flower(k), L, PETAL[k]).toDataURL()), ...flwSz(k, lk) } : SPR.flw[k], e = document.createElement('div'); e.className = 'flw';
@@ -5123,7 +5129,7 @@ function propSpots() {
     ['bed', '꽃밭', L.bed.x, L.bed.y + 2, 48, 20], ['stump', '그루터기', L.stump.x, L.stump.y - 8, 22, 14]];
   L.bushes.forEach((b, i) => out.push(['bush', '덤불', b.x, b.y - 10, 36, 18, i]));
   L.rocks.forEach((r, i) => { if (r[2] >= 12) out.push(['rock', '바위', r[0], r[1] - r[3], r[2] + 4, r[3] + 6, i]); });
-  (L.sc || []).forEach(([id, x, y], i) => { const I = scImg(id); if (I) out.push(['sc', L.scArt[id].n || '소품', x, y - Math.min(I.h * .3, 14), Math.max(18, I.w / 2 + 4), 14, i]); });
+  (L.sc || []).forEach((r, i) => { const [id, x, y] = r, I = scImg(id), z = scS(r); if (I) out.push(['sc', L.scArt[id].n || '소품', x, y - Math.min(I.h * z * .3, 14), Math.max(18, I.w * z / 2 + 4), 14, i]); });
   if (weather() === 'rain') L.puddles.forEach((q, i) => out.push(['puddle', '물웅덩이', q.x, q.y, q.w / 2 + 4, q.w * .2 + 6, i]));
   return out.map(([k, n, x, y, rx, ry, i]) => ({ k, n, x, y, rx, ry, i }));
 }
@@ -5866,7 +5872,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.25';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.26';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -10623,7 +10629,8 @@ if (/[?&]studio/.test(location.search)) {
 body.szMode :is(#items,#propFx,#bg,#skyC,#skyFx,.bfly,.firefly){opacity:var(--szA,1)}
 #stHov,.stMk{position:absolute;z-index:3001;pointer-events:none;border:2px solid #ffe070;border-radius:6px;box-shadow:0 0 0 1px rgba(0,0,0,.45),0 0 10px rgba(255,224,112,.6);background:rgba(255,224,112,.1)}#stHov[hidden]{display:none}
 #stHands .h:hover{outline:1px dashed rgba(127,215,239,.7)}
-#stHands .h.sel{outline:2px solid #7fd7ef;outline-offset:1px;background:rgba(127,215,239,.14)}
+#stHands .h.sel{outline:2px solid #7fd7ef;outline-offset:1px;background:rgba(127,215,239,.14)}#stHands .h .rz{position:absolute;right:-7px;bottom:-7px;width:12px;height:12px;background:#7fd7ef;border:2px solid #fff;border-radius:2px;cursor:nwse-resize;box-sizing:border-box}
+.prop.sc .scfl{position:absolute;inset:0;background-size:100% 100%;image-rendering:pixelated;transform-origin:50% var(--fo,60%);animation:scFl .42s steps(1) infinite}@keyframes scFl{0%{transform:scale(1,1)}25%{transform:scale(.92,1.12) skewX(-3deg)}50%{transform:scale(1.06,.94)}75%{transform:scale(.96,1.08) skewX(3deg)}}
 .mon.stMark:has(.stbox.hov),.mon.stMark:has(.stbox.on){z-index:99999!important}body.szMode #wrap{overflow:auto}body.szMode .app>:not(.stage-wrap):not(#glows){display:none!important}body.szMode .stage{box-shadow:none}body.szMode #night,body.szMode #skyFx,body.szMode #skyC,body.szMode #bg{display:none}body.szMode .mon.szb img,body.szMode .mon.szb .spr{clip-path:none!important}body.szMode .mon.szb .spr{cursor:move}body.szMode #wrap{background:#1c2028}#szLasso{position:absolute;border:1px dashed #fff;background:rgba(127,215,239,.14);z-index:99998;pointer-events:none}.mon.szDrag{z-index:99999!important}body.szMode .mon .shadow{opacity:.5}
 .stbox{position:absolute;bottom:0;border:1px solid rgba(255,255,255,0);pointer-events:none;z-index:5;transition:border-color .12s}.stbox.hov,.stbox.on,body.szMode .stbox{border-color:rgba(255,255,255,.55)}body.szMode .stbox i{opacity:1;pointer-events:auto}.stbox i{position:absolute;width:8px;height:8px;margin:2px;background:#fff;border:1px solid rgba(0,0,0,.35);border-radius:1px;opacity:0;pointer-events:none}.stbox.hov i,.stbox.on i{opacity:1;pointer-events:auto}.stbox i[data-c=tl]{left:-7px;top:-7px;cursor:nwse-resize}.stbox i[data-c=tr]{right:-7px;top:-7px;cursor:nesw-resize}.stbox i[data-c=bl]{left:-7px;bottom:-7px;cursor:nesw-resize}.stbox i[data-c=br]{right:-7px;bottom:-7px;cursor:nwse-resize}
 .mon.stMark{filter:drop-shadow(1px 0 0 rgba(127,215,239,.85)) drop-shadow(-1px 0 0 rgba(127,215,239,.85)) drop-shadow(0 1px 0 rgba(127,215,239,.85)) drop-shadow(0 -1px 0 rgba(127,215,239,.85))}
@@ -10634,7 +10641,7 @@ body.szMode :is(#items,#propFx,#bg,#skyC,#skyFx,.bfly,.firefly){opacity:var(--sz
 #stHud{position:absolute;inset:0;z-index:2999;pointer-events:none;display:none}#stHud.on{display:block}
 #stHud i{position:absolute;border:1.5px dashed rgba(255,255,255,.85);background:rgba(20,30,60,.35);border-radius:4px;font:600 9px system-ui;color:#fff;font-style:normal;display:flex;align-items:center;justify-content:center}
 #stHud b{position:absolute;left:0;right:0;border-top:1.5px dashed rgba(255,90,90,.9);font:600 9px system-ui;color:#fff;text-shadow:0 0 2px #000;padding-left:4px}
-body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.stage-wrap):not(.stUi){visibility:hidden!important}body.stEdit .stUi{cursor:move;outline:1px dashed rgba(127,215,239,.75);outline-offset:3px}body.stEdit .stUi *{pointer-events:none}body.stEdit .stUi.stUiOn{outline:2px solid #7fd7ef}body.stEdit #frTest{display:none}
+body.stEdit #fx #rain{visibility:visible!important}body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.stage-wrap):not(.stUi){visibility:hidden!important}body.stEdit .stUi{cursor:move;outline:1px dashed rgba(127,215,239,.75);outline-offset:3px}body.stEdit .stUi *{pointer-events:none}body.stEdit .stUi.stUiOn{outline:2px solid #7fd7ef}body.stEdit #frTest{display:none}
 #stHands .hudl{height:14px;cursor:ns-resize;border-radius:0}#stHands .hudl:hover{outline:0;background:rgba(255,90,90,.18)}
 #stGal{position:fixed;inset:0;z-index:99999;overflow:auto;background:#262932;color:#e4e7ee;font:14px/1.5 system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif;padding:16px 16px 60px;-webkit-user-select:text;user-select:text}
 #stGal h3{font-family:Galmuri11,monospace;font-size:13px;color:#7fd7ef;letter-spacing:.06em;margin:26px 0 4px;padding-top:18px;border-top:2px solid #3b4152}#stGal h3:first-child{margin-top:4px;padding-top:0;border-top:0}
@@ -10706,7 +10713,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     L.puddles.forEach((q, i) => { const zQ = LZi('puddle', 'puddles', q); o('puddles', i, [q.x - q.w * zQ / 2, q.y - q.w * zQ * .175, q.w * zQ, q.w * zQ * .35], (dx, dy) => { q.x += dx; q.y += dy; }); });
     L.rocks.forEach((r, i) => { const zR = LZi('rock', 'rocks', r); o('rocks', i, [r[0] - r[2] * zR, r[1] - r[3] * 2 * zR, r[2] * 2 * zR, r[3] * 2 * zR], (dx, dy) => { r[0] += dx; r[1] += dy; }); });
     L.mush.forEach((m, i) => o('mush', i, [m[0] - 8, m[1] - 14, 16, 16], (dx, dy) => { m[0] += dx; m[1] += dy; }));
-    (L.sc || []).forEach((r, i) => { const I = scImg(r[0]) || { w: 24, h: 24 }; o('sc', i, [r[1] - I.w / 2, r[2] - I.h, I.w, I.h], (dx, dy) => { r[1] += dx; r[2] += dy; }); });
+    (L.sc || []).forEach((r, i) => { const I = scImg(r[0]) || { w: 24, h: 24 }, z = scS(r); o('sc', i, [r[1] - I.w * z / 2, r[2] - I.h * z, I.w * z, I.h * z], (dx, dy) => { r[1] += dx; r[2] += dy; }); });
     L.flowers.forEach((f, i) => { const s = flwSz(f[0], f[3]), w = Math.max(s.w, 26), hh = Math.max(s.h, 26); o('flowers', i, [f[1] - w / 2, f[2] - hh, w, hh], (dx, dy) => { f[1] += dx; f[2] += dy; }); });
     return out;
   }
@@ -10722,6 +10729,7 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
     for (const t of items().sort((a, b) => b.box[2] * b.box[3] - a.box[2] * a.box[3])) {
       const e = document.createElement('div'); e.className = 'h' + (sel && sel.key === t.key && sel.i === t.i ? ' sel' : ''); const [x, y, w, h] = t.box;
       e.style.cssText = `left:${x}px;top:${y}px;width:${w}px;height:${h}px`; e.onpointerdown = ev => startDrag(ev, t); hands.append(e);
+      if (sel && sel.key === t.key && sel.i === t.i && canSz(t)) { const z = document.createElement('i'); z.className = 'rz'; z.title = '끌어서 크기 조절'; z.onpointerdown = ev => startSz(ev, t); e.append(z); }
     }
     LAYOUT.path.forEach((p, i) => { const e = document.createElement('div'); e.className = 'h dot'; e.style.left = p[0] + 'px'; e.style.top = p[1] + 'px'; e.onpointerdown = ev => startDrag(ev, { key: 'path', i, mv: (dx, dy) => { p[0] += dx; p[1] += dy; } }); hands.append(e); });
     { const T = LAYOUT.tree, z = LS('tree'); if (!Array.isArray(T.b)) T.b = TREE_B0.map(a => [...a]);   // v3.63 경완: 열매 자리도 끌어서 옮긴다
@@ -10734,6 +10742,14 @@ body.stEdit #mons,body.stEdit #fx,body.stEdit #propFx,body.stEdit .app>:not(.sta
       e.onpointerdown = ev => startDrag(ev, { key: 'pond', i: -1, mv: (dx, dy) => { POND.rx = Math.max(30, POND.rx + dx); POND.ry = Math.max(16, POND.ry + dy); } }); hands.append(e); }
     if (!quiet) api.onSel?.(selInfo(), undo.length);
   }
+  // v8.26 경완: 고른 소품 오른쪽 아래 손잡이를 끌어 크기 조절 (바닥 가운데 기준, .3~4배)
+  const canSz = t => t.key === 'sc' || (t.key !== 'path' && t.key !== 'mush' && t.key !== 'pond' && t.key !== 'bed' && !!LKK(t.key, t.i >= 0 ? LAYOUT[t.key][t.i] : LAYOUT[t.key]));
+  function startSz(ev, t) { ev.preventDefault(); ev.stopPropagation(); undo.push(snap()); if (undo.length > 60) undo.shift();
+    const v = t.i >= 0 ? LAYOUT[t.key][t.i] : LAYOUT[t.key], k = LKK(t.key, v), s0 = t.key === 'sc' ? scS(v) : +full(LKi(k, t.key, v)).s || 1, w0 = t.box[2], x0 = ev.clientX; let raf = 0;
+    const set = s => { s = Math.round(Math.max(.3, Math.min(4, s)) * 20) / 20; if (t.key === 'sc') { if (s === 1) v.length = 3; else v[3] = s; } else { const L = { ...full(LKi(k, t.key, v)), s }; setIlk(t.key, v, plain(L) ? null : L); } };
+    const mv = e => { set(s0 * (w0 + 2 * (e.clientX - x0) / scale) / w0); if (!raf) raf = requestAnimationFrame(() => { raf = 0; rebuild(t.key !== 'sc' && BAKED.has(bakeKey(t.key))); renderHands(true); }); };
+    const up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); removeEventListener('pointercancel', up); changed(t.key === 'sc' ? 'sc' : bakeKey(t.key)); };
+    addEventListener('pointermove', mv); addEventListener('pointerup', up); addEventListener('pointercancel', up); }
   function startDrag(ev, t) {
     ev.preventDefault(); ev.stopPropagation(); undo.push(snap()); if (undo.length > 60) undo.shift();
     sel = t.line ? null : { key: t.key, i: t.i }; drag = { t, x: ev.clientX, y: ev.clientY, moved: false }; hands.setPointerCapture?.(ev.pointerId); renderHands();

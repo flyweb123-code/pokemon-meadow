@@ -544,7 +544,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.28';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.29';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -942,8 +942,8 @@ let editing = false;
 // 편집하기 (v1.7 경완): 화면 배치는 그대로, 편집 버튼은 휴대폰 오른쪽 작은 창에
 let preEdit = null;
 function setEdit(on) { if (on === editing) return; editing = on; $('#eWarn').hidden = true; A?.edit(on); $('#ebar').hidden = !on; document.body.classList.toggle('editing', on); ebarHome(); if (on) ebarPos(); $('#eMode').classList.toggle('stop', on); $('#eTop').hidden = !on; $('#szMode').hidden = on; if (on) layoutBar(); $('#eMode').textContent = on ? '편집 종료' : '편집하기'; $('#eUndo').disabled = !(A?.undoN?.() ?? 0);
-  if (on) { preEdit = { now: $('#hrNow').disabled, h: +$('#hr').value, w: $('#wx .on')?.dataset.w || '' }; A?.setHour(12); A?.setWx('clear'); }   // 편집할 땐 맑은 한낮으로
-  else if (preEdit) { if (preEdit.now) A?.setHour(null); else A?.setHour(preEdit.h); A?.setWx(preEdit.w); preEdit = null; closeZoom(); } if (!on) { $('#propPane').hidden = true; renderReact(null); edOff(); } requestAnimationFrame(fitPhone); }
+  // v3.29 경완: 편집 중에도 위쪽 막대의 시간·날씨를 그대로 쓴다 (예전엔 맑은 한낮으로 고정)
+  if (!on) { closeZoom(); $('#propPane').hidden = true; renderReact(null); edOff(); } requestAnimationFrame(fitPhone); }
 // v2.25 경완: 편집 종료하면 편집에서 켰던 것(길 모양·포켓몬 경계선·세이프 존·고른 소품·세부 창)도 모두 끈다
 function edOff() { closeZoom(); dockMark(null); for (const id of ['ePath', 'eHud2', 'eSafe2']) $('#' + id).classList.remove('on'); store.set('st-safe', ''); A?.showPath?.(false); A?.showHud?.(false); A?.unpick?.(); safeZ(); }
 // v2.48 경완: 배치를 저장 안 하고 편집 종료 → 경고 한 번. 그냥 종료하면 마지막 저장 상태로 돌아간다
@@ -2074,6 +2074,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.29', '10월 22일', ['맵 편집 중에도 시간·날씨를 바꿔 볼 수 있어요', '편집 중 고른 소품 오른쪽 아래 손잡이를 끌어 크기 조절', '횃불처럼 불이 붙은 추가 소품은 모닥불처럼 불꽃이 흔들려요']],
   ['3.28', '10월 22일', ['맵 소품 창: 스칼렛 소품 칸 이름을 \'추가 소품\'으로, 위 전체 소품 칸에 끌어 놓고 소품 창 위 저장을 누르면 전체 소품으로 들어가요', '\'끌어다 놓기 · 누르면 크게\' 문구 지움']],
   ['3.27', '10월 22일', ['밸런스: 창 제목을 끌어 화면 안에서 배치하고, 오른쪽 아래 모서리를 끌어 크기 조절 (겹치면 아래로 밀려요, \'처음 배치로\' 버튼)']],
   ['3.26', '10월 22일', ['스칼렛 소품: \'+ 소품 리스트\' 를 누르면 맵 메뉴 소품 칸에 바로 생기고 맵에 끌어다 놓을 수 있어요. 저장하면 게임에서 포켓몬들이 놀러 와요', '맵 메뉴에 새 스칼렛 소품 빨간 점, 소품 칸의 × 로 목록에서 지우기', '맵 위쪽 막대를 다시 한 줄로']],
