@@ -917,65 +917,6 @@
      "fit": "허수아비 옆, 밭"
     },
     {
-     "id": "chestnut-burr",
-     "n": "밤송이",
-     "k": "먹이",
-     "d": "가시가 사방으로 뻗은 초록 밤송이예요. 윗부분이 벌어져 반들반들한 밤톨이 보여요.",
-     "px": [
-      "........................",
-      "..........k..k..........",
-      "......k..kSkkSk..k......",
-      ".....kSk.kskksk.kSk.....",
-      "....k.kskkskkskksk.k....",
-      "...kSkkskkkkkkkkskkSk...",
-      "...ksk.kkaaaoookk.ksk...",
-      "..k.kskaaabbecoooksk.k..",
-      ".kSkkkaaabbecccoopkkkSk.",
-      "..ksskaaacecccdoopkssk..",
-      "...kkooooccccddopppkk...",
-      ".kkkkoooocdddddppppkkkk.",
-      "kSsskoooooddddpppppkssSk",
-      ".kkkkoooooooopppppqkkkk.",
-      "..ksskoooopppppppqkssk..",
-      ".kSkkkppppppppppqqkkkSk.",
-      "..k.kskpppppppqqqksk.k..",
-      "...ksk.kkpppqqqkk.ksk...",
-      "...kSkkskkkkkkkkskkSk...",
-      "....k..kzzzzzzzzk..k....",
-      ".....zzzzzzzzzzzzzz.....",
-      ".........zzzzzz........."
-     ],
-     "pal": {
-      "k": "#20202c",
-      "z": "#3c4a2c",
-      "a": "#b8d070",
-      "o": "#8aa848",
-      "p": "#5e7a30",
-      "q": "#3e5424",
-      "s": "#c8d880",
-      "S": "#8aa050",
-      "b": "#c87a3a",
-      "c": "#8a4a22",
-      "d": "#5a2e18",
-      "e": "#f0c090"
-     },
-     "acts": [
-      {
-       "w": "풀·벌레 타입 작은 포켓몬",
-       "a": "가시를 피해 조심스럽게 밤톨만 꺼내 먹어요"
-      },
-      {
-       "w": "강철·바위 타입",
-       "a": "가시는 상관없다는 듯 밤송이 위에 앉아요"
-      },
-      {
-       "w": "작은 노말 타입",
-       "a": "가시에 콕 찔려 놀라 뒤로 펄쩍 물러나요"
-      }
-     ],
-     "fit": "열매나무 아래, 가을"
-    },
-    {
      "id": "firewood-stack",
      "n": "장작 더미",
      "k": "쉼터",
@@ -1038,6 +979,68 @@
   }
  ],
  "trash": [
+  {
+   "id": "chestnut-burr",
+   "n": "밤송이",
+   "k": "먹이",
+   "d": "가시가 사방으로 뻗은 초록 밤송이예요. 윗부분이 벌어져 반들반들한 밤톨이 보여요.",
+   "px": [
+    "........................",
+    "..........k..k..........",
+    "......k..kSkkSk..k......",
+    ".....kSk.kskksk.kSk.....",
+    "....k.kskkskkskksk.k....",
+    "...kSkkskkkkkkkkskkSk...",
+    "...ksk.kkaaaoookk.ksk...",
+    "..k.kskaaabbecoooksk.k..",
+    ".kSkkkaaabbecccoopkkkSk.",
+    "..ksskaaacecccdoopkssk..",
+    "...kkooooccccddopppkk...",
+    ".kkkkoooocdddddppppkkkk.",
+    "kSsskoooooddddpppppkssSk",
+    ".kkkkoooooooopppppqkkkk.",
+    "..ksskoooopppppppqkssk..",
+    ".kSkkkppppppppppqqkkkSk.",
+    "..k.kskpppppppqqqksk.k..",
+    "...ksk.kkpppqqqkk.ksk...",
+    "...kSkkskkkkkkkkskkSk...",
+    "....k..kzzzzzzzzk..k....",
+    ".....zzzzzzzzzzzzzz.....",
+    ".........zzzzzz........."
+   ],
+   "pal": {
+    "k": "#20202c",
+    "z": "#3c4a2c",
+    "a": "#b8d070",
+    "o": "#8aa848",
+    "p": "#5e7a30",
+    "q": "#3e5424",
+    "s": "#c8d880",
+    "S": "#8aa050",
+    "b": "#c87a3a",
+    "c": "#8a4a22",
+    "d": "#5a2e18",
+    "e": "#f0c090"
+   },
+   "acts": [
+    {
+     "w": "풀·벌레 타입 작은 포켓몬",
+     "a": "가시를 피해 조심스럽게 밤톨만 꺼내 먹어요"
+    },
+    {
+     "w": "강철·바위 타입",
+     "a": "가시는 상관없다는 듯 밤송이 위에 앉아요"
+    },
+    {
+     "w": "작은 노말 타입",
+     "a": "가시에 콕 찔려 놀라 뒤로 펄쩍 물러나요"
+    }
+   ],
+   "fit": "열매나무 아래, 가을",
+   "del": 1792624379577,
+   "dayAt": 1792618421339,
+   "theme": "가을 수확 축제"
+  },
   {
    "id": "acorn-basket",
    "n": "도토리 바구니",
