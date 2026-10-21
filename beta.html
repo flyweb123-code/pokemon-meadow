@@ -4577,6 +4577,7 @@ function update(m, dt) {
   if (m.pet) { m.goal = null; if (m.state !== 'idle' && m.state !== 'eat') setState(m, 'idle', 1); m.t = Math.max(m.t, 1); }
   if (m.pin) { m.goal = null; m.wp = null; if (m.state === 'move') setState(m, 'idle', 1); m.t = Math.max(m.t, 1); }   /* v3.80 경완: 작업실에서 고른 포켓몬은 제자리 */   /* 쓰다듬는 동안은 제자리 */
   if (m.state === 'idle' && !m.pet && !m.pin && inHud(m)) { moveTo(m, outOfHud(m, { x: clamp(m.x, XL + 30, XR - 30), y: m.y })); }   /* 좌상단 버튼 밑에 서 있지 않게 */
+  if (m.state === 'sleep' && !m.pet && !m.pin && !m.perch && !m.hidden && !m.camp && T(m).mv !== 'swim' && inHud(m)) { m.hudSlp = (m.hudSlp || 0) + dt; if (m.hudSlp > 2) { m.hudSlp = -30; wake(m); goToBed(m); } } else if (m.hudSlp > 0) m.hudSlp = 0;   /* v7.87 경완: 열매·가방 버튼 밑에서 잠든 포켓몬(불러온 자리·화면 크기 바뀜)은 일어나 비켜서 다시 눕는다 (예전엔 깰 때까지 버튼 뒤에 멈춰 있었다) */
   switch (m.state) {
     case 'move': {
       const g = m.goal;
