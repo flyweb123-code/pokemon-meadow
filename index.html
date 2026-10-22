@@ -5980,7 +5980,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.46';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.47';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7936,11 +7936,13 @@ function renderMgrDetail(rebuild) {
     if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; const eb = $('#mEvo'); if (eb) eb.onclick = () => { const Q = boxOf(m.pid); if (!Q || eb.classList.contains('dis') || eb.classList.contains('fin')) return; closeMon(); evolvePoke(Q); }; }
     if (P && $('#mEvo')) setEvoBtn($('#mEvo'), P); }
 }
+// v8.47 경완: 트레이너 이름이 나오는 상태·생각은 친밀도 단계로 — 0 낯섦(하트 0칸) · 1 조금 익숙 · 2 친해지는 중 · 3 아주 친함 · 4 만점
+const frTier = fr => fr >= FR_MAX ? 4 : fr >= FR_MAX * .7 ? 3 : fr >= FR_MAX * .4 ? 2 : fr >= FR_MAX * .2 ? 1 : 0;
 // 상황 칸: 친구, 기분, 생각을 메모처럼
 function moodOf(m) {
-  const P = boxOf(m.pid), fr = P?.fr || 0, best = friendsOf(m).find(x => x.r >= 20);
+  const P = boxOf(m.pid), fr = P?.fr || 0, best = friendsOf(m).find(x => x.r >= 20), ft = frTier(fr);
   if (m.state === 'sleep') return pick2(m, ['쿨쿨… 좋은 꿈을 꾸는 것 같다', '새근새근 깊이 잠들었다']);
-  if (m.petMood > performance.now()) return pick2(m, ['쓰다듬어 줘서 기분이 아주 좋다', `${TJ('이/가')} 쓰다듬어 줘서 행복하다`]);
+  if (m.petMood > performance.now()) return pick2(m, ft < 1 ? ['깜짝 놀랐지만 싫지는 않다', `${TJ('이/가')} 쓰다듬어 줘서 조금 쑥스럽다`] : ft < 3 ? ['쓰다듬어 줘서 기분이 좋다', `${TJ('이/가')} 쓰다듬어 줘서 기분이 좋다`] : ['쓰다듬어 줘서 기분이 아주 좋다', `${TJ('이/가')} 쓰다듬어 줘서 행복하다`]);   /* v8.47 경완: 트레이너 이름 나오는 말은 친밀도 따라 */
   if (m.hunger > 78) return pick2(m, ['배가 너무 고프다… 열매 먹고 싶어', '꼬르륵… 나무 열매가 생각난다']);
   if (m.hunger > 50) return pick2(m, ['조금 출출하다', '열매 하나쯤 먹고 싶다']);
   if (sleepyTime(m)) return pick2(m, ['졸려서 눈이 감긴다', '슬슬 쉬고 싶다']);
@@ -7948,7 +7950,7 @@ function moodOf(m) {
   if (isFull(m)) return pick2(m, ['배가 불러 기분이 좋다', '배부르고 느긋하다']);
   if (fr >= FR_MAX) return pick2(m, [`${TJ('이/가')} 정말 좋다!`, `${TJ('과/와')} 또 달리고 싶다`, `${TJ('이/가')} 오면 제일 먼저 반길 거다`]);
   if (m.state === 'interact' && m.partner) return `${J(m.partner, '과/와')} 함께라 즐겁다`;
-  return pick2(m, ['오늘 날씨가 좋다', '필드가 마음에 든다', '느긋하게 쉬는 중', '주변을 구경하고 있다', `${TJ('이/가')} 뭐 하는지 궁금하다`]);
+  return pick2(m, ['오늘 날씨가 좋다', '필드가 마음에 든다', '느긋하게 쉬는 중', '주변을 구경하고 있다', [`${TJ('이/가')} 아직 조금 낯설다`, `${TJ('이/가')} 뭐 하는지 궁금하다`, `${TJ('이/가')} 오면 반가울 것 같다`, `${TJ('이/가')} 보고 싶다`][Math.min(3, ft)]]);
 }
 // 같은 상황이면 같은 문장이 유지되게 (창을 다시 그릴 때 깜빡이지 않게)
 function pick2(m, L) { const k = L[0]; if (!m.moodK || m.moodK !== k) { m.moodK = k; m.moodI = Math.floor(Math.random() * L.length); } return L[m.moodI % L.length]; }
@@ -8035,21 +8037,25 @@ function thoughtOf(m) {
     if (od.h >= d.h * 3 && od.h >= 12) add(1.5, '#은/는 커다란 @의 등에 올라타 보고 싶어 한다.', o);
     if (d.h >= od.h * 3 && d.h >= 12) add(1.5, '#은/는 작은 @을/를 밟지 않으려고 조심조심 걷는다.', o);
   }
-  if (TH_SP[m.sp]) add(6, TH_SP[m.sp]);
-  for (const t of ty) for (const x of TH_TY[t] || []) add(1.2, x);
+  const ft = frTier(P?.fr || 0), trOk = x => !x.includes('%') || ft >= 2;   /* 트레이너 얘기는 친해진 뒤에 */
+  if (TH_SP[m.sp] && trOk(TH_SP[m.sp])) add(6, TH_SP[m.sp]);
+  for (const t of ty) for (const x of TH_TY[t] || []) if (trOk(x)) add(1.2, x);
   if (TH_C[d.c]) add(1.5, TH_C[d.c]);
   if (d.h <= 3) add(1, '#은/는 작아서 어디든 들어갈 수 있다고 자랑스러워한다.');
   if (d.h >= 20) add(1, '#은/는 몸이 커서 숨바꼭질이 어렵다고 고민한다.');
   if (d.baby) add(2, '#은/는 빨리 커서 어른 포켓몬처럼 되고 싶어 한다.');
   if (P?.shiny) add(4, '#은/는 자기 몸 색이 남들과 다르다는 걸 아는 것 같다.');
   if (P && rankOf(P) === 'S') add(2, '#은/는 자기가 특별하다는 걸 어렴풋이 아는 것 같다.');
-  if ((P?.fr || 0) >= FR_MAX) { add(2, '#은/는 % 발소리를 멀리서도 알아듣는다.'); add(2, '#은/는 %이/가 부르면 제일 먼저 달려갈 생각이다.'); add(1.5, '#은/는 %에게 받은 열매 맛을 아직도 기억한다.'); }
-  if ((P?.fr || 0) >= FR_MAX * .4) { add(1, '#은/는 %에게 칭찬받는 상상을 하고 있다.'); add(1, '#은/는 %의 주머니에서 열매 냄새가 난다고 생각한다.'); }
-  if (P && S.buds.some(b => b.pid === P.id)) { add(4, '#은/는 %과/와 함께 달린 길을 떠올리고 있다.'); add(3, '#은/는 %이/가 오늘은 얼마나 달릴지 궁금하다.'); add(2, '#은/는 %의 신발 끈이 풀리지 않았는지 걱정한다.'); }
-  else add(1, '#은/는 언젠가 %과/와 같이 달리는 날을 기다린다.');
-  add(.8, '#은/는 %이/가 지금 뭘 하고 있을지 궁금하다.');
-  if (isNight()) add(1.5, '#은/는 %이/가 푹 자고 있을지 생각한다.');
-  if (P?.nm) add(1.5, '#은/는 %이/가 지어 준 이름을 혼자 불러 본다.');
+  if (ft === 4) { add(2, '#은/는 % 발소리를 멀리서도 알아듣는다.'); add(2, '#은/는 %이/가 부르면 제일 먼저 달려갈 생각이다.'); add(1.5, '#은/는 %에게 받은 열매 맛을 아직도 기억한다.'); }
+  else if (ft === 3) { add(1.5, '#은/는 %의 옆이 제일 편하다고 생각한다.'); add(1.5, '#은/는 %이/가 안 보이면 두리번두리번 찾는다.'); add(1.2, '#은/는 %이/가 쓰다듬어 주길 기다리고 있다.'); }
+  else if (ft === 2) { add(1, '#은/는 %에게 칭찬받는 상상을 하고 있다.'); add(1, '#은/는 %의 주머니에서 열매 냄새가 난다고 생각한다.'); add(1, '#은/는 %이/가 부르면 고개를 번쩍 든다.'); }
+  else if (ft === 1) { add(1.2, '#은/는 %의 얼굴을 이제 조금 알아보는 것 같다.'); add(1, '#은/는 %이/가 주는 열매라면 받아먹을 생각이 있다.'); add(1, '#은/는 %이/가 오늘도 올지 은근히 기다린다.'); }
+  else { add(1.5, '#은/는 아직 %이/가 낯선지 멀찍이서 지켜본다.'); add(1.2, '#은/는 %이/가 다가오면 슬쩍 한 발 물러선다.'); add(1.2, '#은/는 %이/가 어떤 사람인지 몰래 살피고 있다.'); }
+  if (P && S.buds.some(b => b.pid === P.id)) { if (ft < 1) { add(3, '#은/는 %과/와 달리는 게 아직 조금 어색하다.'); add(2, '#은/는 %의 발걸음에 맞추느라 바쁘다.'); } else { add(4, '#은/는 %과/와 함께 달린 길을 떠올리고 있다.'); add(3, '#은/는 %이/가 오늘은 얼마나 달릴지 궁금하다.'); if (ft >= 2) add(2, '#은/는 %의 신발 끈이 풀리지 않았는지 걱정한다.'); } }
+  else if (ft >= 2) add(1, '#은/는 언젠가 %과/와 같이 달리는 날을 기다린다.');
+  if (ft >= 1) add(.8, '#은/는 %이/가 지금 뭘 하고 있을지 궁금하다.');
+  if (isNight() && ft >= 2) add(1.5, '#은/는 %이/가 푹 자고 있을지 생각한다.');
+  if (P?.nm) add(1.5, ft < 1 ? '#은/는 %이/가 지어 준 이름이 아직 어색하다.' : '#은/는 %이/가 지어 준 이름을 혼자 불러 본다.');
   if (m.name !== d.n) add(2, '#은/는 새 이름이 꽤 마음에 드는 것 같다.');
   if (T(m).noct) add(1, '#은/는 밤이야말로 진짜 자기 시간이라고 생각한다.');
   let k = Math.random() * L.reduce((a, x) => a + x.w, 0), pickd = L[0];
