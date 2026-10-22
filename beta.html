@@ -5980,7 +5980,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.43';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.44';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6093,8 +6093,8 @@ const ITEMS = [
 ];
 const ITEM = Object.fromEntries(ITEMS.map(o => [o.id, o])), ITEM_BY_N = Object.fromEntries(ITEMS.map(o => [o.n, o.id]));
 // 향로: 쓰고 min 분 동안 줍는 알의 등급 확률에 mul 을 곱한다 (다시 나눠 합 1). 빛나는 부적: min 분 동안 줍는 알 n 개에 1개꼴로 이로치가 든 알
-let SHOP = { price: {}, inc: { min: 30, mul: [1, 1, 1.2, 1.4, 1.5] }, charm: { min: 30, n: 20 } };   /* v8.43 경완: 향로 배율 [1,1,2.5,8,10] → [1,1,1.2,1.4,1.5] — 사서 써도 첫 에픽·전설 날이 원래 확률과 비슷하게 (뉴트럴 8번 돌린 평균) */
-function applyShop(o) { const D = { price: {}, inc: { min: 30, mul: [1, 1, 1.2, 1.4, 1.5] }, charm: { min: 30, n: 20 } };   /* v7.82 경완: 빛나는 부적 60 → 30분 */ o = o && typeof o === 'object' ? o : {};
+let SHOP = { price: {}, inc: { min: 30, mul: [1, 1, 1.5, 3, 3] }, charm: { min: 30, n: 20 } };   /* v8.44 경완: 향로 배율 [1,1,1.5,3,3] — 체감은 되면서(한 번에 에픽 반 개쯤 더) 첫 전설이 너무 당겨지지 않게 (8.43 의 1.2·1.4·1.5 는 거의 체감 안 됨, 예전 2.5·8·10 은 첫 전설 절반) */
+function applyShop(o) { const D = { price: {}, inc: { min: 30, mul: [1, 1, 1.5, 3, 3] }, charm: { min: 30, n: 20 } };   /* v7.82 경완: 빛나는 부적 60 → 30분 */ o = o && typeof o === 'object' ? o : {};
   for (const [k, v] of Object.entries(o.price || {})) if ((ITEM[k] || (k.startsWith('bgm:') && TRACKS.some(t => 'bgm:' + t.id === k))) && v >= 0 && v <= 1e7) D.price[k] = Math.round(+v);
   if (o.inc) { if (o.inc.min >= 1 && o.inc.min <= 1440) D.inc.min = +o.inc.min; if (Array.isArray(o.inc.mul) && o.inc.mul.length === 5 && o.inc.mul.every(x => x >= 0 && x <= 100)) D.inc.mul = o.inc.mul.map(Number); }
   if (o.charm) { if (o.charm.min >= 1 && o.charm.min <= 1440) D.charm.min = +o.charm.min; if (o.charm.n >= 1 && o.charm.n <= 100000) D.charm.n = +o.charm.n; }
