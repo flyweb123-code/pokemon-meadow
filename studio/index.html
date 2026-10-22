@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.45"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.46"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.45';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.46';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2100,6 +2100,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.46', '10월 22일', ['뉴트럴: 낮·밤에만 진화하는 포켓몬(라란티스·견고라스 등)도 짝꿍 거리로 진화하게 셈 (게임 8.60)']],
   ['3.45', '10월 22일', ['향로 기본 배율 1·1·1.5·3·3 (체감되면서 첫 전설은 조금만 당겨지게, 게임 8.44)']],
   ['3.44', '10월 22일', ['스칼렛 소품에 프레임 그림(움직이는 소품)을 넣을 수 있어요 — 허수아비가 바람에 흔들려요 (게임 8.43)', '향로 기본 배율 1·1·1.2·1.4·1.5 (사서 써도 원래 확률과 비슷하게)', '뉴트럴: 타입별 미션은 기술 타입으로']],
   ['3.43', '10월 22일', ['날씨 고르기에 \'뇌우\' (굵은 비 + 번개 번쩍 + 천둥, 게임 8.42)']],
