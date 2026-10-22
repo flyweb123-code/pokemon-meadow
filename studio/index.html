@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.43"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.44"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.43';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.44';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2100,6 +2100,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.44', '10월 22일', ['스칼렛 소품에 프레임 그림(움직이는 소품)을 넣을 수 있어요 — 허수아비가 바람에 흔들려요 (게임 8.43)', '향로 기본 배율 1·1·1.2·1.4·1.5 (사서 써도 원래 확률과 비슷하게)', '뉴트럴: 타입별 미션은 기술 타입으로']],
   ['3.43', '10월 22일', ['날씨 고르기에 \'뇌우\' (굵은 비 + 번개 번쩍 + 천둥, 게임 8.42)']],
   ['3.42', '10월 22일', ['뉴트럴: 골드로 산 향로·빛나는 부적과 미니게임 선물로 받은 향로·부적을 걸을 때 쓰는 것까지 넣어 돌려요 (생활 패턴 표에 90일 동안 쓴 수)', '상점 빛나는 부적 기본 시간을 게임과 같은 30분으로']],
   ['3.41', '10월 22일', ['뉴트럴: \'작업본으로 지금 돌려 보기\'를 누르면 지금 미션 골드도 10G 단위(1,000G부터 100G 단위)로 맞춰 작업본에 넣어요', '고친 뉴트럴 계산이 예전 것으로 남지 않게']],
@@ -3168,7 +3169,7 @@ async function renderGeo() {
   if (!geoInit.z) { geoInit.z = 1; geoM.on('zoomend', geoDraw); }
 }
 // ---------- v3.14 경완: 상점 — 물건 가격, 향로·빛나는 부적 효과 (데이터 shop) ----------
-const SHOP0 = { price: {}, inc: { min: 30, mul: [1, 1, 2.5, 8, 10] }, charm: { min: 30, n: 20 } };   // v3.42: 게임 기본값과 같게 (부적 30분, 게임 v7.82)
+const SHOP0 = { price: {}, inc: { min: 30, mul: [1, 1, 1.2, 1.4, 1.5] }, charm: { min: 30, n: 20 } };   // v3.44: 향로 배율 게임 8.43 기본값과 같게   // v3.42: 게임 기본값과 같게 (부적 30분, 게임 v7.82)
 const shopEff = () => { const o = effP(D, 'shop') || {}; return { price: { ...(o.price || {}) }, inc: { ...SHOP0.inc, ...(o.inc || {}) }, charm: { ...SHOP0.charm, ...(o.charm || {}) } }; };
 let shopKmh = 5;   // 걷는 빠르기 가정 (화면 계산용, 저장 안 함)
 function shopPut(fn) { const o = JSON.parse(JSON.stringify(shopEff())); fn(o); if (!Object.keys(o.price).length) delete o.price; if (same(o.inc, SHOP0.inc)) delete o.inc; if (same(o.charm, SHOP0.charm)) delete o.charm;
@@ -3277,7 +3278,7 @@ async function scaLoad() { [SCA_R, SCA_PK] = await Promise.all([staffGet('config
 // v3.26: 예전 picks.json 에 담아 둔 소품은 한 번만 맵 소품 목록으로 옮긴다
 // v3.31 경완: 스칼렛이 작업물을 다시 그리면(피드백 반영 등) 맵 소품 리스트의 같은 소품 그림도 새 그림으로 (작업본에 들어가요, 저장하면 게임에)
 function scaSync() { const art = (D.layout || ORIG?.layout)?.scArt; if (!A?.scDef || !SCA_R || !art) return; let n = 0; const clean = !boxDirty('layout');
-  for (const [id, a] of Object.entries(art)) { const o = scaItem(id); if (o?.px?.length && (JSON.stringify(o.px) !== JSON.stringify(a.px) || JSON.stringify(o.pal) !== JSON.stringify(a.pal))) { A.scDef(id, { ...o, n: a.n }); n++; } }
+  for (const [id, a] of Object.entries(art)) { const o = scaItem(id); if (o?.px?.length && (JSON.stringify(o.px) !== JSON.stringify(a.px) || JSON.stringify(o.pal) !== JSON.stringify(a.pal) || JSON.stringify(o.fr || null) !== JSON.stringify(a.fr || null))) { A.scDef(id, { ...o, n: a.n }); n++; } }
   if (n && clean) { D._sv = D._sv || {}; putP(D._sv, 'layout', D); saveDraft(); layoutBar(); scBar(); }   // v3.39 경완: 바뀐 게 없는데 '배치 저장'이 켜지지 않게 — 다시 그린 그림 반영은 저장까지 해 둔다 (배포하면 게임에)
   if (n) toast(`스칼렛이 다시 그린 소품 ${n}개를 맵 소품에 반영했어요 · 배포하면 게임에 들어가요`); }
 function scaMig() { if (store.get('st-pk-mig') || !A?.scDef || !SCA_R || !SCA_PK) return; store.set('st-pk-mig', '1'); for (const x of SCA_PK.items || []) { const o = scaItem(x.id); if (o?.px?.length && !scaPicked(x.id)) { A.scDef(x.id, o); const N = new Set(JSON.parse(store.get('st-sc-new') || '[]')); N.add(x.id); store.set('st-sc-new', JSON.stringify([...N])); } } scDot(); }
