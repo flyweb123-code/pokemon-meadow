@@ -550,7 +550,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.39';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.40';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -711,7 +711,9 @@ function putP(o, p, src) {   // src(작업본) 의 p 값을 o 에 그대로 옮�
 const BOXES = { bagstep: () => ['bal.BAG_STEP'], monsc: () => ['monSc', 'monRot', 'monFly', 'monFlyA', 'monOffA', 'monSh'], bub: () => ['bub'], thsp: () => ['thSp', 'thOv'], odds: () => ['odds', 'pity', 'tierK', ...[1, 2, 3, 4, 5].map(g => 'eggTiers.' + g)], pity: () => ['pity'], hatch: () => ['bal.HATCH_KM'], tier: () => ['tierOv', 'tierOrd', 'off'], layout: () => ['layout'], spots: () => ['spots'], shop: () => ['shop'] };
 const boxPaths = id => { const [t, x] = id.split(':'); return t === 'pool' ? ['eggList.' + x, 'eggEx.' + x] : t === 'bal' ? BAL[x][1].map(r => 'bal.' + r[0]) : BOXES[t](); };
 const same = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
-const boxDirty = id => ORIG && boxPaths(id).some(p => !same(effP(D, p), effP(D._sv || {}, p)));
+// v3.40 경완: 맵에 안 놓은 소품(scArt 중 sc 에 없는 것)은 게임에 안 쓰이니 바뀌어도 '배치 저장'·'배포할 것'으로 치지 않는다 (데이터엔 다음 진짜 배치 저장 때 같이 실려 감)
+const layNorm = L => { if (!L?.scArt) return L; const used = new Set((L.sc || []).map(r => r[0])); return { ...L, scArt: Object.fromEntries(Object.entries(L.scArt).filter(([id]) => used.has(id))) }; };
+const boxDirty = id => ORIG && boxPaths(id).some(p => p === 'layout' ? !same(layNorm(effP(D, p)), layNorm(effP(D._sv || {}, p))) : !same(effP(D, p), effP(D._sv || {}, p)));
 const boxDef = id => ORIG && boxPaths(id).every(p => same(effP(D, p), effP({}, p)));
 const boxSaved = id => ORIG && boxPaths(id).some(p => !same(effP(D._sv || {}, p), effP({}, p)));
 const ALLBOX = () => ['bagstep', 'odds', 'hatch', 'spots', 'tier', 'layout', 'bub', 'monsc', 'shop', ...[1, 2, 3, 4, 5].map(g => 'pool:' + g), ...BAL.map((_, i) => 'bal:' + i)];
@@ -1927,7 +1929,7 @@ const changes = () => withSaved(changesOf);
 function changesOf() {
   if (!ORIG) return []; const out = [];
   // 넷째 칸 = 되돌리기 열쇠 (배포하기 화면에서 항목별로 취소)
-  if (D.layout) { const noLook = L => JSON.stringify({ ...L, look: undefined });
+  if (D.layout) { const noLook = L => JSON.stringify({ ...layNorm(L), look: undefined });
     if (noLook(D.layout) !== noLook(ORIG.layout)) out.push(['맵 배치', '소품 위치·모양이 바뀌었어요', '', 'layout']);
     const a = ORIG.layout.look || {}, b = D.layout.look || {}; for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) if (JSON.stringify(a[k]) !== JSON.stringify(b[k])) out.push([`${LOOKNAME(k)} 모양`, lookTxt(a[k]), lookTxt(b[k]), 'look:' + k]); }
   (D.odds || []).forEach((p, i) => { if (Math.abs(p - ORIG.odds[i]) > 1e-9) out.push([`${GN[i + 1]} 알 확률`, +(ORIG.odds[i] * 100).toFixed(4) + '%', +(p * 100).toFixed(4) + '%', 'odds:' + i]); });
@@ -2098,6 +2100,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.40', '10월 22일', ['맵에 안 놓은 소품은 그림·크기가 바뀌어도 배치 저장·배포할 것으로 안 셈 (게임에 안 쓰여서)']],
   ['3.39', '10월 22일', ['맵 편집에서 바꾼 게 없으면 배치 저장이 켜지지 않음 (스칼렛 다시 그린 그림 반영은 저장까지, 예전 picks 옮기기는 더 안 함)']],
   ['3.38', '10월 22일', ['소품 카드에 마우스를 올리면 오른쪽 위에 + → 누르면 맵 가운데에 추가']],
   ['3.37', '10월 22일', ['맵 편집 중 빈 곳을 누르면: 고른 소품·창이 열려 있으면 닫고, 아무것도 없으면 편집 종료 (저장 안 한 배치는 한 번 물어봄). 맵 안 빈 곳도 같음 (게임 v8.36)']],
