@@ -1816,18 +1816,14 @@ function fwNoise(t0, dur, vol, type, freq, q = .7) {
   vol = Math.max(.002, vol * volG(VOL.sfx)); g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + .008); g.gain.exponentialRampToValueAtTime(.001, t0 + dur);
   src.connect(f).connect(g).connect(a.destination); src.start(t0); src.stop(t0 + dur + .02);
 }
-function fwLaunchSnd(t, dur) {   // 쉬이익: 올라갈수록 높아지는 휘파람 + 바람 소리
-  const a = actx, o = a.createOscillator(), g = a.createGain(), f0 = 900 + Math.random() * 300, v = .025 * volG(VOL.sfx);
-  o.type = 'sine'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f0 * 2.1, t + dur);
-  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .08); g.gain.setValueAtTime(v, t + dur * .75); g.gain.exponentialRampToValueAtTime(.0005, t + dur);
-  o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + .02);
-  fwNoise(t, dur, .05, 'bandpass', 2600, 1.4);
+function fwLaunchSnd(t, dur) {   // v8.52 경완 '효과음 이상해': 높아지는 휘파람(삐이익)은 빼고, 작은 바람 소리만 슈욱
+  fwNoise(t, Math.min(.5, dur * .7), .025, 'bandpass', 1500, 1.1);
 }
-function fwBoomSnd(t) {   // 쿵! 낮은 폭발 + 펑 터지는 소리, 그리고 불꽃이 흩어지며 타닥타닥
-  fwNoise(t, .9, .55, 'lowpass', 320, .9); fwNoise(t, .28, .3, 'bandpass', 1400, .8);
-  tone(95, t, .45, { type: 'sine', vol: .22, to: 32 });
-  const n = 9 + Math.floor(Math.random() * 8);
-  for (let i = 0; i < n; i++) { const tt = t + .25 + Math.random() * 1.1; fwNoise(tt, .025 + Math.random() * .02, .06 + Math.random() * .1, 'highpass', 2500 + Math.random() * 2500, .5); }
+function fwBoomSnd(t) {   // v8.52: 거친 쾅·타닥타닥 대신 부드러운 펑 + 별가루처럼 반짝이는 높은 음
+  fwNoise(t, .45, .22, 'lowpass', 240, .8);
+  tone(82, t, .32, { type: 'sine', vol: .12, to: 44 });
+  const P = [84, 86, 88, 91, 93, 96], n = 3 + Math.floor(Math.random() * 3), b = Math.floor(Math.random() * 3);
+  for (let i = 0; i < n; i++) tone(NOTE(P[(b + i * 2) % P.length]), t + .12 + i * .09 + Math.random() * .05, .16, { type: 'triangle', vol: .018 });
 }
 const NOTE = n => 440 * Math.pow(2, (n - 69) / 12);
 function melody(t, notes, len, opt) { notes.forEach((n, i) => { if (n) tone(NOTE(n), t + i * len, len * .9, opt); }); return t + notes.length * len; }
@@ -4036,7 +4032,7 @@ const TPL = {
       if (once(sc, 'end', 6.2)) { anim(b, 'hop'); emote(b, sc.p.after || '♪', 'note', 1.6, 'sp-end'); }
     } },
   // the partner (b) rides on the actor's (a) head or back while a strolls, or flies when p.fly; p.rev swaps who rides
-  perch: { dur: 8,
+  perch: { dur: 26,   // v8.52 경완: 머리·등 위에 타는 장면은 길게, 태운 채로 필드를 여기저기 다닌다 (예전 8초, 제자리 좌우 60px)
     init(sc, a, b) { const [m, r] = sc.p.rev ? [b, a] : [a, b]; sc.c = { x: clamp(m.x, XL + 90, XR - 90), y: clamp(m.y, MIN_Y + 30, MAX_Y - 20) }; sc.dx = rnd(-m.w * .1, m.w * .1); anim(r, 'hop');
       if (sc.p.grp) {   // 같은 종이 더 있으면 다 같이 등에 올라탄다 (c.ride = 태워 주는 포켓몬, render 가 자리를 맞춘다)
         const X = S.mons.filter(c => c !== r && c.sp === sc.p.grp && !c.hidden && !c.held && !c.szb && !c.ride && c.state !== 'interact' && c.state !== 'special' && c.state !== 'sleep' && dist(c, m) < 420).slice(0, 3), n = X.length + 1, st = Math.min(r.w * .62, m.w * .95 / n);
@@ -4047,7 +4043,8 @@ const TPL = {
     tick(sc, a, b) {
       const [m, r] = sc.p.rev ? [b, a] : [a, b];
       if (sc.p.fly) { m.xl = Math.min(50, sc.mt * 30); orbit(m, sc.c, sc.mt * .9, 120, 40); }
-      else if (sc.mt > .6) { const x = sc.c.x + Math.sin((sc.mt - .6) * .7) * 60; faceTo(m, x); place(m, x, sc.c.y); }
+      else if (sc.mt > .6) { if (!sc.tg || (Math.abs(sc.tg.x - m.x) < 6 && Math.abs(sc.tg.y - m.y) < 4)) { const q = { x: clamp(m.x + rnd(-170, 170), XL + 50, XR - 50), y: clamp(m.y + rnd(-90, 90), MIN_Y + 30, MAX_Y - 20) }; sc.tg = inHud({ w: m.w || 60, h: m.h || 60 }, q.x, q.y) ? outOfHud({ w: m.w || 60, h: m.h || 60 }, q) : q; }
+        const v = 26 * sc.dt, dx = sc.tg.x - m.x, dy = sc.tg.y - m.y, d = Math.hypot(dx, dy) || 1, k = Math.min(1, v / d); faceTo(m, sc.tg.x); place(m, m.x + dx * k, m.y + dy * k); }
       r.x = m.x + sc.dx; r.y = m.y + (sc.p.front ? 2 : -1); r.face = m.face; r.zAdd = sc.p.front ? 3 : 2;
       r.xl = (m.xl || 0) + m.h * (sc.p.h || .62);
       if (every(sc, 'n', 1.4)) particle(r.x, r.y - r.xl - r.h, sc.p.cls || 'note', pick([].concat(sc.p.t || ['♪', '♫'])));
@@ -5984,7 +5981,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.51';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.52';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7956,17 +7953,17 @@ function moodOf(m) {
   const P = boxOf(m.pid), fr = P?.fr || 0, best = friendsOf(m).find(x => x.r >= 20), ft = frTier(fr);
   if (m.state === 'sleep') return pick2(m, ['쿨쿨… 좋은 꿈을 꾸는 것 같다', '새근새근 깊이 잠들었다']);
   if (m.petMood > performance.now()) return pick2(m, ft < 1 ? ['깜짝 놀랐지만 싫지는 않다', `${TJ('이/가')} 쓰다듬어 줘서 조금 쑥스럽다`] : ft < 3 ? ['쓰다듬어 줘서 기분이 좋다', `${TJ('이/가')} 쓰다듬어 줘서 기분이 좋다`] : ['쓰다듬어 줘서 기분이 아주 좋다', `${TJ('이/가')} 쓰다듬어 줘서 행복하다`]);   /* v8.47 경완: 트레이너 이름 나오는 말은 친밀도 따라 */
-  if (m.state === 'interact' && m.partner) return interMood(m, m.partner);   /* v8.50 경완: 다른 포켓몬과 어울리는 동안엔 그 상호작용에 맞는 상태 */
+  if (m.state === 'interact' && m.partner) { let im = null; try { im = interMood(m, m.partner); } catch (e) {} if (im) return im; }   // v8.52 경완: 맞는 상태가 없으면 비우지 않고 평소 상태로   /* v8.50 경완: 다른 포켓몬과 어울리는 동안엔 그 상호작용에 맞는 상태 */
   if (m.hunger > 78) return pick2(m, ['배가 너무 고프다… 열매 먹고 싶어', '꼬르륵… 나무 열매가 생각난다']);
   if (m.hunger > 50) return pick2(m, ['조금 출출하다', '열매 하나쯤 먹고 싶다']);
   if (sleepyTime(m)) return pick2(m, ['졸려서 눈이 감긴다', '슬슬 쉬고 싶다']);
-  if (m.social > 70) return best ? `${J(best.o, '이/가')} 보고 싶다` : pick2(m, ['심심하다… 누가 놀아 줬으면', '친구를 사귀고 싶다']);
+  if (m.social > 70) return best ? `${esc(best.o.name)}${hasBat(best.o.name) ? '이' : '가'} 보고 싶다`   /* v8.52 경완: 보고 싶은 친구 이름은 굵게 하지 않음 */ : pick2(m, ['심심하다… 누가 놀아 줬으면', '친구를 사귀고 싶다']);
   if (isFull(m)) return pick2(m, ['배가 불러 기분이 좋다', '배부르고 느긋하다']);
   if (fr >= FR_MAX) return pick2(m, [`${TJ('이/가')} 정말 좋다!`, `${TJ('과/와')} 또 달리고 싶다`, `${TJ('이/가')} 오면 제일 먼저 반길 거다`]);
   return pick2(m, ['오늘 날씨가 좋다', '필드가 마음에 든다', '느긋하게 쉬는 중', '주변을 구경하고 있다', TR_MOOD[Math.min(4, ft)][((m.uid || 0) + Math.floor(Date.now() / 36e5)) % 5].replace(/%(\S+?\/\S+?)(?=\s|$)/, (_, q) => TJ(q)).replace('%', TN())]);   /* 칸마다 5개 중 한 시간마다 바뀜 */
 }
 // v8.50 경완: 상호작용 중 상태 — 동작(sc.mo)이 있으면 동작대로, 없으면 장면 종류(kind)대로
-function interMood(m, o) { const sc = m.scene, w = (p, t) => t.replace(/@(\S+?\/\S+?)(?=\s|$)/g, (_, q) => J(o, q)).replace(/@/g, N(o));
+function interMood(m, o) { const sc = m.scene, w = t => t.replace(/@(\S+?\/\S+?)(?=\s|$)/g, (_, q) => J(o, q)).replace(/@/g, N(o));
   const MO = {
     stare: ['@과/와 눈싸움하는 중', '@을/를 빤히 바라보는 중', '@과/와 서로 눈치를 보는 중'],
     scare: ['@을/를 깜짝 놀래는 중', '@ 때문에 깜짝 놀랐다', '@과/와 장난치는 중'],
@@ -7993,7 +7990,7 @@ function interMood(m, o) { const sc = m.scene, w = (p, t) => t.replace(/@(\S+?\/
     fight: ['@과/와 한판 붙는 중!', '@에게 지지 않을 거다', '@과/와 맞서는 중'],
     mirror: ['@이/가 자기랑 똑같아서 어리둥절', '@과/와 마주 보며 갸웃', '@의 정체가 궁금하다'],
   };
-  const L = MO[sc?.mo] || KD[m.kind] || KD.play; return w(pick2(m, L)); }
+  const L = MO[sc?.mo] || KD[m.kind]; return L ? w(pick2(m, L)) : null; }
 // 같은 상황이면 같은 문장이 유지되게 (창을 다시 그릴 때 깜빡이지 않게)
 function pick2(m, L) { const k = L[0]; if (!m.moodK || m.moodK !== k) { m.moodK = k; m.moodI = Math.floor(Math.random() * L.length); } return L[m.moodI % L.length]; }
 // 친구 이름을 누르면 그 친구의 정보창으로 (필드에 있으면 필드 정보창, 상자에만 있으면 상자 상세)
@@ -8991,7 +8988,7 @@ function collectEggs(km, place, tags, pf, ll) {
 function gotLog(got, how, place) {
   if (!got.length) return;
   sfx('pickup');
-  const by = [5, 4, 3, 2, 1].filter(g => got.includes(g)).map(g => `${GRADE[g].n} ${got.filter(x => x === g).length}`).join(', ');
+  const by = [1, 2, 3, 4, 5].filter(g => got.includes(g)).map(g => `${GRADE[g].n} ${got.filter(x => x === g).length}`).join(', ');
   log(`${[how, place ? `${place} 근처에서` : ''].filter(Boolean).join(' ')} 알 ${got.length}개를 주웠다! (${by})${got.sh ? ` ✦ 반짝이는 알 ${got.sh}개!` : ''}`.trim(), [], true);
 }
 // 부화기의 알을 가방으로 뺀다. 쌓인 거리는 그대로 남는다.
@@ -9730,10 +9727,10 @@ function notiShow(force) {
   if (!got.length && !rdy.length && !evo.length) return;
   notiOpen = true;
   const MAXI = 24, row = (list, cls) => `<div class="noti-eggs ${cls}">${list.slice(0, MAXI).map((e, i) => eggHtml(e.g, '' + (e.sh ? ' shx' : '')).replace('class="egg ', `style="--d:${i * 45}ms" class="egg `)).join('')}${list.length > MAXI ? `<span class="more">+${list.length - MAXI}</span>` : ''}</div>`;
-  const by = list => [5, 4, 3, 2, 1].filter(g => list.some(e => e.g === g)).map(g => `${GRADE[g].n} ${list.filter(e => e.g === g).length}`).join(' · ');
+  const by = list => [1, 2, 3, 4, 5].filter(g => list.some(e => e.g === g)).map(g => `${GRADE[g].n} ${list.filter(e => e.g === g).length}`).join(' · ');
   const places = [...new Set(got.map(e => e.place).filter(Boolean))];
-  $('#notiBody').innerHTML = (got.length ? `<div class="ns"><p>알 <b>${got.length}</b>개를 주웠다!</p>${row(got.slice().reverse(), 'new')}<div class="small">${by(got)}${places.length ? `<br>${places.slice(0, 2).map(esc).join(', ')}${places.length > 2 ? ` 외 ${places.length - 2}곳` : ''} 근처` : ''}</div></div>` : '')
-    + (rdy.length ? `<div class="ns rd"><p>알 <b>${rdy.length}</b>개가 부화 준비됐다!</p>${row(rdy, 'rd')}<div class="small">부화기에서 부화시켜 보자</div></div>` : '')
+  $('#notiBody').innerHTML = (got.length ? `<div class="ns"><p>알 <b>${got.length}</b>개를 주웠다!</p>${row(got.slice().reverse().sort((a, b) => a.g - b.g), 'new')}<div class="small">${by(got)}${places.length ? `<br>${places.slice(0, 2).map(esc).join(', ')}${places.length > 2 ? ` 외 ${places.length - 2}곳` : ''} 근처` : ''}</div></div>` : '')
+    + (rdy.length ? `<div class="ns rd"><p>알 <b>${rdy.length}</b>개가 부화 준비됐다!</p>${row(rdy.slice().sort((a, b) => a.g - b.g), 'rd')}<div class="small">부화기에서 부화시켜 보자</div></div>` : '')
     + (evo.length ? `<div class="ns ev"><p>${(() => { const nm = evo.map(b => { const P = boxOf(b.pid); return P ? nameOf(P) : SPECIES[b.sp].n; }); return nm.length > 1 ? `짝꿍 <b>${nm.length}</b>마리가` : J({ name: nm[0] }, '이/가'); })()} 진화할 준비가 됐다!</p><div class="noti-mons">${evo.map((b, i) => { const P = boxOf(b.pid); return `<img alt="" style="--d:${i * 80}ms" src="${(P ? thumbP(P) : thumbOf(b.sp)) || ''}">`; }).join('')}</div><div class="small">짝꿍 탭에서 진화시켜 보자</div></div>` : '');   // v4.87 경완: 진화 준비 알림
   $('#noti').hidden = false; sfx('newdex'); haptic(1);
   $('#notiOk').onclick = () => notiDone(got, rdy, evo);
@@ -10426,7 +10423,7 @@ body.inTitle,body.inTitle #app{background:#24482a!important}body.inTitle #app{ov
 #tut{position:fixed;inset:0;z-index:6400;font-family:var(--px);color:var(--win-ink);-webkit-user-select:none;user-select:none;touch-action:manipulation}
 #tut .tu-hole{position:fixed;border-radius:10px;box-shadow:0 0 8px 2px rgba(255,232,150,.5),0 0 0 200vmax rgba(10,14,30,.6);transition:left .3s steps(4,end),top .3s steps(4,end),width .3s steps(4,end),height .3s steps(4,end),opacity .3s;pointer-events:none;animation:tuGlow 2s ease-in-out infinite}@keyframes tuGlow{50%{box-shadow:0 0 18px 6px rgba(255,232,150,.85),0 0 0 200vmax rgba(10,14,30,.6)}}
 #tut.dim{background:rgba(10,14,30,.6)}#tut .tu-hole.multi{animation:none;box-shadow:none}#tut .tu-mask{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none}#tut.hide .tu-mask{visibility:hidden}#tut .tu-mask[hidden]{display:none}#tut .tu-mark{position:fixed;border-radius:8px;pointer-events:none;box-shadow:0 0 8px 2px rgba(255,232,150,.5);animation:tuMark 2s ease-in-out infinite}@keyframes tuMark{50%{box-shadow:0 0 18px 6px rgba(255,232,150,.85)}}#tut .tu-hole.none{left:50%!important;top:40%!important;width:0!important;height:0!important;animation:none;box-shadow:none}
-#tut.nobox .tu-box{visibility:hidden}#tut.tapon .tu-box{visibility:hidden}#tut.tapon .tu-hole{box-shadow:0 0 8px 2px rgba(255,232,150,.6);animation:tuGlowT 1.6s ease-in-out infinite}#tut.tapon .tu-mask{visibility:hidden}@keyframes tuGlowT{50%{box-shadow:0 0 18px 6px rgba(255,232,150,.9)}}.tu-hand{position:fixed;left:0;top:0;z-index:2147483001;pointer-events:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.35))}#tut.hide{background:none!important}#tut.hide .tu-box,#tut.hide .tu-mark{visibility:hidden}#tut.hide .tu-hole{opacity:0}
+#tut.nobox .tu-box{visibility:hidden}#tut.tapon .tu-box{visibility:hidden}#tut.tapon .tu-hole{box-shadow:0 0 8px 2px rgba(255,232,150,.6);animation:tuGlowT 1.6s ease-in-out infinite}#tut.tapon .tu-mask{visibility:hidden}@keyframes tuGlowT{50%{box-shadow:0 0 18px 6px rgba(255,232,150,.9)}}.tu-hand{position:fixed;left:0;top:0;z-index:2147483001;pointer-events:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.35))}#tut.hide{background:none!important}#tut.hide .tu-box,#tut.hide .tu-mark{visibility:hidden}#tut.hide .tu-hole{opacity:0;transition:none}
 #tut .tu-box{position:fixed;left:50%;transform:translateX(-50%);width:min(560px,calc(100% - 24px));display:flex;align-items:flex-end;gap:8px}
 #tut .tu-box img{flex:none;width:76px;height:116px;image-rendering:pixelated;margin-bottom:-4px;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35))}
 #tut .tu-box .win{flex:1;min-width:0;height:158px;box-sizing:border-box;padding:14px 16px 20px;font-size:15px;line-height:1.6;white-space:pre-wrap;position:relative}
@@ -10715,6 +10712,7 @@ async function tutFlow() {
   const EV = ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchend', 'mousedown', 'mouseup'];
   EV.forEach(t => addEventListener(t, guard, { capture: true, passive: false }));
   let cur = null, raf = 0, pin = null;
+  let bxSnapT = 0;
   const placeBox = (r, first, top, cw) => {   // (게임의 place(m, x, y) 와 이름이 겹쳐 포켓몬이 안 옮겨지던 것)   // 상자는 비춘 곳 바로 위나 아래 (빈 곳이 더 넓은 쪽), 시계·골드 줄은 가리지 않는다
     const H = innerHeight, top0 = 72, bh = bx.offsetHeight || 130;
     if (!r) { bx.style.top = Math.round(H * .5 - bh / 2) + 'px'; return; }
@@ -10731,18 +10729,21 @@ async function tutFlow() {
     const marks = ov.querySelectorAll('.tu-mark'), e2 = r && cur.t2 && el(cur.t2), r2 = e2 ? e2.getBoundingClientRect() : null;   // 버튼과 그 버튼이 올리는 게이지를 같이 비춘다
     marks.forEach(x => x.hidden = !r2); hole.classList.toggle('multi', !!r2);
     { const mk = ov.querySelector('.tu-mask'); mk.toggleAttribute('hidden', !r2); if (r2) { const box = q => `M${q.left - 4} ${q.top - 4}h${q.width + 8}v${q.height + 8}h${-(q.width + 8)}Z`; mk.firstChild.setAttribute('d', `M0 0H${innerWidth}V${innerHeight}H0Z` + box(r) + box(r2)); } }   // v5.45 경완: 버튼과 게이지 두 곳만 뚫고, 둘을 묶는 큰 칸은 비추지 않는다
+    const rH = r;   // v8.52 경완: 두 곳을 비출 때도 테두리(hole)는 첫 번째 곳 크기 그대로 — 다음 단계에서 커졌다 작아지지 않게 (상자 자리는 두 곳을 합친 크기로)
     if (r2) { [r, r2].forEach((q, i) => Object.assign(marks[i].style, { left: q.left - 4 + 'px', top: q.top - 4 + 'px', width: q.width + 8 + 'px', height: q.height + 8 + 'px' })); const L = Math.min(r.left, r2.left), T = Math.min(r.top, r2.top), Rr = Math.max(r.right ?? r.left + r.width, r2.right), B = Math.max(r.bottom ?? r.top + r.height, r2.bottom); r = { left: L, top: T, width: Rr - L, height: B - T, right: Rr, bottom: B }; }
     if (ov.classList.contains('hide') || hole.classList.contains('none')) snap = true;   /* v8.16 경완: 새 화면에서 처음 뜰 때는 바로 그 자리에, 같은 화면 안에서 옮길 때만 움직여 간다 */
-    if (cur?.noHole) { hole.classList.add('none'); ov.classList.remove('dim'); }   /* v8.49 경완: 쓰다듬기 시범은 밝은 박스 없이 */
-    else if (r && r.width) { const p = 6, sn = snap && !ov.classList.contains('hide'); if (sn) hole.style.transition = 'none'; Object.assign(hole.style, { left: r.left - p + 'px', top: r.top - p + 'px', width: r.width + p * 2 + 'px', height: r.height + p * 2 + 'px' }); hole.classList.remove('none'); ov.classList.remove('dim'); if (sn) { void hole.offsetWidth; hole.style.transition = ''; snap = false; } }
+    if (cur?.noHole) { hole.classList.add('none'); ov.classList.remove('dim'); if (r && r.width) { const mk = ov.querySelector('.tu-mask'), pb = $('#petBar'), q = pb && !pb.hidden ? pb.getBoundingClientRect() : null, cx = r.left + r.width / 2, cy = r.top + r.height / 2, rx = r.width * .75 + 16, ry = r.height * .7 + 16; mk.removeAttribute('hidden'); mk.firstChild.setAttribute('d', `M0 0H${innerWidth}V${innerHeight}H0Z M${cx - rx} ${cy}a${rx} ${ry} 0 1 0 ${2 * rx} 0a${rx} ${ry} 0 1 0 ${-2 * rx} 0Z` + (q && q.width ? `M${q.left - 4} ${q.top - 4}h${q.width + 8}v${q.height + 8}h${-(q.width + 8)}Z` : '')); } }   /* v8.52 경완: 쓰다듬기 설명 때 포켓몬 뒤 배경은 어둡게 — 테두리 없이 포켓몬 둘레(타원)와 쓰다듬기 바만 밝게 */   /* v8.49 경완: 쓰다듬기 시범은 밝은 박스 없이 */
+    else if (r && r.width) { const p = 6, sn = snap && !ov.classList.contains('hide'), q = rH && rH.width ? rH : r; if (sn) hole.style.transition = 'none'; Object.assign(hole.style, { left: q.left - p + 'px', top: q.top - p + 'px', width: q.width + p * 2 + 'px', height: q.height + p * 2 + 'px' }); hole.classList.remove('none'); ov.classList.remove('dim'); if (sn) { void hole.offsetWidth; hole.style.transition = ''; snap = false; } }
     else { hole.classList.add('none'); ov.classList.toggle('dim', !cur?.allow && !cur?.tap && !cur?.clear); }
-    placeBox(r && r.width ? r : null, false, inInfo(e), winOf(e)); raf = requestAnimationFrame(track); };
+    { const sn = performance.now() < bxSnapT; if (sn) bx.style.transition = 'none'; placeBox(r && r.width ? r : null, false, inInfo(e), winOf(e)); if (sn) { void bx.offsetWidth; bx.style.transition = ''; } }   /* v8.52 경완: 새 화면에서 비출 곳이 막 그려지며 크기가 바뀌는 동안(부화기 15개 설명)은 박사 창이 아래에서 미끄러져 오지 않고 그 자리에 바로 */ raf = requestAnimationFrame(track); };
   for (const st of T) {
     if (st.when && !st.when()) continue;
     // 창이 뜨거나 화면이 바뀌는 연출은 박사 창을 치우고 화면을 잠근 채 충분히 보여 준다
     if (st.pre || st.hold) { lock = true; ov.classList.add('hide'); if (st.pre) await st.pre(); await wait(st.hold || 800); }
     const bxNew = ov.classList.contains('hide') || ov.classList.contains('tapon') || ov.classList.contains('nobox') || !cur;   /* v8.49 경완: 박사 창이 새로 나타날 때는 도착 자리에서 바로 (같은 화면 안에서 옮길 때만 움직여 간다) */
     cur = st; ov.classList.toggle('clear', !!st.clear); lock = false;
+    if (bxNew) bxSnapT = performance.now() + 700;
+    if (cur && cur.t === st.t) snap = true;   // v8.52 경완: 같은 곳을 이어서 비출 때(조이스틱 설명 → '눌러 보렴')는 테두리가 커졌다 작아지는 움직임 없이 바로
     { const e = el(st.t); if (bxNew) bx.style.transition = 'none'; placeBox(e ? e.getBoundingClientRect() : null, true, inInfo(e), winOf(e)); if (bxNew) { void bx.offsetWidth; bx.style.transition = ''; } }
     ov.classList.remove('hide', 'tapon'); ov.querySelector('.tu-n').textContent = st.c;
     cancelAnimationFrame(raf); track();
@@ -10754,7 +10755,7 @@ async function tutFlow() {
       ov.classList.add('do'); tapped = false; tapSel = st.tap || null; allow = st.allow || st.tap;
       if (!dis) await say(s, false);
       for (let n = 0; ; n++) { await wait(100); if (st.until ? st.until() : tapped) break; }
-      allow = tapSel = null; ov.classList.remove('do', 'tapon'); lock = true; ov.classList.add('hide'); await wait(st.after || 1400); lock = false; ov.classList.remove('hide');
+      allow = tapSel = null; ov.classList.remove('do'); lock = true; ov.classList.add('hide'); await wait(st.after || 1400); lock = false; ov.classList.remove('tapon', 'hide');   /* v8.52 경완: 빛 테두리가 꺼질 때 화면이 한 번 어두워지며 깜빡이던 것 — tapon 을 먼저 빼면 어두운 가림(200vmax 그림자)이 되살아난 채 .3초 동안 사라져서, 다 사라진 뒤에 뺀다 */
     } else await say(s);
     if (stopRun) stopRun();
   }
