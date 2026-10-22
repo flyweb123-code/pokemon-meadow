@@ -1,5 +1,6 @@
 import SwiftUI
 import WebKit
+import CoreHaptics
 
 // GitHub Pages 에 올린 게임을 WKWebView 로 띄운다. 게임 저장은 이 앱 안에 따로 남는다.
 let gameURL = URL(string: "https://flyweb123-code.github.io/pokemon-meadow/")!
@@ -16,6 +17,7 @@ struct GameView: UIViewRepresentable {
         config.mediaTypesRequiringUserActionForPlayback = []
         config.userContentController.add(WeakHandler(bridge), name: "pokeRun")
         config.userContentController.add(HapticHandler(), name: "haptic")
+        config.userContentController.add(HumHandler(), name: "hum")
         let web = WKWebView(frame: .zero, configuration: config)
         web.navigationDelegate = context.coordinator
         web.isOpaque = false
@@ -87,5 +89,50 @@ final class HapticHandler: NSObject, WKScriptMessageHandler {
         let n = max(0, min(2, (message.body as? Int) ?? 1))
         gens[n].impactOccurred()
         gens[n].prepare()
+    }
+}
+
+// 화염방사 버튼을 누르는 동안 끊기지 않는 연속 진동(우우웅): 게임이 hum 메시지로 1을 계속 보내면 이어지고,
+// 0이 오거나 0.3초 동안 1이 안 오면 멈춘다 (게임이 멈춰도 진동이 남지 않게)
+final class HumHandler: NSObject, WKScriptMessageHandler {
+    private var engine: CHHapticEngine?
+    private var player: CHHapticAdvancedPatternPlayer?
+    private var stopWork: DispatchWorkItem?
+
+    override init() {
+        super.init()
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        engine = try? CHHapticEngine()
+        engine?.isAutoShutdownEnabled = true
+        engine?.stoppedHandler = { [weak self] _ in DispatchQueue.main.async { self?.player = nil } }
+        engine?.resetHandler = { [weak self] in DispatchQueue.main.async { self?.player = nil } }
+    }
+
+    func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage) {
+        stopWork?.cancel()
+        guard ((message.body as? Int) ?? 0) == 1 else { stop(); return }
+        start()
+        let w = DispatchWorkItem { [weak self] in self?.stop() }
+        stopWork = w
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: w)
+    }
+
+    private func start() {
+        guard player == nil, let engine else { return }
+        do {
+            try engine.start()
+            let ev = CHHapticEvent(eventType: .hapticContinuous, parameters: [
+                CHHapticEventParameter(parameterID: .hapticIntensity, value: 0.6),
+                CHHapticEventParameter(parameterID: .hapticSharpness, value: 0.12),
+            ], relativeTime: 0, duration: 30)
+            let p = try engine.makeAdvancedPlayer(with: CHHapticPattern(events: [ev], parameters: []))
+            try p.start(atTime: CHHapticTimeImmediate)
+            player = p
+        } catch { player = nil }
+    }
+
+    private func stop() {
+        try? player?.stop(atTime: CHHapticTimeImmediate)
+        player = nil
     }
 }
