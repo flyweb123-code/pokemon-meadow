@@ -1,6 +1,699 @@
 {
  "days": [
   {
+   "at": 1792709198212,
+   "theme": "숲속 놀이터",
+   "note": "오늘은 풀밭 한쪽에 포켓몬 놀이터를 꾸며 봤어요! 소품마다 24~34칸으로 크게 그리고 재질마다 4단계 명암을 왼쪽 위 빛 기준으로 잡았어요. 나무는 결, 쇠는 밝은 하이라이트, 타이어는 고무 느낌으로 나눴고, 작은 포켓몬이 올라타고 숨고 미끄러지는 동작을 중심으로 반응을 정했어요.",
+   "items": [
+    {
+     "id": "tire-swing",
+     "n": "타이어 그네",
+     "k": "놀이",
+     "d": "나무 기둥 두 개에 밧줄로 헌 타이어를 매단 그네예요. 바람이 불면 타이어가 살짝 흔들려요.",
+     "px": [
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkkkk.",
+      "kaaaaaaaaaaaaaaaaaaaaaaaaaabck",
+      "kccbcccbcccbcccbcccbcccbcccbbk",
+      "kcbddddddddddddddddddddddddddk",
+      ".keeekkkkkfkkkkkkkkfkkkkkeeek.",
+      ".kghek...kfk......kfk...kghek.",
+      ".kghek...kfk......kfk...kghek.",
+      ".kghek...kfk......kfk...kghek.",
+      ".kghek...kfk......kfk...kghek.",
+      ".kghek...kfk......kfk...kghek.",
+      ".kghek...kfk......kfk...kghek.",
+      ".kghek....kik.....kfk...kghek.",
+      ".kghek....kfk....kfk....kghek.",
+      ".kghek....kfk....kfk....kghek.",
+      ".kghek....kfk....kfk....kghek.",
+      ".kghek....kfk....kfk....kghek.",
+      ".kghek....kfkkkkkkfk....kghek.",
+      ".kghek....kjlllllljk....kghek.",
+      ".kghek...kmnnnnnnnnlk...kghek.",
+      ".kghek..kmnooopppnnnnk..kghek.",
+      ".kghek.knnookkkkkknoopk.kghek.",
+      ".kghek.klook......koook.kghek.",
+      ".kghekkllnk........koppkkghek.",
+      ".kghek.knnnk......knnpk.kghek.",
+      ".kghek.klnnnkkkkkknnook.kghek.",
+      ".kghek..knooolllnnnook..kghek.",
+      ".kghek...kpooonnnoook...kghek.",
+      ".kghek....kkppppppkk....kghek.",
+      ".khhek......kkkkkk......khhek.",
+      ".khqekrrrrrrrrrrrrrrrrrrkhqek.",
+      ".rkkkrssssssssssssssssssrkkkr.",
+      ".rrrrrssssssssssssssssssrrrrr.",
+      "......rrrrrrrrrrrrrrrrrr......"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#d8a868",
+      "b": "#7a4c28",
+      "c": "#a87040",
+      "d": "#523218",
+      "e": "#5c3820",
+      "f": "#d4b47c",
+      "g": "#e0b07a",
+      "h": "#b47a48",
+      "i": "#a88a58",
+      "j": "#7a6440",
+      "l": "#6a6e7a",
+      "m": "#9aa0ac",
+      "n": "#4a4e5a",
+      "o": "#363a46",
+      "p": "#262a34",
+      "q": "#86542e",
+      "r": "#2c4a28",
+      "s": "#3a5a30"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "타이어 구멍에 쏙 들어가 앉아 흔들리며 졸아요"
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "윗 가로대에 날아와 앉아 아래를 내려다봐요"
+      },
+      {
+       "w": "격투 타입",
+       "a": "타이어를 밀어 흔들어 주고 돌아오면 받아내요"
+      }
+     ],
+     "fit": "풀밭 가장자리, 나무 근처",
+     "glow": 0
+    },
+    {
+     "id": "wood-slide",
+     "n": "나무 미끄럼틀",
+     "k": "놀이",
+     "d": "사다리로 올라가 빨간 판을 타고 내려오는 나무 미끄럼틀이에요.",
+     "px": [
+      "..kkkkkkkkkk....................",
+      ".kaaaaaaaaaak...................",
+      ".kbkkkkkkkkbk...................",
+      ".kck......kck...................",
+      ".kckkkkkkkkck...................",
+      "kdcdeeeeeedbdk..................",
+      "kadaafaafdgggk..................",
+      "kadddddddddhggk.................",
+      ".kbbkkkkbbiihggk................",
+      ".kcjk..kcjkiihggk...............",
+      ".kcjkkkkcjkkiihllk..............",
+      ".kcbaaaabjk.kiihllk.............",
+      ".kcjkkkkcjk..kiihllk............",
+      ".kcjk..kcjk...kiihllk...........",
+      ".kcjkkkkcjk...kiiihllk..........",
+      ".kcbaaaabjk....kiiihlmk.........",
+      ".kcjkkkkcjk.....kiiihmmk........",
+      ".kcjk..kcjk......kiiihmmk.......",
+      ".kcjkkkkcjk.......kiiihmmk......",
+      ".kcbaaaabjk........kiiihmmk.....",
+      ".kcjkkkkcjk.........kiiihmhk....",
+      ".kcjk..kcjk.........kiiiihhhk...",
+      ".kcjkkkkcjk..........kiiinhhhk..",
+      ".kcbaaaabjk...........kincchhhk.",
+      ".kcjkkkkcjk............kncjnhhk.",
+      ".kcjk..kcjk.............kcjnhhk.",
+      ".kcjk..kcjk.............kcjnhhk.",
+      ".kcjk.okcjkoooooooooooookcjkkk..",
+      ".okkooopkkpppppppppppppppkkooooo",
+      ".oooooopppppppppppppppppppoooooo"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#a87040",
+      "b": "#5c3820",
+      "c": "#b47a48",
+      "d": "#523218",
+      "e": "#d8a868",
+      "f": "#7a4c28",
+      "g": "#ec8a72",
+      "h": "#6e2830",
+      "i": "#e8b850",
+      "j": "#86542e",
+      "l": "#c85848",
+      "m": "#9c3c38",
+      "n": "#8e6028",
+      "o": "#2c4a28",
+      "p": "#3a5a30"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "사다리로 올라가 미끄럼판을 타고 내려와요"
+      },
+      {
+       "w": "물 타입",
+       "a": "미끄럼판 끝에 앉아 물을 뿌려 미끄럽게 만들어요"
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "미끄럼판 아래에 기대 그늘에서 쉬어요"
+      }
+     ],
+     "fit": "넓은 풀밭 가운데",
+     "glow": 0
+    },
+    {
+     "id": "seesaw",
+     "n": "시소",
+     "k": "놀이",
+     "d": "가운데 받침 위에 긴 판을 올린 시소예요. 양 끝 파란 자리에 하나씩 앉아요.",
+     "px": [
+      "....kkk...........................",
+      "...kaaak..........................",
+      "....kak...........................",
+      ".kkkkbk...........................",
+      "kcccccck..........................",
+      "kcdddddekkkk......................",
+      ".kkkkkefggghkkkk..................",
+      "......kkkeffgghhkkk........kkk....",
+      ".........kkkkefgiijkkkk...kaaak...",
+      ".............kkkljjmehhkkkkkak....",
+      "..............kbjjmnefgghhhkbkkkk.",
+      "..............kobmnbkkkeegeppppcck",
+      "..............koabbqk..kkkecccccdk",
+      ".............kooaaaqbk....kcdrrrrk",
+      ".............koaaaqqbk.....kkkkkk.",
+      ".............kaaqqqqqk............",
+      "............kaaqbbbbbbk...........",
+      "............skkkkkkkkks...........",
+      "...sssssstttttttttttttttttssssss..",
+      "...sssssstttttttttttttttttssssss..",
+      "............sssssssssss..........."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#a8b2c0",
+      "b": "#4c566a",
+      "c": "#5a8cc0",
+      "d": "#3e6496",
+      "e": "#5c3820",
+      "f": "#86542e",
+      "g": "#b47a48",
+      "h": "#e0b07a",
+      "i": "#ffd8c8",
+      "j": "#c85848",
+      "l": "#ec8a72",
+      "m": "#9c3c38",
+      "n": "#6e2830",
+      "o": "#e8ecf0",
+      "p": "#8cc0e0",
+      "q": "#748094",
+      "r": "#2c4670",
+      "s": "#2c4a28",
+      "t": "#3a5a30"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "둘이 양 끝에 앉아 번갈아 오르내려요"
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "한쪽 끝에 앉아 작은 포켓몬을 높이 띄워 줘요"
+      },
+      {
+       "w": "강철 타입",
+       "a": "가운데 받침 옆에 앉아 쉬어요"
+      }
+     ],
+     "fit": "평평한 풀밭",
+     "glow": 0
+    },
+    {
+     "id": "spring-rider",
+     "n": "몬스터볼 스프링",
+     "k": "놀이",
+     "d": "몬스터볼 모양 몸통이 용수철 위에 얹혀 앞뒤로 흔들리는 놀이기구예요.",
+     "px": [
+      ".......kkkkkkkk.......",
+      ".....kkaaaaaaaakk.....",
+      "....kbbcccccccccdk....",
+      "...kbceeeeeeeeeecfk...",
+      "...kadccccccccccdfk...",
+      "..kaaddddccccfffffck..",
+      "..kadddfcghhgcfffffk..",
+      ".kccccccghbbhgcccccck.",
+      "kggggggghbbbbhgggggggk",
+      "kggggggghbbbbhgggggggk",
+      ".kiiiiiighbbhgiiiiiik.",
+      ".kbbjjjjighhgillliiik.",
+      "..kjjjjjjiiiilliiiik..",
+      "..kbjjjllllllliiiiik..",
+      "...kjjlllllllliiiik...",
+      "...kjjllllllliiiiik...",
+      "....kllliiiiiiiiik....",
+      ".....kkiiiiiiiikk.....",
+      ".......kmmmmmmmk......",
+      ".......kkkkkkkk.......",
+      "......knnnnnnnk.......",
+      ".......kkkkkkkk.......",
+      ".......knnnnnnnk......",
+      ".......kkkkkkkk.......",
+      "......knnnnnnnk.......",
+      "......kkkkkkkkkk......",
+      "...kkkohnnnnnnnhkkk...",
+      "..kooooghhhhhhhggggk..",
+      ".kggggggggggggeeeeeek.",
+      "ppkeeeeeeeeeeeehhhhkpp",
+      "pppkkkhhhhhhhhhhkkkppp"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#ec8a72",
+      "b": "#ffffff",
+      "c": "#6e2830",
+      "d": "#c85848",
+      "e": "#363a46",
+      "f": "#9c3c38",
+      "g": "#4a4e5a",
+      "h": "#262a34",
+      "i": "#98a2b4",
+      "j": "#e8ecf0",
+      "l": "#c4ccd8",
+      "m": "#4c566a",
+      "n": "#a8b2c0",
+      "o": "#6a6e7a",
+      "p": "#2c4a28"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "몬스터볼 위에 올라타 앞뒤로 흔들어요"
+      },
+      {
+       "w": "전기 타입",
+       "a": "용수철에 몸을 대고 전기를 흘려 가운데 단추를 반짝이게 해요"
+      },
+      {
+       "w": "노말 타입",
+       "a": "몬스터볼을 톡톡 건드리며 흔들리는 걸 구경해요"
+      }
+     ],
+     "fit": "놀이터 입구",
+     "glow": 0
+    },
+    {
+     "id": "log-tunnel",
+     "n": "통나무 터널",
+     "k": "숨기",
+     "d": "속을 파낸 굵은 통나무를 눕혀 만든 터널이에요. 안은 어둡고 아늑해요.",
+     "px": [
+      ".....................k...........",
+      ".......k....kk......kak..........",
+      ".....kkbkkkkaakkkkkkkakkkkkkkkk..",
+      "....kbbcbbdeddeeeeeeedeeeeeeeefk.",
+      "...kbccgccbdeeeeeeeeeeeeffhfeffk.",
+      "..kbcgggggcbdeeeeeeehffhffheefhdk",
+      ".kbbcgggggcbbdhffhffhffhffheffhdk",
+      ".kbcgggggggcbdhffhffhffhffdeffhdk",
+      ".kbcggiiiigcbdhffhffhffhfhdeffhdk",
+      ".kbcggiiiigcbdhffhffhffhhhdeffhhk",
+      "kbcgggiiiiggcbdffhffhffdhheeffhdd",
+      ".kbcgiiiiiicbddhhdhhdhhdhhdfffhdk",
+      ".kbcggiiiigcbddhhdhhdhhdhhdeffhdk",
+      ".kbcggiiiigcbddhhdhhdhhdhhdefhhdk",
+      ".kbbcgiiiicbbddhhdhhdhhdhhdefhhdk",
+      "..kbcgggggcbdhdhhddddddddddefhddk",
+      "...kbccgccbdhdddddddddddddddfhdk.",
+      "....kbbcbbddddddddddddddddddfddk.",
+      ".....kkbkkkkkkkkkkkkkkkkkkkkkkk..",
+      "..jjjjjkllllllllllllllllllljjjjjj",
+      "..jjjjjjllllllllllllllllllljjjjjj",
+      "............jjjjjjjjjjj.........."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#6cae58",
+      "b": "#b88e58",
+      "c": "#946c40",
+      "d": "#3a2614",
+      "e": "#9a7048",
+      "f": "#74502e",
+      "g": "#2c2220",
+      "h": "#54381e",
+      "i": "#1a1416",
+      "j": "#2c4a28",
+      "l": "#3a5a30"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "터널 안으로 들어가 숨었다가 반대쪽으로 빠져나와요"
+      },
+      {
+       "w": "벌레 타입",
+       "a": "통나무 껍질 위를 기어 다니며 놀아요"
+      },
+      {
+       "w": "고스트 타입",
+       "a": "터널 안 어둠에 숨어 눈만 내놓아요"
+      },
+      {
+       "w": "풀 타입",
+       "a": "통나무 위 새싹 옆에 앉아 쬐어요"
+      }
+     ],
+     "fit": "숲 경계, 덤불 근처",
+     "glow": 0
+    },
+    {
+     "id": "climbing-dome",
+     "n": "정글짐 돔",
+     "k": "놀이",
+     "d": "파란 쇠막대를 반구 모양으로 엮은 정글짐이에요.",
+     "px": [
+      "............kkkkkkkkkk............",
+      ".........kkkaaaaaaaaaakkk.........",
+      ".......kkaaaakkkaakkkaaaakk.......",
+      "......kaaakkk..kaak..kkkaaak......",
+      ".....kaakk.....kaak.....kkaak.....",
+      "....kaak....kkkkaakkkk....kaak....",
+      "...kaak....kaaaaaaaaaak....kaak...",
+      "..kaak...kkaakkkaakkkaakk...kaak..",
+      ".kaak...kaakk..kaak..kkaak...kaak.",
+      ".kaak..kaak....kaak....kaak..kaak.",
+      ".kaak..kak.....kaak.....kak..kaak.",
+      "kaaak.kaak.....kaak.....kaak.kaaak",
+      "kbbbkkkbkkkkkkkkbbkkkkkkkkbkkkbbbk",
+      "kcccccccccccccccccccccccccccccccck",
+      "kcdddddddddddddddddddddddddddddddk",
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.",
+      "..eeeeeeffffffffffffffffffeeeeee.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#5a8cc0",
+      "b": "#2c4670",
+      "c": "#e8b850",
+      "d": "#c08a38",
+      "e": "#2c4a28",
+      "f": "#3a5a30"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "막대 사이로 올라가 꼭대기에 앉아요"
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "꼭대기 막대에 날아와 앉아요"
+      },
+      {
+       "w": "격투 타입",
+       "a": "막대에 매달려 몸을 단련해요"
+      }
+     ],
+     "fit": "놀이터 가운데",
+     "glow": 0
+    },
+    {
+     "id": "pinwheel",
+     "n": "바람개비",
+     "k": "장식",
+     "d": "막대 끝에 빨강·노랑·파랑·초록 날개가 달린 바람개비예요. 바람이 불면 빙글빙글 돌아요.",
+     "px": [
+      "............k...........",
+      "...........kak..........",
+      "...........kabk.........",
+      "...........kabbk........",
+      "...........kabbck.......",
+      "...........kabccdk......",
+      ".....kk....kabcddk......",
+      "....keek...kbbddk.......",
+      "...keeffk..kbcdk........",
+      "..keeffffk.kbck.........",
+      ".kffffggggkkdk..........",
+      "kffgghhhhhhiiikkkkkkkkk.",
+      ".kkkkkkkkkkiiijllllmmmmk",
+      ".........kniiijmmmmmook.",
+      "........kpqnrkmmmoojjk..",
+      ".......kppqsrkkooojjk...",
+      "......kppqqnrk.kojjk....",
+      ".....kppqqsnrk..kjk.....",
+      "......kqqqsnrk...k......",
+      ".......kqqsnrk..........",
+      "........kssnrk..........",
+      ".........ksnrk..........",
+      "..........knrk..........",
+      "..........krtk..........",
+      "..........kutk..........",
+      "..........kutk..........",
+      "..........kutk..........",
+      "..........kutk..........",
+      "..........kutk..........",
+      "..........kutk..........",
+      "..........kutk..........",
+      "......vvvwwkkwwvvv......",
+      "......vvvwwwwwwvvv......"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#ec8a72",
+      "b": "#c85848",
+      "c": "#9c3c38",
+      "d": "#6e2830",
+      "e": "#a8d880",
+      "f": "#6cae58",
+      "g": "#4a8642",
+      "h": "#2e5e34",
+      "i": "#e8ecf0",
+      "j": "#8e6028",
+      "l": "#f8e090",
+      "m": "#e8b850",
+      "n": "#2c4670",
+      "o": "#c08a38",
+      "p": "#8cc0e0",
+      "q": "#5a8cc0",
+      "r": "#5c3820",
+      "s": "#3e6496",
+      "t": "#86542e",
+      "u": "#b47a48",
+      "v": "#2c4a28",
+      "w": "#3a5a30"
+     },
+     "acts": [
+      {
+       "w": "나는 포켓몬",
+       "a": "바람개비 앞에서 날갯짓해 바람을 일으켜 돌려요"
+      },
+      {
+       "w": "비행 타입",
+       "a": "옆에 내려앉아 도는 날개를 구경해요"
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "막대 옆에 앉아 도는 날개를 쳐다봐요"
+      }
+     ],
+     "fit": "꽃밭 옆, 바람 부는 날",
+     "glow": 0
+    },
+    {
+     "id": "merry-go-round",
+     "n": "뱅뱅이",
+     "k": "놀이",
+     "d": "둥근 노란 판에 손잡이가 달려 빙글빙글 도는 회전 놀이대예요.",
+     "px": [
+      "..............kkkk..............",
+      ".............kaabbk.............",
+      ".............kbbbck.............",
+      "...........kkkbcddkkk...........",
+      ".........kkeeekffkgeekk.........",
+      "......kkkeekkeeegghkkgekkk......",
+      "....kkeeekkkekkegkkekkkgeekk....",
+      "...keekkk.kek.kegk.kfk.kkkgek...",
+      "...kek....kek.kegk.kek....kek...",
+      "...kek....kek.kegk.kek....kek...",
+      "...kek....kek.kegk.kek....kek...",
+      "...kek....kek.kegk.kek....kek...",
+      "...kekkkkkkekkkegkkkekkkkkkek...",
+      "...kekijjjlelileglileliiiikek...",
+      ".kklelimmmlelmleglmlelmmmmlelkk.",
+      "kiilelmmmmlelmleglmlelmmmmlelmmk",
+      "kimmlmmmmmmlmleeeelmlmmnnnnlnnlk",
+      "kmmnmmnnnnnnnnllllnnnnnnnnnnlllk",
+      "kddllnnnnnnnnnnnnnnnnnnnnllllddk",
+      ".kkdddlllllllllllllllllllldddkk.",
+      "...kkddddddddddddddddddddddkk...",
+      "..oookkkkddddddddddddddkkkkooo..",
+      "..oooooppkkkkkkkkkkkkkkppooooo..",
+      "...........oooooooooo..........."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#ec8a72",
+      "b": "#c85848",
+      "c": "#9c3c38",
+      "d": "#6e2830",
+      "e": "#a8b2c0",
+      "f": "#4c566a",
+      "g": "#748094",
+      "h": "#e8ecf0",
+      "i": "#f8e090",
+      "j": "#fff4c0",
+      "l": "#8e6028",
+      "m": "#e8b850",
+      "n": "#c08a38",
+      "o": "#2c4a28",
+      "p": "#3a5a30"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "판 위에 올라가 손잡이를 잡고 돌아요"
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "판 옆에서 손잡이를 밀어 돌려 줘요"
+      },
+      {
+       "w": "에스퍼 타입",
+       "a": "판 위에 앉아 염력으로 천천히 돌려요"
+      }
+     ],
+     "fit": "넓은 풀밭",
+     "glow": 0
+    },
+    {
+     "id": "balance-beam",
+     "n": "외나무 평균대",
+     "k": "놀이",
+     "d": "짧은 다리 두 개 위에 긴 나무를 얹은 평균대예요.",
+     "px": [
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.",
+      "kaabcccccccccccccccccccccccccccddk",
+      "kaabdeddddeddddeddddeddddeddddedek",
+      "kaabebeeeebeeeebeeeebeeeebeeeebebk",
+      "kaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbk",
+      ".kkkfffkkkkkkkkkkkkkkkkkkkkfffkkk.",
+      "...kghik..................kghik...",
+      "...kghfk..................kghfk...",
+      "...kghfk..................kghfk...",
+      "...kghfk..................kghfk...",
+      "...khhfk..................khhfk...",
+      "...khifkjjjjjjjjjjjjjjjjjjkhifk...",
+      ".jjjkkkllllllllllllllllllllkkkjjjj",
+      "......jjjjjjjjjjjjjjjjjjjjjjj....."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#d8b478",
+      "b": "#523218",
+      "c": "#d8a868",
+      "d": "#a87040",
+      "e": "#7a4c28",
+      "f": "#5c3820",
+      "g": "#e0b07a",
+      "h": "#b47a48",
+      "i": "#86542e",
+      "j": "#2c4a28",
+      "l": "#3a5a30"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "평균대 위를 끝에서 끝까지 조심조심 걸어요"
+      },
+      {
+       "w": "격투 타입",
+       "a": "평균대 위에서 한 발로 서서 균형을 잡아요"
+      },
+      {
+       "w": "땅 타입",
+       "a": "평균대 아래에 몸을 숨기고 엎드려 쉬어요"
+      }
+     ],
+     "fit": "놀이터 가장자리",
+     "glow": 0
+    },
+    {
+     "id": "playhouse",
+     "n": "나무 오두막",
+     "k": "쉼터",
+     "d": "빨간 지붕에 창문과 꽃 화분이 달린 작은 나무 놀이집이에요.",
+     "px": [
+      ".............kk.............",
+      "............kaak............",
+      "...........kaaaak...........",
+      "..........kbbaaabk..........",
+      ".........kbbbbbabbk.........",
+      "........kbbbbkkbbbbk........",
+      "......kkbbbbkcckbbbbkk......",
+      ".....kbbbbbkccdekfbbfak.....",
+      "....kbbbbgkccedeekfbafbk....",
+      "...kbbbbkccceedeedkgfbfbk...",
+      "..kbbbbkccedeedddhdckfbffk..",
+      ".kbbbbkedeehddhddhdddkffgfk.",
+      "kbbbbieehdhhhhhhhhhhhhiggggk",
+      "kbfbijiiiiiiiiiiiiiiiiliggk.",
+      ".kkkjjjjjjjjjjmllmllmlmikk..",
+      "...kjjjlmllmllmllmllmmmik...",
+      "...kjjjlmllmllmliiiiiimik...",
+      "...kjjjiiiiiilminodoppiik...",
+      "...kjjiqqrrrrimioodoooiik...",
+      "...kjjiqqrrrrimiddddddiik...",
+      "...kjjiqqrrrrimioohoooiik...",
+      "...kjjiqqrrrriissssssssik...",
+      "...kjjiqqrrtriiuuuuuuuuik...",
+      "...kjmiqqrtvtiiwwwwwwwwik...",
+      "...kjmiqqrrtriiiiiiiiiiik...",
+      "...kjmiqqrrrriimmimmiiiik...",
+      "...kjmiqqrrrriiiiiiiiiiik...",
+      "...klmiqqrrrriiiiiiiiiiik...",
+      "...kliiqqrrrriiiiiiiiiiik...",
+      ".xxxkkkkkkkkkkkkkkkkkkkkxxxx",
+      ".xxxxxyyyyyyyyyyyyyyyyyxxxxx"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#e89a78",
+      "b": "#c06a50",
+      "c": "#d8a868",
+      "d": "#7a4c28",
+      "e": "#a87040",
+      "f": "#94483c",
+      "g": "#6a3030",
+      "h": "#523218",
+      "i": "#5c3820",
+      "j": "#e0b07a",
+      "l": "#b47a48",
+      "m": "#86542e",
+      "n": "#e8f4ff",
+      "o": "#5884b0",
+      "p": "#a8d0ec",
+      "q": "#221a1a",
+      "r": "#2c2220",
+      "s": "#6cae58",
+      "t": "#1a1416",
+      "u": "#6e2830",
+      "v": "#f8e090",
+      "w": "#c85848",
+      "x": "#2c4a28",
+      "y": "#3a5a30"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "문 안으로 들어가 숨었다가 창문으로 얼굴을 내밀어요"
+      },
+      {
+       "w": "노말 타입",
+       "a": "문 앞에 앉아 낮잠을 자요"
+      },
+      {
+       "w": "풀 타입",
+       "a": "창문 아래 꽃 화분 옆에 앉아 쬐어요"
+      }
+     ],
+     "fit": "숲 경계, 나무 그늘",
+     "glow": 0
+    }
+   ]
+  },
+  {
    "at": 1792619438354,
    "theme": "밤을 밝히는 조명",
    "note": "경완 님이 부탁하신 밤 조명 세트예요! 쇠 가로등부터 종이 등롱, 석등, 연꽃 등까지 재질을 다 다르게 잡았고, 불빛은 유리·종이 안쪽을 가운데부터 밝게 칠한 다음 바깥에 옅은 빛 테두리를 점점이 찍어서 밤 풀밭에서도 테두리가 또렷하게 읽히게 했어요. 불꽃 타입이 켜고, 전기 타입이 밝히고, 고스트 타입은 그림자에 숨는 식으로 반응도 빛에 맞췄어요.",
