@@ -5985,7 +5985,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.65';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.66';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6688,7 +6688,7 @@ function mgAimHint(g) {   /* v6.57 경완: 글·화살표 대신 누르는 동�
   const ab = $('#mgAbBtn'), h = $('#mgAim'), r = ab.getBoundingClientRect(), pr = h.offsetParent?.getBoundingClientRect() || { left: 0, top: 0 };
   h.style.left = (r.left - pr.left + r.width / 2) + 'px'; h.style.top = (r.top - pr.top + r.height / 2) + 'px'; const R = MG_AIM_R, d = `M${-MG_AIM_B} ${-R} Q${MG_AIM_B} 0 ${-MG_AIM_B} ${R}`; h.querySelectorAll('path').forEach(p => p.setAttribute('d', d)); h.querySelector('i').style.transform = ''; h.hidden = false; g.aimG = 1; }
 function mgAimMove(dy) { const k = $('#mgAim i'); if (k) { const y = clamp(dy, -MG_AIM_R, MG_AIM_R); k.style.transform = `translate(${mgAimX(y)}px,${y}px)`; } }
-const MG_SURF_RT = .55;   // v8.54 경완: 파도타기 — 파도가 발밑에서 솟아오르는 시간 (초)
+const MG_SURF_RT = .55, MG_SURF_SPD = .4;   // v8.54 경완: 파도타기 — 파도가 발밑에서 솟아오르는 시간 (초)
 const MG_COMBO_T = .7;   // 콤보가 이어지는 시간 (초) — v7.69 경완: 0.7초 (7.68 0.5초 (2.6·1.5는 너무 길다)
 // v5.92 경완: 액티브 기술은 시작과 끝을 확실하게 (색 번쩍·고리·이름, 끝나면 뚝 소리와 연기, 끝나기 직전엔 깜빡)
 const MG_PC_T = 1.1;
@@ -6841,7 +6841,8 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
   const meters = Math.floor(g.dist / 25), ph = 1 + Math.floor(meters / 250);
   if (ph > g.phase) { g.phase = ph; g.ban = { t: 1.6, s: '페이즈 ' + ph }; sfx('rise'); mgHud(); }   // v5.92 경완: 새 장애물 알림은 빼고 페이즈 글자만 화면 가운데에
   g.v = MG_SPD * Math.min(700, 315 + 44 * (g.phase - 1) + (meters % 250) * .13);   // v5.83 경완: 너무 쉬워서 더 빠르게 → v5.86 경완: 살짝만 쉽게
-  const sp = g.v * (g.fx.ice > 0 ? .5 : 1) * (1 + .95 * (g.bm || 0)) * (g.wsX != null ? g.wsX / g.v : 1), dx = sp * dt; g.bA = (g.bA || 0) + dx * Math.max(0, g.bm || 0);   // bA: 오버드라이브 동안 뒷배경을 더 빨리 흘리는 양
+  g.sfB = (g.sfB || 0) + ((g.fx.surf > 0 ? 1 : 0) - (g.sfB || 0)) * Math.min(1, dt * 4);   /* v8.66 경완: 파도타기 하는 동안 속도 빨라짐 (서서히 ×1.4) */
+  const sp = g.v * (g.fx.ice > 0 ? .5 : 1) * (1 + .95 * (g.bm || 0)) * (1 + MG_SURF_SPD * g.sfB) * (g.wsX != null ? g.wsX / g.v : 1), dx = sp * dt; g.bA = (g.bA || 0) + dx * Math.max(0, g.bm || 0);   // bA: 오버드라이브 동안 뒷배경을 더 빨리 흘리는 양
   g.dist += dx; g.sinceSp += dx;
   g.at = (g.at || 0) + dt * 1.25 * (g.y > 0 ? .6 : sp / 340);   // 달리는 빠르기에 맞춰 발을 놀린다
   g.y0 = g.y;
