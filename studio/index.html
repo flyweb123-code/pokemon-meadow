@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js"></script>
+<script src="neutral.js?v=3.41"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.40';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.41';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2100,6 +2100,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.41', '10월 22일', ['뉴트럴: \'작업본으로 지금 돌려 보기\'를 누르면 지금 미션 골드도 10G 단위(1,000G부터 100G 단위)로 맞춰 작업본에 넣어요', '고친 뉴트럴 계산이 예전 것으로 남지 않게']],
   ['3.40', '10월 22일', ['맵에 안 놓은 소품은 그림·크기가 바뀌어도 배치 저장·배포할 것으로 안 셈 (게임에 안 쓰여서)']],
   ['3.39', '10월 22일', ['맵 편집에서 바꾼 게 없으면 배치 저장이 켜지지 않음 (스칼렛 다시 그린 그림 반영은 저장까지, 예전 picks 옮기기는 더 안 함)']],
   ['3.38', '10월 22일', ['소품 카드에 마우스를 올리면 오른쪽 위에 + → 누르면 맵 가운데에 추가']],
@@ -3235,7 +3236,7 @@ function neuModel() {
 window.__neuRun = () => { const m = neuModel(), r = NEU.advise(m); return { at: Date.now(), app: gameVer(), data: LIVE.ver || 0, s: neuSlim(r.s), J: r.J, P: r.P }; };
 const neuSlim = s => ({ days: s.days, N: s.N, users: s.users, by: s.by, all: s.all, rare: s.rare && { ...s.rare, n: spName(s.rare.sp) } });
 async function neuLoad() { NEU_R = await staffGet('config/staff/neutral.json', { runs: [] }); if (view === 'neu') renderNeu(); }
-function neuRunLocal() { if (NEU_BUSY || !A) return; NEU_BUSY = true; renderNeu(); setTimeout(() => { try { const m = neuModel(), r = NEU.advise(m); NEU_L = { at: Date.now(), s: neuSlim(r.s), J: r.J, P: r.P, draft: changes().length, sig: neuSig(m) }; store.set('st-neu-l', JSON.stringify(NEU_L)); } finally { NEU_BUSY = false; renderNeu(); } }, 30); }
+function neuRunLocal() { if (NEU_BUSY || !A) return; NEU_BUSY = true; renderNeu(); setTimeout(() => { try { const fx = NEU.mqRound(neuModel().b || {}); if (Object.keys(fx).length) { D.bal = { ...(D.bal || {}) }; for (const [k, v] of Object.entries(fx)) { if (JSON.stringify(v) === JSON.stringify(ORIG.bal?.[k])) delete D.bal[k]; else D.bal[k] = v; } saveDraft(); dstat(); toast('미션 골드를 10G·100G 단위로 맞춰 작업본에 넣었어요', true); }   /* v3.41 경완: 돌려 보면 지금 미션 골드도 단위에 맞춘다 */ const m = neuModel(), r = NEU.advise(m); NEU_L = { at: Date.now(), s: neuSlim(r.s), J: r.J, P: r.P, draft: changes().length, sig: neuSig(m) }; store.set('st-neu-l', JSON.stringify(NEU_L)); } finally { NEU_BUSY = false; renderNeu(); } }, 30); }
 const LVN = { easy: ['너무 쉬움', 'var(--warn)'], ok: ['적당', 'var(--good)'], hard: ['너무 어려움', 'var(--bad)'] };
 function neuPatch(p) { if (p.bal) { D.bal = { ...(D.bal || {}) }; for (const [k, v] of Object.entries(p.bal)) { if (JSON.stringify(v) === JSON.stringify(ORIG.bal[k])) delete D.bal[k]; else D.bal[k] = v; } if (!Object.keys(D.bal).length) delete D.bal; }
   if (p.pity) { D.pity = { ...(D.pity || {}), ...p.pity }; for (const k of Object.keys(D.pity)) if (D.pity[k] === ORIG.pity[k]) delete D.pity[k]; if (!Object.keys(D.pity).length) delete D.pity; }
