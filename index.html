@@ -334,6 +334,10 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.flw,.lily,.lily::after{animation:none}}
 .puddle{position:absolute;left:0;top:0;pointer-events:none;image-rendering:pixelated;background-size:100% 100%;transform:translate(-50%,-50%);opacity:0;transition:opacity 6s;z-index:2!important}.puddle.on{opacity:1}
 #rain{position:absolute;inset:0;overflow:hidden;pointer-events:none;display:none}#rain.on{display:block}
+#rain.storm i{animation-duration:.4s!important;height:16px;background:rgba(220,234,255,.85)}   /* v8.42 경완: 뇌우는 빗줄기가 굵고 빠르다 */
+.wxflash{position:absolute;inset:-40px;pointer-events:none;background:#eef2ff;mix-blend-mode:screen;opacity:0;animation:wxF .8s ease-out forwards}.wxflash.near{background:#fff;animation-name:wxFn}
+@keyframes wxF{0%{opacity:0}6%{opacity:.4}14%{opacity:.06}22%{opacity:.3}100%{opacity:0}}@keyframes wxFn{0%{opacity:0}4%{opacity:.8}12%{opacity:.12}20%{opacity:.65}36%{opacity:.2}100%{opacity:0}}
+.wxbolt{position:absolute;left:0;top:0;pointer-events:none;filter:drop-shadow(0 0 4px #c8d8ff) drop-shadow(0 0 10px #8aa8ff);animation:wxB .6s steps(6) forwards}@keyframes wxB{0%{opacity:1}30%{opacity:.2}45%{opacity:1}100%{opacity:0}}
 /* v8.25 경완: 계절 날림 */#seaFx{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:2}#seaFx i{position:absolute;top:-12px;animation:seaF 8s linear infinite}#seaFx.sea-winter i{width:3px;height:3px;background:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.35)}#seaFx.sea-spring i{width:4px;height:3px;background:#ffc0d6;border-radius:2px 0}#seaFx.sea-autumn i{width:4px;height:4px;background:#e07a28;box-shadow:1px 1px 0 #a8461c}#seaFx.sea-autumn i:nth-child(3n){background:#e8b030}@keyframes seaF{0%{transform:translate3d(0,0,0) rotate(0)}25%{transform:translate3d(var(--sx),170px,0) rotate(calc(var(--r) * .25))}50%{transform:translate3d(0,340px,0) rotate(calc(var(--r) * .5))}75%{transform:translate3d(calc(var(--sx) * -1),510px,0) rotate(calc(var(--r) * .75))}100%{transform:translate3d(0,690px,0) rotate(var(--r))}}
 #rain i{position:absolute;top:-24px;width:2px;height:12px;background:rgba(210,228,255,.7);transform:translate3d(0,0,0) rotate(14deg);animation:rd .62s linear infinite;will-change:transform}@keyframes rd{from{transform:translate3d(0,0,0) rotate(14deg)}to{transform:translate3d(-150px,640px,0) rotate(14deg)}}/* v4.24 경완: 빗줄기가 아이폰에서 안 보이고 땅 물방울만 → translate 속성 대신 transform 으로 */
 #rainG{position:absolute;inset:0;pointer-events:none;z-index:1;display:none}#rainG.on{display:block}#rainG b{position:absolute;width:10px;height:4px;margin:-2px 0 0 -5px;border:1px solid rgba(220,236,255,.8);border-radius:50%;animation:rsp .5s ease-out infinite;opacity:0}@keyframes rsp{0%{transform:scale(.3);opacity:.9}100%{transform:scale(1.4);opacity:0}}
@@ -1914,6 +1918,10 @@ function sfx(name, k = 0) { sfxN++; if (window.__sfxLog) window.__sfxLog.push(na
   const t = a.currentTime + .01;
   switch (name) {
     case 'tap': tone(1320, t, .035, { vol: .045 }); break;
+    case 'thunder': { if (!noiseBuf) noise(t, .01, .001); const near = k || 0, v = volG(VOL.sfx) * (.22 + .2 * near), src = a.createBufferSource(), lp = a.createBiquadFilter(), g = a.createGain(), L = 2.4 + Math.random() * 1.4;   /* v8.42 경완: 뇌우 천둥 — 가까우면 콰광 하고 갈라지는 소리, 멀면 낮게 우르릉 (낮은 소리만 남긴 잡음 + 출렁이는 크기) */
+      src.buffer = noiseBuf; src.loop = true; src.playbackRate.value = .5 + Math.random() * .2; lp.type = 'lowpass'; lp.frequency.setValueAtTime(near > .5 ? 1400 : 420, t); lp.frequency.exponentialRampToValueAtTime(120, t + .9); lp.Q.value = .7;
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + (near > .5 ? .03 : .25)); for (let q = .4; q < L - .3; q += .25 + Math.random() * .35) g.gain.linearRampToValueAtTime(v * (.35 + Math.random() * .55) * (1 - q / L), t + q); g.gain.exponentialRampToValueAtTime(.0001, t + L);
+      src.connect(lp).connect(g).connect(a.destination); src.start(t); src.stop(t + L + .05); if (near > .5) noise(t, .18, .09 * near, 2200); break; }
     case 'open': tone(880, t, .04, { vol: .05 }); tone(1320, t + .045, .05, { vol: .05 }); break;
     case 'wob': tone(220, t, .06, { vol: .06 }); tone(196, t + .08, .06, { vol: .06 }); break;
     case 'poison': { noise(t, .32, .05, 2600); tone(120, t, .32, { type: 'sawtooth', vol: .025, to: 70 }); for (let i = 0; i < 6; i++) { const f = 260 + Math.random() * 260; tone(f, t + .03 + i * .055, .045, { type: 'sine', vol: .055, to: f * 1.7 }); } break; }   // v7.18 경완: 보글보글 쉬익 — 독 소리
@@ -5442,8 +5450,21 @@ async function fetchWx(force, maxAge = 30 * 60e3) {
 // v8.29 경완: 눈 = 실제 날씨 코드가 눈(71~77·85·86)일 때만 (하늘은 흐림처럼), 작업실 '눈' 고르기(S.wxT='snow')
 const SNOW_C = c => (c >= 71 && c <= 77) || c === 85 || c === 86;
 const snowing = () => S.wxT ? S.wxT === 'snow' : !!(realWx && Date.now() - realWx.at < 12 * 3600e3 && SNOW_C(+realWx.code));
+// v8.42 경완: 뇌우 = 실제 날씨 코드 95~99(뇌우)일 때, 작업실 '뇌우' 고르기(S.wxT='storm'). 비 오는 날 그대로에 빗줄기가 굵고 빨라지고, 가끔 번개가 번쩍이고 천둥이 친다
+const storming = () => S.wxT ? S.wxT === 'storm' : !!(realWx && Date.now() - realWx.at < 12 * 3600e3 && +realWx.code >= 95);
+let stormT = 0;
+function stormBolt() {
+  if (!fxEl) return; const near = Math.random(), x = 30 + Math.random() * (W - 60), y1 = 50 + Math.random() * 90; let px = x, py = -10, d = `M${px} ${py}`;
+  while (py < y1) { py += 10 + Math.random() * 16; px += (Math.random() - .5) * 26; d += `L${px.toFixed(0)} ${Math.min(py, y1).toFixed(0)}`; }
+  const br = Math.random() < .6 ? (() => { let bx = px - (Math.random() - .5) * 40, by = y1 * .5, e = `M${(x + bx) / 2} ${by}`; for (let i = 0; i < 3; i++) { by += 10 + Math.random() * 10; bx += (Math.random() < .5 ? -1 : 1) * (6 + Math.random() * 10); e += `L${bx.toFixed(0)} ${by.toFixed(0)}`; } return e; })() : '';
+  const fl = document.createElement('div'); fl.className = 'wxflash' + (near > .5 ? ' near' : ''); fxEl.append(fl); setTimeout(() => fl.remove(), 900);
+  if (near > .25) { const b = document.createElement('div'); b.className = 'wxbolt'; b.innerHTML = `<svg viewBox="0 0 ${W} 160" width="${W}" height="160" shape-rendering="crispEdges"><path d="${d}${br ? ' ' + br : ''}" fill="none" stroke="#fff" stroke-width="${near > .7 ? 3 : 2}" stroke-linejoin="bevel"/></svg>`; fxEl.append(b); setTimeout(() => b.remove(), 700); }
+  setTimeout(() => sfx('thunder', near), near > .5 ? 80 + Math.random() * 250 : 700 + Math.random() * 1500); haptic(near > .7 ? 1 : 0);
+}
+function stormTick(now = performance.now()) { if (!storming() || document.hidden || !rainEl?.classList.contains('on')) { stormT = 0; return; } if (!stormT) stormT = now + 2500 + Math.random() * 4000; else if (now >= stormT) { stormT = now + 6000 + Math.random() * 12000; stormBolt(); if (Math.random() < .3) setTimeout(stormBolt, 250 + Math.random() * 500); } }
+setInterval(stormTick, 400);
 function weather() {
-  if (S.wxT) return S.wxT === 'snow' ? 'cloud' : S.wxT; if (realWx && Date.now() - realWx.at < 12 * 3600e3) return realWx.w;   /* v4.33: 새 날씨가 오기 전엔 무작위 날씨보다 마지막 실제 날씨 */ const blk = Math.floor(Date.now() / (3 * 3600e3)); let x = (blk * 2654435761) >>> 0; x ^= x >>> 13; x = Math.imul(x, 0x5bd1e995) >>> 0; x ^= x >>> 15; const r = (x % 1000) / 1000;
+  if (S.wxT) return S.wxT === 'snow' ? 'cloud' : S.wxT === 'storm' ? 'rain' : S.wxT; if (realWx && Date.now() - realWx.at < 12 * 3600e3) return realWx.w;   /* v4.33: 새 날씨가 오기 전엔 무작위 날씨보다 마지막 실제 날씨 */ const blk = Math.floor(Date.now() / (3 * 3600e3)); let x = (blk * 2654435761) >>> 0; x ^= x >>> 13; x = Math.imul(x, 0x5bd1e995) >>> 0; x ^= x >>> 15; const r = (x % 1000) / 1000;
   return r < .2 ? 'rain' : r < .5 ? 'cloud' : 'clear';
 }
 const WX_TXT = { clear: '맑음', cloud: '흐림', rain: '비' };
@@ -5510,9 +5531,9 @@ function sky() {
     const wx = weather(), wk = wx === 'rain' ? .8 : wx === 'cloud' ? .92 : 1;   /* 비·흐림이면 필드가 조금 더 어둡다 */
     const c = c0.map((v, j) => v + (c1[j] - v) * e), lum = (c[0] + c[1] + c[2]) / 765, wk2 = 1 - (wx === 'rain' ? .08 + .12 * clamp((lum - .34) / .66, 0, 1) : 1 - wk) * lum,   /* v4.25 경완: 비 오는 한밤도 흐린 밤처럼 약 3%만 */ col = c.map(v => Math.round(v * wk2));   /* v4.24 경완: 비·흐림 어둡게는 낮에만 그대로, 밤에는 거의 안 어둡게 */ nightEl.style.backgroundColor = `rgb(${col.join(',')})`; { const [r, g, b] = col.map(v => (v / 255).toFixed(3)); $('#nightM')?.setAttribute('values', `${r} 0 0 0 0 0 ${g} 0 0 0 0 0 ${b} 0 0 0 0 0 1 0`); }
     skyDark = clamp((1 - (col[0] + col[1] + col[2]) / 765) * 1.6, 0, 1);   /* 어두운 정도: S 랭크 포켓몬이 스스로 빛나는지 */
-    drawSky(h, col, wx); skyBodies(h, wx, skyDark); seasonFx(); rainEl?.classList.toggle('on', wx === 'rain'); rainGEl?.classList.toggle('on', wx === 'rain'); puddleEls.forEach(p => p.classList.toggle('on', wx === 'rain')); if (flameEl) flameEl.classList.toggle('out', wx === 'rain' || (flameEl.dousedT || 0) > Date.now());   /* v4.93: 물 기술에 꺼진 동안도 */ treeBerries(); }
+    drawSky(h, col, wx); skyBodies(h, wx, skyDark); seasonFx(); rainEl?.classList.toggle('on', wx === 'rain'); rainEl?.classList.toggle('storm', wx === 'rain' && storming()); rainGEl?.classList.toggle('on', wx === 'rain'); puddleEls.forEach(p => p.classList.toggle('on', wx === 'rain')); if (flameEl) flameEl.classList.toggle('out', wx === 'rain' || (flameEl.dousedT || 0) > Date.now());   /* v4.93: 물 기술에 꺼진 동안도 */ treeBerries(); }
   const phase = h < 4 ? '한밤' : h < 5.5 ? '새벽' : h < 7 ? '해돋이' : h < 10 ? '아침' : h < 14 ? '한낮' : h < 16.5 ? '오후' : h < 18.6 ? '노을' : h < 20 ? '저녁' : '밤';
-  $('#phase').textContent = phase + (weather() !== 'clear' ? ' · ' + WX_TXT[weather()] : '');
+  $('#phase').textContent = phase + (weather() !== 'clear' ? ' · ' + (storming() ? '뇌우' : WX_TXT[weather()]) : '');
   { const d = new Date(); $('#day').textContent = `${d.getMonth() + 1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})`; }
   $('#time').textContent = clockStr();
   { const nt = uiNight(); $('#clock').classList.toggle('night', nt); $('#dlg').classList.toggle('night', nt); infoEl.classList.toggle('night', nt && !infoEl.classList.contains('bud')); document.querySelectorAll('.mapico').forEach(b => b.classList.toggle('night', nt));   /* v5.86 경완: 필드 버튼은 모두 밤낮 디자인 */ $('#hint').classList.toggle('night', nt); }
@@ -5955,7 +5976,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.41';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.42';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)

@@ -401,7 +401,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
           <!-- v3.26 경완: 위쪽 막대는 한 줄이 더 좋다 (3.25 두 줄 정리 되돌림) -->
           <b>시간</b><input type="range" id="hr" min="0" max="23.75" step=".25" value="14"><span class="num" id="hrT" style="min-width:7.5em">지금</span><button class="chip" id="hrNow" disabled title="지금 시각으로 돌아가기">지금</button>
           <span class="vsep"></span>
-          <span class="chips" id="wx"><button class="chip on" data-w="">날씨 그대로</button><button class="chip" data-w="clear">맑음</button><button class="chip" data-w="cloud">흐림</button><button class="chip" data-w="rain">비</button><button class="chip" data-w="snow">눈</button></span>
+          <span class="chips" id="wx"><button class="chip on" data-w="">날씨 그대로</button><button class="chip" data-w="clear">맑음</button><button class="chip" data-w="cloud">흐림</button><button class="chip" data-w="rain">비</button><button class="chip" data-w="snow">눈</button><button class="chip" data-w="storm">뇌우</button></span>
           <select id="seaSel" aria-label="계절" title="계절 미리 보기 (게임은 날짜에 맞춰 바뀌어요)"><option value="">계절 그대로</option><option value="spring">봄</option><option value="summer">여름</option><option value="autumn">가을</option><option value="winter">겨울</option></select>
           <span class="vsep"></span>
           <b>기종</b><select class="devSel" aria-label="휴대폰 기종"></select>
@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.42"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.43"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.42';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.43';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2100,6 +2100,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.43', '10월 22일', ['날씨 고르기에 \'뇌우\' (굵은 비 + 번개 번쩍 + 천둥, 게임 8.42)']],
   ['3.42', '10월 22일', ['뉴트럴: 골드로 산 향로·빛나는 부적과 미니게임 선물로 받은 향로·부적을 걸을 때 쓰는 것까지 넣어 돌려요 (생활 패턴 표에 90일 동안 쓴 수)', '상점 빛나는 부적 기본 시간을 게임과 같은 30분으로']],
   ['3.41', '10월 22일', ['뉴트럴: \'작업본으로 지금 돌려 보기\'를 누르면 지금 미션 골드도 10G 단위(1,000G부터 100G 단위)로 맞춰 작업본에 넣어요', '고친 뉴트럴 계산이 예전 것으로 남지 않게']],
   ['3.40', '10월 22일', ['맵에 안 놓은 소품은 그림·크기가 바뀌어도 배치 저장·배포할 것으로 안 셈 (게임에 안 쓰여서)']],
