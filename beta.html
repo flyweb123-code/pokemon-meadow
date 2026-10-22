@@ -3898,7 +3898,7 @@ function place(m, x, y) {
   if (mv === 'swim' && !m.land && pondVal(m.x, m.y) > .9) projectOut(m, .9);
 }
 const faceTo = (m, x) => { if (Math.abs(x - m.x) > .5) m.face = x > m.x ? -1 : 1; };
-const sceneCenter = (a, b, r) => ({ x: clamp((a.x + b.x) / 2, XL + 40 + r, XR - 40 - r), y: clamp((a.y + b.y) / 2, MIN_Y + 10 + r * .4, MAX_Y - 10 - r * .3) });
+const sceneCenter = (a, b, r) => { const c = { x: clamp((a.x + b.x) / 2, XL + 40 + r, XR - 40 - r), y: clamp((a.y + b.y) / 2, MIN_Y + 10 + r * .4, MAX_Y - 10 - r * .3) }, d = { w: Math.max(a.w || 60, b.w || 60) + r * 2, h: Math.max(a.h || 60, b.h || 60) }; return inHud(d, c.x, c.y) ? outOfHud(d, c) : c; };   /* v8.50 경완: 둘이 어울리는 자리도 가방·열매 버튼 밑은 피한다 (턱지충이 치코리타와 놀고 버튼 뒤에 남던 것) */
 const every = (sc, k, gap) => { sc[k] = (sc[k] ?? 0) - sc.dt; if (sc[k] <= 0) { sc[k] += gap; return true; } return false; };
 const once = (sc, k, at) => { if (!sc[k] && sc.mt >= at) { sc[k] = 1; return true; } return false; };
 const orbit = (m, c, ang, rx, ry) => { const x = c.x + Math.cos(ang) * rx, y = c.y + Math.sin(ang) * ry; faceTo(m, x); place(m, x, y); };
@@ -4621,7 +4621,8 @@ function update(m, dt) {
   m.t -= dt;
   if (m.pet) { m.goal = null; if (m.state !== 'idle' && m.state !== 'eat') setState(m, 'idle', 1); m.t = Math.max(m.t, 1); }
   if (m.pin) { m.goal = null; m.wp = null; if (m.state === 'move') setState(m, 'idle', 1); m.t = Math.max(m.t, 1); }   /* v3.80 경완: 작업실에서 고른 포켓몬은 제자리 */   /* 쓰다듬는 동안은 제자리 */
-  if (m.state === 'idle' && !m.pet && !m.pin && inHud(m)) { moveTo(m, outOfHud(m, { x: clamp(m.x, XL + 30, XR - 30), y: m.y })); }   /* 좌상단 버튼 밑에 서 있지 않게 */
+  if (m.state === 'idle' && !m.pet && !m.pin && inHud(m)) { moveTo(m, outOfHud(m, { x: clamp(m.x, XL + 30, XR - 30), y: m.y })); }
+  else if (m.state === 'special' && !m.pet && !m.pin && !m.held && !m.camp && !m.perch && inHud(m)) { m.hudSp = (m.hudSp || 0) + dt; if (m.hudSp > 1.5) { m.hudSp = 0; clearMotion?.(m); setState(m, 'idle', 1); moveTo(m, outOfHud(m, { x: clamp(m.x, XL + 30, XR - 30), y: m.y })); } } else m.hudSp = 0;   /* v8.50 경완: 혼자 하는 특별 행동도 버튼 밑에서 오래 하지 않게 */   /* 좌상단 버튼 밑에 서 있지 않게 */
   if (m.state === 'sleep' && !m.pet && !m.pin && !m.perch && !m.hidden && !m.camp && T(m).mv !== 'swim' && inHud(m)) { m.hudSlp = (m.hudSlp || 0) + dt; if (m.hudSlp > 2) { m.hudSlp = -30; wake(m); goToBed(m); } } else if (m.hudSlp > 0) m.hudSlp = 0;   /* v7.89 경완: 열매·가방 버튼 밑에서 잠든 포켓몬(불러온 자리·화면 크기 바뀜)은 일어나 비켜서 다시 눕는다 (예전엔 깰 때까지 버튼 뒤에 멈춰 있었다) */
   switch (m.state) {
     case 'move': {
@@ -5983,7 +5984,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.49';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.50';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7954,15 +7955,44 @@ function moodOf(m) {
   const P = boxOf(m.pid), fr = P?.fr || 0, best = friendsOf(m).find(x => x.r >= 20), ft = frTier(fr);
   if (m.state === 'sleep') return pick2(m, ['쿨쿨… 좋은 꿈을 꾸는 것 같다', '새근새근 깊이 잠들었다']);
   if (m.petMood > performance.now()) return pick2(m, ft < 1 ? ['깜짝 놀랐지만 싫지는 않다', `${TJ('이/가')} 쓰다듬어 줘서 조금 쑥스럽다`] : ft < 3 ? ['쓰다듬어 줘서 기분이 좋다', `${TJ('이/가')} 쓰다듬어 줘서 기분이 좋다`] : ['쓰다듬어 줘서 기분이 아주 좋다', `${TJ('이/가')} 쓰다듬어 줘서 행복하다`]);   /* v8.47 경완: 트레이너 이름 나오는 말은 친밀도 따라 */
+  if (m.state === 'interact' && m.partner) return interMood(m, m.partner);   /* v8.50 경완: 다른 포켓몬과 어울리는 동안엔 그 상호작용에 맞는 상태 */
   if (m.hunger > 78) return pick2(m, ['배가 너무 고프다… 열매 먹고 싶어', '꼬르륵… 나무 열매가 생각난다']);
   if (m.hunger > 50) return pick2(m, ['조금 출출하다', '열매 하나쯤 먹고 싶다']);
   if (sleepyTime(m)) return pick2(m, ['졸려서 눈이 감긴다', '슬슬 쉬고 싶다']);
   if (m.social > 70) return best ? `${J(best.o, '이/가')} 보고 싶다` : pick2(m, ['심심하다… 누가 놀아 줬으면', '친구를 사귀고 싶다']);
   if (isFull(m)) return pick2(m, ['배가 불러 기분이 좋다', '배부르고 느긋하다']);
   if (fr >= FR_MAX) return pick2(m, [`${TJ('이/가')} 정말 좋다!`, `${TJ('과/와')} 또 달리고 싶다`, `${TJ('이/가')} 오면 제일 먼저 반길 거다`]);
-  if (m.state === 'interact' && m.partner) return `${J(m.partner, '과/와')} 함께라 즐겁다`;
   return pick2(m, ['오늘 날씨가 좋다', '필드가 마음에 든다', '느긋하게 쉬는 중', '주변을 구경하고 있다', TR_MOOD[Math.min(4, ft)][((m.uid || 0) + Math.floor(Date.now() / 36e5)) % 5].replace(/%(\S+?\/\S+?)(?=\s|$)/, (_, q) => TJ(q)).replace('%', TN())]);   /* 칸마다 5개 중 한 시간마다 바뀜 */
 }
+// v8.50 경완: 상호작용 중 상태 — 동작(sc.mo)이 있으면 동작대로, 없으면 장면 종류(kind)대로
+function interMood(m, o) { const sc = m.scene, w = (p, t) => t.replace(/@(\S+?\/\S+?)(?=\s|$)/g, (_, q) => J(o, q)).replace(/@/g, N(o));
+  const MO = {
+    stare: ['@과/와 눈싸움하는 중', '@을/를 빤히 바라보는 중', '@과/와 서로 눈치를 보는 중'],
+    scare: ['@을/를 깜짝 놀래는 중', '@ 때문에 깜짝 놀랐다', '@과/와 장난치는 중'],
+    float: ['@과/와 둥실둥실 노는 중', '@ 덕분에 붕 떠 있다', '@을/를 들어 올리는 중'],
+    feed: ['@과/와 열매를 나눠 먹는 중', '@에게 열매를 챙겨 주는 중', '@과/와 맛있게 먹는 중'],
+    perch: ['@ 위에 올라가 쉬는 중', '@과/와 꼭 붙어 있다', '@ 곁에서 쉬는 중'],
+    tag: ['@과/와 술래잡기하는 중', '@을/를 쫓아가는 중', '@에게서 도망가는 중'],
+    snip: ['@과/와 티격태격하는 중', '@과/와 투닥거리는 중', '@에게 살짝 삐졌다'],
+    music: ['@과/와 노래하는 중', '@과/와 같이 음악을 즐기는 중', '@의 노래에 맞춰 흥얼거린다'],
+    dance: ['@과/와 춤추는 중', '@과/와 신나게 춤추는 중', '@과/와 발을 맞추는 중'],
+    circle: ['@과/와 빙글빙글 도는 중', '@ 주위를 맴도는 중', '@과/와 뱅글뱅글 노는 중'],
+    mimic: ['@ 흉내를 내는 중', '@과/와 따라 하기 놀이 중', '@의 동작을 똑같이 따라 한다'],
+    hug: ['@과/와 꼭 껴안는 중', '@에게 폭 안겨 있다', '@과/와 포근하게 붙어 있다'],
+    heal: ['@을/를 돌봐 주는 중', '@ 덕분에 기운이 난다', '@과/와 서로 보살피는 중'],
+    bonk: ['@과/와 힘겨루기하는 중', '@과/와 머리를 맞대고 있다', '@에게 지지 않으려는 중'],
+    spray: ['@과/와 물장난하는 중', '@에게 뭔가를 뿜는 중', '@과/와 흠뻑 장난치는 중'],
+    wrap: ['@을/를 칭칭 감는 중', '@과/와 꼭 엉켜 있다', '@에게 휘감겨 있다'],
+    sniff: ['@의 냄새를 맡는 중', '@과/와 킁킁 인사하는 중', '@이/가 궁금해서 킁킁'],
+  }, KD = {
+    play: ['@과/와 노는 중', '@과/와 함께라 즐겁다', '@과/와 신나게 노는 중'],
+    chat: ['@과/와 이야기하는 중', '@과/와 수다 떠는 중', '@과/와 마주 보는 중'],
+    care: ['@을/를 챙겨 주는 중', '@과/와 다정하게 붙어 있다', '@ 곁을 지키는 중'],
+    show: ['@ 앞에서 실력 뽐내는 중', '@에게 자랑하는 중', '@과/와 겨뤄 보는 중'],
+    fight: ['@과/와 한판 붙는 중!', '@에게 지지 않을 거다', '@과/와 맞서는 중'],
+    mirror: ['@이/가 자기랑 똑같아서 어리둥절', '@과/와 마주 보며 갸웃', '@의 정체가 궁금하다'],
+  };
+  const L = MO[sc?.mo] || KD[m.kind] || KD.play; return w(pick2(m, L)); }
 // 같은 상황이면 같은 문장이 유지되게 (창을 다시 그릴 때 깜빡이지 않게)
 function pick2(m, L) { const k = L[0]; if (!m.moodK || m.moodK !== k) { m.moodK = k; m.moodI = Math.floor(Math.random() * L.length); } return L[m.moodI % L.length]; }
 // 친구 이름을 누르면 그 친구의 정보창으로 (필드에 있으면 필드 정보창, 상자에만 있으면 상자 상세)
@@ -10628,14 +10658,14 @@ async function tutFlow() {
     { c: '쓰다듬기', t: monEl, noHole: 1, run: rubDemo, s: '이렇게 문질러 주면\n즐거움이 올라가고\n포켓몬이 아주 좋아하지.' },
     // v8.08 경완 (PR #509 에서 옮김): 짝꿍 전에 정보카드의 조이스틱(미니게임) 버튼도 알려 준다
     { c: '미니게임', pre: async () => { try { select(mon()); } catch (e) {} await wait(400); }, hold: 900, t: '#infGame', s: '정보카드의 조이스틱 버튼을\n누르면 이 포켓몬과\n미니게임을 할 수 있단다.' },
+    { c: '미니게임', t: '#infGame', t2: () => barOf('즐거움'), s: '미니게임으로도\n즐거움을 올릴 수 있지.' },   /* v8.50 경완: 조이스틱 설명 바로 뒤로 */
     // v8.16 경완: 조이스틱을 눌러 게임 선택 화면을 직접 열어 보고, 게임 창(액티브·패시브)을 보면서 설명 → 꼭 해 보렴 → 나와서 즐거움 → 짝꿍
     { c: '미니게임', t: '#infGame', tap: '#infGame', until: () => !mgEl.hidden, after: 1200, s: '조이스틱 버튼을\n눌러 보렴!' },
-    { c: '미니게임', t: '#mgWho', s: '여기가 함께 놀\n포켓몬이란다.' },
-    { c: '미니게임', t: '[data-gc="jump"]', tap: '[data-gc="jump"] [data-gt]', until: () => !$('#mgPop').hidden, after: 900, s: '\'장애물 넘기\'를\n눌러 보렴.' },
+    { c: '미니게임', t: '#mgWho', s: '여기서 함께 놀 포켓몬의\n정보를 확인하고\n바꿀 수 있단다.' },
+    { c: '미니게임', t: '[data-gc="jump"]', tap: '[data-gc="jump"] [data-gt]', until: () => !$('#mgPop').hidden, after: 900, s: '첫 번째 미니게임인\n\'장애물 넘기\'를\n눌러 보렴.' },
     { c: '미니게임', t: '#mgPop .mg-abs', s: '함께 노는 포켓몬의 타입과\n랭크에 따라 쓸 수 있는\n능력이 달라진단다.' },
-    { c: '미니게임', t: '#mgPop .mg-gl', s: '게임을 하면 골드와\n아이템도 얻을 수 있으니\n꼭 해 보렴!' },
-    { c: '미니게임', pre: async () => { try { mgClose(); } catch (e) {} await wait(300); try { select(mon()); } catch (e) {} await wait(400); }, hold: 700, t: '#infGame', t2: () => barOf('즐거움'), s: '미니게임으로도\n즐거움을 올릴 수 있지.' },
-    { c: '짝꿍', t: '#infBudGo', s: '다음은 짝꿍이야!\n짝꿍은 너와 함께 걷는\n특별한 포켓몬이란다.' },
+    { c: '미니게임', t: '#mgPop .mg-gl', s: '게임을 하면 골드와\n아이템을 얻을 수 있고,\n포켓몬의 친밀도도\n올릴 수 있으니 꼭 해 보렴!' },
+    { c: '짝꿍', pre: async () => { try { mgClose(); } catch (e) {} await wait(300); try { select(mon()); } catch (e) {} await wait(400); }, hold: 700, t: '#infBudGo', s: '다음은 짝꿍이야!\n짝꿍은 너와 함께 걷는\n특별한 포켓몬이란다.' },
     { c: '짝꿍', t: '#infBudGo', s: '포켓몬을 진화시키려면\n꼭 짝꿍으로 정해야 해.\n짝꿍만 함께 걸은 거리만큼\n진화에 가까워지거든.' },
     { c: '짝꿍', t: '#infBudGo', tap: '#infBudGo', until: () => S.buds.length > 0, after: 1800, s: () => `${J2(born(), '을', '를')} 짝꿍으로\n정해 보자.\n'짝꿍으로'를 눌러 보렴!` },
     { c: '짝꿍', when: () => notiOpen && !$('#noti').hidden, t: '#notiOk', tap: '#notiOk', until: () => !notiOpen, s: '이 포켓몬은 진화 조건이\n조금 특별하구나.\n\'확인\'을 눌러 보렴.' },
