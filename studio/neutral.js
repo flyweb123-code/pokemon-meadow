@@ -133,6 +133,8 @@
   const gMQ = (x, k) => { const v = x * k; return v >= 1000 ? Math.round(v / 100) * 100 : Math.max(10, Math.round(v / 10) * 10); };   // v3.35 경완: 미션 골드는 10G 단위, 1,000G(4자리)부터는 100G 단위
   function allGold(b, k) { const o = { DUP_G: scG(b.DUP_G, k), NEW_EGG_G: scG(b.NEW_EGG_G, k), NEW_G: g5(b.NEW_G, k), RUN_G: Math.max(1, Math.round(b.RUN_G * k)), MG_PTS: Math.max(1, Math.round((b.MG_PTS || MQ_DEF.MG_PTS) / k)) };
     for (const q of Object.keys(MQ_N)) o[q] = (Array.isArray(b[q]) ? b[q] : MQ_DEF[q]).map(x => gMQ(x, k)); return o; }
+  // v3.41 경완: 이미 작업본·배포본에 있는 미션 골드도 단위에 맞춘다 (바뀌는 칸만 돌려줌)
+  function mqRound(b) { const o = {}; for (const q of Object.keys(MQ_N)) { const L = Array.isArray(b[q]) ? b[q] : MQ_DEF[q], R = L.map(x => gMQ(x, 1)); if (R.some((x, i) => x !== L[i])) o[q] = R; } return o; }
   function propose(model, s) {
     const J = judge(s), b = model.b, out = [], has = id => J.find(j => j.id === id)?.lv;
     const add = (id, t, why, patch) => out.push({ id, t, why, patch });
@@ -160,6 +162,6 @@
     for (const x of P) { if (!x.patch) continue; const s2 = sim(patched(model, x.patch), o), J2 = judge(s2); x.after = J2.filter(j => { const a = J.find(q => q.id === j.id); return a.txt !== j.txt; }).map(j => ({ id: j.id, n: j.n, from: J.find(q => q.id === j.id).txt, to: j.txt, lv: j.lv })); }
     return { s, J, P }; }
 
-  const NEU = { PERSONAS, BANDS, sim, judge, propose, advise, patched, reach };
+  const NEU = { PERSONAS, BANDS, sim, judge, propose, advise, patched, reach, mqRound };
   if (typeof module !== 'undefined' && module.exports) module.exports = NEU; else root.NEU = NEU;
 })(typeof window !== 'undefined' ? window : globalThis);
