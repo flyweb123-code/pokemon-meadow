@@ -25,7 +25,7 @@
   const EVO_FR = [0, 30, 60];
 
   // model = { odds[5], pity{e,l}, b{밸런스 전부}, probs{g: [[sp, p]]}, SP{sp: {t, fr, kids, ev, eqx, gb(바탕 종 등급), st(진화 단계)}}, price{도구 이름: G} }
-  function evoWay(model, c) { const ev = model.SP[c]?.ev || ''; if (!ev || ev.startsWith('fr')) return { k: ev ? 'fr' : 'km' };
+  function evoWay(model, c) { const ev = model.SP[c]?.ev || ''; if (!ev || ev === 'day' || ev === 'night') return { k: 'km' }; if (ev.startsWith('fr')) return { k: 'fr' };   // 게임 8.60: 낮·밤에만 진화 = 짝꿍 거리로
     if (ev.includes('통신교환')) return { k: 'item', p: model.price['연결의끈'] ?? 1500 };
     for (const [n, p] of Object.entries(model.price)) if (ev.startsWith(n)) return { k: 'item', p };
     return null; }
