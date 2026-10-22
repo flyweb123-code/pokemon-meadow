@@ -5983,7 +5983,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.55';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.56';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9787,7 +9787,7 @@ async function hatchAll() {
     $('#hlNum').textContent = `${i + 1} / ${res.length}`; $('#hlHl').hidden = i <= 0; $('#hlHr').hidden = i >= res.length - 1;
     strip.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-current', j === i));
     if (!q) strip.children[i]?.scrollIntoView({ block: 'nearest', inline: 'center' });
-    fieldBtn.hidden = true;
+    fieldBtn.hidden = true; ok.textContent = i < res.length - 1 ? '다음' : '확인';   /* v8.56 경완: 모두 부화에서 뒤에 카드가 남아 있으면 확인 대신 '다음' */
     { const on = onField(r.P.id); sb.hidden = !on && S.mons.length >= MAX_MONS; sb.disabled = false; sb.classList.toggle('sunk', on); sb.textContent = on ? '필드에 나감' : '필드로'; }   /* v4.45 경완: 모두 부화 카드마다 '필드로' (한 마리 부화와 같이 누르면 눌린 채, 다시 누르면 빼기) */
     if (!q) playCry(r.sp, r.isNew ? 1.3 : .8);
   };
@@ -9809,7 +9809,7 @@ async function hatchAll() {
   sfx(res.some(r => r.isNew) ? 'newdex' : 'hatch'); haptic(2);
   hatchInfoFix(res);
   show(0);
-  await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = ev => { const w = ev.target.closest('.win');
+  await new Promise(r => { ok.onclick = () => { if (i < res.length - 1) { sfx('tap'); show(i + 1); slide(1); return; } r(); }; hatchEl.onclick = ev => { const w = ev.target.closest('.win');
       if (w) { if (ev.target.closest('button,input,a,#hlStrip,[data-tip]')) return; const R = w.getBoundingClientRect(), E = Math.max(EDGE_IN, R.width * .3), d = ev.clientX < R.left + E ? -1 : ev.clientX > R.right - E ? 1 : 0;   /* 카드 좌우 30% (테두리 포함)를 눌러도 넘긴다, 가운데만 빼고 */
         if (d && !$(d < 0 ? '#hlHl' : '#hlHr').hidden) hatchPg?.step(d); return; }
       const d = sideTap(hatchEl, ev); if (d) { if (!$(d < 0 ? '#hlHl' : '#hlHr').hidden) show(i + d); return; } }; });   /* v5.16: 바깥을 눌러도 닫지 않는다 (확인으로만) */
