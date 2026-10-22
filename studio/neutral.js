@@ -37,7 +37,7 @@
     const r = rng(seed), b = model.b, odds = model.odds, HK = b.HATCH_KM, mul = .6 + r() * .9, scM = .75 + r() * .6;
     const sub = .25, per = sub / (b.BAG_STEP || .25), EVN = [0, 5, 10, 15, 20, 25];
     const MQ_DAY = mqL(b, 'MQ_DAY_G'), MQ_TY = mqL(b, 'MQ_TY_G'), MQ_PLAY = mqL(b, 'MQ_PLAY_G'), MQ_SUM = mqL(b, 'MQ_SUM_G'), MQ_PH = mqL(b, 'MQ_PH_G'), MQ_KILL = mqL(b, 'MQ_KILL_G'), MG_PTS = b.MG_PTS || MQ_DEF.MG_PTS;
-    const U = { p: P.id, dex: new Set(), box: [], bag: [], inc: [], pe: 0, pl: 0, gold: 0, gs: { hatch: 0, run: 0, mg: 0, mq: 0, evo: 0 }, spent: 0, buy: 0, evo: 0, sh: 0, eggs: 0, hatched: 0, km: 0,
+    const U = { p: P.id, dex: new Set(), box: [], bag: [], inc: [], pe: 0, pl: 0, gold: 0, gs: { hatch: 0, run: 0, mg: 0, mq: 0, evo: 0 }, spent: 0, buy: 0, evo: 0, sh: 0, it: { inc: 0, charm: 0 }, use: { inc: 0, charm: 0 }, bI: 0, bC: 0, gW: { w: -1, best: 0, got: {} }, eggs: 0, hatched: 0, km: 0,
       fE: null, fL: null, d: {}, bud: [], frD: {}, q: { n: 0, sum: 0, ph: 0, kn: 0, ty: {}, cl: {} } };
     const addG = (k, v) => { U.gold += v; U.gs[k] += v; };
     const getMon = (sp, day) => { const isNew = !U.dex.has(sp); U.dex.add(sp); const m = { sp, fr: 0, km: 0, sex: r() < .5 ? 'f' : 'm', d: day }; U.box.push(m); return [m, isNew]; };
@@ -51,20 +51,28 @@
       let km = 0;
       if (on) { const base = wk ? P.we : P.wd; km = base * mul * (.6 + r() * .8); }
       const runKm = km * P.run; U.km += km;
+      // v3.42 경완: 향로·빛나는 부적 — 골드가 넉넉하면 상점에서 사고(향로 하루 1개, 부적 1주 1개), 미니게임 기록 선물로도 받는다. 걷는 날 하나씩 써서 그 시간(분 → 걸음 빠르기로 km) 동안 줍는 알에 효과
+      const SH = model.shop;
+      if (on && SH && km >= 1) { const pI = SH.inc.p, pC = SH.charm.p;
+        if (!U.it.inc && U.gold >= pI * 3) { U.gold -= pI; U.spent += pI; U.bI++; U.it.inc++; }
+        if (!U.it.charm && U.gold >= pC * 1.5 && day - (U.cD ?? -99) >= 7) { U.gold -= pC; U.spent += pC; U.bC++; U.it.charm++; U.cD = day; } }
+      const kmh = 4.5 + 4.5 * P.run;
+      let incL = 0, chL = 0; if (SH && km >= 1) { if (U.it.inc) { U.it.inc--; U.use.inc++; incL = SH.inc.min / 60 * kmh; } if (U.it.charm) { U.it.charm--; U.use.charm++; chL = SH.charm.min / 60 * kmh; } }
+      const oddsI = SH ? (() => { const w = odds.map((x, j) => x * (SH.inc.mul[j] ?? 1)), t = w.reduce((a, x) => a + x, 0) || 1; return w.map(x => x / t); })() : odds;
       if (runKm) addG('run', Math.round(runKm * b.RUN_G));
       // 250m 마다: 알 줍기 → 부화기 채우기 → 부화기의 모든 알이 같이 걷는다
       for (let left = km; left > 1e-9; left -= sub) {
-        const st = Math.min(sub, left); U.pe += st; U.pl += st;
+        const st = Math.min(sub, left), walked = km - left, OD = walked < incL ? oddsI : odds, shC = walked < chL; U.pe += st; U.pl += st;
         let n = per < 1 ? (r() < per * st / sub ? 1 : 0) : Math.floor(r() * (2 * per + 1) * st / sub);
         n = Math.min(n, b.MAX_BAG - U.bag.length);
-        for (let i = 0; i < n; i++) { let x = r(), g = 5; for (let j = 0; j < 5; j++) if ((x -= odds[j]) <= 0) { g = j + 1; break; }
+        for (let i = 0; i < n; i++) { let x = r(), g = 5; for (let j = 0; j < 5; j++) if ((x -= OD[j]) <= 0) { g = j + 1; break; }
           if (U.pl >= model.pity.l) g = 5; else if (U.pe >= model.pity.e) g = Math.max(g, 4);
-          if (g === 5) U.pl = 0; if (g >= 4) U.pe = 0; U.bag.push(g); U.eggs++; }
-        while (U.inc.length < b.MAX_EGGS && U.bag.length) { const g = U.bag.shift(); U.inc.push({ g, km: 0, need: HK[g] }); }
+          if (g === 5) U.pl = 0; if (g >= 4) U.pe = 0; U.bag.push(shC && r() < 1 / SH.charm.n ? -g : g); U.eggs++; }   /* 부적 중 주운 알은 이로치가 든 알 (음수로 표시) */
+        while (U.inc.length < b.MAX_EGGS && U.bag.length) { const g0 = U.bag.shift(), g = Math.abs(g0); U.inc.push({ g, km: 0, need: HK[g], sh: g0 < 0 }); }
         for (const e of U.inc) e.km += st;
         for (let i = U.inc.length - 1; i >= 0; i--) { const e = U.inc[i]; if (e.km < e.need) continue; U.inc.splice(i, 1); U.hatched++;
           const sp = +pick(r, model.probs[e.g]), [, isNew] = getMon(sp, day); addG('hatch', isNew ? b.NEW_EGG_G[e.g] : b.DUP_G[e.g]);
-          if (r() < 1 / (b.SHINY_N || 4096)) U.sh++;
+          if (e.sh || r() < 1 / (b.SHINY_N || 4096)) U.sh++;
           if (e.g >= 4 && U.fE == null) U.fE = day; if (e.g === 5 && U.fL == null) U.fL = day; }
       }
       fillBud();
@@ -81,6 +89,8 @@
           addG('mg', Math.floor(s / MG_PTS)); best = Math.max(best, s); U.q.n++; U.q.sum += s; U.q.ph = Math.max(U.q.ph, 1 + Math.floor(s * .8 / 250)); U.q.kn += Math.round(2 + s / 500);   /* 짐작: 페이즈는 250m마다(점수의 8할이 거리), 기술로 날리는 수는 한 판에 2 + 점수/500 */
           const frB = Math.floor(s / 1000);   // v8.34 경완: 1,000점부터 +1 if (U.bud[0]) U.bud[0].fr = Math.min(b.FR_MAX, U.bud[0].fr + frB);
           for (const t of model.SP[m.sp]?.t || []) U.q.ty[t] = Math.max(U.q.ty[t] || 0, s); }
+        { const wk = Math.floor((day - 1) / 7); if (U.gW.w !== wk) U.gW = { w: wk, best: 0, got: {} }; U.gW.best = Math.max(U.gW.best, best);   // v3.42: 미니게임 기록별 선물 (7일마다) 중 향로·빛나는 부적
+          for (const [m, k, n] of [[500, 'inc', 1], [3000, 'inc', 2], [5000, 'charm', 1]]) if (U.gW.best >= m && !U.gW.got[m]) { U.gW.got[m] = 1; U.it[k] += n; } }
         if (cnt >= MQ_DAY[0][0]) addG('mq', MQ_DAY[0][1]); if (cnt >= MQ_DAY[1][0] && new Set(U.box.map(o => o.sp)).size >= 3) addG('mq', MQ_DAY[1][1]); if (best >= MQ_DAY[2][0]) addG('mq', MQ_DAY[2][1]);
         const claim = (id, v, L) => L.forEach(([x, gG], j) => { const k = id + j; if (v >= x && !U.q.cl[k]) { U.q.cl[k] = 1; addG('mq', gG); } });
         claim('play', U.q.n, MQ_PLAY); claim('sum', U.q.sum, MQ_SUM); claim('ph', U.q.ph, MQ_PH); claim('kill', U.q.kn, MQ_KILL); for (const [t, v] of Object.entries(U.q.ty)) claim('ty' + t, v, MQ_TY); }
@@ -93,7 +103,7 @@
       if (day === 7 || day === 30 || day === days) U.d[day] = { dex: U.dex.size, bag: U.bag.length, gold: U.gold, earn: Object.values(U.gs).reduce((a, x) => a + x, 0) };
     }
     const earn = Object.values(U.gs).reduce((a, x) => a + x, 0);
-    return { p: P.id, d: U.d, fE: U.fE, fL: U.fL, earn, gs: U.gs, spent: U.spent, buy: U.buy, evo: U.evo, sh: U.sh, eggs: U.eggs, hatched: U.hatched, km: U.km, fr160: U.frD[b.FR_EVO] ?? null, frMax: U.frD.max ?? null };
+    return { p: P.id, d: U.d, fE: U.fE, fL: U.fL, earn, gs: U.gs, spent: U.spent, buy: U.buy, bI: U.bI, bC: U.bC, uI: U.use.inc, uC: U.use.charm, evo: U.evo, sh: U.sh, eggs: U.eggs, hatched: U.hatched, km: U.km, fr160: U.frD[b.FR_EVO] ?? null, frMax: U.frD.max ?? null };
   }
 
   function sim(model, o = {}) {
@@ -101,7 +111,7 @@
     let k = 0; for (const P of PERSONAS) for (let i = 0; i < P.n; i++) users.push(simUser(model, P, seed + k++ * 7919, days, R));
     const by = {}; for (const P of PERSONAS) { const L = users.filter(u => u.p === P.id), f = fn => med(L.map(fn));
       by[P.id] = { name: P.name, n: L.length, dex7: f(u => u.d[7].dex / N), dex30: f(u => u.d[30].dex / N), dex90: f(u => u.d[days].dex / N), fE: f(u => u.fE ?? days + 1), fL: f(u => u.fL ?? days + 1), noL: L.filter(u => u.fL == null).length / L.length,
-        gpd: f(u => u.d[30].earn / 30), gold30: f(u => u.d[30].gold), bag30: f(u => u.d[30].bag), fr160: f(u => u.fr160 ?? days + 1), frMax: f(u => u.frMax ?? days + 1), km: f(u => u.km / days), buy: f(u => u.buy), sh: L.reduce((a, u) => a + u.sh, 0),
+        gpd: f(u => u.d[30].earn / 30), gold30: f(u => u.d[30].gold), bag30: f(u => u.d[30].bag), fr160: f(u => u.fr160 ?? days + 1), frMax: f(u => u.frMax ?? days + 1), km: f(u => u.km / days), buy: f(u => u.buy), uI: f(u => u.uI), uC: f(u => u.uC), sh: L.reduce((a, u) => a + u.sh, 0),
         src: Object.fromEntries(Object.keys(L[0].gs).map(k => [k, Math.round(f(u => u.gs[k]))])) }; }
     // 제일 드문 종: 그 알 등급 확률 × 그 종 확률 로 몇 km 에 하나꼴인지 (천장 빼고)
     let rare = null; const epk = 1 / (model.b.BAG_STEP || .25);
