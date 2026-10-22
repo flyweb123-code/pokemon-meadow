@@ -5983,7 +5983,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.56';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.57';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6686,7 +6686,7 @@ function mgAimHint(g) {   /* v6.57 경완: 글·화살표 대신 누르는 동�
   const ab = $('#mgAbBtn'), h = $('#mgAim'), r = ab.getBoundingClientRect(), pr = h.offsetParent?.getBoundingClientRect() || { left: 0, top: 0 };
   h.style.left = (r.left - pr.left + r.width / 2) + 'px'; h.style.top = (r.top - pr.top + r.height / 2) + 'px'; const R = MG_AIM_R, d = `M${-MG_AIM_B} ${-R} Q${MG_AIM_B} 0 ${-MG_AIM_B} ${R}`; h.querySelectorAll('path').forEach(p => p.setAttribute('d', d)); h.querySelector('i').style.transform = ''; h.hidden = false; g.aimG = 1; }
 function mgAimMove(dy) { const k = $('#mgAim i'); if (k) { const y = clamp(dy, -MG_AIM_R, MG_AIM_R); k.style.transform = `translate(${mgAimX(y)}px,${y}px)`; } }
-const MG_SURF_RT = .6;   // v8.54 경완: 파도타기 — 파도가 발밑에서 솟아오르는 시간 (초)
+const MG_SURF_RT = .55;   // v8.54 경완: 파도타기 — 파도가 발밑에서 솟아오르는 시간 (초)
 const MG_COMBO_T = .7;   // 콤보가 이어지는 시간 (초) — v7.69 경완: 0.7초 (7.68 0.5초 (2.6·1.5는 너무 길다)
 // v5.92 경완: 액티브 기술은 시작과 끝을 확실하게 (색 번쩍·고리·이름, 끝나면 뚝 소리와 연기, 끝나기 직전엔 깜빡)
 const MG_PC_T = 1.1;
@@ -6825,9 +6825,9 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
     if (!(g.fx.ambT > 0) && A.end == null) A.end = A.t + .1;
     if (A.end != null && A.t >= A.end && !A.cl.length) { g.amb = null; g.inv = Math.max(g.inv || 0, 1.2);   /* v6.72 경완: 풀리고 나서 1.2초 무적(깜빡) */ mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, '#6a4a9a', 10, 150); mgAmbOut(g); } }
   if (g.fx.iron > 0 && g.y <= 0 && !g.over) { g.irS = (g.irS || 0) - dt; if (g.irS <= 0) { g.irS = .34; g.shake = Math.max(g.shake || 0, .05); g.shA = Math.max(g.shA || 0, 2); mgDust(g, 3, 70); } }   /* v6.60 철벽: 쿵쿵 무거운 발걸음 */
-  { const on = g.fx.surf > 0, WH = clamp(95 + (g.aimT || 0) * 64, 40, 135) * (g.pas?.pow ? 1.15 : 1);   /* v8.33 경완: 더 민감하게 = 손가락 1px 당 .71 (예전 .36, 위 끝까지 56px·아래 끝까지 77px), 높이도 더 빨리 따라감 */   /* v7.75 경완: 꾹 누른 채 손가락 위아래로 파도 높이 조절 (40~135, 너무 높지 않게) */ if (on && g.sRT > 0) { g.sRT = Math.max(0, g.sRT - dt); const k = 1 - g.sRT / MG_SURF_RT, x = g.sAir ? k : Math.max(0, (k - .2) / .8), e = (1 - Math.cos(Math.PI * x)) / 2 + .1 * Math.sin(Math.PI * x) * x, s0 = g.sL || 0; g.sL = WH * e; if (g.y > 0) g.y = Math.max(0, g.y - (g.sL - s0));   /* 공중: 포켓몬의 실제 높이는 그대로 두고 파도만 밑에서 올라와 만난다 */ if (!g.sAir || g.y <= 0) { g.sq = !g.sAir && k < .2 ? 1 - .22 * Math.sin(k / .2 * Math.PI / 2) : 1 + .3 * Math.sin(x * Math.PI) * (g.sAir ? .5 : 1); g.sqv = 0; } }   /* v8.54 경완: 파도가 밑에서부터 솟는 동안 (살짝 넘쳤다 자리 잡음), 포켓몬은 웅크렸다 늘어나며 함께 올라간다 */
+  { const on = g.fx.surf > 0, WH = clamp(95 + (g.aimT || 0) * 64, 40, 135) * (g.pas?.pow ? 1.15 : 1);   /* v8.33 경완: 더 민감하게 = 손가락 1px 당 .71 (예전 .36, 위 끝까지 56px·아래 끝까지 77px), 높이도 더 빨리 따라감 */   /* v7.75 경완: 꾹 누른 채 손가락 위아래로 파도 높이 조절 (40~135, 너무 높지 않게) */ if (on && g.sRT > 0) { g.sRT = Math.max(0, g.sRT - dt); const k = 1 - g.sRT / MG_SURF_RT, x = g.sAir ? k : Math.max(0, (k - .14) / .86), e = x <= 0 ? 0 : 1 - Math.exp(-5.5 * x) * Math.cos(10 * x), s0 = g.sL || 0; g.sL = WH * e;   /* v8.57 경완 '더 찰지게': 웅크렸다가 파도가 확 솟아 한 번 넘쳤다(+15%) 출렁이며 자리 잡는다 (감쇠 스프링) */ if (g.y > 0) g.y = Math.max(0, g.y - (g.sL - s0));   /* 공중: 포켓몬의 실제 높이는 그대로 두고 파도만 밑에서 올라와 만난다 */ if (!g.sAir || g.y <= 0) { const dv = (g.sL - s0) / Math.max(dt, 1e-3) / WH; g.sq = !g.sAir && x <= 0 ? 1 - .3 * Math.sin(k / .14 * Math.PI / 2) : clamp(1 + dv * .09, .72, 1.45); g.sqv = 0; } if (x > 0 && s0 < WH * .5 && g.sL >= WH * .5) haptic(1); }   /* 솟는 속도만큼 늘어나고, 넘쳤다 내려앉을 땐 찌그러진다 */   /* v8.54 경완: 파도가 밑에서부터 솟는 동안 (살짝 넘쳤다 자리 잡음), 포켓몬은 웅크렸다 늘어나며 함께 올라간다 */
     else { if (!on) g.sRT = 0; g.sL = Math.max(0, (g.sL || 0) + ((on ? WH : 0) - (g.sL || 0)) * Math.min(1, dt * (on ? 11 : 4))); } if (g.sL < .5 && !on) g.sL = 0;   /* v6.37 경완: 파도타기 = 큰 파도가 솟아 그 꼭대기에 올라타고, 파도 앞면이 닿는 장애물은 모두 쓸려 날아간다 */
-    if (on && g.sL > 20) for (const o of g.obs) if (!o.dead && !o.flee && o.x - o.w / 2 < g.PX + 70 && o.x + o.w / 2 > g.PX - 40 && o.y < g.sL + 30) { mgKill(g, o, '#5ab0ff'); if (o.kb) { o.kb.vx *= 1.5; o.kb.vy *= 1.3; } mgFx(g, o.x, g.GY - Math.min(o.y + o.h / 2, g.sL), '#e8f6ff', 12, 240); g.shake = Math.max(g.shake || 0, .12); g.shA = Math.max(g.shA || 0, 4); } }   /* v7.80 경완: 파도로 쓸 땐 진동 없음 */
+    if (on && g.sL > 20) for (const o of g.obs) if (!o.dead && !o.flee && o.x - o.w / 2 < g.PX + 70 && o.x + o.w / 2 > g.PX - 40 && o.y < g.sL + 30) { mgKill(g, o, '#5ab0ff'); haptic(1); if (o.kb) { o.kb.vx *= 1.5; o.kb.vy *= 1.3; } mgFx(g, o.x, g.GY - Math.min(o.y + o.h / 2, g.sL), '#e8f6ff', 12, 240); g.shake = Math.max(g.shake || 0, .12); g.shA = Math.max(g.shA || 0, 4); } }   /* v7.80 경완: 파도로 쓸 땐 진동 없음 */
   if (g.over) { if (g.vy || g.y > 0) { g.vy -= MG_GRAV * MG_FALL * dt; g.y = Math.max(0, g.y + g.vy * dt); if (!g.y) g.vy = 0; } g.overT -= dt;   // 부딪히면 뒤로 튕겨 떨어진다
   if (g.overT <= 0 && !g.done) {
     if (g.revT > 0) { g.revT -= dt; if (g.revT <= 0) { g.over = false; g.revT = 0; g.lives = g.pas?.pow ? 2 : 1; g.inv = 2;   /* v6.36 경완: S 랭크는 하트 2개로 부활 */ g.y = 0; g.vy = 0; g.spin = 0; g.sq = 1.25; g.sqv = 0; g.obs.forEach(o => { if (!o.dead && o.x - g.PX < 160) mgKill(g, o, '#e6e8ff'); }); mgRing(g, '#e6e8ff'); mgFx(g, g.PX, g.GY - MG_PH / 2, '#fff8d0', 20, 220); mgToast(g, '달빛을 받아 다시 일어났어요!'); mgHud(); } }   /* 달빛 부활 */
@@ -6917,7 +6917,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
     if (g.fx.lev) { mgKill(g, o, '#e88aff'); continue; }   /* v7.24 경완: 무적 중이어도 부유 중엔 닿으면 다 날아감 */   // v6.18 경완: 부유 중엔 부딪혀도 안 죽고 포켓몬이 날아간다
     if (g.fx.dig > 0 && o.pat === 'dig') { mgKill(g, o, '#b08050'); if (o.kb) { o.kb.vy = Math.max(o.kb.vy || 0, 520); } mgFx(g, o.x, g.GY - 4, '#c8955a', 10, 200); haptic(1); continue; }   /* v7.21 경완: 땅속에서 디그다와 마주치면 날려 버림 */
     if (g.fx.dig > 0 || g.fx.ghost > 0 || g.inv > 0 || g.amb || g.scH != null || (o.pq && g.fx.punch)) continue;   /* v7.26 경완: 놀래키기 누르는 동안 투명 무적 — 그냥 지나감 */
-    if (g.fx.surf > 0) { mgKill(g, o, '#5ab0ff'); mgFx(g, o.x, g.GY - 10, '#bfe6ff', 10, 200); continue; }   // v6.17 경완: 파도타기로 지나가면 포켓몬이 파도에 날아간다
+    if (g.fx.surf > 0) { mgKill(g, o, '#5ab0ff'); mgFx(g, o.x, g.GY - 10, '#bfe6ff', 10, 200); haptic(1); continue; }   /* v8.57 경완: 파도에 날아갈 때 진동 */   // v6.17 경완: 파도타기로 지나가면 포켓몬이 파도에 날아간다
     if (g.fx.ram > 0 || g.fx.bolt > 0 || (g.abK === 'fly' && g.fx.flyT > 0)) { mgKill(g, o, g.abK === 'fly' ? '#9ad8ff' : '#ffe14a');   /* v7.06 경완: 공중날기 중 부딪히면 날림 */ if (g.fx.bolt > 0) { g.hs = Math.max(g.hs || 0, .03); g.sq = .84; g.sqv = 0; haptic(0); } continue; }   // 오버드라이브로 칠 때마다 멈칫·움찔
     if (g.fx.iron > 0) { mgKill(g, o, '#dfe6f0'); sfx('knock'); g.irF = .2; g.shake = Math.max(g.shake || 0, .08); g.shA = Math.max(g.shA || 0, 3); mgFx(g, (g.PX + o.x) / 2, g.GY - g.y - MG_PH / 2, '#ffffff', 10, 220); continue; }   // 철벽: 부딪힌 포켓몬이 튕겨 날아간다
     if (g.combo) { g.combo = 0; g.cT = 0; } g.pc = 0;
