@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.47"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.48"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.47';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.48';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2100,6 +2100,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.48', '10월 23일', ['뉴트럴 분석 날짜에 요일도 (10월 23일 (금) 오전 7:50)']],
   ['3.47', '10월 23일', ['뉴트럴 분석에 몇 월 며칠 몇 시에 분석했는지 늘 보이게 (오늘이어도 날짜)']],
   ['3.46', '10월 22일', ['뉴트럴: 낮·밤에만 진화하는 포켓몬(라란티스·견고라스 등)도 짝꿍 거리로 진화하게 셈 (게임 8.60)']],
   ['3.45', '10월 22일', ['향로 기본 배율 1·1·1.5·3·3 (체감되면서 첫 전설은 조금만 당겨지게, 게임 8.44)']],
@@ -3222,7 +3223,7 @@ const face = (k, s = 4) => `<span class="stf-face" style="--c:${STAFF[k].c}">${p
 async function staffGet(path, def) {
   try { if (store.get('st-gh-token')) return JSON.parse(await gh(`/contents/${path}?ref=main`, { raw: true })); const r = await fetch('../' + path + '?t=' + Date.now(), { cache: 'no-store' }); return r.ok ? await r.json() : def; }
   catch (e) { return def; } }
-const whenD = t => { const d = new Date(t); return d.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' }) + ' ' + d.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' }); };   // 3.47 경완: 뉴트럴 분석은 오늘이어도 몇 월 며칠인지
+const whenD = t => { const d = new Date(t); return d.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' }) + ` (${'일월화수목금토'[d.getDay()]}) ` + d.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' }); };   // 3.47 경완: 뉴트럴 분석은 오늘이어도 몇 월 며칠인지, 3.48 요일도
 const when = t => { const d = new Date(t), n = new Date(), same = d.toDateString() === n.toDateString(); return same ? d.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' }) : d.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' }) + ' ' + d.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' }); };
 
 // ---------- 뉴트럴의 조언 ----------
