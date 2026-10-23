@@ -5986,7 +5986,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.70';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.71';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -10437,7 +10437,7 @@ body.inTitle,body.inTitle #app{background:#24482a!important}body.inTitle #app{ov
 #tut .tu-box{position:fixed;left:50%;transform:translateX(-50%);width:min(560px,calc(100% - 24px));display:flex;align-items:flex-end;gap:8px}
 #tut .tu-box img{flex:none;width:76px;height:116px;image-rendering:pixelated;margin-bottom:-4px;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35))}
 #tut .tu-box .win{flex:1;min-width:0;height:158px;box-sizing:border-box;padding:14px 16px 20px;font-size:15px;line-height:1.6;white-space:pre-wrap;position:relative}
-#tut.do{pointer-events:none}#tut.do .tu-box{pointer-events:none}#tut .tu-box{transition:none}#tut .tu-n{position:absolute;left:14px;top:-14px;background:var(--frame);color:#fff;font-size:12px;padding:2px 8px}
+#tut.do{pointer-events:none}#tut.do .tu-box{pointer-events:none}#tut .tu-box{transition:top .25s steps(4,end)}#tut .tu-n{position:absolute;left:14px;top:-14px;background:var(--frame);color:#fff;font-size:12px;padding:2px 8px}
 `; document.head.append(st); }
 // 글자를 한 자씩 띄우고(누르면 바로 끝까지), 다 뜨면 ▼ 깜빡이며 누를 때까지 기다린다
 function inTyper(root, tEl, curEl) {
