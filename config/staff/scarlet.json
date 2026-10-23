@@ -790,107 +790,6 @@
      ],
      "fit": "놀이터 가장자리",
      "glow": 0
-    },
-    {
-     "id": "playhouse",
-     "n": "나무 오두막",
-     "k": "쉼터",
-     "d": "빨간 지붕에 창문과 꽃 화분이 달린 작은 나무 놀이집이에요.",
-     "px": [
-      ".............kk.............",
-      "............kaak............",
-      "...........kaaaak...........",
-      "..........kbbaaabk..........",
-      ".........kbbbbbabbk.........",
-      "........kbbbbkkbbbbk........",
-      "......kkbbbbkcckbbbbkk......",
-      ".....kbbbbbkccdekfbbfak.....",
-      "....kbbbbgkccedeekfbafbk....",
-      "...kbbbbkccceedeedkgfbfbk...",
-      "..kbbbbkccedeedddhdckfbffk..",
-      ".kbbbbkedeehddhddhdddkffgfk.",
-      "kbbbbieehdhhhhhhhhhhhhiggggk",
-      "kbfbijiiiiiiiiiiiiiiiiliggk.",
-      ".kkkjjjjjjjjjjmllmllmlmikk..",
-      "...kjjjlmllmllmllmllmmmik...",
-      "...kjjjlmllmllmliiiiiimik...",
-      "...kjjjiiiiiilminodoppiik...",
-      "...kjjiqqrrrrimioodoooiik...",
-      "...kjjiqqrrrrimiddddddiik...",
-      "...kjjiqqrrrrimioohoooiik...",
-      "...kjjiqqrrrriissssssssik...",
-      "...kjjiqqrrtriiuuuuuuuuik...",
-      "...kjmiqqrtvtiiwwwwwwwwik...",
-      "...kjmiqqrrtriiiiiiiiiiik...",
-      "...kjmiqqrrrriimmimmiiiik...",
-      "...kjmiqqrrrriiiiiiiiiiik...",
-      "...klmiqqrrrriiiiiiiiiiik...",
-      "...kliiqqrrrriiiiiiiiiiik...",
-      "....kkkkkkkkkkkkkkkkkkkk...."
-     ],
-     "pal": {
-      "k": "#20202c",
-      "a": "#e89a78",
-      "b": "#c06a50",
-      "c": "#d8a868",
-      "d": "#7a4c28",
-      "e": "#a87040",
-      "f": "#94483c",
-      "g": "#6a3030",
-      "h": "#523218",
-      "i": "#5c3820",
-      "j": "#e0b07a",
-      "l": "#b47a48",
-      "m": "#86542e",
-      "n": "#e8f4ff",
-      "o": "#5884b0",
-      "p": "#a8d0ec",
-      "q": "#221a1a",
-      "r": "#2c2220",
-      "s": "#6cae58",
-      "t": "#1a1416",
-      "u": "#6e2830",
-      "v": "#f8e090",
-      "w": "#c85848",
-      "x": "#2c4a28",
-      "y": "#3a5a30"
-     },
-     "acts": [
-      {
-       "w": "작은 포켓몬",
-       "a": "문 안으로 들어가 숨었다가 창문으로 얼굴을 내밀어요",
-       "x": {
-        "at": [
-         0.66,
-         0.64
-        ],
-        "m": "win"
-       }
-      },
-      {
-       "w": "노말 타입",
-       "a": "문 앞에 앉아 낮잠을 자요",
-       "x": {
-        "at": [
-         0.32,
-         1.03
-        ],
-        "an": "Sleep"
-       }
-      },
-      {
-       "w": "풀 타입",
-       "a": "창문 아래 꽃 화분 옆에 앉아 쬐어요",
-       "x": {
-        "at": [
-         0.7,
-         1.03
-        ]
-       }
-      }
-     ],
-     "fit": "숲 경계, 나무 그늘",
-     "glow": 0
     }
    ]
   },
@@ -2380,6 +2279,110 @@
   }
  ],
  "trash": [
+  {
+   "id": "playhouse",
+   "n": "나무 오두막",
+   "k": "쉼터",
+   "d": "빨간 지붕에 창문과 꽃 화분이 달린 작은 나무 놀이집이에요.",
+   "px": [
+    ".............kk.............",
+    "............kaak............",
+    "...........kaaaak...........",
+    "..........kbbaaabk..........",
+    ".........kbbbbbabbk.........",
+    "........kbbbbkkbbbbk........",
+    "......kkbbbbkcckbbbbkk......",
+    ".....kbbbbbkccdekfbbfak.....",
+    "....kbbbbgkccedeekfbafbk....",
+    "...kbbbbkccceedeedkgfbfbk...",
+    "..kbbbbkccedeedddhdckfbffk..",
+    ".kbbbbkedeehddhddhdddkffgfk.",
+    "kbbbbieehdhhhhhhhhhhhhiggggk",
+    "kbfbijiiiiiiiiiiiiiiiiliggk.",
+    ".kkkjjjjjjjjjjmllmllmlmikk..",
+    "...kjjjlmllmllmllmllmmmik...",
+    "...kjjjlmllmllmliiiiiimik...",
+    "...kjjjiiiiiilminodoppiik...",
+    "...kjjiqqrrrrimioodoooiik...",
+    "...kjjiqqrrrrimiddddddiik...",
+    "...kjjiqqrrrrimioohoooiik...",
+    "...kjjiqqrrrriissssssssik...",
+    "...kjjiqqrrtriiuuuuuuuuik...",
+    "...kjmiqqrtvtiiwwwwwwwwik...",
+    "...kjmiqqrrtriiiiiiiiiiik...",
+    "...kjmiqqrrrriimmimmiiiik...",
+    "...kjmiqqrrrriiiiiiiiiiik...",
+    "...klmiqqrrrriiiiiiiiiiik...",
+    "...kliiqqrrrriiiiiiiiiiik...",
+    "....kkkkkkkkkkkkkkkkkkkk...."
+   ],
+   "pal": {
+    "k": "#20202c",
+    "a": "#e89a78",
+    "b": "#c06a50",
+    "c": "#d8a868",
+    "d": "#7a4c28",
+    "e": "#a87040",
+    "f": "#94483c",
+    "g": "#6a3030",
+    "h": "#523218",
+    "i": "#5c3820",
+    "j": "#e0b07a",
+    "l": "#b47a48",
+    "m": "#86542e",
+    "n": "#e8f4ff",
+    "o": "#5884b0",
+    "p": "#a8d0ec",
+    "q": "#221a1a",
+    "r": "#2c2220",
+    "s": "#6cae58",
+    "t": "#1a1416",
+    "u": "#6e2830",
+    "v": "#f8e090",
+    "w": "#c85848",
+    "x": "#2c4a28",
+    "y": "#3a5a30"
+   },
+   "acts": [
+    {
+     "w": "작은 포켓몬",
+     "a": "문 안으로 들어가 숨었다가 창문으로 얼굴을 내밀어요",
+     "x": {
+      "at": [
+       0.66,
+       0.64
+      ],
+      "m": "win"
+     }
+    },
+    {
+     "w": "노말 타입",
+     "a": "문 앞에 앉아 낮잠을 자요",
+     "x": {
+      "at": [
+       0.32,
+       1.03
+      ],
+      "an": "Sleep"
+     }
+    },
+    {
+     "w": "풀 타입",
+     "a": "창문 아래 꽃 화분 옆에 앉아 쬐어요",
+     "x": {
+      "at": [
+       0.7,
+       1.03
+      ]
+     }
+    }
+   ],
+   "fit": "숲 경계, 나무 그늘",
+   "glow": 0,
+   "del": 1792784146993,
+   "dayAt": 1792709198212,
+   "theme": "숲속 놀이터"
+  },
   {
    "id": "merry-go-round",
    "n": "뱅뱅이",
