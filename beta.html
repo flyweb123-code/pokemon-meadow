@@ -5986,7 +5986,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.73';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.74';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -11082,8 +11082,14 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
   api.oneThumb = async k => { const P = k === 'pond' ? POND : k === 'bed' ? FLOWERBED : null; if (!P) return '';
     const [x0, y0, x1, y1] = k === 'pond' ? [P.x - P.rx - 12, P.y - P.ry - 30, P.x + P.rx + 12, P.y + P.ry + 10] : [P.x - 54, P.y - 48, P.x + 54, P.y + 24];
     const w = Math.round(x1 - x0), h = Math.round(y1 - y0), c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.imageSmoothingEnabled = false;
-    const bg = $('#bg'), ox = BGX ? BGX.ox : 0; g.drawImage(bg, x0 / 2 + ox, y0 / 2, w / 2, h / 2, 0, 0, w, h);
-    const L = [...itemsEl.querySelectorAll('.flw,.lily')].map(e => ({ e, x: parseFloat(e.style.left), y: parseFloat(e.style.top), w: parseFloat(e.style.width), h: parseFloat(e.style.height), src: (e.style.backgroundImage.match(/url\("?(.*?)"?\)$/) || [])[1] }))
+    /* v8.74 경완: 둘레 필드(풀·바위·그루터기)는 빼고 그 소품만 — 배경을 잘라 쓰지 않고 연못·꽃밭 땅을 drawBg 와 같은 식으로 따로 그린다 */
+    { const px = (x, y, c2) => { g.fillStyle = c2; g.fillRect(Math.round(x * 2 - x0), Math.round(y * 2 - y0), 2, 2); };
+      if (k === 'pond') { const Q = { x: P.x / 2, y: P.y / 2, rx: P.rx / 2, ry: P.ry / 2 };
+        for (let y = Math.floor(Q.y - Q.ry - 6); y <= Q.y + Q.ry + 6; y++) for (let x = Math.floor(Q.x - Q.rx - 6); x <= Q.x + Q.rx + 6; x++) { const v = pondVal(x * 2, y * 2) + Math.sin(x * .7) * .015 + Math.cos(y * .9) * .02, d = (x + y) & 1;
+          const c2 = v < .3 ? (v > .26 && d ? '#3a86c8' : '#2e6fb4') : v < .62 ? (v > .56 && d ? '#4c9ad8' : '#3a86c8') : v < .86 ? (v > .8 && d ? '#6cb4e6' : '#4c9ad8') : v < .95 ? '#8ccaf0' : v < 1 ? '#cfe9f6' : v < 1.13 ? (v < 1.04 && d ? '#c8a868' : '#e2cc92') : v < 1.2 ? '#b8985c' : null; if (c2) px(x, y, c2); } }
+      else { const cx = P.x / 2, cy = P.y / 2; for (let y = -8; y <= 8; y++) for (let x = -22; x <= 22; x++) { const q = (x / 19) ** 2 + (y / 6.5) ** 2; if (q <= 1) px(cx + x, cy + y, q > .8 ? '#5e3c20' : (y + 6) % 4 === 0 ? '#6e4626' : (y + 6) % 4 === 1 ? '#a8764a' : '#8a5c34'); } } }
+    const own = e => k === 'pond' ? e.classList.contains('lily') || parseFloat(e.style.top) < P.y && pondVal(parseFloat(e.style.left), parseFloat(e.style.top)) < 1.5 : ((parseFloat(e.style.left) - P.x) / 46) ** 2 + ((parseFloat(e.style.top) - P.y) / 30) ** 2 <= 1;
+    const L = [...itemsEl.querySelectorAll('.flw,.lily')].filter(own).map(e => ({ e, x: parseFloat(e.style.left), y: parseFloat(e.style.top), w: parseFloat(e.style.width), h: parseFloat(e.style.height), src: (e.style.backgroundImage.match(/url\("?(.*?)"?\)$/) || [])[1] }))
       .filter(o => o.src && o.x + o.w / 2 > x0 && o.x - o.w / 2 < x1 && o.y > y0 && o.y - o.h < y1 + (o.e.classList.contains('lily') ? o.h : 0)).sort((a, b) => a.y - b.y);
     for (const o of L) { const im = new Image(); im.src = o.src; await im.decode().catch(() => {}); const ly = o.e.classList.contains('lily'); g.drawImage(im, Math.round(o.x - o.w / 2 - x0), Math.round(o.y - (ly ? o.h / 2 : o.h) - y0), o.w, o.h); }
     return c.toDataURL(); };
