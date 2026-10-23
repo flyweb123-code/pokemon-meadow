@@ -1,6 +1,799 @@
 {
  "days": [
   {
+   "at": 1792795651373,
+   "theme": "아침 정원 가꾸기",
+   "note": "오늘은 아침 정원 가꾸기예요. 어제 지워진 작은 소품들을 보고, 이번엔 맵에서 바로 알아볼 만한 18~34칸짜리로 우물·벤치·벌통처럼 실루엣이 분명한 것만 골랐어요. 나무는 결, 돌은 줄눈, 금속은 하이라이트 한 줄로 재질을 나눴어요.",
+   "items": [
+    {
+     "id": "stone-well",
+     "n": "돌 우물",
+     "k": "쉼터",
+     "d": "돌을 둥글게 쌓고 빨간 지붕을 얹은 우물이에요. 도르래 밧줄에 양철 두레박이 매달려 있고, 안쪽엔 맑은 물이 찰랑여요.",
+     "acts": [
+      {
+       "w": "물 타입",
+       "a": "우물 가장자리에 올라가 물속을 들여다보며 물을 뿜어 올려요",
+       "x": {
+        "at": "top",
+        "m": "peek skill"
+       }
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "빨간 지붕 꼭대기에 날아와 앉아 쉬어요",
+       "x": {
+        "at": [
+         0.5,
+         0.05
+        ],
+        "m": "fly"
+       }
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "두레박 줄에 매달려 오르내리며 놀아요",
+       "x": {
+        "at": [
+         0.5,
+         0.55
+        ],
+        "m": "bob",
+        "back": true
+       }
+      }
+     ],
+     "fit": "집 마당, 꽃밭 옆",
+     "glow": 0,
+     "px": [
+      "...........kkkkkk...........",
+      ".........kkRRRRRRkk.........",
+      ".......kkRRSSSSSSSTkk.......",
+      ".....kkRRTSSTSSTSSTSTkk.....",
+      "...kkRRSSSSSSSSSSSSSSSTkk...",
+      ".kkRRSSTSSTSSTSSTSSTSSTSTkk.",
+      "kRRSSSSSSSSSSSSSSSSSSSSSSSTk",
+      "kTTTTTTTTTTTTTTTTTTTTTTTTTTk",
+      ".kkkABDBBBBBBBBBBBBBBABDzzk.",
+      "...kABDDDDDDDDDDDDDDDABDkzk.",
+      "...kABDkkkkkkrzkkkkkkABDkzk.",
+      "...kAEDk....krzk....kAEDkk..",
+      "...kABDk....krzk....kABDk...",
+      "...kABDk...kkrzkk...kABDk...",
+      "...kABDk..kooooook..kABDk...",
+      "...kABDk..knmnnoqk..kABDk...",
+      "...kAEDk..knmnnoqk..kAEDk...",
+      "...kABDk..kooooook..kABDk...",
+      "...kABDk..knmnnoqk..kABDk...",
+      "...kABDkkkkkkkkkkkkkkABDk...",
+      "..kkABttttttttttttttttBDkk..",
+      ".ktssssssyyyyyyyyyysssssstk.",
+      "kssssyyxwwxxxxxyyyyyyyyssssk",
+      ".ktsssyyyyyyyyyyyyyyyyssstk.",
+      "kuttssussttuttttuuuuuuuuvvuk",
+      "kuttssussttuttttuuuuuuuuvvuk",
+      "kuttssussttuttttuuuuuuuuvvuk",
+      "kuuuuuuuuuuuuuuuuuuuuuuuuuuk",
+      "kttussssuttttutttuuuuuuuvvvk",
+      "kttussssuttttutttuuuuuuuvvvk",
+      "kuuuuuuuuuuuuuuuuuuuuuuuuuuk",
+      "kvvvvvvvvvvvvvvvvvvvvvvvvvvk",
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "A": "#ecc48a",
+      "B": "#c08a52",
+      "D": "#8e5c32",
+      "E": "#5e3a20",
+      "R": "#e08262",
+      "S": "#b85a40",
+      "T": "#823a2c",
+      "k": "#20202c",
+      "m": "#eef0f2",
+      "n": "#b0b8c4",
+      "o": "#747c8a",
+      "q": "#4a505c",
+      "r": "#e2cc98",
+      "s": "#d4cfc2",
+      "t": "#a8a296",
+      "u": "#7a756c",
+      "v": "#524e4a",
+      "w": "#9ad4ee",
+      "x": "#5aa0d4",
+      "y": "#3a6aa8",
+      "z": "#a88a58"
+     }
+    },
+    {
+     "id": "wheelbarrow",
+     "n": "외바퀴 수레",
+     "k": "놀이",
+     "d": "빨간 철판 통에 나무 손잡이와 고무 바퀴 하나가 달린 수레예요. 흙을 나르다 잠깐 세워 둔 채로, 통 안엔 흙 몇 줌이 남아 있어요.",
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "수레 통 안에 들어가 웅크리고 낮잠을 자요",
+       "x": {
+        "at": "in",
+        "an": "Sleep"
+       }
+      },
+      {
+       "w": "격투 타입",
+       "a": "손잡이를 잡고 수레를 앞뒤로 밀며 힘자랑을 해요",
+       "x": {
+        "at": [
+         0.9,
+         0.4
+        ],
+        "m": "push"
+       }
+      },
+      {
+       "w": "땅 타입",
+       "a": "통 안의 흙을 앞발로 파헤치며 놀아요",
+       "x": {
+        "at": "in",
+        "m": "peek",
+        "an": "Attack"
+       }
+      }
+     ],
+     "fit": "꽃밭이나 밭 옆",
+     "glow": 0,
+     "px": [
+      "..............................",
+      "..............................",
+      "..kkkkkkkkkkkkkkkkkkkkk.......",
+      ".kRRRRRRRRRRRRRRRRRRRRRk......",
+      ".kRKKKKKKKKKKKKKKKKKKKTk..kkk.",
+      "..kRffeffffeffffeffffTk..kEEEk",
+      "..kRRSSSSSSSSSSSSSSSTTkkkBBBk.",
+      "...kTTTTTTTTTTTTTTTTTkBBBDDDk.",
+      "...kRRSSSSSSSSSSSSSTTBDDDkkk..",
+      "....kRRSSSSSSSSSSSTTDDkkk.....",
+      "....kRRSSSSSSSSSSSTTkk........",
+      "...kkqqDETTTTTTTTTTk..........",
+      "..kqoqnDEqkkkkkkkDEk..........",
+      "..konnnnEqk.....kDEk..........",
+      ".kqqnononqqk....kDEk..........",
+      ".kqnnnmnnnqk....kDEk..........",
+      ".kqqnononqqk....kDEk..........",
+      "..kqnnnnnqk.....kDEk..........",
+      "..kqqqnqqqk.....kDEk..........",
+      "...kkqqqkk.....kEEEEk.........",
+      ".....kkk........kkkk.........."
+     ],
+     "pal": {
+      "B": "#c08a52",
+      "D": "#8e5c32",
+      "E": "#5e3a20",
+      "K": "#2e2a30",
+      "R": "#e08262",
+      "S": "#b85a40",
+      "T": "#823a2c",
+      "e": "#a85e34",
+      "f": "#6e3c22",
+      "k": "#20202c",
+      "m": "#eef0f2",
+      "n": "#b0b8c4",
+      "o": "#747c8a",
+      "q": "#4a505c"
+     }
+    },
+    {
+     "id": "bird-bath",
+     "n": "돌 물받이",
+     "k": "쉼터",
+     "d": "넓적한 돌 그릇에 빗물이 고인 새 물받이예요. 기둥엔 돌을 깎은 고리 무늬가 두 줄 있어요.",
+     "acts": [
+      {
+       "w": "나는 포켓몬",
+       "a": "그릇 가장자리에 날아와 앉아 물을 마시고 날개를 털어요",
+       "x": {
+        "at": "top",
+        "m": "fly flap"
+       }
+      },
+      {
+       "w": "작은 물 포켓몬",
+       "a": "그릇 물에 들어가 동동 떠서 몸을 담가요",
+       "x": {
+        "at": "in",
+        "m": "ride"
+       }
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "튀는 물방울에 놀라 슬쩍 돌아서 지나가요",
+       "x": {
+        "m": "avoid"
+       }
+      }
+     ],
+     "fit": "꽃밭 가운데, 나무 그늘",
+     "glow": 0,
+     "px": [
+      "......................",
+      ".....kkkkkkkkkkkk.....",
+      "...kktsssssssssstkk...",
+      ".kkssssxxxxxxxxsssskk.",
+      "ktssxwwwwwxxxxxxxxsstk",
+      "ktssxxxxxxxxxwxxxxssvk",
+      "ktttsssxxxxxxxxsssuvvk",
+      "ktttsssttttttuuuuuuvvk",
+      "kttuuuuuuuuuuuuuuuuvvk",
+      ".kkkkuuuuuuuuuuuukkkk.",
+      ".....kkvvvvvvvvkk.....",
+      ".......ktsttuvk.......",
+      ".......kuuuuuuk.......",
+      ".......ktsttuvk.......",
+      ".......ktsttuvk.......",
+      ".......kuuuuuuk.......",
+      ".......ktsttuvk.......",
+      ".......ktsttuvk.......",
+      ".....kkktsttuvkkk.....",
+      "....kssssssssssssk....",
+      "....kttsstttuuuvvk....",
+      "....kttsstttuuuvvk....",
+      "....kvvvvvvvvvvvvk....",
+      ".....kkkkkkkkkkkk.....",
+      "......................"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "s": "#d4cfc2",
+      "t": "#a8a296",
+      "u": "#7a756c",
+      "v": "#524e4a",
+      "w": "#9ad4ee",
+      "x": "#5aa0d4"
+     }
+    },
+    {
+     "id": "birdhouse-post",
+     "n": "기둥 새집",
+     "k": "쉼터",
+     "d": "긴 나무 기둥 위에 빨간 지붕 새집을 얹었어요. 동그란 입구 아래 작은 나무 막대 횃대가 튀어나와 있어요.",
+     "acts": [
+      {
+       "w": "작은 나는 포켓몬",
+       "a": "입구 횃대에 날아와 앉았다가 새집 안으로 쏙 들어가요",
+       "x": {
+        "at": [
+         0.5,
+         0.35
+        ],
+        "m": "fly hide"
+       }
+      },
+      {
+       "w": "벌레 타입",
+       "a": "기둥을 타고 새집까지 올라가요",
+       "x": {
+        "m": "climb"
+       }
+      },
+      {
+       "w": "노말 타입",
+       "a": "기둥에 등을 기대고 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       }
+      }
+     ],
+     "fit": "꽃밭 가장자리, 연못 근처",
+     "glow": 0,
+     "px": [
+      ".......kRSk.......",
+      "......kkRTkk......",
+      "....kkRRSSSTkk....",
+      "..kkRRSSSSSSSTkk..",
+      "kkRRSSSSSSSSSSSTkk",
+      "SSSSSSSSSSSSSSSTTT",
+      "TTTTTTTTTTTTTTTTTT",
+      "kkkGGFHGGHHHHIIkkk",
+      "..kGGFHGKKHHHIIk..",
+      "..kGGFHKIKKHHIIk..",
+      "..kGGFHKKKKHHIIk..",
+      "..kGGFHGKKHHHIIk..",
+      "..kGGFHEEEEHHIIk..",
+      "..kGGFHGGHHHHIIk..",
+      "..kGGFHGGHHHHIIk..",
+      ".kIIIIIIIIIIIIIIk.",
+      "..kkkkkBBDEkkkkk..",
+      "......kBBDEk......",
+      "......kBBDEk......",
+      "......kBEDEk......",
+      "......kBBDEk......",
+      "......kBBDEk......",
+      "......kBBDEk......",
+      "......kBBDEk......",
+      "......kBBDEk......",
+      "......kBEDEk......",
+      "......kBBDEk......",
+      "......kBBDEk......",
+      "......kBBDEk......",
+      "......kBBDEk......",
+      "......kBBDEk......",
+      "......kEEEEk......",
+      ".......kkkk.......",
+      ".................."
+     ],
+     "pal": {
+      "B": "#c08a52",
+      "D": "#8e5c32",
+      "E": "#5e3a20",
+      "F": "#f4e6bc",
+      "G": "#dcc490",
+      "H": "#ac9460",
+      "I": "#74603e",
+      "K": "#2e2a30",
+      "R": "#e08262",
+      "S": "#b85a40",
+      "T": "#823a2c",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "garden-bench",
+     "n": "정원 나무 벤치",
+     "k": "쉼터",
+     "d": "등받이 널빤지 두 장과 넓은 앉는 판으로 짠 나무 벤치예요. 오래 써서 앉는 판 가운데가 반들반들 밝아요.",
+     "acts": [
+      {
+       "w": "노말 타입",
+       "a": "벤치 위에 올라가 배를 깔고 낮잠을 자요",
+       "x": {
+        "at": "top",
+        "an": "Sleep"
+       }
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "벤치 밑 그늘에 숨어 고개만 빼꼼 내밀어요",
+       "x": {
+        "at": "under",
+        "m": "hide speek"
+       }
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "등받이 위에 날아와 나란히 앉아요",
+       "x": {
+        "at": [
+         0.5,
+         0.1
+        ],
+        "m": "fly"
+       }
+      }
+     ],
+     "fit": "나무 그늘, 연못 앞",
+     "glow": 0,
+     "px": [
+      "...kkk......................kkk...",
+      "..kABDkkkkkkkkkkkkkkkkkkkkkkABDk..",
+      "..kABAAAAAAAAAAAAAAAAAAAAAAAABDk..",
+      "..kABBBBBDBBBBBBDBBBBBBDBBBBABDk..",
+      "..kABDDDDDDDDDDDDDDDDDDDDDDDABDk..",
+      "..kABDkkkkkkkkkkkkkkkkkkkkkkABDk..",
+      "..kABAAAAAAAAAAAAAAAAAAAAAAAABDk..",
+      "..kABBBBBDBBBBBBDBBBBBBDBBBBABDk..",
+      "..kABDDDDDDDDDDDDDDDDDDDDDDDABDk..",
+      "..kABDkkkkkkkkkkkkkkkkkkkkkkABDk..",
+      ".kkABDkkkkkkkkkkkkkkkkkkkkkkABDkk.",
+      "kAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAk",
+      "kBBBBBBDBBBBBBDBBBBBBDBBBBBDBBBBBk",
+      "kBBBBBBBBDBBBBBBDBBBBBBDBBBBBDBBBk",
+      "kDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDk",
+      "kEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEk",
+      ".kkABABDkkkkkkkkkkkkkkkkkABDABDkk.",
+      "..kABABDDDDDDDDDDDDDDDDDDABDABDk..",
+      "..kABABDkkkkkkkkkkkkkkkkkABDABDk..",
+      "..kEEEEEk...............kEEEEEEk..",
+      "...kkkkk.................kkkkkk...",
+      ".................................."
+     ],
+     "pal": {
+      "A": "#ecc48a",
+      "B": "#c08a52",
+      "D": "#8e5c32",
+      "E": "#5e3a20",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "country-mailbox",
+     "n": "시골 우체통",
+     "k": "장식",
+     "d": "나무 기둥 위에 둥근 지붕 양철 우체통을 얹었어요. 옆에 달린 빨간 깃발을 올리면 편지가 왔다는 뜻이에요.",
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "우체통 입구로 쏙 들어가 고개만 내밀어요",
+       "x": {
+        "at": [
+         0.45,
+         0.25
+        ],
+        "m": "hide peek"
+       }
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "우체통 둥근 지붕 위에 날아와 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       }
+      },
+      {
+       "w": "전기 타입",
+       "a": "양철 통에 몸을 비비며 찌릿 불꽃을 튀겨요",
+       "x": {
+        "m": "push skill",
+        "fx": "glow"
+       }
+      }
+     ],
+     "fit": "필드 입구, 길가",
+     "glow": 0,
+     "px": [
+      "..................",
+      "...kkkkkkkkkk..kk.",
+      "..knmmmnnnnmnkkLLk",
+      ".knmmnnnnnnnnokTTk",
+      "knmmnnnnnnnnnoqLk.",
+      "knmmnnnnnnnnnoqLk.",
+      "knnmooooooonnoqLk.",
+      "knnmmqqqqqnnnoqLk.",
+      "knnYmnnnnnooooqk..",
+      "knnmmnnnnnooooqk..",
+      "knnmmnnnnnooooqk..",
+      "kqqqqqqqqqqqqqqk..",
+      ".kkkkkBBDEkkkkk...",
+      ".....kBBDEk.......",
+      ".....kBBDEk.......",
+      ".....kBBDEk.......",
+      ".....kBEDEk.......",
+      ".....kBBDEk.......",
+      ".....kBBDEk.......",
+      ".....kBBDEk.......",
+      ".....kBBDEk.......",
+      ".....kBBDEk.......",
+      ".....kBEDEk.......",
+      ".....kBBDEk.......",
+      ".....kBBDEk.......",
+      ".....kBBDEk.......",
+      ".....kBBDEk.......",
+      ".....kEEEEk.......",
+      "......kkkk........",
+      ".................."
+     ],
+     "pal": {
+      "B": "#c08a52",
+      "D": "#8e5c32",
+      "E": "#5e3a20",
+      "L": "#d84a3a",
+      "T": "#823a2c",
+      "Y": "#f8d850",
+      "k": "#20202c",
+      "m": "#eef0f2",
+      "n": "#b0b8c4",
+      "o": "#747c8a",
+      "q": "#4a505c"
+     }
+    },
+    {
+     "id": "copper-watering-can",
+     "n": "구리 물뿌리개",
+     "k": "놀이",
+     "d": "반질반질한 구리 물뿌리개예요. 긴 주둥이 끝 동그란 꼭지에 구멍이 송송 나 있어서 꽃밭에 물을 골고루 뿌려요.",
+     "acts": [
+      {
+       "w": "물 타입",
+       "a": "물뿌리개 옆에서 물대포로 꽃밭에 물을 뿌려 줘요",
+       "x": {
+        "at": "side",
+        "m": "skill",
+        "an": "Attack"
+       }
+      },
+      {
+       "w": "풀 타입",
+       "a": "주둥이 앞에 서서 물방울을 맞으며 기지개를 켜요",
+       "x": {
+        "at": "front",
+        "an": "Rotate"
+       }
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "물뿌리개 안에 들어가 손잡이 밑으로 얼굴을 내밀어요",
+       "x": {
+        "at": "in",
+        "m": "hide peek"
+       }
+      }
+     ],
+     "fit": "꽃밭 옆",
+     "glow": 0,
+     "px": [
+      "........kkk...............",
+      ".......kcddk..........kkk.",
+      "......kcdkkdk........kccek",
+      ".....kcdk..kdk.......kcfek",
+      "....kcdk....kdk......kfcek",
+      "....kdkkkkkkkkdk.....kccek",
+      ".kkkcccccccccccck....kdek.",
+      "kdddddccdddeeeffk...kdek..",
+      "kedkddccdddeeeffk..kdek...",
+      "kedkeeeeeeeeeeeek.kdek....",
+      "kedkddccdddeeeffkkdek.....",
+      "kedkddccdddeeeffkdek......",
+      "keeeddccdddeeeffdek.......",
+      ".kkkeeeeeeeeeeeeek........",
+      "...kddccdddeeeffk.........",
+      "...kffffffffffffk.........",
+      "....kkkkkkkkkkkk..........",
+      ".........................."
+     ],
+     "pal": {
+      "c": "#f4bc88",
+      "d": "#d48c52",
+      "e": "#a85e34",
+      "f": "#6e3c22",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "beehive-box",
+     "n": "나무 벌통",
+     "k": "쉼터",
+     "d": "흰 칠을 한 나무 상자 두 칸을 쌓고 양철 뚜껑을 덮은 벌통이에요. 아래 칸 좁은 입구로 꿀벌이 드나들어요.",
+     "acts": [
+      {
+       "w": "벌레 타입",
+       "a": "벌통 둘레를 빙빙 날며 입구를 드나들어요",
+       "x": {
+        "m": "circ"
+       }
+      },
+      {
+       "w": "꿀을 좋아하는 포켓몬(노말·페어리)",
+       "a": "입구 앞에 앉아 꿀을 핥아 먹어요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       }
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "벌통에 다가왔다가 연기 냄새에 놀란 벌을 보고 피해 가요",
+       "x": {
+        "m": "avoid"
+       }
+      }
+     ],
+     "fit": "꽃밭 가장자리",
+     "glow": 0,
+     "px": [
+      ".....kkk.......kYKYk..",
+      "....kYKYk.......kkk...",
+      "...kkkkkkkkkkkkkkkk...",
+      "..kmmmmmmmmmmmmmmmmk..",
+      ".kknnnnnnnnnnnnnnnnkk.",
+      "kmmmmmmmmmmmmmmmmmmmmk",
+      "knnnnnnnnnnnnnnnnnnnqk",
+      "kooooooooooooooooooook",
+      ".kFFFFFFFFFFFFFFFFFFk.",
+      ".kGGGFFYGGGGGHHHHHIIk.",
+      ".kGGGFHHHHHHHHHHHHIIk.",
+      ".kGGGFFFGGGGGHHHHHIIk.",
+      ".kGGGFFFGGGGGHHHHHIIk.",
+      ".kIIIIIIIIIIIIIIIIIIk.",
+      "kHHHHHHHHHHHHHHHHHHHHk",
+      ".kFFFFFFFFFFFFFFFFFFk.",
+      ".kGGGFFFGGGGGHHHHHIIk.",
+      ".kGGGFHHHHHHYHHHHHIIk.",
+      ".kGGGFFFGGGGGHHHHHIIk.",
+      ".kGGGFFFKKKKKKHHHHIIk.",
+      "kHHHHHHHHHHHHHHHHHHHHk",
+      ".kkEEEEEEEEEEEEEEEEkk.",
+      "..kABDkkkkkkkkkkABDk..",
+      "..kABDk........kABDk..",
+      "..kABDk........kABDk..",
+      "..kABDk........kABDk..",
+      "...kkk..........kkk...",
+      "......................"
+     ],
+     "pal": {
+      "A": "#ecc48a",
+      "B": "#c08a52",
+      "D": "#8e5c32",
+      "E": "#5e3a20",
+      "F": "#f4e6bc",
+      "G": "#dcc490",
+      "H": "#ac9460",
+      "I": "#74603e",
+      "K": "#2e2a30",
+      "Y": "#f8d850",
+      "k": "#20202c",
+      "m": "#eef0f2",
+      "n": "#b0b8c4",
+      "o": "#747c8a",
+      "q": "#4a505c"
+     }
+    },
+    {
+     "id": "signpost",
+     "n": "갈림길 표지판",
+     "k": "장식",
+     "d": "나무 기둥에 화살표 판 두 장을 엇갈려 박은 표지판이에요. 하나는 숲 쪽, 하나는 연못 쪽을 가리키고 손글씨가 적혀 있어요.",
+     "acts": [
+      {
+       "w": "나는 포켓몬",
+       "a": "화살표 판 끝에 날아와 앉아 고개를 갸웃해요",
+       "x": {
+        "at": [
+         0.15,
+         0.2
+        ],
+        "m": "fly"
+       }
+      },
+      {
+       "w": "에스퍼 타입",
+       "a": "표지판 앞에서 화살표 방향을 따라 빙글 돌며 길을 정해요",
+       "x": {
+        "at": "front",
+        "an": "Rotate"
+       }
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "기둥 뒤에 숨었다가 옆으로 고개를 내밀어요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       }
+      }
+     ],
+     "fit": "길이 갈라지는 곳, 필드 가운데",
+     "glow": 0,
+     "px": [
+      "...........kkkk...........",
+      "..........kAAAAk..........",
+      "..........kBBDEk..........",
+      "...kkkkkkkkBBDEkkk........",
+      "..kAAAAAAAAAAAAAAAk.......",
+      ".kABBBBBBBBBzBBBBBk.......",
+      "kDBBBEEBEEEBBEEBEBk.......",
+      ".kDBBBBBBBBBBBBBBBk.......",
+      "..kDDDDDDDDDDDDDDDk.......",
+      "...kkkkkkkkBBDEkkk........",
+      "........kkkBBDEkkkkkkkk...",
+      ".......kFFFFFFFFFFFFFFHk..",
+      ".......kGGGGGzGGGGGGGGGHk.",
+      ".......kGIIGIIGIGIIIGGGGHk",
+      ".......kGGGGGGGGGGGGGGGHk.",
+      ".......kHHHHHHHHHHHHHHHk..",
+      "........kkkBBDEkkkkkkkk...",
+      "..........kBBDEk..........",
+      "..........kBBDEk..........",
+      "..........kBEDEk..........",
+      "..........kBBDEk..........",
+      "..........kBBDEk..........",
+      "..........kBBDEk..........",
+      "..........kBBDEk..........",
+      "..........kBBDEk..........",
+      "..........kBEDEk..........",
+      "..........kBBDEk..........",
+      "..........kBBDEk..........",
+      "..........kBBDEk..........",
+      "..........kEEEEk..........",
+      ".........kuuuuuuk.........",
+      "..........kkkkkk.........."
+     ],
+     "pal": {
+      "A": "#ecc48a",
+      "B": "#c08a52",
+      "D": "#8e5c32",
+      "E": "#5e3a20",
+      "F": "#f4e6bc",
+      "G": "#dcc490",
+      "H": "#ac9460",
+      "I": "#74603e",
+      "k": "#20202c",
+      "u": "#7a756c",
+      "z": "#a88a58"
+     }
+    },
+    {
+     "id": "rain-barrel",
+     "n": "빗물 통",
+     "k": "놀이",
+     "d": "쇠테 네 줄을 두른 배불뚝이 나무 통에 빗물을 받아 두었어요. 아래 꼭지에서 물방울이 똑똑 떨어져요.",
+     "acts": [
+      {
+       "w": "물 타입",
+       "a": "통 위로 뛰어올라 빗물 속에 몸을 담그고 머리만 내놓아요",
+       "x": {
+        "at": "top",
+        "m": "climb peek"
+       }
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "꼭지 아래에 앉아 떨어지는 물방울을 받아 마셔요",
+       "x": {
+        "at": [
+         0.85,
+         1
+        ],
+        "an": "Eat"
+       }
+      },
+      {
+       "w": "격투 타입",
+       "a": "통을 툭툭 밀어 물결을 일으켜요",
+       "x": {
+        "m": "push",
+        "fx": "swing"
+       }
+      }
+     ],
+     "fit": "집 옆, 우물 근처",
+     "glow": 0,
+     "px": [
+      "......................",
+      ".....kkkkkkkkkkkk.....",
+      "...kkDDDDDDDDDDDDkk...",
+      "..kDDyyxwxxyyyyyyDDk..",
+      "...kBDyyyyyyyyyyDEk...",
+      "..kBBAAADBBDBDDEDEEk..",
+      "..knnnnnoooooooqqqqk..",
+      "..kBBAAADBBDBDDEDEEk..",
+      "..kBBAAADBBDBDDEDEEk..",
+      ".kBBBAAADBBDBDDEDDEEk.",
+      ".kBBBAAADBBDBDDEDDEEk.",
+      ".kBBBAAADBBDBDDEDDEEk.",
+      ".knnnnnnoooooooqqqqqk.",
+      ".kBBBAAADBBDBDDEDDEEk.",
+      ".kBBBAAADBBDBDDEDDEEk.",
+      ".kBBBAAADBBDBDDEDDEEk.",
+      ".kBBBAAADBBDBDDEDDEEk.",
+      ".kBBBAAADBBDBDDEDDEEk.",
+      ".kBBBAAADBBDBDDEDDEEk.",
+      "..knnnnnoooooooqqqqk..",
+      "..kBBAAADBBDBDDEooook.",
+      "..kBBAAADBBDBDDEDEEok.",
+      "..kBBAAADBBDBDDEDEExk.",
+      "...knnnnoooooooqqqkk..",
+      "...kBBAADBBDBDEDEEk...",
+      "..kEEEEEEEEEEEEEEEEk..",
+      "...kkkkkkkkkkkkkkkk...",
+      "......................"
+     ],
+     "pal": {
+      "A": "#ecc48a",
+      "B": "#c08a52",
+      "D": "#8e5c32",
+      "E": "#5e3a20",
+      "k": "#20202c",
+      "n": "#b0b8c4",
+      "o": "#747c8a",
+      "q": "#4a505c",
+      "w": "#9ad4ee",
+      "x": "#5aa0d4",
+      "y": "#3a6aa8"
+     }
+    }
+   ]
+  },
+  {
    "at": 1792709198212,
    "theme": "숲속 놀이터",
    "note": "오늘은 풀밭 한쪽에 포켓몬 놀이터를 꾸며 봤어요! 소품마다 24~34칸으로 크게 그리고 재질마다 4단계 명암을 왼쪽 위 빛 기준으로 잡았어요. 나무는 결, 쇠는 밝은 하이라이트, 타이어는 고무 느낌으로 나눴고, 작은 포켓몬이 올라타고 숨고 미끄러지는 동작을 중심으로 반응을 정했어요.",
