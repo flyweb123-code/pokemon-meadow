@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.65"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.66"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.65';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.66';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2123,6 +2123,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.66', '10월 23일', ['몬스터볼 스프링에 올라탄 포켓몬이 볼 구멍 안에 조금 들어가 앉음', '스칼렛 작업물 그림 도트 크기를 모든 소품이 같게 (바람개비 도트가 컸던 것)']],
   ['3.65', '10월 23일', ['스칼렛 예시: 밀어 주는 포켓몬이 소품 쪽을 보게 (걷기·맴돌기 방향도)', '바람개비 날개를 작게 다시 그림', '별 꼬마전구는 전구만, 몬스터볼 스프링은 몬스터볼만 빛남', '시소 다시 그림: 받침은 가만히, 판만 좌우로 기울고 둘이 노는 예시는 포켓몬 두 마리', '상호작용 줄 오른쪽 끝 × 로 그 상호작용만 지우기', '추가한 소품 상세 카드 아래에 상호작용 표시', '야광 버섯이 밤에 빛나게']],
   ['3.64', '10월 23일', ['스칼렛 상호작용 예시: 타이어 그네는 타이어와 줄만, 몬스터볼 스프링은 받침 빼고 스프링부터, 별 꼬마전구 줄은 줄과 전구만 움직임', '바람개비 다시 그림: 날개 네 장과 가운데 고정부를 똑같이, 막대는 날개 뒤로 끊김 없이 이어지고 날개만 돌아감', '같은 소품은 전체 소품 칸·맵에 있는 소품 칸·상세 카드 그림이 같게 (열매나무·횃대·모닥불·꽃밭·연못·큰 바위)', '추가한 소품을 눌러도 상세 카드가 열림']],
   ['3.63', '10월 23일', ['스칼렛 상호작용 예시가 설명과 맞게: 카드마다 예시 동작(자리·움직임)을 따로 정해 둠 (73개)', '새 예시 동작: 미끄럼틀 타기, 터널 지나가기, 올라가기, 올라타 같이 흔들리기, 창문으로 얼굴 내밀기, 옆으로 고개만 내밀기, 다가왔다 피해 가기, 매달려 단련, 한 발로 균형', '게임 v8.88~8.91: 도구 진화 버튼·확인창·도구 들어가는 연출, 불꽃 특기 입자 가운데·둘레 땅 밝힘']],
@@ -3253,7 +3254,7 @@ $('#shopC').addEventListener('change', e => { const t = e.target, v = +t.value;
 // 직원들은 Claude 가 맡는다. 매일 아침 루틴이 일하고(config/staff/*.json), 작업물에 남긴 피드백을 읽고 반영한다 (staff/README.md).
 // v3.53 경완: 맵 편집에서 저장한 소품 크기(scArt[id].s 가로세로, .sy 세로만)를 스칼렛 작업물 그림에도 — 칸(104px)을 넘으면 비율 그대로 줄인다
 const scaSz = id => { const a = (D.layout || ORIG?.layout)?.scArt?.[id]; return [+a?.s || 1, +a?.sy || 1]; };
-function scaSvg(o, R = o.px) { const P = o.pal || {}, base = Math.max(2, Math.floor(96 / Math.max(o.px.length, o.px[0].length))), [s, sy] = scaSz(o.id); let w = R[0].length * base * s, h = R.length * base * s * sy; const f = Math.min(1, 104 / h, 220 / w); w = Math.round(w * f); h = Math.round(h * f);
+function scaSvg(o, R = o.px) { const P = o.pal || {}, base = 3   /* v3.66 경완: 도트 크기는 모든 소품이 같게 (예전엔 작은 그림일수록 도트가 컸다) — 칸보다 크면 그때만 줄인다 */, [s, sy] = scaSz(o.id); let w = R[0].length * base * s, h = R.length * base * s * sy; const f = Math.min(1, 104 / h, 220 / w); w = Math.round(w * f); h = Math.round(h * f);
   return `<svg viewBox="0 0 ${R[0].length} ${R.length}" width="${w}" height="${h}" preserveAspectRatio="none" shape-rendering="crispEdges" aria-hidden="true">${R.map((row, y) => [...row].map((c, x) => P[c] ? `<rect x="${x}" y="${y}" width="1" height="1" fill="${P[c]}"/>` : '').join('')).join('')}</svg>`; }
 const pxSvg = (R, P, s = 4) => `<svg viewBox="0 0 ${R[0].length} ${R.length}" width="${R[0].length * s}" height="${R.length * s}" shape-rendering="crispEdges" aria-hidden="true">${R.map((row, y) => [...row].map((c, x) => P[c] ? `<rect x="${x}" y="${y}" width="1" height="1" fill="${P[c]}"/>` : '').join('')).join('')}</svg>`;
 const STAFF = {
@@ -3461,7 +3462,7 @@ async function scaDemo(b) { const card = b.closest('.sc-it'), o = scaItem(card?.
       if (M.push && tt - hitT < 1.2) { const h = tt - hitT; ang += Math.sin(h * 20) * .06 * Math.exp(-h * 3.5); }
       if (glow) { const p = .5 + .5 * Math.sin(tt * 4); g.shadowColor = `rgba(255,240,150,${(.55 + .4 * p).toFixed(2)})`; g.shadowBlur = 6 + 10 * p; }
       if (MV) { const sb = g.shadowBlur; if (glw) g.shadowBlur = 0; g.drawImage(body, pl, pt, PW, PH); const mx = pl + MV.o[0] * s, my = pt + MV.o[1] * s, a2 = MV.k === 'spin' ? (spin ? tt * (M.flap ? 7 : 4) : 0) : ang * (MV.amp || 1.6);
-        g.translate(mx, my); g.rotate(a2); g.translate(-mx, -my); g.drawImage(mov, pl, pt, PW, PH); if (glw && glow) { g.shadowBlur = sb; g.drawImage(glw, pl, pt, PW, PH); } g.shadowBlur = 0; if (ride) ride(); g.restore(); return; }
+        g.translate(mx, my); g.rotate(a2); g.translate(-mx, -my); if (ride && back) { g.shadowBlur = 0; ride(); ride = null; g.shadowBlur = glw ? 0 : sb; } g.drawImage(mov, pl, pt, PW, PH);   /* v3.66 경완: back 이면 올라탄 포켓몬이 소품 안(구멍)에 들어가 앉는다 */ if (glw && glow) { g.shadowBlur = sb; g.drawImage(glw, pl, pt, PW, PH); } g.shadowBlur = 0; if (ride) ride(); g.restore(); return; }
       g.translate(ox, oy); g.rotate(ang); g.translate(-ox, -oy);
       g.drawImage(body, pl, pt, PW, PH);
       if (head) { const hx = pl + hc[0] * s, hy = pt + hc[1] * s; g.save(); g.translate(hx, hy); g.rotate(tt * (M.flap ? 7 : 4)); g.translate(-hx, -hy); g.drawImage(head, pl, pt, PW, PH); g.restore(); }
