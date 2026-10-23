@@ -580,71 +580,6 @@
      "glow": 0
     },
     {
-     "id": "climbing-dome",
-     "n": "정글짐 돔",
-     "k": "놀이",
-     "d": "파란 쇠막대를 반구 모양으로 엮은 정글짐이에요.",
-     "px": [
-      "............kkkkkkkkkk............",
-      ".........kkkaaaaaaaaaakkk.........",
-      ".......kkaaaakkkaakkkaaaakk.......",
-      "......kaaakkk..kaak..kkkaaak......",
-      ".....kaakk.....kaak.....kkaak.....",
-      "....kaak....kkkkaakkkk....kaak....",
-      "...kaak....kaaaaaaaaaak....kaak...",
-      "..kaak...kkaakkkaakkkaakk...kaak..",
-      ".kaak...kaakk..kaak..kkaak...kaak.",
-      ".kaak..kaak....kaak....kaak..kaak.",
-      ".kaak..kak.....kaak.....kak..kaak.",
-      "kaaak.kaak.....kaak.....kaak.kaaak",
-      "kbbbkkkbkkkkkkkkbbkkkkkkkkbkkkbbbk",
-      "kcccccccccccccccccccccccccccccccck",
-      "kcdddddddddddddddddddddddddddddddk",
-      ".kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk."
-     ],
-     "pal": {
-      "k": "#20202c",
-      "a": "#5a8cc0",
-      "b": "#2c4670",
-      "c": "#e8b850",
-      "d": "#c08a38",
-      "e": "#2c4a28",
-      "f": "#3a5a30"
-     },
-     "acts": [
-      {
-       "w": "작은 포켓몬",
-       "a": "막대 사이로 올라가 꼭대기에 앉아요",
-       "x": {
-        "at": "top",
-        "m": "climb"
-       }
-      },
-      {
-       "w": "나는 포켓몬",
-       "a": "꼭대기 막대에 날아와 앉아요",
-       "x": {
-        "at": "top",
-        "m": "fly"
-       }
-      },
-      {
-       "w": "격투 타입",
-       "a": "막대에 매달려 몸을 단련해요",
-       "x": {
-        "at": [
-         0.5,
-         0.62
-        ],
-        "m": "bob",
-        "an": "Attack"
-       }
-      }
-     ],
-     "fit": "놀이터 가운데",
-     "glow": 0
-    },
-    {
      "id": "pinwheel",
      "n": "바람개비",
      "k": "장식",
@@ -2527,6 +2462,74 @@
   }
  ],
  "trash": [
+  {
+   "id": "climbing-dome",
+   "n": "정글짐 돔",
+   "k": "놀이",
+   "d": "파란 쇠막대를 반구 모양으로 엮은 정글짐이에요.",
+   "px": [
+    "............kkkkkkkkkk............",
+    ".........kkkaaaaaaaaaakkk.........",
+    ".......kkaaaakkkaakkkaaaakk.......",
+    "......kaaakkk..kaak..kkkaaak......",
+    ".....kaakk.....kaak.....kkaak.....",
+    "....kaak....kkkkaakkkk....kaak....",
+    "...kaak....kaaaaaaaaaak....kaak...",
+    "..kaak...kkaakkkaakkkaakk...kaak..",
+    ".kaak...kaakk..kaak..kkaak...kaak.",
+    ".kaak..kaak....kaak....kaak..kaak.",
+    ".kaak..kak.....kaak.....kak..kaak.",
+    "kaaak.kaak.....kaak.....kaak.kaaak",
+    "kbbbkkkbkkkkkkkkbbkkkkkkkkbkkkbbbk",
+    "kcccccccccccccccccccccccccccccccck",
+    "kcdddddddddddddddddddddddddddddddk",
+    ".kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk."
+   ],
+   "pal": {
+    "k": "#20202c",
+    "a": "#5a8cc0",
+    "b": "#2c4670",
+    "c": "#e8b850",
+    "d": "#c08a38",
+    "e": "#2c4a28",
+    "f": "#3a5a30"
+   },
+   "acts": [
+    {
+     "w": "작은 포켓몬",
+     "a": "막대 사이로 올라가 꼭대기에 앉아요",
+     "x": {
+      "at": "top",
+      "m": "climb"
+     }
+    },
+    {
+     "w": "나는 포켓몬",
+     "a": "꼭대기 막대에 날아와 앉아요",
+     "x": {
+      "at": "top",
+      "m": "fly"
+     }
+    },
+    {
+     "w": "격투 타입",
+     "a": "막대에 매달려 몸을 단련해요",
+     "x": {
+      "at": [
+       0.5,
+       0.62
+      ],
+      "m": "bob",
+      "an": "Attack"
+     }
+    }
+   ],
+   "fit": "놀이터 가운데",
+   "glow": 0,
+   "del": 1792784120168,
+   "dayAt": 1792709198212,
+   "theme": "숲속 놀이터"
+  },
   {
    "id": "candle-stand",
    "n": "세 갈래 촛대",
