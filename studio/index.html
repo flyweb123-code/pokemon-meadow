@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.54"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.55"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.54';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.55';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -1195,7 +1195,10 @@ function renderDockMap() {
   const cell = o => { const id = o.key + ':' + o.i; return `<div class="it${id === sid ? ' on' : ''}" data-ik="${id}" title="${esc(o.name)}${o.kindName ? ' · ' + esc(o.kindName) : ''}">${o.key === 'mush' ? '<span class="ph">🍄</span>' : icon(o.icon, o.fr)}${esc(o.name)}${o.kindName ? `<span class="k">${esc(o.kindName)}</span>` : ''}</div>`; };
   $('#dockB').innerHTML = `<h4>누르면 맵에서 골라 모양을 바꿔요</h4>` + (mobile() ? `<div class="sg">${G.flatMap(g => g.L).map(cell).join('')}</div>`   // 휴대폰은 한 줄로 옆으로 넘긴다
     : G.map(g => `<h4>${esc(g.name)} <span class="num mute">${g.L.length}</span></h4><div class="sg">${g.L.map(cell).join('')}</div>`).join(''));
+  oneThumbs('data-ik^', ':');   // v3.55 경완: '맵에 있는 소품' 탭의 연못·꽃밭도 맵 모습 그대로
 }
+// 연못·꽃밭 칸 그림 = 게임 api.oneThumb (그 소품 땅만 따로 그린 것)
+function oneThumbs(attr, suf = '') { for (const k of ['pond', 'bed']) A.oneThumb?.(k).then(u => { if (!u) return; $$(`#dockB [${attr}="${k}${suf}"]`).forEach(it => { const o = it.querySelector('img,.fl'); if (o) o.outerHTML = `<img class="th1" alt="" src="${u}">`; }); }).catch(() => {}); }
 function renderDockAll() {
   if (!A?.cat) { $('#dockB').innerHTML = '<div class="small mute">게임을 새 버전(v3.61)으로 올리면 여기서 소품을 끌어다 놓을 수 있어요.</div>'; return; }
   const C = A.cat();
@@ -1205,7 +1208,7 @@ function renderDockAll() {
     ${(C.hid || []).length ? `<h4>지운 소품</h4><div class="chips">${C.hid.map(k => `<button class="chip" data-rs="${k}">${esc((A.ADD.find(r => r[0] === k) || [k, k])[1])} 되살리기</button>`).join('')}</div>` : ''}
     ${(C.mine || []).length ? `<h4>내 소품</h4><div class="sg">${C.mine.map(([k, n, src, c]) => `<div class="it dr mine" data-k="${k}" title="${esc(n)} · 맵에 ${c}개">${c ? `<span class="c">${c}</span>` : ''}${icon(src)}${esc(n)}<button class="it-add" data-addk="${esc(k)}" aria-label="${esc(n)} 맵에 추가" title="맵 가운데에 추가">+</button></div>`).join('')}</div>` : ''}
     ${scDock()}`;
-  for (const k of ['pond', 'bed']) A.oneThumb?.(k).then(u => { const it = u && $(`#dockB [data-one="${k}"]`); if (!it) return; const o = it.querySelector('img,.fl'); if (o) o.outerHTML = `<img class="th1" alt="" src="${u}">`; }).catch(() => {});   // v3.49 경완: 연못·꽃밭은 맵에 있는 모습 전체로
+  oneThumbs('data-one');   // v3.49 경완: 연못·꽃밭은 맵에 있는 모습 전체로
 }
 // v3.26 경완: 스칼렛의 작업물에서 '소품 리스트'에 넣은 소품 — 끌어다 맵에 놓고, × 로 목록에서 지운다 (게임 v8.22 LAYOUT.scArt)
 // v3.28 경완: 이름은 '추가 소품'. 위 전체 소품 칸으로 끌어 놓으면 '저장 전'이 되고, 소품 창 위 저장을 누르면 전체 소품으로 들어간다 (scArt[id].on)
@@ -2104,6 +2107,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.55', '10월 23일', ['맵에 놓인 스칼렛 소품 8개(석등·가로등·야광 버섯·바람개비·타이어 그네·몬스터볼 스프링·횃불·허수아비)를 지금 맵 크기로 도트 다시 찍음 — 다른 소품과 같은 도트 크기, 크기 배율은 1로 (게임 v8.76)', '스칼렛 소품 모두 밑둥 풀·그림자 없앰, 앞으로 그리는 것도 금지', '허수아비 산들산들 흔들림(12장, 좌우 잘림 없음)', '\'맵에 있는 소품\' 탭의 연못·꽃밭 썸네일도 맵 모습으로']],
   ['3.54', '10월 23일', ['가로등 머리 작게, 석등 지붕 끝 잘림 고침, 둘 다 밑 풀·그림자 없앰, 석등 빛 범위 고침', '가로등·석등 같은 조명은 저녁 6시에 켜지고 아침 6시 반에 꺼짐 (게임 v8.75)', '\'배치를 저장하지 않았어요\' 창: 버튼 둘(저장하지 않고 종료·저장하고 종료), 빈 곳이나 배치 저장을 누르면 닫힘']],
   ['3.53', '10월 23일', ['맵 편집에서 저장한 소품 크기가 스칼렛 작업물 그림에도 (왼쪽 위 \'크기 ×\' 카드)', '허수아비 흔들림 프레임 새로 그림 (앞뒤로 흔들리는 8장)']],
   ['3.52', '10월 23일', ['맵 소품 리스트 연못·꽃밭 썸네일에 둘레 풀·바위·그루터기가 같이 들어가던 것 고침 — 그 소품만 (게임 v8.74)']],

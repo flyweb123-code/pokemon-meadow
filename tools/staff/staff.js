@@ -45,6 +45,8 @@ function scarletAdd(file) {
     const w = o.px[0].length; if (o.px.length < 12 || o.px.length > 40 || w < 12 || w > 40) bad.push(`${at}: 도트 크기 ${w}×${o.px.length} (12~40칸)`);
     o.px.forEach((r, y) => { if (r.length !== w) bad.push(`${at}: ${y + 1}째 줄 길이가 ${r.length} (첫 줄 ${w})`); for (const c of r) if (c !== '.' && !o.pal?.[c]) bad.push(`${at}: 색 '${c}' 이 pal 에 없어요`); });
     for (const [c, v] of Object.entries(o.pal || {})) if (!/^#[0-9a-f]{6}$/i.test(v)) bad.push(`${at}: 색 ${c} 값 ${v}`);
+    const grn = v => { const n = parseInt(String(v).slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b); return g === mx && mx - mn > 24 && g - b > 12; };   // 2026-10-23 경완: 밑둥 풀·그림자 금지
+    if (o.px.slice(-2).some(r => [...r].some(c => c !== '.' && grn(o.pal?.[c])))) bad.push(`${at}: 맨 아래 두 줄에 풀색이 있어요 — 밑둥 풀·그림자는 그리지 않아요`);
     if (!Array.isArray(o.acts) || o.acts.length < 2) bad.push(`${at}: 상호작용(acts)을 2개 이상`); });
   const uniq = [...new Set(bad)]; if (uniq.length) { console.error(uniq.join('\n')); process.exit(1); }
   const R = rd('scarlet.json', { days: [] }); R.days = [{ at: Date.now(), theme: d.theme || '', note: d.note || '', items: L }, ...(R.days || [])].slice(0, 60); wr('scarlet.json', R);

@@ -5992,7 +5992,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.75';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.76';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -11061,7 +11061,11 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
   api.undoN = () => undo.length;
   api.del = () => { if (!sel || sel.i < 0 || sel.key === 'path') return; undo.push(snap()); const k = sel.key; LAYOUT[k].splice(sel.i, 1); sel = null; changed(k === 'flowers' || k === 'bushes' || k === 'puddles' || k === 'sc' ? k : 'rocks'); };
   // v8.22 경완: 스칼렛 소품을 소품 목록에 넣기 / 빼기 (빼면 맵에 놓인 것도 함께 사라짐)
-  api.scDef = (id, a) => { if (!id || !a?.px?.length) return; undo.push(snap()); LAYOUT.scArt = { ...(LAYOUT.scArt || {}), [id]: { n: String(a.n || '소품').slice(0, 16), px: a.px, pal: a.pal || {}, acts: (a.acts || []).map(o => ({ w: o.w, a: o.a })), ...(LAYOUT.scArt?.[id]?.on ? { on: 1 } : {}), ...(LAYOUT.scArt?.[id]?.s ? { s: LAYOUT.scArt[id].s } : {}), ...(LAYOUT.scArt?.[id]?.sy ? { sy: LAYOUT.scArt[id].sy } : {}), ...(a.glow != null ? { glow: +a.glow ? 1 : 0 } : {}), ...(Array.isArray(a.fr) && a.fr.length ? { fr: a.fr, fms: +a.fms || 160 } : {}) } };   /* v8.43: 프레임 그림도 */   /* v8.29: 다시 그린 그림으로 바꿔도 전체 소품(on)은 그대로 */ changed('scArt'); };
+  api.scDef = (id, a) => { if (!id || !a?.px?.length) return; undo.push(snap()); const P = LAYOUT.scArt?.[id], bk = Array.isArray(a.sz) ? a.sz.join('x') : '', rz = bk && P && P.bk !== bk ? a.sz : null;
+    /* v8.76 경완: 맵 크기에 맞춰 도트를 다시 찍은 그림(a.sz = 그때 크기 [s, sy])이면 그만큼 크기 배율을 나눠 화면 크기는 그대로 (한 번만, bk) */
+    const dv = (v, d) => { const q = Math.round((+v || 1) / (+d || 1) * 100) / 100; return Math.abs(q - 1) < .04 ? 0 : q; }, S0 = rz ? dv(P.s, rz[0]) : P?.s, SY0 = rz ? dv(P.sy, rz[1]) : P?.sy;
+    if (rz) for (const r of LAYOUT.sc || []) if (r[0] === id) { if (r[3] != null) r[3] = dv(r[3], rz[0]) || 1; if (r[4] != null) r[4] = dv(r[4], rz[1]) || 1; }
+    LAYOUT.scArt = { ...(LAYOUT.scArt || {}), [id]: { n: String(a.n || '소품').slice(0, 16), px: a.px, pal: a.pal || {}, acts: (a.acts || []).map(o => ({ w: o.w, a: o.a })), ...(P?.on ? { on: 1 } : {}), ...(S0 ? { s: S0 } : {}), ...(SY0 ? { sy: SY0 } : {}), ...(bk ? { bk } : P?.bk ? { bk: P.bk } : {}), ...(a.glow != null ? { glow: +a.glow ? 1 : 0 } : {}), ...(Array.isArray(a.fr) && a.fr.length ? { fr: a.fr, fms: +a.fms || 160 } : {}) } };   /* v8.43: 프레임 그림도 */   /* v8.29: 다시 그린 그림으로 바꿔도 전체 소품(on)은 그대로 */ changed('scArt'); };
   api.scOn = ids => { const L = (ids || []).filter(id => LAYOUT.scArt?.[id] && !LAYOUT.scArt[id].on); if (!L.length) return; undo.push(snap()); for (const id of L) LAYOUT.scArt[id] = { ...LAYOUT.scArt[id], on: 1 }; changed('scArt'); };   // v8.24 경완: 추가 소품 → 전체 소품으로 저장
   api.scUndef = id => { if (!LAYOUT.scArt?.[id]) return; undo.push(snap()); delete LAYOUT.scArt[id]; LAYOUT.sc = (LAYOUT.sc || []).filter(r => r[0] !== id); if (sel?.key === 'sc') sel = null; delete scCache[id]; changed('sc'); };
   api.nudge = (dx, dy) => { const t = sel && items().find(t => t.key === sel.key && t.i === sel.i); if (!t) return; undo.push(snap()); t.mv(dx, dy); changed(sel.key); };
