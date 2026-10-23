@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.67"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.68"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.67';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.68';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -904,7 +904,7 @@ const REACT = {
   pond: [['물·헤엄', '연못에서 헤엄쳐요'], ['그 밖', '물을 마셔요']],
 };
 const RNAME = { tree: '열매나무', perch: '횃대', fire: '모닥불', bed: '꽃밭', bush: '덤불', stump: '그루터기', rock: '바위', puddle: '웅덩이', pond: '연못' };
-const KEY2R = { tree: 'tree', perch: 'perch', fire: 'fire', bed: 'bed', bushes: 'bush', stump: 'stump', rocks: 'rock', puddles: 'puddle', pond: 'pond' };
+const KEY2R = { tree: 'tree', perch: 'perch', fire: 'fire', bed: 'bed', bushes: 'bush', stump: 'stump', rocks: 'rock', puddles: 'puddle', pond: 'pond', trees: 'tree', perches: 'perch', fires: 'fire', beds: 'bed', stumps: 'stump', ponds: 'pond' };
 // v2.36 경완: 소품 반응은 소품 상세 창 아래에. 오른쪽 사이드 바는 지금 시뮬레이터 맵에 있는 소품의 반응만
 const rOf = k => !k ? null : REACT[k] ? k : k === 'rockS' || k === 'rockL' ? 'rock' : KEY2R[k] || (A?.kind?.(k)?.b ? rOf(A.kind(k).b) : null);
 const rxHtml = r => `<section class="rg">${REACT[r].map(([a, b], i) => `<div><button class="chip rx${spxKey === r + ':' + i ? ' on' : ''}" data-rk="${r}" data-ri="${i}">${a}</button><span>${b}</span></div>`).join('')}</section>`;
@@ -1192,7 +1192,7 @@ function renderDock() {
   renderDockAll(); }
 function renderDockMap() {
   if (!A.insts) { $('#dockB').innerHTML = '<div class="small mute">게임을 새 버전(v3.67)으로 올리면 맵에 있는 소품을 하나씩 볼 수 있어요.</div>'; return; }
-  const G = []; for (const o of A.insts()) { const gk = o.key === 'rocks' ? 'rocks:' + o.name : o.key; let g = G.find(x => x.key === gk); if (!g) G.push(g = { key: gk, name: o.key === 'flowers' ? '꽃' : o.name, L: [] }); g.L.push(o); }   // v3.56 경완: 바위는 작은 바위·큰 바위 따로
+  const G = []; for (const o of A.insts()) { const gk = o.key === 'rocks' ? 'rocks:' + o.name : ({ trees: 'tree', perches: 'perch', fires: 'fire', beds: 'bed', stumps: 'stump', ponds: 'pond' })[o.key] || o.key; let g = G.find(x => x.key === gk); if (!g) G.push(g = { key: gk, name: o.key === 'flowers' ? '꽃' : o.name, L: [] }); g.L.push(o); }   // v3.56 경완: 바위는 작은 바위·큰 바위 따로
   const sl = A.selInfo?.(), sid = sl ? sl.key + ':' + sl.i : '';
   const cell = o => { const id = o.key + ':' + o.i; return `<div class="it${id === sid ? ' on' : ''}" data-ik="${id}" title="${esc(o.name)}${o.kindName ? ' · ' + esc(o.kindName) : ''}">${o.key === 'mush' ? '<span class="ph">🍄</span>' : icon(o.icon, o.fr)}${esc(o.name)}${o.kindName ? `<span class="k">${esc(o.kindName)}</span>` : ''}</div>`; };
   $('#dockB').innerHTML = `<h4>누르면 맵에서 골라 모양을 바꿔요</h4>` + (mobile() ? `<div class="sg">${G.flatMap(g => g.L).map(cell).join('')}</div>`   // 휴대폰은 한 줄로 옆으로 넘긴다
@@ -1200,14 +1200,15 @@ function renderDockMap() {
   oneThumbs('data-ik^', ':');   // v3.55 경완: '맵에 있는 소품' 탭의 연못·꽃밭도 맵 모습 그대로
 }
 // 연못·꽃밭 칸 그림 = 게임 api.oneThumb (그 소품 땅만 따로 그린 것)
-function oneThumbs(attr, suf = '') { A.fireArt?.(null).then(u => { if (u) $$(`#dockB [${attr}="fire${suf}"] .fl`).forEach(f => { f.style.backgroundImage = `url(${u})`; f.style.height = "30px"; }); }).catch(() => {});   // v3.64 경완: 모닥불 칸도 상세 카드와 같은 장작+불꽃
+function oneThumbs(attr, suf = '') { if (suf) for (const k of ['ponds', 'beds']) $$(`#dockB [data-ik^="${k}:"]`).forEach(it => A.oneThumb?.(k.slice(0, -1), +it.dataset.ik.split(':')[1]).then(u => { const o = u && it.querySelector('img,.fl'); if (o) o.outerHTML = `<img class="th1" alt="" src="${u}">`; }).catch(() => {}));   // v3.68: 더 놓은 연못·꽃밭
+  A.fireArt?.(null).then(u => { if (u) $$(`#dockB [${attr}="fire${suf}"] .fl${suf ? `,#dockB [${attr}="fires${suf}"] .fl` : ''}`).forEach(f => { f.style.backgroundImage = `url(${u})`; f.style.height = "30px"; }); }).catch(() => {});   // v3.64 경완: 모닥불 칸도 상세 카드와 같은 장작+불꽃
   for (const k of ['pond', 'bed']) A.oneThumb?.(k).then(u => { if (!u) return; $$(`#dockB [${attr}="${k}${suf}"]`).forEach(it => { const o = it.querySelector('img,.fl'); if (o) o.outerHTML = `<img class="th1" alt="" src="${u}">`; }); }).catch(() => {}); }
 function renderDockAll() {
   if (!A?.cat) { $('#dockB').innerHTML = '<div class="small mute">게임을 새 버전(v3.61)으로 올리면 여기서 소품을 끌어다 놓을 수 있어요.</div>'; return; }
   const C = A.cat();
   const SC = C.sc || [], scIt = ([k, n, src, c, id], pd) => `<div class="it dr sc-dk${pd ? ' pend' : ''}" data-k="${esc(k)}" title="${esc(n)}${pd ? ' · 저장 전' : ' · 맵에 ' + c + '개'}">${c ? `<span class="c">${c}</span>` : ''}${icon(src)}${esc(n)}<button class="it-add" data-addk="${esc(k)}" aria-label="${esc(n)} 맵에 추가" title="맵 가운데에 추가">+</button><button class="sc-x" data-scdel="${esc(id)}" aria-label="${esc(n)} 소품 목록에서 지우기" title="소품 목록에서 지우기 (맵에 놓인 것도 사라져요)">×</button></div>`;
   $('#dockSave').hidden = !SC.some(r => SC_PEND.has(r[4]) && !r[5]);
-  $('#dockB').innerHTML = `<div class="sg main">${C.add.map(([k, n, src, c]) => `<div class="it dr" data-k="${k}" title="${esc(n)} · 맵에 ${c}개">${c ? `<span class="c">${c}</span>` : ''}${k === 'mush' ? '<span class="ph">🍄</span>' : icon(src)}${esc(n)}<button class="it-add" data-addk="${esc(k)}" aria-label="${esc(n)} 맵에 추가" title="맵 가운데에 추가">+</button></div>`).join('')}${C.one.map(([k, n, src, fr]) => `<div class="it" data-one="${k}" title="${esc(n)} · 맵에 1개 (하나만 놓을 수 있어요)"><span class="c">1</span>${icon(src, fr)}${esc(n)}</div>`).join('')}${SC.filter(r => r[5] || SC_PEND.has(r[4])).map(r => scIt(r, !r[5])).join('')}</div>
+  $('#dockB').innerHTML = `<div class="sg main">${C.add.map(([k, n, src, c]) => `<div class="it dr" data-k="${k}" title="${esc(n)} · 맵에 ${c}개">${c ? `<span class="c">${c}</span>` : ''}${k === 'mush' ? '<span class="ph">🍄</span>' : icon(src)}${esc(n)}<button class="it-add" data-addk="${esc(k)}" aria-label="${esc(n)} 맵에 추가" title="맵 가운데에 추가">+</button></div>`).join('')}${C.one.map(([k, n, src, fr, c = 1]) => `<div class="it dr" data-k="${k}" data-one="${k}" title="${esc(n)} · 맵에 ${c}개"><span class="c">${c}</span>${icon(src, fr)}${esc(n)}<button class="it-add" data-addk="${esc(k)}" aria-label="${esc(n)} 맵에 추가" title="맵 가운데에 추가">+</button></div>`).join('')}${SC.filter(r => r[5] || SC_PEND.has(r[4])).map(r => scIt(r, !r[5])).join('')}</div>
     ${(C.hid || []).length ? `<h4>지운 소품</h4><div class="chips">${C.hid.map(k => `<button class="chip" data-rs="${k}">${esc((A.ADD.find(r => r[0] === k) || [k, k])[1])} 되살리기</button>`).join('')}</div>` : ''}
     ${(C.mine || []).length ? `<h4>내 소품</h4><div class="sg">${C.mine.map(([k, n, src, c]) => `<div class="it dr mine" data-k="${k}" title="${esc(n)} · 맵에 ${c}개">${c ? `<span class="c">${c}</span>` : ''}${icon(src)}${esc(n)}<button class="it-add" data-addk="${esc(k)}" aria-label="${esc(n)} 맵에 추가" title="맵 가운데에 추가">+</button></div>`).join('')}</div>` : ''}
     ${scDock()}`;
@@ -1232,7 +1233,6 @@ $('#dockB').addEventListener('click', e => { const rs = e.target.closest('[data-
   const ik = e.target.closest('[data-ik]'); if (!ik || !A) return; if (reTap(ik)) return unTap(); const [key, i] = ik.dataset.ik.split(':'); if (!editing) setEdit(true); A.pick(key, +i); const s = A.selInfo?.(); if (s) openInst(s, ik); else closeZoom(); dockMark(s); });
 $('#dockB').addEventListener('pointerdown', e => {
   if (e.target.closest('[data-ik]')) return;
-  const one = e.target.closest('[data-one]'); if (one) { if (reTap(one)) return unTap(); const k = one.dataset.one; if (!editing) setEdit(true); A.pick(k); $$('.dock .it').forEach(x => x.classList.toggle('on', x === one)); openInst(A.selInfo?.() || null, one); return; }
   if (e.target.closest('[data-scdel],[data-addk]')) return; const it = e.target.closest('.it.dr'); if (!it || e.button > 0 || !A) return; if (e.pointerType === 'mouse') e.preventDefault();
   const k = it.dataset.k, x0 = e.clientX, y0 = e.clientY; let moved = false, last = null, g = null, cv = null, toMain = false;
   const scAdd = k.startsWith('sc:') && !it.closest('.sg.main'), inMain = (x, y) => { const m = $('#dockB .sg.main')?.getBoundingClientRect(); return !!m && x >= m.left && x <= m.right && y >= m.top - 8 && y <= m.bottom + 8; };
@@ -1245,7 +1245,8 @@ $('#dockB').addEventListener('pointerdown', e => {
     $('#dockB .sg.main')?.classList.remove('drop'); if (moved && toMain && ev.type !== 'pointercancel') { SC_PEND.add(k.slice(3)); renderDock(); toast('저장을 누르면 전체 소품으로 들어가요'); return; }
     if (ev.type === 'pointercancel' || (moved && !last)) return;   // 옆으로 넘기기·맵 밖에 놓기는 아무 일 없음
     if (moved && !editing) setEdit(true);
-    if (!moved) { if (reTap(it)) closeZoom(); else openZoom(k, it); return; } A.add(k, ...last);
+    if (!moved) { if (it.dataset.one) { if (reTap(it)) return unTap(); if (!editing) setEdit(true); A.pick(it.dataset.one); $$('.dock .it').forEach(x => x.classList.toggle('on', x === it)); openInst(A.selInfo?.() || null, it); return; }   // v3.68 경완: 열매나무·연못 등도 끌어다 여러 개 놓고, 누르면 맨 처음 것의 상세
+      if (reTap(it)) closeZoom(); else openZoom(k, it); return; } A.add(k, ...last);
     renderDock(); };
   addEventListener('pointermove', move); addEventListener('pointerup', up); addEventListener('pointercancel', up);
 });
@@ -1350,10 +1351,10 @@ function openInst(s, el) {
     <div class="zb">${look ? '<button class="chip w" id="zReset">원래대로</button>' : ''}${sv ? '<button class="btn" id="zFix"' + (s.own ? '' : ' disabled') + ' title="이 크기·색을 이 소품 종류의 기본으로">저장</button><button class="chip" id="zKind" title="이 크기·색 그대로 전체 소품에 새 소품으로">다른 이름으로 저장</button>' : ''}<button class="chip del${sv ? ' w' : ' w'}" id="zDel"${s.del ? '' : ' disabled title="하나뿐인 소품이라 지울 수 없어요"'}>${s.del ? '삭제' : '삭제 (하나뿐인 소품)'}</button></div>
     ${ZB_SAVE}`;
   zReact(z, s.key, s.key === 'sc' ? (() => { try { return A.layout().sc?.[s.i]?.[0]; } catch (e) { return null; } })() : null); zoomPos(z, el);
-  const fr = s.key === 'fire' ? 6 : 0, paint = () => look ? zPaint(z, s.key === 'fire' ? null : A.selIcon(), A.selLook(), fr) : zPaint(z, A.insts?.().find(o => o.key === s.key && o.i === s.i)?.icon || '', { s: 1, h: 0, c: 100, b: 100 }, 0);
+  const fire = s.key === 'fire' || s.key === 'fires', fr = fire ? 6 : 0, paint = () => look ? zPaint(z, fire ? null : A.selIcon(), A.selLook(), fr) : zPaint(z, A.insts?.().find(o => o.key === s.key && o.i === s.i)?.icon || '', { s: 1, h: 0, c: 100, b: 100 }, 0);
   const fireP = () => A.fireArt ? A.fireArt(look ? A.selLook() : null).then(src => { if (src && zoomK === 'inst') { zPaint(z, src, look ? A.selLook() : { s: 1, h: 0, c: 100, b: 100 }, 6); } }) : null;   // v2.25 경완: 모닥불도 미리보기 (불꽃이 타오름)
-  paint(); if (s.key === 'fire') { $('#zV').innerHTML = ''; fireP(); } else if (s.key === 'pond' || s.key === 'bed') A.oneThumb?.(s.key).then(u => { if (u && zoomK === 'inst') zPaint(z, u, { s: 1, h: 0, c: 100, b: 100 }, 0); }).catch(() => {});   // v3.64 경완: 연못·꽃밭 상세 카드도 칸 그림 그대로 else if (s.key === 'mush') $('#zV').innerHTML = '<span class="ph" style="font-size:40px">🍄</span>';
-  if (look) zSliders(z, v => { A.setSelLook(v); setTimeout(() => { if (s.key !== 'fire') paint(); else fireP(); }, 80); });
+  paint(); if (fire) { $('#zV').innerHTML = ''; fireP(); } else if (['pond', 'bed', 'ponds', 'beds'].includes(s.key)) A.oneThumb?.(s.key.replace(/s$/, ''), s.key.endsWith('s') ? s.i : -1).then(u => { if (u && zoomK === 'inst') zPaint(z, u, { s: 1, h: 0, c: 100, b: 100 }, 0); }).catch(() => {});   // v3.64 경완: 연못·꽃밭 상세 카드도 칸 그림 그대로 else if (s.key === 'mush') $('#zV').innerHTML = '<span class="ph" style="font-size:40px">🍄</span>';
+  if (look) zSliders(z, v => { A.setSelLook(v); setTimeout(() => { if (!fire) paint(); else fireP(); }, 80); });
   z.onclick = e => { const b = e.target.closest('button'); if (!b) return;
     if (b.id === 'zX') closeZoom();
     else if (b.id === 'zReset') { A.setSelLook({ s: 1, h: 0, c: 100, b: 100 }); setTimeout(paint, 80); }
@@ -2123,6 +2124,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.68', '10월 23일', ['열매나무·횃대·모닥불·꽃밭·그루터기·연못도 여러 개 놓기 (끌어다 놓기·+ 버튼, 맵에 있는 소품 탭에서 하나씩 고르고 지우기)']],
   ['3.67', '10월 23일', ['몬스터볼 스프링에 올라탄 포켓몬이 구조물 뒤가 아니라 볼 구멍 안에 들어가 앉음 (앞 테두리만 가림)']],
   ['3.66', '10월 23일', ['몬스터볼 스프링에 올라탄 포켓몬이 볼 구멍 안에 조금 들어가 앉음', '스칼렛 작업물 그림 도트 크기를 모든 소품이 같게 (바람개비 도트가 컸던 것)']],
   ['3.65', '10월 23일', ['스칼렛 예시: 밀어 주는 포켓몬이 소품 쪽을 보게 (걷기·맴돌기 방향도)', '바람개비 날개를 작게 다시 그림', '별 꼬마전구는 전구만, 몬스터볼 스프링은 몬스터볼만 빛남', '시소 다시 그림: 받침은 가만히, 판만 좌우로 기울고 둘이 노는 예시는 포켓몬 두 마리', '상호작용 줄 오른쪽 끝 × 로 그 상호작용만 지우기', '추가한 소품 상세 카드 아래에 상호작용 표시', '야광 버섯이 밤에 빛나게']],
