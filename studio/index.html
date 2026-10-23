@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.50"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.51"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.50';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.51';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2101,6 +2101,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.51', '10월 23일', ['스칼렛 상호작용 예시: 공격·기술 동작일 때 포켓몬이 작아지던 것 고침 (늘 가만히 그림 크기)']],
   ['3.50', '10월 23일', ['스칼렛 상호작용 예시: 같은 카드를 다시 누르면 꺼짐, 바람개비 날개가 돌고 날갯짓·날아와 앉기·빙빙 돌기·밀기·숨기·기술 빛 등 글대로 움직임', '허수아비처럼 움직이는 소품은 그림 왼쪽 위에 \'움직임\' 카드 · 그림을 누르면 움직이고 다시 누르면 멈춤', '게임 v8.73: 실뿜기 낮은 데서 덜 솟구침·다시 쏘기 .2초 쿨타임, 발챙이 예고 포물선']],
   ['3.49', '10월 23일', ['스칼렛 작업물: 상호작용 앞 카드(누가)를 누르면 그림에 맞는 포켓몬이 나와 그 상호작용을 보여줌 · 한 번 더 누르면 다른 포켓몬', '알림 빨간 점을 작은 원으로', '맵 소품 리스트의 연못·꽃밭 카드 그림을 맵에 있는 모습 전체로 (게임 v8.72)']],
   ['3.48', '10월 23일', ['뉴트럴 분석 날짜에 요일도 (10월 23일 (금) 오전 7:50)']],
@@ -3361,7 +3362,7 @@ async function scaDemo(b) { const card = b.closest('.sc-it'), o = scaItem(card?.
   const head = hr ? mk(0, hr) : null, body = mk(hr, rows); let hc = [cols / 2, hr / 2];
   if (head) { let x0 = 1e9, x1 = -1, y0 = 1e9, y1 = -1; for (let y = 0; y < hr; y++) [...R0[y]].forEach((ch, X) => { if (fill(ch)) { x0 = Math.min(x0, X); x1 = Math.max(x1, X); y0 = Math.min(y0, y); y1 = Math.max(y1, y); } }); hc = [(x0 + x1 + 1) / 2, (y0 + y1 + 1) / 2]; }
   const sv = pic.querySelector('svg'), R = pic.getBoundingClientRect(), sr = sv.getBoundingClientRect(), pl = sr.left - R.left, pt = sr.top - R.top, s = sr.width / cols, PW = sr.width, PH = sr.height, cx = pl + PW / 2;
-  const fw = pmd ? Math.max(fa[1], ia[1]) : im.width, fh = pmd ? Math.max(fa[2], ia[2]) : im.height, k = Math.max(1, Math.min(2, Math.floor(84 / Math.max(fw, fh)) || 1)), MW = fw * k, MH = fh * k;
+  const fw = pmd ? ia[1] : im.width, fh = pmd ? ia[2] : im.height, k = Math.max(1, Math.min(2, Math.floor(84 / Math.max(fw, fh)) || 1)), MW = fw * k, MH = fh * k;   // v3.51 경완: 크기는 가만히 그림 기준 (공격 그림은 칸이 커서 예전엔 포켓몬이 작아졌다)
   const el = me.el = document.createElement('div'); el.className = 'sc-mon'; el.title = '눌러서 닫기'; const c = document.createElement('canvas'), dpr = Math.min(3, devicePixelRatio || 1); c.width = Math.round(R.width * dpr); c.height = Math.round(R.height * dpr); c.style.cssText = `left:0;top:0;width:${R.width}px;height:${R.height}px`;
   const nm = document.createElement('b'); nm.textContent = `${d.n} 예시`; el.append(c, nm); pic.append(el); sv.style.visibility = 'hidden'; me.pic = pic;
   const top = /위에|위로|위를|꼭대기|가로대|지붕|올라|얹|매달|걸터|끝에 앉|양 끝|위 새싹|가장자리에|평균대 위/.test(t), inn = /안에|안으로|속에|속으로|구멍|들어가|쏙|사이에|아래에 들어/.test(t), und = /아래|밑|그늘|기대/.test(t) && !top;
