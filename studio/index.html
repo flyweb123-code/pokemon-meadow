@@ -405,7 +405,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
           <select id="seaSel" aria-label="계절" title="계절 미리 보기 (게임은 날짜에 맞춰 바뀌어요)"><option value="">계절 그대로</option><option value="spring">봄</option><option value="summer">여름</option><option value="autumn">가을</option><option value="winter">겨울</option></select>
           <span class="vsep"></span>
           <b>기종</b><select class="devSel" aria-label="휴대폰 기종"></select>
-          <span class="sp"></span><span id="scSave"></span><button class="chip" id="szMode" title="화면 가득한 맵에 포켓몬을 줄지어 세워 두고 크기를 맞춰요">크기 조절 모드</button><span id="eTop" hidden><button class="chip" id="eUndo" title="방금 전으로 (Ctrl/⌘+Z)">↺ 되돌리기</button><span id="eSave"></span></span><span class="ewrap"><button class="btn" id="eMode">편집하기</button><div id="eWarn" hidden role="alertdialog"><div>배치를 저장하지 않았어요. 그냥 끝내면 원래대로 돌아가요.</div><div class="row"><button class="chip" data-ew="0">계속 편집</button><button class="chip" data-ew="1">그냥 종료</button><button class="btn" data-ew="2">저장하고 종료</button></div></div></span>
+          <span class="sp"></span><span id="scSave"></span><button class="chip" id="szMode" title="화면 가득한 맵에 포켓몬을 줄지어 세워 두고 크기를 맞춰요">크기 조절 모드</button><span id="eTop" hidden><button class="chip" id="eUndo" title="방금 전으로 (Ctrl/⌘+Z)">↺ 되돌리기</button><span id="eSave"></span></span><span class="ewrap"><button class="btn" id="eMode">편집하기</button><div id="eWarn" hidden role="alertdialog"><div>배치를 저장하지 않았어요. 그냥 끝내면 원래대로 돌아가요.</div><div class="row"><button class="chip" data-ew="1">저장하지 않고 종료</button><button class="btn" data-ew="2">저장하고 종료</button></div></div></span>
         </div>
         <div class="canvas" id="mapBox"><div id="szSh" hidden></div><div id="szMo" hidden></div><div id="szBar" hidden><b>크기 조절 모드</b><label class="szal" title="맵 배경 진하기 (0%면 맵이 안 보여요)">배경 투명도<input type="range" id="szA" min="0" max="100" step="5" value="100" aria-label="배경 투명도"><span class="num" id="szAV">100%</span></label><button class="chip" id="szAdd">포켓몬 넣기</button><button class="chip" id="szRand">무작위 10마리</button><button class="chip" id="szClr">모두 빼기</button><span class="num mute" id="szN"></span><span class="sp"></span><span id="szSel" class="small"></span><span id="szSave"></span><button class="btn" id="szExit">끝내기</button></div><div class="phone" id="phone"><iframe id="game" title="게임 화면" src="../index.html?studio"></iframe><div id="sbar"></div><div id="safeZ" hidden></div></div><div id="hotPop" hidden></div><div id="spx" hidden></div><div id="ebar" hidden role="dialog" aria-label="맵 편집">
 <div class="eh"><b>맵 편집</b></div>
@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.53"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.54"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.53';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.54';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -962,10 +962,13 @@ $('#eWarn').onclick = e => { const b = e.target.closest('[data-ew]'); if (!b) re
   setEdit(false); };
 // v2.25 경완: 맵 화면에서 빈 곳(버튼·칸·창이 아닌 곳)을 누르면 고른 소품·세부 창·반응 고르기를 취소
 const BLANK_NOT = 'button,input,select,textarea,label,a,summary,[data-k],[data-ik],[data-one],[data-rs],[data-sp],[data-uid],.it,.mc,.chip,.rx,#zoom,#propPane,#ebar,#spx,#szPane,#hotPop,iframe,.phone,#szBar,.top,.nav,#unsv,#safePop,#dockRz';
-document.addEventListener('pointerdown', e => { if (view !== 'map' || e.button > 0 || e.target.closest(BLANK_NOT) || !e.target.closest('#v-map,.view')) return;
+document.addEventListener('pointerdown', e => { if (!$('#eWarn').hidden) return;   // 저장 안 한 배치 창이 떠 있으면 아래에서 창만 닫는다
+  if (view !== 'map' || e.button > 0 || e.target.closest(BLANK_NOT) || !e.target.closest('#v-map,.view')) return;
   const open = !!(zoomK || A?.selInfo?.() || (spxKey && !szOn));   // v3.37 경완: 편집 중 빈 곳 = 열린 것부터 닫고, 아무것도 안 열려 있으면 편집 종료 (저장 안 한 배치가 있으면 편집 종료 버튼처럼 한 번 물어봄)
   if (zoomK) closeZoom(); A?.unpick?.(); dockMark(null); if (spxKey && !szOn) closeSpx();
   if (editing && !open && $('#eWarn').hidden) $('#eMode').click(); }, true);
+// v3.54 경완: '배치를 저장하지 않았어요' 창은 빈 곳(창·편집 종료 버튼 밖)을 누르면 닫힌다 = 계속 편집
+document.addEventListener('pointerdown', e => { const w = $('#eWarn'); if (!w.hidden && !e.target.closest('#eWarn,#eMode')) w.hidden = true; }, true);
 $('#eSafe2').onclick = () => { const on = !$('#eSafe2').classList.contains('on'); $('#eSafe2').classList.toggle('on', on); store.set('st-safe', on ? '1' : ''); safeZ(); };
 if (store.get('st-safe') === '1') $('#eSafe2').classList.add('on');
 $('#ePath').onclick = () => { const on = !$('#ePath').classList.contains('on'); $('#ePath').classList.toggle('on', on); A?.showPath(on); };
@@ -2101,6 +2104,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.54', '10월 23일', ['가로등 머리 작게, 석등 지붕 끝 잘림 고침, 둘 다 밑 풀·그림자 없앰, 석등 빛 범위 고침', '가로등·석등 같은 조명은 저녁 6시에 켜지고 아침 6시 반에 꺼짐 (게임 v8.75)', '\'배치를 저장하지 않았어요\' 창: 버튼 둘(저장하지 않고 종료·저장하고 종료), 빈 곳이나 배치 저장을 누르면 닫힘']],
   ['3.53', '10월 23일', ['맵 편집에서 저장한 소품 크기가 스칼렛 작업물 그림에도 (왼쪽 위 \'크기 ×\' 카드)', '허수아비 흔들림 프레임 새로 그림 (앞뒤로 흔들리는 8장)']],
   ['3.52', '10월 23일', ['맵 소품 리스트 연못·꽃밭 썸네일에 둘레 풀·바위·그루터기가 같이 들어가던 것 고침 — 그 소품만 (게임 v8.74)']],
   ['3.51', '10월 23일', ['스칼렛 상호작용 예시: 공격·기술 동작일 때 포켓몬이 작아지던 것 고침 (늘 가만히 그림 크기)']],
@@ -3472,7 +3476,7 @@ function hook() {
         MG_PTS: K.MG_PTS ?? 30, MQ_DAY_G: K.MQ_DAY_G || [50, 150, 300], MQ_TY_G: K.MQ_TY_G || [60, 150, 300, 550, 1000], MQ_PH_G: K.MQ_PH_G || [100, 250, 500, 1000], MQ_PLAY_G: K.MQ_PLAY_G || [100, 300, 600, 1000, 2500], MQ_SUM_G: K.MQ_SUM_G || [150, 500, 1200, 3000], MQ_KILL_G: K.MQ_KILL_G || [150, 500, 1500, 3000] } };   // v3.25 경완: 미니게임·미션 골드
     A.ensureSprite(1).then(() => { $('#logoI').src = thumb(25) || ''; A.ensureSprite(25).then(() => $('#logoI').src = thumb(25)); });
   }
-  A.onTap = s => { if (s) mapTap(s); }; A.onBlank = () => { if (editing && !zoomK && $('#eWarn').hidden) $('#eMode').click(); else if (zoomK) closeZoom(); }; A.onSel = onSel; A.onMon = onMon; A.onLog = onLog; A.onLayout = onLayout; A.onHot = onHot; A.onMonSc = onMonSc; A.onSzSel = m => { szCur = m; szInfo(); }; applyInsets();
+  A.onTap = s => { if (s) mapTap(s); }; A.onBlank = () => { if (!$('#eWarn').hidden) $('#eWarn').hidden = true; else if (editing && !zoomK) $('#eMode').click(); else if (zoomK) closeZoom(); }; A.onSel = onSel; A.onMon = onMon; A.onLog = onLog; A.onLayout = onLayout; A.onHot = onHot; A.onMonSc = onMonSc; A.onSzSel = m => { szCur = m; szInfo(); }; applyInsets();
   // v2.99 경완: 데이터 v42 에서 지도 반경마다 장소 특성(th)을 붙였다. 작업본에 예전 반경이 남아 있으면 같은 모양의 반경에 한 번만 옮겨 준다
   if (store.get('st-thfill42') !== '1' && ORIG.spots?.some(o => Array.isArray(o.th))) { const gk = o => [o.la, o.lo, o.r, o.r2 || 0, o.rot || 0].join(','), TM = new Map(ORIG.spots.filter(o => Array.isArray(o.th)).map(o => [gk(o), o.th])); let n = 0;
     for (const W of [D, D._sv]) if (W && Array.isArray(W.spots)) for (const o of W.spots) if (!Array.isArray(o.th) && TM.has(gk(o))) { o.th = [...TM.get(gk(o))]; n++; }
