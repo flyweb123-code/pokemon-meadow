@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.56"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.57"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.56';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.57';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2107,6 +2107,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.57', '10월 23일', ['작아진 스칼렛 소품 8개를 작은 칸에 맞게 손으로 새로 그림 (석등 지붕 넓게, 가로등·횃불·그네·스프링은 예전 그림에서 칸만 덜어 냄)']],
   ['3.56', '10월 23일', ['맵 크기로 다시 찍은 스칼렛 소품 8개 — 크기는 그대로, 명암·재질은 예전 그림 수준으로 다시', '버섯·꽃·풀은 자리 고정: 소품 목록에서 빠지고 맵에서 고르거나 옮길 수 없음, 소품을 그 위에 놓으면 숨고 치우면 다시 보임 (게임 v8.77)', '지금 놓인 소품 밑에 풀·꽃·버섯을 한 번 깔아 둠 (소품을 치우면 드러남)', '\'맵에 있는 소품\' 탭에서 작은 바위·큰 바위 따로']],
   ['3.55', '10월 23일', ['맵에 놓인 스칼렛 소품 8개(석등·가로등·야광 버섯·바람개비·타이어 그네·몬스터볼 스프링·횃불·허수아비)를 지금 맵 크기로 도트 다시 찍음 — 다른 소품과 같은 도트 크기, 크기 배율은 1로 (게임 v8.76)', '스칼렛 소품 모두 밑둥 풀·그림자 없앰, 앞으로 그리는 것도 금지', '허수아비 산들산들 흔들림(12장, 좌우 잘림 없음)', '\'맵에 있는 소품\' 탭의 연못·꽃밭 썸네일도 맵 모습으로']],
   ['3.54', '10월 23일', ['가로등 머리 작게, 석등 지붕 끝 잘림 고침, 둘 다 밑 풀·그림자 없앰, 석등 빛 범위 고침', '가로등·석등 같은 조명은 저녁 6시에 켜지고 아침 6시 반에 꺼짐 (게임 v8.75)', '\'배치를 저장하지 않았어요\' 창: 버튼 둘(저장하지 않고 종료·저장하고 종료), 빈 곳이나 배치 저장을 누르면 닫힘']],
