@@ -181,7 +181,7 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 .sc-hd{display:flex;align-items:center;gap:6px;justify-content:space-between}.sc-hd b{font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sc-pk{flex:none;min-height:24px!important;padding:1px 8px!important;font-size:11.5px!important}.sc-pk.on{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
 .sc-d{font-size:12px;line-height:1.45;color:var(--mute,#9aa0ad)}
-.sc-rx{font-size:11.5px}.sc-rx .rg{padding:6px 7px}.sc-rx div{grid-template-columns:minmax(0,74px) minmax(0,1fr)!important;gap:6px!important;align-items:start!important}.sc-rx .chip{white-space:normal;line-height:1.25;padding:2px 4px;text-align:center;font-size:10.5px;min-height:22px}
+.sc-rx{font-size:11.5px}.sc-rx .rg{padding:6px 7px}.sc-rx div{grid-template-columns:minmax(0,74px) minmax(0,1fr)!important;gap:6px!important;align-items:start!important}.sc-rx .chip{white-space:normal;line-height:1.25;padding:2px 4px;text-align:center;font-size:10.5px;min-height:22px}.sc-rx button.chip{cursor:pointer;font:inherit;font-size:10.5px;color:inherit}.sc-rx button.chip:hover{border-color:var(--acc)}.sc-rx button.chip.on{background:var(--acc);border-color:var(--acc);color:var(--deep);font-weight:600}.sc-pic{overflow:hidden}.sc-mon{position:absolute;inset:0;cursor:pointer;animation:scmIn .25s ease-out}.sc-mon canvas{position:absolute;display:block;image-rendering:pixelated}.sc-mon.fly canvas{animation:scmBob 1.4s ease-in-out infinite}.sc-mon b{position:absolute;left:4px;bottom:4px;font:600 10px/1.2 inherit;white-space:nowrap;padding:1px 5px;border-radius:8px;background:rgba(10,14,30,.75);color:#fff;pointer-events:none}@keyframes scmIn{from{opacity:0;transform:translateY(-6px)}}@keyframes scmBob{50%{transform:translateY(-4px)}}
 .sc-fit{font-size:11px;color:var(--mute,#9aa0ad)}
 .sc-it .fb{margin-top:auto}
 .fb-in{grid-template-columns:minmax(0,1fr) auto!important;align-items:stretch!important}.fb-in textarea{min-height:32px;height:32px;padding:6px 8px;line-height:1.35}.fb-in .chip{min-height:32px;padding:0 10px;white-space:nowrap}
@@ -201,12 +201,12 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 .dock .db{overflow:auto;padding:0 10px 14px;display:grid;gap:12px;align-content:start}
 .dock .sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px}
 .dock .it{position:relative;display:grid;justify-items:center;align-content:end;gap:3px;padding:8px 4px 6px;background:var(--deep);border:1px solid var(--chip);border-radius:4px;font-size:11.5px;color:var(--soft);min-height:84px;touch-action:none;user-select:none;-webkit-user-select:none}
-.dock .it.dr{cursor:grab}.dock .it.sc-dk{position:relative}.dock .it.sc-dk.pend{border-style:dashed;border-color:var(--acc)}.dock .sg.main.drop{outline:2px dashed var(--acc);outline-offset:3px;border-radius:6px}.dock .dh .dsv{margin-left:auto;padding:3px 12px;font-size:12px}.dock .dh .dsv+.dt{margin-left:6px}.dock .dh .dsv[hidden],.dock.fold .dh .dsv{display:none}.dock .sc-x{position:absolute;left:2px;top:2px;min-width:18px;height:18px;padding:0 4px;border:0;border-radius:4px;background:var(--chip);color:var(--mute,#9aa0ad);font-size:12px;line-height:18px;cursor:pointer;opacity:.75}.dock .sc-x:hover{opacity:1;color:var(--fg)}.dock .sc-x.arm{background:#e5484d;color:#fff;opacity:1}.nav a.scnew .lb::after{content:'';display:inline-block;width:8px;height:8px;margin-left:6px;vertical-align:middle;background:#e5484d;box-shadow:0 0 0 1px #8a1a1d}.dock .it.dr:hover{border-color:var(--acc)}
+.dock .it.dr{cursor:grab}.dock .it.sc-dk{position:relative}.dock .it.sc-dk.pend{border-style:dashed;border-color:var(--acc)}.dock .sg.main.drop{outline:2px dashed var(--acc);outline-offset:3px;border-radius:6px}.dock .dh .dsv{margin-left:auto;padding:3px 12px;font-size:12px}.dock .dh .dsv+.dt{margin-left:6px}.dock .dh .dsv[hidden],.dock.fold .dh .dsv{display:none}.dock .sc-x{position:absolute;left:2px;top:2px;min-width:18px;height:18px;padding:0 4px;border:0;border-radius:4px;background:var(--chip);color:var(--mute,#9aa0ad);font-size:12px;line-height:18px;cursor:pointer;opacity:.75}.dock .sc-x:hover{opacity:1;color:var(--fg)}.dock .sc-x.arm{background:#e5484d;color:#fff;opacity:1}.nav a.scnew .lb::after{content:'';display:inline-block;width:6px;height:6px;margin-left:5px;vertical-align:top;border-radius:50%;background:#e5484d}.dock .it.dr:hover{border-color:var(--acc)}
 /* v3.38 경완: 소품 카드에 마우스를 올리면 오른쪽 위 + → 누르면 맵 가운데에 추가 */
 .it-add{position:absolute;right:2px;top:2px;z-index:2;width:20px;height:20px;padding:0;border:0;border-radius:4px;background:var(--acc);color:#fff;font-size:15px;font-weight:700;line-height:20px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .12s}
 .dock .it.dr:hover .it-add,.it-add:focus-visible{opacity:1;pointer-events:auto}@media (hover:none){.it-add{display:none}}.dock .it[data-ik],.dock .it[data-one]{cursor:pointer}.dock .it[data-ik]:hover,.dock .it[data-one]:hover{border-color:var(--acc);background:var(--chip);color:var(--fg)}
 .dock .it img{height:46px;width:auto;max-width:76px;object-fit:contain;image-rendering:pixelated;pointer-events:none}
-.dock .it .fl{width:32px;height:44px;background-size:600% 100%;background-position:0 0;image-rendering:pixelated}
+.dock .it img.th1{width:100%;max-width:100%;height:46px;object-fit:contain}.dock .it .fl{width:32px;height:44px;background-size:600% 100%;background-position:0 0;image-rendering:pixelated}
 .dock .it .ph{font-size:22px;line-height:1;opacity:.7}
 .dock .it .c{position:absolute;top:3px;right:5px;font-family:var(--px);font-size:10px;color:var(--mute)}
 .dock.fold{width:44px}.dock.fold .db,.dock.fold .dh b,.dock.fold .dtab,.dock.fold .drz{display:none}.dock.fold .dh{flex-direction:column;padding:10px 8px}
@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.48"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.49"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.48';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.49';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -1202,6 +1202,7 @@ function renderDockAll() {
     ${(C.hid || []).length ? `<h4>지운 소품</h4><div class="chips">${C.hid.map(k => `<button class="chip" data-rs="${k}">${esc((A.ADD.find(r => r[0] === k) || [k, k])[1])} 되살리기</button>`).join('')}</div>` : ''}
     ${(C.mine || []).length ? `<h4>내 소품</h4><div class="sg">${C.mine.map(([k, n, src, c]) => `<div class="it dr mine" data-k="${k}" title="${esc(n)} · 맵에 ${c}개">${c ? `<span class="c">${c}</span>` : ''}${icon(src)}${esc(n)}<button class="it-add" data-addk="${esc(k)}" aria-label="${esc(n)} 맵에 추가" title="맵 가운데에 추가">+</button></div>`).join('')}</div>` : ''}
     ${scDock()}`;
+  for (const k of ['pond', 'bed']) A.oneThumb?.(k).then(u => { const it = u && $(`#dockB [data-one="${k}"]`); if (!it) return; const o = it.querySelector('img,.fl'); if (o) o.outerHTML = `<img class="th1" alt="" src="${u}">`; }).catch(() => {});   // v3.49 경완: 연못·꽃밭은 맵에 있는 모습 전체로
 }
 // v3.26 경완: 스칼렛의 작업물에서 '소품 리스트'에 넣은 소품 — 끌어다 맵에 놓고, × 로 목록에서 지운다 (게임 v8.22 LAYOUT.scArt)
 // v3.28 경완: 이름은 '추가 소품'. 위 전체 소품 칸으로 끌어 놓으면 '저장 전'이 되고, 소품 창 위 저장을 누르면 전체 소품으로 들어간다 (scArt[id].on)
@@ -2100,6 +2101,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.49', '10월 23일', ['스칼렛 작업물: 상호작용 앞 카드(누가)를 누르면 그림에 맞는 포켓몬이 나와 그 상호작용을 보여줌 · 한 번 더 누르면 다른 포켓몬', '알림 빨간 점을 작은 원으로', '맵 소품 리스트의 연못·꽃밭 카드 그림을 맵에 있는 모습 전체로 (게임 v8.72)']],
   ['3.48', '10월 23일', ['뉴트럴 분석 날짜에 요일도 (10월 23일 (금) 오전 7:50)']],
   ['3.47', '10월 23일', ['뉴트럴 분석에 몇 월 며칠 몇 시에 분석했는지 늘 보이게 (오늘이어도 날짜)']],
   ['3.46', '10월 22일', ['뉴트럴: 낮·밤에만 진화하는 포켓몬(라란티스·견고라스 등)도 짝꿍 거리로 진화하게 셈 (게임 8.60)']],
@@ -3301,7 +3303,7 @@ function renderSca() {
   const card = o => { const pk = scaPicked(o.id); return `<div class="sc-it${pk ? ' pk' : ''}" id="sc-${esc(o.id)}"><div class="sc-pic">${o.px?.length ? pxSvg(o.px, o.pal || {}, Math.max(2, Math.floor(96 / Math.max(o.px.length, o.px[0].length)))) : ''}${o.k ? `<span class="sc-k">${esc(o.k)}</span>` : ''}<button class="sc-wd" data-swdel="${esc(o.id)}" title="휴지통으로">×</button></div>
     <div class="sc-hd"><b>${esc(o.n)}</b><button class="chip sc-pk${pk ? ' on' : ''}" data-pk="${esc(o.id)}"${PK_BUSY ? ' disabled' : ''} title="${pk ? '소품 리스트에서 빼기' : '맵 메뉴 소품 리스트에 추가'}">${pk ? '✓ 리스트에 있음' : '+ 소품 리스트'}</button></div>
     <div class="sc-d">${esc(o.d || '')}</div>
-    ${o.acts?.length ? `<div class="react sc-rx"><section class="rg">${o.acts.map(a => `<div><span class="chip">${esc(a.w)}</span><span>${esc(a.a)}</span></div>`).join('')}</section></div>` : ''}${o.fit ? `<div class="sc-fit">어울리는 곳 · ${esc(o.fit)}</div>` : ''}
+    ${o.acts?.length ? `<div class="react sc-rx"><section class="rg">${o.acts.map((a, i) => `<div><button class="chip" data-scx="${i}" title="눌러서 예시 보기">${esc(a.w)}</button><span>${esc(a.a)}</span></div>`).join('')}</section></div>` : ''}${o.fit ? `<div class="sc-fit">어울리는 곳 · ${esc(o.fit)}</div>` : ''}
     ${fbBox('sca', o.id, o.n, '이 소품에 피드백')}</div>`; };
   const q = scaQ.trim(), hit = o => !q || (o.n + (o.d || '') + (o.acts || []).map(a => a.w + a.a).join('')).includes(q);
   const pk = Object.keys((D.layout || ORIG?.layout)?.scArt || {}).map(id => scaItem(id) || { n: (D.layout || ORIG.layout).scArt[id].n });
@@ -3320,9 +3322,50 @@ function scaPick(id) { if (!A?.scDef) { toast('게임을 새 버전(v8.22)으로
   const on = !scaPicked(id), o = scaItem(id); if (on) { if (!o?.px?.length) return; A.scDef(id, o); const N = new Set(JSON.parse(store.get('st-sc-new') || '[]')); N.add(id); store.set('st-sc-new', JSON.stringify([...N])); scDot(); }
   else A.scUndef(id);
   toast(on ? `${o?.n || '소품'}을(를) 소품 리스트에 넣었어요 · 맵 메뉴에서 저장하면 게임에 들어가요` : '소품 리스트에서 뺐어요'); renderSca(); }
+// v3.49 경완: 상호작용 앞 카드(누가)를 누르면 그 카드에 맞는 포켓몬이 그림 위에 나와 그 상호작용을 해 보인다 (한 번 더 = 다른 포켓몬, 포켓몬 누르면 닫힘)
+let SCX = null;
+function scaDemoOff() { if (!SCX) return; cancelAnimationFrame(SCX.raf); SCX.el?.remove(); SCX.chip?.classList.remove('on'); SCX = null; }
+function scaFitSp(w) { const S = A?.SPECIES; if (!S) return [];
+  const tys = A.TYPE_KO.filter(t => t && w.includes(t)), fly = /나는|날개|새/.test(w), swim = /헤엄|물고기/.test(w), sm = /작은/.test(w), bg = /큰/.test(w);
+  const sc = [], all = Object.keys(S).map(Number).filter(sp => S[sp]?.t);
+  for (const sp of all) { const d = S[sp], ty = d.t.map(t => A.TYPE_KO[t]), small = d.w <= 120 && d.h <= 6; let v = 0, need = 0;
+    if (tys.length) { need++; if (tys.some(t => ty.includes(t))) v += tys.every(t => ty.includes(t)) ? 1.2 : 1; }
+    if (fly) { need++; if (ty.includes('비행') || ty.includes('벌레') && d.h <= 10) v++; }
+    if (swim) { need++; if (ty.includes('물')) v++; }
+    if (sm) { need++; if (small) v++; }
+    if (bg) { need++; if (!small && d.h >= 10) v++; }
+    sc.push([sp, need ? v : 1]); }
+  const top = Math.max(...sc.map(x => x[1])); return sc.filter(x => x[1] >= top - .01 && x[1] > 0).map(x => x[0]); }
+async function scaDemo(b) { const card = b.closest('.sc-it'), o = scaItem(card?.id.slice(3)), a = o?.acts?.[+b.dataset.scx], pic = card?.querySelector('.sc-pic'); if (!a || !pic) return;
+  if (!A?.SPECIES) { toast('게임을 불러오는 중이에요 · 잠시 뒤 다시 눌러 주세요', true); return; }
+  const prev = SCX && SCX.chip === b ? SCX.sp : 0; scaDemoOff();
+  let L = scaFitSp(a.w || ''); if (L.length > 1 && prev) L = L.filter(sp => sp !== prev); if (!L.length) { toast('이 카드에 맞는 포켓몬을 못 찾았어요', true); return; }
+  const sp = L[Math.floor(Math.random() * L.length)], me = SCX = { sp, chip: b, raf: 0 }; b.classList.add('on');
+  await A.ensureSprite(sp).catch(() => {}); if (SCX !== me || !pic.isConnected) return;
+  const P = A.SPRITES[sp], pmd = typeof P === 'object', t = a.a || '', d = A.SPECIES[sp];
+  const want = /졸|자요|잠들|낮잠|꾸벅|자고|쉬어/.test(t) ? ['Sleep'] : /먹|냠|갉|핥|마셔|쪼아/.test(t) ? ['Eat', 'Attack'] : /밀어|밀고|치고|쳐|차고|차서|때|두드|받아|부딪|들이받/.test(t) ? ['Strike', 'Kick', 'Attack'] : /깡충|뛰|점프|흔들|구르|굴러|뒹굴/.test(t) ? ['Hop'] : /빙글|돌아|돌며|맴돌/.test(t) ? ['Rotate', 'Hop'] : /뽐|포즈|자랑/.test(t) ? ['Pose', 'Appeal'] : /불|뿜|쏘|물줄기|전기/.test(t) ? ['Shoot', 'SpAttack', 'Attack'] : [];
+  const an = pmd ? (want.find(n => P.a[n]) || 'Idle') : '', fa = pmd ? P.a[an] : null, ia = pmd ? P.a.Idle || fa : null;
+  const im = new Image(); im.src = pmd ? P.i : P; await im.decode().catch(() => {}); if (SCX !== me || !pic.isConnected) return;
+  const fw = pmd ? Math.max(fa[1], ia[1]) : im.width, fh = pmd ? Math.max(fa[2], ia[2]) : im.height, k = Math.max(1, Math.min(2, Math.floor(84 / Math.max(fw, fh)) || 1));
+  const el = me.el = document.createElement('div'); el.className = 'sc-mon' + (/날아|날개|떠|파닥/.test(t) || A.TYPE_KO && d.t.map(x => A.TYPE_KO[x]).includes('비행') && /위|가로대|꼭대기|지붕|앉/.test(t) ? ' fly' : ''); el.title = '눌러서 닫기';
+  const c = document.createElement('canvas'); c.width = fw * k; c.height = fh * k; el.append(c); const nm = document.createElement('b'); nm.textContent = `${d.n} 예시`; el.append(nm); pic.append(el);
+  const R = pic.getBoundingClientRect(), sv = pic.querySelector('svg')?.getBoundingClientRect() || { left: R.left + R.width / 2 - 40, top: R.top + 16, width: 80, height: 80 };
+  const px = { l: sv.left - R.left, t: sv.top - R.top, w: sv.width, h: sv.height }, cx = px.l + px.w / 2, W = c.width, H = c.height, pad = H * .22;   // PMD 그림은 아래쪽에 여백이 있다
+  let x, y;   // y = 포켓몬 발이 닿는 높이
+  if (/안에|안으로|속에|속으로|구멍|들어가|쏙|사이에/.test(t)) { x = cx; y = px.t + px.h * .62; }
+  else if (/위에|위로|꼭대기|가로대|지붕|올라|얹|매달|걸터/.test(t)) { x = cx; y = px.t + px.h * .18; }
+  else if (/아래|밑|그늘/.test(t)) { x = cx; y = px.t + px.h; }
+  else { x = Math.min(R.width - W / 2 - 2, px.l + px.w + W * .1); y = px.t + px.h; if (x - W / 2 < px.l + px.w * .6) x = Math.max(W / 2 + 2, px.l - W * .1); }
+  c.style.left = `${Math.round(x - W / 2)}px`; c.style.top = `${Math.round(Math.max(-pad, Math.min(R.height - H + pad, y - H + pad)))}px`;
+  const g = c.getContext('2d'), t0 = performance.now();
+  const draw = now => { if (SCX !== me) return; if (!c.isConnected) { SCX = null; return; } me.raf = requestAnimationFrame(draw); g.imageSmoothingEnabled = false; g.clearRect(0, 0, W, H);
+    if (!pmd) { g.drawImage(im, 0, 0, W, H); return; }
+    const durs = fa[6], tot = durs.reduce((p, q) => p + q, 0), tt = ((now - t0) / 1000 * 60) % tot; let f = 0, ac = 0; for (let i = 0; i < durs.length; i++) { ac += durs[i]; if (tt < ac) { f = i; break; } }
+    g.drawImage(im, f * (fa[1] + (P.G || 0)), fa[0], fa[1], fa[2], Math.round((W - fa[1] * k) / 2), H - fa[2] * k - Math.round((fh - fa[2]) * k / 2), fa[1] * k, fa[2] * k); };
+  me.raf = requestAnimationFrame(draw); }
 // v3.26 경완: 새로 넣은 스칼렛 소품이 있으면 맵 메뉴에 빨간 점 (맵 메뉴를 열면 사라짐)
 function scDot() { const a = $('.nav a[data-v="map"]'); if (a) a.classList.toggle('scnew', JSON.parse(store.get('st-sc-new') || '[]').length > 0); }
-$('#scaC').addEventListener('click', e => { const b = e.target.closest('[data-pk]'); if (b) scaPick(b.dataset.pk); const x = e.target.closest('[data-swdel],[data-swday],[data-swres],[data-swgone]'); if (x) scaDel(x); if (e.target.closest('#scaBin')) { scaTrash = !scaTrash; renderSca(); } });
+$('#scaC').addEventListener('click', e => { const cx = e.target.closest('[data-scx]'); if (cx) return scaDemo(cx); if (e.target.closest('.sc-mon')) return scaDemoOff(); const b = e.target.closest('[data-pk]'); if (b) scaPick(b.dataset.pk); const x = e.target.closest('[data-swdel],[data-swday],[data-swres],[data-swgone]'); if (x) scaDel(x); if (e.target.closest('#scaBin')) { scaTrash = !scaTrash; renderSca(); } });
 // v3.31 경완: 작업물 메뉴에서 스칼렛 작업물을 소품마다·날마다 지운다 (× 한 번 → 빨갛게, 한 번 더 → main 의 config/staff/scarlet.json 에서 지움). 이미 소품 리스트에 넣은 건 맵에 그대로 남아요
 // v3.32 경완: × 는 누르면 바로 지우고, 지운 작업물은 휴지통(scarlet.json 의 trash)으로 — 휴지통에서 되살리기·영구 삭제
 let scaTrash = false;

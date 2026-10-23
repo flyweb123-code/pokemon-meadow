@@ -5986,7 +5986,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.71';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.72';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -11077,6 +11077,15 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
     if (key === 'sc') return { key, i, name: LAYOUT.scArt[v[0]]?.n || NAME.sc, kindName: null, icon: scImg(v[0])?.src || '', fr: 0 };
     return { key, i, name: key === 'flowers' ? FNAME[v[0]] : NAME[key], kindName: typeof id === 'string' ? LAYOUT.kinds?.[id]?.n || null : null, icon: key === 'fire' ? SPR.flame : k ? api.lookIcon(k, LKi(k, key, v)) : oneI[key] || '', fr: key === 'fire' ? 6 : 0 }; }); };
   api.pick = (key, i = -1) => { if (!(key in LAYOUT)) return; sel = { key, i }; renderHands(); api.onSel?.(selInfo(), undo.length); };
+  /* v8.72 경완: 작업실 소품 리스트의 연못·꽃밭 카드는 수련잎·꽃 하나가 아니라 맵에 있는 그 모습 전체를 썸네일로 (배경 + 그 둘레의 꽃·갈대·수련잎) */
+  api.oneThumb = async k => { const P = k === 'pond' ? POND : k === 'bed' ? FLOWERBED : null; if (!P) return '';
+    const [x0, y0, x1, y1] = k === 'pond' ? [P.x - P.rx - 12, P.y - P.ry - 30, P.x + P.rx + 12, P.y + P.ry + 10] : [P.x - 54, P.y - 48, P.x + 54, P.y + 24];
+    const w = Math.round(x1 - x0), h = Math.round(y1 - y0), c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.imageSmoothingEnabled = false;
+    const bg = $('#bg'), ox = BGX ? BGX.ox : 0; g.drawImage(bg, x0 / 2 + ox, y0 / 2, w / 2, h / 2, 0, 0, w, h);
+    const L = [...itemsEl.querySelectorAll('.flw,.lily')].map(e => ({ e, x: parseFloat(e.style.left), y: parseFloat(e.style.top), w: parseFloat(e.style.width), h: parseFloat(e.style.height), src: (e.style.backgroundImage.match(/url\("?(.*?)"?\)$/) || [])[1] }))
+      .filter(o => o.src && o.x + o.w / 2 > x0 && o.x - o.w / 2 < x1 && o.y > y0 && o.y - o.h < y1 + (o.e.classList.contains('lily') ? o.h : 0)).sort((a, b) => a.y - b.y);
+    for (const o of L) { const im = new Image(); im.src = o.src; await im.decode().catch(() => {}); const ly = o.e.classList.contains('lily'); g.drawImage(im, Math.round(o.x - o.w / 2 - x0), Math.round(o.y - (ly ? o.h / 2 : o.h) - y0), o.w, o.h); }
+    return c.toDataURL(); };
   api.cat = () => { const n = k => LAYOUT[k].length, nf = k => LAYOUT.flowers.filter(f => f[0] === k).length, nr = sz => LAYOUT.rocks.filter(r => r[4] === sz).length;
     return { one: [['tree', '열매나무', SPR.tree], ['perch', '횃대', SPR.perch], ['fire', '모닥불', SPR.flame, 6], ['bed', '꽃밭', SPR.flw.sun.src], ['stump', '그루터기', api.lookIcon('stump')], ['pond', '연못', SPR.lilyF]],
       hid: [...(LAYOUT.hide || [])], add: api.ADD.filter(([k]) => !LAYOUT.hide?.includes(k)).map(([k, nm]) => [k, nm, api.lookIcon(k) || api.addIcon(k), SPR.flw[k] ? nf(k) : k === 'bush' ? n('bushes') : k === 'puddle' ? n('puddles') : k === 'mush' ? n('mush') : nr(k === 'rockS' ? 1 : 2)]),
