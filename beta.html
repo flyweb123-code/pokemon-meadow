@@ -6205,9 +6205,9 @@ function itemPop(P) {
     const card = !$('#pokePop').hidden; if (card) closePoke(); evolveWin(P, card, c); };
 }
 // ---------- 미니게임 (베타 v5.77 경완): 필드 정보창 조이스틱 → 게임 고르기 → 장애물 넘기 ----------
-// 미니게임천국 '달려라'처럼 저절로 달리고 눌러서 뛴다. 500점마다(v8.81, 예전엔 250m) 페이즈가 올라 빨라지고 장애물이 늘어난다.
+// 미니게임천국 '달려라'처럼 저절로 달리고 눌러서 뛴다. 1000점마다(v8.83, 예전엔 250m) 페이즈가 올라 빨라지고 장애물이 늘어난다.
 const mgPhSc = g => Math.floor(g.dist / 25) + (g.bonus || 0);   // 페이즈 점수 = 화면 점수 그대로 (v8.83 경완: 기술 점수도 총점에 들어가니 빼지 않음 — v8.82 되돌림)
-const MG_PH_SC = 500;   // 페이즈 한 칸 = 점수 (달린 m + 밟기·기술 점수). v8.81 경완 '250점은 너무 빠름' → 500
+const MG_PH_SC = 1000;   // 페이즈 한 칸 = 점수 (달린 m + 밟기·기술 점수). v8.81 경완 '250점은 너무 빠름' → 500, v8.83 '기술 점수도 생각해서 기준 높여야' → 1000
 // 장애물은 다른 포켓몬. 함께 뛰는 포켓몬은 첫 번째 타입에 따라 능력이 하나씩 있고, 페이즈마다 다시 채워진다.
 const ICO_JOY = '<svg viewBox="0 0 12 12" width="26" height="26" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M4 0h4v1h1v4h-1v1h-1v2h4v1h1v3h-12v-3h1v-1h4v-2h-1v-1h-1v-4h1z"/><path fill="#e8483c" d="M4 1h4v4h-4z"/><path fill="#ff9a8a" d="M5 1h1v1h-1z"/><path fill="#b02a22" d="M7 4h1v1h-1z"/><path fill="#5a5a6a" d="M5 6h2v2h-2z"/><path fill="#a8acc0" d="M1 9h10v2h-10z"/><path fill="#ffd84a" d="M8 9h2v1h-2z"/></svg>';
 // k: 능력 종류, c: 페이즈마다 쓸 수 있는 횟수 (0 = 저절로)
