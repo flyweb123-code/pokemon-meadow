@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.46"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.47"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.46';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.47';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2100,6 +2100,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.47', '10월 23일', ['뉴트럴 분석에 몇 월 며칠 몇 시에 분석했는지 늘 보이게 (오늘이어도 날짜)']],
   ['3.46', '10월 22일', ['뉴트럴: 낮·밤에만 진화하는 포켓몬(라란티스·견고라스 등)도 짝꿍 거리로 진화하게 셈 (게임 8.60)']],
   ['3.45', '10월 22일', ['향로 기본 배율 1·1·1.5·3·3 (체감되면서 첫 전설은 조금만 당겨지게, 게임 8.44)']],
   ['3.44', '10월 22일', ['스칼렛 소품에 프레임 그림(움직이는 소품)을 넣을 수 있어요 — 허수아비가 바람에 흔들려요 (게임 8.43)', '향로 기본 배율 1·1·1.2·1.4·1.5 (사서 써도 원래 확률과 비슷하게)', '뉴트럴: 타입별 미션은 기술 타입으로']],
@@ -3221,6 +3222,7 @@ const face = (k, s = 4) => `<span class="stf-face" style="--c:${STAFF[k].c}">${p
 async function staffGet(path, def) {
   try { if (store.get('st-gh-token')) return JSON.parse(await gh(`/contents/${path}?ref=main`, { raw: true })); const r = await fetch('../' + path + '?t=' + Date.now(), { cache: 'no-store' }); return r.ok ? await r.json() : def; }
   catch (e) { return def; } }
+const whenD = t => { const d = new Date(t); return d.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' }) + ' ' + d.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' }); };   // 3.47 경완: 뉴트럴 분석은 오늘이어도 몇 월 며칠인지
 const when = t => { const d = new Date(t), n = new Date(), same = d.toDateString() === n.toDateString(); return same ? d.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' }) : d.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' }) + ' ' + d.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' }); };
 
 // ---------- 뉴트럴의 조언 ----------
@@ -3257,8 +3259,8 @@ function renderNeu() {
   const per = s => `<div class="tblw"><table class="tov nb-t"><tr><th>생활 패턴</th><th class="r">하루 km</th><th class="r">30일 도감</th><th class="r">첫 에픽</th><th class="r">첫 전설</th><th class="r">하루 골드</th><th class="r">친밀도 만점</th><th class="r">가방(30일)</th><th class="r">향로·부적<small>90일 쓴 수</small></th></tr>${NEU.PERSONAS.map(P => { const o = s.by[P.id]; if (!o) return ''; const d = v => v > s.days ? `${s.days}일+` : Math.round(v) + '일';
     return `<tr><td><b>${esc(P.name)}</b> <span class="small mute">${o.n}명</span><div class="small mute">${esc(P.d)}</div></td><td class="r num">${o.km.toFixed(1)}</td><td class="r num">${Math.round(o.dex30 * 100)}%</td><td class="r num">${d(o.fE)}</td><td class="r num">${d(o.fL)}</td><td class="r num">${Math.round(o.gpd).toLocaleString()}G</td><td class="r num">${d(o.frMax)}</td><td class="r num">${Math.round(o.bag30)}</td><td class="r num">${o.uI == null ? '-' : `${Math.round(o.uI)} · ${Math.round(o.uC)}`}</td></tr>`; }).join('')}</table></div>`;
   const text = last?.text ? `<div class="stf-say">${last.text.split(/\n+/).map(p => `<p>${esc(p)}</p>`).join('')}</div>` : '<div class="stf-say"><p>아직 아침 분석을 올리지 않았어요. 매일 아침에 100명이 90일 동안 게임하는 걸 돌려 보고 여기에 적어 둘게요. 지금 바로 보고 싶으면 아래 버튼을 눌러 주세요.</p></div>';
-  $('#neuC').innerHTML = `<div class="card stf-hd">${face('neu', 5)}<div><h2 style="margin:0">뉴트럴 <span class="small mute">밸런스 담당</span></h2>${last ? `<div class="small mute">${when(last.at)} 분석 · 게임 ${esc(last.app || '')} · 데이터 v${last.data}</div>` : ''}${text}${fbBox('neu', 'all', '', '뉴트럴에게 피드백 남기기 (분석 방식·기준·말투 등)')}</div></div>
-    <div class="card"><h2>지금 상태 ${NEU_L ? `<span class="small mute">작업본 기준 (바뀐 곳 ${NEU_L.draft}개) · ${when(NEU_L.at)}에 돌림</span>${stale ? ' <span class="tag" style="background:var(--warn)">그 뒤로 값이 바뀌었어요 · 다시 돌려 보세요</span>' : ''}` : last ? '<span class="small mute">배포된 값 기준 · 아침 분석</span>' : ''}</h2>
+  $('#neuC').innerHTML = `<div class="card stf-hd">${face('neu', 5)}<div><h2 style="margin:0">뉴트럴 <span class="small mute">밸런스 담당</span></h2>${last ? `<div class="small mute">${whenD(last.at)} 분석 · 게임 ${esc(last.app || '')} · 데이터 v${last.data}</div>` : ''}${text}${fbBox('neu', 'all', '', '뉴트럴에게 피드백 남기기 (분석 방식·기준·말투 등)')}</div></div>
+    <div class="card"><h2>지금 상태 ${NEU_L ? `<span class="small mute">작업본 기준 (바뀐 곳 ${NEU_L.draft}개) · ${whenD(NEU_L.at)}에 돌림</span>${stale ? ' <span class="tag" style="background:var(--warn)">그 뒤로 값이 바뀌었어요 · 다시 돌려 보세요</span>' : ''}` : last ? '<span class="small mute">배포된 값 기준 · 아침 분석</span>' : ''}</h2>
       ${R ? `<div class="nb">${R.J.map(bar).join('')}</div>` : '<div class="empty">아직 돌린 결과가 없어요.</div>'}
       <div class="chips"><button class="btn" id="neuRun"${NEU_BUSY || !A ? ' disabled' : ''}>${NEU_BUSY ? '100명이 90일 동안 노는 중…' : '작업본으로 지금 돌려 보기'}</button>${NEU_L && last ? '<button class="chip" id="neuBack">아침 분석으로 보기</button>' : ''}</div></div>
     <div class="card"><h2>고칠 거리</h2><div class="small mute">제안마다 그 값으로 한 번 더 돌려 본 결과를 붙였어요. 작업본에 넣어도 배포하기를 눌러야 게임에 들어가요.</div>${R ? sugg(R.P, !!A) : ''}</div>
