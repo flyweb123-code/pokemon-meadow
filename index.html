@@ -6001,7 +6001,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.86';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.87';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -10239,6 +10239,7 @@ async function evolveWin(P, card, forceTo) {
         cur ^= 1; img.src = cur ? toSrc : fromSrc; wh.src = cur ? toW : fromW; k++;
         for (const x of [img, wh]) { x.classList.remove('beat'); void x.offsetWidth; x.classList.add('beat'); }
         if (!music) sfx('evotick', Math.min(30, k));
+        haptic(k > EVO_SWAPS.length * .7 ? 1 : 0);   // v8.87 경완: 깜빡일 때마다 진동 (끝으로 갈수록 조금 세게)
       }
       // 빛 알갱이가 모여든다 (끝으로 갈수록 많이)
       if (t >= EVO_T0 && t - lastPart > .22 - p * .18) { lastPart = t; const w = el.clientWidth, h = el.clientHeight, a = Math.random() * Math.PI * 2, r = Math.max(w, h) * .55;
