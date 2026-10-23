@@ -181,7 +181,7 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 .sc-hd{display:flex;align-items:center;gap:6px;justify-content:space-between}.sc-hd b{font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sc-pk{flex:none;min-height:24px!important;padding:1px 8px!important;font-size:11.5px!important}.sc-pk.on{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
 .sc-d{font-size:12px;line-height:1.45;color:var(--mute,#9aa0ad)}
-.sc-rx{font-size:11.5px}.sc-rx .rg{padding:6px 7px}.sc-rx div{grid-template-columns:minmax(0,74px) minmax(0,1fr)!important;gap:6px!important;align-items:start!important}.sc-rx .chip{white-space:normal;line-height:1.25;padding:2px 4px;text-align:center;font-size:10.5px;min-height:22px}.sc-rx button.chip{cursor:pointer;font:inherit;font-size:10.5px;color:inherit}.sc-rx button.chip:hover{border-color:var(--acc)}.sc-rx button.chip.on{background:var(--acc);border-color:var(--acc);color:var(--deep);font-weight:600}.sc-pic{overflow:hidden}.sc-mon{position:absolute;inset:0;cursor:pointer;animation:scmIn .25s ease-out}.sc-mon canvas{position:absolute;display:block;image-rendering:pixelated}.sc-mon.fly canvas{animation:scmBob 1.4s ease-in-out infinite}.sc-mon b{position:absolute;left:4px;bottom:4px;font:600 10px/1.2 inherit;white-space:nowrap;padding:1px 5px;border-radius:8px;background:rgba(10,14,30,.75);color:#fff;pointer-events:none}@keyframes scmIn{from{opacity:0;transform:translateY(-6px)}}@keyframes scmBob{50%{transform:translateY(-4px)}}
+.sc-rx{font-size:11.5px}.sc-rx .rg{padding:6px 7px}.sc-ax{border:0;background:none;color:var(--mute);font:inherit;font-size:13px;line-height:1;padding:2px 3px;cursor:pointer;border-radius:4px;white-space:nowrap}.sc-ax:hover{color:var(--bad,#e05a5a)}.sc-ax.arm{background:var(--bad,#e05a5a);color:#fff;font-size:10.5px;padding:3px 5px}.sc-rx div{grid-template-columns:minmax(0,74px) minmax(0,1fr) auto!important;gap:6px!important;align-items:start!important}.sc-rx .chip{white-space:normal;line-height:1.25;padding:2px 4px;text-align:center;font-size:10.5px;min-height:22px}.sc-rx button.chip{cursor:pointer;font:inherit;font-size:10.5px;color:inherit}.sc-rx button.chip:hover{border-color:var(--acc)}.sc-rx button.chip.on{background:var(--acc);border-color:var(--acc);color:var(--deep);font-weight:600}.sc-pic{overflow:hidden}.sc-mon{position:absolute;inset:0;cursor:pointer;animation:scmIn .25s ease-out}.sc-mon canvas{position:absolute;display:block;image-rendering:pixelated}.sc-mon.fly canvas{animation:scmBob 1.4s ease-in-out infinite}.sc-mon b{position:absolute;left:4px;bottom:4px;font:600 10px/1.2 inherit;white-space:nowrap;padding:1px 5px;border-radius:8px;background:rgba(10,14,30,.75);color:#fff;pointer-events:none}@keyframes scmIn{from{opacity:0;transform:translateY(-6px)}}@keyframes scmBob{50%{transform:translateY(-4px)}}
 .sc-fit{font-size:11px;color:var(--mute,#9aa0ad)}
 .sc-it .fb{margin-top:auto}
 .fb-in{grid-template-columns:minmax(0,1fr) auto!important;align-items:stretch!important}.fb-in textarea{min-height:32px;height:32px;padding:6px 8px;line-height:1.35}.fb-in .chip{min-height:32px;padding:0 10px;white-space:nowrap}
@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.64"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.65"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.64';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.65';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -908,7 +908,9 @@ const KEY2R = { tree: 'tree', perch: 'perch', fire: 'fire', bed: 'bed', bushes: 
 // v2.36 경완: 소품 반응은 소품 상세 창 아래에. 오른쪽 사이드 바는 지금 시뮬레이터 맵에 있는 소품의 반응만
 const rOf = k => !k ? null : REACT[k] ? k : k === 'rockS' || k === 'rockL' ? 'rock' : KEY2R[k] || (A?.kind?.(k)?.b ? rOf(A.kind(k).b) : null);
 const rxHtml = r => `<section class="rg">${REACT[r].map(([a, b], i) => `<div><button class="chip rx${spxKey === r + ':' + i ? ' on' : ''}" data-rk="${r}" data-ri="${i}">${a}</button><span>${b}</span></div>`).join('')}</section>`;
-function zReact(z, k) { const r = rOf(k); if (!r) return; z.insertAdjacentHTML('beforeend', `<div class="zre"><h4>소품 반응 · ${RNAME[r]}</h4><div class="react">${rxHtml(r)}</div></div>`); }
+function zReact(z, k, scId) { if (scId || k?.startsWith?.('sc:')) { const id = scId || k.slice(3), L = scaItem(id)?.acts || (() => { try { return A.layout().scArt?.[id]?.acts; } catch (e) { return null; } })() || [];   // v3.65 경완: 추가한 소품 상세 카드에도 그 소품의 상호작용
+    if (L.length) z.insertAdjacentHTML('beforeend', `<div class="zre"><h4>소품 반응</h4><div class="react"><section class="rg">${L.map(a => `<div><span class="chip" style="white-space:normal;text-align:center;line-height:1.25">${esc(a.w)}</span><span>${esc(a.a)}</span></div>`).join('')}</section></div></div>`); return; }
+  const r = rOf(k); if (!r) return; z.insertAdjacentHTML('beforeend', `<div class="zre"><h4>소품 반응 · ${RNAME[r]}</h4><div class="react">${rxHtml(r)}</div></div>`); }
 const onMap = () => { const S = new Set(); try { for (const o of A?.insts?.() || []) { const r = rOf(o.key) || rOf(o.kind); if (r) S.add(r); } } catch (e) {} return S; };
 function renderReact(k) {
   $('#rkHint').textContent = k ? '· ' + RNAME[k] : '· 지금 맵에 있는 소품';
@@ -1347,7 +1349,7 @@ function openInst(s, el) {
     <div class="small mute">${s.key === 'sc' ? `크기 ${Math.round((s.sz || 1) * 100)}%. 맵에서 모서리를 끌어 크기를 바꾼 뒤 [저장]하면 이 소품은 앞으로 이 크기로 놓여요.` : !look ? '이 소품은 크기·색을 바꿀 수 없어요. 맵에서 끌어서 옮겨요.' : s.kind ? `"${esc(s.kindName)}" 소품이에요. 여기서 바꾸면 맵의 이 소품 하나만 따로 바뀌어요.` : '맵에 있는 이 소품 하나만 바뀌어요. 전체 소품에는 그대로예요.'}</div>
     <div class="zb">${look ? '<button class="chip w" id="zReset">원래대로</button>' : ''}${sv ? '<button class="btn" id="zFix"' + (s.own ? '' : ' disabled') + ' title="이 크기·색을 이 소품 종류의 기본으로">저장</button><button class="chip" id="zKind" title="이 크기·색 그대로 전체 소품에 새 소품으로">다른 이름으로 저장</button>' : ''}<button class="chip del${sv ? ' w' : ' w'}" id="zDel"${s.del ? '' : ' disabled title="하나뿐인 소품이라 지울 수 없어요"'}>${s.del ? '삭제' : '삭제 (하나뿐인 소품)'}</button></div>
     ${ZB_SAVE}`;
-  zReact(z, s.key); zoomPos(z, el);
+  zReact(z, s.key, s.key === 'sc' ? (() => { try { return A.layout().sc?.[s.i]?.[0]; } catch (e) { return null; } })() : null); zoomPos(z, el);
   const fr = s.key === 'fire' ? 6 : 0, paint = () => look ? zPaint(z, s.key === 'fire' ? null : A.selIcon(), A.selLook(), fr) : zPaint(z, A.insts?.().find(o => o.key === s.key && o.i === s.i)?.icon || '', { s: 1, h: 0, c: 100, b: 100 }, 0);
   const fireP = () => A.fireArt ? A.fireArt(look ? A.selLook() : null).then(src => { if (src && zoomK === 'inst') { zPaint(z, src, look ? A.selLook() : { s: 1, h: 0, c: 100, b: 100 }, 6); } }) : null;   // v2.25 경완: 모닥불도 미리보기 (불꽃이 타오름)
   paint(); if (s.key === 'fire') { $('#zV').innerHTML = ''; fireP(); } else if (s.key === 'pond' || s.key === 'bed') A.oneThumb?.(s.key).then(u => { if (u && zoomK === 'inst') zPaint(z, u, { s: 1, h: 0, c: 100, b: 100 }, 0); }).catch(() => {});   // v3.64 경완: 연못·꽃밭 상세 카드도 칸 그림 그대로 else if (s.key === 'mush') $('#zV').innerHTML = '<span class="ph" style="font-size:40px">🍄</span>';
@@ -2121,6 +2123,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.65', '10월 23일', ['스칼렛 예시: 밀어 주는 포켓몬이 소품 쪽을 보게 (걷기·맴돌기 방향도)', '바람개비 날개를 작게 다시 그림', '별 꼬마전구는 전구만, 몬스터볼 스프링은 몬스터볼만 빛남', '시소 다시 그림: 받침은 가만히, 판만 좌우로 기울고 둘이 노는 예시는 포켓몬 두 마리', '상호작용 줄 오른쪽 끝 × 로 그 상호작용만 지우기', '추가한 소품 상세 카드 아래에 상호작용 표시', '야광 버섯이 밤에 빛나게']],
   ['3.64', '10월 23일', ['스칼렛 상호작용 예시: 타이어 그네는 타이어와 줄만, 몬스터볼 스프링은 받침 빼고 스프링부터, 별 꼬마전구 줄은 줄과 전구만 움직임', '바람개비 다시 그림: 날개 네 장과 가운데 고정부를 똑같이, 막대는 날개 뒤로 끊김 없이 이어지고 날개만 돌아감', '같은 소품은 전체 소품 칸·맵에 있는 소품 칸·상세 카드 그림이 같게 (열매나무·횃대·모닥불·꽃밭·연못·큰 바위)', '추가한 소품을 눌러도 상세 카드가 열림']],
   ['3.63', '10월 23일', ['스칼렛 상호작용 예시가 설명과 맞게: 카드마다 예시 동작(자리·움직임)을 따로 정해 둠 (73개)', '새 예시 동작: 미끄럼틀 타기, 터널 지나가기, 올라가기, 올라타 같이 흔들리기, 창문으로 얼굴 내밀기, 옆으로 고개만 내밀기, 다가왔다 피해 가기, 매달려 단련, 한 발로 균형', '게임 v8.88~8.91: 도구 진화 버튼·확인창·도구 들어가는 연출, 불꽃 특기 입자 가운데·둘레 땅 밝힘']],
   ['3.62', '10월 23일', ['뉴트럴 미니게임 페이즈 계산을 게임 v8.84처럼 점수 500점마다로']],
@@ -3324,7 +3327,7 @@ async function scaLoad() { [SCA_R, SCA_PK] = await Promise.all([staffGet('config
 // v3.26: 예전 picks.json 에 담아 둔 소품은 한 번만 맵 소품 목록으로 옮긴다
 // v3.31 경완: 스칼렛이 작업물을 다시 그리면(피드백 반영 등) 맵 소품 리스트의 같은 소품 그림도 새 그림으로 (작업본에 들어가요, 저장하면 게임에)
 function scaSync() { const art = (D.layout || ORIG?.layout)?.scArt; if (!A?.scDef || !SCA_R || !art) return; let n = 0; const clean = !boxDirty('layout');
-  for (const [id, a] of Object.entries(art)) { const o = scaItem(id); if (o?.px?.length && (JSON.stringify(o.px) !== JSON.stringify(a.px) || JSON.stringify(o.pal) !== JSON.stringify(a.pal) || JSON.stringify(o.fr || null) !== JSON.stringify(a.fr || null))) { A.scDef(id, { ...o, n: a.n }); n++; } }
+  for (const [id, a] of Object.entries(art)) { const o = scaItem(id); if (o?.px?.length && (JSON.stringify(o.px) !== JSON.stringify(a.px) || JSON.stringify(o.pal) !== JSON.stringify(a.pal) || JSON.stringify(o.fr || null) !== JSON.stringify(a.fr || null) || JSON.stringify((o.acts || []).map(q => [q.w, q.a])) !== JSON.stringify((a.acts || []).map(q => [q.w, q.a])) || (o.glow != null && +o.glow !== +(a.glow ?? -1)))) {   /* v3.65: 상호작용 지우기·빛 켜기도 맵 소품에 반영 */ A.scDef(id, { ...o, n: a.n }); n++; } }
   if (n && clean) { D._sv = D._sv || {}; putP(D._sv, 'layout', D); saveDraft(); layoutBar(); scBar(); }   // v3.39 경완: 바뀐 게 없는데 '배치 저장'이 켜지지 않게 — 다시 그린 그림 반영은 저장까지 해 둔다 (배포하면 게임에)
   if (n) toast(`스칼렛이 다시 그린 소품 ${n}개를 맵 소품에 반영했어요 · 배포하면 게임에 들어가요`); }
 // v3.56 경완: 버섯·꽃·풀(자연 요소)은 자리 고정 — 지금 놓인 소품 밑동 둘레에 한 번 깔아 둔다 (게임 api.natSeed, 소품을 치우면 드러남)
@@ -3346,7 +3349,7 @@ function renderSca() {
   const card = o => { const pk = scaPicked(o.id); return `<div class="sc-it${pk ? ' pk' : ''}" id="sc-${esc(o.id)}"><div class="sc-pic${o.fr?.length ? ' mv' : ''}">${o.px?.length ? scaSvg(o) : ''}${o.k || o.fr?.length || scaSz(o.id).some(v => v !== 1) ? `<span class="sc-tg">${o.k ? `<span class="sc-k">${esc(o.k)}</span>` : ''}${o.fr?.length ? '<span class="sc-k sc-mv" title="그림을 누르면 움직여요">움직임</span>' : ''}${(([z, zy]) => z !== 1 || zy !== 1 ? `<span class="sc-k" title="맵 편집에서 저장한 크기">크기 ×${+z.toFixed(2)}${zy !== 1 ? ` · 세로 ×${+zy.toFixed(2)}` : ''}</span>` : '')(scaSz(o.id))}</span>` : ''}<button class="sc-wd" data-swdel="${esc(o.id)}" title="휴지통으로">×</button></div>
     <div class="sc-hd"><b>${esc(o.n)}</b><button class="chip sc-pk${pk ? ' on' : ''}" data-pk="${esc(o.id)}"${PK_BUSY ? ' disabled' : ''} title="${pk ? '소품 리스트에서 빼기' : '맵 메뉴 소품 리스트에 추가'}">${pk ? '✓ 리스트에 있음' : '+ 소품 리스트'}</button></div>
     <div class="sc-d">${esc(o.d || '')}</div>
-    ${o.acts?.length ? `<div class="react sc-rx"><section class="rg">${o.acts.map((a, i) => `<div><button class="chip" data-scx="${i}" title="눌러서 예시 보기">${esc(a.w)}</button><span>${esc(a.a)}</span></div>`).join('')}</section></div>` : ''}${o.fit ? `<div class="sc-fit">어울리는 곳 · ${esc(o.fit)}</div>` : ''}
+    ${o.acts?.length ? `<div class="react sc-rx"><section class="rg">${o.acts.map((a, i) => `<div><button class="chip" data-scx="${i}" title="눌러서 예시 보기">${esc(a.w)}</button><span>${esc(a.a)}</span><button class="sc-ax" data-scax="${i}" aria-label="이 상호작용 지우기" title="이 상호작용 지우기">×</button></div>`).join('')}</section></div>` : ''}${o.fit ? `<div class="sc-fit">어울리는 곳 · ${esc(o.fit)}</div>` : ''}
     ${fbBox('sca', o.id, o.n, '이 소품에 피드백')}</div>`; };
   const q = scaQ.trim(), hit = o => !q || (o.n + (o.d || '') + (o.acts || []).map(a => a.w + a.a).join('')).includes(q);
   const pk = Object.keys((D.layout || ORIG?.layout)?.scArt || {}).map(id => scaItem(id) || { n: (D.layout || ORIG.layout).scArt[id].n });
@@ -3399,17 +3402,21 @@ async function scaDemo(b) { const card = b.closest('.sc-it'), o = scaItem(card?.
   // 소품이 할 일: 날개 돌기(위쪽만), 흔들림, 시소, 반짝
   const spin = X ? has(X.fx, 'spin') : !M.circ && /돌려|도는|돌아가|돌아요|돌고|돌리/.test(t), swing = X ? has(X.fx, 'swing') : /흔들/.test(t), rock = X ? has(X.fx, 'rock') : /오르내려|띄워|번갈아/.test(t), glow = X ? has(X.fx, 'glow') : /반짝|불을 켜|밝게|불을 붙|빛 포자|불빛을 쬐|불을 쬐/.test(t);
   const im = new Image(); im.src = pmd ? P.i : P; await im.decode().catch(() => {}); if (SCX !== me || !pic.isConnected) return;
+  // v3.65 경완: 둘이 노는 상호작용은 포켓몬 두 마리 — x.two = { at: [가로, 발 높이], w: 짝 포켓몬 글 (없으면 같은 글) }
+  let T2 = null; if (X?.two?.at) { const L2 = scaFitSp(X.two.w || a.w || '').filter(q => q !== sp), Lx = L2.length ? L2 : L, sp2 = Lx[Math.floor(Math.random() * Lx.length)]; await A.ensureSprite(sp2).catch(() => {}); if (SCX !== me || !pic.isConnected) return;
+    const P2 = A.SPRITES[sp2], pm2 = typeof P2 === 'object', im2 = new Image(); im2.src = pm2 ? P2.i : P2; await im2.decode().catch(() => {}); if (SCX !== me || !pic.isConnected) return;
+    const i2 = pm2 ? P2.a.Idle || Object.values(P2.a)[0] : null, f2 = pm2 ? P2.a[X.two.an || an] || i2 : null, w2 = pm2 ? i2[1] : im2.width, h2 = pm2 ? i2[2] : im2.height; T2 = { P2, pm2, im2, f2, k2: Math.max(1, Math.min(2, Math.floor(84 / Math.max(w2, h2)) || 1)), w2, h2, n: A.SPECIES[sp2]?.n || '' }; }
   const R0 = o.px, rows = R0.length, cols = R0[0].length, pal = o.pal || {}, fill = ch => pal[ch] && pal[ch] !== 'transparent';
   const mk = (r0, r1, G = R0) => { const c = document.createElement('canvas'); c.width = cols; c.height = rows; const x = c.getContext('2d'); for (let y = r0; y < r1; y++) [...(G[y] || '')].forEach((ch, X) => { if (fill(ch)) { x.fillStyle = pal[ch]; x.fillRect(X, y, 1, 1); } }); return c; };
   const MV = o.mv?.st && o.mv?.mp ? o.mv : null;   // v3.64 경완: 움직이는 부분(mp)만 움직이고 나머지(st: 그네 기둥·스프링 받침·전구 기둥·바람개비 막대)는 가만히 — o = 도는·흔들리는 축(칸 단위)
   const span = r => { const s = [...R0[r]], i = s.findIndex(fill), j = s.length - 1 - [...s].reverse().findIndex(fill); return i < 0 ? 0 : j - i + 1; };
   let hr = 0; if (spin && !MV) for (let r = Math.floor(rows * .3); r < rows - 3; r++) if ([0, 1, 2, 3].every(j => span(r + j) > 0 && span(r + j) <= 4)) { hr = r; break; }   // 막대 위가 도는 부분 (바람개비 날개)
-  const head = hr ? mk(0, hr) : null, body = MV ? mk(0, rows, MV.st) : mk(hr, rows), mov = MV ? mk(0, rows, MV.mp) : null; let hc = [cols / 2, hr / 2];
+  const head = hr ? mk(0, hr) : null, body = MV ? mk(0, rows, MV.st) : mk(hr, rows), mov = MV ? mk(0, rows, MV.mp) : null, glw = MV && (MV.gl || MV.gr) ? mk(0, rows, MV.mp.map((r, y) => [...r].map(ch => (!MV.gr || (y >= MV.gr[0] && y < MV.gr[1])) && (!MV.gl || MV.gl.includes(ch)) ? ch : '.').join(''))) : null;; let hc = [cols / 2, hr / 2];   // v3.65 경완: 빛나는 건 전구·몬스터볼 부분만 (mv.gl 글자 / mv.gr 줄)
   if (head) { let x0 = 1e9, x1 = -1, y0 = 1e9, y1 = -1; for (let y = 0; y < hr; y++) [...R0[y]].forEach((ch, X) => { if (fill(ch)) { x0 = Math.min(x0, X); x1 = Math.max(x1, X); y0 = Math.min(y0, y); y1 = Math.max(y1, y); } }); hc = [(x0 + x1 + 1) / 2, (y0 + y1 + 1) / 2]; }
   const sv = pic.querySelector('svg'), R = pic.getBoundingClientRect(), sr = sv.getBoundingClientRect(), pl = sr.left - R.left, pt = sr.top - R.top, s = sr.width / cols, PW = sr.width, PH = sr.height, cx = pl + PW / 2;
   const fw = pmd ? ia[1] : im.width, fh = pmd ? ia[2] : im.height, k = Math.max(1, Math.min(2, Math.floor(84 / Math.max(fw, fh)) || 1)), MW = fw * k, MH = fh * k;   // v3.51 경완: 크기는 가만히 그림 기준 (공격 그림은 칸이 커서 예전엔 포켓몬이 작아졌다)
   const el = me.el = document.createElement('div'); el.className = 'sc-mon'; el.title = '눌러서 닫기'; const c = document.createElement('canvas'), dpr = Math.min(3, devicePixelRatio || 1); c.width = Math.round(R.width * dpr); c.height = Math.round(R.height * dpr); c.style.cssText = `left:0;top:0;width:${R.width}px;height:${R.height}px`;
-  const nm = document.createElement('b'); nm.textContent = `${d.n} 예시`; el.append(c, nm); pic.append(el); sv.style.visibility = 'hidden'; me.pic = pic;
+  const nm = document.createElement('b'); nm.textContent = `${d.n}${T2 ? ' · ' + T2.n : ''} 예시`; el.append(c, nm); pic.append(el); sv.style.visibility = 'hidden'; me.pic = pic;
   // 자리
   const sideX = () => { let x = pl + PW + MW * .12; if (x + MW / 2 > R.width - 2) x = Math.max(MW / 2 + 2, pl - MW * .12); return x; };
   let tx, ty, pos = X?.at;
@@ -3431,9 +3438,9 @@ async function scaDemo(b) { const card = b.closest('.sc-it'), o = scaItem(card?.
     if (M.fly) { const u = (tt % 4.5) / 4.5; if (u < .3) { const q = u / .3, e = 1 - (1 - q) ** 2, sx = R.width + MW / 2, sy = -8; x = sx + (tx - sx) * e; y = sy + (ty - sy) * e - Math.sin(q * Math.PI) * 18 + Math.sin(tt * 26) * 2; A2 = wa; }
       else if (u > .92) { const q = (u - .92) / .08; al = 1 - q; } }
     if (M.flap) { y += Math.sin(tt * 16) * 3; A2 = wa; }
-    if (M.circ) { const an = tt * 2.4, top = y < pt + PH * .6, oy = top ? Math.min(y, pt + PH * .3) : pt + PH * .45, r = top ? PW * .32 : PW / 2 + MW * .3; x = cx + Math.cos(an) * r; y = oy + Math.sin(an) * (top ? 6 : 12) + Math.sin(tt * 18) * 2; back = Math.sin(an) < 0; fl = Math.sin(an) > 0; A2 = wa; }
-    if (M.walk) { const q = .5 - .5 * Math.cos(tt * 1.1); x = pl + PW * (.15 + .7 * q); fl = Math.sin(tt * 1.1) < 0; A2 = wa; }
-    if (M.push) { const q = (tt * .8) % 1, reach = q < .35 ? q / .35 : q < .55 ? 1 : 1 - (q - .55) / .45, gap = MW * .45; x = tx + side * gap * (1 - reach); if (q >= .35 && hitT < tt - .9) hitT = tt; A2 = q >= .3 && q < .6 ? fa : ia; fl = side > 0; }
+    if (M.circ) { const an = tt * 2.4, top = y < pt + PH * .6, oy = top ? Math.min(y, pt + PH * .3) : pt + PH * .45, r = top ? PW * .32 : PW / 2 + MW * .3; x = cx + Math.cos(an) * r; y = oy + Math.sin(an) * (top ? 6 : 12) + Math.sin(tt * 18) * 2; back = Math.sin(an) < 0; fl = Math.sin(an) < 0; A2 = wa; }
+    if (M.walk) { const q = .5 - .5 * Math.cos(tt * 1.1); x = pl + PW * (.15 + .7 * q); fl = Math.sin(tt * 1.1) > 0; A2 = wa; }
+    if (M.push) { const q = (tt * .8) % 1, reach = q < .35 ? q / .35 : q < .55 ? 1 : 1 - (q - .55) / .45, gap = MW * .45; x = tx + side * gap * (1 - reach); if (q >= .35 && hitT < tt - .9) hitT = tt; A2 = q >= .3 && q < .6 ? fa : ia; fl = side < 0; }   // v3.65 경완: 미는 포켓몬은 소품 쪽을 본다 (그림 기본 = 왼쪽 보기)
     if (M.hide && !M.win && !M.speek) { back = true; if (!X) { x = cx + PW * .08; y = pt + PH * .9; } if (M.peek) { const q = Math.max(0, Math.sin(tt * 1.6)) ** .6; y += (Math.min(y, pt + MH * .45) - y) * q; } else if (!X) x = pl + PW * .82; }   // 고개만 내밀기 = 소품 위로 머리가 올라왔다 내려감
     if (M.speek) { back = true; const q = Math.max(0, Math.sin(tt * 1.6)) ** .6; x = tx + side * MW * .55 * q; fl = side < 0; }   // 옆으로 고개만 쏙
     if (M.win) { const q = (tt % 4) / 4; if (q < .45) al = 0; else { clip = [tx, ty, Math.max(8, Math.min(MW * .3, PW * .14))]; y = ty + MH * .45 + (1 - Math.min(1, (q - .45) / .12)) * MH * .3; } }   // 창문으로 얼굴: at 이 창 가운데, 창 칸만 보인다
@@ -3453,13 +3460,15 @@ async function scaDemo(b) { const card = b.closest('.sc-it'), o = scaItem(card?.
       if (rock) { ang = Math.sin(tt * 2.4) * .13; oy = pt + PH * .7; }
       if (M.push && tt - hitT < 1.2) { const h = tt - hitT; ang += Math.sin(h * 20) * .06 * Math.exp(-h * 3.5); }
       if (glow) { const p = .5 + .5 * Math.sin(tt * 4); g.shadowColor = `rgba(255,240,150,${(.55 + .4 * p).toFixed(2)})`; g.shadowBlur = 6 + 10 * p; }
-      if (MV) { g.drawImage(body, pl, pt, PW, PH); const mx = pl + MV.o[0] * s, my = pt + MV.o[1] * s, a2 = MV.k === 'spin' ? (spin ? tt * (M.flap ? 7 : 4) : 0) : ang * (MV.amp || 1.6);
-        g.translate(mx, my); g.rotate(a2); g.translate(-mx, -my); g.drawImage(mov, pl, pt, PW, PH); g.shadowBlur = 0; if (ride) ride(); g.restore(); return; }
+      if (MV) { const sb = g.shadowBlur; if (glw) g.shadowBlur = 0; g.drawImage(body, pl, pt, PW, PH); const mx = pl + MV.o[0] * s, my = pt + MV.o[1] * s, a2 = MV.k === 'spin' ? (spin ? tt * (M.flap ? 7 : 4) : 0) : ang * (MV.amp || 1.6);
+        g.translate(mx, my); g.rotate(a2); g.translate(-mx, -my); g.drawImage(mov, pl, pt, PW, PH); if (glw && glow) { g.shadowBlur = sb; g.drawImage(glw, pl, pt, PW, PH); } g.shadowBlur = 0; if (ride) ride(); g.restore(); return; }
       g.translate(ox, oy); g.rotate(ang); g.translate(-ox, -oy);
       g.drawImage(body, pl, pt, PW, PH);
       if (head) { const hx = pl + hc[0] * s, hy = pt + hc[1] * s; g.save(); g.translate(hx, hy); g.rotate(tt * (M.flap ? 7 : 4)); g.translate(-hx, -hy); g.drawImage(head, pl, pt, PW, PH); g.restore(); }
       g.shadowBlur = 0; if (ride) ride(); g.restore(); };
-    const drawMon = () => { if (!clip) return mon(x, y, A2, tt, fl, al, rot); g.save(); g.beginPath(); g.arc(clip[0], clip[1], clip[2], 0, Math.PI * 2); g.clip(); mon(x, y, A2, tt, fl, al, rot); g.restore(); };
+    const drawTwo = () => { if (!T2) return; const x2 = pl + PW * X.two.at[0], y2 = pt + PH * X.two.at[1], { P2, pm2, im2, f2, k2, w2, h2 } = T2; g.save(); g.translate(Math.round(x2), Math.round(y2)); if (x2 < x) g.scale(-1, 1);   // 짝은 첫 포켓몬 쪽을 본다
+      if (!pm2) g.drawImage(im2, -w2 * k2 / 2, -h2 * k2 * .9, w2 * k2, h2 * k2); else { const fr = frame(f2, tt + .7), w = f2[1] * k2, h = f2[2] * k2; g.drawImage(im2, fr * (f2[1] + (P2.G || 0)), f2[0], f2[1], f2[2], -Math.round(w / 2), -Math.round(h * .78), w, h); } g.restore(); };
+    const drawMon = () => { drawTwo(); if (!clip) return mon(x, y, A2, tt, fl, al, rot); g.save(); g.beginPath(); g.arc(clip[0], clip[1], clip[2], 0, Math.PI * 2); g.clip(); mon(x, y, A2, tt, fl, al, rot); g.restore(); };
     if (M.ride) prop(drawMon); else { if (back) drawMon(); prop(); if (!back) drawMon(); }
     // 효과: 기술 빛 알갱이, 날갯짓 바람
     if (M.skill && Math.random() < .5) parts.push({ x, y: y - MH * .35, vx: (cx - x) * (1.2 + Math.random()), vy: (pt + PH * .4 - y + MH * .35) * (1.2 + Math.random()) + (Math.random() - .5) * 40, t: .6, c: tyc });
@@ -3476,7 +3485,7 @@ function scaFrames(pic) { const o = scaItem(pic.closest('.sc-it')?.id.slice(3));
   SCF.tm = setInterval(() => { if (SCF !== me || !pic.isConnected) { clearInterval(me.tm); if (SCF === me) SCF = null; return; } const cur = pic.querySelector('svg'); if (!cur) return; const vis = cur.style.visibility; me.i = (me.i + 1) % F.length; cur.outerHTML = F[me.i]; if (vis) pic.querySelector('svg').style.visibility = vis; }, +o.fms || 160); }
 // v3.26 경완: 새로 넣은 스칼렛 소품이 있으면 맵 메뉴에 빨간 점 (맵 메뉴를 열면 사라짐)
 function scDot() { const a = $('.nav a[data-v="map"]'); if (a) a.classList.toggle('scnew', JSON.parse(store.get('st-sc-new') || '[]').length > 0); }
-$('#scaC').addEventListener('click', e => { const cx = e.target.closest('[data-scx]'); if (cx) return scaDemo(cx); if (e.target.closest('.sc-mon')) return scaDemoOff(); { const pc = e.target.closest('.sc-pic'); if (pc && !e.target.closest('[data-swdel],[data-swres],[data-swgone]')) return scaFrames(pc); } const b = e.target.closest('[data-pk]'); if (b) scaPick(b.dataset.pk); const x = e.target.closest('[data-swdel],[data-swday],[data-swres],[data-swgone]'); if (x) scaDel(x); if (e.target.closest('#scaBin')) { scaTrash = !scaTrash; renderSca(); } });
+$('#scaC').addEventListener('click', e => { const ax = e.target.closest('[data-scax]'); if (ax) return scaActDel(ax); const cx = e.target.closest('[data-scx]'); if (cx) return scaDemo(cx); if (e.target.closest('.sc-mon')) return scaDemoOff(); { const pc = e.target.closest('.sc-pic'); if (pc && !e.target.closest('[data-swdel],[data-swres],[data-swgone]')) return scaFrames(pc); } const b = e.target.closest('[data-pk]'); if (b) scaPick(b.dataset.pk); const x = e.target.closest('[data-swdel],[data-swday],[data-swres],[data-swgone]'); if (x) scaDel(x); if (e.target.closest('#scaBin')) { scaTrash = !scaTrash; renderSca(); } });
 // v3.31 경완: 작업물 메뉴에서 스칼렛 작업물을 소품마다·날마다 지운다 (× 한 번 → 빨갛게, 한 번 더 → main 의 config/staff/scarlet.json 에서 지움). 이미 소품 리스트에 넣은 건 맵에 그대로 남아요
 // v3.32 경완: × 는 누르면 바로 지우고, 지운 작업물은 휴지통(scarlet.json 의 trash)으로 — 휴지통에서 되살리기·영구 삭제
 let scaTrash = false;
@@ -3489,6 +3498,11 @@ function scaEdit(fn, msg, done, el) { if (!store.get('st-gh-token')) { toast('�
   if (el) { const g = el.parentElement; el.remove(); if (g && !g.children.length) g.closest('.sc-day')?.remove(); const bn = $('#scaBin'); if (bn) bn.textContent = `🗑 휴지통 ${(SCA_R.trash || []).length}개${scaTrash ? ' · 작업물로 돌아가기' : ''}`; if (scaTrash && !$('#scaC .sc-g')?.children.length) renderSca(); } else renderSca();
   scaPend++; scaQue = scaQue.then(() => ghJsonEdit('config/staff/scarlet.json', fn, msg)).then(() => { if (done) toast(done); }, err => { scaFail = true; toast('올리지 못했어요: ' + (err.message || err), true); })
     .finally(() => { if (--scaPend === 0 && scaFail) { scaFail = false; scaLoad(); } }); }
+// v3.65 경완: 상호작용 줄 오른쪽 끝 × — 한 번 누르면 빨갛게, 한 번 더 누르면 그 상호작용만 지운다
+function scaActDel(b) { const card = b.closest('.sc-it'), id = card?.id.slice(3), i = +b.dataset.scax; if (!id) return;
+  if (!b.classList.contains('arm')) { $$('.sc-ax.arm').forEach(x => { x.classList.remove('arm'); x.textContent = '×'; }); b.classList.add('arm'); b.textContent = '지우기'; setTimeout(() => { if (b.isConnected) { b.classList.remove('arm'); b.textContent = '×'; } }, 3000); return; }
+  scaDemoOff(); const w = scaItem(id)?.acts?.[i]?.w || '상호작용';
+  scaEdit(R => { for (const d of R.days || []) for (const o of d.items || []) if (o.id === id && Array.isArray(o.acts)) o.acts.splice(i, 1); return R; }, `스칼렛 소품 상호작용 지우기: ${id} · ${w} (작업실)`, `${w} 상호작용을 지웠어요`); scaSync(); }
 function scaDel(b) { const id = b.dataset.swdel, at = +b.dataset.swday || 0, tid = b.dataset.swres || b.dataset.swgone;
   if (b.dataset.swres) return scaEdit(R => { const i = (R.trash || []).findIndex(o => o.id === tid); if (i < 0) return R; const [o] = R.trash.splice(i, 1), { del, dayAt, theme, ...it } = o; let d = (R.days || []).find(x => x.at === dayAt);
     if (!d) { d = { at: dayAt || Date.now(), theme, note: '', items: [] }; R.days = [...(R.days || []), d].sort((a, b) => b.at - a.at); } d.items.push(it); return R; }, `스칼렛 작업물 되살리기: ${tid} (작업실)`, '되살렸어요', b.closest('.sc-it'));

@@ -5183,7 +5183,7 @@ function scFlBox(x0, x1, y0, y1, w, h) { const fw = Math.max(5, (x1 - x0 + 1) * 
   return { l: (cx - fw / 2) / w * 100, t: (y1 + 1 - fh) / h * 100, w: fw / w * 100, h: fh / h * 100 }; }
 const scS = r => +(r?.[3] ?? LAYOUT.scArt?.[r?.[0]]?.s) || 1, scSY = r => +(r?.[4] ?? LAYOUT.scArt?.[r?.[0]]?.sy) || 1;   // v8.37 경완: 위아래 테두리로 늘인 세로 배율 (r[4], 종류 기본 scArt.sy)   // v8.33: 놓인 소품 크기가 없으면 그 소품 종류의 기본 크기(scArt.s, 상세 창 [저장])
 // v8.31 경완: 불·조명처럼 빛을 내는 소품은 밤에 모닥불처럼 둘레를 밝힌다 (scArt.glow 가 있으면 그걸로, 없으면 이름으로)
-const SC_LIT = /횃불|촛불|초$|랜턴|램프|등불|등롱|등잔|가로등|석등|연꽃 ?등|화로|모닥|불꽃|조명|전구|반딧불|등대|호롱/;
+const SC_LIT = /야광|빛나는|횃불|촛불|초$|랜턴|램프|등불|등롱|등잔|가로등|석등|연꽃 ?등|화로|모닥|불꽃|조명|전구|반딧불|등대|호롱/;
 const scLit = A => A?.glow != null ? !!+A.glow : SC_LIT.test(A?.n || '');   // 놓인 스칼렛 소품 하나의 크기 배율
 function buildProps() {
   makeSprites();
@@ -6004,7 +6004,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.92';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.93';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
