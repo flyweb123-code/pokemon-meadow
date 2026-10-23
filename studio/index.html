@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.52"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.53"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.52';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.53';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2101,6 +2101,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.53', '10월 23일', ['맵 편집에서 저장한 소품 크기가 스칼렛 작업물 그림에도 (왼쪽 위 \'크기 ×\' 카드)', '허수아비 흔들림 프레임 새로 그림 (앞뒤로 흔들리는 8장)']],
   ['3.52', '10월 23일', ['맵 소품 리스트 연못·꽃밭 썸네일에 둘레 풀·바위·그루터기가 같이 들어가던 것 고침 — 그 소품만 (게임 v8.74)']],
   ['3.51', '10월 23일', ['스칼렛 상호작용 예시: 공격·기술 동작일 때 포켓몬이 작아지던 것 고침 (늘 가만히 그림 크기)']],
   ['3.50', '10월 23일', ['스칼렛 상호작용 예시: 같은 카드를 다시 누르면 꺼짐, 바람개비 날개가 돌고 날갯짓·날아와 앉기·빙빙 돌기·밀기·숨기·기술 빛 등 글대로 움직임', '허수아비처럼 움직이는 소품은 그림 왼쪽 위에 \'움직임\' 카드 · 그림을 누르면 움직이고 다시 누르면 멈춤', '게임 v8.73: 실뿜기 낮은 데서 덜 솟구침·다시 쏘기 .2초 쿨타임, 발챙이 예고 포물선']],
@@ -3216,6 +3217,10 @@ $('#shopC').addEventListener('change', e => { const t = e.target, v = +t.value;
   else if (t.dataset.sc) shopPut(o => { o.charm[t.dataset.sc] = t.dataset.sc === 'min' ? Math.max(1, Math.min(1440, Math.round(v))) : Math.max(1, Math.round(v)); }); });
 // ---------- 직원 (v3.20 경완): 뉴트럴(밸런스) · 스칼렛(소품 디자인) ----------
 // 직원들은 Claude 가 맡는다. 매일 아침 루틴이 일하고(config/staff/*.json), 작업물에 남긴 피드백을 읽고 반영한다 (staff/README.md).
+// v3.53 경완: 맵 편집에서 저장한 소품 크기(scArt[id].s 가로세로, .sy 세로만)를 스칼렛 작업물 그림에도 — 칸(104px)을 넘으면 비율 그대로 줄인다
+const scaSz = id => { const a = (D.layout || ORIG?.layout)?.scArt?.[id]; return [+a?.s || 1, +a?.sy || 1]; };
+function scaSvg(o, R = o.px) { const P = o.pal || {}, base = Math.max(2, Math.floor(96 / Math.max(o.px.length, o.px[0].length))), [s, sy] = scaSz(o.id); let w = R[0].length * base * s, h = R.length * base * s * sy; const f = Math.min(1, 104 / h, 220 / w); w = Math.round(w * f); h = Math.round(h * f);
+  return `<svg viewBox="0 0 ${R[0].length} ${R.length}" width="${w}" height="${h}" preserveAspectRatio="none" shape-rendering="crispEdges" aria-hidden="true">${R.map((row, y) => [...row].map((c, x) => P[c] ? `<rect x="${x}" y="${y}" width="1" height="1" fill="${P[c]}"/>` : '').join('')).join('')}</svg>`; }
 const pxSvg = (R, P, s = 4) => `<svg viewBox="0 0 ${R[0].length} ${R.length}" width="${R[0].length * s}" height="${R.length * s}" shape-rendering="crispEdges" aria-hidden="true">${R.map((row, y) => [...row].map((c, x) => P[c] ? `<rect x="${x}" y="${y}" width="1" height="1" fill="${P[c]}"/>` : '').join('')).join('')}</svg>`;
 const STAFF = {
   neu: { n: '뉴트럴', role: '밸런스 담당', menu: 'neu', c: '#7fd7ef', px: ['....kkkkkkkk....', '...khhhhhhhhk...', '..khhhhhhhhhhk..', '..khhsssssshhk..', '..kskkksskkkssk.', '..kskllkkllkssk.', '..kskkksskkkssk.', '..kssssssssssk..', '...ksssrrsssk...', '....kssssssk....', '..kkwwkbbkwwkk..', '.kwwwwkbbkwwwwk.', '.kwwwwwbbwkcppck', '.kwwwwwbbwkcppck', '.kwwwwwwwwkcccck', '.kkkkkkkkkkkkkkk'],
@@ -3298,12 +3303,12 @@ const scaPicked = id => !!(D.layout || ORIG?.layout)?.scArt?.[id];   // v3.26: �
 // v3.32 경완: 휴지통 = 지운 작업물 (되살리기 → 원래 날짜로, 영구 삭제)
 function scaBin() { const T = (SCA_R?.trash || []).filter(o => !scaQ.trim() || (o.n + (o.d || '')).includes(scaQ.trim()));
   if (!T.length) return '<div class="empty">휴지통이 비어 있어요.</div>';
-  return `<div class="sc-day"><h2>휴지통 <span class="small mute">${T.length}개 · 스칼렛은 같은 소품을 다시 그리지 않아요</span></h2><div class="sc-g">${T.map(o => `<div class="sc-it"><div class="sc-pic">${o.px?.length ? pxSvg(o.px, o.pal || {}, Math.max(2, Math.floor(96 / Math.max(o.px.length, o.px[0].length)))) : ''}</div>
+  return `<div class="sc-day"><h2>휴지통 <span class="small mute">${T.length}개 · 스칼렛은 같은 소품을 다시 그리지 않아요</span></h2><div class="sc-g">${T.map(o => `<div class="sc-it"><div class="sc-pic">${o.px?.length ? scaSvg(o) : ''}</div>
     <div class="sc-hd"><b>${esc(o.n)}</b><span class="small mute">${o.dayAt ? new Date(o.dayAt).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' }) : ''} 작업 · ${when(o.del)} 지움</span></div><div class="sc-d">${esc(o.d || '')}</div>
     <div class="row" style="display:flex;gap:6px"><button class="chip" data-swres="${esc(o.id)}">되살리기</button><button class="chip" data-swgone="${esc(o.id)}">영구 삭제</button></div></div>`).join('')}</div></div>`; }
 function renderSca() {
   const days = SCA_R?.days || [], last = days[0];
-  const card = o => { const pk = scaPicked(o.id); return `<div class="sc-it${pk ? ' pk' : ''}" id="sc-${esc(o.id)}"><div class="sc-pic${o.fr?.length ? ' mv' : ''}">${o.px?.length ? pxSvg(o.px, o.pal || {}, Math.max(2, Math.floor(96 / Math.max(o.px.length, o.px[0].length)))) : ''}${o.k || o.fr?.length ? `<span class="sc-tg">${o.k ? `<span class="sc-k">${esc(o.k)}</span>` : ''}${o.fr?.length ? '<span class="sc-k sc-mv" title="그림을 누르면 움직여요">움직임</span>' : ''}</span>` : ''}<button class="sc-wd" data-swdel="${esc(o.id)}" title="휴지통으로">×</button></div>
+  const card = o => { const pk = scaPicked(o.id); return `<div class="sc-it${pk ? ' pk' : ''}" id="sc-${esc(o.id)}"><div class="sc-pic${o.fr?.length ? ' mv' : ''}">${o.px?.length ? scaSvg(o) : ''}${o.k || o.fr?.length || scaSz(o.id).some(v => v !== 1) ? `<span class="sc-tg">${o.k ? `<span class="sc-k">${esc(o.k)}</span>` : ''}${o.fr?.length ? '<span class="sc-k sc-mv" title="그림을 누르면 움직여요">움직임</span>' : ''}${(([z, zy]) => z !== 1 || zy !== 1 ? `<span class="sc-k" title="맵 편집에서 저장한 크기">크기 ×${+z.toFixed(2)}${zy !== 1 ? ` · 세로 ×${+zy.toFixed(2)}` : ''}</span>` : '')(scaSz(o.id))}</span>` : ''}<button class="sc-wd" data-swdel="${esc(o.id)}" title="휴지통으로">×</button></div>
     <div class="sc-hd"><b>${esc(o.n)}</b><button class="chip sc-pk${pk ? ' on' : ''}" data-pk="${esc(o.id)}"${PK_BUSY ? ' disabled' : ''} title="${pk ? '소품 리스트에서 빼기' : '맵 메뉴 소품 리스트에 추가'}">${pk ? '✓ 리스트에 있음' : '+ 소품 리스트'}</button></div>
     <div class="sc-d">${esc(o.d || '')}</div>
     ${o.acts?.length ? `<div class="react sc-rx"><section class="rg">${o.acts.map((a, i) => `<div><button class="chip" data-scx="${i}" title="눌러서 예시 보기">${esc(a.w)}</button><span>${esc(a.a)}</span></div>`).join('')}</section></div>` : ''}${o.fit ? `<div class="sc-fit">어울리는 곳 · ${esc(o.fit)}</div>` : ''}
@@ -3407,7 +3412,7 @@ async function scaDemo(b) { const card = b.closest('.sc-it'), o = scaItem(card?.
 let SCF = null;
 function scaFramesOff() { if (!SCF) return; clearInterval(SCF.tm); SCF.pic.classList.remove('mvon'); const sv = SCF.pic.querySelector('svg'); if (sv && SCF.svg) { sv.outerHTML = SCF.svg; if (SCX?.pic === SCF.pic) SCF.pic.querySelector('svg').style.visibility = 'hidden'; } SCF = null; }
 function scaFrames(pic) { const o = scaItem(pic.closest('.sc-it')?.id.slice(3)); if (!o?.fr?.length) return; const same = SCF?.pic === pic; scaFramesOff(); if (same) return;
-  const sv = pic.querySelector('svg'); if (!sv) return; const R0 = o.px, sc = Math.max(2, Math.floor(96 / Math.max(R0.length, R0[0].length))), F = o.fr.map(f => pxSvg(f, o.pal || {}, sc));
+  const sv = pic.querySelector('svg'); if (!sv) return; const F = o.fr.map(f => scaSvg(o, f));
   SCF = { pic, svg: sv.outerHTML, i: 0 }; pic.classList.add('mvon'); const me = SCF;
   SCF.tm = setInterval(() => { if (SCF !== me || !pic.isConnected) { clearInterval(me.tm); if (SCF === me) SCF = null; return; } const cur = pic.querySelector('svg'); if (!cur) return; const vis = cur.style.visibility; me.i = (me.i + 1) % F.length; cur.outerHTML = F[me.i]; if (vis) pic.querySelector('svg').style.visibility = vis; }, +o.fms || 160); }
 // v3.26 경완: 새로 넣은 스칼렛 소품이 있으면 맵 메뉴에 빨간 점 (맵 메뉴를 열면 사라짐)
