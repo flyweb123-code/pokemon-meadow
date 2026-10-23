@@ -177,7 +177,7 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 .sc-it{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--chip);border-radius:8px;padding:8px;min-width:0}.sc-it.pk{border-color:var(--acc)}
 .sc-pic{position:relative;display:grid;place-items:center;height:112px;background:repeating-conic-gradient(#3a3f4d 0 25%,#333846 0 50%) 0 0/12px 12px;border-radius:6px}
 .sc-wd{position:absolute;right:4px;top:4px;font-size:11px;line-height:1;padding:4px 7px;border-radius:4px;border:0;background:rgba(0,0,0,.55);color:#e4e7ee;cursor:pointer;opacity:.6}.sc-wd:hover{opacity:1}.sc-wd.arm,.sc-wdd.arm{background:#c0392b;color:#fff;opacity:1}.sc-wdd{margin-left:8px;font-size:11px;vertical-align:middle}
-.sc-k{position:absolute;left:4px;top:4px;font-size:10.5px;padding:0 6px;border-radius:4px;background:rgba(0,0,0,.55);color:#e4e7ee}
+.sc-tg{position:absolute;left:4px;top:4px;display:flex;gap:4px;z-index:1}.sc-tg .sc-k{position:static}.sc-k.sc-mv{background:var(--acc);color:var(--deep);font-weight:600}.sc-pic.mvon .sc-mv{box-shadow:0 0 0 2px #fff}.sc-pic.mv{cursor:pointer}.sc-k{position:absolute;left:4px;top:4px;font-size:10.5px;padding:0 6px;border-radius:4px;background:rgba(0,0,0,.55);color:#e4e7ee}
 .sc-hd{display:flex;align-items:center;gap:6px;justify-content:space-between}.sc-hd b{font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sc-pk{flex:none;min-height:24px!important;padding:1px 8px!important;font-size:11.5px!important}.sc-pk.on{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
 .sc-d{font-size:12px;line-height:1.45;color:var(--mute,#9aa0ad)}
@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.49"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.50"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.49';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.50';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2101,6 +2101,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.50', '10월 23일', ['스칼렛 상호작용 예시: 같은 카드를 다시 누르면 꺼짐, 바람개비 날개가 돌고 날갯짓·날아와 앉기·빙빙 돌기·밀기·숨기·기술 빛 등 글대로 움직임', '허수아비처럼 움직이는 소품은 그림 왼쪽 위에 \'움직임\' 카드 · 그림을 누르면 움직이고 다시 누르면 멈춤', '게임 v8.73: 실뿜기 낮은 데서 덜 솟구침·다시 쏘기 .2초 쿨타임, 발챙이 예고 포물선']],
   ['3.49', '10월 23일', ['스칼렛 작업물: 상호작용 앞 카드(누가)를 누르면 그림에 맞는 포켓몬이 나와 그 상호작용을 보여줌 · 한 번 더 누르면 다른 포켓몬', '알림 빨간 점을 작은 원으로', '맵 소품 리스트의 연못·꽃밭 카드 그림을 맵에 있는 모습 전체로 (게임 v8.72)']],
   ['3.48', '10월 23일', ['뉴트럴 분석 날짜에 요일도 (10월 23일 (금) 오전 7:50)']],
   ['3.47', '10월 23일', ['뉴트럴 분석에 몇 월 며칠 몇 시에 분석했는지 늘 보이게 (오늘이어도 날짜)']],
@@ -3300,7 +3301,7 @@ function scaBin() { const T = (SCA_R?.trash || []).filter(o => !scaQ.trim() || (
     <div class="row" style="display:flex;gap:6px"><button class="chip" data-swres="${esc(o.id)}">되살리기</button><button class="chip" data-swgone="${esc(o.id)}">영구 삭제</button></div></div>`).join('')}</div></div>`; }
 function renderSca() {
   const days = SCA_R?.days || [], last = days[0];
-  const card = o => { const pk = scaPicked(o.id); return `<div class="sc-it${pk ? ' pk' : ''}" id="sc-${esc(o.id)}"><div class="sc-pic">${o.px?.length ? pxSvg(o.px, o.pal || {}, Math.max(2, Math.floor(96 / Math.max(o.px.length, o.px[0].length)))) : ''}${o.k ? `<span class="sc-k">${esc(o.k)}</span>` : ''}<button class="sc-wd" data-swdel="${esc(o.id)}" title="휴지통으로">×</button></div>
+  const card = o => { const pk = scaPicked(o.id); return `<div class="sc-it${pk ? ' pk' : ''}" id="sc-${esc(o.id)}"><div class="sc-pic${o.fr?.length ? ' mv' : ''}">${o.px?.length ? pxSvg(o.px, o.pal || {}, Math.max(2, Math.floor(96 / Math.max(o.px.length, o.px[0].length)))) : ''}${o.k || o.fr?.length ? `<span class="sc-tg">${o.k ? `<span class="sc-k">${esc(o.k)}</span>` : ''}${o.fr?.length ? '<span class="sc-k sc-mv" title="그림을 누르면 움직여요">움직임</span>' : ''}</span>` : ''}<button class="sc-wd" data-swdel="${esc(o.id)}" title="휴지통으로">×</button></div>
     <div class="sc-hd"><b>${esc(o.n)}</b><button class="chip sc-pk${pk ? ' on' : ''}" data-pk="${esc(o.id)}"${PK_BUSY ? ' disabled' : ''} title="${pk ? '소품 리스트에서 빼기' : '맵 메뉴 소품 리스트에 추가'}">${pk ? '✓ 리스트에 있음' : '+ 소품 리스트'}</button></div>
     <div class="sc-d">${esc(o.d || '')}</div>
     ${o.acts?.length ? `<div class="react sc-rx"><section class="rg">${o.acts.map((a, i) => `<div><button class="chip" data-scx="${i}" title="눌러서 예시 보기">${esc(a.w)}</button><span>${esc(a.a)}</span></div>`).join('')}</section></div>` : ''}${o.fit ? `<div class="sc-fit">어울리는 곳 · ${esc(o.fit)}</div>` : ''}
@@ -3322,50 +3323,94 @@ function scaPick(id) { if (!A?.scDef) { toast('게임을 새 버전(v8.22)으로
   const on = !scaPicked(id), o = scaItem(id); if (on) { if (!o?.px?.length) return; A.scDef(id, o); const N = new Set(JSON.parse(store.get('st-sc-new') || '[]')); N.add(id); store.set('st-sc-new', JSON.stringify([...N])); scDot(); }
   else A.scUndef(id);
   toast(on ? `${o?.n || '소품'}을(를) 소품 리스트에 넣었어요 · 맵 메뉴에서 저장하면 게임에 들어가요` : '소품 리스트에서 뺐어요'); renderSca(); }
-// v3.49 경완: 상호작용 앞 카드(누가)를 누르면 그 카드에 맞는 포켓몬이 그림 위에 나와 그 상호작용을 해 보인다 (한 번 더 = 다른 포켓몬, 포켓몬 누르면 닫힘)
+// v3.49 경완: 상호작용 앞 카드(누가)를 누르면 그 카드에 맞는 포켓몬이 그림 위에 나와 그 상호작용을 해 보인다 (포켓몬 누르면 닫힘)
+// v3.50 경완: 같은 카드를 다시 누르면 꺼짐 · 소품도 글대로 움직임(바람개비 날개 돌기·그네 흔들림·시소·반짝) · 포켓몬도 글대로(날아와 앉기·날갯짓·빙빙·걷기·밀기·숨기·기술)
 let SCX = null;
-function scaDemoOff() { if (!SCX) return; cancelAnimationFrame(SCX.raf); SCX.el?.remove(); SCX.chip?.classList.remove('on'); SCX = null; }
+function scaDemoOff() { if (!SCX) return; cancelAnimationFrame(SCX.raf); SCX.el?.remove(); { const v = SCX.pic?.querySelector('svg'); if (v) v.style.visibility = ''; } SCX.chip?.classList.remove('on'); SCX = null; }
 function scaFitSp(w) { const S = A?.SPECIES; if (!S) return [];
   const tys = A.TYPE_KO.filter(t => t && w.includes(t)), fly = /나는|날개|새/.test(w), swim = /헤엄|물고기/.test(w), sm = /작은/.test(w), bg = /큰/.test(w);
   const sc = [], all = Object.keys(S).map(Number).filter(sp => S[sp]?.t);
   for (const sp of all) { const d = S[sp], ty = d.t.map(t => A.TYPE_KO[t]), small = d.w <= 120 && d.h <= 6; let v = 0, need = 0;
     if (tys.length) { need++; if (tys.some(t => ty.includes(t))) v += tys.every(t => ty.includes(t)) ? 1.2 : 1; }
-    if (fly) { need++; if (ty.includes('비행') || ty.includes('벌레') && d.h <= 10) v++; }
+    if (fly) { need++; if (ty.includes('비행') || [9, 13].includes(d.sh)) v++; }   // 날개 있는 몸 모양(게임 winged 와 같게)
     if (swim) { need++; if (ty.includes('물')) v++; }
     if (sm) { need++; if (small) v++; }
     if (bg) { need++; if (!small && d.h >= 10) v++; }
     sc.push([sp, need ? v : 1]); }
   const top = Math.max(...sc.map(x => x[1])); return sc.filter(x => x[1] >= top - .01 && x[1] > 0).map(x => x[0]); }
 async function scaDemo(b) { const card = b.closest('.sc-it'), o = scaItem(card?.id.slice(3)), a = o?.acts?.[+b.dataset.scx], pic = card?.querySelector('.sc-pic'); if (!a || !pic) return;
+  if (SCX && SCX.chip === b) return scaDemoOff();   // v3.50 경완: 같은 카드를 다시 누르면 꺼짐
   if (!A?.SPECIES) { toast('게임을 불러오는 중이에요 · 잠시 뒤 다시 눌러 주세요', true); return; }
-  const prev = SCX && SCX.chip === b ? SCX.sp : 0; scaDemoOff();
-  let L = scaFitSp(a.w || ''); if (L.length > 1 && prev) L = L.filter(sp => sp !== prev); if (!L.length) { toast('이 카드에 맞는 포켓몬을 못 찾았어요', true); return; }
+  scaDemoOff(); const L = scaFitSp(a.w || ''); if (!L.length) { toast('이 카드에 맞는 포켓몬을 못 찾았어요', true); return; }
   const sp = L[Math.floor(Math.random() * L.length)], me = SCX = { sp, chip: b, raf: 0 }; b.classList.add('on');
   await A.ensureSprite(sp).catch(() => {}); if (SCX !== me || !pic.isConnected) return;
-  const P = A.SPRITES[sp], pmd = typeof P === 'object', t = a.a || '', d = A.SPECIES[sp];
-  const want = /졸|자요|잠들|낮잠|꾸벅|자고|쉬어/.test(t) ? ['Sleep'] : /먹|냠|갉|핥|마셔|쪼아/.test(t) ? ['Eat', 'Attack'] : /밀어|밀고|치고|쳐|차고|차서|때|두드|받아|부딪|들이받/.test(t) ? ['Strike', 'Kick', 'Attack'] : /깡충|뛰|점프|흔들|구르|굴러|뒹굴/.test(t) ? ['Hop'] : /빙글|돌아|돌며|맴돌/.test(t) ? ['Rotate', 'Hop'] : /뽐|포즈|자랑/.test(t) ? ['Pose', 'Appeal'] : /불|뿜|쏘|물줄기|전기/.test(t) ? ['Shoot', 'SpAttack', 'Attack'] : [];
-  const an = pmd ? (want.find(n => P.a[n]) || 'Idle') : '', fa = pmd ? P.a[an] : null, ia = pmd ? P.a.Idle || fa : null;
+  const P = A.SPRITES[sp], pmd = typeof P === 'object', t = a.a || '', d = A.SPECIES[sp], tyc = A.TYPE_C?.[d.t[0]] || '#ffe14a';
+  // 포켓몬이 할 일 (상호작용 글에서 고른다)
+  const M = { fly: /날아와|날아 와|날아들|내려앉/.test(t), flap: /날갯짓|파닥|떠서|떠 있|떠다/.test(t), circ: /빙빙|맴돌|둘레를/.test(t), walk: /걸어|걷|기어 다니|끝에서 끝|지나다|오가/.test(t),
+    push: /밀어|밀고|부딪|톡톡|건드|코끝으로|받아/.test(t), hide: /숨어|숨었|숨기|숨겨|그림자 속|뒤에서 나타/.test(t), peek: /내밀|눈만|고개만|들여다/.test(t), skill: /기술|전기를|염력|불을 붙|불을 켜|밝게|흩날려|채찍/.test(t), blink: /나타났다 사라졌다/.test(t) };
+  const want = M.skill ? ['SpAttack', 'Shoot', 'Charge', 'Attack'] : M.push ? ['Strike', 'Attack', 'Kick'] : /졸|자요|잠들|낮잠|꾸벅|자고|말고 자|쉬어|엎드려/.test(t) ? ['Sleep'] : /먹|냠|갉|핥|마셔|쪼아|뜯어/.test(t) ? ['Eat', 'Attack']
+    : M.walk || M.circ || M.flap ? ['Walk'] : /깡충|뛰|점프|굴러|뒹굴/.test(t) ? ['Hop'] : /빙글/.test(t) ? ['Rotate', 'Hop'] : /단련|수련/.test(t) ? ['Attack', 'Strike'] : /뽐|포즈|자랑/.test(t) ? ['Pose', 'Appeal'] : [];
+  const an = pmd ? (want.find(n => P.a[n]) || 'Idle') : '', fa = pmd ? P.a[an] : null, ia = pmd ? P.a.Idle || fa : null, wa = pmd ? P.a.Walk || ia : null;
+  // 소품이 할 일: 날개 돌기(위쪽만), 흔들림, 시소, 반짝
+  const spin = !M.circ && /돌려|도는|돌아가|돌아요|돌고|돌리/.test(t), swing = /흔들/.test(t), rock = /오르내려|띄워|번갈아/.test(t), glow = /반짝|불을 켜|밝게|불을 붙|빛 포자|불빛을 쬐|불을 쬐/.test(t);
   const im = new Image(); im.src = pmd ? P.i : P; await im.decode().catch(() => {}); if (SCX !== me || !pic.isConnected) return;
-  const fw = pmd ? Math.max(fa[1], ia[1]) : im.width, fh = pmd ? Math.max(fa[2], ia[2]) : im.height, k = Math.max(1, Math.min(2, Math.floor(84 / Math.max(fw, fh)) || 1));
-  const el = me.el = document.createElement('div'); el.className = 'sc-mon' + (/날아|날개|떠|파닥/.test(t) || A.TYPE_KO && d.t.map(x => A.TYPE_KO[x]).includes('비행') && /위|가로대|꼭대기|지붕|앉/.test(t) ? ' fly' : ''); el.title = '눌러서 닫기';
-  const c = document.createElement('canvas'); c.width = fw * k; c.height = fh * k; el.append(c); const nm = document.createElement('b'); nm.textContent = `${d.n} 예시`; el.append(nm); pic.append(el);
-  const R = pic.getBoundingClientRect(), sv = pic.querySelector('svg')?.getBoundingClientRect() || { left: R.left + R.width / 2 - 40, top: R.top + 16, width: 80, height: 80 };
-  const px = { l: sv.left - R.left, t: sv.top - R.top, w: sv.width, h: sv.height }, cx = px.l + px.w / 2, W = c.width, H = c.height, pad = H * .22;   // PMD 그림은 아래쪽에 여백이 있다
-  let x, y;   // y = 포켓몬 발이 닿는 높이
-  if (/안에|안으로|속에|속으로|구멍|들어가|쏙|사이에/.test(t)) { x = cx; y = px.t + px.h * .62; }
-  else if (/위에|위로|꼭대기|가로대|지붕|올라|얹|매달|걸터/.test(t)) { x = cx; y = px.t + px.h * .18; }
-  else if (/아래|밑|그늘/.test(t)) { x = cx; y = px.t + px.h; }
-  else { x = Math.min(R.width - W / 2 - 2, px.l + px.w + W * .1); y = px.t + px.h; if (x - W / 2 < px.l + px.w * .6) x = Math.max(W / 2 + 2, px.l - W * .1); }
-  c.style.left = `${Math.round(x - W / 2)}px`; c.style.top = `${Math.round(Math.max(-pad, Math.min(R.height - H + pad, y - H + pad)))}px`;
-  const g = c.getContext('2d'), t0 = performance.now();
-  const draw = now => { if (SCX !== me) return; if (!c.isConnected) { SCX = null; return; } me.raf = requestAnimationFrame(draw); g.imageSmoothingEnabled = false; g.clearRect(0, 0, W, H);
-    if (!pmd) { g.drawImage(im, 0, 0, W, H); return; }
-    const durs = fa[6], tot = durs.reduce((p, q) => p + q, 0), tt = ((now - t0) / 1000 * 60) % tot; let f = 0, ac = 0; for (let i = 0; i < durs.length; i++) { ac += durs[i]; if (tt < ac) { f = i; break; } }
-    g.drawImage(im, f * (fa[1] + (P.G || 0)), fa[0], fa[1], fa[2], Math.round((W - fa[1] * k) / 2), H - fa[2] * k - Math.round((fh - fa[2]) * k / 2), fa[1] * k, fa[2] * k); };
+  const R0 = o.px, rows = R0.length, cols = R0[0].length, pal = o.pal || {}, fill = ch => pal[ch] && pal[ch] !== 'transparent';
+  const mk = (r0, r1) => { const c = document.createElement('canvas'); c.width = cols; c.height = rows; const x = c.getContext('2d'); for (let y = r0; y < r1; y++) [...R0[y]].forEach((ch, X) => { if (fill(ch)) { x.fillStyle = pal[ch]; x.fillRect(X, y, 1, 1); } }); return c; };
+  const span = r => { const s = [...R0[r]], i = s.findIndex(fill), j = s.length - 1 - [...s].reverse().findIndex(fill); return i < 0 ? 0 : j - i + 1; };
+  let hr = 0; if (spin) for (let r = Math.floor(rows * .3); r < rows - 3; r++) if ([0, 1, 2, 3].every(j => span(r + j) > 0 && span(r + j) <= 4)) { hr = r; break; }   // 막대 위가 도는 부분 (바람개비 날개)
+  const head = hr ? mk(0, hr) : null, body = mk(hr, rows); let hc = [cols / 2, hr / 2];
+  if (head) { let x0 = 1e9, x1 = -1, y0 = 1e9, y1 = -1; for (let y = 0; y < hr; y++) [...R0[y]].forEach((ch, X) => { if (fill(ch)) { x0 = Math.min(x0, X); x1 = Math.max(x1, X); y0 = Math.min(y0, y); y1 = Math.max(y1, y); } }); hc = [(x0 + x1 + 1) / 2, (y0 + y1 + 1) / 2]; }
+  const sv = pic.querySelector('svg'), R = pic.getBoundingClientRect(), sr = sv.getBoundingClientRect(), pl = sr.left - R.left, pt = sr.top - R.top, s = sr.width / cols, PW = sr.width, PH = sr.height, cx = pl + PW / 2;
+  const fw = pmd ? Math.max(fa[1], ia[1]) : im.width, fh = pmd ? Math.max(fa[2], ia[2]) : im.height, k = Math.max(1, Math.min(2, Math.floor(84 / Math.max(fw, fh)) || 1)), MW = fw * k, MH = fh * k;
+  const el = me.el = document.createElement('div'); el.className = 'sc-mon'; el.title = '눌러서 닫기'; const c = document.createElement('canvas'), dpr = Math.min(3, devicePixelRatio || 1); c.width = Math.round(R.width * dpr); c.height = Math.round(R.height * dpr); c.style.cssText = `left:0;top:0;width:${R.width}px;height:${R.height}px`;
+  const nm = document.createElement('b'); nm.textContent = `${d.n} 예시`; el.append(c, nm); pic.append(el); sv.style.visibility = 'hidden'; me.pic = pic;
+  const top = /위에|위로|위를|꼭대기|가로대|지붕|올라|얹|매달|걸터|끝에 앉|양 끝|위 새싹|가장자리에|평균대 위/.test(t), inn = /안에|안으로|속에|속으로|구멍|들어가|쏙|사이에|아래에 들어/.test(t), und = /아래|밑|그늘|기대/.test(t) && !top;
+  let tx, ty; if (inn) { tx = cx; ty = pt + PH * .62; } else if (top) { tx = cx; ty = pt + PH * .16; } else if (und) { tx = cx + PW * .12; ty = pt + PH; } else { tx = pl + PW + MW * .12; ty = pt + PH; if (tx + MW / 2 > R.width - 2) tx = Math.max(MW / 2 + 2, pl - MW * .12); }
+  if (M.flap) ty -= Math.min(30, PH * .3);
+  const side = tx < cx ? -1 : 1, g = c.getContext('2d'), t0 = performance.now(), parts = []; let hitT = -9;
+  const frame = (A2, tt) => { const durs = A2[6], tot = durs.reduce((p, q) => p + q, 0), u = (tt * 60) % tot; let f = 0, ac = 0; for (let i = 0; i < durs.length; i++) { ac += durs[i]; if (u < ac) { f = i; break; } } return f; };
+  const mon = (x, y, A2, tt, flip, al) => { g.save(); g.globalAlpha = al ?? 1; g.translate(Math.round(x), Math.round(y)); if (flip) g.scale(-1, 1);
+    if (!pmd) g.drawImage(im, -MW / 2, -MH * .9, MW, MH); else { const f = frame(A2, tt), w = A2[1] * k, h = A2[2] * k; g.drawImage(im, f * (A2[1] + (P.G || 0)), A2[0], A2[1], A2[2], -Math.round(w / 2), -Math.round(h * .78), w, h); } g.restore(); };
+  const draw = now => { if (SCX !== me) return; if (!c.isConnected) { SCX = null; return; } me.raf = requestAnimationFrame(draw);
+    const tt = (now - t0) / 1000; g.setTransform(dpr, 0, 0, dpr, 0, 0); g.imageSmoothingEnabled = false; g.clearRect(0, 0, R.width, R.height);
+    // 포켓몬 자리
+    let x = tx, y = ty, A2 = fa, fl = false, back = false, al = 1;
+    if (M.fly) { const u = (tt % 4.5) / 4.5; if (u < .3) { const q = u / .3, e = 1 - (1 - q) ** 2, sx = R.width + MW / 2, sy = -8; x = sx + (tx - sx) * e; y = sy + (ty - sy) * e - Math.sin(q * Math.PI) * 18 + Math.sin(tt * 26) * 2; A2 = wa; }
+      else if (u > .92) { const q = (u - .92) / .08; al = 1 - q; } }
+    if (M.flap) { y += Math.sin(tt * 16) * 3; A2 = wa; }
+    if (M.circ) { const an = tt * 2.4; x = cx + Math.cos(an) * (PW / 2 + MW * .3); y = pt + PH * .45 + Math.sin(an) * 12 + Math.sin(tt * 18) * 2; back = Math.sin(an) < 0; fl = Math.sin(an) > 0; A2 = wa; }
+    if (M.walk) { const q = .5 - .5 * Math.cos(tt * 1.1); x = pl + PW * (.15 + .7 * q); fl = Math.sin(tt * 1.1) < 0; A2 = wa; }
+    if (M.push) { const q = (tt * .8) % 1, reach = q < .35 ? q / .35 : q < .55 ? 1 : 1 - (q - .55) / .45, gap = MW * .45; x = tx + side * gap * (1 - reach); if (q >= .35 && hitT < tt - .9) hitT = tt; A2 = q >= .3 && q < .6 ? fa : ia; }
+    if (M.hide) { back = true; x = cx + PW * .08; y = pt + PH * .9; if (M.peek) { const q = Math.max(0, Math.sin(tt * 1.6)) ** .6; y += (Math.min(y, pt + MH * .45) - y) * q; } else x = pl + PW * .82; }   // 고개만 내밀기 = 소품 위로 머리가 올라왔다 내려감
+    if (M.blink) al *= Math.sin(tt * 2.2) > -.2 ? 1 : 0;
+    x = clamp(x, -MW / 2, R.width + MW / 2);
+    // 소품
+    const prop = () => { g.save(); let ang = 0, ox = cx, oy = pt + PH;
+      if (swing) { ang = Math.sin(tt * 3) * .07; if (/그네/.test(o.n)) oy = pt; }
+      if (rock) { ang = Math.sin(tt * 2.4) * .13; oy = pt + PH * .7; }
+      if (M.push && tt - hitT < 1.2) { const h = tt - hitT; ang += Math.sin(h * 20) * .06 * Math.exp(-h * 3.5); }
+      g.translate(ox, oy); g.rotate(ang); g.translate(-ox, -oy);
+      if (glow) { const p = .5 + .5 * Math.sin(tt * 4); g.shadowColor = `rgba(255,240,150,${(.55 + .4 * p).toFixed(2)})`; g.shadowBlur = 6 + 10 * p; }
+      g.drawImage(body, pl, pt, PW, PH);
+      if (head) { const hx = pl + hc[0] * s, hy = pt + hc[1] * s; g.save(); g.translate(hx, hy); g.rotate(tt * (M.flap ? 7 : 4)); g.translate(-hx, -hy); g.drawImage(head, pl, pt, PW, PH); g.restore(); }
+      g.restore(); };
+    if (back) mon(x, y, A2, tt, fl, al); prop(); if (!back) mon(x, y, A2, tt, fl, al);
+    // 효과: 기술 빛 알갱이, 날갯짓 바람
+    if (M.skill && Math.random() < .5) parts.push({ x, y: y - MH * .35, vx: (cx - x) * (1.2 + Math.random()), vy: (pt + PH * .4 - y + MH * .35) * (1.2 + Math.random()) + (Math.random() - .5) * 40, t: .6, c: tyc });
+    if (M.flap && spin && Math.random() < .25) parts.push({ x: x - side * MW * .3, y: y - MH * .3 + (Math.random() - .5) * 16, vx: -side * 120, vy: 0, t: .45, c: '#ffffff', ln: 1 });
+    for (const p of parts) { p.t -= 1 / 60; p.x += p.vx / 60; p.y += p.vy / 60; g.globalAlpha = Math.max(0, Math.min(1, p.t * 2)); g.fillStyle = p.c; if (p.ln) g.fillRect(Math.round(p.x), Math.round(p.y), 6, 1); else g.fillRect(Math.round(p.x) - 1, Math.round(p.y) - 1, 3, 3); }
+    g.globalAlpha = 1; for (let i = parts.length - 1; i >= 0; i--) if (parts[i].t <= 0) parts.splice(i, 1); };
   me.raf = requestAnimationFrame(draw); }
+// v3.50 경완: 허수아비처럼 움직이는 소품(fr 프레임)은 그림 왼쪽 위 '움직임' 카드 · 그림을 누르면 움직이고 다시 누르면 멈춤
+let SCF = null;
+function scaFramesOff() { if (!SCF) return; clearInterval(SCF.tm); SCF.pic.classList.remove('mvon'); const sv = SCF.pic.querySelector('svg'); if (sv && SCF.svg) { sv.outerHTML = SCF.svg; if (SCX?.pic === SCF.pic) SCF.pic.querySelector('svg').style.visibility = 'hidden'; } SCF = null; }
+function scaFrames(pic) { const o = scaItem(pic.closest('.sc-it')?.id.slice(3)); if (!o?.fr?.length) return; const same = SCF?.pic === pic; scaFramesOff(); if (same) return;
+  const sv = pic.querySelector('svg'); if (!sv) return; const R0 = o.px, sc = Math.max(2, Math.floor(96 / Math.max(R0.length, R0[0].length))), F = o.fr.map(f => pxSvg(f, o.pal || {}, sc));
+  SCF = { pic, svg: sv.outerHTML, i: 0 }; pic.classList.add('mvon'); const me = SCF;
+  SCF.tm = setInterval(() => { if (SCF !== me || !pic.isConnected) { clearInterval(me.tm); if (SCF === me) SCF = null; return; } const cur = pic.querySelector('svg'); if (!cur) return; const vis = cur.style.visibility; me.i = (me.i + 1) % F.length; cur.outerHTML = F[me.i]; if (vis) pic.querySelector('svg').style.visibility = vis; }, +o.fms || 160); }
 // v3.26 경완: 새로 넣은 스칼렛 소품이 있으면 맵 메뉴에 빨간 점 (맵 메뉴를 열면 사라짐)
 function scDot() { const a = $('.nav a[data-v="map"]'); if (a) a.classList.toggle('scnew', JSON.parse(store.get('st-sc-new') || '[]').length > 0); }
-$('#scaC').addEventListener('click', e => { const cx = e.target.closest('[data-scx]'); if (cx) return scaDemo(cx); if (e.target.closest('.sc-mon')) return scaDemoOff(); const b = e.target.closest('[data-pk]'); if (b) scaPick(b.dataset.pk); const x = e.target.closest('[data-swdel],[data-swday],[data-swres],[data-swgone]'); if (x) scaDel(x); if (e.target.closest('#scaBin')) { scaTrash = !scaTrash; renderSca(); } });
+$('#scaC').addEventListener('click', e => { const cx = e.target.closest('[data-scx]'); if (cx) return scaDemo(cx); if (e.target.closest('.sc-mon')) return scaDemoOff(); { const pc = e.target.closest('.sc-pic'); if (pc && !e.target.closest('[data-swdel],[data-swres],[data-swgone]')) return scaFrames(pc); } const b = e.target.closest('[data-pk]'); if (b) scaPick(b.dataset.pk); const x = e.target.closest('[data-swdel],[data-swday],[data-swres],[data-swgone]'); if (x) scaDel(x); if (e.target.closest('#scaBin')) { scaTrash = !scaTrash; renderSca(); } });
 // v3.31 경완: 작업물 메뉴에서 스칼렛 작업물을 소품마다·날마다 지운다 (× 한 번 → 빨갛게, 한 번 더 → main 의 config/staff/scarlet.json 에서 지움). 이미 소품 리스트에 넣은 건 맵에 그대로 남아요
 // v3.32 경완: × 는 누르면 바로 지우고, 지운 작업물은 휴지통(scarlet.json 의 trash)으로 — 휴지통에서 되살리기·영구 삭제
 let scaTrash = false;
