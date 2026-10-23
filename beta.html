@@ -6000,7 +6000,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.77';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.78';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8991,9 +8991,9 @@ function spotHit(ll) {
   }
   return null;
 }
-function collectEggs(km, place, tags, pf, ll) {
+function collectEggs(km, place, tags, pf, ll, win) {
   S.bagAcc += km; let n = 0; const P = S.pity || (S.pity = { e: 0, l: 0 }); P.e += km; P.l += km;
-  const t1 = Date.now(), t0 = Math.max(S.colT || t1, t1 - 6 * 3600e3), fI = fxFrac('incense', t0, t1), fC = fxFrac('charm', t0, t1); S.colT = t1;   // v5.75: 향로·빛나는 부적이 켜져 있던 만큼
+  const t1 = win ? win[1] : Date.now(), t0 = win ? win[0] : Math.max(S.colT || t1, t1 - 6 * 3600e3), fI = fxFrac('incense', t0, t1), fC = fxFrac('charm', t0, t1); if (!win) S.colT = t1;   // v5.75: 향로·빛나는 부적이 켜져 있던 만큼. v8.78 경완: 운동 기록은 그 운동 시간(win) 동안 켜져 있던 만큼
   while (S.bagAcc >= BAG_SUB) { S.bagAcc -= BAG_SUB; let k = (S.bagQ && S.bagQ.length) ? S.bagQ.shift() : bagRoll();   /* v5.16: 다음 칸들은 미리 굴려 둔다 (앱 알림이 다음에 알을 줍는 거리를 알 수 있게) */
     if (!k && (S.bagDry || 0) >= 1 - 1e-6) k = 1;   // v4.85 경완 '보정': 1km 동안 알을 하나도 못 주웠으면 다음 250m엔 꼭 1개
     S.bagDry = k ? 0 : (S.bagDry || 0) + BAG_SUB; n += k; }   // v4.07 경완: 250m마다 확률로 줍는다 (1km에 평균 1/BAG_STEP 개, 보통 1~2개, 운 좋으면 3개)
@@ -9058,13 +9058,15 @@ function noteFed(t0, t1, km) {
 }
 function fedIn(t0, t1) { let k = 0; for (const [a, b, km] of S.fedLog) { const o = Math.min(b, t1) - Math.max(a, t0); if (o > 0) k += b > a ? km * o / (b - a) : km; else if (b === a && a >= t0 && a <= t1) k += km; } return k; }
 function walkFeed(km, t0, t1) { if (!(km > 0)) return; feedKm(km); if (!setEl.hidden) renderNext(); noteFed(t0, t1, km); S.fedPend += km; if (!walkFeed.t) walkFeed.t = setTimeout(() => { walkFeed.t = 0; save(); }, 10000); if (!runEl.hidden) renderRun(); else if (!mgr.hidden) renderBuddy(); postNative(); }
-function applyKm(km, t0 = 0, t1 = 0, feed = km) {
+function applyKm(km, t0 = 0, t1 = 0, feed = km, off = false) {
   if (!(km > 0)) return [];
   feedKm(feed);
   // 아이폰 앱이 걸음(만보기)으로 알을 줍고 있으면 런닝 거리로는 줍지 않는다 (같은 거리를 두 번 세지 않게)
   // 알마다 달린 길(지나간 곳 기록) 중 한 곳을 골라 주운 곳으로 남긴다
   let got = [];
-  if (!S.walkSync) { got = collectEggs(km, '', null, () => routePlace(t0, t1)); const ps = [...new Set(got.eggs.map(e => e.place).filter(Boolean))]; gotLog(got, '', ps.length === 1 ? ps[0] : ''); }
+  // v8.78 경완: 아이폰을 두고 워치만 차고 운동했으면(off) 만보기가 못 잰 거리(feed)로 줍는다 — 향로·부적은 그 운동 시간에 켜져 있던 만큼
+  const win = t0 ? [t0, t1 || t0] : null, ek = !S.walkSync ? km : off && feed > .005 ? feed : 0;
+  if (ek) { got = collectEggs(ek, '', null, () => routePlace(t0, t1), null, win); const ps = [...new Set(got.eggs.map(e => e.place).filter(Boolean))]; gotLog(got, '', ps.length === 1 ? ps[0] : ''); }
   return got.eggs || [];
 }
 // v5.16 경완: 앱 푸시 알림 — 앞으로 걸으면 생길 일(알 줍기·부화 준비·진화 준비)을 '몇 km 더 걸으면'으로 앱에 넘긴다.
@@ -9149,14 +9151,16 @@ window.pokeRunWalk = (km, place, tags, la, lo) => {
   save(); renderRun(); return true;
 };
 // 아이폰 앱: 워치 런닝(watch), 또는 모션 기록에서 찾아낸 달리기(auto, 시작·끝 시각 포함)
-window.pokeRunAddKm = (km, t0, src = 'watch', t1 = 0) => {
+window.pokeRunAddKm = (km, t0, src = 'watch', t1 = 0, ph) => {
   km = Math.round(+km * 100) / 100; if (!(km >= .01 && km <= 100)) return false;
   t0 = +t0 || 0; t1 = +t1 || 0; src = ['auto', 'health'].includes(src) ? src : 'watch';
   // 같은 달리기가 여러 길(워치 앱·건강 앱·자동 감지·잠금 런닝)로 들어오면 시간이 겹치는 두 번째부터 건너뛴다
   if (t0 && S.runs.some(r => r.t0 && r.t0 < (t1 || t0) + 60000 && (r.t || r.t0) > t0 - 60000)) return true;
   // 걸음(만보기)으로 이미 쌓인 거리는 빼고 나머지만 쌓는다 (자동 감지 런닝은 만보기 거리라 전부 쌓여 있다)
-  const walked = src === 'auto' ? km : t0 ? Math.min(km, fedIn(t0, t1 || Date.now())) : 0, feed = km - walked;
-  addRun(km, src, t0, t1, applyKm(km, t0, t1, feed)); return true;
+  // v8.78: 아이폰 앱은 그 운동 시간에 아이폰 만보기가 잰 거리(ph, 모르면 -1)도 보낸다 → 아이폰을 두고 나간 만큼만 새로 쌓고 알도 줍는다
+  ph = ph == null || !(+ph >= 0) ? -1 : +ph;
+  const walked = src === 'auto' ? km : t0 ? Math.min(km, Math.max(fedIn(t0, t1 || Date.now()), ph)) : 0, feed = km - walked;
+  addRun(km, src, t0, t1, applyKm(km, t0, t1, feed, ph >= 0)); return true;
 };
 // 지나간 곳 기록 (아이폰 앱이 보낸 동네·운동 경로의 몇 곳)
 function notePlace(n, tags, t, ll) { if (!n) return; S.places.push(ll ? { n: String(n), tags: tags || [], t, ll } : { n: String(n), tags: tags || [], t }); S.places.sort((a, b) => a.t - b.t); if (S.places.length > 300) S.places.splice(0, S.places.length - 300); }
