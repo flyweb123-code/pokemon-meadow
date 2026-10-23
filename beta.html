@@ -298,6 +298,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .stage.berry-mode{cursor:copy}
 #mons{position:absolute;inset:0;pointer-events:none}#mons>*{pointer-events:auto;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 #night{position:absolute;inset:0;pointer-events:none;z-index:1000;mix-blend-mode:multiply;transition:background-color .6s}
+#tuShade{position:absolute;inset:0;pointer-events:none;z-index:1050;background:rgba(10,14,30,.6)}   /* v8.70 튜토리얼: 포켓몬(+1100)과 말풍선(#fx)만 이 그늘 위로 */
 #fx{position:absolute;inset:0;pointer-events:none;z-index:1100}
 /* v3.54 경완: 필드 위쪽은 먼 숲과 하늘 (시간·날씨에 따라), 해·달·별·구름 */
 .stage #skyC{width:360px;height:120px;bottom:auto}
@@ -1448,7 +1449,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
       <canvas id="bg" width="1920" height="1200"></canvas>
       <div id="items"></div>
       <div id="mons"></div>
-      <div id="night"></div><svg width="0" height="0" style="position:absolute"><filter id="nightF" filterUnits="userSpaceOnUse" x="-400" y="-400" width="800" height="800" color-interpolation-filters="sRGB"><feColorMatrix id="nightM" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0"/></filter></svg><div id="glows"></div>
+      <div id="night"></div><div id="tuShade" hidden></div><svg width="0" height="0" style="position:absolute"><filter id="nightF" filterUnits="userSpaceOnUse" x="-400" y="-400" width="800" height="800" color-interpolation-filters="sRGB"><feColorMatrix id="nightM" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0"/></filter></svg><div id="glows"></div>
       <div id="propFx"></div>
       <div id="fx"></div>
     </div>
@@ -4711,7 +4712,7 @@ function render(m, now) {
   /* 밝게 보이는 포켓몬만 밤 그늘 위로 올린다. 그 바로 앞(아래쪽)에 겹친 포켓몬도 함께 올리되 밤빛 필터로 똑같이 어둡게 해서, 앞뒤 순서는 그대로 둔다 */
   const shade = !upOf(m) && !m.pet && skyDark > .25 && S.mons.some(o => o !== m && upOf(o) && !o.hidden && m.y > o.y && m.y - o.y < (o.h || 60) + (m.h || 60) && Math.abs(m.x - o.x) < ((o.w || 50) + (m.w || 50)) / 2 + 12);
   if (shade !== !!m.shade) { m.shade = shade; m.el.classList.toggle('nightf', shade); }
-  { const z = Math.round(m.y) + (m.zAdd || 0) + (m.perch ? 2 : 0) + (m.pet ? 5000 : 0) + (upOf(m) || shade ? 1100 : 0); if (m.rZ !== z) { m.rZ = z; m.el.style.zIndex = z; } }
+  { const z = Math.round(m.y) + (m.zAdd || 0) + (m.perch ? 2 : 0) + (m.pet ? 5000 : 0) + (upOf(m) || shade || m.tuLit ? 1100 : 0); if (m.rZ !== z) { m.rZ = z; m.el.style.zIndex = z; } }
   { const oa = MON_OFFA[m.form]?.[m.anName] || 0, ox = Array.isArray(oa) ? oa[0] : 0, oy = Array.isArray(oa) ? oa[1] : oa;   // v5.79 경완: 동작별 그림 위치 [좌우, 위아래] (좌우는 기본 그림 = 왼쪽 볼 때 기준)
   const lv = `translate(${ox * (m.face || 1)}px, ${((wet ? m.h * .38 : m.flop ? m.h * .42 : m.sp === 129 && !m.held ? m.h * .24 : 0) - Math.max(0, m.lift + (MON_FLYA[m.form]?.[m.anName] || 0)) - bob + oy).toFixed(1)}px)`; if (m.rLf !== lv) { m.rLf = lv; m.liftEl.style.transform = lv; } }   // 육지의 잉어킹은 그림자에 붙게 조금 내린다 (v5.68 경완: 작업실 크기 조절 모드처럼 땅에 놓인 잉어킹도)
   if (m.flop && now > (m.swT || 0)) { m.swT = now + rnd(180, 360); for (const s of [-1, 1]) if (Math.random() < .75) particle(m.x + s * rnd(6, m.w * .32), m.y - m.h * .2 - rnd(0, 10), 'sweat', '', d => d.style.setProperty('--dx', s * rnd(12, 26) + 'px')); }
@@ -5985,7 +5986,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.69';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.70';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -10436,7 +10437,7 @@ body.inTitle,body.inTitle #app{background:#24482a!important}body.inTitle #app{ov
 #tut .tu-box{position:fixed;left:50%;transform:translateX(-50%);width:min(560px,calc(100% - 24px));display:flex;align-items:flex-end;gap:8px}
 #tut .tu-box img{flex:none;width:76px;height:116px;image-rendering:pixelated;margin-bottom:-4px;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35))}
 #tut .tu-box .win{flex:1;min-width:0;height:158px;box-sizing:border-box;padding:14px 16px 20px;font-size:15px;line-height:1.6;white-space:pre-wrap;position:relative}
-#tut.do{pointer-events:none}#tut.do .tu-box{pointer-events:none}#tut .tu-box{transition:top .25s steps(4,end)}#tut .tu-n{position:absolute;left:14px;top:-14px;background:var(--frame);color:#fff;font-size:12px;padding:2px 8px}
+#tut.do{pointer-events:none}#tut.do .tu-box{pointer-events:none}#tut .tu-box{transition:none}#tut .tu-n{position:absolute;left:14px;top:-14px;background:var(--frame);color:#fff;font-size:12px;padding:2px 8px}
 `; document.head.append(st); }
 // 글자를 한 자씩 띄우고(누르면 바로 끝까지), 다 뜨면 ▼ 깜빡이며 누를 때까지 기다린다
 function inTyper(root, tEl, curEl) {
@@ -10651,7 +10652,7 @@ async function tutFlow() {
     { c: '부화', t: '#hatchStage', s: () => `와! ${J2(born2(), '이', '가')} 태어났구나!\n새 포켓몬을 만나면\n골드도 받는단다.` },
     { c: '부화', t: '#hatchSend', tap: '#hatchSend', until: () => S.mons.length > 0, s: '\'필드로\'를 누르면\n포켓몬이 필드에\n나간단다.' },
     { c: '부화', run: () => { placeMon(); return null; }, t: '#hatchOk', tap: '#hatchOk', until: () => $('#hatch').hidden, s: '\'확인\'을 눌러\n창을 닫아 보렴.' },
-    { c: '필드', pre: async () => { if (!pin) placeMon(); sheetsOff(); await wait(600); }, t: monEl, noLit: 1, s: () => `${J2(born(), '이', '가')} 필드에 나왔어!\n포켓몬들은 필드에서\n놀고, 먹고, 자고, 어울린단다.` },
+    { c: '필드', pre: async () => { if (!pin) placeMon(); sheetsOff(); await wait(600); }, t: monEl, noHole: 1, s: () => `${J2(born(), '이', '가')} 필드에 나왔어!\n포켓몬들은 필드에서\n놀고, 먹고, 자고, 어울린단다.` },
     { c: '필드', t: monEl, tap: () => monEl(), until: () => S.sel === mon(), s: () => `${J2(born(), '을', '를')} 눌러 보렴!` },
     { c: '친밀도', t: frRow, s: () => `먼저 친밀도란다.\n${J2(born(), '이', '가')} ${nm}${hasBat(nm) ? '이' : ''}를\n얼마나 좋아하는지 보여 주지.` },
     { c: '친밀도', t: '#pMoves', s: '친밀도가 만점이 되면\n그 포켓몬만의\n특별한 기술을 쓸 수 있단다!' },
@@ -10721,7 +10722,7 @@ async function tutFlow() {
   const EV = ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchend', 'mousedown', 'mouseup'];
   EV.forEach(t => addEventListener(t, guard, { capture: true, passive: false }));
   let cur = null, raf = 0, pin = null;
-  let bxSnapT = 0, trK = '';
+  let bxSnapT = 0, trK = '', bxGone = false; const tuLitOff = () => { const m = mon(); if (m?.tuLit) { m.tuLit = false; m.rZ = null; } const d = $('#tuShade'); if (d) d.hidden = true; };
   const placeBox = (r, first, top, cw) => {   // (게임의 place(m, x, y) 와 이름이 겹쳐 포켓몬이 안 옮겨지던 것)   // 상자는 비춘 곳 바로 위나 아래 (빈 곳이 더 넓은 쪽), 시계·골드 줄은 가리지 않는다
     const H = innerHeight, top0 = 72, bh = bx.offsetHeight || 130;
     if (!r) { bx.style.top = Math.round(H * .5 - bh / 2) + 'px'; return; }
@@ -10741,8 +10742,9 @@ async function tutFlow() {
     const rH = r;   // v8.52 경완: 두 곳을 비출 때도 테두리(hole)는 첫 번째 곳 크기 그대로 — 다음 단계에서 커졌다 작아지지 않게 (상자 자리는 두 곳을 합친 크기로)
     if (r2) { [r, r2].forEach((q, i) => Object.assign(marks[i].style, { left: q.left - 4 + 'px', top: q.top - 4 + 'px', width: q.width + 8 + 'px', height: q.height + 8 + 'px' })); const L = Math.min(r.left, r2.left), T = Math.min(r.top, r2.top), Rr = Math.max(r.right ?? r.left + r.width, r2.right), B = Math.max(r.bottom ?? r.top + r.height, r2.bottom); r = { left: L, top: T, width: Rr - L, height: B - T, right: Rr, bottom: B }; }
     if (ov.classList.contains('hide') || hole.classList.contains('none')) snap = true;   /* v8.16 경완: 새 화면에서 처음 뜰 때는 바로 그 자리에, 같은 화면 안에서 옮길 때만 움직여 간다 */
+    if (!cur?.noHole) tuLitOff();
     if (cur?.noLit) { hole.classList.add('none'); ov.classList.remove('dim'); ov.querySelector('.tu-mask').setAttribute('hidden', ''); }   /* v8.54 경완: '필드에 나왔어' 설명 땐 포켓몬을 밝게 비추지 않음 (누르라고 할 때만) */
-    else if (cur?.noHole) { hole.classList.add('none'); ov.classList.remove('dim'); if (r && r.width) { const mk = ov.querySelector('.tu-mask'), pb = $('#petBar'), q = pb && !pb.hidden ? pb.getBoundingClientRect() : null, cx = r.left + r.width / 2, cy = r.top + r.height / 2, rx = r.width * .75 + 16, ry = r.height * .7 + 16; mk.removeAttribute('hidden'); mk.firstChild.setAttribute('d', `M0 0H${innerWidth}V${innerHeight}H0Z M${cx - rx} ${cy}a${rx} ${ry} 0 1 0 ${2 * rx} 0a${rx} ${ry} 0 1 0 ${-2 * rx} 0Z` + (q && q.width ? `M${q.left - 4} ${q.top - 4}h${q.width + 8}v${q.height + 8}h${-(q.width + 8)}Z` : '')); } }   /* v8.52 경완: 쓰다듬기 설명 때 포켓몬 뒤 배경은 어둡게 — 테두리 없이 포켓몬 둘레(타원)와 쓰다듬기 바만 밝게 */   /* v8.49 경완: 쓰다듬기 시범은 밝은 박스 없이 */
+    else if (cur?.noHole) { hole.classList.add('none'); ov.classList.remove('dim'); const m = mon(), mk = ov.querySelector('.tu-mask'); if (m && !m.tuLit) { m.tuLit = true; m.rZ = null; } $('#tuShade').hidden = false; mk.removeAttribute('hidden'); mk.firstChild.setAttribute('d', [...$('#app').children].filter(x => x.id !== 'wrap' && x.id !== 'petBar' && !x.hidden && getComputedStyle(x).display !== 'none').map(x => x.getBoundingClientRect()).filter(x => x.width && x.height).map(x => `M${x.left} ${x.top}h${x.width}v${x.height}h${-x.width}Z`).join('') || 'M0 0'); }   /* v8.70 경완: 둥근 빛 없이 쓰다듬을 때처럼 포켓몬과 말풍선만 밝게 — 필드 안은 #tuShade 그늘 위로 포켓몬만 올리고, 필드 위 HUD 는 tu-mask 로 어둡게 */   /* v8.52 경완: 쓰다듬기 설명 때 포켓몬 뒤 배경은 어둡게 — 테두리 없이 포켓몬 둘레(타원)와 쓰다듬기 바만 밝게 */   /* v8.49 경완: 쓰다듬기 시범은 밝은 박스 없이 */
     else if (r && r.width) { const p = 6, sn = snap && !ov.classList.contains('hide'), q = rH && rH.width ? rH : r; if (sn) hole.style.transition = 'none'; Object.assign(hole.style, { left: q.left - p + 'px', top: q.top - p + 'px', width: q.width + p * 2 + 'px', height: q.height + p * 2 + 'px' }); hole.classList.remove('none'); ov.classList.remove('dim'); if (sn) { void hole.offsetWidth; hole.style.transition = ''; snap = false; } }
     else { hole.classList.add('none'); ov.classList.toggle('dim', !cur?.allow && !cur?.tap && !cur?.clear); }
     { const k = r && r.width ? [T.indexOf(cur), Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)].join() : '', mv = trK && k && trK !== k && trK.split(',')[0] === k.split(',')[0]; trK = k;   /* v8.53 경완: 비출 곳이 창과 함께 움직이는 중(부화기에 넣기 창이 뜰 때)이면 박사 창도 미끄러지지 않고 바로 따라 붙는다 */
@@ -10751,8 +10753,8 @@ async function tutFlow() {
     if (st.when && !st.when()) continue;
     // 창이 뜨거나 화면이 바뀌는 연출은 박사 창을 치우고 화면을 잠근 채 충분히 보여 준다
     if (st.pre || st.hold) { lock = true; ov.classList.add('hide'); if (st.pre) await st.pre(); await wait(st.hold || 800); }
-    const bxNew = ov.classList.contains('hide') || ov.classList.contains('tapon') || ov.classList.contains('nobox') || !cur;   /* v8.49 경완: 박사 창이 새로 나타날 때는 도착 자리에서 바로 (같은 화면 안에서 옮길 때만 움직여 간다) */
-    cur = st; ov.classList.toggle('clear', !!st.clear); lock = false;
+    const bxNew = bxGone || ov.classList.contains('hide') || ov.classList.contains('tapon') || ov.classList.contains('nobox') || !cur;   /* v8.49 경완: 박사 창이 새로 나타날 때는 도착 자리에서 바로 (같은 화면 안에서 옮길 때만 움직여 간다) */
+    bxGone = false; cur = st; ov.classList.toggle('clear', !!st.clear); lock = false;
     if (bxNew) bxSnapT = performance.now() + 700;
     if (cur && cur.t === st.t) snap = true;   // v8.52 경완: 같은 곳을 이어서 비출 때(조이스틱 설명 → '눌러 보렴')는 테두리가 커졌다 작아지는 움직임 없이 바로
     { const e = el(st.t); if (bxNew) bx.style.transition = 'none'; placeBox(e ? e.getBoundingClientRect() : null, true, inInfo(e), winOf(e)); if (bxNew) { void bx.offsetWidth; bx.style.transition = ''; } }
@@ -10766,12 +10768,12 @@ async function tutFlow() {
       ov.classList.add('do'); tapped = false; tapSel = st.tap || null; allow = st.allow || st.tap;
       if (!dis) await say(s, false);
       for (let n = 0; ; n++) { await wait(100); if (st.until ? st.until() : tapped) break; }
-      allow = tapSel = null; ov.classList.remove('do'); lock = true; ov.classList.add('hide'); await wait(st.after || 1400); lock = false; ov.classList.remove('tapon', 'hide');   /* v8.52 경완: 빛 테두리가 꺼질 때 화면이 한 번 어두워지며 깜빡이던 것 — tapon 을 먼저 빼면 어두운 가림(200vmax 그림자)이 되살아난 채 .3초 동안 사라져서, 다 사라진 뒤에 뺀다 */
+      allow = tapSel = null; ov.classList.remove('do'); lock = true; ov.classList.add('hide'); await wait(st.after || 1400); lock = false; ov.classList.remove('tapon', 'hide'); bxGone = true;   /* v8.70 경완: 누르고 박사 창이 꺼졌다 다시 뜰 때는 예전 자리에서 미끄러져 오지 않고 새 자리에 바로 ('알' 메뉴를 눌러 보렴) */   /* v8.52 경완: 빛 테두리가 꺼질 때 화면이 한 번 어두워지며 깜빡이던 것 — tapon 을 먼저 빼면 어두운 가림(200vmax 그림자)이 되살아난 채 .3초 동안 사라져서, 다 사라진 뒤에 뺀다 */
     } else await say(s);
     if (stopRun) stopRun();
   }
   cancelAnimationFrame(raf); EV.forEach(t => removeEventListener(t, guard, { capture: true }));
-  ov.remove();
+  tuLitOff(); ov.remove();
   // v5.45 경완: 튜토리얼이 끝나면 환영 창 + 100골드 (알림 창 모양을 빌려 쓴다)
   // v5.47 경완: 남은 알(가방)에 새 알 표시를 다시 달고, '알' 메뉴에도 알림 점 — 직접 부화기에 넣어 보게
   if (tutFreeze && !introPv) { tutFreeze = false; saveFrozen = false; }   // v5.53 경완: 튜토리얼을 끝까지 마쳐야 처음 저장한다
