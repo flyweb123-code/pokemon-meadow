@@ -1,14 +1,17 @@
 import Foundation
 import HealthKit
 import CoreLocation
+import CoreMotion
 
-// 워치만 차고 달려도 반영: 건강 앱에 저장된 '달리기' 운동(애플워치 운동 앱, NRC 등)을 읽어
+// 워치만 차고 달려도 반영: 건강 앱에 저장된 달리기·걷기·하이킹 운동(애플워치 운동 앱, NRC 등)을 읽어
 // 지난번 이후 새로 끝난 것을 런닝 기록으로 보낸다. 앱을 열 때마다 확인한다.
 // 포켓몬 키우기 워치 앱이 저장한 운동은 이미 워치에서 바로 넘어오므로 건너뛴다.
 final class HealthSync {
     static let shared = HealthSync()
 
     private let store = HKHealthStore()
+    // 2026-10-23 경완: 아이폰을 두고 워치만 차고 운동한 거리도 알을 줍게 — 그 운동 시간에 아이폰 만보기가 잰 거리를 같이 보낸다
+    private let pedometer = CMPedometer()
     // v2: 처음 켤 때 지난 2일치를 확인한다 (예전 v1 은 '지금부터'라서 앱을 다시 설치하기 전에 뛴 기록을 놓쳤다)
     private let lastKey = "healthLastSync.v2"
     private var busy = false
@@ -30,7 +33,7 @@ final class HealthSync {
         busy = true
         let last = Date(timeIntervalSince1970: UserDefaults.standard.double(forKey: lastKey))
         let pred = NSCompoundPredicate(andPredicateWithSubpredicates: [
-            HKQuery.predicateForWorkouts(with: .running),
+            NSCompoundPredicate(orPredicateWithSubpredicates: [HKWorkoutActivityType.running, .walking, .hiking].map { HKQuery.predicateForWorkouts(with: $0) }),
             HKQuery.predicateForSamples(withStart: last, end: nil, options: .strictStartDate),
         ])
         let sort = [NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: true)]
@@ -47,8 +50,10 @@ final class HealthSync {
                         ?? w.totalDistance?.doubleValue(for: .meter()) ?? 0
                     let km = meters / 1000
                     if km >= 0.1 {
-                        PhoneBridge.shared.enqueueRun(km: km, start: w.startDate.timeIntervalSince1970, end: w.endDate.timeIntervalSince1970, kind: 2)
-                        self.routePlaces(w)
+                        self.phoneKm(w.startDate, w.endDate) { ph in
+                            PhoneBridge.shared.enqueueRun(km: km, start: w.startDate.timeIntervalSince1970, end: w.endDate.timeIntervalSince1970, kind: 2, phoneKm: ph)
+                            self.routePlaces(w)
+                        }
                     }
                 }
                 UserDefaults.standard.set(newest.timeIntervalSince1970, forKey: self.lastKey)
@@ -56,6 +61,15 @@ final class HealthSync {
             }
         }
         store.execute(q)
+    }
+
+    // 그 운동 시간에 아이폰 만보기가 잰 거리(km). 모르면 -1 (게임은 예전처럼 처리)
+    private func phoneKm(_ start: Date, _ end: Date, done: @escaping (Double) -> Void) {
+        guard CMPedometer.isDistanceAvailable() else { done(-1); return }
+        pedometer.queryPedometerData(from: start, to: end) { data, error in
+            let km = error == nil ? (data?.distance?.doubleValue ?? 0) / 1000 : -1
+            DispatchQueue.main.async { done(km) }
+        }
     }
 
     // MARK: 운동 경로(GPS) → 알을 주운 곳
@@ -66,7 +80,7 @@ final class HealthSync {
         guard !UserDefaults.standard.bool(forKey: backfillKey) else { return }
         UserDefaults.standard.set(true, forKey: backfillKey)
         let pred = NSCompoundPredicate(andPredicateWithSubpredicates: [
-            HKQuery.predicateForWorkouts(with: .running),
+            NSCompoundPredicate(orPredicateWithSubpredicates: [HKWorkoutActivityType.running, .walking, .hiking].map { HKQuery.predicateForWorkouts(with: $0) }),
             HKQuery.predicateForSamples(withStart: Date().addingTimeInterval(-7 * 24 * 3600), end: nil, options: .strictStartDate),
         ])
         let q = HKSampleQuery(sampleType: .workoutType(), predicate: pred, limit: 30, sortDescriptors: nil) { [weak self] _, samples, _ in
