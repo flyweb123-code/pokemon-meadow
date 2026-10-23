@@ -724,88 +724,6 @@
      }
     },
     {
-     "id": "merry-go-round",
-     "n": "뱅뱅이",
-     "k": "놀이",
-     "d": "둥근 노란 판에 손잡이가 달려 빙글빙글 도는 회전 놀이대예요.",
-     "px": [
-      "..............kkkk..............",
-      ".............kaabbk.............",
-      ".............kbbbck.............",
-      "...........kkkbcddkkk...........",
-      ".........kkeeekffkgeekk.........",
-      "......kkkeekkeeegghkkgekkk......",
-      "....kkeeekkkekkegkkekkkgeekk....",
-      "...keekkk.kek.kegk.kfk.kkkgek...",
-      "...kek....kek.kegk.kek....kek...",
-      "...kek....kek.kegk.kek....kek...",
-      "...kek....kek.kegk.kek....kek...",
-      "...kek....kek.kegk.kek....kek...",
-      "...kekkkkkkekkkegkkkekkkkkkek...",
-      "...kekijjjlelileglileliiiikek...",
-      ".kklelimmmlelmleglmlelmmmmlelkk.",
-      "kiilelmmmmlelmleglmlelmmmmlelmmk",
-      "kimmlmmmmmmlmleeeelmlmmnnnnlnnlk",
-      "kmmnmmnnnnnnnnllllnnnnnnnnnnlllk",
-      "kddllnnnnnnnnnnnnnnnnnnnnllllddk",
-      ".kkdddlllllllllllllllllllldddkk.",
-      "...kkddddddddddddddddddddddkk...",
-      ".....kkkkddddddddddddddkkkk.....",
-      ".........kkkkkkkkkkkkkk........."
-     ],
-     "pal": {
-      "k": "#20202c",
-      "a": "#ec8a72",
-      "b": "#c85848",
-      "c": "#9c3c38",
-      "d": "#6e2830",
-      "e": "#a8b2c0",
-      "f": "#4c566a",
-      "g": "#748094",
-      "h": "#e8ecf0",
-      "i": "#f8e090",
-      "j": "#fff4c0",
-      "l": "#8e6028",
-      "m": "#e8b850",
-      "n": "#c08a38",
-      "o": "#2c4a28",
-      "p": "#3a5a30"
-     },
-     "acts": [
-      {
-       "w": "작은 포켓몬",
-       "a": "판 위에 올라가 손잡이를 잡고 돌아요",
-       "x": {
-        "at": [
-         0.5,
-         0.6
-        ],
-        "m": "ride circ"
-       }
-      },
-      {
-       "w": "큰 포켓몬",
-       "a": "판 옆에서 손잡이를 밀어 돌려 줘요",
-       "x": {
-        "m": "push"
-       }
-      },
-      {
-       "w": "에스퍼 타입",
-       "a": "판 위에 앉아 염력으로 천천히 돌려요",
-       "x": {
-        "at": [
-         0.5,
-         0.6
-        ],
-        "m": "skill"
-       }
-      }
-     ],
-     "fit": "넓은 풀밭",
-     "glow": 0
-    },
-    {
      "id": "balance-beam",
      "n": "외나무 평균대",
      "k": "놀이",
@@ -2462,6 +2380,91 @@
   }
  ],
  "trash": [
+  {
+   "id": "merry-go-round",
+   "n": "뱅뱅이",
+   "k": "놀이",
+   "d": "둥근 노란 판에 손잡이가 달려 빙글빙글 도는 회전 놀이대예요.",
+   "px": [
+    "..............kkkk..............",
+    ".............kaabbk.............",
+    ".............kbbbck.............",
+    "...........kkkbcddkkk...........",
+    ".........kkeeekffkgeekk.........",
+    "......kkkeekkeeegghkkgekkk......",
+    "....kkeeekkkekkegkkekkkgeekk....",
+    "...keekkk.kek.kegk.kfk.kkkgek...",
+    "...kek....kek.kegk.kek....kek...",
+    "...kek....kek.kegk.kek....kek...",
+    "...kek....kek.kegk.kek....kek...",
+    "...kek....kek.kegk.kek....kek...",
+    "...kekkkkkkekkkegkkkekkkkkkek...",
+    "...kekijjjlelileglileliiiikek...",
+    ".kklelimmmlelmleglmlelmmmmlelkk.",
+    "kiilelmmmmlelmleglmlelmmmmlelmmk",
+    "kimmlmmmmmmlmleeeelmlmmnnnnlnnlk",
+    "kmmnmmnnnnnnnnllllnnnnnnnnnnlllk",
+    "kddllnnnnnnnnnnnnnnnnnnnnllllddk",
+    ".kkdddlllllllllllllllllllldddkk.",
+    "...kkddddddddddddddddddddddkk...",
+    ".....kkkkddddddddddddddkkkk.....",
+    ".........kkkkkkkkkkkkkk........."
+   ],
+   "pal": {
+    "k": "#20202c",
+    "a": "#ec8a72",
+    "b": "#c85848",
+    "c": "#9c3c38",
+    "d": "#6e2830",
+    "e": "#a8b2c0",
+    "f": "#4c566a",
+    "g": "#748094",
+    "h": "#e8ecf0",
+    "i": "#f8e090",
+    "j": "#fff4c0",
+    "l": "#8e6028",
+    "m": "#e8b850",
+    "n": "#c08a38",
+    "o": "#2c4a28",
+    "p": "#3a5a30"
+   },
+   "acts": [
+    {
+     "w": "작은 포켓몬",
+     "a": "판 위에 올라가 손잡이를 잡고 돌아요",
+     "x": {
+      "at": [
+       0.5,
+       0.6
+      ],
+      "m": "ride circ"
+     }
+    },
+    {
+     "w": "큰 포켓몬",
+     "a": "판 옆에서 손잡이를 밀어 돌려 줘요",
+     "x": {
+      "m": "push"
+     }
+    },
+    {
+     "w": "에스퍼 타입",
+     "a": "판 위에 앉아 염력으로 천천히 돌려요",
+     "x": {
+      "at": [
+       0.5,
+       0.6
+      ],
+      "m": "skill"
+     }
+    }
+   ],
+   "fit": "넓은 풀밭",
+   "glow": 0,
+   "del": 1792784129759,
+   "dayAt": 1792709198212,
+   "theme": "숲속 놀이터"
+  },
   {
    "id": "climbing-dome",
    "n": "정글짐 돔",
