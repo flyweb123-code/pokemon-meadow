@@ -6001,7 +6001,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.79';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.80';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6205,7 +6205,8 @@ function itemPop(P) {
     const card = !$('#pokePop').hidden; if (card) closePoke(); evolveWin(P, card, c); };
 }
 // ---------- 미니게임 (베타 v5.77 경완): 필드 정보창 조이스틱 → 게임 고르기 → 장애물 넘기 ----------
-// 미니게임천국 '달려라'처럼 저절로 달리고 눌러서 뛴다. 250m 마다 페이즈가 올라 빨라지고 장애물이 늘어난다.
+// 미니게임천국 '달려라'처럼 저절로 달리고 눌러서 뛴다. 250점마다(v8.80, 예전엔 250m) 페이즈가 올라 빨라지고 장애물이 늘어난다.
+const MG_PH_SC = 250;   // 페이즈 한 칸 = 점수 (달린 m + 밟기·기술 점수)
 // 장애물은 다른 포켓몬. 함께 뛰는 포켓몬은 첫 번째 타입에 따라 능력이 하나씩 있고, 페이즈마다 다시 채워진다.
 const ICO_JOY = '<svg viewBox="0 0 12 12" width="26" height="26" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M4 0h4v1h1v4h-1v1h-1v2h4v1h1v3h-12v-3h1v-1h4v-2h-1v-1h-1v-4h1z"/><path fill="#e8483c" d="M4 1h4v4h-4z"/><path fill="#ff9a8a" d="M5 1h1v1h-1z"/><path fill="#b02a22" d="M7 4h1v1h-1z"/><path fill="#5a5a6a" d="M5 6h2v2h-2z"/><path fill="#a8acc0" d="M1 9h10v2h-10z"/><path fill="#ffd84a" d="M8 9h2v1h-2z"/></svg>';
 // k: 능력 종류, c: 페이즈마다 쓸 수 있는 횟수 (0 = 저절로)
@@ -6854,9 +6855,9 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
   if (g.cd > 0 && !g.rsm) { const T = MG_IN_T(g.fh), e0 = T - g.cd; g.cd -= dt; const e = T - g.cd; for (let i = g.inN; i < g.lmax; i++) if (e >= MG_IN_A(g, i - 1) + MG_IN_F) { g.inN = i + 1; g.lN = -1; mgHud(); const c = $('#mgLife').children[i]; c?.classList.add('re'); sfx('ab', 'snap'); haptic(0); } else break; if (e0 < .15 && e >= .15) sfx('ab', 'fairy');
     if (g.cd <= .6 && g.cdN !== 0) { g.cdN = 0; sfx('start'); g.banQ = { t: 1.6, s: '페이즈 1' }; } if (g.cd <= 0 && g.banQ) { g.ban = g.banQ; g.banQ = null; } if (g.cd > .6) return; }
   else if (g.cd > 0) { g.cd -= dt; const n = Math.ceil(g.cd - .6); if (n !== g.cdN) { g.cdN = n; if (n > 0) sfx('tick'); else { sfx('start'); g.banQ = { t: 1.6, s: g.rsm ? '다시 시작!' : '페이즈 1' }; } } if (g.cd <= 0 && g.banQ) { g.ban = g.banQ; g.banQ = null; } if (g.cd > .6) return; }   /* v6.71 경완: '시작!' 글자가 사라진 뒤에 페이즈 글자 (겹치지 않게) */   // v5.79 경완: 시작 전 3·2·1
-  const meters = Math.floor(g.dist / 25), ph = 1 + Math.floor(meters / 250);
+  const meters = Math.floor(g.dist / 25), sc = meters + (g.bonus || 0), ph = 1 + Math.floor(sc / MG_PH_SC);   // v8.80 경완: 페이즈는 거리 말고 점수로 (기술로 빨리 달리는 포켓몬이 점수는 낮은데 페이즈만 빨리 오르던 것)
   if (ph > g.phase) { g.phase = ph; g.ban = { t: 1.6, s: '페이즈 ' + ph }; sfx('rise'); mgHud(); }   // v5.92 경완: 새 장애물 알림은 빼고 페이즈 글자만 화면 가운데에
-  g.v = MG_SPD * Math.min(700, 315 + 44 * (g.phase - 1) + (meters % 250) * .13);   // v5.83 경완: 너무 쉬워서 더 빠르게 → v5.86 경완: 살짝만 쉽게
+  g.v = MG_SPD * Math.min(700, 315 + 44 * (g.phase - 1) + Math.min(MG_PH_SC, sc - (g.phase - 1) * MG_PH_SC) * .13);   // v5.83 경완: 너무 쉬워서 더 빠르게 → v5.86 경완: 살짝만 쉽게
   g.sfB = (g.sfB || 0) + ((g.fx.surf > 0 ? 1 : 0) - (g.sfB || 0)) * Math.min(1, dt * 4);   /* v8.66 경완: 파도타기 하는 동안 속도 빨라짐 (서서히 ×1.4, v8.67 ×1.7) */
   const sp = g.v * (g.fx.ice > 0 ? .5 : 1) * (1 + .95 * (g.bm || 0)) * (1 + MG_SURF_SPD * g.sfB) * (g.wsX != null ? g.wsX / g.v : 1), dx = sp * dt; g.bA = (g.bA || 0) + dx * Math.max(0, g.bm || 0);   // bA: 오버드라이브 동안 뒷배경을 더 빨리 흘리는 양
   g.dist += dx; g.sinceSp += dx;
@@ -6983,7 +6984,7 @@ function mgRender(g, cv = $('#mgCv')) {
   x.setTransform(g.dpr, 0, 0, g.dpr, 0, 0); x.imageSmoothingEnabled = false;
   if (g.shake > 0) { const a = (g.shA || 4) * Math.min(1, g.shake / .25); x.translate(Math.round((Math.random() - .5) * 2 * a / P) * P, Math.round((Math.random() - .5) * 2 * a / P) * P); }
   // 하늘 색: 페이즈 끝 40m 동안 다음 하늘로 천천히 넘어간다
-  const meters = d / 25, ph = g.phase || 1 + Math.floor(meters / 250), pi = (ph - 1) % 4, pf = clamp(((meters % 250) - 210) / 40, 0, 1), P0 = MG_PAL[pi], P1 = MG_PAL[(pi + 1) % 4];
+  const sc = d / 25 + (g.bonus || 0), ph = g.phase || 1 + Math.floor(sc / MG_PH_SC), pi = (ph - 1) % 4, pf = clamp((sc - (ph - 1) * MG_PH_SC - (MG_PH_SC - 40)) / 40, 0, 1), P0 = MG_PAL[pi], P1 = MG_PAL[(pi + 1) % 4];
   const K = i => mgLerp(P0[i], P1[i], pf), C = (i, a) => mgRgb(K(i), a), night = pi === 3 ? 1 - pf : pi === 2 ? pf : 0;
   const b = mgBuf(g, 'bgc'), p = mgPen(b);
   // 하늘: 계단처럼 띠를 나누고 띠 사이는 체크무늬로 섞는다

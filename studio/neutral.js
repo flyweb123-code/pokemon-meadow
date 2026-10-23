@@ -86,7 +86,7 @@
       // 미니게임: 골드는 점수 30점마다 1G, 친밀도는 첫째 짝꿍에게
       if (on && P.mg) { let n = Math.floor(P.mg) + (r() < P.mg % 1 ? 1 : 0), best = 0, cnt = 0;
         for (let i = 0; i < n; i++) { const s = Math.round(P.sc * scM * (.5 + r())), m = U.bud[i % Math.max(1, U.bud.length)] || U.box[0]; if (!m) break; cnt++;
-          addG('mg', Math.floor(s / MG_PTS)); best = Math.max(best, s); U.q.n++; U.q.sum += s; U.q.ph = Math.max(U.q.ph, 1 + Math.floor(s * .8 / 250)); U.q.kn += Math.round(2 + s / 500);   /* 짐작: 페이즈는 250m마다(점수의 8할이 거리), 기술로 날리는 수는 한 판에 2 + 점수/500 */
+          addG('mg', Math.floor(s / MG_PTS)); best = Math.max(best, s); U.q.n++; U.q.sum += s; U.q.ph = Math.max(U.q.ph, 1 + Math.floor(s / 250));   /* 게임 v8.80: 페이즈 = 250점마다 */ U.q.kn += Math.round(2 + s / 500);   /* 짐작: 페이즈는 250m마다(점수의 8할이 거리), 기술로 날리는 수는 한 판에 2 + 점수/500 */
           const frB = Math.floor(s / 1000);   // v8.34 경완: 1,000점부터 +1 if (U.bud[0]) U.bud[0].fr = Math.min(b.FR_MAX, U.bud[0].fr + frB);
           { const t = (model.SP[m.sp]?.t || [1])[0]; U.q.ty[t] = Math.max(U.q.ty[t] || 0, s); } }   // v3.44: 타입별 미션은 기술 타입(첫 타입) 하나로
         { const wk = Math.floor((day - 1) / 7); if (U.gW.w !== wk) U.gW = { w: wk, best: 0, got: {} }; U.gW.best = Math.max(U.gW.best, best);   // v3.42: 미니게임 기록별 선물 (7일마다) 중 향로·빛나는 부적
