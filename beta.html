@@ -2929,22 +2929,22 @@ function dirtFx(m) { const c = m.clean ?? 100; if (c >= 40 || m.hidden || !m.el)
   fxEl.append(i); setTimeout(() => i.remove(), 1700); }
 const frRate = m => { if (!m.pid || m.hidden) return 0; const a = gaugeAvg(m); return FR_TABLE.find(([v]) => a >= v)[1] + (a >= 40 && withFriend(m) ? .5 : 0); };   // 친구 보너스는 돌봐 줄 때만
 // 앱이 꺼져 있던(화면을 떠나 있던) 동안의 필드 친밀도
-let FLD_FR_DAY = 12, OFF_PLAY = 20;   // 필드에 있는 시간으로 받는 친밀도 하루 한도 (v3.74: 12 = 평균 80 이상 하루 종일. 구간마다 하루 12 · 7.2 · 4.3 · 2.9 로 다 다름)
+let FLD_FR_DAY = 12, OFF_PAL = .5;   // 필드에 있는 시간으로 받는 친밀도 하루 한도 (v3.74: 12 = 평균 80 이상 하루 종일. 구간마다 하루 12 · 7.2 · 4.3 · 2.9 로 다 다름)
 // 꺼져 있던 시간을 1분씩 따라가며 배부름·즐거움·청결이 떨어지는 대로 친밀도를 쌓는다
 // 배고픔은 80까지만 오른다 (켰을 때 먹여 줄 틈이 있게). 필드 몫은 날마다 10까지.
 function offFr(m, sec) {
   if (!(sec > 1)) return; sec = Math.min(sec, 120 * 864e2);
-  const hun = HUNGER_RATE * (T(m).hun || 1) * .6 * 60, joy = JOY_RATE * .65 * 60, fr0 = m.pid && !m.hidden && withFriend(m), pal = S.mons.some(o => o !== m && !o.hidden); let pt = m.offP || 0;   /* v8.68 경완: 꺼 둔 동안에도 필드에 다른 포켓몬이 있으면 OFF_PLAY 분마다 같이 놀아 즐거움 +8 (친한 친구가 있으면 +12) */
+  const hun = HUNGER_RATE * (T(m).hun || 1) * .6 * 60, joy = JOY_RATE * .65 * 60, fr0 = m.pid && !m.hidden && withFriend(m), pal = S.mons.some(o => o !== m && !o.hidden);   /* v8.69 경완: 꺼 둔 동안 필드에 다른 포켓몬이 있으면 같이 놀아 즐거움이 절반 속도로만 떨어짐 (v8.68 의 오르기는 '안 떨어지게 된다'고 되돌림) */
   const end = Date.now(), steps = Math.min(20000, Math.ceil(sec / 60)), dt = sec / steps; let t = end - sec * 1000, day = dayKey(t), got = 0, acc = m.frT || 0; const nm = x => { const q = new Date(x); q.setHours(24, 0, 0, 0); return +q; }; let mid = nm(t);
   const flush = () => { if (day === dayKey()) { while (got-- > 0 && dayCap(m, 'fld', FLD_FR_DAY)) addFr(m.pid, 1); } else if (got > 0) addFr(m.pid, Math.min(got, FLD_FR_DAY)); got = 0; };
   for (let k = 0; k < steps; k++) {
     if (m.hunger < 80) m.hunger = Math.min(80, m.hunger + hun * dt / 60);
-    if (!(m.joyH > t)) m.joy = Math.max(0, (m.joy ?? 60) - joy * dt / 60); if (pal && (pt += dt) >= OFF_PLAY * 60) { pt -= OFF_PLAY * 60; m.joy = clamp((m.joy ?? 60) + (fr0 ? 12 : 8)); if (m.joy >= 100 && !(m.joyH > t)) m.joyH = t + JOY_HOLD * 60000; } m.clean = Math.max(0, (m.clean ?? 100) - CLEAN_RATE * dt);
+    if (!(m.joyH > t)) m.joy = Math.max(0, (m.joy ?? 60) - joy * (pal ? OFF_PAL : 1) * dt / 60); m.clean = Math.max(0, (m.clean ?? 100) - CLEAN_RATE * dt);
     const a = gaugeAvg(m), r = m.pid && !m.hidden ? FR_TABLE.find(([v]) => a >= v)[1] + (a >= 40 && fr0 ? .5 : 0) : 0;
     acc += r * dt; while (acc >= 3600) { acc -= 3600; got++; }
     t += dt * 1000; if (t >= mid) { flush(); day = dayKey(t); mid = nm(t); }
   }
-  flush(); m.frT = acc; m.offP = pt; dirtVis(m);
+  flush(); m.frT = acc; dirtVis(m);
 }
 { let hidAt = 0; document.addEventListener('visibilitychange', () => { if (document.hidden) hidAt = Date.now(); else if (hidAt) { const sec = (Date.now() - hidAt) / 1000; hidAt = 0; S.mons.forEach(m => offFr(m, sec)); save(); } }); }
 function dayCap(m, k, max) { const P = boxOf(m.pid); if (!P) return false; const d = dayKey(); if (P[k + 'D'] !== d) { P[k + 'D'] = d; P[k + 'N'] = 0; } if (P[k + 'N'] >= max) return false; P[k + 'N']++; return true; }
@@ -5985,7 +5985,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.68';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.69';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
