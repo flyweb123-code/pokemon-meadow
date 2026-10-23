@@ -5050,7 +5050,7 @@ function drawBg(X) {
   put(lookCv(ART.stump(), 'stump'), LAYOUT.stump.x / 2, LAYOUT.stump.y / 2);
   for (const [x, y, w, h, n, s, lk] of LAYOUT.rocks) { const L = lkRes(lk); put(L ? scaleCv(tintCv(ART.rock(w, h, s * 977, n), L), +L.s || 1) : lookCv(ART.rock(w, h, s * 977, n), 'rock'), x / 2, y / 2); }
   // 버섯
-  for (const [x, y] of LAYOUT.mush.map(([a, b]) => [a / 2, b / 2])) { px(x, y - 2, 2, 3, '#f0e8d8'); px(x - 2, y - 4, 6, 2, '#d83838'); px(x - 1, y - 5, 4, 1, '#e85050'); px(x - 1, y - 4, 1, 1, '#fff'); px(x + 2, y - 4, 1, 1, '#fff'); px(x - 2, y - 2, 6, 1, 'rgba(0,0,0,.15)'); }
+  for (const [x, y] of LAYOUT.mush.filter(([a, b]) => !natCover(a, b)).map(([a, b]) => [a / 2, b / 2])) { px(x, y - 2, 2, 3, '#f0e8d8'); px(x - 2, y - 4, 6, 2, '#d83838'); px(x - 1, y - 5, 4, 1, '#e85050'); px(x - 1, y - 4, 1, 1, '#fff'); px(x + 2, y - 4, 1, 1, '#fff'); px(x - 2, y - 2, 6, 1, 'rgba(0,0,0,.15)'); }
   // 꽃밭: 갈아 놓은 두둑 (꽃은 흔들리는 그림으로 따로)
   { const [cx, cy] = [FLOWERBED.x / 2, FLOWERBED.y / 2];
     const bedR = a => 1;   // v4.96 경완: 꽃밭도 다시 타원형
@@ -5150,6 +5150,13 @@ function onProp(x, y) {
     || L.bushes.some(b => { const z = LZi('bush', 'bushes', b); return inB(b.x, b.y, 72 * z, 48 * z); }) || L.rocks.some(r => { const z = LZi('rock', 'rocks', r); return inB(r[0], r[1], r[2] * 2 * z + 4, r[3] * 2 * z + 4); }) || L.mush.some(m => inB(m[0], m[1], 16, 16)) || (L.sc || []).some(r => { const I = scImg(r[0]), z = scS(r); return I && inB(r[1], r[2], I.w * z, I.h * z * scSY(r)); })
     || L.puddles.some(q => { const z = LZi('puddle', 'puddles', q); return inB(q.x, q.y + q.w * z * .175, q.w * z, q.w * z * .35); }) || L.flowers.some(f => { const k = SPR.flw?.[f[0]] && flwSz(f[0], f[3]); return inB(f[1], f[2], Math.max(16, k?.w || 16), Math.max(18, k?.h || 18)); });
 }
+// v8.77 경완: 자연 요소(꽃·풀·버섯)는 자리 고정 — 소품이 그 위에 놓이면 숨고, 소품을 치우면 다시 보인다 (소품 밑동 둘레만 본다)
+function natCover(x, y) {
+  const L = LAYOUT, inB = (cx, by, w, h) => Math.abs(x - cx) < w / 2 && y <= by + 3 && y >= by - h, zT = LS('tree'), zP = LS('perch'), zF = LS('fire'), zS = LS('stump');
+  return pondVal(x, y) < 1.12 || inB(L.tree.x, L.tree.y, 36 * zT, 24 * zT) || inB(L.perch.x, L.perch.y, 40 * zP, 18 * zP) || inB(L.fire.x, L.fire.y + 14, 64 * zF, 40 * zF) || inB(L.stump.x, L.stump.y, 42 * zS, 22 * zS) || inB(L.bed.x, L.bed.y + 24, 98, 52)
+    || L.bushes.some(b => { const z = LZi('bush', 'bushes', b); return inB(b.x, b.y, 66 * z, 30 * z); }) || L.rocks.some(r => { const z = LZi('rock', 'rocks', r); return inB(r[0], r[1], r[2] * 2 * z + 2, r[3] * 2 * z + 2); })
+    || (L.sc || []).some(r => { const I = scImg(r[0]), z = scS(r); return I && inB(r[1], r[2], I.w * z * .85, Math.max(12, I.h * z * scSY(r) * .45)); });
+}
 // v8.22 경완: 스칼렛 소품 그림 (도트 한 칸 = 2px)
 const SC_PX = 2, scCache = {};
 // v8.26 경완: 불 붙은 소품(횃불·촛불·랜턴…)은 불꽃 칸만 따로 떼어 모닥불처럼 흔든다
@@ -5188,7 +5195,8 @@ function buildProps() {
   PROPS.bushEls = PROPS.bushes.map(b => { const L = lkRes(b.lk), z = L ? +L.s || 1 : zB; return add('bush', b, L ? lkUrl('bush', L, () => tintCv(ART.bush(), L).toDataURL()) : SPR.bush, Math.round(72 * z), Math.round(48 * z)); });
   /* v3.55: 꽃·풀은 바람에 살랑살랑 (하나씩 박자를 달리) */
   const WIN = season() === 'winter'; seasonFx();   // 겨울엔 꽃이 지고 풀만
-  FLOWERS.forEach(([k, x, y, lk], i) => { if (WIN && !['grass', 'tall'].includes(k)) return; const L = lkRes(lk), f = L ? { src: lkUrl('f' + k, L, () => tintCv(ART.flower(k), L, PETAL[k]).toDataURL()), ...flwSz(k, lk) } : SPR.flw[k], e = document.createElement('div'); e.className = 'flw';
+  const nBed = FLOWERS.length - LAYOUT.flowers.length;
+  FLOWERS.forEach(([k, x, y, lk], i) => { if (WIN && !['grass', 'tall'].includes(k)) return; if (i >= nBed && natCover(x, y)) return; const L = lkRes(lk), f = L ? { src: lkUrl('f' + k, L, () => tintCv(ART.flower(k), L, PETAL[k]).toDataURL()), ...flwSz(k, lk) } : SPR.flw[k], e = document.createElement('div'); e.className = 'flw';
     e.style.cssText = W2(f.src, f.w, f.h) + `;left:${x}px;top:${y}px;z-index:${Math.round(y)};--d:${(1.6 + ((i * 37) % 13) / 10).toFixed(2)}s;--dl:${(-((i * 53) % 29) / 10).toFixed(1)}s;--a:${k === 'grass' ? 7 : k === 'sun' ? 4 : 6}deg`; itemsEl.append(e); });
   for (const q of PROPS.puddles) { const e = document.createElement('div'); e.className = 'puddle'; const L = lkRes(q.lk), qw = Math.round(q.w * (L ? +L.s || 1 : LS('puddle'))); e.style.cssText = W2(L ? lkUrl('pud', L, () => SPR.pudArt(L)) : SPR.puddle, qw, Math.round(qw * .35)) + `;left:${q.x}px;top:${q.y}px`; itemsEl.append(e); puddleEls.push(e); }
   flameEl = document.createElement('div'); flameEl.className = 'flame'; flameEl.style.cssText = `background-image:url(${SPR.flame});left:${FIRE.x}px;top:${FIRE.y}px;z-index:${Math.round(FIRE.y) + 1}` + (LS('fire') !== 1 ? `;transform:scale(${LS('fire')});transform-origin:50% 100%` : ''); itemsEl.append(flameEl);   /* v3.61 경완: 불꽃도 높이 순서대로 → 앞에 선 포켓몬이 불을 가린다 */
@@ -5992,7 +6000,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.76';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.77';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -10347,7 +10355,8 @@ function setLayoutIn(L) {
   LAYOUT.scArt = L.scArt && typeof L.scArt === 'object' ? JSON.parse(JSON.stringify(L.scArt)) : {}; LAYOUT.sc = Array.isArray(L.sc) ? JSON.parse(JSON.stringify(L.sc)).filter(r => LAYOUT.scArt[r[0]]) : [];
   for (const k of ['path', 'bushes', 'puddles', 'rocks', 'mush', 'flowers']) if (Array.isArray(L[k])) LAYOUT[k].splice(0, LAYOUT[k].length, ...JSON.parse(JSON.stringify(L[k])));
   LAYOUT.look = L.look && typeof L.look === 'object' ? JSON.parse(JSON.stringify(L.look)) : {};
-  if (Array.isArray(L.hide) && L.hide.length) LAYOUT.hide = [...L.hide]; else delete LAYOUT.hide;   // v3.70: 작업실에서 지운 소품 종류 (목록에서 숨김)
+  if (Array.isArray(L.hide) && L.hide.length) LAYOUT.hide = [...L.hide]; else delete LAYOUT.hide;
+  if (L.nat) LAYOUT.nat = 1; else delete LAYOUT.nat;   // v8.77: 놓인 소품 밑에 자연 요소를 한 번 깔았음   // v3.70: 작업실에서 지운 소품 종류 (목록에서 숨김)
   FLOWERS.splice(0, FLOWERS.length, ...bedFlowers(FLOWERBED), ...LAYOUT.flowers);
   uiIn(L);
 }
@@ -10923,9 +10932,8 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
     L.bushes.forEach((b, i) => { const zB = LZi('bush', 'bushes', b); o('bushes', i, [b.x - 36 * zB, b.y - 48 * zB, 72 * zB, 48 * zB], (dx, dy) => { b.x += dx; b.y += dy; }); });
     L.puddles.forEach((q, i) => { const zQ = LZi('puddle', 'puddles', q); o('puddles', i, [q.x - q.w * zQ / 2, q.y - q.w * zQ * .175, q.w * zQ, q.w * zQ * .35], (dx, dy) => { q.x += dx; q.y += dy; }); });
     L.rocks.forEach((r, i) => { const zR = LZi('rock', 'rocks', r); o('rocks', i, [r[0] - r[2] * zR, r[1] - r[3] * 2 * zR, r[2] * 2 * zR, r[3] * 2 * zR], (dx, dy) => { r[0] += dx; r[1] += dy; }); });
-    L.mush.forEach((m, i) => o('mush', i, [m[0] - 8, m[1] - 14, 16, 16], (dx, dy) => { m[0] += dx; m[1] += dy; }));
+    /* v8.77 경완: 버섯·꽃·풀(자연 요소)은 자리 고정 — 고르거나 옮기지 않는다 */
     (L.sc || []).forEach((r, i) => { const I = scImg(r[0]) || { w: 24, h: 24 }, z = scS(r), zy = z * scSY(r); o('sc', i, [r[1] - I.w * z / 2, r[2] - I.h * zy, I.w * z, I.h * zy], (dx, dy) => { r[1] += dx; r[2] += dy; }); });
-    L.flowers.forEach((f, i) => { const s = flwSz(f[0], f[3]), w = Math.max(s.w, 26), hh = Math.max(s.h, 26); o('flowers', i, [f[1] - w / 2, f[2] - hh, w, hh], (dx, dy) => { f[1] += dx; f[2] += dy; }); });
     return out;
   }
   function selInfo() {
@@ -10982,7 +10990,7 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
   hands.addEventListener('pointerup', () => { const tap = drag && !drag.moved && !drag.t.berry && !drag.t.line, moved = drag?.moved, key = drag?.t.key; if (drag && !drag.moved) undo.pop(); if (dragRaf) { cancelAnimationFrame(dragRaf); dragRaf = 0; } drag = null;
     if (moved) { if (key !== 'minY') rebuild(BAKED.has(key)); renderHands(); api.onLayout?.(JSON.parse(snap()), undo.length); } else renderHands(); if (tap) api.onTap?.(selInfo()); });
   hands.addEventListener('pointerdown', ev => { if (ev.target === hands) { const had = !!sel; sel = null; renderHands(); if (!had) api.onBlank?.(); } });   // v8.36: 아무것도 안 고른 채 빈 곳 = 작업실이 편집 종료
-  function changed(key) { if (key !== 'minY') rebuild(BAKED.has(key)); renderHands(); api.onLayout?.(JSON.parse(snap()), undo.length); }
+  function changed(key) { if (key !== 'minY') rebuild(BAKED.has(key) || LAYOUT.mush.length > 0 && !['flowers', 'puddles', 'scArt', 'look'].includes(key)); renderHands(); api.onLayout?.(JSON.parse(snap()), undo.length); }
   for (const k in UI_EL) { const el = $(UI_EL[k]); if (!el) continue;   // v3.88 경완: 편집 중엔 날짜 박스·열매 버튼·골드도 보이고, 끌어서 자리를 옮긴다
     el.addEventListener('click', e => { if (document.body.classList.contains('stEdit')) { e.stopPropagation(); e.preventDefault(); } }, true);
     el.addEventListener('pointerdown', e => { if (!document.body.classList.contains('stEdit') || e.button > 0) return; e.preventDefault(); e.stopPropagation(); const x0 = e.clientX, y0 = e.clientY, v0 = LAYOUT.ui?.[k] || [0, 0], s0 = snap(); let mv = false;
@@ -11061,14 +11069,25 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
   api.undoN = () => undo.length;
   api.del = () => { if (!sel || sel.i < 0 || sel.key === 'path') return; undo.push(snap()); const k = sel.key; LAYOUT[k].splice(sel.i, 1); sel = null; changed(k === 'flowers' || k === 'bushes' || k === 'puddles' || k === 'sc' ? k : 'rocks'); };
   // v8.22 경완: 스칼렛 소품을 소품 목록에 넣기 / 빼기 (빼면 맵에 놓인 것도 함께 사라짐)
-  api.scDef = (id, a) => { if (!id || !a?.px?.length) return; undo.push(snap()); const P = LAYOUT.scArt?.[id], bk = Array.isArray(a.sz) ? a.sz.join('x') : '', rz = bk && P && P.bk !== bk ? a.sz : null;
-    /* v8.76 경완: 맵 크기에 맞춰 도트를 다시 찍은 그림(a.sz = 그때 크기 [s, sy])이면 그만큼 크기 배율을 나눠 화면 크기는 그대로 (한 번만, bk) */
+  api.scDef = (id, a) => { if (!id || !a?.px?.length) return; undo.push(snap()); const P = LAYOUT.scArt?.[id], bk = Array.isArray(a.sz) ? a.sz.join('x') : '', ob = (P?.bk || '1x1').split('x').map(Number), nb = bk ? a.sz.map(Number) : [1, 1], rz = P && (P.bk || '') !== bk ? [nb[0] / ob[0], nb[1] / ob[1]] : null;
+    /* v8.76 경완: 맵 크기에 맞춰 그린 그림(a.sz = 원래 그림 대비 [s, sy])으로 바뀌면 그만큼 크기 배율을 나눠 화면 크기는 그대로. v8.77: 원래 그림으로 돌아오면(sz 없음) 배율도 되돌림 (bk = 지금 그림의 sz) */
     const dv = (v, d) => { const q = Math.round((+v || 1) / (+d || 1) * 100) / 100; return Math.abs(q - 1) < .04 ? 0 : q; }, S0 = rz ? dv(P.s, rz[0]) : P?.s, SY0 = rz ? dv(P.sy, rz[1]) : P?.sy;
     if (rz) for (const r of LAYOUT.sc || []) if (r[0] === id) { if (r[3] != null) r[3] = dv(r[3], rz[0]) || 1; if (r[4] != null) r[4] = dv(r[4], rz[1]) || 1; }
-    LAYOUT.scArt = { ...(LAYOUT.scArt || {}), [id]: { n: String(a.n || '소품').slice(0, 16), px: a.px, pal: a.pal || {}, acts: (a.acts || []).map(o => ({ w: o.w, a: o.a })), ...(P?.on ? { on: 1 } : {}), ...(S0 ? { s: S0 } : {}), ...(SY0 ? { sy: SY0 } : {}), ...(bk ? { bk } : P?.bk ? { bk: P.bk } : {}), ...(a.glow != null ? { glow: +a.glow ? 1 : 0 } : {}), ...(Array.isArray(a.fr) && a.fr.length ? { fr: a.fr, fms: +a.fms || 160 } : {}) } };   /* v8.43: 프레임 그림도 */   /* v8.29: 다시 그린 그림으로 바꿔도 전체 소품(on)은 그대로 */ changed('scArt'); };
+    LAYOUT.scArt = { ...(LAYOUT.scArt || {}), [id]: { n: String(a.n || '소품').slice(0, 16), px: a.px, pal: a.pal || {}, acts: (a.acts || []).map(o => ({ w: o.w, a: o.a })), ...(P?.on ? { on: 1 } : {}), ...(S0 ? { s: S0 } : {}), ...(SY0 ? { sy: SY0 } : {}), ...(bk ? { bk } : {}), ...(a.glow != null ? { glow: +a.glow ? 1 : 0 } : {}), ...(Array.isArray(a.fr) && a.fr.length ? { fr: a.fr, fms: +a.fms || 160 } : {}) } };   /* v8.43: 프레임 그림도 */   /* v8.29: 다시 그린 그림으로 바꿔도 전체 소품(on)은 그대로 */ changed('scArt'); };
   api.scOn = ids => { const L = (ids || []).filter(id => LAYOUT.scArt?.[id] && !LAYOUT.scArt[id].on); if (!L.length) return; undo.push(snap()); for (const id of L) LAYOUT.scArt[id] = { ...LAYOUT.scArt[id], on: 1 }; changed('scArt'); };   // v8.24 경완: 추가 소품 → 전체 소품으로 저장
   api.scUndef = id => { if (!LAYOUT.scArt?.[id]) return; undo.push(snap()); delete LAYOUT.scArt[id]; LAYOUT.sc = (LAYOUT.sc || []).filter(r => r[0] !== id); if (sel?.key === 'sc') sel = null; delete scCache[id]; changed('sc'); };
   api.nudge = (dx, dy) => { const t = sel && items().find(t => t.key === sel.key && t.i === sel.i); if (!t) return; undo.push(snap()); t.mv(dx, dy); changed(sel.key); };
+  /* v8.77 경완: 지금 놓인 소품 밑동 둘레에 풀·꽃·버섯을 한 번 깔아 둔다 — 소품을 치우면 드러난다 (LAYOUT.nat 이 있으면 다시 안 함) */
+  api.natSeed = () => { const L = LAYOUT; if (L.nat) return 0; let sd = 4242; const R = () => (sd = (sd * 16807) % 2147483647) / 2147483647, F = [], M = [];
+    const put = (cx, by, w, h, n) => { for (let j = 0; j < n; j++) { const x = Math.round(cx + (R() - .5) * w * .7), y = Math.round(by - 1 - R() * h * .7); if (pondVal(x, y) < 1.3 || !natCover(x, y)) continue; const q = R();
+      if (q < .07 && L.mush.length + M.length < 6) M.push([x, y]); else F.push([q < .5 ? 'grass' : q < .72 ? 'tall' : q < .84 ? 'daisy' : q < .93 ? 'pink' : 'bell', x, y]); } };
+    const zT = LS('tree'), zP = LS('perch'), zS = LS('stump');
+    put(L.tree.x, L.tree.y, 36 * zT, 24 * zT, 3); put(L.perch.x, L.perch.y, 40 * zP, 18 * zP, 2); put(L.stump.x, L.stump.y, 42 * zS, 22 * zS, 2);
+    L.bushes.forEach(b => { const z = LZi('bush', 'bushes', b); put(b.x, b.y, 66 * z, 30 * z, 2); });
+    L.rocks.forEach(r => { const z = LZi('rock', 'rocks', r); put(r[0], r[1], r[2] * 2 * z, r[3] * 2 * z, r[4] === 2 ? 2 : 1); });
+    (L.sc || []).forEach(r => { const I = scImg(r[0]), z = scS(r); if (I) put(r[1], r[2], I.w * z * .85, Math.max(12, I.h * z * scSY(r) * .45), Math.max(1, Math.min(4, Math.round(I.w * z / 22)))); });
+    undo.push(snap()); L.flowers.push(...F); L.mush.push(...M); L.nat = 1; changed('mush'); return F.length + M.length; };
+  api.NAT = k => !!SPR.flw[k] || k === 'mush';   // v8.77 경완: 자연 요소는 작업실 소품 목록에 없다
   api.ADD = [['daisy', '데이지'], ['pink', '분홍꽃'], ['tulip', '튤립'], ['bell', '파랑꽃'], ['sun', '해바라기'], ['grass', '풀'], ['tall', '키 큰 풀'], ['rockS', '작은 바위'], ['rockL', '큰 바위'], ['mush', '버섯'], ['bush', '덤불'], ['puddle', '웅덩이']];
   api.addIcon = k => SPR.flw[k]?.src || (k === 'bush' ? SPR.bush : k === 'puddle' ? SPR.puddle : '');
   // v3.61 작업실: 소품 창에서 끌어 온 자리(화면 좌표)에 놓는다. 좌표가 없으면 가운데
@@ -11086,7 +11105,7 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
   // v3.67 경완: 맵에 놓인 소품 하나하나 (작업실 "맵에 있는 소품" 탭)
   api.insts = () => { const C = api.cat(), oneI = Object.fromEntries(C.one.map(r => [r[0], r[2]])); return items().map(({ key, i }) => { const v = i >= 0 ? LAYOUT[key][i] : LAYOUT[key], k = LKK(key, v), id = k ? kdOf(key, v) : null;
     if (key === 'sc') return { key, i, name: LAYOUT.scArt[v[0]]?.n || NAME.sc, kindName: null, icon: scImg(v[0])?.src || '', fr: 0 };
-    return { key, i, name: key === 'flowers' ? FNAME[v[0]] : NAME[key], kindName: typeof id === 'string' ? LAYOUT.kinds?.[id]?.n || null : null, icon: key === 'fire' ? SPR.flame : k ? api.lookIcon(k, LKi(k, key, v)) : oneI[key] || '', fr: key === 'fire' ? 6 : 0 }; }); };
+    return { key, i, name: key === 'flowers' ? FNAME[v[0]] : key === 'rocks' ? (v[4] === 2 ? '큰 바위' : '작은 바위') : NAME[key], kindName: typeof id === 'string' ? LAYOUT.kinds?.[id]?.n || null : null, icon: key === 'fire' ? SPR.flame : k ? api.lookIcon(k, LKi(k, key, v)) : oneI[key] || '', fr: key === 'fire' ? 6 : 0 }; }); };
   api.pick = (key, i = -1) => { if (!(key in LAYOUT)) return; sel = { key, i }; renderHands(); api.onSel?.(selInfo(), undo.length); };
   /* v8.72 경완: 작업실 소품 리스트의 연못·꽃밭 카드는 수련잎·꽃 하나가 아니라 맵에 있는 그 모습 전체를 썸네일로 (배경 + 그 둘레의 꽃·갈대·수련잎) */
   api.oneThumb = async k => { const P = k === 'pond' ? POND : k === 'bed' ? FLOWERBED : null; if (!P) return '';
@@ -11105,7 +11124,7 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
     return c.toDataURL(); };
   api.cat = () => { const n = k => LAYOUT[k].length, nf = k => LAYOUT.flowers.filter(f => f[0] === k).length, nr = sz => LAYOUT.rocks.filter(r => r[4] === sz).length;
     return { one: [['tree', '열매나무', SPR.tree], ['perch', '횃대', SPR.perch], ['fire', '모닥불', SPR.flame, 6], ['bed', '꽃밭', SPR.flw.sun.src], ['stump', '그루터기', api.lookIcon('stump')], ['pond', '연못', SPR.lilyF]],
-      hid: [...(LAYOUT.hide || [])], add: api.ADD.filter(([k]) => !LAYOUT.hide?.includes(k)).map(([k, nm]) => [k, nm, api.lookIcon(k) || api.addIcon(k), SPR.flw[k] ? nf(k) : k === 'bush' ? n('bushes') : k === 'puddle' ? n('puddles') : k === 'mush' ? n('mush') : nr(k === 'rockS' ? 1 : 2)]),
+      hid: [...(LAYOUT.hide || [])], add: api.ADD.filter(([k]) => !LAYOUT.hide?.includes(k) && !api.NAT(k)).map(([k, nm]) => [k, nm, api.lookIcon(k) || api.addIcon(k), SPR.flw[k] ? nf(k) : k === 'bush' ? n('bushes') : k === 'puddle' ? n('puddles') : k === 'mush' ? n('mush') : nr(k === 'rockS' ? 1 : 2)]),
       mine: Object.entries(LAYOUT.kinds || {}).map(([id, K]) => [id, K.n, api.lookIcon(id), kindCount(id), K.b]),
       sc: Object.entries(LAYOUT.scArt || {}).map(([id, A]) => ['sc:' + id, A.n, scImg(id)?.src || '', (LAYOUT.sc || []).filter(r => r[0] === id).length, id, !!A.on]) }; };
   // ---------- 포켓몬 풀어놓기: 작업실 목록에서 끌어 온 포켓몬. 소품 위면 빛나고, 놓으면 그 소품 반응 ----------

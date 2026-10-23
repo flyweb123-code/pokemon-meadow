@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.55"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.56"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.55';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.56';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -1190,7 +1190,7 @@ function renderDock() {
   renderDockAll(); }
 function renderDockMap() {
   if (!A.insts) { $('#dockB').innerHTML = '<div class="small mute">게임을 새 버전(v3.67)으로 올리면 맵에 있는 소품을 하나씩 볼 수 있어요.</div>'; return; }
-  const G = []; for (const o of A.insts()) { let g = G.find(x => x.key === o.key); if (!g) G.push(g = { key: o.key, name: o.key === 'flowers' ? '꽃' : o.name, L: [] }); g.L.push(o); }
+  const G = []; for (const o of A.insts()) { const gk = o.key === 'rocks' ? 'rocks:' + o.name : o.key; let g = G.find(x => x.key === gk); if (!g) G.push(g = { key: gk, name: o.key === 'flowers' ? '꽃' : o.name, L: [] }); g.L.push(o); }   // v3.56 경완: 바위는 작은 바위·큰 바위 따로
   const sl = A.selInfo?.(), sid = sl ? sl.key + ':' + sl.i : '';
   const cell = o => { const id = o.key + ':' + o.i; return `<div class="it${id === sid ? ' on' : ''}" data-ik="${id}" title="${esc(o.name)}${o.kindName ? ' · ' + esc(o.kindName) : ''}">${o.key === 'mush' ? '<span class="ph">🍄</span>' : icon(o.icon, o.fr)}${esc(o.name)}${o.kindName ? `<span class="k">${esc(o.kindName)}</span>` : ''}</div>`; };
   $('#dockB').innerHTML = `<h4>누르면 맵에서 골라 모양을 바꿔요</h4>` + (mobile() ? `<div class="sg">${G.flatMap(g => g.L).map(cell).join('')}</div>`   // 휴대폰은 한 줄로 옆으로 넘긴다
@@ -2107,6 +2107,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.56', '10월 23일', ['맵 크기로 다시 찍은 스칼렛 소품 8개 — 크기는 그대로, 명암·재질은 예전 그림 수준으로 다시', '버섯·꽃·풀은 자리 고정: 소품 목록에서 빠지고 맵에서 고르거나 옮길 수 없음, 소품을 그 위에 놓으면 숨고 치우면 다시 보임 (게임 v8.77)', '지금 놓인 소품 밑에 풀·꽃·버섯을 한 번 깔아 둠 (소품을 치우면 드러남)', '\'맵에 있는 소품\' 탭에서 작은 바위·큰 바위 따로']],
   ['3.55', '10월 23일', ['맵에 놓인 스칼렛 소품 8개(석등·가로등·야광 버섯·바람개비·타이어 그네·몬스터볼 스프링·횃불·허수아비)를 지금 맵 크기로 도트 다시 찍음 — 다른 소품과 같은 도트 크기, 크기 배율은 1로 (게임 v8.76)', '스칼렛 소품 모두 밑둥 풀·그림자 없앰, 앞으로 그리는 것도 금지', '허수아비 산들산들 흔들림(12장, 좌우 잘림 없음)', '\'맵에 있는 소품\' 탭의 연못·꽃밭 썸네일도 맵 모습으로']],
   ['3.54', '10월 23일', ['가로등 머리 작게, 석등 지붕 끝 잘림 고침, 둘 다 밑 풀·그림자 없앰, 석등 빛 범위 고침', '가로등·석등 같은 조명은 저녁 6시에 켜지고 아침 6시 반에 꺼짐 (게임 v8.75)', '\'배치를 저장하지 않았어요\' 창: 버튼 둘(저장하지 않고 종료·저장하고 종료), 빈 곳이나 배치 저장을 누르면 닫힘']],
   ['3.53', '10월 23일', ['맵 편집에서 저장한 소품 크기가 스칼렛 작업물 그림에도 (왼쪽 위 \'크기 ×\' 카드)', '허수아비 흔들림 프레임 새로 그림 (앞뒤로 흔들리는 8장)']],
@@ -3304,6 +3305,10 @@ function scaSync() { const art = (D.layout || ORIG?.layout)?.scArt; if (!A?.scDe
   for (const [id, a] of Object.entries(art)) { const o = scaItem(id); if (o?.px?.length && (JSON.stringify(o.px) !== JSON.stringify(a.px) || JSON.stringify(o.pal) !== JSON.stringify(a.pal) || JSON.stringify(o.fr || null) !== JSON.stringify(a.fr || null))) { A.scDef(id, { ...o, n: a.n }); n++; } }
   if (n && clean) { D._sv = D._sv || {}; putP(D._sv, 'layout', D); saveDraft(); layoutBar(); scBar(); }   // v3.39 경완: 바뀐 게 없는데 '배치 저장'이 켜지지 않게 — 다시 그린 그림 반영은 저장까지 해 둔다 (배포하면 게임에)
   if (n) toast(`스칼렛이 다시 그린 소품 ${n}개를 맵 소품에 반영했어요 · 배포하면 게임에 들어가요`); }
+// v3.56 경완: 버섯·꽃·풀(자연 요소)은 자리 고정 — 지금 놓인 소품 밑동 둘레에 한 번 깔아 둔다 (게임 api.natSeed, 소품을 치우면 드러남)
+function natSync() { if (!A?.natSeed) return; const clean = !boxDirty('layout'), n = A.natSeed(); if (!n) return;
+  if (clean) { D._sv = D._sv || {}; putP(D._sv, 'layout', D); saveDraft(); layoutBar(); }
+  toast(`지금 놓인 소품 밑에 풀·꽃 ${n}개를 깔았어요 · 배포하면 게임에 들어가요`); }
 function scaMig() { if (store.get('st-pk-mig') || !A?.scDef || !SCA_R || !SCA_PK) return; store.set('st-pk-mig', '1'); for (const x of SCA_PK.items || []) { const o = scaItem(x.id); if (o?.px?.length && !scaPicked(x.id)) { A.scDef(x.id, o); const N = new Set(JSON.parse(store.get('st-sc-new') || '[]')); N.add(x.id); store.set('st-sc-new', JSON.stringify([...N])); } } scDot(); }
 const scaItem = id => (SCA_R?.days || []).flatMap(d => d.items).find(o => o.id === id);
 const scaPicked = id => !!(D.layout || ORIG?.layout)?.scArt?.[id];   // v3.26: 소품 리스트 = 맵 배치의 스칼렛 소품 목록 (저장하면 게임에 들어감)
@@ -3489,7 +3494,7 @@ function hook() {
   A.edit(editing); if (!$('#hrNow').disabled) A.setHour(+$('#hr').value); $('#hrNow').disabled && $('#hrNow').onclick();
   const w0 = $('#wx .on')?.dataset.w; if (w0) A.setWx(w0); if ($('#seaSel').value) A.setSeason?.($('#seaSel').value);
   $('#addp').innerHTML = A.ADD.map(([k, n]) => { const s = A.addIcon(k); return `<button data-k="${k}">${s ? `<img alt="" src="${s}">` : `<span class="ph">${k === 'mush' ? '🍄' : '●'}</span>`}${n}</button>`; }).join('');
-  renderNav(); renderReact(null); renderPal(); renderDock(); scaSync(); dstat(); RENDER[view]?.(); statusBar(); setTimeout(safeZ, 300); setTimeout(thumbsReady, 2500);
+  renderNav(); renderReact(null); renderPal(); renderDock(); scaSync(); natSync(); dstat(); RENDER[view]?.(); statusBar(); setTimeout(safeZ, 300); setTimeout(thumbsReady, 2500);
   if (szOn) { szOn = false; szSet(true); }   // v2.63: 크기 조절 모드 중에 게임 화면이 다시 불러와지면 게임도 다시 크기 조절 모드로
 }
 addEventListener('message', e => { if (e.data?.studio === 'ready' && !e.data.gal) hook(); if (e.data?.studio === 'ready' && e.data.gal) $('#galLoad').hidden = true; });
