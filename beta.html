@@ -6075,7 +6075,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.12';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.13';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6978,16 +6978,16 @@ function mgMove(g, o, dt) {
   else if (o.pat === 'wave') o.y = o.by + Math.sin(T * 2.2) * (o.by - 4);   // v5.92 경완: 땅 가까이부터 높이까지 크게 오르내림 (내려올 땐 뛰어넘고 올라갈 땐 밑으로)
   else if (o.pat === 'leap') { if (!o.lp && o.x - g.PX < MG_LEAP[0]) { o.lp = g.t; o.lx = MG_LEAP[0]; }   /* v8.73 경완: 늘 예고 포물선 시작점에서 뛴다 (프레임에 따라 몇 px 안쪽에서 뛰던 것) */ if (o.lp) { const k = (g.t - o.lp) / .75; o.lf = k < 1 && !o.kb; if (o.lf) o.x = g.PX + o.lx - (o.lx - MG_LEAP[1]) * k;   /* v7.58 경완: 점선 궤도 그대로 — 뛰는 동안은 화면 흐름(속도·얼음·오버드라이브)과 상관없이 x 를 궤도에 맞춤 */   /* v6.83 경완: 화면 안에서 뛰고, 빠르기와 상관없이 늘 같은 자리에 떨어진다 */ o.y = k < 1 ? 4 * MG_LEAP[2] * k * (1 - k) : 0; o.sq = k < .1 ? .8 : k >= 1 && k < 1.15 ? .82 : 1; } else o.sq = o.x - g.PX < MG_LEAP[0] + 70 ? .8 + Math.abs(Math.sin(T * 14)) * .06 : 1 + Math.sin(T * 9) * .05; }   /* v6.81: 뛰기 전에 미리 웅크려 보인다 */   // 가까워지면 펄쩍
   else if (o.pat === 'dig') { const k = clamp((185 - (o.x - g.PX)) / 60, 0, 1); o.y = -o.h * (1 - k); o.up = k; }   // 땅속에서 튀어나옴
-  else if (o.pat === 'swoop') { const k = clamp((300 - (o.x - g.PX)) / 260, 0, 1); o.y = o.by - (o.by - 6) * Math.sin(k * Math.PI); }   // 하늘에서 내리꽂혔다 다시 올라감
+  else if (o.pat === 'swoop') { const k = clamp((330 - (o.x - g.PX)) / 250, 0, 1);   /* v9.13 경완: 주뱃이 너무 어려워서 — 더 앞에서 내리꽂고, 주인공 앞에선 점프 꼭대기(약 125~140)보다 높이 올라가 있음 */ o.y = o.by - (o.by - 6) * Math.sin(k * Math.PI); }   // 하늘에서 내리꽂혔다 다시 올라감
 }
 function mgSpawn(g) {
   const ph = g.phase, pool = ['g', 'g', 'g', 'f'];
   if (ph >= 2) pool.push('gg', 'f'); if (ph >= 3) pool.push('gf', 'gg'); if (ph >= 4) pool.push('ggg', 'gf');
   const kind = pool[Math.floor(Math.random() * pool.length)], pick = L => L[Math.floor(Math.random() * L.length)], x0 = g.W + 50;
-  const add = (x, t) => { const f = t === 'f', RL = g.pool.roles && (f ? g.pool.froles : g.pool.roles), rp = RL ? pick(Object.keys(RL).filter(r => (MG_UNLOCK[r] || 1) <= ph)) : null, k = rp ? RL[rp] : pick(f ? g.pool.fly : g.pool.gnd), B = mgBox(k), bh = B ? B.h : 28, sc = clamp(MG_WS, 16 / bh, (f ? 46 : 64) / bh), w = Math.max(14, (B ? B.w * sc : 26) * .75);
-    const pat = rp || (f ? 'wave' : MG_PAT[(SPECIES[k]?.t || [1])[0]] || 'still'), by = pat === 'swoop' ? 120 + Math.random() * 20 : f ? Math.round((g.phh || 36) + 22) : pat === 'dig' ? -200 : 0;
+  const add = (x, t, nsw) => { const f = t === 'f', RL = g.pool.roles && (f ? g.pool.froles : g.pool.roles), rp = RL ? pick(Object.keys(RL).filter(r => (MG_UNLOCK[r] || 1) <= ph && !(nsw && r === 'swoop'))) : null, k = rp ? RL[rp] : pick(f ? g.pool.fly : g.pool.gnd), B = mgBox(k), bh = B ? B.h : 28, sc = clamp(MG_WS, 16 / bh, (f ? 46 : 64) / bh), w = Math.max(14, (B ? B.w * sc : 26) * .75);
+    const pat = rp || (f ? 'wave' : MG_PAT[(SPECIES[k]?.t || [1])[0]] || 'still'), by = pat === 'swoop' ? 160 + Math.random() * 16 : f ? Math.round((g.phh || 36) + 22) : pat === 'dig' ? -200 : 0;
     g.obs.push({ x, t, k, sc, w, h: Math.round(bh * sc), y: by, by, ph: Math.random() * 6, pat, x0: x }); };
-  if (kind === 'gg') { add(x0, 'g'); add(x0 + 46, 'g'); } else if (kind === 'ggg') { add(x0, 'g'); add(x0 + 46, 'g'); add(x0 + 92, 'g'); } else if (kind === 'gf') { add(x0, 'g'); add(x0 + 130, 'f'); } else add(x0, kind);
+  if (kind === 'gg') { add(x0, 'g'); add(x0 + 46, 'g'); } else if (kind === 'ggg') { add(x0, 'g'); add(x0 + 46, 'g'); add(x0 + 92, 'g'); } else if (kind === 'gf') { add(x0, 'g'); add(x0 + 130, 'f', 1); }   // v9.13: 땅 장애물 바로 뒤엔 주뱃(내리꽂기)이 안 나옴 else add(x0, kind);
   const base = g.v * (.5 + Math.random() * .6) + 110 - Math.min(60, ph * 10);
   g.gap = Math.max(g.v * .52 + 70, base + 20) + (kind.length > 1 ? 75 : 0);
 }
@@ -7165,12 +7165,15 @@ function mgPen(c) {
 function mgCloud(p, cx, cy, s) { p.disc(cx, cy, 9 * s); p.disc(cx + 11 * s, cy - 5 * s, 11 * s); p.disc(cx + 24 * s, cy - 1 * s, 9 * s); p.disc(cx + 12 * s, cy + 3 * s, 10 * s, 6 * s); }
 // 도트 그림판 두 장: 배경(포켓몬 뒤), 효과(포켓몬 앞)
 function mgBuf(g, key) { const P = MG_PX, w = Math.ceil(g.W / P) + 2, h = Math.ceil(g.H / P) + 2; let c = g[key]; if (!c || c.width !== w || c.height !== h) { c = g[key] = document.createElement('canvas'); c.width = w; c.height = h; } const x = c.getContext('2d'); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, w, h); x.globalAlpha = 1; return x; }
+const mgEase = u => u * u * (3 - 2 * u);
 function mgRender(g, cv = $('#mgCv')) {
   const x = cv.getContext('2d'), { W, H, GY } = g, d = g.dist, bA = g.bA || 0, bd = f => f * (d - .6 * bA) + .54 * bA, thumb = !g.run, P = MG_PX, t0 = g.t;
   x.setTransform(g.dpr, 0, 0, g.dpr, 0, 0); x.imageSmoothingEnabled = false;
   if (g.shake > 0) { const a = (g.shA || 4) * Math.min(1, g.shake / .25); x.translate(Math.round((Math.random() - .5) * 2 * a / P) * P, Math.round((Math.random() - .5) * 2 * a / P) * P); }
   // 하늘 색: 페이즈 끝 40m 동안 다음 하늘로 천천히 넘어간다
-  const sc = mgPhSc(g), ph = g.phase || 1 + Math.floor(sc / MG_PH_SC), pi = (ph - 1) % 4, pf = clamp((sc - (ph - 1) * MG_PH_SC - (MG_PH_SC - 40)) / 40, 0, 1), P0 = MG_PAL[pi], P1 = MG_PAL[(pi + 1) % 4];
+  const sc = mgPhSc(g), ph = g.phase || 1 + Math.floor(sc / MG_PH_SC);   /* v9.13 경완: 페이즈가 오르면 그때부터 4초 동안 다음 하늘로 천천히 (예전엔 점수로 넘어가 밟기·기술 점수가 한 번에 붙으면 뚝 바뀜) */
+  { const tg = ph - 1, dtS = clamp(t0 - (g.skyLt ?? t0), 0, .1); g.skyLt = t0; if (g.skyI == null || g.skyI > tg || !g.run) g.skyI = tg; else g.skyI = Math.min(tg, g.skyI + dtS / 4); }
+  const sF = g.skyI, pi = Math.floor(sF) % 4, pf = mgEase(sF - Math.floor(sF)), P0 = MG_PAL[pi], P1 = MG_PAL[(pi + 1) % 4];
   const K = i => mgLerp(P0[i], P1[i], pf), C = (i, a) => mgRgb(K(i), a), night = pi === 3 ? 1 - pf : pi === 2 ? pf : 0;
   const b = mgBuf(g, 'bgc'), p = mgPen(b);
   // 하늘: 계단처럼 띠를 나누고 띠 사이는 체크무늬로 섞는다
