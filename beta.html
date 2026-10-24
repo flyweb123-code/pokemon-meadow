@@ -3281,9 +3281,10 @@ function treeWp1(m, tx, ty, Tr) { const z = ZP('tree', Tr), ly = Tr.y - 3;
 }
 // v9.35 경완 '가로등이랑 몬스터볼 스프링도 포켓몬이 뒤에 겹쳐서 가만히 있거나 잠들지 않도록': 스칼렛 소품 그림 뒤(발이 소품 바닥보다 위, 그림 폭 안)도 나무 뒤처럼 피한다
 let scBR = [], scBRT = -1e9;   // 소품 자리·크기는 1초에 한 번만 다시 잰다 (매 프레임 부름)
-function scBehind(x, y) { const now = performance.now(); if (now - scBRT > 1000) { scBRT = now; scBR = []; for (const r of LAYOUT.sc || []) { if (!LAYOUT.scArt?.[r[0]]) continue; const I = scImg(r[0]); if (I) scBR.push([r, I.w * scS(r), I.h * scS(r) * scSY(r)]); } }
-  for (const [r, W, H] of scBR) if (y < r[2] - 2 && y > r[2] - H * .9 && Math.abs(x - r[1]) < W * .42) return r; return null; }
-function outOfSc(p) { const r = scBehind(p.x, p.y); if (!r) return p; const y = r[2] + 8 + Math.random() * 12; if (y <= MAX_Y) return { x: p.x, y }; const W = (scImg(r[0])?.w || 40) * scS(r), x = r[1] + (p.x < r[1] ? -1 : 1) * (W * .5 + 20); return { x: clamp(x, XL + 30, XR - 30), y: p.y }; }
+// v9.37 경완 '포켓몬이 소품 뒤에 숨어서 자지 않게': 스칼렛 소품뿐 아니라 필드에 서 있는 소품 그림(횃대·덤불·나무 등) 모두 — [x, 바닥 y, 폭, 높이]
+function scBehind(x, y) { const now = performance.now(); if (now - scBRT > 1000) { scBRT = now; scBR = []; for (const e of itemsEl.querySelectorAll('.prop:not(.bgp)')) { const st = e.style, w = parseFloat(st.width), h = parseFloat(st.height), l = parseFloat(st.left), t = parseFloat(st.top); if (h >= 24 && w > 0 && isFinite(l) && isFinite(t)) scBR.push([l, Math.max(t, +st.zIndex || t), w, h]); } }
+  for (const r of scBR) if (y < r[1] - 2 && y > r[1] - r[3] * .9 && Math.abs(x - r[0]) < r[2] * .42) return r; return null; }
+function outOfSc(p) { const r = scBehind(p.x, p.y); if (!r) return p; const y = r[1] + 8 + Math.random() * 12; if (y <= MAX_Y) return { x: p.x, y }; const x = r[0] + (p.x < r[0] ? -1 : 1) * (r[2] * .5 + 20); return { x: clamp(x, XL + 30, XR - 30), y: p.y }; }
 function outOfTree(p) { const T = treeBehind(p.x, p.y); if (!T) return p; const z = ZP('tree', T); return { x: p.x, y: T.y + 8 + Math.random() * 14 * z }; }
 function moveTo(m, p, goal, spdMul = 1) {
   m.wp = null;
