@@ -2044,7 +2044,8 @@ function bgmSrcStop() { const x = bgm.src; bgm.src = null; if (x) { try { x.stop
 // 곡 위치 기억: 오디오를 새로 만들어도 멈췄던 자리부터 이어서 튼다
 const bgmPos = () => { if (!bgm.src || !actx || !bgm.buf) return bgm.pos || 0; return ((actx.currentTime - bgm.t0) % bgm.buf.duration + bgm.buf.duration) % bgm.buf.duration; };
 function bgmSrcStart(off = bgm.pos || 0) {
-  if (bgm.src || !bgm.buf) return; const a = audio(); if (!a) return; bgmRoute();
+  if (bgm.src || !bgm.buf) return; try { if (campMus.on && !bgm.preview) return; } catch (e) {}   /* v9.19 경완: 모닥불 노래 중엔 배경 음악이 다시 켜지지 않게 (곡을 받아 오던 게 늦게 끝나거나 무작위 다음 곡이 겹치던 것) — 노래가 끝나면 campBgm(false) 가 이어 튼다 */
+  const a = audio(); if (!a) return; bgmRoute();
   off = off % bgm.buf.duration || 0;
   const x = a.createBufferSource(); x.buffer = bgm.buf; x.loop = !(S.bgmRand && !bgm.preview); x.connect(bgm.gain); x.start(0, off); bgm.src = x; bgm.t0 = a.currentTime - off;
   x.onended = () => { if (bgm.src !== x || x.loop) return; bgm.src = null; bgm.pos = 0; if (S.bgmRand && bgmOn && !bgm.preview) bgmPlay(bgmRandId(bgm.id)); };   // 무작위 재생: 한 곡이 끝나면 다른 곡
@@ -5396,7 +5397,7 @@ function campStart(c) {
   const cq = live().sort(() => Math.random() - .5).map((o, i, A) => ({ o, t: DUR * (.1 + .75 * (i + rnd(.15, .85)) / A.length) }));   /* v6.51 경완: 노래 중간중간 모여 앉은 포켓몬이 한 마리씩 울음소리 */
   const iv = setInterval(() => {
     const L = live(), el = performance.now() - t0;
-    while (cq.length && el >= cq[0].t) { const { o } = cq.shift(); if (L.includes(o)) { playCry(o.sp); o.act.classList.remove('camp'); anim(o, 'hop'); emote(o, '♪', 'note', 1.4, 'camp-cry'); setTimeout(() => { if (o.camp === c) { o.act.classList.remove('hop'); o.act.classList.add('camp'); } }, 650); } }
+    while (cq.length && el >= cq[0].t) { const { o } = cq.shift(); if (L.includes(o)) { if (mgEl.hidden) playCry(o.sp); o.act.classList.remove('camp');   /* v9.19 경완: 미니게임 하는 동안엔 필드 모닥불 울음소리 안 냄 */ anim(o, 'hop'); emote(o, '♪', 'note', 1.4, 'camp-cry'); setTimeout(() => { if (o.camp === c) { o.act.classList.remove('hop'); o.act.classList.add('camp'); } }, 650); } }
     if (CAMP !== c || L.length < 2 || el > DUR) {
       clearInterval(iv); campBgm(false); if (CAMP !== c) return; CAMP = null;
       if (L.length >= 2) {
@@ -6077,7 +6078,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.18';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.19';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
