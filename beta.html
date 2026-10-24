@@ -1439,7 +1439,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 #eggSortG.egg-sort{gap:5px}#eggSortG.egg-sort button{margin:0;border:2px solid var(--frame);background:#fff;color:var(--win-ink);box-shadow:2px 2px 0 rgba(0,0,0,.18);padding:4px 8px}#eggSortG.egg-sort button:active{transform:translate(2px,2px);box-shadow:none;background:var(--frame);color:var(--win)}   /* v6.37 부화기 정렬 = 개별 버튼 */
 #hatch.hlock button{pointer-events:none!important}#hatch.hlock .win button{opacity:.55;transition:opacity .3s}   /* v6.37 hatchLock */
 /* v8.98 경완: 맵 편집 모드 */
-#btnMapEdit{left:20px;top:110px;position:absolute;z-index:25}
+#btnMapEdit{left:20px;top:110px;position:absolute;z-index:25;padding:0;border:0;background:none;cursor:pointer;line-height:0;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35));-webkit-tap-highlight-color:transparent}#btnMapEdit:active{transform:translate(1px,1px)}
 .metitle{flex-direction:column;align-items:flex-start;gap:2px}.metitle b{font-size:18px}.metitle span{font-size:12px;color:var(--dim,#666)}
 .me-save{position:absolute;right:20px;top:20px;z-index:25;height:42px;padding:0 20px;font:inherit;font-size:17px;font-weight:700;color:#20202c;background:#ffd84a;border:3px solid #20202c;cursor:pointer;
   box-shadow:inset 0 3px 0 #fff2a8,inset 0 -4px 0 #d89a2a,3px 3px 0 rgba(0,0,0,.35);-webkit-tap-highlight-color:transparent}
@@ -1454,7 +1454,7 @@ body.mapEdit :is(#mons,#fx,#propFx,#night,#rain,#rainG,#tuShade,.berrybar,#dlg,.
 @keyframes meGlow{50%{filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff) drop-shadow(0 0 7px #ffd84a) drop-shadow(0 0 3px #ffd84a)}}
 .me-bar{position:fixed;left:0;right:0;bottom:0;z-index:70;background:var(--frame,#20202c);border-top:3px solid #23232f;color:#f8f8f8;display:flex;flex-direction:column;gap:8px;
   padding:10px calc(var(--si-right,env(safe-area-inset-right)) + 8px) calc(var(--sab,env(safe-area-inset-bottom)) + 8px) calc(var(--si-left,env(safe-area-inset-left)) + 8px)}
-.me-head{display:flex;align-items:baseline;gap:8px;padding:0 4px}.me-head b{font-size:15px;color:#ffe27a}.me-head span{font-size:12px;color:#b8b8d0}
+.me-head{display:flex;align-items:center;gap:8px;padding:0 0 0 4px}.me-all{margin-left:auto;padding:6px 10px;font:inherit;font-size:12px;color:#20202c;background:#f8f8f8;border:2px solid #20202c;box-shadow:inset 0 -3px 0 #c8c8d8;cursor:pointer;-webkit-tap-highlight-color:transparent}.me-all:active{transform:translateY(1px);box-shadow:inset 0 -1px 0 #c8c8d8}.me-head b{font-size:15px;color:#ffe27a}.me-head span{font-size:12px;color:#b8b8d0}
 .me-list{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 2px 4px;min-height:92px}.me-list::-webkit-scrollbar{display:none}
 .me-it{flex:0 0 76px;height:88px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;padding:4px 2px 6px;font:inherit;font-size:12px;color:#20202c;background:#f8f8f8;border:3px solid #20202c;
   box-shadow:inset 0 -4px 0 #c8c8d8;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -1463,10 +1463,10 @@ body.mapEdit :is(#mons,#fx,#propFx,#night,#rain,#rainG,#tuShade,.berrybar,#dlg,.
 .me-it[aria-pressed="true"]{background:#fff6c8;box-shadow:inset 0 0 0 2px #ffd84a,inset 0 -4px 0 #e8c860}
 .me-none{margin:auto;font-size:13px;color:#b8b8d0;text-align:center;line-height:1.5}
 .me-keys{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
-.me-keys .opt{min-height:46px;color:var(--win,#f8f8f8);text-align:center;font-size:14px;border:0;background:#4b4b66;box-shadow:inset 0 3px 0 rgba(255,255,255,.2),inset 0 -4px 0 rgba(0,0,0,.4),0 3px 0 #1c1c26}
+.me-keys .opt{min-height:46px;padding:6px 2px;display:flex;align-items:center;justify-content:center;line-height:1.2;color:var(--win,#f8f8f8);text-align:center;font-size:14px;border:0;background:#4b4b66;box-shadow:inset 0 3px 0 rgba(255,255,255,.2),inset 0 -4px 0 rgba(0,0,0,.4),0 3px 0 #1c1c26}
 .me-keys .opt::before{display:none}.me-keys .opt:disabled{opacity:.45}
 @media (max-width: 760px), (max-height: 500px) and (orientation: landscape) {
-  #btnMapEdit{position:relative;left:auto;top:auto;grid-area:stage;align-self:start;justify-self:start;margin:calc(var(--si-top,env(safe-area-inset-top)) + 58px) 0 0 calc(var(--si-left,env(safe-area-inset-left)) + 8px);width:42px;height:42px}
+  #btnMapEdit{position:relative;left:auto;top:auto;grid-area:stage;align-self:start;justify-self:start;margin:calc(var(--si-top,env(safe-area-inset-top)) + 58px) 0 0 calc(var(--si-left,env(safe-area-inset-left)) + 8px)}
   .me-save{position:relative;right:auto;top:auto;grid-area:stage;align-self:start;justify-self:end;margin:calc(var(--si-top,env(safe-area-inset-top)) + 8px) calc(var(--si-right,env(safe-area-inset-right)) + 8px) 0 0}
   .me-bar{position:relative;grid-row:3;grid-column:1/-1}
 }
@@ -1491,11 +1491,11 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
   <div class="hud win clockwin" id="clock"><span class="t" id="time">07:00</span><span class="d"><span id="day">1일째</span> · <span id="phase">아침</span></span></div>
 
     <!-- v8.98 경완: 맵 편집 모드 (날짜 박스 밑 아이콘 → 편집 화면, 우상단 저장) -->
-  <button class="hud mapico" id="btnMapEdit" type="button" aria-label="맵 편집"><svg viewBox="0 0 12 12" width="28" height="28" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M8 0h3v1H8zM7 1h1v1H7zM11 1h1v2h-1zM6 2h1v1H6zM5 3h1v1H5zM10 3h1v1h-1zM4 4h1v1H4zM9 4h1v1H9zM3 5h1v1H3zM8 5h1v1H8zM2 6h1v1H2zM7 6h1v1H7zM1 7h1v2H1zM6 7h1v1H6zM5 8h1v1H5zM0 9h1v3H0zM4 9h1v1H4zM3 10h1v1H3zM1 11h2v1H1z"/><path fill="#e8607a" d="M8 1h3v2H8zM9 3h1v1H9z"/><path fill="#ffd84a" d="M7 2h1v1H7zM6 3h3v1H6zM5 4h3v1H5zM4 5h3v1H4zM4 6h2v1H4z"/><path fill="#d89a2a" d="M8 4h1v1H8zM7 5h1v1H7zM6 6h1v1H6zM5 7h1v1H5z"/><path fill="#f0d8b0" d="M3 6h1v1H3zM2 7h3v1H2zM2 8h3v1H2zM2 9h2v1H2z"/><path fill="#4b4b66" d="M1 9h1v2H1zM2 10h1v1H2z"/><path fill="#5aa83a" d="M6 10h4v1H6z"/></svg></button>
+  <button class="hud mapedit" id="btnMapEdit" type="button" aria-label="맵 편집"><svg viewBox="0 0 14 12" width="42" height="36" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M5 0h1v1H5zM6 0h1v1H6zM7 0h1v1H7zM8 0h1v1H8zM0 1h1v1H0zM1 1h1v1H1zM2 1h1v1H2zM3 1h1v1H3zM4 1h1v1H4zM9 1h1v1H9zM10 1h1v1H10zM11 1h1v1H11zM12 1h1v1H12zM13 1h1v1H13zM0 2h1v1H0zM13 2h1v1H13zM0 3h1v1H0zM13 3h1v1H13zM0 4h1v1H0zM13 4h1v1H13zM0 5h1v1H0zM13 5h1v1H13zM0 6h1v1H0zM13 6h1v1H13zM0 7h1v1H0zM13 7h1v1H13zM0 8h1v1H0zM13 8h1v1H13zM0 9h1v1H0zM13 9h1v1H13zM0 10h1v1H0zM5 10h1v1H5zM6 10h1v1H6zM7 10h1v1H7zM8 10h1v1H8zM13 10h1v1H13zM0 11h1v1H0zM1 11h1v1H1zM2 11h1v1H2zM3 11h1v1H3zM4 11h1v1H4zM9 11h1v1H9zM10 11h1v1H10zM11 11h1v1H11zM12 11h1v1H12zM13 11h1v1H13z"/><path fill="#dcc690" d="M5 1h1v1H5zM6 1h1v1H6zM7 1h1v1H7zM8 1h1v1H8zM5 2h1v1H5zM6 2h1v1H6zM7 2h1v1H7zM8 2h1v1H8zM7 3h1v1H7zM8 3h1v1H8zM8 4h1v1H8zM5 6h1v1H5zM5 7h1v1H5zM6 7h1v1H6zM6 8h1v1H6zM8 8h1v1H8zM5 9h1v1H5zM6 9h1v1H6zM7 9h1v1H7zM8 9h1v1H8z"/><path fill="#6ab84a" d="M1 2h1v1H1zM2 2h1v1H2zM1 3h1v1H1zM2 3h1v1H2zM3 3h1v1H3zM2 4h1v1H2zM3 4h1v1H3zM1 7h1v1H1zM2 7h1v1H2zM1 8h1v1H1zM2 8h1v1H2zM3 8h1v1H3zM2 9h1v1H2zM3 9h1v1H3zM3 10h1v1H3z"/><path fill="#f6e8bc" d="M3 2h1v1H3zM10 2h1v1H10zM11 2h1v1H11zM12 2h1v1H12zM11 3h1v1H11zM10 4h1v1H10zM12 4h1v1H12zM2 5h1v1H2zM3 5h1v1H3zM11 5h1v1H11zM1 6h1v1H1zM2 6h1v1H2zM10 6h1v1H10zM11 6h1v1H11zM12 6h1v1H12zM3 7h1v1H3zM10 7h1v1H10zM12 7h1v1H12zM10 8h1v1H10zM11 8h1v1H11zM12 8h1v1H12zM11 9h1v1H11zM12 9h1v1H12zM10 10h1v1H10zM11 10h1v1H11zM12 10h1v1H12z"/><path fill="#a88a58" d="M4 2h1v1H4zM9 2h1v1H9zM4 3h1v1H4zM9 3h1v1H9zM4 4h1v1H4zM9 4h1v1H9zM4 5h1v1H4zM9 5h1v1H9zM4 6h1v1H4zM9 6h1v1H9zM4 7h1v1H4zM9 7h1v1H9zM4 8h1v1H4zM9 8h1v1H9zM4 9h1v1H4zM9 9h1v1H9zM4 10h1v1H4zM9 10h1v1H9z"/><path fill="#58a8e0" d="M5 3h1v1H5zM6 3h1v1H6zM5 4h1v1H5zM6 4h1v1H6zM7 4h1v1H7zM6 5h1v1H6zM7 5h1v1H7zM8 5h1v1H8zM7 6h1v1H7zM8 6h1v1H8z"/><path fill="#e04838" d="M10 3h1v1H10zM12 3h1v1H12zM11 4h1v1H11zM10 5h1v1H10zM12 5h1v1H12z"/><path fill="#4a8a34" d="M1 4h1v1H1zM1 9h1v1H1zM1 10h1v1H1zM2 10h1v1H2z"/><path fill="#c05038" d="M1 5h1v1H1zM3 6h1v1H3zM11 7h1v1H11zM5 8h1v1H5zM7 8h1v1H7zM10 9h1v1H10z"/><path fill="#3a78b8" d="M5 5h1v1H5zM6 6h1v1H6zM7 7h1v1H7zM8 7h1v1H8z"/></svg></button>
   <div class="hud win clockwin metitle" id="meTitle" hidden><b>맵 편집</b><span>소품을 눌러서 옮겨요</span></div>
   <button class="hud me-save" id="meSave" type="button" hidden>저장</button>
   <div class="me-bar" id="meBar" hidden>
-    <div class="me-head"><b>가방 소품</b><span>골라서 필드에 놓아요</span></div>
+    <div class="me-head"><b>가방 소품</b><span>골라서 필드에 놓아요</span><button class="me-all" id="meAll" type="button">가방 전체보기</button></div>
     <div class="me-list" id="meList"></div>
     <div class="me-keys"><button class="opt" id="meCancel" type="button">취소</button><button class="opt" id="meUndo" type="button" disabled>되돌리기</button><button class="opt" id="meRedo" type="button" disabled>다시 하기</button></div>
   </div>
@@ -6071,7 +6071,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.98';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.99';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6284,6 +6284,7 @@ function mapEditSet(on) { if (mapEdit === on) return; mapEdit = on; document.bod
 $('#btnMapEdit').onclick = () => mapEditSet(true);
 $('#meSave').onclick = () => mapEditSet(false);   // 2단계: 배치한 대로 저장
 $('#meCancel').onclick = () => mapEditSet(false);
+$('#meAll').onclick = () => { sfx('tap'); bagOpen(); };   // 2단계: 가방의 필드 탭으로 열기
 $('#meX').onclick = e => { e.stopPropagation(); meSel(null); };   // 2단계: 빼면 가방 필드 탭으로
 $('#meList').onclick = e => { const b = e.target.closest('[data-k]'); if (!b) return; mePick = mePick === b.dataset.k ? null : b.dataset.k; meRender(); sfx('tap'); };
 $('#wrap').addEventListener('pointerdown', e => { if (!mapEdit || e.target.closest('#meX')) return; e.stopPropagation(); e.preventDefault();
