@@ -1445,7 +1445,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 body.mapEdit :is(#mons,#fx,#propFx,#night,#rain,#rainG,#tuShade,.berrybar,#dlg,.menuwin,#cmd,#goldbar,#btnMapEdit,#clock,#edge,#side,#info,#petBar,#hint,#washBrush,#items .berry,#items .tb,#items .hole){display:none!important}
 #meZone{position:absolute;left:0;top:0;width:360px;height:600px;pointer-events:none;z-index:0}
 #meLayer{position:absolute;left:0;top:0;width:360px;height:600px;pointer-events:none;z-index:9001}
-.me-foot{position:absolute;translate:-50% -50%;border:2px dashed #7cf08a;border-radius:50%;background:rgba(124,240,138,.22)}
+.me-foot{position:absolute;translate:-50% -50%;border:2px dashed #7cf08a;border-radius:50%;background:rgba(124,240,138,.22)}body.mapEdit #wrap{touch-action:none}.me-foot.bad{border-color:#ff6a5a;background:rgba(255,90,80,.3)}#items .prop.meDrag{filter:drop-shadow(0 6px 2px rgba(0,0,0,.35)) drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 -1px 0 #fff);animation:none}
 .me-x{position:absolute;translate:-50% -50%;width:22px;height:22px;padding:0;display:grid;place-items:center;pointer-events:auto;color:#fff;background:#e04838;border:2px solid #20202c;box-shadow:inset 0 -2px 0 #9a2418,2px 2px 0 rgba(0,0,0,.35);cursor:pointer}
 .me-x svg{width:10px;height:10px}
 #items .prop.meSel{filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff) drop-shadow(0 0 4px #ffe27a) drop-shadow(0 0 2px #ffe27a);animation:meGlow 1.2s ease-in-out infinite;z-index:8999!important}
@@ -5249,14 +5249,14 @@ function buildProps() {
   makeSprites();
   const add = (cls, at, src, w, h, z) => { const e = document.createElement('div'); e.className = 'prop ' + cls; e.style.cssText = W2(src, w, h) + `;left:${at.x}px;top:${at.y}px;z-index:${z ?? Math.round(at.y)}`; itemsEl.append(e); return e; };
   const zT = LS('tree'), zP = LS('perch'), zB = LS('bush');
-  treeEl = add('tree', PROPS.tree, SPR.tree, Math.round(100 * zT), Math.round(116 * zT));
-  add('perch', PROPS.perch, SPR.perch, Math.round(52 * zP), Math.round(64 * zP));
+  treeEl = add('tree', PROPS.tree, SPR.tree, Math.round(100 * zT), Math.round(116 * zT)); treeEl.LV = PROPS.tree;   /* v9.06: .LV = 이 소품의 LAYOUT 자리 (맵 편집에서 옮김) */
+  add('perch', PROPS.perch, SPR.perch, Math.round(52 * zP), Math.round(64 * zP)).LV = PROPS.perch;
   /* v8.95 경완: 더 놓은 열매나무·횃대 (열매는 맨 처음 나무에만) */
-  (LAYOUT.trees || []).forEach(v => { const L = LKi('tree', 'trees', v), z = +L?.s || 1; add('tree t2', v, L && L !== lookOf('tree') ? lkUrl('tree', L, () => tintCv(ART.tree(), L).toDataURL()) : SPR.tree, Math.round(100 * z), Math.round(116 * z)).T = v; });
-  (LAYOUT.perches || []).forEach(v => { const L = LKi('perch', 'perches', v), z = +L?.s || 1; add('perch p2', v, L && L !== lookOf('perch') ? lkUrl('perch', L, () => tintCv(ART.perch(), L).toDataURL()) : SPR.perch, Math.round(52 * z), Math.round(64 * z)); });
-  scFlEls = []; scLights = []; (LAYOUT.sc || []).forEach(r => { const [id, x, y] = r, I = scImg(id), z = scS(r), zy = z * scSY(r); if (!I) return; if (scLit(LAYOUT.scArt[id])) { const W = I.w * z, H = I.h * zy, f = I.fl; const E = I.em; scLights.push({ x: Math.round(f ? x + ((f.l + f.w / 2) / 100 - .5) * W : E ? x + (E.cx - .5) * W : x), y: Math.round(f ? y - H + (f.t + f.h * .7) / 100 * H : E ? y - H + E.cy * H : y - H * .65), k: Math.max(.55, Math.min(1.4, W / 34)), fire: !!f, core: E ? { x: Math.round(x + (E.cx - .5) * W), y: Math.round(y - H + E.cy * H), rx: Math.max(5, Math.round(E.rw * W * .75)), ry: Math.max(5, Math.round(E.rh * H * .75)) } : null }); } const e = add('sc', { x, y }, I.src, Math.round(I.w * z), Math.round(I.h * zy)); if (I.sheet) { e.classList.add('scan'); e.style.backgroundImage = `url(${I.sheet})`; e.style.backgroundSize = `${I.nfr * 100}% 100%`; e.style.setProperty('--sw', Math.round(I.w * z) + 'px'); e.style.setProperty('--n', I.nfr); e.style.animationDuration = I.nfr * I.fms + 'ms'; e.style.animationTimingFunction = `steps(${I.nfr})`; e.style.animationDelay = -Math.round(Math.random() * I.nfr * I.fms) + 'ms'; } if (I.em && scLit(LAYOUT.scArt[id])) { const q = document.createElement('i'); q.className = 'scem'; q.style.backgroundImage = `url(${I.em.src})`; const q2 = document.createElement('i'); q2.className = 'scoff'; q2.style.backgroundImage = `url(${I.em.off})`; e.append(q2, q); }   // v8.37 경완: 빛 나는 칸은 따로 얹어 은은하게 번지고, 밤에도 확실히 밝게 (nightHoles 의 core)
+  (LAYOUT.trees || []).forEach(v => { const L = LKi('tree', 'trees', v), z = +L?.s || 1, e = add('tree t2', v, L && L !== lookOf('tree') ? lkUrl('tree', L, () => tintCv(ART.tree(), L).toDataURL()) : SPR.tree, Math.round(100 * z), Math.round(116 * z)); e.T = e.LV = v; });
+  (LAYOUT.perches || []).forEach(v => { const L = LKi('perch', 'perches', v), z = +L?.s || 1; add('perch p2', v, L && L !== lookOf('perch') ? lkUrl('perch', L, () => tintCv(ART.perch(), L).toDataURL()) : SPR.perch, Math.round(52 * z), Math.round(64 * z)).LV = v; });
+  scFlEls = []; scLights = []; (LAYOUT.sc || []).forEach(r => { const [id, x, y] = r, I = scImg(id), z = scS(r), zy = z * scSY(r); if (!I) return; if (scLit(LAYOUT.scArt[id])) { const W = I.w * z, H = I.h * zy, f = I.fl; const E = I.em; scLights.push({ x: Math.round(f ? x + ((f.l + f.w / 2) / 100 - .5) * W : E ? x + (E.cx - .5) * W : x), y: Math.round(f ? y - H + (f.t + f.h * .7) / 100 * H : E ? y - H + E.cy * H : y - H * .65), k: Math.max(.55, Math.min(1.4, W / 34)), fire: !!f, core: E ? { x: Math.round(x + (E.cx - .5) * W), y: Math.round(y - H + E.cy * H), rx: Math.max(5, Math.round(E.rw * W * .75)), ry: Math.max(5, Math.round(E.rh * H * .75)) } : null }); } const e = add('sc', { x, y }, I.src, Math.round(I.w * z), Math.round(I.h * zy)); e.LV = r; e.FSRC = I.src; if (I.sheet) { e.classList.add('scan'); e.style.backgroundImage = `url(${I.sheet})`; e.style.backgroundSize = `${I.nfr * 100}% 100%`; e.style.setProperty('--sw', Math.round(I.w * z) + 'px'); e.style.setProperty('--n', I.nfr); e.style.animationDuration = I.nfr * I.fms + 'ms'; e.style.animationTimingFunction = `steps(${I.nfr})`; e.style.animationDelay = -Math.round(Math.random() * I.nfr * I.fms) + 'ms'; } if (I.em && scLit(LAYOUT.scArt[id])) { const q = document.createElement('i'); q.className = 'scem'; q.style.backgroundImage = `url(${I.em.src})`; const q2 = document.createElement('i'); q2.className = 'scoff'; q2.style.backgroundImage = `url(${I.em.off})`; e.append(q2, q); }   // v8.37 경완: 빛 나는 칸은 따로 얹어 은은하게 번지고, 밤에도 확실히 밝게 (nightHoles 의 core)
       if (I.fl) { const f = document.createElement('i'); f.className = 'scfl'; f.style.cssText = `background-image:url(${SPR.flame});left:${I.fl.l}%;top:${I.fl.t}%;width:${I.fl.w}%;height:${I.fl.h}%`; f.fi0 = Math.floor(Math.random() * 6); f.innerHTML = '<b></b><b></b><b></b>'; e.append(f); scFlEls.push(f); } });
-  PROPS.bushEls = PROPS.bushes.map(b => { const L = lkRes(b.lk), z = L ? +L.s || 1 : zB; return add('bush', b, L ? lkUrl('bush', L, () => tintCv(ART.bush(), L).toDataURL()) : SPR.bush, Math.round(72 * z), Math.round(48 * z)); });
+  PROPS.bushEls = PROPS.bushes.map(b => { const L = lkRes(b.lk), z = L ? +L.s || 1 : zB; const e = add('bush', b, L ? lkUrl('bush', L, () => tintCv(ART.bush(), L).toDataURL()) : SPR.bush, Math.round(72 * z), Math.round(48 * z)); e.LV = b; return e; });
   /* v3.55: 꽃·풀은 바람에 살랑살랑 (하나씩 박자를 달리) */
   const WIN = season() === 'winter'; seasonFx();   // 겨울엔 꽃이 지고 풀만
   const nBed = FLOWERS.length - LAYOUT.flowers.length;
@@ -5802,7 +5802,7 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, hunger: m.hunger, slpB: m.slpB, slpW: m.slpW, social: m.social, joy: m.joy, joyH: m.joyH || 0, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk, red: !!b.red })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, mg: S.mg || {}, fbag: S.fbag || {}, fbagT: S.fbagT || {}, fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])] };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, mg: S.mg || {}, fbag: S.fbag || {}, fbagT: S.fbagT || {}, lay: S.lay || {}, fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])] };
 }
 let saveFrozen = false, tutFreeze = false, introPv = false;   // introPv: 튜토리얼 미리 보기 (끝나도 저장 안 함)
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
@@ -5810,7 +5810,7 @@ async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
   S.lockT = d.lockT || 0; S.tree = d.tree || null; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.bagDry = d.bagDry || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.trI = d.trI ?? null; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.autoInc = !!d.autoInc; S.noti = { on: true, egg: true, hatch: true, evo: true, ...(d.noti || {}) }; S.bagQ = Array.isArray(d.bagQ) ? d.bagQ : [];   /* v4.23 경완: 부화기 자동 채우기가 다시 켜면 꺼지던 문제 — 저장에 빠져 있었다 */ S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
-  if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1; S.items = d.items || {}; S.itemSeen = d.itemSeen || { ...S.items };   /* v7.48: 예전 저장은 가진 것 모두 본 것으로 */ S.mg = d.mg || {}; S.fbag = d.fbag || {}; S.fbagT = d.fbagT || {}; S.fx = d.fx || {}; S.colT = d.colT || 0;
+  if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1; S.items = d.items || {}; S.itemSeen = d.itemSeen || { ...S.items };   /* v7.48: 예전 저장은 가진 것 모두 본 것으로 */ S.mg = d.mg || {}; S.fbag = d.fbag || {}; S.lay = d.lay && typeof d.lay === 'object' ? d.lay : {}; S.fbagT = d.fbagT || {}; S.fx = d.fx || {}; S.colT = d.colT || 0;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
   cleanPlaces();
   S.dexNew = new Set(d.dexNew || []); S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
@@ -6073,7 +6073,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.05';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.06';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6303,10 +6303,10 @@ function meSel(el) { if (meSelEl) meSelEl.classList.remove('meSel'); meSelEl = e
   const cx = parseFloat(el.style.left), by = parseFloat(el.style.top), w = parseFloat(el.style.width) || el.offsetWidth, h = parseFloat(el.style.height) || el.offsetHeight;
   const sm = w < 60;   /* v9.04: 바위처럼 작은 소품은 x 가 소품을 덮어 다시 누르면 x 가 눌렸음 → 오른쪽 위 바깥으로 */
   Object.assign(x.style, { left: cx + (sm ? w / 2 + 9 : w * .36) + 'px', top: by - h * .92 - (sm ? 10 : 0) + 'px' }); f.hidden = true;
-  meFoot(el, F => { if (meSelEl !== el || !F) return; Object.assign(f.style, { left: cx - w / 2 + F.x * w + 'px', top: by - h + F.y * h + 'px', width: Math.max(8, F.w * w) + 'px', height: Math.max(6, F.h * h) + 'px' }); f.hidden = false; }); }
+  meFoot(el, F => { el.FP = F; if (meSelEl !== el || !F) return; f.classList.remove('bad'); Object.assign(f.style, { left: cx - w / 2 + F.x * w + 'px', top: by - h + F.y * h + 'px', width: Math.max(8, F.w * w) + 'px', height: Math.max(6, F.h * h) + 'px' }); f.hidden = false; }); }
 // v9.04 경완: 땅에 닿는 자리(초록 점선)는 그림에서 잰다 — 납작한 소품(꽃밭·연못·바위·모닥불·웅덩이)은 그림 전체, 나머지는 밑동 줄(그림 너비의 35% 높이)의 가로 폭
 const meFootC = {};
-function meFoot(el, cb) { const src = (el.style.backgroundImage.match(/url\("?(.*?)"?\)/) || [])[1]; if (!src) return cb(null); const flat = /\b(bed|pond|rock|fire|puddle)\b/.test(el.className), key = (flat ? 'f' : 'u') + src.length + src.slice(-40);
+function meFoot(el, cb) { const src = el.FSRC || (el.style.backgroundImage.match(/url\("?(.*?)"?\)/) || [])[1]; if (!src) return cb(null); const flat = /\b(bed|pond|rock|fire|puddle)\b/.test(el.className), key = (flat ? 'f' : 'u') + src.length + src.slice(-40);
   if (meFootC[key]) return cb(meFootC[key]); const im = new Image(); im.onload = () => { const w = im.naturalWidth, h = im.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.drawImage(im, 0, 0); const A = g.getImageData(0, 0, w, h).data, op = (x, y) => A[(y * w + x) * 4 + 3] > 40;
     let y0 = h, y1 = -1; for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (op(x, y)) { y0 = Math.min(y0, y); y1 = y; break; }
     if (y1 < 0) return cb(null); let x0 = w, x1 = -1; for (let x = 0; x < w; x++) if (op(x, y1)) { x0 = Math.min(x0, x); x1 = x; }
@@ -6317,18 +6317,52 @@ function meFoot(el, cb) { const src = (el.style.backgroundImage.match(/url\("?(.
 function meBgProps(on) { itemsEl.querySelectorAll('.prop.bgp').forEach(e => e.remove()); if (!on) return; const bg = $('#bg');
   for (const p of BGP) { const w = p.cv.width, h = p.cv.height, c = document.createElement('canvas'), g = c.getContext('2d'); c.width = w; c.height = h;
     g.drawImage(bg, p.l + BGOX, p.t, w, h, 0, 0, w, h); g.globalCompositeOperation = 'destination-in'; g.drawImage(p.cv, 0, 0);
-    const e = document.createElement('div'); e.className = 'prop bgp ' + p.k; e.style.cssText = W2(c.toDataURL(), w * 2, h * 2) + `;left:${(p.l + w / 2) * 2}px;top:${(p.t + h) * 2}px`; e.style.setProperty('z-index', 0, 'important'); e.P = p; itemsEl.prepend(e); } }   /* 바탕 그림처럼 맨 아래 — 골라도 위의 꽃·나무를 덮지 않게 */
+    const e = document.createElement('div'); e.className = 'prop bgp ' + p.k; e.style.cssText = W2(c.toDataURL(), w * 2, h * 2) + `;left:${(p.l + w / 2) * 2}px;top:${(p.t + h) * 2}px`; e.style.setProperty('z-index', 0, 'important'); e.P = p; e.LV = p.v; itemsEl.prepend(e); } meFootAll(); }   /* 바탕 그림처럼 맨 아래 — 골라도 위의 꽃·나무를 덮지 않게 */
 function mapEditSet(on) { if (mapEdit === on) return; mapEdit = on; document.body.classList.toggle('mapEdit', on); for (const id of ['meBar', 'meTitle', 'meZone', 'meLayer']) $('#' + id).hidden = !on;
-  if (on) { mePick = null; meBgProps(true); meZoneDraw(); meRender(); } else { meSel(null); meBgProps(false); } sfx(on ? 'open' : 'tap'); dispatchEvent(new Event('resize')); }
+  if (on) { mePick = null; meSnap = meSnapshot(); meBgProps(true); meZoneDraw(); meRender(); } else { meSel(null); meBgProps(false); meSnap = null; } sfx(on ? 'open' : 'tap'); dispatchEvent(new Event('resize')); }
 $('#btnMapEdit').onclick = () => mapEditSet(true);
-$('#meSave').onclick = () => mapEditSet(false);   // 2단계: 배치한 대로 저장
-$('#meCancel').onclick = () => mapEditSet(false);
+$('#meSave').onclick = () => { layKeep(); mapEditSet(false); };   // v9.06 경완: 옮긴 자리를 이 플레이어 저장(S.lay)에 남김
+$('#meCancel').onclick = () => { const moved = meSnap && meSnapRestore(meSnap); mapEditSet(false); if (moved) seaRedraw(); };
 $('#meAll').onclick = () => { sfx('tap'); bagOpenField(); };
 $('#meX').onclick = e => { e.stopPropagation(); meSel(null); };   // 2단계: 빼면 가방 필드 탭으로
 $('#meList').onclick = e => { const b = e.target.closest('[data-k]'); if (!b) return; mePick = mePick === b.dataset.k ? null : b.dataset.k; meRender(); sfx('tap'); };
 $('#wrap').addEventListener('pointerdown', e => { if (!mapEdit || e.target.closest('#meX')) return; e.stopPropagation(); e.preventDefault();
   let best = null, bestA = 0; for (const el of itemsEl.querySelectorAll('.prop')) { const r = el.getBoundingClientRect(); if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom && (!best || +el.style.zIndex > +best.style.zIndex || (+el.style.zIndex === +best.style.zIndex && r.width * r.height < bestA))) { best = el; bestA = r.width * r.height; } }
-  meSel(best); }, true);
+  if (best !== meSelEl) meSel(best); if (best) meDrag = { el: best, x0: e.clientX, y0: e.clientY, on: false, l0: parseFloat(best.style.left), t0: parseFloat(best.style.top), id: e.pointerId }; }, true);
+// v9.06 경완: 고른 소품을 끌어 옮긴다 — 손가락을 따라 부드럽게, 땅에 닿는 자리는 안전 구역 안으로만, 다른 소품·연못과 겹치면 빨갛게 → 놓으면 제자리로
+let meDrag = null, meSnap = null;
+addEventListener('pointermove', e => { const D = meDrag; if (!D || !mapEdit || e.pointerId !== D.id) return; const el = D.el;
+  if (!D.on) { if (Math.hypot(e.clientX - D.x0, e.clientY - D.y0) < 5) return; D.on = true; D.k = el.getBoundingClientRect().width / el.offsetWidth || 1; $('#meX').hidden = true; el.classList.add('meDrag'); if (el.classList.contains('bgp')) el.style.setProperty('z-index', 8999, 'important'); }   /* 끄는 동안은 맨 위 */
+  let dx = (e.clientX - D.x0) / D.k, dy = (e.clientY - D.y0) / D.k; const F = el.FP, w = parseFloat(el.style.width), h = parseFloat(el.style.height);
+  if (F) { const Z = meZoneRect(), fx = D.l0 - w / 2 + F.x * w, fy = D.t0 - h + F.y * h, rx = F.w * w / 2, ry = F.h * h / 2;   // 땅에 닿는 자리가 안전 구역 밖으로 못 나가게
+    dx = Math.max(Z.x0 + rx - fx, Math.min(Z.x1 - rx - fx, dx)); dy = Math.max(Z.y0 + ry - fy, Math.min(Z.y1 - ry - fy, dy)); }
+  D.dx = Math.round(dx); D.dy = Math.round(dy); el.style.left = D.l0 + D.dx + 'px'; el.style.top = D.t0 + D.dy + 'px'; if (!el.classList.contains('bgp')) el.style.zIndex = Math.round(D.t0 + D.dy);
+  const f = $('#meFoot'); if (F) { f.style.left = D.l0 + D.dx - w / 2 + F.x * w + 'px'; f.style.top = D.t0 + D.dy - h + F.y * h + 'px'; } D.bad = meHits(el, 0, 0);   /* 자리는 이미 옮겨 둠 */ f.classList.toggle('bad', D.bad); }, { passive: true });
+const meUp = e => { const D = meDrag; if (!D || e.pointerId !== D.id) return; meDrag = null; if (!D.on) return; const el = D.el; el.classList.remove('meDrag'); if (el.classList.contains('bgp')) el.style.setProperty('z-index', 0, 'important');
+  if (D.bad || !(D.dx || D.dy)) { el.style.left = D.l0 + 'px'; el.style.top = D.t0 + 'px'; if (!el.classList.contains('bgp')) el.style.zIndex = Math.round(D.t0); if (D.bad) sfx('tap'); meSel(el); return; }
+  const v = el.LV; if (!v) return meSel(el); lvMove(v, D.dx, D.dy); sfx('tap'); meRedraw(v); };
+addEventListener('pointerup', meUp); addEventListener('pointercancel', meUp);
+const meZoneRect = () => ({ x0: Math.max(0, XL) + 6, x1: Math.min(W, XR) - 6, y0: MIN_Y, y1: MAX_Y0 });
+// 땅에 닿는 자리(타원)끼리 겹치는지 — 둘레 16점 + 가운데로 어림
+const meEll = (el, dx = 0, dy = 0) => { const F = el.FP; if (!F) return null; const w = parseFloat(el.style.width), h = parseFloat(el.style.height); return { x: parseFloat(el.style.left) + dx - w / 2 + F.x * w, y: parseFloat(el.style.top) + dy - h + F.y * h, rx: F.w * w / 2, ry: F.h * h / 2 }; };
+const ellIn = (E, x, y) => ((x - E.x) / E.rx) ** 2 + ((y - E.y) / E.ry) ** 2 < 1;
+const ellHit = (A, B) => { for (let i = 0; i <= 16; i++) { const a = i / 16 * 6.283, s = i === 16 ? 0 : .92; if (ellIn(B, A.x + Math.cos(a) * A.rx * s, A.y + Math.sin(a) * A.ry * s) || ellIn(A, B.x + Math.cos(a) * B.rx * s, B.y + Math.sin(a) * B.ry * s)) return true; } return false; };
+function meHits(el, dx, dy) { const A = { ...meEll(el) }; if (!A.rx) return false; A.x += dx; A.y += dy; for (const o of itemsEl.querySelectorAll('.prop')) { if (o === el || !o.LV || o.LV === el.LV) continue; const B = meEll(o); if (B && ellHit(A, B)) return true; } return false; }
+function meFootAll() { for (const o of itemsEl.querySelectorAll('.prop')) if (o.LV && !o.FP) meFoot(o, F => { o.FP = F; }); }
+// LAYOUT 자리: {x,y} 또는 [x,y,…] (바위) / [id,x,y] (스칼렛)
+const lvXY = v => Array.isArray(v) ? (typeof v[0] === 'string' ? [v[1], v[2]] : [v[0], v[1]]) : [v.x, v.y];
+function lvSet(v, x, y) { if (Array.isArray(v)) { const i = typeof v[0] === 'string' ? 1 : 0; v[i] = x; v[i + 1] = y; } else { v.x = x; v.y = y; } }
+const lvMove = (v, dx, dy) => { const [x, y] = lvXY(v); lvSet(v, Math.round(x + dx), Math.round(y + dy)); };
+// 이 플레이어가 옮긴 자리: S.lay = { 'tree' | 'rocks.2' | 'sc.0' …: [원래 x, 원래 y, 새 x, 새 y] } — 작업실이 그 소품을 옮기거나 바꾸면(원래 자리가 달라지면) 무시
+const LAY_ONE = ['tree', 'perch', 'fire', 'bed', 'stump', 'pond'], LAY_ARR = ['trees', 'perches', 'fires', 'beds', 'stumps', 'ponds', 'bushes', 'rocks', 'sc'];
+function layKey(v) { for (const k of LAY_ONE) if (LAYOUT[k] === v) return k; for (const k of LAY_ARR) { const i = (LAYOUT[k] || []).indexOf(v); if (i >= 0) return k + '.' + i; } return null; }
+const layObj = key => { const [k, i] = key.split('.'); return i == null ? (LAY_ONE.includes(k) ? LAYOUT[k] : null) : LAY_ARR.includes(k) ? LAYOUT[k]?.[+i] : null; };
+function layApply() { let n = 0; for (const [key, q] of Object.entries(S.lay || {})) { const v = layObj(key); if (!v || !Array.isArray(q)) continue; const [x, y] = lvXY(v); if (x === q[0] && y === q[1]) { lvSet(v, q[2], q[3]); n++; } } return n; }
+function meSnapshot() { const m = new Map(); for (const k of LAY_ONE) m.set(LAYOUT[k], lvXY(LAYOUT[k])); for (const k of LAY_ARR) for (const v of LAYOUT[k] || []) m.set(v, lvXY(v)); return m; }
+function meSnapRestore(m) { let moved = false; for (const [v, [x, y]] of m) { const [a, b] = lvXY(v); if (a !== x || b !== y) { lvSet(v, x, y); moved = true; } } return moved; }
+function layKeep() { if (!meSnap) return; const L = S.lay || (S.lay = {}); for (const [v, [x0, y0]] of meSnap) { const [x, y] = lvXY(v); if (x === x0 && y === y0) continue; const key = layKey(v); if (!key) continue; const o = L[key] ? [L[key][0], L[key][1]] : [x0, y0]; if (o[0] === x && o[1] === y) delete L[key]; else L[key] = [o[0], o[1], x, y]; } save(); }
+// 옮긴 뒤 바탕·소품을 새 자리로 다시 그리고, 같은 소품을 다시 고른다
+function meRedraw(v) { seaRedraw(); meBgProps(true); meZoneDraw(); const el = [...itemsEl.querySelectorAll('.prop')].find(o => o.LV === v); meSel(el || null); }
 $('#ibagX').onclick = () => { ibagEl.hidden = true; };
 ibagEl.addEventListener('click', e => {
   if (e.target.closest('[data-shop]')) { ibagEl.hidden = true; $('#openShop').click(); return; }
@@ -10538,6 +10572,7 @@ function setLayoutIn(L) {
   LAYOUT.look = L.look && typeof L.look === 'object' ? JSON.parse(JSON.stringify(L.look)) : {};
   if (Array.isArray(L.hide) && L.hide.length) LAYOUT.hide = [...L.hide]; else delete LAYOUT.hide;
   if (L.nat) LAYOUT.nat = 1; else delete LAYOUT.nat;   // v8.77: 놓인 소품 밑에 자연 요소를 한 번 깔았음   // v3.70: 작업실에서 지운 소품 종류 (목록에서 숨김)
+  if (typeof S !== 'undefined' && S.lay) layApply();   // v9.06: 작업실 배치를 새로 받아도 플레이어가 옮긴 자리는 다시 얹는다
   FLOWERS.splice(0, FLOWERS.length, ...ALLP('bed').flatMap(bedFlowers), ...LAYOUT.flowers);
   uiIn(L);
 }
@@ -11005,6 +11040,7 @@ async function start(data) {
   if (isNew) try { localStorage.setItem('pk-news', NEWS_ID); } catch (e) {}   /* v7.44: 처음 시작한 사람은 업데이트 알림창 안 띄움 */
   if (isNew && INTRO_ON()) { saveFrozen = true; tutFreeze = true; }
   if (!isNew && !introPrev) await restore(d); else await fresh();
+  if (layApply()) seaRedraw();   // v9.06 경완: 맵 편집에서 옮긴 자리
   if (bgmOn && bgm.id !== S.bgm) bgmStart();
   Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp)); menuDots();
   migrateBox(); undoAutoHatch(); syncNeed(); renderGold(); if (!((isNew && INTRO_ON()) || /[?&]intro/.test(location.search))) document.documentElement.classList.remove('bootBlk');
