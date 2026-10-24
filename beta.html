@@ -1448,6 +1448,7 @@ body.mapEdit :is(#mons,#fx,#propFx,#night,#rain,#rainG,#tuShade,.berrybar,#dlg,.
 .me-foot{position:absolute;translate:-50% -50%;border:2px dashed #7cf08a;border-radius:50%;background:rgba(124,240,138,.22)}body.mapEdit #wrap{touch-action:none}.me-foot.bad{border-color:#ff6a5a;background:rgba(255,90,80,.3)}#items .prop.meDrag{filter:drop-shadow(0 6px 2px rgba(0,0,0,.35)) drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 -1px 0 #fff);animation:none}
 .me-x{position:absolute;translate:-50% -50%;width:22px;height:22px;padding:0;display:grid;place-items:center;pointer-events:auto;color:#fff;background:#e04838;border:2px solid #20202c;box-shadow:inset 0 -2px 0 #9a2418,2px 2px 0 rgba(0,0,0,.35);cursor:pointer}
 .me-x svg{width:10px;height:10px}
+body.mapEdit:not(.meHas) #items .prop{filter:drop-shadow(1px 0 0 rgba(255,255,255,.85)) drop-shadow(-1px 0 0 rgba(255,255,255,.85)) drop-shadow(0 1px 0 rgba(255,255,255,.85)) drop-shadow(0 -1px 0 rgba(255,255,255,.85)) drop-shadow(0 0 3px #ffe27a)}   /* v9.11 경완: 편집 모드에선 옮길 수 있는 소품 모두 테두리 빛, 고르면 그 소품만 */
 #items .prop.meSel{filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff) drop-shadow(0 0 4px #ffe27a) drop-shadow(0 0 2px #ffe27a);animation:meGlow 1.2s ease-in-out infinite;z-index:8999!important}
 @keyframes meGlow{50%{filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff) drop-shadow(0 0 7px #ffd84a) drop-shadow(0 0 3px #ffd84a)}}
 .me-bar{position:fixed;left:0;right:0;bottom:0;z-index:70;background:var(--frame,#20202c);border-top:3px solid #23232f;color:#f8f8f8;display:flex;flex-direction:column;gap:8px;
@@ -6074,7 +6075,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.10';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.11';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6303,7 +6304,7 @@ function meZoneDraw() { const c = $('#meZone'), g = c.getContext('2d'), { x0, x1
   for (const P of ALLP('pond')) { if (P === BG_SKIP) continue; g.beginPath(); g.ellipse(P.x, P.y, P.rx * 1.06, P.ry * 1.1, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(255,140,140,.95)'; g.stroke(); } }
 function meRender() { const F = S.fbag || {}, L = fbagList();   // v9.00: 가방에 있는 것만, 최근에 넣은 순
   $('#meList').innerHTML = L.length ? L.map(([k, n, src]) => `<button class="me-it" type="button" data-k="${esc(k)}" aria-pressed="${mePick === k}"><i class="icnt">${F[k]}</i><img class="fpth" src="${src}" alt=""><span>${esc(n)}</span></button>`).join('') : '<p class="me-none">가방에 놓을 소품이 없어요.<br>필드의 소품을 빼면 여기로 들어와요.</p>'; }
-function meSel(el) { if (meSelEl) meSelEl.classList.remove('meSel'); meSelEl = el; const x = $('#meX'), f = $('#meFoot'); x.hidden = f.hidden = !el; if (!el) return; el.classList.add('meSel');
+function meSel(el) { if (meSelEl) meSelEl.classList.remove('meSel'); meSelEl = el; document.body.classList.toggle('meHas', !!el); const x = $('#meX'), f = $('#meFoot'); x.hidden = f.hidden = !el; if (!el) return; el.classList.add('meSel');
   const cx = parseFloat(el.style.left), by = parseFloat(el.style.top), w = parseFloat(el.style.width) || el.offsetWidth, h = parseFloat(el.style.height) || el.offsetHeight;
   const sm = w < 60;   /* v9.04: 바위처럼 작은 소품은 x 가 소품을 덮어 다시 누르면 x 가 눌렸음 → 오른쪽 위 바깥으로 */
   Object.assign(x.style, { left: cx + (sm ? w / 2 + 9 : w * .36) + 'px', top: by - h * .92 - (sm ? 10 : 0) + 'px' }); f.hidden = true;
