@@ -3247,7 +3247,7 @@ function nearestBerry(m) {
 }
 
 // ---------- behaviour ----------
-function setState(m, s, t) { if (m.state === 'interact' && s !== 'interact' && m.act) clearMotion(m); m.state = s; m.t = t; }
+function setState(m, s, t) { if (m.state === 'interact' && s !== 'interact' && m.act) clearMotion(m); if (m.lookBk && performance.now() > m.lookBk) { m.lookBk = 0; if (!m.camp) m.backSit = false; } m.state = s; m.t = t; }
 // 좌상단 시계·열매·테스트 버튼 자리 (월드 좌표, 1초마다 다시 잰다): 포켓몬이 그 밑에 서 있으면 누르기 힘들어 피해 간다
 let hudZ = [], hudZt = 0;
 function hudZone() {
@@ -3298,6 +3298,7 @@ function moveTo(m, p, goal, spdMul = 1) {
   { const q = fireOut(m, { x: m.tx, y: m.ty }, 1.1); m.tx = q.x; m.ty = q.y; }
   if (mv !== 'swim' && inHud(m, m.tx, m.ty)) { let q = outOfHud(m, { x: m.tx, y: m.ty }); for (let i = 0; i < 6 && (inHud(m, q.x, q.y) || (pondWalk(m) && pondVal(q.x, q.y) < 1.1)); i++) q = outOfHud(m, randLand()); m.tx = clamp(q.x, XL + 30, XR - 30); m.ty = clamp(q.y, MIN_Y, MAX_Y); }   /* v8.55 경완 '앱만 켜면 턱지충이 열매 버튼 뒤에': 연못가·모닥불 비키기가 목적지를 다시 버튼 밑으로 밀어 넣으면 그 자리에서 멈춰 버렸다 → 마지막에 한 번 더 확인하고, 안 되면 다른 빈 땅으로 */
   if (m.propSit) { m.propSit = false; m.xl = 0; m.pzB = null; }
+  if (m.anOv) { m.anOv = null; m.zAdd = 0; }
   m.goal = goal || { kind: 'wander' }; m.spdMul = spdMul;
   setState(m, 'move', 30);
 }
@@ -3394,7 +3395,7 @@ function think(m) {
     if (o) return moveTo(m, o, { kind: 'meet', mon: o });
   }
   if (winged(m) && !(m.treeCd > 0) && sceneFree(m) && Math.random() < (m.hunger > 50 && S.tree?.n ? .12 : .05)) { m.treeCd = rnd(240, 480); return moveTo(m, { x: PROPS.tree.x + rnd(-24, 24) * LS('tree'), y: PROPS.tree.y + 4 }, { kind: 'treePerch' }); }   // v4.55 경완: 새 포켓몬은 가끔 열매나무에 날아올라 앉고, 배고프면 달린 열매를 쪼아 먹는다
-  if (t.mv !== 'swim' && !(m.propCd > 0) && sceneFree(m) && Math.random() < .12) { m.propCd = rnd(120, 300); const L = propSpots().filter(q => q.k !== 'tree' && q.k !== 'puddle'), q = L.length && pick(L); if (q) return moveTo(m, { x: q.x + (m.x < q.x ? -1 : 1) * q.rx * .6, y: q.y + q.ry * .5 }, { kind: 'prop', p: q }); }
+  if (t.mv !== 'swim' && !(m.propCd > 0) && sceneFree(m) && Math.random() < .22) { m.propCd = rnd(60, 150);   /* v9.37 경완 '소품 상호작용 빈도·시간 늘리기': .12 → .22, 쉬는 틈 120~300 → 60~150초 */ const L = propSpots().filter(q => q.k !== 'tree' && q.k !== 'puddle'), q = L.length && pick(L); if (q) return moveTo(m, { x: q.x + (m.x < q.x ? -1 : 1) * q.rx * .6, y: q.y + q.ry * .5 }, { kind: 'prop', p: q }); }
   if (Math.random() < .35) { setState(m, 'idle', rnd(2, 6)); if (Math.random() < .12) emote(m, pick(['…', '♪', '?']), '', 2.2, 'idle-alone'); return; }
   let p;
   if (t.mv === 'swim') p = randPond(.8, m);
@@ -4687,7 +4688,7 @@ function drawSprite(m, dt) {
   if (m.one) { m.one.t += dt; name = m.one.name; t = m.one.t; }
   if (m.szAn && !m.one && A[m.szAn]) name = m.szAn;
   if (m.scp && m.scAn && !m.one && A[m.scAn]) name = m.scAn;
-  if (m.anOv && !m.one && A[m.anOv] && m.anOvT > performance.now()) name = m.anOv;   // v9.35: 술래잡기처럼 장면 중에 달리는 동안 걷는 그림   // v9.29: 스칼렛 소품 놀이 동작 그림   // v5.69 작업실 크기 조절 모드: 고른 동작으로 보기
+  if (m.anOv && !m.one && !m.held && A[m.anOv] && m.anOvT > performance.now()) name = m.anOv;   // v9.35: 술래잡기처럼 장면 중에 달리는 동안 걷는 그림   // v9.29: 스칼렛 소품 놀이 동작 그림   // v5.69 작업실 크기 조절 모드: 고른 동작으로 보기
   if (!A[name]) name = name === 'WalkUp' ? 'Walk' : 'Idle';
   m.anName = name;
   // v3.46/3.47 경완: 먹는 동안은 고개를 꾸벅이며 오물오물 (파르빗처럼 Eat 그림 움직임이 작은 종도 잘 보이게 모든 종)
@@ -5443,7 +5444,7 @@ function scPlay(m, p, a, ride, two, drag) { const r = LAYOUT.sc[p.i], G = r && s
   const an = pmd ? (S2.want.filter(n => !(drag && n === 'Sleep')).find(n => P.a[n]) || null) : null;   // v9.33 경완 '자던 포켓몬을 타이어 그네에 데려가도 계속 잠': 끌어다 놓아 깨운 포켓몬은 졸기·자기 그림 없이 논다
   m.scp = { r, G, S: S2, M, tx: clamp(tx, XL + 20, XR - 20), ty, side: tx < G.cx ? -1 : 1, an, back: ride ? ride.back : two ? false : S2.back || (M.hide && !M.win && !M.speek) || M.speek || M.win,
     ride: !!(ride || M.ride || two), t0: performance.now(), x0: m.x, y0: m.y - (m.lift || 0), hitT: -9, spT: 0, MW, MH };
-  m.goal = null; m.wp = null; m.propSit = true; m.pzB = null; setState(m, 'idle', M.avoid ? 4.6 : rnd(9, 14)); return true; }
+  m.goal = null; m.wp = null; m.propSit = true; m.pzB = null; setState(m, 'idle', M.avoid ? 4.6 : rnd(14, 22)); return true; }
 function scEnd(m) { const q = m.scp; if (!q) return; m.scp = null; m.scAn = null; m.scRot = 0; m.el.style.opacity = '';
   if (m.propSit) { m.propSit = false; m.xl = 0; m.pzB = null; } if (q.ride || q.back || m.y < q.G.gy) { m.y = Math.max(m.y, q.G.gy + 4); m.x = clamp(m.x, XL + 20, XR - 20); }
   if (!S.mons.some(o => o.scp?.r === q.r)) scFxOff(q.G); }
@@ -5556,7 +5557,7 @@ function campBgm(on) { try {
   if (!campMus.on && !bgm.camp) return false; campMus.stop(2); const r = bgm.camp; bgm.camp = null; if (!r || !mgEl.hidden || bgm.mg) return false;
   setTimeout(() => { if (campMus.on || bgm.mg) return; bgm.fadeIn = 2; if (bgmOn && r.id && r.id !== 'intro') bgmPlay(r.id, r.pos); else bgmStart(); }, 1200); return false; } catch (e) { return false; } }
 const PROP_JOY = 3;
-function propReact(m, p, drag) { propReactIn(m, p, drag); m.propUntil = performance.now() + clamp(m.t || 3, 3, 10) * 1000; sceneNext = Math.max(sceneNext, m.propUntil + rnd(3000, 6000)); }
+function propReact(m, p, drag) { propReactIn(m, p, drag); m.propUntil = performance.now() + clamp(m.t || 3, 3, 24) * 1000; sceneNext = Math.max(sceneNext, m.propUntil + rnd(3000, 6000)); }
 function propReactIn(m, p, drag) {
   const flyer = winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover', small = isSmall(m) && ![1, 2, 3, 5, 10, 11].includes(SPm(m).sh) && (SPm(m).spd || 0) >= 50, at = (dx, dy) =>   /* v4.91 경완: 우르 같은 느린 털뭉치·공·물고기 모양은 횃대에 못 올라간다 */ { m.x = clamp(p.x + dx, XL + 20, XR - 20); m.y = clamp(p.y + dy, MIN_Y, MAX_Y); };
   faceTo(m, p.x); m.goal = null; m.joy = clamp((m.joy ?? 60) + PROP_JOY);   /* v4.42 경완: 맵 소품과 놀면 즐거움도 조금 오른다 */
@@ -5569,12 +5570,16 @@ function propReactIn(m, p, drag) {
       const tw = a.x?.two; if (tw?.at) { const ok = o => o !== m && S.mons.includes(o) && awake(o) && !o.held && !o.scp && !o.camp && !o.pin && !o.evolving && !o.washing && o.state !== 'special' && o.state !== 'interact' && dist(o, p) < 320, o2 = S.mons.filter(ok).sort((u, v) => dist(u, p) - dist(v, p)).find(o => { const ty2 = tyOf(o).map(t => TYPE_KO[t]), w = tw.w || a.w || ''; return ty2.some(t => t && w.includes(t)) || (isSmall(o) && /작은/.test(w)) || (!isSmall(o) && /큰/.test(w)); });   // 둘이 노는 상호작용 (시소): 가까운 짝이 반대쪽에 앉는다
         if (o2 && scPlay(o2, p, a, null, tw)) { o2.propUntil = performance.now() + 10000; dustAt(o2); return log(`${J(m,'과/와')} ${J(o2,'이/가')} ${esc(A.n)}에서 같이 논다.`, [m, o2]); } }
       return log(`${J(m,'이/가')} ${esc(A.n)} 곁에서 놀고 있다.`, [m]); }
-    at(m.x < p.x ? -p.rx * .7 : p.rx * .7, 8); setState(m, 'idle', rnd(5, 9)); anim(m, 'hop'); emote(m, a ? '♪' : '…', '', 2.2, 'prop-play');
+    { const G = r && scGeo(r), d = rnd(9, 15), MW = m.w || 40; setState(m, 'idle', d);   /* v9.35 경완 '소품 신기하게 바라보는 상호작용은 소품에 가리지 않게': 소품 앞에 겹쳐 뒷모습으로 올려다보거나, 소품 옆(그림 밖)에서 바라본다 */
+      if (G && (T(m).mv === 'walk' || T(m).mv === 'hover') && G.gy + 8 <= MAX_Y && Math.random() < .5) { place(m, clamp(G.cx + rnd(-G.W * .2, G.W * .2), XL + 20, XR - 20), G.gy + 8); m.backSit = true; m.lookBk = performance.now() + d * 1000; }
+      else if (G) { let x = m.x < G.cx ? G.l - MW * .45 : G.l + G.W + MW * .45; if (x < XL + 20 || x > XR - 20) x = x < G.cx ? G.l + G.W + MW * .45 : G.l - MW * .45; place(m, clamp(x, XL + 20, XR - 20), Math.min(MAX_Y, G.gy + 2)); faceTo(m, G.cx); }
+      else at(m.x < p.x ? -p.rx * .7 : p.rx * .7, 8); }
+    anim(m, 'hop'); emote(m, a ? '♪' : '…', '', 2.2, 'prop-play');
     return log(a ? `${J(m,'이/가')} ${esc(A.n)} 곁에서 놀고 있다.` : `${J(m,'이/가')} ${esc(A?.n || '소품')}${hasBat(A?.n || '소품') ? '을' : '를'} 신기한 듯 바라본다.`, [m]); }   /* v9.28 경완: 일지엔 괄호 설명 없이 */
   if (p.k === 'tree' && p.x2) { at(m.x < p.x ? -32 : 32, 14); setState(m, 'idle', rnd(6, 10)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play'); return log(pick([`${J(m,'이/가')} 나무 그늘 아래에서 쉰다.`, `${J(m,'이/가')} 나무 밑동에 기대어 하늘을 올려다본다.`]), [m]); }   /* v8.95: 더 놓은 나무엔 열매가 없다 */
   if (p.k === 'tree') { at(m.x < p.x ? -32 : 32, 14); setState(m, 'idle', 2.5); anim(m, 'hop'); setTimeout(() => { if (S.mons.includes(m)) shakeTree(m); }, 250); return; }
   if (p.k === 'perch') {
-    if (flyer || small) { at(10, 10); propSit(m, 40); setState(m, 'idle', rnd(14, 24)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play');
+    if (flyer || small) { at(10, 10); propSit(m, 40); setState(m, 'idle', rnd(20, 32)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play');
       return log(pick([`${J(m,'이/가')} 횃대 가지에 폴짝 올라앉았다.`, `${J(m,'이/가')} 횃대 끝에 앉아 필드를 내려다본다.`, `${J(m,'이/가')} 횃대에 앉아 깃털을 고른다.`].slice(0, flyer ? 3 : 2)), [m]); }
     at(-16, 16); setState(m, 'idle', rnd(5, 8)); anim(m, 'shake'); emote(m, '♪', '', 2.2, 'prop-play');
     return log(pick([`${J(m,'이/가')} 횃대 기둥에 등을 벅벅 비빈다. 시원해 보인다.`, `${J(m,'이/가')} 횃대를 올려다보지만 너무 높아 보인다.`]), [m]);
@@ -5612,13 +5617,13 @@ function propReactIn(m, p, drag) {
     setTimeout(() => { if (!S.mons.includes(m)) return; m.el.style.visibility = ''; m.y = Math.min(MAX_Y, p.y + 16); emote(m, '!', '', 2.2, 'bush-out'); anim(m, 'hop'); el?.classList.remove('rustle'); }, 4200);   /* v4.61 경완: 튀어나오면 덤불은 멈춘다 */
     return;
   }
-  if (p.k === 'stump') { at(0, 10); propSit(m, 14); faceTo(m, nearPond(p.x, p.y).x); onShadow(m);   /* v4.26 경완: 그루터기에 앉으면 호수 쪽을 바라본다 */ setState(m, 'idle', rnd(10, 16)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play'); return log(`${J(m,'이/가')} 그루터기 위에 올라앉아 쉰다.`, [m]); }
+  if (p.k === 'stump') { at(0, 10); propSit(m, 14); faceTo(m, nearPond(p.x, p.y).x); onShadow(m);   /* v4.26 경완: 그루터기에 앉으면 호수 쪽을 바라본다 */ setState(m, 'idle', rnd(16, 26)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play'); return log(`${J(m,'이/가')} 그루터기 위에 올라앉아 쉰다.`, [m]); }
   if (p.k === 'rock') {
     const ty = tyOf(m);
-    if (ty.includes(ROC) || ty.includes(GRO) || ty.includes(FIG)) { at(0, p.ry - 4); propSit(m, 10); onShadow(m); setState(m, 'idle', 8); anim(m, 'hop'); emote(m, '!', '', 2.2, 'rock-pose'); return log(`${J(m,'이/가')} 바위 위에 올라가 늠름하게 포즈를 잡는다.`, [m]); }
+    if (ty.includes(ROC) || ty.includes(GRO) || ty.includes(FIG)) { at(0, p.ry - 4); propSit(m, 10); onShadow(m); setState(m, 'idle', 12); anim(m, 'hop'); emote(m, '!', '', 2.2, 'rock-pose'); return log(`${J(m,'이/가')} 바위 위에 올라가 늠름하게 포즈를 잡는다.`, [m]); }
     { const sd = m.x < p.x ? -1 : 1, dry = ([dx, dy]) => pondVal(clamp(p.x + dx, XL + 20, XR - 20), clamp(p.y + dy, MIN_Y, MAX_Y)) > 1.2;   /* v5.36 경완: 호숫가 바위에 기대면 몸이 물에 잠기던 것 → 물 밖인 쪽(반대편·아래·위)에 기댄다 */
-      const c = [[sd * 26, 6], [-sd * 26, 6], [0, 18], [0, -12]].find(dry); at(...(c || [sd * 26, 6])); if (!c && pondVal(m.x, m.y) <= 1.2) projectOut(m, 1.2); }
-    setState(m, 'idle', 6); emote(m, '…', '', 2.2, 'rock-lean'); return log(`${J(m,'이/가')} 바위에 기대어 쉰다.`, [m]);
+      const c = [[sd * 12, 9], [-sd * 12, 9], [0, 14]].find(dry);   /* v9.37 경완 '바위에 기대서 쉴 때는 바위가 포켓몬 뒤 쪽으로 + 자는 모션': 바위 바로 앞에 겹쳐 기대고 잠든 그림 (예전엔 옆·위쪽 자리도 있어 바위에 가렸음) */ at(...(c || [sd * 26, 6])); if (!c && pondVal(m.x, m.y) <= 1.2) projectOut(m, 1.2); }
+    { const d = rnd(12, 18); setState(m, 'idle', d); m.anOv = 'Sleep'; m.anOvT = performance.now() + d * 1000; m.zAdd = 2; } emote(m, '…', '', 2.2, 'rock-lean'); return log(`${J(m,'이/가')} 바위에 기대어 꾸벅꾸벅 존다.`, [m]);
   }
   if (p.k === 'puddle') {
     const ty = tyOf(m); at(0, 0); setState(m, 'idle', 5); splashAt(m);
@@ -5639,7 +5644,7 @@ function treePerch(m) {
   let sx = tx + rnd(-26, 26) * z, sy = ty - rnd(64, 84) * z;
   if (peck) { const [bx, by] = slots[n - 1]; sx = tx - 50 * z + bx * 2 * z + (m.x < tx ? -10 : 10); sy = ty - 116 * z + by * 2 * z + 14 + (m.h || 30) * .3; }
   m.x = clamp(sx, XL + 20, XR - 20); m.y = ty + 3; faceTo(m, peck ? tx - 50 * z + slots[n - 1][0] * 2 * z : (Math.random() < .5 ? m.x - 1 : m.x + 1));
-  propSit(m, Math.max(20, m.y - sy)); setState(m, 'idle', rnd(12, 20)); anim(m, 'hop');
+  propSit(m, Math.max(20, m.y - sy)); setState(m, 'idle', rnd(18, 28)); anim(m, 'hop');
   if (!peck) { emote(m, '♪', '', 2.2, 'prop-play'); return log(pick([`${J(m,'이/가')} 열매나무 가지에 날아올라 앉았다.`, `${J(m,'이/가')} 열매나무 잎 사이에 앉아 필드를 내려다본다.`, `${J(m,'이/가')} 열매나무 가지에 앉아 깃털을 고른다.`]), [m]); }
   setTimeout(() => {
     if (!S.mons.includes(m) || !m.propSit || !(S.tree.n > 0)) return;
@@ -6222,7 +6227,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.36';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.37';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
