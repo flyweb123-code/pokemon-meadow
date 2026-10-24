@@ -5375,7 +5375,7 @@ function scSpec(a, A) { const t = a.a || '', X = a.x || null, has = (s, k) => ('
 // 놓인 소품 하나의 그림 칸 (필드 좌표): 왼쪽 위 (l, t), 너비·높이, 칸 하나 크기, 바닥 y
 function scGeo(r) { const I = scImg(r[0]), A = LAYOUT.scArt[r[0]]; if (!I || !A) return null; const W = I.w * scS(r), H = I.h * scS(r) * scSY(r), cols = A.px[0].length, rows = A.px.length;
   return { I, A, W, H, l: r[1] - W / 2, t: r[2] - H, cx: r[1], gy: r[2], kx: W / cols, ky: H / rows, el: [...itemsEl.querySelectorAll('.prop.sc')].find(e => e.LV === r) }; }
-function scPlay(m, p, a, ride, two) { const r = LAYOUT.sc[p.i], G = r && scGeo(r); if (!G) return false; const S2 = scSpec(a, G.A), { M } = S2, P = SPRITES[m.sk || m.form], pmd = isPmd(m.form) && P?.a;
+function scPlay(m, p, a, ride, two, drag) { const r = LAYOUT.sc[p.i], G = r && scGeo(r); if (!G) return false; const S2 = scSpec(a, G.A), { M } = S2, P = SPRITES[m.sk || m.form], pmd = isPmd(m.form) && P?.a;
   const MW = m.w || 40, MH = m.h || 40, sideX = () => { let x = G.l + G.W + MW * .3; if (x > XR - 24 || (m.x < G.cx && G.l - MW * .3 > XL + 24)) x = G.l - MW * .3; return x; };
   let pos = two ? two.at : ride ? [.5, ride.fy] : S2.pos, tx, ty;
   if (Array.isArray(pos)) { tx = G.l + G.W * pos[0]; ty = G.t + G.H * pos[1]; }
@@ -5385,7 +5385,7 @@ function scPlay(m, p, a, ride, two) { const r = LAYOUT.sc[p.i], G = r && scGeo(r
   if (M.push && !Array.isArray(pos)) tx = G.cx + (tx < G.cx ? -1 : 1) * (G.W / 2 + MW * .3);
   if (M.flap && !Array.isArray(pos)) ty -= Math.min(30, G.H * .3);
   if (M.hide && !M.win && !M.speek && !a.x) { tx = G.cx + G.W * .08; ty = G.t + G.H * .9; if (!M.peek) tx = G.l + G.W * .82; }
-  const an = pmd ? (S2.want.find(n => P.a[n]) || null) : null;
+  const an = pmd ? (S2.want.filter(n => !(drag && n === 'Sleep')).find(n => P.a[n]) || null) : null;   // v9.33 경완 '자던 포켓몬을 타이어 그네에 데려가도 계속 잠': 끌어다 놓아 깨운 포켓몬은 졸기·자기 그림 없이 논다
   m.scp = { r, G, S: S2, M, tx: clamp(tx, XL + 20, XR - 20), ty, side: tx < G.cx ? -1 : 1, an, back: ride ? ride.back : two ? false : S2.back || (M.hide && !M.win && !M.speek) || M.speek || M.win,
     ride: !!(ride || M.ride || two), t0: performance.now(), x0: m.x, y0: m.y - (m.lift || 0), hitT: -9, spT: 0, MW, MH };
   m.goal = null; m.wp = null; m.propSit = true; m.pzB = null; setState(m, 'idle', M.avoid ? 4.6 : rnd(9, 14)); return true; }
@@ -5508,9 +5508,9 @@ function propReactIn(m, p, drag) {
   if (p.k === 'sc') { const r = LAYOUT.sc[p.i], A = r && LAYOUT.scArt[r[0]], ty = tyOf(m).map(t => TYPE_KO[t]), mv = T(m).mv;   /* v8.22 경완: 스칼렛 소품 — 누가(w)에 맞는 행동을 골라 소품 곁에서 논다 */
     const fit = a => { const w = a.w || ''; return ty.some(t => t && w.includes(t)) || ((flyer) && /나는|날개|새/.test(w)) || (mv === 'swim' && /헤엄|물고기/.test(w)) || (small && /작은/.test(w)) || (!small && /큰/.test(w)); };
     const rd = (A?.acts || []).find(a => /올라타|들어가 앉|구멍/.test(a.a || '')), L = (A?.acts || []).filter(fit), a = rd && (drag || L.includes(rd)) ? rd : L.length ? pick(L) : null;   /* v9.28 경완: 타는 소품(몬스터볼 스프링·타이어 그네)은 끌어다 놓으면 무조건 타기부터 — 작은 포켓몬은 구멍 안에, 다른 포켓몬은 구조물 위에 올라탐 */
-    if (a && a === rd) { const inH = isSmall(m), tire = /구멍/.test(rd.a); scPlay(m, p, rd, { fy: 1 - (inH ? (tire ? .2 : .78) : (tire ? .22 : .8)), back: inH });   /* v9.32 경완: 작은 포켓몬은 스프링 구멍에 살짝만 (얼굴 안 가리게 .55 → .78), 타이어는 구멍 안에 앉아 아래 테두리만 앞에 (예전 .06 은 타이어 뒤로 숨었음), 다른 포켓몬도 몬스터볼 구멍 쪽에 얹혀 탐 (.45 → .8) */ emote(m, '♪', '', 2.2, 'prop-play');   // v9.28: 작은 포켓몬은 소품 뒤(구멍 속)에, 다른 포켓몬은 소품 앞 위에 올라탐 · v9.29: 흔들리는 부분과 같이 흔들린다
+    if (a && a === rd) { const inH = isSmall(m), tire = /구멍/.test(rd.a); scPlay(m, p, rd, { fy: 1 - (inH ? (tire ? .2 : .78) : (tire ? .22 : .8)), back: inH }, null, drag);   /* v9.32 경완: 작은 포켓몬은 스프링 구멍에 살짝만 (얼굴 안 가리게 .55 → .78), 타이어는 구멍 안에 앉아 아래 테두리만 앞에 (예전 .06 은 타이어 뒤로 숨었음), 다른 포켓몬도 몬스터볼 구멍 쪽에 얹혀 탐 (.45 → .8) */ emote(m, '♪', '', 2.2, 'prop-play');   // v9.28: 작은 포켓몬은 소품 뒤(구멍 속)에, 다른 포켓몬은 소품 앞 위에 올라탐 · v9.29: 흔들리는 부분과 같이 흔들린다
       return log(inH ? `${J(m,'이/가')} ${esc(A.n)}에 쏙 들어가 앉아 흔들흔들 논다.` : `${J(m,'이/가')} ${esc(A.n)} 위에 올라타 흔들흔들 논다.`, [m]); }
-    if (a && scPlay(m, p, a)) { emote(m, '♪', '', 2.2, 'prop-play');   /* v9.29 경완: 작업실 예시와 같은 동작 */
+    if (a && scPlay(m, p, a, null, null, drag)) { emote(m, '♪', '', 2.2, 'prop-play');   /* v9.29 경완: 작업실 예시와 같은 동작 */
       const tw = a.x?.two; if (tw?.at) { const ok = o => o !== m && S.mons.includes(o) && awake(o) && !o.held && !o.scp && !o.camp && !o.pin && !o.evolving && !o.washing && o.state !== 'special' && o.state !== 'interact' && dist(o, p) < 320, o2 = S.mons.filter(ok).sort((u, v) => dist(u, p) - dist(v, p)).find(o => { const ty2 = tyOf(o).map(t => TYPE_KO[t]), w = tw.w || a.w || ''; return ty2.some(t => t && w.includes(t)) || (isSmall(o) && /작은/.test(w)) || (!isSmall(o) && /큰/.test(w)); });   // 둘이 노는 상호작용 (시소): 가까운 짝이 반대쪽에 앉는다
         if (o2 && scPlay(o2, p, a, null, tw)) { o2.propUntil = performance.now() + 10000; dustAt(o2); return log(`${J(m,'과/와')} ${J(o2,'이/가')} ${esc(A.n)}에서 같이 논다.`, [m, o2]); } }
       return log(`${J(m,'이/가')} ${esc(A.n)} 곁에서 놀고 있다.`, [m]); }
@@ -6167,7 +6167,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.32';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.33';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
