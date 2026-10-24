@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.69"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.70"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.69';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.70';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2125,6 +2125,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.70', '10월 24일', ['상점 › 필드: 베타 게임으로 보기를 안 켜도 맵 전체 소품 고르는 칸이 떠요']],
   ['3.69', '10월 24일', ['상점 메뉴를 게임 상점 탭(아이템·도구·음악·필드)별로 나눔', '향로·빛나는 부적 효과는 밸런스 메뉴로 옮김', '상점 › 필드: 맵 전체 소품에서 눌러 필드 상점에 넣고, 가격·순서(▲▼)·빼기(×)를 정해요 (게임 v9.01)']],
   ['3.68', '10월 23일', ['열매나무·횃대·모닥불·꽃밭·그루터기·연못도 여러 개 놓기 (끌어다 놓기·+ 버튼, 맵에 있는 소품 탭에서 하나씩 고르고 지우기)']],
   ['3.67', '10월 23일', ['몬스터볼 스프링에 올라탄 포켓몬이 구조물 뒤가 아니라 볼 구멍 안에 들어가 앉음 (앞 테두리만 가림)']],
@@ -3259,7 +3260,7 @@ function renderShop() {
   else if (shopTab === 'tool') body = `<div class="card"><h2 class="ih">${gi('coin')}도구 가격 (특수 진화)</h2><div>${I.filter(o => o.k === 'tool').map(o => row(ic(o), o.n, o.id, o.p)).join('')}</div></div>`;
   else if (shopTab === 'bgm') body = `<div class="card"><h2 class="ih">${gi('coin')}음악 가격</h2><div>${T.filter(t => t.price).map(t => row('', t.n, 'bgm:' + t.id, t.price)).join('')}</div></div>`;
   else { const cat = fpCat(), CM = Object.fromEntries(cat.map(r => [r[0], r])), on = new Set(sh.field.map(r => r[0])), q = shopFQ.trim();
-    if (!A.fpInfo) body = `<div class="card"><h2 class="ih">${gi('coin')}필드 상점</h2><p class="small mute">필드 상점은 베타 게임(v9.01 이상)에만 있어요. 버전 화면에서 <b>베타 게임으로 보기</b>를 켜 주세요.</p></div>`;
+    if (!A.cat) body = `<div class="card"><h2 class="ih">${gi('coin')}필드 상점</h2><p class="small mute">게임 화면을 불러오는 중이에요.</p></div>`;   /* v3.70 경완: 본 게임 미리보기여도 고를 수 있게 (썸네일은 맵 소품 그림, 게임 필드 상점은 베타 v9.01~) */
     else body = `<div class="card"><h2 class="ih">${gi('coin')}필드 상점에서 파는 소품 <span class="num mute">${sh.field.length}</span></h2>
       <p class="small mute">게임 상점 '필드' 탭에 이 순서대로 나와요. 사면 가방 필드 탭에 들어가고, 맵 편집에서 필드에 놓을 수 있어요.</p>
       ${sh.field.length ? `<div class="fps">${sh.field.map(([k, p], i) => { const r = CM[k]; return `<div class="fp-r${r ? '' : ' gone'}" data-fk="${esc(k)}"><span class="fp-th">${r ? `<img alt="" src="${r[2]}">` : '<span class="ph">?</span>'}</span><div class="lt">${esc(r ? r[1] : k)}${r ? '' : '<small>맵 전체 소품에서 빠진 소품이라 게임에 안 나와요</small>'}</div><span class="uw"><input class="inp" data-fp="${esc(k)}" inputmode="numeric" value="${p}" aria-label="가격"><span class="u">G</span></span><span class="fp-mv"><button class="chip" data-fup="${i}" aria-label="위로"${i ? '' : ' disabled'}>▲</button><button class="chip" data-fdn="${i}" aria-label="아래로"${i < sh.field.length - 1 ? '' : ' disabled'}>▼</button></span><button class="chip del" data-fx="${esc(k)}" aria-label="상점에서 빼기" title="상점에서 빼기">×</button></div>`; }).join('')}</div>` : '<div class="empty">아직 파는 소품이 없어요. 아래 전체 소품에서 + 를 눌러 넣어요.</div>'}</div>
