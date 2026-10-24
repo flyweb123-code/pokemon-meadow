@@ -3287,7 +3287,7 @@ function moveTo(m, p, goal, spdMul = 1) {
   else if ((mv === 'walk') && pondVal(m.tx, m.ty) < 1.1) { const q = pondGap(nearPond(m.tx, m.ty)) && m.ty > nearPond(m.tx, m.ty).y ? pondSide({ x: m.tx, y: m.ty }, 1.12) : shorePoint({ x: m.tx, y: m.ty }); m.tx = q.x; m.ty = q.y; }
   { const q = fireOut(m, { x: m.tx, y: m.ty }, 1.1); m.tx = q.x; m.ty = q.y; }
   if (mv !== 'swim' && inHud(m, m.tx, m.ty)) { let q = outOfHud(m, { x: m.tx, y: m.ty }); for (let i = 0; i < 6 && (inHud(m, q.x, q.y) || (mv === 'walk' && pondVal(q.x, q.y) < 1.1)); i++) q = outOfHud(m, randLand()); m.tx = clamp(q.x, XL + 30, XR - 30); m.ty = clamp(q.y, MIN_Y, MAX_Y); }   /* v8.55 경완 '앱만 켜면 턱지충이 열매 버튼 뒤에': 연못가·모닥불 비키기가 목적지를 다시 버튼 밑으로 밀어 넣으면 그 자리에서 멈춰 버렸다 → 마지막에 한 번 더 확인하고, 안 되면 다른 빈 땅으로 */
-  if (m.propSit) { m.propSit = false; m.xl = 0; }
+  if (m.propSit) { m.propSit = false; m.xl = 0; m.pzB = null; }
   m.goal = goal || { kind: 'wander' }; m.spdMul = spdMul;
   setState(m, 'move', 30);
 }
@@ -4768,7 +4768,7 @@ function render(m, now) {
   /* 밝게 보이는 포켓몬만 밤 그늘 위로 올린다. 그 바로 앞(아래쪽)에 겹친 포켓몬도 함께 올리되 밤빛 필터로 똑같이 어둡게 해서, 앞뒤 순서는 그대로 둔다 */
   const shade = !upOf(m) && !m.pet && skyDark > .25 && S.mons.some(o => o !== m && upOf(o) && !o.hidden && m.y > o.y && m.y - o.y < (o.h || 60) + (m.h || 60) && Math.abs(m.x - o.x) < ((o.w || 50) + (m.w || 50)) / 2 + 12);
   if (shade !== !!m.shade) { m.shade = shade; m.el.classList.toggle('nightf', shade); }
-  { const z = Math.round(m.y) + (m.zAdd || 0) + (m.perch ? 2 : 0) + (m.pet ? 5000 : 0) + (upOf(m) || shade || m.tuLit ? 1100 : 0); if (m.rZ !== z) { m.rZ = z; m.el.style.zIndex = z; } }
+  { let z = Math.round(m.y) + (m.zAdd || 0) + (m.perch ? 2 : 0) + (m.pet ? 5000 : 0) + (upOf(m) || shade || m.tuLit ? 1100 : 0); if (m.propSit && m.pzB != null && z >= m.pzB) z = m.pzB - 1; if (m.rZ !== z) { m.rZ = z; m.el.style.zIndex = z; } }
   { const oa = MON_OFFA[m.form]?.[m.anName] || 0, ox = Array.isArray(oa) ? oa[0] : 0, oy = Array.isArray(oa) ? oa[1] : oa;   // v5.79 경완: 동작별 그림 위치 [좌우, 위아래] (좌우는 기본 그림 = 왼쪽 볼 때 기준)
   const lv = `translate(${ox * (m.face || 1)}px, ${((wet ? m.h * .38 : m.flop ? m.h * .42 : m.sp === 129 && !m.held ? m.h * .24 : 0) - Math.max(0, m.lift + (MON_FLYA[m.form]?.[m.anName] || 0)) - bob + oy).toFixed(1)}px)`; if (m.rLf !== lv) { m.rLf = lv; m.liftEl.style.transform = lv; } }   // 육지의 잉어킹은 그림자에 붙게 조금 내린다 (v5.68 경완: 작업실 크기 조절 모드처럼 땅에 놓인 잉어킹도)
   if (m.flop && now > (m.swT || 0)) { m.swT = now + rnd(180, 360); for (const s of [-1, 1]) if (Math.random() < .75) particle(m.x + s * rnd(6, m.w * .32), m.y - m.h * .2 - rnd(0, 10), 'sweat', '', d => d.style.setProperty('--dx', s * rnd(12, 26) + 'px')); }
@@ -5334,6 +5334,7 @@ function propArt(p) { const L = LAYOUT, dom = e => { if (!e) return null; const 
     case 'puddle': return dom(puddleEls[p.i]);
     case 'fire': { const F = p.x2 ? L.fires[p.i] : FIRE; return F && cvAt(lkCv(ART.campfire(), 'fire', F), F.x, F.y + 18); }
     case 'stump': { const T = p.x2 ? L.stumps[p.i] : L.stump; return T && cvAt(lkCv(ART.stump(), 'stump', T), T.x, T.y); }
+    case 'sc': { const r = L.sc?.[p.i], e = r && [...itemsEl.querySelectorAll('.prop')].find(o => o.LV === r); if (!e || !e.FSRC) return null; const w = e.offsetWidth, h = e.offsetHeight; return { url: e.FSRC, x: parseFloat(e.style.left) - w / 2, y: parseFloat(e.style.top) - h, w, h }; }   // v9.28 경완: 상점에서 산 소품도 모양 따라 빛 테두리
     case 'rock': { const r = L.rocks[p.i]; if (!r) return null; const [x, y, w, h, n, s, lk] = r, K = lkRes(lk); return cvAt(K ? scaleCv(tintCv(ART.rock(w, h, s * 977, n), K), +K.s || 1) : lookCv(ART.rock(w, h, s * 977, n), 'rock'), x, y); }
   } return null; }
 // 소품이 그려진 네모 칸 (작업실 편집 손잡이와 같은 크기)
@@ -5419,14 +5420,17 @@ function campBgm(on) { try {
   if (!campMus.on && !bgm.camp) return false; campMus.stop(2); const r = bgm.camp; bgm.camp = null; if (!r || !mgEl.hidden || bgm.mg) return false;
   setTimeout(() => { if (campMus.on || bgm.mg) return; bgm.fadeIn = 2; if (bgmOn && r.id && r.id !== 'intro') bgmPlay(r.id, r.pos); else bgmStart(); }, 1200); return false; } catch (e) { return false; } }
 const PROP_JOY = 3;
-function propReact(m, p) { propReactIn(m, p); m.propUntil = performance.now() + clamp(m.t || 3, 3, 10) * 1000; sceneNext = Math.max(sceneNext, m.propUntil + rnd(3000, 6000)); }
-function propReactIn(m, p) {
+function propReact(m, p, drag) { propReactIn(m, p, drag); m.propUntil = performance.now() + clamp(m.t || 3, 3, 10) * 1000; sceneNext = Math.max(sceneNext, m.propUntil + rnd(3000, 6000)); }
+function propReactIn(m, p, drag) {
   const flyer = winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover', small = isSmall(m) && ![1, 2, 3, 5, 10, 11].includes(SPm(m).sh) && (SPm(m).spd || 0) >= 50, at = (dx, dy) =>   /* v4.91 경완: 우르 같은 느린 털뭉치·공·물고기 모양은 횃대에 못 올라간다 */ { m.x = clamp(p.x + dx, XL + 20, XR - 20); m.y = clamp(p.y + dy, MIN_Y, MAX_Y); };
   faceTo(m, p.x); m.goal = null; m.joy = clamp((m.joy ?? 60) + PROP_JOY);   /* v4.42 경완: 맵 소품과 놀면 즐거움도 조금 오른다 */
   if (p.k === 'sc') { const r = LAYOUT.sc[p.i], A = r && LAYOUT.scArt[r[0]], ty = tyOf(m).map(t => TYPE_KO[t]), mv = T(m).mv;   /* v8.22 경완: 스칼렛 소품 — 누가(w)에 맞는 행동을 골라 소품 곁에서 논다 */
     const fit = a => { const w = a.w || ''; return ty.some(t => t && w.includes(t)) || ((flyer) && /나는|날개|새/.test(w)) || (mv === 'swim' && /헤엄|물고기/.test(w)) || (small && /작은/.test(w)) || (!small && /큰/.test(w)); };
-    const L = (A?.acts || []).filter(fit), a = L.length ? pick(L) : null; at(m.x < p.x ? -p.rx * .7 : p.rx * .7, 8); setState(m, 'idle', rnd(5, 9)); anim(m, 'hop'); emote(m, a ? '♪' : '…', '', 2.2, 'prop-play');
-    return log(a ? `${J(m,'이/가')} ${esc(A.n)} 곁에서 놀고 있다. (${esc(a.a).replace(/[.。]?\s*$/, '')})` : `${J(m,'이/가')} ${esc(A?.n || '소품')}${hasBat(A?.n || '소품') ? '을' : '를'} 신기한 듯 바라본다.`, [m]); }
+    const rd = (A?.acts || []).find(a => /올라타|들어가 앉|구멍/.test(a.a || '')), L = (A?.acts || []).filter(fit), a = rd && (drag || L.includes(rd)) ? rd : L.length ? pick(L) : null;   /* v9.28 경완: 타는 소품(몬스터볼 스프링·타이어 그네)은 끌어다 놓으면 무조건 타기부터 — 작은 포켓몬은 구멍 안에, 다른 포켓몬은 구조물 위에 올라탐 */
+    if (a && a === rd) { const I = scImg(r[0]), H = I ? I.h * scS(r) * scSY(r) : 30, inH = isSmall(m), tire = /구멍/.test(rd.a); at(0, r[2] - p.y + (inH ? -1 : 1)); propSit(m, Math.round(H * (inH ? (tire ? .06 : .55) : (tire ? .22 : .45)))); m.pzB = inH ? Math.round(r[2]) : null;   // 구멍 속은 밤에도 소품 뒤로   // 작은 포켓몬은 소품 뒤(구멍 속)에, 큰 포켓몬은 소품 앞 위에 올라탐 setState(m, 'idle', rnd(6, 10)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play');
+      return log(inH ? `${J(m,'이/가')} ${esc(A.n)}에 쏙 들어가 앉아 흔들흔들 논다.` : `${J(m,'이/가')} ${esc(A.n)} 위에 올라타 흔들흔들 논다.`, [m]); }
+    at(m.x < p.x ? -p.rx * .7 : p.rx * .7, 8); setState(m, 'idle', rnd(5, 9)); anim(m, 'hop'); emote(m, a ? '♪' : '…', '', 2.2, 'prop-play');
+    return log(a ? `${J(m,'이/가')} ${esc(A.n)} 곁에서 놀고 있다.` : `${J(m,'이/가')} ${esc(A?.n || '소품')}${hasBat(A?.n || '소품') ? '을' : '를'} 신기한 듯 바라본다.`, [m]); }   /* v9.28 경완: 일지엔 괄호 설명 없이 */
   if (p.k === 'tree' && p.x2) { at(m.x < p.x ? -32 : 32, 14); setState(m, 'idle', rnd(6, 10)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play'); return log(pick([`${J(m,'이/가')} 나무 그늘 아래에서 쉰다.`, `${J(m,'이/가')} 나무 밑동에 기대어 하늘을 올려다본다.`]), [m]); }   /* v8.95: 더 놓은 나무엔 열매가 없다 */
   if (p.k === 'tree') { at(m.x < p.x ? -32 : 32, 14); setState(m, 'idle', 2.5); anim(m, 'hop'); setTimeout(() => { if (S.mons.includes(m)) shakeTree(m); }, 250); return; }
   if (p.k === 'perch') {
@@ -5940,7 +5944,7 @@ function liftUp(m) {
   const o = m.partner;
   if (o) { m.partner = null; o.partner = null; o.scene = null; setState(o, 'idle', 1); }
   if (m.state === 'sleep') wake(m, `${J(m,'이/가')} 들어 올려지자 깜짝 놀라 깼다.`);
-  m.goal = null; m.scene = null; setState(m, 'idle', 1); m.perch = null; m.xl = 0; m.propSit = false;
+  m.goal = null; m.scene = null; setState(m, 'idle', 1); m.perch = null; m.xl = 0; m.propSit = false; m.pzB = null;
   if (m.lift > 26) { m.y = clamp(m.y - (m.lift - 26), MIN_Y, MAX_Y); m.lift = 26; }   /* 떠 있던 포켓몬: 몸통은 그대로, 그림자를 몸 아래로 끌어 올린다 */
   m.held = true; m.el.classList.add('held'); emote(m, '!', '', 1.2, 'hold'); haptic(0);   // 들 때는 정보창 없이 살짝 진동만
 }
@@ -5968,7 +5972,7 @@ function endDrag(e) {
   if (o) { o.el.classList.remove('drop-target'); if (o.bub.classList.contains('star')) o.bubT = 0; }
   markProp(null);
   if (o && S.mons.includes(o)) { userAct(o); return meetByHand(m, o); }
-  if (d.prop) { userAct(m); m.home = { x: m.x, y: m.y }; if (m.state === 'sleep') wake(m); return propReact(m, d.prop); }
+  if (d.prop) { userAct(m); m.home = { x: m.x, y: m.y }; if (m.state === 'sleep') wake(m); return propReact(m, d.prop, true); }
   settle(m);
   m.home = { x: m.x, y: m.y };
   if (m.land) { setState(m, 'idle', 1.2); dustAt(m); userAct(m); emote(m, '!?', '', 2.2, 'karp-land'); return log(pick([`${J(m,'이/가')} 땅 위에서 파닥파닥 몸부림친다. 호수로 돌아가고 싶은 눈치다.`, `${J(m,'은/는')} 물 밖이 영 불편한지 펄떡펄떡 뛰며 호수 쪽을 바라본다.`]), [m]); }
@@ -6078,7 +6082,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.27';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.28';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6302,9 +6306,15 @@ const bagOpen = () => tabTo(ibagEl, () => { ibagEl.hidden = false; ibagFOnly = f
 // v8.98 경완: 맵 편집 모드 — 1단계는 화면 배치만 (아이콘으로 들어가 포켓몬·효과·버튼·상태창을 숨기고, 아래는 편집 메뉴, 우상단 저장으로 끝)
 // 안전 구역(포켓몬이 다니는 곳) 밖은 어둡게, 연못은 놓을 수 없는 곳. 소품을 누르면 테두리 빛 + 우상단 x + 땅에 닿는 자리
 let mapEdit = false, meSelEl = null, mePick = null;
-function meZoneDraw() { const c = $('#meZone'), g = c.getContext('2d'), { x0, x1 } = meZoneRect(); g.clearRect(0, 0, W, H); g.fillStyle = 'rgba(16,16,40,.55)'; g.fillRect(0, 0, W, H); g.clearRect(x0, MIN_Y, x1 - x0, MAX_Y0 - MIN_Y);
+function meZoneDraw() { const c = $('#meZone'); let g = c.getContext('2d'); const { x0, x1 } = meZoneRect(); g.clearRect(0, 0, W, H); g.fillStyle = 'rgba(16,16,40,.55)'; g.fillRect(0, 0, W, H); g.clearRect(x0, MIN_Y, x1 - x0, MAX_Y0 - MIN_Y);
   g.setLineDash([6, 4]); g.lineWidth = 2; g.strokeStyle = 'rgba(255,255,255,.9)'; g.strokeRect(x0 + 1, MIN_Y + 1, x1 - x0 - 2, MAX_Y0 - MIN_Y - 2);
-  for (const P of ALLP('pond')) { if (P === BG_SKIP) continue; g.beginPath(); g.ellipse(P.x, P.y, P.rx * 1.06, P.ry * 1.1, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(255,140,140,.95)'; g.stroke(); } }
+  for (const P of ALLP('pond')) { if (P === BG_SKIP) continue; g.beginPath(); g.ellipse(P.x, P.y, P.rx * 1.06, P.ry * 1.1, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(255,140,140,.95)'; g.stroke(); }
+  let hc = $('#meHudCv'); if (!hc) { hc = document.createElement('canvas'); hc.id = 'meHudCv'; hc.width = W * 3; hc.height = H * 3; hc.style.cssText = 'position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;pointer-events:none'; $('#meLayer').prepend(hc); } { const q = hc.getContext('2d'); q.setTransform(1, 0, 0, 1, 0, 0); q.clearRect(0, 0, hc.width, hc.height); q.setTransform(3, 0, 0, 3, 0, 0); g = q; }
+  g.setLineDash([4, 3]); g.lineWidth = 1.5; g.font = '10px Galmuri11, monospace'; g.textAlign = 'center'; g.textBaseline = 'middle';   /* v9.28 경완: 평소 화면의 버튼 자리를 반투명하게 (소품이 버튼 밑에 숨지 않게) */
+  for (const b of meHud) { g.fillStyle = 'rgba(255,255,255,.32)'; g.beginPath(); g.roundRect(b.x, b.y, b.w, b.h, 6); g.fill(); g.strokeStyle = 'rgba(255,255,255,.85)'; g.stroke(); g.fillStyle = 'rgba(30,30,50,.8)'; g.fillText(b.n, b.x + b.w / 2, b.y + b.h / 2); } }
+const ME_HUD = [['#clock', '시계'], ['#goldbar', '골드'], ['#btnMapEdit', '편집'], ['.berrybar', '열매'], ['#dlg', '상태창'], ['.menuwin', '메뉴'], ['#cmd', '메뉴']];
+let meHud = [];
+function meHudSnap() { const r = itemsEl.getBoundingClientRect(), k = r.width / itemsEl.offsetWidth || 1; return ME_HUD.map(([q, n]) => { const e = document.querySelector(q); if (!e || getComputedStyle(e).display === 'none') return null; const b = e.getBoundingClientRect(); if (!b.width || !b.height) return null; return { n, x: (b.left - r.left) / k, y: (b.top - r.top) / k, w: b.width / k, h: b.height / k }; }).filter(Boolean); }
 function meRender() { const F = S.fbag || {}, L = fbagList();   // v9.00: 가방에 있는 것만, 최근에 넣은 순
   $('#meList').innerHTML = L.length ? L.map(([k, n, src]) => `<button class="me-it" type="button" data-k="${esc(k)}" aria-pressed="${mePick === k}"><i class="icnt">${F[k]}</i><img class="fpth" src="${src}" alt=""><span>${esc(n)}</span></button>`).join('') : '<p class="me-none">가방에 놓을 소품이 없어요.<br>필드의 소품을 빼면 여기로 들어와요.</p>'; }
 function meSel(el) { if (meSelEl) meSelEl.classList.remove('meSel'); meSelEl = el; document.body.classList.toggle('meHas', !!el); const x = $('#meX'), f = $('#meFoot'); x.hidden = f.hidden = !el; if (!el) return; el.classList.add('meSel');
@@ -6326,7 +6336,7 @@ function meBgProps(on) { itemsEl.querySelectorAll('.prop.bgp').forEach(e => e.re
   for (const p of BGP) { const w = p.cv.width, h = p.cv.height, c = document.createElement('canvas'), g = c.getContext('2d'); c.width = w; c.height = h;
     g.drawImage(bg, p.l + BGOX, p.t, w, h, 0, 0, w, h); g.globalCompositeOperation = 'destination-in'; g.drawImage(p.cv, 0, 0);
     const e = document.createElement('div'); e.className = 'prop bgp ' + p.k; e.style.cssText = W2(c.toDataURL(), w * 2, h * 2) + `;left:${(p.l + w / 2) * 2}px;top:${(p.t + h) * 2}px`; e.style.setProperty('z-index', 0, 'important'); e.P = p; e.LV = p.v; itemsEl.prepend(e); } meFootAll(); }   /* 바탕 그림처럼 맨 아래 — 골라도 위의 꽃·나무를 덮지 않게 */
-function mapEditSet(on) { if (mapEdit === on) return; mapEdit = on; document.body.classList.toggle('mapEdit', on); for (const id of ['meBar', 'meTitle', 'meZone', 'meLayer']) $('#' + id).hidden = !on;
+function mapEditSet(on) { if (mapEdit === on) return; if (on) meHud = meHudSnap(); mapEdit = on; document.body.classList.toggle('mapEdit', on); for (const id of ['meBar', 'meTitle', 'meZone', 'meLayer']) $('#' + id).hidden = !on;
   if (on) { mePick = null; meBagD = {}; meXLR = [XL, XR]; meSnap = meSnapshot(); meBgProps(true); meZoneDraw(); meRender(); } else { meSel(null); meBgProps(false); meSnap = null; } sfx(on ? 'open' : 'tap'); dispatchEvent(new Event('resize')); }
 $('#btnMapEdit').onclick = () => mapEditSet(true);
 $('#meSave').onclick = () => { layKeep(); for (const K of LAY_ARR) for (const v of LAYOUT[K] || []) delete v.paN; mapEditSet(false); };   // v9.06 경완: 옮긴 자리를 이 플레이어 저장(S.lay)에 남김
