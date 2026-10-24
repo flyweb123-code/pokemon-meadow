@@ -2320,7 +2320,10 @@ function pondWp(m, tx, ty) {
   const POND = hit; if (!hit || !pondGap(POND) || (m.y < POND.y && ty < POND.y)) return null; const sd = m.x < POND.x ? -1 : 1, st = tx < POND.x ? -1 : 1;
   if (m.y < POND.y - POND.ry * .6) return { x: POND.x + st * POND.rx * 1.2, y: POND.y };   // 위에서 → 목표 쪽 옆으로
   if (m.y > POND.y && Math.abs(m.x - POND.x) < POND.rx * 1.1) return { x: POND.x + sd * POND.rx * 1.2, y: POND.y };   // 아래 띠 안 → 내 쪽 옆으로
-  return sd !== st ? { x: POND.x, y: POND.y - POND.ry * 1.3 } : null;   // 옆에서 반대편 아래로 → 위로 돌아서
+  if (sd === st) return null;
+  // v8.96 경완: 호수 옆(아래쪽)에서 반대편으로 갈 때 호수 위 가운데로 곧장 가면 물가를 따라 아래 띠로 미끄러져 갇혔다 → 먼저 내 쪽 물가를 따라 위로 올라간다
+  if (m.y > POND.y - POND.ry * .9) return { x: clamp(POND.x + sd * POND.rx * 1.15, XL + 22, XR - 22), y: POND.y - POND.ry * 1.0 };
+  return { x: POND.x, y: POND.y - POND.ry * 1.3 };   // 옆에서 반대편 아래로 → 위로 돌아서
 }
 // v4.60 경완: 불은 뜨겁다 — 걷는 포켓몬은 모닥불을 뚫고 지나가지 않고 둘레를 돌아간다
 const nearFire = (x, y) => { let b = LAYOUT.fire, bd = Infinity; for (const F of ALLP('fire')) { const d = (F.x - x) ** 2 + ((F.y - y) * 2) ** 2; if (d < bd) { bd = d; b = F; } } return b; };   // v8.95: 모닥불이 여러 개면 가까운 것
@@ -6026,7 +6029,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.95';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.96';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
