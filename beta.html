@@ -6978,16 +6978,17 @@ function mgMove(g, o, dt) {
   else if (o.pat === 'wave') o.y = o.by + Math.sin(T * 2.2) * (o.by - 4);   // v5.92 경완: 땅 가까이부터 높이까지 크게 오르내림 (내려올 땐 뛰어넘고 올라갈 땐 밑으로)
   else if (o.pat === 'leap') { if (!o.lp && o.x - g.PX < MG_LEAP[0]) { o.lp = g.t; o.lx = MG_LEAP[0]; }   /* v8.73 경완: 늘 예고 포물선 시작점에서 뛴다 (프레임에 따라 몇 px 안쪽에서 뛰던 것) */ if (o.lp) { const k = (g.t - o.lp) / .75; o.lf = k < 1 && !o.kb; if (o.lf) o.x = g.PX + o.lx - (o.lx - MG_LEAP[1]) * k;   /* v7.58 경완: 점선 궤도 그대로 — 뛰는 동안은 화면 흐름(속도·얼음·오버드라이브)과 상관없이 x 를 궤도에 맞춤 */   /* v6.83 경완: 화면 안에서 뛰고, 빠르기와 상관없이 늘 같은 자리에 떨어진다 */ o.y = k < 1 ? 4 * MG_LEAP[2] * k * (1 - k) : 0; o.sq = k < .1 ? .8 : k >= 1 && k < 1.15 ? .82 : 1; } else o.sq = o.x - g.PX < MG_LEAP[0] + 70 ? .8 + Math.abs(Math.sin(T * 14)) * .06 : 1 + Math.sin(T * 9) * .05; }   /* v6.81: 뛰기 전에 미리 웅크려 보인다 */   // 가까워지면 펄쩍
   else if (o.pat === 'dig') { const k = clamp((185 - (o.x - g.PX)) / 60, 0, 1); o.y = -o.h * (1 - k); o.up = k; }   // 땅속에서 튀어나옴
-  else if (o.pat === 'swoop') { const k = clamp((330 - (o.x - g.PX)) / 250, 0, 1);   /* v9.13 경완: 주뱃이 너무 어려워서 — 더 앞에서 내리꽂고, 주인공 앞에선 점프 꼭대기(약 125~140)보다 높이 올라가 있음 */ o.y = o.by - (o.by - 6) * Math.sin(k * Math.PI); }   // 하늘에서 내리꽂혔다 다시 올라감
+  else if (o.pat === 'swoop') { if (!o.wu && o.x < g.W - 16) o.wu = g.t; if (o.wu && g.t - o.wu < .45) o.sq = .86 + Math.abs(Math.sin((g.t - o.wu) * 30)) * .1; else if (o.wu && !o.ch) { o.ch = 1; o.sq = 1; }   /* v9.13 경완: 가디처럼 — 화면에 들어오면 0.45초 파닥이며 웅크리고, 내리꽂을 길을 점선으로 미리 */
+    const k = clamp((300 - (o.x - g.PX)) / 260, 0, 1); o.y = o.by - (o.by - 6) * Math.sin(k * Math.PI); }   // 하늘에서 내리꽂혔다 다시 올라감
 }
 function mgSpawn(g) {
   const ph = g.phase, pool = ['g', 'g', 'g', 'f'];
   if (ph >= 2) pool.push('gg', 'f'); if (ph >= 3) pool.push('gf', 'gg'); if (ph >= 4) pool.push('ggg', 'gf');
   const kind = pool[Math.floor(Math.random() * pool.length)], pick = L => L[Math.floor(Math.random() * L.length)], x0 = g.W + 50;
-  const add = (x, t, nsw) => { const f = t === 'f', RL = g.pool.roles && (f ? g.pool.froles : g.pool.roles), rp = RL ? pick(Object.keys(RL).filter(r => (MG_UNLOCK[r] || 1) <= ph && !(nsw && r === 'swoop'))) : null, k = rp ? RL[rp] : pick(f ? g.pool.fly : g.pool.gnd), B = mgBox(k), bh = B ? B.h : 28, sc = clamp(MG_WS, 16 / bh, (f ? 46 : 64) / bh), w = Math.max(14, (B ? B.w * sc : 26) * .75);
-    const pat = rp || (f ? 'wave' : MG_PAT[(SPECIES[k]?.t || [1])[0]] || 'still'), by = pat === 'swoop' ? 160 + Math.random() * 16 : f ? Math.round((g.phh || 36) + 22) : pat === 'dig' ? -200 : 0;
+  const add = (x, t) => { const f = t === 'f', RL = g.pool.roles && (f ? g.pool.froles : g.pool.roles), rp = RL ? pick(Object.keys(RL).filter(r => (MG_UNLOCK[r] || 1) <= ph)) : null, k = rp ? RL[rp] : pick(f ? g.pool.fly : g.pool.gnd), B = mgBox(k), bh = B ? B.h : 28, sc = clamp(MG_WS, 16 / bh, (f ? 46 : 64) / bh), w = Math.max(14, (B ? B.w * sc : 26) * .75);
+    const pat = rp || (f ? 'wave' : MG_PAT[(SPECIES[k]?.t || [1])[0]] || 'still'), by = pat === 'swoop' ? 120 + Math.random() * 20 : f ? Math.round((g.phh || 36) + 22) : pat === 'dig' ? -200 : 0;
     g.obs.push({ x, t, k, sc, w, h: Math.round(bh * sc), y: by, by, ph: Math.random() * 6, pat, x0: x }); };
-  if (kind === 'gg') { add(x0, 'g'); add(x0 + 46, 'g'); } else if (kind === 'ggg') { add(x0, 'g'); add(x0 + 46, 'g'); add(x0 + 92, 'g'); } else if (kind === 'gf') { add(x0, 'g'); add(x0 + 130, 'f', 1); }   // v9.13: 땅 장애물 바로 뒤엔 주뱃(내리꽂기)이 안 나옴 else add(x0, kind);
+  if (kind === 'gg') { add(x0, 'g'); add(x0 + 46, 'g'); } else if (kind === 'ggg') { add(x0, 'g'); add(x0 + 46, 'g'); add(x0 + 92, 'g'); } else if (kind === 'gf') { add(x0, 'g'); add(x0 + 130, 'f'); } else add(x0, kind);
   const base = g.v * (.5 + Math.random() * .6) + 110 - Math.min(60, ph * 10);
   g.gap = Math.max(g.v * .52 + 70, base + 20) + (kind.length > 1 ? 75 : 0);
 }
@@ -7289,14 +7290,17 @@ function mgRender(g, cv = $('#mgCv')) {
     for (let i = 0; i < 12; i++) { const an = i / 12 * Math.PI * 2 + mgH(i) * .4, d = g.gcl.R * (.25 + .75 * Math.sqrt(u)) * (.7 + mgH(i + 7) * .3), r = (8 + mgH(i + 3) * 10) * (1 + u); q.disc(g.gcl.x + Math.cos(an) * d, g.gcl.y + Math.sin(an) * d * .7 - u * 10, r, r * .8, `rgba(${i % 3 ? '150,90,200' : '200,160,240'},${(.55 * al).toFixed(2)})`); } }
   if (!thumb) for (const o of g.obs) {   /* v6.81 경완: 가디·윈디·디그다·뾰로롱 같은 움직이는 장애물은 들어오기 전부터 '!' 표시 */
     if (o.dead || o.flee || o.stomp || o.kb || o.bd || !MG_WARN[o.pat] || o.x > W + 200) continue;
-    if (o.pat === 'dash' ? o.ch : o.pat === 'leap' ? o.lp && g.t - o.lp > .75 : o.pat === 'dig' ? o.up > .05 : o.x - g.PX < 230) continue;
+    if (o.pat === 'dash' ? o.ch : o.pat === 'leap' ? o.lp && g.t - o.lp > .75 : o.pat === 'dig' ? o.up > .05 : o.x - g.PX < 40) continue;
     const lpk = o.pat === 'leap' && o.lp ? (g.t - o.lp) / .75 : -1;   /* v8.73 경완: 뛰는 동안에도 예고 포물선을 남겨, 지나간 점만 지운다 (포물선 따라 움직이는 게 보이게) */
-    if (lpk < 0) { const ex = Math.min(o.x, W - 12), ey = o.pat === 'dig' ? GY - 24 : GY - Math.max(0, o.y) - (o.h || 30) - 16 + Math.sin(t * 9) * 2, bl = Math.floor(t * 6) % 2;
+    if (lpk < 0 && !(o.pat === 'swoop' && o.x - g.PX < 300)) { const ex = Math.min(o.x, W - 12), ey = o.pat === 'dig' ? GY - 24 : GY - Math.max(0, o.y) - (o.h || 30) - 16 + Math.sin(t * 9) * 2, bl = Math.floor(t * 6) % 2;
     q.rect(ex - 7, ey - 9, 14, 18, '#2a1e28'); q.rect(ex - 5, ey - 7, 10, 14, bl ? '#ff5a3a' : '#ffd23a'); q.rect(ex - 1, ey - 5, 2, 6, '#2a1e28'); q.rect(ex - 1, ey + 3, 2, 2, '#2a1e28');
     if (o.x > W - 12) { q.rect(ex + 8, ey - 3, 2, 6, '#2a1e28'); q.rect(ex + 10, ey - 1, 2, 2, '#2a1e28'); } }
     if (o.pat === 'leap') { const al = clamp((W + 120 - o.x) / 90, 0, 1) * (lpk > .85 ? (1 - lpk) / .15 : 1), x0 = g.PX + MG_LEAP[0], x1 = g.PX + MG_LEAP[1], hh = (o.h || 30) * .5;   /* v6.83 경완: 발챙이가 뛸 길을 점선으로 미리 */
       for (let i = 1; i < 14; i++) { if (lpk < 0 && i % 2 === (Math.floor(t * 8) % 2)) continue; const k = i / 14; if (k <= lpk) continue; const px = x0 - (x0 - x1) * k, py = GY - 4 * MG_LEAP[2] * k * (1 - k) - hh; q.disc(px, py, 3, 3, `rgba(42,30,40,${(.7 * al).toFixed(2)})`); q.disc(px, py, 2, 2, `rgba(255,255,255,${al.toFixed(2)})`); }
-      q.disc(x1, GY, 9, 3, `rgba(255,90,58,${(.75 * al).toFixed(2)})`); q.disc(x0, GY, 6, 2, `rgba(255,255,255,${(.6 * al).toFixed(2)})`); } }
+      q.disc(x1, GY, 9, 3, `rgba(255,90,58,${(.75 * al).toFixed(2)})`); q.disc(x0, GY, 6, 2, `rgba(255,255,255,${(.6 * al).toFixed(2)})`); }
+    if (o.pat === 'swoop') { const al = clamp((W + 120 - o.x) / 90, 0, 1), hh = (o.h || 30) * .5, dx0 = o.x - g.PX;   /* v9.13 경완: 주뱃이 내리꽂을 길을 점선으로 미리 (발챙이처럼) */
+      for (let i = 0; i <= 28; i++) { const k = i / 28, dx = 300 - 260 * k; if (dx >= dx0 || i % 2 === (Math.floor(t * 8) % 2)) continue; const px = g.PX + dx, py = GY - (o.by - (o.by - 6) * Math.sin(k * Math.PI)) - hh; q.disc(px, py, 3, 3, `rgba(42,30,40,${(.7 * al).toFixed(2)})`); q.disc(px, py, 2, 2, `rgba(255,255,255,${al.toFixed(2)})`); }
+      if (dx0 > 170) q.disc(g.PX + 170, GY, 9, 3, `rgba(255,90,58,${(.75 * al).toFixed(2)})`); } }
   if (g.fx.str > 0 && g.ab.k === 'beam' && g.bmGo && g.bmUp > 0 && g.bmUp < MG_BM_IN) { const B = mgBeamSeg(g), k = 1 - g.bmUp / MG_BM_IN; q.disc(B.x0 + 4, B.y0 + 4, 4 + 12 * k, 4 + 12 * k, 'rgba(180,138,255,.45)'); q.disc(B.x0 + 4, B.y0 + 4, 2 + 6 * k, 2 + 6 * k, '#ffffff'); }   /* v7.17 입에 빛이 모임 */
   if (g.fx.dig > 0 && g.digS >= MG_DIG_U + MG_DIG_D) { const X = g.PX + 2, wb = Math.sin(t * 34) * .06, rx = 24 * (1 + wb), ry = 11 * (1 - wb) + (g.digS < MG_DIG_IN ? (1 - (MG_DIG_IN - g.digS) / (MG_DIG_IN - MG_DIG_U - MG_DIG_D)) * 0 : 0);   /* v7.15 경완: 땅속 흙더미 그래픽 — 꿈틀대는 흙더미·금·돌멩이·흙먼지 꼬리 */
     for (let i = 0; i < 5; i++) { const a = ((t * 1.6 + i / 5) % 1); q.disc(X - 16 - a * 60, GY - 2 - a * 4, 7 * (1 - a) + 2, 4 * (1 - a) + 1, `rgba(200,160,110,${(.5 * (1 - a)).toFixed(2)})`); }
