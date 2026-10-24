@@ -368,7 +368,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .shopwin .soon{margin:auto;color:var(--dim);font-size:16px;text-align:center}
 .runtabs.shoptabs{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:10px}
 .itm .vpic img{width:48px;height:48px;margin:4px;image-rendering:pixelated}.itm .icnt{position:absolute;top:4px;right:6px;font-style:normal;font-weight:700;font-size:14px;line-height:16px;text-align:right;color:#20202c}   /* v7.53 경완: 가진 수량은 박스 없이 글자만 */.itm .icnt::before{content:'×';font-weight:400;margin-right:1px}.runtabs.shoptabs.bagtabs{grid-template-columns:repeat(3,minmax(0,1fr))}
-.sb-pic{width:40px;height:40px;image-rendering:pixelated;flex:none}.shop-bar .sb-name span{white-space:normal}
+.sb-pic{width:40px;height:40px;image-rendering:pixelated;flex:none;object-fit:contain}.itm .vpic img.fpth{object-fit:contain}.shop-bar .sb-name span{white-space:normal}
 #itemPop{position:fixed;inset:0;z-index:5900;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35)}#itemPop[hidden]{display:none}.ipwin{width:min(92vw,400px)}.iprow{display:flex;align-items:center;gap:10px;padding:8px 4px;border-top:2px dashed var(--inner)}.iprow img{width:40px;height:40px;image-rendering:pixelated}.iprow div{flex:1;min-width:0}.iprow b{display:block}.iprow span{font-size:12px;color:var(--dim)}#mg .mg-card.open:active{transform:none;box-shadow:3px 3px 0 rgba(0,0,0,.15)}#mg .mg-abn{display:flex;align-items:center;gap:5px}#mg .mg-abn .tyi{width:16px!important;height:16px!important;flex:none}#mg .mg-abn .rk{flex:none;zoom:.8}.bagwin .bag-body{flex:1;min-height:0;overflow-y:auto}.bag-ask{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;width:min(84vw,300px)}.bag-ask img{width:56px;height:56px;image-rendering:pixelated}.bag-ask p{margin:4px 0 0;font-size:16px}.bag-ask span{font-size:12px;color:var(--dim)}.bag-yn{display:flex;gap:8px;margin-top:8px}.bag-yn .lk-btn{min-width:90px}.ibag-hb{display:flex;gap:6px}#ibagMulti::before{display:none}.itm .ichk{position:absolute;top:2px;left:2px;width:14px;height:14px;border:2px solid #20202c;background:#fff;box-sizing:border-box}.itm[aria-current="true"] .ichk{background:#20202c;box-shadow:inset 0 0 0 2px #fff}.ibag-multi .itm[aria-current="true"]{border-color:var(--cursor)}.lk-btn.warn{background:#e0555a;color:#fff}#ibagBar{position:relative}#ibagBar .ibag-toss{position:absolute;right:-3px;bottom:calc(100% + 6px);width:40px;height:40px;display:flex;align-items:center;justify-content:center;border:3px solid var(--frame);background:#fff;padding:0;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.18)}#ibagBar .ibag-toss svg{width:24px;height:24px;display:block}#ibagBar .ibag-toss:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.18)}   /* v7.60 경완: 버리기 = 박스 위쪽 휴지통 아이콘 */.bag-cnt{display:flex;align-items:center;gap:10px;margin-top:4px}.bag-cnt b{min-width:44px;font-size:18px}.bag-cnt .lk-btn{min-width:40px;padding:6px 0}.bag-h{margin:10px 2px 6px;font-size:13px;color:var(--dim)}.bag-n{font-style:normal;font-size:13px;color:var(--dim)}.bag-none{text-align:center;margin:18px 0 10px;line-height:1.6}.bag-shop{display:block;margin:0 auto 6px}
 .fxbar{display:flex;flex-direction:column;align-items:flex-end;gap:4px}.fxbar:empty{display:none}.fxc{display:flex;align-items:center;gap:4px;font-size:15px;color:#fff;text-shadow:0 1px 0 #000,1px 0 0 #000,-1px 0 0 #000,0 -1px 0 #000}.fxc img{width:40px;height:40px;image-rendering:pixelated}   /* v6.44 경완: 필드 효과 아이콘 크게, 여러 개면 아래로 줄줄이 */
 /* v6.43 경완: 향로를 쓰면 필드의 향로 아이콘 둘레로 향이 몽글몽글 퍼져 나감 (도트 연기 알갱이 7개가 엇갈려 떠오르며 옆·아래로 번짐) */#gold{position:relative;z-index:3}.fxbar{position:relative;z-index:1}.fxc b{font-variant-numeric:tabular-nums;min-width:3.2em;text-align:left}.fxc.fx-incense{position:relative}.fxc.fx-charm{position:relative}.fxc.fx-charm img{position:relative;z-index:1;animation:chGlow 2.2s ease-in-out infinite}.fxc .spk{position:absolute;left:20px;top:20px;width:0;height:0;pointer-events:none;z-index:2}.fxc .spk i{position:absolute;left:-6px;top:-6px;width:12px;height:12px;background:radial-gradient(circle,#fff 0 18%,transparent 22%),linear-gradient(transparent 44%,#fff8c0 44% 56%,transparent 56%),linear-gradient(90deg,transparent 44%,#fff8c0 44% 56%,transparent 56%);filter:drop-shadow(0 0 3px #ffe680) drop-shadow(0 0 6px #9fe6ff);opacity:0;transform:translate(var(--x),var(--y)) scale(.2) rotate(0);animation:chTw 2.4s ease-in-out infinite}.fxc .spk i:nth-child(1){--x:-18px;--y:-16px;animation-delay:0s}.fxc .spk i:nth-child(2){--x:16px;--y:-20px;animation-delay:-.4s}.fxc .spk i:nth-child(3){--x:20px;--y:10px;animation-delay:-.8s}.fxc .spk i:nth-child(4){--x:-20px;--y:14px;animation-delay:-1.2s}.fxc .spk i:nth-child(5){--x:2px;--y:-26px;animation-delay:-1.6s}.fxc .spk i:nth-child(6){--x:-4px;--y:22px;animation-delay:-2s}@keyframes chTw{0%,100%{opacity:0;transform:translate(var(--x),var(--y)) scale(.2) rotate(0)}40%{opacity:1;transform:translate(var(--x),var(--y)) scale(1.15) rotate(45deg)}70%{opacity:.5;transform:translate(var(--x),var(--y)) scale(.7) rotate(90deg)}}@keyframes chGlow{0%,100%{filter:drop-shadow(0 0 2px rgba(159,230,255,.6))}50%{filter:drop-shadow(0 0 7px rgba(255,240,150,.95)) brightness(1.15)}}   /* v6.52 경완: 빛나는 부적을 쓰면 필드 부적 아이콘 둘레에 반짝반짝 */.fxc.fx-incense img{position:relative;z-index:1;animation:incBob 2.4s ease-in-out infinite}.fxc .smk{position:absolute;left:20px;top:18px;width:0;height:0;pointer-events:none}.fxc .smk::before{content:'';position:absolute;left:-30px;top:-22px;width:60px;height:52px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,190,230,.45),rgba(220,170,255,.18) 60%,transparent);animation:incGlow 3s ease-in-out infinite}.fxc .smk i{position:absolute;left:-11px;top:-16px;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.95) 0%,rgba(246,232,255,.8) 38%,rgba(226,200,242,.35) 62%,transparent 72%);filter:blur(2px);opacity:0;will-change:transform,opacity;animation:incPuff 4.2s cubic-bezier(.3,.1,.5,1) infinite}.fxc .smk i:nth-child(1){--x:-14px;--w:6px;--y:-58px;animation-delay:0s}.fxc .smk i:nth-child(2){--x:10px;--w:-8px;--y:-64px;animation-delay:-.6s}.fxc .smk i:nth-child(3){--x:-24px;--w:-4px;--y:-50px;animation-delay:-1.2s}.fxc .smk i:nth-child(4){--x:4px;--w:9px;--y:-70px;animation-delay:-1.8s}.fxc .smk i:nth-child(5){--x:-30px;--w:7px;--y:-44px;animation-delay:-2.4s}.fxc .smk i:nth-child(6){--x:16px;--w:-6px;--y:-56px;animation-delay:-3s}.fxc .smk i:nth-child(7){--x:-8px;--w:-9px;--y:-66px;animation-delay:-3.6s}@keyframes incPuff{0%{opacity:0;transform:translate(0,4px) scale(.35);filter:blur(1px)}15%{opacity:.95}45%{transform:translate(calc(var(--x) * .45 + var(--w)),calc(var(--y) * .45)) scale(1.3);filter:blur(3px)}75%{opacity:.5}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(2.6);filter:blur(6px)}}   /* v6.47 경완: 도트 말고 진짜 연기처럼 — 흐린 동그란 김이 뚜껑에서 흔들리며 피어올라 커지고 옅어짐 */@keyframes incGlow{0%,100%{opacity:.55;transform:scale(.9)}50%{opacity:1;transform:scale(1.12)}}@keyframes incBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}@media (prefers-reduced-motion:reduce){.fxc .smk i,.fxc.fx-incense img{animation:none}}
@@ -1574,7 +1574,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
     </section>
     <section class="stab" data-st="tool" hidden><div class="shop-inv" id="toolList"></div><div class="shop-bar" id="toolBar" hidden></div><p class="shop-msg" id="toolMsg"></p></section>
     <section class="stab" data-st="item" hidden><div class="shop-inv" id="itemList"></div><div class="shop-bar" id="itemBar" hidden></div><p class="shop-msg" id="itemMsg"></p></section>
-    <section class="stab" data-st="fashion" hidden><p class="soon">아직 준비중입니다</p></section>
+    <section class="stab" data-st="fashion" hidden><div class="shop-inv" id="fpList"></div><div class="shop-bar" id="fpBar" hidden></div><p class="shop-msg" id="fpMsg"></p></section>
     <div class="runtabs shoptabs" id="shopTabs" role="tablist"><button class="runtab" role="tab" data-st="item">아이템</button><button class="runtab" role="tab" data-st="tool">도구</button><button class="runtab" role="tab" data-st="bgm">음악</button><button class="runtab" role="tab" data-st="fashion">필드</button></div>
   </div>
 </div>
@@ -6072,7 +6072,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.00';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.01';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6185,11 +6185,12 @@ const ITEMS = [
 ];
 const ITEM = Object.fromEntries(ITEMS.map(o => [o.id, o])), ITEM_BY_N = Object.fromEntries(ITEMS.map(o => [o.n, o.id]));
 // 향로: 쓰고 min 분 동안 줍는 알의 등급 확률에 mul 을 곱한다 (다시 나눠 합 1). 빛나는 부적: min 분 동안 줍는 알 n 개에 1개꼴로 이로치가 든 알
-let SHOP = { price: {}, inc: { min: 30, mul: [1, 1, 1.5, 3, 3] }, charm: { min: 30, n: 20 } };   /* v8.44 경완: 향로 배율 [1,1,1.5,3,3] — 체감은 되면서(한 번에 에픽 반 개쯤 더) 첫 전설이 너무 당겨지지 않게 (8.43 의 1.2·1.4·1.5 는 거의 체감 안 됨, 예전 2.5·8·10 은 첫 전설 절반) */
-function applyShop(o) { const D = { price: {}, inc: { min: 30, mul: [1, 1, 1.5, 3, 3] }, charm: { min: 30, n: 20 } };   /* v7.82 경완: 빛나는 부적 60 → 30분 */ o = o && typeof o === 'object' ? o : {};
+let SHOP = { field: [], price: {}, inc: { min: 30, mul: [1, 1, 1.5, 3, 3] }, charm: { min: 30, n: 20 } };   /* v8.44 경완: 향로 배율 [1,1,1.5,3,3] — 체감은 되면서(한 번에 에픽 반 개쯤 더) 첫 전설이 너무 당겨지지 않게 (8.43 의 1.2·1.4·1.5 는 거의 체감 안 됨, 예전 2.5·8·10 은 첫 전설 절반) */
+function applyShop(o) { const D = { field: [], price: {}, inc: { min: 30, mul: [1, 1, 1.5, 3, 3] }, charm: { min: 30, n: 20 } };   /* v7.82 경완: 빛나는 부적 60 → 30분 */ o = o && typeof o === 'object' ? o : {};
   for (const [k, v] of Object.entries(o.price || {})) if ((ITEM[k] || (k.startsWith('bgm:') && TRACKS.some(t => 'bgm:' + t.id === k))) && v >= 0 && v <= 1e7) D.price[k] = Math.round(+v);
   if (o.inc) { if (o.inc.min >= 1 && o.inc.min <= 1440) D.inc.min = +o.inc.min; if (Array.isArray(o.inc.mul) && o.inc.mul.length === 5 && o.inc.mul.every(x => x >= 0 && x <= 100)) D.inc.mul = o.inc.mul.map(Number); }
   if (o.charm) { if (o.charm.min >= 1 && o.charm.min <= 1440) D.charm.min = +o.charm.min; if (o.charm.n >= 1 && o.charm.n <= 100000) D.charm.n = +o.charm.n; }
+  if (Array.isArray(o.field)) for (const r of o.field) if (Array.isArray(r) && typeof r[0] === 'string' && r[1] >= 0 && r[1] <= 1e7 && !D.field.some(x => x[0] === r[0])) D.field.push([r[0], Math.round(+r[1])]);   /* v9.01 경완: 필드 상점 = [[소품 이름표, 가격], ...] 작업실 상점 › 필드 */
   SHOP = D; }
 const itemPrice = id => SHOP.price[id] ?? ITEM[id].p;
 const trackPrice = t => SHOP.price['bgm:' + t.id] ?? t.price;   // 배경 음악 가격도 작업실에서
@@ -6230,13 +6231,25 @@ function itemSeenClamp() { const I = itemsOf(), Z = S.itemSeen; if (Z) for (cons
 let ibagFresh = new Set();
 const ibagEl = $('#ibag'); let ibagSel = null, ibagMul = false, ibagPick = new Set();   /* v5.90 경완: 가방 여러 개 선택·버리기 */
 let ibagTab = 'item', ibagFOnly = false, ibagFSel = null;   // v9.00 경완: 가방 '필드' 탭 = 맵에서 뺀 소품. 맵 편집의 '가방 전체보기'는 필드 탭만 (탭 없이)
-const fbagList = () => { const F = S.fbag || {}, T = S.fbagT || {}; return ME_KINDS.filter(([k]) => F[k] > 0).sort((a, b) => (T[b[0]] || 0) - (T[a[0]] || 0)); };   // 최근에 넣은 것 먼저
+// v9.01 경완: 필드 소품 이름표 = 작업실 맵 '전체 소품'과 같은 것 (tree·perch·fire·bed·stump·pond·rockS·rockL·bush·puddle, 내 소품 id, 'sc:'+스칼렛 소품 id)
+// 그림은 정사각 캔버스 가운데(아래 맞춤)에 원래 비율대로 넣어서 어느 칸에 넣어도 찌그러지지 않게 한다
+const FP_N = { tree: '열매나무', perch: '횃대', fire: '모닥불', bed: '꽃밭', stump: '그루터기', pond: '연못', rockS: '작은 바위', rockL: '큰 바위', bush: '덤불', puddle: '웅덩이' }, fpThC = {};
+function fpSquare(src, cv) { const w = cv.width, h = cv.height, n = Math.max(w, h) + 2, c = document.createElement('canvas'); c.width = c.height = n; const g = c.getContext('2d'); g.imageSmoothingEnabled = false; g.drawImage(cv, Math.floor((n - w) / 2), n - h - 1 - Math.floor((n - h - 2) / 2)); return c.toDataURL(); }
+function fpPond() { const c = document.createElement('canvas'); c.width = 30; c.height = 18; const g = c.getContext('2d'), E = (rx, ry, f) => { g.fillStyle = f; g.beginPath(); g.ellipse(15, 9, rx, ry, 0, 0, 7); g.fill(); }; E(15, 9, '#b89a6a'); E(13.5, 7.8, '#3a78b8'); E(11, 6, '#58a8e0'); g.fillStyle = '#5aa83a'; g.fillRect(8, 8, 4, 2); g.fillRect(18, 6, 3, 2); g.fillStyle = '#f0a0c0'; g.fillRect(9, 7, 1, 1); g.fillStyle = '#d8f0ff'; g.fillRect(14, 5, 3, 1); return c; }
+function fpCv(b, L) { const cv = b === 'tree' ? ART.tree() : b === 'perch' ? ART.perch() : b === 'bush' ? ART.bush() : b === 'stump' ? ART.stump() : b === 'fire' ? ART.campfire() : b === 'rockS' ? ART.rock(10, 7, 13 * 977, 1) : b === 'rockL' ? ART.rock(16, 10, 17 * 977, 2) : b === 'pond' ? fpPond() : null; return cv ? tintCv(cv, L) : null; }
+function fpInfo(k) { if (typeof k !== 'string') return null;
+  if (k.startsWith('sc:')) { const id = k.slice(3), A = LAYOUT.scArt?.[id], I = A && scImg(id); if (!I) return null; if (!fpThC[k] || fpThC[k].key !== I.key) { const c = document.createElement('canvas'), h = A.px.length, w = A.px[0].length; c.width = w; c.height = h; const g = c.getContext('2d'); A.px.forEach((r, y) => { for (let x = 0; x < r.length; x++) { const col = A.pal?.[r[x]]; if (r[x] !== '.' && col) { g.fillStyle = col; g.fillRect(x, y, 1, 1); } } }); fpThC[k] = { key: I.key, src: fpSquare(I.src, c) }; } return { n: A.n || '소품', src: fpThC[k].src }; }
+  const KD = LAYOUT.kinds?.[k], b = KD ? KD.b : k; if (!FP_N[b]) return null;
+  if (!fpThC[k]) { const L = KD ? lkRes(KD.lk) : lookOf(b === 'rockS' || b === 'rockL' ? 'rock' : b), cv = fpCv(b, L);
+    if (cv) fpThC[k] = { src: fpSquare('', cv) }; else { const im = b === 'bed' ? SPR.flw?.sun?.src : b === 'puddle' ? SPR.puddle : ''; fpThC[k] = { src: im || '' }; } }
+  return { n: KD ? KD.n : FP_N[b], src: fpThC[k].src }; }
+const fbagList = () => { const F = S.fbag || {}, T = S.fbagT || {}; return Object.keys(F).filter(k => F[k] > 0 && fpInfo(k)).sort((a, b) => (T[b] || 0) - (T[a] || 0)).map(k => [k, fpInfo(k).n, fpInfo(k).src]); };   // 최근에 넣은 것 먼저
 function fbagAdd(k, n = 1) { const F = S.fbag || (S.fbag = {}), T = S.fbagT || (S.fbagT = {}); F[k] = (F[k] || 0) + n; if (F[k] <= 0) { delete F[k]; delete T[k]; } else if (n > 0) T[k] = Date.now(); save(); }
-function renderFBag() { const F = S.fbag || {}, A = meArtOf(), L = fbagList(); if (ibagFSel && !(F[ibagFSel] > 0)) ibagFSel = null;
+function renderFBag() { const F = S.fbag || {}, L = fbagList(); if (ibagFSel && !(F[ibagFSel] > 0)) ibagFSel = null;
   document.querySelectorAll('#ibagTabs [data-bt]').forEach(b => b.setAttribute('aria-selected', b.dataset.bt === 'field')); $('#ibagMulti').hidden = true; ibagEl.classList.remove('ibag-multi');
-  $('#ibagBody').innerHTML = L.length ? '<div class="shop-inv">' + L.map(([k, n]) => `<button class="vin itm" data-fk="${k}" aria-current="${ibagFSel === k}"><span class="vpic"><img src="${A[k]}" alt=""></span><i class="icnt">${F[k]}</i><span class="vname">${n}</span></button>`).join('') + '</div>' : '<p class="bag-none">가방에 필드 소품이 없어요.<br>맵 편집에서 필드의 소품을 빼면 여기로 들어와요.</p>';
-  const bar = $('#ibagBar'), o = ME_KINDS.find(([k]) => k === ibagFSel); bar.hidden = !o; if (!o) return;
-  bar.innerHTML = `<img class="sb-pic" src="${A[o[0]]}" alt=""><div class="sb-name"><b>${o[1]} ×${F[o[0]]}</b><span>맵 편집에서 필드에 놓을 수 있어요.</span></div>` + (mapEdit ? '' : '<button class="lk-btn main" data-place>놓으러 가기</button>'); }
+  $('#ibagBody').innerHTML = L.length ? '<div class="shop-inv">' + L.map(([k, n, src]) => `<button class="vin itm" data-fk="${esc(k)}" aria-current="${ibagFSel === k}"><span class="vpic"><img class="fpth" src="${src}" alt=""></span><i class="icnt">${F[k]}</i><span class="vname">${n}</span></button>`).join('') + '</div>' : '<p class="bag-none">가방에 필드 소품이 없어요.<br>맵 편집에서 필드의 소품을 빼면 여기로 들어와요.</p>';
+  const bar = $('#ibagBar'), o = L.find(([k]) => k === ibagFSel); bar.hidden = !o; if (!o) return;
+  bar.innerHTML = `<img class="sb-pic fpth" src="${o[2]}" alt=""><div class="sb-name"><b>${esc(o[1])} ×${F[o[0]]}</b><span>맵 편집에서 필드에 놓을 수 있어요.</span></div>` + (mapEdit ? '' : '<button class="lk-btn main" data-place>놓으러 가기</button>'); }
 const bagOpenField = () => tabTo(ibagEl, () => { ibagEl.hidden = false; ibagFOnly = true; ibagTab = 'field'; ibagFSel = null; ibagMul = false; ibagPick.clear(); $('#ibagMsg').textContent = ''; renderIBag(); });
 $('#ibagTabs').addEventListener('click', e => { const b = e.target.closest('[data-bt]'); if (!b || b.dataset.bt === ibagTab) return; ibagFresh = new Set();   /* v7.56 경완: 보고 탭을 옮기면 칸의 빨간 점도 사라짐 */ ibagTab = b.dataset.bt; ibagSel = null; ibagPick.clear(); $('#ibagMsg').textContent = ''; renderIBag(); });
 function renderIBag() {
@@ -6279,14 +6292,12 @@ let bagTapT = 0; $('#btnBag').onclick = () => { const w = $('#btnBag'); if (bagT
 const bagOpen = () => tabTo(ibagEl, () => { ibagEl.hidden = false; ibagFOnly = false; ibagFresh = new Set(); ibagTab = 'item'; ibagSel = null; ibagMul = false; ibagPick.clear(); $('#ibagMsg').textContent = ''; renderIBag(); });
 // v8.98 경완: 맵 편집 모드 — 1단계는 화면 배치만 (아이콘으로 들어가 포켓몬·효과·버튼·상태창을 숨기고, 아래는 편집 메뉴, 우상단 저장으로 끝)
 // 안전 구역(포켓몬이 다니는 곳) 밖은 어둡게, 연못은 놓을 수 없는 곳. 소품을 누르면 테두리 빛 + 우상단 x + 땅에 닿는 자리
-let mapEdit = false, meSelEl = null, meArt = null, mePick = null;
-const ME_KINDS = [['tree', '열매나무'], ['perch', '횃대'], ['bush', '덤불'], ['fire', '모닥불'], ['stump', '그루터기'], ['rock', '바위']];
-const meArtOf = () => meArt || (meArt = { tree: SPR.tree, perch: SPR.perch, bush: SPR.bush, fire: ART.campfire().toDataURL(), stump: ART.stump().toDataURL(), rock: ART.rock(14, 9, 9 * 977, 2).toDataURL() });
+let mapEdit = false, meSelEl = null, mePick = null;
 function meZoneDraw() { const c = $('#meZone'), g = c.getContext('2d'), x0 = Math.max(0, XL) + 6, x1 = Math.min(W, XR) - 6; g.clearRect(0, 0, W, H); g.fillStyle = 'rgba(16,16,40,.55)'; g.fillRect(0, 0, W, H); g.clearRect(x0, MIN_Y, x1 - x0, MAX_Y0 - MIN_Y);
   g.setLineDash([6, 4]); g.lineWidth = 2; g.strokeStyle = 'rgba(255,255,255,.9)'; g.strokeRect(x0 + 1, MIN_Y + 1, x1 - x0 - 2, MAX_Y0 - MIN_Y - 2);
   for (const P of ALLP('pond')) { g.beginPath(); g.ellipse(P.x, P.y, P.rx * 1.06, P.ry * 1.1, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(255,140,140,.95)'; g.stroke(); } }
-function meRender() { const F = S.fbag || {}, A = meArtOf(), L = fbagList();   // v9.00: 가방에 있는 것만, 최근에 넣은 순
-  $('#meList').innerHTML = L.length ? L.map(([k, n]) => `<button class="me-it" type="button" data-k="${k}" aria-pressed="${mePick === k}"><i class="icnt">${F[k]}</i><img src="${A[k]}" alt=""><span>${n}</span></button>`).join('') : '<p class="me-none">가방에 놓을 소품이 없어요.<br>필드의 소품을 빼면 여기로 들어와요.</p>'; }
+function meRender() { const F = S.fbag || {}, L = fbagList();   // v9.00: 가방에 있는 것만, 최근에 넣은 순
+  $('#meList').innerHTML = L.length ? L.map(([k, n, src]) => `<button class="me-it" type="button" data-k="${esc(k)}" aria-pressed="${mePick === k}"><i class="icnt">${F[k]}</i><img class="fpth" src="${src}" alt=""><span>${esc(n)}</span></button>`).join('') : '<p class="me-none">가방에 놓을 소품이 없어요.<br>필드의 소품을 빼면 여기로 들어와요.</p>'; }
 function meSel(el) { if (meSelEl) meSelEl.classList.remove('meSel'); meSelEl = el; const x = $('#meX'), f = $('#meFoot'); x.hidden = f.hidden = !el; if (!el) return; el.classList.add('meSel');
   const cx = parseFloat(el.style.left), by = parseFloat(el.style.top), w = parseFloat(el.style.width) || el.offsetWidth, h = parseFloat(el.style.height) || el.offsetHeight;
   Object.assign(x.style, { left: cx + w * .36 + 'px', top: by - h * .92 + 'px' }); Object.assign(f.style, { left: cx + 'px', top: by - 2 + 'px', width: Math.round(w * .34) + 'px', height: Math.round(w * .12) + 'px' }); }
@@ -6341,7 +6352,7 @@ const MG_AB = {   // v8.17 경완: 게임 창에서 스크롤 없이 보이게 �
   9: { n: '철벽', c: 12, k: 'iron', d: '5초 동안 몸이 강철처럼 단단하고 무거워져서, 부딪히는 포켓몬을 튕겨 날려 버려요' },   /* v6.27 경완: 강철 돌진 → 철벽 */
   10: { n: '화염방사', c: 12, k: 'fire', d: '앞으로 불꽃을 뿜어요. 누르고 있는 동안 발밑 불꽃으로 떠올라요' },   /* v6.30 경완: 이름 화염방사, 쿨타임 8→12초, 손가락 위아래로 겨누기 */
   11: { n: '파도타기', c: 12, k: 'surf', d: '꾹 누르는 동안 파도에 올라타 앞 장애물을 모두 쓸어 버려요' },   /* v6.37 경완: 실제 파도처럼 높은 파도에 올라탄다 */
-  12: { n: '덩굴채찍', c: 6, k: 'vine', d: '채찍이 닿는 범위의 장애물을 모두 날려 버려요' },
+  12: { n: '덩굴채찍', c: 4, k: 'vine', d: '채찍이 닿는 범위의 장애물을 모두 날려 버려요' },   // v9.01 경완: 쿨 6→4초
   13: { n: '오버드라이브', c: 12, k: 'bolt', d: '꾹 누르는 동안 빠르게 달리며 무적, 떼면 전기 폭발로 날려요' },   /* v6.32 경완: 볼트 대시 → 오버드라이브, 끝날 때 전기 폭발 */   // v6.17 경완: 누른 만큼 이어지고 떼면 끝
   14: { n: '부유', c: 10, k: 'lev', d: '4초 동안 누르면 둥실 뜨고, 떠 있을 때 닿는 포켓몬을 날려요' },   // v7.77 경완: 쿨 16→10   // v6.18 경완: 이름 부유, 떠 있는 동안 맞아도 안 죽고 날린다
    // v6.17 경완: 순간이동 → 한 번 누르면 크게 부유
@@ -7444,7 +7455,18 @@ function setShopTab(t) {
   document.querySelectorAll('.shopwin .stab').forEach(x => x.hidden = x.dataset.st !== t);
   if (t !== 'bgm' && bgm.preview) { bgmStopPreview(); renderShop(); }
   if (t === 'tool' || t === 'item') { itemSel[t] = null; $(`#${t}Msg`).textContent = ''; renderItems(t); }
+  if (t === 'fashion') { fpSel = null; $('#fpMsg').textContent = ''; renderFpShop(); }
 }
+// v9.01 경완: 상점 필드 탭 = 작업실에서 고른 필드 소품 (사면 가방 필드 탭으로)
+let fpSel = null;
+function renderFpShop() { const L = SHOP.field.filter(([k]) => fpInfo(k)), F = S.fbag || {};
+  $('#fpList').innerHTML = L.length ? L.map(([k, p]) => { const o = fpInfo(k); return `<button class="vin itm" data-fp="${esc(k)}" aria-current="${fpSel === k}"><span class="vpic"><img class="fpth" src="${o.src}" alt=""></span>${F[k] ? `<i class="icnt">${F[k]}</i>` : ''}<span class="vname">${esc(o.n)}</span><span class="vtag">${p.toLocaleString()}G</span></button>`; }).join('') : '<p class="soon">아직 준비중입니다</p>';
+  const r = L.find(([k]) => k === fpSel), bar = $('#fpBar'); bar.hidden = !r; if (!r) return; const o = fpInfo(r[0]);
+  bar.innerHTML = `<img class="sb-pic fpth" src="${o.src}" alt=""><div class="sb-name"><b>${esc(o.n)}</b><span>사면 가방 필드 탭에 들어가요. 맵 편집에서 필드에 놓을 수 있어요.</span></div><button class="lk-btn main" data-act="buy">구매</button>`; }
+$('#fpList').addEventListener('click', e => { const v = e.target.closest('[data-fp]'); if (!v) return; sfx('tap'); fpSel = fpSel === v.dataset.fp ? null : v.dataset.fp; $('#fpMsg').textContent = ''; renderFpShop(); });
+$('#fpBar').addEventListener('click', e => { if (!e.target.closest('[data-act="buy"]')) return; const r = SHOP.field.find(([k]) => k === fpSel), o = r && fpInfo(r[0]), msg = $('#fpMsg'); if (!o) return;
+  if (S.gold < r[1]) { msg.textContent = `골드가 ${(r[1] - S.gold).toLocaleString()}G 모자라요.`; sfx('wob'); return; }
+  S.gold -= r[1]; fbagAdd(r[0]); renderGold(); sfx('newdex'); msg.innerHTML = `${J({ name: o.n }, '을/를')} 샀다! (가방에 ${S.fbag[r[0]]}개)`; renderFpShop(); });
 // 상점 도구·아이템 탭: 칸을 누르면 아래 막대에 설명과 사기(아이템은 쓰기도)
 let itemSel = { tool: null, item: null };
 // v7.29 경완: 상점 도구 그림 크기 맞추기 (v7.30 아이템 탭 향로·부적도) — 그림마다 투명 여백을 재서 실제 그림이 같은 크기·가운데로 보이게
@@ -11275,6 +11297,7 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
       .filter(o => o.src && o.x + o.w / 2 > x0 && o.x - o.w / 2 < x1 && o.y > y0 && o.y - o.h < y1 + (o.e.classList.contains('lily') ? o.h : 0)).sort((a, b) => a.y - b.y);
     for (const o of L) { const im = new Image(); im.src = o.src; await im.decode().catch(() => {}); const ly = o.e.classList.contains('lily'); g.drawImage(im, Math.round(o.x - o.w / 2 - x0), Math.round(o.y - (ly ? o.h / 2 : o.h) - y0), o.w, o.h); }
     return c.toDataURL(); };
+  api.fpInfo = fpInfo; api.fbag = () => ({ ...(S.fbag || {}) });   // v9.01: 작업실 상점 › 필드 칸 그림 = 게임과 같은 정사각 그림
   api.cat = () => { const n = k => LAYOUT[k].length, nf = k => LAYOUT.flowers.filter(f => f[0] === k).length, nr = sz => LAYOUT.rocks.filter(r => r[4] === sz).length;
     const n1 = k => 1 + (LAYOUT[MK[k]] || []).length;   // v8.95: [이름표, 이름, 그림, 프레임, 맵에 몇 개]
     return { one: [['tree', '열매나무', api.lookIcon('tree'), 0, n1('tree')], ['perch', '횃대', api.lookIcon('perch'), 0, n1('perch')], ['fire', '모닥불', SPR.flame, 6, n1('fire')], ['bed', '꽃밭', SPR.flw.sun.src, 0, n1('bed')], ['stump', '그루터기', api.lookIcon('stump'), 0, n1('stump')], ['pond', '연못', SPR.lilyF, 0, n1('pond')]],
