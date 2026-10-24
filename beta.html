@@ -6074,7 +6074,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.08';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.09';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6188,12 +6188,15 @@ const ITEMS = [
 const ITEM = Object.fromEntries(ITEMS.map(o => [o.id, o])), ITEM_BY_N = Object.fromEntries(ITEMS.map(o => [o.n, o.id]));
 // 향로: 쓰고 min 분 동안 줍는 알의 등급 확률에 mul 을 곱한다 (다시 나눠 합 1). 빛나는 부적: min 분 동안 줍는 알 n 개에 1개꼴로 이로치가 든 알
 let SHOP = { field: [], price: {}, inc: { min: 30, mul: [1, 1, 1.5, 3, 3] }, charm: { min: 30, n: 20 } };   /* v8.44 경완: 향로 배율 [1,1,1.5,3,3] — 체감은 되면서(한 번에 에픽 반 개쯤 더) 첫 전설이 너무 당겨지지 않게 (8.43 의 1.2·1.4·1.5 는 거의 체감 안 됨, 예전 2.5·8·10 은 첫 전설 절반) */
-function applyShop(o) { const D = { field: [], price: {}, inc: { min: 30, mul: [1, 1, 1.5, 3, 3] }, charm: { min: 30, n: 20 } };   /* v7.82 경완: 빛나는 부적 60 → 30분 */ o = o && typeof o === 'object' ? o : {};
+function applyShop(o) { const D = { field: [], ord: {}, price: {}, inc: { min: 30, mul: [1, 1, 1.5, 3, 3] }, charm: { min: 30, n: 20 } };   /* v7.82 경완: 빛나는 부적 60 → 30분 */ o = o && typeof o === 'object' ? o : {};
   for (const [k, v] of Object.entries(o.price || {})) if ((ITEM[k] || (k.startsWith('bgm:') && TRACKS.some(t => 'bgm:' + t.id === k))) && v >= 0 && v <= 1e7) D.price[k] = Math.round(+v);
   if (o.inc) { if (o.inc.min >= 1 && o.inc.min <= 1440) D.inc.min = +o.inc.min; if (Array.isArray(o.inc.mul) && o.inc.mul.length === 5 && o.inc.mul.every(x => x >= 0 && x <= 100)) D.inc.mul = o.inc.mul.map(Number); }
   if (o.charm) { if (o.charm.min >= 1 && o.charm.min <= 1440) D.charm.min = +o.charm.min; if (o.charm.n >= 1 && o.charm.n <= 100000) D.charm.n = +o.charm.n; }
   if (Array.isArray(o.field)) for (const r of o.field) if (Array.isArray(r) && typeof r[0] === 'string' && r[1] >= 0 && r[1] <= 1e7 && !D.field.some(x => x[0] === r[0])) D.field.push([r[0], Math.round(+r[1])]);   /* v9.01 경완: 필드 상점 = [[소품 이름표, 가격], ...] 작업실 상점 › 필드 */
+  if (o.ord && typeof o.ord === 'object') for (const t of ['item', 'tool', 'bgm']) if (Array.isArray(o.ord[t])) D.ord[t] = o.ord[t].filter(x => typeof x === 'string');   /* v9.09 경완: 상점 탭 순서 (작업실 상점 ▲▼) */
   SHOP = D; }
+// 작업실에서 정한 순서대로 (정하지 않은 건 원래 순서로 뒤에)
+const shopOrd = (t, L, id) => { const O = SHOP.ord?.[t]; if (!O?.length) return L; const r = x => { const i = O.indexOf(id(x)); return i < 0 ? (t === 'bgm' ? -1 : 1e6) : i; };   /* 음악은 무료 곡(목록에 없음)이 맨 앞 */ return L.map((x, i) => [x, i]).sort((a, b) => r(a[0]) - r(b[0]) || a[1] - b[1]).map(a => a[0]); };
 const itemPrice = id => SHOP.price[id] ?? ITEM[id].p;
 const trackPrice = t => SHOP.price['bgm:' + t.id] ?? t.price;   // 배경 음악 가격도 작업실에서
 const itemsOf = () => S.items || (S.items = {});
@@ -7474,7 +7477,7 @@ shopEl.addEventListener('click', e => { if (e.target === shopEl) shopEl.hidden =
 let shopSel = null;
 function renderShop() {
   $('#shopGold').textContent = S.gold.toLocaleString();
-  $('#shopList').innerHTML = TRACKS.map(t => {
+  $('#shopList').innerHTML = shopOrd('bgm', TRACKS, t => t.id).map(t => {
     const own = S.tracks.includes(t.id), cur = S.bgm === t.id, has = bgm.have.has(t.id);
     return `<button class="vin${bgm.preview === t.id ? ' pre' : ''}${own ? ' own' : ''}${has ? '' : ' nofile'}" data-id="${t.id}" aria-current="${shopSel === t.id}"${own ? ' disabled' : ''}><span class="vpic">${vinylSvg(t.c)}</span><span class="vname">${t.n}</span><span class="vtag">${own ? '보유 중' : `${trackPrice(t).toLocaleString()}G`}</span></button>`;
   }).join('');
@@ -7527,7 +7530,7 @@ let itemSel = { tool: null, item: null };
 const ART_FIT = new Map();
 function artFit(box) { box.querySelectorAll('img[data-fit]').forEach(im => { const go = () => { let f = ART_FIT.get(im.src); if (!f) { const w = im.naturalWidth, h = im.naturalHeight; if (!w) return; const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(im, 0, 0); const d = x.getImageData(0, 0, w, h).data; let x0 = w, y0 = h, x1 = -1, y1 = -1; for (let y = 0; y < h; y++) for (let i = 0; i < w; i++) if (d[(y * w + i) * 4 + 3] > 20) { if (i < x0) x0 = i; if (i > x1) x1 = i; if (y < y0) y0 = y; if (y > y1) y1 = y; } if (x1 < 0) return; const k = Math.min(3, .86 * Math.min(w / (x1 - x0 + 1), h / (y1 - y0 + 1))); f = { k, dx: (w / 2 - (x0 + x1 + 1) / 2) / w, dy: (h / 2 - (y0 + y1 + 1) / 2) / h }; ART_FIT.set(im.src, f); } im.style.transform = `scale(${f.k.toFixed(3)}) translate(${(f.dx * 100).toFixed(1)}%,${(f.dy * 100).toFixed(1)}%)`; }; if (im.complete) go(); else im.addEventListener('load', go, { once: true }); }); }
 function renderItems(k) {
-  const I = itemsOf(), L = ITEMS.filter(o => o.k === k), sel = itemSel[k];
+  const I = itemsOf(), L = shopOrd(k, ITEMS.filter(o => o.k === k), o => o.id), sel = itemSel[k];
   $(`#${k}List`).innerHTML = L.map(o => `<button class="vin itm" data-it="${o.id}" aria-current="${sel === o.id}"><span class="vpic"><img src="${ITEM_ART[o.a]}" alt="" data-fit></span>${I[o.id] ? `<i class="icnt">${I[o.id]}</i>` : ''}<span class="vname">${o.n}</span><span class="vtag">${itemPrice(o.id).toLocaleString()}G</span></button>`).join(''); artFit($(`#${k}List`));
   const o = ITEM[sel], bar = $(`#${k}Bar`); bar.hidden = !o; if (!o) return;
   const left = o.k === 'item' ? fxLeft(o.id) : 0;
