@@ -1452,7 +1452,7 @@ body.mapEdit :is(#mons,#fx,#propFx,#night,#rain,#rainG,#tuShade,.berrybar,#dlg,.
 @keyframes meGlow{50%{filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff) drop-shadow(0 0 7px #ffd84a) drop-shadow(0 0 3px #ffd84a)}}
 .me-bar{position:fixed;left:0;right:0;bottom:0;z-index:70;background:var(--frame,#20202c);border-top:3px solid #23232f;color:#f8f8f8;display:flex;flex-direction:column;gap:8px;
   padding:10px calc(var(--si-right,env(safe-area-inset-right)) + 8px) calc(var(--sab,env(safe-area-inset-bottom)) + 8px) calc(var(--si-left,env(safe-area-inset-left)) + 8px)}
-.me-head{display:flex;align-items:center;gap:8px;padding:0 0 0 4px}.me-all{margin-left:auto;padding:6px 10px;font:inherit;font-size:12px;color:#20202c;background:#f8f8f8;border:2px solid #20202c;box-shadow:inset 0 -3px 0 #c8c8d8;cursor:pointer;-webkit-tap-highlight-color:transparent}.me-all:active{transform:translateY(1px);box-shadow:inset 0 -1px 0 #c8c8d8}.me-head b{font-size:15px;color:#ffe27a}.me-head span{font-size:12px;color:#b8b8d0}
+.me-head{display:flex;align-items:center;gap:8px;padding:0 0 0 4px}.me-all{margin-left:auto;padding:6px 10px;font:inherit;font-size:12px;color:#f8f8f8;background:#4b4b66;border:0;box-shadow:inset 0 2px 0 rgba(255,255,255,.2),inset 0 -3px 0 rgba(0,0,0,.4),0 2px 0 #1c1c26;cursor:pointer;-webkit-tap-highlight-color:transparent}.me-all:active{transform:translateY(1px);box-shadow:inset 0 2px 0 rgba(0,0,0,.4),0 1px 0 #1c1c26}.me-head b{font-size:15px;color:#ffe27a}.me-head span{font-size:12px;color:#b8b8d0}
 .me-list{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 2px 4px;min-height:92px}.me-list::-webkit-scrollbar{display:none}
 .me-it{flex:0 0 76px;height:88px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;padding:4px 2px 6px;font:inherit;font-size:12px;color:#20202c;background:#f8f8f8;border:3px solid #20202c;
   box-shadow:inset 0 -4px 0 #c8c8d8;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -6067,7 +6067,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.02';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.03';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
