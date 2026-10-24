@@ -6029,7 +6029,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.96';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.97';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9674,7 +9674,7 @@ function eggView(e, bag) {   // v4.51 경완: 부화기에서 고른 알을 한 
   const fill = k => { const x = L[k]; if (!x) return; const rd = !bag && x.km >= x.need; if (bag && x.isNew) { x.isNew = false; save(); }
     hatchStage.innerHTML = '<i class="ehalo"></i>' + eggHtml(x.g, 'wob' + (x.sh ? ' shx' : ''));
     const need = bag ? GRADE[x.g].km : x.need, km = x.km || 0;
-    m.innerHTML = `<b class="evg">${GRADE[x.g].n} 알</b> <span class="state${rd ? ' ready' : ''}">${bag ? '가방' : rd ? '부화 준비 완료' : '부화 중'}</span><div class="prog"><i style="width:${Math.min(100, km / need * 100)}%"></i></div>${fmtKm(km)} / ${need}km${bag ? ' 쌓임' : ` · 앞으로 <b>${fmtKm(Math.max(0, need - km))}</b>km`}<div class="evd">${x.place || x.spN ? `${eggGotDay(x)}${esc(eggPlace(x))} 근처에서 주운 알` : x.t ? `${eggGotDay(x)}주운 알` : '주운 곳 기록 없음'}<br>${themeHint(x)}</div>`;
+    m.innerHTML = `<b class="evg">${GRADE[x.g].n} 알</b> <span class="state${rd ? ' ready' : ''}">${bag ? '가방' : rd ? '부화 준비 완료' : '부화 중'}</span><div class="prog"><i style="width:${Math.min(100, km / need * 100)}%"></i></div>${fmtKm(km)} / ${need}km${bag ? ' 쌓임' : ` · 앞으로 <b>${fmtKm(Math.max(0, need - km))}</b>km`}<div class="evd">${x.place || x.spN ? `${eggGotDay(x)}${esc(eggPlace(x))} 근처에서 <span style="white-space:nowrap">주운 알</span>` : x.t ? `${eggGotDay(x)}<span style="white-space:nowrap">주운 알</span>` : '주운 곳 기록 없음'}<br>${themeHint(x)}</div>`;
     $('#hlHl').hidden = k <= 0; $('#hlHr').hidden = k >= L.length - 1;
     if (bag) { arm = 0; dl.classList.remove('arm'); dl.textContent = '버리기'; const full = S.eggs.length >= MAX_EGGS; inB.disabled = full; inB.textContent = full ? '부화기가 꽉 찼어요' : '부화기에 넣기'; } };
   fill(i);
