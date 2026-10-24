@@ -827,6 +827,7 @@ body.petting #dlg,body.petting #info{display:none!important}
 .fulltag{display:inline-block;font-size:11px;font-weight:400;color:#fff;background:#e8a020;padding:1px 6px}
 .cmvhost{position:absolute;left:50%;top:50%;width:0;height:0;scale:.5;pointer-events:none;z-index:2}.cmvbub{position:absolute;left:50%;top:4px;transform:translateX(-50%);z-index:3;background:#fff;border:2px solid #333;padding:1px 8px;font-size:13px;white-space:nowrap;box-shadow:2px 2px 0 rgba(0,0,0,.2);pointer-events:none;animation:cmvb .25s steps(3,end)}@keyframes cmvb{from{transform:translateX(-50%) scale(.4)}}.mvfx{position:absolute;left:0;top:0;background-size:100% 100%;image-rendering:pixelated;pointer-events:none;will-change:transform}
 .mvring{position:absolute;left:0;top:0;width:24px;height:24px;border:3px solid;border-radius:50%;pointer-events:none}
+.mvarc{position:absolute;left:0;top:0;width:26px;height:44px;border:5px solid transparent;border-radius:50%;pointer-events:none;filter:drop-shadow(0 0 3px rgba(210,250,70,1)) drop-shadow(0 0 1px #3a5a10)}   /* v9.18 벌레의야단법석 소리 물결 */
 .mvrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px;font-size:12px;color:#5c6c5c}
 .mvuse{display:flex;align-items:center;gap:8px;width:100%;margin-top:8px;font:inherit;font-size:14px;padding:8px 12px;border:3px solid var(--card-frame);background:#fff;color:var(--win-ink);cursor:pointer;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
 .mvuse.on{border-color:var(--tc);background:color-mix(in srgb,var(--tc) 14%,#fff)}
@@ -6076,7 +6077,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.17';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.18';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8631,6 +8632,18 @@ function mvRing(x, y, color, dur = 700, delay = 0, max = 4) {
   a.onfinish = () => d.remove(); setTimeout(() => d.remove(), dur + delay + 300);
 }
 // 타입별 연출. o = 몸 가운데, f = 바라보는 쪽(+1 오른쪽)
+// v9.18 경완: 기술 이름별 연출 (타입 공통 연출보다 먼저)
+const MV_NAME = {
+  '벌레의야단법석': (o, f, m) => {   // 몸을 부르르 떨며 앞으로 소리 물결(호)이 겹겹이 퍼지고, 끝에서 쾅 울림 + 앞쪽 포켓몬이 움찔
+    if (m) { anim(m, 'shake'); setTimeout(() => S.mons.includes(m) && anim(m, 'shake'), 380); }
+    for (let i = 0; i < 7; i++) { const d = document.createElement('div'), c = i % 2 ? '#f4ffd0' : '#b8e030'; d.className = 'mvarc'; d.style.cssText = `left:${o.x + f * 16}px;top:${o.y}px;border-${f > 0 ? 'right' : 'left'}-color:${c}`; (mvHost || fxEl).append(d);
+      const a = d.animate([{ transform: `translate(-50%,-50%) translateX(0) scale(.5)`, opacity: 0 }, { offset: .15, opacity: 1 }, { offset: .7, opacity: .9 }, { transform: `translate(-50%,-50%) translateX(${f * 130}px) scale(3)`, opacity: 0 }], { duration: 700, delay: i * 100, easing: 'ease-out', fill: 'both' }); a.onfinish = () => d.remove(); setTimeout(() => d.remove(), 1600); }
+    for (let i = 0; i < 10; i++) mvSprite('bug', o.x + f * rnd(20, 110), o.y + rnd(-22, 18), [[rnd(-4, 4), rnd(-4, 4), .3, 0, 0], [rnd(-6, 6), rnd(-6, 6), .7, 0, 1], [rnd(-8, 8), rnd(-8, 8), .5, 0, 0]], 300, 120 + i * 70, 2, f);
+    setTimeout(() => { mvRing(o.x + f * 130, o.y, '#a8d020', 520, 0, 3.4); mvRing(o.x + f * 130, o.y, '#ffffff', 420, 80, 2.4); mvSnd(7);
+      if (m) for (const q of S.mons) if (q !== m && !q.hidden && Math.abs(q.y - m.y) < 50 && (q.x - m.x) * f > 0 && Math.abs(q.x - m.x) < 160) anim(q, 'shake'); }, 780);
+    setTimeout(() => mvSnd(7), 320);
+  },
+};
 const MV_FX = {
   1: (o, f) => { for (let i = 0; i < 3; i++) mvSprite('hit', o.x + f * (30 + i * 14), o.y + rnd(-14, 10), [[0, 0, .3, 0, 1], [0, 0, 1.4, 45, 1], [0, 0, 1.6, 90, 0]], 380, i * 140); },
   2: (o, f) => { for (let i = 0; i < 4; i++) mvSprite('punch', o.x + f * (26 + i * 16), o.y + rnd(-18, 12), [[0, 0, .2, 0, 1], [0, 0, 1.6, 30, 1], [0, 0, 1.9, 60, 0]], 340, i * 120); },
@@ -8671,7 +8684,7 @@ function cardMove(pic, img, sp, i = 0) {
     else img.animate([{ scale: '1', filter: 'none' }, { scale: '1.08', filter: `drop-shadow(0 0 6px ${TYPE_C[t]}) brightness(1.4)` }, { scale: '1', filter: 'none' }], { duration: 600 });
     mvSnd(t);
     setTimeout(() => { if (!host.isConnected) return; const fake = { x: 0, y: 40, h: 80, face: -1, act: img, lift: 0 }; mvHost = host;
-      try { (MV_FX[t] || MV_FX[1])({ x: 0, y: 0 }, 1, fake); } catch (e) {} setTimeout(() => { if (mvHost === host) mvHost = null; }, 1300); }, 120);
+      try { if (MV_NAME[name]) MV_NAME[name]({ x: 0, y: 0 }, 1, null); else (MV_FX[t] || MV_FX[1])({ x: 0, y: 0 }, 1, fake); } catch (e) {} setTimeout(() => { if (mvHost === host) mvHost = null; }, 1500); }, 120);
   }, 480);
 }
 function useMove(m, i = 0) {
@@ -8702,7 +8715,7 @@ function useMove(m, i = 0) {
   // 먼저 외치고(크앙!), 이어서 기술 모션·연출과 타입별 효과음
   emote(m, shoutOf(m.sp), '', 1.4, 'shout'); anim(m, 'hop');
   const f = -m.face || 1, mo = MOVE_MO[name] || (T(m).sp === 'dig' ? 'dig' : null);
-  const fire = () => { if (!S.mons.includes(m)) return; const o = { x: m.x, y: m.y - m.h * .5 - (m.lift || 0) }; mvSnd(t); setTimeout(() => { const f1 = -m.face || 1; (MV_FX[t] || MV_FX[1])(o, f1, m); try { elemReact(m, t, dc, f1); } catch (e) {} }, 120); };   /* v8.85 경완: 기술 쓰는 사이 포켓몬이 돌아서면 불꽃이 등 뒤로 나가던 것 — 쏘는 순간 바라보는 쪽으로 */
+  const fire = () => { if (!S.mons.includes(m)) return; const o = { x: m.x, y: m.y - m.h * .5 - (m.lift || 0) }; mvSnd(t); setTimeout(() => { const f1 = -m.face || 1; (MV_NAME[name] || MV_FX[t] || MV_FX[1])(o, f1, m); try { elemReact(m, t, dc, f1); } catch (e) {} }, 120); };   /* v8.85 경완: 기술 쓰는 사이 포켓몬이 돌아서면 불꽃이 등 뒤로 나가던 것 — 쏘는 순간 바라보는 쪽으로 */
   setTimeout(() => { if (!S.mons.includes(m)) return; if (mo) moveMotion(m, mo, f, fire, dc); else { moveAnim(m, dc); fire(); } }, 480);
   const by = watching(m), seen = startle(m, name, by);
   if (!seen && (by || Math.random() < .5)) log(`${J(m,'이/가')} ${J({ name },'을/를')} 썼다!`, [m]);
