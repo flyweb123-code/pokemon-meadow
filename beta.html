@@ -1438,6 +1438,38 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 .mg-rec b{font-size:44px;line-height:1.1}.mg-got{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}.mg-got span{flex:1 1 auto;padding:7px 10px;background:#f6f6fb;border:2px solid #20202c;box-shadow:2px 2px 0 rgba(0,0,0,.12);font-size:13px}
 #eggSortG.egg-sort{gap:5px}#eggSortG.egg-sort button{margin:0;border:2px solid var(--frame);background:#fff;color:var(--win-ink);box-shadow:2px 2px 0 rgba(0,0,0,.18);padding:4px 8px}#eggSortG.egg-sort button:active{transform:translate(2px,2px);box-shadow:none;background:var(--frame);color:var(--win)}   /* v6.37 부화기 정렬 = 개별 버튼 */
 #hatch.hlock button{pointer-events:none!important}#hatch.hlock .win button{opacity:.55;transition:opacity .3s}   /* v6.37 hatchLock */
+/* v8.98 경완: 맵 편집 모드 */
+#btnMapEdit{left:20px;top:110px;position:absolute;z-index:25}
+.metitle{flex-direction:column;align-items:flex-start;gap:2px}.metitle b{font-size:18px}.metitle span{font-size:12px;color:var(--dim,#666)}
+.me-save{position:absolute;right:20px;top:20px;z-index:25;height:42px;padding:0 20px;font:inherit;font-size:17px;font-weight:700;color:#20202c;background:#ffd84a;border:3px solid #20202c;cursor:pointer;
+  box-shadow:inset 0 3px 0 #fff2a8,inset 0 -4px 0 #d89a2a,3px 3px 0 rgba(0,0,0,.35);-webkit-tap-highlight-color:transparent}
+.me-save:active{transform:translate(2px,2px);box-shadow:inset 0 3px 0 #d89a2a,1px 1px 0 rgba(0,0,0,.35)}
+body.mapEdit :is(#mons,#fx,#propFx,#night,#rain,#rainG,#tuShade,.berrybar,#dlg,.menuwin,#cmd,#goldbar,#btnMapEdit,#clock,#edge,#side,#info,#petBar,#hint,#washBrush,#items .berry,#items .tb,#items .hole){display:none!important}
+#meZone{position:absolute;left:0;top:0;width:360px;height:600px;pointer-events:none;z-index:0}
+#meLayer{position:absolute;left:0;top:0;width:360px;height:600px;pointer-events:none;z-index:9001}
+.me-foot{position:absolute;translate:-50% -50%;border:2px dashed #7cf08a;border-radius:50%;background:rgba(124,240,138,.22)}
+.me-x{position:absolute;translate:-50% -50%;width:22px;height:22px;padding:0;display:grid;place-items:center;pointer-events:auto;color:#fff;background:#e04838;border:2px solid #20202c;box-shadow:inset 0 -2px 0 #9a2418,2px 2px 0 rgba(0,0,0,.35);cursor:pointer}
+.me-x svg{width:10px;height:10px}
+#items .prop.meSel{filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff) drop-shadow(0 0 4px #ffe27a) drop-shadow(0 0 2px #ffe27a);animation:meGlow 1.2s ease-in-out infinite;z-index:8999!important}
+@keyframes meGlow{50%{filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff) drop-shadow(0 0 7px #ffd84a) drop-shadow(0 0 3px #ffd84a)}}
+.me-bar{position:fixed;left:0;right:0;bottom:0;z-index:70;background:var(--frame,#20202c);border-top:3px solid #23232f;color:#f8f8f8;display:flex;flex-direction:column;gap:8px;
+  padding:10px calc(var(--si-right,env(safe-area-inset-right)) + 8px) calc(var(--sab,env(safe-area-inset-bottom)) + 8px) calc(var(--si-left,env(safe-area-inset-left)) + 8px)}
+.me-head{display:flex;align-items:baseline;gap:8px;padding:0 4px}.me-head b{font-size:15px;color:#ffe27a}.me-head span{font-size:12px;color:#b8b8d0}
+.me-list{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 2px 4px;min-height:92px}.me-list::-webkit-scrollbar{display:none}
+.me-it{flex:0 0 76px;height:88px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;padding:4px 2px 6px;font:inherit;font-size:12px;color:#20202c;background:#f8f8f8;border:3px solid #20202c;
+  box-shadow:inset 0 -4px 0 #c8c8d8;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.me-it img{flex:1 1 auto;min-height:0;max-width:62px;max-height:54px;object-fit:contain;image-rendering:pixelated}
+.me-it .icnt{position:absolute;top:2px;right:3px;font-style:normal;font-size:12px;font-weight:700;color:#20202c}
+.me-it[aria-pressed="true"]{background:#fff6c8;box-shadow:inset 0 0 0 2px #ffd84a,inset 0 -4px 0 #e8c860}
+.me-none{margin:auto;font-size:13px;color:#b8b8d0;text-align:center;line-height:1.5}
+.me-keys{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.me-keys .opt{min-height:46px;color:var(--win,#f8f8f8);text-align:center;font-size:14px;border:0;background:#4b4b66;box-shadow:inset 0 3px 0 rgba(255,255,255,.2),inset 0 -4px 0 rgba(0,0,0,.4),0 3px 0 #1c1c26}
+.me-keys .opt::before{display:none}.me-keys .opt:disabled{opacity:.45}
+@media (max-width: 760px), (max-height: 500px) and (orientation: landscape) {
+  #btnMapEdit{position:relative;left:auto;top:auto;grid-area:stage;align-self:start;justify-self:start;margin:calc(var(--si-top,env(safe-area-inset-top)) + 58px) 0 0 calc(var(--si-left,env(safe-area-inset-left)) + 8px);width:42px;height:42px}
+  .me-save{position:relative;right:auto;top:auto;grid-area:stage;align-self:start;justify-self:end;margin:calc(var(--si-top,env(safe-area-inset-top)) + 8px) calc(var(--si-right,env(safe-area-inset-right)) + 8px) 0 0}
+  .me-bar{position:relative;grid-row:3;grid-column:1/-1}
+}
 </style>
 <script>/* v5.54 경완: 처음 시작(저장 없음)이면 오프닝 전에 필드가 잠깐 보이지 않게 처음부터 검은 화면으로 덮는다 */
 try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(localStorage.getItem(st ? 'pk-studio-v2' : 'pk-meadow-v2') || 'null');
@@ -1448,15 +1480,25 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
     <div class="stage" id="stage">
       <canvas id="skyC" width="480" height="60"></canvas><div id="skyFx"></div>
       <canvas id="bg" width="1920" height="1200"></canvas>
-      <div id="items"></div>
+      <canvas id="meZone" width="360" height="600" hidden></canvas><div id="items"></div>
       <div id="mons"></div>
       <div id="night"></div><div id="tuShade" hidden></div><svg width="0" height="0" style="position:absolute"><filter id="nightF" filterUnits="userSpaceOnUse" x="-400" y="-400" width="800" height="800" color-interpolation-filters="sRGB"><feColorMatrix id="nightM" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0"/></filter></svg><div id="glows"></div>
-      <div id="propFx"></div>
+      <div id="propFx"></div><div id="meLayer" hidden><i class="me-foot" id="meFoot" hidden></i><button class="me-x" id="meX" type="button" aria-label="소품 빼기" hidden><svg viewBox="0 0 7 7" width="14" height="14" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M0 0h2v1h1v1h1V1h1V0h2v2H6v1H5v1h1v1h1v2H5V6H4V5H3v1H2v1H0V5h1V4h1V3H1V2H0z"/></svg></button></div>
       <div id="fx"></div>
     </div>
   </div>
 
   <div class="hud win clockwin" id="clock"><span class="t" id="time">07:00</span><span class="d"><span id="day">1일째</span> · <span id="phase">아침</span></span></div>
+
+    <!-- v8.98 경완: 맵 편집 모드 (날짜 박스 밑 아이콘 → 편집 화면, 우상단 저장) -->
+  <button class="hud mapico" id="btnMapEdit" type="button" aria-label="맵 편집"><svg viewBox="0 0 12 12" width="28" height="28" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M8 0h3v1H8zM7 1h1v1H7zM11 1h1v2h-1zM6 2h1v1H6zM5 3h1v1H5zM10 3h1v1h-1zM4 4h1v1H4zM9 4h1v1H9zM3 5h1v1H3zM8 5h1v1H8zM2 6h1v1H2zM7 6h1v1H7zM1 7h1v2H1zM6 7h1v1H6zM5 8h1v1H5zM0 9h1v3H0zM4 9h1v1H4zM3 10h1v1H3zM1 11h2v1H1z"/><path fill="#e8607a" d="M8 1h3v2H8zM9 3h1v1H9z"/><path fill="#ffd84a" d="M7 2h1v1H7zM6 3h3v1H6zM5 4h3v1H5zM4 5h3v1H4zM4 6h2v1H4z"/><path fill="#d89a2a" d="M8 4h1v1H8zM7 5h1v1H7zM6 6h1v1H6zM5 7h1v1H5z"/><path fill="#f0d8b0" d="M3 6h1v1H3zM2 7h3v1H2zM2 8h3v1H2zM2 9h2v1H2z"/><path fill="#4b4b66" d="M1 9h1v2H1zM2 10h1v1H2z"/><path fill="#5aa83a" d="M6 10h4v1H6z"/></svg></button>
+  <div class="hud win clockwin metitle" id="meTitle" hidden><b>맵 편집</b><span>소품을 눌러서 옮겨요</span></div>
+  <button class="hud me-save" id="meSave" type="button" hidden>저장</button>
+  <div class="me-bar" id="meBar" hidden>
+    <div class="me-head"><b>가방 소품</b><span>골라서 필드에 놓아요</span></div>
+    <div class="me-list" id="meList"></div>
+    <div class="me-keys"><button class="opt" id="meCancel" type="button">취소</button><button class="opt" id="meUndo" type="button" disabled>되돌리기</button><button class="opt" id="meRedo" type="button" disabled>다시 하기</button></div>
+  </div>
 
   <nav class="hud win menuwin" aria-label="메뉴">
     <button class="opt wide" id="openShop" aria-pressed="false">상점</button>
@@ -6029,7 +6071,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.97';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '8.98';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6224,6 +6266,29 @@ function ibagToss(ids) {   /* ids 하나면 개수 고르기, 여럿이면 고�
 /* v7.71 경완: 가방 버튼은 누르면 쏙 눌렸다가 톡 나온 뒤 가방이 열림 */
 let bagTapT = 0; $('#btnBag').onclick = () => { const w = $('#btnBag'); if (bagTapT) return; w.classList.remove('tap'); void w.offsetWidth; w.classList.add('tap'); bagTapT = setTimeout(() => { bagTapT = 0; w.classList.remove('tap'); bagOpen(); }, 110); };
 const bagOpen = () => tabTo(ibagEl, () => { ibagEl.hidden = false; ibagFresh = new Set(); ibagTab = 'item'; ibagSel = null; ibagMul = false; ibagPick.clear(); $('#ibagMsg').textContent = ''; renderIBag(); });
+// v8.98 경완: 맵 편집 모드 — 1단계는 화면 배치만 (아이콘으로 들어가 포켓몬·효과·버튼·상태창을 숨기고, 아래는 편집 메뉴, 우상단 저장으로 끝)
+// 안전 구역(포켓몬이 다니는 곳) 밖은 어둡게, 연못은 놓을 수 없는 곳. 소품을 누르면 테두리 빛 + 우상단 x + 땅에 닿는 자리
+let mapEdit = false, meSelEl = null, meArt = null, mePick = null;
+const ME_KINDS = [['tree', '열매나무'], ['perch', '횃대'], ['bush', '덤불'], ['fire', '모닥불'], ['stump', '그루터기'], ['rock', '바위']];
+const meArtOf = () => meArt || (meArt = { tree: SPR.tree, perch: SPR.perch, bush: SPR.bush, fire: ART.campfire().toDataURL(), stump: ART.stump().toDataURL(), rock: ART.rock(14, 9, 9 * 977, 2).toDataURL() });
+function meZoneDraw() { const c = $('#meZone'), g = c.getContext('2d'), x0 = Math.max(0, XL) + 6, x1 = Math.min(W, XR) - 6; g.clearRect(0, 0, W, H); g.fillStyle = 'rgba(16,16,40,.55)'; g.fillRect(0, 0, W, H); g.clearRect(x0, MIN_Y, x1 - x0, MAX_Y0 - MIN_Y);
+  g.setLineDash([6, 4]); g.lineWidth = 2; g.strokeStyle = 'rgba(255,255,255,.9)'; g.strokeRect(x0 + 1, MIN_Y + 1, x1 - x0 - 2, MAX_Y0 - MIN_Y - 2);
+  for (const P of ALLP('pond')) { g.beginPath(); g.ellipse(P.x, P.y, P.rx * 1.06, P.ry * 1.1, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(255,140,140,.95)'; g.stroke(); } }
+function meRender() { const F = S.fbag || {}, A = meArtOf(), L = ME_KINDS.filter(([k]) => F[k] > 0);
+  $('#meList').innerHTML = L.length ? L.map(([k, n]) => `<button class="me-it" type="button" data-k="${k}" aria-pressed="${mePick === k}"><i class="icnt">${F[k]}</i><img src="${A[k]}" alt=""><span>${n}</span></button>`).join('') : '<p class="me-none">가방에 놓을 소품이 없어요.<br>필드의 소품을 빼면 여기로 들어와요.</p>'; }
+function meSel(el) { if (meSelEl) meSelEl.classList.remove('meSel'); meSelEl = el; const x = $('#meX'), f = $('#meFoot'); x.hidden = f.hidden = !el; if (!el) return; el.classList.add('meSel');
+  const cx = parseFloat(el.style.left), by = parseFloat(el.style.top), w = parseFloat(el.style.width) || el.offsetWidth, h = parseFloat(el.style.height) || el.offsetHeight;
+  Object.assign(x.style, { left: cx + w * .36 + 'px', top: by - h * .92 + 'px' }); Object.assign(f.style, { left: cx + 'px', top: by - 2 + 'px', width: Math.round(w * .34) + 'px', height: Math.round(w * .12) + 'px' }); }
+function mapEditSet(on) { if (mapEdit === on) return; mapEdit = on; document.body.classList.toggle('mapEdit', on); for (const id of ['meBar', 'meTitle', 'meSave', 'meZone', 'meLayer']) $('#' + id).hidden = !on;
+  if (on) { mePick = null; meZoneDraw(); meRender(); } else meSel(null); sfx(on ? 'open' : 'tap'); dispatchEvent(new Event('resize')); }
+$('#btnMapEdit').onclick = () => mapEditSet(true);
+$('#meSave').onclick = () => mapEditSet(false);   // 2단계: 배치한 대로 저장
+$('#meCancel').onclick = () => mapEditSet(false);
+$('#meX').onclick = e => { e.stopPropagation(); meSel(null); };   // 2단계: 빼면 가방 필드 탭으로
+$('#meList').onclick = e => { const b = e.target.closest('[data-k]'); if (!b) return; mePick = mePick === b.dataset.k ? null : b.dataset.k; meRender(); sfx('tap'); };
+$('#wrap').addEventListener('pointerdown', e => { if (!mapEdit || e.target.closest('#meX')) return; e.stopPropagation(); e.preventDefault();
+  let best = null; for (const el of itemsEl.querySelectorAll('.prop')) { const r = el.getBoundingClientRect(); if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom && (!best || +el.style.zIndex > +best.style.zIndex)) best = el; }
+  meSel(best); }, true);
 $('#ibagX').onclick = () => { ibagEl.hidden = true; };
 ibagEl.addEventListener('click', e => {
   if (e.target.closest('[data-shop]')) { ibagEl.hidden = true; $('#openShop').click(); return; }
