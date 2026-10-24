@@ -5805,7 +5805,7 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, hunger: m.hunger, slpB: m.slpB, slpW: m.slpW, social: m.social, joy: m.joy, joyH: m.joyH || 0, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk, red: !!b.red })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, mg: S.mg || {}, fbag: S.fbag || {}, fbagT: S.fbagT || {}, lay: S.lay || {}, fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])] };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, mg: S.mg || {}, fbag: S.fbag || {}, fbagT: S.fbagT || {}, lay: S.lay || {}, layAdd: S.layAdd || [], fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])] };
 }
 let saveFrozen = false, tutFreeze = false, introPv = false;   // introPv: 튜토리얼 미리 보기 (끝나도 저장 안 함)
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
@@ -5813,7 +5813,7 @@ async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
   S.lockT = d.lockT || 0; S.tree = d.tree || null; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.bagDry = d.bagDry || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.trI = d.trI ?? null; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.autoInc = !!d.autoInc; S.noti = { on: true, egg: true, hatch: true, evo: true, ...(d.noti || {}) }; S.bagQ = Array.isArray(d.bagQ) ? d.bagQ : [];   /* v4.23 경완: 부화기 자동 채우기가 다시 켜면 꺼지던 문제 — 저장에 빠져 있었다 */ S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
-  if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1; S.items = d.items || {}; S.itemSeen = d.itemSeen || { ...S.items };   /* v7.48: 예전 저장은 가진 것 모두 본 것으로 */ S.mg = d.mg || {}; S.fbag = d.fbag || {}; S.lay = d.lay && typeof d.lay === 'object' ? d.lay : {}; S.fbagT = d.fbagT || {}; S.fx = d.fx || {}; S.colT = d.colT || 0;
+  if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1; S.items = d.items || {}; S.itemSeen = d.itemSeen || { ...S.items };   /* v7.48: 예전 저장은 가진 것 모두 본 것으로 */ S.mg = d.mg || {}; S.fbag = d.fbag || {}; S.lay = d.lay && typeof d.lay === 'object' ? d.lay : {}; S.layAdd = Array.isArray(d.layAdd) ? d.layAdd : []; S.fbagT = d.fbagT || {}; S.fx = d.fx || {}; S.colT = d.colT || 0;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
   cleanPlaces();
   S.dexNew = new Set(d.dexNew || []); S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
@@ -6076,7 +6076,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.15';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.17';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6327,8 +6327,8 @@ function meBgProps(on) { itemsEl.querySelectorAll('.prop.bgp').forEach(e => e.re
 function mapEditSet(on) { if (mapEdit === on) return; mapEdit = on; document.body.classList.toggle('mapEdit', on); for (const id of ['meBar', 'meTitle', 'meZone', 'meLayer']) $('#' + id).hidden = !on;
   if (on) { mePick = null; meBagD = {}; meXLR = [XL, XR]; meSnap = meSnapshot(); meBgProps(true); meZoneDraw(); meRender(); } else { meSel(null); meBgProps(false); meSnap = null; } sfx(on ? 'open' : 'tap'); dispatchEvent(new Event('resize')); }
 $('#btnMapEdit').onclick = () => mapEditSet(true);
-$('#meSave').onclick = () => { layKeep(); mapEditSet(false); };   // v9.06 경완: 옮긴 자리를 이 플레이어 저장(S.lay)에 남김
-$('#meCancel').onclick = () => { for (const [k, n] of Object.entries(meBagD)) if (n) fbagAdd(k, -n); meBagD = {}; const moved = meSnap && meSnapRestore(meSnap); mapEditSet(false); if (moved) seaRedraw(); };
+$('#meSave').onclick = () => { layKeep(); for (const K of LAY_ARR) for (const v of LAYOUT[K] || []) delete v.paN; mapEditSet(false); };   // v9.06 경완: 옮긴 자리를 이 플레이어 저장(S.lay)에 남김
+$('#meCancel').onclick = () => { for (const [k, n] of Object.entries(meBagD)) if (n) fbagAdd(k, -n); meBagD = {}; if (layDrop(v => v.paN)) seaRedraw(); const moved = meSnap && meSnapRestore(meSnap); mapEditSet(false); if (moved) seaRedraw(); };
 $('#meAll').onclick = () => { sfx('tap'); bagOpenField(); };
 // v9.14 경완: x = 그 소품을 맵에서 빼서 가방(필드 탭)으로. 뺀 소품은 맵 밖(ME_OUT)으로 치워 두고 저장(layKeep)이 그 자리를 기억 → 가방에서 고르고 맵을 누르면 그 자리로 다시 놓임
 function fpKeyOf(v) { const key = layKey(v); if (!key) return null; const [k] = key.split('.'); if (k === 'sc') return 'sc:' + v[0]; const b = k === 'bushes' ? 'bush' : MKB[k] || k, l = v.lk, id = typeof l === 'string' ? l : l?.kd; return id && LAYOUT.kinds?.[id]?.b === b ? id : b; }
@@ -6342,7 +6342,8 @@ $('#wrap').addEventListener('pointerdown', e => { if (!mapEdit || e.target.close
   let best = null, bestA = 0; for (const el of itemsEl.querySelectorAll('.prop')) { const r = el.getBoundingClientRect(); if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom && (!best || +el.style.zIndex > +best.style.zIndex || (+el.style.zIndex === +best.style.zIndex && r.width * r.height < bestA))) { best = el; bestA = r.width * r.height; } }
   if (!best && mePick) { const v = [...meSnap.keys()].find(o => meOut(o) && fpKeyOf(o) === mePick);   /* 가방에서 고른 소품을 누른 자리에 (땅에 닿는 자리 = 누른 곳, 안전 구역 안으로) */
     if (v) { const r = itemsEl.getBoundingClientRect(), k = r.width / itemsEl.offsetWidth || 1, Z = meZoneRect(); lvSet(v, Math.round(clamp((e.clientX - r.left) / k, Z.x0 + 10, Z.x1 - 10)), Math.round(clamp((e.clientY - r.top) / k, Z.y0 + 10, Z.y1))); meBag(mePick, -1); if (!(S.fbag?.[mePick] > 0)) mePick = null; sfx('tap'); meRedraw(v); meRender(); return; }
-    toast('새로 산 소품을 놓는 건 곧 돼요'); return; }
+    const r = itemsEl.getBoundingClientRect(), k = r.width / itemsEl.offsetWidth || 1, Z = meZoneRect(), mk = fpMake(mePick, Math.round(clamp((e.clientX - r.left) / k, Z.x0 + 10, Z.x1 - 10)), Math.round(clamp((e.clientY - r.top) / k, Z.y0 + 10, Z.y1)));   /* 새로 산 소품: 목록 끝에 새로 (저장하면 S.layAdd) */
+    if (!mk) return; mk[1].pa = 1; mk[1].paN = 1; (LAYOUT[mk[0]] = LAYOUT[mk[0]] || []).push(mk[1]); meBag(mePick, -1); if (!(S.fbag?.[mePick] > 0)) mePick = null; sfx('tap'); meRedraw(mk[1]); meRender(); return; }
   if (best !== meSelEl) meSel(best); if (best) meDrag = { el: best, x0: e.clientX, y0: e.clientY, on: false, l0: parseFloat(best.style.left), t0: parseFloat(best.style.top), id: e.pointerId }; }, true);
 // v9.06 경완: 고른 소품을 끌어 옮긴다 — 손가락을 따라 부드럽게, 땅에 닿는 자리는 안전 구역 안으로만, 다른 소품·연못과 겹치면 빨갛게 → 놓으면 제자리로
 let meDrag = null, meSnap = null;
@@ -6374,10 +6375,18 @@ const lvMove = (v, dx, dy) => { const [x, y] = lvXY(v); lvSet(v, Math.round(x + 
 const LAY_ONE = ['tree', 'perch', 'fire', 'bed', 'stump', 'pond'], LAY_ARR = ['trees', 'perches', 'fires', 'beds', 'stumps', 'ponds', 'bushes', 'sc'];
 function layKey(v) { for (const k of LAY_ONE) if (LAYOUT[k] === v) return k; for (const k of LAY_ARR) { const i = (LAYOUT[k] || []).indexOf(v); if (i >= 0) return k + '.' + i; } return null; }
 const layObj = key => { const [k, i] = key.split('.'); return i == null ? (LAY_ONE.includes(k) ? LAYOUT[k] : null) : LAY_ARR.includes(k) ? LAYOUT[k]?.[+i] : null; };
-function layApply() { let n = 0; for (const [key, q] of Object.entries(S.lay || {})) { const v = layObj(key); if (!v || !Array.isArray(q)) continue; const [x, y] = lvXY(v); if (x === q[0] && y === q[1]) { lvSet(v, q[2], q[3]); n++; } } return n; }
+// v9.17 경완: 상점에서 사서 놓은 소품 = S.layAdd [[가방 이름표, x, y], …] — 배치를 다시 받을 때마다 목록 끝에 다시 붙인다 (.pa)
+function fpMake(k, x, y) { if (k.startsWith('sc:')) { const id = k.slice(3); return LAYOUT.scArt?.[id] ? ['sc', [id, x, y]] : null; }
+  const KD = LAYOUT.kinds?.[k], b = KD ? KD.b : k, K = b === 'bush' ? 'bushes' : MK[b]; if (!K) return null; const B = LAYOUT[b];
+  const v = b === 'pond' ? { x, y, rx: Math.round((B?.rx || 102) * .6), ry: Math.round((B?.ry || 50) * .6) } : b === 'tree' ? { x, y, b: TREE_B0.map(a => [...a]) } : { x, y }; if (KD) v.lk = k; return [K, v]; }
+const layDrop = f => { let n = 0; for (const K of LAY_ARR) { const A = LAYOUT[K]; if (Array.isArray(A)) for (let i = A.length - 1; i >= 0; i--) if (f(A[i])) { A.splice(i, 1); n++; } } return n; };   // 목록은 제자리에서 고침 (PROPS 가 같은 배열을 봄)
+function layAddApply() { layDrop(v => v.pa);
+  for (const [k, x, y] of S.layAdd || []) { const r = typeof k === 'string' && fpMake(k, x, y); if (!r) continue; r[1].pa = 1; (LAYOUT[r[0]] = LAYOUT[r[0]] || []).push(r[1]); } }
+function layApply() { layAddApply(); let n = (S.layAdd || []).length; for (const [key, q] of Object.entries(S.lay || {})) { const v = layObj(key); if (!v || !Array.isArray(q)) continue; const [x, y] = lvXY(v); if (x === q[0] && y === q[1]) { lvSet(v, q[2], q[3]); n++; } } return n; }
 function meSnapshot() { const m = new Map(); for (const k of LAY_ONE) m.set(LAYOUT[k], lvXY(LAYOUT[k])); for (const k of LAY_ARR) for (const v of LAYOUT[k] || []) m.set(v, lvXY(v)); return m; }
 function meSnapRestore(m) { let moved = false; for (const [v, [x, y]] of m) { const [a, b] = lvXY(v); if (a !== x || b !== y) { lvSet(v, x, y); moved = true; } } return moved; }
-function layKeep() { if (!meSnap) return; const L = S.lay || (S.lay = {}); for (const [v, [x0, y0]] of meSnap) { const [x, y] = lvXY(v); if (x === x0 && y === y0) continue; const key = layKey(v); if (!key) continue; const o = L[key] ? [L[key][0], L[key][1]] : [x0, y0]; if (o[0] === x && o[1] === y) delete L[key]; else L[key] = [o[0], o[1], x, y]; } save(); }
+function layKeep() { if (!meSnap) return; S.layAdd = []; for (const K of LAY_ARR) for (const v of LAYOUT[K] || []) if (v.pa && !meOut(v)) { const k = fpKeyOf(v); if (k) S.layAdd.push([k, ...lvXY(v)]); }
+  const L = S.lay || (S.lay = {}); for (const [v, [x0, y0]] of meSnap) { if (v.pa) continue; const [x, y] = lvXY(v); if (x === x0 && y === y0) continue; const key = layKey(v); if (!key) continue; const o = L[key] ? [L[key][0], L[key][1]] : [x0, y0]; if (o[0] === x && o[1] === y) delete L[key]; else L[key] = [o[0], o[1], x, y]; } save(); }
 // 옮긴 뒤 바탕·소품을 새 자리로 다시 그리고, 같은 소품을 다시 고른다
 function meRedraw(v) { seaRedraw(); meBgProps(true); meZoneDraw(); const el = [...itemsEl.querySelectorAll('.prop')].find(o => o.LV === v); meSel(el || null); }
 $('#ibagX').onclick = () => { ibagEl.hidden = true; };
@@ -6694,12 +6703,12 @@ function mgThumbArt(cv, kind, m, me, tok) {
     const x = cv.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.imageSmoothingEnabled = false; x.drawImage(b, 0, 0, b.width * P, b.height * P);
   });
 }
-const MG_ROLE = { still: [74, 95], hop: [39, 1], wave: [16, 21], pace: [7, 92], dash: [58, 4], leap: [60, 118], dig: [50, 27], swoop: [41, 22], roll: [204, 205] };   // 움직임마다 한 마리 (앞 포켓몬이 주인공이면 뒤)
+const MG_ROLE = { still: [74, 95], hop: [39, 1], wave: [16, 21], pace: [7, 158], dash: [58, 4], leap: [60, 118], dig: [50, 27], swoop: [41, 22], roll: [205, 204], spring: [325, 326], fade: [92, 93] };   // 움직임마다 한 마리 (앞 포켓몬이 주인공이면 뒤)
 // v5.88 경완: 페이즈가 오를 때마다 새 움직임의 장애물이 하나씩 나온다
 const MG_LEAP = [170, 62, 72];   // 발챙이: 주인공 앞 170에서 뛰어 62에 떨어진다 (높이 72)
-const MG_WARN = { dash: 1, leap: 1, dig: 1, swoop: 1, roll: 1 };
-const MG_UNLOCK = { still: 1, hop: 1, wave: 1, pace: 2, dash: 3, dig: 4, leap: 5, swoop: 6, roll: 7 }, MG_FLY = ['wave', 'swoop'];
-const MG_ROLE_N = { pace: '앞뒤로 왔다 갔다 해요', dash: '가까워지면 달려들어요', leap: '가까워지면 펄쩍 뛰어올라요', dig: '땅속에 숨어 있다가 튀어나와요', swoop: '하늘에서 내리꽂혀요', roll: '셋이 줄지어 데굴데굴 굴러와요' };
+const MG_WARN = { dash: 1, leap: 1, dig: 1, swoop: 1, roll: 1, spring: 1, fade: 1 };
+const MG_UNLOCK = { still: 1, hop: 1, wave: 1, pace: 2, dash: 3, dig: 4, leap: 5, swoop: 6, roll: 7, spring: 8, fade: 9 }, MG_FLY = ['wave', 'swoop'];
+const MG_ROLE_N = { pace: '앞뒤로 왔다 갔다 해요', dash: '가까워지면 달려들어요', leap: '가까워지면 펄쩍 뛰어올라요', dig: '땅속에 숨어 있다가 튀어나와요', swoop: '하늘에서 내리꽂혀요', roll: '셋이 줄지어 데굴데굴 굴러와요', spring: '꼬리 스프링으로 높이 튀어 올라요', fade: '사라졌다 나타나요 (보일 때만 부딪혀요)' };
 async function mgPrep(me) {
   const want = [16, me, ...S.box.slice().sort(() => Math.random() - .5).slice(0, 3).map(P => P.sp)];
   await Promise.race([Promise.all(want.map(sp => ensureSprite(sp).catch(() => {}))), new Promise(r => setTimeout(r, 2500))]);
@@ -6988,6 +6997,9 @@ function mgMove(g, o, dt) {
   else if (o.pat === 'wave') o.y = o.by + Math.sin(T * 2.2) * (o.by - 4);   // v5.92 경완: 땅 가까이부터 높이까지 크게 오르내림 (내려올 땐 뛰어넘고 올라갈 땐 밑으로)
   else if (o.pat === 'leap') { if (!o.lp && o.x - g.PX < MG_LEAP[0]) { o.lp = g.t; o.lx = MG_LEAP[0]; }   /* v8.73 경완: 늘 예고 포물선 시작점에서 뛴다 (프레임에 따라 몇 px 안쪽에서 뛰던 것) */ if (o.lp) { const k = (g.t - o.lp) / .75; o.lf = k < 1 && !o.kb; if (o.lf) o.x = g.PX + o.lx - (o.lx - MG_LEAP[1]) * k;   /* v7.58 경완: 점선 궤도 그대로 — 뛰는 동안은 화면 흐름(속도·얼음·오버드라이브)과 상관없이 x 를 궤도에 맞춤 */   /* v6.83 경완: 화면 안에서 뛰고, 빠르기와 상관없이 늘 같은 자리에 떨어진다 */ o.y = k < 1 ? 4 * MG_LEAP[2] * k * (1 - k) : 0; o.sq = k < .1 ? .8 : k >= 1 && k < 1.15 ? .82 : 1; } else o.sq = o.x - g.PX < MG_LEAP[0] + 70 ? .8 + Math.abs(Math.sin(T * 14)) * .06 : 1 + Math.sin(T * 9) * .05; }   /* v6.81: 뛰기 전에 미리 웅크려 보인다 */   // 가까워지면 펄쩍
   else if (o.pat === 'dig') { const k = clamp((185 - (o.x - g.PX)) / 60, 0, 1); o.y = -o.h * (1 - k); o.up = k; }   // 땅속에서 튀어나옴
+  else if (o.pat === 'spring') { const T2 = 1.15, q = (g.t + o.ph) % T2, up = .32, a = q < up ? 0 : (q - up) / (T2 - up);   /* v9.16 경완: 피그점프 — 꼬리 스프링으로 꾹 눌렸다가 높이(105) 튀어 오름. 낮을 땐 뛰어넘고 높을 땐 밑으로 */
+    o.y = a > 0 ? 4 * 105 * a * (1 - a) : 0; o.sq = q < up ? 1 - .3 * Math.sin(q / up * Math.PI) : a < .1 ? 1.15 : 1; if (q < up && q + .02 > up - .02 && !o.bz) { o.bz = 1; mgFx(g, o.x, g.GY, '#c8b090', 5, 80); } if (q >= up) o.bz = 0; }
+  else if (o.pat === 'fade') { const q = (g.t + o.ph) % 1.6, dx = o.x - g.PX; o.y = 10 + Math.sin(g.t * 3 + o.ph) * 4; o.al = dx < 90 && o.lk != null ? o.lk : q < .9 ? 1 : q < 1.05 ? 1 - (q - .9) / .15 : q < 1.45 ? .12 : (q - 1.45) / .15 * .88 + .12; if (dx < 90 && o.lk == null) o.lk = o.al >= .5 ? 1 : .12; o.nh = o.al < .5; }   /* v9.16 경완: 고오스 — 0.9초 보였다 0.7초 흐려짐, 흐릴 땐 그냥 지나감 (주인공 앞 90 안에선 그때 상태 그대로) */
   else if (o.pat === 'roll') { o.x -= (55 + 6 * g.phase) * dt; o.rot = (o.x - o.x0) / Math.max(8, o.h * .5); o.y = Math.abs(Math.sin(o.rot * 1.6)) * 2.5; }   /* v9.15 경완: 쏘콘 — 몸을 데굴데굴 돌리며 셋이 줄지어 굴러온다 */
   else if (o.pat === 'swoop') { if (!o.wu && o.x < g.W - 16) o.wu = g.t; if (o.wu && g.t - o.wu < .45) o.sq = .86 + Math.abs(Math.sin((g.t - o.wu) * 30)) * .1; else if (o.wu && !o.ch) { o.ch = 1; o.sq = 1; }   /* v9.13 경완: 가디처럼 — 화면에 들어오면 0.45초 파닥이며 웅크리고, 내리꽂을 길을 점선으로 미리 */
     const k = clamp((300 - (o.x - g.PX)) / 260, 0, 1); o.y = o.by - (o.by - 6) * Math.sin(k * Math.PI); }   // 하늘에서 내리꽂혔다 다시 올라감
@@ -7120,7 +7132,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
     if (hk < 0) g.hpT = 0; else if ((g.hpT = (g.hpT || 0) - dt) <= 0) { g.hpT = hk >= 1 ? .14 : .34 - .2 * hk; haptic(hk >= 1 ? 1 : 0); if (g.fx.gasH > 0) sfx('potion', hk); else if (g.scH != null || g.pcH != null) sfx('chg', hk); } }
   g.cmT = g.fx.cmW > 0 ? g.fx.cmW : 0; if (g.cmT > 0) { mgCharmGrab(g); if ((g.cmS = (g.cmS || 0) - dt) <= 0) { g.cmS = .24; sfx('ab', 'sing'); } }
   for (const o of g.obs) {
-    if (o.dead || o.flee || o.cm) continue;
+    if (o.dead || o.flee || o.cm || o.nh) continue;   // v9.16: 고오스가 흐려진 중엔 안 부딪힘
     const gz = g.pas.graze || 0, ol = o.x - o.w / 2 + 4 + gz, or = o.x + o.w / 2 - 4 - gz, ob = o.y, ot = o.y + o.h - 4 - gz;
     // v5.88 경완: 밟기 판정을 넉넉하게 — 떨어지는 중이고 발이 몸 위쪽 절반(또는 머리 16px 안)에서 내려왔으면 밟기, 옆으로도 8px 더 봐준다
     const stp = g.vy < 0 && !g.amb && !g.fx.flying && !(g.fx.bolt > 0) && !(g.fx.iron > 0) && g.y0 >= Math.min(ot - 16, o.y + o.h * .5), ex = stp ? 8 : 0;
@@ -7249,7 +7261,7 @@ function mgRender(g, cv = $('#mgCv')) {
   { { const tg = g.fx.bolt > 0 && !thumb ? clamp(((g.bm || 0) - .45) / 1.3, 0, 1) : 0; g.bB = clamp((g.bB || 0) + clamp(tg - (g.bB || 0), -.12, .2), 0, 1); }   /* v7.03 경완: 처음엔 블러 없이, 빨라지는 만큼 점점 */ if (g.bB > 0) { x.save(); for (let i = 1; i <= 6; i++) { x.globalAlpha = .17 * g.bB; x.drawImage(b.canvas, 0, 0, b.canvas.width, b.canvas.height, i * 7 * g.bB, 0, b.canvas.width * P, b.canvas.height * P); } x.restore(); } }   /* v6.54 경완: 오버드라이브 = 배경이 옆으로 번지는 동작 블러 */
   { const on = g.pas?.pow && (g.abK || g.fx.str > 0 || g.sDarkT > 0); g.sDk = clamp((g.sDk || 0) + (on ? .12 : -.06), 0, 1); if (g.sDk > 0) { x.fillStyle = `rgba(14,10,36,${(.5 * g.sDk).toFixed(3)})`; x.fillRect(0, 0, W, H); } }   /* v6.17 경완: S 랭크 기술을 쓰는 동안 배경이 어두워진다 */
   // 포켓몬 (장애물 → 주인공)
-  for (const o of g.obs) { const a = o.dead ? Math.max(0, o.kt / .35) : o.flee ? clamp(2.2 - o.flee, 0, 1) : 1; const by = o.t === 'f' ? Math.sin(g.t * 5 + o.ph) * 4 : 0;
+  for (const o of g.obs) { const a = (o.dead ? Math.max(0, o.kt / .35) : o.flee ? clamp(2.2 - o.flee, 0, 1) : 1) * (o.dead || o.flee ? 1 : o.al ?? 1); const by = o.t === 'f' ? Math.sin(g.t * 5 + o.ph) * 4 : 0;
     if (o.kb && o.kb.psn) { const e = 1.4 - o.kt, sh = Math.sin(g.t * 60) * 1.6 * Math.max(.35, 1 - e / .6), pk = .6 + .4 * Math.sin(e * 14);   /* v8.41 경완: 찌그러지거나 쓰러지지 않고 제자리에서 보랏빛으로 바뀌어 떨다가 사라진다 (독 걸린 상태만) */
       x.save(); x.translate(o.x + sh, GY - o.y); try { x.filter = `sepia(1) saturate(${3 + pk * 2}) hue-rotate(230deg) brightness(${.8 + pk * .1})`; } catch (er) {} mgDraw(x, o.k, 'Hurt', g.t, 0, 0, o.sc, false, clamp(o.kt / .35, 0, 1)); x.filter = 'none'; x.restore(); continue; }
     if (o.kb && o.kb.sqz) { const e = 1.1 - o.kt, s = Math.min(1, e / .07), w = e > .07 ? Math.exp(-(e - .07) * 9) * Math.sin((e - .07) * 38) * .12 : 0; x.save(); x.translate(o.x, GY - o.y); x.scale(1 + .55 * s - w, Math.max(.22, 1 - .72 * s + w)); mgDraw(x, o.k, 'Hurt', g.t, 0, 0, o.sc, false, clamp(o.kt / .3, 0, 1)); x.restore(); continue; }   /* v7.13: 펀치에 납작 */
