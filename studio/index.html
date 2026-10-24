@@ -390,7 +390,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 @media (min-width:821px){#thI{display:flex;flex-direction:column}#thI>*{flex:none}#thI>.gpw{flex:1 1 0;min-height:330px;display:flex;flex-direction:column}#thI>.gpw>#thPal{flex:1 1 0;min-height:140px;max-height:none}#thI>.gsc{max-height:var(--gsH,48%);overflow:auto}}
 </style>
 <div id="app">
-  <header class="tbar"><div class="logo"><img id="logoI" alt=""><span class="lt">작업실</span></div><span class="crumb" id="crumb">맵</span><span class="sp"></span><span class="unsv" id="safeW"><button id="safeB" class="safeb" hidden></button><div id="safePop" class="safep" hidden></div></span><span class="unsv" id="unsvW"><button id="unsv" hidden></button><div id="unsvPop" hidden></div></span><span class="dstat" id="dstat">바뀐 곳 없음</span><button class="chip" id="unAll" disabled title="저장하지 않은 수정을 모두 마지막으로 저장한 상태로 되돌려요">되돌리기</button><button class="btn" id="goWork">배포하기</button></header>
+  <header class="tbar"><div class="logo"><img id="logoI" alt=""><span class="lt">작업실</span></div><span class="crumb" id="crumb">맵</span><span class="sp"></span><span class="unsv" id="safeW"><button id="safeB" class="safeb" hidden></button><div id="safePop" class="safep" hidden></div></span><span class="unsv" id="unsvW"><button id="unsv" hidden></button><div id="unsvPop" hidden></div></span><span class="dstat" id="dstat">바뀐 곳 없음</span><button class="chip" id="unAll" disabled title="저장하지 않은 수정을 모두 마지막으로 저장한 상태로 되돌려요">되돌리기</button><button class="chip" id="goBeta" disabled title="베타(beta.html)에만 데이터를 올려요. 진짜 게임은 그대로예요">베타로 배포하기</button><button class="btn" id="goWork">배포하기</button></header>
   <nav class="nav" id="nav"></nav>
   <main id="main">
     <!-- 맵 편집 -->
@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.74"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.75"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.74';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.75';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -642,6 +642,22 @@ async function quickDeploy() { const C = changes(), tok = store.get('st-gh-token
   catch (err) { toast('배포하지 못했어요: ' + ghErr(err)); }
   b.disabled = false; b.textContent = '배포하기'; dstat(); }
 $('#goWork').onclick = quickDeploy;
+// v3.75 경완: 베타로 배포하기 — 저장한 것까지를 config/beta.json 에만 올림 (베타 게임만 씀, 진짜 게임·데이터 번호·기록은 그대로, 작업본도 그대로 남김)
+async function deployBeta(data, tries = 2) {
+  let old = null; try { old = JSON.parse(await gh('/contents/config/beta.json?ref=main', { raw: true })); } catch (e) { if (e.status !== 404) throw e; }
+  const bver = (old?.bver || 0) + 1, beta = { ver: LIVE.ver || 0, bver, at: Date.now(), note: '', data };
+  const ref = await gh('/git/ref/heads/main'), base = await gh('/git/commits/' + ref.object.sha);
+  const tree = await gh('/git/trees', { method: 'POST', body: JSON.stringify({ base_tree: base.tree.sha, tree: [{ path: 'config/beta.json', mode: '100644', type: 'blob', content: JSON.stringify(beta) }] }) });
+  const cm = await gh('/git/commits', { method: 'POST', body: JSON.stringify({ message: `베타 데이터 ${bver} (작업실 베타 배포, 데이터 v${LIVE.ver || 0} 위)`, tree: tree.sha, parents: [ref.object.sha] }) });
+  try { await gh('/git/refs/heads/main', { method: 'PATCH', body: JSON.stringify({ sha: cm.sha }) }); }
+  catch (e) { if (e.status === 422 && tries > 1) return deployBeta(data, tries - 1); throw e; }
+  return bver; }
+$('#goBeta').onclick = async () => { const tok = store.get('st-gh-token'); if (!changes().length) return;
+  if (!CANDEPLOY || !tok) { go('work'); toast(CANDEPLOY ? '먼저 아래에서 GitHub 를 연결해 주세요' : '이 미리보기에서는 배포할 수 없어요'); return; }
+  const b = $('#goBeta'); b.disabled = true; b.textContent = '베타에 올리는 중…';
+  try { const n = await deployBeta(snapshot()); toast(`베타 데이터 ${n} 올렸어요 · 진짜 게임은 그대로예요 (저장한 것만, 작업본은 남겨 뒀어요)`); }
+  catch (err) { toast('베타에 올리지 못했어요: ' + ghErr(err)); }
+  b.textContent = '베타로 배포하기'; dstat(); };
 
 // ---------- 휴대폰 틀 크기 ----------
 // 기종별 화면 크기 (CSS 픽셀). 기본은 아이폰 17 Pro
@@ -783,7 +799,7 @@ function unsvBar() { const b = $('#unsv'); if (!b || !ORIG) return; const here =
 $('#unsv').onclick = e => { e.stopPropagation(); $('#unsvPop').hidden = !$('#unsvPop').hidden; };
 $('#unsvPop').onclick = e => { const b = e.target.closest('[data-ub]'); if (!b) return; const [, v, pre] = BOXINFO(b.dataset.ub); pre?.(); $('#unsvPop').hidden = true; go(v); };
 document.addEventListener('pointerdown', e => { if (!e.target.closest('#unsvW')) $('#unsvPop').hidden = true; });
-function dstat() { unsvBar(); if (ORIG) scBar(); const n = changes().length, gv = gameVer(); $('#dstat').innerHTML = `작업실 v${STUDIO_VER} · ` + (gv ? `게임 ${gv}${BETA ? ' 베타' : ''} · ` : '') + `데이터 v${LIVE.ver || 0}` + (n ? ` · 바뀐 곳 <b>${n}</b>` : ''); $('#dstat').title = '작업실 = 이 작업실 화면 버전, 게임 = 게임 코드 버전, 데이터 = 작업실에서 배포한 횟수'; $('#goWork').disabled = !n; { const u = $('#unAll'); if (u && !u.dataset.arm) u.disabled = !unsaved(); } $('#goWork').title = n ? '' : '바뀐 곳이 없어요'; const e = document.querySelector('.nav [data-n=work]'); if (e) e.textContent = n || ''; }
+function dstat() { unsvBar(); if (ORIG) scBar(); const n = changes().length, gv = gameVer(); $('#dstat').innerHTML = `작업실 v${STUDIO_VER} · ` + (gv ? `게임 ${gv}${BETA ? ' 베타' : ''} · ` : '') + `데이터 v${LIVE.ver || 0}` + (n ? ` · 바뀐 곳 <b>${n}</b>` : ''); $('#dstat').title = '작업실 = 이 작업실 화면 버전, 게임 = 게임 코드 버전, 데이터 = 작업실에서 배포한 횟수'; $('#goWork').disabled = !n; if ($('#goBeta')) $('#goBeta').disabled = !n; { const u = $('#unAll'); if (u && !u.dataset.arm) u.disabled = !unsaved(); } $('#goWork').title = n ? '' : '바뀐 곳이 없어요'; const e = document.querySelector('.nav [data-n=work]'); if (e) e.textContent = n || ''; }
 
 // ---------- 공통 계산 ----------
 let ORIG = null, LIVE = { ver: 0 };   // 지금 배포된 값 (게임이 불러온 데이터)
@@ -2126,6 +2142,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.75', '10월 24일', ['위쪽 \'베타로 배포하기\': 저장한 것을 베타 게임에만 올려요 (진짜 게임·데이터 번호는 그대로, 작업본도 남아요, 베타 v9.12)']],
   ['3.74', '10월 24일', ['상점 › 아이템·도구·음악·필드: 왼쪽 ⠿ 를 끌어서 순서를 바꿔요 (▲▼ 대신)']],
   ['3.73', '10월 24일', ['상점 › 아이템·도구·음악: ▲▼ 로 순서를 바꿔요 (게임 상점이 그 순서대로, 베타 v9.09)']],
   ['3.72', '10월 24일', ['바위는 버섯·풀처럼 자연 요소: 상점 › 필드 소품 칸에서 뺌, 베타 게임(v9.08)에선 맵 소품 목록에도 없음']],
