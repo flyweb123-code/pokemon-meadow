@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.71"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.72"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.71';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.72';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2125,6 +2125,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.72', '10월 24일', ['바위는 버섯·풀처럼 자연 요소: 상점 › 필드 소품 칸에서 뺌, 베타 게임(v9.08)에선 맵 소품 목록에도 없음']],
   ['3.71', '10월 24일', ['상점 › 필드: 모닥불·연못·꽃밭 칸도 맵 메뉴와 같은 그림으로 보여요']],
   ['3.70', '10월 24일', ['상점 › 필드: 베타 게임으로 보기를 안 켜도 맵 전체 소품 고르는 칸이 떠요']],
   ['3.69', '10월 24일', ['상점 메뉴를 게임 상점 탭(아이템·도구·음악·필드)별로 나눔', '향로·빛나는 부적 효과는 밸런스 메뉴로 옮김', '상점 › 필드: 맵 전체 소품에서 눌러 필드 상점에 넣고, 가격·순서(▲▼)·빼기(×)를 정해요 (게임 v9.01)']],
@@ -3253,7 +3254,7 @@ function fpThLoad() { if (fpThGo || A?.fpInfo) return; fpThGo = true; const done
   A?.fireArt?.(null).then(u => { if (!u) return; const im = new Image(); im.onload = () => { const w = Math.round(im.naturalWidth / 6), c = document.createElement('canvas'); c.width = w; c.height = im.naturalHeight; c.getContext('2d').drawImage(im, 0, 0); done('fire', c.toDataURL()); }; im.src = u; }).catch(() => {});
   for (const k of ['pond', 'bed']) A?.oneThumb?.(k).then(u => done(k, u)).catch(() => {}); }
 function fpCat() { const C = A?.cat?.(); if (!C) return []; fpThLoad(); const th = (k, src) => A.fpInfo?.(k)?.src || FP_TH[k] || src;
-  return [...C.one.map(([k, n, src]) => [k, n, th(k, src)]), ...C.add.filter(([k]) => k !== 'mush').map(([k, n, src]) => [k, n, th(k, src)]), ...(C.mine || []).map(([k, n, src]) => [k, n, th(k, src)]), ...(C.sc || []).filter(r => r[5]).map(([k, n, src]) => [k, n, th(k, src)])]; }
+  return [...C.one.map(([k, n, src]) => [k, n, th(k, src)]), ...C.add.filter(([k]) => k !== 'mush' && k !== 'rockS' && k !== 'rockL').map(([k, n, src]) => [k, n, th(k, src)]), ...(C.mine || []).map(([k, n, src]) => [k, n, th(k, src)]), ...(C.sc || []).filter(r => r[5]).map(([k, n, src]) => [k, n, th(k, src)])]; }
 function renderShop() {
   const I = A?.ITEMS, T = A?.TRACKS || [], sh = shopEff();
   if (!I) { $('#shopC').innerHTML = `<div class="card"><h2>상점</h2><p class="small mute">상점 도구·아이템은 아직 베타 게임에만 있어요. 버전 화면에서 <b>베타 게임으로 보기</b>를 켜면 여기서 가격과 효과를 고칠 수 있어요.</p></div>`; $('#shopI').innerHTML = ''; return; }
