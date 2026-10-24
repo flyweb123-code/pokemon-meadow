@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.70"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.71"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.70';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.71';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2125,6 +2125,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.71', '10월 24일', ['상점 › 필드: 모닥불·연못·꽃밭 칸도 맵 메뉴와 같은 그림으로 보여요']],
   ['3.70', '10월 24일', ['상점 › 필드: 베타 게임으로 보기를 안 켜도 맵 전체 소품 고르는 칸이 떠요']],
   ['3.69', '10월 24일', ['상점 메뉴를 게임 상점 탭(아이템·도구·음악·필드)별로 나눔', '향로·빛나는 부적 효과는 밸런스 메뉴로 옮김', '상점 › 필드: 맵 전체 소품에서 눌러 필드 상점에 넣고, 가격·순서(▲▼)·빼기(×)를 정해요 (게임 v9.01)']],
   ['3.68', '10월 23일', ['열매나무·횃대·모닥불·꽃밭·그루터기·연못도 여러 개 놓기 (끌어다 놓기·+ 버튼, 맵에 있는 소품 탭에서 하나씩 고르고 지우기)']],
@@ -3246,7 +3247,12 @@ function shopFxCard() {   // 밸런스 메뉴 안 카드
       <p class="small">평소 이로치: 알 ${SN.toLocaleString()}개에 1마리 = <b>${fk(SN / E)}에 1번꼴</b> → 부적 중: <b>${fk(1 / (E * pC))}에 1번꼴</b>. 부적 한 번(${sh.charm.min}분, 약 ${kmC.toFixed(1)}km·알 ${nC.toFixed(0)}개) 동안 이로치 알이 하나라도 나올 확률 <b>${pc(atLeast(pC, nC))}</b> (평소 ${pc(atLeast(1 / SN, nC))})</p>
       <p class="small mute">값은 상점 데이터에 같이 저장돼요 (상점 메뉴와 같은 저장).</p></div>${boxBar('shop')}</div>`; }
 // 맵 '전체 소품' 목록 (작업실 맵 소품 창과 같은 것) → [이름표, 이름, 그림]
-function fpCat() { const C = A?.cat?.(); if (!C) return []; const th = (k, src) => A.fpInfo?.(k)?.src || src;
+// v3.71 경완: 본 게임 미리보기(fpInfo 없음)에서도 모닥불·연못·꽃밭은 맵 메뉴와 같은 그림 (장작+불꽃 첫 장, 맵에 있는 모습)
+const FP_TH = {}; let fpThGo = false;
+function fpThLoad() { if (fpThGo || A?.fpInfo) return; fpThGo = true; const done = (k, u) => { if (!u) return; FP_TH[k] = u; if (view === 'shop' && shopTab === 'field') renderShop(); };
+  A?.fireArt?.(null).then(u => { if (!u) return; const im = new Image(); im.onload = () => { const w = Math.round(im.naturalWidth / 6), c = document.createElement('canvas'); c.width = w; c.height = im.naturalHeight; c.getContext('2d').drawImage(im, 0, 0); done('fire', c.toDataURL()); }; im.src = u; }).catch(() => {});
+  for (const k of ['pond', 'bed']) A?.oneThumb?.(k).then(u => done(k, u)).catch(() => {}); }
+function fpCat() { const C = A?.cat?.(); if (!C) return []; fpThLoad(); const th = (k, src) => A.fpInfo?.(k)?.src || FP_TH[k] || src;
   return [...C.one.map(([k, n, src]) => [k, n, th(k, src)]), ...C.add.filter(([k]) => k !== 'mush').map(([k, n, src]) => [k, n, th(k, src)]), ...(C.mine || []).map(([k, n, src]) => [k, n, th(k, src)]), ...(C.sc || []).filter(r => r[5]).map(([k, n, src]) => [k, n, th(k, src)])]; }
 function renderShop() {
   const I = A?.ITEMS, T = A?.TRACKS || [], sh = shopEff();
