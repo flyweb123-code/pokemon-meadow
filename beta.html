@@ -311,6 +311,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 #skyFx .star{width:2px;height:2px;background:#fff;animation:twk 2.6s ease-in-out infinite}@keyframes twk{50%{opacity:.25}}
 #skyFx .cloud{animation:cloudM linear infinite}@keyframes cloudM{from{transform:translateX(-120px)}to{transform:translateX(480px)}}
 .prop{position:absolute;left:0;top:0;pointer-events:none;image-rendering:pixelated;background-size:100% 100%;transform:translate(-50%,-100%);transform-origin:50% 100%}
+.prop .scmp{position:absolute;inset:0;background-size:100% 100%;image-rendering:pixelated}   /* v9.29 경완: 스칼렛 소품의 움직이는 부분 */
 .prop.sc.scan{animation:scAn 1s steps(2) infinite}@keyframes scAn{from{background-position-x:0}to{background-position-x:calc(var(--sw) * var(--n) * -1)}}   /* v8.43 경완: 프레임 그림 소품 (허수아비 흔들림) */
 .prop.shake{animation:tshake .55s steps(6)}@keyframes tshake{0%,100%{transform:translate(-50%,-100%)}20%{transform:translate(-50%,-100%) rotate(-2.5deg)}40%{transform:translate(-50%,-100%) rotate(2.5deg)}60%{transform:translate(-50%,-100%) rotate(-1.5deg)}80%{transform:translate(-50%,-100%) rotate(1deg)}}
 .prop.rustle{animation:rustle .4s steps(4)}.tb.pecked{transition:transform .25s,opacity .25s;transform:scale(.3);opacity:0}@keyframes rustle{0%,100%{transform:translate(-50%,-100%)}25%{transform:translate(-50%,-100%) skewX(5deg)}75%{transform:translate(-50%,-100%) skewX(-5deg)}}
@@ -4636,7 +4637,8 @@ function drawSprite(m, dt) {
   let name = baseAnim(m), t;
   if (m.state === 'sleep') m.sleepAge = (m.sleepAge || 0) + dt;
   if (m.one) { m.one.t += dt; name = m.one.name; t = m.one.t; }
-  if (m.szAn && !m.one && A[m.szAn]) name = m.szAn;   // v5.69 작업실 크기 조절 모드: 고른 동작으로 보기
+  if (m.szAn && !m.one && A[m.szAn]) name = m.szAn;
+  if (m.scp && m.scAn && !m.one && A[m.scAn]) name = m.scAn;   // v9.29: 스칼렛 소품 놀이 동작 그림   // v5.69 작업실 크기 조절 모드: 고른 동작으로 보기
   if (!A[name]) name = name === 'WalkUp' ? 'Walk' : 'Idle';
   m.anName = name;
   // v3.46/3.47 경완: 먹는 동안은 고개를 꾸벅이며 오물오물 (파르빗처럼 Eat 그림 움직임이 작은 종도 잘 보이게 모든 종)
@@ -4744,14 +4746,15 @@ const FLAP_IDLE = new Set([41, 42, 169, 714, 715]);   // 가만히 있어도 늘
 // v5.20 경완: 가만히 서 있을 때 원래 떠 있는 높이 (크기 조절 모드 떠있기 게이지의 0 이 아니라 이 값에서 시작). 날개 접고 서는 새·걷는 포켓몬은 0
 const liftBase = sp => { const t = DEX[sp]; if (!t || (t.mv !== 'fly' && t.mv !== 'hover')) return 0; return t.mv === 'fly' && SPECIES[sp]?.sh === 9 && !FLAP_IDLE.has(sp) ? 0 : t.mv === 'fly' ? 40 : 16; };
 function render(m, now) {
+  if (m.scp) scTick(m, now);
   const t = T(m), flyer = t.mv === 'fly' || t.mv === 'hover';
   const grounded = !m.held && !(flyer && pondVal(m.x, m.y) < 1.05) && (m.state === 'sleep' || m.state === 'eat' || (t.mv === 'fly' && SPm(m).sh === 9 && !FLAP_IDLE.has(m.sp) && m.state !== 'move'));   /* v4.91: 호수 위에서는 앉지 않고 떠 있다 */   // v3.62 경완: 새는 날개를 접고 서 있을 땐 땅에, 날아갈 때만 떠 있다
   if (m.perch) { const p = m.perch; if (S.mons.includes(p) && p.state === 'sleep' && m.state === 'sleep') { m.x = p.x + m.perchDx; m.y = p.y + 1; m.xl = p.h * .45; } else { m.perch = null; m.xl = 0; } }
   if (m.ride) { const h = m.ride; if (S.mons.includes(h) && h.scene === m.rideSc && h.state === 'interact' && !m.held && m.state !== 'interact' && m.state !== 'special') { m.x = h.x + m.rideDx; m.y = h.y; m.xl = (h.xl || 0) + h.h * .62; m.face = h.face; m.zAdd = 2; m.goal = null; if (m.state === 'move') setState(m, 'idle', 30); m.t = Math.max(m.t, 1); }
     else { m.ride = null; m.rideSc = null; m.xl = 0; m.zAdd = 0; if (!m.held && S.mons.includes(h)) { place(m, h.x + (m.rideDx < 0 ? -1 : 1) * Math.max(34, (m.w + h.w) * .4) + rnd(-12, 12), h.y + rnd(4, 16)); dustAt(m); } } }
-  const fly0 = MON_FLY[m.form] || 0, targetLift = Math.max(0, m.szb ? liftBase(m.sp) + fly0 : m.held ? 26 : (flyer ? (grounded ? (t.mv === 'hover' ? 6 : 0) : (t.mv === 'fly' ? 40 : 16)) : 0) + (m.xl || 0) + fly0);   /* v5.20: MON_FLY 는 원래 높이에 더하는 값 (음수면 낮게) */   /* 들면 나는 포켓몬도 손가락(몸통) 기준: 그림자 위 높이를 더하지 않는다 */
-  m.lift += (targetLift - m.lift) * .08;
-  const bob = flyer && !grounded && !m.szb ? Math.sin(now / 260 + m.uid) * 4 : 0;   /* v4.61 경완: 크기 조절 모드에선 둥둥 안 뜬다 */
+  const fly0 = MON_FLY[m.form] || 0, targetLift = m.scp && !m.held ? Math.max(0, (m.xl || 0) + fly0) : Math.max(0, m.szb ? liftBase(m.sp) + fly0 : m.held ? 26 : (flyer ? (grounded ? (t.mv === 'hover' ? 6 : 0) : (t.mv === 'fly' ? 40 : 16)) : 0) + (m.xl || 0) + fly0);   /* v5.20: MON_FLY 는 원래 높이에 더하는 값 (음수면 낮게) */   /* 들면 나는 포켓몬도 손가락(몸통) 기준: 그림자 위 높이를 더하지 않는다 */
+  m.lift += (targetLift - m.lift) * (m.scp && m.scSnap ? 1 : .08);   // v9.29: 소품 놀이 중엔 높이를 바로 따라간다
+  const bob = flyer && !grounded && !m.szb && !m.scp ? Math.sin(now / 260 + m.uid) * 4 : 0;   /* v4.61 경완: 크기 조절 모드에선 둥둥 안 뜬다 */
   const pv = pondVal(m.x, m.y), wet = !flyer && (m.wet ? pv < 1.0 : pv < .94);   /* 물가 경계에서 젖음/마름이 번갈아 바뀌며 위아래로 튀지 않게 여유를 둔다 */
   if (wet !== m.wet) { m.wet = wet; m.el.classList.toggle('wet', wet); }
   if (m.land && (!isFish(m.sp) || pondVal(m.x, m.y) < .85)) { m.land = false; if (!m.held) { splashAt(m); log(`${J(m,'이/가')} 겨우 호수로 돌아와 첨벙! 한결 편안해 보인다.`, [m]); } }
@@ -4770,7 +4773,7 @@ function render(m, now) {
   if (shade !== !!m.shade) { m.shade = shade; m.el.classList.toggle('nightf', shade); }
   { let z = Math.round(m.y) + (m.zAdd || 0) + (m.perch ? 2 : 0) + (m.pet ? 5000 : 0) + (upOf(m) || shade || m.tuLit ? 1100 : 0); if (m.propSit && m.pzB != null && z >= m.pzB) z = m.pzB - 1; if (m.rZ !== z) { m.rZ = z; m.el.style.zIndex = z; } }
   { const oa = MON_OFFA[m.form]?.[m.anName] || 0, ox = Array.isArray(oa) ? oa[0] : 0, oy = Array.isArray(oa) ? oa[1] : oa;   // v5.79 경완: 동작별 그림 위치 [좌우, 위아래] (좌우는 기본 그림 = 왼쪽 볼 때 기준)
-  const lv = `translate(${ox * (m.face || 1)}px, ${((wet ? m.h * .38 : m.flop ? m.h * .42 : m.sp === 129 && !m.held ? m.h * .24 : 0) - Math.max(0, m.lift + (MON_FLYA[m.form]?.[m.anName] || 0)) - bob + oy).toFixed(1)}px)`; if (m.rLf !== lv) { m.rLf = lv; m.liftEl.style.transform = lv; } }   // 육지의 잉어킹은 그림자에 붙게 조금 내린다 (v5.68 경완: 작업실 크기 조절 모드처럼 땅에 놓인 잉어킹도)
+  const lv = `translate(${ox * (m.face || 1)}px, ${((wet ? m.h * .38 : m.flop ? m.h * .42 : m.sp === 129 && !m.held ? m.h * .24 : 0) - Math.max(0, m.lift + (MON_FLYA[m.form]?.[m.anName] || 0)) - bob + oy).toFixed(1)}px)${m.scRot ? ` rotate(${m.scRot.toFixed(3)}rad)` : ''}`; if (m.rLf !== lv) { m.rLf = lv; m.liftEl.style.transform = lv; } }   // 육지의 잉어킹은 그림자에 붙게 조금 내린다 (v5.68 경완: 작업실 크기 조절 모드처럼 땅에 놓인 잉어킹도)
   if (m.flop && now > (m.swT || 0)) { m.swT = now + rnd(180, 360); for (const s of [-1, 1]) if (Math.random() < .75) particle(m.x + s * rnd(6, m.w * .32), m.y - m.h * .2 - rnd(0, 10), 'sweat', '', d => d.style.setProperty('--dx', s * rnd(12, 26) + 'px')); }
   if (m.rFc !== m.face || m.flipEl.style.transform === '') { m.rFc = m.face; m.flipEl.style.transform = `scaleX(${m.face})`; m.flipEl.style.setProperty('--f', m.face); }
   if (m.shEl && m.shF !== m.face) { m.shF = m.face; m.shEl.style.translate = m.shX ? `${(m.shX * m.face).toFixed(1)}px 0` : ''; m.shEl.style.rotate = m.shR ? m.shR * m.face + 'deg' : ''; }
@@ -5232,7 +5235,7 @@ const LAMP_ON = 18, LAMP_OFF = 6.5;   // 조명 켜는 시각(저녁 6시) · �
 function scOff(c) { const o = document.createElement('canvas'); o.width = c.width; o.height = c.height; const g = o.getContext('2d'); g.drawImage(c, 0, 0); const D = g.getImageData(0, 0, o.width, o.height), P = D.data;
   for (let i = 0; i < P.length; i += 4) if (P[i + 3]) { const l = (P[i] + P[i + 1] + P[i + 2]) / 3; P[i] = Math.round(l * .42 + P[i] * .08 + 34); P[i + 1] = Math.round(l * .42 + P[i + 1] * .08 + 40); P[i + 2] = Math.round(l * .42 + P[i + 2] * .08 + 52); }
   g.putImageData(D, 0, 0); return o.toDataURL(); }
-function scImg(id) { const A = LAYOUT.scArt?.[id]; if (!A?.px?.length) return null; const key = id + ':' + JSON.stringify(A.px).length + JSON.stringify(A.pal) + ':' + (A.fr ? JSON.stringify(A.fr).length + '/' + A.fms : '');
+function scImg(id) { const A = LAYOUT.scArt?.[id]; if (!A?.px?.length) return null; const key = id + ':' + JSON.stringify(A.px).length + JSON.stringify(A.pal) + ':' + (A.fr ? JSON.stringify(A.fr).length + '/' + A.fms : '') + (A.mv ? ':mv' + JSON.stringify(A.mv).length : '');
   if (scCache[id]?.key === key) return scCache[id]; const h = A.px.length, w = A.px[0].length, c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
   const fire = SC_FIRE.test(A.n || ''), fc = fire ? document.createElement('canvas') : null, fg = fc?.getContext('2d'); if (fc) { fc.width = w; fc.height = h; } let nf = 0, fb = 0, fx0 = 1e9, fx1 = -1, fy0 = 1e9;
   const flame = (col, y) => { if (!fire || y > h * .6) return false; const n = parseInt(col.slice(1), 16), r = n >> 16, gg = (n >> 8) & 255, b = n & 255; return r > 200 && b < 140 && r - b > 90 && gg > 60; };
@@ -5242,7 +5245,9 @@ function scImg(id) { const A = LAYOUT.scArt?.[id]; if (!A?.px?.length) return nu
   if (fc && nf < 3) g.drawImage(fc, 0, 0);
   let sheet = null, nfr = 1; const FR = Array.isArray(A.fr) ? A.fr.filter(f => Array.isArray(f) && f.length === h) : [];   /* v8.43 경완: 프레임 그림(scArt.fr = [px, ...], fms = 한 장 ms)이 있으면 가로로 이어 붙인 시트로 돌린다 (허수아비 흔들림) */
   if (FR.length) { nfr = FR.length + 1; const sc = document.createElement('canvas'); sc.width = w * nfr; sc.height = h; const sg = sc.getContext('2d'); sg.drawImage(c, 0, 0); FR.forEach((F, i) => F.forEach((r, y) => { for (let x = 0; x < Math.min(w, r.length); x++) { const col = A.pal?.[r[x]]; if (r[x] === '.' || !col) continue; sg.fillStyle = col; sg.fillRect((i + 1) * w + x, y, 1, 1); } })); sheet = sc.toDataURL(); }
-  return scCache[id] = { key, sheet, nfr, fms: Math.max(40, +A.fms || 160), src: c.toDataURL(), w: w * SC_PX, h: h * SC_PX, fl: fc && nf >= 3 ? scFlBox(fx0, fx1, fy0, fb, w, h) : null, em: ne >= 2 ? { src: ec.toDataURL(), off: scOff(ec), cx: (ex0 + ex1 + 1) / 2 / w, cy: (ey0 + ey1 + 1) / 2 / h, rw: (ex1 - ex0 + 1) / w, rh: (ey1 - ey0 + 1) / h } : null }; }
+  let mv = null; const MV = A.mv; if (!FR.length && Array.isArray(MV?.st) && Array.isArray(MV?.mp) && Array.isArray(MV.o)) { const cv = (G, keep) => { const k = document.createElement('canvas'); k.width = w; k.height = h; const kg = k.getContext('2d'); G.forEach((r, y) => { if (!keep(y)) return; for (let x = 0; x < Math.min(w, r.length); x++) { const col = A.pal?.[r[x]]; if (r[x] === '.' || !col) continue; kg.fillStyle = col; kg.fillRect(x, y, 1, 1); } }); return k.toDataURL(); }, fr = +MV.fr || 0;   /* v9.29 경완: 움직이는 부분(mv.mp)만 흔들리고 도는 소품 — 받침(st)은 가만히, mv.fr 위쪽(뒤 테두리)은 올라탄 포켓몬 뒤에 */
+    mv = { st: cv(MV.st, () => 1), mp: cv(MV.mp, y => y >= fr), mb: fr ? cv(MV.mp, y => y < fr) : null, o: [MV.o[0] / w * 100, MV.o[1] / h * 100] }; }
+  return scCache[id] = { key, sheet, nfr, mv, fms: Math.max(40, +A.fms || 160), src: c.toDataURL(), w: w * SC_PX, h: h * SC_PX, fl: fc && nf >= 3 ? scFlBox(fx0, fx1, fy0, fb, w, h) : null, em: ne >= 2 ? { src: ec.toDataURL(), off: scOff(ec), cx: (ex0 + ex1 + 1) / 2 / w, cy: (ey0 + ey1 + 1) / 2 / h, rw: (ex1 - ex0 + 1) / w, rh: (ey1 - ey0 + 1) / h } : null }; }
 // v8.29 경완: 그려진 불꽃 칸 대신 모닥불과 같은 불꽃(SPR.flame 6장)을 그 자리에 크게 — 불꽃 칸 너비의 1.35배 (v8.32: 다시 그린 큰 횃불엔 1.8배가 너무 컸음), 밑동은 불꽃 칸 아래 끝
 function scFlBox(x0, x1, y0, y1, w, h) { const fw = Math.max(5, (x1 - x0 + 1) * 1.35), fh = Math.max(fw * 22 / 16, (y1 - y0 + 1) * 1.05), cx = (x0 + x1 + 1) / 2;
   return { l: (cx - fw / 2) / w * 100, t: (y1 + 1 - fh) / h * 100, w: fw / w * 100, h: fh / h * 100 }; }
@@ -5259,7 +5264,7 @@ function buildProps() {
   /* v8.95 경완: 더 놓은 열매나무·횃대 (열매는 맨 처음 나무에만) */
   (LAYOUT.trees || []).forEach(v => { const L = LKi('tree', 'trees', v), z = +L?.s || 1, e = add('tree t2', v, L && L !== lookOf('tree') ? lkUrl('tree', L, () => tintCv(ART.tree(), L).toDataURL()) : SPR.tree, Math.round(100 * z), Math.round(116 * z)); e.T = e.LV = v; });
   (LAYOUT.perches || []).forEach(v => { const L = LKi('perch', 'perches', v), z = +L?.s || 1; add('perch p2', v, L && L !== lookOf('perch') ? lkUrl('perch', L, () => tintCv(ART.perch(), L).toDataURL()) : SPR.perch, Math.round(52 * z), Math.round(64 * z)).LV = v; });
-  scFlEls = []; scLights = []; (LAYOUT.sc || []).forEach(r => { const [id, x, y] = r, I = scImg(id), z = scS(r), zy = z * scSY(r); if (!I) return; if (scLit(LAYOUT.scArt[id])) { const W = I.w * z, H = I.h * zy, f = I.fl; const E = I.em; scLights.push({ x: Math.round(f ? x + ((f.l + f.w / 2) / 100 - .5) * W : E ? x + (E.cx - .5) * W : x), y: Math.round(f ? y - H + (f.t + f.h * .7) / 100 * H : E ? y - H + E.cy * H : y - H * .65), k: Math.max(.55, Math.min(1.4, W / 34)), fire: !!f, core: E ? { x: Math.round(x + (E.cx - .5) * W), y: Math.round(y - H + E.cy * H), rx: Math.max(5, Math.round(E.rw * W * .75)), ry: Math.max(5, Math.round(E.rh * H * .75)) } : null }); } const e = add('sc', { x, y }, I.src, Math.round(I.w * z), Math.round(I.h * zy)); e.LV = r; e.FSRC = I.src; if (I.sheet) { e.classList.add('scan'); e.style.backgroundImage = `url(${I.sheet})`; e.style.backgroundSize = `${I.nfr * 100}% 100%`; e.style.setProperty('--sw', Math.round(I.w * z) + 'px'); e.style.setProperty('--n', I.nfr); e.style.animationDuration = I.nfr * I.fms + 'ms'; e.style.animationTimingFunction = `steps(${I.nfr})`; e.style.animationDelay = -Math.round(Math.random() * I.nfr * I.fms) + 'ms'; } if (I.em && scLit(LAYOUT.scArt[id])) { const q = document.createElement('i'); q.className = 'scem'; q.style.backgroundImage = `url(${I.em.src})`; const q2 = document.createElement('i'); q2.className = 'scoff'; q2.style.backgroundImage = `url(${I.em.off})`; e.append(q2, q); }   // v8.37 경완: 빛 나는 칸은 따로 얹어 은은하게 번지고, 밤에도 확실히 밝게 (nightHoles 의 core)
+  scFlEls = []; scLights = []; (LAYOUT.sc || []).forEach(r => { const [id, x, y] = r, I = scImg(id), z = scS(r), zy = z * scSY(r); if (!I) return; if (scLit(LAYOUT.scArt[id])) { const W = I.w * z, H = I.h * zy, f = I.fl; const E = I.em; scLights.push({ x: Math.round(f ? x + ((f.l + f.w / 2) / 100 - .5) * W : E ? x + (E.cx - .5) * W : x), y: Math.round(f ? y - H + (f.t + f.h * .7) / 100 * H : E ? y - H + E.cy * H : y - H * .65), k: Math.max(.55, Math.min(1.4, W / 34)), fire: !!f, core: E ? { x: Math.round(x + (E.cx - .5) * W), y: Math.round(y - H + E.cy * H), rx: Math.max(5, Math.round(E.rw * W * .75)), ry: Math.max(5, Math.round(E.rh * H * .75)) } : null }); } const e = add('sc', { x, y }, I.src, Math.round(I.w * z), Math.round(I.h * zy)); e.LV = r; e.FSRC = I.src; if (I.mv) { const W = Math.round(I.w * z), H = Math.round(I.h * zy), part = (el, src) => { const q = document.createElement('i'); q.className = 'scmp'; q.style.backgroundImage = `url(${src})`; q.style.transformOrigin = `${I.mv.o[0].toFixed(2)}% ${I.mv.o[1].toFixed(2)}%`; el.prepend(q); return q; }; e.style.backgroundImage = `url(${I.mv.st})`; e.mpEl = part(e, I.mv.mp); if (I.mv.mb) { const b = add('sc scmb', { x, y }, I.mv.mb, W, H, Math.round(y) - 3); b.style.backgroundImage = 'none'; e.mbEl = part(b, I.mv.mb); } }   /* v9.29: 움직이는 부분은 따로 (작업실 예시처럼) */ if (I.sheet) { e.classList.add('scan'); e.style.backgroundImage = `url(${I.sheet})`; e.style.backgroundSize = `${I.nfr * 100}% 100%`; e.style.setProperty('--sw', Math.round(I.w * z) + 'px'); e.style.setProperty('--n', I.nfr); e.style.animationDuration = I.nfr * I.fms + 'ms'; e.style.animationTimingFunction = `steps(${I.nfr})`; e.style.animationDelay = -Math.round(Math.random() * I.nfr * I.fms) + 'ms'; } if (I.em && scLit(LAYOUT.scArt[id])) { const q = document.createElement('i'); q.className = 'scem'; q.style.backgroundImage = `url(${I.em.src})`; const q2 = document.createElement('i'); q2.className = 'scoff'; q2.style.backgroundImage = `url(${I.em.off})`; e.append(q2, q); }   // v8.37 경완: 빛 나는 칸은 따로 얹어 은은하게 번지고, 밤에도 확실히 밝게 (nightHoles 의 core)
       if (I.fl) { const f = document.createElement('i'); f.className = 'scfl'; f.style.cssText = `background-image:url(${SPR.flame});left:${I.fl.l}%;top:${I.fl.t}%;width:${I.fl.w}%;height:${I.fl.h}%`; f.fi0 = Math.floor(Math.random() * 6); f.innerHTML = '<b></b><b></b><b></b>'; e.append(f); scFlEls.push(f); } });
   PROPS.bushEls = PROPS.bushes.map(b => { const L = lkRes(b.lk), z = L ? +L.s || 1 : zB; const e = add('bush', b, L ? lkUrl('bush', L, () => tintCv(ART.bush(), L).toDataURL()) : SPR.bush, Math.round(72 * z), Math.round(48 * z)); e.LV = b; return e; });
   /* v3.55: 꽃·풀은 바람에 살랑살랑 (하나씩 박자를 달리) */
@@ -5306,7 +5311,8 @@ function propSpots() {
   L.rocks.forEach((r, i) => { if (r[2] >= 12) out.push(['rock', '바위', r[0], r[1] - r[3], r[2] + 4, r[3] + 6, i]); });
   (L.sc || []).forEach((r, i) => { const [id, x, y] = r, I = scImg(id), z = scS(r); if (I) out.push(['sc', L.scArt[id].n || '소품', x, y - Math.min(I.h * z * scSY(r) * .3, 14), Math.max(18, I.w * z / 2 + 4), 14, i]); });
   if (weather() === 'rain') L.puddles.forEach((q, i) => out.push(['puddle', '물웅덩이', q.x, q.y, q.w / 2 + 4, q.w * .2 + 6, i]));
-  return out.filter(o => o[2] > ME_OUT / 2).map(([k, n, x, y, rx, ry, i, x2]) => ({ k, n, x, y, rx, ry, i, x2: !!x2 }));   // v9.14: 가방에 넣어 둔 소품(맵 밖)은 빼고
+  const cov = (L.sc || []).filter(r => r[1] > ME_OUT / 2).map(r => { const I = scImg(r[0]); if (!I) return null; const W = I.w * scS(r), H = I.h * scS(r) * scSY(r); return [r[1] - W / 2, r[2] - H, r[1] + W / 2, r[2] + 4]; }).filter(Boolean);   /* v9.29 경완 '소품으로 바위가 가려졌는데 바위에 기대 쉼': 스칼렛 소품 그림에 가려진 소품·바위·덤불은 놀 자리에서 뺀다 */
+  return out.filter(o => o[2] > ME_OUT / 2 && (o[0] === 'sc' || !cov.some(c => o[2] > c[0] && o[2] < c[2] && o[3] > c[1] && o[3] < c[3]))).map(([k, n, x, y, rx, ry, i, x2]) => ({ k, n, x, y, rx, ry, i, x2: !!x2 }));   // v9.14: 가방에 넣어 둔 소품(맵 밖)은 빼고
 }
 function propAt(x, y) { let best = null, bd = 1; for (const p of propSpots()) { const d = ((x - p.x) / p.rx) ** 2 + ((y - p.y) / p.ry) ** 2; if (d < bd) { bd = d; best = p; } } if (!best && pondVal(x, y) < 1) { const P = nearPond(x, y); best = { k: 'pond', n: '연못', x: P.x, y: P.y, rx: P.rx, ry: P.ry }; } return best; }
 const propHotEl = (() => { const e = document.createElement('div'); e.id = 'propHot'; e.innerHTML = '<b></b>'; return e; })();
@@ -5351,6 +5357,79 @@ function propBox(p) { const L = LAYOUT;
     default: return [p.x - p.rx, p.y - p.ry, p.rx * 2, p.ry * 2];
   } }
 const propSit = (m, lift) => { m.propSit = true; m.xl = lift; };
+// v9.29 경완 '작업실에서 예시로 봤던 상호작용 모션이 필드에 안 나옴': 스칼렛 소품 상호작용을 작업실 예시(scaDemo)와 같은 규칙으로 필드에서 움직인다
+//   act.x = { at, m, an, fx, back, two } 가 있으면 그대로, 없으면 글에서 짐작 (작업실과 같은 낱말). 소품 mv(움직이는 부분) 이 있으면 그 부분만 흔들리고 돈다
+const SC_MS = 'fly flap circ walk push hide peek win speek skill blink ride slide climb through avoid bob wobble'.split(' ');
+function scSpec(a, A) { const t = a.a || '', X = a.x || null, has = (s, k) => (' ' + (s || '') + ' ').includes(' ' + k + ' ');
+  const M = X ? Object.fromEntries(SC_MS.map(k => [k, has(X.m, k)]))
+    : { fly: /날아와|날아 와|날아들|내려앉/.test(t), flap: /날갯짓|파닥|떠서|떠 있|떠다/.test(t), circ: /빙빙|맴돌|둘레를/.test(t), walk: /걸어|걷|기어 다니|끝에서 끝|지나다|오가/.test(t),
+      push: /밀어|밀고|부딪|톡톡|건드|코끝으로|받아/.test(t), hide: /숨어|숨었|숨기|숨겨|그림자 속|뒤에서 나타/.test(t), peek: /내밀|눈만|고개만|들여다/.test(t), skill: /기술|전기를|염력|불을 붙|불을 켜|밝게|흩날려|채찍/.test(t), blink: /나타났다 사라졌다/.test(t), avoid: /피해|가까이 가지 않/.test(t), ride: /올라타|들어가 앉/.test(t) };
+  const want = X?.an ? [X.an, 'Idle'] : M.skill ? ['SpAttack', 'Shoot', 'Charge', 'Attack'] : M.push ? ['Strike', 'Attack', 'Kick'] : /졸|자요|잠들|낮잠|꾸벅|자고|말고 자|쉬어|엎드려/.test(t) ? ['Sleep'] : /먹|냠|갉|핥|마셔|쪼아|뜯어/.test(t) ? ['Eat', 'Attack']
+    : M.walk || M.circ || M.flap ? ['Walk'] : /깡충|뛰|점프|굴러|뒹굴/.test(t) ? ['Hop'] : /빙글/.test(t) ? ['Rotate', 'Hop'] : /단련|수련/.test(t) ? ['Attack', 'Strike'] : /뽐|포즈|자랑/.test(t) ? ['Pose', 'Appeal'] : [];
+  let pos = X?.at; if (!X || pos == null) { const top = /위에|위로|위를|꼭대기|가로대|지붕|올라|얹|매달|걸터|끝에 앉|양 끝|위 새싹|가장자리에|평균대 위/.test(t), inn = /안에|안으로|속에|속으로|구멍|들어가|쏙|사이에|아래에 들어/.test(t), und = /아래|밑|그늘|기대/.test(t) && !top; pos = X ? 'side' : inn ? 'in' : top ? 'top' : und ? 'under' : 'side'; }
+  const fx = X ? { spin: has(X.fx, 'spin'), swing: has(X.fx, 'swing'), rock: has(X.fx, 'rock'), glow: has(X.fx, 'glow') }
+    : { spin: !M.circ && /돌려|도는|돌아가|돌아요|돌고|돌리/.test(t), swing: /흔들/.test(t), rock: /오르내려|띄워|번갈아/.test(t), glow: /반짝|불을 켜|밝게|불을 붙|빛 포자|불빛을 쬐|불을 쬐/.test(t) };
+  return { M, want, pos, fx, back: !!X?.back, two: X?.two?.at ? X.two : null }; }
+// 놓인 소품 하나의 그림 칸 (필드 좌표): 왼쪽 위 (l, t), 너비·높이, 칸 하나 크기, 바닥 y
+function scGeo(r) { const I = scImg(r[0]), A = LAYOUT.scArt[r[0]]; if (!I || !A) return null; const W = I.w * scS(r), H = I.h * scS(r) * scSY(r), cols = A.px[0].length, rows = A.px.length;
+  return { I, A, W, H, l: r[1] - W / 2, t: r[2] - H, cx: r[1], gy: r[2], kx: W / cols, ky: H / rows, el: [...itemsEl.querySelectorAll('.prop.sc')].find(e => e.LV === r) }; }
+function scPlay(m, p, a, ride, two) { const r = LAYOUT.sc[p.i], G = r && scGeo(r); if (!G) return false; const S2 = scSpec(a, G.A), { M } = S2, P = SPRITES[m.sk || m.form], pmd = isPmd(m.form) && P?.a;
+  const MW = m.w || 40, MH = m.h || 40, sideX = () => { let x = G.l + G.W + MW * .3; if (x > XR - 24 || (m.x < G.cx && G.l - MW * .3 > XL + 24)) x = G.l - MW * .3; return x; };
+  let pos = two ? two.at : ride ? [.5, ride.fy] : S2.pos, tx, ty;
+  if (Array.isArray(pos)) { tx = G.l + G.W * pos[0]; ty = G.t + G.H * pos[1]; }
+  else if (pos === 'in') { tx = G.cx; ty = G.t + G.H * .62; } else if (pos === 'top') { tx = G.cx; ty = G.t + G.H * .16; } else if (pos === 'under') { tx = G.cx + G.W * .12; ty = G.gy; }
+  else if (pos === 'front') { tx = G.cx; ty = G.gy + 3; } else if (pos === 'far') { tx = G.l + G.W + MW * 1.1; if (tx > XR - 24) tx = G.l - MW * 1.1; ty = G.gy; }
+  else { tx = sideX(); ty = G.gy; }
+  if (M.push && !Array.isArray(pos)) tx = G.cx + (tx < G.cx ? -1 : 1) * (G.W / 2 + MW * .3);
+  if (M.flap && !Array.isArray(pos)) ty -= Math.min(30, G.H * .3);
+  if (M.hide && !M.win && !M.speek && !a.x) { tx = G.cx + G.W * .08; ty = G.t + G.H * .9; if (!M.peek) tx = G.l + G.W * .82; }
+  const an = pmd ? (S2.want.find(n => P.a[n]) || null) : null;
+  m.scp = { r, G, S: S2, M, tx: clamp(tx, XL + 20, XR - 20), ty, side: tx < G.cx ? -1 : 1, an, back: ride ? ride.back : two ? false : S2.back || (M.hide && !M.win && !M.speek) || M.speek || M.win,
+    ride: !!(ride || M.ride || two), t0: performance.now(), x0: m.x, y0: m.y - (m.lift || 0), hitT: -9, spT: 0, MW, MH };
+  m.goal = null; m.wp = null; m.propSit = true; m.pzB = null; setState(m, 'idle', M.avoid ? 4.6 : rnd(9, 14)); return true; }
+function scEnd(m) { const q = m.scp; if (!q) return; m.scp = null; m.scAn = null; m.scRot = 0; m.el.style.opacity = '';
+  if (m.propSit) { m.propSit = false; m.xl = 0; m.pzB = null; } if (q.ride || q.back || m.y < q.G.gy) { m.y = Math.max(m.y, q.G.gy + 4); m.x = clamp(m.x, XL + 20, XR - 20); }
+  if (!S.mons.some(o => o.scp?.r === q.r)) scFxOff(q.G); }
+function scFxOff(G) { const e = G.el; if (!e) return; e.style.transform = ''; e.style.filter = ''; if (e.mpEl) e.mpEl.style.transform = ''; if (e.mbEl) e.mbEl.style.transform = ''; }
+// 매 장면: 포켓몬 자리·높이·그림·소품 움직임
+function scTick(m, now) { const q = m.scp; if (!q) return; if (!q.G.el?.isConnected && LAYOUT.sc.includes(q.r)) { const G2 = scGeo(q.r); if (G2?.el) q.G = G2; }   // 소품을 다시 그렸으면 새 그림으로
+  if (m.held || m.state !== 'idle' || !S.mons.includes(m) || !LAYOUT.sc.includes(q.r) || !q.G.el?.isConnected) { scEnd(m); return; }
+  const { G, M, S: S2 } = q, tt = (now - q.t0) / 1000, MW = q.MW, MH = q.MH, ease = u => u < .5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2, lerp = (p, r, u) => p + (r - p) * u;
+  let x = q.tx, y = q.ty, fl = null, back = q.back, al = 1, rot = 0, an = q.an, walk = false;
+  if (M.fly && tt < 1.4) { const u = tt / 1.4, e = 1 - (1 - u) ** 2, sx = q.tx + q.side * 150, sy = q.ty - 120; x = sx + (q.tx - sx) * e; y = sy + (q.ty - sy) * e - Math.sin(u * Math.PI) * 18 + Math.sin(tt * 26) * 2; walk = true; fl = q.side > 0 ? false : true; }
+  else if (!M.fly && !M.climb && !M.avoid && !M.slide && !M.through && tt < .45) { const u = ease(tt / .45); x = lerp(q.x0, q.tx, u); y = lerp(q.y0, q.ty, u) - Math.sin(u * Math.PI) * 14; }   // 제자리로 폴짝
+  if (M.flap) { y += Math.sin(tt * 16) * 3; walk = true; }
+  if (M.circ) { const a2 = tt * 2.4, top = q.ty < G.t + G.H * .6, oy = top ? Math.min(q.ty, G.t + G.H * .3) : G.t + G.H * .45, rr = top ? G.W * .32 : G.W / 2 + MW * .3; x = G.cx + Math.cos(a2) * rr; y = oy + Math.sin(a2) * (top ? 6 : 12) + Math.sin(tt * 18) * 2; back = Math.sin(a2) < 0; fl = Math.sin(a2) < 0; walk = true; }
+  if (M.walk) { const u = .5 - .5 * Math.cos(tt * 1.1); x = G.l + G.W * (.15 + .7 * u); fl = Math.sin(tt * 1.1) > 0; walk = true; }
+  if (M.push) { const u = (tt * .8) % 1, reach = u < .35 ? u / .35 : u < .55 ? 1 : 1 - (u - .55) / .45; x = q.tx + q.side * MW * .45 * (1 - reach); if (u >= .35 && q.hitT < tt - .9) q.hitT = tt; if (!(u >= .3 && u < .6)) an = null; fl = q.side < 0; }
+  if (M.hide && !M.win && !M.speek && M.peek) { const u = Math.max(0, Math.sin(tt * 1.6)) ** .6; y += (Math.min(y, G.t + MH * .45) - y) * u; }   // 소품 위로 고개만 쏙
+  if (M.speek) { const u = Math.max(0, Math.sin(tt * 1.6)) ** .6; x = q.tx + q.side * MW * .55 * u; fl = q.side < 0; }
+  if (M.win) { const u = (tt % 4) / 4; if (u < .45) al = 0; else y = q.ty + MH * .3 * (1 - Math.min(1, (u - .45) / .12)); }
+  if (M.blink) al *= Math.sin(tt * 2.2) > -.2 ? 1 : 0;
+  if (M.bob) y += Math.sin(tt * 4) * 3;
+  if (M.wobble) rot = Math.sin(tt * 3) * .16;
+  if (M.slide) { const u = (tt % 5) / 5, gx = G.l + G.W * .1, gy = G.gy, ux = G.l + G.W * .22, uy = G.t + G.H * .22, ex = G.l + G.W * .95;   // 사다리로 올라가 미끄럼판 타고 내려옴
+    if (u < .35) { const v = u / .35; x = lerp(gx, ux, v); y = lerp(gy, uy, v) + Math.sin(v * 40) * 1.5; walk = true; } else if (u < .5) { x = ux; y = uy; } else if (u < .7) { const v = ease((u - .5) / .2); x = lerp(ux + G.W * .2, ex, v); y = lerp(uy + G.H * .1, gy, v * v); fl = true; rot = .35 * (1 - v); } else { const v = (u - .7) / .3; x = lerp(ex, gx, v); y = gy; walk = true; back = true; } }
+  if (M.climb && tt < 2) { const v = ease(tt / 2), sx = G.l - MW * .2; x = lerp(sx, q.tx, v); y = lerp(G.gy, q.ty, v) + Math.sin(tt * 30) * 1.5; walk = true; fl = true; }
+  if (M.through) { const u = (tt % 4) / 4; x = lerp(G.l - MW * .45, G.l + G.W + MW * .45, u); y = G.t + G.H * (Array.isArray(S2.pos) ? S2.pos[1] : .97); fl = true; walk = true; back = x > G.l + G.W * .12 && x < G.l + G.W * .88; }
+  if (M.avoid) { const near = G.cx + q.side * (G.W / 2 + MW * .55), far = G.cx + q.side * (G.W / 2 + MW * 2.4); y = G.gy + 3;   // 다가오다 움찔하고 멀리 피해 감
+    if (tt < 1.6) { x = lerp(q.x0, near, ease(tt / 1.6)); walk = true; fl = q.side < 0; } else if (tt < 2.3) { x = near + Math.sin(tt * 40) * 2; y -= Math.sin((tt - 1.6) / .7 * Math.PI) * 10; an = null; fl = q.side < 0; } else { x = lerp(near, far, ease(Math.min(1, (tt - 2.3) / 2))); walk = true; fl = q.side > 0; } }
+  // 소품 움직임 (ride = 포켓몬이 소품과 같이 흔들린다)
+  const fx = S2.fx, MV = G.A.mv?.st && G.A.mv?.mp && G.el?.mpEl ? G.A.mv : null; let ang = 0, ox = G.cx, oy = G.gy;
+  if (fx.swing) { ang = Math.sin(tt * 3) * .07; if (/그네/.test(G.A.n || '')) oy = G.t; }
+  if (fx.rock) { ang = Math.sin(tt * 2.4) * .13; oy = G.t + G.H * .7; }
+  if (M.push && tt - q.hitT < 1.2) { const h = tt - q.hitT; ang += Math.sin(h * 20) * .06 * Math.exp(-h * 3.5); }
+  const e = G.el; let a2 = ang, px = ox, py = oy;
+  if (MV) { px = G.l + MV.o[0] * G.kx; py = G.t + MV.o[1] * G.ky; a2 = MV.k === 'spin' ? (fx.spin ? tt * (M.flap ? 7 : 4) : 0) : ang * (MV.amp || 1.6); const tf = `rotate(${a2.toFixed(4)}rad)`; e.mpEl.style.transform = tf; if (e.mbEl) e.mbEl.style.transform = tf; }
+  else { const tf = ang ? `translate(-50%,-100%) rotate(${ang.toFixed(4)}rad)` : ''; e.style.transformOrigin = `${((ox - G.l) / G.W * 100).toFixed(1)}% ${((oy - G.t) / G.H * 100).toFixed(1)}%`; e.style.transform = tf; }
+  if (fx.glow) { const u = .5 + .5 * Math.sin(tt * 4); e.style.filter = `drop-shadow(0 0 ${(3 + 5 * u).toFixed(1)}px rgba(255,240,150,${(.55 + .4 * u).toFixed(2)}))`; }
+  if (q.ride && (MV ? MV.k !== 'spin' : true) && a2) { const dx = x - px, dy = y - py, c = Math.cos(a2), s = Math.sin(a2); x = px + dx * c - dy * s; y = py + dx * s + dy * c; rot += a2; }
+  if (M.skill && now > q.spT) { q.spT = now + 260; particle(G.cx + rnd(-G.W * .3, G.W * .3), G.t + G.H * rnd(.2, .6), 'spark', '✦'); }
+  if (M.flap && fx.spin && now > q.spT) { q.spT = now + 320; particle(x - q.side * MW * .3, y - MH * .3, 'spark', '〰'); }
+  // 필드에 옮기기: 그림자(m.y)는 소품 바닥 앞/뒤, 그 위 높이는 xl
+  const air = y < G.gy - 1; m.x = clamp(x, XL + 16, XR - 16); m.y = clamp(back ? G.gy - 1 : air ? G.gy + 2 : y + 2, MIN_Y, MAX_Y); m.xl = air || back ? Math.max(0, m.y - y) : 0;
+  m.pzB = back ? Math.round(G.gy) : null; if (fl != null) m.face = fl ? -1 : 1; else faceTo(m, G.cx);
+  m.scAn = walk ? 'Walk' : an; m.scRot = rot; m.el.style.opacity = al < 1 ? String(al) : ''; m.scSnap = tt > .05; }
 // v5.77 경완(고라파덕이 그루터기 옆에 걸터앉아 잠): 위에 올라앉을 때는 몸통이 아니라 그림자 가운데(무게 중심)를 그 자리에 맞춘다
 const onShadow = m => { if (m.shX) m.x = clamp(m.x - m.shX * (m.face || 1), XL + 20, XR - 20); };
 const tyOf = m => SPD(m.form || m.sp).t || [];
@@ -5427,8 +5506,12 @@ function propReactIn(m, p, drag) {
   if (p.k === 'sc') { const r = LAYOUT.sc[p.i], A = r && LAYOUT.scArt[r[0]], ty = tyOf(m).map(t => TYPE_KO[t]), mv = T(m).mv;   /* v8.22 경완: 스칼렛 소품 — 누가(w)에 맞는 행동을 골라 소품 곁에서 논다 */
     const fit = a => { const w = a.w || ''; return ty.some(t => t && w.includes(t)) || ((flyer) && /나는|날개|새/.test(w)) || (mv === 'swim' && /헤엄|물고기/.test(w)) || (small && /작은/.test(w)) || (!small && /큰/.test(w)); };
     const rd = (A?.acts || []).find(a => /올라타|들어가 앉|구멍/.test(a.a || '')), L = (A?.acts || []).filter(fit), a = rd && (drag || L.includes(rd)) ? rd : L.length ? pick(L) : null;   /* v9.28 경완: 타는 소품(몬스터볼 스프링·타이어 그네)은 끌어다 놓으면 무조건 타기부터 — 작은 포켓몬은 구멍 안에, 다른 포켓몬은 구조물 위에 올라탐 */
-    if (a && a === rd) { const I = scImg(r[0]), H = I ? I.h * scS(r) * scSY(r) : 30, inH = isSmall(m), tire = /구멍/.test(rd.a); at(0, r[2] - p.y + (inH ? -1 : 1)); propSit(m, Math.round(H * (inH ? (tire ? .06 : .55) : (tire ? .22 : .45)))); m.pzB = inH ? Math.round(r[2]) : null;   // 구멍 속은 밤에도 소품 뒤로   // 작은 포켓몬은 소품 뒤(구멍 속)에, 큰 포켓몬은 소품 앞 위에 올라탐 setState(m, 'idle', rnd(6, 10)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play');
+    if (a && a === rd) { const inH = isSmall(m), tire = /구멍/.test(rd.a); scPlay(m, p, rd, { fy: 1 - (inH ? (tire ? .06 : .55) : (tire ? .22 : .45)), back: inH }); emote(m, '♪', '', 2.2, 'prop-play');   // v9.28: 작은 포켓몬은 소품 뒤(구멍 속)에, 다른 포켓몬은 소품 앞 위에 올라탐 · v9.29: 흔들리는 부분과 같이 흔들린다
       return log(inH ? `${J(m,'이/가')} ${esc(A.n)}에 쏙 들어가 앉아 흔들흔들 논다.` : `${J(m,'이/가')} ${esc(A.n)} 위에 올라타 흔들흔들 논다.`, [m]); }
+    if (a && scPlay(m, p, a)) { emote(m, '♪', '', 2.2, 'prop-play');   /* v9.29 경완: 작업실 예시와 같은 동작 */
+      const tw = a.x?.two; if (tw?.at) { const ok = o => o !== m && S.mons.includes(o) && awake(o) && !o.held && !o.scp && !o.camp && !o.pin && !o.evolving && !o.washing && o.state !== 'special' && o.state !== 'interact' && dist(o, p) < 320, o2 = S.mons.filter(ok).sort((u, v) => dist(u, p) - dist(v, p)).find(o => { const ty2 = tyOf(o).map(t => TYPE_KO[t]), w = tw.w || a.w || ''; return ty2.some(t => t && w.includes(t)) || (isSmall(o) && /작은/.test(w)) || (!isSmall(o) && /큰/.test(w)); });   // 둘이 노는 상호작용 (시소): 가까운 짝이 반대쪽에 앉는다
+        if (o2 && scPlay(o2, p, a, null, tw)) { o2.propUntil = performance.now() + 10000; dustAt(o2); return log(`${J(m,'과/와')} ${J(o2,'이/가')} ${esc(A.n)}에서 같이 논다.`, [m, o2]); } }
+      return log(`${J(m,'이/가')} ${esc(A.n)} 곁에서 놀고 있다.`, [m]); }
     at(m.x < p.x ? -p.rx * .7 : p.rx * .7, 8); setState(m, 'idle', rnd(5, 9)); anim(m, 'hop'); emote(m, a ? '♪' : '…', '', 2.2, 'prop-play');
     return log(a ? `${J(m,'이/가')} ${esc(A.n)} 곁에서 놀고 있다.` : `${J(m,'이/가')} ${esc(A?.n || '소품')}${hasBat(A?.n || '소품') ? '을' : '를'} 신기한 듯 바라본다.`, [m]); }   /* v9.28 경완: 일지엔 괄호 설명 없이 */
   if (p.k === 'tree' && p.x2) { at(m.x < p.x ? -32 : 32, 14); setState(m, 'idle', rnd(6, 10)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play'); return log(pick([`${J(m,'이/가')} 나무 그늘 아래에서 쉰다.`, `${J(m,'이/가')} 나무 밑동에 기대어 하늘을 올려다본다.`]), [m]); }   /* v8.95: 더 놓은 나무엔 열매가 없다 */
@@ -6082,7 +6165,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.28';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.29';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6423,6 +6506,7 @@ function itemPop(P) {
 // ---------- 미니게임 (베타 v5.77 경완): 필드 정보창 조이스틱 → 게임 고르기 → 장애물 넘기 ----------
 // 미니게임천국 '달려라'처럼 저절로 달리고 눌러서 뛴다. 500점마다(v8.84, 예전엔 250m) 페이즈가 올라 빨라지고 장애물이 늘어난다.
 const mgPhSc = g => Math.floor(g.dist / 25) + (g.bonus || 0);   // 페이즈 점수 = 화면 점수 그대로 (v8.83 경완: 기술 점수도 총점에 들어가니 빼지 않음 — v8.82 되돌림)
+const MG_V_PH = 6, MG_REST = 2.5;   // v9.29 경완: 속도는 페이즈 6에서 그만 오름 · 페이즈가 바뀌면 2.5초 동안 새 장애물 없음
 const MG_PH_SC = 500;   // 페이즈 한 칸 = 점수 (달린 m + 밟기·기술 점수). v8.84: 자동 플레이 9종 150초 — 예전 250m(약 33초)마다 평균 385~470점(최소 322, 최대 450~600) → 사람은 더 잘 밟으니 500 (1000 은 페이즈 2까지 85초로 너무 느림)
 // 장애물은 다른 포켓몬. 함께 뛰는 포켓몬은 첫 번째 타입에 따라 능력이 하나씩 있고, 페이즈마다 다시 채워진다.
 const ICO_JOY = '<svg viewBox="0 0 12 12" width="26" height="26" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M4 0h4v1h1v4h-1v1h-1v2h4v1h1v3h-12v-3h1v-1h4v-2h-1v-1h-1v-4h1z"/><path fill="#e8483c" d="M4 1h4v4h-4z"/><path fill="#ff9a8a" d="M5 1h1v1h-1z"/><path fill="#b02a22" d="M7 4h1v1h-1z"/><path fill="#5a5a6a" d="M5 6h2v2h-2z"/><path fill="#a8acc0" d="M1 9h10v2h-10z"/><path fill="#ffd84a" d="M8 9h2v1h-2z"/></svg>';
@@ -7101,8 +7185,8 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
     if (g.cd <= .6 && g.cdN !== 0) { g.cdN = 0; sfx('start'); g.banQ = { t: 1.6, s: '페이즈 1' }; } if (g.cd <= 0 && g.banQ) { g.ban = g.banQ; g.banQ = null; } if (g.cd > .6) return; }
   else if (g.cd > 0) { g.cd -= dt; const n = Math.ceil(g.cd - .6); if (n !== g.cdN) { g.cdN = n; if (n > 0) sfx('tick'); else { sfx('start'); g.banQ = { t: 1.6, s: g.rsm ? '다시 시작!' : '페이즈 1' }; } } if (g.cd <= 0 && g.banQ) { g.ban = g.banQ; g.banQ = null; } if (g.cd > .6) return; }   /* v6.71 경완: '시작!' 글자가 사라진 뒤에 페이즈 글자 (겹치지 않게) */   // v5.79 경완: 시작 전 3·2·1
   const meters = Math.floor(g.dist / 25), sc = mgPhSc(g), ph = 1 + Math.floor(sc / MG_PH_SC);   // v8.80 경완: 페이즈는 거리 말고 점수로 (기술로 빨리 달리는 포켓몬이 점수는 낮은데 페이즈만 빨리 오르던 것)
-  if (ph > g.phase) { g.phase = ph; g.ban = { t: 1.6, s: '페이즈 ' + ph }; sfx('rise'); mgHud(); }   // v5.92 경완: 새 장애물 알림은 빼고 페이즈 글자만 화면 가운데에
-  g.v = MG_SPD * Math.min(700, 315 + 44 * (g.phase - 1) + Math.min(MG_PH_SC, sc - (g.phase - 1) * MG_PH_SC) * .13);   // v5.83 경완: 너무 쉬워서 더 빠르게 → v5.86 경완: 살짝만 쉽게
+  if (ph > g.phase) { g.phase = ph; g.ban = { t: 1.6, s: '페이즈 ' + ph }; sfx('rise'); mgHud(); g.rest = MG_REST; }   // v9.29 경완: 페이즈가 바뀌면 잠깐 새 장애물 없이 숨 고르기   // v5.92 경완: 새 장애물 알림은 빼고 페이즈 글자만 화면 가운데에
+  g.v = MG_SPD * Math.min(700, 315 + 44 * (Math.min(g.phase, MG_V_PH) - 1) + (g.phase < MG_V_PH ? Math.min(MG_PH_SC, sc - (g.phase - 1) * MG_PH_SC) * .13 : 0));   /* v9.29 경완 '실력과 상관없이 늘 어려워짐': 속도(와 장애물 간격)는 페이즈 MG_V_PH 에서 멈추고, 그 뒤로는 새 장애물만 늘어난다 */   // v5.83 경완: 너무 쉬워서 더 빠르게 → v5.86 경완: 살짝만 쉽게
   g.sfB = (g.sfB || 0) + ((g.fx.surf > 0 ? 1 : 0) - (g.sfB || 0)) * Math.min(1, dt * 4);   /* v8.66 경완: 파도타기 하는 동안 속도 빨라짐 (서서히 ×1.4, v8.67 ×1.7) */
   const sp = g.v * (g.fx.ice > 0 ? .5 : 1) * (1 + .95 * (g.bm || 0)) * (1 + MG_SURF_SPD * g.sfB) * (g.wsX != null ? g.wsX / g.v : 1), dx = sp * dt; g.bA = (g.bA || 0) + dx * Math.max(0, g.bm || 0);   // bA: 오버드라이브 동안 뒷배경을 더 빨리 흘리는 양
   g.dist += dx; g.sinceSp += dx;
@@ -7129,7 +7213,7 @@ function mgStep(g, dt) { if (!g.fit) mgFitMe(g);
   }
   if (g.buf > 0) g.buf -= dt; if (g.stBuf > 0) g.stBuf -= dt;
   if (g.y <= 0) { g.jn = 0; g.pc = 0; g.levD = 0; if (g.combo && g.wasAir && (g.cSt || !g.cAir) && !mgRunAb(g)) { if (g.combo >= 3) mgToast(g, `${g.combo} 콤보!`); g.combo = 0; g.cT = 0; }   /* v7.66 경완: 밟기로 이어 온 콤보는 땅에 닿으면 끊김, 기술로 날린 콤보는 시간(MG_COMBO_T) 안에 이어감 */ g.wasAir = false; g.cAir = false;   /* v7.73 경완: 뛰었다가 공중에서 아무것도 못 날리고(밟지도 않고) 내려오면 콤보 끊김 — 점프만으로 콤보 유지 막음 */ if (g.buf > 0 && !g.fx.flying && !(g.fx.dig > 0)) { g.buf = 0; mgJump(true); g.hold = false; g.cut = false; } }
-  if (g.sinceSp >= g.gap) { g.sinceSp = 0; mgSpawn(g); }
+  if (g.rest > 0) { g.rest -= dt; g.sinceSp = 0; } else if (g.sinceSp >= g.gap) { g.sinceSp = 0; mgSpawn(g); }
   for (const o of g.obs) { if (!(o.cm && !o.dead) && !(o.lf && !o.dead && !o.kb && !o.bd)) o.x -= dx * (o.t === 'f' && o.pat !== 'wave' && !o.bd ? 1.18 : 1);   /* v7.06: 홀린 포켓몬은 화면과 같이 흐르지 않고 캐릭터를 따라 다님 */   /* v6.16 경완: 구구(wave)는 제자리에서 위아래만 */ if (o.cm && !o.dead) mgCharmStep(g, o, dt); else if (o.bd && !o.dead) mgBoundStep(g, o, dt); else if (!o.dead && !o.flee && !o.stomp) mgMove(g, o, dt); if (o.flee) { o.flee += dt; const k = o.flee - (o.fd || 0); if (k >= 0 && k < .3) { o.x += dx; o.y = (o.fy || 0) + Math.sin(Math.min(1, k / .24) * Math.PI) * 30; } else if (k >= .3) { const r = k - .3; o.x += dx + 520 * Math.min(1, r / .08) * dt; o.y = (o.fy || 0) + Math.abs(Math.sin(r * 18)) * 12; if (!o.fdu && r > .05) { o.fdu = 1; mgFx(g, o.x - o.w / 2, g.GY - 4, '#e8d6aa', 8, 140); } } }   /* v6.67: 화들짝 뛰어올라 덜덜 → 뒤돌아 후다닥 */   /* v6.17 경완: 깜짝 놀라 펄쩍(!) → 돌아서서 통통 뛰며 달아난다 */ if (o.dead && !(o.kb?.psn && g.fx.gasH > 0 && o.kt < .5)) o.kt -= dt;   /* v8.64: 독가스를 모으는 동안 독에 걸린 포켓몬은 사라지지 않고 떨며 기다렸다가 터질 때 날아간다 */ if (o.kb && o.kb.psn) { if (o.y > 0) { o.kb.vy -= 2400 * dt; o.y = Math.max(0, o.y + o.kb.vy * dt); } if ((o.kb.bt -= dt) <= 0 && o.kt > .3) { o.kb.bt = .12; g.parts.push({ x: o.x + (Math.random() - .5) * o.w * .6, y: g.GY - o.y - o.h * (.4 + Math.random() * .5), vx: (Math.random() - .5) * 20, vy: -90 - Math.random() * 60, t: .5, t0: .5, r: 2 + Math.random() * 2, c: Math.random() < .6 ? '#b47ae0' : '#e8d4ff', dust: 1 }); } } else if (o.kb && o.kb.sqz) { if (o.y > 0) { o.kb.vy -= 2400 * dt; o.y = Math.max(0, o.y + o.kb.vy * dt); if (o.y <= 0) { mgFx(g, o.x, g.GY - 2, '#e8d6aa', 6, 120); g.shake = Math.max(g.shake || 0, .06); } } } else if (o.kb && o.kb.bw) mgBowl(g, o, dt); else if (o.kb) { o.x += o.kb.vx * dt; o.y += o.kb.vy * dt; o.kb.vy -= (o.kb.dn ? 2200 : 900) * dt; o.kb.r += o.kb.vr * dt; if (Math.random() < .5) g.parts.push({ x: o.x, y: g.GY - o.y - o.h / 2, vx: -80, vy: 0, t: .3, t0: .4, r: 2, c: Math.random() < .5 ? '#ffffff' : o.kb.c }); } }
   if (g.fl?.length || (g.fx.str > 0 && g.ab.k === 'fire')) {   /* v6.30 경완: 화염방사 = 불 알갱이를 겨눈 방향으로 쏘고, 알갱이는 쏜 뒤엔 제 갈 길로 날아간다 → 손가락을 움직이면 줄기가 호스 물줄기처럼 휘며 따라온다 */
     const pw = g.pas?.pow ? 1.8 : 1, on = g.fx.str > 0 && g.ab.k === 'fire', sy = g.GY - g.y - MG_PH / 2 - 4; g.fl = g.fl || [];
@@ -11401,7 +11485,7 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
     /* v8.76 경완: 맵 크기에 맞춰 그린 그림(a.sz = 원래 그림 대비 [s, sy])으로 바뀌면 그만큼 크기 배율을 나눠 화면 크기는 그대로. v8.77: 원래 그림으로 돌아오면(sz 없음) 배율도 되돌림 (bk = 지금 그림의 sz) */
     const dv = (v, d) => { const q = Math.round((+v || 1) / (+d || 1) * 100) / 100; return Math.abs(q - 1) < .04 ? 0 : q; }, S0 = rz ? dv(P.s, rz[0]) : P?.s, SY0 = rz ? dv(P.sy, rz[1]) : P?.sy;
     if (rz) for (const r of LAYOUT.sc || []) if (r[0] === id) { if (r[3] != null) r[3] = dv(r[3], rz[0]) || 1; if (r[4] != null) r[4] = dv(r[4], rz[1]) || 1; }
-    LAYOUT.scArt = { ...(LAYOUT.scArt || {}), [id]: { n: String(a.n || '소품').slice(0, 16), px: a.px, pal: a.pal || {}, acts: (a.acts || []).map(o => ({ w: o.w, a: o.a })), ...(P?.on ? { on: 1 } : {}), ...(S0 ? { s: S0 } : {}), ...(SY0 ? { sy: SY0 } : {}), ...(bk ? { bk } : {}), ...(a.glow != null ? { glow: +a.glow ? 1 : 0 } : {}), ...(Array.isArray(a.fr) && a.fr.length ? { fr: a.fr, fms: +a.fms || 160 } : {}) } };   /* v8.43: 프레임 그림도 */   /* v8.29: 다시 그린 그림으로 바꿔도 전체 소품(on)은 그대로 */ changed('scArt'); };
+    LAYOUT.scArt = { ...(LAYOUT.scArt || {}), [id]: { n: String(a.n || '소품').slice(0, 16), px: a.px, pal: a.pal || {}, acts: (a.acts || []).map(o => ({ w: o.w, a: o.a, ...(o.x && typeof o.x === 'object' ? { x: o.x } : {}) })), ...(a.mv?.st && a.mv?.mp ? { mv: a.mv } : {}),   /* v9.29 경완: 작업실 예시 동작(x)·움직이는 부분(mv)도 게임으로 */ ...(P?.on ? { on: 1 } : {}), ...(S0 ? { s: S0 } : {}), ...(SY0 ? { sy: SY0 } : {}), ...(bk ? { bk } : {}), ...(a.glow != null ? { glow: +a.glow ? 1 : 0 } : {}), ...(Array.isArray(a.fr) && a.fr.length ? { fr: a.fr, fms: +a.fms || 160 } : {}) } };   /* v8.43: 프레임 그림도 */   /* v8.29: 다시 그린 그림으로 바꿔도 전체 소품(on)은 그대로 */ changed('scArt'); };
   api.scOn = ids => { const L = (ids || []).filter(id => LAYOUT.scArt?.[id] && !LAYOUT.scArt[id].on); if (!L.length) return; undo.push(snap()); for (const id of L) LAYOUT.scArt[id] = { ...LAYOUT.scArt[id], on: 1 }; changed('scArt'); };   // v8.24 경완: 추가 소품 → 전체 소품으로 저장
   api.scUndef = id => { if (!LAYOUT.scArt?.[id]) return; undo.push(snap()); delete LAYOUT.scArt[id]; LAYOUT.sc = (LAYOUT.sc || []).filter(r => r[0] !== id); if (sel?.key === 'sc') sel = null; delete scCache[id]; changed('sc'); };
   api.nudge = (dx, dy) => { const t = sel && items().find(t => t.key === sel.key && t.i === sel.i); if (!t) return; undo.push(snap()); t.mv(dx, dy); changed(sel.key); };

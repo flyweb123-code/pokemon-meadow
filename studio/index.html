@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.75"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.76"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.75';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.76';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2142,6 +2142,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.76', '10월 24일', ['스칼렛 소품의 예시 동작과 움직이는 부분도 게임에 보내요 · 작업실을 열면 맵 소품에 반영되니 베타로 배포하면 필드에서 예시처럼 움직여요 (베타 v9.29)']],
   ['3.75', '10월 24일', ['위쪽 \'베타로 배포하기\': 저장한 것을 베타 게임에만 올려요 (진짜 게임·데이터 번호는 그대로, 작업본도 남아요, 베타 v9.12)']],
   ['3.74', '10월 24일', ['상점 › 아이템·도구·음악·필드: 왼쪽 ⠿ 를 끌어서 순서를 바꿔요 (▲▼ 대신)']],
   ['3.73', '10월 24일', ['상점 › 아이템·도구·음악: ▲▼ 로 순서를 바꿔요 (게임 상점이 그 순서대로, 베타 v9.09)']],
@@ -3407,7 +3408,7 @@ async function scaLoad() { [SCA_R, SCA_PK] = await Promise.all([staffGet('config
 // v3.26: 예전 picks.json 에 담아 둔 소품은 한 번만 맵 소품 목록으로 옮긴다
 // v3.31 경완: 스칼렛이 작업물을 다시 그리면(피드백 반영 등) 맵 소품 리스트의 같은 소품 그림도 새 그림으로 (작업본에 들어가요, 저장하면 게임에)
 function scaSync() { const art = (D.layout || ORIG?.layout)?.scArt; if (!A?.scDef || !SCA_R || !art) return; let n = 0; const clean = !boxDirty('layout');
-  for (const [id, a] of Object.entries(art)) { const o = scaItem(id); if (o?.px?.length && (JSON.stringify(o.px) !== JSON.stringify(a.px) || JSON.stringify(o.pal) !== JSON.stringify(a.pal) || JSON.stringify(o.fr || null) !== JSON.stringify(a.fr || null) || JSON.stringify((o.acts || []).map(q => [q.w, q.a])) !== JSON.stringify((a.acts || []).map(q => [q.w, q.a])) || (o.glow != null && +o.glow !== +(a.glow ?? -1)))) {   /* v3.65: 상호작용 지우기·빛 켜기도 맵 소품에 반영 */ A.scDef(id, { ...o, n: a.n }); n++; } }
+  for (const [id, a] of Object.entries(art)) { const o = scaItem(id); if (o?.px?.length && (JSON.stringify(o.px) !== JSON.stringify(a.px) || JSON.stringify(o.pal) !== JSON.stringify(a.pal) || JSON.stringify(o.fr || null) !== JSON.stringify(a.fr || null) || JSON.stringify((o.acts || []).map(q => [q.w, q.a, q.x || null])) !== JSON.stringify((a.acts || []).map(q => [q.w, q.a, q.x || null])) || JSON.stringify(o.mv?.st && o.mv?.mp ? o.mv : null) !== JSON.stringify(a.mv || null) || (o.glow != null && +o.glow !== +(a.glow ?? -1)))) {   /* v3.65: 상호작용 지우기·빛 켜기도 맵 소품에 반영 · v3.76 경완: 예시 동작(x)·움직이는 부분(mv)도 게임으로 */ A.scDef(id, { ...o, n: a.n }); n++; } }
   if (n && clean) { D._sv = D._sv || {}; putP(D._sv, 'layout', D); saveDraft(); layoutBar(); scBar(); }   // v3.39 경완: 바뀐 게 없는데 '배치 저장'이 켜지지 않게 — 다시 그린 그림 반영은 저장까지 해 둔다 (배포하면 게임에)
   if (n) toast(`스칼렛이 다시 그린 소품 ${n}개를 맵 소품에 반영했어요 · 배포하면 게임에 들어가요`); }
 // v3.56 경완: 버섯·꽃·풀(자연 요소)은 자리 고정 — 지금 놓인 소품 밑동 둘레에 한 번 깔아 둔다 (게임 api.natSeed, 소품을 치우면 드러남)
