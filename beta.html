@@ -367,7 +367,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
 .shopwin .stab:not([hidden]){flex:1;min-height:0;display:flex;flex-direction:column}
 .shopwin .soon{margin:auto;color:var(--dim);font-size:16px;text-align:center}
 .runtabs.shoptabs{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:10px}
-.itm .vpic img{width:48px;height:48px;margin:4px;image-rendering:pixelated}.itm .icnt{position:absolute;top:4px;right:6px;font-style:normal;font-weight:700;font-size:14px;line-height:16px;text-align:right;color:#20202c}   /* v7.53 경완: 가진 수량은 박스 없이 글자만 */.itm .icnt::before{content:'×';font-weight:400;margin-right:1px}.runtabs.shoptabs.bagtabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+.itm .vpic img{width:48px;height:48px;margin:4px;image-rendering:pixelated}.itm .icnt{position:absolute;top:4px;right:6px;font-style:normal;font-weight:700;font-size:14px;line-height:16px;text-align:right;color:#20202c}   /* v7.53 경완: 가진 수량은 박스 없이 글자만 */.itm .icnt::before{content:'×';font-weight:400;margin-right:1px}.runtabs.shoptabs.bagtabs{grid-template-columns:repeat(3,minmax(0,1fr))}
 .sb-pic{width:40px;height:40px;image-rendering:pixelated;flex:none}.shop-bar .sb-name span{white-space:normal}
 #itemPop{position:fixed;inset:0;z-index:5900;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35)}#itemPop[hidden]{display:none}.ipwin{width:min(92vw,400px)}.iprow{display:flex;align-items:center;gap:10px;padding:8px 4px;border-top:2px dashed var(--inner)}.iprow img{width:40px;height:40px;image-rendering:pixelated}.iprow div{flex:1;min-width:0}.iprow b{display:block}.iprow span{font-size:12px;color:var(--dim)}#mg .mg-card.open:active{transform:none;box-shadow:3px 3px 0 rgba(0,0,0,.15)}#mg .mg-abn{display:flex;align-items:center;gap:5px}#mg .mg-abn .tyi{width:16px!important;height:16px!important;flex:none}#mg .mg-abn .rk{flex:none;zoom:.8}.bagwin .bag-body{flex:1;min-height:0;overflow-y:auto}.bag-ask{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;width:min(84vw,300px)}.bag-ask img{width:56px;height:56px;image-rendering:pixelated}.bag-ask p{margin:4px 0 0;font-size:16px}.bag-ask span{font-size:12px;color:var(--dim)}.bag-yn{display:flex;gap:8px;margin-top:8px}.bag-yn .lk-btn{min-width:90px}.ibag-hb{display:flex;gap:6px}#ibagMulti::before{display:none}.itm .ichk{position:absolute;top:2px;left:2px;width:14px;height:14px;border:2px solid #20202c;background:#fff;box-sizing:border-box}.itm[aria-current="true"] .ichk{background:#20202c;box-shadow:inset 0 0 0 2px #fff}.ibag-multi .itm[aria-current="true"]{border-color:var(--cursor)}.lk-btn.warn{background:#e0555a;color:#fff}#ibagBar{position:relative}#ibagBar .ibag-toss{position:absolute;right:-3px;bottom:calc(100% + 6px);width:40px;height:40px;display:flex;align-items:center;justify-content:center;border:3px solid var(--frame);background:#fff;padding:0;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.18)}#ibagBar .ibag-toss svg{width:24px;height:24px;display:block}#ibagBar .ibag-toss:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.18)}   /* v7.60 경완: 버리기 = 박스 위쪽 휴지통 아이콘 */.bag-cnt{display:flex;align-items:center;gap:10px;margin-top:4px}.bag-cnt b{min-width:44px;font-size:18px}.bag-cnt .lk-btn{min-width:40px;padding:6px 0}.bag-h{margin:10px 2px 6px;font-size:13px;color:var(--dim)}.bag-n{font-style:normal;font-size:13px;color:var(--dim)}.bag-none{text-align:center;margin:18px 0 10px;line-height:1.6}.bag-shop{display:block;margin:0 auto 6px}
 .fxbar{display:flex;flex-direction:column;align-items:flex-end;gap:4px}.fxbar:empty{display:none}.fxc{display:flex;align-items:center;gap:4px;font-size:15px;color:#fff;text-shadow:0 1px 0 #000,1px 0 0 #000,-1px 0 0 #000,0 -1px 0 #000}.fxc img{width:40px;height:40px;image-rendering:pixelated}   /* v6.44 경완: 필드 효과 아이콘 크게, 여러 개면 아래로 줄줄이 */
@@ -1439,6 +1439,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 #eggSortG.egg-sort{gap:5px}#eggSortG.egg-sort button{margin:0;border:2px solid var(--frame);background:#fff;color:var(--win-ink);box-shadow:2px 2px 0 rgba(0,0,0,.18);padding:4px 8px}#eggSortG.egg-sort button:active{transform:translate(2px,2px);box-shadow:none;background:var(--frame);color:var(--win)}   /* v6.37 부화기 정렬 = 개별 버튼 */
 #hatch.hlock button{pointer-events:none!important}#hatch.hlock .win button{opacity:.55;transition:opacity .3s}   /* v6.37 hatchLock */
 /* v8.98 경완: 맵 편집 모드 */
+#ibag.ibag-fonly #ibagTabs{display:none}
 #btnMapEdit{left:20px;top:110px;position:absolute;z-index:25;padding:0;border:0;background:none;cursor:pointer;line-height:0;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35));-webkit-tap-highlight-color:transparent}#btnMapEdit:active{transform:translate(1px,1px)}
 .metitle{flex-direction:column;align-items:flex-start;gap:2px}.metitle b{font-size:18px}.metitle span{font-size:12px;color:var(--dim,#666)}
 .me-save{position:absolute;right:20px;top:20px;z-index:25;height:42px;padding:0 20px;font:inherit;font-size:17px;font-weight:700;color:#20202c;background:#ffd84a;border:3px solid #20202c;cursor:pointer;
@@ -1582,7 +1583,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
     <div class="sheet-head"><h3>가방</h3><span class="ibag-hb"><button class="opt" id="ibagMulti">여러 개 선택</button><button class="opt" id="ibagX">닫기</button></span></div>
     <div class="bag-body" id="ibagBody"></div>
     <div class="shop-bar" id="ibagBar" hidden></div><p class="shop-msg" id="ibagMsg"></p>
-    <div class="runtabs shoptabs bagtabs" id="ibagTabs" role="tablist"><button class="runtab" role="tab" data-bt="item">아이템</button><button class="runtab" role="tab" data-bt="tool">도구</button></div>
+    <div class="runtabs shoptabs bagtabs" id="ibagTabs" role="tablist"><button class="runtab" role="tab" data-bt="item">아이템</button><button class="runtab" role="tab" data-bt="tool">도구</button><button class="runtab" role="tab" data-bt="field">필드</button></div>
   </div>
 </div>
 <div class="sheet" id="mg" hidden>
@@ -5800,7 +5801,7 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, hunger: m.hunger, slpB: m.slpB, slpW: m.slpW, social: m.social, joy: m.joy, joyH: m.joyH || 0, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk, red: !!b.red })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, mg: S.mg || {}, fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])] };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, mg: S.mg || {}, fbag: S.fbag || {}, fbagT: S.fbagT || {}, fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])] };
 }
 let saveFrozen = false, tutFreeze = false, introPv = false;   // introPv: 튜토리얼 미리 보기 (끝나도 저장 안 함)
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
@@ -5808,7 +5809,7 @@ async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
   S.lockT = d.lockT || 0; S.tree = d.tree || null; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.bagDry = d.bagDry || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.trI = d.trI ?? null; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.autoInc = !!d.autoInc; S.noti = { on: true, egg: true, hatch: true, evo: true, ...(d.noti || {}) }; S.bagQ = Array.isArray(d.bagQ) ? d.bagQ : [];   /* v4.23 경완: 부화기 자동 채우기가 다시 켜면 꺼지던 문제 — 저장에 빠져 있었다 */ S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
-  if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1; S.items = d.items || {}; S.itemSeen = d.itemSeen || { ...S.items };   /* v7.48: 예전 저장은 가진 것 모두 본 것으로 */ S.mg = d.mg || {}; S.fx = d.fx || {}; S.colT = d.colT || 0;
+  if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1; S.items = d.items || {}; S.itemSeen = d.itemSeen || { ...S.items };   /* v7.48: 예전 저장은 가진 것 모두 본 것으로 */ S.mg = d.mg || {}; S.fbag = d.fbag || {}; S.fbagT = d.fbagT || {}; S.fx = d.fx || {}; S.colT = d.colT || 0;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
   cleanPlaces();
   S.dexNew = new Set(d.dexNew || []); S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
@@ -6071,7 +6072,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '8.99';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.00';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6228,9 +6229,19 @@ function itemSeeTab(k) { const I = itemsOf(), Z = S.itemSeen || (S.itemSeen = {}
 function itemSeenClamp() { const I = itemsOf(), Z = S.itemSeen; if (Z) for (const id in Z) if ((I[id] || 0) < Z[id]) Z[id] = I[id] || 0; }   // 쓰거나 버려 줄면 본 개수도 줄여서 다시 생기면 점
 let ibagFresh = new Set();
 const ibagEl = $('#ibag'); let ibagSel = null, ibagMul = false, ibagPick = new Set();   /* v5.90 경완: 가방 여러 개 선택·버리기 */
-let ibagTab = 'item';
+let ibagTab = 'item', ibagFOnly = false, ibagFSel = null;   // v9.00 경완: 가방 '필드' 탭 = 맵에서 뺀 소품. 맵 편집의 '가방 전체보기'는 필드 탭만 (탭 없이)
+const fbagList = () => { const F = S.fbag || {}, T = S.fbagT || {}; return ME_KINDS.filter(([k]) => F[k] > 0).sort((a, b) => (T[b[0]] || 0) - (T[a[0]] || 0)); };   // 최근에 넣은 것 먼저
+function fbagAdd(k, n = 1) { const F = S.fbag || (S.fbag = {}), T = S.fbagT || (S.fbagT = {}); F[k] = (F[k] || 0) + n; if (F[k] <= 0) { delete F[k]; delete T[k]; } else if (n > 0) T[k] = Date.now(); save(); }
+function renderFBag() { const F = S.fbag || {}, A = meArtOf(), L = fbagList(); if (ibagFSel && !(F[ibagFSel] > 0)) ibagFSel = null;
+  document.querySelectorAll('#ibagTabs [data-bt]').forEach(b => b.setAttribute('aria-selected', b.dataset.bt === 'field')); $('#ibagMulti').hidden = true; ibagEl.classList.remove('ibag-multi');
+  $('#ibagBody').innerHTML = L.length ? '<div class="shop-inv">' + L.map(([k, n]) => `<button class="vin itm" data-fk="${k}" aria-current="${ibagFSel === k}"><span class="vpic"><img src="${A[k]}" alt=""></span><i class="icnt">${F[k]}</i><span class="vname">${n}</span></button>`).join('') + '</div>' : '<p class="bag-none">가방에 필드 소품이 없어요.<br>맵 편집에서 필드의 소품을 빼면 여기로 들어와요.</p>';
+  const bar = $('#ibagBar'), o = ME_KINDS.find(([k]) => k === ibagFSel); bar.hidden = !o; if (!o) return;
+  bar.innerHTML = `<img class="sb-pic" src="${A[o[0]]}" alt=""><div class="sb-name"><b>${o[1]} ×${F[o[0]]}</b><span>맵 편집에서 필드에 놓을 수 있어요.</span></div>` + (mapEdit ? '' : '<button class="lk-btn main" data-place>놓으러 가기</button>'); }
+const bagOpenField = () => tabTo(ibagEl, () => { ibagEl.hidden = false; ibagFOnly = true; ibagTab = 'field'; ibagFSel = null; ibagMul = false; ibagPick.clear(); $('#ibagMsg').textContent = ''; renderIBag(); });
 $('#ibagTabs').addEventListener('click', e => { const b = e.target.closest('[data-bt]'); if (!b || b.dataset.bt === ibagTab) return; ibagFresh = new Set();   /* v7.56 경완: 보고 탭을 옮기면 칸의 빨간 점도 사라짐 */ ibagTab = b.dataset.bt; ibagSel = null; ibagPick.clear(); $('#ibagMsg').textContent = ''; renderIBag(); });
 function renderIBag() {
+  ibagEl.classList.toggle('ibag-fonly', ibagFOnly);
+  if (ibagTab === 'field') return renderFBag();
   itemSeenClamp(); itemSeeTab(ibagTab);
   const I = itemsOf(), L = ITEMS.filter(o => I[o.id] > 0); if (ibagSel && !(I[ibagSel] > 0)) ibagSel = null;
   const sec = (k, t) => { const R = L.filter(o => o.k === k); return R.length ? `<h4 class="bag-h">${t}</h4><div class="shop-inv">` + R.map(o => `<button class="vin itm" data-it="${o.id}" aria-current="${ibagMul ? ibagPick.has(o.id) : ibagSel === o.id}">${ibagMul ? '<i class="ichk"></i>' : ''}${ibagFresh.has(o.id) ? '<i class="nd" aria-label="새로 생김"></i>' : ''}<span class="vpic"><img src="${ITEM_ART[o.a]}" alt=""></span><i class="icnt">${I[o.id]}</i><span class="vname">${o.n}</span></button>`).join('') + '</div>' : ''; };
@@ -6265,7 +6276,7 @@ function ibagToss(ids) {   /* ids 하나면 개수 고르기, 여럿이면 고�
 }
 /* v7.71 경완: 가방 버튼은 누르면 쏙 눌렸다가 톡 나온 뒤 가방이 열림 */
 let bagTapT = 0; $('#btnBag').onclick = () => { const w = $('#btnBag'); if (bagTapT) return; w.classList.remove('tap'); void w.offsetWidth; w.classList.add('tap'); bagTapT = setTimeout(() => { bagTapT = 0; w.classList.remove('tap'); bagOpen(); }, 110); };
-const bagOpen = () => tabTo(ibagEl, () => { ibagEl.hidden = false; ibagFresh = new Set(); ibagTab = 'item'; ibagSel = null; ibagMul = false; ibagPick.clear(); $('#ibagMsg').textContent = ''; renderIBag(); });
+const bagOpen = () => tabTo(ibagEl, () => { ibagEl.hidden = false; ibagFOnly = false; ibagFresh = new Set(); ibagTab = 'item'; ibagSel = null; ibagMul = false; ibagPick.clear(); $('#ibagMsg').textContent = ''; renderIBag(); });
 // v8.98 경완: 맵 편집 모드 — 1단계는 화면 배치만 (아이콘으로 들어가 포켓몬·효과·버튼·상태창을 숨기고, 아래는 편집 메뉴, 우상단 저장으로 끝)
 // 안전 구역(포켓몬이 다니는 곳) 밖은 어둡게, 연못은 놓을 수 없는 곳. 소품을 누르면 테두리 빛 + 우상단 x + 땅에 닿는 자리
 let mapEdit = false, meSelEl = null, meArt = null, mePick = null;
@@ -6274,7 +6285,7 @@ const meArtOf = () => meArt || (meArt = { tree: SPR.tree, perch: SPR.perch, bush
 function meZoneDraw() { const c = $('#meZone'), g = c.getContext('2d'), x0 = Math.max(0, XL) + 6, x1 = Math.min(W, XR) - 6; g.clearRect(0, 0, W, H); g.fillStyle = 'rgba(16,16,40,.55)'; g.fillRect(0, 0, W, H); g.clearRect(x0, MIN_Y, x1 - x0, MAX_Y0 - MIN_Y);
   g.setLineDash([6, 4]); g.lineWidth = 2; g.strokeStyle = 'rgba(255,255,255,.9)'; g.strokeRect(x0 + 1, MIN_Y + 1, x1 - x0 - 2, MAX_Y0 - MIN_Y - 2);
   for (const P of ALLP('pond')) { g.beginPath(); g.ellipse(P.x, P.y, P.rx * 1.06, P.ry * 1.1, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(255,140,140,.95)'; g.stroke(); } }
-function meRender() { const F = S.fbag || {}, A = meArtOf(), L = ME_KINDS.filter(([k]) => F[k] > 0);
+function meRender() { const F = S.fbag || {}, A = meArtOf(), L = fbagList();   // v9.00: 가방에 있는 것만, 최근에 넣은 순
   $('#meList').innerHTML = L.length ? L.map(([k, n]) => `<button class="me-it" type="button" data-k="${k}" aria-pressed="${mePick === k}"><i class="icnt">${F[k]}</i><img src="${A[k]}" alt=""><span>${n}</span></button>`).join('') : '<p class="me-none">가방에 놓을 소품이 없어요.<br>필드의 소품을 빼면 여기로 들어와요.</p>'; }
 function meSel(el) { if (meSelEl) meSelEl.classList.remove('meSel'); meSelEl = el; const x = $('#meX'), f = $('#meFoot'); x.hidden = f.hidden = !el; if (!el) return; el.classList.add('meSel');
   const cx = parseFloat(el.style.left), by = parseFloat(el.style.top), w = parseFloat(el.style.width) || el.offsetWidth, h = parseFloat(el.style.height) || el.offsetHeight;
@@ -6284,7 +6295,7 @@ function mapEditSet(on) { if (mapEdit === on) return; mapEdit = on; document.bod
 $('#btnMapEdit').onclick = () => mapEditSet(true);
 $('#meSave').onclick = () => mapEditSet(false);   // 2단계: 배치한 대로 저장
 $('#meCancel').onclick = () => mapEditSet(false);
-$('#meAll').onclick = () => { sfx('tap'); bagOpen(); };   // 2단계: 가방의 필드 탭으로 열기
+$('#meAll').onclick = () => { sfx('tap'); bagOpenField(); };
 $('#meX').onclick = e => { e.stopPropagation(); meSel(null); };   // 2단계: 빼면 가방 필드 탭으로
 $('#meList').onclick = e => { const b = e.target.closest('[data-k]'); if (!b) return; mePick = mePick === b.dataset.k ? null : b.dataset.k; meRender(); sfx('tap'); };
 $('#wrap').addEventListener('pointerdown', e => { if (!mapEdit || e.target.closest('#meX')) return; e.stopPropagation(); e.preventDefault();
@@ -6293,6 +6304,8 @@ $('#wrap').addEventListener('pointerdown', e => { if (!mapEdit || e.target.close
 $('#ibagX').onclick = () => { ibagEl.hidden = true; };
 ibagEl.addEventListener('click', e => {
   if (e.target.closest('[data-shop]')) { ibagEl.hidden = true; $('#openShop').click(); return; }
+  { const f = e.target.closest('[data-fk]'); if (f) { sfx('tap'); if (mapEdit) { ibagEl.hidden = true; mePick = f.dataset.fk; meRender(); return; }   /* 편집 중엔 고르면 바로 아래 줄에서 골라 둔 상태로 */ ibagFSel = ibagFSel === f.dataset.fk ? null : f.dataset.fk; renderIBag(); return; } }
+  if (e.target.closest('#ibagBar [data-place]')) { const k = ibagFSel; ibagEl.hidden = true; mapEditSet(true); mePick = k; meRender(); return; }
   if (e.target.closest('#ibagMulti')) { ibagMul = !ibagMul; ibagPick.clear(); ibagSel = null; $('#ibagMsg').textContent = ''; renderIBag(); return; }
   const v = e.target.closest('[data-it]'); if (v) { const k = v.dataset.it; ibagFresh.delete(k);   /* v7.56 경완: 한 번 누르면 빨간 점 사라짐 */ if (ibagMul) ibagPick.has(k) ? ibagPick.delete(k) : ibagPick.add(k); else ibagSel = ibagSel === k ? null : k; $('#ibagMsg').textContent = ''; renderIBag(); return; }
   if (e.target.closest('#ibagBar [data-all]')) { const I = itemsOf(), T = ITEMS.filter(o => o.k === ibagTab && I[o.id] > 0); if (T.every(o => ibagPick.has(o.id))) ibagPick.clear(); else T.forEach(o => ibagPick.add(o.id)); renderIBag(); return; }
