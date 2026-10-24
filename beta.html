@@ -5106,7 +5106,7 @@ function drawBg(X) {
   // 그림 소품: 모닥불 자리·그루터기·바위
   for (const F of ALLP('fire')) putP('fire', F, lkCv(ART.campfire(), 'fire', F), F.x / 2, F.y / 2 + 9);
   for (const T of ALLP('stump')) putP('stump', T, lkCv(ART.stump(), 'stump', T), T.x / 2, T.y / 2);
-  for (const r of LAYOUT.rocks) { const [x, y, w, h, n, s, lk] = r, L = lkRes(lk); putP('rock', r, L ? scaleCv(tintCv(ART.rock(w, h, s * 977, n), L), +L.s || 1) : lookCv(ART.rock(w, h, s * 977, n), 'rock'), x / 2, y / 2); }
+  for (const r of LAYOUT.rocks) { const [x, y, w, h, n, s, lk] = r, L = lkRes(lk); if (natCover(x, y)) continue; put(L ? scaleCv(tintCv(ART.rock(w, h, s * 977, n), L), +L.s || 1) : lookCv(ART.rock(w, h, s * 977, n), 'rock'), x / 2, y / 2); }   // v9.08 경완: 바위는 버섯·풀처럼 자연 요소 — 맵 편집에서 못 고르고, 소품을 그 위에 놓으면 숨음
   // 버섯
   for (const [x, y] of LAYOUT.mush.filter(([a, b]) => !natCover(a, b)).map(([a, b]) => [a / 2, b / 2])) { px(x, y - 2, 2, 3, '#f0e8d8'); px(x - 2, y - 4, 6, 2, '#d83838'); px(x - 1, y - 5, 4, 1, '#e85050'); px(x - 1, y - 4, 1, 1, '#fff'); px(x + 2, y - 4, 1, 1, '#fff'); px(x - 2, y - 2, 6, 1, 'rgba(0,0,0,.15)'); }
   // 꽃밭: 갈아 놓은 두둑 (꽃은 흔들리는 그림으로 따로)
@@ -5216,7 +5216,7 @@ function onProp(x, y) {
 function natCover(x, y) {
   const L = LAYOUT, inB = (cx, by, w, h) => Math.abs(x - cx) < w / 2 && y <= by + 3 && y >= by - h, zT = LS('tree'), zP = LS('perch'), zF = LS('fire'), zS = LS('stump');
   return pondVal(x, y) < 1.12 || inB(L.tree.x, L.tree.y, 36 * zT, 24 * zT) || inB(L.perch.x, L.perch.y, 40 * zP, 18 * zP) || inB(L.fire.x, L.fire.y + 14, 64 * zF, 40 * zF) || inB(L.stump.x, L.stump.y, 42 * zS, 22 * zS) || inB(L.bed.x, L.bed.y + 24, 98, 52)
-    || L.bushes.some(b => { const z = LZi('bush', 'bushes', b); return inB(b.x, b.y, 66 * z, 30 * z); }) || L.rocks.some(r => { const z = LZi('rock', 'rocks', r); return inB(r[0], r[1], r[2] * 2 * z + 2, r[3] * 2 * z + 2); })
+    || L.bushes.some(b => { const z = LZi('bush', 'bushes', b); return inB(b.x, b.y, 66 * z, 30 * z); })
     || (L.sc || []).some(r => { const I = scImg(r[0]), z = scS(r); return I && inB(r[1], r[2], I.w * z * .85, Math.max(12, I.h * z * scSY(r) * .45)); });
 }
 // v8.22 경완: 스칼렛 소품 그림 (도트 한 칸 = 2px)
@@ -6074,7 +6074,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.07';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.08';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6241,7 +6241,7 @@ function fpPond() { const c = document.createElement('canvas'); c.width = 30; c.
 function fpCv(b, L) { const cv = b === 'tree' ? ART.tree() : b === 'perch' ? ART.perch() : b === 'bush' ? ART.bush() : b === 'stump' ? ART.stump() : b === 'fire' ? ART.campfire() : b === 'rockS' ? ART.rock(10, 7, 13 * 977, 1) : b === 'rockL' ? ART.rock(16, 10, 17 * 977, 2) : b === 'pond' ? fpPond() : null; return cv ? tintCv(cv, L) : null; }
 function fpInfo(k) { if (typeof k !== 'string') return null;
   if (k.startsWith('sc:')) { const id = k.slice(3), A = LAYOUT.scArt?.[id], I = A && scImg(id); if (!I) return null; if (!fpThC[k] || fpThC[k].key !== I.key) { const c = document.createElement('canvas'), h = A.px.length, w = A.px[0].length; c.width = w; c.height = h; const g = c.getContext('2d'); A.px.forEach((r, y) => { for (let x = 0; x < r.length; x++) { const col = A.pal?.[r[x]]; if (r[x] !== '.' && col) { g.fillStyle = col; g.fillRect(x, y, 1, 1); } } }); fpThC[k] = { key: I.key, src: fpSquare(I.src, c) }; } return { n: A.n || '소품', src: fpThC[k].src }; }
-  const KD = LAYOUT.kinds?.[k], b = KD ? KD.b : k; if (!FP_N[b]) return null;
+  const KD = LAYOUT.kinds?.[k], b = KD ? KD.b : k; if (!FP_N[b] || b === 'rockS' || b === 'rockL') return null;   // v9.08: 바위는 자연 요소라 상점·가방에 없음
   if (!fpThC[k]) { const L = KD ? lkRes(KD.lk) : lookOf(b === 'rockS' || b === 'rockL' ? 'rock' : b), cv = fpCv(b, L);
     if (cv) fpThC[k] = { src: fpSquare('', cv) }; else { const im = b === 'bed' ? SPR.flw?.sun?.src : b === 'puddle' ? SPR.puddle : ''; fpThC[k] = { src: im || '' }; } }
   return { n: KD ? KD.n : FP_N[b], src: fpThC[k].src }; }
@@ -6357,7 +6357,7 @@ const lvXY = v => Array.isArray(v) ? (typeof v[0] === 'string' ? [v[1], v[2]] : 
 function lvSet(v, x, y) { if (Array.isArray(v)) { const i = typeof v[0] === 'string' ? 1 : 0; v[i] = x; v[i + 1] = y; } else { v.x = x; v.y = y; } }
 const lvMove = (v, dx, dy) => { const [x, y] = lvXY(v); lvSet(v, Math.round(x + dx), Math.round(y + dy)); };
 // 이 플레이어가 옮긴 자리: S.lay = { 'tree' | 'rocks.2' | 'sc.0' …: [원래 x, 원래 y, 새 x, 새 y] } — 작업실이 그 소품을 옮기거나 바꾸면(원래 자리가 달라지면) 무시
-const LAY_ONE = ['tree', 'perch', 'fire', 'bed', 'stump', 'pond'], LAY_ARR = ['trees', 'perches', 'fires', 'beds', 'stumps', 'ponds', 'bushes', 'rocks', 'sc'];
+const LAY_ONE = ['tree', 'perch', 'fire', 'bed', 'stump', 'pond'], LAY_ARR = ['trees', 'perches', 'fires', 'beds', 'stumps', 'ponds', 'bushes', 'sc'];
 function layKey(v) { for (const k of LAY_ONE) if (LAYOUT[k] === v) return k; for (const k of LAY_ARR) { const i = (LAYOUT[k] || []).indexOf(v); if (i >= 0) return k + '.' + i; } return null; }
 const layObj = key => { const [k, i] = key.split('.'); return i == null ? (LAY_ONE.includes(k) ? LAYOUT[k] : null) : LAY_ARR.includes(k) ? LAYOUT[k]?.[+i] : null; };
 function layApply() { let n = 0; for (const [key, q] of Object.entries(S.lay || {})) { const v = layObj(key); if (!v || !Array.isArray(q)) continue; const [x, y] = lvXY(v); if (x === q[0] && y === q[1]) { lvSet(v, q[2], q[3]); n++; } } return n; }
@@ -11316,7 +11316,7 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
     L.rocks.forEach(r => { const z = LZi('rock', 'rocks', r); put(r[0], r[1], r[2] * 2 * z, r[3] * 2 * z, r[4] === 2 ? 2 : 1); });
     (L.sc || []).forEach(r => { const I = scImg(r[0]), z = scS(r); if (I) put(r[1], r[2], I.w * z * .85, Math.max(12, I.h * z * scSY(r) * .45), Math.max(1, Math.min(4, Math.round(I.w * z / 22)))); });
     undo.push(snap()); L.flowers.push(...F); L.mush.push(...M); L.nat = 1; changed('mush'); return F.length + M.length; };
-  api.NAT = k => !!SPR.flw[k] || k === 'mush';   // v8.77 경완: 자연 요소는 작업실 소품 목록에 없다
+  api.NAT = k => !!SPR.flw[k] || k === 'mush' || k === 'rockS' || k === 'rockL';   // v9.08: 바위도 자연 요소   // v8.77 경완: 자연 요소는 작업실 소품 목록에 없다
   api.ADD = [['daisy', '데이지'], ['pink', '분홍꽃'], ['tulip', '튤립'], ['bell', '파랑꽃'], ['sun', '해바라기'], ['grass', '풀'], ['tall', '키 큰 풀'], ['rockS', '작은 바위'], ['rockL', '큰 바위'], ['mush', '버섯'], ['bush', '덤불'], ['puddle', '웅덩이']];
   api.addIcon = k => SPR.flw[k]?.src || (k === 'bush' ? SPR.bush : k === 'puddle' ? SPR.puddle : '');
   // v3.61 작업실: 소품 창에서 끌어 온 자리(화면 좌표)에 놓는다. 좌표가 없으면 가운데
