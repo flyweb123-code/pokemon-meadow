@@ -1,6 +1,773 @@
 {
  "days": [
   {
+   "at": 1792882040608,
+   "theme": "숲속 캠핑장",
+   "note": "오늘은 숲속 캠핑장이에요. 텐트·삼발이 냄비·해먹처럼 하룻밤 머무는 물건을 맵 크기 그대로 그렸고, 밑둥 풀·그림자 없이 소품 테두리에서 끝냈어요. 삼발이 냄비 불은 밤에 둘레를 밝히고, 해먹은 천만 살랑 흔들려요.",
+   "items": [
+    {
+     "id": "canvas-tent",
+     "n": "캠핑 텐트",
+     "k": "쉼터",
+     "d": "주황 천을 삼각으로 친 작은 텐트예요. 앞 입구가 반쯤 열려 있어 안이 어둑하게 보여요.",
+     "px": [
+      "............kwk...........",
+      "............kwk...........",
+      "...........kRQk...........",
+      "..........kRRQQk..........",
+      "..........kRRQQk..........",
+      ".........kRrRQqQk.........",
+      "........kRrrrQqqQk........",
+      "........kRrrrQqqQk........",
+      ".......kRrrqrQqQqQk.......",
+      ".......kRrrrrQqqqQk.......",
+      "......kRrrrrrQqqqqQk......",
+      ".....kRrrrrrtDtqqqqQk.....",
+      ".....kRrrrqrtDtqQqqQk.....",
+      "....kRrrrrrtdddtqqqqQk....",
+      "...kRrrrrrrtDDDtqqqqqQk...",
+      "...kRrrrrrtDDDDDtqqqqQk...",
+      "..kRrrrrqrtDDDDDtqQqqqQk..",
+      ".kRrrrrrrtDDDDDDDtqqqqqQk.",
+      ".kRrrrrrrtDDDDDDDtqqqqqQk.",
+      "kRrrrrrrtDDDDDDDDDtqqqqqQk",
+      "vRrrrrrqtDDDDDDDDDtQqqqqQv",
+      "kvkkkkkkkkkkkkkkkkkkkkkkvk"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "R": "#f0a070",
+      "r": "#d8784a",
+      "q": "#b05a3a",
+      "Q": "#7e3e2c",
+      "t": "#e8d0a0",
+      "D": "#3a2a2c",
+      "d": "#2a2026",
+      "w": "#a87040",
+      "v": "#7a4c28"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "입구 안으로 들어가 몸을 말고 낮잠을 자요",
+       "x": {
+        "at": "in",
+        "an": "Sleep"
+       }
+      },
+      {
+       "w": "겁 많은 포켓몬(유령·악 타입)",
+       "a": "텐트 안에 숨어 있다가 입구로 고개만 내밀어요",
+       "x": {
+        "at": "in",
+        "m": "hide peek"
+       }
+      },
+      {
+       "w": "나는 작은 포켓몬",
+       "a": "꼭대기 기둥 끝에 날아와 앉아요",
+       "x": {
+        "at": [
+         0.5,
+         0.05
+        ],
+        "m": "fly"
+       }
+      }
+     ],
+     "fit": "풀밭 가장자리, 모닥불 근처",
+     "glow": 0
+    },
+    {
+     "id": "tripod-pot",
+     "n": "삼발이 냄비 불",
+     "k": "불",
+     "d": "나뭇가지 셋을 묶은 삼발이에 쇠냄비를 매달고 아래에 장작불을 피웠어요. 냄비에서 수프가 보글보글 끓어요.",
+     "px": [
+      "..........kk..........",
+      ".........kwwk.........",
+      ".........kwwk.........",
+      ".........kwnk.........",
+      ".........knvk.........",
+      "........kvknvk........",
+      ".....kkkkwnkvkkkk.....",
+      "....kMMmmmmmmmmmmk....",
+      ".....kNNNNNNNNNNk.....",
+      "....kNnmmmmnnnnNNk....",
+      "....knnnmmnnnnnnNk....",
+      "....kNnnnnnnnnnNNk....",
+      "....kNnnnnnnnnnNNk....",
+      "....kwNNnnnnnNNNvk....",
+      "....kvkNNNNNNNNkvk....",
+      "...kwk.kkkkykkk.kvk...",
+      "...kwk...kyoxk..kvk...",
+      "..kvk...koyyok...kvk..",
+      "..kwk..kxoyyoxk..kvk..",
+      ".kwk.kkvvvvvvvvkk.kvk.",
+      ".kvkkWWwvwwwvwwwwkkvk.",
+      "kwk.kvvvvvvvvvvvvk.kvk",
+      ".k...kkkkkkkkkkkk...k.",
+      "......................"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "W": "#d8a868",
+      "w": "#a87040",
+      "v": "#6e4424",
+      "M": "#e8eef2",
+      "m": "#9aa4ae",
+      "n": "#5e6874",
+      "N": "#363c48",
+      "y": "#ffe070",
+      "o": "#f09030",
+      "x": "#d04a28"
+     },
+     "acts": [
+      {
+       "w": "불꽃 타입",
+       "a": "불 옆에 앉아 불을 쬐며 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": "front",
+        "an": "Sleep"
+       }
+      },
+      {
+       "w": "노말 타입·먹보 포켓몬(잠만보 등)",
+       "a": "냄비 앞에 앉아 수프를 떠먹어요",
+       "x": {
+        "at": "side",
+        "an": "Eat"
+       }
+      },
+      {
+       "w": "물·얼음 타입",
+       "a": "다가왔다가 뜨거워서 돌아가요",
+       "x": {
+        "m": "avoid"
+       }
+      }
+     ],
+     "fit": "텐트·피크닉 테이블 근처",
+     "glow": 1
+    },
+    {
+     "id": "picnic-table",
+     "n": "피크닉 테이블",
+     "k": "쉼터",
+     "d": "벤치가 붙은 나무 테이블에 빨간 체크 식탁보를 깔고 가운데 바구니를 올려 두었어요.",
+     "px": [
+      "...........kBBbbbk..........",
+      "......kkkkkkbbbbbkkkkk......",
+      ".kkkkkEERREERREERREERRkkkkk.",
+      "kWWWWWRREERREERREERREEWWWWWk",
+      "kwwwwwEERREERREERREERRwwwwwk",
+      "kvvvvvEERREERREERREERRvvvvvk",
+      ".kkkvwRREERREERREERREEvVkkk.",
+      "...kvwrrkkrkkrkkrkkrkkvVk...",
+      "...kvwkk..k..k..k..k.kvVk...",
+      "....kvwk............kvVk....",
+      "kkkkkvwkkkkkkkkkkkkkkvVkkkkk",
+      "wWWWWWwWWWWWwWWWWWwWWWWWwWWW",
+      "vvvvvvvvvvvvvvvvvvvvvvvvvvvv",
+      "kvkkkkvwkkkkkvvkkkkkvVkkkkVk",
+      "kvk..kvwk...kvvk...kvVk..kVk",
+      "kvk...kvwk..kvvk..kvVk...kVk",
+      "kvk....kk...kvvk...kk....kVk",
+      ".k...........kk...........k."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "W": "#d8a868",
+      "w": "#a87040",
+      "v": "#7a4c28",
+      "V": "#523218",
+      "R": "#e8e0d0",
+      "E": "#c85048",
+      "r": "#9a3a36",
+      "b": "#b88a50",
+      "B": "#e0bc80"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "테이블 위로 올라가 바구니 옆에서 열매를 먹어요",
+       "x": {
+        "at": "top",
+        "m": "climb",
+        "an": "Eat"
+       }
+      },
+      {
+       "w": "보통 크기 포켓몬",
+       "a": "벤치에 나란히 앉아 쉬어요",
+       "x": {
+        "at": [
+         0.2,
+         0.62
+        ]
+       }
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "테이블 아래 그늘에 들어가 낮잠을 자요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       }
+      }
+     ],
+     "fit": "풀밭 가운데, 텐트 근처",
+     "glow": 0
+    },
+    {
+     "id": "hammock",
+     "n": "해먹",
+     "k": "쉼터",
+     "d": "나무 기둥 두 개 사이에 줄무늬 천 해먹을 걸었어요. 바람이 불면 해먹만 살랑 흔들려요.",
+     "px": [
+      "kWWWk......................kWWWk",
+      "kWwvk......................kWwvk",
+      "kWwvk......................kWwvk",
+      "kWwvk......................kWwvk",
+      "kWwvSk.....................kWwvk",
+      "kWvvGSk...................kSWvvk",
+      "kWwvGsSk.................kSsWwvk",
+      "kWwvGssSk...............kSssWwvk",
+      "kWwvkGssSkk...........kkSssGWwvk",
+      "kWwvkkGsGSSkk.......kkSSGsGkWwvk",
+      "kWvvk.kGGssSSkkkkkkkSSssGGkkWvvk",
+      "kWwvk..kGsssGSSSSSSSGsssGk.kWwvk",
+      "kWwvk..kgGGsGsssGsssGsGGgk.kWwvk",
+      "kWwvk...kggGGsssGsssGGggk..kWwvk",
+      "kWwvk....kkggGGGGGGGggkk...kWwvk",
+      "kWvvk......kkgggggggkk.....kWvvk",
+      "kWwvk........kkkkkkk.......kWwvk",
+      "kWwvk......................kWwvk",
+      "kWwvk......................kWwvk",
+      "kWwvk......................kWwvk"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "W": "#d8a868",
+      "w": "#a87040",
+      "v": "#6e4424",
+      "S": "#f0e2b8",
+      "s": "#d8bc80",
+      "G": "#6a9a9a",
+      "g": "#4a6e74"
+     },
+     "mv": {
+      "st": [
+       "kWWWk......................kWWWk",
+       "kWwvk......................kWwvk",
+       "kWwvk......................kWwvk",
+       "kWwvk......................kWwvk",
+       "kWwvk......................kWwvk",
+       "kWvvk......................kWvvk",
+       "kWwvk......................kWwvk",
+       "kWwvk......................kWwvk",
+       "kWwvk......................kWwvk",
+       "kWwvk......................kWwvk",
+       "kWvvk......................kWvvk",
+       "kWwvk......................kWwvk",
+       "kWwvk......................kWwvk",
+       "kWwvk......................kWwvk",
+       "kWwvk......................kWwvk",
+       "kWvvk......................kWvvk",
+       "kWwvk......................kWwvk",
+       "kWwvk......................kWwvk",
+       "kWwvk......................kWwvk",
+       "kWwvk......................kWwvk"
+      ],
+      "mp": [
+       "................................",
+       "................................",
+       "................................",
+       "....k...........................",
+       "...kSk.....................k....",
+       "...kGSk...................kSk...",
+       "...kGsSk.................kSsk...",
+       "...kGssSk...............kSssk...",
+       "....kGssSkk...........kkSssGk...",
+       ".....kGsGSSkk.......kkSSGsGk....",
+       "......kGGssSSkkkkkkkSSssGGk.....",
+       ".......kGsssGSSSSSSSGsssGk......",
+       ".......kgGGsGsssGsssGsGGgk......",
+       "........kggGGsssGsssGGggk.......",
+       ".........kkggGGGGGGGggkk........",
+       "...........kkgggggggkk..........",
+       ".............kkkkkkk............",
+       "................................",
+       "................................",
+       "................................"
+      ],
+      "o": [
+       16,
+       3
+      ],
+      "k": "swing",
+      "amp": 1.6
+     },
+     "acts": [
+      {
+       "w": "노말 타입·느긋한 포켓몬",
+       "a": "해먹에 누워 흔들리며 잠들어요",
+       "x": {
+        "at": [
+         0.5,
+         0.55
+        ],
+        "m": "ride",
+        "an": "Sleep",
+        "fx": "swing"
+       }
+      },
+      {
+       "w": "나는 작은 포켓몬",
+       "a": "기둥 꼭대기에 날아와 앉아요",
+       "x": {
+        "at": [
+         0.06,
+         0
+        ],
+        "m": "fly"
+       }
+      },
+      {
+       "w": "격투 타입",
+       "a": "해먹을 밀어 흔들어 줘요",
+       "x": {
+        "m": "push",
+        "fx": "swing"
+       }
+      }
+     ],
+     "fit": "나무 사이, 그늘진 곳",
+     "glow": 0
+    },
+    {
+     "id": "wood-canoe",
+     "n": "나무 카누",
+     "k": "물가",
+     "d": "물가에 끌어 올려 둔 나무 카누예요. 앞뒤 끝이 살짝 들려 있고 안에 가로대 두 개가 있어요.",
+     "px": [
+      "kk..........................kk",
+      "WWkkk....................kkkWW",
+      "vwWWWkkkk............kkkkWWWwv",
+      "VwwwwWWWWkkkkkkkkkkkkWWWWwwwwV",
+      "kvwwwDDDDWWWWWWWWWWWWDDDDwwwvk",
+      "kVvwwwwwwWWDDDDDDDDDWWwwwwwvVk",
+      ".kVvwwwwwWWdddddddddWWwwwwvVk.",
+      "..kVvwwvwwwwwwwwwwwwwwwvwvVk..",
+      "...kVvvwwwwvwwwvwwwvwwwvvVk...",
+      "....kVVvvwwwwwwwwwwwwvvVVk....",
+      ".....kkVVvvvvvvvvvvvvVVkk.....",
+      ".......kkVVVVVVVVVVVVkk.......",
+      ".........kkkkkkkkkkkk........."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "W": "#e0b07a",
+      "w": "#b07440",
+      "v": "#86542e",
+      "V": "#5c3820",
+      "D": "#3e2a22",
+      "d": "#5a3c2c"
+     },
+     "acts": [
+      {
+       "w": "물 타입",
+       "a": "카누 안에 들어가 앉아 꼬리를 늘어뜨려요",
+       "x": {
+        "at": "in"
+       }
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "뱃머리에 올라가 균형을 잡아요",
+       "x": {
+        "at": [
+         0.9,
+         0.3
+        ],
+        "m": "climb wobble"
+       }
+      },
+      {
+       "w": "헤엄치는 포켓몬",
+       "a": "카누 둘레를 빙빙 돌며 놀아요",
+       "x": {
+        "m": "circ"
+       }
+      }
+     ],
+     "fit": "연못 가장자리",
+     "glow": 0
+    },
+    {
+     "id": "trail-backpack",
+     "n": "등산 배낭",
+     "k": "캠핑",
+     "d": "빨간 등산 배낭에 침낭을 말아 묶어 세워 두었어요. 앞주머니가 볼록해요.",
+     "px": [
+      "..kggggggggggggk..",
+      ".kGGGGGGGGGGGGGGk.",
+      "..krRRRRrrrrrrrk..",
+      "..krRRRRrrrrrrrk..",
+      "..krrrrrrrrrrrrk..",
+      "..krRRRrrrrrrrrk..",
+      "..krRRRrrrrrrrrk..",
+      "..krrrrrrrrrrrrk..",
+      ".kkrrrbrrrrbrrrk..",
+      "kBbrQQbQQQQbQQqk..",
+      "kbbRQQMQQQQMQQqk..",
+      "kbbRRrrrrrrrrqqk..",
+      "kbbRRrrrrrrrrqqk..",
+      "kbbRRqRRqqqqqqqk..",
+      "kbbRRqqqqqqqqqqk..",
+      "kbbRRqqqqqqqqqqk..",
+      ".kkRRqqqqqqqqqqk..",
+      "..kRRQQQQQQQQqqk..",
+      "..kQRrrrrrrrrqqk..",
+      "...kkkkkkkkkkkk..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "R": "#e07a5a",
+      "r": "#c0503c",
+      "q": "#923a30",
+      "Q": "#642824",
+      "b": "#b88a50",
+      "B": "#e0bc80",
+      "M": "#d8dee4",
+      "G": "#7a9aaa",
+      "g": "#a8c4cc"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "배낭 뒤에 숨었다가 옆으로 고개를 내밀어요",
+       "x": {
+        "at": "side",
+        "m": "hide speek"
+       }
+      },
+      {
+       "w": "먹보 포켓몬",
+       "a": "앞주머니를 뒤져 간식을 꺼내 먹어요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       }
+      },
+      {
+       "w": "나는 작은 포켓몬",
+       "a": "침낭 위에 날아와 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       }
+      }
+     ],
+     "fit": "텐트 앞, 길가",
+     "glow": 0
+    },
+    {
+     "id": "camp-chair",
+     "n": "접이식 캠핑 의자",
+     "k": "쉼터",
+     "d": "초록 천을 씌운 접이식 의자예요. 팔걸이는 나무, 다리는 X자 쇠파이프예요.",
+     "px": [
+      "..kMkkkkkkkkkknk..",
+      "..kmggggggggggnk..",
+      "..kmggGHGGHGHHnk..",
+      "..kmggGHGGHGHHnk..",
+      "..kmggGHGGHGHHnk..",
+      "..kmggGHGGHGHHnk..",
+      "..kmggGHGGHGHHnk..",
+      ".kkmggGHGGHGHHnkk.",
+      "kWWWggGHGGHGHHwwwk",
+      "kmkmHHHHHHHHHHnknk",
+      "kmkmkkkkkkkkkknknk",
+      "kmggggggggggggggnk",
+      "kmGGGGGGGGGGGGGGnk",
+      ".kHHHHHHHHHHHHHHk.",
+      "..knkkkkkkkkkkmk..",
+      "...knk......kmk...",
+      "....knk....kmk....",
+      ".....knk..kmk.....",
+      "..kk..knkkmk..kk..",
+      ".kNNk..knmk..kNNk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "g": "#8ab07a",
+      "G": "#5e8a5a",
+      "H": "#3e6444",
+      "W": "#d8a868",
+      "w": "#a87040",
+      "M": "#e8eef2",
+      "m": "#a8b4bc",
+      "n": "#6e7a86",
+      "N": "#4a5460"
+     },
+     "acts": [
+      {
+       "w": "보통 크기 포켓몬",
+       "a": "의자에 앉아 등을 기대고 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": [
+         0.5,
+         0.6
+        ],
+        "an": "Sleep"
+       }
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "의자 밑 그늘에 들어가 엎드려요",
+       "x": {
+        "at": "under"
+       }
+      },
+      {
+       "w": "나는 작은 포켓몬",
+       "a": "등받이 위에 날아와 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       }
+      }
+     ],
+     "fit": "모닥불·삼발이 냄비 앞",
+     "glow": 0
+    },
+    {
+     "id": "hand-pump",
+     "n": "손 펌프",
+     "k": "물가",
+     "d": "손잡이를 위아래로 움직이면 물이 나오는 옛날 쇠 펌프예요. 주둥이 끝에 물방울이 맺혀 있어요.",
+     "px": [
+      "WWWWWWkkkk......",
+      "vvvvvvMmmmk.....",
+      "kkkkkkmmmmkk....",
+      "...kMmmmmmmmk...",
+      "...knnnnnnnnk...",
+      "....kMMmmnnk....",
+      "....kMMmmnnk....",
+      "....kMMmmnnkkkk.",
+      "....kMMmmnnmmmMk",
+      "....kMMmmnnnnnnk",
+      "....kMMmmnnkknnk",
+      "....kMMmmnnkknnk",
+      "...kmmmmmmmmkkk.",
+      "...knnnnnnnnkBk.",
+      "....kMMmmnnkkbk.",
+      "....kMMmmnnk.k..",
+      "....kMMmmnnk....",
+      "....kMMmmnnk....",
+      "....kMMmmnnk....",
+      "....kMMmmnnk....",
+      "....kNNNNNNk....",
+      "...kNNNNNNNNk...",
+      "...knnnnnnnnk...",
+      "..kNNNNNNNNNNk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "M": "#d8e2e8",
+      "m": "#8a9aa8",
+      "n": "#5a6878",
+      "N": "#3a4452",
+      "W": "#d8a868",
+      "w": "#a87040",
+      "v": "#7a4c28",
+      "B": "#bfe6f4",
+      "b": "#5aa0d0"
+     },
+     "acts": [
+      {
+       "w": "물 타입",
+       "a": "주둥이 아래에 서서 떨어지는 물을 맞아요",
+       "x": {
+        "at": [
+         0.85,
+         1
+        ]
+       }
+      },
+      {
+       "w": "격투 타입·힘센 포켓몬",
+       "a": "손잡이를 꾹꾹 눌러 물을 퍼 올려요",
+       "x": {
+        "at": [
+         0.1,
+         0.4
+        ],
+        "m": "push"
+       }
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "물방울이 튀자 깜짝 놀라 피해 가요",
+       "x": {
+        "m": "avoid"
+       }
+      }
+     ],
+     "fit": "텐트·연못 사이",
+     "glow": 0
+    },
+    {
+     "id": "cooler-box",
+     "n": "아이스박스",
+     "k": "캠핑",
+     "d": "흰 뚜껑에 파란 몸통인 아이스박스예요. 안에 얼음과 시원한 열매 주스가 들어 있어요.",
+     "px": [
+      "kkkkNNNNNNNNNNNNNNkkkk",
+      "ssssNssssssssssssNssss",
+      "SsssNSSSSSSSSSSSSNSTTT",
+      "SSSSSSSSSSSSSSSSSSSTTT",
+      "TTTTTTTTTTTTTTTTTTTTTT",
+      "kBBbbbbCCMMMMCCbbbccck",
+      "kBBbbbbbbMMMMbbbbbccck",
+      "kBBbbbbbbnnnnbbbbbccck",
+      "kBBbbbbbbbbbbbbbbbccck",
+      "kBBbbbbbbbbbbbbbbbccck",
+      "kBBbcccccccccccccbccck",
+      "kBBbbbbbbbbbbbbbbbccck",
+      "kBBbbbbbbbbbbbbbbbccck",
+      "kBBbbbbbbbbbbbbbbbccck",
+      "kCCCCCCCCCCCCCCCCCCCCk",
+      ".kkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "s": "#ffffff",
+      "S": "#e6eaee",
+      "T": "#b0b8c4",
+      "B": "#7ab4e0",
+      "b": "#4a88c8",
+      "c": "#34649c",
+      "C": "#244a78",
+      "M": "#e8eef2",
+      "n": "#6e7a86",
+      "N": "#4a5460"
+     },
+     "acts": [
+      {
+       "w": "얼음 타입",
+       "a": "뚜껑 위에 올라가 시원하다는 듯 엎드려 자요",
+       "x": {
+        "at": "top",
+        "m": "climb",
+        "an": "Sleep"
+       }
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "옆에 기대어 몸을 식혀요",
+       "x": {
+        "at": "under"
+       }
+      },
+      {
+       "w": "먹보 포켓몬",
+       "a": "뚜껑을 밀어 열고 주스를 꺼내 마셔요",
+       "x": {
+        "at": "front",
+        "m": "push",
+        "an": "Eat"
+       }
+      }
+     ],
+     "fit": "피크닉 테이블 옆",
+     "glow": 0
+    },
+    {
+     "id": "star-telescope",
+     "n": "별 보는 망원경",
+     "k": "놀이",
+     "d": "나무 삼각대 위에 은색 망원경을 올렸어요. 금색 띠를 두르고 밤하늘 쪽으로 비스듬히 향해 있어요.",
+     "px": [
+      "...............knnnk",
+      "...............kNBNk",
+      "..............kkNBNk",
+      ".............kMMNNNk",
+      "...........kkMmmNNNk",
+      ".........kkMMmmmnkk.",
+      "........kyYmmmnnk...",
+      ".......kMYYmmnkk....",
+      ".....kkMmYYnnk......",
+      ".kkkkMMmmYYkk.......",
+      "kNNNMmmmnmnnk.......",
+      "kNnNmmmnknnnk.......",
+      "kNNNmnnkknnnk.......",
+      "kNNNnkk..kvVk.......",
+      ".kkkk....kvVk.......",
+      "........kwvkVk......",
+      "........kwvkVk......",
+      ".......kwkvkkVk.....",
+      ".......kwkvkkVk.....",
+      "......kwkkvk.kVk....",
+      ".....kwk.kvk..kVk...",
+      ".....kwk.kvk..kVk...",
+      "....kwk..kvk...kVk..",
+      "....kwk..kvk...kVk..",
+      "...kwk...kvk....kVk.",
+      "..kwk....kvk.....kVk"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "M": "#e8eef2",
+      "m": "#a8b4bc",
+      "n": "#6e7a86",
+      "N": "#3a4452",
+      "B": "#9ad0f0",
+      "Y": "#d8a838",
+      "y": "#ffe070",
+      "w": "#a87040",
+      "v": "#7a4c28",
+      "V": "#523218"
+     },
+     "acts": [
+      {
+       "w": "에스퍼·페어리 타입",
+       "a": "망원경 뒤에 서서 밤하늘을 들여다봐요",
+       "x": {
+        "at": [
+         0.1,
+         0.5
+        ],
+        "m": "peek"
+       }
+      },
+      {
+       "w": "나는 작은 포켓몬",
+       "a": "망원경 끝에 날아와 앉아요",
+       "x": {
+        "at": [
+         0.85,
+         0.05
+        ],
+        "m": "fly"
+       }
+      },
+      {
+       "w": "호기심 많은 작은 포켓몬",
+       "a": "삼각대 다리 사이를 지나다니며 놀아요",
+       "x": {
+        "at": "under",
+        "m": "through"
+       }
+      }
+     ],
+     "fit": "언덕 위, 텐트 근처",
+     "glow": 0
+    }
+   ]
+  },
+  {
    "at": 1792795651373,
    "theme": "아침 정원 가꾸기",
    "note": "오늘은 아침 정원 가꾸기예요. 어제 지워진 작은 소품들을 보고, 이번엔 맵에서 바로 알아볼 만한 18~34칸짜리로 우물·벤치·벌통처럼 실루엣이 분명한 것만 골랐어요. 나무는 결, 돌은 줄눈, 금속은 하이라이트 한 줄로 재질을 나눴어요.",
