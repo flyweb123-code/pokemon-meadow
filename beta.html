@@ -6165,7 +6165,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.29';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.30';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -10746,10 +10746,18 @@ function retier(ov, ord) { EGG_EFF = null;
       all.forEach((b, i) => { TIER_Z[b] = all.length > 1 ? 1 - i / (all.length - 1) : .5; }); return; }
     const all = [...L].sort((a, b) => b - a); all.forEach((b, i) => { TIER_Z[b] = all.length > 1 ? 1 - i / (all.length - 1) : .5; }); });
 }
+// v9.29 경완 '너가 눌러줘': 배포된 배치에 예시 동작(act.x)·움직이는 부분(mv)이 없으면 스칼렛 작업물(config/staff/scarlet.json)에서 채운다 — 작업실에서 다시 배포하지 않아도 예시처럼 움직인다
+let scFillP = null;
+function scFill() { if (!Object.keys(LAYOUT.scArt || {}).length) return; (scFillP || (scFillP = fetch('config/staff/scarlet.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null))).then(R => { if (!R?.days) return; const it = {}; R.days.forEach(d => (d.items || []).forEach(o => { if (o?.id) it[o.id] = o; })); let n = 0;
+  for (const [id, A] of Object.entries(LAYOUT.scArt || {})) { const o = it[id] || it[id.replace(/-k[0-9a-z]+$/, '')]; if (!o) continue;
+    (A.acts || []).forEach(a => { if (a.x) return; const b = (o.acts || []).find(q => q.a === a.a && q.x); if (b) { a.x = b.x; n++; } });
+    const M = o.mv, same = G => Array.isArray(G) && G.length === A.px?.length && G.every((r, y) => r.length === A.px[y].length); if (!A.mv && M?.st && M?.mp && same(M.st) && same(M.mp)) { A.mv = M; n++; } }
+  if (n && typeof itemsEl !== 'undefined' && itemsEl?.querySelector('.prop')) seaRedraw(); }); }   // 이미 그린 필드면 소품을 다시 그린다 (아직이면 처음 그릴 때 들어감)
 function setLayoutIn(L) {
   for (const k of ['pond', 'fire', 'bed', 'tree', 'perch', 'stump']) if (L[k]) { delete LAYOUT[k].lk; Object.assign(LAYOUT[k], L[k]); }
   LAYOUT.kinds = L.kinds && typeof L.kinds === 'object' ? JSON.parse(JSON.stringify(L.kinds)) : {};
   LAYOUT.scArt = L.scArt && typeof L.scArt === 'object' ? JSON.parse(JSON.stringify(L.scArt)) : {}; LAYOUT.sc = Array.isArray(L.sc) ? JSON.parse(JSON.stringify(L.sc)).filter(r => LAYOUT.scArt[r[0]]) : [];
+  scFill();
   for (const k of ['path', 'bushes', 'puddles', 'rocks', 'mush', 'flowers']) if (Array.isArray(L[k])) LAYOUT[k].splice(0, LAYOUT[k].length, ...JSON.parse(JSON.stringify(L[k])));
   for (const k of Object.values(MK)) LAYOUT[k] = Array.isArray(L[k]) ? JSON.parse(JSON.stringify(L[k])) : [];
   LAYOUT.look = L.look && typeof L.look === 'object' ? JSON.parse(JSON.stringify(L.look)) : {};
