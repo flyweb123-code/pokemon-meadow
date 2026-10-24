@@ -6078,7 +6078,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.22';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.23';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6705,12 +6705,12 @@ function mgThumbArt(cv, kind, m, me, tok) {
     const x = cv.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.imageSmoothingEnabled = false; x.drawImage(b, 0, 0, b.width * P, b.height * P);
   });
 }
-const MG_ROLE = { still: [74, 95], hop: [39, 1], wave: [16, 21], pace: [7, 158], dash: [58, 4], leap: [60, 118], dig: [50, 27], swoop: [41, 22], roll: [205, 204], spring: [325, 326], fade: [92, 93], flop: [129, 98], track: [15, 49], trio: [19, 161] };   // 움직임마다 한 마리 (앞 포켓몬이 주인공이면 뒤)
+const MG_ROLE = { still: [74, 95], hop: [39, 1], wave: [16, 21], pace: [7, 158], dash: [58, 4], leap: [60, 118], dig: [50, 27], swoop: [41, 22], roll: [205, 204], spring: [325, 326], fade: [92, 93], flop: [129, 98], track: [15, 49], trio: [19, 161], mime: [122, 124] };   // 움직임마다 한 마리 (앞 포켓몬이 주인공이면 뒤)
 // v5.88 경완: 페이즈가 오를 때마다 새 움직임의 장애물이 하나씩 나온다
 const MG_LEAP = [170, 62, 72];   // 발챙이: 주인공 앞 170에서 뛰어 62에 떨어진다 (높이 72)
-const MG_WARN = { dash: 1, leap: 1, dig: 1, swoop: 1, roll: 1, spring: 1, fade: 1, flop: 1, track: 1, trio: 1 };
-const MG_UNLOCK = { still: 1, hop: 1, wave: 1, pace: 2, dash: 3, dig: 4, leap: 5, swoop: 6, roll: 7, spring: 8, fade: 9, flop: 10, track: 11, trio: 12 }, MG_FLY = ['wave', 'swoop', 'track'];
-const MG_ROLE_N = { pace: '앞뒤로 왔다 갔다 해요', dash: '가까워지면 달려들어요', leap: '가까워지면 펄쩍 뛰어올라요', dig: '땅속에 숨어 있다가 튀어나와요', swoop: '하늘에서 내리꽂혀요', roll: '셋이 줄지어 데굴데굴 굴러와요', spring: '꼬리 스프링으로 높이 튀어 올라요', fade: '사라졌다 나타나요 (보일 때만 부딪혀요)', flop: '셋이 제자리에서 펄떡펄떡 (높이가 제각각)', track: '내 높이를 따라오다 가까워지면 쏜살같이 (그때 피하기)', trio: '셋이 번갈아 콩콩 뛰어요 (내려간 틈에 넘기)' };
+const MG_WARN = { dash: 1, leap: 1, dig: 1, swoop: 1, roll: 1, spring: 1, fade: 1, flop: 1, track: 1, trio: 1, mime: 1 };
+const MG_UNLOCK = { still: 1, hop: 1, wave: 1, pace: 2, dash: 3, dig: 4, leap: 5, swoop: 6, roll: 7, spring: 8, fade: 9, flop: 10, track: 11, trio: 12, mime: 13 }, MG_FLY = ['wave', 'swoop', 'track'];
+const MG_ROLE_N = { pace: '앞뒤로 왔다 갔다 해요', dash: '가까워지면 달려들어요', leap: '가까워지면 펄쩍 뛰어올라요', dig: '땅속에 숨어 있다가 튀어나와요', swoop: '하늘에서 내리꽂혀요', roll: '셋이 줄지어 데굴데굴 굴러와요', spring: '꼬리 스프링으로 높이 튀어 올라요', fade: '사라졌다 나타나요 (보일 때만 부딪혀요)', flop: '셋이 제자리에서 펄떡펄떡 (높이가 제각각)', track: '내 높이를 따라오다 가까워지면 쏜살같이 (그때 피하기)', trio: '셋이 번갈아 콩콩 뛰어요 (내려간 틈에 넘기)', mime: '앞에 반짝이는 투명 벽을 세워요 (벽이 낮을 때 넘기)' };
 async function mgPrep(me) {
   const want = [16, me, ...S.box.slice().sort(() => Math.random() - .5).slice(0, 3).map(P => P.sp)];
   await Promise.race([Promise.all(want.map(sp => ensureSprite(sp).catch(() => {}))), new Promise(r => setTimeout(r, 2500))]);
@@ -7008,6 +7008,8 @@ function mgMove(g, o, dt) {
     if (!o.lk && dx < 170) { o.lk = 1; mgFx(g, o.x, g.GY - o.y - o.h / 2, '#ffe14a', 5, 90); } if (!o.lk) o.y += clamp(ty - o.y, -110 * dt, 110 * dt); else o.x -= 85 * dt; o.sq = o.lk ? 1 : 1 + Math.sin(g.t * 30) * .04; }
   else if (o.pat === 'trio') { const T2 = .84, q = (g.t + o.ph) % T2, a = q / T2;   /* v9.22 경완: 꼬렛 무리 — 셋이 번갈아 콩콩 (가운데가 뛸 때 양옆은 내려와 있음) */
     o.y = 4 * 46 * a * (1 - a); o.sq = a < .08 || a > .92 ? .84 : 1; if (a < .5 && !o.bz) { o.bz = 1; } if (a > .9 && o.bz) { o.bz = 0; mgFx(g, o.x, g.GY, '#c8b090', 3, 50); } }
+  else if (o.pat === 'mime' || o.pat === 'wall') { const q = ((g.t + o.ph) % 2.2) / 2.2, lv = .5 - .5 * Math.cos(q * Math.PI * 2);   /* v9.23 경완: 마임맨 — 손으로 투명 벽을 밀어 올렸다 내렸다 (벽은 34~100 높이, 주인공 앞 70 안에선 그 높이 그대로). 마임맨 몸은 그냥 지나감 */
+    if (o.pat === 'mime') { o.sq = 1 + Math.sin(g.t * 7 + o.ph) * .04; o.lv = lv; } else { if (!(o.x - g.PX < 70 && o.lkH)) o.lkH = Math.round(34 + 66 * lv); o.h = o.lkH; } }
   else if (o.pat === 'roll') { o.x -= (55 + 6 * g.phase) * dt; o.rot = (o.x - o.x0) / Math.max(8, o.h * .5); o.y = Math.abs(Math.sin(o.rot * 1.6)) * 2.5; }   /* v9.15 경완: 쏘콘 — 몸을 데굴데굴 돌리며 셋이 줄지어 굴러온다 */
   else if (o.pat === 'swoop') { if (!o.wu && o.x < g.W - 16) o.wu = g.t; if (o.wu && g.t - o.wu < .45) o.sq = .86 + Math.abs(Math.sin((g.t - o.wu) * 30)) * .1; else if (o.wu && !o.ch) { o.ch = 1; o.sq = 1; }   /* v9.13 경완: 가디처럼 — 화면에 들어오면 0.45초 파닥이며 웅크리고, 내리꽂을 길을 점선으로 미리 */
     const k = clamp((300 - (o.x - g.PX)) / 260, 0, 1); o.y = o.by - (o.by - 6) * Math.sin(k * Math.PI); }   // 하늘에서 내리꽂혔다 다시 올라감
@@ -7020,6 +7022,7 @@ function mgSpawn(g) {
     const pat = rp || (f ? 'wave' : MG_PAT[(SPECIES[k]?.t || [1])[0]] || 'still'), by = pat === 'swoop' ? 120 + Math.random() * 20 : f ? Math.round((g.phh || 36) + 22) : pat === 'dig' ? -200 : 0;
     if (pat === 'roll') { const s2 = Math.min(sc, 36 / bh), w2 = Math.max(14, (B ? B.w * s2 : 26) * .75); for (const d of [0, 105, 210]) g.obs.push({ x: x + d, t, k, sc: s2, w: w2, h: Math.round(bh * s2), y: 0, by: 0, ph: Math.random() * 6, pat, x0: x + d, ...(d ? { fo: 1 } : {}) }); rl = 1; return; }   // 쏘콘은 작게 셋이 한 줄로 (하나씩 리듬 맞춰 넘기)
     if (pat === 'flop') { const s2 = Math.min(sc, 34 / bh), w2 = Math.max(14, (B ? B.w * s2 : 26) * .75), H = [38, 66, 92].sort(() => Math.random() - .5), p0 = Math.random() * 6; [0, 110, 220].forEach((d, i) => g.obs.push({ x: x + d, t, k, sc: s2, w: w2, h: Math.round(bh * s2), y: 0, by: 0, ph: p0 + i * .32, hh: H[i], fd: i % 2 ? -1 : 1, pat, x0: x + d, ...(d ? { fo: 1 } : {}) })); rl = 1; return; }   // 잉어킹은 작게 셋이 (높이 제각각, 조금씩 엇갈려 펄떡)
+    if (pat === 'mime') { const s2 = Math.min(sc, 50 / bh), w2 = Math.max(14, (B ? B.w * s2 : 26) * .75), p0 = Math.random() * 6; g.obs.push({ x: x + 40, t, k, sc: s2, w: w2, h: Math.round(bh * s2), y: 0, by: 0, ph: p0, pat, x0: x + 40, nh: 1 }, { x: x + 8, t, k, sc: s2, w: 18, h: 60, y: 0, by: 0, ph: p0, pat: 'wall', x0: x, fo: 1 }); rl = 1; return; }   // 마임맨 앞에 투명 벽 (부딪히는 건 벽만)
     if (pat === 'trio') { const s2 = Math.min(sc, 34 / bh), w2 = Math.max(14, (B ? B.w * s2 : 26) * .75), p0 = Math.random() * 6; [0, 92, 184].forEach((d, i) => g.obs.push({ x: x + d, t, k, sc: s2, w: w2, h: Math.round(bh * s2), y: 0, by: 0, ph: p0 + (i % 2) * .42, pat, x0: x + d, ...(d ? { fo: 1 } : {}) })); rl = 1; return; }   // 꼬렛은 셋이 번갈아 (가운데만 반 박자 늦게)
     g.obs.push({ x, t, k, sc, w, h: Math.round(bh * sc), y: by, by, ph: Math.random() * 6, pat, x0: x }); };   // 쏘콘은 셋이 한 줄로
   if (kind === 'gg') { add(x0, 'g'); add(x0 + 46, 'g'); } else if (kind === 'ggg') { add(x0, 'g'); add(x0 + 46, 'g'); add(x0 + 92, 'g'); } else if (kind === 'gf') { add(x0, 'g'); add(x0 + 130, 'f'); } else add(x0, kind);
@@ -7272,6 +7275,10 @@ function mgRender(g, cv = $('#mgCv')) {
   { const on = g.pas?.pow && (g.abK || g.fx.str > 0 || g.sDarkT > 0); g.sDk = clamp((g.sDk || 0) + (on ? .12 : -.06), 0, 1); if (g.sDk > 0) { x.fillStyle = `rgba(14,10,36,${(.5 * g.sDk).toFixed(3)})`; x.fillRect(0, 0, W, H); } }   /* v6.17 경완: S 랭크 기술을 쓰는 동안 배경이 어두워진다 */
   // 포켓몬 (장애물 → 주인공)
   for (const o of g.obs) { const a = (o.dead ? Math.max(0, o.kt / .35) : o.flee ? clamp(2.2 - o.flee, 0, 1) : 1) * (o.dead || o.flee ? 1 : o.al ?? 1); const by = o.t === 'f' ? Math.sin(g.t * 5 + o.ph) * 4 : 0;
+    if (o.pat === 'wall') { if (o.dead || o.kb || o.flee || o.bd) continue; const L = o.x - o.w / 2 - 4, Tp = GY - o.h, Wd = o.w + 8;   /* v9.23 경완: 마임맨의 반짝이는 투명 벽 */
+      x.save(); x.fillStyle = 'rgba(190,230,255,.28)'; x.fillRect(L, Tp, Wd, o.h); x.fillStyle = 'rgba(255,255,255,.85)'; x.fillRect(L, Tp, Wd, 3); x.fillRect(L, Tp, 2, o.h); x.fillRect(L + Wd - 2, Tp, 2, o.h); x.fillStyle = 'rgba(120,190,255,.55)'; x.fillRect(L + 4, Tp + 6, 2, o.h - 10);
+      for (let i = 0; i < 5; i++) { const u = (g.t * .7 + mgH(i * 7 + (o.ph * 10 | 0))) % 1, sy2 = GY - u * o.h, sx2 = L + 3 + mgH(i * 3) * (Wd - 6), z = 1 + (Math.sin(g.t * 9 + i * 2) > .3 ? 2 : 0); x.fillStyle = `rgba(255,255,255,${(.9 * (1 - u)).toFixed(2)})`; x.fillRect(sx2 - z, sy2, z * 2 + 1, 1); x.fillRect(sx2, sy2 - z, 1, z * 2 + 1); }
+      x.restore(); continue; }
     if (o.kb && o.kb.psn) { const e = 1.4 - o.kt, sh = Math.sin(g.t * 60) * 1.6 * Math.max(.35, 1 - e / .6), pk = .6 + .4 * Math.sin(e * 14);   /* v8.41 경완: 찌그러지거나 쓰러지지 않고 제자리에서 보랏빛으로 바뀌어 떨다가 사라진다 (독 걸린 상태만) */
       x.save(); x.translate(o.x + sh, GY - o.y); try { x.filter = `sepia(1) saturate(${3 + pk * 2}) hue-rotate(230deg) brightness(${.8 + pk * .1})`; } catch (er) {} mgDraw(x, o.k, 'Hurt', g.t, 0, 0, o.sc, false, clamp(o.kt / .35, 0, 1)); x.filter = 'none'; x.restore(); continue; }
     if (o.kb && o.kb.sqz) { const e = 1.1 - o.kt, s = Math.min(1, e / .07), w = e > .07 ? Math.exp(-(e - .07) * 9) * Math.sin((e - .07) * 38) * .12 : 0; x.save(); x.translate(o.x, GY - o.y); x.scale(1 + .55 * s - w, Math.max(.22, 1 - .72 * s + w)); mgDraw(x, o.k, 'Hurt', g.t, 0, 0, o.sc, false, clamp(o.kt / .3, 0, 1)); x.restore(); continue; }   /* v7.13: 펀치에 납작 */
