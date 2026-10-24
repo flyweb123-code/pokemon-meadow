@@ -2257,6 +2257,7 @@ const LAYOUT = {
 };
 /*LAYOUT-END*/
 const MK = { tree: 'trees', perch: 'perches', fire: 'fires', bed: 'beds', stump: 'stumps', pond: 'ponds' }, MKB = { trees: 'tree', perches: 'perch', fires: 'fire', beds: 'bed', stumps: 'stump', ponds: 'pond' };
+const ME_OUT = -9000, meOut = v => lvXY(v)[0] <= ME_OUT / 2;   // v9.14: 맵 편집에서 가방에 넣은 소품은 맵 밖 이 자리에
 const ALLP = k => [LAYOUT[k], ...(LAYOUT[MK[k]] || [])];   // v8.95: 그 소품 전부 (맨 처음 것 + 더 놓은 것)
 const POND = LAYOUT.pond;   // v3.55: 360 폭 맵 아래쪽 가운데   // 2026-10-14 줄임 (원래 150×80): 아래로 지나갈 길이 생기게
 let MIN_Y = 150; const MAX_Y0 = 580; let MAX_Y = MAX_Y0;   // MAX_Y: 상태창이 펴져 있으면 그 위까지만 (dlgBound)
@@ -5303,7 +5304,7 @@ function propSpots() {
   L.rocks.forEach((r, i) => { if (r[2] >= 12) out.push(['rock', '바위', r[0], r[1] - r[3], r[2] + 4, r[3] + 6, i]); });
   (L.sc || []).forEach((r, i) => { const [id, x, y] = r, I = scImg(id), z = scS(r); if (I) out.push(['sc', L.scArt[id].n || '소품', x, y - Math.min(I.h * z * scSY(r) * .3, 14), Math.max(18, I.w * z / 2 + 4), 14, i]); });
   if (weather() === 'rain') L.puddles.forEach((q, i) => out.push(['puddle', '물웅덩이', q.x, q.y, q.w / 2 + 4, q.w * .2 + 6, i]));
-  return out.map(([k, n, x, y, rx, ry, i, x2]) => ({ k, n, x, y, rx, ry, i, x2: !!x2 }));
+  return out.filter(o => o[2] > ME_OUT / 2).map(([k, n, x, y, rx, ry, i, x2]) => ({ k, n, x, y, rx, ry, i, x2: !!x2 }));   // v9.14: 가방에 넣어 둔 소품(맵 밖)은 빼고
 }
 function propAt(x, y) { let best = null, bd = 1; for (const p of propSpots()) { const d = ((x - p.x) / p.rx) ** 2 + ((y - p.y) / p.ry) ** 2; if (d < bd) { bd = d; best = p; } } if (!best && pondVal(x, y) < 1) { const P = nearPond(x, y); best = { k: 'pond', n: '연못', x: P.x, y: P.y, rx: P.rx, ry: P.ry }; } return best; }
 const propHotEl = (() => { const e = document.createElement('div'); e.id = 'propHot'; e.innerHTML = '<b></b>'; return e; })();
@@ -6075,7 +6076,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.13';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.14';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6324,15 +6325,24 @@ function meBgProps(on) { itemsEl.querySelectorAll('.prop.bgp').forEach(e => e.re
     g.drawImage(bg, p.l + BGOX, p.t, w, h, 0, 0, w, h); g.globalCompositeOperation = 'destination-in'; g.drawImage(p.cv, 0, 0);
     const e = document.createElement('div'); e.className = 'prop bgp ' + p.k; e.style.cssText = W2(c.toDataURL(), w * 2, h * 2) + `;left:${(p.l + w / 2) * 2}px;top:${(p.t + h) * 2}px`; e.style.setProperty('z-index', 0, 'important'); e.P = p; e.LV = p.v; itemsEl.prepend(e); } meFootAll(); }   /* 바탕 그림처럼 맨 아래 — 골라도 위의 꽃·나무를 덮지 않게 */
 function mapEditSet(on) { if (mapEdit === on) return; mapEdit = on; document.body.classList.toggle('mapEdit', on); for (const id of ['meBar', 'meTitle', 'meZone', 'meLayer']) $('#' + id).hidden = !on;
-  if (on) { mePick = null; meXLR = [XL, XR]; meSnap = meSnapshot(); meBgProps(true); meZoneDraw(); meRender(); } else { meSel(null); meBgProps(false); meSnap = null; } sfx(on ? 'open' : 'tap'); dispatchEvent(new Event('resize')); }
+  if (on) { mePick = null; meBagD = {}; meXLR = [XL, XR]; meSnap = meSnapshot(); meBgProps(true); meZoneDraw(); meRender(); } else { meSel(null); meBgProps(false); meSnap = null; } sfx(on ? 'open' : 'tap'); dispatchEvent(new Event('resize')); }
 $('#btnMapEdit').onclick = () => mapEditSet(true);
 $('#meSave').onclick = () => { layKeep(); mapEditSet(false); };   // v9.06 경완: 옮긴 자리를 이 플레이어 저장(S.lay)에 남김
-$('#meCancel').onclick = () => { const moved = meSnap && meSnapRestore(meSnap); mapEditSet(false); if (moved) seaRedraw(); };
+$('#meCancel').onclick = () => { for (const [k, n] of Object.entries(meBagD)) if (n) fbagAdd(k, -n); meBagD = {}; const moved = meSnap && meSnapRestore(meSnap); mapEditSet(false); if (moved) seaRedraw(); };
 $('#meAll').onclick = () => { sfx('tap'); bagOpenField(); };
-$('#meX').onclick = e => { e.stopPropagation(); meSel(null); };   // 2단계: 빼면 가방 필드 탭으로
+// v9.14 경완: x = 그 소품을 맵에서 빼서 가방(필드 탭)으로. 뺀 소품은 맵 밖(ME_OUT)으로 치워 두고 저장(layKeep)이 그 자리를 기억 → 가방에서 고르고 맵을 누르면 그 자리로 다시 놓임
+function fpKeyOf(v) { const key = layKey(v); if (!key) return null; const [k] = key.split('.'); if (k === 'sc') return 'sc:' + v[0]; const b = k === 'bushes' ? 'bush' : MKB[k] || k, l = v.lk, id = typeof l === 'string' ? l : l?.kd; return id && LAYOUT.kinds?.[id]?.b === b ? id : b; }
+let meBagD = {};   // 이번 편집에서 가방에 넣고 뺀 수 (취소하면 되돌림)
+const meBag = (k, n) => { fbagAdd(k, n); meBagD[k] = (meBagD[k] || 0) + n; };
+$('#meX').onclick = e => { e.stopPropagation(); const el = meSelEl, v = el?.LV, k = v && fpKeyOf(v); if (!k) return meSel(null);
+  if (ALLP('pond').includes(v) && ALLP('pond').filter(o => !meOut(o)).length < 2) { sfx('tap'); toast('연못은 하나는 있어야 해요 (물 포켓몬이 지낼 곳)'); return; }
+  lvSet(v, ME_OUT, ME_OUT); meBag(k, 1); sfx('tap'); meRedraw(null); meRender(); };
 $('#meList').onclick = e => { const b = e.target.closest('[data-k]'); if (!b) return; mePick = mePick === b.dataset.k ? null : b.dataset.k; meRender(); sfx('tap'); };
 $('#wrap').addEventListener('pointerdown', e => { if (!mapEdit || e.target.closest('#meX')) return; e.stopPropagation(); e.preventDefault();
   let best = null, bestA = 0; for (const el of itemsEl.querySelectorAll('.prop')) { const r = el.getBoundingClientRect(); if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom && (!best || +el.style.zIndex > +best.style.zIndex || (+el.style.zIndex === +best.style.zIndex && r.width * r.height < bestA))) { best = el; bestA = r.width * r.height; } }
+  if (!best && mePick) { const v = [...meSnap.keys()].find(o => meOut(o) && fpKeyOf(o) === mePick);   /* 가방에서 고른 소품을 누른 자리에 (땅에 닿는 자리 = 누른 곳, 안전 구역 안으로) */
+    if (v) { const r = itemsEl.getBoundingClientRect(), k = r.width / itemsEl.offsetWidth || 1, Z = meZoneRect(); lvSet(v, Math.round(clamp((e.clientX - r.left) / k, Z.x0 + 10, Z.x1 - 10)), Math.round(clamp((e.clientY - r.top) / k, Z.y0 + 10, Z.y1))); meBag(mePick, -1); if (!(S.fbag?.[mePick] > 0)) mePick = null; sfx('tap'); meRedraw(v); meRender(); return; }
+    toast('새로 산 소품을 놓는 건 곧 돼요'); return; }
   if (best !== meSelEl) meSel(best); if (best) meDrag = { el: best, x0: e.clientX, y0: e.clientY, on: false, l0: parseFloat(best.style.left), t0: parseFloat(best.style.top), id: e.pointerId }; }, true);
 // v9.06 경완: 고른 소품을 끌어 옮긴다 — 손가락을 따라 부드럽게, 땅에 닿는 자리는 안전 구역 안으로만, 다른 소품·연못과 겹치면 빨갛게 → 놓으면 제자리로
 let meDrag = null, meSnap = null;
