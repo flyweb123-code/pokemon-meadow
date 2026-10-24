@@ -546,11 +546,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.72"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.73"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.72';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.73';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -1972,6 +1972,7 @@ function changesOf() {
     for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) if (JSON.stringify(a[k] ?? null) !== JSON.stringify(b[k] ?? null)) out.push([`${T[k]?.n || k} 장소 특성`, f(a[k]), f(b[k]), 'thov:' + k]); }
   if (D.shop) { const a = ORIG.shop || {}, b = D.shop, nm = id => A?.ITEMS?.find(o => o.id === id)?.n || A?.TRACKS?.find(t => 'bgm:' + t.id === id)?.n || id, g = v => v == null ? '기본' : v.toLocaleString() + 'G';
     for (const id of new Set([...Object.keys(a.price || {}), ...Object.keys(b.price || {})])) if ((a.price || {})[id] !== (b.price || {})[id]) out.push([`${nm(id)} 가격`, g((a.price || {})[id]), g((b.price || {})[id]), 'shp:p:' + id]);
+    if (!same(a.ord, b.ord)) out.push(['상점 순서', a.ord ? '바꿈' : '기본', b.ord ? '바꿈' : '기본', 'shp:ord']);
     if (!same(a.field, b.field)) { const f = L => (L || []).map(([k, p]) => `${A?.fpInfo?.(k)?.n || k} ${p.toLocaleString()}G`).join(', ') || '없음'; out.push(['필드 상점 소품', f(a.field), f(b.field), 'shp:field']); }
     if (!same(a.inc, b.inc)) out.push(['향로 효과', a.inc ? `${a.inc.min}분 ×${a.inc.mul.join('/')}` : '기본', b.inc ? `${b.inc.min}분 ×${b.inc.mul.join('/')}` : '기본', 'shp:inc']);
     if (!same(a.charm, b.charm)) out.push(['빛나는 부적 효과', a.charm ? `${a.charm.min}분 · 알 ${a.charm.n}개에 1개` : '기본', b.charm ? `${b.charm.min}분 · 알 ${b.charm.n}개에 1개` : '기본', 'shp:charm']); }
@@ -2125,6 +2126,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.73', '10월 24일', ['상점 › 아이템·도구·음악: ▲▼ 로 순서를 바꿔요 (게임 상점이 그 순서대로, 베타 v9.09)']],
   ['3.72', '10월 24일', ['바위는 버섯·풀처럼 자연 요소: 상점 › 필드 소품 칸에서 뺌, 베타 게임(v9.08)에선 맵 소품 목록에도 없음']],
   ['3.71', '10월 24일', ['상점 › 필드: 모닥불·연못·꽃밭 칸도 맵 메뉴와 같은 그림으로 보여요']],
   ['3.70', '10월 24일', ['상점 › 필드: 베타 게임으로 보기를 안 켜도 맵 전체 소품 고르는 칸이 떠요']],
@@ -3223,9 +3225,9 @@ async function renderGeo() {
 }
 // ---------- v3.14 경완: 상점 — 물건 가격, 향로·빛나는 부적 효과 (데이터 shop) ----------
 const SHOP0 = { field: [], price: {}, inc: { min: 30, mul: [1, 1, 1.5, 3, 3] }, charm: { min: 30, n: 20 } };   // v3.45: 향로 배율 게임 8.44 기본값과 같게   // v3.42: 게임 기본값과 같게 (부적 30분, 게임 v7.82)
-const shopEff = () => { const o = effP(D, 'shop') || {}; return { field: (o.field || []).map(r => [...r]), price: { ...(o.price || {}) }, inc: { ...SHOP0.inc, ...(o.inc || {}) }, charm: { ...SHOP0.charm, ...(o.charm || {}) } }; };
+const shopEff = () => { const o = effP(D, 'shop') || {}; return { field: (o.field || []).map(r => [...r]), ord: JSON.parse(JSON.stringify(o.ord || {})), price: { ...(o.price || {}) }, inc: { ...SHOP0.inc, ...(o.inc || {}) }, charm: { ...SHOP0.charm, ...(o.charm || {}) } }; };
 let shopKmh = 5;   // 걷는 빠르기 가정 (화면 계산용, 저장 안 함)
-function shopPut(fn) { const o = JSON.parse(JSON.stringify(shopEff())); fn(o); if (!o.field.length) delete o.field; if (!Object.keys(o.price).length) delete o.price; if (same(o.inc, SHOP0.inc)) delete o.inc; if (same(o.charm, SHOP0.charm)) delete o.charm;
+function shopPut(fn) { const o = JSON.parse(JSON.stringify(shopEff())); fn(o); if (!o.field.length) delete o.field; for (const t of Object.keys(o.ord || {})) if (!o.ord[t]?.length) delete o.ord[t]; if (!Object.keys(o.ord || {}).length) delete o.ord; if (!Object.keys(o.price).length) delete o.price; if (same(o.inc, SHOP0.inc)) delete o.inc; if (same(o.charm, SHOP0.charm)) delete o.charm;
   D.shop = o; if (same(o, ORIG.shop || {})) delete D.shop; A?.applyShop?.(effP(D, 'shop')); saveDraft(); RENDER[view]?.(); dstat(); }
 // v3.69 경완: 상점 메뉴는 게임 상점 탭(아이템·도구·음악·필드)별로, 향로·빛나는 부적 효과는 밸런스 메뉴로
 const SHTABS = [['item', '아이템'], ['tool', '도구'], ['bgm', '음악'], ['field', '필드']];
@@ -3259,13 +3261,16 @@ function renderShop() {
   const I = A?.ITEMS, T = A?.TRACKS || [], sh = shopEff();
   if (!I) { $('#shopC').innerHTML = `<div class="card"><h2>상점</h2><p class="small mute">상점 도구·아이템은 아직 베타 게임에만 있어요. 버전 화면에서 <b>베타 게임으로 보기</b>를 켜면 여기서 가격과 효과를 고칠 수 있어요.</p></div>`; $('#shopI').innerHTML = ''; return; }
   const pr = (id, p0) => { const v = sh.price[id] ?? p0, ch = (effP(D, 'shop')?.price || {})[id] !== (ORIG.shop?.price || {})[id]; return `<span class="uw"><input class="inp${ch ? ' ch' : ''}" data-sp="${id}" inputmode="numeric" value="${v}" aria-label="가격"><span class="u">G</span></span>`; };
-  const row = (img, n, id, p0) => `<div class="br shop-r">${img}<div class="lt">${esc(n)}${(sh.price[id] ?? p0) !== p0 ? `<small>기본 ${p0.toLocaleString()}G</small>` : ''}</div>${pr(id, p0)}</div>`;
+  // v3.73 경완: 아이템·도구·음악 순서도 ▲▼ 로 (게임 상점이 이 순서대로, 베타 v9.09~)
+  const ordL = (t, L, idf) => { const O = sh.ord[t] || []; const r = x => { const i = O.indexOf(idf(x)); return i < 0 ? 1e6 : i; }; return L.map((x, i) => [x, i]).sort((a, b) => r(a[0]) - r(b[0]) || a[1] - b[1]).map(a => a[0]); };
+  const mv = (t, i, n) => `<span class="fp-mv"><button class="chip" data-sup="${t}:${i}" aria-label="위로"${i ? '' : ' disabled'}>▲</button><button class="chip" data-sdn="${t}:${i}" aria-label="아래로"${i < n - 1 ? '' : ' disabled'}>▼</button></span>`;
+  const row = (img, n, id, p0, t, i, len) => `<div class="br shop-r">${img}<div class="lt">${esc(n)}${(sh.price[id] ?? p0) !== p0 ? `<small>기본 ${p0.toLocaleString()}G</small>` : ''}</div>${pr(id, p0)}${t ? mv(t, i, len) : ''}</div>`;
   const ic = o => `<img class="sic" src="${A.ITEM_ART[o.a]}" alt="">`;
   const tabs = `<div class="shtabs" role="tablist">${SHTABS.map(([k, n]) => `<button class="chip${k === shopTab ? ' on' : ''}" role="tab" aria-selected="${k === shopTab}" data-shtab="${k}">${n}${k === 'field' && sh.field.length ? ` <span class="num">${sh.field.length}</span>` : ''}</button>`).join('')}</div>`;
   let body = '';
-  if (shopTab === 'item') body = `<div class="card"><h2 class="ih">${gi('coin')}아이템 가격</h2><div>${I.filter(o => o.k === 'item').map(o => row(ic(o), o.n, o.id, o.p)).join('')}</div><p class="small mute">향로·빛나는 부적의 효과(시간·배수)는 밸런스 메뉴에 있어요.</p></div>`;
-  else if (shopTab === 'tool') body = `<div class="card"><h2 class="ih">${gi('coin')}도구 가격 (특수 진화)</h2><div>${I.filter(o => o.k === 'tool').map(o => row(ic(o), o.n, o.id, o.p)).join('')}</div></div>`;
-  else if (shopTab === 'bgm') body = `<div class="card"><h2 class="ih">${gi('coin')}음악 가격</h2><div>${T.filter(t => t.price).map(t => row('', t.n, 'bgm:' + t.id, t.price)).join('')}</div></div>`;
+  if (shopTab === 'item') body = `<div class="card"><h2 class="ih">${gi('coin')}아이템 가격</h2><div>${ordL('item', I.filter(o => o.k === 'item'), o => o.id).map((o, i, L) => row(ic(o), o.n, o.id, o.p, 'item', i, L.length)).join('')}</div><p class="small mute">향로·빛나는 부적의 효과(시간·배수)는 밸런스 메뉴에 있어요.</p></div>`;
+  else if (shopTab === 'tool') body = `<div class="card"><h2 class="ih">${gi('coin')}도구 가격 (특수 진화)</h2><div>${ordL('tool', I.filter(o => o.k === 'tool'), o => o.id).map((o, i, L) => row(ic(o), o.n, o.id, o.p, 'tool', i, L.length)).join('')}</div></div>`;
+  else if (shopTab === 'bgm') body = `<div class="card"><h2 class="ih">${gi('coin')}음악 가격</h2><div>${ordL('bgm', T.filter(t => t.price), t => t.id).map((t, i, L) => row('', t.n, 'bgm:' + t.id, t.price, 'bgm', i, L.length)).join('')}</div></div>`;
   else { const cat = fpCat(), CM = Object.fromEntries(cat.map(r => [r[0], r])), on = new Set(sh.field.map(r => r[0])), q = shopFQ.trim();
     if (!A.cat) body = `<div class="card"><h2 class="ih">${gi('coin')}필드 상점</h2><p class="small mute">게임 화면을 불러오는 중이에요.</p></div>`;   /* v3.70 경완: 본 게임 미리보기여도 고를 수 있게 (썸네일은 맵 소품 그림, 게임 필드 상점은 베타 v9.01~) */
     else body = `<div class="card"><h2 class="ih">${gi('coin')}필드 상점에서 파는 소품 <span class="num mute">${sh.field.length}</span></h2>
@@ -3278,7 +3283,10 @@ function renderShop() {
   $('#shopI').innerHTML = `<h4>상점</h4><div class="small mute">게임 상점 탭(아이템·도구·음악·필드)마다 파는 물건과 가격이에요. 향로·빛나는 부적 효과는 밸런스 메뉴로 옮겼어요. 고친 뒤 저장을 눌러야 배포하기에 들어가요.</div>`;
   if (shopTab === 'field') { const qi = $('#fpQ'); if (qi && shopFQ) { qi.focus(); qi.setSelectionRange(shopFQ.length, shopFQ.length); } }
 }
-$('#shopC').addEventListener('click', e => { const t = e.target.closest('[data-shtab],[data-fadd],[data-fx],[data-fup],[data-fdn]'); if (!t || t.disabled) return;
+$('#shopC').addEventListener('click', e => { const t = e.target.closest('[data-shtab],[data-fadd],[data-fx],[data-fup],[data-fdn],[data-sup],[data-sdn]'); if (!t || t.disabled) return;
+  if (t.dataset.sup || t.dataset.sdn) { const [tb, si] = (t.dataset.sup || t.dataset.sdn).split(':'), i = +si, j = t.dataset.sup ? i - 1 : i + 1, I = A?.ITEMS || [], T = A?.TRACKS || [];
+    const ids = tb === 'bgm' ? T.filter(x => x.price).map(x => x.id) : I.filter(o => o.k === tb).map(o => o.id), O = shopEff().ord[tb] || [], cur = [...O.filter(x => ids.includes(x)), ...ids.filter(x => !O.includes(x))];
+    [cur[i], cur[j]] = [cur[j], cur[i]]; shopPut(o => { o.ord = o.ord || {}; o.ord[tb] = same(cur, ids) ? [] : cur; }); return; }
   if (t.dataset.shtab) { shopTab = t.dataset.shtab; store.set('st-shop-tab', shopTab); renderShop(); return; }
   if (t.dataset.fadd) { const k = t.dataset.fadd; shopPut(o => { const i = o.field.findIndex(r => r[0] === k); if (i >= 0) o.field.splice(i, 1); else o.field.push([k, FP_P0]); }); return; }
   if (t.dataset.fx) { const k = t.dataset.fx; shopPut(o => { o.field = o.field.filter(r => r[0] !== k); }); return; }
