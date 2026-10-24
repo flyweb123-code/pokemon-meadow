@@ -5079,8 +5079,11 @@ function drawBg(X) {
     else if (k < .62) { const sd = R() < .5 ? -1 : 1; px(x + (R() - .5) * 12, y + sd * 5, 1, 2, '#5aa23a'); } }
   // 연못: 젖은 흙 테두리 → 모래 → 얕은 물 → 깊은 물 (단계 사이 디더)   v8.95: 연못마다
   for (const Q of ALLP('pond')) { const P = { x: Q.x / 2, y: Q.y / 2, rx: Q.rx / 2, ry: Q.ry / 2 };
+  const qx0 = Math.floor(P.x - P.rx - 6), qy0 = Math.floor(P.y - P.ry - 6), qm = bgp && document.createElement('canvas'), qg = qm?.getContext('2d');   // v9.04 경완: 맵 편집에서 연못도 고르게 — 젖은 흙 테두리까지 모양
+  if (qm) { qm.width = Math.floor(P.x + P.rx + 6) - qx0 + 1; qm.height = Math.floor(P.y + P.ry + 6) - qy0 + 1; qg.fillStyle = '#000'; bgp.push({ k: 'pond', v: Q, cv: qm, l: qx0, t: qy0 }); }
   for (let y = Math.floor(P.y - P.ry - 6); y <= P.y + P.ry + 6; y++) for (let x = Math.floor(P.x - P.rx - 6); x <= P.x + P.rx + 6; x++) {
     const v = pv(x, y) + Math.sin(x * .7) * .015 + Math.cos(y * .9) * .02, d = (x + y) & 1;
+    if (qg && v < 1.2) qg.fillRect(x - qx0, y - qy0, 1, 1);
     if (v < .3) px(x, y, 1, 1, v > .26 && d ? '#3a86c8' : '#2e6fb4');
     else if (v < .62) px(x, y, 1, 1, v > .56 && d ? '#4c9ad8' : '#3a86c8');
     else if (v < .86) px(x, y, 1, 1, v > .8 && d ? '#6cb4e6' : '#4c9ad8');
@@ -6070,7 +6073,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.04';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.05';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6299,12 +6302,22 @@ function meRender() { const F = S.fbag || {}, L = fbagList();   // v9.00: 가방
 function meSel(el) { if (meSelEl) meSelEl.classList.remove('meSel'); meSelEl = el; const x = $('#meX'), f = $('#meFoot'); x.hidden = f.hidden = !el; if (!el) return; el.classList.add('meSel');
   const cx = parseFloat(el.style.left), by = parseFloat(el.style.top), w = parseFloat(el.style.width) || el.offsetWidth, h = parseFloat(el.style.height) || el.offsetHeight;
   const sm = w < 60;   /* v9.04: 바위처럼 작은 소품은 x 가 소품을 덮어 다시 누르면 x 가 눌렸음 → 오른쪽 위 바깥으로 */
-  Object.assign(x.style, { left: cx + (sm ? w / 2 + 9 : w * .36) + 'px', top: by - h * .92 - (sm ? 10 : 0) + 'px' }); Object.assign(f.style, { left: cx + 'px', top: by - 2 + 'px', width: Math.round(w * .34) + 'px', height: Math.round(w * .12) + 'px' }); }
+  Object.assign(x.style, { left: cx + (sm ? w / 2 + 9 : w * .36) + 'px', top: by - h * .92 - (sm ? 10 : 0) + 'px' }); f.hidden = true;
+  meFoot(el, F => { if (meSelEl !== el || !F) return; Object.assign(f.style, { left: cx - w / 2 + F.x * w + 'px', top: by - h + F.y * h + 'px', width: Math.max(8, F.w * w) + 'px', height: Math.max(6, F.h * h) + 'px' }); f.hidden = false; }); }
+// v9.04 경완: 땅에 닿는 자리(초록 점선)는 그림에서 잰다 — 납작한 소품(꽃밭·연못·바위·모닥불·웅덩이)은 그림 전체, 나머지는 밑동 줄(그림 너비의 35% 높이)의 가로 폭
+const meFootC = {};
+function meFoot(el, cb) { const src = (el.style.backgroundImage.match(/url\("?(.*?)"?\)/) || [])[1]; if (!src) return cb(null); const flat = /\b(bed|pond|rock|fire|puddle)\b/.test(el.className), key = (flat ? 'f' : 'u') + src.length + src.slice(-40);
+  if (meFootC[key]) return cb(meFootC[key]); const im = new Image(); im.onload = () => { const w = im.naturalWidth, h = im.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.drawImage(im, 0, 0); const A = g.getImageData(0, 0, w, h).data, op = (x, y) => A[(y * w + x) * 4 + 3] > 40;
+    let y0 = h, y1 = -1; for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (op(x, y)) { y0 = Math.min(y0, y); y1 = y; break; }
+    if (y1 < 0) return cb(null); let x0 = w, x1 = -1; for (let x = 0; x < w; x++) if (op(x, y1)) { x0 = Math.min(x0, x); x1 = x; }
+    let ox0 = w, ox1 = -1; for (let y = y0; y <= y1; y++) for (let x = 0; x < w; x++) if (op(x, y)) { ox0 = Math.min(ox0, x); ox1 = Math.max(ox1, x); }
+    const bt = flat ? y0 : Math.max(y0, y1 + 1 - Math.round((ox1 - ox0 + 1) * .35)); let bx0 = w, bx1 = -1; for (let y = bt; y <= y1; y++) for (let x = 0; x < w; x++) if (op(x, y)) { bx0 = Math.min(bx0, x); bx1 = Math.max(bx1, x); }
+    const F = meFootC[key] = { x: (bx0 + bx1 + 1) / 2 / w, y: (bt + y1 + 1) / 2 / h, w: (bx1 - bx0 + 1) / w, h: (y1 + 1 - bt) / h }; cb(F); }; im.onerror = () => cb(null); im.src = src; }
 // v9.04 경완: 바탕에 그려진 소품은 편집하는 동안 바탕 그림(계절 색 그대로)을 소품 모양대로 오려 낱개 .prop 으로 겹쳐 둔다 → 누르면 골라짐
 function meBgProps(on) { itemsEl.querySelectorAll('.prop.bgp').forEach(e => e.remove()); if (!on) return; const bg = $('#bg');
   for (const p of BGP) { const w = p.cv.width, h = p.cv.height, c = document.createElement('canvas'), g = c.getContext('2d'); c.width = w; c.height = h;
     g.drawImage(bg, p.l + BGOX, p.t, w, h, 0, 0, w, h); g.globalCompositeOperation = 'destination-in'; g.drawImage(p.cv, 0, 0);
-    const e = document.createElement('div'); e.className = 'prop bgp ' + p.k; e.style.cssText = W2(c.toDataURL(), w * 2, h * 2) + `;left:${(p.l + w / 2) * 2}px;top:${(p.t + h) * 2}px`; e.style.setProperty('z-index', 1, 'important'); e.P = p; itemsEl.append(e); } }   /* 바탕 그림처럼 맨 아래 — 골라도 위의 꽃·나무를 덮지 않게 */
+    const e = document.createElement('div'); e.className = 'prop bgp ' + p.k; e.style.cssText = W2(c.toDataURL(), w * 2, h * 2) + `;left:${(p.l + w / 2) * 2}px;top:${(p.t + h) * 2}px`; e.style.setProperty('z-index', 0, 'important'); e.P = p; itemsEl.prepend(e); } }   /* 바탕 그림처럼 맨 아래 — 골라도 위의 꽃·나무를 덮지 않게 */
 function mapEditSet(on) { if (mapEdit === on) return; mapEdit = on; document.body.classList.toggle('mapEdit', on); for (const id of ['meBar', 'meTitle', 'meZone', 'meLayer']) $('#' + id).hidden = !on;
   if (on) { mePick = null; meBgProps(true); meZoneDraw(); meRender(); } else { meSel(null); meBgProps(false); } sfx(on ? 'open' : 'tap'); dispatchEvent(new Event('resize')); }
 $('#btnMapEdit').onclick = () => mapEditSet(true);
@@ -6314,7 +6327,7 @@ $('#meAll').onclick = () => { sfx('tap'); bagOpenField(); };
 $('#meX').onclick = e => { e.stopPropagation(); meSel(null); };   // 2단계: 빼면 가방 필드 탭으로
 $('#meList').onclick = e => { const b = e.target.closest('[data-k]'); if (!b) return; mePick = mePick === b.dataset.k ? null : b.dataset.k; meRender(); sfx('tap'); };
 $('#wrap').addEventListener('pointerdown', e => { if (!mapEdit || e.target.closest('#meX')) return; e.stopPropagation(); e.preventDefault();
-  let best = null; for (const el of itemsEl.querySelectorAll('.prop')) { const r = el.getBoundingClientRect(); if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom && (!best || +el.style.zIndex > +best.style.zIndex)) best = el; }
+  let best = null, bestA = 0; for (const el of itemsEl.querySelectorAll('.prop')) { const r = el.getBoundingClientRect(); if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom && (!best || +el.style.zIndex > +best.style.zIndex || (+el.style.zIndex === +best.style.zIndex && r.width * r.height < bestA))) { best = el; bestA = r.width * r.height; } }
   meSel(best); }, true);
 $('#ibagX').onclick = () => { ibagEl.hidden = true; };
 ibagEl.addEventListener('click', e => {
