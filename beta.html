@@ -2351,6 +2351,8 @@ function projectOut(m, k) { // push a point out of (k>1) / into (k<1) the pond e
   m.x = POND.x + dx / v * k * POND.rx; m.y = POND.y + dy / v * k * POND.ry;
 }
 // v4.60 경완: 상태창을 펴면 호수 아래 길이 거의 막힌다 → 그 띠에 갇히지 않게 호수 옆으로 비켜서고, 호수 아래를 가로지르려 하면 호수 위로 돌아간다
+// v9.35 경완 '떠 있는 포켓몬은 연못 위 지나갈 수 있게': 걷는 포켓몬이라도 떠 있기(MON_FLY)가 있으면 연못을 돌아가지 않고 위로 지나간다
+const floatM = m => (MON_FLY[m.form] || 0) > 6, pondWalk = m => T(m).mv === 'walk' && !floatM(m);
 const pondGap = (POND = LAYOUT.pond) => MAX_Y - (POND.y + POND.ry * 1.08) < 30;
 function pondSide(q, k = 1.08) {   // 위아래가 막혀 있으면 옆으로 민다 (y 는 그대로)
   if (pondVal(q.x, q.y) >= k) return q; const POND = nearPond(q.x, q.y), dy = (q.y - POND.y) / POND.ry;
@@ -2359,7 +2361,7 @@ function pondSide(q, k = 1.08) {   // 위아래가 막혀 있으면 옆으로 �
 }
 function pondWp(m, tx, ty) { const w = pondWp0(m, tx, ty); return w && Math.hypot(w.x - m.x, w.y - m.y) < 10 ? null : w; }   // v9.34: 이미 그 자리면 다시 주지 않는다 (도착 → 지움 → 또 줌 으로 덜덜)
 function pondWp0(m, tx, ty) {
-  if (T(m).mv !== 'walk') return null;
+  if (!pondWalk(m)) return null;
   let hit = null; for (let i = 1; i < 12 && !hit; i++) { const u = i / 12, x = m.x + (tx - m.x) * u, y = m.y + (ty - m.y) * u; if (pondVal(x, y) < 1.1) hit = nearPond(x, y); }
   const POND = hit; if (!hit || !pondGap(POND) || (m.y < POND.y && ty < POND.y)) return null; const sd = m.x < POND.x ? -1 : 1, st = tx < POND.x ? -1 : 1;
   if (m.y < POND.y - POND.ry * .6) return { x: POND.x + st * POND.rx * 1.2, y: POND.y };   // 위에서 → 목표 쪽 옆으로
@@ -3290,11 +3292,11 @@ function moveTo(m, p, goal, spdMul = 1) {
   m.tx = clamp(p.x, XL + 30, XR - 30); m.ty = clamp(p.y, MIN_Y, MAX_Y);
   { const q = outOfHud(m, { x: m.tx, y: m.ty }); m.tx = clamp(q.x, XL + 30, XR - 30); m.ty = clamp(q.y, MIN_Y, MAX_Y); }
   const mv = T(m).mv;
-  if (mv === 'walk') { const P = nearPond(m.tx, m.ty); if (pondGap(P) && m.ty > P.y && Math.abs(m.tx - P.x) < P.rx * 1.1) { m.tx = clamp(P.x + (m.tx < P.x ? -1 : 1) * P.rx * 1.2, XL + 30, XR - 30); m.ty = clamp(P.y + rnd(-10, 20), MIN_Y, MAX_Y); } }   /* v9.34 경완 '연못 근처 버벅이거나 갇힘': 아래 띠(길이 3px 남짓)는 닿을 수 없는 목표라 그 앞에서 왔다갔다 → 내 쪽 옆으로 */
+  if (pondWalk(m)) { const P = nearPond(m.tx, m.ty); if (pondGap(P) && m.ty > P.y && Math.abs(m.tx - P.x) < P.rx * 1.1) { m.tx = clamp(P.x + (m.tx < P.x ? -1 : 1) * P.rx * 1.2, XL + 30, XR - 30); m.ty = clamp(P.y + rnd(-10, 20), MIN_Y, MAX_Y); } }   /* v9.34 경완 '연못 근처 버벅이거나 갇힘': 아래 띠(길이 3px 남짓)는 닿을 수 없는 목표라 그 앞에서 왔다갔다 → 내 쪽 옆으로 */
   if (mv === 'swim') { const v = pondVal(m.tx, m.ty); if (v > .8) { const q = { x: m.tx, y: m.ty }; projectOut(q, .78); m.tx = q.x; m.ty = q.y; } }
-  else if ((mv === 'walk') && pondVal(m.tx, m.ty) < 1.1) { const q = pondGap(nearPond(m.tx, m.ty)) && m.ty > nearPond(m.tx, m.ty).y ? pondSide({ x: m.tx, y: m.ty }, 1.12) : shorePoint({ x: m.tx, y: m.ty }); m.tx = q.x; m.ty = q.y; }
+  else if (pondWalk(m) && pondVal(m.tx, m.ty) < 1.1) { const q = pondGap(nearPond(m.tx, m.ty)) && m.ty > nearPond(m.tx, m.ty).y ? pondSide({ x: m.tx, y: m.ty }, 1.12) : shorePoint({ x: m.tx, y: m.ty }); m.tx = q.x; m.ty = q.y; }
   { const q = fireOut(m, { x: m.tx, y: m.ty }, 1.1); m.tx = q.x; m.ty = q.y; }
-  if (mv !== 'swim' && inHud(m, m.tx, m.ty)) { let q = outOfHud(m, { x: m.tx, y: m.ty }); for (let i = 0; i < 6 && (inHud(m, q.x, q.y) || (mv === 'walk' && pondVal(q.x, q.y) < 1.1)); i++) q = outOfHud(m, randLand()); m.tx = clamp(q.x, XL + 30, XR - 30); m.ty = clamp(q.y, MIN_Y, MAX_Y); }   /* v8.55 경완 '앱만 켜면 턱지충이 열매 버튼 뒤에': 연못가·모닥불 비키기가 목적지를 다시 버튼 밑으로 밀어 넣으면 그 자리에서 멈춰 버렸다 → 마지막에 한 번 더 확인하고, 안 되면 다른 빈 땅으로 */
+  if (mv !== 'swim' && inHud(m, m.tx, m.ty)) { let q = outOfHud(m, { x: m.tx, y: m.ty }); for (let i = 0; i < 6 && (inHud(m, q.x, q.y) || (pondWalk(m) && pondVal(q.x, q.y) < 1.1)); i++) q = outOfHud(m, randLand()); m.tx = clamp(q.x, XL + 30, XR - 30); m.ty = clamp(q.y, MIN_Y, MAX_Y); }   /* v8.55 경완 '앱만 켜면 턱지충이 열매 버튼 뒤에': 연못가·모닥불 비키기가 목적지를 다시 버튼 밑으로 밀어 넣으면 그 자리에서 멈춰 버렸다 → 마지막에 한 번 더 확인하고, 안 되면 다른 빈 땅으로 */
   if (m.propSit) { m.propSit = false; m.xl = 0; m.pzB = null; }
   m.goal = goal || { kind: 'wander' }; m.spdMul = spdMul;
   setState(m, 'move', 30);
@@ -3966,7 +3968,7 @@ function chooseScene(a, b) {
 function place(m, x, y) {
   m.x = clamp(x, XL + 24, XR - 24); m.y = clamp(y, MIN_Y, MAX_Y);
   const mv = T(m).mv;
-  if (mv === 'walk' && pondVal(m.x, m.y) < 1.08) projectOut(m, 1.08);
+  if (pondWalk(m) && pondVal(m.x, m.y) < 1.08) projectOut(m, 1.08);
   if (mv === 'swim' && !m.land && pondVal(m.x, m.y) > .9) projectOut(m, .9);
 }
 const faceTo = (m, x) => { if (Math.abs(x - m.x) > .5) m.face = x > m.x ? -1 : 1; };
@@ -4134,7 +4136,7 @@ const TPL = {
       if (sc.orb) { const g = sc.mt * (sc.p.spd || 2); orbit(b, sc.c, g, 90, 32); orbit(a, sc.c, g - .9, 90, 32);
         if (every(sc, 'k', 1.1)) { strike(a); if (sc.p.t) particle(b.x, b.y - b.h, sc.p.cls || 'note', pick([].concat(sc.p.t))); } return; }
       const ch = sc.ch, ru = sc.ru, now = performance.now(); if (sc.mt < sc.pz) return;
-      const v = 62 * (sc.p.spd || 2) / 2 * sc.dt, ok = (m, x, y) => x > XL + 30 && x < XR - 30 && y > MIN_Y + 10 && y < MAX_Y - 4 && (T(m).mv !== 'walk' || pondVal(x, y) > 1.15) && !inHud(m, x, y);
+      const v = 62 * (sc.p.spd || 2) / 2 * sc.dt, ok = (m, x, y) => x > XL + 30 && x < XR - 30 && y > MIN_Y + 10 && y < MAX_Y - 4 && (!pondWalk(m) || pondVal(x, y) > 1.15) && !inHud(m, x, y);
       if (!sc.tg || Math.hypot(sc.tg.x - ru.x, sc.tg.y - ru.y) < 12 || Math.hypot(sc.tg.x - ch.x, sc.tg.y - ch.y) < 50) { let best = null, bd = -1;
         for (let i = 0; i < 10; i++) { const q = { x: rnd(XL + 50, XR - 50), y: rnd(MIN_Y + 20, MAX_Y - 10) }; if (!ok(ru, q.x, q.y)) continue; const d = Math.hypot(q.x - ch.x, q.y - ch.y) - Math.hypot(q.x - ru.x, q.y - ru.y) * .5; if (d > bd) { bd = d; best = q; } }
         sc.tg = best || { x: clamp(ru.x + (ru.x - ch.x), XL + 50, XR - 50), y: clamp(ru.y + (ru.y - ch.y), MIN_Y + 20, MAX_Y - 10) }; }
@@ -4739,7 +4741,7 @@ function update(m, dt) {
         if (!S.mons.includes(o) || o.hidden) { think(m); break; }
         const side = m.x < o.x ? -1 : 1;
         m.tx = o.x + side * Math.max(34, (m.w + o.w) * .32); m.ty = o.y + 2;
-        if (T(m).mv === 'walk' && pondVal(m.tx, m.ty) < 1.1) { const q = shorePoint({ x: m.tx, y: m.ty }, 0); m.tx = q.x; m.ty = q.y; }
+        if (pondWalk(m) && pondVal(m.tx, m.ty) < 1.1) { const q = shorePoint({ x: m.tx, y: m.ty }, 0); m.tx = q.x; m.ty = q.y; }
         if (T(m).mv === 'swim' && pondVal(m.tx, m.ty) > .85) { const q = { x: m.tx, y: m.ty }; projectOut(q, .82); m.tx = q.x; m.ty = q.y; }
       }
       if (g && g.kind === 'berry' && !S.berries.includes(g.berry)) { arrive(m); break; }
@@ -4752,17 +4754,17 @@ function update(m, dt) {
       const step = Math.min(d, sp * dt);
       let vx = dx / d * step, vy = dy / d * step;
       /* 호숫가: 물 쪽(걷는 포켓몬)·뭍 쪽(헤엄치는 포켓몬)으로 들어가는 성분만 빼고 물가를 따라 미끄러지게 (밀어냈다 들어갔다 반복하며 덜덜 떠는 것 방지) */
-      if ((t.mv === 'walk' && pondVal(m.x + vx, m.y + vy) < 1.08) || (t.mv === 'swim' && !m.land && pondVal(m.x + vx, m.y + vy) > .9)) {
+      if ((pondWalk(m) && pondVal(m.x + vx, m.y + vy) < 1.08) || (t.mv === 'swim' && !m.land && pondVal(m.x + vx, m.y + vy) > .9)) {
         const NP = nearPond(m.x, m.y); let nx = (m.x - NP.x) / NP.rx ** 2, ny = (m.y - NP.y) / NP.ry ** 2; const nl = Math.hypot(nx, ny) || 1; nx /= nl; ny /= nl;
         const dot = vx * nx + vy * ny, inward = t.mv === 'walk' ? dot < 0 : dot > 0; if (inward) { vx -= dot * nx; vy -= dot * ny; } }
       if (fireBlk(m) && fireVal(m, m.x + vx, m.y + vy) < 1) { const B = fireBox(m); let nx = (m.x - B.x) / B.rx ** 2, ny = (m.y - B.y) / B.ry ** 2; const nl = Math.hypot(nx, ny) || 1; nx /= nl; ny /= nl; const dot = vx * nx + vy * ny; if (dot < 0) { vx -= dot * nx; vy -= dot * ny; } }
       m.x += vx; m.y += vy;
       if (Math.abs(vx) > step * .25 && Math.abs(dx) > 2) m.face = vx > 0 ? -1 : 1;
       m.up = dy < -Math.abs(dx) * .8;
-      if (t.mv === 'walk' && pondVal(m.x, m.y) < 1.08) projectOut(m, 1.08);
+      if (pondWalk(m) && pondVal(m.x, m.y) < 1.08) projectOut(m, 1.08);
       if (t.mv === 'swim' && !m.land && pondVal(m.x, m.y) > .9) projectOut(m, .9);
       m.x = clamp(m.x, XL + 20, XR - 20); m.y = clamp(m.y, MIN_Y, MAX_Y);
-      if (t.mv === 'walk' && pondVal(m.x, m.y) < 1.08) pondSide(m);   /* 호수 아래 띠가 막혀 아래로 밀었다 위로 당겼다 하며 갇히지 않게 옆으로 */
+      if (pondWalk(m) && pondVal(m.x, m.y) < 1.08) pondSide(m);   /* 호수 아래 띠가 막혀 아래로 밀었다 위로 당겼다 하며 갇히지 않게 옆으로 */
       fireOut(m, m, 1);
       // 길이 막혀(호수·화면 끝) 거의 못 나아가면 1초쯤 뒤 왔던 쪽으로 돌아 나간다
       { const gain = d - Math.hypot(gx - m.x, gy - m.y);
@@ -4773,7 +4775,7 @@ function update(m, dt) {
           if (g?.kind === 'prop') m.propCd = rnd(120, 300);
           const now = performance.now(); if (now - (m.stkAt || -1e9) < 15000) { m.stkAt = 0; m.goal = null; setState(m, 'idle', rnd(3, 6)); break; } m.stkAt = now;
           const back = { x: clamp(m.x - dx / d * rnd(90, 170) + rnd(-40, 40), XL + 30, XR - 30), y: clamp(m.y - dy / d * rnd(50, 110) + rnd(-30, 30), MIN_Y + 5, MAX_Y - 5) };
-          if (t.mv === 'walk' && pondVal(back.x, back.y) < 1.15) pondSide(back, 1.2);
+          if (pondWalk(m) && pondVal(back.x, back.y) < 1.15) pondSide(back, 1.2);
           m.goal = null; m.tx = back.x; m.ty = back.y; m.t = Math.min(m.t, 4); break; } }
       if (m.t <= 0) { if (g && g.kind === 'chase') chaseEnd(m); else think(m); }
       break;
@@ -4786,7 +4788,7 @@ function update(m, dt) {
     case 'special': tickSpecial(m, dt); break;
     default: if (m.t <= 0) think(m);
   }
-  if ((m.state === 'interact' || m.state === 'special') && !m.held && T(m).mv === 'walk' && pondVal(m.x, m.y) < 1.04) projectOut(m, 1.08);   // v4.59 경완: 물 포켓몬과 노는 동작이 육지 포켓몬을 호수 위로 옮기던 것 → 물가로 밀어낸다
+  if ((m.state === 'interact' || m.state === 'special') && !m.held && pondWalk(m) && pondVal(m.x, m.y) < 1.04) projectOut(m, 1.08);   // v4.59 경완: 물 포켓몬과 노는 동작이 육지 포켓몬을 호수 위로 옮기던 것 → 물가로 밀어낸다
 }
 
 // ---------- render ----------
@@ -4803,7 +4805,7 @@ function render(m, now) {
   const fly0 = MON_FLY[m.form] || 0, rdOn = m.rdH && !m.held && now - (m.rdT || 0) < 200 && S.mons.includes(m.rdH), scR = m.scp && m.scp.ride, targetLift = m.scp && !m.held ? Math.max(0, (m.xl || 0) + (scR ? 0 : fly0)) : Math.max(0, m.szb ? liftBase(m.sp) + fly0 : m.held ? 26 : (flyer ? (grounded ? (t.mv === 'hover' ? 6 : 0) : (t.mv === 'fly' ? 40 : 16)) : 0) + (m.xl || 0) + fly0);   /* v5.20: MON_FLY 는 원래 높이에 더하는 값 (음수면 낮게) */   /* 들면 나는 포켓몬도 손가락(몸통) 기준: 그림자 위 높이를 더하지 않는다 */
   m.lift += (targetLift - m.lift) * (m.scp && m.scSnap ? 1 : .08);   // v9.29: 소품 놀이 중엔 높이를 바로 따라간다
   const bob = flyer && !grounded && !m.szb && !m.scp && !rdOn ? Math.sin(now / 260 + m.uid) * 4 : 0;   /* v4.61 경완: 크기 조절 모드에선 둥둥 안 뜬다 */
-  const pv = pondVal(m.x, m.y), wet = !flyer && !(m.xl > 6) && (m.wet ? pv < 1.0 : pv < .94), wetUp = !flyer && !wet && m.xl > 6 && pv < .94;   /* v9.35 경완 '물속 포켓몬 염력으로 띄울 때 잘린 채로 올라감': 들어 올리면 물 밖으로 나온 온몸 (물에 잠긴 만큼은 천천히 올라온다) */   /* 물가 경계에서 젖음/마름이 번갈아 바뀌며 위아래로 튀지 않게 여유를 둔다 */
+  const pv = pondVal(m.x, m.y), wet = !flyer && !floatM(m) && !(m.xl > 6) && (m.wet ? pv < 1.0 : pv < .94), wetUp = !flyer && !floatM(m) && !wet && m.xl > 6 && pv < .94;   /* v9.35 경완 '물속 포켓몬 염력으로 띄울 때 잘린 채로 올라감': 들어 올리면 물 밖으로 나온 온몸 (물에 잠긴 만큼은 천천히 올라온다) */   /* 물가 경계에서 젖음/마름이 번갈아 바뀌며 위아래로 튀지 않게 여유를 둔다 */
   if (wet !== m.wet) { m.wet = wet; m.el.classList.toggle('wet', wet); }
   if (m.land && (!isFish(m.sp) || pondVal(m.x, m.y) < .85)) { m.land = false; if (!m.held) { splashAt(m); log(`${J(m,'이/가')} 겨우 호수로 돌아와 첨벙! 한결 편안해 보인다.`, [m]); } }
   { const fl = !!m.land && !m.held; if (fl !== !!m.flop) { m.flop = fl; m.el.classList.toggle('flop', fl); } }
@@ -6124,7 +6126,7 @@ function settle(m) {
   const mv = T(m).mv;
   if (mv === 'swim' && isFish(m.sp) && pondVal(m.x, m.y) > 1) { m.land = true; return; }   // 물고기 포켓몬(잉어킹 등)은 육지에 내려놓을 수 있다 (호수로 힘겹게 돌아간다). v8.13 경완: 잉어킹만 → 물고기 모두
   if (mv === 'swim' && pondVal(m.x, m.y) > .9) { projectOut(m, .8); splashAt(m); }
-  else if (mv === 'walk' && pondVal(m.x, m.y) < 1.08) { const q = shorePoint(m); m.x = q.x; m.y = q.y; }
+  else if (pondWalk(m) && pondVal(m.x, m.y) < 1.08) { const q = shorePoint(m); m.x = q.x; m.y = q.y; }
 }
 function meetByHand(m, o) {
   if (o.state === 'interact' && o.partner) { const p = o.partner; p.partner = null; p.scene = null; setState(p, 'idle', 1); o.partner = null; }
@@ -6220,7 +6222,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.35';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.36';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
