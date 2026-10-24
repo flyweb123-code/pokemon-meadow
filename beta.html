@@ -5023,7 +5023,7 @@ function drawBg(X) {
   const blot = (cx, cy, rx, col) => { const ry = rx * .45; for (let y = -ry; y <= ry; y++) for (let x = -rx; x <= rx; x++) if ((x / rx) ** 2 + (y / ry) ** 2 < 1 && ((x + y + 99) & 1 || (x / rx) ** 2 + (y / ry) ** 2 < .6)) px(cx + x, cy + y, 1, 1, col); };
   for (let i = 0; i < 26; i++) { const cx = R() * PW, cy = 50 + R() * (PH - 50), rx = 10 + R() * 18, col = R() < .5 ? '#6cb446' : '#7cc254'; blot(cx, cy, rx, col); }
   extra(26, () => { const [cx, cy] = xy2(); blot(cx, cy, 10 + R2() * 18, R2() < .5 ? '#6cb446' : '#7cc254'); });
-  for (let i = 0; i < 900; i++) { const x = R() * PW, y = 48 + R() * (PH - 48); if (pv(x, y) < 1.3) continue; const k = R(); px(x, y, 1, 2, k < .5 ? '#5aa23a' : '#8ccc62'); if (k < .25) px(x + 1, y - 1, 1, 2, '#5aa23a'); }
+  for (let i = 0; i < 900; i++) { const x = R() * PW, y = 48 + R() * (PH - 48); let k; if (pv(x, y) < 1.3) { if (!(BG_SKIP?.rx) || ALLP('pond').some(Q => Q !== BG_SKIP && pondV1(Q, x * 2, y * 2) < 1.3)) continue; k = (Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1; k = k < 0 ? k + 1 : k; } else k = R(); px(x, y, 1, 2, k < .5 ? '#5aa23a' : '#8ccc62'); if (k < .25) px(x + 1, y - 1, 1, 2, '#5aa23a'); }
   extra(900, () => { const [x, y] = xy2(), k = R2(); px(x, y, 1, 2, k < .5 ? '#5aa23a' : '#8ccc62'); if (k < .25) px(x + 1, y - 1, 1, 2, '#5aa23a'); });
   // v3.56 경완: 먼 숲은 없애고 가까운 숲 줄만. 열매나무와 같은 방식의 작은 나무를 두 줄로 (하늘이 보이게 낮게)
   { const flip = (cv) => { const c2 = document.createElement('canvas'); c2.width = cv.width; c2.height = cv.height; const q = c2.getContext('2d'); q.translate(cv.width, 0); q.scale(-1, 1); q.drawImage(cv, 0, 0); return c2; };
@@ -6074,7 +6074,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.09';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.10';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6300,7 +6300,7 @@ const bagOpen = () => tabTo(ibagEl, () => { ibagEl.hidden = false; ibagFOnly = f
 let mapEdit = false, meSelEl = null, mePick = null;
 function meZoneDraw() { const c = $('#meZone'), g = c.getContext('2d'), { x0, x1 } = meZoneRect(); g.clearRect(0, 0, W, H); g.fillStyle = 'rgba(16,16,40,.55)'; g.fillRect(0, 0, W, H); g.clearRect(x0, MIN_Y, x1 - x0, MAX_Y0 - MIN_Y);
   g.setLineDash([6, 4]); g.lineWidth = 2; g.strokeStyle = 'rgba(255,255,255,.9)'; g.strokeRect(x0 + 1, MIN_Y + 1, x1 - x0 - 2, MAX_Y0 - MIN_Y - 2);
-  for (const P of ALLP('pond')) { g.beginPath(); g.ellipse(P.x, P.y, P.rx * 1.06, P.ry * 1.1, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(255,140,140,.95)'; g.stroke(); } }
+  for (const P of ALLP('pond')) { if (P === BG_SKIP) continue; g.beginPath(); g.ellipse(P.x, P.y, P.rx * 1.06, P.ry * 1.1, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(255,140,140,.95)'; g.stroke(); } }
 function meRender() { const F = S.fbag || {}, L = fbagList();   // v9.00: 가방에 있는 것만, 최근에 넣은 순
   $('#meList').innerHTML = L.length ? L.map(([k, n, src]) => `<button class="me-it" type="button" data-k="${esc(k)}" aria-pressed="${mePick === k}"><i class="icnt">${F[k]}</i><img class="fpth" src="${src}" alt=""><span>${esc(n)}</span></button>`).join('') : '<p class="me-none">가방에 놓을 소품이 없어요.<br>필드의 소품을 빼면 여기로 들어와요.</p>'; }
 function meSel(el) { if (meSelEl) meSelEl.classList.remove('meSel'); meSelEl = el; const x = $('#meX'), f = $('#meFoot'); x.hidden = f.hidden = !el; if (!el) return; el.classList.add('meSel');
@@ -6336,7 +6336,7 @@ $('#wrap').addEventListener('pointerdown', e => { if (!mapEdit || e.target.close
 // v9.06 경완: 고른 소품을 끌어 옮긴다 — 손가락을 따라 부드럽게, 땅에 닿는 자리는 안전 구역 안으로만, 다른 소품·연못과 겹치면 빨갛게 → 놓으면 제자리로
 let meDrag = null, meSnap = null;
 addEventListener('pointermove', e => { const D = meDrag; if (!D || !mapEdit || e.pointerId !== D.id) return; const el = D.el;
-  if (!D.on) { if (Math.hypot(e.clientX - D.x0, e.clientY - D.y0) < 5) return; D.on = true; D.k = el.getBoundingClientRect().width / el.offsetWidth || 1; $('#meX').hidden = true; el.classList.add('meDrag'); if (el.classList.contains('bgp')) { el.style.setProperty('z-index', 8999, 'important'); BG_SKIP = el.LV; drawBg(); }   /* 끄는 동안은 맨 위, 바탕엔 원래 자리 그림을 지움 */
+  if (!D.on) { if (Math.hypot(e.clientX - D.x0, e.clientY - D.y0) < 5) return; D.on = true; D.k = el.getBoundingClientRect().width / el.offsetWidth || 1; $('#meX').hidden = true; el.classList.add('meDrag'); if (el.classList.contains('bgp')) { el.style.setProperty('z-index', 8999, 'important'); BG_SKIP = el.LV; drawBg(); meZoneDraw(); }   /* 끄는 동안은 맨 위, 바탕엔 원래 자리 그림을 지움 */
     D.co = [...itemsEl.children, ...document.querySelectorAll('.glint')].filter(o => o.CO && o.CO === el.LV).map(o => [o, parseFloat(o.style.left), parseFloat(o.style.top)]); }   /* v9.07 경완: 꽃밭 꽃·연못 갈대·수련잎·모닥불 불꽃도 같이 */
   let dx = (e.clientX - D.x0) / D.k, dy = (e.clientY - D.y0) / D.k; const F = el.FP, w = parseFloat(el.style.width), h = parseFloat(el.style.height);
   if (F) { const Z = meZoneRect(), fx = D.l0 - w / 2 + F.x * w, fy = D.t0 - h + F.y * h, rx = F.w * w / 2, ry = F.h * h / 2;   // 땅에 닿는 자리가 안전 구역 밖으로 못 나가게
