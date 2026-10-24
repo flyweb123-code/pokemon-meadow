@@ -6078,7 +6078,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.20';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.21';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6705,12 +6705,12 @@ function mgThumbArt(cv, kind, m, me, tok) {
     const x = cv.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.imageSmoothingEnabled = false; x.drawImage(b, 0, 0, b.width * P, b.height * P);
   });
 }
-const MG_ROLE = { still: [74, 95], hop: [39, 1], wave: [16, 21], pace: [7, 158], dash: [58, 4], leap: [60, 118], dig: [50, 27], swoop: [41, 22], roll: [205, 204], spring: [325, 326], fade: [92, 93], flop: [129, 98] };   // 움직임마다 한 마리 (앞 포켓몬이 주인공이면 뒤)
+const MG_ROLE = { still: [74, 95], hop: [39, 1], wave: [16, 21], pace: [7, 158], dash: [58, 4], leap: [60, 118], dig: [50, 27], swoop: [41, 22], roll: [205, 204], spring: [325, 326], fade: [92, 93], flop: [129, 98], track: [15, 49] };   // 움직임마다 한 마리 (앞 포켓몬이 주인공이면 뒤)
 // v5.88 경완: 페이즈가 오를 때마다 새 움직임의 장애물이 하나씩 나온다
 const MG_LEAP = [170, 62, 72];   // 발챙이: 주인공 앞 170에서 뛰어 62에 떨어진다 (높이 72)
-const MG_WARN = { dash: 1, leap: 1, dig: 1, swoop: 1, roll: 1, spring: 1, fade: 1, flop: 1 };
-const MG_UNLOCK = { still: 1, hop: 1, wave: 1, pace: 2, dash: 3, dig: 4, leap: 5, swoop: 6, roll: 7, spring: 8, fade: 9, flop: 10 }, MG_FLY = ['wave', 'swoop'];
-const MG_ROLE_N = { pace: '앞뒤로 왔다 갔다 해요', dash: '가까워지면 달려들어요', leap: '가까워지면 펄쩍 뛰어올라요', dig: '땅속에 숨어 있다가 튀어나와요', swoop: '하늘에서 내리꽂혀요', roll: '셋이 줄지어 데굴데굴 굴러와요', spring: '꼬리 스프링으로 높이 튀어 올라요', fade: '사라졌다 나타나요 (보일 때만 부딪혀요)', flop: '셋이 제자리에서 펄떡펄떡 (높이가 제각각)' };
+const MG_WARN = { dash: 1, leap: 1, dig: 1, swoop: 1, roll: 1, spring: 1, fade: 1, flop: 1, track: 1 };
+const MG_UNLOCK = { still: 1, hop: 1, wave: 1, pace: 2, dash: 3, dig: 4, leap: 5, swoop: 6, roll: 7, spring: 8, fade: 9, flop: 10, track: 11 }, MG_FLY = ['wave', 'swoop', 'track'];
+const MG_ROLE_N = { pace: '앞뒤로 왔다 갔다 해요', dash: '가까워지면 달려들어요', leap: '가까워지면 펄쩍 뛰어올라요', dig: '땅속에 숨어 있다가 튀어나와요', swoop: '하늘에서 내리꽂혀요', roll: '셋이 줄지어 데굴데굴 굴러와요', spring: '꼬리 스프링으로 높이 튀어 올라요', fade: '사라졌다 나타나요 (보일 때만 부딪혀요)', flop: '셋이 제자리에서 펄떡펄떡 (높이가 제각각)', track: '내 높이를 따라오다 가까워지면 쏜살같이 (그때 피하기)' };
 async function mgPrep(me) {
   const want = [16, me, ...S.box.slice().sort(() => Math.random() - .5).slice(0, 3).map(P => P.sp)];
   await Promise.race([Promise.all(want.map(sp => ensureSprite(sp).catch(() => {}))), new Promise(r => setTimeout(r, 2500))]);
@@ -7004,6 +7004,8 @@ function mgMove(g, o, dt) {
   else if (o.pat === 'fade') { const q = (g.t + o.ph) % 1.6, dx = o.x - g.PX; o.y = 10 + Math.sin(g.t * 3 + o.ph) * 4; o.al = dx < 90 && o.lk != null ? o.lk : q < .9 ? 1 : q < 1.05 ? 1 - (q - .9) / .15 : q < 1.45 ? .12 : (q - 1.45) / .15 * .88 + .12; if (dx < 90 && o.lk == null) o.lk = o.al >= .5 ? 1 : .12; o.nh = o.al < .5; }   /* v9.16 경완: 고오스 — 0.9초 보였다 0.7초 흐려짐, 흐릴 땐 그냥 지나감 (주인공 앞 90 안에선 그때 상태 그대로) */
   else if (o.pat === 'flop') { const T2 = .95, q = (g.t + o.ph) % T2, up = .2, a = q < up ? 0 : (q - up) / (T2 - up);   /* v9.20 경완: 잉어킹 무리 — 셋이 제자리에서 몸을 뒤집으며 펄떡, 마리마다 높이가 달라 사이사이로 넘어야 함 */
     o.y = a > 0 ? 4 * o.hh * a * (1 - a) : 0; o.rot = a > 0 ? Math.sin(a * Math.PI * 2) * .7 * o.fd : Math.sin(g.t * 26 + o.ph) * .12; o.sq = q < up ? .85 : 1; if (a > 0 && !o.bz) { o.bz = 1; mgFx(g, o.x, g.GY, '#7ac8ff', 5, 90); } if (q < up && o.bz) { o.bz = 0; mgFx(g, o.x, g.GY, '#bfe6ff', 4, 70); } }
+  else if (o.pat === 'track') { const dx = o.x - g.PX, ty = clamp(g.y + 4, 6, 140);   /* v9.21 경완: 독침붕 — 멀리선 주인공 높이를 따라오다 170 안으로 들어오면 그 높이로 고정하고 쏜살같이 (그때 위아래로 피하기) */
+    if (!o.lk && dx < 170) { o.lk = 1; mgFx(g, o.x, g.GY - o.y - o.h / 2, '#ffe14a', 5, 90); } if (!o.lk) o.y += clamp(ty - o.y, -110 * dt, 110 * dt); else o.x -= 85 * dt; o.sq = o.lk ? 1 : 1 + Math.sin(g.t * 30) * .04; }
   else if (o.pat === 'roll') { o.x -= (55 + 6 * g.phase) * dt; o.rot = (o.x - o.x0) / Math.max(8, o.h * .5); o.y = Math.abs(Math.sin(o.rot * 1.6)) * 2.5; }   /* v9.15 경완: 쏘콘 — 몸을 데굴데굴 돌리며 셋이 줄지어 굴러온다 */
   else if (o.pat === 'swoop') { if (!o.wu && o.x < g.W - 16) o.wu = g.t; if (o.wu && g.t - o.wu < .45) o.sq = .86 + Math.abs(Math.sin((g.t - o.wu) * 30)) * .1; else if (o.wu && !o.ch) { o.ch = 1; o.sq = 1; }   /* v9.13 경완: 가디처럼 — 화면에 들어오면 0.45초 파닥이며 웅크리고, 내리꽂을 길을 점선으로 미리 */
     const k = clamp((300 - (o.x - g.PX)) / 260, 0, 1); o.y = o.by - (o.by - 6) * Math.sin(k * Math.PI); }   // 하늘에서 내리꽂혔다 다시 올라감
@@ -7330,7 +7332,9 @@ function mgRender(g, cv = $('#mgCv')) {
       q.disc(x1, GY, 9, 3, `rgba(255,90,58,${(.75 * al).toFixed(2)})`); q.disc(x0, GY, 6, 2, `rgba(255,255,255,${(.6 * al).toFixed(2)})`); }
     if (o.pat === 'swoop') { const al = clamp((W + 120 - o.x) / 90, 0, 1), hh = (o.h || 30) * .5, dx0 = o.x - g.PX;   /* v9.13 경완: 주뱃이 내리꽂을 길을 점선으로 미리 (발챙이처럼) */
       for (let i = 0; i <= 28; i++) { const k = i / 28, dx = 300 - 260 * k; if (dx >= dx0 || i % 2 === (Math.floor(t * 8) % 2)) continue; const px = g.PX + dx, py = GY - (o.by - (o.by - 6) * Math.sin(k * Math.PI)) - hh; q.disc(px, py, 3, 3, `rgba(42,30,40,${(.7 * al).toFixed(2)})`); q.disc(px, py, 2, 2, `rgba(255,255,255,${al.toFixed(2)})`); }
-      if (dx0 > 170) q.disc(g.PX + 170, GY, 9, 3, `rgba(255,90,58,${(.75 * al).toFixed(2)})`); } }
+      if (dx0 > 170) q.disc(g.PX + 170, GY, 9, 3, `rgba(255,90,58,${(.75 * al).toFixed(2)})`); }
+    if (o.pat === 'track' && !o.lk) { const al = clamp((W + 120 - o.x) / 90, 0, 1), yy = GY - o.y - (o.h || 30) * .5;   /* v9.21: 독침붕이 겨눈 높이를 점선으로 */
+      for (let px = Math.min(o.x, W) - 26; px > g.PX + 20; px -= 14) if (Math.floor((px - t * 60) / 14) % 2) { q.disc(px, yy, 3, 2, `rgba(42,30,40,${(.6 * al).toFixed(2)})`); q.disc(px, yy, 2, 1.5, `rgba(255,90,58,${(.9 * al).toFixed(2)})`); } } }
   if (g.fx.str > 0 && g.ab.k === 'beam' && g.bmGo && g.bmUp > 0 && g.bmUp < MG_BM_IN) { const B = mgBeamSeg(g), k = 1 - g.bmUp / MG_BM_IN; q.disc(B.x0 + 4, B.y0 + 4, 4 + 12 * k, 4 + 12 * k, 'rgba(180,138,255,.45)'); q.disc(B.x0 + 4, B.y0 + 4, 2 + 6 * k, 2 + 6 * k, '#ffffff'); }   /* v7.17 입에 빛이 모임 */
   if (g.fx.dig > 0 && g.digS >= MG_DIG_U + MG_DIG_D) { const X = g.PX + 2, wb = Math.sin(t * 34) * .06, rx = 24 * (1 + wb), ry = 11 * (1 - wb) + (g.digS < MG_DIG_IN ? (1 - (MG_DIG_IN - g.digS) / (MG_DIG_IN - MG_DIG_U - MG_DIG_D)) * 0 : 0);   /* v7.15 경완: 땅속 흙더미 그래픽 — 꿈틀대는 흙더미·금·돌멩이·흙먼지 꼬리 */
     for (let i = 0; i < 5; i++) { const a = ((t * 1.6 + i / 5) % 1); q.disc(X - 16 - a * 60, GY - 2 - a * 4, 7 * (1 - a) + 2, 4 * (1 - a) + 1, `rgba(200,160,110,${(.5 * (1 - a)).toFixed(2)})`); }
