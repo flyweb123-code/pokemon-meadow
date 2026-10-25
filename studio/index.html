@@ -551,7 +551,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.84';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.85';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -971,7 +971,7 @@ function alertBox(t, d) { let e = $('#stAlert'); if (!e) { e = document.createEl
   e.innerHTML = `<div class="card" role="alertdialog"><h2>${esc(t)}</h2><p class="small mute">${esc(d)}</p><button class="btn" data-ok>확인</button></div>`; e.hidden = false; }
 function rxMark(r) { try { A?.markInsts?.(r ? (A.insts?.() || []).filter(o => (rOf(o.key) || rOf(o.kind)) === r).map(o => ({ key: o.key, i: o.i })) : null); } catch (e) {} }   // v2.47 경완: 반응 카드를 누르면 그 소품이 시뮬레이터에 테두리로
 function rxClick(b) { if (!A?.reactSps) return; const key = b.dataset.rk + ':' + b.dataset.ri; if (spxKey === key) return closeSpx(); rxMark(b.dataset.rk);
-  const L = A.reactSps(b.dataset.rk, +b.dataset.ri); if (!L) { rxMark(null); toast('비 올 때 저절로 나오는 반응이에요'); return; } openSpx(key, `${RNAME[b.dataset.rk]} · ${b.textContent}`, L); rxDemo({ r: b.dataset.rk, i: +b.dataset.ri }); }
+  const L = A.reactSps(b.dataset.rk, +b.dataset.ri); if (!L) { rxMark(null); toast('비 올 때 저절로 나오는 반응이에요'); return; } rxDemo({ r: b.dataset.rk, i: +b.dataset.ri }); setTimeout(() => rxMark(null), 1500); }   /* v3.85 경완 '소품 반응 시뮬레이터에 적용 안 됨': 누르면 포켓몬 목록 창(시뮬레이터를 가림) 대신 바로 시연만 */
 $('#szPane').addEventListener('pointerdown', e => { const b = e.target.closest('.mc'); if (b && !b.disabled && e.button === 0) startPalDrag(e, +b.dataset.sp); });
 $('#spx').addEventListener('pointerdown', e => { const b = e.target.closest('.mc'); if (b && e.button === 0) startPalDrag(e, +b.dataset.sp); });
 function hourTxt(h) { const H = Math.floor(h), M = Math.round((h - H) * 60); const ph = h < 4 ? '한밤' : h < 5.5 ? '새벽' : h < 7 ? '해돋이' : h < 10 ? '아침' : h < 14 ? '한낮' : h < 16.5 ? '오후' : h < 18.6 ? '노을' : h < 20 ? '저녁' : '밤'; return `${String(H).padStart(2, '0')}:${String(M).padStart(2, '0')} ${ph}`; }
@@ -2156,6 +2156,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.85', '10월 25일', ['소품 반응 카드를 누르면 포켓몬 목록 창 없이 바로 시뮬레이터에서 시연 (목록 창이 시뮬레이터를 가렸음), 연못 카드도 시연']],
   ['3.84', '10월 25일', ['오른쪽 소품 반응의 타입 카드를 누르면 필드에서 그 타입에 맞는 포켓몬이 그 소품과 노는 모습을 보여줘요 (없으면 필드에 하나 풀어놓고, 필드가 꽉 차면 알림창)']],
   ['3.83', '10월 25일', ['시뮬레이터 게임의 맵 편집은 다시 시뮬레이터 안에만 남아요 (작업실 배치·배포엔 안 들어감), 작업실을 새로고침해도 시뮬레이터에서 옮긴 자리가 그대로 보여요']],
   ['3.82', '10월 25일', ['베타 토글이 켜져 있으면 미리보기 게임이 베타로 배포한 데이터를 불러와요: 베타로 배포한 필드 상점·가격 등이 작업실에 그대로 보이고, 그 위에서 이어서 고쳐요']],
