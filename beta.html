@@ -5191,8 +5191,8 @@ function drawBg(X) {
   // 작은 풀 덤불 (키 큰 풀)
   const tall = (x0, y0, n) => { for (let k = 0; k < n; k++) { const x = x0 + k * 3 + (R() - .5) * 2, y = y0 + (k % 2) * 2; px(x, y - 4, 1, 5, '#3f8a30'); px(x + 1, y - 6, 1, 7, '#58a83c'); px(x + 2, y - 3, 1, 4, '#3f8a30'); px(x + 1, y - 6, 1, 1, '#9ad66c'); } };
   // 그림 소품: 모닥불 자리·그루터기·바위
-  const shE = (cx, cy, rx, ry) => { for (let y = -ry; y <= ry; y++) { const hw = Math.round(rx * Math.sqrt(1 - (y / (ry + .5)) ** 2)); px(cx - hw, cy + y, hw * 2, 1, 'rgba(20,40,10,.22)'); } };   /* v9.68 경완: 모닥불·바위 밑에도 열매나무 같은 반투명 그림자 */
-  for (const F of ALLP('fire')) { const cv = lkCv(ART.campfire(), 'fire', F); if (F !== BG_SKIP) shE(F.x / 2, F.y / 2 + 8, Math.round(cv.width * .46), 2); putP('fire', F, cv, F.x / 2, F.y / 2 + 9); }
+  const shE = (cx, cy, rx, ry) => { for (let y = -ry; y <= ry; y++) { const hw = Math.round(rx * Math.sqrt(1 - (y / (ry + .5)) ** 2)); px(cx - hw, cy + y, hw * 2, 1, 'rgba(20,40,10,.22)'); } };   /* v9.68 경완: 바위 밑에도 열매나무 같은 반투명 그림자 (모닥불은 땅에 깔린 거라 없음) */
+  for (const F of ALLP('fire')) putP('fire', F, lkCv(ART.campfire(), 'fire', F), F.x / 2, F.y / 2 + 9);   /* v9.70 경완 '모닥불처럼 땅에 붙어있는 소품은 명암 없애줘' */
   for (const T of ALLP('stump')) putP('stump', T, lkCv(ART.stump(), 'stump', T), T.x / 2, T.y / 2);
   for (const r of LAYOUT.rocks) { const [x, y, w, h, n, s, lk] = r, L = lkRes(lk); if (natCover(x, y)) continue; const cv = L ? scaleCv(tintCv(ART.rock(w, h, s * 977, n), L), +L.s || 1) : lookCv(ART.rock(w, h, s * 977, n), 'rock'); shE(x / 2, y / 2 - 1, Math.round(cv.width * .5), 2); put(cv, x / 2, y / 2); }   // v9.08 경완: 바위는 버섯·풀처럼 자연 요소 — 맵 편집에서 못 고르고, 소품을 그 위에 놓으면 숨음
   // 버섯
@@ -5345,7 +5345,7 @@ const SC_GLASS = /가로등|석등|랜턴|램프|등불|등롱|호롱|전구/;
 const SC_LIT = /야광|빛나는|횃불|촛불|초$|랜턴|램프|등불|등롱|등잔|가로등|석등|연꽃 ?등|화로|모닥|불꽃|조명|전구|반딧불|등대|호롱/;
 const scLit = A => A?.glow != null ? !!+A.glow : SC_LIT.test(A?.n || '');   // 놓인 스칼렛 소품 하나의 크기 배율
 // v9.68 경완: 스칼렛·상점 소품(앞으로 만드는 것 포함)은 그림 맨 아래 두 줄의 칠해진 폭으로 그림자를 깐다 (기둥 하나면 작게, 두 다리면 다리 사이까지)
-function propSh(LV, A, x, y, W) { const P = A?.px; if (!P?.length) return; let l = 1e9, r = -1, n = 0; for (let i = P.length - 1; i >= 0 && n < 2; i--) { const R0 = P[i], a = R0.search(/[^.]/); if (a < 0) continue; n++; l = Math.min(l, a); r = Math.max(r, R0.length - 1 - [...R0].reverse().join('').search(/[^.]/)); } if (r < 0) return;
+function propSh(LV, A, x, y, W) { const P = A?.px; if (!P?.length) return; let l = 1e9, r = -1, n = 0; for (let i = P.length - 1; i >= 0 && n < 2; i--) { const R0 = P[i], a = R0.search(/[^.]/); if (a < 0) continue; n++; l = Math.min(l, a); r = Math.max(r, R0.length - 1 - [...R0].reverse().join('').search(/[^.]/)); } if (r < 0) return; { let top = 0; while (top < P.length && P[top].search(/[^.]/) < 0) top++; if ((P.length - top) < (r - l + 1) * .4) return; }   /* v9.70 경완: 모닥불처럼 땅에 깔린(키가 폭의 40% 안 되는) 소품은 그림자 없음 */
   const cols = P[0].length, k = W / cols, w = Math.max(12, (r - l + 3) * k), cx = x + ((l + r + 1) / 2 / cols - .5) * W, s = document.createElement('div'); s.className = 'psh'; s.CO = LV; s.style.cssText = `left:${cx.toFixed(1)}px;top:${y - 1}px;width:${Math.round(w)}px;height:${Math.round(clamp(w * .22, 5, 14))}px`; itemsEl.append(s); }
 function buildProps() {
   LAYOUT.puddles.length = 0;   // v9.42 경완 '웅덩이 소품 게임에서 아예 지워줘': 받은 배치에 있어도 놓지 않는다 (상점·가방·맵 편집·작업실 소품 목록에서도 뺌)
@@ -6299,7 +6299,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.69';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.70';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
