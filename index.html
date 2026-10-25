@@ -5371,6 +5371,8 @@ function campBgm(on) { try {
   setTimeout(() => { if (campMus.on || bgm.mg) return; bgm.fadeIn = 2; if (bgmOn && r.id && r.id !== 'intro') bgmPlay(r.id, r.pos); else bgmStart(); }, 1200); return false; } catch (e) { return false; } }
 const PROP_JOY = 3;
 function propReact(m, p) { propReactIn(m, p); m.propUntil = performance.now() + clamp(m.t || 3, 3, 10) * 1000; sceneNext = Math.max(sceneNext, m.propUntil + rnd(3000, 6000)); }
+// v8.97 경완 '본 게임에서도 작업실에서 상호작용 지우기': 작업실에서 지운 모닥불·연못·바위 반응(LAYOUT.rxOff, 작업실 반응 분류 이름)은 건너뛴다 (베타 9.66 과 같은 규칙)
+const rxOn = (k, l) => !LAYOUT.rxOff?.[k]?.includes?.(l);
 function propReactIn(m, p) {
   const flyer = winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover', small = isSmall(m) && ![1, 2, 3, 5, 10, 11].includes(SPm(m).sh) && (SPm(m).spd || 0) >= 50, at = (dx, dy) =>   /* v4.91 경완: 우르 같은 느린 털뭉치·공·물고기 모양은 횃대에 못 올라간다 */ { m.x = clamp(p.x + dx, XL + 20, XR - 20); m.y = clamp(p.y + dy, MIN_Y, MAX_Y); };
   faceTo(m, p.x); m.goal = null; m.joy = clamp((m.joy ?? 60) + PROP_JOY);   /* v4.42 경완: 맵 소품과 놀면 즐거움도 조금 오른다 */
@@ -5389,16 +5391,17 @@ function propReactIn(m, p) {
   if (p.k === 'fire') {
     let sd = m.x < p.x ? -1 : 1; const gap = 22 + Math.min(60, (m.w || 40) * .55); at(sd * gap, 8); if (inHud(m)) { sd = -sd; at(sd * gap, 8); } faceTo(m, p.x);   // v4.60 경완: 열매 버튼 밑 자리면 반대쪽에 앉는다 (밑으로 밀려 뛰어가던 것)   // v3.62 경완: 몸이 불에 겹치지 않게 몸 너비만큼 비켜 앉는다
     const FE = p.x2 ? fl2Els[p.i] : flameEl;
-    if (FE?.classList.contains('out')) { setState(m, 'idle', 4); emote(m, '…', '', 2.2, 'ash-sniff'); return log(`${J(m,'이/가')} 비에 꺼진 모닥불 재를 킁킁 맡는다.`, [m]); }
+    if (FE?.classList.contains('out')) { if (!rxOn('fire', '비 올 때')) return; setState(m, 'idle', 4); emote(m, '…', '', 2.2, 'ash-sniff'); return log(`${J(m,'이/가')} 비에 꺼진 모닥불 재를 킁킁 맡는다.`, [m]); }
     m.fireT = Date.now();   // v5.93 경완: 여러 마리를 모닥불에 끌어다 놓으면 다 같이 노래
     if (!p.x2) { const grp = S.mons.filter(o => o !== m && o.fireT && Date.now() - o.fireT < 90e3 && dist(o, FIRE) < 140 && S.mons.includes(o) && awake(o) && !o.held && !o.camp && !o.pin && !o.evolving && !o.washing && o.state !== 'special');
-      if (grp.length && !CAMP) { [m, ...grp].forEach(o => { o.fireT = 0; }); if (campSing(m, null, grp.slice(0, 5))) return; } }
+      if (grp.length && !CAMP && rxOn('fire', '여럿이')) { [m, ...grp].forEach(o => { o.fireT = 0; }); if (campSing(m, null, grp.slice(0, 5))) return; } }
     const ty = tyOf(m);
-    if (ty.includes(FIR)) { setState(m, 'idle', 6); anim(m, 'hop'); burst(m, 'flame', '✹', 3); if (FE) { FE.classList.add('big'); clearTimeout(FE.bigT); FE.bigT = setTimeout(() => FE.classList.remove('big'), 6000); }
+    if (ty.includes(FIR) && rxOn('fire', '불꽃')) { setState(m, 'idle', 6); anim(m, 'hop'); burst(m, 'flame', '✹', 3); if (FE) { FE.classList.add('big'); clearTimeout(FE.bigT); FE.bigT = setTimeout(() => FE.classList.remove('big'), 6000); }
       return log(pick([`${J(m,'이/가')} 모닥불에 불꽃을 불어 넣었다. 불이 활활 커졌다!`, `${J(m,'이/가')} 모닥불 앞에서 신이 나 꼬리를 흔든다. 불꽃이 더 커졌다.`]), [m]); }
-    if (ty.includes(WAT) || ty.includes(ICE)) { at(sd * (gap + 24), 14); setState(m, 'idle', 3); emote(m, '!!', '', 2.2, 'fire-back'); anim(m, 'shake');
+    if ((ty.includes(WAT) || ty.includes(ICE)) && rxOn('fire', '물·얼음') && rxOn('fire', '얼음')) { at(sd * (gap + 24), 14); setState(m, 'idle', 3); emote(m, '!!', '', 2.2, 'fire-back'); anim(m, 'shake');
       return log(ty.includes(ICE) ? `${J(m,'은/는')} 모닥불이 너무 뜨거워 녹을 것 같다며 물러났다.` : `${J(m,'이/가')} 모닥불에 깜짝 놀라 뒤로 물러났다.`, [m]); }
-    if (!p.x2 && campSing(m)) return;   /* v4.44 경완: 가끔 다 같이 둘러앉아 노래 */
+    if (!p.x2 && rxOn('fire', '여럿이') && campSing(m)) return;   /* v4.44 경완: 가끔 다 같이 둘러앉아 노래 */
+    if (!rxOn('fire', '그 밖')) return;
     const dz = isNight() && !T(m).noct;   /* v8.05 경완: 야행성(쌔비냥 등)은 밤에 불을 쬐도 졸지 않는다 */
     setState(m, 'idle', rnd(8, 12)); emote(m, dz ? 'Zz' : '♪', '', 2.2, 'fire-warm');
     if (dz && Math.random() < .5) { setTimeout(() => { if (S.mons.includes(m) && m.state === 'idle' && !m.goal) { moveTo(m, bedSafe(m, { x: m.x, y: m.y }), { kind: 'bed' }, .5); log(`${J(m,'이/가')} 모닥불을 쬐다 꾸벅꾸벅 졸려서 조금 떨어진 곳에 누웠다.`, [m]); } }, 2500); return log(`${J(m,'이/가')} 모닥불 앞에 앉아 불을 쬔다. 따뜻해 보인다.`, [m]); }
@@ -5422,7 +5425,8 @@ function propReactIn(m, p) {
   if (p.k === 'stump') { at(0, 10); propSit(m, 14); faceTo(m, nearPond(p.x, p.y).x); onShadow(m);   /* v4.26 경완: 그루터기에 앉으면 호수 쪽을 바라본다 */ setState(m, 'idle', rnd(10, 16)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play'); return log(`${J(m,'이/가')} 그루터기 위에 올라앉아 쉰다.`, [m]); }
   if (p.k === 'rock') {
     const ty = tyOf(m);
-    if (ty.includes(ROC) || ty.includes(GRO) || ty.includes(FIG)) { at(0, p.ry - 4); propSit(m, 10); onShadow(m); setState(m, 'idle', 8); anim(m, 'hop'); emote(m, '!', '', 2.2, 'rock-pose'); return log(`${J(m,'이/가')} 바위 위에 올라가 늠름하게 포즈를 잡는다.`, [m]); }
+    if ((ty.includes(ROC) || ty.includes(GRO) || ty.includes(FIG)) && rxOn('rock', '바위·땅·격투')) { at(0, p.ry - 4); propSit(m, 10); onShadow(m); setState(m, 'idle', 8); anim(m, 'hop'); emote(m, '!', '', 2.2, 'rock-pose'); return log(`${J(m,'이/가')} 바위 위에 올라가 늠름하게 포즈를 잡는다.`, [m]); }
+    if (!rxOn('rock', '그 밖')) return;
     { const sd = m.x < p.x ? -1 : 1, dry = ([dx, dy]) => pondVal(clamp(p.x + dx, XL + 20, XR - 20), clamp(p.y + dy, MIN_Y, MAX_Y)) > 1.2;   /* v5.36 경완: 호숫가 바위에 기대면 몸이 물에 잠기던 것 → 물 밖인 쪽(반대편·아래·위)에 기댄다 */
       const c = [[sd * 26, 6], [-sd * 26, 6], [0, 18], [0, -12]].find(dry); at(...(c || [sd * 26, 6])); if (!c && pondVal(m.x, m.y) <= 1.2) projectOut(m, 1.2); }
     setState(m, 'idle', 6); emote(m, '…', '', 2.2, 'rock-lean'); return log(`${J(m,'이/가')} 바위에 기대어 쉰다.`, [m]);
@@ -5433,7 +5437,8 @@ function propReactIn(m, p) {
     anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play'); return log(pick([`${J(m,'이/가')} 물웅덩이에서 첨벙첨벙 뛰논다.`, `${J(m,'이/가')} 웅덩이 물을 튀기며 신이 났다.`]), [m]);
   }
   if (p.k === 'pond') {
-    if (T(m).mv === 'swim' || T(m).mv === 'amph' || tyOf(m).includes(WAT)) { settle(m); setState(m, 'idle', 4); splashAt(m); emote(m, '♪', '', 2.2, 'prop-play'); return log(`${J(m,'이/가')} 연못에 첨벙 들어가 헤엄친다.`, [m]); }
+    if ((T(m).mv === 'swim' || T(m).mv === 'amph' || tyOf(m).includes(WAT)) && rxOn('pond', '물·헤엄')) { settle(m); setState(m, 'idle', 4); splashAt(m); emote(m, '♪', '', 2.2, 'prop-play'); return log(`${J(m,'이/가')} 연못에 첨벙 들어가 헤엄친다.`, [m]); }
+    if (!rxOn('pond', '그 밖')) return;
     settle(m); faceTo(m, nearPond(m.x, m.y).x); setState(m, 'idle', 5); emote(m, '♪', '', 2.2, 'prop-play'); return log(pick([`${J(m,'이/가')} 연못가에서 물을 홀짝 마신다.`, `${J(m,'이/가')} 연못에 비친 자기 얼굴을 들여다본다.`]), [m]);
   }
 }
@@ -10418,7 +10423,7 @@ function setLayoutIn(L) {
   for (const k of ['path', 'bushes', 'puddles', 'rocks', 'mush', 'flowers']) if (Array.isArray(L[k])) LAYOUT[k].splice(0, LAYOUT[k].length, ...JSON.parse(JSON.stringify(L[k])));
   for (const k of Object.values(MK)) LAYOUT[k] = Array.isArray(L[k]) ? JSON.parse(JSON.stringify(L[k])) : [];
   LAYOUT.look = L.look && typeof L.look === 'object' ? JSON.parse(JSON.stringify(L.look)) : {};
-  if (Array.isArray(L.hide) && L.hide.length) LAYOUT.hide = [...L.hide]; else delete LAYOUT.hide;
+  if (Array.isArray(L.hide) && L.hide.length) LAYOUT.hide = [...L.hide]; else delete LAYOUT.hide; if (L.rxOff && typeof L.rxOff === 'object' && Object.keys(L.rxOff).length) LAYOUT.rxOff = JSON.parse(JSON.stringify(L.rxOff)); else delete LAYOUT.rxOff;
   if (L.nat) LAYOUT.nat = 1; else delete LAYOUT.nat;   // v8.77: 놓인 소품 밑에 자연 요소를 한 번 깔았음   // v3.70: 작업실에서 지운 소품 종류 (목록에서 숨김)
   FLOWERS.splice(0, FLOWERS.length, ...ALLP('bed').flatMap(bedFlowers), ...LAYOUT.flowers);
   uiIn(L);
@@ -10964,7 +10969,7 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
   const NAME = { pond: '연못', fire: '모닥불', bed: '꽃밭', tree: '열매나무', perch: '횃대', stump: '그루터기', ponds: '연못', fires: '모닥불', beds: '꽃밭', trees: '열매나무', perches: '횃대', stumps: '그루터기', bushes: '덤불', puddles: '웅덩이(비 올 때)', rocks: '바위', mush: '버섯', path: '길', flowers: '꽃·풀', sc: '스칼렛 소품' };
   const FNAME = { daisy: '데이지', pink: '분홍꽃', tulip: '튤립', bell: '파랑꽃', sun: '해바라기', grass: '풀', tall: '키 큰 풀', reed: '갈대', cat: '부들' };
   const BAKED = new Set(['pond', 'fire', 'bed', 'stump', 'rocks', 'mush', 'path', 'kinds', 'ponds', 'fires', 'beds', 'stumps']);
-  function setLayout(L) { for (const k of KEYS_OBJ) if (L[k]) { delete LAYOUT[k].lk; Object.assign(LAYOUT[k], L[k]); } LAYOUT.kinds = JSON.parse(JSON.stringify(L.kinds || {})); LAYOUT.scArt = JSON.parse(JSON.stringify(L.scArt || {})); LAYOUT.sc = JSON.parse(JSON.stringify(L.sc || [])); for (const k of KEYS_ARR) if (L[k]) LAYOUT[k].splice(0, LAYOUT[k].length, ...JSON.parse(JSON.stringify(L[k]))); for (const k of Object.values(MK)) LAYOUT[k] = Array.isArray(L[k]) ? JSON.parse(JSON.stringify(L[k])) : []; LAYOUT.look = JSON.parse(JSON.stringify(L.look || {})); if (Array.isArray(L.hide) && L.hide.length) LAYOUT.hide = [...L.hide]; else delete LAYOUT.hide; uiIn(L); }
+  function setLayout(L) { for (const k of KEYS_OBJ) if (L[k]) { delete LAYOUT[k].lk; Object.assign(LAYOUT[k], L[k]); } LAYOUT.kinds = JSON.parse(JSON.stringify(L.kinds || {})); LAYOUT.scArt = JSON.parse(JSON.stringify(L.scArt || {})); LAYOUT.sc = JSON.parse(JSON.stringify(L.sc || [])); for (const k of KEYS_ARR) if (L[k]) LAYOUT[k].splice(0, LAYOUT[k].length, ...JSON.parse(JSON.stringify(L[k]))); for (const k of Object.values(MK)) LAYOUT[k] = Array.isArray(L[k]) ? JSON.parse(JSON.stringify(L[k])) : []; LAYOUT.look = JSON.parse(JSON.stringify(L.look || {})); if (Array.isArray(L.hide) && L.hide.length) LAYOUT.hide = [...L.hide]; else delete LAYOUT.hide; if (L.rxOff && typeof L.rxOff === 'object' && Object.keys(L.rxOff).length) LAYOUT.rxOff = JSON.parse(JSON.stringify(L.rxOff)); else delete LAYOUT.rxOff; uiIn(L); }
   let bgQ = false, propQ = false;
   function rebuild(bg) {
     if (bg) { if (!bgQ) { bgQ = true; requestAnimationFrame(() => { bgQ = false; drawBg(); document.querySelectorAll('.glint').forEach(g => g.remove()); addGlints(); }); } }
@@ -11310,7 +11315,7 @@ api.szLoad = async L => { for (const o of L || []) { if (!SZB.on) return; const 
   setInterval(() => { stFit(); if (SZB.on && !SZB.drag) { const k = szMons().map(m => (m.w | 0) + 'x' + (m.h | 0)).join(); if (k !== SZB.wk) { SZB.wk = k; SZB.rows(); } } }, 500);   /* v4.61 경완: 그림이 늦게 불려 크기가 바뀌면 격자 다시 맞추기 */
   api.removeMon = uid => { const m = monOf(uid); if (!m) return; removeMon(m, true); save(); };
   // v3.63 작업실: 소품 반응 분류(작업실 REACT 줄 순서)에 드는 포켓몬 번호. 먼저 맞는 줄이 이긴다
-  const RX = { tree: [() => 1], perch: [m => winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover' || isSmall(m), () => 1], fire: [m => tyOf(m).includes(FIR), m => tyOf(m).includes(WAT) || tyOf(m).includes(ICE), () => 1, null],
+  const RX = { tree: [() => 1], perch: [m => winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover' || isSmall(m), () => 1], fire: [m => tyOf(m).includes(FIR), m => tyOf(m).includes(WAT) || tyOf(m).includes(ICE), () => 1, null, null],
     bed: [m => tyOf(m).includes(BUG), m => tyOf(m).includes(GRA) || tyOf(m).includes(FAI), m => (SPD(m.sp).w || 0) > 1000, () => 1], bush: [() => 1], stump: [() => 1],
     rock: [m => tyOf(m).includes(ROC) || tyOf(m).includes(GRO) || tyOf(m).includes(FIG), () => 1], puddle: [m => tyOf(m).includes(FIR), () => 1], pond: [m => T(m).mv === 'swim' || T(m).mv === 'amph' || tyOf(m).includes(WAT), () => 1] };
   api.reactSps = (k, i) => { const F = RX[k]; if (!F || !F[i]) return null; const out = [];
