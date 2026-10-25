@@ -5576,7 +5576,10 @@ const PROP_JOY = 3;
 function propReact(m, p, drag) { propReactIn(m, p, drag); m.propUntil = performance.now() + clamp(m.t || 3, 3, 24) * 1000; sceneNext = Math.max(sceneNext, m.propUntil + rnd(3000, 6000)); }
 // 스칼렛 소품 상호작용의 '누가(w)'에 이 포켓몬이 맞는지 (v9.49: 작업실 타입 카드 시연도 같이 씀)
 function scFit(m, w) { const flyer = winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover', small = isSmall(m) && ![1, 2, 3, 5, 10, 11].includes(SPm(m).sh) && (SPm(m).spd || 0) >= 50, ty = tyOf(m).map(t => TYPE_KO[t]), mv = T(m).mv;
-  return ty.some(t => t && w.includes(t)) || (flyer && /나는|날개|새/.test(w)) || (mv === 'swim' && /헤엄|물고기/.test(w)) || (small && /작은/.test(w)) || (!small && /큰/.test(w)); }
+  /* v9.51 경완 '나는 벌레 타입인데 벌레 아닌 포켓몬도 나옴': '/' 로 나뉜 것 중 하나만 맞으면 되고, 한 덩어리 안에서는 적힌 조건(타입·나는·작은·큰·헤엄)을 모두 만족해야 */
+  return w.split('/').some(c => { const tys = TYPE_KO.filter(t => t && c.includes(t)), q = [];
+    if (/나는|날개|새/.test(c)) q.push(flyer); if (/헤엄|물고기/.test(c)) q.push(mv === 'swim'); if (/작은/.test(c)) q.push(isSmall(m)); if (/큰/.test(c)) q.push(!isSmall(m) && (SPm(m).h || 0) >= 10);
+    return (!tys.length || ty.some(t => tys.includes(t))) && q.every(Boolean); }); }
 function propReactIn(m, p, drag) {
   const flyer = winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover', small = isSmall(m) && ![1, 2, 3, 5, 10, 11].includes(SPm(m).sh) && (SPm(m).spd || 0) >= 50, at = (dx, dy) =>   /* v4.91 경완: 우르 같은 느린 털뭉치·공·물고기 모양은 횃대에 못 올라간다 */ { m.x = clamp(p.x + dx, XL + 20, XR - 20); m.y = clamp(p.y + dy, MIN_Y, MAX_Y); };
   faceTo(m, p.x); m.goal = null; m.joy = clamp((m.joy ?? 60) + PROP_JOY);   /* v4.42 경완: 맵 소품과 놀면 즐거움도 조금 오른다 */
@@ -6249,7 +6252,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.50';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.51';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
