@@ -550,7 +550,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.77';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.78';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -927,11 +927,13 @@ const rxHtml = r => `<section class="rg">${REACT[r].map(([a, b], i) => `<div><bu
 function zReact(z, k, scId) { if (scId || k?.startsWith?.('sc:')) { const id = scId || k.slice(3), L = scaItem(id)?.acts || (() => { try { return A.layout().scArt?.[id]?.acts; } catch (e) { return null; } })() || [];   // v3.65 경완: 추가한 소품 상세 카드에도 그 소품의 상호작용
     if (L.length) z.insertAdjacentHTML('beforeend', `<div class="zre"><h4>소품 반응</h4><div class="react"><section class="rg">${L.map(a => `<div><span class="chip" style="white-space:normal;text-align:center;line-height:1.25">${esc(a.w)}</span><span>${esc(a.a)}</span></div>`).join('')}</section></div></div>`); return; }
   const r = rOf(k); if (!r) return; z.insertAdjacentHTML('beforeend', `<div class="zre"><h4>소품 반응 · ${RNAME[r]}</h4><div class="react">${rxHtml(r)}</div></div>`); }
-const onMap = () => { const S = new Set(); try { for (const o of A?.insts?.() || []) { const r = rOf(o.key) || rOf(o.kind); if (r) S.add(r); } } catch (e) {} return S; };
+const onMap = () => { const S = new Set(); try { for (const o of A?.insts?.() || []) { const r = o.key === 'sc' ? null : rOf(o.key) || rOf(o.kind); if (r) S.add(r); } } catch (e) {} return S; };
+// v3.78 경완: 맵에 놓인 스칼렛·추가 소품의 상호작용도 오른쪽 소품 반응에 (맵에서 빠지면 사라짐)
+const scOnMap = () => { const M = new Map(); try { for (const o of A?.insts?.() || []) if (o.key === 'sc' && o.scId && !M.has(o.scId)) { const L = scaItem(o.scId)?.acts || A.layout().scArt?.[o.scId]?.acts || []; if (L.length) M.set(o.scId, { n: o.name, L }); } } catch (e) {} return M; };
 function renderReact(k) {
   $('#rkHint').textContent = k ? '· ' + RNAME[k] : '· 지금 맵에 있는 소품';
   const M = onMap(), list = k ? [k] : Object.keys(REACT).filter(r => !A?.insts || M.has(r));
-  $('#react').innerHTML = list.map(r => `<section class="rg">${k ? '' : `<b>${RNAME[r]}</b>`}${REACT[r].map(([a, b], i) => `<div><button class="chip rx${spxKey === r + ':' + i ? ' on' : ''}" data-rk="${r}" data-ri="${i}">${a}</button><span>${b}</span></div>`).join('')}</section>`).join('');   // v2.24 경완: 소품마다 칸으로 묶어 줄 맞춤
+  $('#react').innerHTML = list.map(r => `<section class="rg">${k ? '' : `<b>${RNAME[r]}</b>`}${REACT[r].map(([a, b], i) => `<div><button class="chip rx${spxKey === r + ':' + i ? ' on' : ''}" data-rk="${r}" data-ri="${i}">${a}</button><span>${b}</span></div>`).join('')}</section>`).join('') + (k ? '' : [...scOnMap().values()].map(o => `<section class="rg"><b>${esc(o.n)}</b>${o.L.map(a => `<div><span class="chip" style="white-space:normal;text-align:center;line-height:1.25">${esc(a.w)}</span><span>${esc(a.a)}</span></div>`).join('')}</section>`).join(''));   // v2.24 경완: 소품마다 칸으로 묶어 줄 맞춤
 }
 // v1.5 경완: 반응 분류를 누르면 왼쪽에 그 분류 포켓몬 목록. 끌어서 맵에 놓는다. 한 번 더 누르면 닫힌다
 let spxKey = null, spxL = [], spxQ = '', spxGen = 0, spxSY = null;   // v2.60 경완: 세대 탭 (0 = 전체)
@@ -2142,6 +2144,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.78', '10월 25일', ['오른쪽 소품 반응: 맵에 놓인 추가 소품(스칼렛 소품)의 상호작용도 나오고, 맵 편집이나 시뮬레이터 안 맵 편집으로 소품을 넣고 빼면 목록이 바로 바뀌어요 (베타 v9.41)', '시뮬레이터 안 게임 골드는 ∞ (작업실 미리보기에선 줄지 않아요, 베타 v9.41)', '시뮬레이터 안 게임의 맵 편집으로 옮기거나 넣고 뺀 건 시뮬레이터에만 남고 작업본·배포엔 안 들어가요 (베타 v9.41)']],
   ['3.77', '10월 25일', ['시뮬레이터 게임 설정의 \'베타 판 쓰기\'를 켜고 끄면 작업실 미리보기가 베타 게임과 본 게임으로 바뀌어요 (버전 화면의 베타 게임으로 보기와 같아요)']],
   ['3.76', '10월 24일', ['스칼렛 소품의 예시 동작과 움직이는 부분도 게임에 보내요 · 작업실을 열면 맵 소품에 반영되니 베타로 배포하면 필드에서 예시처럼 움직여요 (베타 v9.29)']],
   ['3.75', '10월 24일', ['위쪽 \'베타로 배포하기\': 저장한 것을 베타 게임에만 올려요 (진짜 게임·데이터 번호는 그대로, 작업본도 남아요, 베타 v9.12)']],
@@ -3618,7 +3621,7 @@ const RENDER = { neu: renderNeu, sca: renderSca, ver: renderVer, bub: renderBub,
 // ---------- 게임과 연결 ----------
 function hook() {
   const w = $('#game').contentWindow; A = w.__studio; if (!A || !A.ready) { A = null; return; }
-  $('#gLoad').hidden = true;
+  $('#gLoad').hidden = true; A.onProps = () => { if (!$('#propPane') || $('#propPane').hidden) renderReact(null); };
   try { const sw = w.document.querySelector('#betaSw'); if (sw) sw.onclick = () => { store.set('st-beta', BETA ? '' : '1'); location.reload(); }; } catch (e) {}   // v3.77 경완 '작업실 시뮬레이터에 베타판 쓰기가 안 됨': 게임 설정의 베타 판 쓰기 = 작업실 '베타 게임으로 보기'와 같게 (작업본은 남음)
   if (!w.document.__unmk) { w.document.__unmk = 1; w.addEventListener('pointerdown', e => { if (!e.target.closest?.('.mon')) unmarkMon(); }, true); w.addEventListener('keydown', e => szKey(e)); }   // v2.1 경완: 맵 빈 곳을 누르면 포켓몬 선택(테두리) 풀기
   if (!ORIG) {
