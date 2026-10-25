@@ -550,7 +550,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.81';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.82';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -654,6 +654,7 @@ async function deployBeta(data, tries = 2) {
   const cm = await gh('/git/commits', { method: 'POST', body: JSON.stringify({ message: `베타 데이터 ${bver} (작업실 베타 배포, 데이터 v${LIVE.ver || 0} 위)`, tree: tree.sha, parents: [ref.object.sha] }) });
   try { await gh('/git/refs/heads/main', { method: 'PATCH', body: JSON.stringify({ sha: cm.sha }) }); }
   catch (e) { if (e.status === 422 && tries > 1) return deployBeta(data, tries - 1); throw e; }
+  try { $('#game').contentWindow.localStorage.setItem('pk-cfg-beta', JSON.stringify(beta)); } catch (e) {}   // v3.82: 베타 미리보기는 바로 새 베타 데이터로 (작업본을 비워도 바뀐 값이 그대로 보이게)
   return bver; }
 async function betaDeploy() { const tok = store.get('st-gh-token'); if (!changes().length) return;
   if (!CANDEPLOY || !tok) { go('work'); toast(CANDEPLOY ? '먼저 아래에서 GitHub 를 연결해 주세요' : '이 미리보기에서는 배포할 수 없어요'); return; }
@@ -2148,6 +2149,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.82', '10월 25일', ['베타 토글이 켜져 있으면 미리보기 게임이 베타로 배포한 데이터를 불러와요: 베타로 배포한 필드 상점·가격 등이 작업실에 그대로 보이고, 그 위에서 이어서 고쳐요']],
   ['3.81', '10월 25일', ['예전에 시뮬레이터 게임의 맵 편집으로 옮겨 두었던 자리·넣은 소품도 작업실을 열면 작업실 맵 배치로 들어가요 (되돌리기 가능)']],
   ['3.80', '10월 25일', ['베타로 배포하면 올린 바뀐 곳이 배포하기 메뉴에서 사라져요 (저장 안 한 곳만 남음)', '시뮬레이터 게임의 맵 편집에서 옮기거나 넣고 뺀 소품이 저장을 누르면 작업실 맵 배치에 바로 들어가요 (되돌리기 가능)']],
   ['3.79', '10월 25일', ['위쪽 \'베타로 배포하기\' 버튼을 없애고 배포하기 하나로: 옆 베타 토글을 켜면 미리보기가 베타 게임이 되고 배포하기가 베타로 배포하기로 바뀌어 베타에만 올라가요, 끄면 본 게임으로 배포']],
