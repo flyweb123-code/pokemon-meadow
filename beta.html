@@ -3357,6 +3357,7 @@ let sceneNext = 0;
 // v9.35 경완 '상호작용 하나 끝날 때까지 다음 상호작용은 안 일어나게': 쫓기·놀래키기·치료·좋아하는 포켓몬 찾아가기도 한 장면으로 센다
 const sceneOn = (...ex) => { const now = performance.now(); return S.mons.some(o => !ex.includes(o) && ((o.propUntil || 0) > now || (!o.hidden && ((o.state === 'interact' && o.partner?.partner === o && o.partner.state === 'interact') || (o.state === 'move' && ['meet', 'prop', 'treePerch', 'like', 'chase', 'scare', 'heal'].includes(o.goal?.kind)))))); };   // v6.10 경완: 맵 소품과 노는 것도 한 번에 하나 (소품은 최대 10초까지만 차례를 잡는다)   // 서로 어울리는 중이거나 만나러 가는 중인 쌍만 센다 (어긋난 상태는 막지 않게)
 const sceneFree = m => performance.now() >= sceneNext && !sceneOn(m);
+const propBusy = (o, now = performance.now()) => (o.propUntil || 0) > now || o.scp || (o.state === 'move' && o.goal?.kind === 'prop'), propFree = m => S.mons.filter(o => o !== m && propBusy(o)).length < 3;   // v9.56: 소품 놀이는 동시에 셋까지 (같은 소품은 한 마리)
 const sceneDone = () => { sceneNext = performance.now() + rnd(3000, 6000); };
 function pickPartner(m) {
   const c = S.mons.filter(o => canMeet(m, o));
@@ -3391,7 +3392,7 @@ function think(m) {
   if (t.mv !== 'swim' && !(m.pushCd > 0) && Math.random() < .7) {   /* v9.52 경완 '격투 타입 밀어주기는 누가 타고 있고 근처에 있을 때도': 누가 소품에 타고 있으면 (한 번에 하나 규칙과 상관없이) 근처의 맞는 포켓몬이 와서 밀어 준다 */
     const rd = S.mons.find(o => o !== m && o.scp?.ride && LAYOUT.sc.includes(o.scp.r) && Math.hypot(m.x - o.scp.G.cx, m.y - o.scp.G.gy) < 260 && !S.mons.some(k => k !== o && k.scp?.r === o.scp.r && k.scp.M.push) && !S.mons.some(k => k.goal?.kind === 'scpush' && k.goal.r === o.scp.r)), A = rd && LAYOUT.scArt[rd.scp.r[0]], pa = A && (A.acts || []).find(a => scSpec(a, A).M.push && scFit(m, a.w || ''));
     if (pa) { m.pushCd = rnd(40, 80); const G = rd.scp.G; return moveTo(m, { x: clamp(G.cx + (m.x < G.cx ? -1 : 1) * (G.W / 2 + (m.w || 40) * .4), XL + 20, XR - 20), y: Math.min(MAX_Y, G.gy + 2) }, { kind: 'scpush', r: rd.scp.r, a: pa, rd }); } }
-  if (t.mv !== 'swim' && !(m.propCd > 0) && sceneFree(m) && Math.random() < .4) { m.propCd = rnd(30, 80);   /* v9.55 경완 '포켓몬끼리 상호작용보다 소품 놀이 우선': 좋아하는 포켓몬 찾기·만나기보다 먼저 고른다 · v9.53 경완 '소품 상호작용 빈도 더 높여야': .22 → .4, 쉬는 틈 60~150 → 30~80초 */   /* v9.37 경완 '소품 상호작용 빈도·시간 늘리기': .12 → .22, 쉬는 틈 120~300 → 60~150초 */ const L = propSpots().filter(q => q.k !== 'tree' && q.k !== 'puddle'), rideP = q => q.k === 'sc' && (LAYOUT.scArt[LAYOUT.sc[q.i]?.[0]]?.acts || []).some(a => /올라타|들어가 앉|구멍/.test(a.a || '')), R = L.filter(rideP), q = L.length && (R.length && Math.random() < .45 ? pick(R) : pick(L));   /* v9.54: 탈 수 있는 소품(그네·스프링)을 더 자주 고른다 */ if (q) return moveTo(m, { x: q.x + (m.x < q.x ? -1 : 1) * q.rx * .6, y: q.y + q.ry * .5 }, { kind: 'prop', p: q }); }
+  if (t.mv !== 'swim' && !(m.propCd > 0) && propFree(m) && Math.random() < .4) {   /* v9.56 경완 '스프링 타는 게 아예 없음': 포켓몬끼리 장면이 거의 늘 진행 중이라 sceneFree 가 95% 막았다 → 소품 놀이는 다른 소품 놀이만 없으면 시작 */ m.propCd = rnd(30, 80);   /* v9.55 경완 '포켓몬끼리 상호작용보다 소품 놀이 우선': 좋아하는 포켓몬 찾기·만나기보다 먼저 고른다 · v9.53 경완 '소품 상호작용 빈도 더 높여야': .22 → .4, 쉬는 틈 60~150 → 30~80초 */   /* v9.37 경완 '소품 상호작용 빈도·시간 늘리기': .12 → .22, 쉬는 틈 120~300 → 60~150초 */ const used = q => S.mons.some(o => o !== m && propBusy(o) && (o.goal?.kind === 'prop' ? o.goal.p.k === q.k && o.goal.p.i === q.i : o.scp && q.k === 'sc' && o.scp.r === LAYOUT.sc[q.i])), L = propSpots().filter(q => q.k !== 'tree' && q.k !== 'puddle' && !used(q)), rideP = q => q.k === 'sc' && (LAYOUT.scArt[LAYOUT.sc[q.i]?.[0]]?.acts || []).some(a => /올라타|들어가 앉|구멍/.test(a.a || '')), R = L.filter(rideP), q = L.length && (R.length && Math.random() < .45 ? pick(R) : pick(L));   /* v9.54: 탈 수 있는 소품(그네·스프링)을 더 자주 고른다 */ if (q) return moveTo(m, { x: q.x + (m.x < q.x ? -1 : 1) * q.rx * .6, y: q.y + q.ry * .5 }, { kind: 'prop', p: q }); }
   { const lv = likeOf(m) && relWho(likeOf(m))?.m;
     if (lv && lv !== m && !lv.hidden && awake(lv) && lv.state !== 'interact' && !(m.likeCd > 0) && sceneFree(m) && t.mv !== 'swim' && Math.random() < .3) {
       m.likeCd = rnd(70, 160); const side = m.x < lv.x ? -1 : 1;
@@ -6266,7 +6267,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.55';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.56';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
