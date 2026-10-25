@@ -5324,6 +5324,7 @@ const SC_GLASS = /가로등|석등|랜턴|램프|등불|등롱|호롱|전구/;
 const SC_LIT = /야광|빛나는|횃불|촛불|초$|랜턴|램프|등불|등롱|등잔|가로등|석등|연꽃 ?등|화로|모닥|불꽃|조명|전구|반딧불|등대|호롱/;
 const scLit = A => A?.glow != null ? !!+A.glow : SC_LIT.test(A?.n || '');   // 놓인 스칼렛 소품 하나의 크기 배율
 function buildProps() {
+  LAYOUT.puddles.length = 0;   // v9.42 경완 '웅덩이 소품 게임에서 아예 지워줘': 받은 배치에 있어도 놓지 않는다 (상점·가방·맵 편집·작업실 소품 목록에서도 뺌)
   makeSprites(); clearTimeout(buildProps.st); buildProps.st = setTimeout(() => { try { window.__studio?.onProps?.(); } catch (e) {} }, 120);   // v9.41 경완: 작업실이 맵에 있는 소품 반응 목록을 바로 다시 그리게 (게임 맵 편집으로 넣고 뺄 때도)
   const add = (cls, at, src, w, h, z) => { const e = document.createElement('div'); e.className = 'prop ' + cls; e.style.cssText = W2(src, w, h) + `;left:${at.x}px;top:${at.y}px;z-index:${z ?? Math.round(at.y)}`; itemsEl.append(e); return e; };
   const zT = LS('tree'), zP = LS('perch'), zB = LS('bush');
@@ -6242,7 +6243,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.41';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.42';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6419,7 +6420,7 @@ function fpCv(b, L) { const cv = b === 'tree' ? ART.tree() : b === 'perch' ? ART
 const FP_DESC = {"tree": "가지마다 달콤한 열매가 주렁주렁. 배고픈 포켓몬들이 냄새를 맡고 모여들어요.", "perch": "새 포켓몬이 날개를 접고 쉬어 가는 나무 횃대. 높은 곳을 좋아하는 아이들이 즐겨 앉아요.", "fire": "밤이면 탁탁 타오르는 모닥불. 둘러앉아 불을 쬐다 보면 노래가 시작되기도 해요.", "bed": "알록달록 꽃이 핀 꽃밭. 꽃향기에 이끌린 포켓몬들이 꽃 사이에서 쉬어 가요.", "stump": "오래된 나무가 남긴 그루터기. 올라앉아 쉬거나 기대어 꾸벅꾸벅 졸기 딱 좋아요.", "pond": "맑은 물이 고인 연못. 물 포켓몬은 헤엄치고, 다른 포켓몬은 물가에서 목을 축여요.", "bush": "잎이 무성한 덤불. 겁 많은 포켓몬이 쏙 숨어 고개만 내밀곤 해요.", "puddle": "비 온 뒤 생긴 웅덩이. 첨벙첨벙 뛰어들며 노는 포켓몬이 많아요.", "stone-well": "빨간 지붕을 얹은 돌 우물. 가장자리에서 물을 들여다보거나 두레박 줄에 매달려 놀아요.", "wheelbarrow": "흙이 담긴 외바퀴 수레. 통 안에서 낮잠을 자거나 손잡이를 밀며 힘자랑을 해요.", "bird-bath": "맑은 물을 담은 돌 물받이. 새 포켓몬이 날아와 물을 마시고 날개를 털어요.", "birdhouse-post": "기둥 위의 작은 새집. 입구 횃대에 앉았다가 안으로 쏙 들어가요.", "garden-bench": "정원의 나무 벤치. 위에서 배를 깔고 자거나 밑 그늘에 숨어 쉬어요.", "country-mailbox": "둥근 지붕의 시골 우체통. 입구로 들어가 고개만 내밀기도 해요.", "copper-watering-can": "반짝이는 구리 물뿌리개. 물 포켓몬이 꽃밭에 물을 뿌려 주기도 해요.", "beehive-box": "달콤한 꿀이 가득한 나무 벌통. 꿀을 좋아하는 포켓몬이 입구를 기웃거려요.", "signpost": "갈 곳을 알려 주는 갈림길 표지판. 화살표를 따라 빙글 돌며 길을 정해요.", "rain-barrel": "빗물을 받아 두는 나무 통. 통 속에 몸을 담그거나 꼭지 물방울을 받아 마셔요.", "tire-swing": "나무 틀에 매단 타이어 그네. 구멍에 쏙 들어가 앉아 흔들흔들 놀아요.", "wood-slide": "사다리가 달린 나무 미끄럼틀. 쭉 미끄러져 내려오는 게 제일 인기예요.", "seesaw": "둘이 함께 타는 시소. 번갈아 오르내리며 사이좋게 놀아요.", "spring-rider": "몬스터볼 모양 스프링 놀이기구. 올라타 앞뒤로 흔들흔들해요.", "log-tunnel": "속이 빈 통나무 터널. 안으로 숨었다가 반대쪽으로 빠져나와요.", "pinwheel": "바람이 불면 빙글빙글 도는 바람개비. 날갯짓으로 직접 돌리기도 해요.", "balance-beam": "외나무 평균대. 끝에서 끝까지 조심조심 걸으며 균형을 잡아요.", "street-lamp": "밤길을 밝히는 가로등. 불빛에 이끌린 포켓몬이 날아와 맴돌아요.", "camp-lantern": "따뜻한 빛의 캠핑 랜턴. 옆에서 몸을 말고 자거나 불을 쬐어요.", "glow-mushroom": "밤이면 은은하게 빛나는 야광 버섯. 큰 갓 아래는 아늑한 잠자리예요.", "star-string-lights": "별 모양 꼬마전구 줄. 전기 포켓몬이 불을 켜면 반짝반짝 빛나요.", "garden-torch": "정원을 밝히는 횃불. 불꽃 포켓몬이 불을 쬐며 수련하기도 해요.", "stone-lantern": "이끼 낀 오래된 석등. 받침돌에 기대 자거나 지붕돌 위에 앉아요.", "lotus-lantern": "연못에 띄우는 연꽃 등. 물 위에서 은은하게 빛나요.", "harvest-pumpkin": "잘 익은 수확 호박. 조금씩 갉아 먹거나 뒤에 숨어 놀아요.", "scarecrow": "밀짚모자를 쓴 허수아비. 새 포켓몬은 오히려 팔 위에 앉아 쉬어요.", "apple-crate": "갓 딴 사과가 가득한 상자. 하나씩 집어 먹거나 사과 사이에 앉아요.", "firewood-stack": "차곡차곡 쌓은 장작 더미. 불을 붙여 쬐거나 틈에 쏙 숨어요."};
 function fpInfo(k) { if (typeof k !== 'string') return null;
   if (k.startsWith('sc:')) { const id = k.slice(3), A = LAYOUT.scArt?.[id], I = A && scImg(id); if (!I) return null; if (!fpThC[k] || fpThC[k].key !== I.key) { const c = document.createElement('canvas'), h = A.px.length, w = A.px[0].length; c.width = w; c.height = h; const g = c.getContext('2d'); A.px.forEach((r, y) => { for (let x = 0; x < r.length; x++) { const col = A.pal?.[r[x]]; if (r[x] !== '.' && col) { g.fillStyle = col; g.fillRect(x, y, 1, 1); } } }); fpThC[k] = { key: I.key, src: fpSquare(I.src, c) }; } return { n: A.n || '소품', src: fpThC[k].src, d: FP_DESC[id] || (A.acts?.[0]?.a ? A.acts[0].a.replace(/\s*\(.*?\)/g, '') : '') }; }
-  const KD = LAYOUT.kinds?.[k], b = KD ? KD.b : k; if (!FP_N[b] || b === 'rockS' || b === 'rockL') return null;   // v9.08: 바위는 자연 요소라 상점·가방에 없음
+  const KD = LAYOUT.kinds?.[k], b = KD ? KD.b : k; if (!FP_N[b] || b === 'rockS' || b === 'rockL' || b === 'puddle') return null;   // v9.08: 바위는 자연 요소라 상점·가방에 없음
   if (!fpThC[k]) { const L = KD ? lkRes(KD.lk) : lookOf(b === 'rockS' || b === 'rockL' ? 'rock' : b), cv = fpCv(b, L);
     if (cv) fpThC[k] = { src: fpSquare('', cv) }; else { const im = b === 'bed' ? SPR.flw?.sun?.src : b === 'puddle' ? SPR.puddle : ''; fpThC[k] = { src: im || '' }; } }
   return { n: KD ? KD.n : FP_N[b], src: fpThC[k].src, d: FP_DESC[b] || '' }; }
@@ -11604,7 +11605,7 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
     (L.sc || []).forEach(r => { const I = scImg(r[0]), z = scS(r); if (I) put(r[1], r[2], I.w * z * .85, Math.max(12, I.h * z * scSY(r) * .45), Math.max(1, Math.min(4, Math.round(I.w * z / 22)))); });
     undo.push(snap()); L.flowers.push(...F); L.mush.push(...M); L.nat = 1; changed('mush'); return F.length + M.length; };
   api.NAT = k => !!SPR.flw[k] || k === 'mush' || k === 'rockS' || k === 'rockL';   // v9.08: 바위도 자연 요소   // v8.77 경완: 자연 요소는 작업실 소품 목록에 없다
-  api.ADD = [['daisy', '데이지'], ['pink', '분홍꽃'], ['tulip', '튤립'], ['bell', '파랑꽃'], ['sun', '해바라기'], ['grass', '풀'], ['tall', '키 큰 풀'], ['rockS', '작은 바위'], ['rockL', '큰 바위'], ['mush', '버섯'], ['bush', '덤불'], ['puddle', '웅덩이']];
+  api.ADD = [['daisy', '데이지'], ['pink', '분홍꽃'], ['tulip', '튤립'], ['bell', '파랑꽃'], ['sun', '해바라기'], ['grass', '풀'], ['tall', '키 큰 풀'], ['rockS', '작은 바위'], ['rockL', '큰 바위'], ['mush', '버섯'], ['bush', '덤불']];
   api.addIcon = k => SPR.flw[k]?.src || (k === 'bush' ? SPR.bush : k === 'puddle' ? SPR.puddle : '');
   // v3.61 작업실: 소품 창에서 끌어 온 자리(화면 좌표)에 놓는다. 좌표가 없으면 가운데
   api.add = (k0, X, Y) => { const KD = LAYOUT.kinds?.[k0], k = KD ? KD.b : k0; const p = X == null ? null : toField(X, Y), cx = p ? clamp(Math.round(p.x), XL + 8, XR - 8) : Math.round((XL + XR) / 2), cy = p ? clamp(Math.round(p.y), MIN_Y - 40, H - 8) : 330;
