@@ -390,7 +390,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 @media (min-width:821px){#thI{display:flex;flex-direction:column}#thI>*{flex:none}#thI>.gpw{flex:1 1 0;min-height:330px;display:flex;flex-direction:column}#thI>.gpw>#thPal{flex:1 1 0;min-height:140px;max-height:none}#thI>.gsc{max-height:var(--gsH,48%);overflow:auto}}
 </style>
 <div id="app">
-  <header class="tbar"><div class="logo"><img id="logoI" alt=""><span class="lt">작업실</span></div><span class="crumb" id="crumb">맵</span><span class="sp"></span><span class="unsv" id="safeW"><button id="safeB" class="safeb" hidden></button><div id="safePop" class="safep" hidden></div></span><span class="unsv" id="unsvW"><button id="unsv" hidden></button><div id="unsvPop" hidden></div></span><span class="dstat" id="dstat">바뀐 곳 없음</span><button class="chip" id="unAll" disabled title="저장하지 않은 수정을 모두 마지막으로 저장한 상태로 되돌려요">되돌리기</button><button class="chip" id="goBeta" disabled title="베타(beta.html)에만 데이터를 올려요. 진짜 게임은 그대로예요">베타로 배포하기</button><button class="btn" id="goWork">배포하기</button></header>
+  <header class="tbar"><div class="logo"><img id="logoI" alt=""><span class="lt">작업실</span></div><span class="crumb" id="crumb">맵</span><span class="sp"></span><span class="unsv" id="safeW"><button id="safeB" class="safeb" hidden></button><div id="safePop" class="safep" hidden></div></span><span class="unsv" id="unsvW"><button id="unsv" hidden></button><div id="unsvPop" hidden></div></span><span class="dstat" id="dstat">바뀐 곳 없음</span><button class="chip" id="unAll" disabled title="저장하지 않은 수정을 모두 마지막으로 저장한 상태로 되돌려요">되돌리기</button><button class="chip" id="betaTop" title="켜면 미리보기가 베타 게임(beta.html)이 되고, 배포도 베타에만 올라가요 (진짜 게임은 그대로)">베타</button><button class="btn" id="goWork">배포하기</button></header>
   <nav class="nav" id="nav"></nav>
   <main id="main">
     <!-- 맵 편집 -->
@@ -550,7 +550,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.78';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.79';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -641,7 +641,10 @@ async function quickDeploy() { const C = changes(), tok = store.get('st-gh-token
     const v = await deploy(snapshot(), '', C.map(c => c[2] ? `${c[0]}: ${c[1]} → ${c[2]}` : `${c[0]}: ${c[1]}`)); D = keep; saveDraft(); toast(`데이터 v${v} 배포했어요${ids.length ? ` · 저장 안 한 ${ids.length}곳은 남겨 뒀어요` : ''}`); reloadGame(); if (view === 'work') renderWork(); }
   catch (err) { toast('배포하지 못했어요: ' + ghErr(err)); }
   b.disabled = false; b.textContent = '배포하기'; dstat(); }
-$('#goWork').onclick = quickDeploy;
+// v3.79 경완 '베타로 배포하기 버튼 없애고 배포하기로 통일, 옆에 베타 토글': 베타 토글 = 미리보기 게임(st-beta)과 같이 바뀌고, 켜져 있으면 배포하기가 베타(config/beta.json)에만 올림
+$('#goWork').onclick = () => BETA ? betaDeploy() : quickDeploy();
+{ const t = $('#betaTop'); t.classList.toggle('on', BETA); t.setAttribute('aria-pressed', BETA); t.textContent = BETA ? '베타 켜짐' : '베타 꺼짐'; $('#goWork').textContent = BETA ? '베타로 배포하기' : '배포하기';
+  t.onclick = () => { store.set('st-beta', BETA ? '' : '1'); location.reload(); }; }
 // v3.75 경완: 베타로 배포하기 — 저장한 것까지를 config/beta.json 에만 올림 (베타 게임만 씀, 진짜 게임·데이터 번호·기록은 그대로, 작업본도 그대로 남김)
 async function deployBeta(data, tries = 2) {
   let old = null; try { old = JSON.parse(await gh('/contents/config/beta.json?ref=main', { raw: true })); } catch (e) { if (e.status !== 404) throw e; }
@@ -652,12 +655,12 @@ async function deployBeta(data, tries = 2) {
   try { await gh('/git/refs/heads/main', { method: 'PATCH', body: JSON.stringify({ sha: cm.sha }) }); }
   catch (e) { if (e.status === 422 && tries > 1) return deployBeta(data, tries - 1); throw e; }
   return bver; }
-$('#goBeta').onclick = async () => { const tok = store.get('st-gh-token'); if (!changes().length) return;
+async function betaDeploy() { const tok = store.get('st-gh-token'); if (!changes().length) return;
   if (!CANDEPLOY || !tok) { go('work'); toast(CANDEPLOY ? '먼저 아래에서 GitHub 를 연결해 주세요' : '이 미리보기에서는 배포할 수 없어요'); return; }
-  const b = $('#goBeta'); b.disabled = true; b.textContent = '베타에 올리는 중…';
+  const b = $('#goWork'); b.disabled = true; b.textContent = '베타에 올리는 중…';
   try { const n = await deployBeta(snapshot()); toast(`베타 데이터 ${n} 올렸어요 · 진짜 게임은 그대로예요 (저장한 것만, 작업본은 남겨 뒀어요)`); }
   catch (err) { toast('베타에 올리지 못했어요: ' + ghErr(err)); }
-  b.textContent = '베타로 배포하기'; dstat(); };
+  b.disabled = false; b.textContent = '베타로 배포하기'; dstat(); }
 
 // ---------- 휴대폰 틀 크기 ----------
 // 기종별 화면 크기 (CSS 픽셀). 기본은 아이폰 17 Pro
@@ -799,7 +802,7 @@ function unsvBar() { const b = $('#unsv'); if (!b || !ORIG) return; const here =
 $('#unsv').onclick = e => { e.stopPropagation(); $('#unsvPop').hidden = !$('#unsvPop').hidden; };
 $('#unsvPop').onclick = e => { const b = e.target.closest('[data-ub]'); if (!b) return; const [, v, pre] = BOXINFO(b.dataset.ub); pre?.(); $('#unsvPop').hidden = true; go(v); };
 document.addEventListener('pointerdown', e => { if (!e.target.closest('#unsvW')) $('#unsvPop').hidden = true; });
-function dstat() { unsvBar(); if (ORIG) scBar(); const n = changes().length, gv = gameVer(); $('#dstat').innerHTML = `작업실 v${STUDIO_VER} · ` + (gv ? `게임 ${gv}${BETA ? ' 베타' : ''} · ` : '') + `데이터 v${LIVE.ver || 0}` + (n ? ` · 바뀐 곳 <b>${n}</b>` : ''); $('#dstat').title = '작업실 = 이 작업실 화면 버전, 게임 = 게임 코드 버전, 데이터 = 작업실에서 배포한 횟수'; $('#goWork').disabled = !n; if ($('#goBeta')) $('#goBeta').disabled = !n; { const u = $('#unAll'); if (u && !u.dataset.arm) u.disabled = !unsaved(); } $('#goWork').title = n ? '' : '바뀐 곳이 없어요'; const e = document.querySelector('.nav [data-n=work]'); if (e) e.textContent = n || ''; }
+function dstat() { unsvBar(); if (ORIG) scBar(); const n = changes().length, gv = gameVer(); $('#dstat').innerHTML = `작업실 v${STUDIO_VER} · ` + (gv ? `게임 ${gv}${BETA ? ' 베타' : ''} · ` : '') + `데이터 v${LIVE.ver || 0}` + (n ? ` · 바뀐 곳 <b>${n}</b>` : ''); $('#dstat').title = '작업실 = 이 작업실 화면 버전, 게임 = 게임 코드 버전, 데이터 = 작업실에서 배포한 횟수'; $('#goWork').disabled = !n; { const u = $('#unAll'); if (u && !u.dataset.arm) u.disabled = !unsaved(); } $('#goWork').title = n ? '' : '바뀐 곳이 없어요'; const e = document.querySelector('.nav [data-n=work]'); if (e) e.textContent = n || ''; }
 
 // ---------- 공통 계산 ----------
 let ORIG = null, LIVE = { ver: 0 };   // 지금 배포된 값 (게임이 불러온 데이터)
@@ -2144,6 +2147,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.79', '10월 25일', ['위쪽 \'베타로 배포하기\' 버튼을 없애고 배포하기 하나로: 옆 베타 토글을 켜면 미리보기가 베타 게임이 되고 배포하기가 베타로 배포하기로 바뀌어 베타에만 올라가요, 끄면 본 게임으로 배포']],
   ['3.78', '10월 25일', ['오른쪽 소품 반응: 맵에 놓인 추가 소품(스칼렛 소품)의 상호작용도 나오고, 맵 편집이나 시뮬레이터 안 맵 편집으로 소품을 넣고 빼면 목록이 바로 바뀌어요 (베타 v9.41)', '시뮬레이터 안 게임 골드는 ∞ (작업실 미리보기에선 줄지 않아요, 베타 v9.41)', '시뮬레이터 안 게임의 맵 편집으로 옮기거나 넣고 뺀 건 시뮬레이터에만 남고 작업본·배포엔 안 들어가요 (베타 v9.41)']],
   ['3.77', '10월 25일', ['시뮬레이터 게임 설정의 \'베타 판 쓰기\'를 켜고 끄면 작업실 미리보기가 베타 게임과 본 게임으로 바뀌어요 (버전 화면의 베타 게임으로 보기와 같아요)']],
   ['3.76', '10월 24일', ['스칼렛 소품의 예시 동작과 움직이는 부분도 게임에 보내요 · 작업실을 열면 맵 소품에 반영되니 베타로 배포하면 필드에서 예시처럼 움직여요 (베타 v9.29)']],
