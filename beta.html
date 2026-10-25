@@ -3384,6 +3384,9 @@ function think(m) {
   }
   if (m.hunger > FEED_BUB && !(m.hungryCd > 0) && Math.random() < .25) { m.hungryCd = rnd(40, 90); hungryBub(m); }
   if (S.clock >= (m.awakeT || 0) && sleepyTime(m) && Math.random() < .55) return goToBed(m);
+  if (t.mv !== 'swim' && !(m.pushCd > 0) && Math.random() < .7) {   /* v9.52 경완 '격투 타입 밀어주기는 누가 타고 있고 근처에 있을 때도': 누가 소품에 타고 있으면 (한 번에 하나 규칙과 상관없이) 근처의 맞는 포켓몬이 와서 밀어 준다 */
+    const rd = S.mons.find(o => o !== m && o.scp?.ride && LAYOUT.sc.includes(o.scp.r) && Math.hypot(m.x - o.scp.G.cx, m.y - o.scp.G.gy) < 260 && !S.mons.some(k => k !== o && k.scp?.r === o.scp.r && k.scp.M.push) && !S.mons.some(k => k.goal?.kind === 'scpush' && k.goal.r === o.scp.r)), A = rd && LAYOUT.scArt[rd.scp.r[0]], pa = A && (A.acts || []).find(a => scSpec(a, A).M.push && scFit(m, a.w || ''));
+    if (pa) { m.pushCd = rnd(40, 80); const G = rd.scp.G; return moveTo(m, { x: clamp(G.cx + (m.x < G.cx ? -1 : 1) * (G.W / 2 + (m.w || 40) * .4), XL + 20, XR - 20), y: Math.min(MAX_Y, G.gy + 2) }, { kind: 'scpush', r: rd.scp.r, a: pa, rd }); } }
   { const lv = likeOf(m) && relWho(likeOf(m))?.m;
     if (lv && lv !== m && !lv.hidden && awake(lv) && lv.state !== 'interact' && !(m.likeCd > 0) && sceneFree(m) && t.mv !== 'swim' && Math.random() < .3) {
       m.likeCd = rnd(70, 160); const side = m.x < lv.x ? -1 : 1;
@@ -3434,6 +3437,9 @@ function arrive(m) {
   }
   if (g.kind === 'warm') { const f = g.src; m.goal = null; if (S.mons.includes(f) && f.special === 'flame') { faceTo(m, f.x); setState(m, 'idle', rnd(5, 7)); emote(m, pick(['♨', '♪', '~']), 'note', 2.4, 'warm'); } else setState(m, 'idle', 1.5); return; }
   if (g.kind === 'prop') return propReact(m, g.p);
+  if (g.kind === 'scpush') { const i = LAYOUT.sc.indexOf(g.r), A = LAYOUT.scArt[g.r[0]], rd = g.rd; m.goal = null;
+    if (i < 0 || !A || !S.mons.includes(rd) || rd.scp?.r !== g.r || !scPlay(m, { k: 'sc', i }, g.a, null, null, false)) return setState(m, 'idle', 1);
+    m.propUntil = performance.now() + clamp(m.t || 3, 3, 24) * 1000; emote(m, '♪', '', 2.2, 'prop-play'); return log(`${J(m,'이/가')} ${J(rd,'이/가')} 탄 ${esc(A.n)}${hasBat(A.n) ? '을' : '를'} 밀어 흔들어 준다.`, [m, rd]); }
   if (g.kind === 'treePerch') { treePerch(m); m.propUntil = performance.now() + 10000; sceneNext = Math.max(sceneNext, m.propUntil + rnd(3000, 6000)); return; }
   if (g.kind === 'forage' && g.tree && treeOn()) { setState(m, 'idle', 2.5); faceTo(m, PROPS.tree.x); anim(m, 'hop'); setTimeout(() => { if (S.mons.includes(m)) shakeTree(m); }, 250); return; }
   if (g.kind === 'forage') {
@@ -4727,7 +4733,7 @@ function update(m, dt) {
   const t = T(m), asleep = m.state === 'sleep';
   m.hunger = clamp(m.hunger + dt * HUNGER_RATE * (t.hun || 1) * (asleep ? .4 : 1));
   if (m.state === 'idle' && !m.pin && !m.hidden && !m.propSit && !m.scp && T(m).mv !== 'swim' && (behindTree(m.x, m.y) || scBehind(m.x, m.y)) && !((m.btCd = (m.btCd || 0) - dt) > 0)) { m.btCd = 1.5; moveTo(m, outOfTree({ x: m.x + rnd(-30, 30), y: m.y })); }   // v3.62: 나무 뒤에 서 있으면 앞으로 나온다
-  if (m.forageCd > 0) m.forageCd -= dt; if (m.propCd > 0) m.propCd -= dt; if (m.hungryCd > 0) m.hungryCd -= dt; if (m.likeCd > 0) m.likeCd -= dt;
+  if (m.forageCd > 0) m.forageCd -= dt; if (m.propCd > 0) m.propCd -= dt; if (m.pushCd > 0) m.pushCd -= dt; if (m.hungryCd > 0) m.hungryCd -= dt; if (m.likeCd > 0) m.likeCd -= dt;
   if (!asleep) m.social = clamp(m.social + dt * .4 * (t.soc || 1));
   if (m.joy >= 100) { if (!(m.joyH > 0)) m.joyH = Date.now() + JOY_HOLD * 60000; } else m.joyH = 0;   /* v3.68: 즐거움이 100 이 되면 JOY_HOLD 분 동안은 안 떨어진다 */
   if (!(m.joyH > Date.now())) m.joy = clamp((m.joy ?? 60) - dt * JOY_RATE * (asleep ? .3 : 1));   /* 즐거움: 깨어 있으면 약 4시간에 바닥 */
@@ -4736,9 +4742,9 @@ function update(m, dt) {
   m.t -= dt;
   if (m.pet) { m.goal = null; if (m.state !== 'idle' && m.state !== 'eat') setState(m, 'idle', 1); m.t = Math.max(m.t, 1); }
   if (m.pin) { m.goal = null; m.wp = null; if (m.state === 'move') setState(m, 'idle', 1); m.t = Math.max(m.t, 1); }   /* v3.80 경완: 작업실에서 고른 포켓몬은 제자리 */   /* 쓰다듬는 동안은 제자리 */
-  if (m.state === 'idle' && !m.pet && !m.pin && inHud(m)) { moveTo(m, outOfHud(m, { x: clamp(m.x, XL + 30, XR - 30), y: m.y })); }
+  if (m.state === 'idle' && !m.pet && !m.pin && !m.scp && inHud(m)) { moveTo(m, outOfHud(m, { x: clamp(m.x, XL + 30, XR - 30), y: m.y })); }   /* v9.52 경완 '타이어 그네가 일지 창 가까우면 탑승 안 함': 소품에서 노는 중(m.scp)이면 가방·열매 버튼 밑이어도 비켜 가지 않는다 */
   else if (m.state === 'special' && !m.pet && !m.pin && !m.held && !m.camp && !m.perch && inHud(m)) { m.hudSp = (m.hudSp || 0) + dt; if (m.hudSp > 1.5) { m.hudSp = 0; clearMotion?.(m); setState(m, 'idle', 1); moveTo(m, outOfHud(m, { x: clamp(m.x, XL + 30, XR - 30), y: m.y })); } } else m.hudSp = 0;   /* v8.50 경완: 혼자 하는 특별 행동도 버튼 밑에서 오래 하지 않게 */   /* 좌상단 버튼 밑에 서 있지 않게 */
-  if (m.state !== 'sleep' && !m.pet && !m.pin && !m.held && !m.camp && !m.perch && !m.hidden && !m.ride && inHud(m) && Math.hypot(m.x - (m.hsX ?? -1e9), m.y - (m.hsY ?? -1e9)) < 2) { m.hudSt = (m.hudSt || 0) + dt; if (m.hudSt > 3) { m.hudSt = 0; if (m.partner) { const o = m.partner; o.partner = null; o.scene = null; if (o.state === 'interact') setState(o, 'idle', 1); m.partner = null; } m.scene = null; m.goal = null; clearMotion?.(m); setState(m, 'idle', 1); moveTo(m, outOfHud(m, { x: clamp(m.x, XL + 30, XR - 30), y: m.y })); } } else { m.hudSt = 0; m.hsX = m.x; m.hsY = m.y; }   /* v8.55 경완 '앱만 켜면 턱지충이 열매 버튼 뒤에 가만히': 어떤 상태든 버튼 밑에서 3초 넘게 움직이지 않으면 하던 걸 그만두고 비켜 간다 (잠은 아래 규칙) */
+  if (m.state !== 'sleep' && !m.pet && !m.pin && !m.held && !m.camp && !m.perch && !m.hidden && !m.ride && !m.scp && inHud(m) && Math.hypot(m.x - (m.hsX ?? -1e9), m.y - (m.hsY ?? -1e9)) < 2) { m.hudSt = (m.hudSt || 0) + dt; if (m.hudSt > 3) { m.hudSt = 0; if (m.partner) { const o = m.partner; o.partner = null; o.scene = null; if (o.state === 'interact') setState(o, 'idle', 1); m.partner = null; } m.scene = null; m.goal = null; clearMotion?.(m); setState(m, 'idle', 1); moveTo(m, outOfHud(m, { x: clamp(m.x, XL + 30, XR - 30), y: m.y })); } } else { m.hudSt = 0; m.hsX = m.x; m.hsY = m.y; }   /* v8.55 경완 '앱만 켜면 턱지충이 열매 버튼 뒤에 가만히': 어떤 상태든 버튼 밑에서 3초 넘게 움직이지 않으면 하던 걸 그만두고 비켜 간다 (잠은 아래 규칙) */
   if (m.state === 'sleep' && !m.pet && !m.pin && !m.perch && !m.hidden && !m.camp && T(m).mv !== 'swim' && inHud(m)) { m.hudSlp = (m.hudSlp || 0) + dt; if (m.hudSlp > 2) { m.hudSlp = -30; wake(m); goToBed(m); } } else if (m.hudSlp > 0) m.hudSlp = 0;   /* v7.89 경완: 열매·가방 버튼 밑에서 잠든 포켓몬(불러온 자리·화면 크기 바뀜)은 일어나 비켜서 다시 눕는다 (예전엔 깰 때까지 버튼 뒤에 멈춰 있었다) */
   switch (m.state) {
     case 'move': {
@@ -5459,6 +5465,7 @@ function scPlay(m, p, a, ride, two, drag) { const r = LAYOUT.sc[p.i], G = r && s
   const an = pmd ? (S2.want.filter(n => !(drag && n === 'Sleep')).find(n => P.a[n]) || null) : null;   // v9.33 경완 '자던 포켓몬을 타이어 그네에 데려가도 계속 잠': 끌어다 놓아 깨운 포켓몬은 졸기·자기 그림 없이 논다
   m.scp = { r, G, S: S2, M, tx: clamp(tx, XL + 20, XR - 20), ty, side: tx < G.cx ? -1 : 1, an, back: ride ? ride.back : two ? false : S2.back || (M.hide && !M.win && !M.speek) || M.speek || M.win,
     ride: !!(ride || M.ride || two), t0: performance.now(), x0: m.x, y0: m.y - (m.lift || 0), hitT: -9, spT: 0, MW, MH };
+  { const q = m.scp; let fx0 = q.x0, fy0 = q.y0; if ((M.fly || M.circ) && Math.hypot(q.tx - fx0, q.ty - fy0) < 40) { fx0 = clamp(q.tx + (m.x < G.cx ? -1 : 1) * (G.W / 2 + MW * .5), XL + 20, XR - 20); fy0 = G.gy + 2; m.x = fx0; m.y = fy0; }   /* 소품 위에 바로 놓였으면 옆 땅에서 날아오른다 */ q.fx0 = fx0; q.fy0 = fy0; q.fd = clamp(Math.hypot(q.tx - fx0, q.ty - fy0) / 110, .9, 2.2); }
   if (ride && G.el?.mpH) G.el.mpH.style.zIndex = Math.round(G.gy) - (ride.inH ? 0 : 2);   // v9.38: 구멍 속에 앉은 작은 포켓몬은 타이어 앞 테두리가 앞, 큰 포켓몬은 타이어 앞에 (기둥 사이)
   m.goal = null; m.wp = null; m.propSit = true; m.pzB = null; setState(m, 'idle', M.avoid ? 4.6 : rnd(14, 22)); return true; }
 function scEnd(m) { const q = m.scp; if (!q) return; if (q.G?.el?.mpH) q.G.el.mpH.style.zIndex = Math.round(q.G.gy) - 2; m.scp = null; m.scAn = null; m.scRot = 0; m.el.style.opacity = '';
@@ -5470,16 +5477,17 @@ function scTick(m, now) { const q = m.scp; if (!q) return; if (!q.G.el?.isConnec
   if (m.held || m.state !== 'idle' || !S.mons.includes(m) || !LAYOUT.sc.includes(q.r) || !q.G.el?.isConnected) { scEnd(m); return; }
   const { G, M, S: S2 } = q, tt = (now - q.t0) / 1000, MW = q.MW, MH = q.MH, ease = u => u < .5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2, lerp = (p, r, u) => p + (r - p) * u;
   let x = q.tx, y = q.ty, fl = null, back = q.back, al = 1, rot = 0, an = q.an, walk = false;
-  if (M.fly && tt < 1.4) { const u = tt / 1.4, e = 1 - (1 - u) ** 2, sx = q.tx + q.side * 150, sy = q.ty - 120; x = sx + (q.tx - sx) * e; y = sy + (q.ty - sy) * e - Math.sin(u * Math.PI) * 18 + Math.sin(tt * 26) * 2; walk = true; fl = q.side > 0 ? false : true; }
+  if (M.fly && tt < q.fd) { const u = tt / q.fd, e = ease(u); x = lerp(q.fx0, q.tx, e); y = lerp(q.fy0, q.ty, e) - Math.sin(u * Math.PI) * Math.min(60, 18 + Math.hypot(q.tx - q.fx0, q.ty - q.fy0) * .2) + Math.sin(tt * 26) * 2; walk = true; fl = q.tx < q.fx0; }   /* v9.52 경완 '가로대에 앉는 건 늘 저 위치에서 시작?': 날아와 앉는 소품 놀이는 지금 서 있던 자리에서 날아올라 간다 (예전엔 소품 옆 150px 위에서 나타남) */
   else if (!M.fly && !M.climb && !M.avoid && !M.slide && !M.through && tt < .45) { const u = ease(tt / .45); x = lerp(q.x0, q.tx, u); y = lerp(q.y0, q.ty, u) - Math.sin(u * Math.PI) * 14; }   // 제자리로 폴짝
   if (M.flap) { y += Math.sin(tt * 16) * 3; walk = true; }
   if (M.circ) { const a2 = tt * 2.4, top = q.ty < G.t + G.H * .6, oy = top ? Math.min(q.ty, G.t + G.H * .3) : G.t + G.H * .45, rr = top ? G.W * .32 : G.W / 2 + MW * .3; x = G.cx + Math.cos(a2) * rr; y = oy + Math.sin(a2) * (top ? 6 : 12) + Math.sin(tt * 18) * 2; back = Math.sin(a2) < 0; fl = Math.sin(a2) < 0; walk = true; }
+  if (M.circ && tt < q.fd) { const u = tt / q.fd, e = ease(u); fl = x < q.fx0; x = lerp(q.fx0, x, e); y = lerp(q.fy0, y, e) - Math.sin(u * Math.PI) * 24; walk = true; }   /* v9.52: 빙빙 도는 것도 서 있던 자리에서 날아와 시작 */
   if (M.walk) { const u = .5 - .5 * Math.cos(tt * 1.1); x = G.l + G.W * (.15 + .7 * u); fl = Math.sin(tt * 1.1) > 0; walk = true; }
-  if (M.push) { const u = (tt * .8) % 1, reach = u < .35 ? u / .35 : u < .55 ? 1 : 1 - (u - .55) / .45; x = q.tx + q.side * MW * .45 * (1 - reach); if (u >= .35 && q.hitT < tt - .9) q.hitT = tt; if (!(u >= .3 && u < .6)) an = null; fl = q.side < 0; }
+  if (M.push) { const u = (tt * .8) % 1, reach = u < .35 ? u / .35 : u < .55 ? 1 : 1 - (u - .55) / .45; x = q.tx + q.side * MW * .45 * (1 - reach); if (u >= .35 && q.hitT < tt - .9) { q.hitT = tt; if (G.el) G.el.scHit = now; } if (!(u >= .3 && u < .6)) an = null; fl = q.side < 0; }
   if (M.hide && !M.win && !M.speek && M.peek) { const u = Math.max(0, Math.sin(tt * 1.6)) ** .6; y += (Math.min(y, G.t + MH * .45) - y) * u; }   // 소품 위로 고개만 쏙
   if (M.speek) { const u = Math.max(0, Math.sin(tt * 1.6)) ** .6; x = q.tx + q.side * MW * .55 * u; fl = q.side < 0; }
   if (M.win) { const u = (tt % 4) / 4; if (u < .45) al = 0; else y = q.ty + MH * .3 * (1 - Math.min(1, (u - .45) / .12)); }
-  if (M.blink) al *= Math.sin(tt * 2.2) > -.2 ? 1 : 0;
+  if (M.blink) al *= clamp(.5 + Math.sin(tt * 1.4) * 1.1, 0, 1);   /* v9.52 경완 '허수아비 뒤에서 사라지는 건 스르르': 뚝 끊기지 않고 천천히 사라졌다가 천천히 나타난다 */
   if (M.bob) y += Math.sin(tt * 4) * 3;
   if (M.wobble) rot = Math.sin(tt * 3) * .16;
   if (M.slide) { const u = (tt % 5) / 5, gx = G.l + G.W * .1, gy = G.gy, ux = G.l + G.W * .22, uy = G.t + G.H * .22, ex = G.l + G.W * .95;   // 사다리로 올라가 미끄럼판 타고 내려옴
@@ -5492,10 +5500,11 @@ function scTick(m, now) { const q = m.scp; if (!q) return; if (!q.G.el?.isConnec
   const fx = S2.fx, MV = G.A.mv?.st && G.A.mv?.mp && G.el?.mpEl ? G.A.mv : null; let ang = 0, ox = G.cx, oy = G.gy;
   if (fx.swing) { ang = Math.sin(tt * 3) * .07; if (/그네/.test(G.A.n || '')) oy = G.t; }
   if (fx.rock) { ang = Math.sin(tt * 2.4) * .13; oy = G.t + G.H * .7; }
-  if (M.push && tt - q.hitT < 1.2) { const h = tt - q.hitT; ang += Math.sin(h * 20) * .06 * Math.exp(-h * 3.5); }
+  { const h = (now - (G.el?.scHit ?? -1e9)) / 1000; if (h < 1.6) ang += Math.sin(h * (q.ride ? 6 : 20)) * (q.ride ? .12 : .06) * Math.exp(-h * (q.ride ? 1.6 : 3.5)); }   /* v9.52: 밀어 준 힘은 소품에 남아 타고 있는 포켓몬도 크게 흔들린다 */
   const e = G.el; let a2 = ang, px = ox, py = oy;
-  if (MV) { px = G.l + MV.o[0] * G.kx; py = G.t + MV.o[1] * G.ky; a2 = MV.k === 'spin' ? (fx.spin ? tt * (M.flap ? 7 : 4) : 0) : ang * (MV.amp || 1.6); const tf = `rotate(${a2.toFixed(4)}rad)`; e.mpEl.style.transform = tf; if (e.mbEl) e.mbEl.style.transform = tf; }
-  else { const tf = ang ? `translate(-50%,-100%) rotate(${ang.toFixed(4)}rad)` : ''; e.style.transformOrigin = `${((ox - G.l) / G.W * 100).toFixed(1)}% ${((oy - G.t) / G.H * 100).toFixed(1)}%`; e.style.transform = tf; }
+  if (e && q.ride) e.scRideT = now; const own = !(e && !q.ride && now - (e.scRideT || 0) < 300);   // 누가 타고 있으면 소품 흔들기는 탄 포켓몬 쪽이 맡는다
+  if (MV) { px = G.l + MV.o[0] * G.kx; py = G.t + MV.o[1] * G.ky; a2 = MV.k === 'spin' ? (fx.spin ? tt * (M.flap ? 7 : 4) : 0) : ang * (MV.amp || 1.6); const tf = `rotate(${a2.toFixed(4)}rad)`; if (own) { e.mpEl.style.transform = tf; if (e.mbEl) e.mbEl.style.transform = tf; } }
+  else { const tf = ang ? `translate(-50%,-100%) rotate(${ang.toFixed(4)}rad)` : ''; if (own) { e.style.transformOrigin = `${((ox - G.l) / G.W * 100).toFixed(1)}% ${((oy - G.t) / G.H * 100).toFixed(1)}%`; e.style.transform = tf; } }
   if (fx.glow) { const u = .5 + .5 * Math.sin(tt * 4); e.style.filter = `drop-shadow(0 0 ${(3 + 5 * u).toFixed(1)}px rgba(255,240,150,${(.55 + .4 * u).toFixed(2)}))`; }
   if (q.ride && (MV ? MV.k !== 'spin' : true) && a2) { const dx = x - px, dy = y - py, c = Math.cos(a2), s = Math.sin(a2); x = px + dx * c - dy * s; y = py + dx * s + dy * c; rot += a2; }
   if (M.skill && now > q.spT) { q.spT = now + 260; particle(G.cx + rnd(-G.W * .3, G.W * .3), G.t + G.H * rnd(.2, .6), 'spark', '✦'); }
@@ -5578,7 +5587,7 @@ function propReact(m, p, drag) { propReactIn(m, p, drag); m.propUntil = performa
 function scFit(m, w) { const flyer = winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover', small = isSmall(m) && ![1, 2, 3, 5, 10, 11].includes(SPm(m).sh) && (SPm(m).spd || 0) >= 50, ty = tyOf(m).map(t => TYPE_KO[t]), mv = T(m).mv;
   /* v9.51 경완 '나는 벌레 타입인데 벌레 아닌 포켓몬도 나옴': '/' 로 나뉜 것 중 하나만 맞으면 되고, 한 덩어리 안에서는 적힌 조건(타입·나는·작은·큰·헤엄)을 모두 만족해야 */
   return w.split('/').some(c => { const tys = TYPE_KO.filter(t => t && c.includes(t)), q = [];
-    if (/나는|날개|새/.test(c)) q.push(flyer); if (/헤엄|물고기/.test(c)) q.push(mv === 'swim'); if (/작은/.test(c)) q.push(isSmall(m)); if (/큰/.test(c)) q.push(!isSmall(m) && (SPm(m).h || 0) >= 10);
+    if (/날개/.test(c)) q.push(winged(m)); else if (/나는|새/.test(c)) q.push(flyer);   /* v9.52 경완 '허수아비 팔 끝은 날개 있는 작은 포켓몬만': '날개'는 날개 달린 포켓몬만 (떠다니는 고스트 등은 아님) */ if (/헤엄|물고기/.test(c)) q.push(mv === 'swim'); if (/작은/.test(c)) q.push(isSmall(m)); if (/큰/.test(c)) q.push(!isSmall(m) && (SPm(m).h || 0) >= 10);
     return (!tys.length || ty.some(t => tys.includes(t))) && q.every(Boolean); }); }
 function propReactIn(m, p, drag) {
   const flyer = winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover', small = isSmall(m) && ![1, 2, 3, 5, 10, 11].includes(SPm(m).sh) && (SPm(m).spd || 0) >= 50, at = (dx, dy) =>   /* v4.91 경완: 우르 같은 느린 털뭉치·공·물고기 모양은 횃대에 못 올라간다 */ { m.x = clamp(p.x + dx, XL + 20, XR - 20); m.y = clamp(p.y + dy, MIN_Y, MAX_Y); };
@@ -6252,7 +6261,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.51';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.52';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)

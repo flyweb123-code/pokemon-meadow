@@ -85,7 +85,7 @@ input[type=range]{accent-color:var(--acc);flex:1;min-width:120px;max-width:260px
 .ghost b{position:absolute;top:-22px;left:50%;transform:translateX(-50%);white-space:nowrap;background:var(--acc);color:var(--accfg);font-size:11px;padding:1px 6px;border-radius:3px}
 #cover{position:fixed;inset:0;z-index:9998;touch-action:none;cursor:grabbing}
 .react{display:grid;gap:6px;font-size:12.5px}
-.react div{display:grid;grid-template-columns:88px minmax(0,1fr);gap:8px;align-items:center;line-height:1.4}.react .rg{display:grid;gap:5px;background:var(--deep);border:1px solid var(--chip);border-radius:6px;padding:8px 10px}.react .rg>b{font-size:12px;font-weight:600;color:var(--fg);padding-bottom:2px;border-bottom:1px solid var(--chip);margin-bottom:2px}.react .chip{width:100%}
+.react div{display:grid;grid-template-columns:88px minmax(0,1fr);gap:8px;align-items:center;line-height:1.4}.react div.sxr{grid-template-columns:88px minmax(0,1fr) auto;gap:6px}.react .rg{display:grid;gap:5px;background:var(--deep);border:1px solid var(--chip);border-radius:6px;padding:8px 10px}.react .rg>b{font-size:12px;font-weight:600;color:var(--fg);padding-bottom:2px;border-bottom:1px solid var(--chip);margin-bottom:2px}.react .chip{width:100%}
 #mapI>div{padding-top:12px;border-top:1px solid var(--line)}#mapI>#szPane{padding-top:0;border-top:0}#mapI>#szPane+div{padding-top:0;border-top:0}#mapI h4{margin:0}#mapI .slots{max-width:none}#mapI .slots+.chips{display:grid;grid-template-columns:1fr 1fr;gap:6px}#mapI .slots+.chips .chip{justify-content:center}
 .react .chip{justify-content:center;min-height:24px;padding:1px 6px;font-size:11.5px}
 .logl{display:grid;gap:4px;font-size:12px;color:var(--soft);max-height:150px;overflow:auto}
@@ -551,7 +551,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.85';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.86';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -930,16 +930,27 @@ const KEY2R = { tree: 'tree', perch: 'perch', fire: 'fire', bed: 'bed', bushes: 
 // v2.36 경완: 소품 반응은 소품 상세 창 아래에. 오른쪽 사이드 바는 지금 시뮬레이터 맵에 있는 소품의 반응만
 const rOf = k => !k ? null : REACT[k] ? k : k === 'rockS' || k === 'rockL' ? 'rock' : KEY2R[k] || (A?.kind?.(k)?.b ? rOf(A.kind(k).b) : null);
 const rxHtml = r => `<section class="rg">${REACT[r].map(([a, b], i) => `<div><button class="chip rx${spxKey === r + ':' + i ? ' on' : ''}" data-rk="${r}" data-ri="${i}">${a}</button><span>${b}</span></div>`).join('')}</section>`;
-function zReact(z, k, scId) { if (scId || k?.startsWith?.('sc:')) { const id = scId || k.slice(3), L = scaItem(id)?.acts || (() => { try { return A.layout().scArt?.[id]?.acts; } catch (e) { return null; } })() || [];   // v3.65 경완: 추가한 소품 상세 카드에도 그 소품의 상호작용
-    if (L.length) z.insertAdjacentHTML('beforeend', `<div class="zre"><h4>소품 반응</h4><div class="react"><section class="rg">${L.map((a, j) => `<div><button class="chip sx" data-sc="${esc(id)}" data-ai="${j}" style="white-space:normal;text-align:center;line-height:1.25">${esc(a.w)}</button><span>${esc(a.a)}</span></div>`).join('')}</section></div></div>`); return; }
+// v3.86 경완 '상호작용 카드는 스칼렛·맵 소품 창·나중에 추가되는 어디든 연동': 상호작용 목록은 한 곳(actsOf)에서 읽고, 줄은 한 모양(sxRow, 오른쪽 ×), 지우기도 한 곳(actDel)
+const actsOf = id => scaItem(id)?.acts || (() => { try { return A.layout().scArt?.[id]?.acts; } catch (e) { return null; } })() || [];
+const sxRow = (id, a, j) => `<div class="sxr"><button class="chip sx" data-sc="${esc(id)}" data-ai="${j}" style="white-space:normal;text-align:center;line-height:1.25">${esc(a.w)}</button><span>${esc(a.a)}</span><button class="sc-ax sxd" data-sc="${esc(id)}" data-ai="${j}" aria-label="이 상호작용 지우기" title="이 상호작용 지우기">×</button></div>`;
+function actDel(b) { const id = b.dataset.sc, i = +b.dataset.ai, sca = !!scaItem(id);
+  if (!b.classList.contains('arm')) { $$('.sc-ax.arm').forEach(x => { x.classList.remove('arm'); x.textContent = '×'; }); b.classList.add('arm'); b.textContent = '지우기'; setTimeout(() => { if (b.isConnected) { b.classList.remove('arm'); b.textContent = '×'; } }, 3000); return; }
+  const w = actsOf(id)[i]?.w || '상호작용';
+  if (sca) { if (!store.get('st-gh-token')) { toast('깃허브 열쇠가 있어야 고칠 수 있어요 (설정)', true); return; } try { scaDemoOff(); } catch (e) {}
+    scaEdit(R => { for (const d of R.days || []) for (const o of d.items || []) if (o.id === id && Array.isArray(o.acts)) o.acts.splice(i, 1); return R; }, `스칼렛 소품 상호작용 지우기: ${id} · ${w} (작업실)`, `${w} 상호작용을 지웠어요`); scaSync(); }   // 스칼렛 작업물이면 작업물에서 지우고 맵 소품에도 반영
+  else { let P = null; try { P = A.layout().scArt?.[id]; } catch (e) {} if (!P || !A?.scDef) return; A.scDef(id, { ...P, sz: P.bk ? P.bk.split('x').map(Number) : undefined, acts: (P.acts || []).filter((_, k) => k !== i) }); toast(`${w} 상호작용을 지웠어요 · 배포하면 게임에 들어가요`); }   // 맵에만 있는 소품은 배치 작업본에서
+  actsRefresh(id); }
+function actsRefresh(id) { try { renderReact(null); } catch (e) {} for (const z of $$('#zoom .zre')) { const sx = z.querySelector('[data-sc]'); if (!sx || sx.dataset.sc !== id) continue; const L = actsOf(id), g = z.querySelector('.rg'); if (L.length && g) g.innerHTML = L.map((a, j) => sxRow(id, a, j)).join(''); else z.remove(); } }
+function zReact(z, k, scId) { if (scId || k?.startsWith?.('sc:')) { const id = scId || k.slice(3), L = actsOf(id);   // v3.65 경완: 추가한 소품 상세 카드에도 그 소품의 상호작용
+    if (L.length) z.insertAdjacentHTML('beforeend', `<div class="zre"><h4>소품 반응</h4><div class="react"><section class="rg">${L.map((a, j) => sxRow(id, a, j)).join('')}</section></div></div>`); return; }
   const r = rOf(k); if (!r) return; z.insertAdjacentHTML('beforeend', `<div class="zre"><h4>소품 반응 · ${RNAME[r]}</h4><div class="react">${rxHtml(r)}</div></div>`); }
 const onMap = () => { const S = new Set(); try { for (const o of A?.insts?.() || []) { const r = o.key === 'sc' ? null : rOf(o.key) || rOf(o.kind); if (r) S.add(r); } } catch (e) {} return S; };
 // v3.78 경완: 맵에 놓인 스칼렛·추가 소품의 상호작용도 오른쪽 소품 반응에 (맵에서 빠지면 사라짐)
-const scOnMap = () => { const M = new Map(); try { for (const o of A?.insts?.() || []) if (o.key === 'sc' && o.scId && !M.has(o.scId)) { const L = scaItem(o.scId)?.acts || A.layout().scArt?.[o.scId]?.acts || []; if (L.length) M.set(o.scId, { id: o.scId, n: o.name, L }); } } catch (e) {} return M; };
+const scOnMap = () => { const M = new Map(); try { for (const o of A?.insts?.() || []) if (o.key === 'sc' && o.scId && !M.has(o.scId)) { const L = actsOf(o.scId); if (L.length) M.set(o.scId, { id: o.scId, n: o.name, L }); } } catch (e) {} return M; };
 function renderReact(k) {
   $('#rkHint').textContent = k ? '· ' + RNAME[k] : '· 지금 맵에 있는 소품';
   const M = onMap(), list = k ? [k] : Object.keys(REACT).filter(r => !A?.insts || M.has(r));
-  $('#react').innerHTML = list.map(r => `<section class="rg">${k ? '' : `<b>${RNAME[r]}</b>`}${REACT[r].map(([a, b], i) => `<div><button class="chip rx${spxKey === r + ':' + i ? ' on' : ''}" data-rk="${r}" data-ri="${i}">${a}</button><span>${b}</span></div>`).join('')}</section>`).join('') + (k ? '' : [...scOnMap().values()].map(o => `<section class="rg"><b>${esc(o.n)}</b>${o.L.map((a, j) => `<div><button class="chip sx" data-sc="${esc(o.id)}" data-ai="${j}" style="white-space:normal;text-align:center;line-height:1.25">${esc(a.w)}</button><span>${esc(a.a)}</span></div>`).join('')}</section>`).join(''));   // v2.24 경완: 소품마다 칸으로 묶어 줄 맞춤
+  $('#react').innerHTML = list.map(r => `<section class="rg">${k ? '' : `<b>${RNAME[r]}</b>`}${REACT[r].map(([a, b], i) => `<div><button class="chip rx${spxKey === r + ':' + i ? ' on' : ''}" data-rk="${r}" data-ri="${i}">${a}</button><span>${b}</span></div>`).join('')}</section>`).join('') + (k ? '' : [...scOnMap().values()].map(o => `<section class="rg"><b>${esc(o.n)}</b>${o.L.map((a, j) => sxRow(o.id, a, j)).join('')}</section>`).join(''));   // v2.24 경완: 소품마다 칸으로 묶어 줄 맞춤
 }
 // v1.5 경완: 반응 분류를 누르면 왼쪽에 그 분류 포켓몬 목록. 끌어서 맵에 놓는다. 한 번 더 누르면 닫힌다
 let spxKey = null, spxL = [], spxQ = '', spxGen = 0, spxSY = null;   // v2.60 경완: 세대 탭 (0 = 전체)
@@ -961,8 +972,8 @@ function spxFind() { const q = spxQ.trim(); if (!q) return;   /* v2.63 경완: �
   spxQ = ''; spxSY = null; $('#spxQ').value = ''; $('#spxC').hidden = true; fillSpx(); const b = $(`#spxG .mc[data-sp="${hit}"]`); if (!b) return;
   const g = $('#spxG'); const gr = g.getBoundingClientRect(), br = b.getBoundingClientRect(); g.scrollTop = Math.max(0, g.scrollTop + br.top - gr.top - (gr.height - br.height) / 2); b.classList.remove('mcf'); void b.offsetWidth; b.classList.add('mcf'); }
 function closeSpx() { rxMark(null); spxKey = null; $('#spx').hidden = true; $('#spx').innerHTML = $('#szPane').innerHTML = ''; document.body.classList.remove('szspx'); $$('.react .rx').forEach(c => c.classList.remove('on')); }
-$('#zoom').addEventListener('click', e => { const b = e.target.closest('.rx'); if (b) { e.stopImmediatePropagation(); rxClick(b); return; } const c = e.target.closest('.sx'); if (c) { e.stopImmediatePropagation(); rxDemo({ scId: c.dataset.sc, ai: +c.dataset.ai }); } }, true);
-$('#react').onclick = e => { const b = e.target.closest('.rx'); if (b) return rxClick(b); const c = e.target.closest('.sx'); if (c) rxDemo({ scId: c.dataset.sc, ai: +c.dataset.ai }); };
+$('#zoom').addEventListener('click', e => { const b = e.target.closest('.rx'); if (b) { e.stopImmediatePropagation(); rxClick(b); return; } const dx = e.target.closest('.sxd'); if (dx) { e.stopImmediatePropagation(); actDel(dx); return; } const c = e.target.closest('.sx'); if (c) { e.stopImmediatePropagation(); rxDemo({ scId: c.dataset.sc, ai: +c.dataset.ai }); } }, true);
+$('#react').onclick = e => { const b = e.target.closest('.rx'); if (b) return rxClick(b); const dx = e.target.closest('.sxd'); if (dx) return actDel(dx); const c = e.target.closest('.sx'); if (c) rxDemo({ scId: c.dataset.sc, ai: +c.dataset.ai }); };
 // v3.84 경완: 타입 카드를 누르면 필드에서 맞는 포켓몬이 그 소품과 노는 모습 (없으면 풀어놓고, 필드가 꽉 차면 알림)
 async function rxDemo(o) { if (!A?.demoReact) return; let r = null; try { r = await A.demoReact(o); } catch (e) { r = null; }
   if (r?.startsWith?.('full')) { const n = +r.split(':')[1] || 9; alertBox(`필드가 꽉 찼어요 (${n}/${n})`, '맞는 포켓몬이 필드에 없어서 새로 풀어놓으려 했는데 자리가 없어요. 필드에서 포켓몬을 하나 빼고 다시 눌러 주세요.'); }
@@ -2156,6 +2167,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.86', '10월 25일', ['맵 메뉴 소품 반응·소품 상세 창의 상호작용 줄마다 오른쪽 × (한 번 누르면 빨갛게, 한 번 더 누르면 지움)', '상호작용 목록은 스칼렛 작업물·맵 소품 창·오른쪽 소품 반응이 한 데이터를 같이 봐서 어디서 지워도 다 같이 바뀜', '허수아비 뒤에서 사라지는 예시는 스르르 사라졌다 나타남']],
   ['3.85', '10월 25일', ['소품 반응 카드를 누르면 포켓몬 목록 창 없이 바로 시뮬레이터에서 시연 (목록 창이 시뮬레이터를 가렸음), 연못 카드도 시연']],
   ['3.84', '10월 25일', ['오른쪽 소품 반응의 타입 카드를 누르면 필드에서 그 타입에 맞는 포켓몬이 그 소품과 노는 모습을 보여줘요 (없으면 필드에 하나 풀어놓고, 필드가 꽉 차면 알림창)']],
   ['3.83', '10월 25일', ['시뮬레이터 게임의 맵 편집은 다시 시뮬레이터 안에만 남아요 (작업실 배치·배포엔 안 들어감), 작업실을 새로고침해도 시뮬레이터에서 옮긴 자리가 그대로 보여요']],
@@ -3548,7 +3560,7 @@ async function scaDemo(b) { const card = b.closest('.sc-it'), o = scaItem(card?.
     if (M.hide && !M.win && !M.speek) { back = true; if (!X) { x = cx + PW * .08; y = pt + PH * .9; } if (M.peek) { const q = Math.max(0, Math.sin(tt * 1.6)) ** .6; y += (Math.min(y, pt + MH * .45) - y) * q; } else if (!X) x = pl + PW * .82; }   // 고개만 내밀기 = 소품 위로 머리가 올라왔다 내려감
     if (M.speek) { back = true; const q = Math.max(0, Math.sin(tt * 1.6)) ** .6; x = tx + side * MW * .55 * q; fl = side < 0; }   // 옆으로 고개만 쏙
     if (M.win) { const q = (tt % 4) / 4; if (q < .45) al = 0; else { clip = [tx, ty, Math.max(8, Math.min(MW * .3, PW * .14))]; y = ty + MH * .45 + (1 - Math.min(1, (q - .45) / .12)) * MH * .3; } }   // 창문으로 얼굴: at 이 창 가운데, 창 칸만 보인다
-    if (M.blink) al *= Math.sin(tt * 2.2) > -.2 ? 1 : 0;
+    if (M.blink) al *= Math.max(0, Math.min(1, .5 + Math.sin(tt * 1.4) * 1.1));   /* 3.86 경완: 스르르 사라졌다 나타남 (게임 9.52 와 같게) */
     if (M.bob) y += Math.sin(tt * 4) * 3;
     if (M.wobble) rot = Math.sin(tt * 3) * .16;
     if (M.slide) { const u = (tt % 5) / 5, gx = pl + PW * .1, gy = pt + PH, ux = pl + PW * .22, uy = pt + PH * .22, ex = pl + PW * .95, ey = pt + PH;   // 사다리로 올라가 미끄럼판 타고 내려옴
@@ -3606,7 +3618,7 @@ function scaEdit(fn, msg, done, el) { if (!store.get('st-gh-token')) { toast('�
 function scaActDel(b) { const card = b.closest('.sc-it'), id = card?.id.slice(3), i = +b.dataset.scax; if (!id) return;
   if (!b.classList.contains('arm')) { $$('.sc-ax.arm').forEach(x => { x.classList.remove('arm'); x.textContent = '×'; }); b.classList.add('arm'); b.textContent = '지우기'; setTimeout(() => { if (b.isConnected) { b.classList.remove('arm'); b.textContent = '×'; } }, 3000); return; }
   scaDemoOff(); const w = scaItem(id)?.acts?.[i]?.w || '상호작용';
-  scaEdit(R => { for (const d of R.days || []) for (const o of d.items || []) if (o.id === id && Array.isArray(o.acts)) o.acts.splice(i, 1); return R; }, `스칼렛 소품 상호작용 지우기: ${id} · ${w} (작업실)`, `${w} 상호작용을 지웠어요`); scaSync(); }
+  scaEdit(R => { for (const d of R.days || []) for (const o of d.items || []) if (o.id === id && Array.isArray(o.acts)) o.acts.splice(i, 1); return R; }, `스칼렛 소품 상호작용 지우기: ${id} · ${w} (작업실)`, `${w} 상호작용을 지웠어요`); scaSync(); actsRefresh(id); }
 function scaDel(b) { const id = b.dataset.swdel, at = +b.dataset.swday || 0, tid = b.dataset.swres || b.dataset.swgone;
   if (b.dataset.swres) return scaEdit(R => { const i = (R.trash || []).findIndex(o => o.id === tid); if (i < 0) return R; const [o] = R.trash.splice(i, 1), { del, dayAt, theme, ...it } = o; let d = (R.days || []).find(x => x.at === dayAt);
     if (!d) { d = { at: dayAt || Date.now(), theme, note: '', items: [] }; R.days = [...(R.days || []), d].sort((a, b) => b.at - a.at); } d.items.push(it); return R; }, `스칼렛 작업물 되살리기: ${tid} (작업실)`, '되살렸어요', b.closest('.sc-it'));
