@@ -550,7 +550,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.76';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.77';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2142,6 +2142,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.77', '10월 25일', ['시뮬레이터 게임 설정의 \'베타 판 쓰기\'를 켜고 끄면 작업실 미리보기가 베타 게임과 본 게임으로 바뀌어요 (버전 화면의 베타 게임으로 보기와 같아요)']],
   ['3.76', '10월 24일', ['스칼렛 소품의 예시 동작과 움직이는 부분도 게임에 보내요 · 작업실을 열면 맵 소품에 반영되니 베타로 배포하면 필드에서 예시처럼 움직여요 (베타 v9.29)']],
   ['3.75', '10월 24일', ['위쪽 \'베타로 배포하기\': 저장한 것을 베타 게임에만 올려요 (진짜 게임·데이터 번호는 그대로, 작업본도 남아요, 베타 v9.12)']],
   ['3.74', '10월 24일', ['상점 › 아이템·도구·음악·필드: 왼쪽 ⠿ 를 끌어서 순서를 바꿔요 (▲▼ 대신)']],
@@ -3618,6 +3619,7 @@ const RENDER = { neu: renderNeu, sca: renderSca, ver: renderVer, bub: renderBub,
 function hook() {
   const w = $('#game').contentWindow; A = w.__studio; if (!A || !A.ready) { A = null; return; }
   $('#gLoad').hidden = true;
+  try { const sw = w.document.querySelector('#betaSw'); if (sw) sw.onclick = () => { store.set('st-beta', BETA ? '' : '1'); location.reload(); }; } catch (e) {}   // v3.77 경완 '작업실 시뮬레이터에 베타판 쓰기가 안 됨': 게임 설정의 베타 판 쓰기 = 작업실 '베타 게임으로 보기'와 같게 (작업본은 남음)
   if (!w.document.__unmk) { w.document.__unmk = 1; w.addEventListener('pointerdown', e => { if (!e.target.closest?.('.mon')) unmarkMon(); }, true); w.addEventListener('keydown', e => szKey(e)); }   // v2.1 경완: 맵 빈 곳을 누르면 포켓몬 선택(테두리) 풀기
   if (!ORIG) {
     const K = A.K; LIVE = A.cfg || { ver: 0 }; ORIG = { odds: K.ODDS, pity: { e: K.PITY_E, l: K.PITY_L }, eggTiers: JSON.parse(JSON.stringify(A.EGG_TIERS)), eggList: JSON.parse(JSON.stringify(A.EGG_LIST || [])), eggEx: JSON.parse(JSON.stringify(A.EGG_EX || [])), tierOrd: JSON.parse(JSON.stringify(A.TIER_ORD || {})), off: [...(A.SP_OFF || [])], tierK: { r: A.cfg?.data?.tierK?.r ?? 1, k: { ...(A.TIER_KT || {}) } }, bub: { ...(A.BUB_OV || {}) }, monSc: { ...(A.MON_SC || {}) }, monRot: { ...(A.MON_ROT || {}) }, monFly: { ...(A.MON_FLY || {}) }, monFlyA: JSON.parse(JSON.stringify(A.MON_FLYA || {})), monOffA: JSON.parse(JSON.stringify(A.MON_OFFA || {})), monSh: JSON.parse(JSON.stringify(A.MON_SH || {})), shop: JSON.parse(JSON.stringify(LIVE.data?.shop || {})), thSp: JSON.parse(JSON.stringify(A.TH_SP_OV || {})), thOv: JSON.parse(JSON.stringify(A.TH_OV || {})), spots: JSON.parse(JSON.stringify(A.SPOTS || [])).map(o => { delete o.tha; delete o.pn; return o; }), layout: A.defaultLayout(),
