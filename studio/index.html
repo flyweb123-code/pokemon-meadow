@@ -550,7 +550,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.82';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.83';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2149,6 +2149,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.83', '10월 25일', ['시뮬레이터 게임의 맵 편집은 다시 시뮬레이터 안에만 남아요 (작업실 배치·배포엔 안 들어감), 작업실을 새로고침해도 시뮬레이터에서 옮긴 자리가 그대로 보여요']],
   ['3.82', '10월 25일', ['베타 토글이 켜져 있으면 미리보기 게임이 베타로 배포한 데이터를 불러와요: 베타로 배포한 필드 상점·가격 등이 작업실에 그대로 보이고, 그 위에서 이어서 고쳐요']],
   ['3.81', '10월 25일', ['예전에 시뮬레이터 게임의 맵 편집으로 옮겨 두었던 자리·넣은 소품도 작업실을 열면 작업실 맵 배치로 들어가요 (되돌리기 가능)']],
   ['3.80', '10월 25일', ['베타로 배포하면 올린 바뀐 곳이 배포하기 메뉴에서 사라져요 (저장 안 한 곳만 남음)', '시뮬레이터 게임의 맵 편집에서 옮기거나 넣고 뺀 소품이 저장을 누르면 작업실 맵 배치에 바로 들어가요 (되돌리기 가능)']],
@@ -3640,7 +3641,7 @@ function hook() {
         MG_PTS: K.MG_PTS ?? 30, MQ_DAY_G: K.MQ_DAY_G || [50, 150, 300], MQ_TY_G: K.MQ_TY_G || [60, 150, 300, 550, 1000], MQ_PH_G: K.MQ_PH_G || [100, 250, 500, 1000], MQ_PLAY_G: K.MQ_PLAY_G || [100, 300, 600, 1000, 2500], MQ_SUM_G: K.MQ_SUM_G || [150, 500, 1200, 3000], MQ_KILL_G: K.MQ_KILL_G || [150, 500, 1500, 3000] } };   // v3.25 경완: 미니게임·미션 골드
     A.ensureSprite(1).then(() => { $('#logoI').src = thumb(25) || ''; A.ensureSprite(25).then(() => $('#logoI').src = thumb(25)); });
   }
-  A.onTap = s => { if (s) mapTap(s); }; A.onBlank = () => { if (!$('#eWarn').hidden) $('#eWarn').hidden = true; else if (editing && !zoomK) $('#eMode').click(); else if (zoomK) closeZoom(); }; A.onSel = onSel; A.onMon = onMon; A.onLog = onLog; A.onLayout = onLayout; setTimeout(() => { try { A?.bakeLay?.(); } catch (e) {} }, 0); A.onHot = onHot; A.onMonSc = onMonSc; A.onSzSel = m => { szCur = m; szInfo(); }; applyInsets();
+  A.onTap = s => { if (s) mapTap(s); }; A.onBlank = () => { if (!$('#eWarn').hidden) $('#eWarn').hidden = true; else if (editing && !zoomK) $('#eMode').click(); else if (zoomK) closeZoom(); }; A.onSel = onSel; A.onMon = onMon; A.onLog = onLog; A.onLayout = onLayout; A.onHot = onHot; A.onMonSc = onMonSc; A.onSzSel = m => { szCur = m; szInfo(); }; applyInsets();
   // v2.99 경완: 데이터 v42 에서 지도 반경마다 장소 특성(th)을 붙였다. 작업본에 예전 반경이 남아 있으면 같은 모양의 반경에 한 번만 옮겨 준다
   if (store.get('st-thfill42') !== '1' && ORIG.spots?.some(o => Array.isArray(o.th))) { const gk = o => [o.la, o.lo, o.r, o.r2 || 0, o.rot || 0].join(','), TM = new Map(ORIG.spots.filter(o => Array.isArray(o.th)).map(o => [gk(o), o.th])); let n = 0;
     for (const W of [D, D._sv]) if (W && Array.isArray(W.spots)) for (const o of W.spots) if (!Array.isArray(o.th) && TM.has(gk(o))) { o.th = [...TM.get(gk(o))]; n++; }
