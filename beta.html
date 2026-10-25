@@ -5472,7 +5472,7 @@ function scPlay(m, p, a, ride, two, drag) { const r = LAYOUT.sc[p.i], G = r && s
   if (M.hide && !M.win && !M.speek && !a.x) { tx = G.cx + G.W * .08; ty = G.t + G.H * .9; if (!M.peek) tx = G.l + G.W * .82; }
   const an = pmd ? (S2.want.filter(n => !(drag && n === 'Sleep')).find(n => P.a[n]) || null) : null;   // v9.33 경완 '자던 포켓몬을 타이어 그네에 데려가도 계속 잠': 끌어다 놓아 깨운 포켓몬은 졸기·자기 그림 없이 논다
   m.scp = { r, G, S: S2, M, tx: clamp(tx, XL + 20, XR - 20), ty, side: tx < G.cx ? -1 : 1, an, back: ride ? ride.back : two ? false : S2.back || (M.hide && !M.win && !M.speek) || M.speek || M.win,
-    ride: !!(ride || M.ride || two), t0: performance.now(), x0: m.x, y0: m.y - (m.lift || 0), hitT: -9, spT: 0, MW, MH };
+    ride: !!(ride || M.ride || two), t0: performance.now(), x0: m.x, y0: m.y - (m.lift || 0), hitT: -9, spT: 0, MW, MH, ed: clamp(Math.hypot(tx - m.x, ty - m.y + (m.lift || 0)) / 70, .35, 1.4) };
   { const q = m.scp; let fx0 = q.x0, fy0 = q.y0; if ((M.fly || M.circ) && Math.hypot(q.tx - fx0, q.ty - fy0) < 40) { fx0 = clamp(q.tx + (m.x < G.cx ? -1 : 1) * (G.W / 2 + MW * .5), XL + 20, XR - 20); fy0 = G.gy + 2; m.x = fx0; m.y = fy0; }   /* 소품 위에 바로 놓였으면 옆 땅에서 날아오른다 */ q.fx0 = fx0; q.fy0 = fy0; q.fd = clamp(Math.hypot(q.tx - fx0, q.ty - fy0) / 110, .9, 2.2); }
   if (ride && G.el?.mpH) G.el.mpH.style.zIndex = Math.round(G.gy) - (ride.inH ? 0 : 2);   // v9.38: 구멍 속에 앉은 작은 포켓몬은 타이어 앞 테두리가 앞, 큰 포켓몬은 타이어 앞에 (기둥 사이)
   m.goal = null; m.wp = null; m.propSit = true; m.pzB = null; setState(m, 'idle', M.avoid ? 4.6 : rnd(14, 22)); return true; }
@@ -5486,7 +5486,6 @@ function scTick(m, now) { const q = m.scp; if (!q) return; if (!q.G.el?.isConnec
   const { G, M, S: S2 } = q, tt = (now - q.t0) / 1000, MW = q.MW, MH = q.MH, ease = u => u < .5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2, lerp = (p, r, u) => p + (r - p) * u;
   let x = q.tx, y = q.ty, fl = null, back = q.back, al = 1, rot = 0, an = q.an, walk = false;
   if (M.fly && tt < q.fd) { const u = tt / q.fd, e = ease(u); x = lerp(q.fx0, q.tx, e); y = lerp(q.fy0, q.ty, e) - Math.sin(u * Math.PI) * Math.min(60, 18 + Math.hypot(q.tx - q.fx0, q.ty - q.fy0) * .2) + Math.sin(tt * 26) * 2; walk = true; fl = q.tx < q.fx0; }   /* v9.52 경완 '가로대에 앉는 건 늘 저 위치에서 시작?': 날아와 앉는 소품 놀이는 지금 서 있던 자리에서 날아올라 간다 (예전엔 소품 옆 150px 위에서 나타남) */
-  else if (!M.fly && !M.climb && !M.avoid && !M.slide && !M.through && tt < .45) { const u = ease(tt / .45); x = lerp(q.x0, q.tx, u); y = lerp(q.y0, q.ty, u) - Math.sin(u * Math.PI) * 14; }   // 제자리로 폴짝
   if (M.flap) { y += Math.sin(tt * 16) * 3; walk = true; }
   if (M.circ) { const a2 = tt * 2.4, EM = scImg(q.r[0])?.em, top = q.ty < G.t + G.H * .6, oy = EM ? G.t + EM.cy * G.H + MH * .45 : top ? Math.min(q.ty, G.t + G.H * .3) : G.t + G.H * .45, rr = EM ? Math.max(14, EM.rw * G.W * .6 + MW * .35) : top ? G.W * .32 : G.W / 2 + MW * .3; x = (EM ? G.l + EM.cx * G.W : G.cx) + Math.cos(a2) * rr; y = oy + Math.sin(a2) * (top || EM ? 6 : 12)   /* v9.53 경완 '가로등 조명 근처 떠도는 건 조명 높이에': 빛 나는 칸(em)이 있으면 몸 가운데가 그 높이에 오게 그 둘레를 돈다 */ + Math.sin(tt * 18) * 2; back = Math.sin(a2) < 0; fl = Math.sin(a2) < 0; walk = true; }
   if (M.circ && tt < q.fd) { const u = tt / q.fd, e = ease(u); fl = x < q.fx0; x = lerp(q.fx0, x, e); y = lerp(q.fy0, y, e) - Math.sin(u * Math.PI) * 24; walk = true; }   /* v9.52: 빙빙 도는 것도 서 있던 자리에서 날아와 시작 */
@@ -5515,10 +5514,11 @@ function scTick(m, now) { const q = m.scp; if (!q) return; if (!q.G.el?.isConnec
   else { const tf = ang ? `translate(-50%,-100%) rotate(${ang.toFixed(4)}rad)` : ''; if (own) { e.style.transformOrigin = `${((ox - G.l) / G.W * 100).toFixed(1)}% ${((oy - G.t) / G.H * 100).toFixed(1)}%`; e.style.transform = tf; } }
   if (fx.glow) { const u = .5 + .5 * Math.sin(tt * 4); e.style.filter = `drop-shadow(0 0 ${(3 + 5 * u).toFixed(1)}px rgba(255,240,150,${(.55 + .4 * u).toFixed(2)}))`; }
   if (q.ride && (MV ? MV.k !== 'spin' : true) && a2) { const dx = x - px, dy = y - py, c = Math.cos(a2), s = Math.sin(a2); x = px + dx * c - dy * s; y = py + dx * s + dy * c; rot += a2; }
+  let wi = false; if (!M.fly && !M.circ && !M.avoid && tt < q.ed) { const u = ease(tt / q.ed), up = q.ty < G.gy - 6; x = lerp(q.x0, x, u); y = lerp(q.y0, y, u) - (up ? Math.sin(u * Math.PI) * 12 : 0); if (!up) { wi = true; back = false; } if (!up && q.ed > .5) walk = true; fl = x < q.x0 ? true : x > q.x0 ? false : fl; al = Math.max(al, 1 - u); }   /* v9.61 경완 '몬스터볼 스프링 노말 타입이 위에서부터 등장 — 모든 소품에서 자리에서 자연스럽게 시작': 어떤 동작이든 처음엔 서 있던 자리에서 그 동작의 첫 자리까지 걸어가거나(땅) 폴짝 올라간다(위) (예전엔 밀기·미끄럼·통과 등이 첫 자리로 순간 이동, 나머지는 14px 뛰어오름) */
   if (M.skill && now > q.spT) { q.spT = now + 260; particle(G.cx + rnd(-G.W * .3, G.W * .3), G.t + G.H * rnd(.2, .6), 'spark', '✦'); }
   if (M.flap && fx.spin && now > q.spT) { q.spT = now + 320; particle(x - q.side * MW * .3, y - MH * .3, 'spark', '〰'); }
   // 필드에 옮기기: 그림자(m.y)는 소품 바닥 앞/뒤, 그 위 높이는 xl
-  const air = y < G.gy - 1; m.x = clamp(x, XL + 16, XR - 16); m.y = clamp(back ? G.gy - 1 : air ? G.gy + 2 : y + 2, MIN_Y, MAX_Y); m.xl = air || back ? Math.max(0, m.y - y) : 0;
+  const air = !wi && y < G.gy - 1; m.x = clamp(x, XL + 16, XR - 16); m.y = clamp(wi ? y : back ? G.gy - 1 : air ? G.gy + 2 : y + 2, MIN_Y, MAX_Y);   /* v9.61: 땅에서 걸어 들어오는 동안은 그림자도 발밑 그대로 */ m.xl = air || back ? Math.max(0, m.y - y) : 0;
   m.pzB = back ? Math.round(G.gy) : null; if (fl != null) m.face = fl ? -1 : 1; else faceTo(m, G.cx);
   m.scAn = walk ? 'Walk' : an; m.scRot = rot; m.el.style.opacity = al < 1 ? String(al) : ''; m.scSnap = tt > .05; }
 // v5.77 경완(고라파덕이 그루터기 옆에 걸터앉아 잠): 위에 올라앉을 때는 몸통이 아니라 그림자 가운데(무게 중심)를 그 자리에 맞춘다
@@ -6269,7 +6269,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.60';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.61';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
