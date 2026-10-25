@@ -551,7 +551,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.90';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.91';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -646,13 +646,9 @@ async function quickDeploy() { const C = changes(), tok = store.get('st-gh-token
 $('#goWork').onclick = () => BETA ? betaDeploy() : quickDeploy();
 { const t = $('#betaTop'); t.classList.toggle('on', BETA); t.setAttribute('aria-pressed', BETA); t.textContent = BETA ? '베타 켜짐' : '베타 꺼짐'; $('#goWork').textContent = BETA ? '베타로 배포하기' : '배포하기';
   t.onclick = () => { store.set('st-beta', BETA ? '' : '1'); location.reload(); }; }
-// v3.90 경완: 맵 배치(자리)는 작업실에만 남기고 베타 배포엔 진짜 게임(live) 배치를 그대로 싣는다. 소품 그림·반응 같은 나머지 layout 은 작업실 값
-const LAY_POS = ['pond', 'ponds', 'fire', 'fires', 'bed', 'beds', 'tree', 'trees', 'perch', 'perches', 'stump', 'stumps', 'bushes', 'puddles', 'rocks', 'mush', 'flowers', 'path', 'sc'];
-function layKeepLive(data, live) { if (!data?.layout || !live) return data; const d = { ...data, layout: { ...data.layout } }; for (const k of LAY_POS) { if (k in live) d.layout[k] = JSON.parse(JSON.stringify(live[k])); else delete d.layout[k]; } return d; }
 // v3.75 경완: 베타로 배포하기 — 저장한 것까지를 config/beta.json 에만 올림 (베타 게임만 씀, 진짜 게임·데이터 번호·기록은 그대로, 작업본도 그대로 남김)
 async function deployBeta(data, tries = 2) {
   let old = null; try { old = JSON.parse(await gh('/contents/config/beta.json?ref=main', { raw: true })); } catch (e) { if (e.status !== 404) throw e; }
-  data = layKeepLive(data, JSON.parse(await gh('/contents/config/live.json?ref=main', { raw: true }))?.data?.layout);   /* v3.90 경완 '맵 배치는 작업실에만': 베타로 배포해도 소품·연못·꽃 자리는 진짜 게임 배치 그대로 */
   const bver = (old?.bver || 0) + 1, beta = { ver: LIVE.ver || 0, bver, at: Date.now(), note: '', data };
   const ref = await gh('/git/ref/heads/main'), base = await gh('/git/commits/' + ref.object.sha);
   const tree = await gh('/git/trees', { method: 'POST', body: JSON.stringify({ base_tree: base.tree.sha, tree: [{ path: 'config/beta.json', mode: '100644', type: 'blob', content: JSON.stringify(beta) }] }) });
@@ -2179,6 +2175,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.91', '10월 26일', ['3.90 되돌림: 작업실에서 바꾼 맵 배치는 다시 베타 배포에 들어가요. 시뮬레이터 게임은 따로 쓰는 기기처럼, 그 안의 맵 편집은 시뮬레이터에만 남아요']],
   ['3.90', '10월 26일', ['베타로 배포해도 맵 배치(소품·연못·꽃 자리)는 베타 게임에 안 올라가요. 맵 배치는 작업실에만 남고, 베타 게임은 진짜 게임 배치를 써요']],
   ['3.89', '10월 26일', ['소품 반응 카드의 조건 이름을 한 규칙으로 (크기 · 움직임 · 타입, 아무나는 \'모든 포켓몬\', 순서 있는 반응의 마지막은 \'나머지 포켓몬\')', '스칼렛 소품 상호작용 조건도 같은 말로 정리 (바람개비 날갯짓은 \'날갯짓하는 포켓몬\' = 날갯짓 그림이 있는 포켓몬만)']],
   ['3.88', '10월 26일', ['본 게임 미리보기에서도 모닥불·연못·바위 상호작용 × 지우기 (본 게임에 배포하면 게임에 들어가요)', '모닥불 \'깜짝 놀라 뒤로 물러나요\' 는 얼음 타입만 (베타 9.66)']],
