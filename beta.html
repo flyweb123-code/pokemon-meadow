@@ -2856,7 +2856,7 @@ const SCN = [['berry-see', '!', '내가 놓은 열매를 알아챘을 때'], ['t
   ['late-berry', '?', '먹으러 간 열매를 다른 포켓몬이 먼저 먹었을 때'], ['pet-start', '?', '쓰다듬기를 시작할 때'], ['no-answer', '?', '좋아하는 마음을 받았는데 잘 모를 때'], ['fight-scare', '?', '상대를 겁줘서 도망가게 했을 때'], ['headache', '?', '고라파덕이 두통으로 머리를 감쌀 때'], ['sp-curious', '?', '특수 장면에서 무슨 일인지 궁금해할 때'],
   ['wash-start', '…?', '빗질을 시작할 때'], ['sp-late', '…?', '특수 장면에서 늦게 눈치챘을 때'],
   ['idle-alone', '…', '혼자 멍하니 서 있을 때 가끔'], ['pet-quit', '…', '쓰다듬다가 그만뒀을 때'], ['tree-empty', '…', '열매나무를 흔들었는데 열매가 없을 때'], ['tree-shake', '…', '열매나무를 흔들 때'], ['ash-sniff', '…', '비에 꺼진 모닥불 재를 맡을 때'], ['heavy-flower', '…', '무거운 포켓몬이 꽃밭 앞에서 멈칫할 때'], ['rock-lean', '…', '바위에 기대 쉴 때'], ['chase-lost', '…', '쫓아가다 놓쳤을 때'], ['meet-fail', '…', '만나러 갔는데 같이 놀 수 없을 때'], ['play-lose', '…', '장난 겨루기에서 졌을 때'], ['move-calm', '…', '단단해지기·사이코 같은 특기를 쓸 때'], ['sp-ponder', '…', '특수 장면에서 생각에 잠길 때'],
-  ['pet-done', '♪', '쓰다듬기·빗질을 마쳤을 때'], ['pet-ing', '♪', '쓰다듬는 동안'], ['prop-play', '♪', '횃대·그루터기·연못·웅덩이에서 놀 때'], ['tree-peck', '♪', '새 포켓몬이 나무에 달린 열매를 쪼아 먹을 때'], ['flower-sniff', '♪', '꽃밭 냄새를 맡거나 벌레 타입이 꿀을 모을 때'], ['fire-warm', '♪', '모닥불을 쬘 때 (밤엔 Zz)'], ['prank', '♪', '잠든 친구 얼굴에 장난을 쳤을 때'], ['fight-win', '♪', '싸움·겨루기에서 이겼을 때'], ['ghost-scare', '♪', '유령이 놀래키는 데 성공했을 때'], ['chat', '♪', '친구와 수다 떠는 동안'], ['evolve', '♪', '진화했을 때'], ['sp-end', '♪', '특수 장면이 끝날 때'],
+  ['pet-done', '♪', '쓰다듬기·빗질을 마쳤을 때'], ['pet-ing', '♪', '쓰다듬는 동안'], ['prop-play', '♪', '횃대·그루터기·연못·웅덩이에서 놀 때'], ['prop-watch', '!', '소품 옆에서 신기한 듯 구경할 때'], ['tree-peck', '♪', '새 포켓몬이 나무에 달린 열매를 쪼아 먹을 때'], ['flower-sniff', '♪', '꽃밭 냄새를 맡거나 벌레 타입이 꿀을 모을 때'], ['fire-warm', '♪', '모닥불을 쬘 때 (밤엔 Zz)'], ['prank', '♪', '잠든 친구 얼굴에 장난을 쳤을 때'], ['fight-win', '♪', '싸움·겨루기에서 이겼을 때'], ['ghost-scare', '♪', '유령이 놀래키는 데 성공했을 때'], ['chat', '♪', '친구와 수다 떠는 동안'], ['evolve', '♪', '진화했을 때'], ['sp-end', '♪', '특수 장면이 끝날 때'],
   ['sing', '♪♪', '푸린처럼 노래하는 특기를 쓸 때'],
   ['berry-given', '♥', '내가 준 열매를 받아먹었을 때'], ['friend-meet', '♥', '친한 친구를 만났을 때'], ['care', '♥', '지친 친구를 돌봐 줄 때'], ['flower-happy', '♥', '풀·페어리 타입이 꽃밭에서 행복할 때'], ['sp-love', '♥', '특수 장면에서 사이가 좋아졌을 때'],
   ['shy-meet', '…♥', '좋아하는 친구를 만났을 때 가끔'],
@@ -3409,7 +3409,7 @@ function think(m) {
     if (o) return moveTo(m, o, { kind: 'meet', mon: o });
   }
   if (treeOn() && winged(m) && !(m.treeCd > 0) && sceneFree(m) && Math.random() < (m.hunger > 50 && S.tree?.n ? .12 : .05)) { m.treeCd = rnd(240, 480); return moveTo(m, { x: PROPS.tree.x + rnd(-24, 24) * LS('tree'), y: PROPS.tree.y + 4 }, { kind: 'treePerch' }); }   // v4.55 경완: 새 포켓몬은 가끔 열매나무에 날아올라 앉고, 배고프면 달린 열매를 쪼아 먹는다
-  if (t.mv !== 'swim' && !(m.propCd > 0) && propFree(m) && Math.random() < .4) {   /* v9.56 경완 '스프링 타는 게 아예 없음': 포켓몬끼리 장면이 거의 늘 진행 중이라 sceneFree 가 95% 막았다 → 소품 놀이는 다른 소품 놀이만 없으면 시작 */ m.propCd = rnd(30, 80);   /* v9.57 경완: 소품 우선 규칙(9.55) 없앰 — 다시 포켓몬끼리 만나기 다음 · v9.53 경완 '소품 상호작용 빈도 더 높여야': .22 → .4, 쉬는 틈 60~150 → 30~80초 */   /* v9.37 경완 '소품 상호작용 빈도·시간 늘리기': .12 → .22, 쉬는 틈 120~300 → 60~150초 */ const used = q => S.mons.some(o => o !== m && propBusy(o) && (o.goal?.kind === 'prop' ? o.goal.p.k === q.k && o.goal.p.i === q.i : o.scp && q.k === 'sc' && o.scp.r === LAYOUT.sc[q.i])), L = propSpots().filter(q => q.k !== 'tree' && q.k !== 'puddle' && !used(q) && m.lastProp !== q.k + q.i && q.x > XL + 24 && q.x < XR - 24),   /* v9.58 경완 '같은 포켓몬이 같은 소품 반복 X': 바로 전에 논 소품은 건너뛴다 · '바위 없는 데서 바위 상호작용': 화면 밖(포켓몬이 못 가는 곳) 소품은 고르지 않는다 */ rideP = q => q.k === 'sc' && (LAYOUT.scArt[LAYOUT.sc[q.i]?.[0]]?.acts || []).some(a => /올라타|들어가 앉|구멍/.test(a.a || '')), R = L.filter(rideP), q = L.length && (R.length && Math.random() < .45 ? pick(R) : pick(L));   /* v9.54: 탈 수 있는 소품(그네·스프링)을 더 자주 고른다 */ if (q) { m.lastProp = q.k + q.i; return moveTo(m, { x: q.x + (m.x < q.x ? -1 : 1) * q.rx * .6, y: q.y + q.ry * .5 }, { kind: 'prop', p: q }); } }
+  if (t.mv !== 'swim' && !(m.propCd > 0) && propFree(m) && Math.random() < .4) {   /* v9.56 경완 '스프링 타는 게 아예 없음': 포켓몬끼리 장면이 거의 늘 진행 중이라 sceneFree 가 95% 막았다 → 소품 놀이는 다른 소품 놀이만 없으면 시작 */ m.propCd = rnd(30, 80);   /* v9.57 경완: 소품 우선 규칙(9.55) 없앰 — 다시 포켓몬끼리 만나기 다음 · v9.53 경완 '소품 상호작용 빈도 더 높여야': .22 → .4, 쉬는 틈 60~150 → 30~80초 */   /* v9.37 경완 '소품 상호작용 빈도·시간 늘리기': .12 → .22, 쉬는 틈 120~300 → 60~150초 */ const used = q => S.mons.some(o => o !== m && propBusy(o) && (o.goal?.kind === 'prop' ? o.goal.p.k === q.k && o.goal.p.i === q.i : o.scp && q.k === 'sc' && o.scp.r === LAYOUT.sc[q.i])), L = propSpots().filter(q => q.k !== 'tree' && q.k !== 'puddle' && !used(q) && m.lastProp !== q.k + q.i && q.x > XL + 24 && q.x < XR - 24),   /* v9.58 경완 '같은 포켓몬이 같은 소품 반복 X': 바로 전에 논 소품은 건너뛴다 · '바위 없는 데서 바위 상호작용': 화면 밖(포켓몬이 못 가는 곳) 소품은 고르지 않는다 */ rideP = q => q.k === 'sc' && (LAYOUT.scArt[LAYOUT.sc[q.i]?.[0]]?.acts || []).some(a => /올라타|들어가 앉|구멍/.test(a.a || '')), R = L.filter(rideP), q = L.length && (R.length && Math.random() < .45 ? pick(R) : pick(L));   /* v9.54: 탈 수 있는 소품(그네·스프링)을 더 자주 고른다 */ if (q) { m.lastProp0 = m.lastProp; m.lastProp = q.k + q.i; return moveTo(m, { x: q.x + (m.x < q.x ? -1 : 1) * q.rx * .6, y: q.y + q.ry * .5 }, { kind: 'prop', p: q }); } }
   if (Math.random() < .35) { setState(m, 'idle', rnd(2, 6)); if (Math.random() < .12) emote(m, pick(['…', '♪', '?']), '', 2.2, 'idle-alone'); return; }
   let p;
   if (t.mv === 'swim') p = randPond(.8, m);
@@ -3446,6 +3446,7 @@ function arrive(m) {
   if (g.kind === 'scpush') { const i = LAYOUT.sc.indexOf(g.r), A = LAYOUT.scArt[g.r[0]], rd = g.rd; m.goal = null;
     if (i < 0 || !A || !S.mons.includes(rd) || rd.scp?.r !== g.r || !scPlay(m, { k: 'sc', i }, g.a, null, null, false)) return setState(m, 'idle', 1);
     m.propUntil = performance.now() + clamp(m.t || 3, 3, 24) * 1000; emote(m, '♪', '', 2.2, 'prop-play'); return log(`${J(m,'이/가')} ${J(rd,'이/가')} 탄 ${esc(A.n)}${hasBat(A.n) ? '을' : '를'} 밀어 흔들어 준다.`, [m, rd]); }
+  if (g.kind === 'propWatch') return propWatch(m, g.cx);
   if (g.kind === 'treePerch') { treePerch(m); m.propUntil = performance.now() + 10000; sceneNext = Math.max(sceneNext, m.propUntil + rnd(3000, 6000)); return; }
   if (g.kind === 'forage' && g.tree && treeOn()) { setState(m, 'idle', 2.5); faceTo(m, PROPS.tree.x); anim(m, 'hop'); setTimeout(() => { if (S.mons.includes(m)) shakeTree(m); }, 250); return; }
   if (g.kind === 'forage') {
@@ -5590,7 +5591,8 @@ function campBgm(on) { try {
   if (!campMus.on && !bgm.camp) return false; campMus.stop(2); const r = bgm.camp; bgm.camp = null; if (!r || !mgEl.hidden || bgm.mg) return false;
   setTimeout(() => { if (campMus.on || bgm.mg) return; bgm.fadeIn = 2; if (bgmOn && r.id && r.id !== 'intro') bgmPlay(r.id, r.pos); else bgmStart(); }, 1200); return false; } catch (e) { return false; } }
 const PROP_JOY = 3;
-function propReact(m, p, drag) { propReactIn(m, p, drag); m.propUntil = performance.now() + clamp(m.t || 3, 3, 24) * 1000; }   /* v9.58 경완 '포켓몬끼리 상호작용 빈도가 너무 줄음': 소품 놀이가 끝날 때까지 모든 포켓몬끼리 장면을 막던 sceneNext 밀기 없앰 (소품 놀이 중인 그 포켓몬만 빠진다) */
+function propWatch(m, cx) { m.goal = null; m.backSit = false; faceTo(m, cx); setState(m, 'idle', rnd(6, 10)); emote(m, '!', '', 2.2, 'prop-watch'); }   // v9.63: 소품 구경 = 옆에 서서(앞모습) 말풍선 하나, 일지 없음
+function propReact(m, p, drag) { if (propReactIn(m, p, drag) === 'watch') { m.lastProp = m.lastProp0; m.propCd = Math.min(m.propCd || 0, rnd(10, 20)); return; }   /* v9.63: 구경은 소품 놀이 횟수(동시 셋·같은 소품 반복·쉬는 틈)에 안 센다 */ m.propUntil = performance.now() + clamp(m.t || 3, 3, 24) * 1000; }   /* v9.58 경완 '포켓몬끼리 상호작용 빈도가 너무 줄음': 소품 놀이가 끝날 때까지 모든 포켓몬끼리 장면을 막던 sceneNext 밀기 없앰 (소품 놀이 중인 그 포켓몬만 빠진다) */
 // 스칼렛 소품 상호작용의 '누가(w)'에 이 포켓몬이 맞는지 (v9.49: 작업실 타입 카드 시연도 같이 씀)
 function scFit(m, w) { const flyer = winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover', small = isSmall(m) && ![1, 2, 3, 5, 10, 11].includes(SPm(m).sh) && (SPm(m).spd || 0) >= 50, ty = tyOf(m).map(t => TYPE_KO[t]), mv = T(m).mv;
   /* v9.51 경완 '나는 벌레 타입인데 벌레 아닌 포켓몬도 나옴': '/' 로 나뉜 것 중 하나만 맞으면 되고, 한 덩어리 안에서는 적힌 조건(타입·나는·작은·큰·헤엄)을 모두 만족해야 */
@@ -5609,12 +5611,11 @@ function propReactIn(m, p, drag) {
       const tw = a.x?.two; if (tw?.at) { const ok = o => o !== m && S.mons.includes(o) && awake(o) && !o.held && !o.scp && !o.camp && !o.pin && !o.evolving && !o.washing && o.state !== 'special' && o.state !== 'interact' && dist(o, p) < 320, o2 = S.mons.filter(ok).sort((u, v) => dist(u, p) - dist(v, p)).find(o => { const ty2 = tyOf(o).map(t => TYPE_KO[t]), w = tw.w || a.w || ''; return ty2.some(t => t && w.includes(t)) || (isSmall(o) && /작은/.test(w)) || (!isSmall(o) && /큰/.test(w)); });   // 둘이 노는 상호작용 (시소): 가까운 짝이 반대쪽에 앉는다
         if (o2 && scPlay(o2, p, a, null, tw)) { o2.propUntil = performance.now() + 10000; dustAt(o2); return log(`${J(m,'과/와')} ${J(o2,'이/가')} ${esc(A.n)}에서 같이 논다.`, [m, o2]); } }
       return log(`${J(m,'이/가')} ${esc(A.n)} 곁에서 놀고 있다.`, [m]); }
-    { const G = r && scGeo(r), d = rnd(9, 15), MW = m.w || 40; setState(m, 'idle', d);   /* v9.35 경완 '소품 신기하게 바라보는 상호작용은 소품에 가리지 않게': 소품 앞에 겹쳐 뒷모습으로 올려다보거나, 소품 옆(그림 밖)에서 바라본다 */
-      if (G && (T(m).mv === 'walk' || T(m).mv === 'hover') && G.gy + 8 <= MAX_Y && Math.random() < .5) { place(m, clamp(G.cx + rnd(-G.W * .2, G.W * .2), XL + 20, XR - 20), G.gy + 8); m.backSit = true; m.lookBk = performance.now() + d * 1000; }
-      else if (G) { let x = m.x < G.cx ? G.l - MW * .45 : G.l + G.W + MW * .45; if (x < XL + 20 || x > XR - 20) x = x < G.cx ? G.l + G.W + MW * .45 : G.l - MW * .45; place(m, clamp(x, XL + 20, XR - 20), Math.min(MAX_Y, G.gy + 2)); faceTo(m, G.cx); }
-      else at(m.x < p.x ? -p.rx * .7 : p.rx * .7, 8); }
-    anim(m, 'hop'); emote(m, a ? '♪' : '…', '', 2.2, 'prop-play');
-    return log(a ? `${J(m,'이/가')} ${esc(A.n)} 곁에서 놀고 있다.` : `${J(m,'이/가')} ${esc(A?.n || '소품')}${hasBat(A?.n || '소품') ? '을' : '를'} 신기한 듯 바라본다.`, [m]); }   /* v9.28 경완: 일지엔 괄호 설명 없이 */
+    if (!a) { const G = r && scGeo(r), MW = m.w || 40;   /* v9.63 경완 '소품 구경은 옆에서 앞모습으로만, 말풍선 하나, 일지·상호작용 횟수 규칙엔 안 넣음': 뒷모습 겹치기 없앰, 소품 옆까지 걸어가서 구경 */
+      let x = m.x, y = m.y; if (G) { x = m.x < G.cx ? G.l - MW * .45 : G.l + G.W + MW * .45; if (x < XL + 20 || x > XR - 20) x = x < G.cx ? G.l + G.W + MW * .45 : G.l - MW * .45; x = clamp(x, XL + 20, XR - 20); y = Math.min(MAX_Y, G.gy + 2); }
+      m.backSit = false; m.lookBk = 0; if (Math.hypot(x - m.x, y - m.y) > 6) moveTo(m, { x, y }, { kind: 'propWatch', cx: G ? G.cx : p.x }); else propWatch(m, G ? G.cx : p.x); return 'watch'; }
+    anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play');
+    return log(`${J(m,'이/가')} ${esc(A.n)} 곁에서 놀고 있다.`, [m]); }   /* v9.28 경완: 일지엔 괄호 설명 없이 */
   if (p.k === 'tree' && p.x2) { at(m.x < p.x ? -32 : 32, 14); setState(m, 'idle', rnd(6, 10)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play'); return log(pick([`${J(m,'이/가')} 나무 그늘 아래에서 쉰다.`, `${J(m,'이/가')} 나무 밑동에 기대어 하늘을 올려다본다.`]), [m]); }   /* v8.95: 더 놓은 나무엔 열매가 없다 */
   if (p.k === 'tree') { at(m.x < p.x ? -32 : 32, 14); setState(m, 'idle', 2.5); anim(m, 'hop'); setTimeout(() => { if (S.mons.includes(m)) shakeTree(m); }, 250); return; }
   if (p.k === 'perch') {
@@ -6269,7 +6270,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.62';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.63';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
