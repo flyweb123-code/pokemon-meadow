@@ -1,6 +1,948 @@
 {
  "days": [
   {
+   "at": 1792968636307,
+   "theme": "숲속 음악회",
+   "note": "오늘은 풀밭에 작은 음악회를 열어 봤어요! 두드리고, 누르고, 흔들고, 튕기는 악기마다 포켓몬이 직접 소리를 낼 수 있게 동작을 나눴고, 종 걸이와 풍경은 매단 부분만 따로 흔들려요.",
+   "items": [
+    {
+     "id": "big-drum",
+     "n": "빨간 큰북",
+     "k": "놀이",
+     "d": "빨간 몸통에 금색 테를 두르고 크림색 가죽을 씌운 큰북이에요. 몸통에 엮은 끈이 지그재그로 둘러져 있어요.",
+     "px": [
+      "........................",
+      ".....kkkkkkkkkkkkkk.....",
+      "...kkaaaaabbbbbbbbbkk...",
+      "..kaaaaaabbbbbbbbbbbbk..",
+      ".kaababbbbbbbbbbbbcccck.",
+      ".kbbbbbbbbbbbbbccccccck.",
+      ".kRbbbbbbbbccccccccccUk.",
+      ".kGRRbbbbbcccccccccUUJk.",
+      ".kGGGGSSSSSSSSTTTTIJJJk.",
+      ".kRcGGHHHHHHHHIIIIIJcUk.",
+      ".kRbRRHHHcHHHHIcIITUbUk.",
+      ".kRRbRSSSbSSSSTbTTTUbUk.",
+      ".kRRVRSSbSbSSSbTbTTbUUk.",
+      ".kRRVRSSbSbSSSbTbTTbUUk.",
+      ".kRRRbSbSSbSSSbTTbTbUUk.",
+      ".kRRRbSbSSSbSbTTTbbUUUk.",
+      ".kRRRRbSSSSbSbTTTTbUUUk.",
+      ".kRRRRcSSSSSbSTTTTcUUUk.",
+      ".kHHRRSSSSSScSTTTTTUIIk.",
+      ".kGGHHHHHSSSSSTIIIIIJJk.",
+      "..kkGGHHHHHHHHIIIIIJkk..",
+      "....kkkkkHHHHHIkkkkk....",
+      ".........kkkkkk........."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "R": "#e08262",
+      "S": "#b85a40",
+      "T": "#823a2c",
+      "U": "#5a2a24",
+      "V": "#f2a688",
+      "G": "#f6dc8a",
+      "H": "#e0b050",
+      "I": "#b07c30",
+      "J": "#7a5224",
+      "a": "#fbf4e2",
+      "b": "#e6d6b0",
+      "c": "#bca880"
+     },
+     "acts": [
+      {
+       "w": "격투 타입",
+       "a": "북 앞에 서서 주먹으로 둥둥 두드려요",
+       "x": {
+        "at": "front",
+        "m": "push",
+        "an": "Attack",
+        "fx": "swing"
+       }
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "북 위로 올라가 가죽 위에 동그랗게 앉아요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       }
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "북 옆에 기대어 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       }
+      }
+     ],
+     "fit": "모닥불 근처, 넓은 풀밭",
+     "glow": 0
+    },
+    {
+     "id": "horn-gramophone",
+     "n": "나팔 축음기",
+     "k": "쉼터",
+     "d": "나무 상자 위에 까만 음반이 돌고, 커다란 놋쇠 나팔이 꽃처럼 피어 있는 옛날 축음기예요.",
+     "px": [
+      ".....kkkkkk...........",
+      "...kkGGGGGHkk.........",
+      "..kGGVGGGHHHHk........",
+      ".kGGVGIIIIHIHHk.......",
+      "kGGGGIIJJIIHHHIk......",
+      "kGGGIJJKKJJIHIIk......",
+      "kIIIIJKKKKJIIIIk......",
+      "kGGHIJJKKJJIIIIk......",
+      "kHHHHIIJJIIIIIIk......",
+      ".kHHIHIIIIIIIIk.......",
+      "..kHHHIIIIIIIk........",
+      "...kkIIIIIIIk...k.....",
+      ".....kkkkkHIk..knk....",
+      "..........kHIkknnk....",
+      "..........kHIknknk....",
+      "......kkkkkkHInknk....",
+      ".....kqqooooonoonk....",
+      "....kooooooGomoonk....",
+      "...kAAAooooooooAAAk...",
+      "...kADDDDDDDDDDDDEk...",
+      "...kAAABBBBBDDDDEEk...",
+      "...kAAEEEEEEEEEBEEk...",
+      "...kAAEDDDGHDDDBEEk...",
+      "...kAAEBBBBBBBBBEEk...",
+      "...kAAABBBBBDDDDEEk...",
+      "...kEEkkkkkkkkkkEEk...",
+      "....kk..........kk...."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "A": "#ecc48a",
+      "B": "#c08a52",
+      "D": "#8e5c32",
+      "E": "#5e3a20",
+      "G": "#f6dc8a",
+      "H": "#e0b050",
+      "I": "#b07c30",
+      "J": "#7a5224",
+      "K": "#4a3020",
+      "V": "#fff4c0",
+      "o": "#3a3440",
+      "q": "#6a6478",
+      "m": "#eef0f2",
+      "n": "#9aa2b0"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "나팔 앞에 앉아 음악을 들으며 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": "front",
+        "an": "Sleep"
+       }
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 나팔 끝 테두리에 앉아요",
+       "x": {
+        "at": [
+         0.3,
+         0.08
+        ],
+        "m": "fly"
+       }
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "상자 옆에서 나팔 속을 빼꼼 들여다봐요",
+       "x": {
+        "at": "side",
+        "m": "speek"
+       }
+      }
+     ],
+     "fit": "벤치나 그루터기 옆, 조용한 구석",
+     "glow": 0
+    },
+    {
+     "id": "wood-xylophone",
+     "n": "나무 실로폰",
+     "k": "놀이",
+     "d": "나무 받침 위에 일곱 빛깔 건반이 길이 순서대로 놓인 실로폰이에요. 왼쪽 긴 건반은 낮은 소리, 오른쪽 짧은 건반은 높은 소리가 나요.",
+     "px": [
+      "..kk........................",
+      ".kRSkkk.kk..................",
+      ".kvSkOPkYZkkk.kk............",
+      "kDvwDOwkYZkbckfgkkk.kk......",
+      "kERSEOPDYwDbwkfgkRSkOPkkk...",
+      ".kRSkOPEYZEbcDfwDRwkOPkYZk..",
+      ".kRSkOPkYZkbcEfgERSDOwDYwkk.",
+      ".kRSkOPkYZkbckfgkRSEOPEYZDDk",
+      ".kRSkOPkYZkbckfgkRSkOPkYZDDk",
+      ".kRSkOPkYZkbckfgkRSDOwDywEEk",
+      ".kRSkOPkYZkbcDfwDTwEQQEEkkk.",
+      ".kRSkOPDYwDdwEhhEEkkkkkk....",
+      "kDRwDQwEyyEEkkkkkk..........",
+      "kETTEEkkkkkk................",
+      ".kkkkk......................"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "D": "#8e5c32",
+      "E": "#5e3a20",
+      "w": "#f6dc8a",
+      "v": "#fcd2c0",
+      "R": "#e88a6a",
+      "S": "#c4624a",
+      "T": "#8e3c30",
+      "U": "#5a2a24",
+      "O": "#f0b06a",
+      "P": "#d8884a",
+      "Q": "#a05c30",
+      "X": "#6e3c22",
+      "Y": "#f4dc7c",
+      "Z": "#dcb44c",
+      "y": "#a8822e",
+      "z": "#6a5220",
+      "b": "#9ad4ee",
+      "c": "#5aa0d4",
+      "d": "#3a6aa8",
+      "e": "#24406a",
+      "f": "#c8a8e0",
+      "g": "#9a78c0",
+      "h": "#6a4c92",
+      "i": "#40305a"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "건반 위로 올라가 끝에서 끝까지 걸으며 도레미 소리를 내요",
+       "x": {
+        "at": "top",
+        "m": "climb walk"
+       }
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "실로폰 앞에 서서 건반을 톡톡 두드려요",
+       "x": {
+        "at": "front",
+        "m": "push"
+       }
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 건반 위에 사뿐 내려앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       }
+      }
+     ],
+     "fit": "풀밭 한가운데, 무대 앞",
+     "glow": 0
+    },
+    {
+     "id": "upright-piano",
+     "n": "숲속 업라이트 피아노",
+     "k": "놀이",
+     "d": "짙은 밤색 나무로 만든 작은 업라이트 피아노예요. 악보가 펼쳐져 있고 상아색 건반 사이로 까만 건반이 보여요.",
+     "px": [
+      "..........................",
+      ".kkkkkkkkkkkkkkkkkkkkkkkk.",
+      "kLLLLLLLLLLLLLLLLLLLLLLLPk",
+      "kPPPPPPPPPPPPPPPPPPPPPPPQk",
+      ".kLVLLPPPPPPPPPQQQQQZZZZk.",
+      ".kLVLLPPPmmmmqmmmQQQZZZZk.",
+      ".kLLLQQQQssqqssstQQQQZZZk.",
+      ".kLLLQLLLsqssssqtLLLQZZZk.",
+      ".kLLLQPPPsssssqstPPPQZZZk.",
+      ".kLLLQPPPssssssstPPPQZZZk.",
+      ".kLLLQQQQQQQQQQQQQQQQZZZk.",
+      ".kQQQQQQQQQQQQQQQQQQQQQQk.",
+      "kLLLLLLLLLLLLLLLLLLLLLLLLk",
+      ".kLwqmwqmwmmwqmwqmwmmwqZk.",
+      ".kLwqmwqmwmmwqmwqmwmmwqZk.",
+      ".kLtwwtwwtwwtwwtwwtwwtwZk.",
+      ".kZZZZZZZZZZZZZZZZZZZZZZk.",
+      ".kLLLQQQQQQQQQQQQQQQQZZZk.",
+      ".kLLLQLLLLLLLLLLLLLLQZZZk.",
+      ".kLLLQPPPPPPPPPPPPPPQZZZk.",
+      ".kLLLQQQQQQQQQQQQQQQQZZZk.",
+      ".kLLLLPPPPPGHPGQQQQQZZZZk.",
+      ".kPQQkkkkkkkkkkkkkkkkZZZk.",
+      ".kQQQk..............kZZZk.",
+      "..kkk................kkk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "L": "#c88660",
+      "P": "#9a5a3a",
+      "Q": "#6e3a28",
+      "Z": "#4a2620",
+      "V": "#ecb08a",
+      "s": "#f4ead2",
+      "m": "#f8f4ea",
+      "w": "#d8d0c0",
+      "t": "#b0a690",
+      "q": "#2e2a30",
+      "G": "#f6dc8a",
+      "H": "#b07c30"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "피아노 뚜껑 위로 올라가 앉아 발을 달랑거려요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       }
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "건반 앞에 서서 건반을 꾹꾹 눌러 소리를 내요",
+       "x": {
+        "at": "front",
+        "m": "push"
+       }
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "피아노 옆에 기대어 쉬어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       }
+      }
+     ],
+     "fit": "벤치 맞은편, 무대 가운데",
+     "glow": 0
+    },
+    {
+     "id": "music-stand",
+     "n": "은빛 악보대",
+     "k": "장식",
+     "d": "가느다란 은빛 다리 세 개 위에 악보 한 장을 펼쳐 둔 악보대예요. 음표가 콩콩 찍혀 있어요.",
+     "px": [
+      "..............",
+      ".kkkkkkkkkkkk.",
+      "kmmmmmqmmmmmmk",
+      "ksssqqsssssstk",
+      "ksuquuuuuuqutk",
+      "ksssssssqqsstk",
+      "ksuuuuuquuuutk",
+      "kssssqsssssqtk",
+      "ksuuquuuuuqutk",
+      "kssssssssssstk",
+      "kmnnnnnnnnnnnk",
+      "kooooooooooook",
+      ".kkkkknokkkkk.",
+      ".....knok.....",
+      ".....knok.....",
+      ".....kmok.....",
+      "....kooook....",
+      ".....knok.....",
+      ".....knok.....",
+      ".....knok.....",
+      ".....knok.....",
+      "...kknnookk...",
+      "..knnknokook..",
+      ".knkk.kk.kkok.",
+      "..k........k.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "s": "#f4ead2",
+      "m": "#fbf8f0",
+      "t": "#c8bc9c",
+      "u": "#b0a690",
+      "q": "#2e2a30",
+      "n": "#b0b8c4",
+      "o": "#747c8a"
+     },
+     "acts": [
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 악보대 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       }
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "악보대 앞에 서서 악보를 올려다보며 고개를 갸웃해요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       }
+      },
+      {
+       "w": "에스퍼 타입",
+       "a": "악보대 옆에서 염력으로 악보를 넘기는 기술을 써요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       }
+      }
+     ],
+     "fit": "피아노·실로폰 옆",
+     "glow": 0
+    },
+    {
+     "id": "bell-arch",
+     "n": "청동 종 걸이",
+     "k": "놀이",
+     "d": "작은 기와지붕 아래 나무 기둥 두 개에 청동 종을 매단 종 걸이예요. 바람이 불거나 누가 건드리면 종이 흔들리며 댕댕 울려요.",
+     "px": [
+      "........kkkkkkkk........",
+      "......kkRRSSVTTTkk......",
+      "...kkkRRSSSVSTTTTTkkk...",
+      ".kkSSSSSSSSSSSSSSSSSSkk.",
+      "kRRRRSSSSSSSSSTTTTTTTTTk",
+      "kTTTTTTTTTTTTTTTTTTTTTTk",
+      "kAAAAAAAAAAAAAAAAAAAAABk",
+      "kDDDDDDDDDDDDDDDDDDDDDDk",
+      ".kkABkkkkkkutkkkkkkBDkk.",
+      "..kABk....kutk....kBDk..",
+      "..kABk...kabcdk...kBDk..",
+      "..kAEk..kaebccdk..kBEk..",
+      "..kABk..kebbccdk..kBDk..",
+      "..kABk..kebbccdk..kBDk..",
+      "..kABk.kaabbbcddk.kBDk..",
+      "..kABk.kaabbbcddk.kBDk..",
+      "..kABk.kaabbbcddk.kBDk..",
+      "..kAEk.kaabbbcddk.kBEk..",
+      "..kABkkabbbbbbbbbkkBDk..",
+      "..kABkkcccccccccckkBDk..",
+      "..kABk.kkkddddkkk.kBDk..",
+      "..kABk....kcdk....kBDk..",
+      "..kAEk.....kk.....kBEk..",
+      "..kABk............kBDk..",
+      "..kABk............kBDk..",
+      "..kABk............kBDk..",
+      ".kBBBBk..........kBBBBk.",
+      ".kDDDDk..........kDDDDk.",
+      "..kkkk............kkkk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "R": "#e08262",
+      "S": "#b85a40",
+      "T": "#823a2c",
+      "V": "#f2a688",
+      "A": "#ecc48a",
+      "B": "#c08a52",
+      "D": "#8e5c32",
+      "E": "#5e3a20",
+      "a": "#f0c870",
+      "b": "#d09a40",
+      "c": "#9a6a2c",
+      "d": "#6a4420",
+      "e": "#fff0b8",
+      "u": "#d4c49a",
+      "t": "#a89670"
+     },
+     "mv": {
+      "st": [
+       "........kkkkkkkk........",
+       "......kkRRSSVTTTkk......",
+       "...kkkRRSSSVSTTTTTkkk...",
+       ".kkSSSSSSSSSSSSSSSSSSkk.",
+       "kRRRRSSSSSSSSSTTTTTTTTTk",
+       "kTTTTTTTTTTTTTTTTTTTTTTk",
+       "kAAAAAAAAAAAAAAAAAAAAABk",
+       "kDDDDDDDDDDDDDDDDDDDDDDk",
+       ".kkABkkkkkk..kkkkkkBDkk.",
+       "..kABk............kBDk..",
+       "..kABk............kBDk..",
+       "..kAEk............kBEk..",
+       "..kABk............kBDk..",
+       "..kABk............kBDk..",
+       "..kABk............kBDk..",
+       "..kABk............kBDk..",
+       "..kABk............kBDk..",
+       "..kAEk............kBEk..",
+       "..kABk............kBDk..",
+       "..kABk............kBDk..",
+       "..kABk............kBDk..",
+       "..kABk............kBDk..",
+       "..kAEk............kBEk..",
+       "..kABk............kBDk..",
+       "..kABk............kBDk..",
+       "..kABk............kBDk..",
+       ".kBBBBk..........kBBBBk.",
+       ".kDDDDk..........kDDDDk.",
+       "..kkkk............kkkk.."
+      ],
+      "mp": [
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "...........ut...........",
+       "..........kutk..........",
+       ".........kabcdk.........",
+       "........kaebccdk........",
+       "........kebbccdk........",
+       "........kebbccdk........",
+       ".......kaabbbcddk.......",
+       ".......kaabbbcddk.......",
+       ".......kaabbbcddk.......",
+       ".......kaabbbcddk.......",
+       "......kabbbbbbbbbk......",
+       "......kcccccccccck......",
+       ".......kkkddddkkk.......",
+       "..........kcdk..........",
+       "...........kk...........",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................"
+      ],
+      "o": [
+       12,
+       8
+      ],
+      "k": "swing",
+      "amp": 2
+     },
+     "acts": [
+      {
+       "w": "격투 타입",
+       "a": "종 앞에 서서 종을 힘껏 밀어 댕댕 울려요",
+       "x": {
+        "at": "front",
+        "m": "push",
+        "fx": "swing"
+       }
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 지붕 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       }
+      },
+      {
+       "w": "강철 타입",
+       "a": "종 옆에서 종소리에 맞춰 몸을 울리는 기술을 써요",
+       "x": {
+        "m": "skill",
+        "fx": "swing"
+       }
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "종 걸이 기둥에 기대어 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       }
+      }
+     ],
+     "fit": "길 입구, 언덕 위",
+     "glow": 0
+    },
+    {
+     "id": "golden-harp",
+     "n": "금빛 하프",
+     "k": "장식",
+     "d": "금빛 기둥과 나무 울림통 사이에 가는 줄을 여러 가닥 맨 하프예요. 줄 사이로 풀밭이 비쳐 보여요.",
+     "px": [
+      "..kk...............",
+      ".kGHk..............",
+      "kGHHHkkkk..........",
+      "kHHHHGGGGkk........",
+      ".kGHHHHHHGGkk...k..",
+      ".kGHIIIIIHHGGkkkAk.",
+      ".kGHIskskIIHHGGkBk.",
+      ".kGHIs.s.skIIHHGGGk",
+      ".kJJJs.s.s.skIIHHHk",
+      ".kGHIs.s.s.s.sBIIk.",
+      ".kVHIs.s.s.skADEk..",
+      ".kVHIs.s.s.skBEEk..",
+      ".kGHIs.s.s.sADEk...",
+      ".kGHIs.s.skABEk....",
+      ".kJJJs.s.skBDEk....",
+      ".kGHIs.s.sADEk.....",
+      ".kGHIs.s.sBEEk.....",
+      ".kGHIs.skADEk......",
+      ".kGHIs.skBEk.......",
+      ".kGHIs.sADEk.......",
+      ".kJJJs.sBEk........",
+      ".kGHIskADEk........",
+      ".kGHIsABEk.........",
+      ".kGHIsBDEk.........",
+      ".kGHIADEk..........",
+      ".kGHIBEEkk.........",
+      "kABBBBBBBBk........",
+      "kDDDDDDDDDk........",
+      ".kkkDEkkkk........."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "A": "#ecc48a",
+      "B": "#c08a52",
+      "D": "#8e5c32",
+      "E": "#5e3a20",
+      "G": "#f6dc8a",
+      "H": "#e0b050",
+      "I": "#b07c30",
+      "J": "#7a5224",
+      "V": "#fff4c0",
+      "s": "#f4ead2"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "하프 앞에 서서 줄을 하나씩 튕겨 소리를 내요",
+       "x": {
+        "at": "front",
+        "m": "push"
+       }
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 하프 꼭대기 곡선에 앉아요",
+       "x": {
+        "at": [
+         0.5,
+         0.12
+        ],
+        "m": "fly"
+       }
+      },
+      {
+       "w": "페어리·에스퍼 타입",
+       "a": "하프 옆에서 반짝이는 기술로 줄을 울려요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       }
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "하프 옆에 앉아 소리를 들으며 졸아요",
+       "x": {
+        "an": "Sleep"
+       }
+      }
+     ],
+     "fit": "연못가, 꽃밭 옆",
+     "glow": 0
+    },
+    {
+     "id": "music-box",
+     "n": "분홍 인형 오르골",
+     "k": "장식",
+     "d": "뚜껑 안쪽에 빨간 천을 댄 나무 오르골이에요. 위에 분홍 동그란 인형이 서 있고, 옆 손잡이를 돌리면 인형이 돌며 노래가 나와요.",
+     "px": [
+      "....................",
+      "..kkkkkkkkkkkkkk....",
+      ".kAAABBBBBDDDDEEk...",
+      ".kAASSSSSSSSSSEEk...",
+      ".kAASRRRPpPRRREEk...",
+      ".kAASRRppPPRRREEk...",
+      ".kAASRRpqPqRRREEk...",
+      ".kAAABBPPPQDDDEEk...",
+      ".kEEEEEEPQEEEEEEk.k.",
+      ".kTTTTTTTnTTTTTTkkBk",
+      ".kHAAAAAAAAAAAAHkoDk",
+      ".kAAABBBBBDDDDEEkok.",
+      ".kABBBBBBBBBBBBEnok.",
+      ".kADDDDDDDDDDDDEkk..",
+      ".kAAABBBGqGDDDEEk...",
+      ".kAAABBBBGDDDDEEk...",
+      ".kHAABBBBBDDDDEHk...",
+      "..kEEEEEEEEEEEEk....",
+      "...kkkkkkkkkkkk.....",
+      "...................."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "A": "#ecc48a",
+      "B": "#c08a52",
+      "D": "#8e5c32",
+      "E": "#5e3a20",
+      "R": "#e08262",
+      "S": "#b85a40",
+      "T": "#3a2a2c",
+      "G": "#f6dc8a",
+      "H": "#e0b050",
+      "p": "#ffd2e0",
+      "P": "#f4a0bc",
+      "Q": "#c8708e",
+      "q": "#2e2a30",
+      "n": "#b0b8c4",
+      "o": "#747c8a"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "상자 위로 올라가 인형 옆에서 빙글빙글 돌아요",
+       "x": {
+        "at": "top",
+        "m": "climb",
+        "an": "Rotate"
+       }
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "오르골 옆에 서서 손잡이를 밀어 돌려요",
+       "x": {
+        "at": "side",
+        "m": "push"
+       }
+      },
+      {
+       "w": "페어리 타입",
+       "a": "오르골 둘레를 노래에 맞춰 빙빙 돌며 춤춰요",
+       "x": {
+        "m": "circ"
+       }
+      }
+     ],
+     "fit": "벤치 위 옆자리, 꽃밭 옆",
+     "glow": 0
+    },
+    {
+     "id": "wind-chime",
+     "n": "나무 풍경 걸이",
+     "k": "장식",
+     "d": "나무 기둥 팔에 은빛 대롱 네 개를 매단 풍경이에요. 아래 크림색 바람판이 바람을 받으면 대롱끼리 부딪혀 맑은 소리가 나요.",
+     "px": [
+      ".................",
+      ".................",
+      "..kkkkkkkkkkkkk..",
+      ".kBAAAAAAAAAAABk.",
+      ".kDDDDDDDDDDDDDk.",
+      "..kADkkkkkkukkk..",
+      "..kADk.kkBBBBkk..",
+      "..kADkkBBBBBBBBk.",
+      "..kADk.kDDDDDDk..",
+      "..kAEk.kmkmkmkmk.",
+      "..kADk.kmkmkmkmk.",
+      "..kADk.kmkmumkmk.",
+      "..kADk.kmkmumkmk.",
+      "..kADk.kmkmumkok.",
+      "..kADk.kmkmumkk..",
+      "..kAEk.kokmumk...",
+      "..kADk..kkmuok...",
+      "..kADk...kmuk....",
+      "..kADk...kouk....",
+      "..kADk....kuk....",
+      "..kADk...kDDDk...",
+      "..kAEk....kuk....",
+      "..kADk...kssrk...",
+      "..kADk...kssrk...",
+      "..kADk...kssrk...",
+      ".kkADkk...kkk....",
+      "kBBBBBBk.........",
+      "kDDDDDDk.........",
+      ".kkkkkk.........."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "A": "#ecc48a",
+      "B": "#c08a52",
+      "D": "#8e5c32",
+      "E": "#5e3a20",
+      "m": "#eef0f2",
+      "o": "#9aa2b0",
+      "u": "#d4c49a",
+      "t": "#a89670",
+      "s": "#f4ead2",
+      "r": "#c8bc9c"
+     },
+     "mv": {
+      "st": [
+       ".................",
+       ".................",
+       "..kkkkkkkkkkkkk..",
+       ".kBAAAAAAAAAAABk.",
+       ".kDDDDDDDDDDDDDk.",
+       "..kADkkkkkk.kkk..",
+       "..kADk...........",
+       "..kADkk..........",
+       "..kADk...........",
+       "..kAEk...........",
+       "..kADk...........",
+       "..kADk...........",
+       "..kADk...........",
+       "..kADk...........",
+       "..kADk...........",
+       "..kAEk...........",
+       "..kADk...........",
+       "..kADk...........",
+       "..kADk...........",
+       "..kADk...........",
+       "..kADk...........",
+       "..kAEk...........",
+       "..kADk...........",
+       "..kADk...........",
+       "..kADk...........",
+       ".kkADkk..........",
+       "kBBBBBBk.........",
+       "kDDDDDDk.........",
+       ".kkkkkk.........."
+      ],
+      "mp": [
+       ".................",
+       ".................",
+       ".................",
+       ".................",
+       ".................",
+       "...........u.....",
+       ".......kkBBBBkk..",
+       ".......BBBBBBBBk.",
+       ".......kDDDDDDk..",
+       ".......kmkmkmkmk.",
+       ".......kmkmkmkmk.",
+       ".......kmkmumkmk.",
+       ".......kmkmumkmk.",
+       ".......kmkmumkok.",
+       ".......kmkmumkk..",
+       ".......kokmumk...",
+       "........kkmuok...",
+       ".........kmuk....",
+       ".........kouk....",
+       "..........kuk....",
+       ".........kDDDk...",
+       "..........kuk....",
+       ".........kssrk...",
+       ".........kssrk...",
+       ".........kssrk...",
+       "..........kkk....",
+       ".................",
+       ".................",
+       "................."
+      ],
+      "o": [
+       11,
+       5
+      ],
+      "k": "swing",
+      "amp": 2.4
+     },
+     "acts": [
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "풍경 옆에 떠서 날갯짓으로 바람을 일으켜 풍경을 흔들어요",
+       "x": {
+        "m": "flap",
+        "fx": "swing"
+       }
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "풍경 아래로 가서 뛰어올라 바람판을 툭 건드려요",
+       "x": {
+        "at": "under",
+        "m": "push",
+        "fx": "swing"
+       }
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "기둥 옆에 앉아 풍경 소리를 들으며 졸아요",
+       "x": {
+        "an": "Sleep"
+       }
+      }
+     ],
+     "fit": "나무 그늘, 길가",
+     "glow": 0
+    },
+    {
+     "id": "log-drums",
+     "n": "통나무 북 셋",
+     "k": "놀이",
+     "d": "높이가 다른 통나무 세 개에 가죽을 씌우고 끈으로 묶은 북이에요. 높은 통은 낮은 소리, 낮은 통은 높은 소리가 나요.",
+     "px": [
+      "...........................",
+      "....kk.....................",
+      ".kkkaakkk..................",
+      "kaaabbbbbk.................",
+      "kbbbbbccck..kk.............",
+      "kAABccDEEkkkaakkk..........",
+      "kJJJJJJJJaaabbbbbk.........",
+      "kJDJBJDJEbbbbbccck...kk....",
+      "kADBBDDEEAABccDEEkkkkaakkk.",
+      "kADBBDDEEJJJJJJJJkaaabbbbbk",
+      "kADBBDDEEJDJBJDJEkbbbbbccck",
+      "kADBBDDEEADBBDDEEkAABccDEEk",
+      "kADBBDDEEADBBDDEEkJJJJJJJJk",
+      "kADBBDDEEADBBDDEEkJDJBJDJEk",
+      "kADBBDDEEADBBDDEEkADBBDDEEk",
+      "kEEEEEEEEEEEEEEEEkEEEEEEEEk",
+      ".kkkkkkkkkkkkkkkk.kkkkkkkk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "A": "#ecc48a",
+      "B": "#c08a52",
+      "D": "#8e5c32",
+      "E": "#5e3a20",
+      "a": "#fbf4e2",
+      "b": "#e6d6b0",
+      "c": "#bca880",
+      "J": "#6e4a30"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "제일 낮은 통 위로 올라가 앉아요",
+       "x": {
+        "at": [
+         0.83,
+         0.42
+        ],
+        "m": "climb"
+       }
+      },
+      {
+       "w": "격투·땅 타입",
+       "a": "통 앞에 서서 차례로 두드려 쿵쿵 장단을 맞춰요",
+       "x": {
+        "at": "front",
+        "m": "push",
+        "an": "Attack"
+       }
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 제일 높은 통 위에 앉아요",
+       "x": {
+        "at": [
+         0.17,
+         0.2
+        ],
+        "m": "fly"
+       }
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "통 옆에 기대어 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       }
+      }
+     ],
+     "fit": "모닥불 둘레, 넓은 풀밭",
+     "glow": 0
+    }
+   ]
+  },
+  {
    "at": 1792882040608,
    "theme": "숲속 캠핑장",
    "note": "오늘은 숲속 캠핑장이에요. 텐트·삼발이 냄비·해먹처럼 하룻밤 머무는 물건을 맵 크기 그대로 그렸고, 밑둥 풀·그림자 없이 소품 테두리에서 끝냈어요. 삼발이 냄비 불은 밤에 둘레를 밝히고, 해먹은 천만 살랑 흔들려요.",
