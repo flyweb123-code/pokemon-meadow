@@ -551,7 +551,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.88';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.89';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -914,16 +914,17 @@ const mobile = () => matchMedia('(max-width:820px)').matches, toInsp = id => { i
 const sel = { rank: null, mon: null, pool: null, poolG: 1, tier: null, prop: null, monUid: null };
 
 // ---------- 맵 ----------
+/* v3.89 경완 '상호작용 앞 타입 카드가 중구난방 → 조건 시스템': [지우기 열쇠(예전 이름, 게임 rxOff 와 맞춤), 설명, 카드에 보이는 조건]. 조건 말은 게임 scFit 위 설명과 같음 — [크기] [움직임] [타입 타입 | 포켓몬], 여럿은 ' / ', 순서 있는 반응의 마지막은 '나머지 포켓몬' */
 const REACT = {
-  tree: [['그 밖', '나무를 흔들어 열매를 떨어뜨려요']],
-  perch: [['날개·작은 몸', '횃대 위에 올라앉아요'], ['그 밖', '횃대에 몸을 비벼요']],
-  fire: [['불꽃', '불이 6초 동안 크게 타올라요'], ['얼음', '깜짝 놀라 뒤로 물러나요'], ['그 밖', '불을 쬐고, 밤이면 꾸벅꾸벅 졸아요'], ['비 올 때', '꺼진 재 냄새를 맡아요'], ['여럿이', '가끔 둘러앉아 다 같이 노래해요 (여러 마리를 끌어다 놓으면 꼭)']],   /* v3.87 경완 '모닥불 노래는 왜 카드에 없냐': 게임 v4.44·v5.93 모닥불 노래 */
-  bed: [['벌레', '꽃꿀을 먹어요'], ['풀·페어리', '하트를 띄우며 좋아해요'], ['아주 무거움', '꽃을 밟지 않게 조심조심'], ['그 밖', '꽃 냄새를 맡아요']],
-  bush: [['모두', '덤불 속에 4초 숨어요 (덤불이 바스락)']],
-  stump: [['모두', '그루터기에 앉아요']],
-  rock: [['바위·땅·격투', '바위 위에서 폼을 잡아요'], ['그 밖', '바위에 기대요']],
-  puddle: [['불꽃', '물에 놀라 싫어해요'], ['그 밖', '첨벙첨벙 놀아요 (비 올 때만)']],
-  pond: [['물·헤엄', '연못에서 헤엄쳐요'], ['그 밖', '물을 마셔요']],
+  tree: [['그 밖', '나무를 흔들어 열매를 떨어뜨려요', '모든 포켓몬']],
+  perch: [['날개·작은 몸', '횃대 위에 올라앉아요', '나는 포켓몬 / 작은 포켓몬'], ['그 밖', '횃대에 몸을 비벼요', '나머지 포켓몬']],
+  fire: [['불꽃', '불이 6초 동안 크게 타올라요', '불꽃 타입'], ['얼음', '깜짝 놀라 뒤로 물러나요', '얼음 타입'], ['그 밖', '불을 쬐고, 밤이면 꾸벅꾸벅 졸아요', '나머지 포켓몬'], ['비 올 때', '꺼진 재 냄새를 맡아요', '비 올 때 · 모든 포켓몬'], ['여럿이', '가끔 둘러앉아 다 같이 노래해요 (여러 마리를 끌어다 놓으면 꼭)', '여럿이 모이면 · 모든 포켓몬']],   /* v3.87 경완 '모닥불 노래는 왜 카드에 없냐': 게임 v4.44·v5.93 모닥불 노래 */
+  bed: [['벌레', '꽃꿀을 먹어요', '벌레 타입'], ['풀·페어리', '하트를 띄우며 좋아해요', '풀·페어리 타입'], ['아주 무거움', '꽃을 밟지 않게 조심조심', '아주 무거운 포켓몬'], ['그 밖', '꽃 냄새를 맡아요', '나머지 포켓몬']],
+  bush: [['모두', '덤불 속에 4초 숨어요 (덤불이 바스락)', '모든 포켓몬']],
+  stump: [['모두', '그루터기에 앉아요', '모든 포켓몬']],
+  rock: [['바위·땅·격투', '바위 위에서 폼을 잡아요', '바위·땅·격투 타입'], ['그 밖', '바위에 기대요', '나머지 포켓몬']],
+  puddle: [['불꽃', '물에 놀라 싫어해요', '불꽃 타입'], ['그 밖', '첨벙첨벙 놀아요 (비 올 때만)', '나머지 포켓몬']],
+  pond: [['물·헤엄', '연못에서 헤엄쳐요', '물 타입 / 헤엄치는 포켓몬'], ['그 밖', '물을 마셔요', '나머지 포켓몬']],
 };
 const RNAME = { tree: '열매나무', perch: '횃대', fire: '모닥불', bed: '꽃밭', bush: '덤불', stump: '그루터기', rock: '바위', puddle: '웅덩이', pond: '연못' };
 const KEY2R = { tree: 'tree', perch: 'perch', fire: 'fire', bed: 'bed', bushes: 'bush', stump: 'stump', rocks: 'rock', puddles: 'puddle', pond: 'pond', trees: 'tree', perches: 'perch', fires: 'fire', beds: 'bed', stumps: 'stump', ponds: 'pond' };
@@ -931,11 +932,11 @@ const KEY2R = { tree: 'tree', perch: 'perch', fire: 'fire', bed: 'bed', bushes: 
 const rOf = k => !k ? null : REACT[k] ? k : k === 'rockS' || k === 'rockL' ? 'rock' : KEY2R[k] || (A?.kind?.(k)?.b ? rOf(A.kind(k).b) : null);
 // v3.87 경완 '모닥불·연못·바위도 기존 상호작용 지울 수 있게 x': 지운 반응은 배치의 rxOff = { fire: ['불꽃', …] } (분류 이름으로), 게임 v9.66 이 그 반응을 건너뛴다
 const RX_DEL = new Set(['fire', 'pond', 'rock'])   /* v3.88 경완 '본 게임에서도 작업실에서 지우기': 본 게임 8.97 도 rxOff 를 읽는다 */, rxOff = r => { try { return A.layout().rxOff?.[r] || []; } catch (e) { return []; } };
-const rxRows = r => { const off = rxOff(r); return REACT[r].map(([a, b], i) => off.includes(a) ? '' : `<div${RX_DEL.has(r) ? ' class="sxr"' : ''}><button class="chip rx${spxKey === r + ':' + i ? ' on' : ''}" data-rk="${r}" data-ri="${i}">${a}</button><span>${b}</span>${RX_DEL.has(r) ? `<button class="sc-ax rxd" data-rk="${r}" data-ri="${i}" aria-label="이 상호작용 지우기" title="이 상호작용 지우기">×</button>` : ''}</div>`).join(''); };
+const rxRows = r => { const off = rxOff(r); return REACT[r].map(([a, b, c], i) => off.includes(a) ? '' : `<div${RX_DEL.has(r) ? ' class="sxr"' : ''}><button class="chip rx${spxKey === r + ':' + i ? ' on' : ''}" data-rk="${r}" data-ri="${i}" style="white-space:normal;text-align:center;line-height:1.25">${c || a}</button><span>${b}</span>${RX_DEL.has(r) ? `<button class="sc-ax rxd" data-rk="${r}" data-ri="${i}" aria-label="이 상호작용 지우기" title="이 상호작용 지우기">×</button>` : ''}</div>`).join(''); };
 const rxHtml = r => `<section class="rg">${rxRows(r)}</section>`;
-function rxDel(b) { const r = b.dataset.rk, lab = REACT[r]?.[+b.dataset.ri]?.[0]; if (!lab || !A?.setLayout) return;
+function rxDel(b) { const r = b.dataset.rk, E = REACT[r]?.[+b.dataset.ri], lab = E?.[0]; if (!lab || !A?.setLayout) return;
   if (!b.classList.contains('arm')) { $$('.sc-ax.arm').forEach(x => { x.classList.remove('arm'); x.textContent = '×'; }); b.classList.add('arm'); b.textContent = '지우기'; setTimeout(() => { if (b.isConnected) { b.classList.remove('arm'); b.textContent = '×'; } }, 3000); return; }
-  const L = A.layout(), O = L.rxOff || {}; O[r] = [...new Set([...(O[r] || []), lab])]; L.rxOff = O; A.setLayout(L); toast(`${RNAME[r]} '${lab}' 상호작용을 지웠어요 · 배포하면 게임에 들어가요`);
+  const L = A.layout(), O = L.rxOff || {}; O[r] = [...new Set([...(O[r] || []), lab])]; L.rxOff = O; A.setLayout(L); toast(`${RNAME[r]} '${E[2] || lab}' 상호작용을 지웠어요 · 배포하면 게임에 들어가요`);
   try { renderReact(null); } catch (e) {} for (const z of $$('#zoom .zre')) { const g = z.querySelector(`.rx[data-rk="${r}"]`)?.closest('.rg'); if (g) g.innerHTML = rxRows(r); } }
 // v3.86 경완 '상호작용 카드는 스칼렛·맵 소품 창·나중에 추가되는 어디든 연동': 상호작용 목록은 한 곳(actsOf)에서 읽고, 줄은 한 모양(sxRow, 오른쪽 ×), 지우기도 한 곳(actDel)
 const actsOf = id => scaItem(id)?.acts || (() => { try { return A.layout().scArt?.[id]?.acts; } catch (e) { return null; } })() || [];
@@ -1304,7 +1305,7 @@ let hotT = 0;
 function onHot(k) {
   const pop = $('#hotPop'); clearTimeout(hotT);
   if (!k || !REACT[k]) { hotT = setTimeout(() => { pop.hidden = true; }, 1600); return; }   // 놓은 뒤에도 잠깐 남겨서 무슨 반응인지 맞춰 볼 수 있게
-  pop.innerHTML = `<h4>${RNAME[k]}에서 나오는 반응</h4><div class="r">${REACT[k].filter(([a]) => !rxOff(k).includes(a)).map(([a, b]) => `<span class="chip">${a}</span><span>${b}</span>`).join('')}</div>`; pop.hidden = false;
+  pop.innerHTML = `<h4>${RNAME[k]}에서 나오는 반응</h4><div class="r">${REACT[k].filter(([a]) => !rxOff(k).includes(a)).map(([a, b, c]) => `<span class="chip">${c || a}</span><span>${b}</span>`).join('')}</div>`; pop.hidden = false;
   const r = $('#phone').getBoundingClientRect(), m = $('#mapBox').getBoundingClientRect();
   if (!mobile() && r.right + 248 < innerWidth) { pop.style.left = r.right + 12 + 'px'; pop.style.top = Math.max(m.top + 8, r.top + 60) + 'px'; }
   else { pop.style.left = Math.max(8, m.left + 8) + 'px'; pop.style.top = m.top + 8 + 'px'; }
@@ -2174,6 +2175,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.89', '10월 26일', ['소품 반응 카드의 조건 이름을 한 규칙으로 (크기 · 움직임 · 타입, 아무나는 \'모든 포켓몬\', 순서 있는 반응의 마지막은 \'나머지 포켓몬\')', '스칼렛 소품 상호작용 조건도 같은 말로 정리 (바람개비 날갯짓은 \'날갯짓하는 포켓몬\' = 날갯짓 그림이 있는 포켓몬만)']],
   ['3.88', '10월 26일', ['본 게임 미리보기에서도 모닥불·연못·바위 상호작용 × 지우기 (본 게임에 배포하면 게임에 들어가요)', '모닥불 \'깜짝 놀라 뒤로 물러나요\' 는 얼음 타입만 (베타 9.66)']],
   ['3.87', '10월 26일', ['모닥불·연못·바위의 원래 상호작용도 줄마다 오른쪽 × 로 지우기 (배포하면 게임에서 그 반응이 안 나와요)', '모닥불 반응 카드에 \'여럿이 · 둘러앉아 다 같이 노래\' 추가']],
   ['3.86', '10월 25일', ['맵 메뉴 소품 반응·소품 상세 창의 상호작용 줄마다 오른쪽 × (한 번 누르면 빨갛게, 한 번 더 누르면 지움)', '상호작용 목록은 스칼렛 작업물·맵 소품 창·오른쪽 소품 반응이 한 데이터를 같이 봐서 어디서 지워도 다 같이 바뀜', '허수아비 뒤에서 사라지는 예시는 스르르 사라졌다 나타남']],
