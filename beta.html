@@ -6243,7 +6243,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.43';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.44';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6506,9 +6506,9 @@ function meBgProps(on) { itemsEl.querySelectorAll('.prop.bgp').forEach(e => e.re
     g.drawImage(bg, p.l + BGOX, p.t, w, h, 0, 0, w, h); g.globalCompositeOperation = 'destination-in'; g.drawImage(p.cv, 0, 0);
     const e = document.createElement('div'); e.className = 'prop bgp ' + p.k; e.style.cssText = W2(c.toDataURL(), w * 2, h * 2) + `;left:${(p.l + w / 2) * 2}px;top:${(p.t + h) * 2}px`; e.style.setProperty('z-index', 0, 'important'); e.P = p; e.LV = p.v; itemsEl.prepend(e); } meFootAll(); }   /* 바탕 그림처럼 맨 아래 — 골라도 위의 꽃·나무를 덮지 않게 */
 function mapEditSet(on) { if (mapEdit === on) return; if (on) meHud = meHudSnap(); mapEdit = on; document.body.classList.toggle('mapEdit', on); for (const id of ['meBar', 'meTitle', 'meZone', 'meLayer']) $('#' + id).hidden = !on;
-  if (on) { mePick = null; meBagD = {}; meXLR = [XL, XR]; meSnap = meSnapshot(); meBgProps(true); meZoneDraw(); meRender(); } else { meSel(null); meBgProps(false); meSnap = null; } sfx(on ? 'open' : 'tap'); dispatchEvent(new Event('resize')); }
+  if (on) { try { window.__studio?.meStart?.(); } catch (e) {} mePick = null; meBagD = {}; meXLR = [XL, XR]; meSnap = meSnapshot(); meBgProps(true); meZoneDraw(); meRender(); } else { meSel(null); meBgProps(false); meSnap = null; } sfx(on ? 'open' : 'tap'); dispatchEvent(new Event('resize')); }
 $('#btnMapEdit').onclick = () => mapEditSet(true);
-$('#meSave').onclick = () => { layKeep(); for (const K of LAY_ARR) for (const v of LAYOUT[K] || []) delete v.paN; mapEditSet(false); };   // v9.06 경완: 옮긴 자리를 이 플레이어 저장(S.lay)에 남김
+$('#meSave').onclick = () => { layKeep(); for (const K of LAY_ARR) for (const v of LAYOUT[K] || []) delete v.paN; mapEditSet(false); try { window.__studio?.meSaved?.(); } catch (e) {} };   // v9.44 경완: 작업실 시뮬레이터면 작업실 맵 배치로 바로   // v9.06 경완: 옮긴 자리를 이 플레이어 저장(S.lay)에 남김
 $('#meCancel').onclick = () => { for (const [k, n] of Object.entries(meBagD)) if (n) fbagAdd(k, -n); meBagD = {}; if (layDrop(v => v.paN)) seaRedraw(); const moved = meSnap && meSnapRestore(meSnap); mapEditSet(false); if (moved) seaRedraw(); };
 $('#meAll').onclick = () => { sfx('tap'); bagOpenField(); };
 // v9.14 경완: x = 그 소품을 맵에서 빼서 가방(필드 탭)으로. 뺀 소품은 맵 밖(ME_OUT)으로 치워 두고 저장(layKeep)이 그 자리를 기억 → 가방에서 고르고 맵을 누르면 그 자리로 다시 놓임
@@ -11580,6 +11580,12 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
   api.unpick = () => { if (!sel) return; sel = null; renderHands(); };
   api.showHud = on => { const b = hud.querySelector('b'); Object.assign(b.style, { left: XL + 'px', right: 'auto', width: (XR - XL) + 'px', textAlign: 'center', padding: '2px 0 0' }); hud.classList.toggle('on', !!on); renderHands(); };   // v3.70: 보이는 폭 가운데에 (글이 잘리지 않게)
   api.layout = () => dsnap();
+  /* v9.44 경완 '시뮬레이터에서 맵 편집한 거 자동으로 작업실에 저장': 맵 편집 저장 = 옮긴 자리·넣은 소품을 배치에 그대로 굳히고(S.lay·S.layAdd 비움) 작업본으로, 뺀 소품은 목록에서 지움. 편집 전 배치는 되돌리기에 */
+  let mePre = null;
+  api.meStart = () => { mePre = snap(); };
+  api.meSaved = () => { const pre = mePre; mePre = null; const L = JSON.parse(snap());
+    for (const K of LAY_ARR) if (Array.isArray(L[K])) L[K] = L[K].filter(v => !meOut(v)).map(v => { if (v && typeof v === 'object' && !Array.isArray(v)) { delete v.pa; delete v.paN; } return v; });
+    S.lay = {}; S.layAdd = []; save(); if (pre) undo.push(pre); setLayout(L); sel = null; rebuild(true); renderHands(); api.onLayout?.(dsnap(), undo.length); };
   api.defaultLayout = () => JSON.parse(JSON.stringify(DEFAULT || LAYOUT));
   api.setLayout = L => { undo.push(snap()); setLayout(L); sel = null; rebuild(true); renderHands(); api.onLayout?.(dsnap(), undo.length); };
   api.undo = () => { if (!undo.length) return; setLayout(JSON.parse(undo.pop())); sel = null; rebuild(true); renderHands(); api.onLayout?.(dsnap(), undo.length); };
