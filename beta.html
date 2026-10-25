@@ -5519,7 +5519,7 @@ function scTick(m, now) { const q = m.scp; if (!q) return; if (!q.G.el?.isConnec
   if (M.flap && fx.spin && now > q.spT) { q.spT = now + 320; particle(x - q.side * MW * .3, y - MH * .3, 'spark', '〰'); }
   // 필드에 옮기기: 그림자(m.y)는 소품 바닥 앞/뒤, 그 위 높이는 xl
   const air = !wi && y < G.gy - 1; m.x = clamp(x, XL + 16, XR - 16); m.y = clamp(wi ? y : back ? G.gy - 1 : air ? G.gy + 2 : y + 2, MIN_Y, MAX_Y);   /* v9.61: 땅에서 걸어 들어오는 동안은 그림자도 발밑 그대로 */ m.xl = air || back ? Math.max(0, m.y - y) : 0;
-  m.pzB = back ? Math.round(G.gy) : null; if (fl != null) m.face = fl ? -1 : 1; else faceTo(m, G.cx);
+  m.pzB = back ? Math.round(G.gy) : null; if (fl != null) m.face = fl ? -1 : 1; else if (!q.ride && Math.abs(x - G.cx) > Math.max(10, G.W * .3)) faceTo(m, G.cx);   /* v9.62 경완 '네이티가 타이어 그네에서 좌우로 왔다갔다': 소품 가운데 근처(타기·안·위)에서는 흔들려 가운데를 넘나들 때마다 몸을 뒤집지 않고 처음 방향 그대로 */
   m.scAn = walk ? 'Walk' : an; m.scRot = rot; m.el.style.opacity = al < 1 ? String(al) : ''; m.scSnap = tt > .05; }
 // v5.77 경완(고라파덕이 그루터기 옆에 걸터앉아 잠): 위에 올라앉을 때는 몸통이 아니라 그림자 가운데(무게 중심)를 그 자리에 맞춘다
 const onShadow = m => { if (m.shX) m.x = clamp(m.x - m.shX * (m.face || 1), XL + 20, XR - 20); };
@@ -6269,7 +6269,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.61';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.62';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
