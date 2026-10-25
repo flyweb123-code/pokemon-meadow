@@ -5603,7 +5603,7 @@ function propReactIn(m, p, drag) {
   if (p.k === 'sc') { const r = LAYOUT.sc[p.i], A = r && LAYOUT.scArt[r[0]], ty = tyOf(m).map(t => TYPE_KO[t]), mv = T(m).mv;   /* v8.22 경완: 스칼렛 소품 — 누가(w)에 맞는 행동을 골라 소품 곁에서 논다 */
     const fit = a => scFit(m, a.w || '');
     const rd = (A?.acts || []).find(a => /올라타|들어가 앉|구멍/.test(a.a || '')), L = (A?.acts || []).filter(fit), a = rd && (drag || T(m).mv !== 'swim' && Math.random() < .65) ? rd : L.length ? pick(L) : null;   /* v9.54 경완 '소품 탑승 빈도 늘리기': 혼자 찾아와도 65% 는 올라탄다 (예전엔 탈 수 있는 쪽으로 뽑혔을 때만, 끌어다 놓은 것처럼 누구나) */   /* v9.28 경완: 타는 소품(몬스터볼 스프링·타이어 그네)은 끌어다 놓으면 무조건 타기부터 — 작은 포켓몬은 구멍 안에, 다른 포켓몬은 구조물 위에 올라탐 */
-    if (a && a === rd) { const tire = /구멍/.test(rd.a), G0 = tire && scGeo(r), inH = isSmall(m) && !(G0 && (m.w || 40) > scGap(G0));   /* v9.38 경완 '기둥 범위보다 클 경우 한쪽은 앞 한쪽은 뒤': 기둥 사이보다 넓으면 구멍 속이 아니라 타이어 앞에 타고, 어느 쪽이든 기둥은 둘 다 뒤 (9.39) */ scPlay(m, p, rd, { fy: 1 - (inH ? (tire ? .2 : .78) : (tire ? .22 : .8)), back: inH || !!(tire && G0?.el?.mpH), inH, tire }, null, drag);   /* v9.32 경완: 작은 포켓몬은 스프링 구멍에 살짝만 (얼굴 안 가리게 .55 → .78), 타이어는 구멍 안에 앉아 아래 테두리만 앞에 (예전 .06 은 타이어 뒤로 숨었음), 다른 포켓몬도 몬스터볼 구멍 쪽에 얹혀 탐 (.45 → .8) */ emote(m, '♪', '', 2.2, 'prop-play');   // v9.28: 작은 포켓몬은 소품 뒤(구멍 속)에, 다른 포켓몬은 소품 앞 위에 올라탐 · v9.29: 흔들리는 부분과 같이 흔들린다
+    if (a && a === rd) { const tire = /구멍/.test(rd.a), G0 = tire && scGeo(r), inH = isSmall(m) && !(G0 && (m.w || 40) > scGap(G0));   /* v9.38 경완 '기둥 범위보다 클 경우 한쪽은 앞 한쪽은 뒤': 기둥 사이보다 넓으면 구멍 속이 아니라 타이어 앞에 타고, 어느 쪽이든 기둥은 둘 다 뒤 (9.39) */ scPlay(m, p, rd, { fy: 1 - (inH ? (tire ? .2 : .7) : (tire ? .22 : .8)), back: inH || !!(tire && G0?.el?.mpH), inH, tire }, null, drag);   /* v9.60 경완 '1번 그림만 구멍 안, 나머지는 밖': 숨 쉬는 그림 대부분(첫 칸)이 몸을 펴고 있어 구멍 위로 나왔다 → 스프링은 .78 → .7 로 더 깊이 */   /* v9.32 경완: 작은 포켓몬은 스프링 구멍에 살짝만 (얼굴 안 가리게 .55 → .78), 타이어는 구멍 안에 앉아 아래 테두리만 앞에 (예전 .06 은 타이어 뒤로 숨었음), 다른 포켓몬도 몬스터볼 구멍 쪽에 얹혀 탐 (.45 → .8) */ emote(m, '♪', '', 2.2, 'prop-play');   // v9.28: 작은 포켓몬은 소품 뒤(구멍 속)에, 다른 포켓몬은 소품 앞 위에 올라탐 · v9.29: 흔들리는 부분과 같이 흔들린다
       return log(inH ? `${J(m,'이/가')} ${esc(A.n)}에 쏙 들어가 앉아 흔들흔들 논다.` : `${J(m,'이/가')} ${esc(A.n)} 위에 올라타 흔들흔들 논다.`, [m]); }
     if (a && scPlay(m, p, a, null, null, drag)) { emote(m, '♪', '', 2.2, 'prop-play');   /* v9.29 경완: 작업실 예시와 같은 동작 */
       const tw = a.x?.two; if (tw?.at) { const ok = o => o !== m && S.mons.includes(o) && awake(o) && !o.held && !o.scp && !o.camp && !o.pin && !o.evolving && !o.washing && o.state !== 'special' && o.state !== 'interact' && dist(o, p) < 320, o2 = S.mons.filter(ok).sort((u, v) => dist(u, p) - dist(v, p)).find(o => { const ty2 = tyOf(o).map(t => TYPE_KO[t]), w = tw.w || a.w || ''; return ty2.some(t => t && w.includes(t)) || (isSmall(o) && /작은/.test(w)) || (!isSmall(o) && /큰/.test(w)); });   // 둘이 노는 상호작용 (시소): 가까운 짝이 반대쪽에 앉는다
@@ -6269,7 +6269,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.59';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.60';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
