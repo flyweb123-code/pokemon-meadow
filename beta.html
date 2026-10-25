@@ -2450,7 +2450,6 @@ const FX_FIX = {
   // 하늘을 떠다님 / 날지 못함
   81: { mv: 'hover' }, 82: { mv: 'hover' }, 462: { mv: 'hover' }, 344: { mv: 'hover' }, 375: { mv: 'hover' }, 938: { mv: 'hover' },
   84: { mv: 'walk' }, 85: { mv: 'walk' }, 177: { mv: 'walk' },
-  722: { mv: 'walk' }, 723: { mv: 'walk' }, 724: { mv: 'walk' },   // v9.69 경완 '빼미스로우 걸을 때 왜 떠다니지': 나몰빼미 계열은 걷는 그림이 날개 접고 땅을 걷는 그림이라 땅으로 걷는다
   // 물에서 헤엄침
   226: { mv: 'swim' }, 458: { mv: 'swim' }, 580: { mv: 'amph' }, 20: { mv: 'amph' }, 347: { mv: 'amph' }, 348: { mv: 'amph' }, 614: { mv: 'amph' },
   // 잠꾸러기 (언제나 선잠, 죽을 때까지 잠듦)
@@ -3814,7 +3813,7 @@ const SPm = m => SPD(m.sp);
 const genus = m => (SPm(m).g || '').replace(/포켓몬$/, '') || '포켓몬';
 const kg = m => SPm(m).w / 10;
 const winged = m => [9, 13].includes(SPm(m).sh) || T(m).mv === 'fly';
-const flapper = m => (T(m).mv === 'fly' && ![1, 2, 4].includes(SPm(m).sh)) || FLAP_IDLE.has(m.sp);   /* v9.68 경완 '날갯짓 모션이 있는 애들만': 날아다니는 걸음 그림이 날갯짓인 포켓몬 (구구처럼 걸어 다니는 새, 갸라도스·레쿠쟈·메테노·흔들풍손처럼 날개 없이 나는 건 빠짐) */
+const flapper = m => FLAP_IDLE.has(m.sp) || (T(m).mv === 'fly' && ![1, 2, 4].includes(SPm(m).sh) && (SPm(m).sh === 9 ? 0 : 40) + (MON_FLY[m.form] || 0) + (MON_FLYA[m.form]?.Walk || 0) > 4);   /* v9.68 경완 '날갯짓 모션이 있는 애들만': 걸을 때 떠 있는(작업실 떠 있기 > 4) 나는 포켓몬 = 날갯짓 그림 (9.71: 날개 접고 서는 새는 작업실 걷기 떠 있기로 가름). 구구처럼 걷는 새, 갸라도스·레쿠쟈·메테노·흔들풍손처럼 날개 없이 나는 건 빠짐 */
 const tailed = m => [2, 6, 8].includes(SPm(m).sh);
 const prankster = m => has(m, DAR) || (T(m).aggr || 0) > .4;
 const soft = m => has(m, FAI) || has(m, NOR) || SPm(m).eg.includes(6);
@@ -4823,7 +4822,7 @@ const liftBase = sp => { const t = DEX[sp]; if (!t || (t.mv !== 'fly' && t.mv !=
 function render(m, now) {
   if (m.scp) scTick(m, now);
   const t = T(m), flyer = t.mv === 'fly' || t.mv === 'hover';
-  const grounded = !m.held && !(flyer && pondVal(m.x, m.y) < 1.05) && (m.state === 'sleep' || m.state === 'eat' || (t.mv === 'fly' && SPm(m).sh === 9 && !FLAP_IDLE.has(m.sp) && m.state !== 'move'));   /* v4.91: 호수 위에서는 앉지 않고 떠 있다 */   // v3.62 경완: 새는 날개를 접고 서 있을 땐 땅에, 날아갈 때만 떠 있다
+  const grounded = !m.held && !(flyer && pondVal(m.x, m.y) < 1.05) && (m.state === 'sleep' || m.state === 'eat' || (t.mv === 'fly' && SPm(m).sh === 9 && !FLAP_IDLE.has(m.sp)));   /* v9.71 경완 '안 나는 모션들은 떠 있기 0으로 다 맞춰놨어 나는 건 떠 있고': 날개 접고 서는 새는 움직일 때도 40px 띄우지 않고 작업실 떠 있기(MON_FLY + 동작별 MON_FLYA)만 따른다 (연못 위는 그대로 날아서) */   /* v4.91: 호수 위에서는 앉지 않고 떠 있다 */   // v3.62 경완: 새는 날개를 접고 서 있을 땐 땅에, 날아갈 때만 떠 있다
   if (m.perch) { const p = m.perch; if (S.mons.includes(p) && p.state === 'sleep' && m.state === 'sleep') { m.x = p.x + m.perchDx; m.y = p.y + 1; m.xl = p.h * .45; } else { m.perch = null; m.xl = 0; } }
   if (m.ride) { const h = m.ride; if (S.mons.includes(h) && h.scene === m.rideSc && h.state === 'interact' && !m.held && m.state !== 'interact' && m.state !== 'special') { m.x = h.x + m.rideDx; m.y = h.y; m.xl = (h.xl || 0) + h.h * .62; m.rdH = h; m.rdT = now; m.face = h.face; m.zAdd = 2; m.goal = null; if (m.state === 'move') setState(m, 'idle', 30); m.t = Math.max(m.t, 1); }
     else { m.ride = null; m.rideSc = null; m.xl = 0; m.zAdd = 0; if (!m.held && S.mons.includes(h)) { place(m, h.x + (m.rideDx < 0 ? -1 : 1) * Math.max(34, (m.w + h.w) * .4) + rnd(-12, 12), h.y + rnd(4, 16)); dustAt(m); } } }
@@ -6299,7 +6298,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.70';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.71';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
