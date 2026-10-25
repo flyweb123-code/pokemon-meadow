@@ -3403,7 +3403,7 @@ function think(m) {
     if (o) return moveTo(m, o, { kind: 'meet', mon: o });
   }
   if (treeOn() && winged(m) && !(m.treeCd > 0) && sceneFree(m) && Math.random() < (m.hunger > 50 && S.tree?.n ? .12 : .05)) { m.treeCd = rnd(240, 480); return moveTo(m, { x: PROPS.tree.x + rnd(-24, 24) * LS('tree'), y: PROPS.tree.y + 4 }, { kind: 'treePerch' }); }   // v4.55 경완: 새 포켓몬은 가끔 열매나무에 날아올라 앉고, 배고프면 달린 열매를 쪼아 먹는다
-  if (t.mv !== 'swim' && !(m.propCd > 0) && sceneFree(m) && Math.random() < .4) { m.propCd = rnd(30, 80);   /* v9.53 경완 '소품 상호작용 빈도 더 높여야': .22 → .4, 쉬는 틈 60~150 → 30~80초 */   /* v9.37 경완 '소품 상호작용 빈도·시간 늘리기': .12 → .22, 쉬는 틈 120~300 → 60~150초 */ const L = propSpots().filter(q => q.k !== 'tree' && q.k !== 'puddle'), q = L.length && pick(L); if (q) return moveTo(m, { x: q.x + (m.x < q.x ? -1 : 1) * q.rx * .6, y: q.y + q.ry * .5 }, { kind: 'prop', p: q }); }
+  if (t.mv !== 'swim' && !(m.propCd > 0) && sceneFree(m) && Math.random() < .4) { m.propCd = rnd(30, 80);   /* v9.53 경완 '소품 상호작용 빈도 더 높여야': .22 → .4, 쉬는 틈 60~150 → 30~80초 */   /* v9.37 경완 '소품 상호작용 빈도·시간 늘리기': .12 → .22, 쉬는 틈 120~300 → 60~150초 */ const L = propSpots().filter(q => q.k !== 'tree' && q.k !== 'puddle'), rideP = q => q.k === 'sc' && (LAYOUT.scArt[LAYOUT.sc[q.i]?.[0]]?.acts || []).some(a => /올라타|들어가 앉|구멍/.test(a.a || '')), R = L.filter(rideP), q = L.length && (R.length && Math.random() < .45 ? pick(R) : pick(L));   /* v9.54: 탈 수 있는 소품(그네·스프링)을 더 자주 고른다 */ if (q) return moveTo(m, { x: q.x + (m.x < q.x ? -1 : 1) * q.rx * .6, y: q.y + q.ry * .5 }, { kind: 'prop', p: q }); }
   if (Math.random() < .35) { setState(m, 'idle', rnd(2, 6)); if (Math.random() < .12) emote(m, pick(['…', '♪', '?']), '', 2.2, 'idle-alone'); return; }
   let p;
   if (t.mv === 'swim') p = randPond(.8, m);
@@ -5594,7 +5594,7 @@ function propReactIn(m, p, drag) {
   faceTo(m, p.x); m.goal = null; m.joy = clamp((m.joy ?? 60) + PROP_JOY);   /* v4.42 경완: 맵 소품과 놀면 즐거움도 조금 오른다 */
   if (p.k === 'sc') { const r = LAYOUT.sc[p.i], A = r && LAYOUT.scArt[r[0]], ty = tyOf(m).map(t => TYPE_KO[t]), mv = T(m).mv;   /* v8.22 경완: 스칼렛 소품 — 누가(w)에 맞는 행동을 골라 소품 곁에서 논다 */
     const fit = a => scFit(m, a.w || '');
-    const rd = (A?.acts || []).find(a => /올라타|들어가 앉|구멍/.test(a.a || '')), L = (A?.acts || []).filter(fit), a = rd && (drag || L.includes(rd)) ? rd : L.length ? pick(L) : null;   /* v9.28 경완: 타는 소품(몬스터볼 스프링·타이어 그네)은 끌어다 놓으면 무조건 타기부터 — 작은 포켓몬은 구멍 안에, 다른 포켓몬은 구조물 위에 올라탐 */
+    const rd = (A?.acts || []).find(a => /올라타|들어가 앉|구멍/.test(a.a || '')), L = (A?.acts || []).filter(fit), a = rd && (drag || T(m).mv !== 'swim' && Math.random() < .65) ? rd : L.length ? pick(L) : null;   /* v9.54 경완 '소품 탑승 빈도 늘리기': 혼자 찾아와도 65% 는 올라탄다 (예전엔 탈 수 있는 쪽으로 뽑혔을 때만, 끌어다 놓은 것처럼 누구나) */   /* v9.28 경완: 타는 소품(몬스터볼 스프링·타이어 그네)은 끌어다 놓으면 무조건 타기부터 — 작은 포켓몬은 구멍 안에, 다른 포켓몬은 구조물 위에 올라탐 */
     if (a && a === rd) { const tire = /구멍/.test(rd.a), G0 = tire && scGeo(r), inH = isSmall(m) && !(G0 && (m.w || 40) > scGap(G0));   /* v9.38 경완 '기둥 범위보다 클 경우 한쪽은 앞 한쪽은 뒤': 기둥 사이보다 넓으면 구멍 속이 아니라 타이어 앞에 타고, 어느 쪽이든 기둥은 둘 다 뒤 (9.39) */ scPlay(m, p, rd, { fy: 1 - (inH ? (tire ? .2 : .78) : (tire ? .22 : .8)), back: inH || !!(tire && G0?.el?.mpH), inH }, null, drag);   /* v9.32 경완: 작은 포켓몬은 스프링 구멍에 살짝만 (얼굴 안 가리게 .55 → .78), 타이어는 구멍 안에 앉아 아래 테두리만 앞에 (예전 .06 은 타이어 뒤로 숨었음), 다른 포켓몬도 몬스터볼 구멍 쪽에 얹혀 탐 (.45 → .8) */ emote(m, '♪', '', 2.2, 'prop-play');   // v9.28: 작은 포켓몬은 소품 뒤(구멍 속)에, 다른 포켓몬은 소품 앞 위에 올라탐 · v9.29: 흔들리는 부분과 같이 흔들린다
       return log(inH ? `${J(m,'이/가')} ${esc(A.n)}에 쏙 들어가 앉아 흔들흔들 논다.` : `${J(m,'이/가')} ${esc(A.n)} 위에 올라타 흔들흔들 논다.`, [m]); }
     if (a && scPlay(m, p, a, null, null, drag)) { emote(m, '♪', '', 2.2, 'prop-play');   /* v9.29 경완: 작업실 예시와 같은 동작 */
@@ -6261,7 +6261,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.53';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.54';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
