@@ -468,6 +468,8 @@ ol.log{list-style:none;margin:0;padding:0 4px 0 0;overflow-y:auto;height:calc(5 
 .dlg.open .more{opacity:.5}
 ol.log li{display:block;font-size:14px;line-height:1.6;padding:5px 0;border-bottom:2px dotted var(--dlg-in)}
 ol.log li:last-child{border-bottom:0}
+.log li .txt{display:block}
+.dlg .now.l3,.log li .txt.l3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 ol.log li.empty{color:var(--dim);text-align:center}
 .dlg.night ol.log li.big .txt{color:#ff9a8a}
 ol.log li time{color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -2785,6 +2787,7 @@ function renderLog() {
   const skip = getComputedStyle($('#dlgPrev')).display === 'none' ? 1 : 2, old = S.log.slice(skip);   // 폰에선 상태창에 한 줄만 보인다
   logEl.innerHTML = ''; old.filter(passesFilter).reverse().forEach(e => logEl.append(logItem(e)));
   if (!old.length) logEl.innerHTML = '<li class="empty">지난 기록이 아직 없어요</li>';
+  if (!$('#journal').hidden) logEl.querySelectorAll('.txt').forEach(fit3);
   if (end) logEl.scrollTop = logEl.scrollHeight;
   renderDlg();
 }
@@ -2815,9 +2818,12 @@ function pinOf() {
   if (S.sel !== p.m || p.m.state !== 'interact' || !p.m.partner) { dlgPin = null; return null; }
   return p.e;
 }
+// v9.77 경완 '일지창 3줄 넘어가지 않게': 긴 문장은 글자를 조금씩(최대 3/4까지) 줄여 3줄 안에 넣고, 그래도 넘치면 3줄에서 … 로 자른다
+function fit3(el) { if (!el) return; el.style.fontSize = ''; el.classList.remove('l3'); if (!el.textContent || !el.offsetParent) return; const lh = () => { const cs = getComputedStyle(el), v = parseFloat(cs.lineHeight); return v > 0 ? v : parseFloat(cs.fontSize) * 1.5; }, n = () => el.offsetHeight / lh(), f0 = parseFloat(getComputedStyle(el).fontSize);
+  for (let f = f0; n() > 3.2 && f > f0 * .75; ) { f -= 1; el.style.fontSize = f + 'px'; } if (n() > 3.2) el.classList.add('l3'); }
 function renderDlg() {
   const pe = pinOf(), [a0, a1] = S.log, a = pe || a0, b = pe ? (a0 !== pe ? a0 : a1) : a1;
-  $('#dlgNow').innerHTML = a ? stripHint(a.html) : '';
+  $('#dlgNow').innerHTML = a ? stripHint(a.html) : ''; fit3($('#dlgNow'));
   $('#dlgPrev').innerHTML = b ? `${clockStr(b.t)}  ${b.html.replace(/<[^>]+>/g, '')}` : '';
 }
 
@@ -6325,7 +6331,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.76';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.77';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
