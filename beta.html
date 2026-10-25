@@ -5620,6 +5620,10 @@ function scFit(m, w) { const flyer = winged(m) || T(m).mv === 'fly' || T(m).mv =
     return (!tys.length || ty.some(t => tys.includes(t))) && q.every(Boolean); }); }
 // v9.66 경완 '모닥불·연못·바위도 기존 상호작용 지울 수 있게': 작업실에서 지운 반응(LAYOUT.rxOff = { fire: ['불꽃', …] }, 작업실 반응 분류 이름)은 건너뛰고, 남은 반응이 없으면 구경만
 const rxOn = (k, l) => !LAYOUT.rxOff?.[k]?.includes?.(l);
+// v9.76 경완 '소품 상호작용별로 알맞은 일지': 상호작용(act)마다 일지 문장 — l = 혼자 할 때, li = 구멍 속에 들어가 탈 때, l2 = 둘이 할 때 (문장 하나 또는 여러 개 중 하나). {a:이/가}·{b:을/를} 은 포켓몬 이름+조사, 없으면 앞에 'OO이/가' 를 붙인다. 없는 소품은 예전처럼 '곁에서 놀고 있다'
+function scLog(m, A, a, o2, inH) { const L = o2 ? a?.l2 : inH && a?.li || a?.l, t = Array.isArray(L) ? pick(L.filter(Boolean)) : L;
+  if (!t || typeof t !== 'string') return o2 ? `${J(m,'과/와')} ${J(o2,'이/가')} ${esc(A.n)}에서 같이 논다.` : `${J(m,'이/가')} ${esc(A.n)} 곁에서 놀고 있다.`;
+  const s = esc(t); return /\{[ab]:/.test(s) ? s.replace(/\{([ab]):([^}]*)\}/g, (_, k, j) => k === 'b' && !o2 ? '' : J(k === 'a' ? m : o2, j)) : o2 ? `${J(m,'과/와')} ${J(o2,'이/가')} ${s}` : `${J(m,'이/가')} ${s}`; }
 function propReactIn(m, p, drag) {
   const flyer = winged(m) || T(m).mv === 'fly' || T(m).mv === 'hover', small = isSmall(m) && ![1, 2, 3, 5, 10, 11].includes(SPm(m).sh) && (SPm(m).spd || 0) >= 50, at = (dx, dy) =>   /* v4.91 경완: 우르 같은 느린 털뭉치·공·물고기 모양은 횃대에 못 올라간다 */ { m.x = clamp(p.x + dx, XL + 20, XR - 20); m.y = clamp(p.y + dy, MIN_Y, MAX_Y); };
   faceTo(m, p.x); m.goal = null; m.joy = clamp((m.joy ?? 60) + PROP_JOY);   /* v4.42 경완: 맵 소품과 놀면 즐거움도 조금 오른다 */
@@ -5627,16 +5631,16 @@ function propReactIn(m, p, drag) {
     const fit = a => scFit(m, a.w || '');
     const rd = (A?.acts || []).find(a => /올라타|들어가 앉|구멍/.test(a.a || '')), L = (A?.acts || []).filter(fit), a = rd && (drag || T(m).mv !== 'swim' && Math.random() < .65) ? rd : L.length ? pick(L) : null;   /* v9.54 경완 '소품 탑승 빈도 늘리기': 혼자 찾아와도 65% 는 올라탄다 (예전엔 탈 수 있는 쪽으로 뽑혔을 때만, 끌어다 놓은 것처럼 누구나) */   /* v9.28 경완: 타는 소품(몬스터볼 스프링·타이어 그네)은 끌어다 놓으면 무조건 타기부터 — 작은 포켓몬은 구멍 안에, 다른 포켓몬은 구조물 위에 올라탐 */
     if (a && a === rd) { const tire = /구멍/.test(rd.a), G0 = tire && scGeo(r), inH = isSmall(m) && !(G0 && (m.w || 40) > scGap(G0));   /* v9.38 경완 '기둥 범위보다 클 경우 한쪽은 앞 한쪽은 뒤': 기둥 사이보다 넓으면 구멍 속이 아니라 타이어 앞에 타고, 어느 쪽이든 기둥은 둘 다 뒤 (9.39) */ scPlay(m, p, rd, { fy: 1 - (inH ? (tire ? .2 : .7) : (tire ? .22 : .8)), back: inH || !!(tire && G0?.el?.mpH), inH, tire }, null, drag);   /* v9.60 경완 '1번 그림만 구멍 안, 나머지는 밖': 숨 쉬는 그림 대부분(첫 칸)이 몸을 펴고 있어 구멍 위로 나왔다 → 스프링은 .78 → .7 로 더 깊이 */   /* v9.32 경완: 작은 포켓몬은 스프링 구멍에 살짝만 (얼굴 안 가리게 .55 → .78), 타이어는 구멍 안에 앉아 아래 테두리만 앞에 (예전 .06 은 타이어 뒤로 숨었음), 다른 포켓몬도 몬스터볼 구멍 쪽에 얹혀 탐 (.45 → .8) */ emote(m, '♪', '', 2.2, 'prop-play');   // v9.28: 작은 포켓몬은 소품 뒤(구멍 속)에, 다른 포켓몬은 소품 앞 위에 올라탐 · v9.29: 흔들리는 부분과 같이 흔들린다
-      return log(inH ? `${J(m,'이/가')} ${esc(A.n)}에 쏙 들어가 앉아 흔들흔들 논다.` : `${J(m,'이/가')} ${esc(A.n)} 위에 올라타 흔들흔들 논다.`, [m]); }
+      return log(rd.l || rd.li ? scLog(m, A, rd, null, inH) : inH ? `${J(m,'이/가')} ${esc(A.n)}에 쏙 들어가 앉아 흔들흔들 논다.` : `${J(m,'이/가')} ${esc(A.n)} 위에 올라타 흔들흔들 논다.`, [m]); }
     if (a && scPlay(m, p, a, null, null, drag)) { emote(m, '♪', '', 2.2, 'prop-play');   /* v9.29 경완: 작업실 예시와 같은 동작 */
       const tw = a.x?.two; if (tw?.at) { const ok = o => o !== m && S.mons.includes(o) && awake(o) && !o.held && !o.scp && !o.camp && !o.pin && !o.evolving && !o.washing && o.state !== 'special' && o.state !== 'interact' && dist(o, p) < 320, o2 = S.mons.filter(ok).sort((u, v) => dist(u, p) - dist(v, p)).find(o => { const ty2 = tyOf(o).map(t => TYPE_KO[t]), w = tw.w || a.w || ''; return ty2.some(t => t && w.includes(t)) || (isSmall(o) && /작은/.test(w)) || (!isSmall(o) && /큰/.test(w)); });   // 둘이 노는 상호작용 (시소): 가까운 짝이 반대쪽에 앉는다
-        if (o2 && scPlay(o2, p, a, null, tw)) { o2.propUntil = performance.now() + 10000; dustAt(o2); return log(`${J(m,'과/와')} ${J(o2,'이/가')} ${esc(A.n)}에서 같이 논다.`, [m, o2]); } }
-      return log(`${J(m,'이/가')} ${esc(A.n)} 곁에서 놀고 있다.`, [m]); }
+        if (o2 && scPlay(o2, p, a, null, tw)) { o2.propUntil = performance.now() + 10000; dustAt(o2); return log(scLog(m, A, a, o2), [m, o2]); } }
+      return log(scLog(m, A, a), [m]); }
     if (!a) { const G = r && scGeo(r), MW = m.w || 40;   /* v9.63 경완 '소품 구경은 옆에서 앞모습으로만, 말풍선 하나, 일지·상호작용 횟수 규칙엔 안 넣음': 뒷모습 겹치기 없앰, 소품 옆까지 걸어가서 구경 */
       let x = m.x, y = m.y; if (G) { x = m.x < G.cx ? G.l - MW * .45 : G.l + G.W + MW * .45; if (x < XL + 20 || x > XR - 20) x = x < G.cx ? G.l + G.W + MW * .45 : G.l - MW * .45; x = clamp(x, XL + 20, XR - 20); y = Math.min(MAX_Y, G.gy + 2); }
       m.backSit = false; m.lookBk = 0; if (Math.hypot(x - m.x, y - m.y) > 6) moveTo(m, { x, y }, { kind: 'propWatch', cx: G ? G.cx : p.x }); else propWatch(m, G ? G.cx : p.x); return 'watch'; }
     anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play');
-    return log(`${J(m,'이/가')} ${esc(A.n)} 곁에서 놀고 있다.`, [m]); }   /* v9.28 경완: 일지엔 괄호 설명 없이 */
+    return log(scLog(m, A, a), [m]); }   /* v9.28 경완: 일지엔 괄호 설명 없이 */
   if (p.k === 'tree' && p.x2) { at(m.x < p.x ? -32 : 32, 14); setState(m, 'idle', rnd(6, 10)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play'); return log(pick([`${J(m,'이/가')} 나무 그늘 아래에서 쉰다.`, `${J(m,'이/가')} 나무 밑동에 기대어 하늘을 올려다본다.`]), [m]); }   /* v8.95: 더 놓은 나무엔 열매가 없다 */
   if (p.k === 'tree') { at(m.x < p.x ? -32 : 32, 14); setState(m, 'idle', 2.5); anim(m, 'hop'); setTimeout(() => { if (S.mons.includes(m)) shakeTree(m); }, 250); return; }
   if (p.k === 'perch') {
@@ -6321,7 +6325,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.75';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.76';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -10922,7 +10926,7 @@ function retier(ov, ord) { EGG_EFF = null;
 let scFillP = null;
 function scFill() { if (!Object.keys(LAYOUT.scArt || {}).length) return; (scFillP || (scFillP = fetch('config/staff/scarlet.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null))).then(R => { if (!R?.days) return; const it = {}; R.days.forEach(d => (d.items || []).forEach(o => { if (o?.id) it[o.id] = o; })); let n = 0;
   for (const [id, A] of Object.entries(LAYOUT.scArt || {})) { const o = it[id] || it[id.replace(/-k[0-9a-z]+$/, '')]; if (!o) continue;
-    (A.acts || []).forEach(a => { if (a.x) return; const b = (o.acts || []).find(q => q.a === a.a && q.x); if (b) { a.x = b.x; n++; } });
+    (A.acts || []).forEach(a => { const b = (o.acts || []).find(q => q.a === a.a); if (!b) return; if (!a.x && b.x) { a.x = b.x; n++; } for (const k of ['l', 'li', 'l2']) if (!a[k] && b[k]) a[k] = b[k]; });   /* v9.76: 일지 문장(l·li·l2)도 */
     const M = o.mv, same = G => Array.isArray(G) && G.length === A.px?.length && G.every((r, y) => r.length === A.px[y].length); if (!A.mv && M?.st && M?.mp && same(M.st) && same(M.mp)) { A.mv = M; n++; } }
   if (n && typeof itemsEl !== 'undefined' && itemsEl?.querySelector('.prop')) seaRedraw(); }); }   // 이미 그린 필드면 소품을 다시 그린다 (아직이면 처음 그릴 때 들어감)
 function setLayoutIn(L) {
@@ -11667,7 +11671,7 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
     /* v8.76 경완: 맵 크기에 맞춰 그린 그림(a.sz = 원래 그림 대비 [s, sy])으로 바뀌면 그만큼 크기 배율을 나눠 화면 크기는 그대로. v8.77: 원래 그림으로 돌아오면(sz 없음) 배율도 되돌림 (bk = 지금 그림의 sz) */
     const dv = (v, d) => { const q = Math.round((+v || 1) / (+d || 1) * 100) / 100; return Math.abs(q - 1) < .04 ? 0 : q; }, S0 = rz ? dv(P.s, rz[0]) : P?.s, SY0 = rz ? dv(P.sy, rz[1]) : P?.sy;
     if (rz) for (const r of LAYOUT.sc || []) if (r[0] === id) { if (r[3] != null) r[3] = dv(r[3], rz[0]) || 1; if (r[4] != null) r[4] = dv(r[4], rz[1]) || 1; }
-    LAYOUT.scArt = { ...(LAYOUT.scArt || {}), [id]: { n: String(a.n || '소품').slice(0, 16), px: a.px, pal: a.pal || {}, acts: (a.acts || []).map(o => ({ w: o.w, a: o.a, ...(o.x && typeof o.x === 'object' ? { x: o.x } : {}) })), ...(a.mv?.st && a.mv?.mp ? { mv: a.mv } : {}),   /* v9.29 경완: 작업실 예시 동작(x)·움직이는 부분(mv)도 게임으로 */ ...(P?.on ? { on: 1 } : {}), ...(S0 ? { s: S0 } : {}), ...(SY0 ? { sy: SY0 } : {}), ...(bk ? { bk } : {}), ...(a.glow != null ? { glow: +a.glow ? 1 : 0 } : {}), ...(Array.isArray(a.fr) && a.fr.length ? { fr: a.fr, fms: +a.fms || 160 } : {}) } };   /* v8.43: 프레임 그림도 */   /* v8.29: 다시 그린 그림으로 바꿔도 전체 소품(on)은 그대로 */ changed('scArt'); };
+    LAYOUT.scArt = { ...(LAYOUT.scArt || {}), [id]: { n: String(a.n || '소품').slice(0, 16), px: a.px, pal: a.pal || {}, acts: (a.acts || []).map(o => ({ w: o.w, a: o.a, ...(o.x && typeof o.x === 'object' ? { x: o.x } : {}), ...Object.fromEntries(['l', 'li', 'l2'].filter(k => o[k]).map(k => [k, o[k]])) })), ...(a.mv?.st && a.mv?.mp ? { mv: a.mv } : {}),   /* v9.29 경완: 작업실 예시 동작(x)·움직이는 부분(mv)도 게임으로 */ ...(P?.on ? { on: 1 } : {}), ...(S0 ? { s: S0 } : {}), ...(SY0 ? { sy: SY0 } : {}), ...(bk ? { bk } : {}), ...(a.glow != null ? { glow: +a.glow ? 1 : 0 } : {}), ...(Array.isArray(a.fr) && a.fr.length ? { fr: a.fr, fms: +a.fms || 160 } : {}) } };   /* v8.43: 프레임 그림도 */   /* v8.29: 다시 그린 그림으로 바꿔도 전체 소품(on)은 그대로 */ changed('scArt'); };
   api.scOn = ids => { const L = (ids || []).filter(id => LAYOUT.scArt?.[id] && !LAYOUT.scArt[id].on); if (!L.length) return; undo.push(snap()); for (const id of L) LAYOUT.scArt[id] = { ...LAYOUT.scArt[id], on: 1 }; changed('scArt'); };   // v8.24 경완: 추가 소품 → 전체 소품으로 저장
   api.scUndef = id => { if (!LAYOUT.scArt?.[id]) return; undo.push(snap()); delete LAYOUT.scArt[id]; LAYOUT.sc = (LAYOUT.sc || []).filter(r => r[0] !== id); if (sel?.key === 'sc') sel = null; delete scCache[id]; changed('sc'); };
   api.nudge = (dx, dy) => { const t = sel && items().find(t => t.key === sel.key && t.i === sel.i); if (!t) return; undo.push(snap()); t.mv(dx, dy); changed(sel.key); };
@@ -11848,7 +11852,7 @@ api.szLoad = async L => { for (const o of L || []) { if (!SZB.on) return; const 
       const L = Object.keys(SPECIES).map(Number).filter(sp => DEX[sp] && fitF({ sp, form: sp })); if (!L.length) return 'nosp';
       m = await spawn(pick(L), { x: clamp(p.x + rnd(-70, 70), XL + 16, XR - 16), y: clamp(p.y + rnd(24, 60), MIN_Y, MAX_Y) }); m.studio = true; save(); api.onMon?.({ uid: m.uid, sp: m.sp, name: m.name, wild: !m.pid }); await new Promise(r => setTimeout(r, 350)); }
     if (!awake(m)) wake(m); if (m.scp) scEnd(m); m.goal = null;
-    if (a && !/올라타|들어가 앉|구멍/.test(a.a || '') && scPlay(m, p, a, null, null, true)) { emote(m, '♪', '', 2.2, 'prop-play'); m.propUntil = performance.now() + 12000; log(`${J(m,'이/가')} ${esc(LAYOUT.scArt[o.scId].n)} 곁에서 놀고 있다.`, [m]); }
+    if (a && !/올라타|들어가 앉|구멍/.test(a.a || '') && scPlay(m, p, a, null, null, true)) { emote(m, '♪', '', 2.2, 'prop-play'); m.propUntil = performance.now() + 12000; log(scLog(m, LAYOUT.scArt[o.scId], a), [m]); }
     else { if (p.k === 'pond') { const sw = T(m).mv === 'swim' || T(m).mv === 'amph' || tyOf(m).includes(WAT); place(m, clamp(p.x + rnd(-p.rx * .3, p.rx * .3), XL + 20, XR - 20), sw ? p.y : clamp(p.y + p.ry * 1.15, MIN_Y, MAX_Y)); } propReact(m, p, true); }
     return 'ok:' + (m.name || SPECIES[m.sp]?.n || ''); };
   api.clearMons = () => { for (const m of [...S.mons]) removeMon(m, true); save(); };   // v3.69 경완: 작업실 미리보기(따로 저장)에서는 원래 있던 포켓몬도 모두 뺀다
