@@ -6243,7 +6243,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.44';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.45';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -11583,6 +11583,7 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
   /* v9.44 경완 '시뮬레이터에서 맵 편집한 거 자동으로 작업실에 저장': 맵 편집 저장 = 옮긴 자리·넣은 소품을 배치에 그대로 굳히고(S.lay·S.layAdd 비움) 작업본으로, 뺀 소품은 목록에서 지움. 편집 전 배치는 되돌리기에 */
   let mePre = null;
   api.meStart = () => { mePre = snap(); };
+  api.bakeLay = () => { if (!Object.keys(S.lay || {}).length && !(S.layAdd || []).length) return; mePre = JSON.stringify(dsnap()); api.meSaved(); };   // v9.45 경완 '시뮬레이터에서 하는 건 다 작업실에': 예전에 시뮬레이터 맵 편집으로 옮겨 둔 자리도 작업실을 열 때 배치로
   api.meSaved = () => { const pre = mePre; mePre = null; const L = JSON.parse(snap());
     for (const K of LAY_ARR) if (Array.isArray(L[K])) L[K] = L[K].filter(v => !meOut(v)).map(v => { if (v && typeof v === 'object' && !Array.isArray(v)) { delete v.pa; delete v.paN; } return v; });
     S.lay = {}; S.layAdd = []; save(); if (pre) undo.push(pre); setLayout(L); sel = null; rebuild(true); renderHands(); api.onLayout?.(dsnap(), undo.length); };
