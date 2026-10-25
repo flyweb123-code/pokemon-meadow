@@ -551,7 +551,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.91';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.92';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -635,11 +635,17 @@ $('#nav').ondblclick = e => { const a = e.target.closest('a'); if (a && !e.targe
 $('#tabs').onclick = e => { const a = e.target.closest('a'); if (!a) return; const t = MTABS.find(x => x[0] === a.dataset.t); go(lastOf[t[0]] || t[3][0]); };
 document.addEventListener('click', e => { const c = e.target.closest('.seg .chip'); if (c && Date.now() - segDragAt > 300) go(c.dataset.v); });
 // v2.17 경완: 위쪽 배포하기는 화면을 넘기지 않고 바로 배포 (저장한 것만, 저장 안 한 곳은 그대로 남김)
+// v3.92 경완 '시뮬레이터는 따로 쓰는 기기, 그 안의 맵 배치는 배포 안 함': 작업실 시뮬레이터에서 바꾼 자리(소품·연못·꽃·바위·길)는 배포(본 게임·베타)에 안 싣고 진짜 게임(live) 자리를 그대로 둔다.
+// 소품 그림·반응 같은 나머지 layout 은 데이터라 배포된다. 작업실의 배치는 배포 뒤에도 작업본에 남는다 (포켓몬 배치처럼 작업실에서만)
+const LAY_POS = ['pond', 'ponds', 'fire', 'fires', 'bed', 'beds', 'tree', 'trees', 'perch', 'perches', 'stump', 'stumps', 'bushes', 'puddles', 'rocks', 'mush', 'flowers', 'path', 'sc'];
+async function liveLay() { try { return JSON.parse(await gh('/contents/config/live.json?ref=main', { raw: true }))?.data?.layout || null; } catch (e) { if (e.status === 404) return null; throw e; } }
+function layNoPos(data, live) { if (!data?.layout || !live) return data; const d = { ...data, layout: { ...data.layout } }; for (const k of LAY_POS) { if (k in live) d.layout[k] = JSON.parse(JSON.stringify(live[k])); else delete d.layout[k]; } return d; }
+function layKeepDraft(keep, sent) { if (!D.layout || !sent?.layout) return keep; const L = JSON.parse(JSON.stringify(sent.layout)); for (const k of LAY_POS) { if (k in D.layout) L[k] = D.layout[k]; else delete L[k]; } if (JSON.stringify(L) !== JSON.stringify(sent.layout)) keep.layout = L; return keep; }
 async function quickDeploy() { const C = changes(), tok = store.get('st-gh-token'); if (!C.length) return;
   if (!CANDEPLOY || !tok) { go('work'); toast(CANDEPLOY ? '먼저 아래에서 GitHub 를 연결해 주세요' : '이 미리보기에서는 배포할 수 없어요'); return; }
   const b = $('#goWork'); b.disabled = true; b.textContent = '배포하는 중…';
   try { const ids = ALLBOX().filter(boxDirty), keep = {}; for (const id of ids) for (const p of boxPaths(id)) putP(keep, p, D);
-    const v = await deploy(snapshot(), '', C.map(c => c[2] ? `${c[0]}: ${c[1]} → ${c[2]}` : `${c[0]}: ${c[1]}`)); D = keep; saveDraft(); toast(`데이터 v${v} 배포했어요${ids.length ? ` · 저장 안 한 ${ids.length}곳은 남겨 뒀어요` : ''}`); reloadGame(); if (view === 'work') renderWork(); }
+    const sent = layNoPos(snapshot(), await liveLay()), v = await deploy(sent, '', C.map(c => c[2] ? `${c[0]}: ${c[1]} → ${c[2]}` : `${c[0]}: ${c[1]}`)); D = layKeepDraft(keep, sent); saveDraft(); toast(`데이터 v${v} 배포했어요${ids.length ? ` · 저장 안 한 ${ids.length}곳은 남겨 뒀어요` : ''}`); reloadGame(); if (view === 'work') renderWork(); }
   catch (err) { toast('배포하지 못했어요: ' + ghErr(err)); }
   b.disabled = false; b.textContent = '배포하기'; dstat(); }
 // v3.79 경완 '베타로 배포하기 버튼 없애고 배포하기로 통일, 옆에 베타 토글': 베타 토글 = 미리보기 게임(st-beta)과 같이 바뀌고, 켜져 있으면 배포하기가 베타(config/beta.json)에만 올림
@@ -661,7 +667,7 @@ async function betaDeploy() { const tok = store.get('st-gh-token'); if (!changes
   if (!CANDEPLOY || !tok) { go('work'); toast(CANDEPLOY ? '먼저 아래에서 GitHub 를 연결해 주세요' : '이 미리보기에서는 배포할 수 없어요'); return; }
   const b = $('#goWork'); b.disabled = true; b.textContent = '베타에 올리는 중…';
   try { const ids = ALLBOX().filter(boxDirty), keep = {}; for (const id of ids) for (const p of boxPaths(id)) putP(keep, p, D);   /* v3.80 경완 '베타로 배포했는데 바뀐 곳이 안 사라짐': 배포하기처럼 올린 것(저장본)은 작업본에서 비우고 게임을 다시 불러옴 */
-    const n = await deployBeta(snapshot()); D = keep; saveDraft(); toast(`베타 데이터 ${n} 올렸어요 · 진짜 게임은 그대로예요${ids.length ? ` · 저장 안 한 ${ids.length}곳은 남겨 뒀어요` : ''}`); reloadGame(); if (view === 'work') renderWork(); }
+    const sent = layNoPos(snapshot(), await liveLay()), n = await deployBeta(sent); D = layKeepDraft(keep, sent); saveDraft(); toast(`베타 데이터 ${n} 올렸어요 · 진짜 게임은 그대로예요${ids.length ? ` · 저장 안 한 ${ids.length}곳은 남겨 뒀어요` : ''}`); reloadGame(); if (view === 'work') renderWork(); }
   catch (err) { toast('베타에 올리지 못했어요: ' + ghErr(err)); }
   b.disabled = false; b.textContent = '베타로 배포하기'; dstat(); }
 
@@ -2093,7 +2099,7 @@ function renderWork() {
   let armed = false; $('#wClear').onclick = e => { if (!armed) { armed = true; e.target.textContent = '정말 버릴까요? 한 번 더'; return; } D = {}; saveDraft(); if (A) A.setLayout(ORIG.layout); renderWork(); };
   if (!CANDEPLOY) return;
   $('#wDeploy').onclick = async e => { e.target.disabled = true; $('#wMsg').textContent = '배포하는 중…';
-    try { const v = await deploy(snapshot(), $('#wNote').value.trim(), changes().map(c => c[2] ? `${c[0]}: ${c[1]} → ${c[2]}` : `${c[0]}: ${c[1]}`)); D = {}; saveDraft(); toast(`데이터 v${v} 배포했어요`); reloadGame(); go('work'); }
+    try { const sent = layNoPos(snapshot(), await liveLay()), v = await deploy(sent, $('#wNote').value.trim(), changes().map(c => c[2] ? `${c[0]}: ${c[1]} → ${c[2]}` : `${c[0]}: ${c[1]}`)); D = layKeepDraft({}, sent); saveDraft(); toast(`데이터 v${v} 배포했어요`); reloadGame(); go('work'); }
     catch (err) { $('#wMsg').textContent = '배포하지 못했어요: ' + ghErr(err); e.target.disabled = false; } };
   if (tok) $('#ghOff').onclick = () => { store.set('st-gh-token', ''); renderWork(); };
   else $('#ghSave').onclick = async () => { const t = $('#ghTok').value.trim(); if (!t) return; $('#ghMsg').textContent = '확인하는 중…';
@@ -2175,6 +2181,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.92', '10월 26일', ['시뮬레이터는 따로 쓰는 기기처럼: 시뮬레이터에서 바꾼 맵 배치(소품·연못·꽃 자리)는 배포하기·베타로 배포하기 모두 게임에 안 올라가고 작업실에만 남아요 (포켓몬 배치처럼). 소품 반응·그림 같은 데이터는 지금처럼 배포돼요']],
   ['3.91', '10월 26일', ['3.90 되돌림: 작업실에서 바꾼 맵 배치는 다시 베타 배포에 들어가요. 시뮬레이터 게임은 따로 쓰는 기기처럼, 그 안의 맵 편집은 시뮬레이터에만 남아요']],
   ['3.90', '10월 26일', ['베타로 배포해도 맵 배치(소품·연못·꽃 자리)는 베타 게임에 안 올라가요. 맵 배치는 작업실에만 남고, 베타 게임은 진짜 게임 배치를 써요']],
   ['3.89', '10월 26일', ['소품 반응 카드의 조건 이름을 한 규칙으로 (크기 · 움직임 · 타입, 아무나는 \'모든 포켓몬\', 순서 있는 반응의 마지막은 \'나머지 포켓몬\')', '스칼렛 소품 상호작용 조건도 같은 말로 정리 (바람개비 날갯짓은 \'날갯짓하는 포켓몬\' = 날갯짓 그림이 있는 포켓몬만)']],
