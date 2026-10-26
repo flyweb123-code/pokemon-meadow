@@ -60,12 +60,12 @@ function build() {
   document.body.appendChild(root);
   $g('.gy-plate').onclick = () => { sfx('tap'); infoPop(); };
   $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap'); const t = b.dataset.t; if (t === 'out') return exit(); openTab(tab === t ? null : t); };
-  addEventListener('resize', () => { if (open && st()?.d) layout(); });
+  addEventListener('resize', () => { if (open) layout(st()?.d ? undefined : DESIGNS[0]); });
 }
 
 // 맵 크기: 화면 폭에 맞추고, 너무 길면 세로로 넘겨 본다
-function layout() {
-  const D = dzOf(st().d), stg = $g('.gy-stage'), map = $g('.gy-map'), img = map.querySelector('img');
+function layout(D = dzOf(st().d)) {
+  const stg = $g('.gy-stage'), map = $g('.gy-map'), img = map.querySelector('img');
   const mw = D.w * 16, mh = D.h * 16, aw = stg.clientWidth - 16, ah = stg.clientHeight - 104 - 140;
   sc = Math.min(3.5, aw / mw, Math.max(ah / mh, aw / mw * .8)); sc = Math.max(1, Math.floor(sc * 8) / 8);
   map.style.width = mw * sc + 'px'; map.style.height = mh * sc + 'px';
@@ -215,10 +215,46 @@ function opened() {
   sfx('tap'); const fx = document.createElement('div'); fx.className = 'gy-fx'; const C = ['#e04838', '#ffd84a', '#58a8e0', '#6ab84a', '#f8f8f8'];
   for (let k = 0; k < 46; k++) { const i = document.createElement('i'); i.style.left = Math.random() * 100 + '%'; i.style.background = C[k % C.length]; i.style.setProperty('--dx', (Math.random() * 80 - 40) + 'px'); i.style.animationDelay = Math.random() * .6 + 's'; i.style.animationDuration = 1.6 + Math.random() * 1.2 + 's'; fx.appendChild(i); }
   root.appendChild(fx); setTimeout(() => fx.remove(), 3600);
-  const ic = document.querySelector('#btnGym svg')?.outerHTML || '';
-  pop(`<div class="gy-open"><span class="gy-open-ic">${ic}</span><h4>${esc(st().nm)} 개장!</h4><p>오늘부터 관장님이에요. 체육관 안내원에게 말을 걸면 운영 방법을 알려 줘요.</p></div><div class="gy-btns one"><button class="main" data-a="ok">좋아요</button></div>`, (a, close) => close());
   say(`<b>${esc(st().nm)}</b>의 문을 열었다!`, '안내원을 눌러 보세요');
+  setTimeout(() => kang(KANG_OPEN(), { lit: true }), 1400);
 }
+
+// ---------- 강박사 안내 (처음 체육관에 올 때, 체육관을 연 뒤) ----------
+const KANG_HI = () => [
+  '오, 왔구나!\n기다리고 있었단다.',
+  '여기는 오랫동안 문을 닫아 둔\n빈 체육관이란다.',
+  trName() ? `${trName()}, 오늘부터 네가\n이 체육관의 관장이다!` : '오늘부터 네가\n이 체육관의 관장이다!',
+  '관장은 찾아오는 도전자와\n배틀해서 실력을 보여 주는\n사람이지.',
+  '먼저 체육관을 꾸며 보자.\n체육관 모양과 타입을\n고르렴.',
+  '타입을 정하면 그 타입\n포켓몬만 배틀에 낼 수 있단다.\n잘 고르렴!',
+];
+const KANG_OPEN = () => [
+  '멋진 체육관이구나!',
+  '도전자는 하루에 몇 번,\n아무 때나 찾아온단다.',
+  '누가 오면 필드의 체육관\n버튼에 빨간 점이 뜨지.',
+  '도전자를 이기면 골드를 받고\n평판이 오른단다. 평판이 오르면\n체육관도 커지지.',
+  '훈련장에서 포켓몬을 키우고,\n트레이너를 고용해 함께\n체육관을 지킬 수도 있단다.',
+  '한 타입으로 도전자를\n100명 막아 내면\n자격 배지를 준단다!',
+  '모르는 게 있으면 안내원에게\n물어보렴. 그럼 힘내라,\n관장님!',
+];
+// lines 를 강박사가 한 줄씩 말한다 (화면을 누르면 다음). lit: 처음부터 밝게 / 아니면 어두운 체육관에 불이 켜지며 시작
+function kang(lines, { lit = false } = {}) {
+  return new Promise(done => {
+    const k = document.createElement('div'); k.className = 'gy-kang' + (lit ? ' lit' : '');
+    k.innerHTML = `<i class="gy-k-veil"></i><img class="gy-k-pic" alt="강박사" src="${GA.KANG}"><button class="gy-k-skip" type="button">건너뛰기</button><div class="win gy-k-box" aria-live="polite"><span class="gy-k-nm">강박사</span><span class="gy-k-t"></span><b class="gy-k-cur" hidden>▼</b></div>`;
+    root.appendChild(k);
+    const talk = GA.inTyper(k, k.querySelector('.gy-k-t'), k.querySelector('.gy-k-cur'));
+    let stop = false; const end = async () => { if (k.classList.contains('bye')) return; stop = true; k.classList.add('bye'); await wait(450); k.remove(); done(); };
+    k.querySelector('.gy-k-skip').onclick = e => { e.stopPropagation(); sfx('tap'); end(); };
+    (async () => {
+      if (!lit) { await wait(500); for (const o of [.55, .9, .25, .6, 0]) { k.style.setProperty('--veil', o); await wait(o ? 110 : 0); } k.classList.add('lit'); await wait(500); }
+      k.classList.add('in'); await wait(650);
+      for (const t of lines) { if (stop) return; await talk(t); }
+      end();
+    })();
+  });
+}
+
 
 // ---------- 들어가기·나가기 ----------
 const preload = src => new Promise(ok => { const i = new Image(); i.onload = i.onerror = () => ok(); i.src = src; });
@@ -228,16 +264,24 @@ async function prepare() {
   if (g?.d) L.push(preload(`${IMG}map/${g.d}.png`)); else DESIGNS.forEach(D => L.push(preload(`${IMG}map/${D.id}.png`)));
   await Promise.all(L);
 }
+// 처음: 빈 체육관(회색시티 모양)에 불이 켜지고, 내가 문으로 들어오면 강박사가 설명 → 디자인·타입·이름 정하기
+async function intro() {
+  const D = DESIGNS[0]; clearEnts(); layout(D); say('', ''); root.classList.add('pre');
+  const me = ent({ ow: trOf().sex === 'f' ? 'green_normal' : 'red_normal', x: D.door[0], y: D.door[1], f: 'u' });
+  const k = kang(KANG_HI());
+  await wait(1500); await walk(me, [[D.door[0], D.door[1] - 4]]);
+  await k; root.classList.remove('pre'); if (!open) return; setup();
+}
 function enter() {
-  open = true; tab = null; root.hidden = false; document.body.classList.add('gymMode'); openTab(null);
+  open = true; tab = null; root.hidden = false; GA.gymIn(); openTab(null);
   requestAnimationFrame(() => root.classList.add('on'));
-  if (st()?.d) renderHome(); else { clearEnts(); setup(); }
+  if (st()?.d) renderHome(); else intro();
   setTimeout(() => gymLoad.hide(), 120);
 }
 async function exit() {
-  root.querySelectorAll('.gy-pop,.gy-setup').forEach(x => x.remove());
-  gymLoad.show('퇴근하는 중', '', true); await wait(1300);
-  open = false; root.classList.remove('on'); root.hidden = true; document.body.classList.remove('gymMode'); clearEnts();
+  root.querySelectorAll('.gy-pop,.gy-setup,.gy-kang').forEach(x => x.remove());
+  gymLoad.show('퇴근하는 중', '', true); await wait(2800);
+  open = false; root.classList.remove('on'); root.hidden = true; root.querySelectorAll('.gy-kang').forEach(x => x.remove()); root.classList.remove('pre'); GA.gymOut(); clearEnts();
   try { menuDots(); } catch (e) {}
   await wait(200); gymLoad.hide();
 }
