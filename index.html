@@ -3330,6 +3330,7 @@ function moveTo(m, p, goal, spdMul = 1) {
   setState(m, 'move', 30);
 }
 function sleep(m, msg = true) {
+  if (!m.scp && !m.held && T(m).mv === 'swim' && (m.land || pondVal(m.x, m.y) > .95)) { if (m.land) return; return moveTo(m, randPond(.8, m), { kind: 'bed' }, .8); }   // v10.01 경완 '형광어 육지에서 자고 있음': 헤엄치는 포켓몬은 물 밖에서 잠들지 않는다 (물로 돌아가서 잔다)
   if (!m.scp && !m.perch && !m.held && lowAn(m, 'Sleep') && pondVal(m.x, m.y) < 1.05) return moveTo(m, shorePoint(m, 0), { kind: 'bed' }, .8);   // v9.55: 연못 위면 물가로 가서 잔다
   if (!m.scp && !m.perch && !m.held && T(m).mv !== 'swim' && scBehind(m.x, m.y)) { const q = outOfSc({ x: m.x, y: m.y }); place(m, q.x, q.y); }   // v9.35: 소품 뒤에 숨어 잠들지 않게 앞으로
   m.goal = null; m.partner = null; setState(m, 'sleep', 0); m.el.classList.add('asleep');
@@ -6344,7 +6345,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.00';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.01';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
