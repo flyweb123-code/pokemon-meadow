@@ -1678,7 +1678,8 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
         <div class="op-row"><span>베타 판 쓰기 (이 기기만)</span><button class="op-sw" id="betaSw" role="switch" aria-checked="false"><i></i></button></div>
         <div class="set-btns one"><button class="lk-btn main" id="updNow">배포된 최신 판 바로 받기</button></div>
         <div class="set-btns one"><button class="lk-btn main" id="newsPv">업데이트 알림창 미리 보기</button></div>
-        <div class="set-btns one"><button class="lk-btn main" id="tutPv">튜토리얼 미리 보기</button></div>   <!-- v8.04 경완: 오프닝·튜토리얼을 처음부터 (저장은 그대로) -->
+        <div class="set-btns one"><button class="lk-btn main" id="tutPv">튜토리얼 미리 보기</button></div>
+        <div class="set-btns one"><button class="lk-btn main" id="dexFxPv">도감 등록 연출 미리 보기</button></div>   <!-- v9.95 경완: 못 만난 포켓몬 3마리로 해 보고 원래대로 (저장 안 함) -->   <!-- v8.04 경완: 오프닝·튜토리얼을 처음부터 (저장은 그대로) -->
         <!-- v8.16 경완: 운영자 골드 맞추기 없앰 (v7.46) -->   <!-- v7.28 경완: 운영자 전용 — 봤다고 저장하지 않음 -->
         <div class="mgt-row"><span>기술 시험</span><select id="mgtType" aria-label="타입 (액티브 기술)"></select><select id="mgtRk" aria-label="랭크 (패시브)"></select><button class="lk-btn main" id="mgtGo">해 보기</button></div>   <!-- v6.21 경완: 운영자 전용 미니게임 기술 시험 (보상·기록 없음) -->
         <p class="op-note" id="updMsg" hidden></p>
@@ -9435,10 +9436,19 @@ function unlock(sp, fx) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); trUpChe
 /* v9.95 경완: 부화·진화로 새로 등록된 포켓몬은 창을 다 닫은 뒤 번호순 도감을 열어, 그 칸으로 스크롤하며 하나씩 채워 넣는다 (화면을 누르면 남은 것을 한꺼번에) */
 const dexFx = { q: [], on: false };
 function dexFxFlush() { const L = dexFx.q.splice(0); L.forEach(sp => { lockDexBtn(sp); dexCellReady(sp); }); return L; }
+$('#dexFxPv').addEventListener('click', async () => {   /* v9.95 경완: 운영자 — 못 만난 포켓몬 3마리를 잠깐 등록한 것처럼 채워 보고, 끝나면 원래대로 (저장 안 함) */
+  if (dexFx.on) return; const pool = Object.keys(SPECIES).map(Number).filter(sp => !S.unlocked.has(sp) && dexBtns[sp]); if (!pool.length) return;
+  const L = []; while (L.length < Math.min(3, pool.length)) { const sp = pool[Math.floor(Math.random() * pool.length)]; if (!L.includes(sp)) L.push(sp); }
+  for (let k = 0; k < 20 && dexFxBlocked(); k++) await wait(300); if (dexFxBlocked()) return;
+  const fz = saveFrozen, nw = L.filter(sp => !S.dexNew?.has(sp)); saveFrozen = true;
+  L.forEach(sp => { S.unlocked.add(sp); (S.dexNew ||= new Set()).add(sp); dexFx.q.push(sp); });
+  try { await dexFxRun(); } finally { L.forEach(sp => { S.unlocked.delete(sp); if (nw.includes(sp)) S.dexNew.delete(sp); lockDexBtn(sp); }); $('#dexOwn').textContent = `${S.unlocked.size}/${Object.keys(SPECIES).length}`; filterDex(); saveFrozen = fz; }
+});
+const dexFxBlocked = () => hatching || evolving || hatchQ.length || !$('#noti').hidden || !hatchEl.hidden || !!document.querySelector('#frMax:not([hidden]),#dexPop:not([hidden])');   /* 열린 창이 실제로 보이는지로 (notiOpen 값은 남아 있을 때가 있다) */
 function dexFxKick(ms = 450) { clearTimeout(dexFx.t); dexFx.t = setTimeout(dexFxRun, ms); }
 async function dexFxRun() {
   if (dexFx.on || !dexFx.q.length) return;
-  if (hatching || evolving || hatchQ.length || notiOpen || !$('#noti').hidden || !hatchEl.hidden || document.querySelector('#frMax:not([hidden]),#dexPop:not([hidden])')) return dexFxKick(600);
+  if (dexFxBlocked()) return dexFxKick(600);
   dexFx.on = true; const L = [...new Set(dexFx.q.splice(0))].sort((a, b) => a - b);
   try {
     $('#dexQ').value = ''; dexQv = ''; setFilter('dexType', 0); setFilter('dexGen', 0);
