@@ -2794,7 +2794,7 @@ function renderLog() {
   renderDlg();
 }
 const dlgEl = $('#dlg');
-function foldDlg(on, auto = false) { if (!on && auto && document.body.classList.contains('fview')) return; if (!on) document.body.classList.remove('fview');   /* v9.87 경완: 버튼을 다 숨긴 동안엔 접힌 일지 버튼으로만 편다 */ if (on && !$('#journal').hidden) setLog(false); dlgEl.classList.toggle('folded', on); queueMicrotask(dlgBound); $('#dlgFold').setAttribute('aria-label', on ? '상태창 펴기' : '상태창 접기'); if (!auto) try { localStorage.setItem('pk-dlg-fold', on ? '1' : ''); } catch (e) {} }
+function foldDlg(on, auto = false) { if (!on && auto && document.body.classList.contains('fview')) return; if (!on) document.body.classList.remove('fview');   /* v9.87 경완: 버튼을 다 숨긴 동안엔 일지 소식으로 저절로 펴지지 않는다 (빈 곳·접힌 일지 버튼으로만) */ if (on && !$('#journal').hidden) setLog(false); dlgEl.classList.toggle('folded', on); queueMicrotask(dlgBound); $('#dlgFold').setAttribute('aria-label', on ? '상태창 펴기' : '상태창 접기'); if (!auto) try { localStorage.setItem('pk-dlg-fold', on ? '1' : ''); } catch (e) {} }
 // 상태창이 펴져 있으면 포켓몬이 그 뒤(가려지는 곳)로 가지 않게 아래 경계를 올리고, 이미 가려진 포켓몬은 위로 걸어 나오게 한다
 function dlgBound() {
   let y = MAX_Y0;
@@ -6152,7 +6152,7 @@ stage.addEventListener('click', e => {
     noticeBerry(addBerry(x, y));
   } else if (lookMon) { lookMon = null; sfx('tap'); }   // 필드 보기 표시만 끈다
   else if (S.sel) { select(null); sfx('tap'); }   // 포켓몬 정보창이 떠 있으면 그것만 닫는다
-  else if (!document.body.classList.contains('fview')) { foldDlg(!dlgEl.classList.contains('folded')); document.body.classList.toggle('fview', dlgEl.classList.contains('folded')); sfx('tap'); }   // 그다음 빈 곳을 누르면 상태창(일지 포함)을 접고, 다시 누르면 편다
+  else { foldDlg(!dlgEl.classList.contains('folded')); document.body.classList.toggle('fview', dlgEl.classList.contains('folded')); sfx('tap'); }   // v9.88 경완: 숨긴 동안 빈 곳을 다시 누르면 다 펼친다 (자동 펴기만 막음)   // 그다음 빈 곳을 누르면 상태창(일지 포함)을 접고, 다시 누르면 편다
 });
 
 // 빈 땅을 문지르면 빛 줄기가 나오고, 그대로 포켓몬 위를 문지르면 바로 그 포켓몬 쓰다듬기가 시작된다
@@ -6335,7 +6335,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.87';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.88';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
