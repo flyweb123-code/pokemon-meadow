@@ -2089,9 +2089,15 @@ function musicDB() {
   return new Promise((res, rej) => { const r = indexedDB.open('pk-music', 1); r.onupgradeneeded = () => r.result.createObjectStore('t'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
 }
 async function musicDo(mode, fn) { const db = await musicDB(); return new Promise((res, rej) => { const tx = db.transaction('t', mode), st = tx.objectStore('t'); const r = fn(st); tx.oncomplete = () => res(r && r.result); tx.onerror = () => rej(tx.error); }); }
-const musicGet = id => musicDo('readonly', st => st.get(id));
 const musicPut = (id, blob) => musicDo('readwrite', st => st.put(blob, id));
-const musicKeys = () => musicDo('readonly', st => st.getAllKeys());
+// v10.20 경완: 울음소리는 가져오지 않아도 PokeAPI 공개 모음(cries 저장소)에서 처음 울 때 받아 이 기기에 넣어 둔다. 곡은 그대로 가져오기만.
+const CRY_N = 1025, cryURL = sp => `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${sp}.ogg`;
+async function musicGet(id) {
+  let b = null; try { b = await musicDo('readonly', st => st.get(id)); } catch (e) {}
+  const sp = /^cry\d+$/.test(id) ? +id.slice(3) : 0; if (b || !sp || sp > CRY_N) return b;
+  try { const r = await fetch(cryURL(sp)); if (!r.ok) return null; b = await r.blob(); musicPut(id, b).catch(() => {}); return b; } catch (e) { return null; }   // 한 번 받으면 오프라인에서도 나온다
+}
+const musicKeys = () => musicDo('readonly', st => st.getAllKeys()).catch(() => []).then(k => [...new Set([...(k || []), ...Array.from({ length: CRY_N }, (_, i) => 'cry' + (i + 1))])]);
 const evoMus = { have: false, buf: null, src: null, g: null };
 musicKeys().then(k => { (k || []).forEach(x => x === 'evo' ? (evoMus.have = true) : /^cry\d+$/.test(x) ? cry.have.add(+x.slice(3)) : bgm.have.add(x)); cryLabel(); if (bgmOn && bgm.id == null) bgmStart(); if (!$('#shop').hidden) renderShop(); }).catch(() => {});
 async function bgmPlay(id, pos) {
@@ -6447,7 +6453,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.19';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.20';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -11347,9 +11353,9 @@ async function setupFlow() {
 #setup .su-later{background:none;border:0;color:#6e6b64;font:inherit;font-size:11px;text-decoration:underline;margin-top:6px;padding:8px}
 #setup .su-done{font-size:14px;color:#ffd75a;min-height:20px}`; document.head.append(st); }
   const ov = document.createElement('div'); ov.id = 'setup'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', '소리 준비');
-  ov.innerHTML = `<h2>소리 준비</h2><p>게임 음악과 포켓몬 울음소리를 이 기기에 가져와 주세요.<br>파일은 이 기기에만 저장돼요.</p>
+  ov.innerHTML = `<h2>소리 준비</h2><p>게임 음악을 이 기기에 가져와 주세요.<br>파일은 이 기기에만 저장돼요.</p>
 <div class="su-row" data-k="m"><button class="lk-btn main" type="button">음악 가져오기</button><small></small></div>
-<div class="su-row" data-k="c"><button class="lk-btn main" type="button">울음소리 가져오기</button><small></small></div>
+<div class="su-row" data-k="c" hidden><button class="lk-btn main" type="button">울음소리 가져오기</button><small></small></div>
 <div class="su-done" aria-live="polite"></div><button class="su-later" type="button">나중에 하기</button>`;
   document.body.append(ov);
   const rm = ov.querySelector('[data-k=m]'), rc = ov.querySelector('[data-k=c]'), done = ov.querySelector('.su-done');
