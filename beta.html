@@ -5690,7 +5690,7 @@ function propReactIn(m, p, drag) {
     setTimeout(() => { if (!S.mons.includes(m)) return; m.el.style.visibility = ''; m.y = Math.min(MAX_Y, p.y + 16); emote(m, '!', '', 2.2, 'bush-out'); anim(m, 'hop'); el?.classList.remove('rustle'); }, 4200);   /* v4.61 경완: 튀어나오면 덤불은 멈춘다 */
     return;
   }
-  if (p.k === 'stump') { at(0, 10); propSit(m, 14); faceTo(m, nearPond(p.x, p.y).x); onShadow(m);   /* v4.26 경완: 그루터기에 앉으면 호수 쪽을 바라본다 */ setState(m, 'idle', rnd(16, 26)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play'); return log(`${J(m,'이/가')} 그루터기 위에 올라앉아 쉰다.`, [m]); }
+  if (p.k === 'stump') { at(0, 10); { const v = p.x2 ? LAYOUT.stumps[p.i] : LAYOUT.stump; propSit(m, Math.round(19 * ZP('stump', v)) + 2); }   /* v9.83 경완: 그림자가 윗둥 나이테 가운데로 (그림 22×16 에서 나이테 가운데 = 밑에서 9.5칸) */ faceTo(m, nearPond(p.x, p.y).x); onShadow(m);   /* v4.26 경완: 그루터기에 앉으면 호수 쪽을 바라본다 */ setState(m, 'idle', rnd(16, 26)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play'); return log(`${J(m,'이/가')} 그루터기 위에 올라앉아 쉰다.`, [m]); }
   if (p.k === 'rock') {
     const ty = tyOf(m);
     if ((ty.includes(ROC) || ty.includes(GRO) || ty.includes(FIG)) && rxOn('rock', '바위·땅·격투')) { at(0, p.ry - 4); propSit(m, 10); onShadow(m); setState(m, 'idle', 12); anim(m, 'hop'); emote(m, '!', '', 2.2, 'rock-pose'); return log(`${J(m,'이/가')} 바위 위에 올라가 늠름하게 포즈를 잡는다.`, [m]); }
@@ -6332,7 +6332,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.82';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.83';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
