@@ -1,6 +1,1107 @@
 {
  "days": [
   {
+   "at": 1793054952756,
+   "theme": "포켓몬 운동회",
+   "note": "오늘은 풀밭에 작은 운동회를 열었어요! 골대·허들·시상대처럼 실루엣만 봐도 알 수 있는 기구로 골랐고, 샌드백과 출발 깃발은 매단 부분만 따로 흔들려요.",
+   "items": [
+    {
+     "id": "hoop-post",
+     "n": "운동회 농구 골대",
+     "k": "놀이",
+     "d": "쇠기둥 위에 하얀 판과 주황 테가 달린 농구 골대예요. 판 가운데 빨간 네모가 있고, 테 아래로 하얀 그물이 늘어져 있어요.",
+     "acts": [
+      {
+       "w": "나는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 골대 판 위에 앉아 내려다봐요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "농구 골대 판 위에 날아올라 앉아 운동장을 내려다본다.",
+        "농구 골대 꼭대기에 앉아 느긋하게 쉰다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "골대 아래에서 폴짝폴짝 뛰어올라 그물을 툭 건드려요",
+       "x": {
+        "at": "under",
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "농구 골대 그물 아래에서 폴짝 뛰어 그물을 툭 건드렸다.",
+        "농구 골대 그물에 닿으려고 몇 번이고 뛰어오른다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "골대 기둥에 등을 기대고 앉아 쉬어요",
+       "x": {
+        "at": [
+         0.22,
+         1
+        ],
+        "an": "Sleep"
+       },
+       "l": [
+        "농구 골대 기둥에 등을 기대고 앉아 쉰다.",
+        "농구 골대 기둥 옆에서 꾸벅꾸벅 존다."
+       ]
+      }
+     ],
+     "fit": "넓은 풀밭 가장자리",
+     "glow": 0,
+     "px": [
+      "..........kkkkkkkkkkkkk.",
+      ".........kWWWWWWWWWWWWWk",
+      ".........kWVVWWWWWWWWWYk",
+      ".........kWVXXXXXXXXXXYk",
+      ".........kWXXXXXXXXXXXYk",
+      "....kkk..kWXXXXXXXXXXXYk",
+      "...kabck.kWXXXXXXXXXXXYk",
+      "...kabck.kWXXRRRRRRRXXYk",
+      "...kabckkkWXXRXXXXXRXXYk",
+      "...kabcaaaZXXRXXXXXRXXYk",
+      "...kabccccZXXRXXXXXRXXYk",
+      "...kabccckWXXRXXXXXRXXYk",
+      "...kabckkkWXXRRRRRRRXXYk",
+      "...kabck.kZZZZZZZZZZZZZk",
+      "...kabck..kkQOOOOOOOPkk.",
+      "...kabck...kPPPPPPPPPk..",
+      "...kabck....nknknknkn...",
+      "...kabck....nn.n.n.nn...",
+      "...kabck.....nn.n.nn....",
+      "...kabck.....m.m.m.m....",
+      "...kabck......m.m.m.....",
+      "...kabck......mm.mm.....",
+      "...kabck................",
+      "...kabck................",
+      "...kabck................",
+      "...kabck................",
+      "...kabck................",
+      "...kabck................",
+      ".kkkabckkkk.............",
+      "kppppppppppk............",
+      "kpqqqqqqqqrk............",
+      "kpqqqqqqqqrk............",
+      "kssssssssssk............",
+      ".kkkkkkkkkk............."
+     ],
+     "pal": {
+      "a": "#c8d0dc",
+      "b": "#929eb4",
+      "c": "#66728a",
+      "p": "#a8a49a",
+      "q": "#86827a",
+      "r": "#66625c",
+      "s": "#4a4744",
+      "W": "#fbf8ee",
+      "X": "#e8e2d2",
+      "Y": "#c4bca8",
+      "Z": "#9a917c",
+      "V": "#ffffff",
+      "R": "#c8564a",
+      "O": "#ec9a4a",
+      "P": "#b4642e",
+      "Q": "#f8c486",
+      "n": "#f2efe6",
+      "m": "#c8c2b4",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "goal-net",
+     "n": "축구 골대",
+     "k": "놀이",
+     "d": "하얀 쇠기둥에 빨간 띠를 감고, 뒤에 촘촘한 그물을 친 작은 축구 골대예요.",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "골대 앞을 왔다 갔다 하며 골키퍼처럼 지켜요",
+       "x": {
+        "at": "front",
+        "m": "walk"
+       },
+       "l": [
+        "축구 골대 앞을 왔다 갔다 하며 골키퍼 흉내를 낸다.",
+        "축구 골대 앞에 버티고 서서 공이 오나 지킨다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "골대 앞에서 공을 차듯 발차기 기술을 힘껏 써요",
+       "x": {
+        "m": "skill",
+        "an": "Attack"
+       },
+       "l": [
+        "축구 골대를 향해 힘찬 발차기를 날렸다. 골인!",
+        "축구 골대 앞에서 슛 연습을 한다."
+       ]
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 골대 가로대 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "축구 골대 가로대 위에 날아올라 앉았다.",
+        "축구 골대 가로대에 앉아 경기를 구경한다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "그물 뒤에 쏙 숨었다가 고개를 내밀어요",
+       "x": {
+        "m": "hide peek",
+        "back": true
+       },
+       "l": [
+        "축구 골대 그물 뒤에 숨었다가 빼꼼 고개를 내민다.",
+        "축구 골대 그물 뒤에서 숨바꼭질을 한다."
+       ]
+      }
+     ],
+     "fit": "넓은 풀밭 한가운데",
+     "glow": 0,
+     "px": [
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.",
+      "kVVVVRRVVVVRRVVVVRRVVVVRRVVVVRRVXk",
+      "kXXXXSSXXXXSSXXXXSSXXXXSSXXXXSSXXk",
+      "kYYYYTTYYYYTTYYYYTTYYYYTTYYYYTTYYk",
+      "kRSTccccccccccccccccccccccccccRSTk",
+      "kWXYcknkknkknkknkknkknkknkknkcWXYk",
+      "kWXYckn..n..n..n..n..n..n..nkcWXYk",
+      "kWXYcnnnnnnnnnnnnnnnnnnnnnnnncWXYk",
+      "kRSTckn..n..n..n..n..n..n..nkcRSTk",
+      "kWXYckn..n..n..n..n..n..n..nkcWXYk",
+      "kWXYcnnnnnnnnnnnnnnnnnnnnnnnncWXYk",
+      "kWXYckn..n..n..n..n..n..n..nkcWXYk",
+      "kRSTckm..m..m..m..m..m..m..mkcRSTk",
+      "kWXYcmmmmmmmmmmmmmmmmmmmmmmmmcWXYk",
+      "kWXYckm..m..m..m..m..m..m..mkcWXYk",
+      "kWXYckm..m..m..m..m..m..m..mkcWXYk",
+      "kRSTcmmmmmmmmmmmmmmmmmmmmmmmmcRSTk",
+      "kWXYckm..m..m..m..m..m..m..mkcWXYk",
+      "kWXYckmkkmkkmkkmkkmkkmkkmkkmkcWXYk",
+      "kWXYddddddddddddddddddddddddddWXYk",
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.",
+      ".................................."
+     ],
+     "pal": {
+      "W": "#ffffff",
+      "X": "#ecebe4",
+      "Y": "#c6c3b6",
+      "V": "#ffffff",
+      "R": "#e07a68",
+      "S": "#c8564a",
+      "T": "#963a34",
+      "c": "#b0aca0",
+      "d": "#868276",
+      "n": "#e4e1d6",
+      "m": "#bdb9ac",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "victory-podium",
+     "n": "시상대",
+     "k": "놀이",
+     "d": "가운데가 제일 높은 1·2·3등 시상대예요. 윗면은 금·은·동으로 칠하고 앞에 등수를 큼직하게 새겼어요.",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "시상대 가운데 1등 자리로 올라가 가슴을 펴고 서요",
+       "x": {
+        "at": [
+         0.5,
+         0.15
+        ],
+        "m": "climb"
+       },
+       "l": [
+        "시상대 1등 자리에 올라가 가슴을 활짝 폈다.",
+        "시상대 꼭대기에 올라 우승 포즈를 취한다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "3등 자리에 올라가 앉아 다리를 달랑거려요",
+       "x": {
+        "at": [
+         0.8,
+         0.6
+        ],
+        "m": "climb"
+       },
+       "l": [
+        "시상대 3등 자리에 올라가 앉아 다리를 달랑거린다.",
+        "시상대 낮은 칸에 걸터앉아 쉰다."
+       ]
+      },
+      {
+       "w": "전기·불꽃 타입",
+       "a": "1등 자리 위에서 축하하듯 기술을 터뜨려요",
+       "x": {
+        "at": [
+         0.5,
+         0.15
+        ],
+        "m": "climb skill",
+        "fx": "glow"
+       },
+       "l": [
+        "시상대 위에서 축하 불꽃처럼 기술을 펑 터뜨렸다.",
+        "시상대 1등 자리에서 번쩍번쩍 축하 기술을 쓴다."
+       ]
+      }
+     ],
+     "fit": "운동장 가장자리, 골대 옆",
+     "glow": 0,
+     "px": [
+      "................................",
+      "................................",
+      "...........kkkkkkkkkk...........",
+      "..........kGVGGGGGGGGk..........",
+      "..........kHHHHHHHHHIk..........",
+      "..........kIIIIIIIIIIk..........",
+      "..........kABBBBBBBBCk..........",
+      "..........kABBBBBBBBCk..........",
+      ".kkkkkkkkkkABBBDBBBBCk..........",
+      "kgVggggggggDBBDIDBBBCk..........",
+      "khhhhhhhhhhDBDIIDDBBCkkkkkkkkkk.",
+      "kiiiiiiiiiiDBBDIDDBBDVoooooooook",
+      "kABBBBBBBBBDBBDIDDBBDpppppppppqk",
+      "kABBBiiBBBBDBDIIIDBBDqqqqqqqqqqk",
+      "kABBBBDiBBBDBBDDDDDBDBBBqqBBBBCk",
+      "kABBBBiBDBBDBBBDDDBBDBBBBDqBBBCk",
+      "kABBBiBDBBBDBBBBBBBBDBBBBqBDBBCk",
+      "kABBBiiiBBBDBBBBBBBBDBBBBBqBBBCk",
+      "kABBBBDDDBBDBBBBBBBBDBBBqqBDBBCk",
+      "kDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDk",
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "A": "#fbf3dc",
+      "B": "#ecdcb8",
+      "C": "#c8b48c",
+      "D": "#9a8664",
+      "V": "#ffffff",
+      "G": "#fbe07a",
+      "H": "#e8b23a",
+      "I": "#a87a24",
+      "g": "#eef0f4",
+      "h": "#b8c0cc",
+      "i": "#7e8898",
+      "o": "#f0b888",
+      "p": "#c8804a",
+      "q": "#8c5430",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "track-hurdle",
+     "n": "달리기 허들",
+     "k": "놀이",
+     "d": "빨강·하양 줄무늬 판을 쇠다리 두 개에 얹은 허들이에요. 다리 끝은 넘어지지 않게 옆으로 길게 뻗어 있어요.",
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "허들 판 밑으로 납작 엎드려 쏙 지나가요",
+       "x": {
+        "m": "through"
+       },
+       "l": [
+        "허들 밑으로 납작 엎드려 쏙 빠져나갔다.",
+        "허들 아래를 기어서 몇 번이고 지나간다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 허들 판 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "허들 판 위에 날아올라 앉아 깃을 고른다.",
+        "허들 위에 앉아 다른 포켓몬이 달리는 걸 구경한다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "허들 앞에서 달려왔다 멈칫하고 옆으로 돌아가요",
+       "x": {
+        "m": "avoid"
+       },
+       "l": [
+        "허들 앞까지 달려왔다가 멈칫하고 옆으로 돌아갔다.",
+        "허들을 넘을까 말까 고민하다 돌아간다."
+       ]
+      }
+     ],
+     "fit": "풀밭 길가, 여러 개 줄지어",
+     "glow": 0,
+     "px": [
+      "..........................",
+      ".kkkkkkkkkkkkkkkkkkkkkkkk.",
+      "kVQQQQVVVVQQQQVVVVQQQQVVVk",
+      "kQQQRRWWWWRRRRWWWWRRRRWWYk",
+      "kQRRRRWWWWRRRRWWWWRRRRWWYk",
+      "kQRRRRWWWWRRRRWWWWRRRRWWYk",
+      "kQSSSSWWWWSSSSWWWWSSSSWWYk",
+      "kZTTTTZZZZTTTTZZZZTTTTZZZk",
+      ".kkackkkkkkkkkkkkkkkkackk.",
+      "..kack..............kack..",
+      "..kack..............kack..",
+      "..kack..............kack..",
+      "..kack..............kack..",
+      ".kkackkkk........kkkkackk.",
+      "kaaaaaaaak......kaaaaaaaak",
+      "kddddddddk......kddddddddk",
+      ".kkkkkkkk........kkkkkkkk."
+     ],
+     "pal": {
+      "a": "#c8d0dc",
+      "c": "#66728a",
+      "d": "#46506a",
+      "V": "#ffffff",
+      "W": "#f4efe2",
+      "Y": "#d2c9b6",
+      "Z": "#a69c86",
+      "Q": "#ee8a76",
+      "R": "#d65a4a",
+      "S": "#a83c34",
+      "T": "#7a2c28",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "spring-trampoline",
+     "n": "파랑 트램펄린",
+     "k": "놀이",
+     "d": "파란 테두리 쿠션 안에 탄탄한 남색 매트를 친 동그란 트램펄린이에요. 짧은 쇠다리 세 개가 받치고 있어요.",
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "트램펄린 위로 올라가 통통 높이 튀어 올라요",
+       "x": {
+        "at": "top",
+        "m": "climb bob"
+       },
+       "l": [
+        "트램펄린 위에서 통통 높이 튀어 오른다.",
+        "트램펄린 위에서 신나게 콩콩 뛴다."
+       ]
+      },
+      {
+       "w": "보통 크기 포켓몬",
+       "a": "트램펄린 가장자리에 올라가 균형을 잡으며 걸어요",
+       "x": {
+        "at": "top",
+        "m": "wobble"
+       },
+       "l": [
+        "트램펄린 가장자리 쿠션 위에서 비틀비틀 균형을 잡는다.",
+        "트램펄린 테두리를 따라 조심조심 걷는다."
+       ]
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "트램펄린 옆에 앉아 매트를 꾹꾹 눌러 봐요",
+       "x": {
+        "m": "push"
+       },
+       "l": [
+        "트램펄린 매트를 꾹 눌러 보고 출렁이는 걸 신기해한다.",
+        "트램펄린 옆에 앉아 매트를 꾹꾹 누른다."
+       ]
+      }
+     ],
+     "fit": "넓은 풀밭, 놀이터 옆",
+     "glow": 0,
+     "px": [
+      "..............................",
+      ".......kkkkkkkkkkkkkkkk.......",
+      "....kkkPPPPPPPPPPPPPPPPkkk....",
+      "...kPPPPPPmmMmNNNNNNPPPPPPk...",
+      "..kPPPPmMmmMmmMMMMMMMNNPPPPk..",
+      ".kPPPmmMmmMmMMMMMMMMMMMNNQQQk.",
+      "kPPPPNMMMMMMMMMMMMMMMMMMNQQQQk",
+      "kPPPPNMMMMMMMMMMMMMMMMMMNQQQQk",
+      ".kPPPNNMMMMMMMMMMMMMMMMNNQQQk.",
+      ".kuPPPPNNMMMMMMMMMMMMNNRRRRuk.",
+      ".kuuPPPRRRNNNNNNNNNNRRRRRRuuk.",
+      "..kwuuwRRwRRwRRwRRwRRwRuwuuk..",
+      "..kvvvvvvvvvvvvvvvvvvvvvvvvk..",
+      "...kackkkkkkkkackkkkkkkkkack..",
+      "...kack......kack.......kack..",
+      "...kack......kack.......kack..",
+      "...kack......kack.......kack..",
+      "....kk........kk.........kk..."
+     ],
+     "pal": {
+      "a": "#c8d0dc",
+      "c": "#66728a",
+      "P": "#86b4e8",
+      "Q": "#5a8ed4",
+      "R": "#3e6aae",
+      "u": "#2e5290",
+      "v": "#24406e",
+      "w": "#e8e4d8",
+      "M": "#4a4e6c",
+      "N": "#3a3d56",
+      "m": "#5c6384",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "punch-bag",
+     "n": "샌드백 걸이",
+     "k": "놀이",
+     "d": "나무 기둥과 팔에 빨간 가죽 샌드백을 사슬로 매단 연습 기구예요. 샌드백만 사슬 끝에서 흔들흔들 움직여요.",
+     "acts": [
+      {
+       "w": "격투 타입",
+       "a": "샌드백 앞에 서서 주먹으로 팡팡 쳐서 크게 흔들어요",
+       "x": {
+        "at": [
+         0.62,
+         1
+        ],
+        "m": "push",
+        "an": "Attack",
+        "fx": "swing"
+       },
+       "l": [
+        "샌드백을 팡팡 쳐서 크게 흔들었다.",
+        "샌드백 앞에서 주먹 연습을 한다. 퍽, 퍽!"
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "샌드백을 톡 밀어 보고 흔들리는 걸 구경해요",
+       "x": {
+        "at": [
+         0.62,
+         1
+        ],
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "샌드백을 톡 밀어 보고 흔들흔들 움직이자 신기해한다.",
+        "샌드백을 콕 찔러 보고 흔들리는 걸 구경한다."
+       ]
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 나무 팔 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "샌드백 걸이 나무 팔 위에 날아올라 앉았다.",
+        "샌드백 걸이 위에 앉아 연습하는 포켓몬을 내려다본다."
+       ]
+      }
+     ],
+     "fit": "운동장 구석, 바위 옆",
+     "glow": 0,
+     "px": [
+      "......................",
+      "..kkkkkkkkkkkkkkkk....",
+      ".kLLLLLLLLLLLLLLLLk...",
+      ".kLBBBSBBBSBBBSBBSk...",
+      ".kDDDDDDDDDDDDDDDDk...",
+      ".kLSSBBkkkkkkghkkk....",
+      ".kLBSSk.....khgk......",
+      ".kLBSk......kghk......",
+      ".kLBSk.....kkhgkk.....",
+      ".kLBSk....kEFFFGHk....",
+      ".kLSSk...kEEFFFGGHk...",
+      ".kLBSk...kJJJJJJKKk...",
+      ".kLBSk...kEIFFFGGHk...",
+      ".kLBSk...kEIFFFGGHk...",
+      ".kLBSk...kEIFFFGGHk...",
+      ".kLSSk...kEIFFFGGHk...",
+      ".kLBSk...kEIFFFGGHk...",
+      ".kLBSk...kEIFFFGGHk...",
+      ".kLBSk...kEIFFFGGHk...",
+      ".kLBSk...kEIFFFGGHk...",
+      ".kLSSk...kEIFFFGGHk...",
+      ".kLBSk...kEIFFFGGHk...",
+      ".kLBSk...kEEFFFGGHk...",
+      ".kLBSk...kEEFFFGGHk...",
+      ".kLBSk...kJJJJJJKKk...",
+      ".kLSSk...kEEFFFGGHk...",
+      ".kLBSk...kEEFFFGGHk...",
+      "kkLBSkkkkkkEFFFGHk....",
+      "LLLLLLLLLLkkkkkkk.....",
+      "LBBBBBBBBSk...........",
+      "DDDDDDDDDDk...........",
+      "kkkkkkkkkk............"
+     ],
+     "pal": {
+      "L": "#dcae70",
+      "B": "#b4804a",
+      "S": "#8a5e34",
+      "D": "#614124",
+      "g": "#b8bcc4",
+      "h": "#7c818c",
+      "E": "#f09a80",
+      "F": "#cc5a44",
+      "G": "#a2402f",
+      "H": "#762c24",
+      "I": "#f4b8a0",
+      "J": "#5a3a2c",
+      "K": "#3e2820",
+      "k": "#20202c"
+     },
+     "mv": {
+      "o": [
+       13.5,
+       4.5
+      ],
+      "k": "swing",
+      "amp": 1.3,
+      "st": [
+       "......................",
+       "..kkkkkkkkkkkkkkkk....",
+       ".kLLLLLLLLLLLLLLLLk...",
+       ".kLBBBSBBBSBBBSBBSk...",
+       ".kDDDDDDDDDDDDDDDDk...",
+       ".kLSSBBkkkkk....kk....",
+       ".kLBSSk...............",
+       ".kLBSk................",
+       ".kLBSk................",
+       ".kLBSk................",
+       ".kLSSk................",
+       ".kLBSk................",
+       ".kLBSk................",
+       ".kLBSk................",
+       ".kLBSk................",
+       ".kLSSk................",
+       ".kLBSk................",
+       ".kLBSk................",
+       ".kLBSk................",
+       ".kLBSk................",
+       ".kLSSk................",
+       ".kLBSk................",
+       ".kLBSk................",
+       ".kLBSk................",
+       ".kLBSk................",
+       ".kLSSk................",
+       ".kLBSk................",
+       "kkLBSkkkkk............",
+       "LLLLLLLLLLk...........",
+       "LBBBBBBBBSk...........",
+       "DDDDDDDDDDk...........",
+       "kkkkkkkkkk............"
+      ],
+      "mp": [
+       "......................",
+       "......................",
+       "......................",
+       "......................",
+       "......................",
+       "............kghk......",
+       "............khgk......",
+       "............kghk......",
+       "...........kkhgkk.....",
+       "..........kEFFFGHk....",
+       ".........kEEFFFGGHk...",
+       ".........kJJJJJJKKk...",
+       ".........kEIFFFGGHk...",
+       ".........kEIFFFGGHk...",
+       ".........kEIFFFGGHk...",
+       ".........kEIFFFGGHk...",
+       ".........kEIFFFGGHk...",
+       ".........kEIFFFGGHk...",
+       ".........kEIFFFGGHk...",
+       ".........kEIFFFGGHk...",
+       ".........kEIFFFGGHk...",
+       ".........kEIFFFGGHk...",
+       ".........kEEFFFGGHk...",
+       ".........kEEFFFGGHk...",
+       ".........kJJJJJJKKk...",
+       ".........kEEFFFGGHk...",
+       ".........kEEFFFGGHk...",
+       "..........kEFFFGHk....",
+       "...........kkkkkk.....",
+       "......................",
+       "......................",
+       "......................"
+      ]
+     }
+    },
+    {
+     "id": "target-easel",
+     "n": "과녁판",
+     "k": "놀이",
+     "d": "나무 이젤 위에 빨강·하양 동그라미를 겹쳐 그린 큰 과녁이에요. 한가운데는 노란 점이에요.",
+     "acts": [
+      {
+       "w": "불꽃·전기·물·풀 타입",
+       "a": "과녁에서 조금 떨어져 한가운데를 향해 기술을 쏴요",
+       "x": {
+        "at": "far",
+        "m": "skill",
+        "an": "Attack",
+        "fx": "glow"
+       },
+       "l": [
+        "과녁 한가운데를 노리고 기술을 쏘았다. 명중!",
+        "과녁을 향해 기술 연습을 한다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "과녁판 뒤에 숨었다가 옆으로 고개를 빼꼼 내밀어요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "과녁판 뒤에 숨었다가 옆으로 빼꼼 고개를 내민다.",
+        "과녁판 뒤에 숨어 숨바꼭질을 한다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "과녁 앞에 서서 동그라미를 가만히 바라봐요",
+       "x": {
+        "at": "front"
+       },
+       "l": [
+        "과녁 앞에 서서 빨간 동그라미를 가만히 바라본다.",
+        "과녁 한가운데 노란 점을 뚫어지게 본다."
+       ]
+      }
+     ],
+     "fit": "넓은 풀밭 끝, 사람 없는 쪽",
+     "glow": 0,
+     "px": [
+      "........kkkkkkkk........",
+      "......kkBBBBBBBBkk......",
+      ".....kBBrrrRRRRRBBk.....",
+      "....kBrrrrRWWRRRRRBk....",
+      "...kBrrVwWWWWWWWRRRBk...",
+      "..kBrrVwWWWRRWWWWRRRBk..",
+      "..kBrVwWWRRRRRRWWWRRBk..",
+      ".kBrrwWWRRRWWRRRWWWRRSk.",
+      ".kBrrWWRRWWWWWWRRWWRRSk.",
+      ".kBrRWWRRWWYYWWRRWWRTSk.",
+      ".kBRWWRRWWYYYYWWRRWWTSk.",
+      ".kBRWWRRWWYYYYWWRRWXTSk.",
+      ".kBRRWWRRWWYYWWRRWXTTSk.",
+      ".kBRRWWRRWWWWWWRRXXTTSk.",
+      ".kBRRWWWRRRWWRRRXXXTTSk.",
+      "..kBRRWWWRRRRRRXXXTTSk..",
+      "..kBRRRWWWWRRWXXXTTTSk..",
+      "...kBRRRWWWWWXXXTTTSk...",
+      "....kBRRRRRWXTTTTTSk....",
+      ".....kBBRRTTTTTTSSk.....",
+      ".....kLSSSSSSSSSkLSk....",
+      ".....kLSkkkSDkkkkLSk....",
+      ".....kLSkkkSDkkkkLSk....",
+      "....kBBBBBBBBBBBBBBSk...",
+      "....kSSSSSSSSSSSSSSSk...",
+      "...kLSkkkkkSDkkkkkkLSk..",
+      "...kLSk...kSDk....kLSk..",
+      "...kLSk...kSDk....kLSk..",
+      "..kLSk....kSDk.....kLSk.",
+      "..kLSk.....kk......kLSk.",
+      "...kk...............kk.."
+     ],
+     "pal": {
+      "L": "#dcae70",
+      "B": "#b4804a",
+      "S": "#8a5e34",
+      "D": "#614124",
+      "V": "#ffffff",
+      "r": "#ee8070",
+      "R": "#d0503f",
+      "T": "#983630",
+      "w": "#ffffff",
+      "W": "#f2ede0",
+      "X": "#cec5b0",
+      "Y": "#f4cc4a",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "start-flag",
+     "n": "출발 깃발",
+     "k": "놀이",
+     "d": "쇠 깃대 꼭대기에 금색 공을 얹고 검정·하양 체크무늬 제비꼬리 깃발을 단 출발 깃발이에요. 깃발만 바람에 펄럭여요.",
+     "acts": [
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "깃발 옆에 떠서 날갯짓으로 바람을 일으켜 깃발을 펄럭여요",
+       "x": {
+        "m": "flap",
+        "fx": "swing"
+       },
+       "l": [
+        "날갯짓으로 바람을 일으켜 출발 깃발을 펄럭였다.",
+        "출발 깃발 옆에서 파닥파닥 바람을 보낸다."
+       ]
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 깃대 꼭대기 금색 공 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "출발 깃대 꼭대기 금색 공 위에 날아올라 앉았다.",
+        "출발 깃대 꼭대기에서 바람을 맞으며 쉰다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "깃대 받침돌에 기대앉아 펄럭이는 깃발을 올려다봐요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "출발 깃대 받침돌에 기대앉아 펄럭이는 깃발을 올려다본다.",
+        "출발 깃발 아래에서 꾸벅꾸벅 존다."
+       ]
+      }
+     ],
+     "fit": "달리기 길 시작점, 허들 옆",
+     "glow": 0,
+     "px": [
+      ".kGGk...............",
+      "kGGHIk..............",
+      ".kHHk...............",
+      ".kackk..........kk..",
+      ".kacAAkkkkk..kkkBBk.",
+      ".kacBBVVABWkkAVVCk..",
+      ".kacWWWWBCXVABWWk...",
+      ".kacWWBBWXCWBWBBk...",
+      ".kacBBBBWXCBWWBBCk..",
+      ".kacBBWWBCXBWBWWCCk.",
+      ".kacWWWWBCXWBBWWkk..",
+      ".kacWWBBWXCWBWBBk...",
+      ".kacBBBBWXCBWkkk....",
+      ".kacBBWWBCXBk.......",
+      ".kackkWWkkkk........",
+      ".kack.kk............",
+      ".kack...............",
+      ".kack...............",
+      ".kack...............",
+      ".kack...............",
+      ".kack...............",
+      ".kack...............",
+      ".kack...............",
+      ".kack...............",
+      ".kack...............",
+      ".kack...............",
+      ".kack...............",
+      ".kack...............",
+      "kkackkk.............",
+      "pppppppk............",
+      "pqqqqqrk............",
+      "pqqqqqrk............",
+      "sssssssk............",
+      "kkkkkkk............."
+     ],
+     "pal": {
+      "a": "#d8dee8",
+      "c": "#929eb4",
+      "p": "#b8b2a4",
+      "q": "#948e82",
+      "r": "#726c62",
+      "s": "#524e48",
+      "G": "#fff0a0",
+      "H": "#f0c040",
+      "I": "#b0842a",
+      "V": "#ffffff",
+      "W": "#f2ede0",
+      "X": "#cbc2ae",
+      "A": "#6a6a7c",
+      "B": "#4a4a5c",
+      "C": "#363644",
+      "k": "#20202c"
+     },
+     "mv": {
+      "o": [
+       4,
+       8.5
+      ],
+      "k": "swing",
+      "amp": 1.2,
+      "st": [
+       ".kGGk...............",
+       "kGGHIk..............",
+       ".kHHk...............",
+       ".kack...............",
+       ".kac................",
+       ".kac................",
+       ".kac................",
+       ".kac................",
+       ".kac................",
+       ".kac................",
+       ".kac................",
+       ".kac................",
+       ".kac................",
+       ".kac................",
+       ".kack...............",
+       ".kack...............",
+       ".kack...............",
+       ".kack...............",
+       ".kack...............",
+       ".kack...............",
+       ".kack...............",
+       ".kack...............",
+       ".kack...............",
+       ".kack...............",
+       ".kack...............",
+       ".kack...............",
+       ".kack...............",
+       ".kack...............",
+       "kkackkk.............",
+       "pppppppk............",
+       "pqqqqqrk............",
+       "pqqqqqrk............",
+       "sssssssk............",
+       "kkkkkkk............."
+      ],
+      "mp": [
+       "....................",
+       "....................",
+       "....................",
+       ".....k..........kk..",
+       "....AAkkkkk..kkkBBk.",
+       "....BBVVABWkkAVVCk..",
+       "....WWWWBCXVABWWk...",
+       "....WWBBWXCWBWBBk...",
+       "....BBBBWXCBWWBBCk..",
+       "....BBWWBCXBWBWWCCk.",
+       "....WWWWBCXWBBWWkk..",
+       "....WWBBWXCWBWBBk...",
+       "....BBBBWXCBWkkk....",
+       "....BBWWBCXBk.......",
+       ".....kWWkkkk........",
+       "......kk............",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "...................."
+      ]
+     }
+    },
+    {
+     "id": "bowling-set",
+     "n": "볼링핀과 볼링공",
+     "k": "놀이",
+     "d": "목에 빨간 줄을 두른 하얀 볼링핀 세 개와 반질반질한 보라 볼링공이에요.",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "볼링공을 앞발로 밀어 굴려서 핀에 부딪쳐요",
+       "x": {
+        "at": [
+         0.25,
+         1
+        ],
+        "m": "push"
+       },
+       "l": [
+        "볼링공을 데굴데굴 굴려 핀을 맞혔다. 스트라이크!",
+        "볼링공을 밀어 굴리고 핀이 흔들리는 걸 본다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "핀 사이에 쏙 숨어 핀인 척 가만히 서 있어요",
+       "x": {
+        "at": [
+         0.6,
+         1
+        ],
+        "m": "hide peek"
+       },
+       "l": [
+        "볼링핀 사이에 쏙 숨어 핀인 척 가만히 서 있다.",
+        "볼링핀 뒤에서 빼꼼 고개를 내민다."
+       ]
+      },
+      {
+       "w": "바위·땅·격투 타입",
+       "a": "핀 앞에서 몸통 박치기 기술로 핀을 한꺼번에 노려요",
+       "x": {
+        "m": "skill push",
+        "an": "Attack"
+       },
+       "l": [
+        "볼링핀을 향해 몸통 박치기를 했다. 핀이 와르르!",
+        "볼링핀 앞에서 힘을 모아 들이받는 연습을 한다."
+       ]
+      }
+     ],
+     "fit": "평평한 풀밭, 길가",
+     "glow": 0,
+     "px": [
+      "..............kk..........",
+      ".............kVYk.........",
+      ".........kk.kVUWYk..kk....",
+      "........kVYkkVWWYk.kVYk...",
+      ".......kVUWYkVWWYkkVUWYk..",
+      ".......kVWWYkkVYk.kVWWYk..",
+      ".......kVWWYkkQSk.kVWWYk..",
+      "........kVYk.kQSk..kVYk...",
+      "........kQSkkVWWYk.kQSk...",
+      "....kkkkkQSkkVWWYk.kQSk...",
+      "..kkbbbdZZWZZWWWXYkVWWYk..",
+      ".kbhhbeeddZZZWWWXYkVWWYk..",
+      "kbbheefefcdZZZWWXZZWWWXYk.",
+      "kbbeeeeeecdZZZWWXZZWWWXYk.",
+      "kbbeeeefeddZZZWWXZZWWWXYk.",
+      "kbeeeeeedddZZZWWYkVWWWXYk.",
+      "keeeeeeddddZZZZZZkVWWWXYk.",
+      ".kecceddddZYkkkkk.kVWWYk..",
+      "..kkcdddZZZZk.....kYZZZk..",
+      "....kkkkkkkk.......kkkk..."
+     ],
+     "pal": {
+      "V": "#ffffff",
+      "W": "#f2eee4",
+      "X": "#d6cebe",
+      "Y": "#b4aa96",
+      "Z": "#8e846e",
+      "U": "#ffffff",
+      "Q": "#f08878",
+      "S": "#983630",
+      "b": "#9a8ad8",
+      "e": "#6a5ab4",
+      "c": "#4e4090",
+      "d": "#382c6c",
+      "h": "#d6ccf4",
+      "f": "#241c44",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "vault-box",
+     "n": "나무 뜀틀",
+     "k": "놀이",
+     "d": "나무 단 네 개를 아래로 갈수록 넓게 쌓고, 맨 위에 하얀 가죽 쿠션을 덮은 뜀틀이에요. 가운데 단에 손잡이 홈이 있어요.",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "뜀틀 쿠션 위로 기어 올라가 앉아요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "뜀틀 위로 영차 올라가 쿠션에 앉았다.",
+        "뜀틀 꼭대기 쿠션 위에 올라 주위를 둘러본다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "뜀틀 옆에 붙어 숨었다가 옆으로 고개만 빼꼼 내밀어요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "뜀틀 뒤에 숨었다가 옆으로 빼꼼 고개를 내민다.",
+        "뜀틀 뒤에 숨어 친구를 기다린다."
+       ]
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "뜀틀 쿠션 위에 엎드려 낮잠을 자요",
+       "x": {
+        "at": "top",
+        "m": "climb",
+        "an": "Sleep"
+       },
+       "l": [
+        "뜀틀 쿠션 위에 엎드려 낮잠을 잔다.",
+        "뜀틀 위에 축 늘어져 쿨쿨 잔다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "뜀틀 옆면을 손바닥으로 밀며 힘을 길러요",
+       "x": {
+        "m": "push",
+        "an": "Attack"
+       },
+       "l": [
+        "뜀틀 옆면을 손바닥으로 꾹꾹 밀며 힘을 기른다.",
+        "뜀틀을 상대로 밀기 연습을 한다."
+       ]
+      }
+     ],
+     "fit": "운동장 가운데, 매트 옆",
+     "glow": 0,
+     "px": [
+      "............................",
+      "......kkkkkkkkkkkkkkkk......",
+      ".....kVVVWWWWWWWXXXXYYk.....",
+      "....kXXXXXXXXXXXXXXXYYYk....",
+      "....kXXYXXYXXYXXYXXYYYYk....",
+      "....kZZZZZZZZZZZZZZZZZZk....",
+      "....kDDDDDDDDDDDDDDDDDDk....",
+      "....kLBBSBBBBSBBBBSBBBSk....",
+      "....kDDDDDDDDDDDDDDDDDDk....",
+      "...kLDDDDDDDDDDDDDDDDDDLk...",
+      "...kLBBSBBBBSBBBBSBBBBBSk...",
+      "...kDDDDDDDDDDDDDDDDDDDDk...",
+      "..kLDDDDDDDDDDDDDDDDDDDDLk..",
+      "..kLBBSBBBBSDDDDSBBBBSBBSk..",
+      "..kDDDDDDDDDDDDDDDDDDDDDDk..",
+      ".kLDDDDDDDDDDDDDDDDDDDDDDLk.",
+      ".kLBBSBBBBSBBBBSBBBBSBBBBSk.",
+      ".kDDDDDDDDDDDDDDDDDDDDDDDDk.",
+      "..kkkkkkkkkkkkkkkkkkkkkkkk.."
+     ],
+     "pal": {
+      "L": "#dcae70",
+      "B": "#b4804a",
+      "S": "#8a5e34",
+      "D": "#614124",
+      "V": "#ffffff",
+      "W": "#f6f1e4",
+      "X": "#e2d8c2",
+      "Y": "#c4b79c",
+      "Z": "#9e9078",
+      "k": "#20202c"
+     }
+    }
+   ]
+  },
+  {
    "at": 1792968636307,
    "theme": "숲속 음악회",
    "note": "오늘은 풀밭에 작은 음악회를 열어 봤어요! 두드리고, 누르고, 흔들고, 튕기는 악기마다 포켓몬이 직접 소리를 낼 수 있게 동작을 나눴고, 종 걸이와 풍경은 매단 부분만 따로 흔들려요.",
