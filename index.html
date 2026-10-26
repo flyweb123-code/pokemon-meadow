@@ -3306,7 +3306,11 @@ let scBR = [], scBRT = -1e9;   // 소품 자리·크기는 1초에 한 번만 �
 function scBehind(x, y) { const now = performance.now(); if (now - scBRT > 1000) { scBRT = now; scBR = []; for (const e of itemsEl.querySelectorAll('.prop:not(.bgp)')) { const st = e.style, w = parseFloat(st.width), h = parseFloat(st.height), l = parseFloat(st.left), t = parseFloat(st.top); if (h >= 24 && w > 0 && isFinite(l) && isFinite(t)) scBR.push([l, Math.max(t, +st.zIndex || t), w, h]); } }
   for (const r of scBR) if (y < r[1] - 2 && y > r[1] - r[3] * .9 && Math.abs(x - r[0]) < r[2] * .42) return r; return null; }
 function outOfSc(p) { const r = scBehind(p.x, p.y); if (!r) return p; const y = r[1] + 8 + Math.random() * 12; if (y <= MAX_Y) return { x: p.x, y }; const x = r[0] + (p.x < r[0] ? -1 : 1) * (r[2] * .5 + 20); return { x: clamp(x, XL + 30, XR - 30), y: p.y }; }
-function outOfTree(p) { const T = treeBehind(p.x, p.y); if (!T) return p; const z = ZP('tree', T); return { x: p.x, y: T.y + 8 + Math.random() * 14 * z }; }
+function outOfTree(p) { const T = treeBehind(p.x, p.y); if (!T) return p; const z = ZP('tree', T), hw = 48 * z + 14;
+  /* v9.89 경완 '연못 우상단에 포켓몬이 고임': 나무 뒤 목표를 늘 나무 바로 앞으로만 내려서, 나무 앞에 연못이 붙어 있으면 그 좁은 틈에 다 모였다 → 앞·왼쪽·오른쪽 중 물·화면 밖·다른 나무 뒤가 아닌 곳을 고른다 */
+  const C = [{ x: p.x, y: T.y + 8 + Math.random() * 14 * z }, { x: T.x - hw - Math.random() * 16, y: p.y }, { x: T.x + hw + Math.random() * 16, y: p.y }].filter(q => q.x > XL + 24 && q.x < XR - 24 && q.y >= MIN_Y && q.y <= MAX_Y && pondVal(q.x, q.y) >= 1.25 && !behindTree(q.x, q.y));
+  if (!C.length) return { x: p.x, y: T.y + 8 + Math.random() * 14 * z };
+  const w = C.map(q => 1 / (Math.hypot(q.x - p.x, q.y - p.y) + 20)), sum = w.reduce((a, b) => a + b, 0); let r = Math.random() * sum; for (let i = 0; i < C.length; i++) { r -= w[i]; if (r <= 0) return C[i]; } return C[C.length - 1]; }
 function moveTo(m, p, goal, spdMul = 1) {
   m.wp = null;
   if (goal && (goal.kind === 'berry' || goal.kind === 'feedb')) p = eatSpot(m, p);
@@ -6335,7 +6339,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.88';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.89';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
