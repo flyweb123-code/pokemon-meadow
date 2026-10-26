@@ -6072,7 +6072,7 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, hunger: m.hunger, slpB: m.slpB, slpW: m.slpW, social: m.social, joy: m.joy, joyH: m.joyH || 0, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk, red: !!b.red })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, mg: S.mg || {}, fbag: S.fbag || {}, fbagT: S.fbagT || {}, lay: S.lay || {}, layAdd: S.layAdd || [], fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])] };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, mg: S.mg || {}, fbag: S.fbag || {}, fbagT: S.fbagT || {}, lay: S.lay || {}, layAdd: S.layAdd || [], fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])], dexDot: !!S.dexDot };
 }
 let saveFrozen = false, tutFreeze = false, introPv = false;   // introPv: 튜토리얼 미리 보기 (끝나도 저장 안 함)
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
@@ -6083,7 +6083,7 @@ async function restore(d) {
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1; S.items = d.items || {}; S.itemSeen = d.itemSeen || { ...S.items };   /* v7.48: 예전 저장은 가진 것 모두 본 것으로 */ S.mg = d.mg || {}; S.fbag = d.fbag || {}; S.lay = d.lay && typeof d.lay === 'object' ? d.lay : {}; S.layAdd = Array.isArray(d.layAdd) ? d.layAdd : []; S.fbagT = d.fbagT || {}; S.fx = d.fx || {}; S.colT = d.colT || 0;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
   cleanPlaces();
-  S.dexNew = new Set(d.dexNew || []); S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
+  S.dexNew = new Set(d.dexNew || []); S.dexDot = d.dexDot ?? !!S.dexNew.size;   // v10.02 경완: 도감 빨간 점은 도감 탭에 들어가면 사라진다 (NEW 표시는 닫을 때) S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
   for (const o of [...(d.mons || [])].sort((a, b) => (b.uid === d.buddy) - (a.uid === d.buddy)).slice(0, MAX_MONS)) { const m = await spawn(o.sp, { ...o, quiet: true }); m.notes = o.notes || [];
     if (o.asleep) sleep(m, false); }
   // 앱을 닫아 둔 동안: 배고파지고 심심해지면서 그만큼 필드 친밀도 (친구가 옆에 있었는지 보려고 다 불러온 뒤에)
@@ -6279,7 +6279,8 @@ const picked = new Set();
 const grid = $('#dexGrid'), dexBtns = {};
 grid.addEventListener('load', e => { if (e.target.tagName === 'IMG') dexImgFit(e.target); }, true);
 let dexMode = 'field';
-function openDex(mode = 'field') { dexMode = mode; dexSortReset(); sheet.classList.toggle('pick-buddy', mode === 'buddy'); $('#dexTitle').textContent = mode === 'buddy' ? '짝꿍 고르기' : '포켓몬 도감'; picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); sheet.hidden = false; $('#dexOwn').textContent = `${S.unlocked.size}/${Object.keys(SPECIES).length}`; { const r = S.unlocked.size / Object.keys(SPECIES).length * 100; $('#dexPct').textContent = (r >= 100 ? 100 : r < 10 ? r.toFixed(1) : Math.floor(r * 10) / 10) + '%'; }   /* v6.75 경완: 도감 완성률 */ refreshDexBadges(); filterDex(); if (!narrow.matches) $('#dexQ').focus(); }
+function openDex(mode = 'field') { dexMode = mode; dexSortReset(); sheet.classList.toggle('pick-buddy', mode === 'buddy'); $('#dexTitle').textContent = mode === 'buddy' ? '짝꿍 고르기' : '포켓몬 도감'; picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); sheet.hidden = false; $('#dexOwn').textContent = `${S.unlocked.size}/${Object.keys(SPECIES).length}`; { const r = S.unlocked.size / Object.keys(SPECIES).length * 100; $('#dexPct').textContent = (r >= 100 ? 100 : r < 10 ? r.toFixed(1) : Math.floor(r * 10) / 10) + '%'; }   /* v6.75 경완: 도감 완성률 */ refreshDexBadges(); filterDex(); if (!narrow.matches) $('#dexQ').focus();
+  if (mode !== 'buddy' && S.dexDot) { S.dexDot = false; menuDots(); save(); const sp = Math.max(...[...(S.dexNew || [])].filter(x => dexBtns[x] && S.unlocked.has(x))); if (sp > 0) requestAnimationFrame(() => { const b = dexBtns[sp], sr = grid.getBoundingClientRect(), br = b.getBoundingClientRect(); grid.scrollTop = Math.max(0, grid.scrollTop + (br.top - sr.top) - (sr.height - br.height) / 2); }); } }   // v10.02 경완: 빨간 점 보고 들어오면 새로 등록된 것 중 가장 큰 번호 칸이 보이게 스크롤해 둔다
 // the menu works like a tab bar: one window at a time, tapping the open one closes it
 function hideSheets() { sheet.hidden = true; $('#mgr').hidden = true; $('#run').hidden = true; $('#set').hidden = true; $('#shop').hidden = true; $('#ibag').hidden = true; }
 function tabTo(el, open) { const was = !el.hidden; closeToggles(); hideSheets(); if (!was) open(); }
@@ -6345,7 +6346,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.01';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.02';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8109,7 +8110,7 @@ $('#dexQ').addEventListener('input', () => { if (!$('#dexQ').value.trim() && dex
 document.addEventListener('click', e => { const x = e.target.closest('.qw .qx'); if (!x) return; const q = x.parentNode.querySelector('input'); sfx('tap'); q.value = ''; q.dispatchEvent(new Event('input')); q.blur(); });   // 검색어 지우기
 // 기본 정렬은 '만난 것 먼저' (번호순을 고른 적 있으면 그대로)
 // 도감을 열 때마다 등록순(켜진 모양)으로 시작한다
-function dexSortReset() { const b = $('#dexSort'); b.dataset.v = 0; b.textContent = '등록순'; b.classList.add('on'); }
+function dexSortReset() { const b = $('#dexSort'); b.dataset.v = 1; b.textContent = '번호순'; b.classList.add('on'); }   // v10.02 경완: 도감 기본은 번호순
 dexSortReset();
 $('#dexClear').onclick = () => { picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); updateDexCount(); };
 $('#dexGo').onclick = async () => {
@@ -8292,9 +8293,9 @@ function seeBox() { let ch = false; S.box.forEach(p => { if (p.nw) { p.nw = fals
 // 하단 메뉴 알림 점: 알(가방에 새 알) · 포켓몬(박스에 새 포켓몬)
 let tuNoEgg = false;   // v8.49 경완: 튜토리얼에서 알을 받기 전에는 '알' 메뉴 빨간 점을 띄우지 않는다
 function menuDots() { const set = (b, on) => { let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot" aria-label="새 소식"></i>'); else if (!on && d) d.remove(); };
-  set($('#openRun'), !tuNoEgg && S.bag.some(e => e.isNew) || S.eggs.some(e => (e.km >= e.need && !e.rs) || e.nwI));   /* v5.57 경완: 자동 채우기로 부화기에 바로 들어간 새 알도 빨간 점 (부화기 탭 점과 같은 조건) */ set($('#openMgr'), S.box.some(p => p.nw) || !!S.dexNew?.size); set($('#openFld'), S.buds.some(b => b.nw || budNew(b))); { const b = $('#btnBag'); if (b) { itemSeenClamp(); set(b, itemNewK().length > 0); } }   /* v4.87 경완: 진화 준비된 짝꿍이 있으면 빨간 점 (진화할 때까지) */
+  set($('#openRun'), !tuNoEgg && S.bag.some(e => e.isNew) || S.eggs.some(e => (e.km >= e.need && !e.rs) || e.nwI));   /* v5.57 경완: 자동 채우기로 부화기에 바로 들어간 새 알도 빨간 점 (부화기 탭 점과 같은 조건) */ set($('#openMgr'), S.box.some(p => p.nw) || !!S.dexDot); set($('#openFld'), S.buds.some(b => b.nw || budNew(b))); { const b = $('#btnBag'); if (b) { itemSeenClamp(); set(b, itemNewK().length > 0); } }   /* v4.87 경완: 진화 준비된 짝꿍이 있으면 빨간 점 (진화할 때까지) */
   set($('#openShop'), fpDot()); { const b = document.querySelector('#shopTabs [data-st="fashion"]'), d = b && b.querySelector('.dot'); if (b && fpDot() && !d) b.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새 소식"></i>'); else if (b && !fpDot() && d) d.remove(); }
-  for (const [t, on] of [['buddy', S.buds.some(b => b.nw || budNew(b))], ['dex', !!S.dexNew?.size]]) { const b = document.querySelector(`#mgrTabs [data-t="${t}"]`), d = b && b.querySelector('.dot'); if (b && on && !d) b.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새 소식"></i>'); else if (b && !on && d) d.remove(); } }
+  for (const [t, on] of [['buddy', S.buds.some(b => b.nw || budNew(b))], ['dex', !!S.dexDot]]) { const b = document.querySelector(`#mgrTabs [data-t="${t}"]`), d = b && b.querySelector('.dot'); if (b && on && !d) b.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새 소식"></i>'); else if (b && !on && d) d.remove(); } }
 function seeBuds() { if (S.buds.some(b => b.nw || budNew(b))) { S.buds.forEach(b => { delete b.nw; if (budReady(b)) b.es = true; }); save(); menuDots(); } }   // v5.00 경완: 진화 빨간 점도 짝꿍 탭을 보고 나면 모두 사라진다
 function renderBox() {
   document.querySelectorAll('#boxSort [data-sort]').forEach(b => { const on = b.dataset.sort === boxSort; b.setAttribute('aria-pressed', on); b.dataset.dir = on && boxSort !== 'field' ? (boxDir > 0 ? '▼' : '▲') : ''; });
@@ -9430,7 +9431,7 @@ function migrateBox() {
 S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.bagDry = 0; S.pity = { e: 0, l: 0 }; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked = new Set(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1;
 const hatchQ = [];
 
-function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); trUpCheck(); (S.dexNew ||= new Set()).add(sp); if (dexBtns[sp]) { lockDexBtn(sp); dexCellReady(sp); } } }
+function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); trUpCheck(); (S.dexNew ||= new Set()).add(sp); S.dexDot = true; if (dexBtns[sp]) { lockDexBtn(sp); dexCellReady(sp); } } }
 // 새로 등록된 칸은 그림을 바로 넣고 순서도 미리 맞춰 둔다 → 도감을 열 때 없던 칸이 뒤늦게 생기는 모습이 안 보인다
 // v3.09: 작은 스프라이트(토중몬 등)를 칸 높이까지 늘리면 도트가 커 보인다(경완) → 도트 한 칸 최대 2배까지만 키우고 칸 높이는 그대로
 function dexImgFit(im, H = 56) { const h = Math.min(H, Math.round(im.naturalHeight * 2)); im.style.height = h + 'px'; im.style.marginTop = (H - h) + 'px'; im.dataset.fit = 1; }   // v6.13 경완: 크기를 맞추기 전 한 프레임 동안 원래 크기로 보였다가 줄어들던 것 → 맞추기 전엔 숨김 (CSS)
