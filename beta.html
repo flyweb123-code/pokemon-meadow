@@ -5726,7 +5726,7 @@ function propReactIn(m, p, drag) {
     { let n = 0; const sh = () => { if (!S.mons.includes(m) || m.el.style.visibility !== 'hidden' || ++n > 6) return; rs(); setTimeout(sh, rnd(700, 1300)); }; setTimeout(sh, rnd(900, 1300)); }   // v4.52 경완: 숨어 있는 동안 덤불이 가끔 바스락 흔들려 안에 누가 있는 걸 알 수 있게
     log(`${J(m,'이/가')} 덤불 속으로 쏙 숨었다.`, [m]);
     setTimeout(() => { if (!S.mons.includes(m)) return; const by = el?.LV?.y ?? p.y + 10, y0 = by - 3, y1 = Math.min(MAX_Y, by + 18), H = Math.max(26, Math.min(48, (m.h || 40) * .8)), t0 = performance.now();   /* v10.08 경완 '덤불에서 확실하게 튀어나오게': 덤불 뒤(속)에서 솟아올라 앞으로 떨어진다 */
-      m.el.style.visibility = ''; m.x = m.tx = hx; m.y = y0; m.goal = null; setState(m, 'idle', 2.5); rs(); for (let i = 0; i < 6; i++) particle(m.x + rnd(-20, 20), by - rnd(10, 26), 'leaf', pick(['"', '❦'])); emote(m, '!', '', 2.2, 'bush-out'); sfx('pop');
+      m.el.style.visibility = ''; m.x = m.tx = hx; m.y = y0; m.goal = null; setState(m, 'idle', 2.5); rs(); { const LC = { spring: ['#78c040', '#9ad24c', '#62ae3a'], summer: ['#3f8a30', '#4f9e36', '#2f7426'], autumn: ['#d8742a', '#e8a034', '#c0502a'], winter: ['#e6eef4', '#c4d6e2', '#6f8c80'] }[season()] || ['#3f8a30']; for (let i = 0; i < 6; i++) particle(m.x + rnd(-20, 20), by - rnd(10, 26), 'leaf', pick(['"', '❦']), d => { d.style.color = pick(LC); }); }   /* v10.09 경완: 잎 색은 계절 덤불 색 */ emote(m, '!', '', 2.2, 'bush-out'); sfx('pop');
       const st = () => { if (!S.mons.includes(m) || m.held) return; const k = Math.min(1, (performance.now() - t0) / 520); m.y = y0 + (y1 - y0) * k; m.xl = Math.sin(k * Math.PI) * H; if (k < 1) requestAnimationFrame(st); else { m.xl = 0; anim(m, 'hop'); el?.classList.remove('rustle'); } }; requestAnimationFrame(st); }, 4200);   /* v4.61 경완: 튀어나오면 덤불은 멈춘다 */
     return;
   }
@@ -6373,7 +6373,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.08';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.09';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
