@@ -3297,7 +3297,8 @@ function treeWp(m, tx, ty) {   // v3.63 경완: 나무 뒤 ↔ 앞을 오갈 때
 function treeWp1(m, tx, ty, Tr) { const z = ZP('tree', Tr), ly = Tr.y - 3;
   if ((m.y - ly) * (ty - ly) >= 0) return null;
   const hw = 46 * z + Math.min(18, (m.w || 40) * .3), cx = m.x + (tx - m.x) * (ly - m.y) / (ty - m.y); if (Math.abs(cx - Tr.x) > hw) return null;
-  let sd = (m.x + tx) / 2 < Tr.x ? -1 : 1; const ok = sd => Tr.x + sd * (hw + 8) > XL + 24 && Tr.x + sd * (hw + 8) < XR - 24; if (!ok(sd)) sd = -sd;
+  let sd = (m.x + tx) / 2 < Tr.x ? -1 : 1; const ok = sd => { const x = Tr.x + sd * (hw + 8); return x > XL + 24 && x < XR - 24 && !(pondWalk(m) && pondVal(x, ly) < 1.15); }; if (!ok(sd)) sd = -sd;
+  if (!ok(sd)) return null;   /* v9.90 경완 '여전히 연못 우상단에 뭉침': 나무 옆 돌아갈 자리가 한쪽은 연못 속, 한쪽은 화면 밖이면 그 연못 속 자리로 가려다 연못 길찾기와 서로 밀어 연못 위 띠에 갇혔다 → 둘 다 막히면 돌아가지 않는다 */
   return { x: Tr.x + sd * (hw + 8), y: ly };
 }
 // v9.35 경완 '가로등이랑 몬스터볼 스프링도 포켓몬이 뒤에 겹쳐서 가만히 있거나 잠들지 않도록': 스칼렛 소품 그림 뒤(발이 소품 바닥보다 위, 그림 폭 안)도 나무 뒤처럼 피한다
@@ -6339,7 +6340,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.89';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.90';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
