@@ -6361,7 +6361,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.06';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.07';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9483,7 +9483,7 @@ async function dexFxRun() {
   if (dexFxBlocked()) return dexFxKick(600);
   dexFx.on = true; const L = [...new Set(dexFx.q.splice(0))].sort((a, b) => a - b);
   const W0 = ['#sheet', '#mgr', '#run', '#set', '#shop', '#ibag'].map(w => [w, $(w).hidden]), tab0 = mgrTab, F0 = ['dexType', 'dexGen', 'dexSort'].map(id => [id, +$('#' + id).dataset.v]), q0 = $('#dexQ').value, y0s = grid.scrollTop;   // v9.96 경완: 끝나면 원래 화면으로
-  L.forEach(sp => dexBtns[sp]?.classList.add('dfxHide'));   // v10.02 경완: 등록되기 전엔 실루엣도 안 보이게
+  L.forEach(sp => { const b = dexBtns[sp]; if (!b) return; dexCellReady(sp); b.classList.add('locked'); b.querySelector('.nm').textContent = '???'; b.querySelector('.newtag')?.remove(); });   // v10.07 경완 '등록되기 전 카드는 등록 전 상태 그대로': 검은 실루엣·??? (10.02 의 빈 칸 대신)
   try {
     $('#dexQ').value = ''; dexQv = ''; setFilter('dexType', 0); setFilter('dexGen', 0);
     setMgrTab('dex'); syncTabs(); setFilter('dexSort', 1);
@@ -9499,9 +9499,9 @@ async function dexFxRun() {
       if (!skip) { b.insertAdjacentHTML('beforeend', '<span class="dfx-sp">' + '<i></i>'.repeat(8) + '</span>'); sfx('newdex'); haptic(1); await wait(760); }
       setTimeout(() => { b.classList.remove('dfx', 'dfxIn'); b.querySelector('.dfx-sp')?.remove(); }, 900);
     }
-    shield.remove(); await wait(skip ? 200 : 500);
+    shield.remove(); await wait(skip ? 300 : 1500);   /* v10.07 경완: 등록 뒤 화면이 돌아가기 전에 텀 */
   } finally {
-    L.forEach(sp => dexBtns[sp]?.classList.remove('dfxHide'));
+    L.forEach(sp => { if (dexBtns[sp]) { dexBtns[sp].classList.remove('dfxHide'); lockDexBtn(sp); } });
     for (const [w, h] of W0) $(w).hidden = h;
     if (!$('#mgr').hidden && tab0 !== 'dex') setMgrTab(tab0);
     if (!sheet.hidden) { $('#dexQ').value = q0; dexQv = q0; for (const [id, v] of F0) setFilter(id, v); grid.scrollTop = y0s; }
