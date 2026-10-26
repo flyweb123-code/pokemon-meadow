@@ -6332,7 +6332,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.78';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.79';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6571,7 +6571,8 @@ function meZoneDraw() { const c = $('#meZone'); let g = c.getContext('2d'); cons
   let hc = $('#meHudCv'); if (!hc) { hc = document.createElement('canvas'); hc.id = 'meHudCv'; hc.width = W * 3; hc.height = H * 3; hc.style.cssText = 'position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;pointer-events:none'; $('#meLayer').prepend(hc); } { const q = hc.getContext('2d'); q.setTransform(1, 0, 0, 1, 0, 0); q.clearRect(0, 0, hc.width, hc.height); q.setTransform(3, 0, 0, 3, 0, 0); g = q; }
   g.setLineDash([4, 3]); g.lineWidth = 1.5; g.font = '10px Galmuri11, monospace'; g.textAlign = 'center'; g.textBaseline = 'middle';   /* v9.28 경완: 평소 화면의 버튼 자리를 반투명하게 (소품이 버튼 밑에 숨지 않게) */
   for (const b of meHud) { g.fillStyle = 'rgba(255,255,255,.32)'; g.beginPath(); g.roundRect(b.x, b.y, b.w, b.h, 6); g.fill(); g.strokeStyle = 'rgba(255,255,255,.85)'; g.stroke(); g.fillStyle = 'rgba(30,30,50,.8)'; g.fillText(b.n, b.x + b.w / 2, b.y + b.h / 2); } }
-const ME_HUD = [['#clock', '시계'], ['#goldbar', '골드'], ['#btnMapEdit', '편집'], ['.berrybar', '열매'], ['#dlg', '상태창'], ['.menuwin', '메뉴'], ['#cmd', '메뉴']];
+// v9.79 경완: 가방·열매 버튼 칸은 '버튼'으로
+const ME_HUD = [['#clock', '시계'], ['#goldbar', '골드'], ['#btnMapEdit', '편집'], ['.berrybar', '버튼'], ['#dlg', '상태창'], ['.menuwin', '메뉴'], ['#cmd', '메뉴']];
 let meHud = [];
 function meHudSnap() { const r = itemsEl.getBoundingClientRect(), k = r.width / itemsEl.offsetWidth || 1; return ME_HUD.map(([q, n]) => { const e = document.querySelector(q); if (!e || getComputedStyle(e).display === 'none') return null; const b = e.getBoundingClientRect(); if (!b.width || !b.height) return null; return { n, x: (b.left - r.left) / k, y: (b.top - r.top) / k, w: b.width / k, h: b.height / k }; }).filter(Boolean); }
 function meRender() { const F = S.fbag || {}, L = fbagList();   // v9.00: 가방에 있는 것만, 최근에 넣은 순
