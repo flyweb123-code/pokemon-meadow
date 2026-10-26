@@ -1460,7 +1460,7 @@ body.mapEdit :is(#mons,#fx,#propFx,#night,#lightC,#rain,#rainG,#tuShade,.berryba
 #meZone{position:absolute;left:0;top:0;width:360px;height:600px;pointer-events:none;z-index:0}
 #meLayer{position:absolute;left:0;top:0;width:360px;height:600px;pointer-events:none;z-index:9001}
 .me-foot{position:absolute;translate:-50% -50%;border:2px dashed #7cf08a;border-radius:50%;background:rgba(124,240,138,.22)}body.mapEdit #wrap{touch-action:none}
-#clock,#btnMapEdit,.menuwin,#goldbar,.berrybar,#side,#dlg,#cmd{transition:opacity .25s}body.fview :is(#clock,#btnMapEdit,.menuwin,#goldbar,.berrybar,#side,#dlg,#cmd,#hint){opacity:0!important;pointer-events:none!important}   /* v9.85 경완: 빈 곳을 눌러 일지를 접으면 버튼·날짜·골드를 다 숨겨 필드만 보기 */.me-foot.bad{border-color:#ff6a5a;background:rgba(255,90,80,.3)}#items .prop.meDrag{filter:drop-shadow(0 6px 2px rgba(0,0,0,.35)) drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 -1px 0 #fff);animation:none}
+#clock,#btnMapEdit,#goldbar,.berrybar,#side{transition:opacity .25s}body.fview :is(#clock,#btnMapEdit,#goldbar,.berrybar,#side,#hint){opacity:0!important;pointer-events:none!important}   /* v9.85 경완: 빈 곳을 눌러 일지를 접으면 버튼·날짜·골드를 숨겨 필드만 보기 (v9.86: 아래 메뉴·접힌 일지 버튼은 남김) */.me-foot.bad{border-color:#ff6a5a;background:rgba(255,90,80,.3)}#items .prop.meDrag{filter:drop-shadow(0 6px 2px rgba(0,0,0,.35)) drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 -1px 0 #fff);animation:none}
 .me-x{position:absolute;translate:-50% -50%;width:22px;height:22px;padding:0;display:grid;place-items:center;pointer-events:auto;color:#fff;background:#e04838;border:2px solid #20202c;box-shadow:inset 0 -2px 0 #9a2418,2px 2px 0 rgba(0,0,0,.35);cursor:pointer}
 .me-x svg{width:10px;height:10px}
 body.mapEdit:not(.meHas) #items .prop{filter:drop-shadow(1px 0 0 rgba(255,255,255,.85)) drop-shadow(-1px 0 0 rgba(255,255,255,.85)) drop-shadow(0 1px 0 rgba(255,255,255,.85)) drop-shadow(0 -1px 0 rgba(255,255,255,.85)) drop-shadow(0 0 3px #ffe27a)}   /* v9.11 경완: 편집 모드에선 옮길 수 있는 소품 모두 테두리 빛, 고르면 그 소품만 */
@@ -6334,7 +6334,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.85';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.86';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
