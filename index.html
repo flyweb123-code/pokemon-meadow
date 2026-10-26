@@ -3412,6 +3412,9 @@ function think(m) {
   if (t.mv !== 'swim' && !(m.pushCd > 0) && Math.random() < .7) {   /* v9.52 경완 '격투 타입 밀어주기는 누가 타고 있고 근처에 있을 때도': 누가 소품에 타고 있으면 (한 번에 하나 규칙과 상관없이) 근처의 맞는 포켓몬이 와서 밀어 준다 */
     const rd = S.mons.find(o => o !== m && o.scp?.ride && LAYOUT.sc.includes(o.scp.r) && Math.hypot(m.x - o.scp.G.cx, m.y - o.scp.G.gy) < 260 && !S.mons.some(k => k !== o && k.scp?.r === o.scp.r && k.scp.M.push) && !S.mons.some(k => k.goal?.kind === 'scpush' && k.goal.r === o.scp.r)), A = rd && LAYOUT.scArt[rd.scp.r[0]], pa = A && (A.acts || []).find(a => scSpec(a, A).M.push && scFit(m, a.w || ''));
     if (pa) { m.pushCd = rnd(40, 80); const G = rd.scp.G; return moveTo(m, { x: clamp(G.cx + (m.x < G.cx ? -1 : 1) * (G.W / 2 + (m.w || 40) * .4), XL + 20, XR - 20), y: Math.min(MAX_Y, G.gy + 2) }, { kind: 'scpush', r: rd.scp.r, a: pa, rd }); } }
+  if (t.mv !== 'swim' && !isFish(m.sp) && !m.scp && Math.random() < .6) {   /* v9.98 경완: 시소에 혼자 앉아 기다리면 근처 포켓몬이 걸어와 같이 탄다 */
+    const lo = S.mons.find(o => o !== m && o.scp?.tw && o.scp.ride && awake(o) && Math.hypot(m.x - o.scp.G.cx, m.y - o.scp.G.gy) < 420 && !S.mons.some(k => k !== o && k.scp?.r === o.scp.r)), i = lo ? LAYOUT.sc.indexOf(lo.scp.r) : -1, A = i >= 0 && LAYOUT.scArt[lo.scp.r[0]], a = A && (A.acts || []).find(x => x.x?.two?.at);
+    if (a && scPlay(m, { k: 'sc', i }, a, null, a.x.two)) { m.propUntil = performance.now() + 10000; return log(scLog(lo, A, a, m), [lo, m]); } }
   { const lv = likeOf(m) && relWho(likeOf(m))?.m;
     if (lv && lv !== m && !lv.hidden && awake(lv) && lv.state !== 'interact' && !(m.likeCd > 0) && sceneFree(m) && t.mv !== 'swim' && Math.random() < .3) {
       m.likeCd = rnd(70, 160); const side = m.x < lv.x ? -1 : 1;
@@ -5502,7 +5505,7 @@ function scPlay(m, p, a, ride, two, drag) { const r = LAYOUT.sc[p.i], G = r && s
   if (M.hide && !M.win && !M.speek && !a.x) { tx = G.cx + G.W * .08; ty = G.t + G.H * .9; if (!M.peek) tx = G.l + G.W * .82; }
   const an = pmd ? (S2.want.filter(n => !(drag && n === 'Sleep' && a.x?.an !== 'Sleep')).find(n => P.a[n]) || null) : null;   // v9.65 경완 '허수아비 발치에 앉아 쉬기는 자는 모션': 동작에 Sleep 이 정해져 있으면 끌어다 놓아도 잔다   // v9.33 경완 '자던 포켓몬을 타이어 그네에 데려가도 계속 잠': 끌어다 놓아 깨운 포켓몬은 졸기·자기 그림 없이 논다
   m.scp = { r, G, S: S2, M, tx: clamp(tx, XL + 20, XR - 20), ty, side: tx < G.cx ? -1 : 1, an, back: ride ? ride.back : two ? false : S2.back || (M.hide && !M.win && !M.speek) || M.speek || M.win,
-    ride: !!(ride || M.ride || two), t0: performance.now(), x0: m.x, y0: m.y - (m.lift || 0), hitT: -9, spT: 0, MW, MH, ed: clamp(Math.hypot(tx - m.x, ty - m.y + (m.lift || 0)) / 70, .35, 1.4) };
+    ride: !!(ride || M.ride || two), t0: performance.now(), x0: m.x, y0: m.y - (m.lift || 0), hitT: -9, spT: 0, MW, MH, ed: two ? clamp(Math.hypot(tx - m.x, ty - m.y + (m.lift || 0)) / 60, .6, 7) : clamp(Math.hypot(tx - m.x, ty - m.y + (m.lift || 0)) / 70, .35, 1.4), tw: !!a.x?.two?.at, dotT: 0 };   /* v9.98 경완 '시소 둘이 탈 땐 근처 포켓몬이 와서': 짝은 걸어서 온다 */
   { const q = m.scp; let fx0 = q.x0, fy0 = q.y0; if ((M.fly || M.circ) && Math.hypot(q.tx - fx0, q.ty - fy0) < 40) { fx0 = clamp(q.tx + (m.x < G.cx ? -1 : 1) * (G.W / 2 + MW * .5), XL + 20, XR - 20); fy0 = G.gy + 2; m.x = fx0; m.y = fy0; }   /* 소품 위에 바로 놓였으면 옆 땅에서 날아오른다 */ q.fx0 = fx0; q.fy0 = fy0; q.fd = clamp(Math.hypot(q.tx - fx0, q.ty - fy0) / 110, .9, 2.2); }
   if (ride && G.el?.mpH) G.el.mpH.style.zIndex = Math.round(G.gy) - (ride.inH ? 0 : 2);   // v9.38: 구멍 속에 앉은 작은 포켓몬은 타이어 앞 테두리가 앞, 큰 포켓몬은 타이어 앞에 (기둥 사이)
   m.goal = null; m.wp = null; m.propSit = true; m.pzB = null; setState(m, 'idle', M.avoid ? 4.6 : rnd(14, 22)); return true; }
@@ -5537,6 +5540,7 @@ function scTick(m, now) { const q = m.scp; if (!q) return; if (!q.G.el?.isConnec
   const fx = S2.fx, MV = G.A.mv?.st && G.A.mv?.mp && G.el?.mpEl ? G.A.mv : null; let ang = 0, ox = G.cx, oy = G.gy;
   if (fx.swing) { ang = Math.sin(tt * 3) * .07; if (/그네/.test(G.A.n || '')) oy = G.t; }
   if (fx.rock) { ang = Math.sin(tt * 2.4) * .13; oy = G.t + G.H * .7; }
+  if (q.tw && !S.mons.some(o => o !== m && o.scp?.r === q.r && o.scp.ride && now - o.scp.t0 > o.scp.ed * 1000)) { ang = 0; if (q.ride && now > q.dotT && tt > q.ed) { q.dotT = now + 3200; emote(m, '…', '', 2.4, 'seesaw-wait'); } }   /* v9.98 경완: 둘이 타는 소품(시소)에 혼자 있으면 움직이지 않고 말풍선 … */
   { const h = (now - (G.el?.scHit ?? -1e9)) / 1000; if (h < 1.6) ang += Math.sin(h * (q.ride ? 6 : 20)) * (q.ride ? .12 : .06) * Math.exp(-h * (q.ride ? 1.6 : 3.5)); }   /* v9.52: 밀어 준 힘은 소품에 남아 타고 있는 포켓몬도 크게 흔들린다 */
   const e = G.el; let a2 = ang, px = ox, py = oy;
   if (e && q.ride) e.scRideT = now; const own = !(e && !q.ride && now - (e.scRideT || 0) < 300);   // 누가 타고 있으면 소품 흔들기는 탄 포켓몬 쪽이 맡는다
@@ -5648,7 +5652,7 @@ function propReactIn(m, p, drag) {
     if (a && a === rd) { const tire = /구멍/.test(rd.a), G0 = tire && scGeo(r), inH = isSmall(m) && !(G0 && (m.w || 40) > scGap(G0));   /* v9.38 경완 '기둥 범위보다 클 경우 한쪽은 앞 한쪽은 뒤': 기둥 사이보다 넓으면 구멍 속이 아니라 타이어 앞에 타고, 어느 쪽이든 기둥은 둘 다 뒤 (9.39) */ scPlay(m, p, rd, { fy: 1 - (inH ? (tire ? .2 : .7) : (tire ? .22 : .8)), back: inH || !!(tire && G0?.el?.mpH), inH, tire }, null, drag);   /* v9.60 경완 '1번 그림만 구멍 안, 나머지는 밖': 숨 쉬는 그림 대부분(첫 칸)이 몸을 펴고 있어 구멍 위로 나왔다 → 스프링은 .78 → .7 로 더 깊이 */   /* v9.32 경완: 작은 포켓몬은 스프링 구멍에 살짝만 (얼굴 안 가리게 .55 → .78), 타이어는 구멍 안에 앉아 아래 테두리만 앞에 (예전 .06 은 타이어 뒤로 숨었음), 다른 포켓몬도 몬스터볼 구멍 쪽에 얹혀 탐 (.45 → .8) */ emote(m, '♪', '', 2.2, 'prop-play');   // v9.28: 작은 포켓몬은 소품 뒤(구멍 속)에, 다른 포켓몬은 소품 앞 위에 올라탐 · v9.29: 흔들리는 부분과 같이 흔들린다
       return log(rd.l || rd.li ? scLog(m, A, rd, null, inH) : inH ? `${J(m,'이/가')} ${esc(A.n)}에 쏙 들어가 앉아 흔들흔들 논다.` : `${J(m,'이/가')} ${esc(A.n)} 위에 올라타 흔들흔들 논다.`, [m]); }
     if (a && scPlay(m, p, a, null, null, drag)) { emote(m, '♪', '', 2.2, 'prop-play');   /* v9.29 경완: 작업실 예시와 같은 동작 */
-      const tw = a.x?.two; if (tw?.at) { const ok = o => o !== m && S.mons.includes(o) && awake(o) && !o.held && !o.scp && !o.camp && !o.pin && !o.evolving && !o.washing && o.state !== 'special' && o.state !== 'interact' && dist(o, p) < 480, nr = S.mons.filter(ok).sort((u, v) => dist(u, p) - dist(v, p)), o2 = nr.find(o => { const ty2 = tyOf(o).map(t => TYPE_KO[t]), w = tw.w || a.w || ''; return ty2.some(t => t && w.includes(t)) || (isSmall(o) && /작은/.test(w)) || (!isSmall(o) && /큰/.test(w)); }) || nr.find(o => T(o).mv !== 'swim');   /* v9.87 경완 '시소를 잘 안 탐': 크기가 맞는 짝이 없으면 가까운 아무 포켓몬이나 (320 → 480) */   // 둘이 노는 상호작용 (시소): 가까운 짝이 반대쪽에 앉는다
+      const tw = a.x?.two; if (tw?.at) { const ok = o => o !== m && S.mons.includes(o) && T(o).mv !== 'swim' && !isFish(o.sp) && awake(o) && !o.held && !o.scp && !o.camp && !o.pin && !o.evolving && !o.washing && o.state !== 'special' && o.state !== 'interact' && dist(o, p) < 480, nr = S.mons.filter(ok).sort((u, v) => dist(u, p) - dist(v, p)), o2 = nr.find(o => { const ty2 = tyOf(o).map(t => TYPE_KO[t]), w = tw.w || a.w || ''; return ty2.some(t => t && w.includes(t)) || (isSmall(o) && /작은/.test(w)) || (!isSmall(o) && /큰/.test(w)); }) || nr.find(o => T(o).mv !== 'swim');   /* v9.87 경완 '시소를 잘 안 탐': 크기가 맞는 짝이 없으면 가까운 아무 포켓몬이나 (320 → 480) */   // 둘이 노는 상호작용 (시소): 가까운 짝이 반대쪽에 앉는다
         if (o2 && scPlay(o2, p, a, null, tw)) { o2.propUntil = performance.now() + 10000; dustAt(o2); { const on = x => S.mons.includes(x) && x.scp?.r === r && awake(x); setTimeout(() => { if (on(m) && on(o2)) emote(m, '♥', 'heart', 2.2, 'seesaw-joy'); }, 1600); setTimeout(() => { if (on(m) && on(o2)) emote(o2, '♥', 'heart', 2.2, 'seesaw-joy'); }, 2300); }   /* v9.87 경완: 둘이 시소를 타면 자리에 앉은 뒤 한 번씩 즐거운 말풍선 */ return log(scLog(m, A, a, o2), [m, o2]); } }
       return log(scLog(m, A, a), [m]); }
     if (!a) { const G = r && scGeo(r), MW = m.w || 40;   /* v9.63 경완 '소품 구경은 옆에서 앞모습으로만, 말풍선 하나, 일지·상호작용 횟수 규칙엔 안 넣음': 뒷모습 겹치기 없앰, 소품 옆까지 걸어가서 구경 */
@@ -6340,7 +6344,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.97';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.98';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
