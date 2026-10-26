@@ -551,7 +551,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.93';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.94';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -749,11 +749,11 @@ const unsaved = () => ORIG ? ALLBOX().filter(boxDirty).length : 0;
 function boxBar(id, lab = '') { const d = boxDirty(id), sv = boxSaved(id);
   return `<div class="sbx${d ? ' dirty' : ''}" data-box="${id}"><span class="st">${d ? '● 저장 안 함' : sv ? '✓ 저장됨 · 배포 대기' : '게임 값 그대로'}</span><button class="chip" data-bd${boxDef(id) ? ' disabled' : ''} title="지금 게임에 들어 있는 값으로 (저장해야 반영)"><span class="rvi">↺</span>기본값으로</button><button class="btn" data-bs${d ? '' : ' disabled'}>${lab || '저장'}</button></div>`; }
 function boxAct(id, save) { const P = boxPaths(id);
-  if (save) { const W = D; W._sv = W._sv || {}; for (const p of P) putP(W._sv, p, W); if (!Object.keys(W._sv).length) delete W._sv; toast('저장했어요. 배포하기에 들어갔어요'); if (id === 'spots' && view === 'geo' && !mobile()) { geoSel.i = -1; geoJoin = -1; geoDraw(); geoSide(); } }   // v2.98 경완: 저장해도 오른쪽 창은 접지 않는다
+  if (save) { const W = D; W._sv = W._sv || {}; for (const p of P) putP(W._sv, p, W); if (!Object.keys(W._sv).length) delete W._sv; toast(id === 'layout' && !changes().some(c => c[3] === 'layout' || String(c[3]).startsWith('look:')) ? '배치를 작업실에 저장했어요 · 배포하기에는 안 들어가요' : '저장했어요. 배포하기에 들어갔어요'); if (id === 'spots' && view === 'geo' && !mobile()) { geoSel.i = -1; geoJoin = -1; geoDraw(); geoSide(); } }   // v2.98 경완: 저장해도 오른쪽 창은 접지 않는다
   else { for (const p of P) putP(D, p, null); if (id === 'layout') A?.setLayout(ORIG.layout); if (id === 'bub') bubLive(); if (id === 'monsc') { scLive(); szPane(); } if (id === 'thsp') { A?.setThOv?.(effP(D, 'thOv')); A?.setThSp?.(effP(D, 'thSp')); } toast('기본값으로 돌렸어요. 저장을 눌러야 반영돼요'); }
   saveDraft(); scBar(); if (id === 'layout') layoutBar(); else if (id !== 'monsc') RENDER[view]?.(); }
 document.addEventListener('click', e => { const b = e.target.closest('[data-bs],[data-bd]'), x = b?.closest('[data-box]'); if (!x || b.disabled) return; boxAct(x.dataset.box, b.hasAttribute('data-bs')); });
-function layoutBar() { const e = $('#eSave'); if (e) e.innerHTML = `<span data-box="layout"><button class="btn" data-bs${boxDirty('layout') ? '' : ' disabled'} title="배치를 저장해 배포하기에 넣어요">배치 저장</button></span>`; }   // v2.47 경완: 편집 종료 옆 배치 저장 (저장 안 함 안내는 위쪽 막대)
+function layoutBar() { const e = $('#eSave'); if (e) e.innerHTML = `<span data-box="layout"><button class="btn" data-bs${boxDirty('layout') ? '' : ' disabled'} title="배치를 작업실에만 저장해요 (배포하기에는 안 들어가요)">배치 저장</button></span>`; }   // v2.47 경완: 편집 종료 옆 배치 저장 (저장 안 함 안내는 위쪽 막대)
 // v2.91 경완: 모든 화면 Ctrl(⌘)+Z = 되돌리기, Ctrl(⌘)+Shift+Z (또는 Ctrl+Y) = 다시 실행. 작업본 D 전체를 단계마다 기억한다
 // (누른 채 끌거나 슬라이더로 연달아 바뀌는 건 한 단계로 묶음; 저장 여부(_sv)는 건드리지 않아서 되돌리면 다시 '저장 안 함'이 된다)
 const HIST_N = 100; let hUndo = [], hRedo = [], hLast = null, hT = 0, hMute = false, hScPend = false, hDown = false;
@@ -2008,7 +2008,7 @@ const changes = () => withSaved(changesOf);
 function changesOf() {
   if (!ORIG) return []; const out = [];
   // 넷째 칸 = 되돌리기 열쇠 (배포하기 화면에서 항목별로 취소)
-  if (D.layout) { const noLook = L => JSON.stringify({ ...layNorm(L), look: undefined });
+  if (D.layout) { const noLook = L => { const o = { ...layNorm(L), look: undefined }; for (const k of LAY_POS) delete o[k]; return JSON.stringify(o); };   // v3.94 경완 '배치 저장은 작업실에만': 자리(LAY_POS)만 바뀐 건 배포할 것으로 안 셈 (배포 때도 layNoPos 로 빠짐)
     if (noLook(D.layout) !== noLook(ORIG.layout)) out.push(['맵 배치', '소품 위치·모양이 바뀌었어요', '', 'layout']);
     const a = ORIG.layout.look || {}, b = D.layout.look || {}; for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) if (JSON.stringify(a[k]) !== JSON.stringify(b[k])) out.push([`${LOOKNAME(k)} 모양`, lookTxt(a[k]), lookTxt(b[k]), 'look:' + k]); }
   (D.odds || []).forEach((p, i) => { if (Math.abs(p - ORIG.odds[i]) > 1e-9) out.push([`${GN[i + 1]} 알 확률`, +(ORIG.odds[i] * 100).toFixed(4) + '%', +(p * 100).toFixed(4) + '%', 'odds:' + i]); });
@@ -2181,6 +2181,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.94', '10월 27일', ['맵 메뉴에서 배치 저장을 눌러도 배포하기에 안 들어가요. 소품 자리는 작업실에만 저장돼요']],
   ['3.93', '10월 26일', ['스칼렛 소품 상호작용마다 필드 일지 문장이 생겼어요. 상호작용 줄 아래에 작게 보여요 (예: 시소 "OO와 OO가 시소 양 끝에 앉아 번갈아 오르내린다")']],
   ['3.92', '10월 26일', ['시뮬레이터는 따로 쓰는 기기처럼: 시뮬레이터에서 바꾼 맵 배치(소품·연못·꽃 자리)는 배포하기·베타로 배포하기 모두 게임에 안 올라가고 작업실에만 남아요 (포켓몬 배치처럼). 소품 반응·그림 같은 데이터는 지금처럼 배포돼요']],
   ['3.91', '10월 26일', ['3.90 되돌림: 작업실에서 바꾼 맵 배치는 다시 베타 배포에 들어가요. 시뮬레이터 게임은 따로 쓰는 기기처럼, 그 안의 맵 편집은 시뮬레이터에만 남아요']],
