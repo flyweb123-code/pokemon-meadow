@@ -2456,7 +2456,7 @@ const FX_FIX = {
   551: { noct: 0 }, 552: { noct: 0 }, 553: { noct: 0 },
   // 하늘을 떠다님 / 날지 못함
   81: { mv: 'hover' }, 82: { mv: 'hover' }, 462: { mv: 'hover' }, 344: { mv: 'hover' }, 375: { mv: 'hover' }, 938: { mv: 'hover' },
-  84: { mv: 'walk' }, 85: { mv: 'walk' }, 177: { mv: 'walk' },
+  84: { mv: 'walk' }, 85: { mv: 'walk' }, 177: { mv: 'walk' }, 709: { mv: 'walk' },   // v9.97 경완 '대로트 왜 둥둥': 나무 포켓몬은 걸어 다님 (떠 있기를 0 이하로 맞춘 포켓몬은 위아래로 둥둥도 안 함)
   // 물에서 헤엄침
   226: { mv: 'swim' }, 458: { mv: 'swim' }, 580: { mv: 'amph' }, 20: { mv: 'amph' }, 347: { mv: 'amph' }, 348: { mv: 'amph' }, 614: { mv: 'amph' },
   // 잠꾸러기 (언제나 선잠, 죽을 때까지 잠듦)
@@ -4846,7 +4846,7 @@ function render(m, now) {
     else { m.ride = null; m.rideSc = null; m.xl = 0; m.zAdd = 0; if (!m.held && S.mons.includes(h)) { place(m, h.x + (m.rideDx < 0 ? -1 : 1) * Math.max(34, (m.w + h.w) * .4) + rnd(-12, 12), h.y + rnd(4, 16)); dustAt(m); } } }
   const fly0 = MON_FLY[m.form] || 0, rdOn = m.rdH && !m.held && now - (m.rdT || 0) < 200 && S.mons.includes(m.rdH), scR = m.scp && m.scp.ride, targetLift = m.scp && !m.held ? Math.max(0, (m.xl || 0) + (scR ? 0 : fly0)) : Math.max(0, m.szb ? liftBase(m.sp) + fly0 : m.held ? 26 : (flyer ? (grounded ? (t.mv === 'hover' ? 6 : 0) : (t.mv === 'fly' ? 40 : 16)) : 0) + (m.xl || 0) + fly0);   /* v5.20: MON_FLY 는 원래 높이에 더하는 값 (음수면 낮게) */   /* 들면 나는 포켓몬도 손가락(몸통) 기준: 그림자 위 높이를 더하지 않는다 */
   m.lift += (targetLift - m.lift) * (m.scp && m.scSnap ? 1 : .08);   // v9.29: 소품 놀이 중엔 높이를 바로 따라간다
-  const bob = flyer && !grounded && !m.szb && !m.scp && !rdOn ? Math.sin(now / 260 + m.uid) * 4 : 0;   /* v4.61 경완: 크기 조절 모드에선 둥둥 안 뜬다 */
+  const bob = flyer && !grounded && !m.szb && !m.scp && !rdOn && liftBase(m.sp) + fly0 > 2 ? Math.sin(now / 260 + m.uid) * 4 : 0;   /* v4.61 경완: 크기 조절 모드에선 둥둥 안 뜬다 */
   const pv = pondVal(m.x, m.y), wet = !flyer && !floatM(m) && !(m.xl > 6) && (m.wet ? pv < 1.0 : pv < .94), wetUp = !flyer && !floatM(m) && !wet && m.xl > 6 && pv < .94;   /* v9.35 경완 '물속 포켓몬 염력으로 띄울 때 잘린 채로 올라감': 들어 올리면 물 밖으로 나온 온몸 (물에 잠긴 만큼은 천천히 올라온다) */   /* 물가 경계에서 젖음/마름이 번갈아 바뀌며 위아래로 튀지 않게 여유를 둔다 */
   if (wet !== m.wet) { m.wet = wet; m.el.classList.toggle('wet', wet); }
   if (m.land && (!isFish(m.sp) || pondVal(m.x, m.y) < .85)) { m.land = false; if (!m.held) { splashAt(m); log(`${J(m,'이/가')} 겨우 호수로 돌아와 첨벙! 한결 편안해 보인다.`, [m]); } }
@@ -6340,7 +6340,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.94';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.97';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
