@@ -6375,7 +6375,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.13';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.14';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -10407,7 +10407,7 @@ async function playHatch() {
   else { const m = S.mons.find(x => x.pid === P.id); log(`${GRADE[g].n} 알에서 ${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어나 필드에 나왔다!`, m ? [m] : [], true); }
   if (0) log(`${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났지만 필드가 꽉 차서 포켓몬 박스에 들어갔다.`, [], true);
   save(); renderRun(); refreshCap();
-  if (how === 'look') lookBorn(P.id); else dexFxKick();
+  if (how === 'look') lookBorn(P.id); else dexFxKick(0);
   if (hatchQ.length) playHatch();
 }
 const wait = ms => new Promise(r => setTimeout(r, ms));
@@ -10549,7 +10549,7 @@ async function hatchAll() {
   const nw = res.filter(r => r.isNew).length, sh = res.filter(r => r.P.shiny).length;
   log(`알 ${res.length}개가 한꺼번에 부화했다! ${res.map(r => SPECIES[r.sp].n).join(', ')}${nw ? ` (새로 만난 포켓몬 ${nw}마리)` : ''}${sh ? ` ✦ 색이 다른 포켓몬 ${sh}마리!` : ''}`, [], true);
   save(); renderRun(); refreshCap();
-  if (hatchQ.length) playHatch(); else dexFxKick();
+  if (hatchQ.length) playHatch(); else dexFxKick(0);
 }
 let hatchPg = null;   // 모두 부화 목록일 때만
 cardPager(hatchEl, { can: d => !!hatchPg?.can(d), snap: (d, w) => hatchPg.snap(d, w), step: d => hatchPg?.step(d), skip: e => !hatchPg || !!e.target.closest('#hlStrip') });
@@ -10639,7 +10639,7 @@ async function evolve(m) {
   unlock(to, true);
   log(`축하해! ${J({ name: oldName },'은/는')} ${J(m,'으로/로')} 진화했다!`, [m], true);
   emote(m, '♪', 'note', 2, 'evolve'); m.evolving = false; setState(m, 'idle', 3);
-  infoEl.dataset.uid = ''; renderInfo(); evolving = false; save(); setTimeout(() => veil.remove(), 700); dexFxKick(900);
+  infoEl.dataset.uid = ''; renderInfo(); evolving = false; save(); setTimeout(() => veil.remove(), 700); dexFxKick(0);
 }
 
 // lock-screen run: the game notes the start time, the phone (or Nike Run Club) writes the distance to
@@ -11011,7 +11011,7 @@ async function evolveWin(P, card, forceTo, tool) {   // tool: 쓴 도구 id → 
     $('#noti').hidden = false; sfx('newdex'); haptic(1);
     await new Promise(res => { const done = () => { $('#noti').hidden = true; $('#noti').onclick = null; notiOpen = false; res(); }; $('#notiOk').onclick = done; $('#noti').onclick = ev => { if (ev.target.id === 'noti') done(); }; });
   }
-  evolving = false; save(); dexFxKick(900); if (!dexFx.q.length) dexPvEnd();
+  evolving = false; save(); dexFxKick(0); if (!dexFx.q.length) dexPvEnd();   /* v10.14 경완: 창이 닫히면 원래 화면 없이 바로 도감 연출 */
   notiSoon(600);   // 진화하는 동안 미뤄 둔 알림이 있으면
 }
 // the dex only lets you release species you have met
