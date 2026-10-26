@@ -565,7 +565,7 @@ ol.log li.big .txt{color:#c03838}
 @keyframes burrow{to{transform:translateX(-50%) translateY(60%) scaleY(.2);opacity:0}}
 @keyframes emerge{from{transform:translateX(-50%) translateY(60%) scaleY(.2);opacity:0}}
 @keyframes vanish{to{transform:translateX(-50%) scale(.2);opacity:0}}
-@keyframes appear{from{transform:translateX(-50%) scale(.2);opacity:0}}
+@keyframes appear{from{transform:translateX(-50%) scale(.2);opacity:0}}.act.gpop{animation:gpop .3s ease-out}@keyframes gpop{0%{transform:translateX(-50%) scale(1.45);filter:brightness(2.4)}60%{transform:translateX(-50%) scale(.92)}}
 @keyframes breathe{0%,100%{transform:translateX(-50%) scaleY(1)}50%{transform:translateX(-50%) scaleY(.95)}}
 @keyframes doze{0%{transform:translateX(-50%)}12%{transform:translateX(-50%) rotate(-7deg) translateY(2px)}22%{transform:translateX(-50%)}
   42%{transform:translateX(-50%) rotate(-9deg) translateY(3px)}52%{transform:translateX(-50%) rotate(-2deg)}
@@ -812,7 +812,7 @@ body.petting #dlg,body.petting #info{display:none!important}
 .pk .rk{position:absolute;left:3px;top:3px}
 #dexFxShield{position:fixed;inset:0;z-index:9800}
 #dexGrid button.dfx{position:relative;z-index:1}#dexGrid button.dfx::after{content:'';position:absolute;inset:-1px;border:2px solid #ffd84a;border-radius:4px;pointer-events:none;animation:dfxRing .9s steps(6,end) both}@keyframes dfxRing{0%{transform:scale(1.3);opacity:0}30%{transform:scale(1);opacity:1}75%{opacity:1}100%{opacity:0}}
-#dexGrid button.dfxIn img{animation:dfxPop .55s steps(8,end) both}button.dfxHide img{visibility:hidden}@keyframes dfxPop{0%{transform:scale(.3);filter:brightness(0) opacity(.35)}45%{transform:scale(1.3);filter:brightness(2.6)}100%{transform:scale(1);filter:none}}
+#dexGrid button.dfxIn img{animation:dfxPop .55s steps(8,end) both}button.dfxHide img{visibility:hidden}.dfxWhite{position:fixed;inset:0;z-index:99990;background:#fff;opacity:0;pointer-events:none;transition:opacity .4s ease-in}.dfxWhite.on{opacity:1}.dfxWhite.out{opacity:0;transition:opacity .6s ease-out}@keyframes dfxPop{0%{transform:scale(.3);filter:brightness(0) opacity(.35)}45%{transform:scale(1.3);filter:brightness(2.6)}100%{transform:scale(1);filter:none}}
 #dexGrid .dfx-sp{position:absolute;left:50%;top:42%;width:0;height:0;pointer-events:none}#dexGrid .dfx-sp i{position:absolute;width:4px;height:4px;margin:-2px;background:#ffe680;box-shadow:0 0 0 1px #c88a10;animation:dfxSp .6s steps(6,end) both}
 #dexGrid .dfx-sp i:nth-child(1){--x:0;--y:-30px}#dexGrid .dfx-sp i:nth-child(2){--x:21px;--y:-21px}#dexGrid .dfx-sp i:nth-child(3){--x:30px;--y:0}#dexGrid .dfx-sp i:nth-child(4){--x:21px;--y:21px}#dexGrid .dfx-sp i:nth-child(5){--x:0;--y:30px}#dexGrid .dfx-sp i:nth-child(6){--x:-21px;--y:21px}#dexGrid .dfx-sp i:nth-child(7){--x:-30px;--y:0}#dexGrid .dfx-sp i:nth-child(8){--x:-21px;--y:-21px}
 @keyframes dfxSp{0%{transform:translate(0,0) scale(.5);opacity:0}25%{opacity:1}100%{transform:translate(var(--x),var(--y)) scale(1);opacity:0}}
@@ -3383,7 +3383,7 @@ function canMeet(m, o) {
 /* v6.09 경완: 상호작용이 한꺼번에 여러 곳에서 짧게 일어나 알아보기 어렵던 것 — 필드 전체에서 한 번에 한 쌍만 어울리고, 끝나면 3~6초 쉬었다가 다음 쌍 */
 let sceneNext = 0;
 // v9.35 경완 '상호작용 하나 끝날 때까지 다음 상호작용은 안 일어나게': 쫓기·놀래키기·치료·좋아하는 포켓몬 찾아가기도 한 장면으로 센다
-const sceneOn = (...ex) => { const now = performance.now(); return S.mons.some(o => !ex.includes(o) && ((!o.hidden && ((o.state === 'interact' && o.partner?.partner === o && o.partner.state === 'interact') || (o.state === 'move' && ['meet', 'treePerch', 'like', 'chase', 'scare', 'heal'].includes(o.goal?.kind)))))); };   /* v9.58 경완 '포켓몬끼리 상호작용 빈도 줄음': 소품 놀이(가는 중·노는 중)는 포켓몬끼리 장면을 막지 않는다 */   // v6.10 경완: 맵 소품과 노는 것도 한 번에 하나 (소품은 최대 10초까지만 차례를 잡는다)   // 서로 어울리는 중이거나 만나러 가는 중인 쌍만 센다 (어긋난 상태는 막지 않게)
+const sceneOn = (...ex) => { const now = performance.now(); return S.mons.some(o => !ex.includes(o) && (o.special === 'gscare' || (!o.hidden && ((o.state === 'interact' && o.partner?.partner === o && o.partner.state === 'interact') || (o.state === 'move' && ['meet', 'treePerch', 'like', 'chase', 'scare', 'heal'].includes(o.goal?.kind)))))); };   /* v9.58 경완 '포켓몬끼리 상호작용 빈도 줄음': 소품 놀이(가는 중·노는 중)는 포켓몬끼리 장면을 막지 않는다 */   // v6.10 경완: 맵 소품과 노는 것도 한 번에 하나 (소품은 최대 10초까지만 차례를 잡는다)   // 서로 어울리는 중이거나 만나러 가는 중인 쌍만 센다 (어긋난 상태는 막지 않게)
 const sceneFree = m => performance.now() >= sceneNext && !sceneOn(m);
 const propBusy = (o, now = performance.now()) => (o.propUntil || 0) > now || o.scp || (o.state === 'move' && o.goal?.kind === 'prop'), propFree = m => S.mons.filter(o => o !== m && propBusy(o)).length < 3;   // v9.56: 소품 놀이는 동시에 셋까지 (같은 소품은 한 마리)
 const sceneDone = () => { sceneNext = performance.now() + rnd(3000, 6000); };
@@ -4492,7 +4492,7 @@ function doSpecial(m) {
   if (sp === 'ghost') {
     const c = S.mons.filter(o => o !== m && awake(o) && o.state !== 'interact' && T(o).mv !== 'swim');
     if (!c.length || !sceneFree(m)) return false;   // v9.35 경완: 다른 상호작용이 끝날 때까지 기다린다
-    const o = pick(c); moveTo(m, o, { kind: 'scare', mon: o }, 1.3); return true;
+    const o = pick(c); m.gsO = o; setState(m, 'special', 3.6); m.special = 'gscare'; m.phase = 0; return true;   /* v10.08 경완 '고스트 놀래키기는 스르르 사라졌다가 확 나타나게': 걸어가지 않고 그 자리에서 사라졌다가 상대 등 뒤에 나타난다 */
   }
   if (sp === 'spark') {
     setState(m, 'special', 2.5); m.special = 'spark'; anim(m, 'shake'); burst(m, 'spark', '✦', 5);
@@ -4628,6 +4628,14 @@ function tickSpecial(m, dt) {
     } else log(`${J(m,'이/가')} 노래를 마쳤다. 다들 귀를 기울였다.`, [m]);
     slept.forEach(o => addRel(o, m, 2));
   }
+  if (s === 'gscare') { const o = m.gsO, back = () => { m.hidden = false; m.el.style.visibility = ''; m.el.style.transition = ''; m.el.style.opacity = ''; m.gsO = null; m.special = null; };
+    if (!o || !S.mons.includes(o) || !awake(o) || o.held) { back(); return think(m); }
+    if (m.phase === 0) { m.phase = 1; faceTo(m, o.x); m.el.style.transition = 'opacity 1.3s ease-in'; m.el.style.opacity = '0'; }   // 스르르 투명해짐
+    if (m.phase === 1 && m.t < 2.1) { m.phase = 2; m.hidden = true; m.el.style.visibility = 'hidden'; }
+    if (m.phase === 2 && m.t < 1.3) { const d = ((o.w || 40) + (m.w || 40)) * .42 + 6; let x = o.x + (o.face > 0 ? d : -d); if (x < XL + 24 || x > XR - 24) x = o.x - (o.face > 0 ? d : -d);   // 상대가 보는 쪽의 반대(등 뒤)
+      m.x = m.tx = clamp(x, XL + 24, XR - 24); m.y = m.ty = clamp(o.y - 2, MIN_Y, MAX_Y); faceTo(m, o.x); back();
+      m.act.classList.remove('gpop'); void m.act.offsetWidth; m.act.classList.add('gpop'); setTimeout(() => m.act.classList.remove('gpop'), 400); sfx('pop'); return ghostScare(m, o); }   // 확 나타나며 왁!
+    return; }
   if (s === 'dig' || s === 'teleport') {
     if (m.phase === 0 && m.t < (s === 'dig' ? 4.4 : 3.1)) { m.phase = 1; m.hidden = true; m.el.style.visibility = 'hidden'; }
     if (m.phase === 1 && m.t < 1) {
@@ -4770,10 +4778,11 @@ function drawSprite(m, dt) {
 // ---------- update ----------
 // v10.04 경완 '타이어 그네 뒤로 걸어도 뒤로 안 가지네': 밤에 빛나는 포켓몬(S 랭크·누른 포켓몬)은 밤 그늘 위(+1100)로 올라가 뒤에 있는 소품까지 앞질렀다 → 그 포켓몬 앞에 겹친 소품도 같이 올리고 밤빛 필터로 똑같이 어둡게 (앞뒤 순서는 그대로)
 let pnlT = 0;
-function propNightLift() { const now = performance.now(); if (now - pnlT < 150) return; pnlT = now; const L = S.mons.filter(o => (o.lit || o.bright) && !o.hidden && o.el.isConnected);
-  for (const e of itemsEl.children) { if (!e.classList.contains('prop') || (!L.length && !e.pnl)) continue; let up = false;
-    if (L.length) { const z0 = e.pnl ? e.z0 : +e.style.zIndex, x = parseFloat(e.style.left), y = parseFloat(e.style.top), W = e.offsetWidth / 2, H = e.offsetHeight; up = L.some(o => z0 > o.y && Math.abs(x - o.x) < W + (o.w || 50) / 2 && y - H < o.y - (o.xl || 0) && y > o.y - (o.xl || 0) - (o.h || 60)); }
-    if (up === !!e.pnl) continue; if (up) { e.z0 = +e.style.zIndex; e.style.zIndex = e.z0 + 1100; } else if (+e.style.zIndex === e.z0 + 1100) e.style.zIndex = e.z0; e.pnl = up; e.classList.toggle('nightf', up); } }
+function propNightLift() { const now = performance.now(); if (now - pnlT < 150) return; pnlT = now; const L = S.mons.filter(o => (o.lit || o.bright) && !o.hidden && o.el.isConnected && o.el.style.visibility !== 'hidden');
+  const P = [...itemsEl.children].filter(e => e.classList.contains('prop') && (L.length || e.pnl)).map(e => { const x = parseFloat(e.style.left), y = parseFloat(e.style.top), W = e.offsetWidth / 2; return { e, z: e.pnl ? e.z0 : +e.style.zIndex, x0: x - W, x1: x + W, y0: y - e.offsetHeight, y1: y, up: false }; }).sort((a, b) => a.z - b.z);
+  if (L.length) for (const q of P) q.up = L.some(o => q.z > o.y && q.x0 < o.x + (o.w || 50) / 2 && q.x1 > o.x - (o.w || 50) / 2 && q.y0 < o.y - (o.xl || 0) && q.y1 > o.y - (o.xl || 0) - (o.h || 60))
+    || P.some(r => r.up && r.z < q.z && q.x0 < r.x1 && q.x1 > r.x0 && q.y0 < r.y1 && q.y1 > r.y0);   /* v10.08 경완 '그루터기 뒤 덤불이 앞으로 나옴': 올린 소품 앞에 겹친 소품도 같이 올려 앞뒤 순서를 지킨다 (덤불에 숨은 포켓몬은 셈하지 않음) */
+  for (const { e, up } of P) { if (up === !!e.pnl) continue; if (up) { e.z0 = +e.style.zIndex; e.style.zIndex = e.z0 + 1100; } else if (+e.style.zIndex === e.z0 + 1100) e.style.zIndex = e.z0; e.pnl = up; e.classList.toggle('nightf', up); } }
 function update(m, dt) {
   if (m.held || m.evolving || m.frz) return;   /* v3.81: 작업실 크기 조절 모드 포켓몬은 가만히 */
   const t = T(m), asleep = m.state === 'sleep';
@@ -4786,6 +4795,7 @@ function update(m, dt) {
   if (m.spCd > 0) m.spCd -= dt;
   if (m.form !== m.sp) { m.formT -= dt; if (m.formT <= 0 && m.state !== 'interact') revert(m); }
   m.t -= dt;
+  if (m.gsO && (m.state !== 'special' || m.special !== 'gscare')) { m.gsO = null; m.hidden = false; m.el.style.visibility = ''; m.el.style.transition = ''; m.el.style.opacity = ''; if (m.special === 'gscare') m.special = null; }   // 놀래키려고 사라진 중에 들거나 다른 일로 끊기면 다시 보이게
   if (m.pet) { m.goal = null; if (m.state !== 'idle' && m.state !== 'eat') setState(m, 'idle', 1); m.t = Math.max(m.t, 1); }
   if (m.pin) { m.goal = null; m.wp = null; if (m.state === 'move') setState(m, 'idle', 1); m.t = Math.max(m.t, 1); }   /* v3.80 경완: 작업실에서 고른 포켓몬은 제자리 */   /* 쓰다듬는 동안은 제자리 */
   if (m.state === 'idle' && !m.pet && !m.pin && !m.scp && inHud(m)) { moveTo(m, outOfHud(m, { x: clamp(m.x, XL + 30, XR - 30), y: m.y })); }   /* v9.52 경완 '타이어 그네가 일지 창 가까우면 탑승 안 함': 소품에서 노는 중(m.scp)이면 가방·열매 버튼 밑이어도 비켜 가지 않는다 */
@@ -5711,11 +5721,13 @@ function propReactIn(m, p, drag) {
     emote(m, '♪', '', 2.2, 'flower-sniff'); return log(`${J(m,'이/가')} 꽃향기를 킁킁 맡는다.`, [m]);
   }
   if (p.k === 'bush') {
-    const el = PROPS.bushEls?.[p.i]; at(rnd(-8, 8), -2); setState(m, 'idle', 6); m.el.style.visibility = 'hidden';
+    const el = PROPS.bushEls?.[p.i]; at(rnd(-8, 8), -2); setState(m, 'idle', 6); m.el.style.visibility = 'hidden'; const hx = m.x;
     const rs = () => { if (el) { el.classList.remove('rustle'); void el.offsetWidth; el.classList.add('rustle'); } }; rs();
     { let n = 0; const sh = () => { if (!S.mons.includes(m) || m.el.style.visibility !== 'hidden' || ++n > 6) return; rs(); setTimeout(sh, rnd(700, 1300)); }; setTimeout(sh, rnd(900, 1300)); }   // v4.52 경완: 숨어 있는 동안 덤불이 가끔 바스락 흔들려 안에 누가 있는 걸 알 수 있게
     log(`${J(m,'이/가')} 덤불 속으로 쏙 숨었다.`, [m]);
-    setTimeout(() => { if (!S.mons.includes(m)) return; m.el.style.visibility = ''; m.y = Math.min(MAX_Y, p.y + 16); emote(m, '!', '', 2.2, 'bush-out'); anim(m, 'hop'); el?.classList.remove('rustle'); }, 4200);   /* v4.61 경완: 튀어나오면 덤불은 멈춘다 */
+    setTimeout(() => { if (!S.mons.includes(m)) return; const by = el?.LV?.y ?? p.y + 10, y0 = by - 3, y1 = Math.min(MAX_Y, by + 18), H = Math.max(26, Math.min(48, (m.h || 40) * .8)), t0 = performance.now();   /* v10.08 경완 '덤불에서 확실하게 튀어나오게': 덤불 뒤(속)에서 솟아올라 앞으로 떨어진다 */
+      m.el.style.visibility = ''; m.x = m.tx = hx; m.y = y0; m.goal = null; setState(m, 'idle', 2.5); rs(); for (let i = 0; i < 6; i++) particle(m.x + rnd(-20, 20), by - rnd(10, 26), 'leaf', pick(['"', '❦'])); emote(m, '!', '', 2.2, 'bush-out'); sfx('pop');
+      const st = () => { if (!S.mons.includes(m) || m.held) return; const k = Math.min(1, (performance.now() - t0) / 520); m.y = y0 + (y1 - y0) * k; m.xl = Math.sin(k * Math.PI) * H; if (k < 1) requestAnimationFrame(st); else { m.xl = 0; anim(m, 'hop'); el?.classList.remove('rustle'); } }; requestAnimationFrame(st); }, 4200);   /* v4.61 경완: 튀어나오면 덤불은 멈춘다 */
     return;
   }
   if (p.k === 'stump') { at(0, 10); { const v = p.x2 ? LAYOUT.stumps[p.i] : LAYOUT.stump; propSit(m, Math.round(19 * ZP('stump', v)) + 2); sitFront(m); }   /* v9.83 경완: 그림자가 윗둥 나이테 가운데로 (그림 22×16 에서 나이테 가운데 = 밑에서 9.5칸) */ faceTo(m, nearPond(p.x, p.y).x); onShadow(m);   /* v4.26 경완: 그루터기에 앉으면 호수 쪽을 바라본다 */ setState(m, 'idle', rnd(16, 26)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play'); return log(`${J(m,'이/가')} 그루터기 위에 올라앉아 쉰다.`, [m]); }
@@ -6361,7 +6373,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.07';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.08';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9483,7 +9495,7 @@ async function dexFxRun() {
   if (dexFxBlocked()) return dexFxKick(600);
   dexFx.on = true; const L = [...new Set(dexFx.q.splice(0))].sort((a, b) => a - b);
   const W0 = ['#sheet', '#mgr', '#run', '#set', '#shop', '#ibag'].map(w => [w, $(w).hidden]), tab0 = mgrTab, F0 = ['dexType', 'dexGen', 'dexSort'].map(id => [id, +$('#' + id).dataset.v]), q0 = $('#dexQ').value, y0s = grid.scrollTop;   // v9.96 경완: 끝나면 원래 화면으로
-  L.forEach(sp => { const b = dexBtns[sp]; if (!b) return; dexCellReady(sp); b.classList.add('locked'); b.querySelector('.nm').textContent = '???'; b.querySelector('.newtag')?.remove(); });   // v10.07 경완 '등록되기 전 카드는 등록 전 상태 그대로': 검은 실루엣·??? (10.02 의 빈 칸 대신)
+  let wf = null; L.forEach(sp => { const b = dexBtns[sp]; if (!b) return; dexCellReady(sp); b.classList.add('locked'); b.querySelector('.nm').textContent = '???'; b.querySelector('.newtag')?.remove(); });   // v10.07 경완 '등록되기 전 카드는 등록 전 상태 그대로': 검은 실루엣·??? (10.02 의 빈 칸 대신)
   try {
     $('#dexQ').value = ''; dexQv = ''; setFilter('dexType', 0); setFilter('dexGen', 0);
     setMgrTab('dex'); syncTabs(); setFilter('dexSort', 1);
@@ -9500,12 +9512,13 @@ async function dexFxRun() {
       setTimeout(() => { b.classList.remove('dfx', 'dfxIn'); b.querySelector('.dfx-sp')?.remove(); }, 900);
     }
     shield.remove(); await wait(skip ? 300 : 1500);   /* v10.07 경완: 등록 뒤 화면이 돌아가기 전에 텀 */
+    wf = document.createElement('div'); wf.className = 'dfxWhite'; document.body.append(wf); void wf.offsetWidth; wf.classList.add('on'); await wait(420);   /* v10.08 경완: 돌아갈 때 화면이 하얗게 밝아지면서 넘어감 */
   } finally {
     L.forEach(sp => { if (dexBtns[sp]) { dexBtns[sp].classList.remove('dfxHide'); lockDexBtn(sp); } });
     for (const [w, h] of W0) $(w).hidden = h;
     if (!$('#mgr').hidden && tab0 !== 'dex') setMgrTab(tab0);
     if (!sheet.hidden) { $('#dexQ').value = q0; dexQv = q0; for (const [id, v] of F0) setFilter(id, v); grid.scrollTop = y0s; }
-    syncTabs(); dexFx.on = false; if (dexFx.q.length) dexFxKick(); else dexPvEnd(); }
+    syncTabs(); if (wf) { const w = wf; w.classList.add('out'); w.classList.remove('on'); setTimeout(() => w.remove(), 700); } dexFx.on = false; if (dexFx.q.length) dexFxKick(); else dexPvEnd(); }
 }
 // 새로 등록된 칸은 그림을 바로 넣고 순서도 미리 맞춰 둔다 → 도감을 열 때 없던 칸이 뒤늦게 생기는 모습이 안 보인다
 // v3.09: 작은 스프라이트(토중몬 등)를 칸 높이까지 늘리면 도트가 커 보인다(경완) → 도트 한 칸 최대 2배까지만 키우고 칸 높이는 그대로
