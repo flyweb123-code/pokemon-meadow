@@ -410,7 +410,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}@media 
 .vin:not(.own) .vtag{background:#a86a00}
 .shopwin .stab .shop-bar{margin-top:auto;min-height:87px;box-sizing:border-box;flex:none}   /* v7.28 경완: 구매 상자는 탭마다 항상 아래쪽 같은 자리 */
 .shop-bar{display:flex;align-items:center;gap:8px;margin-top:10px;border:3px solid var(--frame);background:var(--card);padding:8px}
-.sb-name{flex:1;min-width:0}.sb-name b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sb-name span{font-size:12px;color:var(--dim)}
+.sb-name{flex:1;min-width:0}.sb-bulk{display:flex;gap:4px;flex:none}.sb-bulk .lk-btn{padding-left:10px;padding-right:10px}.sb-name b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sb-name span{font-size:12px;color:var(--dim)}
 .shop-bar .lk-btn{padding:8px 10px;font-size:13px;flex:none}.shop-bar .lk-btn[disabled]{opacity:.5}
 @media (max-width:520px){.shop-inv{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .shop-row{display:flex;align-items:center;gap:10px;border:3px solid var(--inner);background:#fff;padding:10px}
@@ -6368,7 +6368,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.10';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.11';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6480,7 +6480,7 @@ const ITEMS = [
   { id: 'scroll', n: '악의 족자', k: 'tool', p: 2500, a: 'darkScroll', d: '악의 탑에서 수행하면 받을 수 있는 비전의 족자. 특정 포켓몬이 읽으면 진화한다.' }, { id: 'aug', n: '검은휘석', k: 'tool', p: 2500, a: 'blackAug', d: '쪼개면 날카로운 날이 생기는 검고 윤기 나는 돌. 특정 포켓몬이 무척 좋아한다.' }, { id: 'peat', n: '피트블록', k: 'tool', p: 2500, a: 'peatBlock', d: '말리면 땔감이 되는 진흙 덩어리. 특정 포켓몬이 무척 좋아한다.' },
   { id: 'bless', n: '축복받은갑옷', k: 'tool', p: 2500, a: 'blessArmor', d: '좋은 기운이 깃든 갑옷. 특정 포켓몬을 진화시킨다.' }, { id: 'curse', n: '저주받은갑옷', k: 'tool', p: 2500, a: 'curseArmor', d: '원한이 깃든 갑옷. 특정 포켓몬을 진화시킨다.' }, { id: 'alloy', n: '복합금속', k: 'tool', p: 2500, a: 'metalAlloy', d: '특정 포켓몬을 진화시키는 신기한 금속. 여러 겹으로 겹쳐져 있다.' },
   { id: 'oval', n: '동그란돌', k: 'tool', p: 1500, a: 'ovalStone', d: '특정 포켓몬을 진화시키는 신기한 돌. 알처럼 동그랗고 매끈하다.' }, { id: 'claw', n: '예리한손톱', k: 'tool', p: 2000, a: 'razorClaw', d: '날카롭게 휘어진 손톱. 특정 포켓몬을 진화시킨다.' }, { id: 'fang', n: '예리한이빨', k: 'tool', p: 2000, a: 'razorFang', d: '무엇이든 꿰뚫을 듯한 날카로운 이빨. 특정 포켓몬을 진화시킨다.' },   /* v10.10 경완: 상점에 없던 특수 진화 도구 6종 */
-  { id: 'sweets', n: '딸기사탕공예', k: 'tool', p: 1500, a: 'strawSweet', d: '딸기 모양으로 빚은 달콤한 사탕공예. 특정 포켓몬을 진화시킨다.' }, { id: 'mcandy', n: '멜탄 사탕', k: 'tool', p: 3000, a: 'meltanCandy', d: '멜탄의 기운이 듬뿍 담긴 사탕. 특정 포켓몬을 진화시킨다.' }, { id: 'gcoin', n: '모으령 코인', k: 'tool', p: 3000, a: 'gimmiCoin', d: '모으령이 모아 온 낡은 코인. 특정 포켓몬을 진화시킨다.' },
+  { id: 'sweets', n: '딸기사탕공예', k: 'tool', p: 1500, a: 'strawSweet', d: '딸기 모양으로 빚은 달콤한 사탕공예. 특정 포켓몬을 진화시킨다.' }, { id: 'mcandy', n: '멜탄 사탕', k: 'tool', p: 50, bulk: 1, a: 'meltanCandy', d: '멜탄의 기운이 듬뿍 담긴 사탕. 특정 포켓몬을 진화시킨다.' }, { id: 'gcoin', n: '모으령 코인', k: 'tool', p: 20, bulk: 1, a: 'gimmiCoin', d: '모으령이 모아 온 낡은 코인. 특정 포켓몬을 진화시킨다.' },
   { id: 'incense', n: '향로', k: 'item', p: 900, a: 'incense' }, { id: 'charm', n: '빛나는 부적', k: 'item', p: 5000, a: 'charm' },   /* v6.37 경완: 3,000 → 5,000G */
 ];
 const ITEM = Object.fromEntries(ITEMS.map(o => [o.id, o])), ITEM_BY_N = Object.fromEntries(ITEMS.map(o => [o.n, o.id]));
@@ -6514,16 +6514,18 @@ function renderFx() { const el = $('#fxBar'); if (!el) return; const ks = ['ince
 setInterval(renderFx, 1e3);
 // 특수 진화 도구: 종의 진화 조건 글('불꽃의돌을 써야', '통신교환을 해야')에서 도구를 찾는다
 const evoItem = c => { const ev = SPECIES[c]?.ev || ''; if (ev === '통신교환을 해야') return 'link'; const m = ev.match(/^(.+?)[을를] 써야$/); if (m) return ITEM_BY_N[m[1]] || null; const h = ev.match(/^(.+?)[을를] (지닌 채|[\d,]+개 모아야)/); return h && (ITEM_BY_N[h[1]] || { 사탕공예: 'sweets' }[h[1]]) || null; };   /* v10.10: 지닌 채 진화(동그란돌·예리한손톱·예리한이빨·사탕공예)와 모아서 진화(멜탄 사탕·모으령 코인)도 그 도구를 쓰면 진화 */
+const evoReq = c => { const ev = SPECIES[c]?.ev || '', n = ev.match(/([\d,]+)개 모아야/); return { n: n ? +n[1].replace(/,/g, '') : 1, tm: /낮에/.test(ev) ? 'day' : /밤에/.test(ev) ? 'night' : '' }; };   /* v10.11 경완: 모아서 진화는 그 개수를 한 번에 쓰고, 낮·밤 조건은 그 시간에만 */
+const evoNo = x => { const q = evoReq(x.c), h = itemsOf()[x.it] || 0; return h < q.n ? (h ? `${(q.n - h).toLocaleString()}개 더 모아요` : '') : q.tm && (q.tm === 'day') !== isDay() ? `${q.tm === 'day' ? '낮' : '밤'}에만 써요` : null; };
 const itemEvos = P => (CHILDREN[P.sp] || []).filter(c => { const d = SPECIES[c]; return evoItem(c) && !(d.eqx && (d.eqx === 1 ? 'f' : 'm') !== P.sex); }).map(c => ({ c, it: evoItem(c) }));
-const toolEvos = P => !P || evoKids(P.sp, P).length ? [] : itemEvos(P).filter(x => (itemsOf()[x.it] || 0) > 0);   // v8.88 경완: 특별한 진화인데 그 도구를 가졌으면 진화하기 버튼이 켜진다
+const toolEvos = P => !P || evoKids(P.sp, P).length ? [] : itemEvos(P).filter(x => evoNo(x) === null);   // v8.88 경완: 특별한 진화인데 그 도구를 가졌으면 진화하기 버튼이 켜진다
 function toolGo(P) { const L = toolEvos(P); if (!L.length) return; if (L.length > 1) return itemPop(P); toolAsk(P, L[0]); }   // 도구가 여럿(이브이 돌 등)이면 고르는 창, 하나면 바로 확인 창
 function toolAsk(P, { c, it }) {   // 도구를 쓸지 한 번 더 묻는다 (창 위 창)
-  const o = ITEM[it], I = itemsOf(), el = $('#itemPop');
-  el.innerHTML = `<div class="win ipwin bag-ask" role="dialog" aria-label="${o.n} 쓰기"><img src="${ITEM_ART[o.a]}" alt=""><p>${J({ name: o.n }, '을/를')} 써서 진화시킬까요?</p><span>${esc(nameOf(P))} · 가진 개수 ${I[it] || 0}</span><div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn main" data-yes>쓰기</button></div></div>`;
+  const o = ITEM[it], I = itemsOf(), el = $('#itemPop'), q = evoReq(c), nm = q.n > 1 ? `${o.n} ${q.n.toLocaleString()}개` : o.n;
+  el.innerHTML = `<div class="win ipwin bag-ask" role="dialog" aria-label="${o.n} 쓰기"><img src="${ITEM_ART[o.a]}" alt=""><p>${J({ name: nm }, '을/를')} 써서 진화시킬까요?</p><span>${esc(nameOf(P))} · 가진 개수 ${I[it] || 0}</span><div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn main" data-yes>쓰기</button></div></div>`;
   el.hidden = false; sfx('open');
   el.onclick = e => { if (e.target === el || e.target.closest('[data-no]')) { el.hidden = true; sfx('tap'); return; } if (!e.target.closest('[data-yes]')) return;
-    el.hidden = true; if (!(I[it] > 0) || evolving || hatching) return; I[it]--; if (!I[it]) delete I[it]; save();
-    log(`${esc(nameOf(P))}에게 ${J({ name: o.n }, '을/를')} 썼다!`, [], true);
+    el.hidden = true; if (evoNo({ c, it }) !== null || evolving || hatching) return; I[it] -= q.n; if (!I[it]) delete I[it]; save();
+    log(`${esc(nameOf(P))}에게 ${J({ name: nm }, '을/를')} 썼다!`, [], true);
     const card = !$('#pokePop').hidden; if (card) closePoke(); if (!monPop.hidden) closeMon(); evolveWin(P, card, c, it); };
 }
 // v5.85 경완: 필드의 가방 아이콘 → 상점처럼 따로 뜨는 가방 창. 아이템은 쓰기 전에 창 위 창으로 한 번 더 묻는다
@@ -6748,10 +6750,10 @@ ibagEl.addEventListener('click', e => {
 function itemPop(P) {
   const L = itemEvos(P); if (!L.length) return; const I = itemsOf(), el = $('#itemPop');
   el.innerHTML = `<div class="win ipwin" role="dialog" aria-label="도구 쓰기"><div class="sheet-head"><h3>도구 쓰기</h3><button class="opt" data-x>닫기</button></div>`
-    + L.map(({ c, it }) => `<div class="iprow"><img src="${ITEM_ART[ITEM[it].a]}" alt=""><div><b>${ITEM[it].n}</b><span>→ ${esc(SPECIES[c].n)} · 가진 개수 ${I[it] || 0}</span></div><button class="lk-btn main" data-use="${it}" data-c="${c}"${I[it] ? '' : ' disabled'}>${I[it] ? '쓰기' : '상점에서 사요'}</button></div>`).join('') + `</div>`;
+    + L.map(({ c, it }) => { const q = evoReq(c), no = evoNo({ c, it }); return `<div class="iprow"><img src="${ITEM_ART[ITEM[it].a]}" alt=""><div><b>${ITEM[it].n}${q.n > 1 ? ` ${q.n.toLocaleString()}개` : ''}</b><span>→ ${esc(SPECIES[c].n)} · 가진 개수 ${(I[it] || 0).toLocaleString()}</span></div><button class="lk-btn main" data-use="${it}" data-c="${c}"${no === null ? '' : ' disabled'}>${no === null ? '쓰기' : no || '상점에서 사요'}</button></div>`; }).join('') + `</div>`;
   el.hidden = false; sfx('open');
   el.onclick = e => { const u = e.target.closest('[data-use]'); if (e.target === el || e.target.closest('[data-x]')) { el.hidden = true; return; } if (!u || u.disabled) return;
-    const it = u.dataset.use, c = +u.dataset.c; if (!(I[it] > 0)) return; toolAsk(P, { c, it }); };
+    const it = u.dataset.use, c = +u.dataset.c; if (evoNo({ c, it }) !== null) return; toolAsk(P, { c, it }); };
 }
 // ---------- 미니게임 (베타 v5.77 경완): 필드 정보창 조이스틱 → 게임 고르기 → 장애물 넘기 ----------
 // 미니게임천국 '달려라'처럼 저절로 달리고 눌러서 뛴다. 500점마다(v8.84, 예전엔 250m) 페이즈가 올라 빨라지고 장애물이 늘어난다.
@@ -7957,13 +7959,13 @@ function renderItems(k) {
   const o = ITEM[sel], bar = $(`#${k}Bar`); bar.hidden = !o; if (!o) return;
   const left = o.k === 'item' ? fxLeft(o.id) : 0;
   bar.innerHTML = `<img class="sb-pic" src="${ITEM_ART[o.a]}" alt=""><div class="sb-name"><b>${o.n}</b><span>${itemDesc(o)}${left ? ` · 남은 시간 ${Math.ceil(left / 60e3)}분` : ''}</span></div>`
-    + `<button class="lk-btn main" data-act="buy">구매</button>`;   /* v6.48 경완: 상점에선 쓰기 버튼 없이 구매만 (쓰기는 가방에서) */
+    + (o.bulk ? `<span class="sb-bulk">${[1, 10, 100].map(n => `<button class="lk-btn main" data-act="buy" data-n="${n}">${n}개</button>`).join('')}</span>` : `<button class="lk-btn main" data-act="buy">구매</button>`);   /* v10.11: 모아서 쓰는 도구는 10개·100개씩도 산다 */   /* v6.48 경완: 상점에선 쓰기 버튼 없이 구매만 (쓰기는 가방에서) */
 }
 for (const k of ['tool', 'item']) {
   $(`#${k}List`).addEventListener('click', e => { const v = e.target.closest('[data-it]'); if (!v) return; sfx('tap'); itemSel[k] = itemSel[k] === v.dataset.it ? null : v.dataset.it; $(`#${k}Msg`).textContent = ''; renderItems(k); });
   $(`#${k}Bar`).addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (!b) return; const o = ITEM[itemSel[k]]; if (!o) return; const I = itemsOf(), msg = $(`#${k}Msg`);
-    if (b.dataset.act === 'buy') { const p = itemPrice(o.id); if (S.gold < p) { msg.textContent = `골드가 ${(p - S.gold).toLocaleString()}G 모자라요.`; sfx('wob'); return; }
-      S.gold -= p; I[o.id] = (I[o.id] || 0) + 1; renderGold(); sfx('newdex'); msg.textContent = ''; buyPop(`<img src="${ITEM_ART[o.a]}" alt="">`, `${J({ name: o.n }, '을/를')} 샀다!`, `가진 개수 ${I[o.id]}`); }
+    if (b.dataset.act === 'buy') { const bn = +b.dataset.n || 1, p = itemPrice(o.id) * bn; if (S.gold < p) { msg.textContent = `골드가 ${(p - S.gold).toLocaleString()}G 모자라요.`; sfx('wob'); return; }
+      S.gold -= p; I[o.id] = (I[o.id] || 0) + bn; renderGold(); sfx('newdex'); msg.textContent = ''; const bm = bn > 1 ? `${o.n} ${bn}개` : o.n; buyPop(`<img src="${ITEM_ART[o.a]}" alt="">`, `${J({ name: bm }, '을/를')} 샀다!`, `가진 개수 ${I[o.id].toLocaleString()}`); }
     else if (b.dataset.act === 'use' && I[o.id] > 0) { I[o.id]--; if (!I[o.id]) delete I[o.id]; useFx(o.id); sfx('pickup'); msg.innerHTML = `${J({ name: o.n }, '을/를')} 썼다! ${Math.ceil(fxLeft(o.id) / 60e3)}분 동안 효과가 있어요.`; log(`${J({ name: o.n }, '을/를')} 썼다.`, [], true); }
     itemSel[k] = null; save(); renderItems(k); });
 }
@@ -8879,7 +8881,7 @@ function evoKids(sp, P, now) {
     if (!tmo && (P?.fr || 0) < FR_EVO) return false;
     const tm = tmo ? ev : ev.split(':')[1]; return !tm || (tm === 'day') === isDay(); });
 }
-const evoWhy = c => { const ev = SPECIES[c].ev || ''; { const it = evoItem(c); if (it && it !== 'link' && !/써야$/.test(ev)) { const n = ITEM[it].n; return `${n}${hasBat(n) ? '을' : '를'} 쓰면 진화해요`; } } if (ev === 'day' || ev === 'night') return `${ev === 'day' ? '낮' : '밤'}에만 진화해요`; return ev.startsWith('fr') ? `친밀도가 ${FR_EVO} 이상이어야${ev.endsWith('day') ? ', 낮에' : ev.endsWith('night') ? ', 밤에' : ''} 진화해요` : `${ev} 진화해요`; };
+const evoWhy = c => { const ev = SPECIES[c].ev || ''; { const it = evoItem(c); if (it && it !== 'link' && !/써야$/.test(ev)) { const n = ITEM[it].n, q = evoReq(c); return q.n > 1 ? `${n} ${q.n.toLocaleString()}개를 모아 쓰면 진화해요` : `${n}${hasBat(n) ? '을' : '를'} ${q.tm ? (q.tm === 'day' ? '낮에 ' : '밤에 ') : ''}쓰면 진화해요`; } } if (ev === 'day' || ev === 'night') return `${ev === 'day' ? '낮' : '밤'}에만 진화해요`; return ev.startsWith('fr') ? `친밀도가 ${FR_EVO} 이상이어야${ev.endsWith('day') ? ', 낮에' : ev.endsWith('night') ? ', 밤에' : ''} 진화해요` : `${ev} 진화해요`; };
 // 짝꿍 등록 때: 돌·통신교환처럼 달린 거리로 진화할 수 없는 진화가 있으면 알려 준다
 function evoNotice(sp, P) {
   const L = CHILDREN[sp] || []; if (!L.length) return;
