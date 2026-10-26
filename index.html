@@ -699,7 +699,7 @@ ol.log li.big .txt{color:#c03838}
 #setBack{padding:4px 10px}#set .sheet-head{min-height:44px;box-sizing:border-box}/* 프로필(톱니)과 하위 화면(◀) 머리 높이를 같게: 밀어서 뒤로 갈 때 들어오는 창이 끝난 모습과 같은 자리 */#set #closeSet{display:none}
 .tr-card{display:flex;gap:12px;align-items:stretch;margin:4px 0 14px;padding:10px;border:3px solid var(--frame);background:var(--win);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner)}
 .tr-pic{flex:none;width:112px;height:112px;position:relative;background:#e4f2d0;border:3px solid var(--inner);box-shadow:inset 0 -14px 0 #cfe6b4;overflow:hidden}
-.tr-pic{display:grid;place-items:center}.tr-pic.walking .tr-ow{animation:trWalk .9s steps(1,end) infinite}@keyframes trWalk{0%{background-position:0 0;transform:none}25%{background-position:0 -192px;transform:none}50%{background-position:0 0;transform:none}75%{background-position:0 -192px;transform:scaleX(-1)}}   /* v4.37 경완: 걷는 중이면 트레이너가 정면으로 걷는다 */.tr-ow{width:64px;height:64px;background-repeat:no-repeat;background-size:64px 384px;background-position:0 0;image-rendering:pixelated}
+.tr-pic{display:grid;place-items:center}.tr-pic.walking .tr-ow{animation:trWalk .9s steps(1,end) infinite}@keyframes trWalk{0%{background-position:0 0;transform:none}25%{background-position:0 -288px;transform:none}50%{background-position:0 0;transform:none}75%{background-position:0 -288px;transform:scaleX(-1)}}   /* v4.37 경완: 걷는 중이면 트레이너가 정면으로 걷는다 */.tr-ow{width:96px;height:96px;margin:-16px;flex:none;background-repeat:no-repeat;background-size:96px 576px;background-position:0 0;image-rendering:pixelated}
 .tr-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:10px}
 .tr-top{display:flex;align-items:center;gap:6px;min-width:0}
 .tr-nm{flex:1;min-width:0;display:flex;align-items:center;gap:4px;cursor:text}.tr-nm .pen-b{flex:none;width:14px;height:14px;color:var(--dim)}.tr-nm .pen-b svg{width:100%;height:100%;display:block}.tr-nm input{border:0;outline:0;background:none;padding:0;margin:0;color:var(--win-ink);font-family:inherit;font-size:20px;font-weight:700;max-width:100%}.tr-nm input::placeholder{color:var(--win-ink);opacity:1;font-weight:700}.tr-nm input:focus::placeholder{opacity:.3}.tr-nm input{caret-color:var(--win-ink)}
@@ -1460,10 +1460,10 @@ html:not(.op) #btnGym,html:not(.gym-on) #btnGym,body.mapEdit #btnGym{display:non
 #gymLoad{position:fixed;inset:0;z-index:9800;display:grid;place-items:center;background:#181a2c;color:#f8f8f8;opacity:0;transition:opacity .35s;pointer-events:none}#gymLoad.on{opacity:1;pointer-events:auto}#gymLoad[hidden]{display:none}
 #gymLoad .gl-box{display:flex;flex-direction:column;align-items:center;gap:18px;width:min(300px,80vw)}
 #gymLoad .gl-road{position:relative;width:100%;height:76px;border-bottom:4px solid #46508a;background:repeating-linear-gradient(90deg,transparent 0 14px,rgba(255,255,255,.08) 14px 28px) bottom/100% 8px no-repeat}
-#gymLoad .gl-ow{position:absolute;bottom:0;left:0;width:64px;height:64px;background:0 -128px/64px 384px no-repeat;image-rendering:pixelated;transform:scaleX(-1);animation:glStep .36s steps(1,end) infinite,glWalk 2.4s linear infinite}
+#gymLoad .gl-ow{position:absolute;bottom:-18px;left:0;width:96px;height:96px;background:0 -192px/96px 576px no-repeat;image-rendering:pixelated;transform:scaleX(-1);animation:glStep .36s steps(1,end) infinite,glWalk 3s linear infinite}
 #gymLoad .gl-gym{position:absolute;right:0;bottom:0;line-height:0}#gymLoad .gl-gym svg{width:72px;height:63px}
-#gymLoad.out .gl-ow{transform:none;animation:glStep .36s steps(1,end) infinite,glWalkB 2.4s linear infinite}
-@keyframes glStep{50%{background-position:0 -320px}}@keyframes glWalk{from{left:-4px}to{left:calc(100% - 120px)}}@keyframes glWalkB{from{left:calc(100% - 120px)}to{left:-4px}}
+#gymLoad.out .gl-ow{transform:none;animation:glStep .36s steps(1,end) infinite,glWalkB 3s linear infinite}
+@keyframes glStep{50%{background-position:0 -480px}}@keyframes glWalk{from{left:-4px}to{left:calc(100% - 120px)}}@keyframes glWalkB{from{left:calc(100% - 120px)}to{left:-4px}}
 #gymLoad .gl-t{font-size:18px;font-weight:700;letter-spacing:.5px}#gymLoad .gl-t i{display:inline-block;width:1.4em;text-align:left;font-style:normal}
 #gymLoad .gl-s{font-size:13px;color:#a8acd0;min-height:1.4em;text-align:center}
 @media (max-width: 760px), (max-height: 500px) and (orientation: landscape) {
@@ -1689,6 +1689,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
         <div class="op-row"><span>테스트 버튼 보이기</span><button class="op-sw" id="testSw" role="switch" aria-checked="false"><i></i></button></div>
         <div class="op-row"><span>체육관 모드 보이기 (이 기기만)</span><button class="op-sw" id="gymSw" role="switch" aria-checked="false"><i></i></button></div>
         <div class="op-row"><span>베타 판 쓰기 (이 기기만)</span><button class="op-sw" id="betaSw" role="switch" aria-checked="false"><i></i></button></div>
+        <div class="set-btns one"><button class="lk-btn main" id="gymReset">체육관 초기화</button></div>
         <div class="set-btns one"><button class="lk-btn main" id="updNow">배포된 최신 판 바로 받기</button></div>
         <div class="set-btns one"><button class="lk-btn main" id="newsPv">업데이트 알림창 미리 보기</button></div>
         <div class="set-btns one"><button class="lk-btn main" id="tutPv">튜토리얼 미리 보기</button></div>   <!-- v8.04 경완: 오프닝·튜토리얼을 처음부터 (저장은 그대로) -->
@@ -2058,6 +2059,7 @@ const TRACKS = [
   { id: 'lavender', n: '보라타운', g: '금·은', price: 100, c: '#7050a0', key: /lavender/i },
 ];
 const OLD_TRACKS = { forest: 500, lake: 800, sea: 1200, fest: 1800, battle: 2500 };   // 예전 직접 만든 곡: 산 골드는 돌려준다
+const inGym = () => document.body.classList.contains('gymMode');   /*gym-hook2*/
 let bgmOn = VOL.bgm > 0;
 // 곡은 Web Audio 버퍼로 튼다. 예전엔 <audio>를 Web Audio 로 거쳤는데, 아이폰에서 출력 주파수(44.1k↔48k)가 바뀌면 곡이 중간에 빨라졌다.
 // 메모리를 아끼려고 32kHz 모노로 풀어 둔다 (게임보이 곡이라 소리 차이가 거의 없다).
@@ -2077,7 +2079,7 @@ function bgmSrcStop() { const x = bgm.src; bgm.src = null; if (x) { try { x.stop
 // 곡 위치 기억: 오디오를 새로 만들어도 멈췄던 자리부터 이어서 튼다
 const bgmPos = () => { if (!bgm.src || !actx || !bgm.buf) return bgm.pos || 0; return ((actx.currentTime - bgm.t0) % bgm.buf.duration + bgm.buf.duration) % bgm.buf.duration; };
 function bgmSrcStart(off = bgm.pos || 0) {
-  if (bgm.src || !bgm.buf) return; try { if (campMus.on && !bgm.preview) return; } catch (e) {}   /* v9.19 경완: 모닥불 노래 중엔 배경 음악이 다시 켜지지 않게 (곡을 받아 오던 게 늦게 끝나거나 무작위 다음 곡이 겹치던 것) — 노래가 끝나면 campBgm(false) 가 이어 튼다 */
+  if (bgm.src || !bgm.buf || (inGym() && !bgm.preview)) return; try { if (campMus.on && !bgm.preview) return; } catch (e) {}   /* v9.19 경완: 모닥불 노래 중엔 배경 음악이 다시 켜지지 않게 (곡을 받아 오던 게 늦게 끝나거나 무작위 다음 곡이 겹치던 것) — 노래가 끝나면 campBgm(false) 가 이어 튼다 */
   const a = audio(); if (!a) return; bgmRoute();
   off = off % bgm.buf.duration || 0;
   const x = a.createBufferSource(); x.buffer = bgm.buf; x.loop = !(S.bgmRand && !bgm.preview); x.connect(bgm.gain); x.start(0, off); bgm.src = x; bgm.t0 = a.currentTime - off;
@@ -3054,7 +3056,7 @@ function offFr(m, sec) {
   }
   flush(); m.frT = acc; dirtVis(m);
 }
-{ let hidAt = 0; document.addEventListener('visibilitychange', () => { if (document.hidden) hidAt = Date.now(); else if (hidAt) { const sec = (Date.now() - hidAt) / 1000; hidAt = 0; S.mons.forEach(m => offFr(m, sec)); save(); } }); }
+{ let hidAt = 0; document.addEventListener('visibilitychange', () => { if (document.hidden) hidAt = Date.now(); else if (hidAt) { const sec = (Date.now() - hidAt) / 1000; hidAt = 0; if (!inGym()) S.mons.forEach(m => offFr(m, sec)); save(); } }); }
 function dayCap(m, k, max) { const P = boxOf(m.pid); if (!P) return false; const d = dayKey(); if (P[k + 'D'] !== d) { P[k + 'D'] = d; P[k + 'N'] = 0; } if (P[k + 'N'] >= max) return false; P[k + 'N']++; return true; }
 function berryFr(m) { if (!(m.hunger > 0)) return false; addFr(m.pid, 1); return true; }   // v4.42 경완: 내가 준 열매로 배부름이 오를 때마다 친밀도 +1, 하루 한도 없음 (이미 가득이면 없음)
 function berryBoost(m, mine) { if (mine) m.joy = clamp((m.joy ?? 60) + 5); }   // 내가 준 열매면 즐거움 +5
@@ -5848,7 +5850,7 @@ function stormBolt() {
   if (near > .25) { const b = document.createElement('div'); b.className = 'wxbolt'; b.innerHTML = `<svg viewBox="0 0 ${W} 160" width="${W}" height="160" shape-rendering="crispEdges"><path d="${d}${br ? ' ' + br : ''}" fill="none" stroke="#fff" stroke-width="${near > .7 ? 3 : 2}" stroke-linejoin="bevel"/></svg>`; fxEl.append(b); setTimeout(() => b.remove(), 700); }
   setTimeout(() => sfx('thunder', near), near > .5 ? 80 + Math.random() * 250 : 700 + Math.random() * 1500); haptic(near > .7 ? 1 : 0);
 }
-function stormTick(now = performance.now()) { if (!storming() || document.hidden || !rainEl?.classList.contains('on')) { stormT = 0; return; } if (!stormT) stormT = now + 2500 + Math.random() * 4000; else if (now >= stormT) { stormT = now + 6000 + Math.random() * 12000; stormBolt(); if (Math.random() < .3) setTimeout(stormBolt, 250 + Math.random() * 500); } }
+function stormTick(now = performance.now()) { if (!storming() || document.hidden || inGym() || !rainEl?.classList.contains('on')) { stormT = 0; return; } if (!stormT) stormT = now + 2500 + Math.random() * 4000; else if (now >= stormT) { stormT = now + 6000 + Math.random() * 12000; stormBolt(); if (Math.random() < .3) setTimeout(stormBolt, 250 + Math.random() * 500); } }
 setInterval(stormTick, 400);
 function weather() {
   if (S.wxT) return S.wxT === 'snow' ? 'cloud' : S.wxT === 'storm' ? 'rain' : S.wxT; if (realWx && Date.now() - realWx.at < 12 * 3600e3) return realWx.w;   /* v4.33: 새 날씨가 오기 전엔 무작위 날씨보다 마지막 실제 날씨 */ const blk = Math.floor(Date.now() / (3 * 3600e3)); let x = (blk * 2654435761) >>> 0; x ^= x >>> 13; x = Math.imul(x, 0x5bd1e995) >>> 0; x ^= x >>> 15; const r = (x % 1000) / 1000;
@@ -6408,10 +6410,19 @@ document.addEventListener('click', e => {
   let busy = false;
   $('#btnGym').onclick = async () => { if (busy || window.Gym?.isOpen?.()) return; busy = true; sfx('tap'); select(null);
     gymLoad.show('체육관 출근 중'); const t0 = Date.now();
-    try { await loadGymJs(); await Gym.prepare(); await new Promise(r => setTimeout(r, Math.max(0, 1500 - (Date.now() - t0)))); Gym.enter(); }
+    try { await loadGymJs(); await Gym.prepare(); await new Promise(r => setTimeout(r, Math.max(0, 3000 - (Date.now() - t0)))); Gym.enter(); }
     catch (e) { gymLoad.sub('체육관 문이 잠겨 있어요. 인터넷 연결을 확인하고 다시 눌러 주세요.'); await new Promise(r => setTimeout(r, 2200)); gymLoad.hide(); }
     busy = false; };
 }
+/*gym-hook2*/
+// 체육관에 들어가면 필드는 앱을 내린 것처럼 멈춘다: 포켓몬·날씨·알림창이 돌지 않고 필드 곡도 멈춤. 나오면 그동안의 친밀도·배부름을 앱이 꺼져 있던 것처럼 따라잡는다
+{ let inAt = 0; Object.defineProperty(GA, 'KANG', { get: () => KANG }); GA.inTyper = (...a) => inTyper(...a);
+  GA.gymIn = () => { inAt = Date.now(); document.body.classList.add('gymMode'); try { bgm.pos = bgmPos(); bgmSrcStop(); } catch (e) {} };
+  GA.gymOut = () => { document.body.classList.remove('gymMode'); const sec = inAt ? (Date.now() - inAt) / 1000 : 0; inAt = 0;
+    try { S.mons.forEach(m => offFr(m, sec)); } catch (e) {} save(); last = performance.now(); try { if (bgmOn && !bgmAway) bgmSrcStart(); } catch (e) {} notiSoon(1200); };
+  let arm = 0; $('#gymReset').onclick = () => { const b = $('#gymReset');
+    if (Date.now() - arm > 3000) { arm = Date.now(); b.textContent = '한 번 더 누르면 체육관이 지워져요'; setTimeout(() => { if (Date.now() - arm >= 3000) b.textContent = '체육관 초기화'; }, 3100); return; }
+    arm = 0; S.gym = null; save(); menuDots(); b.textContent = '체육관을 지웠어요'; setTimeout(() => { b.textContent = '체육관 초기화'; }, 1800); }; }
 // 운영자 모드·테스트 버튼 (이 기기에만 저장)
 { const de = document.documentElement, get = k => { try { return localStorage.getItem(k) === '1'; } catch (e) { return false; } }, put = (k, v) => { try { v ? localStorage.setItem(k, '1') : localStorage.removeItem(k); } catch (e) {} };
   const paint = () => { const op = get('pk-op'), t = op && get('pk-tests'); de.classList.toggle('op', op); de.classList.toggle('tests', t); $('#testSw').setAttribute('aria-checked', t); };
@@ -6455,7 +6466,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.23';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.24';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9508,7 +9519,7 @@ const frMaxQ = []; let frMaxT = 0, frMaxOpen = false;
 function frMaxHit(P, f0) { if (f0 < FR_MAX && (P.fr || 0) >= FR_MAX && !frMaxQ.includes(P.id)) { frMaxQ.push(P.id); clearTimeout(frMaxT); frMaxT = setTimeout(frMaxShow, 900); } }
 function frMaxShow() {
   if (frMaxOpen || !frMaxQ.length) return;
-  if (document.hidden || hatching || evolving) { clearTimeout(frMaxT); frMaxT = setTimeout(frMaxShow, 1500); return; }   // v4.83 경완: 메뉴·창이 열려 있어도 그 위로 뜬다 (부화·진화 연출 중에만 끝나길 기다림)
+  if (document.hidden || inGym() || hatching || evolving) { clearTimeout(frMaxT); frMaxT = setTimeout(frMaxShow, 1500); return; }   // v4.83 경완: 메뉴·창이 열려 있어도 그 위로 뜬다 (부화·진화 연출 중에만 끝나길 기다림)
   const P = boxOf(frMaxQ.shift()); if (!P) return frMaxShow();
   frMaxOpen = true; frMaxPre(P, () => frMaxWin(P));
 }
@@ -9614,7 +9625,7 @@ const rollGrade = () => { let r = Math.random(); for (let g = 1; g <= 5; g++) if
 const dayKey = (t = Date.now()) => { const d = new Date(t); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
 function today() { if (!S.today || S.today.d !== dayKey()) S.today = { d: dayKey(), walk: 0, eggs: 0 }; return S.today; }
 // 트레이너: 이름·성별(금·은·크리스탈의 주인공 그림)·등급(지금까지 달린 거리)
-const TR_OW = { m: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAABgCAYAAAAU0fKgAAACYUlEQVR4nO1YsZHCMBA8GAKXoNAhISVQgsughA8dUsKHlEAJhJRA6NAlONMH/IrzaU/ofxwwDDvDYMu61Uo6ne+8EoIQ2sjax3FY2basIYQ2XkLD7GU/ThnJutZYROQSmkzd2uuMEffjVOryILDM2tCS6L4bNirkeoQaKzAO517arpfh3Bclo0/b9TKOw2q2Btq47fi1HWAjct/ftusj68AUwCZNAcDigGQ4HO9G31/UWKxxCG2crqd4220j7vG77bZxup7SfWY8XU+pA65vu20ytM9Akm0jk457hjQX7wB5wDqsbcMlNJkT2Xa9iPQ0WlLW5hJYAya7SPBa8aAGbjwo4Wk8uIQmOREwHI40JmTxoAZV8aBknCmAiqrhf+G68nDuXVfG6NSV4QNYKCsV64M+M4fCOUfgwL/+6WfFeAAFdhul6/1thIrsaQGfePDA8vGglA9gazUJ3UamwvoFTmOVH2hCKCweJvzjGqkOm15VTNRkejCXQHe2p/KpI2Er9aLpUPdvT4QSrD7a6etd5BE4EkHhFU/hJR1WHVXApuDlR8XDpJNOdpAogaeAZmZL4B0Dih3xU3Dk17Tg0J3+WnAIpqBrgVK6b+uFLCo/S7ZKBytVLTWFRrYGmFcIbUxbWRGFquKBHaRIABLPYHG8ezyowafgUAqqhlbIciSdG3m5sjVOCpgKVnCwJCPtAo5yIqhMKNxs3St53CloApveMEOXQKvwjBbFO8aDT8HB8doFB4X9EKkTj+LrnW3lfpxmgcRi9l7QJf5+nPKPEJJ7Y/ZR1qsVrCr6VddOwy4Ynun2H+Nl5dP12W48AAAAAElFTkSuQmCC', f: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAABgCAYAAAAU0fKgAAAChklEQVR4nO1Yu5XbMBBc6l0RCFGCwisDIctwCSzFIUKWoVAlMEQJzuhAWmiwnAUpny+wHzc5CovP7G+AvUGIhBBXNl7KMtixzUAIcV3mST7ztRm/jXeJadpsMtjFYZzrAhTdsOTUbPJhEejCmCbRzUpOsszTYzw7JuDpJScJ4ywlp4fu+Y36jT9CiOv1x30NIa6/bj/rX/zGOa4PRKTCtRLTYxxPH3A3XBjT9LIbvnEjEZGL2hjGuVF4os5VfwwInSFhJqiUsgwfaJNu9JmvNQIqeiLObyc4Xveiousuu0bvCA2jhW3NacLITLELuxnIRG33fqNsislutHeYywdMGB80UUD7KaJx3qCiYbRs5I2JED64jXd3suowGhsn2sqzOmsi5USbOFX/1DWc2MTbUJeVqsvpxUjM8ywD8TfOa8q4KdleOT91pSyDW0zWkUgm9F7AG6nkREOpYY5pWt0wKjx7M8X81I0tsi4feIImXJgCWdf+/kf4wLviD78PdCGGEq99Nw/0ZE0aTCavxGkeaELFlOr47gNDUdgbmXEAljSlNEsqJSeXI7ph3MB/muTeTJbSGfyKiJlQyjJs3gAOdIoAkfQWucXUbGKg2wLbFfbgsI8LEScKzAT2xBN5433gvQ0OO/EQkfyJvBXG/7ThaE7XXuDIt66jqbzMUz0Vv5mcDQfkBOvMWBS68GyDsddsVB9YSEd8oeIW05FmoyuHbP4b8n18wORsOM6Gg5n2dsOhrzb3XihlqRzphdKK+0pjDQfjiS4fHOEClxzQH9/2NnARfJkPzoZjqijOhuM1uSdfbjgaH1h+VAQYGSvVBE0kXGhTWTfu/l/Z6xUsKjWDFhOzFXU4/hsxFxD0hqGbSAAAAABJRU5ErkJggg==' };
+const TR_OW = { m: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAADACAYAAABlPmF2AAAFmklEQVR42u1cPXDiRhT+lFyhzFwBV+ESd1wH3eJKSoe70IV0XOXQ4W5dJDPQQUdcQWdSnVM57oyKjKSZK6C6o8iMuc6uDJ1VZGZTiJUFBlsLEs7E75vRDGjF/r590vv0PgACgfDC0FR/cJTLiafKT8djpTrfqDZeSaVQzKdXljujKZDLCZVOfKM6A+saf65s6w7I0T+HSir17DJtagPCZuzJkTqjKQDgwHUj1/1mE8uVDeX+dAAA48Pixrsg6hKIj9xAfzbDlHcBAFPexfiwiPFhceFcfzbDR24AgIhzu4rrTl0AEIxxcXcnVh6McRG+NnYb4IaBarmASl9feUG/4qF3PkTTsiLXrSnOAgAgm89CO6hB2B2/kvnnyWgCANivtSPX/a1CB359e6//Uni/h9ntDG/vdZjmewDAP5N7ZNPfAQB650P89fWrlsg2ZIzDdZuQSxGGnHp5zSZufi24YQhhdwRjXDDGhc2YNLLgsBkLyoXdEdwwRKyecDKaoF/xgu82Y7i4+IyLi8+QDkoaorSFWDEfUTBacVQKtp84Ki3MStTRK4MxLupndrDfw8dSWWLPAwIA6mc2AKD90wFWfVepV7kDjHEAWLb0decTwTo3G9n9EggEAoFA/ADxA/8pfkB5BmRorloWK0HxHFQICqUZ6M9msVyzMUGRzmQWGjhwXTnaoPF0JqNEUERdAnHdqWO/1gY3DExvb1delM5k0LQsyGuj1K9kA/MQDQCQLwIjnyJa+DwnJxIhKBamVXZEItRwYoGJYIwLbhjiqvs4PL/qMhEOYGM1wjk/AAAoeV4QnocPWcYYh7A7iBohR74XTEYTmPoQ8IBBX0ejv7dQflK9QQkeTN3BZFRIlh+46jIhrn9cOMLLosIPKBkLY1wUfy6h5B2vLL/UW3B+u4TrNpMLzyUfUPKOMZjzhWbFw6XeehF+IDw7xA8QCAQCgUD8QLL8wHONJ8oPyGmXb8t3zQ+Ihv0lMX4gsg1UUik4zhekN2xom10g7u6E33jzQyR+4HQ8jpWg0N698+ua8m6QrLCqYckPJLEEmtuuiYFXRH72x1puYBMo+QH/3XEJ+7U2ZC7B8GaIcqmMyWiinLyg5AealqX1zofI5rPghoFsPgsAKOwVljkCLW4jfBSkrsodkCHa9x9cpXo3uhfI9ZasyFEuh3I9BdP0Z0Xb/z1y3RvlEZU8DweuG8SDp24TZbCAJ4jdFS/d7YJRh3HenuGkegMzlOSQeIB63amHc4bCJEVyRig7UD+zofdOAABetbERN7DVDMhkllA2xW6eiJbZkl2OmkAgEAgEIiheOUERhYQggQMJHEjgkJjAgRuGkJkRwI4FDpIP+DQ1Mfv7E+IWOCjtgqZloWlZgcBBjrhaLoSnPrloWMaDc0ezVuCAuDMo5uupmboTeLtlgcOlrsNp7cFp7T3KL4l3CeCnbxTzaUyLvg2k82lcju+TUVas4AVWChzm21RZXaFt2AnfJfvZEluF6Bt1YJfJCk/uCnqgJBAIBALxA8QP/C/4ARI4kMDhxQUOkfwANwxZYdDQOoGDKj8Q2RFdd+qo9HU0LT8S4ngIQEfOw6t8bhhoWlb8/ICkZWTku8wFcMPAwCsGHUxkGzLG0cIAXhXQe4uFXtXXHQy8olLIpnIv0EzdEU8KHDwPg/ly7dfaIkonlPyAnPZVSQryXF8xgUHZFR/DBAAMBg9khPx8DBP7tbbSLlB+HpD/sNCoDhYEDvPsGeU6tyIoQlkTO+cJiB8gEAgEAvEDr5AfIIFDUvwACRxI4LC1wKF3PkSj8YICh7DW4HUIHDDPJQEAaRPpTAZmxduJwCH4J4bisS9kGKV+QMsbwAvxBImG55PRZCFPQL4936XAYeHPLupndpBTsFOBwxJnsDwjWtIdeKpDpDUgEJTwL+TmOxU6aOQIAAAAAElFTkSuQmCC', f: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAADACAYAAABlPmF2AAAE00lEQVR42u1cIXTbSBD97jtganYHHZYrctiqaF2WhOWQDR3UhLlMhhFqw3RF9jEFXQ7ZsBKyzGLkmEmwRU2h2BywpZMU2dbKUnJt5r+n9yzvWju7M7PSfM8IYDAYz4ya6g+E0Glb+2xm1CqTVgidxuMFfftGmcd4vKBdAqbxSlUITfu9UNveAgihk653dvbT9Q5UVuFV3sEnkysAgOveR983BidoDE6i87BtMrnKLYSyChrGOVz3HssTDZPjD5gcf8DyRIPr3qNhnFfmBSSEjlAFmwZ60IcAAMO4wWxmFPKybL1KSWsh8noBrX9T3groUkYndqBldmrX3eiz4TjlrQCAaFae2SeamgSAaGomPntmP5x5eJRnhLqU4azgz33EV0SXEv7cj2YebytdBeEAvbOjRIfR7V1i8NJVEDfEz0MRX2YCQFI+MsBSjRBrPcOf++hadbiWD63bBADU6x0EwQ2sboBmq4nam8vc11baiEI9A8B79wKu5eOqZ+Oo9z2zTxW3Y5oKsRIA7f+2YMuHba8Gfns+K1X3mUJIuSDP7NNUCJoKQZ7ZJykXufW+1wMJABqPFwCA09PXAIDUeaWzT2xMW84ZDAaDwWB+gPmBF8IPpFGEH/ilED+wDsOz2h42tO3lBbqUZAeaEj/QrrswHKdWlhuSLiXiQmxCbPBc188tQBgFtzTg2s7mB/ptF3M3CkzLFeBvXWLuAi1te8ewzx9GuSuQCNE3CTF31dmRV0V2xLmb77vSw/PQDrYaoYL+VVaAPLOfW9J131JDtSgaTjEgFCew1uE7eWa/IobE60Q8wGDUTjR+hA0AeDObKV1baSsOB7+yhrC6f+GLtbK837oaerdDOI56eK7MkGTwAcwPMBgMBoPB/ADzA4/4AZWHk0r4gfUj2o/BDygL8KAPd/IDp6evw/+aaZen1cq2gRQ/gNIECFmSXQhzCPKG6EoqsLoBAODg8hqe2cfo9m5j37z8QG43NBynNrq9Q7PVhC4lmq1mNNOHr1/R0naTF3uvgOE4NQxAvbMj+HN/lS8AiU/LJRrur4V2V2UvaHcDdEf10rZ35a14MGpDuzhexWNTMzNlo+zsiQTeHR4SeR16d3iYSGJJHdWtQDxM9+d+OqGlVnV4DgBY55DAtuqRXTxF4kIiPB+PFzQVgsbjxV6h+T4SU0nXYTAYDAaDCQomKH5CgoILHKrwAi5w4AKHygoclPgBz+zj4PI6KnAIB+2dHT0qcChdAMNx0Ds7ghA62l0bB+fXT37jiuxACJ2kXBB5ncjq47aBsqnauMccByumLAhu8N69wFXPjjrEihtqZW9EiZVIFzl8hK2cuLC3OsIih6LUzL7S0nMkLWQaJT9UMhgMBoP5AeYHXjY/kAYXOHCBAxc4/JAFDnndkNI5I0UHLLoCtYPL67hxbSUyqihwAIDo1Q/PVuDweSiik/poIz9QKU+QeOkF8wPMDzAYDAaD+QHmB/63/AC4wKGCyCjBAXCBwza8vAKHcLZFixyUt01dSgpfjhjmEmzKG8hDVCh7gR1osK1kvsg+UBag9f0f/Dm8AHAGDLCRM8hL06gKQEDyJYhhyP723CmkXuUV+LRconG7Kmhpr70iLsyTvCAxfYS36fAVEU/BD2SqpkpmhMH4efEvgZyqh1J67jcAAAAASUVORK5CYII=' }; /*trow-frlg*/
 const TR_LV = [[0, '견습 트레이너'], [10, '초보 트레이너'], [30, '신참 트레이너'], [60, '숙련 트레이너'], [100, '베테랑 트레이너'], [160, '엘리트 트레이너'], [250, '에이스 트레이너'], [400, '체육관 관장'], [600, '챔피언'], [850, '사천왕'], [1025, '포켓몬 마스터']]   /* v3.64 경완: 사천왕을 챔피언 다음 단계로 */;   // 모은 도감 수
 const trOf = () => S.tr || (S.tr = { n: '', sex: 'm' });
 const TN = () => trOf().n || '트레이너';
@@ -9624,7 +9635,7 @@ let trUpT = 0;
 function trUpCheck() { const i = trLevel().i; if (S.trI == null) S.trI = trLevel(S.unlocked.size - 1).i;   /* 처음엔 방금 등록 전 등급을 기준으로 */ if (i > S.trI) { clearTimeout(trUpT); trUpT = setTimeout(trUpShow, 900); } }
 function trUpShow() {
   const L = trLevel(); if (S.trI == null || L.i <= S.trI) return;
-  if (document.hidden || hatching || evolving || frMaxOpen || notiOpen) { clearTimeout(trUpT); trUpT = setTimeout(trUpShow, 1500); return; }
+  if (document.hidden || inGym() || hatching || evolving || frMaxOpen || notiOpen) { clearTimeout(trUpT); trUpT = setTimeout(trUpShow, 1500); return; }
   S.trI = L.i; save(); frMaxOpen = true;
   const t = trOf();
   $('#frMax').classList.add('trup'); $('#frMaxT').textContent = '트레이너 등급 업!'; $('#frMax .win').setAttribute('aria-label', '트레이너 등급 업');
@@ -10514,7 +10525,7 @@ function newsMark() { try { const L = newsSeen(); if (!L.includes(NEWS_ID)) L.pu
 function newsDue() { try { return !newsSeen().includes(NEWS_ID); } catch (e) { return false; } }   // v7.44 경완: 업데이트 알림창 자동 표시 (한 번)
 function notiSoon(ms = 500) { clearTimeout(notiT); notiT = setTimeout(notiShow, ms); }
 function notiShow(force) {
-  if (notiOpen || document.hidden || (tutOn && !force)) return;   // v5.39 경완: 튜토리얼 중엔 튜토리얼이 부를 때만 (알이 먼저 받아지던 것)
+  if (notiOpen || document.hidden || inGym() || (tutOn && !force)) return;   // v5.39 경완: 튜토리얼 중엔 튜토리얼이 부를 때만 (알이 먼저 받아지던 것)
   if (hatching || evolving) { notiSoon(2000); return; }
   if (!$('#news').hidden) return; if (newsDue()) { newsShow(); return; }   /* v7.44 경완: 업데이트 알림창이 먼저, 닫으면 알 알림이 이어서 */
   const got = [...S.bag.filter(e => e.isNew && !e.nt), ...S.eggs.filter(e => e.nq && !e.nt)], rdy = S.eggs.filter(e => e.km >= e.need && !e.rn), evo = S.buds.filter(b => b.en === false && budReady(b));
@@ -11092,6 +11103,7 @@ const fieldCovered = () => document.body.classList.contains('gymMode') || narrow
 function frame(now) {
   requestAnimationFrame(frame);
   const cov = fieldCovered(); if (cov !== fCov) { fCov = cov; document.body.classList.toggle('fcov', cov); }
+  if (inGym()) { last = now; return; }   // 체육관에 있는 동안 필드는 멈춤
   if (now - fLast < (cov ? 100 : fGap()) && !drag && !petM) return; fLast = now;
   const t0 = performance.now(); try { frameIn(now, cov); } catch (e) { frameErr(e); } if (!cov) fCost += (performance.now() - t0 - fCost) * .05;
 }
@@ -11221,8 +11233,8 @@ function introCss() { if ($('#introCss')) return; const st = document.createElem
 #intro .in-stage{position:relative;flex:1;width:100%;min-height:0;display:grid;place-items:center}
 #intro .in-pic{grid-area:1/1;image-rendering:pixelated;opacity:0;transition:opacity .45s steps(4,end),transform .9s steps(6,end)}#intro .in-pic.on{opacity:1}
 #intro .kang{width:152px;height:232px}#intro .in-mon{position:relative;background-repeat:no-repeat}#intro .in-mon .zz{position:absolute;right:-8px;top:8px;font-size:20px;color:#7a8ab8;animation:inZz 2.4s steps(6,end) infinite}#intro .in-mon .z2{font-size:14px;animation-delay:1.2s}@keyframes inZz{0%{transform:translate(0,10px);opacity:0}25%{opacity:1}100%{transform:translate(14px,-26px);opacity:0}}
-#intro .in-tr{width:128px;height:128px;background-repeat:no-repeat;background-size:128px 768px;background-position:0 0}
-#intro .in-pic.shrink{transform:scale(.18)}#intro .in-two{grid-area:1/1;display:flex;gap:28px;opacity:0;transition:opacity .45s steps(4,end)}#intro .in-two.on{opacity:1}#intro .in-two i{width:96px;height:96px;background-repeat:no-repeat;background-size:96px 576px;image-rendering:pixelated;opacity:.45;transition:opacity .15s}#intro .in-two i.sel{opacity:1}
+#intro .in-tr{width:192px;height:192px;background-repeat:no-repeat;background-size:192px 1152px;background-position:0 0}
+#intro .in-pic.shrink{transform:scale(.18)}#intro .in-two{grid-area:1/1;display:flex;gap:28px;opacity:0;transition:opacity .45s steps(4,end)}#intro .in-two.on{opacity:1}#intro .in-two i{width:128px;height:128px;background-repeat:no-repeat;background-size:128px 768px;image-rendering:pixelated;opacity:.45;transition:opacity .15s}#intro .in-two i.sel{opacity:1}
 #intro .in-box{box-sizing:border-box;width:min(560px,calc(100% - 24px));height:142px;overflow:hidden;flex:none;margin:0 12px calc(14px + env(safe-area-inset-bottom));padding:16px 22px 20px;font-size:18px;line-height:1.65;white-space:pre-wrap;position:relative}
 #intro .cur,#tut .cur{position:absolute;right:18px;bottom:10px;font-size:13px;animation:inBlink .8s steps(1) infinite}@keyframes inBlink{50%{opacity:0}}
 #intro .in-menu{position:absolute;right:max(12px,calc(50% - 268px));bottom:calc(148px + env(safe-area-inset-bottom));display:grid;gap:2px;padding:12px 18px 12px 12px;font-size:18px;min-width:132px;box-sizing:border-box}

@@ -128,11 +128,24 @@ body.gymMode{overflow:hidden}
 .gy-sum .tyi{width:18px;height:18px;vertical-align:-4px}
 
 /* 개장 축하 */
-.gy-open{text-align:center}
-.gy-open .gy-open-ic{display:block;margin:4px auto 10px;width:84px;height:72px}
-.gy-open .gy-open-ic svg{width:84px;height:72px}
 .gy-fx{position:absolute;inset:0;pointer-events:none;z-index:9;overflow:hidden}
 .gy-fx i{position:absolute;top:-12px;width:8px;height:8px;animation:gyConf 2.2s linear forwards}
 @keyframes gyConf{to{transform:translate(var(--dx),110vh) rotate(720deg)}}
 @keyframes gyPop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.05);opacity:1}100%{transform:scale(1)}}
 .gy-pop .win{animation:gyPop .28s ease-out}
+/* 강박사 안내: 어두운 체육관에 불이 켜지고(.lit) 강박사가 옆에서 들어와(.in) 말한다. 화면을 누르면 다음 줄 */
+.gy-kang{position:absolute;inset:0;z-index:12;display:flex;flex-direction:column;justify-content:flex-end;-webkit-user-select:none;user-select:none;touch-action:manipulation;transition:opacity .45s steps(4,end)}
+.gy-kang.bye{opacity:0;pointer-events:none}
+.gy-k-veil{position:absolute;inset:0;background:#000;opacity:var(--veil,1);pointer-events:none}
+.gy-kang.lit .gy-k-veil{opacity:0;transition:opacity .5s steps(4,end)}
+.gy-k-pic{position:absolute;left:50%;bottom:calc(var(--sab,env(safe-area-inset-bottom)) + 150px);width:114px;height:174px;margin-left:-57px;image-rendering:pixelated;
+  transform:translateX(calc(50vw + 80px));transition:transform .6s steps(6,end);filter:drop-shadow(0 6px 0 rgba(0,0,0,.25))}
+.gy-kang.in .gy-k-pic{transform:none}
+.gy-k-skip{position:absolute;z-index:2;bottom:calc(var(--sab,env(safe-area-inset-bottom)) + 152px);right:max(12px,calc(50% - 280px));font:inherit;font-size:13px;color:#c8cad8;background:rgba(0,0,0,.35);border:0;padding:8px 10px;cursor:pointer}
+.gy-k-box{position:relative;box-sizing:border-box;width:min(560px,calc(100% - 24px));height:132px;margin:0 auto calc(var(--sab,env(safe-area-inset-bottom)) + 14px);padding:14px 22px 18px;font-size:17px;line-height:1.6;white-space:pre-wrap;overflow:hidden;
+  opacity:0;transition:opacity .3s steps(3,end)}
+.gy-kang.in .gy-k-box{opacity:1}
+.gy-k-nm{display:block;font-size:13px;color:var(--dim);line-height:1.2;margin-bottom:4px}
+.gy-k-cur{position:absolute;right:18px;bottom:10px;font-size:13px;animation:gyBlink .8s steps(1) infinite}
+@keyframes gyBlink{50%{opacity:0}}
+#gym.pre .gy-top,#gym.pre .gy-dlg{visibility:hidden}   /* 처음 안내 중엔 빈 이름표·대화창을 숨김 */

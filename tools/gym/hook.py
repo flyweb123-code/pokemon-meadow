@@ -9,10 +9,10 @@ html:not(.op) #btnGym,html:not(.gym-on) #btnGym,body.mapEdit #btnGym{display:non
 #gymLoad{position:fixed;inset:0;z-index:9800;display:grid;place-items:center;background:#181a2c;color:#f8f8f8;opacity:0;transition:opacity .35s;pointer-events:none}#gymLoad.on{opacity:1;pointer-events:auto}#gymLoad[hidden]{display:none}
 #gymLoad .gl-box{display:flex;flex-direction:column;align-items:center;gap:18px;width:min(300px,80vw)}
 #gymLoad .gl-road{position:relative;width:100%;height:76px;border-bottom:4px solid #46508a;background:repeating-linear-gradient(90deg,transparent 0 14px,rgba(255,255,255,.08) 14px 28px) bottom/100% 8px no-repeat}
-#gymLoad .gl-ow{position:absolute;bottom:0;left:0;width:64px;height:64px;background:0 -128px/64px 384px no-repeat;image-rendering:pixelated;transform:scaleX(-1);animation:glStep .36s steps(1,end) infinite,glWalk 2.4s linear infinite}
+#gymLoad .gl-ow{position:absolute;bottom:-18px;left:0;width:96px;height:96px;background:0 -192px/96px 576px no-repeat;image-rendering:pixelated;transform:scaleX(-1);animation:glStep .36s steps(1,end) infinite,glWalk 3s linear infinite}
 #gymLoad .gl-gym{position:absolute;right:0;bottom:0;line-height:0}#gymLoad .gl-gym svg{width:72px;height:63px}
-#gymLoad.out .gl-ow{transform:none;animation:glStep .36s steps(1,end) infinite,glWalkB 2.4s linear infinite}
-@keyframes glStep{50%{background-position:0 -320px}}@keyframes glWalk{from{left:-4px}to{left:calc(100% - 120px)}}@keyframes glWalkB{from{left:calc(100% - 120px)}to{left:-4px}}
+#gymLoad.out .gl-ow{transform:none;animation:glStep .36s steps(1,end) infinite,glWalkB 3s linear infinite}
+@keyframes glStep{50%{background-position:0 -480px}}@keyframes glWalk{from{left:-4px}to{left:calc(100% - 120px)}}@keyframes glWalkB{from{left:calc(100% - 120px)}to{left:-4px}}
 #gymLoad .gl-t{font-size:18px;font-weight:700;letter-spacing:.5px}#gymLoad .gl-t i{display:inline-block;width:1.4em;text-align:left;font-style:normal}
 #gymLoad .gl-s{font-size:13px;color:#a8acd0;min-height:1.4em;text-align:center}
 @media (max-width: 760px), (max-height: 500px) and (orientation: landscape) {
@@ -50,7 +50,7 @@ JS = MARK + r'''
   let busy = false;
   $('#btnGym').onclick = async () => { if (busy || window.Gym?.isOpen?.()) return; busy = true; sfx('tap'); select(null);
     gymLoad.show('체육관 출근 중'); const t0 = Date.now();
-    try { await loadGymJs(); await Gym.prepare(); await new Promise(r => setTimeout(r, Math.max(0, 1500 - (Date.now() - t0)))); Gym.enter(); }
+    try { await loadGymJs(); await Gym.prepare(); await new Promise(r => setTimeout(r, Math.max(0, 3000 - (Date.now() - t0)))); Gym.enter(); }
     catch (e) { gymLoad.sub('체육관 문이 잠겨 있어요. 인터넷 연결을 확인하고 다시 눌러 주세요.'); await new Promise(r => setTimeout(r, 2200)); gymLoad.hide(); }
     busy = false; };
 }
@@ -85,4 +85,42 @@ def patch(path):
     s = s[:k] + JS.lstrip('\n') + s[k:]
     open(path, 'w', encoding='utf-8').write(s); print(path, 'ok')
 
-for p in sys.argv[1:]: patch(p)
+MARK2 = '/*gym-hook2*/'
+# 2단계 훅 (2026-10-27 경완): 체육관에 있는 동안 키우기 게임은 멈춘다(앱을 내린 것처럼), 운영자 체육관 초기화
+JS2 = MARK2 + r"""
+// 체육관에 들어가면 필드는 앱을 내린 것처럼 멈춘다: 포켓몬·날씨·알림창이 돌지 않고 필드 곡도 멈춤. 나오면 그동안의 친밀도·배부름을 앱이 꺼져 있던 것처럼 따라잡는다
+{ let inAt = 0; Object.defineProperty(GA, 'KANG', { get: () => KANG }); GA.inTyper = (...a) => inTyper(...a);
+  GA.gymIn = () => { inAt = Date.now(); document.body.classList.add('gymMode'); try { bgm.pos = bgmPos(); bgmSrcStop(); } catch (e) {} };
+  GA.gymOut = () => { document.body.classList.remove('gymMode'); const sec = inAt ? (Date.now() - inAt) / 1000 : 0; inAt = 0;
+    try { S.mons.forEach(m => offFr(m, sec)); } catch (e) {} save(); last = performance.now(); try { if (bgmOn && !bgmAway) bgmSrcStart(); } catch (e) {} notiSoon(1200); };
+  let arm = 0; $('#gymReset').onclick = () => { const b = $('#gymReset');
+    if (Date.now() - arm > 3000) { arm = Date.now(); b.textContent = '한 번 더 누르면 체육관이 지워져요'; setTimeout(() => { if (Date.now() - arm >= 3000) b.textContent = '체육관 초기화'; }, 3100); return; }
+    arm = 0; S.gym = null; save(); menuDots(); b.textContent = '체육관을 지웠어요'; setTimeout(() => { b.textContent = '체육관 초기화'; }, 1800); }; }
+"""
+
+def patch2(path):
+    s = open(path, encoding='utf-8').read()
+    if MARK2 in s:
+        print(path, 'already2'); return
+    def sub1(old, new, where):
+        nonlocal s
+        assert s.count(old) == 1, (path, where, s.count(old))
+        s = s.replace(old, new, 1)
+    sub1('let bgmOn = VOL.bgm > 0;', "const inGym = () => document.body.classList.contains('gymMode');   " + MARK2 + "\nlet bgmOn = VOL.bgm > 0;", 'ingym')
+    sub1('if (bgm.src || !bgm.buf) return;', 'if (bgm.src || !bgm.buf || (inGym() && !bgm.preview)) return;', 'bgm')
+    sub1("const cov = fieldCovered(); if (cov !== fCov) { fCov = cov; document.body.classList.toggle('fcov', cov); }", "const cov = fieldCovered(); if (cov !== fCov) { fCov = cov; document.body.classList.toggle('fcov', cov); }\n  if (inGym()) { last = now; return; }   // 체육관에 있는 동안 필드는 멈춤", 'frame')
+    sub1('hidAt = 0; S.mons.forEach(m => offFr(m, sec)); save();', 'hidAt = 0; if (!inGym()) S.mons.forEach(m => offFr(m, sec)); save();', 'vis')
+    sub1('if (document.hidden || hatching || evolving) { clearTimeout(frMaxT);', 'if (document.hidden || inGym() || hatching || evolving) { clearTimeout(frMaxT);', 'frmax')
+    sub1('if (document.hidden || hatching || evolving || frMaxOpen || notiOpen', 'if (document.hidden || inGym() || hatching || evolving || frMaxOpen || notiOpen', 'trup')
+    sub1('if (notiOpen || document.hidden || (tutOn && !force)) return;', 'if (notiOpen || document.hidden || inGym() || (tutOn && !force)) return;', 'noti')
+    sub1('if (!storming() || document.hidden ||', 'if (!storming() || document.hidden || inGym() ||', 'storm')
+    a = '<div class="op-row"><span>베타 판 쓰기 (이 기기만)</span>'
+    i = s.index(a); j = s.index('</div>', i) + 6
+    s = s[:j] + '\n        <div class="set-btns one"><button class="lk-btn main" id="gymReset">체육관 초기화</button></div>' + s[j:]
+    for a, b in [("glWalk 2.4s linear infinite}", "glWalk 3s linear infinite}"), ("glWalkB 2.4s linear infinite}", "glWalkB 3s linear infinite}"), ("Math.max(0, 1500 - (Date.now() - t0))", "Math.max(0, 3000 - (Date.now() - t0))")]:
+        if a in s: sub1(a, b, a[:10])
+    k = s.index('// 운영자 모드·테스트 버튼 (이 기기에만 저장)')
+    s = s[:k] + JS2.lstrip('\n') + s[k:]
+    open(path, 'w', encoding='utf-8').write(s); print(path, 'ok2')
+
+for p in sys.argv[1:]: patch(p); patch2(p)
