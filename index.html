@@ -294,7 +294,7 @@ body{background:var(--forest);color:var(--win-ink);font-family:var(--px);font-si
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
 button{font:inherit;color:inherit;cursor:pointer;background:transparent;border:0;padding:0}
-button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}
+button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}@media (hover:none) and (pointer:coarse){button:focus-visible{outline:none}}
 
 .app{position:relative;height:100%;overflow:hidden}
 .stage-wrap{position:absolute;inset:0;overflow:hidden;background:radial-gradient(ellipse at 50% 60%,#3d6f35,var(--forest) 70%);touch-action:manipulation}
@@ -1591,7 +1591,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
 </div>
 <div class="sheet" id="ibag" hidden>
   <div class="win shopwin bagwin" role="dialog" aria-label="가방">
-    <div class="sheet-head"><h3>가방</h3><span class="ibag-hb"><button class="opt" id="ibagMulti">여러 개 선택</button><button class="opt" id="ibagX">닫기</button></span></div>
+    <div class="sheet-head"><h3>가방</h3><span class="ibag-hb"><button class="opt" id="ibagMulti">선택</button><button class="opt" id="ibagX">닫기</button></span></div>
     <div class="bag-body" id="ibagBody"></div>
     <div class="shop-bar" id="ibagBar" hidden></div><p class="shop-msg" id="ibagMsg"></p>
     <div class="runtabs shoptabs bagtabs" id="ibagTabs" role="tablist"><button class="runtab" role="tab" data-bt="item">아이템</button><button class="runtab" role="tab" data-bt="tool">도구</button><button class="runtab" role="tab" data-bt="field">필드</button></div>
@@ -6354,7 +6354,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.05';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.06';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6538,8 +6538,10 @@ function fpInfo(k) { if (typeof k !== 'string') return null;
 const fbagList = () => { const F = S.fbag || {}, T = S.fbagT || {}; return Object.keys(F).filter(k => F[k] > 0 && fpInfo(k)).sort((a, b) => (T[b] || 0) - (T[a] || 0)).map(k => [k, fpInfo(k).n, fpInfo(k).src]); };   // 최근에 넣은 것 먼저
 function fbagAdd(k, n = 1) { const F = S.fbag || (S.fbag = {}), T = S.fbagT || (S.fbagT = {}); F[k] = (F[k] || 0) + n; if (F[k] <= 0) { delete F[k]; delete T[k]; } else if (n > 0) T[k] = Date.now(); save(); }
 function renderFBag() { const F = S.fbag || {}, L = fbagList(); if (ibagFSel && !(F[ibagFSel] > 0)) ibagFSel = null;
-  document.querySelectorAll('#ibagTabs [data-bt]').forEach(b => b.setAttribute('aria-selected', b.dataset.bt === 'field')); $('#ibagMulti').hidden = true; ibagEl.classList.remove('ibag-multi');
-  $('#ibagBody').innerHTML = L.length ? '<div class="shop-inv">' + L.map(([k, n, src]) => `<button class="vin itm" data-fk="${esc(k)}" aria-current="${ibagFSel === k}"><span class="vpic"><img class="fpth" src="${src}" alt=""></span><i class="icnt">${F[k]}</i><span class="vname">${n}</span></button>`).join('') + '</div>' : '<p class="bag-none">가방에 필드 소품이 없어요.<br>맵 편집에서 필드의 소품을 빼면 여기로 들어와요.</p>';
+  document.querySelectorAll('#ibagTabs [data-bt]').forEach(b => b.setAttribute('aria-selected', b.dataset.bt === 'field')); const mul = ibagMul && !mapEdit; ibagEl.classList.toggle('ibag-multi', mul); { const b = $('#ibagMulti'); b.hidden = !L.length || mapEdit; b.setAttribute('aria-pressed', mul); b.textContent = mul ? '선택 끝' : '선택'; }   /* v10.06 경완: 가방 필드 탭에도 선택 (맵 편집 중엔 고르면 바로 놓기라 없음) */
+  $('#ibagBody').innerHTML = L.length ? '<div class="shop-inv">' + L.map(([k, n, src]) => `<button class="vin itm" data-fk="${esc(k)}" aria-current="${mul ? ibagPick.has(k) : ibagFSel === k}">${mul ? '<i class="ichk"></i>' : ''}<span class="vpic"><img class="fpth" src="${src}" alt=""></span><i class="icnt">${F[k]}</i><span class="vname">${n}</span></button>`).join('') + '</div>' : '<p class="bag-none">가방에 필드 소품이 없어요.<br>맵 편집에서 필드의 소품을 빼면 여기로 들어와요.</p>';
+  if (mul) { for (const k of [...ibagPick]) if (!(F[k] > 0)) ibagPick.delete(k); const bar = $('#ibagBar'), T2 = L.filter(([k]) => ibagPick.has(k)); bar.hidden = false;
+    bar.innerHTML = `<div class="sb-name"><b>${T2.length ? `${T2.length}종 ${T2.reduce((a, [k]) => a + F[k], 0)}개 골랐어요` : '버릴 것을 골라 주세요'}</b><span><button class="opt" data-all>${T2.length === L.length && L.length ? '모두 풀기' : '모두 고르기'}</button></span></div><button class="lk-btn warn" data-toss${T2.length ? '' : ' disabled'}>버리기</button>`; return; }
   const bar = $('#ibagBar'), o = L.find(([k]) => k === ibagFSel); bar.hidden = !o; if (!o) return;
   bar.innerHTML = `<img class="sb-pic fpth" src="${o[2]}" alt=""><div class="sb-name"><b>${esc(o[1])} ×${F[o[0]]}</b><span>${esc(fpInfo(o[0])?.d ? fpInfo(o[0]).d + ' ' : '')}맵 편집에서 필드에 놓을 수 있어요.</span></div>` + (mapEdit ? '' : '<button class="lk-btn main" data-place>놓으러 가기</button>'); }
 const bagOpenField = () => tabTo(ibagEl, () => { ibagEl.hidden = false; ibagFOnly = true; ibagTab = 'field'; ibagFSel = null; ibagMul = false; ibagPick.clear(); $('#ibagMsg').textContent = ''; renderIBag(); });
@@ -6554,7 +6556,7 @@ function renderIBag() {
   document.querySelectorAll('#ibagTabs [data-bt]').forEach(b => { b.setAttribute('aria-selected', b.dataset.bt === ibagTab); const on = itemNewK(b.dataset.bt).length > 0, d = b.querySelector('.dot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새로 생김"></i>'); else if (!on && d) d.remove(); });
   const T = L.filter(o => o.k === ibagTab);
   $('#ibagBody').innerHTML = T.length ? sec(ibagTab, '').replace('<h4 class="bag-h"></h4>', '') : L.length ? `<p class="bag-none">${ibagTab === 'item' ? '가진 아이템이 없어요' : '가진 도구가 없어요'}.<br>상점에서 살 수 있어요.</p><button class="lk-btn main bag-shop" data-shop>상점 가기</button>` : `<p class="bag-none">아직 가진 도구가 없어요.<br>상점에서 살 수 있어요.</p><button class="lk-btn main bag-shop" data-shop>상점 가기</button>`;
-  ibagEl.classList.toggle('ibag-multi', ibagMul); $('#ibagMulti').setAttribute('aria-pressed', ibagMul); $('#ibagMulti').textContent = ibagMul ? '선택 끝' : '여러 개 선택'; $('#ibagMulti').hidden = !L.length;
+  ibagEl.classList.toggle('ibag-multi', ibagMul); $('#ibagMulti').setAttribute('aria-pressed', ibagMul); $('#ibagMulti').textContent = ibagMul ? '선택 끝' : '선택'; $('#ibagMulti').hidden = !L.length;
   if (ibagMul) { for (const k of [...ibagPick]) if (!(I[k] > 0) || ITEM[k].k !== ibagTab) ibagPick.delete(k); const bar = $('#ibagBar'), T2 = T.filter(o => ibagPick.has(o.id)); bar.hidden = false;
     bar.innerHTML = `<div class="sb-name"><b>${T2.length ? `${T2.length}종 ${T2.reduce((a, o) => a + I[o.id], 0)}개 골랐어요` : '버릴 것을 골라 주세요'}</b><span><button class="opt" data-all>${T2.length === T.length && T.length ? '모두 풀기' : '모두 고르기'}</button></span></div><button class="lk-btn warn" data-toss${T2.length ? '' : ' disabled'}>버리기</button>`; return; }
   const o = ITEM[ibagSel], bar = $('#ibagBar'); bar.hidden = !o; if (!o) return; const left = o.k === 'item' ? fxLeft(o.id) : 0;
@@ -6569,13 +6571,14 @@ function ibagAsk(o) {
     $('#ibagMsg').innerHTML = `${J({ name: o.n }, '을/를')} 썼다! ${Math.ceil(fxLeft(o.id) / 60e3)}분 동안 효과가 있어요.`; log(`${J({ name: o.n }, '을/를')} 썼다.`, [], true); ibagSel = null; save(); renderIBag(); };   /* v9.43 경완: 쓰면 아래 박스는 닫힘 */
 }
 function ibagToss(ids) {   /* ids 하나면 개수 고르기, 여럿이면 고른 종류를 모두 버림 */
-  const I = itemsOf(), el = $('#itemPop'), one = ids.length === 1 ? ITEM[ids[0]] : null; let n = one ? 1 : 0; const tot = ids.reduce((a, k) => a + (I[k] || 0), 0);
-  const draw = () => { el.innerHTML = `<div class="win ipwin bag-ask" role="dialog" aria-label="버리기">${one ? `<img src="${ITEM_ART[one.a]}" alt=""><p>${J({ name: one.n }, '을/를')} 몇 개 버릴까요?</p><div class="bag-cnt"><button class="lk-btn" data-m>−</button><b>${n}</b><button class="lk-btn" data-p>+</button><button class="opt" data-mx>전부</button></div><span>가진 개수 ${I[one.id]}</span>` : `<p>고른 ${ids.length}종 ${tot}개를 버릴까요?</p><span>${ids.map(k => ITEM[k].n).join(', ')}</span>`}<span>버린 건 되돌릴 수 없어요</span><div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn warn" data-yes>버리기</button></div></div>`; };
+  const fld = ibagTab === 'field', FN = fld ? Object.fromEntries(fbagList().map(([k, n, src]) => [k, { id: k, n, src }])) : null, IT = fld ? FN : ITEM, I = fld ? { ...(S.fbag || {}) } : itemsOf(), el = $('#itemPop'), one = ids.length === 1 ? IT[ids[0]] : null;   /* v10.06: 필드 탭(가방 필드 소품)도 같은 창으로 버림 */ let n = one ? 1 : 0; const tot = ids.reduce((a, k) => a + (I[k] || 0), 0);
+  const draw = () => { el.innerHTML = `<div class="win ipwin bag-ask" role="dialog" aria-label="버리기">${one ? `<img ${fld ? 'class="fpth" ' : ''}src="${fld ? one.src : ITEM_ART[one.a]}" alt=""><p>${J({ name: one.n }, '을/를')} 몇 개 버릴까요?</p><div class="bag-cnt"><button class="lk-btn" data-m>−</button><b>${n}</b><button class="lk-btn" data-p>+</button><button class="opt" data-mx>전부</button></div><span>가진 개수 ${I[one.id]}</span>` : `<p>고른 ${ids.length}종 ${tot}개를 버릴까요?</p><span>${ids.map(k => IT[k].n).join(', ')}</span>`}<span>버린 건 되돌릴 수 없어요</span><div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn warn" data-yes>버리기</button></div></div>`; };
   draw(); el.hidden = false; sfx('open');
   el.onclick = e => { if (e.target === el || e.target.closest('[data-no]')) { el.hidden = true; return; }
     if (one && e.target.closest('[data-m],[data-p],[data-mx]')) { n = e.target.closest('[data-mx]') ? I[one.id] : Math.max(1, Math.min(I[one.id], n + (e.target.closest('[data-p]') ? 1 : -1))); draw(); return; }
     if (!e.target.closest('[data-yes]')) return; el.hidden = true; let c = 0;
-    for (const k of ids) { const d = one ? Math.min(n, I[k] || 0) : (I[k] || 0); if (!d) continue; I[k] -= d; c += d; if (!I[k]) delete I[k]; }
+    for (const k of ids) { const d = one ? Math.min(n, I[k] || 0) : (I[k] || 0); if (!d) continue; I[k] -= d; c += d; if (!I[k]) delete I[k]; if (fld) fbagAdd(k, -d); }
+    if (fld && c && ibagFSel && !(S.fbag?.[ibagFSel] > 0)) ibagFSel = null;
     if (!c) return; sfx('tap'); ibagPick.clear(); if (!(I[ibagSel] > 0)) ibagSel = null;
     $('#ibagMsg').textContent = one ? `${one.n} ${c}개를 버렸어요.` : `${ids.length}종 ${c}개를 버렸어요.`; save(); renderIBag(); };
 }
@@ -6706,14 +6709,24 @@ function meRedraw(v) { try { window.__studio?.onProps?.(); } catch (e) {} seaRed
 $('#ibagX').onclick = () => { ibagEl.hidden = true; };
 ibagEl.addEventListener('click', e => {
   if (e.target.closest('[data-shop]')) { ibagEl.hidden = true; $('#openShop').click(); return; }
-  { const f = e.target.closest('[data-fk]'); if (f) { sfx('tap'); if (mapEdit) { ibagEl.hidden = true; mePick = f.dataset.fk; meRender(); return; }   /* 편집 중엔 고르면 바로 아래 줄에서 골라 둔 상태로 */ ibagFSel = ibagFSel === f.dataset.fk ? null : f.dataset.fk; renderIBag(); return; } }
+  { const f = e.target.closest('[data-fk]'); if (f) { sfx('tap'); if (mapEdit) { ibagEl.hidden = true; mePick = f.dataset.fk; meRender(); return; }   /* 편집 중엔 고르면 바로 아래 줄에서 골라 둔 상태로 */ if (ibagMul) { const k = f.dataset.fk; ibagPick.has(k) ? ibagPick.delete(k) : ibagPick.add(k); $('#ibagMsg').textContent = ''; renderIBag(); return; } ibagFSel = ibagFSel === f.dataset.fk ? null : f.dataset.fk; renderIBag(); return; } }
   if (e.target.closest('#ibagBar [data-place]')) { const k = ibagFSel; ibagEl.hidden = true; mapEditSet(true); mePick = k; meRender(); return; }
-  if (e.target.closest('#ibagMulti')) { ibagMul = !ibagMul; ibagPick.clear(); ibagSel = null; $('#ibagMsg').textContent = ''; renderIBag(); return; }
+  if (e.target.closest('#ibagMulti')) { ibagMul = !ibagMul; ibagPick.clear(); ibagSel = null; ibagFSel = null; $('#ibagMsg').textContent = ''; renderIBag(); return; }
   const v = e.target.closest('[data-it]'); if (v) { const k = v.dataset.it; ibagFresh.delete(k);   /* v7.56 경완: 한 번 누르면 빨간 점 사라짐 */ if (ibagMul) ibagPick.has(k) ? ibagPick.delete(k) : ibagPick.add(k); else ibagSel = ibagSel === k ? null : k; $('#ibagMsg').textContent = ''; renderIBag(); return; }
+  if (e.target.closest('#ibagBar [data-all]') && ibagTab === 'field') { const K = fbagList().map(([k]) => k); if (K.every(k => ibagPick.has(k))) ibagPick.clear(); else K.forEach(k => ibagPick.add(k)); renderIBag(); return; }
   if (e.target.closest('#ibagBar [data-all]')) { const I = itemsOf(), T = ITEMS.filter(o => o.k === ibagTab && I[o.id] > 0); if (T.every(o => ibagPick.has(o.id))) ibagPick.clear(); else T.forEach(o => ibagPick.add(o.id)); renderIBag(); return; }
   if (e.target.closest('#ibagBar [data-toss]')) { const ids = ibagMul ? [...ibagPick] : ibagSel ? [ibagSel] : []; if (ids.length) ibagToss(ids); return; }
   if (e.target.closest('#ibagBar [data-use]') && ITEM[ibagSel]) ibagAsk(ITEM[ibagSel]);
 });
+// v10.06 경완: 가방 칸을 꾹 누르면 선택 모드로 들어가며 그 칸이 골라진다 (뗀 뒤 오는 click 은 삼킴)
+{ let lpT = 0, lp0 = null, lpEat = false;
+  const lpOff = () => { clearTimeout(lpT); lpT = 0; };
+  ibagEl.addEventListener('pointerdown', e => { const c = e.target.closest('#ibagBody [data-it],#ibagBody [data-fk]'); lpOff(); lpEat = false; if (!c || ibagMul || mapEdit) return; lp0 = [e.clientX, e.clientY];
+    lpT = setTimeout(() => { lpT = 0; ibagMul = true; ibagPick.clear(); ibagSel = null; ibagFSel = null; const k = c.dataset.it || c.dataset.fk; ibagFresh.delete(k); ibagPick.add(k); lpEat = true; $('#ibagMsg').textContent = ''; haptic(1); sfx('tap'); renderIBag(); }, 450); });
+  ibagEl.addEventListener('pointermove', e => { if (lpT && lp0 && Math.hypot(e.clientX - lp0[0], e.clientY - lp0[1]) > 10) lpOff(); });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(t => ibagEl.addEventListener(t, lpOff));
+  ibagEl.addEventListener('contextmenu', e => { if (e.target.closest('#ibagBody [data-it],#ibagBody [data-fk]')) e.preventDefault(); });
+  ibagEl.addEventListener('click', e => { if (lpEat) { lpEat = false; if (e.target.closest('#ibagBody')) { e.stopImmediatePropagation(); e.preventDefault(); } } }, true); }
 function itemPop(P) {
   const L = itemEvos(P); if (!L.length) return; const I = itemsOf(), el = $('#itemPop');
   el.innerHTML = `<div class="win ipwin" role="dialog" aria-label="도구 쓰기"><div class="sheet-head"><h3>도구 쓰기</h3><button class="opt" data-x>닫기</button></div>`
