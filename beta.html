@@ -153,7 +153,7 @@ body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop
 #evoFull .ef-card{color:var(--win-ink)}
 #evoFull .ef-ok.rise{animation:efokin .9s cubic-bezier(.33,0,.2,1)}@keyframes efokin{0%{max-height:0;padding-block:0;border-width:0 3px;margin-top:-10px;opacity:0;transform:translateY(8px)}55%{opacity:0}100%{max-height:60px;opacity:1;transform:none}}
 #evoFull .ef-bottom.gone{opacity:0;transition:opacity .25s;pointer-events:none}#dexPop.evo{z-index:7100;background:rgba(5,6,14,.45)}
-#evoFull .ef-ok{width:100%;overflow:hidden;display:block;font:inherit;font-size:16px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:11px 16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35),0 0 0 2px var(--inner);cursor:pointer}#evoFull .ef-ok[hidden]{display:none}
+#evoFull .ef-ok{width:100%;overflow:hidden;display:block;font:inherit;font-size:16px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:11px 16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35),0 0 0 2px var(--inner);cursor:pointer}#evoFull .ef-ok[hidden]{display:none}#evoFull .ef-ok{transition:transform .08s,box-shadow .08s,filter .08s}#evoFull .ef-ok:active,#evoFull .ef-ok.prs,#dpAct:active,#dpAct.prs{transform:translateY(3px);box-shadow:none;filter:brightness(.82)}#dpAct{transition:transform .08s,box-shadow .08s,filter .08s}
 .pf-runs .runs{max-height:none}.pf-link{display:flex;align-items:center;gap:10px;width:100%;margin-top:14px;padding:14px 16px;border:3px solid var(--frame);background:var(--win);color:var(--win-ink);font:inherit;font-size:16px;text-align:left;cursor:pointer;box-shadow:3px 3px 0 rgba(0,0,0,.18)}.pf-link:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(0,0,0,.18)}.pf-link .pf-lt{font-weight:700;flex:1}.pf-link .pf-arr{font-size:12px;color:var(--dim)}
 .pf-runs .runs>:first-child{margin-top:0}
 .pf-diag{margin:14px 0 0;font-size:11px;line-height:1.4;color:#c03838;border:2px dashed #c03838;padding:3px 6px}.pf-diag:empty{display:none}
@@ -565,7 +565,7 @@ ol.log li.big .txt{color:#c03838}
 @keyframes burrow{to{transform:translateX(-50%) translateY(60%) scaleY(.2);opacity:0}}
 @keyframes emerge{from{transform:translateX(-50%) translateY(60%) scaleY(.2);opacity:0}}
 @keyframes vanish{to{transform:translateX(-50%) scale(.2);opacity:0}}
-@keyframes appear{from{transform:translateX(-50%) scale(.2);opacity:0}}.act.gpop{animation:ghpop .3s ease-out}@keyframes ghpop{0%{transform:translateX(-50%) scale(1.45);filter:brightness(2.4)}60%{transform:translateX(-50%) scale(.92)}}
+@keyframes appear{from{transform:translateX(-50%) scale(.2);opacity:0}}.act.gpop{animation:ghpop .3s ease-out}.mon.gfade .shadow{opacity:0!important;transition:opacity 1.3s ease-in}.mon.gpopS .shadow{animation:ghsh .3s ease-out}@keyframes ghsh{0%{opacity:0;transform:scale(.3)}100%{opacity:1;transform:none}}   /* v10.15 경완: 그림자도 같이 사라졌다 나타남 */@keyframes ghpop{0%{transform:translateX(-50%) scale(1.45);filter:brightness(2.4)}60%{transform:translateX(-50%) scale(.92)}}
 @keyframes breathe{0%,100%{transform:translateX(-50%) scaleY(1)}50%{transform:translateX(-50%) scaleY(.95)}}
 @keyframes doze{0%{transform:translateX(-50%)}12%{transform:translateX(-50%) rotate(-7deg) translateY(2px)}22%{transform:translateX(-50%)}
   42%{transform:translateX(-50%) rotate(-9deg) translateY(3px)}52%{transform:translateX(-50%) rotate(-2deg)}
@@ -830,7 +830,7 @@ body.petting #dlg,body.petting #info{display:none!important}
 @keyframes joyS{0%{filter:brightness(1.3) drop-shadow(0 0 5px #fffbe0) drop-shadow(0 0 22px #ffb000)}50%{filter:drop-shadow(0 0 0 transparent)}}@keyframes joyA{0%{filter:brightness(1.3) drop-shadow(0 0 5px #ffe0e0) drop-shadow(0 0 22px #ff2020)}50%{filter:drop-shadow(0 0 0 transparent)}}   /* 좋아할 때: 켜졌다 꺼졌다 점멸 */
 .hspk{position:absolute;transform:translate(-50%,-50%);line-height:1;pointer-events:none;color:#fff6b0;text-shadow:0 0 4px #ffb000,0 0 2px #fff;animation:hspk .7s ease-out forwards}.hspk.A{color:#ffe0e0;text-shadow:0 0 4px #ff3a3a,0 0 2px #fff}
 @keyframes hspk{0%{opacity:0;scale:.3}25%{opacity:1;scale:1.25}60%{opacity:1;scale:.9}100%{opacity:0;scale:.4;translate:0 -10px}}
-.mon.rkS .flip{animation:sglow 4s ease-in-out infinite}.mon.rkA .flip{animation:aglowM 4s ease-in-out infinite}@keyframes aglowM{0%,100%{filter:drop-shadow(0 0 2px #ff9090) drop-shadow(0 0 6px #ff3a3a)}50%{filter:drop-shadow(0 0 3px #ffa0a0) drop-shadow(0 0 11px #ff2828)}}   /* A 랭크: 박스와 같은 붉은 후광 */.mon.nightf .act,.mon.nightf .shadow{filter:url(#nightF)}.mon.selflit .flip{animation:sglowN 4s ease-in-out infinite}@keyframes sglowN{0%,100%{filter:brightness(.6) sepia(.15) drop-shadow(0 0 2px rgba(255,224,140,.75)) drop-shadow(0 0 6px rgba(255,176,32,.7))}50%{filter:brightness(.66) sepia(.15) drop-shadow(0 0 3px rgba(255,232,160,.9)) drop-shadow(0 0 11px rgba(255,170,20,.85))}}#glows{position:absolute;inset:0;pointer-events:none}.gl{position:absolute;left:0;top:0;z-index:2;border-radius:50%;mix-blend-mode:screen;pointer-events:none;width:200px;height:96px;margin:-48px 0 0 -100px;background:radial-gradient(closest-side,rgba(255,214,130,.1),rgba(255,200,110,.05) 40%,rgba(255,190,90,0) 70%,rgba(255,170,50,0))}@keyframes glp{50%{opacity:.85}}.gl.a{background:radial-gradient(closest-side,rgba(255,60,50,.75),rgba(255,50,40,.38) 45%,rgba(255,40,30,0) 75%)}.mon.selflit .shadow{opacity:.9;background:radial-gradient(closest-side,rgba(40,24,0,.62),rgba(40,24,0,.48) 70%,rgba(40,24,0,0))}   /* v10.00 경완 'S랭크 그림자가 잘 안 보여': 밤에 스스로 빛나는 S랭크는 발밑 빛 위에 진한 그림자 */
+.mon.rkS .flip{animation:sglow 4s ease-in-out infinite}.mon.rkA .flip{animation:aglowM 4s ease-in-out infinite}@keyframes aglowM{0%,100%{filter:drop-shadow(0 0 2px #ff9090) drop-shadow(0 0 6px #ff3a3a)}50%{filter:drop-shadow(0 0 3px #ffa0a0) drop-shadow(0 0 11px #ff2828)}}   /* A 랭크: 박스와 같은 붉은 후광 */.mon.nightf .act,.mon.nightf .shadow{filter:url(#nightF)}.mon.selflit .flip{animation:sglowN 4s ease-in-out infinite}.mon.selflit .act{filter:url(#nightF) brightness(1.15)}   /* v10.15 경완 'S랭크가 어두워 보여': 해 질 녘에도 고정 .6 이라 다른 포켓몬보다 어두웠다 → 밤 색을 그대로 따르고 조금 더 밝게 */@keyframes sglowN{0%,100%{filter:drop-shadow(0 0 2px rgba(255,224,140,.75)) drop-shadow(0 0 6px rgba(255,176,32,.7))}50%{filter:drop-shadow(0 0 3px rgba(255,232,160,.9)) drop-shadow(0 0 11px rgba(255,170,20,.85))}}#glows{position:absolute;inset:0;pointer-events:none}.gl{position:absolute;left:0;top:0;z-index:2;border-radius:50%;mix-blend-mode:screen;pointer-events:none;width:200px;height:96px;margin:-48px 0 0 -100px;background:radial-gradient(closest-side,rgba(255,214,130,.1),rgba(255,200,110,.05) 40%,rgba(255,190,90,0) 70%,rgba(255,170,50,0))}@keyframes glp{50%{opacity:.85}}.gl.a{background:radial-gradient(closest-side,rgba(255,60,50,.75),rgba(255,50,40,.38) 45%,rgba(255,40,30,0) 75%)}.mon.selflit .shadow{opacity:.9;background:radial-gradient(closest-side,rgba(40,24,0,.62),rgba(40,24,0,.48) 70%,rgba(40,24,0,0))}   /* v10.00 경완 'S랭크 그림자가 잘 안 보여': 밤에 스스로 빛나는 S랭크는 발밑 빛 위에 진한 그림자 */
 @keyframes sglow{0%,100%{filter:drop-shadow(0 0 1px #fff6c0) drop-shadow(0 0 3px #ffc830)}50%{filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 7px #ffb000)}}
 .pk.rkA{background:radial-gradient(circle 40px at 50% 42px,rgba(255,120,120,.38),rgba(255,120,120,0))}.pk.rkA img,.dp-pic.rkA img,.bd-pic.rkA img{animation:aglowI 2s ease-in-out infinite}@keyframes aglowI{0%,100%{filter:drop-shadow(0 0 1px #ffd0d0) drop-shadow(0 0 3px #ff5050)}50%{filter:drop-shadow(0 0 2px #ffd0d0) drop-shadow(0 0 7px #ff3838)}}
 .mon.rkS .lift::before{content:'✦';position:absolute;left:0;bottom:calc(var(--mh,60px) * .55);color:#fff3a0;font-size:20px;text-shadow:0 0 4px #ffb000,0 0 2px #fff;animation:spk 1.6s steps(1) infinite;pointer-events:none;z-index:3}
@@ -4628,13 +4628,13 @@ function tickSpecial(m, dt) {
     } else log(`${J(m,'이/가')} 노래를 마쳤다. 다들 귀를 기울였다.`, [m]);
     slept.forEach(o => addRel(o, m, 2));
   }
-  if (s === 'gscare') { const o = m.gsO, back = () => { m.hidden = false; m.el.style.visibility = ''; m.el.style.transition = ''; m.el.style.opacity = ''; m.gsO = null; m.special = null; };
+  if (s === 'gscare') { const o = m.gsO, back = () => { m.hidden = false; m.el.style.visibility = ''; m.el.style.transition = ''; m.el.style.opacity = ''; m.el.classList.remove('gfade'); m.gsO = null; m.special = null; };
     if (!o || !S.mons.includes(o) || !awake(o) || o.held) { back(); return think(m); }
-    if (m.phase === 0) { m.phase = 1; faceTo(m, o.x); m.el.style.transition = 'opacity 1.3s ease-in'; m.el.style.opacity = '0'; }   // 스르르 투명해짐
+    if (m.phase === 0) { m.phase = 1; faceTo(m, o.x); m.el.style.transition = 'opacity 1.3s ease-in'; m.el.style.opacity = '0'; m.el.classList.add('gfade'); }   // 스르르 투명해짐
     if (m.phase === 1 && m.t < 2.1) { m.phase = 2; m.hidden = true; m.el.style.visibility = 'hidden'; }
     if (m.phase === 2 && m.t < 1.3) { const d = ((o.w || 40) + (m.w || 40)) * .42 + 6; let x = o.x + (o.face > 0 ? d : -d); if (x < XL + 24 || x > XR - 24) x = o.x - (o.face > 0 ? d : -d);   // 상대가 보는 쪽의 반대(등 뒤)
       m.x = m.tx = clamp(x, XL + 24, XR - 24); m.y = m.ty = clamp(o.y - 2, MIN_Y, MAX_Y); faceTo(m, o.x); back();
-      m.act.classList.remove('gpop'); void m.act.offsetWidth; m.act.classList.add('gpop'); setTimeout(() => m.act.classList.remove('gpop'), 400); sfx('pop'); return ghostScare(m, o); }   // 확 나타나며 왁!
+      m.act.classList.remove('gpop'); m.el.classList.remove('gpopS'); void m.act.offsetWidth; m.act.classList.add('gpop'); m.el.classList.add('gpopS'); setTimeout(() => { m.act.classList.remove('gpop'); m.el.classList.remove('gpopS'); }, 400); sfx('pop'); return ghostScare(m, o); }   // 확 나타나며 왁!
     return; }
   if (s === 'dig' || s === 'teleport') {
     if (m.phase === 0 && m.t < (s === 'dig' ? 4.4 : 3.1)) { m.phase = 1; m.hidden = true; m.el.style.visibility = 'hidden'; }
@@ -4795,7 +4795,7 @@ function update(m, dt) {
   if (m.spCd > 0) m.spCd -= dt;
   if (m.form !== m.sp) { m.formT -= dt; if (m.formT <= 0 && m.state !== 'interact') revert(m); }
   m.t -= dt;
-  if (m.gsO && (m.state !== 'special' || m.special !== 'gscare')) { m.gsO = null; m.hidden = false; m.el.style.visibility = ''; m.el.style.transition = ''; m.el.style.opacity = ''; if (m.special === 'gscare') m.special = null; }   // 놀래키려고 사라진 중에 들거나 다른 일로 끊기면 다시 보이게
+  if (m.gsO && (m.state !== 'special' || m.special !== 'gscare')) { m.gsO = null; m.hidden = false; m.el.style.visibility = ''; m.el.style.transition = ''; m.el.style.opacity = ''; m.el.classList.remove('gfade'); if (m.special === 'gscare') m.special = null; }   // 놀래키려고 사라진 중에 들거나 다른 일로 끊기면 다시 보이게
   if (m.pet) { m.goal = null; if (m.state !== 'idle' && m.state !== 'eat') setState(m, 'idle', 1); m.t = Math.max(m.t, 1); }
   if (m.pin) { m.goal = null; m.wp = null; if (m.state === 'move') setState(m, 'idle', 1); m.t = Math.max(m.t, 1); }   /* v3.80 경완: 작업실에서 고른 포켓몬은 제자리 */   /* 쓰다듬는 동안은 제자리 */
   if (m.state === 'idle' && !m.pet && !m.pin && !m.scp && inHud(m)) { moveTo(m, outOfHud(m, { x: clamp(m.x, XL + 30, XR - 30), y: m.y })); }   /* v9.52 경완 '타이어 그네가 일지 창 가까우면 탑승 안 함': 소품에서 노는 중(m.scp)이면 가방·열매 버튼 밑이어도 비켜 가지 않는다 */
@@ -5625,7 +5625,7 @@ function campStart(c) {
   const live = () => c.G.filter(o => S.mons.includes(o) && o.camp === c && c.ready.has(o) && !o.held && awake(o) && o.state === 'special');
   c.G.filter(o => !c.ready.has(o)).forEach(o => { o.camp = null; if (o.goal?.kind === 'camp') think(o); });
   if (live().length < 2) { c.G.forEach(campLeave); CAMP = null; return; }
-  c.on = true; const t0 = performance.now(), DUR = campBgm(true) ? 24000 : 15000;   // 곡이 나오면 한 곡(24초) 다 부른다
+  c.on = true; const t0 = performance.now(), DUR = campBgm(true) ? (M => M ? Math.round(M.ld.length * M.ld[0].length * M.e8() * 1000) : 24000)(CAMP_MORE[campMus.id]) : 15000;   // 곡이 나오면 한 곡(24초) 다 부른다
   const sync = DUR > 15000;   // 곡이 나오면 다 같이 한 마디(1.5초)에 맞춰 좌우로 흔든다
   live().forEach((o, i) => { faceTo(o, FIRE.x); o.act.style.setProperty('--cs', sync ? '1.5s' : rnd(1.05, 1.3).toFixed(2) + 's'); o.act.style.setProperty('--cd', sync ? '0s' : (-i * .35).toFixed(2) + 's'); o.act.classList.add('camp'); emote(o, '♪', 'note', 2, 'camp-sing'); });
   flameEl.classList.add('big'); clearTimeout(flameEl.bigT); flameEl.bigT = setTimeout(() => flameEl.classList.remove('big'), DUR);
@@ -5651,7 +5651,7 @@ function campStart(c) {
 const CAMP_P = .35;
 // v5.93 경완: 모닥불 노래 동안은 따로 만든 캠프송을 틀고, 끝나면 듣던 곡을 멈춘 자리부터 다시
 function campBgm(on) { try {
-  if (on) { if (!bgmOn || !mgEl.hidden || campMus.on) return false; bgm.camp = { id: bgm.id, pos: bgmPos() }; bgmSrcStop(); campMus.start('camp'); return campMus.on; }
+  if (on) { if (!bgmOn || !mgEl.hidden || campMus.on) return false; bgm.camp = { id: bgm.id, pos: bgmPos() }; bgmSrcStop(); campMus.start(campPick()); return campMus.on; }
   if (!campMus.on && !bgm.camp) return false; campMus.stop(2); const r = bgm.camp; bgm.camp = null; if (!r || !mgEl.hidden || bgm.mg) return false;
   setTimeout(() => { if (campMus.on || bgm.mg) return; bgm.fadeIn = 2; if (bgmOn && r.id && r.id !== 'intro') bgmPlay(r.id, r.pos); else bgmStart(); }, 1200); return false; } catch (e) { return false; } }
 const PROP_JOY = 3;
@@ -5727,9 +5727,11 @@ function propReactIn(m, p, drag) {
     const rs = () => { if (el) { el.classList.remove('rustle'); void el.offsetWidth; el.classList.add('rustle'); } }; rs();
     { let n = 0; const sh = () => { if (!S.mons.includes(m) || m.el.style.visibility !== 'hidden' || ++n > 6) return; rs(); setTimeout(sh, rnd(700, 1300)); }; setTimeout(sh, rnd(900, 1300)); }   // v4.52 경완: 숨어 있는 동안 덤불이 가끔 바스락 흔들려 안에 누가 있는 걸 알 수 있게
     log(`${J(m,'이/가')} 덤불 속으로 쏙 숨었다.`, [m]);
-    setTimeout(() => { if (!S.mons.includes(m)) return; const by = el?.LV?.y ?? p.y + 10, y0 = by - 3, y1 = Math.min(MAX_Y, by + 18), H = Math.max(26, Math.min(48, (m.h || 40) * .8)), t0 = performance.now();   /* v10.08 경완 '덤불에서 확실하게 튀어나오게': 덤불 뒤(속)에서 솟아올라 앞으로 떨어진다 */
-      m.el.style.visibility = ''; m.x = m.tx = hx; m.y = y0; m.goal = null; setState(m, 'idle', 2.5); rs(); { const LC = { spring: ['#78c040', '#9ad24c', '#62ae3a'], summer: ['#3f8a30', '#4f9e36', '#2f7426'], autumn: ['#d8742a', '#e8a034', '#c0502a'], winter: ['#e6eef4', '#c4d6e2', '#6f8c80'] }[season()] || ['#3f8a30']; for (let i = 0; i < 6; i++) particle(m.x + rnd(-20, 20), by - rnd(10, 26), 'leaf', pick(['"', '❦']), d => { d.style.color = pick(LC); }); }   /* v10.09 경완: 잎 색은 계절 덤불 색 */ emote(m, '!', '', 2.2, 'bush-out'); sfx('pop');
-      const st = () => { if (!S.mons.includes(m) || m.held) return; const k = Math.min(1, (performance.now() - t0) / 520); m.y = y0 + (y1 - y0) * k; m.xl = Math.sin(k * Math.PI) * H; if (k < 1) requestAnimationFrame(st); else { m.xl = 0; anim(m, 'hop'); el?.classList.remove('rustle'); } }; requestAnimationFrame(st); }, 4200);   /* v4.61 경완: 튀어나오면 덤불은 멈춘다 */
+    setTimeout(() => { if (!S.mons.includes(m)) return; const by = el?.LV?.y ?? p.y + 10, y0 = by - 3, y1 = Math.min(MAX_Y, by + 18), H = Math.max(40, Math.min(70, (m.h || 40) * .9 + 18));   /* v10.08 경완 '덤불에서 확실하게 튀어나오게': 덤불 뒤(속)에서 솟아올라 앞으로 떨어진다 */
+      rs(); setTimeout(() => { if (!S.mons.includes(m)) return; const t0 = performance.now(); let lf = 0;   /* v10.15 경완 '덤불 위쪽으로 점프하면서, 잎 타이밍': 덤불이 한 번 크게 흔들린 뒤 높이 뛰어오르고, 덤불 위를 지날 때 잎이 터진다 */
+      m.el.style.visibility = ''; m.x = m.tx = hx; m.y = y0; m.xl = 0; m.goal = null; setState(m, 'idle', 2.5);
+      const leaves = () => { const LC = { spring: ['#78c040', '#9ad24c', '#62ae3a'], summer: ['#3f8a30', '#4f9e36', '#2f7426'], autumn: ['#d8742a', '#e8a034', '#c0502a'], winter: ['#e6eef4', '#c4d6e2', '#6f8c80'] }[season()] || ['#3f8a30']; for (let i = 0; i < 8; i++) particle(m.x + rnd(-22, 22), by - rnd(8, 28), 'leaf', pick(['"', '❦']), d => { d.style.color = pick(LC); }); rs(); emote(m, '!', '', 2.2, 'bush-out'); sfx('pop'); };
+      const st = () => { if (!S.mons.includes(m) || m.held) return; const k = Math.min(1, (performance.now() - t0) / 640), up = k < .42; m.y = y0 + (y1 - y0) * Math.max(0, (k - .2) / .8); m.xl = up ? H * (1 - (1 - k / .42) ** 2) : H * (1 - ((k - .42) / .58) ** 2); if (!lf && k > .12) { lf = 1; leaves(); } if (k < 1) requestAnimationFrame(st); else { m.xl = 0; anim(m, 'hop'); el?.classList.remove('rustle'); } }; requestAnimationFrame(st); }, 260); }, 4200);   /* v4.61 경완: 튀어나오면 덤불은 멈춘다 */
     return;
   }
   if (p.k === 'stump') { at(0, 10); { const v = p.x2 ? LAYOUT.stumps[p.i] : LAYOUT.stump; propSit(m, Math.round(19 * ZP('stump', v)) + 2); sitFront(m); }   /* v9.83 경완: 그림자가 윗둥 나이테 가운데로 (그림 22×16 에서 나이테 가운데 = 밑에서 9.5칸) */ faceTo(m, nearPond(p.x, p.y).x); onShadow(m);   /* v4.26 경완: 그루터기에 앉으면 호수 쪽을 바라본다 */ setState(m, 'idle', rnd(16, 26)); anim(m, 'hop'); emote(m, '♪', '', 2.2, 'prop-play'); return log(`${J(m,'이/가')} 그루터기 위에 올라앉아 쉰다.`, [m]); }
@@ -6375,7 +6377,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.14';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.15';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7000,8 +7002,36 @@ const mgMus = chipSeq({ jump: { e8: () => 30 / (MG_MUS.jump.bpm + 6 * ((MGG?.pha
     if (b === 2 || b === 6) s.hit(t, .12, .16, 1800);   // 짝
     s.hit(t + (b % 2 ? 0 : e8 * .5), .03, .045, 7000); } } });   // 치
 // v5.93 경완: 모닥불 노래 동안만 나오는 곡 (6/8 박자 느긋한 캠프송, 직접 만든 곡). 화음 = [베이스, 기타 화음 3음]
-const CAMP_CH = { D: [38, [62, 66, 69]], G: [43, [62, 67, 71]], A: [33, [61, 64, 69]], Bm: [35, [62, 66, 71]] };
-const campMus = chipSeq({ camp: { vol: .8, e8: () => .25, ch: ['D', 'G', 'D', 'A', 'D', 'G', 'A', 'D', 'Bm', 'G', 'D', 'A', 'Bm', 'G', 'A', 'D'], ld: [
+const CAMP_CH = { D: [38, [62, 66, 69]], G: [43, [62, 67, 71]], A: [33, [61, 64, 69]], Bm: [35, [62, 66, 71]], C: [36, [60, 64, 67]], F: [41, [60, 65, 69]], Am: [45, [60, 64, 69]], Em: [40, [59, 64, 67]] };
+// v10.15 경완 '모닥불 노래 바리에이션 5개': 원래 캠프송 + 직접 만든 4곡 (자장가 G 6/8 · 민요풍 Am 4/4 · 폴카 C 2/4 · 뱃노래 Em 6/8), 부를 때마다 지난번과 다른 곡
+function campPlay(lead, lv) { return function (s, { b, t, e8, n, len, r }) { const [bs, tri] = CAMP_CH[r], nb = this.ld[0].length;
+  if (n > 0) { s.note(NOTE(n), t, e8 * len * .95, lead, lv); s.note(NOTE(n), t, e8 * len * .9, 'square', .01); }
+  if (nb === 6) { if (b === 0 || b === 3) s.pluck(NOTE(bs + (b === 3 ? 7 : 0)), t, e8 * 2.6, 'triangle', .2); else s.pluck(NOTE(tri[(b % 3) - 1 + (b > 3 ? 1 : 0)] || tri[0]), t, e8 * 1.8, 'triangle', .05); if (b === 1 || b === 4) s.hit(t, .05, .025, 5000); return; }
+  if (b === 0 || b === 4) s.pluck(NOTE(bs + (b === 4 ? 7 : 0)), t, e8 * 3, 'triangle', .2); else s.pluck(NOTE(tri[(b % 4) - 1]), t, e8 * 1.6, 'triangle', .05);
+  if (b === 2 || b === 6) s.hit(t, .05, .025, 5000); }; }
+const CAMP_MORE = {
+  lull: { vol: .8, e8: () => .28, play: campPlay('sine', .13), ch: ['G', 'G', 'C', 'G', 'G', 'Em', 'A', 'D', 'G', 'G', 'C', 'G', 'C', 'D', 'G', 'G'], ld: [
+    [74, -1, 71, 74, -1, 71], [79, -1, -1, 78, -1, 76], [76, -1, 72, 76, -1, 79], [74, -1, -1, -1, -1, 0],
+    [71, -1, 72, 74, -1, 76], [79, -1, 78, 76, -1, 71], [73, -1, 76, 81, -1, 79], [78, -1, -1, -1, 0, 74],
+    [74, -1, 71, 74, -1, 79], [83, -1, -1, 81, -1, 79], [76, -1, 79, 84, -1, 81], [79, -1, -1, 74, -1, 71],
+    [72, -1, 76, 79, -1, 76], [78, -1, 74, 81, -1, 78], [79, -1, -1, 74, -1, 71], [67, -1, -1, -1, -1, 0]] },
+  folk: { vol: .8, e8: () => .21, play: campPlay('triangle', .11), ch: ['Am', 'F', 'C', 'G', 'Am', 'F', 'G', 'Am', 'F', 'C', 'G', 'Am', 'F', 'C', 'G', 'Am'], ld: [
+    [69, -1, 72, -1, 76, -1, 72, -1], [77, -1, 76, -1, 72, -1, 69, -1], [67, -1, 72, -1, 76, -1, 79, -1], [79, -1, -1, 77, 76, -1, 74, -1],
+    [72, -1, 69, -1, 72, -1, 76, -1], [77, -1, -1, -1, 81, -1, 77, -1], [79, -1, 77, -1, 74, -1, 71, -1], [69, -1, -1, -1, -1, -1, 0, 0],
+    [81, -1, -1, 79, 77, -1, 76, -1], [76, -1, -1, 74, 72, -1, 67, -1], [74, -1, 76, -1, 79, -1, 74, -1], [76, -1, -1, -1, 72, -1, 0, 0],
+    [77, -1, 76, -1, 77, -1, 81, -1], [79, -1, 76, -1, 72, -1, 76, -1], [74, -1, 71, -1, 74, -1, 79, -1], [76, -1, -1, -1, 69, -1, -1, 0]] },
+  polka: { vol: .75, e8: () => .19, play: campPlay('square', .05), ch: ['C', 'C', 'G', 'G', 'G', 'G', 'C', 'C', 'F', 'F', 'C', 'C', 'G', 'G', 'C', 'C'], ld: [
+    [72, 0, 76, 0, 79, -1, 76, 0], [84, -1, 79, -1, 76, -1, 72, 0], [74, 0, 77, 0, 79, -1, 77, 0], [83, -1, 79, -1, 74, -1, 71, 0],
+    [71, 74, 77, -1, 74, 77, 79, -1], [77, -1, 74, -1, 71, -1, 67, 0], [72, 76, 79, -1, 76, 79, 84, -1], [79, -1, 76, -1, 72, -1, 0, 0],
+    [77, 0, 81, 0, 84, -1, 81, 0], [77, -1, 81, -1, 77, -1, 72, 0], [76, 0, 79, 0, 84, -1, 79, 0], [76, -1, 79, -1, 76, -1, 72, 0],
+    [74, 76, 77, -1, 79, -1, 77, -1], [74, -1, 71, -1, 67, -1, 71, -1], [72, -1, 76, -1, 79, -1, 76, -1], [72, -1, -1, -1, 0, 0, 0, 0]] },
+  shanty: { vol: .8, e8: () => .23, play: campPlay('triangle', .12), ch: ['Em', 'Em', 'D', 'D', 'Em', 'C', 'D', 'Em', 'G', 'D', 'Em', 'Em', 'C', 'D', 'Em', 'Em'], ld: [
+    [71, -1, 71, 71, -1, 74], [76, -1, 74, 71, -1, 67], [69, -1, 69, 69, -1, 74], [78, -1, 76, 74, -1, 69],
+    [71, -1, 74, 76, -1, 79], [79, -1, 76, 72, -1, 76], [74, -1, 78, 81, -1, 78], [76, -1, -1, -1, 0, 71],
+    [74, -1, 79, 79, -1, 78], [78, -1, 74, 69, -1, 74], [76, -1, 79, 83, -1, 79], [76, -1, -1, 71, -1, 74],
+    [76, -1, 72, 76, -1, 79], [81, -1, 78, 74, -1, 78], [79, -1, 76, 71, -1, 74], [76, -1, -1, -1, -1, 0]] } };
+let campLast = 'camp'; const campPick = () => { const L = ['camp', ...Object.keys(CAMP_MORE)].filter(k => k !== campLast); return campLast = pick(L); };
+const campMus = chipSeq({ ...CAMP_MORE, camp: { vol: .8, e8: () => .25, ch: ['D', 'G', 'D', 'A', 'D', 'G', 'A', 'D', 'Bm', 'G', 'D', 'A', 'Bm', 'G', 'A', 'D'], ld: [
   [74, -1, 76, 78, -1, 74], [79, -1, 78, 76, -1, 74], [78, -1, 76, 74, -1, 69], [71, -1, 73, 76, -1, -1],
   [74, -1, 76, 78, -1, 81], [83, -1, 81, 79, -1, 78], [76, -1, 78, 76, -1, 73], [74, -1, -1, -1, 0, 69],
   [71, -1, 74, 78, -1, 76], [74, -1, 71, 79, -1, 78], [78, -1, 81, 78, -1, 74], [76, -1, -1, 73, -1, 69],
@@ -8101,7 +8131,7 @@ $('#dpClose').onclick = closeCard;
 $('#dexPop').addEventListener('click', e => { if (e.target.id !== 'dexPop') return; const d = sideTap($('#dexPop'), e); if (d) { const h = $(d < 0 ? '#dpHl' : '#dpHr'); if (!h.hidden) cardStep(d); return; } closeCard(); });
 $('#dpAct').onclick = async () => {
   const sp = cardSp; if (sp == null) return;
-  if (cardEvo) { closeCard(); return; }
+  if (cardEvo) { const a = $('#dpAct'); if (a.classList.contains('prs')) return; a.classList.add('prs'); setTimeout(() => { a.classList.remove('prs'); closeCard(); }, 160); return; }
   if (dexMode === 'buddy') { if (S.buds.some(b => b.sp === sp)) return; closeCard(); picked.clear(); picked.add(sp); await setBuddySp(sp); return; }
   // 바로 필드에 풀어놓는다
   const P = freePoke(sp); if (S.mons.length >= MAX_MONS || !P) return;
@@ -10993,14 +11023,14 @@ async function evolveWin(P, card, forceTo, tool) {   // tool: 쓴 도구 id → 
   save();   // v5.02 경완: 새 모습은 공개된 자리 그대로 (위로 올리지 않는다)
   // v4.95 경완: 축하 글이 먼저 뜨고, 조금 있다가 글 상자가 밀려 올라가며 확인 버튼이 생긴다
   await wait(1300); ok.hidden = false; ok.classList.remove('rise'); void ok.offsetWidth; ok.classList.add('rise'); ok.focus();
-  await new Promise(res => ok.onclick = res); sfx('tap');
+  await new Promise(res => ok.onclick = () => { ok.onclick = null; ok.classList.remove('rise'); ok.classList.add('prs'); sfx('tap'); setTimeout(res, 160); });   /* v10.15 경완: 확인 버튼 누르는 모션 */
   // 그다음은 도감 메뉴의 그 도감 카드(빨간 도감)를 띄우고, 카드의 확인으로 끝
   el.querySelector('.ef-bottom').classList.add('gone');
   await new Promise(res => { cardEvo = res; $('#dexPop').classList.add('evo'); openCard(to); });
   shut = true; evoMusicFade(.8); sfx('tap');
   open.forEach(x => x.hidden = false); if (!mgr.hidden) { renderBuddy(); renderMgr(true); } if (card) openPoke(P.id);   // 보던 창을 먼저 깔아 둔 뒤 진화 화면을 걷는다 (v5.00 경완: 필드가 잠깐 보이던 것)
   el.classList.remove('in'); bgmDuck(1, 1.2);
-  await wait(350); el.hidden = true; el.className = ''; parts.innerHTML = ''; msg.hidden = false; ok.classList.remove('rise'); el.querySelector('.ef-bottom').classList.remove('gone');
+  await wait(350); el.hidden = true; el.className = ''; parts.innerHTML = ''; msg.hidden = false; ok.classList.remove('rise', 'prs'); el.querySelector('.ef-bottom').classList.remove('gone');
   renderRun(); renderBox();
   if (dexFx.q.length && !dexFx.on) { evolving = false; dexFx.hold = true; try { await dexFxRun(); } finally { dexFx.hold = false; evolving = true; } }   // v10.02 경완: 진화로 새로 등록되면 새 소식 창보다 도감 등록 연출이 먼저
   const rw = [P.fr > fr0 ? `<div class="ns ns-fr"><p style="display:flex;align-items:center;justify-content:center;gap:7px"><span style="color:#e04870">♥</span><span>친밀도가 <b>${P.fr - fr0}</b> 올랐다!</span></p><div class="small">${esc(nameOf(P))} 친밀도 ${P.fr}/${FR_MAX}</div></div>` : '',
