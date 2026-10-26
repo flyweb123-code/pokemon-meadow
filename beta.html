@@ -1679,7 +1679,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
         <div class="set-btns one"><button class="lk-btn main" id="updNow">배포된 최신 판 바로 받기</button></div>
         <div class="set-btns one"><button class="lk-btn main" id="newsPv">업데이트 알림창 미리 보기</button></div>
         <div class="set-btns one"><button class="lk-btn main" id="tutPv">튜토리얼 미리 보기</button></div>
-        <div class="set-btns one"><button class="lk-btn main" id="dexPvH">부화 → 도감 등록 미리 보기</button><button class="lk-btn main" id="dexPvE">진화 → 도감 등록 미리 보기</button></div>   <!-- v9.99 경완: 부화·진화 과정부터 도감 등록 연출까지 쭉 (저장 안 함, 끝나면 원래대로) -->   <!-- v8.04 경완: 오프닝·튜토리얼을 처음부터 (저장은 그대로) -->
+        <div class="set-btns one"><button class="lk-btn main" id="dexPvH">부화 → 도감 등록 미리 보기</button><button class="lk-btn main" id="dexPvE">진화 → 도감 등록 미리 보기</button><button class="lk-btn main" id="dexPvA">여러 알 모두 부화 → 도감 등록 미리 보기</button></div>   <!-- v9.99 경완: 부화·진화 과정부터 도감 등록 연출까지 쭉 (저장 안 함, 끝나면 원래대로) -->   <!-- v8.04 경완: 오프닝·튜토리얼을 처음부터 (저장은 그대로) -->
         <!-- v8.16 경완: 운영자 골드 맞추기 없앰 (v7.46) -->   <!-- v7.28 경완: 운영자 전용 — 봤다고 저장하지 않음 -->
         <div class="mgt-row"><span>기술 시험</span><select id="mgtType" aria-label="타입 (액티브 기술)"></select><select id="mgtRk" aria-label="랭크 (패시브)"></select><button class="lk-btn main" id="mgtGo">해 보기</button></div>   <!-- v6.21 경완: 운영자 전용 미니게임 기술 시험 (보상·기록 없음) -->
         <p class="op-note" id="updMsg" hidden></p>
@@ -6375,7 +6375,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.12';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.13';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9485,13 +9485,16 @@ const dexFx = { q: [], on: false };
 function dexFxFlush() { const L = dexFx.q.splice(0); L.forEach(sp => { lockDexBtn(sp); dexCellReady(sp); }); return L; }
 // v9.99 경완 '도감 연출은 진화했을 때랑 알 부화시켰을 때 둘 다 운영자 모드에서, 과정부터 쭉': 저장해 두고 다시 켜서 이번 실행은 저장 안 함 → 못 만난 포켓몬으로 진짜 부화·진화 → 도감 등록 연출 → 끝나면 다시 켜서 원래대로
 let dexPv = null;
-['H', 'E'].forEach(k => $('#dexPv' + k).addEventListener('click', () => { sfx('tap'); save(); try { sessionStorage.setItem('pk-dexpv', k === 'H' ? 'hatch' : 'evo'); } catch (e) { return; } location.reload(); }));
+['H', 'E', 'A'].forEach(k => $('#dexPv' + k).addEventListener('click', () => { sfx('tap'); save(); try { sessionStorage.setItem('pk-dexpv', { H: 'hatch', E: 'evo', A: 'all' }[k]); } catch (e) { return; } location.reload(); }));
 async function dexPvStart(kind) {
   for (let k = 0; k < 40 && (dexFxBlocked() || hatching || evolving); k++) { const b = $('#noti:not([hidden]) button, #news:not([hidden]) #newsOk'); if (b) b.click(); await wait(400); }
   const open = sp => dexBtns[sp] && !S.unlocked.has(sp) && !SP_OFF.has(sp) && !SPECIES[sp].leg && !SPECIES[sp].my;
   dexPv = kind; hideSheets(); syncTabs();
   if (kind === 'hatch') { const L = Object.keys(SPECIES).map(Number).filter(sp => open(sp) && !SPECIES[sp].fr); const sp = pick(L.length ? L : Object.keys(SPECIES).map(Number).filter(open)); if (!sp) { dexPv = null; return; }
     hatchEgg({ id: -1, g: 1, sp, km: 1, need: 1, place: '미리 보기' }, true); playHatch(); }
+  else if (kind === 'all') { const L = Object.keys(SPECIES).map(Number).filter(sp => open(sp) && !SPECIES[sp].fr), A = [];   /* v10.13 경완: 여러 알 모두 부화 → 도감 등록 (못 만난 3마리) */
+    while (A.length < 3 && L.length) A.push(L.splice(Math.floor(Math.random() * L.length), 1)[0]); if (!A.length) { dexPv = null; return; }
+    S.eggs.push(...A.map((sp, k) => ({ id: -1 - k, g: 1, sp, km: 1, need: 1, place: '미리 보기' }))); hatchAll(); }
   else { const L = Object.keys(SPECIES).map(Number).filter(to => open(to) && SPECIES[to].fr && SPECIES[SPECIES[to].fr] && !SP_OFF.has(SPECIES[to].fr)); const to = pick(L); if (!to) { dexPv = null; return; }
     const P = newPoke(SPECIES[to].fr); S.box.push(P); evolveWin(P, false, to); }
 }
