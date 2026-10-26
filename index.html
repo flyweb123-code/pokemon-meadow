@@ -565,7 +565,7 @@ ol.log li.big .txt{color:#c03838}
 @keyframes burrow{to{transform:translateX(-50%) translateY(60%) scaleY(.2);opacity:0}}
 @keyframes emerge{from{transform:translateX(-50%) translateY(60%) scaleY(.2);opacity:0}}
 @keyframes vanish{to{transform:translateX(-50%) scale(.2);opacity:0}}
-@keyframes appear{from{transform:translateX(-50%) scale(.2);opacity:0}}.act.gpop{animation:gpop .3s ease-out}@keyframes gpop{0%{transform:translateX(-50%) scale(1.45);filter:brightness(2.4)}60%{transform:translateX(-50%) scale(.92)}}
+@keyframes appear{from{transform:translateX(-50%) scale(.2);opacity:0}}.act.gpop{animation:ghpop .3s ease-out}@keyframes ghpop{0%{transform:translateX(-50%) scale(1.45);filter:brightness(2.4)}60%{transform:translateX(-50%) scale(.92)}}
 @keyframes breathe{0%,100%{transform:translateX(-50%) scaleY(1)}50%{transform:translateX(-50%) scaleY(.95)}}
 @keyframes doze{0%{transform:translateX(-50%)}12%{transform:translateX(-50%) rotate(-7deg) translateY(2px)}22%{transform:translateX(-50%)}
   42%{transform:translateX(-50%) rotate(-9deg) translateY(3px)}52%{transform:translateX(-50%) rotate(-2deg)}
@@ -6368,7 +6368,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.11';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.12';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
