@@ -6340,7 +6340,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.93';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.94';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8946,12 +8946,13 @@ const MV_PIX = {
   rock: ['..aaaa..', '.abbbba.', 'abbcbbba', 'abbbbcba', 'abcbbbba', '.abbbba.', '..aaa...'],
   spark: ['..a..', '..b..', 'abcba', '..b..', '..a..'],
   wind: ['..aaaaa..', '.a.....aa', 'aa..aaa..', '..aa.....'],
+  comet: ['......aaa..', '...aaabbbaa', 'aabbbbcccba', '.aabbbcccba', '...aaabbbaa', '......aaa..'],   // v9.94 경완 '드래곤 기술이 독 같음': 앞이 뭉툭한 용의 기운 꼬리별
   slash: ['.......aa', '........a', '........a', '.......aa', '......aa.', '....aaa..', '..aaa....', 'aaa......'],
 };
 const MV_PAL = {
   fire: ['flame', '#d83010', '#ff9020', '#fff070'], elec: ['bolt', '#c08800', '#fff048'], water: ['drop', '#2060d0', '#58a8f8', '#e0f4ff'],
   leaf: ['leaf', '#2a7a20', '#6ad048'], ice: ['shard', '#4890d0', '#a8e0ff', '#ffffff'], snow: ['spark', '#a8e0ff', '#ffffff', '#ffffff'],
-  ghost: ['ball', '#301848', '#6a3aa0', '#c8a0ff'], poison: ['ball', '#6a2a8a', '#b060d0', '#f0c8ff'], dragon: ['ball', '#2a2a90', '#6a50e0', '#d0c0ff'],
+  ghost: ['ball', '#301848', '#6a3aa0', '#c8a0ff'], poison: ['ball', '#6a2a8a', '#b060d0', '#f0c8ff'], dragon: ['comet', '#1c2a8c', '#4f7cf0', '#d8f0ff'], dragon2: ['comet', '#3c1888', '#9058f0', '#f0e0ff'], dspark: ['spark', '#4f7cf0', '#a8e0ff', '#ffffff'],
   psy: ['ball', '#a02870', '#f060b0', '#ffd0f0'], bubble: ['ball', '#3a80d0', '#a8d8ff', '#ffffff'],
   hit: ['star', '#f8c030', '#fff070', '#ffffff'], punch: ['star', '#e05818', '#ffa040', '#fff0c0'], metal: ['star', '#708098', '#c8d4e0', '#ffffff'],
   rock: ['rock', '#5a4630', '#a08060', '#c8b090'], clod: ['rock', '#6a4a20', '#b08040', '#d8b070'],
@@ -9008,7 +9009,12 @@ const MV_FX = {
   13: (o, f, m) => { fireFlash(m.x, m.y, 1100, [255, 240, 120]); for (let k = 0; k < 2; k++) { mvSprite('elec', m.x + rnd(-6, 6), m.y - 60, [[0, -120, 1.2, 0, 1], [0, 0, 1.4, 0, 1], [0, 0, 1.4, 0, 0]], 300, k * 380, 4); setTimeout(() => { m.act.animate([{ filter: 'brightness(2.2)' }, { filter: 'brightness(1)' }], { duration: 260 }); for (let i = 0; i < 6; i++) mvSprite('gold', o.x + rnd(-36, 36), o.y + rnd(-30, 24), [[0, 0, .4, 0, 1], [0, 0, 1.3, 0, 1], [0, 0, .3, 0, 0]], 380, i * 30, 3); }, 200 + k * 380); } },
   14: (o, f, m) => { for (let i = 0; i < 4; i++) mvRing(o.x, o.y, '#f060b0', 900, i * 220, 5); m.act.animate([{ filter: 'drop-shadow(0 0 0 #f060b0)' }, { filter: 'drop-shadow(0 0 8px #f060b0)' }, { filter: 'drop-shadow(0 0 0 #f060b0)' }], { duration: 1200 }); },
   15: (o, f) => { for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2; mvSprite('ice', o.x + f * 30, o.y, [[0, 0, .3, a * 57 + 90, 1], [Math.cos(a) * 60, Math.sin(a) * 45, 1.2, a * 57 + 90, 1], [Math.cos(a) * 80, Math.sin(a) * 60, 1, a * 57 + 90, 0]], 700, 0, 3); } for (let i = 0; i < 8; i++) mvSprite('snow', o.x + f * 40 + rnd(-50, 50), o.y - 50, [[0, 0, .8, 0, 1], [rnd(-10, 10), 70, .8, 180, 0]], 1000, i * 70, 3); },
-  16: (o, f) => { for (let i = 0; i < 9; i++) mvSprite('dragon', o.x + f * 16, o.y, [[0, 0, .4, 0, 1], [f * 70, Math.sin(i) * 20, 1.1, 0, 1], [f * 160, Math.sin(i + 2) * 28, 1.4, 0, 0]], 800, i * 70, 2); },
+  16: (o, f) => { mvRing(o.x + f * 14, o.y, '#6a8af0', 380, 0, 1.6);   /* v9.94 경완: 파랑·보라 두 줄기가 꼬이며 앞으로 뻗고 끝에서 터짐 (예전 보라 공은 독처럼 보였음) */
+    for (let i = 0; i < 16; i++) { const s = i % 2 ? 1 : -1, kf = [];
+      for (let k = 0; k <= 4; k++) { const t = k / 4, a = t * Math.PI * 2, sl = s * Math.cos(a) * 18 * 2 * Math.PI / 170; kf.push([f * (14 + t * 170), s * Math.sin(a) * 18, .6 + t * .7, f * Math.atan(sl) * 57, k === 4 ? 0 : 1]); }
+      mvSprite(s > 0 ? 'dragon' : 'dragon2', o.x, o.y, kf, 760, (i >> 1) * 60, 2.6, f); }
+    setTimeout(() => { mvRing(o.x + f * 184, o.y, '#4f7cf0', 520, 0, 3.4); mvRing(o.x + f * 184, o.y, '#c0a8ff', 420, 90, 2.4);
+      for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; mvSprite('dspark', o.x + f * 184, o.y, [[0, 0, .4, 0, 1], [Math.cos(a) * 40, Math.sin(a) * 30, 1, 0, 1], [Math.cos(a) * 56, Math.sin(a) * 42, .6, 0, 0]], 500, 0, 3); } }, 820); },
   17: (o, f) => { mvSprite('dark', o.x + f * 36, o.y, [[-f * 14, -14, .7, 0, 0], [0, 0, 1.6, 0, 1], [f * 14, 14, 1.8, 0, 0]], 380, 0, 3, f); mvSprite('dark', o.x + f * 50, o.y + 6, [[-f * 14, -14, .7, 20, 0], [0, 0, 1.6, 20, 1], [f * 14, 14, 1.8, 20, 0]], 380, 200, 3, f); setTimeout(() => mvRing(o.x, o.y, '#3a2a48', 700, 0, 4), 300); },
   18: (o, f) => { mvSprite('fairy', o.x, o.y - 40, [[0, 0, .5, 0, 0], [0, -10, 2.2, 90, 1], [f * 120, 0, 2.6, 180, 0]], 1100, 0, 4); for (let i = 0; i < 10; i++) mvSprite('fairy', o.x + rnd(-40, 40), o.y + rnd(-40, 20), [[0, 0, .3, 0, 1], [0, -10, 1.2, 0, 1], [0, -20, .3, 0, 0]], 700, i * 70, 3); },
 };
