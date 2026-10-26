@@ -6073,7 +6073,7 @@ let saveFrozen = false, tutFreeze = false, introPv = false;   // introPv: 튜토
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.tree = d.tree || null; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.bagDry = d.bagDry || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.trI = d.trI ?? null; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.autoInc = !!d.autoInc; S.noti = { on: true, egg: true, hatch: true, evo: true, ...(d.noti || {}) }; S.bagQ = Array.isArray(d.bagQ) ? d.bagQ : [];   /* v4.23 경완: 부화기 자동 채우기가 다시 켜면 꺼지던 문제 — 저장에 빠져 있었다 */ S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
+  S.lockT = d.lockT || 0; S.tree = d.tree || null; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { rkMig(P); if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.bagDry = d.bagDry || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.trI = d.trI ?? null; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.autoInc = !!d.autoInc; S.noti = { on: true, egg: true, hatch: true, evo: true, ...(d.noti || {}) }; S.bagQ = Array.isArray(d.bagQ) ? d.bagQ : [];   /* v4.23 경완: 부화기 자동 채우기가 다시 켜면 꺼지던 문제 — 저장에 빠져 있었다 */ S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1; S.items = d.items || {}; S.itemSeen = d.itemSeen || { ...S.items };   /* v7.48: 예전 저장은 가진 것 모두 본 것으로 */ S.mg = d.mg || {}; S.fbag = d.fbag || {}; S.lay = d.lay && typeof d.lay === 'object' ? d.lay : {}; S.layAdd = Array.isArray(d.layAdd) ? d.layAdd : []; S.fbagT = d.fbagT || {}; S.fx = d.fx || {}; S.colT = d.colT || 0;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
@@ -6340,7 +6340,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.92';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.93';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8270,7 +8270,7 @@ function boxList(all, keepAll) {
   const q = all ? '' : boxQ();
   const L = (boxSort === 'field' && !keepAll ? S.box.filter(p => onField(p.id)) : S.box.slice()).filter(p => boxHit(p, q));   // 필드: 필드에 나가 있는 포켓몬만
   const d = boxSort === 'field' ? 1 : boxDir, idx = new Map(S.box.map((p, i) => [p, i]));
-  const key = { field: p => (onField(p.id) ? 1e6 : 0) + idx.get(p), rank: p => { const s = rankScore(p), i = rankT(p).findIndex(([, v]) => s >= v); return (RANKS.length - (i < 0 ? RANKS.length - 1 : i)) * 1e4 + bsSum(p.sp); }, bs: p => bsSum(p.sp), fr: p => p.fr || 0, no: p => -p.sp }[boxSort] || (p => idx.get(p));   // 날짜: 상자에 들어온 순서. v7.82 경완: 랭크순은 같은 랭크 안에서 종족값 높은 순
+  const key = { field: p => (onField(p.id) ? 1e6 : 0) + idx.get(p), rank: p => { const s = rankScore(p), i = RANKS.findIndex(([, v]) => s >= v); return (RANKS.length - (i < 0 ? RANKS.length - 1 : i)) * 1e4 + bsSum(p.sp); }, bs: p => bsSum(p.sp), fr: p => p.fr || 0, no: p => -p.sp }[boxSort] || (p => idx.get(p));   // 날짜: 상자에 들어온 순서. v7.82 경완: 랭크순은 같은 랭크 안에서 종족값 높은 순
   // 키는 한 번씩만 계산해 두고 정렬 (1000마리도 바로)
   const K = new Map(L.map(p => [p, [key(p), rankScore(p), idx.get(p)]]));
   L.sort((a, b) => { const x = K.get(a), y = K.get(b); return d * (y[0] - x[0]) || y[1] - x[1] || y[2] - x[2]; });
@@ -8865,9 +8865,8 @@ const fmtKm1 = v => (Math.floor(v * 10 + 1e-6) / 10).toFixed(1);
 // 개체값은 능력치 6개마다 0~31. 합계로 S~F 랭크(대략 S 2%, A 8%, B 20%, C 30%, D 25%, E 10%, F 5%).
 // 이로치는 6세대 이후 본가 게임처럼 1/4096. 친밀도 0~255(하트 5칸).
 const IV_N = ['HP', '공격', '방어', '특공', '특방', '스피드'];
-const RANKS0 = [['S', 140], ['A', 122], ['B', 105], ['C', 87], ['D', 69], ['E', 56], ['F', 0]];   // 9.92 전에 뽑은 포켓몬(rv 없음)은 이 기준 그대로
-const RANKS = RANKS0.map(([r, v]) => [r, v ? v + 13 : 0]);   // v9.92 경완: 기준선 +13 (보정 중간값 +12.6 → 평균적인 종이 S 2%, A 9% 근처). 새로 뽑는 포켓몬부터(rv: 1)
-const rankT = p => p?.rv ? RANKS : RANKS0;
+const RANKS0 = [['S', 140], ['A', 122], ['B', 105], ['C', 87], ['D', 69], ['E', 56], ['F', 0]];   // 9.92 전 기준. 그때 뽑은 포켓몬(rv 없음)은 불러올 때 rkMig 가 개체값을 올려 새 기준에서도 같은 랭크로
+const RANKS = RANKS0.map(([r, v]) => [r, v ? v + 13 : 0]);   // v9.92 경완: 기준선 +13 (보정 중간값 +12.6 → 평균적인 종이 S 2%, A 9% 근처)
 let SHINY_RATE = 1 / 4096;
 const ivSum = p => p.iv.reduce((a, b) => a + b, 0);
 // 종족값: 종마다 정해진 기본 능력치 6개(본가 게임 데이터). 합계가 400보다 높을수록 랭크 점수에 더해진다(8당 1점)
@@ -8877,7 +8876,10 @@ const FORM_BS = { 746: [175, 620], 774: [440, 500], 555: [480, 540] }, formBs = 
 const FAM_AVG = {}, famBs = sp => { const r = baseOf(sp); if (FAM_AVG[r] == null) { const F = famOf(r); FAM_AVG[r] = F.reduce((a, x) => a + formBs(x), 0) / F.length; } return FAM_AVG[r]; };   // v4.54 경완: 진화 가족(진화 전·진화형 전부) 종족값 합계 평균
 const TIER_RK = 2, tierBonus = sp => (10 - (TIER[baseOf(sp)] ?? 10)) * TIER_RK;   // v4.58 경완: 희귀한 티어일수록 랭크 점수 + (10티어 0점, 한 티어마다 +2, 1티어 +18)
 const rankScore = p => ivSum(p) + (famBs(p.sp) - 400) / 8 + tierBonus(p.sp);   // 랭크는 가족 평균 종족값으로 → 진화해도 랭크가 그대로
-const rankOf = p => (rankT(p).find(([, v]) => rankScore(p) >= v) || RANKS[RANKS.length - 1])[0];   /* 종족값이 아주 낮으면 점수가 0 아래로 내려갈 수 있다 → F */
+const rankOf = p => (RANKS.find(([, v]) => rankScore(p) >= v) || RANKS[RANKS.length - 1])[0];   /* 종족값이 아주 낮으면 점수가 0 아래로 내려갈 수 있다 → F */
+/* v9.93 경완: 예전 기준 포켓몬은 그 랭크의 새 기준선까지 모자란 만큼(0~13) 31 아래 개체값에 1씩 나눠 더한다 → 랭크 그대로, 기준 하나 */
+function rkMig(P) { if (P.rv || !Array.isArray(P.iv)) return; const r = (RANKS0.find(([, v]) => rankScore(P) >= v) || RANKS0[RANKS0.length - 1])[0], t = RANKS.find(([k]) => k === r)[1]; let need = t ? Math.ceil(t - rankScore(P) - 1e-9) : 0;
+  while (need-- > 0) { const L = P.iv.map((v, i) => v < 31 ? i : -1).filter(i => i >= 0); if (!L.length) break; P.iv[L[Math.floor(Math.random() * L.length)]]++; } P.rv = 1; }
 // 능력치 = 개체값 + 종족값 한 줄로 (따로 보이지 않는다, 총합 줄 없음). 막대는 200 을 꽉 찬 것으로, 개체값 31 이면 금색
 const ivRows = P => { const bs = bsOf(P.sp); return P.iv.map((v, k) => { const t = v + bs[k]; return `<span>${IV_N[k]}</span><span class="b"><i class="${v === 31 ? 'max' : ''}" style="width:${Math.min(100, Math.round(t / 200 * 100))}%"></i></span><span class="v">${t}</span>`; }).join(''); };
 const shinyHue = sp => 70 + (sp * 47) % 220;
