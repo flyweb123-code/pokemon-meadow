@@ -6096,7 +6096,7 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, hunger: m.hunger, slpB: m.slpB, slpW: m.slpW, social: m.social, joy: m.joy, joyH: m.joyH || 0, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk, red: !!b.red })), lockT: S.lockT,
-    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, mg: S.mg || {}, fbag: S.fbag || {}, fbagT: S.fbagT || {}, lay: S.lay || {}, layAdd: S.layAdd || [], fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])], dexDot: !!S.dexDot };
+    gold: S.gold, box: S.box, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], dexFix1: !!S.dexFix1, buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, mg: S.mg || {}, fbag: S.fbag || {}, fbagT: S.fbagT || {}, lay: S.lay || {}, layAdd: S.layAdd || [], fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])], dexDot: !!S.dexDot };
 }
 let saveFrozen = false, tutFreeze = false, introPv = false;   // introPv: 튜토리얼 미리 보기 (끝나도 저장 안 함)
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { localStorage.setItem(KEY, JSON.stringify(serialize())); } catch (e) {} }
@@ -6107,7 +6107,11 @@ async function restore(d) {
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1; S.items = d.items || {}; S.itemSeen = d.itemSeen || { ...S.items };   /* v7.48: 예전 저장은 가진 것 모두 본 것으로 */ S.mg = d.mg || {}; S.fbag = d.fbag || {}; S.lay = d.lay && typeof d.lay === 'object' ? d.lay : {}; S.layAdd = Array.isArray(d.layAdd) ? d.layAdd : []; S.fbagT = d.fbagT || {}; S.fx = d.fx || {}; S.colT = d.colT || 0;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
   cleanPlaces();
-  S.dexNew = new Set(d.dexNew || []); S.dexDot = d.dexDot ?? !!S.dexNew.size;   // v10.02 경완: 도감 빨간 점은 도감 탭에 들어가면 사라진다 (NEW 표시는 닫을 때) S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));
+  S.dexNew = new Set(d.dexNew || []); S.dexDot = d.dexDot ?? !!S.dexNew.size;   /* v10.02 경완: 도감 빨간 점은 도감 탭에 들어가면 사라진다 (NEW 표시는 닫을 때) */
+  S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(sp)); (d.mons || []).forEach(o => S.unlocked.add(o.sp));   /* v10.18: 10.02 에서 이 줄이 위 줄 주석 안으로 들어가 도감 목록을 못 불러오고 빈 채로 저장됐다 */
+  S.dexFix1 = !!d.dexFix1; if (!S.dexFix1) { S.dexFix1 = true; const add = sp => { for (let k = 0; sp != null && SPECIES[sp] && k < 4; k++) { S.unlocked.add(+sp); sp = SPECIES[sp].fr; } };   /* v10.18 경완 '도감 등록한 거 없어짐': 한 번만, 박스·필드·짝꿍 포켓몬과 그 진화 전 모습, 최근 부화, 베타 켜기 전 백업의 도감으로 되살린다 */
+    [...(d.box || []), ...(d.mons || []), ...(d.buds || [])].forEach(o => add(o.sp)); (d.recentHatch || []).forEach(add); (d.dexNew || []).forEach(add);
+    try { const o = JSON.parse(localStorage.getItem('pk-meadow-v2-prebeta') || 'null'), bd = o?.d && JSON.parse(o.d); (bd?.unlocked || []).forEach(sp => { if (SPECIES[sp]) S.unlocked.add(+sp); }); } catch (e) {} }
   for (const o of [...(d.mons || [])].sort((a, b) => (b.uid === d.buddy) - (a.uid === d.buddy)).slice(0, MAX_MONS)) { const m = await spawn(o.sp, { ...o, quiet: true }); m.notes = o.notes || [];
     if (o.asleep) sleep(m, false); }
   // 앱을 닫아 둔 동안: 배고파지고 심심해지면서 그만큼 필드 친밀도 (친구가 옆에 있었는지 보려고 다 불러온 뒤에)
@@ -6370,7 +6374,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.15';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.18';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
