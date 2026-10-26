@@ -810,6 +810,12 @@ body.petting #dlg,body.petting #info{display:none!important}
 .rk{display:inline-block;box-sizing:border-box;width:20px;padding:0!important;text-align:center;font-size:11px;font-weight:700;color:#fff;padding:0 4px;border:2px solid rgba(0,0,0,.25)}
 .rk.S{background:#e8a020}.rk.A{background:#e04848}.rk.B{background:#8e48e8}.rk.C{background:#4e7fc0}.rk.D{background:#6f8574}.rk.E{background:#909098}.rk.F{background:#6a6a70}
 .pk .rk{position:absolute;left:3px;top:3px}
+#dexFxShield{position:fixed;inset:0;z-index:9800}
+#dexGrid button.dfx{position:relative;z-index:1}#dexGrid button.dfx::after{content:'';position:absolute;inset:-1px;border:2px solid #ffd84a;border-radius:4px;pointer-events:none;animation:dfxRing .9s steps(6,end) both}@keyframes dfxRing{0%{transform:scale(1.3);opacity:0}30%{transform:scale(1);opacity:1}75%{opacity:1}100%{opacity:0}}
+#dexGrid button.dfxIn img{animation:dfxPop .55s steps(8,end) both}@keyframes dfxPop{0%{transform:scale(.3);filter:brightness(0) opacity(.35)}45%{transform:scale(1.3);filter:brightness(2.6)}100%{transform:scale(1);filter:none}}
+#dexGrid .dfx-sp{position:absolute;left:50%;top:42%;width:0;height:0;pointer-events:none}#dexGrid .dfx-sp i{position:absolute;width:4px;height:4px;margin:-2px;background:#ffe680;box-shadow:0 0 0 1px #c88a10;animation:dfxSp .6s steps(6,end) both}
+#dexGrid .dfx-sp i:nth-child(1){--x:0;--y:-30px}#dexGrid .dfx-sp i:nth-child(2){--x:21px;--y:-21px}#dexGrid .dfx-sp i:nth-child(3){--x:30px;--y:0}#dexGrid .dfx-sp i:nth-child(4){--x:21px;--y:21px}#dexGrid .dfx-sp i:nth-child(5){--x:0;--y:30px}#dexGrid .dfx-sp i:nth-child(6){--x:-21px;--y:21px}#dexGrid .dfx-sp i:nth-child(7){--x:-30px;--y:0}#dexGrid .dfx-sp i:nth-child(8){--x:-21px;--y:-21px}
+@keyframes dfxSp{0%{transform:translate(0,0) scale(.5);opacity:0}25%{opacity:1}100%{transform:translate(var(--x),var(--y)) scale(1);opacity:0}}
 #dexGrid .newtag{left:auto;right:3px;top:3px;transform:none;animation:nbob 1.2s steps(2,end) infinite}@keyframes nbob{50%{transform:translateY(-3px)}}
 .pk .pk-new{position:absolute;right:4px;top:4px;width:7px;height:7px;background:#e04838}.pk .pk-new~.tgs{right:15px}.pk .tgs{position:absolute;right:3px;top:3px;display:flex;gap:2px}.pk .tg{font-size:9px;background:var(--frame);color:var(--win);padding:1px 3px}
 .pk .tg{background:#3c9a4c;color:#fff}.pk .tg.bud{background:#e8679a;color:#fff}
@@ -1672,7 +1678,8 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
         <div class="op-row"><span>베타 판 쓰기 (이 기기만)</span><button class="op-sw" id="betaSw" role="switch" aria-checked="false"><i></i></button></div>
         <div class="set-btns one"><button class="lk-btn main" id="updNow">배포된 최신 판 바로 받기</button></div>
         <div class="set-btns one"><button class="lk-btn main" id="newsPv">업데이트 알림창 미리 보기</button></div>
-        <div class="set-btns one"><button class="lk-btn main" id="tutPv">튜토리얼 미리 보기</button></div>   <!-- v8.04 경완: 오프닝·튜토리얼을 처음부터 (저장은 그대로) -->
+        <div class="set-btns one"><button class="lk-btn main" id="tutPv">튜토리얼 미리 보기</button></div>
+        <div class="set-btns one"><button class="lk-btn main" id="dexFxPv">도감 등록 연출 미리 보기</button></div>   <!-- v9.95 경완: 못 만난 포켓몬 3마리로 해 보고 원래대로 (저장 안 함) -->   <!-- v8.04 경완: 오프닝·튜토리얼을 처음부터 (저장은 그대로) -->
         <!-- v8.16 경완: 운영자 골드 맞추기 없앰 (v7.46) -->   <!-- v7.28 경완: 운영자 전용 — 봤다고 저장하지 않음 -->
         <div class="mgt-row"><span>기술 시험</span><select id="mgtType" aria-label="타입 (액티브 기술)"></select><select id="mgtRk" aria-label="랭크 (패시브)"></select><button class="lk-btn main" id="mgtGo">해 보기</button></div>   <!-- v6.21 경완: 운영자 전용 미니게임 기술 시험 (보상·기록 없음) -->
         <p class="op-note" id="updMsg" hidden></p>
@@ -6274,7 +6281,7 @@ const picked = new Set();
 const grid = $('#dexGrid'), dexBtns = {};
 grid.addEventListener('load', e => { if (e.target.tagName === 'IMG') dexImgFit(e.target); }, true);
 let dexMode = 'field';
-function openDex(mode = 'field') { dexMode = mode; dexSortReset(); sheet.classList.toggle('pick-buddy', mode === 'buddy'); $('#dexTitle').textContent = mode === 'buddy' ? '짝꿍 고르기' : '포켓몬 도감'; picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); sheet.hidden = false; $('#dexOwn').textContent = `${S.unlocked.size}/${Object.keys(SPECIES).length}`; { const r = S.unlocked.size / Object.keys(SPECIES).length * 100; $('#dexPct').textContent = (r >= 100 ? 100 : r < 10 ? r.toFixed(1) : Math.floor(r * 10) / 10) + '%'; }   /* v6.75 경완: 도감 완성률 */ refreshDexBadges(); filterDex(); if (!narrow.matches) $('#dexQ').focus(); }
+function openDex(mode = 'field') { if (!dexFx.on) dexFxFlush(); dexMode = mode; dexSortReset(); sheet.classList.toggle('pick-buddy', mode === 'buddy'); $('#dexTitle').textContent = mode === 'buddy' ? '짝꿍 고르기' : '포켓몬 도감'; picked.forEach(sp => dexBtns[sp].setAttribute('aria-pressed', 'false')); picked.clear(); sheet.hidden = false; $('#dexOwn').textContent = `${S.unlocked.size}/${Object.keys(SPECIES).length}`; { const r = S.unlocked.size / Object.keys(SPECIES).length * 100; $('#dexPct').textContent = (r >= 100 ? 100 : r < 10 ? r.toFixed(1) : Math.floor(r * 10) / 10) + '%'; }   /* v6.75 경완: 도감 완성률 */ refreshDexBadges(); filterDex(); if (!narrow.matches) $('#dexQ').focus(); }
 // the menu works like a tab bar: one window at a time, tapping the open one closes it
 function hideSheets() { sheet.hidden = true; $('#mgr').hidden = true; $('#run').hidden = true; $('#set').hidden = true; $('#shop').hidden = true; $('#ibag').hidden = true; }
 function tabTo(el, open) { const was = !el.hidden; closeToggles(); hideSheets(); if (!was) open(); }
@@ -6340,7 +6347,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '9.94';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '9.95';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9425,7 +9432,42 @@ function migrateBox() {
 S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.bagDry = 0; S.pity = { e: 0, l: 0 }; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked = new Set(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1;
 const hatchQ = [];
 
-function unlock(sp) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); trUpCheck(); (S.dexNew ||= new Set()).add(sp); if (dexBtns[sp]) { lockDexBtn(sp); dexCellReady(sp); } } }
+function unlock(sp, fx) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); trUpCheck(); (S.dexNew ||= new Set()).add(sp); if (fx && dexBtns[sp]) { dexFx.q.push(sp); return; } if (dexBtns[sp]) { lockDexBtn(sp); dexCellReady(sp); } } }
+/* v9.95 경완: 부화·진화로 새로 등록된 포켓몬은 창을 다 닫은 뒤 번호순 도감을 열어, 그 칸으로 스크롤하며 하나씩 채워 넣는다 (화면을 누르면 남은 것을 한꺼번에) */
+const dexFx = { q: [], on: false };
+function dexFxFlush() { const L = dexFx.q.splice(0); L.forEach(sp => { lockDexBtn(sp); dexCellReady(sp); }); return L; }
+$('#dexFxPv').addEventListener('click', async () => {   /* v9.95 경완: 운영자 — 못 만난 포켓몬 3마리를 잠깐 등록한 것처럼 채워 보고, 끝나면 원래대로 (저장 안 함) */
+  if (dexFx.on) return; const pool = Object.keys(SPECIES).map(Number).filter(sp => !S.unlocked.has(sp) && dexBtns[sp]); if (!pool.length) return;
+  const L = []; while (L.length < Math.min(3, pool.length)) { const sp = pool[Math.floor(Math.random() * pool.length)]; if (!L.includes(sp)) L.push(sp); }
+  for (let k = 0; k < 20 && dexFxBlocked(); k++) await wait(300); if (dexFxBlocked()) return;
+  const fz = saveFrozen, nw = L.filter(sp => !S.dexNew?.has(sp)); saveFrozen = true;
+  L.forEach(sp => { S.unlocked.add(sp); (S.dexNew ||= new Set()).add(sp); dexFx.q.push(sp); });
+  try { await dexFxRun(); } finally { L.forEach(sp => { S.unlocked.delete(sp); if (nw.includes(sp)) S.dexNew.delete(sp); lockDexBtn(sp); }); $('#dexOwn').textContent = `${S.unlocked.size}/${Object.keys(SPECIES).length}`; filterDex(); saveFrozen = fz; }
+});
+const dexFxBlocked = () => hatching || evolving || hatchQ.length || !$('#noti').hidden || !hatchEl.hidden || !!document.querySelector('#frMax:not([hidden]),#dexPop:not([hidden])');   /* 열린 창이 실제로 보이는지로 (notiOpen 값은 남아 있을 때가 있다) */
+function dexFxKick(ms = 450) { clearTimeout(dexFx.t); dexFx.t = setTimeout(dexFxRun, ms); }
+async function dexFxRun() {
+  if (dexFx.on || !dexFx.q.length) return;
+  if (dexFxBlocked()) return dexFxKick(600);
+  dexFx.on = true; const L = [...new Set(dexFx.q.splice(0))].sort((a, b) => a - b);
+  try {
+    $('#dexQ').value = ''; dexQv = ''; setFilter('dexType', 0); setFilter('dexGen', 0);
+    setMgrTab('dex'); syncTabs(); setFilter('dexSort', 1);
+    const own = $('#dexOwn'), tot = Object.keys(SPECIES).length; let n = S.unlocked.size - L.length; own.textContent = `${n}/${tot}`;
+    const shield = document.createElement('div'); shield.id = 'dexFxShield'; document.body.append(shield); let skip = false; shield.onclick = () => { skip = true; };
+    await wait(380);
+    for (const sp of L) {
+      const b = dexBtns[sp]; if (!b) continue;
+      if (!skip) { const sr = grid.getBoundingClientRect(), br = b.getBoundingClientRect(), y0 = grid.scrollTop, y1 = Math.max(0, Math.min(grid.scrollHeight - grid.clientHeight, y0 + (br.top - sr.top) - (sr.height - br.height) / 2)), D = Math.max(260, Math.min(900, 240 + Math.abs(y1 - y0) * .35)), t0 = performance.now();
+        await new Promise(res => { const st = () => { const k = Math.min(1, (performance.now() - t0) / D), e = k < .5 ? 4 * k * k * k : 1 - (-2 * k + 2) ** 3 / 2; grid.scrollTop = y0 + (y1 - y0) * e; if (k < 1 && !skip) requestAnimationFrame(st); else res(); }; requestAnimationFrame(st); });
+        b.classList.add('dfx'); await wait(skip ? 0 : 260); }
+      lockDexBtn(sp); dexCellReady(sp); own.textContent = `${++n}/${tot}`; b.classList.remove('dfxIn'); void b.offsetWidth; b.classList.add('dfx', 'dfxIn');
+      if (!skip) { b.insertAdjacentHTML('beforeend', '<span class="dfx-sp">' + '<i></i>'.repeat(8) + '</span>'); sfx('newdex'); haptic(1); await wait(760); }
+      setTimeout(() => { b.classList.remove('dfx', 'dfxIn'); b.querySelector('.dfx-sp')?.remove(); }, 900);
+    }
+    shield.remove();
+  } finally { dexFx.on = false; if (dexFx.q.length) dexFxKick(); }
+}
 // 새로 등록된 칸은 그림을 바로 넣고 순서도 미리 맞춰 둔다 → 도감을 열 때 없던 칸이 뒤늦게 생기는 모습이 안 보인다
 // v3.09: 작은 스프라이트(토중몬 등)를 칸 높이까지 늘리면 도트가 커 보인다(경완) → 도트 한 칸 최대 2배까지만 키우고 칸 높이는 그대로
 function dexImgFit(im, H = 56) { const h = Math.min(H, Math.round(im.naturalHeight * 2)); im.style.height = h + 'px'; im.style.marginTop = (H - h) + 'px'; im.dataset.fit = 1; }   // v6.13 경완: 크기를 맞추기 전 한 프레임 동안 원래 크기로 보였다가 줄어들던 것 → 맞추기 전엔 숨김 (CSS)
@@ -9461,7 +9503,7 @@ let trUpT = 0;
 function trUpCheck() { const i = trLevel().i; if (S.trI == null) S.trI = trLevel(S.unlocked.size - 1).i;   /* 처음엔 방금 등록 전 등급을 기준으로 */ if (i > S.trI) { clearTimeout(trUpT); trUpT = setTimeout(trUpShow, 900); } }
 function trUpShow() {
   const L = trLevel(); if (S.trI == null || L.i <= S.trI) return;
-  if (document.hidden || hatching || evolving || frMaxOpen || notiOpen) { clearTimeout(trUpT); trUpT = setTimeout(trUpShow, 1500); return; }
+  if (document.hidden || hatching || evolving || frMaxOpen || notiOpen || dexFx.on || dexFx.q.length) { clearTimeout(trUpT); trUpT = setTimeout(trUpShow, 1500); return; }   /* v9.95: 도감 채우기 연출이 끝난 뒤에 */
   S.trI = L.i; save(); frMaxOpen = true;
   const t = trOf();
   $('#frMax').classList.add('trup'); $('#frMaxT').textContent = '트레이너 등급 업!'; $('#frMax .win').setAttribute('aria-label', '트레이너 등급 업');
@@ -10011,7 +10053,7 @@ function rollEgg(e) {
 }
 // 태어난 포켓몬을 상자에 넣고 도감 등록, 이미 만난 종이면 골드
 function bornPoke({ g, sp, place, sh }) {
-  const P = newPoke(sp, { g, place, ...(sh ? { shiny: true } : {}) }), isNew = !S.unlocked.has(sp); unlock(sp); P.nw = true;   // 박스에 새로 들어온 표시 (확인하면 지움)
+  const P = newPoke(sp, { g, place, ...(sh ? { shiny: true } : {}) }), isNew = !S.unlocked.has(sp); unlock(sp, true); P.nw = true;   // 박스에 새로 들어온 표시 (확인하면 지움)
   return { g, sp, place, P, isNew, dupG: addGold(isNew ? NEW_EGG_G[g] : DUP_G[g]) };
 }
 const bornMsg = ({ g, sp, P, isNew, dupG }) => `${GRADE[g].n} 알에서 <b>${esc(SPECIES[sp].n)}</b>${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났다!<br><span class="small">${isNew ? `새로 만난 포켓몬이라 <b>${dupG}G</b>를 받았다` : `이미 만난 포켓몬이라 <b>${dupG}G</b>를 받았다`}</span>`
@@ -10302,7 +10344,7 @@ async function playHatch() {
   else { const m = S.mons.find(x => x.pid === P.id); log(`${GRADE[g].n} 알에서 ${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어나 필드에 나왔다!`, m ? [m] : [], true); }
   if (0) log(`${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났지만 필드가 꽉 차서 포켓몬 박스에 들어갔다.`, [], true);
   save(); renderRun(); refreshCap();
-  if (how === 'look') lookBorn(P.id);
+  if (how === 'look') lookBorn(P.id); else dexFxKick();
   if (hatchQ.length) playHatch();
 }
 const wait = ms => new Promise(r => setTimeout(r, ms));
@@ -10444,7 +10486,7 @@ async function hatchAll() {
   const nw = res.filter(r => r.isNew).length, sh = res.filter(r => r.P.shiny).length;
   log(`알 ${res.length}개가 한꺼번에 부화했다! ${res.map(r => SPECIES[r.sp].n).join(', ')}${nw ? ` (새로 만난 포켓몬 ${nw}마리)` : ''}${sh ? ` ✦ 색이 다른 포켓몬 ${sh}마리!` : ''}`, [], true);
   save(); renderRun(); refreshCap();
-  if (hatchQ.length) playHatch();
+  if (hatchQ.length) playHatch(); else dexFxKick();
 }
 let hatchPg = null;   // 모두 부화 목록일 때만
 cardPager(hatchEl, { can: d => !!hatchPg?.can(d), snap: (d, w) => hatchPg.snap(d, w), step: d => hatchPg?.step(d), skip: e => !hatchPg || !!e.target.closest('#hlStrip') });
@@ -10531,10 +10573,10 @@ async function evolve(m) {
   for (let i = 0; i < 3; i++) setTimeout(() => ring(m.x, m.y - m.h / 2), i * 180);
   burst(m, 'spark', '✦', 8); anim(m, 'hop');
   if (m.name === oldName || m.name.startsWith(oldName + ' ')) { m.name = m.name.replace(oldName, DEX[to].n); m.tag.textContent = m.name; }
-  unlock(to);
+  unlock(to, true);
   log(`축하해! ${J({ name: oldName },'은/는')} ${J(m,'으로/로')} 진화했다!`, [m], true);
   emote(m, '♪', 'note', 2, 'evolve'); m.evolving = false; setState(m, 'idle', 3);
-  infoEl.dataset.uid = ''; renderInfo(); evolving = false; save(); setTimeout(() => veil.remove(), 700);
+  infoEl.dataset.uid = ''; renderInfo(); evolving = false; save(); setTimeout(() => veil.remove(), 700); dexFxKick(900);
 }
 
 // lock-screen run: the game notes the start time, the phone (or Nike Run Club) writes the distance to
@@ -10875,7 +10917,7 @@ async function evolveWin(P, card, forceTo, tool) {   // tool: 쓴 도구 id → 
   await wait(180);
   evoMusicFade(1.2);
   const newTo = !S.unlocked.has(to); if (newTo) addGold(NEW_G);
-  P.sp = to; P.km = 0; if (b) { b.sp = to; b.km = 0; } unlock(to);
+  P.sp = to; P.km = 0; if (b) { b.sp = to; b.km = 0; } unlock(to, true);
   const fr0 = P.fr || 0; P.fr = Math.min(FR_MAX, fr0 + (EVO_FR[Math.min(2, evoStage(to))] || EVO_FR[1])); frMaxHit(P, fr0);   // 진화하면 친밀도가 오른다 (첫 진화 30, 두 번째 60)
   { const m = S.mons.find(x => x.pid === P.id); if (m) { m.sp = to; setForm(m, to); m.el.classList.remove('ditto'); if (m.name === fromN || m.name.startsWith(fromN + ' ')) { m.name = m.name.replace(fromN, toN); m.tag.textContent = m.name; } } }   // 필드에 있던 포켓몬도 새 모습으로
   await wait(700);
@@ -10905,7 +10947,7 @@ async function evolveWin(P, card, forceTo, tool) {   // tool: 쓴 도구 id → 
     $('#noti').hidden = false; sfx('newdex'); haptic(1);
     await new Promise(res => { const done = () => { $('#noti').hidden = true; $('#noti').onclick = null; notiOpen = false; res(); }; $('#notiOk').onclick = done; $('#noti').onclick = ev => { if (ev.target.id === 'noti') done(); }; });
   }
-  evolving = false; save();
+  evolving = false; save(); dexFxKick(900);
   notiSoon(600);   // 진화하는 동안 미뤄 둔 알림이 있으면
 }
 // the dex only lets you release species you have met
