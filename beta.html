@@ -41,6 +41,7 @@ body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop
 .slot.empty,.eslot.add,.bd-empty{transition:background .12s}
 .pp-x{border:0;background:none;font:inherit;font-size:20px;line-height:1;padding:6px 4px 6px 12px;margin:-6px -4px -6px 0;color:var(--dim);cursor:pointer}
 .pp-body{border:0!important;background:none!important;padding:0!important;margin:0 0 12px!important}.pp-body .ivs{margin-top:8px}
+.pp-na{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:baseline;margin-top:8px;padding:8px 10px;border:2px solid var(--inner);background:rgba(255,255,255,.5);font-size:14px}.pp-na .na-l{font-size:12px;font-weight:700;color:var(--dim)}.pp-na small{font-size:11.5px;color:var(--dim)}.ha-tag{display:inline-block;margin-left:4px;padding:0 5px;border-radius:4px;background:#7a3ec8;color:#fff;font-size:10.5px;font-style:normal;font-weight:700;vertical-align:1px}   /* v10.35: 성격·특성 */
 .ivs .fr-l{margin-top:4px}.ivs .hearts{margin-top:4px}
 .hearts.frtap{display:inline-flex;align-items:center;line-height:1;height:16px;color:#e04870;letter-spacing:1px;font-size:14px}.frbar>span:first-child,.ivs .fr-l{line-height:16px}
 .dexpop .boxbtn.white{background:#fff;color:var(--frame);border-color:var(--frame)}
@@ -6412,8 +6413,8 @@ document.addEventListener('click', e => {
       L.hidden = false; void L.offsetWidth; L.classList.add('on'); clearInterval(dT); let n = 0; dT = setInterval(() => { n = (n + 1) % 4; dots.textContent = '.'.repeat(n) || ' '; }, 380); },
     sub(t) { L.querySelector('.gl-s').textContent = t; },
     hide() { L.classList.remove('on'); clearInterval(dT); setTimeout(() => { if (!L.classList.contains('on')) L.hidden = true; }, 380); } };
-  const loadGymJs = () => window.Gym ? Promise.resolve() : new Promise((ok, no) => { const v = encodeURIComponent(APP_VER), c = document.createElement('link'); c.rel = 'stylesheet'; c.href = `gym/gym.css?v=${v}`; document.head.appendChild(c);
-    const s = document.createElement('script'); s.src = `gym/gym.js?v=${v}`; s.onload = () => window.Gym ? ok() : no(new Error('gym')); s.onerror = no; document.head.appendChild(s); });
+  const loadGymJs = () => window.Gym ? Promise.resolve() : new Promise((ok, no) => { const v = encodeURIComponent(APP_VER), c = document.createElement('link'); c.rel = 'stylesheet'; c.href = `gymb/gym.css?v=${v}`; document.head.appendChild(c);
+    const s = document.createElement('script'); s.src = `gymb/gym.js?v=${v}`; s.onload = () => window.Gym ? ok() : no(new Error('gym')); s.onerror = no; document.head.appendChild(s); });
   // 게임 본체는 함수 안에 있어서 gym.js 가 쓸 것만 꺼내 준다 (늦게 정의되는 것도 있어 getter)
   window.GA = { get S() { return S; }, get SPECIES() { return SPECIES; }, get TYPE_KO() { return TYPE_KO; }, get TYPE_C() { return TYPE_C; }, get RANKS() { return RANKS; }, get LEARN() { return LEARN; },
     tyIcon: (...a) => tyIcon(...a), sfx: (...a) => sfx(...a), save: () => save(), trOf: () => trOf(), esc: s => esc(s), menuDots: () => menuDots(), addGold: n => addGold(n), renderGold: () => renderGold(),
@@ -6442,6 +6443,8 @@ GA.thumb = P => ensureSprite(P.sp).then(() => thumbP(P)); GA.shinyHue = sp => sh
 window.gymBdgRow = () => { const sec = $('#pfGymBdg'), g = S.gym; if (!sec) return; const de = document.documentElement; sec.hidden = !(g && g.d && de.classList.contains('op') && de.classList.contains('gym-on')); if (sec.hidden) return;   // 운영자 '체육관 모드 보이기'를 켠 기기만 const b = g.bdg || {}, n = Object.keys(b).length;
   sec.querySelector('small').textContent = `${n}/18`; sec.querySelector('.gb-grid').innerHTML = TYPE_KO.map((t, i) => i ? `<img alt="${t}" title="${t} 자격 배지${b[i] ? '' : ' (아직)'}" src="gym/img/badge/${i}.png" class="${b[i] ? 'on' : ''}">` : '').join(''); };
 /*gym-hook6*/
+GA.natAb = P => nabLoad().then(() => natAb(P)); GA.natAbHtml = P => natAbHtml(P);
+GA.lift = (sp, sleep) => { const t = DEX[sp]; if (!t) return 0; const f0 = MON_FLY[sp] || 0; return Math.max(0, sleep ? (t.mv === 'hover' ? 6 : 0) + Math.min(0, f0) : liftBase(sp) + f0); };   // v10.35: 체육관 훈련장도 필드와 같은 떠 있는 높이
 GA.pmd = (sp, sex) => ensureSprite(sp).then(() => { const k = fKey(sp, sex); if (!isPmd(k)) return { img: SPRITES[k] }; return padAtlas(k).then(() => ({ P: SPRITES[k], s: scaleOf(k), wh: atlasSize(k) })); });
 /*gym-hook7*/
 GA.art = () => ({ ART, seasonCv, season: () => season() });
@@ -6488,7 +6491,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.34';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.35';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8246,6 +8249,7 @@ $('#dpAct').onclick = async () => {
   if (dexMode === 'buddy') { if (S.buds.some(b => b.sp === sp)) return; closeCard(); picked.clear(); picked.add(sp); await setBuddySp(sp); return; }
   // 바로 필드에 풀어놓는다
   const P = freePoke(sp); if (S.mons.length >= MAX_MONS || !P) return;
+  if (!(await yardAsk(P))) return;
   closeCard(); sheet.hidden = true;
   try { const m = await spawn(sp, { pid: P.id }); if (m) select(m); } catch (e) { log(`${SPECIES[sp].n}의 그림을 불러오지 못했다.`); }
 };
@@ -8307,7 +8311,7 @@ $('#dexGo').onclick = async () => {
   const list = [...picked]; picked.clear(); Object.values(dexBtns).forEach(b => b.setAttribute('aria-pressed', 'false'));
   sheet.hidden = true;
   let last = null;
-  for (const sp of list) { const P = freePoke(sp); if (!P) continue; try { last = await spawn(sp, { pid: P.id }); } catch (e) { log(`${SPECIES[sp].n}의 그림을 불러오지 못했다.`); } }
+  for (const sp of list) { const P = freePoke(sp); if (!P || inYard(P.id)) continue; try { last = await spawn(sp, { pid: P.id }); } catch (e) { log(`${SPECIES[sp].n}의 그림을 불러오지 못했다.`); } }
   if (last) select(last);
 };
 
@@ -8530,6 +8534,21 @@ $('#boxQ').addEventListener('input', () => { if (!$('#boxQ').value.trim() && box
 $('#boxGrid').addEventListener('click', e => { const b = e.target.closest('[data-id]'); if (b && mgPick) { const P = boxOf(+b.dataset.id); if (!P) return; sfx('tap'); mgr.hidden = true; mgMon = S.mons.find(o => o.pid === P.id) || { pid: P.id, sp: P.sp, form: P.sp, sk: fKey(P.sp, P.sex), name: nameOf(P) }; mgOpenG = ''; mgView('sel'); return; }   /* v7.57 경완: 게임 고르기에서 함께 놀 포켓몬을 박스 화면에서 골라 바꿈 */
   if (b) { ppBud = false; ppSolo = false; openPoke(+b.dataset.id); } });
 let pokeId = null;
+// v10.35 경완 '성격은 포켓몬 정보카드에서도', '특성, 숨겨진 특성': 체육관 배틀과 같은 규칙 (gym/abil.json, 체육관에서 이미 정해졌으면 그 값)
+let NAB = null; const nabLoad = () => NAB ? Promise.resolve(NAB) : (nabLoad.p = nabLoad.p || fetch('gym/abil.json?v=' + encodeURIComponent(APP_VER)).then(r => r.json()).then(d => { NAB = d; NAB.ntm = Object.fromEntries(d.nt.map(x => [x[0], x])); return d; }).catch(() => { nabLoad.p = null; return null; }));
+const nabSeed = s => { let h = 2166136261; for (const ch of String(s)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 1e6) / 1e6; }; };
+function natAb(P) {
+  if (!NAB) return null; const m = S.gym?.mon?.[P.id], L = NAB.sp[P.sp] || [['noability']], nm = L[0], h = L[1];
+  if (m?.nat) return { nat: m.nat, ab: m.ha && h ? h : nm.includes(m.ab) ? m.ab : nm[0], ha: !!(m.ha && h) };
+  const r = nabSeed('gm' + P.id), nat = NAB.nt[Math.floor(r() * NAB.nt.length)][0], ab = nm[Math.floor(r() * Math.min(2, nm.length))], ha = !!h && nabSeed('ha' + P.id)() < .05;
+  return { nat, ab: ha ? h : ab, ha };
+}
+const STAT_K = { atk: '공격', def: '방어', spa: '특수공격', spd: '특수방어', spe: '스피드' };
+function natAbHtml(P) {
+  const o = natAb(P); if (!o) { nabLoad().then(() => document.querySelectorAll(`.pp-na[data-na="${P.id}"]`).forEach(e => { e.innerHTML = natAbHtml(P); })); return '<span class="na-l">성격</span><span>…</span><span class="na-l">특성</span><span>…</span>'; }
+  const n = NAB.ntm[o.nat] || [o.nat, o.nat];
+  return `<span class="na-l">성격</span><span><b>${esc(n[1])}</b>${n[2] ? ` <small>${STAT_K[n[2]]}↑ ${STAT_K[n[3]]}↓</small>` : ' <small>보정 없음</small>'}</span><span class="na-l">특성</span><span><b>${esc(NAB.ab[o.ab] || o.ab)}</b>${o.ha ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</span>`;
+}
 function openPoke(id, dir = 0, quiet = false, noCry = false) {
   const P = boxOf(id); if (!P) return; if (!quiet && P.nw) { P.nw = false; save(); renderBox(); } if (!quiet && !noCry && ($('#pokePop').hidden || pokeId !== id)) playCry(P.sp, .1); pokeId = id;
   const L = pokeList(), i = L.indexOf(P), d = SPECIES[P.sp], rk = rankOf(P);
@@ -8539,6 +8558,7 @@ function openPoke(id, dir = 0, quiet = false, noCry = false) {
   img.src = thumbP(P) || ''; if (!thumbOf(P.sp)) ensureSprite(P.sp).then(() => { if (pokeId === id) img.src = thumbP(P); }).catch(() => {});
   $('#ppBody').innerHTML = infoHead(P, P.sp, nameEdit('ppName', nameOf(P), P.sex), nameOf(P) !== d.n ? `<span class="ih-sp">${esc(d.n)}</span>` : '')
     + `<div class="ivs">${ivRows(P)}<span class="fr-l">친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>`
+    + `<div class="pp-na" data-na="${P.id}">${natAbHtml(P)}</div>`
     + moveCard(P.sp, P.fr || 0, (P.fr || 0) >= FR_MAX)
     ;
   { const inp = $('#ppName'); inp.addEventListener('input', () => { inp.style.width = (Math.max(1, inp.value.length) + .15) + "em"; }); inp.addEventListener('change', () => renameBox(P, inp.value)); inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); }); }
@@ -8602,7 +8622,7 @@ $('#ppField').onclick = async () => {
   const P = boxOf(pokeId); if (!P) return;
   const m = S.mons.find(x => x.pid === P.id);
   if (m) { if (boxFromSlot) return; sfx('tap'); removeMon(m); }   // 눌려 있던 버튼이 중간 모션 없이 바로 '필드에 내보내기'로
-  else if (S.mons.length < MAX_MONS) { const fb = $('#ppField'); if (fb.classList.contains('pressd') || fb.classList.contains('sunk')) return; sfx('tap');
+  else if (S.mons.length < MAX_MONS) { const fb = $('#ppField'); if (fb.classList.contains('pressd') || fb.classList.contains('sunk')) return; if (!(await yardAsk(P))) return; sfx('tap');
     if (boxFromSlot) { fb.classList.add('pressd'); await wait(110); fb.classList.remove('pressd'); }   // 빈 슬롯에서 왔으면 바로 눌린 뒤 필드로
     else { fb.classList.add('sunk'); fb.textContent = '필드에 나감'; }   /* v4.39 경완: 부화 창 '필드로' 처럼 눌린 채 '필드에 나감' (다시 누르면 빼기) */   // 그림을 불러오는 동안 기다리지 않고 먼저 눌린 모양으로
     try { markNew(await spawn(P.sp, { pid: P.id })); } catch (e) {} if (boxFromSlot && S.mons.some(x => x.pid === P.id)) { refreshCap(); save(); closePoke(); setMgrTab('field'); return; } }
@@ -8631,7 +8651,7 @@ $('#openFld').onclick = () => menuTo(fldOpen, 'fld');   // 짝꿍 고르다 나�
 $('#closeMgr').onclick = closeMgr;
 // fill up to six free spots with random species from the dex
 $('#mgrRandom').onclick = async () => {
-  const btn = $('#mgrRandom'), free = MAX_MONS - S.mons.length, pool = S.box.filter(p => !onField(p.id));
+  const btn = $('#mgrRandom'), free = MAX_MONS - S.mons.length, pool = S.box.filter(p => !onField(p.id) && !inYard(p.id));
   const say = t => { btn.textContent = t; setTimeout(() => btn.textContent = '무작위', 2200); };
   if (!pool.length) return say('내보낼 포켓몬이 없어요');
   if (free <= 0) return say('필드가 꽉 찼어요');
@@ -9590,7 +9610,13 @@ function frMaxWin(P) {
   $('#frMaxOk').onclick = done; $('#frMax').onclick = ev => { if (ev.target.id === 'frMax') done(); };
 }
 // 필드에 나갈 개체: 같은 종 중 필드에 없는 것, 랭크 높은 순
-const freePoke = sp => S.box.filter(p => p.sp === sp && !onField(p.id)).sort((a, b) => ivSum(b) - ivSum(a))[0] || null;
+const freePoke = sp => S.box.filter(p => p.sp === sp && !onField(p.id)).sort((a, b) => inYard(a.id) - inYard(b.id) || ivSum(b) - ivSum(a))[0] || null;   // v10.35: 체육관 훈련장에 있는 포켓몬은 뒤로
+// v10.35 경완 '훈련장에 있는 포켓몬 다시 필드로 보낼 때 알림창': 훈련 중이면 먼저 물어본다
+const inYard = id => !!S.gym?.tr?.some(e => e.id === id);
+function yardAsk(P) { return new Promise(ok => { if (!P || !inYard(P.id)) return ok(true); const el = $('#itemPop');
+  el.innerHTML = `<div class="win ipwin bag-ask" role="dialog" aria-label="훈련장에서 데려오기"><p>${J({ name: nameOf(P) }, '은/는')} 체육관 훈련장에서 훈련 중이에요.<br>필드로 보내면 훈련장에서 빠져요. 보낼까요?</p><div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn main" data-yes>필드로</button></div></div>`;
+  el.hidden = false; sfx('open');
+  el.onclick = e => { if (e.target === el || e.target.closest('[data-no]')) { el.hidden = true; sfx('tap'); ok(false); return; } if (!e.target.closest('[data-yes]')) return; el.hidden = true; sfx('tap'); ok(true); }; }); }
 // 예전 저장: 필드·도감·짝꿍에 있던 포켓몬을 상자에 한 마리씩 넣는다 (이로치 아님)
 // 2026-10-14 새벽(한국 시각) 런닝이 반영되며 알이 저절로 깨졌던 것을 한 번만 되돌린다 (사용자 요청: 부화기에서 직접 부화)
 function undoAutoHatch() {
@@ -9700,7 +9726,7 @@ const rollGrade = () => { let r = Math.random(); for (let g = 1; g <= 5; g++) if
 const dayKey = (t = Date.now()) => { const d = new Date(t); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
 function today() { if (!S.today || S.today.d !== dayKey()) S.today = { d: dayKey(), walk: 0, eggs: 0 }; return S.today; }
 // 트레이너: 이름·성별(금·은·크리스탈의 주인공 그림)·등급(지금까지 달린 거리)
-const TR_OW = { m: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAADACAYAAABlPmF2AAAFmklEQVR42u1cPXDiRhT+lFyhzFwBV+ESd1wH3eJKSoe70IV0XOXQ4W5dJDPQQUdcQWdSnVM57oyKjKSZK6C6o8iMuc6uDJ1VZGZTiJUFBlsLEs7E75vRDGjF/r590vv0PgACgfDC0FR/cJTLiafKT8djpTrfqDZeSaVQzKdXljujKZDLCZVOfKM6A+saf65s6w7I0T+HSir17DJtagPCZuzJkTqjKQDgwHUj1/1mE8uVDeX+dAAA48Pixrsg6hKIj9xAfzbDlHcBAFPexfiwiPFhceFcfzbDR24AgIhzu4rrTl0AEIxxcXcnVh6McRG+NnYb4IaBarmASl9feUG/4qF3PkTTsiLXrSnOAgAgm89CO6hB2B2/kvnnyWgCANivtSPX/a1CB359e6//Uni/h9ntDG/vdZjmewDAP5N7ZNPfAQB650P89fWrlsg2ZIzDdZuQSxGGnHp5zSZufi24YQhhdwRjXDDGhc2YNLLgsBkLyoXdEdwwRKyecDKaoF/xgu82Y7i4+IyLi8+QDkoaorSFWDEfUTBacVQKtp84Ki3MStTRK4MxLupndrDfw8dSWWLPAwIA6mc2AKD90wFWfVepV7kDjHEAWLb0decTwTo3G9n9EggEAoFA/ADxA/8pfkB5BmRorloWK0HxHFQICqUZ6M9msVyzMUGRzmQWGjhwXTnaoPF0JqNEUERdAnHdqWO/1gY3DExvb1delM5k0LQsyGuj1K9kA/MQDQCQLwIjnyJa+DwnJxIhKBamVXZEItRwYoGJYIwLbhjiqvs4PL/qMhEOYGM1wjk/AAAoeV4QnocPWcYYh7A7iBohR74XTEYTmPoQ8IBBX0ejv7dQflK9QQkeTN3BZFRIlh+46jIhrn9cOMLLosIPKBkLY1wUfy6h5B2vLL/UW3B+u4TrNpMLzyUfUPKOMZjzhWbFw6XeehF+IDw7xA8QCAQCgUD8QLL8wHONJ8oPyGmXb8t3zQ+Ihv0lMX4gsg1UUik4zhekN2xom10g7u6E33jzQyR+4HQ8jpWg0N698+ua8m6QrLCqYckPJLEEmtuuiYFXRH72x1puYBMo+QH/3XEJ+7U2ZC7B8GaIcqmMyWiinLyg5AealqX1zofI5rPghoFsPgsAKOwVljkCLW4jfBSkrsodkCHa9x9cpXo3uhfI9ZasyFEuh3I9BdP0Z0Xb/z1y3RvlEZU8DweuG8SDp24TZbCAJ4jdFS/d7YJRh3HenuGkegMzlOSQeIB63amHc4bCJEVyRig7UD+zofdOAABetbERN7DVDMhkllA2xW6eiJbZkl2OmkAgEAgEIiheOUERhYQggQMJHEjgkJjAgRuGkJkRwI4FDpIP+DQ1Mfv7E+IWOCjtgqZloWlZgcBBjrhaLoSnPrloWMaDc0ezVuCAuDMo5uupmboTeLtlgcOlrsNp7cFp7T3KL4l3CeCnbxTzaUyLvg2k82lcju+TUVas4AVWChzm21RZXaFt2AnfJfvZEluF6Bt1YJfJCk/uCnqgJBAIBALxA8QP/C/4ARI4kMDhxQUOkfwANwxZYdDQOoGDKj8Q2RFdd+qo9HU0LT8S4ngIQEfOw6t8bhhoWlb8/ICkZWTku8wFcMPAwCsGHUxkGzLG0cIAXhXQe4uFXtXXHQy8olLIpnIv0EzdEU8KHDwPg/ly7dfaIkonlPyAnPZVSQryXF8xgUHZFR/DBAAMBg9khPx8DBP7tbbSLlB+HpD/sNCoDhYEDvPsGeU6tyIoQlkTO+cJiB8gEAgEAvEDr5AfIIFDUvwACRxI4LC1wKF3PkSj8YICh7DW4HUIHDDPJQEAaRPpTAZmxduJwCH4J4bisS9kGKV+QMsbwAvxBImG55PRZCFPQL4936XAYeHPLupndpBTsFOBwxJnsDwjWtIdeKpDpDUgEJTwL+TmOxU6aOQIAAAAAElFTkSuQmCC', f: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAADACAYAAABlPmF2AAAE00lEQVR42u1cIXTbSBD97jtganYHHZYrctiqaF2WhOWQDR3UhLlMhhFqw3RF9jEFXQ7ZsBKyzGLkmEmwRU2h2BywpZMU2dbKUnJt5r+n9yzvWju7M7PSfM8IYDAYz4ya6g+E0Glb+2xm1CqTVgidxuMFfftGmcd4vKBdAqbxSlUITfu9UNveAgihk653dvbT9Q5UVuFV3sEnkysAgOveR983BidoDE6i87BtMrnKLYSyChrGOVz3HssTDZPjD5gcf8DyRIPr3qNhnFfmBSSEjlAFmwZ60IcAAMO4wWxmFPKybL1KSWsh8noBrX9T3groUkYndqBldmrX3eiz4TjlrQCAaFae2SeamgSAaGomPntmP5x5eJRnhLqU4azgz33EV0SXEv7cj2YebytdBeEAvbOjRIfR7V1i8NJVEDfEz0MRX2YCQFI+MsBSjRBrPcOf++hadbiWD63bBADU6x0EwQ2sboBmq4nam8vc11baiEI9A8B79wKu5eOqZ+Oo9z2zTxW3Y5oKsRIA7f+2YMuHba8Gfns+K1X3mUJIuSDP7NNUCJoKQZ7ZJykXufW+1wMJABqPFwCA09PXAIDUeaWzT2xMW84ZDAaDwWB+gPmBF8IPpFGEH/ilED+wDsOz2h42tO3lBbqUZAeaEj/QrrswHKdWlhuSLiXiQmxCbPBc188tQBgFtzTg2s7mB/ptF3M3CkzLFeBvXWLuAi1te8ewzx9GuSuQCNE3CTF31dmRV0V2xLmb77vSw/PQDrYaoYL+VVaAPLOfW9J131JDtSgaTjEgFCew1uE7eWa/IobE60Q8wGDUTjR+hA0AeDObKV1baSsOB7+yhrC6f+GLtbK837oaerdDOI56eK7MkGTwAcwPMBgMBoPB/ADzA4/4AZWHk0r4gfUj2o/BDygL8KAPd/IDp6evw/+aaZen1cq2gRQ/gNIECFmSXQhzCPKG6EoqsLoBAODg8hqe2cfo9m5j37z8QG43NBynNrq9Q7PVhC4lmq1mNNOHr1/R0naTF3uvgOE4NQxAvbMj+HN/lS8AiU/LJRrur4V2V2UvaHcDdEf10rZ35a14MGpDuzhexWNTMzNlo+zsiQTeHR4SeR16d3iYSGJJHdWtQDxM9+d+OqGlVnV4DgBY55DAtuqRXTxF4kIiPB+PFzQVgsbjxV6h+T4SU0nXYTAYDAaDCQomKH5CgoILHKrwAi5w4AKHygoclPgBz+zj4PI6KnAIB+2dHT0qcChdAMNx0Ds7ghA62l0bB+fXT37jiuxACJ2kXBB5ncjq47aBsqnauMccByumLAhu8N69wFXPjjrEihtqZW9EiZVIFzl8hK2cuLC3OsIih6LUzL7S0nMkLWQaJT9UMhgMBoP5AeYHXjY/kAYXOHCBAxc4/JAFDnndkNI5I0UHLLoCtYPL67hxbSUyqihwAIDo1Q/PVuDweSiik/poIz9QKU+QeOkF8wPMDzAYDAaD+QHmB/63/AC4wKGCyCjBAXCBwza8vAKHcLZFixyUt01dSgpfjhjmEmzKG8hDVCh7gR1osK1kvsg+UBag9f0f/Dm8AHAGDLCRM8hL06gKQEDyJYhhyP723CmkXuUV+LRconG7Kmhpr70iLsyTvCAxfYS36fAVEU/BD2SqpkpmhMH4efEvgZyqh1J67jcAAAAASUVORK5CYII=' }; /*trow-frlg*/
+const TR_OW = { m: 'data:image/png;base64,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', f: 'data:image/png;base64,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' }; /*trow-pt*/   // v10.35 경완: 주인공을 플라티나 광휘·빛나로 (프로필·로딩·체육관)
 const TR_LV = [[0, '견습 트레이너'], [10, '초보 트레이너'], [30, '신참 트레이너'], [60, '숙련 트레이너'], [100, '베테랑 트레이너'], [160, '엘리트 트레이너'], [250, '에이스 트레이너'], [400, '체육관 관장'], [600, '챔피언'], [850, '사천왕'], [1025, '포켓몬 마스터']]   /* v3.64 경완: 사천왕을 챔피언 다음 단계로 */;   // 모은 도감 수
 const trOf = () => S.tr || (S.tr = { n: '', sex: 'm' });
 const TN = () => trOf().n || '트레이너';
