@@ -123,4 +123,18 @@ def patch2(path):
     s = s[:k] + JS2.lstrip('\n') + s[k:]
     open(path, 'w', encoding='utf-8').write(s); print(path, 'ok2')
 
-for p in sys.argv[1:]: patch(p); patch2(p)
+MARK3 = '/*gym-hook3*/'
+# 3단계 훅 (v10.25): 체육관 BGM(플래티넘 원본 소리를 받아 gym/bgm.js 가 연주)이 필드 곡과 같은 소리 통로·볼륨을 쓰게, 배틀 울음소리
+JS3 = MARK3 + r"""
+GA.audio = () => audio(); GA.bgmGain = () => { if (!audio()) return null; bgmRoute(); return bgm.gain; }; GA.bgmOn = () => bgmOn; GA.cry = (sp, d) => playCry(sp, d);
+"""
+
+def patch3(path):
+    s = open(path, encoding='utf-8').read()
+    if MARK3 in s:
+        print(path, 'already3'); return
+    k = s.index('// 운영자 모드·테스트 버튼 (이 기기에만 저장)')
+    s = s[:k] + JS3.lstrip('\n') + s[k:]
+    open(path, 'w', encoding='utf-8').write(s); print(path, 'ok3')
+
+for p in sys.argv[1:]: patch(p); patch2(p); patch3(p)
