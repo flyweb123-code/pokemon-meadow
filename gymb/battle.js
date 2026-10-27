@@ -8,6 +8,7 @@
 const GA = window.GA, { sfx, esc } = GA;
 const SPECIES = GA.SPECIES, TYPE_KO = GA.TYPE_KO, S = GA.S;
 const IMG = 'gym/img/';
+const trSrc = k => window.Gym?.k?.trSrc?.(k) || `${IMG}tr/${k}.png`;
 const VER = ((document.currentScript && document.currentScript.src.match(/[?&]v=([^&]+)/)) || [])[1] || '';
 const wait = ms => new Promise(r => setTimeout(r, ms));
 const clampN = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -126,7 +127,7 @@ function fillTh(root) { root.querySelectorAll('img[data-th]').forEach(im => { co
   // 트레이너 포켓몬(종만 앎)도 포켓몬 상자와 같은 그림 (경완 2026-10-27)
   root.querySelectorAll('img[data-sp]').forEach(im => { if (im.dataset.ok) return; im.dataset.ok = 1; GA.thumb({ sp: +im.dataset.sp }).then(u => { if (u) im.src = u; }).catch(() => {}); }); }
 const pkSrc = (sp, o = {}) => `${IMG}pk/${sp}${o.b ? 'b' : ''}${o.s ? 's' : ''}${o.f && FEM.has(+sp) ? 'f' : ''}.png?v=${VER}`;
-const TR_KO = { youngster: '반바지 꼬마', lass: '짧은 치마', bug_catcher: '곤충채집 소년', camper: '캠프 보이', picnicker: '피크닉 걸', hiker: '등산가', fisherman: '낚시꾼', swimmer_m: '수영팬티 소년', swimmer_f: '비키니 아가씨', cool_trainer_m: '엘리트 트레이너', cool_trainer_f: '엘리트 트레이너', beauty: '아가씨', gentleman: '신사', super_nerd: '괴짜', black_belt: '태권왕', bird_keeper: '새 조련사', psychic_m: '초능력자', psychic_f: '초능력자', engineer: '기술자', sailor: '뱃사람', rocker: '로커', tamer: '조련사', school_kid_m: '학원 소년', school_kid_f: '학원 소녀', battle_girl: '배틀걸', channeler: '기도사', juggler: '마술사', aroma_lady: '아로마 아가씨', ruin_maniac: '유적 마니아', poke_maniac: '포켓몬 마니아', pokemaniac: '포켓몬 마니아' };
+const TR_KO = { youngster: '반바지 꼬마', lass: '짧은 치마', bug_catcher: '곤충채집 소년', camper: '캠프 보이', picnicker: '피크닉 걸', hiker: '등산가', fisherman: '낚시꾼', swimmer_m: '수영팬티 소년', swimmer_f: '비키니 아가씨', cool_trainer_m: '엘리트 트레이너', cool_trainer_f: '엘리트 트레이너', beauty: '아가씨', gentleman: '신사', super_nerd: '괴짜', black_belt: '태권왕', bird_keeper: '새 조련사', psychic_m: '초능력자', psychic_f: '초능력자', engineer: '기술자', sailor: '뱃사람', rocker: '로커', tamer: '조련사', school_kid_m: '학원 소년', school_kid_f: '학원 소녀', battle_girl: '배틀걸', channeler: '기도사', juggler: '마술사', aroma_lady: '아로마 아가씨', ruin_maniac: '유적 마니아', poke_maniac: '포켓몬 마니아', pokemaniac: '포켓몬 마니아', ninja_boy: '닌자 보이', dragon_tamer: '드래곤 조련사', skier_f: '스키어', poke_kid: '포켓몬 꼬마', artist: '화가', cyclist_m: '사이클링 보이', jogger: '조깅맨' };
 const NAMES_M = ['철수', '민준', '지훈', '현우', '도윤', '준서', '태양', '하준', '시우', '건우', '동현', '재민', '우진', '성민', '영호'];
 const NAMES_F = ['영희', '서연', '지우', '하은', '수아', '민지', '예린', '소희', '유나', '채원', '다은', '지민', '나연', '보람', '은비'];
 // 연습 상대 (도전자 방문은 3단계): 트레이너 종류별로 어울리는 포켓몬
@@ -427,7 +428,7 @@ async function encounter(opts) {
     w.insertAdjacentHTML('beforeend', Array.from({ length: 12 }, (_, i) => `<i class="st ${i % 2 ? 'r' : 'l'}" style="top:${(i * 100 / 12).toFixed(3)}%;animation-delay:${i * 28}ms"></i>`).join(''));
     await wait(760);
   } else {
-    w.insertAdjacentHTML('beforeend', `<i class="bk"></i><div class="band"><i class="mug" style="background-image:url(${IMG}tr/${opts.foe.tr}.png)"></i><b><small>${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`);
+    w.insertAdjacentHTML('beforeend', `<i class="bk"></i><div class="band"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`);
     await wait(1900);
   }
   return () => { w.classList.add('out'); setTimeout(() => w.remove(), 520); };
@@ -449,7 +450,7 @@ async function run(opts) {
   const encDone = await encounter(opts);
   el.classList.remove('off'); el.hidden = false; el.className = 'bt intro';
   $b('.bt-bg').style.backgroundImage = `url(${IMG}bt/bg_${opts.bg || 'in1'}.png)`;
-  $b('.bt-tr.e').style.backgroundImage = `url(${IMG}tr/${opts.foe.tr}.png)`;
+  $b('.bt-tr.e').style.backgroundImage = `url(${trSrc(opts.foe.tr)})`;
   $b('.bt-tr.p').style.backgroundImage = `url(${opts.meBackUrl || `${IMG}trb/${meF ? 'pt_f' : 'pt_m'}.png`})`;
   ['e', 'p'].forEach(s => { $b(`.bt-hb.${s}`).classList.remove('on'); monEl(s).className = `bt-mon ${s}`; setSt(s, ''); });
   $b('.bt-msg .t').textContent = ''; idlePanel();

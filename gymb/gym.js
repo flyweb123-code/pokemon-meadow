@@ -8,6 +8,9 @@ const GA = window.GA, { tyIcon, sfx, save, trOf, esc, menuDots } = GA;
 const SPECIES = GA.SPECIES, TYPE_KO = GA.TYPE_KO;
 const S = GA.S;
 const IMG = 'gym/img/';
+// 4세대 플라티나 그림 (경완 2026-10-27 'npc들도 4세대 pt에 맞춰야'): 있으면 pt/ 에서, 걸음 그림은 32칸
+const PT_TR = new Set('artist battle_girl beauty bird_keeper black_belt bug_catcher camper champion_cynthia channeler cool_trainer_f cool_trainer_m cyclist_m dragon_tamer elite_four_aaron elite_four_bertha elite_four_flint elite_four_lucian fisherman gentleman hiker jogger lass leader_byron leader_candice leader_fantina leader_gardenia leader_maylene leader_roark leader_volkner leader_wake ninja_boy picnicker poke_kid pokemaniac psychic_m rival_barry rocker ruin_maniac sailor skier_f super_nerd swimmer_f youngster'.split(' ')), PT_OW = new Set('aaron artist barry battle_girl beauty bertha black_belt boy bug_catcher byron camper candice channeler cooltrainer_f cooltrainer_m crasher_wake cyclist_m cynthia dragon_tamer fantina fisher flint gardenia gentleman gym_guy hiker jogger lass lucian man maylene ninja_boy picnicker poke_kid poke_maniac roark rocker ruin_maniac sailor scientist skier_f swimmer_f_land volkner youngster'.split(' '));
+const trSrc = k => `${IMG}${PT_TR.has(k) ? 'pt/' : ''}tr/${k}.png`, owSrc = k => `${IMG}${PT_OW.has(k) ? 'pt/' : ''}ow/${k}.png`, owW = k => PT_OW.has(k) || /^pt_/.test(k || '') ? 32 : 16;
 const VER = ((document.currentScript && document.currentScript.src.match(/[?&]v=([^&]+)/)) || [])[1] || '';
 const loadJs = (src, g) => window[g] ? Promise.resolve() : new Promise(ok => { const x = document.createElement('script'); x.src = `${src}?v=${VER}`; x.onload = x.onerror = () => ok(); document.head.appendChild(x); });
 const bgmPlay = n => { try { window.GymBGM?.play(n); } catch (e) {} };
@@ -18,24 +21,30 @@ const clampN = (v, a, b) => Math.max(a, Math.min(b, v));
 // ---------- 체육관 디자인 (본가 관동 체육관 맵) ----------
 // 좌표는 16px 칸. leader: 관장(나) 자리, door: 문, path: 문 → 관장 앞까지 도전자가 걷는 길(꺾이는 점들),
 // slots: 고용 트레이너 자리 [x, y, 보는 방향] (도전자는 그 트레이너가 보는 칸에 멈춰서 배틀), guy: 체육관 안내원
+// 4세대 플라티나 체육관 (본가 3D 맵을 위에서 비스듬히 본 그림으로 뽑음). old: 예전 칸토 디자인 id
 const DESIGNS = [
-  { id: 'pewter', n: '바위 계단', sub: '회색시티 체육관', w: 13, h: 16, leader: [6, 5], door: [6, 14], guy: [8, 13],
-    deco: [[2, 5], [10, 5], [3, 9], [9, 9], [2, 11], [10, 11], [2, 13], [10, 13]],
-    path: [[6, 14], [6, 6]], slots: [[7, 13, 'l'], [5, 11, 'r'], [7, 10, 'l'], [5, 9, 'r'], [7, 8, 'l']] },
-  { id: 'cerulean', n: '물 위 다리', sub: '블루시티 체육관', w: 17, h: 20, leader: [8, 6], door: [8, 18], guy: [7, 18],
-    deco: [[2, 3], [14, 3], [1, 8], [15, 8], [1, 13], [15, 13], [5, 18], [11, 18]],
-    path: [[8, 18], [8, 16], [9, 16], [9, 10], [8, 10], [8, 7]], slots: [[7, 16, 'r'], [8, 13, 'r'], [10, 10, 'l'], [7, 9, 'r'], [9, 8, 'l']] },
-  { id: 'vermilion', n: '번개 관문', sub: '갈색시티 체육관', w: 11, h: 21, leader: [5, 2], door: [5, 19], guy: [4, 18],
-    deco: [[1, 3], [9, 3], [1, 9], [9, 9], [1, 13], [9, 13], [1, 18], [9, 18]],
-    path: [[5, 19], [5, 16], [4, 16], [4, 9], [5, 9], [5, 3]], slots: [[6, 17, 'l'], [3, 15, 'r'], [5, 13, 'l'], [3, 11, 'r'], [6, 8, 'l']] },
-  { id: 'celadon', n: '꽃 정원', sub: '무지개시티 체육관', w: 13, h: 20, leader: [6, 4], door: [6, 18], guy: [5, 17],
-    deco: [[3, 10], [9, 10], [1, 16], [11, 16], [2, 17], [10, 17], [1, 12], [11, 12]],
-    path: [[6, 18], [6, 5]], slots: [[7, 17, 'l'], [5, 13, 'r'], [7, 11, 'l'], [5, 9, 'r'], [7, 7, 'l']] },
-  { id: 'fuchsia', n: '넓은 무대', sub: '연분홍시티 체육관', w: 15, h: 16, leader: [7, 6], door: [7, 14], guy: [11, 13],
-    deco: [[2, 3], [12, 3], [2, 7], [12, 7], [3, 10], [11, 10], [2, 13], [12, 13]],
-    path: [[7, 14], [7, 8]], slots: [[8, 13, 'l'], [6, 12, 'r'], [8, 11, 'l'], [6, 10, 'r'], [8, 9, 'l']] },
+  { id: 'oreburgh', old: 'pewter', n: '탄광 계단', sub: '무쇠시티 체육관', w: 16, h: 34, leader: [7, 7], door: [7, 32], guy: [8, 31],
+    deco: [[12, 29], [3, 10], [3, 30], [12, 12], [3, 18], [12, 23], [5, 12], [9, 28]],
+    path: [[7, 32], [7, 29], [4, 29], [4, 23], [10, 23], [10, 18], [9, 18], [9, 15], [7, 15], [7, 8]], slots: [[6, 26, 'r'], [8, 8, 'l'], [11, 18, 'l'], [8, 32, 'l'], [6, 15, 'r']],
+    free: ['0000000000000000', '0000000000000000', '0000000000000000', '0000000000000000', '0000000000000000', '0000000000000000', '0000000000000000', '0000011111000000', '0001111011111000', '0001111011111000', '0001100000111000', '0001100000111000', '0001111011111000', '0001100000111000', '0001100000111000', '0001111000111000', '0000011110000000', '0000011110000000', '0001111110011000', '0000000000011000', '0000000000011000', '0000000000011000', '0000000000011000', '0001000000011000', '0001011111111000', '0000000000000000', '0000001111000000', '0000001111000000', '0000001111000000', '0001000011111000', '0001101010111000', '0001101010111000', '0001111011111000', '0000000000000000'] },
+  { id: 'eterna', old: 'celadon', n: '꽃시계 정원', sub: '영원시티 체육관', w: 21, h: 33, leader: [10, 6], door: [10, 31], guy: [8, 29],
+    deco: [[1, 15], [19, 15], [19, 25], [4, 9], [1, 24], [16, 10], [5, 20], [16, 31]],
+    path: [[10, 31], [10, 7]], slots: [[9, 31, 'r'], [11, 7, 'l'], [11, 22, 'l'], [11, 28, 'l'], [9, 25, 'r']],
+    free: ['000000000000000000000', '000000000000000000000', '000000000000000000000', '000000000000000000000', '000000000000000000000', '000000000000000000000', '000000000111000000000', '000000100101001000000', '000011100101001110000', '000011100000001110000', '010011011101110110000', '111110100000001011100', '111101000000000101100', '111010000000000010111', '111010000000000010111', '111010000000000010111', '111011000000000110111', '111010000000000010111', '111010000000000010111', '001010000000000010111', '001001000000000100111', '001000100000001000111', '111100011101110001111', '111110000000000011111', '111111000000000111111', '111111111101111111111', '001000111101111000100', '001100111101111001100', '001100111101111001100', '000000101101101000000', '000001111101111100000', '000011111101111110000', '000000000000000000000'] },
+  { id: 'veilstone', old: 'fuchsia', n: '격투 링', sub: '베일시티 체육관', w: 26, h: 34, leader: [12, 5], door: [12, 32], guy: [13, 31],
+    deco: [[24, 5], [24, 30], [1, 27], [8, 4], [23, 20], [5, 20], [15, 7], [21, 12]],
+    path: [[12, 32], [12, 6]], slots: [[15, 24, 'r'], [16, 15, 'l'], [2, 11, 'd'], [11, 15, 'l'], [11, 32, 'r']],
+    free: ['00000000000000000000000000', '00000000000000000000000000', '00000000000000000000000000', '00000000000000000000000000', '00000001111111111111111000', '00010000011000110000000110', '00010000011000110111111110', '00010000111101111111011110', '00011000000000000000101110', '01011111100000000000100110', '01111000101001111111100110', '00111111100000111101100110', '01101110000000000000110110', '01101100100100111101110100', '00111111110100111101110110', '01111100100101111110110110', '00011000101100111100010110', '00111111110100000001010110', '01111111111100000001010110', '00001000000101111111010110', '01101111001101011110010110', '01100111001001100000010110', '00000000000100011110110110', '01110000000000111111100110', '00010000000100011110000110', '01110000000001011110000110', '00010000000101000000100010', '01100000000001000000100010', '00011000000100000000000010', '01100000000101111111110010', '01111111111101111111111010', '01111111110101011111111010', '01111111111101111111110000', '00000000000000000000000000'] },
+  { id: 'snowpoint', old: 'cerulean', n: '얼음 언덕', sub: '선단시티 체육관', w: 21, h: 32, leader: [10, 4], door: [10, 30], guy: [11, 29],
+    deco: [[12, 30], [1, 29], [19, 27], [8, 12], [7, 26], [14, 24], [8, 4], [12, 15]],
+    path: [[10, 30], [10, 5]], slots: [[16, 5, 'd'], [20, 11, 'l'], [2, 8, 'r'], [17, 18, 'd'], [4, 19, 'u']],
+    free: ['000000000000000000000', '000000000000000000000', '000000000000000000000', '000000000000000000000', '000000001111100000000', '111111101101101111111', '111111100000001111111', '111111100000001111111', '111111111101111111111', '110000000000000000011', '110000000000000000011', '110111111101111111011', '110111111101111111011', '110110000000000011011', '110110000000000011011', '110110111101111011011', '110110111101111011011', '110110110000011011011', '110110110000011011011', '110110110101011011011', '110110110101011011011', '110110110101011011011', '110110111101111011011', '110110111101111011011', '110111111101111111011', '110111111101111111011', '111111111101111111111', '111111111101111111111', '111111111101111111111', '111111110101011111111', '111111111101111111111', '000000000000000000000'] },
+  { id: 'pastoria', old: 'vermilion', n: '물길 미로', sub: '늪지시티 체육관', w: 25, h: 45, leader: [12, 5], door: [12, 43], guy: [14, 41],
+    deco: [[14, 4], [15, 43], [1, 38], [22, 11], [14, 27], [2, 17], [2, 29], [22, 25]],
+    path: [[12, 43], [12, 6]], slots: [[10, 34, 'd'], [6, 23, 'd'], [20, 34, 'l'], [4, 9, 'l'], [18, 19, 'l']],
+    free: ['0000000000000000000000000', '0000000000000000000000000', '0000000000000000000000000', '0000000000000000000000000', '1000000000100010000000001', '1000000000100010000000001', '1011100000100010000000001', '1011100000000000000000001', '1011100000000000000000001', '1011100000000000000000001', '1011100111110111110000001', '1011111111110111110011101', '1000011111110111111111101', '1000011000000000000011101', '1000000000000000001111101', '1000011000000000001111101', '1011111111110111111111101', '1011111000110111111100001', '1000011000100011111100001', '1000011000000001111100001', '1000011000000001111100001', '1000011000000001111111101', '1000000000000001110111101', '1000011111110111110011101', '1011111110000000000011101', '1011111110000000001011101', '1000010000000000000111101', '1000000001110111111111101', '1000010000000001001111101', '1011111111110111111111101', '1011110000000001001111101', '1011110000000000001111101', '1011110000000001001111101', '1011110000000000001100001', '1001111111110111111111101', '1011111111110111111111101', '0000000000010100000000000', '1000000000000000000000001', '1111111111000001111111111', '0000000011000001100000000', '0000000011110111100000000', '0000000011110111100000000', '1000000011110111100000001', '0000000011110111100000000', '0000000000000000000000000'] },
 ];
-const dzOf = id => DESIGNS.find(d => d.id === id) || DESIGNS[0];
+const dzOf = id => DESIGNS.find(d => d.id === id) || DESIGNS.find(d => d.old === id) || DESIGNS[0];
 
 // ---------- 평판·등급 ----------
 const REP_MAX = 1000;
@@ -76,7 +85,7 @@ function build() {
 function layout(D = dzOf(st().d)) {
   const stg = $g('.gy-stage'), map = $g('.gy-map'), img = map.querySelector('img');
   const mw = D.w * 16, mh = D.h * 16, aw = stg.clientWidth - 16, ah = stg.clientHeight - 104 - 140;
-  sc = Math.min(3.5, aw / mw, Math.max(ah / mh, aw / mw * .8)); sc = Math.max(1, Math.floor(sc * 8) / 8);
+  sc = Math.min(3.5, aw / mw, Math.max(ah / mh, aw / mw * .8)); sc = Math.max(.75, Math.floor(sc * 8) / 8);   // 플라티나 맵은 넓어서 1배보다 작아질 수 있다
   map.style.width = mw * sc + 'px'; map.style.height = mh * sc + 'px';
   img.src = `${IMG}map/${D.id}.png`; img.style.width = mw * sc + 'px'; img.style.height = mh * sc + 'px';
   ents.forEach(place);
@@ -85,8 +94,8 @@ function layout(D = dzOf(st().d)) {
 // ---------- 필드 걸음 그림 (본가 16x32 프레임: 0 아래 1 위 2 왼쪽 3·4 아래 걷기 5·6 위 걷기 7·8 왼쪽 걷기) ----------
 const FR = { d: [0, 3, 4], u: [1, 5, 6], l: [2, 7, 8], r: [2, 7, 8] };
 function ent(o) {
-  const e = Object.assign({ x: 0, y: 0, f: 'd', st: 0, n3: false, fw: /^pt_/.test(o.ow || '') ? 32 : 16 }, o); e.el = document.createElement('i'); e.el.className = 'gy-ow' + (o.onTap ? ' tap' : '');
-  e.el.style.backgroundImage = `url(${o.src || `${IMG}ow/${o.ow}.png`})`; if (o.onTap) e.el.onclick = ev => { ev.stopPropagation(); o.onTap(e); };
+  const e = Object.assign({ x: 0, y: 0, f: 'd', st: 0, n3: false, fw: owW(o.ow) }, o); e.el = document.createElement('i'); e.el.className = 'gy-ow' + (o.onTap ? ' tap' : '');
+  e.el.style.backgroundImage = `url(${o.src || owSrc(o.ow)})`; if (o.onTap) e.el.onclick = ev => { ev.stopPropagation(); o.onTap(e); };
   $g('.gy-ents').appendChild(e.el); ents.push(e); place(e); return e;
 }
 function place(e) {
@@ -172,7 +181,7 @@ function decoList(g = st(), D = dzOf(g.d)) { const pos = g.dpos || {}, used = ne
 // 놓을 수 있는 칸: 맵 안쪽, 관장·문·안내원·길·트레이너 자리·관장 옆 포켓몬 자리가 아닌 곳
 function freeTile(D, x, y, used) {
   if (x < 1 || y < 2 || x > D.w - 2 || y > D.h - 2 || used?.has(x + ',' + y)) return false;
-  if (D.free) return !!D.free[y]?.[x];
+  if (D.free && D.free[y]?.[x] !== '1') return false;
   const bad = [[D.leader[0], D.leader[1]], [D.leader[0] + 1, D.leader[1]], [D.leader[0] - 1, D.leader[1]], [D.leader[0], D.leader[1] - 1], [D.leader[0], D.leader[1] + 1], D.door, [D.door[0], D.door[1] - 1], D.guy, ...D.slots];
   if (bad.some(q => q[0] === x && q[1] === y)) return false;
   for (let i = 1; i < D.path.length; i++) { const [a, b] = [D.path[i - 1], D.path[i]]; if (Math.min(a[0], b[0]) <= x && x <= Math.max(a[0], b[0]) && Math.min(a[1], b[1]) <= y && y <= Math.max(a[1], b[1])) return false; }
@@ -231,6 +240,10 @@ const CLS = {
   cool_trainer_m: { ow: 'cooltrainer_m', f: 0, t: [] }, cool_trainer_f: { ow: 'cooltrainer_f', f: 1, t: [] }, beauty: { ow: 'beauty', f: 1, t: [12, 18, 11, 1] },
   gentleman: { ow: 'gentleman', f: 0, t: [1, 10, 17] }, rocker: { ow: 'rocker', f: 0, t: [13, 4] }, sailor: { ow: 'sailor', f: 0, t: [11, 2] }, channeler: { ow: 'channeler', f: 1, t: [8] },
   pokemaniac: { ow: 'poke_maniac', f: 0, t: [16, 5, 6] },
+  // 4세대에서 새로 온 트레이너
+  poke_kid: { ow: 'poke_kid', f: 1, t: [1, 13, 18], e: 1 }, jogger: { ow: 'jogger', f: 0, t: [1, 2, 3], e: 1 }, cyclist_m: { ow: 'cyclist_m', f: 0, t: [13, 3, 1], e: 1 },
+  battle_girl: { ow: 'battle_girl', f: 1, t: [2] }, ninja_boy: { ow: 'ninja_boy', f: 0, t: [4, 7, 17] }, ruin_maniac: { ow: 'ruin_maniac', f: 0, t: [5, 6, 9] },
+  dragon_tamer: { ow: 'dragon_tamer', f: 0, t: [16] }, skier_f: { ow: 'skier_f', f: 1, t: [15] }, artist: { ow: 'artist', f: 0, t: [18, 14, 1] },
 };
 const N3 = new Set(['agatha', 'blaine', 'brock', 'bruno', 'erika', 'koga', 'lance', 'lt_surge', 'misty', 'sabrina']);   // 걸음 프레임이 없는 그림(3칸)
 const CHAL_LINES = [
@@ -241,13 +254,15 @@ const WIN_LINES = ['으으… 졌다! 더 연습하고 올게요!', '역시 관�
 const LOSE_LINES = ['해냈다! 제가 이겼어요!', '관장님한테 이기다니… 꿈 같아요!', '좋은 승부였어요, 관장님!'];
 const REW = [{ g: 40, r: 2, rl: -4, fr: 1 }, { g: 100, r: 5, rl: -3, fr: 2 }, { g: 300, r: 15, rl: -2, fr: 4 }];
 const DIFF_KO = ['쉬움', '보통', '어려움'];
-const RIVAL_GYMS = ['회색시티 체육관', '블루시티 체육관', '갈색시티 체육관', '무지개시티 체육관', '연분홍시티 체육관', '노랑시티 체육관', '홍련마을 체육관', '상록시티 체육관', '도라지시티 체육관'];
+const RIVAL_GYMS = ['무쇠시티 체육관', '영원시티 체육관', '베일시티 체육관', '늪지시티 체육관', '연고시티 체육관', '운하시티 체육관', '선단시티 체육관', '물가시티 체육관'];
 let NAMED = [];
-const loadNamed = () => NAMED.length ? Promise.resolve() : fetch(`gym/named.json?v=${VER}`).then(r => r.ok ? r.json() : []).then(j => { NAMED = j || []; }).catch(() => {});
+const loadNamed = () => NAMED.length ? Promise.resolve() : fetch(`gymb/named.json?v=${VER}`).then(r => r.ok ? r.json() : []).then(j => { NAMED = j || []; }).catch(() => {});
 
 function gInit() {
   const g = st(); if (!g) return null;
   for (const [k, v] of Object.entries({ sch: [], q: [], log: [], w: 0, l: 0, blk: 0, bk: {}, bdg: {}, nt: {}, sf: [], cid: 0 })) if (g[k] == null) g[k] = v;
+  // 칸토 디자인에서 플라티나 체육관으로: 같은 분위기 맵으로 옮기고, 직접 놓은 장식 자리는 새로 잡는다
+  if (g.d && !DESIGNS.some(d => d.id === g.d)) { g.d = dzOf(g.d).id; g.dpos = {}; }
   return g;
 }
 const luNow = () => { const g = st(), L = (g.lu || [])[g.luI | 0] || []; return L.map(id => S.box.find(p => p.id === id)).filter(P => P && (SPECIES[P.sp]?.t || []).includes(g.ty)); };
@@ -274,13 +289,12 @@ function mkChal(t) {
   return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), diff, team: mkTeam(C.t, Math.max(3, avg + (diff ? -2 : -8)), n) };
 }
 // 이름 있는 트레이너: 본가 팀 단계. 그 단계 평균 레벨이 내 라인업 평균 + 6 이하일 때부터 온다
-const trImgOf = (n, s) => n.id === 'green' ? (s >= 6 ? 'champion_rival' : s >= 4 ? 'rival_late' : 'rival_early') : n.tr;
 function pickNamed(avg, t) {
   const g = st(), busy = new Set(g.q.filter(c => c.named).map(c => c.named));
   const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || x.s >= n.st.length || t < (x.n || 0)) return false; return avg >= teamLv(n.st[x.s]) - 6; });
   if (!ok.length) return null;
   const n = pick(ok), s = (g.nt[n.id] || {}).s || 0;
-  return { id: ++g.cid, t, named: n.id, s, cls: n.cls, tr: trImgOf(n, s), ow: n.ow, nm: n.nm, diff: 2, music: n.id === 'green' && s >= 6 ? 'champ' : n.music, team: n.st[s].map(m => [m[0], m[1], m[2]]) };
+  return { id: ++g.cid, t, named: n.id, s, cls: n.cls, tr: n.tr, ow: n.ow, nm: n.nm, diff: 2, music: n.music, team: n.st[s].map(m => [m[0], m[1], m[2]]) };
 }
 // 하루 시간표: 등급이 오를수록 많이 온다 (2~5명, 오전 8시 ~ 밤 10시 사이 아무 때나)
 function mkSch(d0, from = 0) {
@@ -474,7 +488,7 @@ function guyAsk() {
   $g('.gy-dlg').innerHTML = `<span class="gy-who">안내원</span>관장님, 체육관 설명을 처음부터 들어 보실래요?<span class="gy-dsub">체육관이 어떻게 돌아가는지 차근차근 알려 드려요</span><div class="gy-dyn"><button class="gy-dbtn2" type="button" data-a="n">괜찮아요</button><button class="gy-dbtn2 main" type="button" data-a="y">들을래요</button></div>`;
   $g('.gy-dyn').onclick = async e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); sfx('tap');
     if (b.dataset.a === 'n') { say(GUY_TIPS[tipI++ % GUY_TIPS.length](), '안내원'); return; }
-    await kang(GUY_TOUR(), { lit: true, nm: '안내원', pic: `${IMG}ow/${GUY_OW}.png`, ow: 1 }); homeSay(); };
+    await kang(GUY_TOUR(), { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1 }); homeSay(); };
 }
 function renderTop() {
   const g = st(), G = gradeOf(g.rep || 0);
@@ -569,7 +583,7 @@ function bodyCard(src, h, sub = '', btn = '', onClick) {
   return pop(`<div class="gy-body"><div class="bd-pic"><img alt="" src="${src}" onload="this.style.width=this.naturalWidth*2+'px';this.style.height=this.naturalHeight*2+'px'"></div><h4>${h}</h4>${sub ? `<p>${sub}</p>` : ''}</div>${btn || '<div class="gy-btns one"><button data-a="x">닫기</button></div>'}`, (a, close, p) => { if (a === 'x') close(); else onClick?.(a, close, p); });
 }
 async function meCard() { const g = st(), O = OUTFITS[g.fit]; bodyCard(await fitSrc('tr'), `관장 ${esc(trName() || '나')}`, `${g.w}승 ${g.l}패 · 막은 도전자 ${g.blk}명${O ? `<br>입은 옷: ${O.n}` : ''}`); }
-function sfCard(s) { bodyCard(`${IMG}tr/${s.tr}.png`, sfName(s), `${TRAITS[s.trait]?.n || ''} · ${s.w || 0}승 ${s.l || 0}패${s.rest ? '<br>월급을 못 받아서 쉬고 있어요' : ''}`); }
+function sfCard(s) { bodyCard(trSrc(s.tr), sfName(s), `${TRAITS[s.trait]?.n || ''} · ${s.w || 0}승 ${s.l || 0}패${s.rest ? '<br>월급을 못 받아서 쉬고 있어요' : ''}`); }
 function infoPop() {
   const g = st(), D = dzOf(g.d), G = gradeOf(g.rep || 0), d0 = new Date(g.t0 || Date.now());
   pop(`<h4>체육관 정보</h4><dl class="gy-info">
@@ -692,7 +706,7 @@ const KANG_OPEN = () => [
 function kang(lines, { lit = false, nm = '강박사', pic = GA.KANG, ow = 0 } = {}) {
   return new Promise(done => {
     const k = document.createElement('div'); k.className = 'gy-kang' + (lit ? ' lit' : '') + (ow ? ' guide' : '');
-    k.innerHTML = `<i class="gy-k-veil"></i>${ow ? `<i class="gy-k-pic ow" style="background-image:url(${pic})"></i>` : `<img class="gy-k-pic" alt="${nm}" src="${pic}">`}<button class="gy-k-skip" type="button">건너뛰기</button><div class="win gy-k-box" aria-live="polite"><span class="gy-k-nm">${nm}</span><span class="gy-k-t"></span><b class="gy-k-cur" hidden>▼</b></div>`;
+    k.innerHTML = `<i class="gy-k-veil"></i>${ow ? `<i class="gy-k-pic ow${/\/pt\/|pt_/.test(pic) ? ' w32' : ''}" style="background-image:url(${pic})"></i>` : `<img class="gy-k-pic" alt="${nm}" src="${pic}">`}<button class="gy-k-skip" type="button">건너뛰기</button><div class="win gy-k-box" aria-live="polite"><span class="gy-k-nm">${nm}</span><span class="gy-k-t"></span><b class="gy-k-cur" hidden>▼</b></div>`;
     root.appendChild(k);
     const talk = GA.inTyper(k, k.querySelector('.gy-k-t'), k.querySelector('.gy-k-cur'));
     let stop = false; const end = async () => { if (k.classList.contains('bye')) return; stop = true; k.classList.add('bye'); await wait(450); k.remove(); done(); };
@@ -711,8 +725,8 @@ function kang(lines, { lit = false, nm = '강박사', pic = GA.KANG, ow = 0 } = 
 const preload = src => new Promise(ok => { const i = new Image(); i.onload = i.onerror = () => ok(); i.src = src; });
 async function prepare() {
   if (!root) build();
-  const g = st(); const L = [preload(`${IMG}ow/${myOw()}.png`), preload(`${IMG}ow/gym_guy.png`)];
-  if (g?.d) L.push(preload(`${IMG}map/${g.d}.png`)); else DESIGNS.forEach(D => L.push(preload(`${IMG}map/${D.id}.png`)));
+  const g = st(); const L = [preload(`${IMG}ow/${myOw()}.png`), preload(owSrc(GUY_OW))];
+  if (g?.d) L.push(preload(`${IMG}map/${dzOf(g.d).id}.png`)); else DESIGNS.forEach(D => L.push(preload(`${IMG}map/${D.id}.png`)));
   L.push(loadJs('gymb/bgm.js', 'GymBGM').then(() => { try { window.GymBGM?.prep('gym'); } catch (e) {} }));   // 출근 로딩 동안 체육관 곡을 미리 만든다
   L.push(loadNamed(), loadJs('gymb/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => loadJs('gymb/manage.js', 'GymManage')).catch(() => {}));   // 도전자 방문·훈련장 계산에 배틀 자료가 필요
   if (g?.fit) L.push(fitSrc('ow'), fitSrc('trb'), fitSrc('tr'));   // 옷 칠한 그림을 미리
@@ -756,7 +770,7 @@ async function exit() {
 
 window.Gym = { prepare, enter, exit, isOpen: () => open, renderGold: renderGoldG, DESIGNS, _walk: walk, _ent: ent, _tick: tick,
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { fitSrc, myF, bodyCard, decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, decoMax, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG } };
+  k: { trSrc, owSrc, owW, fitSrc, myF, bodyCard, decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, decoMax, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 window.gymDot = () => { const g = S.gym; return !!(g && g.d && ((g.q && g.q.length) || (g.at && Date.now() >= g.at))); };
 })();
