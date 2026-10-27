@@ -7,7 +7,7 @@ body.gymMode{overflow:hidden}
 
 /* 맵 무대 */
 .gy-main{position:relative;flex:1 1 auto;min-height:0}
-.gy-stage{position:absolute;inset:0;z-index:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:none;display:flex;justify-content:center;align-items:flex-start;
+.gy-stage{position:absolute;inset:0;z-index:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:none;display:flex;justify-content:flex-start;align-items:flex-start;
   padding:calc(var(--si-top,env(safe-area-inset-top)) + 104px) 0 150px;background:radial-gradient(ellipse at 50% 40%,#30344a,#16171f 75%)}
 .gy-stage::-webkit-scrollbar{display:none}
 .gy-map{position:relative;flex:none;box-shadow:0 0 0 4px #0c0d14,0 10px 30px rgba(0,0,0,.5);overflow:hidden}
@@ -592,3 +592,81 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .gy-pop .gy-btns.two2{grid-template-columns:repeat(2,minmax(0,1fr))}.gy-pop .gy-btns.two2 button.main{grid-column:1/-1}
 .gy-pop .gy-btns.three button[data-a=tm]~button.main{grid-column:1/-1}
 .tp-xp{display:block;font-size:11px;color:var(--dim);margin:0 0 2px}.mp-head .mp-xp{margin-top:4px}
+/* 배틀 화면 휴대폰 배치 (v10.38) */
+.bt-mid{display:none}
+.bt.mob .bt-ds{position:absolute;inset:0;width:auto;height:auto;transform:none}
+.bt.mob .bt-top{transform:scale(var(--k));transform-origin:0 0;top:env(safe-area-inset-top)}
+.bt.mob .bt-bot{transform:scale(var(--k));transform-origin:0 100%;top:auto;bottom:env(safe-area-inset-bottom)}
+.bt.mob .bt-hinge{display:none}
+.bt.mob .bt-mid{display:flex;position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top) + 192px * var(--k));bottom:calc(env(safe-area-inset-bottom) + 192px * var(--k));align-items:center;justify-content:center;background:linear-gradient(#20222c,#2c2f3c 50%,#1a1b22);box-shadow:inset 0 3px 0 #0c0d12,inset 0 -3px 0 #0c0d12}
+.bt-mid .bt-msg{position:relative;left:auto;right:auto;bottom:auto;width:252px;height:48px;flex:none;box-sizing:border-box;transform:scale(var(--k))}
+.bt.mob::before,.bt.mob::after{content:'';position:absolute;left:0;right:0;background:#0c0d12;z-index:0}
+.bt.mob::before{top:0;height:env(safe-area-inset-top)}.bt.mob::after{bottom:0;height:env(safe-area-inset-bottom)}
+/* 아래 화면 글자 잘 보이게 (경완 2026-10-27 '하단 버튼들 가독성') */
+.bt .bb span{font-size:14px;letter-spacing:.5px;text-shadow:1px 0 0 rgba(0,0,0,.6),-1px 0 0 rgba(0,0,0,.6),0 1px 0 rgba(0,0,0,.6),0 -1px 0 rgba(0,0,0,.6),1px 1px 0 rgba(0,0,0,.6)}
+.bp-main .fight span{font-size:22px}
+.bp-q,.bp-yn p{font-size:11px;font-weight:700;text-shadow:1px 1px 0 #203048,-1px 0 0 #203048,0 -1px 0 #203048,1px 0 0 #203048}
+.bt .mvb b{font-size:12.5px;top:6px;color:#202020;text-shadow:1px 1px 0 rgba(255,255,255,.75)}
+.bt .mvb .eff{left:50%;right:auto;top:22px;transform:translateX(-50%);padding:0 5px;border-radius:6px;background:rgba(255,255,255,.88);font-size:8.5px;line-height:11px;font-weight:700;white-space:nowrap;color:#405060}
+.bt .mvb .eff.hi{color:#e01808}.bt .mvb .eff.lo{color:#2850a0}.bt .mvb .eff.no{color:#606060}
+.bt .mvb .pp{font-size:9px;font-weight:700;color:#202020;bottom:10px}
+.bt .pty{font-size:10px}.bt .pty .lv,.bt .pty .hpn{font-size:9px}
+/* 랭크 배지 (본 게임 .rk 그대로, 그림 테두리 왼쪽 위) */
+.rk-fr>.rk{position:absolute;left:-4px;top:-5px;z-index:1;width:auto;min-width:15px;height:15px;padding:0 2px!important;font-size:9px;line-height:11px;border-width:2px;font-family:inherit}
+.rk-fr>.rk.S{width:auto}
+.bt .rk-fr>.rk{display:none}
+.ty-tag .rk{width:14px;height:14px;font-size:8px;line-height:10px;border-width:2px;flex:none}
+.ty-tag .tt-r{display:flex;align-items:center;gap:2px;white-space:nowrap}
+/* 포켓몬 박스: 새 화면 (v10.38) */
+.gy-boxw{padding:0;background:var(--win)}
+.gy-boxw>.win{border:0!important;box-shadow:none!important;border-radius:0;padding:calc(10px + env(safe-area-inset-top)) 12px 10px;animation:bwIn .22s ease-out}
+@keyframes bwIn{from{transform:translateX(24px);opacity:0}}
+.bw-hd{gap:10px;margin:0 0 6px}.bw-hd h4 small{font-size:13px;color:var(--dim);font-weight:400}
+.bw-hd .bw-x{width:40px;height:40px;font-size:26px;line-height:30px;padding:0 0 4px}
+
+/* v10.38 체육관 정보 새 화면 (경완 2026-10-27) */
+.gy-infos{animation:bwIn .22s ease-out}
+.gy-infos .if-t{font-size:17px}
+.gy-infos .gy-body{gap:10px;padding-bottom:6px}
+.gy-infos h5{margin:8px 0 0;font-size:13px;color:var(--dim)}
+.if-hero{display:flex;gap:12px;align-items:center;padding:10px;border:3px solid var(--frame);background:var(--card);box-shadow:0 3px 0 var(--frame)}
+.if-hero>img{width:92px;height:auto;image-rendering:pixelated;box-shadow:0 0 0 3px var(--frame);flex:none}
+.if-hero>div{min-width:0;display:flex;flex-direction:column;gap:4px}
+.if-hero h3{margin:0;font-size:19px;line-height:1.3;word-break:keep-all}
+.if-hero p{margin:0;font-size:12px;color:var(--dim)}
+.if-ty{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700}.if-ty .tyi{width:18px;height:18px}
+.if-hero .gy-chg,.gy-infos .gy-chg{font-size:11px;padding:3px 7px;margin-left:4px;vertical-align:3px;border:2px solid var(--frame);background:var(--win);box-shadow:0 2px 0 var(--frame)}
+.if-grade{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border:3px solid var(--frame);background:var(--win)}
+.if-grade>div{display:flex;justify-content:space-between;align-items:baseline}.if-grade b{font-size:16px}.if-grade span{font-size:13px;font-variant-numeric:tabular-nums}
+.if-grade small,.if-bdg small{font-size:12px;color:var(--dim);line-height:1.45}
+.gy-infos .gy-bar{width:100%;height:12px}
+.if-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.if-grid>div{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border:3px solid var(--frame);background:var(--win);box-shadow:0 3px 0 var(--frame)}
+.if-grid small{font-size:11px;color:var(--dim)}.if-grid b{font-size:16px;font-variant-numeric:tabular-nums}.if-grid em{font-style:normal;font-size:11px;color:var(--dim)}
+.if-bdg{display:flex;gap:12px;align-items:center;padding:10px 12px;border:3px solid var(--frame);background:var(--win)}
+.if-bdg>img{width:40px;height:40px;image-rendering:pixelated;filter:grayscale(1) brightness(.6);opacity:.7}.if-bdg>img.on{filter:none;opacity:1}
+.if-bdg>div{flex:1;display:flex;flex-direction:column;gap:5px}
+.if-old{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.if-old li{display:flex;align-items:center;gap:6px;font-size:13px;padding:6px 8px;border:2px dashed var(--inner)}.if-old .tyi{width:18px;height:18px}.if-old small{margin-left:auto;color:var(--dim);font-size:11px}
+.gy-infos .gy-btns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:6px}
+.gy-infos .gy-btns button{padding:11px 4px;font-size:14px;border:3px solid var(--frame);background:var(--win);box-shadow:0 3px 0 var(--frame)}
+.gy-infos .gy-btns button:active,.if-re:active{transform:translateY(3px);box-shadow:none}
+.if-re{margin-top:6px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px;font-size:15px;color:#fff!important;background:#b8443a!important;border:3px solid #5a1a14!important;box-shadow:0 3px 0 #5a1a14}
+.if-re small{font-size:11px;opacity:.85}
+/* 폐업 → 공사 → 새 단장 셔터 */
+.gy-re{position:absolute;inset:0;z-index:11;pointer-events:auto;overflow:hidden}
+.gy-re .re-shut{position:absolute;inset:0;transform:translateY(-102%);transition:transform 1.4s steps(14,end);
+  background:repeating-linear-gradient(#8a8e9c 0 14px,#6a6e7c 14px 16px,#a4a8b4 16px 18px);box-shadow:0 6px 0 #3a3c46}
+.gy-re .re-shut i{position:absolute;left:0;right:0;bottom:0;height:22px;background:#4a4c58;border-top:3px solid #2a2c34}
+.gy-re.down .re-shut{transform:none}
+.gy-re.up .re-shut{transform:translateY(-102%);transition-duration:.8s}
+.gy-re .re-sign{position:absolute;left:50%;top:42%;translate:-50% -50%;width:min(300px,80vw);display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 14px;text-align:center;
+  background:var(--card);border:4px solid var(--frame);box-shadow:0 4px 0 var(--frame);opacity:0;transition:opacity .3s 1.3s}
+.gy-re.down .re-sign{opacity:1}.gy-re.up .re-sign{opacity:0;transition-delay:0s}
+.gy-re .re-sign b{font-size:26px;letter-spacing:4px;color:#b8443a}.gy-re .re-sign span{font-size:16px;font-weight:700}.gy-re .re-sign small{font-size:12px;color:var(--dim)}.gy-re .re-sign .tyi{width:16px;height:16px;vertical-align:-3px}
+.gy-re.build .re-sign b{color:#c88a10}
+.gy-re .re-bar{width:100%;height:12px;border:2px solid var(--frame);background:repeating-linear-gradient(45deg,#ffd84a 0 8px,#383848 8px 16px);background-size:200% 100%;animation:reBar .6s linear infinite}
+.gy-re .re-bar i{display:block;height:100%;background:transparent}
+@keyframes reBar{to{background-position:-22px 0}}
+.gy-re.build .re-shut{animation:reShake .42s steps(2,end) infinite}
+@keyframes reShake{50%{transform:translateY(2px)}}

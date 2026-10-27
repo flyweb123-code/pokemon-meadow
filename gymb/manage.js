@@ -219,7 +219,7 @@ function yEmo(m, ch, cls = '') { const q = document.createElement('i'); q.classN
 function yFx(x, y, cls) { const q = document.createElement('i'); q.className = 'ty-fx ' + cls; q.style.cssText = `left:${x.toFixed(0)}px;top:${y.toFixed(0)}px;z-index:${Math.round(y) + 3}`; Y.L.append(q); setTimeout(() => q.remove(), 700); }
 // 포켓몬 밑 이름표: 레벨 + 다음 레벨까지 경험치 막대
 function yTag(m) { const g = GB().growth(m.P.sp), x = GB().gm(m.P), a = GB().xpAt(g, x.lv), b = GB().xpAt(g, x.lv + 1), r = x.lv >= GB().LV_MAX ? 1 : Math.max(0, Math.min(1, ((x.xp ?? a) - a) / Math.max(1, b - a)));
-  m.tag.innerHTML = `<b>Lv.${x.lv}</b><i><s style="width:${(r * 100).toFixed(0)}%"></s></i>`; }
+  m.tag.innerHTML = `<span class="tt-r"><span class="rk ${GA.rankOf(m.P)}">${GA.rankOf(m.P)}</span><b>Lv.${x.lv}</b></span><i><s style="width:${(r * 100).toFixed(0)}%"></s></i>`; }
 function yHit(m, k) {
   const q = Y.eq[k]; if (q) { q.el.classList.remove('wob'); void q.el.offsetWidth; q.el.classList.add('wob'); yFx(q.x + (m.x < q.x ? -10 : 10), q.y - (k === 'water' ? 10 : 46), k === 'water' ? 'spl' : 'spk'); }
   else yFx(m.x - m.face * 22, m.y - 24, 'spk');
