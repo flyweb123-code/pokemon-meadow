@@ -8,6 +8,9 @@ const GA = window.GA, { tyIcon, sfx, save, trOf, esc, menuDots } = GA;
 const SPECIES = GA.SPECIES, TYPE_KO = GA.TYPE_KO;
 const S = GA.S;
 const IMG = 'gym/img/';
+const VER = ((document.currentScript && document.currentScript.src.match(/[?&]v=([^&]+)/)) || [])[1] || '';
+const loadJs = (src, g) => window[g] ? Promise.resolve() : new Promise(ok => { const x = document.createElement('script'); x.src = `${src}?v=${VER}`; x.onload = x.onerror = () => ok(); document.head.appendChild(x); });
+const bgmPlay = n => { try { window.GymBGM?.play(n); } catch (e) {} };
 const $g = s => root.querySelector(s);
 const wait = ms => new Promise(r => setTimeout(r, ms));
 const clampN = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -262,6 +265,7 @@ async function prepare() {
   if (!root) build();
   const g = st(); const L = [preload(`${IMG}ow/${trOf().sex === 'f' ? 'green_normal' : 'red_normal'}.png`), preload(`${IMG}ow/gym_guy.png`)];
   if (g?.d) L.push(preload(`${IMG}map/${g.d}.png`)); else DESIGNS.forEach(D => L.push(preload(`${IMG}map/${D.id}.png`)));
+  L.push(loadJs('gym/bgm.js', 'GymBGM').then(() => { try { window.GymBGM?.prep('gym'); } catch (e) {} }));   // 출근 로딩 동안 체육관 곡을 미리 만든다
   await Promise.all(L);
 }
 // 처음: 빈 체육관(회색시티 모양)에 불이 켜지고, 내가 문으로 들어오면 강박사가 설명 → 디자인·타입·이름 정하기
@@ -273,13 +277,14 @@ async function intro() {
   await k; root.classList.remove('pre'); if (!open) return; setup();
 }
 function enter() {
-  open = true; tab = null; root.hidden = false; GA.gymIn(); openTab(null);
+  open = true; tab = null; root.hidden = false; GA.gymIn(); openTab(null); bgmPlay('gym');   // 체육관 곡: 처음이면 플래티넘 원본 소리를 받아 오는 동안 잠깐 조용하다
   requestAnimationFrame(() => root.classList.add('on'));
   if (st()?.d) renderHome(); else intro();
   setTimeout(() => gymLoad.hide(), 120);
 }
 async function exit() {
   root.querySelectorAll('.gy-pop,.gy-setup,.gy-kang').forEach(x => x.remove());
+  try { window.GymBGM?.free(); } catch (e) {}
   gymLoad.show('퇴근하는 중', '', true); await wait(2800);
   open = false; root.classList.remove('on'); root.hidden = true; root.querySelectorAll('.gy-kang').forEach(x => x.remove()); root.classList.remove('pre'); GA.gymOut(); clearEnts();
   try { menuDots(); } catch (e) {}
