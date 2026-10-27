@@ -137,6 +137,7 @@ const SOON = {
 function openTab(t) {
   tab = t; root.querySelectorAll('.gy-menu button[data-t]').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === t));
   const sh = $g('.gy-sheet'); if (!t) { sh.hidden = true; return; }
+  if (t === 'battle') { sh.hidden = false; sh.scrollTop = 0; sh.innerHTML = '<h3>배틀</h3><p class="gy-lead">불러오는 중…</p>'; loadJs('gym/battle.js', 'GymBattle').then(() => { if (tab === 'battle' && window.GymBattle) GymBattle.tab(sh); }); return; }
   const o = SOON[t];
   sh.innerHTML = `<h3>${o.t}</h3><p class="gy-lead">${o.d}</p><div class="gy-soon"><i class="gy-soon-ic" style="background-image:url(${IMG}${o.ic}.png)"></i><b>준비 중이에요</b><p>이 메뉴는 다음 단계에서 열려요.</p><ul>${o.li.map(x => `<li>${x}</li>`).join('')}</ul></div>`;
   sh.hidden = false; sh.scrollTop = 0;
