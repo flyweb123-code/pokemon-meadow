@@ -67,7 +67,9 @@ function build() {
     </nav>`;
   document.body.appendChild(root);
   $g('.gy-plate').onclick = () => { sfx('tap'); infoPop(); };
-  $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap'); const t = b.dataset.t; if (t === 'out') return exit(); openTab(tab === t ? null : t); };
+  $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = b.dataset.t; if (t === 'out') return exit(); sfx('tap'); openTab(tab === t ? null : t); };
+  // 퇴근은 손가락이 닿는 순간 로딩 화면부터 (click 을 기다리지 않음, 경완 2026-10-27 '여전히 바로 안 뜸')
+  $g('.gy-menu .gy-out').addEventListener('pointerdown', e => { if (e.button) return; e.preventDefault(); exit(); });
   addEventListener('resize', () => { if (open) layout(st()?.d ? undefined : DESIGNS[0]); });
 }
 
@@ -609,7 +611,9 @@ async function later() {
   if (g.rpt && !g.rpt.seen) await reportPop();
   if (g.newBdg) await badgeGet(g.newBdg);
 }
+let leaving = false;
 async function exit() {
+  if (leaving || !open) return; leaving = true;
   // 퇴근 누르면 로딩 화면부터 바로 (서서히 나타나지 않게, 경완 2026-10-27)
   const L = document.getElementById('gymLoad'); L?.classList.add('inst'); gymLoad.show('퇴근하는 중', '', true); void L?.offsetWidth; L?.classList.remove('inst');
   root.querySelectorAll('.gy-pop,.gy-setup,.gy-kang').forEach(x => x.remove());
@@ -618,7 +622,7 @@ async function exit() {
   clearInterval(tickT); if (st()?.d) { tick(); setAt(); save(); }
   open = false; root.classList.remove('on'); root.hidden = true; root.querySelectorAll('.gy-kang').forEach(x => x.remove()); root.classList.remove('pre'); GA.gymOut(); clearEnts();
   try { menuDots(); } catch (e) {}
-  await wait(200); gymLoad.hide();
+  await wait(200); gymLoad.hide(); leaving = false;
 }
 
 window.Gym = { prepare, enter, exit, isOpen: () => open, renderGold: renderGoldG, DESIGNS, _walk: walk, _ent: ent, _tick: tick,
