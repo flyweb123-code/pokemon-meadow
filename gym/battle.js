@@ -186,14 +186,35 @@ const ST_X = { par: 0, frz: 1, slp: 2, psn: 3, tox: 3, brn: 4 };
 function setSt(side, st) { const i = $b(`.bt-hb.${side} .st`); i.className = 'st' + (st in ST_X ? ' s' + ST_X[st] : ''); }
 
 // ---------- 포켓몬 그림 ----------
-// 1~493: 플래티넘 원본 2장 그림(160x80) + 본가 움직임(gym/img/pk/anim.json), 494~: 5세대 그림 한 장
+// 1~649: 블랙·화이트 움직이는 gif (못 받으면 1~493 은 플래티넘 2장 그림+움직임, 494~649 는 한 장), 650~: 팬게임(pokeemerald-expansion) 2장 그림을 같은 판으로 (gym/img/pk/anim.json)
 // 위치는 DS 화면 좌표: 상대 80x80 칸 왼쪽 위 (136, E_Y+보정), 내 쪽 (40, P_Y+보정)
 const E_Y = 8, P_Y = 64;
 function monEl(side) { return $b(`.bt-mon.${side}`); }
+// 1~649 는 블랙·화이트 움직이는 gif 를 smogon/sprites(고정 커밋)에서 바로 받아 계속 움직인다. 못 받으면 저장소 그림
+const G5 = 'https://raw.githubusercontent.com/smogon/sprites/18fc3d83b8bc6746f0052273232c1794ef2d7d42/src/sprites/gen5/';
+const G5K = ['-b', '-s', '-f', '-b-s', '-b-f', '-f-s', '-b-f-s'];
+function gifUrl(sp, b, sh, f) {
+  const g = ANIM.g?.[sp]; if (!g) return null; const [nm, bits] = g, has = k => !k || (bits >> G5K.indexOf(k) & 1);
+  const fs = f ? ['-f', ''] : [''], ss = sh ? ['-s', ''] : [''];
+  for (const fk of fs) for (const sk of ss) { const k = (b ? '-b' : '') + fk + sk; if (has(k)) return `${G5}s${nm}${k}.gif`; }
+  return has(b ? '-b' : '') ? `${G5}s${nm}${b ? '-b' : ''}.gif` : null;
+}
+const gifOk = new Map();   // 주소 → Promise<bool>
+function gifLoad(u) {
+  if (!u) return Promise.resolve(false);
+  if (!gifOk.has(u)) gifOk.set(u, new Promise(r => { const i = new Image(); i.onload = () => r(true); i.onerror = () => r(false); i.src = u; }));
+  return gifOk.get(u);
+}
+// 나올 그림 고르기: gif 가 1.5초 안에 오면 gif, 아니면 저장소 그림 (늦게라도 오면 다음 번엔 gif)
+async function pickGif(side, A) {
+  const u = gifUrl(A.sp, side === 'p', A.shiny, A.g === 'F'); if (!u) return null;
+  return (await Promise.race([gifLoad(u), wait(1500).then(() => false)])) ? u : null;
+}
 function showMon(side, A, on = true) {
   const m = monEl(side), img = m.querySelector('img');
-  if (A) {
-    const a = ANIM[A.sp], sheet = !!a; img.onerror = () => { img.onerror = null; img.src = pkSrc(A.sp, { b: side === 'p', s: A.shiny }); }; img.src = pkSrc(A.sp, { b: side === 'p', s: A.shiny, f: A.g === 'F' }); img.alt = '';
+  if (A && A.gif) { img.onerror = null; img.src = A.gif; img.alt = ''; m.classList.remove('pl2'); m.classList.add('gf'); img.style.transform = ''; m.style.left = m.style.top = ''; }
+  else if (A) {
+    m.classList.remove('gf'); const a = ANIM[A.sp], sheet = !!a; img.onerror = () => { img.onerror = null; img.src = pkSrc(A.sp, { b: side === 'p', s: A.shiny }); }; img.src = pkSrc(A.sp, { b: side === 'p', s: A.shiny, f: A.g === 'F' }); img.alt = '';
     m.classList.toggle('pl2', sheet); img.style.transform = '';
     if (sheet) { m.style.left = (side === 'e' ? 136 : 40) + 'px'; m.style.top = (side === 'e' ? E_Y + a[0] : P_Y + a[1]) + 'px'; }
     else { m.style.left = m.style.top = ''; }
@@ -202,7 +223,7 @@ function showMon(side, A, on = true) {
 }
 // 본가 움직임: [장, 지연(1/30초), x, y], 장이 -2 보다 작으면 그 칸으로 지연 횟수만큼 되돌아가기
 function playAnim(side, A) {
-  const a = ANIM[A?.sp], m = monEl(side); if (!a) return;
+  const a = ANIM[A?.sp], m = monEl(side); if (!a || A.gif) return;
   const fr = side === 'e' ? a[3] : a[5], st = side === 'e' ? a[2] : a[4], img = m.querySelector('img'), tok = (m._tok = (m._tok || 0) + 1);
   const set = (f, x, y) => { img.style.transform = `translate(${-80 * f + (side === 'p' ? -x : x)}px,${y}px)`; };
   (async () => {
@@ -213,10 +234,13 @@ function playAnim(side, A) {
       set(f, x, y); await wait(Math.max(1, d) * 1000 / 30); i++;
     }
     if (m._tok === tok) set(0, 0, 0);
+    // 650~ (팬게임 그림)은 블랙·화이트처럼 계속 움직이도록 잠깐 쉬고 다시
+    if (A.sp >= 650 && fr.length) { await wait(rnd(900, 1800)); if (m._tok === tok && B && !A.fnt) playAnim(side, A); }
   })();
 }
 // 볼 던지기 → 펑 → 하얗게 커지며 나타남 (4세대)
 async function sendOut(side, A) {
+  A.gif = await pickGif(side, A); if (!B) return;
   const m = monEl(side); m.classList.remove('faint', 'on', 'recall'); showMon(side, A, false); m.classList.add('ball');
   await throwBall(side);
   ballPoof(side); se('BOWA2', { pan: panOf(side) }); m.classList.add('on'); await wait(60);
@@ -267,6 +291,8 @@ function effOf(type) {
 }
 const TY_EN = ['', 'Normal', 'Fighting', 'Flying', 'Poison', 'Ground', 'Rock', 'Bug', 'Ghost', 'Steel', 'Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Ice', 'Dragon', 'Dark', 'Fairy'];
 const CAT_KO = ['물리', '특수', '변화'];
+// 본가(플래티넘) 타입 꼬리표 + 물리·특수·변화 아이콘. 꼬리표 글자는 한국어로 위에 쓴다
+const tyTag = (ty, cat) => `<span class="tg"><i class="ty" style="background-image:url(${IMG}bt/ty_${ty}.png)">${TYPE_KO[ty] || ''}</i>${cat == null ? '' : `<i class="ct" style="background-image:url(${IMG}bt/cat_${cat | 0}.png)" title="${CAT_KO[cat | 0]}"></i>`}</span>`;
 function effTag(d) {
   if (!d || d[3] === 2) return '';
   const e = effOf(TY_EN[d[2]]); if (e == null) return '';
@@ -276,7 +302,7 @@ function movePanel(req) {
   return new Promise(res => {
     const mv = req.active[0].moves;
     const p = panel(`<div class="bp-moves">${[0, 1, 2, 3].map(i => { const m = mv[i]; if (!m) return `<i class="mvb empty"></i>`; const d = mvOf(m.id) || ['', m.move, 1, 0]; const ty = d[2] || 1;
-      return `<div class="mvw"><button class="mvb" data-i="${i}" style="background-image:url(${IMG}bt/mv_${ty}.png)" ${m.disabled || m.pp <= 0 ? 'disabled' : ''}><b>${esc(d[1])}</b>${effTag(d)}<span class="cat c${d[3] | 0}">${CAT_KO[d[3] | 0]}</span><span class="pp">PP <em>${m.pp}/${m.maxpp}</em></span></button><button class="mvi" data-info="${i}" aria-label="기술 설명">?</button></div>`; }).join('')}
+      return `<div class="mvw"><button class="mvb" data-i="${i}" style="background-image:url(${IMG}bt/mv_${ty}.png)" ${m.disabled || m.pp <= 0 ? 'disabled' : ''}><b>${esc(d[1])}</b>${effTag(d)}${tyTag(ty, d[3])}<span class="pp">PP <em>${m.pp}/${m.maxpp}</em></span></button><button class="mvi" data-info="${i}" aria-label="기술 설명">?</button></div>`; }).join('')}
       <button class="bb cancel" data-x><span>취소</span></button></div>`);
     p.onclick = e => {
       const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe();
@@ -291,7 +317,7 @@ function moveInfo(m) {
   return new Promise(res => {
     const d = mvOf(m.id) || ['', m.move, 1, 0, 0, 0, m.maxpp, 0, '']; const ty = d[2] || 1;
     const p = panel(`<div class="bp-info"><div class="mi-top" style="background-image:url(${IMG}bt/mv_${ty}.png)"><b>${esc(d[1])}</b></div>
-      <dl><dt>타입</dt><dd>${GA.tyIcon(ty)} ${TYPE_KO[ty] || ''}</dd><dt>분류</dt><dd><span class="cat c${d[3] | 0}">${CAT_KO[d[3] | 0]}</span></dd>
+      <dl><dt>타입</dt><dd>${tyTag(ty)}</dd><dt>분류</dt><dd>${tyTag(ty, d[3]).replace(/<i class="ty"[^]*?<\/i>/, '')} ${CAT_KO[d[3] | 0]}</dd>
       <dt>위력</dt><dd>${d[4] || '—'}</dd><dt>명중</dt><dd>${d[5] && d[5] !== true ? d[5] : '—'}</dd><dt>PP</dt><dd>${m.pp}/${m.maxpp}</dd><dt>효과</dt><dd>${effTag(d).replace(/<\/?i[^>]*>/g, '') || '—'}</dd></dl>
       <p>${esc(d[8] || '')}</p><button class="bb cancel" data-x><span>돌아가기</span></button></div>`);
     p.onclick = e => { const b = e.target.closest('button'); if (!b) return; tapSe(); res(); };
@@ -380,6 +406,7 @@ async function run(opts) {
   await wait(900); el.classList.remove('intro');
   const foeNm = B.foeNm = `${opts.foe.cls} ${opts.foe.nm}`;
   await msg(`${iga(foeNm)} 승부를 걸어왔다!`, 900);
+  my.forEach(o => gifLoad(gifUrl(o.sp, true, o.shiny, o.g === 'F'))); foeT.forEach(o => gifLoad(gifUrl(o.sp, false, o.shiny, o.g === 'F')));   // 미리 받기
   btl.makeChoices('default', 'default');   // 팀 미리보기: 라인업 순서 그대로
   try { await play(); } catch (e) { console.error(e); }
   const won = btl.winner === '관장', out = B?.out;
@@ -631,7 +658,7 @@ function monPop(id) {
   const mv = m.mv.map(x => mvOf(x)).filter(Boolean);
   gymPop(`<div class="mp-head">${thumb(P)}<div><h4>${esc(nmOf(P))}</h4><p>Lv.${m.lv} · 랭크 ${GA.rankOf(P)}</p><i class="mp-xp"><i style="width:${m.lv >= LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><small>${m.lv >= LV_MAX ? '최고 레벨' : `다음 레벨까지 ${Math.max(0, b - m.xp).toLocaleString()}`}</small></div></div>
     <dl class="gy-info mp-info"><dt>성격</dt><dd><span>${natKo(m.nat)}${nt[1] ? ` <small>${STAT_KO[nt[1]]}↑ ${STAT_KO[nt[2]]}↓</small>` : ''}</span></dd><i></i><dt>특성</dt><dd><span>${abKo(m.ab)}</span></dd><i></i></dl>
-    <div class="mp-moves">${mv.map(x => `<div class="mp-mv" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}">${GA.tyIcon(x[2])}<b>${esc(x[1])}</b><span><i class="cat c${x[3] | 0}">${CAT_KO[x[3] | 0]}</i>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'} · PP ${x[6] || '—'}</span><p>${esc(x[8] || '')}</p></div>`).join('')}</div>
+    <div class="mp-moves">${mv.map(x => `<div class="mp-mv" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}"><b>${esc(x[1])}</b><span>${tyTag(x[2], x[3])}<em>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'} · PP ${x[6] || '—'}</em></span><p>${esc(x[8] || '')}</p></div>`).join('')}</div>
     <div class="gy-btns"><button data-a="up">앞으로</button><button data-a="rm">빼기</button><button class="main" data-a="x">닫기</button></div>`,
     (a, close) => { const c = curLu(), i = c.indexOf(P.id); if (a === 'rm' && i >= 0) c.splice(i, 1); if (a === 'up' && i > 0) { c.splice(i, 1); c.splice(i - 1, 0, P.id); } close(); GA.save(); drawTab(); });
 }
