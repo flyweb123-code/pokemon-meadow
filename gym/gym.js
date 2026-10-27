@@ -424,7 +424,7 @@ const SOON = {
 };
 function openTab(t) {
   tab = t; root.querySelectorAll('.gy-menu button[data-t]').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === t));
-  const sh = $g('.gy-sheet'); if (!t) { sh.hidden = true; return; }
+  const sh = $g('.gy-sheet'); sh.classList.remove('ty-on'); if (!t) { sh.hidden = true; return; }
   if (t === 'battle') { sh.hidden = false; sh.scrollTop = 0; sh.innerHTML = '<h3>배틀</h3><p class="gy-lead">불러오는 중…</p>'; loadJs('gym/battle.js', 'GymBattle').then(() => { if (tab === 'battle' && window.GymBattle) GymBattle.tab(sh); }); return; }
   if (t === 'train' || t === 'staff' || t === 'shop') { sh.hidden = false; sh.scrollTop = 0; sh.innerHTML = `<h3>${SOON[t].t}</h3><p class="gy-lead">불러오는 중…</p>`;
     loadJs('gym/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => loadJs('gym/manage.js', 'GymManage')).then(() => { if (tab === t && window.GymManage) GymManage.tab(t, sh); }); return; }
@@ -610,9 +610,11 @@ async function later() {
   if (g.newBdg) await badgeGet(g.newBdg);
 }
 async function exit() {
+  // 퇴근 누르면 로딩 화면부터 바로 (서서히 나타나지 않게, 경완 2026-10-27)
+  const L = document.getElementById('gymLoad'); L?.classList.add('inst'); gymLoad.show('퇴근하는 중', '', true); void L?.offsetWidth; L?.classList.remove('inst');
   root.querySelectorAll('.gy-pop,.gy-setup,.gy-kang').forEach(x => x.remove());
   try { window.GymBGM?.free(); } catch (e) {}
-  gymLoad.show('퇴근하는 중', '', true); await wait(2800);
+  await wait(2800);
   clearInterval(tickT); if (st()?.d) { tick(); setAt(); save(); }
   open = false; root.classList.remove('on'); root.hidden = true; root.querySelectorAll('.gy-kang').forEach(x => x.remove()); root.classList.remove('pre'); GA.gymOut(); clearEnts();
   try { menuDots(); } catch (e) {}

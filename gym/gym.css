@@ -367,33 +367,34 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 /* ---------- 4단계: 훈련장 ---------- */
 .tr-xp{position:relative;height:5px;background:var(--hp-track);box-shadow:0 0 0 1px var(--frame)}.tr-xp i{position:absolute;inset:0 auto 0 0;background:#58a8f0}
 .tr-cap{margin:10px 0 0;font-size:12px;color:var(--dim)}
-/* 훈련장 마당 (필드처럼 돌아다니는 포켓몬) */
-.ty{position:relative;height:250px;overflow:hidden;box-shadow:inset 0 0 0 3px rgba(0,0,0,.18);touch-action:manipulation}
+/* 훈련장 마당: 시트 전체를 필드처럼 */
+.gy-sheet.ty-on{padding:0;overflow:hidden}
+.ty-yd{position:absolute;inset:0;overflow:hidden;background:#74bc4c;touch-action:manipulation;user-select:none;-webkit-user-select:none}
 .ty-bg{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
 .ty-l{position:absolute;inset:0}
-.ty-empty{position:absolute;left:0;right:0;top:46%;margin:0;text-align:center;font-size:13px;color:#fff;text-shadow:1px 1px 0 #000}
-.ty-eq{position:absolute;width:64px;height:64px;margin:-64px 0 0 -32px;background-size:100% 100%;image-rendering:pixelated;transform-origin:50% 100%;pointer-events:none}
-.ty-eq.eq-water{margin-top:-46px}
-.ty-eq.wob{animation:tyWob .45s}.ty-eq.eq-sandbag.wob{transform-origin:50% 0;animation-name:tySwing;animation-duration:.7s}
-@keyframes tyWob{0%,100%{rotate:0deg}25%{rotate:9deg}55%{rotate:-6deg}80%{rotate:2deg}}
-@keyframes tySwing{0%,100%{rotate:0deg}20%{rotate:16deg}50%{rotate:-10deg}75%{rotate:4deg}}
+.ty-eq{position:absolute;background-size:100% 100%;image-rendering:pixelated;transform-origin:50% 100%;pointer-events:none}
+.ty-eq.eq-dummy{width:56px;height:88px;margin:-84px 0 0 -28px}.ty-eq.eq-sandbag{width:64px;height:96px;margin:-92px 0 0 -32px}
+.ty-eq.eq-fly{width:64px;height:92px;margin:-88px 0 0 -32px}.ty-eq.eq-water{width:56px;height:36px;margin:-24px 0 0 -28px;animation:tyBuoy 2.4s ease-in-out infinite}
+@keyframes tyBuoy{50%{translate:0 2px}}
+.ty-eq.wob{animation:tyWob .45s}.ty-eq.eq-sandbag.wob{animation:tySwing .7s}.ty-eq.eq-water.wob{animation:tyBob2 .5s}
+@keyframes tyWob{0%,100%{rotate:0deg}25%{rotate:7deg}55%{rotate:-5deg}80%{rotate:2deg}}
+@keyframes tySwing{0%,100%{scale:1 1}20%{scale:.94 1.02;translate:3px 0}50%{scale:1.03 .98;translate:-2px 0}}
+@keyframes tyBob2{30%{translate:0 4px}60%{translate:0 -1px}}
 .ty-m{position:absolute;left:0;top:0;width:0;height:0;cursor:pointer}
-.ty-sh{position:absolute;left:-14px;top:-4px;width:28px;height:8px;border-radius:50%;background:rgba(0,0,0,.22);pointer-events:none}
+.ty-sh{position:absolute;left:-14px;top:-4px;width:28px;height:8px;border-radius:50%;background:rgba(20,40,10,.25);pointer-events:none}
 .ty-fl{position:absolute;left:0;top:0}
 .ty-sp{position:absolute;display:block;background-repeat:no-repeat;image-rendering:pixelated}
-.ty-sp.one{left:-24px;top:-48px;width:48px;height:48px;background-size:contain;background-position:50% 100%}
+.ty-sp.one{left:-28px;top:-56px;width:56px;height:56px;background-size:contain;background-position:50% 100%}
 .ty-m.bob .ty-sp.one{animation:tyBob .5s infinite}
 @keyframes tyBob{50%{translate:0 -3px}}
-.ty-m.swim .ty-fl{clip-path:inset(-200px -200px 7px -200px)}.ty-m.swim .ty-sh{background:rgba(255,255,255,.45);height:6px;top:-6px}
-.ty-emo{position:absolute;left:-20px;top:-62px;width:40px;text-align:center;font-style:normal;font-weight:700;font-size:13px;color:#fff;text-shadow:0 0 2px #000,1px 1px 0 #000;pointer-events:none;animation:tyEmo 1.3s forwards;z-index:2}
-.ty-emo.xp{color:#9fe0ff;font-size:11px}.ty-emo.mu{color:#ffd0e8}.ty-emo.hit{color:#ffe070;font-size:16px}
+.ty-m.swim .ty-fl{clip-path:inset(-300px -300px 9px -300px)}.ty-m.swim .ty-sh{background:rgba(255,255,255,.4)}
+.ty-emo{position:absolute;left:-24px;top:-62px;width:48px;text-align:center;font-style:normal;font-weight:700;font-size:14px;color:#fff;text-shadow:0 0 2px #000,1px 1px 0 #000,-1px -1px 0 #000;pointer-events:none;animation:tyEmo 1.3s forwards;z-index:2}
+.ty-emo.xp{color:#9fe0ff;font-size:12px}.ty-emo.mu{color:#ffd0e8}.ty-emo.hit{color:#ffe070;font-size:17px}.ty-emo.zz{color:#dfe8ff;font-size:12px}
 @keyframes tyEmo{0%{opacity:0;translate:0 6px}15%{opacity:1;translate:0 0}75%{opacity:1}100%{opacity:0;translate:0 -14px}}
-.ty-chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}
-.ty-chip{display:grid;grid-template-columns:34px 1fr;grid-template-rows:auto auto auto;column-gap:6px;row-gap:2px;align-items:center;padding:5px 6px;text-align:left;font-size:12px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.12)}
-.ty-chip img{grid-row:1/4;width:34px;height:34px;image-rendering:pixelated;object-fit:contain}
-.ty-chip b{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ty-chip b em{font-style:normal;color:var(--dim);font-weight:400}
-.ty-chip small{font-size:10.5px;color:var(--dim)}.ty-chip.done{opacity:.75}
-.ty-chip.add{display:flex;flex-direction:column;justify-content:center;align-items:center;border:3px dashed var(--inner);box-shadow:none;color:var(--dim);min-height:52px}.ty-chip.add span{font-size:20px;line-height:1}
+.ty-add{position:absolute;right:calc(var(--si-right,env(safe-area-inset-right)) + 12px);bottom:14px;z-index:5000;width:56px;height:56px;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+  background:#f8f8f8;color:#20202c;border:3px solid #20202c;box-shadow:inset 0 0 0 2px #fff,inset 0 -4px 0 #c8c8d0,0 3px 0 rgba(0,0,0,.35)}
+.ty-add b{font-size:26px;line-height:1}.ty-add small{font-size:10px;color:#58586a}
+.ty-add.pulse{animation:tyPulse 1.4s ease-in-out infinite}@keyframes tyPulse{50%{scale:1.08}}
 .lu-pick button.dim{opacity:.6}
 
 /* ---------- 6단계: 트레이너 ---------- */
@@ -436,3 +437,5 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .up-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;margin-bottom:6px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.1)}
 .up-row div{display:flex;flex-direction:column;gap:2px;font-size:14px}.up-row small{font-size:12px;color:var(--dim)}.up-row em{font-style:normal;color:var(--dim)}.up-row .gy-key{min-height:40px;padding:6px 12px}
 #gym .gy-sheet .coin,#gym .gy-pop .coin{position:static;display:inline-block;width:12px;height:12px;margin:0 3px 0 0;vertical-align:-1px}
+
+#gymLoad.inst{transition:none}

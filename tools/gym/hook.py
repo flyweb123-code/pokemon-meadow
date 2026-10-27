@@ -189,4 +189,21 @@ def patch6(path):
     s = s[:k] + JS6.lstrip('\n') + s[k:]
     open(path, 'w', encoding='utf-8').write(s); print(path, 'ok6')
 
-for p in sys.argv[1:]: patch(p); patch2(p); patch3(p); patch4(p); patch5(p); patch6(p)
+MARK7 = '/*gym-hook7*/'
+# 7단계 훅 (v10.31): 훈련장을 필드와 같은 그림 도구로 — ART(덩어리·외곽선 도트 그림)의 sheet·trunk·limb 를 꺼내고 계절 색(seasonCv)을 쓴다
+ART_OLD = "  return { tree, treeS, perch, bush, rock, stump, campfire, flower, G, B, ST };"
+ART_NEW = "  return { tree, treeS, perch, bush, rock, stump, campfire, flower, G, B, ST, sheet, trunk, limb };"
+JS7 = MARK7 + r"""
+GA.art = () => ({ ART, seasonCv, season: () => season() });
+"""
+
+def patch7(path):
+    s = open(path, encoding='utf-8').read()
+    if MARK7 in s:
+        print(path, 'already7'); return
+    assert s.count(ART_OLD) == 1; s = s.replace(ART_OLD, ART_NEW)
+    k = s.index('// 운영자 모드·테스트 버튼 (이 기기에만 저장)')
+    s = s[:k] + JS7.lstrip('\n') + s[k:]
+    open(path, 'w', encoding='utf-8').write(s); print(path, 'ok7')
+
+for p in sys.argv[1:]: patch(p); patch2(p); patch3(p); patch4(p); patch5(p); patch6(p); patch7(p)

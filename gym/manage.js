@@ -21,7 +21,7 @@ const monImg = (sp, o = {}) => { const g = GB().gifUrl(sp, false, !!o.s, !!o.f),
 const owIc = ow => `<i class="ow-ic" style="background-image:url(${IMG}ow/${ow}.png)"></i>`;
 let sh = null, cur = null, shopT = 'tm', tmTy = 0;
 function tab(t, el) { sh = el; cur = t; draw(); }
-function draw() { if (!sh || !st()) return; sh.onclick = null; ({ train: drawTrain, staff: drawStaff, shop: drawShop })[cur]?.(); GB()?.fillTh(sh); }
+function draw() { if (!sh || !st()) return; sh.onclick = null; sh.classList.remove('ty-on'); ({ train: drawTrain, staff: drawStaff, shop: drawShop })[cur]?.(); GB()?.fillTh(sh); }
 const redraw = () => { if (sh && !sh.hidden) draw(); };
 
 // ======================= 훈련장 (4단계) =======================
@@ -57,76 +57,144 @@ function tickTrain(now) {
     return true;
   });
 }
-// 훈련장 = 필드처럼 포켓몬이 돌아다니며 기구를 치고, 서로 대련하고, 쉬는 마당 (경완 피드백 2026-10-27 '꾸미기 모드 필드처럼').
-// 본게임 PMD 걸음 그림(GA.pmd)을 쓰고, 그림이 없는 종은 한 장 그림. 경험치 계산은 tickTrain 그대로(화면은 보여 주기만).
+// 훈련장 = 필드처럼 화면 가득한 마당 (경완 피드백 2026-10-27 '꾸미기 모드 필드처럼', '미사여구 다 빼고 전체 화면, 퀄리티 필드 수준').
+// 바탕·기구는 본게임 필드와 같은 도트 그림 도구(GA.art: ART 덩어리·외곽선, 계절 색)로 그린다. 포켓몬은 필드와 같은 걸음 그림(GA.pmd)·크기.
+// 포켓몬이 돌아다니며 기구를 치고, 둘씩 대련하고, 쉬고, 오늘 8시간을 다 쓰면 잔다. 경험치 계산은 tickTrain 그대로(화면은 보여 주기만).
 const leftOf = e => e.d === K.dayStart(Date.now()) ? Math.max(0, 8 - e.h) : 8;
-let Y = null;   // 마당: { el, W, H, eq: {k: {x, y, el}}, mons: [], raf, last, pos: {id: [x, y]} }
-const YH = 250;
+let Y = null;   // 마당: { el, W, H, eq: {k: {x, y, el}}, mons: [], raf, last, pos: {id: [x, y]}, pond, ring }
 const inPond = (x, y, m = 0) => { const p = Y.pond; return ((x - p.x) / (p.rx + m)) ** 2 + ((y - p.y) / (p.ry + m)) ** 2 < 1; };
+const yTop = () => 150;   // 숲 아래부터 걸어 다님
 function yardSpot(swim) {
-  for (let i = 0; i < 40; i++) { const x = 20 + Math.random() * (Y.W - 40), y = YH * .34 + Math.random() * (YH * .62);
-    if (swim ? inPond(x, y, -14) : !inPond(x, y, 14)) return [x, y]; }
-  return [Y.W * .3, YH * .6];
+  for (let i = 0; i < 60; i++) { const x = 24 + Math.random() * (Y.W - 48), y = yTop() + Math.random() * (Y.H - yTop() - 20);
+    if (swim ? inPond(x, y, -18) : !inPond(x, y, 16) && !Object.values(Y.eq).some(q => Math.abs(q.x - x) < 26 && y < q.y + 8 && y > q.y - 20)) return [x, y]; }
+  return [Y.W * .3, Y.H * .6];
 }
-function yardBg(c, W) {
-  const w = c.width = Math.ceil(W / 2), h = c.height = YH / 2, x = c.getContext('2d'), P = Y.pond;
-  const hs = (i, j) => { const v = Math.sin(i * 127.1 + j * 311.7) * 43758.5453; return v - Math.floor(v); };
-  x.fillStyle = '#78c058'; x.fillRect(0, 0, w, h);
-  for (let j = 0; j < h; j += 3) for (let i = 0; i < w; i += 3) { const v = hs(i, j); if (v < .12) { x.fillStyle = '#60a848'; x.fillRect(i, j, 1, 2); x.fillRect(i + 2, j, 1, 2); } else if (v > .985) { x.fillStyle = v > .993 ? '#f8f8f8' : '#f8d030'; x.fillRect(i, j, 2, 2); } }
-  // 가운데 흙 마당
-  x.fillStyle = '#d8b878'; x.beginPath(); x.ellipse(w * .42, h * .6, w * .36, h * .26, 0, 0, 7); x.fill();
-  x.fillStyle = '#c8a060'; for (let j = 0; j < h; j += 4) for (let i = 0; i < w; i += 5) if (hs(i + 9, j) < .2 && ((i - w * .42) / (w * .34)) ** 2 + ((j - h * .6) / (h * .24)) ** 2 < 1) x.fillRect(i, j, 2, 1);
-  // 뒤쪽 나무 울타리
-  x.fillStyle = '#58a040'; x.fillRect(0, 0, w, h * .26);
-  for (let i = 0; i < w; i += 14) { x.fillStyle = '#4a8a38'; x.beginPath(); x.arc(i + 7, h * .1, 9, 0, 7); x.fill(); }
-  x.fillStyle = '#a87838'; x.fillRect(0, h * .2, w, 3); x.fillRect(0, h * .27, w, 3);
-  for (let i = 3; i < w; i += 12) { x.fillStyle = '#a87838'; x.fillRect(i, h * .16, 4, h * .16); x.fillStyle = '#704818'; x.fillRect(i + 3, h * .16, 1, h * .16); x.fillRect(i, h * .32, 4, 1); }
-  // 연못
-  x.fillStyle = '#3870c8'; x.beginPath(); x.ellipse(P.x / 2, P.y / 2 + 1, P.rx / 2 + 2, P.ry / 2 + 2, 0, 0, 7); x.fill();
-  x.fillStyle = '#4890e8'; x.beginPath(); x.ellipse(P.x / 2, P.y / 2, P.rx / 2, P.ry / 2, 0, 0, 7); x.fill();
-  x.fillStyle = '#a8d0f8'; for (let k = 0; k < 4; k++) x.fillRect(P.x / 2 - P.rx / 3 + k * P.rx / 5, P.y / 2 - P.ry / 5 + (k % 2) * 6, 6, 1);
+// 필드 도트 그림 도구로 기구 그리기 (1칸 = 화면 2px, 필드와 같은 크기)
+const SW = { ol: '#4a3410', d2: '#7a5a20', d1: '#9a7428', m: '#b8902e', l: '#d4ac44', h: '#e8c860', hh: '#f6e09a' };
+const RD = { ol: '#3a1010', d2: '#5e1c18', d1: '#7e2a22', m: '#a03a2c', l: '#c0503a', h: '#dc7454', hh: '#f0a07c' };
+const WH = { ol: '#3c3c48', d2: '#9090a0', d1: '#b0b0bc', m: '#c8c8d4', l: '#dcdce6', h: '#ececf4', hh: '#ffffff' };
+let EQ_CV = null;
+function eqArt() {
+  if (EQ_CV) return EQ_CV; const { ART } = GA.art(), B = ART.B, ST = ART.ST;
+  const dummy = () => { const S = ART.sheet(28, 44, 313);
+    ART.trunk(S, 14, 14, 42, 1.3, 2.1, B, false);
+    ART.limb(S, 3, 21, 25, 21, 1.3, 1.3);
+    S.clump(14, 27, 6.5, SW, 0, 1.3, .14); S.clump(14, 11, 5.2, SW, .12, .95, .12); S.seams(SW);
+    for (let x = 6; x <= 22; x++) { if (S.get(x, 22)) S.set(x, 22, RD.m, 0, RD.ol); if (S.get(x, 32)) S.set(x, 32, RD.d1, 0, RD.ol); }
+    for (let y = -3; y <= 3; y++) for (let x = -3; x <= 3; x++) { const d = Math.hypot(x, y); if (d > 3.2) continue; S.set(14 + x, 27 + y, d > 2.2 ? RD.m : d > 1.1 ? WH.h : RD.l, 0, RD.ol); }
+    for (let k = 0; k < 14; k++) { const x = 9 + Math.floor(S.R() * 11), y = 7 + Math.floor(S.R() * 30); if (S.get(x, y) === SW.l || S.get(x, y) === SW.m) S.set(x, y, SW.d1, 0, SW.ol); }
+    S.outline(); return S.canvas([14, 42, 8, 1.6]); };
+  const sandbag = () => { const S = ART.sheet(32, 48, 727);
+    ART.trunk(S, 5, 4, 46, 1.2, 1.8, B, false); ART.trunk(S, 27, 4, 46, 1.2, 1.8, B, false);
+    ART.limb(S, 3, 4, 29, 4, 1.4, 1.4);
+    for (let y = 6; y <= 12; y++) S.set(16, y, y % 2 ? ST.h : ST.d1, 0, ST.ol);
+    S.clump(16, 26, 7, RD, .05, 1.75, .06); S.seams(RD);
+    for (let x = 8; x <= 24; x++) { if (S.get(x, 17)) S.set(x, 17, '#3c2a20', 0, RD.ol); if (S.get(x, 35)) S.set(x, 35, '#3c2a20', 0, RD.ol); }
+    for (let y = 19; y <= 33; y += 2) if (S.get(13, y)) S.set(13, y, RD.hh, 0, RD.ol);
+    S.outline(); return S.canvas([16, 46, 13, 1.6]); };
+  const target = () => { const S = ART.sheet(32, 46, 919);
+    ART.limb(S, 9, 44, 14, 20, 1, 1); ART.limb(S, 23, 44, 18, 20, 1, 1); ART.limb(S, 16, 43, 16, 22, .8, .8);
+    for (let y = -12; y <= 12; y++) for (let x = -12; x <= 12; x++) { const d = Math.hypot(x, y / .95); if (d > 11.6) continue; const lt = (-x - y) / 24, ring = Math.floor(d / 2.4);
+      const P = d > 10 ? B : ring % 2 ? WH : RD, c = lt > .25 ? P.h : lt > -.1 ? P.l : lt > -.35 ? P.m : P.d1; S.set(16 + x, 17 + y, c, 0, P.ol); }
+    S.outline(); return S.canvas([16, 44, 11, 1.6]); };
+  const buoy = () => { const S = ART.sheet(28, 18, 41);
+    for (let y = -6; y <= 6; y++) for (let x = -11; x <= 11; x++) { const o = (x / 10.5) ** 2 + (y / 5.6) ** 2, i = (x / 4) ** 2 + (y / 2.2) ** 2; if (o > 1 || i < 1) continue;
+      const P = (Math.atan2(y, x) + Math.PI) / (Math.PI / 2) % 2 < 1 ? RD : WH, lt = -y / 6 - x / 22; S.set(14 + x, 8 + y, lt > .35 ? P.h : lt > -.1 ? P.l : lt > -.45 ? P.m : P.d1, 0, P.ol); }
+    S.outline(); return S.canvas(); };
+  return (EQ_CV = { dummy: dummy().toDataURL(), sandbag: sandbag().toDataURL(), fly: target().toDataURL(), water: buoy().toDataURL() });
+}
+function yardBg(c) {
+  const { ART, seasonCv } = GA.art(), PW = c.width = Math.ceil(Y.W / 2), PH = c.height = Math.ceil(Y.H / 2), g = c.getContext('2d'); g.imageSmoothingEnabled = false;
+  let seed = 11; const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const px = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(Math.round(x), Math.round(y), w, h); };
+  const put = (cv, x, y) => g.drawImage(cv, Math.round(x - cv.width / 2), Math.round(y - cv.height));
+  const flip = cv => { const c2 = document.createElement('canvas'); c2.width = cv.width; c2.height = cv.height; const q = c2.getContext('2d'); q.translate(cv.width, 0); q.scale(-1, 1); q.drawImage(cv, 0, 0); return c2; };
+  const P = { x: Y.pond.x / 2, y: Y.pond.y / 2, rx: Y.pond.rx / 2, ry: Y.pond.ry / 2 }, pv = (x, y) => ((x - P.x) / P.rx) ** 2 + ((y - P.y) / P.ry) ** 2;
+  const A = { x: Y.ring.x / 2, y: Y.ring.y / 2, rx: Y.ring.rx / 2, ry: Y.ring.ry / 2 }, av = (x, y) => ((x - A.x) / A.rx) ** 2 + ((y - A.y) / A.ry) ** 2 + Math.sin(x * .45) * .02 + Math.cos(y * .6) * .025;
+  const kN = PW * PH / (180 * 300);
+  // 하늘
+  { const T = [74, 160, 240], Bc = [200, 232, 255]; for (let y = 0; y < 60; y++) { const t = Math.min(1, Math.floor(y / 4) * 4 / 48); px(0, y, PW, 1, `rgb(${T.map((v, j) => Math.round(v + (Bc[j] - v) * t)).join(',')})`); } }
+  // 땅: 세 가지 초록 얼룩 + 잔디 결 (필드와 같은 색)
+  px(0, 44, PW, PH - 44, '#74bc4c');
+  const blot = (cx, cy, rx, col) => { const ry = rx * .45; for (let y = -ry; y <= ry; y++) for (let x = -rx; x <= rx; x++) if ((x / rx) ** 2 + (y / ry) ** 2 < 1 && ((x + y + 99) & 1 || (x / rx) ** 2 + (y / ry) ** 2 < .6)) px(cx + x, cy + y, 1, 1, col); };
+  for (let i = 0; i < 26 * kN; i++) blot(R() * PW, 50 + R() * (PH - 50), 10 + R() * 18, R() < .5 ? '#6cb446' : '#7cc254');
+  // 훈련 마당 흙 (필드 흙길 색, 가장자리는 풀이 덮고 자갈)
+  for (let y = Math.floor(A.y - A.ry - 2); y <= A.y + A.ry + 2; y++) for (let x = Math.floor(A.x - A.rx - 2); x <= A.x + A.rx + 2; x++) { const v = av(x, y), d = (x + y) & 1;
+    if (v < .8) px(x, y, 1, 1, v > .74 && d ? '#cfb27a' : '#dcc48c'); else if (v < .92) px(x, y, 1, 1, v > .88 && d ? '#a88a52' : '#cfb27a'); else if (v < 1) px(x, y, 1, 1, d ? '#a88a52' : '#b8985c'); }
+  for (let i = 0; i < 260 * kN; i++) { const a = R() * 6.28, r = Math.sqrt(R()), x = A.x + Math.cos(a) * A.rx * r, y = A.y + Math.sin(a) * A.ry * r, k = R();
+    if (r > .93) { px(x, y - 1, 1, 2, '#5aa23a'); continue; }
+    if (k < .5) px(x, y, 2, 1, '#b8985c'); else if (k < .7) { px(x, y, 2, 2, '#a8a094'); px(x, y, 1, 1, '#d8d0c4'); } else if (k < .78) px(x, y, 1, 1, '#c8aa70'); }
+  // 잔디 결 (흙·연못 위는 빼고)
+  for (let i = 0; i < 900 * kN; i++) { const x = R() * PW, y = 48 + R() * (PH - 48), k = R(); if (pv(x, y) < 1.3 || av(x, y) < 1.02) continue; px(x, y, 1, 2, k < .5 ? '#5aa23a' : '#8ccc62'); if (k < .25) px(x + 1, y - 1, 1, 2, '#5aa23a'); }
+  // 숲 (필드 위쪽과 같은 방식: 그늘이 안으로 짙어지고, 작은 나무 세 줄, 밑동 풀숲)
+  { const b1 = ART.treeS(51, -.28), b2 = ART.treeS(83, -.28), f1 = ART.treeS(117, -.05), f2 = ART.treeS(201, -.05), T = [b1, flip(b2), flip(b1), b2, f1, flip(f2), flip(f1), f2];
+    const shade = (cv, a) => { const c2 = document.createElement('canvas'); c2.width = cv.width; c2.height = cv.height; const q = c2.getContext('2d'); q.drawImage(cv, 0, 0); q.globalCompositeOperation = 'source-atop'; q.fillStyle = `rgba(6,18,8,${a})`; q.fillRect(0, 0, cv.width, cv.height); return c2; };
+    const sc = (cv, k) => { const c2 = document.createElement('canvas'); c2.width = Math.round(cv.width * k); c2.height = Math.round(cv.height * k); const q = c2.getContext('2d'); q.imageSmoothingEnabled = false; q.drawImage(cv, 0, 0, c2.width, c2.height); return c2; };
+    const BAY = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]], dith = (x, y, a) => a * 16 > BAY[y & 3][x & 3] + .5;
+    const edge = x => 57 + Math.round(Math.sin(x * .37) * 1.2 + Math.sin(x * .11 + 1) * 1.4);
+    const DEEP = ['#0a170c', '#0e1f10', '#132a15', '#19351b', '#204222', '#2a5229'];
+    for (let x = 0; x < PW; x++) { const top = 33 + Math.round(Math.sin(x * .5) * 1.5 + Math.sin(x * .17) * 1.5), bot = edge(x);
+      for (let y = top; y < bot; y++) { const k = (y - top) / (bot - top) * (DEEP.length - 1), i = Math.floor(k); px(x, y, 1, 1, DEEP[Math.min(DEEP.length - 1, i + (dith(x, y, k - i) ? 1 : 0))]); } }
+    const d1 = shade(sc(b1, .62), .6), d2 = shade(sc(flip(b2), .62), .6), M = [T[0], T[1], T[2], T[3]].map(t => shade(sc(t, .8), .32));
+    const row = (x0, st, f) => { for (let x = x0, i = 0; x < PW + 14; x += st(i), i++) f(x, i); };
+    row(3, i => 8 + (i % 2) * 2, (x, i) => put(i % 2 ? d1 : d2, x, 47 + (i % 3)));
+    row(-4, i => 11 + (i % 3) * 2, (x, i) => put(M[i % 4], x, 52 + (i % 2)));
+    row(1, i => 17 + (i % 2) * 3, (x, i) => put(T[4 + (i % 4)], x, 55 + (i % 2)));
+    for (let x = 0; x < PW; x++) { const e = edge(x); for (let y = e; y < e + 18; y++) { const t = (y - e) / 18; if (R() < (1 - t) ** 1.6 * .85) px(x, y, 1, 1, t < .3 ? '#3f8a34' : t < .6 ? '#4f9a3c' : '#62ac44'); } }
+    const UG = ['#2c5e26', '#3a7a30', '#4c9038', '#5ea844'];
+    for (let x = -2; x < PW + 2; x++) { const e = edge(x), h = 3 + Math.floor(R() * 4) + (Math.sin(x * .9) > .6 ? 2 : 0); for (let y = 0; y < h; y++) px(x, e + 1 - y, 1, 1, UG[Math.min(3, Math.floor((y / h) * 3 + (R() < .3 ? 1 : 0)))]); }
+    for (let i = 0; i < 60 * PW / 180; i++) { const x = R() * PW, e = edge(Math.round(x)) + 2 + R() * 6; px(x, e, 1, 2, R() < .5 ? '#3f8a34' : '#5aa23a'); } }
+  // 연못 (필드 연못과 같은 단계 색)
+  for (let y = Math.floor(P.y - P.ry - 6); y <= P.y + P.ry + 6; y++) for (let x = Math.floor(P.x - P.rx - 6); x <= P.x + P.rx + 6; x++) {
+    const v = pv(x, y) + Math.sin(x * .7) * .015 + Math.cos(y * .9) * .02, d = (x + y) & 1;
+    if (v < .3) px(x, y, 1, 1, v > .26 && d ? '#3a86c8' : '#2e6fb4'); else if (v < .62) px(x, y, 1, 1, v > .56 && d ? '#4c9ad8' : '#3a86c8');
+    else if (v < .86) px(x, y, 1, 1, v > .8 && d ? '#6cb4e6' : '#4c9ad8'); else if (v < .95) px(x, y, 1, 1, '#8ccaf0'); else if (v < 1) px(x, y, 1, 1, '#cfe9f6');
+    else if (v < 1.13) px(x, y, 1, 1, v < 1.04 && d ? '#c8a868' : '#e2cc92'); else if (v < 1.2) px(x, y, 1, 1, '#b8985c'); else if (v < 1.24 && d) px(x, y, 1, 1, '#5aa23a'); }
+  for (let i = 0; i < 8; i++) { const a = R() * 6.28, r = Math.sqrt(R()) * .7, x = P.x + Math.cos(a) * P.rx * r, y = P.y + Math.sin(a) * P.ry * r; px(x, y, 5, 1, '#a8dcfa'); px(x + 1, y + 1, 3, 1, '#7cc0ec'); }
+  // 가장자리 장식: 덤불·바위·꽃·키 큰 풀 (마당·연못·가운데 길은 비움)
+  const D = [], FK = ['sun', 'tulip', 'daisy', 'pink', 'bell', 'grass', 'tall'];
+  const free = (x, y) => y > 76 && av(x, y) > 1.25 && pv(x, y) > 1.6;
+  for (let i = 0, n = 0; i < 400 && n < 26 * kN; i++) { const x = R() * PW, y = 70 + R() * (PH - 70); if (!free(x, y)) continue; n++; const k = R(); D.push([k < .14 ? 'bush' : k < .3 ? 'rock' : k < .8 ? 'flw' : 'tall', x, y]); }
+  D.sort((a, b) => a[2] - b[2]).forEach(([k, x, y]) => {
+    if (k === 'bush') put(ART.bush(), x, y); else if (k === 'rock') put(ART.rock(8 + Math.round(R() * 8), 6 + Math.round(R() * 4), Math.round(R() * 99) * 977, 1 + Math.round(R())), x, y);
+    else if (k === 'flw') put(ART.flower(FK[Math.floor(R() * FK.length)]), x, y);
+    else for (let q = 0, n = 3 + Math.floor(R() * 3); q < n; q++) { const xx = x + q * 3, yy = y + (q % 2) * 2; px(xx, yy - 4, 1, 5, '#3f8a30'); px(xx + 1, yy - 6, 1, 7, '#58a83c'); px(xx + 2, yy - 3, 1, 4, '#3f8a30'); px(xx + 1, yy - 6, 1, 1, '#9ad66c'); } });
+  try { seasonCv(c, 'bg', { ox: 0, oy: 0 }); } catch (e) {}
 }
 function drawTrain() {
   const g = st(); g.tr = g.tr || []; tickTrain(Date.now()); K.save();
-  const n = trMax();
   if (Y) { Y.mons.forEach(m => { Y.pos[m.id] = [m.x, m.y]; }); cancelAnimationFrame(Y.raf); }
-  sh.innerHTML = `<h3>훈련장</h3><p class="gy-lead">보낸 포켓몬이 기구를 치고 서로 대련하며 경험치를 쌓아요(하루 8시간, 앱을 꺼 둬도). 가끔 특별한 기술을 익혀요. 필드에 있던 포켓몬은 필드에서 빠져요.</p>
-    <div class="ty"><canvas class="ty-bg"></canvas><div class="ty-l"></div>${g.tr.length ? '' : '<p class="ty-empty">아직 훈련 중인 포켓몬이 없어요</p>'}</div>
-    <div class="ty-chips"></div><p class="tr-cap">훈련장 ${g.tr.length}/${n}마리${n < 6 ? ' · 상점의 <b>체육관 넓히기</b>에서 늘릴 수 있어요' : ''}</p>`;
-  const el = sh.querySelector('.ty'), W = Math.max(280, el.clientWidth || 340);
-  Y = { el, W, H: YH, L: el.querySelector('.ty-l'), eq: {}, mons: [], pos: Y?.pos || {}, last: 0, pond: { x: W * .8, y: YH * .8, rx: W * .17, ry: YH * .13 } };
-  yardBg(el.querySelector('.ty-bg'), W);
-  const EQ = { dummy: [.18, .5], sandbag: [.47, .42], fly: [.8, .47], water: [.79, .83] };
-  for (const k in EQ) { const [fx, fy] = EQ[k], q = document.createElement('i'); q.className = 'ty-eq eq-' + k; q.style.cssText = `left:${fx * W}px;top:${fy * YH}px;z-index:${Math.round(fy * YH)};background-image:url(${IMG}deco/tr_${k}.png)`; Y.L.append(q); Y.eq[k] = { x: fx * W, y: fy * YH, el: q }; }
+  sh.classList.add('ty-on'); sh.scrollTop = 0;
+  sh.innerHTML = `<div class="ty-yd"><canvas class="ty-bg"></canvas><div class="ty-l"></div><button class="ty-add${g.tr.length ? '' : ' pulse'}" data-add="1" aria-label="포켓몬 보내기"><b>+</b><small>${g.tr.length}/${trMax()}</small></button></div>`;
+  const el = sh.querySelector('.ty-yd'), W = Math.max(280, el.clientWidth || 360), H = Math.max(420, el.clientHeight || 640);
+  Y = { el, W, H, L: el.querySelector('.ty-l'), eq: {}, mons: [], pos: Y?.pos || {}, last: 0,
+    pond: { x: W * .72, y: H * .86, rx: W * .24, ry: Math.min(70, H * .08) }, ring: { x: W * .48, y: H * .52, rx: W * .43, ry: H * .21 } };
+  yardBg(el.querySelector('.ty-bg'));
+  const ART_ = eqArt(), EQ = { dummy: [.2, .5], sandbag: [.5, .41], fly: [.8, .53], water: [.72, .86] };
+  for (const k in EQ) { const [fx, fy] = EQ[k], q = document.createElement('i'), y = k === 'water' ? Y.pond.y : fy * H; q.className = 'ty-eq eq-' + k;
+    q.style.cssText = `left:${fx * W}px;top:${y}px;z-index:${Math.round(y)};background-image:url(${ART_[k]})`; Y.L.append(q); Y.eq[k] = { x: fx * W, y, el: q }; }
   g.tr.forEach((e, i) => { const P = boxOf(e.id); if (P) yardMon(P, e, i); });
-  yardChips();
   sh.onclick = ev => {
     const t = ev.target.closest('[data-p],[data-add]'); if (!t) return; sfx('tap');
-    if (t.dataset.add) return pickTrain();
+    if (t.dataset.add) return st().tr.length >= trMax() ? say(`훈련장이 가득 찼어요.${trMax() < 6 ? '<br><small>상점의 체육관 넓히기에서 늘릴 수 있어요.</small>' : ''}`) : pickTrain();
     trPop(+t.dataset.p || t.dataset.p);
   };
   Y.raf = requestAnimationFrame(yardLoop);
-}
-function yardChips() {
-  const g = st(), box = sh?.querySelector('.ty-chips'); if (!box) return;
-  box.innerHTML = g.tr.map(e => { const P = boxOf(e.id); if (!P) return ''; const m = GB().gm(P), gr = GB().growth(P.sp), a = GB().xpAt(gr, m.lv), b = GB().xpAt(gr, m.lv + 1), left = leftOf(e);
-    return `<button class="ty-chip${left <= 0 ? ' done' : ''}" data-p="${P.id}">${GB().thumb(P)}<b>${esc(nmOf(P))} <em>Lv.${m.lv}</em></b><i class="tr-xp"><i style="width:${m.lv >= GB().LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><small>${left > 0 ? `오늘 ${Math.ceil(left)}시간 남음` : '오늘 훈련 끝 · 쿨쿨'}</small></button>`; }).join('')
-    + (g.tr.length < trMax() ? '<button class="ty-chip add" data-add="1"><span>+</span><small>포켓몬 보내기</small></button>' : '');
-  GB()?.fillTh(box);
 }
 function yardMon(P, e, i) {
   const t = SPECIES[P.sp]?.t || [], o = document.createElement('div');
   o.className = 'ty-m'; o.dataset.p = P.id; o.innerHTML = '<i class="ty-sh"></i><div class="ty-fl"><i class="ty-sp"></i></div>';
   const [x, y] = Y.pos[P.id] || yardSpot(); Y.L.append(o);
-  const m = { id: P.id, P, e, el: o, fl: o.querySelector('.ty-fl'), sp: o.querySelector('.ty-sp'), x, y, face: Math.random() < .5 ? 1 : -1, st: 'rest', until: performance.now() / 1000 + Math.random() * 2, at: 0, home: stOf(P, i), swimmer: t.includes(11), flyer: t.includes(3), D: null };
+  const m = { id: P.id, P, e, el: o, fl: o.querySelector('.ty-fl'), sp: o.querySelector('.ty-sp'), shd: o.querySelector('.ty-sh'), x, y, face: Math.random() < .5 ? 1 : -1, st: 'rest', until: performance.now() / 1000 + Math.random() * 2, at: 0, home: stOf(P, i), swimmer: t.includes(11), flyer: t.includes(3), D: null };
   Y.mons.push(m); place(m);
   GA.pmd?.(P.sp, P.sex).then(D => { if (!Y.mons.includes(m)) return; m.D = D;
-    if (D.P) { const [w, h] = D.wh, s = D.s * .78; m.s = s; Object.assign(m.sp.style, { backgroundImage: `url("${D.P.i}")`, backgroundSize: `${w * s}px ${h * s}px` }); if (P.shiny) m.sp.style.filter = `hue-rotate(${GA.shinyHue(P.sp)}deg)`; m.fk = ''; }
+    if (D.P) { const [w, h] = D.wh, s = D.s; m.s = s; Object.assign(m.sp.style, { backgroundImage: `url("${D.P.i}")`, backgroundSize: `${w * s}px ${h * s}px` }); if (P.shiny) m.sp.style.filter = `hue-rotate(${GA.shinyHue(P.sp)}deg)`; m.fk = '';
+      const fw = Math.max(10, (D.P.fw || 14) * s * 1.05); Object.assign(m.shd.style, { width: fw + 'px', left: ((D.P.fx || 0) * s - fw / 2) + 'px', height: Math.max(6, fw * .3) + 'px', top: -Math.max(6, fw * .3) / 2 + 'px' }); }
     else { m.sp.classList.add('one'); m.sp.style.backgroundImage = `url("${D.img}")`; }
   }).catch(() => {});
 }
 const place = m => { m.el.style.transform = `translate(${m.x.toFixed(1)}px,${m.y.toFixed(1)}px)`; m.el.style.zIndex = Math.round(m.y) + 2; m.fl.style.transform = `scaleX(${m.face})`; };
-function yEmo(m, ch, cls = '') { const q = document.createElement('i'); q.className = 'ty-emo ' + cls; q.textContent = ch; m.el.append(q); setTimeout(() => q.remove(), 1300); }
+function yEmo(m, ch, cls = '') { const q = document.createElement('i'); q.className = 'ty-emo ' + cls; q.textContent = ch; q.style.top = ((m.top ?? -40) - 22) + 'px'; m.el.append(q); setTimeout(() => q.remove(), 1300); }
 function yHit(m, k) {
   const q = Y.eq[k]; if (q) { q.el.classList.remove('wob'); void q.el.offsetWidth; q.el.classList.add('wob'); }
   if (Math.random() < .35) yEmo(m, '+EXP', 'xp'); else if (Math.random() < .5) yEmo(m, '!', 'hit');
@@ -137,7 +205,7 @@ function yNext(m, now) {
   const r = Math.random(), free = Y.mons.filter(o => o !== m && (o.st === 'rest' || o.st === 'wander') && leftOf(o.e) > 0);
   if (r < .5) { const k = r < .35 ? m.home : K.pick(m.swimmer ? ['water', 'dummy', 'sandbag'] : m.flyer ? ['fly', 'dummy', 'sandbag'] : ['dummy', 'sandbag']);
     const q = Y.eq[k], side = k === 'water' ? -1 : Math.random() < .5 ? -1 : 1, busy = Y.mons.some(o => o !== m && o.k === k && o.side === side && (o.st === 'go' || o.st === 'train'));
-    if (!busy) { m.st = 'go'; m.k = k; m.side = side; m.tx = q.x + side * (k === 'water' ? 44 : 34); m.ty = q.y + (k === 'water' ? -2 : 3); m.then = 'train'; return; } }
+    if (!busy) { m.st = 'go'; m.k = k; m.side = side; m.tx = q.x + side * (k === 'water' ? 48 : k === 'fly' ? 48 : 40); m.ty = q.y + (k === 'water' ? -2 : 3); m.then = 'train'; return; } }
   if (r < .72 && free.length) { const o = K.pick(free), [cx, cy] = yardSpot();
     m.st = o.st = 'go'; m.then = o.then = 'spw'; m.k = o.k = null; m.mate = o; o.mate = m; m.tx = cx - 26; o.tx = cx + 26; m.ty = o.ty = cy; m.lead = true; o.lead = false; return; }
   if (r < .86) { m.st = 'rest'; m.one = null; m.nap = Math.random() < .3; m.until = now + 3 + Math.random() * 4; return; }
@@ -146,7 +214,7 @@ function yNext(m, now) {
 function yardLoop(ts) {
   if (!Y || !Y.el.isConnected || sh.hidden || cur !== 'train') { Y && (Y.raf = 0); return; }
   const now = ts / 1000, dt = Math.min(.1, Y.last ? now - Y.last : 0); Y.last = now;
-  if (now - (Y.ck ?? now) > 30) { tickTrain(Date.now()); K.save(); yardChips(); Y.ck = now; } else Y.ck ??= now;   // 30초마다 남은 시간·레벨 새로
+  if (now - (Y.ck ?? now) > 30) { tickTrain(Date.now()); K.save(); Y.ck = now; } else Y.ck ??= now;   // 30초마다 남은 시간·레벨 새로
   for (const m of Y.mons) {
     if (m.st === 'go') {
       const dx = m.tx - m.x, dy = m.ty - m.y, d = Math.hypot(dx, dy), v = 42 * dt;
@@ -162,6 +230,7 @@ function yardLoop(ts) {
       yNext(m, now);
     }
     if (m.st === 'spar' && m.lead && !m.one && !m.mate?.one) { const a = m.turn % 2 ? m.mate : m; a.one = { n: 'Attack', t: 0, tgt: a === m ? m.mate : m }; m.turn++; }
+    if (m.st === 'sleep' && now > (m.zz || 0)) { m.zz = now + 3 + Math.random() * 2; yEmo(m, 'Zz', 'zz'); }
     if (m.st === 'train' && !m.one) m.one = { n: 'Attack', t: 0, k: m.k, gap: .25 + Math.random() * .5 };
     m.el.classList.toggle('swim', inPond(m.x, m.y, -6));
     place(m); yDraw(m, dt);
@@ -184,6 +253,7 @@ function yDraw(m, dt) {
   let acc = 0; f = durs.length - 1; for (let i = 0; i < durs.length; i++) { acc += durs[i] / 60; if (t < acc) { f = i; break; } }
   const key = nm + ':' + f; if (m.fk === key) return; m.fk = key;
   const s = m.s, P = D.P, st2 = m.sp.style;
+  if (nm === 'Idle' || m.top == null) m.top = (-a[5] - (P.fy || 0)) * s + (P.vt || 0) * s;
   st2.width = a[1] * s + 'px'; st2.height = a[2] * s + 'px'; st2.left = -a[4] * s + 'px'; st2.top = (-a[5] - (P.fy || 0)) * s + 'px';
   st2.backgroundPosition = `${-f * (a[1] + (P.G || 0)) * s}px ${-a[0] * s}px`;
 }
@@ -198,7 +268,7 @@ function pickTrain() {
 }
 function trPop(id) {
   const P = boxOf(id); if (!P) return; const m = GB().gm(P), ph = perHour(P), g = GB().growth(P.sp), need = GB().xpAt(g, m.lv + 1) - GB().xpAt(g, m.lv);
-  pop(`<div class="mp-head">${GB().thumb(P)}<div><h4>${esc(nmOf(P))}</h4><p>Lv.${m.lv} · 1시간에 약 ${m.lv >= GB().LV_MAX ? 0 : (ph / need).toFixed(2)}레벨</p></div></div>
+  pop(`<div class="mp-head">${GB().thumb(P)}<div><h4>${esc(nmOf(P))}</h4><p>Lv.${m.lv} · 1시간에 약 ${m.lv >= GB().LV_MAX ? 0 : (ph / need).toFixed(2)}레벨<br>${(e => !e ? '' : leftOf(e) > 0 ? `오늘 ${Math.ceil(leftOf(e))}시간 더 훈련해요` : '오늘 훈련 끝 · 내일 다시')(st().tr.find(e => e.id === P.id))}</p></div></div>
     <div class="mp-moves">${m.mv.map(x => GB().mvOf(x)).filter(Boolean).map(x => GB().mvRow(x, '')).join('')}</div>
     <div class="gy-btns"><button data-a="mv">기술 바꾸기</button><button data-a="out">데려오기</button><button class="main" data-a="x" style="grid-column:1/-1">닫기</button></div>`,
     (a, close) => { if (!a) return; close(); if (a === 'mv') return GB().movesPop(P, () => { redraw(); trPop(id); });
