@@ -6442,6 +6442,7 @@ GA.thumb = P => ensureSprite(P.sp).then(() => thumbP(P)); GA.shinyHue = sp => sh
 window.gymBdgRow = () => { const sec = $('#pfGymBdg'), g = S.gym; if (!sec) return; const de = document.documentElement; sec.hidden = !(g && g.d && de.classList.contains('op') && de.classList.contains('gym-on')); if (sec.hidden) return;   // 운영자 '체육관 모드 보이기'를 켠 기기만 const b = g.bdg || {}, n = Object.keys(b).length;
   sec.querySelector('small').textContent = `${n}/18`; sec.querySelector('.gb-grid').innerHTML = TYPE_KO.map((t, i) => i ? `<img alt="${t}" title="${t} 자격 배지${b[i] ? '' : ' (아직)'}" src="gym/img/badge/${i}.png" class="${b[i] ? 'on' : ''}">` : '').join(''); };
 /*gym-hook6*/
+GA.lift = (sp, sleep) => { const t = DEX[sp]; if (!t) return 0; const f0 = MON_FLY[sp] || 0; return Math.max(0, sleep ? (t.mv === 'hover' ? 6 : 0) + Math.min(0, f0) : liftBase(sp) + f0); };   // v10.35: 체육관 훈련장도 필드와 같은 떠 있는 높이
 GA.pmd = (sp, sex) => ensureSprite(sp).then(() => { const k = fKey(sp, sex); if (!isPmd(k)) return { img: SPRITES[k] }; return padAtlas(k).then(() => ({ P: SPRITES[k], s: scaleOf(k), wh: atlasSize(k) })); });
 /*gym-hook7*/
 GA.art = () => ({ ART, seasonCv, season: () => season() });
@@ -8246,6 +8247,7 @@ $('#dpAct').onclick = async () => {
   if (dexMode === 'buddy') { if (S.buds.some(b => b.sp === sp)) return; closeCard(); picked.clear(); picked.add(sp); await setBuddySp(sp); return; }
   // 바로 필드에 풀어놓는다
   const P = freePoke(sp); if (S.mons.length >= MAX_MONS || !P) return;
+  if (!(await yardAsk(P))) return;
   closeCard(); sheet.hidden = true;
   try { const m = await spawn(sp, { pid: P.id }); if (m) select(m); } catch (e) { log(`${SPECIES[sp].n}의 그림을 불러오지 못했다.`); }
 };
@@ -8307,7 +8309,7 @@ $('#dexGo').onclick = async () => {
   const list = [...picked]; picked.clear(); Object.values(dexBtns).forEach(b => b.setAttribute('aria-pressed', 'false'));
   sheet.hidden = true;
   let last = null;
-  for (const sp of list) { const P = freePoke(sp); if (!P) continue; try { last = await spawn(sp, { pid: P.id }); } catch (e) { log(`${SPECIES[sp].n}의 그림을 불러오지 못했다.`); } }
+  for (const sp of list) { const P = freePoke(sp); if (!P || inYard(P.id)) continue; try { last = await spawn(sp, { pid: P.id }); } catch (e) { log(`${SPECIES[sp].n}의 그림을 불러오지 못했다.`); } }
   if (last) select(last);
 };
 
@@ -8602,7 +8604,7 @@ $('#ppField').onclick = async () => {
   const P = boxOf(pokeId); if (!P) return;
   const m = S.mons.find(x => x.pid === P.id);
   if (m) { if (boxFromSlot) return; sfx('tap'); removeMon(m); }   // 눌려 있던 버튼이 중간 모션 없이 바로 '필드에 내보내기'로
-  else if (S.mons.length < MAX_MONS) { const fb = $('#ppField'); if (fb.classList.contains('pressd') || fb.classList.contains('sunk')) return; sfx('tap');
+  else if (S.mons.length < MAX_MONS) { const fb = $('#ppField'); if (fb.classList.contains('pressd') || fb.classList.contains('sunk')) return; if (!(await yardAsk(P))) return; sfx('tap');
     if (boxFromSlot) { fb.classList.add('pressd'); await wait(110); fb.classList.remove('pressd'); }   // 빈 슬롯에서 왔으면 바로 눌린 뒤 필드로
     else { fb.classList.add('sunk'); fb.textContent = '필드에 나감'; }   /* v4.39 경완: 부화 창 '필드로' 처럼 눌린 채 '필드에 나감' (다시 누르면 빼기) */   // 그림을 불러오는 동안 기다리지 않고 먼저 눌린 모양으로
     try { markNew(await spawn(P.sp, { pid: P.id })); } catch (e) {} if (boxFromSlot && S.mons.some(x => x.pid === P.id)) { refreshCap(); save(); closePoke(); setMgrTab('field'); return; } }
@@ -8631,7 +8633,7 @@ $('#openFld').onclick = () => menuTo(fldOpen, 'fld');   // 짝꿍 고르다 나�
 $('#closeMgr').onclick = closeMgr;
 // fill up to six free spots with random species from the dex
 $('#mgrRandom').onclick = async () => {
-  const btn = $('#mgrRandom'), free = MAX_MONS - S.mons.length, pool = S.box.filter(p => !onField(p.id));
+  const btn = $('#mgrRandom'), free = MAX_MONS - S.mons.length, pool = S.box.filter(p => !onField(p.id) && !inYard(p.id));
   const say = t => { btn.textContent = t; setTimeout(() => btn.textContent = '무작위', 2200); };
   if (!pool.length) return say('내보낼 포켓몬이 없어요');
   if (free <= 0) return say('필드가 꽉 찼어요');
@@ -9590,7 +9592,13 @@ function frMaxWin(P) {
   $('#frMaxOk').onclick = done; $('#frMax').onclick = ev => { if (ev.target.id === 'frMax') done(); };
 }
 // 필드에 나갈 개체: 같은 종 중 필드에 없는 것, 랭크 높은 순
-const freePoke = sp => S.box.filter(p => p.sp === sp && !onField(p.id)).sort((a, b) => ivSum(b) - ivSum(a))[0] || null;
+const freePoke = sp => S.box.filter(p => p.sp === sp && !onField(p.id)).sort((a, b) => inYard(a.id) - inYard(b.id) || ivSum(b) - ivSum(a))[0] || null;   // v10.35: 체육관 훈련장에 있는 포켓몬은 뒤로
+// v10.35 경완 '훈련장에 있는 포켓몬 다시 필드로 보낼 때 알림창': 훈련 중이면 먼저 물어본다
+const inYard = id => !!S.gym?.tr?.some(e => e.id === id);
+function yardAsk(P) { return new Promise(ok => { if (!P || !inYard(P.id)) return ok(true); const el = $('#itemPop');
+  el.innerHTML = `<div class="win ipwin bag-ask" role="dialog" aria-label="훈련장에서 데려오기"><p>${J({ name: nameOf(P) }, '은/는')} 체육관 훈련장에서 훈련 중이에요.<br>필드로 보내면 훈련장에서 빠져요. 보낼까요?</p><div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn main" data-yes>필드로</button></div></div>`;
+  el.hidden = false; sfx('open');
+  el.onclick = e => { if (e.target === el || e.target.closest('[data-no]')) { el.hidden = true; sfx('tap'); ok(false); return; } if (!e.target.closest('[data-yes]')) return; el.hidden = true; sfx('tap'); ok(true); }; }); }
 // 예전 저장: 필드·도감·짝꿍에 있던 포켓몬을 상자에 한 마리씩 넣는다 (이로치 아님)
 // 2026-10-14 새벽(한국 시각) 런닝이 반영되며 알이 저절로 깨졌던 것을 한 번만 되돌린다 (사용자 요청: 부화기에서 직접 부화)
 function undoAutoHatch() {

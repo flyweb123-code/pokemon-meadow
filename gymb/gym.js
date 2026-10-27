@@ -56,8 +56,7 @@ function build() {
     <div class="gy-main">
       <div class="gy-stage"><div class="gy-map"><img alt=""><div class="gy-ents"></div></div></div>
       <div class="gy-top">
-        <button class="win gy-plate" type="button" aria-label="체육관 정보"><span class="gy-nm"></span><span class="gy-rep"><span class="gy-grade"></span><i class="gy-bar"><i></i></i><b class="gy-repn"></b></span></button>
-        <div class="gy-gold" aria-label="골드"><i class="coin" aria-hidden="true"></i><b class="gy-goldn"></b><span>G</span></div>
+        <button class="win gy-plate" type="button" aria-label="체육관 정보"><span class="gy-nm"></span><span class="gy-grade"></span><span class="gy-rep"><em>평판</em><i class="gy-bar"><i></i></i><b class="gy-repn"></b></span></button>
       </div>
       <div class="win blue gy-dlg" aria-live="polite"></div>
       <section class="gy-sheet" hidden></section>
@@ -263,7 +262,7 @@ const TRAITS = {
 function staffFight(c) {
   const g = st(), lost = [];
   for (const s of g.sf) {
-    if (s.rest || (s.trait === 'lazy' && Math.random() < .2)) continue;
+    if (s.rest || s.yard || (s.trait === 'lazy' && Math.random() < .2)) continue;   // 훈련장에 배치한 트레이너는 도전자를 상대하지 않는다
     const z = (teamLv(s.team) - teamLv(c.team)) / 3 + (s.team.length - c.team.length) * .35 + (s.trait === 'guts' ? .6 : 0) + .3;
     if (Math.random() < 1 / (1 + Math.exp(-z))) {
       s.w = (s.w || 0) + 1; s.xp = (s.xp || 0) + 1;
@@ -418,7 +417,7 @@ function renderTop() {
   $g('.gy-nm').innerHTML = `${tyIcon(g.ty)}<span>${esc(g.nm)}</span>`;
   $g('.gy-grade').textContent = G.n;
   $g('.gy-bar>i').style.width = (G.hi > G.lo ? clampN(((g.rep || 0) - G.lo) / (G.hi - G.lo), 0, 1) : 1) * 100 + '%';
-  $g('.gy-repn').textContent = `평판 ${g.rep || 0}`;
+  $g('.gy-repn').textContent = `${g.rep || 0}${G.hi > G.lo && G.hi < REP_MAX + 1 ? `/${G.hi}` : ''}`; $g('.gy-grade').dataset.g = G.i;
   renderGoldG(); menuDot();
 }
 function menuDot() { const g = st(), b = $g('.gy-menu [data-t="staff"]'); if (!b) return; const on = !!(g?.cand && !g.candSeen); let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot"></i>'); if (!on && d) d.remove(); }
@@ -428,11 +427,36 @@ function renderHome() {
   clearEnts(); layout();
   // 꾸미기 → 고용 트레이너(자리마다 보는 방향) → 관장(나) → 안내원
   (g.dp || []).slice(0, decoMax()).forEach((k, i) => { const p = D.deco[i]; if (k && p) prop(k, p[0], p[1]); });
-  g.sf.forEach((s, i) => { const p = D.slots[i]; if (!p) return; ent({ ow: s.ow, x: p[0], y: p[1], f: p[2], n3: N3.has(s.ow), onTap: () => { sfx('tap'); sfCard(s); say(`<span class="gy-who">${sfName(s)}</span>${s.rest ? '월급을 못 받아서 쉬고 있어요…' : pick(['오늘도 체육관은 제가 지킬게요!', '도전자는 저를 먼저 이겨야 해요.', `지금까지 ${s.w || 0}명을 막았어요!`, '관장님, 훈련 열심히 하고 있어요!'])}`, `${TRAITS[s.trait]?.n || ''} · ${s.w || 0}승 ${s.l || 0}패`); } }); });
+  g.sf.filter(s => !s.yard).forEach((s, i) => { const p = D.slots[i]; if (!p) return; ent({ ow: s.ow, x: p[0], y: p[1], f: p[2], n3: N3.has(s.ow), onTap: () => { sfx('tap'); sfCard(s); say(`<span class="gy-who">${sfName(s)}</span>${s.rest ? '월급을 못 받아서 쉬고 있어요…' : pick(['오늘도 체육관은 제가 지킬게요!', '도전자는 저를 먼저 이겨야 해요.', `지금까지 ${s.w || 0}명을 막았어요!`, '관장님, 훈련 열심히 하고 있어요!'])}`, `${TRAITS[s.trait]?.n || ''} · ${s.w || 0}승 ${s.l || 0}패`); } }); });
   const meE = ent({ ow: myOw(), x: D.leader[0], y: D.leader[1], f: 'd', n3: N3.has(myOw()), onTap: () => { sfx('tap'); meCard(); say(`관장 <b>${esc(trName() || '나')}</b>. 오늘도 체육관을 지키고 있다.`, `${g.w}승 ${g.l}패 · 막은 도전자 ${g.blk}명`); } });
   if (g.fit) fitSrc('ow').then(u => { if (meE.el.isConnected) meE.el.style.backgroundImage = `url(${u})`; });
+  palEnt(D);
   ent({ ow: 'gym_guy', x: D.guy[0], y: D.guy[1], f: 'd', onTap: () => { sfx('tap'); say(GUY_TIPS[tipI++ % GUY_TIPS.length](), '안내원'); } });
   homeSay();
+}
+// 관장 뒤 포켓몬 (경완 2026-10-27): 기본은 지금 라인업에서 레벨이 가장 높은 포켓몬, 눌러서 바꿀 수 있다 (g.pal)
+function palPick() { const g = st(), L = luNow(), P = g.pal && S.box.find(p => p.id === g.pal); if (P) return P;
+  return L.slice().sort((a, b) => GB().gm(b).lv - GB().gm(a).lv || GA.ivSum(b) - GA.ivSum(a))[0] || null; }
+let palRaf = 0;
+function palEnt(D) {
+  cancelAnimationFrame(palRaf); const P = GB()?.gm && palPick(); if (!P) return;
+  const e = { prop: 1, x: D.leader[0] + .85, y: D.leader[1] - .35, w: 16, h: 16, el: document.createElement('i'), pal: 1 }; e.el.className = 'gy-pal tap';
+  e.el.innerHTML = '<i class="gp-sh"></i><i class="gp-sp"></i>'; e.el.onclick = ev => { ev.stopPropagation(); sfx('tap'); palChoose(); };
+  $g('.gy-ents').appendChild(e.el); ents.push(e); place(e); e.el.style.zIndex = Math.round(D.leader[1] * 10) + 8;   // 내 캐릭터보다 뒤
+  GA.pmd(P.sp, P.sex).then(M => { if (!e.el.isConnected) return; const sp = e.el.querySelector('.gp-sp'), k = sc / 2;
+    if (P.shiny) sp.style.filter = `hue-rotate(${GA.shinyHue(P.sp)}deg)`;
+    if (!M.P) { sp.classList.add('one'); sp.style.backgroundImage = `url("${M.img}")`; return; }
+    const s = M.s * k, A = M.P.a, a = A.Idle || Object.values(A)[0], durs = a[6], tot = durs.reduce((x, d) => x + d, 0) / 60, lift = (GA.lift?.(P.sp) || 0) * k;
+    Object.assign(sp.style, { backgroundImage: `url("${M.P.i}")`, backgroundSize: `${M.wh[0] * s}px ${M.wh[1] * s}px`, width: a[1] * s + 'px', height: a[2] * s + 'px', left: (8 * sc - a[4] * s) + 'px', top: (16 * sc - (a[5] + (M.P.fy || 0)) * s - lift) + 'px' });
+    let f0 = -1; const t0 = performance.now(); const tick = now => { if (!e.el.isConnected) return; let t = ((now - t0) / 1000) % tot, f = durs.length - 1; for (let i = 0, c = 0; i < durs.length; i++) { c += durs[i] / 60; if (t < c) { f = i; break; } }
+      if (f !== f0) { f0 = f; sp.style.backgroundPosition = `${-f * (a[1] + (M.P.G || 0)) * s}px ${-a[0] * s}px`; } sp.style.translate = lift > 2 * k ? `0 ${(Math.sin(now / 260) * 4 * k).toFixed(1)}px` : ''; palRaf = requestAnimationFrame(tick); };
+    palRaf = requestAnimationFrame(tick); }).catch(() => {});
+}
+function palChoose() {
+  const g = st(), cur = palPick(), L = S.box.slice().sort((a, b) => GB().gm(b).lv - GB().gm(a).lv).slice(0, 60);
+  const p = pop(`<h4>관장 옆 포켓몬</h4><p class="gy-msg">홈 화면에서 내 뒤에 서 있을 포켓몬을 골라요.</p><div class="lu-pick">${L.map(P => `<button data-a="${P.id}" class="${cur && cur.id === P.id ? 'on' : ''}">${GB().thumb(P)}<b>${esc(SPECIES[P.sp]?.n || "")}</b><span>Lv.${GB().gm(P).lv}</span></button>`).join('')}</div><div class="gy-btns"><button data-a="auto">가장 센 포켓몬</button><button data-a="x">닫기</button></div>`,
+    (a, close) => { close(); if (a === 'x') return; g.pal = a === 'auto' ? 0 : (+a || a); save(); renderHome(); });
+  GB().fillTh?.(p);
 }
 // 아래 상태창: 기다리는 도전자가 있으면 '도전 받기', 없으면 다음 방문 예고
 function homeSay() {
@@ -443,10 +467,12 @@ function homeSay() {
     $g('.gy-dbtn').onclick = e => { e.stopPropagation(); sfx('tap'); challenge(); };
     return;
   }
-  // 다음 도전자가 언제 오는지는 알려 주지 않는다 (경완 2026-10-27)
-  say('지금은 조용한 체육관이에요.', '도전자가 오면 필드의 체육관 버튼에 빨간 점이 떠요');
+  // 다음 도전자가 언제 오는지는 알려 주지 않는다. 조용할 땐 체육관 일지 최근 3줄 (경완 2026-10-27 '체육관 일지를 홈화면 하단 상태창에')
+  const L = (g.log || []).slice(0, 3);
+  $g('.gy-dlg').innerHTML = `<span class="gy-who">체육관 일지</span>${L.length ? `<ul class="gy-hlog">${L.map(([t, k, h]) => `<li><i>${LOG_IC[k] || '·'}</i><span>${h}</span><time>${hhmm(t)}</time></li>`).join('')}</ul>` : '<span class="gy-dsub">아직 기록이 없어요. 도전자가 오면 필드의 체육관 버튼에 빨간 점이 떠요.</span>'}<button class="gy-dmore" type="button">전체 ▶</button>`;
+  $g('.gy-dmore').onclick = e => { e.stopPropagation(); sfx('tap'); logPop(); };
 }
-function renderGoldG() { if (root) $g('.gy-goldn').textContent = /[?&]studio/.test(location.search) ? '∞' : S.gold.toLocaleString(); }
+function renderGoldG() { const e = root && $g('.gy-goldn'); if (e) e.textContent = /[?&]studio/.test(location.search) ? '∞' : S.gold.toLocaleString(); }   // 홈 화면 골드는 뺐다 (경완 2026-10-27). 상점 등에서 쓰면 그대로
 function say(html, sub = '') { $g('.gy-dlg').innerHTML = html + (sub ? `<span class="gy-dsub">${sub}</span>` : ''); }
 
 // ---------- 메뉴 창 ----------

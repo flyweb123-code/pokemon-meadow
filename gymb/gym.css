@@ -177,7 +177,7 @@ body.gymMode{overflow:hidden}
 .bt-mon .clip{position:relative;overflow:visible}
 .bt-mon img{display:block;max-width:none;image-rendering:pixelated;transition:transform .42s steps(8)}
 .bt-mon.pl2{width:80px;height:80px;display:block}
-.bt-mon.p.gf img{scale:2;transform-origin:50% 100%}   /* 블랙·화이트처럼 내 쪽 뒷모습은 2배 */
+.bt-mon.p.gf img{transform-origin:50% 100%}   /* 경완 2026-10-27 "네이티오 너무 큼": 본가(플래티나)처럼 뒷모습도 1배 — 2장 그림(pl2)과 같은 크기 */
 .bt-mon.pl2 .clip{width:80px;height:80px;overflow:hidden}
 .bt-mon.pl2 img{width:160px;height:80px;transition:none}
 .bt.intro .bt-mon.e{transform:translateX(-256px)}
@@ -404,7 +404,7 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .sf-none{font-size:13px;color:var(--dim);margin:0 0 12px}
 .sf-h{margin:12px 0 6px;font-size:15px}.sf-h small{font-weight:400;color:var(--dim);font-size:12px}
 .sf-list{display:grid;gap:8px}
-.sf-card{position:relative;display:grid;grid-template-columns:22px 32px 1fr auto;gap:8px;align-items:center;padding:8px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.12)}
+.sf-card{position:relative;display:grid;grid-template-columns:22px 48px 1fr auto;gap:8px;align-items:center;padding:8px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.12)}
 .sf-card.rest{background:rgba(0,0,0,.05)}.sf-card.rest em{color:#b8402c;font-style:normal}
 .sf-n{font-style:normal;font-weight:700;color:var(--dim);text-align:center}
 .ow-ic{display:inline-block;width:32px;height:64px;background-repeat:no-repeat;background-size:auto 64px;background-position:0 0;image-rendering:pixelated}
@@ -465,3 +465,46 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .gy-body{text-align:center}.gy-body .bd-pic{margin:0 auto 8px;width:176px;height:176px;overflow:hidden;border:3px solid var(--frame);border-radius:12px;background:radial-gradient(circle at 50% 60%,#fff 0 40%,#e9e2cf 100%);display:grid;place-items:center}
 .gy-body .bd-pic img{width:128px;height:128px;image-rendering:pixelated}.gy-body h4{margin:0 0 4px}.gy-body p{font-size:13px;margin:0}
 .ft-grid .ft-pic{width:80px;height:72px;display:block;overflow:hidden}.ft-grid .ft-pic img{width:80px;height:80px;margin-top:-6px;image-rendering:pixelated}
+/* 트레이너 특성 상자 · 탭 · 코치 */
+.trt{display:inline-flex;align-items:center;flex-wrap:wrap;gap:2px 6px;align-self:flex-start;margin:2px 0;padding:3px 8px 3px 3px;border:2px solid var(--tc,#4a7ad0);border-radius:6px;background:var(--tb,#eef4ff);font-size:12px;line-height:1.2}
+.trt b{padding:1px 5px;border-radius:3px;background:var(--tc,#4a7ad0);color:#fff;font-size:10.5px}.trt i{font-style:normal;font-weight:700;color:var(--tc,#4a7ad0)}.trt small{flex-basis:100%;padding-left:2px;color:var(--dim);font-size:11px}
+.trt-train{--tc:#d0602a;--tb:#fff1e6}.trt-star{--tc:#c79410;--tb:#fff8dc}.trt-money{--tc:#2f9a4c;--tb:#eaf8ee}.trt-guts{--tc:#c8344a;--tb:#ffecef}.trt-grow{--tc:#3a8ec8;--tb:#e9f5ff}.trt-thrift{--tc:#7a6a4a;--tb:#f6f1e6}.trt-lazy{--tc:#8a7ab0;--tb:#f2eefa}
+.sp-tabs .tdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#e84040;vertical-align:middle}.sp-tabs small{font-size:11px;opacity:.75}
+.sf-pic{width:48px;height:48px;image-rendering:pixelated;object-fit:contain}.sf-card.yard{background:#fff3e6;box-shadow:inset 0 0 0 2px #f0a060}.sf-card em.y{color:#d0602a;font-style:normal;font-weight:700}
+.sf-btn button:disabled{opacity:.4}
+.sf-cand .trt{font-size:12px}
+.ty-co{position:absolute;width:32px;height:64px;margin:-60px 0 0 -16px;background-repeat:no-repeat;background-size:auto 64px;background-position:0 0;image-rendering:pixelated;cursor:pointer}
+.ty-co.l{background-position:-64px 0}.ty-co.cheer{animation:tyCheer .5s steps(2,end) 2}@keyframes tyCheer{50%{transform:translateY(-4px)}}
+.ty-co::after{content:'';position:absolute;left:4px;bottom:-3px;width:24px;height:7px;border-radius:50%;background:rgba(20,40,10,.25);z-index:-1}
+.ty-emo.co{left:auto;margin-left:-24px;width:auto;min-width:48px;white-space:nowrap;color:#ffe8a0;font-size:12px}
+/* 훈련장 다듬기: 이름표·경험치 막대, 반짝·먼지, 코치 보너스 */
+.ty-tag{position:absolute;left:-22px;top:5px;width:44px;display:flex;flex-direction:column;align-items:center;gap:1px;pointer-events:none}
+.ty-tag b{font-size:9.5px;line-height:1;color:#fff;text-shadow:0 0 2px #000,1px 1px 0 #000}.ty-tag i{display:block;width:34px;height:4px;border:1px solid #20202a;background:#3a3a44;border-radius:2px;overflow:hidden}
+.ty-tag s{display:block;height:100%;background:linear-gradient(#8fe0ff,#3aa8e8);text-decoration:none;transition:width .6s}
+.ty-m.swim .ty-tag{top:-2px}
+.ty-fx{position:absolute;width:0;height:0;pointer-events:none}
+.ty-fx.spk::before{content:'';position:absolute;left:-12px;top:-12px;width:24px;height:24px;background:#fff8c0;clip-path:polygon(50% 0,60% 38%,100% 50%,60% 62%,50% 100%,40% 62%,0 50%,40% 38%);filter:drop-shadow(0 0 3px #ffb000);animation:tySpk .35s steps(3,end) forwards}
+.ty-fx.spk::after{content:'';position:absolute;left:-18px;top:-18px;width:36px;height:36px;border:3px solid #fff;border-radius:50%;opacity:.8;animation:tyRing .3s ease-out forwards}
+@keyframes tySpk{0%{transform:scale(.4) rotate(0)}60%{transform:scale(1.2) rotate(20deg)}100%{transform:scale(.2) rotate(40deg);opacity:0}}
+@keyframes tyRing{0%{transform:scale(.3)}100%{transform:scale(1.3);opacity:0}}
+.ty-fx.spl::before,.ty-fx.spl::after{content:'';position:absolute;width:6px;height:6px;border-radius:50%;background:#dff4ff;box-shadow:10px -4px 0 #bfe8ff,-10px -2px 0 #bfe8ff,4px -10px 0 #fff;animation:tySpl .6s ease-out forwards}
+.ty-fx.spl::after{animation-delay:.1s;transform:scaleX(-1)}
+@keyframes tySpl{0%{transform:translateY(0) scale(.6)}50%{transform:translateY(-12px) scale(1)}100%{transform:translateY(-2px) scale(.8);opacity:0}}
+.ty-fx.dst::before{content:'';position:absolute;left:-5px;top:-6px;width:10px;height:6px;border-radius:50%;background:rgba(232,214,170,.9);box-shadow:-6px 2px 0 -1px rgba(232,214,170,.7);animation:tyDst .6s ease-out forwards}
+@keyframes tyDst{0%{transform:scale(.5)}100%{transform:translateY(-6px) scale(1.4);opacity:0}}
+.ty-info{position:absolute;left:12px;top:calc(var(--si-top,env(safe-area-inset-top)) + 10px);z-index:5000;padding:5px 10px;border:2px solid #20202a;border-radius:8px;background:rgba(255,248,224,.94);font-size:12px;box-shadow:0 2px 0 #20202a;pointer-events:none}.ty-info b{color:#d0602a}
+/* 홈 위 상태 박스 (골드 없이 한 줄 전체), 관장 뒤 포켓몬, 상태창 일지 */
+.gy-top .gy-plate{flex:1 1 auto;display:grid!important;grid-template-columns:1fr auto;grid-template-areas:"nm gr" "rep rep";align-items:center;gap:6px 10px}
+.gy-plate .gy-nm{grid-area:nm}.gy-plate .gy-grade{grid-area:gr;padding:2px 8px;border:2px solid var(--frame);border-radius:6px;background:#fff6c8;font-size:12px;font-weight:700;color:#8a5a10;white-space:nowrap}
+.gy-plate .gy-grade[data-g="0"]{background:#eef0f4;color:#58607a}.gy-plate .gy-grade[data-g="1"]{background:#e8f6e6;color:#2f7a3a}.gy-plate .gy-grade[data-g="2"]{background:#e6f0ff;color:#2a58a8}.gy-plate .gy-grade[data-g="3"]{background:#f3e8ff;color:#7a3ec8}.gy-plate .gy-grade[data-g="4"]{background:#ffe8e8;color:#c03838}.gy-plate .gy-grade[data-g="5"]{background:linear-gradient(90deg,#fff3b0,#ffd36a);color:#7a4a00}
+.gy-plate .gy-rep{grid-area:rep;display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center}
+.gy-plate .gy-rep em{font-style:normal;font-size:11px;font-weight:700;padding:1px 5px;border-radius:3px;background:#3a3a50;color:#ffe27a;letter-spacing:.5px}
+.gy-plate .gy-bar{width:auto;height:9px;border-radius:5px}.gy-plate .gy-repn{font-size:12px;font-variant-numeric:tabular-nums}
+.gy-pal{position:absolute;overflow:visible;cursor:pointer;pointer-events:auto}.gy-pal .gp-sp{position:absolute;display:block;background-repeat:no-repeat;image-rendering:pixelated}
+.gy-pal .gp-sp.one{left:-25%;bottom:0;width:150%;height:150%;background-size:contain;background-position:50% 100%}
+.gy-pal .gp-sh{position:absolute;left:15%;right:15%;bottom:-6%;height:24%;border-radius:50%;background:rgba(0,0,0,.22)}
+.gy-hlog{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-direction:column;gap:3px}
+.gy-hlog li{display:grid;grid-template-columns:18px 1fr auto;gap:6px;align-items:baseline;font-size:13px;line-height:1.35}.gy-hlog li span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gy-hlog time{font-size:11px;color:var(--dim)}
+.gy-hlog i{font-style:normal}
+.gy-dmore{position:absolute;right:12px;top:8px;padding:2px 6px;font-size:12px;background:none;border:0;color:var(--dim)}
+.lu-pick button.on{box-shadow:inset 0 0 0 3px #ffd84a}
