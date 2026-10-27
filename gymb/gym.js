@@ -50,13 +50,15 @@ const DESIGNS_FR = [
     path: [[6, 14], [6, 6]], slots: [[7, 10, 'l'], [5, 9, 'r'], [7, 8, 'l'], [5, 8, 'r'], [8, 6, 'l'], [4, 6, 'r'], [9, 8, 'l']], inY: 10, tiny: [[7, 11], [[2, 3], [10, 11]]], cuts: [[9, 11], [9, 11], [9, 11], [9, 11], [9, 11]] },
   { id: 'cerulean', pt: 'snowpoint', n: '물 위 다리', sub: '블루시티 체육관', w: 17, h: 20, leader: [8, 6], door: [8, 18], guy: [7, 18],
     deco: [[2, 3], [14, 3], [1, 8], [15, 8], [1, 13], [15, 13], [5, 18], [11, 18]],
-    path: [[8, 18], [8, 16], [9, 16], [9, 10], [8, 10], [8, 7]], slots: [[8, 13, 'r'], [10, 10, 'l'], [6, 10, 'r'], [9, 8, 'l'], [7, 8, 'r'], [11, 7, 'l'], [5, 7, 'r']], inY: 15, tiny: [[8, 16], [[3, 5], [12, 14]]], cuts: [[9, 15], [9, 15], [12, 15], [12, 15], [15, 16]] },
+    path: [[8, 18], [8, 16], [9, 16], [9, 10], [8, 10], [8, 7]], slots: [[8, 13, 'r'], [10, 10, 'l'], [6, 10, 'r'], [9, 8, 'l'], [7, 8, 'r'], [11, 7, 'l'], [5, 7, 'r']], inY: 15, tiny: [[8, 16], [[3, 5], [12, 14]]],
+    fix: { t: [[3, 7, 4, 7, 1, 1], [9, 7, 4, 7, 1, 1, 1], [5, 8, 7, 17, 3, .5]], 1: [[9, 8.5, 9, 8, 1, .5], [12, 7, 4, 7, 1, 1, 1], [12, 8, 4, 8, 1, 1, 1], [13, 7, 11, 12, 1, 2]],
+      2: [[4, 10.5, 4, 7.5, 1, .5], [4, 11, 4, 8, 1, 1], [5, 11, 6, 8, 1, 1]], 3: [[4, 10.5, 4, 7.5, 1, .5], [4, 11, 4, 8, 1, 1], [5, 11, 6, 8, 1, 1]] }, cuts: [[9, 15], [9, 15], [12, 15], [12, 15], [15, 16]] },
   { id: 'vermilion', pt: 'pastoria', n: '번개 관문', sub: '갈색시티 체육관', w: 11, h: 21, leader: [5, 2], door: [5, 19], guy: [4, 18],
     deco: [[1, 3], [9, 3], [1, 9], [9, 9], [1, 13], [9, 13], [1, 18], [9, 18]],
-    path: [[5, 19], [5, 16], [4, 16], [4, 9], [5, 9], [5, 3]], slots: [[5, 15, 'l'], [3, 13, 'r'], [5, 11, 'l'], [6, 8, 'l'], [4, 8, 'r'], [6, 4, 'l'], [4, 4, 'r']], inY: 15, tiny: [[4, 16]], cuts: [[9, 15], [9, 13], [9, 13], [9, 11], [9, 11]] },
+    path: [[5, 19], [5, 16], [4, 16], [4, 9], [5, 9], [5, 3]], slots: [[5, 15, 'l'], [3, 13, 'r'], [5, 11, 'l'], [6, 8, 'l'], [4, 8, 'r'], [6, 4, 'l'], [4, 4, 'r']], inY: 15, tiny: [[4, 16]], fix: { t: [0, 10].flatMap(x => [4, 5, 6, 7].map(y => [x, y, x, 4, 1, 1])) }, cuts: [[9, 15], [9, 13], [9, 13], [9, 11], [9, 11]] },
   { id: 'celadon', pt: 'eterna', n: '꽃 정원', sub: '무지개시티 체육관', w: 13, h: 20, leader: [6, 4], door: [6, 18], guy: [5, 17],
     deco: [[3, 10], [9, 10], [1, 16], [11, 16], [2, 17], [10, 17], [1, 12], [11, 12]],
-    path: [[6, 18], [6, 5]], slots: [[7, 13, 'l'], [5, 12, 'r'], [7, 11, 'l'], [5, 10, 'r'], [7, 9, 'l'], [5, 14, 'r'], [7, 14, 'l'], [5, 5, 'r'], [7, 5, 'l']], inY: 14, tiny: [[6, 15], [[2, 3], [10, 11]]], cuts: [[6, 14], [9, 14], [9, 14], [6, 8], [13, 14]] },
+    path: [[6, 18], [6, 5]], slots: [[7, 13, 'l'], [5, 12, 'r'], [7, 11, 'l'], [5, 10, 'r'], [7, 9, 'l'], [5, 14, 'r'], [7, 14, 'l'], [5, 5, 'r'], [7, 5, 'l']], inY: 14, tiny: [[6, 15], [[2, 3], [10, 11]]], fix: { t: [[2, 5, 5, 4, 1, 1]] }, cuts: [[6, 14], [9, 14], [9, 14], [6, 8], [13, 14]] },
   { id: 'fuchsia', pt: 'veilstone', n: '넓은 무대', sub: '연분홍시티 체육관', w: 15, h: 16, leader: [7, 6], door: [7, 14], guy: [11, 13],
     deco: [[2, 3], [12, 3], [2, 7], [12, 7], [3, 10], [11, 10], [2, 13], [12, 13]],
     path: [[7, 14], [7, 8]], slots: [[8, 10, 'l'], [6, 10, 'r'], [8, 8, 'l'], [6, 8, 'r'], [9, 9, 'l'], [5, 9, 'r'], [9, 7, 'l'], [5, 7, 'r']], inY: 10, tiny: [[8, 11], [[1, 3], [12, 14]]], cuts: [[9, 10], [9, 10], [9, 10], [9, 10]] },
@@ -70,9 +72,10 @@ const dzBase = id => DESIGNS.find(d => d.id === id) || DESIGNS.find(d => d.old =
 const OPEN = [0, .2, .4, .6, .8, 1];
 // cuts[등급] = [a, b]: 위아래 줄 그림이 이어지는 자리를 골라 둠 (경완 2026-10-27 '맵 줄인거 티나지 않게')
 // tiny = 새내기(등급 0) 체육관: [줄 [a, b], 칸 [[a, b], …]] 나·입구 기둥·안내원만 겨우 들어가게 (경완 2026-10-27 '맨 처음은 진짜 겁나 좁아야')
-function cutOf(D) { const g = st(); if (!g) return null; const gi = gradeOf(g.rep || 0).i;
-  if (gi === 0 && D.tiny) return { y: D.tiny[0], x: D.tiny[1] || [] };
-  if (D.cuts) { const c = D.cuts[gi]; return c ? { y: c, x: [] } : null; }
+function cutOf(D, gi) { if (gi == null) { const g = st(); if (!g) return null; gi = gradeOf(g.rep || 0).i; }
+  const f = D.fix?.[gi === 0 && D.tiny ? 't' : gi];
+  if (gi === 0 && D.tiny) return { y: D.tiny[0], x: D.tiny[1] || [], f };
+  if (D.cuts) { const c = D.cuts[gi]; return c ? { y: c, x: [], f } : null; }
   const a0 = D.leader[1] + 3, b0 = D.door[1] - 3; if (b0 - a0 < 2) return null;
   const a = a0 + Math.round((b0 - a0) * OPEN[gi]); return a < b0 ? { y: [a, b0], x: [] } : null; }
 // 잘라 낸 구간 R([[a, b], …], 오름차순)에 대해 원래 좌표 → 보이는 좌표(잘린 곳은 null), 그 반대
@@ -80,8 +83,8 @@ const cutV = R => z => { let d = 0; for (const [a, b] of R) { if (z >= b) d += b
 const cutF = R => z => { for (const [a, b] of R) if (z >= a) z += b - a; return z; };
 const keepSeg = (R, n) => { const out = []; let s = 0; for (const [a, b] of R) { if (a > s) out.push([s, a]); s = b; } if (s < n) out.push([s, n]); return out; };
 const dzCache = {};
-function dzOf(id) {
-  const D = dzBase(id), c = cutOf(D), k = D.id + JSON.stringify(c); if (dzCache[k]) return dzCache[k];
+function dzOf(id, gi) {
+  const D = dzBase(id), c = cutOf(D, gi), k = D.id + JSON.stringify(c); if (dzCache[k]) return dzCache[k];
   const id0 = z => z;
   if (!c) return (dzCache[k] = Object.assign({}, D, { base: D, cut: null, toV: id0, toF: id0, toVx: id0, toFx: id0 }));
   const RY = c.y ? [c.y] : [], RX = c.x, v = cutV(RY), vx = cutV(RX), ok = p => v(p[1]) != null && vx(p[0]) != null, pt = p => [vx(p[0]), v(p[1]), ...p.slice(2)];
@@ -91,6 +94,8 @@ function dzOf(id) {
     deco: D.deco.filter(ok).map(pt), slots: D.slots.filter(ok).map(pt), free: D.free && D.free.filter((_, y) => v(y) != null).map(r => [...r].filter((_, x) => vx(x) != null).join('')),
     toV: v, toF: cutF(RY), toVx: vx, toFx: cutF(RX) }));
 }
+// 미리보기 그림을 지금 크기(data-gi 가 있으면 그 등급, 처음 열 때는 0 = 새내기)의 잘라 붙인 맵으로 (경완 2026-10-27)
+function fillMs(el) { el.querySelectorAll('img[data-ms]').forEach(im => { const gi = im.dataset.gi === '' || im.dataset.gi == null ? undefined : +im.dataset.gi; mapSrc(dzOf(im.dataset.ms, gi)).then(u => { im.src = u; }); }); }
 // 잘라 붙인 맵 그림 (이음매 없이)
 const mapCache = {};
 function mapSrc(D) { const u = `${IMG}map/${D.id}.png`; if (!D.cut) return Promise.resolve(u); const k = D.id + JSON.stringify(D.cut); if (mapCache[k]) return mapCache[k];
@@ -99,6 +104,8 @@ function mapSrc(D) { const u = `${IMG}map/${D.id}.png`; if (!D.cut) return Promi
       const SY = keepSeg(D.cut.y ? [D.cut.y] : [], Math.ceil(im.height / 16)), SX = keepSeg(D.cut.x, Math.ceil(im.width / 16));
       let dy = 0; for (const [y0, y1] of SY) { let dx = 0; const hh = Math.min(y1 * 16, im.height) - y0 * 16;
         for (const [x0, x1] of SX) { const ww = Math.min(x1 * 16, im.width) - x0 * 16; g.drawImage(im, x0 * 16, y0 * 16, ww, hh, dx, dy, ww, hh); dx += ww; } dy += hh; }
+      // 이음매 메우기: [보이는 x, y, 원래 x, y, 너비, 높이(칸), 좌우 뒤집기] (경완 2026-10-27 '좁혔을 때 경계선 안 보이게')
+      (D.cut.f || []).forEach(([vx, vy, sx, sy, w, h, fl]) => { const W = w * 16, Hh = h * 16; g.save(); g.translate(vx * 16 + (fl ? W : 0), vy * 16); if (fl) g.scale(-1, 1); g.drawImage(im, sx * 16, sy * 16, W, Hh, 0, 0, W, Hh); g.restore(); });
       res(c.toDataURL()); }; im.src = u; })); }
 
 // ---------- 평판·등급 ----------
@@ -589,8 +596,13 @@ const GUY_TOUR = () => [
 function guyAsk() {
   $g('.gy-dlg').innerHTML = `<span class="gy-who">안내원</span>관장님, 체육관 설명을 처음부터 들어 보실래요?<span class="gy-dsub">체육관이 어떻게 돌아가는지 차근차근 알려 드려요</span><div class="gy-dyn"><button class="gy-dbtn2" type="button" data-a="n">괜찮아요</button><button class="gy-dbtn2 main" type="button" data-a="y">들을래요</button></div>`;
   $g('.gy-dyn').onclick = async e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); sfx('tap');
-    if (b.dataset.a === 'n') { say('<span class="gy-who">안내원</span>알겠어요! 궁금한 게 생기면 언제든 불러 주세요.'); return; }   // 괜찮아요 = 설명 없이 끝 (경완 2026-10-27)
-    await kang(GUY_TOUR(), { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1 }); homeSay(); };
+    off(); const guy = { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1 };
+    if (b.dataset.a === 'n') { await kang(['알겠어요! 궁금한 게 생기면\n언제든 불러 주세요.'], guy); homeSay(); return; }   // 괜찮아요 = 설명 없이 끝 (경완 2026-10-27)
+    await kang(GUY_TOUR(), guy); homeSay(); };
+  // 물음 밖(대화창·빈 곳)을 누르면 박사 창처럼 닫힌다 (경완 2026-10-27)
+  const shut = e => { if (e.target.closest('.gy-dyn button, .gy-kang')) return; off(); if ($g('.gy-dyn')) homeSay(); };
+  const off = () => root.removeEventListener('click', shut, true);
+  setTimeout(() => root.addEventListener('click', shut, true));
 }
 function renderTop() {
   const g = st(), G = gradeOf(g.rep || 0);
@@ -700,7 +712,7 @@ function infoPop() {
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos'; root.appendChild(el);
   el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 정보</b></div>
     <div class="gy-body">
-      <div class="if-hero"><img alt="" src="${IMG}map/${D.id}.png"><div><span class="if-ty">${tyIcon(g.ty)}${TYPE_KO[g.ty]} 타입</span><h3>${esc(g.nm)} <button class="gy-chg" type="button" data-a="nm">이름 바꾸기</button></h3><p>${D.n} · ${D.sub}</p></div></div>
+      <div class="if-hero"><img alt="" data-ms="${g.d}"><div><span class="if-ty">${tyIcon(g.ty)}${TYPE_KO[g.ty]} 타입</span><h3>${esc(g.nm)} <button class="gy-chg" type="button" data-a="nm">이름 바꾸기</button></h3><p>${D.n} · ${D.sub}</p></div></div>
       <div class="if-grade"><div><b>${G.n}</b><span>평판 ${g.rep || 0}${nx ? ` / ${nx[0]}` : ''}</span></div><i class="gy-bar"><i style="width:${pct}%"></i></i><small>${nx ? `${nx[0] - (g.rep || 0)} 더 모으면 <b>${nx[1]}</b>, 체육관이 넓어지고 트레이너를 더 둘 수 있어요` : '가장 높은 등급이에요'}</small></div>
       <h5>운영</h5><div class="if-grid">
         <div><small>개장일</small><b>${d0.getFullYear()}.${d0.getMonth() + 1}.${d0.getDate()}</b><em>${days}일째</em></div>
@@ -715,6 +727,7 @@ function infoPop() {
       <div class="gy-btns three if-btns"><button type="button" data-a="log">체육관 일지</button><button type="button" data-a="bdg">자격 배지</button><button type="button" data-a="rk">주간 랭킹</button></div>
       <button class="if-re" type="button" data-a="re">폐업하고 새로 세우기<small>타입·디자인을 바꿔 다시 열어요</small></button>
     </div>`;
+  fillMs(el);
   el.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap'); const a = b.dataset.a;
     if (a === 'x') return el.remove(); if (a === 'log') return logPop(); if (a === 'bdg') return badgePop(); if (a === 'rk') return reportPop(true);
     if (a === 'nm') { el.remove(); return setup('nm'); }
@@ -764,7 +777,7 @@ function setup(only, re) {
     if (k === 'd') {
       const D = dzBase(dr.d), di = DESIGNS.indexOf(D);
       body = `<h3>${re ? '새 체육관 디자인' : '체육관 디자인'}</h3><p class="gy-lead">${re ? '새로 세울 체육관 모양을 골라요.' : '본가 관동 지방 체육관이에요. 나중에 바꿀 수 있어요.'}</p>
-        <div class="gy-dz"><div class="gy-dz-view"><img src="${IMG}map/${D.id}.png" alt="${D.n}"><button class="gy-dz-arw l" type="button" data-m="-1" aria-label="이전">◀</button><button class="gy-dz-arw r" type="button" data-m="1" aria-label="다음">▶</button></div>
+        <div class="gy-dz"><div class="gy-dz-view"><img data-ms="${D.id}" data-gi="${first ? 0 : ''}" alt="${D.n}"><button class="gy-dz-arw l" type="button" data-m="-1" aria-label="이전">◀</button><button class="gy-dz-arw r" type="button" data-m="1" aria-label="다음">▶</button></div>
         <div class="gy-dz-nm">${D.n}</div><div class="gy-dz-sub">${D.sub}</div><div class="gy-dots">${DESIGNS.map((_, j) => `<i class="${j === di ? 'on' : ''}"></i>`).join('')}</div></div>`;
     } else if (k === 'ty') {
       body = `<h3>체육관 타입</h3><p class="gy-lead">배틀에는 이 타입 포켓몬만 낼 수 있어요. 타입별로 체육관 운영에 성공하면 자격 배지를 받아요.</p>
@@ -774,10 +787,10 @@ function setup(only, re) {
       if (!dr.nm) dr.nm = defName(dr.ty);
       body = `<h3>체육관 이름</h3><p class="gy-lead">도전자들이 보는 이름이에요.</p>
         <div class="gy-name"><input type="text" maxlength="14" value="${esc(dr.nm)}" aria-label="체육관 이름"><span class="gy-cnt"></span></div>
-        ${first || re ? `<div class="gy-sum"><img src="${IMG}map/${dr.d}.png" alt=""><div><span>${dzBase(dr.d).n}</span><span>${tyIcon(dr.ty)} ${TYPE_KO[dr.ty]} 타입</span></div></div>` : ''}`;
+        ${first || re ? `<div class="gy-sum"><img data-ms="${dr.d}" data-gi="${first ? 0 : ''}" alt=""><div><span>${dzBase(dr.d).n}</span><span>${tyIcon(dr.ty)} ${TYPE_KO[dr.ty]} 타입</span></div></div>` : ''}`;
     }
     el.innerHTML = `${head}<div class="gy-body">${body}</div><button class="gy-key main gy-next" type="button" ${k === 'ty' && !dr.ty ? 'disabled' : ''}>${btn}</button>`;
-    const inp = el.querySelector('input');
+    fillMs(el); const inp = el.querySelector('input');
     if (inp) { const cnt = () => { el.querySelector('.gy-cnt').textContent = `${inp.value.length}/14`; }; cnt(); inp.oninput = () => { dr.nm = inp.value; cnt(); el.querySelector('.gy-next').disabled = !inp.value.trim(); }; }
   };
   el.onclick = e => {

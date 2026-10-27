@@ -458,9 +458,14 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 @keyframes encNm{from{transform:translate(-120vw,-50%)}}
 
 /* 랭크 테두리 (꾸미기 모드와 같은 색: 본 게임 [data-rk] --rkc) */
-.rk-fr{position:relative;display:inline-grid;place-items:center;flex:none;border:2px solid var(--rkc,#888);border-radius:8px;background:rgba(255,255,255,.55);padding:1px;line-height:0}
-.rk-fr[data-rk="A"]{box-shadow:0 0 6px rgba(240,80,80,.7)}.rk-fr[data-rk="S"]{box-shadow:0 0 7px rgba(255,200,40,.8)}
-.rk-fr[data-rk="S"]::before{content:'✦';position:absolute;right:2px;top:1px;color:#fff6b0;font-size:10px;line-height:1;text-shadow:0 0 3px #ffb000}
+/* 랭크 테두리: 본 게임(꾸미기 모드) 프로필 테두리와 같은 차림 (경완 2026-10-27) */
+.rk-fr{position:relative;display:inline-grid;place-items:center;flex:none;box-sizing:border-box;border:3px solid var(--rkc,#6a6a70);border-radius:0;background:#e4f2d0;padding:1px;line-height:0;--mw:22px;--mh:22px}
+.rk-fr[data-rk="S"]{border:2px solid #8a5a08;padding:4px;box-shadow:inset 0 0 0 1px #fffbe0,inset 0 0 0 3px #ffd028,inset 0 0 0 4px #c07c08,0 0 8px rgba(255,200,40,.75)}
+.rk-fr[data-rk="A"]{border:2px solid #8a1c1c;padding:4px;box-shadow:inset 0 0 0 1px #ffd0d0,inset 0 0 0 3px #f05454,inset 0 0 0 4px #a82424,0 0 7px rgba(240,80,80,.7)}
+.rk-fr:is([data-rk="S"],[data-rk="A"])::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:2;--gc:rgba(255,80,80,.75);box-shadow:inset 0 0 5px var(--gc);animation:rkIn 2.2s ease-in-out infinite}
+.rk-fr[data-rk="S"]::after{--gc:rgba(255,205,60,.85)}
+.rk-fr[data-rk="S"]::before{content:'✦';position:absolute;right:3px;top:2px;z-index:3;color:#fff6b0;font-size:10px;line-height:1;text-shadow:0 0 4px #ffb000;animation:spk 1.6s steps(1) infinite;pointer-events:none}
+.rk-fr[data-rk="S"]>img:not(.shiny){animation:sglow 1.8s ease-in-out infinite}.rk-fr[data-rk="A"]>img:not(.shiny){animation:aglowI 2s ease-in-out infinite}
 /* 전신 카드 */
 .gy-body{text-align:center}.gy-body .bd-pic{margin:0 auto 8px;width:176px;height:176px;overflow:hidden;border:3px solid var(--frame);border-radius:12px;background:radial-gradient(circle at 50% 60%,#fff 0 40%,#e9e2cf 100%);display:grid;place-items:center}
 .gy-body .bd-pic img{width:128px;height:128px;image-rendering:pixelated}.gy-body h4{margin:0 0 4px}.gy-body p{font-size:13px;margin:0}
@@ -588,7 +593,7 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .tm-own{font-style:normal;font-size:11px;font-weight:700;color:#fff;background:#4a7ad0;border-radius:8px;padding:0 6px;line-height:16px}
 .mp-mv .tm-own{position:absolute;right:8px;top:6px}
 .tm-bag{display:inline-block;margin-left:4px;padding:0 6px;border-radius:4px;background:#e3ecff;color:#2a58a8;font-weight:700}
-.tm-mons{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 4px}.tm-mons span{display:flex;flex-direction:column;align-items:center;font-size:10px;color:var(--dim)}.tm-mons img{width:32px;height:32px;object-fit:contain;image-rendering:pixelated}.tm-mons .rk-fr{border-width:1px;border-radius:5px}
+.tm-mons{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 4px}.tm-mons span{display:flex;flex-direction:column;align-items:center;font-size:10px;color:var(--dim)}.tm-mons img{width:32px;height:32px;object-fit:contain;image-rendering:pixelated}.tm-mons .rk-fr>span.rk{width:13px;font-size:9px;line-height:11px}
 .gy-pop .gy-btns.two2{grid-template-columns:repeat(2,minmax(0,1fr))}.gy-pop .gy-btns.two2 button.main{grid-column:1/-1}
 .gy-pop .gy-btns.three button[data-a=tm]~button.main{grid-column:1/-1}
 .tp-xp{display:block;font-size:11px;color:var(--dim);margin:0 0 2px}.mp-head .mp-xp{margin-top:4px}
@@ -596,13 +601,11 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .bt-mid{display:none}
 .bt.mob .bt-ds{position:absolute;inset:0;width:auto;height:auto;transform:none}
 .bt.mob .bt-top{transform:scale(var(--k));transform-origin:0 0;top:var(--st,0px)}
-.bt.mob .bt-bot{transform:scale(var(--k),var(--ky,var(--k)));transform-origin:0 0;top:var(--bt);bottom:auto}
+.bt.mob .bt-bot{transform:scale(var(--k));transform-origin:0 0;top:var(--bt);bottom:auto;height:var(--bh,192px)}
 .bt.mob .bt-hinge{display:none}
 .bt.mob.msgmid .bt-top{height:162px}
 .bt.mob .bt-mid{display:flex;position:absolute;left:0;right:0;top:var(--mt);height:var(--mh);align-items:center;justify-content:center;background:#0c0d12}
 .bt-mid .bt-msg{position:relative;left:auto;right:auto;bottom:auto;width:252px;height:48px;flex:none;box-sizing:border-box;transform:scale(var(--k))}
-/* 세로로 늘린 아래 화면에서 글자·그림은 원래 비율로 */
-.bt.mob .bt-panel button>*,.bt.mob .bt-panel .bp-q,.bt.mob .bt-panel .mvi{transform:scaleY(var(--ty,1))}
 .bt.mob::before,.bt.mob::after{content:'';position:absolute;left:0;right:0;background:#0c0d12;z-index:0}
 .bt.mob::before{top:0;height:env(safe-area-inset-top)}.bt.mob::after{bottom:0;height:env(safe-area-inset-bottom)}
 /* 아래 화면 글자 잘 보이게 (경완 2026-10-27 '하단 버튼들 가독성') */
@@ -615,9 +618,8 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .bt .mvb .pp{font-size:9px;font-weight:700;color:#202020;bottom:10px}
 .bt .pty{font-size:10px}.bt .pty .lv,.bt .pty .hpn{font-size:9px}
 /* 랭크 배지 (본 게임 .rk 그대로, 그림 테두리 왼쪽 위) */
-.rk-fr>.rk{position:absolute;left:-4px;top:-5px;z-index:1;width:auto;min-width:15px;height:15px;padding:0 2px!important;font-size:9px;line-height:11px;border-width:2px;font-family:inherit}
-.rk-fr>.rk.S{width:auto}
-.bt .rk-fr>.rk{display:none}
+.rk-fr>span.rk{position:absolute!important;left:0;top:0;z-index:4;display:block;border:0!important;width:16px;min-width:0;height:auto;padding:1px 0!important;font-size:11px;line-height:13px;font-family:inherit}
+.bt .rk-fr>span.rk{display:none}.bt .rk-fr{border-width:2px;padding:0}.bt .rk-fr:is([data-rk="S"],[data-rk="A"]){padding:2px}
 .ty-tag .rk{width:14px;height:14px;font-size:8px;line-height:10px;border-width:2px;flex:none}
 .ty-tag .tt-r{display:flex;align-items:center;gap:2px;white-space:nowrap}
 /* 포켓몬 박스: 새 화면 (v10.38) */
@@ -677,3 +679,42 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 /* v10.40 기술 버튼에 위력·명중 (경완 2026-10-27) */
 .bt .mvb .pw{position:absolute;left:7px;top:22px;font-size:8px;line-height:11px;font-weight:700;color:#303040;white-space:nowrap;text-shadow:1px 1px 0 rgba(255,255,255,.75)}.bt .mvb .pw em{font-style:normal;color:#101018}
 .bt .mvb .eff{left:auto;right:7px;transform:none;padding:0 4px;font-size:8px}
+/* 휴대폰 아래 화면 새 차림 (경완 2026-10-27 '버튼 너무 크고 밤티, 몬스터볼 찌그러짐, 글자 정렬'): 늘리지 않고 높이만 키운 화면에
+   몬스터볼은 원래 비율 그대로 가운데, 버튼은 그림 대신 둥근 버튼 */
+.bt.mob .bt-bot{background:url(../gym/img/bt/sub_ball.png) center/256px 152px no-repeat,linear-gradient(#c5c5c5 0 16px,#d5d5d5 16px 18px,#eee 18px 20px,#fff 20px calc(100% - 20px),#eee calc(100% - 20px) calc(100% - 18px),#d5d5d5 calc(100% - 18px) calc(100% - 16px),#c5c5c5 calc(100% - 16px))}
+.bt.mob :is(.bp-main,.bp-moves,.bp-party,.bp-yn){background:none;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:26px 12px;align-content:center;box-sizing:border-box}
+.bt.mob :is(.bp-main,.bp-moves,.bp-party,.bp-yn) :is(.bb,.mvw,.mvb.empty,.bp-q,p){position:relative;left:auto;top:auto;right:auto;width:auto;height:auto;margin:0}
+.bt.mob .bb{border-radius:14px;--c1:#6f7c94;--c2:#4e5a70;background:linear-gradient(var(--c1),var(--c2));box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -3px 0 rgba(0,0,0,.16),0 0 0 1.5px rgba(0,0,0,.28),0 3px 0 rgba(0,0,0,.18)}
+.bt.mob .bb span{font-size:14px;letter-spacing:.3px;text-shadow:0 1px 0 rgba(0,0,0,.35)}
+.bt.mob .bb:active{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 0 0 1.5px rgba(0,0,0,.28)}
+.bt.mob .bp-q,.bt.mob .bp-yn p{grid-column:1/-1;line-height:18px;font-size:11px;color:#3a4252;text-shadow:none;padding:2px 0 4px}
+.bt.mob .bp-main{grid-template-columns:repeat(3,1fr);grid-template-rows:auto minmax(64px,118px) minmax(36px,50px)}
+.bt.mob .bp-main .bp-q{order:-1}
+.bt.mob .bp-main .fight{grid-column:1/-1;--c1:#f4706a;--c2:#d93a3c;border-radius:18px}.bt.mob .bp-main .fight span{font-size:22px;letter-spacing:2px}
+.bt.mob .bp-main .bag{--c1:#f7bb4a;--c2:#e48e1e}.bt.mob .bp-main .run{--c1:#62aef0;--c2:#2f7cd0}.bt.mob .bp-main .mon{--c1:#74c862;--c2:#3e9a3e}
+.bt.mob .bp-moves{grid-template-rows:repeat(2,minmax(52px,88px)) minmax(32px,44px);padding-left:8px;padding-right:8px;gap:7px}
+.bt.mob .bp-moves .cancel,.bt.mob .bp-party .cancel{grid-column:1/-1}
+.bt.mob .mvb{background:linear-gradient(color-mix(in srgb,var(--tc) 78%,#fff),var(--tc))!important;border-radius:12px;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.35);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -3px 0 rgba(0,0,0,.16),0 0 0 1.5px rgba(0,0,0,.28),0 3px 0 rgba(0,0,0,.18);display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;padding:7px 8px;gap:2px;box-sizing:border-box}
+.bt.mob .mvb>*{position:static!important;transform:none!important;margin:0}
+.bt.mob .mvb b{font-size:13px;line-height:16px;text-align:left;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.35);padding-right:16px;overflow:hidden;text-overflow:ellipsis}
+.bt.mob .mvb .pw{font-size:8.5px;line-height:12px;text-align:left;color:rgba(255,255,255,.92);text-shadow:0 1px 0 rgba(0,0,0,.3)}.bt.mob .mvb .pw em{color:#fff}
+.bt.mob .mvb .eff{align-self:flex-start;padding:0 5px;border-radius:7px;background:rgba(255,255,255,.92);font-size:8px;line-height:12px;text-shadow:none}
+.bt.mob .mvb .tg{display:flex;align-self:flex-start;margin-top:auto}.bt.mob .mvb .tg .ty{width:28px;height:14px;background-size:28px 14px;line-height:14px;font-size:7.5px}.bt.mob .mvb .tg .ct{width:20px;height:10px;background-size:20px 10px}
+.bt.mob .mvb .pp{position:absolute!important;right:8px;bottom:8px;font-size:8.5px;line-height:12px;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.35)}
+.bt.mob .mvb:disabled{filter:grayscale(.85) brightness(.9)}
+.bt.mob .mvw .mvi{position:absolute;right:6px;top:6px;background:rgba(255,255,255,.85)}
+.bt.mob .mvb.empty{background:rgba(120,130,150,.18);border-radius:12px;box-shadow:inset 0 0 0 1.5px rgba(120,130,150,.35);opacity:1}
+.bt.mob .bp-party{grid-auto-rows:auto;grid-template-rows:repeat(3,minmax(40px,54px)) minmax(32px,44px)}
+.bt.mob .pty{border-radius:10px}
+.bt.mob .bp-yn{grid-template-columns:1fr;grid-template-rows:auto minmax(40px,60px) minmax(40px,60px)}
+.bt.mob .bp-yn .yes{--c1:#62aef0;--c2:#2f7cd0}.bt.mob .bp-yn .no{--c1:#9aa3b2;--c2:#6c7586}
+.bt.mob .bp-yn .bb span{font-size:16px}
+.bt.mob .bp-info{top:calc(50% - 96px);bottom:auto;height:192px;background:none}
+.bt.mob .bp-info .cancel{left:12px;width:232px;top:150px;height:36px}
+.bt.mob .bp-info p,.bt.mob .bp-info dl{background:rgba(255,255,255,.88);border-radius:8px}
+/* 대화창 글자: 한 줄이어도 가운데 높이에 */
+.bt-mid .bt-msg{display:flex;align-items:center;padding:4px 12px}
+.bt.mob .pty{grid-template-columns:38px 1fr;grid-template-rows:1fr auto auto;padding:3px 6px 4px 4px;column-gap:4px}
+.bt.mob .pty .rk-fr{grid-row:1/4;align-self:center}.bt.mob .pty img{width:28px;height:28px}
+.bt.mob .pty b{align-self:end;font-size:11px}.bt.mob .pty .lv{right:7px;top:5px}
