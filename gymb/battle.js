@@ -31,6 +31,8 @@ function loadData() {
 }
 let simP = null;
 const loadSim = () => window.PSim ? Promise.resolve() : simP || (simP = new Promise((ok, no) => { const s = document.createElement('script'); s.src = `gym/psim.js?v=${VER}`; s.onload = () => window.PSim ? ok() : no(new Error('sim')); s.onerror = () => { simP = null; no(new Error('sim')); }; document.head.appendChild(s); }));
+let splP = null;   // 기술 파티클 엔진 (gymb/spl.js)
+const loadSpl = () => window.GymSPL ? Promise.resolve() : splP || (splP = new Promise(ok => { const s = document.createElement('script'); s.src = `gymb/spl.js?v=${VER}`; s.onload = ok; s.onerror = () => { splP = null; ok(); }; document.head.appendChild(s); }));
 const mvOf = id => D.mv[MVI.get(id)];   // [id, 이름, 타입, 분류(0 물리 1 특수 2 변화), 위력, 명중, PP, 우선도, 설명]
 const mvKo = id => mvOf(id)?.[1] || id;
 const NATS = () => Object.keys(D.nt);
@@ -166,6 +168,7 @@ function buildUI() {
       <i class="bt-tr e"></i><i class="bt-tr p"></i>
       <div class="bt-mw e"><div class="bt-mon e"><div class="clip"><img alt=""></div></div></div>
       <div class="bt-mw p"><div class="bt-mon p"><div class="clip"><img alt=""></div></div></div>
+      <canvas class="bt-ptc" width="256" height="192"></canvas>
       <div class="bt-hb e"><b class="nm"></b><i class="sx"></i><span class="lv"></span><i class="st"></i><i class="hp"><i></i></i></div>
       <div class="bt-hb p"><b class="nm"></b><i class="sx"></i><span class="lv"></span><i class="st"></i><i class="hp"><i></i></i><span class="hpn"><b class="c"></b><b class="m"></b></span><i class="xp"><i></i></i></div>
       <div class="bt-fx"></div>
@@ -590,7 +593,7 @@ function sideMsg(sd, w, on) { const mine = sd.startsWith('p1'), who2 = mine ? '�
 // ---------- 연출 (4세대 느낌. 기술별 본가 연출은 다음 단계에서 기술마다 붙인다) ----------
 const TY_FX = { 10: '#ff7a30', 11: '#48a0ff', 13: '#ffe040', 15: '#a8f0ff', 4: '#c060e0', 8: '#7058a8', 18: '#ff9ed8', 6: '#b8a058', 5: '#d8b060', 2: '#e05030', 14: '#ff70b0', 12: '#68d048', 3: '#a8c8ff', 7: '#a8c020', 9: '#c8c8d8', 16: '#7050f0', 17: '#504048', 1: '#f8f8f8' };
 // 기술 연출: 플래티넘 원본 대본(gym/mvfx.json, tools/gym/mkanim.py)대로 소리·흔들기·움직임·배경·색 번쩍을 같은 박자(1/30초)에.
-// 파티클은 원본 그림을 못 쓰니 같은 때·같은 곳에서 타입 색 불꽃으로.
+// 파티클은 원본 방출기 그대로 gymb/spl.js 가 그린다 ('p' 사건). 대본이 없는 기술만 타입 색 불꽃('e').
 const FR = 1000 / 30;
 const CTR = { e: [176, 56], p: [80, 104] };
 const other = s => s === 'p' ? 'e' : 'p';
@@ -631,6 +634,14 @@ async function moveFx(s, id, miss) {
   }
   const sp = B.fast ? .6 : 1, F = FR * sp, side = w => w === 'a' ? s : other(s), mw = w => $b(`.bt-mw.${side(w)}`);
   const pan = w => w === 'a' ? panOf(s) : w === 'd' ? panOf(other(s)) : 0;
+  // 원본 파티클: 그림을 다 받은 뒤 다른 연출과 같은 박자로 시작
+  let spl = null;
+  if (A[1].some(e => e[0] === 'p')) {
+    await Promise.race([loadSpl(), wait(1500)]);
+    if (window.GymSPL && B) { spl = window.GymSPL.start($b('.bt-ptc'), A[1], s, F, VER); await Promise.race([spl.ready, wait(2000)]); }
+    if (!B) { spl?.stop(); return; }
+    spl?.go();
+  }
   const pos = { p: [0, 0], e: [0, 0] }, setPos = sd => { $b(`.bt-mw.${sd}`).style.translate = `${pos[sd][0]}px ${pos[sd][1]}px`; };
   const job = [];
   for (const e of A[1]) {
@@ -658,6 +669,7 @@ async function moveFx(s, id, miss) {
     }, t)));
   }
   await wait(A[0] * F + 30);
+  if (spl) { await Promise.race([spl.done, wait(1500)]); spl.stop(); }
   // 원래 자리로
   ['p', 'e'].forEach(sd => { const x = $b(`.bt-mw.${sd}`); x.getAnimations().forEach(a => a.cancel()); x.style.translate = ''; monEl(sd).style.visibility = ''; });
   const d = $b('.bt-dim'); d.style.setProperty('--fd', '.2s'); d.style.opacity = 0;
@@ -718,12 +730,7 @@ function drawTab() {
 function gymPop(html, onClick) { const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`;
   p.onclick = e => { if (e.target === p) return p.remove(); const b = e.target.closest('button[data-a]'); if (b) { sfx('tap'); onClick?.(b.dataset.a, () => p.remove(), b); } };
   document.querySelector('#gym .gy-main').appendChild(p); fillTh(p); return p; }
-function pickMon() {
-  const cur = curLu(), L = S.box.filter(p => tyOk(p) && !cur.includes(p.id)).map(P => ({ P, m: gm(P) })).sort((a, b) => b.m.lv - a.m.lv || GA.ivSum(b.P) - GA.ivSum(a.P));
-  if (!L.length) { gymPop(`<h4>라인업</h4><p class="gy-msg">더 넣을 수 있는 ${TYPE_KO[S.gym.ty]} 타입 포켓몬이 없어요.</p><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, c) => c()); return; }
-  gymPop(`<h4>라인업에 넣을 포켓몬</h4><div class="lu-pick">${L.map(({ P, m }) => `<button data-a="${P.id}">${thumb(P)}<b>${esc(nmOf(P))}</b><span>Lv.${m.lv}</span></button>`).join('')}</div><div class="gy-btns one"><button data-a="x">닫기</button></div>`,
-    (a, close) => { close(); if (a === 'x') return; const c = curLu(); if (c.length < 6) c.push(+a || a); GA.save(); drawTab(); });
-}
+function pickMon() { boxWin(true); }
 // 개체값 육각형 (본가 '능력 판정'처럼): HP 위, 시계 방향으로 공격·방어·스피드·특방·특공. 성격으로 오르는 능력은 빨강, 내려가는 능력은 파랑
 const IV_ORD = [[0, 'HP', ''], [1, '공격', 'atk'], [2, '방어', 'def'], [5, '스피드', 'spe'], [4, '특방', 'spd'], [3, '특공', 'spa']];
 const ivJudge = v => v >= 31 ? '최고' : v >= 26 ? '훌륭해' : v >= 16 ? '굉장해' : v >= 1 ? '괜찮아' : '별로야';
@@ -736,14 +743,47 @@ function ivHex(P, m) {
   return `<div class="iv-hex"><svg viewBox="0 0 180 150" role="img" aria-label="개체값"><polygon points="${ring(1)}" class="r0"/><polygon points="${ring(2 / 3)}" class="r1"/><polygon points="${ring(1 / 3)}" class="r1"/><polygon points="${poly}" class="iv"/>${lab}</svg>
     <div class="iv-sum"><b>개체값</b><span>합계 ${sum}/186</span><span>가장 좋은 능력: ${best[1]}</span><span>${IV_ORD.map(([i, n]) => `${n} ${ivJudge(iv[i])}`).join(' · ')}</span></div></div>`;
 }
-// 포켓몬 박스 (배틀 메뉴): 체육관 타입 포켓몬 모두 / 전체. 누르면 정보 (경완 2026-10-27)
-let boxAll = false;
-function boxPop() {
-  const lu = new Set(curLu()), L = S.box.filter(P => boxAll || tyOk(P)).map(P => ({ P, m: gm(P) })).sort((a, b) => b.m.lv - a.m.lv || GA.ivSum(b.P) - GA.ivSum(a.P));
-  const p = gymPop(`<h4>포켓몬 박스 <small>${L.length}마리</small></h4><div class="sp-chips bx-f"><button data-a="f0" aria-pressed="${!boxAll}">${TYPE_KO[S.gym.ty]} 타입</button><button data-a="f1" aria-pressed="${boxAll}">전체</button></div>
-    <div class="lu-pick bx-list">${L.map(({ P, m }) => `<button data-a="p${P.id}" class="${lu.has(P.id) ? 'on' : ''}${tyOk(P) ? '' : ' dim'}">${thumb(P)}<b>${esc(nmOf(P))}</b><span>Lv.${m.lv}</span>${lu.has(P.id) ? '<em>라인업</em>' : ''}</button>`).join('') || '<p class="gy-msg">포켓몬이 없어요.</p>'}</div><div class="gy-btns one"><button data-a="x">닫기</button></div>`,
-    (a, close) => { close(); if (a === 'f0' || a === 'f1') { boxAll = a === 'f1'; return boxPop(); } if (a[0] === 'p') monPop(a.slice(1), true); });
+// 포켓몬 박스 창: 본 게임 포켓몬 박스와 같은 모양(검색·정렬·칸)으로 화면 전체에 뜬다. 체육관 타입 포켓몬만, 기본은 레벨순 (경완 2026-10-27)
+// add=true 면 라인업 빈 칸에서 연 것: 누르면 바로 라인업에 넣는다. 아니면 누르면 정보 창
+const BX_SORT = [['lv', '레벨'], ['rank', '랭크'], ['iv', '개체값'], ['no', '번호'], ['new', '날짜']];
+let bxSort = 'lv', bxDir = 1, bxQ = '', bxRefresh = null;
+const RK_ORD = { S: 7, A: 6, B: 5, C: 4, D: 3, E: 2, F: 1 };
+function boxWin(add) {
+  document.querySelector('#gym .gy-boxw')?.remove();
+  const w = document.createElement('div'); w.className = 'gy-boxw';
+  w.innerHTML = `<div class="win" role="dialog" aria-label="포켓몬 박스"><div class="bw-hd"><h4>${add ? '라인업에 넣을 포켓몬' : '포켓몬 박스'}</h4><button class="bw-x" data-x aria-label="닫기">✕</button></div>
+    <p class="bw-ty">${GA.tyIcon(S.gym.ty)} ${TYPE_KO[S.gym.ty]} 타입 포켓몬만 보여요</p>
+    <div class="filters boxq"><span class="qw"><input type="search" placeholder="이름이나 번호" aria-label="포켓몬 이름이나 번호로 찾기" autocomplete="off" value="${esc(bxQ)}"><button type="button" class="qx" aria-label="검색어 지우기">✕</button></span></div>
+    <div class="mgr-tools"><div class="bag-sort bw-sort">${BX_SORT.map(([k, n]) => `<button data-sort="${k}">${n}</button>`).join('')}</div><span class="tcount"></span></div>
+    <div class="boxgrid bw-grid"></div></div>`;
+  document.querySelector('#gym .gy-main').appendChild(w);
+  const grid = w.querySelector('.bw-grid'), inp = w.querySelector('input');
+  const draw = () => {
+    w.querySelectorAll('[data-sort]').forEach(b => { const on = b.dataset.sort === bxSort; b.setAttribute('aria-pressed', on); b.dataset.dir = on ? (bxDir > 0 ? '▼' : '▲') : ''; });
+    const lu = new Set(curLu()), q = bxQ.toLowerCase();
+    const key = { lv: x => x.m.lv * 1e3 + GA.ivSum(x.P), rank: x => (RK_ORD[GA.rankOf(x.P)] || 0) * 1e5 + x.m.lv, iv: x => GA.ivSum(x.P) * 1e3 + x.m.lv, no: x => -(+x.P.sp) * 1e6 + x.m.lv, new: x => +x.P.id || 0 }[bxSort];
+    const all = S.box.filter(tyOk), L = all.filter(P => !q || nmOf(P).toLowerCase().includes(q) || String(P.sp) === q.replace(/^0+/, '')).map(P => ({ P, m: gm(P) })).sort((a, b) => (key(b) - key(a)) * bxDir);
+    w.querySelector('.tcount').innerHTML = q ? `찾은 포켓몬 <b>${L.length}</b>마리` : `${TYPE_KO[S.gym.ty]} 타입 <b>${all.length}</b>마리`;
+    grid.innerHTML = L.length ? L.map(({ P, m }) => { const rk = GA.rankOf(P), on = lu.has(P.id);
+      return `<button class="pk${P.shiny ? ' shiny' : ''}${GA.pkCls?.(P) || ''}${add && on ? ' bw-off' : ''}" data-id="${P.id}" style="--shue:${GA.shinyHue(P.sp)}deg"><span class="rk ${rk}">${rk}</span>${on ? '<span class="tgs"><span class="tg">라인업</span></span>' : ''}<img alt="" data-th="${P.id}"><span class="nm">${esc(nmOf(P))}${P.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="bw-lv">Lv.${m.lv}</span></button>`; }).join('')
+      : `<p class="empty-msg">${q ? '찾는 포켓몬이 없어요.' : `${TYPE_KO[S.gym.ty]} 타입 포켓몬이 아직 없어요.`}</p>`;
+    fillTh(grid);
+  };
+  bxRefresh = () => w.isConnected && draw();
+  w.onclick = e => {
+    if (e.target.closest('[data-x]')) { sfx('tap'); w.remove(); return; }
+    if (e.target.closest('.qx')) { inp.value = ''; bxQ = ''; draw(); return; }
+    const s = e.target.closest('[data-sort]'); if (s) { sfx('tap'); const k = s.dataset.sort; if (k === bxSort) bxDir = -bxDir; else { bxSort = k; bxDir = 1; } draw(); grid.scrollTop = 0; return; }
+    const c = e.target.closest('.pk'); if (!c) return; sfx('tap');
+    const id = +c.dataset.id || c.dataset.id;
+    if (add) { const cur = curLu(); if (cur.includes(id)) return; if (cur.length < 6) cur.push(id); GA.save(); drawTab(); if (cur.length >= 6) w.remove(); else draw(); return; }
+    monPop(id, true);
+  };
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); bxQ = inp.value.trim(); draw(); inp.blur(); } });
+  inp.addEventListener('input', () => { if (!inp.value.trim() && bxQ) { bxQ = ''; draw(); } });
+  draw();
 }
+const boxPop = () => boxWin(false);
 function monPop(id, fromBox) {
   const P = boxOf(+id || id); if (!P) return; const inLu = curLu().includes(P.id); const m = gm(P), g = growth(P.sp), a = xpAt(g, m.lv), b = xpAt(g, m.lv + 1), nt = D.nt[m.nat] || ['', '', ''];
   const mv = m.mv.map(x => mvOf(x)).filter(Boolean);
@@ -751,12 +791,27 @@ function monPop(id, fromBox) {
     <dl class="gy-info mp-info"><dt>성격</dt><dd><span>${natKo(m.nat)}${nt[1] ? ` <small>${STAT_KO[nt[1]]}↑ ${STAT_KO[nt[2]]}↓</small>` : ''}</span></dd><i></i><dt>특성</dt><dd><span>${abKo(m.ab)}${m.ha ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</span></dd><i></i></dl>
     ${ivHex(P, m)}
     <div class="mp-moves">${mv.map(x => `<div class="mp-mv" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}"><b>${esc(x[1])}</b><span>${tyTag(x[2], x[3])}<em>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'} · PP ${x[6] || '—'}</em></span><p>${esc(x[8] || '')}</p></div>`).join('')}</div>
-    ${inLu ? '<div class="gy-btns three"><button data-a="up">앞으로</button><button data-a="rm">빼기</button><button data-a="mv">기술 바꾸기</button><button class="main" data-a="x">닫기</button></div>'
-      : `<div class="gy-btns three"><button data-a="add" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업에 넣기</button><button data-a="mv">기술 바꾸기</button><button class="main" data-a="x">닫기</button></div>`}`,
-    (a, close) => { const c = curLu(), i = c.indexOf(P.id); if (a === 'mv') { close(); movesPop(P, () => monPop(P.id)); return; } if (a === 'rm' && i >= 0) c.splice(i, 1); if (a === 'up' && i > 0) { c.splice(i, 1); c.splice(i - 1, 0, P.id); } if (a === 'add' && i < 0 && c.length < 6 && tyOk(P)) c.push(P.id); close(); GA.save(); drawTab(); if (fromBox) boxPop(); });
+    ${inLu ? '<div class="gy-btns two2"><button data-a="up">앞으로</button><button data-a="rm">빼기</button><button data-a="mv">기술 바꾸기</button><button data-a="tm">기술머신</button><button class="main" data-a="x">닫기</button></div>'
+      : `<div class="gy-btns three"><button data-a="add" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업에 넣기</button><button data-a="mv">기술 바꾸기</button><button data-a="tm">기술머신</button><button class="main" data-a="x">닫기</button></div>`}`,
+    (a, close) => { const c = curLu(), i = c.indexOf(P.id); if (a === 'mv') { close(); movesPop(P, () => monPop(P.id, fromBox)); return; } if (a === 'tm') { close(); tmPop(P, () => monPop(P.id, fromBox)); return; } if (a === 'rm' && i >= 0) c.splice(i, 1); if (a === 'up' && i > 0) { c.splice(i, 1); c.splice(i - 1, 0, P.id); } if (a === 'add' && i < 0 && c.length < 6 && tyOk(P)) c.push(P.id); close(); GA.save(); drawTab(); if (fromBox) bxRefresh?.(); });
 }
 const mvRow = (x, a) => `<button class="mp-mv" data-a="${a}" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}"><b>${esc(x[1])}</b><span>${tyTag(x[2], x[3])}<em>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'} · PP ${x[6] || '—'}</em></span></button>`;
 // 기술 바꾸기: 잊을 기술(또는 빈 칸)을 고르고 → 배울 기술을 고른다. 잊은 기술은 '아는 기술'로 남아 다시 배울 수 있다
+// 기술머신 가르치기 (가방 g.tms 에서 하나 쓴다): 이 포켓몬이 배울 수 있는 것만 → 잊을 기술(또는 빈 칸·익혀 두기만)
+function tmPop(P, done) {
+  const g = S.gym, m = gm(P), can = new Set((D.sp[P.sp]?.tm || []).map(i => D.mv[i]?.[0])), own = Object.entries(g.tms || {}).filter(([, n]) => n > 0);
+  const L = own.filter(([id]) => can.has(id) && !m.mv.includes(id)).map(([id, n]) => [mvOf(id), n]).filter(([x]) => x);
+  if (!L.length) { gymPop(`<h4>기술머신</h4><p class="gy-msg">${own.length ? `${esc(nmOf(P))}에게 가르칠 수 있는 기술머신이 없어요.` : '가진 기술머신이 없어요.'}<br>상점의 기술머신에서 살 수 있어요.</p><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, c) => { c(); done?.(); }); return; }
+  gymPop(`<h4>${esc(nmOf(P))}에게 가르칠 기술머신</h4><div class="mp-moves pick">${L.map(([x, n]) => mvRow(x, 't' + x[0]).replace('</button>', `<i class="tm-own">×${n}</i></button>`)).join('')}</div><div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => {
+    close(); if (a === 'x') return done?.(); const id = a.slice(1), x = mvOf(id); if (!x) return done?.();
+    const use = k => { g.tms[id] = (g.tms[id] || 0) - 1; if (g.tms[id] <= 0) delete g.tms[id]; m.kn = (m.kn || []).filter(y => y !== id);
+      if (k == null) { if (!m.kn.includes(id)) m.kn.push(id); } else if (k >= m.mv.length) m.mv.push(id); else { const old = m.mv[k]; m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); }
+      GA.save(); se('DECIDE'); gymPop(`<p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} ${esc(x[1])}${jong(x[1]) ? '을' : '를'} ${k == null ? '익혀 두었다! (기술 바꾸기에서 쓸 수 있어요)' : '배웠다!'}</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => { c(); done?.(); }); };
+    if (m.mv.length < 4) return use(m.mv.length);
+    gymPop(`<h4>${esc(x[1])} 대신 잊을 기술</h4><p class="gy-msg">잊은 기술은 나중에 기술 바꾸기에서 다시 배울 수 있어요.</p><div class="mp-moves pick">${m.mv.map((y, k) => mvOf(y) ? mvRow(mvOf(y), 's' + k) : '').join('')}</div>
+      <div class="gy-btns"><button data-a="keep">익혀 두기만</button><button data-a="x">그만두기</button></div>`, (b, c2) => { c2(); if (b === 'x') return tmPop(P, done); use(b === 'keep' ? null : +b.slice(1)); });
+  });
+}
 function movesPop(P, done) {
   const m = gm(P), C = mvCands(P, m);
   gymPop(`<h4>${esc(nmOf(P))}의 기술</h4><p class="gy-msg">바꿀 기술을 고르세요. 배울 수 있는 기술 ${C.length}개</p>
@@ -783,5 +838,5 @@ async function practice() {
   finally { document.body.classList.remove('gymBattle'); drawTab(); }
 }
 
-window.GymBattle = { tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _foeEntry: foeEntry, get _B() { return B; } };
+window.GymBattle = { tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _foeEntry: foeEntry, get _B() { return B; } };
 })();
