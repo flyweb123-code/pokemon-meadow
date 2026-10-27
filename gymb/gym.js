@@ -164,6 +164,48 @@ const DECO = {};
  ['big_snorlax_doll', '큰 잠만보 인형', 6000, 2], ['big_rhydon_doll', '큰 코뿌리 인형', 6000, 2], ['big_lapras_doll', '큰 라프라스 인형', 6000, 2], ['big_venusaur_doll', '큰 이상해꽃 인형', 8000, 3], ['big_charizard_doll', '큰 리자몽 인형', 8000, 3], ['big_blastoise_doll', '큰 거북왕 인형', 8000, 3], ['big_wailmer_doll', '큰 고래왕자 인형', 6000, 2],
  ['big_regirock_doll', '큰 레지락 인형', 12000, 4], ['big_regice_doll', '큰 레지아이스 인형', 12000, 4], ['big_registeel_doll', '큰 레지스틸 인형', 12000, 4]].forEach(([k, n, g, lv]) => { DECO[k] = { n, g, lv: lv || 0, w: /^big_/.test(k) ? 32 : 16, h: /^big_/.test(k) || k === 'statue' ? 32 : 16 }; });
 const decoMax = () => Math.min(8, 2 + (st().decoN || 0));
+// 꾸미기 자리: g.dp 놓은 것(순서), g.dpos {꾸미기: [x, y]} 직접 놓은 칸 (경완 2026-10-27 '산 거 직접 놓을 수 있게'). 칸이 없으면 맵의 기본 자리
+function decoList(g = st(), D = dzOf(g.d)) { const pos = g.dpos || {}, used = new Set(), out = [];
+  (g.dp || []).filter(Boolean).slice(0, decoMax()).forEach((k, i) => { let p = pos[k] && pos[k][2] === D.id && freeTile(D, pos[k][0], pos[k][1], used) ? pos[k] : null;
+    if (!p) p = D.deco.find(q => freeTile(D, q[0], q[1], used)); if (!p) return; used.add(p[0] + ',' + p[1]); out.push([k, p[0], p[1]]); });
+  return out; }
+// 놓을 수 있는 칸: 맵 안쪽, 관장·문·안내원·길·트레이너 자리·관장 옆 포켓몬 자리가 아닌 곳
+function freeTile(D, x, y, used) {
+  if (x < 1 || y < 2 || x > D.w - 2 || y > D.h - 2 || used?.has(x + ',' + y)) return false;
+  if (D.free) return !!D.free[y]?.[x];
+  const bad = [[D.leader[0], D.leader[1]], [D.leader[0] + 1, D.leader[1]], [D.leader[0] - 1, D.leader[1]], [D.leader[0], D.leader[1] - 1], [D.leader[0], D.leader[1] + 1], D.door, [D.door[0], D.door[1] - 1], D.guy, ...D.slots];
+  if (bad.some(q => q[0] === x && q[1] === y)) return false;
+  for (let i = 1; i < D.path.length; i++) { const [a, b] = [D.path[i - 1], D.path[i]]; if (Math.min(a[0], b[0]) <= x && x <= Math.max(a[0], b[0]) && Math.min(a[1], b[1]) <= y && y <= Math.max(a[1], b[1])) return false; }
+  return true;
+}
+// 꾸미기 놓기 모드: 아래 창에서 꾸미기를 고르고 맵의 칸을 누르면 그 자리에 (놓인 걸 누르면 집어 들기)
+let ded = null;
+function decoEdit() {
+  const g = st(), D = dzOf(g.d); g.own = g.own || {}; g.dp = (g.dp || []).filter(Boolean); g.dpos = g.dpos || {};
+  openTab(null); root.classList.add('ded'); ded = { sel: null };
+  const map = $g('.gy-map'); let grid = map.querySelector('.gy-grid'); if (!grid) { grid = document.createElement('div'); grid.className = 'gy-grid'; map.appendChild(grid); }
+  const draw = () => {
+    renderHome(true); const L = decoList(g, D), on = new Set(L.map(x => x[0]));
+    grid.style.setProperty('--t', 16 * sc + 'px'); grid.innerHTML = ded.sel && on.has(ded.sel) ? (([, x, y]) => `<i class="gg-sel" style="left:${x * 16 * sc}px;top:${y * 16 * sc}px;width:${16 * sc}px;height:${16 * sc}px"></i>`)(L.find(z => z[0] === ded.sel)) : '';
+    const own = Object.keys(g.own).filter(k => DECO[k]);
+    $g('.gy-dlg').innerHTML = `<span class="gy-who">꾸미기 놓기 <small>${on.size}/${decoMax()}</small></span><span class="gy-dsub">${ded.sel ? `<b>${DECO[ded.sel].n}</b>${on.has(ded.sel) ? ' · 옮길 칸을 누르세요' : ' · 놓을 칸을 누르세요'}` : own.length ? '꾸미기를 고르고 맵의 칸을 누르세요. 놓인 꾸미기를 눌러도 골라져요.' : '아직 산 꾸미기가 없어요. 상점에서 사 오세요.'}</span>
+      <div class="gy-dpick">${own.map(k => `<button data-k="${k}" class="${k === ded.sel ? 'sel' : ''}${on.has(k) ? ' on' : ''}"><img alt="" src="${IMG}deco/${k}.png"></button>`).join('')}</div>
+      <div class="gy-dyn">${ded.sel && on.has(ded.sel) ? '<button class="gy-dbtn2" type="button" data-a="rm">치우기</button>' : ''}<button class="gy-dbtn2 main" type="button" data-a="ok">완료</button></div>`;
+  };
+  ded.draw = draw;
+  $g('.gy-dlg').onclick = e => { const b = e.target.closest('button'); if (!b || !ded) return; e.stopPropagation(); sfx('tap');
+    if (b.dataset.k) { ded.sel = ded.sel === b.dataset.k ? null : b.dataset.k; return draw(); }
+    if (b.dataset.a === 'rm') { g.dp = g.dp.filter(k => k !== ded.sel); delete g.dpos[ded.sel]; ded.sel = null; save(); return draw(); }
+    if (b.dataset.a === 'ok') return decoDone(); };
+  map.onclick = e => { if (!ded) return; const r = map.getBoundingClientRect(), x = Math.floor((e.clientX - r.left) / (16 * sc)), y = Math.floor((e.clientY - r.top) / (16 * sc));
+    const L = decoList(g, D), hit = L.find(z => z[1] === x && z[2] === y); if (hit) { sfx('tap'); ded.sel = hit[0]; return draw(); }
+    if (!ded.sel) return; const used = new Set(L.filter(z => z[0] !== ded.sel).map(z => z[1] + ',' + z[2]));
+    if (!freeTile(D, x, y, used)) { sfx('no'); return; }
+    if (!g.dp.includes(ded.sel)) { if (g.dp.length >= decoMax()) { $g('.gy-dsub').innerHTML = '꾸미기 자리가 꽉 찼어요. 하나를 치우거나 체육관을 넓혀 주세요.'; return; } g.dp.push(ded.sel); }
+    g.dpos[ded.sel] = [x, y, D.id]; sfx('tap'); save(); draw(); };
+  draw();
+}
+function decoDone() { if (!ded) return; ded = null; root.classList.remove('ded'); $g('.gy-map .gy-grid')?.remove(); $g('.gy-map').onclick = null; $g('.gy-dlg').onclick = null; renderHome(); }
 
 // ---------- 운영: 도전자 방문·고용 트레이너·평판·일지·주간 보고 (3·6·7단계) ----------
 // 저장(S.gym): day 시간표를 만든 날, sch 오늘 남은 방문 시각, q 관장을 기다리는 도전자, at 필드 체육관 버튼 빨간 점이 뜰 시각,
@@ -412,6 +454,28 @@ const GUY_TIPS = [
   () => `훈련장에 포켓몬을 보내 두면 앱을 꺼도 경험치가 쌓여요. 하루 8시간까지예요.`,
 ];
 let tipI = 0;
+// 안내원: 먼저 물어보고, 들으면 체육관 전체 설명을 튜토리얼처럼 (경완 2026-10-27)
+const GUY_OW = 'gym_guy';
+const GUY_TOUR = () => [
+  `어서 와요, 관장님!\n${st().nm}의 안내원이에요.\n체육관 일을 차근차근 알려 드릴게요.`,
+  '도전자는 하루에 몇 번\n아무 때나 찾아와요.\n오면 필드의 체육관 버튼에\n빨간 점이 떠요.',
+  '아래 상태창의 [도전 받기]를\n누르면 배틀이 시작돼요.\n도전자는 그날 밤 12시까지\n기다려 줘요.',
+  `배틀에는 ${TYPE_KO[st().ty]} 타입 포켓몬만\n낼 수 있어요. [배틀] 메뉴에서\n라인업을 3개까지 짜 둘 수 있어요.`,
+  '도전자를 이기면 골드와 평판을\n받아요. 평판이 쌓이면\n체육관 등급이 올라요.',
+  '등급이 오르면 도전자가 더 자주\n오고, 트레이너를 더 고용하고,\n체육관을 넓힐 수 있어요.',
+  '[트레이너] 메뉴의 지원서 탭에\n가끔 지원자가 와요. 면접을 보고\n고용하면 도전자를 먼저 막아 줘요.',
+  '고용 관리 탭에서 트레이너를\n훈련장 코치로 보낼 수도 있어요.\n코치는 훈련 경험치를 올려 줘요.',
+  '[훈련장]에 포켓몬을 보내 두면\n앱을 꺼도 경험치가 쌓여요.\n하루 8시간까지 훈련해요.',
+  '[상점]에서는 기술머신,\n꾸미기, 관장 의상, 체육관\n넓히기를 살 수 있어요.',
+  '이름판을 누르면 체육관 정보,\n일지, 자격 배지, 주간 랭킹을\n볼 수 있어요.',
+  '한 타입으로 도전자를 100명\n막으면 자격 배지를 받아요.\n그럼 힘내세요, 관장님!',
+];
+function guyAsk() {
+  $g('.gy-dlg').innerHTML = `<span class="gy-who">안내원</span>관장님, 체육관 설명을 처음부터 들어 보실래요?<span class="gy-dsub">체육관이 어떻게 돌아가는지 차근차근 알려 드려요</span><div class="gy-dyn"><button class="gy-dbtn2" type="button" data-a="n">괜찮아요</button><button class="gy-dbtn2 main" type="button" data-a="y">들을래요</button></div>`;
+  $g('.gy-dyn').onclick = async e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); sfx('tap');
+    if (b.dataset.a === 'n') { say(GUY_TIPS[tipI++ % GUY_TIPS.length](), '안내원'); return; }
+    await kang(GUY_TOUR(), { lit: true, nm: '안내원', pic: `${IMG}ow/${GUY_OW}.png`, ow: 1 }); homeSay(); };
+}
 function renderTop() {
   const g = st(), G = gradeOf(g.rep || 0);
   $g('.gy-nm').innerHTML = `${tyIcon(g.ty)}<span>${esc(g.nm)}</span>`;
@@ -421,18 +485,19 @@ function renderTop() {
   renderGoldG(); menuDot();
 }
 function menuDot() { const g = st(), b = $g('.gy-menu [data-t="staff"]'); if (!b) return; const on = !!(g?.cand && !g.candSeen); let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot"></i>'); if (!on && d) d.remove(); }
-function renderHome() {
+function renderHome(quiet) {
+  if (ded && !quiet) return ded.draw();
   const g = gInit(), D = dzOf(g.d);
   renderTop();
   clearEnts(); layout();
   // 꾸미기 → 고용 트레이너(자리마다 보는 방향) → 관장(나) → 안내원
-  (g.dp || []).slice(0, decoMax()).forEach((k, i) => { const p = D.deco[i]; if (k && p) prop(k, p[0], p[1]); });
+  decoList(g, D).forEach(([k, x, y]) => prop(k, x, y));
   g.sf.filter(s => !s.yard).forEach((s, i) => { const p = D.slots[i]; if (!p) return; ent({ ow: s.ow, x: p[0], y: p[1], f: p[2], n3: N3.has(s.ow), onTap: () => { sfx('tap'); sfCard(s); say(`<span class="gy-who">${sfName(s)}</span>${s.rest ? '월급을 못 받아서 쉬고 있어요…' : pick(['오늘도 체육관은 제가 지킬게요!', '도전자는 저를 먼저 이겨야 해요.', `지금까지 ${s.w || 0}명을 막았어요!`, '관장님, 훈련 열심히 하고 있어요!'])}`, `${TRAITS[s.trait]?.n || ''} · ${s.w || 0}승 ${s.l || 0}패`); } }); });
   const meE = ent({ ow: myOw(), x: D.leader[0], y: D.leader[1], f: 'd', n3: N3.has(myOw()), onTap: () => { sfx('tap'); meCard(); say(`관장 <b>${esc(trName() || '나')}</b>. 오늘도 체육관을 지키고 있다.`, `${g.w}승 ${g.l}패 · 막은 도전자 ${g.blk}명`); } });
   if (g.fit) fitSrc('ow').then(u => { if (meE.el.isConnected) meE.el.style.backgroundImage = `url(${u})`; });
   palEnt(D);
-  ent({ ow: 'gym_guy', x: D.guy[0], y: D.guy[1], f: 'd', onTap: () => { sfx('tap'); say(GUY_TIPS[tipI++ % GUY_TIPS.length](), '안내원'); } });
-  homeSay();
+  ent({ ow: GUY_OW, x: D.guy[0], y: D.guy[1], f: 'd', onTap: () => { sfx('tap'); guyAsk(); } });
+  if (!quiet) homeSay();
 }
 // 관장 뒤 포켓몬 (경완 2026-10-27): 기본은 지금 라인업에서 레벨이 가장 높은 포켓몬, 눌러서 바꿀 수 있다 (g.pal)
 function palPick() { const g = st(), L = luNow(), P = g.pal && S.box.find(p => p.id === g.pal); if (P) return P;
@@ -624,10 +689,10 @@ const KANG_OPEN = () => [
   '모르는 게 있으면 안내원에게\n물어보렴. 그럼 힘내라,\n관장님!',
 ];
 // lines 를 강박사가 한 줄씩 말한다 (화면을 누르면 다음). lit: 처음부터 밝게 / 아니면 어두운 체육관에 불이 켜지며 시작
-function kang(lines, { lit = false } = {}) {
+function kang(lines, { lit = false, nm = '강박사', pic = GA.KANG, ow = 0 } = {}) {
   return new Promise(done => {
-    const k = document.createElement('div'); k.className = 'gy-kang' + (lit ? ' lit' : '');
-    k.innerHTML = `<i class="gy-k-veil"></i><img class="gy-k-pic" alt="강박사" src="${GA.KANG}"><button class="gy-k-skip" type="button">건너뛰기</button><div class="win gy-k-box" aria-live="polite"><span class="gy-k-nm">강박사</span><span class="gy-k-t"></span><b class="gy-k-cur" hidden>▼</b></div>`;
+    const k = document.createElement('div'); k.className = 'gy-kang' + (lit ? ' lit' : '') + (ow ? ' guide' : '');
+    k.innerHTML = `<i class="gy-k-veil"></i>${ow ? `<i class="gy-k-pic ow" style="background-image:url(${pic})"></i>` : `<img class="gy-k-pic" alt="${nm}" src="${pic}">`}<button class="gy-k-skip" type="button">건너뛰기</button><div class="win gy-k-box" aria-live="polite"><span class="gy-k-nm">${nm}</span><span class="gy-k-t"></span><b class="gy-k-cur" hidden>▼</b></div>`;
     root.appendChild(k);
     const talk = GA.inTyper(k, k.querySelector('.gy-k-t'), k.querySelector('.gy-k-cur'));
     let stop = false; const end = async () => { if (k.classList.contains('bye')) return; stop = true; k.classList.add('bye'); await wait(450); k.remove(); done(); };
@@ -691,7 +756,7 @@ async function exit() {
 
 window.Gym = { prepare, enter, exit, isOpen: () => open, renderGold: renderGoldG, DESIGNS, _walk: walk, _ent: ent, _tick: tick,
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { fitSrc, myF, bodyCard, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, decoMax, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG } };
+  k: { fitSrc, myF, bodyCard, decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, decoMax, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 window.gymDot = () => { const g = S.gym; return !!(g && g.d && ((g.q && g.q.length) || (g.at && Date.now() >= g.at))); };
 })();

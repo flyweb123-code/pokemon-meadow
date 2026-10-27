@@ -37,7 +37,7 @@ const YARD_SF = 2;
 // 특별한 기술: 기술머신으로 배우는 기술 중 자기 타입의 공격 기술 하나 (1시간마다 5%)
 function special(P) {
   const D = GB().D, m = GB().gm(P), t = SPECIES[P.sp]?.t || [], L = (D.sp[P.sp]?.tm || []).map(i => D.mv[i]).filter(x => x && x[3] !== 2 && (x[4] || 0) >= 50 && !m.mv.includes(x[0]) && !(m.kn || []).includes(x[0]));
-  const pref = L.filter(x => t.includes(x[2])), pool = pref.length ? pref : L; if (!pool.length) return null;
+  const pref = L.filter(x => t.includes(x[2])), pool = pref.length && Math.random() < .5 ? pref : L; if (!pool.length) return null;   // 자기 타입이 아니어도 배운다 (반반)
   const x = K.pick(pool); GB().teach(m, x[0], null, false); return x;
 }
 function tickTrain(now) {
@@ -362,16 +362,16 @@ function shopTm(body) {
   const D = GB().D, g = st(), mons = S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(g.ty));
   const can = new Map(); mons.forEach(P => (D.sp[P.sp]?.tm || []).forEach(i => { if (!can.has(i)) can.set(i, []); can.get(i).push(P); }));
   const types = [...new Set([...can.keys()].map(i => D.mv[i][2]))].sort((a, b) => a - b);
-  if (!types.includes(tmTy)) tmTy = types.includes(g.ty) ? g.ty : types[0] || 0;
-  const L = [...can.keys()].map(i => D.mv[i]).filter(x => x[2] === tmTy).sort((a, b) => (b[3] !== 2) - (a[3] !== 2) || (b[4] || 0) - (a[4] || 0));
-  body.innerHTML = `<p class="gy-lead">${TYPE_KO[g.ty]} 타입 포켓몬이 배울 수 있는 기술이에요. 사면 바로 한 마리에게 가르쳐요.</p>
-    ${types.length ? `<div class="sp-chips">${types.map(t => `<button data-ty="${t}" aria-pressed="${t === tmTy}">${GA.tyIcon(t)}${TYPE_KO[t]}</button>`).join('')}</div>` : `<p class="sf-none">${TYPE_KO[g.ty]} 타입 포켓몬이 아직 없어요.</p>`}
-    <div class="sp-list">${L.map(x => `<button class="sp-tm" data-tm="${x[0]}">${GB().tyTag(x[2], x[3])}<b>${esc(x[1])}</b><small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}</small><em>${gold(tmPrice(x))}</em></button>`).join('')}</div>`;
+  if (tmTy !== -1 && !types.includes(tmTy)) tmTy = -1;   // -1 = 전체 (경완 2026-10-27 '에스퍼 포켓몬이라고 에스퍼 기술만 배우는 건 아닌데')
+  const L = [...can.keys()].map(i => D.mv[i]).filter(x => tmTy === -1 || x[2] === tmTy).sort((a, b) => (tmTy === -1 ? a[2] - b[2] : 0) || (b[3] !== 2) - (a[3] !== 2) || (b[4] || 0) - (a[4] || 0));
+  body.innerHTML = `<p class="gy-lead">체육관 포켓몬이 배울 수 있는 기술머신이에요. 타입이 달라도 배울 수 있는 기술은 다 있어요. 사면 바로 한 마리에게 가르쳐요.</p>
+    ${types.length ? `<div class="sp-chips"><button data-ty="-1" aria-pressed="${tmTy === -1}">전체</button>${types.map(t => `<button data-ty="${t}" aria-pressed="${t === tmTy}">${GA.tyIcon(t)}${TYPE_KO[t]}</button>`).join('')}</div>` : `<p class="sf-none">${TYPE_KO[g.ty]} 타입 포켓몬이 아직 없어요.</p>`}
+    <div class="sp-list">${L.map(x => `<button class="sp-tm" data-tm="${x[0]}"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">${GB().tyTag(x[2], x[3])}<b>${esc(x[1])}</b><small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}</small><em>${gold(tmPrice(x))}</em></button>`).join('')}</div>`;
   body.onclick = (e, b) => { sfx('tap'); if (b.dataset.ty) { tmTy = +b.dataset.ty; redraw(); return; } if (b.dataset.tm) buyTm(b.dataset.tm, can); };
 }
 function buyTm(id, can) {
   const D = GB().D, x = GB().mvOf(id), i = D.mv.indexOf(x), price = tmPrice(x), L = (can.get(i) || []).filter(P => !GB().gm(P).mv.includes(id));
-  pop(`<h4>기술머신 · ${esc(x[1])}</h4><div class="mp-moves one">${GB().mvRow(x, '')}</div><p class="gy-msg">${esc(x[8] || '')}</p>
+  pop(`<h4><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">기술머신 · ${esc(x[1])}</h4><div class="mp-moves one">${GB().mvRow(x, '')}</div><p class="gy-msg">${esc(x[8] || '')}</p>
     ${L.length ? `<p class="gy-msg">가르칠 포켓몬을 고르세요 (${gold(price)})</p><div class="lu-pick">${L.map(P => `<button data-a="${P.id}">${GB().thumb(P)}<b>${esc(nmOf(P))}</b><span>Lv.${GB().gm(P).lv}</span></button>`).join('')}</div>` : '<p class="gy-msg">이 기술을 배울 수 있는 포켓몬이 이미 다 알고 있어요.</p>'}
     <div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => {
     if (!a) return; close(); if (a === 'x') return; const P = boxOf(+a || a); if (!P) return;
@@ -389,14 +389,13 @@ function buyTm(id, can) {
 function shopDeco(body) {
   const g = st(), G = K.gradeOf(g.rep || 0).i, max = K.decoMax(); g.own = g.own || {}; g.dp = (g.dp || []).slice(0, 8);
   const placed = Array.from({ length: max }, (_, i) => g.dp[i] || null);
-  body.innerHTML = `<p class="gy-lead">본가 비밀기지 인형·쿠션으로 체육관을 꾸며요. 사면 빈 자리에 놓여요.</p>
-    <h4 class="sf-h">놓인 꾸미기 <small>${placed.filter(Boolean).length}/${max}</small></h4>
-    <div class="dc-slots">${placed.map((k, i) => `<button data-slot="${i}" class="${k ? '' : 'empty'}">${k ? `<img alt="" src="${IMG}deco/${k}.png">` : '+'}</button>`).join('')}</div>
+  body.innerHTML = `<p class="gy-lead">본가 비밀기지 인형·쿠션으로 체육관을 꾸며요. 사면 빈 자리에 놓이고, 원하는 칸으로 옮길 수 있어요.</p>
+    <div class="dc-place"><div><b>놓인 꾸미기 ${placed.filter(Boolean).length}/${max}</b><small>맵에서 칸을 골라 직접 놓아요</small></div><button class="gy-key main" data-place="1">직접 놓기</button></div>
     <h4 class="sf-h">상품</h4><div class="dc-grid">${Object.entries(K.DECO).map(([k, o]) => { const lock = G < o.lv, own = g.own[k];
       return `<button data-dc="${k}" class="${own ? 'own' : ''}${lock ? ' lock' : ''}"><span class="dc-pic"><img alt="" src="${IMG}deco/${k}.png" class="${o.w > 16 ? 'big' : ''}"></span><b>${o.n}</b><em>${own ? (placed.includes(k) ? '놓여 있음' : '가지고 있음') : lock ? `${K.gradeOf([0, 100, 250, 450, 700, 1000][o.lv]).n}부터` : gold(o.g)}</em></button>`; }).join('')}</div>`;
   body.onclick = (e, b) => {
     sfx('tap');
-    if (b.dataset.slot) { const i = +b.dataset.slot; if (g.dp[i]) { g.dp[i] = null; K.save(); redraw(); } return; }
+    if (b.dataset.place) return K.decoEdit();
     const k = b.dataset.dc; if (!k) return; const o = K.DECO[k];
     if (g.own[k]) { if (placed.includes(k)) { g.dp[placed.indexOf(k)] = null; } else { const i = placed.indexOf(null); if (i < 0) return say('꾸미기 자리가 꽉 찼어요. 놓인 것을 눌러 치우거나, 체육관 넓히기에서 자리를 늘려 주세요.'); g.dp[i] = k; } K.save(); redraw(); return; }
     if (G < o.lv) return say(`${K.gradeOf([0, 100, 250, 450, 700, 1000][o.lv]).n}이 되면 살 수 있어요.`);
@@ -423,19 +422,20 @@ function shopFit(body) {
       close(); if (a === 'y' && !spend(o.g)) return say('골드가 모자라요.'); if (a === 'y') g.fits[k] = 1; g.fit = k; K.save(); redraw(); K.renderHome(); });
   };
 }
-// 체육관 넓히기: 훈련장 칸, 꾸미기 자리 (등급이 오를 때마다 하나씩)
+// 체육관 넓히기 (경완 2026-10-27 '애매한 듯'): 단계 하나씩 올리고, 단계마다 무엇이 늘어나는지 보여 준다. 다음 단계는 체육관 등급이 있어야 열린다
+const UPS = [[0, 0, 0], [1, 2, 1500], [2, 4, 3500], [3, 5, 6000], [4, 6, 10000]];   // [필요 등급, 이 단계까지 늘어난 (훈련장 칸, 꾸미기 자리), 값]
+function upLv(g) { let n = 0; UPS.forEach((u, i) => { if ((g.trN || 0) >= u[0] && (g.decoN || 0) >= u[1]) n = i; }); return n; }
 function shopUp(body) {
-  const g = st(), G = K.gradeOf(g.rep || 0), trN = g.trN || 0, dN = (g.decoN || 0) / 2;
-  const item = (k, n, have, max, price, need) => `<div class="up-row"><div><b>${n}</b><small>${have}/${max}${have < max && G.i < need ? ` · ${K.gradeOf([0, 100, 250, 450, 700, 1000][need]).n}부터` : ''}</small></div>${have >= max ? '<em>최대</em>' : `<button class="gy-key${G.i >= need ? ' main' : ''}" data-up="${k}" ${G.i >= need ? '' : 'disabled'}>${gold(price)}</button>`}</div>`;
-  body.innerHTML = `<p class="gy-lead">평판이 올라 체육관 등급이 오르면 체육관을 넓힐 수 있어요. 지금 등급: <b>${G.n}</b></p>
-    ${item('tr', '훈련장 칸 +1', 2 + trN, 6, 1500 * (trN + 1), trN + 1)}${item('dc', '꾸미기 자리 +2', 2 + dN * 2, 8, 1000 * (dN + 1), dN + 1)}
-    <div class="up-row"><div><b>트레이너 자리</b><small>${K.staffMax()}/5 · 등급이 오르면 저절로 늘어요</small></div></div>
-    <div class="up-row"><div><b>도전자 방문</b><small>하루 ${2 + (G.i >= 2) + (G.i >= 4)}~${3 + (G.i >= 2) + (G.i >= 4)}명 · 등급이 오르면 늘어요</small></div></div>`;
+  const g = st(), G = K.gradeOf(g.rep || 0), lv = upLv(g), nx = UPS[lv + 1];
+  const card = (i, u) => `<div class="up-lv${i <= lv ? ' done' : i === lv + 1 ? ' next' : ''}"><i>${i + 1}단계</i><div><b>${i ? `훈련장 ${2 + u[0]}칸 · 꾸미기 ${2 + u[1]}자리` : '처음 체육관 (훈련장 2칸 · 꾸미기 2자리)'}</b><small>${i <= lv ? '완료' : `${K.gradeOf([0, 100, 250, 450, 700, 1000][u[0]]).n}부터 · ${u[2].toLocaleString()}G`}</small></div></div>`;
+  body.innerHTML = `<p class="gy-lead">체육관을 넓히면 훈련장 칸과 꾸미기 자리가 함께 늘어나요. 다음 단계는 체육관 등급이 올라야 열려요. 지금 등급: <b>${G.n}</b></p>
+    <div class="up-list">${UPS.map((u, i) => card(i, u)).join('')}</div>
+    ${nx ? `<button class="gy-key${G.i >= nx[0] ? ' main' : ''} up-go" data-up="1" ${G.i >= nx[0] ? '' : 'disabled'}>${G.i >= nx[0] ? `${gold(nx[2])} 내고 ${lv + 2}단계로 넓히기` : `${K.gradeOf([0, 100, 250, 450, 700, 1000][nx[0]]).n}이 되면 넓힐 수 있어요`}</button>` : '<p class="sf-none">체육관을 끝까지 넓혔어요!</p>'}
+    <div class="up-row"><div><b>트레이너 자리</b><small>${K.staffMax()}/5 · 체육관 등급이 오르면 저절로 늘어요</small></div></div>
+    <div class="up-row"><div><b>도전자 방문</b><small>하루 ${2 + (G.i >= 2) + (G.i >= 4)}~${3 + (G.i >= 2) + (G.i >= 4)}명 · 체육관 등급이 오르면 늘어요</small></div></div>`;
   body.onclick = (e, b) => {
-    sfx('tap'); const k = b.dataset.up; if (!k) return; const price = k === 'tr' ? 1500 * (trN + 1) : 1000 * (dN + 1);
-    if (!spend(price)) return say('골드가 모자라요.');
-    if (k === 'tr') g.trN = trN + 1; else g.decoN = (g.decoN || 0) + 2;
-    K.glog('tr', k === 'tr' ? `훈련장을 넓혔다! (${2 + g.trN}칸)` : `꾸미기 자리를 늘렸다! (${K.decoMax()}자리)`); K.save(); redraw();
+    sfx('tap'); if (!b.dataset.up || !nx || G.i < nx[0]) return; if (!spend(nx[2])) return say('골드가 모자라요.');
+    g.trN = Math.max(g.trN || 0, nx[0]); g.decoN = Math.max(g.decoN || 0, nx[1]); K.glog('tr', `체육관을 ${lv + 2}단계로 넓혔다! <small>훈련장 ${2 + g.trN}칸 · 꾸미기 ${K.decoMax()}자리</small>`); K.save(); redraw(); K.renderHome();
   };
 }
 

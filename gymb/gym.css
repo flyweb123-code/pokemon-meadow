@@ -422,8 +422,8 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .sp-chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}.sp-chips button{display:inline-flex;align-items:center;gap:3px;padding:4px 7px;font-size:12px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.12)}
 .sp-chips button[aria-pressed="true"]{background:#fff6c8;box-shadow:inset 0 0 0 2px #ffd84a}.sp-chips .tyi{width:16px;height:16px}
 .sp-list{display:grid;gap:4px}
-.sp-tm{display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto auto;column-gap:8px;align-items:center;padding:6px 8px;text-align:left;box-shadow:inset 0 0 0 2px rgba(0,0,0,.1)}
-.sp-tm .tg{position:static!important;grid-row:1/3}.sp-tm b{font-size:14px}.sp-tm small{font-size:11px;color:var(--dim);grid-column:2}.sp-tm em{grid-row:1/3;grid-column:3;font-style:normal;font-size:13px;white-space:nowrap}
+.sp-tm{display:grid;grid-template-columns:32px auto 1fr auto;grid-template-rows:auto auto;column-gap:8px;align-items:center;padding:6px 8px;text-align:left;box-shadow:inset 0 0 0 2px rgba(0,0,0,.1)}
+.sp-tm .tg{position:static!important;grid-row:1/3}.sp-tm b{font-size:14px}.sp-tm small{font-size:11px;color:var(--dim);grid-column:3}.sp-tm em{grid-row:1/3;grid-column:4;font-style:normal;font-size:13px;white-space:nowrap}
 .dc-slots{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px}
 .dc-slots button{aspect-ratio:1;display:grid;place-items:center;box-shadow:inset 0 0 0 2px rgba(0,0,0,.15);color:var(--dim)}.dc-slots button.empty{box-shadow:none;border:2px dashed var(--inner)}
 .dc-slots img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
@@ -508,3 +508,26 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .gy-hlog i{font-style:normal}
 .gy-dmore{position:absolute;right:12px;top:8px;padding:2px 6px;font-size:12px;background:none;border:0;color:var(--dim)}
 .lu-pick button.on{box-shadow:inset 0 0 0 3px #ffd84a}
+
+.tm-ic{width:32px;height:32px;image-rendering:pixelated;grid-row:1/3}.gy-pop h4 .tm-ic{vertical-align:middle;margin:-6px 4px -6px 0}
+.gy-k-pic.ow{width:72px;height:144px;margin-left:-36px;background-repeat:no-repeat;background-size:auto 144px;background-position:0 0}
+.gy-k-pic.ow.w32{width:144px;margin-left:-72px}
+.gy-dyn{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.gy-dbtn2{padding:7px 14px;font-size:14px;font-weight:700;border:2px solid var(--frame);background:var(--win);box-shadow:0 3px 0 var(--frame)}
+.gy-dbtn2.main{background:#ffd84a;color:#20202c}
+/* 꾸미기 놓기 모드 */
+#gym.ded .gy-ents *{pointer-events:none!important}#gym.ded .gy-map{cursor:pointer}
+.gy-grid{position:absolute;inset:0;z-index:2000;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.28) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.28) 1px,transparent 1px);background-size:var(--t) var(--t)}
+.gy-grid .gg-sel{position:absolute;box-shadow:inset 0 0 0 3px #ffd84a,0 0 8px #ffd84a;animation:gyBob 1s ease-in-out infinite}
+.gy-dpick{display:flex;gap:6px;overflow-x:auto;margin-top:8px;padding-bottom:2px}
+.gy-dpick button{flex:none;width:44px;height:44px;padding:4px;border:2px solid var(--frame);background:#fff;border-radius:6px;position:relative}
+.gy-dpick button img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+.gy-dpick button.on::after{content:'✓';position:absolute;right:1px;bottom:-1px;font-size:11px;color:#2a8a3e;font-weight:700}
+.gy-dpick button.sel{box-shadow:0 0 0 3px #ffd84a;background:#fff6c8}
+.dc-place{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;margin-bottom:10px;background:#fff6c8;box-shadow:inset 0 0 0 2px #ffd84a}.dc-place div{display:flex;flex-direction:column;gap:2px;font-size:14px}.dc-place small{font-size:12px;color:var(--dim)}
+.up-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.up-lv{display:grid;grid-template-columns:52px 1fr;gap:8px;align-items:center;padding:8px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.12);opacity:.6}
+.up-lv i{font-style:normal;font-weight:700;font-size:12px;text-align:center;padding:4px 0;border-radius:4px;background:#e4e4ea}.up-lv div{display:flex;flex-direction:column;gap:2px;font-size:13px}.up-lv small{font-size:11px;color:var(--dim)}
+.up-lv.done{opacity:1}.up-lv.done i{background:#2a8a3e;color:#fff}.up-lv.next{opacity:1;box-shadow:inset 0 0 0 2px #ffd84a;background:#fffbe6}.up-lv.next i{background:#ffd84a}
+.up-go{width:100%;min-height:44px;margin-bottom:10px}
+.gy-kang.guide{background:rgba(12,13,20,.55)}#gym:has(.gy-kang.guide) .gy-dlg{visibility:hidden}
