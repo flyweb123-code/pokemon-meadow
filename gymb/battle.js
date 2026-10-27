@@ -184,12 +184,18 @@ function buildUI() {
   el.addEventListener('pointerup', () => { if (B?.tapWake) { const w = B.tapWake; B.tapWake = null; w(); } else if (B) B.fast = true; });
   addEventListener('resize', fit);
 }
-// 세로로 긴 휴대폰 (경완 2026-10-27 '전체 화면을 모바일 레이아웃에 맞게'): 위 화면은 맨 위, 아래 화면은 맨 아래에 폭에 꽉 차게.
-// 가운데 남는 자리에 대화창을 꺼내 놓아 위 화면은 배틀만 보인다. 넓은 화면은 예전처럼 두 화면을 가운데에
+// 세로로 긴 휴대폰 (경완 2026-10-27 '전체 화면을 모바일 레이아웃에 맞게', '배틀 상태창은 배틀 화면 밑에 바로 붙여주고 버튼을 좀 위아래로 키워도 돼'):
+// 위 화면은 맨 위 폭에 꽉 차게, 바로 밑에 대화창, 남는 높이는 모두 아래(터치) 화면 — 아래 화면은 세로로만 더 늘리고 글자·그림은 원래 비율로 되돌린다.
+// 넓은 화면은 예전처럼 두 화면을 가운데에
+let safe = null; const TOP_H = 162;   // 대화창을 밖으로 꺼내면 위 화면은 배틀 장면 높이만
+const safeIn = () => { if (safe) return safe; const q = document.createElement('div'); q.style.cssText = 'position:fixed;visibility:hidden;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)'; document.body.appendChild(q);
+  const cs = getComputedStyle(q); safe = [parseFloat(cs.paddingTop) || 0, parseFloat(cs.paddingBottom) || 0]; q.remove(); return safe; };
 function fit() {
   if (!el) return; const W = innerWidth, H = innerHeight, mob = H / W > 1.45, msgEl = $b('.bt-msg');
   el.classList.toggle('mob', mob);
-  if (mob) { const k = W / 256, room = H - 384 * k - 90; el.style.setProperty('--k', k); const mid = room >= 50 * k; el.classList.toggle('msgmid', mid); (mid ? $b('.bt-mid') : $b('.bt-top')).appendChild(msgEl); return; }
+  if (mob) { const k = W / 256, [st, sb] = safeIn(), mh = 52 * k, tall = H - sb - st - (TOP_H + 52 + 192) * k >= 0, top = st + (tall ? TOP_H : 192) * k, bt = top + mh, bh = H - sb - bt;
+    el.classList.toggle('msgmid', tall); (tall ? $b('.bt-mid') : $b('.bt-top')).appendChild(msgEl);
+    const ky = tall ? bh / 192 : k; [['--k', k], ['--ky', ky], ['--ty', k / ky], ['--st', st + 'px'], ['--mt', top + 'px'], ['--mh', mh + 'px'], ['--bt', (tall ? bt : H - sb - 192 * k) + 'px']].forEach(([n, v]) => el.style.setProperty(n, v)); return; }
   el.classList.remove('msgmid'); $b('.bt-top').appendChild(msgEl);
   const k = Math.max(1, Math.floor(Math.min(W / 256, (H - 20) / 394) * 4) / 4); el.style.setProperty('--k', k);
 }
