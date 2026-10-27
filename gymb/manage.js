@@ -18,7 +18,7 @@ const gold = n => `<i class="coin"></i>${n.toLocaleString()}G`;
 // 포켓몬 정면 그림: 블랙·화이트 움직이는 gif (못 받으면 저장소 png 첫 칸)
 const monImg = (sp, o = {}) => { const g = GB().gifUrl(sp, false, !!o.s, !!o.f), png = GB().pkSrc(sp, { s: o.s, f: o.f });
   return g ? `<img class="mi" alt="" src="${g}" onerror="this.onerror=null;this.src='${png}';this.classList.add('pn')">` : `<img class="mi pn" alt="" src="${png}">`; };
-const owIc = ow => `<i class="ow-ic" style="background-image:url(${IMG}ow/${ow}.png)"></i>`;
+const owIc = ow => `<i class="ow-ic${K.owW(ow) > 16 ? ' w32' : ''}" style="background-image:url(${K.owSrc(ow)})"></i>`;
 let sh = null, cur = null, shopT = 'tm', tmTy = 0;
 function tab(t, el) { sh = el; cur = t; draw(); }
 function draw() { if (!sh || !st()) return; sh.onclick = null; sh.classList.remove('ty-on'); ({ train: drawTrain, staff: drawStaff, shop: drawShop })[cur]?.(); GB()?.fillTh(sh); }
@@ -186,10 +186,10 @@ function drawTrain() {
     q.style.cssText = `left:${fx * W}px;top:${y}px;z-index:${Math.round(y)};background-image:url(${ART_[k]})`; Y.L.append(q); Y.eq[k] = { x: fx * W, y, el: q }; }
   g.tr.forEach((e, i) => { const P = boxOf(e.id); if (P) yardMon(P, e, i); });
   // 코치 (훈련장에 배치한 트레이너): 코트 가장자리에서 응원
-  Y.co = g.sf.filter(x => x.yard).slice(0, YARD_SF).map((x, i) => { const q = document.createElement('i'), cx = W * (i ? .78 : .22), cy = H * .57; q.className = 'ty-co'; q.dataset.co = i;
-    q.style.cssText = `left:${cx}px;top:${cy}px;z-index:${Math.round(cy)};background-image:url(${IMG}ow/${x.ow}.png)`; Y.L.append(q); return { s: x, el: q, x: cx, y: cy, nx: performance.now() / 1000 + 1 + i * 1.7 }; });
+  Y.co = g.sf.filter(x => x.yard).slice(0, YARD_SF).map((x, i) => { const q = document.createElement('i'), cx = W * (i ? .78 : .22), cy = H * .57; q.className = 'ty-co' + (K.owW(x.ow) > 16 ? ' w32' : ''); q.dataset.co = i;
+    q.style.cssText = `left:${cx}px;top:${cy}px;z-index:${Math.round(cy)};background-image:url(${K.owSrc(x.ow)})`; Y.L.append(q); return { s: x, el: q, x: cx, y: cy, nx: performance.now() / 1000 + 1 + i * 1.7 }; });
   sh.onclick = ev => {
-    const c = ev.target.closest('[data-co]'); if (c) { sfx('tap'); const o = Y.co[+c.dataset.co]?.s; if (o) K.bodyCard(`${IMG}tr/${o.tr}.png`, `${esc(o.cls)} ${esc(o.nm)}`, `훈련장 코치 · 경험치 +${o.trait === 'train' ? 50 : 25}%`); return; }
+    const c = ev.target.closest('[data-co]'); if (c) { sfx('tap'); const o = Y.co[+c.dataset.co]?.s; if (o) K.bodyCard(K.trSrc(o.tr), `${esc(o.cls)} ${esc(o.nm)}`, `훈련장 코치 · 경험치 +${o.trait === 'train' ? 50 : 25}%`); return; }
     const t = ev.target.closest('[data-p],[data-add]'); if (!t) return; sfx('tap');
     if (t.dataset.add) return st().tr.length >= trMax() ? say(`훈련장이 가득 찼어요.${trMax() < 6 ? '<br><small>상점의 체육관 넓히기에서 늘릴 수 있어요.</small>' : ''}`) : pickTrain();
     trPop(+t.dataset.p || t.dataset.p);
@@ -315,10 +315,10 @@ function drawStaff() {
   if (g.cand && !g.candSeen) { g.candSeen = 1; K.setAt(); K.save(); K.menuDot(); }
   const c = g.cand, yN = g.sf.filter(s => s.yard).length;
   const tabs = `<div class="sp-tabs" role="tablist"><button role="tab" data-sft="cand" aria-selected="${sfT === 'cand'}">지원서${c ? ' <i class="tdot"></i>' : ''}</button><button role="tab" data-sft="sf" aria-selected="${sfT === 'sf'}">고용 관리 <small>${g.sf.length}/${max}</small></button></div>`;
-  const cand = c ? `<div class="sf-cand"><img alt="" src="${IMG}tr/${c.tr}.png"><div><b>${esc(c.cls)} ${esc(c.nm)}</b>${trtBox(c.trait, true)}${teamIc(c.team)}<small>${Math.max(1, Math.round((c.exp - now) / K.H))}시간 뒤에 떠나요 · 월급 7일에 ${c.wage}G</small></div><button class="gy-key main" data-iv="1">면접 보기</button></div>`
+  const cand = c ? `<div class="sf-cand"><img alt="" src="${K.trSrc(c.tr)}"><div><b>${esc(c.cls)} ${esc(c.nm)}</b>${trtBox(c.trait, true)}${teamIc(c.team)}<small>${Math.max(1, Math.round((c.exp - now) / K.H))}시간 뒤에 떠나요 · 월급 7일에 ${c.wage}G</small></div><button class="gy-key main" data-iv="1">면접 보기</button></div>`
       : `<p class="sf-none">지금은 지원서가 없어요. 새 지원자가 오면 트레이너 단추에 빨간 점이 떠요.</p>`;
   const list = `<p class="gy-lead">고용한 트레이너가 순서대로 도전자를 먼저 상대해요. 훈련장에 배치하면 도전자 대신 포켓몬 훈련을 도와요 (최대 ${YARD_SF}명). 월급은 7일마다 나가고, 골드가 모자라면 쉬어요.</p>
-    <div class="sf-list">${g.sf.map((s, i) => `<div class="sf-card${s.rest ? ' rest' : ''}${s.yard ? ' yard' : ''}"><i class="sf-n">${s.yard ? '💪' : i + 1}</i><img class="sf-pic" alt="" src="${IMG}tr/${s.tr}.png"><div class="sf-mid"><b>${esc(s.cls)} ${esc(s.nm)}</b>${trtBox(s.trait)}<span>${s.w || 0}승 ${s.l || 0}패${s.rest ? ' · <em>쉬는 중</em>' : s.yard ? ' · <em class="y">훈련장 코치</em>' : ''}</span>${teamIc(s.team)}<small>월급 ${s.wage}G · ${s.rest ? '밀린 월급을 주면 다시 일해요' : `다음 월급 ${Math.max(0, Math.ceil((s.pay - now) / K.DAY))}일 뒤`}</small></div>
+    <div class="sf-list">${g.sf.map((s, i) => `<div class="sf-card${s.rest ? ' rest' : ''}${s.yard ? ' yard' : ''}"><i class="sf-n">${s.yard ? '💪' : i + 1}</i><img class="sf-pic" alt="" src="${K.trSrc(s.tr)}"><div class="sf-mid"><b>${esc(s.cls)} ${esc(s.nm)}</b>${trtBox(s.trait)}<span>${s.w || 0}승 ${s.l || 0}패${s.rest ? ' · <em>쉬는 중</em>' : s.yard ? ' · <em class="y">훈련장 코치</em>' : ''}</span>${teamIc(s.team)}<small>월급 ${s.wage}G · ${s.rest ? '밀린 월급을 주면 다시 일해요' : `다음 월급 ${Math.max(0, Math.ceil((s.pay - now) / K.DAY))}일 뒤`}</small></div>
       <div class="sf-btn">${i ? `<button data-up="${i}" aria-label="앞으로">▲</button>` : ''}<button data-yd="${i}" ${!s.yard && yN >= YARD_SF ? 'disabled' : ''}>${s.yard ? '체육관으로' : '훈련장 배치'}</button><button data-fire="${i}">해고</button></div></div>`).join('') || '<p class="sf-none">아직 고용한 트레이너가 없어요. 지원서 탭에서 면접을 볼 수 있어요.</p>'}</div>`;
   sh.innerHTML = `<h3>트레이너</h3>${tabs}${sfT === 'cand' ? cand : list}`;
   sh.onclick = e => {
@@ -334,7 +334,7 @@ function drawStaff() {
 function interview() {
   const g = st(), c = g.cand; if (!c) return;
   const full = g.sf.length >= K.staffMax(), lv = Math.round(K.teamLv(c.team));
-  pop(`<h4>면접</h4><div class="iv-head"><img alt="" src="${IMG}tr/${c.tr}.png"><div><b>${esc(c.cls)} ${esc(c.nm)}</b>${trtBox(c.trait, true)}</div></div>
+  pop(`<h4>면접</h4><div class="iv-head"><img alt="" src="${K.trSrc(c.tr)}"><div><b>${esc(c.cls)} ${esc(c.nm)}</b>${trtBox(c.trait, true)}</div></div>
     <p class="iv-say">“안녕하세요! ${esc(LINES[c.trait])}”</p>
     <dl class="gy-info iv-dl"><dt>포켓몬</dt><dd>${teamIc(c.team)}</dd><i></i><dt>평균 레벨</dt><dd><span>Lv.${lv}</span></dd><i></i><dt>월급</dt><dd><span>7일에 ${c.wage}G</span></dd><i></i></dl>
     ${full ? `<p class="gy-msg iv-warn">트레이너 자리가 꽉 찼어요 (${g.sf.length}/${K.staffMax()}). 체육관 등급을 올리거나 한 명을 해고해야 해요.</p>` : `<p class="gy-msg">고용하면 첫 주 월급 ${c.wage}G를 바로 줘요.</p>`}
