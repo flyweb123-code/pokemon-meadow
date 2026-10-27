@@ -439,3 +439,20 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 #gym .gy-sheet .coin,#gym .gy-pop .coin{position:static;display:inline-block;width:12px;height:12px;margin:0 3px 0 0;vertical-align:-1px}
 
 #gymLoad.inst{transition:none}
+
+/* 배틀 들어가는 화면 전환 (battle.js encounter) */
+.bt-enc{position:absolute;inset:0;z-index:40;overflow:hidden;pointer-events:auto;transition:opacity .45s}
+.bt-enc.flash{background:#fff}.bt-enc.out{opacity:0}
+.bt-enc .st{position:absolute;left:0;width:100%;height:calc(100% / 12 + 1px);background:#08090d;animation:encL .42s cubic-bezier(.3,.6,.4,1) both}
+.bt-enc .st.r{animation-name:encR}
+@keyframes encL{from{transform:translateX(-101%)}}@keyframes encR{from{transform:translateX(101%)}}
+.bt-enc .bk{position:absolute;inset:0;background:#08090d;animation:encBk .25s both}
+@keyframes encBk{from{opacity:0}}
+.bt-enc .band{position:absolute;left:0;right:0;top:50%;height:150px;margin-top:-75px;overflow:hidden;
+  background:repeating-linear-gradient(-60deg,#2a3c8a 0 10px,#24347a 10px 20px);box-shadow:0 -4px 0 #f8d030,0 4px 0 #f8d030;animation:encBand .35s .15s cubic-bezier(.2,.8,.3,1) both}
+@keyframes encBand{from{transform:scaleY(0)}}
+.bt-enc .mug{position:absolute;right:8%;bottom:0;width:192px;height:192px;margin-bottom:-42px;background:0 0/192px 192px no-repeat;image-rendering:pixelated;animation:encMug .5s .4s cubic-bezier(.2,.8,.3,1) both}
+@keyframes encMug{from{transform:translateX(120vw)}}
+.bt-enc .band b{position:absolute;left:7%;top:50%;transform:translateY(-50%);color:#fff;font-size:22px;line-height:1.25;text-shadow:2px 2px 0 #10183a;animation:encNm .45s .65s cubic-bezier(.2,.8,.3,1) both}
+.bt-enc .band b small{display:block;font-size:13px;color:#f8d030}
+@keyframes encNm{from{transform:translate(-120vw,-50%)}}
