@@ -405,6 +405,24 @@ function aiChoice(btl, diff) {
   return 'move ' + (sc[0].o.i + 1);
 }
 
+// ---------- 배틀 들어가는 화면 전환 (DP·Pt 본가처럼) ----------
+// 화면이 두 번 하얗게 번쩍 → 일반 트레이너는 가로 띠가 양옆에서 번갈아 밀려 들어와 화면을 덮고,
+// 관장·사천왕·챔피언·라이벌(music 이 gymBattle·champ·rival)은 어두운 화면에 트레이너 얼굴 띠가 미끄러져 들어온다.
+// 끝나면 배틀 화면을 그 밑에 띄우고 돌려준 함수로 전환 화면을 걷는다.
+async function encounter(opts) {
+  const host = el.parentElement || document.body, w = document.createElement('div'), big = ['gymBattle', 'champ', 'rival'].includes(opts.music);
+  w.className = 'bt-enc'; host.append(w);
+  for (let i = 0; i < 2; i++) { w.classList.add('flash'); await wait(90); w.classList.remove('flash'); await wait(120); }
+  if (!big) {
+    w.insertAdjacentHTML('beforeend', Array.from({ length: 12 }, (_, i) => `<i class="st ${i % 2 ? 'r' : 'l'}" style="top:${(i * 100 / 12).toFixed(3)}%;animation-delay:${i * 28}ms"></i>`).join(''));
+    await wait(760);
+  } else {
+    w.insertAdjacentHTML('beforeend', `<i class="bk"></i><div class="band"><i class="mug" style="background-image:url(${IMG}tr/${opts.foe.tr}.png)"></i><b><small>${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`);
+    await wait(1900);
+  }
+  return () => { w.classList.add('out'); setTimeout(() => w.remove(), 520); };
+}
+
 // ---------- 배틀 진행 ----------
 // opts: { my: [P...], foe: { tr, cls, nm, f, team: [entry...] }, diff, practice, bg, music: 'train'|'gymBattle'|'rival'|'champ' }
 const M = (f, ...a) => { try { window.GymBGM?.[f](...a); } catch (e) {} };   // 체육관 BGM (gym/bgm.js)
@@ -417,6 +435,8 @@ async function run(opts) {
   btl.setPlayer('p2', { name: opts.foe.nm, team: foeT.map(psSet) });
   B = { btl, my, foe: foeT, act: { p: null, e: null }, li: 0, practice: !!opts.practice, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), xr: {} };
   const meF = GA.trOf().sex === 'f';
+  const music = opts.music || 'train'; M('play', music, { fade: .2 }); M('prep', music === 'train' ? 'winTrain' : 'winGym');
+  const encDone = await encounter(opts);
   el.classList.remove('off'); el.hidden = false; el.className = 'bt intro';
   $b('.bt-bg').style.backgroundImage = `url(${IMG}bt/bg_${opts.bg || 'in1'}.png)`;
   $b('.bt-tr.e').style.backgroundImage = `url(${IMG}tr/${opts.foe.tr}.png)`;
@@ -424,8 +444,7 @@ async function run(opts) {
   ['e', 'p'].forEach(s => { $b(`.bt-hb.${s}`).classList.remove('on'); monEl(s).className = `bt-mon ${s}`; setSt(s, ''); });
   $b('.bt-msg .t').textContent = ''; idlePanel();
   // 등장: 화면이 번쩍이며 가로줄로 열리고, 발판·트레이너가 양옆에서 미끄러져 들어온다
-  const music = opts.music || 'train'; M('play', music, { fade: .2 }); M('prep', music === 'train' ? 'winTrain' : 'winGym');
-  M('sePrep', SE_BASE.map(n => 'DP_' + n)); await wait(40); el.classList.add('open'); se('SLIDEIN');
+  M('sePrep', SE_BASE.map(n => 'DP_' + n)); await wait(40); el.classList.add('open'); encDone(); se('SLIDEIN');
   await wait(900); el.classList.remove('intro');
   const foeNm = B.foeNm = `${opts.foe.cls} ${opts.foe.nm}`;
   await msg(`${iga(foeNm)} 승부를 걸어왔다!`, 900);
