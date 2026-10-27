@@ -195,7 +195,7 @@ function fit() {
   el.classList.toggle('mob', mob);
   if (mob) { const k = W / 256, [st, sb] = safeIn(), mh = 52 * k, tall = H - sb - st - (TOP_H + 52 + 192) * k >= 0, top = st + (tall ? TOP_H : 192) * k, bt = top + mh, bh = H - sb - bt;
     el.classList.toggle('msgmid', tall); (tall ? $b('.bt-mid') : $b('.bt-top')).appendChild(msgEl);
-    const ky = tall ? bh / 192 : k; [['--k', k], ['--ky', ky], ['--ty', k / ky], ['--st', st + 'px'], ['--mt', top + 'px'], ['--mh', mh + 'px'], ['--bt', (tall ? bt : H - sb - 192 * k) + 'px']].forEach(([n, v]) => el.style.setProperty(n, v)); return; }
+    [['--k', k], ['--bh', (tall ? bh / k : 192) + 'px'], ['--st', st + 'px'], ['--mt', top + 'px'], ['--mh', mh + 'px'], ['--bt', (tall ? bt : H - sb - 192 * k) + 'px']].forEach(([n, v]) => el.style.setProperty(n, v)); return; }
   el.classList.remove('msgmid'); $b('.bt-top').appendChild(msgEl);
   const k = Math.max(1, Math.floor(Math.min(W / 256, (H - 20) / 394) * 4) / 4); el.style.setProperty('--k', k);
 }
@@ -347,6 +347,7 @@ function effOf(type) {
   if (!dex.getImmunity(T.name, foe)) return 0;
   return 2 ** dex.getEffectiveness(T.name, foe);
 }
+const TY_C = ['', '#9fa19f', '#ff8000', '#81b9ef', '#9141cb', '#915121', '#afa981', '#91a119', '#704170', '#60a1b8', '#e62829', '#2980ef', '#3fa129', '#fac000', '#ef4179', '#3dcef3', '#5060e1', '#624d4e', '#ef70ef'];
 const TY_EN = ['', 'Normal', 'Fighting', 'Flying', 'Poison', 'Ground', 'Rock', 'Bug', 'Ghost', 'Steel', 'Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Ice', 'Dragon', 'Dark', 'Fairy'];
 const CAT_KO = ['물리', '특수', '변화'];
 // 본가(플래티넘) 타입 꼬리표 + 물리·특수·변화 아이콘. 꼬리표 글자는 한국어로 위에 쓴다
@@ -360,7 +361,7 @@ function movePanel(req) {
   return new Promise(res => {
     const mv = req.active[0].moves;
     const p = panel(`<div class="bp-moves">${[0, 1, 2, 3].map(i => { const m = mv[i]; if (!m) return `<i class="mvb empty"></i>`; const d = mvOf(m.id) || ['', m.move, 1, 0]; const ty = d[2] || 1;
-      return `<div class="mvw"><button class="mvb" data-i="${i}" style="background-image:url(${IMG}bt/mv_${ty}.png)" ${m.disabled || m.pp <= 0 ? 'disabled' : ''}><b>${esc(d[1])}</b><span class="pw">위력 <em>${d[4] || '—'}</em> 명중 <em>${d[5] && d[5] !== true ? d[5] : '—'}</em></span>${effTag(d)}${tyTag(ty, d[3])}<span class="pp">PP <em>${m.pp}/${m.maxpp}</em></span></button><button class="mvi" data-info="${i}" aria-label="기술 설명">?</button></div>`; }).join('')}
+      return `<div class="mvw"><button class="mvb" data-i="${i}" style="background-image:url(${IMG}bt/mv_${ty}.png);--tc:${TY_C[ty]}" ${m.disabled || m.pp <= 0 ? 'disabled' : ''}><b>${esc(d[1])}</b><span class="pw">위력 <em>${d[4] || '—'}</em> 명중 <em>${d[5] && d[5] !== true ? d[5] : '—'}</em></span>${effTag(d)}${tyTag(ty, d[3])}<span class="pp">PP <em>${m.pp}/${m.maxpp}</em></span></button><button class="mvi" data-info="${i}" aria-label="기술 설명">?</button></div>`; }).join('')}
       <button class="bb cancel" data-x><span>취소</span></button></div>`);
     p.onclick = e => {
       const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe();
