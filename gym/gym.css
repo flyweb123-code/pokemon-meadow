@@ -365,26 +365,35 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .mp-mv[data-a]:active{transform:translateY(1px)}
 
 /* ---------- 4단계: 훈련장 ---------- */
-.tr-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.tr-cell{display:flex;flex-direction:column;align-items:stretch;gap:3px;padding:6px;text-align:left;font-size:12px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.12)}
-.tr-cell b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tr-cell b em{font-style:normal;color:var(--dim);font-weight:400;font-size:12px}.tr-cell small{font-size:10.5px;color:var(--dim)}
-.tr-cell.empty{min-height:150px;align-items:center;justify-content:center;border:3px dashed var(--inner);box-shadow:none;color:var(--dim)}.tr-cell.empty span{font-size:28px}
-.tr-yd{position:relative;height:96px;overflow:hidden;image-rendering:pixelated;background:linear-gradient(#a8d8f0 0 46%,#78c058 46% 100%);box-shadow:inset 0 0 0 2px rgba(0,0,0,.15)}
-.tr-cell.water .tr-yd{background:linear-gradient(#a8d8f0 0 42%,#4890e8 42% 100%)}.tr-cell.fly .tr-yd{background:linear-gradient(#78b8f0,#d0ecff)}
-.tr-cell.sandbag .tr-yd{background:linear-gradient(#e8d8b0 0 46%,#c8a870 46% 100%)}
-.tr-eq{position:absolute;right:10px;bottom:6px;width:64px;height:64px;image-rendering:pixelated;animation:trEq 1.6s var(--d,0s) infinite}
-.tr-cell.fly .tr-eq{bottom:2px}.tr-cell.water .tr-eq{bottom:-6px;right:4px}
-.tr-yd .mi{position:absolute;left:4px;bottom:4px;width:auto;height:auto;max-height:80px;image-rendering:pixelated;animation:trHit 1.6s var(--d,0s) infinite}
-.tr-yd .mi.pn{width:80px;height:80px;object-fit:none;object-position:0 0;max-height:none}
-.tr-cell.fly .mi{bottom:22px;animation-name:trFly}.tr-cell.water .mi{bottom:8px}
-.tr-hit{position:absolute;right:46px;top:16px;font-style:normal;font-weight:700;font-size:16px;color:#fff;text-shadow:0 0 2px #000,1px 1px 0 #000;opacity:0;animation:trBang 1.6s var(--d,0s) infinite}
-.tr-cell.done .mi,.tr-cell.done .tr-eq,.tr-cell.done .tr-hit{animation:none}.tr-cell.done .tr-yd{filter:saturate(.4) brightness(.9)}
-@keyframes trHit{0%,55%,100%{translate:0 0}62%{translate:22px -6px}70%{translate:30px 0}82%{translate:0 0}}
-@keyframes trFly{0%,100%{translate:0 0}25%{translate:6px -8px}50%{translate:26px -2px}60%{translate:30px 2px}75%{translate:10px -6px}}
-@keyframes trEq{0%,66%,100%{rotate:0deg}72%{rotate:8deg}80%{rotate:-5deg}88%{rotate:2deg}}
-@keyframes trBang{0%,64%{opacity:0;scale:.6}70%{opacity:1;scale:1.2}86%{opacity:0;scale:1}}
 .tr-xp{position:relative;height:5px;background:var(--hp-track);box-shadow:0 0 0 1px var(--frame)}.tr-xp i{position:absolute;inset:0 auto 0 0;background:#58a8f0}
 .tr-cap{margin:10px 0 0;font-size:12px;color:var(--dim)}
+/* 훈련장 마당 (필드처럼 돌아다니는 포켓몬) */
+.ty{position:relative;height:250px;overflow:hidden;box-shadow:inset 0 0 0 3px rgba(0,0,0,.18);touch-action:manipulation}
+.ty-bg{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
+.ty-l{position:absolute;inset:0}
+.ty-empty{position:absolute;left:0;right:0;top:46%;margin:0;text-align:center;font-size:13px;color:#fff;text-shadow:1px 1px 0 #000}
+.ty-eq{position:absolute;width:64px;height:64px;margin:-64px 0 0 -32px;background-size:100% 100%;image-rendering:pixelated;transform-origin:50% 100%;pointer-events:none}
+.ty-eq.eq-water{margin-top:-46px}
+.ty-eq.wob{animation:tyWob .45s}.ty-eq.eq-sandbag.wob{transform-origin:50% 0;animation-name:tySwing;animation-duration:.7s}
+@keyframes tyWob{0%,100%{rotate:0deg}25%{rotate:9deg}55%{rotate:-6deg}80%{rotate:2deg}}
+@keyframes tySwing{0%,100%{rotate:0deg}20%{rotate:16deg}50%{rotate:-10deg}75%{rotate:4deg}}
+.ty-m{position:absolute;left:0;top:0;width:0;height:0;cursor:pointer}
+.ty-sh{position:absolute;left:-14px;top:-4px;width:28px;height:8px;border-radius:50%;background:rgba(0,0,0,.22);pointer-events:none}
+.ty-fl{position:absolute;left:0;top:0}
+.ty-sp{position:absolute;display:block;background-repeat:no-repeat;image-rendering:pixelated}
+.ty-sp.one{left:-24px;top:-48px;width:48px;height:48px;background-size:contain;background-position:50% 100%}
+.ty-m.bob .ty-sp.one{animation:tyBob .5s infinite}
+@keyframes tyBob{50%{translate:0 -3px}}
+.ty-m.swim .ty-fl{clip-path:inset(-200px -200px 7px -200px)}.ty-m.swim .ty-sh{background:rgba(255,255,255,.45);height:6px;top:-6px}
+.ty-emo{position:absolute;left:-20px;top:-62px;width:40px;text-align:center;font-style:normal;font-weight:700;font-size:13px;color:#fff;text-shadow:0 0 2px #000,1px 1px 0 #000;pointer-events:none;animation:tyEmo 1.3s forwards;z-index:2}
+.ty-emo.xp{color:#9fe0ff;font-size:11px}.ty-emo.mu{color:#ffd0e8}.ty-emo.hit{color:#ffe070;font-size:16px}
+@keyframes tyEmo{0%{opacity:0;translate:0 6px}15%{opacity:1;translate:0 0}75%{opacity:1}100%{opacity:0;translate:0 -14px}}
+.ty-chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}
+.ty-chip{display:grid;grid-template-columns:34px 1fr;grid-template-rows:auto auto auto;column-gap:6px;row-gap:2px;align-items:center;padding:5px 6px;text-align:left;font-size:12px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.12)}
+.ty-chip img{grid-row:1/4;width:34px;height:34px;image-rendering:pixelated;object-fit:contain}
+.ty-chip b{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ty-chip b em{font-style:normal;color:var(--dim);font-weight:400}
+.ty-chip small{font-size:10.5px;color:var(--dim)}.ty-chip.done{opacity:.75}
+.ty-chip.add{display:flex;flex-direction:column;justify-content:center;align-items:center;border:3px dashed var(--inner);box-shadow:none;color:var(--dim);min-height:52px}.ty-chip.add span{font-size:20px;line-height:1}
 .lu-pick button.dim{opacity:.6}
 
 /* ---------- 6단계: 트레이너 ---------- */
