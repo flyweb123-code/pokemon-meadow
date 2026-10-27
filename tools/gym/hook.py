@@ -31,7 +31,7 @@ HTML_SW = '''<div class="op-row"><span>체육관 모드 보이기 (이 기기만
 JS = MARK + r'''
 // 체육관 모드: 운영자 '체육관 모드 보이기'(이 기기만)를 켜면 필드 맵 편집 버튼 옆에 체육관 버튼. 체육관 화면·규칙은 gym/gym.js (들어갈 때 처음 불러온다)
 { const de = document.documentElement, on = () => { try { return localStorage.getItem('pk-gym') === '1'; } catch (e) { return false; } };
-  const paintG = () => { de.classList.toggle('gym-on', on()); $('#gymSw').setAttribute('aria-checked', on()); menuDots(); };
+  const paintG = () => { de.classList.toggle('gym-on', on()); $('#gymSw').setAttribute('aria-checked', on()); menuDots(); try { window.gymBdgRow?.(); } catch (e) {} };
   $('#gymSw').onclick = () => { sfx('tap'); try { on() ? localStorage.removeItem('pk-gym') : localStorage.setItem('pk-gym', '1'); } catch (e) {} paintG(); };
   try { paintG(); } catch (e) {} setInterval(() => { if (de.classList.contains('gym-on') && !document.hidden) menuDots(); }, 30e3);
   const L = $('#gymLoad'), dots = L.querySelector('.gl-dots'); let dT = 0;
@@ -160,7 +160,7 @@ CSS5 = MARK5 + r"""#pfGymBdg[hidden]{display:none}html:not(.op) #pfGymBdg,html:n
 HTML5 = """<section class="set-sec pf-sec" id="pfGymBdg" hidden><h4>체육관 자격 배지<small></small></h4><div class="gb-grid"></div></section>   <!-- 체육관 모드 자격 배지 (gym-hook5) -->
       """
 JS5 = MARK5 + r"""
-window.gymBdgRow = () => { const sec = $('#pfGymBdg'), g = S.gym; if (!sec) return; sec.hidden = !(g && g.d); if (sec.hidden) return; const b = g.bdg || {}, n = Object.keys(b).length;
+window.gymBdgRow = () => { const sec = $('#pfGymBdg'), g = S.gym; if (!sec) return; const de = document.documentElement; sec.hidden = !(g && g.d && de.classList.contains('op') && de.classList.contains('gym-on')); if (sec.hidden) return;   // 운영자 '체육관 모드 보이기'를 켠 기기만 const b = g.bdg || {}, n = Object.keys(b).length;
   sec.querySelector('small').textContent = `${n}/18`; sec.querySelector('.gb-grid').innerHTML = TYPE_KO.map((t, i) => i ? `<img alt="${t}" title="${t} 자격 배지${b[i] ? '' : ' (아직)'}" src="gym/img/badge/${i}.png" class="${b[i] ? 'on' : ''}">` : '').join(''); };
 """
 
@@ -175,4 +175,18 @@ def patch5(path):
     s = s[:k] + JS5.lstrip('\n') + s[k:]
     open(path, 'w', encoding='utf-8').write(s); print(path, 'ok5')
 
-for p in sys.argv[1:]: patch(p); patch2(p); patch3(p); patch4(p); patch5(p)
+MARK6 = '/*gym-hook6*/'
+# 6단계 훅 (v10.30): 훈련장 필드에서 필드와 같은 포켓몬 그림(던전 아틀라스: a = {Idle, Walk, WalkUp, Sleep, Attack, Hurt, Hop, Eat} 각 [y, w, h, 칸 수, cx, cy, 칸별 1/60초, 때리는 칸])
+JS6 = MARK6 + r"""
+GA.pmd = (sp, sex) => ensureSprite(sp).then(() => { const k = fKey(sp, sex); if (!isPmd(k)) return { img: SPRITES[k] }; return padAtlas(k).then(() => ({ P: SPRITES[k], s: scaleOf(k), wh: atlasSize(k) })); });
+"""
+
+def patch6(path):
+    s = open(path, encoding='utf-8').read()
+    if MARK6 in s:
+        print(path, 'already6'); return
+    k = s.index('// 운영자 모드·테스트 버튼 (이 기기에만 저장)')
+    s = s[:k] + JS6.lstrip('\n') + s[k:]
+    open(path, 'w', encoding='utf-8').write(s); print(path, 'ok6')
+
+for p in sys.argv[1:]: patch(p); patch2(p); patch3(p); patch4(p); patch5(p); patch6(p)

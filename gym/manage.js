@@ -57,23 +57,135 @@ function tickTrain(now) {
     return true;
   });
 }
+// 훈련장 = 필드처럼 포켓몬이 돌아다니며 기구를 치고, 서로 대련하고, 쉬는 마당 (경완 피드백 2026-10-27 '꾸미기 모드 필드처럼').
+// 본게임 PMD 걸음 그림(GA.pmd)을 쓰고, 그림이 없는 종은 한 장 그림. 경험치 계산은 tickTrain 그대로(화면은 보여 주기만).
+const leftOf = e => e.d === K.dayStart(Date.now()) ? Math.max(0, 8 - e.h) : 8;
+let Y = null;   // 마당: { el, W, H, eq: {k: {x, y, el}}, mons: [], raf, last, pos: {id: [x, y]} }
+const YH = 250;
+const inPond = (x, y, m = 0) => { const p = Y.pond; return ((x - p.x) / (p.rx + m)) ** 2 + ((y - p.y) / (p.ry + m)) ** 2 < 1; };
+function yardSpot(swim) {
+  for (let i = 0; i < 40; i++) { const x = 20 + Math.random() * (Y.W - 40), y = YH * .34 + Math.random() * (YH * .62);
+    if (swim ? inPond(x, y, -14) : !inPond(x, y, 14)) return [x, y]; }
+  return [Y.W * .3, YH * .6];
+}
+function yardBg(c, W) {
+  const w = c.width = Math.ceil(W / 2), h = c.height = YH / 2, x = c.getContext('2d'), P = Y.pond;
+  const hs = (i, j) => { const v = Math.sin(i * 127.1 + j * 311.7) * 43758.5453; return v - Math.floor(v); };
+  x.fillStyle = '#78c058'; x.fillRect(0, 0, w, h);
+  for (let j = 0; j < h; j += 3) for (let i = 0; i < w; i += 3) { const v = hs(i, j); if (v < .12) { x.fillStyle = '#60a848'; x.fillRect(i, j, 1, 2); x.fillRect(i + 2, j, 1, 2); } else if (v > .985) { x.fillStyle = v > .993 ? '#f8f8f8' : '#f8d030'; x.fillRect(i, j, 2, 2); } }
+  // 가운데 흙 마당
+  x.fillStyle = '#d8b878'; x.beginPath(); x.ellipse(w * .42, h * .6, w * .36, h * .26, 0, 0, 7); x.fill();
+  x.fillStyle = '#c8a060'; for (let j = 0; j < h; j += 4) for (let i = 0; i < w; i += 5) if (hs(i + 9, j) < .2 && ((i - w * .42) / (w * .34)) ** 2 + ((j - h * .6) / (h * .24)) ** 2 < 1) x.fillRect(i, j, 2, 1);
+  // 뒤쪽 나무 울타리
+  x.fillStyle = '#58a040'; x.fillRect(0, 0, w, h * .26);
+  for (let i = 0; i < w; i += 14) { x.fillStyle = '#4a8a38'; x.beginPath(); x.arc(i + 7, h * .1, 9, 0, 7); x.fill(); }
+  x.fillStyle = '#a87838'; x.fillRect(0, h * .2, w, 3); x.fillRect(0, h * .27, w, 3);
+  for (let i = 3; i < w; i += 12) { x.fillStyle = '#a87838'; x.fillRect(i, h * .16, 4, h * .16); x.fillStyle = '#704818'; x.fillRect(i + 3, h * .16, 1, h * .16); x.fillRect(i, h * .32, 4, 1); }
+  // 연못
+  x.fillStyle = '#3870c8'; x.beginPath(); x.ellipse(P.x / 2, P.y / 2 + 1, P.rx / 2 + 2, P.ry / 2 + 2, 0, 0, 7); x.fill();
+  x.fillStyle = '#4890e8'; x.beginPath(); x.ellipse(P.x / 2, P.y / 2, P.rx / 2, P.ry / 2, 0, 0, 7); x.fill();
+  x.fillStyle = '#a8d0f8'; for (let k = 0; k < 4; k++) x.fillRect(P.x / 2 - P.rx / 3 + k * P.rx / 5, P.y / 2 - P.ry / 5 + (k % 2) * 6, 6, 1);
+}
 function drawTrain() {
   const g = st(); g.tr = g.tr || []; tickTrain(Date.now()); K.save();
-  const n = trMax(), now = Date.now();
-  const cells = Array.from({ length: n }, (_, i) => {
-    const e = g.tr[i], P = e && boxOf(e.id);
-    if (!P) return `<button class="tr-cell empty" data-add="1"><span>+</span><small>포켓몬 보내기</small></button>`;
-    const m = GB().gm(P), gr = GB().growth(P.sp), a = GB().xpAt(gr, m.lv), b = GB().xpAt(gr, m.lv + 1), k = stOf(P, i), left = e.d === K.dayStart(now) ? Math.max(0, 8 - e.h) : 8;
-    return `<button class="tr-cell ${k}${left <= 0 ? ' done' : ''}" data-p="${P.id}" style="--d:${(i * .37) % 1.2}s"><span class="tr-yd"><img class="tr-eq" alt="" src="${IMG}deco/tr_${k}.png">${monImg(P.sp, { s: P.shiny, f: P.sex === 'f' })}<i class="tr-hit">!</i></span>
-      <b>${esc(nmOf(P))} <em>Lv.${m.lv}</em></b><i class="tr-xp"><i style="width:${m.lv >= GB().LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><small>${left > 0 ? `${TR_ST[k]} · 오늘 ${Math.ceil(left)}시간 남음` : '오늘 훈련 끝 (내일 다시)'}</small></button>`;
-  }).join('');
-  sh.innerHTML = `<h3>훈련장</h3><p class="gy-lead">포켓몬을 보내 두면 앱을 꺼 둬도 경험치가 쌓여요(하루 8시간까지). 가끔 특별한 기술을 익혀요. 훈련장에 보낸 포켓몬은 필드에서 빠져요.</p>
-    <div class="tr-grid">${cells}</div><p class="tr-cap">훈련장 ${g.tr.length}/${n}칸${n < 6 ? ' · 상점의 <b>체육관 넓히기</b>에서 칸을 늘릴 수 있어요' : ''}</p>`;
-  sh.onclick = e => {
-    const b = e.target.closest('button'); if (!b) return; sfx('tap');
-    if (b.dataset.add) return pickTrain();
-    if (b.dataset.p) return trPop(+b.dataset.p || b.dataset.p);
+  const n = trMax();
+  if (Y) { Y.mons.forEach(m => { Y.pos[m.id] = [m.x, m.y]; }); cancelAnimationFrame(Y.raf); }
+  sh.innerHTML = `<h3>훈련장</h3><p class="gy-lead">보낸 포켓몬이 기구를 치고 서로 대련하며 경험치를 쌓아요(하루 8시간, 앱을 꺼 둬도). 가끔 특별한 기술을 익혀요. 필드에 있던 포켓몬은 필드에서 빠져요.</p>
+    <div class="ty"><canvas class="ty-bg"></canvas><div class="ty-l"></div>${g.tr.length ? '' : '<p class="ty-empty">아직 훈련 중인 포켓몬이 없어요</p>'}</div>
+    <div class="ty-chips"></div><p class="tr-cap">훈련장 ${g.tr.length}/${n}마리${n < 6 ? ' · 상점의 <b>체육관 넓히기</b>에서 늘릴 수 있어요' : ''}</p>`;
+  const el = sh.querySelector('.ty'), W = Math.max(280, el.clientWidth || 340);
+  Y = { el, W, H: YH, L: el.querySelector('.ty-l'), eq: {}, mons: [], pos: Y?.pos || {}, last: 0, pond: { x: W * .8, y: YH * .8, rx: W * .17, ry: YH * .13 } };
+  yardBg(el.querySelector('.ty-bg'), W);
+  const EQ = { dummy: [.18, .5], sandbag: [.47, .42], fly: [.8, .47], water: [.79, .83] };
+  for (const k in EQ) { const [fx, fy] = EQ[k], q = document.createElement('i'); q.className = 'ty-eq eq-' + k; q.style.cssText = `left:${fx * W}px;top:${fy * YH}px;z-index:${Math.round(fy * YH)};background-image:url(${IMG}deco/tr_${k}.png)`; Y.L.append(q); Y.eq[k] = { x: fx * W, y: fy * YH, el: q }; }
+  g.tr.forEach((e, i) => { const P = boxOf(e.id); if (P) yardMon(P, e, i); });
+  yardChips();
+  sh.onclick = ev => {
+    const t = ev.target.closest('[data-p],[data-add]'); if (!t) return; sfx('tap');
+    if (t.dataset.add) return pickTrain();
+    trPop(+t.dataset.p || t.dataset.p);
   };
+  Y.raf = requestAnimationFrame(yardLoop);
+}
+function yardChips() {
+  const g = st(), box = sh?.querySelector('.ty-chips'); if (!box) return;
+  box.innerHTML = g.tr.map(e => { const P = boxOf(e.id); if (!P) return ''; const m = GB().gm(P), gr = GB().growth(P.sp), a = GB().xpAt(gr, m.lv), b = GB().xpAt(gr, m.lv + 1), left = leftOf(e);
+    return `<button class="ty-chip${left <= 0 ? ' done' : ''}" data-p="${P.id}">${GB().thumb(P)}<b>${esc(nmOf(P))} <em>Lv.${m.lv}</em></b><i class="tr-xp"><i style="width:${m.lv >= GB().LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><small>${left > 0 ? `오늘 ${Math.ceil(left)}시간 남음` : '오늘 훈련 끝 · 쿨쿨'}</small></button>`; }).join('')
+    + (g.tr.length < trMax() ? '<button class="ty-chip add" data-add="1"><span>+</span><small>포켓몬 보내기</small></button>' : '');
+  GB()?.fillTh(box);
+}
+function yardMon(P, e, i) {
+  const t = SPECIES[P.sp]?.t || [], o = document.createElement('div');
+  o.className = 'ty-m'; o.dataset.p = P.id; o.innerHTML = '<i class="ty-sh"></i><div class="ty-fl"><i class="ty-sp"></i></div>';
+  const [x, y] = Y.pos[P.id] || yardSpot(); Y.L.append(o);
+  const m = { id: P.id, P, e, el: o, fl: o.querySelector('.ty-fl'), sp: o.querySelector('.ty-sp'), x, y, face: Math.random() < .5 ? 1 : -1, st: 'rest', until: performance.now() / 1000 + Math.random() * 2, at: 0, home: stOf(P, i), swimmer: t.includes(11), flyer: t.includes(3), D: null };
+  Y.mons.push(m); place(m);
+  GA.pmd?.(P.sp, P.sex).then(D => { if (!Y.mons.includes(m)) return; m.D = D;
+    if (D.P) { const [w, h] = D.wh, s = D.s * .78; m.s = s; Object.assign(m.sp.style, { backgroundImage: `url("${D.P.i}")`, backgroundSize: `${w * s}px ${h * s}px` }); if (P.shiny) m.sp.style.filter = `hue-rotate(${GA.shinyHue(P.sp)}deg)`; m.fk = ''; }
+    else { m.sp.classList.add('one'); m.sp.style.backgroundImage = `url("${D.img}")`; }
+  }).catch(() => {});
+}
+const place = m => { m.el.style.transform = `translate(${m.x.toFixed(1)}px,${m.y.toFixed(1)}px)`; m.el.style.zIndex = Math.round(m.y) + 2; m.fl.style.transform = `scaleX(${m.face})`; };
+function yEmo(m, ch, cls = '') { const q = document.createElement('i'); q.className = 'ty-emo ' + cls; q.textContent = ch; m.el.append(q); setTimeout(() => q.remove(), 1300); }
+function yHit(m, k) {
+  const q = Y.eq[k]; if (q) { q.el.classList.remove('wob'); void q.el.offsetWidth; q.el.classList.add('wob'); }
+  if (Math.random() < .35) yEmo(m, '+EXP', 'xp'); else if (Math.random() < .5) yEmo(m, '!', 'hit');
+}
+// 다음 할 일: 기구 훈련 · 대련 · 쉬기 · 돌아다니기 (오늘 8시간 다 쓴 포켓몬은 잠)
+function yNext(m, now) {
+  if (leftOf(m.e) <= 0) { m.st = 'sleep'; m.until = now + 99; m.one = null; return; }
+  const r = Math.random(), free = Y.mons.filter(o => o !== m && (o.st === 'rest' || o.st === 'wander') && leftOf(o.e) > 0);
+  if (r < .5) { const k = r < .35 ? m.home : K.pick(m.swimmer ? ['water', 'dummy', 'sandbag'] : m.flyer ? ['fly', 'dummy', 'sandbag'] : ['dummy', 'sandbag']);
+    const q = Y.eq[k], side = k === 'water' ? -1 : Math.random() < .5 ? -1 : 1, busy = Y.mons.some(o => o !== m && o.k === k && o.side === side && (o.st === 'go' || o.st === 'train'));
+    if (!busy) { m.st = 'go'; m.k = k; m.side = side; m.tx = q.x + side * (k === 'water' ? 44 : 34); m.ty = q.y + (k === 'water' ? -2 : 3); m.then = 'train'; return; } }
+  if (r < .72 && free.length) { const o = K.pick(free), [cx, cy] = yardSpot();
+    m.st = o.st = 'go'; m.then = o.then = 'spw'; m.k = o.k = null; m.mate = o; o.mate = m; m.tx = cx - 26; o.tx = cx + 26; m.ty = o.ty = cy; m.lead = true; o.lead = false; return; }
+  if (r < .86) { m.st = 'rest'; m.one = null; m.nap = Math.random() < .3; m.until = now + 3 + Math.random() * 4; return; }
+  const [x, y] = yardSpot(m.swimmer && Math.random() < .5); m.st = 'go'; m.tx = x; m.ty = y; m.then = 'rest'; m.k = null;
+}
+function yardLoop(ts) {
+  if (!Y || !Y.el.isConnected || sh.hidden || cur !== 'train') { Y && (Y.raf = 0); return; }
+  const now = ts / 1000, dt = Math.min(.1, Y.last ? now - Y.last : 0); Y.last = now;
+  if (now - (Y.ck ?? now) > 30) { tickTrain(Date.now()); K.save(); yardChips(); Y.ck = now; } else Y.ck ??= now;   // 30초마다 남은 시간·레벨 새로
+  for (const m of Y.mons) {
+    if (m.st === 'go') {
+      const dx = m.tx - m.x, dy = m.ty - m.y, d = Math.hypot(dx, dy), v = 42 * dt;
+      if (Math.abs(dx) > 2) m.face = dx > 0 ? -1 : 1;
+      if (d <= v) { m.x = m.tx; m.y = m.ty;
+        if (m.then === 'train') { m.st = 'train'; m.until = now + 5 + Math.random() * 4; m.face = Y.eq[m.k].x > m.x ? -1 : 1; }
+        else if (m.then === 'spw') { m.st = 'spw'; m.until = now + 6; const o = m.mate; if (o && o.st === 'spw' && o.mate === m) { m.face = o.x > m.x ? -1 : 1; o.face = -m.face; m.st = o.st = 'spar'; m.until = o.until = now + 4 + Math.random() * 3; m.turn = o.turn = 0; } }
+        else { m.st = 'rest'; m.nap = false; m.until = now + 1.5 + Math.random() * 3; } }
+      else { m.x += dx / d * v; m.y += dy / d * v; m.an = dy < -Math.abs(dx) ? 'WalkUp' : 'Walk'; }
+    } else if (now >= m.until) {
+      if (m.st === 'spar' || m.st === 'spw') { const o = m.mate; if (m.st === 'spar') { yEmo(m, '♪', 'mu'); if (o) yEmo(o, '♪', 'mu'); }
+        m.mate = null; if (o && o.mate === m) { o.mate = null; yNext(o, now); } }
+      yNext(m, now);
+    }
+    if (m.st === 'spar' && m.lead && !m.one && !m.mate?.one) { const a = m.turn % 2 ? m.mate : m; a.one = { n: 'Attack', t: 0, tgt: a === m ? m.mate : m }; m.turn++; }
+    if (m.st === 'train' && !m.one) m.one = { n: 'Attack', t: 0, k: m.k, gap: .25 + Math.random() * .5 };
+    m.el.classList.toggle('swim', inPond(m.x, m.y, -6));
+    place(m); yDraw(m, dt);
+  }
+  Y.raf = requestAnimationFrame(yardLoop);
+}
+function yDraw(m, dt) {
+  const D = m.D; if (!D?.P) { m.el.classList.toggle('bob', m.st === 'go' || m.st === 'train' || m.st === 'spar'); if (m.one) { m.one.t += dt; if (m.one.t > .8) { if (m.one.k) yHit(m, m.one.k); m.one = null; } } return; }
+  const A = D.P.a; let nm, f = null;
+  if (m.one) { nm = A[m.one.n] ? m.one.n : 'Idle'; m.one.t += dt; }
+  else nm = m.st === 'go' ? m.an : m.st === 'sleep' || (m.st === 'rest' && m.nap) ? 'Sleep' : 'Idle';
+  if (!A[nm]) nm = nm === 'WalkUp' && A.Walk ? 'Walk' : 'Idle';
+  const a = A[nm], durs = a[6], tot = durs.reduce((s, d) => s + d, 0) / 60;
+  let t;
+  if (m.one) { t = m.one.t;
+    const hitT = durs.slice(0, (a[7] ?? 0) + 1).reduce((s, d) => s + d, 0) / 60;
+    if (!m.one.hit && t >= hitT) { m.one.hit = 1; if (m.one.k) yHit(m, m.one.k); if (m.one.tgt) { const o = m.one.tgt; if (D && o.D?.P?.a.Hurt && !o.one) o.one = { n: 'Hurt', t: 0 }; yEmo(o, '!', 'hit'); } }
+    if (t >= tot) { if (m.one.gap && t < tot + m.one.gap) { t = tot - .001; } else { m.one = null; return yDraw(m, 0); } } }
+  else { if (m.ak !== nm) { m.ak = nm; m.at = 0; } m.at += dt; t = m.at % tot; }
+  let acc = 0; f = durs.length - 1; for (let i = 0; i < durs.length; i++) { acc += durs[i] / 60; if (t < acc) { f = i; break; } }
+  const key = nm + ':' + f; if (m.fk === key) return; m.fk = key;
+  const s = m.s, P = D.P, st2 = m.sp.style;
+  st2.width = a[1] * s + 'px'; st2.height = a[2] * s + 'px'; st2.left = -a[4] * s + 'px'; st2.top = (-a[5] - (P.fy || 0)) * s + 'px';
+  st2.backgroundPosition = `${-f * (a[1] + (P.G || 0)) * s}px ${-a[0] * s}px`;
 }
 function pickTrain() {
   const g = st(), ids = new Set(g.tr.map(e => e.id)), ty = g.ty;

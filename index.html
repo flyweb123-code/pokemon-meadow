@@ -6395,7 +6395,7 @@ document.addEventListener('click', e => {
 /*gym-hook*/
 // 체육관 모드: 운영자 '체육관 모드 보이기'(이 기기만)를 켜면 필드 맵 편집 버튼 옆에 체육관 버튼. 체육관 화면·규칙은 gym/gym.js (들어갈 때 처음 불러온다)
 { const de = document.documentElement, on = () => { try { return localStorage.getItem('pk-gym') === '1'; } catch (e) { return false; } };
-  const paintG = () => { de.classList.toggle('gym-on', on()); $('#gymSw').setAttribute('aria-checked', on()); menuDots(); };
+  const paintG = () => { de.classList.toggle('gym-on', on()); $('#gymSw').setAttribute('aria-checked', on()); menuDots(); try { window.gymBdgRow?.(); } catch (e) {} };
   $('#gymSw').onclick = () => { sfx('tap'); try { on() ? localStorage.removeItem('pk-gym') : localStorage.setItem('pk-gym', '1'); } catch (e) {} paintG(); };
   try { paintG(); } catch (e) {} setInterval(() => { if (de.classList.contains('gym-on') && !document.hidden) menuDots(); }, 30e3);
   const L = $('#gymLoad'), dots = L.querySelector('.gl-dots'); let dT = 0;
@@ -6432,8 +6432,10 @@ GA.audio = () => audio(); GA.bgmGain = () => { if (!audio()) return null; bgmRou
 /*gym-hook4*/
 GA.thumb = P => ensureSprite(P.sp).then(() => thumbP(P)); GA.shinyHue = sp => shinyHue(sp); GA.sfxVol = () => volG(VOL.sfx); GA.quietTap = () => { sfxN++; };   // 이 클릭엔 기본 '톡' 소리를 내지 않는다(체육관 배틀은 본가 효과음)
 /*gym-hook5*/
-window.gymBdgRow = () => { const sec = $('#pfGymBdg'), g = S.gym; if (!sec) return; sec.hidden = !(g && g.d); if (sec.hidden) return; const b = g.bdg || {}, n = Object.keys(b).length;
+window.gymBdgRow = () => { const sec = $('#pfGymBdg'), g = S.gym; if (!sec) return; const de = document.documentElement; sec.hidden = !(g && g.d && de.classList.contains('op') && de.classList.contains('gym-on')); if (sec.hidden) return;   // 운영자 '체육관 모드 보이기'를 켠 기기만 const b = g.bdg || {}, n = Object.keys(b).length;
   sec.querySelector('small').textContent = `${n}/18`; sec.querySelector('.gb-grid').innerHTML = TYPE_KO.map((t, i) => i ? `<img alt="${t}" title="${t} 자격 배지${b[i] ? '' : ' (아직)'}" src="gym/img/badge/${i}.png" class="${b[i] ? 'on' : ''}">` : '').join(''); };
+/*gym-hook6*/
+GA.pmd = (sp, sex) => ensureSprite(sp).then(() => { const k = fKey(sp, sex); if (!isPmd(k)) return { img: SPRITES[k] }; return padAtlas(k).then(() => ({ P: SPRITES[k], s: scaleOf(k), wh: atlasSize(k) })); });
 // 운영자 모드·테스트 버튼 (이 기기에만 저장)
 { const de = document.documentElement, get = k => { try { return localStorage.getItem(k) === '1'; } catch (e) { return false; } }, put = (k, v) => { try { v ? localStorage.setItem(k, '1') : localStorage.removeItem(k); } catch (e) {} };
   const paint = () => { const op = get('pk-op'), t = op && get('pk-tests'); de.classList.toggle('op', op); de.classList.toggle('tests', t); $('#testSw').setAttribute('aria-checked', t); };
@@ -6477,7 +6479,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.29';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.30';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
