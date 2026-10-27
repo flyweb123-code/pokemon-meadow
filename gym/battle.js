@@ -20,12 +20,13 @@ const J = (w, a, b) => w + (jong(w) ? a : b);
 const eun = w => J(w, '은', '는'), iga = w => J(w, '이', '가'), eul = w => J(w, '을', '를'), wa = w => J(w, '과', '와');
 
 // ---------- 데이터 (기술·특성·성격·배울 기술: gym/data.json, tools/gym/mkdata.js) ----------
-let D = null, MVI = null, FEM = new Set(), dataP = null;
+let D = null, MVI = null, FEM = new Set(), ANIM = {}, MFX = {}, dataP = null;
+const getJ = u => fetch(`${u}?v=${VER}`).then(r => r.ok ? r.json() : null).catch(() => null);
 function loadData() {
   return dataP || (dataP = Promise.all([
     fetch(`gym/data.json?v=${VER}`).then(r => { if (!r.ok) throw new Error('data'); return r.json(); }),
-    fetch(`${IMG}pk/fem.json?v=${VER}`).then(r => r.ok ? r.json() : []).catch(() => [])
-  ]).then(([d, fem]) => { D = d; MVI = new Map(d.mv.map((m, i) => [m[0], i])); FEM = new Set(fem); }).catch(e => { dataP = null; throw e; }));
+    getJ(`${IMG}pk/fem.json`), getJ(`${IMG}pk/anim.json`), getJ('gym/mvfx.json')
+  ]).then(([d, fem, an, fx]) => { D = d; MVI = new Map(d.mv.map((m, i) => [m[0], i])); FEM = new Set(fem || []); ANIM = an || {}; MFX = fx || {}; }).catch(e => { dataP = null; throw e; }));
 }
 let simP = null;
 const loadSim = () => window.PSim ? Promise.resolve() : simP || (simP = new Promise((ok, no) => { const s = document.createElement('script'); s.src = `gym/psim.js?v=${VER}`; s.onload = () => window.PSim ? ok() : no(new Error('sim')); s.onerror = () => { simP = null; no(new Error('sim')); }; document.head.appendChild(s); }));
@@ -88,6 +89,9 @@ function lus() { const g = S.gym; if (!Array.isArray(g.lu)) g.lu = [[], [], []];
 const curLu = () => lus()[S.gym.luI | 0];
 
 // ---------- 그림 ----------
+// 라인업·고르기 그림은 포켓몬 상자와 같은 그림 (경완 2026-10-27)
+const thumb = P => `<img alt="" data-th="${P.id}"${P.shiny ? ` class="shiny" style="--shue:${GA.shinyHue(P.sp)}deg"` : ''}>`;
+function fillTh(root) { root.querySelectorAll('img[data-th]').forEach(im => { const P = S.box.find(p => String(p.id) === im.dataset.th); if (P) GA.thumb(P).then(u => { if (u) im.src = u; }).catch(() => {}); }); }
 const pkSrc = (sp, o = {}) => `${IMG}pk/${sp}${o.b ? 'b' : ''}${o.s ? 's' : ''}${o.f && FEM.has(+sp) ? 'f' : ''}.png?v=${VER}`;
 const TR_KO = { youngster: '반바지 꼬마', lass: '짧은 치마', bug_catcher: '곤충채집 소년', camper: '캠프 보이', picnicker: '피크닉 걸', hiker: '등산가', fisherman: '낚시꾼', swimmer_m: '수영팬티 소년', swimmer_f: '비키니 아가씨', cool_trainer_m: '엘리트 트레이너', cool_trainer_f: '엘리트 트레이너', beauty: '아가씨', gentleman: '신사', super_nerd: '괴짜', black_belt: '태권왕', bird_keeper: '새 조련사', psychic_m: '초능력자', psychic_f: '초능력자', engineer: '기술자', sailor: '뱃사람', rocker: '로커', tamer: '조련사', school_kid_m: '학원 소년', school_kid_f: '학원 소녀', battle_girl: '배틀걸', channeler: '기도사', juggler: '마술사', aroma_lady: '아로마 아가씨', ruin_maniac: '유적 마니아', poke_maniac: '포켓몬 마니아', pokemaniac: '포켓몬 마니아' };
 const NAMES_M = ['철수', '민준', '지훈', '현우', '도윤', '준서', '태양', '하준', '시우', '건우', '동현', '재민', '우진', '성민', '영호'];
@@ -112,14 +116,22 @@ const PRACTICE = [
 // ---------- 배틀 화면 ----------
 let el = null, B = null;   // 화면, 진행 중인 배틀
 const $b = s => el.querySelector(s);
+// ---------- 효과음 (플래티넘 원본 SEQ_SE_DP_*, gym/bgm.js 가 받아 와 연주) ----------
+const se = (nm, o) => { try { window.GymBGM?.se('DP_' + nm, o); } catch (e) {} };
+const SE_BASE = ['DECIDE', 'SELECT', 'KOUKA_M', 'KOUKA_H', 'KOUKA_L', 'POKE_DEAD', 'BOWA2', 'SUIKOMU', 'SLIDEIN', 'HINSI', 'NAGERU'];
+const tapSe = (nm = 'DECIDE') => { try { GA.quietTap?.(); } catch (e) {} se(nm); };
+// 화면 x(0~256) → 소리 좌우
+const panOf = side => side === 'e' ? .5 : -.5;
+
 function buildUI() {
   el = document.createElement('div'); el.className = 'bt'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', '배틀');
   el.innerHTML = `<div class="bt-ds">
     <div class="bt-top">
-      <div class="bt-bg"></div>
+      <div class="bt-bg"></div><i class="bt-dim"></i>
       <i class="bt-pl e"></i><i class="bt-pl p"></i>
       <i class="bt-tr e"></i><i class="bt-tr p"></i>
-      <div class="bt-mon e"><img alt=""></div><div class="bt-mon p"><img alt=""></div>
+      <div class="bt-mw e"><div class="bt-mon e"><div class="clip"><img alt=""></div></div></div>
+      <div class="bt-mw p"><div class="bt-mon p"><div class="clip"><img alt=""></div></div></div>
       <div class="bt-hb e"><b class="nm"></b><i class="sx"></i><span class="lv"></span><i class="st"></i><i class="hp"><i></i></i></div>
       <div class="bt-hb p"><b class="nm"></b><i class="sx"></i><span class="lv"></span><i class="st"></i><i class="hp"><i></i></i><span class="hpn"><b class="c"></b><b class="m"></b></span><i class="xp"><i></i></i></div>
       <div class="bt-fx"></div>
@@ -144,53 +156,98 @@ async function msg(t, hold = 650) {
 // 누를 때까지 기다리는 대화 (승부 끝 등)
 async function msgTap(t) { await msg(t, 0); if (!B) return; $b('.bt-msg .cur').hidden = false; await new Promise(r => { B.tapWake = r; }); $b('.bt-msg .cur').hidden = true; }
 
-// 체력 막대 (본가: 초록 > 1/2, 노랑 > 1/5, 빨강)
+// 체력 막대 (본가: 초록 > 1/2, 노랑 > 1/5, 빨강). 막대는 48칸, 4세대처럼 한 칸씩 줄어든다
 function hpCol(r) { return r > .5 ? 'g' : r > .2 ? 'y' : 'r'; }
+const hpPx = (hp, mhp) => hp <= 0 || !mhp ? 0 : Math.max(1, Math.ceil(hp / mhp * 48));
 function paintHb(side, A) {
   const hb = $b(`.bt-hb.${side}`); if (!A) { hb.classList.remove('on'); return; }
   hb.querySelector('.nm').textContent = A.nm; hb.querySelector('.lv').textContent = A.lv;
   const sx = hb.querySelector('.sx'); sx.className = 'sx ' + (A.g || ''); sx.textContent = A.g === 'M' ? '♂' : A.g === 'F' ? '♀' : '';
   setHp(side, A.hp, A.mhp); setSt(side, A.st);
-  if (side === 'p') { const g = A.xpg; hb.querySelector('.xp>i').style.width = (g ? clampN(g, 0, 1) * 100 : 0) + '%'; }
+  if (side === 'p') { const g = A.xpg; hb.querySelector('.xp>i').style.width = (g ? clampN(g, 0, 1) * 96 : 0) + 'px'; }
 }
-function setHp(side, hp, mhp) {
-  const hb = $b(`.bt-hb.${side}`), r = mhp ? hp / mhp : 0, f = hb.querySelector('.hp>i');
-  f.style.width = Math.ceil(r * 48) + 'px'; f.className = hpCol(r);
+function setHp(side, hp, mhp, px = hpPx(hp, mhp)) {
+  const hb = $b(`.bt-hb.${side}`), f = hb.querySelector('.hp>i');
+  f.style.width = px + 'px'; f.className = hpCol(px / 48);
   if (side === 'p') { hb.querySelector('.hpn .c').textContent = Math.max(0, Math.round(hp)); hb.querySelector('.hpn .m').textContent = mhp; }
+  if (side === 'p') lowHp(px > 0 && px / 48 <= .2);
 }
 async function drainHp(side, A, to) {
-  const from = A.hp, steps = Math.min(48, Math.max(6, Math.abs(Math.round((to - from) / A.mhp * 48))));
-  for (let i = 1; i <= steps; i++) { if (!B) return; setHp(side, from + (to - from) * i / steps, A.mhp); await wait(B.fast ? 6 : 18); }
-  A.hp = to; setHp(side, to, A.mhp);
+  const from = A.hp, p0 = hpPx(from, A.mhp), p1 = hpPx(to, A.mhp), n = Math.abs(p1 - p0);
+  for (let i = 1; i <= n; i++) { if (!B) return; setHp(side, from + (to - from) * i / n, A.mhp, p0 + Math.sign(p1 - p0) * i); await wait(B.fast ? 8 : 17); }
+  A.hp = to; setHp(side, to, A.mhp, p1);
+}
+// 내 포켓몬 체력이 빨강이면 본가처럼 삐삐 소리
+function lowHp(on) {
+  if (!B) return; if (on === !!B.lowT) return;
+  if (on) { const f = () => { if (B && !B.btl.ended) se('HINSI'); }; f(); B.lowT = setInterval(f, 700); } else { clearInterval(B.lowT); B.lowT = 0; }
 }
 const ST_X = { par: 0, frz: 1, slp: 2, psn: 3, tox: 3, brn: 4 };
 function setSt(side, st) { const i = $b(`.bt-hb.${side} .st`); i.className = 'st' + (st in ST_X ? ' s' + ST_X[st] : ''); }
 
-// 포켓몬 그림
+// ---------- 포켓몬 그림 ----------
+// 1~493: 플래티넘 원본 2장 그림(160x80) + 본가 움직임(gym/img/pk/anim.json), 494~: 5세대 그림 한 장
+// 위치는 DS 화면 좌표: 상대 80x80 칸 왼쪽 위 (136, E_Y+보정), 내 쪽 (40, P_Y+보정)
+const E_Y = 8, P_Y = 64;
 function monEl(side) { return $b(`.bt-mon.${side}`); }
 function showMon(side, A, on = true) {
   const m = monEl(side), img = m.querySelector('img');
-  if (A) { img.src = pkSrc(A.sp, { b: side === 'p', s: A.shiny, f: A.g === 'F' }); img.alt = A.nm; }
+  if (A) {
+    const a = ANIM[A.sp], sheet = !!a; img.onerror = () => { img.onerror = null; img.src = pkSrc(A.sp, { b: side === 'p', s: A.shiny }); }; img.src = pkSrc(A.sp, { b: side === 'p', s: A.shiny, f: A.g === 'F' }); img.alt = '';
+    m.classList.toggle('pl2', sheet); img.style.transform = '';
+    if (sheet) { m.style.left = (side === 'e' ? 136 : 40) + 'px'; m.style.top = (side === 'e' ? E_Y + a[0] : P_Y + a[1]) + 'px'; }
+    else { m.style.left = m.style.top = ''; }
+  }
   m.classList.toggle('on', on);
 }
-// 몬스터볼에서 나오기: 하얗게 커지며 나타남 (4세대처럼)
+// 본가 움직임: [장, 지연(1/30초), x, y], 장이 -2 보다 작으면 그 칸으로 지연 횟수만큼 되돌아가기
+function playAnim(side, A) {
+  const a = ANIM[A?.sp], m = monEl(side); if (!a) return;
+  const fr = side === 'e' ? a[3] : a[5], st = side === 'e' ? a[2] : a[4], img = m.querySelector('img'), tok = (m._tok = (m._tok || 0) + 1);
+  const set = (f, x, y) => { img.style.transform = `translate(${-80 * f + (side === 'p' ? -x : x)}px,${y}px)`; };
+  (async () => {
+    await wait(st * 1000 / 30); const cnt = {}; let i = 0, g = 0;
+    while (i < fr.length && g++ < 80) {
+      if (m._tok !== tok) return; const [f, d, x, y] = fr[i];
+      if (f < -1) { cnt[i] = cnt[i] ?? d; if (cnt[i]-- > 0) { i = -f - 2; continue; } i++; continue; }
+      set(f, x, y); await wait(Math.max(1, d) * 1000 / 30); i++;
+    }
+    if (m._tok === tok) set(0, 0, 0);
+  })();
+}
+// 볼 던지기 → 펑 → 하얗게 커지며 나타남 (4세대)
 async function sendOut(side, A) {
-  const m = monEl(side); m.classList.remove('faint', 'on'); m.classList.add('ball'); showMon(side, A, false);
-  ballPoof(side); await wait(260); m.classList.add('on'); try { GA.cry?.(A.sp); } catch (e) {}
-  await wait(380); m.classList.remove('ball');
-  paintHb(side, A); $b(`.bt-hb.${side}`).classList.add('on'); await wait(250);
+  const m = monEl(side); m.classList.remove('faint', 'on', 'recall'); showMon(side, A, false); m.classList.add('ball');
+  await throwBall(side);
+  ballPoof(side); se('BOWA2', { pan: panOf(side) }); m.classList.add('on'); await wait(60);
+  m.classList.remove('ball'); await wait(260); try { GA.cry?.(A.sp); } catch (e) {} playAnim(side, A);
+  paintHb(side, A); $b(`.bt-hb.${side}`).classList.add('on'); await wait(450);
+}
+function throwBall(side) {
+  const fx = $b('.bt-fx'), b = document.createElement('i'); b.className = 'ball'; fx.appendChild(b);
+  const [x0, y0, x1, y1] = side === 'e' ? [190, 40, 176, 66] : [40, 120, 80, 112];
+  const mid = side === 'e' ? 30 : 70;
+  const an = b.animate([{ transform: `translate(${x0}px,${y0}px) rotate(0)` }, { transform: `translate(${(x0 + x1) / 2}px,${mid}px) rotate(360deg)`, offset: .5 }, { transform: `translate(${x1}px,${y1}px) rotate(720deg)` }], { duration: 420, easing: 'linear' });
+  return an.finished.catch(() => {}).then(() => b.remove());
 }
 function ballPoof(side) {
-  const fx = $b('.bt-fx'), x = side === 'e' ? 176 : 64, y = side === 'e' ? 70 : 118;
-  for (let k = 0; k < 8; k++) { const i = document.createElement('i'); i.className = 'poof'; const a = k / 8 * Math.PI * 2; i.style.left = x + 'px'; i.style.top = y + 'px'; i.style.setProperty('--dx', Math.cos(a) * 26 + 'px'); i.style.setProperty('--dy', Math.sin(a) * 18 + 'px'); fx.appendChild(i); setTimeout(() => i.remove(), 600); }
-  try { sfx('pop'); } catch (e) {}
+  const fx = $b('.bt-fx'), x = side === 'e' ? 176 : 80, y = side === 'e' ? 66 : 112;
+  for (let k = 0; k < 10; k++) { const i = document.createElement('i'); i.className = 'poof'; const a = k / 10 * Math.PI * 2; i.style.left = x + 'px'; i.style.top = y + 'px'; i.style.setProperty('--dx', Math.cos(a) * 30 + 'px'); i.style.setProperty('--dy', Math.sin(a) * 22 + 'px'); fx.appendChild(i); setTimeout(() => i.remove(), 600); }
+}
+async function recall(side) { const m = monEl(side); se('SUIKOMU', { pan: panOf(side) }); m.classList.add('recall'); await wait(420); m.classList.remove('on', 'recall'); $b(`.bt-hb.${side}`).classList.remove('on'); }
+// 쓰러짐: 울음소리 → 발판 아래로 쑥 내려감 (4세대)
+async function faint(side, A) {
+  try { GA.cry?.(A.sp); } catch (e) {} await wait(B?.fast ? 200 : 520);
+  se('POKE_DEAD', { pan: panOf(side) }); monEl(side).classList.add('faint'); await wait(420);
+  $b(`.bt-hb.${side}`).classList.remove('on'); if (side === 'p') lowHp(false);
 }
 async function flash(n = 1) { const f = $b('.bt-flash'); for (let i = 0; i < n; i++) { f.classList.add('on'); await wait(70); f.classList.remove('on'); await wait(70); } }
 
 // ---------- 아래 화면 ----------
 function panel(html) { const p = $b('.bt-panel'); p.innerHTML = html; return p; }
-function idlePanel() { panel(`<div class="bp-idle"></div>`); }
+function idlePanel() { panel(`<div class="bp-idle"></div>`); el?.classList.remove('idle'); }
 function mainPanel(A) {
+  el.classList.add('idle');   // 고르는 동안 내 포켓몬·체력 상자가 위아래로 살짝 (본가)
   return new Promise(res => {
     const p = panel(`<div class="bp-main">
       <button class="bb fight" data-a="fight"><span>싸우다</span></button>
@@ -198,30 +255,60 @@ function mainPanel(A) {
       <button class="bb run" data-a="run"><span>${B.practice ? '그만두기' : '기권'}</span></button>
       <button class="bb mon" data-a="mon"><span>포켓몬</span></button>
       <p class="bp-q">${esc(A.nm)}${jong(A.nm) ? '은' : '는'} 무엇을 할까?</p></div>`);
-    p.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap'); res(b.dataset.a); };
+    p.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; tapSe(); res(b.dataset.a); };
   });
+}
+// 상대에게 얼마나 잘 듣는지 (본가 이후 세대의 '효과가 굉장함' 표시처럼)
+function effOf(type) {
+  const foe = B?.btl.p2.active[0]; if (!foe || foe.fainted) return null;
+  const dex = B.btl.dex, T = dex.types.get(type); if (!T?.exists) return null;
+  if (!dex.getImmunity(T.name, foe)) return 0;
+  return 2 ** dex.getEffectiveness(T.name, foe);
+}
+const TY_EN = ['', 'Normal', 'Fighting', 'Flying', 'Poison', 'Ground', 'Rock', 'Bug', 'Ghost', 'Steel', 'Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Ice', 'Dragon', 'Dark', 'Fairy'];
+const CAT_KO = ['물리', '특수', '변화'];
+function effTag(d) {
+  if (!d || d[3] === 2) return '';
+  const e = effOf(TY_EN[d[2]]); if (e == null) return '';
+  return e === 0 ? '<i class="eff no">효과 없음</i>' : e > 1 ? '<i class="eff hi">효과 굉장!</i>' : e < 1 ? '<i class="eff lo">효과 별로</i>' : '<i class="eff">효과 있음</i>';
 }
 function movePanel(req) {
   return new Promise(res => {
     const mv = req.active[0].moves;
-    const p = panel(`<div class="bp-moves">${[0, 1, 2, 3].map(i => { const m = mv[i]; if (!m) return `<i class="mvb empty"></i>`; const d = mvOf(m.id) || ['', m.move, 1]; const ty = d[2] || 1;
-      return `<button class="mvb" data-i="${i}" style="background-image:url(${IMG}bt/mv_${ty}.png)" ${m.disabled || m.pp <= 0 ? 'disabled' : ''}><b>${esc(d[1])}</b><span class="pp">PP <em>${m.pp}/${m.maxpp}</em></span><span class="ty">${GA.tyIcon(ty)}</span></button>`; }).join('')}
+    const p = panel(`<div class="bp-moves">${[0, 1, 2, 3].map(i => { const m = mv[i]; if (!m) return `<i class="mvb empty"></i>`; const d = mvOf(m.id) || ['', m.move, 1, 0]; const ty = d[2] || 1;
+      return `<div class="mvw"><button class="mvb" data-i="${i}" style="background-image:url(${IMG}bt/mv_${ty}.png)" ${m.disabled || m.pp <= 0 ? 'disabled' : ''}><b>${esc(d[1])}</b>${effTag(d)}<span class="cat c${d[3] | 0}">${CAT_KO[d[3] | 0]}</span><span class="pp">PP <em>${m.pp}/${m.maxpp}</em></span></button><button class="mvi" data-info="${i}" aria-label="기술 설명">?</button></div>`; }).join('')}
       <button class="bb cancel" data-x><span>취소</span></button></div>`);
-    p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap'); if (b.hasAttribute('data-x')) return res(null); res(+b.dataset.i); };
+    p.onclick = e => {
+      const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe();
+      if (b.hasAttribute('data-x')) return res(null);
+      if (b.dataset.info) return moveInfo(mv[+b.dataset.info]).then(() => movePanel(req).then(res));
+      res(+b.dataset.i);
+    };
+  });
+}
+// 기술 설명: 타입·분류·위력·명중·PP·설명 (아래 화면)
+function moveInfo(m) {
+  return new Promise(res => {
+    const d = mvOf(m.id) || ['', m.move, 1, 0, 0, 0, m.maxpp, 0, '']; const ty = d[2] || 1;
+    const p = panel(`<div class="bp-info"><div class="mi-top" style="background-image:url(${IMG}bt/mv_${ty}.png)"><b>${esc(d[1])}</b></div>
+      <dl><dt>타입</dt><dd>${GA.tyIcon(ty)} ${TYPE_KO[ty] || ''}</dd><dt>분류</dt><dd><span class="cat c${d[3] | 0}">${CAT_KO[d[3] | 0]}</span></dd>
+      <dt>위력</dt><dd>${d[4] || '—'}</dd><dt>명중</dt><dd>${d[5] && d[5] !== true ? d[5] : '—'}</dd><dt>PP</dt><dd>${m.pp}/${m.maxpp}</dd><dt>효과</dt><dd>${effTag(d).replace(/<\/?i[^>]*>/g, '') || '—'}</dd></dl>
+      <p>${esc(d[8] || '')}</p><button class="bb cancel" data-x><span>돌아가기</span></button></div>`);
+    p.onclick = e => { const b = e.target.closest('button'); if (!b) return; tapSe(); res(); };
   });
 }
 function partyPanel(req, forced) {
   return new Promise(res => {
     const L = req.side.pokemon;
     const p = panel(`<div class="bp-party">${L.map((m, i) => { const [hp, mhp] = (m.condition.split(' ')[0] || '0/0').split('/').map(Number); const fnt = /fnt/.test(m.condition), A = B.my[i], r = mhp ? hp / mhp : 0;
-      return `<button class="pty${m.active ? ' act' : ''}${fnt ? ' fnt' : ''}" data-i="${i}" ${m.active || fnt ? 'disabled' : ''}><img src="${pkSrc(A.sp, { s: A.shiny, f: A.g === 'F' })}" alt=""><b>${esc(A.nm)}</b><span class="lv">Lv${A.lv}</span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${hp}/${mhp}`}</span></button>`; }).join('')}
-      ${forced ? '' : '<button class="bb cancel" data-x><span>취소</span></button>'}</div>`);
-    p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap'); if (b.hasAttribute('data-x')) return res(null); res(+b.dataset.i); };
+      return `<button class="pty${m.active ? ' act' : ''}${fnt ? ' fnt' : ''}" data-i="${i}" ${m.active || fnt ? 'disabled' : ''}>${boxOf(A.pid) ? thumb(boxOf(A.pid)) : ''}<b>${esc(A.nm)}</b><span class="lv">Lv${A.lv}</span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${hp}/${mhp}`}</span></button>`; }).join('')}
+      ${forced ? '' : '<button class="bb cancel" data-x><span>취소</span></button>'}</div>`); fillTh(p);
+    p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.hasAttribute('data-x')) return res(null); res(+b.dataset.i); };
   });
 }
 function yesNo(q) {
   return new Promise(res => { const p = panel(`<div class="bp-yn"><p>${q}</p><button class="bb yes" data-a="1"><span>네</span></button><button class="bb no" data-a="0"><span>아니요</span></button></div>`);
-    p.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap'); res(b.dataset.a === '1'); }; });
+    p.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; tapSe(); res(b.dataset.a === '1'); }; });
 }
 
 // ---------- 쇼다운 세트 ----------
@@ -289,7 +376,7 @@ async function run(opts) {
   $b('.bt-msg .t').textContent = ''; idlePanel();
   // 등장: 화면이 번쩍이며 가로줄로 열리고, 발판·트레이너가 양옆에서 미끄러져 들어온다
   const music = opts.music || 'train'; M('play', music, { fade: .2 }); M('prep', music === 'train' ? 'winTrain' : 'winGym');
-  await wait(40); el.classList.add('open'); try { sfx('start'); } catch (e) {}
+  M('sePrep', SE_BASE.map(n => 'DP_' + n)); await wait(40); el.classList.add('open'); se('SLIDEIN');
   await wait(900); el.classList.remove('intro');
   const foeNm = B.foeNm = `${opts.foe.cls} ${opts.foe.nm}`;
   await msg(`${iga(foeNm)} 승부를 걸어왔다!`, 900);
@@ -303,7 +390,7 @@ async function run(opts) {
       else await msgTap('승부에서 졌다…');
     }
   }
-  M('play', 'gym', { fade: 1.2 });
+  lowHp(false); M('play', 'gym', { fade: 1.2 });
   el.classList.add('off'); await wait(450); el.hidden = true; const res = { won, quit: out === 'quit', turns: btl.turn, my: B?.my }; B = null; return res;
 }
 
@@ -341,6 +428,8 @@ function partyIdx(side, line) {
   const k = L.findIndex(p => p.name === nm && p.species.name === spn && !p.fainted && p !== (side === 'p' ? B.act.p?.pk : B.act.e?.pk));
   return k >= 0 ? k : L.findIndex(p => p.name === nm);
 }
+// 맞는 소리는 효과(굉장/별로)에 따라 다르다: 이어지는 줄을 미리 본다
+function effAhead(id) { const L = B.btl.log; for (let k = B.li; k < Math.min(L.length, B.li + 4); k++) { const x = L[k].split('|'); if (x[1] === '-supereffective' && x[2] === id) return 'H'; if (x[1] === '-resisted' && x[2] === id) return 'L'; if (x[1] === 'move' || x[1] === '-damage') break; } return 'M'; }
 async function readLog() {
   const L = B.btl.log;
   while (B && B.li < L.length) {
@@ -358,7 +447,7 @@ async function handle(a) {
       const s = sideOf(a[2]), i = partyIdx(s, a), det = a[3].split(', '), [hp, mhp] = hpOf(a[4]);
       const src = s === 'p' ? B.my[i] : B.foe[i], pk = (s === 'p' ? B.btl.p1 : B.btl.p2).pokemon[i];
       const old = A(s);
-      if (old && !old.fnt) { await msg(s === 'p' ? `돌아와! ${old.nm}!` : `${eun(B.foeNm)} ${eul(old.nm)} 되돌렸다!`, 0); monEl(s).classList.add('recall'); await wait(380); monEl(s).classList.remove('on', 'recall'); $b(`.bt-hb.${s}`).classList.remove('on'); }
+      if (old && !old.fnt) { await msg(s === 'p' ? `돌아와! ${old.nm}!` : `${eun(B.foeNm)} ${eul(old.nm)} 되돌렸다!`, 0); await recall(s); }
       const sp = PSim.Dex.species.get(det[0]).num || src.sp;
       const X = B.act[s] = { i, pk, nm: src.nm, sp, lv: +(det.find(d => /^L\d+/.test(d)) || 'L100').slice(1), g: det.includes('F') ? 'F' : det.includes('M') ? 'M' : '', shiny: det.includes('shiny'), hp, mhp, st: stOf(a[4]), fnt: false };
       if (s === 'p') X.xpg = xpGauge(src);
@@ -376,12 +465,12 @@ async function handle(a) {
     case '-damage': {
       const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); const from = (a[4] || '').replace('[from] ', '');
       if (from) { const t = dmgFrom(from, a[2]); if (t) await msg(t, 300); }
-      if (!from) await hitFx(s);
+      if (!from) await hitFx(s, effAhead(a[2]));
       if (mhp) X.mhp = mhp; await drainHp(s, X, hp); X.st = stOf(a[3]) || X.st; break;
     }
     case '-heal': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); if (mhp) X.mhp = mhp; await drainHp(s, X, hp); await msg(`${who(a[2])}의 체력이 회복되었다!`); break; }
     case '-sethp': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp] = hpOf(a[3]); await drainHp(s, X, hp); break; }
-    case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; try { GA.cry?.(X.sp); } catch (e) {} await wait(250); monEl(s).classList.add('faint'); try { sfx('stomp'); } catch (e) {} await wait(500); $b(`.bt-hb.${s}`).classList.remove('on'); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); break; }
+    case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); break; }
     case '-supereffective': await msg('효과가 굉장했다!'); break;
     case '-resisted': await msg('효과가 별로인 듯하다…'); break;
     case '-immune': await msg(`${who(a[2])}에게는 효과가 없는 것 같다…`); break;
@@ -394,9 +483,9 @@ async function handle(a) {
     case 'cant': await msg(cantMsg(who(a[2]), a[3])); break;
     case '-boost': case '-unboost': { const n = +a[4] || 0, up = k === '-boost', s = sideOf(a[2]); await statFx(s, up); await msg(`${who(a[2])}의 ${iga(STAT_KO[a[3]] || a[3])} ${n >= 3 ? '매우 크게 ' : n === 2 ? '크게 ' : n === 0 ? '더 이상 ' : ''}${n === 0 ? (up ? '올라가지 않는다!' : '떨어지지 않는다!') : up ? '올라갔다!' : '떨어졌다!'}`); break; }
     case '-weather': { const w = a[2]; if (a.includes('[upkeep]')) break; const T = { RainDance: '비가 내리기 시작했다!', SunnyDay: '햇살이 강해졌다!', Sandstorm: '모래바람이 불기 시작했다!', Hail: '싸라기눈이 내리기 시작했다!', Snow: '눈이 내리기 시작했다!', none: '날씨가 원래대로 돌아왔다!' }; if (T[w]) await msg(T[w]); break; }
-    case '-start': { const t = startMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
+    case '-start': { if (/confusion/.test(a[3])) stSe(sideOf(a[2]), 'conf'); const t = startMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
     case '-end': { const t = endMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
-    case '-activate': { const t = actMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
+    case '-activate': { if (/confusion/.test(a[3])) stSe(sideOf(a[2]), 'conf'); const t = actMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
     case '-ability': await msg(`${who(a[2])}의 ${abKo(toID(a[3]))}!`, 500); break;
     case '-hitcount': await msg(`${a[3]}번 맞았다!`); break;
     case '-ohko': await msg('일격필살!'); break;
@@ -419,19 +508,88 @@ function actMsg(n, w) { w = (w || '').replace('move: ', ''); const T = { confusi
 function sideMsg(sd, w, on) { const mine = sd.startsWith('p1'), who2 = mine ? '우리 편' : '상대 편'; w = (w || '').replace('move: ', ''); const T = { Reflect: on ? `리플렉터로 ${who2}의 물리 공격에 강해졌다!` : `${who2}의 리플렉터가 사라졌다!`, 'Light Screen': on ? `빛의장막으로 ${who2}의 특수 공격에 강해졌다!` : `${who2}의 빛의장막이 사라졌다!`, Spikes: on ? `${who2} 발밑에 압정이 뿌려졌다!` : '', 'Stealth Rock': on ? `${who2} 주변에 뾰족한 바위가 떠다니기 시작했다!` : '', Tailwind: on ? `${who2}에 순풍이 불기 시작했다!` : `${who2}의 순풍이 멈췄다!`, Safeguard: on ? `${who2}는 신비의 베일에 감싸였다!` : '' }; return T[w] || ''; }
 
 // ---------- 연출 (4세대 느낌. 기술별 본가 연출은 다음 단계에서 기술마다 붙인다) ----------
-const TY_SFX = { 10: 'fire', 11: 'puddle', 13: 'bolt', 15: 'ice', 4: 'poison', 8: 'ghost', 18: 'fairy', 6: 'rock', 5: 'dig', 2: 'punch', 14: 'special', 12: 'bush', 3: 'fly', 7: 'chup', 9: 'iron', 16: 'beam', 17: 'scare', 1: 'ram' };
 const TY_FX = { 10: '#ff7a30', 11: '#48a0ff', 13: '#ffe040', 15: '#a8f0ff', 4: '#c060e0', 8: '#7058a8', 18: '#ff9ed8', 6: '#b8a058', 5: '#d8b060', 2: '#e05030', 14: '#ff70b0', 12: '#68d048', 3: '#a8c8ff', 7: '#a8c020', 9: '#c8c8d8', 16: '#7050f0', 17: '#504048', 1: '#f8f8f8' };
-async function moveFx(s, id, miss) {
-  const m = mvOf(id); if (!m) return; const ty = m[2], cat = m[3], me = monEl(s), foe = monEl(s === 'p' ? 'e' : 'p');
-  try { sfx(TY_SFX[ty] || 'ram'); } catch (e) {}
-  if (cat === 2) { me.classList.add('glow'); me.style.setProperty('--fx', TY_FX[ty] || '#fff'); await wait(520); me.classList.remove('glow'); return; }
-  if (cat === 0) { me.classList.add('lunge'); await wait(260); me.classList.remove('lunge'); }
-  else { const fx = $b('.bt-fx'), o = document.createElement('i'); o.className = 'orb ' + s; o.style.setProperty('--fx', TY_FX[ty] || '#fff'); fx.appendChild(o); await wait(420); o.remove(); }
-  if (miss) await wait(120);
+// 기술 연출: 플래티넘 원본 대본(gym/mvfx.json, tools/gym/mkanim.py)대로 소리·흔들기·움직임·배경·색 번쩍을 같은 박자(1/30초)에.
+// 파티클은 원본 그림을 못 쓰니 같은 때·같은 곳에서 타입 색 불꽃으로.
+const FR = 1000 / 30;
+const CTR = { e: [176, 56], p: [80, 104] };
+const other = s => s === 'p' ? 'e' : 'p';
+function tintOf(side) {   // 포켓몬 색 덮기용 SVG 필터 (한 번 만든다)
+  let f = el.querySelector(`#btTint${side}`);
+  if (!f) {
+    let svg = el.querySelector('svg.bt-defs');
+    if (!svg) { svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'bt-defs'); svg.setAttribute('width', 0); svg.setAttribute('height', 0); svg.style.position = 'absolute'; el.appendChild(svg); }
+    svg.insertAdjacentHTML('beforeend', `<filter id="btTint${side}" color-interpolation-filters="sRGB"><feFlood flood-color="#fff" flood-opacity="0"/><feComposite in2="SourceAlpha" operator="in"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode/></feMerge></filter>`);
+    f = el.querySelector(`#btTint${side}`);
+  }
+  return f.querySelector('feFlood');
 }
-async function hitFx(s) { const m = monEl(s); for (let i = 0; i < 3; i++) { m.classList.add('blink'); await wait(B?.fast ? 40 : 70); m.classList.remove('blink'); await wait(B?.fast ? 40 : 70); } }
-async function statFx(s, up) { const m = monEl(s); m.classList.add(up ? 'up' : 'down'); try { sfx(up ? 'rise' : 'lev'); } catch (e) {} await wait(560); m.classList.remove('up', 'down'); }
-async function stFx(s, st) { const m = monEl(s); m.style.setProperty('--fx', { brn: '#ff6030', par: '#ffe040', slp: '#a0a0c0', frz: '#a8f0ff', psn: '#c060e0', tox: '#a040c0' }[st] || '#fff'); m.classList.add('glow'); await wait(450); m.classList.remove('glow'); }
+function emit(where, s, col, ms) {
+  const fx = $b('.bt-fx'), [ax, ay] = CTR[s], [dx, dy] = CTR[other(s)];
+  const one = (x, y, tx, ty, d) => { const i = document.createElement('i'); i.className = 'em'; i.style.left = x + 'px'; i.style.top = y + 'px'; i.style.setProperty('--c', col); i.style.setProperty('--dx', tx + 'px'); i.style.setProperty('--dy', ty + 'px'); i.style.animationDuration = d + 'ms'; fx.appendChild(i); setTimeout(() => i.remove(), d + 50); };
+  if (where === 'ad' || where === 'da') {
+    const [x0, y0, x1, y1] = where === 'ad' ? [ax, ay, dx, dy] : [dx, dy, ax, ay];
+    for (let k = 0; k < 6; k++) setTimeout(() => B && one(x0 + rnd(-4, 4), y0 + rnd(-4, 4), x1 - x0 + rnd(-6, 6), y1 - y0 + rnd(-6, 6), ms * .7), k * ms / 14);
+    return;
+  }
+  const [x, y] = where === 'a' ? [ax, ay] : where === 'c' ? [128, 80] : [dx, dy];
+  for (let k = 0; k < 9; k++) { const t = k / 9 * Math.PI * 2 + rnd(0, .5), r = rnd(14, 28); setTimeout(() => B && one(x + rnd(-6, 6), y + rnd(-6, 6), Math.cos(t) * r, Math.sin(t) * r * .8, ms * .8), k * ms / 30); }
+}
+const MV_REP = { 1: ['tackle', 'hypervoice', 'growl'], 2: ['brickbreak', 'aurasphere', 'bulkup'], 3: ['wingattack', 'airslash', 'roost'], 4: ['poisonjab', 'sludgebomb', 'toxic'], 5: ['earthquake', 'earthpower', 'mudsport'],
+  6: ['rockslide', 'ancientpower', 'stealthrock'], 7: ['xscissor', 'bugbuzz', 'tailglow'], 8: ['shadowclaw', 'shadowball', 'confuseray'], 9: ['ironhead', 'flashcannon', 'irondefense'], 10: ['firepunch', 'flamethrower', 'willowisp'],
+  11: ['waterfall', 'surf', 'raindance'], 12: ['leafblade', 'energyball', 'synthesis'], 13: ['thunderpunch', 'thunderbolt', 'thunderwave'], 14: ['zenheadbutt', 'psychic', 'calmmind'], 15: ['icepunch', 'icebeam', 'hail'],
+  16: ['dragonclaw', 'dragonpulse', 'dragondance'], 17: ['crunch', 'darkpulse', 'nastyplot'], 18: ['tackle', 'charm', 'charm'] };
+async function moveFx(s, id, miss) {
+  const m = mvOf(id); if (!m || miss) return; const ty = m[2], cat = m[3], col = TY_FX[ty] || '#fff';
+  let A = MFX[id]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1];
+  // 5세대 이후 기술: 같은 타입·분류의 4세대 기술 연출을 빌린다
+  if (!A) { const r = MV_REP[ty]?.[cat]; A = r && MFX[r]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1]; }
+  if (!A) {   // 그래도 없으면 분류에 따라 간단히
+    A = cat === 0 ? [14, [['s', 0, '050', 'd'], ['m', 0, 'a', 14, -8, 2], ['e', 2, 'd', 12], ['k', 2, 'd', 2, 0, 1, 2], ['m', 4, 'a', -14, 8, 2]]]
+      : cat === 1 ? [26, [['s', 0, 'W207', 'm'], ['e', 0, 'ad', 18], ['e', 14, 'd', 12], ['k', 16, 'd', 2, 0, 1, 2]]]
+      : [20, [['s', 0, 'W287', 'a'], ['f', 0, 'a', col, 10, 20]]];
+  }
+  const sp = B.fast ? .6 : 1, F = FR * sp, side = w => w === 'a' ? s : other(s), mw = w => $b(`.bt-mw.${side(w)}`);
+  const pan = w => w === 'a' ? panOf(s) : w === 'd' ? panOf(other(s)) : 0;
+  const pos = { p: [0, 0], e: [0, 0] }, setPos = sd => { $b(`.bt-mw.${sd}`).style.translate = `${pos[sd][0]}px ${pos[sd][1]}px`; };
+  const job = [];
+  for (const e of A[1]) {
+    const t = e[1] * F, k = e[0];
+    job.push(new Promise(res => setTimeout(() => { if (!B) return res();
+      if (k === 's') se(e[2], { pan: e[3] === 'm' ? 0 : pan(e[3]) });
+      else if (k === 'k') {
+        const tg = e[2] === 'bg' ? [$b('.bt-bg')] : e[2] === 'ad' ? [mw('a'), mw('d')] : [mw(e[2])], n = Math.max(1, e[6]) * 2, iv = (e[5] + 1) * F;
+        tg.forEach(x => x.animate(Array.from({ length: n + 1 }, (_, i) => ({ transform: i === n ? 'none' : `translate(${(i % 2 ? -1 : 1) * e[3]}px,${(i % 2 ? -1 : 1) * e[4]}px)` })), { duration: n * iv, easing: `steps(${n})` }));
+      } else if (k === 'm') {
+        const sd = side(e[2]), fl = sd === 'e' ? -1 : 1, fr = Math.max(1, e[5]); const p0 = [...pos[sd]];
+        pos[sd] = [p0[0] + e[3] * fl, p0[1] + e[4] * fl];
+        $b(`.bt-mw.${sd}`).animate([{ translate: `${p0[0]}px ${p0[1]}px` }, { translate: `${pos[sd][0]}px ${pos[sd][1]}px` }], { duration: fr * F, easing: `steps(${fr})`, fill: 'forwards' }); setPos(sd);
+      } else if (k === 'b') {
+        const d = $b('.bt-dim'); d.style.background = e[4]; d.style.setProperty('--fd', e[5] * F + 'ms'); d.style.opacity = e[3] / 16 * .75;
+      } else if (k === 'f') {
+        const fl = tintOf(side(e[2])), c = monEl(side(e[2])).querySelector('.clip'); fl.setAttribute('flood-color', e[3] === '#fff' ? '#fff' : e[3]); c.style.filter = `url(#btTint${side(e[2])})`;
+        const half = e[5] / 2 * F, t0 = performance.now(), mx = Math.min(1, e[4] / 16);
+        const step = () => { const u = (performance.now() - t0) / half; if (u >= 2 || !B) { fl.setAttribute('flood-opacity', 0); c.style.filter = ''; return; } fl.setAttribute('flood-opacity', (u < 1 ? u : 2 - u) * mx); requestAnimationFrame(step); }; step();
+      } else if (k === 'e') emit(e[2], s, col, Math.max(10, e[3]) * F);
+      else if (k === 'h') monEl(side(e[2])).style.visibility = e[3] ? 'hidden' : '';
+      else if (k === 'z') { const c = monEl(side(e[2])).querySelector('.clip'); c.style.transformOrigin = '50% 100%'; c.animate([{ transform: 'none' }, { transform: `scale(${e[3]},${e[4]})` }, { transform: 'none' }], { duration: e[5] * F }); }
+      else if (k === 'w') { const d = $b('.bt-dim'); d.style.background = col; d.style.setProperty('--fd', 8 * F + 'ms'); d.style.opacity = e[2] ? .35 : 0; }
+      res();
+    }, t)));
+  }
+  await wait(A[0] * F + 30);
+  // 원래 자리로
+  ['p', 'e'].forEach(sd => { const x = $b(`.bt-mw.${sd}`); x.getAnimations().forEach(a => a.cancel()); x.style.translate = ''; monEl(sd).style.visibility = ''; });
+  const d = $b('.bt-dim'); d.style.setProperty('--fd', '.2s'); d.style.opacity = 0;
+}
+// 맞음: 본가 효과음(굉장 H / 보통 M / 별로 L) + 4번 깜빡
+async function hitFx(s, eff = 'M') { se('KOUKA_' + eff, { pan: panOf(s) }); const m = monEl(s); for (let i = 0; i < 4; i++) { m.classList.add('blink'); await wait(B?.fast ? 34 : 66); m.classList.remove('blink'); await wait(B?.fast ? 34 : 66); } }
+// 능력 변화·상태 이상: 플래티넘 공통 연출의 소리
+async function statFx(s, up) { const m = monEl(s); m.classList.add(up ? 'up' : 'down'); se(up ? 'W287' : 'W287B', { pan: panOf(s) }); await wait(640); m.classList.remove('up', 'down'); }
+// [소리, 간격(1/30초), 횟수] (common_anims: burn·paralysis·sleep·freeze·poison)
+const ST_SE = { brn: ['W172', 0, 1], par: ['W085C', 0, 1], slp: ['W173B', 20, 1], frz: ['W258', 8, 2], psn: ['W092D', 3, 3], tox: ['W092D', 3, 3], conf: ['W146', 4, 4] };
+const stSe = (s, st) => { const x = ST_SE[st]; if (!x) return; for (let i = 0; i < x[2]; i++) se(x[0], { pan: panOf(s), at: i * x[1] / 30 }); };
+async function stFx(s, st) { const m = monEl(s); m.style.setProperty('--fx', { brn: '#ff6030', par: '#ffe040', slp: '#a0a0c0', frz: '#a8f0ff', psn: '#c060e0', tox: '#a040c0' }[st] || '#fff'); stSe(s, st); m.classList.add('glow'); await wait(520); m.classList.remove('glow'); }
 function xpGauge(src) { const P = boxOf(src.pid); if (!P) return 0; const m = gm(P), g = growth(P.sp), a = xpAt(g, m.lv), b = xpAt(g, m.lv + 1); return b > a ? (m.xp - a) / (b - a) : 1; }
 
 // ---------- 배틀 탭: 라인업 (gym.js 의 배틀 메뉴 창) ----------
@@ -447,9 +605,10 @@ function drawTab() {
   sh.innerHTML = `<h3>배틀</h3><p class="gy-lead">${GA.tyIcon(ty)} ${TYPE_KO[ty]} 타입 포켓몬으로 6마리까지 라인업을 짜요. 라인업은 3개까지 저장돼요.</p>
     <div class="lu-tabs" role="tablist">${L.map((l, i) => `<button role="tab" aria-selected="${i === g.luI}" data-lu="${i}">라인업 ${i + 1}<small>${l.length}/6</small></button>`).join('')}</div>
     <div class="lu-grid">${[0, 1, 2, 3, 4, 5].map(i => { const P = boxOf(cur[i]); if (!P) return `<button class="lu-slot empty" data-add="${i}" ${can.length ? '' : 'disabled'}><span>+</span></button>`; const m = gm(P);
-      return `<button class="lu-slot" data-p="${P.id}"><i class="lu-n">${i + 1}</i><img src="${pkSrc(P.sp, { s: P.shiny, f: P.sex === 'f' })}" alt=""><b>${esc(nmOf(P))}</b><span>Lv.${m.lv} · ${GA.rankOf(P)}</span></button>`; }).join('')}</div>
+      return `<button class="lu-slot" data-p="${P.id}"><i class="lu-n">${i + 1}</i>${thumb(P)}<b>${esc(nmOf(P))}</b><span>Lv.${m.lv} · ${GA.rankOf(P)}</span></button>`; }).join('')}</div>
     ${can.length ? '' : `<p class="lu-none">${TYPE_KO[ty]} 타입 포켓몬이 아직 없어요. 알을 부화시켜 데려와 주세요.</p>`}
     <div class="lu-act"><button class="gy-key main" data-go ${cur.length ? '' : 'disabled'}>연습 배틀</button><p>연습 배틀은 아무 트레이너와 겨뤄 보는 거예요. 보상은 없어요.</p></div>`;
+  fillTh(sh);
   sh.onclick = e => {
     const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap');
     if (b.dataset.lu) { g.luI = +b.dataset.lu; GA.save(); drawTab(); return; }
@@ -460,19 +619,19 @@ function drawTab() {
 }
 function gymPop(html, onClick) { const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`;
   p.onclick = e => { if (e.target === p) return p.remove(); const b = e.target.closest('button[data-a]'); if (b) { sfx('tap'); onClick?.(b.dataset.a, () => p.remove(), b); } };
-  document.querySelector('#gym .gy-main').appendChild(p); return p; }
+  document.querySelector('#gym .gy-main').appendChild(p); fillTh(p); return p; }
 function pickMon() {
   const cur = curLu(), L = S.box.filter(p => tyOk(p) && !cur.includes(p.id)).map(P => ({ P, m: gm(P) })).sort((a, b) => b.m.lv - a.m.lv || GA.ivSum(b.P) - GA.ivSum(a.P));
   if (!L.length) { gymPop(`<h4>라인업</h4><p class="gy-msg">더 넣을 수 있는 ${TYPE_KO[S.gym.ty]} 타입 포켓몬이 없어요.</p><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, c) => c()); return; }
-  gymPop(`<h4>라인업에 넣을 포켓몬</h4><div class="lu-pick">${L.map(({ P, m }) => `<button data-a="${P.id}"><img src="${pkSrc(P.sp, { s: P.shiny, f: P.sex === 'f' })}" alt=""><b>${esc(nmOf(P))}</b><span>Lv.${m.lv}</span><em>${GA.rankOf(P)}</em></button>`).join('')}</div><div class="gy-btns one"><button data-a="x">닫기</button></div>`,
+  gymPop(`<h4>라인업에 넣을 포켓몬</h4><div class="lu-pick">${L.map(({ P, m }) => `<button data-a="${P.id}">${thumb(P)}<b>${esc(nmOf(P))}</b><span>Lv.${m.lv}</span><em>${GA.rankOf(P)}</em></button>`).join('')}</div><div class="gy-btns one"><button data-a="x">닫기</button></div>`,
     (a, close) => { close(); if (a === 'x') return; const c = curLu(); if (c.length < 6) c.push(+a || a); GA.save(); drawTab(); });
 }
 function monPop(id) {
   const P = boxOf(+id || id); if (!P) return; const m = gm(P), g = growth(P.sp), a = xpAt(g, m.lv), b = xpAt(g, m.lv + 1), nt = D.nt[m.nat] || ['', '', ''];
   const mv = m.mv.map(x => mvOf(x)).filter(Boolean);
-  gymPop(`<div class="mp-head"><img src="${pkSrc(P.sp, { s: P.shiny, f: P.sex === 'f' })}" alt=""><div><h4>${esc(nmOf(P))}</h4><p>Lv.${m.lv} · 랭크 ${GA.rankOf(P)}</p><i class="mp-xp"><i style="width:${m.lv >= LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><small>${m.lv >= LV_MAX ? '최고 레벨' : `다음 레벨까지 ${Math.max(0, b - m.xp).toLocaleString()}`}</small></div></div>
+  gymPop(`<div class="mp-head">${thumb(P)}<div><h4>${esc(nmOf(P))}</h4><p>Lv.${m.lv} · 랭크 ${GA.rankOf(P)}</p><i class="mp-xp"><i style="width:${m.lv >= LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><small>${m.lv >= LV_MAX ? '최고 레벨' : `다음 레벨까지 ${Math.max(0, b - m.xp).toLocaleString()}`}</small></div></div>
     <dl class="gy-info mp-info"><dt>성격</dt><dd><span>${natKo(m.nat)}${nt[1] ? ` <small>${STAT_KO[nt[1]]}↑ ${STAT_KO[nt[2]]}↓</small>` : ''}</span></dd><i></i><dt>특성</dt><dd><span>${abKo(m.ab)}</span></dd><i></i></dl>
-    <div class="mp-moves">${mv.map(x => `<div class="mp-mv" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}">${GA.tyIcon(x[2])}<b>${esc(x[1])}</b><span>${['물리', '특수', '변화'][x[3]]}${x[4] ? ` · 위력 ${x[4]}` : ''}</span><p>${esc(x[8] || '')}</p></div>`).join('')}</div>
+    <div class="mp-moves">${mv.map(x => `<div class="mp-mv" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}">${GA.tyIcon(x[2])}<b>${esc(x[1])}</b><span><i class="cat c${x[3] | 0}">${CAT_KO[x[3] | 0]}</i>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'} · PP ${x[6] || '—'}</span><p>${esc(x[8] || '')}</p></div>`).join('')}</div>
     <div class="gy-btns"><button data-a="up">앞으로</button><button data-a="rm">빼기</button><button class="main" data-a="x">닫기</button></div>`,
     (a, close) => { const c = curLu(), i = c.indexOf(P.id); if (a === 'rm' && i >= 0) c.splice(i, 1); if (a === 'up' && i > 0) { c.splice(i, 1); c.splice(i - 1, 0, P.id); } close(); GA.save(); drawTab(); });
 }

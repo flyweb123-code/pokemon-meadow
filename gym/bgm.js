@@ -14,8 +14,10 @@ const PART = {
   bField: [1628096, 3984], bBattle: [1632096, 3820],
   sGym: [829664, 8876], sBaGym: [987488, 13836], sBaTrain: [1013312, 8996], sBaRival: [1067936, 8272], sBaChamp: [1048928, 11672],
   sWinTrain: [1084160, 4204], sWinGym: [1088384, 7584],
+  // 효과음: 배틀·기본 효과음 악보 묶음(gym/se.json 의 block), 악기, 소리 묶음
+  seBlock: [1450624, 126400], bSe: [1648288, 4416], bBasic: [1624352, 3720], wSe: [7219648, 85568],
 };
-const BANK = { field: { b: 'bField', w: ['wBasic', 'wField'] }, battle: { b: 'bBattle', w: ['wBasic', 'wBattle'] } };
+const BANK = { field: { b: 'bField', w: ['wBasic', 'wField'] }, battle: { b: 'bBattle', w: ['wBasic', 'wBattle'] }, S: { b: 'bSe', w: ['wBasic', 'wSe'] }, B: { b: 'bBasic', w: ['wBasic'] } };
 // 곡 이름 → 악보, 악기 묶음, 곡 볼륨(원본 SEQ 정보 값)
 const SONG = {
   gym: { s: 'sGym', bank: 'field', vol: 118 },            // 체육관
@@ -128,6 +130,34 @@ function watch() {
     if (!cur.src || cur.ctx !== ctx || cur.out !== out) { if (cur.src && cur.ctx !== ctx) { cur.src = null; } cur.name = null; start(cur.want, { fade: 1 }).catch(() => {}); }
   }, 700);
 }
+// ---------- 효과음 (배틀: 맞는 소리·쓰러짐·볼·기술 소리 등, 플래티넘 원본) ----------
+let SE = null, seOut = null;
+const seList = () => SE || (SE = fetch(`gym/se.json?v=${VER}`).then(r => r.json()).catch(e => { SE = null; throw e; }));
+const seBuf = new Map();   // 이름 → Promise<AudioBuffer>
+async function seMake(ctx, nm) {
+  const J = await seList(), e = J.se[nm]; if (!e) return null;
+  const B = BANK[e[2]], [blk, bank, ...wars] = await Promise.all([part('seBlock'), part(B.b), ...B.w.map(part)]);
+  const bk = sent.has(B.b) ? null : bank.slice(0), ws = B.w.map((w, i) => sent.has(w) ? null : wars[i].slice(0));
+  const r = await work({ seq: blk.slice(e[0], e[0] + e[1]), bankKey: B.b, bank: bk, warKeys: B.w, wars: ws, vol: e[3], gain: 1, trim: true });
+  sent.add(B.b); B.w.forEach(w => sent.add(w));
+  return toBuf(ctx, r);
+}
+function seGet(ctx, nm) {
+  let p = seBuf.get(nm); if (p && p.ctx === ctx) return p.p;
+  p = { ctx, p: seMake(ctx, nm) }; p.p.catch(() => seBuf.delete(nm)); seBuf.set(nm, p); return p.p;
+}
+// nm: 'DP_KOUKA_M' 처럼 SEQ_SE_ 뒤 이름. pan -1(왼쪽)~1(오른쪽), at: 몇 초 뒤
+async function sePlay(nm, { pan = 0, at = 0 } = {}) {
+  let ctx = null; try { ctx = GA.audio(); } catch (e) {} if (!ctx) return;
+  const v = (() => { try { return GA.sfxVol(); } catch (e) { return .1; } })(); if (!v) return;
+  const t0 = ctx.currentTime;
+  const buf = await seGet(ctx, nm).catch(() => null); if (!buf) return;
+  if (!seOut || seOut.context !== ctx) { seOut = ctx.createGain(); seOut.connect(ctx.destination); }
+  seOut.gain.value = 1.5 * v;
+  const src = ctx.createBufferSource(); src.buffer = buf;
+  let node = src; if (pan && ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = pan; src.connect(p); node = p; }
+  node.connect(seOut); src.start(Math.max(ctx.currentTime, t0 + at));
+}
 const GymBGM = {
   // 곡 바꾸기. 처음이면 받아 오고 만드는 동안 조용하다가 준비되면 서서히 커진다
   play(name, o) { if (!SONG[name]) return Promise.resolve(); cur.want = name; trim([name]); watch(); return on() ? start(name, o).catch(() => {}) : Promise.resolve(); },
@@ -135,7 +165,10 @@ const GymBGM = {
   // 다음에 틀 곡을 미리 만들어 둔다 (배틀 시작하면 승리 곡)
   prep(name) { if (SONG[name]) make(name).catch(() => {}); },
   // 체육관에서 나가면 메모리를 비운다
-  free() { this.stop(.3); pcm.clear(); bufs.clear(); if (worker) { try { worker.terminate(); } catch (e) {} worker = null; sent.clear(); } },
+  free() { this.stop(.3); pcm.clear(); bufs.clear(); seBuf.clear(); if (worker) { try { worker.terminate(); } catch (e) {} worker = null; sent.clear(); } },
+  // 효과음: 미리 만들어 두기 / 틀기
+  sePrep(L) { let ctx = null; try { ctx = GA.audio(); } catch (e) {} if (ctx) L.forEach(n => seGet(ctx, n).catch(() => {})); },
+  se: (nm, o) => sePlay(nm, o).catch(() => {}),
   get name() { return cur.want; },
   SONG,
 };

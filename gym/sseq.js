@@ -292,7 +292,11 @@
       try {
         if (!banks[m.bankKey]) banks[m.bankKey] = parseBank(new Uint8Array(m.bank));
         const ws = m.warKeys.map((k, i) => k == null ? null : wars[k] || (wars[k] = parseWar(new Uint8Array(m.wars[i]))));
-        const r = render({ seq: new Uint8Array(m.seq), bank: banks[m.bankKey], wars: ws, vol: m.vol });
+        const r = render({ seq: new Uint8Array(m.seq), bank: banks[m.bankKey], wars: ws, vol: m.vol, gain: m.gain });
+        if (m.trim && !r.loop) {   // 효과음: 끝의 무음은 잘라 낸다
+          let e = r.L.length; while (e > 0 && Math.abs(r.L[e - 1]) < 1e-4 && Math.abs(r.R[e - 1]) < 1e-4) e--;
+          e = Math.min(r.L.length, e + 64); r.L = r.L.slice(0, e); r.R = r.R.slice(0, e);
+        }
         G.postMessage({ id: m.id, L: r.L, R: r.R, rate: r.rate, loop: r.loop, loopStart: r.loopStart }, [r.L.buffer, r.R.buffer]);
       } catch (err) { G.postMessage({ id: m.id, err: String(err) }); }
     };
