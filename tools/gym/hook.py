@@ -137,4 +137,18 @@ def patch3(path):
     s = s[:k] + JS3.lstrip('\n') + s[k:]
     open(path, 'w', encoding='utf-8').write(s); print(path, 'ok3')
 
-for p in sys.argv[1:]: patch(p); patch2(p); patch3(p)
+MARK4 = '/*gym-hook4*/'
+# 4단계 훅 (v10.27): 라인업 그림을 포켓몬 상자 그림과 같게, 체육관 효과음 볼륨
+JS4 = MARK4 + r"""
+GA.thumb = P => ensureSprite(P.sp).then(() => thumbP(P)); GA.shinyHue = sp => shinyHue(sp); GA.sfxVol = () => volG(VOL.sfx); GA.quietTap = () => { sfxN++; };   // 이 클릭엔 기본 '톡' 소리를 내지 않는다(체육관 배틀은 본가 효과음)
+"""
+
+def patch4(path):
+    s = open(path, encoding='utf-8').read()
+    if MARK4 in s:
+        print(path, 'already4'); return
+    k = s.index('// 운영자 모드·테스트 버튼 (이 기기에만 저장)')
+    s = s[:k] + JS4.lstrip('\n') + s[k:]
+    open(path, 'w', encoding='utf-8').write(s); print(path, 'ok4')
+
+for p in sys.argv[1:]: patch(p); patch2(p); patch3(p); patch4(p)
