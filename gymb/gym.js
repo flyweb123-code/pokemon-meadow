@@ -47,19 +47,19 @@ const DESIGNS_PT = [
 const DESIGNS_FR = [
   { id: 'pewter', pt: 'oreburgh', n: '바위 계단', sub: '회색시티 체육관', w: 13, h: 16, leader: [6, 5], door: [6, 14], guy: [8, 13],
     deco: [[2, 5], [10, 5], [3, 9], [9, 9], [2, 11], [10, 11], [2, 13], [10, 13]],
-    path: [[6, 14], [6, 6]], slots: [[7, 10, 'l'], [5, 9, 'r'], [7, 8, 'l'], [5, 8, 'r'], [8, 6, 'l'], [4, 6, 'r'], [9, 8, 'l']], inY: 10, cuts: [[9, 11], [9, 11], [9, 11], [9, 11], [9, 11]] },
+    path: [[6, 14], [6, 6]], slots: [[7, 10, 'l'], [5, 9, 'r'], [7, 8, 'l'], [5, 8, 'r'], [8, 6, 'l'], [4, 6, 'r'], [9, 8, 'l']], inY: 10, tiny: [[7, 11], [[2, 3], [10, 11]]], cuts: [[9, 11], [9, 11], [9, 11], [9, 11], [9, 11]] },
   { id: 'cerulean', pt: 'snowpoint', n: '물 위 다리', sub: '블루시티 체육관', w: 17, h: 20, leader: [8, 6], door: [8, 18], guy: [7, 18],
     deco: [[2, 3], [14, 3], [1, 8], [15, 8], [1, 13], [15, 13], [5, 18], [11, 18]],
-    path: [[8, 18], [8, 16], [9, 16], [9, 10], [8, 10], [8, 7]], slots: [[8, 13, 'r'], [10, 10, 'l'], [6, 10, 'r'], [9, 8, 'l'], [7, 8, 'r'], [11, 7, 'l'], [5, 7, 'r']], inY: 15, cuts: [[9, 15], [9, 15], [12, 15], [12, 15], [15, 16]] },
+    path: [[8, 18], [8, 16], [9, 16], [9, 10], [8, 10], [8, 7]], slots: [[8, 13, 'r'], [10, 10, 'l'], [6, 10, 'r'], [9, 8, 'l'], [7, 8, 'r'], [11, 7, 'l'], [5, 7, 'r']], inY: 15, tiny: [[8, 16], [[3, 5], [12, 14]]], cuts: [[9, 15], [9, 15], [12, 15], [12, 15], [15, 16]] },
   { id: 'vermilion', pt: 'pastoria', n: '번개 관문', sub: '갈색시티 체육관', w: 11, h: 21, leader: [5, 2], door: [5, 19], guy: [4, 18],
     deco: [[1, 3], [9, 3], [1, 9], [9, 9], [1, 13], [9, 13], [1, 18], [9, 18]],
-    path: [[5, 19], [5, 16], [4, 16], [4, 9], [5, 9], [5, 3]], slots: [[5, 15, 'l'], [3, 13, 'r'], [5, 11, 'l'], [6, 8, 'l'], [4, 8, 'r'], [6, 4, 'l'], [4, 4, 'r']], inY: 15, cuts: [[9, 15], [9, 13], [9, 13], [9, 11], [9, 11]] },
+    path: [[5, 19], [5, 16], [4, 16], [4, 9], [5, 9], [5, 3]], slots: [[5, 15, 'l'], [3, 13, 'r'], [5, 11, 'l'], [6, 8, 'l'], [4, 8, 'r'], [6, 4, 'l'], [4, 4, 'r']], inY: 15, tiny: [[4, 16]], cuts: [[9, 15], [9, 13], [9, 13], [9, 11], [9, 11]] },
   { id: 'celadon', pt: 'eterna', n: '꽃 정원', sub: '무지개시티 체육관', w: 13, h: 20, leader: [6, 4], door: [6, 18], guy: [5, 17],
     deco: [[3, 10], [9, 10], [1, 16], [11, 16], [2, 17], [10, 17], [1, 12], [11, 12]],
-    path: [[6, 18], [6, 5]], slots: [[7, 13, 'l'], [5, 12, 'r'], [7, 11, 'l'], [5, 10, 'r'], [7, 9, 'l'], [5, 14, 'r'], [7, 14, 'l'], [5, 5, 'r'], [7, 5, 'l']], inY: 14, cuts: [[6, 14], [9, 14], [9, 14], [6, 8], [13, 14]] },
+    path: [[6, 18], [6, 5]], slots: [[7, 13, 'l'], [5, 12, 'r'], [7, 11, 'l'], [5, 10, 'r'], [7, 9, 'l'], [5, 14, 'r'], [7, 14, 'l'], [5, 5, 'r'], [7, 5, 'l']], inY: 14, tiny: [[6, 15], [[2, 3], [10, 11]]], cuts: [[6, 14], [9, 14], [9, 14], [6, 8], [13, 14]] },
   { id: 'fuchsia', pt: 'veilstone', n: '넓은 무대', sub: '연분홍시티 체육관', w: 15, h: 16, leader: [7, 6], door: [7, 14], guy: [11, 13],
     deco: [[2, 3], [12, 3], [2, 7], [12, 7], [3, 10], [11, 10], [2, 13], [12, 13]],
-    path: [[7, 14], [7, 8]], slots: [[8, 10, 'l'], [6, 10, 'r'], [8, 8, 'l'], [6, 8, 'r'], [9, 9, 'l'], [5, 9, 'r'], [9, 7, 'l'], [5, 7, 'r']], inY: 10, cuts: [[9, 10], [9, 10], [9, 10], [9, 10]] },
+    path: [[7, 14], [7, 8]], slots: [[8, 10, 'l'], [6, 10, 'r'], [8, 8, 'l'], [6, 8, 'r'], [9, 9, 'l'], [5, 9, 'r'], [9, 7, 'l'], [5, 7, 'r']], inY: 10, tiny: [[8, 11], [[1, 3], [12, 14]]], cuts: [[9, 10], [9, 10], [9, 10], [9, 10]] },
 ];
 // 맵 묶음: 'fr' 파이어레드 칸토 체육관 / 'pt' 플라티나 (경완 2026-10-27 '맵은 이전 버전으로 바꿔줘봐 지금 캐릭터랑 묻는지 함 보게')
 const MAP_SET = 'fr';
@@ -69,24 +69,36 @@ const dzBase = id => DESIGNS.find(d => d.id === id) || DESIGNS.find(d => d.old =
 // 닫힌 줄은 맵 그림에서 잘라 내고 위아래를 붙인다. 저장하는 칸(꾸미기·트레이너 자리)은 원래 맵 좌표(toF), 화면은 줄인 좌표(toV)
 const OPEN = [0, .2, .4, .6, .8, 1];
 // cuts[등급] = [a, b]: 위아래 줄 그림이 이어지는 자리를 골라 둠 (경완 2026-10-27 '맵 줄인거 티나지 않게')
-function cutOf(D) { const g = st(); if (!g) return null; if (D.cuts) return D.cuts[gradeOf(g.rep || 0).i] || null; const a0 = D.leader[1] + 3, b0 = D.door[1] - 3; if (b0 - a0 < 2) return null;
-  const a = a0 + Math.round((b0 - a0) * OPEN[gradeOf(g.rep || 0).i]); return a < b0 ? [a, b0] : null; }
+// tiny = 새내기(등급 0) 체육관: [줄 [a, b], 칸 [[a, b], …]] 나·입구 기둥·안내원만 겨우 들어가게 (경완 2026-10-27 '맨 처음은 진짜 겁나 좁아야')
+function cutOf(D) { const g = st(); if (!g) return null; const gi = gradeOf(g.rep || 0).i;
+  if (gi === 0 && D.tiny) return { y: D.tiny[0], x: D.tiny[1] || [] };
+  if (D.cuts) { const c = D.cuts[gi]; return c ? { y: c, x: [] } : null; }
+  const a0 = D.leader[1] + 3, b0 = D.door[1] - 3; if (b0 - a0 < 2) return null;
+  const a = a0 + Math.round((b0 - a0) * OPEN[gi]); return a < b0 ? { y: [a, b0], x: [] } : null; }
+// 잘라 낸 구간 R([[a, b], …], 오름차순)에 대해 원래 좌표 → 보이는 좌표(잘린 곳은 null), 그 반대
+const cutV = R => z => { let d = 0; for (const [a, b] of R) { if (z >= b) d += b - a; else if (z >= a) return null; } return z - d; };
+const cutF = R => z => { for (const [a, b] of R) if (z >= a) z += b - a; return z; };
+const keepSeg = (R, n) => { const out = []; let s = 0; for (const [a, b] of R) { if (a > s) out.push([s, a]); s = b; } if (s < n) out.push([s, n]); return out; };
 const dzCache = {};
 function dzOf(id) {
-  const D = dzBase(id), c = cutOf(D), k = D.id + (c || ''); if (dzCache[k]) return dzCache[k];
-  if (!c) return (dzCache[k] = Object.assign({}, D, { base: D, cut: null, toV: y => y, toF: y => y }));
-  const [a, b] = c, n = b - a, v = y => y < a ? y : y >= b ? y - n : null, pt = p => [p[0], v(p[1]), ...p.slice(2)];
-  const path = D.path.map(p => [p[0], v(p[1]) ?? a]).filter((p, i, L) => !i || p[0] !== L[i - 1][0] || p[1] !== L[i - 1][1]);
-  return (dzCache[k] = Object.assign({}, D, { base: D, cut: c, h: D.h - n, leader: pt(D.leader), door: pt(D.door), guy: pt(D.guy), path,
-    deco: D.deco.filter(p => v(p[1]) != null).map(pt), slots: D.slots.filter(p => v(p[1]) != null).map(pt), free: D.free && D.free.filter((_, y) => v(y) != null),
-    toV: v, toF: y => y < a ? y : y + n }));
+  const D = dzBase(id), c = cutOf(D), k = D.id + JSON.stringify(c); if (dzCache[k]) return dzCache[k];
+  const id0 = z => z;
+  if (!c) return (dzCache[k] = Object.assign({}, D, { base: D, cut: null, toV: id0, toF: id0, toVx: id0, toFx: id0 }));
+  const RY = c.y ? [c.y] : [], RX = c.x, v = cutV(RY), vx = cutV(RX), ok = p => v(p[1]) != null && vx(p[0]) != null, pt = p => [vx(p[0]), v(p[1]), ...p.slice(2)];
+  const ny = RY.reduce((t, [a, b]) => t + b - a, 0), nx = RX.reduce((t, [a, b]) => t + b - a, 0);
+  const path = D.path.map(p => [vx(p[0]) ?? 0, v(p[1]) ?? RY[0][0]]).filter((p, i, L) => !i || p[0] !== L[i - 1][0] || p[1] !== L[i - 1][1]);
+  return (dzCache[k] = Object.assign({}, D, { base: D, cut: c, h: D.h - ny, w: D.w - nx, leader: pt(D.leader), door: pt(D.door), guy: pt(D.guy), path,
+    deco: D.deco.filter(ok).map(pt), slots: D.slots.filter(ok).map(pt), free: D.free && D.free.filter((_, y) => v(y) != null).map(r => [...r].filter((_, x) => vx(x) != null).join('')),
+    toV: v, toF: cutF(RY), toVx: vx, toFx: cutF(RX) }));
 }
 // 잘라 붙인 맵 그림 (이음매 없이)
 const mapCache = {};
-function mapSrc(D) { const u = `${IMG}map/${D.id}.png`; if (!D.cut) return Promise.resolve(u); const k = D.id + D.cut; if (mapCache[k]) return mapCache[k];
+function mapSrc(D) { const u = `${IMG}map/${D.id}.png`; if (!D.cut) return Promise.resolve(u); const k = D.id + JSON.stringify(D.cut); if (mapCache[k]) return mapCache[k];
   return (mapCache[k] = new Promise(res => { const im = new Image(); im.onerror = () => res(u);
-    im.onload = () => { const [a, b] = D.cut, c = document.createElement('canvas'), W = im.width; c.width = W; c.height = D.h * 16; const g = c.getContext('2d');
-      g.drawImage(im, 0, 0, W, a * 16, 0, 0, W, a * 16); g.drawImage(im, 0, b * 16, W, im.height - b * 16, 0, a * 16, W, im.height - b * 16);
+    im.onload = () => { const c = document.createElement('canvas'); c.width = D.w * 16; c.height = D.h * 16; const g = c.getContext('2d');
+      const SY = keepSeg(D.cut.y ? [D.cut.y] : [], Math.ceil(im.height / 16)), SX = keepSeg(D.cut.x, Math.ceil(im.width / 16));
+      let dy = 0; for (const [y0, y1] of SY) { let dx = 0; const hh = Math.min(y1 * 16, im.height) - y0 * 16;
+        for (const [x0, x1] of SX) { const ww = Math.min(x1 * 16, im.width) - x0 * 16; g.drawImage(im, x0 * 16, y0 * 16, ww, hh, dx, dy, ww, hh); dx += ww; } dy += hh; }
       res(c.toDataURL()); }; im.src = u; })); }
 
 // ---------- 평판·등급 ----------
@@ -128,9 +140,10 @@ function build() {
 function layout(D = dzOf(st().d)) {
   const stg = $g('.gy-stage'), map = $g('.gy-map'), img = map.querySelector('img');
   const mw = D.w * 16, mh = D.h * 16, aw = stg.clientWidth - 16, ah = stg.clientHeight - 104 - 140;
-  sc = Math.min(3.5, aw / mw, Math.max(ah / mh, aw / mw * .8)); sc = Math.max(1.75, Math.floor(sc * 8) / 8);   // 너무 작아지지 않게 (넘치면 스크롤)   // 플라티나 맵은 넓어서 1배보다 작아질 수 있다
+  const bw = (D.base || D).w * 16, bh = (D.base || D).h * 16;   // 배율은 다 열린 맵 기준: 좁은 체육관은 화면에서도 작게 보인다
+  sc = Math.min(3.5, aw / bw, Math.max(ah / bh, aw / bw * .8)); sc = Math.max(1.75, Math.floor(sc * 8) / 8);   // 너무 작아지지 않게 (넘치면 스크롤)   // 플라티나 맵은 넓어서 1배보다 작아질 수 있다
   map.style.width = mw * sc + 'px'; map.style.height = mh * sc + 'px';
-  const mk = D.id + (D.cut || ''); if (img.dataset.k !== mk) { img.dataset.k = mk; mapSrc(D).then(u => { if (img.dataset.k === mk) img.src = u; }); }
+  const mk = D.id + JSON.stringify(D.cut); if (img.dataset.k !== mk) { img.dataset.k = mk; mapSrc(D).then(u => { if (img.dataset.k === mk) img.src = u; }); }
   img.style.width = mw * sc + 'px'; img.style.height = mh * sc + 'px';
   // 관장(나)이 보이는 칸의 가운데에 오게: 맵 둘레에 여백을 두고 그만큼 넘겨 둔다 (경완 2026-10-27 '내 캐릭터 있는 곳이 가운데에 오게')
   const W = stg.clientWidth, H = stg.clientHeight, T = parseFloat(getComputedStyle(stg).paddingTop) || 104, B = 150, cy = T + (H - T - B) / 2;
@@ -227,7 +240,7 @@ const DECO = {};
 const decoMax = () => Math.min(8, 2 + (st().decoN || 0));
 // 꾸미기 자리: g.dp 놓은 것(순서), g.dpos {꾸미기: [x, y]} 직접 놓은 칸 (경완 2026-10-27 '산 거 직접 놓을 수 있게'). 칸이 없으면 맵의 기본 자리
 function decoList(g = st(), D = dzOf(g.d)) { const pos = g.dpos || {}, used = new Set(sfList(g, D).map(z => z[1] + ',' + z[2])), out = [];
-  (g.dp || []).filter(Boolean).slice(0, decoMax()).forEach((k, i) => { let p = pos[k] && pos[k][2] === D.id && D.toV(pos[k][1]) != null ? [pos[k][0], D.toV(pos[k][1])] : null; if (p && !freeTile(D, p[0], p[1], used)) p = null;
+  (g.dp || []).filter(Boolean).slice(0, decoMax()).forEach((k, i) => { let p = pos[k] && pos[k][2] === D.id && D.toV(pos[k][1]) != null && D.toVx(pos[k][0]) != null ? [D.toVx(pos[k][0]), D.toV(pos[k][1])] : null; if (p && !freeTile(D, p[0], p[1], used)) p = null;
     if (!p) p = D.deco.find(q => freeTile(D, q[0], q[1], used)); if (!p) return; used.add(p[0] + ',' + p[1]); out.push([k, p[0], p[1]]); });
   return out; }
 // 놓을 수 있는 칸: 맵 안쪽, 관장·문·안내원·길·트레이너 자리·관장 옆 포켓몬 자리가 아닌 곳
@@ -263,7 +276,7 @@ function decoEdit() {
     if (!ded.sel) return; const used = new Set(L.filter(z => z[0] !== ded.sel).map(z => z[1] + ',' + z[2]));
     if (!freeTile(D, x, y, used)) { sfx('no'); return; }
     if (!g.dp.includes(ded.sel)) { if (g.dp.length >= decoMax()) { $g('.gy-dsub').innerHTML = '꾸미기 자리가 꽉 찼어요. 하나를 치우거나 체육관을 넓혀 주세요.'; return; } g.dp.push(ded.sel); }
-    g.dpos[ded.sel] = [x, D.toF(y), D.id]; sfx('tap'); save(); draw(); };
+    g.dpos[ded.sel] = [D.toFx(x), D.toF(y), D.id]; sfx('tap'); save(); draw(); };
   draw();
 }
 function decoDone() { if (!ded) return; ded = null; root.classList.remove('ded'); $g('.gy-map .gy-grid')?.remove(); $g('.gy-map').onclick = null; $g('.gy-dlg').onclick = null; renderHome(); }
@@ -287,7 +300,7 @@ function faceTo(D, x, y) { let best = null, bd = 1e9;
 // 체육관에 선 트레이너와 자리 [[s, x, y, 방향]]: 직접 고른 칸 먼저, 나머지는 기본 자리 순서대로
 function sfList(g = st(), D = dzOf(g.d)) {
   const L = g.sf.filter(inGym), used = new Set(), out = new Map();
-  for (const s of L) { const p = s.gp && s.gp[2] === D.id && D.toV(s.gp[1]) != null ? [s.gp[0], D.toV(s.gp[1])] : null; if (p && trTile(D, p[0], p[1], used)) { used.add(p[0] + ',' + p[1]); out.set(s, [s, p[0], p[1], faceTo(D, p[0], p[1])]); } }
+  for (const s of L) { const p = s.gp && s.gp[2] === D.id && D.toV(s.gp[1]) != null && D.toVx(s.gp[0]) != null ? [D.toVx(s.gp[0]), D.toV(s.gp[1])] : null; if (p && trTile(D, p[0], p[1], used)) { used.add(p[0] + ',' + p[1]); out.set(s, [s, p[0], p[1], faceTo(D, p[0], p[1])]); } }
   for (const s of L) { if (out.has(s)) continue; const q = D.slots.find(q => trTile(D, q[0], q[1], used)); if (!q) continue; used.add(q[0] + ',' + q[1]); out.set(s, [s, q[0], q[1], q[2]]); }
   return L.filter(s => out.has(s)).map(s => out.get(s));
 }
@@ -311,7 +324,7 @@ function sfPlace(s, back) {
   map.onclick = e => { if (!ded) return; const r = map.getBoundingClientRect(), x = Math.floor((e.clientX - r.left) / (16 * sc)), y = Math.floor((e.clientY - r.top) / (16 * sc));
     const used = new Set([...sfList(g, D).filter(z => z[0] !== s).map(z => z[1] + ',' + z[2]), ...decoList(g, D).map(z => z[1] + ',' + z[2])]);
     if (!trTile(D, x, y, used)) { sfx('no'); return; }
-    const was = inGym(s); s.gym = 1; s.gp = [x, D.toF(y), D.id]; if (!was) glog('sf', `${sfName(s)}${jong(s.nm) ? '을' : '를'} 체육관에 배치했다.`); sfx('tap'); save(); draw(); };
+    const was = inGym(s); s.gym = 1; s.gp = [D.toFx(x), D.toF(y), D.id]; if (!was) glog('sf', `${sfName(s)}${jong(s.nm) ? '을' : '를'} 체육관에 배치했다.`); sfx('tap'); save(); draw(); };
   draw();
 }
 
@@ -473,7 +486,7 @@ function mkCand(now) {
   const wage = Math.round(clampN((150 + lv * 5 + n * 35) * (trait === 'thrift' ? .7 : trait === 'lazy' ? .55 : trait === 'guts' ? 1.15 : 1), 150, 600) / 10) * 10;
   return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), f: C.f, trait, wage, team: mkTeam(C.t, lv, n) };
 }
-const staffMax = () => Math.min(5, 1 + gradeOf(st().rep || 0).i);
+const staffMax = () => Math.min(5, gradeOf(st().rep || 0).i);   // 새내기 체육관은 고용 못 함 (경완 2026-10-27)
 function tick(now = Date.now()) {
   const g = gInit(); if (!g || !g.d) return;
   rollWeek(now);
@@ -694,7 +707,7 @@ function infoPop() {
         <div><small>전적</small><b>${g.w || 0}승 ${g.l || 0}패</b><em>방어율 ${wr}%</em></div>
         <div><small>막은 도전자</small><b>${g.blk || 0}명</b><em>트레이너 포함</em></div>
         <div><small>이번 주</small><b>${w.w || 0}승 ${w.l || 0}패</b><em>${(w.g || 0).toLocaleString()}G</em></div>
-        <div><small>트레이너</small><b>${(g.sf || []).length} / ${staffMax()}명</b><em>등급마다 1명씩</em></div>
+        <div><small>트레이너</small><b>${(g.sf || []).length} / ${staffMax()}명</b><em>${staffMax() ? '등급마다 1명씩' : '동네 체육관부터'}</em></div>
         <div><small>꾸미기</small><b>${(g.dp || []).length} / ${decoMax()}개</b><em>놓은 것 / 자리</em></div>
       </div>
       <h5>${TYPE_KO[g.ty]} 자격 배지</h5><div class="if-bdg"><img alt="" src="${IMG}badge/${g.ty}.png" class="${g.bdg?.[g.ty] ? 'on' : ''}"><div><b>${g.bdg?.[g.ty] ? '받았어요!' : `도전자 ${bk} / 100명 막기`}</b><i class="gy-bar"><i style="width:${bk}%"></i></i><small>모은 배지 ${nb} / 18</small></div></div>

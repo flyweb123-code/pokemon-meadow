@@ -354,7 +354,7 @@ function movePanel(req) {
   return new Promise(res => {
     const mv = req.active[0].moves;
     const p = panel(`<div class="bp-moves">${[0, 1, 2, 3].map(i => { const m = mv[i]; if (!m) return `<i class="mvb empty"></i>`; const d = mvOf(m.id) || ['', m.move, 1, 0]; const ty = d[2] || 1;
-      return `<div class="mvw"><button class="mvb" data-i="${i}" style="background-image:url(${IMG}bt/mv_${ty}.png)" ${m.disabled || m.pp <= 0 ? 'disabled' : ''}><b>${esc(d[1])}</b>${effTag(d)}${tyTag(ty, d[3])}<span class="pp">PP <em>${m.pp}/${m.maxpp}</em></span></button><button class="mvi" data-info="${i}" aria-label="기술 설명">?</button></div>`; }).join('')}
+      return `<div class="mvw"><button class="mvb" data-i="${i}" style="background-image:url(${IMG}bt/mv_${ty}.png)" ${m.disabled || m.pp <= 0 ? 'disabled' : ''}><b>${esc(d[1])}</b><span class="pw">위력 <em>${d[4] || '—'}</em> 명중 <em>${d[5] && d[5] !== true ? d[5] : '—'}</em></span>${effTag(d)}${tyTag(ty, d[3])}<span class="pp">PP <em>${m.pp}/${m.maxpp}</em></span></button><button class="mvi" data-info="${i}" aria-label="기술 설명">?</button></div>`; }).join('')}
       <button class="bb cancel" data-x><span>취소</span></button></div>`);
     p.onclick = e => {
       const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe();
@@ -462,11 +462,12 @@ async function run(opts) {
   const btl = new PSim.Battle({ formatid: 'gen9customgame', seed: [1, 2, 3, 4].map(() => Math.floor(Math.random() * 65536)) });
   btl.setPlayer('p1', { name: '관장', team: my.map(psSet) });
   btl.setPlayer('p2', { name: opts.foe.nm, team: foeT.map(psSet) });
-  B = { btl, my, foe: foeT, act: { p: null, e: null }, li: 0, practice: !!opts.practice, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), xr: {} };
+  // 쇼다운은 교체할 때마다 pokemon 배열 순서를 바꾼다. 처음 순서(my·foe 와 같은 순서)를 따로 둔다 (경완 2026-10-27 '시라소몬인데 망키라고 나옴')
+  B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null }, li: 0, practice: !!opts.practice, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), xr: {} };
   const meF = GA.trOf().sex === 'f';
   const music = opts.music || 'train'; M('play', music, { fade: .2 }); M('prep', music === 'train' ? 'winTrain' : 'winGym');
   const encDone = await encounter(opts);
-  el.classList.remove('off'); el.hidden = false; el.className = 'bt intro';
+  el.classList.remove('off'); el.hidden = false; el.className = 'bt intro'; fit();   // className 을 새로 쓰면 mob·msgmid 가 지워져 대화창이 사라졌음 (경완 2026-10-27 '배틀 상태창이 없어졌네')
   $b('.bt-bg').style.backgroundImage = `url(${IMG}bt/bg_${opts.bg || 'in1'}.png)`;
   $b('.bt-tr.e').style.backgroundImage = `url(${trSrc(opts.foe.tr)})`;
   $b('.bt-tr.p').style.backgroundImage = `url(${opts.meBackUrl || `${IMG}trb/${meF ? 'pt_f' : 'pt_m'}.png`})`;
@@ -522,7 +523,7 @@ const sideOf = id => id.startsWith('p1') ? 'p' : 'e';
 const nmIn = (id) => id.replace(/^p\da?: /, '');
 const who = id => (sideOf(id) === 'e' ? '상대 ' : '') + nmIn(id);
 function partyIdx(side, line) {
-  const L = side === 'p' ? B.btl.p1.pokemon : B.btl.p2.pokemon, nm = nmIn(line[2]), spn = line[3].split(',')[0];
+  const L = B.o[side], nm = nmIn(line[2]), spn = line[3].split(',')[0];
   const k = L.findIndex(p => p.name === nm && p.species.name === spn && !p.fainted && p !== (side === 'p' ? B.act.p?.pk : B.act.e?.pk));
   return k >= 0 ? k : L.findIndex(p => p.name === nm);
 }
@@ -543,7 +544,7 @@ async function handle(a) {
   switch (k) {
     case 'switch': case 'drag': {
       const s = sideOf(a[2]), i = partyIdx(s, a), det = a[3].split(', '), [hp, mhp] = hpOf(a[4]);
-      const src = s === 'p' ? B.my[i] : B.foe[i], pk = (s === 'p' ? B.btl.p1 : B.btl.p2).pokemon[i];
+      const src = s === 'p' ? B.my[i] : B.foe[i], pk = B.o[s][i];
       const old = A(s);
       if (old && !old.fnt) { await msg(s === 'p' ? `돌아와! ${old.nm}!` : `${eun(B.foeNm)} ${eul(old.nm)} 되돌렸다!`, 0); await recall(s); }
       const sp = PSim.Dex.species.get(det[0]).num || src.sp;
@@ -701,7 +702,7 @@ async function stFx(s, st) { const m = monEl(s); m.style.setProperty('--fx', { b
 async function expGain(X) {
   const foe = B.foe[X.i]; if (!foe) return;
   for (const pid of B.used) {
-    const i = B.my.findIndex(o => o.pid === pid), pk = B.btl.p1.pokemon[i], P = boxOf(pid); if (!P || !pk || pk.fainted) continue;
+    const i = B.my.findIndex(o => o.pid === pid), pk = B.o.p[i], P = boxOf(pid); if (!P || !pk || pk.fainted) continue;
     const m = gm(P), r = gainXp(P, xpFor(foe, m.lv)); if (!r.n) continue;
     const x = B.xr[pid] = B.xr[pid] || { n: 0, lv0: r.lv0, lv: r.lv0, learned: [] }; x.n += r.n; x.lv = r.lv; x.learned.push(...r.learned);
     const nm = B.my[i].nm, A = B.act.p, on = A && A.pid === pid && !A.fnt;
