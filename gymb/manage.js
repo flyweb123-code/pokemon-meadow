@@ -431,13 +431,13 @@ function shopDeco(body) {
       g.own[k] = 1; const i = placed.indexOf(null); if (i >= 0) g.dp[i] = k; K.save(); redraw(); });
   };
 }
-// 관장 의상: 얼굴·머리는 그대로, 옷 색만 (맵·배틀 뒷모습 모두). 누르면 그 옷을 입은 전신 카드 (경완 2026-10-27)
+// 관장 의상: 앞모습은 옷 모양까지 새로 그린 그림, 맵·배틀 뒷모습은 옷 색만. 누르면 그 옷을 입은 전신 카드 (경완 2026-10-27)
 function shopFit(body) {
   const g = st(), G = K.gradeOf(g.rep || 0).i; g.fits = g.fits || {};
   const need = o => K.gradeOf([0, 100, 250, 450, 700, 1000][o.lv]).n;
   const row = (k, o) => { const own = !k || g.fits[k], on = (g.fit || '') === k, lock = o.lv && G < o.lv;
     return `<button data-fit="${k}" class="${on ? 'on' : ''}${lock ? ' lock' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${o.n}</b><em>${on ? '입는 중' : own ? '입기' : lock ? `${need(o)}부터` : gold(o.g)}</em></button>`; };
-  body.innerHTML = `<p class="gy-lead">체육관에서 입는 관장 옷이에요. 얼굴은 그대로, 옷 색만 바뀌어요. 눌러서 입은 모습을 미리 볼 수 있어요.</p><div class="ft-grid">${row('', { n: '기본 옷' })}${Object.entries(K.OUTFITS).map(([k, o]) => row(k, o)).join('')}</div>`;
+  body.innerHTML = `<p class="gy-lead">체육관에서 입는 관장 옷이에요. 옷마다 모양이 달라요. 맵과 배틀 뒷모습은 옷 색이 바뀌어요. 눌러서 입은 모습을 미리 볼 수 있어요.</p><div class="ft-grid">${row('', { n: '기본 옷' })}${Object.entries(K.OUTFITS).map(([k, o]) => row(k, o)).join('')}</div>`;
   body.querySelectorAll('img[data-fk]').forEach(im => K.fitSrc('tr', im.dataset.fk).then(u => { im.src = u; }));
   body.onclick = async (e, b) => {
     sfx('tap'); const k = b.dataset.fit; if (k == null) return; const o = k ? K.OUTFITS[k] : { n: '기본 옷' }, own = !k || g.fits[k], on = (g.fit || '') === k, lock = o.lv && G < o.lv;

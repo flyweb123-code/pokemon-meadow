@@ -206,6 +206,8 @@ const fitCache = {};
 function fitSrc(kind, fit = st()?.fit) {
   const base = myOw(), key = `${kind}/${base}`, url = `${IMG}${key}.png`, O = OUTFITS[fit];
   if (!O || !CLOTH[key]) return Promise.resolve(url);
+  // 앞모습(전신 카드·상점)은 옷 모양까지 새로 그린 그림 (Figma 이미지 모델, 경완 2026-10-27 '색 바꾸기 수준이 아니라 옷 좀 바꿔줘')
+  if (kind === 'tr') return Promise.resolve(`${IMG}fit/${fit}_${myF() ? 'f' : 'm'}.png`);
   const ck = key + '|' + fit; if (fitCache[ck]) return fitCache[ck];
   return (fitCache[ck] = new Promise(ok => { const im = new Image(); im.onload = () => {
     const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const x = c.getContext('2d'); x.drawImage(im, 0, 0);
@@ -601,7 +603,8 @@ function renderHome(quiet) {
   if (!quiet) homeSay();
 }
 // 관장 뒤 포켓몬 (경완 2026-10-27): 기본은 지금 라인업에서 레벨이 가장 높은 포켓몬, 눌러서 바꿀 수 있다 (g.pal)
-function palPick() { const g = st(), L = luNow(), P = g.pal && S.box.find(p => p.id === g.pal); if (P) return P;
+// 경완 2026-10-27 '관장 옆 포켓몬은 라인업에서 고를 수 있게': 고른 포켓몬이 지금 라인업에 없으면 기본으로
+function palPick() { const g = st(), L = luNow(), P = g.pal && L.find(p => p.id === g.pal); if (P) return P;
   return L.slice().sort((a, b) => GB().gm(b).lv - GB().gm(a).lv || GA.ivSum(b) - GA.ivSum(a))[0] || null; }
 let palRaf = 0;
 function palEnt(D) {
@@ -619,8 +622,9 @@ function palEnt(D) {
     palRaf = requestAnimationFrame(tick); }).catch(() => {});
 }
 function palChoose() {
-  const g = st(), cur = palPick(), L = S.box.slice().sort((a, b) => GB().gm(b).lv - GB().gm(a).lv).slice(0, 60);
-  const p = pop(`<h4>관장 옆 포켓몬</h4><p class="gy-msg">홈 화면에서 내 뒤에 서 있을 포켓몬을 골라요.</p><div class="lu-pick">${L.map(P => `<button data-a="${P.id}" class="${cur && cur.id === P.id ? 'on' : ''}">${GB().thumb(P)}<b>${esc(SPECIES[P.sp]?.n || "")}</b><span>Lv.${GB().gm(P).lv}</span></button>`).join('')}</div><div class="gy-btns"><button data-a="auto">가장 센 포켓몬</button><button data-a="x">닫기</button></div>`,
+  const g = st(), cur = palPick(), L = luNow();
+  if (!L.length) return say('라인업이 비어 있어요. 배틀 메뉴에서 라인업을 먼저 짜 주세요.');
+  const p = pop(`<h4>관장 옆 포켓몬</h4><p class="gy-msg">지금 라인업(라인업 ${(g.luI || 0) + 1})에서 내 옆에 서 있을 포켓몬을 골라요.</p><div class="lu-pick">${L.map(P => `<button data-a="${P.id}" class="${cur && cur.id === P.id ? 'on' : ''}">${GB().thumb(P)}<b>${esc(SPECIES[P.sp]?.n || "")}</b><span>Lv.${GB().gm(P).lv}</span></button>`).join('')}</div><div class="gy-btns"><button data-a="auto">가장 센 포켓몬</button><button data-a="x">닫기</button></div>`,
     (a, close) => { close(); if (a === 'x') return; g.pal = a === 'auto' ? 0 : (+a || a); save(); renderHome(); });
   GB().fillTh?.(p);
 }

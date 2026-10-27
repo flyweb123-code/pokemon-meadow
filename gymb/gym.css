@@ -670,3 +670,4 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 @keyframes reBar{to{background-position:-22px 0}}
 .gy-re.build .re-shut{animation:reShake .42s steps(2,end) infinite}
 @keyframes reShake{50%{transform:translateY(2px)}}
+.gy-pop .gy-btns button.on{background:#fff6c8;box-shadow:inset 0 0 0 2px #ffd84a,0 3px 0 var(--frame)}
