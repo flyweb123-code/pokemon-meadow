@@ -151,4 +151,28 @@ def patch4(path):
     s = s[:k] + JS4.lstrip('\n') + s[k:]
     open(path, 'w', encoding='utf-8').write(s); print(path, 'ok4')
 
-for p in sys.argv[1:]: patch(p); patch2(p); patch3(p); patch4(p)
+MARK5 = '/*gym-hook5*/'
+# 5단계 훅 (v10.29): 프로필 트레이너 카드 아래 체육관 자격 배지 18칸 (받은 배지는 색, 없으면 실루엣). 체육관 모드를 켠 기기에서 체육관을 연 뒤에만
+CSS5 = MARK5 + r"""#pfGymBdg[hidden]{display:none}html:not(.op) #pfGymBdg,html:not(.gym-on) #pfGymBdg{display:none!important}
+#pfGymBdg .gb-grid{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:4px}#pfGymBdg img{width:100%;max-width:30px;aspect-ratio:1;justify-self:center;image-rendering:pixelated;filter:brightness(0);opacity:.18}#pfGymBdg img.on{filter:none;opacity:1}
+#pfGymBdg h4 small{font-size:12px;font-weight:400;color:var(--dim);margin-left:6px}
+"""
+HTML5 = """<section class="set-sec pf-sec" id="pfGymBdg" hidden><h4>체육관 자격 배지<small></small></h4><div class="gb-grid"></div></section>   <!-- 체육관 모드 자격 배지 (gym-hook5) -->
+      """
+JS5 = MARK5 + r"""
+window.gymBdgRow = () => { const sec = $('#pfGymBdg'), g = S.gym; if (!sec) return; sec.hidden = !(g && g.d); if (sec.hidden) return; const b = g.bdg || {}, n = Object.keys(b).length;
+  sec.querySelector('small').textContent = `${n}/18`; sec.querySelector('.gb-grid').innerHTML = TYPE_KO.map((t, i) => i ? `<img alt="${t}" title="${t} 자격 배지${b[i] ? '' : ' (아직)'}" src="gym/img/badge/${i}.png" class="${b[i] ? 'on' : ''}">` : '').join(''); };
+"""
+
+def patch5(path):
+    s = open(path, encoding='utf-8').read()
+    if MARK5 in s:
+        print(path, 'already5'); return
+    k = s.index('</style>'); s = s[:k] + CSS5 + s[k:]
+    a = '<section class="set-sec pf-sec">\n        <h4>오늘</h4>'; assert s.count(a) == 1; s = s.replace(a, HTML5 + a)
+    a = 'function renderProfile() {'; assert s.count(a) == 1; s = s.replace(a, a + ' try { window.gymBdgRow?.(); } catch (e) {}')
+    k = s.index('// 운영자 모드·테스트 버튼 (이 기기에만 저장)')
+    s = s[:k] + JS5.lstrip('\n') + s[k:]
+    open(path, 'w', encoding='utf-8').write(s); print(path, 'ok5')
+
+for p in sys.argv[1:]: patch(p); patch2(p); patch3(p); patch4(p); patch5(p)

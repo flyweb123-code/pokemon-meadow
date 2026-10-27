@@ -2,6 +2,9 @@
 body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop.scsp{background-image:var(--full)!important}/* v9.43 경완: 맵 편집에선 타는 소품을 조각 없이 통그림으로 */.scoff{position:absolute;inset:0;background-size:100% 100%;image-rendering:pixelated;pointer-events:none}.lamps .scoff{display:none}.scem{display:none}.lamps .scem{display:block}.scem{position:absolute;inset:0;background-size:100% 100%;image-rendering:pixelated;pointer-events:none;filter:brightness(1.12) drop-shadow(0 0 2px rgba(255,246,206,.9)) drop-shadow(0 0 5px rgba(255,236,170,.55))}
 /* v9.41 경완 '횃불 불 부분 모닥불처럼 둘레 밝게': 횃불 불꽃(.scfl) 규칙도 작업실 전용 style 에만 있어 게임에선 불꽃이 안 보였다 → 게임 style 로, 모닥불(.flame::before)처럼 둘레 빛 */
 .scfl{position:absolute;background-size:600% 100%;image-rendering:pixelated;filter:drop-shadow(0 0 6px rgba(255,140,30,.9));pointer-events:none;animation:fireK 3s ease-in-out infinite}.scfl::before{content:"";position:absolute;left:50%;top:62%;width:340%;height:210%;transform:translate(-50%,-50%) scale(var(--fk));border-radius:50%;background:radial-gradient(closest-side,rgba(255,190,80,.6),rgba(255,150,50,.25) 55%,rgba(255,120,30,0));opacity:calc(var(--fk) - .12);z-index:-1;pointer-events:none}.prop.sc .scfl b{position:absolute;left:50%;bottom:30%;width:2px;height:2px;background:#ffd060;box-shadow:0 0 3px #ff8a20;opacity:0;animation:ember 1.3s linear infinite;--x:-5px}.prop.sc .scfl b:nth-child(2){animation-delay:-.45s;--x:6px;animation-duration:1.1s}.prop.sc .scfl b:nth-child(3){animation-delay:-.9s;--x:2px;animation-duration:1.5s}
+/*gym-hook5*/#pfGymBdg[hidden]{display:none}html:not(.op) #pfGymBdg,html:not(.gym-on) #pfGymBdg{display:none!important}
+#pfGymBdg .gb-grid{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:4px}#pfGymBdg img{width:100%;max-width:30px;aspect-ratio:1;justify-self:center;image-rendering:pixelated;filter:brightness(0);opacity:.18}#pfGymBdg img.on{filter:none;opacity:1}
+#pfGymBdg h4 small{font-size:12px;font-weight:400;color:var(--dim);margin-left:6px}
 </style></head><body><title>포켓몬 키우기</title>
 <script>
 // v5.74 경완: 베타 판 — 운영자 칸 '베타 판 쓰기'를 켠 기기만 beta.html(새 기능 시험판)로 넘어간다. 저장은 본 게임과 같다
@@ -1647,6 +1650,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
           <div class="tr-next" id="trNext" hidden></div>
         </div>
       </section>
+      <section class="set-sec pf-sec" id="pfGymBdg" hidden><h4>체육관 자격 배지<small></small></h4><div class="gb-grid"></div></section>   <!-- 체육관 모드 자격 배지 (gym-hook5) -->
       <section class="set-sec pf-sec">
         <h4>오늘</h4>
         <div class="pf-grid">
@@ -6434,6 +6438,9 @@ document.addEventListener('click', e => {
 GA.audio = () => audio(); GA.bgmGain = () => { if (!audio()) return null; bgmRoute(); return bgm.gain; }; GA.bgmOn = () => bgmOn; GA.cry = (sp, d) => playCry(sp, d);
 /*gym-hook4*/
 GA.thumb = P => ensureSprite(P.sp).then(() => thumbP(P)); GA.shinyHue = sp => shinyHue(sp); GA.sfxVol = () => volG(VOL.sfx); GA.quietTap = () => { sfxN++; };   // 이 클릭엔 기본 '톡' 소리를 내지 않는다(체육관 배틀은 본가 효과음)
+/*gym-hook5*/
+window.gymBdgRow = () => { const sec = $('#pfGymBdg'), g = S.gym; if (!sec) return; sec.hidden = !(g && g.d); if (sec.hidden) return; const b = g.bdg || {}, n = Object.keys(b).length;
+  sec.querySelector('small').textContent = `${n}/18`; sec.querySelector('.gb-grid').innerHTML = TYPE_KO.map((t, i) => i ? `<img alt="${t}" title="${t} 자격 배지${b[i] ? '' : ' (아직)'}" src="gym/img/badge/${i}.png" class="${b[i] ? 'on' : ''}">` : '').join(''); };
 // 운영자 모드·테스트 버튼 (이 기기에만 저장)
 { const de = document.documentElement, get = k => { try { return localStorage.getItem(k) === '1'; } catch (e) { return false; } }, put = (k, v) => { try { v ? localStorage.setItem(k, '1') : localStorage.removeItem(k); } catch (e) {} };
   const paint = () => { const op = get('pk-op'), t = op && get('pk-tests'); de.classList.toggle('op', op); de.classList.toggle('tests', t); $('#testSw').setAttribute('aria-checked', t); };
@@ -6477,7 +6484,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.28';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.29';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9749,7 +9756,7 @@ let budFocus = null;   // v4.92: 프로필에서 눌러 온 짝꿍 카드 테두
 function clearBudFocus() { if (budFocus == null) return; budFocus = null; document.querySelectorAll('.bd-card.focus').forEach(c => c.classList.remove('focus')); }
 document.addEventListener('pointerdown', e => { if (budFocus != null && !e.target.closest('.bd-card.focus')) clearBudFocus(); }, true);
 for (const k of ['Hatch', 'Evo']) $('#pf' + k + 'Box')?.addEventListener('click', e => { const g = e.currentTarget._go; if (g) { sfx('tap'); g(); } });
-function renderProfile() {
+function renderProfile() { try { window.gymBdgRow?.(); } catch (e) {}
   renderTrainer();
   if (!$('#pfWalk')) return; const T = today(), live = S.ped && S.ped.d === T.d, k0 = new Date(); k0.setHours(0, 0, 0, 0);
   const runKm = S.runs.filter(r => r.t >= +k0).reduce((a, r) => a + r.km, 0);

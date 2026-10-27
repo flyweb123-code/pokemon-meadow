@@ -80,6 +80,29 @@ function gm(P) {
   if (!D.sp[P.sp]?.ab?.includes(m.ab)) m.ab = D.sp[P.sp]?.ab?.[0] || m.ab;   // 진화해서 특성이 바뀌면 새 종의 첫 특성
   return m;
 }
+// 경험치 (배틀·훈련장): 레벨업하면 그 레벨에 배우는 기술을 익힌다. 기술이 4개면 '아는 기술'(kn)에 넣고, 가장 약한 공격 기술보다 세면 바로 바꾼다 (변화 기술은 자동으로 안 바꿈)
+function gainXp(P, n) {
+  const m = gm(P), g = growth(P.sp), out = { lv0: m.lv, lv: m.lv, n: 0, learned: [] };   // learned: [[새 기술, 잊은 기술|'']]
+  if (m.lv >= LV_MAX || !(n > 0)) return out;
+  n = Math.round(n); out.n = n; m.xp = Math.min(m.xp + n, xpAt(g, LV_MAX));
+  while (m.lv < LV_MAX && m.xp >= xpAt(g, m.lv + 1)) { m.lv++; const L = D.sp[P.sp]?.lv || []; for (let i = 0; i < L.length; i += 2) if (L[i] === m.lv) teach(m, D.mv[L[i + 1]][0], out); }
+  out.lv = m.lv; return out;
+}
+const mvPow = id => { const d = mvOf(id); return !d ? 0 : d[3] === 2 ? -1 : (d[4] || 40); };
+function teach(m, id, out, auto = true) {
+  if (m.mv.includes(id)) return;
+  if (m.mv.length < 4) { m.mv.push(id); out?.learned.push([id, '']); return; }
+  m.kn = m.kn || []; if (!m.kn.includes(id)) m.kn.push(id);
+  if (!auto) return; const nw = mvPow(id); if (nw <= 0) return;
+  let k = -1; m.mv.forEach((x, i) => { const p = mvPow(x); if (p >= 0 && p < nw && (k < 0 || p < mvPow(m.mv[k]))) k = i; });
+  if (k < 0) return;
+  const old = m.mv[k]; m.mv[k] = id; m.kn = m.kn.filter(x => x !== id); m.kn.push(old); out?.learned.push([id, old]);
+}
+// 기술 바꾸기 후보: 지금 레벨까지 레벨업으로 배우는 기술 + 아는 기술(기술머신·훈련장)
+const mvCands = (P, m = gm(P)) => [...new Set([...lvMoves(P.sp, m.lv).map(([, i]) => D.mv[i][0]), ...(m.kn || [])])].filter(id => !m.mv.includes(id) && mvOf(id));
+// 쓰러뜨린 상대 한 마리의 경험치 (본가 5세대 식, 기초 경험치는 종족값 합으로 어림, 트레이너 배틀 1.5배)
+function xpFor(foe, Lp) { const bs = SPECIES[foe.sp]?.bs || [60, 60, 60, 60, 60, 60], t = bs.reduce((a, b) => a + b, 0), b = Math.round(t * t / 1000), L = foe.lv;
+  return Math.floor(1.5 * b * L / 5 * ((2 * L + 10) / (L + Lp + 10)) ** 2.5) + 1; }
 const boxOf = id => S.box.find(p => p.id === id);
 const nmOf = P => SPECIES[P.sp]?.n || '???';
 const tyOk = P => (SPECIES[P.sp]?.t || []).includes(S.gym.ty);
@@ -392,12 +415,12 @@ async function run(opts) {
   const btl = new PSim.Battle({ formatid: 'gen9customgame', seed: [1, 2, 3, 4].map(() => Math.floor(Math.random() * 65536)) });
   btl.setPlayer('p1', { name: '관장', team: my.map(psSet) });
   btl.setPlayer('p2', { name: opts.foe.nm, team: foeT.map(psSet) });
-  B = { btl, my, foe: foeT, act: { p: null, e: null }, li: 0, practice: !!opts.practice, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null };
+  B = { btl, my, foe: foeT, act: { p: null, e: null }, li: 0, practice: !!opts.practice, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), xr: {} };
   const meF = GA.trOf().sex === 'f';
   el.classList.remove('off'); el.hidden = false; el.className = 'bt intro';
   $b('.bt-bg').style.backgroundImage = `url(${IMG}bt/bg_${opts.bg || 'in1'}.png)`;
   $b('.bt-tr.e').style.backgroundImage = `url(${IMG}tr/${opts.foe.tr}.png)`;
-  $b('.bt-tr.p').style.backgroundImage = `url(${IMG}trb/${meF ? 'leaf' : 'red'}.png)`;
+  $b('.bt-tr.p').style.backgroundImage = `url(${IMG}trb/${opts.meBack || (meF ? 'leaf' : 'red')}.png)`;
   ['e', 'p'].forEach(s => { $b(`.bt-hb.${s}`).classList.remove('on'); monEl(s).className = `bt-mon ${s}`; setSt(s, ''); });
   $b('.bt-msg .t').textContent = ''; idlePanel();
   // 등장: 화면이 번쩍이며 가로줄로 열리고, 발판·트레이너가 양옆에서 미끄러져 들어온다
@@ -418,7 +441,7 @@ async function run(opts) {
     }
   }
   lowHp(false); M('play', 'gym', { fade: 1.2 });
-  el.classList.add('off'); await wait(450); el.hidden = true; const res = { won, quit: out === 'quit', turns: btl.turn, my: B?.my }; B = null; return res;
+  el.classList.add('off'); await wait(450); el.hidden = true; const res = { won, quit: out === 'quit', turns: btl.turn, my: B?.my, used: [...(B?.used || [])], xr: B?.xr || {} }; B = null; return res;
 }
 
 // 쇼다운 기록을 한 줄씩 읽어 화면에 보여 준다. 고를 차례가 오면 아래 화면 메뉴
@@ -477,7 +500,7 @@ async function handle(a) {
       if (old && !old.fnt) { await msg(s === 'p' ? `돌아와! ${old.nm}!` : `${eun(B.foeNm)} ${eul(old.nm)} 되돌렸다!`, 0); await recall(s); }
       const sp = PSim.Dex.species.get(det[0]).num || src.sp;
       const X = B.act[s] = { i, pk, nm: src.nm, sp, lv: +(det.find(d => /^L\d+/.test(d)) || 'L100').slice(1), g: det.includes('F') ? 'F' : det.includes('M') ? 'M' : '', shiny: det.includes('shiny'), hp, mhp, st: stOf(a[4]), fnt: false };
-      if (s === 'p') X.xpg = xpGauge(src);
+      if (s === 'p') { X.xpg = xpGauge(src); X.pid = src.pid; B.used.add(src.pid); }
       if (s === 'e') { if (!B.eOut) { B.eOut = 1; $b('.bt-tr.e').classList.add('away'); } await msg(`${eun(B.foeNm)} ${eul(X.nm)} 내보냈다!`, 0); }
       else { if (!B.pOut) { B.pOut = 1; $b('.bt-tr.p').classList.add('throw'); } await msg(`가랏! ${X.nm}!`, 0); }
       await sendOut(s, X); await wait(200);
@@ -497,7 +520,7 @@ async function handle(a) {
     }
     case '-heal': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); if (mhp) X.mhp = mhp; await drainHp(s, X, hp); await msg(`${who(a[2])}의 체력이 회복되었다!`); break; }
     case '-sethp': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp] = hpOf(a[3]); await drainHp(s, X, hp); break; }
-    case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); break; }
+    case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s === 'e' && !B.practice) await expGain(X); break; }
     case '-supereffective': await msg('효과가 굉장했다!'); break;
     case '-resisted': await msg('효과가 별로인 듯하다…'); break;
     case '-immune': await msg(`${who(a[2])}에게는 효과가 없는 것 같다…`); break;
@@ -617,6 +640,23 @@ async function statFx(s, up) { const m = monEl(s); m.classList.add(up ? 'up' : '
 const ST_SE = { brn: ['W172', 0, 1], par: ['W085C', 0, 1], slp: ['W173B', 20, 1], frz: ['W258', 8, 2], psn: ['W092D', 3, 3], tox: ['W092D', 3, 3], conf: ['W146', 4, 4] };
 const stSe = (s, st) => { const x = ST_SE[st]; if (!x) return; for (let i = 0; i < x[2]; i++) se(x[0], { pan: panOf(s), at: i * x[1] / 30 }); };
 async function stFx(s, st) { const m = monEl(s); m.style.setProperty('--fx', { brn: '#ff6030', par: '#ffe040', slp: '#a0a0c0', frz: '#a8f0ff', psn: '#c060e0', tox: '#a040c0' }[st] || '#fff'); stSe(s, st); m.classList.add('glow'); await wait(520); m.classList.remove('glow'); }
+// 상대를 쓰러뜨리면 나왔던 내 포켓몬(쓰러지지 않은)이 경험치를 받는다. 나와 있는 포켓몬은 경험치 막대가 차오르고 레벨업
+async function expGain(X) {
+  const foe = B.foe[X.i]; if (!foe) return;
+  for (const pid of B.used) {
+    const i = B.my.findIndex(o => o.pid === pid), pk = B.btl.p1.pokemon[i], P = boxOf(pid); if (!P || !pk || pk.fainted) continue;
+    const m = gm(P), r = gainXp(P, xpFor(foe, m.lv)); if (!r.n) continue;
+    const x = B.xr[pid] = B.xr[pid] || { n: 0, lv0: r.lv0, lv: r.lv0, learned: [] }; x.n += r.n; x.lv = r.lv; x.learned.push(...r.learned);
+    const nm = B.my[i].nm, A = B.act.p, on = A && A.pid === pid && !A.fnt;
+    await msg(`${eun(nm)} 경험치 ${eul(r.n.toLocaleString())} 얻었다!`, on ? 0 : 500);
+    if (on) { const hb = $b('.bt-hb.p .xp>i'), g = growth(P.sp); let lv = r.lv0;
+      for (;;) { const goal = lv < r.lv ? 1 : xpGauge(B.my[i]); hb.style.transition = 'width .6s linear'; hb.style.width = clampN(goal, 0, 1) * 96 + 'px'; await wait(B.fast ? 250 : 620); if (lv >= r.lv) break; lv++; A.lv = lv; $b('.bt-hb.p .lv').textContent = lv; se('W287'); hb.style.transition = 'none'; hb.style.width = '0px'; await wait(30); }
+      hb.style.transition = ''; A.xpg = xpGauge(B.my[i]); }
+    if (r.lv > r.lv0) await msg(`${nm}의 레벨이 ${r.lv}${/[036]$/.test(String(r.lv)) ? '으로' : '로'} 올랐다!`);
+    for (const [id, f] of r.learned) await msg(f ? `${eun(nm)} ${eul(mvKo(f))} 잊고 ${eul(mvKo(id))} 배웠다!` : `${eun(nm)} 새로 ${eul(mvKo(id))} 배웠다!`);
+  }
+  GA.save();
+}
 function xpGauge(src) { const P = boxOf(src.pid); if (!P) return 0; const m = gm(P), g = growth(P.sp), a = xpAt(g, m.lv), b = xpAt(g, m.lv + 1); return b > a ? (m.xp - a) / (b - a) : 1; }
 
 // ---------- 배틀 탭: 라인업 (gym.js 의 배틀 메뉴 창) ----------
@@ -659,8 +699,23 @@ function monPop(id) {
   gymPop(`<div class="mp-head">${thumb(P)}<div><h4>${esc(nmOf(P))}</h4><p>Lv.${m.lv} · 랭크 ${GA.rankOf(P)}</p><i class="mp-xp"><i style="width:${m.lv >= LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><small>${m.lv >= LV_MAX ? '최고 레벨' : `다음 레벨까지 ${Math.max(0, b - m.xp).toLocaleString()}`}</small></div></div>
     <dl class="gy-info mp-info"><dt>성격</dt><dd><span>${natKo(m.nat)}${nt[1] ? ` <small>${STAT_KO[nt[1]]}↑ ${STAT_KO[nt[2]]}↓</small>` : ''}</span></dd><i></i><dt>특성</dt><dd><span>${abKo(m.ab)}</span></dd><i></i></dl>
     <div class="mp-moves">${mv.map(x => `<div class="mp-mv" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}"><b>${esc(x[1])}</b><span>${tyTag(x[2], x[3])}<em>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'} · PP ${x[6] || '—'}</em></span><p>${esc(x[8] || '')}</p></div>`).join('')}</div>
-    <div class="gy-btns"><button data-a="up">앞으로</button><button data-a="rm">빼기</button><button class="main" data-a="x">닫기</button></div>`,
-    (a, close) => { const c = curLu(), i = c.indexOf(P.id); if (a === 'rm' && i >= 0) c.splice(i, 1); if (a === 'up' && i > 0) { c.splice(i, 1); c.splice(i - 1, 0, P.id); } close(); GA.save(); drawTab(); });
+    <div class="gy-btns three"><button data-a="up">앞으로</button><button data-a="rm">빼기</button><button data-a="mv">기술 바꾸기</button><button class="main" data-a="x">닫기</button></div>`,
+    (a, close) => { const c = curLu(), i = c.indexOf(P.id); if (a === 'mv') { close(); movesPop(P, () => monPop(P.id)); return; } if (a === 'rm' && i >= 0) c.splice(i, 1); if (a === 'up' && i > 0) { c.splice(i, 1); c.splice(i - 1, 0, P.id); } close(); GA.save(); drawTab(); });
+}
+const mvRow = (x, a) => `<button class="mp-mv" data-a="${a}" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}"><b>${esc(x[1])}</b><span>${tyTag(x[2], x[3])}<em>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'} · PP ${x[6] || '—'}</em></span></button>`;
+// 기술 바꾸기: 잊을 기술(또는 빈 칸)을 고르고 → 배울 기술을 고른다. 잊은 기술은 '아는 기술'로 남아 다시 배울 수 있다
+function movesPop(P, done) {
+  const m = gm(P), C = mvCands(P, m);
+  gymPop(`<h4>${esc(nmOf(P))}의 기술</h4><p class="gy-msg">바꿀 기술을 고르세요. 배울 수 있는 기술 ${C.length}개</p>
+    <div class="mp-moves pick">${m.mv.map((id, i) => mvOf(id) ? mvRow(mvOf(id), 's' + i) : '').join('')}${m.mv.length < 4 ? `<button class="mp-mv empty" data-a="s${m.mv.length}"><b>빈 칸</b></button>` : ''}</div>
+    <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => {
+    close(); if (a === 'x') return done?.();
+    const k = +a.slice(1), old = m.mv[k];
+    if (!C.length) { gymPop(`<h4>기술 바꾸기</h4><p class="gy-msg">지금 배울 수 있는 다른 기술이 없어요. 레벨을 올리거나 기술머신·훈련장에서 익혀 보세요.</p><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b, c2) => { c2(); movesPop(P, done); }); return; }
+    gymPop(`<h4>${old ? `${esc(mvKo(old))} 대신` : '새로'} 배울 기술</h4><div class="mp-moves pick">${C.map(id => mvRow(mvOf(id), 'n' + id)).join('')}</div><div class="gy-btns one"><button data-a="x">뒤로</button></div>`, (b, c2) => {
+      c2(); if (b !== 'x') { const id = b.slice(1); m.kn = (m.kn || []).filter(x => x !== id); if (old) { m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); } else m.mv.push(id); GA.save(); se('DECIDE'); }
+      movesPop(P, done); });
+  });
 }
 // 연습 배틀: 라인업 평균 레벨 근처의 아무 트레이너
 async function practice() {
@@ -675,5 +730,5 @@ async function practice() {
   finally { document.body.classList.remove('gymBattle'); drawTab(); }
 }
 
-window.GymBattle = { tab, run, loadData, loadSim, gm, lus, _xpAt: xpAt, _psSet: psSet, _foeEntry: foeEntry, get _B() { return B; } };
+window.GymBattle = { tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _foeEntry: foeEntry, get _B() { return B; } };
 })();
