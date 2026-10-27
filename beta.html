@@ -9047,7 +9047,7 @@ function evoKids(sp, P, now) {
   return (CHILDREN[sp] || []).filter(c => { const d = SPECIES[c], ev = d.ev || '';
     if (d.eqx && (d.eqx === 1 ? 'f' : 'm') !== P?.sex) return false;
     const tmo = ev === 'day' || ev === 'night';   // v8.60 경완: 낮·밤에만 진화하는 포켓몬도 짝꿍 거리를 쌓고, 다 차면 그 시간에 진화
-    if (ev === EV_DARK) return !now || darkNear(P);   // v10.42 경완: 판짱 → 부란다는 거리를 다 채우고 필드에 악타입 포켓몬이 함께 있으면 진화
+    if (ev === EV_DARK) return !now || darkNear(P);   // v10.43 경완: 판짱 → 부란다는 거리를 다 채우고 필드에 악타입 포켓몬이 함께 있으면 진화
     if (ev && !ev.startsWith('fr') && !tmo) return false;
     if (!now || !ev) return true;
     if (!tmo && (P?.fr || 0) < FR_EVO) return false;
