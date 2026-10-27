@@ -41,6 +41,7 @@ body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop
 .slot.empty,.eslot.add,.bd-empty{transition:background .12s}
 .pp-x{border:0;background:none;font:inherit;font-size:20px;line-height:1;padding:6px 4px 6px 12px;margin:-6px -4px -6px 0;color:var(--dim);cursor:pointer}
 .pp-body{border:0!important;background:none!important;padding:0!important;margin:0 0 12px!important}.pp-body .ivs{margin-top:8px}
+.pp-na{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:baseline;margin-top:8px;padding:8px 10px;border:2px solid var(--inner);background:rgba(255,255,255,.5);font-size:14px}.pp-na .na-l{font-size:12px;font-weight:700;color:var(--dim)}.pp-na small{font-size:11.5px;color:var(--dim)}.ha-tag{display:inline-block;margin-left:4px;padding:0 5px;border-radius:4px;background:#7a3ec8;color:#fff;font-size:10.5px;font-style:normal;font-weight:700;vertical-align:1px}   /* v10.35: 성격·특성 */
 .ivs .fr-l{margin-top:4px}.ivs .hearts{margin-top:4px}
 .hearts.frtap{display:inline-flex;align-items:center;line-height:1;height:16px;color:#e04870;letter-spacing:1px;font-size:14px}.frbar>span:first-child,.ivs .fr-l{line-height:16px}
 .dexpop .boxbtn.white{background:#fff;color:var(--frame);border-color:var(--frame)}
@@ -6442,6 +6443,7 @@ GA.thumb = P => ensureSprite(P.sp).then(() => thumbP(P)); GA.shinyHue = sp => sh
 window.gymBdgRow = () => { const sec = $('#pfGymBdg'), g = S.gym; if (!sec) return; const de = document.documentElement; sec.hidden = !(g && g.d && de.classList.contains('op') && de.classList.contains('gym-on')); if (sec.hidden) return;   // 운영자 '체육관 모드 보이기'를 켠 기기만 const b = g.bdg || {}, n = Object.keys(b).length;
   sec.querySelector('small').textContent = `${n}/18`; sec.querySelector('.gb-grid').innerHTML = TYPE_KO.map((t, i) => i ? `<img alt="${t}" title="${t} 자격 배지${b[i] ? '' : ' (아직)'}" src="gym/img/badge/${i}.png" class="${b[i] ? 'on' : ''}">` : '').join(''); };
 /*gym-hook6*/
+GA.natAb = P => nabLoad().then(() => natAb(P)); GA.natAbHtml = P => natAbHtml(P);
 GA.lift = (sp, sleep) => { const t = DEX[sp]; if (!t) return 0; const f0 = MON_FLY[sp] || 0; return Math.max(0, sleep ? (t.mv === 'hover' ? 6 : 0) + Math.min(0, f0) : liftBase(sp) + f0); };   // v10.35: 체육관 훈련장도 필드와 같은 떠 있는 높이
 GA.pmd = (sp, sex) => ensureSprite(sp).then(() => { const k = fKey(sp, sex); if (!isPmd(k)) return { img: SPRITES[k] }; return padAtlas(k).then(() => ({ P: SPRITES[k], s: scaleOf(k), wh: atlasSize(k) })); });
 /*gym-hook7*/
@@ -6489,7 +6491,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.34';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.35';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8532,6 +8534,21 @@ $('#boxQ').addEventListener('input', () => { if (!$('#boxQ').value.trim() && box
 $('#boxGrid').addEventListener('click', e => { const b = e.target.closest('[data-id]'); if (b && mgPick) { const P = boxOf(+b.dataset.id); if (!P) return; sfx('tap'); mgr.hidden = true; mgMon = S.mons.find(o => o.pid === P.id) || { pid: P.id, sp: P.sp, form: P.sp, sk: fKey(P.sp, P.sex), name: nameOf(P) }; mgOpenG = ''; mgView('sel'); return; }   /* v7.57 경완: 게임 고르기에서 함께 놀 포켓몬을 박스 화면에서 골라 바꿈 */
   if (b) { ppBud = false; ppSolo = false; openPoke(+b.dataset.id); } });
 let pokeId = null;
+// v10.35 경완 '성격은 포켓몬 정보카드에서도', '특성, 숨겨진 특성': 체육관 배틀과 같은 규칙 (gym/abil.json, 체육관에서 이미 정해졌으면 그 값)
+let NAB = null; const nabLoad = () => NAB ? Promise.resolve(NAB) : (nabLoad.p = nabLoad.p || fetch('gym/abil.json?v=' + encodeURIComponent(APP_VER)).then(r => r.json()).then(d => { NAB = d; NAB.ntm = Object.fromEntries(d.nt.map(x => [x[0], x])); return d; }).catch(() => { nabLoad.p = null; return null; }));
+const nabSeed = s => { let h = 2166136261; for (const ch of String(s)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 1e6) / 1e6; }; };
+function natAb(P) {
+  if (!NAB) return null; const m = S.gym?.mon?.[P.id], L = NAB.sp[P.sp] || [['noability']], nm = L[0], h = L[1];
+  if (m?.nat) return { nat: m.nat, ab: m.ha && h ? h : nm.includes(m.ab) ? m.ab : nm[0], ha: !!(m.ha && h) };
+  const r = nabSeed('gm' + P.id), nat = NAB.nt[Math.floor(r() * NAB.nt.length)][0], ab = nm[Math.floor(r() * Math.min(2, nm.length))], ha = !!h && nabSeed('ha' + P.id)() < .05;
+  return { nat, ab: ha ? h : ab, ha };
+}
+const STAT_K = { atk: '공격', def: '방어', spa: '특수공격', spd: '특수방어', spe: '스피드' };
+function natAbHtml(P) {
+  const o = natAb(P); if (!o) { nabLoad().then(() => document.querySelectorAll(`.pp-na[data-na="${P.id}"]`).forEach(e => { e.innerHTML = natAbHtml(P); })); return '<span class="na-l">성격</span><span>…</span><span class="na-l">특성</span><span>…</span>'; }
+  const n = NAB.ntm[o.nat] || [o.nat, o.nat];
+  return `<span class="na-l">성격</span><span><b>${esc(n[1])}</b>${n[2] ? ` <small>${STAT_K[n[2]]}↑ ${STAT_K[n[3]]}↓</small>` : ' <small>보정 없음</small>'}</span><span class="na-l">특성</span><span><b>${esc(NAB.ab[o.ab] || o.ab)}</b>${o.ha ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</span>`;
+}
 function openPoke(id, dir = 0, quiet = false, noCry = false) {
   const P = boxOf(id); if (!P) return; if (!quiet && P.nw) { P.nw = false; save(); renderBox(); } if (!quiet && !noCry && ($('#pokePop').hidden || pokeId !== id)) playCry(P.sp, .1); pokeId = id;
   const L = pokeList(), i = L.indexOf(P), d = SPECIES[P.sp], rk = rankOf(P);
@@ -8541,6 +8558,7 @@ function openPoke(id, dir = 0, quiet = false, noCry = false) {
   img.src = thumbP(P) || ''; if (!thumbOf(P.sp)) ensureSprite(P.sp).then(() => { if (pokeId === id) img.src = thumbP(P); }).catch(() => {});
   $('#ppBody').innerHTML = infoHead(P, P.sp, nameEdit('ppName', nameOf(P), P.sex), nameOf(P) !== d.n ? `<span class="ih-sp">${esc(d.n)}</span>` : '')
     + `<div class="ivs">${ivRows(P)}<span class="fr-l">친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>`
+    + `<div class="pp-na" data-na="${P.id}">${natAbHtml(P)}</div>`
     + moveCard(P.sp, P.fr || 0, (P.fr || 0) >= FR_MAX)
     ;
   { const inp = $('#ppName'); inp.addEventListener('input', () => { inp.style.width = (Math.max(1, inp.value.length) + .15) + "em"; }); inp.addEventListener('change', () => renameBox(P, inp.value)); inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); }); }

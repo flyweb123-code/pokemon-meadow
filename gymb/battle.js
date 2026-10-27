@@ -55,6 +55,8 @@ function xpAt(g, n) {
 }
 const growth = sp => D.sp[sp]?.g || 2;
 // 개체마다 정해지는 난수 (같은 개체는 늘 같은 성격·특성·기술)
+const abNorm = sp => { const o = D.sp[sp]; if (!o) return ['noability']; const L = (o.ab || []).filter(a => a !== o.h); return L.length ? L : o.ab || ['noability']; };
+const hiddenRoll = k => seeded(k)() < .05;
 const seeded = s => { let h = 2166136261; for (const ch of String(s)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 1e6) / 1e6; }; };
 // 레벨 lv 까지 레벨업으로 배우는 기술 (진화 기술 0 포함, 최근 것 우선)
 function lvMoves(sp, lv) { const L = D.sp[sp]?.lv || [], out = []; for (let i = 0; i < L.length; i += 2) if (L[i] <= lv) out.push([L[i], L[i + 1]]); return out; }
@@ -75,9 +77,14 @@ function gm(P) {
   let m = g.mon[P.id];
   if (!m || !D.sp[P.sp]) {
     const r = seeded('gm' + P.id), lv = BASE_LV[GA.rankOf(P)] || 5, ab = D.sp[P.sp]?.ab || ['noability'], nats = NATS();
-    m = g.mon[P.id] = { lv, xp: xpAt(growth(P.sp), lv), nat: nats[Math.floor(r() * nats.length)], ab: ab[Math.floor(r() * Math.min(2, ab.length))], mv: pickMoves(P.sp, lv, r) };
+    const nm = abNorm(P.sp), ha = hiddenRoll('ha' + P.id) && D.sp[P.sp]?.h;
+    m = g.mon[P.id] = { lv, xp: xpAt(growth(P.sp), lv), nat: nats[Math.floor(r() * nats.length)], ab: nm[Math.floor(r() * Math.min(2, nm.length))], mv: pickMoves(P.sp, lv, r) };
+    if (ha) { m.ab = ha; m.ha = 1; }
   }
-  if (!D.sp[P.sp]?.ab?.includes(m.ab)) m.ab = D.sp[P.sp]?.ab?.[0] || m.ab;   // 진화해서 특성이 바뀌면 새 종의 첫 특성
+  // 특성 (경완 2026-10-27 '특성, 숨겨진 특성'): 보통 특성은 숨겨진 특성을 뺀 것 중에서, 숨겨진 특성은 5% (ha). 진화하면 같은 자리 특성으로
+  const h = D.sp[P.sp]?.h, nm = abNorm(P.sp);
+  if (m.ha) { if (h && m.ab !== h) m.ab = h; else if (!h) { m.ha = 0; m.ab = nm[0] || m.ab; } }
+  else if (!nm.includes(m.ab)) m.ab = nm[0] || m.ab;
   return m;
 }
 // 경험치 (배틀·훈련장): 레벨업하면 그 레벨에 배우는 기술을 익힌다. 기술이 4개면 '아는 기술'(kn)에 넣고, 가장 약한 공격 기술보다 세면 바로 바꾼다 (변화 기술은 자동으로 안 바꿈)
@@ -377,7 +384,7 @@ function myEntry(P) { const m = gm(P); return { pid: P.id, sp: P.sp, nm: nmOf(P)
 function foeEntry(sp, lv) {
   const r = Math.random, ab = D.sp[sp]?.ab || ['noability'], nats = NATS(), g = SPECIES[sp]?.g;
   const sex = /수컷만|♂만/.test(g || '') ? 'M' : /암컷만|♀만/.test(g || '') ? 'F' : Math.random() < .5 ? 'M' : 'F';
-  return { sp, nm: SPECIES[sp]?.n || String(sp), lv, mv: pickMoves(sp, lv, r), ab: ab[Math.floor(r() * Math.min(2, ab.length))], nat: pick(nats), iv: Array.from({ length: 6 }, () => Math.floor(rnd(8, 26))), g: sex, shiny: Math.random() < 1 / 4096 };
+  return { sp, nm: SPECIES[sp]?.n || String(sp), lv, mv: pickMoves(sp, lv, r), ab: Math.random() < .05 && D.sp[sp]?.h ? D.sp[sp].h : abNorm(sp)[Math.floor(r() * Math.min(2, abNorm(sp).length))], nat: pick(nats), iv: Array.from({ length: 6 }, () => Math.floor(rnd(8, 26))), g: sex, shiny: Math.random() < 1 / 4096 };
 }
 
 // ---------- AI (난이도: 0 쉬움 1 보통 2 어려움) ----------
@@ -696,13 +703,14 @@ function drawTab() {
     <div class="lu-grid">${[0, 1, 2, 3, 4, 5].map(i => { const P = boxOf(cur[i]); if (!P) return `<button class="lu-slot empty" data-add="${i}" ${can.length ? '' : 'disabled'}><span>+</span></button>`; const m = gm(P);
       return `<button class="lu-slot" data-p="${P.id}"><i class="lu-n">${i + 1}</i>${thumb(P)}<b>${esc(nmOf(P))}</b><span>Lv.${m.lv}</span></button>`; }).join('')}</div>
     ${can.length ? '' : `<p class="lu-none">${TYPE_KO[ty]} 타입 포켓몬이 아직 없어요. 알을 부화시켜 데려와 주세요.</p>`}
-    <div class="lu-act"><button class="gy-key main" data-go ${cur.length ? '' : 'disabled'}>연습 배틀</button><p>연습 배틀은 아무 트레이너와 겨뤄 보는 거예요. 보상은 없어요.</p></div>`;
+    <div class="lu-act"><div class="lu-row2"><button class="gy-key" data-box>포켓몬 박스</button><button class="gy-key main" data-go ${cur.length ? '' : 'disabled'}>연습 배틀</button></div><p>연습 배틀은 아무 트레이너와 겨뤄 보는 거예요. 보상은 없어요.</p></div>`;
   fillTh(sh);
   sh.onclick = e => {
     const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap');
     if (b.dataset.lu) { g.luI = +b.dataset.lu; GA.save(); drawTab(); return; }
     if (b.dataset.add) return pickMon();
     if (b.dataset.p) return monPop(b.dataset.p);
+    if (b.hasAttribute('data-box')) return boxPop();
     if (b.hasAttribute('data-go')) return practice();
   };
 }
@@ -715,14 +723,36 @@ function pickMon() {
   gymPop(`<h4>라인업에 넣을 포켓몬</h4><div class="lu-pick">${L.map(({ P, m }) => `<button data-a="${P.id}">${thumb(P)}<b>${esc(nmOf(P))}</b><span>Lv.${m.lv}</span></button>`).join('')}</div><div class="gy-btns one"><button data-a="x">닫기</button></div>`,
     (a, close) => { close(); if (a === 'x') return; const c = curLu(); if (c.length < 6) c.push(+a || a); GA.save(); drawTab(); });
 }
-function monPop(id) {
-  const P = boxOf(+id || id); if (!P) return; const m = gm(P), g = growth(P.sp), a = xpAt(g, m.lv), b = xpAt(g, m.lv + 1), nt = D.nt[m.nat] || ['', '', ''];
+// 개체값 육각형 (본가 '능력 판정'처럼): HP 위, 시계 방향으로 공격·방어·스피드·특방·특공. 성격으로 오르는 능력은 빨강, 내려가는 능력은 파랑
+const IV_ORD = [[0, 'HP', ''], [1, '공격', 'atk'], [2, '방어', 'def'], [5, '스피드', 'spe'], [4, '특방', 'spd'], [3, '특공', 'spa']];
+const ivJudge = v => v >= 31 ? '최고' : v >= 26 ? '훌륭해' : v >= 16 ? '굉장해' : v >= 1 ? '괜찮아' : '별로야';
+function ivHex(P, m) {
+  const iv = P.iv || [0, 0, 0, 0, 0, 0], nt = D.nt[m.nat] || ['', '', ''], R = 52, cx = 90, cy = 72, pt = (k, r) => { const a = -Math.PI / 2 + k * Math.PI / 3; return [cx + Math.cos(a) * r, cy + Math.sin(a) * r]; };
+  const ring = f => IV_ORD.map((_, k) => pt(k, R * f).map(v => v.toFixed(1)).join(',')).join(' ');
+  const poly = IV_ORD.map(([i], k) => pt(k, R * Math.max(.04, iv[i] / 31)).map(v => v.toFixed(1)).join(',')).join(' ');
+  const lab = IV_ORD.map(([i, n, key], k) => { const [x, y] = pt(k, R + 17), c = key && key === nt[1] ? 'up' : key && key === nt[2] ? 'dn' : ''; return `<text x="${x.toFixed(1)}" y="${(y - 3).toFixed(1)}" class="${c}">${n}</text><text x="${x.toFixed(1)}" y="${(y + 9).toFixed(1)}" class="v">${iv[i]}</text>`; }).join('');
+  const sum = iv.reduce((a, b) => a + b, 0), best = IV_ORD.reduce((a, o) => iv[o[0]] > iv[a[0]] ? o : a, IV_ORD[0]);
+  return `<div class="iv-hex"><svg viewBox="0 0 180 150" role="img" aria-label="개체값"><polygon points="${ring(1)}" class="r0"/><polygon points="${ring(2 / 3)}" class="r1"/><polygon points="${ring(1 / 3)}" class="r1"/><polygon points="${poly}" class="iv"/>${lab}</svg>
+    <div class="iv-sum"><b>개체값</b><span>합계 ${sum}/186</span><span>가장 좋은 능력: ${best[1]}</span><span>${IV_ORD.map(([i, n]) => `${n} ${ivJudge(iv[i])}`).join(' · ')}</span></div></div>`;
+}
+// 포켓몬 박스 (배틀 메뉴): 체육관 타입 포켓몬 모두 / 전체. 누르면 정보 (경완 2026-10-27)
+let boxAll = false;
+function boxPop() {
+  const lu = new Set(curLu()), L = S.box.filter(P => boxAll || tyOk(P)).map(P => ({ P, m: gm(P) })).sort((a, b) => b.m.lv - a.m.lv || GA.ivSum(b.P) - GA.ivSum(a.P));
+  const p = gymPop(`<h4>포켓몬 박스 <small>${L.length}마리</small></h4><div class="sp-chips bx-f"><button data-a="f0" aria-pressed="${!boxAll}">${TYPE_KO[S.gym.ty]} 타입</button><button data-a="f1" aria-pressed="${boxAll}">전체</button></div>
+    <div class="lu-pick bx-list">${L.map(({ P, m }) => `<button data-a="p${P.id}" class="${lu.has(P.id) ? 'on' : ''}${tyOk(P) ? '' : ' dim'}">${thumb(P)}<b>${esc(nmOf(P))}</b><span>Lv.${m.lv}</span>${lu.has(P.id) ? '<em>라인업</em>' : ''}</button>`).join('') || '<p class="gy-msg">포켓몬이 없어요.</p>'}</div><div class="gy-btns one"><button data-a="x">닫기</button></div>`,
+    (a, close) => { close(); if (a === 'f0' || a === 'f1') { boxAll = a === 'f1'; return boxPop(); } if (a[0] === 'p') monPop(a.slice(1), true); });
+}
+function monPop(id, fromBox) {
+  const P = boxOf(+id || id); if (!P) return; const inLu = curLu().includes(P.id); const m = gm(P), g = growth(P.sp), a = xpAt(g, m.lv), b = xpAt(g, m.lv + 1), nt = D.nt[m.nat] || ['', '', ''];
   const mv = m.mv.map(x => mvOf(x)).filter(Boolean);
   gymPop(`<div class="mp-head">${thumb(P)}<div><h4>${esc(nmOf(P))}</h4><p>Lv.${m.lv} · 랭크 ${GA.rankOf(P)}</p><i class="mp-xp"><i style="width:${m.lv >= LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><small>${m.lv >= LV_MAX ? '최고 레벨' : `다음 레벨까지 ${Math.max(0, b - m.xp).toLocaleString()}`}</small></div></div>
-    <dl class="gy-info mp-info"><dt>성격</dt><dd><span>${natKo(m.nat)}${nt[1] ? ` <small>${STAT_KO[nt[1]]}↑ ${STAT_KO[nt[2]]}↓</small>` : ''}</span></dd><i></i><dt>특성</dt><dd><span>${abKo(m.ab)}</span></dd><i></i></dl>
+    <dl class="gy-info mp-info"><dt>성격</dt><dd><span>${natKo(m.nat)}${nt[1] ? ` <small>${STAT_KO[nt[1]]}↑ ${STAT_KO[nt[2]]}↓</small>` : ''}</span></dd><i></i><dt>특성</dt><dd><span>${abKo(m.ab)}${m.ha ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</span></dd><i></i></dl>
+    ${ivHex(P, m)}
     <div class="mp-moves">${mv.map(x => `<div class="mp-mv" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}"><b>${esc(x[1])}</b><span>${tyTag(x[2], x[3])}<em>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'} · PP ${x[6] || '—'}</em></span><p>${esc(x[8] || '')}</p></div>`).join('')}</div>
-    <div class="gy-btns three"><button data-a="up">앞으로</button><button data-a="rm">빼기</button><button data-a="mv">기술 바꾸기</button><button class="main" data-a="x">닫기</button></div>`,
-    (a, close) => { const c = curLu(), i = c.indexOf(P.id); if (a === 'mv') { close(); movesPop(P, () => monPop(P.id)); return; } if (a === 'rm' && i >= 0) c.splice(i, 1); if (a === 'up' && i > 0) { c.splice(i, 1); c.splice(i - 1, 0, P.id); } close(); GA.save(); drawTab(); });
+    ${inLu ? '<div class="gy-btns three"><button data-a="up">앞으로</button><button data-a="rm">빼기</button><button data-a="mv">기술 바꾸기</button><button class="main" data-a="x">닫기</button></div>'
+      : `<div class="gy-btns three"><button data-a="add" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업에 넣기</button><button data-a="mv">기술 바꾸기</button><button class="main" data-a="x">닫기</button></div>`}`,
+    (a, close) => { const c = curLu(), i = c.indexOf(P.id); if (a === 'mv') { close(); movesPop(P, () => monPop(P.id)); return; } if (a === 'rm' && i >= 0) c.splice(i, 1); if (a === 'up' && i > 0) { c.splice(i, 1); c.splice(i - 1, 0, P.id); } if (a === 'add' && i < 0 && c.length < 6 && tyOk(P)) c.push(P.id); close(); GA.save(); drawTab(); if (fromBox) boxPop(); });
 }
 const mvRow = (x, a) => `<button class="mp-mv" data-a="${a}" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}"><b>${esc(x[1])}</b><span>${tyTag(x[2], x[3])}<em>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'} · PP ${x[6] || '—'}</em></span></button>`;
 // 기술 바꾸기: 잊을 기술(또는 빈 칸)을 고르고 → 배울 기술을 고른다. 잊은 기술은 '아는 기술'로 남아 다시 배울 수 있다

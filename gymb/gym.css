@@ -531,3 +531,13 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .up-lv.done{opacity:1}.up-lv.done i{background:#2a8a3e;color:#fff}.up-lv.next{opacity:1;box-shadow:inset 0 0 0 2px #ffd84a;background:#fffbe6}.up-lv.next i{background:#ffd84a}
 .up-go{width:100%;min-height:44px;margin-bottom:10px}
 .gy-kang.guide{background:rgba(12,13,20,.55)}#gym:has(.gy-kang.guide) .gy-dlg{visibility:hidden}
+.ha-tag{display:inline-block;margin-left:4px;padding:0 5px;border-radius:4px;background:#7a3ec8;color:#fff;font-size:10.5px;font-style:normal;font-weight:700}
+/* 배틀 메뉴: 박스 · 개체값 육각형 */
+.lu-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.lu-row2 .gy-key{min-height:46px}
+.iv-hex{display:grid;grid-template-columns:180px 1fr;gap:6px;align-items:center;margin:8px 0;padding:6px;border:2px solid rgba(0,0,0,.12);border-radius:8px;background:#fbfaf6}
+.iv-hex svg{width:180px;height:150px}.iv-hex .r0{fill:#eef2f8;stroke:#9aa4b8;stroke-width:1.5}.iv-hex .r1{fill:none;stroke:#c8d0dc;stroke-width:1}
+.iv-hex .iv{fill:rgba(255,200,40,.55);stroke:#e0a010;stroke-width:2;stroke-linejoin:round}
+.iv-hex text{font-size:10px;text-anchor:middle;fill:#40404c;font-weight:700}.iv-hex text.v{font-size:10px;fill:#2a58a8}.iv-hex text.up{fill:#d83a30}.iv-hex text.dn{fill:#3a6ad8}
+.iv-sum{display:flex;flex-direction:column;gap:3px;font-size:11.5px;color:var(--dim)}.iv-sum b{font-size:13px;color:var(--win-ink)}
+@media (max-width:360px){.iv-hex{grid-template-columns:1fr}.iv-hex svg{margin:0 auto}}
+.bx-f{margin:0 0 8px}.bx-list{max-height:52vh;overflow:auto}.lu-pick button.dim{opacity:.55}.lu-pick button em{font-style:normal;font-size:10px;color:#2a8a3e;font-weight:700}
