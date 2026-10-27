@@ -47,19 +47,19 @@ const DESIGNS_PT = [
 const DESIGNS_FR = [
   { id: 'pewter', pt: 'oreburgh', n: '바위 계단', sub: '회색시티 체육관', w: 13, h: 16, leader: [6, 5], door: [6, 14], guy: [8, 13],
     deco: [[2, 5], [10, 5], [3, 9], [9, 9], [2, 11], [10, 11], [2, 13], [10, 13]],
-    path: [[6, 14], [6, 6]], slots: [[7, 13, 'l'], [5, 11, 'r'], [7, 10, 'l'], [5, 9, 'r'], [7, 8, 'l']] },
+    path: [[6, 14], [6, 6]], slots: [[7, 10, 'l'], [5, 9, 'r'], [7, 8, 'l'], [5, 8, 'r'], [8, 6, 'l'], [4, 6, 'r'], [9, 8, 'l']], inY: 10, cuts: [[9, 11], [9, 11], [9, 11], [9, 11], [9, 11]] },
   { id: 'cerulean', pt: 'snowpoint', n: '물 위 다리', sub: '블루시티 체육관', w: 17, h: 20, leader: [8, 6], door: [8, 18], guy: [7, 18],
     deco: [[2, 3], [14, 3], [1, 8], [15, 8], [1, 13], [15, 13], [5, 18], [11, 18]],
-    path: [[8, 18], [8, 16], [9, 16], [9, 10], [8, 10], [8, 7]], slots: [[7, 16, 'r'], [8, 13, 'r'], [10, 10, 'l'], [7, 9, 'r'], [9, 8, 'l']] },
+    path: [[8, 18], [8, 16], [9, 16], [9, 10], [8, 10], [8, 7]], slots: [[8, 13, 'r'], [10, 10, 'l'], [6, 10, 'r'], [9, 8, 'l'], [7, 8, 'r'], [11, 7, 'l'], [5, 7, 'r']], inY: 15, cuts: [[9, 15], [9, 15], [12, 15], [12, 15], [15, 16]] },
   { id: 'vermilion', pt: 'pastoria', n: '번개 관문', sub: '갈색시티 체육관', w: 11, h: 21, leader: [5, 2], door: [5, 19], guy: [4, 18],
     deco: [[1, 3], [9, 3], [1, 9], [9, 9], [1, 13], [9, 13], [1, 18], [9, 18]],
-    path: [[5, 19], [5, 16], [4, 16], [4, 9], [5, 9], [5, 3]], slots: [[6, 17, 'l'], [3, 15, 'r'], [5, 13, 'l'], [3, 11, 'r'], [6, 8, 'l']] },
+    path: [[5, 19], [5, 16], [4, 16], [4, 9], [5, 9], [5, 3]], slots: [[5, 15, 'l'], [3, 13, 'r'], [5, 11, 'l'], [6, 8, 'l'], [4, 8, 'r'], [6, 4, 'l'], [4, 4, 'r']], inY: 15, cuts: [[9, 15], [9, 13], [9, 13], [9, 11], [9, 11]] },
   { id: 'celadon', pt: 'eterna', n: '꽃 정원', sub: '무지개시티 체육관', w: 13, h: 20, leader: [6, 4], door: [6, 18], guy: [5, 17],
     deco: [[3, 10], [9, 10], [1, 16], [11, 16], [2, 17], [10, 17], [1, 12], [11, 12]],
-    path: [[6, 18], [6, 5]], slots: [[7, 17, 'l'], [5, 13, 'r'], [7, 11, 'l'], [5, 9, 'r'], [7, 7, 'l']] },
+    path: [[6, 18], [6, 5]], slots: [[7, 13, 'l'], [5, 12, 'r'], [7, 11, 'l'], [5, 10, 'r'], [7, 9, 'l'], [5, 14, 'r'], [7, 14, 'l'], [5, 5, 'r'], [7, 5, 'l']], inY: 14, cuts: [[6, 14], [9, 14], [9, 14], [6, 8], [13, 14]] },
   { id: 'fuchsia', pt: 'veilstone', n: '넓은 무대', sub: '연분홍시티 체육관', w: 15, h: 16, leader: [7, 6], door: [7, 14], guy: [11, 13],
     deco: [[2, 3], [12, 3], [2, 7], [12, 7], [3, 10], [11, 10], [2, 13], [12, 13]],
-    path: [[7, 14], [7, 8]], slots: [[8, 13, 'l'], [6, 12, 'r'], [8, 11, 'l'], [6, 10, 'r'], [8, 9, 'l']] },
+    path: [[7, 14], [7, 8]], slots: [[8, 10, 'l'], [6, 10, 'r'], [8, 8, 'l'], [6, 8, 'r'], [9, 9, 'l'], [5, 9, 'r'], [9, 7, 'l'], [5, 7, 'r']], inY: 10, cuts: [[9, 10], [9, 10], [9, 10], [9, 10]] },
 ];
 // 맵 묶음: 'fr' 파이어레드 칸토 체육관 / 'pt' 플라티나 (경완 2026-10-27 '맵은 이전 버전으로 바꿔줘봐 지금 캐릭터랑 묻는지 함 보게')
 const MAP_SET = 'fr';
@@ -68,7 +68,8 @@ const dzBase = id => DESIGNS.find(d => d.id === id) || DESIGNS.find(d => d.old =
 // 체육관은 처음엔 관장 주변 + 입구만 작게, 평판(등급)이 오를수록 가운데 홀이 열린다 (경완 2026-10-27).
 // 닫힌 줄은 맵 그림에서 잘라 내고 위아래를 붙인다. 저장하는 칸(꾸미기·트레이너 자리)은 원래 맵 좌표(toF), 화면은 줄인 좌표(toV)
 const OPEN = [0, .2, .4, .6, .8, 1];
-function cutOf(D) { const g = st(); if (!g) return null; const a0 = D.leader[1] + 3, b0 = D.door[1] - 3; if (b0 - a0 < 2) return null;
+// cuts[등급] = [a, b]: 위아래 줄 그림이 이어지는 자리를 골라 둠 (경완 2026-10-27 '맵 줄인거 티나지 않게')
+function cutOf(D) { const g = st(); if (!g) return null; if (D.cuts) return D.cuts[gradeOf(g.rep || 0).i] || null; const a0 = D.leader[1] + 3, b0 = D.door[1] - 3; if (b0 - a0 < 2) return null;
   const a = a0 + Math.round((b0 - a0) * OPEN[gradeOf(g.rep || 0).i]); return a < b0 ? [a, b0] : null; }
 const dzCache = {};
 function dzOf(id) {
@@ -80,13 +81,12 @@ function dzOf(id) {
     deco: D.deco.filter(p => v(p[1]) != null).map(pt), slots: D.slots.filter(p => v(p[1]) != null).map(pt), free: D.free && D.free.filter((_, y) => v(y) != null),
     toV: v, toF: y => y < a ? y : y + n }));
 }
-// 잘라 붙인 맵 그림 (닫힌 줄 자리에 옅은 그늘)
+// 잘라 붙인 맵 그림 (이음매 없이)
 const mapCache = {};
 function mapSrc(D) { const u = `${IMG}map/${D.id}.png`; if (!D.cut) return Promise.resolve(u); const k = D.id + D.cut; if (mapCache[k]) return mapCache[k];
   return (mapCache[k] = new Promise(res => { const im = new Image(); im.onerror = () => res(u);
     im.onload = () => { const [a, b] = D.cut, c = document.createElement('canvas'), W = im.width; c.width = W; c.height = D.h * 16; const g = c.getContext('2d');
       g.drawImage(im, 0, 0, W, a * 16, 0, 0, W, a * 16); g.drawImage(im, 0, b * 16, W, im.height - b * 16, 0, a * 16, W, im.height - b * 16);
-      const gr = g.createLinearGradient(0, a * 16 - 5, 0, a * 16 + 5); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(.5, 'rgba(0,0,0,.28)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, a * 16 - 5, W, 10);
       res(c.toDataURL()); }; im.src = u; })); }
 
 // ---------- 평판·등급 ----------
@@ -132,8 +132,12 @@ function layout(D = dzOf(st().d)) {
   map.style.width = mw * sc + 'px'; map.style.height = mh * sc + 'px';
   const mk = D.id + (D.cut || ''); if (img.dataset.k !== mk) { img.dataset.k = mk; mapSrc(D).then(u => { if (img.dataset.k === mk) img.src = u; }); }
   img.style.width = mw * sc + 'px'; img.style.height = mh * sc + 'px';
-  // 맵이 화면보다 크면 스크롤해서 본다. 처음 들어오거나 크기가 바뀌면 관장(나) 쪽으로
-  const vk = mk + '|' + sc; if (stg.dataset.vk !== vk) { stg.dataset.vk = vk; requestAnimationFrame(() => { stg.scrollTop = Math.max(0, (D.leader[1] * 16 * sc) - stg.clientHeight * .3); stg.scrollLeft = Math.max(0, (D.leader[0] * 16 + 8) * sc - stg.clientWidth / 2); }); }
+  // 관장(나)이 보이는 칸의 가운데에 오게: 맵 둘레에 여백을 두고 그만큼 넘겨 둔다 (경완 2026-10-27 '내 캐릭터 있는 곳이 가운데에 오게')
+  const W = stg.clientWidth, H = stg.clientHeight, T = parseFloat(getComputedStyle(stg).paddingTop) || 104, B = 150, cy = T + (H - T - B) / 2;
+  const lx = (D.leader[0] + .5) * 16 * sc, ly = (D.leader[1] + .5) * 16 * sc, pl = Math.max(8, W / 2 - lx), pr = Math.max(8, W / 2 - (mw * sc - lx));
+  stg.style.paddingLeft = pl + 'px'; stg.style.paddingRight = pr + 'px';
+  map.style.marginTop = Math.max(0, cy - T - ly) + 'px'; map.style.marginBottom = Math.max(0, (H - cy) - (mh * sc - ly) - B) + 'px';
+  const vk = mk + '|' + sc + '|' + W + 'x' + H; if (stg.dataset.vk !== vk) { stg.dataset.vk = vk; requestAnimationFrame(() => { stg.scrollTop = T + parseFloat(map.style.marginTop) + ly - cy; stg.scrollLeft = pl + lx - W / 2; }); }
   ents.forEach(place);
 }
 
@@ -247,7 +251,7 @@ function decoEdit() {
       <div class="gy-dpick">${own.map(k => `<button data-k="${k}" class="${k === ded.sel ? 'sel' : ''}${on.has(k) ? ' on' : ''}"><img alt="" src="${IMG}deco/${k}.png"></button>`).join('')}</div>
       <div class="gy-dyn">${ded.sel && on.has(ded.sel) ? '<button class="gy-dbtn2" type="button" data-a="rm">치우기</button>' : ''}<button class="gy-dbtn2 main" type="button" data-a="ok">완료</button></div>`;
   };
-  ded.draw = draw;
+  ded.draw = draw; ded.end = decoDone;
   $g('.gy-dlg').onclick = e => { const b = e.target.closest('button'); if (!b || !ded) return; e.stopPropagation(); sfx('tap');
     if (b.dataset.k) { ded.sel = ded.sel === b.dataset.k ? null : b.dataset.k; return draw(); }
     if (b.dataset.a === 'rm') { g.dp = g.dp.filter(k => k !== ded.sel); delete g.dpos[ded.sel]; ded.sel = null; save(); return draw(); }
@@ -267,6 +271,7 @@ const inGym = s => s.gym ?? (s.yard ? 0 : 1);
 function trTile(D, x, y, used) {
   if (x < 1 || y < 2 || x > D.w - 2 || y > D.h - 2 || used?.has(x + ',' + y)) return false;
   if (D.free && D.free[y]?.[x] !== '1' && !D.slots.some(q => q[0] === x && q[1] === y)) return false;
+  if (D.inY != null && D.toF(y) > D.inY) return false;   // 입구 기둥보다 안쪽만 (경완 2026-10-27)
   const bad = [[D.leader[0], D.leader[1]], [D.leader[0] + 1, D.leader[1]], [D.leader[0] - 1, D.leader[1]], [D.leader[0], D.leader[1] - 1], [D.leader[0], D.leader[1] + 1], D.door, [D.door[0], D.door[1] - 1], D.guy];
   if (bad.some(q => q[0] === x && q[1] === y)) return false;
   for (let i = 1; i < D.path.length; i++) { const [a, b] = [D.path[i - 1], D.path[i]]; if (Math.min(a[0], b[0]) <= x && x <= Math.max(a[0], b[0]) && Math.min(a[1], b[1]) <= y && y <= Math.max(a[1], b[1])) return false; }
@@ -281,7 +286,7 @@ function faceTo(D, x, y) { let best = null, bd = 1e9;
 function sfList(g = st(), D = dzOf(g.d)) {
   const L = g.sf.filter(inGym), used = new Set(), out = new Map();
   for (const s of L) { const p = s.gp && s.gp[2] === D.id && D.toV(s.gp[1]) != null ? [s.gp[0], D.toV(s.gp[1])] : null; if (p && trTile(D, p[0], p[1], used)) { used.add(p[0] + ',' + p[1]); out.set(s, [s, p[0], p[1], faceTo(D, p[0], p[1])]); } }
-  for (const s of L) { if (out.has(s)) continue; const q = D.slots.find(q => !used.has(q[0] + ',' + q[1])); if (!q) continue; used.add(q[0] + ',' + q[1]); out.set(s, [s, q[0], q[1], q[2]]); }
+  for (const s of L) { if (out.has(s)) continue; const q = D.slots.find(q => trTile(D, q[0], q[1], used)); if (!q) continue; used.add(q[0] + ',' + q[1]); out.set(s, [s, q[0], q[1], q[2]]); }
   return L.filter(s => out.has(s)).map(s => out.get(s));
 }
 // 트레이너 자리 고르기 모드: 맵의 칸을 누르면 그 트레이너가 거기 선다 (꾸미기 놓기와 같은 방식)
@@ -296,7 +301,8 @@ function sfPlace(s, back) {
       <div class="gy-dyn">${inGym(s) ? '<button class="gy-dbtn2" type="button" data-a="rm">체육관에서 빼기</button>' : ''}<button class="gy-dbtn2 main" type="button" data-a="ok">완료</button></div>`;
   };
   ded.draw = draw;
-  const done = () => { ded = null; root.classList.remove('ded'); $g('.gy-map .gy-grid')?.remove(); map.onclick = null; $g('.gy-dlg').onclick = null; renderHome(); back?.(); };
+  const done = (quiet) => { ded = null; root.classList.remove('ded'); $g('.gy-map .gy-grid')?.remove(); map.onclick = null; $g('.gy-dlg').onclick = null; renderHome(); if (!quiet) back?.(); };
+  ded.end = () => done(true);
   $g('.gy-dlg').onclick = e => { const b = e.target.closest('button'); if (!b || !ded) return; e.stopPropagation(); sfx('tap');
     if (b.dataset.a === 'rm') { s.gym = 0; delete s.gp; glog('sf', `${sfName(s)}${jong(s.nm) ? '을' : '를'} 체육관 자리에서 뺐다.`); save(); return done(); }
     if (b.dataset.a === 'ok') return done(); };
@@ -549,17 +555,6 @@ function badgeGet(ty) {
 }
 
 // ---------- 홈 ----------
-const GUY_TIPS = [
-  () => `어서 와요, 관장님! 여기는 <b>${esc(st().nm)}</b>예요.`,
-  () => `도전자는 하루에 몇 번 아무 때나 찾아와요. 누가 오면 필드의 체육관 버튼에 <b>빨간 점</b>이 떠요.`,
-  () => `배틀에는 체육관 타입(<b>${TYPE_KO[st().ty]}</b>) 포켓몬만 낼 수 있어요.`,
-  () => `도전자를 이길수록 <b>평판</b>이 올라가요. 등급이 오르면 도전자가 더 자주 오고, 트레이너도 더 고용할 수 있어요.`,
-  () => `트레이너를 고용하면 도전자를 먼저 상대해 줘요. 다 이기고 올라온 도전자만 관장님이 상대하면 돼요.`,
-  () => `도전자는 그날 밤 12시까지 기다려요. 그때까지 안 받으면 돌아가고 평판이 조금 떨어져요.`,
-  () => `이름판을 누르면 <b>체육관 일지</b>와 <b>자격 배지</b>를 볼 수 있어요. 월요일엔 지난주 보고서가 와요.`,
-  () => `훈련장에 포켓몬을 보내 두면 앱을 꺼도 경험치가 쌓여요. 하루 8시간까지예요.`,
-];
-let tipI = 0;
 // 안내원: 먼저 물어보고, 들으면 체육관 전체 설명을 튜토리얼처럼 (경완 2026-10-27)
 const GUY_OW = 'gym_guy';
 const GUY_TOUR = () => [
@@ -579,7 +574,7 @@ const GUY_TOUR = () => [
 function guyAsk() {
   $g('.gy-dlg').innerHTML = `<span class="gy-who">안내원</span>관장님, 체육관 설명을 처음부터 들어 보실래요?<span class="gy-dsub">체육관이 어떻게 돌아가는지 차근차근 알려 드려요</span><div class="gy-dyn"><button class="gy-dbtn2" type="button" data-a="n">괜찮아요</button><button class="gy-dbtn2 main" type="button" data-a="y">들을래요</button></div>`;
   $g('.gy-dyn').onclick = async e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); sfx('tap');
-    if (b.dataset.a === 'n') { say(GUY_TIPS[tipI++ % GUY_TIPS.length](), '안내원'); return; }
+    if (b.dataset.a === 'n') { say('<span class="gy-who">안내원</span>알겠어요! 궁금한 게 생기면 언제든 불러 주세요.'); return; }   // 괜찮아요 = 설명 없이 끝 (경완 2026-10-27)
     await kang(GUY_TOUR(), { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1 }); homeSay(); };
 }
 function renderTop() {
@@ -654,6 +649,8 @@ const SOON = {
   shop: { t: '체육관 상점', ic: 'tr/gentleman', d: '체육관 운영에 필요한 것을 사요.', li: ['기술머신으로 포켓몬에게 기술 가르치기', '체육관 꾸미기 아이템', '평판이 오르면 체육관 넓히기'] },
 };
 function openTab(t) {
+  // 꾸미기·자리 정하기 중에 다른 메뉴를 열면 그 모드를 끝낸다 (경완 2026-10-27 '꾸미기 하고 나서 맵에 그리드 안 사라지는 오류')
+  if (t && ded) ded.end?.();
   tab = t; root.querySelectorAll('.gy-menu button[data-t]').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === t));
   const sh = $g('.gy-sheet'); sh.classList.remove('ty-on'); if (!t) { sh.hidden = true; return; }
   if (t === 'battle') { sh.hidden = false; sh.scrollTop = 0; sh.innerHTML = '<h3>배틀</h3><p class="gy-lead">불러오는 중…</p>'; loadJs('gymb/battle.js', 'GymBattle').then(() => { if (tab === 'battle' && window.GymBattle) GymBattle.tab(sh); }); return; }
@@ -676,16 +673,37 @@ function bodyCard(src, h, sub = '', btn = '', onClick) {
 }
 async function meCard() { const g = st(), O = OUTFITS[g.fit]; bodyCard(await fitSrc('tr'), `관장 ${esc(trName() || '나')}`, `${g.w}승 ${g.l}패 · 막은 도전자 ${g.blk}명${O ? `<br>입은 옷: ${O.n}` : ''}`); }
 function sfCard(s) { bodyCard(trSrc(s.tr), sfName(s), `${TRAITS[s.trait]?.n || ''} · ${s.w || 0}승 ${s.l || 0}패${s.rest ? '<br>월급을 못 받아서 쉬고 있어요' : ''}`); }
+// 체육관 정보: 팝업이 아니라 자세한 새 화면 (경완 2026-10-27 '새로운 창으로 더 자세하게')
 function infoPop() {
-  const g = st(), D = dzOf(g.d), G = gradeOf(g.rep || 0), d0 = new Date(g.t0 || Date.now());
-  pop(`<h4>체육관 정보</h4><dl class="gy-info">
-      <dt>이름</dt><dd><span>${esc(g.nm)}</span></dd><button class="gy-chg" data-a="nm">바꾸기</button>
-      <dt>타입</dt><dd>${tyIcon(g.ty)}<span>${TYPE_KO[g.ty]}</span></dd><button class="gy-chg" data-a="ty">바꾸기</button>
-      <dt>디자인</dt><dd><span>${D.n}</span></dd><button class="gy-chg" data-a="d">바꾸기</button>
-      <dt>등급</dt><dd><span>${G.n} · 평판 ${g.rep || 0}</span></dd><i></i>
-      <dt>개장일</dt><dd><span>${d0.getFullYear()}년 ${d0.getMonth() + 1}월 ${d0.getDate()}일</span></dd><i></i>
-      <dt>전적</dt><dd><span>${g.w || 0}승 ${g.l || 0}패 · 막은 도전자 ${g.blk || 0}명</span></dd><i></i>
-    </dl><div class="gy-btns three"><button data-a="log">체육관 일지</button><button data-a="bdg">자격 배지</button><button data-a="rk">주간 랭킹</button><button class="main" data-a="x">닫기</button></div>`, (a, close) => { close(); if (a === 'log') return logPop(); if (a === 'bdg') return badgePop(); if (a === 'rk') return reportPop(true); if (a !== 'x') setup(a); });
+  root.querySelector('.gy-infos')?.remove();
+  const g = st(), D = dzOf(g.d), G = gradeOf(g.rep || 0), d0 = new Date(g.t0 || Date.now()), days = Math.max(1, Math.floor((dayStart(Date.now()) - dayStart(g.t0 || Date.now())) / DAY) + 1);
+  const wl = (g.w || 0) + (g.l || 0), wr = wl ? Math.round((g.w || 0) / wl * 100) : 0, w = g.wk || {}, nb = Object.keys(g.bdg || {}).length, bk = Math.min(100, (g.bk || {})[g.ty] || 0);
+  const pct = G.hi > G.lo ? Math.min(100, ((g.rep || 0) - G.lo) / (G.hi - G.lo) * 100) : 100, nx = GRADES[G.i + 1];
+  const old = (g.tyLog || []).slice(-3).reverse().map(([t, at]) => { const d = new Date(at); return `<li>${tyIcon(t)}<span>${TYPE_KO[t]} 체육관</span><small>${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()} 폐업</small></li>`; }).join('');
+  const el = document.createElement('section'); el.className = 'gy-setup gy-infos'; root.appendChild(el);
+  el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 정보</b></div>
+    <div class="gy-body">
+      <div class="if-hero"><img alt="" src="${IMG}map/${D.id}.png"><div><span class="if-ty">${tyIcon(g.ty)}${TYPE_KO[g.ty]} 타입</span><h3>${esc(g.nm)} <button class="gy-chg" type="button" data-a="nm">이름 바꾸기</button></h3><p>${D.n} · ${D.sub}</p></div></div>
+      <div class="if-grade"><div><b>${G.n}</b><span>평판 ${g.rep || 0}${nx ? ` / ${nx[0]}` : ''}</span></div><i class="gy-bar"><i style="width:${pct}%"></i></i><small>${nx ? `${nx[0] - (g.rep || 0)} 더 모으면 <b>${nx[1]}</b>, 체육관이 넓어지고 트레이너를 더 둘 수 있어요` : '가장 높은 등급이에요'}</small></div>
+      <h5>운영</h5><div class="if-grid">
+        <div><small>개장일</small><b>${d0.getFullYear()}.${d0.getMonth() + 1}.${d0.getDate()}</b><em>${days}일째</em></div>
+        <div><small>전적</small><b>${g.w || 0}승 ${g.l || 0}패</b><em>방어율 ${wr}%</em></div>
+        <div><small>막은 도전자</small><b>${g.blk || 0}명</b><em>트레이너 포함</em></div>
+        <div><small>이번 주</small><b>${w.w || 0}승 ${w.l || 0}패</b><em>${(w.g || 0).toLocaleString()}G</em></div>
+        <div><small>트레이너</small><b>${(g.sf || []).length} / ${staffMax()}명</b><em>등급마다 1명씩</em></div>
+        <div><small>꾸미기</small><b>${(g.dp || []).length} / ${decoMax()}개</b><em>놓은 것 / 자리</em></div>
+      </div>
+      <h5>${TYPE_KO[g.ty]} 자격 배지</h5><div class="if-bdg"><img alt="" src="${IMG}badge/${g.ty}.png" class="${g.bdg?.[g.ty] ? 'on' : ''}"><div><b>${g.bdg?.[g.ty] ? '받았어요!' : `도전자 ${bk} / 100명 막기`}</b><i class="gy-bar"><i style="width:${bk}%"></i></i><small>모은 배지 ${nb} / 18</small></div></div>
+      ${old ? `<h5>예전 체육관</h5><ul class="if-old">${old}</ul>` : ''}
+      <div class="gy-btns three if-btns"><button type="button" data-a="log">체육관 일지</button><button type="button" data-a="bdg">자격 배지</button><button type="button" data-a="rk">주간 랭킹</button></div>
+      <button class="if-re" type="button" data-a="re">폐업하고 새로 세우기<small>타입·디자인을 바꿔 다시 열어요</small></button>
+    </div>`;
+  el.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap'); const a = b.dataset.a;
+    if (a === 'x') return el.remove(); if (a === 'log') return logPop(); if (a === 'bdg') return badgePop(); if (a === 'rk') return reportPop(true);
+    if (a === 'nm') { el.remove(); return setup('nm'); }
+    if (a === 're') return pop(`<h4>체육관 폐업</h4><p class="gy-msg"><b>${esc(g.nm)}</b>의 문을 닫고 새 타입·디자인으로 다시 세워요.<br>평판·트레이너·꾸미기·모은 배지는 그대로 이어져요. 배지 진행은 타입마다 따로 세요.</p><div class="gy-btns"><button data-a="x">그만두기</button><button class="main" data-a="ok">폐업하기</button></div>`,
+      (k, close) => { close(); if (k === 'ok') { el.remove(); setup(['d', 'ty', 'nm'], true); } });
+  };
 }
 // 체육관 일지: 날짜별로 누가 왔고 누가 이겼는지
 const LOG_IC = { win: '🏆', lose: '💦', sf: '🛡', in: '🚪', out: '👋', pay: '💰', bdg: '🎖', wk: '📋', tr: '💪' };
@@ -714,20 +732,21 @@ function reportPop(any) {
 }
 
 // ---------- 처음 설정: 디자인 → 타입 → 이름 (바꾸기는 그 단계 하나만) ----------
-function setup(only) {
+function setup(only, re) {
   const g = st(), first = !g?.d;
   const dr = { d: g?.d || DESIGNS[0].id, ty: g?.ty || 0, nm: g?.nm || '' };
-  const steps = only ? [only] : ['d', 'ty', 'nm'];
+  if (re && dr.nm === defName(dr.ty)) dr.nm = '';
+  const steps = Array.isArray(only) ? only : only ? [only] : ['d', 'ty', 'nm'];
   let i = 0;
   const el = document.createElement('section'); el.className = 'gy-setup'; root.appendChild(el);
   const counts = myTypes();
   const draw = () => {
     const k = steps[i], last = i === steps.length - 1;
     const head = `<div class="gy-sh">${i === 0 && first ? '<button class="gy-back" type="button" data-x aria-label="체육관 나가기">✕</button>' : '<button class="gy-back" type="button" aria-label="뒤로">◀</button>'}${steps.length > 1 ? `<span class="gy-steps">${steps.map((_, j) => `<i class="${j <= i ? 'on' : ''}"></i>`).join('')}</span>` : ''}</div>`;
-    let body = '', btn = last ? (first ? '체육관 열기' : '저장') : '다음';
+    let body = '', btn = last ? (first ? '체육관 열기' : re ? '새로 세우기' : '저장') : '다음';
     if (k === 'd') {
       const D = dzBase(dr.d), di = DESIGNS.indexOf(D);
-      body = `<h3>체육관 디자인</h3><p class="gy-lead">본가 관동 지방 체육관이에요. 나중에 바꿀 수 있어요.</p>
+      body = `<h3>${re ? '새 체육관 디자인' : '체육관 디자인'}</h3><p class="gy-lead">${re ? '새로 세울 체육관 모양을 골라요.' : '본가 관동 지방 체육관이에요. 나중에 바꿀 수 있어요.'}</p>
         <div class="gy-dz"><div class="gy-dz-view"><img src="${IMG}map/${D.id}.png" alt="${D.n}"><button class="gy-dz-arw l" type="button" data-m="-1" aria-label="이전">◀</button><button class="gy-dz-arw r" type="button" data-m="1" aria-label="다음">▶</button></div>
         <div class="gy-dz-nm">${D.n}</div><div class="gy-dz-sub">${D.sub}</div><div class="gy-dots">${DESIGNS.map((_, j) => `<i class="${j === di ? 'on' : ''}"></i>`).join('')}</div></div>`;
     } else if (k === 'ty') {
@@ -738,7 +757,7 @@ function setup(only) {
       if (!dr.nm) dr.nm = defName(dr.ty);
       body = `<h3>체육관 이름</h3><p class="gy-lead">도전자들이 보는 이름이에요.</p>
         <div class="gy-name"><input type="text" maxlength="14" value="${esc(dr.nm)}" aria-label="체육관 이름"><span class="gy-cnt"></span></div>
-        ${first ? `<div class="gy-sum"><img src="${IMG}map/${dr.d}.png" alt=""><div><span>${dzBase(dr.d).n}</span><span>${tyIcon(dr.ty)} ${TYPE_KO[dr.ty]} 타입</span></div></div>` : ''}`;
+        ${first || re ? `<div class="gy-sum"><img src="${IMG}map/${dr.d}.png" alt=""><div><span>${dzBase(dr.d).n}</span><span>${tyIcon(dr.ty)} ${TYPE_KO[dr.ty]} 타입</span></div></div>` : ''}`;
     }
     el.innerHTML = `${head}<div class="gy-body">${body}</div><button class="gy-key main gy-next" type="button" ${k === 'ty' && !dr.ty ? 'disabled' : ''}>${btn}</button>`;
     const inp = el.querySelector('input');
@@ -762,6 +781,7 @@ function setup(only) {
   el.addEventListener('pointerup', e => { if (sx == null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 40) el.querySelector(`.gy-dz-arw.${dx < 0 ? 'r' : 'l'}`)?.click(); });
   const finish = () => {
     if (first) S.gym = { v: 1, d: dr.d, ty: dr.ty, nm: dr.nm, rep: 0, t0: Date.now() };
+    else if (re) { el.remove(); return refound(dr); }
     else { if (only === 'ty' && dr.ty !== g.ty) { g.tyLog = g.tyLog || []; g.tyLog.push([g.ty, Date.now()]); } Object.assign(g, { d: dr.d, ty: dr.ty, nm: dr.nm }); }
     save(); el.remove(); renderHome();
     if (first) { tick(); renderHome(); opened(); }
@@ -774,6 +794,27 @@ function opened() {
   root.appendChild(fx); setTimeout(() => fx.remove(), 3600);
   say(`<b>${esc(st().nm)}</b>의 문을 열었다!`, '안내원을 눌러 보세요');
   setTimeout(() => kang(KANG_OPEN(), { lit: true }), 1400);
+}
+
+// 폐업 → 공사 → 새 체육관 개장 연출 (경완 2026-10-27 '손바닥 뒤집듯 바꾸는게 아니라 폐업하고 다시 새로 설립하는 연출')
+async function refound(dr) {
+  const g = st(), oldNm = g.nm; openTab(null);
+  const fx = document.createElement('div'); fx.className = 'gy-re'; root.appendChild(fx);
+  fx.innerHTML = `<div class="re-shut"><i></i></div><div class="re-sign"><b>폐 업</b><span>${esc(oldNm)}</span><small>그동안 찾아 주셔서 고맙습니다</small></div>`;
+  say(`<b>${esc(oldNm)}</b>의 문을 닫았다…`); sfx('tap');
+  requestAnimationFrame(() => fx.classList.add('down')); await wait(2600);
+  // 공사 중: 그 사이에 새 체육관으로 바꿔 둔다
+  if (dr.ty !== g.ty) { g.tyLog = g.tyLog || []; g.tyLog.push([g.ty, Date.now()]); }
+  Object.assign(g, { d: dr.d, ty: dr.ty, nm: dr.nm }); glog('in', `<b>${esc(oldNm)}</b>을 닫고 <b>${esc(dr.nm)}</b>을 새로 세웠다.`); save();
+  fx.querySelector('.re-sign').innerHTML = `<b>공 사 중</b><span>${esc(dr.nm)}</span><small>새 체육관을 짓고 있어요</small><div class="re-bar"><i></i></div>`;
+  fx.classList.add('build'); for (let k = 0; k < 6; k++) { setTimeout(() => sfx('tap'), 300 + k * 420); } await wait(2900);
+  renderHome(); renderTop(); await wait(200);
+  fx.querySelector('.re-sign').innerHTML = `<b>새 단 장</b><span>${esc(dr.nm)}</span><small>${tyIcon(dr.ty)} ${TYPE_KO[dr.ty]} 타입 · ${dzBase(dr.d).n}</small>`;
+  await wait(1300); fx.classList.remove('down', 'build'); fx.classList.add('up'); await wait(900); fx.remove();
+  const cf = document.createElement('div'); cf.className = 'gy-fx'; const C = ['#e04838', '#ffd84a', '#58a8e0', '#6ab84a', '#f8f8f8'];
+  for (let k = 0; k < 46; k++) { const i = document.createElement('i'); i.style.left = Math.random() * 100 + '%'; i.style.background = C[k % C.length]; i.style.setProperty('--dx', (Math.random() * 80 - 40) + 'px'); i.style.animationDelay = Math.random() * .6 + 's'; i.style.animationDuration = 1.6 + Math.random() * 1.2 + 's'; cf.appendChild(i); }
+  root.appendChild(cf); setTimeout(() => cf.remove(), 3600);
+  say(`<b>${esc(dr.nm)}</b>의 문을 새로 열었다!`, `${TYPE_KO[dr.ty]} 타입 체육관`);
 }
 
 // ---------- 강박사 안내 (처음 체육관에 올 때, 체육관을 연 뒤) ----------
@@ -851,7 +892,7 @@ async function exit() {
   if (leaving || !open) return; leaving = true;
   // 퇴근 누르면 로딩 화면부터 바로 (서서히 나타나지 않게, 경완 2026-10-27)
   const L = document.getElementById('gymLoad'); L?.classList.add('inst'); gymLoad.show('퇴근하는 중', '', true); void L?.offsetWidth; L?.classList.remove('inst');
-  root.querySelectorAll('.gy-pop,.gy-setup,.gy-kang').forEach(x => x.remove());
+  root.querySelectorAll('.gy-pop,.gy-setup,.gy-kang').forEach(x => x.remove()); ded?.end?.();
   try { window.GymBGM?.free(); } catch (e) {}
   await wait(2800);
   clearInterval(tickT); if (st()?.d) { tick(); setAt(); save(); }

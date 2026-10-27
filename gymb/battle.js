@@ -124,7 +124,8 @@ const curLu = () => lus()[S.gym.luI | 0];
 // ---------- 그림 ----------
 // 라인업·고르기 그림은 포켓몬 상자와 같은 그림 (경완 2026-10-27)
 // 랭크는 꾸미기 모드처럼 그림 테두리 색으로 (경완 2026-10-27)
-const thumb = P => `<span class="rk-fr" data-rk="${GA.rankOf(P)}"><img alt="" data-th="${P.id}"${P.shiny ? ` class="shiny" style="--shue:${GA.shinyHue(P.sp)}deg"` : ''}></span>`;
+// 랭크 배지도 본 게임 포켓몬 박스처럼 왼쪽 위에 (경완 2026-10-27 '체육관 모드에도 랭크 테두리 + 랭크 배지')
+const thumb = P => { const rk = GA.rankOf(P); return `<span class="rk-fr" data-rk="${rk}"><span class="rk ${rk}">${rk}</span><img alt="" data-th="${P.id}"${P.shiny ? ` class="shiny" style="--shue:${GA.shinyHue(P.sp)}deg"` : ''}></span>`; };
 function fillTh(root) { root.querySelectorAll('img[data-th]').forEach(im => { const P = S.box.find(p => String(p.id) === im.dataset.th); if (P) GA.thumb(P).then(u => { if (u) im.src = u; }).catch(() => {}); });
   // 트레이너 포켓몬(종만 앎)도 포켓몬 상자와 같은 그림 (경완 2026-10-27)
   root.querySelectorAll('img[data-sp]').forEach(im => { if (im.dataset.ok) return; im.dataset.ok = 1; GA.thumb({ sp: +im.dataset.sp }).then(u => { if (u) im.src = u; }).catch(() => {}); }); }
@@ -176,13 +177,22 @@ function buildUI() {
       <i class="bt-flash"></i>
     </div>
     <div class="bt-hinge"></div>
+    <div class="bt-mid"></div>
     <div class="bt-bot"><div class="bt-panel"></div></div>
   </div>`;
   document.getElementById('gym').appendChild(el);
   el.addEventListener('pointerup', () => { if (B?.tapWake) { const w = B.tapWake; B.tapWake = null; w(); } else if (B) B.fast = true; });
   addEventListener('resize', fit);
 }
-function fit() { if (!el) return; const W = innerWidth, H = innerHeight; const k = Math.max(1, Math.floor(Math.min(W / 256, (H - 20) / 394) * 4) / 4); el.style.setProperty('--k', k); }
+// 세로로 긴 휴대폰 (경완 2026-10-27 '전체 화면을 모바일 레이아웃에 맞게'): 위 화면은 맨 위, 아래 화면은 맨 아래에 폭에 꽉 차게.
+// 가운데 남는 자리에 대화창을 꺼내 놓아 위 화면은 배틀만 보인다. 넓은 화면은 예전처럼 두 화면을 가운데에
+function fit() {
+  if (!el) return; const W = innerWidth, H = innerHeight, mob = H / W > 1.45, msgEl = $b('.bt-msg');
+  el.classList.toggle('mob', mob);
+  if (mob) { const k = W / 256, room = H - 384 * k - 90; el.style.setProperty('--k', k); const mid = room >= 50 * k; el.classList.toggle('msgmid', mid); (mid ? $b('.bt-mid') : $b('.bt-top')).appendChild(msgEl); return; }
+  el.classList.remove('msgmid'); $b('.bt-top').appendChild(msgEl);
+  const k = Math.max(1, Math.floor(Math.min(W / 256, (H - 20) / 394) * 4) / 4); el.style.setProperty('--k', k);
+}
 
 // 대화창: 글자를 하나씩. wait=true 면 다 쓰고 잠깐 멈춤(누르면 바로 다음)
 async function msg(t, hold = 650) {
@@ -247,11 +257,16 @@ async function pickGif(side, A) {
   const u = gifUrl(A.sp, side === 'p', A.shiny, A.g === 'F'); if (!u) return null;
   return (await Promise.race([gifLoad(u), wait(1500).then(() => false)])) ? u : null;
 }
+// 새 그림이 다 올 때까지 숨긴다: 아이폰은 새 주소를 받는 동안 앞 포켓몬 그림을 그대로 보여 줘서 이름과 그림이 어긋났다 (경완 2026-10-27 '모래두지인데 깨비참')
+function setSrc(img, u) {
+  const abs = new URL(u, location.href).href; if (img.src === abs && img.complete && img.naturalWidth) { img.style.visibility = ''; return; }
+  img.style.visibility = 'hidden'; img.onload = () => { img.onload = null; img.style.visibility = ''; }; img.src = u;
+}
 function showMon(side, A, on = true) {
   const m = monEl(side), img = m.querySelector('img');
-  if (A && A.gif) { img.onerror = null; img.src = A.gif; img.alt = ''; m.classList.remove('pl2'); m.classList.add('gf'); img.style.transform = ''; m.style.left = m.style.top = ''; }
+  if (A && A.gif) { img.onerror = null; setSrc(img, A.gif); img.alt = ''; m.classList.remove('pl2'); m.classList.add('gf'); img.style.transform = ''; m.style.left = m.style.top = ''; }
   else if (A) {
-    m.classList.remove('gf'); const a = ANIM[A.sp], sheet = !!a; img.onerror = () => { img.onerror = null; img.src = pkSrc(A.sp, { b: side === 'p', s: A.shiny }); }; img.src = pkSrc(A.sp, { b: side === 'p', s: A.shiny, f: A.g === 'F' }); img.alt = '';
+    m.classList.remove('gf'); const a = ANIM[A.sp], sheet = !!a; img.onerror = () => { img.onerror = null; setSrc(img, pkSrc(A.sp, { b: side === 'p', s: A.shiny })); }; setSrc(img, pkSrc(A.sp, { b: side === 'p', s: A.shiny, f: A.g === 'F' })); img.alt = '';
     m.classList.toggle('pl2', sheet); img.style.transform = '';
     if (sheet) { m.style.left = (side === 'e' ? 136 : 40) + 'px'; m.style.top = (side === 'e' ? E_Y + a[0] : P_Y + a[1]) + 'px'; }
     else { m.style.left = m.style.top = ''; }
@@ -745,13 +760,14 @@ function ivHex(P, m) {
 }
 // 포켓몬 박스 창: 본 게임 포켓몬 박스와 같은 모양(검색·정렬·칸)으로 화면 전체에 뜬다. 체육관 타입 포켓몬만, 기본은 레벨순 (경완 2026-10-27)
 // add=true 면 라인업 빈 칸에서 연 것: 누르면 바로 라인업에 넣는다. 아니면 누르면 정보 창
+// 팝업이 아니라 새 화면으로 (경완 2026-10-27): 체육관 화면 위를 통째로 덮고, 왼쪽 위 ‹ 로 돌아간다
 const BX_SORT = [['lv', '레벨'], ['rank', '랭크'], ['iv', '개체값'], ['no', '번호'], ['new', '날짜']];
 let bxSort = 'lv', bxDir = 1, bxQ = '', bxRefresh = null;
 const RK_ORD = { S: 7, A: 6, B: 5, C: 4, D: 3, E: 2, F: 1 };
 function boxWin(add) {
   document.querySelector('#gym .gy-boxw')?.remove();
   const w = document.createElement('div'); w.className = 'gy-boxw';
-  w.innerHTML = `<div class="win" role="dialog" aria-label="포켓몬 박스"><div class="bw-hd"><h4>${add ? '라인업에 넣을 포켓몬' : '포켓몬 박스'}</h4><button class="bw-x" data-x aria-label="닫기">✕</button></div>
+  w.innerHTML = `<div class="win" role="dialog" aria-label="포켓몬 박스"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>${add ? `라인업 ${(S.gym.luI | 0) + 1}에 넣을 포켓몬 <small>${curLu().length}/6</small>` : '포켓몬 박스'}</h4></div>
     <p class="bw-ty">${GA.tyIcon(S.gym.ty)} ${TYPE_KO[S.gym.ty]} 타입 포켓몬만 보여요</p>
     <div class="filters boxq"><span class="qw"><input type="search" placeholder="이름이나 번호" aria-label="포켓몬 이름이나 번호로 찾기" autocomplete="off" value="${esc(bxQ)}"><button type="button" class="qx" aria-label="검색어 지우기">✕</button></span></div>
     <div class="mgr-tools"><div class="bag-sort bw-sort">${BX_SORT.map(([k, n]) => `<button data-sort="${k}">${n}</button>`).join('')}</div><span class="tcount"></span></div>
@@ -776,7 +792,7 @@ function boxWin(add) {
     const s = e.target.closest('[data-sort]'); if (s) { sfx('tap'); const k = s.dataset.sort; if (k === bxSort) bxDir = -bxDir; else { bxSort = k; bxDir = 1; } draw(); grid.scrollTop = 0; return; }
     const c = e.target.closest('.pk'); if (!c) return; sfx('tap');
     const id = +c.dataset.id || c.dataset.id;
-    if (add) { const cur = curLu(); if (cur.includes(id)) return; if (cur.length < 6) cur.push(id); GA.save(); drawTab(); if (cur.length >= 6) w.remove(); else draw(); return; }
+    if (add) { const cur = curLu(); if (cur.includes(id)) return; if (cur.length < 6) cur.push(id); GA.save(); drawTab(); if (cur.length >= 6) w.remove(); else { const sm = w.querySelector('.bw-hd small'); if (sm) sm.textContent = `${cur.length}/6`; draw(); } return; }
     monPop(id, true);
   };
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); bxQ = inp.value.trim(); draw(); inp.blur(); } });
