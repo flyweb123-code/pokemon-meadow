@@ -595,11 +595,14 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 /* 배틀 화면 휴대폰 배치 (v10.38) */
 .bt-mid{display:none}
 .bt.mob .bt-ds{position:absolute;inset:0;width:auto;height:auto;transform:none}
-.bt.mob .bt-top{transform:scale(var(--k));transform-origin:0 0;top:env(safe-area-inset-top)}
-.bt.mob .bt-bot{transform:scale(var(--k));transform-origin:0 100%;top:auto;bottom:env(safe-area-inset-bottom)}
+.bt.mob .bt-top{transform:scale(var(--k));transform-origin:0 0;top:var(--st,0px)}
+.bt.mob .bt-bot{transform:scale(var(--k),var(--ky,var(--k)));transform-origin:0 0;top:var(--bt);bottom:auto}
 .bt.mob .bt-hinge{display:none}
-.bt.mob .bt-mid{display:flex;position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top) + 192px * var(--k));bottom:calc(env(safe-area-inset-bottom) + 192px * var(--k));align-items:center;justify-content:center;background:linear-gradient(#20222c,#2c2f3c 50%,#1a1b22);box-shadow:inset 0 3px 0 #0c0d12,inset 0 -3px 0 #0c0d12}
+.bt.mob.msgmid .bt-top{height:162px}
+.bt.mob .bt-mid{display:flex;position:absolute;left:0;right:0;top:var(--mt);height:var(--mh);align-items:center;justify-content:center;background:#0c0d12}
 .bt-mid .bt-msg{position:relative;left:auto;right:auto;bottom:auto;width:252px;height:48px;flex:none;box-sizing:border-box;transform:scale(var(--k))}
+/* 세로로 늘린 아래 화면에서 글자·그림은 원래 비율로 */
+.bt.mob .bt-panel button>*,.bt.mob .bt-panel .bp-q,.bt.mob .bt-panel .mvi{transform:scaleY(var(--ty,1))}
 .bt.mob::before,.bt.mob::after{content:'';position:absolute;left:0;right:0;background:#0c0d12;z-index:0}
 .bt.mob::before{top:0;height:env(safe-area-inset-top)}.bt.mob::after{bottom:0;height:env(safe-area-inset-bottom)}
 /* 아래 화면 글자 잘 보이게 (경완 2026-10-27 '하단 버튼들 가독성') */
