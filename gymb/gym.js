@@ -162,7 +162,7 @@ function build() {
   const keep = () => { if (fb.parentNode !== dlg || dlg.lastChild !== fb) dlg.appendChild(fb); }; keep(); new MutationObserver(keep).observe(dlg, { childList: true });
   dlg.addEventListener('click', e => { if (root.classList.contains('dfold') && !root.classList.contains('ded') && !busy && e.target !== fb) { e.stopPropagation(); sfx('tap'); dFold(false); } }, true);
   // 필드 관찰 일지처럼: 일지창을 누르면 위로 펼쳐 지난 일지까지, 다시 누르면 접힌 3줄로 (경완 2026-10-28)
-  dlg.addEventListener('click', e => { if (!dlg.querySelector('.gy-hlog') || e.target.closest('button') || root.classList.contains('dfold')) return; e.stopPropagation(); sfx('tap'); root.classList.toggle('dlog'); homeSay(); });
+  dlg.addEventListener('click', e => { if (e.target.closest('button') || root.classList.contains('dfold') || root.classList.contains('ded') || busy) return; e.stopPropagation(); sfx('tap'); root.classList.toggle('dlog'); homeSay(); });
   try { if (localStorage.getItem('pk-gy-fold')) root.classList.add('dfold'); } catch (e) {}
   // 빈 곳을 한 번 누르면 일지를 접고 이름판·버튼을 다 숨겨 메뉴만 남김, 다시 누르면 다 펼침 (경완 2026-10-28, 필드 fview 와 같음)
   $g('.gy-stage').addEventListener('click', e => { if (ded || busy || root.classList.contains('pre') || root.querySelector('.gy-kang,.gy-pop,.gy-setup') || e.target.closest('.tap,.gy-prop.tap')) return;
@@ -714,7 +714,7 @@ function palChoose() {
 // 아래 상태창: 기다리는 도전자가 있으면 '도전 받기', 없으면 다음 방문 예고
 function homeSay() {
   const g = st(); if (busy) return;
-  if (g.q.length) {
+  if (g.q.length && !root.classList.contains('dlog')) {   // 펼친 일지에선 도전자 알림 대신 일지 (경완 2026-10-28 '펼치기 기능 구현 안됐고')
     const c = g.q[0];
     $g('.gy-dlg').innerHTML = `${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 도전하러 왔어요!${g.q.length > 1 ? ` <small>(기다리는 도전자 ${g.q.length}명)</small>` : ''}${c.named ? '<span class="gy-dsub">이름 있는 트레이너</span>' : ''}<button class="gy-dbtn" type="button">도전 받기 ▶</button>`;
     $g('.gy-dbtn').onclick = e => { e.stopPropagation(); sfx('tap'); challenge(); };
