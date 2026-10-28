@@ -27,7 +27,7 @@ function loadData() {
   return dataP || (dataP = Promise.all([
     fetch(`gym/data.json?v=${VER}`).then(r => { if (!r.ok) throw new Error('data'); return r.json(); }),
     getJ(`${IMG}pk/fem.json`), getJ(`${IMG}pk/anim.json`), getJ('gym/mvfx.json')
-  ]).then(([d, fem, an, fx]) => { D = d; MVI = new Map(d.mv.map((m, i) => [m[0], i])); FEM = new Set(fem || []); ANIM = an || {}; MFX = fx || {}; }).catch(e => { dataP = null; throw e; }));
+  ]).then(([d, fem, an, fx]) => { D = d; MVI = new Map(d.mv.map((m, i) => [m[0], i])); FEM = new Set(fem || []); ANIM = an || {}; MFX = fx || {}; mfxAdd(); }).catch(e => { dataP = null; throw e; }));
 }
 let simP = null;
 const loadSim = () => window.PSim ? Promise.resolve() : simP || (simP = new Promise((ok, no) => { const s = document.createElement('script'); s.src = `gym/psim.js?v=${VER}`; s.onload = () => window.PSim ? ok() : no(new Error('sim')); s.onerror = () => { simP = null; no(new Error('sim')); }; document.head.appendChild(s); }));
@@ -172,6 +172,7 @@ function buildUI() {
       <canvas class="bt-ptc" width="256" height="192"></canvas>
       <div class="bt-hb e"><b class="nm"></b><span class="lv"><i class="sx"></i><em class="lvn"></em></span><i class="st"></i><i class="hp"><i></i></i></div>
       <div class="bt-hb p"><b class="nm"></b><span class="lv"><i class="sx"></i><em class="lvn"></em></span><i class="st"></i><i class="hp"><i></i></i><span class="hpn"><b class="c"></b><b class="m"></b></span><i class="xp"><i></i></i></div>
+      <div class="bt-pty e"></div><div class="bt-pty p"></div>
       <div class="bt-fx"></div>
       <div class="bt-msg"><span class="t"></span><b class="cur" hidden>▼</b></div>
       <i class="bt-flash"></i>
@@ -379,7 +380,7 @@ function movePanel(req) {
 function moveInfo(m) {
   return new Promise(res => {
     const d = mvOf(m.id) || ['', m.move, 1, 0, 0, 0, m.maxpp, 0, '']; const ty = d[2] || 1;
-    const p = panel(`<div class="bp-info"><div class="mi-top" style="background-image:url(${IMG}bt/mv_${ty}.png)"><b>${esc(d[1])}</b></div>
+    const p = panel(`<div class="bp-info"><div class="mi-top" style="background-image:url(${IMG}bt/mv_${ty}.png);--tc:${TY_C[ty]}"><b>${esc(d[1])}</b></div>
       <dl><dt>타입</dt><dd>${tyTag(ty)}</dd><dt>분류</dt><dd>${tyTag(ty, d[3]).replace(/<i class="ty"[^]*?<\/i>/, '')} ${CAT_KO[d[3] | 0]}</dd>
       <dt>위력</dt><dd>${d[4] || '—'}</dd><dt>명중</dt><dd>${d[5] && d[5] !== true ? d[5] : '—'}</dd><dt>PP</dt><dd>${m.pp}/${m.maxpp}</dd><dt>효과</dt><dd>${effTag(d).replace(/<\/?i[^>]*>/g, '') || '—'}</dd></dl>
       <p>${esc(d[8] || '')}</p><button class="bb cancel" data-x><span>돌아가기</span></button></div>`);
@@ -466,6 +467,9 @@ async function encounter(opts) {
 // ---------- 배틀 진행 ----------
 // opts: { my: [P...], foe: { tr, cls, nm, f, team: [entry...] }, diff, practice, bg, music: 'train'|'gymBattle'|'rival'|'champ' }
 const M = (f, ...a) => { try { window.GymBGM?.[f](...a); } catch (e) {} };   // 체육관 BGM (gym/bgm.js)
+// 본가 몬스터볼 줄: 배틀 시작 때 양쪽이 가진 포켓몬 수 (쓰러짐은 회색, 상태 이상은 노랑, 빈 칸은 테두리만) (경완 2026-10-28)
+function tray() { ['e', 'p'].forEach(s => { const L = B.o[s] || [], t = $b(`.bt-pty.${s}`);
+  t.innerHTML = Array.from({ length: 6 }, (_, i) => { const P = L[i]; return `<i class="${!P ? 'x' : P.fainted || P.hp <= 0 ? 'f' : P.status ? 's' : 'o'}"></i>`; }).join(''); t.classList.add('on'); }); }
 async function run(opts) {
   await Promise.all([loadData(), loadSim()]);
   if (!el) buildUI(); fit();
@@ -485,13 +489,13 @@ async function run(opts) {
   trE.className = 'bt-tr e'; trP.className = 'bt-tr p';
   trE.style.backgroundImage = `url(${uE})`; trP.style.backgroundImage = `url(${uP})`;
   await Promise.race([Promise.all([uE, uP].map(u => new Promise(r => { const im = new Image(); im.onload = im.onerror = r; im.src = u; }))), wait(1200)]);   // 그림이 늦게 떠서 멈춰 보이지 않게 미리 받기
-  ['e', 'p'].forEach(s => { $b(`.bt-hb.${s}`).classList.remove('on'); monEl(s).className = `bt-mon ${s}`; setSt(s, ''); });
+  ['e', 'p'].forEach(s => { $b(`.bt-pty.${s}`).classList.remove('on'); $b(`.bt-hb.${s}`).classList.remove('on'); monEl(s).className = `bt-mon ${s}`; setSt(s, ''); });
   $b('.bt-msg .t').textContent = ''; idlePanel();
   // 등장: 화면이 번쩍이며 가로줄로 열리고, 발판·트레이너가 양옆에서 미끄러져 들어온다
   M('sePrep', SE_BASE.map(n => 'DP_' + n)); await wait(40); el.classList.add('now', 'open'); void el.offsetWidth; el.classList.remove('now'); encDone(); se('SLIDEIN');   // 배틀 화면은 바로 불투명하게 (서서히 나타나면 걷히는 전환 화면 사이로 체육관이 비쳤다, 경완 2026-10-28)
   await wait(900); el.classList.remove('intro');
   const foeNm = B.foeNm = `${opts.foe.cls} ${opts.foe.nm}`;
-  await msg(`${iga(foeNm)} 승부를 걸어왔다!`, 900);
+  tray(); await msg(`${iga(foeNm)} 승부를 걸어왔다!`, 900);
   my.forEach(o => gifLoad(gifUrl(o.sp, true, o.shiny, o.g === 'F'))); foeT.forEach(o => gifLoad(gifUrl(o.sp, false, o.shiny, o.g === 'F')));   // 미리 받기
   btl.makeChoices('default', 'default');   // 팀 미리보기: 라인업 순서 그대로
   try { await play(); } catch (e) { console.error(e); }
@@ -507,7 +511,9 @@ async function run(opts) {
     }
   }
   lowHp(false); M('play', 'gym', { fade: 1.2 });
-  el.classList.add('off'); await wait(450); el.hidden = true; const res = { won, quit: out === 'quit', turns: btl.turn, my: B?.my, used: [...(B?.used || [])], xr: B?.xr || {} }; B = null; return res;
+  // 끝나면 까맣게 어두워졌다가 체육관이 밝아지며 돌아온다 (본가처럼, 경완 2026-10-28)
+  const fd = document.createElement('i'); fd.className = 'bt-fade'; (el.parentElement || document.body).appendChild(fd); void fd.offsetWidth; fd.classList.add('on'); await wait(420);
+  el.classList.add('off'); el.hidden = true; await wait(120); fd.classList.remove('on'); setTimeout(() => fd.remove(), 800); await wait(650); const res = { won, quit: out === 'quit', turns: btl.turn, my: B?.my, used: [...(B?.used || [])], xr: B?.xr || {} }; B = null; return res;
 }
 
 // 쇼다운 기록을 한 줄씩 읽어 화면에 보여 준다. 고를 차례가 오면 아래 화면 메뉴
@@ -572,8 +578,8 @@ async function handle(a) {
       const sp = PSim.Dex.species.get(det[0]).num || src.sp;
       const X = B.act[s] = { i, pk, nm: src.nm, sp, lv: +(det.find(d => /^L\d+/.test(d)) || 'L100').slice(1), g: det.includes('F') ? 'F' : det.includes('M') ? 'M' : '', shiny: det.includes('shiny'), hp, mhp, st: stOf(a[4]), fnt: false };
       if (s === 'p') { X.xpg = xpGauge(src); X.pid = src.pid; B.used.add(src.pid); }
-      if (s === 'e') { if (!B.eOut) { B.eOut = 1; $b('.bt-tr.e').classList.add('away'); } await msg(`${eun(B.foeNm)} ${eul(X.nm)} 내보냈다!`, 0); }
-      else { if (!B.pOut) { B.pOut = 1; $b('.bt-tr.p').classList.add('throw'); } await msg(`가랏! ${X.nm}!`, 0); }
+      if (s === 'e') { if (!B.eOut) { B.eOut = 1; $b('.bt-tr.e').classList.add('away'); $b('.bt-pty.e').classList.remove('on'); } await msg(`${eun(B.foeNm)} ${eul(X.nm)} 내보냈다!`, 0); }
+      else { if (!B.pOut) { B.pOut = 1; $b('.bt-tr.p').classList.add('throw'); $b('.bt-pty.p').classList.remove('on'); } await msg(`가랏! ${X.nm}!`, 0); }
       await sendOut(s, X); await wait(200);
       break;
     }
@@ -658,6 +664,42 @@ const MV_REP = { 1: ['tackle', 'hypervoice', 'growl'], 2: ['brickbreak', 'aurasp
   6: ['rockslide', 'ancientpower', 'stealthrock'], 7: ['xscissor', 'bugbuzz', 'tailglow'], 8: ['shadowclaw', 'shadowball', 'confuseray'], 9: ['ironhead', 'flashcannon', 'irondefense'], 10: ['firepunch', 'flamethrower', 'willowisp'],
   11: ['waterfall', 'surf', 'raindance'], 12: ['leafblade', 'energyball', 'synthesis'], 13: ['thunderpunch', 'thunderbolt', 'thunderwave'], 14: ['zenheadbutt', 'psychic', 'calmmind'], 15: ['icepunch', 'icebeam', 'hail'],
   16: ['dragonclaw', 'dragonpulse', 'dragondance'], 17: ['crunch', 'darkpulse', 'nastyplot'], 18: ['tackle', 'charm', 'charm'] };
+// 원본 대본에서 포켓몬 그림 조작(어둡게·늘이기 등)이 빠져 소리만 나던 기술 31개에 비슷한 움직임을 더한다 (경완 2026-10-28 '나이트헤드 연출이 없음')
+// [종류, 시각(1/30초), …] — f 색 덮기 [대상, 색, 세기(16), 길이] / k 흔들기 [대상, x, y, 간격, 횟수] / m 움직임 [대상, x, y, 프레임] / z 늘이기 [대상, 가로, 세로, 길이] / e 불꽃 [대상, 길이]
+const MFX_ADD = {
+  nightshade: [['f', 6, 'a', '#201830', 16, 30], ['e', 24, 'ad', 16], ['f', 40, 'd', '#000', 14, 16], ['k', 40, 'd', 3, 0, 1, 5]],
+  constrict: [['f', 2, 'd', '#c8a060', 10, 16], ['z', 2, 'd', .85, 1, 16], ['k', 6, 'd', 2, 0, 1, 5]],
+  magnitude: [['k', 0, 'bg', 4, 2, 1, 10], ['k', 0, 'd', 4, 0, 1, 10]],
+  glare: [['f', 4, 'a', '#ffd040', 14, 12], ['e', 10, 'ad', 10], ['k', 22, 'd', 1, 0, 1, 4]],
+  meanlook: [['f', 4, 'a', '#000', 12, 16], ['k', 22, 'd', 1, 0, 1, 4]],
+  scaryface: [['z', 0, 'a', 1.15, 1.15, 16], ['f', 4, 'a', '#000', 10, 14], ['k', 20, 'd', 2, 0, 1, 5]],
+  bulkup: [['z', 0, 'a', 1.1, 1.05, 12], ['z', 14, 'a', 1.1, 1.05, 12], ['f', 0, 'a', '#e05030', 10, 26]],
+  growth: [['z', 0, 'a', 1.15, 1.15, 20], ['f', 0, 'a', '#60c050', 10, 22]],
+  meditate: [['f', 0, 'a', '#e080f0', 12, 26], ['m', 0, 'a', 0, -4, 6], ['m', 14, 'a', 0, 4, 6]],
+  irondefense: [['f', 0, 'a', '#d8d8e8', 14, 24]],
+  minimize: [['z', 0, 'a', .5, .5, 24]],
+  camouflage: [['f', 0, 'a', '#80b880', 12, 24]],
+  flash: [['f', 0, 'd', '#fff', 16, 14], ['f', 0, 'a', '#fff', 12, 10]],
+  foresight: [['f', 6, 'd', '#ff5050', 10, 12], ['f', 20, 'd', '#ff5050', 10, 12]],
+  lockon: [['f', 6, 'd', '#ff3030', 12, 10], ['k', 6, 'd', 1, 0, 1, 3]],
+  kinesis: [['f', 0, 'a', '#e080f0', 10, 16], ['k', 8, 'd', 2, 0, 1, 6]],
+  tailwhip: [['m', 0, 'a', 5, 0, 2], ['m', 3, 'a', -10, 0, 3], ['m', 7, 'a', 10, 0, 3], ['m', 11, 'a', -5, 0, 2]],
+  metronome: [['m', 0, 'a', 4, 0, 3], ['m', 4, 'a', -8, 0, 4], ['m', 9, 'a', 8, 0, 4], ['m', 14, 'a', -4, 0, 3]],
+  assist: [['m', 0, 'a', 0, -6, 3], ['m', 5, 'a', 0, 6, 3], ['f', 0, 'a', '#ffffff', 8, 12]],
+  followme: [['m', 0, 'a', 0, -6, 3], ['m', 5, 'a', 0, 6, 3], ['m', 10, 'a', 0, -6, 3], ['m', 15, 'a', 0, 6, 3]],
+  memento: [['f', 0, 'a', '#000', 16, 26], ['f', 24, 'd', '#000', 10, 14]],
+  grudge: [['f', 0, 'd', '#6040a0', 12, 20]],
+  spite: [['f', 0, 'd', '#6040a0', 12, 16], ['k', 8, 'd', 2, 0, 1, 4]],
+  torment: [['f', 0, 'd', '#e04838', 10, 16], ['k', 4, 'd', 2, 0, 1, 6]],
+  swagger: [['z', 0, 'a', 1.1, 1.1, 14], ['k', 14, 'd', 2, 0, 1, 4]],
+  roleplay: [['m', 0, 'a', 12, -4, 4], ['m', 10, 'a', -12, 4, 4]],
+  trick: [['m', 0, 'a', 10, 0, 4], ['m', 0, 'd', 10, 0, 4], ['m', 8, 'a', -10, 0, 4], ['m', 8, 'd', -10, 0, 4]],
+  switcheroo: [['m', 0, 'a', 10, 0, 4], ['m', 0, 'd', 10, 0, 4], ['m', 8, 'a', -10, 0, 4], ['m', 8, 'd', -10, 0, 4]],
+  doomdesire: [['k', 30, 'd', 3, 0, 1, 6]],
+  trickroom: [['k', 0, 'bg', 2, 2, 1, 8]],
+};
+function mfxAdd() { for (const [k, L] of Object.entries(MFX_ADD)) { const v = MFX[k]; if (!v) continue;
+  (Array.isArray(v[0]) ? v : [v]).forEach(A => { if (A.added) return; A.added = 1; A[1].push(...L); A[0] = Math.max(A[0], ...L.map(e => e[1] + (e[0] === 'k' ? (e[5] + 1) * e[6] * 2 : e[0] === 'e' ? e[3] : e[0] === 'z' ? e[5] : e[0] === 'f' ? e[5] : e[5] || 4))); }); } }
 async function moveFx(s, id, miss) {
   const m = mvOf(id); if (!m || miss) return; const ty = m[2], cat = m[3], col = TY_FX[ty] || '#fff';
   let A = MFX[id]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1];
@@ -735,7 +777,7 @@ async function expGain(X) {
     const nm = B.my[i].nm, A = B.act.p, on = A && A.pid === pid && !A.fnt;
     await msg(`${eun(nm)} 경험치 ${eul(r.n.toLocaleString())} 얻었다!`, on ? 0 : 500);
     if (on) { const hb = $b('.bt-hb.p .xp>i'), g = growth(P.sp); let lv = r.lv0;
-      for (;;) { const goal = lv < r.lv ? 1 : xpGauge(B.my[i]); hb.style.transition = 'width .6s linear'; hb.style.width = clampN(goal, 0, 1) * 96 + 'px'; await wait(B.fast ? 250 : 620); if (lv >= r.lv) break; lv++; A.lv = lv; $b('.bt-hb.p .lvn').textContent = lv; se('W287'); hb.style.transition = 'none'; hb.style.width = '0px'; await wait(30); }
+      for (;;) { const goal = lv < r.lv ? 1 : xpGauge(B.my[i]); se('EXP', { dur: B.fast ? .25 : .6 }); hb.style.transition = 'width .6s linear'; hb.style.width = clampN(goal, 0, 1) * 96 + 'px'; await wait(B.fast ? 250 : 620); if (lv >= r.lv) break; lv++; A.lv = lv; $b('.bt-hb.p .lvn').textContent = lv; se('EXPMAX');   /* 경완 2026-10-28: 경험치 막대 차는 본가 소리(SEQ_SE_DP_EXP), 꽉 차면 EXPMAX */ hb.style.transition = 'none'; hb.style.width = '0px'; await wait(30); }
       hb.style.transition = ''; A.xpg = xpGauge(B.my[i]); }
     if (r.lv > r.lv0) await msg(`${nm}의 레벨이 ${r.lv}${/[036]$/.test(String(r.lv)) ? '으로' : '로'} 올랐다!`);
     for (const [id, f] of r.learned) await msg(f ? `${eun(nm)} ${eul(mvKo(f))} 잊고 ${eul(mvKo(id))} 배웠다!` : `${eun(nm)} 새로 ${eul(mvKo(id))} 배웠다!`);

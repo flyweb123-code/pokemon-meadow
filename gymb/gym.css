@@ -1042,3 +1042,23 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 .gy-notem small{display:block;margin-top:4px;font-size:12px;color:var(--dim)}
 .gy-notem{color:#20202c!important}
 .bt.now :is(.bt-pl,.bt-tr,.bt-mon,.bt-bg){transition:none!important}   /* 시작할 때 화면 밖에서 바로 출발 (밖으로 나갔다 들어오지 않게) */
+/* 기술 설명 (경완 2026-10-28 '? 눌렀을 때 버튼이 이전 디자인이랑 달라'): 기술 카드와 같은 둥근 색 카드 + 흰 카드 하나 */
+.bt.mob .bp-info .mi-top{left:12px;width:232px;top:6px;height:30px;border-radius:12px;background:linear-gradient(color-mix(in srgb,var(--tc) 78%,#fff),var(--tc))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -3px 0 rgba(0,0,0,.16),0 0 0 1.5px rgba(0,0,0,.28),0 3px 0 rgba(0,0,0,.18)}
+.bt.mob .bp-info .mi-top b{font-size:13px;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.35)}
+.bt.mob .bp-info dl{top:44px;padding:6px 8px;border-radius:12px 12px 0 0;box-shadow:0 0 0 1.5px rgba(0,0,0,.18)}
+.bt.mob .bp-info p{top:96px;height:44px;padding:4px 8px 6px;border-radius:0 0 12px 12px;box-shadow:0 0 0 1.5px rgba(0,0,0,.18)}
+.bt.mob .bp-info dl,.bt.mob .bp-info p{left:12px;right:12px;background:rgba(255,255,255,.94)}
+.bt-fade{position:absolute;inset:0;z-index:30;background:#000;opacity:0;pointer-events:none;transition:opacity .4s ease-in}.bt-fade.on{opacity:1}
+.bt-fade:not(.on){transition:opacity .7s ease-out}
+/* 몬스터볼 줄 (경완 2026-10-28) */
+.bt-pty{position:absolute;z-index:3;display:flex;gap:3px;padding:3px 6px;height:14px;box-sizing:border-box;align-items:center;background:linear-gradient(#585868,#303040);box-shadow:0 1px 0 #18181f,inset 0 1px 0 rgba(255,255,255,.25);opacity:0;transition:transform .45s cubic-bezier(.2,.7,.3,1),opacity .25s}
+.bt-pty.e{left:0;top:30px;padding-left:10px;flex-direction:row-reverse;border-radius:0 7px 7px 0;transform:translateX(-120px)}
+.bt-pty.p{right:0;top:104px;padding-right:10px;border-radius:7px 0 0 7px;transform:translateX(120px)}
+.bt-pty.on{opacity:1;transform:none}
+.bt-pty i{width:9px;height:9px;border-radius:50%;box-sizing:border-box;box-shadow:0 0 0 1px #101018;background:linear-gradient(#f04838 0 42%,#101018 42% 58%,#f8f8f8 58%)}
+.bt-pty i.s{background:linear-gradient(#f8c838 0 42%,#101018 42% 58%,#f8f8f8 58%)}
+.bt-pty i.f{background:linear-gradient(#808088 0 42%,#101018 42% 58%,#b8b8c0 58%)}
+.bt-pty i.x{background:none;box-shadow:inset 0 0 0 1px #8888a0}
+.bt-pty.p{top:114px}
+.bt-hb .lv{align-items:center!important}.bt-hb .lv .sx{font-size:10px!important;line-height:12px!important;transform:translateY(-1px)}   /* 성별 기호를 Lv 글자 가운데에 (경완 2026-10-28) */
+.if-bdg .if-bt{font-size:12px;font-weight:700;color:var(--dim)}
