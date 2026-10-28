@@ -181,7 +181,7 @@ function buildUI() {
     <div class="bt-bot"><div class="bt-panel"></div></div>
   </div>`;
   document.getElementById('gym').appendChild(el);
-  el.addEventListener('pointerup', () => { if (B?.tapWake) { const w = B.tapWake; B.tapWake = null; w(); } else if (B) B.fast = true; });
+  el.addEventListener('pointerup', () => { if (B?.tapWake) { const w = B.tapWake; B.tapWake = null; se('SELECT'); w(); }   /* 경완 2026-10-28: 글 넘길 때 본가(Pt 글상자 A 버튼)와 같은 SEQ_SE_DP_SELECT */ else if (B) B.fast = true; });
   addEventListener('resize', fit);
 }
 // 세로로 긴 휴대폰 (경완 2026-10-27 '전체 화면을 모바일 레이아웃에 맞게', '배틀 상태창은 배틀 화면 밑에 바로 붙여주고 버튼을 좀 위아래로 키워도 돼'):

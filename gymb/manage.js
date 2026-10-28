@@ -323,7 +323,7 @@ const trtBox = (k, full, bare) => { const T = K.TRAITS[k]; return T ? `<span cla
 // 트레이너: 지원서 탭 / 고용 관리 탭 (경완 2026-10-27)
 let sfT = 'cand';
 // 지원서 남은 시간 (경완 2026-10-28): 우상단에 시:분, 가운데 : 가 깜빡
-const cvLeft = ms => { const m = Math.max(0, Math.ceil(ms / 60000)); return `${String(Math.floor(m / 60)).padStart(2, '0')}<i>:</i>${String(m % 60).padStart(2, '0')}`; };
+const cvLeft = ms => { const m = Math.max(0, Math.ceil(ms / 60000)); return `${Math.floor(m / 60)}h ${m % 60}m`; };   // 경완 2026-10-28: '남은 시간' 상태박스 안에 h m
 setInterval(() => document.querySelectorAll('.cv-left[data-exp]').forEach(e => { e.innerHTML = cvLeft(+e.dataset.exp - Date.now()); }), 20e3);
 function drawStaff() {
   const g = st(), now = Date.now(), max = K.staffMax();
@@ -331,7 +331,7 @@ function drawStaff() {
   const c = C.length, yN = g.sf.filter(s => s.yard).length;
   const tabs = `<div class="sp-tabs" role="tablist"><button role="tab" data-sft="cand" aria-selected="${sfT === 'cand'}">지원서${c ? ' <i class="tdot"></i>' : ''}</button><button role="tab" data-sft="sf" aria-selected="${sfT === 'sf'}">고용 관리</button></div>`;
   // 지원서 (경완 2026-10-28): 스프라이트가 잘 보이는 세로 카드, 여러 장이면 옆으로 넘긴다. 면접 내용도 카드 안에, 바로 고용하기
-  const cand = c ? `<div class="cv-deck">${C.map((x, i) => `<article class="cv-card" data-i="${i}"><header><b>트레이너 지원서</b><small class="cv-left" data-exp="${x.exp}">${cvLeft(x.exp - now)}</small></header>
+  const cand = c ? `<div class="cv-deck">${C.map((x, i) => `<article class="cv-card" data-i="${i}"><header><b>트레이너 지원서</b><span class="cv-tm"><em>남은 시간</em><b class="cv-left" data-exp="${x.exp}">${cvLeft(x.exp - now)}</b></span></header>
       <div class="cv-photo"><img alt="" src="${K.trSrc(x.tr)}"><div class="cv-nm"><small>${esc(x.cls)}</small><b>${esc(x.nm)}</b></div></div>
       <p class="cv-say">“안녕하세요! ${esc(LINES[x.trait])}”</p>
       <dl class="cv-dl"><dt>특성</dt><dd>${trtBox(x.trait, true, true)}</dd><dt>포켓몬</dt><dd>${teamIc(x.team)}</dd><dt>평균 레벨</dt><dd>Lv.${Math.round(K.teamLv(x.team))}</dd><dt>희망 월급</dt><dd>7일에 <b>${x.wage}G</b></dd></dl>
@@ -386,7 +386,7 @@ function hire(c) {
 }
 
 // ======================= 상점 (5단계) =======================
-const SHOP_T = [['tm', '기술머신'], ['deco', '꾸미기'], ['fit', '관장 의상']];   // 넓히기는 빼고 등급 따라 저절로 (경완 2026-10-28)
+const SHOP_T = [['tm', '기술머신'], ['deco', '꾸미기'], ['fit', '의상']];   // 넓히기는 빼고 등급 따라 저절로 (경완 2026-10-28)
 const tmPrice = x => x[3] === 2 ? 500 : (x[4] || 0) <= 50 ? 300 : x[4] <= 70 ? 700 : x[4] <= 85 ? 1200 : x[4] <= 100 ? 2000 : 3000;
 function drawShop() {
   if (!SHOP_T.some(([k]) => k === shopT)) shopT = 'tm';
