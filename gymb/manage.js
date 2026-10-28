@@ -319,7 +319,7 @@ const LINES = { train: '훈련이라면 자신 있어요! 체육관 포켓몬들
 // 포켓몬 그림 + 레벨: 상자 없이 그림 밑에 작은 글씨 (경완 2026-10-27 '박스 없이 좀 더 깔끔하게')
 const teamIc = T => `<span class="sf-team">${T.map(([sp, lv]) => `<span><img alt="" data-sp="${sp}"><small>Lv.${lv}</small></span>`).join('')}</span>`;
 // 특성은 상자로 (경완 2026-10-27 '트레이너 특성은 확실하게 박스로')
-const trtBox = (k, full) => { const T = K.TRAITS[k]; return T ? `<span class="trt trt-${k}"><b>특성</b><i>${T.n}</i>${full ? `<small>${T.d}</small>` : ''}</span>` : ''; };
+const trtBox = (k, full, bare) => { const T = K.TRAITS[k]; return T ? `<span class="trt trt-${k}">${bare ? '' : '<b>특성</b>'}<i>${T.n}</i>${full ? `<small>${T.d}</small>` : ''}</span>` : ''; };
 // 트레이너: 지원서 탭 / 고용 관리 탭 (경완 2026-10-27)
 let sfT = 'cand';
 function drawStaff() {
@@ -328,13 +328,12 @@ function drawStaff() {
   const c = C.length, yN = g.sf.filter(s => s.yard).length;
   const tabs = `<div class="sp-tabs" role="tablist"><button role="tab" data-sft="cand" aria-selected="${sfT === 'cand'}">지원서${c ? ' <i class="tdot"></i>' : ''}</button><button role="tab" data-sft="sf" aria-selected="${sfT === 'sf'}">고용 관리 <small>${g.sf.length}/${max}</small></button></div>`;
   // 지원서 (경완 2026-10-28): 스프라이트가 잘 보이는 세로 카드, 여러 장이면 옆으로 넘긴다. 면접 내용도 카드 안에, 바로 고용하기
-  const full = g.sf.length >= max;
   const cand = c ? `<div class="cv-deck">${C.map((x, i) => `<article class="cv-card" data-i="${i}"><header><b>트레이너 지원서</b><small>No.${String(x.id).padStart(3, '0')}</small></header>
       <div class="cv-photo"><img alt="" src="${K.trSrc(x.tr)}"><div class="cv-nm"><small>${esc(x.cls)}</small><b>${esc(x.nm)}</b></div></div>
       <p class="cv-say">“안녕하세요! ${esc(LINES[x.trait])}”</p>
-      <dl class="cv-dl"><dt>특성</dt><dd>${trtBox(x.trait, true)}</dd><dt>포켓몬</dt><dd>${teamIc(x.team)}</dd><dt>평균 레벨</dt><dd>Lv.${Math.round(K.teamLv(x.team))}</dd><dt>희망 월급</dt><dd>7일에 <b>${x.wage}G</b> <small>(고용하면 첫 주 바로)</small></dd></dl>
-      <p class="cv-exp">${full ? `트레이너 자리가 꽉 찼어요 (${g.sf.length}/${max}). 등급을 올리거나 한 명을 해고해야 해요.` : `${Math.max(1, Math.round((x.exp - now) / K.H))}시간 뒤에 다른 체육관으로 가요`}</p>
-      <div class="cv-btns"><button class="gy-key" data-no="${i}">돌려보내기</button><button class="gy-key main" data-hire="${i}" ${full ? 'disabled' : ''}>고용하기</button></div></article>`).join('')}</div>
+      <dl class="cv-dl"><dt>특성</dt><dd>${trtBox(x.trait, true, true)}</dd><dt>포켓몬</dt><dd>${teamIc(x.team)}</dd><dt>평균 레벨</dt><dd>Lv.${Math.round(K.teamLv(x.team))}</dd><dt>희망 월급</dt><dd>7일에 <b>${x.wage}G</b></dd></dl>
+      <p class="cv-exp">${Math.max(1, Math.round((x.exp - now) / K.H))}시간 뒤에 다른 체육관으로 가요</p>
+      <div class="cv-btns"><button class="gy-key" data-no="${i}">돌려보내기</button><button class="gy-key main" data-hire="${i}">고용하기</button></div></article>`).join('')}</div>
       ${C.length > 1 ? `<div class="cv-dots">${C.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : ''}`
       : `<p class="sf-none">지금은 지원서가 없어요. 새 지원자가 오면 트레이너 단추에 빨간 점이 떠요.</p>`;
   const gL = K.sfList ? K.sfList() : [], gNo = x => gL.findIndex(z => z[0] === x);
@@ -378,7 +377,8 @@ function reject(c) {
   if (!c) return; dropCand(c); K.glog('sf', `지원자 ${esc(c.cls)} ${esc(c.nm)}${K.jong(c.nm) ? '을' : '를'} 돌려보냈다.`); K.save(); redraw();
 }
 function hire(c) {
-  const g = st(); if (!c || g.sf.length >= K.staffMax()) return;
+  const g = st(); if (!c) return;
+  if (g.sf.length >= K.staffMax()) return pop(`<h4>트레이너 자리가 꽉 찼어요</h4><p class="gy-msg">지금 ${g.sf.length}/${K.staffMax()}명이에요. 체육관 등급을 올리거나 한 명을 해고하면 고용할 수 있어요.</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => close());
   if (!spend(c.wage)) return say(`골드가 모자라요. 첫 주 월급 ${c.wage}G가 필요해요.`);
   const now = Date.now(); g.sf.push(Object.assign({}, c, { hired: now, pay: now + 7 * K.DAY, w: 0, l: 0, xp: 0 })); dropCand(c);
   K.glog('sf', `${esc(c.cls)} <b>${esc(c.nm)}</b>${K.jong(c.nm) ? '을' : '를'} 고용했다! <small>월급 ${c.wage}G</small>`); K.save(); redraw(); K.renderHome();
