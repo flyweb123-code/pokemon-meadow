@@ -552,7 +552,7 @@ function tick(now = Date.now()) {
   while (g.day < today && guard++ < 14) {   // 지난 날: 남은 방문을 다 처리하고, 자정까지 안 받은 도전자는 돌아간다
     const end = nextDay(g.day);
     while (g.sch.length && g.sch[0] < end) arrive(mkChal(g.sch.shift()));
-    for (const c of g.q) { addRep(-1); glog('out', `${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 기다리다 돌아갔다. <small>평판 -1</small>`, end - 1); }
+    for (const c of g.q) glog('out', `${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 기다리다 돌아갔다.`, end - 1);   // 평판은 깎지 않는다 (경완 2026-10-28)
     g.q = []; g.day = end; g.sch = mkSch(end);
   }
   if (g.day < today) { g.day = today; g.sch = mkSch(today, now); }
@@ -595,7 +595,7 @@ async function challenge() {
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : pick(WIN_LINES), lose: N ? N.ln[2].replace('{me}', me) : pick(LOSE_LINES) };
     document.body.classList.add('gymBattle');
     let res;
-    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: c.music || (c.diff ? 'train' : 'train'), meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: REW[c.diff].g, r: REW[c.diff].r, rl: Math.max(-(g.rep || 0), REW[c.diff].rl) }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: c.music || (c.diff ? 'train' : 'train'), meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); }
     g.q.shift(); const R = REW[c.diff], won = !!res?.won, now = Date.now();
     let gold = 0, rep = 0;
