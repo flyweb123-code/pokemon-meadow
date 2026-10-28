@@ -917,3 +917,26 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .gy-sheet .gy-stabs{position:sticky;bottom:-14px;z-index:2;flex:none;margin-top:auto;grid-template-columns:repeat(3,minmax(0,1fr))!important;box-shadow:0 -8px 0 var(--win),0 14px 0 var(--win)}
 .gy-sheet .gy-stabs .runtab{margin:0;border-radius:0;box-shadow:none}.gy-sheet .gy-stabs .runtab:first-child{border-left:0}
 .gy-sheet .sp-body{padding-bottom:4px}
+/* v10.58 (경완 2026-10-28): 꾸미기 = 테두리 없는 아이콘, 창고·도전자 명단 = 밤낮 상관없는 네모 버튼, 홈 화면 일지창 없음 */
+#gym .gy-deco{border:0!important;background:none!important;box-shadow:none!important;width:auto!important;height:auto;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.45))}
+#gym .gy-deco svg{width:42px;height:39px}
+#gym .gy-deco:active{transform:translate(1px,1px);box-shadow:none!important}
+#gym .gy-sq{position:absolute;z-index:3;display:grid;place-items:center;width:46px!important;height:46px;min-height:0;padding:0!important;box-sizing:border-box;border:3px solid #383848;background:#f8f8f8;box-shadow:inset 0 0 0 3px #f8f8f8,inset 0 0 0 5px #c8c8d8,3px 3px 0 rgba(0,0,0,.35);cursor:pointer;color:#20202c}
+#gym .gy-store.gy-sq{top:calc(var(--si-top,env(safe-area-inset-top)) + 88px);right:calc(var(--si-right,env(safe-area-inset-right)) + 8px);bottom:auto}
+#gym .gy-sq svg{width:28px;height:28px;filter:none}
+#gym .gy-sq:active{transform:translate(2px,2px);box-shadow:inset 0 0 0 3px #f8f8f8,inset 0 0 0 5px #c8c8d8}
+#gym.dhide:not(.ded) .gy-dlg,#gym .gy-dfold{display:none!important}
+.gy-qbtn{position:absolute;z-index:3;right:calc(var(--si-right,env(safe-area-inset-right)) + 10px);bottom:12px;width:54px;height:54px;padding:0;display:grid;place-items:center;border:3px solid #383848;background:#f8f8f8;box-shadow:inset 0 0 0 3px #f8f8f8,inset 0 0 0 5px #c8c8d8,3px 3px 0 rgba(0,0,0,.35);cursor:pointer}
+.gy-qbtn svg{width:28px;height:33px}.gy-qbtn:active{transform:translate(2px,2px);box-shadow:inset 0 0 0 3px #f8f8f8,inset 0 0 0 5px #c8c8d8}
+.gy-qbtn .gy-qn{position:absolute;right:-8px;top:-8px;min-width:20px;height:20px;padding:0 5px;box-sizing:border-box;border-radius:10px;background:#e04838;color:#fff;font-size:12px;line-height:20px;text-align:center;box-shadow:0 0 0 2px #fff}
+.gy-qbtn.has{animation:qbob 1.2s steps(2,end) infinite}@keyframes qbob{50%{translate:0 -3px}}
+#gym:is(.gview,.ded,.busy,.pre) .gy-qbtn,#gym:has(.gy-sheet:not([hidden]),.gy-infos,.gy-kang) .gy-qbtn{visibility:hidden!important}
+.gy-qw .qw-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+.qw-list{display:flex;flex-direction:column;gap:8px}
+.qw-row{display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:center;padding:8px 10px;border:3px solid var(--frame);background:#fffdf4;box-shadow:3px 3px 0 rgba(0,0,0,.15)}
+.qw-pic{width:64px;height:64px;display:grid;place-items:center;overflow:hidden;background:#e8eef8;border:2px solid var(--frame)}.qw-pic img{width:64px;height:64px;object-fit:contain;image-rendering:pixelated}
+.qw-tx{display:flex;flex-direction:column;gap:2px;min-width:0}.qw-tx small{font-size:12px;color:var(--dim)}.qw-tx small em{font-style:normal;color:#b07a10;font-weight:700}.qw-tx b{font-size:17px}.qw-tx span{font-size:11px;color:var(--dim)}
+.qw-row .gy-key{min-height:40px;padding:0 12px!important;margin:0;white-space:nowrap}
+.qw-none{margin:24px 0;text-align:center;font-size:14px;line-height:1.6;color:var(--dim)}
+.gy-qw .gy-hlog.all{max-height:none;overflow:visible}
+.gy-qw .gy-body{text-align:left}.gy-qw .qw-tx{align-items:flex-start}.gy-qw .gy-hlog li{text-align:left}

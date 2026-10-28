@@ -135,8 +135,9 @@ function build() {
         <button class="win gy-plate" type="button" aria-label="체육관 정보"><span class="gy-nm"></span><span class="gy-grade"></span><span class="gy-rep"><em>평판</em><i class="gy-bar"><i></i></i><b class="gy-repn"></b></span></button>
       </div>
       <!-- 필드와 같은 자리 (경완 2026-10-28): 꾸미기 = 맵 편집 자리(왼쪽 위), 창고 = 가방 자리(오른쪽) -->
-      <button class="gy-deco" type="button" aria-label="꾸미기"></button>
-      <button class="gy-store mapico" type="button" aria-label="창고"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 3h12v1H2zM1 4h1v3H1zM14 4h1v3h-1zM2 7h12v1H2zM2 8h1v6H2zM13 8h1v6h-1zM3 14h10v1H3zM6 9h4v1H6zM6 10h1v1H6zM9 10h1v1H9zM6 11h4v1H6z"/><path fill="#c8783c" d="M2 4h12v3H2zM3 8h10v6H3z"/><path fill="#e8a060" d="M2 4h12v1H2zM3 8h10v1H3z"/><path fill="#f0c040" d="M7 10h2v1H7z"/><path fill="#8a4a24" d="M3 13h10v1H3zM7 4h2v3H7z"/></svg></button>
+      <button class="gy-deco" type="button" aria-label="꾸미기"><svg viewBox="0 0 14 13" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M3 1h6v1h2v1h1v3h-1v1H9v1h1v2H9v1H7v1H3v-1H2v-1H1V8H0V4h1V3h1V2h1z"/><path fill="#f0d8a8" d="M3 2h6v1h2v3H9v1H8v2h1v1H7v1H3v-1H2V8H1V4h1V3h1z"/><path fill="#e04838" d="M3 4h2v2H3z"/><path fill="#58a8e0" d="M6 3h2v2H6z"/><path fill="#6ab84a" d="M3 7h2v2H3z"/><path fill="#ffd84a" d="M5 9h2v1H5z"/><path fill="#20202c" d="M13 0h1v2h-1v1h-1v1h-1v1h-1v1H9V5h1V4h1V3h1V2h1z"/><path fill="#a87a48" d="M12 1h1v1h-1v1h-1v1h-1v1H9V4h1V3h1V2h1z"/></svg></button>
+      <button class="gy-store gy-sq" type="button" aria-label="창고"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 3h12v1H2zM1 4h1v3H1zM14 4h1v3h-1zM2 7h12v1H2zM2 8h1v6H2zM13 8h1v6h-1zM3 14h10v1H3zM6 9h4v1H6zM6 10h1v1H6zM9 10h1v1H9zM6 11h4v1H6z"/><path fill="#c8783c" d="M2 4h12v3H2zM3 8h10v6H3z"/><path fill="#e8a060" d="M2 4h12v1H2zM3 8h10v1H3z"/><path fill="#f0c040" d="M7 10h2v1H7z"/><path fill="#8a4a24" d="M3 13h10v1H3zM7 4h2v3H7z"/></svg></button>
+      <button class="gy-qbtn" type="button" aria-label="도전자 명단"><svg viewBox="0 0 12 14" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M4 0h4v1h3v13H1V1h3zM2 2v11h8V2H8v1H4V2z"/><path fill="#f6e8bc" d="M2 2h2v1h4V2h2v11H2z"/><path fill="#c8a060" d="M5 0h2v2H5z"/><path fill="#e04838" d="M3 4h2v2H3zM3 7h2v2H3zM3 10h2v2H3z"/><path fill="#5a5a6a" d="M6 5h3v1H6zM6 8h3v1H6zM6 11h3v1H6z"/></svg><b class="gy-qn" hidden></b></button>
       <button class="win gy-simb" type="button">시뮬</button>
       <div class="win blue gy-dlg" aria-live="polite"></div>
       <section class="gy-sheet" hidden></section>
@@ -147,7 +148,6 @@ function build() {
   document.body.appendChild(root);
   $g('.gy-plate').onclick = () => { sfx('tap'); infoPop(); };
   $g('.gy-store').onclick = () => { sfx('tap'); if (ded) ded.end?.(); storePop(); };
-  { const ms = document.querySelector('#btnMapEdit svg'); if (ms) $g('.gy-deco').appendChild(ms.cloneNode(true)); }   // 필드 맵 편집 아이콘 그대로
   $g('.gy-deco').onclick = () => { sfx('tap'); root.querySelectorAll('.gy-infos').forEach(x => x.remove()); if (!ded) decoEdit(); };
   $g('.gy-simb').onclick = () => { sfx('tap'); simPop(); };
   $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = b.dataset.t; if (t === 'out') return exit(); sfx('tap');
@@ -156,22 +156,14 @@ function build() {
   // 퇴근은 손가락이 닿는 순간 로딩 화면부터 (click 을 기다리지 않음, 경완 2026-10-27 '여전히 바로 안 뜸')
   $g('.gy-menu .gy-out').addEventListener('pointerdown', e => { if (e.button) return; e.preventDefault(); exit(); });
   addEventListener('resize', () => { if (open) layout(st()?.d ? undefined : DESIGNS[0]); });
-  // 일지 접기·펴기 (경완 2026-10-28 '꾸미기 모드 관찰일지처럼'): ▼ 버튼은 대화창 글이 바뀌어도 늘 붙어 있게
-  const dlg = $g('.gy-dlg'), fb = document.createElement('button'); fb.type = 'button'; fb.className = 'gy-dfold'; fb.textContent = '▼';
-  fb.onclick = e => { e.stopPropagation(); sfx('tap'); dFold(!root.classList.contains('dfold')); };
-  const keep = () => { if (fb.parentNode !== dlg || dlg.lastChild !== fb) dlg.appendChild(fb); }; keep(); new MutationObserver(keep).observe(dlg, { childList: true });
-  dlg.addEventListener('click', e => { if (root.classList.contains('dfold') && !root.classList.contains('ded') && !busy && e.target !== fb) { e.stopPropagation(); sfx('tap'); dFold(false); } }, true);
-  // 필드 관찰 일지처럼: 일지창을 누르면 위로 펼쳐 지난 일지까지, 다시 누르면 접힌 3줄로 (경완 2026-10-28)
-  dlg.addEventListener('click', e => { if (e.target.closest('button') || root.classList.contains('dfold') || root.classList.contains('ded') || busy) return; e.stopPropagation(); sfx('tap'); root.classList.toggle('dlog'); homeSay(); });
-  try { if (localStorage.getItem('pk-gy-fold')) root.classList.add('dfold'); } catch (e) {}
-  // 빈 곳을 한 번 누르면 일지를 접고 이름판·버튼을 다 숨겨 메뉴만 남김, 다시 누르면 다 펼침 (경완 2026-10-28, 필드 fview 와 같음)
+  // 홈 화면엔 일지창이 없다 (경완 2026-10-28 '체육관 일지창 없애주고'): 대화창은 알림이 있을 때만 뜨고, 누르면 닫힌다
+  const dlg = $g('.gy-dlg');
+  dlg.addEventListener('click', e => { if (e.target.closest('button') || root.classList.contains('ded') || busy || root.classList.contains('dhide')) return; e.stopPropagation(); sfx('tap'); homeSay(); });
+  // 도전자 명단 아이콘 → 새 화면 (도전자 / 체육관 일지)
+  $g('.gy-qbtn').onclick = () => { sfx('tap'); if (ded) ded.end?.(); qPop(); };
+  // 빈 곳을 한 번 누르면 이름판·버튼을 다 숨겨 메뉴만 남김, 다시 누르면 다 펼침 (경완 2026-10-28, 필드 fview 와 같음)
   $g('.gy-stage').addEventListener('click', e => { if (ded || busy || root.classList.contains('pre') || root.querySelector('.gy-kang,.gy-pop,.gy-setup') || e.target.closest('.tap,.gy-prop.tap')) return;
-    const on = !root.classList.contains('dfold'); dFold(on); root.classList.toggle('gview', on); sfx('tap'); });
-}
-function dFold(on, auto = false) {
-  if (!on && auto && root.classList.contains('gview')) return; if (!on) root.classList.remove('gview');
-  root.classList.toggle('dfold', on); if (on && root.classList.contains('dlog')) { root.classList.remove('dlog'); homeSay(); } const fb = $g('.gy-dfold'); if (fb) fb.setAttribute('aria-label', on ? '일지 펴기' : '일지 접기');
-  if (!auto) try { localStorage.setItem('pk-gy-fold', on ? '1' : ''); } catch (e) {}
+    root.classList.toggle('gview'); sfx('tap'); });
 }
 
 // 맵 크기: 화면 폭에 맞추고, 너무 길면 세로로 넘겨 본다
@@ -714,19 +706,31 @@ function palChoose() {
 // 아래 상태창: 기다리는 도전자가 있으면 '도전 받기', 없으면 다음 방문 예고
 function homeSay() {
   const g = st(); if (busy) return;
-  if (g.q.length && !root.classList.contains('dlog')) {   // 펼친 일지에선 도전자 알림 대신 일지 (경완 2026-10-28 '펼치기 기능 구현 안됐고')
-    const c = g.q[0];
-    $g('.gy-dlg').innerHTML = `${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 도전하러 왔어요!${g.q.length > 1 ? ` <small>(기다리는 도전자 ${g.q.length}명)</small>` : ''}${c.named ? '<span class="gy-dsub">이름 있는 트레이너</span>' : ''}<button class="gy-dbtn" type="button">도전 받기 ▶</button>`;
-    $g('.gy-dbtn').onclick = e => { e.stopPropagation(); sfx('tap'); challenge(); };
-    return;
-  }
-  // 다음 도전자가 언제 오는지는 알려 주지 않는다. 조용할 땐 체육관 일지 최근 3줄 (경완 2026-10-27 '체육관 일지를 홈화면 하단 상태창에')
-  const all = root.classList.contains('dlog'), L = (g.log || []).slice(0, all ? 80 : 3); let last = '';
-  const row = ([t, k, h]) => { const d = new Date(t), dk = `${d.getMonth() + 1}월 ${d.getDate()}일`, hd = all && dk !== last ? `<li class="hl-day">${dk}</li>` : ''; last = dk; return `${hd}<li><i>${LOG_IC[k] || '·'}</i><span>${h}</span><time>${hhmm(t)}</time></li>`; };
-  $g('.gy-dlg').innerHTML = `<span class="gy-who">체육관 일지</span>${L.length ? `<ul class="gy-hlog${all ? ' all' : ''}">${L.map(row).join('')}</ul>` : '<span class="gy-dsub">아직 기록이 없어요. 도전자가 오면 필드의 체육관 버튼에 빨간 점이 떠요.</span>'}`;
+  root.classList.add('dhide'); $g('.gy-dlg').innerHTML = '';
+  const n = g.q.length, b = $g('.gy-qn'); if (b) { b.hidden = !n; b.textContent = n; } $g('.gy-qbtn')?.classList.toggle('has', !!n);
+  const pw = root.querySelector('.gy-qw'); if (pw) pw.redraw?.();
+}
+// 도전자 명단 (경완 2026-10-28 '화면 하단에 도전자 명단 아이콘, 누르면 새 화면에서'): 기다리는 도전자 / 체육관 일지
+let qT = 'q';
+function qPop() {
+  root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
+  const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-qw'; root.appendChild(el);
+  const draw = el.redraw = () => { const g = st(), Q = g.q;
+    let body;
+    if (qT === 'q') body = Q.length ? `<div class="qw-list">${Q.map((c, i) => `<div class="qw-row"><span class="qw-pic"><img alt="" src="${trSrc(c.tr)}"></span><div class="qw-tx"><small>${esc(c.cls)}${c.named ? ' · <em>이름 있는 트레이너</em>' : ''}</small><b>${esc(c.nm)}</b><span>${hhmm(c.t)}에 왔어요</span></div><button class="gy-key main" type="button" data-c="${i}">도전 받기</button></div>`).join('')}</div>`
+      : '<p class="qw-none">지금 기다리는 도전자가 없어요.<br>도전자가 오면 이 아이콘과 필드의 체육관 버튼에 빨간 점이 떠요.</p>';
+    else { const L = (g.log || []).slice(0, 80); let last = '';
+      body = L.length ? `<ul class="gy-hlog all">${L.map(([t, k, h]) => { const d = new Date(t), dk = `${d.getMonth() + 1}월 ${d.getDate()}일`, hd = dk !== last ? `<li class="hl-day">${dk}</li>` : ''; last = dk; return `${hd}<li><i>${LOG_IC[k] || '·'}</i><span>${h}</span><time>${hhmm(t)}</time></li>`; }).join('')}</ul>` : '<p class="qw-none">아직 기록이 없어요.</p>'; }
+    el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">도전자 명단</b></div>
+      <div class="gy-body"><div class="sp-tabs qw-tabs" role="tablist"><button type="button" role="tab" data-t="q" aria-selected="${qT === 'q'}">기다리는 도전자 <small>${Q.length}</small></button><button type="button" role="tab" data-t="log" aria-selected="${qT === 'log'}">체육관 일지</button></div>${body}</div>`; };
+  draw();
+  el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap');
+    if (b.dataset.a === 'x') return el.remove();
+    if (b.dataset.t) { qT = b.dataset.t; return draw(); }
+    if (b.dataset.c) { const g = st(), c = g.q[+b.dataset.c]; if (!c) return draw(); g.q.splice(+b.dataset.c, 1); g.q.unshift(c); el.remove(); challenge(); } };
 }
 function renderGoldG() { const e = root && $g('.gy-goldn'); if (e) e.textContent = /[?&]studio/.test(location.search) ? '∞' : S.gold.toLocaleString(); }   // 홈 화면 골드는 뺐다 (경완 2026-10-27). 상점 등에서 쓰면 그대로
-function say(html, sub = '') { $g('.gy-dlg').innerHTML = html + (sub ? `<span class="gy-dsub">${sub}</span>` : ''); }
+function say(html, sub = '') { root.classList.remove('dhide'); $g('.gy-dlg').innerHTML = html + (sub ? `<span class="gy-dsub">${sub}</span>` : ''); }
 
 // ---------- 메뉴 창 ----------
 const SOON = {
@@ -1018,7 +1022,7 @@ async function intro() {
   await k; root.classList.remove('pre'); if (!open) return; setup();
 }
 function enter() {
-  open = true; tab = null; root.hidden = false; root.classList.remove('gview'); root.classList.toggle('sim', !!window.gymSim); GA.gymIn(); openTab(null); bgmPlay('gym');   // 체육관 곡: 처음이면 플래티넘 원본 소리를 받아 오는 동안 잠깐 조용하다
+  open = true; tab = null; root.hidden = false; root.classList.remove('gview'); root.classList.toggle('sim', !!window.gymSimOn); GA.gymIn(); openTab(null); bgmPlay('gym');   // 체육관 곡: 처음이면 플래티넘 원본 소리를 받아 오는 동안 잠깐 조용하다
   requestAnimationFrame(() => root.classList.add('on'));
   if (st()?.d) { tick(); renderHome(); later(); } else intro();
   setTimeout(() => gymLoad.hide(), 120);
