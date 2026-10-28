@@ -1127,10 +1127,10 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 .bt-hb .lv .sx:not(.M):not(.F){display:none}
 .bt-hb .lv{align-items:center!important}.bt-hb .lv .lvn{line-height:10px}
 /* 몬스터볼 자리 (경완 2026-10-28): 상대 = 상자 왼쪽 아래, 나 = 상자 오른쪽 아래. 상자 그림에 한 줄(8px)을 더 넣은 hb_*2.png */
-.bt-hb.e{background-image:url(../gym/img/bt/hb_enemy2.png)!important}.bt-hb.p{background-image:url(../gym/img/bt/hb_player2.png)!important;top:82px!important}
-.bt-hb .xp{top:58px!important}
-.bt-hb.e .hbb{left:10px!important;top:40px!important}
-.bt-hb.p .hbb{left:auto!important;right:8px;top:48px!important}
+/* 포켓몬 수 볼은 정보 상자 바깥: 상대 = 상자 아래 왼쪽, 나 = 상자 위 오른쪽 (경완 2026-10-28) */
+.bt-hb .hbb{gap:1px!important;padding:2px 4px;background:#303040;box-shadow:inset 0 1px 0 #585868,inset 0 -1px 0 #18181f}.bt-hb.e .hbb i+i{margin-left:0}
+.bt-hb.e .hbb{left:10px!important;top:45px!important;border-radius:0 0 4px 4px}
+.bt-hb.p .hbb{left:auto!important;right:2px;top:0!important;border-radius:4px 4px 0 0}
 /* 기술 버튼: 타입·물리/특수 표시를 위로 (경완 2026-10-28) */
 .bt.mob .mvb .tg{order:-1;margin-top:0!important;margin-bottom:3px!important}
 .bt:not(.mob) .mvb .tg{bottom:auto;top:5px}.bt:not(.mob) .mvb b{top:19px}.bt:not(.mob) .mvb .pw,.bt:not(.mob) .mvb .eff{top:32px}
