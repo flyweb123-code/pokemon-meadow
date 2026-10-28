@@ -478,7 +478,7 @@ const M = (f, ...a) => { try { window.GymBGM?.[f](...a); } catch (e) {} };   // 
 // 본가 몬스터볼 줄: 배틀 시작 때 양쪽이 가진 포켓몬 수 (쓰러짐은 회색, 상태 이상은 노랑, 빈 칸은 테두리만) (경완 2026-10-28)
 function tray() { ['e', 'p'].forEach(s => { const L = B.o[s] || [], t = $b(`.bt-pty.${s}`);
   t.innerHTML = balls(s); t.classList.add('on'); }); }
-// 포켓몬 수 몬스터볼 (도트, gym/img/bt/pball.png: 보통·상태 이상·기절·빈 칸)
+// 포켓몬 수 몬스터볼 (도트, gym/img/bt/pball8.png: 보통·상태 이상·기절·빈 칸)
 const balls = s => { const L = B.o[s] || [], live = B.btl?.[s === 'p' ? 'p1' : 'p2']?.pokemon || [];
   return Array.from({ length: 6 }, (_, i) => { const P = L[i], X = P && (live.find(q => q === P) || P); return `<i class="${!X ? 'x' : X.fainted || X.hp <= 0 ? 'f' : X.status ? 's' : 'o'}"></i>`; }).join(''); };
 async function run(opts) {
