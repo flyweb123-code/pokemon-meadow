@@ -19,13 +19,13 @@ const gold = n => `<i class="coin"></i>${n.toLocaleString()}G`;
 const monImg = (sp, o = {}) => { const g = GB().gifUrl(sp, false, !!o.s, !!o.f), png = GB().pkSrc(sp, { s: o.s, f: o.f });
   return g ? `<img class="mi" alt="" src="${g}" onerror="this.onerror=null;this.src='${png}';this.classList.add('pn')">` : `<img class="mi pn" alt="" src="${png}">`; };
 const owIc = ow => `<i class="ow-ic${K.owW(ow) > 16 ? ' w32' : ''}" style="background-image:url(${K.owSrc(ow)})"></i>`;
-let sh = null, cur = null, shopT = 'tm', tmTy = 0;
+let sh = null, cur = null, shopT = 'tm', tmTy = 0, tmCat = -1, tmPow = 1;   // 기술머신: 타입·형태(물리 0 특수 1 변화 2) 필터, 위력순 (1 높은 순 · -1 낮은 순, 경완 2026-10-28)
 function tab(t, el) { sh = el; cur = t; draw(); }
 function draw() { if (!sh || !st()) return; sh.onclick = null; sh.classList.remove('ty-on'); ({ train: drawTrain, staff: drawStaff, shop: drawShop })[cur]?.(); GB()?.fillTh(sh); }
 const redraw = () => { if (sh && !sh.hidden) draw(); };
 
 // ======================= 훈련장 (4단계) =======================
-const trMax = () => Math.min(6, 2 + Math.max(st().trN || 0, Math.min(4, K.gradeOf(st().rep || 0).i)));   // 체육관 등급이 오르면 저절로 (예전에 넓힌 건 그대로)
+const trMax = () => Math.min(6, 2 + Math.max(st().trN || 0, Math.min(4, K.bigOf())));   // 체육관을 넓히면 늘어남 (예전에 돈 내고 넓힌 건 그대로)
 const TR_ST = { dummy: '지푸라기 타격대', sandbag: '샌드백', fly: '비행 장치', water: '물 위 장치' };
 const stOf = (P, i) => { const t = SPECIES[P.sp]?.t || []; return t.includes(3) ? 'fly' : t.includes(11) ? 'water' : t.includes(2) || i % 2 ? 'sandbag' : 'dummy'; };
 // 1시간 경험치: 레벨 10 은 1시간에 약 1레벨, 레벨 50 은 약 0.2레벨 (경완 기획 밸런스). 훈련광 트레이너가 있으면 +20%
@@ -191,7 +191,7 @@ function drawTrain() {
   sh.onclick = ev => {
     const c = ev.target.closest('[data-co]'); if (c) { sfx('tap'); const o = Y.co[+c.dataset.co]?.s; if (o) sfDetail(o); return; }
     const t = ev.target.closest('[data-p],[data-add]'); if (!t) return; sfx('tap');
-    if (t.dataset.add) return st().tr.length >= trMax() ? say(`훈련장이 가득 찼어요.${trMax() < 6 ? '<br><small>체육관 등급이 오르면 칸이 늘어나요.</small>' : ''}`) : pickTrain();
+    if (t.dataset.add) return st().tr.length >= trMax() ? say(`훈련장이 가득 찼어요.${trMax() < 6 ? '<br><small>평판을 올려 체육관을 넓히면 칸이 늘어나요.</small>' : ''}`) : pickTrain();
     trPop(+t.dataset.p || t.dataset.p);
   };
   { const x = coachX(); if (x > 1.001) el.insertAdjacentHTML('beforeend', `<div class="ty-info">💪 코치 보너스 <b>+${Math.round((x - 1) * 100)}%</b></div>`); }
@@ -324,20 +324,26 @@ const trtBox = (k, full) => { const T = K.TRAITS[k]; return T ? `<span class="tr
 let sfT = 'cand';
 function drawStaff() {
   const g = st(), now = Date.now(), max = K.staffMax();
-  if (g.cand && !g.candSeen) { g.candSeen = 1; K.setAt(); K.save(); K.menuDot(); }
-  const c = g.cand, yN = g.sf.filter(s => s.yard).length;
+  const C = g.cands || (g.cands = []); if (C.length && !g.candSeen) { g.candSeen = 1; K.setAt(); K.save(); K.menuDot(); }
+  const c = C.length, yN = g.sf.filter(s => s.yard).length;
   const tabs = `<div class="sp-tabs" role="tablist"><button role="tab" data-sft="cand" aria-selected="${sfT === 'cand'}">지원서${c ? ' <i class="tdot"></i>' : ''}</button><button role="tab" data-sft="sf" aria-selected="${sfT === 'sf'}">고용 관리 <small>${g.sf.length}/${max}</small></button></div>`;
-  const cand = c ? `<div class="sf-cand"><img alt="" src="${K.trSrc(c.tr)}"><div><b>${esc(c.cls)} ${esc(c.nm)}</b>${trtBox(c.trait, true)}${teamIc(c.team)}<small>${Math.max(1, Math.round((c.exp - now) / K.H))}시간 뒤에 떠나요 · 월급 7일에 ${c.wage}G</small></div><button class="gy-key main" data-iv="1">면접 보기</button></div>`
+  // 지원서 (경완 2026-10-28): 스프라이트가 잘 보이는 세로 카드, 여러 장이면 옆으로 넘긴다
+  const cand = c ? `<div class="cv-deck">${C.map((x, i) => `<article class="cv-card" data-i="${i}"><header><b>트레이너 지원서</b><small>No.${String(x.id).padStart(3, '0')}</small></header>
+      <div class="cv-photo"><img alt="" src="${K.trSrc(x.tr)}"></div><div class="cv-nm"><small>${esc(x.cls)}</small><b>${esc(x.nm)}</b></div>
+      <dl class="cv-dl"><dt>특성</dt><dd>${trtBox(x.trait, true)}</dd><dt>포켓몬</dt><dd>${teamIc(x.team)}</dd><dt>희망 월급</dt><dd>7일에 <b>${x.wage}G</b></dd></dl>
+      <p class="cv-exp">${Math.max(1, Math.round((x.exp - now) / K.H))}시간 뒤에 다른 체육관으로 가요</p><button class="gy-key main" data-iv="${i}">면접 보기</button></article>`).join('')}</div>
+      ${C.length > 1 ? `<div class="cv-dots">${C.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : ''}`
       : `<p class="sf-none">지금은 지원서가 없어요. 새 지원자가 오면 트레이너 단추에 빨간 점이 떠요.</p>`;
   const gL = K.sfList ? K.sfList() : [], gNo = x => gL.findIndex(z => z[0] === x);
   const list = `<p class="gy-lead">체육관에 세운 트레이너가 순서대로 도전자를 먼저 상대해요. 훈련장 코치를 함께 맡길 수도 있어요 (코치는 최대 ${YARD_SF}명). 카드를 누르면 자세히 볼 수 있어요.</p>
     <div class="sf-list">${g.sf.map((s, i) => `<button class="sf-card${s.rest ? ' rest' : ''}" data-sf="${i}"><img class="sf-pic" alt="" src="${K.trSrc(s.tr)}"><div class="sf-mid"><b>${esc(s.cls)} ${esc(s.nm)}</b>${trtBox(s.trait)}
       <span class="sf-st">${s.rest ? '<em class="r">쉬는 중</em>' : ''}${K.inGym(s) ? `<em class="g">체육관 ${gNo(s) >= 0 ? gNo(s) + 1 + '번' : ''}</em>` : ''}${s.yard ? '<em class="y">훈련장 코치</em>' : ''}${!K.inGym(s) && !s.yard && !s.rest ? '<em>대기 중</em>' : ''}<i>${s.w || 0}승 ${s.l || 0}패</i></span>${teamIc(s.team)}</div><i class="sf-go">›</i></button>`).join('') || '<p class="sf-none">아직 고용한 트레이너가 없어요. 지원서 탭에서 면접을 볼 수 있어요.</p>'}</div>`;
   sh.innerHTML = `<h3>트레이너</h3>${tabs}${sfT === 'cand' ? cand : list}`;
+  const dk = sh.querySelector('.cv-deck'); if (dk) dk.onscroll = () => { const i = Math.round(dk.scrollLeft / (dk.firstElementChild.offsetWidth + 12)); sh.querySelectorAll('.cv-dots i').forEach((d, j) => d.classList.toggle('on', i === j)); };
   sh.onclick = e => {
     const b = e.target.closest('button'); if (!b) return; sfx('tap');
     if (b.dataset.sft) { sfT = b.dataset.sft; redraw(); return; }
-    if (b.dataset.iv) return interview();
+    if (b.dataset.iv) return interview(C[+b.dataset.iv]);
     if (b.dataset.sf) return sfDetail(g.sf[+b.dataset.sf]);
   };
 }
@@ -362,8 +368,8 @@ function sfDetail(s) {
     });
   return p;
 }
-function interview() {
-  const g = st(), c = g.cand; if (!c) return;
+function interview(c) {
+  const g = st(); if (!c) return; const drop = () => { g.cands = (g.cands || []).filter(x => x !== c); };
   const full = g.sf.length >= K.staffMax(), lv = Math.round(K.teamLv(c.team));
   pop(`<h4>면접</h4><div class="iv-head"><img alt="" src="${K.trSrc(c.tr)}"><div><b>${esc(c.cls)} ${esc(c.nm)}</b>${trtBox(c.trait, true)}</div></div>
     <p class="iv-say">“안녕하세요! ${esc(LINES[c.trait])}”</p>
@@ -371,9 +377,9 @@ function interview() {
     ${full ? `<p class="gy-msg iv-warn">트레이너 자리가 꽉 찼어요 (${g.sf.length}/${K.staffMax()}). 체육관 등급을 올리거나 한 명을 해고해야 해요.</p>` : `<p class="gy-msg">고용하면 첫 주 월급 ${c.wage}G를 바로 줘요.</p>`}
     <div class="gy-btns"><button data-a="no">돌려보내기</button><button class="main" data-a="ok" ${full ? 'disabled' : ''}>고용하기</button></div>`,
     (a, close) => {
-      if (a === 'no') { close(); g.cand = null; K.glog('sf', `면접 지원자 ${esc(c.cls)} ${esc(c.nm)}${K.jong(c.nm) ? '을' : '를'} 돌려보냈다.`); K.save(); redraw(); return; }
+      if (a === 'no') { close(); drop(); K.glog('sf', `면접 지원자 ${esc(c.cls)} ${esc(c.nm)}${K.jong(c.nm) ? '을' : '를'} 돌려보냈다.`); K.save(); redraw(); return; }
       if (a !== 'ok' || full) return; if (!spend(c.wage)) { close(); return say(`골드가 모자라요. 첫 주 월급 ${c.wage}G가 필요해요.`); }
-      close(); const now = Date.now(); g.sf.push(Object.assign({}, c, { hired: now, pay: now + 7 * K.DAY, w: 0, l: 0, xp: 0 })); g.cand = null;
+      close(); const now = Date.now(); g.sf.push(Object.assign({}, c, { hired: now, pay: now + 7 * K.DAY, w: 0, l: 0, xp: 0 })); drop();
       K.glog('sf', `${esc(c.cls)} <b>${esc(c.nm)}</b>${K.jong(c.nm) ? '을' : '를'} 고용했다! <small>월급 ${c.wage}G</small>`); K.save(); redraw(); K.renderHome();
     });
 }
@@ -395,12 +401,14 @@ function shopTm(body) {
   const can = new Map(); mons.forEach(P => (D.sp[P.sp]?.tm || []).forEach(i => { if (!can.has(i)) can.set(i, []); can.get(i).push(P); }));
   const types = [...new Set([...can.keys()].map(i => D.mv[i][2]))].sort((a, b) => a - b);
   if (tmTy !== -1 && !types.includes(tmTy)) tmTy = -1;   // -1 = 전체 (경완 2026-10-27 '에스퍼 포켓몬이라고 에스퍼 기술만 배우는 건 아닌데')
-  const L = [...can.keys()].map(i => D.mv[i]).filter(x => tmTy === -1 || x[2] === tmTy).sort((a, b) => (tmTy === -1 ? a[2] - b[2] : 0) || (b[3] !== 2) - (a[3] !== 2) || (b[4] || 0) - (a[4] || 0));
+  const L = [...can.keys()].map(i => D.mv[i]).filter(x => (tmTy === -1 || x[2] === tmTy) && (tmCat === -1 || x[3] === tmCat)).sort((a, b) => ((b[4] || 0) - (a[4] || 0)) * tmPow || a[2] - b[2]);
   const own = Object.values(g.tms).reduce((a, n) => a + (n || 0), 0);
   body.innerHTML = `${own ? `<p class="tm-bagl"><span class="tm-bag">가진 기술머신 ${own}개</span></p>` : ''}
-    ${types.length ? `<div class="sp-chips tm-f"><button data-ty="-1" aria-pressed="${tmTy === -1}">전체</button>${types.map(t => `<button data-ty="${t}" aria-pressed="${t === tmTy}">${GA.tyIcon(t)}${TYPE_KO[t]}</button>`).join('')}</div>` : `<p class="sf-none">${TYPE_KO[g.ty]} 타입 포켓몬이 아직 없어요.</p>`}
+    ${types.length ? `<div class="sp-chips tm-f"><button data-ty="-1" aria-pressed="${tmTy === -1}">전체</button>${types.map(t => `<button data-ty="${t}" aria-pressed="${t === tmTy}">${GA.tyIcon(t)}${TYPE_KO[t]}</button>`).join('')}</div>
+      <div class="tm-row"><div class="sp-chips tm-cat">${['전체', '물리', '특수', '변화'].map((n, i) => `<button data-cat="${i - 1}" aria-pressed="${tmCat === i - 1}">${n}</button>`).join('')}</div><button class="tm-sort" data-pow="1">위력순 ${tmPow > 0 ? '▼' : '▲'}</button></div>` : `<p class="sf-none">${TYPE_KO[g.ty]} 타입 포켓몬이 아직 없어요.</p>`}
+    ${types.length && !L.length ? '<p class="sf-none">조건에 맞는 기술머신이 없어요.</p>' : ''}
     <div class="sp-list">${L.map(x => `<button class="sp-tm" data-tm="${x[0]}"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png"><span class="tm-nm"><b>${esc(x[1])}</b>${g.tms[x[0]] ? `<i class="tm-own">×${g.tms[x[0]]}</i>` : ''}</span><span class="tm-meta">${GB().tyTag(x[2], x[3])}<small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}</small></span><em>${gold(tmPrice(x))}</em></button>`).join('')}</div>`;
-  body.onclick = (e, b) => { sfx('tap'); if (b.dataset.ty) { tmTy = +b.dataset.ty; redraw(); return; } if (b.dataset.tm) buyTm(b.dataset.tm, can); };
+  body.onclick = (e, b) => { sfx('tap'); if (b.dataset.ty) { tmTy = +b.dataset.ty; redraw(); return; } if (b.dataset.cat) { tmCat = +b.dataset.cat; redraw(); return; } if (b.dataset.pow) { tmPow = -tmPow; redraw(); return; } if (b.dataset.tm) buyTm(b.dataset.tm, can); };
 }
 function buyTm(id, can) {
   const D = GB().D, g = st(), x = GB().mvOf(id), i = D.mv.indexOf(x), price = tmPrice(x), L = can.get(i) || [], n = g.tms?.[id] || 0;
