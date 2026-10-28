@@ -462,10 +462,11 @@ const luNow = () => { const g = st(), L = (g.lu || [])[g.luI | 0] || []; return 
 function myAvg() { const g = st(), L = luNow().map(P => g.mon?.[P.id]?.lv).filter(Boolean); return L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : 10; }
 // 레벨에 맞는 종 고르기: 종족값 합이 레벨에 어울리는 포켓몬 (전설·환상·아기 빼고), 타입 맞추기
 let spCache = null;
+const spOff = sp => !!GA.SP_OFF?.has(+sp);   // 작업실에서 끈 포켓몬은 도전자·지원자 팀에 안 나옴 (경완 2026-10-28)
 function pickSp(types, lv) {
   if (!spCache) spCache = Object.entries(SPECIES).filter(([n, o]) => +n <= 1025 && !o.leg && !o.my && !o.baby && o.bs).map(([n, o]) => ({ n: +n, t: o.t || [], b: o.bs.reduce((a, c) => a + c, 0) }));
   const tgt = Math.min(530, 230 + lv * 6.5);
-  for (const w of [55, 90, 140, 400]) { const L = spCache.filter(x => Math.abs(x.b - tgt) <= w && (!types.length || x.t.some(t => types.includes(t)))); if (L.length) return pick(L).n; }
+  for (const w of [55, 90, 140, 400]) { const L = spCache.filter(x => !spOff(x.n) && Math.abs(x.b - tgt) <= w && (!types.length || x.t.some(t => types.includes(t)))); if (L.length) return pick(L).n; }
   return 19;
 }
 function mkTeam(types, lvB, n) {
@@ -484,10 +485,10 @@ function mkChal(t) {
 // 이름 있는 트레이너: 본가 팀 단계. 그 단계 평균 레벨이 내 라인업 평균 + 6 이하일 때부터 온다
 function pickNamed(avg, t) {
   const g = st(), busy = new Set(g.q.filter(c => c.named).map(c => c.named));
-  const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || x.s >= n.st.length || t < (x.n || 0)) return false; return avg >= teamLv(n.st[x.s]) - 6; });
+  const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || x.s >= n.st.length || t < (x.n || 0) || !n.st[x.s].some(m => !spOff(m[0]))) return false; return avg >= teamLv(n.st[x.s]) - 6; });
   if (!ok.length) return null;
   const n = pick(ok), s = (g.nt[n.id] || {}).s || 0;
-  return { id: ++g.cid, t, named: n.id, s, cls: n.cls, tr: n.tr, ow: n.ow, nm: n.nm, diff: 2, music: n.music, team: n.st[s].map(m => [m[0], m[1], m[2]]) };
+  return { id: ++g.cid, t, named: n.id, s, cls: n.cls, tr: n.tr, ow: n.ow, nm: n.nm, diff: 2, music: n.music, team: n.st[s].filter(m => !spOff(m[0])).map(m => [m[0], m[1], m[2]]) };
 }
 // 하루 시간표: 등급이 오를수록 많이 온다 (2~5명, 오전 8시 ~ 밤 10시 사이 아무 때나)
 function mkSch(d0, from = 0) {
@@ -570,6 +571,7 @@ function mkCand(now) {
 const staffMax = () => Math.min(5, gradeOf(st().rep || 0).i);   // 새내기 체육관은 고용 못 함 (경완 2026-10-27)
 function tick(now = Date.now()) {
   const g = gInit(); if (!g || !g.d) return;
+  [...(g.q || []), ...(g.cands || [])].forEach(c => { if (c.team?.some(m => spOff(m[0]))) c.team = c.team.map(m => spOff(m[0]) ? [pickSp(SPECIES[m[0]]?.t || [], m[1]), m[1]] : m); });   // 이미 와 있는 도전자·지원자도 끈 포켓몬은 바꿈
   rollWeek(now);
   const today = dayStart(now);
   if (!g.day) { g.day = today; g.sch = mkSch(today, now); g.sch.unshift(now + 90e3); }   // 처음: 1분 반 뒤 첫 도전자
