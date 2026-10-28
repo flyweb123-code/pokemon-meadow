@@ -818,3 +818,18 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .lu-slot[data-p]{touch-action:none}
 .lu-slot.lu-drag{z-index:5;pointer-events:none;box-shadow:inset 0 0 0 2px #ffd84a,0 6px 12px rgba(0,0,0,.25);background:#fff6c8!important;transition:none}
 .lu-slot.lu-over{box-shadow:inset 0 0 0 3px #4a8ad0}
+/* 상성 표시 (경완 2026-10-28 '효과 표시 디자인 밤티'): 카드 색 위에 얹는 반투명 라벨 + 화살표 */
+.bt.mob .mvb .eff{display:inline-flex;align-items:center;gap:3px;padding:1px 6px 1px 4px;border-radius:4px;font-size:8px;line-height:12px;font-weight:700;letter-spacing:.2px;
+  color:#fff;background:rgba(255,255,255,.22);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);text-shadow:0 1px 0 rgba(0,0,0,.3)}
+.bt.mob .mvb .eff::before{content:'●';font-size:6px}
+.bt.mob .mvb .eff.hi{color:#5a3a00;background:linear-gradient(#ffe680,#ffc830);box-shadow:inset 0 0 0 1px #fff3b0,0 1px 0 rgba(0,0,0,.25);text-shadow:none;animation:effGlow 1.4s ease-in-out infinite}
+.bt.mob .mvb .eff.hi::before{content:'▲';font-size:7px;color:#d84a00}
+.bt.mob .mvb .eff.lo{background:rgba(20,30,60,.32);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}.bt.mob .mvb .eff.lo::before{content:'▼';font-size:7px;color:#a8c4ff}
+.bt.mob .mvb .eff.no{background:rgba(0,0,0,.45);box-shadow:none;color:#d8d8d8}.bt.mob .mvb .eff.no::before{content:'✕';font-size:7px}
+@keyframes effGlow{50%{filter:brightness(1.12);box-shadow:inset 0 0 0 1px #fff3b0,0 0 6px rgba(255,220,80,.8)}}
+/* 타입·형태 아이콘 같은 크기·같은 줄 (경완 2026-10-28) */
+.bt .mvb .tg{align-items:center;gap:3px}.bt .mvb .tg .ct{width:32px;height:16px;background-size:32px 16px}
+.bt.mob .mvb .tg{align-items:center;gap:2px}.bt.mob .mvb .tg .ty,.bt.mob .mvb .tg .ct{width:26px;height:13px;background-size:26px 13px;line-height:13px;font-size:7px}
+.tg{align-items:center}
+.bt.mob .bp-main .bp-q{visibility:hidden}   /* 질문은 위 대화창에 (본가) */
+.bt-mid .bt-msg .cur{right:8px;bottom:4px;font-size:9px}
