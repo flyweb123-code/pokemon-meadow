@@ -244,11 +244,12 @@ const DECO = {};
  ['statue', '체육관 석상', 2000, 1],
  ['big_snorlax_doll', '큰 잠만보 인형', 6000, 2], ['big_rhydon_doll', '큰 코뿌리 인형', 6000, 2], ['big_lapras_doll', '큰 라프라스 인형', 6000, 2], ['big_venusaur_doll', '큰 이상해꽃 인형', 8000, 3], ['big_charizard_doll', '큰 리자몽 인형', 8000, 3], ['big_blastoise_doll', '큰 거북왕 인형', 8000, 3], ['big_wailmer_doll', '큰 고래왕자 인형', 6000, 2],
  ['big_regirock_doll', '큰 레지락 인형', 12000, 4], ['big_regice_doll', '큰 레지아이스 인형', 12000, 4], ['big_registeel_doll', '큰 레지스틸 인형', 12000, 4]].forEach(([k, n, g, lv]) => { DECO[k] = { n, g, lv: lv || 0, w: /^big_/.test(k) ? 32 : 16, h: /^big_/.test(k) || k === 'statue' ? 32 : 16 }; });
-const decoMax = () => Math.min(8, 2 + Math.max(st().decoN || 0, [0, 2, 4, 5, 6][Math.min(4, gradeOf(st().rep || 0).i)]));   // 등급 따라 저절로 (경완 2026-10-28 넓히기 뺌)
+// 꾸미기는 개수 제한 없음 (경완 2026-10-28): 기본 자리가 다 차면 맵의 아무 빈 칸에
+const anyFree = (D, used) => { for (let y = D.h - 1; y >= 0; y--) for (let x = 0; x < D.w; x++) if (freeTile(D, x, y, used)) return [x, y]; return null; };
 // 꾸미기 자리: g.dp 놓은 것(순서), g.dpos {꾸미기: [x, y]} 직접 놓은 칸 (경완 2026-10-27 '산 거 직접 놓을 수 있게'). 칸이 없으면 맵의 기본 자리
 function decoList(g = st(), D = dzOf(g.d)) { const pos = g.dpos || {}, used = new Set(sfList(g, D).map(z => z[1] + ',' + z[2])), out = [];
-  (g.dp || []).filter(Boolean).slice(0, decoMax()).forEach((k, i) => { let p = pos[k] && pos[k][2] === D.id && D.toV(pos[k][1]) != null && D.toVx(pos[k][0]) != null ? [D.toVx(pos[k][0]), D.toV(pos[k][1])] : null; if (p && !freeTile(D, p[0], p[1], used)) p = null;
-    if (!p) p = D.deco.find(q => freeTile(D, q[0], q[1], used)); if (!p) return; used.add(p[0] + ',' + p[1]); out.push([k, p[0], p[1]]); });
+  (g.dp || []).filter(Boolean).forEach((k, i) => { let p = pos[k] && pos[k][2] === D.id && D.toV(pos[k][1]) != null && D.toVx(pos[k][0]) != null ? [D.toVx(pos[k][0]), D.toV(pos[k][1])] : null; if (p && !freeTile(D, p[0], p[1], used)) p = null;
+    if (!p) p = D.deco.find(q => freeTile(D, q[0], q[1], used)) || anyFree(D, used); if (!p) return; used.add(p[0] + ',' + p[1]); out.push([k, p[0], p[1]]); });
   return out; }
 // 놓을 수 있는 칸: 맵 안쪽, 관장·문·안내원·길·트레이너 자리·관장 옆 포켓몬 자리가 아닌 곳
 function freeTile(D, x, y, used) {
@@ -269,7 +270,7 @@ function decoEdit() {
     renderHome(true); const L = decoList(g, D), on = new Set(L.map(x => x[0]));
     grid.style.setProperty('--t', 16 * sc + 'px'); grid.innerHTML = ded.sel && on.has(ded.sel) ? (([, x, y]) => `<i class="gg-sel" style="left:${x * 16 * sc}px;top:${y * 16 * sc}px;width:${16 * sc}px;height:${16 * sc}px"></i>`)(L.find(z => z[0] === ded.sel)) : '';
     const own = Object.keys(g.own).filter(k => DECO[k]);
-    $g('.gy-dlg').innerHTML = `<span class="gy-who">꾸미기 놓기 <small>${on.size}/${decoMax()}</small></span><span class="gy-dsub">${ded.sel ? `<b>${DECO[ded.sel].n}</b>${on.has(ded.sel) ? ' · 옮길 칸을 누르세요' : ' · 놓을 칸을 누르세요'}` : own.length ? '꾸미기를 고르고 맵의 칸을 누르세요. 놓인 꾸미기를 눌러도 골라져요.' : '아직 산 꾸미기가 없어요. 상점에서 사 오세요.'}</span>
+    $g('.gy-dlg').innerHTML = `<span class="gy-who">꾸미기 놓기 <small>${on.size}개</small></span><span class="gy-dsub">${ded.sel ? `<b>${DECO[ded.sel].n}</b>${on.has(ded.sel) ? ' · 옮길 칸을 누르세요' : ' · 놓을 칸을 누르세요'}` : own.length ? '꾸미기를 고르고 맵의 칸을 누르세요. 놓인 꾸미기를 눌러도 골라져요.' : '아직 산 꾸미기가 없어요. 상점에서 사 오세요.'}</span>
       <div class="gy-dpick">${own.map(k => `<button data-k="${k}" class="${k === ded.sel ? 'sel' : ''}${on.has(k) ? ' on' : ''}"><img alt="" src="${IMG}deco/${k}.png"></button>`).join('')}</div>
       <div class="gy-dyn">${ded.sel && on.has(ded.sel) ? '<button class="gy-dbtn2" type="button" data-a="rm">치우기</button>' : ''}<button class="gy-dbtn2 main" type="button" data-a="ok">완료</button></div>`;
   };
@@ -282,7 +283,7 @@ function decoEdit() {
     const L = decoList(g, D), hit = L.find(z => z[1] === x && z[2] === y); if (hit) { sfx('tap'); ded.sel = hit[0]; return draw(); }
     if (!ded.sel) return; const used = new Set(L.filter(z => z[0] !== ded.sel).map(z => z[1] + ',' + z[2]));
     if (!freeTile(D, x, y, used)) { sfx('no'); return; }
-    if (!g.dp.includes(ded.sel)) { if (g.dp.length >= decoMax()) { $g('.gy-dsub').innerHTML = '꾸미기 자리가 꽉 찼어요. 하나를 치워 주세요.'; return; } g.dp.push(ded.sel); }
+    if (!g.dp.includes(ded.sel)) g.dp.push(ded.sel);
     g.dpos[ded.sel] = [D.toFx(x), D.toF(y), D.id]; sfx('tap'); save(); draw(); };
   draw();
 }
@@ -720,7 +721,7 @@ function infoPop() {
         <div><small>막은 도전자</small><b>${g.blk || 0}명</b><em>트레이너 포함</em></div>
         <div><small>이번 주</small><b>${w.w || 0}승 ${w.l || 0}패</b><em>${(w.g || 0).toLocaleString()}G</em></div>
         <div><small>트레이너</small><b>${(g.sf || []).length} / ${staffMax()}명</b><em>${staffMax() ? '등급마다 1명씩' : '동네 체육관부터'}</em></div>
-        <div><small>꾸미기</small><b>${(g.dp || []).length} / ${decoMax()}개</b><em>놓은 것 / 자리</em></div>
+        <div><small>꾸미기</small><b>${(g.dp || []).filter(Boolean).length}개</b><em>놓은 것</em></div>
       </div>
       <h5>${TYPE_KO[g.ty]} 자격 배지</h5><div class="if-bdg"><img alt="" src="${IMG}badge/${g.ty}.png" class="${g.bdg?.[g.ty] ? 'on' : ''}"><div><b>${g.bdg?.[g.ty] ? '받았어요!' : `도전자 ${bk} / 100명 막기`}</b><i class="gy-bar"><i style="width:${bk}%"></i></i><small>모은 배지 ${nb} / 18</small></div></div>
       ${old ? `<h5>예전 체육관</h5><ul class="if-old">${old}</ul>` : ''}
@@ -936,7 +937,7 @@ async function exit() {
 
 window.Gym = { prepare, enter, exit, isOpen: () => open, renderGold: renderGoldG, DESIGNS, _walk: walk, _ent: ent, _tick: tick,
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, decoMax, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG } };
+  k: { trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 window.gymDot = () => { const g = S.gym; return !!(g && g.d && ((g.q && g.q.length) || (g.at && Date.now() >= g.at))); };
 })();
