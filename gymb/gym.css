@@ -839,3 +839,15 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .gy-top .gy-store::before,.gy-top .gy-store::after{display:none!important}
 .gy-store svg{width:36px;height:36px;filter:drop-shadow(1px 2px 0 rgba(0,0,0,.45))}
 .gy-simb{top:calc(var(--si-top,env(safe-area-inset-top)) + 150px)}
+/* 접힌 일지에 글자(텍스트 노드)가 남던 것 */
+#gym.dfold:not(.ded):not(.busy) .gy-dlg{font-size:0;color:transparent}#gym.dfold:not(.ded):not(.busy) .gy-dlg .gy-dfold{font-size:13px;color:var(--dim)}
+/* 일지 펼치기 (필드 관찰 일지처럼) */
+.gy-dlg:has(.gy-hlog){cursor:pointer}
+.gy-hlog.all{max-height:min(46vh,360px);overflow-y:auto;overscroll-behavior:contain;padding-right:2px}
+.gy-hlog.all li{white-space:normal}.gy-hlog.all li span{white-space:normal;overflow:visible}
+.gy-hlog .hl-day{display:block!important;margin:6px 0 1px;font-size:11px;font-weight:700;color:var(--dim);border-bottom:1px dashed rgba(0,0,0,.15)}
+.gy-hlog .hl-day:first-child{margin-top:0}
+.bt.now{transition:none!important}
+/* 싸우다 화면: 위 여백 없이 버튼이 아래 화면을 채움 (경완 2026-10-28) */
+.bt.mob .bp-main .bp-q{display:none}
+.bt.mob .bp-main{grid-template-rows:minmax(64px,2.2fr) minmax(40px,1fr);align-content:stretch;padding:16px 12px}
