@@ -480,7 +480,9 @@ function tray() { ['e', 'p'].forEach(s => { const L = B.o[s] || [], t = $b(`.bt-
   t.innerHTML = balls(s); t.classList.add('on'); }); }
 // 포켓몬 수 몬스터볼 (도트, gym/img/bt/pball8.png: 보통·상태 이상·기절·빈 칸)
 const balls = s => { const L = B.o[s] || [], live = B.btl?.[s === 'p' ? 'p1' : 'p2']?.pokemon || [];
-  return Array.from({ length: 6 }, (_, i) => { const P = L[i], X = P && (live.find(q => q === P) || P); return `<i class="${!X ? 'x' : X.fainted || X.hp <= 0 ? 'f' : X.status ? 's' : 'o'}"></i>`; }).join(''); };
+  return Array.from({ length: 6 }, (_, i) => { const P = L[i], X = P && (live.find(q => q === P) || P), D = X && B.act?.[s]?.pk === X ? B.act[s] : null;
+    // 나와 있는 포켓몬은 화면에 보인 상태로: 쓰러지는 연출이 끝나기 전엔 볼이 안 꺼진다 (경완 2026-10-28 '스포')
+    return `<i class="${!X ? 'x' : D ? (D.fntS ? 'f' : D.st ? 's' : 'o') : X.fainted || X.hp <= 0 ? 'f' : X.status ? 's' : 'o'}"></i>`; }).join(''); };
 async function run(opts) {
   await Promise.all([loadData(), loadSim()]);
   if (!el) buildUI(); fit();
@@ -612,7 +614,7 @@ async function handle(a) {
     }
     case '-heal': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); if (mhp) X.mhp = mhp; await drainHp(s, X, hp); await msg(`${who(a[2])}의 체력이 회복되었다!`); break; }
     case '-sethp': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp] = hpOf(a[3]); await drainHp(s, X, hp); break; }
-    case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s === 'e' && !B.practice) await expGain(X); break; }
+    case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); X.fntS = true; hbBalls(s); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s === 'e' && !B.practice) await expGain(X); break; }
     case '-immune': await msg(`${who(a[2])}에게는 효과가 없는 것 같다…`); break;
     case '-miss': await msg(a[3] ? `${who(a[3])}에게는 맞지 않았다!` : `${who(a[2])}의 공격은 빗나갔다!`); break;
     case '-fail': await msg('그러나 실패했다!'); break;
