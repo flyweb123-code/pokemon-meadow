@@ -1420,7 +1420,6 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
   .sheet .win{padding-right:14px;padding-bottom:calc(var(--sab) + 10px)}
 }
 @media (prefers-reduced-motion: reduce){.mon.held .flip,.act,.bubble,.pt,.berry.new,.ring,.mon.wet .ripple,.sel-mark,.dlg .more,.snot,.bfly::before,.bfly::after,.glint{animation:none!important}.snot{transform:scale(1)}}
-#probeOut{margin:8px 0 0;padding:8px;max-height:46vh;overflow:auto;white-space:pre-wrap;word-break:break-all;font:11px/1.45 ui-monospace,Menlo,monospace;background:rgba(0,0,0,.06);border:2px solid var(--inner)}
 </style>
 
 <script>setTimeout(() => document.documentElement.classList.add('ready'), 6000)</script>
@@ -1470,10 +1469,10 @@ html:not(.op) #btnGym,html:not(.gym-on) #btnGym,body.mapEdit #btnGym{display:non
 #gymLoad{position:fixed;inset:0;z-index:9800;display:grid;place-items:center;background:#181a2c;color:#f8f8f8;opacity:0;transition:opacity .35s;pointer-events:none}#gymLoad.on{opacity:1;pointer-events:auto}#gymLoad[hidden]{display:none}
 #gymLoad .gl-box{display:flex;flex-direction:column;align-items:center;gap:18px;width:min(300px,80vw)}
 #gymLoad .gl-road{position:relative;width:100%;height:76px;border-bottom:4px solid #46508a;background:repeating-linear-gradient(90deg,transparent 0 14px,rgba(255,255,255,.08) 14px 28px) bottom/100% 8px no-repeat}
-#gymLoad .gl-ow{position:absolute;bottom:-18px;left:0;width:96px;height:96px;background:0 -192px/96px 576px no-repeat;image-rendering:pixelated;transform:scaleX(-1);animation:glStep .36s steps(1,end) infinite,glWalk 3s linear infinite}
+#gymLoad .gl-ow{position:absolute;z-index:1;bottom:-18px;left:0;width:96px;height:96px;background:0 -192px/96px 576px no-repeat;image-rendering:pixelated;transform:scaleX(-1);animation:glStep .36s steps(1,end) infinite,glWalk 3s linear forwards}
 #gymLoad .gl-gym{position:absolute;right:0;bottom:0;line-height:0}#gymLoad .gl-gym svg{width:72px;height:63px}
-#gymLoad.out .gl-ow{transform:none;animation:glStep .36s steps(1,end) infinite,glWalkB 3s linear infinite}
-@keyframes glStep{50%{background-position:0 -480px}}@keyframes glWalk{from{left:-4px}to{left:calc(100% - 120px)}}@keyframes glWalkB{from{left:calc(100% - 120px)}to{left:-4px}}
+#gymLoad.out .gl-ow{transform:scaleX(-1);animation:glStep .36s steps(1,end) infinite,glWalkO 3s linear forwards}#gymLoad.out .gl-gym{left:0;right:auto}   /* 경완 2026-10-28: 퇴근도 왼쪽→오른쪽으로 걷고 체육관은 왼쪽 */   /* 경완 2026-10-28: 한 번만 걷고 끝자리에 선다 (반복하면 퇴근 로딩 끝에 체육관 쪽으로 되돌아갔다) */
+@keyframes glStep{50%{background-position:0 -480px}}@keyframes glWalk{from{left:-4px}to{left:calc(100% - 120px)}}@keyframes glWalkB{from{left:calc(100% - 120px)}to{left:-4px}}@keyframes glWalkO{from{left:24px}to{left:calc(100% - 92px)}}
 #gymLoad .gl-t{font-size:18px;font-weight:700;letter-spacing:.5px}#gymLoad .gl-t i{display:inline-block;width:1.4em;text-align:left;font-style:normal}
 #gymLoad .gl-s{font-size:13px;color:#a8acd0;min-height:1.4em;text-align:center}
 @media (max-width: 760px), (max-height: 500px) and (orientation: landscape) {
@@ -1701,16 +1700,15 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
         <div class="op-row"><span>체육관 모드 보이기 (이 기기만)</span><button class="op-sw" id="gymSw" role="switch" aria-checked="false"><i></i></button></div>
         <div class="op-row"><span>베타 판 쓰기 (이 기기만)</span><button class="op-sw" id="betaSw" role="switch" aria-checked="false"><i></i></button></div>
         <div class="set-btns one"><button class="lk-btn main" id="gymReset">체육관 초기화</button></div>
+        <div class="set-btns one"><button class="lk-btn main" id="gymSim">체육관 시뮬레이터</button></div>   <!-- 경완 2026-10-28: 지원서·도전자 등을 바로 불러 보는 시험판. 나오면 원래 체육관으로 되돌림 -->
         <div class="set-btns one"><button class="lk-btn main" id="updNow">배포된 최신 판 바로 받기</button></div>
         <div class="set-btns one"><button class="lk-btn main" id="newsPv">업데이트 알림창 미리 보기</button></div>
         <div class="set-btns one"><button class="lk-btn main" id="tutPv">튜토리얼 미리 보기</button></div>
-        <div class="set-btns one"><button class="lk-btn main" id="dexPvH">부화 → 도감 등록 미리 보기</button><button class="lk-btn main" id="dexPvE">진화 → 도감 등록 미리 보기</button><button class="lk-btn main" id="dexPvA">여러 알 모두 부화 → 도감 등록 미리 보기</button></div>   <!-- v9.99 경완: 부화·진화 과정부터 도감 등록 연출까지 쭉 (저장 안 함, 끝나면 원래대로) -->   <!-- v8.04 경완: 오프닝·튜토리얼을 처음부터 (저장은 그대로) -->
+        <!-- v10.61 경완: 운영자 도감 미리 보기·장소 찾기 시험 없앰 -->   <!-- v8.04 경완: 오프닝·튜토리얼을 처음부터 (저장은 그대로) -->
         <!-- v8.16 경완: 운영자 골드 맞추기 없앰 (v7.46) -->   <!-- v7.28 경완: 운영자 전용 — 봤다고 저장하지 않음 -->
         <div class="mgt-row"><span>기술 시험</span><select id="mgtType" aria-label="타입 (액티브 기술)"></select><select id="mgtRk" aria-label="랭크 (패시브)"></select><button class="lk-btn main" id="mgtGo">해 보기</button></div>   <!-- v6.21 경완: 운영자 전용 미니게임 기술 시험 (보상·기록 없음) -->
         <p class="op-note" id="updMsg" hidden></p>
         <div class="set-btns one" id="betaBkRow" hidden><button class="lk-btn main" id="betaBk">베타 켜기 전 저장으로 되돌리기</button></div>
-        <div class="set-btns one" id="probeRow" hidden><button class="lk-btn main" id="placeProbe">장소 찾기 시험</button></div>
-        <pre class="probe-out" id="probeOut" hidden></pre>
       </section>
       <section class="set-sec test-only">
         <h4>테스트</h4>
@@ -2246,7 +2244,7 @@ async function importCries(file) {
   items.forEach(([sp]) => cry.have.add(sp)); cry.buf.clear();
   return items.length;
 }
-async function playCry(sp, delay = 0) {
+async function playCry(sp, delay = 0, rate = 1) {   // rate: 쓰러질 때 낮게 (본가 4세대)
   if (!sfxOn || !cry.have.has(sp)) return; const a = audio(); if (!a) return;
   try {
     let buf = cry.buf.get(sp);
@@ -2259,7 +2257,7 @@ async function playCry(sp, delay = 0) {
       cry.buf.set(sp, buf); if (cry.buf.size > 40) cry.buf.delete(cry.buf.keys().next().value);
     }
     const src = a.createBufferSource(), g = a.createGain(); g.gain.value = (buf.g ?? .25) * volG(VOL.sfx);
-    src.buffer = buf; src.connect(g).connect(a.destination); src.start(a.currentTime + delay);
+    src.buffer = buf; src.playbackRate.value = rate; src.connect(g).connect(a.destination); src.start(a.currentTime + delay); return buf.duration / rate;
   } catch (e) {}
 }
 async function importMusic(files) {
@@ -6140,7 +6138,7 @@ function serialize() {
     gold: S.gold, box: S.box, gym: S.gym || undefined, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], dexFix1: !!S.dexFix1, buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, mg: S.mg || {}, fbag: S.fbag || {}, fbagT: S.fbagT || {}, lay: S.lay || {}, layAdd: S.layAdd || [], fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])], dexDot: !!S.dexDot };
 }
 let saveFrozen = false, tutFreeze = false, introPv = false;   // introPv: 튜토리얼 미리 보기 (끝나도 저장 안 함)
-function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { const o = serialize(), t = JSON.stringify(o); localStorage.setItem(KEY, t); bakTick(t, o); } catch (e) {} }
+function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { const o = serialize(); window.gymSimFix?.(o); const t = JSON.stringify(o); localStorage.setItem(KEY, t); bakTick(t, o); } catch (e) {} }
 /* v10.19 경완 '데이터가 실시간 기기에 백업되게': 저장할 때(1분에 한 번까지) 기기 안 IndexedDB 'pk-bak' 에도 남긴다.
    r0~r11 = 10분 칸마다 최근 2시간, dYYYY-MM-DD = 그날 첫 저장 14일, p시각 = 도감·박스가 갑자기 줄기 직전 저장(5개), 되돌리기 직전 저장도 p 로 */
 const BAK = { db: null, last: 0 };
@@ -6416,7 +6414,7 @@ document.addEventListener('click', e => {
   const loadGymJs = () => window.Gym ? Promise.resolve() : new Promise((ok, no) => { const v = encodeURIComponent(APP_VER), c = document.createElement('link'); c.rel = 'stylesheet'; c.href = `gymb/gym.css?v=${v}`; document.head.appendChild(c);
     const s = document.createElement('script'); s.src = `gymb/gym.js?v=${v}`; s.onload = () => window.Gym ? ok() : no(new Error('gym')); s.onerror = no; document.head.appendChild(s); });
   // 게임 본체는 함수 안에 있어서 gym.js 가 쓸 것만 꺼내 준다 (늦게 정의되는 것도 있어 getter)
-  window.GA = { get S() { return S; }, get SPECIES() { return SPECIES; }, get TYPE_KO() { return TYPE_KO; }, get TYPE_C() { return TYPE_C; }, get RANKS() { return RANKS; }, get LEARN() { return LEARN; },
+  window.GA = { get S() { return S; }, get SP_OFF() { return SP_OFF; }, get SPECIES() { return SPECIES; }, get TYPE_KO() { return TYPE_KO; }, get TYPE_C() { return TYPE_C; }, get RANKS() { return RANKS; }, get LEARN() { return LEARN; },
     tyIcon: (...a) => tyIcon(...a), sfx: (...a) => sfx(...a), save: () => save(), trOf: () => trOf(), esc: s => esc(s), menuDots: () => menuDots(), addGold: n => addGold(n), renderGold: () => renderGold(),
     boxOf: id => boxOf(id), removeMon: (m, q) => removeMon(m, q), log: (...a) => log(...a), ivSum: p => ivSum(p), rankOf: p => rankOf(p), addFr: (id, n) => addFr(id, n) };
   let busy = false;
@@ -6434,9 +6432,19 @@ document.addEventListener('click', e => {
     try { S.mons.forEach(m => offFr(m, sec)); } catch (e) {} save(); last = performance.now(); try { if (bgmOn && !bgmAway) bgmSrcStart(); } catch (e) {} notiSoon(1200); };
   let arm = 0; $('#gymReset').onclick = () => { const b = $('#gymReset');
     if (Date.now() - arm > 3000) { arm = Date.now(); b.textContent = '한 번 더 누르면 체육관이 지워져요'; setTimeout(() => { if (Date.now() - arm >= 3000) b.textContent = '체육관 초기화'; }, 3100); return; }
-    arm = 0; S.gym = null; save(); menuDots(); b.textContent = '체육관을 지웠어요'; setTimeout(() => { b.textContent = '체육관 초기화'; }, 1800); }; }
+    arm = 0; S.gym = null; save(); menuDots(); b.textContent = '체육관을 지웠어요'; setTimeout(() => { b.textContent = '체육관 초기화'; }, 1800); };
+  // 체육관 시뮬레이터 (경완 2026-10-28 '개발하고 있는 거 계속 반영해서 확인'): 들어가기 전 체육관·골드를 떠 두고, 퇴근하면 되돌린다. 앱이 꺼져도 다음에 켤 때 되돌림
+  const SIMK = 'pk-gym-sim', simBack = () => { try { const o = JSON.parse(localStorage.getItem(SIMK) || 'null'); if (o) { S.gym = o.gym; S.gold = o.gold; localStorage.removeItem(SIMK); save(); menuDots(); } } catch (e) {} window.gymSimOn = 0; try { renderGold(); } catch (e) {} };   // 퇴근하면 필드 골드 숫자도 진짜 골드로 (경완 2026-10-28)
+  if (localStorage.getItem(SIMK)) simBack();
+  // 시뮬 중 저장엔 진짜 체육관·골드를 남긴다: 앱이 꺼지거나 본 게임으로 열어도 시뮬 골드(10만)가 남지 않게 (경완 2026-10-28 '돈이 갑자기 10만원')
+  // 시뮬 골드가 새던 버그(10.57 전)로 생긴 10만G 되돌리기: 경완 원래 170G + 그 뒤에 번 만큼 (운영자 기기, 한 번만)
+  try { if (localStorage.getItem('pk-op') === '1' && !localStorage.getItem('pk-gfix1') && !localStorage.getItem(SIMK)) { localStorage.setItem('pk-gfix1', '1'); if (S.gold >= 100000 && S.gold < 200000) { S.gold = S.gold - 100000 + 170; save(); try { renderGold(); } catch (e) {} } } } catch (e) {}
+  window.gymSimFix = o => { if (!window.gymSimOn) return; try { const b = JSON.parse(localStorage.getItem(SIMK) || 'null'); if (b) { o.gym = b.gym || undefined; o.gold = b.gold; } } catch (e) {} };
+  const out0 = GA.gymOut; GA.gymOut = () => { if (window.gymSimOn) simBack(); out0(); };
+  $('#gymSim').onclick = () => { if (window.Gym?.isOpen?.()) return; sfx('tap'); try { localStorage.setItem(SIMK, JSON.stringify({ gym: S.gym || null, gold: S.gold })); } catch (e) { return; }
+    window.gymSimOn = 1; S.gold = Math.max(S.gold, 100000); hideSheets(); $('#btnGym').onclick(); }; }
 /*gym-hook3*/
-GA.audio = () => audio(); GA.bgmGain = () => { if (!audio()) return null; bgmRoute(); return bgm.gain; }; GA.bgmOn = () => bgmOn; GA.cry = (sp, d) => playCry(sp, d);
+GA.audio = () => audio(); GA.bgmGain = () => { if (!audio()) return null; bgmRoute(); return bgm.gain; }; GA.bgmOn = () => bgmOn; GA.cry = (sp, d, r) => playCry(sp, d, r);
 /*gym-hook4*/
 GA.thumb = P => ensureSprite(P.sp).then(() => thumbP(P)); GA.pkCls = P => pkCls(P) + (tierOf(+P.sp) ? ' t-' + tierOf(+P.sp) : ''); GA.isFish = sp => isFish(sp); GA.shinyHue = sp => shinyHue(sp); GA.sfxVol = () => volG(VOL.sfx); GA.quietTap = () => { sfxN++; };   // 이 클릭엔 기본 '톡' 소리를 내지 않는다(체육관 배틀은 본가 효과음)
 /*gym-hook5*/
@@ -6491,7 +6499,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.43';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.76';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9047,7 +9055,7 @@ function evoKids(sp, P, now) {
   return (CHILDREN[sp] || []).filter(c => { const d = SPECIES[c], ev = d.ev || '';
     if (d.eqx && (d.eqx === 1 ? 'f' : 'm') !== P?.sex) return false;
     const tmo = ev === 'day' || ev === 'night';   // v8.60 경완: 낮·밤에만 진화하는 포켓몬도 짝꿍 거리를 쌓고, 다 차면 그 시간에 진화
-    if (ev === EV_DARK) return !now || darkNear(P);   // v10.43 경완: 판짱 → 부란다는 거리를 다 채우고 판짱과 악타입 포켓몬이 둘 다 필드에 있으면 진화
+    if (ev === EV_DARK) return !now || darkNear(P);   // v10.76 경완: 판짱 → 부란다는 거리를 다 채우고 판짱과 악타입 포켓몬이 둘 다 필드에 있으면 진화
     if (ev && !ev.startsWith('fr') && !tmo) return false;
     if (!now || !ev) return true;
     if (!tmo && (P?.fr || 0) < FR_EVO) return false;
@@ -9654,23 +9662,9 @@ function unlock(sp, fx) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); trUpChe
 /* v9.95 경완: 부화·진화로 새로 등록된 포켓몬은 창을 다 닫은 뒤 번호순 도감을 열어, 그 칸으로 스크롤하며 하나씩 채워 넣는다 (화면을 누르면 남은 것을 한꺼번에) */
 const dexFx = { q: [], on: false };
 function dexFxFlush() { const L = dexFx.q.splice(0); L.forEach(sp => { lockDexBtn(sp); dexCellReady(sp); }); return L; }
-// v9.99 경완 '도감 연출은 진화했을 때랑 알 부화시켰을 때 둘 다 운영자 모드에서, 과정부터 쭉': 저장해 두고 다시 켜서 이번 실행은 저장 안 함 → 못 만난 포켓몬으로 진짜 부화·진화 → 도감 등록 연출 → 끝나면 다시 켜서 원래대로
-let dexPv = null;
-['H', 'E', 'A'].forEach(k => $('#dexPv' + k).addEventListener('click', () => { sfx('tap'); save(); try { sessionStorage.setItem('pk-dexpv', { H: 'hatch', E: 'evo', A: 'all' }[k]); } catch (e) { return; } location.reload(); }));
-async function dexPvStart(kind) {
-  for (let k = 0; k < 40 && (dexFxBlocked() || hatching || evolving); k++) { const b = $('#noti:not([hidden]) button, #news:not([hidden]) #newsOk'); if (b) b.click(); await wait(400); }
-  const open = sp => dexBtns[sp] && !S.unlocked.has(sp) && !SP_OFF.has(sp) && !SPECIES[sp].leg && !SPECIES[sp].my;
-  dexPv = kind; hideSheets(); syncTabs();
-  if (kind === 'hatch') { const L = Object.keys(SPECIES).map(Number).filter(sp => open(sp) && !SPECIES[sp].fr); const sp = pick(L.length ? L : Object.keys(SPECIES).map(Number).filter(open)); if (!sp) { dexPv = null; return; }
-    hatchEgg({ id: -1, g: 1, sp, km: 1, need: 1, place: '미리 보기' }, true); playHatch(); }
-  else if (kind === 'all') { const L = Object.keys(SPECIES).map(Number).filter(sp => open(sp) && !SPECIES[sp].fr), A = [];   /* v10.13 경완: 여러 알 모두 부화 → 도감 등록 (못 만난 3마리) */
-    while (A.length < 3 && L.length) A.push(L.splice(Math.floor(Math.random() * L.length), 1)[0]); if (!A.length) { dexPv = null; return; }
-    S.eggs.push(...A.map((sp, k) => ({ id: -1 - k, g: 1, sp, km: 1, need: 1, place: '미리 보기' }))); hatchAll(); }
-  else { const L = Object.keys(SPECIES).map(Number).filter(to => open(to) && SPECIES[to].fr && SPECIES[SPECIES[to].fr] && !SP_OFF.has(SPECIES[to].fr)); const to = pick(L); if (!to) { dexPv = null; return; }
-    const P = newPoke(SPECIES[to].fr); S.box.push(P); evolveWin(P, false, to); }
-}
-function dexPvEnd() { if (!dexPv || dexFx.hold || evolving) return; dexPv = null; setTimeout(() => location.reload(), 1200); }
 const dexFxBlocked = () => hatching || evolving || hatchQ.length || !$('#noti').hidden || !hatchEl.hidden || !!document.querySelector('#frMax:not([hidden]),#dexPop:not([hidden])');   /* 열린 창이 실제로 보이는지로 (notiOpen 값은 남아 있을 때가 있다) */
+function dexFxVeil() { if (dexFx.wi) return wait(0); const wi = document.createElement('div'); wi.className = 'dfxWhite'; document.body.append(wi); void wi.offsetWidth; wi.classList.add('on'); dexFx.wi = wi; clearTimeout(dexFx.wiT); /* v10.43 경완 '단일 부화·진화 뒤 도감 연출 전에 원래 화면이 잠깐 보이는 틈': 창을 닫기 전에 그 위로 먼저 하얗게 덮고, 도감 연출은 그 흰 화면을 이어 받는다 */
+  dexFx.wiT = setTimeout(() => { if (!dexFx.on && dexFx.wi === wi) { dexFx.wi = null; wi.classList.add('out'); wi.classList.remove('on'); setTimeout(() => wi.remove(), 700); } }, 4000); return wait(420); }   /* 연출이 못 열리면 4초 뒤 걷는다 */
 function dexFxKick(ms = 450) { clearTimeout(dexFx.t); dexFx.t = setTimeout(dexFxRun, ms); }
 async function dexFxRun() {
   if (dexFx.on || !dexFx.q.length) return;
@@ -9681,7 +9675,7 @@ async function dexFxRun() {
   let wf = null; L.forEach(sp => { const b = dexBtns[sp]; if (!b) return; dexCellReady(sp); b.classList.add('locked'); b.querySelector('.nm').textContent = '???'; b.querySelector('.newtag')?.remove(); });   // v10.07 경완 '등록되기 전 카드는 등록 전 상태 그대로': 검은 실루엣·??? (10.02 의 빈 칸 대신)
   try {
     $('#dexQ').value = ''; dexQv = ''; setFilter('dexType', 0); setFilter('dexGen', 0);
-    { const wi = document.createElement('div'); wi.className = 'dfxWhite'; document.body.append(wi); void wi.offsetWidth; wi.classList.add('on'); await wait(420);   /* v10.20 경완: 시작할 때도 화면이 하얗게 밝아지면서 도감으로 넘어간다 */
+    { let wi = dexFx.wi; dexFx.wi = null; clearTimeout(dexFx.wiT); if (!wi) { wi = document.createElement('div'); wi.className = 'dfxWhite'; document.body.append(wi); void wi.offsetWidth; wi.classList.add('on'); await wait(420); }   /* v10.20 경완: 시작할 때도 화면이 하얗게 밝아지면서 도감으로 넘어간다 */
       setMgrTab('dex'); syncTabs(); setFilter('dexSort', 1); await wait(60); wi.classList.add('out'); wi.classList.remove('on'); setTimeout(() => wi.remove(), 700); }
     { const tb = [...document.querySelectorAll('#dexTabs, #mgrTabs')].map(e => e.getBoundingClientRect()).find(r => r.height); if (tb) skB.style.bottom = Math.round(innerHeight - tb.top + 12) + 'px'; skB.hidden = skip; }   /* 아래 박스·도감 탭 바로 위 */
     const own = $('#dexOwn'), tot = Object.keys(SPECIES).length; let n = S.unlocked.size - L.length; own.textContent = `${n}/${tot}`;
@@ -9702,7 +9696,7 @@ async function dexFxRun() {
     for (const [w, h] of W0) $(w).hidden = h;
     if (!$('#mgr').hidden && tab0 !== 'dex') setMgrTab(tab0);
     if (!sheet.hidden) { $('#dexQ').value = q0; dexQv = q0; for (const [id, v] of F0) setFilter(id, v); grid.scrollTop = y0s; }
-    syncTabs(); if (wf) { const w = wf; w.classList.add('out'); w.classList.remove('on'); setTimeout(() => w.remove(), 700); } setTimeout(() => shield.remove(), wf ? 650 : 0); dexFx.on = false; if (dexFx.q.length) dexFxKick(); else dexPvEnd(); }
+    syncTabs(); if (wf) { const w = wf; w.classList.add('out'); w.classList.remove('on'); setTimeout(() => w.remove(), 700); } setTimeout(() => shield.remove(), wf ? 650 : 0); dexFx.on = false; if (dexFx.q.length) dexFxKick(); }
 }
 // 새로 등록된 칸은 그림을 바로 넣고 순서도 미리 맞춰 둔다 → 도감을 열 때 없던 칸이 뒤늦게 생기는 모습이 안 보인다
 // v3.09: 작은 스프라이트(토중몬 등)를 칸 높이까지 늘리면 도트가 커 보인다(경완) → 도트 한 칸 최대 2배까지만 키우고 칸 높이는 그대로
@@ -9803,10 +9797,6 @@ function renderProfile() { try { window.gymBdgRow?.(); } catch (e) {}
   $('#pfDiag').textContent = !window.webkit?.messageHandlers?.pokeRun ? '' : D.err ? `만보기 오류: ${D.err}` : D.n ? `만보기 신호 ${D.n}번 · 마지막 ${ago}초 전 · ${D.km.toFixed(3)}km` : '만보기 신호를 아직 못 받았어요';
 }
 const pedDiag = { n: 0, at: 0, km: 0, err: '' };
-// v5.61 경완: 운영자 › 장소 찾기 시험 — 아이폰 앱이 지금 위치로 장소 이름을 찾는 단계별 결과와 최근 자동 기록을 보여 준다 (알 주운 곳이 동까지만 나올 때 원인 확인용)
-{ const h = window.webkit?.messageHandlers?.pokeRun; $('#probeRow').hidden = !h;
-  $('#placeProbe').onclick = () => { const o = $('#probeOut'); o.hidden = false; o.textContent = '찾는 중…'; sfx('tap'); try { h.postMessage({ probe: true }); } catch (e) { o.textContent = '앱에 보내지 못했어요: ' + e; } };
-  window.pokeRunProbe = lines => { const o = $('#probeOut'); o.hidden = false; o.textContent = (Array.isArray(lines) ? lines : [String(lines)]).join('\n'); }; }
 window.pokeRunPedErr = msg => { pedDiag.err = String(msg); if (!setEl.hidden) renderProfile(); };
 setInterval(() => { if (!setEl.hidden && pedDiag.n) renderProfile(); }, 1000);
 // 아이폰 앱: 오늘 0시부터 걸은 거리(만보기)를 걷는 동안 계속 보낸다 (화면 표시용, 알 줍기는 pokeRunWalk)
@@ -10574,6 +10564,7 @@ async function playHatch() {
     try { sm = await spawn(sp, { pid: P.id }); sm.born = S.clock; markNew(sm); } finally { busy = false; } save(); refreshCap(); });
   ok.focus(); hatchLock();
   const how = await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = null; });   /* v5.16 경완: 두드리다 바깥을 눌러 정보를 못 보고 닫히지 않게, 확인으로만 닫는다 */
+  if (how !== 'look' && dexFx.q.length && !hatchQ.length && !dexFx.on) await dexFxVeil(); /* v10.43 경완 '단일 부화·진화 뒤 도감 연출 전에 원래 화면이 잠깐 보이는 틈': 창을 닫기 전에 그 위로 먼저 하얗게 덮고, 도감 연출은 그 흰 화면을 이어 받는다 */
   hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; sb.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatching = false;
   hatchFx(); if (fg >= 5) bgmDuck(1, 2.5);
   if (!send) log(`${GRADE[g].n} 알에서 ${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어나 포켓몬 박스에 들어갔다.`, [], true);
@@ -10718,6 +10709,7 @@ async function hatchAll() {
       if (w) { if (ev.target.closest('button,input,a,#hlStrip,[data-tip]')) return; const R = w.getBoundingClientRect(), E = Math.max(EDGE_IN, R.width * .3), d = ev.clientX < R.left + E ? -1 : ev.clientX > R.right - E ? 1 : 0;   /* 카드 좌우 30% (테두리 포함)를 눌러도 넘긴다, 가운데만 빼고 */
         if (d && !$(d < 0 ? '#hlHl' : '#hlHr').hidden) hatchPg?.step(d); return; }
       const d = sideTap(hatchEl, ev); if (d) { if (!$(d < 0 ? '#hlHl' : '#hlHr').hidden) show(i + d); return; } }; });   /* v5.16: 바깥을 눌러도 닫지 않는다 (확인으로만) */
+  if (dexFx.q.length && !hatchQ.length && !dexFx.on) await dexFxVeil();
   hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; sb.hidden = true; fastBtn(sb, null); look.textContent = '상태창 보기'; showDexInfo(null); hatchFx(); hatchEl.classList.remove('list'); $('#hlHl').hidden = $('#hlHr').hidden = true; hatchPg = null; hw.style.transform = ''; hatching = false;
   const nw = res.filter(r => r.isNew).length, sh = res.filter(r => r.P.shiny).length;
   log(`알 ${res.length}개가 한꺼번에 부화했다! ${res.map(r => SPECIES[r.sp].n).join(', ')}${nw ? ` (새로 만난 포켓몬 ${nw}마리)` : ''}${sh ? ` ✦ 색이 다른 포켓몬 ${sh}마리!` : ''}`, [], true);
@@ -11171,6 +11163,7 @@ async function evolveWin(P, card, forceTo, tool) {   // tool: 쓴 도구 id → 
   el.querySelector('.ef-bottom').classList.add('gone');
   await new Promise(res => { cardEvo = res; $('#dexPop').classList.add('evo'); openCard(to); });
   shut = true; evoMusicFade(.8); sfx('tap');
+  if (dexFx.q.length && !dexFx.on) await dexFxVeil(); /* v10.43 경완 '단일 부화·진화 뒤 도감 연출 전에 원래 화면이 잠깐 보이는 틈': 창을 닫기 전에 그 위로 먼저 하얗게 덮고, 도감 연출은 그 흰 화면을 이어 받는다 */
   open.forEach(x => x.hidden = false); if (!mgr.hidden) { renderBuddy(); renderMgr(true); } if (card) openPoke(P.id);   // 보던 창을 먼저 깔아 둔 뒤 진화 화면을 걷는다 (v5.00 경완: 필드가 잠깐 보이던 것)
   el.classList.remove('in'); bgmDuck(1, 1.2);
   await wait(350); el.hidden = true; el.className = ''; parts.innerHTML = ''; msg.hidden = false; ok.classList.remove('rise', 'prs'); el.querySelector('.ef-bottom').classList.remove('gone');
@@ -11184,7 +11177,7 @@ async function evolveWin(P, card, forceTo, tool) {   // tool: 쓴 도구 id → 
     $('#noti').hidden = false; sfx('newdex'); haptic(1);
     await new Promise(res => { const done = () => { $('#noti').hidden = true; $('#noti').onclick = null; notiOpen = false; res(); }; $('#notiOk').onclick = done; $('#noti').onclick = ev => { if (ev.target.id === 'noti') done(); }; });
   }
-  evolving = false; save(); dexFxKick(0); if (!dexFx.q.length) dexPvEnd();   /* v10.14 경완: 창이 닫히면 원래 화면 없이 바로 도감 연출 */
+  evolving = false; save(); dexFxKick(0);   /* v10.14 경완: 창이 닫히면 원래 화면 없이 바로 도감 연출 */
   notiSoon(600);   // 진화하는 동안 미뤄 둔 알림이 있으면
 }
 // the dex only lets you release species you have met
@@ -11737,14 +11730,13 @@ async function start(data) {
   const isNew = !(d && d.mons && (d.mons.length || d.unlocked));
   const introPrev = !isNew && /[?&]intro/.test(location.search);   // v5.38: ?intro 는 저장이 있어도 새 게임처럼 오프닝·튜토리얼을 미리 보기만 한다 (원래 저장은 건드리지 않게 이번 실행은 저장 안 함)
   if (introPrev) { saveFrozen = true; introPv = true; }
-  let dexPvK = null; if (!introPrev) { try { dexPvK = sessionStorage.getItem('pk-dexpv'); sessionStorage.removeItem('pk-dexpv'); } catch (e) {} if (dexPvK) saveFrozen = true; }   // v9.99: 운영자 부화·진화 도감 미리 보기 — 이번 실행은 저장 안 함
   // v5.53 경완: 오프닝·튜토리얼 도중 앱을 껐다 켜면 튜토리얼이 통째로 건너뛰어지던 것 → 튜토리얼을 마칠 때까지 저장하지 않아 다시 켜면 처음부터
   if (isNew) { newsMark(); try { localStorage.setItem('pk-news', NEWS_MAIN); } catch (e) {} }   /* v7.44: 처음 시작한 사람은 업데이트 알림창 안 띄움 */
   if (isNew && INTRO_ON()) { saveFrozen = true; tutFreeze = true; }
   if (!isNew && !introPrev) await restore(d); else await fresh();
   if (layApply()) seaRedraw();   // v9.06 경완: 맵 편집에서 옮긴 자리
   if (bgmOn && bgm.id !== S.bgm) bgmStart();
-  Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp)); menuDots(); if (dexPvK) setTimeout(() => dexPvStart(dexPvK), 1500);
+  Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp)); menuDots();
   migrateBox(); undoAutoHatch(); syncNeed(); renderGold(); if (!((isNew && INTRO_ON()) || /[?&]intro/.test(location.search))) document.documentElement.classList.remove('bootBlk');
   if ((isNew && INTRO_ON()) || /[?&]intro/.test(location.search)) introFlow().then(() => tutFlow()).finally(() => { if (introPrev) { tutFreeze = false; setTimeout(() => location.replace(location.pathname), 1500); return; }   /* v8.04 경완: 운영자 '튜토리얼 미리 보기' — 끝나면 원래 저장으로 돌아감 (미리 보기 중엔 저장 안 함) */ if (tutFreeze) { tutFreeze = false; saveFrozen = false; save(); } }).then(() => notiSoon(300)); else notiSoon(700); sky(); fetchWx(false, 10 * 60e3); setInterval(fetchWx, 10 * 60e3); document.addEventListener('visibilitychange', () => { if (document.hidden) return;   /* v4.33 경완: 다시 켜면 시간·날씨를 바로 (서서히 바뀌는 연출 없이) */
     const c = document.documentElement.classList; c.add('boot'); S.clock = realClock(); skyKey = ''; sky(); requestAnimationFrame(() => requestAnimationFrame(() => c.remove('boot'))); fetchWx(false, 10 * 60e3); }); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));

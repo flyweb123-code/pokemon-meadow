@@ -12,12 +12,13 @@ const SDAT_SIZE = 7484768;
 const PART = {
   wBasic: [6573184, 458564], wField: [7031776, 30836], wBattle: [7062624, 33656],
   bField: [1628096, 3984], bBattle: [1632096, 3820],
-  sGym: [829664, 8876], sBaGym: [987488, 13836], sBaTrain: [1013312, 8996], sBaRival: [1067936, 8272], sBaChamp: [1048928, 11672],
+  sGym: [829664, 8876], sBaGym: [987488, 13836], sBaTrain: [1013312, 8996], sBaRival: [1067936, 8272], sBaChamp: [1048928, 11672], sEyeElite: [941696, 6000], sEyeChamp: [964096, 6632],
   sWinTrain: [1084160, 4204], sWinGym: [1088384, 7584],
   // 효과음: 배틀·기본 효과음 악보 묶음(gym/se.json 의 block), 악기, 소리 묶음
-  seBlock: [1450624, 126400], bSe: [1648288, 4416], bBasic: [1624352, 3720], wSe: [7219648, 85568],
+  seBlock: [1450624, 126400], fanBlock: [1244704, 7144], bSe: [1648288, 4416], bBasic: [1624352, 3720], wSe: [7219648, 85568],
+  bSeF: [1643904, 4368], wSeF: [7158592, 61032],   // 필드 효과음 (문 소리, 경완 2026-10-28)
 };
-const BANK = { field: { b: 'bField', w: ['wBasic', 'wField'] }, battle: { b: 'bBattle', w: ['wBasic', 'wBattle'] }, S: { b: 'bSe', w: ['wBasic', 'wSe'] }, B: { b: 'bBasic', w: ['wBasic'] } };
+const BANK = { field: { b: 'bField', w: ['wBasic', 'wField'] }, battle: { b: 'bBattle', w: ['wBasic', 'wBattle'] }, S: { b: 'bSe', w: ['wBasic', 'wSe'] }, B: { b: 'bBasic', w: ['wBasic'] }, F: { b: 'bSeF', w: ['wBasic', 'wSeF'] } };
 // 곡 이름 → 악보, 악기 묶음, 곡 볼륨(원본 SEQ 정보 값)
 const SONG = {
   gym: { s: 'sGym', bank: 'field', vol: 118 },            // 체육관
@@ -27,6 +28,8 @@ const SONG = {
   champ: { s: 'sBaChamp', bank: 'battle', vol: 90 },      // 챔피언 배틀
   winTrain: { s: 'sWinTrain', bank: 'battle', vol: 118 }, // 트레이너에게 이겼다
   winGym: { s: 'sWinGym', bank: 'battle', vol: 120 },     // 관장에게 이겼다
+  eyeElite: { s: 'sEyeElite', bank: 'B', vol: 80 },       // 이름 있는 트레이너 등장 (시선 마주침, 엘리트)
+  eyeChamp: { s: 'sEyeChamp', bank: 'B', vol: 100 },      // 챔피언 등장
 };
 
 // ---------- 받아 오기·저장 ----------
@@ -101,8 +104,13 @@ function toBuf(ctx, r) {
   b.getChannelData(0).set(r.L); b.getChannelData(1).set(r.R);
   return b;
 }
+// 끊긴 자리 (경완 2026-10-28 '배틀 중 나갔다 오면 끊긴 부분부터'): 앱을 나갔다 와서 다시 틀 때만 이어서, 새로 고른 곡은 처음부터
+const pos = {};
+function posNow() { const { src, ctx, name } = cur; if (!src || !ctx || !name || cur.t0 == null) return; const d = src.buffer.duration; let p = ctx.currentTime - cur.t0;
+  if (src.loop && p > d) { const ls = src.loopStart; p = ls + (p - ls) % Math.max(.01, d - ls); } pos[name] = clampP(p, d); }
+const clampP = (p, d) => Math.max(0, Math.min(p, d - .05));
 function stopSrc(fade = .4) {
-  const { src, g, ctx } = cur; cur.src = null; cur.g = null; if (!src) return;
+  posNow(); const { src, g, ctx } = cur; cur.src = null; cur.g = null; if (!src) return;
   try { const t = ctx.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + fade); src.stop(t + fade + .05); } catch (e) { try { src.stop(); } catch (x) {} }
   setTimeout(() => { try { src.disconnect(); g.disconnect(); } catch (e) {} }, fade * 1000 + 200);
 }
@@ -115,8 +123,8 @@ async function start(name, { fade = .6 } = {}) {
   const src = ctx.createBufferSource(), g = ctx.createGain();
   src.buffer = B.buf; src.loop = B.loop;
   if (B.loop) { src.loopStart = B.ls; src.loopEnd = B.buf.duration; }
-  const t = ctx.currentTime; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(1, t + fade);
-  src.connect(g); g.connect(out); src.start();
+  const t = ctx.currentTime, off = pos[name] || 0; delete pos[name]; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(1, t + fade);
+  src.connect(g); g.connect(out); src.start(0, off); cur.t0 = t - off;
   src.onended = () => { if (cur.src === src) { cur.src = null; cur.name = null; } };
   Object.assign(cur, { name, src, g, ctx, out });
 }
@@ -127,7 +135,7 @@ function watch() {
     if (!cur.want) { clearInterval(tick); tick = 0; return; }
     if (!on()) { if (cur.src) stopSrc(.2); cur.name = null; return; }
     let ctx = null, out = null; try { ctx = GA.audio(); out = GA.bgmGain(); } catch (e) {}
-    if (!cur.src || cur.ctx !== ctx || cur.out !== out) { if (cur.src && cur.ctx !== ctx) { cur.src = null; } cur.name = null; start(cur.want, { fade: 1 }).catch(() => {}); }
+    if (!cur.src || cur.ctx !== ctx || cur.out !== out) { if (cur.src && cur.ctx !== ctx) { posNow(); cur.src = null; } cur.name = null; start(cur.want, { fade: 1 }).catch(() => {}); }
   }, 700);
 }
 // ---------- 효과음 (배틀: 맞는 소리·쓰러짐·볼·기술 소리 등, 플래티넘 원본) ----------
@@ -136,7 +144,7 @@ const seList = () => SE || (SE = fetch(`gym/se.json?v=${VER}`).then(r => r.json(
 const seBuf = new Map();   // 이름 → Promise<AudioBuffer>
 async function seMake(ctx, nm) {
   const J = await seList(), e = J.se[nm]; if (!e) return null;
-  const B = BANK[e[2]], [blk, bank, ...wars] = await Promise.all([part('seBlock'), part(B.b), ...B.w.map(part)]);
+  const B = BANK[e[2]], [blk, bank, ...wars] = await Promise.all([part(e[4] || 'seBlock'), part(B.b), ...B.w.map(part)]);   // e[4]: 팡파레처럼 효과음 묶음 밖의 악보
   const bk = sent.has(B.b) ? null : bank.slice(0), ws = B.w.map((w, i) => sent.has(w) ? null : wars[i].slice(0));
   const r = await work({ seq: blk.slice(e[0], e[0] + e[1]), bankKey: B.b, bank: bk, warKeys: B.w, wars: ws, vol: e[3], gain: 1, trim: true });
   sent.add(B.b); B.w.forEach(w => sent.add(w));
@@ -147,7 +155,7 @@ function seGet(ctx, nm) {
   p = { ctx, p: seMake(ctx, nm) }; p.p.catch(() => seBuf.delete(nm)); seBuf.set(nm, p); return p.p;
 }
 // nm: 'DP_KOUKA_M' 처럼 SEQ_SE_ 뒤 이름. pan -1(왼쪽)~1(오른쪽), at: 몇 초 뒤
-async function sePlay(nm, { pan = 0, at = 0 } = {}) {
+async function sePlay(nm, { pan = 0, at = 0, dur = 0, gain = 1 } = {}) {   // gain: 원본이 작은 소리 키우기   // dur: 그 초만큼만 (본가에서 멈추는 소리, 경험치 막대 등)
   let ctx = null; try { ctx = GA.audio(); } catch (e) {} if (!ctx) return;
   const v = (() => { try { return GA.sfxVol(); } catch (e) { return .1; } })(); if (!v) return;
   const t0 = ctx.currentTime;
@@ -155,12 +163,12 @@ async function sePlay(nm, { pan = 0, at = 0 } = {}) {
   if (!seOut || seOut.context !== ctx) { seOut = ctx.createGain(); seOut.connect(ctx.destination); }
   seOut.gain.value = 1.5 * v;
   const src = ctx.createBufferSource(); src.buffer = buf;
-  let node = src; if (pan && ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = pan; src.connect(p); node = p; }
-  node.connect(seOut); src.start(Math.max(ctx.currentTime, t0 + at));
+  let node = src; if (gain !== 1) { const gn = ctx.createGain(); gn.gain.value = gain; src.connect(gn); node = gn; } if (pan && ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = pan; node.connect(p); node = p; }
+  node.connect(seOut); const st = Math.max(ctx.currentTime, t0 + at); src.start(st); if (dur) src.stop(st + dur);
 }
 const GymBGM = {
   // 곡 바꾸기. 처음이면 받아 오고 만드는 동안 조용하다가 준비되면 서서히 커진다
-  play(name, o) { if (!SONG[name]) return Promise.resolve(); cur.want = name; trim([name]); watch(); return on() ? start(name, o).catch(() => {}) : Promise.resolve(); },
+  play(name, o) { if (!SONG[name]) return Promise.resolve(); if (cur.want !== name) delete pos[name]; cur.want = name; trim([name]); watch(); return on() ? start(name, o).catch(() => {}) : Promise.resolve(); },
   stop(fade = .6) { cur.want = null; cur.name = null; stopSrc(fade); clearInterval(tick); tick = 0; },
   // 다음에 틀 곡을 미리 만들어 둔다 (배틀 시작하면 승리 곡)
   prep(name) { if (SONG[name]) make(name).catch(() => {}); },

@@ -9,7 +9,7 @@ const SPECIES = GA.SPECIES, TYPE_KO = GA.TYPE_KO;
 const S = GA.S;
 const IMG = 'gym/img/';
 // 4세대 플라티나 그림 (경완 2026-10-27 'npc들도 4세대 pt에 맞춰야'): 있으면 pt/ 에서, 걸음 그림은 32칸
-const PT_TR = new Set('artist battle_girl beauty bird_keeper black_belt bug_catcher camper champion_cynthia channeler cool_trainer_f cool_trainer_m cyclist_m dragon_tamer elite_four_aaron elite_four_bertha elite_four_flint elite_four_lucian fisherman gentleman hiker jogger lass leader_byron leader_candice leader_fantina leader_gardenia leader_maylene leader_roark leader_volkner leader_wake ninja_boy picnicker poke_kid pokemaniac psychic_m rival_barry rocker ruin_maniac sailor skier_f super_nerd swimmer_f youngster'.split(' ')), PT_OW = new Set('aaron artist barry battle_girl beauty bertha black_belt boy bug_catcher byron camper candice channeler cooltrainer_f cooltrainer_m crasher_wake cyclist_m cynthia dragon_tamer fantina fisher flint gardenia gentleman gym_guy hiker jogger lass lucian man maylene ninja_boy picnicker poke_kid poke_maniac roark rocker ruin_maniac sailor scientist skier_f swimmer_f_land volkner youngster'.split(' '));
+const PT_TR = new Set('artist battle_girl beauty bird_keeper black_belt bug_catcher camper champion_cynthia channeler cool_trainer_f cool_trainer_m cyclist_m dragon_tamer elite_four_aaron elite_four_bertha elite_four_flint elite_four_lucian fisherman gentleman hiker jogger lass leader_byron leader_candice leader_fantina leader_gardenia leader_maylene leader_roark leader_volkner leader_wake ninja_boy picnicker poke_kid pokemaniac psychic_m rival_barry rocker ruin_maniac sailor skier_f super_nerd swimmer_f youngster'.split(' ')), PT_OW = new Set('aaron artist barry bird_keeper battle_girl beauty bertha black_belt boy bug_catcher byron camper candice channeler cooltrainer_f cooltrainer_m crasher_wake cyclist_m cynthia dragon_tamer fantina fisher flint gardenia gentleman gym_guy hiker jogger lass lucian man maylene ninja_boy picnicker poke_kid poke_maniac roark rocker ruin_maniac sailor scientist skier_f swimmer_f_land volkner youngster'.split(' '));
 const trSrc = k => `${IMG}${PT_TR.has(k) ? 'pt/' : ''}tr/${k}.png`, owSrc = k => `${IMG}${PT_OW.has(k) ? 'pt/' : ''}ow/${k}.png`, owW = k => PT_OW.has(k) || /^pt_/.test(k || '') ? 32 : 16;
 const VER = ((document.currentScript && document.currentScript.src.match(/[?&]v=([^&]+)/)) || [])[1] || '';
 const loadJs = (src, g) => window[g] ? Promise.resolve() : new Promise(ok => { const x = document.createElement('script'); x.src = `${src}?v=${VER}`; x.onload = x.onerror = () => ok(); document.head.appendChild(x); });
@@ -59,9 +59,9 @@ const DESIGNS_FR = [
   { id: 'celadon', pt: 'eterna', n: '꽃 정원', sub: '무지개시티 체육관', w: 13, h: 20, leader: [6, 4], door: [6, 18], guy: [5, 17],
     deco: [[3, 10], [9, 10], [1, 16], [11, 16], [2, 17], [10, 17], [1, 12], [11, 12]],
     path: [[6, 18], [6, 5]], slots: [[7, 13, 'l'], [5, 12, 'r'], [7, 11, 'l'], [5, 10, 'r'], [7, 9, 'l'], [5, 14, 'r'], [7, 14, 'l'], [5, 5, 'r'], [7, 5, 'l']], inY: 14, tiny: [[6, 15], [[2, 3], [10, 11]]], fix: { t: [[2, 5, 5, 4, 1, 1]] }, cuts: [[6, 14], [9, 14], [9, 14], [6, 8], [13, 14]] },
-  { id: 'fuchsia', pt: 'veilstone', n: '넓은 무대', sub: '연분홍시티 체육관', w: 15, h: 16, leader: [7, 6], door: [7, 14], guy: [11, 13],
+  { id: 'fuchsia', pt: 'veilstone', n: '넓은 무대', sub: '연분홍시티 체육관', w: 15, h: 16, leader: [7, 6], door: [7, 14], guy: [8, 13],
     deco: [[2, 3], [12, 3], [2, 7], [12, 7], [3, 10], [11, 10], [2, 13], [12, 13]],
-    path: [[7, 14], [7, 8]], slots: [[8, 10, 'l'], [6, 10, 'r'], [8, 8, 'l'], [6, 8, 'r'], [9, 9, 'l'], [5, 9, 'r'], [9, 7, 'l'], [5, 7, 'r']], inY: 10, tiny: [[8, 11], [[1, 3], [12, 14]]], cuts: [[9, 10], [9, 10], [9, 10], [9, 10]] },
+    path: [[7, 14], [7, 8]], slots: [[8, 10, 'l'], [6, 10, 'r'], [8, 8, 'l'], [6, 8, 'r'], [9, 9, 'l'], [5, 9, 'r'], [9, 7, 'l'], [5, 7, 'r']], inY: 10, tiny: [[8, 11], [[1, 6], [9, 14]]], cuts: [[8, 11, [[1, 5], [10, 14]]], [9, 11, [[1, 4], [11, 14]]], [9, 10, [[1, 4], [11, 14]]], [9, 10]] },   // 경완 2026-10-28 '넓은 무대는 줄어든 느낌이 없네': 기둥 사이 칸도 잘라 좁게
 ];
 // 맵 묶음: 'fr' 파이어레드 칸토 체육관 / 'pt' 플라티나 (경완 2026-10-27 '맵은 이전 버전으로 바꿔줘봐 지금 캐릭터랑 묻는지 함 보게')
 const MAP_SET = 'fr';
@@ -72,10 +72,10 @@ const dzBase = id => DESIGNS.find(d => d.id === id) || DESIGNS.find(d => d.old =
 const OPEN = [0, .2, .4, .6, .8, 1];
 // cuts[등급] = [a, b]: 위아래 줄 그림이 이어지는 자리를 골라 둠 (경완 2026-10-27 '맵 줄인거 티나지 않게')
 // tiny = 새내기(등급 0) 체육관: [줄 [a, b], 칸 [[a, b], …]] 나·입구 기둥·안내원만 겨우 들어가게 (경완 2026-10-27 '맨 처음은 진짜 겁나 좁아야')
-function cutOf(D, gi) { if (gi == null) { const g = st(); if (!g) return null; gi = gradeOf(g.rep || 0).i; }
+function cutOf(D, gi) { if (gi == null) { const g = st(); if (!g) return null; gi = bigOf(g); }
   const f = D.fix?.[gi === 0 && D.tiny ? 't' : gi];
   if (gi === 0 && D.tiny) return { y: D.tiny[0], x: D.tiny[1] || [], f };
-  if (D.cuts) { const c = D.cuts[gi]; return c ? { y: c, x: [], f } : null; }
+  if (D.cuts) { const c = D.cuts[gi]; return c ? { y: [c[0], c[1]], x: c[2] || [], f } : null; }   // [a, b, 칸 자르기?]
   const a0 = D.leader[1] + 3, b0 = D.door[1] - 3; if (b0 - a0 < 2) return null;
   const a = a0 + Math.round((b0 - a0) * OPEN[gi]); return a < b0 ? { y: [a, b0], x: [] } : null; }
 // 잘라 낸 구간 R([[a, b], …], 오름차순)에 대해 원래 좌표 → 보이는 좌표(잘린 곳은 null), 그 반대
@@ -95,6 +95,8 @@ function dzOf(id, gi) {
     toV: v, toF: cutF(RY), toVx: vx, toFx: cutF(RX) }));
 }
 // 미리보기 그림을 지금 크기(data-gi 가 있으면 그 등급, 처음 열 때는 0 = 새내기)의 잘라 붙인 맵으로 (경완 2026-10-27)
+// 디자인 썸네일을 미리 그려 둔다 (경완 2026-10-28 '맵 썸네일이 바로 안 나오고 박스 텍스트 먼저')
+const preMs = gi => DESIGNS.forEach(d => mapSrc(dzOf(d.id, gi)).then(u => { const im = new Image(); im.src = u; im.decode?.().catch(() => {}); }));
 function fillMs(el) { el.querySelectorAll('img[data-ms]').forEach(im => { const gi = im.dataset.gi === '' || im.dataset.gi == null ? undefined : +im.dataset.gi; mapSrc(dzOf(im.dataset.ms, gi)).then(u => { im.src = u; }); }); }
 // 잘라 붙인 맵 그림 (이음매 없이)
 const mapCache = {};
@@ -111,6 +113,11 @@ function mapSrc(D) { const u = `${IMG}map/${D.id}.png`; if (!D.cut) return Promi
 // ---------- 평판·등급 ----------
 const REP_MAX = 1000;
 const GRADES = [[0, '새내기 체육관'], [100, '동네 체육관'], [250, '이름난 체육관'], [450, '인기 체육관'], [700, '명문 체육관'], [1000, '전설의 체육관']];
+// 체육관 크기 단계: 평판으로 등급이 오르면 체육관 정보에서 넓힌다 (경완 2026-10-28 '돈 내고 넓히는 것보다 평판 오르면'). g.big 없으면 예전 저장 = 등급 그대로
+const bigOf = (g = st()) => { const gi = gradeOf(g?.rep || 0).i; return g?.big == null ? gi : Math.min(g.big, gi); };
+const canBig = (g = st()) => !!g?.d && gradeOf(g.rep || 0).i > bigOf(g);
+// 등급 배지 (경완 2026-10-28): 등급 색 방패 + 별 수
+const gEmb = i => `<i class="g-emb" data-g="${i}"><i>${'★'.repeat(i + 1)}</i></i>`;
 const gradeOf = rep => { let i = 0; GRADES.forEach(([v], k) => { if (rep >= v) i = k; }); return { i, n: GRADES[i][1], lo: GRADES[i][0], hi: GRADES[i + 1]?.[0] ?? REP_MAX }; };
 
 // ---------- 저장 ----------
@@ -129,18 +136,39 @@ function build() {
       <div class="gy-top">
         <button class="win gy-plate" type="button" aria-label="체육관 정보"><span class="gy-nm"></span><span class="gy-grade"></span><span class="gy-rep"><em>평판</em><i class="gy-bar"><i></i></i><b class="gy-repn"></b></span></button>
       </div>
+      <!-- 필드와 같은 자리 (경완 2026-10-28): 꾸미기 = 맵 편집 자리(왼쪽 위), 창고 = 가방 자리(오른쪽) -->
+      <button class="gy-deco" type="button" aria-label="꾸미기"><svg viewBox="0 0 17 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M1 0h3v1H1zM13 0h3v1H13zM0 1h17v1H0zM0 2h3v1H0zM14 2h3v1H14zM1 3h2v1H1zM14 3h2v1H14zM2 4h1v1H2zM14 4h1v1H14zM2 5h1v1H2zM6 5h1v1H6zM10 5h1v1H10zM14 5h1v1H14zM2 6h1v1H2zM8 6h1v1H8zM14 6h1v1H14zM2 7h1v1H2zM7 7h1v1H7zM9 7h1v1H9zM14 7h1v1H14zM3 8h1v1H3zM13 8h1v1H13zM2 9h1v1H2zM14 9h1v1H14zM2 10h1v1H2zM14 10h1v1H14zM2 11h1v1H2zM14 11h1v1H14zM2 12h1v1H2zM14 12h1v1H14zM3 13h1v1H3zM13 13h1v1H13zM4 14h1v1H4zM7 14h3v1H7zM12 14h1v1H12zM5 15h2v1H5zM10 15h2v1H10z"/><path fill="#ffd520" d="M3 2h1v1H3zM13 2h1v1H13zM3 3h2v1H3zM6 3h5v1H6zM12 3h2v1H12zM4 4h9v1H4zM4 5h2v1H4zM7 5h3v1H7zM11 5h2v1H11zM6 6h2v1H6zM9 6h2v1H9zM8 7h1v1H8zM5 8h1v1H5zM11 8h1v1H11zM4 9h2v1H4zM11 9h2v1H11z"/><path fill="#6a3908" d="M4 2h9v1H4zM5 3h1v1H5zM11 3h1v1H11zM3 4h1v1H3zM13 4h1v1H13zM3 5h1v1H3zM13 5h1v1H13zM3 6h1v1H3zM13 6h1v1H13zM3 7h1v1H3zM13 7h1v1H13zM4 8h1v1H4zM12 8h1v1H12zM3 9h1v1H3zM6 9h1v1H6zM10 9h1v1H10zM13 9h1v1H13zM3 10h1v1H3zM5 10h2v1H5zM10 10h2v1H10zM13 10h1v1H13zM3 11h1v1H3zM13 11h1v1H13zM3 12h1v1H3zM5 12h2v1H5zM10 12h2v1H10zM13 12h1v1H13zM4 13h1v1H4zM7 13h3v1H7zM12 13h1v1H12zM5 14h2v1H5zM10 14h2v1H10z"/><path fill="#e65262" d="M4 6h2v1H4zM11 6h2v1H11zM4 7h2v1H4zM11 7h2v1H11z"/><path fill="#de9c10" d="M6 7h1v1H6zM10 7h1v1H10zM6 8h5v1H6zM7 9h3v1H7zM4 10h1v1H4zM7 10h3v1H7zM12 10h1v1H12zM4 11h9v1H4zM4 12h1v1H4zM7 12h3v1H7zM12 12h1v1H12zM5 13h2v1H5zM10 13h2v1H10z"/></svg></button>
+      <button class="gy-store gy-sq" type="button" aria-label="창고"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 3h12v1H2zM1 4h1v3H1zM14 4h1v3h-1zM2 7h12v1H2zM2 8h1v6H2zM13 8h1v6h-1zM3 14h10v1H3zM6 9h4v1H6zM6 10h1v1H6zM9 10h1v1H9zM6 11h4v1H6z"/><path fill="#c8783c" d="M2 4h12v3H2zM3 8h10v6H3z"/><path fill="#e8a060" d="M2 4h12v1H2zM3 8h10v1H3z"/><path fill="#f0c040" d="M7 10h2v1H7z"/><path fill="#8a4a24" d="M3 13h10v1H3zM7 4h2v3H7z"/></svg></button>
+      <button class="gy-qbtn" type="button" aria-label="도전자 명단"><svg viewBox="0 0 16 19" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M6 0h4v1H6zM5 1h1v1H5zM10 1h1v1H10zM3 2h10v1H3zM2 3h1v1H2zM5 3h1v1H5zM10 3h1v1H10zM13 3h1v1H13zM2 4h1v1H2zM6 4h4v1H6zM13 4h1v1H13zM2 5h1v1H2zM15 5h1v1H15zM2 6h1v1H2zM15 6h1v1H15zM2 7h1v1H2zM15 7h1v1H15zM2 8h1v1H2zM15 8h1v1H15zM2 9h1v1H2zM15 9h1v1H15zM2 10h1v1H2zM15 10h1v1H15zM2 11h1v1H2zM15 11h1v1H15zM2 12h1v1H2zM15 12h1v1H15zM2 13h1v1H2zM15 13h1v1H15zM2 14h1v1H2zM15 14h1v1H15zM2 15h1v1H2zM15 15h1v1H15zM2 16h1v1H2zM15 16h1v1H15zM2 17h1v1H2zM15 17h1v1H15zM3 18h12v1H3z"/><path fill="#48b048" d="M11 5h1v1H11zM10 6h1v1H10zM5 7h1v1H5zM9 7h1v1H9zM5 8h2v1H5zM8 8h1v1H8zM6 9h2v1H6z"/><path fill="#2c7c3c" d="M11 6h1v1H11zM10 7h1v1H10zM9 8h1v1H9zM8 9h1v1H8zM7 10h1v1H7z"/><path fill="#f8f8f0" d="M6 3h3v1H6zM4 5h7v1H4zM12 5h1v1H12zM4 6h6v1H4zM12 6h1v1H12zM4 7h1v1H4zM6 7h3v1H6zM11 7h2v1H11zM4 8h1v1H4zM7 8h1v1H7zM10 8h3v1H10zM4 9h2v1H4zM9 9h4v1H9zM4 10h3v1H4zM8 10h5v1H8zM4 11h1v1H4zM12 11h1v1H12zM4 12h9v1H4zM4 13h1v1H4zM12 13h1v1H12zM4 14h9v1H4zM4 15h1v1H4zM10 15h3v1H10z"/><path fill="#8888a0" d="M9 3h1v1H9z"/><path fill="#b8783c" d="M3 3h2v1H3zM11 3h1v1H11zM3 4h3v1H3zM10 4h2v1H10zM3 5h1v1H3zM3 6h1v1H3zM3 7h1v1H3zM3 8h1v1H3zM3 9h1v1H3zM3 10h1v1H3zM3 11h1v1H3zM3 12h1v1H3zM3 13h1v1H3zM3 14h1v1H3zM3 15h1v1H3zM3 16h1v1H3z"/><path fill="#8a5428" d="M12 3h1v1H12zM12 4h1v1H12zM14 5h1v1H14zM14 6h1v1H14zM14 7h1v1H14zM14 8h1v1H14zM14 9h1v1H14zM14 10h1v1H14zM14 11h1v1H14zM14 12h1v1H14zM14 13h1v1H14zM14 14h1v1H14zM14 15h1v1H14zM14 16h1v1H14zM3 17h12v1H3z"/><path fill="#e04838" d="M6 1h3v1H6z"/><path fill="#a02820" d="M9 1h1v1H9z"/><path fill="#686878" d="M5 11h7v1H5zM5 13h7v1H5zM5 15h5v1H5z"/><path fill="#d8d0b0" d="M13 5h1v1H13zM13 6h1v1H13zM13 7h1v1H13zM13 8h1v1H13zM13 9h1v1H13zM13 10h1v1H13zM13 11h1v1H13zM13 12h1v1H13zM13 13h1v1H13zM13 14h1v1H13zM13 15h1v1H13zM4 16h10v1H4z"/></svg><b class="gy-qn" hidden></b></button>
+      <button class="win gy-simb" type="button">시뮬</button>
       <div class="win blue gy-dlg" aria-live="polite"></div>
       <section class="gy-sheet" hidden></section>
+      <div class="win gy-dtit"><b>체육관 꾸미기</b><span>꾸미기를 눌러서 옮겨요</span></div>
     </div>
     <nav class="gy-menu" aria-label="체육관 메뉴">
       <button type="button" data-t="battle">배틀</button><button type="button" data-t="train">훈련장</button><button type="button" data-t="staff">트레이너</button><button type="button" data-t="shop">상점</button><button type="button" class="gy-out" data-t="out">퇴근</button>
-    </nav>`;
+    </nav>
+    <div class="gy-dbar"><div class="db-head"><b>가방 꾸미기</b><span>골라서 체육관에 놓아요</span></div><div class="db-list"></div>
+      <div class="db-keys"><button type="button" data-a="cancel">취소</button><button type="button" class="ok" data-a="save">저장</button></div></div>`;
   document.body.appendChild(root);
   $g('.gy-plate').onclick = () => { sfx('tap'); infoPop(); };
-  $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = b.dataset.t; if (t === 'out') return exit(); sfx('tap'); openTab(tab === t ? null : t); };
+  $g('.gy-store').onclick = () => { sfx('tap'); if (ded) ded.end?.(); storePop(); };
+  $g('.gy-deco').onclick = () => { sfx('tap'); root.querySelectorAll('.gy-infos').forEach(x => x.remove()); if (!ded) decoEdit(); };
+  $g('.gy-simb').onclick = () => { sfx('tap'); simPop(); };
+  $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = b.dataset.t; if (t === 'out') return exit(); sfx('tap');
+    const cov = root.querySelectorAll('.gy-boxw,.gy-infos'); if (cov.length) { cov.forEach(x => x.remove()); return openTab(t); }   // 포켓몬 고르기·정보 화면 위에서 메뉴를 누르면 그 화면을 닫고 그 메뉴로 (경완 2026-10-28)
+    openTab(tab === t ? null : t); };
   // 퇴근은 손가락이 닿는 순간 로딩 화면부터 (click 을 기다리지 않음, 경완 2026-10-27 '여전히 바로 안 뜸')
   $g('.gy-menu .gy-out').addEventListener('pointerdown', e => { if (e.button) return; e.preventDefault(); exit(); });
   addEventListener('resize', () => { if (open) layout(st()?.d ? undefined : DESIGNS[0]); });
+  // 홈 화면엔 일지창이 없다 (경완 2026-10-28 '체육관 일지창 없애주고'): 대화창은 알림이 있을 때만 뜨고, 누르면 닫힌다
+  const dlg = $g('.gy-dlg');
+  dlg.addEventListener('click', e => { if (e.target.closest('button') || root.classList.contains('ded') || busy || root.classList.contains('dhide')) return; e.stopPropagation(); sfx('tap'); homeSay(); });
+  // 도전자 명단 아이콘 → 새 화면 (도전자 / 체육관 일지)
+  $g('.gy-qbtn').onclick = () => { sfx('tap'); if (ded) ded.end?.(); qPop(); };
+  // 빈 곳을 한 번 누르면 이름판·버튼을 다 숨겨 메뉴만 남김, 다시 누르면 다 펼침 (경완 2026-10-28, 필드 fview 와 같음)
+  $g('.gy-stage').addEventListener('click', e => { if (ded || busy || root.classList.contains('pre') || root.querySelector('.gy-kang,.gy-pop,.gy-setup') || e.target.closest('.tap,.gy-prop.tap')) return;
+    root.classList.toggle('gview'); sfx('tap'); });
 }
 
 // 맵 크기: 화면 폭에 맞추고, 너무 길면 세로로 넘겨 본다
@@ -169,13 +197,13 @@ function ent(o) {
   $g('.gy-ents').appendChild(e.el); ents.push(e); place(e); return e;
 }
 function place(e) {
-  if (e.prop) { const s = e.el.style; s.width = e.w * sc + 'px'; s.height = e.h * sc + 'px'; s.left = (e.x * 16 - (e.w - 16) / 2) * sc + 'px'; s.top = (e.y * 16 + 16 - e.h) * sc + 'px'; s.zIndex = Math.round(e.y * 10) + 9; return; }
+  if (e.prop) { const s = e.el.style; s.width = e.w * sc + 'px'; s.height = e.h * sc + 'px'; s.left = e.x * 16 * sc + 'px'; s.top = (e.y * 16 + 16 - e.h) * sc + 'px'; s.zIndex = Math.round(e.y * 10) + 9; return; }
   const s = e.el.style, fr = e.n3 ? ({ d: 0, u: 1, l: 2, r: 2 })[e.f] : FR[e.f][e.st];
   s.width = e.fw * sc + 'px'; s.height = 32 * sc + 'px'; s.left = (e.x * 16 - (e.fw - 16) / 2) * sc + 'px'; s.top = (e.y * 16 - 16) * sc + 'px';
   s.backgroundSize = `auto ${32 * sc}px`; s.backgroundPosition = `${-fr * e.fw * sc}px 0`; s.zIndex = Math.round(e.y * 10) + 10;
   e.el.classList.toggle('flip', e.f === 'r');
 }
-function prop(k, x, y) { const o = DECO[k]; if (!o) return; const e = { prop: 1, x, y, w: o.w, h: o.h, el: document.createElement('i') }; e.el.className = 'gy-prop'; e.el.style.backgroundImage = `url(${IMG}deco/${k}.png)`; $g('.gy-ents').appendChild(e.el); ents.push(e); place(e); return e; }
+function prop(k, x, y) { const o = DECO[k]; if (!o) return; const e = { prop: 1, k, x, y, w: o.w, h: o.h, el: document.createElement('i') }; e.el.className = 'gy-prop'; e.el.style.backgroundImage = `url(${IMG}deco/t/${k}.png)`; $g('.gy-ents').appendChild(e.el); ents.push(e); place(e); return e; }
 function clearEnts() { ents.forEach(e => e.el.remove()); ents = []; }
 // 칸을 따라 걷기 (한 칸 0.26초, 걸음 프레임 번갈아)
 async function walk(e, pts, spd = 260) {
@@ -243,12 +271,19 @@ const DECO = {};
  ['pika_cushion', '피카 쿠션', 500], ['round_cushion', '둥근 쿠션', 500], ['kiss_cushion', '키스 쿠션', 500], ['zigzag_cushion', '지그재그 쿠션', 500], ['spin_cushion', '빙글 쿠션', 500], ['diamond_cushion', '다이아 쿠션', 500], ['ball_cushion', '볼 쿠션', 500], ['grass_cushion', '풀 쿠션', 500], ['fire_cushion', '불꽃 쿠션', 500], ['water_cushion', '물 쿠션', 500],
  ['statue', '체육관 석상', 2000, 1],
  ['big_snorlax_doll', '큰 잠만보 인형', 6000, 2], ['big_rhydon_doll', '큰 코뿌리 인형', 6000, 2], ['big_lapras_doll', '큰 라프라스 인형', 6000, 2], ['big_venusaur_doll', '큰 이상해꽃 인형', 8000, 3], ['big_charizard_doll', '큰 리자몽 인형', 8000, 3], ['big_blastoise_doll', '큰 거북왕 인형', 8000, 3], ['big_wailmer_doll', '큰 고래왕자 인형', 6000, 2],
- ['big_regirock_doll', '큰 레지락 인형', 12000, 4], ['big_regice_doll', '큰 레지아이스 인형', 12000, 4], ['big_registeel_doll', '큰 레지스틸 인형', 12000, 4]].forEach(([k, n, g, lv]) => { DECO[k] = { n, g, lv: lv || 0, w: /^big_/.test(k) ? 32 : 16, h: /^big_/.test(k) || k === 'statue' ? 32 : 16 }; });
-const decoMax = () => Math.min(8, 2 + (st().decoN || 0));
+ ['big_regirock_doll', '큰 레지락 인형', 12000, 4], ['big_regice_doll', '큰 레지아이스 인형', 12000, 4], ['big_registeel_doll', '큰 레지스틸 인형', 12000, 4]].forEach(([k, n, g, lv]) => { DECO[k] = { n, g, lv: 0, w: /^big_/.test(k) ? 32 : 16, h: /^big_/.test(k) ? 32 : 16 }; });   // 작은 건 1칸, 큰 인형은 2×2칸 (경완 2026-10-28 '격자 한칸 다 채우게', '큰 인형들은 최소 4칸')
+Object.values(OUTFITS).forEach(o => { o.lv = 0; });   // 꾸미기·관장 의상은 등급 제한 없음 (경완 2026-10-28)
+// 꾸미기는 개수 제한 없음 (경완 2026-10-28): 기본 자리가 다 차면 맵의 아무 빈 칸에
+const anyFree = (D, used, k) => { for (let y = D.h - 1; y >= 0; y--) for (let x = 0; x < D.w; x++) if (fitAt(D, k, x, y, used)) return [x, y]; return null; };
+// 꾸미기가 차지하는 칸: [x, y] 는 왼쪽 아래 칸, 큰 인형은 오른쪽·위로 한 칸씩 더
+const dSz = k => [(DECO[k]?.w || 16) / 16, (DECO[k]?.h || 16) / 16];
+const dCells = (k, x, y) => { const [w, h] = dSz(k), out = []; for (let i = 0; i < w; i++) for (let j = 0; j < h; j++) out.push([x + i, y - j]); return out; };
+const fitAt = (D, k, x, y, used) => dCells(k, x, y).every(([a, b]) => freeTile(D, a, b, used));
+const decoUsed = (L, skip) => new Set(L.filter(z => z[0] !== skip).flatMap(z => dCells(...z).map(c => c[0] + ',' + c[1])));
 // 꾸미기 자리: g.dp 놓은 것(순서), g.dpos {꾸미기: [x, y]} 직접 놓은 칸 (경완 2026-10-27 '산 거 직접 놓을 수 있게'). 칸이 없으면 맵의 기본 자리
 function decoList(g = st(), D = dzOf(g.d)) { const pos = g.dpos || {}, used = new Set(sfList(g, D).map(z => z[1] + ',' + z[2])), out = [];
-  (g.dp || []).filter(Boolean).slice(0, decoMax()).forEach((k, i) => { let p = pos[k] && pos[k][2] === D.id && D.toV(pos[k][1]) != null && D.toVx(pos[k][0]) != null ? [D.toVx(pos[k][0]), D.toV(pos[k][1])] : null; if (p && !freeTile(D, p[0], p[1], used)) p = null;
-    if (!p) p = D.deco.find(q => freeTile(D, q[0], q[1], used)); if (!p) return; used.add(p[0] + ',' + p[1]); out.push([k, p[0], p[1]]); });
+  (g.dp || []).filter(Boolean).forEach((k, i) => { let p = pos[k] && pos[k][2] === D.id && D.toV(pos[k][1]) != null && D.toVx(pos[k][0]) != null ? [D.toVx(pos[k][0]), D.toV(pos[k][1])] : null; if (p && !fitAt(D, k, p[0], p[1], used)) p = null;
+    if (!p) p = D.deco.find(q => fitAt(D, k, q[0], q[1], used)) || anyFree(D, used, k); if (!p) return; dCells(k, p[0], p[1]).forEach(c => used.add(c[0] + ',' + c[1])); out.push([k, p[0], p[1]]); });
   return out; }
 // 놓을 수 있는 칸: 맵 안쪽, 관장·문·안내원·길·트레이너 자리·관장 옆 포켓몬 자리가 아닌 곳
 function freeTile(D, x, y, used) {
@@ -259,34 +294,71 @@ function freeTile(D, x, y, used) {
   for (let i = 1; i < D.path.length; i++) { const [a, b] = [D.path[i - 1], D.path[i]]; if (Math.min(a[0], b[0]) <= x && x <= Math.max(a[0], b[0]) && Math.min(a[1], b[1]) <= y && y <= Math.max(a[1], b[1])) return false; }
   return true;
 }
-// 꾸미기 놓기 모드: 아래 창에서 꾸미기를 고르고 맵의 칸을 누르면 그 자리에 (놓인 걸 누르면 집어 들기)
+// 꾸미기 모드 (경완 2026-10-28 '필드 맵 편집이랑 비슷하게'): 왼쪽 위 제목 카드 + 아래 가방 창(가방 꾸미기 · 취소/저장).
+// 놓인 꾸미기를 누르면 고르기(초록 점선 칸 + 빨간 ✕ = 가방으로), 끌면 격자 따라 옮기기. 가방 꾸미기는 끌어다 놓거나 골라서 빈 칸을 누르기. 취소 = 들어오기 전으로
 let ded = null;
+const XSVG = '<svg viewBox="0 0 7 7" width="14" height="14" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M0 0h2v1h1v1h1V1h1V0h2v2H6v1H5v1h1v1h1v2H5V6H4V5H3v1H2v1H0V5h1V4h1V3H1V2H0z"/></svg>';
 function decoEdit() {
   const g = st(), D = dzOf(g.d); g.own = g.own || {}; g.dp = (g.dp || []).filter(Boolean); g.dpos = g.dpos || {};
-  openTab(null); root.classList.add('ded'); ded = { sel: null };
-  const map = $g('.gy-map'); let grid = map.querySelector('.gy-grid'); if (!grid) { grid = document.createElement('div'); grid.className = 'gy-grid'; map.appendChild(grid); }
+  openTab(null); root.querySelectorAll('.gy-pop.gy-note').forEach(x => x.remove()); root.classList.remove('gview');
+  root.classList.add('ded', 'dedc'); ded = { sel: null, pick: null, snap: JSON.stringify([g.dp, g.dpos]) };
+  const map = $g('.gy-map'), bar = $g('.gy-dbar'), list = bar.querySelector('.db-list'), tit = $g('.gy-dtit span'), stage = $g('.gy-stage');
+  let grid = map.querySelector('.gy-grid'); if (!grid) { grid = document.createElement('div'); grid.className = 'gy-grid'; map.appendChild(grid); }
+  const T = () => 16 * sc;
+  const warn = t => { clearTimeout(warn.t); tit.textContent = t; tit.classList.add('warn'); warn.t = setTimeout(() => { tit.textContent = '꾸미기를 눌러서 옮겨요'; tit.classList.remove('warn'); }, 2400); };
+  const hitAt = (L, x, y) => L.find(z => dCells(...z).some(c => c[0] === x && c[1] === y));
+  const okAt = (k, x, y) => fitAt(D, k, x, y, decoUsed(decoList(g, D), k));
+  // 손가락 위치 → 꾸미기의 왼쪽 아래 칸 (큰 인형은 손가락이 가운데). off = 집어 든 자리와의 차이
+  const anchor = (k, cx, cy, off = [0, 0]) => { const r = map.getBoundingClientRect(), [w, h] = dSz(k); return [Math.round((cx - r.left) / T() - w / 2 - off[0]), Math.round((cy - r.top) / T() + h / 2 - off[1]) - 1]; };
   const draw = () => {
-    renderHome(true); const L = decoList(g, D), on = new Set(L.map(x => x[0]));
-    grid.style.setProperty('--t', 16 * sc + 'px'); grid.innerHTML = ded.sel && on.has(ded.sel) ? (([, x, y]) => `<i class="gg-sel" style="left:${x * 16 * sc}px;top:${y * 16 * sc}px;width:${16 * sc}px;height:${16 * sc}px"></i>`)(L.find(z => z[0] === ded.sel)) : '';
-    const own = Object.keys(g.own).filter(k => DECO[k]);
-    $g('.gy-dlg').innerHTML = `<span class="gy-who">꾸미기 놓기 <small>${on.size}/${decoMax()}</small></span><span class="gy-dsub">${ded.sel ? `<b>${DECO[ded.sel].n}</b>${on.has(ded.sel) ? ' · 옮길 칸을 누르세요' : ' · 놓을 칸을 누르세요'}` : own.length ? '꾸미기를 고르고 맵의 칸을 누르세요. 놓인 꾸미기를 눌러도 골라져요.' : '아직 산 꾸미기가 없어요. 상점에서 사 오세요.'}</span>
-      <div class="gy-dpick">${own.map(k => `<button data-k="${k}" class="${k === ded.sel ? 'sel' : ''}${on.has(k) ? ' on' : ''}"><img alt="" src="${IMG}deco/${k}.png"></button>`).join('')}</div>
-      <div class="gy-dyn">${ded.sel && on.has(ded.sel) ? '<button class="gy-dbtn2" type="button" data-a="rm">치우기</button>' : ''}<button class="gy-dbtn2 main" type="button" data-a="ok">완료</button></div>`;
+    renderHome(true); const L = decoList(g, D), on = new Set(L.map(z => z[0])); if (ded.sel && !on.has(ded.sel)) ded.sel = null;
+    ents.forEach(e => { if (e.prop && e.k) e.el.classList.toggle('dsel', e.k === ded.sel); }); root.classList.toggle('dhas', !!ded.sel);
+    grid.style.setProperty('--t', T() + 'px');
+    const z = ded.sel && L.find(q => q[0] === ded.sel), [w, h] = z ? dSz(z[0]) : [1, 1];
+    grid.innerHTML = z ? `<i class="gg-foot" style="left:${z[1] * T()}px;top:${(z[2] - h + 1) * T()}px;width:${w * T()}px;height:${h * T()}px"></i><button class="gg-x" type="button" aria-label="가방에 넣기" style="left:${(z[1] + w) * T() + 12 > stage.scrollLeft + stage.clientWidth - map.offsetLeft ? z[1] * T() : (z[1] + w) * T()}px;top:${Math.max(z[2] - h + 1, .4) * T()}px">${XSVG}</button>` : '';
+    const bag = Object.keys(g.own).filter(k => g.own[k] && DECO[k] && !on.has(k)); if (ded.pick && !bag.includes(ded.pick)) ded.pick = null;
+    list.innerHTML = bag.length ? bag.map(k => `<button class="db-it" type="button" data-k="${k}" aria-pressed="${ded.pick === k}"><img alt="" src="${IMG}deco/t/${k}.png"><span>${DECO[k].n}</span></button>`).join('')
+      : '<p class="db-none">가방에 놓을 꾸미기가 없어요.<br>체육관의 꾸미기를 빼면 여기로 들어와요.</p>';
   };
-  ded.draw = draw; ded.end = decoDone;
-  $g('.gy-dlg').onclick = e => { const b = e.target.closest('button'); if (!b || !ded) return; e.stopPropagation(); sfx('tap');
-    if (b.dataset.k) { ded.sel = ded.sel === b.dataset.k ? null : b.dataset.k; return draw(); }
-    if (b.dataset.a === 'rm') { g.dp = g.dp.filter(k => k !== ded.sel); delete g.dpos[ded.sel]; ded.sel = null; save(); return draw(); }
-    if (b.dataset.a === 'ok') return decoDone(); };
-  map.onclick = e => { if (!ded) return; const r = map.getBoundingClientRect(), x = Math.floor((e.clientX - r.left) / (16 * sc)), y = Math.floor((e.clientY - r.top) / (16 * sc));
-    const L = decoList(g, D), hit = L.find(z => z[1] === x && z[2] === y); if (hit) { sfx('tap'); ded.sel = hit[0]; return draw(); }
-    if (!ded.sel) return; const used = new Set(L.filter(z => z[0] !== ded.sel).map(z => z[1] + ',' + z[2]));
-    if (!freeTile(D, x, y, used)) { sfx('no'); return; }
-    if (!g.dp.includes(ded.sel)) { if (g.dp.length >= decoMax()) { $g('.gy-dsub').innerHTML = '꾸미기 자리가 꽉 찼어요. 하나를 치우거나 체육관을 넓혀 주세요.'; return; } g.dp.push(ded.sel); }
-    g.dpos[ded.sel] = [D.toFx(x), D.toF(y), D.id]; sfx('tap'); save(); draw(); };
+  const put = (k, x, y) => { if (!okAt(k, x, y)) { sfx('no'); warn('여기엔 놓을 수 없어요'); return draw(); }
+    if (!g.dp.includes(k)) g.dp.push(k); g.dpos[k] = [D.toFx(x), D.toF(y), D.id]; ded.sel = k; ded.pick = null; sfx('tap'); draw(); };
+  const end = keep => { if (!ded) return; if (!keep) { const [dp, dpos] = JSON.parse(ded.snap); g.dp = dp; g.dpos = dpos; } save(); decoDone(); };
+  ded.draw = draw; ded.end = () => end(true);
+  // 끌기: 놓인 꾸미기나 가방 꾸미기를 끌면 칸에 맞춰 따라오고, 놓으면 그 칸에. 빈 곳을 끌면 맵 넘기기
+  let drag = null, noClick = 0;
+  const ghost = (k, x, y) => { let gh = grid.querySelector('.gg-gh'), tl = grid.querySelector('.gg-tile'); const [w, h] = dSz(k), ok = okAt(k, x, y);
+    if (!gh) { gh = document.createElement('i'); gh.className = 'gg-gh'; tl = document.createElement('i'); tl.className = 'gg-tile'; grid.append(tl, gh); }
+    const box = `left:${x * T()}px;top:${(y - h + 1) * T()}px;width:${w * T()}px;height:${h * T()}px`;
+    gh.style.cssText = `background-image:url(${IMG}deco/t/${k}.png);${box}`; tl.style.cssText = box; tl.classList.toggle('bad', !ok); return ok; };
+  const dim = (k, on) => ents.forEach(e => { if (e.prop && e.k === k) e.el.style.opacity = on ? .3 : ''; });
+  const move = e => { if (!drag || e.pointerId !== drag.pid) return; const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
+    if (!drag.on) { if (Math.hypot(dx, dy) < 8) return; if (drag.pal && Math.abs(dx) > Math.abs(dy)) { drag = null; return; } drag.on = true; if (drag.k) { dim(drag.k, true); grid.classList.add('drag'); } }
+    if (!drag.k) { stage.scrollLeft = drag.sl - dx; stage.scrollTop = drag.st - dy; return; }
+    e.preventDefault(); drag.t = anchor(drag.k, e.clientX, e.clientY, drag.off); drag.ok = ghost(drag.k, ...drag.t);
+    const r = stage.getBoundingClientRect(); if (e.clientY < r.top + 48) stage.scrollTop -= 10; else if (e.clientY > r.bottom - 48 && e.clientY < r.bottom) stage.scrollTop += 10; };
+  const up = e => { if (!drag || e.pointerId !== drag.pid) return; const d = drag; drag = null; removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up);
+    grid.classList.remove('drag'); grid.querySelectorAll('.gg-gh,.gg-tile').forEach(x => x.remove()); if (d.k) dim(d.k, false);
+    if (!d.on || e.type === 'pointercancel' || !ded) return; noClick = Date.now(); if (!d.k) return;
+    if (!d.t) return draw(); put(d.k, ...d.t); };
+  const begin = (k, e, pal, off) => { if (!ded || e.button) return; drag = { k, pal, off, pid: e.pointerId, x0: e.clientX, y0: e.clientY, sl: stage.scrollLeft, st: stage.scrollTop };
+    addEventListener('pointermove', move, { passive: false }); addEventListener('pointerup', up); addEventListener('pointercancel', up); };
+  const tile = e => { const r = map.getBoundingClientRect(); return [Math.floor((e.clientX - r.left) / T()), Math.floor((e.clientY - r.top) / T())]; };
+  map.onpointerdown = e => { if (!ded || e.target.closest('.gg-x')) return; const hit = hitAt(decoList(g, D), ...tile(e));
+    if (!hit) return begin(null, e); const r = map.getBoundingClientRect(), [w, h] = dSz(hit[0]);
+    begin(hit[0], e, false, [(e.clientX - r.left) / T() - (hit[1] + w / 2), (e.clientY - r.top) / T() - (hit[2] + 1 - h / 2)]); };
+  // 그냥 누르기: ✕ = 가방으로, 놓인 꾸미기 = 고르기, 빈 칸 = 가방에서 고른 꾸미기를 거기에, 아니면 고르기 풀기
+  map.onclick = e => { if (!ded || Date.now() - noClick < 400) return;
+    if (e.target.closest('.gg-x')) { sfx('tap'); g.dp = g.dp.filter(k => k !== ded.sel); delete g.dpos[ded.sel]; ded.sel = null; return draw(); }
+    const hit = hitAt(decoList(g, D), ...tile(e)); if (hit) { sfx('tap'); ded.sel = ded.sel === hit[0] ? null : hit[0]; ded.pick = null; return draw(); }
+    if (ded.pick) return put(ded.pick, ...anchor(ded.pick, e.clientX, e.clientY));
+    if (ded.sel) { ded.sel = null; draw(); } };
+  bar.onpointerdown = e => { const b = e.target.closest('.db-it'); if (b) begin(b.dataset.k, e, true); };
+  bar.onclick = e => { const b = e.target.closest('button'); if (!b || !ded) return; e.stopPropagation(); if (b.dataset.k && Date.now() - noClick < 400) return; sfx('tap');
+    if (b.dataset.k) { ded.pick = ded.pick === b.dataset.k ? null : b.dataset.k; ded.sel = null; if (ded.pick) warn('놓을 칸을 누르세요'); return draw(); }
+    if (b.dataset.a) end(b.dataset.a === 'save'); };
   draw();
 }
-function decoDone() { if (!ded) return; ded = null; root.classList.remove('ded'); $g('.gy-map .gy-grid')?.remove(); $g('.gy-map').onclick = null; $g('.gy-dlg').onclick = null; renderHome(); }
+function decoDone() { if (!ded) return; ded = null; root.classList.remove('ded', 'dedc', 'dhas'); $g('.gy-map .gy-grid')?.remove(); $g('.gy-map').onclick = null; $g('.gy-map').onpointerdown = null; $g('.gy-dbar').onclick = null; $g('.gy-dbar').onpointerdown = null; renderHome(); }
 // 고용 트레이너 자리 (경완 2026-10-27 '훈련장 배치랑 체육관 배치 둘 다', '체육관 배치 위치는 내가 고를 수 있게'):
 // s.gym 체육관에 서 있음(도전자 상대), s.yard 훈련장 코치. 둘 다 켤 수 있다. s.gp [x, y, 맵] 직접 고른 칸 (없으면 맵의 기본 자리)
 const inGym = s => s.gym ?? (s.yard ? 0 : 1);
@@ -329,7 +401,7 @@ function sfPlace(s, back) {
     if (b.dataset.a === 'rm') { s.gym = 0; delete s.gp; glog('sf', `${sfName(s)}${jong(s.nm) ? '을' : '를'} 체육관 자리에서 뺐다.`); save(); return done(); }
     if (b.dataset.a === 'ok') return done(); };
   map.onclick = e => { if (!ded) return; const r = map.getBoundingClientRect(), x = Math.floor((e.clientX - r.left) / (16 * sc)), y = Math.floor((e.clientY - r.top) / (16 * sc));
-    const used = new Set([...sfList(g, D).filter(z => z[0] !== s).map(z => z[1] + ',' + z[2]), ...decoList(g, D).map(z => z[1] + ',' + z[2])]);
+    const used = new Set([...sfList(g, D).filter(z => z[0] !== s).map(z => z[1] + ',' + z[2]), ...decoUsed(decoList(g, D))]);
     if (!trTile(D, x, y, used)) { sfx('no'); return; }
     const was = inGym(s); s.gym = 1; s.gp = [D.toFx(x), D.toF(y), D.id]; if (!was) glog('sf', `${sfName(s)}${jong(s.nm) ? '을' : '를'} 체육관에 배치했다.`); sfx('tap'); save(); draw(); };
   draw();
@@ -354,7 +426,7 @@ const GB = () => window.GymBattle;
 const CLS = {
   youngster: { ow: 'youngster', f: 0, t: [1, 7, 4, 5], e: 1 }, lass: { ow: 'lass', f: 1, t: [1, 18, 12], e: 1 }, bug_catcher: { ow: 'bug_catcher', f: 0, t: [7], e: 1 },
   camper: { ow: 'camper', f: 0, t: [5, 6, 10, 1], e: 1 }, picnicker: { ow: 'picnicker', f: 1, t: [12, 1, 18], e: 1 }, fisherman: { ow: 'fisher', f: 0, t: [11], e: 1 },
-  swimmer_f: { ow: 'swimmer_f_land', f: 1, t: [11, 15], e: 1 }, bird_keeper: { ow: 'boy', f: 0, t: [3], e: 1 },
+  swimmer_f: { ow: 'swimmer_f_land', f: 1, t: [11, 15], e: 1 }, bird_keeper: { ow: 'bird_keeper', f: 0, t: [3], e: 1 },
   hiker: { ow: 'hiker', f: 0, t: [6, 5, 2] }, super_nerd: { ow: 'scientist', f: 0, t: [13, 4, 10, 9] }, psychic_m: { ow: 'man', f: 0, t: [14] }, black_belt: { ow: 'black_belt', f: 0, t: [2] },
   cool_trainer_m: { ow: 'cooltrainer_m', f: 0, t: [] }, cool_trainer_f: { ow: 'cooltrainer_f', f: 1, t: [] }, beauty: { ow: 'beauty', f: 1, t: [12, 18, 11, 1] },
   gentleman: { ow: 'gentleman', f: 0, t: [1, 10, 17] }, rocker: { ow: 'rocker', f: 0, t: [13, 4] }, sailor: { ow: 'sailor', f: 0, t: [11, 2] }, channeler: { ow: 'channeler', f: 1, t: [8] },
@@ -382,16 +454,19 @@ function gInit() {
   for (const [k, v] of Object.entries({ sch: [], q: [], log: [], w: 0, l: 0, blk: 0, bk: {}, bdg: {}, nt: {}, sf: [], cid: 0 })) if (g[k] == null) g[k] = v;
   // 칸토 디자인에서 플라티나 체육관으로: 같은 분위기 맵으로 옮기고, 직접 놓은 장식 자리는 새로 잡는다
   if (g.d && !DESIGNS.some(d => d.id === g.d)) g.d = dzBase(g.d).id;   // 맵 묶음이 바뀌면 짝 맵으로 (자리는 맵 id 로 저장돼 있어 그대로 둔다)
+  if (g.d && g.big == null) g.big = gradeOf(g.rep || 0).i;   // 지금 크기에서부터 직접 넓히기
+  if (!g.cands) g.cands = g.cand ? [g.cand] : []; delete g.cand;   // 지원서는 여러 장 (경완 2026-10-28 '카드 슬라이드해서 넘기는')
   return g;
 }
 const luNow = () => { const g = st(), L = (g.lu || [])[g.luI | 0] || []; return L.map(id => S.box.find(p => p.id === id)).filter(P => P && (SPECIES[P.sp]?.t || []).includes(g.ty)); };
 function myAvg() { const g = st(), L = luNow().map(P => g.mon?.[P.id]?.lv).filter(Boolean); return L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : 10; }
 // 레벨에 맞는 종 고르기: 종족값 합이 레벨에 어울리는 포켓몬 (전설·환상·아기 빼고), 타입 맞추기
 let spCache = null;
+const spOff = sp => !!GA.SP_OFF?.has(+sp);   // 작업실에서 끈 포켓몬은 도전자·지원자 팀에 안 나옴 (경완 2026-10-28)
 function pickSp(types, lv) {
   if (!spCache) spCache = Object.entries(SPECIES).filter(([n, o]) => +n <= 1025 && !o.leg && !o.my && !o.baby && o.bs).map(([n, o]) => ({ n: +n, t: o.t || [], b: o.bs.reduce((a, c) => a + c, 0) }));
   const tgt = Math.min(530, 230 + lv * 6.5);
-  for (const w of [55, 90, 140, 400]) { const L = spCache.filter(x => Math.abs(x.b - tgt) <= w && (!types.length || x.t.some(t => types.includes(t)))); if (L.length) return pick(L).n; }
+  for (const w of [55, 90, 140, 400]) { const L = spCache.filter(x => !spOff(x.n) && Math.abs(x.b - tgt) <= w && (!types.length || x.t.some(t => types.includes(t)))); if (L.length) return pick(L).n; }
   return 19;
 }
 function mkTeam(types, lvB, n) {
@@ -410,14 +485,14 @@ function mkChal(t) {
 // 이름 있는 트레이너: 본가 팀 단계. 그 단계 평균 레벨이 내 라인업 평균 + 6 이하일 때부터 온다
 function pickNamed(avg, t) {
   const g = st(), busy = new Set(g.q.filter(c => c.named).map(c => c.named));
-  const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || x.s >= n.st.length || t < (x.n || 0)) return false; return avg >= teamLv(n.st[x.s]) - 6; });
+  const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || x.s >= n.st.length || t < (x.n || 0) || !n.st[x.s].some(m => !spOff(m[0]))) return false; return avg >= teamLv(n.st[x.s]) - 6; });
   if (!ok.length) return null;
   const n = pick(ok), s = (g.nt[n.id] || {}).s || 0;
-  return { id: ++g.cid, t, named: n.id, s, cls: n.cls, tr: n.tr, ow: n.ow, nm: n.nm, diff: 2, music: n.music, team: n.st[s].map(m => [m[0], m[1], m[2]]) };
+  return { id: ++g.cid, t, named: n.id, s, cls: n.cls, tr: n.tr, ow: n.ow, nm: n.nm, diff: 2, music: n.music, team: n.st[s].filter(m => !spOff(m[0])).map(m => [m[0], m[1], m[2]]) };
 }
 // 하루 시간표: 등급이 오를수록 많이 온다 (2~5명, 오전 8시 ~ 밤 10시 사이 아무 때나)
 function mkSch(d0, from = 0) {
-  const G = gradeOf(st().rep || 0), n = 2 + (G.i >= 2) + (G.i >= 4) + (Math.random() < .5);
+  const n = 3 + (Math.random() < .5);   // 하루 3~4명, 등급 상관없음 (경완 2026-10-28)
   return Array.from({ length: n }, () => d0 + rnd(8, 22) * H).filter(t => t > from).sort((a, b) => a - b);
 }
 function glog(k, html, t = Date.now()) { const g = st(); g.log.unshift([t, k, html]); if (g.log.length > 80) g.log.length = 80; }
@@ -496,6 +571,7 @@ function mkCand(now) {
 const staffMax = () => Math.min(5, gradeOf(st().rep || 0).i);   // 새내기 체육관은 고용 못 함 (경완 2026-10-27)
 function tick(now = Date.now()) {
   const g = gInit(); if (!g || !g.d) return;
+  [...(g.q || []), ...(g.cands || [])].forEach(c => { if (c.team?.some(m => spOff(m[0]))) c.team = c.team.map(m => spOff(m[0]) ? [pickSp(SPECIES[m[0]]?.t || [], m[1]), m[1]] : m); });   // 이미 와 있는 도전자·지원자도 끈 포켓몬은 바꿈
   rollWeek(now);
   const today = dayStart(now);
   if (!g.day) { g.day = today; g.sch = mkSch(today, now); g.sch.unshift(now + 90e3); }   // 처음: 1분 반 뒤 첫 도전자
@@ -503,14 +579,14 @@ function tick(now = Date.now()) {
   while (g.day < today && guard++ < 14) {   // 지난 날: 남은 방문을 다 처리하고, 자정까지 안 받은 도전자는 돌아간다
     const end = nextDay(g.day);
     while (g.sch.length && g.sch[0] < end) arrive(mkChal(g.sch.shift()));
-    for (const c of g.q) { addRep(-1); glog('out', `${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 기다리다 돌아갔다. <small>평판 -1</small>`, end - 1); }
+    for (const c of g.q) glog('out', `${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 기다리다 돌아갔다.`, end - 1);   // 평판은 깎지 않는다 (경완 2026-10-28)
     g.q = []; g.day = end; g.sch = mkSch(end);
   }
   if (g.day < today) { g.day = today; g.sch = mkSch(today, now); }
   while (g.sch.length && g.sch[0] <= now) arrive(mkChal(g.sch.shift()));
   payDay(now);
-  if (g.cand && now > g.cand.exp) { glog('sf', `면접 지원자 ${g.cand.cls} <b>${esc(g.cand.nm)}</b>${jong(g.cand.nm) ? '은' : '는'} 다른 체육관으로 갔다.`, g.cand.exp); g.cand = null; }
-  if (!g.cand && now >= (g.candN || 0) && g.sf.length < 5) { g.cand = mkCand(now); g.candSeen = 0; g.candN = now + rnd(20, 40) * H; }
+  g.cands = g.cands.filter(c => { if (now <= c.exp) return true; glog('sf', `면접 지원자 ${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 다른 체육관으로 갔다.`, c.exp); return false; });
+  if (g.cands.length < 3 && now >= (g.candN || 0) && g.sf.length < 5) { g.cands.push(mkCand(now)); g.candSeen = 0; g.candN = now + rnd(14, 30) * H; }
   try { window.GymManage?.tickTrain(now); } catch (e) { console.error(e); }
   setAt(now); save();
 }
@@ -518,7 +594,7 @@ function tick(now = Date.now()) {
 function setAt(now = Date.now()) {
   const g = st(); let a = g.q.length ? g.q[0].t : (g.sch[0] || nextDay(now) + 9 * H);
   if (g.rpt && !g.rpt.seen) a = Math.min(a, now);
-  if (g.cand && !g.candSeen) a = Math.min(a, g.cand.t);
+  if (g.cands?.length && !g.candSeen) a = Math.min(a, Math.max(...g.cands.map(c => c.t)));
   a = Math.min(a, weekStart(now) + 7 * DAY + 7 * H);
   g.at = a;
 }
@@ -529,22 +605,29 @@ function talk(html, btn = '다음', sub = '') {
   return new Promise(ok => { $g('.gy-dlg').innerHTML = `${html}${sub ? `<span class="gy-dsub">${sub}</span>` : ''}<button class="gy-dbtn" type="button">${btn} ▶</button>`;
     $g('.gy-dbtn').onclick = e => { e.stopPropagation(); sfx('tap'); ok(); }; });
 }
+const doorSe = () => { try { window.GymBGM?.se('DP_DOOR', { gain: 2.4 }); } catch (e) {} };   // 도전자가 드나들 때 철컥 문 소리 (플래티넘 SEQ_SE_DP_DOOR, 경완 2026-10-28 '자동문 말고 철컥')
 async function challenge() {
   const g = st(), c = g.q[0]; if (!c || busy) return;
   const my = luNow(); if (!my.length) { say('라인업이 비어 있어요.', '배틀 메뉴에서 라인업을 먼저 짜 주세요'); openTab('battle'); return; }
   busy = true; openTab(null); root.classList.add('busy');
   try {
     await loadJs('gymb/battle.js', 'GymBattle'); await GB().loadData();
-    const D = dzOf(g.d), e = ent({ ow: c.ow, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(c.ow) });
-    say(`${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 들어온다!`);
+    // 문 소리 → 문 앞 카펫에 나타나 잠깐 섰다가 → 관장 앞까지 걸어온다 (경완 2026-10-28 '소리랑 타이밍 맞춰서, 카펫 위에 잠깐 멈췄다가')
+    const D = dzOf(g.d), bm = c.music || (c.named && NAMED.find(n => n.id === c.named)?.music) || (c.named ? 'gymBattle' : 'train');
+    try { window.GymBGM?.prep(bm); if (c.named) window.GymBGM?.play(bm === 'champ' ? 'eyeChamp' : 'eyeElite', { fade: .1 }); } catch (e) {}   // 이름 있는 트레이너는 들어올 때부터 등장 곡 (배틀 곡과 다름, 경완 2026-10-28)
+    doorSe(); await wait(180);
+    const e = ent({ ow: c.ow, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(c.ow) });
+    dlg(`${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 들어온다!`); await wait(650);
     await walk(e, D.path.slice(1)); e.f = 'u'; place(e);
     const N = c.named && NAMED.find(n => n.id === c.named), me = trName() || '관장';
     const line = N ? N.ln[0].replace('{me}', me) : pick(CHAL_LINES[c.diff] || CHAL_LINES[1]);
-    await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>${esc(line)}`, '배틀 시작', `난이도 ${DIFF_KO[c.diff]} · 포켓몬 ${c.team.length}마리`);
+    await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>${esc(line)}`, '배틀 시작');   // 난이도·마리 수는 안 보여 줌 (경완 2026-10-28)
     const team = c.team.map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv); if (mv && mv.length) o.mv = mv; if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); return o; });
+    // 배틀이 끝나면 배틀 화면에서 상대가 한마디 (경완 2026-10-28)
+    const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : pick(WIN_LINES), lose: N ? N.ln[2].replace('{me}', me) : pick(LOSE_LINES) };
     document.body.classList.add('gymBattle');
     let res;
-    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: c.music || (c.diff ? 'train' : 'train'), meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: REW[c.diff].g, r: REW[c.diff].r, rl: Math.max(-(g.rep || 0), REW[c.diff].rl) }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); }
     g.q.shift(); const R = REW[c.diff], won = !!res?.won, now = Date.now();
     let gold = 0, rep = 0;
@@ -554,10 +637,9 @@ async function challenge() {
     glog(won ? 'win' : 'lose', `${esc(c.cls)} <b>${esc(c.nm)}</b>${won ? `에게 이겼다! <small>+${gold}G · 평판 +${rep}</small>` : `에게 졌다… <small>평판 ${rep}</small>`}`);
     setAt(); save(); renderTop();
     await resultPop(c, res, gold, rep, R);
-    const after = N ? (won ? N.ln[1] : N.ln[2]).replace('{me}', me) : pick(won ? WIN_LINES : LOSE_LINES);
-    e.f = 'u'; place(e); await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>${esc(after)}`, '배웅하기');
-    say(''); await walk(e, D.path.slice(0, -1).reverse()); e.el.remove(); ents = ents.filter(x => x !== e);
     if (g.newBdg) await badgeGet(g.newBdg);
+    // 배웅하기 창 없이, 알림을 다 닫으면 도전자가 걸어 나간다 (경완 2026-10-28)
+    dlg(''); root.classList.add('dhide'); await walk(e, D.path.slice(0, -1).reverse()); await wait(250); doorSe(); await wait(120); e.el.remove(); ents = ents.filter(x => x !== e);
   } catch (err) { console.error(err); GA.toast?.('배틀을 시작하지 못했어요'); }
   finally { busy = false; root.classList.remove('busy'); if (open) renderHome(); }
 }
@@ -567,9 +649,26 @@ function resultPop(c, res, gold, rep, R) {
   const rows = (res?.used || []).map(id => { const P = S.box.find(p => p.id === id); if (!P) return ''; const x = xr[id], m = st().mon?.[id];
     return `<div class="rs-mon"><img alt="" data-th="${P.id}"><b>${esc(SPECIES[P.sp]?.n || '')}</b><span>Lv.${m?.lv || '?'}${x && x.lv > x.lv0 ? ` <em>▲${x.lv - x.lv0}</em>` : ''}</span><small>${x ? `경험치 +${x.n.toLocaleString()}` : '경험치 없음'}${won ? ` · 친밀도 +${R.fr}` : ''}</small>${x?.learned?.length ? `<small class="nw">새 기술: ${x.learned.map(([id]) => esc(GB().mvKo(id))).join(', ')}</small>` : ''}</div>`; }).join('');
   return new Promise(ok => { const p = pop(`<h4>${won ? '승리!' : res?.quit ? '기권했다' : '패배…'}</h4>
-      <div class="rs-sum">${won ? `<span><i class="coin"></i> +${gold}G</span>` : ''}<span>평판 ${rep >= 0 ? '+' : ''}${rep}</span></div>
+      <div class="rs-sum">${won ? `<span><i class="coin"></i> +${gold}G</span>` : ''}</div>${repBox(rep)}
       <div class="rs-mons">${rows}</div><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => { close(); ok(); });
-    GB()?.fillTh(p); });
+    GB()?.fillTh(p); repAnim(p, rep); });
+}
+// 평판 오르내림 연출 (경완 2026-10-28 '평판 오르고 떨어지는 거 연출'): 숫자 세기 + 막대 + 튀는 +N/-N, 등급이 바뀌면 배지 반짝
+const repBox = rep => { const r1 = st().rep || 0, r0 = Math.max(0, r1 - rep), G = gradeOf(r0), pc = r => clampN((r - gradeOf(r).lo) / Math.max(1, gradeOf(r).hi - gradeOf(r).lo), 0, 1) * 100;
+  return `<div class="rs-rep ${rep > 0 ? 'up' : rep < 0 ? 'dn' : ''}" data-r0="${r0}" data-r1="${r1}"><div class="rr-top"><span>평판</span><b class="rr-n">${r0}</b><em class="rr-d">${rep >= 0 ? '+' : ''}${rep}</em></div>
+    <div class="rr-g">${gEmb(G.i)}<span class="rr-gn">${G.n}</span><i class="gy-bar"><i style="width:${pc(r0)}%"></i></i></div></div>`; };
+async function repAnim(p, rep) {
+  const el = p?.querySelector('.rs-rep'); if (!el || !rep) return;
+  const r0 = +el.dataset.r0, r1 = +el.dataset.r1, n = el.querySelector('.rr-n'), bar = el.querySelector('.gy-bar>i'), g0 = gradeOf(r0).i;
+  await wait(380); if (!el.isConnected) return;
+  el.classList.add('go'); window.GymBGM?.se?.(rep > 0 ? 'DP_EXP' : 'DP_KOUKA_L');
+  const t0 = performance.now(), T = clampN(Math.abs(r1 - r0) * 90, 500, 1100);
+  await new Promise(done => { const f = now => { if (!el.isConnected) return done(); const k = Math.min(1, (now - t0) / T), r = Math.round(r0 + (r1 - r0) * (1 - (1 - k) ** 2)), G = gradeOf(r);
+    n.textContent = r; bar.style.width = clampN((r - G.lo) / Math.max(1, G.hi - G.lo), 0, 1) * 100 + '%';
+    if (G.i !== +el.dataset.gi) { el.dataset.gi = G.i; el.querySelector('.g-emb').outerHTML = gEmb(G.i); el.querySelector('.rr-gn').textContent = G.n; }
+    k < 1 ? requestAnimationFrame(f) : done(); }; el.dataset.gi = g0; requestAnimationFrame(f); });
+  el.classList.add('end');
+  if (gradeOf(r1).i !== g0 && el.isConnected) { el.classList.add(gradeOf(r1).i > g0 ? 'gup' : 'gdn'); window.GymBGM?.se?.(gradeOf(r1).i > g0 ? 'DP_PINPON' : 'DP_KOUKA_L'); }
 }
 function badgeGet(ty) {
   st().newBdg = 0; save();
@@ -586,11 +685,11 @@ const GUY_TOUR = () => [
   `배틀에는 ${TYPE_KO[st().ty]} 타입 포켓몬만\n낼 수 있어요. [배틀] 메뉴에서\n라인업을 3개까지 짜 둘 수 있어요.`,
   '도전자를 이기면 골드와 평판을\n받아요. 평판이 쌓이면\n체육관 등급이 올라요.',
   '등급이 오르면 도전자가 더 자주\n오고, 트레이너를 더 고용하고,\n체육관을 넓힐 수 있어요.',
-  '[트레이너] 메뉴의 지원서 탭에\n가끔 지원자가 와요. 면접을 보고\n고용하면 도전자를 먼저 막아 줘요.',
+  '[트레이너] 메뉴의 지원서 탭에\n가끔 지원자가 와요. 지원서를 보고\n고용하면 도전자를 먼저 막아 줘요.',
   '고용 관리 탭에서 트레이너를\n훈련장 코치로 보낼 수도 있어요.\n코치는 훈련 경험치를 올려 줘요.',
   '[훈련장]에 포켓몬을 보내 두면\n앱을 꺼도 경험치가 쌓여요.\n하루 8시간까지 훈련해요.',
-  '[상점]에서는 기술머신,\n꾸미기, 관장 의상, 체육관\n넓히기를 살 수 있어요.',
-  '이름판을 누르면 체육관 정보,\n일지, 자격 배지, 주간 랭킹을\n볼 수 있어요.',
+  '[상점]에서는 기술머신,\n꾸미기, 관장 의상을\n살 수 있어요. 평판이 오르면\n체육관이 저절로 넓어져요.',
+  '이름판을 누르면 체육관 정보,\n자격 배지, 주간 랭킹을\n볼 수 있어요.',
   '한 타입으로 도전자를 100명\n막으면 자격 배지를 받아요.\n그럼 힘내세요, 관장님!',
 ];
 function guyAsk() {
@@ -609,10 +708,10 @@ function renderTop() {
   $g('.gy-nm').innerHTML = `${tyIcon(g.ty)}<span>${esc(g.nm)}</span>`;
   $g('.gy-grade').textContent = G.n;
   $g('.gy-bar>i').style.width = (G.hi > G.lo ? clampN(((g.rep || 0) - G.lo) / (G.hi - G.lo), 0, 1) : 1) * 100 + '%';
-  $g('.gy-repn').textContent = `${g.rep || 0}${G.hi > G.lo && G.hi < REP_MAX + 1 ? `/${G.hi}` : ''}`; $g('.gy-grade').dataset.g = G.i;
+  $g('.gy-repn').textContent = `${g.rep || 0}${G.hi > G.lo && G.hi < REP_MAX + 1 ? `/${G.hi}` : ''}`; $g('.gy-grade').dataset.g = G.i; $g('.gy-plate').classList.toggle('canup', canBig(g));
   renderGoldG(); menuDot();
 }
-function menuDot() { const g = st(), b = $g('.gy-menu [data-t="staff"]'); if (!b) return; const on = !!(g?.cand && !g.candSeen); let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot"></i>'); if (!on && d) d.remove(); }
+function menuDot() { const g = st(), b = $g('.gy-menu [data-t="staff"]'); if (!b) return; const on = !!(g?.cands?.length && !g.candSeen); let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot"></i>'); if (!on && d) d.remove(); }
 function renderHome(quiet) {
   if (ded && !quiet) return ded.draw();
   const g = gInit(), D = dzOf(g.d);
@@ -620,8 +719,8 @@ function renderHome(quiet) {
   clearEnts(); layout();
   // 꾸미기 → 고용 트레이너(자리마다 보는 방향) → 관장(나) → 안내원
   decoList(g, D).forEach(([k, x, y]) => prop(k, x, y));
-  sfList(g, D).forEach(([s, x, y, f]) => { ent({ ow: s.ow, x, y, f, n3: N3.has(s.ow), onTap: () => { sfx('tap'); sfCard(s); say(`<span class="gy-who">${sfName(s)}</span>${s.rest ? '월급을 못 받아서 쉬고 있어요…' : pick(['오늘도 체육관은 제가 지킬게요!', '도전자는 저를 먼저 이겨야 해요.', `지금까지 ${s.w || 0}명을 막았어요!`, '관장님, 훈련 열심히 하고 있어요!'])}`, `${TRAITS[s.trait]?.n || ''} · ${s.w || 0}승 ${s.l || 0}패`); } }); });
-  const meE = ent({ ow: myOw(), x: D.leader[0], y: D.leader[1], f: 'd', n3: N3.has(myOw()), onTap: () => { sfx('tap'); meCard(); say(`관장 <b>${esc(trName() || '나')}</b>. 오늘도 체육관을 지키고 있다.`, `${g.w}승 ${g.l}패 · 막은 도전자 ${g.blk}명`); } });
+  sfList(g, D).forEach(([s, x, y, f]) => { ent({ ow: s.ow, x, y, f, n3: N3.has(s.ow), onTap: () => { sfx('tap'); sfCard(s);  } }); });
+  const meE = ent({ ow: myOw(), x: D.leader[0], y: D.leader[1], f: 'd', n3: N3.has(myOw()), onTap: () => { sfx('tap'); meCard();  } });
   if (g.fit) fitSrc('ow').then(u => { if (meE.el.isConnected) meE.el.style.backgroundImage = `url(${u})`; });
   palEnt(D);
   ent({ ow: GUY_OW, x: D.guy[0], y: D.guy[1], f: 'd', onTap: () => { sfx('tap'); guyAsk(); } });
@@ -629,7 +728,8 @@ function renderHome(quiet) {
 }
 // 관장 뒤 포켓몬 (경완 2026-10-27): 기본은 지금 라인업에서 레벨이 가장 높은 포켓몬, 눌러서 바꿀 수 있다 (g.pal)
 // 경완 2026-10-27 '관장 옆 포켓몬은 라인업에서 고를 수 있게': 고른 포켓몬이 지금 라인업에 없으면 기본으로
-function palPick() { const g = st(), L = luNow(), P = g.pal && L.find(p => p.id === g.pal); if (P) return P;
+const luAll = () => { const g = st(), ids = [...new Set((g.lu || []).flat())]; return ids.map(id => S.box.find(p => p.id === id)).filter(P => P && (SPECIES[P.sp]?.t || []).includes(g.ty)); };   // 관장 옆 포켓몬은 라인업 전체에서 (경완 2026-10-28)
+function palPick() { const g = st(), L = luNow(), P = g.pal && luAll().find(p => p.id === g.pal); if (P) return P;
   return L.slice().sort((a, b) => GB().gm(b).lv - GB().gm(a).lv || GA.ivSum(b) - GA.ivSum(a))[0] || null; }
 let palRaf = 0;
 function palEnt(D) {
@@ -647,35 +747,46 @@ function palEnt(D) {
     palRaf = requestAnimationFrame(tick); }).catch(() => {});
 }
 function palChoose() {
-  const g = st(), cur = palPick(), L = luNow();
+  const g = st(), cur = palPick(), L = luAll();
   if (!L.length) return say('라인업이 비어 있어요. 배틀 메뉴에서 라인업을 먼저 짜 주세요.');
-  const p = pop(`<h4>관장 옆 포켓몬</h4><p class="gy-msg">지금 라인업(라인업 ${(g.luI || 0) + 1})에서 내 옆에 서 있을 포켓몬을 골라요.</p><div class="lu-pick">${L.map(P => `<button data-a="${P.id}" class="${cur && cur.id === P.id ? 'on' : ''}">${GB().thumb(P)}<b>${esc(SPECIES[P.sp]?.n || "")}</b><span>Lv.${GB().gm(P).lv}</span></button>`).join('')}</div><div class="gy-btns"><button data-a="auto">가장 센 포켓몬</button><button data-a="x">닫기</button></div>`,
-    (a, close) => { close(); if (a === 'x') return; g.pal = a === 'auto' ? 0 : (+a || a); save(); renderHome(); });
+  const p = pop(`<h4>관장 옆 포켓몬</h4><div class="lu-pick">${L.map(P => `<button data-a="${P.id}" class="${cur && cur.id === P.id ? 'on' : ''}">${GB().thumb(P)}<b>${esc(SPECIES[P.sp]?.n || "")}</b><span>Lv.${GB().gm(P).lv}</span></button>`).join('')}</div><div class="gy-btns"><button data-a="x">닫기</button></div>`,
+    (a, close) => { close(); if (a === 'x') return; g.pal = +a || a; save(); renderHome(); });
   GB().fillTh?.(p);
 }
 // 아래 상태창: 기다리는 도전자가 있으면 '도전 받기', 없으면 다음 방문 예고
 function homeSay() {
   const g = st(); if (busy) return;
-  if (g.q.length) {
-    const c = g.q[0];
-    $g('.gy-dlg').innerHTML = `${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 도전하러 왔어요!${g.q.length > 1 ? ` <small>(기다리는 도전자 ${g.q.length}명)</small>` : ''}<span class="gy-dsub">난이도 ${DIFF_KO[c.diff]} · 포켓몬 ${c.team.length}마리${c.named ? ' · 이름 있는 트레이너' : ''}</span><button class="gy-dbtn" type="button">도전 받기 ▶</button>`;
-    $g('.gy-dbtn').onclick = e => { e.stopPropagation(); sfx('tap'); challenge(); };
-    return;
-  }
-  // 다음 도전자가 언제 오는지는 알려 주지 않는다. 조용할 땐 체육관 일지 최근 3줄 (경완 2026-10-27 '체육관 일지를 홈화면 하단 상태창에')
-  const L = (g.log || []).slice(0, 3);
-  $g('.gy-dlg').innerHTML = `<span class="gy-who">체육관 일지</span>${L.length ? `<ul class="gy-hlog">${L.map(([t, k, h]) => `<li><i>${LOG_IC[k] || '·'}</i><span>${h}</span><time>${hhmm(t)}</time></li>`).join('')}</ul>` : '<span class="gy-dsub">아직 기록이 없어요. 도전자가 오면 필드의 체육관 버튼에 빨간 점이 떠요.</span>'}<button class="gy-dmore" type="button">전체 ▶</button>`;
-  $g('.gy-dmore').onclick = e => { e.stopPropagation(); sfx('tap'); logPop(); };
+  if (!ded) { root.classList.add('dhide'); $g('.gy-dlg').innerHTML = ''; }   // 꾸미기·자리 정하기 중엔 그대로 (20초마다 불려서 창이 비던 버그, 경완 2026-10-28)
+  const n = g.q.length, b = $g('.gy-qn'); if (b) { b.hidden = !n; b.textContent = n; } $g('.gy-qbtn')?.classList.toggle('has', !!n);
+  const pw = root.querySelector('.gy-qw'); if (pw) pw.redraw?.();
+}
+// 도전자 명단 (경완 2026-10-28 '화면 하단에 도전자 명단 아이콘, 누르면 새 화면에서'): 기다리는 도전자만 (체육관 일지는 없앰, 경완 2026-10-28)
+function qPop() {
+  root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
+  const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-qw'; root.appendChild(el);
+  const draw = el.redraw = () => { const g = st(), Q = g.q;
+    let body;
+    body = Q.length ? `<div class="qw-list">${Q.map((c, i) => `<div class="qw-row"><span class="qw-pic${c.named ? ' qw-sil' : ''}"><img alt="" src="${trSrc(c.tr)}"></span><div class="qw-tx"><small>${c.named ? '<em>이름 있는 트레이너</em>' : esc(c.cls)}</small><b>${c.named ? '???' : esc(c.nm)}</b><span>${hhmm(c.t)}에 왔어요</span></div><button class="gy-key main" type="button" data-c="${i}">도전 받기</button></div>`).join('')}</div>`
+      : '<p class="qw-none">지금 기다리는 도전자가 없어요.</p>';
+    el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">도전자 명단</b></div>
+      <div class="gy-body">${body}</div>`; };
+  draw();
+  el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap');
+    if (b.dataset.a === 'x') return el.remove();
+    if (b.dataset.c) { const g = st(), c = g.q[+b.dataset.c]; if (!c) return draw(); g.q.splice(+b.dataset.c, 1); g.q.unshift(c); el.remove(); challenge(); } };
 }
 function renderGoldG() { const e = root && $g('.gy-goldn'); if (e) e.textContent = /[?&]studio/.test(location.search) ? '∞' : S.gold.toLocaleString(); }   // 홈 화면 골드는 뺐다 (경완 2026-10-27). 상점 등에서 쓰면 그대로
-function say(html, sub = '') { $g('.gy-dlg').innerHTML = html + (sub ? `<span class="gy-dsub">${sub}</span>` : ''); }
+function dlg(html, sub = '') { root.classList.remove('dhide'); $g('.gy-dlg').innerHTML = html + (sub ? `<span class="gy-dsub">${sub}</span>` : ''); }   // 아래 대화창 (도전자 입장 등 연출 중에만)
+// 알림은 아래 상태창 대신 가운데 팝업 (경완 2026-10-28 '상태창 하단에 뜨는 것들 다 가운데 중앙 팝업창으로')
+function say(html, sub = '') { if (!html) return dlg('', ''); root.querySelector('.gy-pop.gy-note')?.remove();
+  const p = pop(`<p class="gy-msg gy-notem">${html}${sub ? `<small>${sub}</small>` : ''}</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => close()); p?.classList?.add('gy-note'); }
 
 // ---------- 메뉴 창 ----------
 const SOON = {
   battle: { t: '배틀', ic: 'tr/red', d: '도전자와 본가처럼 턴제 배틀을 해요.', li: ['체육관 타입 포켓몬으로 6마리까지 라인업', '라인업 저장해 두고 골라 쓰기', '이기면 골드·친밀도·경험치'] },
   train: { t: '훈련장', ic: 'tr/black_belt', d: '포켓몬을 풀어 두면 천천히 경험치가 쌓여요.', li: ['지푸라기 타격대·샌드백을 치는 모션', '새 포켓몬은 날기 장치, 물 포켓몬은 물 위 장치', '가끔 특별한 기술을 배워요'] },
   staff: { t: '트레이너', ic: 'tr/cool_trainer_f', d: '체육관에 트레이너를 5명까지 고용해요.', li: ['가끔 오는 면접 제안', '트레이너마다 특성 (예: 훈련광)', '도전자를 먼저 상대해 주고, 월급은 7일마다'] },
-  shop: { t: '체육관 상점', ic: 'tr/gentleman', d: '체육관 운영에 필요한 것을 사요.', li: ['기술머신으로 포켓몬에게 기술 가르치기', '체육관 꾸미기 아이템', '평판이 오르면 체육관 넓히기'] },
+  shop: { t: '체육관 상점', ic: 'tr/gentleman', d: '체육관 운영에 필요한 것을 사요.', li: ['기술머신으로 포켓몬에게 기술 가르치기', '체육관 꾸미기 아이템', '관장 의상'] },
 };
 function openTab(t) {
   // 꾸미기·자리 정하기 중에 다른 메뉴를 열면 그 모드를 끝낸다 (경완 2026-10-27 '꾸미기 하고 나서 맵에 그리드 안 사라지는 오류')
@@ -708,45 +819,104 @@ function infoPop() {
   const g = st(), D = dzOf(g.d), G = gradeOf(g.rep || 0), d0 = new Date(g.t0 || Date.now()), days = Math.max(1, Math.floor((dayStart(Date.now()) - dayStart(g.t0 || Date.now())) / DAY) + 1);
   const wl = (g.w || 0) + (g.l || 0), wr = wl ? Math.round((g.w || 0) / wl * 100) : 0, w = g.wk || {}, nb = Object.keys(g.bdg || {}).length, bk = Math.min(100, (g.bk || {})[g.ty] || 0);
   const pct = G.hi > G.lo ? Math.min(100, ((g.rep || 0) - G.lo) / (G.hi - G.lo) * 100) : 100, nx = GRADES[G.i + 1];
-  const old = (g.tyLog || []).slice(-3).reverse().map(([t, at]) => { const d = new Date(at); return `<li>${tyIcon(t)}<span>${TYPE_KO[t]} 체육관</span><small>${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()} 폐업</small></li>`; }).join('');
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos'; root.appendChild(el);
   el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 정보</b></div>
     <div class="gy-body">
-      <div class="if-hero"><img alt="" data-ms="${g.d}"><div><span class="if-ty">${tyIcon(g.ty)}${TYPE_KO[g.ty]} 타입</span><h3>${esc(g.nm)} <button class="gy-chg" type="button" data-a="nm">이름 바꾸기</button></h3><p>${D.n} · ${D.sub}</p></div></div>
-      <div class="if-grade"><div><b>${G.n}</b><span>평판 ${g.rep || 0}${nx ? ` / ${nx[0]}` : ''}</span></div><i class="gy-bar"><i style="width:${pct}%"></i></i><small>${nx ? `${nx[0] - (g.rep || 0)} 더 모으면 <b>${nx[1]}</b>, 체육관이 넓어지고 트레이너를 더 둘 수 있어요` : '가장 높은 등급이에요'}</small></div>
-      <h5>운영</h5><div class="if-grid">
-        <div><small>개장일</small><b>${d0.getFullYear()}.${d0.getMonth() + 1}.${d0.getDate()}</b><em>${days}일째</em></div>
-        <div><small>전적</small><b>${g.w || 0}승 ${g.l || 0}패</b><em>방어율 ${wr}%</em></div>
-        <div><small>막은 도전자</small><b>${g.blk || 0}명</b><em>트레이너 포함</em></div>
-        <div><small>이번 주</small><b>${w.w || 0}승 ${w.l || 0}패</b><em>${(w.g || 0).toLocaleString()}G</em></div>
-        <div><small>트레이너</small><b>${(g.sf || []).length} / ${staffMax()}명</b><em>${staffMax() ? '등급마다 1명씩' : '동네 체육관부터'}</em></div>
-        <div><small>꾸미기</small><b>${(g.dp || []).length} / ${decoMax()}개</b><em>놓은 것 / 자리</em></div>
+      <div class="if-hero"><img alt="" data-ms="${g.d}"><div><span class="if-ty">${tyIcon(g.ty)}${TYPE_KO[g.ty]} 타입</span><h3>${esc(g.nm)} <button class="gy-chg gy-pen" type="button" data-a="nm" aria-label="이름 바꾸기"><svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M8 0h2v1H8zM7 1h1v1H7zM10 1h1v1h-1zM6 2h1v1H6zM11 2h1v1h-1zM5 3h1v1H5zM10 3h1v1h-1zM4 4h1v1H4zM9 4h1v1H9zM3 5h1v1H3zM8 5h1v1H8zM2 6h1v1H2zM7 6h1v1H7zM1 7h1v2H1zM6 7h1v1H6zM5 8h1v1H5zM0 9h1v3H0zM4 9h1v1H4zM1 11h3v1H1zM2 10h1v1H2z"/><path fill="#f0c040" d="M7 2h1v1H7zM6 3h2v1H6zM5 4h2v1H5zM4 5h2v1H4zM3 6h2v1H3zM2 7h2v1H2zM2 8h3v1H2zM1 9h3v1H1zM3 10h1v1H3z"/><path fill="#e86070" d="M8 1h2v1H8zM8 2h3v1H8zM8 3h2v1H8zM8 4h1v1H8z"/></svg></button></h3></div></div>
+      <button class="if-grade" type="button" data-a="perk" data-g="${G.i}">${gEmb(G.i)}<div class="ig-tx"><small>지금 등급 <em>혜택 보기 ›</em></small><b>${G.n}</b><i class="gy-bar"><i style="width:${pct}%"></i></i><span>평판 <b>${g.rep || 0}</b>${nx ? ` / ${nx[0]} · 다음 <u>${nx[1]}</u>` : ' · 가장 높은 등급'}</span></div></button>
+      <div class="if-two">
+        <div class="if-staff"><small>고용할 수 있는 트레이너</small><b>${staffMax()}<em>명</em></b></div>
+        <div class="if-big"><small>체육관 크기</small><b>${bigOf(g) + 1}<em>/ ${GRADES.length}단계</em></b>${canBig(g) ? '<button class="gy-key main" type="button" data-a="big">넓히기</button>' : ''}</div>
       </div>
-      <h5>${TYPE_KO[g.ty]} 자격 배지</h5><div class="if-bdg"><img alt="" src="${IMG}badge/${g.ty}.png" class="${g.bdg?.[g.ty] ? 'on' : ''}"><div><b>${g.bdg?.[g.ty] ? '받았어요!' : `도전자 ${bk} / 100명 막기`}</b><i class="gy-bar"><i style="width:${bk}%"></i></i><small>모은 배지 ${nb} / 18</small></div></div>
-      ${old ? `<h5>예전 체육관</h5><ul class="if-old">${old}</ul>` : ''}
-      <div class="gy-btns three if-btns"><button type="button" data-a="log">체육관 일지</button><button type="button" data-a="bdg">자격 배지</button><button type="button" data-a="rk">주간 랭킹</button></div>
-      <button class="if-re" type="button" data-a="re">폐업하고 새로 세우기<small>타입·디자인을 바꿔 다시 열어요</small></button>
+      <div class="if-bdg"><img alt="" src="${IMG}badge/${g.ty}.png" class="${g.bdg?.[g.ty] ? 'on' : ''}"><div><small class="if-bt">${TYPE_KO[g.ty]} 자격 배지</small><b>${g.bdg?.[g.ty] ? '받았어요!' : `도전자 ${bk} / 100`}</b><i class="gy-bar"><i style="width:${bk}%"></i></i></div></div>
+      <div class="gy-btns if-btns"><button type="button" data-a="bdg">자격 배지</button><button type="button" data-a="rk">주간 랭킹</button></div>
+      <button class="if-re" type="button" data-a="re">폐업하고 새로 세우기</button>
     </div>`;
   fillMs(el);
   el.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap'); const a = b.dataset.a;
-    if (a === 'x') return el.remove(); if (a === 'log') return logPop(); if (a === 'bdg') return badgePop(); if (a === 'rk') return reportPop(true);
+    if (a === 'x') return el.remove(); if (a === 'perk') return perkPop(); if (a === 'big') return bigUp(el); if (a === 'bdg') return badgePop(); if (a === 'rk') return reportPop(true);
     if (a === 'nm') { el.remove(); return setup('nm'); }
-    if (a === 're') return pop(`<h4>체육관 폐업</h4><p class="gy-msg"><b>${esc(g.nm)}</b>의 문을 닫고 새 타입·디자인으로 다시 세워요.<br>평판·트레이너·꾸미기·모은 배지는 그대로 이어져요. 배지 진행은 타입마다 따로 세요.</p><div class="gy-btns"><button data-a="x">그만두기</button><button class="main" data-a="ok">폐업하기</button></div>`,
-      (k, close) => { close(); if (k === 'ok') { el.remove(); setup(['d', 'ty', 'nm'], true); } });
+    if (a === 're') return pop(`<h4>체육관 폐업</h4><p class="gy-msg" style="text-align:center">정말 폐업하시겠습니까?</p><div class="gy-btns"><button data-a="x">그만두기</button><button class="main" data-a="ok">폐업하기</button></div>`,
+      (k, close) => { close(); if (k === 'ok') { el.remove(); closeFx().then(() => { if (open) setup(['d', 'ty', 'nm'], true); }); } });
   };
 }
-// 체육관 일지: 날짜별로 누가 왔고 누가 이겼는지
-const LOG_IC = { win: '🏆', lose: '💦', sf: '🛡', in: '🚪', out: '👋', pay: '💰', bdg: '🎖', wk: '📋', tr: '💪' };
-function logPop() {
-  const L = st().log || []; let last = '', html = '';
-  for (const [t, k, h] of L) { const d = new Date(t), dk = `${d.getMonth() + 1}월 ${d.getDate()}일`; if (dk !== last) { html += `<h5>${dk}</h5>`; last = dk; } html += `<p class="lg-${k}"><i>${LOG_IC[k] || '·'}</i><span>${h}</span><time>${hhmm(t)}</time></p>`; }
-  pop(`<h4>체육관 일지</h4><div class="gy-log">${html || '<p class="gy-msg">아직 기록이 없어요.</p>'}</div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
+// 등급별 혜택 (경완 2026-10-28)
+function perkPop() {
+  const g = st(), gi = gradeOf(g.rep || 0).i;
+  const row = ([v, n], i) => {
+    const L = [`체육관 크기 ${i + 1}단계`, `트레이너 ${Math.min(5, i)}명 고용`, `훈련장 ${2 + Math.min(4, i)}칸`];   // 도전자 수·꾸미기·의상은 등급 차등 없음 (경완 2026-10-28)
+    return `<li class="${i === gi ? 'cur' : i < gi ? 'done' : ''}">${gEmb(i)}<div><b>${n}</b><small>평판 ${v}</small>${i === gi ? '<em>지금</em>' : ''}</div><ul>${L.map(t => `<li>${t}</li>`).join('')}</ul></li>`; };
+  pop(`<h4>등급별 혜택</h4><ol class="gy-perk">${GRADES.map(row).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
+}
+// 체육관 넓히기: 한 단계씩, 평판 등급까지 (공짜)
+// 넓히기 (경완 2026-10-28 '팝업이 아니고 홈 화면에서 넓어지는 연출, 효과음·bgm 같이 > 그 다음 축하 메시지')
+async function bigUp(el) {
+  const g = st(); if (!canBig(g) || busy) return; const prev = bigOf(g), A = dzOf(g.d, prev);
+  el?.remove(); root.querySelectorAll('.gy-infos,.gy-pop').forEach(x => x.remove()); openTab(null); root.classList.remove('gview');
+  busy = true; root.classList.add('busy', 'dhide');
+  const M = window.GymBGM, map = $g('.gy-map'), r0 = map.getBoundingClientRect();
+  try {
+    try { M?.sePrep?.(['ME_FANFA5', 'DP_KON']); M?.stop(.4); } catch (e) {}
+    await wait(500);
+    g.big = prev + 1; save(); glog('in', `체육관을 ${g.big + 1}단계로 넓혔다!`);
+    try { M?.se('ME_FANFA5'); M?.se('DP_KON'); } catch (e) {}
+    renderHome(true); const B = dzOf(g.d), r1 = map.getBoundingClientRect();
+    const ox = (B.leader[0] + .5) * 16 * sc, oy = (B.leader[1] + .5) * 16 * sc;
+    map.style.transformOrigin = `${ox}px ${oy}px`;
+    const an = map.animate([{ transform: `scale(${r0.width / r1.width},${r0.height / r1.height})`, filter: 'brightness(1.7)' }, { transform: 'scale(1)', filter: 'brightness(1.15)', offset: .85 }, { transform: 'scale(1)', filter: 'none' }], { duration: 1800, easing: 'steps(9, end)' });
+    $g('.gy-stage').animate([{ translate: '0 0' }, { translate: '0 -3px' }, { translate: '0 3px' }, { translate: '0 -2px' }, { translate: '0 0' }], { duration: 480, iterations: 3 });
+    await an.finished.catch(() => {}); await wait(2500);
+    try { M?.play('gym'); } catch (e) {}
+    busy = false; root.classList.remove('busy'); renderHome(true);
+    say('체육관이 넓어졌어요!', `+${B.w * B.h - A.w * A.h}칸 넓어졌어요 · 훈련장 칸도 늘었어요`);
+  } finally { busy = false; root.classList.remove('busy'); }
+}
+// 창고 (경완 2026-10-28 '꾸미기 모드 가방처럼'): 상점에서 산 기술머신·꾸미기·관장 의상을 한곳에서 본다
+let storeT = 'tm';
+function storePop() {
+  root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
+  const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew'; root.appendChild(el);
+  const draw = () => { const g = st(); g.tms = g.tms || {}; g.own = g.own || {}; g.fits = g.fits || {}; g.dp = (g.dp || []).filter(Boolean);
+    const nTm = Object.values(g.tms).reduce((a, n) => a + (n || 0), 0), dk = Object.keys(g.own).filter(k => g.own[k] && DECO[k]), fk = Object.keys(g.fits).filter(k => g.fits[k] && OUTFITS[k]);
+    const T = [['tm', '기술머신', nTm], ['deco', '꾸미기', dk.length], ['fit', '의상', fk.length + 1]];
+    let body = '';
+    if (storeT === 'tm') { const D = GB()?.D, L = Object.entries(g.tms).filter(([, n]) => n > 0).map(([id, n]) => [GB()?.mvOf?.(id), n, id]).filter(([x]) => x);
+      body = !D ? '<p class="gy-lead">불러오는 중…</p>' : L.length ? `<p class="st-tip">배틀 메뉴나 훈련장에서 포켓몬을 누르고 '기술머신'으로 가르쳐요.</p><div class="sp-list">${L.map(([x, n]) => `<div class="sp-tm"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png"><span class="tm-nm"><b>${esc(x[1])}</b><i class="tm-own">×${n}</i></span><span class="tm-meta">${GB().tyTag(x[2], x[3])}<small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}</small></span></div>`).join('')}</div>` : '<p class="sf-none">가진 기술머신이 없어요. 상점에서 사 오세요.</p>'; }
+    if (storeT === 'deco') body = dk.length ? `<div class="dc-grid">${dk.map(k => `<button type="button" data-dc="${k}" class="${g.dp.includes(k) ? 'own' : ''}"><span class="dc-pic"><img alt="" src="${IMG}deco/${k}.png" class="${DECO[k].w > 16 ? 'big' : ''}"></span><b>${DECO[k].n}</b><em>${g.dp.includes(k) ? '놓여 있음' : '창고에 있음'}</em></button>`).join('')}</div>` : '<p class="sf-none">가진 꾸미기가 없어요. 상점에서 사 오세요.</p>';
+    if (storeT === 'fit') body = `<div class="ft-grid">${['', ...fk].map(k => `<button type="button" data-fit="${k}" class="${(g.fit || '') === k ? 'on' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${k ? OUTFITS[k].n : '기본 옷'}</b><em>${(g.fit || '') === k ? '입는 중' : '입기'}</em></button>`).join('')}</div>`;
+    el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">창고</b></div>
+      <div class="gy-body"><div class="sp-tabs st-tabs" role="tablist">${T.map(([k, n, c]) => `<button type="button" role="tab" data-st="${k}" aria-selected="${storeT === k}">${n} <small>${c}</small></button>`).join('')}</div>${body}</div>`;
+    el.querySelectorAll('img[data-fk]').forEach(im => fitSrc('tr', im.dataset.fk).then(u => { im.src = u; }));
+    if (storeT === 'tm' && !GB()?.D) loadJs('gymb/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => { if (el.isConnected && storeT === 'tm') draw(); });
+  };
+  draw();
+  el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap'); const g = st();
+    if (b.dataset.a === 'x') return el.remove();
+    if (b.dataset.st) { storeT = b.dataset.st; return draw(); }
+    if (b.dataset.a === 'place') { el.remove(); return decoEdit(); }
+    if (b.dataset.dc) { const k = b.dataset.dc, i = g.dp.indexOf(k); if (i >= 0) { g.dp.splice(i, 1); delete g.dpos?.[k]; } else g.dp.push(k); save(); renderHome(true); return draw(); }
+    if (b.dataset.fit != null) { g.fit = b.dataset.fit; save(); renderHome(true); return draw(); } };
+}
+// 체육관 시뮬레이터 (운영자, 경완 2026-10-28): 기다려야 볼 수 있는 것을 바로 불러 본다. 나오면 원래 체육관으로 되돌아간다 (beta.html gymSim)
+function simPop() {
+  const g = st(); if (!g?.d) return say('체육관을 먼저 세워 주세요.');
+  const B = [['cand1', '지원자 1명 부르기'], ['cand3', '지원자 3명 부르기'], ['chal', '도전자 부르기'], ['named', '이름 있는 도전자'], ['rep+', '평판 +100'], ['rep-', '평판 -100'], ['gold', '골드 +10만'], ['rpt', '주간 보고서 보기'], ['bdg', '자격 배지 받기 연출'], ['new', '처음 세우기부터']];
+  pop(`<h4>체육관 시뮬레이터</h4><p class="gy-msg">퇴근하면 들어오기 전 체육관으로 되돌아가요.</p><div class="gy-sim">${B.map(([a, n]) => `<button type="button" data-a="${a}">${n}</button>`).join('')}</div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => {
+    close(); if (a === 'x') return; const now = Date.now();
+    if (a === 'cand1' || a === 'cand3') { for (let i = a === 'cand1' ? 1 : 3; i--;) g.cands.push(mkCand(now)); g.candSeen = 0; save(); menuDot(); return say(`지원자가 왔어요! (지원서 ${g.cands.length}장)`, '트레이너 메뉴 › 지원서'); }
+    if (a === 'chal' || a === 'named') { let c = mkChal(now); if (a === 'named') { for (let i = 0; i < 30 && !c.named; i++) c = mkChal(now); } arrive(c); save(); return homeSay(); }
+    if (a === 'rep+' || a === 'rep-') { g.rep = Math.max(0, (g.rep || 0) + (a === 'rep+' ? 100 : -100)); save(); renderTop(); return say(`평판 ${g.rep} (${gradeOf(g.rep).n})`); }
+    if (a === 'gold') { S.gold += 100000; save(); renderGoldG(); return say(`골드 ${S.gold.toLocaleString()}G`); }
+    if (a === 'rpt') { g.rpt = g.rpt || { w: 3, l: 1, b: 12, g: 4200, rank: 7, seen: 0 }; return reportPop(true); }
+    if (a === 'bdg') return badgeGet(g.ty);
+    if (a === 'new') { S.gym = null; save(); clearEnts(); return intro(); }
+  });
 }
 // 자격 배지 18칸: 받은 배지는 색, 아직이면 실루엣과 진행도
 function badgePop() {
   const g = st(), n = Object.keys(g.bdg || {}).length;
-  pop(`<h4>자격 배지 <small>${n}/18</small></h4><p class="gy-msg">한 타입으로 도전자 100명을 막으면(트레이너가 막은 것 포함) 그 타입 배지를 받아요.</p>
-    <div class="gy-bdgs">${TYPE_KO.map((nm, t) => t ? `<div class="${g.bdg[t] ? 'on' : ''}${g.ty === t ? ' cur' : ''}"><img alt="" src="${IMG}badge/${t}.png"><b>${nm}</b><small>${g.bdg[t] ? '획득' : `${Math.min(99, g.bk[t] || 0)}/100`}</small></div>` : '').join('')}</div>
+  pop(`<h4>자격 배지</h4>
+    <div class="gy-bdgs">${TYPE_KO.map((nm, t) => t ? `<div class="${g.bdg[t] ? 'on' : ''}${g.ty === t ? ' cur' : ''}"><img alt="" src="${IMG}badge/${t}.png"><b>${nm}</b></div>` : '').join('')}</div>
     <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }
 // 주간 보고서·랭킹 (월요일): 지난주 기록 / 이번 주 진행
@@ -772,12 +942,12 @@ function setup(only, re) {
   const counts = myTypes();
   const draw = () => {
     const k = steps[i], last = i === steps.length - 1;
-    const head = `<div class="gy-sh">${i === 0 && first ? '<button class="gy-back" type="button" data-x aria-label="체육관 나가기">✕</button>' : '<button class="gy-back" type="button" aria-label="뒤로">◀</button>'}${steps.length > 1 ? `<span class="gy-steps">${steps.map((_, j) => `<i class="${j <= i ? 'on' : ''}"></i>`).join('')}</span>` : ''}</div>`;
+    const head = `<div class="gy-sh">${i === 0 && re ? '' : i === 0 && first ? '<button class="gy-back" type="button" data-x aria-label="체육관 나가기">✕</button>' : '<button class="gy-back" type="button" aria-label="뒤로">◀</button>'}${steps.length > 1 ? `<span class="gy-steps">${steps.map((_, j) => `<i class="${j <= i ? 'on' : ''}"></i>`).join('')}</span>` : ''}</div>`;
     let body = '', btn = last ? (first ? '체육관 열기' : re ? '새로 세우기' : '저장') : '다음';
     if (k === 'd') {
       const D = dzBase(dr.d), di = DESIGNS.indexOf(D);
       body = `<h3>${re ? '새 체육관 디자인' : '체육관 디자인'}</h3><p class="gy-lead">${re ? '새로 세울 체육관 모양을 골라요.' : '본가 관동 지방 체육관이에요. 나중에 바꿀 수 있어요.'}</p>
-        <div class="gy-dz"><div class="gy-dz-view"><img data-ms="${D.id}" data-gi="${first ? 0 : ''}" alt="${D.n}"><button class="gy-dz-arw l" type="button" data-m="-1" aria-label="이전">◀</button><button class="gy-dz-arw r" type="button" data-m="1" aria-label="다음">▶</button></div>
+        <div class="gy-dz"><div class="gy-dz-view"><img data-ms="${D.id}" data-gi="${first ? 0 : ''}" alt=""><button class="gy-dz-arw l" type="button" data-m="-1" aria-label="이전">◀</button><button class="gy-dz-arw r" type="button" data-m="1" aria-label="다음">▶</button></div>
         <div class="gy-dz-nm">${D.n}</div><div class="gy-dz-sub">${D.sub}</div><div class="gy-dots">${DESIGNS.map((_, j) => `<i class="${j === di ? 'on' : ''}"></i>`).join('')}</div></div>`;
     } else if (k === 'ty') {
       body = `<h3>체육관 타입</h3><p class="gy-lead">배틀에는 이 타입 포켓몬만 낼 수 있어요. 타입별로 체육관 운영에 성공하면 자격 배지를 받아요.</p>
@@ -787,7 +957,7 @@ function setup(only, re) {
       if (!dr.nm) dr.nm = defName(dr.ty);
       body = `<h3>체육관 이름</h3><p class="gy-lead">도전자들이 보는 이름이에요.</p>
         <div class="gy-name"><input type="text" maxlength="14" value="${esc(dr.nm)}" aria-label="체육관 이름"><span class="gy-cnt"></span></div>
-        ${first || re ? `<div class="gy-sum"><img data-ms="${dr.d}" data-gi="${first ? 0 : ''}" alt=""><div><span>${dzBase(dr.d).n}</span><span>${tyIcon(dr.ty)} ${TYPE_KO[dr.ty]} 타입</span></div></div>` : ''}`;
+        ${first || re ? `<div class="gy-sum"><div class="sm-map"><img data-ms="${dr.d}" data-gi="${first ? 0 : ''}" alt=""></div><div class="sm-row"><b>${dzBase(dr.d).n}</b><span class="sm-ty" style="--tc:${GA.TYPE_C?.[dr.ty] || '#888'}">${tyIcon(dr.ty)}${TYPE_KO[dr.ty]} 타입</span></div></div>` : ''}`;
     }
     el.innerHTML = `${head}<div class="gy-body">${body}</div><button class="gy-key main gy-next" type="button" ${k === 'ty' && !dr.ty ? 'disabled' : ''}>${btn}</button>`;
     fillMs(el); const inp = el.querySelector('input');
@@ -822,28 +992,29 @@ function opened() {
   sfx('tap'); const fx = document.createElement('div'); fx.className = 'gy-fx'; const C = ['#e04838', '#ffd84a', '#58a8e0', '#6ab84a', '#f8f8f8'];
   for (let k = 0; k < 46; k++) { const i = document.createElement('i'); i.style.left = Math.random() * 100 + '%'; i.style.background = C[k % C.length]; i.style.setProperty('--dx', (Math.random() * 80 - 40) + 'px'); i.style.animationDelay = Math.random() * .6 + 's'; i.style.animationDuration = 1.6 + Math.random() * 1.2 + 's'; fx.appendChild(i); }
   root.appendChild(fx); setTimeout(() => fx.remove(), 3600);
-  say(`<b>${esc(st().nm)}</b>의 문을 열었다!`, '안내원을 눌러 보세요');
-  setTimeout(() => kang(KANG_OPEN(), { lit: true }), 1400);
+  say(`<b>${esc(st().nm)}</b>의 문을 열었다!`);   // '안내원을 눌러 보세요' 문구 없앰 (경완 2026-10-28)
+  setTimeout(() => { root.querySelector('.gy-note')?.remove(); kang(KANG_OPEN(), { lit: true }); }, 1400);
 }
 
 // 폐업 → 공사 → 새 체육관 개장 연출 (경완 2026-10-27 '손바닥 뒤집듯 바꾸는게 아니라 폐업하고 다시 새로 설립하는 연출')
-async function refound(dr) {
-  const g = st(), oldNm = g.nm; openTab(null);
+// 폐업 (경완 2026-10-28 '폐업하기 누르면 바로 폐업 연출 → 오픈 연출 → 새 디자인 정하기')
+const confetti = () => { const cf = document.createElement('div'); cf.className = 'gy-fx'; const C = ['#e04838', '#ffd84a', '#58a8e0', '#6ab84a', '#f8f8f8'];
+  for (let k = 0; k < 46; k++) { const i = document.createElement('i'); i.style.left = Math.random() * 100 + '%'; i.style.background = C[k % C.length]; i.style.setProperty('--dx', (Math.random() * 80 - 40) + 'px'); i.style.animationDelay = Math.random() * .6 + 's'; i.style.animationDuration = 1.6 + Math.random() * 1.2 + 's'; cf.appendChild(i); }
+  root.appendChild(cf); setTimeout(() => cf.remove(), 3600); };
+async function closeFx() {
+  const g = st(), oldNm = g.nm; openTab(null); preMs();
   const fx = document.createElement('div'); fx.className = 'gy-re'; root.appendChild(fx);
   fx.innerHTML = `<div class="re-shut"><i></i></div><div class="re-sign"><b>폐 업</b><span>${esc(oldNm)}</span><small>그동안 찾아 주셔서 고맙습니다</small></div>`;
   say(`<b>${esc(oldNm)}</b>의 문을 닫았다…`); sfx('tap');
   requestAnimationFrame(() => fx.classList.add('down')); await wait(2600);
-  // 공사 중: 그 사이에 새 체육관으로 바꿔 둔다
+  fx.querySelector('.re-sign').innerHTML = `<b>새 단 장</b><span>새 체육관이 문을 열어요</span><small>어떤 체육관으로 열지 골라 주세요</small>`;
+  sfx('tap'); await wait(1400); fx.classList.remove('down'); fx.classList.add('up'); confetti(); await wait(900); fx.remove();
+}
+async function refound(dr) {
+  const g = st(), oldNm = g.nm;
   if (dr.ty !== g.ty) { g.tyLog = g.tyLog || []; g.tyLog.push([g.ty, Date.now()]); }
   Object.assign(g, { d: dr.d, ty: dr.ty, nm: dr.nm }); glog('in', `<b>${esc(oldNm)}</b>을 닫고 <b>${esc(dr.nm)}</b>을 새로 세웠다.`); save();
-  fx.querySelector('.re-sign').innerHTML = `<b>공 사 중</b><span>${esc(dr.nm)}</span><small>새 체육관을 짓고 있어요</small><div class="re-bar"><i></i></div>`;
-  fx.classList.add('build'); for (let k = 0; k < 6; k++) { setTimeout(() => sfx('tap'), 300 + k * 420); } await wait(2900);
-  renderHome(); renderTop(); await wait(200);
-  fx.querySelector('.re-sign').innerHTML = `<b>새 단 장</b><span>${esc(dr.nm)}</span><small>${tyIcon(dr.ty)} ${TYPE_KO[dr.ty]} 타입 · ${dzBase(dr.d).n}</small>`;
-  await wait(1300); fx.classList.remove('down', 'build'); fx.classList.add('up'); await wait(900); fx.remove();
-  const cf = document.createElement('div'); cf.className = 'gy-fx'; const C = ['#e04838', '#ffd84a', '#58a8e0', '#6ab84a', '#f8f8f8'];
-  for (let k = 0; k < 46; k++) { const i = document.createElement('i'); i.style.left = Math.random() * 100 + '%'; i.style.background = C[k % C.length]; i.style.setProperty('--dx', (Math.random() * 80 - 40) + 'px'); i.style.animationDelay = Math.random() * .6 + 's'; i.style.animationDuration = 1.6 + Math.random() * 1.2 + 's'; cf.appendChild(i); }
-  root.appendChild(cf); setTimeout(() => cf.remove(), 3600);
+  renderHome(); renderTop(); confetti();
   say(`<b>${esc(dr.nm)}</b>의 문을 새로 열었다!`, `${TYPE_KO[dr.ty]} 타입 체육관`);
 }
 
@@ -890,21 +1061,21 @@ async function prepare() {
   if (!root) build();
   const g = st(); const L = [preload(`${IMG}ow/${myOw()}.png`), preload(owSrc(GUY_OW))];
   if (g?.d) L.push(preload(`${IMG}map/${dzOf(g.d).id}.png`)); else DESIGNS.forEach(D => L.push(preload(`${IMG}map/${D.id}.png`)));
-  L.push(loadJs('gymb/bgm.js', 'GymBGM').then(() => { try { window.GymBGM?.prep('gym'); } catch (e) {} }));   // 출근 로딩 동안 체육관 곡을 미리 만든다
+  L.push(loadJs('gymb/bgm.js', 'GymBGM').then(() => { try { window.GymBGM?.prep('gym'); window.GymBGM?.sePrep?.(['DP_DOOR', 'DP_REGI']); } catch (e) {} }));   // 출근 로딩 동안 체육관 곡을 미리 만든다
   L.push(loadNamed(), loadJs('gymb/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => loadJs('gymb/manage.js', 'GymManage')).catch(() => {}));   // 도전자 방문·훈련장 계산에 배틀 자료가 필요
   if (g?.fit) L.push(fitSrc('ow'), fitSrc('trb'), fitSrc('tr'));   // 옷 칠한 그림을 미리
   await Promise.all(L);
 }
 // 처음: 빈 체육관(회색시티 모양)에 불이 켜지고, 내가 문으로 들어오면 강박사가 설명 → 디자인·타입·이름 정하기
 async function intro() {
-  const D = DESIGNS[0]; clearEnts(); layout(D); say('', ''); root.classList.add('pre');
+  const D = DESIGNS[0]; clearEnts(); layout(D); dlg('', ''); root.classList.add('pre'); preMs(0);
   const me = ent({ ow: myOw(), x: D.door[0], y: D.door[1], f: 'u' });
   const k = kang(KANG_HI());
   await wait(1500); await walk(me, [[D.door[0], D.door[1] - 4]]);
   await k; root.classList.remove('pre'); if (!open) return; setup();
 }
 function enter() {
-  open = true; tab = null; root.hidden = false; GA.gymIn(); openTab(null); bgmPlay('gym');   // 체육관 곡: 처음이면 플래티넘 원본 소리를 받아 오는 동안 잠깐 조용하다
+  open = true; tab = null; root.hidden = false; root.classList.remove('gview'); root.classList.toggle('sim', !!window.gymSimOn); GA.gymIn(); openTab(null); bgmPlay('gym');   // 체육관 곡: 처음이면 플래티넘 원본 소리를 받아 오는 동안 잠깐 조용하다
   requestAnimationFrame(() => root.classList.add('on'));
   if (st()?.d) { tick(); renderHome(); later(); } else intro();
   setTimeout(() => gymLoad.hide(), 120);
@@ -922,18 +1093,21 @@ async function exit() {
   if (leaving || !open) return; leaving = true;
   // 퇴근 누르면 로딩 화면부터 바로 (서서히 나타나지 않게, 경완 2026-10-27)
   const L = document.getElementById('gymLoad'); L?.classList.add('inst'); gymLoad.show('퇴근하는 중', '', true); void L?.offsetWidth; L?.classList.remove('inst');
+  // 로딩 화면이 실제로 그려진 다음에 정리한다: 체육관 화면은 곧바로 숨겨 휴대폰이 더 그리지 않게 (경완 2026-10-28 '화면 먼저 띄우고 뒤에서 로딩')
+  const t0 = Date.now(); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  root.style.visibility = 'hidden'; clearInterval(tickT); cancelAnimationFrame(palRaf); try { openTab(null); } catch (e) {}
   root.querySelectorAll('.gy-pop,.gy-setup,.gy-kang').forEach(x => x.remove()); ded?.end?.();
-  try { window.GymBGM?.free(); } catch (e) {}
-  await wait(2800);
+  await wait(0); try { window.GymBGM?.free(); } catch (e) {}
+  await wait(Math.max(0, 2800 - (Date.now() - t0)));
   clearInterval(tickT); if (st()?.d) { tick(); setAt(); save(); }
-  open = false; root.classList.remove('on'); root.hidden = true; root.querySelectorAll('.gy-kang').forEach(x => x.remove()); root.classList.remove('pre'); GA.gymOut(); clearEnts();
+  open = false; root.classList.remove('on'); root.hidden = true; root.style.visibility = ''; root.querySelectorAll('.gy-kang').forEach(x => x.remove()); root.classList.remove('pre'); GA.gymOut(); clearEnts();
   try { menuDots(); } catch (e) {}
   await wait(200); gymLoad.hide(); leaving = false;
 }
 
 window.Gym = { prepare, enter, exit, isOpen: () => open, renderGold: renderGoldG, DESIGNS, _walk: walk, _ent: ent, _tick: tick,
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, decoMax, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG } };
+  k: { bigOf, trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 window.gymDot = () => { const g = S.gym; return !!(g && g.d && ((g.q && g.q.length) || (g.at && Date.now() >= g.at))); };
 })();
