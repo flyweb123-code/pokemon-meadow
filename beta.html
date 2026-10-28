@@ -6414,7 +6414,7 @@ document.addEventListener('click', e => {
   const loadGymJs = () => window.Gym ? Promise.resolve() : new Promise((ok, no) => { const v = encodeURIComponent(APP_VER), c = document.createElement('link'); c.rel = 'stylesheet'; c.href = `gymb/gym.css?v=${v}`; document.head.appendChild(c);
     const s = document.createElement('script'); s.src = `gymb/gym.js?v=${v}`; s.onload = () => window.Gym ? ok() : no(new Error('gym')); s.onerror = no; document.head.appendChild(s); });
   // 게임 본체는 함수 안에 있어서 gym.js 가 쓸 것만 꺼내 준다 (늦게 정의되는 것도 있어 getter)
-  window.GA = { get S() { return S; }, get SPECIES() { return SPECIES; }, get TYPE_KO() { return TYPE_KO; }, get TYPE_C() { return TYPE_C; }, get RANKS() { return RANKS; }, get LEARN() { return LEARN; },
+  window.GA = { get S() { return S; }, get SP_OFF() { return SP_OFF; }, get SPECIES() { return SPECIES; }, get TYPE_KO() { return TYPE_KO; }, get TYPE_C() { return TYPE_C; }, get RANKS() { return RANKS; }, get LEARN() { return LEARN; },
     tyIcon: (...a) => tyIcon(...a), sfx: (...a) => sfx(...a), save: () => save(), trOf: () => trOf(), esc: s => esc(s), menuDots: () => menuDots(), addGold: n => addGold(n), renderGold: () => renderGold(),
     boxOf: id => boxOf(id), removeMon: (m, q) => removeMon(m, q), log: (...a) => log(...a), ivSum: p => ivSum(p), rankOf: p => rankOf(p), addFr: (id, n) => addFr(id, n) };
   let busy = false;
