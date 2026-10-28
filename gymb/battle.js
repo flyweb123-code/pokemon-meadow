@@ -187,7 +187,7 @@ function buildUI() {
 // 세로로 긴 휴대폰 (경완 2026-10-27 '전체 화면을 모바일 레이아웃에 맞게', '배틀 상태창은 배틀 화면 밑에 바로 붙여주고 버튼을 좀 위아래로 키워도 돼'):
 // 위 화면은 맨 위 폭에 꽉 차게, 바로 밑에 대화창, 남는 높이는 모두 아래(터치) 화면 — 아래 화면은 세로로만 더 늘리고 글자·그림은 원래 비율로 되돌린다.
 // 넓은 화면은 예전처럼 두 화면을 가운데에
-let safe = null; const TOP_H = 162;   // 대화창을 밖으로 꺼내면 위 화면은 배틀 장면 높이만
+let safe = null; const TOP_H = 144;   // 본가 대화창 윗선(144): 뒷모습 그림이 거기서 끝난다 (경완 2026-10-28)   // 대화창을 밖으로 꺼내면 위 화면은 배틀 장면 높이만
 const safeIn = () => { if (safe) return safe; const q = document.createElement('div'); q.style.cssText = 'position:fixed;visibility:hidden;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)'; document.body.appendChild(q);
   const cs = getComputedStyle(q); safe = [parseFloat(cs.paddingTop) || 0, parseFloat(cs.paddingBottom) || 0]; q.remove(); return safe; };
 function fit() {
