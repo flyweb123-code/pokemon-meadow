@@ -997,3 +997,5 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 .cv-dots{flex:none;height:34px;margin:0 auto!important;align-items:center}
 .cv-deck .cv-photo{background:url(../gym/img/bt/bg_in1c.png) center bottom/cover no-repeat,#e8c070}
 .cv-deck .cv-photo img{align-self:end;margin:0 0 10px}
+.lu-slot{height:118px;min-height:0;box-sizing:border-box}   /* 경완 2026-10-28: 빈 칸·찬 칸 같은 크기 */
+.gy-btns>button:only-child{grid-column:1/-1;width:100%}
