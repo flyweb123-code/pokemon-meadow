@@ -540,7 +540,7 @@ async function challenge() {
     await walk(e, D.path.slice(1)); e.f = 'u'; place(e);
     const N = c.named && NAMED.find(n => n.id === c.named), me = trName() || '관장';
     const line = N ? N.ln[0].replace('{me}', me) : pick(CHAL_LINES[c.diff] || CHAL_LINES[1]);
-    await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>${esc(line)}`, '배틀 시작', `난이도 ${DIFF_KO[c.diff]} · 포켓몬 ${c.team.length}마리`);
+    await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>${esc(line)}`, '배틀 시작');   // 난이도·마리 수는 안 보여 줌 (경완 2026-10-28)
     const team = c.team.map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv); if (mv && mv.length) o.mv = mv; if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); return o; });
     document.body.classList.add('gymBattle');
     let res;
@@ -658,7 +658,7 @@ function homeSay() {
   const g = st(); if (busy) return;
   if (g.q.length) {
     const c = g.q[0];
-    $g('.gy-dlg').innerHTML = `${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 도전하러 왔어요!${g.q.length > 1 ? ` <small>(기다리는 도전자 ${g.q.length}명)</small>` : ''}<span class="gy-dsub">난이도 ${DIFF_KO[c.diff]} · 포켓몬 ${c.team.length}마리${c.named ? ' · 이름 있는 트레이너' : ''}</span><button class="gy-dbtn" type="button">도전 받기 ▶</button>`;
+    $g('.gy-dlg').innerHTML = `${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 도전하러 왔어요!${g.q.length > 1 ? ` <small>(기다리는 도전자 ${g.q.length}명)</small>` : ''}${c.named ? '<span class="gy-dsub">이름 있는 트레이너</span>' : ''}<button class="gy-dbtn" type="button">도전 받기 ▶</button>`;
     $g('.gy-dbtn').onclick = e => { e.stopPropagation(); sfx('tap'); challenge(); };
     return;
   }
@@ -922,11 +922,14 @@ async function exit() {
   if (leaving || !open) return; leaving = true;
   // 퇴근 누르면 로딩 화면부터 바로 (서서히 나타나지 않게, 경완 2026-10-27)
   const L = document.getElementById('gymLoad'); L?.classList.add('inst'); gymLoad.show('퇴근하는 중', '', true); void L?.offsetWidth; L?.classList.remove('inst');
+  // 로딩 화면이 실제로 그려진 다음에 정리한다: 체육관 화면은 곧바로 숨겨 휴대폰이 더 그리지 않게 (경완 2026-10-28 '화면 먼저 띄우고 뒤에서 로딩')
+  const t0 = Date.now(); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  root.style.visibility = 'hidden'; clearInterval(tickT); cancelAnimationFrame(palRaf); try { openTab(null); } catch (e) {}
   root.querySelectorAll('.gy-pop,.gy-setup,.gy-kang').forEach(x => x.remove()); ded?.end?.();
-  try { window.GymBGM?.free(); } catch (e) {}
-  await wait(2800);
+  await wait(0); try { window.GymBGM?.free(); } catch (e) {}
+  await wait(Math.max(0, 2800 - (Date.now() - t0)));
   clearInterval(tickT); if (st()?.d) { tick(); setAt(); save(); }
-  open = false; root.classList.remove('on'); root.hidden = true; root.querySelectorAll('.gy-kang').forEach(x => x.remove()); root.classList.remove('pre'); GA.gymOut(); clearEnts();
+  open = false; root.classList.remove('on'); root.hidden = true; root.style.visibility = ''; root.querySelectorAll('.gy-kang').forEach(x => x.remove()); root.classList.remove('pre'); GA.gymOut(); clearEnts();
   try { menuDots(); } catch (e) {}
   await wait(200); gymLoad.hide(); leaving = false;
 }
