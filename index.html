@@ -6499,7 +6499,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.75';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.76';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9049,16 +9049,19 @@ const budFree = L => { const u = new Set(L.map(b => b.slot)); let k = 0; while (
 // 진화 조건(species ev): 없음 = 달린 거리로 진화, 'fr' = 친밀도도 높아야, 'fr:day/night' = 낮/밤에, 'day'/'night' = 거리 + 낮/밤에만, 그 밖(돌·통신교환 등) = 거리로는 안 됨. eg 1 암컷만, 2 수컷만
 let FR_EVO = 160;
 const isDay = () => { const h = new Date().getHours(); return h >= 6 && h < 18; };
+const EV_DARK = '악타입 포켓몬과 함께 있어야';
+const darkNear = P => { const L = S.mons || []; return P != null && L.some(m => m.pid === P.id) && L.some(m => m.pid !== P.id && (SPECIES[m.sp]?.t || []).includes(17)); };   // 자기도 필드에 있고, 다른 악타입(17 = 악, TYPE_KO)도 필드에
 function evoKids(sp, P, now) {
   return (CHILDREN[sp] || []).filter(c => { const d = SPECIES[c], ev = d.ev || '';
     if (d.eqx && (d.eqx === 1 ? 'f' : 'm') !== P?.sex) return false;
     const tmo = ev === 'day' || ev === 'night';   // v8.60 경완: 낮·밤에만 진화하는 포켓몬도 짝꿍 거리를 쌓고, 다 차면 그 시간에 진화
+    if (ev === EV_DARK) return !now || darkNear(P);   // v10.76 경완: 판짱 → 부란다는 거리를 다 채우고 판짱과 악타입 포켓몬이 둘 다 필드에 있으면 진화
     if (ev && !ev.startsWith('fr') && !tmo) return false;
     if (!now || !ev) return true;
     if (!tmo && (P?.fr || 0) < FR_EVO) return false;
     const tm = tmo ? ev : ev.split(':')[1]; return !tm || (tm === 'day') === isDay(); });
 }
-const evoWhy = c => { const ev = SPECIES[c].ev || ''; { const it = evoItem(c); if (it && it !== 'link' && !/써야$/.test(ev)) { const n = ITEM[it].n, q = evoReq(c); return q.n > 1 ? `${n} ${q.n.toLocaleString()}개를 모아 쓰면 진화해요` : `${n}${hasBat(n) ? '을' : '를'} ${q.tm ? (q.tm === 'day' ? '낮에 ' : '밤에 ') : ''}쓰면 진화해요`; } } if (ev === 'day' || ev === 'night') return `${ev === 'day' ? '낮' : '밤'}에만 진화해요`; return ev.startsWith('fr') ? `친밀도가 ${FR_EVO} 이상이어야${ev.endsWith('day') ? ', 낮에' : ev.endsWith('night') ? ', 밤에' : ''} 진화해요` : `${ev} 진화해요`; };
+const evoWhy = c => { const ev = SPECIES[c].ev || ''; { const it = evoItem(c); if (it && it !== 'link' && !/써야$/.test(ev)) { const n = ITEM[it].n, q = evoReq(c); return q.n > 1 ? `${n} ${q.n.toLocaleString()}개를 모아 쓰면 진화해요` : `${n}${hasBat(n) ? '을' : '를'} ${q.tm ? (q.tm === 'day' ? '낮에 ' : '밤에 ') : ''}쓰면 진화해요`; } } if (ev === 'day' || ev === 'night') return `${ev === 'day' ? '낮' : '밤'}에만 진화해요`; if (ev === EV_DARK) return '필드에 악타입 포켓몬과 함께 나와 있어야 진화해요'; return ev.startsWith('fr') ? `친밀도가 ${FR_EVO} 이상이어야${ev.endsWith('day') ? ', 낮에' : ev.endsWith('night') ? ', 밤에' : ''} 진화해요` : `${ev} 진화해요`; };
 // 짝꿍 등록 때: 돌·통신교환처럼 달린 거리로 진화할 수 없는 진화가 있으면 알려 준다
 function evoNotice(sp, P) {
   const L = CHILDREN[sp] || []; if (!L.length) return;
