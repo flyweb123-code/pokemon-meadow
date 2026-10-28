@@ -9,7 +9,7 @@ const SPECIES = GA.SPECIES, TYPE_KO = GA.TYPE_KO;
 const S = GA.S;
 const IMG = 'gym/img/';
 // 4세대 플라티나 그림 (경완 2026-10-27 'npc들도 4세대 pt에 맞춰야'): 있으면 pt/ 에서, 걸음 그림은 32칸
-const PT_TR = new Set('artist battle_girl beauty bird_keeper black_belt bug_catcher camper champion_cynthia channeler cool_trainer_f cool_trainer_m cyclist_m dragon_tamer elite_four_aaron elite_four_bertha elite_four_flint elite_four_lucian fisherman gentleman hiker jogger lass leader_byron leader_candice leader_fantina leader_gardenia leader_maylene leader_roark leader_volkner leader_wake ninja_boy picnicker poke_kid pokemaniac psychic_m rival_barry rocker ruin_maniac sailor skier_f super_nerd swimmer_f youngster'.split(' ')), PT_OW = new Set('aaron artist barry battle_girl beauty bertha black_belt boy bug_catcher byron camper candice channeler cooltrainer_f cooltrainer_m crasher_wake cyclist_m cynthia dragon_tamer fantina fisher flint gardenia gentleman gym_guy hiker jogger lass lucian man maylene ninja_boy picnicker poke_kid poke_maniac roark rocker ruin_maniac sailor scientist skier_f swimmer_f_land volkner youngster'.split(' '));
+const PT_TR = new Set('artist battle_girl beauty bird_keeper black_belt bug_catcher camper champion_cynthia channeler cool_trainer_f cool_trainer_m cyclist_m dragon_tamer elite_four_aaron elite_four_bertha elite_four_flint elite_four_lucian fisherman gentleman hiker jogger lass leader_byron leader_candice leader_fantina leader_gardenia leader_maylene leader_roark leader_volkner leader_wake ninja_boy picnicker poke_kid pokemaniac psychic_m rival_barry rocker ruin_maniac sailor skier_f super_nerd swimmer_f youngster'.split(' ')), PT_OW = new Set('aaron artist barry bird_keeper battle_girl beauty bertha black_belt boy bug_catcher byron camper candice channeler cooltrainer_f cooltrainer_m crasher_wake cyclist_m cynthia dragon_tamer fantina fisher flint gardenia gentleman gym_guy hiker jogger lass lucian man maylene ninja_boy picnicker poke_kid poke_maniac roark rocker ruin_maniac sailor scientist skier_f swimmer_f_land volkner youngster'.split(' '));
 const trSrc = k => `${IMG}${PT_TR.has(k) ? 'pt/' : ''}tr/${k}.png`, owSrc = k => `${IMG}${PT_OW.has(k) ? 'pt/' : ''}ow/${k}.png`, owW = k => PT_OW.has(k) || /^pt_/.test(k || '') ? 32 : 16;
 const VER = ((document.currentScript && document.currentScript.src.match(/[?&]v=([^&]+)/)) || [])[1] || '';
 const loadJs = (src, g) => window[g] ? Promise.resolve() : new Promise(ok => { const x = document.createElement('script'); x.src = `${src}?v=${VER}`; x.onload = x.onerror = () => ok(); document.head.appendChild(x); });
@@ -426,7 +426,7 @@ const GB = () => window.GymBattle;
 const CLS = {
   youngster: { ow: 'youngster', f: 0, t: [1, 7, 4, 5], e: 1 }, lass: { ow: 'lass', f: 1, t: [1, 18, 12], e: 1 }, bug_catcher: { ow: 'bug_catcher', f: 0, t: [7], e: 1 },
   camper: { ow: 'camper', f: 0, t: [5, 6, 10, 1], e: 1 }, picnicker: { ow: 'picnicker', f: 1, t: [12, 1, 18], e: 1 }, fisherman: { ow: 'fisher', f: 0, t: [11], e: 1 },
-  swimmer_f: { ow: 'swimmer_f_land', f: 1, t: [11, 15], e: 1 }, bird_keeper: { ow: 'boy', f: 0, t: [3], e: 1 },
+  swimmer_f: { ow: 'swimmer_f_land', f: 1, t: [11, 15], e: 1 }, bird_keeper: { ow: 'bird_keeper', f: 0, t: [3], e: 1 },
   hiker: { ow: 'hiker', f: 0, t: [6, 5, 2] }, super_nerd: { ow: 'scientist', f: 0, t: [13, 4, 10, 9] }, psychic_m: { ow: 'man', f: 0, t: [14] }, black_belt: { ow: 'black_belt', f: 0, t: [2] },
   cool_trainer_m: { ow: 'cooltrainer_m', f: 0, t: [] }, cool_trainer_f: { ow: 'cooltrainer_f', f: 1, t: [] }, beauty: { ow: 'beauty', f: 1, t: [12, 18, 11, 1] },
   gentleman: { ow: 'gentleman', f: 0, t: [1, 10, 17] }, rocker: { ow: 'rocker', f: 0, t: [13, 4] }, sailor: { ow: 'sailor', f: 0, t: [11, 2] }, channeler: { ow: 'channeler', f: 1, t: [8] },
@@ -1035,7 +1035,7 @@ async function prepare() {
   if (!root) build();
   const g = st(); const L = [preload(`${IMG}ow/${myOw()}.png`), preload(owSrc(GUY_OW))];
   if (g?.d) L.push(preload(`${IMG}map/${dzOf(g.d).id}.png`)); else DESIGNS.forEach(D => L.push(preload(`${IMG}map/${D.id}.png`)));
-  L.push(loadJs('gym/bgm.js', 'GymBGM').then(() => { try { window.GymBGM?.prep('gym'); } catch (e) {} }));   // 출근 로딩 동안 체육관 곡을 미리 만든다
+  L.push(loadJs('gym/bgm.js', 'GymBGM').then(() => { try { window.GymBGM?.prep('gym'); window.GymBGM?.sePrep?.(['DP_DOOR', 'DP_REGI']); } catch (e) {} }));   // 출근 로딩 동안 체육관 곡을 미리 만든다
   L.push(loadNamed(), loadJs('gym/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => loadJs('gym/manage.js', 'GymManage')).catch(() => {}));   // 도전자 방문·훈련장 계산에 배틀 자료가 필요
   if (g?.fit) L.push(fitSrc('ow'), fitSrc('trb'), fitSrc('tr'));   // 옷 칠한 그림을 미리
   await Promise.all(L);
