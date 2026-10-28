@@ -6488,7 +6488,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.34';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.45';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9642,6 +9642,8 @@ async function dexPvStart(kind) {
 }
 function dexPvEnd() { if (!dexPv || dexFx.hold || evolving) return; dexPv = null; setTimeout(() => location.reload(), 1200); }
 const dexFxBlocked = () => hatching || evolving || hatchQ.length || !$('#noti').hidden || !hatchEl.hidden || !!document.querySelector('#frMax:not([hidden]),#dexPop:not([hidden])');   /* 열린 창이 실제로 보이는지로 (notiOpen 값은 남아 있을 때가 있다) */
+function dexFxVeil() { if (dexFx.wi) return wait(0); const wi = document.createElement('div'); wi.className = 'dfxWhite'; document.body.append(wi); void wi.offsetWidth; wi.classList.add('on'); dexFx.wi = wi; clearTimeout(dexFx.wiT); /* v10.43 경완 '단일 부화·진화 뒤 도감 연출 전에 원래 화면이 잠깐 보이는 틈': 창을 닫기 전에 그 위로 먼저 하얗게 덮고, 도감 연출은 그 흰 화면을 이어 받는다 */
+  dexFx.wiT = setTimeout(() => { if (!dexFx.on && dexFx.wi === wi) { dexFx.wi = null; wi.classList.add('out'); wi.classList.remove('on'); setTimeout(() => wi.remove(), 700); } }, 4000); return wait(420); }   /* 연출이 못 열리면 4초 뒤 걷는다 */
 function dexFxKick(ms = 450) { clearTimeout(dexFx.t); dexFx.t = setTimeout(dexFxRun, ms); }
 async function dexFxRun() {
   if (dexFx.on || !dexFx.q.length) return;
@@ -9652,7 +9654,7 @@ async function dexFxRun() {
   let wf = null; L.forEach(sp => { const b = dexBtns[sp]; if (!b) return; dexCellReady(sp); b.classList.add('locked'); b.querySelector('.nm').textContent = '???'; b.querySelector('.newtag')?.remove(); });   // v10.07 경완 '등록되기 전 카드는 등록 전 상태 그대로': 검은 실루엣·??? (10.02 의 빈 칸 대신)
   try {
     $('#dexQ').value = ''; dexQv = ''; setFilter('dexType', 0); setFilter('dexGen', 0);
-    { const wi = document.createElement('div'); wi.className = 'dfxWhite'; document.body.append(wi); void wi.offsetWidth; wi.classList.add('on'); await wait(420);   /* v10.20 경완: 시작할 때도 화면이 하얗게 밝아지면서 도감으로 넘어간다 */
+    { let wi = dexFx.wi; dexFx.wi = null; clearTimeout(dexFx.wiT); if (!wi) { wi = document.createElement('div'); wi.className = 'dfxWhite'; document.body.append(wi); void wi.offsetWidth; wi.classList.add('on'); await wait(420); }   /* v10.20 경완: 시작할 때도 화면이 하얗게 밝아지면서 도감으로 넘어간다 */
       setMgrTab('dex'); syncTabs(); setFilter('dexSort', 1); await wait(60); wi.classList.add('out'); wi.classList.remove('on'); setTimeout(() => wi.remove(), 700); }
     { const tb = [...document.querySelectorAll('#dexTabs, #mgrTabs')].map(e => e.getBoundingClientRect()).find(r => r.height); if (tb) skB.style.bottom = Math.round(innerHeight - tb.top + 12) + 'px'; skB.hidden = skip; }   /* 아래 박스·도감 탭 바로 위 */
     const own = $('#dexOwn'), tot = Object.keys(SPECIES).length; let n = S.unlocked.size - L.length; own.textContent = `${n}/${tot}`;
@@ -10545,6 +10547,7 @@ async function playHatch() {
     try { sm = await spawn(sp, { pid: P.id }); sm.born = S.clock; markNew(sm); } finally { busy = false; } save(); refreshCap(); });
   ok.focus(); hatchLock();
   const how = await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = null; });   /* v5.16 경완: 두드리다 바깥을 눌러 정보를 못 보고 닫히지 않게, 확인으로만 닫는다 */
+  if (how !== 'look' && dexFx.q.length && !hatchQ.length && !dexFx.on) await dexFxVeil(); /* v10.43 경완 '단일 부화·진화 뒤 도감 연출 전에 원래 화면이 잠깐 보이는 틈': 창을 닫기 전에 그 위로 먼저 하얗게 덮고, 도감 연출은 그 흰 화면을 이어 받는다 */
   hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; sb.hidden = true; look.textContent = '상태창 보기'; showDexInfo(null); hatching = false;
   hatchFx(); if (fg >= 5) bgmDuck(1, 2.5);
   if (!send) log(`${GRADE[g].n} 알에서 ${P.shiny ? '✦ 색이 다른 ' : ''}${SPECIES[sp].n}${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어나 포켓몬 박스에 들어갔다.`, [], true);
@@ -10689,6 +10692,7 @@ async function hatchAll() {
       if (w) { if (ev.target.closest('button,input,a,#hlStrip,[data-tip]')) return; const R = w.getBoundingClientRect(), E = Math.max(EDGE_IN, R.width * .3), d = ev.clientX < R.left + E ? -1 : ev.clientX > R.right - E ? 1 : 0;   /* 카드 좌우 30% (테두리 포함)를 눌러도 넘긴다, 가운데만 빼고 */
         if (d && !$(d < 0 ? '#hlHl' : '#hlHr').hidden) hatchPg?.step(d); return; }
       const d = sideTap(hatchEl, ev); if (d) { if (!$(d < 0 ? '#hlHl' : '#hlHr').hidden) show(i + d); return; } }; });   /* v5.16: 바깥을 눌러도 닫지 않는다 (확인으로만) */
+  if (dexFx.q.length && !hatchQ.length && !dexFx.on) await dexFxVeil();
   hatchEl.onclick = null; hatchEl.hidden = true; look.hidden = true; sb.hidden = true; fastBtn(sb, null); look.textContent = '상태창 보기'; showDexInfo(null); hatchFx(); hatchEl.classList.remove('list'); $('#hlHl').hidden = $('#hlHr').hidden = true; hatchPg = null; hw.style.transform = ''; hatching = false;
   const nw = res.filter(r => r.isNew).length, sh = res.filter(r => r.P.shiny).length;
   log(`알 ${res.length}개가 한꺼번에 부화했다! ${res.map(r => SPECIES[r.sp].n).join(', ')}${nw ? ` (새로 만난 포켓몬 ${nw}마리)` : ''}${sh ? ` ✦ 색이 다른 포켓몬 ${sh}마리!` : ''}`, [], true);
@@ -11142,6 +11146,7 @@ async function evolveWin(P, card, forceTo, tool) {   // tool: 쓴 도구 id → 
   el.querySelector('.ef-bottom').classList.add('gone');
   await new Promise(res => { cardEvo = res; $('#dexPop').classList.add('evo'); openCard(to); });
   shut = true; evoMusicFade(.8); sfx('tap');
+  if (dexFx.q.length && !dexFx.on) await dexFxVeil(); /* v10.43 경완 '단일 부화·진화 뒤 도감 연출 전에 원래 화면이 잠깐 보이는 틈': 창을 닫기 전에 그 위로 먼저 하얗게 덮고, 도감 연출은 그 흰 화면을 이어 받는다 */
   open.forEach(x => x.hidden = false); if (!mgr.hidden) { renderBuddy(); renderMgr(true); } if (card) openPoke(P.id);   // 보던 창을 먼저 깔아 둔 뒤 진화 화면을 걷는다 (v5.00 경완: 필드가 잠깐 보이던 것)
   el.classList.remove('in'); bgmDuck(1, 1.2);
   await wait(350); el.hidden = true; el.className = ''; parts.innerHTML = ''; msg.hidden = false; ok.classList.remove('rise', 'prs'); el.querySelector('.ef-bottom').classList.remove('gone');
