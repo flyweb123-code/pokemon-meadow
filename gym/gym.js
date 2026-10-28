@@ -581,13 +581,14 @@ function talk(html, btn = '다음', sub = '') {
   return new Promise(ok => { $g('.gy-dlg').innerHTML = `${html}${sub ? `<span class="gy-dsub">${sub}</span>` : ''}<button class="gy-dbtn" type="button">${btn} ▶</button>`;
     $g('.gy-dbtn').onclick = e => { e.stopPropagation(); sfx('tap'); ok(); }; });
 }
+const doorSe = () => { try { window.GymBGM?.se('DP_DOOR10'); } catch (e) {} };   // 도전자가 드나들 때 자동문 소리 (플래티넘 SEQ_SE_DP_DOOR10, 경완 2026-10-28)
 async function challenge() {
   const g = st(), c = g.q[0]; if (!c || busy) return;
   const my = luNow(); if (!my.length) { say('라인업이 비어 있어요.', '배틀 메뉴에서 라인업을 먼저 짜 주세요'); openTab('battle'); return; }
   busy = true; openTab(null); root.classList.add('busy');
   try {
     await loadJs('gym/battle.js', 'GymBattle'); await GB().loadData();
-    const D = dzOf(g.d), e = ent({ ow: c.ow, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(c.ow) });
+    const D = dzOf(g.d), e = ent({ ow: c.ow, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(c.ow) }); doorSe();
     dlg(`${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 들어온다!`);
     await walk(e, D.path.slice(1)); e.f = 'u'; place(e);
     const N = c.named && NAMED.find(n => n.id === c.named), me = trName() || '관장';
@@ -608,9 +609,9 @@ async function challenge() {
     glog(won ? 'win' : 'lose', `${esc(c.cls)} <b>${esc(c.nm)}</b>${won ? `에게 이겼다! <small>+${gold}G · 평판 +${rep}</small>` : `에게 졌다… <small>평판 ${rep}</small>`}`);
     setAt(); save(); renderTop();
     await resultPop(c, res, gold, rep, R);
-    e.f = 'u'; place(e); await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>${won ? '다음에 또 도전하러 올게요!' : '감사했습니다, 관장님!'}`, '배웅하기');
-    dlg(''); await walk(e, D.path.slice(0, -1).reverse()); e.el.remove(); ents = ents.filter(x => x !== e);
     if (g.newBdg) await badgeGet(g.newBdg);
+    // 배웅하기 창 없이, 알림을 다 닫으면 도전자가 걸어 나간다 (경완 2026-10-28)
+    dlg(''); root.classList.add('dhide'); await walk(e, D.path.slice(0, -1).reverse()); doorSe(); e.el.remove(); ents = ents.filter(x => x !== e);
   } catch (err) { console.error(err); GA.toast?.('배틀을 시작하지 못했어요'); }
   finally { busy = false; root.classList.remove('busy'); if (open) renderHome(); }
 }
@@ -782,7 +783,7 @@ function infoPop() {
         <div class="if-staff"><small>고용할 수 있는 트레이너</small><b>${staffMax()}<em>명</em></b></div>
         <div class="if-big"><small>체육관 크기</small><b>${bigOf(g) + 1}<em>/ ${GRADES.length}단계</em></b>${canBig(g) ? '<button class="gy-key main" type="button" data-a="big">넓히기</button>' : ''}</div>
       </div>
-      <h5>${TYPE_KO[g.ty]} 자격 배지</h5><div class="if-bdg"><img alt="" src="${IMG}badge/${g.ty}.png" class="${g.bdg?.[g.ty] ? 'on' : ''}"><div><b>${g.bdg?.[g.ty] ? '받았어요!' : `도전자 ${bk} / 100명 막기`}</b><i class="gy-bar"><i style="width:${bk}%"></i></i><small>모은 배지 ${nb} / 18</small></div></div>
+      <div class="if-bdg"><img alt="" src="${IMG}badge/${g.ty}.png" class="${g.bdg?.[g.ty] ? 'on' : ''}"><div><small class="if-bt">${TYPE_KO[g.ty]} 자격 배지</small><b>${g.bdg?.[g.ty] ? '받았어요!' : `도전자 ${bk} / 100`}</b><i class="gy-bar"><i style="width:${bk}%"></i></i></div></div>
       <div class="gy-btns if-btns"><button type="button" data-a="bdg">자격 배지</button><button type="button" data-a="rk">주간 랭킹</button></div>
       <button class="if-re" type="button" data-a="re">폐업하고 새로 세우기</button>
     </div>`;
@@ -862,8 +863,8 @@ function simPop() {
 // 자격 배지 18칸: 받은 배지는 색, 아직이면 실루엣과 진행도
 function badgePop() {
   const g = st(), n = Object.keys(g.bdg || {}).length;
-  pop(`<h4>자격 배지 <small>${n}/18</small></h4><p class="gy-msg">한 타입으로 도전자 100명을 막으면(트레이너가 막은 것 포함) 그 타입 배지를 받아요.</p>
-    <div class="gy-bdgs">${TYPE_KO.map((nm, t) => t ? `<div class="${g.bdg[t] ? 'on' : ''}${g.ty === t ? ' cur' : ''}"><img alt="" src="${IMG}badge/${t}.png"><b>${nm}</b><small>${g.bdg[t] ? '획득' : `${Math.min(99, g.bk[t] || 0)}/100`}</small></div>` : '').join('')}</div>
+  pop(`<h4>자격 배지</h4>
+    <div class="gy-bdgs">${TYPE_KO.map((nm, t) => t ? `<div class="${g.bdg[t] ? 'on' : ''}${g.ty === t ? ' cur' : ''}"><img alt="" src="${IMG}badge/${t}.png"><b>${nm}</b></div>` : '').join('')}</div>
     <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }
 // 주간 보고서·랭킹 (월요일): 지난주 기록 / 이번 주 진행

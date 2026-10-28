@@ -16,8 +16,9 @@ const PART = {
   sWinTrain: [1084160, 4204], sWinGym: [1088384, 7584],
   // 효과음: 배틀·기본 효과음 악보 묶음(gym/se.json 의 block), 악기, 소리 묶음
   seBlock: [1450624, 126400], bSe: [1648288, 4416], bBasic: [1624352, 3720], wSe: [7219648, 85568],
+  bSeF: [1643904, 4368], wSeF: [7158592, 61032],   // 필드 효과음 (문 소리, 경완 2026-10-28)
 };
-const BANK = { field: { b: 'bField', w: ['wBasic', 'wField'] }, battle: { b: 'bBattle', w: ['wBasic', 'wBattle'] }, S: { b: 'bSe', w: ['wBasic', 'wSe'] }, B: { b: 'bBasic', w: ['wBasic'] } };
+const BANK = { field: { b: 'bField', w: ['wBasic', 'wField'] }, battle: { b: 'bBattle', w: ['wBasic', 'wBattle'] }, S: { b: 'bSe', w: ['wBasic', 'wSe'] }, B: { b: 'bBasic', w: ['wBasic'] }, F: { b: 'bSeF', w: ['wBasic', 'wSeF'] } };
 // 곡 이름 → 악보, 악기 묶음, 곡 볼륨(원본 SEQ 정보 값)
 const SONG = {
   gym: { s: 'sGym', bank: 'field', vol: 118 },            // 체육관
@@ -147,7 +148,7 @@ function seGet(ctx, nm) {
   p = { ctx, p: seMake(ctx, nm) }; p.p.catch(() => seBuf.delete(nm)); seBuf.set(nm, p); return p.p;
 }
 // nm: 'DP_KOUKA_M' 처럼 SEQ_SE_ 뒤 이름. pan -1(왼쪽)~1(오른쪽), at: 몇 초 뒤
-async function sePlay(nm, { pan = 0, at = 0 } = {}) {
+async function sePlay(nm, { pan = 0, at = 0, dur = 0 } = {}) {   // dur: 그 초만큼만 (본가에서 멈추는 소리, 경험치 막대 등)
   let ctx = null; try { ctx = GA.audio(); } catch (e) {} if (!ctx) return;
   const v = (() => { try { return GA.sfxVol(); } catch (e) { return .1; } })(); if (!v) return;
   const t0 = ctx.currentTime;
@@ -156,7 +157,7 @@ async function sePlay(nm, { pan = 0, at = 0 } = {}) {
   seOut.gain.value = 1.5 * v;
   const src = ctx.createBufferSource(); src.buffer = buf;
   let node = src; if (pan && ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = pan; src.connect(p); node = p; }
-  node.connect(seOut); src.start(Math.max(ctx.currentTime, t0 + at));
+  node.connect(seOut); const st = Math.max(ctx.currentTime, t0 + at); src.start(st); if (dur) src.stop(st + dur);
 }
 const GymBGM = {
   // 곡 바꾸기. 처음이면 받아 오고 만드는 동안 조용하다가 준비되면 서서히 커진다
