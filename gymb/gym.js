@@ -157,6 +157,8 @@ function build() {
   fb.onclick = e => { e.stopPropagation(); sfx('tap'); dFold(!root.classList.contains('dfold')); };
   const keep = () => { if (fb.parentNode !== dlg || dlg.lastChild !== fb) dlg.appendChild(fb); }; keep(); new MutationObserver(keep).observe(dlg, { childList: true });
   dlg.addEventListener('click', e => { if (root.classList.contains('dfold') && !root.classList.contains('ded') && !busy && e.target !== fb) { e.stopPropagation(); sfx('tap'); dFold(false); } }, true);
+  // 필드 관찰 일지처럼: 일지창을 누르면 위로 펼쳐 지난 일지까지, 다시 누르면 접힌 3줄로 (경완 2026-10-28)
+  dlg.addEventListener('click', e => { if (!dlg.querySelector('.gy-hlog') || e.target.closest('button') || root.classList.contains('dfold')) return; e.stopPropagation(); sfx('tap'); root.classList.toggle('dlog'); homeSay(); });
   try { if (localStorage.getItem('pk-gy-fold')) root.classList.add('dfold'); } catch (e) {}
   // 빈 곳을 한 번 누르면 일지를 접고 이름판·버튼을 다 숨겨 메뉴만 남김, 다시 누르면 다 펼침 (경완 2026-10-28, 필드 fview 와 같음)
   $g('.gy-stage').addEventListener('click', e => { if (ded || busy || root.classList.contains('pre') || root.querySelector('.gy-kang,.gy-pop,.gy-setup') || e.target.closest('.tap,.gy-prop.tap')) return;
@@ -164,7 +166,7 @@ function build() {
 }
 function dFold(on, auto = false) {
   if (!on && auto && root.classList.contains('gview')) return; if (!on) root.classList.remove('gview');
-  root.classList.toggle('dfold', on); const fb = $g('.gy-dfold'); if (fb) fb.setAttribute('aria-label', on ? '일지 펴기' : '일지 접기');
+  root.classList.toggle('dfold', on); if (on && root.classList.contains('dlog')) { root.classList.remove('dlog'); homeSay(); } const fb = $g('.gy-dfold'); if (fb) fb.setAttribute('aria-label', on ? '일지 펴기' : '일지 접기');
   if (!auto) try { localStorage.setItem('pk-gy-fold', on ? '1' : ''); } catch (e) {}
 }
 
@@ -715,9 +717,9 @@ function homeSay() {
     return;
   }
   // 다음 도전자가 언제 오는지는 알려 주지 않는다. 조용할 땐 체육관 일지 최근 3줄 (경완 2026-10-27 '체육관 일지를 홈화면 하단 상태창에')
-  const L = (g.log || []).slice(0, 3);
-  $g('.gy-dlg').innerHTML = `<span class="gy-who">체육관 일지</span>${L.length ? `<ul class="gy-hlog">${L.map(([t, k, h]) => `<li><i>${LOG_IC[k] || '·'}</i><span>${h}</span><time>${hhmm(t)}</time></li>`).join('')}</ul>` : '<span class="gy-dsub">아직 기록이 없어요. 도전자가 오면 필드의 체육관 버튼에 빨간 점이 떠요.</span>'}<button class="gy-dmore" type="button">전체 ▶</button>`;
-  $g('.gy-dmore').onclick = e => { e.stopPropagation(); sfx('tap'); logPop(); };
+  const all = root.classList.contains('dlog'), L = (g.log || []).slice(0, all ? 80 : 3); let last = '';
+  const row = ([t, k, h]) => { const d = new Date(t), dk = `${d.getMonth() + 1}월 ${d.getDate()}일`, hd = all && dk !== last ? `<li class="hl-day">${dk}</li>` : ''; last = dk; return `${hd}<li><i>${LOG_IC[k] || '·'}</i><span>${h}</span><time>${hhmm(t)}</time></li>`; };
+  $g('.gy-dlg').innerHTML = `<span class="gy-who">체육관 일지</span>${L.length ? `<ul class="gy-hlog${all ? ' all' : ''}">${L.map(row).join('')}</ul>` : '<span class="gy-dsub">아직 기록이 없어요. 도전자가 오면 필드의 체육관 버튼에 빨간 점이 떠요.</span>'}`;
 }
 function renderGoldG() { const e = root && $g('.gy-goldn'); if (e) e.textContent = /[?&]studio/.test(location.search) ? '∞' : S.gold.toLocaleString(); }   // 홈 화면 골드는 뺐다 (경완 2026-10-27). 상점 등에서 쓰면 그대로
 function say(html, sub = '') { $g('.gy-dlg').innerHTML = html + (sub ? `<span class="gy-dsub">${sub}</span>` : ''); }

@@ -484,7 +484,7 @@ async function run(opts) {
   ['e', 'p'].forEach(s => { $b(`.bt-hb.${s}`).classList.remove('on'); monEl(s).className = `bt-mon ${s}`; setSt(s, ''); });
   $b('.bt-msg .t').textContent = ''; idlePanel();
   // 등장: 화면이 번쩍이며 가로줄로 열리고, 발판·트레이너가 양옆에서 미끄러져 들어온다
-  M('sePrep', SE_BASE.map(n => 'DP_' + n)); await wait(40); el.classList.add('open'); encDone(); se('SLIDEIN');
+  M('sePrep', SE_BASE.map(n => 'DP_' + n)); await wait(40); el.classList.add('now', 'open'); void el.offsetWidth; el.classList.remove('now'); encDone(); se('SLIDEIN');   // 배틀 화면은 바로 불투명하게 (서서히 나타나면 걷히는 전환 화면 사이로 체육관이 비쳤다, 경완 2026-10-28)
   await wait(900); el.classList.remove('intro');
   const foeNm = B.foeNm = `${opts.foe.cls} ${opts.foe.nm}`;
   await msg(`${iga(foeNm)} 승부를 걸어왔다!`, 900);
