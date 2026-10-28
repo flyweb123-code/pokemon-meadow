@@ -886,3 +886,10 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .tm-row .tm-sort{height:32px}
 /* 골드 아이콘과 숫자 사이 띄우기 (경완 2026-10-28) */
 #gym .gy-sheet .coin,#gym .gy-pop .coin{margin-right:5px}
+/* 꾸미기·창고 아이콘: 필드 맵 편집·가방과 같은 자리·모양 (경완 2026-10-28) */
+.gy-deco{position:absolute;z-index:3;left:calc(env(safe-area-inset-left) + 8px);top:var(--gy-tb,88px);padding:0;border:0;background:none;cursor:pointer;line-height:0;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35));-webkit-tap-highlight-color:transparent}
+.gy-deco svg{width:42px;height:36px}.gy-deco:active{transform:translate(1px,1px)}
+#gym .gy-store.mapico{position:absolute;z-index:3;right:calc(env(safe-area-inset-right) + 8px);bottom:calc(351px + env(safe-area-inset-bottom));width:46px!important;height:46px;min-height:0;padding:0!important;display:grid;place-items:center}
+#gym .gy-store.mapico svg{width:30px;height:30px;filter:none}
+#gym .gy-store.mapico:active{transform:translate(2px,2px);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner)}
+#gym:is(.gview,.ded,.busy,.sim-hide) :is(.gy-deco,.gy-store),#gym:has(.gy-sheet:not([hidden]),.gy-infos) :is(.gy-deco,.gy-store){visibility:hidden!important}
