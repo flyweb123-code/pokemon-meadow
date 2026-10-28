@@ -478,10 +478,13 @@ async function run(opts) {
   const meF = GA.trOf().sex === 'f';
   const music = opts.music || 'train'; M('play', music, { fade: .2 }); M('prep', music === 'train' ? 'winTrain' : 'winGym');
   const encDone = await encounter(opts);
-  el.classList.remove('off'); el.hidden = false; el.className = 'bt intro'; fit();   // className 을 새로 쓰면 mob·msgmid 가 지워져 대화창이 사라졌음 (경완 2026-10-27 '배틀 상태창이 없어졌네')
+  el.classList.remove('off'); el.hidden = false; el.className = 'bt intro now'; fit();   // className 을 새로 쓰면 mob·msgmid 가 지워져 대화창이 사라졌음 (경완 2026-10-27 '배틀 상태창이 없어졌네')
   $b('.bt-bg').style.backgroundImage = `url(${IMG}bt/bg_${opts.bg || 'in1'}.png)`;
-  $b('.bt-tr.e').style.backgroundImage = `url(${trSrc(opts.foe.tr)})`;
-  $b('.bt-tr.p').style.backgroundImage = `url(${opts.meBackUrl || `${IMG}trb/${meF ? 'pt_f' : 'pt_m'}.png`})`;
+  // 지난 배틀의 away·back·throw 가 남아 있으면 트레이너가 미끄러져 들어오지 않고 제자리에 있었다 (경완 2026-10-28 '발판만 움직이고 캐릭터는 안 움직임')
+  const trE = $b('.bt-tr.e'), trP = $b('.bt-tr.p'), uE = trSrc(opts.foe.tr), uP = opts.meBackUrl || `${IMG}trb/${meF ? 'pt_f' : 'pt_m'}.png`;
+  trE.className = 'bt-tr e'; trP.className = 'bt-tr p';
+  trE.style.backgroundImage = `url(${uE})`; trP.style.backgroundImage = `url(${uP})`;
+  await Promise.race([Promise.all([uE, uP].map(u => new Promise(r => { const im = new Image(); im.onload = im.onerror = r; im.src = u; }))), wait(1200)]);   // 그림이 늦게 떠서 멈춰 보이지 않게 미리 받기
   ['e', 'p'].forEach(s => { $b(`.bt-hb.${s}`).classList.remove('on'); monEl(s).className = `bt-mon ${s}`; setSt(s, ''); });
   $b('.bt-msg .t').textContent = ''; idlePanel();
   // 등장: 화면이 번쩍이며 가로줄로 열리고, 발판·트레이너가 양옆에서 미끄러져 들어온다

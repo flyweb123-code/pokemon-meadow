@@ -588,7 +588,7 @@ async function challenge() {
   try {
     await loadJs('gymb/battle.js', 'GymBattle'); await GB().loadData();
     const D = dzOf(g.d), e = ent({ ow: c.ow, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(c.ow) });
-    say(`${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 들어온다!`);
+    dlg(`${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 들어온다!`);
     await walk(e, D.path.slice(1)); e.f = 'u'; place(e);
     const N = c.named && NAMED.find(n => n.id === c.named), me = trName() || '관장';
     const line = N ? N.ln[0].replace('{me}', me) : pick(CHAL_LINES[c.diff] || CHAL_LINES[1]);
@@ -609,7 +609,7 @@ async function challenge() {
     setAt(); save(); renderTop();
     await resultPop(c, res, gold, rep, R);
     e.f = 'u'; place(e); await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>${won ? '다음에 또 도전하러 올게요!' : '감사했습니다, 관장님!'}`, '배웅하기');
-    say(''); await walk(e, D.path.slice(0, -1).reverse()); e.el.remove(); ents = ents.filter(x => x !== e);
+    dlg(''); await walk(e, D.path.slice(0, -1).reverse()); e.el.remove(); ents = ents.filter(x => x !== e);
     if (g.newBdg) await badgeGet(g.newBdg);
   } catch (err) { console.error(err); GA.toast?.('배틀을 시작하지 못했어요'); }
   finally { busy = false; root.classList.remove('busy'); if (open) renderHome(); }
@@ -673,8 +673,8 @@ function renderHome(quiet) {
   clearEnts(); layout();
   // 꾸미기 → 고용 트레이너(자리마다 보는 방향) → 관장(나) → 안내원
   decoList(g, D).forEach(([k, x, y]) => prop(k, x, y));
-  sfList(g, D).forEach(([s, x, y, f]) => { ent({ ow: s.ow, x, y, f, n3: N3.has(s.ow), onTap: () => { sfx('tap'); sfCard(s); say(`<span class="gy-who">${sfName(s)}</span>${s.rest ? '월급을 못 받아서 쉬고 있어요…' : pick(['오늘도 체육관은 제가 지킬게요!', '도전자는 저를 먼저 이겨야 해요.', `지금까지 ${s.w || 0}명을 막았어요!`, '관장님, 훈련 열심히 하고 있어요!'])}`, `${TRAITS[s.trait]?.n || ''} · ${s.w || 0}승 ${s.l || 0}패`); } }); });
-  const meE = ent({ ow: myOw(), x: D.leader[0], y: D.leader[1], f: 'd', n3: N3.has(myOw()), onTap: () => { sfx('tap'); meCard(); say(`관장 <b>${esc(trName() || '나')}</b>. 오늘도 체육관을 지키고 있다.`, `${g.w}승 ${g.l}패 · 막은 도전자 ${g.blk}명`); } });
+  sfList(g, D).forEach(([s, x, y, f]) => { ent({ ow: s.ow, x, y, f, n3: N3.has(s.ow), onTap: () => { sfx('tap'); sfCard(s);  } }); });
+  const meE = ent({ ow: myOw(), x: D.leader[0], y: D.leader[1], f: 'd', n3: N3.has(myOw()), onTap: () => { sfx('tap'); meCard();  } });
   if (g.fit) fitSrc('ow').then(u => { if (meE.el.isConnected) meE.el.style.backgroundImage = `url(${u})`; });
   palEnt(D);
   ent({ ow: GUY_OW, x: D.guy[0], y: D.guy[1], f: 'd', onTap: () => { sfx('tap'); guyAsk(); } });
@@ -730,7 +730,10 @@ function qPop() {
     if (b.dataset.c) { const g = st(), c = g.q[+b.dataset.c]; if (!c) return draw(); g.q.splice(+b.dataset.c, 1); g.q.unshift(c); el.remove(); challenge(); } };
 }
 function renderGoldG() { const e = root && $g('.gy-goldn'); if (e) e.textContent = /[?&]studio/.test(location.search) ? '∞' : S.gold.toLocaleString(); }   // 홈 화면 골드는 뺐다 (경완 2026-10-27). 상점 등에서 쓰면 그대로
-function say(html, sub = '') { root.classList.remove('dhide'); $g('.gy-dlg').innerHTML = html + (sub ? `<span class="gy-dsub">${sub}</span>` : ''); }
+function dlg(html, sub = '') { root.classList.remove('dhide'); $g('.gy-dlg').innerHTML = html + (sub ? `<span class="gy-dsub">${sub}</span>` : ''); }   // 아래 대화창 (도전자 입장 등 연출 중에만)
+// 알림은 아래 상태창 대신 가운데 팝업 (경완 2026-10-28 '상태창 하단에 뜨는 것들 다 가운데 중앙 팝업창으로')
+function say(html, sub = '') { if (!html) return dlg('', ''); root.querySelector('.gy-pop.gy-note')?.remove();
+  const p = pop(`<p class="gy-msg gy-notem">${html}${sub ? `<small>${sub}</small>` : ''}</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => close()); p?.classList?.add('gy-note'); }
 
 // ---------- 메뉴 창 ----------
 const SOON = {
@@ -801,10 +804,19 @@ function perkPop() {
 }
 // 체육관 넓히기: 한 단계씩, 평판 등급까지 (공짜)
 function bigUp(el) {
-  const g = st(); if (!canBig(g)) return; g.big = bigOf(g) + 1; save();
+  const g = st(); if (!canBig(g)) return; const prev = bigOf(g); g.big = prev + 1; save();
   glog('in', `체육관을 ${g.big + 1}단계로 넓혔다!`); el?.remove(); renderHome();
-  const m = $g('.gy-map'); m.classList.remove('grow'); void m.offsetWidth; m.classList.add('grow');
-  say(`체육관이 넓어졌어요! <small>(${g.big + 1}단계)</small>`, '훈련장 칸도 늘었어요');
+  bigFx(prev, g.big).then(() => { const m = $g('.gy-map'); m.classList.remove('grow'); void m.offsetWidth; m.classList.add('grow'); });
+}
+// 넓히기 전후 비교 (경완 2026-10-28 '전후 차이 확실하게'): 같은 배율로 전·후 맵을 위아래로 놓고, 후 맵이 커지며 나타난다
+async function bigFx(a, b) {
+  const g = st(), A = dzOf(g.d, a), B = dzOf(g.d, b); let ua, ub;
+  try { [ua, ub] = await Promise.all([mapSrc(A), mapSrc(B)]); } catch (e) { return; }
+  const mw = Math.max(A.w, B.w) * 16, mh = Math.max(A.h, B.h) * 16, r = root.getBoundingClientRect();
+  const k = Math.min(2, (Math.min(r.width, 420) - 72) / mw, (r.height - 300) / 2 / mh);
+  const fig = (D, u, t, cls) => `<figure class="bf-${cls}"><figcaption>${t}</figcaption><div class="bf-map"><img alt="" src="${u}" style="width:${D.w * 16 * k}px"></div><small>${D.w} × ${D.h}칸</small></figure>`;
+  return new Promise(ok => { const p = pop(`<h4>체육관이 넓어졌어요!</h4><div class="gy-bigfx">${fig(A, ua, `이전 · ${a + 1}단계`, 'a')}<i class="bf-arw">▼</i>${fig(B, ub, `지금 · ${b + 1}단계`, 'b')}</div><p class="bf-gain">+${B.w * B.h - A.w * A.h}칸 넓어졌어요<small>훈련장 칸도 늘었어요</small></p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (x, close) => { close(); ok(); });
+    p?.classList?.add('gy-bigp'); });
 }
 // 창고 (경완 2026-10-28 '꾸미기 모드 가방처럼'): 상점에서 산 기술머신·꾸미기·관장 의상을 한곳에서 본다
 let storeT = 'tm';
@@ -928,7 +940,7 @@ function opened() {
   for (let k = 0; k < 46; k++) { const i = document.createElement('i'); i.style.left = Math.random() * 100 + '%'; i.style.background = C[k % C.length]; i.style.setProperty('--dx', (Math.random() * 80 - 40) + 'px'); i.style.animationDelay = Math.random() * .6 + 's'; i.style.animationDuration = 1.6 + Math.random() * 1.2 + 's'; fx.appendChild(i); }
   root.appendChild(fx); setTimeout(() => fx.remove(), 3600);
   say(`<b>${esc(st().nm)}</b>의 문을 열었다!`);   // '안내원을 눌러 보세요' 문구 없앰 (경완 2026-10-28)
-  setTimeout(() => kang(KANG_OPEN(), { lit: true }), 1400);
+  setTimeout(() => { root.querySelector('.gy-note')?.remove(); kang(KANG_OPEN(), { lit: true }); }, 1400);
 }
 
 // 폐업 → 공사 → 새 체육관 개장 연출 (경완 2026-10-27 '손바닥 뒤집듯 바꾸는게 아니라 폐업하고 다시 새로 설립하는 연출')
@@ -1003,7 +1015,7 @@ async function prepare() {
 }
 // 처음: 빈 체육관(회색시티 모양)에 불이 켜지고, 내가 문으로 들어오면 강박사가 설명 → 디자인·타입·이름 정하기
 async function intro() {
-  const D = DESIGNS[0]; clearEnts(); layout(D); say('', ''); root.classList.add('pre'); preMs(0);
+  const D = DESIGNS[0]; clearEnts(); layout(D); dlg('', ''); root.classList.add('pre'); preMs(0);
   const me = ent({ ow: myOw(), x: D.door[0], y: D.door[1], f: 'u' });
   const k = kang(KANG_HI());
   await wait(1500); await walk(me, [[D.door[0], D.door[1] - 4]]);
