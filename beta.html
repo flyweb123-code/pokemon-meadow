@@ -3370,7 +3370,7 @@ function moveTo(m, p, goal, spdMul = 1) {
 }
 function sleep(m, msg = true) {
   if (!m.scp && !m.held && T(m).mv === 'swim' && (m.land || pondVal(m.x, m.y) > .95)) { if (m.land) return; return moveTo(m, randPond(.8, m), { kind: 'bed' }, .8); }   // v10.01 경완 '형광어 육지에서 자고 있음': 헤엄치는 포켓몬은 물 밖에서 잠들지 않는다 (물로 돌아가서 잔다)
-  if (!m.scp && !m.perch && !m.held && lowAn(m, 'Sleep') && pondVal(m.x, m.y) < 1.05) return moveTo(m, shorePoint(m, 0), { kind: 'bed' }, .8);   // v9.55: 연못 위면 물가로 가서 잔다
+  if (!m.scp && !m.perch && !m.held && (lowAn(m, 'Sleep') || pondWalk(m)) && pondVal(m.x, m.y) < 1.05) return moveTo(m, shorePoint(m, 0), { kind: 'bed' }, .8);   // v9.55: 연못 위면 물가로 가서 잔다 (v10.77 경완 '메이클 렌트라 왜 호수에서 자고 있냐': 걷는 포켓몬도)
   if (!m.scp && !m.perch && !m.held && T(m).mv !== 'swim' && scBehind(m.x, m.y)) { const q = outOfSc({ x: m.x, y: m.y }); place(m, q.x, q.y); }   // v9.35: 소품 뒤에 숨어 잠들지 않게 앞으로
   m.goal = null; m.partner = null; setState(m, 'sleep', 0); m.el.classList.add('asleep');
   // nod off first, then lie squashed and breathe; restored sleepers skip the nodding
@@ -4833,6 +4833,7 @@ function update(m, dt) {
   if (m.state === 'idle' && !m.pet && !m.pin && !m.scp && inHud(m)) { moveTo(m, outOfHud(m, { x: clamp(m.x, XL + 30, XR - 30), y: m.y })); }   /* v9.52 경완 '타이어 그네가 일지 창 가까우면 탑승 안 함': 소품에서 노는 중(m.scp)이면 가방·열매 버튼 밑이어도 비켜 가지 않는다 */
   else if (m.state === 'special' && !m.pet && !m.pin && !m.held && !m.camp && !m.perch && inHud(m)) { m.hudSp = (m.hudSp || 0) + dt; if (m.hudSp > 1.5) { m.hudSp = 0; clearMotion?.(m); setState(m, 'idle', 1); moveTo(m, outOfHud(m, { x: clamp(m.x, XL + 30, XR - 30), y: m.y })); } } else m.hudSp = 0;   /* v8.50 경완: 혼자 하는 특별 행동도 버튼 밑에서 오래 하지 않게 */   /* 좌상단 버튼 밑에 서 있지 않게 */
   if (m.state !== 'sleep' && !m.pet && !m.pin && !m.held && !m.camp && !m.perch && !m.hidden && !m.ride && !m.scp && inHud(m) && Math.hypot(m.x - (m.hsX ?? -1e9), m.y - (m.hsY ?? -1e9)) < 2) { m.hudSt = (m.hudSt || 0) + dt; if (m.hudSt > 3) { m.hudSt = 0; if (m.partner) { const o = m.partner; o.partner = null; o.scene = null; if (o.state === 'interact') setState(o, 'idle', 1); m.partner = null; } m.scene = null; m.goal = null; clearMotion?.(m); setState(m, 'idle', 1); moveTo(m, outOfHud(m, { x: clamp(m.x, XL + 30, XR - 30), y: m.y })); } } else { m.hudSt = 0; m.hsX = m.x; m.hsY = m.y; }   /* v8.55 경완 '앱만 켜면 턱지충이 열매 버튼 뒤에 가만히': 어떤 상태든 버튼 밑에서 3초 넘게 움직이지 않으면 하던 걸 그만두고 비켜 간다 (잠은 아래 규칙) */
+  if (m.state === 'sleep' && !m.pet && !m.pin && !m.perch && !m.hidden && !m.camp && !m.scp && !m.held && pondWalk(m) && pondVal(m.x, m.y) < 1) { m.pondSlp = (m.pondSlp || 0) + dt; if (m.pondSlp > 1.5) { m.pondSlp = 0; wake(m); moveTo(m, shorePoint(m, 0), { kind: 'bed' }, .8); } } else m.pondSlp = 0;   /* v10.77 경완 '메이클 렌트라 왜 호수에서 자고 있냐': 물 위에서 잠든 걷는 포켓몬(불러온 자리·같이 낮잠·연못을 옮김)은 일어나 물가로 나가서 다시 잔다 */
   if (m.state === 'sleep' && !m.pet && !m.pin && !m.perch && !m.hidden && !m.camp && T(m).mv !== 'swim' && inHud(m)) { m.hudSlp = (m.hudSlp || 0) + dt; if (m.hudSlp > 2) { m.hudSlp = -30; wake(m); goToBed(m); } } else if (m.hudSlp > 0) m.hudSlp = 0;   /* v7.89 경완: 열매·가방 버튼 밑에서 잠든 포켓몬(불러온 자리·화면 크기 바뀜)은 일어나 비켜서 다시 눕는다 (예전엔 깰 때까지 버튼 뒤에 멈춰 있었다) */
   switch (m.state) {
     case 'move': {
@@ -6499,7 +6500,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.76';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.77';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
