@@ -170,6 +170,7 @@ const GymBGM = {
   // 효과음: 미리 만들어 두기 / 틀기
   sePrep(L) { let ctx = null; try { ctx = GA.audio(); } catch (e) {} if (ctx) L.forEach(n => seGet(ctx, n).catch(() => {})); },
   se: (nm, o) => sePlay(nm, o).catch(() => {}),
+  sePrep: L => { let ctx = null; try { ctx = GA.audio(); } catch (e) {} if (ctx) L.forEach(nm => seGet(ctx, nm).catch(() => {})); },   // 처음 울릴 때 늦지 않게 미리 만들어 둠
   get name() { return cur.want; },
   SONG,
 };

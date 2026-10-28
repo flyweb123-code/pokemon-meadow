@@ -411,8 +411,8 @@ function shopTm(body) {
     <div class="sp-list">${L.map(x => `<button class="sp-tm" data-tm="${x[0]}"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png"><span class="tm-nm"><b>${esc(x[1])}</b>${g.tms[x[0]] ? `<i class="tm-own">×${g.tms[x[0]]}</i>` : ''}</span><span class="tm-meta">${GB().tyTag(x[2], x[3])}<small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}</small></span><em>${gold(tmPrice(x))}</em></button>`).join('')}</div>`;
   // 필터는 눌러서 고르는 목록으로 (경완 2026-10-28 '모든 항목을 나열하지 말고')
   // 필터: 도감처럼 단추를 누르면 목록 창 (경완 2026-10-28)
-  const fPick = f => { const O = f === 'ty' ? [[-1, '모든 타입'], ...types.map(t => [t, TYPE_KO[t], t])] : [[-1, '모든 형태'], [0, '물리'], [1, '특수'], [2, '변화']], v = f === 'ty' ? tmTy : tmCat;
-    pop(`<h4>${f === 'ty' ? '타입' : '형태'}</h4><div class="tm-fopts">${O.map(([k, n, t]) => `<button data-a="${k}" aria-selected="${k === v}">${t != null ? GA.tyIcon(t) : ''}${n}</button>`).join('')}</div>`, (a, close) => { close(); if (a == null || a === '') return; if (f === 'ty') tmTy = +a; else tmCat = +a; redraw(); }); };
+  const fPick = f => { const O = f === 'ty' ? [[-1, '모든 타입'], ...types.map(t => [t, TYPE_KO[t], t])] : [[-1, '모든 형태'], [0, '물리', null, 0], [1, '특수', null, 1], [2, '변화', null, 2]], v = f === 'ty' ? tmTy : tmCat;
+    pop(`<h4>${f === 'ty' ? '타입' : '형태'}</h4><div class="tm-fopts">${O.map(([k, n, t, c]) => `<button data-a="${k}" aria-selected="${k === v}">${t != null ? GA.tyIcon(t) : ''}${c != null ? `<img class="fo-cat" alt="" src="${K.IMG}bt/cat_${c}.png">` : ''}${n}</button>`).join('')}</div>`, (a, close) => { close(); if (a == null || a === '') return; if (f === 'ty') tmTy = +a; else tmCat = +a; redraw(); }); };
   body.onclick = (e, b) => { sfx('tap'); if (b.dataset.f) return fPick(b.dataset.f); if (b.dataset.pow) { tmPow = -tmPow; redraw(); return; } if (b.dataset.tm) buyTm(b.dataset.tm, can); };
 }
 function buyTm(id, can) {

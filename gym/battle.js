@@ -170,8 +170,8 @@ function buildUI() {
       <div class="bt-mw e"><div class="bt-mon e"><div class="clip"><img alt=""></div></div></div>
       <div class="bt-mw p"><div class="bt-mon p"><div class="clip"><img alt=""></div></div></div>
       <canvas class="bt-ptc" width="256" height="192"></canvas>
-      <div class="bt-hb e"><b class="nm"></b><span class="lv"><i class="sx"></i><em class="lvn"></em></span><i class="st"></i><i class="hp"><i></i></i></div>
-      <div class="bt-hb p"><b class="nm"></b><span class="lv"><i class="sx"></i><em class="lvn"></em></span><i class="st"></i><i class="hp"><i></i></i><span class="hpn"><b class="c"></b><b class="m"></b></span><i class="xp"><i></i></i></div>
+      <div class="bt-hb e"><span class="hbb"></span><b class="nm"></b><span class="lv"><i class="sx"></i><em class="lvn"></em></span><i class="st"></i><i class="hp"><i></i></i></div>
+      <div class="bt-hb p"><span class="hbb"></span><b class="nm"></b><span class="lv"><i class="sx"></i><em class="lvn"></em></span><i class="st"></i><i class="hp"><i></i></i><span class="hpn"><b class="c"></b><b class="m"></b></span><i class="xp"><i></i></i></div>
       <div class="bt-pty e"></div><div class="bt-pty p"></div>
       <div class="bt-fx"></div>
       <div class="bt-msg"><span class="t"></span><b class="cur" hidden>▼</b></div>
@@ -227,7 +227,10 @@ function setHp(side, hp, mhp, px = hpPx(hp, mhp)) {
   f.style.width = px + 'px'; f.className = hpCol(px / 48);
   if (side === 'p') { hb.querySelector('.hpn .c').textContent = Math.max(0, Math.round(hp)); hb.querySelector('.hpn .m').textContent = mhp; }
   if (side === 'p') lowHp(px > 0 && px / 48 <= .2);
+  hbBalls(side);
 }
+// 체력 상자 안 HP 띠 왼쪽에 남은 포켓몬 수 몬스터볼 (경완 2026-10-28 '각자의 포켓몬 정보 박스 내에')
+function hbBalls(side) { const b = el?.querySelector(`.bt-hb.${side} .hbb`); if (b && B) b.innerHTML = balls(side); }
 async function drainHp(side, A, to) {
   const from = A.hp, p0 = hpPx(from, A.mhp), p1 = hpPx(to, A.mhp), n = Math.abs(p1 - p0);
   for (let i = 1; i <= n; i++) { if (!B) return; setHp(side, from + (to - from) * i / n, A.mhp, p0 + Math.sign(p1 - p0) * i); await wait(B.fast ? 8 : 17); }
@@ -239,7 +242,7 @@ function lowHp(on) {
   if (on) { const f = () => { if (B && !B.btl.ended) se('HINSI'); }; f(); B.lowT = setInterval(f, 700); } else { clearInterval(B.lowT); B.lowT = 0; }
 }
 const ST_X = { par: 0, frz: 1, slp: 2, psn: 3, tox: 3, brn: 4 };
-function setSt(side, st) { const i = $b(`.bt-hb.${side} .st`); i.className = 'st' + (st in ST_X ? ' s' + ST_X[st] : ''); }
+function setSt(side, st) { const i = $b(`.bt-hb.${side} .st`); i.className = 'st' + (st in ST_X ? ' s' + ST_X[st] : ''); hbBalls(side); }
 
 // ---------- 포켓몬 그림 ----------
 // 1~649: 블랙·화이트 움직이는 gif (못 받으면 1~493 은 플래티넘 2장 그림+움직임, 494~649 는 한 장), 650~: 팬게임(pokeemerald-expansion) 2장 그림을 같은 판으로 (gym/img/pk/anim.json)
@@ -280,6 +283,8 @@ function showMon(side, A, on = true) {
     if (sheet) { m.style.left = (side === 'e' ? 136 : 40) + 'px'; m.style.top = (side === 'e' ? E_Y + a[0] : P_Y + a[1]) + 'px'; }
     else { m.style.left = m.style.top = ''; }
   }
+  // 650~ 뒷모습(과 한 장짜리 앞모습)은 원본이 한 장이라 멈춰 있었다 (경완 2026-10-28 '대로트 뒷모습 안 움직임'): 블랙·화이트처럼 숨 쉬듯 움찔
+  const an = A && !A.gif && ANIM[A.sp]; m.classList.toggle('bw', !!A && !A.gif && A.sp >= 494 && (side === 'p' || !an || !(an[3] || []).length));
   m.classList.toggle('on', on);
 }
 // 본가 움직임: [장, 지연(1/30초), x, y], 장이 -2 보다 작으면 그 칸으로 지연 횟수만큼 되돌아가기
@@ -341,8 +346,7 @@ function mainPanel(A) {
       <button class="bb bag" data-a="bag"><span>가방</span></button>
       <button class="bb run" data-a="run"><span>${B.practice ? '그만두기' : '기권'}</span></button>
       <button class="bb mon" data-a="mon"><span>포켓몬</span></button>
-      <p class="bp-q">${esc(A.nm)}${jong(A.nm) ? '은' : '는'} 무엇을 할까?</p>
-      <div class="bp-pty"><span class="e">${balls('e')}</span><span class="p">${balls('p')}</span></div></div>`);   // 고르는 동안에도 남은 포켓몬 수 (경완 2026-10-28)
+      <p class="bp-q">${esc(A.nm)}${jong(A.nm) ? '은' : '는'} 무엇을 할까?</p></div>`);
     p.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; tapSe(); res(b.dataset.a); };
   });
 }
@@ -388,10 +392,12 @@ function moveInfo(m) {
     p.onclick = e => { const b = e.target.closest('button'); if (!b) return; tapSe(); res(); };
   });
 }
+// 쇼다운은 교체할 때마다 side.pokemon 순서를 바꾼다: 지금 i번째 → 처음 순서(B.my) 번호. 울부짖기·날려버리기로 바뀐 뒤 이름·그림이 어긋나 원래 포켓몬이 '나와 있음'으로 잠겼다 (경완 2026-10-28)
+const myIx = i => { const P = B.btl.p1.pokemon[i], j = B.o.p.indexOf(P); return j >= 0 ? j : i; };
 function partyPanel(req, forced) {
   return new Promise(res => {
     const L = req.side.pokemon;
-    const p = panel(`<div class="bp-party">${L.map((m, i) => { const [hp, mhp] = (m.condition.split(' ')[0] || '0/0').split('/').map(Number); const fnt = /fnt/.test(m.condition), A = B.my[i], r = mhp ? hp / mhp : 0;
+    const p = panel(`<div class="bp-party">${L.map((m, i) => { const [hp, mhp] = (m.condition.split(' ')[0] || '0/0').split('/').map(Number); const fnt = /fnt/.test(m.condition), A = B.my[myIx(i)], r = mhp ? hp / mhp : 0;
       return `<button class="pty${m.active ? ' act' : ''}${fnt ? ' fnt' : ''}" data-i="${i}" ${m.active || fnt ? 'disabled' : ''}>${boxOf(A.pid) ? thumb(boxOf(A.pid)) : ''}<b>${esc(A.nm)}</b><span class="lv">Lv${A.lv}</span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${hp}/${mhp}`}</span></button>`; }).join('')}
       ${forced ? '' : '<button class="bb cancel" data-x><span>취소</span></button>'}</div>`); fillTh(p);
     p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.hasAttribute('data-x')) return res(null); res(+b.dataset.i); };

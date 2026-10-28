@@ -1109,3 +1109,18 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 .bt.mob .bp-pty i{width:12px;height:12px;background-size:48px 12px}.bt.mob .bp-pty i.s{background-position:-12px 0}.bt.mob .bp-pty i.f{background-position:-24px 0}.bt.mob .bp-pty i.x{background-position:-36px 0}
 .bt.mob .bp-main:has(.bp-pty){grid-template-rows:auto minmax(64px,2.2fr) minmax(40px,1fr)}
 .bt.mob .bp-main .bp-pty{align-items:flex-start;align-self:start;height:auto}.bp-pty span{align-self:flex-start}
+/* 체력 상자 안 몬스터볼 (6px 도트, HP 띠 왼쪽) */
+.bt-hb .hbb{position:absolute;top:32px;display:flex;gap:0;height:6px}.bt-hb.e .hbb{left:10px}.bt-hb.p .hbb{left:16px;gap:1px}
+.bt-hb .hbb i{width:6px;height:6px;background:url(../gym/img/bt/pball6.png) 0 0/24px 6px no-repeat;image-rendering:pixelated}
+.bt-hb .hbb i.s{background-position:-6px 0}.bt-hb .hbb i.f{background-position:-12px 0}.bt-hb .hbb i.x{background-position:-18px 0}
+.bt-hb .st{top:4px!important;height:9px;line-height:9px;box-shadow:0 0 0 1px #303830}.bt-hb.e .st{left:14px!important}.bt-hb.p .st{left:30px!important}   /* 상태 이상은 상자 위 탭으로 (HP 띠 왼쪽은 몬스터볼 자리) */
+/* 한 장짜리 그림 포켓몬(650~ 뒷모습 등)도 숨 쉬듯 2장 움직임 (본가 블랙·화이트 느낌) */
+.bt-mon.bw .clip{transform-origin:50% 100%;animation:btBw 1.2s steps(1) infinite}
+.bt-mon.p.bw .clip{animation-delay:-.6s}
+@keyframes btBw{0%{scale:1 1}50%{scale:1.03 .95}}
+.bt-mon.faint.bw .clip,.bt-mon.ball.bw .clip{animation:none}
+/* 상점 필터 (경완 2026-10-28): 화살표 없이 글자만 작은 단추, 고르는 창의 '모든 …'은 한 줄 전체, 형태는 물리·특수·변화 아이콘 */
+.tm-row .fsel{flex:0 0 auto;min-width:0;padding:5px 10px;font-size:12px;text-align:center}.tm-row .fsel::after{content:none!important;display:none}
+.tm-row .tm-sort{margin-left:auto}
+.tm-fopts button[data-a="-1"]{grid-column:1/-1}
+.tm-fopts .fo-cat{width:32px;height:16px;image-rendering:pixelated}
