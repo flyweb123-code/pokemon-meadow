@@ -1023,3 +1023,22 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 .if-btns{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px}.if-btns button{width:100%}
 .gy-qw .gy-body{display:flex;flex-direction:column;flex:1}.gy-qw .qw-none{margin:auto;padding-bottom:60px;text-align:center}
 .qw-sil img{filter:brightness(0);opacity:.85}   /* 이름 있는 트레이너는 명단에서 실루엣 (경완 2026-10-28) */
+/* 넓히기 전후 비교 (경완 2026-10-28) */
+.gy-bigfx{display:flex;flex-direction:column;align-items:center;gap:4px;margin:6px 0 4px}
+.gy-bigfx figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px}
+.gy-bigfx figcaption{font-size:12px;font-weight:700;color:var(--dim)}.gy-bigfx .bf-b figcaption{color:#c07a00}
+.gy-bigfx small{font-size:11px;color:var(--dim)}
+.bf-map{box-shadow:0 0 0 3px #20202c;overflow:hidden;background:#0c0d14}.bf-map img{display:block;width:100%;height:100%;image-rendering:pixelated}
+.bf-a .bf-map{filter:grayscale(.6) brightness(.9)}
+.bf-b .bf-map{box-shadow:0 0 0 3px #ffd84a,0 0 14px rgba(255,216,74,.6);animation:bfGrow .7s .35s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes bfGrow{from{transform:scale(.55);opacity:0}to{transform:none;opacity:1}}
+.bf-arw{font-style:normal;color:#c07a00;font-size:14px;animation:bfArw .8s steps(2) infinite}@keyframes bfArw{50%{translate:0 3px}}
+.bf-gain{margin:6px 0 0!important;text-align:center;font-weight:700;font-size:14px;color:#c07a00}
+.bf-map{background:none}.bf-map img{height:auto}
+.bf-gain small{display:block;margin-top:2px;font-size:11px;font-weight:400;color:var(--dim)}
+/* 알림 팝업 (아래 상태창 대신, 경완 2026-10-28) */
+.gy-note .win{width:min(300px,100%)}
+.gy-notem{text-align:center;font-size:15px;line-height:1.5;margin:4px 0 0!important}
+.gy-notem small{display:block;margin-top:4px;font-size:12px;color:var(--dim)}
+.gy-notem{color:#20202c!important}
+.bt.now :is(.bt-pl,.bt-tr,.bt-mon,.bt-bg){transition:none!important}   /* 시작할 때 화면 밖에서 바로 출발 (밖으로 나갔다 들어오지 않게) */
