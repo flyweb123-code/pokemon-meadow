@@ -205,7 +205,8 @@ function fit() {
 async function msg(t, hold = 650) {
   if (!B) return; const box = $b('.bt-msg .t'), cur = $b('.bt-msg .cur'); B.fast = false; cur.hidden = true; box.textContent = '';
   for (const ch of [...t]) { if (!B) return; if (B.fast) { box.textContent = t; break; } box.textContent += ch; await wait(ch === ' ' ? 12 : 26); }
-  if (hold) { cur.hidden = false; await Promise.race([wait(hold + (B.fast ? 0 : 900)), new Promise(r => { if (B) B.tapWake = r; })]); if (B) B.tapWake = null; cur.hidden = true; }
+  // 저절로 넘어가지 않는다: 대화창·빈 곳을 눌러야 다음 (경완 2026-10-28)
+  if (hold) { cur.hidden = false; await new Promise(r => { if (!B) return r(); B.tapWake = r; const iv = setInterval(() => { if (!B || B.tapWake !== r) { clearInterval(iv); r(); } }, 250); }); if (B) B.tapWake = null; cur.hidden = true; }
 }
 // 누를 때까지 기다리는 대화 (승부 끝 등)
 async function msgTap(t) { await msg(t, 0); if (!B) return; $b('.bt-msg .cur').hidden = false; await new Promise(r => { B.tapWake = r; }); $b('.bt-msg .cur').hidden = true; }
@@ -498,6 +499,8 @@ async function run(opts) {
       if (won) { M('play', music === 'train' ? 'winTrain' : 'winGym', { fade: .05 }); await msgTap(`${wa(foeNm)}의 승부에서 이겼다!`); }
       else await msgTap('승부에서 졌다…');
       const ln = opts.foe.say?.[won ? 'win' : 'lose']; if (ln && B) await msgTap(ln);   // 상대 한마디 (본가처럼 다시 나와서)
+      // 보상 (경완 2026-10-28): 한마디 뒤 골드·평판
+      const W = opts.rew; if (W && B) { if (won) { await msgTap(`${W.g.toLocaleString()}G를 받았다!`); if (W.r) await msgTap(`체육관 평판이 ${W.r} 올랐다!`); } else if (W.rl) await msgTap(`체육관 평판이 ${-W.rl} 깎였다…`); }
     }
   }
   lowHp(false); M('play', 'gym', { fade: 1.2 });
@@ -579,6 +582,7 @@ async function handle(a) {
     }
     case '-damage': {
       const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); const from = (a[4] || '').replace('[from] ', '');
+      if (ST_P[from]) await stFx(s, from, true);   // 화상·독 데미지는 본가처럼 연출 뒤 HP
       if (from) { const t = dmgFrom(from, a[2]); if (t) await msg(t, 300); }
       if (!from) await hitFx(s, effAhead(a[2]));
       if (mhp) X.mhp = mhp; await drainHp(s, X, hp); X.st = stOf(a[3]) || X.st; await flushPend(); break;
@@ -592,7 +596,7 @@ async function handle(a) {
     case '-nothing': await msg('그러나 아무 일도 일어나지 않았다!'); break;
     case '-status': { const s = sideOf(a[2]), X = A(s); if (X) { X.st = a[3]; setSt(s, a[3]); } await stFx(s, a[3]); await msg(statusMsg(who(a[2]), a[3])); break; }
     case '-curestatus': { const s = sideOf(a[2]), X = A(s); if (X) { X.st = ''; setSt(s, ''); } await msg(cureMsg(who(a[2]), a[3])); break; }
-    case 'cant': await msg(cantMsg(who(a[2]), a[3])); break;
+    case 'cant': if (ST_P[a[3]]) await stFx(sideOf(a[2]), a[3]); await msg(cantMsg(who(a[2]), a[3])); break;
     case '-boost': case '-unboost': { const n = +a[4] || 0, up = k === '-boost', s = sideOf(a[2]); await statFx(s, up); await msg(`${who(a[2])}의 ${iga(STAT_KO[a[3]] || a[3])} ${n >= 3 ? '매우 크게 ' : n === 2 ? '크게 ' : n === 0 ? '더 이상 ' : ''}${n === 0 ? (up ? '올라가지 않는다!' : '떨어지지 않는다!') : up ? '올라갔다!' : '떨어졌다!'}`); break; }
     case '-weather': { const w = a[2]; if (a.includes('[upkeep]')) break; const T = { RainDance: '비가 내리기 시작했다!', SunnyDay: '햇살이 강해졌다!', Sandstorm: '모래바람이 불기 시작했다!', Hail: '싸라기눈이 내리기 시작했다!', Snow: '눈이 내리기 시작했다!', none: '날씨가 원래대로 돌아왔다!' }; if (T[w]) await msg(T[w]); break; }
     case '-start': { if (/confusion/.test(a[3])) stSe(sideOf(a[2]), 'conf'); const t = startMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
@@ -710,7 +714,14 @@ async function statFx(s, up) { const m = monEl(s); m.classList.add(up ? 'up' : '
 // [소리, 간격(1/30초), 횟수] (common_anims: burn·paralysis·sleep·freeze·poison)
 const ST_SE = { brn: ['W172', 0, 1], par: ['W085C', 0, 1], slp: ['W173B', 20, 1], frz: ['W258', 8, 2], psn: ['W092D', 3, 3], tox: ['W092D', 3, 3], conf: ['W146', 4, 4] };
 const stSe = (s, st) => { const x = ST_SE[st]; if (!x) return; for (let i = 0; i < x[2]; i++) se(x[0], { pan: panOf(s), at: i * x[1] / 30 }); };
-async function stFx(s, st) { const m = monEl(s); m.style.setProperty('--fx', { brn: '#ff6030', par: '#ffe040', slp: '#a0a0c0', frz: '#a8f0ff', psn: '#c060e0', tox: '#a040c0' }[st] || '#fff'); stSe(s, st); m.classList.add('glow'); await wait(520); m.classList.remove('glow'); }
+// 본가처럼 상태 이상 연출 (경완 2026-10-28): 화상 = 불꽃이 피어오름, 독 = 보라 거품, 잠듦 = Z, 마비 = 번개, 얼음 = 얼음 조각. 걸릴 때·턴마다 데미지·못 움직일 때
+const ST_P = { brn: ['f', 7], psn: ['b', 8], tox: ['b', 8], slp: ['z', 3], par: ['e', 5], frz: ['i', 6] };
+async function stFx(s, st, hurt = false) {
+  const m = monEl(s); if (!m) return; m.style.setProperty('--fx', { brn: '#ff6030', par: '#ffe040', slp: '#a0a0c0', frz: '#a8f0ff', psn: '#c060e0', tox: '#a040c0' }[st] || '#fff'); stSe(s, st); m.classList.add('glow');
+  const P = ST_P[st]; let w = null;
+  if (P) { w = document.createElement('div'); w.className = `bt-stp ${P[0]}`; w.innerHTML = Array.from({ length: P[1] }, (_, i) => `<i style="--x:${Math.round((P[0] === 'z' ? 58 + i * 10 : 18 + (i * 64 / Math.max(1, P[1] - 1)) + (i % 2 ? 6 : -6)))}%;--d:${i * (P[0] === 'z' ? 260 : 90)}ms">${P[0] === 'z' ? 'Z' : ''}</i>`).join(''); m.appendChild(w); }
+  if (hurt) m.animate([{ opacity: 1 }, { opacity: .15 }, { opacity: 1 }, { opacity: .15 }, { opacity: 1 }], { duration: 520, easing: 'steps(5)', delay: 260 });
+  await wait(P ? (P[0] === 'z' ? 1100 : 900) : 520); m.classList.remove('glow'); w?.remove(); }
 // 상대를 쓰러뜨리면 나왔던 내 포켓몬(쓰러지지 않은)이 경험치를 받는다. 나와 있는 포켓몬은 경험치 막대가 차오르고 레벨업
 async function expGain(X) {
   const foe = B.foe[X.i]; if (!foe) return;
@@ -875,12 +886,14 @@ async function practice() {
   const avg = Math.round(my.reduce((s, P) => s + gm(P).lv, 0) / my.length);
   const T = pick(PRACTICE), n = clampN(Math.round(rnd(1, Math.min(3, my.length) + .4)), 1, 3);
   const team = Array.from({ length: n }, () => foeEntry(pick(T.sp), clampN(avg + Math.round(rnd(-3, 1)), 2, 100)));
-  const foe = { tr: T.tr, cls: TR_KO[T.tr] || '트레이너', nm: pick(T.f ? NAMES_F : NAMES_M), team };
+  // 연습 배틀도 끝나면 상대가 한마디 (경완 2026-10-28)
+  const say = { win: pick(['으윽, 연습이라도 지는 건 분하네요!', '덕분에 좋은 연습이 됐어요!', '역시 관장님 포켓몬은 강하네요.', '다음 연습 땐 꼭 이길게요!']), lose: pick(['연습이라도 이긴 건 이긴 거죠!', '오늘은 제가 한 수 위였네요!', '좋은 연습 상대가 되어 드렸나요?']) };
+  const foe = { tr: T.tr, cls: TR_KO[T.tr] || '트레이너', nm: pick(T.f ? NAMES_F : NAMES_M), team, say };
   document.body.classList.add('gymBattle');
   try { await run({ my, foe, diff: 1, practice: true, bg: pick(['in1', 'in2', 'in3']) }); }
   catch (e) { console.error(e); GA.toast?.('배틀을 시작하지 못했어요'); }
   finally { document.body.classList.remove('gymBattle'); drawTab(); }
 }
 
-window.GymBattle = { tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _foeEntry: foeEntry, get _B() { return B; } };
+window.GymBattle = { tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _foeEntry: foeEntry, get _B() { return B; } };
 })();

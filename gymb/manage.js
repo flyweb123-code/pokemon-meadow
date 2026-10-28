@@ -322,24 +322,25 @@ const teamIc = T => `<span class="sf-team">${T.map(([sp, lv]) => `<span><img alt
 const trtBox = (k, full, bare) => { const T = K.TRAITS[k]; return T ? `<span class="trt trt-${k}">${bare ? '' : '<b>특성</b>'}<i>${T.n}</i>${full ? `<small>${T.d}</small>` : ''}</span>` : ''; };
 // 트레이너: 지원서 탭 / 고용 관리 탭 (경완 2026-10-27)
 let sfT = 'cand';
+// 지원서 남은 시간 (경완 2026-10-28): 우상단에 시:분, 가운데 : 가 깜빡
+const cvLeft = ms => { const m = Math.max(0, Math.ceil(ms / 60000)); return `${String(Math.floor(m / 60)).padStart(2, '0')}<i>:</i>${String(m % 60).padStart(2, '0')}`; };
+setInterval(() => document.querySelectorAll('.cv-left[data-exp]').forEach(e => { e.innerHTML = cvLeft(+e.dataset.exp - Date.now()); }), 20e3);
 function drawStaff() {
   const g = st(), now = Date.now(), max = K.staffMax();
   const C = g.cands || (g.cands = []); if (C.length && !g.candSeen) { g.candSeen = 1; K.setAt(); K.save(); K.menuDot(); }
   const c = C.length, yN = g.sf.filter(s => s.yard).length;
-  const tabs = `<div class="sp-tabs" role="tablist"><button role="tab" data-sft="cand" aria-selected="${sfT === 'cand'}">지원서${c ? ' <i class="tdot"></i>' : ''}</button><button role="tab" data-sft="sf" aria-selected="${sfT === 'sf'}">고용 관리 <small>${g.sf.length}/${max}</small></button></div>`;
+  const tabs = `<div class="sp-tabs" role="tablist"><button role="tab" data-sft="cand" aria-selected="${sfT === 'cand'}">지원서${c ? ' <i class="tdot"></i>' : ''}</button><button role="tab" data-sft="sf" aria-selected="${sfT === 'sf'}">고용 관리</button></div>`;
   // 지원서 (경완 2026-10-28): 스프라이트가 잘 보이는 세로 카드, 여러 장이면 옆으로 넘긴다. 면접 내용도 카드 안에, 바로 고용하기
-  const cand = c ? `<div class="cv-deck">${C.map((x, i) => `<article class="cv-card" data-i="${i}"><header><b>트레이너 지원서</b><small>No.${String(x.id).padStart(3, '0')}</small></header>
+  const cand = c ? `<div class="cv-deck">${C.map((x, i) => `<article class="cv-card" data-i="${i}"><header><b>트레이너 지원서</b><small class="cv-left" data-exp="${x.exp}">${cvLeft(x.exp - now)}</small></header>
       <div class="cv-photo"><img alt="" src="${K.trSrc(x.tr)}"><div class="cv-nm"><small>${esc(x.cls)}</small><b>${esc(x.nm)}</b></div></div>
       <p class="cv-say">“안녕하세요! ${esc(LINES[x.trait])}”</p>
       <dl class="cv-dl"><dt>특성</dt><dd>${trtBox(x.trait, true, true)}</dd><dt>포켓몬</dt><dd>${teamIc(x.team)}</dd><dt>평균 레벨</dt><dd>Lv.${Math.round(K.teamLv(x.team))}</dd><dt>희망 월급</dt><dd>7일에 <b>${x.wage}G</b></dd></dl>
-      <p class="cv-exp">${Math.max(1, Math.round((x.exp - now) / K.H))}시간 뒤에 다른 체육관으로 가요</p>
       <div class="cv-btns"><button class="gy-key" data-no="${i}">돌려보내기</button><button class="gy-key main" data-hire="${i}">고용하기</button></div></article>`).join('')}</div>
       ${C.length > 1 ? `<div class="cv-dots">${C.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : ''}`
       : `<p class="sf-none">지금은 지원서가 없어요. 새 지원자가 오면 트레이너 단추에 빨간 점이 떠요.</p>`;
   const gL = K.sfList ? K.sfList() : [], gNo = x => gL.findIndex(z => z[0] === x);
-  const list = `<p class="gy-lead">체육관에 세운 트레이너가 순서대로 도전자를 먼저 상대해요. 훈련장 코치를 함께 맡길 수도 있어요 (코치는 최대 ${YARD_SF}명). 카드를 누르면 자세히 볼 수 있어요.</p>
-    <div class="sf-list">${g.sf.map((s, i) => `<button class="sf-card${s.rest ? ' rest' : ''}" data-sf="${i}"><img class="sf-pic" alt="" src="${K.trSrc(s.tr)}"><div class="sf-mid"><b>${esc(s.cls)} ${esc(s.nm)}</b>${trtBox(s.trait)}
-      <span class="sf-st">${s.rest ? '<em class="r">쉬는 중</em>' : ''}${K.inGym(s) ? `<em class="g">체육관 ${gNo(s) >= 0 ? gNo(s) + 1 + '번' : ''}</em>` : ''}${s.yard ? '<em class="y">훈련장 코치</em>' : ''}${!K.inGym(s) && !s.yard && !s.rest ? '<em>대기 중</em>' : ''}<i>${s.w || 0}승 ${s.l || 0}패</i></span>${teamIc(s.team)}</div><i class="sf-go">›</i></button>`).join('') || '<p class="sf-none">아직 고용한 트레이너가 없어요. 지원서 탭에서 고용할 수 있어요.</p>'}</div>`;
+  const list = `<div class="sf-list">${g.sf.map((s, i) => `<button class="sf-card${s.rest ? ' rest' : ''}" data-sf="${i}"><img class="sf-pic" alt="" src="${K.trSrc(s.tr)}"><div class="sf-mid"><b>${esc(s.cls)} ${esc(s.nm)}</b>${trtBox(s.trait)}
+      <span class="sf-st">${s.rest ? '<em class="r">쉬는 중</em>' : ''}${K.inGym(s) ? `<em class="g">체육관 ${gNo(s) >= 0 ? gNo(s) + 1 + '번' : ''}</em>` : ''}${s.yard ? '<em class="y">훈련장 코치</em>' : ''}${!K.inGym(s) && !s.yard && !s.rest ? '<em>대기 중</em>' : ''}<i>${s.w || 0}승 ${s.l || 0}패</i></span>${teamIc(s.team)}</div><i class="sf-go">›</i></button>`).join('') || '<p class="sf-none sf-empty">아직 고용한 트레이너가 없어요.</p>'}</div>`;
   sh.innerHTML = `<h3>트레이너</h3>${tabs}${sfT === 'cand' ? cand : list}`;
   const dk = sh.querySelector('.cv-deck'); if (dk) dk.onscroll = () => { const i = Math.round(dk.scrollLeft / (dk.firstElementChild.offsetWidth + 12)); sh.querySelectorAll('.cv-dots i').forEach((d, j) => d.classList.toggle('on', i === j)); };
   sh.onclick = e => {
@@ -389,8 +390,7 @@ const SHOP_T = [['tm', '기술머신'], ['deco', '꾸미기'], ['fit', '관장 �
 const tmPrice = x => x[3] === 2 ? 500 : (x[4] || 0) <= 50 ? 300 : x[4] <= 70 ? 700 : x[4] <= 85 ? 1200 : x[4] <= 100 ? 2000 : 3000;
 function drawShop() {
   if (!SHOP_T.some(([k]) => k === shopT)) shopT = 'tm';
-  // 탭은 필드 상점처럼 아래에 (경완 2026-10-28)
-  sh.innerHTML = `<h3>체육관 상점</h3><div class="sp-body"></div><div class="runtabs shoptabs gy-stabs" role="tablist">${SHOP_T.map(([k, n]) => `<button class="runtab" role="tab" data-st="${k}" aria-selected="${shopT === k}">${n}</button>`).join('')}</div>`;
+  sh.innerHTML = `<h3>체육관 상점</h3><div class="sp-tabs" role="tablist">${SHOP_T.map(([k, n]) => `<button role="tab" data-st="${k}" aria-selected="${shopT === k}">${n}</button>`).join('')}</div><div class="sp-body"></div>`;   // 탭은 다시 위 작은 탭 (경완 2026-10-28)
   const body = sh.querySelector('.sp-body');
   ({ tm: shopTm, deco: shopDeco, fit: shopFit })[shopT](body);
   const inner = body.onclick; body.onclick = null;
@@ -405,13 +405,14 @@ function shopTm(body) {
   const L = [...can.keys()].map(i => D.mv[i]).filter(x => (tmTy === -1 || x[2] === tmTy) && (tmCat === -1 || x[3] === tmCat)).sort((a, b) => ((b[4] || 0) - (a[4] || 0)) * tmPow || a[2] - b[2]);
   const own = Object.values(g.tms).reduce((a, n) => a + (n || 0), 0);
   body.innerHTML = `${own ? `<p class="tm-bagl"><span class="tm-bag">가진 기술머신 ${own}개</span></p>` : ''}
-    ${types.length ? `<div class="tm-row"><label class="tm-sel"><select data-f="ty"><option value="-1">타입 전체</option>${types.map(t => `<option value="${t}" ${t === tmTy ? 'selected' : ''}>${TYPE_KO[t]}</option>`).join('')}</select></label>
-      <label class="tm-sel"><select data-f="cat">${['형태 전체', '물리', '특수', '변화'].map((n, i) => `<option value="${i - 1}" ${tmCat === i - 1 ? 'selected' : ''}>${n}</option>`).join('')}</select></label><button class="tm-sort" data-pow="1">위력순 ${tmPow > 0 ? '▼' : '▲'}</button></div>` : `<p class="sf-none">${TYPE_KO[g.ty]} 타입 포켓몬이 아직 없어요.</p>`}
+    ${types.length ? `<div class="tm-row"><button class="fsel${tmTy !== -1 ? ' on' : ''}" data-f="ty">${tmTy === -1 ? '모든 타입' : TYPE_KO[tmTy]}</button><button class="fsel${tmCat !== -1 ? ' on' : ''}" data-f="cat">${tmCat === -1 ? '모든 형태' : ['물리', '특수', '변화'][tmCat]}</button><button class="tm-sort" data-pow="1">위력순 ${tmPow > 0 ? '▼' : '▲'}</button></div>` : `<p class="sf-none">${TYPE_KO[g.ty]} 타입 포켓몬이 아직 없어요.</p>`}
     ${types.length && !L.length ? '<p class="sf-none">조건에 맞는 기술머신이 없어요.</p>' : ''}
     <div class="sp-list">${L.map(x => `<button class="sp-tm" data-tm="${x[0]}"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png"><span class="tm-nm"><b>${esc(x[1])}</b>${g.tms[x[0]] ? `<i class="tm-own">×${g.tms[x[0]]}</i>` : ''}</span><span class="tm-meta">${GB().tyTag(x[2], x[3])}<small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}</small></span><em>${gold(tmPrice(x))}</em></button>`).join('')}</div>`;
   // 필터는 눌러서 고르는 목록으로 (경완 2026-10-28 '모든 항목을 나열하지 말고')
-  body.onchange = e => { const f = e.target.dataset.f; if (!f) return; sfx('tap'); if (f === 'ty') tmTy = +e.target.value; else tmCat = +e.target.value; redraw(); };
-  body.onclick = (e, b) => { sfx('tap'); if (b.dataset.pow) { tmPow = -tmPow; redraw(); return; } if (b.dataset.tm) buyTm(b.dataset.tm, can); };
+  // 필터: 도감처럼 단추를 누르면 목록 창 (경완 2026-10-28)
+  const fPick = f => { const O = f === 'ty' ? [[-1, '모든 타입'], ...types.map(t => [t, TYPE_KO[t], t])] : [[-1, '모든 형태'], [0, '물리'], [1, '특수'], [2, '변화']], v = f === 'ty' ? tmTy : tmCat;
+    pop(`<h4>${f === 'ty' ? '타입' : '형태'}</h4><div class="tm-fopts">${O.map(([k, n, t]) => `<button data-a="${k}" aria-selected="${k === v}">${t != null ? GA.tyIcon(t) : ''}${n}</button>`).join('')}</div>`, (a, close) => { close(); if (a == null || a === '') return; if (f === 'ty') tmTy = +a; else tmCat = +a; redraw(); }); };
+  body.onclick = (e, b) => { sfx('tap'); if (b.dataset.f) return fPick(b.dataset.f); if (b.dataset.pow) { tmPow = -tmPow; redraw(); return; } if (b.dataset.tm) buyTm(b.dataset.tm, can); };
 }
 function buyTm(id, can) {
   const D = GB().D, g = st(), x = GB().mvOf(id), i = D.mv.indexOf(x), price = tmPrice(x), L = can.get(i) || [], n = g.tms?.[id] || 0;
