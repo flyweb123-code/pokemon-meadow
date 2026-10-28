@@ -1470,7 +1470,7 @@ html:not(.op) #btnGym,html:not(.gym-on) #btnGym,body.mapEdit #btnGym{display:non
 #gymLoad{position:fixed;inset:0;z-index:9800;display:grid;place-items:center;background:#181a2c;color:#f8f8f8;opacity:0;transition:opacity .35s;pointer-events:none}#gymLoad.on{opacity:1;pointer-events:auto}#gymLoad[hidden]{display:none}
 #gymLoad .gl-box{display:flex;flex-direction:column;align-items:center;gap:18px;width:min(300px,80vw)}
 #gymLoad .gl-road{position:relative;width:100%;height:76px;border-bottom:4px solid #46508a;background:repeating-linear-gradient(90deg,transparent 0 14px,rgba(255,255,255,.08) 14px 28px) bottom/100% 8px no-repeat}
-#gymLoad .gl-ow{position:absolute;bottom:-18px;left:0;width:96px;height:96px;background:0 -192px/96px 576px no-repeat;image-rendering:pixelated;transform:scaleX(-1);animation:glStep .36s steps(1,end) infinite,glWalk 3s linear infinite}
+#gymLoad .gl-ow{position:absolute;z-index:1;bottom:-18px;left:0;width:96px;height:96px;background:0 -192px/96px 576px no-repeat;image-rendering:pixelated;transform:scaleX(-1);animation:glStep .36s steps(1,end) infinite,glWalk 3s linear infinite}
 #gymLoad .gl-gym{position:absolute;right:0;bottom:0;line-height:0}#gymLoad .gl-gym svg{width:72px;height:63px}
 #gymLoad.out .gl-ow{transform:none;animation:glStep .36s steps(1,end) infinite,glWalkB 3s linear infinite}
 @keyframes glStep{50%{background-position:0 -480px}}@keyframes glWalk{from{left:-4px}to{left:calc(100% - 120px)}}@keyframes glWalkB{from{left:calc(100% - 120px)}to{left:-4px}}
@@ -6491,7 +6491,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.42';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.43';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
