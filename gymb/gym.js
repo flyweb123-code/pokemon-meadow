@@ -137,16 +137,19 @@ function build() {
         <button class="win gy-plate" type="button" aria-label="체육관 정보"><span class="gy-nm"></span><span class="gy-grade"></span><span class="gy-rep"><em>평판</em><i class="gy-bar"><i></i></i><b class="gy-repn"></b></span></button>
       </div>
       <!-- 필드와 같은 자리 (경완 2026-10-28): 꾸미기 = 맵 편집 자리(왼쪽 위), 창고 = 가방 자리(오른쪽) -->
-      <button class="gy-deco" type="button" aria-label="꾸미기"><svg viewBox="0 0 16 19" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M9 0h3v1H9zM8 1h1v1H8zM12 1h1v1H12zM7 2h1v1H7zM12 2h1v1H12zM2 3h3v1H2zM7 3h1v1H7zM12 3h1v1H12zM14 3h2v1H14zM1 4h1v1H1zM5 4h1v1H5zM7 4h1v1H7zM12 4h2v1H12zM15 4h1v1H15zM1 5h1v1H1zM6 5h2v1H6zM11 5h2v1H11zM15 5h1v1H15zM1 6h1v1H1zM7 6h2v1H7zM11 6h1v1H11zM15 6h1v1H15zM2 7h1v1H2zM8 7h1v1H8zM10 7h1v1H10zM15 7h1v1H15zM3 8h3v1H3zM9 8h1v1H9zM13 8h2v1H13zM6 9h2v1H6zM9 9h1v1H9zM11 9h3v1H11zM2 10h12v1H2zM1 11h1v1H1zM14 11h1v1H14zM1 12h1v1H1zM14 12h1v1H14zM2 13h12v1H2zM2 14h1v1H2zM13 14h1v1H13zM2 15h1v1H2zM13 15h1v1H13zM3 16h1v1H3zM12 16h1v1H12zM3 17h1v1H3zM12 17h1v1H12zM4 18h8v1H4z"/><path fill="#48b048" d="M11 1h1v1H11zM10 2h2v1H10zM9 3h2v1H9zM4 4h1v1H4zM9 4h2v1H9zM3 5h3v1H3zM8 5h2v1H8zM14 5h1v1H14zM2 6h3v1H2zM9 6h1v1H9zM13 6h2v1H13zM3 7h2v1H3zM11 7h3v1H11z"/><path fill="#2c7c3c" d="M11 3h1v1H11zM11 4h1v1H11zM10 5h1v1H10zM5 6h2v1H5zM10 6h1v1H10zM5 7h3v1H5zM9 7h1v1H9zM14 7h1v1H14zM6 8h3v1H6zM10 8h3v1H10zM8 9h1v1H8zM10 9h1v1H10z"/><path fill="#8ce070" d="M9 1h2v1H9zM8 2h2v1H8zM8 3h1v1H8zM2 4h2v1H2zM8 4h1v1H8zM14 4h1v1H14zM2 5h1v1H2zM13 5h1v1H13zM12 6h1v1H12z"/><path fill="#d8743c" d="M12 11h2v1H12zM2 12h11v1H2zM4 14h8v1H4zM4 15h8v1H4zM5 16h6v1H5zM5 17h6v1H5z"/><path fill="#a04c28" d="M13 12h1v1H13zM12 14h1v1H12zM12 15h1v1H12zM11 16h1v1H11zM11 17h1v1H11z"/><path fill="#f0a060" d="M2 11h10v1H2zM3 14h1v1H3zM3 15h1v1H3zM4 16h1v1H4zM4 17h1v1H4z"/><path fill="#ffe060" d="M1 0h1v1H1zM0 1h1v1H0zM2 1h1v1H2zM1 2h1v1H1z"/><path fill="#f8f8f0" d="M1 1h1v1H1z"/></svg></button>
+      <button class="gy-deco" type="button" aria-label="꾸미기"><svg viewBox="0 0 17 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M1 0h3v1H1zM13 0h3v1H13zM0 1h17v1H0zM0 2h3v1H0zM14 2h3v1H14zM1 3h2v1H1zM14 3h2v1H14zM2 4h1v1H2zM14 4h1v1H14zM2 5h1v1H2zM6 5h1v1H6zM10 5h1v1H10zM14 5h1v1H14zM2 6h1v1H2zM8 6h1v1H8zM14 6h1v1H14zM2 7h1v1H2zM7 7h1v1H7zM9 7h1v1H9zM14 7h1v1H14zM3 8h1v1H3zM13 8h1v1H13zM2 9h1v1H2zM14 9h1v1H14zM2 10h1v1H2zM14 10h1v1H14zM2 11h1v1H2zM14 11h1v1H14zM2 12h1v1H2zM14 12h1v1H14zM3 13h1v1H3zM13 13h1v1H13zM4 14h1v1H4zM7 14h3v1H7zM12 14h1v1H12zM5 15h2v1H5zM10 15h2v1H10z"/><path fill="#ffd520" d="M3 2h1v1H3zM13 2h1v1H13zM3 3h2v1H3zM6 3h5v1H6zM12 3h2v1H12zM4 4h9v1H4zM4 5h2v1H4zM7 5h3v1H7zM11 5h2v1H11zM6 6h2v1H6zM9 6h2v1H9zM8 7h1v1H8zM5 8h1v1H5zM11 8h1v1H11zM4 9h2v1H4zM11 9h2v1H11z"/><path fill="#6a3908" d="M4 2h9v1H4zM5 3h1v1H5zM11 3h1v1H11zM3 4h1v1H3zM13 4h1v1H13zM3 5h1v1H3zM13 5h1v1H13zM3 6h1v1H3zM13 6h1v1H13zM3 7h1v1H3zM13 7h1v1H13zM4 8h1v1H4zM12 8h1v1H12zM3 9h1v1H3zM6 9h1v1H6zM10 9h1v1H10zM13 9h1v1H13zM3 10h1v1H3zM5 10h2v1H5zM10 10h2v1H10zM13 10h1v1H13zM3 11h1v1H3zM13 11h1v1H13zM3 12h1v1H3zM5 12h2v1H5zM10 12h2v1H10zM13 12h1v1H13zM4 13h1v1H4zM7 13h3v1H7zM12 13h1v1H12zM5 14h2v1H5zM10 14h2v1H10z"/><path fill="#e65262" d="M4 6h2v1H4zM11 6h2v1H11zM4 7h2v1H4zM11 7h2v1H11z"/><path fill="#de9c10" d="M6 7h1v1H6zM10 7h1v1H10zM6 8h5v1H6zM7 9h3v1H7zM4 10h1v1H4zM7 10h3v1H7zM12 10h1v1H12zM4 11h9v1H4zM4 12h1v1H4zM7 12h3v1H7zM12 12h1v1H12zM5 13h2v1H5zM10 13h2v1H10z"/></svg></button>
       <button class="gy-store gy-sq" type="button" aria-label="창고"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 3h12v1H2zM1 4h1v3H1zM14 4h1v3h-1zM2 7h12v1H2zM2 8h1v6H2zM13 8h1v6h-1zM3 14h10v1H3zM6 9h4v1H6zM6 10h1v1H6zM9 10h1v1H9zM6 11h4v1H6z"/><path fill="#c8783c" d="M2 4h12v3H2zM3 8h10v6H3z"/><path fill="#e8a060" d="M2 4h12v1H2zM3 8h10v1H3z"/><path fill="#f0c040" d="M7 10h2v1H7z"/><path fill="#8a4a24" d="M3 13h10v1H3zM7 4h2v3H7z"/></svg></button>
       <button class="gy-qbtn" type="button" aria-label="도전자 명단"><svg viewBox="0 0 16 19" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M6 0h4v1H6zM5 1h1v1H5zM10 1h1v1H10zM3 2h10v1H3zM2 3h1v1H2zM5 3h1v1H5zM10 3h1v1H10zM13 3h1v1H13zM2 4h1v1H2zM6 4h4v1H6zM13 4h1v1H13zM2 5h1v1H2zM15 5h1v1H15zM2 6h1v1H2zM15 6h1v1H15zM2 7h1v1H2zM15 7h1v1H15zM2 8h1v1H2zM15 8h1v1H15zM2 9h1v1H2zM15 9h1v1H15zM2 10h1v1H2zM15 10h1v1H15zM2 11h1v1H2zM15 11h1v1H15zM2 12h1v1H2zM15 12h1v1H15zM2 13h1v1H2zM15 13h1v1H15zM2 14h1v1H2zM15 14h1v1H15zM2 15h1v1H2zM15 15h1v1H15zM2 16h1v1H2zM15 16h1v1H15zM2 17h1v1H2zM15 17h1v1H15zM3 18h12v1H3z"/><path fill="#48b048" d="M11 5h1v1H11zM10 6h1v1H10zM5 7h1v1H5zM9 7h1v1H9zM5 8h2v1H5zM8 8h1v1H8zM6 9h2v1H6z"/><path fill="#2c7c3c" d="M11 6h1v1H11zM10 7h1v1H10zM9 8h1v1H9zM8 9h1v1H8zM7 10h1v1H7z"/><path fill="#f8f8f0" d="M6 3h3v1H6zM4 5h7v1H4zM12 5h1v1H12zM4 6h6v1H4zM12 6h1v1H12zM4 7h1v1H4zM6 7h3v1H6zM11 7h2v1H11zM4 8h1v1H4zM7 8h1v1H7zM10 8h3v1H10zM4 9h2v1H4zM9 9h4v1H9zM4 10h3v1H4zM8 10h5v1H8zM4 11h1v1H4zM12 11h1v1H12zM4 12h9v1H4zM4 13h1v1H4zM12 13h1v1H12zM4 14h9v1H4zM4 15h1v1H4zM10 15h3v1H10z"/><path fill="#8888a0" d="M9 3h1v1H9z"/><path fill="#b8783c" d="M3 3h2v1H3zM11 3h1v1H11zM3 4h3v1H3zM10 4h2v1H10zM3 5h1v1H3zM3 6h1v1H3zM3 7h1v1H3zM3 8h1v1H3zM3 9h1v1H3zM3 10h1v1H3zM3 11h1v1H3zM3 12h1v1H3zM3 13h1v1H3zM3 14h1v1H3zM3 15h1v1H3zM3 16h1v1H3z"/><path fill="#8a5428" d="M12 3h1v1H12zM12 4h1v1H12zM14 5h1v1H14zM14 6h1v1H14zM14 7h1v1H14zM14 8h1v1H14zM14 9h1v1H14zM14 10h1v1H14zM14 11h1v1H14zM14 12h1v1H14zM14 13h1v1H14zM14 14h1v1H14zM14 15h1v1H14zM14 16h1v1H14zM3 17h12v1H3z"/><path fill="#e04838" d="M6 1h3v1H6z"/><path fill="#a02820" d="M9 1h1v1H9z"/><path fill="#686878" d="M5 11h7v1H5zM5 13h7v1H5zM5 15h5v1H5z"/><path fill="#d8d0b0" d="M13 5h1v1H13zM13 6h1v1H13zM13 7h1v1H13zM13 8h1v1H13zM13 9h1v1H13zM13 10h1v1H13zM13 11h1v1H13zM13 12h1v1H13zM13 13h1v1H13zM13 14h1v1H13zM13 15h1v1H13zM4 16h10v1H4z"/></svg><b class="gy-qn" hidden></b></button>
       <button class="win gy-simb" type="button">시뮬</button>
       <div class="win blue gy-dlg" aria-live="polite"></div>
       <section class="gy-sheet" hidden></section>
+      <div class="win gy-dtit"><b>체육관 꾸미기</b><span>꾸미기를 눌러서 옮겨요</span></div>
     </div>
     <nav class="gy-menu" aria-label="체육관 메뉴">
       <button type="button" data-t="battle">배틀</button><button type="button" data-t="train">훈련장</button><button type="button" data-t="staff">트레이너</button><button type="button" data-t="shop">상점</button><button type="button" class="gy-out" data-t="out">퇴근</button>
-    </nav>`;
+    </nav>
+    <div class="gy-dbar"><div class="db-head"><b>가방 꾸미기</b><span>골라서 체육관에 놓아요</span></div><div class="db-list"></div>
+      <div class="db-keys"><button type="button" data-a="cancel">취소</button><button type="button" class="ok" data-a="save">저장</button></div></div>`;
   document.body.appendChild(root);
   $g('.gy-plate').onclick = () => { sfx('tap'); infoPop(); };
   $g('.gy-store').onclick = () => { sfx('tap'); if (ded) ded.end?.(); storePop(); };
@@ -194,13 +197,13 @@ function ent(o) {
   $g('.gy-ents').appendChild(e.el); ents.push(e); place(e); return e;
 }
 function place(e) {
-  if (e.prop) { const s = e.el.style; s.width = e.w * sc + 'px'; s.height = e.h * sc + 'px'; s.left = (e.x * 16 - (e.w - 16) / 2) * sc + 'px'; s.top = (e.y * 16 + 16 - e.h) * sc + 'px'; s.zIndex = Math.round(e.y * 10) + 9; return; }
+  if (e.prop) { const s = e.el.style; s.width = e.w * sc + 'px'; s.height = e.h * sc + 'px'; s.left = e.x * 16 * sc + 'px'; s.top = (e.y * 16 + 16 - e.h) * sc + 'px'; s.zIndex = Math.round(e.y * 10) + 9; return; }
   const s = e.el.style, fr = e.n3 ? ({ d: 0, u: 1, l: 2, r: 2 })[e.f] : FR[e.f][e.st];
   s.width = e.fw * sc + 'px'; s.height = 32 * sc + 'px'; s.left = (e.x * 16 - (e.fw - 16) / 2) * sc + 'px'; s.top = (e.y * 16 - 16) * sc + 'px';
   s.backgroundSize = `auto ${32 * sc}px`; s.backgroundPosition = `${-fr * e.fw * sc}px 0`; s.zIndex = Math.round(e.y * 10) + 10;
   e.el.classList.toggle('flip', e.f === 'r');
 }
-function prop(k, x, y) { const o = DECO[k]; if (!o) return; const e = { prop: 1, k, x, y, w: o.w, h: o.h, el: document.createElement('i') }; e.el.className = 'gy-prop'; e.el.style.backgroundImage = `url(${IMG}deco/${k}.png)`; $g('.gy-ents').appendChild(e.el); ents.push(e); place(e); return e; }
+function prop(k, x, y) { const o = DECO[k]; if (!o) return; const e = { prop: 1, k, x, y, w: o.w, h: o.h, el: document.createElement('i') }; e.el.className = 'gy-prop'; e.el.style.backgroundImage = `url(${IMG}deco/t/${k}.png)`; $g('.gy-ents').appendChild(e.el); ents.push(e); place(e); return e; }
 function clearEnts() { ents.forEach(e => e.el.remove()); ents = []; }
 // 칸을 따라 걷기 (한 칸 0.26초, 걸음 프레임 번갈아)
 async function walk(e, pts, spd = 260) {
@@ -268,14 +271,19 @@ const DECO = {};
  ['pika_cushion', '피카 쿠션', 500], ['round_cushion', '둥근 쿠션', 500], ['kiss_cushion', '키스 쿠션', 500], ['zigzag_cushion', '지그재그 쿠션', 500], ['spin_cushion', '빙글 쿠션', 500], ['diamond_cushion', '다이아 쿠션', 500], ['ball_cushion', '볼 쿠션', 500], ['grass_cushion', '풀 쿠션', 500], ['fire_cushion', '불꽃 쿠션', 500], ['water_cushion', '물 쿠션', 500],
  ['statue', '체육관 석상', 2000, 1],
  ['big_snorlax_doll', '큰 잠만보 인형', 6000, 2], ['big_rhydon_doll', '큰 코뿌리 인형', 6000, 2], ['big_lapras_doll', '큰 라프라스 인형', 6000, 2], ['big_venusaur_doll', '큰 이상해꽃 인형', 8000, 3], ['big_charizard_doll', '큰 리자몽 인형', 8000, 3], ['big_blastoise_doll', '큰 거북왕 인형', 8000, 3], ['big_wailmer_doll', '큰 고래왕자 인형', 6000, 2],
- ['big_regirock_doll', '큰 레지락 인형', 12000, 4], ['big_regice_doll', '큰 레지아이스 인형', 12000, 4], ['big_registeel_doll', '큰 레지스틸 인형', 12000, 4]].forEach(([k, n, g, lv]) => { DECO[k] = { n, g, lv: 0, w: /^big_/.test(k) ? 32 : 16, h: /^big_/.test(k) || k === 'statue' ? 32 : 16 }; });
+ ['big_regirock_doll', '큰 레지락 인형', 12000, 4], ['big_regice_doll', '큰 레지아이스 인형', 12000, 4], ['big_registeel_doll', '큰 레지스틸 인형', 12000, 4]].forEach(([k, n, g, lv]) => { DECO[k] = { n, g, lv: 0, w: /^big_/.test(k) ? 32 : 16, h: /^big_/.test(k) ? 32 : 16 }; });   // 작은 건 1칸, 큰 인형은 2×2칸 (경완 2026-10-28 '격자 한칸 다 채우게', '큰 인형들은 최소 4칸')
 Object.values(OUTFITS).forEach(o => { o.lv = 0; });   // 꾸미기·관장 의상은 등급 제한 없음 (경완 2026-10-28)
 // 꾸미기는 개수 제한 없음 (경완 2026-10-28): 기본 자리가 다 차면 맵의 아무 빈 칸에
-const anyFree = (D, used) => { for (let y = D.h - 1; y >= 0; y--) for (let x = 0; x < D.w; x++) if (freeTile(D, x, y, used)) return [x, y]; return null; };
+const anyFree = (D, used, k) => { for (let y = D.h - 1; y >= 0; y--) for (let x = 0; x < D.w; x++) if (fitAt(D, k, x, y, used)) return [x, y]; return null; };
+// 꾸미기가 차지하는 칸: [x, y] 는 왼쪽 아래 칸, 큰 인형은 오른쪽·위로 한 칸씩 더
+const dSz = k => [(DECO[k]?.w || 16) / 16, (DECO[k]?.h || 16) / 16];
+const dCells = (k, x, y) => { const [w, h] = dSz(k), out = []; for (let i = 0; i < w; i++) for (let j = 0; j < h; j++) out.push([x + i, y - j]); return out; };
+const fitAt = (D, k, x, y, used) => dCells(k, x, y).every(([a, b]) => freeTile(D, a, b, used));
+const decoUsed = (L, skip) => new Set(L.filter(z => z[0] !== skip).flatMap(z => dCells(...z).map(c => c[0] + ',' + c[1])));
 // 꾸미기 자리: g.dp 놓은 것(순서), g.dpos {꾸미기: [x, y]} 직접 놓은 칸 (경완 2026-10-27 '산 거 직접 놓을 수 있게'). 칸이 없으면 맵의 기본 자리
 function decoList(g = st(), D = dzOf(g.d)) { const pos = g.dpos || {}, used = new Set(sfList(g, D).map(z => z[1] + ',' + z[2])), out = [];
-  (g.dp || []).filter(Boolean).forEach((k, i) => { let p = pos[k] && pos[k][2] === D.id && D.toV(pos[k][1]) != null && D.toVx(pos[k][0]) != null ? [D.toVx(pos[k][0]), D.toV(pos[k][1])] : null; if (p && !freeTile(D, p[0], p[1], used)) p = null;
-    if (!p) p = D.deco.find(q => freeTile(D, q[0], q[1], used)) || anyFree(D, used); if (!p) return; used.add(p[0] + ',' + p[1]); out.push([k, p[0], p[1]]); });
+  (g.dp || []).filter(Boolean).forEach((k, i) => { let p = pos[k] && pos[k][2] === D.id && D.toV(pos[k][1]) != null && D.toVx(pos[k][0]) != null ? [D.toVx(pos[k][0]), D.toV(pos[k][1])] : null; if (p && !fitAt(D, k, p[0], p[1], used)) p = null;
+    if (!p) p = D.deco.find(q => fitAt(D, k, q[0], q[1], used)) || anyFree(D, used, k); if (!p) return; dCells(k, p[0], p[1]).forEach(c => used.add(c[0] + ',' + c[1])); out.push([k, p[0], p[1]]); });
   return out; }
 // 놓을 수 있는 칸: 맵 안쪽, 관장·문·안내원·길·트레이너 자리·관장 옆 포켓몬 자리가 아닌 곳
 function freeTile(D, x, y, used) {
@@ -286,57 +294,71 @@ function freeTile(D, x, y, used) {
   for (let i = 1; i < D.path.length; i++) { const [a, b] = [D.path[i - 1], D.path[i]]; if (Math.min(a[0], b[0]) <= x && x <= Math.max(a[0], b[0]) && Math.min(a[1], b[1]) <= y && y <= Math.max(a[1], b[1])) return false; }
   return true;
 }
-// 꾸미기 놓기 모드: 아래 창에서 꾸미기를 고르고 맵의 칸을 누르면 그 자리에 (놓인 걸 누르면 집어 들기)
+// 꾸미기 모드 (경완 2026-10-28 '필드 맵 편집이랑 비슷하게'): 왼쪽 위 제목 카드 + 아래 가방 창(가방 꾸미기 · 취소/저장).
+// 놓인 꾸미기를 누르면 고르기(초록 점선 칸 + 빨간 ✕ = 가방으로), 끌면 격자 따라 옮기기. 가방 꾸미기는 끌어다 놓거나 골라서 빈 칸을 누르기. 취소 = 들어오기 전으로
 let ded = null;
+const XSVG = '<svg viewBox="0 0 7 7" width="14" height="14" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M0 0h2v1h1v1h1V1h1V0h2v2H6v1H5v1h1v1h1v2H5V6H4V5H3v1H2v1H0V5h1V4h1V3H1V2H0z"/></svg>';
 function decoEdit() {
   const g = st(), D = dzOf(g.d); g.own = g.own || {}; g.dp = (g.dp || []).filter(Boolean); g.dpos = g.dpos || {};
-  openTab(null); root.classList.add('ded'); ded = { sel: null };
-  const map = $g('.gy-map'); let grid = map.querySelector('.gy-grid'); if (!grid) { grid = document.createElement('div'); grid.className = 'gy-grid'; map.appendChild(grid); }
+  openTab(null); root.querySelectorAll('.gy-pop.gy-note').forEach(x => x.remove()); root.classList.remove('gview');
+  root.classList.add('ded', 'dedc'); ded = { sel: null, pick: null, snap: JSON.stringify([g.dp, g.dpos]) };
+  const map = $g('.gy-map'), bar = $g('.gy-dbar'), list = bar.querySelector('.db-list'), tit = $g('.gy-dtit span'), stage = $g('.gy-stage');
+  let grid = map.querySelector('.gy-grid'); if (!grid) { grid = document.createElement('div'); grid.className = 'gy-grid'; map.appendChild(grid); }
+  const T = () => 16 * sc;
+  const warn = t => { clearTimeout(warn.t); tit.textContent = t; tit.classList.add('warn'); warn.t = setTimeout(() => { tit.textContent = '꾸미기를 눌러서 옮겨요'; tit.classList.remove('warn'); }, 2400); };
+  const hitAt = (L, x, y) => L.find(z => dCells(...z).some(c => c[0] === x && c[1] === y));
+  const okAt = (k, x, y) => fitAt(D, k, x, y, decoUsed(decoList(g, D), k));
+  // 손가락 위치 → 꾸미기의 왼쪽 아래 칸 (큰 인형은 손가락이 가운데). off = 집어 든 자리와의 차이
+  const anchor = (k, cx, cy, off = [0, 0]) => { const r = map.getBoundingClientRect(), [w, h] = dSz(k); return [Math.round((cx - r.left) / T() - w / 2 - off[0]), Math.round((cy - r.top) / T() + h / 2 - off[1]) - 1]; };
   const draw = () => {
-    renderHome(true); const L = decoList(g, D), on = new Set(L.map(x => x[0]));
-    grid.style.setProperty('--t', 16 * sc + 'px'); grid.innerHTML = ded.sel && on.has(ded.sel) ? (([, x, y]) => `<i class="gg-sel" style="left:${x * 16 * sc}px;top:${y * 16 * sc}px;width:${16 * sc}px;height:${16 * sc}px"></i>`)(L.find(z => z[0] === ded.sel)) : '';
-    const own = Object.keys(g.own).filter(k => DECO[k]);
-    $g('.gy-dlg').innerHTML = `<span class="gy-who">꾸미기 놓기 <small>${on.size}개</small></span><span class="gy-dsub">${ded.sel ? `<b>${DECO[ded.sel].n}</b>${on.has(ded.sel) ? ' · 끌어서 옮기거나 칸을 누르세요' : ' · 끌어다 놓거나 칸을 누르세요'}` : own.length ? '꾸미기를 맵으로 끌어다 놓거나, 고르고 칸을 누르세요.' : '아직 산 꾸미기가 없어요. 상점에서 사 오세요.'}</span>
-      <div class="gy-dpick">${own.map(k => `<button data-k="${k}" class="${k === ded.sel ? 'sel' : ''}${on.has(k) ? ' on' : ''}"><img alt="" src="${IMG}deco/${k}.png"></button>`).join('')}</div>
-      <div class="gy-dyn">${ded.sel && on.has(ded.sel) ? '<button class="gy-dbtn2" type="button" data-a="rm">치우기</button>' : ''}<button class="gy-dbtn2 main" type="button" data-a="ok">완료</button></div>`;
+    renderHome(true); const L = decoList(g, D), on = new Set(L.map(z => z[0])); if (ded.sel && !on.has(ded.sel)) ded.sel = null;
+    ents.forEach(e => { if (e.prop && e.k) e.el.classList.toggle('dsel', e.k === ded.sel); }); root.classList.toggle('dhas', !!ded.sel);
+    grid.style.setProperty('--t', T() + 'px');
+    const z = ded.sel && L.find(q => q[0] === ded.sel), [w, h] = z ? dSz(z[0]) : [1, 1];
+    grid.innerHTML = z ? `<i class="gg-foot" style="left:${z[1] * T()}px;top:${(z[2] - h + 1) * T()}px;width:${w * T()}px;height:${h * T()}px"></i><button class="gg-x" type="button" aria-label="가방에 넣기" style="left:${(z[1] + w) * T() + 12 > stage.scrollLeft + stage.clientWidth - map.offsetLeft ? z[1] * T() : (z[1] + w) * T()}px;top:${Math.max(z[2] - h + 1, .4) * T()}px">${XSVG}</button>` : '';
+    const bag = Object.keys(g.own).filter(k => g.own[k] && DECO[k] && !on.has(k)); if (ded.pick && !bag.includes(ded.pick)) ded.pick = null;
+    list.innerHTML = bag.length ? bag.map(k => `<button class="db-it" type="button" data-k="${k}" aria-pressed="${ded.pick === k}"><img alt="" src="${IMG}deco/t/${k}.png"><span>${DECO[k].n}</span></button>`).join('')
+      : '<p class="db-none">가방에 놓을 꾸미기가 없어요.<br>체육관의 꾸미기를 빼면 여기로 들어와요.</p>';
   };
-  ded.draw = draw; ded.end = decoDone;
-  $g('.gy-dlg').onclick = e => { const b = e.target.closest('button'); if (!b || !ded) return; e.stopPropagation(); if (b.dataset.k && Date.now() - noClick < 400) return; sfx('tap');
-    if (b.dataset.k) { ded.sel = ded.sel === b.dataset.k ? null : b.dataset.k; return draw(); }
-    if (b.dataset.a === 'rm') { g.dp = g.dp.filter(k => k !== ded.sel); delete g.dpos[ded.sel]; ded.sel = null; save(); return draw(); }
-    if (b.dataset.a === 'ok') return decoDone(); };
-  // 끌어다 놓기 (경완 2026-10-28 '필드 맵 편집처럼 끌어다 놓는 형식, 격자 기준'): 놓인 꾸미기나 아래 목록을 끌면 칸에 맞춰 따라오고, 놓으면 그 칸에
-  const tileAt = (cx, cy) => { const r = map.getBoundingClientRect(); return [Math.floor((cx - r.left) / (16 * sc)), Math.floor((cy - r.top) / (16 * sc))]; };
-  const stage = $g('.gy-stage'); let drag = null, noClick = 0;
-  const okAt = (k, x, y) => freeTile(D, x, y, new Set(decoList(g, D).filter(z => z[0] !== k).map(z => z[1] + ',' + z[2])));
-  const ghost = (k, x, y) => { let gh = grid.querySelector('.gg-gh'), tl = grid.querySelector('.gg-tile'); const o = DECO[k], ok = okAt(k, x, y);
+  const put = (k, x, y) => { if (!okAt(k, x, y)) { sfx('no'); warn('여기엔 놓을 수 없어요'); return draw(); }
+    if (!g.dp.includes(k)) g.dp.push(k); g.dpos[k] = [D.toFx(x), D.toF(y), D.id]; ded.sel = k; ded.pick = null; sfx('tap'); draw(); };
+  const end = keep => { if (!ded) return; if (!keep) { const [dp, dpos] = JSON.parse(ded.snap); g.dp = dp; g.dpos = dpos; } save(); decoDone(); };
+  ded.draw = draw; ded.end = () => end(true);
+  // 끌기: 놓인 꾸미기나 가방 꾸미기를 끌면 칸에 맞춰 따라오고, 놓으면 그 칸에. 빈 곳을 끌면 맵 넘기기
+  let drag = null, noClick = 0;
+  const ghost = (k, x, y) => { let gh = grid.querySelector('.gg-gh'), tl = grid.querySelector('.gg-tile'); const [w, h] = dSz(k), ok = okAt(k, x, y);
     if (!gh) { gh = document.createElement('i'); gh.className = 'gg-gh'; tl = document.createElement('i'); tl.className = 'gg-tile'; grid.append(tl, gh); }
-    gh.style.cssText = `background-image:url(${IMG}deco/${k}.png);width:${o.w * sc}px;height:${o.h * sc}px;left:${(x * 16 - (o.w - 16) / 2) * sc}px;top:${(y * 16 + 16 - o.h) * sc}px`;
-    tl.style.cssText = `left:${x * 16 * sc}px;top:${y * 16 * sc}px;width:${16 * sc}px;height:${16 * sc}px`; tl.classList.toggle('bad', !ok); return ok; };
+    const box = `left:${x * T()}px;top:${(y - h + 1) * T()}px;width:${w * T()}px;height:${h * T()}px`;
+    gh.style.cssText = `background-image:url(${IMG}deco/t/${k}.png);${box}`; tl.style.cssText = box; tl.classList.toggle('bad', !ok); return ok; };
   const dim = (k, on) => ents.forEach(e => { if (e.prop && e.k === k) e.el.style.opacity = on ? .3 : ''; });
   const move = e => { if (!drag || e.pointerId !== drag.pid) return; const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
     if (!drag.on) { if (Math.hypot(dx, dy) < 8) return; if (drag.pal && Math.abs(dx) > Math.abs(dy)) { drag = null; return; } drag.on = true; if (drag.k) { dim(drag.k, true); grid.classList.add('drag'); } }
-    if (!drag.k) { stage.scrollLeft = drag.sl - dx; stage.scrollTop = drag.st - dy; return; }   // 빈 곳을 끌면 맵 넘기기
-    e.preventDefault(); const [x, y] = tileAt(e.clientX, e.clientY); drag.t = [x, y]; drag.ok = ghost(drag.k, x, y);
-    const r = stage.getBoundingClientRect(); if (e.clientY < r.top + 48) stage.scrollTop -= 10; else if (e.clientY > r.bottom - 48) stage.scrollTop += 10; };
+    if (!drag.k) { stage.scrollLeft = drag.sl - dx; stage.scrollTop = drag.st - dy; return; }
+    e.preventDefault(); drag.t = anchor(drag.k, e.clientX, e.clientY, drag.off); drag.ok = ghost(drag.k, ...drag.t);
+    const r = stage.getBoundingClientRect(); if (e.clientY < r.top + 48) stage.scrollTop -= 10; else if (e.clientY > r.bottom - 48 && e.clientY < r.bottom) stage.scrollTop += 10; };
   const up = e => { if (!drag || e.pointerId !== drag.pid) return; const d = drag; drag = null; removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up);
     grid.classList.remove('drag'); grid.querySelectorAll('.gg-gh,.gg-tile').forEach(x => x.remove()); if (d.k) dim(d.k, false);
-    if (!d.on || e.type === 'pointercancel') return; noClick = Date.now();
-    if (!d.k) return; if (!d.ok) { sfx('no'); return draw(); }
-    if (!g.dp.includes(d.k)) g.dp.push(d.k); g.dpos[d.k] = [D.toFx(d.t[0]), D.toF(d.t[1]), D.id]; ded.sel = d.k; sfx('tap'); save(); draw(); };
-  const begin = (k, e, pal) => { if (!ded || e.button) return; drag = { k, pal, pid: e.pointerId, x0: e.clientX, y0: e.clientY, sl: stage.scrollLeft, st: stage.scrollTop };
+    if (!d.on || e.type === 'pointercancel' || !ded) return; noClick = Date.now(); if (!d.k) return;
+    if (!d.t) return draw(); put(d.k, ...d.t); };
+  const begin = (k, e, pal, off) => { if (!ded || e.button) return; drag = { k, pal, off, pid: e.pointerId, x0: e.clientX, y0: e.clientY, sl: stage.scrollLeft, st: stage.scrollTop };
     addEventListener('pointermove', move, { passive: false }); addEventListener('pointerup', up); addEventListener('pointercancel', up); };
-  map.onpointerdown = e => { if (!ded) return; const [x, y] = tileAt(e.clientX, e.clientY), hit = decoList(g, D).find(z => z[1] === x && z[2] === y); begin(hit ? hit[0] : null, e); };
-  $g('.gy-dlg').onpointerdown = e => { const b = e.target.closest('.gy-dpick button[data-k]'); if (b) begin(b.dataset.k, e, true); };
-  // 그냥 누르기: 놓인 꾸미기 = 고르기, 빈 칸 = 고른 꾸미기를 거기에
-  map.onclick = e => { if (!ded || Date.now() - noClick < 400) return; const [x, y] = tileAt(e.clientX, e.clientY);
-    const L = decoList(g, D), hit = L.find(z => z[1] === x && z[2] === y); if (hit) { sfx('tap'); ded.sel = hit[0]; return draw(); }
-    if (!ded.sel) return; if (!okAt(ded.sel, x, y)) { sfx('no'); return; }
-    if (!g.dp.includes(ded.sel)) g.dp.push(ded.sel);
-    g.dpos[ded.sel] = [D.toFx(x), D.toF(y), D.id]; sfx('tap'); save(); draw(); };
+  const tile = e => { const r = map.getBoundingClientRect(); return [Math.floor((e.clientX - r.left) / T()), Math.floor((e.clientY - r.top) / T())]; };
+  map.onpointerdown = e => { if (!ded || e.target.closest('.gg-x')) return; const hit = hitAt(decoList(g, D), ...tile(e));
+    if (!hit) return begin(null, e); const r = map.getBoundingClientRect(), [w, h] = dSz(hit[0]);
+    begin(hit[0], e, false, [(e.clientX - r.left) / T() - (hit[1] + w / 2), (e.clientY - r.top) / T() - (hit[2] + 1 - h / 2)]); };
+  // 그냥 누르기: ✕ = 가방으로, 놓인 꾸미기 = 고르기, 빈 칸 = 가방에서 고른 꾸미기를 거기에, 아니면 고르기 풀기
+  map.onclick = e => { if (!ded || Date.now() - noClick < 400) return;
+    if (e.target.closest('.gg-x')) { sfx('tap'); g.dp = g.dp.filter(k => k !== ded.sel); delete g.dpos[ded.sel]; ded.sel = null; return draw(); }
+    const hit = hitAt(decoList(g, D), ...tile(e)); if (hit) { sfx('tap'); ded.sel = ded.sel === hit[0] ? null : hit[0]; ded.pick = null; return draw(); }
+    if (ded.pick) return put(ded.pick, ...anchor(ded.pick, e.clientX, e.clientY));
+    if (ded.sel) { ded.sel = null; draw(); } };
+  bar.onpointerdown = e => { const b = e.target.closest('.db-it'); if (b) begin(b.dataset.k, e, true); };
+  bar.onclick = e => { const b = e.target.closest('button'); if (!b || !ded) return; e.stopPropagation(); if (b.dataset.k && Date.now() - noClick < 400) return; sfx('tap');
+    if (b.dataset.k) { ded.pick = ded.pick === b.dataset.k ? null : b.dataset.k; ded.sel = null; if (ded.pick) warn('놓을 칸을 누르세요'); return draw(); }
+    if (b.dataset.a) end(b.dataset.a === 'save'); };
   draw();
 }
-function decoDone() { if (!ded) return; ded = null; root.classList.remove('ded'); $g('.gy-map .gy-grid')?.remove(); $g('.gy-map').onclick = null; $g('.gy-map').onpointerdown = null; $g('.gy-dlg').onclick = null; $g('.gy-dlg').onpointerdown = null; renderHome(); }
+function decoDone() { if (!ded) return; ded = null; root.classList.remove('ded', 'dedc', 'dhas'); $g('.gy-map .gy-grid')?.remove(); $g('.gy-map').onclick = null; $g('.gy-map').onpointerdown = null; $g('.gy-dbar').onclick = null; $g('.gy-dbar').onpointerdown = null; renderHome(); }
 // 고용 트레이너 자리 (경완 2026-10-27 '훈련장 배치랑 체육관 배치 둘 다', '체육관 배치 위치는 내가 고를 수 있게'):
 // s.gym 체육관에 서 있음(도전자 상대), s.yard 훈련장 코치. 둘 다 켤 수 있다. s.gp [x, y, 맵] 직접 고른 칸 (없으면 맵의 기본 자리)
 const inGym = s => s.gym ?? (s.yard ? 0 : 1);
@@ -379,7 +401,7 @@ function sfPlace(s, back) {
     if (b.dataset.a === 'rm') { s.gym = 0; delete s.gp; glog('sf', `${sfName(s)}${jong(s.nm) ? '을' : '를'} 체육관 자리에서 뺐다.`); save(); return done(); }
     if (b.dataset.a === 'ok') return done(); };
   map.onclick = e => { if (!ded) return; const r = map.getBoundingClientRect(), x = Math.floor((e.clientX - r.left) / (16 * sc)), y = Math.floor((e.clientY - r.top) / (16 * sc));
-    const used = new Set([...sfList(g, D).filter(z => z[0] !== s).map(z => z[1] + ',' + z[2]), ...decoList(g, D).map(z => z[1] + ',' + z[2])]);
+    const used = new Set([...sfList(g, D).filter(z => z[0] !== s).map(z => z[1] + ',' + z[2]), ...decoUsed(decoList(g, D))]);
     if (!trTile(D, x, y, used)) { sfx('no'); return; }
     const was = inGym(s); s.gym = 1; s.gp = [D.toFx(x), D.toF(y), D.id]; if (!was) glog('sf', `${sfName(s)}${jong(s.nm) ? '을' : '를'} 체육관에 배치했다.`); sfx('tap'); save(); draw(); };
   draw();
@@ -581,15 +603,17 @@ function talk(html, btn = '다음', sub = '') {
   return new Promise(ok => { $g('.gy-dlg').innerHTML = `${html}${sub ? `<span class="gy-dsub">${sub}</span>` : ''}<button class="gy-dbtn" type="button">${btn} ▶</button>`;
     $g('.gy-dbtn').onclick = e => { e.stopPropagation(); sfx('tap'); ok(); }; });
 }
-const doorSe = () => { try { window.GymBGM?.se('DP_DOOR10'); } catch (e) {} };   // 도전자가 드나들 때 자동문 소리 (플래티넘 SEQ_SE_DP_DOOR10, 경완 2026-10-28)
+const doorSe = () => { try { window.GymBGM?.se('DP_DOOR'); } catch (e) {} };   // 도전자가 드나들 때 철컥 문 소리 (플래티넘 SEQ_SE_DP_DOOR, 경완 2026-10-28 '자동문 말고 철컥')
 async function challenge() {
   const g = st(), c = g.q[0]; if (!c || busy) return;
   const my = luNow(); if (!my.length) { say('라인업이 비어 있어요.', '배틀 메뉴에서 라인업을 먼저 짜 주세요'); openTab('battle'); return; }
   busy = true; openTab(null); root.classList.add('busy');
   try {
     await loadJs('gymb/battle.js', 'GymBattle'); await GB().loadData();
-    const D = dzOf(g.d), e = ent({ ow: c.ow, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(c.ow) }); doorSe();
-    dlg(`${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 들어온다!`);
+    // 문 소리 → 문 앞 카펫에 나타나 잠깐 섰다가 → 관장 앞까지 걸어온다 (경완 2026-10-28 '소리랑 타이밍 맞춰서, 카펫 위에 잠깐 멈췄다가')
+    const D = dzOf(g.d); doorSe(); await wait(180);
+    const e = ent({ ow: c.ow, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(c.ow) });
+    dlg(`${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 들어온다!`); await wait(650);
     await walk(e, D.path.slice(1)); e.f = 'u'; place(e);
     const N = c.named && NAMED.find(n => n.id === c.named), me = trName() || '관장';
     const line = N ? N.ln[0].replace('{me}', me) : pick(CHAL_LINES[c.diff] || CHAL_LINES[1]);
@@ -611,7 +635,7 @@ async function challenge() {
     await resultPop(c, res, gold, rep, R);
     if (g.newBdg) await badgeGet(g.newBdg);
     // 배웅하기 창 없이, 알림을 다 닫으면 도전자가 걸어 나간다 (경완 2026-10-28)
-    dlg(''); root.classList.add('dhide'); await walk(e, D.path.slice(0, -1).reverse()); doorSe(); e.el.remove(); ents = ents.filter(x => x !== e);
+    dlg(''); root.classList.add('dhide'); await walk(e, D.path.slice(0, -1).reverse()); await wait(250); doorSe(); await wait(120); e.el.remove(); ents = ents.filter(x => x !== e);
   } catch (err) { console.error(err); GA.toast?.('배틀을 시작하지 못했어요'); }
   finally { busy = false; root.classList.remove('busy'); if (open) renderHome(); }
 }
@@ -711,7 +735,7 @@ function palChoose() {
 // 아래 상태창: 기다리는 도전자가 있으면 '도전 받기', 없으면 다음 방문 예고
 function homeSay() {
   const g = st(); if (busy) return;
-  root.classList.add('dhide'); $g('.gy-dlg').innerHTML = '';
+  if (!ded) { root.classList.add('dhide'); $g('.gy-dlg').innerHTML = ''; }   // 꾸미기·자리 정하기 중엔 그대로 (20초마다 불려서 창이 비던 버그, 경완 2026-10-28)
   const n = g.q.length, b = $g('.gy-qn'); if (b) { b.hidden = !n; b.textContent = n; } $g('.gy-qbtn')?.classList.toggle('has', !!n);
   const pw = root.querySelector('.gy-qw'); if (pw) pw.redraw?.();
 }

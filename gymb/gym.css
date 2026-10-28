@@ -1062,3 +1062,49 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 .bt-pty.p{top:114px}
 .bt-hb .lv{align-items:center!important}.bt-hb .lv .sx{font-size:10px!important;line-height:12px!important;transform:translateY(-1px)}   /* 성별 기호를 Lv 글자 가운데에 (경완 2026-10-28) */
 .if-bdg .if-bt{font-size:12px;font-weight:700;color:var(--dim)}
+/* 꾸미기 모드 = 필드 맵 편집처럼 (경완 2026-10-28): 제목 카드 + 아래 가방 창, 메뉴·이름판·대화창은 숨김 */
+.gy-prop{background-size:contain!important;background-position:center bottom!important}
+.gy-dtit,.gy-dbar{display:none}
+#gym.dedc .gy-dtit{display:flex;flex-direction:column;align-items:flex-start;gap:2px;position:absolute;z-index:4;pointer-events:none;width:auto!important;padding:9px 14px 10px!important;
+  left:calc(var(--si-left,env(safe-area-inset-left)) + 8px);top:calc(var(--si-top,env(safe-area-inset-top)) + 8px)}
+.gy-dtit b{font-size:18px;line-height:1.2}.gy-dtit span{font-size:12px;color:var(--dim,#666)}.gy-dtit span.warn{color:#e05a4a}
+#gym.dedc :is(.gy-menu,.gy-top,.gy-dlg,.gy-simb,.gy-qbtn,.gy-deco,.gy-store){display:none!important}
+#gym.dedc .gy-dbar{flex:none;display:flex;flex-direction:column;gap:8px;background:var(--frame,#20202c);border-top:3px solid #23232f;color:#f8f8f8;
+  padding:10px calc(var(--si-right,env(safe-area-inset-right)) + 8px) calc(var(--sab,env(safe-area-inset-bottom)) + 8px) calc(var(--si-left,env(safe-area-inset-left)) + 8px)}
+.db-head{display:flex;align-items:baseline;gap:8px;padding-left:4px}.db-head b{font-size:15px;color:#ffe27a}.db-head span{font-size:12px;color:#b8b8d0}
+.db-list{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 2px 4px;min-height:92px}.db-list::-webkit-scrollbar{display:none}
+.db-it{flex:0 0 76px;height:88px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;padding:6px 3px 6px;font:inherit;font-size:11px;line-height:1.15;color:#20202c;background:#f8f8f8;border:3px solid #20202c;
+  box-shadow:inset 0 -4px 0 #c8c8d8;cursor:pointer;touch-action:pan-x;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.db-it img{flex:1 1 auto;min-height:0;max-width:48px;max-height:44px;width:auto;object-fit:contain;image-rendering:pixelated;-webkit-user-drag:none;pointer-events:none}
+.db-it span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.db-it[aria-pressed="true"]{background:#fff6c8;box-shadow:inset 0 0 0 2px #ffd84a,inset 0 -4px 0 #e8c860}
+.db-none{margin:auto;font-size:13px;color:#b8b8d0;text-align:center;line-height:1.5}
+.db-keys{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.db-keys button{min-height:46px;font:inherit;font-size:14px;color:#f8f8f8;border:0;background:#4b4b66;box-shadow:inset 0 3px 0 rgba(255,255,255,.2),inset 0 -4px 0 rgba(0,0,0,.4),0 3px 0 #1c1c26;cursor:pointer}
+.db-keys button.ok{background:#ffd84a;color:#20202c;font-weight:700;box-shadow:inset 0 3px 0 #fff2a8,inset 0 -4px 0 #d89a2a,0 3px 0 #1c1c26}
+.db-keys button:active,.db-it:active{transform:translateY(1px)}
+#gym.dedc:not(.dhas) .gy-ents .gy-prop{filter:drop-shadow(1px 0 0 rgba(255,255,255,.85)) drop-shadow(-1px 0 0 rgba(255,255,255,.85)) drop-shadow(0 1px 0 rgba(255,255,255,.85)) drop-shadow(0 -1px 0 rgba(255,255,255,.85)) drop-shadow(0 0 3px #ffe27a)}
+#gym.dedc .gy-prop.dsel{filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff) drop-shadow(0 0 5px #ffd84a)}
+.gy-grid .gg-foot{position:absolute;box-sizing:border-box;border:2px dashed #7cf08a;background:rgba(124,240,138,.22)}
+.gy-grid .gg-x{position:absolute;translate:-50% -50%;width:24px;height:24px;padding:0;display:grid;place-items:center;pointer-events:auto;color:#fff;background:#e04838;border:2px solid #20202c;box-shadow:inset 0 -2px 0 #9a2418,2px 2px 0 rgba(0,0,0,.35);cursor:pointer;z-index:3}
+.gy-grid .gg-gh{background-size:contain!important;background-position:center bottom!important}
+.gy-grid.drag :is(.gg-foot,.gg-x){display:none}
+#gym .gy-deco svg{width:40px;height:38px}   /* 인형 아이콘 (경완 2026-10-28) */
+/* 지원서 프로필 사진 여백 줄이기 (경완 2026-10-28): 사진은 고정 높이, 카드는 내용만큼 + 위아래 가운데 */
+.gy-sheet:has(.cv-deck) .cv-deck{align-items:center}
+.cv-deck .cv-card{align-self:center;height:auto}
+.cv-deck .cv-photo{flex:0 0 184px!important;height:184px!important;min-height:0!important}
+.cv-card .cv-btns{margin-top:4px!important}
+/* 포켓몬 수 몬스터볼 = 도트 (경완 2026-10-28 '배틀화면 도트 그래픽에 맞춰'): 8px 그림, 띠도 각진 도트 */
+.bt-pty{height:12px;gap:2px;padding:2px 5px;background:#303040;border-radius:0!important;box-shadow:inset 0 1px 0 #585868,inset 0 -1px 0 #18181f}
+.bt-pty.e{padding-left:6px;clip-path:polygon(0 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%)}
+.bt-pty.p{padding-right:6px;clip-path:polygon(4px 0,100% 0,100% 100%,4px 100%,0 calc(100% - 4px),0 4px)}
+:is(.bt-pty,.bp-pty) i{width:8px;height:8px;border-radius:0;box-shadow:none;flex:none;background:url(../gym/img/bt/pball.png) 0 0/32px 8px no-repeat;image-rendering:pixelated}
+:is(.bt-pty,.bp-pty) i.s{background-position:-8px 0}:is(.bt-pty,.bp-pty) i.f{background-position:-16px 0}:is(.bt-pty,.bp-pty) i.x{background-position:-24px 0}
+.bp-pty{position:absolute;left:8px;right:8px;top:6px;display:flex;justify-content:space-between;pointer-events:none}
+.bp-pty span{display:flex;gap:2px;padding:2px 4px;background:rgba(32,32,44,.82);box-shadow:inset 0 1px 0 #585868}
+.bp-pty .e{flex-direction:row-reverse}
+.bt.mob .bp-main .bp-pty{position:relative;left:auto;right:auto;top:auto;grid-column:1/-1;order:-2;margin:-8px 0 -2px}
+.bt.mob .bp-pty i{width:12px;height:12px;background-size:48px 12px}.bt.mob .bp-pty i.s{background-position:-12px 0}.bt.mob .bp-pty i.f{background-position:-24px 0}.bt.mob .bp-pty i.x{background-position:-36px 0}
+.bt.mob .bp-main:has(.bp-pty){grid-template-rows:auto minmax(64px,2.2fr) minmax(40px,1fr)}
+.bt.mob .bp-main .bp-pty{align-items:flex-start;align-self:start;height:auto}.bp-pty span{align-self:flex-start}

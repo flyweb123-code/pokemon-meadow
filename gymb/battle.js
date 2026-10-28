@@ -341,7 +341,8 @@ function mainPanel(A) {
       <button class="bb bag" data-a="bag"><span>가방</span></button>
       <button class="bb run" data-a="run"><span>${B.practice ? '그만두기' : '기권'}</span></button>
       <button class="bb mon" data-a="mon"><span>포켓몬</span></button>
-      <p class="bp-q">${esc(A.nm)}${jong(A.nm) ? '은' : '는'} 무엇을 할까?</p></div>`);
+      <p class="bp-q">${esc(A.nm)}${jong(A.nm) ? '은' : '는'} 무엇을 할까?</p>
+      <div class="bp-pty"><span class="e">${balls('e')}</span><span class="p">${balls('p')}</span></div></div>`);   // 고르는 동안에도 남은 포켓몬 수 (경완 2026-10-28)
     p.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; tapSe(); res(b.dataset.a); };
   });
 }
@@ -469,7 +470,10 @@ async function encounter(opts) {
 const M = (f, ...a) => { try { window.GymBGM?.[f](...a); } catch (e) {} };   // 체육관 BGM (gym/bgm.js)
 // 본가 몬스터볼 줄: 배틀 시작 때 양쪽이 가진 포켓몬 수 (쓰러짐은 회색, 상태 이상은 노랑, 빈 칸은 테두리만) (경완 2026-10-28)
 function tray() { ['e', 'p'].forEach(s => { const L = B.o[s] || [], t = $b(`.bt-pty.${s}`);
-  t.innerHTML = Array.from({ length: 6 }, (_, i) => { const P = L[i]; return `<i class="${!P ? 'x' : P.fainted || P.hp <= 0 ? 'f' : P.status ? 's' : 'o'}"></i>`; }).join(''); t.classList.add('on'); }); }
+  t.innerHTML = balls(s); t.classList.add('on'); }); }
+// 포켓몬 수 몬스터볼 (도트, gym/img/bt/pball.png: 보통·상태 이상·기절·빈 칸)
+const balls = s => { const L = B.o[s] || [], live = B.btl?.[s === 'p' ? 'p1' : 'p2']?.pokemon || [];
+  return Array.from({ length: 6 }, (_, i) => { const P = L[i], X = P && (live.find(q => q === P) || P); return `<i class="${!X ? 'x' : X.fainted || X.hp <= 0 ? 'f' : X.status ? 's' : 'o'}"></i>`; }).join(''); };
 async function run(opts) {
   await Promise.all([loadData(), loadSim()]);
   if (!el) buildUI(); fit();

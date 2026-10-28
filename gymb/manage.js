@@ -14,6 +14,7 @@ const onField = id => S.mons.some(m => m.pid === id);
 const pop = (h, f) => { const p = K.pop(h, f); GB()?.fillTh(p); return p; };
 const say = msg => pop(`<p class="gy-msg" style="text-align:center">${msg}</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, c) => c());
 const spend = n => { if (S.gold < n) return false; S.gold -= n; try { GA.renderGold(); } catch (e) {} K.renderGoldG(); K.save(); return true; };
+const buy = n => { if (!spend(n)) return false; try { window.GymBGM?.se('DP_REGI'); } catch (e) {} return true; };   // 상점에서 살 때 본가 계산대 소리 (SEQ_SE_DP_REGI, 경완 2026-10-28)
 const gold = n => `<i class="coin"></i>${n.toLocaleString()}G`;
 // 포켓몬 정면 그림: 블랙·화이트 움직이는 gif (못 받으면 저장소 png 첫 칸)
 const monImg = (sp, o = {}) => { const g = GB().gifUrl(sp, false, !!o.s, !!o.f), png = GB().pkSrc(sp, { s: o.s, f: o.f });
@@ -420,7 +421,7 @@ function buyTm(id, can) {
     <p class="gy-msg tm-who">배울 수 있는 포켓몬 ${L.length}마리${n ? ` · 가진 것 ${n}개` : ''}</p><div class="tm-mons">${L.slice(0, 18).map(P => `<span>${GB().thumb(P)}<small>${GB().gm(P).mv.includes(id) ? '앎' : 'Lv.' + GB().gm(P).lv}</small></span>`).join('')}</div>
     <div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="buy">${gold(price)} 사기</button></div>`, (a, close) => {
     if (a === 'x') return close(); if (a !== 'buy') return;
-    if (!spend(price)) { close(); return say(`골드가 모자라요. ${price.toLocaleString()}G가 필요해요.`); }
+    if (!buy(price)) { close(); return say(`골드가 모자라요. ${price.toLocaleString()}G가 필요해요.`); }
     close(); g.tms = g.tms || {}; g.tms[id] = (g.tms[id] || 0) + 1; K.glog('tr', `기술머신 <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 샀다.`); K.save(); redraw();
     say(`기술머신 ${esc(x[1])}${K.jong(x[1]) ? '을' : '를'} 가방에 넣었어요.<br><small>배틀 메뉴나 훈련장에서 포켓몬을 누르고 '기술머신'으로 가르쳐 주세요.</small>`);
   });
@@ -438,7 +439,7 @@ function shopDeco(body) {
     if (g.own[k]) { if (placed.includes(k)) g.dp.splice(placed.indexOf(k), 1); else g.dp.push(k); K.save(); redraw(); return; }
     if (G < o.lv) return say(`${K.gradeOf([0, 100, 250, 450, 700, 1000][o.lv]).n}이 되면 살 수 있어요.`);
     pop(`<h4>${o.n}</h4><div class="dc-big"><img alt="" src="${IMG}deco/${k}.png"></div><div class="gy-btns"><button data-a="x">그만두기</button><button class="main" data-a="y">${gold(o.g)} 사기</button></div>`, (a, close) => {
-      close(); if (a !== 'y') return; if (!spend(o.g)) return say('골드가 모자라요.');
+      close(); if (a !== 'y') return; if (!buy(o.g)) return say('골드가 모자라요.');
       g.own[k] = 1; g.dp.push(k); K.save(); redraw(); });
   };
 }
@@ -457,7 +458,7 @@ function shopFit(body) {
       : lock ? `<div class="gy-btns one"><button data-a="x">${need(o)}이 되면 살 수 있어요</button></div>`
       : `<div class="gy-btns"><button data-a="x">그만두기</button><button class="main" data-a="y">${gold(o.g)} 사기</button></div>`;
     K.bodyCard(await K.fitSrc('tr', k), o.n, own ? '' : lock ? '아직 살 수 없어요' : '사면 바로 입어요', btn, (a, close) => {
-      close(); if (a === 'y' && !spend(o.g)) return say('골드가 모자라요.'); if (a === 'y') g.fits[k] = 1; g.fit = k; K.save(); redraw(); K.renderHome(); });
+      close(); if (a === 'y' && !buy(o.g)) return say('골드가 모자라요.'); if (a === 'y') g.fits[k] = 1; g.fit = k; K.save(); redraw(); K.renderHome(); });
   };
 }
 window.GymManage = { tab, tickTrain, redraw };
