@@ -1,4 +1,4 @@
-/* 체육관 모드 4~6단계 (경완 기획 2026-10-27): 훈련장 · 트레이너 고용 · 상점(기술머신·꾸미기·관장 의상·넓히기).
+/* 체육관 모드 4~6단계 (경완 기획 2026-10-27): 훈련장 · 트레이너 고용 · 상점(기술머신·꾸미기·관장 의상).
    gym.js 의 메뉴가 이 파일을 불러 GymManage.tab(t, 시트) 를 부른다. 도전자 방문 계산 중에 GymManage.tickTrain(지금) 으로 훈련 경험치를 쌓는다.
    저장(S.gym): tr 훈련 중 [{id, t 마지막 계산, d 오늘 시작 시각, h 오늘 쓴 시간, fx 남은 경험치 조각, acc 특별 기술 확률용 시간}], trN 늘린 훈련장 칸,
      sf 고용 트레이너, cand 면접 지원자, own {꾸미기: 1}, dp 놓은 꾸미기(칸 순서), decoN 늘린 꾸미기 칸, fit 입은 관장 의상, fits {의상: 1} */
@@ -25,7 +25,7 @@ function draw() { if (!sh || !st()) return; sh.onclick = null; sh.classList.remo
 const redraw = () => { if (sh && !sh.hidden) draw(); };
 
 // ======================= 훈련장 (4단계) =======================
-const trMax = () => Math.min(6, 2 + (st().trN || 0));
+const trMax = () => Math.min(6, 2 + Math.max(st().trN || 0, Math.min(4, K.gradeOf(st().rep || 0).i)));   // 체육관 등급이 오르면 저절로 (예전에 넓힌 건 그대로)
 const TR_ST = { dummy: '지푸라기 타격대', sandbag: '샌드백', fly: '비행 장치', water: '물 위 장치' };
 const stOf = (P, i) => { const t = SPECIES[P.sp]?.t || []; return t.includes(3) ? 'fly' : t.includes(11) ? 'water' : t.includes(2) || i % 2 ? 'sandbag' : 'dummy'; };
 // 1시간 경험치: 레벨 10 은 1시간에 약 1레벨, 레벨 50 은 약 0.2레벨 (경완 기획 밸런스). 훈련광 트레이너가 있으면 +20%
@@ -191,7 +191,7 @@ function drawTrain() {
   sh.onclick = ev => {
     const c = ev.target.closest('[data-co]'); if (c) { sfx('tap'); const o = Y.co[+c.dataset.co]?.s; if (o) sfDetail(o); return; }
     const t = ev.target.closest('[data-p],[data-add]'); if (!t) return; sfx('tap');
-    if (t.dataset.add) return st().tr.length >= trMax() ? say(`훈련장이 가득 찼어요.${trMax() < 6 ? '<br><small>상점의 체육관 넓히기에서 늘릴 수 있어요.</small>' : ''}`) : pickTrain();
+    if (t.dataset.add) return st().tr.length >= trMax() ? say(`훈련장이 가득 찼어요.${trMax() < 6 ? '<br><small>체육관 등급이 오르면 칸이 늘어나요.</small>' : ''}`) : pickTrain();
     trPop(+t.dataset.p || t.dataset.p);
   };
   { const x = coachX(); if (x > 1.001) el.insertAdjacentHTML('beforeend', `<div class="ty-info">💪 코치 보너스 <b>+${Math.round((x - 1) * 100)}%</b></div>`); }
@@ -379,12 +379,13 @@ function interview() {
 }
 
 // ======================= 상점 (5단계) =======================
-const SHOP_T = [['tm', '기술머신'], ['deco', '꾸미기'], ['fit', '관장 의상'], ['up', '체육관 넓히기']];
+const SHOP_T = [['tm', '기술머신'], ['deco', '꾸미기'], ['fit', '관장 의상']];   // 넓히기는 빼고 등급 따라 저절로 (경완 2026-10-28)
 const tmPrice = x => x[3] === 2 ? 500 : (x[4] || 0) <= 50 ? 300 : x[4] <= 70 ? 700 : x[4] <= 85 ? 1200 : x[4] <= 100 ? 2000 : 3000;
 function drawShop() {
+  if (!SHOP_T.some(([k]) => k === shopT)) shopT = 'tm';
   sh.innerHTML = `<h3>체육관 상점</h3><div class="sp-tabs" role="tablist">${SHOP_T.map(([k, n]) => `<button role="tab" data-st="${k}" aria-selected="${shopT === k}">${n}</button>`).join('')}</div><div class="sp-body"></div>`;
   const body = sh.querySelector('.sp-body');
-  ({ tm: shopTm, deco: shopDeco, fit: shopFit, up: shopUp })[shopT](body);
+  ({ tm: shopTm, deco: shopDeco, fit: shopFit })[shopT](body);
   const inner = body.onclick; body.onclick = null;
   sh.onclick = e => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.st) { sfx('tap'); shopT = b.dataset.st; redraw(); return; } inner?.(e, b); };
 }
@@ -396,7 +397,7 @@ function shopTm(body) {
   if (tmTy !== -1 && !types.includes(tmTy)) tmTy = -1;   // -1 = 전체 (경완 2026-10-27 '에스퍼 포켓몬이라고 에스퍼 기술만 배우는 건 아닌데')
   const L = [...can.keys()].map(i => D.mv[i]).filter(x => tmTy === -1 || x[2] === tmTy).sort((a, b) => (tmTy === -1 ? a[2] - b[2] : 0) || (b[3] !== 2) - (a[3] !== 2) || (b[4] || 0) - (a[4] || 0));
   const own = Object.values(g.tms).reduce((a, n) => a + (n || 0), 0);
-  body.innerHTML = `<p class="gy-lead">체육관 포켓몬이 배울 수 있는 기술머신이에요. 산 기술머신은 가방에 들어가요. 가르치기는 배틀 메뉴나 훈련장에서 포켓몬을 누르고 <b>기술머신</b> 단추로 해요.${own ? ` <span class="tm-bag">가진 기술머신 ${own}개</span>` : ''}</p>
+  body.innerHTML = `${own ? `<p class="tm-bagl"><span class="tm-bag">가진 기술머신 ${own}개</span></p>` : ''}
     ${types.length ? `<div class="sp-chips tm-f"><button data-ty="-1" aria-pressed="${tmTy === -1}">전체</button>${types.map(t => `<button data-ty="${t}" aria-pressed="${t === tmTy}">${GA.tyIcon(t)}${TYPE_KO[t]}</button>`).join('')}</div>` : `<p class="sf-none">${TYPE_KO[g.ty]} 타입 포켓몬이 아직 없어요.</p>`}
     <div class="sp-list">${L.map(x => `<button class="sp-tm" data-tm="${x[0]}"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png"><span class="tm-nm"><b>${esc(x[1])}</b>${g.tms[x[0]] ? `<i class="tm-own">×${g.tms[x[0]]}</i>` : ''}</span><span class="tm-meta">${GB().tyTag(x[2], x[3])}<small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}</small></span><em>${gold(tmPrice(x))}</em></button>`).join('')}</div>`;
   body.onclick = (e, b) => { sfx('tap'); if (b.dataset.ty) { tmTy = +b.dataset.ty; redraw(); return; } if (b.dataset.tm) buyTm(b.dataset.tm, can); };
@@ -416,7 +417,7 @@ function buyTm(id, can) {
 function shopDeco(body) {
   const g = st(), G = K.gradeOf(g.rep || 0).i, max = K.decoMax(); g.own = g.own || {}; g.dp = (g.dp || []).slice(0, 8);
   const placed = Array.from({ length: max }, (_, i) => g.dp[i] || null);
-  body.innerHTML = `<p class="gy-lead">본가 비밀기지 인형·쿠션으로 체육관을 꾸며요. 사면 빈 자리에 놓이고, 원하는 칸으로 옮길 수 있어요.</p>
+  body.innerHTML = `
     <div class="dc-place"><div><b>놓인 꾸미기 ${placed.filter(Boolean).length}/${max}</b><small>맵에서 칸을 골라 직접 놓아요</small></div><button class="gy-key main" data-place="1">직접 놓기</button></div>
     <h4 class="sf-h">상품</h4><div class="dc-grid">${Object.entries(K.DECO).map(([k, o]) => { const lock = G < o.lv, own = g.own[k];
       return `<button data-dc="${k}" class="${own ? 'own' : ''}${lock ? ' lock' : ''}"><span class="dc-pic"><img alt="" src="${IMG}deco/${k}.png" class="${o.w > 16 ? 'big' : ''}"></span><b>${o.n}</b><em>${own ? (placed.includes(k) ? '놓여 있음' : '가지고 있음') : lock ? `${K.gradeOf([0, 100, 250, 450, 700, 1000][o.lv]).n}부터` : gold(o.g)}</em></button>`; }).join('')}</div>`;
@@ -424,7 +425,7 @@ function shopDeco(body) {
     sfx('tap');
     if (b.dataset.place) return K.decoEdit();
     const k = b.dataset.dc; if (!k) return; const o = K.DECO[k];
-    if (g.own[k]) { if (placed.includes(k)) { g.dp[placed.indexOf(k)] = null; } else { const i = placed.indexOf(null); if (i < 0) return say('꾸미기 자리가 꽉 찼어요. 놓인 것을 눌러 치우거나, 체육관 넓히기에서 자리를 늘려 주세요.'); g.dp[i] = k; } K.save(); redraw(); return; }
+    if (g.own[k]) { if (placed.includes(k)) { g.dp[placed.indexOf(k)] = null; } else { const i = placed.indexOf(null); if (i < 0) return say('꾸미기 자리가 꽉 찼어요. 놓인 것을 눌러 치워 주세요. 체육관 등급이 오르면 자리가 늘어나요.'); g.dp[i] = k; } K.save(); redraw(); return; }
     if (G < o.lv) return say(`${K.gradeOf([0, 100, 250, 450, 700, 1000][o.lv]).n}이 되면 살 수 있어요.`);
     pop(`<h4>${o.n}</h4><div class="dc-big"><img alt="" src="${IMG}deco/${k}.png"></div><div class="gy-btns"><button data-a="x">그만두기</button><button class="main" data-a="y">${gold(o.g)} 사기</button></div>`, (a, close) => {
       close(); if (a !== 'y') return; if (!spend(o.g)) return say('골드가 모자라요.');
@@ -437,7 +438,7 @@ function shopFit(body) {
   const need = o => K.gradeOf([0, 100, 250, 450, 700, 1000][o.lv]).n;
   const row = (k, o) => { const own = !k || g.fits[k], on = (g.fit || '') === k, lock = o.lv && G < o.lv;
     return `<button data-fit="${k}" class="${on ? 'on' : ''}${lock ? ' lock' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${o.n}</b><em>${on ? '입는 중' : own ? '입기' : lock ? `${need(o)}부터` : gold(o.g)}</em></button>`; };
-  body.innerHTML = `<p class="gy-lead">체육관에서 입는 관장 옷이에요. 옷마다 모양이 달라요. 맵과 배틀 뒷모습은 옷 색이 바뀌어요. 눌러서 입은 모습을 미리 볼 수 있어요.</p><div class="ft-grid">${row('', { n: '기본 옷' })}${Object.entries(K.OUTFITS).map(([k, o]) => row(k, o)).join('')}</div>`;
+  body.innerHTML = `<div class="ft-grid">${row('', { n: '기본 옷' })}${Object.entries(K.OUTFITS).map(([k, o]) => row(k, o)).join('')}</div>`;
   body.querySelectorAll('img[data-fk]').forEach(im => K.fitSrc('tr', im.dataset.fk).then(u => { im.src = u; }));
   body.onclick = async (e, b) => {
     sfx('tap'); const k = b.dataset.fit; if (k == null) return; const o = k ? K.OUTFITS[k] : { n: '기본 옷' }, own = !k || g.fits[k], on = (g.fit || '') === k, lock = o.lv && G < o.lv;
@@ -449,22 +450,5 @@ function shopFit(body) {
       close(); if (a === 'y' && !spend(o.g)) return say('골드가 모자라요.'); if (a === 'y') g.fits[k] = 1; g.fit = k; K.save(); redraw(); K.renderHome(); });
   };
 }
-// 체육관 넓히기 (경완 2026-10-27 '애매한 듯'): 단계 하나씩 올리고, 단계마다 무엇이 늘어나는지 보여 준다. 다음 단계는 체육관 등급이 있어야 열린다
-const UPS = [[0, 0, 0], [1, 2, 1500], [2, 4, 3500], [3, 5, 6000], [4, 6, 10000]];   // [필요 등급, 이 단계까지 늘어난 (훈련장 칸, 꾸미기 자리), 값]
-function upLv(g) { let n = 0; UPS.forEach((u, i) => { if ((g.trN || 0) >= u[0] && (g.decoN || 0) >= u[1]) n = i; }); return n; }
-function shopUp(body) {
-  const g = st(), G = K.gradeOf(g.rep || 0), lv = upLv(g), nx = UPS[lv + 1];
-  const card = (i, u) => `<div class="up-lv${i <= lv ? ' done' : i === lv + 1 ? ' next' : ''}"><i>${i + 1}단계</i><div><b>${i ? `훈련장 ${2 + u[0]}칸 · 꾸미기 ${2 + u[1]}자리` : '처음 체육관 (훈련장 2칸 · 꾸미기 2자리)'}</b><small>${i <= lv ? '완료' : `${K.gradeOf([0, 100, 250, 450, 700, 1000][u[0]]).n}부터 · ${u[2].toLocaleString()}G`}</small></div></div>`;
-  body.innerHTML = `<p class="gy-lead">체육관을 넓히면 훈련장 칸과 꾸미기 자리가 함께 늘어나요. 다음 단계는 체육관 등급이 올라야 열려요. 지금 등급: <b>${G.n}</b></p>
-    <div class="up-list">${UPS.map((u, i) => card(i, u)).join('')}</div>
-    ${nx ? `<button class="gy-key${G.i >= nx[0] ? ' main' : ''} up-go" data-up="1" ${G.i >= nx[0] ? '' : 'disabled'}>${G.i >= nx[0] ? `${gold(nx[2])} 내고 ${lv + 2}단계로 넓히기` : `${K.gradeOf([0, 100, 250, 450, 700, 1000][nx[0]]).n}이 되면 넓힐 수 있어요`}</button>` : '<p class="sf-none">체육관을 끝까지 넓혔어요!</p>'}
-    <div class="up-row"><div><b>트레이너 자리</b><small>${K.staffMax()}/5 · 체육관 등급이 오르면 저절로 늘어요</small></div></div>
-    <div class="up-row"><div><b>도전자 방문</b><small>하루 ${2 + (G.i >= 2) + (G.i >= 4)}~${3 + (G.i >= 2) + (G.i >= 4)}명 · 체육관 등급이 오르면 늘어요</small></div></div>`;
-  body.onclick = (e, b) => {
-    sfx('tap'); if (!b.dataset.up || !nx || G.i < nx[0]) return; if (!spend(nx[2])) return say('골드가 모자라요.');
-    g.trN = Math.max(g.trN || 0, nx[0]); g.decoN = Math.max(g.decoN || 0, nx[1]); K.glog('tr', `체육관을 ${lv + 2}단계로 넓혔다! <small>훈련장 ${2 + g.trN}칸 · 꾸미기 ${K.decoMax()}자리</small>`); K.save(); redraw(); K.renderHome();
-  };
-}
-
 window.GymManage = { tab, tickTrain, redraw };
 })();
