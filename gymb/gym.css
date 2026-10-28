@@ -603,7 +603,7 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .bt.mob .bt-top{transform:scale(var(--k));transform-origin:0 0;top:var(--st,0px)}
 .bt.mob .bt-bot{transform:scale(var(--k));transform-origin:0 0;top:var(--bt);bottom:auto;height:var(--bh,192px)}
 .bt.mob .bt-hinge{display:none}
-.bt.mob.msgmid .bt-top{height:162px}
+.bt.mob.msgmid .bt-top{height:144px}
 .bt.mob .bt-mid{display:flex;position:absolute;left:0;right:0;top:var(--mt);height:var(--mh);align-items:center;justify-content:center;background:#0c0d12}
 .bt-mid .bt-msg{position:relative;left:auto;right:auto;bottom:auto;width:252px;height:48px;flex:none;box-sizing:border-box;transform:scale(var(--k))}
 .bt.mob::before,.bt.mob::after{content:'';position:absolute;left:0;right:0;background:#0c0d12;z-index:0}
@@ -793,7 +793,7 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .gy-sum .sm-ty{display:inline-flex;align-items:center;gap:5px;padding:5px 10px 5px 6px;border-radius:999px;background:var(--tc);color:#fff;font-size:14px;font-weight:700;text-shadow:0 1px 0 rgba(0,0,0,.35)}
 .gy-sum .sm-ty .tyi{width:20px;height:20px;vertical-align:0}
 /* 경완 2026-10-28: 세로 화면에선 뒷모습이 발판 선(144)에서 잘리지 않게 장면 끝(162)까지, 아래 화면 위아래 회색 띠 없앰 */
-.bt.mob.msgmid .bt-mw.p{height:162px}
+.bt.mob.msgmid .bt-mw.p{height:144px}
 .bt.mob .bt-bot{background:url(../gym/img/bt/sub_ball.png) center/256px 152px no-repeat,#fff}
 .bt.mob .bt-mid{background:#2a2a32}
 /* 상태창 글자 정렬 (경완 2026-10-28 '박스에 붙어 있거나 레벨이 삐져나옴'): 레벨은 오른쪽 안쪽 기준, 성별은 레벨 앞 */
@@ -851,3 +851,16 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 /* 싸우다 화면: 위 여백 없이 버튼이 아래 화면을 채움 (경완 2026-10-28) */
 .bt.mob .bp-main .bp-q{display:none}
 .bt.mob .bp-main{grid-template-rows:minmax(64px,2.2fr) minmax(40px,1fr);align-content:stretch;padding:16px 12px}
+/* 라인업 카드 2차 정리 (경완 2026-10-28 '카드 정리가 안된듯'): 한 화면에 들어오게 */
+.gy-pop .win:has(.mp-head) .iv-hex{grid-template-columns:132px 1fr;margin:0 0 10px;padding:4px 8px}
+.gy-pop .win:has(.mp-head) .iv-hex svg{width:132px;height:110px}
+.gy-pop .win:has(.mp-head) .iv-sum span:nth-of-type(n+2){font-size:11px}
+.gy-pop .win:has(.mp-head) .mp-mv p{display:none}
+.gy-pop .win:has(.mp-head) .mp-moves{gap:5px;margin-bottom:10px}
+.gy-pop .win:has(.mp-head) .mp-mv{padding:6px 8px;gap:2px}
+.gy-pop .win:has(.mp-head) .mp-mv b{font-size:14px}
+.gy-pop .win:has(.mp-head) .mp-mv span{display:flex;flex-direction:column;gap:2px}
+.gy-pop .win:has(.mp-head) .mp-head{margin-bottom:8px;padding-bottom:8px}
+.gy-pop .win:has(.mp-head) .mp-two{margin-bottom:8px}
+/* 랭크 배지 글자는 늘 흰색 (B~F 가 창 글자색을 물려받아 안 보이던 것, 경완 2026-10-28) */
+:is(#gym,.gy-pop,.bt) .rk:not(.S){color:#fff!important;text-shadow:1px 1px 0 rgba(0,0,0,.35)}
