@@ -833,3 +833,9 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .tg{align-items:center}
 .bt.mob .bp-main .bp-q{visibility:hidden}   /* 질문은 위 대화창에 (본가) */
 .bt-mid .bt-msg .cur{right:8px;bottom:4px;font-size:9px}
+/* 창고 아이콘은 이름판 아래 배경 없이, 이름판은 한 줄 전체 (경완 2026-10-28) */
+.gy-top{flex-direction:column;align-items:stretch;gap:6px}
+.gy-top .gy-store{align-self:flex-end;width:auto!important;min-height:0;padding:0 2px!important;background:none!important;border:0!important;box-shadow:none!important;color:#fff;text-shadow:1px 0 0 #20202c,-1px 0 0 #20202c,0 1px 0 #20202c,0 -1px 0 #20202c,1px 1px 0 #20202c;font-weight:700}
+.gy-top .gy-store::before,.gy-top .gy-store::after{display:none!important}
+.gy-store svg{width:36px;height:36px;filter:drop-shadow(1px 2px 0 rgba(0,0,0,.45))}
+.gy-simb{top:calc(var(--si-top,env(safe-area-inset-top)) + 150px)}
