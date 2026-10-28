@@ -980,3 +980,20 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 .if-two>div{justify-content:center;min-height:74px}
 .gy-perk>li{display:grid;grid-template-columns:42px 1fr;column-gap:10px;align-items:start}.gy-perk>li>.g-emb{grid-row:1/3;width:40px;height:46px}.gy-perk>li>.g-emb>i{font-size:7px}
 .gy-perk>li>div,.gy-perk>li>ul{grid-column:2}
+
+/* v10.62 경완 '아이콘 밤티': 꾸미기 = 화분, 도전자 명단 = 체크 클립보드 (둘 다 박스 없이) */
+#gym .gy-deco svg{width:40px;height:48px}
+.gy-qbtn{width:auto;height:auto;border:0;background:none;box-shadow:none;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.45));-webkit-tap-highlight-color:transparent}
+.gy-qbtn svg{width:40px;height:48px}.gy-qbtn:active{transform:translate(1px,1px);box-shadow:none}
+.gy-qbtn .gy-qn{right:-6px;top:-4px}
+/* v10.62 경완: 지원서 남은 시간 상태박스 · 카드가 화면 아래까지 꽉 · 점은 카드와 메뉴 사이 위아래 가운데 */
+.cv-card header{align-items:center}
+.cv-tm{display:inline-flex;align-items:center;gap:6px;padding:2px 8px 3px;background:rgba(255,255,255,.1);border:2px solid #8ea0c8;font-size:11px;line-height:1.2}
+.cv-tm em{font-style:normal;color:#c8d4f0}
+.cv-tm .cv-left{font-size:14px!important;color:#ffe27a!important;letter-spacing:.5px}
+.gy-sheet:has(.cv-deck) .cv-deck{flex:1 0 auto;align-items:stretch;padding-bottom:6px}
+.cv-deck .cv-photo{flex:1 0 176px;height:auto;min-height:176px}
+.gy-sheet:has(.cv-dots){padding-bottom:0}
+.cv-dots{flex:none;height:34px;margin:0 auto!important;align-items:center}
+.cv-deck .cv-photo{background:url(../gym/img/bt/bg_in1c.png) center bottom/cover no-repeat,#e8c070}
+.cv-deck .cv-photo img{align-self:end;margin:0 0 10px}
