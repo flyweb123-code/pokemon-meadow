@@ -598,7 +598,7 @@ async function challenge() {
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : pick(WIN_LINES), lose: N ? N.ln[2].replace('{me}', me) : pick(LOSE_LINES) };
     document.body.classList.add('gymBattle');
     let res;
-    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: REW[c.diff].g, r: REW[c.diff].r, rl: Math.max(-(g.rep || 0), REW[c.diff].rl) }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: c.music || (c.diff ? 'train' : 'train'), meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: REW[c.diff].g, r: REW[c.diff].r, rl: Math.max(-(g.rep || 0), REW[c.diff].rl) }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: c.music || (c.named && NAMED.find(n => n.id === c.named)?.music) || (c.named ? 'gymBattle' : 'train'), meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); }
     g.q.shift(); const R = REW[c.diff], won = !!res?.won, now = Date.now();
     let gold = 0, rep = 0;
@@ -643,7 +643,7 @@ const GUY_TOUR = () => [
   '고용 관리 탭에서 트레이너를\n훈련장 코치로 보낼 수도 있어요.\n코치는 훈련 경험치를 올려 줘요.',
   '[훈련장]에 포켓몬을 보내 두면\n앱을 꺼도 경험치가 쌓여요.\n하루 8시간까지 훈련해요.',
   '[상점]에서는 기술머신,\n꾸미기, 관장 의상을\n살 수 있어요. 평판이 오르면\n체육관이 저절로 넓어져요.',
-  '이름판을 누르면 체육관 정보,\n일지, 자격 배지, 주간 랭킹을\n볼 수 있어요.',
+  '이름판을 누르면 체육관 정보,\n자격 배지, 주간 랭킹을\n볼 수 있어요.',
   '한 타입으로 도전자를 100명\n막으면 자격 배지를 받아요.\n그럼 힘내세요, 관장님!',
 ];
 function guyAsk() {
@@ -714,23 +714,19 @@ function homeSay() {
   const n = g.q.length, b = $g('.gy-qn'); if (b) { b.hidden = !n; b.textContent = n; } $g('.gy-qbtn')?.classList.toggle('has', !!n);
   const pw = root.querySelector('.gy-qw'); if (pw) pw.redraw?.();
 }
-// 도전자 명단 (경완 2026-10-28 '화면 하단에 도전자 명단 아이콘, 누르면 새 화면에서'): 기다리는 도전자 / 체육관 일지
-let qT = 'q';
+// 도전자 명단 (경완 2026-10-28 '화면 하단에 도전자 명단 아이콘, 누르면 새 화면에서'): 기다리는 도전자만 (체육관 일지는 없앰, 경완 2026-10-28)
 function qPop() {
   root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-qw'; root.appendChild(el);
   const draw = el.redraw = () => { const g = st(), Q = g.q;
     let body;
-    if (qT === 'q') body = Q.length ? `<div class="qw-list">${Q.map((c, i) => `<div class="qw-row"><span class="qw-pic"><img alt="" src="${trSrc(c.tr)}"></span><div class="qw-tx"><small>${esc(c.cls)}${c.named ? ' · <em>이름 있는 트레이너</em>' : ''}</small><b>${esc(c.nm)}</b><span>${hhmm(c.t)}에 왔어요</span></div><button class="gy-key main" type="button" data-c="${i}">도전 받기</button></div>`).join('')}</div>`
-      : '<p class="qw-none">지금 기다리는 도전자가 없어요.<br>도전자가 오면 이 아이콘과 필드의 체육관 버튼에 빨간 점이 떠요.</p>';
-    else { const L = (g.log || []).slice(0, 80); let last = '';
-      body = L.length ? `<ul class="gy-hlog all">${L.map(([t, k, h]) => { const d = new Date(t), dk = `${d.getMonth() + 1}월 ${d.getDate()}일`, hd = dk !== last ? `<li class="hl-day">${dk}</li>` : ''; last = dk; return `${hd}<li><i>${LOG_IC[k] || '·'}</i><span>${h}</span><time>${hhmm(t)}</time></li>`; }).join('')}</ul>` : '<p class="qw-none">아직 기록이 없어요.</p>'; }
+    body = Q.length ? `<div class="qw-list">${Q.map((c, i) => `<div class="qw-row"><span class="qw-pic${c.named ? ' qw-sil' : ''}"><img alt="" src="${trSrc(c.tr)}"></span><div class="qw-tx"><small>${c.named ? '<em>이름 있는 트레이너</em>' : esc(c.cls)}</small><b>${c.named ? '???' : esc(c.nm)}</b><span>${hhmm(c.t)}에 왔어요</span></div><button class="gy-key main" type="button" data-c="${i}">도전 받기</button></div>`).join('')}</div>`
+      : '<p class="qw-none">지금 기다리는 도전자가 없어요.</p>';
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">도전자 명단</b></div>
-      <div class="gy-body"><div class="sp-tabs qw-tabs" role="tablist"><button type="button" role="tab" data-t="q" aria-selected="${qT === 'q'}">기다리는 도전자 <small>${Q.length}</small></button><button type="button" role="tab" data-t="log" aria-selected="${qT === 'log'}">체육관 일지</button></div>${body}</div>`; };
+      <div class="gy-body">${body}</div>`; };
   draw();
   el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap');
     if (b.dataset.a === 'x') return el.remove();
-    if (b.dataset.t) { qT = b.dataset.t; return draw(); }
     if (b.dataset.c) { const g = st(), c = g.q[+b.dataset.c]; if (!c) return draw(); g.q.splice(+b.dataset.c, 1); g.q.unshift(c); el.remove(); challenge(); } };
 }
 function renderGoldG() { const e = root && $g('.gy-goldn'); if (e) e.textContent = /[?&]studio/.test(location.search) ? '∞' : S.gold.toLocaleString(); }   // 홈 화면 골드는 뺐다 (경완 2026-10-27). 상점 등에서 쓰면 그대로
@@ -784,12 +780,12 @@ function infoPop() {
         <div class="if-big"><small>체육관 크기</small><b>${bigOf(g) + 1}<em>/ ${GRADES.length}단계</em></b>${canBig(g) ? '<button class="gy-key main" type="button" data-a="big">넓히기</button>' : ''}</div>
       </div>
       <h5>${TYPE_KO[g.ty]} 자격 배지</h5><div class="if-bdg"><img alt="" src="${IMG}badge/${g.ty}.png" class="${g.bdg?.[g.ty] ? 'on' : ''}"><div><b>${g.bdg?.[g.ty] ? '받았어요!' : `도전자 ${bk} / 100명 막기`}</b><i class="gy-bar"><i style="width:${bk}%"></i></i><small>모은 배지 ${nb} / 18</small></div></div>
-      <div class="gy-btns three if-btns"><button type="button" data-a="log">체육관 일지</button><button type="button" data-a="bdg">자격 배지</button><button type="button" data-a="rk">주간 랭킹</button></div>
+      <div class="gy-btns if-btns"><button type="button" data-a="bdg">자격 배지</button><button type="button" data-a="rk">주간 랭킹</button></div>
       <button class="if-re" type="button" data-a="re">폐업하고 새로 세우기</button>
     </div>`;
   fillMs(el);
   el.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap'); const a = b.dataset.a;
-    if (a === 'x') return el.remove(); if (a === 'perk') return perkPop(); if (a === 'big') return bigUp(el); if (a === 'log') return logPop(); if (a === 'bdg') return badgePop(); if (a === 'rk') return reportPop(true);
+    if (a === 'x') return el.remove(); if (a === 'perk') return perkPop(); if (a === 'big') return bigUp(el); if (a === 'bdg') return badgePop(); if (a === 'rk') return reportPop(true);
     if (a === 'nm') { el.remove(); return setup('nm'); }
     if (a === 're') return pop(`<h4>체육관 폐업</h4><p class="gy-msg" style="text-align:center">정말 폐업하시겠습니까?</p><div class="gy-btns"><button data-a="x">그만두기</button><button class="main" data-a="ok">폐업하기</button></div>`,
       (k, close) => { close(); if (k === 'ok') { el.remove(); closeFx().then(() => { if (open) setup(['d', 'ty', 'nm'], true); }); } });
@@ -839,7 +835,7 @@ function storePop() {
 // 체육관 시뮬레이터 (운영자, 경완 2026-10-28): 기다려야 볼 수 있는 것을 바로 불러 본다. 나오면 원래 체육관으로 되돌아간다 (beta.html gymSim)
 function simPop() {
   const g = st(); if (!g?.d) return say('체육관을 먼저 세워 주세요.');
-  const B = [['cand1', '지원자 1명 부르기'], ['cand3', '지원자 3명 부르기'], ['chal', '도전자 부르기'], ['named', '이름 있는 도전자'], ['rep+', '평판 +100'], ['rep-', '평판 -100'], ['gold', '골드 +10만'], ['rpt', '주간 보고서 보기'], ['bdg', '자격 배지 받기 연출'], ['log', '일지 예시 채우기'], ['new', '처음 세우기부터']];
+  const B = [['cand1', '지원자 1명 부르기'], ['cand3', '지원자 3명 부르기'], ['chal', '도전자 부르기'], ['named', '이름 있는 도전자'], ['rep+', '평판 +100'], ['rep-', '평판 -100'], ['gold', '골드 +10만'], ['rpt', '주간 보고서 보기'], ['bdg', '자격 배지 받기 연출'], ['new', '처음 세우기부터']];
   pop(`<h4>체육관 시뮬레이터</h4><p class="gy-msg">퇴근하면 들어오기 전 체육관으로 되돌아가요.</p><div class="gy-sim">${B.map(([a, n]) => `<button type="button" data-a="${a}">${n}</button>`).join('')}</div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => {
     close(); if (a === 'x') return; const now = Date.now();
     if (a === 'cand1' || a === 'cand3') { for (let i = a === 'cand1' ? 1 : 3; i--;) g.cands.push(mkCand(now)); g.candSeen = 0; save(); menuDot(); return say(`지원자가 왔어요! (지원서 ${g.cands.length}장)`, '트레이너 메뉴 › 지원서'); }
@@ -848,16 +844,8 @@ function simPop() {
     if (a === 'gold') { S.gold += 100000; save(); renderGoldG(); return say(`골드 ${S.gold.toLocaleString()}G`); }
     if (a === 'rpt') { g.rpt = g.rpt || { w: 3, l: 1, b: 12, g: 4200, rank: 7, seen: 0 }; return reportPop(true); }
     if (a === 'bdg') return badgeGet(g.ty);
-    if (a === 'log') { const L = [['in', '바다 소년 <b>민수</b>가 도전하러 왔다!'], ['win', '바다 소년 <b>민수</b>에게 이겼다! <small>+320G · 평판 +3</small>'], ['lose', '엘리트 트레이너 <b>지수</b>에게 졌다… <small>평판 -2</small>'], ['out', '등산가 <b>철호</b>는 기다리다 돌아갔다. <small>평판 -1</small>'], ['pay', '월급 300G']]; L.forEach(([k, h], i) => glog(k, h, now - i * 6e5)); save(); return homeSay(); }
     if (a === 'new') { S.gym = null; save(); clearEnts(); return intro(); }
   });
-}
-// 체육관 일지: 날짜별로 누가 왔고 누가 이겼는지
-const LOG_IC = { win: '🏆', lose: '💦', sf: '🛡', in: '🚪', out: '👋', pay: '💰', bdg: '🎖', wk: '📋', tr: '💪' };
-function logPop() {
-  const L = st().log || []; let last = '', html = '';
-  for (const [t, k, h] of L) { const d = new Date(t), dk = `${d.getMonth() + 1}월 ${d.getDate()}일`; if (dk !== last) { html += `<h5>${dk}</h5>`; last = dk; } html += `<p class="lg-${k}"><i>${LOG_IC[k] || '·'}</i><span>${h}</span><time>${hhmm(t)}</time></p>`; }
-  pop(`<h4>체육관 일지</h4><div class="gy-log">${html || '<p class="gy-msg">아직 기록이 없어요.</p>'}</div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }
 // 자격 배지 18칸: 받은 배지는 색, 아직이면 실루엣과 진행도
 function badgePop() {
@@ -939,7 +927,7 @@ function opened() {
   sfx('tap'); const fx = document.createElement('div'); fx.className = 'gy-fx'; const C = ['#e04838', '#ffd84a', '#58a8e0', '#6ab84a', '#f8f8f8'];
   for (let k = 0; k < 46; k++) { const i = document.createElement('i'); i.style.left = Math.random() * 100 + '%'; i.style.background = C[k % C.length]; i.style.setProperty('--dx', (Math.random() * 80 - 40) + 'px'); i.style.animationDelay = Math.random() * .6 + 's'; i.style.animationDuration = 1.6 + Math.random() * 1.2 + 's'; fx.appendChild(i); }
   root.appendChild(fx); setTimeout(() => fx.remove(), 3600);
-  say(`<b>${esc(st().nm)}</b>의 문을 열었다!`, '안내원을 눌러 보세요');
+  say(`<b>${esc(st().nm)}</b>의 문을 열었다!`);   // '안내원을 눌러 보세요' 문구 없앰 (경완 2026-10-28)
   setTimeout(() => kang(KANG_OPEN(), { lit: true }), 1400);
 }
 

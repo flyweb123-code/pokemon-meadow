@@ -999,3 +999,27 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 .cv-deck .cv-photo img{align-self:end;margin:0 0 10px}
 .lu-slot{height:118px;min-height:0;box-sizing:border-box}   /* 경완 2026-10-28: 빈 칸·찬 칸 같은 크기 */
 .gy-btns>button:only-child{grid-column:1/-1;width:100%}
+/* 경완 2026-10-28: 포켓몬 상세 카드 낮게 — 기술은 한 줄(이름·타입·형태·수치), 닫기는 오른쪽 위 ✕ */
+.gy-pop .win:has(.mp-head){position:relative}
+.mp-moves.mp-line{grid-template-columns:1fr;gap:4px}
+.mp-line .mp-mv{flex-direction:row;align-items:center;gap:6px;padding:6px 8px!important;min-height:0}
+.mp-line .mp-mv b{flex:none;font-size:13px!important}
+.mp-line .mp-mv .tg{display:inline-flex;align-items:center;gap:3px;flex:none}
+.mp-line .mp-mv em{margin-left:auto;font-style:normal;font-size:11px;color:var(--dim);white-space:nowrap}
+.mp-x{position:absolute;right:8px;top:8px;width:34px;height:34px;padding:0;display:grid;place-items:center;font-size:16px;line-height:1;min-height:0}
+.gy-pop .mp-btns button{min-height:40px}
+.gy-pop .win:has(.mp-head) .mp-line .mp-mv span.tg{flex-direction:row!important;gap:3px}
+/* 개체값: 누르면 가로 막대 (경완 2026-10-28) */
+.iv-hex{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.iv-hex .iv-bars{display:none}
+.iv-hex.bar{grid-template-columns:1fr 112px!important}
+.iv-hex.bar svg{display:none}.iv-hex.bar .iv-bars{display:flex;flex-direction:column;gap:5px;padding:4px 0}
+.ivb{display:grid;grid-template-columns:52px 1fr 24px;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#40404c}
+.ivb span i{font-style:normal;font-size:9px;margin-left:2px}
+.ivb.up span{color:#d83a30}.ivb.dn span{color:#3a6ad8}
+.ivb b{height:8px;background:#e6e9f0;box-shadow:inset 0 0 0 1px #c8d0dc;overflow:hidden}.ivb b i{display:block;height:100%;background:#f0b020}
+.ivb.up b i{background:#e8665c}.ivb.dn b i{background:#6a8ae0}
+.ivb em{font-style:normal;text-align:right;color:#2a58a8}
+.if-btns{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px}.if-btns button{width:100%}
+.gy-qw .gy-body{display:flex;flex-direction:column;flex:1}.gy-qw .qw-none{margin:auto;padding-bottom:60px;text-align:center}
+.qw-sil img{filter:brightness(0);opacity:.85}   /* 이름 있는 트레이너는 명단에서 실루엣 (경완 2026-10-28) */
