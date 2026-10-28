@@ -718,3 +718,4 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .bt.mob .pty{grid-template-columns:38px 1fr;grid-template-rows:1fr auto auto;padding:3px 6px 4px 4px;column-gap:4px}
 .bt.mob .pty .rk-fr{grid-row:1/4;align-self:center}.bt.mob .pty img{width:28px;height:28px}
 .bt.mob .pty b{align-self:end;font-size:11px}.bt.mob .pty .lv{right:7px;top:5px}
+.tm-bagl{margin:0 0 8px}

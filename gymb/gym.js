@@ -244,7 +244,7 @@ const DECO = {};
  ['statue', '체육관 석상', 2000, 1],
  ['big_snorlax_doll', '큰 잠만보 인형', 6000, 2], ['big_rhydon_doll', '큰 코뿌리 인형', 6000, 2], ['big_lapras_doll', '큰 라프라스 인형', 6000, 2], ['big_venusaur_doll', '큰 이상해꽃 인형', 8000, 3], ['big_charizard_doll', '큰 리자몽 인형', 8000, 3], ['big_blastoise_doll', '큰 거북왕 인형', 8000, 3], ['big_wailmer_doll', '큰 고래왕자 인형', 6000, 2],
  ['big_regirock_doll', '큰 레지락 인형', 12000, 4], ['big_regice_doll', '큰 레지아이스 인형', 12000, 4], ['big_registeel_doll', '큰 레지스틸 인형', 12000, 4]].forEach(([k, n, g, lv]) => { DECO[k] = { n, g, lv: lv || 0, w: /^big_/.test(k) ? 32 : 16, h: /^big_/.test(k) || k === 'statue' ? 32 : 16 }; });
-const decoMax = () => Math.min(8, 2 + (st().decoN || 0));
+const decoMax = () => Math.min(8, 2 + Math.max(st().decoN || 0, [0, 2, 4, 5, 6][Math.min(4, gradeOf(st().rep || 0).i)]));   // 등급 따라 저절로 (경완 2026-10-28 넓히기 뺌)
 // 꾸미기 자리: g.dp 놓은 것(순서), g.dpos {꾸미기: [x, y]} 직접 놓은 칸 (경완 2026-10-27 '산 거 직접 놓을 수 있게'). 칸이 없으면 맵의 기본 자리
 function decoList(g = st(), D = dzOf(g.d)) { const pos = g.dpos || {}, used = new Set(sfList(g, D).map(z => z[1] + ',' + z[2])), out = [];
   (g.dp || []).filter(Boolean).slice(0, decoMax()).forEach((k, i) => { let p = pos[k] && pos[k][2] === D.id && D.toV(pos[k][1]) != null && D.toVx(pos[k][0]) != null ? [D.toVx(pos[k][0]), D.toV(pos[k][1])] : null; if (p && !freeTile(D, p[0], p[1], used)) p = null;
@@ -282,7 +282,7 @@ function decoEdit() {
     const L = decoList(g, D), hit = L.find(z => z[1] === x && z[2] === y); if (hit) { sfx('tap'); ded.sel = hit[0]; return draw(); }
     if (!ded.sel) return; const used = new Set(L.filter(z => z[0] !== ded.sel).map(z => z[1] + ',' + z[2]));
     if (!freeTile(D, x, y, used)) { sfx('no'); return; }
-    if (!g.dp.includes(ded.sel)) { if (g.dp.length >= decoMax()) { $g('.gy-dsub').innerHTML = '꾸미기 자리가 꽉 찼어요. 하나를 치우거나 체육관을 넓혀 주세요.'; return; } g.dp.push(ded.sel); }
+    if (!g.dp.includes(ded.sel)) { if (g.dp.length >= decoMax()) { $g('.gy-dsub').innerHTML = '꾸미기 자리가 꽉 찼어요. 하나를 치워 주세요.'; return; } g.dp.push(ded.sel); }
     g.dpos[ded.sel] = [D.toFx(x), D.toF(y), D.id]; sfx('tap'); save(); draw(); };
   draw();
 }
@@ -589,7 +589,7 @@ const GUY_TOUR = () => [
   '[트레이너] 메뉴의 지원서 탭에\n가끔 지원자가 와요. 면접을 보고\n고용하면 도전자를 먼저 막아 줘요.',
   '고용 관리 탭에서 트레이너를\n훈련장 코치로 보낼 수도 있어요.\n코치는 훈련 경험치를 올려 줘요.',
   '[훈련장]에 포켓몬을 보내 두면\n앱을 꺼도 경험치가 쌓여요.\n하루 8시간까지 훈련해요.',
-  '[상점]에서는 기술머신,\n꾸미기, 관장 의상, 체육관\n넓히기를 살 수 있어요.',
+  '[상점]에서는 기술머신,\n꾸미기, 관장 의상을\n살 수 있어요. 평판이 오르면\n체육관이 저절로 넓어져요.',
   '이름판을 누르면 체육관 정보,\n일지, 자격 배지, 주간 랭킹을\n볼 수 있어요.',
   '한 타입으로 도전자를 100명\n막으면 자격 배지를 받아요.\n그럼 힘내세요, 관장님!',
 ];
@@ -675,7 +675,7 @@ const SOON = {
   battle: { t: '배틀', ic: 'tr/red', d: '도전자와 본가처럼 턴제 배틀을 해요.', li: ['체육관 타입 포켓몬으로 6마리까지 라인업', '라인업 저장해 두고 골라 쓰기', '이기면 골드·친밀도·경험치'] },
   train: { t: '훈련장', ic: 'tr/black_belt', d: '포켓몬을 풀어 두면 천천히 경험치가 쌓여요.', li: ['지푸라기 타격대·샌드백을 치는 모션', '새 포켓몬은 날기 장치, 물 포켓몬은 물 위 장치', '가끔 특별한 기술을 배워요'] },
   staff: { t: '트레이너', ic: 'tr/cool_trainer_f', d: '체육관에 트레이너를 5명까지 고용해요.', li: ['가끔 오는 면접 제안', '트레이너마다 특성 (예: 훈련광)', '도전자를 먼저 상대해 주고, 월급은 7일마다'] },
-  shop: { t: '체육관 상점', ic: 'tr/gentleman', d: '체육관 운영에 필요한 것을 사요.', li: ['기술머신으로 포켓몬에게 기술 가르치기', '체육관 꾸미기 아이템', '평판이 오르면 체육관 넓히기'] },
+  shop: { t: '체육관 상점', ic: 'tr/gentleman', d: '체육관 운영에 필요한 것을 사요.', li: ['기술머신으로 포켓몬에게 기술 가르치기', '체육관 꾸미기 아이템', '관장 의상'] },
 };
 function openTab(t) {
   // 꾸미기·자리 정하기 중에 다른 메뉴를 열면 그 모드를 끝낸다 (경완 2026-10-27 '꾸미기 하고 나서 맵에 그리드 안 사라지는 오류')
