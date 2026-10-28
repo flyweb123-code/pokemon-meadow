@@ -133,8 +133,10 @@ function build() {
       <div class="gy-stage"><div class="gy-map"><img alt=""><div class="gy-ents"></div></div></div>
       <div class="gy-top">
         <button class="win gy-plate" type="button" aria-label="체육관 정보"><span class="gy-nm"></span><span class="gy-grade"></span><span class="gy-rep"><em>평판</em><i class="gy-bar"><i></i></i><b class="gy-repn"></b></span></button>
-        <button class="gy-store" type="button" aria-label="창고"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 3h12v1H2zM1 4h1v3H1zM14 4h1v3h-1zM2 7h12v1H2zM2 8h1v6H2zM13 8h1v6h-1zM3 14h10v1H3zM6 9h4v1H6zM6 10h1v1H6zM9 10h1v1H9zM6 11h4v1H6z"/><path fill="#c8783c" d="M2 4h12v3H2zM3 8h10v6H3z"/><path fill="#e8a060" d="M2 4h12v1H2zM3 8h10v1H3z"/><path fill="#f0c040" d="M7 10h2v1H7z"/><path fill="#8a4a24" d="M3 13h10v1H3zM7 4h2v3H7z"/></svg><span>창고</span></button>
       </div>
+      <!-- 필드와 같은 자리 (경완 2026-10-28): 꾸미기 = 맵 편집 자리(왼쪽 위), 창고 = 가방 자리(오른쪽) -->
+      <button class="gy-deco" type="button" aria-label="꾸미기"></button>
+      <button class="gy-store mapico" type="button" aria-label="창고"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 3h12v1H2zM1 4h1v3H1zM14 4h1v3h-1zM2 7h12v1H2zM2 8h1v6H2zM13 8h1v6h-1zM3 14h10v1H3zM6 9h4v1H6zM6 10h1v1H6zM9 10h1v1H9zM6 11h4v1H6z"/><path fill="#c8783c" d="M2 4h12v3H2zM3 8h10v6H3z"/><path fill="#e8a060" d="M2 4h12v1H2zM3 8h10v1H3z"/><path fill="#f0c040" d="M7 10h2v1H7z"/><path fill="#8a4a24" d="M3 13h10v1H3zM7 4h2v3H7z"/></svg></button>
       <button class="win gy-simb" type="button">시뮬</button>
       <div class="win blue gy-dlg" aria-live="polite"></div>
       <section class="gy-sheet" hidden></section>
@@ -145,6 +147,8 @@ function build() {
   document.body.appendChild(root);
   $g('.gy-plate').onclick = () => { sfx('tap'); infoPop(); };
   $g('.gy-store').onclick = () => { sfx('tap'); if (ded) ded.end?.(); storePop(); };
+  { const ms = document.querySelector('#btnMapEdit svg'); if (ms) $g('.gy-deco').appendChild(ms.cloneNode(true)); }   // 필드 맵 편집 아이콘 그대로
+  $g('.gy-deco').onclick = () => { sfx('tap'); root.querySelectorAll('.gy-infos').forEach(x => x.remove()); if (!ded) decoEdit(); };
   $g('.gy-simb').onclick = () => { sfx('tap'); simPop(); };
   $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = b.dataset.t; if (t === 'out') return exit(); sfx('tap');
     const cov = root.querySelectorAll('.gy-boxw,.gy-infos'); if (cov.length) { cov.forEach(x => x.remove()); return openTab(t); }   // 포켓몬 고르기·정보 화면 위에서 메뉴를 누르면 그 화면을 닫고 그 메뉴로 (경완 2026-10-28)
@@ -813,7 +817,7 @@ function storePop() {
     let body = '';
     if (storeT === 'tm') { const D = GB()?.D, L = Object.entries(g.tms).filter(([, n]) => n > 0).map(([id, n]) => [GB()?.mvOf?.(id), n, id]).filter(([x]) => x);
       body = !D ? '<p class="gy-lead">불러오는 중…</p>' : L.length ? `<p class="st-tip">배틀 메뉴나 훈련장에서 포켓몬을 누르고 '기술머신'으로 가르쳐요.</p><div class="sp-list">${L.map(([x, n]) => `<div class="sp-tm"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png"><span class="tm-nm"><b>${esc(x[1])}</b><i class="tm-own">×${n}</i></span><span class="tm-meta">${GB().tyTag(x[2], x[3])}<small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}</small></span></div>`).join('')}</div>` : '<p class="sf-none">가진 기술머신이 없어요. 상점에서 사 오세요.</p>'; }
-    if (storeT === 'deco') body = dk.length ? `<div class="dc-place"><div><b>놓인 꾸미기 ${g.dp.length}개</b><small>누르면 놓거나 넣어 둬요</small></div><button class="gy-key main" type="button" data-a="place">직접 놓기</button></div><div class="dc-grid">${dk.map(k => `<button type="button" data-dc="${k}" class="${g.dp.includes(k) ? 'own' : ''}"><span class="dc-pic"><img alt="" src="${IMG}deco/${k}.png" class="${DECO[k].w > 16 ? 'big' : ''}"></span><b>${DECO[k].n}</b><em>${g.dp.includes(k) ? '놓여 있음' : '창고에 있음'}</em></button>`).join('')}</div>` : '<p class="sf-none">가진 꾸미기가 없어요. 상점에서 사 오세요.</p>';
+    if (storeT === 'deco') body = dk.length ? `<div class="dc-grid">${dk.map(k => `<button type="button" data-dc="${k}" class="${g.dp.includes(k) ? 'own' : ''}"><span class="dc-pic"><img alt="" src="${IMG}deco/${k}.png" class="${DECO[k].w > 16 ? 'big' : ''}"></span><b>${DECO[k].n}</b><em>${g.dp.includes(k) ? '놓여 있음' : '창고에 있음'}</em></button>`).join('')}</div>` : '<p class="sf-none">가진 꾸미기가 없어요. 상점에서 사 오세요.</p>';
     if (storeT === 'fit') body = `<div class="ft-grid">${['', ...fk].map(k => `<button type="button" data-fit="${k}" class="${(g.fit || '') === k ? 'on' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${k ? OUTFITS[k].n : '기본 옷'}</b><em>${(g.fit || '') === k ? '입는 중' : '입기'}</em></button>`).join('')}</div>`;
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">창고</b></div>
       <div class="gy-body"><div class="sp-tabs st-tabs" role="tablist">${T.map(([k, n, c]) => `<button type="button" role="tab" data-st="${k}" aria-selected="${storeT === k}">${n} <small>${c}</small></button>`).join('')}</div>${body}</div>`;

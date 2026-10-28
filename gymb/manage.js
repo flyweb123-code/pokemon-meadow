@@ -428,12 +428,10 @@ function shopDeco(body) {
   const g = st(), G = K.gradeOf(g.rep || 0).i; g.own = g.own || {}; g.dp = (g.dp || []).filter(Boolean);   // 개수 제한 없음 (경완 2026-10-28)
   const placed = g.dp;
   body.innerHTML = `
-    <div class="dc-place"><div><b>놓인 꾸미기 ${placed.length}개</b><small>맵에서 칸을 골라 직접 놓아요</small></div><button class="gy-key main" data-place="1">직접 놓기</button></div>
-    <h4 class="sf-h">상품</h4><div class="dc-grid">${Object.entries(K.DECO).map(([k, o]) => { const lock = G < o.lv, own = g.own[k];
+    <div class="dc-grid">${Object.entries(K.DECO).map(([k, o]) => { const lock = G < o.lv, own = g.own[k];
       return `<button data-dc="${k}" class="${own ? 'own' : ''}${lock ? ' lock' : ''}"><span class="dc-pic"><img alt="" src="${IMG}deco/${k}.png" class="${o.w > 16 ? 'big' : ''}"></span><b>${o.n}</b><em>${own ? (placed.includes(k) ? '놓여 있음' : '가지고 있음') : lock ? `${K.gradeOf([0, 100, 250, 450, 700, 1000][o.lv]).n}부터` : gold(o.g)}</em></button>`; }).join('')}</div>`;
   body.onclick = (e, b) => {
     sfx('tap');
-    if (b.dataset.place) return K.decoEdit();
     const k = b.dataset.dc; if (!k) return; const o = K.DECO[k];
     if (g.own[k]) { if (placed.includes(k)) g.dp.splice(placed.indexOf(k), 1); else g.dp.push(k); K.save(); redraw(); return; }
     if (G < o.lv) return say(`${K.gradeOf([0, 100, 250, 450, 700, 1000][o.lv]).n}이 되면 살 수 있어요.`);
