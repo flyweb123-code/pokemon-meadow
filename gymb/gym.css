@@ -692,7 +692,7 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .bt.mob .bp-main .bp-q{order:-1}
 .bt.mob .bp-main .fight{grid-column:1/-1;--c1:#f4706a;--c2:#d93a3c;border-radius:18px}.bt.mob .bp-main .fight span{font-size:22px;letter-spacing:2px}
 .bt.mob .bp-main .bag{--c1:#f7bb4a;--c2:#e48e1e}.bt.mob .bp-main .run{--c1:#62aef0;--c2:#2f7cd0}.bt.mob .bp-main .mon{--c1:#74c862;--c2:#3e9a3e}
-.bt.mob .bp-moves{grid-template-rows:repeat(2,minmax(52px,88px)) minmax(32px,44px);padding-left:8px;padding-right:8px;gap:7px}
+.bt.mob .bp-moves{grid-template-rows:repeat(2,minmax(52px,100px)) minmax(32px,44px);padding-left:8px;padding-right:8px;gap:7px}
 .bt.mob .bp-moves .cancel,.bt.mob .bp-party .cancel{grid-column:1/-1}
 .bt.mob .mvb{background:linear-gradient(color-mix(in srgb,var(--tc) 78%,#fff),var(--tc))!important;border-radius:12px;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.35);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -3px 0 rgba(0,0,0,.16),0 0 0 1.5px rgba(0,0,0,.28),0 3px 0 rgba(0,0,0,.18);display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;padding:7px 8px;gap:2px;box-sizing:border-box}
@@ -1129,7 +1129,7 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 /* 몬스터볼 자리 (경완 2026-10-28): 상대 = 상자 왼쪽 아래, 나 = 상자 오른쪽 아래. 상자 그림에 한 줄(8px)을 더 넣은 hb_*2.png */
 /* 포켓몬 수 볼은 정보 상자 바깥: 상대 = 상자 아래 왼쪽, 나 = 상자 위 오른쪽 (경완 2026-10-28) */
 .bt-hb .hbb{gap:1px!important;height:11px!important;box-sizing:border-box;align-items:center;padding:2px 4px;background:#303040;box-shadow:inset 0 1px 0 #585868,inset 0 -1px 0 #18181f}.bt-hb.e .hbb i+i{margin-left:0}
-.bt-hb.e .hbb{left:10px!important;top:45px!important;border-radius:0 0 4px 4px}
+.bt-hb.e .hbb{left:10px!important;top:1px!important;border-radius:4px 4px 0 0}.bt-hb.e .st{left:auto!important;right:24px}   /* 상대 볼도 상자 위 왼쪽, 상태 이상 탭은 오른쪽으로 (경완 2026-10-28) */
 .bt-hb.p .hbb{left:auto!important;right:2px;top:0!important;border-radius:4px 4px 0 0}
 /* 기술 버튼: 타입·물리/특수 표시를 위로 (경완 2026-10-28) */
 .bt.mob .mvb .tg{order:-1;margin-top:0!important;margin-bottom:3px!important}
@@ -1158,3 +1158,6 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 /* 혼란 병아리 (경완 2026-10-28) */
 .bt-conf{position:absolute;left:50%;top:22%;width:0;height:0;z-index:4;pointer-events:none}
 .bt-conf i{position:absolute;left:-8px;top:-8px;width:17px;height:15px;background:url(../gym/img/bt/st_duck.png) 0 0/17px 15px no-repeat;image-rendering:pixelated}
+/* 기술 버튼: 효과 표시와 PP 가 같은 줄에 겹치지 않게 PP 는 맨 아랫줄 오른쪽 (경완 2026-10-28) */
+.bt.mob .mvb .pp{position:static!important;align-self:flex-end;margin-top:auto!important;padding-top:2px}
+.bt.mob .mvb .eff{margin-top:2px!important}.bt.mob .mvb>*{flex-shrink:0}
