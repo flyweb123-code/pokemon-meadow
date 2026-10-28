@@ -59,9 +59,9 @@ const DESIGNS_FR = [
   { id: 'celadon', pt: 'eterna', n: '꽃 정원', sub: '무지개시티 체육관', w: 13, h: 20, leader: [6, 4], door: [6, 18], guy: [5, 17],
     deco: [[3, 10], [9, 10], [1, 16], [11, 16], [2, 17], [10, 17], [1, 12], [11, 12]],
     path: [[6, 18], [6, 5]], slots: [[7, 13, 'l'], [5, 12, 'r'], [7, 11, 'l'], [5, 10, 'r'], [7, 9, 'l'], [5, 14, 'r'], [7, 14, 'l'], [5, 5, 'r'], [7, 5, 'l']], inY: 14, tiny: [[6, 15], [[2, 3], [10, 11]]], fix: { t: [[2, 5, 5, 4, 1, 1]] }, cuts: [[6, 14], [9, 14], [9, 14], [6, 8], [13, 14]] },
-  { id: 'fuchsia', pt: 'veilstone', n: '넓은 무대', sub: '연분홍시티 체육관', w: 15, h: 16, leader: [7, 6], door: [7, 14], guy: [11, 13],
+  { id: 'fuchsia', pt: 'veilstone', n: '넓은 무대', sub: '연분홍시티 체육관', w: 15, h: 16, leader: [7, 6], door: [7, 14], guy: [8, 13],
     deco: [[2, 3], [12, 3], [2, 7], [12, 7], [3, 10], [11, 10], [2, 13], [12, 13]],
-    path: [[7, 14], [7, 8]], slots: [[8, 10, 'l'], [6, 10, 'r'], [8, 8, 'l'], [6, 8, 'r'], [9, 9, 'l'], [5, 9, 'r'], [9, 7, 'l'], [5, 7, 'r']], inY: 10, tiny: [[8, 11], [[1, 3], [12, 14]]], cuts: [[9, 10], [9, 10], [9, 10], [9, 10]] },
+    path: [[7, 14], [7, 8]], slots: [[8, 10, 'l'], [6, 10, 'r'], [8, 8, 'l'], [6, 8, 'r'], [9, 9, 'l'], [5, 9, 'r'], [9, 7, 'l'], [5, 7, 'r']], inY: 10, tiny: [[8, 11], [[1, 6], [9, 14]]], cuts: [[8, 11, [[1, 5], [10, 14]]], [9, 11, [[1, 4], [11, 14]]], [9, 10, [[1, 4], [11, 14]]], [9, 10]] },   // 경완 2026-10-28 '넓은 무대는 줄어든 느낌이 없네': 기둥 사이 칸도 잘라 좁게
 ];
 // 맵 묶음: 'fr' 파이어레드 칸토 체육관 / 'pt' 플라티나 (경완 2026-10-27 '맵은 이전 버전으로 바꿔줘봐 지금 캐릭터랑 묻는지 함 보게')
 const MAP_SET = 'fr';
@@ -72,10 +72,10 @@ const dzBase = id => DESIGNS.find(d => d.id === id) || DESIGNS.find(d => d.old =
 const OPEN = [0, .2, .4, .6, .8, 1];
 // cuts[등급] = [a, b]: 위아래 줄 그림이 이어지는 자리를 골라 둠 (경완 2026-10-27 '맵 줄인거 티나지 않게')
 // tiny = 새내기(등급 0) 체육관: [줄 [a, b], 칸 [[a, b], …]] 나·입구 기둥·안내원만 겨우 들어가게 (경완 2026-10-27 '맨 처음은 진짜 겁나 좁아야')
-function cutOf(D, gi) { if (gi == null) { const g = st(); if (!g) return null; gi = gradeOf(g.rep || 0).i; }
+function cutOf(D, gi) { if (gi == null) { const g = st(); if (!g) return null; gi = bigOf(g); }
   const f = D.fix?.[gi === 0 && D.tiny ? 't' : gi];
   if (gi === 0 && D.tiny) return { y: D.tiny[0], x: D.tiny[1] || [], f };
-  if (D.cuts) { const c = D.cuts[gi]; return c ? { y: c, x: [], f } : null; }
+  if (D.cuts) { const c = D.cuts[gi]; return c ? { y: [c[0], c[1]], x: c[2] || [], f } : null; }   // [a, b, 칸 자르기?]
   const a0 = D.leader[1] + 3, b0 = D.door[1] - 3; if (b0 - a0 < 2) return null;
   const a = a0 + Math.round((b0 - a0) * OPEN[gi]); return a < b0 ? { y: [a, b0], x: [] } : null; }
 // 잘라 낸 구간 R([[a, b], …], 오름차순)에 대해 원래 좌표 → 보이는 좌표(잘린 곳은 null), 그 반대
@@ -95,6 +95,8 @@ function dzOf(id, gi) {
     toV: v, toF: cutF(RY), toVx: vx, toFx: cutF(RX) }));
 }
 // 미리보기 그림을 지금 크기(data-gi 가 있으면 그 등급, 처음 열 때는 0 = 새내기)의 잘라 붙인 맵으로 (경완 2026-10-27)
+// 디자인 썸네일을 미리 그려 둔다 (경완 2026-10-28 '맵 썸네일이 바로 안 나오고 박스 텍스트 먼저')
+const preMs = gi => DESIGNS.forEach(d => mapSrc(dzOf(d.id, gi)).then(u => { const im = new Image(); im.src = u; im.decode?.().catch(() => {}); }));
 function fillMs(el) { el.querySelectorAll('img[data-ms]').forEach(im => { const gi = im.dataset.gi === '' || im.dataset.gi == null ? undefined : +im.dataset.gi; mapSrc(dzOf(im.dataset.ms, gi)).then(u => { im.src = u; }); }); }
 // 잘라 붙인 맵 그림 (이음매 없이)
 const mapCache = {};
@@ -111,6 +113,9 @@ function mapSrc(D) { const u = `${IMG}map/${D.id}.png`; if (!D.cut) return Promi
 // ---------- 평판·등급 ----------
 const REP_MAX = 1000;
 const GRADES = [[0, '새내기 체육관'], [100, '동네 체육관'], [250, '이름난 체육관'], [450, '인기 체육관'], [700, '명문 체육관'], [1000, '전설의 체육관']];
+// 체육관 크기 단계: 평판으로 등급이 오르면 체육관 정보에서 넓힌다 (경완 2026-10-28 '돈 내고 넓히는 것보다 평판 오르면'). g.big 없으면 예전 저장 = 등급 그대로
+const bigOf = (g = st()) => { const gi = gradeOf(g?.rep || 0).i; return g?.big == null ? gi : Math.min(g.big, gi); };
+const canBig = (g = st()) => !!g?.d && gradeOf(g.rep || 0).i > bigOf(g);
 const gradeOf = rep => { let i = 0; GRADES.forEach(([v], k) => { if (rep >= v) i = k; }); return { i, n: GRADES[i][1], lo: GRADES[i][0], hi: GRADES[i + 1]?.[0] ?? REP_MAX }; };
 
 // ---------- 저장 ----------
@@ -128,7 +133,9 @@ function build() {
       <div class="gy-stage"><div class="gy-map"><img alt=""><div class="gy-ents"></div></div></div>
       <div class="gy-top">
         <button class="win gy-plate" type="button" aria-label="체육관 정보"><span class="gy-nm"></span><span class="gy-grade"></span><span class="gy-rep"><em>평판</em><i class="gy-bar"><i></i></i><b class="gy-repn"></b></span></button>
+        <button class="win gy-store" type="button" aria-label="창고"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 3h12v1H2zM1 4h1v3H1zM14 4h1v3h-1zM2 7h12v1H2zM2 8h1v6H2zM13 8h1v6h-1zM3 14h10v1H3zM6 9h4v1H6zM6 10h1v1H6zM9 10h1v1H9zM6 11h4v1H6z"/><path fill="#c8783c" d="M2 4h12v3H2zM3 8h10v6H3z"/><path fill="#e8a060" d="M2 4h12v1H2zM3 8h10v1H3z"/><path fill="#f0c040" d="M7 10h2v1H7z"/><path fill="#8a4a24" d="M3 13h10v1H3zM7 4h2v3H7z"/></svg><span>창고</span></button>
       </div>
+      <button class="win gy-simb" type="button">시뮬</button>
       <div class="win blue gy-dlg" aria-live="polite"></div>
       <section class="gy-sheet" hidden></section>
     </div>
@@ -137,10 +144,28 @@ function build() {
     </nav>`;
   document.body.appendChild(root);
   $g('.gy-plate').onclick = () => { sfx('tap'); infoPop(); };
-  $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = b.dataset.t; if (t === 'out') return exit(); sfx('tap'); openTab(tab === t ? null : t); };
+  $g('.gy-store').onclick = () => { sfx('tap'); if (ded) ded.end?.(); storePop(); };
+  $g('.gy-simb').onclick = () => { sfx('tap'); simPop(); };
+  $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = b.dataset.t; if (t === 'out') return exit(); sfx('tap');
+    const cov = root.querySelectorAll('.gy-boxw,.gy-infos'); if (cov.length) { cov.forEach(x => x.remove()); return openTab(t); }   // 포켓몬 고르기·정보 화면 위에서 메뉴를 누르면 그 화면을 닫고 그 메뉴로 (경완 2026-10-28)
+    openTab(tab === t ? null : t); };
   // 퇴근은 손가락이 닿는 순간 로딩 화면부터 (click 을 기다리지 않음, 경완 2026-10-27 '여전히 바로 안 뜸')
   $g('.gy-menu .gy-out').addEventListener('pointerdown', e => { if (e.button) return; e.preventDefault(); exit(); });
   addEventListener('resize', () => { if (open) layout(st()?.d ? undefined : DESIGNS[0]); });
+  // 일지 접기·펴기 (경완 2026-10-28 '꾸미기 모드 관찰일지처럼'): ▼ 버튼은 대화창 글이 바뀌어도 늘 붙어 있게
+  const dlg = $g('.gy-dlg'), fb = document.createElement('button'); fb.type = 'button'; fb.className = 'gy-dfold'; fb.textContent = '▼';
+  fb.onclick = e => { e.stopPropagation(); sfx('tap'); dFold(!root.classList.contains('dfold')); };
+  const keep = () => { if (fb.parentNode !== dlg || dlg.lastChild !== fb) dlg.appendChild(fb); }; keep(); new MutationObserver(keep).observe(dlg, { childList: true });
+  dlg.addEventListener('click', e => { if (root.classList.contains('dfold') && !root.classList.contains('ded') && !busy && e.target !== fb) { e.stopPropagation(); sfx('tap'); dFold(false); } }, true);
+  try { if (localStorage.getItem('pk-gy-fold')) root.classList.add('dfold'); } catch (e) {}
+  // 빈 곳을 한 번 누르면 일지를 접고 이름판·버튼을 다 숨겨 메뉴만 남김, 다시 누르면 다 펼침 (경완 2026-10-28, 필드 fview 와 같음)
+  $g('.gy-stage').addEventListener('click', e => { if (ded || busy || root.classList.contains('pre') || root.querySelector('.gy-kang,.gy-pop,.gy-setup') || e.target.closest('.tap,.gy-prop.tap')) return;
+    const on = !root.classList.contains('dfold'); dFold(on); root.classList.toggle('gview', on); sfx('tap'); });
+}
+function dFold(on, auto = false) {
+  if (!on && auto && root.classList.contains('gview')) return; if (!on) root.classList.remove('gview');
+  root.classList.toggle('dfold', on); const fb = $g('.gy-dfold'); if (fb) fb.setAttribute('aria-label', on ? '일지 펴기' : '일지 접기');
+  if (!auto) try { localStorage.setItem('pk-gy-fold', on ? '1' : ''); } catch (e) {}
 }
 
 // 맵 크기: 화면 폭에 맞추고, 너무 길면 세로로 넘겨 본다
@@ -175,7 +200,7 @@ function place(e) {
   s.backgroundSize = `auto ${32 * sc}px`; s.backgroundPosition = `${-fr * e.fw * sc}px 0`; s.zIndex = Math.round(e.y * 10) + 10;
   e.el.classList.toggle('flip', e.f === 'r');
 }
-function prop(k, x, y) { const o = DECO[k]; if (!o) return; const e = { prop: 1, x, y, w: o.w, h: o.h, el: document.createElement('i') }; e.el.className = 'gy-prop'; e.el.style.backgroundImage = `url(${IMG}deco/${k}.png)`; $g('.gy-ents').appendChild(e.el); ents.push(e); place(e); return e; }
+function prop(k, x, y) { const o = DECO[k]; if (!o) return; const e = { prop: 1, k, x, y, w: o.w, h: o.h, el: document.createElement('i') }; e.el.className = 'gy-prop'; e.el.style.backgroundImage = `url(${IMG}deco/${k}.png)`; $g('.gy-ents').appendChild(e.el); ents.push(e); place(e); return e; }
 function clearEnts() { ents.forEach(e => e.el.remove()); ents = []; }
 // 칸을 따라 걷기 (한 칸 0.26초, 걸음 프레임 번갈아)
 async function walk(e, pts, spd = 260) {
@@ -270,24 +295,47 @@ function decoEdit() {
     renderHome(true); const L = decoList(g, D), on = new Set(L.map(x => x[0]));
     grid.style.setProperty('--t', 16 * sc + 'px'); grid.innerHTML = ded.sel && on.has(ded.sel) ? (([, x, y]) => `<i class="gg-sel" style="left:${x * 16 * sc}px;top:${y * 16 * sc}px;width:${16 * sc}px;height:${16 * sc}px"></i>`)(L.find(z => z[0] === ded.sel)) : '';
     const own = Object.keys(g.own).filter(k => DECO[k]);
-    $g('.gy-dlg').innerHTML = `<span class="gy-who">꾸미기 놓기 <small>${on.size}개</small></span><span class="gy-dsub">${ded.sel ? `<b>${DECO[ded.sel].n}</b>${on.has(ded.sel) ? ' · 옮길 칸을 누르세요' : ' · 놓을 칸을 누르세요'}` : own.length ? '꾸미기를 고르고 맵의 칸을 누르세요. 놓인 꾸미기를 눌러도 골라져요.' : '아직 산 꾸미기가 없어요. 상점에서 사 오세요.'}</span>
+    $g('.gy-dlg').innerHTML = `<span class="gy-who">꾸미기 놓기 <small>${on.size}개</small></span><span class="gy-dsub">${ded.sel ? `<b>${DECO[ded.sel].n}</b>${on.has(ded.sel) ? ' · 끌어서 옮기거나 칸을 누르세요' : ' · 끌어다 놓거나 칸을 누르세요'}` : own.length ? '꾸미기를 맵으로 끌어다 놓거나, 고르고 칸을 누르세요.' : '아직 산 꾸미기가 없어요. 상점에서 사 오세요.'}</span>
       <div class="gy-dpick">${own.map(k => `<button data-k="${k}" class="${k === ded.sel ? 'sel' : ''}${on.has(k) ? ' on' : ''}"><img alt="" src="${IMG}deco/${k}.png"></button>`).join('')}</div>
       <div class="gy-dyn">${ded.sel && on.has(ded.sel) ? '<button class="gy-dbtn2" type="button" data-a="rm">치우기</button>' : ''}<button class="gy-dbtn2 main" type="button" data-a="ok">완료</button></div>`;
   };
   ded.draw = draw; ded.end = decoDone;
-  $g('.gy-dlg').onclick = e => { const b = e.target.closest('button'); if (!b || !ded) return; e.stopPropagation(); sfx('tap');
+  $g('.gy-dlg').onclick = e => { const b = e.target.closest('button'); if (!b || !ded) return; e.stopPropagation(); if (b.dataset.k && Date.now() - noClick < 400) return; sfx('tap');
     if (b.dataset.k) { ded.sel = ded.sel === b.dataset.k ? null : b.dataset.k; return draw(); }
     if (b.dataset.a === 'rm') { g.dp = g.dp.filter(k => k !== ded.sel); delete g.dpos[ded.sel]; ded.sel = null; save(); return draw(); }
     if (b.dataset.a === 'ok') return decoDone(); };
-  map.onclick = e => { if (!ded) return; const r = map.getBoundingClientRect(), x = Math.floor((e.clientX - r.left) / (16 * sc)), y = Math.floor((e.clientY - r.top) / (16 * sc));
+  // 끌어다 놓기 (경완 2026-10-28 '필드 맵 편집처럼 끌어다 놓는 형식, 격자 기준'): 놓인 꾸미기나 아래 목록을 끌면 칸에 맞춰 따라오고, 놓으면 그 칸에
+  const tileAt = (cx, cy) => { const r = map.getBoundingClientRect(); return [Math.floor((cx - r.left) / (16 * sc)), Math.floor((cy - r.top) / (16 * sc))]; };
+  const stage = $g('.gy-stage'); let drag = null, noClick = 0;
+  const okAt = (k, x, y) => freeTile(D, x, y, new Set(decoList(g, D).filter(z => z[0] !== k).map(z => z[1] + ',' + z[2])));
+  const ghost = (k, x, y) => { let gh = grid.querySelector('.gg-gh'), tl = grid.querySelector('.gg-tile'); const o = DECO[k], ok = okAt(k, x, y);
+    if (!gh) { gh = document.createElement('i'); gh.className = 'gg-gh'; tl = document.createElement('i'); tl.className = 'gg-tile'; grid.append(tl, gh); }
+    gh.style.cssText = `background-image:url(${IMG}deco/${k}.png);width:${o.w * sc}px;height:${o.h * sc}px;left:${(x * 16 - (o.w - 16) / 2) * sc}px;top:${(y * 16 + 16 - o.h) * sc}px`;
+    tl.style.cssText = `left:${x * 16 * sc}px;top:${y * 16 * sc}px;width:${16 * sc}px;height:${16 * sc}px`; tl.classList.toggle('bad', !ok); return ok; };
+  const dim = (k, on) => ents.forEach(e => { if (e.prop && e.k === k) e.el.style.opacity = on ? .3 : ''; });
+  const move = e => { if (!drag || e.pointerId !== drag.pid) return; const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
+    if (!drag.on) { if (Math.hypot(dx, dy) < 8) return; if (drag.pal && Math.abs(dx) > Math.abs(dy)) { drag = null; return; } drag.on = true; if (drag.k) { dim(drag.k, true); grid.classList.add('drag'); } }
+    if (!drag.k) { stage.scrollLeft = drag.sl - dx; stage.scrollTop = drag.st - dy; return; }   // 빈 곳을 끌면 맵 넘기기
+    e.preventDefault(); const [x, y] = tileAt(e.clientX, e.clientY); drag.t = [x, y]; drag.ok = ghost(drag.k, x, y);
+    const r = stage.getBoundingClientRect(); if (e.clientY < r.top + 48) stage.scrollTop -= 10; else if (e.clientY > r.bottom - 48) stage.scrollTop += 10; };
+  const up = e => { if (!drag || e.pointerId !== drag.pid) return; const d = drag; drag = null; removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up);
+    grid.classList.remove('drag'); grid.querySelectorAll('.gg-gh,.gg-tile').forEach(x => x.remove()); if (d.k) dim(d.k, false);
+    if (!d.on || e.type === 'pointercancel') return; noClick = Date.now();
+    if (!d.k) return; if (!d.ok) { sfx('no'); return draw(); }
+    if (!g.dp.includes(d.k)) g.dp.push(d.k); g.dpos[d.k] = [D.toFx(d.t[0]), D.toF(d.t[1]), D.id]; ded.sel = d.k; sfx('tap'); save(); draw(); };
+  const begin = (k, e, pal) => { if (!ded || e.button) return; drag = { k, pal, pid: e.pointerId, x0: e.clientX, y0: e.clientY, sl: stage.scrollLeft, st: stage.scrollTop };
+    addEventListener('pointermove', move, { passive: false }); addEventListener('pointerup', up); addEventListener('pointercancel', up); };
+  map.onpointerdown = e => { if (!ded) return; const [x, y] = tileAt(e.clientX, e.clientY), hit = decoList(g, D).find(z => z[1] === x && z[2] === y); begin(hit ? hit[0] : null, e); };
+  $g('.gy-dlg').onpointerdown = e => { const b = e.target.closest('.gy-dpick button[data-k]'); if (b) begin(b.dataset.k, e, true); };
+  // 그냥 누르기: 놓인 꾸미기 = 고르기, 빈 칸 = 고른 꾸미기를 거기에
+  map.onclick = e => { if (!ded || Date.now() - noClick < 400) return; const [x, y] = tileAt(e.clientX, e.clientY);
     const L = decoList(g, D), hit = L.find(z => z[1] === x && z[2] === y); if (hit) { sfx('tap'); ded.sel = hit[0]; return draw(); }
-    if (!ded.sel) return; const used = new Set(L.filter(z => z[0] !== ded.sel).map(z => z[1] + ',' + z[2]));
-    if (!freeTile(D, x, y, used)) { sfx('no'); return; }
+    if (!ded.sel) return; if (!okAt(ded.sel, x, y)) { sfx('no'); return; }
     if (!g.dp.includes(ded.sel)) g.dp.push(ded.sel);
     g.dpos[ded.sel] = [D.toFx(x), D.toF(y), D.id]; sfx('tap'); save(); draw(); };
   draw();
 }
-function decoDone() { if (!ded) return; ded = null; root.classList.remove('ded'); $g('.gy-map .gy-grid')?.remove(); $g('.gy-map').onclick = null; $g('.gy-dlg').onclick = null; renderHome(); }
+function decoDone() { if (!ded) return; ded = null; root.classList.remove('ded'); $g('.gy-map .gy-grid')?.remove(); $g('.gy-map').onclick = null; $g('.gy-map').onpointerdown = null; $g('.gy-dlg').onclick = null; $g('.gy-dlg').onpointerdown = null; renderHome(); }
 // 고용 트레이너 자리 (경완 2026-10-27 '훈련장 배치랑 체육관 배치 둘 다', '체육관 배치 위치는 내가 고를 수 있게'):
 // s.gym 체육관에 서 있음(도전자 상대), s.yard 훈련장 코치. 둘 다 켤 수 있다. s.gp [x, y, 맵] 직접 고른 칸 (없으면 맵의 기본 자리)
 const inGym = s => s.gym ?? (s.yard ? 0 : 1);
@@ -383,6 +431,8 @@ function gInit() {
   for (const [k, v] of Object.entries({ sch: [], q: [], log: [], w: 0, l: 0, blk: 0, bk: {}, bdg: {}, nt: {}, sf: [], cid: 0 })) if (g[k] == null) g[k] = v;
   // 칸토 디자인에서 플라티나 체육관으로: 같은 분위기 맵으로 옮기고, 직접 놓은 장식 자리는 새로 잡는다
   if (g.d && !DESIGNS.some(d => d.id === g.d)) g.d = dzBase(g.d).id;   // 맵 묶음이 바뀌면 짝 맵으로 (자리는 맵 id 로 저장돼 있어 그대로 둔다)
+  if (g.d && g.big == null) g.big = gradeOf(g.rep || 0).i;   // 지금 크기에서부터 직접 넓히기
+  if (!g.cands) g.cands = g.cand ? [g.cand] : []; delete g.cand;   // 지원서는 여러 장 (경완 2026-10-28 '카드 슬라이드해서 넘기는')
   return g;
 }
 const luNow = () => { const g = st(), L = (g.lu || [])[g.luI | 0] || []; return L.map(id => S.box.find(p => p.id === id)).filter(P => P && (SPECIES[P.sp]?.t || []).includes(g.ty)); };
@@ -510,8 +560,8 @@ function tick(now = Date.now()) {
   if (g.day < today) { g.day = today; g.sch = mkSch(today, now); }
   while (g.sch.length && g.sch[0] <= now) arrive(mkChal(g.sch.shift()));
   payDay(now);
-  if (g.cand && now > g.cand.exp) { glog('sf', `면접 지원자 ${g.cand.cls} <b>${esc(g.cand.nm)}</b>${jong(g.cand.nm) ? '은' : '는'} 다른 체육관으로 갔다.`, g.cand.exp); g.cand = null; }
-  if (!g.cand && now >= (g.candN || 0) && g.sf.length < 5) { g.cand = mkCand(now); g.candSeen = 0; g.candN = now + rnd(20, 40) * H; }
+  g.cands = g.cands.filter(c => { if (now <= c.exp) return true; glog('sf', `면접 지원자 ${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 다른 체육관으로 갔다.`, c.exp); return false; });
+  if (g.cands.length < 3 && now >= (g.candN || 0) && g.sf.length < 5) { g.cands.push(mkCand(now)); g.candSeen = 0; g.candN = now + rnd(14, 30) * H; }
   try { window.GymManage?.tickTrain(now); } catch (e) { console.error(e); }
   setAt(now); save();
 }
@@ -519,7 +569,7 @@ function tick(now = Date.now()) {
 function setAt(now = Date.now()) {
   const g = st(); let a = g.q.length ? g.q[0].t : (g.sch[0] || nextDay(now) + 9 * H);
   if (g.rpt && !g.rpt.seen) a = Math.min(a, now);
-  if (g.cand && !g.candSeen) a = Math.min(a, g.cand.t);
+  if (g.cands?.length && !g.candSeen) a = Math.min(a, Math.max(...g.cands.map(c => c.t)));
   a = Math.min(a, weekStart(now) + 7 * DAY + 7 * H);
   g.at = a;
 }
@@ -543,9 +593,11 @@ async function challenge() {
     const line = N ? N.ln[0].replace('{me}', me) : pick(CHAL_LINES[c.diff] || CHAL_LINES[1]);
     await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>${esc(line)}`, '배틀 시작');   // 난이도·마리 수는 안 보여 줌 (경완 2026-10-28)
     const team = c.team.map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv); if (mv && mv.length) o.mv = mv; if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); return o; });
+    // 배틀이 끝나면 배틀 화면에서 상대가 한마디 (경완 2026-10-28)
+    const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : pick(WIN_LINES), lose: N ? N.ln[2].replace('{me}', me) : pick(LOSE_LINES) };
     document.body.classList.add('gymBattle');
     let res;
-    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: c.music || (c.diff ? 'train' : 'train'), meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: c.music || (c.diff ? 'train' : 'train'), meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); }
     g.q.shift(); const R = REW[c.diff], won = !!res?.won, now = Date.now();
     let gold = 0, rep = 0;
@@ -555,8 +607,7 @@ async function challenge() {
     glog(won ? 'win' : 'lose', `${esc(c.cls)} <b>${esc(c.nm)}</b>${won ? `에게 이겼다! <small>+${gold}G · 평판 +${rep}</small>` : `에게 졌다… <small>평판 ${rep}</small>`}`);
     setAt(); save(); renderTop();
     await resultPop(c, res, gold, rep, R);
-    const after = N ? (won ? N.ln[1] : N.ln[2]).replace('{me}', me) : pick(won ? WIN_LINES : LOSE_LINES);
-    e.f = 'u'; place(e); await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>${esc(after)}`, '배웅하기');
+    e.f = 'u'; place(e); await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>${won ? '다음에 또 도전하러 올게요!' : '감사했습니다, 관장님!'}`, '배웅하기');
     say(''); await walk(e, D.path.slice(0, -1).reverse()); e.el.remove(); ents = ents.filter(x => x !== e);
     if (g.newBdg) await badgeGet(g.newBdg);
   } catch (err) { console.error(err); GA.toast?.('배틀을 시작하지 못했어요'); }
@@ -610,10 +661,10 @@ function renderTop() {
   $g('.gy-nm').innerHTML = `${tyIcon(g.ty)}<span>${esc(g.nm)}</span>`;
   $g('.gy-grade').textContent = G.n;
   $g('.gy-bar>i').style.width = (G.hi > G.lo ? clampN(((g.rep || 0) - G.lo) / (G.hi - G.lo), 0, 1) : 1) * 100 + '%';
-  $g('.gy-repn').textContent = `${g.rep || 0}${G.hi > G.lo && G.hi < REP_MAX + 1 ? `/${G.hi}` : ''}`; $g('.gy-grade').dataset.g = G.i;
+  $g('.gy-repn').textContent = `${g.rep || 0}${G.hi > G.lo && G.hi < REP_MAX + 1 ? `/${G.hi}` : ''}`; $g('.gy-grade').dataset.g = G.i; $g('.gy-plate').classList.toggle('canup', canBig(g));
   renderGoldG(); menuDot();
 }
-function menuDot() { const g = st(), b = $g('.gy-menu [data-t="staff"]'); if (!b) return; const on = !!(g?.cand && !g.candSeen); let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot"></i>'); if (!on && d) d.remove(); }
+function menuDot() { const g = st(), b = $g('.gy-menu [data-t="staff"]'); if (!b) return; const on = !!(g?.cands?.length && !g.candSeen); let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot"></i>'); if (!on && d) d.remove(); }
 function renderHome(quiet) {
   if (ded && !quiet) return ded.draw();
   const g = gInit(), D = dzOf(g.d);
@@ -713,28 +764,83 @@ function infoPop() {
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos'; root.appendChild(el);
   el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 정보</b></div>
     <div class="gy-body">
-      <div class="if-hero"><img alt="" data-ms="${g.d}"><div><span class="if-ty">${tyIcon(g.ty)}${TYPE_KO[g.ty]} 타입</span><h3>${esc(g.nm)} <button class="gy-chg" type="button" data-a="nm">이름 바꾸기</button></h3><p>${D.n} · ${D.sub}</p></div></div>
-      <div class="if-grade"><div><b>${G.n}</b><span>평판 ${g.rep || 0}${nx ? ` / ${nx[0]}` : ''}</span></div><i class="gy-bar"><i style="width:${pct}%"></i></i><small>${nx ? `${nx[0] - (g.rep || 0)} 더 모으면 <b>${nx[1]}</b>, 체육관이 넓어지고 트레이너를 더 둘 수 있어요` : '가장 높은 등급이에요'}</small></div>
-      <h5>운영</h5><div class="if-grid">
-        <div><small>개장일</small><b>${d0.getFullYear()}.${d0.getMonth() + 1}.${d0.getDate()}</b><em>${days}일째</em></div>
-        <div><small>전적</small><b>${g.w || 0}승 ${g.l || 0}패</b><em>방어율 ${wr}%</em></div>
-        <div><small>막은 도전자</small><b>${g.blk || 0}명</b><em>트레이너 포함</em></div>
-        <div><small>이번 주</small><b>${w.w || 0}승 ${w.l || 0}패</b><em>${(w.g || 0).toLocaleString()}G</em></div>
-        <div><small>트레이너</small><b>${(g.sf || []).length} / ${staffMax()}명</b><em>${staffMax() ? '등급마다 1명씩' : '동네 체육관부터'}</em></div>
-        <div><small>꾸미기</small><b>${(g.dp || []).filter(Boolean).length}개</b><em>놓은 것</em></div>
+      <div class="if-hero"><img alt="" data-ms="${g.d}"><div><span class="if-ty">${tyIcon(g.ty)}${TYPE_KO[g.ty]} 타입</span><h3>${esc(g.nm)} <button class="gy-chg gy-pen" type="button" data-a="nm" aria-label="이름 바꾸기"><svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M8 0h2v1H8zM7 1h1v1H7zM10 1h1v1h-1zM6 2h1v1H6zM11 2h1v1h-1zM5 3h1v1H5zM10 3h1v1h-1zM4 4h1v1H4zM9 4h1v1H9zM3 5h1v1H3zM8 5h1v1H8zM2 6h1v1H2zM7 6h1v1H7zM1 7h1v2H1zM6 7h1v1H6zM5 8h1v1H5zM0 9h1v3H0zM4 9h1v1H4zM1 11h3v1H1zM2 10h1v1H2z"/><path fill="#f0c040" d="M7 2h1v1H7zM6 3h2v1H6zM5 4h2v1H5zM4 5h2v1H4zM3 6h2v1H3zM2 7h2v1H2zM2 8h3v1H2zM1 9h3v1H1zM3 10h1v1H3z"/><path fill="#e86070" d="M8 1h2v1H8zM8 2h3v1H8zM8 3h2v1H8zM8 4h1v1H8z"/></svg></button></h3></div></div>
+      <div class="if-grade"><small>지금 등급</small><div><b>${G.n}</b><span>평판 ${g.rep || 0}${nx ? ` / ${nx[0]}` : ''}</span></div><i class="gy-bar"><i style="width:${pct}%"></i></i><small>${nx ? `${nx[0] - (g.rep || 0)} 더 모으면 <b>${nx[1]}</b>` : '가장 높은 등급이에요'}</small></div>
+      <div class="if-two">
+        <div class="if-staff"><small>고용할 수 있는 트레이너</small><b>${staffMax()}<em>명</em></b><span>${staffMax() ? `지금 ${(g.sf || []).length}명 고용 중` : '동네 체육관부터 고용할 수 있어요'}</span></div>
+        <div class="if-big"><small>체육관 크기</small><b>${bigOf(g) + 1}<em>/ ${GRADES.length}단계</em></b>${canBig(g) ? '<button class="gy-key main" type="button" data-a="big">넓히기</button>' : `<span>${bigOf(g) + 1 < GRADES.length ? `${GRADES[bigOf(g) + 1][1]}이 되면 넓힐 수 있어요` : '가장 넓어요'}</span>`}</div>
       </div>
+      <button class="if-perk" type="button" data-a="perk">등급별 혜택 보기 ▶</button>
       <h5>${TYPE_KO[g.ty]} 자격 배지</h5><div class="if-bdg"><img alt="" src="${IMG}badge/${g.ty}.png" class="${g.bdg?.[g.ty] ? 'on' : ''}"><div><b>${g.bdg?.[g.ty] ? '받았어요!' : `도전자 ${bk} / 100명 막기`}</b><i class="gy-bar"><i style="width:${bk}%"></i></i><small>모은 배지 ${nb} / 18</small></div></div>
       ${old ? `<h5>예전 체육관</h5><ul class="if-old">${old}</ul>` : ''}
       <div class="gy-btns three if-btns"><button type="button" data-a="log">체육관 일지</button><button type="button" data-a="bdg">자격 배지</button><button type="button" data-a="rk">주간 랭킹</button></div>
-      <button class="if-re" type="button" data-a="re">폐업하고 새로 세우기<small>타입·디자인을 바꿔 다시 열어요</small></button>
+      <button class="if-re" type="button" data-a="re">폐업하고 새로 세우기</button>
     </div>`;
   fillMs(el);
   el.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap'); const a = b.dataset.a;
-    if (a === 'x') return el.remove(); if (a === 'log') return logPop(); if (a === 'bdg') return badgePop(); if (a === 'rk') return reportPop(true);
+    if (a === 'x') return el.remove(); if (a === 'perk') return perkPop(); if (a === 'big') return bigUp(el); if (a === 'log') return logPop(); if (a === 'bdg') return badgePop(); if (a === 'rk') return reportPop(true);
     if (a === 'nm') { el.remove(); return setup('nm'); }
-    if (a === 're') return pop(`<h4>체육관 폐업</h4><p class="gy-msg"><b>${esc(g.nm)}</b>의 문을 닫고 새 타입·디자인으로 다시 세워요.<br>평판·트레이너·꾸미기·모은 배지는 그대로 이어져요. 배지 진행은 타입마다 따로 세요.</p><div class="gy-btns"><button data-a="x">그만두기</button><button class="main" data-a="ok">폐업하기</button></div>`,
-      (k, close) => { close(); if (k === 'ok') { el.remove(); setup(['d', 'ty', 'nm'], true); } });
+    if (a === 're') return pop(`<h4>체육관 폐업</h4><p class="gy-msg" style="text-align:center">정말 폐업하시겠습니까?</p><div class="gy-btns"><button data-a="x">그만두기</button><button class="main" data-a="ok">폐업하기</button></div>`,
+      (k, close) => { close(); if (k === 'ok') { el.remove(); closeFx().then(() => { if (open) setup(['d', 'ty', 'nm'], true); }); } });
   };
+}
+// 등급별 혜택 (경완 2026-10-28)
+function perkPop() {
+  const g = st(), gi = gradeOf(g.rep || 0).i;
+  const row = ([v, n], i) => { const nd = Object.values(DECO).filter(o => (o.lv || 0) === i).length, nf = Object.values(OUTFITS).filter(o => (o.lv || 0) === i).length;
+    const L = [`체육관 크기 ${i + 1}단계`, `트레이너 ${Math.min(5, i)}명 고용`, `훈련장 ${2 + Math.min(4, i)}칸`, `도전자 하루 ${2 + (i >= 2) + (i >= 4)}~${3 + (i >= 2) + (i >= 4)}명`];
+    if (i && nd) L.push(`새 꾸미기 ${nd}개`); if (i && nf) L.push(`새 관장 의상 ${nf}벌`);
+    return `<li class="${i === gi ? 'cur' : i < gi ? 'done' : ''}"><div><b>${n}</b><small>평판 ${v}</small>${i === gi ? '<em>지금</em>' : ''}</div><ul>${L.map(t => `<li>${t}</li>`).join('')}</ul></li>`; };
+  pop(`<h4>등급별 혜택</h4><ol class="gy-perk">${GRADES.map(row).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
+}
+// 체육관 넓히기: 한 단계씩, 평판 등급까지 (공짜)
+function bigUp(el) {
+  const g = st(); if (!canBig(g)) return; g.big = bigOf(g) + 1; save();
+  glog('in', `체육관을 ${g.big + 1}단계로 넓혔다!`); el?.remove(); renderHome();
+  const m = $g('.gy-map'); m.classList.remove('grow'); void m.offsetWidth; m.classList.add('grow');
+  say(`체육관이 넓어졌어요! <small>(${g.big + 1}단계)</small>`, '훈련장 칸도 늘었어요');
+}
+// 창고 (경완 2026-10-28 '꾸미기 모드 가방처럼'): 상점에서 산 기술머신·꾸미기·관장 의상을 한곳에서 본다
+let storeT = 'tm';
+function storePop() {
+  root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
+  const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew'; root.appendChild(el);
+  const draw = () => { const g = st(); g.tms = g.tms || {}; g.own = g.own || {}; g.fits = g.fits || {}; g.dp = (g.dp || []).filter(Boolean);
+    const nTm = Object.values(g.tms).reduce((a, n) => a + (n || 0), 0), dk = Object.keys(g.own).filter(k => g.own[k] && DECO[k]), fk = Object.keys(g.fits).filter(k => g.fits[k] && OUTFITS[k]);
+    const T = [['tm', '기술머신', nTm], ['deco', '꾸미기', dk.length], ['fit', '관장 의상', fk.length + 1]];
+    let body = '';
+    if (storeT === 'tm') { const D = GB()?.D, L = Object.entries(g.tms).filter(([, n]) => n > 0).map(([id, n]) => [GB()?.mvOf?.(id), n, id]).filter(([x]) => x);
+      body = !D ? '<p class="gy-lead">불러오는 중…</p>' : L.length ? `<p class="st-tip">배틀 메뉴나 훈련장에서 포켓몬을 누르고 '기술머신'으로 가르쳐요.</p><div class="sp-list">${L.map(([x, n]) => `<div class="sp-tm"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png"><span class="tm-nm"><b>${esc(x[1])}</b><i class="tm-own">×${n}</i></span><span class="tm-meta">${GB().tyTag(x[2], x[3])}<small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}</small></span></div>`).join('')}</div>` : '<p class="sf-none">가진 기술머신이 없어요. 상점에서 사 오세요.</p>'; }
+    if (storeT === 'deco') body = dk.length ? `<div class="dc-place"><div><b>놓인 꾸미기 ${g.dp.length}개</b><small>누르면 놓거나 넣어 둬요</small></div><button class="gy-key main" type="button" data-a="place">직접 놓기</button></div><div class="dc-grid">${dk.map(k => `<button type="button" data-dc="${k}" class="${g.dp.includes(k) ? 'own' : ''}"><span class="dc-pic"><img alt="" src="${IMG}deco/${k}.png" class="${DECO[k].w > 16 ? 'big' : ''}"></span><b>${DECO[k].n}</b><em>${g.dp.includes(k) ? '놓여 있음' : '창고에 있음'}</em></button>`).join('')}</div>` : '<p class="sf-none">가진 꾸미기가 없어요. 상점에서 사 오세요.</p>';
+    if (storeT === 'fit') body = `<div class="ft-grid">${['', ...fk].map(k => `<button type="button" data-fit="${k}" class="${(g.fit || '') === k ? 'on' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${k ? OUTFITS[k].n : '기본 옷'}</b><em>${(g.fit || '') === k ? '입는 중' : '입기'}</em></button>`).join('')}</div>`;
+    el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">창고</b></div>
+      <div class="gy-body"><div class="sp-tabs st-tabs" role="tablist">${T.map(([k, n, c]) => `<button type="button" role="tab" data-st="${k}" aria-selected="${storeT === k}">${n} <small>${c}</small></button>`).join('')}</div>${body}</div>`;
+    el.querySelectorAll('img[data-fk]').forEach(im => fitSrc('tr', im.dataset.fk).then(u => { im.src = u; }));
+    if (storeT === 'tm' && !GB()?.D) loadJs('gymb/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => { if (el.isConnected && storeT === 'tm') draw(); });
+  };
+  draw();
+  el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap'); const g = st();
+    if (b.dataset.a === 'x') return el.remove();
+    if (b.dataset.st) { storeT = b.dataset.st; return draw(); }
+    if (b.dataset.a === 'place') { el.remove(); return decoEdit(); }
+    if (b.dataset.dc) { const k = b.dataset.dc, i = g.dp.indexOf(k); if (i >= 0) { g.dp.splice(i, 1); delete g.dpos?.[k]; } else g.dp.push(k); save(); renderHome(true); return draw(); }
+    if (b.dataset.fit != null) { g.fit = b.dataset.fit; save(); renderHome(true); return draw(); } };
+}
+// 체육관 시뮬레이터 (운영자, 경완 2026-10-28): 기다려야 볼 수 있는 것을 바로 불러 본다. 나오면 원래 체육관으로 되돌아간다 (beta.html gymSim)
+function simPop() {
+  const g = st(); if (!g?.d) return say('체육관을 먼저 세워 주세요.');
+  const B = [['cand1', '지원자 1명 부르기'], ['cand3', '지원자 3명 부르기'], ['chal', '도전자 부르기'], ['named', '이름 있는 도전자'], ['rep+', '평판 +100'], ['rep-', '평판 -100'], ['gold', '골드 +10만'], ['rpt', '주간 보고서 보기'], ['bdg', '자격 배지 받기 연출'], ['log', '일지 예시 채우기'], ['new', '처음 세우기부터']];
+  pop(`<h4>체육관 시뮬레이터</h4><p class="gy-msg">퇴근하면 들어오기 전 체육관으로 되돌아가요.</p><div class="gy-sim">${B.map(([a, n]) => `<button type="button" data-a="${a}">${n}</button>`).join('')}</div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => {
+    close(); if (a === 'x') return; const now = Date.now();
+    if (a === 'cand1' || a === 'cand3') { for (let i = a === 'cand1' ? 1 : 3; i--;) g.cands.push(mkCand(now)); g.candSeen = 0; save(); menuDot(); return say(`지원자가 왔어요! (지원서 ${g.cands.length}장)`, '트레이너 메뉴 › 지원서'); }
+    if (a === 'chal' || a === 'named') { let c = mkChal(now); if (a === 'named') { for (let i = 0; i < 30 && !c.named; i++) c = mkChal(now); } arrive(c); save(); return homeSay(); }
+    if (a === 'rep+' || a === 'rep-') { g.rep = Math.max(0, (g.rep || 0) + (a === 'rep+' ? 100 : -100)); save(); renderTop(); return say(`평판 ${g.rep} (${gradeOf(g.rep).n})`); }
+    if (a === 'gold') { S.gold += 100000; save(); renderGoldG(); return say(`골드 ${S.gold.toLocaleString()}G`); }
+    if (a === 'rpt') { g.rpt = g.rpt || { w: 3, l: 1, b: 12, g: 4200, rank: 7, seen: 0 }; return reportPop(true); }
+    if (a === 'bdg') return badgeGet(g.ty);
+    if (a === 'log') { const L = [['in', '바다 소년 <b>민수</b>가 도전하러 왔다!'], ['win', '바다 소년 <b>민수</b>에게 이겼다! <small>+320G · 평판 +3</small>'], ['lose', '엘리트 트레이너 <b>지수</b>에게 졌다… <small>평판 -2</small>'], ['out', '등산가 <b>철호</b>는 기다리다 돌아갔다. <small>평판 -1</small>'], ['pay', '월급 300G']]; L.forEach(([k, h], i) => glog(k, h, now - i * 6e5)); save(); return homeSay(); }
+    if (a === 'new') { S.gym = null; save(); clearEnts(); return intro(); }
+  });
 }
 // 체육관 일지: 날짜별로 누가 왔고 누가 이겼는지
 const LOG_IC = { win: '🏆', lose: '💦', sf: '🛡', in: '🚪', out: '👋', pay: '💰', bdg: '🎖', wk: '📋', tr: '💪' };
@@ -773,12 +879,12 @@ function setup(only, re) {
   const counts = myTypes();
   const draw = () => {
     const k = steps[i], last = i === steps.length - 1;
-    const head = `<div class="gy-sh">${i === 0 && first ? '<button class="gy-back" type="button" data-x aria-label="체육관 나가기">✕</button>' : '<button class="gy-back" type="button" aria-label="뒤로">◀</button>'}${steps.length > 1 ? `<span class="gy-steps">${steps.map((_, j) => `<i class="${j <= i ? 'on' : ''}"></i>`).join('')}</span>` : ''}</div>`;
+    const head = `<div class="gy-sh">${i === 0 && re ? '' : i === 0 && first ? '<button class="gy-back" type="button" data-x aria-label="체육관 나가기">✕</button>' : '<button class="gy-back" type="button" aria-label="뒤로">◀</button>'}${steps.length > 1 ? `<span class="gy-steps">${steps.map((_, j) => `<i class="${j <= i ? 'on' : ''}"></i>`).join('')}</span>` : ''}</div>`;
     let body = '', btn = last ? (first ? '체육관 열기' : re ? '새로 세우기' : '저장') : '다음';
     if (k === 'd') {
       const D = dzBase(dr.d), di = DESIGNS.indexOf(D);
       body = `<h3>${re ? '새 체육관 디자인' : '체육관 디자인'}</h3><p class="gy-lead">${re ? '새로 세울 체육관 모양을 골라요.' : '본가 관동 지방 체육관이에요. 나중에 바꿀 수 있어요.'}</p>
-        <div class="gy-dz"><div class="gy-dz-view"><img data-ms="${D.id}" data-gi="${first ? 0 : ''}" alt="${D.n}"><button class="gy-dz-arw l" type="button" data-m="-1" aria-label="이전">◀</button><button class="gy-dz-arw r" type="button" data-m="1" aria-label="다음">▶</button></div>
+        <div class="gy-dz"><div class="gy-dz-view"><img data-ms="${D.id}" data-gi="${first ? 0 : ''}" alt=""><button class="gy-dz-arw l" type="button" data-m="-1" aria-label="이전">◀</button><button class="gy-dz-arw r" type="button" data-m="1" aria-label="다음">▶</button></div>
         <div class="gy-dz-nm">${D.n}</div><div class="gy-dz-sub">${D.sub}</div><div class="gy-dots">${DESIGNS.map((_, j) => `<i class="${j === di ? 'on' : ''}"></i>`).join('')}</div></div>`;
     } else if (k === 'ty') {
       body = `<h3>체육관 타입</h3><p class="gy-lead">배틀에는 이 타입 포켓몬만 낼 수 있어요. 타입별로 체육관 운영에 성공하면 자격 배지를 받아요.</p>
@@ -788,7 +894,7 @@ function setup(only, re) {
       if (!dr.nm) dr.nm = defName(dr.ty);
       body = `<h3>체육관 이름</h3><p class="gy-lead">도전자들이 보는 이름이에요.</p>
         <div class="gy-name"><input type="text" maxlength="14" value="${esc(dr.nm)}" aria-label="체육관 이름"><span class="gy-cnt"></span></div>
-        ${first || re ? `<div class="gy-sum"><img data-ms="${dr.d}" data-gi="${first ? 0 : ''}" alt=""><div><span>${dzBase(dr.d).n}</span><span>${tyIcon(dr.ty)} ${TYPE_KO[dr.ty]} 타입</span></div></div>` : ''}`;
+        ${first || re ? `<div class="gy-sum"><div class="sm-map"><img data-ms="${dr.d}" data-gi="${first ? 0 : ''}" alt=""></div><div class="sm-row"><b>${dzBase(dr.d).n}</b><span class="sm-ty" style="--tc:${GA.TYPE_C?.[dr.ty] || '#888'}">${tyIcon(dr.ty)}${TYPE_KO[dr.ty]} 타입</span></div></div>` : ''}`;
     }
     el.innerHTML = `${head}<div class="gy-body">${body}</div><button class="gy-key main gy-next" type="button" ${k === 'ty' && !dr.ty ? 'disabled' : ''}>${btn}</button>`;
     fillMs(el); const inp = el.querySelector('input');
@@ -828,23 +934,24 @@ function opened() {
 }
 
 // 폐업 → 공사 → 새 체육관 개장 연출 (경완 2026-10-27 '손바닥 뒤집듯 바꾸는게 아니라 폐업하고 다시 새로 설립하는 연출')
-async function refound(dr) {
-  const g = st(), oldNm = g.nm; openTab(null);
+// 폐업 (경완 2026-10-28 '폐업하기 누르면 바로 폐업 연출 → 오픈 연출 → 새 디자인 정하기')
+const confetti = () => { const cf = document.createElement('div'); cf.className = 'gy-fx'; const C = ['#e04838', '#ffd84a', '#58a8e0', '#6ab84a', '#f8f8f8'];
+  for (let k = 0; k < 46; k++) { const i = document.createElement('i'); i.style.left = Math.random() * 100 + '%'; i.style.background = C[k % C.length]; i.style.setProperty('--dx', (Math.random() * 80 - 40) + 'px'); i.style.animationDelay = Math.random() * .6 + 's'; i.style.animationDuration = 1.6 + Math.random() * 1.2 + 's'; cf.appendChild(i); }
+  root.appendChild(cf); setTimeout(() => cf.remove(), 3600); };
+async function closeFx() {
+  const g = st(), oldNm = g.nm; openTab(null); preMs();
   const fx = document.createElement('div'); fx.className = 'gy-re'; root.appendChild(fx);
   fx.innerHTML = `<div class="re-shut"><i></i></div><div class="re-sign"><b>폐 업</b><span>${esc(oldNm)}</span><small>그동안 찾아 주셔서 고맙습니다</small></div>`;
   say(`<b>${esc(oldNm)}</b>의 문을 닫았다…`); sfx('tap');
   requestAnimationFrame(() => fx.classList.add('down')); await wait(2600);
-  // 공사 중: 그 사이에 새 체육관으로 바꿔 둔다
+  fx.querySelector('.re-sign').innerHTML = `<b>새 단 장</b><span>새 체육관이 문을 열어요</span><small>어떤 체육관으로 열지 골라 주세요</small>`;
+  sfx('tap'); await wait(1400); fx.classList.remove('down'); fx.classList.add('up'); confetti(); await wait(900); fx.remove();
+}
+async function refound(dr) {
+  const g = st(), oldNm = g.nm;
   if (dr.ty !== g.ty) { g.tyLog = g.tyLog || []; g.tyLog.push([g.ty, Date.now()]); }
   Object.assign(g, { d: dr.d, ty: dr.ty, nm: dr.nm }); glog('in', `<b>${esc(oldNm)}</b>을 닫고 <b>${esc(dr.nm)}</b>을 새로 세웠다.`); save();
-  fx.querySelector('.re-sign').innerHTML = `<b>공 사 중</b><span>${esc(dr.nm)}</span><small>새 체육관을 짓고 있어요</small><div class="re-bar"><i></i></div>`;
-  fx.classList.add('build'); for (let k = 0; k < 6; k++) { setTimeout(() => sfx('tap'), 300 + k * 420); } await wait(2900);
-  renderHome(); renderTop(); await wait(200);
-  fx.querySelector('.re-sign').innerHTML = `<b>새 단 장</b><span>${esc(dr.nm)}</span><small>${tyIcon(dr.ty)} ${TYPE_KO[dr.ty]} 타입 · ${dzBase(dr.d).n}</small>`;
-  await wait(1300); fx.classList.remove('down', 'build'); fx.classList.add('up'); await wait(900); fx.remove();
-  const cf = document.createElement('div'); cf.className = 'gy-fx'; const C = ['#e04838', '#ffd84a', '#58a8e0', '#6ab84a', '#f8f8f8'];
-  for (let k = 0; k < 46; k++) { const i = document.createElement('i'); i.style.left = Math.random() * 100 + '%'; i.style.background = C[k % C.length]; i.style.setProperty('--dx', (Math.random() * 80 - 40) + 'px'); i.style.animationDelay = Math.random() * .6 + 's'; i.style.animationDuration = 1.6 + Math.random() * 1.2 + 's'; cf.appendChild(i); }
-  root.appendChild(cf); setTimeout(() => cf.remove(), 3600);
+  renderHome(); renderTop(); confetti();
   say(`<b>${esc(dr.nm)}</b>의 문을 새로 열었다!`, `${TYPE_KO[dr.ty]} 타입 체육관`);
 }
 
@@ -898,14 +1005,14 @@ async function prepare() {
 }
 // 처음: 빈 체육관(회색시티 모양)에 불이 켜지고, 내가 문으로 들어오면 강박사가 설명 → 디자인·타입·이름 정하기
 async function intro() {
-  const D = DESIGNS[0]; clearEnts(); layout(D); say('', ''); root.classList.add('pre');
+  const D = DESIGNS[0]; clearEnts(); layout(D); say('', ''); root.classList.add('pre'); preMs(0);
   const me = ent({ ow: myOw(), x: D.door[0], y: D.door[1], f: 'u' });
   const k = kang(KANG_HI());
   await wait(1500); await walk(me, [[D.door[0], D.door[1] - 4]]);
   await k; root.classList.remove('pre'); if (!open) return; setup();
 }
 function enter() {
-  open = true; tab = null; root.hidden = false; GA.gymIn(); openTab(null); bgmPlay('gym');   // 체육관 곡: 처음이면 플래티넘 원본 소리를 받아 오는 동안 잠깐 조용하다
+  open = true; tab = null; root.hidden = false; root.classList.remove('gview'); root.classList.toggle('sim', !!window.gymSim); GA.gymIn(); openTab(null); bgmPlay('gym');   // 체육관 곡: 처음이면 플래티넘 원본 소리를 받아 오는 동안 잠깐 조용하다
   requestAnimationFrame(() => root.classList.add('on'));
   if (st()?.d) { tick(); renderHome(); later(); } else intro();
   setTimeout(() => gymLoad.hide(), 120);
@@ -937,7 +1044,7 @@ async function exit() {
 
 window.Gym = { prepare, enter, exit, isOpen: () => open, renderGold: renderGoldG, DESIGNS, _walk: walk, _ent: ent, _tick: tick,
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG } };
+  k: { bigOf, trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 window.gymDot = () => { const g = S.gym; return !!(g && g.d && ((g.q && g.q.length) || (g.at && Date.now() >= g.at))); };
 })();

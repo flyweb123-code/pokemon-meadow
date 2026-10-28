@@ -719,3 +719,76 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .bt.mob .pty .rk-fr{grid-row:1/4;align-self:center}.bt.mob .pty img{width:28px;height:28px}
 .bt.mob .pty b{align-self:end;font-size:11px}.bt.mob .pty .lv{right:7px;top:5px}
 .tm-bagl{margin:0 0 8px}
+/* 꾸미기 끌어다 놓기 (v10.46) */
+#gym.ded .gy-map{touch-action:none}
+.gy-dpick button{touch-action:pan-x;user-select:none;-webkit-user-select:none}.gy-dpick button img{pointer-events:none;-webkit-user-drag:none}
+.gy-grid .gg-gh{position:absolute;background:0 0/100% 100% no-repeat;image-rendering:pixelated;opacity:.85;filter:drop-shadow(0 3px 0 rgba(0,0,0,.35));z-index:2}
+.gy-grid .gg-tile{position:absolute;box-shadow:inset 0 0 0 3px #5ee07a;background:rgba(94,224,122,.25);z-index:1}.gy-grid .gg-tile.bad{box-shadow:inset 0 0 0 3px #ff5a5a;background:rgba(255,90,90,.28)}
+.gy-grid.drag .gg-sel{display:none}
+/* 체육관 정보: 등급·고용 가능 트레이너·크기 (v10.46) */
+.if-grade>small:first-child{font-size:11px;font-weight:700;color:var(--dim);letter-spacing:.3px}
+.if-grade>div b{font-size:22px}
+.if-two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.if-two>div{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border:3px solid var(--frame);background:var(--win);box-shadow:0 3px 0 var(--frame)}
+.if-two small{font-size:11px;font-weight:700;color:var(--dim)}
+.if-two b{font-size:30px;line-height:1.1;font-variant-numeric:tabular-nums}.if-two b em{font-style:normal;font-size:13px;margin-left:3px;color:var(--dim)}
+.if-two span{font-size:12px;color:var(--dim);line-height:1.4}
+.if-two .gy-key{min-height:34px;margin-top:2px;font-size:13px;animation:gyBob 1.2s ease-in-out infinite}
+.if-perk{width:100%;min-height:42px;font-size:14px;border:3px solid var(--frame);background:#fff6c8;box-shadow:0 3px 0 var(--frame)}
+.gy-perk{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-direction:column;gap:6px;max-height:58vh;overflow:auto}
+.gy-perk>li{padding:8px 10px;border:2px solid var(--frame);border-radius:6px;background:#fff;opacity:.7}
+.gy-perk>li.done{opacity:.9;background:#eef7ec}.gy-perk>li.cur{opacity:1;background:#fff6c8;box-shadow:0 0 0 2px #ffd84a}
+.gy-perk>li>div{display:flex;align-items:baseline;gap:8px}.gy-perk>li>div b{font-size:14px}.gy-perk>li>div small{font-size:11px;color:var(--dim)}
+.gy-perk>li>div em{margin-left:auto;font-style:normal;font-size:11px;font-weight:700;color:#8a5a10}
+.gy-perk ul{margin:4px 0 0;padding:0 0 0 16px;font-size:12px;line-height:1.55}
+/* 이름판 누르는 모션 + 넓힐 수 있을 때 표시 */
+.gy-plate{transition:transform .08s ease-out,filter .08s}
+.gy-plate:active{transform:translateY(3px) scale(.985);filter:brightness(.94)}
+.gy-plate.canup{position:relative}.gy-plate.canup::after{content:'넓히기!';position:absolute;right:-4px;top:-8px;padding:1px 6px;border-radius:8px;background:#e04838;color:#fff;font-size:10px;font-weight:700;box-shadow:0 0 0 2px #fff;animation:gyBob 1s ease-in-out infinite}
+.gy-map.grow{animation:gyGrow .6s ease-out}
+@keyframes gyGrow{0%{filter:brightness(1.8)}100%{filter:none}}
+.bw-grid .pk.bw-no{opacity:.35;filter:grayscale(1);cursor:default}.bw-grid .pk.bw-no .bw-lv{font-size:10px}
+/* 일지 접기·빈 곳 눌러 숨기기 (경완 2026-10-28) */
+.gy-dfold{position:absolute;right:8px;top:6px;z-index:2;padding:2px 6px;font-size:13px;line-height:1;background:none;border:0;color:var(--dim)}
+.gy-dlg .gy-dmore{right:34px}
+#gym.dfold:not(.ded):not(.busy) .gy-dlg{left:auto;width:50px!important;height:38px;min-height:0;padding:0!important;box-sizing:border-box;cursor:pointer}
+#gym.dfold:not(.ded):not(.busy) .gy-dlg>:not(.gy-dfold){display:none!important}
+#gym.dfold:not(.ded):not(.busy) .gy-dlg .gy-dfold{top:auto;right:4px;bottom:0;padding:10px 14px;transform:rotate(180deg)}
+#gym.ded .gy-dfold,#gym.busy .gy-dfold{display:none}
+#gym.gview .gy-top,#gym.gview .gy-store{visibility:hidden!important}
+.gy-infos .gy-chg.gy-pen{display:inline-grid;place-items:center;width:28px;height:28px;padding:0;margin-left:6px;vertical-align:2px;border:0;background:none;box-shadow:none}
+.gy-infos .gy-pen svg{width:18px;height:18px}.gy-infos .gy-pen:active{transform:translateY(2px)}
+/* 창고 (경완 2026-10-28) */
+.gy-top .gy-store{pointer-events:auto;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:62px!important;min-height:62px;padding:6px 4px!important;font-size:12px;line-height:1;transition:transform .08s ease-out}
+.gy-store svg{width:32px;height:32px}.gy-store:active{transform:translateY(3px) scale(.97)}
+.gy-storew .st-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}.gy-storew .st-tabs small{font-size:11px;opacity:.75}
+.gy-storew .st-tip{font-size:12px;color:var(--dim);margin:0 0 8px}
+.gy-storew .sp-tm{cursor:default}
+/* 기술머신 형태 필터 + 위력순 (경완 2026-10-28) */
+.tm-row{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:10px}.tm-row .tm-cat{margin:0;flex-wrap:nowrap}
+.tm-sort{flex:none;padding:4px 8px;font-size:12px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.12)}
+/* 트레이너 지원서 카드 (경완 2026-10-28): 세로 카드, 옆으로 넘기기 */
+.cv-deck{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:4px 16px 8px;scrollbar-width:none;touch-action:pan-x pan-y}.cv-deck::-webkit-scrollbar{display:none}
+.cv-card{flex:none;width:min(280px,calc(100% - 40px));scroll-snap-align:center;display:flex;flex-direction:column;gap:8px;padding:12px 14px 14px;background:#fffdf4;border:3px solid var(--frame);box-shadow:4px 4px 0 rgba(0,0,0,.18);
+  background-image:repeating-linear-gradient(0deg,transparent 0 23px,rgba(90,120,170,.10) 23px 24px)}
+.cv-deck:has(.cv-card:only-child){justify-content:center}
+.cv-card header{display:flex;align-items:baseline;justify-content:space-between;padding-bottom:6px;border-bottom:2px solid var(--frame)}.cv-card header b{font-size:15px;letter-spacing:1px}.cv-card header small{font-size:11px;color:var(--dim)}
+.cv-photo{position:relative;align-self:center;display:grid;place-items:center;width:150px;height:150px;background:#e8eef8;border:2px solid var(--frame)}
+.cv-photo img{width:144px;height:144px;object-fit:contain;image-rendering:pixelated}
+.cv-nm{display:flex;flex-direction:column;align-items:center;line-height:1.25}.cv-nm small{font-size:12px;color:var(--dim)}.cv-nm b{font-size:18px}
+.cv-dl{display:grid;grid-template-columns:62px 1fr;gap:6px 8px;margin:0;font-size:12px;align-items:center}.cv-dl dt{color:var(--dim);font-weight:700}.cv-dl dd{margin:0;min-width:0}.cv-dl .trt{margin:0}
+.cv-exp{margin:0;font-size:11px;color:#b04848;text-align:center}
+.cv-card .gy-key{min-height:42px}
+.cv-dots{display:flex;justify-content:center;gap:6px;margin:2px 0 10px}.cv-dots i{width:8px;height:8px;background:#c8c8d0}.cv-dots i.on{background:var(--frame)}
+/* 시뮬레이터 (운영자) */
+.gy-simb{display:none;position:absolute;z-index:4;right:calc(var(--si-right,env(safe-area-inset-right)) + 8px);top:calc(var(--si-top,env(safe-area-inset-top)) + 80px);width:62px!important;padding:6px 4px!important;font-size:12px;background:#ffe3a0!important}
+#gym.sim .gy-simb{display:block}#gym.gview .gy-simb{visibility:hidden}
+.gy-sim{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0 12px}.gy-sim button{padding:9px 4px;font-size:12.5px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.12)}
+#gym img[data-ms]:not([src]){visibility:hidden}
+/* 이름 정하기 요약 (경완 2026-10-28 '점선 박스 밤티 · 맵 크게 · 타입 확인') */
+.gy-sum{display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:0;border:0;margin-top:14px}
+.gy-sum .sm-map{display:grid;place-items:center;padding:10px;background:#1c1d2c;border:3px solid var(--frame);box-shadow:0 4px 0 rgba(0,0,0,.15)}
+.gy-sum .sm-map img{width:100%;height:min(38vh,300px);object-fit:contain;image-rendering:pixelated;box-shadow:none}
+.gy-sum .sm-row{flex-direction:row;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:15px}
+.gy-sum .sm-ty{display:inline-flex;align-items:center;gap:5px;padding:5px 10px 5px 6px;border-radius:999px;background:var(--tc);color:#fff;font-size:14px;font-weight:700;text-shadow:0 1px 0 rgba(0,0,0,.35)}
+.gy-sum .sm-ty .tyi{width:20px;height:20px;vertical-align:0}
