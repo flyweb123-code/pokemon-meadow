@@ -1155,3 +1155,6 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 @keyframes rrBadge{0%{transform:scale(.8)}40%{transform:scale(1.4) rotate(-8deg)}100%{transform:scale(.8)}}
 /* 지원서 끝에서 더 넘기면 화면 전체가 끌려가던 것 막기 (경완 2026-10-28) */
 .cv-deck{overscroll-behavior:none}.gy-sheet:has(.cv-deck),.gy-pop:has(.cv-deck){overscroll-behavior:none;overflow-x:hidden}
+/* 혼란 병아리 (경완 2026-10-28) */
+.bt-conf{position:absolute;left:50%;top:22%;width:0;height:0;z-index:4;pointer-events:none}
+.bt-conf i{position:absolute;left:-8px;top:-8px;width:17px;height:15px;background:url(../gym/img/bt/st_duck.png) 0 0/17px 15px no-repeat;image-rendering:pixelated}
