@@ -911,3 +911,5 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .gy-simb{top:calc(var(--si-top,env(safe-area-inset-top)) + 142px)}
 .gy-dlg:has(.gy-dbtn) .gy-dfold{top:2px;bottom:auto}
 #gym.dlog .gy-hlog.all{padding-right:24px}
+.cv-dl .sf-team span{gap:3px}   /* 포켓몬과 레벨 사이 (경완 2026-10-28) */
+.cv-dots{width:100%;box-sizing:border-box;justify-content:center;align-self:center;margin:4px auto 12px}
