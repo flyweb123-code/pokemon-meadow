@@ -116,6 +116,8 @@ const GRADES = [[0, '새내기 체육관'], [100, '동네 체육관'], [250, '�
 // 체육관 크기 단계: 평판으로 등급이 오르면 체육관 정보에서 넓힌다 (경완 2026-10-28 '돈 내고 넓히는 것보다 평판 오르면'). g.big 없으면 예전 저장 = 등급 그대로
 const bigOf = (g = st()) => { const gi = gradeOf(g?.rep || 0).i; return g?.big == null ? gi : Math.min(g.big, gi); };
 const canBig = (g = st()) => !!g?.d && gradeOf(g.rep || 0).i > bigOf(g);
+// 등급 배지 (경완 2026-10-28): 등급 색 방패 + 별 수
+const gEmb = i => `<i class="g-emb" data-g="${i}"><i>${'★'.repeat(i + 1)}</i></i>`;
 const gradeOf = rep => { let i = 0; GRADES.forEach(([v], k) => { if (rep >= v) i = k; }); return { i, n: GRADES[i][1], lo: GRADES[i][0], hi: GRADES[i + 1]?.[0] ?? REP_MAX }; };
 
 // ---------- 저장 ----------
@@ -266,7 +268,8 @@ const DECO = {};
  ['pika_cushion', '피카 쿠션', 500], ['round_cushion', '둥근 쿠션', 500], ['kiss_cushion', '키스 쿠션', 500], ['zigzag_cushion', '지그재그 쿠션', 500], ['spin_cushion', '빙글 쿠션', 500], ['diamond_cushion', '다이아 쿠션', 500], ['ball_cushion', '볼 쿠션', 500], ['grass_cushion', '풀 쿠션', 500], ['fire_cushion', '불꽃 쿠션', 500], ['water_cushion', '물 쿠션', 500],
  ['statue', '체육관 석상', 2000, 1],
  ['big_snorlax_doll', '큰 잠만보 인형', 6000, 2], ['big_rhydon_doll', '큰 코뿌리 인형', 6000, 2], ['big_lapras_doll', '큰 라프라스 인형', 6000, 2], ['big_venusaur_doll', '큰 이상해꽃 인형', 8000, 3], ['big_charizard_doll', '큰 리자몽 인형', 8000, 3], ['big_blastoise_doll', '큰 거북왕 인형', 8000, 3], ['big_wailmer_doll', '큰 고래왕자 인형', 6000, 2],
- ['big_regirock_doll', '큰 레지락 인형', 12000, 4], ['big_regice_doll', '큰 레지아이스 인형', 12000, 4], ['big_registeel_doll', '큰 레지스틸 인형', 12000, 4]].forEach(([k, n, g, lv]) => { DECO[k] = { n, g, lv: lv || 0, w: /^big_/.test(k) ? 32 : 16, h: /^big_/.test(k) || k === 'statue' ? 32 : 16 }; });
+ ['big_regirock_doll', '큰 레지락 인형', 12000, 4], ['big_regice_doll', '큰 레지아이스 인형', 12000, 4], ['big_registeel_doll', '큰 레지스틸 인형', 12000, 4]].forEach(([k, n, g, lv]) => { DECO[k] = { n, g, lv: 0, w: /^big_/.test(k) ? 32 : 16, h: /^big_/.test(k) || k === 'statue' ? 32 : 16 }; });
+Object.values(OUTFITS).forEach(o => { o.lv = 0; });   // 꾸미기·관장 의상은 등급 제한 없음 (경완 2026-10-28)
 // 꾸미기는 개수 제한 없음 (경완 2026-10-28): 기본 자리가 다 차면 맵의 아무 빈 칸에
 const anyFree = (D, used) => { for (let y = D.h - 1; y >= 0; y--) for (let x = 0; x < D.w; x++) if (freeTile(D, x, y, used)) return [x, y]; return null; };
 // 꾸미기 자리: g.dp 놓은 것(순서), g.dpos {꾸미기: [x, y]} 직접 놓은 칸 (경완 2026-10-27 '산 거 직접 놓을 수 있게'). 칸이 없으면 맵의 기본 자리
@@ -466,7 +469,7 @@ function pickNamed(avg, t) {
 }
 // 하루 시간표: 등급이 오를수록 많이 온다 (2~5명, 오전 8시 ~ 밤 10시 사이 아무 때나)
 function mkSch(d0, from = 0) {
-  const G = gradeOf(st().rep || 0), n = 2 + (G.i >= 2) + (G.i >= 4) + (Math.random() < .5);
+  const n = 3 + (Math.random() < .5);   // 하루 3~4명, 등급 상관없음 (경완 2026-10-28)
   return Array.from({ length: n }, () => d0 + rnd(8, 22) * H).filter(t => t > from).sort((a, b) => a - b);
 }
 function glog(k, html, t = Date.now()) { const g = st(); g.log.unshift([t, k, html]); if (g.log.length > 80) g.log.length = 80; }
@@ -770,19 +773,16 @@ function infoPop() {
   const g = st(), D = dzOf(g.d), G = gradeOf(g.rep || 0), d0 = new Date(g.t0 || Date.now()), days = Math.max(1, Math.floor((dayStart(Date.now()) - dayStart(g.t0 || Date.now())) / DAY) + 1);
   const wl = (g.w || 0) + (g.l || 0), wr = wl ? Math.round((g.w || 0) / wl * 100) : 0, w = g.wk || {}, nb = Object.keys(g.bdg || {}).length, bk = Math.min(100, (g.bk || {})[g.ty] || 0);
   const pct = G.hi > G.lo ? Math.min(100, ((g.rep || 0) - G.lo) / (G.hi - G.lo) * 100) : 100, nx = GRADES[G.i + 1];
-  const old = (g.tyLog || []).slice(-3).reverse().map(([t, at]) => { const d = new Date(at); return `<li>${tyIcon(t)}<span>${TYPE_KO[t]} 체육관</span><small>${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()} 폐업</small></li>`; }).join('');
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos'; root.appendChild(el);
   el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 정보</b></div>
     <div class="gy-body">
       <div class="if-hero"><img alt="" data-ms="${g.d}"><div><span class="if-ty">${tyIcon(g.ty)}${TYPE_KO[g.ty]} 타입</span><h3>${esc(g.nm)} <button class="gy-chg gy-pen" type="button" data-a="nm" aria-label="이름 바꾸기"><svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M8 0h2v1H8zM7 1h1v1H7zM10 1h1v1h-1zM6 2h1v1H6zM11 2h1v1h-1zM5 3h1v1H5zM10 3h1v1h-1zM4 4h1v1H4zM9 4h1v1H9zM3 5h1v1H3zM8 5h1v1H8zM2 6h1v1H2zM7 6h1v1H7zM1 7h1v2H1zM6 7h1v1H6zM5 8h1v1H5zM0 9h1v3H0zM4 9h1v1H4zM1 11h3v1H1zM2 10h1v1H2z"/><path fill="#f0c040" d="M7 2h1v1H7zM6 3h2v1H6zM5 4h2v1H5zM4 5h2v1H4zM3 6h2v1H3zM2 7h2v1H2zM2 8h3v1H2zM1 9h3v1H1zM3 10h1v1H3z"/><path fill="#e86070" d="M8 1h2v1H8zM8 2h3v1H8zM8 3h2v1H8zM8 4h1v1H8z"/></svg></button></h3></div></div>
-      <div class="if-grade"><small>지금 등급</small><div><b>${G.n}</b><span>평판 ${g.rep || 0}${nx ? ` / ${nx[0]}` : ''}</span></div><i class="gy-bar"><i style="width:${pct}%"></i></i><small>${nx ? `${nx[0] - (g.rep || 0)} 더 모으면 <b>${nx[1]}</b>` : '가장 높은 등급이에요'}</small></div>
+      <button class="if-grade" type="button" data-a="perk" data-g="${G.i}">${gEmb(G.i)}<div class="ig-tx"><small>지금 등급 <em>혜택 보기 ›</em></small><b>${G.n}</b><i class="gy-bar"><i style="width:${pct}%"></i></i><span>평판 <b>${g.rep || 0}</b>${nx ? ` / ${nx[0]} · 다음 <u>${nx[1]}</u>` : ' · 가장 높은 등급'}</span></div></button>
       <div class="if-two">
-        <div class="if-staff"><small>고용할 수 있는 트레이너</small><b>${staffMax()}<em>명</em></b><span>${staffMax() ? `지금 ${(g.sf || []).length}명 고용 중` : '동네 체육관부터 고용할 수 있어요'}</span></div>
-        <div class="if-big"><small>체육관 크기</small><b>${bigOf(g) + 1}<em>/ ${GRADES.length}단계</em></b>${canBig(g) ? '<button class="gy-key main" type="button" data-a="big">넓히기</button>' : `<span>${bigOf(g) + 1 < GRADES.length ? `${GRADES[bigOf(g) + 1][1]}이 되면 넓힐 수 있어요` : '가장 넓어요'}</span>`}</div>
+        <div class="if-staff"><small>고용할 수 있는 트레이너</small><b>${staffMax()}<em>명</em></b></div>
+        <div class="if-big"><small>체육관 크기</small><b>${bigOf(g) + 1}<em>/ ${GRADES.length}단계</em></b>${canBig(g) ? '<button class="gy-key main" type="button" data-a="big">넓히기</button>' : ''}</div>
       </div>
-      <button class="if-perk" type="button" data-a="perk">등급별 혜택 보기 ▶</button>
       <h5>${TYPE_KO[g.ty]} 자격 배지</h5><div class="if-bdg"><img alt="" src="${IMG}badge/${g.ty}.png" class="${g.bdg?.[g.ty] ? 'on' : ''}"><div><b>${g.bdg?.[g.ty] ? '받았어요!' : `도전자 ${bk} / 100명 막기`}</b><i class="gy-bar"><i style="width:${bk}%"></i></i><small>모은 배지 ${nb} / 18</small></div></div>
-      ${old ? `<h5>예전 체육관</h5><ul class="if-old">${old}</ul>` : ''}
       <div class="gy-btns three if-btns"><button type="button" data-a="log">체육관 일지</button><button type="button" data-a="bdg">자격 배지</button><button type="button" data-a="rk">주간 랭킹</button></div>
       <button class="if-re" type="button" data-a="re">폐업하고 새로 세우기</button>
     </div>`;
@@ -797,10 +797,9 @@ function infoPop() {
 // 등급별 혜택 (경완 2026-10-28)
 function perkPop() {
   const g = st(), gi = gradeOf(g.rep || 0).i;
-  const row = ([v, n], i) => { const nd = Object.values(DECO).filter(o => (o.lv || 0) === i).length, nf = Object.values(OUTFITS).filter(o => (o.lv || 0) === i).length;
-    const L = [`체육관 크기 ${i + 1}단계`, `트레이너 ${Math.min(5, i)}명 고용`, `훈련장 ${2 + Math.min(4, i)}칸`, `도전자 하루 ${2 + (i >= 2) + (i >= 4)}~${3 + (i >= 2) + (i >= 4)}명`];
-    if (i && nd) L.push(`새 꾸미기 ${nd}개`); if (i && nf) L.push(`새 관장 의상 ${nf}벌`);
-    return `<li class="${i === gi ? 'cur' : i < gi ? 'done' : ''}"><div><b>${n}</b><small>평판 ${v}</small>${i === gi ? '<em>지금</em>' : ''}</div><ul>${L.map(t => `<li>${t}</li>`).join('')}</ul></li>`; };
+  const row = ([v, n], i) => {
+    const L = [`체육관 크기 ${i + 1}단계`, `트레이너 ${Math.min(5, i)}명 고용`, `훈련장 ${2 + Math.min(4, i)}칸`];   // 도전자 수·꾸미기·의상은 등급 차등 없음 (경완 2026-10-28)
+    return `<li class="${i === gi ? 'cur' : i < gi ? 'done' : ''}">${gEmb(i)}<div><b>${n}</b><small>평판 ${v}</small>${i === gi ? '<em>지금</em>' : ''}</div><ul>${L.map(t => `<li>${t}</li>`).join('')}</ul></li>`; };
   pop(`<h4>등급별 혜택</h4><ol class="gy-perk">${GRADES.map(row).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }
 // 체육관 넓히기: 한 단계씩, 평판 등급까지 (공짜)
