@@ -1420,7 +1420,6 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
   .sheet .win{padding-right:14px;padding-bottom:calc(var(--sab) + 10px)}
 }
 @media (prefers-reduced-motion: reduce){.mon.held .flip,.act,.bubble,.pt,.berry.new,.ring,.mon.wet .ripple,.sel-mark,.dlg .more,.snot,.bfly::before,.bfly::after,.glint{animation:none!important}.snot{transform:scale(1)}}
-#probeOut{margin:8px 0 0;padding:8px;max-height:46vh;overflow:auto;white-space:pre-wrap;word-break:break-all;font:11px/1.45 ui-monospace,Menlo,monospace;background:rgba(0,0,0,.06);border:2px solid var(--inner)}
 </style>
 
 <script>setTimeout(() => document.documentElement.classList.add('ready'), 6000)</script>
@@ -1705,13 +1704,11 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
         <div class="set-btns one"><button class="lk-btn main" id="updNow">배포된 최신 판 바로 받기</button></div>
         <div class="set-btns one"><button class="lk-btn main" id="newsPv">업데이트 알림창 미리 보기</button></div>
         <div class="set-btns one"><button class="lk-btn main" id="tutPv">튜토리얼 미리 보기</button></div>
-        <div class="set-btns one"><button class="lk-btn main" id="dexPvH">부화 → 도감 등록 미리 보기</button><button class="lk-btn main" id="dexPvE">진화 → 도감 등록 미리 보기</button><button class="lk-btn main" id="dexPvA">여러 알 모두 부화 → 도감 등록 미리 보기</button></div>   <!-- v9.99 경완: 부화·진화 과정부터 도감 등록 연출까지 쭉 (저장 안 함, 끝나면 원래대로) -->   <!-- v8.04 경완: 오프닝·튜토리얼을 처음부터 (저장은 그대로) -->
+        <!-- v10.61 경완: 운영자 도감 미리 보기·장소 찾기 시험 없앰 -->   <!-- v8.04 경완: 오프닝·튜토리얼을 처음부터 (저장은 그대로) -->
         <!-- v8.16 경완: 운영자 골드 맞추기 없앰 (v7.46) -->   <!-- v7.28 경완: 운영자 전용 — 봤다고 저장하지 않음 -->
         <div class="mgt-row"><span>기술 시험</span><select id="mgtType" aria-label="타입 (액티브 기술)"></select><select id="mgtRk" aria-label="랭크 (패시브)"></select><button class="lk-btn main" id="mgtGo">해 보기</button></div>   <!-- v6.21 경완: 운영자 전용 미니게임 기술 시험 (보상·기록 없음) -->
         <p class="op-note" id="updMsg" hidden></p>
         <div class="set-btns one" id="betaBkRow" hidden><button class="lk-btn main" id="betaBk">베타 켜기 전 저장으로 되돌리기</button></div>
-        <div class="set-btns one" id="probeRow" hidden><button class="lk-btn main" id="placeProbe">장소 찾기 시험</button></div>
-        <pre class="probe-out" id="probeOut" hidden></pre>
       </section>
       <section class="set-sec test-only">
         <h4>테스트</h4>
@@ -6502,7 +6499,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.60';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.61';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9662,22 +9659,6 @@ function unlock(sp, fx) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); trUpChe
 /* v9.95 경완: 부화·진화로 새로 등록된 포켓몬은 창을 다 닫은 뒤 번호순 도감을 열어, 그 칸으로 스크롤하며 하나씩 채워 넣는다 (화면을 누르면 남은 것을 한꺼번에) */
 const dexFx = { q: [], on: false };
 function dexFxFlush() { const L = dexFx.q.splice(0); L.forEach(sp => { lockDexBtn(sp); dexCellReady(sp); }); return L; }
-// v9.99 경완 '도감 연출은 진화했을 때랑 알 부화시켰을 때 둘 다 운영자 모드에서, 과정부터 쭉': 저장해 두고 다시 켜서 이번 실행은 저장 안 함 → 못 만난 포켓몬으로 진짜 부화·진화 → 도감 등록 연출 → 끝나면 다시 켜서 원래대로
-let dexPv = null;
-['H', 'E', 'A'].forEach(k => $('#dexPv' + k).addEventListener('click', () => { sfx('tap'); save(); try { sessionStorage.setItem('pk-dexpv', { H: 'hatch', E: 'evo', A: 'all' }[k]); } catch (e) { return; } location.reload(); }));
-async function dexPvStart(kind) {
-  for (let k = 0; k < 40 && (dexFxBlocked() || hatching || evolving); k++) { const b = $('#noti:not([hidden]) button, #news:not([hidden]) #newsOk'); if (b) b.click(); await wait(400); }
-  const open = sp => dexBtns[sp] && !S.unlocked.has(sp) && !SP_OFF.has(sp) && !SPECIES[sp].leg && !SPECIES[sp].my;
-  dexPv = kind; hideSheets(); syncTabs();
-  if (kind === 'hatch') { const L = Object.keys(SPECIES).map(Number).filter(sp => open(sp) && !SPECIES[sp].fr); const sp = pick(L.length ? L : Object.keys(SPECIES).map(Number).filter(open)); if (!sp) { dexPv = null; return; }
-    hatchEgg({ id: -1, g: 1, sp, km: 1, need: 1, place: '미리 보기' }, true); playHatch(); }
-  else if (kind === 'all') { const L = Object.keys(SPECIES).map(Number).filter(sp => open(sp) && !SPECIES[sp].fr), A = [];   /* v10.13 경완: 여러 알 모두 부화 → 도감 등록 (못 만난 3마리) */
-    while (A.length < 3 && L.length) A.push(L.splice(Math.floor(Math.random() * L.length), 1)[0]); if (!A.length) { dexPv = null; return; }
-    S.eggs.push(...A.map((sp, k) => ({ id: -1 - k, g: 1, sp, km: 1, need: 1, place: '미리 보기' }))); hatchAll(); }
-  else { const L = Object.keys(SPECIES).map(Number).filter(to => open(to) && SPECIES[to].fr && SPECIES[SPECIES[to].fr] && !SP_OFF.has(SPECIES[to].fr)); const to = pick(L); if (!to) { dexPv = null; return; }
-    const P = newPoke(SPECIES[to].fr); S.box.push(P); evolveWin(P, false, to); }
-}
-function dexPvEnd() { if (!dexPv || dexFx.hold || evolving) return; dexPv = null; setTimeout(() => location.reload(), 1200); }
 const dexFxBlocked = () => hatching || evolving || hatchQ.length || !$('#noti').hidden || !hatchEl.hidden || !!document.querySelector('#frMax:not([hidden]),#dexPop:not([hidden])');   /* 열린 창이 실제로 보이는지로 (notiOpen 값은 남아 있을 때가 있다) */
 function dexFxVeil() { if (dexFx.wi) return wait(0); const wi = document.createElement('div'); wi.className = 'dfxWhite'; document.body.append(wi); void wi.offsetWidth; wi.classList.add('on'); dexFx.wi = wi; clearTimeout(dexFx.wiT); /* v10.43 경완 '단일 부화·진화 뒤 도감 연출 전에 원래 화면이 잠깐 보이는 틈': 창을 닫기 전에 그 위로 먼저 하얗게 덮고, 도감 연출은 그 흰 화면을 이어 받는다 */
   dexFx.wiT = setTimeout(() => { if (!dexFx.on && dexFx.wi === wi) { dexFx.wi = null; wi.classList.add('out'); wi.classList.remove('on'); setTimeout(() => wi.remove(), 700); } }, 4000); return wait(420); }   /* 연출이 못 열리면 4초 뒤 걷는다 */
@@ -9712,7 +9693,7 @@ async function dexFxRun() {
     for (const [w, h] of W0) $(w).hidden = h;
     if (!$('#mgr').hidden && tab0 !== 'dex') setMgrTab(tab0);
     if (!sheet.hidden) { $('#dexQ').value = q0; dexQv = q0; for (const [id, v] of F0) setFilter(id, v); grid.scrollTop = y0s; }
-    syncTabs(); if (wf) { const w = wf; w.classList.add('out'); w.classList.remove('on'); setTimeout(() => w.remove(), 700); } setTimeout(() => shield.remove(), wf ? 650 : 0); dexFx.on = false; if (dexFx.q.length) dexFxKick(); else dexPvEnd(); }
+    syncTabs(); if (wf) { const w = wf; w.classList.add('out'); w.classList.remove('on'); setTimeout(() => w.remove(), 700); } setTimeout(() => shield.remove(), wf ? 650 : 0); dexFx.on = false; if (dexFx.q.length) dexFxKick(); }
 }
 // 새로 등록된 칸은 그림을 바로 넣고 순서도 미리 맞춰 둔다 → 도감을 열 때 없던 칸이 뒤늦게 생기는 모습이 안 보인다
 // v3.09: 작은 스프라이트(토중몬 등)를 칸 높이까지 늘리면 도트가 커 보인다(경완) → 도트 한 칸 최대 2배까지만 키우고 칸 높이는 그대로
@@ -9813,10 +9794,6 @@ function renderProfile() { try { window.gymBdgRow?.(); } catch (e) {}
   $('#pfDiag').textContent = !window.webkit?.messageHandlers?.pokeRun ? '' : D.err ? `만보기 오류: ${D.err}` : D.n ? `만보기 신호 ${D.n}번 · 마지막 ${ago}초 전 · ${D.km.toFixed(3)}km` : '만보기 신호를 아직 못 받았어요';
 }
 const pedDiag = { n: 0, at: 0, km: 0, err: '' };
-// v5.61 경완: 운영자 › 장소 찾기 시험 — 아이폰 앱이 지금 위치로 장소 이름을 찾는 단계별 결과와 최근 자동 기록을 보여 준다 (알 주운 곳이 동까지만 나올 때 원인 확인용)
-{ const h = window.webkit?.messageHandlers?.pokeRun; $('#probeRow').hidden = !h;
-  $('#placeProbe').onclick = () => { const o = $('#probeOut'); o.hidden = false; o.textContent = '찾는 중…'; sfx('tap'); try { h.postMessage({ probe: true }); } catch (e) { o.textContent = '앱에 보내지 못했어요: ' + e; } };
-  window.pokeRunProbe = lines => { const o = $('#probeOut'); o.hidden = false; o.textContent = (Array.isArray(lines) ? lines : [String(lines)]).join('\n'); }; }
 window.pokeRunPedErr = msg => { pedDiag.err = String(msg); if (!setEl.hidden) renderProfile(); };
 setInterval(() => { if (!setEl.hidden && pedDiag.n) renderProfile(); }, 1000);
 // 아이폰 앱: 오늘 0시부터 걸은 거리(만보기)를 걷는 동안 계속 보낸다 (화면 표시용, 알 줍기는 pokeRunWalk)
@@ -11197,7 +11174,7 @@ async function evolveWin(P, card, forceTo, tool) {   // tool: 쓴 도구 id → 
     $('#noti').hidden = false; sfx('newdex'); haptic(1);
     await new Promise(res => { const done = () => { $('#noti').hidden = true; $('#noti').onclick = null; notiOpen = false; res(); }; $('#notiOk').onclick = done; $('#noti').onclick = ev => { if (ev.target.id === 'noti') done(); }; });
   }
-  evolving = false; save(); dexFxKick(0); if (!dexFx.q.length) dexPvEnd();   /* v10.14 경완: 창이 닫히면 원래 화면 없이 바로 도감 연출 */
+  evolving = false; save(); dexFxKick(0);   /* v10.14 경완: 창이 닫히면 원래 화면 없이 바로 도감 연출 */
   notiSoon(600);   // 진화하는 동안 미뤄 둔 알림이 있으면
 }
 // the dex only lets you release species you have met
@@ -11750,14 +11727,13 @@ async function start(data) {
   const isNew = !(d && d.mons && (d.mons.length || d.unlocked));
   const introPrev = !isNew && /[?&]intro/.test(location.search);   // v5.38: ?intro 는 저장이 있어도 새 게임처럼 오프닝·튜토리얼을 미리 보기만 한다 (원래 저장은 건드리지 않게 이번 실행은 저장 안 함)
   if (introPrev) { saveFrozen = true; introPv = true; }
-  let dexPvK = null; if (!introPrev) { try { dexPvK = sessionStorage.getItem('pk-dexpv'); sessionStorage.removeItem('pk-dexpv'); } catch (e) {} if (dexPvK) saveFrozen = true; }   // v9.99: 운영자 부화·진화 도감 미리 보기 — 이번 실행은 저장 안 함
   // v5.53 경완: 오프닝·튜토리얼 도중 앱을 껐다 켜면 튜토리얼이 통째로 건너뛰어지던 것 → 튜토리얼을 마칠 때까지 저장하지 않아 다시 켜면 처음부터
   if (isNew) { newsMark(); try { localStorage.setItem('pk-news', NEWS_MAIN); } catch (e) {} }   /* v7.44: 처음 시작한 사람은 업데이트 알림창 안 띄움 */
   if (isNew && INTRO_ON()) { saveFrozen = true; tutFreeze = true; }
   if (!isNew && !introPrev) await restore(d); else await fresh();
   if (layApply()) seaRedraw();   // v9.06 경완: 맵 편집에서 옮긴 자리
   if (bgmOn && bgm.id !== S.bgm) bgmStart();
-  Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp)); menuDots(); if (dexPvK) setTimeout(() => dexPvStart(dexPvK), 1500);
+  Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp)); menuDots();
   migrateBox(); undoAutoHatch(); syncNeed(); renderGold(); if (!((isNew && INTRO_ON()) || /[?&]intro/.test(location.search))) document.documentElement.classList.remove('bootBlk');
   if ((isNew && INTRO_ON()) || /[?&]intro/.test(location.search)) introFlow().then(() => tutFlow()).finally(() => { if (introPrev) { tutFreeze = false; setTimeout(() => location.replace(location.pathname), 1500); return; }   /* v8.04 경완: 운영자 '튜토리얼 미리 보기' — 끝나면 원래 저장으로 돌아감 (미리 보기 중엔 저장 안 함) */ if (tutFreeze) { tutFreeze = false; saveFrozen = false; save(); } }).then(() => notiSoon(300)); else notiSoon(700); sky(); fetchWx(false, 10 * 60e3); setInterval(fetchWx, 10 * 60e3); document.addEventListener('visibilitychange', () => { if (document.hidden) return;   /* v4.33 경완: 다시 켜면 시간·날씨를 바로 (서서히 바뀌는 연출 없이) */
     const c = document.documentElement.classList; c.add('boot'); S.clock = realClock(); skyKey = ''; sky(); requestAnimationFrame(() => requestAnimationFrame(() => c.remove('boot'))); fetchWx(false, 10 * 60e3); }); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
