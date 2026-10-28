@@ -2244,7 +2244,7 @@ async function importCries(file) {
   items.forEach(([sp]) => cry.have.add(sp)); cry.buf.clear();
   return items.length;
 }
-async function playCry(sp, delay = 0) {
+async function playCry(sp, delay = 0, rate = 1) {   // rate: 쓰러질 때 낮게 (본가 4세대)
   if (!sfxOn || !cry.have.has(sp)) return; const a = audio(); if (!a) return;
   try {
     let buf = cry.buf.get(sp);
@@ -2257,7 +2257,7 @@ async function playCry(sp, delay = 0) {
       cry.buf.set(sp, buf); if (cry.buf.size > 40) cry.buf.delete(cry.buf.keys().next().value);
     }
     const src = a.createBufferSource(), g = a.createGain(); g.gain.value = (buf.g ?? .25) * volG(VOL.sfx);
-    src.buffer = buf; src.connect(g).connect(a.destination); src.start(a.currentTime + delay);
+    src.buffer = buf; src.playbackRate.value = rate; src.connect(g).connect(a.destination); src.start(a.currentTime + delay); return buf.duration / rate;
   } catch (e) {}
 }
 async function importMusic(files) {
@@ -6444,7 +6444,7 @@ document.addEventListener('click', e => {
   $('#gymSim').onclick = () => { if (window.Gym?.isOpen?.()) return; sfx('tap'); try { localStorage.setItem(SIMK, JSON.stringify({ gym: S.gym || null, gold: S.gold })); } catch (e) { return; }
     window.gymSimOn = 1; S.gold = Math.max(S.gold, 100000); hideSheets(); $('#btnGym').onclick(); }; }
 /*gym-hook3*/
-GA.audio = () => audio(); GA.bgmGain = () => { if (!audio()) return null; bgmRoute(); return bgm.gain; }; GA.bgmOn = () => bgmOn; GA.cry = (sp, d) => playCry(sp, d);
+GA.audio = () => audio(); GA.bgmGain = () => { if (!audio()) return null; bgmRoute(); return bgm.gain; }; GA.bgmOn = () => bgmOn; GA.cry = (sp, d, r) => playCry(sp, d, r);
 /*gym-hook4*/
 GA.thumb = P => ensureSprite(P.sp).then(() => thumbP(P)); GA.pkCls = P => pkCls(P) + (tierOf(+P.sp) ? ' t-' + tierOf(+P.sp) : ''); GA.isFish = sp => isFish(sp); GA.shinyHue = sp => shinyHue(sp); GA.sfxVol = () => volG(VOL.sfx); GA.quietTap = () => { sfxN++; };   // 이 클릭엔 기본 '톡' 소리를 내지 않는다(체육관 배틀은 본가 효과음)
 /*gym-hook5*/
@@ -6499,7 +6499,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.69';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.70';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
