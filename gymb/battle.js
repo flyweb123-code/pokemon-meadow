@@ -201,10 +201,11 @@ function fit() {
 }
 
 // 대화창: 글자를 하나씩. wait=true 면 다 쓰고 잠깐 멈춤(누르면 바로 다음)
+// 본가처럼 ▼ 가 깜빡이는 동안 대화창·빈 곳을 누르면 넘어간다. 안 눌러도 잠시 뒤 저절로 (경완 2026-10-28)
 async function msg(t, hold = 650) {
   if (!B) return; const box = $b('.bt-msg .t'), cur = $b('.bt-msg .cur'); B.fast = false; cur.hidden = true; box.textContent = '';
   for (const ch of [...t]) { if (!B) return; if (B.fast) { box.textContent = t; break; } box.textContent += ch; await wait(ch === ' ' ? 12 : 26); }
-  if (hold) { cur.hidden = false; await Promise.race([wait(hold + (B.fast ? 0 : 150)), new Promise(r => { if (B) B.tapWake = r; })]); if (B) B.tapWake = null; cur.hidden = true; }
+  if (hold) { cur.hidden = false; await Promise.race([wait(hold + (B.fast ? 0 : 900)), new Promise(r => { if (B) B.tapWake = r; })]); if (B) B.tapWake = null; cur.hidden = true; }
 }
 // 누를 때까지 기다리는 대화 (승부 끝 등)
 async function msgTap(t) { await msg(t, 0); if (!B) return; $b('.bt-msg .cur').hidden = false; await new Promise(r => { B.tapWake = r; }); $b('.bt-msg .cur').hidden = true; }
@@ -330,6 +331,8 @@ function panel(html) { const p = $b('.bt-panel'); p.innerHTML = html; return p; 
 function idlePanel() { panel(`<div class="bp-idle"></div>`); el?.classList.remove('idle'); }
 function mainPanel(A) {
   el.classList.add('idle');   // 고르는 동안 내 포켓몬·체력 상자가 위아래로 살짝 (본가)
+  // 지난 메시지가 남아 있으면 멈춘 것처럼 보인다 (경완 2026-10-28): 본가처럼 대화창에 '무엇을 할까?'
+  $b('.bt-msg .t').textContent = `${A.nm}${jong(A.nm) ? '은' : '는'} 무엇을 할까?`; $b('.bt-msg .cur').hidden = true;
   return new Promise(res => {
     const p = panel(`<div class="bp-main">
       <button class="bb fight" data-a="fight"><span>싸우다</span></button>
@@ -547,8 +550,13 @@ async function readLog() {
 }
 const hpOf = s => { const [a] = String(s || '').split(' '); if (a === '0') return [0, 0]; const [h, m] = a.split('/').map(Number); return [h || 0, m || 0]; };
 const stOf = s => (String(s || '').split(' ')[1] || '').replace('fnt', '');
+// 급소·상성 말은 본가처럼 체력바가 다 줄어든 뒤에 (경완 2026-10-28). 쇼다운은 -damage 앞에 보내므로 모아 뒀다가 낸다
+const PEND = { '-crit': '급소에 맞았다!', '-supereffective': '효과가 굉장했다!', '-resisted': '효과가 별로인 듯하다…' };
+async function flushPend() { const L = B?.pend; if (!L?.length) return; B.pend = []; for (const t of L) await msg(t); }
 async function handle(a) {
   const k = a[1], A = s => B.act[s];
+  if (PEND[k]) { (B.pend = B.pend || []).push(PEND[k]); return; }
+  if (k !== '-damage') await flushPend();
   switch (k) {
     case 'switch': case 'drag': {
       const s = sideOf(a[2]), i = partyIdx(s, a), det = a[3].split(', '), [hp, mhp] = hpOf(a[4]);
@@ -573,15 +581,12 @@ async function handle(a) {
       const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); const from = (a[4] || '').replace('[from] ', '');
       if (from) { const t = dmgFrom(from, a[2]); if (t) await msg(t, 300); }
       if (!from) await hitFx(s, effAhead(a[2]));
-      if (mhp) X.mhp = mhp; await drainHp(s, X, hp); X.st = stOf(a[3]) || X.st; break;
+      if (mhp) X.mhp = mhp; await drainHp(s, X, hp); X.st = stOf(a[3]) || X.st; await flushPend(); break;
     }
     case '-heal': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); if (mhp) X.mhp = mhp; await drainHp(s, X, hp); await msg(`${who(a[2])}의 체력이 회복되었다!`); break; }
     case '-sethp': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp] = hpOf(a[3]); await drainHp(s, X, hp); break; }
     case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s === 'e' && !B.practice) await expGain(X); break; }
-    case '-supereffective': await msg('효과가 굉장했다!'); break;
-    case '-resisted': await msg('효과가 별로인 듯하다…'); break;
     case '-immune': await msg(`${who(a[2])}에게는 효과가 없는 것 같다…`); break;
-    case '-crit': await msg('급소에 맞았다!'); break;
     case '-miss': await msg(a[3] ? `${who(a[3])}에게는 맞지 않았다!` : `${who(a[2])}의 공격은 빗나갔다!`); break;
     case '-fail': await msg('그러나 실패했다!'); break;
     case '-nothing': await msg('그러나 아무 일도 일어나지 않았다!'); break;
