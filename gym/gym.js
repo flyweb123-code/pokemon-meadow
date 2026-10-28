@@ -605,7 +605,7 @@ function talk(html, btn = '다음', sub = '') {
   return new Promise(ok => { $g('.gy-dlg').innerHTML = `${html}${sub ? `<span class="gy-dsub">${sub}</span>` : ''}<button class="gy-dbtn" type="button">${btn} ▶</button>`;
     $g('.gy-dbtn').onclick = e => { e.stopPropagation(); sfx('tap'); ok(); }; });
 }
-const doorSe = () => { try { window.GymBGM?.se('DP_DOOR'); } catch (e) {} };   // 도전자가 드나들 때 철컥 문 소리 (플래티넘 SEQ_SE_DP_DOOR, 경완 2026-10-28 '자동문 말고 철컥')
+const doorSe = () => { try { window.GymBGM?.se('DP_DOOR', { gain: 2.4 }); } catch (e) {} };   // 도전자가 드나들 때 철컥 문 소리 (플래티넘 SEQ_SE_DP_DOOR, 경완 2026-10-28 '자동문 말고 철컥')
 async function challenge() {
   const g = st(), c = g.q[0]; if (!c || busy) return;
   const my = luNow(); if (!my.length) { say('라인업이 비어 있어요.', '배틀 메뉴에서 라인업을 먼저 짜 주세요'); openTab('battle'); return; }
@@ -613,7 +613,9 @@ async function challenge() {
   try {
     await loadJs('gym/battle.js', 'GymBattle'); await GB().loadData();
     // 문 소리 → 문 앞 카펫에 나타나 잠깐 섰다가 → 관장 앞까지 걸어온다 (경완 2026-10-28 '소리랑 타이밍 맞춰서, 카펫 위에 잠깐 멈췄다가')
-    const D = dzOf(g.d); doorSe(); await wait(180);
+    const D = dzOf(g.d), bm = c.music || (c.named && NAMED.find(n => n.id === c.named)?.music) || (c.named ? 'gymBattle' : 'train');
+    try { window.GymBGM?.prep(bm); if (c.named) window.GymBGM?.play(bm === 'champ' ? 'eyeChamp' : 'eyeElite', { fade: .1 }); } catch (e) {}   // 이름 있는 트레이너는 들어올 때부터 등장 곡 (배틀 곡과 다름, 경완 2026-10-28)
+    doorSe(); await wait(180);
     const e = ent({ ow: c.ow, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(c.ow) });
     dlg(`${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 들어온다!`); await wait(650);
     await walk(e, D.path.slice(1)); e.f = 'u'; place(e);
@@ -625,7 +627,7 @@ async function challenge() {
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : pick(WIN_LINES), lose: N ? N.ln[2].replace('{me}', me) : pick(LOSE_LINES) };
     document.body.classList.add('gymBattle');
     let res;
-    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: REW[c.diff].g, r: REW[c.diff].r, rl: Math.max(-(g.rep || 0), REW[c.diff].rl) }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: c.music || (c.named && NAMED.find(n => n.id === c.named)?.music) || (c.named ? 'gymBattle' : 'train'), meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: REW[c.diff].g, r: REW[c.diff].r, rl: Math.max(-(g.rep || 0), REW[c.diff].rl) }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); }
     g.q.shift(); const R = REW[c.diff], won = !!res?.won, now = Date.now();
     let gold = 0, rep = 0;
@@ -647,9 +649,26 @@ function resultPop(c, res, gold, rep, R) {
   const rows = (res?.used || []).map(id => { const P = S.box.find(p => p.id === id); if (!P) return ''; const x = xr[id], m = st().mon?.[id];
     return `<div class="rs-mon"><img alt="" data-th="${P.id}"><b>${esc(SPECIES[P.sp]?.n || '')}</b><span>Lv.${m?.lv || '?'}${x && x.lv > x.lv0 ? ` <em>▲${x.lv - x.lv0}</em>` : ''}</span><small>${x ? `경험치 +${x.n.toLocaleString()}` : '경험치 없음'}${won ? ` · 친밀도 +${R.fr}` : ''}</small>${x?.learned?.length ? `<small class="nw">새 기술: ${x.learned.map(([id]) => esc(GB().mvKo(id))).join(', ')}</small>` : ''}</div>`; }).join('');
   return new Promise(ok => { const p = pop(`<h4>${won ? '승리!' : res?.quit ? '기권했다' : '패배…'}</h4>
-      <div class="rs-sum">${won ? `<span><i class="coin"></i> +${gold}G</span>` : ''}<span>평판 ${rep >= 0 ? '+' : ''}${rep}</span></div>
+      <div class="rs-sum">${won ? `<span><i class="coin"></i> +${gold}G</span>` : ''}</div>${repBox(rep)}
       <div class="rs-mons">${rows}</div><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => { close(); ok(); });
-    GB()?.fillTh(p); });
+    GB()?.fillTh(p); repAnim(p, rep); });
+}
+// 평판 오르내림 연출 (경완 2026-10-28 '평판 오르고 떨어지는 거 연출'): 숫자 세기 + 막대 + 튀는 +N/-N, 등급이 바뀌면 배지 반짝
+const repBox = rep => { const r1 = st().rep || 0, r0 = Math.max(0, r1 - rep), G = gradeOf(r0), pc = r => clampN((r - gradeOf(r).lo) / Math.max(1, gradeOf(r).hi - gradeOf(r).lo), 0, 1) * 100;
+  return `<div class="rs-rep ${rep > 0 ? 'up' : rep < 0 ? 'dn' : ''}" data-r0="${r0}" data-r1="${r1}"><div class="rr-top"><span>평판</span><b class="rr-n">${r0}</b><em class="rr-d">${rep >= 0 ? '+' : ''}${rep}</em></div>
+    <div class="rr-g">${gEmb(G.i)}<span class="rr-gn">${G.n}</span><i class="gy-bar"><i style="width:${pc(r0)}%"></i></i></div></div>`; };
+async function repAnim(p, rep) {
+  const el = p?.querySelector('.rs-rep'); if (!el || !rep) return;
+  const r0 = +el.dataset.r0, r1 = +el.dataset.r1, n = el.querySelector('.rr-n'), bar = el.querySelector('.gy-bar>i'), g0 = gradeOf(r0).i;
+  await wait(380); if (!el.isConnected) return;
+  el.classList.add('go'); window.GymBGM?.se?.(rep > 0 ? 'DP_EXP' : 'DP_KOUKA_L');
+  const t0 = performance.now(), T = clampN(Math.abs(r1 - r0) * 90, 500, 1100);
+  await new Promise(done => { const f = now => { if (!el.isConnected) return done(); const k = Math.min(1, (now - t0) / T), r = Math.round(r0 + (r1 - r0) * (1 - (1 - k) ** 2)), G = gradeOf(r);
+    n.textContent = r; bar.style.width = clampN((r - G.lo) / Math.max(1, G.hi - G.lo), 0, 1) * 100 + '%';
+    if (G.i !== +el.dataset.gi) { el.dataset.gi = G.i; el.querySelector('.g-emb').outerHTML = gEmb(G.i); el.querySelector('.rr-gn').textContent = G.n; }
+    k < 1 ? requestAnimationFrame(f) : done(); }; el.dataset.gi = g0; requestAnimationFrame(f); });
+  el.classList.add('end');
+  if (gradeOf(r1).i !== g0 && el.isConnected) { el.classList.add(gradeOf(r1).i > g0 ? 'gup' : 'gdn'); window.GymBGM?.se?.(gradeOf(r1).i > g0 ? 'DP_PINPON' : 'DP_KOUKA_L'); }
 }
 function badgeGet(ty) {
   st().newBdg = 0; save();
@@ -830,20 +849,27 @@ function perkPop() {
   pop(`<h4>등급별 혜택</h4><ol class="gy-perk">${GRADES.map(row).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }
 // 체육관 넓히기: 한 단계씩, 평판 등급까지 (공짜)
-function bigUp(el) {
-  const g = st(); if (!canBig(g)) return; const prev = bigOf(g); g.big = prev + 1; save();
-  glog('in', `체육관을 ${g.big + 1}단계로 넓혔다!`); el?.remove(); renderHome();
-  bigFx(prev, g.big).then(() => { const m = $g('.gy-map'); m.classList.remove('grow'); void m.offsetWidth; m.classList.add('grow'); });
-}
-// 넓히기 전후 비교 (경완 2026-10-28 '전후 차이 확실하게'): 같은 배율로 전·후 맵을 위아래로 놓고, 후 맵이 커지며 나타난다
-async function bigFx(a, b) {
-  const g = st(), A = dzOf(g.d, a), B = dzOf(g.d, b); let ua, ub;
-  try { [ua, ub] = await Promise.all([mapSrc(A), mapSrc(B)]); } catch (e) { return; }
-  const mw = Math.max(A.w, B.w) * 16, mh = Math.max(A.h, B.h) * 16, r = root.getBoundingClientRect();
-  const k = Math.min(2, (Math.min(r.width, 420) - 72) / mw, (r.height - 300) / 2 / mh);
-  const fig = (D, u, t, cls) => `<figure class="bf-${cls}"><figcaption>${t}</figcaption><div class="bf-map"><img alt="" src="${u}" style="width:${D.w * 16 * k}px"></div><small>${D.w} × ${D.h}칸</small></figure>`;
-  return new Promise(ok => { const p = pop(`<h4>체육관이 넓어졌어요!</h4><div class="gy-bigfx">${fig(A, ua, `이전 · ${a + 1}단계`, 'a')}<i class="bf-arw">▼</i>${fig(B, ub, `지금 · ${b + 1}단계`, 'b')}</div><p class="bf-gain">+${B.w * B.h - A.w * A.h}칸 넓어졌어요<small>훈련장 칸도 늘었어요</small></p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (x, close) => { close(); ok(); });
-    p?.classList?.add('gy-bigp'); });
+// 넓히기 (경완 2026-10-28 '팝업이 아니고 홈 화면에서 넓어지는 연출, 효과음·bgm 같이 > 그 다음 축하 메시지')
+async function bigUp(el) {
+  const g = st(); if (!canBig(g) || busy) return; const prev = bigOf(g), A = dzOf(g.d, prev);
+  el?.remove(); root.querySelectorAll('.gy-infos,.gy-pop').forEach(x => x.remove()); openTab(null); root.classList.remove('gview');
+  busy = true; root.classList.add('busy', 'dhide');
+  const M = window.GymBGM, map = $g('.gy-map'), r0 = map.getBoundingClientRect();
+  try {
+    try { M?.sePrep?.(['ME_FANFA5', 'DP_KON']); M?.stop(.4); } catch (e) {}
+    await wait(500);
+    g.big = prev + 1; save(); glog('in', `체육관을 ${g.big + 1}단계로 넓혔다!`);
+    try { M?.se('ME_FANFA5'); M?.se('DP_KON'); } catch (e) {}
+    renderHome(true); const B = dzOf(g.d), r1 = map.getBoundingClientRect();
+    const ox = (B.leader[0] + .5) * 16 * sc, oy = (B.leader[1] + .5) * 16 * sc;
+    map.style.transformOrigin = `${ox}px ${oy}px`;
+    const an = map.animate([{ transform: `scale(${r0.width / r1.width},${r0.height / r1.height})`, filter: 'brightness(1.7)' }, { transform: 'scale(1)', filter: 'brightness(1.15)', offset: .85 }, { transform: 'scale(1)', filter: 'none' }], { duration: 1800, easing: 'steps(9, end)' });
+    $g('.gy-stage').animate([{ translate: '0 0' }, { translate: '0 -3px' }, { translate: '0 3px' }, { translate: '0 -2px' }, { translate: '0 0' }], { duration: 480, iterations: 3 });
+    await an.finished.catch(() => {}); await wait(2500);
+    try { M?.play('gym'); } catch (e) {}
+    busy = false; root.classList.remove('busy'); renderHome(true);
+    say('체육관이 넓어졌어요!', `+${B.w * B.h - A.w * A.h}칸 넓어졌어요 · 훈련장 칸도 늘었어요`);
+  } finally { busy = false; root.classList.remove('busy'); }
 }
 // 창고 (경완 2026-10-28 '꾸미기 모드 가방처럼'): 상점에서 산 기술머신·꾸미기·관장 의상을 한곳에서 본다
 let storeT = 'tm';
@@ -1081,7 +1107,7 @@ async function exit() {
 
 window.Gym = { prepare, enter, exit, isOpen: () => open, renderGold: renderGoldG, DESIGNS, _walk: walk, _ent: ent, _tick: tick,
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { bigOf, trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG } };
+  k: { bigOf, trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 window.gymDot = () => { const g = S.gym; return !!(g && g.d && ((g.q && g.q.length) || (g.at && Date.now() >= g.at))); };
 })();

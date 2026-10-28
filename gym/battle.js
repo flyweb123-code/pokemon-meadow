@@ -283,7 +283,7 @@ function showMon(side, A, on = true) {
     if (sheet) { m.style.left = (side === 'e' ? 136 : 40) + 'px'; m.style.top = (side === 'e' ? E_Y + a[0] : P_Y + a[1]) + 'px'; }
     else { m.style.left = m.style.top = ''; }
   }
-  // 650~ 뒷모습(과 한 장짜리 앞모습)은 원본이 한 장이라 멈춰 있었다 (경완 2026-10-28 '대로트 뒷모습 안 움직임'): 블랙·화이트처럼 숨 쉬듯 움찔
+  // 한 장짜리 그림(650~ 뒷모습 등)은 bw: 고르는 동안 스프라이트는 가만히, 정보 박스만 까딱 (경완 2026-10-28)
   const an = A && !A.gif && ANIM[A.sp]; m.classList.toggle('bw', !!A && !A.gif && A.sp >= 494 && (side === 'p' || !an || !(an[3] || []).length));
   m.classList.toggle('on', on);
 }
@@ -327,7 +327,8 @@ function ballPoof(side) {
 async function recall(side) { const m = monEl(side); se('SUIKOMU', { pan: panOf(side) }); m.classList.add('recall'); await wait(420); m.classList.remove('on', 'recall'); $b(`.bt-hb.${side}`).classList.remove('on'); }
 // 쓰러짐: 울음소리 → 발판 아래로 쑥 내려감 (4세대)
 async function faint(side, A) {
-  try { GA.cry?.(A.sp); } catch (e) {} await wait(B?.fast ? 200 : 520);
+  // 본가처럼 낮은 울음소리를 다 낸 뒤 쓰러진다 (경완 2026-10-28)
+  let d = 0; try { d = await GA.cry?.(A.sp, 0, .8) || 0; } catch (e) {} await wait(B?.fast ? 200 : clampN(d * 1000 - 120, 520, 1400));
   se('POKE_DEAD', { pan: panOf(side) }); monEl(side).classList.add('faint'); await wait(420);
   $b(`.bt-hb.${side}`).classList.remove('on'); if (side === 'p') lowHp(false);
 }
@@ -490,7 +491,9 @@ async function run(opts) {
   // 쇼다운은 교체할 때마다 pokemon 배열 순서를 바꾼다. 처음 순서(my·foe 와 같은 순서)를 따로 둔다 (경완 2026-10-27 '시라소몬인데 망키라고 나옴')
   B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null }, li: 0, practice: !!opts.practice, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), xr: {} };
   const meF = GA.trOf().sex === 'f';
-  const music = opts.music || 'train'; M('play', music, { fade: .2 }); M('prep', music === 'train' ? 'winTrain' : 'winGym');
+  const music = opts.music || 'train'; M('prep', music === 'train' ? 'winTrain' : 'winGym');
+  // 곡이 준비된 뒤에 연출 시작 (경완 2026-10-28 '시작 연출이랑 BGM 타이밍이 안 맞음'): 처음 만드는 곡이면 기다림, 최대 4초
+  await Promise.race([(async () => { try { await window.GymBGM?.play(music, { fade: .05 }); } catch (e) {} })(), wait(4000)]);
   const encDone = await encounter(opts);
   el.classList.remove('off'); el.hidden = false; el.className = 'bt intro now'; fit();   // className 을 새로 쓰면 mob·msgmid 가 지워져 대화창이 사라졌음 (경완 2026-10-27 '배틀 상태창이 없어졌네')
   $b('.bt-bg').style.backgroundImage = `url(${IMG}bt/bg_${opts.bg || 'in1'}.png)`;
@@ -948,7 +951,10 @@ async function practice() {
   const say = { win: pick(['으윽, 연습이라도 지는 건 분하네요!', '덕분에 좋은 연습이 됐어요!', '역시 관장님 포켓몬은 강하네요.', '다음 연습 땐 꼭 이길게요!']), lose: pick(['연습이라도 이긴 건 이긴 거죠!', '오늘은 제가 한 수 위였네요!', '좋은 연습 상대가 되어 드렸나요?']) };
   const foe = { tr: T.tr, cls: TR_KO[T.tr] || '트레이너', nm: pick(T.f ? NAMES_F : NAMES_M), team, say };
   document.body.classList.add('gymBattle');
-  try { await run({ my, foe, diff: 1, practice: true, bg: pick(['in1', 'in2', 'in3']) }); }
+  // 연습 배틀도 골드·평판 (경완 2026-10-28): 쉬운 도전자만큼, 그만두면 없음
+  const K = window.Gym?.k, g0 = K?.st?.(), rew = { g: 40, r: 2, rl: -Math.min(2, g0?.rep || 0) };
+  try { const res = await run({ my, foe, diff: 1, practice: true, rew, bg: pick(['in1', 'in2', 'in3']) });
+    if (K && res && !res.quit) { if (res.won) { K.addG(rew.g); K.addRep(rew.r); } else K.addRep(rew.rl); K.save(); K.renderTop(); } }
   catch (e) { console.error(e); GA.toast?.('배틀을 시작하지 못했어요'); }
   finally { document.body.classList.remove('gymBattle'); drawTab(); }
 }
