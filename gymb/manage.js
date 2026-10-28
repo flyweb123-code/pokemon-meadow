@@ -415,21 +415,21 @@ function buyTm(id, can) {
 }
 // 꾸미기: 사면 빈 칸에 바로 놓인다. 놓인 것을 누르면 치우기, 가진 것을 누르면 놓기
 function shopDeco(body) {
-  const g = st(), G = K.gradeOf(g.rep || 0).i, max = K.decoMax(); g.own = g.own || {}; g.dp = (g.dp || []).slice(0, 8);
-  const placed = Array.from({ length: max }, (_, i) => g.dp[i] || null);
+  const g = st(), G = K.gradeOf(g.rep || 0).i; g.own = g.own || {}; g.dp = (g.dp || []).filter(Boolean);   // 개수 제한 없음 (경완 2026-10-28)
+  const placed = g.dp;
   body.innerHTML = `
-    <div class="dc-place"><div><b>놓인 꾸미기 ${placed.filter(Boolean).length}/${max}</b><small>맵에서 칸을 골라 직접 놓아요</small></div><button class="gy-key main" data-place="1">직접 놓기</button></div>
+    <div class="dc-place"><div><b>놓인 꾸미기 ${placed.length}개</b><small>맵에서 칸을 골라 직접 놓아요</small></div><button class="gy-key main" data-place="1">직접 놓기</button></div>
     <h4 class="sf-h">상품</h4><div class="dc-grid">${Object.entries(K.DECO).map(([k, o]) => { const lock = G < o.lv, own = g.own[k];
       return `<button data-dc="${k}" class="${own ? 'own' : ''}${lock ? ' lock' : ''}"><span class="dc-pic"><img alt="" src="${IMG}deco/${k}.png" class="${o.w > 16 ? 'big' : ''}"></span><b>${o.n}</b><em>${own ? (placed.includes(k) ? '놓여 있음' : '가지고 있음') : lock ? `${K.gradeOf([0, 100, 250, 450, 700, 1000][o.lv]).n}부터` : gold(o.g)}</em></button>`; }).join('')}</div>`;
   body.onclick = (e, b) => {
     sfx('tap');
     if (b.dataset.place) return K.decoEdit();
     const k = b.dataset.dc; if (!k) return; const o = K.DECO[k];
-    if (g.own[k]) { if (placed.includes(k)) { g.dp[placed.indexOf(k)] = null; } else { const i = placed.indexOf(null); if (i < 0) return say('꾸미기 자리가 꽉 찼어요. 놓인 것을 눌러 치워 주세요. 체육관 등급이 오르면 자리가 늘어나요.'); g.dp[i] = k; } K.save(); redraw(); return; }
+    if (g.own[k]) { if (placed.includes(k)) g.dp.splice(placed.indexOf(k), 1); else g.dp.push(k); K.save(); redraw(); return; }
     if (G < o.lv) return say(`${K.gradeOf([0, 100, 250, 450, 700, 1000][o.lv]).n}이 되면 살 수 있어요.`);
     pop(`<h4>${o.n}</h4><div class="dc-big"><img alt="" src="${IMG}deco/${k}.png"></div><div class="gy-btns"><button data-a="x">그만두기</button><button class="main" data-a="y">${gold(o.g)} 사기</button></div>`, (a, close) => {
       close(); if (a !== 'y') return; if (!spend(o.g)) return say('골드가 모자라요.');
-      g.own[k] = 1; const i = placed.indexOf(null); if (i >= 0) g.dp[i] = k; K.save(); redraw(); });
+      g.own[k] = 1; g.dp.push(k); K.save(); redraw(); });
   };
 }
 // 관장 의상: 앞모습은 옷 모양까지 새로 그린 그림, 맵·배틀 뒷모습은 옷 색만. 누르면 그 옷을 입은 전신 카드 (경완 2026-10-27)
