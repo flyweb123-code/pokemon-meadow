@@ -1090,11 +1090,12 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 .gy-grid .gg-gh{background-size:contain!important;background-position:center bottom!important}
 .gy-grid.drag :is(.gg-foot,.gg-x){display:none}
 #gym .gy-deco svg{width:40px;height:38px}   /* 인형 아이콘 (경완 2026-10-28) */
-/* 지원서 프로필 사진 여백 줄이기 (경완 2026-10-28): 사진은 고정 높이, 카드는 내용만큼 + 위아래 가운데 */
-.gy-sheet:has(.cv-deck) .cv-deck{align-items:center}
-.cv-deck .cv-card{align-self:center;height:auto}
+/* 지원서 (경완 2026-10-28 '프로필 박스 키우지 말고 밑에 내용 박스를 늘리면'): 카드는 위아래 꽉, 사진은 고정 높이, 남는 높이는 아래 내용 칸이 */
+.gy-sheet:has(.cv-deck) .cv-deck{align-items:stretch}
+.cv-deck .cv-card{align-self:stretch}
 .cv-deck .cv-photo{flex:0 0 184px!important;height:184px!important;min-height:0!important}
-.cv-card .cv-btns{margin-top:4px!important}
+.cv-deck .cv-dl{flex:1 1 auto;align-content:space-evenly;padding:6px 10px;background:#fff;border:2px solid var(--inner,#d8d8e0);border-radius:8px}
+.cv-card .cv-btns{margin-top:0!important}
 /* 포켓몬 수 몬스터볼 = 도트 (경완 2026-10-28 '배틀화면 도트 그래픽에 맞춰'): 8px 그림, 띠도 각진 도트 */
 .bt-pty{height:12px;gap:2px;padding:2px 5px;background:#303040;border-radius:0!important;box-shadow:inset 0 1px 0 #585868,inset 0 -1px 0 #18181f}
 .bt-pty.e{padding-left:6px;clip-path:polygon(0 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%)}
