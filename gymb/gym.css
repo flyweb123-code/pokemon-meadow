@@ -913,3 +913,7 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 #gym.dlog .gy-hlog.all{padding-right:24px}
 .cv-dl .sf-team span{gap:3px}   /* 포켓몬과 레벨 사이 (경완 2026-10-28) */
 .cv-dots{width:100%;box-sizing:border-box;justify-content:center;align-self:center;margin:4px auto 12px}
+/* 상점 탭: 필드 상점처럼 아래 (경완 2026-10-28) */
+.gy-sheet .gy-stabs{position:sticky;bottom:-14px;z-index:2;flex:none;margin-top:auto;grid-template-columns:repeat(3,minmax(0,1fr))!important;box-shadow:0 -8px 0 var(--win),0 14px 0 var(--win)}
+.gy-sheet .gy-stabs .runtab{margin:0;border-radius:0;box-shadow:none}.gy-sheet .gy-stabs .runtab:first-child{border-left:0}
+.gy-sheet .sp-body{padding-bottom:4px}

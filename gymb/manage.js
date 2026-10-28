@@ -389,7 +389,8 @@ const SHOP_T = [['tm', '기술머신'], ['deco', '꾸미기'], ['fit', '관장 �
 const tmPrice = x => x[3] === 2 ? 500 : (x[4] || 0) <= 50 ? 300 : x[4] <= 70 ? 700 : x[4] <= 85 ? 1200 : x[4] <= 100 ? 2000 : 3000;
 function drawShop() {
   if (!SHOP_T.some(([k]) => k === shopT)) shopT = 'tm';
-  sh.innerHTML = `<h3>체육관 상점</h3><div class="sp-tabs" role="tablist">${SHOP_T.map(([k, n]) => `<button role="tab" data-st="${k}" aria-selected="${shopT === k}">${n}</button>`).join('')}</div><div class="sp-body"></div>`;
+  // 탭은 필드 상점처럼 아래에 (경완 2026-10-28)
+  sh.innerHTML = `<h3>체육관 상점</h3><div class="sp-body"></div><div class="runtabs shoptabs gy-stabs" role="tablist">${SHOP_T.map(([k, n]) => `<button class="runtab" role="tab" data-st="${k}" aria-selected="${shopT === k}">${n}</button>`).join('')}</div>`;
   const body = sh.querySelector('.sp-body');
   ({ tm: shopTm, deco: shopDeco, fit: shopFit })[shopT](body);
   const inner = body.onclick; body.onclick = null;
