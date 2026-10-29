@@ -418,7 +418,7 @@ function psSet(o) {
     gender: o.g === 'M' || o.g === 'F' ? o.g : '', shiny: !!o.shiny,
     ivs: { hp: iv[0], atk: iv[1], def: iv[2], spa: iv[3], spd: iv[4], spe: iv[5] }, evs: o.evs || { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 } };
 }
-function myEntry(P) { const m = gm(P); return { pid: P.id, sp: P.sp, nm: nmOf(P), lv: m.lv, mv: m.mv, ab: m.ab, nat: m.nat, iv: P.iv, g: P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '', shiny: !!P.shiny }; }
+function myEntry(P) { const m = gm(P); return { pid: P.id, sp: P.sp, nm: nmOf(P), lv: m.lv, mv: m.mv, ab: m.ab, nat: m.nat, iv: P.iv, fr: P.fr || 0, g: P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '', shiny: !!P.shiny }; }
 // 상대 포켓몬: 그 레벨에 배우는 기술 중 무작위 4개
 function foeEntry(sp, lv) {
   const r = Math.random, ab = D.sp[sp]?.ab || ['noability'], nats = NATS(), g = SPECIES[sp]?.g;
@@ -492,6 +492,7 @@ async function run(opts) {
   btl.setPlayer('p2', { name: opts.foe.nm, team: foeT.map(psSet) });
   // 쇼다운은 교체할 때마다 pokemon 배열 순서를 바꾼다. 처음 순서(my·foe 와 같은 순서)를 따로 둔다 (경완 2026-10-27 '시라소몬인데 망키라고 나옴')
   B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null }, li: 0, practice: !!opts.practice, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), xr: {} };
+  frHooks(btl);
   const meF = GA.trOf().sex === 'f';
   const music = opts.music || 'train'; M('prep', music === 'train' ? 'winTrain' : 'winGym');
   // 곡이 준비된 뒤에 연출 시작 (경완 2026-10-28 '시작 연출이랑 BGM 타이밍이 안 맞음'): 처음 만드는 곡이면 기다림, 최대 4초
@@ -567,6 +568,28 @@ function partyIdx(side, line) {
 }
 // 맞는 소리는 효과(굉장/별로)에 따라 다르다: 이어지는 줄을 미리 본다
 function effAhead(id) { const L = B.btl.log; for (let k = B.li; k < Math.min(L.length, B.li + 4); k++) { const x = L[k].split('|'); if (x[1] === '-supereffective' && x[2] === id) return 'H'; if (x[1] === '-resisted' && x[2] === id) return 'L'; if (x[1] === 'move' || x[1] === '-damage') break; } return 'M'; }
+// 친밀도 기믹 (경완 2026-10-29 '배틀에 친밀도 기믹'): 하트(친밀도 51마다 1개, 255 = 만점)가 많을수록 내 포켓몬이 관장을 위해 힘낸다 (본가 소드·실드 '어펙션' 느낌)
+// ♥3 이상: 쓰러질 공격을 HP 1로 버팀 (15·20·25%) · ♥4 이상: 급소 +1, 턴 끝에 상태 이상을 스스로 고침 (20%) · ♥5(만점): 공격을 피함 (10%)
+const FR_END = [0, 0, 0, 15, 20, 25];
+function frLv(pk) { if (!B || !pk || pk.side?.id !== 'p1') return 0; const fr = B.my[B.o.p.indexOf(pk)]?.fr || 0; return fr >= 255 ? 5 : Math.min(4, Math.floor(fr / 51)); }
+function frHooks(btl) {
+  const F = btl.format;
+  btl.onEvent('Damage', F, -40, function (dmg, target, src, eff) {
+    if (eff?.effectType !== 'Move' || !(dmg >= target.hp) || target.hp <= 1) return;
+    const h = frLv(target); if (h < 3 || !this.randomChance(FR_END[h], 100)) return;
+    this.add('-frmsg', target, 'endure'); return target.hp - 1;
+  });
+  btl.onEvent('Accuracy', F, function (acc, target, src, move) {
+    if (acc === true || target === src || move?.category === 'Status' || frLv(target) < 5 || !this.randomChance(10, 100)) return;
+    this.add('-frmsg', target, 'dodge'); return 0;
+  });
+  btl.onEvent('ModifyCritRatio', F, function (r, src) { return frLv(src) >= 4 ? r + 1 : r; });
+  btl.onEvent('Residual', F, function () {
+    for (const pk of this.p1.active) if (pk && !pk.fainted && pk.status && frLv(pk) >= 4 && this.randomChance(20, 100)) { this.add('-frmsg', pk, 'cure', pk.status); pk.cureStatus(true); }
+  });
+}
+const FR_ST = { slp: '잠', frz: '얼음', par: '마비', brn: '화상', psn: '독', tox: '독' };
+async function frFx(s) { const m = monEl(s); if (!m) return; const h = document.createElement('i'); h.className = 'bt-hrt'; h.textContent = '♥'; m.appendChild(h); setTimeout(() => h.remove(), 1400); try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {} await wait(500); }
 async function readLog() {
   const L = B.btl.log;
   while (B && B.li < L.length) {
@@ -579,10 +602,18 @@ const hpOf = s => { const [a] = String(s || '').split(' '); if (a === '0') retur
 const stOf = s => (String(s || '').split(' ')[1] || '').replace('fnt', '');
 // 급소·상성 말은 본가처럼 체력바가 다 줄어든 뒤에 (경완 2026-10-28). 쇼다운은 -damage 앞에 보내므로 모아 뒀다가 낸다
 const PEND = { '-crit': '급소에 맞았다!', '-supereffective': '효과가 굉장했다!', '-resisted': '효과가 별로인 듯하다…' };
-async function flushPend() { const L = B?.pend; if (!L?.length) return; B.pend = []; for (const t of L) await msg(t); }
+async function flushPend() { const L = B?.pend; if (!L?.length) return; B.pend = []; for (const t of L) { if (/버텼다!$/.test(t) && B.frq?.length) await frFx(B.frq.shift()); await msg(t); } }
 async function handle(a) {
   const k = a[1], A = s => B.act[s];
   if (PEND[k]) { (B.pend = B.pend || []).push(PEND[k]); return; }
+  if (k === '-frmsg') {   // 친밀도: 버티기는 체력바가 줄어든 뒤에, 피하기·고치기는 바로
+    const n = nmIn(a[2]), s = sideOf(a[2]);
+    if (a[3] === 'endure') { (B.pend = B.pend || []).push(`${eun(n)} 관장님을 슬프게 하지 않으려고 버텼다!`); (B.frq = B.frq || []).push(s); return; }
+    await flushPend(); await frFx(s);
+    await msg(a[3] === 'dodge' ? `${eun(n)} 관장님의 기대에 응하려고 공격을 피했다!` : `${eun(n)} 관장님을 걱정시키지 않으려고 ${FR_ST[a[4]] || '상태 이상'}에서 스스로 벗어났다!`);
+    if (a[3] === 'cure') { const X = B.act[s]; if (X) { X.st = ''; setSt(s, ''); } }
+    return;
+  }
   if (k !== '-damage') await flushPend();
   // 특성은 본가처럼 화면 위 따로 띄우고, 그 효과는 대화창에 (경완 2026-10-29 '위협은 별도 창, 공격이 떨어졌다는 배틀창')
   const fa = a.find(x => /^\[from\] ability: /.test(x)), of = a.find(x => /^\[of\] /.test(x));
