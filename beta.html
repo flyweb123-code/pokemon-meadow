@@ -1008,6 +1008,36 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 .egg.g3{--ec:#e6f2ff;--esh:#b4cfee;--es:#3c86d8;--eo:#24426e;filter:drop-shadow(0 0 3px rgba(80,150,235,.7))}   /* v8.12 경완: 레어 알도 에픽처럼 살짝 빛남 */.egg.g3 .etw{display:inline}
 .egg.g4{--ec:#f1e6ff;--esh:#c9b0ee;--es:#9a62dc;--eo:#3e2466;filter:drop-shadow(0 0 3px rgba(170,120,240,.75))}.egg.g4 .em{display:inline}
 .egg.g5{--ec:#fff1b8;--esh:#e8c868;--es:#e0a020;--eo:#6a4210;filter:drop-shadow(0 0 2px #fff6c0) drop-shadow(0 0 6px #ffd84a)}.egg.g5 .em{display:inline}.egg.g5::before,.egg.g5::after{content:'';position:absolute;z-index:2;width:38%;aspect-ratio:1;background:#ffffff;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);pointer-events:none;transform:scale(0);animation:eggSpk 1.6s ease-in-out infinite}.egg.g5::before{top:-6%;right:-16%}.egg.g5::after{width:28%;bottom:14%;left:-14%;animation-delay:-.8s}@keyframes eggSpk{0%,100%{transform:scale(0) rotate(0)}40%{transform:scale(1) rotate(45deg)}60%{transform:scale(.9) rotate(60deg)}80%{transform:scale(0) rotate(90deg)}}@media (prefers-reduced-motion:reduce){.egg.g5::before,.egg.g5::after{animation:none;transform:scale(.8)}}   /* v8.12 경완: 전설 알 반짝반짝 */
+/* 타입 전설 알 (전설의 체육관 보상): 껍질 = 타입 색, 둘레에 타입 효과 (경완 2026-10-29) */
+.egg.lt{filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 6px var(--es))}.egg.lt .lfx{position:absolute;inset:-28% -40%;pointer-events:none;z-index:3}
+.egg.lt .lfx i{position:absolute;width:24%;aspect-ratio:1;background:var(--lp);clip-path:var(--ls);opacity:0;animation:var(--la) 1.8s ease-in-out infinite;filter:drop-shadow(0 0 1px var(--eo))}
+.egg.lt .lfx i:nth-child(1){left:6%;top:58%}.egg.lt .lfx i:nth-child(2){right:6%;top:30%;animation-delay:-.45s}.egg.lt .lfx i:nth-child(3){left:14%;top:8%;animation-delay:-.9s;width:18%}.egg.lt .lfx i:nth-child(4){right:14%;top:72%;animation-delay:-1.35s;width:18%}
+.egg.lt.lrg .lfx i{background:radial-gradient(circle,transparent 42%,var(--lp) 46% 66%,transparent 70%);clip-path:none;filter:none}
+@keyframes lfFl{0%,100%{opacity:0;transform:scale(.2) rotate(0)}30%{opacity:1;transform:scale(1.1) rotate(20deg)}55%{opacity:1;transform:scale(.9) rotate(35deg)}75%{opacity:0;transform:scale(.3) rotate(50deg)}}
+@keyframes lfRi{0%{opacity:0;transform:translateY(40%) scale(.5)}25%{opacity:1}100%{opacity:0;transform:translateY(-160%) scale(1.1)}}
+@keyframes lfFa{0%{opacity:0;transform:translateY(-120%) rotate(0)}25%{opacity:1}100%{opacity:0;transform:translateY(140%) rotate(120deg)}}
+@keyframes lfSw{0%{opacity:0;transform:translate(-60%,30%) rotate(-20deg)}30%{opacity:1}60%{transform:translate(40%,-40%) rotate(25deg)}100%{opacity:0;transform:translate(-30%,-120%) rotate(-10deg)}}
+@keyframes lfDu{0%{opacity:0;transform:translateY(0) scale(.4)}30%{opacity:.9}100%{opacity:0;transform:translateY(-60%) scale(1.5)}}
+.egg.lt5 .lfx i:nth-child(n){top:auto;bottom:0}
+@media (prefers-reduced-motion:reduce){.egg.lt .lfx i{animation:none;opacity:.8}}
+.egg.g5.lt1{--ec:#f4f1e4;--esh:#d6d0b0;--es:#a8a878;--eo:#4f4b33;--lp:#fff4c0;--ls:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);--la:lfFl}
+.egg.g5.lt2{--ec:#ffe4dc;--esh:#e8a090;--es:#c03028;--eo:#5a1410;--lp:#ff6040;--ls:polygon(50% 0,61% 28%,90% 10%,72% 39%,100% 50%,72% 61%,90% 90%,61% 72%,50% 100%,39% 72%,10% 90%,28% 61%,0 50%,28% 39%,10% 10%,39% 28%);--la:lfFl}
+.egg.g5.lt3{--ec:#f0ecff;--esh:#c8b8f4;--es:#8a70e0;--eo:#3a2c74;--lp:#ffffff;--ls:polygon(0 100%,15% 45%,55% 8%,100% 0,90% 45%,50% 85%);--la:lfSw}
+.egg.g5.lt4{--ec:#f6e0f6;--esh:#d8a0d8;--es:#a040a0;--eo:#4a1a4a;--lp:#c860e8;--ls:circle(45%);--la:lfRi}
+.egg.g5.lt5{--ec:#fbf0cc;--esh:#e0c068;--es:#b08830;--eo:#5a4010;--lp:#c8a050;--ls:circle(45%);--la:lfDu}
+.egg.g5.lt6{--ec:#f1ead0;--esh:#cdbb78;--es:#8f7c28;--eo:#4a3e10;--lp:#a08840;--ls:polygon(15% 20%,80% 8%,92% 80%,10% 90%);--la:lfFa}
+.egg.g5.lt7{--ec:#f2f7cc;--esh:#cdd870;--es:#8a9a10;--eo:#404a08;--lp:#c8e040;--ls:circle(45%);--la:lfSw}
+.egg.g5.lt8{--ec:#e8e0f4;--esh:#b0a0d0;--es:#705898;--eo:#2c2048;--lp:#b8a0f0;--ls:circle(45%);--la:lfRi}
+.egg.g5.lt9{--ec:#f4f4fa;--esh:#c8c8dc;--es:#8888a8;--eo:#3a3a50;--lp:#ffffff;--ls:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);--la:lfFl}
+.egg.g5.lt10{--ec:#fff0d8;--esh:#f8b070;--es:#e85a20;--eo:#6a2008;--lp:#ff8a2a;--ls:polygon(50% 0,72% 30%,88% 60%,80% 88%,50% 100%,20% 88%,12% 60%,32% 42%);--la:lfRi}
+.egg.g5.lt11{--ec:#e4eeff;--esh:#a8c0f4;--es:#3a70e0;--eo:#142c6a;--lp:#5aa8ff;--ls:polygon(50% 0,80% 50%,85% 75%,50% 100%,15% 75%,20% 50%);--la:lfFa}
+.egg.g5.lt12{--ec:#e8f8dc;--esh:#a8dc88;--es:#4ca030;--eo:#1e4a10;--lp:#6cd64a;--ls:polygon(0 100%,15% 45%,55% 8%,100% 0,90% 45%,50% 85%);--la:lfFa}
+.egg.g5.lt13{--ec:#fffbd0;--esh:#f6e070;--es:#e8b800;--eo:#5a4600;--lp:#ffe84a;--ls:polygon(60% 0,15% 58%,45% 58%,30% 100%,88% 40%,56% 40%,75% 0);--la:lfFl}
+.egg.g5.lt14{--ec:#ffe4ee;--esh:#f8a8c4;--es:#e83870;--eo:#6a1030;--lp:#ff70c0;--ls:circle(48%);--la:lfFl}
+.egg.g5.lt15{--ec:#f0ffff;--esh:#b8e8ec;--es:#60b8c8;--eo:#1e4a58;--lp:#e0fbff;--ls:polygon(45% 0,55% 0,55% 38%,88% 18%,93% 27%,60% 50%,93% 73%,88% 82%,55% 62%,55% 100%,45% 100%,45% 62%,12% 82%,7% 73%,40% 50%,7% 27%,12% 18%,45% 38%);--la:lfFa}
+.egg.g5.lt16{--ec:#ece4ff;--esh:#b8a0f8;--es:#6030e0;--eo:#200c60;--lp:#9070ff;--ls:polygon(50% 0,100% 50%,50% 100%,0 50%);--la:lfFl}
+.egg.g5.lt17{--ec:#e8e0d8;--esh:#a89080;--es:#5a4030;--eo:#201410;--lp:#4a3a3a;--ls:circle(45%);--la:lfRi}
+.egg.g5.lt18{--ec:#fff0f6;--esh:#f8c0d4;--es:#e878a0;--eo:#6a2a44;--lp:#ffb0d0;--ls:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);--la:lfFl}
 .egg.big{width:72px;height:88px}
 .egg.wob{animation:wob 1.6s ease-in-out infinite;transform-origin:50% 90%}
 @keyframes wob{0%,70%,100%{transform:rotate(0)}76%{transform:rotate(-8deg)}84%{transform:rotate(8deg)}92%{transform:rotate(-4deg)}}
@@ -6528,7 +6558,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '11.48';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '11.50';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9801,7 +9831,7 @@ function renderNext() {
   const eg = S.eggs.map((e, i) => ({ e, i, r: Math.max(0, e.need - e.km) })).sort((a, b) => a.r - b.r)[0];
   const goEgg = eg && (() => { closeToggles(); hideSheets(); runTab = 'egg'; bagNext = false; eggSel = eg.e; eggSelI = eg.i; eggNone = false; openRun(); });
   if (!eg) set('Hatch', '-', '', '부화기에 알이 없어요', false, '', 0, null);
-  else set('Hatch', eg.r <= 0 ? '준비 완료!' : kmUp(eg.r), eg.r <= 0 ? '' : 'km', `${GRADE[eg.e.g].n} 알`, eg.r <= 0, eggHtml(eg.e.g, '' + (eg.e.sh ? ' shx' : '')), eg.e.km / eg.e.need, goEgg);
+  else set('Hatch', eg.r <= 0 ? '준비 완료!' : kmUp(eg.r), eg.r <= 0 ? '' : 'km', eggName(eg.e), eg.r <= 0, eggHtml(eg.e.g, '' + (eg.e.sh ? ' shx' : ''), eg.e.lt), eg.e.km / eg.e.need, goEgg);
   const ev = S.buds.map(b => { const P = boxOf(b.pid); return evoKids(b.sp, P).length ? { b, P, r: Math.max(0, evoNeed(b) - (b.km || 0)) } : null; }).filter(Boolean).sort((a, b) => a.r - b.r)[0];
   const goEvo = ev && (() => { closeToggles(); hideSheets(); menuTo(fldOpen, 'fld'); budFocus = ev.b.pid; setMgrTab('buddy'); });
   if (!ev) set('Evo', '-', '', S.buds.length ? '진화할 짝꿍이 없어요' : '짝꿍이 없어요', false, '', 0, null);
@@ -9916,14 +9946,14 @@ function gotLog(got, how, place) {
 function unincubate(e) {
   if (!S.eggs.includes(e) || S.bag.length >= MAX_BAG) return false;
   S.eggs = S.eggs.filter(x => x !== e);
-  const b = { id: e.id, g: e.g, t: e.t || Date.now(), km: e.km || 0, sp: e.sp }; if (e.place) b.place = e.place; if (e.tags) b.tags = e.tags; if (e.spN) b.spN = e.spN; if (e.spT) b.spT = e.spT; if (e.thR) b.thR = 1; if (e.sh) b.sh = 1; if (e.nq && !e.nt) b.isNew = true; S.bag.push(b);
+  const b = { id: e.id, g: e.g, t: e.t || Date.now(), km: e.km || 0, sp: e.sp }; if (e.place) b.place = e.place; if (e.tags) b.tags = e.tags; if (e.spN) b.spN = e.spN; if (e.spT) b.spT = e.spT; if (e.thR) b.thR = 1; if (e.sh) b.sh = 1; if (e.lt) b.lt = e.lt; if (e.nq && !e.nt) b.isNew = true; S.bag.push(b);
   save(); return true;
 }
 // 가방의 알을 부화기로 옮긴다
 function incubate(e) {
   if (S.eggs.length >= MAX_EGGS || !S.bag.includes(e)) return false;
   S.bag = S.bag.filter(x => x !== e);
-  const x = { id: e.id, g: e.g, km: e.km || 0, need: GRADE[e.g].km, isNew: true, nwI: true, t: e.t, place: e.place, tags: e.tags, sp: e.sp, ...(e.spN ? { spN: e.spN } : {}), ...(e.spT ? { spT: e.spT } : {}), ...(e.thR ? { thR: 1 } : {}), ...(e.sh ? { sh: 1 } : {}) }; if (e.isNew && !e.nt) x.nq = 1; S.eggs.push(x);   // v5.56 경완: 알리기 전에 부화기로 옮겨진 알(자동 채우기)도 '새 소식'에 나오게
+  const x = { id: e.id, g: e.g, km: e.km || 0, need: GRADE[e.g].km, isNew: true, nwI: true, t: e.t, place: e.place, tags: e.tags, sp: e.sp, ...(e.spN ? { spN: e.spN } : {}), ...(e.spT ? { spT: e.spT } : {}), ...(e.thR ? { thR: 1 } : {}), ...(e.sh ? { sh: 1 } : {}), ...(e.lt ? { lt: e.lt } : {}) }; if (e.isNew && !e.nt) x.nq = 1; S.eggs.push(x);   // v5.56 경완: 알리기 전에 부화기로 옮겨진 알(자동 채우기)도 '새 소식'에 나오게
   save(); return true;
 }
 // v3.90 경완: 자동 채우기를 켜 두면 부화기가 빌 때 가방에서 높은 등급 → 많이 간 거리 → 먼저 주운 알 순으로 채운다 (처음엔 꺼짐)
@@ -9971,7 +10001,7 @@ function notiPlan() {
   const N = S.noti || {}, items = [];
   if (N.on !== false) {
     if (N.egg !== false) { let id = S.eid; for (const [km, k] of nextPickups()) { items.push({ id: 'egg-' + id, km: +km.toFixed(4), n: k, title: '알을 주웠어요!', body: `걷다가 알 ${k}개를 주웠어요. 가방을 확인해 보세요.` }); id += k; } }
-    if (N.hatch !== false) for (const e of S.eggs) { const r = e.need - e.km; if (r > 0) items.push({ id: 'hatch-' + e.id, km: +r.toFixed(4), title: '알이 부화할 준비가 됐어요!', body: `${GRADE[e.g].n} 알이 움직이기 시작했어요. 부화기에서 부화시켜 보세요.` }); }
+    if (N.hatch !== false) for (const e of S.eggs) { const r = e.need - e.km; if (r > 0) items.push({ id: 'hatch-' + e.id, km: +r.toFixed(4), title: '알이 부화할 준비가 됐어요!', body: `${eggName(e)}이 움직이기 시작했어요. 부화기에서 부화시켜 보세요.` }); }
     if (N.evo !== false) for (const b of S.buds) { const P = boxOf(b.pid); if (!evoKids(b.sp, P).length || budKm(b)) continue; const r = evoNeed(b) - b.km; if (r > 0) items.push({ id: 'evo-' + b.pid + '-' + b.sp, km: +r.toFixed(4), title: '짝꿍이 진화할 준비가 됐어요!', body: `${SPECIES[b.sp].n}이(가) 진화할 수 있어요. 짝꿍 탭에서 진화시켜 보세요.` }); }
   }
   return { on: N.on !== false && items.length > 0, items };
@@ -10270,7 +10300,7 @@ function hatchEgg(e, keep, ask) {
   if (!keep) { S.eggs = S.eggs.filter(x => x !== e); autoInc(); }
   const sp = eggSp(e);
   S.recentHatch = [sp, ...(S.recentHatch || []).filter(x => x !== sp)].slice(0, 12);
-  hatchQ.push({ g: e.g, sp, place: e.spN || e.place, egg: keep ? e : null, ask, sh: !!e.sh }); save();
+  hatchQ.push({ g: e.g, lt: e.lt, sp, place: e.spN || e.place, egg: keep ? e : null, ask, sh: !!e.sh }); save();
 }
 // 장소 테마 가중치: 기본 1, 타입 +12(밤 +4), 서식지 +4, 도감 낱말 +8, 특정 종 +20
 function themeW(sp, ths) { const d = SPECIES[sp]; let v = 1;
@@ -10487,7 +10517,15 @@ function fastBtn(b, fn) {
   b.addEventListener('pointercancel', () => { downOn = false; });
   b.addEventListener('click', () => { if (performance.now() - upT > 600) go(); });   // 키보드·접근성 클릭
 }
-const eggHtml = (g, cls = '') => `<div class="egg g${g} ${cls}">${EGG_SVG}</div>`;
+const eggHtml = (g, cls = '', lt = 0) => `<div class="egg g${g}${lt ? ` lt lt${lt}${lt === 14 ? ' lrg' : ''}` : ''} ${cls}">${EGG_SVG}${lt ? `<i class="lfx">${'<i></i>'.repeat(4)}</i>` : ''}</div>`;
+// 전설의 체육관 보상: 체육관 타입 전설 포켓몬이 나오는 타입 전설 알 (e.lt = 타입, 알 둘레에 타입 효과) (경완 2026-10-29)
+const LT_ADJ = ['', '포근한', '불끈한', '산뜻한', '끈적한', '묵직한', '단단한', '꿈틀대는', '으스스한', '매끈한', '화끈한', '촉촉한', '파릇한', '짜릿한', '신비한', '서늘한', '웅장한', '음흉한', '반짝이는'];
+const eggName = e => e.lt ? `${LT_ADJ[e.lt]} 전설 알` : `${GRADE[e.g].n} 알`;
+function legEggSp(t) { const has = sp => (SPECIES[sp].t || []).includes(t) && !SP_OFF.has(sp), all = Object.keys(SPECIES).map(Number);
+  let L = POOL[5].filter(sp => SPECIES[sp].leg && has(sp)); if (!L.length) L = all.filter(sp => SPECIES[sp].leg && has(sp)); if (!L.length) L = all.filter(sp => SPECIES[sp].my && has(sp)); if (!L.length) L = POOL[5];
+  return L[Math.random() * L.length | 0]; }
+GA.LT_ADJ = LT_ADJ; GA.eggIco = lt => eggHtml(5, '', lt);
+GA.legEgg = (t, from) => { const e = { id: S.eid++, g: 5, t: Date.now(), isNew: true, lt: t, sp: legEggSp(t), spot: 1, place: from || '체육관' }; S.bag.push(e); save(); return e; };
 const hatchEl = $('#hatch'), hatchStage = $('#hatchStage');
 // 부화시키기·가방으로 빼기: 누르는 동안 버튼이 쑥 들어간다 (iOS 는 touchstart 가 있어야 :active 가 먹는다)
 document.addEventListener('touchstart', () => {}, { passive: true });
@@ -10528,9 +10566,9 @@ function eggView(e, bag) {   // v4.51 경완: 부화기에서 고른 알을 한 
   let i = Math.max(0, L.indexOf(e));
   // v5.77 경완: 정보 카드처럼 좌우로 밀거나 옆을 눌러 부화기의 다른 알로 넘긴다
   const fill = k => { const x = L[k]; if (!x) return; const rd = !bag && x.km >= x.need; if (bag && x.isNew) { x.isNew = false; save(); }
-    hatchStage.innerHTML = '<i class="ehalo"></i>' + eggHtml(x.g, 'wob' + (x.sh ? ' shx' : ''));
+    hatchStage.innerHTML = '<i class="ehalo"></i>' + eggHtml(x.g, 'wob' + (x.sh ? ' shx' : ''), x.lt);
     const need = bag ? GRADE[x.g].km : x.need, km = x.km || 0;
-    m.innerHTML = `<b class="evg">${GRADE[x.g].n} 알</b> <span class="state${rd ? ' ready' : ''}">${bag ? '가방' : rd ? '부화 준비 완료' : '부화 중'}</span><div class="prog"><i style="width:${Math.min(100, km / need * 100)}%"></i></div>${fmtKm(km)} / ${need}km${bag ? ' 쌓임' : ` · 앞으로 <b>${fmtKm(Math.max(0, need - km))}</b>km`}<div class="evd">${x.place || x.spN ? `${eggGotDay(x)}${esc(eggPlace(x))} 근처에서 <span style="white-space:nowrap">주운 알</span>` : x.t ? `${eggGotDay(x)}<span style="white-space:nowrap">주운 알</span>` : '주운 곳 기록 없음'}<br>${themeHint(x)}</div>`;
+    m.innerHTML = `<b class="evg">${eggName(x)}</b> <span class="state${rd ? ' ready' : ''}">${bag ? '가방' : rd ? '부화 준비 완료' : '부화 중'}</span><div class="prog"><i style="width:${Math.min(100, km / need * 100)}%"></i></div>${fmtKm(km)} / ${need}km${bag ? ' 쌓임' : ` · 앞으로 <b>${fmtKm(Math.max(0, need - km))}</b>km`}<div class="evd">${x.place || x.spN ? `${eggGotDay(x)}${esc(eggPlace(x))} 근처에서 <span style="white-space:nowrap">주운 알</span>` : x.t ? `${eggGotDay(x)}<span style="white-space:nowrap">주운 알</span>` : '주운 곳 기록 없음'}<br>${themeHint(x)}</div>`;
     $('#hlHl').hidden = k <= 0; $('#hlHr').hidden = k >= L.length - 1;
     if (bag) { arm = 0; dl.classList.remove('arm'); dl.textContent = '버리기'; const full = S.eggs.length >= MAX_EGGS; inB.disabled = full; inB.textContent = full ? '부화기가 꽉 찼어요' : '부화기에 넣기'; } };
   fill(i);
@@ -10551,11 +10589,11 @@ function hatchFx() { raysSpin(0); raysA = 0; for (const r of hatchEl.querySelect
 async function playHatch() {
   if (hatching || !hatchQ.length) return;
   hatching = true;
-  const { g, sp, place, egg: src, ask, sh } = hatchQ.shift(), fg = fxGrade(sp, g);   /* 화려한 부화 연출은 특별한 포켓몬(3단계)이 나올 때만 */
+  const { g, lt, sp, place, egg: src, ask, sh } = hatchQ.shift(), fg = fxGrade(sp, g);   /* 화려한 부화 연출은 특별한 포켓몬(3단계)이 나올 때만 */
   const spReady = ensureSprite(sp).catch(() => {});   // 그림은 알이 깨질 때까지 받아 두면 된다 → 창은 바로 뜬다 (예전엔 그림을 받는 동안 버튼이 먹통처럼 보였다)
   hatchEl.hidden = false; $('#hatchOk').hidden = true; showDexInfo(null); $('#hatchMsg').textContent = '어라…? 알의 모습이…!';
   hatchStage.classList.remove('evo'); hatchFx();
-  hatchStage.innerHTML = '<i class="ehalo"></i>' + eggHtml(g).replace('</svg>', '</svg>' + EGG_CK) + '<div class="flash"></div>' + [[-60, -50], [60, -46], [-54, 30], [58, 34]].map(([x, y]) => `<i class="shard" style="--dx:${x}px;--dy:${y}px"></i>`).join('');
+  hatchStage.innerHTML = '<i class="ehalo"></i>' + eggHtml(g, '', lt).replace('</svg>', '</svg>' + EGG_CK) + '<div class="flash"></div>' + [[-60, -50], [60, -46], [-54, 30], [58, 34]].map(([x, y]) => `<i class="shard" style="--dx:${x}px;--dy:${y}px"></i>`).join('');
   const egg = hatchStage.querySelector('.egg'), msg = $('#hatchMsg');
   if (ask) {
     // 목록에서 준비된 알을 누르면: 흔들리는 알 + 부화시키기 버튼. 바깥을 누르면 그냥 닫는다
@@ -10656,7 +10694,7 @@ function notiShow(force) {
   const got = [...S.bag.filter(e => e.isNew && !e.nt), ...S.eggs.filter(e => e.nq && !e.nt)], rdy = S.eggs.filter(e => e.km >= e.need && !e.rn), evo = S.buds.filter(b => b.en === false && budReady(b));
   if (!got.length && !rdy.length && !evo.length) return;
   notiOpen = true;
-  const MAXI = 24, row = (list, cls) => `<div class="noti-eggs ${cls}">${list.slice(0, MAXI).map((e, i) => eggHtml(e.g, '' + (e.sh ? ' shx' : '')).replace('class="egg ', `style="--d:${i * 45}ms" class="egg `)).join('')}${list.length > MAXI ? `<span class="more">+${list.length - MAXI}</span>` : ''}</div>`;
+  const MAXI = 24, row = (list, cls) => `<div class="noti-eggs ${cls}">${list.slice(0, MAXI).map((e, i) => eggHtml(e.g, '' + (e.sh ? ' shx' : ''), e.lt).replace('class="egg ', `style="--d:${i * 45}ms" class="egg `)).join('')}${list.length > MAXI ? `<span class="more">+${list.length - MAXI}</span>` : ''}</div>`;
   const by = list => [1, 2, 3, 4, 5].filter(g => list.some(e => e.g === g)).map(g => `${GRADE[g].n} ${list.filter(e => e.g === g).length}`).join(' · ');
   const places = [...new Set(got.map(e => e.place).filter(Boolean))];
   $('#notiBody').innerHTML = (got.length ? `<div class="ns"><p>알 <b>${got.length}</b>개를 주웠다!</p>${row(got.slice().reverse().sort((a, b) => a.g - b.g), 'new')}<div class="small">${by(got)}${places.length ? `<br>${places.slice(0, 2).map(esc).join(', ')}${places.length > 2 ? ` 외 ${places.length - 2}곳` : ''} 근처` : ''}</div></div>` : '')
@@ -10876,7 +10914,7 @@ function renderBag() {
   if (bagSort === 'km') list.sort((a, b) => (b.km || 0) / GRADE[b.g].km - (a.km || 0) / GRADE[a.g].km || (b.km || 0) - (a.km || 0));
   if (bagSort === 'grade') list.sort((a, b) => b.g - a.g || b.t - a.t);
   if (!S.bag.includes(bagSel)) bagSel = null;
-  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot${bagMul?.has(e.id) ? ' on' : ''}" data-id="${e.id}" aria-current="${e === bagSel}">${bagMul ? '<i class="chk"></i>' : ''}${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g, '' + (e.sh ? ' shx' : ''))}<span>${GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm1(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.replace(/^(\S+ )?\S+(동|읍|면|리|\d가) (?=\S)/, '')) : fmtWhen(e.t)}</span></button>`).join('')
+  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot${bagMul?.has(e.id) ? ' on' : ''}" data-id="${e.id}" aria-current="${e === bagSel}">${bagMul ? '<i class="chk"></i>' : ''}${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g, '' + (e.sh ? ' shx' : ''), e.lt)}<span>${e.lt ? LT_ADJ[e.lt] : GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm1(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.replace(/^(\S+ )?\S+(동|읍|면|리|\d가) (?=\S)/, '')) : fmtWhen(e.t)}</span></button>`).join('')
     : `<div class="bag-empty">${S.bag.length ? '이 등급 알이 없어요' : '움직이면 알을 주울 수 있어요'}</div>`;
   document.querySelector('.rtab[data-tab="bag"]').classList.toggle('none', !S.bag.length);   // 알이 하나도 없으면 안내 문구를 남은 공간 정중앙에
   $('#bagMulti').setAttribute('aria-pressed', !!bagMul); $('#bagMulti').textContent = bagMul ? '취소' : '선택';
@@ -10887,7 +10925,7 @@ function renderBag() {
   $('#bagPop').hidden = !e;
   if (e) { $('#bagDel').classList.toggle('arm', delArm === 1); $('#bagDel').textContent = delArm === 1 ? '정말?' : '버리기'; }
   if (e) { $('#bagIn').disabled = full; $('#bagIn').textContent = full ? `부화기가 꽉 찼어요` : '부화기에 넣기'; }
-  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big wob' + (e.sh ? ' shx' : ''))}<div class="info"><b>${GRADE[e.g].n} 알</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${GRADE[e.g].km}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움<span class="epl">주운 곳: ${e.place || e.spN ? `${esc(eggPlace(e))} 근처` : '기록 없음'}</span>${themeHint(e)}</div></div>`;
+  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big wob' + (e.sh ? ' shx' : ''), e.lt)}<div class="info"><b>${eggName(e)}</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${GRADE[e.g].km}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움<span class="epl">주운 곳: ${e.place || e.spN ? `${esc(eggPlace(e))} 근처` : '기록 없음'}</span>${themeHint(e)}</div></div>`;
 }
 // 가방: 알을 꾹 누르면(0.45초) 여러 개 고르기 모드가 켜지고 그 알이 골라진다 (v3.36 경완)
 { let lp = null, lpDone = 0;
@@ -10952,7 +10990,7 @@ function renderRun() {
   if (runEl.hidden) { if (!$('#bagPop').hidden) { $('#bagPop').hidden = true; bagSel = null; } return; }
   if (!eggNone && !S.eggs.includes(eggSel)) eggSel = S.eggs[Math.min(eggSelI, S.eggs.length - 1)] || null;   // v3.92: 부화로 빠진 알 자리(같은 칸)로 선택이 남는다 else if (eggNone) eggSel = null;
   const e = eggSel;
-  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob' + (e.sh ? ' shx' : ''))}<div class="info"><b>${GRADE[e.g].n} 알</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? `${fmtKm(e.km)} / ${e.need}km` : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}<div class="egg-detail"><span class="epl">${e.place || e.spN ? `${esc(eggPlace(e))} 근처` : '주운 곳 기록 없음'}</span>${themeHint(e)}</div><div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
+  $('#incu').innerHTML = e ? `${eggHtml(e.g, 'big wob' + (e.sh ? ' shx' : ''), e.lt)}<div class="info"><b>${eggName(e)}</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? `${fmtKm(e.km)} / ${e.need}km` : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}<div class="egg-detail"><span class="epl">${e.place || e.spN ? `${esc(eggPlace(e))} 근처` : '주운 곳 기록 없음'}</span>${themeHint(e)}</div><div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
     : `<p class="incu-empty">${S.eggs.length ? '알을 눌러 보자' : '부화 중인 알이 없습니다'}</p>`;
   // 알이 있을 때 높이를 기억해 두고, 빈 부화기도 같은 높이로 둔다
   if (e) requestAnimationFrame(() => { const h = $('#incu').offsetHeight; if (h > 40) document.documentElement.style.setProperty('--incu-h', h + 'px'); });
@@ -10963,7 +11001,7 @@ function renderRun() {
     const x = S.eggs[i], b = document.createElement('button'); b.className = 'eslot';
     if (x) {
       const rd = x.km >= x.need; b.classList.toggle('ready', rd);
-      b.innerHTML = `${(rd && !x.rs) || x.nwI ? '<i class="edot"></i>' : ''}<span class="tag2">${rd ? '부화 준비' : '부화 중'}</span>${eggHtml(x.g, (rd ? 'wob shake' : 'wob') + (x.sh ? ' shx' : ''))}<span>${GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div><span class="ekm">${(Math.floor(x.km * 10) / 10).toFixed(1)}/${x.need}km</span>`;
+      b.innerHTML = `${(rd && !x.rs) || x.nwI ? '<i class="edot"></i>' : ''}<span class="tag2">${rd ? '부화 준비' : '부화 중'}</span>${eggHtml(x.g, (rd ? 'wob shake' : 'wob') + (x.sh ? ' shx' : ''), x.lt)}<span>${x.lt ? LT_ADJ[x.lt] : GRADE[x.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, x.km / x.need * 100)}%"></i></div><span class="ekm">${(Math.floor(x.km * 10) / 10).toFixed(1)}/${x.need}km</span>`;
       b.setAttribute('aria-current', x === e); if (x.isNew) { b.classList.add('new'); x.isNew = false; }
       b.onclick = () => { if (x === eggSel && x.km < x.need) { eggView(x); return; }   // v4.51 경완: 선택된 알을 다시 누르면 선택 해제 대신 알 상태 창
         eggSel = x; eggSelI = i; eggNone = false; box.querySelectorAll('.eslot').forEach(s => s.setAttribute('aria-current', s === b)); if (x.nwI) { delete x.nwI; save(); } if (x.km >= x.need && !hatching && !evolving && !hatchQ.length) pressGo(b, () => { hatchEgg(x, true, true); playHatch(); renderRun(); }); else renderRun(); };   // 준비된 알은 칸이 눌렸다가 창이 뜬다
