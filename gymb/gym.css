@@ -1790,3 +1790,4 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .gy-qw .qw-pw{position:relative;width:96px;height:64px;display:flex;justify-content:center}
 .gy-qw .qw-pw .qw-no{position:absolute;left:0;top:0;width:22px;height:22px;font-size:11px;border:2px solid #fff;box-sizing:border-box}
 .gy-qw .qw-row.wait .qw-wait{align-self:center}
+#gym button.gy-qbtn.gy-qbtn,#gym button.gy-qbtn.gy-qbtn.qding,#gym button.gy-qbtn.gy-qbtn:active{transform-origin:0 50%}   /* 버튼이 translateX(-50%) 로 가운데라 scale 기준점 0 50% = 보이는 버튼 정중앙 (경완 2026-10-29 '모션 앵커 정중앙') */
