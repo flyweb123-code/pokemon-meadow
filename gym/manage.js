@@ -542,8 +542,7 @@ function shopTm(body) {
 }
 function buyTm(id, can) {
   const D = GB().D, g = st(), x = GB().mvOf(id), i = D.mv.indexOf(x), price = tmPrice(x), L = can.get(i) || [], n = g.tms?.[id] || 0;
-  pop(`<h4><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">기술머신 · ${esc(x[1])}</h4><div class="mp-moves one">${GB().mvRow(x, '')}</div><p class="gy-msg">${esc(x[8] || '')}</p>
-    <p class="gy-msg tm-who">배울 수 있는 포켓몬 ${L.length}마리${n ? ` · 가진 것 ${n}개` : ''}</p><div class="tm-mons">${L.slice(0, 18).map(P => `<span>${GB().thumb(P)}<small>${GB().gm(P).mv.includes(id) ? '앎' : 'Lv.' + GB().gm(P).lv}</small></span>`).join('')}</div>
+  pop(`<h4><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">기술머신 · ${esc(x[1])}</h4><div class="mp-moves one tm-card">${GB().mvRow(x, '')}</div><p class="gy-msg">${esc(x[8] || '')}</p>
     <div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="buy">${gold(price)} 사기</button></div>`, (a, close) => {
     if (a === 'x') return close(); if (a !== 'buy') return;
     if (!buy(price)) { close(); return say(`골드가 모자라요. ${price.toLocaleString()}G가 필요해요.`); }
