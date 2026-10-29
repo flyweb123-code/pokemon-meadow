@@ -726,7 +726,15 @@ body.petting #dlg,body.petting #info{display:none!important}
 .bub{position:fixed;z-index:59;pointer-events:none;width:10px;height:10px;margin:-5px 0 0 -5px;border:2px solid rgba(255,255,255,.95);border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff 0 18%,rgba(200,230,255,.55) 30%,rgba(160,210,255,.25));animation:bubUp .8s ease-out forwards}
 @keyframes bubUp{0%{transform:translate(0,0) scale(.4);opacity:0}20%{opacity:1}100%{transform:translate(var(--bx,0),-28px) scale(1.15);opacity:0}}
 .dust{position:absolute;z-index:9000;pointer-events:none;width:4px;height:4px;background:#8a6a3a;animation:dustF 1.4s ease-out forwards}@keyframes dustF{0%{opacity:0;transform:translate(0,0)}25%{opacity:.85}100%{opacity:0;transform:translate(var(--dx,6px),-14px)}}
-.fly{position:absolute;z-index:9000;pointer-events:none;width:3px;height:3px;background:#2a2a2a;animation:flyF 1.6s linear forwards}@keyframes flyF{0%{opacity:0;transform:translate(0,0)}15%{opacity:.9}35%{transform:translate(8px,-6px)}60%{transform:translate(-4px,-12px)}85%{opacity:.9;transform:translate(6px,-8px)}100%{opacity:0;transform:translate(0,-16px)}}body.petting *{touch-action:none!important}
+/* v10.78 경완 '파리 날리는 효과 더 잘 보이게': 청결 20 아래면 파리 2마리(10 아래 3마리)가 머리 둘레를 계속 붕붕 돈다 — 검은 몸에 흰 테두리, 파닥이는 흰 날개 */
+.flyz{position:absolute;left:0;width:0;height:0;pointer-events:none;z-index:4}
+.flyz .fz{position:absolute;left:0;top:0;width:0;height:0;animation:fzO var(--d,2.2s) linear infinite var(--dl,0s)}
+.flyz .fz i{position:absolute;left:-4px;top:-3px;width:8px;height:5px;background:radial-gradient(circle at 82% 45%,#c03a2c 0 1.4px,transparent 1.8px),#141419;border-radius:2px 4px 4px 2px;box-shadow:0 0 0 1px rgba(255,255,255,.75),0 1px 2px rgba(0,0,0,.35);animation:fzJ .26s steps(2) infinite}
+.flyz .fz i::before,.flyz .fz i::after{content:'';position:absolute;top:-5px;width:5px;height:6px;border-radius:60% 60% 40% 40%;background:rgba(225,238,252,.88);box-shadow:0 0 0 1px rgba(60,70,90,.45);transform-origin:50% 100%;animation:fzW .08s steps(2) infinite}
+.flyz .fz i::before{left:-1px;rotate:-28deg}.flyz .fz i::after{left:2px;rotate:18deg;animation-delay:.04s}
+.flyz .fz:nth-child(2){animation-direction:reverse}.flyz .fz:nth-child(2) i,.flyz .fz:nth-child(3) i{transform:scaleX(-1)}
+@keyframes fzW{50%{transform:scaleY(.35)}}@keyframes fzJ{50%{translate:1px -1px}}
+@keyframes fzO{0%{transform:translate(calc(var(--rx) * -1),0)}12%{transform:translate(calc(var(--rx) * -.6),calc(var(--ry) * -1))}25%{transform:translate(0,calc(var(--ry) * -.3))}37%{transform:translate(calc(var(--rx) * .7),calc(var(--ry) * -1.1))}50%{transform:translate(var(--rx),0)}62%{transform:translate(calc(var(--rx) * .4),calc(var(--ry) * .8))}75%{transform:translate(0,calc(var(--ry) * .2))}87%{transform:translate(calc(var(--rx) * -.7),calc(var(--ry) * .9))}100%{transform:translate(calc(var(--rx) * -1),0)}}body.petting *{touch-action:none!important}
 .petbar{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,calc(100% - 24px));z-index:40;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;box-sizing:border-box;background:rgba(30,26,52,.9);color:#fff;border:3px solid #fff;box-shadow:0 0 0 3px #2a2440,5px 5px 0 3px rgba(0,0,0,.28);font-size:15px}.petbar[hidden]{display:none!important}
 [data-rk]{--rkc:#6a6a70}[data-rk="E"]{--rkc:#909098}[data-rk="D"]{--rkc:#6f8574}[data-rk="C"]{--rkc:#4e7fc0}[data-rk="B"]{--rkc:#8e48e8}[data-rk="A"]{--rkc:#e04848}[data-rk="S"]{--rkc:#e8a020}
 .dp-pic[data-rk]:not([data-rk=""]),#info #pPf[data-rk]:not([data-rk=""]),#mgCardPf[data-rk]:not([data-rk=""]){border-color:var(--rkc)!important}
@@ -3044,9 +3052,14 @@ function dirtVis(m, c = m.clean ?? 100) { if (!m.dirtEl) return; const d = clamp
   if (m.dirtK === k) return; m.dirtK = k; m.grimy = k > 0; m.dirtEl.classList.toggle('grimy', m.grimy); m.dirtEl.style.setProperty('--g', (.85 * k).toFixed(2));
   m.dirtEl.style.filter = k ? `sepia(${(.3 * k).toFixed(2)}) saturate(${(1 - .25 * k).toFixed(2)}) brightness(${(1 - .1 * k).toFixed(2)})` : ''; }
 function dirtFx(m) { const c = m.clean ?? 100; if (c >= 40 || m.hidden || !m.el) return; if (Math.random() > (c < 15 ? .5 : .22)) return;
-  const fly = c < 20 && Math.random() < .4, i = document.createElement('i'), H = m.h || 50, W = m.w || 40; i.className = fly ? 'fly' : 'dust';
-  i.style.left = (m.x + (Math.random() - .5) * W * .8).toFixed(1) + 'px'; i.style.top = (m.y - (m.lift || 0) - (fly ? H * (.6 + Math.random() * .4) : Math.random() * H * .5)).toFixed(1) + 'px'; i.style.setProperty('--dx', ((Math.random() - .5) * 16).toFixed(0) + 'px');
+  const i = document.createElement('i'), H = m.h || 50, W = m.w || 40; i.className = 'dust';
+  i.style.left = (m.x + (Math.random() - .5) * W * .8).toFixed(1) + 'px'; i.style.top = (m.y - (m.lift || 0) - Math.random() * H * .5).toFixed(1) + 'px'; i.style.setProperty('--dx', ((Math.random() - .5) * 16).toFixed(0) + 'px');
   fxEl.append(i); setTimeout(() => i.remove(), 1700); }
+// 파리 떼: 포켓몬 그림(liftEl) 안에 붙여서 걷고 뜨는 대로 같이 따라다닌다
+function flyVis(m) { if (!m.liftEl) return; const c = m.clean ?? 100, n = m.hidden || m.washing ? 0 : c < 10 ? 3 : c < 20 ? 2 : 0;
+  let z = m.flyZ; if (!n) { if (z) { z.remove(); m.flyZ = null; } return; }
+  if (!z || !z.isConnected || z.childElementCount !== n) { z?.remove(); z = m.flyZ = document.createElement('span'); z.className = 'flyz'; z.innerHTML = Array.from({ length: n }, (_, k) => `<span class="fz" style="--d:${(1.7 + k * .45 + Math.random() * .3).toFixed(2)}s;--dl:-${(Math.random() * 2).toFixed(2)}s"><i></i></span>`).join(''); m.liftEl.append(z); }
+  const H = m.h || 50, W = m.w || 40, k = `${Math.round(H)},${Math.round(W)}`; if (z.dataset.k !== k) { z.dataset.k = k; z.style.bottom = Math.round(H * .78) + 'px'; z.style.setProperty('--rx', Math.round(Math.max(14, W * .42)) + 'px'); z.style.setProperty('--ry', Math.round(Math.max(7, H * .16)) + 'px'); } }
 const frRate = m => { if (!m.pid || m.hidden) return 0; const a = gaugeAvg(m); return FR_TABLE.find(([v]) => a >= v)[1] + (a >= 40 && withFriend(m) ? .5 : 0); };   // 친구 보너스는 돌봐 줄 때만
 // 앱이 꺼져 있던(화면을 떠나 있던) 동안의 필드 친밀도
 let FLD_FR_DAY = 12, OFF_PAL = .5;   // 필드에 있는 시간으로 받는 친밀도 하루 한도 (v3.74: 12 = 평균 80 이상 하루 종일. 구간마다 하루 12 · 7.2 · 4.3 · 2.9 로 다 다름)
@@ -6427,7 +6440,7 @@ document.addEventListener('click', e => {
 }
 /*gym-hook2*/
 // 체육관에 들어가면 필드는 앱을 내린 것처럼 멈춘다: 포켓몬·날씨·알림창이 돌지 않고 필드 곡도 멈춤. 나오면 그동안의 친밀도·배부름을 앱이 꺼져 있던 것처럼 따라잡는다
-{ let inAt = 0; Object.defineProperty(GA, 'KANG', { get: () => KANG }); GA.inTyper = (...a) => inTyper(...a);
+{ let inAt = 0; Object.defineProperty(GA, 'KANG', { get: () => KANG }); Object.defineProperty(GA, 'GYMB', { get: () => ({ GYM_G, GYM_SF_PCT, WAGE_BASE, WAGE_LV, WAGE_MAX }) }); GA.inTyper = (...a) => inTyper(...a);
   GA.gymIn = () => { inAt = Date.now(); document.body.classList.add('gymMode'); try { bgm.pos = bgmPos(); bgmSrcStop(); } catch (e) {} };
   GA.gymOut = () => { document.body.classList.remove('gymMode'); const sec = inAt ? (Date.now() - inAt) / 1000 : 0; inAt = 0;
     try { S.mons.forEach(m => offFr(m, sec)); } catch (e) {} save(); last = performance.now(); try { if (bgmOn && !bgmAway) bgmSrcStart(); } catch (e) {} notiSoon(1200); };
@@ -6500,7 +6513,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '10.77';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '10.78';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -10059,7 +10072,8 @@ window.pokeRunPlaces = (t0, t1, list) => {
   save(); renderRun(); return true;
 };
 // 골드: 달리면 1km에 10G, 같은 포켓몬이 또 나오면 알 등급에 따라 받는다
-let RUN_G = 10, DUP_G = [0, 15, 30, 60, 120, 250], NEW_EGG_G = [0, 40, 80, 150, 300, 600], NEW_G = 50;   // 알 등급별: 이미 만난 포켓몬 DUP_G, 새로 만난 포켓몬 NEW_EGG_G (일반·희귀·레어·에픽·전설). NEW_G: 진화로 새로 만난 포켓몬
+let RUN_G = 10, DUP_G = [0, 15, 30, 60, 120, 250], NEW_EGG_G = [0, 40, 80, 150, 300, 600], NEW_G = 50;
+let GYM_G = [40, 100, 300], GYM_SF_PCT = 60, WAGE_BASE = 150, WAGE_LV = 5, WAGE_MAX = 600;   // v10.78 경완: 체육관 배틀 골드(쉬움·보통·어려움), 고용 트레이너가 막으면 몇 %, 직원 월급 — 작업실 밸런스에서 (gym.js 가 GA.GYMB 로 읽음)   // 알 등급별: 이미 만난 포켓몬 DUP_G, 새로 만난 포켓몬 NEW_EGG_G (일반·희귀·레어·에픽·전설). NEW_G: 진화로 새로 만난 포켓몬
 function renderGold() { $('#goldN').textContent = /[?&]studio/.test(location.search) ? '∞' : S.gold.toLocaleString(); const g = $('#gold'); g.classList.remove('up'); void g.offsetWidth; g.classList.add('up'); if (!$('#shop').hidden) renderShop(); }
 function addGold(n) { n = Math.round(n); if (!(n > 0)) return 0; S.gold += n; renderGold(); return n; }
 function addRun(km, src, t0, t1, eggs) {
@@ -11220,7 +11234,7 @@ function frameIn(now, cov) {
     if (m.bubT > 0) m.bubT -= real; m.realDt = real * Math.min(S.speed || 0, 3); if (!cov) try { render(m, now); } catch (e) { frameErr(e, m); } }
   if (!cov) { nightHoles(); tickLight(now); tickFlies(now); tickBugs(now, real); tickPinwheels(now); }
   if (flameEl && !cov) { const fi = Math.floor(now / 175) % 6; if (flameEl.fi !== fi) { flameEl.fi = fi; flameEl.style.backgroundPosition = -32 * fi + 'px 0'; for (const e of fl2Els) e.style.backgroundPosition = -32 * fi + 'px 0'; for (const f of scFlEls) f.style.backgroundPosition = ((fi + f.fi0) % 6) * 20 + '% 0'; } }   /* v4.38 경완: 불꽃 장면을 CSS steps 대신 직접 넘긴다 (오래 켜 두면 iPhone 에서 옆으로 미끄러지듯 보였다) */
-  acc += real; if (acc > .5) { acc = 0; S.mons.forEach(m => { if (!m.washing) dirtVis(m); dirtFx(m); }); sky(); rotBerries(); for (const g of [...$('#glows').children]) if (!S.mons.some(m => m.gl === g || m.glA === g)) g.remove(); }   /* 필드에서 빠진 포켓몬의 빛이 남지 않게 */
+  acc += real; if (acc > .5) { acc = 0; S.mons.forEach(m => { if (!m.washing) dirtVis(m); dirtFx(m); flyVis(m); }); sky(); rotBerries(); for (const g of [...$('#glows').children]) if (!S.mons.some(m => m.gl === g || m.glA === g)) g.remove(); }   /* 필드에서 빠진 포켓몬의 빛이 남지 않게 */
   try { tickMoves(real); } catch (e) { frameErr(e); }
   infoT -= real; if (infoT <= 0 && S.sel) { infoT = .5; renderInfo(); }
   S.mons.forEach(m => { if (!m.hidden && !m.washing) m.clean = Math.max(0, (m.clean ?? 100) - real * CLEAN_RATE); m.frT = (m.frT || 0) + real * frRate(m); if (m.frT >= 3600) { m.frT -= 3600; if (dayCap(m, 'fld', FLD_FR_DAY)) { addFr(m.pid, 1); if (fieldSeen(m)) frPop(m); } } });   /* 필드에 있는 시간: 세 게이지가 찰수록 빨리 (FR_TABLE) */
@@ -11283,6 +11297,8 @@ function applyBal(b) {
   if (num(b.NEW_G)) NEW_G = b.NEW_G; if (num(b.RUN_G)) RUN_G = b.RUN_G; if (num(b.BERRY_FR_DAY)) BERRY_FR_DAY = b.BERRY_FR_DAY; if (num(b.PET_DAY)) PET_DAY = b.PET_DAY; if (num(b.JOY_HOLD)) JOY_HOLD = b.JOY_HOLD; if (num(b.WASH_DAY)) WASH_DAY = b.WASH_DAY; if (num(b.PET_FR)) PET_FR = b.PET_FR; if (num(b.WASH_FR1)) WASH_FR = b.WASH_FR1;
   if (num(b.FLD_FR_DAY)) FLD_FR_DAY = b.FLD_FR_DAY; if (num(b.WALK_FR)) WALK_FR = b.WALK_FR; if (num(b.FR_EVO)) FR_EVO = b.FR_EVO; if (num(b.FR_MAX)) FR_MAX = b.FR_MAX; if (num(b.HUNGER_RATE)) HUNGER_RATE = b.HUNGER_RATE;
   if (num(b.CLEAN_DAYS) && b.CLEAN_DAYS > 0) CLEAN_RATE = 100 / (b.CLEAN_DAYS * 86400); if (num(b.JOY_HOURS) && b.JOY_HOURS > 0) JOY_RATE = 100 / (b.JOY_HOURS * 3600);
+  if (Array.isArray(b.GYM_G) && b.GYM_G.length === 3 && b.GYM_G.every(x => num(x) && x >= 0)) GYM_G = [...b.GYM_G]; if (num(b.GYM_SF_PCT) && b.GYM_SF_PCT >= 0) GYM_SF_PCT = b.GYM_SF_PCT;
+  if (num(b.WAGE_BASE) && b.WAGE_BASE >= 0) WAGE_BASE = b.WAGE_BASE; if (num(b.WAGE_LV) && b.WAGE_LV >= 0) WAGE_LV = b.WAGE_LV; if (num(b.WAGE_MAX) && b.WAGE_MAX > 0) WAGE_MAX = b.WAGE_MAX;
   if (num(b.MG_PTS) && b.MG_PTS >= 1) MG_PTS = b.MG_PTS;   /* v8.19 경완: 미니게임·미션 골드도 작업실에서 */
   { const ok = (v, n) => Array.isArray(v) && v.length === n && v.every(x => num(x) && x >= 0); if (ok(b.MQ_DAY_G, MQ_DAY.length)) MQ_DAY.forEach((d, i) => d.gold = b.MQ_DAY_G[i]); if (ok(b.MQ_TY_G, MQ_TY.length)) MQ_TY.forEach((r, i) => r[1] = b.MQ_TY_G[i]);
     for (const [k, id] of [['MQ_PH_G', 'ph'], ['MQ_PLAY_G', 'play'], ['MQ_SUM_G', 'sum'], ['MQ_KILL_G', 'kill']]) { const q = MQ.find(o => o.id === id); if (q && ok(b[k], q.t.length)) q.t.forEach((r, i) => r[1] = b[k][i]); } }
@@ -11794,7 +11810,7 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
   const api = window.__studio = {
     BUBK, SCN, get BUB_OV() { return BUB_OV; }, setBub(o) { BUB_OV = { ...(o || {}) }; }, get MON_SC() { return MON_SC; }, get MON_ROT() { return MON_ROT; }, get MON_FLY() { return MON_FLY; }, get MON_SH() { return MON_SH; }, ITEMS, TRACKS, ITEM_ART, get SHOP() { return SHOP; }, applyShop, get ODDS() { return ODDS; }, get BAG_STEP() { return BAG_STEP; }, get SHINY_RATE() { return SHINY_RATE; }, TH_SP0, get TH_SP_OV() { return TH_SP_OV; }, setThSp: applyThSp, TH_ALL, TH_BASE, get TH_OV() { return TH_OV; }, setThOv(o) { applyThOv(o); applyThSp(TH_SP_OV); }, setMonSh(o) { MON_SH = { ...(o || {}) }; for (const m of S.mons) shadowFit(m); }, liftBase, shGeo: (sp, uid) => { const m = uid != null ? S.mons.find(o => o.uid === uid) : null; return m ? shGeo(m.sk || m.form, m.form, m.w) : shGeo(sp, sp); }, monSk: uid => S.mons.find(o => o.uid === uid)?.sk,   /* v8.13 경완(레디바): 작업실 동작별 떠 있기 창도 필드와 같은 그림(암컷 모습 등)·그림자로 */ THEMES, themeW, setMonPose(r, f, fa, oa) { MON_ROT = { ...(r || {}) }; MON_FLY = { ...(f || {}) }; if (fa !== undefined) MON_FLYA = JSON.parse(JSON.stringify(fa || {})); if (oa !== undefined) MON_OFFA = JSON.parse(JSON.stringify(oa || {})); }, get MON_FLYA() { return MON_FLYA; }, get MON_OFFA() { return MON_OFFA; }, szAnim(uid, n) { const m = S.mons.find(o => o.uid === uid); if (m) { m.szAn = n || null; m.frameKey = null; } }, setMonSc(o) { MON_SC = { ...(o || {}) }; for (const m of S.mons) setForm(m, m.form); setTimeout(() => SZB.rows?.(), 30); }, tierGuard, exBoost, SPECIES, DEX, TIER, TIER0, TIER_SPS, TIER_Z, TIER_ORD, get SP_OFF() { return [...SP_OFF]; }, get TIER_KT() { return TIER_KT; }, FAM_BST, CHILDREN, EGG_TIERS, EGG_LIST, EGG_EX, PIXE, GRADE, POOL, TYPE_KO, TYPE_C, RANKS, LAYOUT, TR_LV,
     ICO: { berry: ICO_BERRY, brush: ICO_BRUSH, hand: ICO_HAND, pen: PEN, egg: EGG_SVG },   // v3.66: 작업실이 게임 아이콘을 그대로 쓴다
-    get K() { return { MG_PTS, MQ_DAY_G: MQ_DAY.map(d => d.gold), MQ_TY_G: MQ_TY.map(r => r[1]), ...Object.fromEntries([['MQ_PH_G', 'ph'], ['MQ_PLAY_G', 'play'], ['MQ_SUM_G', 'sum'], ['MQ_KILL_G', 'kill']].map(([k, id]) => [k, MQ.find(o => o.id === id).t.map(r => r[1])])), PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, PET_FR, WASH_FR1: WASH_FR, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]), HATCH_KM: [0, ...GRADE.slice(1).map(G => G.km)] }; },
+    get K() { return { MG_PTS, MQ_DAY_G: MQ_DAY.map(d => d.gold), MQ_TY_G: MQ_TY.map(r => r[1]), ...Object.fromEntries([['MQ_PH_G', 'ph'], ['MQ_PLAY_G', 'play'], ['MQ_SUM_G', 'sum'], ['MQ_KILL_G', 'kill']].map(([k, id]) => [k, MQ.find(o => o.id === id).t.map(r => r[1])])), PITY_E, PITY_L, BAG_STEP, MAX_EGGS, MAX_BAG, SHINY_RATE, DUP_G, NEW_EGG_G, RUN_G, NEW_G, FR_TABLE, CLEAN_RATE, HUNGER_RATE, JOY_RATE, BERRY_FR_DAY, FLD_FR_DAY, PET_DAY, JOY_HOLD, WASH_DAY, PET_FR, WASH_FR1: WASH_FR, WALK_FR, FR_MAX, FR_EVO, ODDS: [...ODDS], DUP_G: [...DUP_G], NEW_EGG_G: [...NEW_EGG_G], FR_TABLE: FR_TABLE.map(r => [...r]), HATCH_KM: [0, ...GRADE.slice(1).map(G => G.km)], GYM_G: [...GYM_G], GYM_SF_PCT, WAGE_BASE, WAGE_LV, WAGE_MAX }; },
     get cfg() { return CFG; }, get SPOTS() { return SPOTS; },
     get SPRITES() { return SPRITES; }, ensureSprite, thumbOf, gradeOf, tierOf, shinyHue, tyIcon, scaleOf, baseOf, movesOf, eggHtml, propSpots,
     ready: false, onSel: null, onLayout: null, onMon: null, onLog: null,
@@ -12212,12 +12228,12 @@ api.szLoad = async L => { for (const o of L || []) { if (!SZB.on) return; const 
 <div class="row">${[0, 51, 102, 153, 204, 255].map(f => `<div class="it"><div class="chk"><span class="hearts">${hearts(f)}</span></div>${f}</div>`).join('')}</div>
 <h3>트레이너</h3>
 <div class="row">${['m', 'f'].map(s => pix(TR_OW[s], 32, 192, s === 'm' ? '남자' : '여자')).join('')}</div>
-<h3>청결도에 따른 모습</h3><p class="d">청결 60까지는 원래 모습. 60 아래부터 누렇게 바래고 발밑부터 흙·재 얼룩이 점점 진해져요. 40 아래면 먼지가 날리고, 20 아래면 파리도 꼬여요.</p>
+<h3>청결도에 따른 모습</h3><p class="d">청결 60까지는 원래 모습. 60 아래부터 누렇게 바래고 발밑부터 흙·재 얼룩이 점점 진해져요. 40 아래면 먼지가 날리고, 20 아래면 파리 2마리가 머리 둘레를 붕붕 돌아요 (10 아래면 3마리).</p>
 <style>.gcl{position:relative;width:72px;height:72px;margin:auto}.gcl .dirt{position:absolute;inset:0}.gcl img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
 .gcl .grime{position:absolute;inset:0;pointer-events:none;opacity:var(--g,0);background:radial-gradient(circle,rgba(96,86,76,.75) 0 1px,transparent 1.5px) 4px 6px/19px 17px,radial-gradient(circle,rgba(130,122,112,.6) 0 1.2px,transparent 1.7px) 13px 2px/25px 21px,linear-gradient(to top,rgba(118,104,88,.55),rgba(118,104,88,.22) 40%,rgba(130,120,110,.08) 75%,transparent);-webkit-mask:var(--mi) center/contain no-repeat;mask:var(--mi) center/contain no-repeat}
-.gcl .gd{position:absolute;width:4px;height:4px;background:#8a6a3a;opacity:.85}.gcl .gf{position:absolute;width:3px;height:3px;background:#2a2a2a}</style>
+.gcl .gd{position:absolute;width:4px;height:4px;background:#8a6a3a;opacity:.85}.gcl .gf{position:absolute;width:8px;height:5px;background:radial-gradient(circle at 82% 45%,#c03a2c 0 1.4px,transparent 1.8px),#141419;border-radius:2px 4px 4px 2px;box-shadow:0 0 0 1px rgba(255,255,255,.75)}.gcl .gf::before,.gcl .gf::after{content:'';position:absolute;top:-5px;width:5px;height:6px;border-radius:60% 60% 40% 40%;background:rgba(225,238,252,.88);box-shadow:0 0 0 1px rgba(60,70,90,.45)}.gcl .gf::before{left:-1px;rotate:-28deg}.gcl .gf::after{left:2px;rotate:18deg}</style>
 <div class="row" id="galClean">${[100, 60, 45, 30, 15, 0].map(c => { const d = Math.min(1, Math.max(0, (60 - c) / 60)), k = Math.round(d * 20) / 20;
-  const dust = c < 40 ? [[12, 50], [56, 44], [30, 60]].slice(0, c < 15 ? 3 : 2).map(([x, y]) => `<i class="gd" style="left:${x}px;top:${y}px"></i>`).join('') : '', fly = c < 20 ? [[14, 14], [60, 22]].map(([x, y]) => `<i class="gf" style="left:${x}px;top:${y}px"></i>`).join('') : '';
+  const dust = c < 40 ? [[12, 50], [56, 44], [30, 60]].slice(0, c < 15 ? 3 : 2).map(([x, y]) => `<i class="gd" style="left:${x}px;top:${y}px"></i>`).join('') : '', fly = c < 20 ? [[14, 14], [60, 22], [36, 6]].slice(0, c < 10 ? 3 : 2).map(([x, y]) => `<i class="gf" style="left:${x}px;top:${y}px"></i>`).join('') : '';
   return `<div class="it"><div class="chk"><div class="gcl"><div class="dirt" style="${k ? `filter:sepia(${(.3 * k).toFixed(2)}) saturate(${(1 - .25 * k).toFixed(2)}) brightness(${(1 - .1 * k).toFixed(2)})` : ''}"><img alt="" data-gsp="25" src="${thumbOf(25) || ''}"><i class="grime" style="--g:${(.85 * k).toFixed(2)}"></i></div>${dust}${fly}</div></div>청결 ${c}</div>`; }).join('')}</div>
 `;
     for (const sp of reps) ensureSprite(sp).then(() => g.querySelectorAll(`img[data-gsp="${sp}"]`).forEach(i => { i.src = thumbOf(sp) || ''; if (i.closest('.gcl')) i.nextElementSibling?.style.setProperty('--mi', `url("${i.src}")`); })).catch(() => {});   // v4.28: 청결 칸은 얼룩을 그림 모양대로   // v3.70: 그림 모음을 먼저 보여 주고 포켓몬 그림은 받는 대로

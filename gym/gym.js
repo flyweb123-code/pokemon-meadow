@@ -443,7 +443,9 @@ const CHAL_LINES = [
 ];
 const WIN_LINES = ['으으… 졌다! 더 연습하고 올게요!', '역시 관장님은 강하네요.', '다음엔 꼭 이길 거예요!', '좋은 배틀이었어요. 고맙습니다!'];
 const LOSE_LINES = ['해냈다! 제가 이겼어요!', '관장님한테 이기다니… 꿈 같아요!', '좋은 승부였어요, 관장님!'];
-const REW = [{ g: 40, r: 2, rl: -4, fr: 1 }, { g: 100, r: 5, rl: -3, fr: 2 }, { g: 300, r: 15, rl: -2, fr: 4 }];
+const REW0 = [{ g: 40, r: 2, rl: -4, fr: 1 }, { g: 100, r: 5, rl: -3, fr: 2 }, { g: 300, r: 15, rl: -2, fr: 4 }];
+const GYMB = () => GA.GYMB || { GYM_G: REW0.map(o => o.g), GYM_SF_PCT: 60, WAGE_BASE: 150, WAGE_LV: 5, WAGE_MAX: 600 };   // 골드·월급 값은 작업실 밸런스 (게임 10.78)
+const REW = d => ({ ...REW0[d], g: GYMB().GYM_G[d] ?? REW0[d].g });
 const DIFF_KO = ['쉬움', '보통', '어려움'];
 const RIVAL_GYMS = ['무쇠시티 체육관', '영원시티 체육관', '베일시티 체육관', '늪지시티 체육관', '연고시티 체육관', '운하시티 체육관', '선단시티 체육관', '물가시티 체육관'];
 let NAMED = [];
@@ -529,8 +531,8 @@ function arrive(c) {
   if (!c.named && g.sf.length) {
     const { s, lost } = staffFight(c); beat = lost.length;
     if (s) {
-      const R = REW[c.diff], typed = s.team.some(m => (SPECIES[m[0]]?.t || []).includes(g.ty));
-      const gold = addG(Math.round(R.g * .6 * (s.trait === 'money' ? 1.5 : 1))), rep = Math.max(1, Math.round(R.r * .6 * (s.trait === 'star' ? 1.5 : 1) * (typed ? 1.1 : 1)));
+      const R = REW(c.diff), typed = s.team.some(m => (SPECIES[m[0]]?.t || []).includes(g.ty));
+      const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? 1.5 : 1))), rep = Math.max(1, Math.round(R.r * .6 * (s.trait === 'star' ? 1.5 : 1) * (typed ? 1.1 : 1)));
       addRep(rep); blocked();
       glog('sf', `${sfName(s)}${jong(s.nm) ? '이' : '가'} ${cn}${jong(c.nm) ? '을' : '를'} 막아 냈다! <small>+${gold}G · 평판 +${rep}</small>`, c.t); return;
     }
@@ -565,7 +567,7 @@ function payDay(now) {
 // 면접 지원자 (하루~이틀에 한 명, 30시간 동안 기다린다)
 function mkCand(now) {
   const k = pick(Object.keys(CLS)), C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS));
-  const wage = Math.round(clampN((150 + lv * 5 + n * 35) * (trait === 'thrift' ? .7 : trait === 'lazy' ? .55 : trait === 'guts' ? 1.15 : 1), 150, 600) / 10) * 10;
+  const W = GYMB(), wage = Math.round(clampN((W.WAGE_BASE + lv * W.WAGE_LV + n * 35) * (trait === 'thrift' ? .7 : trait === 'lazy' ? .55 : trait === 'guts' ? 1.15 : 1), W.WAGE_BASE, Math.max(W.WAGE_BASE, W.WAGE_MAX)) / 10) * 10;
   return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), f: C.f, trait, wage, team: mkTeam(C.t, lv, n) };
 }
 const staffMax = () => Math.min(5, gradeOf(st().rep || 0).i);   // 새내기 체육관은 고용 못 함 (경완 2026-10-27)
@@ -627,9 +629,9 @@ async function challenge() {
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : pick(WIN_LINES), lose: N ? N.ln[2].replace('{me}', me) : pick(LOSE_LINES) };
     document.body.classList.add('gymBattle');
     let res;
-    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: REW[c.diff].g, r: REW[c.diff].r, rl: Math.max(-(g.rep || 0), REW[c.diff].rl) }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: REW(c.diff).g, r: REW(c.diff).r, rl: Math.max(-(g.rep || 0), REW(c.diff).rl) }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); }
-    g.q.shift(); const R = REW[c.diff], won = !!res?.won, now = Date.now();
+    g.q.shift(); const R = REW(c.diff), won = !!res?.won, now = Date.now();
     let gold = 0, rep = 0;
     if (won) { gold = addG(R.g); addRep(R.r); rep = R.r; g.w++; if (g.wk) g.wk.w++; blocked(); res.used.forEach(id => GA.addFr(id, R.fr)); }
     else { addRep(R.rl); rep = R.rl; g.l++; if (g.wk) g.wk.l++; }
