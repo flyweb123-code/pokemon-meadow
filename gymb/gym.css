@@ -1558,3 +1558,14 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .mp-na .mp-ab.ha small{color:#a87a10!important}.mp-na .mp-ab.ha b{color:#7a5208!important}
 @keyframes haGlow{0%,100%{box-shadow:0 0 0 1px rgba(255,210,60,.35),0 0 4px rgba(255,200,40,.35)}50%{box-shadow:0 0 0 2px rgba(255,214,70,.7),0 0 12px rgba(255,200,40,.75)}}
 .iv-hex.bar .iv-sum span:nth-of-type(3){display:none}
+/* 지니는 도구 (경완 2026-10-29) */
+.rk-fr img.th-it{position:absolute!important;right:-5px!important;bottom:-5px!important;left:auto!important;top:auto!important;width:45%!important;height:45%!important;max-width:30px;max-height:30px;min-width:14px;min-height:14px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff);pointer-events:none;z-index:2;background:none!important;border:0!important}
+.it-ic{image-rendering:pixelated;object-fit:contain}
+.sp-tm.sp-it .tm-meta small{white-space:normal;margin-left:0;line-height:1.35}
+.mi-h .it-ic{width:30px;height:30px}
+.gy-msg.it-own{font-size:12px;opacity:.7;margin-top:-4px}
+.tt-who{position:relative}.tt-who>span{display:flex;flex-direction:column;gap:2px;min-width:0}.tt-who .it-hold{font-size:11px;color:var(--dim)}
+.tt-who .it-take{margin-left:auto;flex:none;height:30px;padding:0 10px;border:2px solid var(--inner);border-radius:6px;background:#fff;font:inherit;font-size:12px;color:var(--win-ink)}
+.lu-slot .lu-hab small{background:#d8a020!important;color:#fff}
+.gy-sheet:has(>.lu-grid) .lu-grid{flex:0 1 auto!important}
+.tt-who>span{align-items:flex-start;text-align:left}
