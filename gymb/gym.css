@@ -500,8 +500,8 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .ty-info{position:absolute;left:12px;top:calc(var(--si-top,env(safe-area-inset-top)) + 10px);z-index:5000;padding:5px 10px;border:2px solid #20202a;border-radius:8px;background:rgba(255,248,224,.94);font-size:12px;box-shadow:0 2px 0 #20202a;pointer-events:none}.ty-info b{color:#d0602a}
 /* 홈 위 상태 박스 (골드 없이 한 줄 전체), 관장 뒤 포켓몬, 상태창 일지 */
 .gy-top .gy-plate{flex:1 1 auto;display:grid!important;grid-template-columns:1fr auto;grid-template-areas:"nm gr" "rep rep";align-items:center;gap:6px 10px}
-.gy-plate .gy-nm{grid-area:nm}.gy-plate .gy-grade{grid-area:gr;padding:2px 8px;border:2px solid var(--frame);border-radius:6px;background:#fff6c8;font-size:12px;font-weight:700;color:#8a5a10;white-space:nowrap}
-.gy-plate .gy-grade[data-g="0"]{background:#eef0f4;color:#58607a}.gy-plate .gy-grade[data-g="1"]{background:#e8f6e6;color:#2f7a3a}.gy-plate .gy-grade[data-g="2"]{background:#e6f0ff;color:#2a58a8}.gy-plate .gy-grade[data-g="3"]{background:#f3e8ff;color:#7a3ec8}.gy-plate .gy-grade[data-g="4"]{background:#ffe8e8;color:#c03838}.gy-plate .gy-grade[data-g="5"]{background:linear-gradient(90deg,#fff3b0,#ffd36a);color:#7a4a00}
+.gy-plate .gy-nm{grid-area:nm}:is(.gy-plate .gy-grade,.if-grade .ig-gr){grid-area:gr;padding:2px 8px;border:2px solid var(--frame);border-radius:6px;background:#fff6c8;font-size:12px;font-weight:700;color:#8a5a10;white-space:nowrap}
+:is(.gy-plate .gy-grade,.if-grade .ig-gr)[data-g="0"]{background:#eef0f4;color:#58607a}:is(.gy-plate .gy-grade,.if-grade .ig-gr)[data-g="1"]{background:#e8f6e6;color:#2f7a3a}:is(.gy-plate .gy-grade,.if-grade .ig-gr)[data-g="2"]{background:#e6f0ff;color:#2a58a8}:is(.gy-plate .gy-grade,.if-grade .ig-gr)[data-g="3"]{background:#f3e8ff;color:#7a3ec8}:is(.gy-plate .gy-grade,.if-grade .ig-gr)[data-g="4"]{background:#ffe8e8;color:#c03838}:is(.gy-plate .gy-grade,.if-grade .ig-gr)[data-g="5"]{background:linear-gradient(90deg,#fff3b0,#ffd36a);color:#7a4a00}
 .gy-plate .gy-rep{grid-area:rep;display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center}
 .gy-plate .gy-rep em{font-style:normal;font-size:11px;font-weight:700;padding:1px 5px;border-radius:3px;background:#3a3a50;color:#ffe27a;letter-spacing:.5px}
 .gy-plate .gy-bar{width:auto;height:9px;border-radius:5px}.gy-plate .gy-repn{font-size:12px;font-variant-numeric:tabular-nums}
@@ -1055,10 +1055,6 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 .bt-pty.e{left:0;top:30px;padding-left:10px;flex-direction:row-reverse;border-radius:0 7px 7px 0;transform:translateX(-120px)}
 .bt-pty.p{right:0;top:104px;padding-right:10px;border-radius:7px 0 0 7px;transform:translateX(120px)}
 .bt-pty.on{opacity:1;transform:none}
-.bt-pty i{width:9px;height:9px;border-radius:50%;box-sizing:border-box;box-shadow:0 0 0 1px #101018;background:linear-gradient(#f04838 0 42%,#101018 42% 58%,#f8f8f8 58%)}
-.bt-pty i.s{background:linear-gradient(#f8c838 0 42%,#101018 42% 58%,#f8f8f8 58%)}
-.bt-pty i.f{background:linear-gradient(#808088 0 42%,#101018 42% 58%,#b8b8c0 58%)}
-.bt-pty i.x{background:none;box-shadow:inset 0 0 0 1px #8888a0}
 .bt-pty.p{top:114px}
 .bt-hb .lv{align-items:center!important}.bt-hb .lv .sx{font-size:10px!important;line-height:12px!important;transform:translateY(-1px)}   /* 성별 기호를 Lv 글자 가운데에 (경완 2026-10-28) */
 .if-bdg .if-bt{font-size:12px;font-weight:700;color:var(--dim)}
@@ -1161,3 +1157,17 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 /* 기술 버튼: 효과 표시와 PP 가 같은 줄에 겹치지 않게 PP 는 맨 아랫줄 오른쪽 (경완 2026-10-28) */
 .bt.mob .mvb .pp{position:static!important;align-self:flex-end;margin-top:auto!important;padding-top:2px}
 .bt.mob .mvb .eff{margin-top:2px!important}.bt.mob .mvb>*{flex-shrink:0}
+/* 특성 알림 띠 (경완 2026-10-29): 상대는 오른쪽 위에서, 나는 왼쪽에서 미끄러져 나옴 */
+.bt-abp{position:absolute;z-index:30;display:flex;flex-direction:column;gap:1px;min-width:92px;padding:3px 10px;box-sizing:border-box;background:linear-gradient(#585868,#303040);box-shadow:0 1px 0 #18181f,inset 0 1px 0 rgba(255,255,255,.25);color:#f8f8f8;text-shadow:1px 1px 0 #18181f;line-height:1.15;transition:transform .2s steps(5),opacity .15s;opacity:0;pointer-events:none}
+.bt-abp small{font-size:7px;color:#c8c8d8}.bt-abp b{font-size:10px;font-weight:400}
+.bt-abp.e{right:0;top:50px;align-items:flex-end;border-radius:6px 0 0 6px;transform:translateX(110%)}
+.bt-abp.p{left:0;top:62px;border-radius:0 6px 6px 0;transform:translateX(-110%)}
+.bt-abp.on{opacity:1;transform:none}
+/* 체육관 정보 등급 카드 (경완 2026-10-29): 등급 이름은 홈 이름판 등급 배지와 같은 모양을 크게, 다음 등급 › 오른쪽 위, 평판 숫자는 게이지 오른쪽 아래 */
+.if-grade .ig-tx .ig-top{display:flex;justify-content:space-between;align-items:center;align-self:stretch;width:100%;gap:8px}
+.if-grade .ig-tx .ig-top small{font-size:11px;font-weight:700;color:var(--dim)}
+.if-grade .ig-tx .ig-top em{font-style:normal;font-size:11px;font-weight:700;color:#b07a10;white-space:nowrap}
+.if-grade .ig-tx>b.ig-gr{align-self:flex-start;margin:4px 0 2px;padding:3px 12px;font-size:18px;line-height:1.2}
+.if-grade .ig-tx .ig-rep{align-self:flex-end}
+button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer;box-shadow:0 3px 0 var(--frame)}button.if-bdg:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)}
+.if-bdg .if-bt{display:flex;justify-content:space-between}.if-bdg .if-bt em{font-style:normal;font-size:11px;color:#b07a10}

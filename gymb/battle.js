@@ -584,6 +584,11 @@ async function handle(a) {
   const k = a[1], A = s => B.act[s];
   if (PEND[k]) { (B.pend = B.pend || []).push(PEND[k]); return; }
   if (k !== '-damage') await flushPend();
+  // 특성은 본가처럼 화면 위 따로 띄우고, 그 효과는 대화창에 (경완 2026-10-29 '위협은 별도 창, 공격이 떨어졌다는 배틀창')
+  const fa = a.find(x => /^\[from\] ability: /.test(x)), of = a.find(x => /^\[of\] /.test(x));
+  if (k === '-ability' && a[2]) { await abPop(a[2], toID(a[3])); return; }
+  if (fa) await abPop(of ? of.slice(5) : a[2], toID(fa.replace('[from] ability: ', '')));
+  else B.abLast = '';
   switch (k) {
     case 'switch': case 'drag': {
       const s = sideOf(a[2]), i = partyIdx(s, a), det = a[3].split(', '), [hp, mhp] = hpOf(a[4]);
@@ -777,6 +782,12 @@ const ST_SE = { brn: ['W172', 0, 1], par: ['W085C', 0, 1], slp: ['W173B', 20, 1]
 const stSe = (s, st) => { const x = ST_SE[st]; if (!x) return; for (let i = 0; i < x[2]; i++) se(x[0], { pan: panOf(s), at: i * x[1] / 30 }); };
 // 본가처럼 상태 이상 연출 (경완 2026-10-28): 화상 = 불꽃이 피어오름, 독 = 보라 거품, 잠듦 = Z, 마비 = 번개, 얼음 = 얼음 조각. 걸릴 때·턴마다 데미지·못 움직일 때
 const ST_P = { brn: ['f', 7], psn: ['b', 8], tox: ['b', 8], slp: ['z', 3], par: ['e', 5], frz: ['i', 6] };
+// 특성 알림: 그 포켓몬 쪽 화면 위로 미끄러져 나오는 띠 (같은 특성이 줄줄이 오면 한 번만)
+async function abPop(id, ab) {
+  if (!id || !ab || !B) return; const s = sideOf(id), key = s + ab; if (B.abLast === key) return; B.abLast = key;
+  const w = document.createElement('div'); w.className = `bt-abp ${s}`; w.innerHTML = `<small>${esc(who(id))}의</small><b>${esc(abKo(ab))}</b>`;
+  $b('.bt-top')?.appendChild(w) || el.appendChild(w);
+  await wait(30); w.classList.add('on'); await wait(B.fast ? 500 : 1100); w.classList.remove('on'); await wait(220); w.remove(); }
 // 혼란: 본가처럼 머리 위로 병아리 셋이 빙글빙글 (플래티넘 status_effect 그림, 경완 2026-10-28)
 async function confFx(s) {
   const m = monEl(s); if (!m) return; stSe(s, 'conf');
@@ -970,5 +981,5 @@ async function practice() {
   finally { document.body.classList.remove('gymBattle'); drawTab(); }
 }
 
-window.GymBattle = { tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _foeEntry: foeEntry, get _B() { return B; } };
+window.GymBattle = { tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, get _B() { return B; } };
 })();
