@@ -1192,7 +1192,7 @@ function setup(only, re) {
     } else {
       if (!dr.nm) dr.nm = defName(dr.ty);
       body = `<h3>체육관 이름</h3><p class="gy-lead">도전자들이 보는 이름이에요.</p>
-        <div class="gy-name"><input type="text" maxlength="8" value="${esc(dr.nm)}" aria-label="체육관 이름"><span class="gy-cnt"></span></div>
+        <div class="gy-name"><label class="gy-nmf"><input type="text" maxlength="8" value="${esc(dr.nm)}" aria-label="체육관 이름"><svg class="gy-pen" viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path fill="#e8a020" d="M10 2h2v1h1v1h1v2h-1v1h-1v1h-1v1h-1v1H9v1H8v1H7v1H6v-1H5v-1H4v-1H3v-1h1V9h1V8h1V7h1V6h1V5h1V4h1z"/><path fill="#f0a0a0" d="M12 2h1v1h1v1h1v1h-1V4h-1V3h-1z"/><path fill="#f6d8a8" d="M3 11h1v1h1v1h1v1H3z"/><path fill="#40404c" d="M2 13h2v1h1v1H2zM10 1h2v1h-2zM14 5h1v2h-1z"/></svg></label><span class="gy-cnt"></span></div>
         ${first || re ? `<div class="gy-sum"><div class="sm-map"><img data-ms="${dr.d}" data-gi="${first ? 0 : ''}" data-me alt=""></div><div class="sm-row"><b>${dzBase(dr.d).n}</b><span class="sm-ty" style="--tc:${GA.TYPE_C?.[dr.ty] || '#888'}">${tyIcon(dr.ty)}${TYPE_KO[dr.ty]} 타입</span></div></div>` : ''}`;
     }
     el.innerHTML = `${head}<div class="gy-body">${body}</div><button class="gy-key main gy-next" type="button" ${k === 'ty' && !dr.ty ? 'disabled' : ''}>${btn}</button>`;
@@ -1217,7 +1217,7 @@ function setup(only, re) {
   el.addEventListener('pointerup', e => { if (sx == null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 40) el.querySelector(`.gy-dz-arw.${dx < 0 ? 'r' : 'l'}`)?.click(); });
   const finish = () => {
     if (first) S.gym = { v: 1, d: dr.d, ty: dr.ty, nm: dr.nm, rep: 0, t0: Date.now() };
-    else if (re) { el.remove(); return refound(dr, re); }
+    else if (re) return refound(dr, re, el);
     else { if (only === 'ty' && dr.ty !== g.ty) { g.tyLog = g.tyLog || []; g.tyLog.push([g.ty, Date.now()]); } Object.assign(g, { d: dr.d, ty: dr.ty, nm: dr.nm }); }
     save(); el.remove(); renderHome();
     if (first) { tick(); renderHome(); opened(); }
@@ -1247,7 +1247,7 @@ async function firstChal() {
   if (!open) return; bgmPlay('gym'); const g = st(); if (!g || g.q.length) return homeSay();
   let c = mkChal(Date.now()); for (let i = 0; i < 30 && (c.named || c.boss); i++) c = mkChal(Date.now());
   await wait(700); arrive(c); save(); homeSay();
-  const qb = $g('.gy-qbtn'); if (qb) { qb.classList.remove('qact'); void qb.offsetWidth; qb.classList.add('qact'); setTimeout(() => qb.classList.remove('qact'), 1800); }
+  const qb = $g('.gy-qbtn'); if (qb) { qb.classList.remove('qact'); void qb.offsetWidth; qb.classList.add('qact'); setTimeout(() => qb.classList.remove('qact'), 800); }
   try { window.GymBGM?.se('DP_PINPON'); } catch (e) {}
 }
 // 폐업 → 공사 → 새 체육관 개장 연출 (경완 2026-10-27 '손바닥 뒤집듯 바꾸는게 아니라 폐업하고 다시 새로 설립하는 연출')
@@ -1264,10 +1264,19 @@ async function closeFx(under) {
   fx.querySelector('.re-sign').innerHTML = `<b>새 단 장</b><span>새 체육관이 문을 열어요</span><small>어떤 체육관으로 열지 골라 주세요</small>`;
   sfx('tap'); await wait(1400); root.querySelector('.gy-pop.gy-note')?.remove(); under?.(); await wait(60); fx.classList.remove('down'); fx.classList.add('up'); shutSe(0); await wait(900); fx.remove();
 }
-async function refound(dr, mode) {   // mode 'new': 지금 체육관은 휴업, 'close': 지금 체육관은 폐업. 새 체육관은 평판 0부터 (경완 2026-10-29)
+async function refound(dr, mode, setupEl) {   // mode 'new': 지금 체육관은 휴업, 'close': 지금 체육관은 폐업. 새 체육관은 평판 0부터 (경완 2026-10-29)
   const g = st(), oldNm = g.nm;
+  // 새로 세우기: 셔터 내림 → 공사 중 → 새 단장 → 셔터 올림 → GRAND OPEN (경완 2026-10-29)
+  const fx = document.createElement('div'); fx.className = 'gy-re'; root.appendChild(fx);
+  fx.innerHTML = `<div class="re-shut"><i></i></div><div class="re-sign"><b>공 사 중</b><span>${esc(dr.nm)}</span><small>새 체육관을 짓고 있어요</small><div class="re-bar"><i></i></div></div>`;
+  requestAnimationFrame(() => { fx.classList.add('down'); shutSe(1); }); await wait(1600);
+  setupEl?.remove(); openTab(null);
   gSwap({ v: 1, d: dr.d, ty: dr.ty, nm: dr.nm, rep: 0, t0: Date.now() }, mode === 'close'); glog('in', mode === 'close' ? `<b>${esc(oldNm)}</b>을 닫고 <b>${esc(dr.nm)}</b>을 새로 세웠다.` : `<b>${esc(dr.nm)}</b>을 새로 세웠다.`); save();
   renderHome(); renderTop();
+  fx.classList.add('build'); for (let k = 0; k < 6; k++) setTimeout(() => { try { window.GymBGM?.se('DP_KON', { gain: 1 }); } catch (e) {} }, 300 + k * 420); await wait(2900);
+  fx.querySelector('.re-sign').innerHTML = `<b>새 단 장</b><span>${esc(dr.nm)}</span><small>${tyIcon(dr.ty)} ${TYPE_KO[dr.ty]} 타입</small>`;
+  fx.classList.remove('build'); sfx('tap'); await wait(1300);
+  fx.classList.remove('down'); fx.classList.add('up'); shutSe(0); await wait(900); fx.remove();
   // 새 체육관은 언제나 튜토리얼 때처럼 GRAND OPEN 연출 → 바로 첫 도전자 (경완 2026-10-29)
   await grandOpen();
   await new Promise(ok => say(`<b>${esc(dr.nm)}</b>의 문을 새로 열었다!`, `${TYPE_KO[dr.ty]} 타입 체육관`, ok)); await wait(250);
