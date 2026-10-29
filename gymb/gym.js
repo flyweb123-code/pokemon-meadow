@@ -453,14 +453,22 @@ const LOSE_LINES = ['해냈다! 제가 이겼어요!', '관장님한테 이기�
 const REW0 = [{ g: 40, r: 2, rl: -4, fr: 1 }, { g: 100, r: 5, rl: -3, fr: 2 }, { g: 300, r: 15, rl: -2, fr: 4 }];
 const GYMB = () => GA.GYMB || { GYM_G: REW0.map(o => o.g), GYM_SF_PCT: 60, WAGE_BASE: 150, WAGE_LV: 5, WAGE_MAX: 600 };   // 골드·월급 값은 작업실 밸런스 (게임 10.78)
 const REW = d => ({ ...REW0[d], g: GYMB().GYM_G[d] ?? REW0[d].g });
+const rewOf = c => { const R = REW(c.diff); return c.boss ? { ...R, g: R.g * (1 + c.boss), r: R.r * 2 } : R; };
 const DIFF_KO = ['쉬움', '보통', '어려움'];
+// 자격 배지 등급 (경완 2026-10-29): 그 타입으로 막은 도전자 100·200·300·500명 = 동·은·금·프리즘. 문턱마다 '배지 심사' 이름 있는 트레이너(보스)를 이겨야 넘어간다
+const BD_AT = [100, 200, 300, 500], BD_KO = ['동', '은', '금', '프리즘'];
+const BD_MID = [35, 70, 135, 170, 235, 270, 340, 380, 420, 460];   // 중간중간 이름 있는 트레이너가 오는 자리
+const bdLv = (g, t) => (g.bdl || {})[t] | 0;
+const bdImg = (t, L) => `${IMG}badge/${Math.max(1, L)}/${t}.png?v=5`;
+const bdPh = bk => Math.min(1, (bk || 0) / 500);   // 500명까지 갈수록 어려워짐 (0~1)
 const RIVAL_GYMS = ['무쇠시티 체육관', '영원시티 체육관', '베일시티 체육관', '늪지시티 체육관', '연고시티 체육관', '운하시티 체육관', '선단시티 체육관', '물가시티 체육관'];
 let NAMED = [];
 const loadNamed = () => NAMED.length ? Promise.resolve() : fetch(`gymb/named.json?v=${VER}`).then(r => r.ok ? r.json() : []).then(j => { NAMED = j || []; }).catch(() => {});
 
 function gInit() {
   const g = st(); if (!g) return null;
-  for (const [k, v] of Object.entries({ sch: [], q: [], log: [], w: 0, l: 0, blk: 0, bk: {}, bdg: {}, nt: {}, sf: [], cid: 0 })) if (g[k] == null) g[k] = v;
+  for (const [k, v] of Object.entries({ sch: [], q: [], log: [], w: 0, l: 0, blk: 0, bk: {}, bdg: {}, nt: {}, sf: [], cid: 0, bdl: {}, ms: {}, bsN: {} })) if (g[k] == null) g[k] = v;
+  for (const t of Object.keys(g.bdg)) if (!g.bdl[t]) g.bdl[t] = 1;   // 예전 배지(100명) = 동
   // 칸토 디자인에서 플라티나 체육관으로: 같은 분위기 맵으로 옮기고, 직접 놓은 장식 자리는 새로 잡는다
   if (g.d && !DESIGNS.some(d => d.id === g.d)) g.d = dzBase(g.d).id;   // 맵 묶음이 바뀌면 짝 맵으로 (자리는 맵 id 로 저장돼 있어 그대로 둔다)
   if (g.d && g.big == null) g.big = gradeOf(g.rep || 0).i;   // 지금 크기에서부터 직접 넓히기
@@ -485,11 +493,37 @@ function mkTeam(types, lvB, n) {
 const teamLv = T => T.reduce((a, m) => a + m[1], 0) / T.length;
 function mkChal(t) {
   const g = st(), G = gradeOf(g.rep || 0), avg = myAvg();
-  const nm = pickNamed(avg, t); if (nm && Math.random() < .22) return nm;
-  const diff = Math.random() < [.75, .55, .4, .3, .2, .15][G.i] ? 0 : 1;
+  const ty = g.ty, bk = g.bk[ty] || 0, L = bdLv(g, ty), f = bdPh(bk);
+  // 문턱(99·199·299·499명): 배지 심사 보스. 지면 몇 시간 뒤 다시 온다
+  if (L < BD_AT.length && bk >= BD_AT[L] - 1 && !g.q.some(c => c.boss) && t >= (g.bsN[ty] || 0)) { const b = mkBoss(L, t); if (b) return b; }
+  // 중간 이름 있는 트레이너 (자리마다 한 번)
+  const ms = g.ms[ty] || (g.ms[ty] = []), mid = BD_MID.find(a => bk >= a && a < (BD_AT[L] || 1e9) && !ms.includes(a));
+  if (mid != null && !g.q.some(c => c.named)) { const c = mkScripted(L, t, 0); if (c) { ms.push(mid); return c; } }
+  const nm = pickNamed(avg, t); if (nm && Math.random() < .12) return nm;
+  // 보통 도전자: 막은 수가 늘수록 어려운 도전자가 많고, 레벨·마리 수·개체값이 오른다
+  const diff = Math.random() < [.75, .55, .4, .3, .2, .15][G.i] * (1 - f * .8) ? 0 : 1;
   const k = pick(Object.keys(CLS).filter(x => !!CLS[x].e === !diff)), C = CLS[k];
-  const n = diff ? rndI(2, clampN(luNow().length + 1, 2, 4)) : rndI(1, 2);
-  return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), diff, team: mkTeam(C.t, Math.max(3, avg + (diff ? -2 : -8)), n) };
+  const n = diff ? rndI(2, clampN(luNow().length + 1 + (f > .4) + (f > .8), 2, 6)) : rndI(1, 2) + (f > .5);
+  return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), diff, ivm: Math.round(f * 20), team: mkTeam(C.t, Math.max(3, avg + (diff ? -2 + Math.round(f * 5) : -8 + Math.round(f * 6))), n) };
+}
+// 이름 있는 트레이너 팀을 지금 내 라인업에 맞춰 (레벨 = 내 평균 + bonus). 가장 가까운 단계 팀을 골라 레벨만 옮긴다
+function nmTeam(n, tgt) {
+  const S0 = n.st.map(T => T.filter(m => !spOff(m[0]))).filter(T => T.length); if (!S0.length) return null;
+  const T = S0.reduce((a, b) => Math.abs(teamLv(b) - tgt) < Math.abs(teamLv(a) - tgt) ? b : a), d = Math.round(tgt - teamLv(T));
+  return T.map(m => [m[0], clampN(m[1] + d, 5, 100), m[2]]);
+}
+const NM_POOL = L => NAMED.filter(n => L < 2 ? /관장|라이벌/.test(n.cls) : L < 3 ? /관장|사천왕/.test(n.cls) : /사천왕/.test(n.cls));
+function mkScripted(L, t, bonus, n0) {
+  const g = st(), n = n0 || pick(NM_POOL(L).filter(x => !g.q.some(c => c.named === x.id))); if (!n) return null;
+  const team = nmTeam(n, myAvg() + bonus + L + rndI(-1, 1)); if (!team) return null;
+  return { id: ++g.cid, t, named: n.id, sc: 1, cls: n.cls, tr: n.tr, ow: n.ow, nm: n.nm, diff: 2, music: n.music, team };
+}
+// 배지 심사 보스: 동 = 관장, 은 = 라이벌·관장, 금 = 사천왕, 프리즘 = 챔피언. 내 평균 +4/+6/+8/+11, 개체값 최고
+function mkBoss(L, t) {
+  const g = st(), r = seeded('bs' + g.ty + L), P = [NAMED.filter(n => /관장/.test(n.cls)), NAMED.filter(n => /라이벌|관장/.test(n.cls)), NAMED.filter(n => /사천왕/.test(n.cls)), NAMED.filter(n => /챔피언/.test(n.cls))][L];
+  if (!P?.length) return null;
+  const c = mkScripted(L, t, [4, 6, 8, 11][L] - L, P[Math.floor(r() * P.length)]); if (c) { c.boss = L + 1; c.music = L >= 2 ? 'champ' : c.music; }
+  return c;
 }
 // 이름 있는 트레이너: 본가 팀 단계. 그 단계 평균 레벨이 내 라인업 평균 + 6 이하일 때부터 온다
 function pickNamed(avg, t) {
@@ -508,9 +542,12 @@ function glog(k, html, t = Date.now()) { const g = st(); g.log.unshift([t, k, ht
 function addRep(n) { const g = st(); const r0 = g.rep || 0; g.rep = clampN(r0 + n, 0, REP_MAX); if (g.wk) g.wk.r += g.rep - r0; }
 function addG(n) { const v = GA.addGold(n) || 0; if (st().wk) st().wk.g += v; renderGoldG(); return v; }
 // 막은 도전자 (내가 이기거나 트레이너가 막음): 그 타입 자격 배지 진행
-function blocked() {
-  const g = st(), ty = g.ty; g.blk++; g.bk[ty] = (g.bk[ty] || 0) + 1; if (g.wk) g.wk.b++;
-  if (g.bk[ty] >= 100 && !g.bdg[ty]) { g.bdg[ty] = Date.now(); g.newBdg = ty; glog('bdg', `<b>${TYPE_KO[ty]} 자격 배지</b>를 받았다! (${TYPE_KO[ty]} 타입으로 도전자 100명)`); }
+// 문턱 바로 앞(99명 등)에서는 배지 심사 보스를 이겨야만 넘어간다
+function blocked(c) {
+  const g = st(), ty = g.ty, L = bdLv(g, ty), A = BD_AT[L]; g.blk++; if (g.wk) g.wk.b++;
+  const bk = (g.bk[ty] || 0) + 1;
+  if (c?.boss && A) { g.bk[ty] = Math.max(bk, A); g.bdl[ty] = L + 1; g.bdg[ty] = g.bdg[ty] || Date.now(); g.newBdg = ty; glog('bdg', `<b>${TYPE_KO[ty]} ${BD_KO[L]} 자격 배지</b>를 받았다! (${TYPE_KO[ty]} 타입으로 도전자 ${A}명)`); return; }
+  g.bk[ty] = A ? Math.min(bk, A - 1) : bk;
 }
 const sfName = s => `${s.cls} ${esc(s.nm)}`;
 const TRAITS = {
@@ -540,13 +577,13 @@ function arrive(c) {
     if (s) {
       const R = REW(c.diff), typed = s.team.some(m => (SPECIES[m[0]]?.t || []).includes(g.ty));
       const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? 1.5 : 1))), rep = Math.max(1, Math.round(R.r * .6 * (s.trait === 'star' ? 1.5 : 1) * (typed ? 1.1 : 1)));
-      addRep(rep); blocked();
+      addRep(rep); blocked(c);
       glog('sf', `${sfName(s)}${jong(s.nm) ? '이' : '가'} ${cn}${jong(c.nm) ? '을' : '를'} 막아 냈다! <small>+${gold}G · 평판 +${rep}</small>`, c.t); return;
     }
     if (lost.length) glog('in', `${cn}${jong(c.nm) ? '이' : '가'} 트레이너 ${lost.length}명을 이기고 올라왔다!`, c.t);
   }
   if (g.q.length >= 5) { glog('out', `${cn}${jong(c.nm) ? '은' : '는'} 기다리는 사람이 많아 그냥 돌아갔다.`, c.t); return; }
-  g.q.push(c); if (!beat || c.named) glog('in', `${cn}${jong(c.nm) ? '이' : '가'} 도전하러 왔다!${c.named ? ' <small>이름 있는 트레이너</small>' : ''}`, c.t);
+  g.q.push(c); if (!beat || c.named) glog('in', `${cn}${jong(c.nm) ? '이' : '가'} 도전하러 왔다!${c.boss ? ` <small>${BD_KO[c.boss - 1]} 자격 배지 심사</small>` : c.named ? ' <small>이름 있는 트레이너</small>' : ''}`, c.t);
 }
 // 지난주 보고서 (월요일): 전적·막은 도전자·번 골드, 가상 체육관들과 점수 순위
 function rollWeek(now) {
@@ -629,19 +666,21 @@ async function challenge() {
     await walk(e, D.path.slice(1)); e.f = 'u'; place(e);
     const N = c.named && NAMED.find(n => n.id === c.named), me = trName() || '관장';
     const line = N ? N.ln[0].replace('{me}', me) : pick(CHAL_LINES[c.diff] || CHAL_LINES[1]);
+    if (c.boss) await talk(`<span class="gy-who">자격 배지 심사</span>${TYPE_KO[g.ty]} <b>${BD_KO[c.boss - 1]} 자격 배지</b>를 걸고<br>${esc(c.cls)} ${esc(c.nm)}${jong(c.nm) ? '이' : '가'} 심사하러 왔다!<br>이기면 배지를 받는다.`);   // 100명 단위 페이즈 (경완 2026-10-29)
     await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>${esc(line)}`, '배틀 시작');   // 난이도·마리 수는 안 보여 줌 (경완 2026-10-28)
-    const team = c.team.map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv); if (mv && mv.length) o.mv = mv; if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); return o; });
+    const team = c.team.map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv); if (mv && mv.length) o.mv = mv; if (c.boss) o.iv = o.iv.map(() => 31); else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); return o; });
     // 배틀이 끝나면 배틀 화면에서 상대가 한마디 (경완 2026-10-28)
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : pick(WIN_LINES), lose: N ? N.ln[2].replace('{me}', me) : pick(LOSE_LINES) };
     document.body.classList.add('gymBattle');
     let res;
-    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: REW(c.diff).g, r: REW(c.diff).r, rl: Math.max(-(g.rep || 0), REW(c.diff).rl) }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: rewOf(c).g, r: rewOf(c).r, rl: Math.max(-(g.rep || 0), rewOf(c).rl) }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); }   // 배틀 끝나고 돌아오면 아래 대화창은 숨김 (경완 2026-10-29)
-    g.q.shift(); const R = REW(c.diff), won = !!res?.won, now = Date.now();
+    g.q.shift(); const R = rewOf(c), won = !!res?.won, now = Date.now();
     let gold = 0, rep = 0;
-    if (won) { gold = addG(R.g); addRep(R.r); rep = R.r; g.w++; if (g.wk) g.wk.w++; blocked(); res.used.forEach(id => GA.addFr(id, R.fr)); }
+    if (won) { gold = addG(R.g); addRep(R.r); rep = R.r; g.w++; if (g.wk) g.wk.w++; blocked(c); res.used.forEach(id => GA.addFr(id, R.fr)); }
+    if (!won && c.boss) g.bsN[g.ty] = now + rnd(2, 4) * H;   // 배지 심사에서 지면 몇 시간 뒤 다시 온다
     else { addRep(R.rl); rep = R.rl; g.l++; if (g.wk) g.wk.l++; }
-    if (N) { const x = g.nt[N.id] || { s: 0 }; g.nt[N.id] = won ? { s: x.s + 1, n: now + rnd(2, 3.5) * DAY } : { s: x.s, n: now + rnd(.8, 1.5) * DAY }; }
+    if (N && !c.sc) { const x = g.nt[N.id] || { s: 0 }; g.nt[N.id] = won ? { s: x.s + 1, n: now + rnd(2, 3.5) * DAY } : { s: x.s, n: now + rnd(.8, 1.5) * DAY }; }
     glog(won ? 'win' : 'lose', `${esc(c.cls)} <b>${esc(c.nm)}</b>${won ? `에게 이겼다! <small>+${gold}G · 평판 +${rep}</small>` : `에게 졌다… <small>평판 ${rep}</small>`}`);
     setAt(); save(); renderTop();
     await resultPop(c, res, gold, rep, R);
@@ -680,7 +719,7 @@ async function repAnim(p, rep) {
 }
 function badgeGet(ty) {
   st().newBdg = 0; save();
-  return new Promise(ok => { sfx('tap'); pop(`<h4>자격 배지를 받았다!</h4><div class="bd-get"><img alt="" src="${IMG}badge/${ty}.png?v=4"></div><p class="gy-msg" style="text-align:center">${TYPE_KO[ty]} 타입으로 도전자 100명을 막아 냈어요.<br><b>${TYPE_KO[ty]} 자격 배지</b>는 프로필에서도 볼 수 있어요.</p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); });
+  return new Promise(ok => { sfx('tap'); const L = Math.max(1, bdLv(st(), ty)); pop(`<h4>${BD_KO[L - 1]} 자격 배지를 받았다!</h4><div class="bd-get t${L}"><img alt="" src="${bdImg(ty, L)}"></div><p class="gy-msg" style="text-align:center">${TYPE_KO[ty]} 타입으로 도전자 ${BD_AT[L - 1]}명을 막아 냈어요.<br><b>${TYPE_KO[ty]} ${BD_KO[L - 1]} 자격 배지</b>는 프로필에서도 볼 수 있어요.${BD_AT[L] ? `<br><small>${BD_AT[L]}명을 막으면 ${BD_KO[L]} 배지 심사가 열려요.</small>` : ''}</p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); });
 }
 
 // ---------- 홈 ----------
@@ -775,7 +814,7 @@ function qPop() {
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-qw'; root.appendChild(el);
   const draw = el.redraw = () => { const g = st(), Q = g.q;
     let body;
-    body = Q.length ? `<div class="qw-list">${Q.map((c, i) => `<div class="qw-row"><span class="qw-pic${c.named ? ' qw-sil' : ''}"><img alt="" src="${trSrc(c.tr)}"></span><div class="qw-tx"><small>${c.named ? '<em>이름 있는 트레이너</em>' : esc(c.cls)}</small><b>${c.named ? '???' : esc(c.nm)}</b><span>${hhmm(c.t)}에 왔어요</span></div><button class="gy-key main" type="button" data-c="${i}">도전 받기</button></div>`).join('')}</div>`
+    body = Q.length ? `<div class="qw-list">${Q.map((c, i) => `<div class="qw-row"><span class="qw-pic${c.named ? ' qw-sil' : ''}"><img alt="" src="${trSrc(c.tr)}"></span><div class="qw-tx"><small>${c.boss ? `<em class="qw-bs">${BD_KO[c.boss - 1]} 배지 심사</em>` : c.named ? '<em>이름 있는 트레이너</em>' : esc(c.cls)}</small><b>${c.named ? '???' : esc(c.nm)}</b><span>${hhmm(c.t)}에 왔어요</span></div><button class="gy-key main" type="button" data-c="${i}">도전 받기</button></div>`).join('')}</div>`
       : '<p class="qw-none">지금 기다리는 도전자가 없어요.</p>';
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">도전자 명단</b></div>
       <div class="gy-body">${body}</div>`; };
@@ -826,7 +865,7 @@ function sfCard(s) { bodyCard(trSrc(s.tr), sfName(s), `${TRAITS[s.trait]?.n || '
 function infoPop() {
   root.querySelector('.gy-infos')?.remove();
   const g = st(), D = dzOf(g.d), G = gradeOf(g.rep || 0), d0 = new Date(g.t0 || Date.now()), days = Math.max(1, Math.floor((dayStart(Date.now()) - dayStart(g.t0 || Date.now())) / DAY) + 1);
-  const wl = (g.w || 0) + (g.l || 0), wr = wl ? Math.round((g.w || 0) / wl * 100) : 0, w = g.wk || {}, nb = Object.keys(g.bdg || {}).length, bk = Math.min(100, (g.bk || {})[g.ty] || 0);
+  const wl = (g.w || 0) + (g.l || 0), wr = wl ? Math.round((g.w || 0) / wl * 100) : 0, w = g.wk || {}, nb = Object.keys(g.bdg || {}).length, bL = bdLv(g, g.ty), bA = BD_AT[bL], bk = (g.bk || {})[g.ty] || 0, bP = bA ? Math.min(100, (bk - (BD_AT[bL - 1] || 0)) / (bA - (BD_AT[bL - 1] || 0)) * 100) : 100;
   const pct = G.hi > G.lo ? Math.min(100, ((g.rep || 0) - G.lo) / (G.hi - G.lo) * 100) : 100, nx = GRADES[G.i + 1];
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos'; root.appendChild(el);
   el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 정보</b></div>
@@ -837,7 +876,7 @@ function infoPop() {
         <div class="if-staff"><small>고용할 수 있는 트레이너</small><b>${staffMax()}<em>명</em></b></div>
         <div class="if-big"><small>체육관 크기</small><b>${bigOf(g) + 1}<em>/ ${GRADES.length}단계</em></b>${canBig(g) ? '<button class="gy-key main" type="button" data-a="big">넓히기</button>' : ''}</div>
       </div>
-      <button class="if-bdg" type="button" data-a="bdg"><img alt="" src="${IMG}badge/${g.ty}.png?v=4" class="${g.bdg?.[g.ty] ? 'on' : ''}"><div><small class="if-bt">${TYPE_KO[g.ty]} 자격 배지<em>전체 보기 ›</em></small><b>${g.bdg?.[g.ty] ? '받았어요!' : `도전자 ${bk} / 100`}</b><i class="gy-bar"><i style="width:${bk}%"></i></i></div></button>
+      <button class="if-bdg" type="button" data-a="bdg"><img alt="" src="${bdImg(g.ty, bL)}" class="${bL ? 'on' : ''}"><div><small class="if-bt">${TYPE_KO[g.ty]} 자격 배지${bL ? ` · ${BD_KO[bL - 1]}` : ''}<em>전체 보기 ›</em></small><b>${bA ? `${BD_KO[bL]}까지 도전자 ${bk} / ${bA}${bk >= bA - 1 ? ' <span class="if-sim">심사 대기</span>' : ''}` : `프리즘 달성! 막은 도전자 ${bk}명`}</b><i class="gy-bar"><i style="width:${bP}%"></i></i></div></button>
       <button class="if-re" type="button" data-a="re">폐업하고 새로 세우기</button>
     </div>`;
   fillMs(el);
@@ -928,7 +967,8 @@ function simPop() {
 function badgePop() {
   const g = st(), n = Object.keys(g.bdg || {}).length;
   pop(`<h4>자격 배지</h4>
-    <div class="gy-bdgs">${TYPE_KO.map((nm, t) => t ? `<div class="${g.bdg[t] ? 'on' : ''}${g.ty === t ? ' cur' : ''}"><img alt="" src="${IMG}badge/${t}.png?v=4"><b>${nm}</b></div>` : '').join('')}</div>
+    <div class="gy-bdgs">${TYPE_KO.map((nm, t) => { if (!t) return ''; const L = bdLv(g, t); return `<div class="${L ? 'on' : ''}${g.ty === t ? ' cur' : ''}"><img alt="" src="${bdImg(t, L)}"><b>${nm}</b><small>${L ? BD_KO[L - 1] : `${(g.bk || {})[t] || 0}/100`}</small></div>`; }).join('')}</div>
+    <p class="bd-tiers">${BD_AT.map((a, i) => `<span class="t${i + 1}">${BD_KO[i]} ${a}명</span>`).join('')}</p>
     <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }
 // 주간 보고서·랭킹 (월요일): 지난주 기록 / 이번 주 진행
@@ -1118,7 +1158,7 @@ async function exit() {
 
 window.Gym = { prepare, enter, exit, isOpen: () => open, renderGold: renderGoldG, DESIGNS, _walk: walk, _ent: ent, _tick: tick,
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { bigOf, trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop } };
+  k: { bigOf, trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 window.gymDot = () => { const g = S.gym; return !!(g && g.d && ((g.q && g.q.length) || (g.at && Date.now() >= g.at))); };
 })();
