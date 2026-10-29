@@ -868,29 +868,34 @@ function drawTab() {
   sh.innerHTML = `<h3>배틀</h3>
     <div class="lu-tabs" role="tablist">${L.map((l, i) => `<button role="tab" aria-selected="${i === g.luI}" data-lu="${i}">라인업 ${i + 1}<small>${l.length}/6</small></button>`).join('')}</div>
     <div class="lu-grid">${[0, 1, 2, 3, 4, 5].map(i => { const P = boxOf(cur[i]); if (!P) return `<button class="lu-slot empty" data-add="${i}" ${can.length ? '' : 'disabled'}><span>+</span></button>`; const m = gm(P);
-      return `<button class="lu-slot${luOrd ? ' lu-ord' : ''}" data-p="${P.id}"><i class="lu-n">${i + 1}</i>${luOrd ? '' : `<span class="lu-x" data-rm="${P.id}" role="button" aria-label="라인업에서 빼기">✕</span>`}${thumb(P)}<b>${esc(nmOf(P))}</b><span>Lv.${m.lv}</span></button>`; }).join('')}</div>
+      const T = SPECIES[P.sp]?.t || [];   // 칸 디자인 (경완 2026-10-29 '퀄리티 좀 높여줘'): 첫 타입 색 띠, 번호 딱지, 타입 아이콘, 레벨 딱지
+      return `<button class="lu-slot${luOrd ? ' lu-ord' : ''}" data-p="${P.id}" style="--tc:${GA.TYPE_C?.[T[0]] || '#8890a8'}"><i class="lu-n">${i + 1}</i>${luOrd ? '' : `<span class="lu-x" data-rm="${P.id}" role="button" aria-label="라인업에서 빼기">✕</span>`}${thumb(P)}<b>${esc(nmOf(P))}</b><span class="lu-ft"><span class="lu-tys">${T.map(t => GA.tyIcon(t)).join('')}</span><em>Lv.${m.lv}</em></span></button>`; }).join('')}</div>
     ${can.length ? '' : `<p class="lu-none">${TYPE_KO[ty]} 타입 포켓몬이 아직 없어요. 알을 부화시켜 데려와 주세요.</p>`}
-    <div class="lu-act"><div class="lu-row2"><button class="gy-key" data-box>포켓몬 박스</button><button class="gy-key${luOrd ? ' on' : ''}" data-ord ${cur.length > 1 ? '' : 'disabled'}>${luOrd ? '순서 바꾸기 끝' : '순서 바꾸기'}</button></div>${luOrd ? '<p>포켓몬을 끌어서 순서를 바꿔요</p>' : ''}<button class="gy-key main lu-go" data-go ${cur.length ? '' : 'disabled'}>연습 배틀</button></div>`;   // 연습 배틀은 아래 가운데 크게, 박스 옆에 순서 바꾸기 (경완 2026-10-29)
+    <div class="lu-act"><div class="lu-row2"><button class="gy-key" data-box><i class="lu-ic"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 2h12v1H2zM1 3h1v11H1zM14 3h1v11h-1zM2 14h12v1H2zM2 7h12v1H2zM6 8h4v1H6zM6 9h1v1H6zM9 9h1v1H9zM6 10h4v1H6z"/><path fill="#e85a4a" d="M2 3h12v4H2z"/><path fill="#ff8a78" d="M2 3h12v1H2z"/><path fill="#f4f4f8" d="M2 8h4v6H2zM10 8h4v6h-4zM6 11h4v3H6z"/><path fill="#fff" d="M7 9h2v1H7z"/></svg></i>포켓몬 박스</button><button class="gy-key${luOrd ? ' on' : ''}" data-ord ${cur.length > 1 ? '' : 'disabled'}><i class="lu-ic"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M4 1h1v1H4zM3 2h3v1H3zM2 3h5v1H2zM4 4h1v9H4zM11 3h1v9h-1zM9 11h5v1H9zM10 12h3v1h-3zM11 13h1v1h-1z"/></svg></i>${luOrd ? '순서 바꾸기 끝' : '순서 바꾸기'}</button></div>${luOrd ? '<p>포켓몬을 끌어서 순서를 바꿔요</p>' : ''}<button class="gy-key main lu-go" data-go ${cur.length ? '' : 'disabled'}><i class="lu-ic"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M5 1h6v1H5zM3 2h2v1H3zM11 2h2v1h-2zM2 3h1v2H2zM13 3h1v2h-1zM1 5h1v6H1zM14 5h1v6h-1zM2 11h1v2H2zM13 11h1v2h-1zM3 13h2v1H3zM11 13h2v1h-2zM5 14h6v1H5zM2 7h4v1H2zM10 7h4v1h-4zM6 6h4v1H6zM5 7h1v2H5zM10 7h1v2h-1zM6 9h4v1H6z"/><path fill="#e83a3a" d="M5 2h6v1H5zM3 3h10v2H3zM2 5h12v2H2zM6 6h0z"/><path fill="#fff" d="M2 8h3v1H2zM11 8h3v1h-3zM2 9h12v2H2zM3 11h10v2H3zM5 13h6v1H5zM6 7h4v2H6z"/><path fill="#ff9a9a" d="M4 3h2v1H4zM3 4h1v1H3z"/></svg></i>연습 배틀</button></div>`;   // 연습 배틀은 아래 가운데 크게, 박스 옆에 순서 바꾸기 (경완 2026-10-29)
   fillTh(sh);
   // 끌어서 순서 바꾸기 (경완 2026-10-28 '라인업 화면에서 포켓몬 순서 바꿀 수 있게')
   const grid = sh.querySelector('.lu-grid'); let dg = null, noTap = 0;
-  const slotAt = (x, y) => document.elementFromPoint(x, y)?.closest('.lu-grid .lu-slot');
+  // 옮길 자리는 칸이 아니라 칸과 칸 사이 여백 가운데에 막대로 보인다 (경완 2026-10-29)
+  if (luOrd) grid.classList.add('lu-wig');   // 순서 바꾸기 중엔 칸이 흔들흔들
+  const bar = document.createElement('i'); bar.className = 'lu-bar'; bar.hidden = true; grid.appendChild(bar);
+  const insAt = (x, y) => { const F = [...grid.querySelectorAll('.lu-slot[data-p]')]; if (F.length < 2) return null; const gr = grid.getBoundingClientRect();
+    let best = null, bd = 1e9; F.forEach((el, i) => { if (el.classList.contains('lu-drag')) return; const r = el.getBoundingClientRect(), d = Math.hypot(Math.max(r.left - x, 0, x - r.right), Math.max(r.top - y, 0, y - r.bottom)); if (d < bd) { bd = d; best = [i, r]; } });
+    const [i, r] = best, after = x > r.left + r.width / 2, k = i + (after ? 1 : 0), gap = parseFloat(getComputedStyle(grid).columnGap) || 8;
+    bar.hidden = false; bar.style.left = ((after ? r.right + gap / 2 : r.left - gap / 2) - gr.left) + 'px'; bar.style.top = (r.top - gr.top) + 'px'; bar.style.height = r.height + 'px'; return k; };
   // 순서 바꾸기 모드에선 바로 끌고, 아니면 슬롯을 꾹 누르면 끌 수 있다 (경완 2026-10-29)
   grid.oncontextmenu = e => e.preventDefault();
   grid.addEventListener('touchmove', e => { if (dg?.ready) e.preventDefault(); }, { passive: false });   // 꾹 누른 뒤엔 화면이 스크롤되지 않게
   grid.onpointerdown = e => { const b = e.target.closest('.lu-slot[data-p]'); if (!b || e.button || e.target.closest('.lu-x')) return; const d = dg = { b, x: e.clientX, y: e.clientY, pid: e.pointerId, on: false, ready: luOrd };
-    if (!luOrd) d.t = setTimeout(() => { if (dg !== d) return; d.ready = true; noTap = Date.now() + 1e4; b.classList.add('lu-hold'); sfx('tap'); try { navigator.vibrate?.(15); } catch (er) {} }, 380); };
+    if (!luOrd) d.t = setTimeout(() => { if (dg !== d) return; d.ready = true; noTap = Date.now() + 1e4; b.classList.add('lu-hold'); grid.classList.add('lu-wig'); sfx('tap'); try { navigator.vibrate?.(15); } catch (er) {} }, 380); };
   grid.onpointermove = e => { if (!dg || e.pointerId !== dg.pid) return; const dx = e.clientX - dg.x, dy = e.clientY - dg.y;
     if (!dg.on) { if (!dg.ready) { if (Math.hypot(dx, dy) > 8) { clearTimeout(dg.t); dg = null; } return; } if (Math.hypot(dx, dy) < (luOrd ? 8 : 3)) return; dg.on = true; try { grid.setPointerCapture(e.pointerId); } catch (er) {} dg.b.classList.add('lu-drag'); }
-    dg.b.style.transform = `translate(${dx}px,${dy}px) scale(1.06)`; const t = slotAt(e.clientX, e.clientY);
-    grid.querySelectorAll('.lu-over').forEach(x => x !== t && x.classList.remove('lu-over')); if (t && t !== dg.b) t.classList.add('lu-over'); };
-  grid.onpointerup = grid.onpointercancel = e => { if (!dg || e.pointerId !== dg.pid) return; const d = dg; dg = null; clearTimeout(d.t); d.b.classList.remove('lu-hold'); if (!d.on) { if (d.ready && !luOrd) noTap = Date.now(); return; }
-    noTap = Date.now(); d.b.style.pointerEvents = 'none'; const t = e.type === 'pointerup' && slotAt(e.clientX, e.clientY); d.b.style.pointerEvents = '';
-    const slots = [...grid.querySelectorAll('.lu-slot')], from = cur.indexOf(+d.b.dataset.p || d.b.dataset.p), to = t ? Math.min(cur.length - 1, slots.indexOf(t)) : -1;
+    dg.b.style.transform = `translate(${dx}px,${dy}px) scale(1.06)`; dg.ins = insAt(e.clientX, e.clientY); };
+  grid.onpointerup = grid.onpointercancel = e => { if (!dg || e.pointerId !== dg.pid) return; const d = dg; dg = null; clearTimeout(d.t); d.b.classList.remove('lu-hold'); if (!luOrd) grid.classList.remove('lu-wig'); bar.hidden = true; if (!d.on) { if (d.ready && !luOrd) noTap = Date.now(); return; }
+    noTap = Date.now(); const from = cur.indexOf(+d.b.dataset.p || d.b.dataset.p), ins = e.type === 'pointerup' ? d.ins ?? -1 : -1, to = ins < 0 ? -1 : ins > from ? ins - 1 : ins;
     if (from >= 0 && to >= 0 && to !== from) { const [id] = cur.splice(from, 1); cur.splice(to, 0, id); GA.save(); sfx('tap'); }
     drawTab(); };
   sh.onclick = e => {
-    const x = e.target.closest('.lu-x'); if (x && Date.now() - noTap >= 400) { sfx('tap'); const j = cur.indexOf(+x.dataset.rm || x.dataset.rm); if (j >= 0) { cur.splice(j, 1); GA.save(); } drawTab(); return; }   // 슬롯 ✕ = 바로 빼기 (경완 2026-10-29)
+    const x = e.target.closest('.lu-x'); if (x && Date.now() - noTap >= 400) { sfx('tap'); const id = +x.dataset.rm || x.dataset.rm; luAsk(boxOf(id), () => { const j = cur.indexOf(id); if (j >= 0) { cur.splice(j, 1); GA.save(); } drawTab(); }); return; }   // 슬롯 ✕ = 바로 빼기 (경완 2026-10-29)
     const b = e.target.closest('button'); if (!b || b.disabled || Date.now() - noTap < 400) return; sfx('tap');
     if (b.dataset.lu) { g.luI = +b.dataset.lu; GA.save(); drawTab(); return; }
     if (b.dataset.add) return pickMon();
@@ -903,6 +908,9 @@ function drawTab() {
 function gymPop(html, onClick) { const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`;
   p.onclick = e => { if (e.target === p) return p.remove(); const h = e.target.closest('.iv-hex'); if (h) { sfx('tap'); ivBar = h.classList.toggle('bar'); return; } const b = e.target.closest('button[data-a]'); if (b) { sfx('tap'); onClick?.(b.dataset.a, () => p.remove(), b); } };
   document.querySelector('#gym .gy-main').appendChild(p); fillTh(p); return p; }
+// 라인업에서 빼기 전에 묻는 창 (경완 2026-10-29)
+function luAsk(P, ok) { const n = P ? nmOf(P) : '이 포켓몬', c = n.charCodeAt(n.length - 1) - 0xac00, j = c >= 0 && c < 11172 && c % 28 ? '을' : '를';
+  gymPop(`<h4>${esc(n)}${j} 라인업에서 뺄까요?</h4><div class="gy-btns"><button data-a="x">취소</button><button class="main danger" data-a="ok">빼기</button></div>`, (a, close) => { close(); if (a === 'ok') ok(); }); }
 function pickMon() { boxWin(true); }
 // 개체값 육각형 (본가 '능력 판정'처럼): HP 위, 시계 방향으로 공격·방어·스피드·특방·특공. 성격으로 오르는 능력은 빨강, 내려가는 능력은 파랑
 const IV_ORD = [[0, 'HP', ''], [1, '공격', 'atk'], [2, '방어', 'def'], [5, '스피드', 'spe'], [4, '특방', 'spd'], [3, '특공', 'spa']];
@@ -995,9 +1003,12 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
       if (a === 'mv') { close(); movesPop(P, () => monPop(P.id, fromBox, null, lst)); return; }
       if (a === 'tm') { close(); tmPop(P, () => monPop(P.id, fromBox, null, lst)); return; }
       if (a === 'tr') return window.GymManage?.trSend(P, () => { drawTab(); bxRefresh?.(); monPop(P.id, fromBox, p, lst); });
+      const fin = () => {
       if (a === 'rm' && i >= 0) c.splice(i, 1); if (a === 'add' && i < 0 && c.length < 6 && tyOk(P)) c.push(P.id); close(); GA.save(); drawTab();
       if (fromBox === 'add') { const bw = document.querySelector('#gym .gy-boxw'); if (a === 'add' && c.length >= 6) bw?.remove(); else { const sm = bw?.querySelector('.bw-hd small'); if (sm) sm.textContent = `${c.length}/6`; } }   // 라인업 고르기: 6마리 차면 박스도 닫힘
-      if (fromBox) bxRefresh?.(); });
+      if (fromBox) bxRefresh?.(); };
+      if (a === 'rm') return luAsk(P, fin);   // 빼기 전에 한 번 묻기 (경완 2026-10-29)
+      fin(); });
   p.querySelector('.win').classList.toggle('mp-tr', inTr(P.id));   // 훈련 중이면 카드 색이 바뀐다 (경완 2026-10-29)
   // 라인업 포켓몬은 카드를 좌우로 밀면 다음·이전 포켓몬: 꾸미기 모드 포켓몬 박스처럼 옆 카드가 붙어 따라 들어온다, 좌우 힌트 화살표 (경완 2026-10-29)
   const L = lst ? lst() : curLu(), k = L.indexOf(P.id), w = p.querySelector('.win');

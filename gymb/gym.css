@@ -1432,3 +1432,30 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 #gym .gy-boxw .pk .tgs .tg.tg-tr,.gy-boxw .pk .tg.tg-tr{background:#9a6a3c!important;color:#fff!important}
 .gy-pop .win.mp-tr{background:#f6efe4!important;box-shadow:inset 0 0 0 3px #c49a6c,0 0 0 3px var(--frame)!important}
 .gy-pop .win.mp-tr :is(.mp-na .mp-nat,.mp-na .mp-ab,.iv-hex,.mp-mv){background:#fbf7f0!important}
+/* 라인업 순서 바꾸기: 칸이 흔들흔들, 옮길 자리는 칸 사이 여백 가운데 막대 (경완 2026-10-29) */
+.lu-grid{position:relative}
+.lu-grid.lu-wig .lu-slot[data-p]:not(.lu-drag){animation:luWig .26s ease-in-out infinite alternate}
+.lu-grid.lu-wig .lu-slot[data-p]:nth-child(2n){animation-delay:-.13s;animation-direction:alternate-reverse}
+@keyframes luWig{from{rotate:-1.6deg}to{rotate:1.6deg}}
+.lu-bar{position:absolute;z-index:4;width:4px;margin-left:-2px;border-radius:2px;background:#4a8ad0;box-shadow:0 0 0 2px #fff,0 0 6px rgba(74,138,208,.8);pointer-events:none}
+.lu-bar[hidden]{display:none}
+/* 배틀 탭 칸·버튼 다듬기 (경완 2026-10-29 '디자인 퀄리티 좀 높여줘') */
+.lu-grid{gap:10px}
+.lu-slot{border-radius:8px!important;overflow:visible}
+.lu-slot[data-p]{border:3px solid var(--frame)!important;background:linear-gradient(180deg,color-mix(in srgb,var(--tc) 22%,#fff) 0,#fff 46%)!important;box-shadow:inset 0 0 0 2px #fff,inset 0 -4px 0 color-mix(in srgb,var(--tc) 35%,#e6e6ee),0 3px 0 rgba(0,0,0,.28)!important;padding:14px 4px 8px!important;gap:3px}
+.lu-slot[data-p]::before{content:'';position:absolute;left:2px;right:2px;top:2px;height:5px;border-radius:4px 4px 0 0;background:var(--tc);opacity:.85}
+.lu-slot[data-p] .lu-n{left:-3px;top:-3px;width:22px;height:22px;display:grid;place-items:center;background:var(--frame);color:#fff;font-size:12px;font-weight:700;border-radius:8px 0 8px 0}
+.lu-slot[data-p] .rk-fr{background:#fff}
+.lu-slot[data-p] b{font-size:13px;color:var(--win-ink);margin-top:2px}
+.lu-slot .lu-ft{display:flex;align-items:center;gap:4px;font-size:11px}.lu-slot .lu-tys{display:flex;gap:1px}.lu-slot .lu-tys .tyi{width:14px;height:14px}
+.lu-slot .lu-ft em{font-style:normal;font-weight:700;color:#fff;background:#3a3f52;padding:1px 6px;border-radius:7px;line-height:1.3}
+.lu-slot.empty{border:3px dashed #c4c4d2!important;background:repeating-linear-gradient(135deg,rgba(0,0,0,.025) 0 6px,transparent 6px 12px)!important;box-shadow:none!important}
+.lu-slot.empty span{width:34px;height:34px;display:grid;place-items:center;border:2px solid #c4c4d2;border-radius:50%;font-size:22px!important;line-height:1;color:#a8a8b8!important;background:#fff}
+.lu-slot.empty:not(:disabled):active span{background:#fff6c8;border-color:#d8a830;color:#b07a10!important}
+.lu-tabs button{border-radius:8px 8px 4px 4px}
+.lu-act .gy-key{gap:8px;border-radius:6px}
+.lu-ic{display:inline-grid;place-items:center;line-height:0;flex:none}.lu-ic svg{width:20px;height:20px;display:block}
+.lu-act .lu-go .lu-ic svg{width:26px;height:26px;filter:drop-shadow(1px 1px 0 rgba(0,0,0,.25))}
+.lu-act .lu-go{letter-spacing:1px}
+.lu-row2 .gy-key .lu-ic{color:var(--gy-gold,#ffd84a)}
+.lu-slot{height:138px!important}.lu-slot[data-p] .rk-fr img{width:50px;height:50px}
