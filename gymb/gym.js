@@ -1272,6 +1272,7 @@ async function grandOpen() {
   fx.classList.add('go'); $g('.gy-stage')?.animate([{ translate: '0 0' }, { translate: '0 -4px' }, { translate: '0 4px' }, { translate: '0 -2px' }, { translate: '0 0' }], { duration: 420, iterations: 2 });
   confetti(); setTimeout(confetti, 900); setTimeout(confetti, 1800);
   await wait(3600); fx.classList.add('out'); await wait(500); fx.remove();
+  bgmPlay('gym');   // 팡파르가 끝나면 체육관 곡을 바로 다시 (경완 2026-10-29 '그랜드 오픈 하고 bgm 끊김')
 }
 // 튜토리얼이 끝나면 바로 첫 도전자 (경완 2026-10-29): 도전자 받기 단추가 켜지며 통통 + 효과음
 async function firstChal() {
