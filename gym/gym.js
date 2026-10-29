@@ -534,7 +534,7 @@ function luPick() {
     p.onclick = (f => e => { if (e.target === p) { p.remove(); return ok(null); } f(e); })(p.onclick);   // 빈 곳을 누르면 닫힘 → 도전자 말로 돌아감 (경완 2026-10-29)
     GB().fillTh(p); draw(); });
 }
-function myAvg() { const g = st(), L = luNow().map(P => g.mon?.[P.id]?.lv).filter(Boolean); return L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : 10; }
+function myAvg() { const g = st(), L = luNow().map(P => (GB()?.gm?.(P) || g.mon?.[P.id])?.lv).filter(Boolean); return L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : 10; }
 // 레벨에 맞는 종 고르기: 종족값 합이 레벨에 어울리는 포켓몬 (전설·환상·아기 빼고), 타입 맞추기
 let spCache = null;
 const spOff = sp => !!GA.SP_OFF?.has(+sp);   // 작업실에서 끈 포켓몬은 도전자·지원자 팀에 안 나옴 (경완 2026-10-28)
@@ -551,10 +551,11 @@ function mkTeam(types, lvB, n) {
 const teamLv = T => T.reduce((a, m) => a + m[1], 0) / T.length;
 // 배틀 직전에 고른 라인업으로 상대 레벨·마리 수를 다시 맞춘다 (경완 2026-10-29). 본가 단계 팀(pickNamed)은 그대로
 function refit(c, my) {
-  const g = st(), L = my.map(P => g.mon?.[P.id]?.lv).filter(Boolean); if (!L.length) return;
+  const g = st(), L = my.map(P => (GB()?.gm?.(P) || g.mon?.[P.id])?.lv).filter(Boolean); if (!L.length) return;   // 아직 개체 정보가 없는 포켓몬도 gm() 으로 만들어서 센다
   const avg = Math.round(L.reduce((a, b) => a + b, 0) / L.length);
   if (c.named) {
-    if (!c.sc) return;
+    // 본가 단계 팀도 라인업 평균 +2 로 레벨만 옮긴다 (경완 2026-10-29 '여전히 라인업 기반이 아닌 듯'). 구성·기술은 그대로
+    if (!c.sc) { const d = Math.round(avg + 2 - teamLv(c.team)); c.team = c.team.map(m => [m[0], clampN(m[1] + d, 5, 100), m[2]]); return; }
     const n = NAMED.find(x => x.id === c.named), bn = c.bn ?? (c.boss ? [2, 3, 4, 6, 8, 11][c.boss - 1] : clampN((g.gmax | 0) - 2, 0, 3));
     const T = n && nmTeam(n, avg + bn + rndI(-1, 1)); if (T) c.team = T;
     return;
@@ -726,6 +727,10 @@ function setAt(now = Date.now()) {
 // ---------- 도전 받기: 도전자가 문으로 들어와 관장 앞까지 걸어오고, 한마디 → 배틀 → 결과 ----------
 let busy = false;
 function talk(html, btn = '다음', sub = '') {
+  // 그냥 넘기는 대사는 버튼 대신 깜빡이는 ▼, 대화창이나 빈 곳을 누르면 다음으로 (경완 2026-10-29). '배틀 시작' 같은 글자 버튼은 그대로
+  if (btn === '다음') return new Promise(ok => { $g('.gy-dlg').innerHTML = `${html}${sub ? `<span class="gy-dsub">${sub}</span>` : ''}<i class="gy-dnext" aria-hidden="true">▼</i>`;
+    const t0 = Date.now(), on = e => { if (Date.now() - t0 < 200 || e.target.closest('button, .gy-pop')) return; e.stopPropagation(); root.removeEventListener('click', on, true); sfx('tap'); ok(); };
+    root.addEventListener('click', on, true); });
   return new Promise(ok => { $g('.gy-dlg').innerHTML = `${html}${sub ? `<span class="gy-dsub">${sub}</span>` : ''}<button class="gy-dbtn" type="button">${btn} ▶</button>`;
     $g('.gy-dbtn').onclick = e => { e.stopPropagation(); sfx('tap'); ok(); }; });
 }
@@ -803,8 +808,9 @@ async function repAnim(p, rep) {
   const el = p?.querySelector('.rs-rep'); if (!el || !rep) return;
   const r0 = +el.dataset.r0, r1 = +el.dataset.r1, n = el.querySelector('.rr-n'), bar = el.querySelector('.gy-bar>i'), g0 = gradeOf(r0).i;
   await wait(380); if (!el.isConnected) return;
-  el.classList.add('go'); window.GymBGM?.se?.(rep > 0 ? 'DP_EXP' : 'DP_KOUKA_L');
-  const t0 = performance.now(), T = clampN(Math.abs(r1 - r0) * 90, 500, 1100);
+  const T = clampN(Math.abs(r1 - r0) * 90, 500, 1100);
+  el.classList.add('go'); window.GymBGM?.se?.(rep > 0 ? 'DP_EXP' : 'DP_KOUKA_L', rep > 0 ? { dur: T / 1000 } : undefined);   // 차오르는 소리는 막대가 다 찰 때 같이 멈춤 (경완 2026-10-29)
+  const t0 = performance.now();
   await new Promise(done => { const f = now => { if (!el.isConnected) return done(); const k = Math.min(1, (now - t0) / T), r = Math.round(r0 + (r1 - r0) * (1 - (1 - k) ** 2)), G = gradeOf(r);
     n.textContent = r; bar.style.width = clampN((r - G.lo) / Math.max(1, G.hi - G.lo), 0, 1) * 100 + '%';
     if (G.i !== +el.dataset.gi) { el.dataset.gi = G.i; el.querySelector('.rr-bd').innerHTML = gEmb(G.i); el.querySelector('.rr-gn').textContent = G.n; }
