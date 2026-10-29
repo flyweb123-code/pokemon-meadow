@@ -1740,3 +1740,42 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 @keyframes skFl{from{transform:scaleY(1) translateY(0)}to{transform:scaleY(1.25) translateY(-3px) scaleX(.85)}}
 .gy-pop .win.rs-shk{animation:rsShk .36s steps(6)}
 @keyframes rsShk{20%{transform:translate(-5px,2px)}40%{transform:translate(4px,-3px)}60%{transform:translate(-3px,1px)}80%{transform:translate(2px,-1px)}}
+/* 전설 알 (경완 2026-10-29) */
+.gy-perk .pk-le{display:inline-block;vertical-align:middle;margin:0 6px 0 -2px}.gy-perk .pk-le .egg{width:22px;height:27px}
+.gy-perk li small{display:block;font-size:11px;color:var(--dim)}
+.gy-pop .le-get{display:flex;justify-content:center;padding:22px 0 14px}.gy-pop .le-get .egg{width:72px;height:88px}
+.gy-grand .gg-ban,.gy-grand .gg-rays{top:50%}   /* 그랜드 오픈 창은 화면 가운데 (경완 2026-10-29) */
+.gy-perk ul li:has(.pk-le){list-style:none;margin-left:-16px}.gy-perk .pk-le{margin:0 6px 0 0}.gy-perk li:has(.pk-le) small{padding-left:28px}
+/* 도전자 명단 새 디자인 (경완 2026-10-29) */
+.gy-qw{background:repeating-linear-gradient(135deg,#f4f1e6 0 14px,#eeeadc 14px 28px)}
+.gy-qw .qw-sum{display:flex;flex-direction:column;gap:2px;margin:0 0 12px;padding:10px 14px;background:#3a3a50;color:#fff;border:3px solid var(--frame);box-shadow:3px 3px 0 rgba(0,0,0,.18)}
+.gy-qw .qw-sum b{font-size:15px}.gy-qw .qw-sum b em{font-style:normal;color:#ffd84a;font-size:19px;margin:0 1px}.gy-qw .qw-sum span{font-size:11px;color:#c8c8dc}
+.gy-qw .qw-list{gap:10px}
+.gy-qw .qw-row{position:relative;grid-template-columns:auto 64px 1fr auto;border-radius:6px;background:#fffdf4;padding:8px 12px 8px 8px}
+.gy-qw .qw-pic{position:relative;width:64px;height:64px;border:0;background:none;overflow:visible}
+.gy-qw .qw-pic img{position:relative;z-index:1}
+.gy-qw .qw-base{position:absolute;left:4px;right:4px;bottom:2px;height:16px;border-radius:50%;background:radial-gradient(ellipse at 50% 40%,#d8e8c0,#9cbc78 70%);box-shadow:0 2px 0 #6a8a50}
+.gy-qw .qw-tx{gap:3px}.gy-qw .qw-tx b{font-size:17px;line-height:1.1}.gy-qw .qw-tx span{font-size:11px}
+.gy-qw .qw-tag{display:inline-block;font-style:normal;font-size:11px;font-weight:700;padding:1px 7px;border-radius:9px;background:#e6ecf6;color:#4a5a7a}
+.gy-qw .qw-tag.nm{background:#fff0c4;color:#9a6a08}.gy-qw .qw-tag.bs{background:#ffe0dc;color:#c0302a}
+/* 다음 차례: 큰 카드 */
+.gy-qw .qw-row.next{grid-template-columns:96px 1fr;grid-template-areas:'p t' 'b b';row-gap:10px;padding:22px 14px 14px;border-color:#3a3a50;background:linear-gradient(180deg,#e4f0ff 0,#fffdf4 62%);box-shadow:4px 4px 0 rgba(0,0,0,.2)}
+.gy-qw .qw-row.next .qw-pic{grid-area:p;width:96px;height:96px}.gy-qw .qw-row.next .qw-pic img{width:96px;height:96px}
+.gy-qw .qw-row.next .qw-base{height:22px;left:6px;right:6px}
+.gy-qw .qw-row.next .qw-tx{grid-area:t}.gy-qw .qw-row.next .qw-tx b{font-size:22px}
+.gy-qw .qw-row.next .gy-key{grid-area:b;width:100%;min-height:48px;font-size:17px}
+.gy-qw .qw-rib{position:absolute;left:-3px;top:-3px;padding:3px 12px 3px 10px;background:#ffd84a;color:#3a2a00;font-size:11px;font-weight:700;border:3px solid var(--frame);border-radius:6px 0 8px 0}
+.gy-qw .qw-row.next.boss{border-color:#c0302a;background:linear-gradient(180deg,#ffe4e0 0,#fffdf4 62%);box-shadow:4px 4px 0 rgba(120,20,10,.25),0 0 0 2px #ffb0a0 inset}
+.gy-qw .qw-row.next.boss .qw-rib{background:#e84a3a;color:#fff}.gy-qw .qw-row.next.boss .qw-base{background:radial-gradient(ellipse at 50% 40%,#f0d0c0,#c88a70 70%);box-shadow:0 2px 0 #8a5040}
+/* 기다리는 줄 */
+.gy-qw .qw-row.wait{opacity:1;background:#fbf8ee;border-color:#8a8aa0;box-shadow:2px 2px 0 rgba(0,0,0,.12)}
+.gy-qw .qw-row.wait .qw-pic,.gy-qw .qw-row.wait .qw-tx{opacity:.75}
+.gy-qw .qw-no{width:24px;height:24px;display:grid;place-items:center;border-radius:50%;background:#3a3a50;color:#fff;font-size:12px;font-weight:700}
+.gy-qw .qw-wait{font-size:11px!important;padding:3px 8px!important;border-radius:9px;background:#e6e6ee;color:#6a6a80!important}
+/* 비었을 때 */
+.gy-qw .qw-none{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--dim)}.gy-qw .qw-none b{font-size:15px;color:#3a3a50}.gy-qw .qw-none span{font-size:12px}
+.gy-qw .qw-clip{width:56px;height:68px;margin-bottom:8px;background:#fff;border:3px solid var(--frame);border-radius:4px;box-shadow:3px 3px 0 rgba(0,0,0,.15);position:relative;background-image:repeating-linear-gradient(180deg,transparent 0 12px,#d8d8e4 12px 14px);background-position:0 18px;background-clip:content-box;padding:18px 9px 6px}
+.gy-qw .qw-clip::before{content:'';position:absolute;left:50%;top:-8px;width:26px;height:12px;margin-left:-13px;background:#8a8aa0;border:3px solid var(--frame);border-radius:3px}
+/* 띵동 (경완 2026-10-29) */
+#gym button.gy-qbtn.gy-qbtn.qding{animation:qDing 1.2s ease-out!important}
+@keyframes qDing{0%{scale:1;rotate:0deg}10%{scale:1.1;rotate:-4deg;filter:brightness(1.3) drop-shadow(0 0 10px #ffd84a)}20%{rotate:4deg}30%{rotate:-3deg}40%{scale:1.08;rotate:3deg}50%{scale:1.05;rotate:-1deg}62%{scale:1;rotate:0deg}72%{scale:1.06}84%{scale:1}100%{scale:1;rotate:0deg}}
