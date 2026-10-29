@@ -961,22 +961,23 @@ const boxPop = () => boxWin(false);
 function monPop(id, fromBox, dir = 0) {
   const P = boxOf(+id || id); if (!P) return; const inLu = curLu().includes(P.id); const m = gm(P), g = growth(P.sp), a = xpAt(g, m.lv), b = xpAt(g, m.lv + 1), nt = D.nt[m.nat] || ['', '', ''];
   const mv = m.mv.map(x => mvOf(x)).filter(Boolean), h = D.sp[P.sp]?.h, ad = AB_D?.[m.ab] || '';
+  // 특성 팝업: 숨겨진 특성은 안내 문구 대신 눌러서 효과 (경완 2026-10-29)
+  const abShow = (k, hid, hk) => gymPop(`<h4>${abKo(k)}${hid ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</h4><p class="gy-msg ab-d">${esc(AB_D?.[k] || '효과 설명이 아직 없어요.')}</p>${hk ? `<button type="button" class="ab-hid" data-a="hab"><small>숨겨진 특성</small><b>${abKo(hk)}</b><i>›</i></button>` : ''}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b, c2) => { if (b === 'hab') return abShow(hk, true); c2(); });
   // 정보 카드 (경완 2026-10-29): 이름 밑 타입·레벨·경험치 왼쪽 맞춤, 경험치 막대는 끝까지 / 성격·특성(효과·숨겨진 특성) / 개체값 › / 기술(누르면 상세, 위에 '기술 바꾸기') / 기술 가르치기
-  const p = gymPop(`<div class="mp-head">${thumb(P)}<div class="mp-hd"><h4>${esc(nmOf(P))}</h4><p class="mp-tys">${(SPECIES[P.sp]?.t || []).map(t => tyTag(t)).join('')}</p><p class="mp-lv"><b>Lv.${m.lv}</b> · 랭크 ${GA.rankOf(P)}</p>${frRow(P)}<i class="mp-xp"><i style="width:${m.lv >= LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><small>${m.lv >= LV_MAX ? '최고 레벨' : `다음 레벨까지 ${Math.max(0, b - m.xp).toLocaleString()}`}</small></div></div>
-    <div class="mp-nat"><small>성격</small><b>${natKo(m.nat)}</b>${nt[1] ? `<span><i class="up">${STAT_KO[nt[1]]} ▲</i><i class="dn">${STAT_KO[nt[2]]} ▼</i></span>` : '<span><i>능력 변화 없음</i></span>'}</div>
-    <div class="mp-ab"><div class="mp-abh"><small>특성</small><b>${abKo(m.ab)}</b>${m.ha ? '<em class="ha-tag">숨겨진 특성</em>' : ''}</div><p>${esc(ad || '효과 설명이 아직 없어요.')}</p>${!m.ha && h && h !== m.ab ? `<p class="mp-ha">숨겨진 특성 <b>${abKo(h)}</b> · 20마리 중 1마리꼴로 가진 특별한 특성</p>` : m.ha ? '<p class="mp-ha">20마리 중 1마리꼴로만 가진 특별한 특성이에요.</p>' : ''}</div>
+  const p = gymPop(`<div class="mp-head">${thumb(P)}<div class="mp-hd"><h4>${esc(nmOf(P))}</h4><p class="mp-tys">${(SPECIES[P.sp]?.t || []).map(t => tyTag(t)).join('')}</p><p class="mp-lv"><b>Lv.${m.lv}</b> · 랭크 ${GA.rankOf(P)}</p>${frRow(P)}<i class="mp-xp"><i style="width:${m.lv >= LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><small class="mp-xpn">${m.lv >= LV_MAX ? '최고 레벨' : `${Math.max(0, m.xp - a).toLocaleString()}/${(b - a).toLocaleString()}`}</small></div></div>
+    <div class="mp-na"><div class="mp-nat"><small>성격</small><p><b>${natKo(m.nat)}</b>${nt[1] ? `<span><i class="up">${STAT_KO[nt[1]]}▲</i><i class="dn">${STAT_KO[nt[2]]}▼</i></span>` : '<span><i>변화 없음</i></span>'}</p></div><button type="button" class="mp-ab" data-a="ab"><small>특성 <i class="mp-more">›</i></small><p><b${m.ha ? ' class="ha"' : ''}>${abKo(m.ab)}</b>${m.ha ? '<em class="ha-tag">숨겨진</em>' : ''}</p></button></div>
     ${ivHex(P, m)}
     <div class="mp-mvh"><small>기술</small><button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button></div>
     <div class="mp-moves mp-line">${mv.map(x => `<button type="button" class="mp-mv" data-a="i${x[0]}" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}">${tyTag(x[2], x[3])}<b>${esc(x[1])}</b><em>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'} · PP ${x[6] || '—'}</em></button>`).join('')}</div>
     <div class="gy-btns mp-btns"><button data-a="tm">기술 가르치기</button>${inLu ? '<button data-a="rm" class="danger">라인업에서 빼기</button>' : `<button data-a="add" class="main" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업에 넣기</button>`}</div><button class="mp-x" data-a="x" aria-label="닫기">✕</button>`,
     (a, close) => { const c = curLu(), i = c.indexOf(P.id);
       if (a[0] === 'i' && a.length > 1) return mvInfo(a.slice(1));
+      if (a === 'ab') return abShow(m.ab, m.ha, !m.ha && h && h !== m.ab ? h : null);   // 특성 효과는 눌러서 팝업 (경완 2026-10-29)
       if (a === 'mv') { close(); movesPop(P, () => monPop(P.id, fromBox)); return; }
       if (a === 'tm') { close(); tmPop(P, () => monPop(P.id, fromBox)); return; }
       if (a === 'rm' && i >= 0) c.splice(i, 1); if (a === 'add' && i < 0 && c.length < 6 && tyOk(P)) c.push(P.id); close(); GA.save(); drawTab(); if (fromBox) bxRefresh?.(); });
   // 라인업 포켓몬은 카드를 좌우로 밀면 다음·이전 포켓몬 (경완 2026-10-29)
   const L = curLu(), k = L.indexOf(P.id), w = p.querySelector('.win');
-  if (dir) w.animate([{ transform: `translateX(${dir * 40}px)`, opacity: .3 }, { transform: 'none', opacity: 1 }], { duration: 180, easing: 'ease-out' });
   if (k >= 0 && L.length > 1) { let x0 = null, y0 = 0;
     w.insertAdjacentHTML('beforeend', `<p class="mp-pg">${L.map((_, i) => `<i class="${i === k ? 'on' : ''}"></i>`).join('')}</p>`);
     w.addEventListener('pointerdown', e => { x0 = e.clientX; y0 = e.clientY; });
@@ -1021,18 +1022,33 @@ function teachPick(id, done) { boxWin(false, id, done); }
 // 기술 줄 = 정보 카드 기술 줄과 같은 모양 (경완 2026-10-29 '기술 바꾸기 카드도 상세 카드랑 동일하게')
 const mvRow = (x, a) => `<button type="button" class="mp-mv" data-a="${a}" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}">${tyTag(x[2], x[3])}<b>${esc(x[1])}</b><em>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'} · PP ${x[6] || '—'}</em></button>`;
 // 기술 바꾸기: 잊을 기술(또는 빈 칸)을 고르고 → 배울 기술을 고른다. 잊은 기술은 '아는 기술'로 남아 다시 배울 수 있다
+// 기술 순서 (경완 2026-10-29): 기술 줄을 꾹 눌러 위아래로 끌면 순서가 바뀐다
 function movesPop(P, done) {
-  const m = gm(P), C = mvCands(P, m);
-  gymPop(`<h4>${esc(nmOf(P))}의 기술</h4><p class="gy-msg">바꿀 기술을 고르세요. 배울 수 있는 기술 ${C.length}개</p>
-    <div class="mp-moves mp-line pick">${m.mv.map((id, i) => mvOf(id) ? mvRow(mvOf(id), 's' + i) : '').join('')}${m.mv.length < 4 ? `<button class="mp-mv empty" data-a="s${m.mv.length}"><b>빈 칸</b></button>` : ''}</div>
+  const m = gm(P), C = mvCands(P, m).map(id => [id, mvOf(id)]).filter(([, x]) => x).sort((a, b) => (a[1][2] - b[1][2]) || ((b[1][4] || 0) - (a[1][4] || 0))).map(([id]) => id);   // 배울 기술은 타입순 (경완 2026-10-29)
+  let drag = 0;
+  const p = gymPop(`<h4>${esc(nmOf(P))}의 기술</h4><p class="gy-msg">바꿀 기술을 고르세요</p>
+    <div class="mp-moves mp-line pick mv-ord">${m.mv.map((id, i) => mvOf(id) ? mvRow(mvOf(id), 's' + i) : '').join('')}${m.mv.length < 4 ? `<button class="mp-mv empty" data-a="s${m.mv.length}"><b>빈 칸</b></button>` : ''}</div>
     <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => {
+    if (drag) return;
     close(); if (a === 'x') return done?.();
     const k = +a.slice(1), old = m.mv[k];
     if (!C.length) { gymPop(`<h4>기술 바꾸기</h4><p class="gy-msg">지금 배울 수 있는 다른 기술이 없어요. 레벨을 올리거나 기술머신·훈련장에서 익혀 보세요.</p><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b, c2) => { c2(); movesPop(P, done); }); return; }
-    gymPop(`<h4>${old ? `${esc(mvKo(old))} 대신` : '새로'} 배울 기술</h4><div class="mp-moves mp-line pick">${C.map(id => mvRow(mvOf(id), 'n' + id)).join('')}</div><div class="gy-btns one"><button data-a="x">뒤로</button></div>`, (b, c2) => {
+    gymPop(`<h4>${old ? `${esc(mvKo(old))} 대신` : '새로'} 배울 기술</h4><div class="mp-moves mp-line pick mv-learn">${C.map(id => mvRow(mvOf(id), 'n' + id)).join('')}</div><div class="gy-btns one"><button data-a="x">뒤로</button></div>`, (b, c2) => {
       c2(); if (b !== 'x') { const id = b.slice(1); m.kn = (m.kn || []).filter(x => x !== id); if (old) { m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); } else m.mv.push(id); GA.save(); se('DECIDE'); }
       movesPop(P, done); });
   });
+  const list = p.querySelector('.mv-ord'); let lp = null;
+  const end = () => { if (!lp) return; clearTimeout(lp.t); const on = lp.on; lp.b.classList.remove('drag'); lp = null; if (!on) return;
+    const ord = [...list.querySelectorAll('.mp-mv:not(.empty)')].map(b => +b.dataset.a.slice(1)), mv0 = m.mv.slice();
+    m.mv = ord.map(i => mv0[i]); GA.save(); setTimeout(() => { drag = 0; p.remove(); movesPop(P, done); }, 0); };
+  list.addEventListener('contextmenu', e => e.preventDefault());
+  list.addEventListener('pointerdown', e => { const b = e.target.closest('.mp-mv:not(.empty)'); if (!b || m.mv.length < 2) return;
+    addEventListener('pointerup', end, { once: true }); addEventListener('pointercancel', end, { once: true });
+    lp = { b, y: e.clientY, on: false, t: setTimeout(() => { if (!lp) return; lp.on = true; drag = 1; b.classList.add('drag'); sfx('tap'); try { navigator.vibrate?.(15); } catch (e) {} }, 380) }; });
+  list.addEventListener('pointermove', e => { if (!lp) return;
+    if (!lp.on) { if (Math.abs(e.clientY - lp.y) > 8) { clearTimeout(lp.t); lp = null; } return; }
+    e.preventDefault(); const rows = [...list.querySelectorAll('.mp-mv:not(.empty)')];
+    for (const r of rows) { if (r === lp.b) continue; const R = r.getBoundingClientRect(); if (e.clientY > R.top && e.clientY < R.bottom) { const i = rows.indexOf(r), j = rows.indexOf(lp.b); r.parentNode.insertBefore(lp.b, i > j ? r.nextSibling : r); break; } } });
 }
 // 연습 배틀: 라인업 평균 레벨 근처의 아무 트레이너
 async function practice() {
