@@ -115,15 +115,17 @@ function mapSrc(D) { const u = `${IMG}map/${D.id}.png${D.iv ? `?v=${D.iv}` : ""}
 
 // ---------- 평판·등급 ----------
 const REP_MAX = 500;
-// 평판 ≈ 막은 도전자 수 (경완 2026-10-29). 등급마다 배지 그림: 새내기 · 아이언 · 동 · 은 · 금 · 프리즘
-const GRADES = [[0, '새내기 체육관'], [50, '동네 체육관'], [100, '이름난 체육관'], [200, '인기 체육관'], [300, '명문 체육관'], [500, '전설의 체육관']];
+// 평판 ≈ 막은 도전자 수 (경완 2026-10-29). 등급마다 배지 그림: 동 테 · 은 테 · 금 테 · 동 월계수 · 은 · 금 · 프리즘
+const GRADES = [[0, '새내기 체육관'], [30, '동네 체육관'], [60, '떠오르는 체육관'], [100, '이름난 체육관'], [200, '인기 체육관'], [300, '명문 체육관'], [500, '전설의 체육관']];
+// 체육관 크기·트레이너·훈련장 단계 (6단계 그대로): 떠오르는 체육관은 동네와 같은 단계
+const STAGE = [0, 1, 1, 2, 3, 4, 5], STAGES = 6;
 const GRADES_OLD = [0, 100, 250, 450, 700, 1000];   // 10.87 까지의 평판 문턱 (예전 저장 옮기기)
 // 체육관 크기 단계: 평판으로 등급이 오르면 체육관 정보에서 넓힌다 (경완 2026-10-28 '돈 내고 넓히는 것보다 평판 오르면'). g.big 없으면 예전 저장 = 등급 그대로
-const bigOf = (g = st()) => { const gi = gradeOf(g?.rep || 0).i; return g?.big == null ? gi : Math.min(g.big, gi); };
-const canBig = (g = st()) => !!g?.d && gradeOf(g.rep || 0).i > bigOf(g);
+const bigOf = (g = st()) => { const gi = gradeOf(g?.rep || 0).s; return g?.big == null ? gi : Math.min(g.big, gi); };
+const canBig = (g = st()) => !!g?.d && gradeOf(g.rep || 0).s > bigOf(g);
 // 등급 배지 = 지금 체육관 타입의 그 등급 배지 그림 (경완 2026-10-29 '이 배지를 체육관 등급 배지로')
 const gEmb = i => bdHtml(st().ty, i + 1);
-const gradeOf = rep => { let i = 0; GRADES.forEach(([v], k) => { if (rep >= v) i = k; }); return { i, n: GRADES[i][1], lo: GRADES[i][0], hi: GRADES[i + 1]?.[0] ?? REP_MAX }; };
+const gradeOf = rep => { let i = 0; GRADES.forEach(([v], k) => { if (rep >= v) i = k; }); return { i, s: STAGE[i], n: GRADES[i][1], lo: GRADES[i][0], hi: GRADES[i + 1]?.[0] ?? REP_MAX }; };
 
 // ---------- 저장 ----------
 const st = () => S.gym;
@@ -144,7 +146,7 @@ function build() {
       <!-- 필드와 같은 자리 (경완 2026-10-28): 꾸미기 = 맵 편집 자리(왼쪽 위), 창고 = 가방 자리(오른쪽) -->
       <button class="gy-deco" type="button" aria-label="꾸미기"><svg viewBox="0 0 17 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M1 0h3v1H1zM13 0h3v1H13zM0 1h17v1H0zM0 2h3v1H0zM14 2h3v1H14zM1 3h2v1H1zM14 3h2v1H14zM2 4h1v1H2zM14 4h1v1H14zM2 5h1v1H2zM6 5h1v1H6zM10 5h1v1H10zM14 5h1v1H14zM2 6h1v1H2zM8 6h1v1H8zM14 6h1v1H14zM2 7h1v1H2zM7 7h1v1H7zM9 7h1v1H9zM14 7h1v1H14zM3 8h1v1H3zM13 8h1v1H13zM2 9h1v1H2zM14 9h1v1H14zM2 10h1v1H2zM14 10h1v1H14zM2 11h1v1H2zM14 11h1v1H14zM2 12h1v1H2zM14 12h1v1H14zM3 13h1v1H3zM13 13h1v1H13zM4 14h1v1H4zM7 14h3v1H7zM12 14h1v1H12zM5 15h2v1H5zM10 15h2v1H10z"/><path fill="#ffd520" d="M3 2h1v1H3zM13 2h1v1H13zM3 3h2v1H3zM6 3h5v1H6zM12 3h2v1H12zM4 4h9v1H4zM4 5h2v1H4zM7 5h3v1H7zM11 5h2v1H11zM6 6h2v1H6zM9 6h2v1H9zM8 7h1v1H8zM5 8h1v1H5zM11 8h1v1H11zM4 9h2v1H4zM11 9h2v1H11z"/><path fill="#6a3908" d="M4 2h9v1H4zM5 3h1v1H5zM11 3h1v1H11zM3 4h1v1H3zM13 4h1v1H13zM3 5h1v1H3zM13 5h1v1H13zM3 6h1v1H3zM13 6h1v1H13zM3 7h1v1H3zM13 7h1v1H13zM4 8h1v1H4zM12 8h1v1H12zM3 9h1v1H3zM6 9h1v1H6zM10 9h1v1H10zM13 9h1v1H13zM3 10h1v1H3zM5 10h2v1H5zM10 10h2v1H10zM13 10h1v1H13zM3 11h1v1H3zM13 11h1v1H13zM3 12h1v1H3zM5 12h2v1H5zM10 12h2v1H10zM13 12h1v1H13zM4 13h1v1H4zM7 13h3v1H7zM12 13h1v1H12zM5 14h2v1H5zM10 14h2v1H10z"/><path fill="#e65262" d="M4 6h2v1H4zM11 6h2v1H11zM4 7h2v1H4zM11 7h2v1H11z"/><path fill="#de9c10" d="M6 7h1v1H6zM10 7h1v1H10zM6 8h5v1H6zM7 9h3v1H7zM4 10h1v1H4zM7 10h3v1H7zM12 10h1v1H12zM4 11h9v1H4zM4 12h1v1H4zM7 12h3v1H7zM12 12h1v1H12zM5 13h2v1H5zM10 13h2v1H10z"/></svg></button>
       <button class="gy-store gy-sq" type="button" aria-label="창고"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 3h12v1H2zM1 4h1v3H1zM14 4h1v3h-1zM2 7h12v1H2zM2 8h1v6H2zM13 8h1v6h-1zM3 14h10v1H3zM6 9h4v1H6zM6 10h1v1H6zM9 10h1v1H9zM6 11h4v1H6z"/><path fill="#c8783c" d="M2 4h12v3H2zM3 8h10v6H3z"/><path fill="#e8a060" d="M2 4h12v1H2zM3 8h10v1H3z"/><path fill="#f0c040" d="M7 10h2v1H7z"/><path fill="#8a4a24" d="M3 13h10v1H3zM7 4h2v3H7z"/></svg></button>
-      <button class="gy-qbtn" type="button" aria-label="도전자 명단"><svg viewBox="0 0 16 19" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M6 0h4v1H6zM5 1h1v1H5zM10 1h1v1H10zM3 2h10v1H3zM2 3h1v1H2zM5 3h1v1H5zM10 3h1v1H10zM13 3h1v1H13zM2 4h1v1H2zM6 4h4v1H6zM13 4h1v1H13zM2 5h1v1H2zM15 5h1v1H15zM2 6h1v1H2zM15 6h1v1H15zM2 7h1v1H2zM15 7h1v1H15zM2 8h1v1H2zM15 8h1v1H15zM2 9h1v1H2zM15 9h1v1H15zM2 10h1v1H2zM15 10h1v1H15zM2 11h1v1H2zM15 11h1v1H15zM2 12h1v1H2zM15 12h1v1H15zM2 13h1v1H2zM15 13h1v1H15zM2 14h1v1H2zM15 14h1v1H15zM2 15h1v1H2zM15 15h1v1H15zM2 16h1v1H2zM15 16h1v1H15zM2 17h1v1H2zM15 17h1v1H15zM3 18h12v1H3z"/><path fill="#48b048" d="M11 5h1v1H11zM10 6h1v1H10zM5 7h1v1H5zM9 7h1v1H9zM5 8h2v1H5zM8 8h1v1H8zM6 9h2v1H6z"/><path fill="#2c7c3c" d="M11 6h1v1H11zM10 7h1v1H10zM9 8h1v1H9zM8 9h1v1H8zM7 10h1v1H7z"/><path fill="#f8f8f0" d="M6 3h3v1H6zM4 5h7v1H4zM12 5h1v1H12zM4 6h6v1H4zM12 6h1v1H12zM4 7h1v1H4zM6 7h3v1H6zM11 7h2v1H11zM4 8h1v1H4zM7 8h1v1H7zM10 8h3v1H10zM4 9h2v1H4zM9 9h4v1H9zM4 10h3v1H4zM8 10h5v1H8zM4 11h1v1H4zM12 11h1v1H12zM4 12h9v1H4zM4 13h1v1H4zM12 13h1v1H12zM4 14h9v1H4zM4 15h1v1H4zM10 15h3v1H10z"/><path fill="#8888a0" d="M9 3h1v1H9z"/><path fill="#b8783c" d="M3 3h2v1H3zM11 3h1v1H11zM3 4h3v1H3zM10 4h2v1H10zM3 5h1v1H3zM3 6h1v1H3zM3 7h1v1H3zM3 8h1v1H3zM3 9h1v1H3zM3 10h1v1H3zM3 11h1v1H3zM3 12h1v1H3zM3 13h1v1H3zM3 14h1v1H3zM3 15h1v1H3zM3 16h1v1H3z"/><path fill="#8a5428" d="M12 3h1v1H12zM12 4h1v1H12zM14 5h1v1H14zM14 6h1v1H14zM14 7h1v1H14zM14 8h1v1H14zM14 9h1v1H14zM14 10h1v1H14zM14 11h1v1H14zM14 12h1v1H14zM14 13h1v1H14zM14 14h1v1H14zM14 15h1v1H14zM14 16h1v1H14zM3 17h12v1H3z"/><path fill="#e04838" d="M6 1h3v1H6z"/><path fill="#a02820" d="M9 1h1v1H9z"/><path fill="#686878" d="M5 11h7v1H5zM5 13h7v1H5zM5 15h5v1H5z"/><path fill="#d8d0b0" d="M13 5h1v1H13zM13 6h1v1H13zM13 7h1v1H13zM13 8h1v1H13zM13 9h1v1H13zM13 10h1v1H13zM13 11h1v1H13zM13 12h1v1H13zM13 13h1v1H13zM13 14h1v1H13zM13 15h1v1H13zM4 16h10v1H4z"/></svg><b class="gy-qn" hidden></b></button>
+      <button class="gy-qbtn" type="button" aria-label="도전자 받기"><svg viewBox="0 0 16 19" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M6 0h4v1H6zM5 1h1v1H5zM10 1h1v1H10zM3 2h10v1H3zM2 3h1v1H2zM5 3h1v1H5zM10 3h1v1H10zM13 3h1v1H13zM2 4h1v1H2zM6 4h4v1H6zM13 4h1v1H13zM2 5h1v1H2zM15 5h1v1H15zM2 6h1v1H2zM15 6h1v1H15zM2 7h1v1H2zM15 7h1v1H15zM2 8h1v1H2zM15 8h1v1H15zM2 9h1v1H2zM15 9h1v1H15zM2 10h1v1H2zM15 10h1v1H15zM2 11h1v1H2zM15 11h1v1H15zM2 12h1v1H2zM15 12h1v1H15zM2 13h1v1H2zM15 13h1v1H15zM2 14h1v1H2zM15 14h1v1H15zM2 15h1v1H2zM15 15h1v1H15zM2 16h1v1H2zM15 16h1v1H15zM2 17h1v1H2zM15 17h1v1H15zM3 18h12v1H3z"/><path fill="#48b048" d="M11 5h1v1H11zM10 6h1v1H10zM5 7h1v1H5zM9 7h1v1H9zM5 8h2v1H5zM8 8h1v1H8zM6 9h2v1H6z"/><path fill="#2c7c3c" d="M11 6h1v1H11zM10 7h1v1H10zM9 8h1v1H9zM8 9h1v1H8zM7 10h1v1H7z"/><path fill="#f8f8f0" d="M6 3h3v1H6zM4 5h7v1H4zM12 5h1v1H12zM4 6h6v1H4zM12 6h1v1H12zM4 7h1v1H4zM6 7h3v1H6zM11 7h2v1H11zM4 8h1v1H4zM7 8h1v1H7zM10 8h3v1H10zM4 9h2v1H4zM9 9h4v1H9zM4 10h3v1H4zM8 10h5v1H8zM4 11h1v1H4zM12 11h1v1H12zM4 12h9v1H4zM4 13h1v1H4zM12 13h1v1H12zM4 14h9v1H4zM4 15h1v1H4zM10 15h3v1H10z"/><path fill="#8888a0" d="M9 3h1v1H9z"/><path fill="#b8783c" d="M3 3h2v1H3zM11 3h1v1H11zM3 4h3v1H3zM10 4h2v1H10zM3 5h1v1H3zM3 6h1v1H3zM3 7h1v1H3zM3 8h1v1H3zM3 9h1v1H3zM3 10h1v1H3zM3 11h1v1H3zM3 12h1v1H3zM3 13h1v1H3zM3 14h1v1H3zM3 15h1v1H3zM3 16h1v1H3z"/><path fill="#8a5428" d="M12 3h1v1H12zM12 4h1v1H12zM14 5h1v1H14zM14 6h1v1H14zM14 7h1v1H14zM14 8h1v1H14zM14 9h1v1H14zM14 10h1v1H14zM14 11h1v1H14zM14 12h1v1H14zM14 13h1v1H14zM14 14h1v1H14zM14 15h1v1H14zM14 16h1v1H14zM3 17h12v1H3z"/><path fill="#e04838" d="M6 1h3v1H6z"/><path fill="#a02820" d="M9 1h1v1H9z"/><path fill="#686878" d="M5 11h7v1H5zM5 13h7v1H5zM5 15h5v1H5z"/><path fill="#d8d0b0" d="M13 5h1v1H13zM13 6h1v1H13zM13 7h1v1H13zM13 8h1v1H13zM13 9h1v1H13zM13 10h1v1H13zM13 11h1v1H13zM13 12h1v1H13zM13 13h1v1H13zM13 14h1v1H13zM13 15h1v1H13zM4 16h10v1H4z"/></svg><b class="gy-qn" hidden></b></button>
       <button class="win gy-simb" type="button">시뮬</button>
       <div class="win blue gy-dlg" aria-live="polite"></div>
       <section class="gy-sheet" hidden></section>
@@ -172,7 +174,7 @@ function build() {
   dlg.addEventListener('click', e => { if (e.target.closest('button') || root.classList.contains('ded') || busy || root.classList.contains('dhide')) return; e.stopPropagation(); sfx('tap'); homeSay(); });
   // 도전자 명단 아이콘 → 새 화면 (도전자 / 체육관 일지)
   $g('.gy-qbtn').onclick = () => { sfx('tap'); if (ded) ded.end?.(); qPop(); };
-  [['.gy-deco', '꾸미기'], ['.gy-store', '창고'], ['.gy-qbtn', '도전자 명단']].forEach(([c, n]) => $g(c).insertAdjacentHTML('beforeend', `<small class="ga-l">${n}</small>`));   // 홈 레이아웃 C: 메뉴 위 행동 줄 (경완 2026-10-29)
+  [['.gy-deco', '꾸미기'], ['.gy-store', '창고'], ['.gy-qbtn', '도전자 받기']].forEach(([c, n]) => $g(c).insertAdjacentHTML('beforeend', `<small class="ga-l">${n}</small>`));   // 홈 레이아웃 C: 메뉴 위 행동 줄 (경완 2026-10-29)
   // 빈 곳을 한 번 누르면 이름판·버튼을 다 숨겨 메뉴만 남김, 다시 누르면 다 펼침 (경완 2026-10-28, 필드 fview 와 같음)
   $g('.gy-stage').addEventListener('click', e => { if (ded || busy || root.classList.contains('pre') || root.querySelector('.gy-kang,.gy-pop,.gy-setup') || e.target.closest('.tap,.gy-prop.tap')) return;
     root.classList.toggle('gview'); sfx('tap'); });
@@ -463,9 +465,9 @@ const DIFF_KO = ['쉬움', '보통', '어려움'];
 // g.gmax = 심사를 통과한 가장 높은 등급 (그 아래로 떨어졌다 다시 오를 땐 심사 없음), g.bdl[타입] = 그 타입으로 올라 본 가장 높은 등급 + 1 (= 배지 그림 번호, 0 = 아직)
 const BD_MID = [35, 70, 135, 170, 235, 270, 340, 380, 420, 460];   // 평판이 이 자리를 지날 때마다 이름 있는 트레이너가 한 번 온다
 const bdLv = (g, t) => (g.bdl || {})[t] | 0;
-const bdImg = (t, L) => `${IMG}badge/${Math.max(1, L)}/${t}.png?v=9`;
+const bdImg = (t, L) => `${IMG}badge/${Math.max(1, L)}/${t}.png?v=10`;
 // 배지 그림 + 빛 지나가기(모든 등급 같게) + 반짝이(동까지 0 · 은 1 · 금 2 · 프리즘 4, 경완 2026-10-29 '갈수록 반짝이는 느낌')
-const BD_TW = [0, 0, 0, 0, 1, 2, 4];
+const BD_TW = [0, 0, 0, 0, 0, 1, 2, 4];
 const bdHtml = (t, L, cls = '') => { const u = bdImg(t, L); return `<span class="bdw t${L}${cls ? ' ' + cls : ''}" style="--m:url('${u}')"><img alt="" src="${u}">${L ? '<i class="bd-sw"></i>' + '<i class="bd-tw"></i>'.repeat(BD_TW[L] || 0) : ''}</span>`; };
 const gShort = i => GRADES[i][1].replace(/ 체육관$/, '');
 const bdPh = rep => Math.min(1, (rep || 0) / REP_MAX);   // 평판이 오를수록 도전자가 어려워짐 (0~1)
@@ -478,16 +480,16 @@ function gInit() {
   const g = st(); if (!g) return null;
   for (const [k, v] of Object.entries({ sch: [], q: [], log: [], w: 0, l: 0, blk: 0, bk: {}, bdg: {}, nt: {}, sf: [], cid: 0, bdl: {}, ms: {}, bsN: {}, gmax: 0 })) if (g[k] == null) g[k] = v;
   for (const t of Object.keys(g.bdg)) if (!g.bdl[t]) g.bdl[t] = 1;   // 예전 배지(100명) = 동
-  if (g.rv !== 2) {   // 10.88: 평판 문턱을 막은 도전자 수에 맞춰 줄이고, 타입 배지(동~프리즘 1~4)를 등급 배지 번호(3~6)로
-    const r = g.rep || 0, i = GRADES_OLD.findLastIndex(v => r >= v), lo = GRADES_OLD[i], hi = GRADES_OLD[i + 1];
-    g.rep = hi ? Math.round(GRADES[i][0] + (r - lo) / (hi - lo) * (GRADES[i + 1][0] - GRADES[i][0])) : REP_MAX;
-    g.gmax = gradeOf(g.rep).i; for (const t of Object.keys(g.bdl)) if (g.bdl[t]) g.bdl[t] += 2;
+  if (g.rv !== 3) {   // 10.90: 평판 문턱을 막은 도전자 수에 맞춰 줄이고(예전 등급 → 새 등급 0·1·3·4·5·6), 타입 배지(동~프리즘 1~4)를 등급 배지 번호(4~7)로
+    const NEW = [0, 30, 100, 200, 300, 500], r = g.rep || 0, i = GRADES_OLD.findLastIndex(v => r >= v), lo = GRADES_OLD[i], hi = GRADES_OLD[i + 1];
+    g.rep = hi ? Math.round(NEW[i] + (r - lo) / (hi - lo) * (NEW[i + 1] - NEW[i])) : REP_MAX;
+    g.gmax = gradeOf(g.rep).i; for (const t of Object.keys(g.bdl)) if (g.bdl[t]) g.bdl[t] += 3;
     if (g.ty && g.gmax) { g.bdl[g.ty] = Math.max(bdLv(g, g.ty), g.gmax + 1); g.bdg[g.ty] = g.bdg[g.ty] || Date.now(); }
-    g.q = g.q.filter(c => !c.boss); g.bsN = {}; g.ms = {}; g.rv = 2;
+    g.q = g.q.filter(c => !c.boss); g.bsN = {}; g.ms = {}; g.rv = 3;
   }
   // 칸토 디자인에서 플라티나 체육관으로: 같은 분위기 맵으로 옮기고, 직접 놓은 장식 자리는 새로 잡는다
   if (g.d && !DESIGNS.some(d => d.id === g.d)) g.d = dzBase(g.d).id;   // 맵 묶음이 바뀌면 짝 맵으로 (자리는 맵 id 로 저장돼 있어 그대로 둔다)
-  if (g.d && g.big == null) g.big = gradeOf(g.rep || 0).i;   // 지금 크기에서부터 직접 넓히기
+  if (g.d && g.big == null) g.big = gradeOf(g.rep || 0).s;   // 지금 크기에서부터 직접 넓히기
   if (!g.cands) g.cands = g.cand ? [g.cand] : []; delete g.cand;   // 지원서는 여러 장 (경완 2026-10-28 '카드 슬라이드해서 넘기는')
   return g;
 }
@@ -509,7 +511,7 @@ function mkTeam(types, lvB, n) {
 const teamLv = T => T.reduce((a, m) => a + m[1], 0) / T.length;
 function mkChal(t) {
   const g = st(), G = gradeOf(g.rep || 0), avg = myAvg();
-  const rep = g.rep || 0, L = clampN((g.gmax | 0) - 1, 0, 3), f = bdPh(rep), nx = GRADES[(g.gmax | 0) + 1];
+  const rep = g.rep || 0, L = clampN((g.gmax | 0) - 2, 0, 3), f = bdPh(rep), nx = GRADES[(g.gmax | 0) + 1];
   // 다음 등급 문턱 바로 앞(평판 49·99·199·299·499): 승급 심사 보스. 지면 몇 시간 뒤 다시 온다
   if (nx && rep >= nx[0] - 1 && !g.q.some(c => c.boss) && t >= (g.bsN.r || 0)) { const b = mkBoss((g.gmax | 0) + 1, t); if (b) return b; }
   // 중간 이름 있는 트레이너 (자리마다 한 번)
@@ -517,7 +519,7 @@ function mkChal(t) {
   if (mid != null && !g.q.some(c => c.named)) { const c = mkScripted(L, t, 0); if (c) { ms.push(mid); return c; } }
   const nm = pickNamed(avg, t); if (nm && Math.random() < .12) return nm;
   // 보통 도전자: 막은 수가 늘수록 어려운 도전자가 많고, 레벨·마리 수·개체값이 오른다
-  const diff = Math.random() < [.75, .55, .4, .3, .2, .15][G.i] * (1 - f * .8) ? 0 : 1;
+  const diff = Math.random() < [.75, .6, .5, .4, .3, .2, .15][G.i] * (1 - f * .8) ? 0 : 1;
   const k = pick(Object.keys(CLS).filter(x => !!CLS[x].e === !diff)), C = CLS[k];
   const n = diff ? rndI(2, clampN(luNow().length + 1 + (f > .4) + (f > .8), 2, 6)) : rndI(1, 2) + (f > .5);
   return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), diff, ivm: Math.round(f * 20), team: mkTeam(C.t, Math.max(3, avg + (diff ? -2 + Math.round(f * 5) : -8 + Math.round(f * 6))), n) };
@@ -534,11 +536,11 @@ function mkScripted(L, t, bonus, n0) {
   const team = nmTeam(n, myAvg() + bonus + L + rndI(-1, 1)); if (!team) return null;
   return { id: ++g.cid, t, named: n.id, sc: 1, cls: n.cls, tr: n.tr, ow: n.ow, nm: n.nm, diff: 2, music: n.music, team };
 }
-// 승급 심사 보스 (gi = 올라갈 등급 1~5): 동네·이름난 = 관장, 인기 = 라이벌·관장, 명문 = 사천왕, 전설 = 챔피언. 내 평균 +3/+4/+6/+8/+11, 개체값 최고
+// 승급 심사 보스 (gi = 올라갈 등급 1~6): 동네·떠오르는·이름난 = 관장, 인기 = 라이벌·관장, 명문 = 사천왕, 전설 = 챔피언. 내 평균 +2/+3/+4/+6/+8/+11, 개체값 최고
 function mkBoss(gi, t) {
-  const g = st(), r = seeded('bs' + g.ty + gi), q = [/관장/, /관장/, /라이벌|관장/, /사천왕/, /챔피언/][gi - 1], P = q && NAMED.filter(n => q.test(n.cls));
+  const g = st(), r = seeded('bs' + g.ty + gi), q = [/관장/, /관장/, /관장/, /라이벌|관장/, /사천왕/, /챔피언/][gi - 1], P = q && NAMED.filter(n => q.test(n.cls));
   if (!P?.length) return null;
-  const c = mkScripted(0, t, [3, 4, 6, 8, 11][gi - 1], P[Math.floor(r() * P.length)]); if (c) { c.boss = gi; c.music = gi >= 4 ? 'champ' : c.music; }
+  const c = mkScripted(0, t, [2, 3, 4, 6, 8, 11][gi - 1], P[Math.floor(r() * P.length)]); if (c) { c.boss = gi; c.music = gi >= 5 ? 'champ' : c.music; }
   return c;
 }
 // 이름 있는 트레이너: 본가 팀 단계. 그 단계 평균 레벨이 내 라인업 평균 + 6 이하일 때부터 온다
@@ -562,7 +564,7 @@ function blocked(c) {
   const g = st(), ty = g.ty; g.blk++; if (g.wk) g.wk.b++; g.bk[ty] = (g.bk[ty] || 0) + 1;
   if (!c?.boss) return;
   const gi = c.boss, r0 = g.rep || 0; g.gmax = Math.max(g.gmax | 0, gi); g.rep = Math.max(r0, GRADES[gi][0]); if (g.wk) g.wk.r += g.rep - r0;
-  g.bdl[ty] = Math.max(bdLv(g, ty), gi + 1); g.bdg[ty] = g.bdg[ty] || Date.now(); g.newBdg = ty;
+  g.bdl[ty] = Math.max(bdLv(g, ty), gi + 1); g.bdg[ty] = g.bdg[ty] || Date.now(); g.newBdg = ty; g.newG = gi;
   glog('bdg', `승급 심사 통과! <b>${GRADES[gi][1]}</b> 배지를 받았다!`);
 }
 const sfName = s => `${s.cls} ${esc(s.nm)}`;
@@ -630,7 +632,7 @@ function mkCand(now) {
   const W = GYMB(), wage = Math.round(clampN((W.WAGE_BASE + lv * W.WAGE_LV + n * 35) * (trait === 'thrift' ? .7 : trait === 'lazy' ? .55 : trait === 'guts' ? 1.15 : 1), W.WAGE_BASE, Math.max(W.WAGE_BASE, W.WAGE_MAX)) / 10) * 10;
   return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), f: C.f, trait, wage, team: mkTeam(C.t, lv, n) };
 }
-const staffMax = () => Math.min(5, gradeOf(st().rep || 0).i);   // 새내기 체육관은 고용 못 함 (경완 2026-10-27)
+const staffMax = () => Math.min(5, gradeOf(st().rep || 0).s);   // 새내기 체육관은 고용 못 함 (경완 2026-10-27)
 function tick(now = Date.now()) {
   const g = gInit(); if (!g || !g.d) return;
   [...(g.q || []), ...(g.cands || [])].forEach(c => { if (c.team?.some(m => spOff(m[0]))) c.team = c.team.map(m => spOff(m[0]) ? [pickSp(SPECIES[m[0]]?.t || [], m[1]), m[1]] : m); });   // 이미 와 있는 도전자·지원자도 끈 포켓몬은 바꿈
@@ -735,8 +737,8 @@ async function repAnim(p, rep) {
   if (gradeOf(r1).i !== g0 && el.isConnected) { el.classList.add(gradeOf(r1).i > g0 ? 'gup' : 'gdn'); window.GymBGM?.se?.(gradeOf(r1).i > g0 ? 'DP_PINPON' : 'DP_KOUKA_L'); }
 }
 function badgeGet(ty) {
-  st().newBdg = 0; save();
-  return new Promise(ok => { sfx('tap'); const L = Math.max(1, bdLv(st(), ty)), gi = L - 1, nx = GRADES[gi + 1]; pop(`<h4>${GRADES[gi][1]} 배지를 받았다!</h4><div class="bd-get t${L}">${bdHtml(ty, L)}</div><p class="gy-msg" style="text-align:center">승급 심사를 통과해서 체육관 등급이<br><b>${GRADES[gi][1]}</b>으로 올랐어요.<br>배지는 홈 화면과 프로필에서 볼 수 있어요.${nx ? `<br><small>평판 ${nx[0]}을 채우면 ${nx[1]} 승급 심사가 열려요.</small>` : ''}</p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); });
+  const g0 = st(), gN = g0.newG; g0.newBdg = 0; delete g0.newG; save();   // 방금 오른 등급 (없으면 지금 등급)
+  return new Promise(ok => { sfx('tap'); const gi = gN ?? gradeOf(g0.rep || 0).i, L = gi + 1, nx = GRADES[gi + 1]; pop(`<h4>${GRADES[gi][1]} 배지를 받았다!</h4><div class="bd-get t${L}">${bdHtml(ty, L)}</div><p class="gy-msg" style="text-align:center">승급 심사를 통과해서 체육관 등급이<br><b>${GRADES[gi][1]}</b>으로 올랐어요.<br>배지는 홈 화면과 프로필에서 볼 수 있어요.${nx ? `<br><small>평판 ${nx[0]}을 채우면 ${nx[1]} 승급 심사가 열려요.</small>` : ''}</p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); });
 }
 
 // ---------- 홈 ----------
@@ -892,7 +894,7 @@ function infoPop() {
       <button class="if-grade" type="button" data-a="perk" data-g="${G.i}">${gEmb(G.i)}<div class="ig-tx"><div class="ig-top"><small>지금 등급</small><em>${nx ? `다음 ${nx[1]}` : '가장 높은 등급'} ›</em></div><b class="ig-gr" data-g="${G.i}">${G.n}</b><i class="gy-bar"><i style="width:${pct}%"></i></i><span class="ig-rep">평판 <b>${g.rep || 0}</b>${nx ? ` / ${nx[0]}` : ''}${exam(nx) ? ' <span class="if-sim">승급 심사 대기</span>' : ''}</span></div></button>
       <div class="if-two">
         <div class="if-staff"><small>고용할 수 있는 트레이너</small><b>${staffMax()}<em>명</em></b></div>
-        <div class="if-big"><small>체육관 크기</small><b>${bigOf(g) + 1}<em>/ ${GRADES.length}단계</em></b>${canBig(g) ? '<button class="gy-key main" type="button" data-a="big">넓히기</button>' : ''}</div>
+        <div class="if-big"><small>체육관 크기</small><b>${bigOf(g) + 1}<em>/ ${STAGES}단계</em></b>${canBig(g) ? '<button class="gy-key main" type="button" data-a="big">넓히기</button>' : ''}</div>
       </div>
       <button class="if-bdg" type="button" data-a="bdg">${bdHtml(g.ty, bL, bL ? 'on' : '')}<div><small class="if-bt">타입별 등급 배지<em>전체 보기 ›</em></small><b>${nb} / 18 타입</b><span class="if-bs">${TYPE_KO[g.ty]} 타입 최고 ${bL ? GRADES[bL - 1][1] : '아직 없음'}</span></div></button>
       <button class="if-re" type="button" data-a="re">폐업하고 새로 세우기</button>
@@ -908,8 +910,8 @@ function infoPop() {
 // 등급별 혜택 (경완 2026-10-28)
 function perkPop() {
   const g = st(), gi = gradeOf(g.rep || 0).i;
-  const row = ([v, n], i) => {
-    const L = [`체육관 크기 ${i + 1}단계`, `트레이너 ${Math.min(5, i)}명 고용`, `훈련장 ${2 + Math.min(4, i)}칸`];   // 도전자 수·꾸미기·의상은 등급 차등 없음 (경완 2026-10-28)
+  const row = ([v, n], i) => { const k = STAGE[i];
+    const L = [`체육관 크기 ${k + 1}단계`, `트레이너 ${Math.min(5, k)}명 고용`, `훈련장 ${2 + Math.min(4, k)}칸`];   // 도전자 수·꾸미기·의상은 등급 차등 없음 (경완 2026-10-28)
     return `<li class="${i === gi ? 'cur' : i < gi ? 'done' : ''}">${gEmb(i)}<div><b>${n}</b><small>평판 ${v}</small>${i === gi ? '<em>지금</em>' : ''}</div><ul>${L.map(t => `<li>${t}</li>`).join('')}</ul></li>`; };
   pop(`<h4>등급별 혜택</h4><ol class="gy-perk">${GRADES.map(row).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }

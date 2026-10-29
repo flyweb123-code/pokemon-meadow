@@ -1245,10 +1245,10 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 /* 자격 배지 등급 (동·은·금·프리즘) */
 .bd-tiers{display:flex;justify-content:center;gap:4px;margin:6px 0 2px;font-size:11px}
 .bd-tiers span{padding:2px 5px;border-radius:9px;border:2px solid #20202a;font-weight:700;font-size:10px;white-space:nowrap}
-.bd-tiers{flex-wrap:wrap}.bd-tiers .t1{background:#eef0f4}.bd-tiers .t2{background:#9aa4b0}.bd-tiers .t3{background:#e8a878}.bd-tiers .t4{background:#dfe4ec}.bd-tiers .t5{background:#ffd860}.bd-tiers .t6{background:linear-gradient(90deg,#ffb0c8,#ffe890,#a8f0c0,#a8d8ff,#d0b0ff)}
+.bd-tiers{flex-wrap:wrap}.bd-tiers :is(.t1,.t4){background:#e8a878}.bd-tiers :is(.t2,.t5){background:#dfe4ec}.bd-tiers :is(.t3,.t6){background:#ffd860}.bd-tiers .t7{background:linear-gradient(90deg,#ffb0c8,#ffe890,#a8f0c0,#a8d8ff,#d0b0ff)}
 .qw-bs{color:#c0302a !important;font-weight:700}
 .if-sim{display:inline-block;margin-left:4px;padding:0 5px;border-radius:6px;background:#c0302a;color:#fff;font-size:10px;vertical-align:1px}
-.bd-get.t6 img{filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 12px #c8b0ff)}
+.bd-get.t7 img{filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 12px #c8b0ff)}
 /* 친밀도 기믹: 내 포켓몬 위로 떠오르는 하트 */
 .bt-hrt{position:absolute;left:50%;top:10%;z-index:4;font-style:normal;font-size:22px;color:#ff5a8a;text-shadow:0 0 0 #fff,1px 1px 0 #6a1030,-1px -1px 0 #fff;pointer-events:none;animation:btHrt 1.4s ease-out forwards}
 @keyframes btHrt{0%{opacity:0;transform:translate(-50%,10px) scale(.4)}25%{opacity:1;transform:translate(-50%,-6px) scale(1.2)}60%{transform:translate(-50%,-16px) scale(1)}100%{opacity:0;transform:translate(-50%,-30px) scale(1)}}
@@ -1268,15 +1268,14 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 /* 체육관 등급 배지 (10.89, 경완 2026-10-29 '배지를 중심으로 펼쳐지는 느낌'): 큰 배지가 가운데, 양쪽으로 이름판 날개가 배지 밑에서 펼쳐진다 */
 .gy-top .gy-plate{display:grid!important;grid-template-columns:minmax(0,1fr) 104px minmax(0,1fr);align-items:center;gap:0;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;width:100%!important}
 /* 날개 = 등급 색 리본 (경완 2026-10-29 '등급 상태 박스 퀄리티'): 바깥 끝은 제비꼬리, 이중 테두리, 아래 등급 색 띠 */
-.gy-plate{--g1:#eceef3;--g2:#a2a9b8;--g3:#4c5466}
-.gy-plate[data-g="1"]{--g1:#d4dae2;--g2:#6c7888;--g3:#2a3038}.gy-plate[data-g="2"]{--g1:#f8dcc2;--g2:#c07440;--g3:#6a3818}
-.gy-plate[data-g="3"]{--g1:#e6ecf6;--g2:#8e98ac;--g3:#3e475a}.gy-plate[data-g="4"]{--g1:#fff0b4;--g2:#e0a020;--g3:#7a4c08}
-.gy-plate[data-g="5"]{--g1:#efe6ff;--g2:#8478d0;--g3:#3e2f8a}
+.gy-plate,.gy-plate:is([data-g="0"],[data-g="3"]){--g1:#f8dcc2;--g2:#c07440;--g3:#6a3818}
+.gy-plate:is([data-g="1"],[data-g="4"]){--g1:#e6ecf6;--g2:#8e98ac;--g3:#3e475a}.gy-plate:is([data-g="2"],[data-g="5"]){--g1:#fff0b4;--g2:#e0a020;--g3:#7a4c08}
+.gy-plate[data-g="6"]{--g1:#efe6ff;--g2:#8478d0;--g3:#3e2f8a}
 .gy-plate .gy-wing{position:relative;z-index:1;isolation:isolate;min-width:0;height:60px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;gap:6px;background:none;border:0;filter:drop-shadow(0 3px 0 rgba(0,0,0,.4))}
 .gy-plate .gy-wing::before,.gy-plate .gy-wing::after{content:'';position:absolute;z-index:-1;clip-path:var(--cp)}
 .gy-plate .gy-wing::before{inset:0;background:var(--frame)}
 .gy-plate .gy-wing::after{inset:3px;background:linear-gradient(180deg,#fff 0,#fff 8%,var(--win) 9%,var(--win) 70%,var(--g1) 71%,var(--g1) 84%,var(--g2) 85%)}
-.gy-plate[data-g="5"] .gy-wing::after{background:linear-gradient(180deg,#fff 0,#fff 8%,var(--win) 9%,var(--win) 70%,var(--g1) 71%,var(--g1) 84%,transparent 85%),linear-gradient(90deg,#ff9ec4,#ffe27a,#9ef0b8,#9ed4ff,#c8a8ff)}
+.gy-plate[data-g="6"] .gy-wing::after{background:linear-gradient(180deg,#fff 0,#fff 8%,var(--win) 9%,var(--win) 70%,var(--g1) 71%,var(--g1) 84%,transparent 85%),linear-gradient(90deg,#ff9ec4,#ffe27a,#9ef0b8,#9ed4ff,#c8a8ff)}
 .gy-plate .gy-wing.l{--cp:polygon(0 0,100% 0,100% 100%,0 100%,13px 50%);margin-right:-36px;padding:0 44px 6px 20px;align-items:stretch}
 .gy-plate .gy-wing.r{--cp:polygon(0 0,100% 0,calc(100% - 13px) 50%,100% 100%,0 100%);margin-left:-36px;padding:0 20px 6px 44px;align-items:flex-end}
 .gy-plate .gy-bd{position:relative;z-index:2;justify-self:center;line-height:0;margin:-4px 0 -12px}
@@ -1294,3 +1293,17 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .rs-rep.gup .rr-bd{animation:rrBadge .8s cubic-bezier(.3,1.6,.5,1)}
 .if-bdg .if-bs{display:block;font-size:11px;color:var(--dim);margin-top:2px}
 .rs-stk{padding:1px 8px;border-radius:9px;background:#ffe27a;color:#8a4a00;font-weight:700;font-size:12px;border:2px solid #20202c}
+/* 홈 레이아웃 D (경완 2026-10-29): 꾸미기·창고는 박스 없이 타이틀 밑 양쪽, 가운데 아래는 큰 '도전자 받기' (누르면 도전자 명단) */
+#gym :is(.gy-deco.gy-deco.gy-deco,.gy-store.gy-sq.gy-sq){top:calc(var(--si-top,env(safe-area-inset-top)) + 80px)!important;bottom:auto!important;width:58px!important;height:auto!important;padding:2px 0!important;background:none!important;box-shadow:none!important;border:0!important;transform:none!important;gap:2px}
+#gym .gy-deco{left:calc(var(--si-left,env(safe-area-inset-left)) + 6px)!important}
+#gym .gy-store.gy-sq{left:auto!important;right:calc(var(--si-right,env(safe-area-inset-right)) + 6px)!important}
+#gym :is(.gy-deco,.gy-store.gy-sq) svg{width:32px!important;height:32px!important;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.45))!important}
+#gym :is(.gy-deco,.gy-store.gy-sq) .ga-l{font-size:11px;text-shadow:1px 0 0 #20202c,-1px 0 0 #20202c,0 1px 0 #20202c,0 -1px 0 #20202c,1px 1px 0 #20202c}
+#gym :is(.gy-deco,.gy-store.gy-sq):active{transform:translateY(2px)!important}
+#gym button.gy-qbtn.gy-qbtn{left:50%!important;right:auto!important;bottom:10px!important;transform:translateX(-50%);width:min(64%,260px)!important;height:58px!important;flex-direction:row!important;gap:8px!important;border:3px solid #20202c!important;border-radius:12px!important;background:linear-gradient(180deg,#fff2a0 0,#ffd84a 45%,#f0b030 100%)!important;box-shadow:inset 0 2px 0 rgba(255,255,255,.8),inset 0 -4px 0 rgba(150,90,0,.35),0 4px 0 #20202c!important}
+#gym button.gy-qbtn.gy-qbtn .ga-l{font-size:17px;color:#3a2400;text-shadow:0 1px 0 rgba(255,255,255,.7);letter-spacing:.5px}
+#gym button.gy-qbtn.gy-qbtn svg{width:22px!important;height:26px!important}
+#gym button.gy-qbtn.gy-qbtn:active{transform:translate(-50%,3px)!important;box-shadow:inset 0 2px 0 rgba(255,255,255,.8),inset 0 -2px 0 rgba(150,90,0,.35),0 1px 0 #20202c!important}
+#gym button.gy-qbtn.gy-qbtn .gy-qn{right:-8px;top:-10px}
+#gym .gy-qbtn.has{animation:qbob2 1.2s steps(2,end) infinite}@keyframes qbob2{50%{translate:0 -3px}}
+#gym .gy-simb{top:calc(var(--si-top,env(safe-area-inset-top)) + 140px)!important}
