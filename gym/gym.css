@@ -1677,3 +1677,7 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .ivb-lg{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 8px;margin-top:2px;font-size:9px;color:var(--dim,#70707c)}
 .ivb-lg span{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}.ivb-lg i{display:inline-block;width:8px;height:8px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
 .gy-pop .win:has(.mp-head) .iv-hex.bar .iv-bars{gap:2px}.ivb-lg{margin-top:1px}
+/* 막대 보기: 이름(스피드▲)이 두 줄로 꺾이지 않게, 범례가 상자 밖으로 나가지 않게 (경완 2026-10-29) */
+.ivb{grid-template-columns:auto 1fr auto!important;gap:6px!important;line-height:14px}.ivb span{white-space:nowrap;width:50px}.ivb em{min-width:48px;white-space:nowrap}
+.gy-pop .win:has(.mp-head) .iv-hex.bar{height:auto!important;min-height:130px}
+.ivb-lg{flex-wrap:nowrap;white-space:nowrap;gap:2px 6px}
