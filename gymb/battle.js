@@ -965,8 +965,7 @@ function boxWin(add, tmId, done, O) {   // O: 다른 곳에서 쓰는 고르기 
   const w = document.createElement('div'); w.className = 'gy-boxw';
   w.innerHTML = `<div class="win" role="dialog" aria-label="포켓몬 박스"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>${O ? O.title() : tmId ? `기술 가르치기 · ${esc(mvKo(tmId))}` : add ? `라인업 ${(S.gym.luI | 0) + 1}에 넣을 포켓몬 <small>${curLu().length}/6</small>` : '포켓몬 박스'}</h4></div>
         <div class="filters boxq"><span class="qw"><input type="search" placeholder="이름이나 번호" aria-label="포켓몬 이름이나 번호로 찾기" autocomplete="off" value="${esc(bxQ)}"><button type="button" class="qx" aria-label="검색어 지우기">✕</button></span></div>
-    <div class="mgr-tools"><div class="bag-sort bw-sort">${BX_SORT.map(([k, n]) => `<button data-sort="${k}">${n}</button>`).join('')}</div><p class="bw-tip">${GA.tyIcon(S.gym.ty)}<span>${O ? O.tip : `${TYPE_KO[S.gym.ty]} 타입 포켓몬만 보여요${tmId ? ' · 배울 수 있는 포켓몬만 고를 수 있어요' : ''}`}</span></p><span class="tcount"></span></div>
-    <div class="bw-tyf" role="group" aria-label="타입 필터"></div>
+    <div class="mgr-tools"><div class="bag-sort bw-sort">${BX_SORT.map(([k, n]) => `<button data-sort="${k}">${n}</button>`).join('')}</div><div class="bw-tyf" role="group" aria-label="타입 필터"></div><span class="tcount"></span></div>
     <div class="boxgrid bw-grid"></div></div>`;
   document.querySelector('#gym .gy-main').appendChild(w);
   const grid = w.querySelector('.bw-grid'), inp = w.querySelector('input');
@@ -979,7 +978,7 @@ function boxWin(add, tmId, done, O) {   // O: 다른 곳에서 쓰는 고르기 
     // 타입 필터: 목록에 있는 타입만 아이콘으로, 고르면 그 타입이 들어간 포켓몬만 (경완 2026-10-29)
     const gt = S.gym.ty, TY = [...new Set(all.flatMap(tys))].filter(t => t !== gt).sort((a, b) => a - b); if (bxTy && !TY.includes(bxTy)) bxTy = 0;   // 체육관 타입은 기본, 나머지 한 타입을 팝업에서 고르기 (경완 2026-10-29)
     bxTyAll = TY;
-    w.querySelector('.bw-tyf').innerHTML = TY.length ? `<button type="button" class="bw-tyb${bxTy ? ' on' : ''}" data-typop aria-label="타입 고르기">${tyI(gt)}${bxTy ? `<span>+</span>${tyI(bxTy)}<b>${TYPE_KO[gt]}·${TYPE_KO[bxTy]}</b>` : `<b>타입 고르기</b>`}<i>▾</i></button>` : '';
+    w.querySelector('.bw-tyf').innerHTML = TY.length ? `<button type="button" class="bw-tyb${bxTy ? ' on' : ''}" data-typop aria-label="타입 고르기">${bxTy ? `${tyI(bxTy)}<b>${TYPE_KO[bxTy]}</b>` : `<b>타입</b>`}</button>` : '';
     const L = all.filter(P => (!q || nmOf(P).toLowerCase().includes(q) || String(P.sp) === q.replace(/^0+/, '')) && (!bxTy || tys(P).includes(bxTy))).map(P => { const ok = O ? O.ok(P) : tyOk(P) && (!tmId || tmCan(P, tmId)); return { P, ok, f: O?.first ? +!!O.first(P) : 0, m: O || tyOk(P) ? gm(P) : null }; }).sort((a, b) => (b.ok - a.ok) || (b.f - a.f) || (key(b) - key(a)) * bxDir);
     w.querySelector('.tcount').innerHTML = q || bxTy ? `찾은 포켓몬 <b>${L.length}</b>마리` : `<b>${all.length}</b>마리`;   // 마릿수만 (경완 2026-10-29)
     grid.innerHTML = L.length ? L.map(({ P, m, ok }) => { const rk = GA.rankOf(P), on = lu.has(P.id);
@@ -992,7 +991,7 @@ function boxWin(add, tmId, done, O) {   // O: 다른 곳에서 쓰는 고르기 
     if (e.target.closest('[data-x]')) { sfx('tap'); w.remove(); if (tmId || O) done?.(); return; }
     if (e.target.closest('.qx')) { inp.value = ''; bxQ = ''; draw(); return; }
     if (e.target.closest('[data-typop]')) { sfx('tap'); const gt = S.gym.ty, cell = (t, on, lab) => `<button class="${on ? 'on' : ''}" data-a="${t}">${t ? tyI(t) : ''}<span>${lab}</span></button>`;
-      gymPop(`<h4>타입 고르기</h4><p class="bw-tyh">${tyI(gt)} ${TYPE_KO[gt]} 타입은 기본이에요. 같이 가진 타입을 하나 고르세요.</p><div class="bw-tyg">${cell(0, !bxTy, '전체')}${bxTyAll.map(t => cell(t, bxTy === t, TYPE_KO[t])).join('')}</div>`, (a, close) => { close(); bxTy = +a; draw(); grid.scrollTop = 0; }); return; }
+      gymPop(`<h4>타입 고르기</h4><p class="bw-tyh"><span>${tyI(gt)}${TYPE_KO[gt]} 타입은 기본이에요.</span><span>같이 가진 타입을 하나 고르세요.</span></p><div class="bw-tyg">${cell(0, !bxTy, '전체')}${bxTyAll.map(t => cell(t, bxTy === t, TYPE_KO[t])).join('')}</div>`, (a, close) => { close(); bxTy = +a; draw(); grid.scrollTop = 0; }); return; }
     const s = e.target.closest('[data-sort]'); if (s) { sfx('tap'); const k = s.dataset.sort; if (k === bxSort) bxDir = -bxDir; else { bxSort = k; bxDir = 1; } draw(); grid.scrollTop = 0; return; }
     const c = e.target.closest('.pk'); if (!c) return; sfx('tap');
     const id = +c.dataset.id || c.dataset.id;
