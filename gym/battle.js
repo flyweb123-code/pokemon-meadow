@@ -1078,17 +1078,18 @@ function mvInfo(id, teach, lab = '기술 가르치기', onX) {
 // 이 포켓몬이 이 기술머신을 배울 수 있나 (이미 아는 기술은 못 배움)
 const tmCan = (P, id) => (D.sp[P.sp]?.tm || []).some(i => D.mv[i]?.[0] === id) && !gm(P).mv.includes(id);
 // 기술머신 하나를 P 에게: 기술이 4개면 잊을 기술 고르기(또는 익혀 두기만)
-function teachTm(P, id, done) {
+function teachTm(P, id, done, slot) {   // slot: 기술 바꾸기에서 고른 칸이면 그 자리에 바로
   const g = S.gym, m = gm(P), x = mvOf(id); if (!x || !(g.tms?.[id] > 0)) return done?.();
   const use = k => { g.tms[id] = (g.tms[id] || 0) - 1; if (g.tms[id] <= 0) delete g.tms[id]; m.kn = (m.kn || []).filter(y => y !== id);
     if (k == null) { if (!m.kn.includes(id)) m.kn.push(id); } else if (k >= m.mv.length) m.mv.push(id); else { const old = m.mv[k]; m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); }
     GA.save(); se('DECIDE'); gymPop(`<p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} ${esc(x[1])}${jong(x[1]) ? '을' : '를'} ${k == null ? '익혀 두었다! (기술 바꾸기에서 쓸 수 있어요)' : '배웠다!'}</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => { c(); done?.(); }); };
+  if (slot != null) return use(Math.min(slot, m.mv.length));
   if (m.mv.length < 4) return use(m.mv.length);
   gymPop(`<h4>${esc(x[1])} 대신 잊을 기술</h4><p class="gy-msg">잊은 기술은 나중에 기술 바꾸기에서 다시 배울 수 있어요.</p><div class="mp-moves mp-line pick">${m.mv.map((y, k) => mvOf(y) ? mvRow(mvOf(y), 's' + k) : '').join('')}</div>
     <div class="gy-btns"><button data-a="keep">익혀 두기만</button><button data-a="x">그만두기</button></div>`, (b, c2) => { c2(); if (b === 'x') return done?.(); use(b === 'keep' ? null : +b.slice(1)); });
 }
 // 기술 가르치기 (경완 2026-10-29): 창고 기술머신 탭과 같은 화면. 가르칠 수 있는 것 먼저, 못 가르치는 건 회색
-function tmPop(P, done) {
+function tmPop(P, done, slot) {
   const g = S.gym; g.tms = g.tms || {};
   const L = Object.entries(g.tms).filter(([, n]) => n > 0).map(([id, n]) => [mvOf(id), n, id]).filter(([x]) => x).map(r => [...r, tmCan(P, r[2])]).sort((a, b) => (b[3] - a[3]) || ((b[0][4] || 0) - (a[0][4] || 0)));
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew tm-teach';
@@ -1097,7 +1098,7 @@ function tmPop(P, done) {
   document.querySelector('#gym .gy-main').appendChild(el); fillTh(el);   // 하단 메뉴는 그대로 (경완 2026-10-29)
   el.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap');
     if (b.dataset.a === 'x') { el.remove(); return done?.(); }
-    const id = b.dataset.tm; if (id) mvInfo(id, () => { el.remove(); teachTm(P, id, done); }); };
+    const id = b.dataset.tm; if (id) mvInfo(id, () => { el.remove(); teachTm(P, id, done, slot); }); };
 }
 const tmRow = (x, n, id, off, note) => `<button type="button" class="sp-tm${off ? ' off' : ''}" data-tm="${id}" ${off ? 'disabled' : ''}><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png"><span class="tm-nm"><b>${esc(x[1])}</b><i class="tm-own">×${n}</i></span><span class="tm-meta">${tyTag(x[2], x[3])}<small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}${note ? ` · ${note}` : ''}</small></span></button>`;
 // ---------- 지니는 도구 (경완 2026-10-29): 본가처럼 포켓몬에게 하나씩. 일회용(상처약·열매 등)은 없고 계속 효과 있는 것만. 그림은 PokeAPI/sprites items
@@ -1209,10 +1210,11 @@ function movesPop(P, done) {
     if (drag) return;
     close(); if (a === 'x') return done?.();
     const k = +a.slice(1), old = m.mv[k];
-    if (!C.length) { gymPop(`<h4>기술 바꾸기</h4><p class="gy-msg">지금 배울 수 있는 다른 기술이 없어요. 레벨을 올리거나 기술머신·훈련장에서 익혀 보세요.</p><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b, c2) => { c2(); movesPop(P, done); }); return; }
+    if (!C.length) { gymPop(`<h4>기술 바꾸기</h4><p class="gy-msg">지금 배울 수 있는 다른 기술이 없어요. 레벨을 올리거나 기술머신·훈련장에서 익혀 보세요.</p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="tm">기술 가르치기</button></div>`, (b, c2) => { c2(); if (b === 'tm') return tmPop(P, () => movesPop(P, done), k); movesPop(P, done); }); return; }
     // 배울 기술을 누르면 바로 바뀌지 않고 상세 창 → '바꾸기' (경완 2026-10-29)
-    const learn = () => gymPop(`<h4>${old ? `${esc(mvKo(old))} 대신` : '새로'} 배울 기술</h4><div class="mp-moves mp-line pick mv-learn">${C.map(id => mvRow(mvOf(id), 'n' + id)).join('')}</div><div class="gy-btns one"><button data-a="x">뒤로</button></div>`, (b, c2) => {
-      c2(); if (b === 'x') return movesPop(P, done); const id = b.slice(1);
+    const learn = () => gymPop(`<h4>${old ? `${esc(mvKo(old))} 대신` : '새로'} 배울 기술</h4><div class="mp-moves mp-line pick mv-learn">${C.map(id => mvRow(mvOf(id), 'n' + id)).join('')}</div><div class="gy-btns"><button data-a="x">뒤로</button><button class="main" data-a="tm">기술 가르치기</button></div>`, (b, c2) => {
+      c2(); if (b === 'x') return movesPop(P, done);
+      if (b === 'tm') return tmPop(P, () => movesPop(P, done), k);   // 기술머신으로 이 칸에 가르치기 (경완 2026-10-29) const id = b.slice(1);
       mvInfo(id, () => { m.kn = (m.kn || []).filter(x => x !== id); if (old) { m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); } else m.mv.push(id); GA.save(); se('DECIDE'); movesPop(P, done); }, old ? '바꾸기' : '배우기', learn); });
     learn();
   });
