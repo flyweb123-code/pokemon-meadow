@@ -465,7 +465,7 @@ const DIFF_KO = ['쉬움', '보통', '어려움'];
 // g.gmax = 심사를 통과한 가장 높은 등급 (그 아래로 떨어졌다 다시 오를 땐 심사 없음), g.bdl[타입] = 그 타입으로 올라 본 가장 높은 등급 + 1 (= 배지 그림 번호, 0 = 아직)
 const BD_MID = [35, 70, 135, 170, 235, 270, 340, 380, 420, 460];   // 평판이 이 자리를 지날 때마다 이름 있는 트레이너가 한 번 온다
 const bdLv = (g, t) => (g.bdl || {})[t] | 0;
-const bdImg = (t, L) => `${IMG}badge/${Math.max(1, L)}/${t}.png?v=10`;
+const bdImg = (t, L) => `${IMG}badge/${Math.max(1, L)}/${t}.png?v=11`;
 // 배지 그림 + 빛 지나가기(모든 등급 같게) + 반짝이(동까지 0 · 은 1 · 금 2 · 프리즘 4, 경완 2026-10-29 '갈수록 반짝이는 느낌')
 const BD_TW = [0, 0, 0, 0, 0, 1, 2, 4];
 const bdHtml = (t, L, cls = '') => { const u = bdImg(t, L); return `<span class="bdw t${L}${cls ? ' ' + cls : ''}" style="--m:url('${u}')"><img alt="" src="${u}">${L ? '<i class="bd-sw"></i>' + '<i class="bd-tw"></i>'.repeat(BD_TW[L] || 0) : ''}</span>`; };
