@@ -780,9 +780,12 @@ const MFX_ADD = {
 };
 function mfxAdd() { for (const [k, L] of Object.entries(MFX_ADD)) { const v = MFX[k]; if (!v) continue;
   (Array.isArray(v[0]) ? v : [v]).forEach(A => { if (A.added) return; A.added = 1; A[1].push(...L); A[0] = Math.max(A[0], ...L.map(e => e[1] + (e[0] === 'k' ? (e[5] + 1) * e[6] * 2 : e[0] === 'e' ? e[3] : e[0] === 'z' ? e[5] : e[0] === 'f' ? e[5] : e[5] || 4))); }); } }
+const MV_LIKE = { poweruppunch: 'megapunch', jetpunch: 'machpunch', ragefist: 'shadowpunch', plasmafists: 'thunderpunch' };
 async function moveFx(s, id, miss) {
   const m = mvOf(id); if (!m || miss) return; const ty = m[2], cat = m[3], col = TY_FX[ty] || '#fff';
   let A = MFX[id]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1];
+  // 5세대 이후 주먹 기술은 비슷한 4세대 주먹 연출로 (경완 2026-10-29 '그로우펀치가 당수 모션')
+  if (!A && MV_LIKE[id]) { A = MFX[MV_LIKE[id]]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1]; }
   // 5세대 이후 기술: 같은 타입·분류의 4세대 기술 연출을 빌린다
   if (!A) { const r = MV_REP[ty]?.[cat]; A = r && MFX[r]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1]; }
   if (!A) {   // 그래도 없으면 분류에 따라 간단히
