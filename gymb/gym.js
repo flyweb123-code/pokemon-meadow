@@ -459,7 +459,7 @@ const DIFF_KO = ['쉬움', '보통', '어려움'];
 const BD_AT = [100, 200, 300, 500], BD_KO = ['동', '은', '금', '프리즘'];
 const BD_MID = [35, 70, 135, 170, 235, 270, 340, 380, 420, 460];   // 중간중간 이름 있는 트레이너가 오는 자리
 const bdLv = (g, t) => (g.bdl || {})[t] | 0;
-const bdImg = (t, L) => `${IMG}badge/${Math.max(1, L)}/${t}.png?v=6`;
+const bdImg = (t, L) => `${IMG}badge/${Math.max(1, L)}/${t}.png?v=7`;
 // 배지 그림 + 빛 지나가기(모든 등급 같게) + 반짝이(동 0 · 은 1 · 금 2 · 프리즘 4, 경완 2026-10-29 '갈수록 반짝이는 느낌')
 const bdHtml = (t, L, cls = '') => { const u = bdImg(t, L); return `<span class="bdw t${L}${cls ? ' ' + cls : ''}" style="--m:url('${u}')"><img alt="" src="${u}">${L ? '<i class="bd-sw"></i>' + '<i class="bd-tw"></i>'.repeat([0, 0, 1, 2, 4][L]) : ''}</span>`; };
 const bdPh = bk => Math.min(1, (bk || 0) / 500);   // 500명까지 갈수록 어려워짐 (0~1)
