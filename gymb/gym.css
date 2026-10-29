@@ -1265,3 +1265,7 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .gy-boxw .mgr-tools .bw-tip .tyi{width:16px;height:16px;flex:none}
 /* + 박스 화면은 모션 없이 바로 (경완 2026-10-29) */
 .gy-boxw>.win{animation:none!important}
+/* 훈련 현황 새 화면 (경완 2026-10-29) */
+.ts-win>.win{animation:none!important}.ts-win .bw-hd h4 small{font-size:12px;color:var(--dim);font-weight:400;margin-left:4px}
+.ts-win .ts-list{flex:1;min-height:0;max-height:none;margin:8px 0 0;padding-bottom:10px}.ts-win .gy-msg{margin:24px 0;text-align:center}
+.ty-st svg{width:28px;height:28px}
