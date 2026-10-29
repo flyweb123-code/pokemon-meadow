@@ -136,9 +136,9 @@ function mapSrc(D) { const u = `${IMG}map/${D.id}.png${D.iv ? `?v=${D.iv}` : ""}
       res(c.toDataURL()); }; im.src = u; })); }
 
 // ---------- 평판·등급 ----------
-const REP_MAX = 500;
+const REP_MAX = 1250;   // 11.58: 평판 숫자 2.5배 (경완 2026-10-29 '잘하면 30일 정도에 다 채우게')
 // 평판 ≈ 막은 도전자 수 (경완 2026-10-29). 등급마다 배지 그림: 동 테 · 은 테 · 금 테 · 동 월계수 · 은 · 금 · 프리즘
-const GRADES = [[0, '새내기 체육관'], [30, '동네 체육관'], [60, '떠오르는 체육관'], [100, '이름난 체육관'], [200, '인기 체육관'], [300, '명문 체육관'], [500, '전설의 체육관']];
+const GRADES = [[0, '새내기 체육관'], [75, '동네 체육관'], [150, '떠오르는 체육관'], [250, '이름난 체육관'], [500, '인기 체육관'], [750, '명문 체육관'], [1250, '전설의 체육관']];
 // 체육관 크기·트레이너·훈련장 단계 (6단계 그대로): 떠오르는 체육관은 동네와 같은 단계
 const STAGE = [0, 1, 1, 2, 3, 4, 5], STAGES = 7;   // STAGE = 트레이너·훈련장 단계. 체육관 크기는 등급마다 한 단계씩 7단계 (경완 2026-10-29 '체육관 크기 7단계')
 const GRADES_OLD = [0, 100, 250, 450, 700, 1000];   // 10.87 까지의 평판 문턱 (예전 저장 옮기기)
@@ -492,7 +492,7 @@ const rewOf = c => { const R = REW(c.diff); return c.boss ? { ...R, g: R.g * (1 
 const DIFF_KO = ['쉬움', '보통', '어려움'];
 // 체육관 등급 배지 (경완 2026-10-29 '배지 개념을 체육관 등급이랑 통합'): 다음 등급 문턱 바로 앞에서 '승급 심사' 보스를 이겨야 올라간다.
 // g.gmax = 심사를 통과한 가장 높은 등급 (그 아래로 떨어졌다 다시 오를 땐 심사 없음), g.bdl[타입] = 그 타입으로 올라 본 가장 높은 등급 + 1 (= 배지 그림 번호, 0 = 아직)
-const BD_MID = [35, 70, 135, 170, 235, 270, 340, 380, 420, 460];   // 평판이 이 자리를 지날 때마다 이름 있는 트레이너가 한 번 온다
+const BD_MID = [88, 175, 338, 425, 588, 675, 850, 950, 1050, 1150];   // 평판이 이 자리를 지날 때마다 이름 있는 트레이너가 한 번 온다
 const bdLv = (g, t) => Math.max((g.bdl || {})[t] | 0, gList().some(x => x.ty === t) ? 1 : 0);   // 등급 1 배지는 체육관을 열자마자 (경완 2026-10-29)
 const bdImg = (t, L) => `${IMG}badge/${Math.max(1, L)}/${t}.png?v=11`;
 // 배지 그림 + 빛 지나가기(모든 등급 같게) + 반짝이(동까지 0 · 은 1 · 금 2 · 프리즘 4, 경완 2026-10-29 '갈수록 반짝이는 느낌')
@@ -509,13 +509,14 @@ function gInit() {
   const g = st(); if (!g) return null;
   for (const [k, v] of Object.entries({ sch: [], q: [], log: [], w: 0, l: 0, blk: 0, bk: {}, bdg: {}, nt: {}, sf: [], cid: 0, bdl: {}, ms: {}, bsN: {}, gmax: 0 })) if (g[k] == null) g[k] = v;
   for (const t of Object.keys(g.bdg)) if (!g.bdl[t]) g.bdl[t] = 1;   // 예전 배지(100명) = 동
-  if (g.rv !== 3) {   // 10.90: 평판 문턱을 막은 도전자 수에 맞춰 줄이고(예전 등급 → 새 등급 0·1·3·4·5·6), 타입 배지(동~프리즘 1~4)를 등급 배지 번호(4~7)로
+  if ((g.rv | 0) < 3) {   // 10.90: 평판 문턱을 막은 도전자 수에 맞춰 줄이고(예전 등급 → 새 등급 0·1·3·4·5·6), 타입 배지(동~프리즘 1~4)를 등급 배지 번호(4~7)로
     const NEW = [0, 30, 100, 200, 300, 500], r = g.rep || 0, i = GRADES_OLD.findLastIndex(v => r >= v), lo = GRADES_OLD[i], hi = GRADES_OLD[i + 1];
     g.rep = hi ? Math.round(NEW[i] + (r - lo) / (hi - lo) * (NEW[i + 1] - NEW[i])) : REP_MAX;
     g.gmax = gradeOf(g.rep).i; for (const t of Object.keys(g.bdl)) if (g.bdl[t]) g.bdl[t] += 3;
     if (g.ty && g.gmax) { g.bdl[g.ty] = Math.max(bdLv(g, g.ty), g.gmax + 1); g.bdg[g.ty] = g.bdg[g.ty] || Date.now(); }
     g.q = g.q.filter(c => !c.boss); g.bsN = {}; g.ms = {}; g.rv = 3;
   }
+  if (g.rv === 3) { g.rep = Math.round((g.rep || 0) * 2.5); g.ms = {}; g.rv = 4; }   // 11.58: 평판 문턱 2.5배에 맞춰 옮김
   // 칸토 디자인에서 플라티나 체육관으로: 같은 분위기 맵으로 옮기고, 직접 놓은 장식 자리는 새로 잡는다
   if (g.d && !DESIGNS.some(d => d.id === g.d)) g.d = dzBase(g.d).id;   // 맵 묶음이 바뀌면 짝 맵으로 (자리는 맵 id 로 저장돼 있어 그대로 둔다)
   if (g.d && g.big == null) g.big = gradeOf(g.rep || 0).i;   // 지금 크기에서부터 직접 넓히기
@@ -571,7 +572,7 @@ function refit(c, my) {
 function mkChal(t) {
   const g = st(), G = gradeOf(g.rep || 0), avg = myAvg();
   const rep = g.rep || 0, L = clampN((g.gmax | 0) - 2, 0, 3), f = bdPh(rep), nx = GRADES[(g.gmax | 0) + 1];
-  // 다음 등급 문턱 바로 앞(평판 49·99·199·299·499): 승급 심사 보스. 지면 몇 시간 뒤 다시 온다
+  // 다음 등급 문턱 바로 앞(평판 74·149·249·499·749·1249): 승급 심사 보스. 지면 몇 시간 뒤 다시 온다
   if (nx && rep >= nx[0] - 1 && !g.q.some(c => c.boss) && t >= (g.bsN.r || 0)) { const b = mkBoss((g.gmax | 0) + 1, t); if (b) return b; }
   // 중간 이름 있는 트레이너 (자리마다 한 번)
   const ms = g.ms.r || (g.ms.r = []), mid = BD_MID.find(a => rep >= a && a < (nx ? nx[0] : 1e9) && !ms.includes(a));
@@ -661,7 +662,7 @@ function arrive(c) {
     const { s, lost } = staffFight(c); beat = lost.length;
     if (s) {
       const R = REW(c.diff), r0 = g.rep || 0;
-      const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? 1.5 : 1))); g.stk = (g.stk | 0) + 1; addRep(Math.max(1, Math.round(R.r * (s.trait === 'star' ? 1.5 : 1))) + stkBonus(g.stk)); const rep = (g.rep || 0) - r0;
+      const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? 1.5 : 1))); g.stk = (g.stk | 0) + 1; addRep(Math.max(1, Math.round(R.r * (s.trait === 'star' ? 1.5 : 1))));   // 트레이너가 막으면 연승은 이어 주지만 연승 보너스는 관장이 직접 이길 때만 const rep = (g.rep || 0) - r0;
       blocked(c);
       glog('sf', `${sfName(s)}${jong(s.nm) ? '이' : '가'} ${cn}${jong(c.nm) ? '을' : '를'} 막아 냈다! <small>+${gold}G · 평판 +${rep}</small>`, c.t); return;
     }
@@ -764,7 +765,8 @@ async function challenge() {
     while (await luPick() == null);
     const my = luNow();
     refit(c, my);
-    const team = c.team.map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv); if (mv && mv.length) o.mv = mv; if (c.boss) o.iv = o.iv.map(() => 31); else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); return o; });
+    // 어려운 도전자·이름 있는 트레이너는 실전 기술 배치 (경완 2026-10-29)
+    const team = c.team.map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss || c.named ? 2 : c.diff ? 1 : 0); if (mv && mv.length) o.mv = mv; if (c.boss) o.iv = o.iv.map(() => 31); else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); return o; });
     // 배틀이 끝나면 배틀 화면에서 상대가 한마디 (경완 2026-10-28)
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : pick(WIN_LINES), lose: N ? N.ln[2].replace('{me}', me) : pick(LOSE_LINES) };
     document.body.classList.add('gymBattle');
@@ -1167,7 +1169,7 @@ function simPop() {
     close(); if (a === 'x') return; const now = Date.now();
     if (a === 'cand1' || a === 'cand3') { for (let i = a === 'cand1' ? 1 : 3; i--;) g.cands.push(mkCand(now)); g.candSeen = 0; save(); menuDot(); return say(`지원자가 왔어요! (지원서 ${g.cands.length}장)`, '트레이너 메뉴 › 지원서'); }
     if (a === 'chal' || a === 'named') { let c = mkChal(now); if (a === 'named') { for (let i = 0; i < 30 && !c.named; i++) c = mkChal(now); } arrive(c); save(); homeSay(); return qDing(); }
-    if (a === 'rep+' || a === 'rep-') { g.rep = clampN((g.rep || 0) + (a === 'rep+' ? 50 : -50), 0, REP_MAX); g.gmax = Math.max(g.gmax | 0, gradeOf(g.rep).i); save(); renderTop(); return say(`평판 ${g.rep} (${gradeOf(g.rep).n})`); }
+    if (a === 'rep+' || a === 'rep-') { g.rep = clampN((g.rep || 0) + (a === 'rep+' ? 125 : -125), 0, REP_MAX); g.gmax = Math.max(g.gmax | 0, gradeOf(g.rep).i); save(); renderTop(); return say(`평판 ${g.rep} (${gradeOf(g.rep).n})`); }
     if (a === 'gold') { S.gold += 100000; save(); renderGoldG(); return say(`골드 ${S.gold.toLocaleString()}G`); }
     if (a === 'rpt') { g.rpt = g.rpt || { w: 3, l: 1, b: 12, g: 4200, rank: 7, seen: 0 }; return reportPop(true); }
     if (a === 'bdg') return badgeGet(g.ty);
