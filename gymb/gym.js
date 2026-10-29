@@ -1081,7 +1081,8 @@ function mgPop() {
 function perkPop() {
   const g = st(), gi = gradeOf(g.rep || 0).i;
   const row = ([v, n], i) => { const k = STAGE[i];
-    const L = [`체육관 크기 ${i + 1}단계`, SF_MAX[i] ? `트레이너 ${SF_MAX[i]}명 고용` : '트레이너 고용 잠김', i ? `훈련장 ${Math.min(6, i)}칸` : '훈련장 잠김'];   // 훈련장은 등급마다 한 칸 (경완 2026-10-29)   // 도전자 수·꾸미기·의상은 등급 차등 없음 (경완 2026-10-28)
+    const L = [`체육관 크기 ${i + 1}단계`, SF_MAX[i] ? `트레이너 ${SF_MAX[i]}명 고용` : '트레이너 고용 잠김', i ? `훈련장 ${Math.min(6, i)}칸` : '훈련장 잠김'];
+    if (i === GRADES.length - 1) L.splice(0, 3, '체육관 타입 전설 포켓몬이 나오는 전설의 알 지급');   // 전설 등급은 이것만 (경완 2026-10-29)   // 훈련장은 등급마다 한 칸 (경완 2026-10-29)   // 도전자 수·꾸미기·의상은 등급 차등 없음 (경완 2026-10-28)
     return `<li class="${i === gi ? 'cur' : i < gi ? 'done' : ''}">${i > gi ? `<span class="bdw sil"><img alt="" src="${bdImg(g.ty, i + 1)}"></span>` : gEmb(i)}<div><b>${n}</b><small>평판 ${v}</small>${i === gi ? '<em>지금</em>' : ''}</div><ul>${L.map(t => `<li>${t}</li>`).join('')}</ul></li>`; };
   pop(`<h4>체육관 등급</h4><ol class="gy-perk">${GRADES.map(row).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }
