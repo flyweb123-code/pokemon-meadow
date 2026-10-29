@@ -75,6 +75,32 @@ function pickMoves(sp, lv, r) {
   if (!take.some(atk)) take[0] = MVI.get('tackle');
   return take.map(i => D.mv[i][0]);
 }
+// 실전 기술 배치 (경완 2026-10-29 '난이도가 레벨뿐 아니라 실전 기술 배치·운용까지'): tier 1 = 레벨업 기술 중 자속·견제·변화기 하나, tier 2 = 기술머신·알 기술까지 넣고 능력치 올리기·선공기도
+const MV_BAD = new Set('hyperbeam gigaimpact blastburn hydrocannon frenzyplant rockwrecker roaroftime selfdestruct explosion memento finalgambit healingwish lunardance focuspunch dreameater lastresort synchronoise futuresight doomdesire skullbash skyattack razorwind solarbeam solarblade meteorbeam belch steelbeam mindblown naturalgift fling snore spitup present magnitude return frustration trumpcard spitup beatup counter mirrorcoat metalburst bide endeavor painsplit perishsong destinybond grudge'.split(' '));
+const MV_FIX = { seismictoss: 70, nightshade: 70, superfang: 60, dragonrage: 40, sonicboom: 20 };
+const MV_SETUP = { swordsdance: 0, dragondance: 0, bulkup: 0, howl: 0, honeclaws: 0, shiftgear: 0, coil: 0, nastyplot: 1, calmmind: 1, quiverdance: 1, tailglow: 1, geomancy: 1, workup: -1, growth: 1 };
+const MV_STAT = { thunderwave: 3, willowisp: 3, toxic: 3, spore: 5, sleeppowder: 4, hypnosis: 2, yawn: 2, glare: 3, stunspore: 2, stealthrock: 2, leechseed: 2, recover: 3, roost: 3, softboiled: 3, slackoff: 3, synthesis: 2, moonlight: 2, morningsun: 2, milkdrink: 3, shoreup: 3, substitute: 1, reflect: 1, lightscreen: 1, taunt: 1, encore: 1, trickroom: 0 };
+const MV_2T = new Set('dig fly bounce dive phantomforce shadowforce skydrop solarbeam'.split(' '));   // 두 턴 기술
+const MV_PRIO = new Set('extremespeed aquajet machpunch bulletpunch iceshard shadowsneak suckerpunch quickattack vacuumwave accelerock jetpunch firstimpression'.split(' '));
+function smartMoves(sp, lv, tier, r) {
+  const o = D.sp[sp]; if (!o) return pickMoves(sp, lv, r);
+  const bs = SPECIES[sp]?.bs || [60, 60, 60, 60, 60, 60], phys = bs[1] >= bs[3], tys = SPECIES[sp]?.t || [];
+  let ids = lvMoves(sp, lv).map(([l, i]) => i); if (tier >= 2) ids = ids.concat(o.tm || [], o.ex || []);
+  ids = [...new Set(ids)].filter(i => D.mv[i] && !MV_BAD.has(D.mv[i][0]));
+  const pw = i => { const m = D.mv[i]; if (m[3] === 2) return 0; const fx = MV_FIX[m[0]], bp = fx || m[4] || 0; if (!bp) return 0; return bp * ((m[5] || 100) / 100) ** 1.5 * (!fx && tys.includes(m[2]) ? 1.5 : 1) * (fx || (m[3] === 0) === phys ? 1 : .55) * (m[7] > 0 ? .8 : 1) * (MV_2T.has(m[0]) ? .7 : 1) * (.9 + r() * .2); };
+  const atk = ids.filter(i => pw(i) > 0).map(i => [i, pw(i)]).sort((a, b) => b[1] - a[1]), take = [], tyIn = new Set();
+  const add = i => { if (i != null && !take.includes(i) && take.length < 4) { take.push(i); tyIn.add(D.mv[i][2]); } };
+  for (const t of tys) add(atk.find(([i]) => D.mv[i][2] === t)?.[0]);   // 자속 하나씩
+  const nAtk = tier >= 2 ? 3 : 3;
+  for (const [i] of atk) { if (take.length >= nAtk) break; if (!tyIn.has(D.mv[i][2])) add(i); }   // 다른 타입 견제기
+  if (tier >= 2) { const pr = atk.find(([i]) => MV_PRIO.has(D.mv[i][0]) && (D.mv[i][3] === 0) === phys); if (pr && r() < .6 && take.length < 4) add(pr[0]); }
+  const st = ids.filter(i => D.mv[i][3] === 2).map(i => { const k = D.mv[i][0]; let v = MV_STAT[k] ?? -1; if (k in MV_SETUP) v = MV_SETUP[k] < 0 ? 2 : (MV_SETUP[k] === 1) === !phys ? 4 + tier : -1; return [i, v + r()]; }).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]);
+  if (st.length && take.length < 4) add(st[0][0]);
+  if (tier >= 2 && st.length > 1 && take.length < 4 && r() < .5) add(st[1][0]);
+  for (const [i] of atk) add(i);   // 남은 칸은 센 기술로
+  if (!take.length) return pickMoves(sp, lv, r);
+  return take.map(i => D.mv[i][0]);
+}
 // 체육관 개체 정보: 처음 볼 때 만든다
 function gm(P) {
   const g = S.gym; g.mon = g.mon || {};
@@ -435,10 +461,10 @@ function psSet(o) {
 }
 function myEntry(P) { const m = gm(P); return { pid: P.id, sp: P.sp, nm: nmOf(P), lv: m.lv, mv: m.mv, ab: m.ab, nat: m.nat, it: m.it, iv: P.iv, fr: P.fr || 0, g: P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '', shiny: !!P.shiny }; }
 // 상대 포켓몬: 그 레벨에 배우는 기술 중 무작위 4개
-function foeEntry(sp, lv) {
+function foeEntry(sp, lv, tier = 0) {
   const r = Math.random, ab = D.sp[sp]?.ab || ['noability'], nats = NATS(), g = SPECIES[sp]?.g;
   const sex = /수컷만|♂만/.test(g || '') ? 'M' : /암컷만|♀만/.test(g || '') ? 'F' : Math.random() < .5 ? 'M' : 'F';
-  return { sp, nm: SPECIES[sp]?.n || String(sp), lv, mv: pickMoves(sp, lv, r), ab: Math.random() < HA_RATE && D.sp[sp]?.h ? D.sp[sp].h : abNorm(sp)[Math.floor(r() * Math.min(2, abNorm(sp).length))], nat: pick(nats), iv: Array.from({ length: 6 }, () => Math.floor(rnd(8, 26))), g: sex, shiny: Math.random() < 1 / 4096 };
+  return { sp, nm: SPECIES[sp]?.n || String(sp), lv, mv: tier ? smartMoves(sp, lv, tier, r) : pickMoves(sp, lv, r), ab: Math.random() < HA_RATE && D.sp[sp]?.h ? D.sp[sp].h : abNorm(sp)[Math.floor(r() * Math.min(2, abNorm(sp).length))], nat: pick(nats), iv: Array.from({ length: 6 }, () => Math.floor(rnd(8, 26))), g: sex, shiny: Math.random() < 1 / 4096 };
 }
 
 // ---------- AI (난이도: 0 쉬움 1 보통 2 어려움) ----------
@@ -446,25 +472,51 @@ function aiChoice(btl, diff) {
   const side = btl.p2, req = side.activeRequest; if (!req || req.wait) return null;
   const foe = btl.p1.active[0], me = side.active[0];
   const score = (mon, mid) => { const m = btl.dex.moves.get(mid); if (!foe || foe.fainted) return 1; if (m.category === 'Status') return diff ? 18 + Math.random() * 14 : 20;
-    if (!btl.dex.getImmunity(m.type, foe)) return 0; const eff = 2 ** btl.dex.getEffectiveness(m.type, foe); const stab = mon.getTypes().includes(m.type) ? 1.5 : 1;
+    if (!btl.dex.getImmunity(m.type, foe)) return 0; const eff = 2 ** btl.dex.getEffectiveness(m.type, foe); const stab = (mon.types || mon.species?.types || []).includes(m.type) ? 1.5 : 1;
     return (m.basePower || 40) * eff * stab * ((m.accuracy === true ? 100 : m.accuracy) / 100); };
-  if (req.forceSwitch) {
-    const opts = req.side.pokemon.map((p, i) => ({ p, i, mon: side.pokemon[i] })).filter(o => !o.p.active && !/fnt/.test(o.p.condition));
-    if (!opts.length) return 'pass';
-    if (diff === 0) return 'switch ' + (pick(opts).i + 1);
-    const best = opts.map(o => ({ o, s: Math.max(...o.mon.moveSlots.map(ms => score(o.mon, ms.id))) })).sort((a, b) => b.s - a.s)[0];
-    return 'switch ' + (best.o.i + 1);
+  const bench = () => req.side.pokemon.map((p, i) => ({ p, i, mon: side.pokemon[i] })).filter(o => !o.p.active && !/fnt/.test(o.p.condition));
+  // 쉬움: 예전 그대로 (거의 아무 기술)
+  if (diff === 0) {
+    if (req.forceSwitch) { const o = bench(); return o.length ? 'switch ' + (pick(o).i + 1) : 'pass'; }
+    const mv = req.active[0].moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0); if (!mv.length) return 'move 1';
+    if (Math.random() < .7) return 'move ' + (pick(mv).i + 1);
+    return 'move ' + (mv.map(o => ({ o, s: score(me, o.m.id) * rnd(.85, 1.15) })).sort((a, b) => b.s - a.s)[0].o.i + 1);
   }
+  // 보통·어려움: 실제 데미지를 어림해서 운용 (경완 2026-10-29 '실전 운용까지 AI'): 마무리·선공기·능력치 올리기·상태이상·회복·교체
+  // 쇼다운 getStat·hasType 은 이벤트를 돌려서 배틀 밖에서 부르면 스택이 넘친다 → 저장된 능력치·종족 타입으로 직접 계산
+  const st = (p, k) => { const b = p.boosts?.[k] || 0; let v = (p.storedStats?.[k] || 100) * (b >= 0 ? (2 + b) / 2 : 2 / (2 - b)); if (k === 'spe' && p.status === 'par') v /= 2; if (k === 'atk' && p.status === 'brn') v /= 2; return v; };
+  const hasT = (p, t) => (p.types || p.species?.types || []).includes(t);
+  const dmg = (a, d, mid) => { if (!a || !d || d.fainted) return 0; const m = btl.dex.moves.get(mid); if (m.category === 'Status') return 0;
+    if (!btl.dex.getImmunity(m.type, d)) return 0; if (m.damage === 'level') return a.level; if (typeof m.damage === 'number') return m.damage;
+    const bp = m.basePower || 0; if (!bp) return 0; const ph = m.category === 'Physical', A = st(a, ph ? 'atk' : 'spa'), Df = Math.max(1, st(d, ph ? 'def' : 'spd'));
+    const base = Math.floor(Math.floor(Math.floor(2 * a.level / 5 + 2) * bp * A / Df) / 50) + 2;
+    return base * (hasT(a, m.type) ? 1.5 : 1) * 2 ** btl.dex.getEffectiveness(m.type, d) * .925 * ((m.accuracy === true ? 100 : m.accuracy) / 100); };
+  const best = (a, d) => Math.max(0, ...(a?.moveSlots || []).filter(x => x.pp > 0).map(x => dmg(a, d, x.id)));
+  const fast = (a, d) => st(a, 'spe') >= st(d, 'spe');
+  // 들어갈 포켓몬 고르기: 내가 주는 피해 비율 − 받는 피해 비율이 가장 좋은 쪽
+  const matchup = mon => !foe || foe.fainted ? 0 : Math.min(1.2, best(mon, foe) / Math.max(1, foe.hp)) - Math.min(1.2, best(foe, mon) / Math.max(1, mon.hp)) * .9;
+  if (req.forceSwitch) { const o = bench(); if (!o.length) return 'pass'; return 'switch ' + (o.map(x => ({ x, s: matchup(x.mon) + Math.random() * .1 })).sort((a, b) => b.s - a.s)[0].x.i + 1); }
   const mv = req.active[0].moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0);
   if (!mv.length) return 'move 1';
-  if (diff === 0 && Math.random() < .7) return 'move ' + (pick(mv).i + 1);
-  const sc = mv.map(o => ({ o, s: score(me, o.m.id) * rnd(.85, 1.15) })).sort((a, b) => b.s - a.s);
-  if (diff === 1 && Math.random() < .25) return 'move ' + (pick(mv).i + 1);
-  // 어려움: 상성이 아주 나쁘면 가끔 교체
-  if (diff === 2 && sc[0].s < 40 && !req.active[0].trapped && Math.random() < .35) {
-    const opts = req.side.pokemon.map((p, i) => ({ p, i, mon: side.pokemon[i] })).filter(o => !o.p.active && !/fnt/.test(o.p.condition));
-    const best = opts.map(o => ({ o, s: Math.max(...o.mon.moveSlots.map(ms => score(o.mon, ms.id))) })).sort((a, b) => b.s - a.s)[0];
-    if (best && best.s > sc[0].s * 1.8) return 'switch ' + (best.o.i + 1);
+  if (diff === 1 && Math.random() < .12) return 'move ' + (pick(mv).i + 1);   // 보통은 가끔 실수
+  const fHp = Math.max(1, foe?.hp || 1), mHp = me.hp / me.maxhp, inDanger = best(foe, me) >= me.hp, foeHit = best(foe, me) / Math.max(1, me.hp), bo = me.boosts || {};
+  const sc = mv.map(o => { const m = btl.dex.moves.get(o.m.id); let v;
+    if (m.category !== 'Status') { const d = dmg(me, foe, o.m.id); v = Math.min(1, d / fHp); if (d >= fHp) v += 1 + (m.priority > 0 ? .3 : 0); if (m.priority > 0 && inDanger && !fast(me, foe)) v += d >= fHp ? .6 : .25; if (m.self?.boosts && Object.values(m.self.boosts).some(x => x < 0)) v -= .08; }
+    else { v = .05; const sb = m.boosts && m.target === 'self' ? m.boosts : null;
+      if (sb) { const up = Object.entries(sb).filter(([k, x]) => x > 0), cur = Math.max(...up.map(([k]) => bo[k] || 0), 0); if (up.length && cur < 2 && mHp > .6 && foeHit < .45) v = .62 - cur * .2; }
+      else if (m.status && foe && !foe.status && !foe.fainted) { const im = !btl.dex.getImmunity(m.status === 'par' && m.type === 'Electric' ? 'Electric' : m.type, foe) || (m.status === 'brn' && hasT(foe, 'Fire')) || ((m.status === 'psn' || m.status === 'tox') && (hasT(foe, 'Poison') || hasT(foe, 'Steel'))) || (m.status === 'par' && hasT(foe, 'Electric'));
+        if (!im && foe.hp / foe.maxhp > .4) v = m.status === 'slp' ? .75 : m.status === 'brn' ? (st(foe, 'atk') > st(foe, 'spa') ? .6 : .35) : m.status === 'par' ? (fast(me, foe) ? .3 : .55) : .45; }
+      else if (m.heal || m.id === 'roost' || m.id === 'synthesis' || m.id === 'moonlight' || m.id === 'morningsun') v = mHp < .45 && !inDanger ? .7 : mHp < .7 ? .25 : 0;
+      else if (m.sideCondition === 'stealthrock') v = !btl.p1.sideConditions?.stealthrock && btl.p1.pokemon.filter(p => !p.fainted).length > 2 ? .5 : 0;
+      else if (m.volatileStatus === 'leechseed') v = foe && !foe.volatiles?.leechseed && !hasT(foe, 'Grass') ? .4 : 0;
+      else if (m.id === 'substitute') v = mHp > .6 && !me.volatiles?.substitute ? .3 : 0;
+      else if (m.id === 'protect' || m.id === 'detect') v = .1;
+      if (m.accuracy !== true) v *= m.accuracy / 100; }
+    return { o, s: v * rnd(.95, 1.05) }; }).sort((a, b) => b.s - a.s);
+  // 상성이 나쁘면 교체: 지금 기술로 거의 못 때리고, 맞으면 크게 다칠 때 더 나은 포켓몬이 있으면
+  if (!req.active[0].trapped && foe && !foe.fainted && sc[0].s < .3 && (foeHit > .5 || sc[0].s < .12)) {
+    const b = bench().map(x => ({ x, s: matchup(x.mon) })).sort((a, b) => b.s - a.s)[0];
+    if (b && b.s > matchup(me) + .35 && Math.random() < (diff === 2 ? .75 : .4)) return 'switch ' + (b.x.i + 1);
   }
   return 'move ' + (sc[0].o.i + 1);
 }
@@ -1284,5 +1336,5 @@ async function practice() {
   finally { document.body.classList.remove('gymBattle'); drawTab(); }
 }
 
-window.GymBattle = { HOLD, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, get _B() { return B; } };
+window.GymBattle = { HOLD, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; } };
 })();
