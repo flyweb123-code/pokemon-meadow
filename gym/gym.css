@@ -1310,3 +1310,14 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .lu-slot.lu-hold{box-shadow:inset 0 0 0 2px #ffd84a,0 4px 10px rgba(0,0,0,.2)!important;scale:1.04}
 /* 상세카드 좌우 화살표 (꾸미기 박스 카드처럼) */
 .gy-pop .fx-h .sw-h,.gy-pop .dp-arr .sw-h{background:#fff}
+/* 훈련장으로 (경완 2026-10-29): 훈련 중이면 카드가 초록빛, 이름 옆 '훈련중' 상자 */
+.tr-tag{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:4px;background:#3e9a52;color:#fff;font-size:11px;font-style:normal;font-weight:700;vertical-align:3px}
+.gy-pop .win.mp-tr{background:#eef7e8!important;box-shadow:inset 0 0 0 3px #7cc48a,0 0 0 3px var(--frame)!important}
+.gy-pop .win.mp-tr :is(.mp-na .mp-nat,.mp-na .mp-ab,.iv-hex,.mp-mv){background:#f7fcf3!important}
+.mp-btns button.tr-go{background:#3e9a52!important;color:#fff!important;border-color:#24653a!important;box-shadow:0 3px 0 #24653a!important}
+.mp-btns button.tr-on{background:#fff!important;color:#2e7a42!important;border-color:#3e9a52!important;box-shadow:0 3px 0 #3e9a52!important}
+.gy-boxw .pk .tg.tg-tr{background:#3e9a52!important;color:#fff!important}
+#gym .gy-boxw .pk .tgs .tg.tg-tr{background:#2a7fbf!important}
+.sf-tp{cursor:pointer;border-radius:6px}.sf-tp:active{translate:0 2px;background:rgba(0,0,0,.06)}
+.mp-fth{flex:none;display:grid;place-items:center;width:84px;height:84px;background:#e4efd8;box-shadow:inset 0 0 0 3px #9aa4b8}.mp-fth img{width:72px;height:72px;image-rendering:pixelated;object-fit:contain}
+.mp-line .mp-mv b{flex:0 1 auto!important;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mp-line .mp-mv em{flex:none}

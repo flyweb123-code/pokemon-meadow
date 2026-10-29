@@ -380,6 +380,16 @@ function pickTrain() {
         if (g.tr.length >= trMax()) { K.save(); w.close(); return redraw(); } }
       K.save(); w.redraw(); } });
 }
+// 상세카드 '훈련장으로' (경완 2026-10-29 '필드로 버튼처럼 눌렀다 뺐다'): 훈련 중이면 데려오고, 아니면 한 번 물어보고 보낸다
+function trSend(P, done) {
+  const g = st(), i = g.tr.findIndex(e => e.id === P.id), n = esc(nmOf(P)), j = K.jong(nmOf(P)) ? '을' : '를';
+  if (i >= 0) { tickTrain(Date.now()); g.tr.splice(i, 1); K.glog('tr', `${n}${j} 훈련장에서 데려왔다.`); K.save(); redraw(); return done?.(); }
+  if (g.tr.length >= trMax()) return say('훈련장이 가득 찼어요. 6마리까지 보낼 수 있어요.');
+  if (GB().gm(P).lv >= GB().LV_MAX) return say('이미 최고 레벨이에요.');
+  GB().gymPop(`<h4>${n}${j} 훈련장에 보낼까요?</h4>${onField(P.id) ? `<p class="gy-msg">지금 필드에 나가 있어서 보내면 <b>필드에서 빠져요</b>.</p>` : ''}<div class="gy-btns"><button data-a="x">취소</button><button class="main" data-a="ok">보내기</button></div>`, (a, close) => { close(); if (a !== 'ok') return;
+    const m = S.mons.find(o => o.pid === P.id); if (m) { try { GA.removeMon(m, true); } catch (e) {} }
+    const now = Date.now(); g.tr.push({ id: P.id, t: now, d: K.dayStart(now), h: 0, j: now, l0: GB().gm(P).lv, x: 0, mv: [] }); K.glog('tr', `${n}${j} 훈련장에 보냈다.`); K.save(); redraw(); done?.(); });
+}
 // 훈련 현황 (경완 2026-10-29): 나와 있던 시간, 얻은 경험치, 오른 레벨, 배운 기술
 const hm = ms => { const m = Math.max(0, Math.floor(ms / 60000)), d = Math.floor(m / 1440), h = Math.floor(m % 1440 / 60); return d ? `${d}일 ${h}시간` : h ? `${h}시간 ${m % 60}분` : `${m}분`; };
 // 새 화면으로 (경완 2026-10-29 '훈련현황 새로운 화면에'): 포켓몬 박스처럼 전체 화면, ‹ 로 닫기
@@ -419,7 +429,7 @@ const LINES = {
 };
 const sayOf = c => { const L = LINES[c.trait] || [''], n = Math.abs((c.id | 0) * 2654435761 | 0) || 0; return `${HELLO[n % HELLO.length]} ${L[(n >>> 3) % L.length]}`; };
 // 포켓몬 그림 + 레벨: 상자 없이 그림 밑에 작은 글씨 (경완 2026-10-27 '박스 없이 좀 더 깔끔하게')
-const teamIc = T => `<span class="sf-team">${T.map(([sp, lv]) => `<span><img alt="" data-sp="${sp}"><small>Lv.${lv}</small></span>`).join('')}</span>`;
+const teamIc = (T, key) => `<span class="sf-team">${T.map(([sp, lv], i) => `<span${key != null ? ` class="sf-tp" role="button" data-tsp="${sp}" data-tlv="${lv}" data-tk="${key}-${i}"` : ''}><img alt="" data-sp="${sp}"><small>Lv.${lv}</small></span>`).join('')}</span>`;   // key 가 있으면 눌러서 상세카드 (지원서)
 // 특성은 상자로 (경완 2026-10-27 '트레이너 특성은 확실하게 박스로')
 const trtBox = (k, full, bare) => { const T = K.TRAITS[k]; return T ? `<span class="trt trt-${k}">${bare ? '' : '<b>특성</b>'}<i>${T.n}</i>${full ? `<small>${T.d}</small>` : ''}</span>` : ''; };
 // 트레이너: 지원서 탭 / 고용 관리 탭 (경완 2026-10-27)
@@ -436,7 +446,7 @@ function drawStaff() {
   const cand = c ? `<div class="cv-deck">${C.map((x, i) => `<article class="cv-card" data-i="${i}"><header><b>트레이너 지원서</b><span class="cv-tm"><em>남은 시간</em><b class="cv-left" data-exp="${x.exp}">${cvLeft(x.exp - now)}</b></span></header>
       <div class="cv-photo"><img alt="" src="${K.trSrc(x.tr)}"><div class="cv-nm"><small>${esc(x.cls)}</small><b>${esc(x.nm)}</b></div></div>
       <p class="cv-say">“${esc(sayOf(x))}”</p>
-      <dl class="cv-dl"><dt>특성</dt><dd>${trtBox(x.trait, true, true)}</dd><dt>포켓몬</dt><dd>${teamIc(x.team)}</dd><dt>평균 레벨</dt><dd>Lv.${Math.round(K.teamLv(x.team))}</dd><dt>희망 월급</dt><dd>7일에 <b>${x.wage}G</b></dd></dl>
+      <dl class="cv-dl"><dt>특성</dt><dd>${trtBox(x.trait, true, true)}</dd><dt>포켓몬</dt><dd>${teamIc(x.team, x.id)}</dd><dt>평균 레벨</dt><dd>Lv.${Math.round(K.teamLv(x.team))}</dd><dt>희망 월급</dt><dd>7일에 <b>${x.wage}G</b></dd></dl>
       <div class="cv-btns"><button class="gy-key" data-no="${i}">돌려보내기</button><button class="gy-key main" data-hire="${i}">고용하기</button></div></article>`).join('')}</div>
       ${C.length > 1 ? `<div class="cv-dots">${C.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : ''}`
       : `<p class="sf-none">지금은 지원서가 없어요. 새 지원자가 오면 트레이너 단추에 빨간 점이 떠요.</p>`;
@@ -446,6 +456,7 @@ function drawStaff() {
   sh.innerHTML = `<h3>트레이너</h3>${tabs}${sfT === 'cand' ? cand : list}`;
   const dk = sh.querySelector('.cv-deck'); if (dk) dk.onscroll = () => { const i = Math.round(dk.scrollLeft / (dk.firstElementChild.offsetWidth + 12)); sh.querySelectorAll('.cv-dots i').forEach((d, j) => d.classList.toggle('on', i === j)); };
   sh.onclick = e => {
+    const tp = e.target.closest('[data-tsp]'); if (tp) { sfx('tap'); return GB().foePop(+tp.dataset.tsp, +tp.dataset.tlv, tp.dataset.tk); }   // 지원서 포켓몬 → 상세카드 (경완 2026-10-29)
     const b = e.target.closest('button'); if (!b) return; sfx('tap');
     if (b.dataset.sft) { sfT = b.dataset.sft; redraw(); return; }
     if (b.dataset.no) return reject(C[+b.dataset.no]);
@@ -561,5 +572,5 @@ function shopFit(body) {
       close(); if (a === 'y' && !buy(o.g)) return say('골드가 모자라요.'); if (a === 'y') g.fits[k] = 1; g.fit = k; K.save(); redraw(); K.renderHome(); });
   };
 }
-window.GymManage = { tab, tickTrain, redraw };
+window.GymManage = { tab, tickTrain, redraw, trSend };
 })();
