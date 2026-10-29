@@ -993,7 +993,7 @@ async function shutFx(t1, s1, t2, s2, mid) {
   sfx('tap'); await wait(1100); fx.classList.remove('down'); fx.classList.add('up'); await wait(900); fx.remove();
 }
 const gCard = (x, i) => { const G = gradeOf(x.rep || 0), cur = x === st();
-  return `<div class="mg-card${cur ? ' cur' : ''}" data-ty="${x.ty}"><button type="button" class="mg-go" data-i="${i}"><img alt="" data-ms="${x.d}" data-gi="${bigOf(x)}"><span class="mg-tx"><b>${esc(x.nm)}</b><span class="mg-ty">${tyIcon(x.ty)}${TYPE_KO[x.ty]} 타입</span><small>${G.n} · 평판 ${x.rep || 0}</small></span><em class="mg-st">${cur ? '운영 중' : '휴업 중'}</em></button><button type="button" class="mg-del" data-del="${i}">폐업</button></div>`; };
+  return `<div class="mg-card${cur ? ' cur' : ''}" data-ty="${x.ty}"><button type="button" class="mg-go" data-i="${i}"><span class="mg-th"><img alt="" data-ms="${x.d}" data-gi="${bigOf(x)}"><em class="mg-st">${cur ? '운영 중' : '휴업 중'}</em></span><span class="mg-tx"><b>${esc(x.nm)}</b><span class="mg-ty">${tyIcon(x.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[x.ty]} 타입</span><small>${G.n} · 평판 ${x.rep || 0}</small></span></button><button type="button" class="mg-del" data-del="${i}">폐업</button></div>`; };
 let mgTy = 0;
 function mgPop() {
   $g('.gy-mgs')?.remove(); const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-mgs'; $g('.gy-main').appendChild(el);
