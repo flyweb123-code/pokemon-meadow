@@ -961,8 +961,11 @@ function ivHex(P, m) {
   const cOf = key => key && key === nt[1] ? 'up' : key && key === nt[2] ? 'dn' : '', arw = c => c === 'up' ? '▲' : c === 'dn' ? '▼' : '';   // 성격으로 오른 능력 ▲, 내린 능력 ▼ (경완 2026-10-28)
   const lab = IV_ORD.map(([i, n, key], k) => { const [x, y] = pt(k, R + 17), c = cOf(key); return `<text x="${x.toFixed(1)}" y="${(y - 3).toFixed(1)}" class="${c}">${n}${arw(c)}</text><text x="${x.toFixed(1)}" y="${(y + 9).toFixed(1)}" class="v">${st[i]}${nd(i)}</text>`; }).join('');
   const sum = iv.reduce((a, b) => a + b, 0), best = IV_ORD.reduce((a, o) => st[o[0]] > st[a[0]] ? o : a, IV_ORD[0]);
-  // 누르면 육각형 ↔ 가로 막대 (경완 2026-10-28). 막대 쪽엔 능력마다 개체값 판정
-  const bars = `<div class="iv-bars">${[[0, 'HP', ''], [1, '공격', 'atk'], [2, '방어', 'def'], [3, '특공', 'spa'], [4, '특방', 'spd'], [5, '스피드', 'spe']].map(([i, n, key]) => { const c = cOf(key); return `<div class="ivb ${c}"><span>${n}<i>${arw(c)}</i></span><b><i style="width:${(st[i] / mx * 100).toFixed(1)}%"></i></b><em>${st[i]}<i>${nd(i)}</i></em><small>${ivJudge(iv[i])}</small></div>`; }).join('')}</div>`;
+  // 누르면 육각형 ↔ 가로 막대 (경완 2026-10-28). 막대는 종족값·개체값·성격으로 오른 몫을 색으로 나눔, 판정 글자 없음 (경완 2026-10-29)
+  const sb = statsOf(P.sp ?? m.sp, m.lv || 1, [0, 0, 0, 0, 0, 0], 'hardy'), w = v => (Math.max(0, v) / mx * 100).toFixed(1) + '%';
+  const bars = `<div class="iv-bars">${[[0, 'HP', ''], [1, '공격', 'atk'], [2, '방어', 'def'], [3, '특공', 'spa'], [4, '특방', 'spd'], [5, '스피드', 'spe']].map(([i, n, key]) => { const c = cOf(key), d = st[i] - st0[i];
+    return `<div class="ivb ${c}"><span>${n}<i>${arw(c)}</i></span><b><i class="sg-b" style="width:${w(sb[i])}"></i><i class="sg-i" style="width:${w(st0[i] - sb[i])}"></i>${d > 0 ? `<i class="sg-u" style="width:${w(d)}"></i>` : d < 0 ? `<i class="sg-d" style="width:${w(-d)}"></i>` : ''}</b><em>${st[i]}<i>${nd(i)}</i></em></div>`; }).join('')}
+    <div class="ivb-lg"><span><i class="sg-b"></i>종족값</span><span><i class="sg-i"></i>개체값</span><span><i class="sg-u"></i>성격 ▲</span><span><i class="sg-d"></i>성격 ▼</span></div></div>`;
   return `<div class="iv-hex${ivBar ? ' bar' : ''}" role="button" tabindex="0" aria-label="능력치 (누르면 보기 바꾸기)">${bars}<svg viewBox="0 -12 180 164" role="img" aria-label="능력치"><polygon points="${ring(1)}" class="r0"/><polygon points="${ring(2 / 3)}" class="r1"/><polygon points="${ring(1 / 3)}" class="r1"/><polygon points="${poly}" class="iv"/>${lab}</svg>
     <div class="iv-sum"><b>능력치</b><span>합계 ${st.reduce((a, b) => a + b, 0)}</span><span>판정: ${ivJudge(Math.round(sum / 6))}</span><span>가장 좋은 능력치: ${best[1]}</span></div></div>`;
 }

@@ -2583,6 +2583,12 @@ const gateReady = (async () => {
   setTimeout(() => { ov.classList.add('out'); setTimeout(() => ov.remove(), 450); }, 700);
 })().catch(() => {});
 
+// 쉴 때 그림이 잘려 있는 포켓몬은 다른 동작 첫 칸으로 프로필 그림을 다시 만든다 (모르페코: 오른쪽이 잘림, 경완 2026-10-29)
+const TH_ANIM = { 877: 'Charge' };
+async function thFix(data) {
+  for (const k in data) { const s = data[k], A = s?.a?.[TH_ANIM[parseInt(k)]]; if (!A || typeof s.i !== 'string') continue;
+    try { const im = new Image(); im.src = s.i; await im.decode(); const [y, w, h] = A, c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(im, 0, y, w, h, 0, 0, w, h); s.th = c.toDataURL(); } catch (e) {} }
+}
 function loadChunk(k) {
   if (!chunkLoads[k]) chunkLoads[k] = (async () => {
     const el = document.getElementById('chunk-' + k);
@@ -2597,6 +2603,7 @@ function loadChunk(k) {
       data = await r.json();
     }
     Object.assign(SPRITES, data);
+    await thFix(data);
   })().catch(e => { delete chunkLoads[k]; throw e; });
   return chunkLoads[k];
 }
@@ -6521,7 +6528,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '11.33';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '11.34';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
