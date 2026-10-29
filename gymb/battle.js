@@ -982,7 +982,7 @@ function monHtml(P, mode) {
     <div class="mp-moves mp-line">${mv.map(x => `<button type="button" class="mp-mv" data-a="i${x[0]}" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}">${tyTag(x[2], x[3])}<b>${esc(x[1])}</b><em>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'} · PP ${x[6] || '—'}</em></button>`).join('')}</div>
     ${mode === 'add' ? `<div class="gy-btns one mp-btns">${inLu ? '<button data-a="rm" class="danger">라인업에서 빼기</button>' : `<button data-a="add" class="main" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업에 넣기</button>`}</div>` : `<div class="gy-btns mp-btns"><button data-a="tm">기술 가르치기</button><button data-a="tr" class="${inTr(P.id) ? 'tr-on' : 'tr-go'}">${inTr(P.id) ? '훈련장에서 빼기' : '훈련장으로'}</button></div>`}<button class="mp-x" data-a="x" aria-label="닫기">✕</button>`;
 }
-function monPop(id, fromBox, under) {
+function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수). 없으면 라인업 (훈련장 슬롯은 훈련장 포켓몬끼리만, 경완 2026-10-29)
   const P = boxOf(+id || id); if (!P) return; const m = gm(P), nt = D.nt[m.nat] || ['', '', ''], h = D.sp[P.sp]?.h;
   // 특성 팝업: 숨겨진 특성은 안내 문구 대신 눌러서 효과 (경완 2026-10-29)
   const abShow = (k, hid, hk) => gymPop(`<h4>${abKo(k)}${hid ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</h4><p class="gy-msg ab-d">${esc(AB_D?.[k] || '효과 설명이 아직 없어요.')}</p>${hk ? `<button type="button" class="ab-hid" data-a="hab"><small>숨겨진 특성</small><b>${abKo(hk)}</b><i>›</i></button>` : ''}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b, c2) => { if (b === 'hab') return abShow(hk, true); c2(); });
@@ -992,18 +992,18 @@ function monPop(id, fromBox, under) {
       if (a[0] === 'i' && a.length > 1) return mvInfo(a.slice(1));
       if (a === 'nat') return gymPop(`<h4>${natKo(m.nat)}</h4><p class="gy-msg nat-d">${nt[1] ? `<span class="nat-c up">${STAT_KO[nt[1]]} ▲</span><span class="nat-c dn">${STAT_KO[nt[2]]} ▼</span>` : '<span class="nat-c">능력 변화 없음</span>'}</p><p class="gy-msg ab-d">${nt[1] ? `${STAT_KO[nt[1]]}${jong(STAT_KO[nt[1]]) ? '이' : '가'} 잘 오르고, ${STAT_KO[nt[2]]}${jong(STAT_KO[nt[2]]) ? '이' : '가'} 덜 오르는 성격이에요.` : '모든 능력이 고르게 오르는 성격이에요.'}</p><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b2, c2) => c2());   // 성격 효과도 눌러서 (경완 2026-10-29)
       if (a === 'ab') return abShow(m.ab, m.ha, !m.ha && h && h !== m.ab ? h : null);   // 특성 효과는 눌러서 팝업 (경완 2026-10-29)
-      if (a === 'mv') { close(); movesPop(P, () => monPop(P.id, fromBox)); return; }
-      if (a === 'tm') { close(); tmPop(P, () => monPop(P.id, fromBox)); return; }
-      if (a === 'tr') return window.GymManage?.trSend(P, () => { drawTab(); bxRefresh?.(); monPop(P.id, fromBox, p); });
+      if (a === 'mv') { close(); movesPop(P, () => monPop(P.id, fromBox, null, lst)); return; }
+      if (a === 'tm') { close(); tmPop(P, () => monPop(P.id, fromBox, null, lst)); return; }
+      if (a === 'tr') return window.GymManage?.trSend(P, () => { drawTab(); bxRefresh?.(); monPop(P.id, fromBox, p, lst); });
       if (a === 'rm' && i >= 0) c.splice(i, 1); if (a === 'add' && i < 0 && c.length < 6 && tyOk(P)) c.push(P.id); close(); GA.save(); drawTab();
       if (fromBox === 'add') { const bw = document.querySelector('#gym .gy-boxw'); if (a === 'add' && c.length >= 6) bw?.remove(); else { const sm = bw?.querySelector('.bw-hd small'); if (sm) sm.textContent = `${c.length}/6`; } }   // 라인업 고르기: 6마리 차면 박스도 닫힘
       if (fromBox) bxRefresh?.(); });
   p.querySelector('.win').classList.toggle('mp-tr', inTr(P.id));   // 훈련 중이면 카드 색이 바뀐다 (경완 2026-10-29)
   // 라인업 포켓몬은 카드를 좌우로 밀면 다음·이전 포켓몬: 꾸미기 모드 포켓몬 박스처럼 옆 카드가 붙어 따라 들어온다, 좌우 힌트 화살표 (경완 2026-10-29)
-  const L = curLu(), k = L.indexOf(P.id), w = p.querySelector('.win');
+  const L = lst ? lst() : curLu(), k = L.indexOf(P.id), w = p.querySelector('.win');
   if (under) { p.style.background = 'transparent'; p.style.backdropFilter = p.style.webkitBackdropFilter = 'none'; Promise.race([Promise.all([...p.querySelectorAll('img')].map(i => new Promise(r => { if (i.complete && i.naturalWidth) r(); else { i.onload = i.onerror = r; } }))), new Promise(r => setTimeout(r, 300))]).then(() => { under.remove(); p.style.background = p.style.backdropFilter = p.style.webkitBackdropFilter = ''; }); }
   if (k >= 0 && L.length > 1) {
-    const nb = d => L[k + d], go = (d, snd) => { if (nb(d) == null) return; if (snd) sfx('tap'); monPop(nb(d), fromBox, p); };   // 끝에서는 안 넘어감, 밀어서 넘길 땐 소리 없음 (경완 2026-10-29)
+    const nb = d => L[k + d], go = (d, snd) => { if (nb(d) == null) return; if (snd) sfx('tap'); monPop(nb(d), fromBox, p, lst); };   // 끝에서는 안 넘어감, 밀어서 넘길 땐 소리 없음 (경완 2026-10-29)
     const pg = j => `<p class="mp-pg">${L.map((_, i) => `<i class="${i === j ? 'on' : ''}"></i>`).join('')}</p>`;
     w.insertAdjacentHTML('beforeend', `${pg(k)}<button class="dp-arr l" type="button" data-nav="-1" aria-label="이전 포켓몬"><i class="sw-h l"></i></button><button class="dp-arr r" type="button" data-nav="1" aria-label="다음 포켓몬"><i class="sw-h r"></i></button>`);
     const arrows = [...w.querySelectorAll(':scope > .dp-arr')];
@@ -1112,5 +1112,5 @@ async function practice() {
   finally { document.body.classList.remove('gymBattle'); drawTab(); }
 }
 
-window.GymBattle = { tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b) => monPop(i, b), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, get _B() { return B; } };
+window.GymBattle = { tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, get _B() { return B; } };
 })();
