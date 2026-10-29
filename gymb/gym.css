@@ -1223,3 +1223,18 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 #gym .gy-qbtn.has{box-shadow:0 0 0 2px #ffd84a!important}
 #gym .gy-simb{top:calc(var(--si-top,env(safe-area-inset-top)) + 88px)!important}
 #gym:not(.dhide):has(.gy-dlg:not(:empty)) :is(.gy-deco,.gy-store.gy-sq,.gy-qbtn){visibility:hidden!important}
+/* 훈련장 개편 (경완 2026-10-29): 스칼렛 소품·후프링·현황 */
+.ty-pr{position:absolute;background-size:100% 100%;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none;transform-origin:50% 100%}
+.ty-pr::after{content:'';position:absolute;left:12%;right:12%;bottom:-3px;height:7px;border-radius:50%;background:rgba(60,40,10,.22);z-index:-1}
+.ty-mp{position:absolute;inset:0;background-size:100% 100%;image-rendering:pixelated}
+.ty-mp.swing{animation:tyBag .9s ease-out}@keyframes tyBag{20%{transform:rotate(-14deg)}45%{transform:rotate(9deg)}70%{transform:rotate(-4deg)}100%{transform:none}}
+.ty-mp.wob,.ty-pr.wob{animation:tyWob .45s}
+.ty-pr.sq{animation:tySq .25s ease-out}@keyframes tySq{40%{transform:scale(1.06,.86)}100%{transform:none}}
+.ty-pr.spin{animation:tySpin .5s ease-out}@keyframes tySpin{30%{transform:scaleX(.82) rotate(-3deg)}70%{transform:scaleX(1.05)}100%{transform:none}}
+.ty-shot{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:radial-gradient(circle at 40% 40%,#fff 0 25%,var(--c) 55%,transparent 72%);box-shadow:0 0 8px var(--c);pointer-events:none}
+.ty-st{position:absolute;right:calc(var(--si-right,env(safe-area-inset-right)) + 12px);top:calc(var(--si-top,env(safe-area-inset-top)) + 10px);z-index:5000;min-height:0!important;padding:6px 12px!important;border:2px solid #20202a!important;border-radius:8px!important;background:rgba(255,248,224,.96)!important;font-size:13px;font-weight:700;box-shadow:0 2px 0 #20202a!important}
+.ts-list{display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow:auto;margin:6px 0 10px}
+.ts-row{display:flex;gap:10px;align-items:flex-start;padding:8px;border-radius:8px;background:rgba(0,0,0,.04);box-shadow:inset 0 0 0 1px rgba(0,0,0,.1);text-align:left}
+.ts-row img{width:48px;height:48px;object-fit:contain;image-rendering:pixelated;flex:none}
+.ts-row>div{flex:1;min-width:0}.ts-row b{font-size:14px}.ts-row b span{font-size:12px;color:var(--dim);font-weight:400}.ts-row b em{font-style:normal;color:#d83a30;font-weight:700}
+.ts-row dl{display:grid;grid-template-columns:auto 1fr;gap:2px 8px;margin:4px 0 0;font-size:12px}.ts-row dt{color:var(--dim)}.ts-row dd{margin:0}.ts-row dd small{color:var(--dim)}

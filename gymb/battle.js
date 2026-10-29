@@ -887,13 +887,13 @@ function ivHex(P, m) {
 const BX_SORT = [['lv', '레벨'], ['rank', '랭크'], ['new', '날짜']];   // 경완 2026-10-28 '정렬은 레벨, 랭크, 날짜만'
 let bxSort = 'lv', bxDir = 1, bxQ = '', bxRefresh = null;
 const RK_ORD = { S: 7, A: 6, B: 5, C: 4, D: 3, E: 2, F: 1 };
-function boxWin(add, tmId, done) {   // tmId: 창고에서 기술머신 가르칠 포켓몬 고르기 (경완 2026-10-29)
+function boxWin(add, tmId, done, O) {   // O: 다른 곳에서 쓰는 고르기 (훈련장 등) {title, tip, list, ok, first, tag, pick}   // tmId: 창고에서 기술머신 가르칠 포켓몬 고르기 (경완 2026-10-29)
   document.querySelector('#gym .gy-boxw')?.remove();
   const w = document.createElement('div'); w.className = 'gy-boxw';
-  w.innerHTML = `<div class="win" role="dialog" aria-label="포켓몬 박스"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>${tmId ? `기술 가르치기 · ${esc(mvKo(tmId))}` : add ? `라인업 ${(S.gym.luI | 0) + 1}에 넣을 포켓몬 <small>${curLu().length}/6</small>` : '포켓몬 박스'}</h4></div>
+  w.innerHTML = `<div class="win" role="dialog" aria-label="포켓몬 박스"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>${O ? O.title() : tmId ? `기술 가르치기 · ${esc(mvKo(tmId))}` : add ? `라인업 ${(S.gym.luI | 0) + 1}에 넣을 포켓몬 <small>${curLu().length}/6</small>` : '포켓몬 박스'}</h4></div>
         <div class="filters boxq"><span class="qw"><input type="search" placeholder="이름이나 번호" aria-label="포켓몬 이름이나 번호로 찾기" autocomplete="off" value="${esc(bxQ)}"><button type="button" class="qx" aria-label="검색어 지우기">✕</button></span></div>
     <div class="mgr-tools"><div class="bag-sort bw-sort">${BX_SORT.map(([k, n]) => `<button data-sort="${k}">${n}</button>`).join('')}</div><span class="tcount"></span></div>
-    <p class="bw-tip">${TYPE_KO[S.gym.ty]} 타입 포켓몬만 보여요${tmId ? ' · 배울 수 있는 포켓몬만 고를 수 있어요' : ''}</p><div class="boxgrid bw-grid"></div></div>`;
+    <p class="bw-tip">${O ? O.tip : `${TYPE_KO[S.gym.ty]} 타입 포켓몬만 보여요${tmId ? ' · 배울 수 있는 포켓몬만 고를 수 있어요' : ''}`}</p><div class="boxgrid bw-grid"></div></div>`;
   document.querySelector('#gym .gy-main').appendChild(w);
   const grid = w.querySelector('.bw-grid'), inp = w.querySelector('input');
   const draw = () => {
@@ -901,20 +901,21 @@ function boxWin(add, tmId, done) {   // tmId: 창고에서 기술머신 가르�
     const lu = new Set(curLu()), q = bxQ.toLowerCase();
     const key = { lv: x => (x.m?.lv || 0) * 1e3 + GA.ivSum(x.P), rank: x => (RK_ORD[GA.rankOf(x.P)] || 0) * 1e5 + (x.m?.lv || 0), new: x => +x.P.t || +x.P.id || 0 }[bxSort] || (x => (x.m?.lv || 0));
     // 라인업 고르기는 가진 포켓몬 전부: 다른 타입은 흐리게(못 고름), 고를 수 있는 포켓몬이 앞에 (경완 2026-10-28)
-    const all = S.box.filter(tyOk), L = all.filter(P => !q || nmOf(P).toLowerCase().includes(q) || String(P.sp) === q.replace(/^0+/, '')).map(P => { const ok = tyOk(P) && (!tmId || tmCan(P, tmId)); return { P, ok, m: tyOk(P) ? gm(P) : null }; }).sort((a, b) => (b.ok - a.ok) || (key(b) - key(a)) * bxDir);
-    w.querySelector('.tcount').innerHTML = q ? `찾은 포켓몬 <b>${L.length}</b>마리` : `${TYPE_KO[S.gym.ty]} 타입 <b>${all.length}</b>마리`;
+    const all = O ? O.list() : S.box.filter(tyOk), L = all.filter(P => !q || nmOf(P).toLowerCase().includes(q) || String(P.sp) === q.replace(/^0+/, '')).map(P => { const ok = O ? O.ok(P) : tyOk(P) && (!tmId || tmCan(P, tmId)); return { P, ok, f: O?.first ? +!!O.first(P) : 0, m: O || tyOk(P) ? gm(P) : null }; }).sort((a, b) => (b.ok - a.ok) || (b.f - a.f) || (key(b) - key(a)) * bxDir);
+    w.querySelector('.tcount').innerHTML = q ? `찾은 포켓몬 <b>${L.length}</b>마리` : O ? `포켓몬 <b>${all.length}</b>마리` : `${TYPE_KO[S.gym.ty]} 타입 <b>${all.length}</b>마리`;
     grid.innerHTML = L.length ? L.map(({ P, m, ok }) => { const rk = GA.rankOf(P), on = lu.has(P.id);
-      return `<button class="pk${P.shiny ? ' shiny' : ''}${GA.pkCls?.(P) || ''}${ok ? '' : ' bw-no'}" data-id="${P.id}" ${ok ? '' : 'disabled'} style="--shue:${GA.shinyHue(P.sp)}deg"><span class="rk ${rk}">${rk}</span>${on ? '<span class="tgs"><span class="tg">라인업</span></span>' : ''}<img alt="" data-th="${P.id}"><span class="nm">${esc(nmOf(P))}${P.shiny ? '<b class="sh">✦</b>' : ''}</span>${tmId && !ok ? `<span class="bw-lv">${m?.mv.includes(tmId) ? '이미 앎' : '못 배움'}</span>` : m ? `<span class="bw-lv">Lv.${m.lv}</span>` : `<span class="bw-lv">${(SPECIES[P.sp]?.t || []).map(t => TYPE_KO[t]).join("·")}</span>`}</button>`; }).join('')
+      return `<button class="pk${P.shiny ? ' shiny' : ''}${GA.pkCls?.(P) || ''}${ok ? '' : ' bw-no'}" data-id="${P.id}" ${ok ? '' : 'disabled'} style="--shue:${GA.shinyHue(P.sp)}deg"><span class="rk ${rk}">${rk}</span>${(t => t ? `<span class="tgs"><span class="tg">${t}</span></span>` : '')(O ? O.tag?.(P) : on ? '라인업' : '')}<img alt="" data-th="${P.id}"><span class="nm">${esc(nmOf(P))}${P.shiny ? '<b class="sh">✦</b>' : ''}</span>${tmId && !ok ? `<span class="bw-lv">${m?.mv.includes(tmId) ? '이미 앎' : '못 배움'}</span>` : m ? `<span class="bw-lv">Lv.${m.lv}</span>` : `<span class="bw-lv">${(SPECIES[P.sp]?.t || []).map(t => TYPE_KO[t]).join("·")}</span>`}</button>`; }).join('')
       : `<p class="empty-msg">${q ? '찾는 포켓몬이 없어요.' : `${TYPE_KO[S.gym.ty]} 타입 포켓몬이 아직 없어요.`}</p>`;
     fillTh(grid);
   };
   bxRefresh = () => w.isConnected && draw();
   w.onclick = e => {
-    if (e.target.closest('[data-x]')) { sfx('tap'); w.remove(); if (tmId) done?.(); return; }
+    if (e.target.closest('[data-x]')) { sfx('tap'); w.remove(); if (tmId || O) done?.(); return; }
     if (e.target.closest('.qx')) { inp.value = ''; bxQ = ''; draw(); return; }
     const s = e.target.closest('[data-sort]'); if (s) { sfx('tap'); const k = s.dataset.sort; if (k === bxSort) bxDir = -bxDir; else { bxSort = k; bxDir = 1; } draw(); grid.scrollTop = 0; return; }
     const c = e.target.closest('.pk'); if (!c) return; sfx('tap');
     const id = +c.dataset.id || c.dataset.id;
+    if (O) { const P = boxOf(id); if (P) O.pick(P, { close: () => w.remove(), redraw: () => { const h = w.querySelector('.bw-hd h4'); if (h) h.innerHTML = O.title(); draw(); } }); return; }
     if (tmId) { const P = boxOf(id); if (!P || !tmCan(P, tmId)) return; w.remove(); teachTm(P, tmId, done); return; }
     if (add) { const cur = curLu(), j = cur.indexOf(id); if (j >= 0) cur.splice(j, 1); else if (cur.length < 6) cur.push(id); else return;   /* 경완 2026-10-28: 라인업에 든 포켓몬을 다시 누르면 빠진다 */ GA.save(); drawTab(); if (cur.length >= 6 && j < 0) w.remove(); else { const sm = w.querySelector('.bw-hd small'); if (sm) sm.textContent = `${cur.length}/6`; draw(); } return; }
     monPop(id, true);
@@ -1017,5 +1018,5 @@ async function practice() {
   finally { document.body.classList.remove('gymBattle'); drawTab(); }
 }
 
-window.GymBattle = { tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b) => monPop(i, b), mvInfo, teachPick, tmRow, teachTm, tmCan, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, get _B() { return B; } };
+window.GymBattle = { tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b) => monPop(i, b), mvInfo, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, get _B() { return B; } };
 })();
