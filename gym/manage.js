@@ -113,6 +113,23 @@ function buoyArt() {
   g.fillStyle = '#ffffff'; g.fillRect(9, 4, 3, 1); g.fillRect(8, 5, 1, 1);   // 반짝
   return (BUOY = c.toDataURL());
 }
+// 후프링 (경완 2026-10-29 '몸통이 구멍을 통과하면서'): 비스듬히 본 세로 고리. 뒤 반쪽은 포켓몬 뒤, 앞 반쪽은 포켓몬 앞에 그려 통과하는 것처럼
+let RING = null;
+function ringArt() {
+  if (RING) return RING; const w = 18, h = 44, cx = 9, cy = 12, RX = 6, RY = 11.5, T = 2.6;
+  const mk = front => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'), px = (x, y, col) => { g.fillStyle = col; g.fillRect(x, y, 1, 1); };
+    if (!front) { for (let y = 23; y < 41; y++) { px(8, y, '#20202c'); px(9, y, '#d0d4dc'); px(10, y, '#8a909c'); px(11, y, '#20202c'); } for (let x = 4; x < 16; x++) { px(x, 40, '#20202c'); px(x, 41, x < 6 || x > 13 ? '#20202c' : '#9aa0ac'); px(x, 42, x < 6 || x > 13 ? '#20202c' : '#6a707c'); px(x, 43, '#20202c'); } }
+    for (let y = 0; y < 26; y++) for (let x = 0; x < w; x++) { const X = x + .5 - cx, Y2 = y + .5 - cy, o = (X / RX) ** 2 + (Y2 / RY) ** 2, i = (X / (RX - T)) ** 2 + (Y2 / (RY - T)) ** 2;
+      if (o > 1.18 || i < .8) continue; if (front !== X > 0) continue;
+      const edge = o > .92 || i < 1.02, band = Math.floor((Math.atan2(Y2, X) + Math.PI) / (Math.PI / 4)) % 2;
+      px(x, y, edge ? '#20202c' : X > 0 ? (band ? '#ffd860' : '#ffffff') : (band ? '#c08a30' : '#c8ccd4')); }
+    return c.toDataURL(); };
+  return (RING = [mk(false), mk(true)]);
+}
+function yRing(i, x, y) {
+  const [bk, ft] = ringArt(), w = 36, h = 88, el = n => { const q = document.createElement('i'); q.className = 'ty-pr pr-hoop' + (n ? ' fr' : ''); q.style.cssText = `left:${(x - w / 2).toFixed(0)}px;top:${(y - h).toFixed(0)}px;width:${w}px;height:${h}px;z-index:${Math.round(y) + (n ? 70 : -60)};background-image:url(${n ? ft : bk})`; Y.L.append(q); return q; };
+  const b = el(0), f = el(1); return (Y.pr['ring' + i] = { k: 'ring' + i, x, y, w, h, el: b, fr: f, ring: [x, y - h + 12 / 44 * h] });
+}
 function yardBg(c) {
   const { ART, seasonCv } = GA.art(), PW = c.width = Math.ceil(Y.W / 2), PH = c.height = Math.ceil(Y.H / 2), g = c.getContext('2d'); g.imageSmoothingEnabled = false;
   let seed = 23; const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
@@ -172,7 +189,7 @@ async function drawTrain() {
   const g = st(); g.tr = g.tr || []; tickTrain(Date.now()); K.save();
   if (Y) { Y.mons.forEach(m => { Y.pos[m.id] = [m.x, m.y]; }); cancelAnimationFrame(Y.raf); }
   sh.classList.add('ty-on'); sh.scrollTop = 0;
-  sh.innerHTML = `<div class="ty-yd"><canvas class="ty-bg"></canvas><div class="ty-l"></div><button class="ty-st" type="button" data-stat="1">훈련 현황</button><button class="ty-add${g.tr.length ? '' : ' pulse'}" data-add="1" aria-label="포켓몬 보내기"><b>+</b><small>${g.tr.length}/${trMax()}</small></button></div>`;
+  sh.innerHTML = `<div class="ty-yd"><canvas class="ty-bg"></canvas><div class="ty-l"></div><button class="ty-st" type="button" data-stat="1" aria-label="훈련 현황"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M1 1h1v13H1zM1 14h14v1H1z"/><path fill="#e05a4a" d="M4 9h2v5H4z"/><path fill="#f0b030" d="M8 5h2v9H8z"/><path fill="#4a9ad8" d="M12 2h2v12h-2z"/></svg><small>현황</small></button><button class="ty-add${g.tr.length ? '' : ' pulse'}" data-add="1" aria-label="포켓몬 보내기"><b>+</b><small>${g.tr.length}/${trMax()}</small></button></div>`;
   const el = sh.querySelector('.ty-yd'); await loadYA(); if (!el.isConnected) return;
   const W = Math.max(280, el.clientWidth || 360), H = Math.max(520, el.clientHeight || 640);
   Y = { el, W, H, L: el.querySelector('.ty-l'), pr: {}, mons: [], pos: Y?.pos || {}, last: 0,
@@ -182,7 +199,7 @@ async function drawTrain() {
   const r1 = H * .29, r2 = H * .39, r3 = H * .82;   // 의자·아이스박스 없앰, 후프링 위로, 수영장 왼쪽 (경완 2026-10-29)
   yProp('bag1', 'punch-bag', W * .1, r2); yProp('bag2', 'punch-bag', W * .27, r2); yProp('tramp', 'spring-trampoline', W * .5, r2); yProp('tgt', 'target-easel', W * .9, r2);
   yProp('flag', 'start-flag', W * .62, r3 - 2); yProp('h1', 'track-hurdle', W * .73, r3); yProp('h2', 'track-hurdle', W * .87, r3);
-  [.24, .5, .76].forEach((f, i) => yProp('ring' + i, 'hoop-ring', W * f, r1, { z: -30 }));
+  [.24, .5, .76].forEach((f, i) => yRing(i, W * f, r1));
   Y.lane = { x0: W * .6, x1: W * .95, y: r3 + 4 };
   // 부표: 줄 위가 아니라 줄 아래 물 위에 둥둥 (입체 튜브)
   { const q = document.createElement('i'), x = Y.pond.x0 + (Y.pond.x1 - Y.pond.x0) * .66, y = Y.pond.y + (Y.pond.y1 - Y.pond.y) * .55; q.className = 'ty-eq eq-water'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y)};background-image:url(${buoyArt()})`; Y.L.append(q); Y.pr.water = { k: 'water', x, y, w: 64, h: 44, el: q }; }
@@ -303,8 +320,9 @@ function yardLoop(ts) {
     if (m.st === 'run') { const L = Y.lane, v = 96 * dt; m.x += m.dir * v; m.face = -m.dir; m.an = 'Walk';
       const hd = ['h1', 'h2'].map(k => Math.abs(m.x - Y.pr[k].x)).reduce((a, b) => Math.min(a, b)), J = 26; m.air = hd < J ? Math.cos(hd / J * Math.PI / 2) * 24 : 0;
       if (m.x > L.x1 || m.x < L.x0) { m.x = clampN(m.x, L.x0, L.x1); m.dir = -m.dir; if (++m.lap >= 4) { yEmo(m, '!', 'hit'); yNext(m, now); } } }
-    if (m.st === 'hoop') { m.ph += dt / 4.2; const p = hoopAt(m.ph % 1); m.x = p.x; m.y = p.y; m.air = p.air; m.face = p.f; m.an = 'Walk'; m.zb = p.f < 0 ? 40 : -40;
-      const pr = Math.floor(m.ph * 3 / .55 * .55); if (m.ph % 1 < .55) { const i = Math.floor((m.ph % 1) / .55 * 3.0); if (i !== m.ri && i < 3) { m.ri = i; yWob(Y.pr['ring' + i], 'spin'); } } else m.ri = -1;
+    if (m.st === 'hoop') { m.ph += dt / 4.2; const p = hoopAt(m.ph % 1); m.x = p.x; m.y = p.y; m.air = p.air; m.face = p.f; m.an = 'Walk'; m.zb = 0;
+      m.air = Math.max(0, p.air - (m.top != null ? -m.top * .5 : 18) - (m.lift || 0));   // 몸통 가운데가 고리 구멍 높이로
+      if (m.ph % 1 < .55) { const R = [0, 1, 2].map(i => Y.pr['ring' + i]), i = R.findIndex(q => Math.abs(q.x - m.x) < 4); if (i >= 0 && i !== m.ri) { m.ri = i; yWob({ el: R[i].fr }, 'spin'); yWob(R[i], 'spin'); } } else m.ri = -1;
       if (m.ph >= 3) { m.air = 0; yNext(m, now); } }
     if (m.st === 'spar' && m.lead && !m.one && !m.mate?.one) { const a = m.turn % 2 ? m.mate : m; a.one = { n: 'Attack', t: 0, tgt: a === m ? m.mate : m }; m.turn++; }
     if ((m.st === 'sleep') && now > (m.zz || 0)) { m.zz = now + 3 + Math.random() * 2; yEmo(m, 'Zz', 'zz'); }
@@ -374,7 +392,7 @@ function trPop(id) {
   const P = boxOf(id); if (!P) return; const m = GB().gm(P), ph = perHour(P), g = GB().growth(P.sp), need = GB().xpAt(g, m.lv + 1) - GB().xpAt(g, m.lv);
   const a0 = GB().xpAt(g, m.lv), r = m.lv >= GB().LV_MAX ? 1 : clampN(((m.xp ?? a0) - a0) / Math.max(1, need), 0, 1);
   pop(`<div class="mp-head">${GB().thumb(P)}<div><h4>${esc(nmOf(P))}</h4><i class="mp-xp"><i style="width:${(r * 100).toFixed(1)}%"></i></i><small class="tp-xp">경험치 ${m.lv >= GB().LV_MAX ? '최고 레벨' : `${Math.floor(r * 100)}% · 다음 레벨까지 ${Math.max(0, Math.ceil(need - ((m.xp ?? a0) - a0))).toLocaleString()}`}</small><p>Lv.${m.lv} · 1시간에 약 ${m.lv >= GB().LV_MAX ? 0 : (ph / need).toFixed(2)}레벨<br>${(e => !e ? '' : leftOf(e) > 0 ? `오늘 ${Math.ceil(leftOf(e))}시간 더 훈련해요` : '오늘 훈련 끝 · 내일 다시')(st().tr.find(e => e.id === P.id))}</p></div></div>
-    <div class="mp-moves">${m.mv.map(x => GB().mvOf(x)).filter(Boolean).map(x => GB().mvRow(x, '')).join('')}</div>
+    <div class="mp-moves mp-line">${m.mv.map(x => GB().mvOf(x)).filter(Boolean).map(x => GB().mvRow(x, '')).join('')}</div>
     <div class="gy-btns three"><button data-a="mv">기술 바꾸기</button><button data-a="tm">기술 가르치기</button><button data-a="out">데려오기</button><button class="main" data-a="x">닫기</button></div>`,
     (a, close) => { if (!a) return; close(); if (a === 'mv') return GB().movesPop(P, () => { redraw(); trPop(id); }); if (a === 'tm') return GB().tmPop(P, () => { redraw(); trPop(id); });
       if (a === 'out') { tickTrain(Date.now()); st().tr = st().tr.filter(e => e.id !== P.id); K.save(); redraw(); } });

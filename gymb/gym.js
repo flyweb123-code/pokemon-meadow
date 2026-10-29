@@ -139,7 +139,7 @@ function build() {
     <div class="gy-main">
       <div class="gy-stage"><div class="gy-map"><img alt=""><div class="gy-ents"></div></div></div>
       <div class="gy-top">
-        <button class="win gy-plate" type="button" aria-label="체육관 정보"><span class="gy-nm"></span><span class="gy-bd"></span><span class="gy-grade"></span><span class="gy-rep"><em>평판</em><i class="gy-bar"><i></i></i></span><b class="gy-repn"></b></button>
+        <button class="gy-plate" type="button" aria-label="체육관 정보"><span class="gy-wing l"><span class="gy-nm"></span><span class="gy-rep"><em>평판</em><i class="gy-bar"><i></i></i></span></span><span class="gy-bd"></span><span class="gy-wing r"><span class="gy-grade"></span><b class="gy-repn"></b></span></button>
       </div>
       <!-- 필드와 같은 자리 (경완 2026-10-28): 꾸미기 = 맵 편집 자리(왼쪽 위), 창고 = 가방 자리(오른쪽) -->
       <button class="gy-deco" type="button" aria-label="꾸미기"><svg viewBox="0 0 17 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M1 0h3v1H1zM13 0h3v1H13zM0 1h17v1H0zM0 2h3v1H0zM14 2h3v1H14zM1 3h2v1H1zM14 3h2v1H14zM2 4h1v1H2zM14 4h1v1H14zM2 5h1v1H2zM6 5h1v1H6zM10 5h1v1H10zM14 5h1v1H14zM2 6h1v1H2zM8 6h1v1H8zM14 6h1v1H14zM2 7h1v1H2zM7 7h1v1H7zM9 7h1v1H9zM14 7h1v1H14zM3 8h1v1H3zM13 8h1v1H13zM2 9h1v1H2zM14 9h1v1H14zM2 10h1v1H2zM14 10h1v1H14zM2 11h1v1H2zM14 11h1v1H14zM2 12h1v1H2zM14 12h1v1H14zM3 13h1v1H3zM13 13h1v1H13zM4 14h1v1H4zM7 14h3v1H7zM12 14h1v1H12zM5 15h2v1H5zM10 15h2v1H10z"/><path fill="#ffd520" d="M3 2h1v1H3zM13 2h1v1H13zM3 3h2v1H3zM6 3h5v1H6zM12 3h2v1H12zM4 4h9v1H4zM4 5h2v1H4zM7 5h3v1H7zM11 5h2v1H11zM6 6h2v1H6zM9 6h2v1H9zM8 7h1v1H8zM5 8h1v1H5zM11 8h1v1H11zM4 9h2v1H4zM11 9h2v1H11z"/><path fill="#6a3908" d="M4 2h9v1H4zM5 3h1v1H5zM11 3h1v1H11zM3 4h1v1H3zM13 4h1v1H13zM3 5h1v1H3zM13 5h1v1H13zM3 6h1v1H3zM13 6h1v1H13zM3 7h1v1H3zM13 7h1v1H13zM4 8h1v1H4zM12 8h1v1H12zM3 9h1v1H3zM6 9h1v1H6zM10 9h1v1H10zM13 9h1v1H13zM3 10h1v1H3zM5 10h2v1H5zM10 10h2v1H10zM13 10h1v1H13zM3 11h1v1H3zM13 11h1v1H13zM3 12h1v1H3zM5 12h2v1H5zM10 12h2v1H10zM13 12h1v1H13zM4 13h1v1H4zM7 13h3v1H7zM12 13h1v1H12zM5 14h2v1H5zM10 14h2v1H10z"/><path fill="#e65262" d="M4 6h2v1H4zM11 6h2v1H11zM4 7h2v1H4zM11 7h2v1H11z"/><path fill="#de9c10" d="M6 7h1v1H6zM10 7h1v1H10zM6 8h5v1H6zM7 9h3v1H7zM4 10h1v1H4zM7 10h3v1H7zM12 10h1v1H12zM4 11h9v1H4zM4 12h1v1H4zM7 12h3v1H7zM12 12h1v1H12zM5 13h2v1H5zM10 13h2v1H10z"/></svg></button>
@@ -455,6 +455,8 @@ const LOSE_LINES = ['해냈다! 제가 이겼어요!', '관장님한테 이기�
 const REW0 = [{ g: 40, r: 1, rl: -1, fr: 1 }, { g: 100, r: 1, rl: -1, fr: 2 }, { g: 300, r: 2, rl: -1, fr: 4 }];   // 평판은 막은 도전자 1명 ≈ 1 (경완 2026-10-29)
 const GYMB = () => GA.GYMB || { GYM_G: REW0.map(o => o.g), GYM_SF_PCT: 60, WAGE_BASE: 150, WAGE_LV: 5, WAGE_MAX: 600 };   // 골드·월급 값은 작업실 밸런스 (게임 10.78)
 const REW = d => ({ ...REW0[d], g: GYMB().GYM_G[d] ?? REW0[d].g });
+// 연승 보너스 (경완 2026-10-29 '연승하면 평판 더 오르게'): 막을 때마다 g.stk +1, 내가 지면 0. 3연승부터 +1, 6연승 +2, 10연승 +3
+const stkBonus = n => n >= 10 ? 3 : n >= 6 ? 2 : n >= 3 ? 1 : 0;
 const rewOf = c => { const R = REW(c.diff); return c.boss ? { ...R, g: R.g * (1 + c.boss), r: R.r * 2 } : R; };
 const DIFF_KO = ['쉬움', '보통', '어려움'];
 // 체육관 등급 배지 (경완 2026-10-29 '배지 개념을 체육관 등급이랑 통합'): 다음 등급 문턱 바로 앞에서 '승급 심사' 보스를 이겨야 올라간다.
@@ -590,7 +592,7 @@ function arrive(c) {
     const { s, lost } = staffFight(c); beat = lost.length;
     if (s) {
       const R = REW(c.diff), r0 = g.rep || 0;
-      const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? 1.5 : 1))); addRep(Math.max(1, Math.round(R.r * (s.trait === 'star' ? 1.5 : 1)))); const rep = (g.rep || 0) - r0;
+      const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? 1.5 : 1))); g.stk = (g.stk | 0) + 1; addRep(Math.max(1, Math.round(R.r * (s.trait === 'star' ? 1.5 : 1))) + stkBonus(g.stk)); const rep = (g.rep || 0) - r0;
       blocked(c);
       glog('sf', `${sfName(s)}${jong(s.nm) ? '이' : '가'} ${cn}${jong(c.nm) ? '을' : '를'} 막아 냈다! <small>+${gold}G · 평판 +${rep}</small>`, c.t); return;
     }
@@ -687,13 +689,13 @@ async function challenge() {
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : pick(WIN_LINES), lose: N ? N.ln[2].replace('{me}', me) : pick(LOSE_LINES) };
     document.body.classList.add('gymBattle');
     let res;
-    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: rewOf(c).g, r: rewOf(c).r, rl: Math.max(-(g.rep || 0), rewOf(c).rl) }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: rewOf(c).g, r: rewOf(c).r + stkBonus((g.stk | 0) + 1), rl: Math.max(-(g.rep || 0), rewOf(c).rl) }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); }   // 배틀 끝나고 돌아오면 아래 대화창은 숨김 (경완 2026-10-29)
     g.q.shift(); const R = rewOf(c), won = !!res?.won, now = Date.now();
     let gold = 0, rep = 0;
     const r0 = g.rep || 0;
-    if (won) { gold = addG(R.g); addRep(R.r); g.w++; if (g.wk) g.wk.w++; blocked(c); res.used.forEach(id => GA.addFr(id, R.fr)); }
-    else { if (c.boss) g.bsN.r = now + rnd(2, 4) * H; addRep(R.rl); g.l++; if (g.wk) g.wk.l++; }   // 승급 심사에서 지면 몇 시간 뒤 다시 온다
+    if (won) { g.stk = (g.stk | 0) + 1; gold = addG(R.g); addRep(R.r + stkBonus(g.stk)); g.w++; if (g.wk) g.wk.w++; blocked(c); res.used.forEach(id => GA.addFr(id, R.fr)); }
+    else { g.stk = 0; if (c.boss) g.bsN.r = now + rnd(2, 4) * H; addRep(R.rl); g.l++; if (g.wk) g.wk.l++; }   // 승급 심사에서 지면 몇 시간 뒤 다시 온다
     rep = (g.rep || 0) - r0;
     if (N && !c.sc) { const x = g.nt[N.id] || { s: 0 }; g.nt[N.id] = won ? { s: x.s + 1, n: now + rnd(2, 3.5) * DAY } : { s: x.s, n: now + rnd(.8, 1.5) * DAY }; }
     glog(won ? 'win' : 'lose', `${esc(c.cls)} <b>${esc(c.nm)}</b>${won ? `에게 이겼다! <small>+${gold}G · 평판 +${rep}</small>` : `에게 졌다… <small>평판 ${rep}</small>`}`);
@@ -711,7 +713,7 @@ function resultPop(c, res, gold, rep, R) {
   const rows = (res?.used || []).map(id => { const P = S.box.find(p => p.id === id); if (!P) return ''; const x = xr[id], m = st().mon?.[id];
     return `<div class="rs-mon"><img alt="" data-th="${P.id}"><b>${esc(SPECIES[P.sp]?.n || '')}</b><span>Lv.${m?.lv || '?'}${x && x.lv > x.lv0 ? ` <em>▲${x.lv - x.lv0}</em>` : ''}</span><small>${x ? `경험치 +${x.n.toLocaleString()}` : '경험치 없음'}${won ? ` · 친밀도 +${R.fr}` : ''}</small>${x?.learned?.length ? `<small class="nw">새 기술: ${x.learned.map(([id]) => esc(GB().mvKo(id))).join(', ')}</small>` : ''}</div>`; }).join('');
   return new Promise(ok => { const p = pop(`<h4>${won ? '승리!' : res?.quit ? '기권했다' : '패배…'}</h4>
-      <div class="rs-sum">${won ? `<span><i class="coin"></i> +${gold}G</span>` : ''}</div>${repBox(rep)}
+      <div class="rs-sum">${won ? `<span><i class="coin"></i> +${gold}G</span>` : ''}${won && stkBonus(st().stk | 0) ? `<span class="rs-stk">${st().stk}연승! 평판 +${stkBonus(st().stk)}</span>` : ''}</div>${repBox(rep)}
       <div class="rs-mons">${rows}</div><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => { close(); ok(); });
     GB()?.fillTh(p); repAnim(p, rep); });
 }
