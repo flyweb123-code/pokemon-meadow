@@ -807,7 +807,7 @@ function guyAsk() {
 }
 function renderTop() {
   const g = st(), G = gradeOf(g.rep || 0);
-  $g('.gy-nm').innerHTML = `${tyIcon(g.ty)}<span>${esc(g.nm)}</span>`;
+  { const n = $g('.gy-nm'); n.innerHTML = `<span>${esc(g.nm)}</span>`; const t = n.firstChild; t.style.fontSize = ''; requestAnimationFrame(() => { let f = parseFloat(getComputedStyle(t).fontSize); while (t.scrollWidth > t.clientWidth + 1 && f > 11) t.style.fontSize = (--f) + 'px'; }); }   // 타입 아이콘 빼고 이름만, 예전에 길게 지은 이름은 글자를 줄여 맞춤 (경완 2026-10-29)
   $g('.gy-grade').textContent = G.n;
   { const b = $g('.gy-bd'), k = `${g.ty}.${G.i}`; if (b.dataset.k !== k) { b.dataset.k = k; b.innerHTML = gEmb(G.i); } }   // 등급 배지를 타이틀 박스 가운데에 (경완 2026-10-29)
   $g('.gy-bar>i').style.width = (G.hi > G.lo ? clampN(((g.rep || 0) - G.lo) / (G.hi - G.lo), 0, 1) : 1) * 100 + '%';
@@ -1067,12 +1067,12 @@ function setup(only, re) {
     } else {
       if (!dr.nm) dr.nm = defName(dr.ty);
       body = `<h3>체육관 이름</h3><p class="gy-lead">도전자들이 보는 이름이에요.</p>
-        <div class="gy-name"><input type="text" maxlength="14" value="${esc(dr.nm)}" aria-label="체육관 이름"><span class="gy-cnt"></span></div>
+        <div class="gy-name"><input type="text" maxlength="8" value="${esc(dr.nm)}" aria-label="체육관 이름"><span class="gy-cnt"></span></div>
         ${first || re ? `<div class="gy-sum"><div class="sm-map"><img data-ms="${dr.d}" data-gi="${first ? 0 : ''}" alt=""></div><div class="sm-row"><b>${dzBase(dr.d).n}</b><span class="sm-ty" style="--tc:${GA.TYPE_C?.[dr.ty] || '#888'}">${tyIcon(dr.ty)}${TYPE_KO[dr.ty]} 타입</span></div></div>` : ''}`;
     }
     el.innerHTML = `${head}<div class="gy-body">${body}</div><button class="gy-key main gy-next" type="button" ${k === 'ty' && !dr.ty ? 'disabled' : ''}>${btn}</button>`;
     fillMs(el); const inp = el.querySelector('input');
-    if (inp) { const cnt = () => { el.querySelector('.gy-cnt').textContent = `${inp.value.length}/14`; }; cnt(); inp.oninput = () => { dr.nm = inp.value; cnt(); el.querySelector('.gy-next').disabled = !inp.value.trim(); }; }
+    if (inp) { const cnt = () => { el.querySelector('.gy-cnt').textContent = `${inp.value.length}/8`; }; cnt(); inp.oninput = () => { dr.nm = inp.value; cnt(); el.querySelector('.gy-next').disabled = !inp.value.trim(); }; }
   };
   el.onclick = e => {
     const b = e.target.closest('button'); if (!b) return; sfx('tap');
@@ -1082,7 +1082,7 @@ function setup(only, re) {
     if (b.dataset.ty) { const t = +b.dataset.ty, auto = !dr.nm || dr.nm === defName(dr.ty); dr.ty = t; if (auto) dr.nm = ''; draw(); return; }
     if (b.classList.contains('gy-next')) {
       if (steps[i] === 'ty' && !dr.ty) return;
-      if (steps[i] === 'nm') { dr.nm = (el.querySelector('input').value || '').trim().slice(0, 14) || defName(dr.ty); }
+      if (steps[i] === 'nm') { dr.nm = (el.querySelector('input').value || '').trim().slice(0, 8) || defName(dr.ty); }
       if (i < steps.length - 1) { i++; draw(); return; }
       finish();
     }
