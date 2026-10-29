@@ -1321,3 +1321,16 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .sf-tp{cursor:pointer;border-radius:6px}.sf-tp:active{translate:0 2px;background:rgba(0,0,0,.06)}
 .mp-fth{flex:none;display:grid;place-items:center;width:84px;height:84px;background:#e4efd8;box-shadow:inset 0 0 0 3px #9aa4b8}.mp-fth img{width:72px;height:72px;image-rendering:pixelated;object-fit:contain}
 .mp-line .mp-mv b{flex:0 1 auto!important;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mp-line .mp-mv em{flex:none}
+/* 훈련장 슬롯 3×2 (경완 2026-10-29): 필드 슬롯 모양 */
+.ts-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.ts-slot{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:178px;padding:8px 6px 8px!important;border:3px solid var(--inner)!important;background:#fff!important;box-shadow:none!important;border-radius:0;font:inherit;color:var(--win-ink);text-align:center}
+.ts-slot.empty{justify-content:center;background:rgba(0,0,0,.04)!important;border-style:dashed!important}.ts-slot.empty span{font-size:30px;color:var(--dim)}
+.ts-slot img{width:64px;height:64px;object-fit:contain;image-rendering:pixelated;margin-top:6px}
+.ts-slot b{font-size:13px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ts-slot .ts-lv{font-size:12px;color:var(--dim)}.ts-slot .ts-lv em{font-style:normal;color:#d83a30;font-weight:700}
+.ts-slot .ts-x{position:absolute;right:0;top:0;font-size:15px;line-height:1;padding:5px 6px 8px 10px;color:var(--dim);z-index:1}.ts-slot .ts-x:active{color:var(--frame)}
+.ts-g{display:flex;align-items:center;gap:4px;width:92%;font-size:10px;color:var(--dim)}.ts-g>i{font-style:normal;flex:none;width:34px;text-align:left}
+.ts-g .mini{flex:1;height:6px;background:#e4e4ec;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}.ts-g .mini i{display:block;height:100%;background:#4a9ad8}.ts-g.h .mini i{background:#3e9a52}
+.ts-slot small{font-size:10px;color:var(--dim);margin-top:auto}
+.ts-tip{margin:10px 0 0;font-size:12px;color:var(--dim);text-align:center}
+.ts-win .win{overflow:auto}
