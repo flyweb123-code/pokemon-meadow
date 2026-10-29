@@ -941,9 +941,9 @@ function boxWin(add, tmId, done, O) {   // O: 다른 곳에서 쓰는 고르기 
     const key = { lv: x => (x.m?.lv || 0) * 1e3 + GA.ivSum(x.P), rank: x => (RK_ORD[GA.rankOf(x.P)] || 0) * 1e5 + (x.m?.lv || 0), new: x => +x.P.t || +x.P.id || 0 }[bxSort] || (x => (x.m?.lv || 0));
     // 라인업 고르기는 가진 포켓몬 전부: 다른 타입은 흐리게(못 고름), 고를 수 있는 포켓몬이 앞에 (경완 2026-10-28)
     const all = O ? O.list() : S.box.filter(tyOk), L = all.filter(P => !q || nmOf(P).toLowerCase().includes(q) || String(P.sp) === q.replace(/^0+/, '')).map(P => { const ok = O ? O.ok(P) : tyOk(P) && (!tmId || tmCan(P, tmId)); return { P, ok, f: O?.first ? +!!O.first(P) : 0, m: O || tyOk(P) ? gm(P) : null }; }).sort((a, b) => (b.ok - a.ok) || (b.f - a.f) || (key(b) - key(a)) * bxDir);
-    w.querySelector('.tcount').innerHTML = q ? `찾은 포켓몬 <b>${L.length}</b>마리` : O ? `포켓몬 <b>${all.length}</b>마리` : `${TYPE_KO[S.gym.ty]} 타입 <b>${all.length}</b>마리`;
+    w.querySelector('.tcount').innerHTML = q ? `찾은 포켓몬 <b>${L.length}</b>마리` : `<b>${all.length}</b>마리`;   // 마릿수만 (경완 2026-10-29)
     grid.innerHTML = L.length ? L.map(({ P, m, ok }) => { const rk = GA.rankOf(P), on = lu.has(P.id);
-      return `<button class="pk${P.shiny ? ' shiny' : ''}${GA.pkCls?.(P) || ''}${ok ? '' : ' bw-no'}" data-id="${P.id}" ${ok ? '' : 'disabled'} style="--shue:${GA.shinyHue(P.sp)}deg"><span class="rk ${rk}">${rk}</span>${(t => t ? `<span class="tgs"><span class="tg">${t}</span></span>` : '')(O ? O.tag?.(P) : on ? '라인업' : '')}<img alt="" data-th="${P.id}"><span class="nm">${esc(nmOf(P))}${P.shiny ? '<b class="sh">✦</b>' : ''}</span>${tmId && !ok ? `<span class="bw-lv">${m?.mv.includes(tmId) ? '이미 앎' : '못 배움'}</span>` : m ? `<span class="bw-lv">Lv.${m.lv}</span>` : `<span class="bw-lv">${(SPECIES[P.sp]?.t || []).map(t => TYPE_KO[t]).join("·")}</span>`}</button>`; }).join('')
+      return `<button class="pk${P.shiny ? ' shiny' : ''}${GA.pkCls?.(P) || ''}${ok ? '' : ' bw-no'}" data-id="${P.id}" ${ok ? '' : 'disabled'} style="--shue:${GA.shinyHue(P.sp)}deg"><span class="rk ${rk}">${rk}</span>${(T => T.length ? `<span class="tgs">${T.map(t => `<span class="tg${t === '훈련중' || t === '훈련 중' ? ' tg-tr' : ''}">${t}</span>`).join('')}</span>` : '')(O ? [O.tag?.(P)].filter(Boolean) : [on && '라인업', inTr(P.id) && '훈련중'].filter(Boolean))}<img alt="" data-th="${P.id}"><span class="nm">${esc(nmOf(P))}${P.shiny ? '<b class="sh">✦</b>' : ''}</span>${tmId && !ok ? `<span class="bw-lv">${m?.mv.includes(tmId) ? '이미 앎' : '못 배움'}</span>` : m ? `<span class="bw-lv">Lv.${m.lv}</span>` : `<span class="bw-lv">${(SPECIES[P.sp]?.t || []).map(t => TYPE_KO[t]).join("·")}</span>`}</button>`; }).join('')
       : `<p class="empty-msg">${q ? '찾는 포켓몬이 없어요.' : `${TYPE_KO[S.gym.ty]} 타입 포켓몬이 아직 없어요.`}</p>`;
     fillTh(grid);
   };
@@ -956,6 +956,7 @@ function boxWin(add, tmId, done, O) {   // O: 다른 곳에서 쓰는 고르기 
     const id = +c.dataset.id || c.dataset.id;
     if (O) { const P = boxOf(id); if (P) O.pick(P, { close: () => w.remove(), redraw: () => { const h = w.querySelector('.bw-hd h4'); if (h) h.innerHTML = O.title(); draw(); } }); return; }
     if (tmId) { const P = boxOf(id); if (!P || !tmCan(P, tmId)) return; w.remove(); teachTm(P, tmId, done); return; }
+    if (add) return monPop(id, 'add');   // 라인업 고르기도 상세카드 먼저, 버튼은 라인업에 넣기만 (경완 2026-10-29)
     if (add) { const cur = curLu(), j = cur.indexOf(id); if (j >= 0) cur.splice(j, 1); else if (cur.length < 6) cur.push(id); else return;   /* 경완 2026-10-28: 라인업에 든 포켓몬을 다시 누르면 빠진다 */ GA.save(); drawTab(); if (cur.length >= 6 && j < 0) w.remove(); else { const sm = w.querySelector('.bw-hd small'); if (sm) sm.textContent = `${cur.length}/6`; draw(); } return; }
     monPop(id, true);
   };
@@ -965,28 +966,33 @@ function boxWin(add, tmId, done, O) {   // O: 다른 곳에서 쓰는 고르기 
 }
 const boxPop = () => boxWin(false);
 // 정보 카드 html (넘기기 때 옆 카드도 같은 걸로 그린다)
-function monHtml(P) {
+const inTr = id => !!S.gym?.tr?.some(e => e.id === id);
+function monHtml(P, mode) {
   const inLu = curLu().includes(P.id); const m = gm(P), g = growth(P.sp), a = xpAt(g, m.lv), b = xpAt(g, m.lv + 1), mv = m.mv.map(x => mvOf(x)).filter(Boolean);
-  return `<div class="mp-head">${thumb(P)}<div class="mp-hd"><h4>${esc(nmOf(P))}</h4><p class="mp-tys">${(SPECIES[P.sp]?.t || []).map(t => tyTag(t)).join('')}</p><p class="mp-lv"><b>Lv.${m.lv}</b> · 랭크 ${GA.rankOf(P)}</p>${frRow(P)}<i class="mp-xp"><i style="width:${m.lv >= LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><small class="mp-xpn">${m.lv >= LV_MAX ? '최고 레벨' : `${Math.max(0, m.xp - a).toLocaleString()}/${(b - a).toLocaleString()}`}</small></div></div>
+  return `<div class="mp-head">${thumb(P)}<div class="mp-hd"><h4>${esc(nmOf(P))}${inTr(P.id) ? '<em class="tr-tag">훈련중</em>' : ''}</h4><p class="mp-tys">${(SPECIES[P.sp]?.t || []).map(t => tyTag(t)).join('')}</p><p class="mp-lv"><b>Lv.${m.lv}</b> · 랭크 ${GA.rankOf(P)}</p>${frRow(P)}<i class="mp-xp"><i style="width:${m.lv >= LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><small class="mp-xpn">${m.lv >= LV_MAX ? '최고 레벨' : `${Math.max(0, m.xp - a).toLocaleString()}/${(b - a).toLocaleString()}`}</small></div></div>
     <div class="mp-na"><button type="button" class="mp-nat" data-a="nat"><small>성격 <i class="mp-more">›</i></small><p><b>${natKo(m.nat)}</b></p></button><button type="button" class="mp-ab" data-a="ab"><small>특성 <i class="mp-more">›</i></small><p><b${m.ha ? ' class="ha"' : ''}>${abKo(m.ab)}</b>${m.ha ? '<em class="ha-tag">숨겨진</em>' : ''}</p></button></div>
     ${ivHex(P, m)}
     <div class="mp-mvh"><small>기술</small><button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button></div>
     <div class="mp-moves mp-line">${mv.map(x => `<button type="button" class="mp-mv" data-a="i${x[0]}" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}">${tyTag(x[2], x[3])}<b>${esc(x[1])}</b><em>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'} · PP ${x[6] || '—'}</em></button>`).join('')}</div>
-    <div class="gy-btns mp-btns"><button data-a="tm">기술 가르치기</button>${inLu ? '<button data-a="rm" class="danger">라인업에서 빼기</button>' : `<button data-a="add" class="main" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업에 넣기</button>`}</div><button class="mp-x" data-a="x" aria-label="닫기">✕</button>`;
+    ${mode === 'add' ? `<div class="gy-btns one mp-btns">${inLu ? '<button data-a="rm" class="danger">라인업에서 빼기</button>' : `<button data-a="add" class="main" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업에 넣기</button>`}</div>` : `<div class="gy-btns mp-btns"><button data-a="tm">기술 가르치기</button><button data-a="tr" class="${inTr(P.id) ? 'tr-on' : 'tr-go'}">${inTr(P.id) ? '훈련장에서 빼기' : '훈련장으로'}</button></div>`}<button class="mp-x" data-a="x" aria-label="닫기">✕</button>`;
 }
 function monPop(id, fromBox, under) {
   const P = boxOf(+id || id); if (!P) return; const m = gm(P), nt = D.nt[m.nat] || ['', '', ''], h = D.sp[P.sp]?.h;
   // 특성 팝업: 숨겨진 특성은 안내 문구 대신 눌러서 효과 (경완 2026-10-29)
   const abShow = (k, hid, hk) => gymPop(`<h4>${abKo(k)}${hid ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</h4><p class="gy-msg ab-d">${esc(AB_D?.[k] || '효과 설명이 아직 없어요.')}</p>${hk ? `<button type="button" class="ab-hid" data-a="hab"><small>숨겨진 특성</small><b>${abKo(hk)}</b><i>›</i></button>` : ''}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b, c2) => { if (b === 'hab') return abShow(hk, true); c2(); });
   // 정보 카드 (경완 2026-10-29): 이름 밑 타입·레벨·경험치 왼쪽 맞춤, 경험치 막대는 끝까지 / 성격·특성 한 줄(눌러서 효과) / 개체값 › / 기술(누르면 상세, 위에 '기술 바꾸기') / 기술 가르치기
-  const p = gymPop(monHtml(P),
+  const p = gymPop(monHtml(P, fromBox),
     (a, close) => { const c = curLu(), i = c.indexOf(P.id);
       if (a[0] === 'i' && a.length > 1) return mvInfo(a.slice(1));
       if (a === 'nat') return gymPop(`<h4>${natKo(m.nat)}</h4><p class="gy-msg nat-d">${nt[1] ? `<span class="nat-c up">${STAT_KO[nt[1]]} ▲</span><span class="nat-c dn">${STAT_KO[nt[2]]} ▼</span>` : '<span class="nat-c">능력 변화 없음</span>'}</p><p class="gy-msg ab-d">${nt[1] ? `${STAT_KO[nt[1]]}${jong(STAT_KO[nt[1]]) ? '이' : '가'} 잘 오르고, ${STAT_KO[nt[2]]}${jong(STAT_KO[nt[2]]) ? '이' : '가'} 덜 오르는 성격이에요.` : '모든 능력이 고르게 오르는 성격이에요.'}</p><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b2, c2) => c2());   // 성격 효과도 눌러서 (경완 2026-10-29)
       if (a === 'ab') return abShow(m.ab, m.ha, !m.ha && h && h !== m.ab ? h : null);   // 특성 효과는 눌러서 팝업 (경완 2026-10-29)
       if (a === 'mv') { close(); movesPop(P, () => monPop(P.id, fromBox)); return; }
       if (a === 'tm') { close(); tmPop(P, () => monPop(P.id, fromBox)); return; }
-      if (a === 'rm' && i >= 0) c.splice(i, 1); if (a === 'add' && i < 0 && c.length < 6 && tyOk(P)) c.push(P.id); close(); GA.save(); drawTab(); if (fromBox) bxRefresh?.(); });
+      if (a === 'tr') return window.GymManage?.trSend(P, () => { drawTab(); bxRefresh?.(); monPop(P.id, fromBox, p); });
+      if (a === 'rm' && i >= 0) c.splice(i, 1); if (a === 'add' && i < 0 && c.length < 6 && tyOk(P)) c.push(P.id); close(); GA.save(); drawTab();
+      if (fromBox === 'add') { const bw = document.querySelector('#gym .gy-boxw'); if (a === 'add' && c.length >= 6) bw?.remove(); else { const sm = bw?.querySelector('.bw-hd small'); if (sm) sm.textContent = `${c.length}/6`; } }   // 라인업 고르기: 6마리 차면 박스도 닫힘
+      if (fromBox) bxRefresh?.(); });
+  p.querySelector('.win').classList.toggle('mp-tr', inTr(P.id));   // 훈련 중이면 카드 색이 바뀐다 (경완 2026-10-29)
   // 라인업 포켓몬은 카드를 좌우로 밀면 다음·이전 포켓몬: 꾸미기 모드 포켓몬 박스처럼 옆 카드가 붙어 따라 들어온다, 좌우 힌트 화살표 (경완 2026-10-29)
   const L = curLu(), k = L.indexOf(P.id), w = p.querySelector('.win');
   if (under) { p.style.background = 'transparent'; p.style.backdropFilter = p.style.webkitBackdropFilter = 'none'; Promise.race([Promise.all([...p.querySelectorAll('img')].map(i => new Promise(r => { if (i.complete && i.naturalWidth) r(); else { i.onload = i.onerror = r; } }))), new Promise(r => setTimeout(r, 300))]).then(() => { under.remove(); p.style.background = p.style.backdropFilter = p.style.webkitBackdropFilter = ''; }); }
@@ -1000,6 +1006,20 @@ function monPop(id, fromBox, under) {
     arrows.forEach(a => a.addEventListener('click', e => { e.stopPropagation(); go(+a.dataset.nav); }));
   }
   return p;
+}
+// 남의 포켓몬 상세카드 (경완 2026-10-29 '지원서 포켓몬 누르면 상세카드'): 종·레벨로 만든 보기 전용 카드, 같은 지원서에선 같은 개체
+const FC = {};
+function foePop(sp, lv, key) {
+  const e = FC[key] || (FC[key] = foeEntry(sp, lv)), nt = D.nt[e.nat] || ['', '', ''], mv = (e.mv || []).map(x => mvOf(x)).filter(Boolean), ha = e.ab === D.sp[sp]?.h;
+  gymPop(`<div class="mp-head"><span class="mp-fth"><img alt="" data-sp="${sp}"></span><div class="mp-hd"><h4>${esc(SPECIES[sp]?.n || '')}</h4><p class="mp-tys">${(SPECIES[sp]?.t || []).map(t => tyTag(t)).join('')}</p><p class="mp-lv"><b>Lv.${lv}</b></p></div></div>
+    <div class="mp-na"><button type="button" class="mp-nat" data-a="nat"><small>성격 <i class="mp-more">›</i></small><p><b>${natKo(e.nat)}</b></p></button><button type="button" class="mp-ab" data-a="ab"><small>특성 <i class="mp-more">›</i></small><p><b${ha ? ' class="ha"' : ''}>${abKo(e.ab)}</b>${ha ? '<em class="ha-tag">숨겨진</em>' : ''}</p></button></div>
+    ${ivHex({ iv: e.iv }, e)}
+    <div class="mp-mvh"><small>기술</small></div>
+    <div class="mp-moves mp-line">${mv.map(x => mvRow(x, 'i' + x[0])).join('')}</div><button class="mp-x" data-a="x" aria-label="닫기">✕</button>`, (a, close) => {
+    if (a === 'x') return close();
+    if (a[0] === 'i' && a.length > 1) return mvInfo(a.slice(1));
+    if (a === 'nat') return gymPop(`<h4>${natKo(e.nat)}</h4><p class="gy-msg nat-d">${nt[1] ? `<span class="nat-c up">${STAT_KO[nt[1]]} ▲</span><span class="nat-c dn">${STAT_KO[nt[2]]} ▼</span>` : '<span class="nat-c">능력 변화 없음</span>'}</p><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b, c2) => c2());
+    if (a === 'ab') return gymPop(`<h4>${abKo(e.ab)}${ha ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</h4><p class="gy-msg ab-d">${esc(AB_D?.[e.ab] || '효과 설명이 아직 없어요.')}</p><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b, c2) => c2()); });
 }
 // 기술 상세 (경완 2026-10-29): 정보 카드·창고에서 기술을 누르면. teach 가 있으면 '기술 가르치기'
 function mvInfo(id, teach) {
@@ -1085,5 +1105,5 @@ async function practice() {
   finally { document.body.classList.remove('gymBattle'); drawTab(); }
 }
 
-window.GymBattle = { tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b) => monPop(i, b), mvInfo, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, get _B() { return B; } };
+window.GymBattle = { tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b) => monPop(i, b), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, get _B() { return B; } };
 })();
