@@ -468,7 +468,7 @@ function drawStaff() {
   const cand = c ? `<div class="cv-deck">${C.map((x, i) => `<article class="cv-card" data-i="${i}"><header><b>트레이너 지원서</b><span class="cv-tm"><em>남은 시간</em><b class="cv-left" data-exp="${x.exp}">${cvLeft(x.exp - now)}</b></span></header>
       <div class="cv-photo"><img alt="" src="${K.trSrc(x.tr)}"><div class="cv-nm"><small>${esc(x.cls)}</small><b>${esc(x.nm)}</b></div></div>
       <p class="cv-say">“${esc(sayOf(x))}”</p>
-      <dl class="cv-dl"><dt>특성</dt><dd>${trtBox(x.trait, true, true)}</dd><dt>포켓몬</dt><dd>${teamIc(x.team, x.id)}</dd><dt>평균 레벨</dt><dd>Lv.${Math.round(K.teamLv(x.team))}</dd><dt>막으면 평판</dt><dd><b class="cv-rep">+${K.sfRep(x, 1)}</b></dd><dt>희망 월급</dt><dd>7일에 <b>${x.wage}G</b></dd></dl>
+      <dl class="cv-dl"><dt>특성</dt><dd>${trtBox(x.trait, true, true)}</dd><dt>포켓몬</dt><dd>${teamIc(x.team, x.id)}</dd><dt>평균 레벨</dt><dd>Lv.${Math.round(K.teamLv(x.team))}</dd><dt>희망 월급</dt><dd>7일에 <b>${x.wage}G</b></dd></dl>
       <div class="cv-btns"><button class="gy-key" data-no="${i}">돌려보내기</button><button class="gy-key main" data-hire="${i}">고용하기</button></div></article>`).join('')}</div>
       ${C.length > 1 ? `<div class="cv-dots">${C.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : ''}`
       : `<p class="sf-none">지금은 지원서가 없어요. 새 지원자가 오면 트레이너 단추에 빨간 점이 떠요.</p>`;

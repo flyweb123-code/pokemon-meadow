@@ -340,12 +340,21 @@ function playAnim(side, A) {
 // 볼 던지기 → 펑 → 하얗게 커지며 나타남 (4세대)
 async function sendOut(side, A) {
   A.gif = await pickGif(side, A); if (!B) return;
-  const m = monEl(side); m.classList.remove('faint', 'on', 'recall', 'fmc'); showMon(side, A, false); m.classList.add('ball');
+  const m = monEl(side); m.classList.remove('faint', 'on', 'recall', 'fmc', 'sub', 'hid'); showMon(side, A, false); m.classList.add('ball');
   await throwBall(side);
   ballPoof(side); se('BOWA2', { pan: panOf(side) }); m.classList.add('on'); await wait(60);
   m.classList.remove('ball'); await wait(260); try { GA.cry?.(A.sp); } catch (e) {} playAnim(side, A);
+  if (A.shiny) await shinyFx(side);   // 색이 다른 포켓몬은 나올 때 반짝반짝 (본가)
   paintHb(side, A); $b(`.bt-hb.${side}`).classList.add('on'); await wait(450);
 }
+async function shinyFx(side) {
+  const m = monEl(side); se('REAPOKE', { pan: panOf(side) });
+  for (let i = 0; i < 7; i++) { const k = document.createElement('i'); k.className = 'bt-shn'; k.style.setProperty('--a', (i * 51) + 'deg'); k.style.animationDelay = (i * 60) + 'ms'; m.appendChild(k); setTimeout(() => k.remove(), 1100); }
+  await wait(800);
+}
+// 대타: 인형으로 바뀐다 / 공중날기·구멍파기 등 숨는 기술: 다음 기술까지 사라진다 (본가)
+function subFx(s, on) { const m = monEl(s); if (!m) return; let d = m.querySelector('.bt-sub'); if (!d) { d = document.createElement('i'); d.className = 'bt-sub'; m.appendChild(d); } m.classList.toggle('sub', on); }
+const HIDE_MV = /^(fly|dig|dive|bounce|phantomforce|shadowforce|skydrop)$/;
 function throwBall(side) {
   const fx = $b('.bt-fx'), b = document.createElement('i'); b.className = 'ball'; fx.appendChild(b);
   const [x0, y0, x1, y1] = side === 'e' ? [190, 40, 176, 66] : [40, 120, 80, 112];
@@ -735,6 +744,7 @@ async function handle(a) {
     }
     case 'move': {
       const s = sideOf(a[2]), X = A(s); const id = toID(a[3]); B.lastMove = { s, id };
+      monEl(s).classList.remove('hid');   // 공중날기·구멍파기 2턴째: 다시 나타나며 공격
       await msg(`${who(a[2])}의 ${mvKo(id)}!`, 0);
       if (a.includes('[notarget]')) break;
       if (noFx()) break;   // 효과가 없는 기술·실패·방어에 막힘은 본가처럼 연출 없이 바로 그 말 (경완 2026-10-29)   // 상대가 먼저 쓰러져 맞을 대상이 없으면 연출 없이 '하지만 상대가 없었다' (본가처럼, 경완 2026-10-29)
@@ -766,13 +776,38 @@ async function handle(a) {
     case '-boost': case '-unboost': { const n = +a[4] || 0, up = k === '-boost', s = sideOf(a[2]); await statFx(s, up); await msg(`${who(a[2])}의 ${iga(STAT_KO[a[3]] || a[3])} ${n >= 3 ? '매우 크게 ' : n === 2 ? '크게 ' : n === 0 ? '더 이상 ' : ''}${n === 0 ? (up ? '올라가지 않는다!' : '떨어지지 않는다!') : up ? '올라갔다!' : '떨어졌다!'}`); break; }
     case '-weather': { const w = a[2]; if (a.includes('[upkeep]')) { const u = { Sandstorm: ['sandstorm', '모래바람이 세차게 분다'], Hail: ['hail', '싸라기눈이 계속 내리고 있다'], Snow: ['hail', '눈이 계속 내리고 있다'], RainDance: ['raindance', '비가 계속 내리고 있다'], SunnyDay: ['sunnyday', '햇살이 강하다'] }[w];   // 턴 끝마다 본가처럼 날씨 연출 (경완 2026-10-29)
         if (u) { await moveFx('p', u[0]); await msg(u[1], 300); } break; } const T = { RainDance: '비가 내리기 시작했다!', SunnyDay: '햇살이 강해졌다!', Sandstorm: '모래바람이 불기 시작했다!', Hail: '싸라기눈이 내리기 시작했다!', Snow: '눈이 내리기 시작했다!', none: '날씨가 원래대로 돌아왔다!' }; if (T[w]) await msg(T[w]); break; }
-    case '-start': { if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); const t = startMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
-    case '-end': { const t = endMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
+    case '-start': { if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); if (/Substitute/.test(a[3])) subFx(sideOf(a[2]), true); const t = startMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
+    case '-end': { if (/Substitute/.test(a[3])) subFx(sideOf(a[2]), false); const t = endMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
     case '-activate': { if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); const t = actMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
     case '-ability': await msg(`${who(a[2])}의 ${abKo(toID(a[3]))}!`, 500); break;
     case '-hitcount': await msg(`${a[3]}번 맞았다!`); break;
     case '-ohko': await msg('일격필살!'); break;
-    case '-prepare': await msg(`${who(a[2])}${jong(nmIn(a[2])) ? '은' : '는'} 힘을 모으고 있다!`); break;
+    case '-prepare': { const id = toID(a[3]), n = who(a[2]), e = jong(nmIn(a[2])) ? '은' : '는';
+      if (HIDE_MV.test(id)) { await moveFx(sideOf(a[2]), id); monEl(sideOf(a[2])).classList.add('hid'); }
+      const T = { fly: '하늘 높이 날아올랐다!', dig: '땅으로 파고들었다!', dive: '물속으로 숨었다!', bounce: '높이 뛰어올랐다!', phantomforce: '모습을 감췄다!', shadowforce: '모습을 감췄다!', solarbeam: '빛을 흡수했다!', solarblade: '빛을 흡수했다!', skullbash: '목을 움츠렸다!', skyattack: '격렬한 빛에 휩싸였다!', razorwind: '바람을 일으켰다!' };
+      await msg(`${n}${e} ${T[id] || '힘을 모으고 있다!'}`); break; }
+    case '-transform': { const s = sideOf(a[2]), X = A(s), T = A(other(s)); if (!X || !T) break;   // 변신: 상대 모습 그대로 (메타몽 등)
+      await moveFx(s, 'transform'); X.sp = T.sp; X.fm = T.fm; X.g = T.g; X.gif = await pickGif(s, X); if (!B) break; showMon(s, X, true); playAnim(s, X);
+      await msg(`${eun(who(a[2]))} ${T.nm}${jong(T.nm) ? '으로' : '로'} 변신했다!`); break; }
+    case '-enditem': { const n = who(a[2]), it = itKo(a[3]), eat = a.includes('[eat]'), from = (a.find(x => /^\[from\] /.test(x)) || '').slice(7);
+      if (/stealeat|move: (Knock Off|Thief|Covet|Bug Bite|Pluck|Incinerate)/i.test(from)) { await msg(`${n}의 ${eun(it)} 사라졌다!`); break; }
+      if (eat) { await moveFx(sideOf(a[2]), 'stockpile'); await msg(`${eun(n)} ${eul(it)} 먹었다!`); break; }
+      if (/Focus Sash|Focus Band/.test(a[3])) { await msg(`${eun(n)} ${it}${jong(it) ? '으로' : '로'} 버텼다!`); break; }
+      if (/Air Balloon/.test(a[3])) { await msg(`${n}의 풍선이 터졌다!`); break; }
+      if (/White Herb|Mental Herb|Power Herb/.test(a[3])) { await msg(`${eun(n)} ${eul(it)} 사용했다!`); break; }
+      break; }
+    case '-item': { const n = who(a[2]), it = itKo(a[3]), from = (a.find(x => /^\[from\] /.test(x)) || '').slice(7);
+      if (/Air Balloon/.test(a[3])) await msg(`${eun(n)} 풍선으로 떠 있다!`);
+      else if (/Frisk/.test(from)) await msg(`${eun(n)} ${eul(it)} 가지고 있다!`);
+      else await msg(`${eun(n)} ${eul(it)} 얻었다!`); break; }
+    case '-clearallboost': await msg('모든 능력 변화가 원래대로 돌아왔다!'); break;
+    case '-clearboost': await msg(`${who(a[2])}의 능력 변화가 원래대로 돌아왔다!`); break;
+    case '-clearnegativeboost': await msg(`${who(a[2])}의 떨어진 능력이 원래대로 돌아왔다!`); break;
+    case '-setboost': if (/atk/.test(a[3])) { await statFx(sideOf(a[2]), true); await msg(`${eun(who(a[2]))} 체력을 깎아서 공격을 최대로 올렸다!`); } break;
+    case '-copyboost': await msg(`${eun(who(a[2]))} ${who(a[3] || a[2])}의 능력 변화를 복사했다!`); break;
+    case '-swapboost': case '-invertboost': await msg(`${who(a[2])}의 능력 변화가 바뀌었다!`); break;
+    case '-singleturn': { const w = (a[3] || '').replace('move: ', ''), n = who(a[2]), T = { Protect: `${eun(n)} 방어 태세에 들어갔다!`, Detect: `${eun(n)} 방어 태세에 들어갔다!`, Endure: `${eun(n)} 버티기 태세에 들어갔다!`, 'Focus Punch': `${eun(n)} 기합을 모으고 있다!`, 'Magic Coat': `${eun(n)} 매직코트로 몸을 감쌌다!`, Snatch: `${eun(n)} 상대가 기술을 쓰기를 기다리고 있다!`, 'Helping Hand': `${eun(n)} 돕기 태세에 들어갔다!`, Roost: '' }; const t = T[w] ?? ''; if (t) await msg(t); break; }
+    case '-singlemove': { const w = (a[3] || '').replace('move: ', ''), n = who(a[2]), T = { 'Destiny Bond': `${eun(n)} 상대를 길동무로 삼으려 하고 있다!`, Grudge: `${eun(n)} 상대에게 원한을 품으려 하고 있다!`, Rage: '' }; const t = T[w] ?? ''; if (t) await msg(t); break; }
     case '-mustrecharge': break;
     case '-sidestart': { const t = sideMsg(a[2], a[3], true); if (t) await msg(t); break; }
     case '-sideend': { const t = sideMsg(a[2], a[3], false); if (t) await msg(t); break; }
@@ -804,16 +839,18 @@ async function resFx(s, from, a) {
   if (/^(Life Orb|Rocky Helmet|Rough Skin|Iron Barbs|Black Sludge|Sticky Barb|Solar Power|Dry Skin|Bad Dreams|Salt Cure|Aftermath|Liquid Ooze)$/.test(f)) return hitFx(s);
 }
 const HEAL_FX = { 'Leftovers': 'aquaring', 'Black Sludge': 'aquaring', 'Shell Bell': 'aquaring', 'Aqua Ring': 'aquaring', 'Ingrain': 'ingrain', 'Wish': 'wish', 'Grassy Terrain': 'aquaring', 'Rain Dish': 'aquaring', 'Ice Body': 'aquaring', 'Poison Heal': 'aquaring', 'Dry Skin': 'aquaring' };
-function healMsg(n, from) { const f = from.replace(/^(move|item|ability): /, ''), T = { 'Leftovers': '먹다남은음식으로 조금 회복했다!', 'Black Sludge': '검은진흙으로 조금 회복했다!', 'Aqua Ring': '아쿠아링으로 체력을 회복했다!', 'Ingrain': '뿌리로부터 양분을 흡수했다!', 'Wish': '희망사항이 이루어졌다!', 'Shell Bell': '조개껍질방울로 조금 회복했다!', 'Grassy Terrain': '그래스필드로 체력이 회복되었다!' }; return T[f] ? `${eun(n)} ${T[f]}` : `${n}의 체력이 회복되었다!`; }
+const IT_KO = { 'Sitrus Berry': '자뭉열매', 'Oran Berry': '오렌열매', 'Lum Berry': '리샘열매', 'Focus Sash': '기합의띠', 'Focus Band': '기합의머리띠', 'Air Balloon': '풍선', 'White Herb': '하양허브', 'Mental Herb': '멘탈허브', 'Power Herb': '파워풀허브', 'Leftovers': '먹다남은음식', 'Life Orb': '생명의구슬', 'Choice Scarf': '구애스카프', 'Choice Band': '구애머리띠', 'Choice Specs': '구애안경', 'Chesto Berry': '유루열매', 'Cheri Berry': '버치열매', 'Pecha Berry': '복슝열매', 'Rawst Berry': '복분열매', 'Aspear Berry': '배리열매', 'Persim Berry': '시마열매', 'Leppa Berry': '과사열매', 'Liechi Berry': '치리열매', 'Salac Berry': '캄라열매', 'Petaya Berry': '야타비열매', 'Ganlon Berry': '용아열매', 'Apicot Berry': '규살열매' };
+const itKo = nm => { const id = toID(nm || ''); return (HOLD[id] && HOLD[id][0]) || IT_KO[nm] || nm || '도구'; };
+function healMsg(n, from) { if (from === 'drain') return `${eun(n)} 상대의 체력을 흡수했다!`; const f = from.replace(/^(move|item|ability): /, ''), T = { 'Leftovers': '먹다남은음식으로 조금 회복했다!', 'Black Sludge': '검은진흙으로 조금 회복했다!', 'Aqua Ring': '아쿠아링으로 체력을 회복했다!', 'Ingrain': '뿌리로부터 양분을 흡수했다!', 'Wish': '희망사항이 이루어졌다!', 'Shell Bell': '조개껍질방울로 조금 회복했다!', 'Grassy Terrain': '그래스필드로 체력이 회복되었다!' }; return T[f] ? `${eun(n)} ${T[f]}` : `${n}의 체력이 회복되었다!`; }
 const dmgFrom = (f, id) => { const n = who(id); f = f.replace(/^item: |^ability: /, ''); const T = { brn: `${n}${jong(nmIn(id)) ? '은' : '는'} 화상 데미지를 입었다!`, psn: `${n}${jong(nmIn(id)) ? '은' : '는'} 독에 의한 데미지를 입었다!`, tox: `${n}${jong(nmIn(id)) ? '은' : '는'} 독에 의한 데미지를 입었다!`, Recoil: `${n}${jong(nmIn(id)) ? '은' : '는'} 공격의 반동을 받았다!`, confusion: '영문도 모른 채 자신을 공격했다!', Sandstorm: `모래바람이 ${n}${jong(nmIn(id)) ? '을' : '를'} 덮쳤다!`, Hail: `싸라기눈이 ${n}${jong(nmIn(id)) ? '을' : '를'} 덮쳤다!`, 'Leech Seed': `씨뿌리기가 ${n}의 체력을 빼앗는다!`, 'Stealth Rock': `뾰족한 바위가 ${n}에게 박혔다!`, Spikes: `${n}${jong(nmIn(id)) ? '은' : '는'} 압정의 데미지를 입었다!`, Curse: `${n}${jong(nmIn(id)) ? '은' : '는'} 저주를 받고 있다!`, Nightmare: `${n}${jong(nmIn(id)) ? '은' : '는'} 악몽에 시달리고 있다!`, 'Life Orb': `${n}${jong(nmIn(id)) ? '은' : '는'} 생명이 조금 깎였다!`, 'Rocky Helmet': `${n}${jong(nmIn(id)) ? '은' : '는'} 울퉁불퉁멧으로 데미지를 입었다!` };
   const tr = f.replace(/^move: /, ''); if (TRAP[tr]) return `${n}${jong(nmIn(id)) ? '은' : '는'} ${mvKo(TRAP[tr])}의 데미지를 입었다!`; return T[f] || ''; };
 function statusMsg(n, st) { const T = { brn: '화상을 입었다!', par: '마비되어 기술이 나오기 어려워졌다!', slp: '잠들어 버렸다!', frz: '얼어붙었다!', psn: '독에 걸렸다!', tox: '맹독을 입었다!' }; return `${eun(n)} ${T[st] || '상태 이상이 되었다!'}`; }
 function cureMsg(n, st) { const T = { slp: '눈을 떴다!', frz: '얼음 상태가 나았다!', par: '마비가 풀렸다!', brn: '화상이 나았다!', psn: '독이 사라졌다!', tox: '독이 사라졌다!' }; return `${eun(n)} ${T[st] || '상태가 나았다!'}`; }
 function cantMsg(n, r) { const T = { par: '몸이 저려서 움직일 수 없다!', slp: '쿨쿨 잠들어 있다.', frz: '얼어버려서 움직일 수 없다!', flinch: '풀이 죽어 기술을 쓸 수 없었다!', recharge: '공격의 반동으로 움직일 수 없다!', nopp: '기술의 남은 PP 가 없다!' }; return `${eun(n)} ${T[r] || '움직일 수 없다!'}`; }
-function startMsg(n, w) { w = (w || '').replace('move: ', ''); const T = { confusion: `${eun(n)} 혼란에 빠졌다!`, Substitute: `${n}의 대타가 나타났다!`, 'Leech Seed': `${n}에게 씨앗을 심었다!`, Taunt: `${eun(n)} 도발에 넘어가 버렸다!`, Encore: `${eun(n)} 앙코르를 받았다!`, Attract: `${eun(n)} 헤롱헤롱해졌다!`, typechange: '', 'Focus Energy': `${eun(n)} 의욕이 넘치고 있다!` }; return T[w] ?? ''; }
-function endMsg(n, w) { w = (w || '').replace('move: ', ''); const T = { confusion: `${n}의 혼란이 풀렸다!`, Substitute: `${n}의 대타는 사라져 버렸다…`, Taunt: `${n}의 도발 효과가 풀렸다!`, Encore: `${n}의 앙코르 상태가 풀렸다!` }; return T[w] ?? ''; }
+function startMsg(n, w) { w = (w || '').replace('move: ', ''); const T = { confusion: `${eun(n)} 혼란에 빠졌다!`, Substitute: `${n}의 대타가 나타났다!`, 'Leech Seed': `${n}에게 씨앗을 심었다!`, Taunt: `${eun(n)} 도발에 넘어가 버렸다!`, Encore: `${eun(n)} 앙코르를 받았다!`, Attract: `${eun(n)} 헤롱헤롱해졌다!`, typechange: '', 'Focus Energy': `${eun(n)} 의욕이 넘치고 있다!`, Disable: `${n}의 기술을 쓸 수 없게 되었다!`, Yawn: `${eun(n)} 졸음이 오기 시작했다!`, perish3: `${n}의 멸망의 카운트가 3이 되었다!`, perish2: `${n}의 멸망의 카운트가 2가 되었다!`, perish1: `${n}의 멸망의 카운트가 1이 되었다!`, perish0: `${n}의 멸망의 카운트가 0이 되었다!`, Torment: `${eun(n)} 트집을 잡혔다!`, 'Magnet Rise': `${eun(n)} 전자력으로 떠올랐다!`, 'Aqua Ring': `${eun(n)} 물의 베일로 몸을 감쌌다!`, Ingrain: `${eun(n)} 뿌리를 뻗었다!`, Curse: `${eun(n)} 저주를 받았다!`, Nightmare: `${eun(n)} 악몽을 꾸기 시작했다!`, 'Heal Block': `${eun(n)} 회복할 수 없게 되었다!`, Embargo: `${eun(n)} 도구를 쓸 수 없게 되었다!`, Stockpile: '', Charge: `${eun(n)} 전기를 모으고 있다!`, Imprison: `${eun(n)} 봉인을 걸었다!`, Telekinesis: `${eun(n)} 공중에 떠올랐다!`, 'Smack Down': `${eun(n)} 떨어졌다!`, 'Salt Cure': `${eun(n)} 소금에 절여졌다!` }; return T[w] ?? ''; }
+function endMsg(n, w) { w = (w || '').replace('move: ', ''); const T = { confusion: `${n}의 혼란이 풀렸다!`, Substitute: `${n}의 대타는 사라져 버렸다…`, Taunt: `${n}의 도발 효과가 풀렸다!`, Encore: `${n}의 앙코르 상태가 풀렸다!`, Disable: `${n}의 사슬묶기가 풀렸다!`, Yawn: '', 'Magnet Rise': `${n}의 전자력이 사라졌다!`, 'Heal Block': `${n}의 회복봉인이 풀렸다!`, Torment: '', 'Leech Seed': `${n}의 씨앗이 떨어졌다!`, 'Salt Cure': '' }; return T[w] ?? ''; }
 function actMsg(n, w) { w = (w || '').replace('move: ', ''); const T = { confusion: `${eun(n)} 혼란에 빠져 있다!`, Protect: `${eun(n)} 공격으로부터 몸을 지켰다!`, Substitute: '대타가 대신 공격을 받았다!', 'Destiny Bond': `${eun(n)} 상대를 길동무로 삼았다!`, Endure: `${eun(n)} 공격을 버텼다!` }; return T[w] ?? ''; }
-function sideMsg(sd, w, on) { const mine = sd.startsWith('p1'), who2 = mine ? '우리 편' : '상대 편'; w = (w || '').replace('move: ', ''); const T = { Reflect: on ? `리플렉터로 ${who2}의 물리 공격에 강해졌다!` : `${who2}의 리플렉터가 사라졌다!`, 'Light Screen': on ? `빛의장막으로 ${who2}의 특수 공격에 강해졌다!` : `${who2}의 빛의장막이 사라졌다!`, Spikes: on ? `${who2} 발밑에 압정이 뿌려졌다!` : '', 'Stealth Rock': on ? `${who2} 주변에 뾰족한 바위가 떠다니기 시작했다!` : '', Tailwind: on ? `${who2}에 순풍이 불기 시작했다!` : `${who2}의 순풍이 멈췄다!`, Safeguard: on ? `${who2}는 신비의 베일에 감싸였다!` : '' }; return T[w] || ''; }
+function sideMsg(sd, w, on) { const mine = sd.startsWith('p1'), who2 = mine ? '우리 편' : '상대 편'; w = (w || '').replace('move: ', ''); const T = { Reflect: on ? `리플렉터로 ${who2}의 물리 공격에 강해졌다!` : `${who2}의 리플렉터가 사라졌다!`, 'Light Screen': on ? `빛의장막으로 ${who2}의 특수 공격에 강해졌다!` : `${who2}의 빛의장막이 사라졌다!`, Spikes: on ? `${who2} 발밑에 압정이 뿌려졌다!` : '', 'Stealth Rock': on ? `${who2} 주변에 뾰족한 바위가 떠다니기 시작했다!` : '', Tailwind: on ? `${who2}에 순풍이 불기 시작했다!` : `${who2}의 순풍이 멈췄다!`, Safeguard: on ? `${who2}는 신비의 베일에 감싸였다!` : `${who2}의 신비의 베일이 사라졌다!`, 'Toxic Spikes': on ? `${who2} 발밑에 독압정이 뿌려졌다!` : `${who2} 발밑의 독압정이 사라졌다!`, 'Sticky Web': on ? `${who2} 발밑에 끈적끈적네트가 펼쳐졌다!` : '', Mist: on ? `${who2}는 흰안개에 둘러싸였다!` : `${who2}의 흰안개가 사라졌다!`, 'Lucky Chant': on ? `행운의 주문으로 ${who2}에 급소가 맞지 않게 되었다!` : '', 'Aurora Veil': on ? `오로라베일로 ${who2}의 물리·특수 공격에 강해졌다!` : `${who2}의 오로라베일이 사라졌다!` }; return T[w] || ''; }
 
 // ---------- 연출 (4세대 느낌. 기술별 본가 연출은 다음 단계에서 기술마다 붙인다) ----------
 const TY_FX = { 10: '#ff7a30', 11: '#48a0ff', 13: '#ffe040', 15: '#a8f0ff', 4: '#c060e0', 8: '#7058a8', 18: '#ff9ed8', 6: '#b8a058', 5: '#d8b060', 2: '#e05030', 14: '#ff70b0', 12: '#68d048', 3: '#a8c8ff', 7: '#a8c020', 9: '#c8c8d8', 16: '#7050f0', 17: '#504048', 1: '#f8f8f8' };

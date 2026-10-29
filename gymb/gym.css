@@ -1790,4 +1790,12 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .gy-qw .qw-pw .qw-no{position:absolute;left:0;top:0;width:22px;height:22px;font-size:11px;border:2px solid #fff;box-sizing:border-box}
 .gy-qw .qw-row.wait .qw-wait{align-self:center}
 #gym button.gy-qbtn.gy-qbtn,#gym button.gy-qbtn.gy-qbtn.qding,#gym button.gy-qbtn.gy-qbtn:active{transform-origin:0 50%}   /* 버튼이 translateX(-50%) 로 가운데라 scale 기준점 0 50% = 보이는 버튼 정중앙 (경완 2026-10-29 '모션 앵커 정중앙') */
-.cv-dl .cv-rep{color:#e07a10;font-size:13px}   /* 좋은 지원자일수록 막을 때 평판이 크다 (경완 2026-10-29) */
+/* 색이 다른 포켓몬 반짝임 · 대타 인형 · 숨는 기술 (본가 연출, 경완 2026-10-29) */
+.bt-mon .bt-shn{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px;pointer-events:none;background:radial-gradient(circle,#fff 0 30%,transparent 32%),linear-gradient(0deg,transparent 42%,#fff8c0 42% 58%,transparent 58%),linear-gradient(90deg,transparent 42%,#fff8c0 42% 58%,transparent 58%);animation:btShn .9s ease-out both;z-index:3}
+@keyframes btShn{0%{transform:rotate(var(--a)) translateY(-4px) scale(.2);opacity:0}25%{opacity:1}100%{transform:rotate(var(--a)) translateY(-34px) scale(1.1);opacity:0}}
+.bt-mon .bt-sub{display:none;position:absolute;left:50%;bottom:10px;width:30px;height:32px;transform:translateX(-50%);background:url(../gym/img/pk/fm/sub.png) no-repeat center bottom/contain;image-rendering:pixelated;pointer-events:none}
+.bt-mon.p .bt-sub{width:42px;height:48px;background-image:url(../gym/img/pk/fm/subb.png);bottom:6px}
+.bt-mon.sub .bt-sub{display:block}.bt-mon.sub img,.bt-mon.hid img{visibility:hidden!important}
+/* 디자인 이름 옆 어울리는 타입 (경완 2026-10-29) */
+.gy-dz-nm{display:flex;align-items:center;justify-content:center;gap:8px}
+.gy-dz-ty{display:inline-flex;align-items:center;gap:3px;padding:2px 8px 2px 4px;border-radius:99px;background:var(--tc);color:#fff;font-size:11px;font-weight:700;text-shadow:0 1px 0 rgba(0,0,0,.3)}.gy-dz-ty img,.gy-dz-ty svg{width:16px;height:16px}
