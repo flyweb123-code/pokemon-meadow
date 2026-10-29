@@ -1279,6 +1279,27 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .lp-th{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;min-height:40px;align-items:center}.lp-th img{width:100%;max-width:44px;aspect-ratio:1;object-fit:contain;image-rendering:pixelated}.lp-th em{grid-column:1/-1;font-style:normal;font-size:12px;color:var(--dim)}
 /* 라인업 슬롯 빼기: 원 배경 없이 도트 X만 (경완 2026-10-29) */
 .lu-slot .lu-x{right:4px;top:4px;background:none!important;border-radius:0;color:#3a3a48!important}.lu-slot .lu-x svg{width:12px;height:12px}
+/* 성격·특성 한 줄 (경완 2026-10-29): 특성 효과는 눌러서 팝업 */
+.mp-na{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 8px}
+.mp-na .mp-nat,.mp-na .mp-ab{display:flex;flex-direction:column;align-items:stretch;gap:2px;margin:0;padding:5px 8px!important;min-height:0;border-radius:8px;background:#fbfaf6!important;border:2px solid rgba(0,0,0,.12)!important;box-shadow:none!important;text-align:left;font:inherit;color:inherit}
+.mp-na small{font-size:10.5px;color:var(--dim);font-weight:700;display:flex;align-items:center;gap:2px}.mp-na .mp-more{font-style:normal;margin-left:auto;font-size:13px;line-height:1}
+.mp-na p{margin:0!important;display:flex;align-items:center;gap:4px;flex-wrap:nowrap;min-width:0}.mp-na b{font-size:14px;white-space:nowrap}.mp-na b.ha{color:#7a3ec8}
+.mp-na span{margin-left:auto;display:flex;gap:2px}.mp-na span i{font-style:normal;font-size:10px;font-weight:700;padding:1px 4px;border-radius:8px;background:rgba(0,0,0,.06);color:var(--dim);white-space:nowrap}
+.mp-na span i.up{background:#fde3e0;color:#d83a30}.mp-na span i.dn{background:#e0e8fd;color:#3a6ad8}
+.mp-na .ha-tag{margin-left:auto;font-size:9.5px;padding:0 4px}
+.gy-pop .ab-d{text-align:left}.gy-pop p.mp-ha{font-size:12px;color:var(--dim);border-top:1px dashed rgba(0,0,0,.15);padding-top:8px}.gy-pop .mp-ha b{color:#7a3ec8}
+/* 기술 순서 끌기 */
+.mv-ord .mp-mv{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.mv-ord .mp-mv.drag{position:relative;z-index:2;background:#fff4c8!important;box-shadow:inset 3px 0 0 var(--tc),0 0 0 2px #d89a20,0 4px 8px rgba(0,0,0,.25)!important;transform:scale(1.02)}
+/* 창 뜰 때 팝업 모션 없음 (경완 2026-10-29) */
+#gym :is(.gy-pop,.gy-pop .win,.gy-boxw,.gy-boxw>.win,.gy-infos,.gy-setup,.gy-sheet,.gy-sheet .win){animation:none!important}
+/* 누르는 버튼은 눌리는 모션 (경완 2026-10-29) */
+:where(#gym) button:not(:disabled):active{translate:0 2px;filter:brightness(.94)}
+.ab-hid{display:flex;align-items:center;gap:8px;width:100%;margin:0 0 4px;padding:8px 10px!important;border-radius:8px;border:2px solid rgba(122,62,200,.35)!important;background:#f6f0fd!important;box-shadow:none!important;text-align:left;font:inherit;color:inherit}
+.ab-hid small{font-size:11px;color:#7a3ec8;font-weight:700}.ab-hid b{font-size:14px;color:#7a3ec8}.ab-hid i{margin-left:auto;font-style:normal;color:#7a3ec8}
+/* 친밀도 하트: 필드 정보카드와 같은 굵기 (경완 2026-10-29 '빈 하트 테두리가 너무 두꺼움') */
+.mp-frh b{font-weight:400!important;font-size:14px!important;color:#e04870!important;letter-spacing:1px;line-height:16px}
+.gy-pop small.mp-xpn,.gy-pop small.tp-xp{display:block!important;width:100%;text-align:right!important}
 /* 체육관 등급 배지 (10.89, 경완 2026-10-29 '배지를 중심으로 펼쳐지는 느낌'): 큰 배지가 가운데, 양쪽으로 이름판 날개가 배지 밑에서 펼쳐진다 */
 .gy-top .gy-plate{display:grid!important;grid-template-columns:minmax(0,1fr) 104px minmax(0,1fr);align-items:center;gap:0;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;width:100%!important}
 /* 날개 = 등급 색 리본 (경완 2026-10-29 '등급 상태 박스 퀄리티'): 바깥 끝은 제비꼬리, 이중 테두리, 아래 등급 색 띠 */
