@@ -63,6 +63,9 @@ const DESIGNS_FR = [
     deco: [[2, 3], [12, 3], [2, 7], [12, 7], [3, 10], [11, 10], [2, 13], [12, 13]],
     path: [[7, 14], [7, 8]], slots: [[8, 10, 'l'], [6, 10, 'r'], [8, 8, 'l'], [6, 8, 'r'], [9, 9, 'l'], [5, 9, 'r'], [9, 7, 'l'], [5, 7, 'r']], inY: 10, tiny: [[8, 11], [[1, 6], [9, 14]]], cuts: [[8, 11, [[1, 5], [10, 14]]], [9, 11, [[1, 4], [11, 14]]], [9, 10, [[1, 4], [11, 14]]], [9, 10]] },   // 경완 2026-10-28 '넓은 무대는 줄어든 느낌이 없네': 기둥 사이 칸도 잘라 좁게
 ];
+// 꾸미기 놓을 수 있는 칸 (경완 2026-10-29 '기둥처럼 입체적인 소품 위에는 못 올리게'): pokefirered 맵 충돌·물 칸 + 석상 머리 칸은 막음. '1' = 놓을 수 있음
+const FR_FREE = {"pewter":["0000000000000","0000111110000","0000000000000","0111101011110","0111111111110","0111011101110","0111111111110","0110101010110","0011111111100","0111011101110","0011111111100","0111011101110","0111011101110","0111111111110","0111111111110","0000000000000"],"cerulean":["00000000000000000","00000000100000000","00000000000000000","01111111111111110","01111110001111110","01000000000000010","01000001110000010","01001111111110010","01000001110010010","01000000000010010","01001111111110010","01001000010000010","01001000010000010","01001111110000010","01000000010000010","01000000010000010","01000011101000010","01000001110000010","01111111111111110","00000000000000000"],"vermilion":["00000000000","00000000000","01101110110","01111111110","01111111110","01111111110","00000000000","00000000000","11111111111","11111111111","10101110101","11111111111","10101110101","11111111111","10101110101","11111111111","11101110111","11101110111","11111111111","11111111111","00000000000"],"celadon":["0000001000000","0000000000000","0111111111110","0110000000110","0010011110100","0111111110110","0110111111110","0110111110110","0110001000110","0110011100110","0111111111100","0011111111110","0111111111110","0110011100110","0110011100110","0111011101110","0111011101110","0111111111110","0111111111110","0000000000000"],"fuchsia":["000000000000000","000000000000000","111111111111111","111111111111111","111111111111111","111111000111111","111111000111111","111111000111111","111111111111111","111111111111111","111111111111111","111101111101111","111101111101111","111111111111111","111111101111111","000000000000000"]};
+DESIGNS_FR.forEach(d => { if (FR_FREE[d.id]) d.free = FR_FREE[d.id]; });
 // 맵 묶음: 'fr' 파이어레드 칸토 체육관 / 'pt' 플라티나 (경완 2026-10-27 '맵은 이전 버전으로 바꿔줘봐 지금 캐릭터랑 묻는지 함 보게')
 const MAP_SET = 'fr';
 const DESIGNS = MAP_SET === 'fr' ? DESIGNS_FR : DESIGNS_PT;
@@ -148,7 +151,7 @@ function build() {
     <nav class="gy-menu" aria-label="체육관 메뉴">
       <button type="button" data-t="battle">배틀</button><button type="button" data-t="train">훈련장</button><button type="button" data-t="staff">트레이너</button><button type="button" data-t="shop">상점</button><button type="button" class="gy-out" data-t="out">퇴근</button>
     </nav>
-    <div class="gy-dbar"><div class="db-head"><b>가방 꾸미기</b><span>골라서 체육관에 놓아요</span></div><div class="db-list"></div>
+    <div class="gy-dbar"><div class="db-head"><b>창고</b><span>골라서 체육관에 놓아요</span></div><div class="db-list"></div>
       <div class="db-keys"><button type="button" data-a="cancel">취소</button><button type="button" class="ok" data-a="save">저장</button></div></div>`;
   document.body.appendChild(root);
   $g('.gy-plate').onclick = () => { sfx('tap'); infoPop(); };
@@ -156,6 +159,7 @@ function build() {
   $g('.gy-deco').onclick = () => { sfx('tap'); root.querySelectorAll('.gy-infos').forEach(x => x.remove()); if (!ded) decoEdit(); };
   $g('.gy-simb').onclick = () => { sfx('tap'); simPop(); };
   $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = b.dataset.t; if (t === 'out') return exit(); sfx('tap');
+    root.querySelectorAll('.gy-pop').forEach(x => x.remove());   // 다른 메뉴를 누르면 포켓몬 정보 카드 같은 팝업도 닫힘 (경완 2026-10-29)
     const cov = root.querySelectorAll('.gy-boxw,.gy-infos'); if (cov.length) { cov.forEach(x => x.remove()); return openTab(t); }   // 포켓몬 고르기·정보 화면 위에서 메뉴를 누르면 그 화면을 닫고 그 메뉴로 (경완 2026-10-28)
     openTab(tab === t ? null : t); };
   // 퇴근은 손가락이 닿는 순간 로딩 화면부터 (click 을 기다리지 않음, 경완 2026-10-27 '여전히 바로 안 뜸')
@@ -166,26 +170,29 @@ function build() {
   dlg.addEventListener('click', e => { if (e.target.closest('button') || root.classList.contains('ded') || busy || root.classList.contains('dhide')) return; e.stopPropagation(); sfx('tap'); homeSay(); });
   // 도전자 명단 아이콘 → 새 화면 (도전자 / 체육관 일지)
   $g('.gy-qbtn').onclick = () => { sfx('tap'); if (ded) ded.end?.(); qPop(); };
+  [['.gy-deco', '꾸미기'], ['.gy-store', '창고'], ['.gy-qbtn', '도전자 명단']].forEach(([c, n]) => $g(c).insertAdjacentHTML('beforeend', `<small class="ga-l">${n}</small>`));   // 홈 레이아웃 C: 메뉴 위 행동 줄 (경완 2026-10-29)
   // 빈 곳을 한 번 누르면 이름판·버튼을 다 숨겨 메뉴만 남김, 다시 누르면 다 펼침 (경완 2026-10-28, 필드 fview 와 같음)
   $g('.gy-stage').addEventListener('click', e => { if (ded || busy || root.classList.contains('pre') || root.querySelector('.gy-kang,.gy-pop,.gy-setup') || e.target.closest('.tap,.gy-prop.tap')) return;
     root.classList.toggle('gview'); sfx('tap'); });
 }
 
 // 맵 크기: 화면 폭에 맞추고, 너무 길면 세로로 넘겨 본다
+const ACT_H = 72;   // 홈 레이아웃 C (경완 2026-10-29): 메뉴 위 행동 줄(꾸미기·창고·도전자 명단) 높이만 비우고 지도는 크게
 function layout(D = dzOf(st().d)) {
   const stg = $g('.gy-stage'), map = $g('.gy-map'), img = map.querySelector('img');
   const mw = D.w * 16, mh = D.h * 16, aw = stg.clientWidth - 16, ah = stg.clientHeight - 104 - 140;
   const bw = (D.base || D).w * 16, bh = (D.base || D).h * 16;   // 배율은 다 열린 맵 기준: 좁은 체육관은 화면에서도 작게 보인다
-  sc = Math.min(3.5, aw / bw, Math.max(ah / bh, aw / bw * .8)); sc = Math.max(1.75, Math.floor(sc * 8) / 8);   // 너무 작아지지 않게 (넘치면 스크롤)   // 플라티나 맵은 넓어서 1배보다 작아질 수 있다
+  sc = Math.min(3.5, aw / bw, Math.max(ah / bh, aw / bw * .8)); sc = Math.round(Math.max(1.75, Math.floor(sc * 8) / 8) * 1.32 * 8) / 8;   // 레이아웃 C (경완 2026-10-29): 예전보다 1.32배 크게, 넘치면 넘겨 보기   // 너무 작아지지 않게 (넘치면 스크롤)   // 플라티나 맵은 넓어서 1배보다 작아질 수 있다
   map.style.width = mw * sc + 'px'; map.style.height = mh * sc + 'px';
   const mk = D.id + JSON.stringify(D.cut); if (img.dataset.k !== mk) { img.dataset.k = mk; mapSrc(D).then(u => { if (img.dataset.k === mk) img.src = u; }); }
   img.style.width = mw * sc + 'px'; img.style.height = mh * sc + 'px';
   // 관장(나)이 보이는 칸의 가운데에 오게: 맵 둘레에 여백을 두고 그만큼 넘겨 둔다 (경완 2026-10-27 '내 캐릭터 있는 곳이 가운데에 오게')
-  const W = stg.clientWidth, H = stg.clientHeight, T = parseFloat(getComputedStyle(stg).paddingTop) || 104, B = 150, cy = T + (H - T - B) / 2;
+  const W = stg.clientWidth, H = stg.clientHeight, T = parseFloat(getComputedStyle(stg).paddingTop) || 104, B = ACT_H + 8, cy = T + (H - T - B) / 2;
   const lx = (D.leader[0] + .5) * 16 * sc, ly = (D.leader[1] + .5) * 16 * sc, pl = Math.max(8, W / 2 - lx), pr = Math.max(8, W / 2 - (mw * sc - lx));
   stg.style.paddingLeft = pl + 'px'; stg.style.paddingRight = pr + 'px';
   map.style.marginTop = Math.max(0, cy - T - ly) + 'px'; map.style.marginBottom = Math.max(0, (H - cy) - (mh * sc - ly) - B) + 'px';
-  const vk = mk + '|' + sc + '|' + W + 'x' + H; if (stg.dataset.vk !== vk) { stg.dataset.vk = vk; requestAnimationFrame(() => { stg.scrollTop = T + parseFloat(map.style.marginTop) + ly - cy; stg.scrollLeft = pl + lx - W / 2; }); }
+  const vk = mk + '|' + sc + '|' + W + 'x' + H; if (stg.dataset.vk !== vk) { stg.dataset.vk = vk; requestAnimationFrame(() => { const mt = parseFloat(map.style.marginTop), s1 = T + mt + ly - cy, s2 = T + mt + mh * sc - (H - B);   // 레이아웃 C: 관장이 보이면 문(아래 끝)이 행동 줄 바로 위에 오게
+      stg.scrollTop = s2 > s1 && ly - (s2 - mt) > 24 ? s2 : s1; stg.scrollLeft = pl + lx - W / 2; }); }
   ents.forEach(place);
 }
 
@@ -294,8 +301,8 @@ function freeTile(D, x, y, used) {
   for (let i = 1; i < D.path.length; i++) { const [a, b] = [D.path[i - 1], D.path[i]]; if (Math.min(a[0], b[0]) <= x && x <= Math.max(a[0], b[0]) && Math.min(a[1], b[1]) <= y && y <= Math.max(a[1], b[1])) return false; }
   return true;
 }
-// 꾸미기 모드 (경완 2026-10-28 '필드 맵 편집이랑 비슷하게'): 왼쪽 위 제목 카드 + 아래 가방 창(가방 꾸미기 · 취소/저장).
-// 놓인 꾸미기를 누르면 고르기(초록 점선 칸 + 빨간 ✕ = 가방으로), 끌면 격자 따라 옮기기. 가방 꾸미기는 끌어다 놓거나 골라서 빈 칸을 누르기. 취소 = 들어오기 전으로
+// 꾸미기 모드 (경완 2026-10-28 '필드 맵 편집이랑 비슷하게'): 왼쪽 위 제목 카드 + 아래 창고 창(창고 · 취소/저장).
+// 놓인 꾸미기를 누르면 고르기(초록 점선 칸 + 빨간 ✕ = 창고로), 끌면 격자 따라 옮기기. 창고 꾸미기는 끌어다 놓거나 골라서 빈 칸을 누르기. 취소 = 들어오기 전으로
 let ded = null;
 const XSVG = '<svg viewBox="0 0 7 7" width="14" height="14" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M0 0h2v1h1v1h1V1h1V0h2v2H6v1H5v1h1v1h1v2H5V6H4V5H3v1H2v1H0V5h1V4h1V3H1V2H0z"/></svg>';
 function decoEdit() {
@@ -315,16 +322,16 @@ function decoEdit() {
     ents.forEach(e => { if (e.prop && e.k) e.el.classList.toggle('dsel', e.k === ded.sel); }); root.classList.toggle('dhas', !!ded.sel);
     grid.style.setProperty('--t', T() + 'px');
     const z = ded.sel && L.find(q => q[0] === ded.sel), [w, h] = z ? dSz(z[0]) : [1, 1];
-    grid.innerHTML = z ? `<i class="gg-foot" style="left:${z[1] * T()}px;top:${(z[2] - h + 1) * T()}px;width:${w * T()}px;height:${h * T()}px"></i><button class="gg-x" type="button" aria-label="가방에 넣기" style="left:${(z[1] + w) * T() + 12 > stage.scrollLeft + stage.clientWidth - map.offsetLeft ? z[1] * T() : (z[1] + w) * T()}px;top:${Math.max(z[2] - h + 1, .4) * T()}px">${XSVG}</button>` : '';
+    grid.innerHTML = z ? `<i class="gg-foot" style="left:${z[1] * T()}px;top:${(z[2] - h + 1) * T()}px;width:${w * T()}px;height:${h * T()}px"></i><button class="gg-x" type="button" aria-label="창고에 넣기" style="left:${(z[1] + w) * T() + 12 > stage.scrollLeft + stage.clientWidth - map.offsetLeft ? z[1] * T() : (z[1] + w) * T()}px;top:${Math.max(z[2] - h + 1, .4) * T()}px">${XSVG}</button>` : '';
     const bag = Object.keys(g.own).filter(k => g.own[k] && DECO[k] && !on.has(k)); if (ded.pick && !bag.includes(ded.pick)) ded.pick = null;
     list.innerHTML = bag.length ? bag.map(k => `<button class="db-it" type="button" data-k="${k}" aria-pressed="${ded.pick === k}"><img alt="" src="${IMG}deco/t/${k}.png"><span>${DECO[k].n}</span></button>`).join('')
-      : '<p class="db-none">가방에 놓을 꾸미기가 없어요.<br>체육관의 꾸미기를 빼면 여기로 들어와요.</p>';
+      : '<p class="db-none">창고에 놓을 꾸미기가 없어요.<br>체육관의 꾸미기를 빼면 여기로 들어와요.</p>';
   };
   const put = (k, x, y) => { if (!okAt(k, x, y)) { sfx('no'); warn('여기엔 놓을 수 없어요'); return draw(); }
     if (!g.dp.includes(k)) g.dp.push(k); g.dpos[k] = [D.toFx(x), D.toF(y), D.id]; ded.sel = k; ded.pick = null; sfx('tap'); draw(); };
   const end = keep => { if (!ded) return; if (!keep) { const [dp, dpos] = JSON.parse(ded.snap); g.dp = dp; g.dpos = dpos; } save(); decoDone(); };
   ded.draw = draw; ded.end = () => end(true);
-  // 끌기: 놓인 꾸미기나 가방 꾸미기를 끌면 칸에 맞춰 따라오고, 놓으면 그 칸에. 빈 곳을 끌면 맵 넘기기
+  // 끌기: 놓인 꾸미기나 창고 꾸미기를 끌면 칸에 맞춰 따라오고, 놓으면 그 칸에. 빈 곳을 끌면 맵 넘기기
   let drag = null, noClick = 0;
   const ghost = (k, x, y) => { let gh = grid.querySelector('.gg-gh'), tl = grid.querySelector('.gg-tile'); const [w, h] = dSz(k), ok = okAt(k, x, y);
     if (!gh) { gh = document.createElement('i'); gh.className = 'gg-gh'; tl = document.createElement('i'); tl.className = 'gg-tile'; grid.append(tl, gh); }
@@ -346,7 +353,7 @@ function decoEdit() {
   map.onpointerdown = e => { if (!ded || e.target.closest('.gg-x')) return; const hit = hitAt(decoList(g, D), ...tile(e));
     if (!hit) return begin(null, e); const r = map.getBoundingClientRect(), [w, h] = dSz(hit[0]);
     begin(hit[0], e, false, [(e.clientX - r.left) / T() - (hit[1] + w / 2), (e.clientY - r.top) / T() - (hit[2] + 1 - h / 2)]); };
-  // 그냥 누르기: ✕ = 가방으로, 놓인 꾸미기 = 고르기, 빈 칸 = 가방에서 고른 꾸미기를 거기에, 아니면 고르기 풀기
+  // 그냥 누르기: ✕ = 창고로, 놓인 꾸미기 = 고르기, 빈 칸 = 창고에서 고른 꾸미기를 거기에, 아니면 고르기 풀기
   map.onclick = e => { if (!ded || Date.now() - noClick < 400) return;
     if (e.target.closest('.gg-x')) { sfx('tap'); g.dp = g.dp.filter(k => k !== ded.sel); delete g.dpos[ded.sel]; ded.sel = null; return draw(); }
     const hit = hitAt(decoList(g, D), ...tile(e)); if (hit) { sfx('tap'); ded.sel = ded.sel === hit[0] ? null : hit[0]; ded.pick = null; return draw(); }
@@ -673,7 +680,7 @@ async function repAnim(p, rep) {
 }
 function badgeGet(ty) {
   st().newBdg = 0; save();
-  return new Promise(ok => { sfx('tap'); pop(`<h4>자격 배지를 받았다!</h4><div class="bd-get"><img alt="" src="${IMG}badge/${ty}.png"></div><p class="gy-msg" style="text-align:center">${TYPE_KO[ty]} 타입으로 도전자 100명을 막아 냈어요.<br><b>${TYPE_KO[ty]} 자격 배지</b>는 프로필에서도 볼 수 있어요.</p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); });
+  return new Promise(ok => { sfx('tap'); pop(`<h4>자격 배지를 받았다!</h4><div class="bd-get"><img alt="" src="${IMG}badge/${ty}.png?v=2"></div><p class="gy-msg" style="text-align:center">${TYPE_KO[ty]} 타입으로 도전자 100명을 막아 냈어요.<br><b>${TYPE_KO[ty]} 자격 배지</b>는 프로필에서도 볼 수 있어요.</p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); });
 }
 
 // ---------- 홈 ----------
@@ -694,6 +701,7 @@ const GUY_TOUR = () => [
   '한 타입으로 도전자를 100명\n막으면 자격 배지를 받아요.\n그럼 힘내세요, 관장님!',
 ];
 function guyAsk() {
+  root.classList.remove('dhide');   // 홈은 대화창을 숨겨 두니 물음 띄울 때 보이게 (경완 2026-10-29 '안내원 눌러도 안 뜸')
   $g('.gy-dlg').innerHTML = `<span class="gy-who">안내원</span>관장님, 체육관 설명을 처음부터 들어 보실래요?<span class="gy-dsub">체육관이 어떻게 돌아가는지 차근차근 알려 드려요</span><div class="gy-dyn"><button class="gy-dbtn2" type="button" data-a="n">괜찮아요</button><button class="gy-dbtn2 main" type="button" data-a="y">들을래요</button></div>`;
   $g('.gy-dyn').onclick = async e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); sfx('tap');
     off(); const guy = { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1 };
@@ -829,7 +837,7 @@ function infoPop() {
         <div class="if-staff"><small>고용할 수 있는 트레이너</small><b>${staffMax()}<em>명</em></b></div>
         <div class="if-big"><small>체육관 크기</small><b>${bigOf(g) + 1}<em>/ ${GRADES.length}단계</em></b>${canBig(g) ? '<button class="gy-key main" type="button" data-a="big">넓히기</button>' : ''}</div>
       </div>
-      <button class="if-bdg" type="button" data-a="bdg"><img alt="" src="${IMG}badge/${g.ty}.png" class="${g.bdg?.[g.ty] ? 'on' : ''}"><div><small class="if-bt">${TYPE_KO[g.ty]} 자격 배지<em>전체 보기 ›</em></small><b>${g.bdg?.[g.ty] ? '받았어요!' : `도전자 ${bk} / 100`}</b><i class="gy-bar"><i style="width:${bk}%"></i></i></div></button>
+      <button class="if-bdg" type="button" data-a="bdg"><img alt="" src="${IMG}badge/${g.ty}.png?v=2" class="${g.bdg?.[g.ty] ? 'on' : ''}"><div><small class="if-bt">${TYPE_KO[g.ty]} 자격 배지<em>전체 보기 ›</em></small><b>${g.bdg?.[g.ty] ? '받았어요!' : `도전자 ${bk} / 100`}</b><i class="gy-bar"><i style="width:${bk}%"></i></i></div></button>
       <button class="if-re" type="button" data-a="re">폐업하고 새로 세우기</button>
     </div>`;
   fillMs(el);
@@ -872,7 +880,7 @@ async function bigUp(el) {
   } finally { busy = false; root.classList.remove('busy'); }
 }
 // 창고 (경완 2026-10-28 '꾸미기 모드 가방처럼'): 상점에서 산 기술머신·꾸미기·관장 의상을 한곳에서 본다
-let storeT = 'tm';
+let storeT = 'tm', stPow = 1;
 function storePop() {
   root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew'; root.appendChild(el);
@@ -881,7 +889,8 @@ function storePop() {
     const T = [['tm', '기술머신', nTm], ['deco', '꾸미기', dk.length], ['fit', '의상', fk.length + 1]];
     let body = '';
     if (storeT === 'tm') { const D = GB()?.D, L = Object.entries(g.tms).filter(([, n]) => n > 0).map(([id, n]) => [GB()?.mvOf?.(id), n, id]).filter(([x]) => x);
-      body = !D ? '<p class="gy-lead">불러오는 중…</p>' : L.length ? `<p class="st-tip">배틀 메뉴나 훈련장에서 포켓몬을 누르고 '기술머신'으로 가르쳐요.</p><div class="sp-list">${L.map(([x, n]) => `<div class="sp-tm"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png"><span class="tm-nm"><b>${esc(x[1])}</b><i class="tm-own">×${n}</i></span><span class="tm-meta">${GB().tyTag(x[2], x[3])}<small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}</small></span></div>`).join('')}</div>` : '<p class="sf-none">가진 기술머신이 없어요. 상점에서 사 오세요.</p>'; }
+      L.sort((a, b) => ((b[0][4] || 0) - (a[0][4] || 0)) * stPow);   // 위력순 (경완 2026-10-29), 안내 문구 없음
+      body = !D ? '<p class="gy-lead">불러오는 중…</p>' : L.length ? `<div class="tm-row"><button class="tm-sort" type="button" data-pow="1">위력순 ${stPow > 0 ? '▼' : '▲'}</button></div><div class="sp-list">${L.map(([x, n, id]) => GB().tmRow(x, n, id)).join('')}</div>` : '<p class="sf-none">가진 기술머신이 없어요. 상점에서 사 오세요.</p>'; }
     if (storeT === 'deco') body = dk.length ? `<div class="dc-grid">${dk.map(k => `<button type="button" data-dc="${k}" class="${g.dp.includes(k) ? 'own' : ''}"><span class="dc-pic"><img alt="" src="${IMG}deco/${k}.png" class="${DECO[k].w > 16 ? 'big' : ''}"></span><b>${DECO[k].n}</b><em>${g.dp.includes(k) ? '놓여 있음' : '창고에 있음'}</em></button>`).join('')}</div>` : '<p class="sf-none">가진 꾸미기가 없어요. 상점에서 사 오세요.</p>';
     if (storeT === 'fit') body = `<div class="ft-grid">${['', ...fk].map(k => `<button type="button" data-fit="${k}" class="${(g.fit || '') === k ? 'on' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${k ? OUTFITS[k].n : '기본 옷'}</b><em>${(g.fit || '') === k ? '입는 중' : '입기'}</em></button>`).join('')}</div>`;
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">창고</b></div>
@@ -893,6 +902,9 @@ function storePop() {
   el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap'); const g = st();
     if (b.dataset.a === 'x') return el.remove();
     if (b.dataset.st) { storeT = b.dataset.st; return draw(); }
+    if (b.dataset.pow) { stPow = -stPow; return draw(); }
+    // 기술머신 누르면 기술 상세 → 기술 가르치기 → 포켓몬 박스 화면에서 고르기 (경완 2026-10-29)
+    if (b.dataset.tm) { const id = b.dataset.tm; return GB().mvInfo(id, () => { el.remove(); GB().teachPick(id, () => storePop()); }); }
     if (b.dataset.a === 'place') { el.remove(); return decoEdit(); }
     if (b.dataset.dc) { const k = b.dataset.dc, i = g.dp.indexOf(k); if (i >= 0) { g.dp.splice(i, 1); delete g.dpos?.[k]; } else g.dp.push(k); save(); renderHome(true); return draw(); }
     if (b.dataset.fit != null) { g.fit = b.dataset.fit; save(); renderHome(true); return draw(); } };
@@ -916,7 +928,7 @@ function simPop() {
 function badgePop() {
   const g = st(), n = Object.keys(g.bdg || {}).length;
   pop(`<h4>자격 배지</h4>
-    <div class="gy-bdgs">${TYPE_KO.map((nm, t) => t ? `<div class="${g.bdg[t] ? 'on' : ''}${g.ty === t ? ' cur' : ''}"><img alt="" src="${IMG}badge/${t}.png"><b>${nm}</b></div>` : '').join('')}</div>
+    <div class="gy-bdgs">${TYPE_KO.map((nm, t) => t ? `<div class="${g.bdg[t] ? 'on' : ''}${g.ty === t ? ' cur' : ''}"><img alt="" src="${IMG}badge/${t}.png?v=2"><b>${nm}</b></div>` : '').join('')}</div>
     <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }
 // 주간 보고서·랭킹 (월요일): 지난주 기록 / 이번 주 진행

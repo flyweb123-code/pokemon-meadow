@@ -12,7 +12,7 @@ const boxOf = id => S.box.find(p => p.id === id);
 const nmOf = P => SPECIES[P.sp]?.n || '???';
 const onField = id => S.mons.some(m => m.pid === id);
 const pop = (h, f) => { const p = K.pop(h, f); GB()?.fillTh(p); return p; };
-const say = msg => pop(`<p class="gy-msg" style="text-align:center">${msg}</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, c) => c());
+const say = msg => K.say(msg);   // 체육관 홈과 같은 가운데 알림 (경완 2026-10-29 '팝업창 중앙 정렬')
 const spend = n => { if (S.gold < n) return false; S.gold -= n; try { GA.renderGold(); } catch (e) {} K.renderGoldG(); K.save(); return true; };
 const buy = n => { if (!spend(n)) return false; try { window.GymBGM?.se('DP_REGI'); } catch (e) {} return true; };   // 상점에서 살 때 본가 계산대 소리 (SEQ_SE_DP_REGI, 경완 2026-10-28)
 const gold = n => `<i class="coin"></i>${n.toLocaleString()}G`;
@@ -310,13 +310,24 @@ function trPop(id) {
   const a0 = GB().xpAt(g, m.lv), r = m.lv >= GB().LV_MAX ? 1 : clampN(((m.xp ?? a0) - a0) / Math.max(1, need), 0, 1);
   pop(`<div class="mp-head">${GB().thumb(P)}<div><h4>${esc(nmOf(P))}</h4><i class="mp-xp"><i style="width:${(r * 100).toFixed(1)}%"></i></i><small class="tp-xp">경험치 ${m.lv >= GB().LV_MAX ? '최고 레벨' : `${Math.floor(r * 100)}% · 다음 레벨까지 ${Math.max(0, Math.ceil(need - ((m.xp ?? a0) - a0))).toLocaleString()}`}</small><p>Lv.${m.lv} · 1시간에 약 ${m.lv >= GB().LV_MAX ? 0 : (ph / need).toFixed(2)}레벨<br>${(e => !e ? '' : leftOf(e) > 0 ? `오늘 ${Math.ceil(leftOf(e))}시간 더 훈련해요` : '오늘 훈련 끝 · 내일 다시')(st().tr.find(e => e.id === P.id))}</p></div></div>
     <div class="mp-moves">${m.mv.map(x => GB().mvOf(x)).filter(Boolean).map(x => GB().mvRow(x, '')).join('')}</div>
-    <div class="gy-btns three"><button data-a="mv">기술 바꾸기</button><button data-a="tm">기술머신</button><button data-a="out">데려오기</button><button class="main" data-a="x">닫기</button></div>`,
+    <div class="gy-btns three"><button data-a="mv">기술 바꾸기</button><button data-a="tm">기술 가르치기</button><button data-a="out">데려오기</button><button class="main" data-a="x">닫기</button></div>`,
     (a, close) => { if (!a) return; close(); if (a === 'mv') return GB().movesPop(P, () => { redraw(); trPop(id); }); if (a === 'tm') return GB().tmPop(P, () => { redraw(); trPop(id); });
       if (a === 'out') { tickTrain(Date.now()); st().tr = st().tr.filter(e => e.id !== P.id); K.save(); redraw(); } });
 }
 
 // ======================= 트레이너 고용 (6단계) =======================
-const LINES = { train: '훈련이라면 자신 있어요! 체육관 포켓몬들도 같이 단련할게요.', star: '제 배틀은 구경꾼이 많이 와요. 체육관 이름을 널리 알릴게요!', money: '도전자에게서 상금을 두둑이 챙겨 올게요.', guts: '절대 물러서지 않아요. 끝까지 버티는 게 제 장점이에요!', grow: '아직 부족하지만, 배틀할수록 강해지는 타입이에요!', thrift: '월급은 조금만 주셔도 괜찮아요. 일하게만 해 주세요!', lazy: '음… 가끔 낮잠을 자지만, 월급은 아주 조금이면 돼요.' };
+// 지원서 인사 (경완 2026-10-29 '특성에 어느 정도 맞추되 다양하게'): 여는 말 + 특성 한마디, 지원서마다 고정(c.id)
+const HELLO = ['안녕하세요!', '처음 뵙겠습니다!', '반갑습니다, 관장님!', '저기… 안녕하세요.', '체육관 소문 듣고 왔어요!', '오늘 공고 보고 바로 달려왔어요!', '잘 부탁드립니다!', '관장님 배틀 보고 반해서 왔어요!'];
+const LINES = {
+  train: ['훈련이라면 자신 있어요! 체육관 포켓몬들도 같이 단련할게요.', '아침 달리기부터 밤 특훈까지, 훈련 계획은 제게 맡겨 주세요.', '포켓몬마다 맞는 훈련법을 찾아 주는 게 특기예요.', '훈련장 한 바퀴만 봐도 고칠 점이 보여요. 금방 강하게 만들어 드릴게요.', '땀 흘리는 포켓몬을 보면 저도 힘이 나요!'],
+  star: ['제 배틀은 구경꾼이 많이 와요. 체육관 이름을 널리 알릴게요!', '사인 요청이 좀 많아도 이해해 주세요. 그만큼 손님이 늘 거예요!', '멋지게 이기는 법을 알아요. 도전자들 사이에 소문이 날걸요?', '방송에도 몇 번 나왔어요. 체육관 홍보는 걱정 마세요!', '무대 체질이에요. 관중이 많을수록 더 잘 싸워요!'],
+  money: ['도전자에게서 상금을 두둑이 챙겨 올게요.', '체육관 살림, 제가 있으면 넉넉해질 거예요.', '계산은 빠르고 배틀은 더 빨라요. 수입은 확실히 늘려 드릴게요.', '이긴 배틀은 반드시 돈이 되게 만드는 게 제 방식이에요.', '상금 협상이라면 누구에게도 지지 않아요!'],
+  guts: ['절대 물러서지 않아요. 끝까지 버티는 게 제 장점이에요!', '체력이 바닥나도 한 번 더 버팁니다. 그게 근성이죠!', '불리할수록 더 불타오르는 타입이에요.', '지는 건 싫어요. 마지막 한 마리까지 포기 안 해요!', '넘어져도 일어나는 건 자신 있어요. 포켓몬들도 그렇게 키웠고요.'],
+  grow: ['아직 부족하지만, 배틀할수록 강해지는 타입이에요!', '하루하루 늘고 있어요. 지켜봐 주세요!', '경험이 적은 대신 배우는 속도는 누구보다 빨라요.', '이 체육관에서 크게 성장하고 싶어요!', '지금은 새싹이지만 금방 큰 나무가 될게요.'],
+  thrift: ['월급은 조금만 주셔도 괜찮아요. 일하게만 해 주세요!', '돈보다 배울 수 있는 곳이 좋아요. 월급은 적당히만요.', '도시락 싸 오고 걸어서 출근해요. 큰돈은 필요 없어요!', '아껴 쓰는 건 자신 있어요. 체육관 비품도 소중히 쓸게요.', '적게 받아도 일은 성실하게! 그게 제 신조예요.'],
+  lazy: ['음… 가끔 낮잠을 자지만, 월급은 아주 조금이면 돼요.', '서두르지 않는 편이에요. 대신 월급은 정말 조금만 주세요.', '하아암… 배틀할 땐 깨어 있을게요. 아마도요.', '느긋하게 일하는 대신 욕심도 없어요.', '날씨 좋은 날엔 조금 늦을 수도 있어요. 그래도 괜찮죠?'],
+};
+const sayOf = c => { const L = LINES[c.trait] || [''], n = Math.abs((c.id | 0) * 2654435761 | 0) || 0; return `${HELLO[n % HELLO.length]} ${L[(n >>> 3) % L.length]}`; };
 // 포켓몬 그림 + 레벨: 상자 없이 그림 밑에 작은 글씨 (경완 2026-10-27 '박스 없이 좀 더 깔끔하게')
 const teamIc = T => `<span class="sf-team">${T.map(([sp, lv]) => `<span><img alt="" data-sp="${sp}"><small>Lv.${lv}</small></span>`).join('')}</span>`;
 // 특성은 상자로 (경완 2026-10-27 '트레이너 특성은 확실하게 박스로')
@@ -334,7 +345,7 @@ function drawStaff() {
   // 지원서 (경완 2026-10-28): 스프라이트가 잘 보이는 세로 카드, 여러 장이면 옆으로 넘긴다. 면접 내용도 카드 안에, 바로 고용하기
   const cand = c ? `<div class="cv-deck">${C.map((x, i) => `<article class="cv-card" data-i="${i}"><header><b>트레이너 지원서</b><span class="cv-tm"><em>남은 시간</em><b class="cv-left" data-exp="${x.exp}">${cvLeft(x.exp - now)}</b></span></header>
       <div class="cv-photo"><img alt="" src="${K.trSrc(x.tr)}"><div class="cv-nm"><small>${esc(x.cls)}</small><b>${esc(x.nm)}</b></div></div>
-      <p class="cv-say">“안녕하세요! ${esc(LINES[x.trait])}”</p>
+      <p class="cv-say">“${esc(sayOf(x))}”</p>
       <dl class="cv-dl"><dt>특성</dt><dd>${trtBox(x.trait, true, true)}</dd><dt>포켓몬</dt><dd>${teamIc(x.team)}</dd><dt>평균 레벨</dt><dd>Lv.${Math.round(K.teamLv(x.team))}</dd><dt>희망 월급</dt><dd>7일에 <b>${x.wage}G</b></dd></dl>
       <div class="cv-btns"><button class="gy-key" data-no="${i}">돌려보내기</button><button class="gy-key main" data-hire="${i}">고용하기</button></div></article>`).join('')}</div>
       ${C.length > 1 ? `<div class="cv-dots">${C.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : ''}`
@@ -397,15 +408,14 @@ function drawShop() {
   const inner = body.onclick; body.onclick = null;
   sh.onclick = e => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.st) { sfx('tap'); shopT = b.dataset.st; redraw(); return; } inner?.(e, b); };
 }
-// 기술머신: 내 체육관 타입 포켓몬이 배울 수 있는 기술. 사면 가방(g.tms {기술: 개수})에 들어가고, 가르치기는 포켓몬 정보 창의 '기술머신'에서 (경완 2026-10-27)
+// 기술머신: 내 체육관 타입 포켓몬이 배울 수 있는 기술. 사면 창고(g.tms {기술: 개수})에 들어가고, 가르치기는 포켓몬 정보 창의 '기술 가르치기'에서 (경완 2026-10-27)
 function shopTm(body) {
   const D = GB().D, g = st(), mons = S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(g.ty)); g.tms = g.tms || {};
   const can = new Map(); mons.forEach(P => (D.sp[P.sp]?.tm || []).forEach(i => { if (!can.has(i)) can.set(i, []); can.get(i).push(P); }));
   const types = [...new Set([...can.keys()].map(i => D.mv[i][2]))].sort((a, b) => a - b);
   if (tmTy !== -1 && !types.includes(tmTy)) tmTy = -1;   // -1 = 전체 (경완 2026-10-27 '에스퍼 포켓몬이라고 에스퍼 기술만 배우는 건 아닌데')
   const L = [...can.keys()].map(i => D.mv[i]).filter(x => (tmTy === -1 || x[2] === tmTy) && (tmCat === -1 || x[3] === tmCat)).sort((a, b) => ((b[4] || 0) - (a[4] || 0)) * tmPow || a[2] - b[2]);
-  const own = Object.values(g.tms).reduce((a, n) => a + (n || 0), 0);
-  body.innerHTML = `${own ? `<p class="tm-bagl"><span class="tm-bag">가진 기술머신 ${own}개</span></p>` : ''}
+  body.innerHTML = `
     ${types.length ? `<div class="tm-row"><button class="fsel${tmTy !== -1 ? ' on' : ''}" data-f="ty">${tmTy === -1 ? '모든 타입' : TYPE_KO[tmTy]}</button><button class="fsel${tmCat !== -1 ? ' on' : ''}" data-f="cat">${tmCat === -1 ? '모든 형태' : ['물리', '특수', '변화'][tmCat]}</button><button class="tm-sort" data-pow="1">위력순 ${tmPow > 0 ? '▼' : '▲'}</button></div>` : `<p class="sf-none">${TYPE_KO[g.ty]} 타입 포켓몬이 아직 없어요.</p>`}
     ${types.length && !L.length ? '<p class="sf-none">조건에 맞는 기술머신이 없어요.</p>' : ''}
     <div class="sp-list">${L.map(x => `<button class="sp-tm" data-tm="${x[0]}"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png"><span class="tm-nm"><b>${esc(x[1])}</b>${g.tms[x[0]] ? `<i class="tm-own">×${g.tms[x[0]]}</i>` : ''}</span><span class="tm-meta">${GB().tyTag(x[2], x[3])}<small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}</small></span><em>${gold(tmPrice(x))}</em></button>`).join('')}</div>`;
@@ -423,7 +433,7 @@ function buyTm(id, can) {
     if (a === 'x') return close(); if (a !== 'buy') return;
     if (!buy(price)) { close(); return say(`골드가 모자라요. ${price.toLocaleString()}G가 필요해요.`); }
     close(); g.tms = g.tms || {}; g.tms[id] = (g.tms[id] || 0) + 1; K.glog('tr', `기술머신 <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 샀다.`); K.save(); redraw();
-    say(`기술머신 ${esc(x[1])}${K.jong(x[1]) ? '을' : '를'} 가방에 넣었어요.<br><small>배틀 메뉴나 훈련장에서 포켓몬을 누르고 '기술머신'으로 가르쳐 주세요.</small>`);
+    say(`기술머신 ${esc(x[1])}${K.jong(x[1]) ? '을' : '를'} 창고에 넣었어요.`);   // 경완 2026-10-29 '여기까지만'
   });
 }
 // 꾸미기: 사면 빈 칸에 바로 놓인다. 놓인 것을 누르면 치우기, 가진 것을 누르면 놓기
