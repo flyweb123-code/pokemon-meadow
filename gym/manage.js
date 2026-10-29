@@ -27,7 +27,9 @@ function draw() { if (!sh || !st()) return; sh.onclick = null; sh.classList.remo
 const redraw = () => { if (sh && !sh.hidden) draw(); };
 
 // ======================= 훈련장 (4단계) =======================
-const trMax = () => 6;   // 6마리 (경완 2026-10-29)
+const TR_ALL = 6, trMax = () => Math.min(TR_ALL, K.gradeOf(st().rep || 0).i);   // 등급마다 한 칸씩: 새내기 0(잠김)·동네 1 … 전설 6 (경완 2026-10-29)
+const trFull = () => trMax() < TR_ALL ? `지금 등급에선 ${trMax()}마리까지 보낼 수 있어요. 등급이 오르면 자리가 늘어요.` : '훈련장이 가득 찼어요. 6마리까지 보낼 수 있어요.';
+const LOCK_SVG = '<svg viewBox="0 0 12 14" shape-rendering="crispEdges" aria-hidden="true"><path fill="#6a6a7c" d="M3 1h6v1H3zM2 2h1v4H2zM9 2h1v4H9z"/><path fill="#20202c" d="M1 6h10v1H1zM0 7h1v6H0zM11 7h1v6h-1zM1 13h10v1H1z"/><path fill="#e8b820" d="M1 7h10v6H1z"/><path fill="#ffd640" d="M1 7h10v1H1z"/><path fill="#7a5a10" d="M5 9h2v3H5z"/></svg>';
 // 1시간 경험치: 레벨 10 은 1시간에 약 1레벨, 레벨 50 은 약 0.2레벨 (경완 기획 밸런스). 훈련광 트레이너가 있으면 +20%
 function perHour(P) { const m = GB().gm(P), g = GB().growth(P.sp); if (m.lv >= GB().LV_MAX) return 0; const need = GB().xpAt(g, m.lv + 1) - GB().xpAt(g, m.lv);
   return need * Math.min(.35, 3 / Math.max(1, m.lv)) * coachX(); }
@@ -373,7 +375,7 @@ function pickTrain(after) {
     tag: P => inTr(P.id) ? '훈련 중' : onField(P.id) ? '필드' : '',
     pick: function this_pick(P, w) { const i = g.tr.findIndex(e => e.id === P.id);
       if (i >= 0) { tickTrain(Date.now()); g.tr.splice(i, 1); K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '을' : '를'} 훈련장에서 데려왔다.`); }
-      else { if (g.tr.length >= trMax()) return say('훈련장이 가득 찼어요. 6마리까지 보낼 수 있어요.');
+      else { if (g.tr.length >= trMax()) return say(trFull());
         // 보내기 전에 한 번 더 묻기, 필드에 나가 있으면 빠진다고 안내 (경완 2026-10-29)
         if (!w.ok) { const n = esc(nmOf(P)); GB().gymPop(`<h4>${n}${K.jong(nmOf(P)) ? '을' : '를'} 훈련장에 보낼까요?</h4>${onField(P.id) ? `<p class="gy-msg">지금 필드에 나가 있어서 보내면 <b>필드에서 빠져요</b>.</p>` : ''}<div class="gy-btns"><button data-a="x">취소</button><button class="main" data-a="ok">보내기</button></div>`, (a, close) => { close(); if (a === 'ok') { w.ok = 1; try { this_pick(P, w); } finally { w.ok = 0; } } }); return; }
         const m = S.mons.find(o => o.pid === P.id); if (m) { try { GA.removeMon(m, true); } catch (e) {} }
@@ -385,7 +387,7 @@ function pickTrain(after) {
 function trSend(P, done) {
   const g = st(), i = g.tr.findIndex(e => e.id === P.id), n = esc(nmOf(P)), j = K.jong(nmOf(P)) ? '을' : '를';
   if (i >= 0) { tickTrain(Date.now()); g.tr.splice(i, 1); K.glog('tr', `${n}${j} 훈련장에서 데려왔다.`); K.save(); redraw(); slotRf?.(); return done?.(); }
-  if (g.tr.length >= trMax()) return say('훈련장이 가득 찼어요. 6마리까지 보낼 수 있어요.');
+  if (g.tr.length >= trMax()) return say(trFull());
   if (GB().gm(P).lv >= GB().LV_MAX) return say('이미 최고 레벨이에요.');
   GB().gymPop(`<h4>${n}${j} 훈련장에 보낼까요?</h4>${onField(P.id) ? `<p class="gy-msg">지금 필드에 나가 있어서 보내면 <b>필드에서 빠져요</b>.</p>` : ''}<div class="gy-btns"><button data-a="x">취소</button><button class="main" data-a="ok">보내기</button></div>`, (a, close) => { close(); if (a !== 'ok') return;
     const m = S.mons.find(o => o.pid === P.id); if (m) { try { GA.removeMon(m, true); } catch (e) {} }
@@ -401,7 +403,7 @@ function statPop() {
   if (!w) { document.querySelector('#gym .gy-boxw')?.remove(); w = document.createElement('div'); w.className = 'gy-boxw ts-win'; document.querySelector('#gym .gy-main').appendChild(w); }
   const L = g.tr.map(e => [e, boxOf(e.id)]).filter(([, P]) => P), today = K.dayStart(Date.now());
   w.innerHTML = `<div class="win" role="dialog" aria-label="훈련장"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>훈련장 <small>${L.length}/${trMax()}</small></h4></div>
-    <div class="ts-grid">${Array.from({ length: trMax() }, (_, i) => { const r = L[i]; if (!r) return `<button type="button" class="ts-slot empty" data-new="1"><span>+</span></button>`;
+    <div class="ts-grid">${Array.from({ length: Math.max(TR_ALL, L.length) }, (_, i) => { const r = L[i]; if (!r && i >= trMax()) return `<div class="ts-slot lock">${LOCK_SVG}<span><b>${K.GRADES[i + 1]?.[1] || ''}</b>이 되면 열려요</span></div>`; if (!r) return `<button type="button" class="ts-slot empty" data-new="1"><span>+</span></button>`;
       const [e, P] = r, m = GB().gm(P), up = m.lv - (e.l0 ?? m.lv), gr = GB().growth(P.sp), a0 = GB().xpAt(gr, m.lv), a1 = GB().xpAt(gr, m.lv + 1), f = m.lv >= GB().LV_MAX ? 1 : clampN(((m.xp ?? a0) - a0) / Math.max(1, a1 - a0), 0, 1), hh = Math.min(8, e.d === today ? e.h : 0);
       return `<button type="button" class="ts-slot" data-id="${P.id}"><span class="ts-x" data-out="${P.id}" role="button" aria-label="훈련장에서 데려오기">✕</span>${GB().thumb(P)}<b>${esc(nmOf(P))}</b><span class="ts-lv">Lv.${m.lv}${up > 0 ? ` <em>▲${up}</em>` : ''}</span>
         <span class="ts-g"><i>경험치</i><span class="mini"><i style="width:${(f * 100).toFixed(0)}%"></i></span></span><span class="ts-g h"><i>오늘</i><span class="mini"><i style="width:${(hh / 8 * 100).toFixed(0)}%"></i></span></span><small>${hm(e.j ? Date.now() - e.j : 0)} 훈련${(e.mv || []).length ? ` · 새 기술 ${(e.mv || []).length}` : ''}</small></button>`; }).join('')}</div>

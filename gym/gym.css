@@ -1492,3 +1492,10 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .lu-slot.lu-drag{scale:1}
 .lu-slot[data-p]{padding:4px 30px 4px 38px!important}
 .gy-plate .gy-nm span{display:block;max-width:100%}
+
+/* 등급으로 잠긴 메뉴·훈련장 칸 (경완 2026-10-29) */
+.gy-menu button.lk{color:rgba(255,255,255,.45)!important}
+.gy-menu button.lk::after{content:'';position:absolute;top:5px;right:6px;width:12px;height:14px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 14' shape-rendering='crispEdges'%3E%3Cpath fill='%236a6a7c' d='M3 1h6v1H3zM2 2h1v4H2zM9 2h1v4H9z'/%3E%3Cpath fill='%2320202c' d='M1 6h10v1H1zM0 7h1v6H0zM11 7h1v6h-1zM1 13h10v1H1z'/%3E%3Cpath fill='%23e8b820' d='M1 7h10v6H1z'/%3E%3Cpath fill='%23ffd640' d='M1 7h10v1H1z'/%3E%3Cpath fill='%237a5a10' d='M5 9h2v3H5z'/%3E%3C/svg%3E") center/contain no-repeat}
+.ts-win .ts-slot.lock{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:8px;min-height:76px;padding:0 10px!important;border-style:dashed!important;border-color:#cfcfda!important;background:repeating-linear-gradient(135deg,rgba(0,0,0,.03) 0 6px,transparent 6px 12px)!important;color:#9a9aac;font-size:12px}
+.ts-win .ts-slot.lock svg{width:18px;height:21px;flex:none}.ts-win .ts-slot.lock b{color:#6a6a80}
+.gy-perk>li>.bdw,.gy-perk>li>.g-emb{align-self:center;display:grid;place-items:center}   /* 배지 칸 위아래 가운데 (경완 2026-10-29) */
