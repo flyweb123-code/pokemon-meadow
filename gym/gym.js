@@ -549,6 +549,21 @@ function mkTeam(types, lvB, n) {
   return Array.from({ length: n }, (_, i) => { const lv = clampN(lvB + rndI(-2, 1) + (i === n - 1 ? 1 : 0), 2, 100); return [pickSp([pick(T)], lv), lv]; });
 }
 const teamLv = T => T.reduce((a, m) => a + m[1], 0) / T.length;
+// 배틀 직전에 고른 라인업으로 상대 레벨·마리 수를 다시 맞춘다 (경완 2026-10-29). 본가 단계 팀(pickNamed)은 그대로
+function refit(c, my) {
+  const g = st(), L = my.map(P => g.mon?.[P.id]?.lv).filter(Boolean); if (!L.length) return;
+  const avg = Math.round(L.reduce((a, b) => a + b, 0) / L.length);
+  if (c.named) {
+    if (!c.sc) return;
+    const n = NAMED.find(x => x.id === c.named), bn = c.bn ?? (c.boss ? [2, 3, 4, 6, 8, 11][c.boss - 1] : clampN((g.gmax | 0) - 2, 0, 3));
+    const T = n && nmTeam(n, avg + bn + rndI(-1, 1)); if (T) c.team = T;
+    return;
+  }
+  const C = CLS[c.k]; if (!C) return;
+  const f = c.f ?? (c.ivm || 0) / 20, diff = c.diff;
+  const n = diff ? rndI(2, clampN(my.length + 1 + (f > .4) + (f > .8), 2, 6)) : clampN(rndI(1, 2) + (f > .5), 1, my.length);
+  c.team = mkTeam(C.t, Math.max(3, avg + (diff ? -2 + Math.round(f * 5) : -8 + Math.round(f * 6))), n);
+}
 function mkChal(t) {
   const g = st(), G = gradeOf(g.rep || 0), avg = myAvg();
   const rep = g.rep || 0, L = clampN((g.gmax | 0) - 2, 0, 3), f = bdPh(rep), nx = GRADES[(g.gmax | 0) + 1];
@@ -562,7 +577,7 @@ function mkChal(t) {
   const diff = Math.random() < [.75, .6, .5, .4, .3, .2, .15][G.i] * (1 - f * .8) ? 0 : 1;
   const k = pick(Object.keys(CLS).filter(x => !!CLS[x].e === !diff)), C = CLS[k];
   const n = diff ? rndI(2, clampN(luNow().length + 1 + (f > .4) + (f > .8), 2, 6)) : rndI(1, 2) + (f > .5);
-  return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), diff, ivm: Math.round(f * 20), team: mkTeam(C.t, Math.max(3, avg + (diff ? -2 + Math.round(f * 5) : -8 + Math.round(f * 6))), n) };
+  return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), diff, f, ivm: Math.round(f * 20), team: mkTeam(C.t, Math.max(3, avg + (diff ? -2 + Math.round(f * 5) : -8 + Math.round(f * 6))), n) };
 }
 // 이름 있는 트레이너 팀을 지금 내 라인업에 맞춰 (레벨 = 내 평균 + bonus). 가장 가까운 단계 팀을 골라 레벨만 옮긴다
 function nmTeam(n, tgt) {
@@ -574,7 +589,7 @@ const NM_POOL = L => NAMED.filter(n => L < 2 ? /관장|라이벌/.test(n.cls) : 
 function mkScripted(L, t, bonus, n0) {
   const g = st(), n = n0 || pick(NM_POOL(L).filter(x => !g.q.some(c => c.named === x.id))); if (!n) return null;
   const team = nmTeam(n, myAvg() + bonus + L + rndI(-1, 1)); if (!team) return null;
-  return { id: ++g.cid, t, named: n.id, sc: 1, cls: n.cls, tr: n.tr, ow: n.ow, nm: n.nm, diff: 2, music: n.music, team };
+  return { id: ++g.cid, t, named: n.id, sc: 1, bn: bonus + L, cls: n.cls, tr: n.tr, ow: n.ow, nm: n.nm, diff: 2, music: n.music, team };
 }
 // 승급 심사 보스 (gi = 올라갈 등급 1~6): 동네·떠오르는·이름난 = 관장, 인기 = 라이벌·관장, 명문 = 사천왕, 전설 = 챔피언. 내 평균 +2/+3/+4/+6/+8/+11, 개체값 최고
 function mkBoss(gi, t) {
@@ -737,6 +752,7 @@ async function challenge() {
     do await talk(who + esc(L[L.length - 1]), '배틀 시작');   // 난이도·마리 수는 안 보여 줌 (경완 2026-10-28), 버튼 글자 '배틀 시작' (경완 2026-10-29)
     while (await luPick() == null);
     const my = luNow();
+    refit(c, my);
     const team = c.team.map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv); if (mv && mv.length) o.mv = mv; if (c.boss) o.iv = o.iv.map(() => 31); else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); return o; });
     // 배틀이 끝나면 배틀 화면에서 상대가 한마디 (경완 2026-10-28)
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : pick(WIN_LINES), lose: N ? N.ln[2].replace('{me}', me) : pick(LOSE_LINES) };
