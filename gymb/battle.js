@@ -1011,7 +1011,7 @@ const boxPop = () => boxWin(false);
 const inTr = id => !!S.gym?.tr?.some(e => e.id === id);
 function monHtml(P, mode) {
   const inLu = curLu().includes(P.id); const m = gm(P), g = growth(P.sp), a = xpAt(g, m.lv), b = xpAt(g, m.lv + 1), mv = m.mv.map(x => mvOf(x)).filter(Boolean);
-  return `<div class="mp-head">${thumb(P)}<div class="mp-hd"><h4>${esc(nmOf(P))}${inTr(P.id) ? '<em class="tr-tag">훈련중</em>' : ''}</h4><p class="mp-tys">${(SPECIES[P.sp]?.t || []).map(t => tyTag(t)).join('')}</p><p class="mp-lv"><b>Lv.${m.lv}</b> · 랭크 ${GA.rankOf(P)}</p>${frRow(P)}<i class="mp-xp"><i style="width:${m.lv >= LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><small class="mp-xpn">${m.lv >= LV_MAX ? '최고 레벨' : `${Math.max(0, m.xp - a).toLocaleString()}/${(b - a).toLocaleString()}`}</small></div></div>
+  return `<div class="mp-head"><button type="button" class="mp-thb" data-a="hit" aria-label="지닌 도구">${thumb(P)}</button><div class="mp-hd"><h4>${esc(nmOf(P))}${inTr(P.id) ? '<em class="tr-tag">훈련중</em>' : ''}</h4><p class="mp-tys">${(SPECIES[P.sp]?.t || []).map(t => tyTag(t)).join('')}</p><p class="mp-lv"><b>Lv.${m.lv}</b> · 랭크 ${GA.rankOf(P)}</p>${frRow(P)}<i class="mp-xp"><i style="width:${m.lv >= LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><small class="mp-xpn">${m.lv >= LV_MAX ? '최고 레벨' : `${Math.max(0, m.xp - a).toLocaleString()}/${(b - a).toLocaleString()}`}</small></div></div>
     <div class="mp-na"><button type="button" class="mp-nat" data-a="nat"><small>성격 <i class="mp-more">›</i></small><p><b>${natKo(m.nat)}</b></p></button><button type="button" class="mp-ab${m.ha ? ' ha' : ''}" data-a="ab"><small>특성 <i class="mp-more">›</i></small><p><b${m.ha ? ' class="ha"' : ''}>${abKo(m.ab)}</b>${m.ha ? '<em class="ha-tag">숨겨진</em>' : ''}</p></button></div>
     ${ivHex(P, m)}
     <div class="mp-mvh"><small>기술</small>${mode === 'add' ? '' : '<button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button>'}</div>
@@ -1030,6 +1030,10 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
       if (a === 'ab') return abShow(m.ab, m.ha, !m.ha && h && h !== m.ab ? h : null);   // 특성 효과는 눌러서 팝업 (경완 2026-10-29)
       if (a === 'mv') { close(); movesPop(P, () => monPop(P.id, fromBox, null, lst)); return; }
       if (a === 'tm') { close(); usePop(P, () => monPop(P.id, fromBox, null, lst)); return; }
+      // 프로필 그림을 누르면 지닌 도구 정보 + 돌려받기 (경완 2026-10-29)
+      if (a === 'hit') { const it = m.it, x = HOLD[it];
+        if (!x) return gymPop(`<h4>지닌 도구 없음</h4><p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} 아무것도 지니고 있지 않아요.</p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="use">도구 사용</button></div>`, (b, c2) => { c2(); if (b === 'use') { close(); usePop(P, () => monPop(P.id, fromBox, null, lst)); } });
+        return gymPop(`<h4 class="mi-h"><img class="tm-ic it-ic" alt="" src="${itImg(it)}">${esc(x[0])}</h4><p class="gy-msg it-own">${esc(nmOf(P))}${jong(nmOf(P)) ? '이' : '가'} 지니고 있어요</p><p class="gy-msg mi-d">${esc(x[2])}</p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="take">돌려받기</button></div>`, (b, c2) => { c2(); if (b !== 'take') return; takeIt(P); se('DECIDE'); close(); monPop(P.id, fromBox, null, lst); }); }
       if (a === 'tr') return window.GymManage?.trSend(P, () => { drawTab(); bxRefresh?.(); monPop(P.id, fromBox, p, lst); });
       const fin = () => {
       if (a === 'rm' && i >= 0) c.splice(i, 1); if (a === 'add' && i < 0 && c.length < 6 && tyOk(P)) c.push(P.id); close(); GA.save(); drawTab();
