@@ -888,7 +888,8 @@ function homeSay() {
   if (!ded) { root.classList.add('dhide'); $g('.gy-dlg').innerHTML = ''; }   // 꾸미기·자리 정하기 중엔 그대로 (20초마다 불려서 창이 비던 버그, 경완 2026-10-28)
   // 도전자 받기 (경완 2026-10-29): 기다리는 도전자가 없으면 비활성, 있으면 'N명의 도전자가 기다리고 있어요' + 새로 온 도전자가 있으면 빨간 점 (누르면 사라짐)
   const n = g.q.length, qb = $g('.gy-qbtn'), cap = $g('.gy-qcap'), dot = $g('.gy-qdot'), nw = g.q.some(c => c.id > (g.qSeen | 0));
-  if (qb) { qb.disabled = !n; qb.classList.toggle('has', !!n); } if (cap) { cap.hidden = false; cap.classList.toggle('none', !n); cap.textContent = n ? `${n}명의 도전자가 기다리고 있어요` : '아직 도전자가 없어요'; }   // 없을 때도 안내 (경완 2026-10-29) if (dot) dot.hidden = !(n && nw);
+  if (qb) { qb.disabled = !n; qb.classList.toggle('has', !!n); } if (cap) { cap.hidden = false; cap.classList.toggle('none', !n); cap.textContent = n ? `${n}명의 도전자가 기다리고 있어요` : '아직 도전자가 없어요'; }   // 없을 때도 안내 (경완 2026-10-29)
+  if (dot) dot.hidden = !(n && nw);   // 주석 뒤에 붙어 있어서 빨간 점이 안 나오던 버그 (경완 2026-10-29)
   const pw = root.querySelector('.gy-qw'); if (pw) pw.redraw?.();
 }
 // 도전자 명단 (경완 2026-10-28 '화면 하단에 도전자 명단 아이콘, 누르면 새 화면에서'): 기다리는 도전자만 (체육관 일지는 없앰, 경완 2026-10-28)
@@ -909,8 +910,9 @@ function qPop() {
 function renderGoldG() { const e = root && $g('.gy-goldn'); if (e) e.textContent = /[?&]studio/.test(location.search) ? '∞' : S.gold.toLocaleString(); }   // 홈 화면 골드는 뺐다 (경완 2026-10-27). 상점 등에서 쓰면 그대로
 function dlg(html, sub = '') { root.classList.remove('dhide'); $g('.gy-dlg').innerHTML = html + (sub ? `<span class="gy-dsub">${sub}</span>` : ''); }   // 아래 대화창 (도전자 입장 등 연출 중에만)
 // 알림은 아래 상태창 대신 가운데 팝업 (경완 2026-10-28 '상태창 하단에 뜨는 것들 다 가운데 중앙 팝업창으로')
-function say(html, sub = '') { if (!html) return dlg('', ''); root.querySelector('.gy-pop.gy-note')?.remove();
-  const p = pop(`<p class="gy-msg gy-notem">${html}${sub ? `<small>${sub}</small>` : ''}</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => close()); p?.classList?.add('gy-note'); }
+function say(html, sub = '', onX) { if (!html) return dlg('', ''); root.querySelector('.gy-pop.gy-note')?.remove();
+  const p = pop(`<p class="gy-msg gy-notem">${html}${sub ? `<small>${sub}</small>` : ''}</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => { close(); onX?.(); }); p?.classList?.add('gy-note');
+  if (onX && p) { const oc = p.onclick; p.onclick = e => { if (e.target !== p) oc(e); }; } }   // 기다리는 안내는 확인 단추로만 닫힌다
 
 // ---------- 메뉴 창 ----------
 const SOON = {
@@ -1144,7 +1146,7 @@ function setup(only, re) {
     let body = '', btn = last ? (first ? '체육관 열기' : re ? '새로 세우기' : '저장') : '다음';
     if (k === 'd') {
       const D = dzBase(dr.d), di = DESIGNS.indexOf(D);
-      body = `<h3>${re ? '새 체육관 디자인' : '체육관 디자인'}</h3><p class="gy-lead">${re ? '새로 세울 체육관 모양을 골라요.' : '본가 관동 지방 체육관이에요. 나중에 바꿀 수 있어요.'}</p>
+      body = `<h3>${re ? '새 체육관 디자인' : '체육관 디자인'}</h3><p class="gy-lead">${re ? '새로 세울 체육관 모양을 골라요.' : '처음엔 작게 시작해서, 등급이 오를 때마다 체육관이 점점 넓어져요.'}</p>
         <div class="gy-dz"><div class="gy-dz-view"><img data-ms="${D.id}" data-gi="${first ? 0 : ''}" alt=""><button class="gy-dz-arw l" type="button" data-m="-1" aria-label="이전">◀</button><button class="gy-dz-arw r" type="button" data-m="1" aria-label="다음">▶</button></div>
         <div class="gy-dz-nm">${D.n}</div><div class="gy-dots">${DESIGNS.map((_, j) => `<i class="${j === di ? 'on' : ''}"></i>`).join('')}</div></div>`;
     } else if (k === 'ty') {
@@ -1196,8 +1198,8 @@ async function opened() {
   fx.classList.add('go'); $g('.gy-stage')?.animate([{ translate: '0 0' }, { translate: '0 -4px' }, { translate: '0 4px' }, { translate: '0 -2px' }, { translate: '0 0' }], { duration: 420, iterations: 2 });
   confetti(); setTimeout(confetti, 900); setTimeout(confetti, 1800);
   await wait(3600); fx.classList.add('out'); await wait(500); fx.remove();
-  say(`<b>${esc(st().nm)}</b>의 문을 열었다!`, '축하해요! 오늘부터 관장님이에요');
-  await wait(2200); root.querySelector('.gy-note')?.remove();
+  await new Promise(ok => say(`<b>${esc(st().nm)}</b>의 문을 열었다!`, '축하해요! 오늘부터 관장님이에요', ok));   // 확인을 누를 때까지 기다린다 (경완 2026-10-29)
+  await wait(250);
   await kang(KANG_OPEN(), { lit: true });
   firstChal();
 }
@@ -1257,14 +1259,14 @@ const KANG_OPEN = () => [
   '모르는 게 있으면 안내원에게\n물어보렴. 그럼 힘내라,\n관장님!',
 ];
 // lines 를 강박사가 한 줄씩 말한다 (화면을 누르면 다음). lit: 처음부터 밝게 / 아니면 어두운 체육관에 불이 켜지며 시작
-function kang(lines, { lit = false, nm = '강박사', pic = GA.KANG, ow = 0 } = {}) {
+function kang(lines, { lit = false, nm = '강박사', pic = GA.KANG, ow = 0, skip = nm !== '강박사' } = {}) {   // 강박사 튜토리얼엔 건너뛰기 없음 (경완 2026-10-29)
   return new Promise(done => {
     const k = document.createElement('div'); k.className = 'gy-kang' + (lit ? ' lit' : '') + (ow ? ' guide' : '');
-    k.innerHTML = `<i class="gy-k-veil"></i>${ow ? `<i class="gy-k-pic ow${/\/pt\/|pt_/.test(pic) ? ' w32' : ''}" style="background-image:url(${pic})"></i>` : `<img class="gy-k-pic" alt="${nm}" src="${pic}">`}<button class="gy-k-skip" type="button">건너뛰기</button><div class="win gy-k-box" aria-live="polite"><span class="gy-k-nm">${nm}</span><span class="gy-k-t"></span><b class="gy-k-cur" hidden>▼</b></div>`;
+    k.innerHTML = `<i class="gy-k-veil"></i>${ow ? `<i class="gy-k-pic ow${/\/pt\/|pt_/.test(pic) ? ' w32' : ''}" style="background-image:url(${pic})"></i>` : `<img class="gy-k-pic" alt="${nm}" src="${pic}">`}${skip ? '<button class="gy-k-skip" type="button">건너뛰기</button>' : ''}<div class="win gy-k-box" aria-live="polite"><span class="gy-k-nm">${nm}</span><span class="gy-k-t"></span><b class="gy-k-cur" hidden>▼</b></div>`;
     root.appendChild(k);
     const talk = GA.inTyper(k, k.querySelector('.gy-k-t'), k.querySelector('.gy-k-cur'));
     let stop = false; const end = async () => { if (k.classList.contains('bye')) return; stop = true; k.classList.add('bye'); await wait(450); k.remove(); done(); };
-    k.querySelector('.gy-k-skip').onclick = e => { e.stopPropagation(); sfx('tap'); end(); };
+    if (skip) k.querySelector('.gy-k-skip').onclick = e => { e.stopPropagation(); sfx('tap'); end(); };
     (async () => {
       if (!lit) { await wait(500); for (const o of [.55, .9, .25, .6, 0]) { k.style.setProperty('--veil', o); await wait(o ? 110 : 0); } k.classList.add('lit'); await wait(500); }
       k.classList.add('in'); await wait(650);
@@ -1307,15 +1309,20 @@ async function townScene() {
     const dx = Math.sign(tx - x), dy = Math.sign(ty - y), f = dx > 0 ? 'r' : dx < 0 ? 'l' : dy > 0 ? 'd' : 'u', x0 = x, y0 = y, t0 = performance.now(); n++;
     await new Promise(ok => { const s = now => { const q = Math.min(1, (now - t0) / 240); put(x0 + dx * q, y0 + dy * q, f, q < .5 ? (n % 2 ? 1 : 2) : 0); q < 1 ? requestAnimationFrame(s) : ok(); }; requestAnimationFrame(s); });
     x += dx; y += dy; }
-  put(x, y, 'u', 0); await wait(500);
+  put(x, y, 'u', 0); await wait(300);
+  // 강박사 그림이 내 캐릭터를 가리지 않게 (경완 2026-10-29): 캐릭터 발밑이 강박사 머리보다 위에 오도록 카메라를 조금 내린다
+  const cy0 = T.to[1], cy1 = Math.max(cy0, ((y + 1) * 16 * k - (H - 340) + H / 2) / (16 * k));
+  if (cy1 > cy0) await new Promise(ok => { const t0 = performance.now(); const f = now => { const q = Math.min(1, (now - t0) / 700), e = 1 - (1 - q) ** 2; cam(T.to[0], cy0 + (cy1 - cy0) * e); q < 1 ? requestAnimationFrame(f) : ok(); }; requestAnimationFrame(f); });
+  await wait(250);
   return el;
 }
 async function intro() {
   const D = DESIGNS[0]; clearEnts(); layout(D); dlg('', ''); root.classList.add('pre'); preMs(0);
   const tw = await townScene(); if (!open) return tw.remove();
-  await kang(KANG_HI(), { lit: true });
-  tw.classList.remove('on'); await wait(450); tw.remove();
-  root.classList.remove('pre'); if (!open) return; setup();
+  await kang(KANG_HI(), { lit: true, skip: 0 });
+  // 타입 고르기 화면을 마을 뒤에 먼저 깔고 마을을 걷어낸다 (사이에 바위 체육관 맵이 비치지 않게)
+  if (!open) return tw.remove(); root.classList.remove('pre'); setup();
+  tw.classList.remove('on'); await wait(850); tw.remove();
 }
 function enter() {
   open = true; tab = null; root.hidden = false; root.classList.remove('gview'); root.classList.toggle('sim', !!window.gymSimOn); GA.gymIn(); openTab(null); bgmPlay(st()?.d ? 'gym' : 'lab');   // 처음 연출·튜토리얼은 연구소 곡 (경완 2026-10-29)   // 체육관 곡: 처음이면 플래티넘 원본 소리를 받아 오는 동안 잠깐 조용하다
