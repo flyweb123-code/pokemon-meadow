@@ -1465,3 +1465,30 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .gy-boxw .bw-tyf button.bw-tyb.on{border-color:var(--frame);background:var(--win);box-shadow:inset 0 0 0 1px var(--frame)}
 .bw-tyh{font-size:12px;opacity:.75;margin:0 0 10px;display:flex;align-items:center;justify-content:center;gap:4px}.bw-tyh .tyi{width:16px;height:16px}
 .bw-tyg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.bw-tyg button{display:flex;align-items:center;justify-content:center;gap:4px;height:36px;border:2px solid var(--inner);background:#fff;color:var(--win-ink);font:inherit;font-size:13px}.bw-tyg button .tyi{width:18px;height:18px}.bw-tyg button.on{border-color:var(--frame);background:var(--win);box-shadow:inset 0 0 0 1px var(--frame)}
+
+/* 라인업 1·2·3 = 누르는 버튼, 슬롯 = 한 줄 꽉 채우는 6행 + 성격·특성 (경완 2026-10-29) */
+.lu-tabs{gap:8px;margin:0 0 14px}
+.lu-tabs button{min-height:46px;border-radius:6px!important;background:var(--gy-btn)!important;color:var(--win)!important;box-shadow:inset 0 3px 0 rgba(255,255,255,.2),inset 0 -4px 0 rgba(0,0,0,.4),0 3px 0 #1c1c26!important;transition:transform .06s}
+.lu-tabs button[aria-selected="true"]{transform:translateY(3px);background:var(--gy-btn-d)!important;color:var(--gy-gold)!important;box-shadow:inset 0 3px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--gy-gold),0 0 0 #1c1c26!important}
+.lu-tabs button:active{transform:translateY(2px)}
+.lu-grid{grid-template-columns:1fr;gap:8px}
+.lu-slot{height:72px!important;flex-direction:row!important;justify-content:flex-start!important;align-items:center!important;gap:10px!important;padding:4px 30px 4px 34px!important;text-align:left}
+.lu-slot[data-p]{background:linear-gradient(90deg,color-mix(in srgb,var(--tc) 22%,#fff) 0,#fff 55%)!important}
+.lu-slot[data-p]::before{left:2px;right:auto;top:2px;bottom:2px;width:5px;height:auto;border-radius:4px 0 0 4px}
+.lu-slot .lu-n{left:-3px!important;top:-3px!important;bottom:-3px;width:28px!important;height:auto!important;display:grid;place-items:center;border-radius:8px 0 0 8px!important;font-size:14px!important}
+.lu-slot.empty .lu-n{left:0!important;top:0!important;bottom:0;background:none;color:#b0b0c0;font-weight:700;font-style:normal;position:absolute}
+.lu-slot .rk-fr{flex:none}.lu-slot[data-p] .rk-fr img{width:44px;height:44px}
+.lu-slot .lu-mid{display:flex;flex-direction:column;gap:4px;min-width:0;flex:0 1 auto;width:34%}
+.lu-slot .lu-mid b{margin:0!important;font-size:14px!important}
+.lu-slot .lu-inf{margin-left:auto;display:flex;flex-direction:column;gap:3px;min-width:0;flex:1 1 0;max-width:46%}
+.lu-slot .lu-inf>span{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--win-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lu-slot .lu-inf small{flex:none;font-size:10px;color:#fff;background:color-mix(in srgb,var(--tc) 70%,#3a3f52);padding:1px 5px;border-radius:5px;line-height:1.35}
+.lu-slot .lu-ha{font-style:normal;font-size:9px;color:#b05a10;border:1px solid #e0a050;border-radius:4px;padding:0 3px;line-height:1.3;flex:none}
+.lu-slot.empty{gap:8px!important;justify-content:center!important;padding:4px!important}
+.lu-slot.empty span{width:28px!important;height:28px!important;font-size:18px!important}
+.lu-slot.empty em{font-style:normal;font-size:13px;color:#a8a8b8}
+.lu-bar{width:auto;height:4px;margin:-2px 0 0 0}
+.lu-grid.lu-wig .lu-slot[data-p]:not(.lu-drag){animation-name:luWig2}.lu-slot.lu-ord{animation-name:luWig2}@keyframes luWig2{from{rotate:-.5deg}to{rotate:.5deg}}
+.lu-slot.lu-drag{scale:1}
+.lu-slot[data-p]{padding:4px 30px 4px 38px!important}
+.gy-plate .gy-nm span{display:block;max-width:100%}
