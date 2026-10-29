@@ -403,7 +403,7 @@ function statPop() {
       const [e, P] = r, m = GB().gm(P), up = m.lv - (e.l0 ?? m.lv), gr = GB().growth(P.sp), a0 = GB().xpAt(gr, m.lv), a1 = GB().xpAt(gr, m.lv + 1), f = m.lv >= GB().LV_MAX ? 1 : clampN(((m.xp ?? a0) - a0) / Math.max(1, a1 - a0), 0, 1), hh = Math.min(8, e.d === today ? e.h : 0);
       return `<button type="button" class="ts-slot" data-id="${P.id}"><span class="ts-x" data-out="${P.id}" role="button" aria-label="훈련장에서 데려오기">✕</span>${GB().thumb(P)}<b>${esc(nmOf(P))}</b><span class="ts-lv">Lv.${m.lv}${up > 0 ? ` <em>▲${up}</em>` : ''}</span>
         <span class="ts-g"><i>경험치</i><span class="mini"><i style="width:${(f * 100).toFixed(0)}%"></i></span></span><span class="ts-g h"><i>오늘</i><span class="mini"><i style="width:${(hh / 8 * 100).toFixed(0)}%"></i></span></span><small>${hm(e.j ? Date.now() - e.j : 0)} 훈련${(e.mv || []).length ? ` · 새 기술 ${(e.mv || []).length}` : ''}</small></button>`; }).join('')}</div>
-    <p class="ts-tip">빈 칸을 누르면 포켓몬을 보내요 · 하루 8시간까지 훈련해요</p></div>`;
+    </div>`;   // 아래 안내 문구는 뺐다 (경완 2026-10-29)
   GB().fillTh(w);
   slotRf = () => { if (w.isConnected) statPop(); };
   w.onclick = e => {
@@ -411,7 +411,7 @@ function statPop() {
     const x = e.target.closest('[data-out]'); if (x) { sfx('tap'); const P = boxOf(+x.dataset.out || x.dataset.out); if (P) trSend(P); return; }
     const b = e.target.closest('.ts-slot'); if (!b) return; sfx('tap');
     if (b.dataset.new) return pickTrain(() => statPop());
-    GB()._monPop(+b.dataset.id || b.dataset.id);
+    GB()._monPop(+b.dataset.id || b.dataset.id, false, null, () => st().tr.map(e => e.id).filter(i => boxOf(i)));   // 카드는 훈련장 포켓몬끼리만 넘김 (경완 2026-10-29)
   };
 }
 function trPop(id) {

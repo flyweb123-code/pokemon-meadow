@@ -1414,3 +1414,21 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .gy-body .me-bdgs{margin:10px 0 2px;padding-top:8px;border-top:2px dashed var(--inner)}.me-bdgs .bdw img{width:34px;height:34px;filter:brightness(0);opacity:.22}.me-bdgs .on .bdw img{filter:none;opacity:1}.me-bdgs b{font-size:10px}
 .me-bdgs div:not(.on) .bdw i{display:none}
 #gym .gy-stage.fit{overflow:hidden}
+/* 훈련장 슬롯 6행 (경완 2026-10-29): 한 줄에 한 마리 */
+.ts-win .ts-grid{grid-template-columns:minmax(0,1fr);gap:6px}
+.ts-win .ts-slot{display:grid;grid-template-columns:60px minmax(0,1fr) minmax(0,1fr);grid-template-areas:"im nm lv" "im g1 g2" "im sm sm";align-items:center;column-gap:8px;row-gap:3px;min-height:76px;padding:6px 26px 6px 8px!important;text-align:left}
+.ts-win .ts-slot>img,.ts-win .ts-slot>.th,.ts-win .ts-slot>:is(span,i):has(img){grid-area:im;margin:0;justify-self:center}
+.ts-win .ts-slot img{width:56px;height:56px;margin:0}
+.ts-win .ts-slot>b{grid-area:nm;font-size:14px}.ts-win .ts-slot .ts-lv{grid-area:lv;justify-self:end}
+.ts-win .ts-slot .ts-g{grid-area:g1;width:auto}.ts-win .ts-slot .ts-g.h{grid-area:g2}
+.ts-win .ts-slot small{grid-area:sm;margin:0}
+.ts-win .ts-slot.empty{display:flex;min-height:76px;padding:0!important}
+.ts-win .ts-slot .ts-x{top:50%;transform:translateY(-50%);padding:10px 8px}
+/* 훈련장 버튼·훈련중 상태: 갈색 계열, 빼기 버튼은 쑥 들어간 비활성 느낌 */
+.mp-btns button.tr-go{background:#9a6a3c!important;color:#fff!important;border-color:#5e3c1c!important;box-shadow:0 3px 0 #5e3c1c!important}
+.mp-btns button.tr-on{background:#d9cbb8!important;color:#7a6a58!important;border-color:#a8927a!important;box-shadow:inset 0 3px 0 rgba(0,0,0,.18)!important;translate:0 3px}
+.mp-btns button.tr-on:active{translate:0 3px}
+.tr-tag{background:#9a6a3c}
+#gym .gy-boxw .pk .tgs .tg.tg-tr,.gy-boxw .pk .tg.tg-tr{background:#9a6a3c!important;color:#fff!important}
+.gy-pop .win.mp-tr{background:#f6efe4!important;box-shadow:inset 0 0 0 3px #c49a6c,0 0 0 3px var(--frame)!important}
+.gy-pop .win.mp-tr :is(.mp-na .mp-nat,.mp-na .mp-ab,.iv-hex,.mp-mv){background:#fbf7f0!important}
