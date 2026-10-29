@@ -189,21 +189,21 @@ async function drawTrain() {
   const g = st(); g.tr = g.tr || []; tickTrain(Date.now()); K.save();
   if (Y) { Y.mons.forEach(m => { Y.pos[m.id] = [m.x, m.y]; }); cancelAnimationFrame(Y.raf); }
   sh.classList.add('ty-on'); sh.scrollTop = 0;
-  sh.innerHTML = `<div class="ty-yd"><canvas class="ty-bg"></canvas><div class="ty-l"></div><button class="ty-st" type="button" data-stat="1" aria-label="훈련 현황"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M1 1h1v13H1zM1 14h14v1H1z"/><path fill="#e05a4a" d="M4 9h2v5H4z"/><path fill="#f0b030" d="M8 5h2v9H8z"/><path fill="#4a9ad8" d="M12 2h2v12h-2z"/></svg><small>현황</small></button><button class="ty-add${g.tr.length ? '' : ' pulse'}" data-add="1" aria-label="포켓몬 보내기"><b>+</b><small>${g.tr.length}/${trMax()}</small></button></div>`;
+  sh.innerHTML = `<div class="ty-yd"><canvas class="ty-bg"></canvas><div class="ty-l"></div><button class="ty-st" type="button" data-stat="1" aria-label="훈련 현황"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M1 1h1v13H1zM1 14h14v1H1z"/><path fill="#e05a4a" d="M4 9h2v5H4z"/><path fill="#f0b030" d="M8 5h2v9H8z"/><path fill="#4a9ad8" d="M12 2h2v12h-2z"/></svg></button><button class="ty-add${g.tr.length ? '' : ' pulse'}" data-add="1" aria-label="포켓몬 보내기"><b>+</b><small>${g.tr.length}/${trMax()}</small></button></div>`;
   const el = sh.querySelector('.ty-yd'); await loadYA(); if (!el.isConnected) return;
   const W = Math.max(280, el.clientWidth || 360), H = Math.max(520, el.clientHeight || 640);
   Y = { el, W, H, L: el.querySelector('.ty-l'), pr: {}, mons: [], pos: Y?.pos || {}, last: 0,
     pond: { x0: 16, y0: H * .74, x1: W * .54, y1: H - 16 }, court: { x0: 22, y0: H * .43, x1: W - 22, y1: H * .63 } };
   Y.pond.x = (Y.pond.x0 + Y.pond.x1) / 2; Y.pond.y = (Y.pond.y0 + Y.pond.y1) / 2;
   yardBg(el.querySelector('.ty-bg'));
-  const r1 = H * .29, r2 = H * .39, r3 = H * .82;   // 의자·아이스박스 없앰, 후프링 위로, 수영장 왼쪽 (경완 2026-10-29)
+  const r1 = H * .29, r2 = H * .39;   // 의자·아이스박스 없앰, 후프링 위로, 수영장 왼쪽 (경완 2026-10-29)
   yProp('bag1', 'punch-bag', W * .1, r2); yProp('bag2', 'punch-bag', W * .27, r2); yProp('tramp', 'spring-trampoline', W * .5, r2); yProp('tgt', 'target-easel', W * .9, r2);
-  yProp('flag', 'start-flag', W * .62, r3 - 2); yProp('h1', 'track-hurdle', W * .73, r3); yProp('h2', 'track-hurdle', W * .87, r3);
+  // 깃발 없애고 허들은 위아래로 (경완 2026-10-29): 오른쪽 아래 세로 트랙, 위에서 아래로 달리며 넘기
+  yProp('h1', 'track-hurdle', W * .72, H * .76); yProp('h2', 'track-hurdle', W * .72, H * .88);
   [.24, .5, .76].forEach((f, i) => yRing(i, W * f, r1));
-  Y.lane = { x0: W * .6, x1: W * .95, y: r3 + 4 };
+  Y.lane = { x: W * .72, y0: H * .69, y1: H * .95 };
   // 부표: 줄 위가 아니라 줄 아래 물 위에 둥둥 (입체 튜브)
   { const q = document.createElement('i'), x = Y.pond.x0 + (Y.pond.x1 - Y.pond.x0) * .66, y = Y.pond.y + (Y.pond.y1 - Y.pond.y) * .55; q.className = 'ty-eq eq-water'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y)};background-image:url(${buoyArt()})`; Y.L.append(q); Y.pr.water = { k: 'water', x, y, w: 64, h: 44, el: q }; }
-  yProp('canoe', 'wood-canoe', Y.pond.x0 + (Y.pond.x1 - Y.pond.x0) * .3, Y.pond.y0 + 26);
   g.tr.forEach((e, i) => { const P = boxOf(e.id); if (P) yardMon(P, e, i); });
   // 코치 (훈련장에 배치한 트레이너): 코트 가장자리에서 응원
   Y.co = g.sf.filter(x => x.yard).slice(0, YARD_SF).map((x, i) => { const q = document.createElement('i'), cx = W * (i ? .9 : .1), cy = H * .6; q.className = 'ty-co' + (K.owW(x.ow) > 16 ? ' w32' : ''); q.dataset.co = i;
@@ -271,7 +271,7 @@ function yNext(m, now) {
   if (k === 'bag1' || k === 'bag2') return yGo(m, k, q.x + 30, q.y + 2, 'bag');
   if (k === 'tgt') return yGo(m, k, q.x - Y.W * .24, q.y + 4, 'shoot');
   if (k === 'tramp') return yGo(m, k, q.x, q.y - 8, 'tramp');
-  if (k === 'run') return yGo(m, k, Y.lane.x0, Y.lane.y, 'run');
+  if (k === 'run') return yGo(m, k, Y.lane.x, Y.lane.y0, 'run');
   if (k === 'water') return yGo(m, k, q.x - 44, q.y - 2, 'buoy');
   if (k === 'hoop') { const R = Y.pr.ring0; return yGo(m, k, R.x - 30, R.y - 6, 'hoop'); }
 }
@@ -317,9 +317,9 @@ function yardLoop(ts) {
     if (m.st === 'buoy' && !m.one) m.one = { n: 'Attack', t: 0, k: 'water', gap: .3 + Math.random() * .5 };
     if (m.st === 'train' && !m.one) m.one = { n: 'Attack', t: 0, gap: .25 + Math.random() * .5 };
     if (m.st === 'tramp') { const p0 = m.ph; m.ph += dt / .62; m.air = Math.abs(Math.sin(m.ph * Math.PI)) * 30; if (Math.floor(m.ph) !== Math.floor(p0)) { yWob(Y.pr.tramp, 'sq'); if (Math.random() < .3) yEmo(m, '♪', 'mu'); } }
-    if (m.st === 'run') { const L = Y.lane, v = 96 * dt; m.x += m.dir * v; m.face = -m.dir; m.an = 'Walk';
-      const hd = ['h1', 'h2'].map(k => Math.abs(m.x - Y.pr[k].x)).reduce((a, b) => Math.min(a, b)), J = 26; m.air = hd < J ? Math.cos(hd / J * Math.PI / 2) * 24 : 0;
-      if (m.x > L.x1 || m.x < L.x0) { m.x = clampN(m.x, L.x0, L.x1); m.dir = -m.dir; if (++m.lap >= 4) { yEmo(m, '!', 'hit'); yNext(m, now); } } }
+    if (m.st === 'run') { const L = Y.lane, v = 80 * dt; m.y += m.dir * v; m.x = L.x; m.an = 'Walk';   // 세로 트랙: 위아래로 달리며 허들 넘기
+      const hd = ['h1', 'h2'].map(k => Math.abs(m.y - Y.pr[k].y)).reduce((a, b) => Math.min(a, b)), J = 16; m.air = hd < J ? Math.cos(hd / J * Math.PI / 2) * 26 : 0;
+      if (m.y > L.y1 || m.y < L.y0) { m.y = clampN(m.y, L.y0, L.y1); m.dir = -m.dir; m.face = Math.random() < .5 ? 1 : -1; if (++m.lap >= 4) { yEmo(m, '!', 'hit'); yNext(m, now); } } }
     if (m.st === 'hoop') { m.ph += dt / 4.2; const p = hoopAt(m.ph % 1); m.x = p.x; m.y = p.y; m.air = p.air; m.face = p.f; m.an = 'Walk'; m.zb = 0;
       m.air = Math.max(0, p.air - (m.top != null ? -m.top * .5 : 18) - (m.lift || 0));   // 몸통 가운데가 고리 구멍 높이로
       if (m.ph % 1 < .55) { const R = [0, 1, 2].map(i => Y.pr['ring' + i]), i = R.findIndex(q => Math.abs(q.x - m.x) < 4); if (i >= 0 && i !== m.ri) { m.ri = i; yWob({ el: R[i].fr }, 'spin'); yWob(R[i], 'spin'); } } else m.ri = -1;
@@ -382,13 +382,18 @@ function pickTrain() {
 }
 // 훈련 현황 (경완 2026-10-29): 나와 있던 시간, 얻은 경험치, 오른 레벨, 배운 기술
 const hm = ms => { const m = Math.max(0, Math.floor(ms / 60000)), d = Math.floor(m / 1440), h = Math.floor(m % 1440 / 60); return d ? `${d}일 ${h}시간` : h ? `${h}시간 ${m % 60}분` : `${m}분`; };
+// 새 화면으로 (경완 2026-10-29 '훈련현황 새로운 화면에'): 포켓몬 박스처럼 전체 화면, ‹ 로 닫기
 function statPop() {
   const g = st(); tickTrain(Date.now()); K.save();
   const L = g.tr.map(e => [e, boxOf(e.id)]).filter(([, P]) => P);
-  pop(`<h4>훈련 현황</h4>${L.length ? `<div class="ts-list">${L.map(([e, P]) => { const m = GB().gm(P), up = m.lv - (e.l0 ?? m.lv), mv = (e.mv || []).map(id => GB().mvKo(id));
+  document.querySelector('#gym .gy-boxw')?.remove();
+  const w = document.createElement('div'); w.className = 'gy-boxw ts-win';
+  w.innerHTML = `<div class="win" role="dialog" aria-label="훈련 현황"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>훈련 현황 <small>${L.length}/${trMax()}</small></h4></div>
+    ${L.length ? `<div class="ts-list">${L.map(([e, P]) => { const m = GB().gm(P), up = m.lv - (e.l0 ?? m.lv), mv = (e.mv || []).map(id => GB().mvKo(id));
     return `<div class="ts-row">${GB().thumb(P)}<div><b>${esc(nmOf(P))} <span>Lv.${m.lv}${up > 0 ? ` <em>▲${up}</em>` : ''}</span></b>
-      <dl><dt>훈련한 시간</dt><dd>${hm(e.j ? Date.now() - e.j : 0)} <small>· 오늘 ${Math.min(8, e.d === K.dayStart(Date.now()) ? e.h : 0).toFixed(1)}/8시간</small></dd><dt>얻은 경험치</dt><dd>${Math.round(e.x || 0).toLocaleString()}</dd><dt>배운 기술</dt><dd>${mv.length ? mv.map(esc).join(', ') : '아직 없어요'}</dd></dl></div></div>`; }).join('')}</div>` : '<p class="gy-msg">훈련장에 포켓몬이 없어요. + 를 눌러 보내 주세요.</p>'}
-    <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
+      <dl><dt>훈련한 시간</dt><dd>${hm(e.j ? Date.now() - e.j : 0)} <small>· 오늘 ${Math.min(8, e.d === K.dayStart(Date.now()) ? e.h : 0).toFixed(1)}/8시간</small></dd><dt>얻은 경험치</dt><dd>${Math.round(e.x || 0).toLocaleString()}</dd><dt>배운 기술</dt><dd>${mv.length ? mv.map(esc).join(', ') : '아직 없어요'}</dd></dl></div></div>`; }).join('')}</div>` : '<p class="gy-msg">훈련장에 포켓몬이 없어요. + 를 눌러 보내 주세요.</p>'}</div>`;
+  document.querySelector('#gym .gy-main').appendChild(w); GB().fillTh(w);
+  w.onclick = e => { if (e.target.closest('[data-x]')) { sfx('tap'); w.remove(); } };
 }
 function trPop(id) {
   const P = boxOf(id); if (!P) return; const m = GB().gm(P), ph = perHour(P), g = GB().growth(P.sp), need = GB().xpAt(g, m.lv + 1) - GB().xpAt(g, m.lv);
