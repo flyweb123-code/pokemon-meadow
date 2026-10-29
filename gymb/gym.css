@@ -1396,3 +1396,6 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .gy-plate .gy-rpa .gy-repn{color:#fff}
 .gy-top .gy-plate .gy-grade{font-size:14px;letter-spacing:0;text-overflow:clip}
 .gy-plate .gy-wing.r{padding:0 16px 6px 40px!important}.gy-plate .gy-wing.l{padding:0 40px 6px 18px!important}
+/* 개체값 육각형: 위 HP 글자 안 잘리게 (viewBox 위로 넓힘), 카드 점은 버튼과 카드 끝 사이 가운데 (경완 2026-10-29) */
+.gy-pop .win:has(.mp-head) .iv-hex svg{width:132px;height:120px}.gy-pop .win:has(.mp-head) .iv-hex{height:130px}
+.gy-pop .win:has(.mp-head) .mp-pg{margin:12px 0 -4px!important;height:6px;align-items:center}

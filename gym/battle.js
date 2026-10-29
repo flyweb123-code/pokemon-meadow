@@ -917,7 +917,7 @@ function ivHex(P, m) {
   const sum = iv.reduce((a, b) => a + b, 0), best = IV_ORD.reduce((a, o) => iv[o[0]] > iv[a[0]] ? o : a, IV_ORD[0]);
   // 개체값 칸을 누르면 육각형 ↔ 가로 막대 (경완 2026-10-28)
   const bars = `<div class="iv-bars">${[[0, 'HP', ''], [1, '공격', 'atk'], [2, '방어', 'def'], [3, '특공', 'spa'], [4, '특방', 'spd'], [5, '스피드', 'spe']].map(([i, n, key]) => { const c = cOf(key); return `<div class="ivb ${c}"><span>${n}<i>${arw(c)}</i></span><b><i style="width:${(iv[i] / 31 * 100).toFixed(1)}%"></i></b><em>${iv[i]}</em></div>`; }).join('')}</div>`;
-  return `<div class="iv-hex${ivBar ? ' bar' : ''}" role="button" tabindex="0" aria-label="개체값 (누르면 보기 바꾸기)">${bars}<svg viewBox="0 0 180 150" role="img" aria-label="개체값"><polygon points="${ring(1)}" class="r0"/><polygon points="${ring(2 / 3)}" class="r1"/><polygon points="${ring(1 / 3)}" class="r1"/><polygon points="${poly}" class="iv"/>${lab}</svg>
+  return `<div class="iv-hex${ivBar ? ' bar' : ''}" role="button" tabindex="0" aria-label="개체값 (누르면 보기 바꾸기)">${bars}<svg viewBox="0 -12 180 164" role="img" aria-label="개체값"><polygon points="${ring(1)}" class="r0"/><polygon points="${ring(2 / 3)}" class="r1"/><polygon points="${ring(1 / 3)}" class="r1"/><polygon points="${poly}" class="iv"/>${lab}</svg>
     <div class="iv-sum"><b>개체값</b><span>합계 ${sum}/186</span><span>가장 좋은 능력: ${best[1]}</span><span>판정: ${ivJudge(Math.round(sum / 6))}</span></div></div>`;
 }
 // 포켓몬 박스 창: 본 게임 포켓몬 박스와 같은 모양(검색·정렬·칸)으로 화면 전체에 뜬다. 체육관 타입 포켓몬만, 기본은 레벨순 (경완 2026-10-27)
@@ -972,7 +972,7 @@ function monHtml(P, mode) {
   return `<div class="mp-head">${thumb(P)}<div class="mp-hd"><h4>${esc(nmOf(P))}${inTr(P.id) ? '<em class="tr-tag">훈련중</em>' : ''}</h4><p class="mp-tys">${(SPECIES[P.sp]?.t || []).map(t => tyTag(t)).join('')}</p><p class="mp-lv"><b>Lv.${m.lv}</b> · 랭크 ${GA.rankOf(P)}</p>${frRow(P)}<i class="mp-xp"><i style="width:${m.lv >= LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><small class="mp-xpn">${m.lv >= LV_MAX ? '최고 레벨' : `${Math.max(0, m.xp - a).toLocaleString()}/${(b - a).toLocaleString()}`}</small></div></div>
     <div class="mp-na"><button type="button" class="mp-nat" data-a="nat"><small>성격 <i class="mp-more">›</i></small><p><b>${natKo(m.nat)}</b></p></button><button type="button" class="mp-ab" data-a="ab"><small>특성 <i class="mp-more">›</i></small><p><b${m.ha ? ' class="ha"' : ''}>${abKo(m.ab)}</b>${m.ha ? '<em class="ha-tag">숨겨진</em>' : ''}</p></button></div>
     ${ivHex(P, m)}
-    <div class="mp-mvh"><small>기술</small><button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button></div>
+    <div class="mp-mvh"><small>기술</small>${mode === 'add' ? '' : '<button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button>'}</div>
     <div class="mp-moves mp-line">${mv.map(x => `<button type="button" class="mp-mv" data-a="i${x[0]}" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}">${tyTag(x[2], x[3])}<b>${esc(x[1])}</b><em>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'} · PP ${x[6] || '—'}</em></button>`).join('')}</div>
     ${mode === 'add' ? `<div class="gy-btns one mp-btns">${inLu ? '<button data-a="rm" class="danger">라인업에서 빼기</button>' : `<button data-a="add" class="main" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업에 넣기</button>`}</div>` : `<div class="gy-btns mp-btns"><button data-a="tm">기술 가르치기</button><button data-a="tr" class="${inTr(P.id) ? 'tr-on' : 'tr-go'}">${inTr(P.id) ? '훈련장에서 빼기' : '훈련장으로'}</button></div>`}<button class="mp-x" data-a="x" aria-label="닫기">✕</button>`;
 }
@@ -997,13 +997,14 @@ function monPop(id, fromBox, under) {
   const L = curLu(), k = L.indexOf(P.id), w = p.querySelector('.win');
   if (under) { p.style.background = 'transparent'; p.style.backdropFilter = p.style.webkitBackdropFilter = 'none'; Promise.race([Promise.all([...p.querySelectorAll('img')].map(i => new Promise(r => { if (i.complete && i.naturalWidth) r(); else { i.onload = i.onerror = r; } }))), new Promise(r => setTimeout(r, 300))]).then(() => { under.remove(); p.style.background = p.style.backdropFilter = p.style.webkitBackdropFilter = ''; }); }
   if (k >= 0 && L.length > 1) {
-    const nb = d => L[(k + d + L.length) % L.length], go = d => { sfx('tap'); monPop(nb(d), fromBox, p); };
-    w.insertAdjacentHTML('beforeend', `<p class="mp-pg">${L.map((_, i) => `<i class="${i === k ? 'on' : ''}"></i>`).join('')}</p><button class="dp-arr l" type="button" data-nav="-1" aria-label="이전 포켓몬"><i class="sw-h l"></i></button><button class="dp-arr r" type="button" data-nav="1" aria-label="다음 포켓몬"><i class="sw-h r"></i></button>`);
+    const nb = d => L[k + d], go = (d, snd) => { if (nb(d) == null) return; if (snd) sfx('tap'); monPop(nb(d), fromBox, p); };   // 끝에서는 안 넘어감, 밀어서 넘길 땐 소리 없음 (경완 2026-10-29)
+    const pg = j => `<p class="mp-pg">${L.map((_, i) => `<i class="${i === j ? 'on' : ''}"></i>`).join('')}</p>`;
+    w.insertAdjacentHTML('beforeend', `${pg(k)}<button class="dp-arr l" type="button" data-nav="-1" aria-label="이전 포켓몬"><i class="sw-h l"></i></button><button class="dp-arr r" type="button" data-nav="1" aria-label="다음 포켓몬"><i class="sw-h r"></i></button>`);
     const arrows = [...w.querySelectorAll(':scope > .dp-arr')];
-    [1, -1].forEach(d => { const Q = boxOf(nb(d)); if (Q) GA.thumb(Q).catch(() => {}); });   // 옆 카드 그림 미리
-    GA.cardPager?.(p, { can: () => true, step: d => go(d),
-      snap: (d, w0) => { const c = w0.cloneNode(false); const Q = boxOf(nb(d)); c.innerHTML = Q ? monHtml(Q) : ''; fillTh(c); return c; } });
-    arrows.forEach(a => a.addEventListener('click', e => { e.stopPropagation(); go(+a.dataset.nav); }));
+    [1, -1].forEach(d => { const Q = nb(d) != null && boxOf(nb(d)); if (Q) GA.thumb(Q).catch(() => {}); });   // 옆 카드 그림 미리
+    GA.cardPager?.(p, { can: d => nb(d) != null, step: d => go(d),
+      snap: (d, w0) => { const c = w0.cloneNode(false); const Q = boxOf(nb(d)); c.innerHTML = Q ? monHtml(Q, fromBox) + pg(k + d) : ''; c.classList.toggle('mp-tr', !!Q && inTr(Q.id)); fillTh(c); return c; } });   // 옆 카드도 실제 카드와 똑같이 (점·훈련 색까지)
+    arrows.forEach(a => { a.hidden = nb(+a.dataset.nav) == null; a.addEventListener('click', e => { e.stopPropagation(); go(+a.dataset.nav, 1); }); });
   }
   return p;
 }
