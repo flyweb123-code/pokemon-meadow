@@ -77,7 +77,9 @@ function yardSpot(swim) {
 // 훈련장 소품 = 스칼렛 작업물 그림 (gymb/yard.json, config/staff/scarlet.json 에서 골라 옮김 + 후프링) (경완 2026-10-29 '스칼렛 작업물 수준으로, 가져와도 돼')
 let YA = null, YAP = null;
 const loadYA = () => YAP || (YAP = fetch(`gymb/yard.json?v=${VER}`).then(r => r.json()).then(j => (YA = j)).catch(() => (YAP = null, {})));
-const pxCv = (px, pal) => { const h = px.length, w = px[0].length, c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
+// 훈련장 그림은 한 번 만든 걸 다시 쓴다 — 메뉴를 열 때마다 새로 그려서 잠깐 비어 보이던 것 (경완 2026-10-29)
+const PXC = new WeakMap(), pxCv = (px, pal) => PXC.get(px) || (PXC.set(px, pxCv0(px, pal)), PXC.get(px));
+const pxCv0 = (px, pal) => { const h = px.length, w = px[0].length, c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
   px.forEach((r, y) => [...r].forEach((ch, x) => { const col = pal[ch]; if (col) { g.fillStyle = col; g.fillRect(x, y, 1, 1); } })); return c.toDataURL(); };
 const YS = 2;   // 소품 1칸 = 화면 2px (필드와 같은 크기)
 function yProp(k, id, x, y, o = {}) {
@@ -134,7 +136,13 @@ function yRing(i, x, y) {
   const [bk, ft, po] = ringArt(), w = 36, h = 88, el = (n, img, cls) => { const q = document.createElement('i'); q.className = 'ty-pr pr-hoop' + cls; q.style.cssText = `left:${(x - w / 2).toFixed(0)}px;top:${(y - h).toFixed(0)}px;width:${w}px;height:${h}px;z-index:${Math.round(y) + n};background-image:url(${img})`; Y.L.append(q); return q; };
   const p = el(-61, po, ' po'), b = el(-60, bk, ' rg'), f = el(70, ft, ' rg fr'); return (Y.pr['ring' + i] = { k: 'ring' + i, x, y, w, h, el: b, fr: f, po: p, ring: [x, y - h + 12 / 44 * h] });
 }
+let YBG = null;
 function yardBg(c) {
+  const key = `${Y.W}x${Y.H}:${st().ty}:${new Date().getMonth()}`;
+  if (YBG?.key === key) { c.width = YBG.cv.width; c.height = YBG.cv.height; c.getContext('2d').drawImage(YBG.cv, 0, 0); return; }
+  yardBg0(c); const cv = document.createElement('canvas'); cv.width = c.width; cv.height = c.height; cv.getContext('2d').drawImage(c, 0, 0); YBG = { key, cv };
+}
+function yardBg0(c) {
   const { ART, seasonCv } = GA.art(), PW = c.width = Math.ceil(Y.W / 2), PH = c.height = Math.ceil(Y.H / 2), g = c.getContext('2d'); g.imageSmoothingEnabled = false;
   let seed = 23; const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   const px = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(Math.round(x), Math.round(y), w, h); };
@@ -332,6 +340,7 @@ function yardLoop(ts) {
     const sw = inPond(m.x, m.y, -6); m.el.classList.toggle('swim', sw); swimMask(m, sw);
     place(m); yDraw(m, dt);
   }
+  if (Y.el.closest('.gy-sheet.lk')) return;   // 잠긴 훈련장은 한 장면에서 멈춘 그림 (경완 2026-10-29)
   Y.raf = requestAnimationFrame(yardLoop);
 }
 // 물에 잠긴 부분은 반투명 (경완 2026-10-27): 발밑에서 물고기는 몸 절반쯤, 다른 포켓몬은 조금

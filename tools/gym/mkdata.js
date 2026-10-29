@@ -18,7 +18,7 @@ const abKo = nameMap(rd('abilities.csv'), rd('ability_names.csv'), 'ability_id')
 const ntKo = nameMap(rd('natures.csv'), rd('nature_names.csv'), 'nature_id');
 // 기술 설명: 가장 최근 판의 한국어 설명
 const mvRows = rd('moves.csv'), mvIdent = Object.fromEntries(mvRows.map(r => [r.move_id || r.id, id(r.identifier)]));
-const desc = {}; rd('move_flavor_text.csv').filter(r => r.language_id == KO).forEach(r => { let k = mvIdent[r.move_id]; if (!k) return; if (k === 'vicegrip') k = 'visegrip'; if (!desc[k] || +r.version_group_id > desc[k][0]) desc[k] = [+r.version_group_id, r.flavor_text.replace(/\s+/g, ' ').trim()]; });
+const desc = {}; rd('move_flavor_text.csv').filter(r => r.language_id == KO).forEach(r => { let k = mvIdent[r.move_id]; if (!k) return; if (k === 'vicegrip') k = 'visegrip'; if (/사용할 수 없는 기술입니다/.test(r.flavor_text)) return; if (!desc[k] || +r.version_group_id > desc[k][0]) desc[k] = [+r.version_group_id, r.flavor_text.replace(/\s+/g, ' ').trim()]; });
 const growth = Object.fromEntries(rd('pokemon_species.csv').map(r => [+r.id, +r.growth_rate_id]));
 const TYPES = ['', 'Normal', 'Fighting', 'Flying', 'Poison', 'Ground', 'Rock', 'Bug', 'Ghost', 'Steel', 'Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Ice', 'Dragon', 'Dark', 'Fairy'];
 const MV = [], mvIx = {};

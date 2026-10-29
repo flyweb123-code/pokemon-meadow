@@ -1719,3 +1719,9 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 
 /* 평판: 오르는 동안만 초록(내릴 땐 빨강), 다 오르면 검정 — 오른 만큼(+N)은 색 그대로 (경완 2026-10-29) */
 .rs-rep .rr-n{transition:color .35s}.rs-rep.end .rr-n{color:var(--win-ink,#20202c)!important}
+
+/* 잠긴 메뉴 뒤 화면은 움직이지 않는 그림으로 (경완 2026-10-29) */
+.gy-sheet.lk>:not(.gy-lockov),.gy-sheet.lk>:not(.gy-lockov) *{animation:none!important;transition:none!important}
+/* 도전자 받기 안내 문구는 버튼 위로 (경완 2026-10-29) */
+#gym button.gy-qbtn.gy-qbtn{bottom:12px!important}
+#gym .gy-qcap{bottom:72px}
