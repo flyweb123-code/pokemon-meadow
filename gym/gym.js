@@ -182,7 +182,6 @@ function build() {
   $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = b.dataset.t; if (t === 'out') return exit(); sfx('tap');
     root.querySelectorAll('.gy-pop').forEach(x => x.remove());   // 다른 메뉴를 누르면 포켓몬 정보 카드 같은 팝업도 닫힘 (경완 2026-10-29)
     const cov = root.querySelectorAll('.gy-boxw,.gy-infos'); if (cov.length) { cov.forEach(x => x.remove()); return openTab(t); }   // 포켓몬 고르기·정보 화면 위에서 메뉴를 누르면 그 화면을 닫고 그 메뉴로 (경완 2026-10-28)
-    if (lockedT(t)) return pop(`<h4>${t === 'train' ? '훈련장' : '트레이너'}은 아직 잠겨 있어요</h4><p class="gy-msg" style="text-align:center">${t === 'train' ? '포켓몬을 맡겨 키우는 훈련장은' : '함께 체육관을 지킬 트레이너 고용은'}<br><b>${GRADES[1][1]}</b>이 되면 열려요.<br><small>평판 ${GRADES[1][0]}을 채우고 승급 심사를 통과해 보세요.</small></p><div class="gy-btns one"><button class="main" data-a="x">알겠어요</button></div>`, (a, close) => close());
     openTab(tab === t ? null : t); };
   // 퇴근은 손가락이 닿는 순간 로딩 화면부터 (click 을 기다리지 않음, 경완 2026-10-27 '여전히 바로 안 뜸')
   $g('.gy-menu .gy-out').addEventListener('pointerdown', e => { if (e.button) return; e.preventDefault(); exit(); });
@@ -490,7 +489,7 @@ const bdLv = (g, t) => (g.bdl || {})[t] | 0;
 const bdImg = (t, L) => `${IMG}badge/${Math.max(1, L)}/${t}.png?v=11`;
 // 배지 그림 + 빛 지나가기(모든 등급 같게) + 반짝이(동까지 0 · 은 1 · 금 2 · 프리즘 4, 경완 2026-10-29 '갈수록 반짝이는 느낌')
 const BD_TW = [0, 0, 0, 0, 0, 1, 2, 4];
-const bdHtml = (t, L, cls = '') => { const u = bdImg(t, L); return `<span class="bdw t${L}${cls ? ' ' + cls : ''}" style="--m:url('${u}')"><img alt="" src="${u}">${L ? '<i class="bd-sw"></i>' + '<i class="bd-tw"></i>'.repeat(BD_TW[L] || 0) : ''}</span>`; };
+const bdHtml = (t, L, cls = '') => { const u = bdImg(t, L); return `<span class="bdw t${L}${cls ? ' ' + cls : ''}" style="--m:url('${u}')"><img alt="" src="${u}">${L >= 4 ? '<i class="bd-sw"></i>' : ''}${L ? '<i class="bd-tw"></i>'.repeat(BD_TW[L] || 0) : ''}</span>`; };   // 빛 지나가기는 월계수(4등급)부터 (경완 2026-10-29)
 const gShort = i => GRADES[i][1].replace(/ 체육관$/, '');
 const bdPh = rep => Math.min(1, (rep || 0) / REP_MAX);   // 평판이 오를수록 도전자가 어려워짐 (0~1)
 const repCap = g => { const nx = GRADES[(g.gmax | 0) + 1]; return nx ? nx[0] - 1 : REP_MAX; };   // 승급 심사 전에는 문턱 바로 앞까지만
@@ -823,6 +822,13 @@ function renderTop() {
 }
 // 새내기 체육관(등급 1)에선 훈련장·트레이너가 잠겨 있다 (경완 2026-10-29 '고용할 수 있는 트레이너가 없으니까')
 const lockedT = t => (t === 'train' || t === 'staff') && gradeOf(st()?.rep || 0).i < 1;
+// 잠긴 메뉴는 실제 화면을 흐리게 깔고 그 위에 안내 (경완 2026-10-29 '팝업 말고 화면을 비활성화하고 그 위에 안내문구')
+function lockOv(sh, t) {
+  const o = document.createElement('div'); o.className = 'gy-lockov';
+  o.innerHTML = `<div class="win"><i class="lk-ic" aria-hidden="true"></i><h4>${t === 'train' ? '훈련장' : '트레이너'}은 아직 잠겨 있어요</h4><p>${t === 'train' ? '포켓몬을 맡겨 키우는 훈련장은' : '함께 체육관을 지킬 트레이너 고용은'}<br><b>${GRADES[1][1]}</b>이 되면 열려요.</p><small>평판 ${GRADES[1][0]}을 채우고 승급 심사를 통과해 보세요.</small></div>`;
+  ['click', 'pointerdown', 'pointerup', 'touchstart'].forEach(k => o.addEventListener(k, e => e.stopPropagation()));
+  sh.classList.add('lk'); sh.scrollTop = 0; sh.appendChild(o);
+}
 function menuDot() { const g = st(), b = $g('.gy-menu [data-t="staff"]'); if (!b) return; ['train', 'staff'].forEach(t => $g(`.gy-menu [data-t="${t}"]`)?.classList.toggle('lk', lockedT(t))); const on = !!(g?.cands?.length && !g.candSeen) && !lockedT('staff'); let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot"></i>'); if (!on && d) d.remove(); }
 function renderHome(quiet) {
   if (ded && !quiet) return ded.draw();
@@ -905,12 +911,11 @@ const SOON = {
 function openTab(t) {
   // 꾸미기·자리 정하기 중에 다른 메뉴를 열면 그 모드를 끝낸다 (경완 2026-10-27 '꾸미기 하고 나서 맵에 그리드 안 사라지는 오류')
   if (t && ded) ded.end?.();
-  if (lockedT(t)) return;
   tab = t; root.querySelectorAll('.gy-menu button[data-t]').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === t));
-  const sh = $g('.gy-sheet'); sh.classList.remove('ty-on'); if (!t) { sh.hidden = true; return; }
+  const sh = $g('.gy-sheet'); sh.classList.remove('ty-on', 'lk'); if (!t) { sh.hidden = true; return; }
   if (t === 'battle') { sh.hidden = false; sh.scrollTop = 0; sh.innerHTML = '<h3>배틀</h3><p class="gy-lead">불러오는 중…</p>'; loadJs('gym/battle.js', 'GymBattle').then(() => { if (tab === 'battle' && window.GymBattle) GymBattle.tab(sh); }); return; }
   if (t === 'train' || t === 'staff' || t === 'shop') { sh.hidden = false; sh.scrollTop = 0; sh.innerHTML = `<h3>${SOON[t].t}</h3><p class="gy-lead">불러오는 중…</p>`;
-    loadJs('gym/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => loadJs('gym/manage.js', 'GymManage')).then(() => { if (tab === t && window.GymManage) { GymManage.tab(t, sh); const g = st(); if (t === 'train' && !g.trTut) { g.trTut = 1; save(); if (!g.tr?.length) kang(KANG_TR(), { lit: true }); } } }); return; }
+    loadJs('gym/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => loadJs('gym/manage.js', 'GymManage')).then(() => { if (tab === t && window.GymManage) { GymManage.tab(t, sh); const g = st(); if (lockedT(t)) return; if (t === 'train' && !g.trTut) { g.trTut = 1; save(); if (!g.tr?.length) kang(KANG_TR(), { lit: true }); } } }); return; }
   const o = SOON[t];
   sh.innerHTML = `<h3>${o.t}</h3><p class="gy-lead">${o.d}</p><div class="gy-soon"><i class="gy-soon-ic" style="background-image:url(${IMG}${o.ic}.png)"></i><b>준비 중이에요</b><p>이 메뉴는 다음 단계에서 열려요.</p><ul>${o.li.map(x => `<li>${x}</li>`).join('')}</ul></div>`;
   sh.hidden = false; sh.scrollTop = 0;
@@ -1236,7 +1241,7 @@ async function exit() {
 
 window.Gym = { prepare, enter, exit, isOpen: () => open, renderGold: renderGoldG, DESIGNS, _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { GRADES, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
+  k: { GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 window.gymDot = () => { const g = S.gym; return !!(g && g.d && ((g.q && g.q.length) || (g.at && Date.now() >= g.at))); };
 })();

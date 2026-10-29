@@ -164,7 +164,7 @@ function buildUI() {
   el = document.createElement('div'); el.className = 'bt'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', '배틀');
   el.innerHTML = `<div class="bt-ds">
     <div class="bt-top">
-      <div class="bt-bg"></div><i class="bt-dim"></i>
+      <div class="bt-bg"></div><i class="bt-terr"></i><i class="bt-dim"></i>
       <i class="bt-pl e"></i><i class="bt-pl p"></i>
       <i class="bt-tr e"></i><i class="bt-tr p"></i>
       <div class="bt-mw e"><div class="bt-mon e"><div class="clip"><img alt=""></div></div></div>
@@ -307,7 +307,7 @@ function playAnim(side, A) {
 // 볼 던지기 → 펑 → 하얗게 커지며 나타남 (4세대)
 async function sendOut(side, A) {
   A.gif = await pickGif(side, A); if (!B) return;
-  const m = monEl(side); m.classList.remove('faint', 'on', 'recall'); showMon(side, A, false); m.classList.add('ball');
+  const m = monEl(side); m.classList.remove('faint', 'on', 'recall', 'fm-hangry', 'fmc'); showMon(side, A, false); m.classList.add('ball');
   await throwBall(side);
   ballPoof(side); se('BOWA2', { pan: panOf(side) }); m.classList.add('on'); await wait(60);
   m.classList.remove('ball'); await wait(260); try { GA.cry?.(A.sp); } catch (e) {} playAnim(side, A);
@@ -672,11 +672,20 @@ async function handle(a) {
     case '-mustrecharge': break;
     case '-sidestart': { const t = sideMsg(a[2], a[3], true); if (t) await msg(t); break; }
     case '-sideend': { const t = sideMsg(a[2], a[3], false); if (t) await msg(t); break; }
-    case '-fieldstart': case '-fieldend': break;
+    case '-fieldstart': case '-fieldend': { const on = k === '-fieldstart', w = (a[2] || '').replace('move: ', ''), t = FIELD_T[w]; const tr = TERR[w];   // 필드 (경완 2026-10-29 '일렉트릭필드 발동이 안 됨')
+      if (tr) { const f = $b('.bt-terr'); f.className = 'bt-terr' + (on ? ' on ' + tr : ''); }
+      if (t) await msg(t[on ? 0 : 1]); break; }
+    case '-formechange': { const s = sideOf(a[2]), m = monEl(s);   // 폼 체인지 (꼬르륵스위치 등): 하얗게 번쩍이며 모습이 바뀐다
+      se('KOUKA_M', { pan: panOf(s) }); m.classList.remove('fmc'); void m.offsetWidth; m.classList.add('fmc'); await wait(260);
+      m.classList.toggle('fm-hangry', /Hangry/.test(a[3] || '')); await wait(420); m.classList.remove('fmc');
+      await msg(`${who(a[2])}의 모습이 바뀌었다!`); break; }
     case 'turn': break;
     case 'win': break;
   }
 }
+const TERR = { 'Electric Terrain': 'el', 'Grassy Terrain': 'gr', 'Misty Terrain': 'mi', 'Psychic Terrain': 'ps' };
+const FIELD_T = { 'Electric Terrain': ['발밑에 전기가 흐르기 시작했다!', '발밑의 전기가 사라졌다!'], 'Grassy Terrain': ['발밑에 풀이 무성해졌다!', '발밑의 풀이 사라졌다!'], 'Misty Terrain': ['발밑에 안개가 자욱해졌다!', '발밑의 안개가 사라졌다!'], 'Psychic Terrain': ['발밑이 이상한 느낌이 되었다!', '발밑의 이상한 느낌이 사라졌다!'],
+  'Trick Room': ['시공이 뒤틀렸다!', '뒤틀린 시공이 원래대로 돌아왔다!'], Gravity: ['중력이 강해졌다!', '중력이 원래대로 돌아왔다!'], 'Magic Room': ['도구의 효과가 사라지는 공간이 되었다!', '도구의 효과가 원래대로 돌아왔다!'], 'Wonder Room': ['방어와 특수방어가 뒤바뀌는 공간이 되었다!', '방어와 특수방어가 원래대로 돌아왔다!'], 'Mud Sport': ['전기의 위력이 약해졌다!', '흙놀이의 효과가 사라졌다!'], 'Water Sport': ['불꽃의 위력이 약해졌다!', '물놀이의 효과가 사라졌다!'] };
 const dmgFrom = (f, id) => { const n = who(id); f = f.replace(/^item: |^ability: /, ''); const T = { brn: `${n}${jong(nmIn(id)) ? '은' : '는'} 화상 데미지를 입었다!`, psn: `${n}${jong(nmIn(id)) ? '은' : '는'} 독에 의한 데미지를 입었다!`, tox: `${n}${jong(nmIn(id)) ? '은' : '는'} 독에 의한 데미지를 입었다!`, Recoil: `${n}${jong(nmIn(id)) ? '은' : '는'} 공격의 반동을 받았다!`, confusion: '영문도 모른 채 자신을 공격했다!', Sandstorm: `모래바람이 ${n}${jong(nmIn(id)) ? '을' : '를'} 덮쳤다!`, Hail: `싸라기눈이 ${n}${jong(nmIn(id)) ? '을' : '를'} 덮쳤다!`, 'Leech Seed': `씨뿌리기가 ${n}의 체력을 빼앗는다!` }; return T[f] || ''; };
 function statusMsg(n, st) { const T = { brn: '화상을 입었다!', par: '마비되어 기술이 나오기 어려워졌다!', slp: '잠들어 버렸다!', frz: '얼어붙었다!', psn: '독에 걸렸다!', tox: '맹독을 입었다!' }; return `${eun(n)} ${T[st] || '상태 이상이 되었다!'}`; }
 function cureMsg(n, st) { const T = { slp: '눈을 떴다!', frz: '얼음 상태가 나았다!', par: '마비가 풀렸다!', brn: '화상이 나았다!', psn: '독이 사라졌다!', tox: '독이 사라졌다!' }; return `${eun(n)} ${T[st] || '상태가 나았다!'}`; }
@@ -763,6 +772,12 @@ async function moveFx(s, id, miss) {
     A = cat === 0 ? [14, [['s', 0, '050', 'd'], ['m', 0, 'a', 14, -8, 2], ['e', 2, 'd', 12], ['k', 2, 'd', 2, 0, 1, 2], ['m', 4, 'a', -14, 8, 2]]]
       : cat === 1 ? [26, [['s', 0, 'W207', 'm'], ['e', 0, 'ad', 18], ['e', 14, 'd', 12], ['k', 16, 'd', 2, 0, 1, 2]]]
       : [20, [['s', 0, 'W287', 'a'], ['f', 0, 'a', col, 10, 20]]];
+  }
+  // 원본 대본에 몸 움직임이 없는 공격 기술(쪼기·흡수 등): 파티클만으론 잘 안 보여서 쳐들어가기·맞고 흔들림을 덧붙인다 (경완 2026-10-29 '쪼기 모션 및 효과 없음')
+  if (cat < 2 && !A[1].some(e => e[0] === 'm' || e[0] === 'k')) {
+    const hit = A[1].find(e => e[0] === 's' && e[3] === 'd')?.[1] ?? Math.round(A[0] / 2), n = Math.max(3, Math.round(A[0] / 3));
+    A = [A[0], [...A[1], ...(/^(earthquake|magnitude)$/.test(id) ? [['k', 0, 'bg', 3, 0, 1, n], ['k', 0, 'd', 3, 0, 1, n]]
+      : cat === 0 ? [['m', Math.max(0, hit - 3), 'a', 14, -8, 2], ['m', hit + 1, 'a', -14, 8, 2], ['k', hit, 'd', 2, 0, 1, 3]] : [['k', hit, 'd', 2, 0, 1, 3]])]];
   }
   const sp = B.fast ? .6 : 1, F = FR * sp, side = w => w === 'a' ? s : other(s), mw = w => $b(`.bt-mw.${side(w)}`);
   const pan = w => w === 'a' ? panOf(s) : w === 'd' ? panOf(other(s)) : 0;
