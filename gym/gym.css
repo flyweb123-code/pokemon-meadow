@@ -1413,3 +1413,4 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 /* 프로필 카드 타입별 등급 배지 */
 .gy-body .me-bdgs{margin:10px 0 2px;padding-top:8px;border-top:2px dashed var(--inner)}.me-bdgs .bdw img{width:34px;height:34px;filter:brightness(0);opacity:.22}.me-bdgs .on .bdw img{filter:none;opacity:1}.me-bdgs b{font-size:10px}
 .me-bdgs div:not(.on) .bdw i{display:none}
+#gym .gy-stage.fit{overflow:hidden}
