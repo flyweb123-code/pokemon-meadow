@@ -55,7 +55,7 @@ const DESIGNS_FR = [
       2: [[4, 10.5, 4, 7.5, 1, .5], [4, 11, 4, 8, 1, 1], [5, 11, 6, 8, 1, 1]], 3: [[4, 10.5, 4, 7.5, 1, .5], [4, 11, 4, 8, 1, 1], [5, 11, 6, 8, 1, 1]] }, cuts: [[9, 15], [9, 15], [12, 15], [12, 15], [15, 16]] },
   { id: 'vermilion', pt: 'pastoria', n: '번개 관문', sub: '갈색시티 체육관', w: 11, h: 21, leader: [5, 2], door: [5, 19], guy: [4, 18],
     deco: [[1, 3], [9, 3], [1, 9], [9, 9], [1, 13], [9, 13], [1, 18], [9, 18]],
-    path: [[5, 19], [5, 3]], slots: [[6, 15, 'l'], [3, 13, 'r'], [6, 11, 'l'], [6, 8, 'l'], [4, 8, 'r'], [6, 4, 'l'], [4, 4, 'r']], inY: 15, tiny: [[4, 16]], fix: { t: [0, 10].flatMap(x => [4, 5, 6, 7].map(y => [x, y, x, 4, 1, 1])) }, iv: 2, /* iv 2: 가운데 줄 쓰레기통을 바닥으로 칠한 그림 → 도전자가 문에서 관장까지 곧게 (경완 2026-10-29) */ cuts: [[9, 15], [9, 13], [9, 13], [9, 11], [9, 11]] },
+    path: [[5, 19], [5, 3]], slots: [[6, 15, 'l'], [3, 13, 'r'], [6, 11, 'l'], [6, 8, 'l'], [4, 8, 'r'], [6, 4, 'l'], [4, 4, 'r'], [2, 3, 'r'], [8, 3, 'l']], inY: 15, tiny: [[4, 16]], fix: { t: [0, 10].flatMap(x => [4, 5, 6, 7].map(y => [x, y, x, 4, 1, 1])) }, iv: 2, /* iv 2: 가운데 줄 쓰레기통을 바닥으로 칠한 그림 → 도전자가 문에서 관장까지 곧게 (경완 2026-10-29) */ cuts: [[9, 15], [9, 13], [9, 13], [9, 11], [9, 11]] },
   { id: 'celadon', pt: 'eterna', n: '꽃 정원', sub: '무지개시티 체육관', w: 13, h: 20, leader: [6, 4], door: [6, 18], guy: [5, 17],
     deco: [[3, 10], [9, 10], [1, 16], [11, 16], [2, 17], [10, 17], [1, 12], [11, 12]],
     path: [[6, 18], [6, 5]], slots: [[7, 13, 'l'], [5, 12, 'r'], [7, 11, 'l'], [5, 10, 'r'], [7, 9, 'l'], [5, 14, 'r'], [7, 14, 'l'], [5, 5, 'r'], [7, 5, 'l']], inY: 14, tiny: [[6, 15], [[2, 3], [10, 11]]], fix: { t: [[2, 5, 5, 4, 1, 1]] }, cuts: [[6, 14], [9, 14], [9, 14], [6, 8], [13, 14]] },
@@ -75,7 +75,21 @@ const dzBase = id => DESIGNS.find(d => d.id === id) || DESIGNS.find(d => d.old =
 const OPEN = [0, 1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6, 1];
 // cuts[등급] = [a, b]: 위아래 줄 그림이 이어지는 자리를 골라 둠 (경완 2026-10-27 '맵 줄인거 티나지 않게')
 // tiny = 새내기(등급 0) 체육관: [줄 [a, b], 칸 [[a, b], …]] 나·입구 기둥·안내원만 겨우 들어가게 (경완 2026-10-27 '맨 처음은 진짜 겁나 좁아야')
+// 체육관 크기 7단계 (경완 2026-10-29 '단계마다 확실히 다르게, 1단계는 훨씬 작게, 넓은 무대는 정사각형으로, 모든 단계에 입구 기둥'):
+// STEPS[맵][단계 0~5] = [남길 줄, 남길 칸('' = 전부), 이음매 패치?]. 단계 6 = 다 열림. 예전 tiny/cuts/fix 는 이걸로 바뀌어 안 쓴다
+const STEPS = {
+  pewter: [['0-2,5-6,11-12,14-15', '0-1,4-8,11-12'], ['0-6,11-12,14-15', '0-1,4-8,11-12'], ['0-6,11-12,14-15', '0-1,3-9,11-12'], ['0-6,11-15', '0-1,3-9,11-12'], ['0-8,11-15', '0-1,3-9,11-12'], ['0-8,11-15', '']],
+  cerulean: [['0-7,16-19', '0-2,5-11,14-16', [[3, 7, 4, 7, 1, 1], [9, 7, 4, 7, 1, 1, 1], [5, 8, 7, 17, 3, .5]]], ['0-8,15-19', '0-2,5-11,14-16'], ['0-8,15-19', ''], ['0-10,14,16-19', ''], ['0-11,15-19', ''], ['0-14,16-19', '']],
+  vermilion: [['0-3,16-20', '0,3-7,10', [0, 6].flatMap((x, i) => [4, 5, 6, 7].map(y => [x, y, i * 10, 4, 1, 1]))], ['0-3,16-20', '', [0, 10].flatMap(x => [4, 5, 6, 7].map(y => [x, y, x, 4, 1, 1]))], ['0-9,15-20', ''], ['0-11,15-20', ''], ['0-11,14-20', ''], ['0-8,10-20', '']],
+  celadon: [['0-5,15-19', '0-1,4-8,11-12'], ['0-5,15-19', '0-1,3-9,11-12', [[2, 5, 5, 4, 1, 1]]], ['0-5,14-19', ''], ['0-8,14-19', ''], ['0-5,8-19', ''], ['0-12,14-19', '']],
+  fuchsia: [['0-2,5-7,11-12,14-15', '3-11'], ['0-2,5-7,11-15', '2-11'], ['0-2,5-8,11-15', '2-12'], ['0-2,4-8,11-15', '1-12'], ['0-2,4-9,11-15', '1-13'], ['0-9,11-15', '0-13']],
+};
+// '0-2,5' 처럼 남길 번호 → 잘라 낼 구간 [[a, b), …]
+const keepR = (s, n) => { if (!s) return []; const K = new Set(); s.split(',').forEach(p => { const [a, b = a] = p.split('-').map(Number); for (let i = a; i <= b; i++) K.add(i); });
+  const R = []; for (let i = 0; i < n; i++) if (!K.has(i)) { const l = R[R.length - 1]; if (l && l[1] === i) l[1] = i + 1; else R.push([i, i + 1]); } return R; };
+const yList = y => !y ? [] : Array.isArray(y[0]) ? y : [y];
 function cutOf(D, gi) { if (gi == null) { const g = st(); if (!g) return null; gi = bigOf(g); }
+  const S7 = STEPS[D.id]; if (S7) { const s = S7[gi]; return s ? { y: keepR(s[0], D.h), x: keepR(s[1], D.w), f: s[2] } : null; }
   const f = D.fix?.[gi === 0 && D.tiny ? 't' : gi - 1];   // 7단계: 0 = tiny, 1~5 = cuts[0~4], 6 = 다 열림 (fix 숫자 키는 cuts 번호)
   if (gi === 0 && D.tiny) return { y: D.tiny[0], x: D.tiny[1] || [], f };
   if (D.cuts) { const c = D.cuts[gi - 1]; return c ? { y: [c[0], c[1]], x: c[2] || [], f } : null; }   // [a, b, 칸 자르기?]
@@ -90,10 +104,12 @@ function dzOf(id, gi) {
   const D = dzBase(id), c = cutOf(D, gi), k = D.id + JSON.stringify(c); if (dzCache[k]) return dzCache[k];
   const id0 = z => z;
   if (!c) return (dzCache[k] = Object.assign({}, D, { base: D, cut: null, toV: id0, toF: id0, toVx: id0, toFx: id0 }));
-  const RY = c.y ? [c.y] : [], RX = c.x, v = cutV(RY), vx = cutV(RX), ok = p => v(p[1]) != null && vx(p[0]) != null, pt = p => [vx(p[0]), v(p[1]), ...p.slice(2)];
+  const RY = yList(c.y), RX = c.x, v = cutV(RY), vx = cutV(RX), ok = p => v(p[1]) != null && vx(p[0]) != null, pt = p => [vx(p[0]), v(p[1]), ...p.slice(2)];
+  const near = (f, R) => z => f(z) ?? ((r => r ? (f(r[0] - 1) ?? -1) + 1 : 0)(R.find(([a, b]) => z >= a && z < b)));   // 잘린 줄 위의 길 점은 바로 아래 남은 줄로
   const ny = RY.reduce((t, [a, b]) => t + b - a, 0), nx = RX.reduce((t, [a, b]) => t + b - a, 0);
-  const path = D.path.map(p => [vx(p[0]) ?? 0, v(p[1]) ?? RY[0][0]]).filter((p, i, L) => !i || p[0] !== L[i - 1][0] || p[1] !== L[i - 1][1]);
-  return (dzCache[k] = Object.assign({}, D, { base: D, cut: c, h: D.h - ny, w: D.w - nx, leader: pt(D.leader), door: pt(D.door), guy: pt(D.guy), path,
+  const pn = p => [near(vx, RX)(p[0]), near(v, RY)(p[1]), ...p.slice(2)];   // 관장·문·안내원은 잘린 줄에 걸려도 가까운 남은 칸으로
+  const path = D.path.map(p => [near(vx, RX)(p[0]), near(v, RY)(p[1])]).filter((p, i, L) => !i || p[0] !== L[i - 1][0] || p[1] !== L[i - 1][1]);
+  return (dzCache[k] = Object.assign({}, D, { base: D, cut: c, h: D.h - ny, w: D.w - nx, leader: pn(D.leader), door: pn(D.door), guy: pn(D.guy), path,
     deco: D.deco.filter(ok).map(pt), slots: D.slots.filter(ok).map(pt), free: D.free && D.free.filter((_, y) => v(y) != null).map(r => [...r].filter((_, x) => vx(x) != null).join('')),
     toV: v, toF: cutF(RY), toVx: vx, toFx: cutF(RX) }));
 }
@@ -106,7 +122,7 @@ const mapCache = {};
 function mapSrc(D) { const u = `${IMG}map/${D.id}.png${D.iv ? `?v=${D.iv}` : ""}`; if (!D.cut) return Promise.resolve(u); const k = D.id + JSON.stringify(D.cut); if (mapCache[k]) return mapCache[k];
   return (mapCache[k] = new Promise(res => { const im = new Image(); im.onerror = () => res(u);
     im.onload = () => { const c = document.createElement('canvas'); c.width = D.w * 16; c.height = D.h * 16; const g = c.getContext('2d');
-      const SY = keepSeg(D.cut.y ? [D.cut.y] : [], Math.ceil(im.height / 16)), SX = keepSeg(D.cut.x, Math.ceil(im.width / 16));
+      const SY = keepSeg(yList(D.cut.y), Math.ceil(im.height / 16)), SX = keepSeg(D.cut.x, Math.ceil(im.width / 16));
       let dy = 0; for (const [y0, y1] of SY) { let dx = 0; const hh = Math.min(y1 * 16, im.height) - y0 * 16;
         for (const [x0, x1] of SX) { const ww = Math.min(x1 * 16, im.width) - x0 * 16; g.drawImage(im, x0 * 16, y0 * 16, ww, hh, dx, dy, ww, hh); dx += ww; } dy += hh; }
       // 이음매 메우기: [보이는 x, y, 원래 x, y, 너비, 높이(칸), 좌우 뒤집기] (경완 2026-10-27 '좁혔을 때 경계선 안 보이게')
