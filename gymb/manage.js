@@ -118,17 +118,17 @@ let RING = null;
 function ringArt() {
   if (RING) return RING; const w = 18, h = 44, cx = 9, cy = 12, RX = 6, RY = 11.5, T = 2.6;
   const mk = front => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'), px = (x, y, col) => { g.fillStyle = col; g.fillRect(x, y, 1, 1); };
-    if (!front) { for (let y = 23; y < 41; y++) { px(8, y, '#20202c'); px(9, y, '#d0d4dc'); px(10, y, '#8a909c'); px(11, y, '#20202c'); } for (let x = 4; x < 16; x++) { px(x, 40, '#20202c'); px(x, 41, x < 6 || x > 13 ? '#20202c' : '#9aa0ac'); px(x, 42, x < 6 || x > 13 ? '#20202c' : '#6a707c'); px(x, 43, '#20202c'); } }
+    if (front === 2) { for (let y = 23; y < 41; y++) { px(8, y, '#20202c'); px(9, y, '#d0d4dc'); px(10, y, '#8a909c'); px(11, y, '#20202c'); } for (let x = 4; x < 16; x++) { px(x, 40, '#20202c'); px(x, 41, x < 6 || x > 13 ? '#20202c' : '#9aa0ac'); px(x, 42, x < 6 || x > 13 ? '#20202c' : '#6a707c'); px(x, 43, '#20202c'); } }
     for (let y = 0; y < 26; y++) for (let x = 0; x < w; x++) { const X = x + .5 - cx, Y2 = y + .5 - cy, o = (X / RX) ** 2 + (Y2 / RY) ** 2, i = (X / (RX - T)) ** 2 + (Y2 / (RY - T)) ** 2;
-      if (o > 1.18 || i < .8) continue; if (front !== X > 0) continue;
+      if (front === 2 || o > 1.18 || i < .8) continue; if (!!front !== X > 0) continue;
       const edge = o > .92 || i < 1.02, band = Math.floor((Math.atan2(Y2, X) + Math.PI) / (Math.PI / 4)) % 2;
       px(x, y, edge ? '#20202c' : X > 0 ? (band ? '#ffd860' : '#ffffff') : (band ? '#c08a30' : '#c8ccd4')); }
     return c.toDataURL(); };
-  return (RING = [mk(false), mk(true)]);
+  return (RING = [mk(false), mk(true), mk(2)]);   // 뒤 반쪽 · 앞 반쪽 · 기둥 (기둥은 따로라 링만 흔들림, 경완 2026-10-29)
 }
 function yRing(i, x, y) {
-  const [bk, ft] = ringArt(), w = 36, h = 88, el = n => { const q = document.createElement('i'); q.className = 'ty-pr pr-hoop' + (n ? ' fr' : ''); q.style.cssText = `left:${(x - w / 2).toFixed(0)}px;top:${(y - h).toFixed(0)}px;width:${w}px;height:${h}px;z-index:${Math.round(y) + (n ? 70 : -60)};background-image:url(${n ? ft : bk})`; Y.L.append(q); return q; };
-  const b = el(0), f = el(1); return (Y.pr['ring' + i] = { k: 'ring' + i, x, y, w, h, el: b, fr: f, ring: [x, y - h + 12 / 44 * h] });
+  const [bk, ft, po] = ringArt(), w = 36, h = 88, el = (n, img, cls) => { const q = document.createElement('i'); q.className = 'ty-pr pr-hoop' + cls; q.style.cssText = `left:${(x - w / 2).toFixed(0)}px;top:${(y - h).toFixed(0)}px;width:${w}px;height:${h}px;z-index:${Math.round(y) + n};background-image:url(${img})`; Y.L.append(q); return q; };
+  const p = el(-61, po, ' po'), b = el(-60, bk, ' rg'), f = el(70, ft, ' rg fr'); return (Y.pr['ring' + i] = { k: 'ring' + i, x, y, w, h, el: b, fr: f, po: p, ring: [x, y - h + 12 / 44 * h] });
 }
 function yardBg(c) {
   const { ART, seasonCv } = GA.art(), PW = c.width = Math.ceil(Y.W / 2), PH = c.height = Math.ceil(Y.H / 2), g = c.getContext('2d'); g.imageSmoothingEnabled = false;
@@ -429,9 +429,9 @@ const cvLeft = ms => { const m = Math.max(0, Math.ceil(ms / 60000)); return `${M
 setInterval(() => document.querySelectorAll('.cv-left[data-exp]').forEach(e => { e.innerHTML = cvLeft(+e.dataset.exp - Date.now()); }), 20e3);
 function drawStaff() {
   const g = st(), now = Date.now(), max = K.staffMax();
-  const C = g.cands || (g.cands = []); if (C.length && !g.candSeen) { g.candSeen = 1; K.setAt(); K.save(); K.menuDot(); }
+  const C = g.cands || (g.cands = []); if (C.length && !g.candSeen && sfT === 'cand') { g.candSeen = 1; K.setAt(); K.save(); K.menuDot(); }   // 지원서 탭을 보면 빨간 점이 꺼진다 (경완 2026-10-29)
   const c = C.length, yN = g.sf.filter(s => s.yard).length;
-  const tabs = `<div class="sp-tabs" role="tablist"><button role="tab" data-sft="cand" aria-selected="${sfT === 'cand'}">지원서${c ? ' <i class="tdot"></i>' : ''}</button><button role="tab" data-sft="sf" aria-selected="${sfT === 'sf'}">고용 관리</button></div>`;
+  const tabs = `<div class="sp-tabs" role="tablist"><button role="tab" data-sft="cand" aria-selected="${sfT === 'cand'}">지원서${c && !g.candSeen ? ' <i class="tdot"></i>' : ''}</button><button role="tab" data-sft="sf" aria-selected="${sfT === 'sf'}">고용 관리</button></div>`;
   // 지원서 (경완 2026-10-28): 스프라이트가 잘 보이는 세로 카드, 여러 장이면 옆으로 넘긴다. 면접 내용도 카드 안에, 바로 고용하기
   const cand = c ? `<div class="cv-deck">${C.map((x, i) => `<article class="cv-card" data-i="${i}"><header><b>트레이너 지원서</b><span class="cv-tm"><em>남은 시간</em><b class="cv-left" data-exp="${x.exp}">${cvLeft(x.exp - now)}</b></span></header>
       <div class="cv-photo"><img alt="" src="${K.trSrc(x.tr)}"><div class="cv-nm"><small>${esc(x.cls)}</small><b>${esc(x.nm)}</b></div></div>
