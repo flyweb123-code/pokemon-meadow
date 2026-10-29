@@ -1716,3 +1716,6 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .mp-moves.tm-card .mp-mv em.mv-st{margin-left:auto;display:flex!important;gap:10px;justify-content:flex-end;font-style:normal;font-size:11px;color:var(--dim);white-space:nowrap;text-align:right}
 .mp-moves.tm-card .mp-mv{flex-direction:row!important;flex-wrap:nowrap!important;justify-content:flex-start!important;text-align:left!important;height:auto;min-height:44px;padding:8px 10px!important}
 .mp-moves.tm-card .mp-mv b{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* 평판: 오르는 동안만 초록(내릴 땐 빨강), 다 오르면 검정 — 오른 만큼(+N)은 색 그대로 (경완 2026-10-29) */
+.rs-rep .rr-n{transition:color .35s}.rs-rep.end .rr-n{color:var(--win-ink,#20202c)!important}
