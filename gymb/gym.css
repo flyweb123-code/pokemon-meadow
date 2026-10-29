@@ -1499,3 +1499,20 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .ts-win .ts-slot.lock{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:8px;min-height:76px;padding:0 10px!important;border-style:dashed!important;border-color:#cfcfda!important;background:repeating-linear-gradient(135deg,rgba(0,0,0,.03) 0 6px,transparent 6px 12px)!important;color:#9a9aac;font-size:12px}
 .ts-win .ts-slot.lock svg{width:18px;height:21px;flex:none}.ts-win .ts-slot.lock b{color:#6a6a80}
 .gy-perk>li>.bdw,.gy-perk>li>.g-emb{align-self:center;display:grid;place-items:center}   /* 배지 칸 위아래 가운데 (경완 2026-10-29) */
+
+/* 배틀 필드(일렉트릭필드 등)·폼 체인지 (경완 2026-10-29) */
+.bt .bt-terr{position:absolute;left:0;right:0;bottom:0;height:62%;pointer-events:none;opacity:0;transition:opacity .6s;mix-blend-mode:screen}
+.bt .bt-terr.on{opacity:1;animation:btTerr 1.6s steps(6) infinite alternate}
+.bt .bt-terr.el{background:linear-gradient(to top,rgba(255,226,60,.55),rgba(255,240,120,.18) 55%,transparent),repeating-linear-gradient(115deg,transparent 0 22px,rgba(255,250,170,.35) 22px 24px,transparent 24px 46px)}
+.bt .bt-terr.gr{background:linear-gradient(to top,rgba(90,210,90,.5),rgba(140,230,120,.15) 55%,transparent)}
+.bt .bt-terr.mi{background:linear-gradient(to top,rgba(255,170,220,.55),rgba(255,210,240,.2) 55%,transparent)}
+.bt .bt-terr.ps{background:linear-gradient(to top,rgba(200,110,255,.5),rgba(220,170,255,.18) 55%,transparent)}
+@keyframes btTerr{from{filter:brightness(.85)}to{filter:brightness(1.25)}}
+.bt-mon.fmc img{animation:btFmc .68s steps(6)}@keyframes btFmc{0%,100%{filter:none}20%,60%{filter:brightness(3) saturate(0)}40%,80%{filter:none}}
+.bt-mon.fm-hangry img{filter:hue-rotate(205deg) saturate(.75) brightness(.8)}
+.gy-sheet.lk{overflow:hidden!important}.gy-sheet.lk>:not(.gy-lockov){filter:grayscale(.85) brightness(.75);pointer-events:none}
+.gy-lockov{position:absolute;inset:0;z-index:30;display:grid;place-items:center;padding:16px;background:rgba(24,24,36,.38)}
+.gy-lockov .win{max-width:300px;width:100%;box-sizing:border-box;padding:18px 16px 16px;text-align:center}
+.gy-lockov .lk-ic{display:block;width:30px;height:35px;margin:0 auto 8px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 14' shape-rendering='crispEdges'%3E%3Cpath fill='%236a6a7c' d='M3 1h6v1H3zM2 2h1v4H2zM9 2h1v4H9z'/%3E%3Cpath fill='%2320202c' d='M1 6h10v1H1zM0 7h1v6H0zM11 7h1v6h-1zM1 13h10v1H1z'/%3E%3Cpath fill='%23e8b820' d='M1 7h10v6H1z'/%3E%3Cpath fill='%23ffd640' d='M1 7h10v1H1z'/%3E%3Cpath fill='%237a5a10' d='M5 9h2v3H5z'/%3E%3C/svg%3E") center/contain no-repeat;image-rendering:pixelated}
+.gy-lockov h4{margin:0 0 8px;font-size:16px}.gy-lockov p{margin:0 0 6px;font-size:13px;line-height:1.55}.gy-lockov small{font-size:11px;color:var(--dim)}
+.gy-plate .gy-wing.l{padding-left:30px!important}.gy-plate .gy-wing.r{padding-right:30px!important}   /* 타이틀 글자 좌우 여백 (경완 2026-10-29) */

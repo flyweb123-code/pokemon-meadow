@@ -23,7 +23,7 @@ const monImg = (sp, o = {}) => { const g = GB().gifUrl(sp, false, !!o.s, !!o.f),
 const owIc = ow => `<i class="ow-ic${K.owW(ow) > 16 ? ' w32' : ''}" style="background-image:url(${K.owSrc(ow)})"></i>`;
 let sh = null, cur = null, shopT = 'tm', tmTy = 0, tmCat = -1, tmPow = 1;   // 기술머신: 타입·형태(물리 0 특수 1 변화 2) 필터, 위력순 (1 높은 순 · -1 낮은 순, 경완 2026-10-28)
 function tab(t, el) { sh = el; cur = t; draw(); }
-function draw() { if (!sh || !st()) return; sh.onclick = null; sh.classList.remove('ty-on'); ({ train: drawTrain, staff: drawStaff, shop: drawShop })[cur]?.(); GB()?.fillTh(sh); }
+function draw() { if (!sh || !st()) return; sh.onclick = null; sh.classList.remove('ty-on'); ({ train: drawTrain, staff: drawStaff, shop: drawShop })[cur]?.(); GB()?.fillTh(sh); sh.classList.remove('lk'); if (K.lockedT?.(cur)) K.lockOv(sh, cur); }
 const redraw = () => { if (sh && !sh.hidden) draw(); };
 
 // ======================= 훈련장 (4단계) =======================
