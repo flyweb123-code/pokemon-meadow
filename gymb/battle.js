@@ -1181,7 +1181,7 @@ const itAll = () => { const g = S.gym || {}, bag = Object.entries(g.itm || {}).f
   for (const k in M) { const id = M[k]?.it, P = id && HOLD[id] && boxOf(+k || k); if (P) held.push([id, P]); } return [...bag, ...held]; };
 // 지닌 도구 카드: 회색 + 지닌 포켓몬 그림 + 돌려받기 (어느 화면에서든)
 const itRowAll = ([id, P]) => { if (!P) return itRow(id); const x = HOLD[id];
-  return `<div class="sp-tm sp-it held"><img class="tm-ic it-ic" alt="" src="${itImg(id)}"><span class="tm-nm"><b>${esc(x[0])}</b></span><span class="tm-meta it-who">${thumb(P)}<small>${esc(nmOf(P))}${jong(nmOf(P)) ? '이' : '가'} 지니고 있어요</small></span><button type="button" class="it-back" data-takeit="${P.id}">돌려받기</button></div>`; };
+  return `<div class="sp-tm sp-it held"><img class="tm-ic it-ic" alt="" src="${itImg(id)}"><span class="tm-nm"><b>${esc(x[0])}</b></span><span class="tm-meta it-who"><span class="it-wth"><img alt="" data-th="${P.id}"></span><small>${esc(nmOf(P))}${jong(nmOf(P)) ? '이' : '가'} 지니고 있어요</small></span><button type="button" class="it-back" data-takeit="${P.id}">돌려받기</button></div>`; };
 // 도구 상세 카드: btn = [글자, 누르면] (없으면 닫기만)
 function itInfo(id, lab, act, foot = '') {
   const x = HOLD[id]; if (!x) return; const n = S.gym?.itm?.[id] || 0;
