@@ -127,7 +127,7 @@ async function start(name, { fade = .6 } = {}) {
   if (B.loop) { src.loopStart = B.ls; src.loopEnd = B.buf.duration; }
   const t = ctx.currentTime, off = pos[name] || 0; delete pos[name]; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(1, t + fade);
   src.connect(g); g.connect(out); src.start(0, off); cur.t0 = t - off;
-  src.onended = () => { if (cur.src === src) { cur.src = null; cur.name = null; } };
+  src.onended = () => { if (cur.src === src) { cur.src = null; cur.name = null; if (!B.loop) cur.fin = name; } };   // 한 번만 도는 곡(승리 곡)이 끝나면 다시 틀지 않는다
   Object.assign(cur, { name, src, g, ctx, out });
 }
 // 오디오가 새로 만들어지거나(아이폰) 볼륨이 0 이 되면 따라간다
@@ -135,6 +135,7 @@ let tick = 0;
 function watch() {
   clearInterval(tick); tick = setInterval(() => {
     if (!cur.want) { clearInterval(tick); tick = 0; return; }
+    if (!cur.src && cur.fin === cur.want) return;   // 이름 있는 트레이너 승리 뒤 승리 곡이 끝나고 처음부터 또 겹쳐 나오던 것 (경완 2026-10-29)
     if (!on()) { if (cur.src) stopSrc(.2); cur.name = null; return; }
     let ctx = null, out = null; try { ctx = GA.audio(); out = GA.bgmGain(); } catch (e) {}
     if (!cur.src || cur.ctx !== ctx || cur.out !== out) { if (cur.src && cur.ctx !== ctx) { posNow(); cur.src = null; } cur.name = null; start(cur.want, { fade: 1 }).catch(() => {}); }
@@ -170,7 +171,7 @@ async function sePlay(nm, { pan = 0, at = 0, dur = 0, gain = 1 } = {}) {   // ga
 }
 const GymBGM = {
   // 곡 바꾸기. 처음이면 받아 오고 만드는 동안 조용하다가 준비되면 서서히 커진다
-  play(name, o) { if (!SONG[name]) return Promise.resolve(); if (cur.want !== name) delete pos[name]; cur.want = name; trim([name]); watch(); return on() ? start(name, o).catch(() => {}) : Promise.resolve(); },
+  play(name, o) { if (!SONG[name]) return Promise.resolve(); if (cur.want !== name) delete pos[name]; cur.want = name; cur.fin = null; trim([name]); watch(); return on() ? start(name, o).catch(() => {}) : Promise.resolve(); },
   stop(fade = .6) { cur.want = null; cur.name = null; stopSrc(fade); clearInterval(tick); tick = 0; },
   // 다음에 틀 곡을 미리 만들어 둔다 (배틀 시작하면 승리 곡)
   prep(name) { if (SONG[name]) make(name).catch(() => {}); },

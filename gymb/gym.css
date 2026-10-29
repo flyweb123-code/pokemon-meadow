@@ -1639,3 +1639,30 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .rs-gold.end{animation:rgEnd .5s cubic-bezier(.3,1.8,.5,1)}.rs-gold.end b{animation:none}@keyframes rgEnd{40%{transform:scale(1.12);box-shadow:inset 0 0 0 2px #f0c850,0 0 18px #ffd84a}}
 .rs-stk{margin:0 0 10px;padding:5px 0;border-radius:8px;text-align:center;font-size:14px;font-weight:700;color:#fff;background:linear-gradient(90deg,#e04838,#f09a20);animation:rsIn .4s cubic-bezier(.3,1.6,.5,1) .5s both}
 .qw-row.wait{opacity:.6}.qw-row .qw-wait{flex:none;font-size:12px;color:var(--dim);padding:0 6px}   /* 맨 위 최신 도전자부터 차례로 (경완 2026-10-29) */
+/* 배틀 교체 (경완 2026-10-29): 버튼에 정사각형 프로필·성별·타입, 누르면 상세 카드 → 바꾸기. 아래 화면은 256 폭 기준으로 줄여 그림 */
+.bt .pty .sx,.bt .bp-card .sx{display:inline-block;flex:none;width:7px;height:8px;margin-left:3px;background:0 0/100% 100% no-repeat;image-rendering:pixelated}
+.bt .pty .sx.M,.bt .bp-card .sx.M{background-image:url(../gym/img/bt/sx_m.png)}.bt .pty .sx.F,.bt .bp-card .sx.F{width:5px;background-image:url(../gym/img/bt/sx_f.png)}
+.bt.mob .pty{grid-template-columns:34px 1fr!important;grid-template-rows:auto auto auto auto!important;row-gap:1px;align-content:center}
+.bt.mob .pty>.rk-fr{grid-row:1/5!important;align-self:center;width:32px!important;height:32px!important;aspect-ratio:1;padding:2px!important;box-sizing:border-box;position:relative}
+.bt.mob .pty>.rk-fr img[data-th]{position:absolute!important;left:2px;top:2px;width:calc(100% - 4px)!important;height:calc(100% - 4px)!important;object-fit:contain}
+.bt.mob .pty>.rk-fr .rk,.bt .bp-card .rk-fr .rk{display:none}
+.bt.mob .pty b{grid-column:2;display:flex;align-items:center;min-width:0;padding-right:26px;font-size:10px!important;white-space:nowrap;overflow:hidden}
+.bt.mob .pty .lv{font-size:8px!important;top:4px!important;right:6px!important}
+.bt .pty .pty-ty,.bt .bp-card .pty-ty{display:flex;gap:1px;grid-column:2}.bt .pty .pty-ty .tyi,.bt .bp-card .pty-ty .tyi{width:10px;height:10px}
+.bt.mob .pty .hp,.bt.mob .pty .hpn{grid-column:2}
+.bt.mob .bp-card{display:flex;flex-direction:column;justify-content:center;gap:4px;height:100%;padding:18px 10px 10px;box-sizing:border-box;color:#283040;text-shadow:none}
+.bp-card .bc-hd{display:flex;gap:7px;align-items:center}
+.bp-card .bc-hd>.rk-fr{flex:none;width:38px!important;height:38px!important;aspect-ratio:1;padding:2px!important;box-sizing:border-box;position:relative}
+.bp-card .bc-hd>.rk-fr img[data-th]{position:absolute!important;left:2px;top:2px;width:calc(100% - 4px)!important;height:calc(100% - 4px)!important;object-fit:contain}
+.bp-card .bc-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.bp-card .bc-tx b{display:flex;align-items:center;font-size:11px}.bp-card .bc-lv{display:flex;align-items:center;gap:4px;font-size:8px;font-weight:700}
+.bp-card .hp{display:block;height:3px;background:#283028;border-radius:1px}.bp-card .hp i{display:block;height:3px;border-radius:1px;background:#70f8a8}.bp-card .hp i.y{background:#f8e038}.bp-card .hp i.r{background:#f85838}
+.bp-card .hpn{font-size:7px;color:#56607a}
+.bp-card .bc-ab{display:flex;align-items:center;flex-wrap:wrap;gap:2px 4px;margin:0;font-size:8px;padding:3px 5px;border-radius:5px;background:rgba(255,255,255,.8);box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.bp-card .bc-ab small{font-size:7px;color:#fff;background:#6f7c94;padding:0 3px;border-radius:3px}.bp-card .bc-ab small:nth-of-type(2){margin-left:4px}
+.bp-card .bc-it{width:12px;height:12px;image-rendering:pixelated}
+.bp-card .bc-mv{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.bp-card .bc-mv span{padding:3px 5px;border-radius:5px;font-size:8px;font-weight:700;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.35);background:linear-gradient(color-mix(in srgb,var(--tc) 78%,#fff),var(--tc));box-shadow:inset 0 0 0 1px rgba(0,0,0,.2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bp-card .bc-btns{display:grid;grid-template-columns:1fr 1.4fr;gap:6px;margin-top:2px}
+.bt.mob .bp-card .bb{position:relative;left:auto!important;top:auto!important;width:auto!important;height:28px;border-radius:9px}.bt.mob .bp-card .bb span{font-size:11px}.bt.mob .bp-card .bb.go{--c1:#74c862;--c2:#3e9a3e}.bt.mob .bp-card .bb:disabled{filter:grayscale(1);opacity:.6}
+.sp-prr{justify-content:flex-end}   /* 상점 가격순 (경완 2026-10-29) */
