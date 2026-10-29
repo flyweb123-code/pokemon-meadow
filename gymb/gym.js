@@ -55,7 +55,7 @@ const DESIGNS_FR = [
       2: [[4, 10.5, 4, 7.5, 1, .5], [4, 11, 4, 8, 1, 1], [5, 11, 6, 8, 1, 1]], 3: [[4, 10.5, 4, 7.5, 1, .5], [4, 11, 4, 8, 1, 1], [5, 11, 6, 8, 1, 1]] }, cuts: [[9, 15], [9, 15], [12, 15], [12, 15], [15, 16]] },
   { id: 'vermilion', pt: 'pastoria', n: '번개 관문', sub: '갈색시티 체육관', w: 11, h: 21, leader: [5, 2], door: [5, 19], guy: [4, 18],
     deco: [[1, 3], [9, 3], [1, 9], [9, 9], [1, 13], [9, 13], [1, 18], [9, 18]],
-    path: [[5, 19], [5, 16], [4, 16], [4, 9], [5, 9], [5, 3]], slots: [[5, 15, 'l'], [3, 13, 'r'], [5, 11, 'l'], [6, 8, 'l'], [4, 8, 'r'], [6, 4, 'l'], [4, 4, 'r']], inY: 15, tiny: [[4, 16]], fix: { t: [0, 10].flatMap(x => [4, 5, 6, 7].map(y => [x, y, x, 4, 1, 1])) }, cuts: [[9, 15], [9, 13], [9, 13], [9, 11], [9, 11]] },
+    path: [[5, 19], [5, 3]], slots: [[6, 15, 'l'], [3, 13, 'r'], [6, 11, 'l'], [6, 8, 'l'], [4, 8, 'r'], [6, 4, 'l'], [4, 4, 'r']], inY: 15, tiny: [[4, 16]], fix: { t: [0, 10].flatMap(x => [4, 5, 6, 7].map(y => [x, y, x, 4, 1, 1])) }, iv: 2, /* iv 2: 가운데 줄 쓰레기통을 바닥으로 칠한 그림 → 도전자가 문에서 관장까지 곧게 (경완 2026-10-29) */ cuts: [[9, 15], [9, 13], [9, 13], [9, 11], [9, 11]] },
   { id: 'celadon', pt: 'eterna', n: '꽃 정원', sub: '무지개시티 체육관', w: 13, h: 20, leader: [6, 4], door: [6, 18], guy: [5, 17],
     deco: [[3, 10], [9, 10], [1, 16], [11, 16], [2, 17], [10, 17], [1, 12], [11, 12]],
     path: [[6, 18], [6, 5]], slots: [[7, 13, 'l'], [5, 12, 'r'], [7, 11, 'l'], [5, 10, 'r'], [7, 9, 'l'], [5, 14, 'r'], [7, 14, 'l'], [5, 5, 'r'], [7, 5, 'l']], inY: 14, tiny: [[6, 15], [[2, 3], [10, 11]]], fix: { t: [[2, 5, 5, 4, 1, 1]] }, cuts: [[6, 14], [9, 14], [9, 14], [6, 8], [13, 14]] },
@@ -100,7 +100,7 @@ const preMs = gi => DESIGNS.forEach(d => mapSrc(dzOf(d.id, gi)).then(u => { cons
 function fillMs(el) { el.querySelectorAll('img[data-ms]').forEach(im => { const gi = im.dataset.gi === '' || im.dataset.gi == null ? undefined : +im.dataset.gi; mapSrc(dzOf(im.dataset.ms, gi)).then(u => { im.src = u; }); }); }
 // 잘라 붙인 맵 그림 (이음매 없이)
 const mapCache = {};
-function mapSrc(D) { const u = `${IMG}map/${D.id}.png`; if (!D.cut) return Promise.resolve(u); const k = D.id + JSON.stringify(D.cut); if (mapCache[k]) return mapCache[k];
+function mapSrc(D) { const u = `${IMG}map/${D.id}.png${D.iv ? `?v=${D.iv}` : ""}`; if (!D.cut) return Promise.resolve(u); const k = D.id + JSON.stringify(D.cut); if (mapCache[k]) return mapCache[k];
   return (mapCache[k] = new Promise(res => { const im = new Image(); im.onerror = () => res(u);
     im.onload = () => { const c = document.createElement('canvas'); c.width = D.w * 16; c.height = D.h * 16; const g = c.getContext('2d');
       const SY = keepSeg(D.cut.y ? [D.cut.y] : [], Math.ceil(im.height / 16)), SX = keepSeg(D.cut.x, Math.ceil(im.width / 16));
@@ -595,7 +595,6 @@ function tick(now = Date.now()) {
 // 필드 체육관 버튼의 빨간 점 (gym.js 없이도 훅이 S.gym.at 만 보고 띄운다)
 function setAt(now = Date.now()) {
   const g = st(); let a = g.q.length ? g.q[0].t : (g.sch[0] || nextDay(now) + 9 * H);
-  if (g.rpt && !g.rpt.seen) a = Math.min(a, now);
   if (g.cands?.length && !g.candSeen) a = Math.min(a, Math.max(...g.cands.map(c => c.t)));
   a = Math.min(a, weekStart(now) + 7 * DAY + 7 * H);
   g.at = a;
@@ -630,7 +629,7 @@ async function challenge() {
     document.body.classList.add('gymBattle');
     let res;
     try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: REW(c.diff).g, r: REW(c.diff).r, rl: Math.max(-(g.rep || 0), REW(c.diff).rl) }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, meBackUrl: await fitSrc('trb') }); }
-    finally { document.body.classList.remove('gymBattle'); }
+    finally { document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); }   // 배틀 끝나고 돌아오면 아래 대화창은 숨김 (경완 2026-10-29)
     g.q.shift(); const R = REW(c.diff), won = !!res?.won, now = Date.now();
     let gold = 0, rep = 0;
     if (won) { gold = addG(R.g); addRep(R.r); rep = R.r; g.w++; if (g.wk) g.wk.w++; blocked(); res.used.forEach(id => GA.addFr(id, R.fr)); }
@@ -691,7 +690,7 @@ const GUY_TOUR = () => [
   '고용 관리 탭에서 트레이너를\n훈련장 코치로 보낼 수도 있어요.\n코치는 훈련 경험치를 올려 줘요.',
   '[훈련장]에 포켓몬을 보내 두면\n앱을 꺼도 경험치가 쌓여요.\n하루 8시간까지 훈련해요.',
   '[상점]에서는 기술머신,\n꾸미기, 관장 의상을\n살 수 있어요. 평판이 오르면\n체육관이 저절로 넓어져요.',
-  '이름판을 누르면 체육관 정보,\n자격 배지, 주간 랭킹을\n볼 수 있어요.',
+  '이름판을 누르면 체육관 정보와\n자격 배지를 볼 수 있어요.',
   '한 타입으로 도전자를 100명\n막으면 자격 배지를 받아요.\n그럼 힘내세요, 관장님!',
 ];
 function guyAsk() {
@@ -825,18 +824,17 @@ function infoPop() {
   el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 정보</b></div>
     <div class="gy-body">
       <div class="if-hero"><img alt="" data-ms="${g.d}"><div><span class="if-ty">${tyIcon(g.ty)}${TYPE_KO[g.ty]} 타입</span><h3>${esc(g.nm)} <button class="gy-chg gy-pen" type="button" data-a="nm" aria-label="이름 바꾸기"><svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M8 0h2v1H8zM7 1h1v1H7zM10 1h1v1h-1zM6 2h1v1H6zM11 2h1v1h-1zM5 3h1v1H5zM10 3h1v1h-1zM4 4h1v1H4zM9 4h1v1H9zM3 5h1v1H3zM8 5h1v1H8zM2 6h1v1H2zM7 6h1v1H7zM1 7h1v2H1zM6 7h1v1H6zM5 8h1v1H5zM0 9h1v3H0zM4 9h1v1H4zM1 11h3v1H1zM2 10h1v1H2z"/><path fill="#f0c040" d="M7 2h1v1H7zM6 3h2v1H6zM5 4h2v1H5zM4 5h2v1H4zM3 6h2v1H3zM2 7h2v1H2zM2 8h3v1H2zM1 9h3v1H1zM3 10h1v1H3z"/><path fill="#e86070" d="M8 1h2v1H8zM8 2h3v1H8zM8 3h2v1H8zM8 4h1v1H8z"/></svg></button></h3></div></div>
-      <button class="if-grade" type="button" data-a="perk" data-g="${G.i}">${gEmb(G.i)}<div class="ig-tx"><small>지금 등급 <em>혜택 보기 ›</em></small><b>${G.n}</b><i class="gy-bar"><i style="width:${pct}%"></i></i><span>평판 <b>${g.rep || 0}</b>${nx ? ` / ${nx[0]} · 다음 <u>${nx[1]}</u>` : ' · 가장 높은 등급'}</span></div></button>
+      <button class="if-grade" type="button" data-a="perk" data-g="${G.i}">${gEmb(G.i)}<div class="ig-tx"><div class="ig-top"><small>지금 등급</small><em>${nx ? `다음 ${nx[1]}` : '가장 높은 등급'} ›</em></div><b class="ig-gr" data-g="${G.i}">${G.n}</b><i class="gy-bar"><i style="width:${pct}%"></i></i><span class="ig-rep">평판 <b>${g.rep || 0}</b>${nx ? ` / ${nx[0]}` : ''}</span></div></button>
       <div class="if-two">
         <div class="if-staff"><small>고용할 수 있는 트레이너</small><b>${staffMax()}<em>명</em></b></div>
         <div class="if-big"><small>체육관 크기</small><b>${bigOf(g) + 1}<em>/ ${GRADES.length}단계</em></b>${canBig(g) ? '<button class="gy-key main" type="button" data-a="big">넓히기</button>' : ''}</div>
       </div>
-      <div class="if-bdg"><img alt="" src="${IMG}badge/${g.ty}.png" class="${g.bdg?.[g.ty] ? 'on' : ''}"><div><small class="if-bt">${TYPE_KO[g.ty]} 자격 배지</small><b>${g.bdg?.[g.ty] ? '받았어요!' : `도전자 ${bk} / 100`}</b><i class="gy-bar"><i style="width:${bk}%"></i></i></div></div>
-      <div class="gy-btns if-btns"><button type="button" data-a="bdg">자격 배지</button><button type="button" data-a="rk">주간 랭킹</button></div>
+      <button class="if-bdg" type="button" data-a="bdg"><img alt="" src="${IMG}badge/${g.ty}.png" class="${g.bdg?.[g.ty] ? 'on' : ''}"><div><small class="if-bt">${TYPE_KO[g.ty]} 자격 배지<em>전체 보기 ›</em></small><b>${g.bdg?.[g.ty] ? '받았어요!' : `도전자 ${bk} / 100`}</b><i class="gy-bar"><i style="width:${bk}%"></i></i></div></button>
       <button class="if-re" type="button" data-a="re">폐업하고 새로 세우기</button>
     </div>`;
   fillMs(el);
   el.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap'); const a = b.dataset.a;
-    if (a === 'x') return el.remove(); if (a === 'perk') return perkPop(); if (a === 'big') return bigUp(el); if (a === 'bdg') return badgePop(); if (a === 'rk') return reportPop(true);
+    if (a === 'x') return el.remove(); if (a === 'perk') return perkPop(); if (a === 'big') return bigUp(el); if (a === 'bdg') return badgePop();
     if (a === 'nm') { el.remove(); return setup('nm'); }
     if (a === 're') return pop(`<h4>체육관 폐업</h4><p class="gy-msg" style="text-align:center">정말 폐업하시겠습니까?</p><div class="gy-btns"><button data-a="x">그만두기</button><button class="main" data-a="ok">폐업하기</button></div>`,
       (k, close) => { close(); if (k === 'ok') { el.remove(); closeFx().then(() => { if (open) setup(['d', 'ty', 'nm'], true); }); } });
@@ -902,7 +900,7 @@ function storePop() {
 // 체육관 시뮬레이터 (운영자, 경완 2026-10-28): 기다려야 볼 수 있는 것을 바로 불러 본다. 나오면 원래 체육관으로 되돌아간다 (beta.html gymSim)
 function simPop() {
   const g = st(); if (!g?.d) return say('체육관을 먼저 세워 주세요.');
-  const B = [['cand1', '지원자 1명 부르기'], ['cand3', '지원자 3명 부르기'], ['chal', '도전자 부르기'], ['named', '이름 있는 도전자'], ['rep+', '평판 +100'], ['rep-', '평판 -100'], ['gold', '골드 +10만'], ['rpt', '주간 보고서 보기'], ['bdg', '자격 배지 받기 연출'], ['new', '처음 세우기부터']];
+  const B = [['cand1', '지원자 1명 부르기'], ['cand3', '지원자 3명 부르기'], ['chal', '도전자 부르기'], ['named', '이름 있는 도전자'], ['rep+', '평판 +100'], ['rep-', '평판 -100'], ['gold', '골드 +10만'], ['bdg', '자격 배지 받기 연출'], ['new', '처음 세우기부터']];
   pop(`<h4>체육관 시뮬레이터</h4><p class="gy-msg">퇴근하면 들어오기 전 체육관으로 되돌아가요.</p><div class="gy-sim">${B.map(([a, n]) => `<button type="button" data-a="${a}">${n}</button>`).join('')}</div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => {
     close(); if (a === 'x') return; const now = Date.now();
     if (a === 'cand1' || a === 'cand3') { for (let i = a === 'cand1' ? 1 : 3; i--;) g.cands.push(mkCand(now)); g.candSeen = 0; save(); menuDot(); return say(`지원자가 왔어요! (지원서 ${g.cands.length}장)`, '트레이너 메뉴 › 지원서'); }
@@ -1062,7 +1060,7 @@ const preload = src => new Promise(ok => { const i = new Image(); i.onload = i.o
 async function prepare() {
   if (!root) build();
   const g = st(); const L = [preload(`${IMG}ow/${myOw()}.png`), preload(owSrc(GUY_OW))];
-  if (g?.d) L.push(preload(`${IMG}map/${dzOf(g.d).id}.png`)); else DESIGNS.forEach(D => L.push(preload(`${IMG}map/${D.id}.png`)));
+  if (g?.d) L.push(preload(`${IMG}map/${dzOf(g.d).id}.png${dzOf(g.d).iv ? `?v=${dzOf(g.d).iv}` : ""}`)); else DESIGNS.forEach(D => L.push(preload(`${IMG}map/${D.id}.png`)));
   L.push(loadJs('gymb/bgm.js', 'GymBGM').then(() => { try { window.GymBGM?.prep('gym'); window.GymBGM?.sePrep?.(['DP_DOOR', 'DP_REGI']); } catch (e) {} }));   // 출근 로딩 동안 체육관 곡을 미리 만든다
   L.push(loadNamed(), loadJs('gymb/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => loadJs('gymb/manage.js', 'GymManage')).catch(() => {}));   // 도전자 방문·훈련장 계산에 배틀 자료가 필요
   if (g?.fit) L.push(fitSrc('ow'), fitSrc('trb'), fitSrc('tr'));   // 옷 칠한 그림을 미리
@@ -1087,7 +1085,6 @@ let tickT = 0;
 // 들어온 뒤: 지난주 보고서 → 새 배지 → 면접 지원자 알림 (하나씩)
 async function later() {
   await wait(700); if (!open) return; const g = st();
-  if (g.rpt && !g.rpt.seen) await reportPop();
   if (g.newBdg) await badgeGet(g.newBdg);
 }
 let leaving = false;
