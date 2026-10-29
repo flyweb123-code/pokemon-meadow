@@ -1399,3 +1399,8 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 /* 개체값 육각형: 위 HP 글자 안 잘리게 (viewBox 위로 넓힘), 카드 점은 버튼과 카드 끝 사이 가운데 (경완 2026-10-29) */
 .gy-pop .win:has(.mp-head) .iv-hex svg{width:132px;height:120px}.gy-pop .win:has(.mp-head) .iv-hex{height:130px}
 .gy-pop .win:has(.mp-head) .mp-pg{margin:12px 0 -4px!important;height:6px;align-items:center}
+/* 포켓몬 박스: 이름·레벨 사이 타입 아이콘, 타입 필터 (경완 2026-10-29) */
+.bw-grid .pk .bw-tys{display:flex;justify-content:center;gap:2px;margin:1px 0}.bw-grid .pk .bw-tys .tyi{width:14px;height:14px}
+.gy-boxw .bw-tyf{display:flex;gap:4px;overflow-x:auto;margin:0 0 8px;padding-bottom:2px;scrollbar-width:none}.gy-boxw .bw-tyf:empty{display:none}
+.gy-boxw .bw-tyf button{flex:none;height:30px;min-width:30px;padding:0 6px;display:flex;align-items:center;justify-content:center;border:2px solid var(--inner);background:#fff;color:var(--win-ink);font:inherit;font-size:12px;opacity:.6}
+.gy-boxw .bw-tyf button .tyi{width:18px;height:18px}.gy-boxw .bw-tyf button[aria-pressed=true]{opacity:1;border-color:var(--frame);background:var(--win);box-shadow:inset 0 0 0 1px var(--frame)}
