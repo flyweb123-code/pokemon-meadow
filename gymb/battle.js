@@ -869,7 +869,7 @@ function drawTab() {
     <div class="lu-tabs" role="tablist">${L.map((l, i) => `<button role="tab" aria-selected="${i === g.luI}" data-lu="${i}">라인업 ${i + 1}<small>${l.length}/6</small></button>`).join('')}</div>
     <div class="lu-grid">${[0, 1, 2, 3, 4, 5].map(i => { const P = boxOf(cur[i]); if (!P) return `<button class="lu-slot empty" data-add="${i}" ${can.length ? '' : 'disabled'}><span>+</span></button>`; const m = gm(P);
       const T = SPECIES[P.sp]?.t || [];   // 칸 디자인 (경완 2026-10-29 '퀄리티 좀 높여줘'): 체육관 타입 색 띠('체육관 타입 색으로 통일'), 번호 딱지, 타입 아이콘, 레벨 딱지
-      return `<button class="lu-slot${luOrd ? ' lu-ord' : ''}" data-p="${P.id}" style="--tc:${GA.TYPE_C?.[ty] || '#8890a8'}"><i class="lu-n">${i + 1}</i>${luOrd ? '' : `<span class="lu-x" data-rm="${P.id}" role="button" aria-label="라인업에서 빼기">✕</span>`}${thumb(P)}<b>${esc(nmOf(P))}</b><span class="lu-ft"><span class="lu-tys">${T.map(t => GA.tyIcon(t)).join('')}</span><em>Lv.${m.lv}</em></span></button>`; }).join('')}</div>
+      return `<button class="lu-slot${luOrd ? ' lu-ord' : ''}" data-p="${P.id}" style="--tc:${GA.TYPE_C?.[ty] || '#8890a8'}"><i class="lu-n">${i + 1}</i>${luOrd ? '' : `<span class="lu-x" data-rm="${P.id}" role="button" aria-label="라인업에서 빼기">✕</span>`}${thumb(P)}<b>${esc(nmOf(P))}</b><span class="lu-ft"><span class="lu-tys">${T.map(tyI).join('')}</span><em>Lv.${m.lv}</em></span></button>`; }).join('')}</div>
     ${can.length ? '' : `<p class="lu-none">${TYPE_KO[ty]} 타입 포켓몬이 아직 없어요. 알을 부화시켜 데려와 주세요.</p>`}
     <div class="lu-act"><div class="lu-row2"><button class="gy-key" data-box><i class="lu-ic"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 2h12v1H2zM1 3h1v11H1zM14 3h1v11h-1zM2 14h12v1H2zM2 7h12v1H2zM6 8h4v1H6zM6 9h1v1H6zM9 9h1v1H9zM6 10h4v1H6z"/><path fill="#e85a4a" d="M2 3h12v4H2z"/><path fill="#ff8a78" d="M2 3h12v1H2z"/><path fill="#f4f4f8" d="M2 8h4v6H2zM10 8h4v6h-4zM6 11h4v3H6z"/><path fill="#fff" d="M7 9h2v1H7z"/></svg></i>포켓몬 박스</button><button class="gy-key${luOrd ? ' on' : ''}" data-ord ${cur.length > 1 ? '' : 'disabled'}><i class="lu-ic"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M4 1h1v1H4zM3 2h3v1H3zM2 3h5v1H2zM4 4h1v9H4zM11 3h1v9h-1zM9 11h5v1H9zM10 12h3v1h-3zM11 13h1v1h-1z"/></svg></i>${luOrd ? '순서 바꾸기 끝' : '순서 바꾸기'}</button></div>${luOrd ? '<p>포켓몬을 끌어서 순서를 바꿔요</p>' : ''}<button class="gy-key main lu-go" data-go ${cur.length ? '' : 'disabled'}><i class="lu-ic"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M5 1h6v1H5zM3 2h2v1H3zM11 2h2v1h-2zM2 3h1v2H2zM13 3h1v2h-1zM1 5h1v6H1zM14 5h1v6h-1zM2 11h1v2H2zM13 11h1v2h-1zM3 13h2v1H3zM11 13h2v1h-2zM5 14h6v1H5zM2 7h4v1H2zM10 7h4v1h-4zM6 6h4v1H6zM5 7h1v2H5zM10 7h1v2h-1zM6 9h4v1H6z"/><path fill="#e83a3a" d="M5 2h6v1H5zM3 3h10v2H3zM2 5h12v2H2zM6 6h0z"/><path fill="#fff" d="M2 8h3v1H2zM11 8h3v1h-3zM2 9h12v2H2zM3 11h10v2H3zM5 13h6v1H5zM6 7h4v2H6z"/><path fill="#ff9a9a" d="M4 3h2v1H4zM3 4h1v1H3z"/></svg></i>연습 배틀</button></div>`;   // 연습 배틀은 아래 가운데 크게, 박스 옆에 순서 바꾸기 (경완 2026-10-29)
   fillTh(sh);
@@ -932,7 +932,8 @@ function ivHex(P, m) {
 // add=true 면 라인업 빈 칸에서 연 것: 누르면 바로 라인업에 넣는다. 아니면 누르면 정보 창
 // 팝업이 아니라 새 화면으로 (경완 2026-10-27): 체육관 화면 위를 통째로 덮고, 왼쪽 위 ‹ 로 돌아간다
 const BX_SORT = [['lv', '레벨'], ['rank', '랭크'], ['new', '날짜']];   // 경완 2026-10-28 '정렬은 레벨, 랭크, 날짜만'
-let bxSort = 'lv', bxDir = 1, bxQ = '', bxTy = 0, bxRefresh = null;   // bxTy: 타입 필터 (0 = 전체, 경완 2026-10-29)
+let bxSort = 'lv', bxDir = 1, bxQ = '', bxTy = 0, bxTyAll = [], bxRefresh = null;
+const tyI = t => GA.tyIcon(t).replace(/ data-tip="[^"]*"/, '');   // 박스·라인업 타입 아이콘은 눌러도 말풍선 없이 (경완 2026-10-29)   // bxTy: 타입 필터 (0 = 전체, 경완 2026-10-29)
 const RK_ORD = { S: 7, A: 6, B: 5, C: 4, D: 3, E: 2, F: 1 };
 function boxWin(add, tmId, done, O) {   // O: 다른 곳에서 쓰는 고르기 (훈련장 등) {title, tip, list, ok, first, tag, pick}   // tmId: 창고에서 기술머신 가르칠 포켓몬 고르기 (경완 2026-10-29)
   document.querySelector('#gym .gy-boxw')?.remove();
@@ -951,12 +952,13 @@ function boxWin(add, tmId, done, O) {   // O: 다른 곳에서 쓰는 고르기 
     // 라인업 고르기는 가진 포켓몬 전부: 다른 타입은 흐리게(못 고름), 고를 수 있는 포켓몬이 앞에 (경완 2026-10-28)
     const all = O ? O.list() : S.box.filter(tyOk), tys = P => SPECIES[P.sp]?.t || [];
     // 타입 필터: 목록에 있는 타입만 아이콘으로, 고르면 그 타입이 들어간 포켓몬만 (경완 2026-10-29)
-    const TY = [...new Set(all.flatMap(tys))].sort((a, b) => a - b); if (bxTy && !TY.includes(bxTy)) bxTy = 0;
-    w.querySelector('.bw-tyf').innerHTML = TY.length > 1 ? `<button type="button" data-tyf="0" aria-pressed="${!bxTy}">전체</button>${TY.map(t => `<button type="button" data-tyf="${t}" aria-pressed="${bxTy === t}" aria-label="${TYPE_KO[t]}">${GA.tyIcon(t)}</button>`).join('')}` : '';
+    const gt = S.gym.ty, TY = [...new Set(all.flatMap(tys))].filter(t => t !== gt).sort((a, b) => a - b); if (bxTy && !TY.includes(bxTy)) bxTy = 0;   // 체육관 타입은 기본, 나머지 한 타입을 팝업에서 고르기 (경완 2026-10-29)
+    bxTyAll = TY;
+    w.querySelector('.bw-tyf').innerHTML = TY.length ? `<button type="button" class="bw-tyb${bxTy ? ' on' : ''}" data-typop aria-label="타입 고르기">${tyI(gt)}${bxTy ? `<span>+</span>${tyI(bxTy)}<b>${TYPE_KO[gt]}·${TYPE_KO[bxTy]}</b>` : `<b>타입 고르기</b>`}<i>▾</i></button>` : '';
     const L = all.filter(P => (!q || nmOf(P).toLowerCase().includes(q) || String(P.sp) === q.replace(/^0+/, '')) && (!bxTy || tys(P).includes(bxTy))).map(P => { const ok = O ? O.ok(P) : tyOk(P) && (!tmId || tmCan(P, tmId)); return { P, ok, f: O?.first ? +!!O.first(P) : 0, m: O || tyOk(P) ? gm(P) : null }; }).sort((a, b) => (b.ok - a.ok) || (b.f - a.f) || (key(b) - key(a)) * bxDir);
     w.querySelector('.tcount').innerHTML = q || bxTy ? `찾은 포켓몬 <b>${L.length}</b>마리` : `<b>${all.length}</b>마리`;   // 마릿수만 (경완 2026-10-29)
     grid.innerHTML = L.length ? L.map(({ P, m, ok }) => { const rk = GA.rankOf(P), on = lu.has(P.id);
-      return `<button class="pk${P.shiny ? ' shiny' : ''}${GA.pkCls?.(P) || ''}${ok ? '' : ' bw-no'}" data-id="${P.id}" ${ok ? '' : 'disabled'} style="--shue:${GA.shinyHue(P.sp)}deg"><span class="rk ${rk}">${rk}</span>${(T => T.length ? `<span class="tgs">${T.map(t => `<span class="tg${t === '훈련중' || t === '훈련 중' ? ' tg-tr' : ''}">${t}</span>`).join('')}</span>` : '')(O ? [O.tag?.(P)].filter(Boolean) : [on && '라인업', inTr(P.id) && '훈련중'].filter(Boolean))}<img alt="" data-th="${P.id}"><span class="nm">${esc(nmOf(P))}${P.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="bw-tys">${tys(P).map(t => GA.tyIcon(t)).join('')}</span>${tmId && !ok ? `<span class="bw-lv">${m?.mv.includes(tmId) ? '이미 앎' : '못 배움'}</span>` : m ? `<span class="bw-lv">Lv.${m.lv}</span>` : ''}</button>`; }).join('')
+      return `<button class="pk${P.shiny ? ' shiny' : ''}${GA.pkCls?.(P) || ''}${ok ? '' : ' bw-no'}" data-id="${P.id}" ${ok ? '' : 'disabled'} style="--shue:${GA.shinyHue(P.sp)}deg"><span class="rk ${rk}">${rk}</span>${(T => T.length ? `<span class="tgs">${T.map(t => `<span class="tg${t === '훈련중' || t === '훈련 중' ? ' tg-tr' : ''}">${t}</span>`).join('')}</span>` : '')(O ? [O.tag?.(P)].filter(Boolean) : [on && '라인업', inTr(P.id) && '훈련중'].filter(Boolean))}<img alt="" data-th="${P.id}"><span class="nm">${esc(nmOf(P))}${P.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="bw-tys">${tys(P).map(tyI).join('')}</span>${tmId && !ok ? `<span class="bw-lv">${m?.mv.includes(tmId) ? '이미 앎' : '못 배움'}</span>` : m ? `<span class="bw-lv">Lv.${m.lv}</span>` : ''}</button>`; }).join('')
       : `<p class="empty-msg">${q || bxTy ? '찾는 포켓몬이 없어요.' : `${TYPE_KO[S.gym.ty]} 타입 포켓몬이 아직 없어요.`}</p>`;
     fillTh(grid);
   };
@@ -964,7 +966,8 @@ function boxWin(add, tmId, done, O) {   // O: 다른 곳에서 쓰는 고르기 
   w.onclick = e => {
     if (e.target.closest('[data-x]')) { sfx('tap'); w.remove(); if (tmId || O) done?.(); return; }
     if (e.target.closest('.qx')) { inp.value = ''; bxQ = ''; draw(); return; }
-    const tf = e.target.closest('[data-tyf]'); if (tf) { sfx('tap'); const t = +tf.dataset.tyf; bxTy = bxTy === t ? 0 : t; draw(); grid.scrollTop = 0; return; }
+    if (e.target.closest('[data-typop]')) { sfx('tap'); const gt = S.gym.ty, cell = (t, on, lab) => `<button class="${on ? 'on' : ''}" data-a="${t}">${t ? tyI(t) : ''}<span>${lab}</span></button>`;
+      gymPop(`<h4>타입 고르기</h4><p class="bw-tyh">${tyI(gt)} ${TYPE_KO[gt]} 타입은 기본이에요. 같이 가진 타입을 하나 고르세요.</p><div class="bw-tyg">${cell(0, !bxTy, '전체')}${bxTyAll.map(t => cell(t, bxTy === t, TYPE_KO[t])).join('')}</div>`, (a, close) => { close(); bxTy = +a; draw(); grid.scrollTop = 0; }); return; }
     const s = e.target.closest('[data-sort]'); if (s) { sfx('tap'); const k = s.dataset.sort; if (k === bxSort) bxDir = -bxDir; else { bxSort = k; bxDir = 1; } draw(); grid.scrollTop = 0; return; }
     const c = e.target.closest('.pk'); if (!c) return; sfx('tap');
     const id = +c.dataset.id || c.dataset.id;

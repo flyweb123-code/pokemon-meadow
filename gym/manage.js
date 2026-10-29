@@ -91,26 +91,28 @@ const yWob = (q, cls = 'wob') => { if (!q) return; const t = q.mp || q.el; t.cla
 const RD = { ol: '#3a1010', d2: '#5e1c18', d1: '#7e2a22', m: '#a03a2c', l: '#c0503a', h: '#dc7454', hh: '#f0a07c' };
 const WH = { ol: '#3c3c48', d2: '#9090a0', d1: '#b0b0bc', m: '#c8c8d4', l: '#dcdce6', h: '#ececf4', hh: '#ffffff' };
 let BUOY = null;
-// 물 위에 뜬 튜브 (경완 2026-10-29 '선 위 말고 물 위에, 입체'): 윗면 + 두께(옆면) + 구멍 안쪽 벽, 아래쪽은 물에 잠겨 파랗게, 둘레 물결
+// 물 위에 뜬 과녁 (경완 2026-10-29 '튜브 말고 타겟처럼'): 작은 나무 뗏목 위에 세운 동그란 과녁판 (흰·빨강 동심원 + 노란 한가운데), 뗏목 아래는 물에 잠기고 둘레 물결
 function buoyArt() {
-  if (BUOY) return BUOY; const w = 32, h = 22, c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
-  const cx = 15.5, cy = 8.5, RX = 14, RY = 7, rx = 6.4, ry = 3.3, T = 3, wl = cy + 5.5;   // 바깥·안 타원, 두께, 물 높이
-  const inE = (x, y, a, b) => ((x - cx) / a) ** 2 + ((y - cy) / b) ** 2 <= 1, seg = (x, y) => (Math.atan2((y - cy) / RY, (x - cx) / RX) + Math.PI + Math.PI / 4) / (Math.PI / 2) % 2 < 1 ? RD : WH;
-  const sea = (col, t) => '#' + [1, 3, 5].map(i => Math.round(parseInt(col.substr(i, 2), 16) * (1 - t) + [0x3a, 0x86, 0xc8][(i - 1) / 2] * t).toString(16).padStart(2, '0')).join('');
-  const M = [];
-  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const X = x + .5, Y2 = y + .5; let col = null;
-    if (inE(X, Y2, RX, RY) && !inE(X, Y2, rx, ry)) { const P = seg(X, Y2), lt = -(Y2 - cy) / RY * .7 - (X - cx) / RX * .35 + (((X - cx) / RX) ** 2 + ((Y2 - cy) / RY) ** 2 > .62 ? -.2 : .15); col = lt > .55 ? P.hh : lt > .2 ? P.h : lt > -.2 ? P.l : P.m; }
-    else if (inE(X, Y2, rx, ry)) { if (!inE(X, Y2 - T, rx, ry)) col = seg(X, Y2 + 3).d1; }   // 구멍: 안쪽 벽(먼 쪽) / 물
-    else { for (let k = 1; k <= T; k++) if (inE(X, Y2 - k, RX, RY)) { const P = seg(X, Y2 - k); col = k > T - 1 ? P.d2 : P.d1; break; } }   // 옆면
-    if (col && Y2 > wl) col = sea(col, Math.min(.75, .35 + (Y2 - wl) * .12));   // 물에 잠긴 아래
-    if (col) M.push([x, y, col]); }
-  const has = new Set(M.map(([x, y]) => x + ',' + y));
-  // 물결 (둘레, 물 높이 아래)
-  for (let a = 0; a < 6.283; a += .05) { const x = Math.round(cx + Math.cos(a) * (RX + 2)), y = Math.round(wl + 1 + Math.sin(a) * (RY * .55)); if (Math.sin(a) > -.2 && !has.has(x + ',' + y)) { g.fillStyle = Math.sin(a) > .5 ? '#a8dcfa' : '#e4f6ff'; g.fillRect(x, y, 1, 1); } }
-  // 외곽선 (물 위만 진하게)
-  for (const [x, y] of M) for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) if (!has.has((x + dx) + ',' + (y + dy))) { g.fillStyle = y + dy > wl + 1 ? 'rgba(20,50,90,.55)' : '#3a1418'; g.fillRect(x + dx, y + dy, 1, 1); }
-  for (const [x, y, col] of M) { g.fillStyle = col; g.fillRect(x, y, 1, 1); }
-  g.fillStyle = '#ffffff'; g.fillRect(9, 4, 3, 1); g.fillRect(8, 5, 1, 1);   // 반짝
+  if (BUOY) return BUOY; const w = 32, h = 34, c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
+  const px = (x, y, col) => { g.fillStyle = col; g.fillRect(x, y, 1, 1); };
+  // 뗏목 (비스듬히 본 타원, 아래쪽 물에 잠김)
+  const cx = 15.5, ry0 = 26, RX = 13, RY = 4.5, wl = 28;
+  for (let a = 0; a < 6.283; a += .05) { const x = Math.round(cx + Math.cos(a) * (RX + 2)), y = Math.round(wl + 1.5 + Math.sin(a) * 3); if (Math.sin(a) > -.3) px(x, y, Math.sin(a) > .5 ? '#a8dcfa' : '#e4f6ff'); }   // 물결
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const X = x + .5, Y = y + .5, e = ((X - cx) / RX) ** 2 + ((Y - ry0) / RY) ** 2, e2 = ((X - cx) / RX) ** 2 + ((Y - ry0 - 2) / RY) ** 2;
+    let col = null;
+    if (e <= 1) col = e > .78 ? '#3a2410' : (Math.floor((X - cx + 40) / 4.5) % 2 ? '#c08a52' : '#dcae70');   // 윗면 판자
+    else if (e2 <= 1 && Y > ry0) col = e2 > .8 ? '#3a2410' : '#8e5c32';   // 옆면
+    if (col && Y > wl + .5) col = col === '#3a2410' ? 'rgba(20,50,90,.55)' : '#4a7aa8';
+    if (col) px(x, y, col); }
+  // 다리 두 개
+  for (const lx of [10, 20]) for (let y = 17; y < 26; y++) { px(lx, y, '#3a2410'); px(lx + 1, y, '#8e5c32'); px(lx + 2, y, '#3a2410'); }
+  // 과녁판 (정면, 동심원)
+  const tx = 15.5, ty = 10.5, R = 10;
+  for (let y = 0; y < 22; y++) for (let x = 0; x < w; x++) { const d = Math.hypot(x + .5 - tx, y + .5 - ty); if (d > R) continue;
+    const lt = (x + .5 - tx) + (y + .5 - ty) > 3;   // 오른쪽 아래 그늘
+    let col = d > R - 1 ? '#20202c' : d > 8 ? (lt ? '#dcd6c6' : '#ffffff') : d > 6 ? (lt ? '#b8322a' : '#e04a3c') : d > 4 ? (lt ? '#dcd6c6' : '#ffffff') : d > 2.2 ? (lt ? '#b8322a' : '#e04a3c') : (lt ? '#e8b820' : '#ffd640');
+    px(x, y, col); }
+  px(10, 5, '#ffffff'); px(11, 4, '#ffffff'); px(12, 4, '#ffffff');   // 반짝
   return (BUOY = c.toDataURL());
 }
 // 후프링 (경완 2026-10-29 '몸통이 구멍을 통과하면서'): 비스듬히 본 세로 고리. 뒤 반쪽은 포켓몬 뒤, 앞 반쪽은 포켓몬 앞에 그려 통과하는 것처럼
