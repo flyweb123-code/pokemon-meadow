@@ -1242,3 +1242,10 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .ty-pr.pr-punch-bag::after{left:0;right:50%}
 .ty-pr.pr-punch-bag::before{content:'';position:absolute;left:44%;right:14%;bottom:-2px;height:6px;border-radius:50%;background:rgba(60,40,10,.15);z-index:-1}
 .ty-pr.pr-start-flag::after{left:0;right:52%}
+/* 자격 배지 등급 (동·은·금·프리즘) */
+.bd-tiers{display:flex;justify-content:center;gap:4px;margin:6px 0 2px;font-size:11px}
+.bd-tiers span{padding:2px 5px;border-radius:9px;border:2px solid #20202a;font-weight:700;font-size:10px;white-space:nowrap}
+.bd-tiers .t1{background:#e8a878}.bd-tiers .t2{background:#dfe4ec}.bd-tiers .t3{background:#ffd860}.bd-tiers .t4{background:linear-gradient(90deg,#ffb0c8,#ffe890,#a8f0c0,#a8d8ff,#d0b0ff)}
+.qw-bs{color:#c0302a !important;font-weight:700}
+.if-sim{display:inline-block;margin-left:4px;padding:0 5px;border-radius:6px;background:#c0302a;color:#fff;font-size:10px;vertical-align:1px}
+.bd-get.t4 img{filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 12px #c8b0ff)}
