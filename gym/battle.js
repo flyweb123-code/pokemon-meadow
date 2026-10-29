@@ -708,9 +708,11 @@ async function handle(a) {
     case 'move': {
       const s = sideOf(a[2]), X = A(s); const id = toID(a[3]); B.lastMove = { s, id };
       await msg(`${who(a[2])}의 ${mvKo(id)}!`, 0);
+      if (a.includes('[notarget]')) break;   // 상대가 먼저 쓰러져 맞을 대상이 없으면 연출 없이 '하지만 상대가 없었다' (본가처럼, 경완 2026-10-29)
       await moveFx(s, id, a.includes('[miss]') || a.some(x => x === '[still]'));
       break;
     }
+    case '-notarget': await msg('하지만 공격할 상대가 없었다!', 500); break;
     case '-damage': {
       const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); const from = (a[4] || '').replace('[from] ', '');
       if (ST_P[from]) await stFx(s, from, true);   // 화상·독 데미지는 본가처럼 연출 뒤 HP
