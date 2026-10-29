@@ -1707,3 +1707,12 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 /* 대사 넘김: 깜빡이는 ▼ (경완 2026-10-29) */
 .gy-dnext{position:absolute;right:14px;bottom:10px;font-style:normal;font-size:14px;line-height:1;color:#e04838;animation:gyNext .8s steps(1,end) infinite;pointer-events:none}
 @keyframes gyNext{50%{opacity:0}}
+
+/* 도구 지닌 포켓몬: 랭크 테두리 없이 네모 칸 안에만 (경완 2026-10-29) */
+.it-who .it-wth{flex:none;width:28px;height:28px;overflow:hidden;display:grid;place-items:center;border-radius:4px;background:rgba(0,0,0,.06)}
+.it-who .it-wth img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+/* 기술머신 상세카드: 위력·명중·PP 오른쪽 정렬 (경완 2026-10-29) */
+.mp-moves.tm-card .mp-mv{display:flex;align-items:center;gap:6px}
+.mp-moves.tm-card .mp-mv em.mv-st{margin-left:auto;display:flex!important;gap:10px;justify-content:flex-end;font-style:normal;font-size:11px;color:var(--dim);white-space:nowrap;text-align:right}
+.mp-moves.tm-card .mp-mv{flex-direction:row!important;flex-wrap:nowrap!important;justify-content:flex-start!important;text-align:left!important;height:auto;min-height:44px;padding:8px 10px!important}
+.mp-moves.tm-card .mp-mv b{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
