@@ -1252,7 +1252,16 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 /* 친밀도 기믹: 내 포켓몬 위로 떠오르는 하트 */
 .bt-hrt{position:absolute;left:50%;top:10%;z-index:4;font-style:normal;font-size:22px;color:#ff5a8a;text-shadow:0 0 0 #fff,1px 1px 0 #6a1030,-1px -1px 0 #fff;pointer-events:none;animation:btHrt 1.4s ease-out forwards}
 @keyframes btHrt{0%{opacity:0;transform:translate(-50%,10px) scale(.4)}25%{opacity:1;transform:translate(-50%,-6px) scale(1.2)}60%{transform:translate(-50%,-16px) scale(1)}100%{opacity:0;transform:translate(-50%,-30px) scale(1)}}
-/* 정보 카드 친밀도 줄 */
-.mp-fr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 8px;padding:8px 10px;border-radius:8px;background:#fbfaf6;border:2px solid rgba(0,0,0,.12);text-align:left}
-.mp-fr b{color:#e8507a;font-size:15px;letter-spacing:1px}.mp-fr b.max{text-shadow:0 0 4px #ffb0c8}.mp-fr em{font-style:normal;font-size:11px;color:var(--dim);margin-left:auto}
-.mp-fr p{flex-basis:100%;margin:0;font-size:11px;color:var(--dim)}
+/* 훈련 현황 = + 버튼 위 아이콘 (경완 2026-10-29) */
+.ty-st{top:auto!important;bottom:80px;width:56px;height:56px;padding:0!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:3px solid #20202c!important;border-radius:0!important;background:#f8f8f8!important;box-shadow:inset 0 0 0 2px #fff,inset 0 -4px 0 #c8c8d0,0 3px 0 rgba(0,0,0,.35)!important}
+.ty-st svg{width:24px;height:24px}.ty-st small{font-size:10px;color:#58586a;font-weight:400}
+.ty-pr.pr-hoop.fr::after{display:none}.ty-pr.pr-hoop::after{left:20%;right:20%}
+/* 상세 카드: 친밀도 하트 (레벨·랭크 밑), 버튼 색 */
+.mp-frh{margin:1px 0 2px!important;display:flex;align-items:center;gap:6px;font-size:12px}.mp-frh small{color:var(--dim);font-size:11px}.mp-frh b{color:#e8507a;font-size:13px;letter-spacing:1px}.mp-frh b.max{text-shadow:0 0 4px #ffb0c8}
+.mp-btns button[data-a=tm]{background:#3a78d0!important;color:#fff!important;border-color:#1e3e78!important}
+.mp-btns button.danger{background:#d04040!important;color:#fff!important;border-color:#7a1e1e!important}
+/* 박스: 안내 문구를 '○○ 타입 N마리' 줄 왼쪽에, 같은 글자 크기 + 타입 아이콘 */
+.gy-boxw .mgr-tools .bw-tip{flex:1 1 0;min-width:0;margin:0!important;display:flex;align-items:center;gap:5px;text-align:left;font-size:14px;color:var(--dim)}
+.gy-boxw .mgr-tools .bw-tip .tyi{width:16px;height:16px;flex:none}
+/* + 박스 화면은 모션 없이 바로 (경완 2026-10-29) */
+.gy-boxw>.win{animation:none!important}
