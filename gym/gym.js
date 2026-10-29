@@ -895,10 +895,13 @@ function pop(html, onClick) {
   const close = () => p.remove(); $g('.gy-main').appendChild(p); return p;
 }
 // 전신 카드 (경완 2026-10-27: 홈에서 나·트레이너를 누르면 전신 그림). src 그림, h 이름, sub 아랫줄, btn 단추 html
-function bodyCard(src, h, sub = '', btn = '', onClick) {
-  return pop(`<div class="gy-body"><div class="bd-pic"><img alt="" src="${src}" onload="this.style.width=this.naturalWidth*2+'px';this.style.height=this.naturalHeight*2+'px'"></div><h4>${h}</h4>${sub ? `<p>${sub}</p>` : ''}</div>${btn || '<div class="gy-btns one"><button data-a="x">닫기</button></div>'}`, (a, close, p) => { if (a === 'x') close(); else onClick?.(a, close, p); });
+function bodyCard(src, h, sub = '', btn = '', onClick, more = '') {
+  return pop(`<div class="gy-body"><div class="bd-pic"><img alt="" src="${src}" onload="this.style.width=this.naturalWidth*2+'px';this.style.height=this.naturalHeight*2+'px'"></div><h4>${h}</h4>${sub ? `<p>${sub}</p>` : ''}${more}</div>${btn || '<div class="gy-btns one"><button data-a="x">닫기</button></div>'}`, (a, close, p) => { if (a === 'x') close(); else onClick?.(a, close, p); });
 }
-async function meCard() { const g = st(), O = OUTFITS[g.fit]; bodyCard(await fitSrc('tr'), `관장 ${esc(trName() || '나')}`, `${g.w}승 ${g.l}패 · 막은 도전자 ${g.blk}명${O ? `<br>입은 옷: ${O.n}` : ''}`); }
+// 타입별 등급 배지는 체육관 정보에서 빼고 내 프로필 카드에 (경완 2026-10-29 '배지랑 타입 이름 정도만')
+async function meCard() { const g = st(), O = OUTFITS[g.fit];
+  const bd = `<div class="gy-bdgs me-bdgs">${TYPE_KO.map((nm, t) => { if (!t) return ''; const L = bdLv(g, t); return `<div class="${L ? 'on' : ''}${g.ty === t ? ' cur' : ''}">${bdHtml(t, L)}<b>${nm}</b></div>`; }).join('')}</div>`;
+  bodyCard(await fitSrc('tr'), `관장 ${esc(trName() || '나')}`, `${g.w}승 ${g.l}패 · 막은 도전자 ${g.blk}명${O ? `<br>입은 옷: ${O.n}` : ''}`, '', null, bd); }
 function sfCard(s) { bodyCard(trSrc(s.tr), sfName(s), `${TRAITS[s.trait]?.n || ''} · ${s.w || 0}승 ${s.l || 0}패${s.rest ? '<br>월급을 못 받아서 쉬고 있어요' : ''}`); }
 // 체육관 정보: 팝업이 아니라 자세한 새 화면 (경완 2026-10-27 '새로운 창으로 더 자세하게')
 function infoPop() {
@@ -915,7 +918,6 @@ function infoPop() {
         <div class="if-staff"><small>고용할 수 있는 트레이너</small><b>${staffMax()}<em>명</em></b></div>
         <div class="if-big"><small>체육관 크기</small><b>${bigOf(g) + 1}<em>/ ${STAGES}단계</em></b>${canBig(g) ? '<button class="gy-key main" type="button" data-a="big">넓히기</button>' : ''}</div>
       </div>
-      <button class="if-bdg" type="button" data-a="bdg">${bdHtml(g.ty, bL, bL ? 'on' : '')}<div><small class="if-bt">타입별 등급 배지<em>전체 보기 ›</em></small><b>${nb} / 18 타입</b><span class="if-bs">${TYPE_KO[g.ty]} 타입 최고 ${bL ? GRADES[bL - 1][1] : '아직 없음'}</span></div></button>
       <button class="if-re" type="button" data-a="re">폐업하고 새로 세우기</button>
     </div>`;
   fillMs(el);
@@ -926,13 +928,13 @@ function infoPop() {
       (k, close) => { close(); if (k === 'ok') { el.remove(); closeFx().then(() => { if (open) setup(['d', 'ty', 'nm'], true); }); } });
   };
 }
-// 등급별 혜택 (경완 2026-10-28)
+// 체육관 등급 (경완 2026-10-28, 이름은 2026-10-29 '등급별 혜택 > 체육관 등급')
 function perkPop() {
   const g = st(), gi = gradeOf(g.rep || 0).i;
   const row = ([v, n], i) => { const k = STAGE[i];
     const L = [`체육관 크기 ${k + 1}단계`, `트레이너 ${Math.min(5, k)}명 고용`, `훈련장 ${2 + Math.min(4, k)}칸`];   // 도전자 수·꾸미기·의상은 등급 차등 없음 (경완 2026-10-28)
-    return `<li class="${i === gi ? 'cur' : i < gi ? 'done' : ''}">${gEmb(i)}<div><b>${n}</b><small>평판 ${v}</small>${i === gi ? '<em>지금</em>' : ''}</div><ul>${L.map(t => `<li>${t}</li>`).join('')}</ul></li>`; };
-  pop(`<h4>등급별 혜택</h4><ol class="gy-perk">${GRADES.map(row).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
+    return `<li class="${i === gi ? 'cur' : i < gi ? 'done' : ''}">${i > gi ? `<span class="bdw sil"><img alt="" src="${bdImg(g.ty, i + 1)}"></span>` : gEmb(i)}<div><b>${n}</b><small>평판 ${v}</small>${i === gi ? '<em>지금</em>' : ''}</div><ul>${L.map(t => `<li>${t}</li>`).join('')}</ul></li>`; };
+  pop(`<h4>체육관 등급</h4><ol class="gy-perk">${GRADES.map(row).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }
 // 체육관 넓히기: 한 단계씩, 평판 등급까지 (공짜)
 // 넓히기 (경완 2026-10-28 '팝업이 아니고 홈 화면에서 넓어지는 연출, 효과음·bgm 같이 > 그 다음 축하 메시지')
