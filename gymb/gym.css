@@ -1596,3 +1596,7 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 @keyframes qAct{0%{scale:.4;filter:brightness(2) drop-shadow(0 0 0 #ffd84a)}20%{scale:1.35;filter:brightness(1.6) drop-shadow(0 0 14px #ffd84a)}35%{scale:.92}50%{scale:1.12}65%{scale:1}100%{scale:1;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.45))}}
 .gy-boxw .mgr-tools .bw-tyf{margin:0 0 4px!important;padding:0 0 4px;flex:0 0 auto}.gy-boxw .mgr-tools .bw-tyf:empty{display:block;flex:1 1 0}
 .bw-tyh{flex-direction:column!important;gap:2px!important;text-align:center}.bw-tyh>span{display:inline-flex;align-items:center;justify-content:center;gap:4px}
+/* 막대 보기: 오른쪽 요약 없이 막대만 꽉 (경완 2026-10-29) */
+.iv-hex.bar{grid-template-columns:1fr!important}.iv-hex.bar .iv-sum{display:none!important}
+.ivb{grid-template-columns:42px 1fr 52px 40px!important}.ivb em{white-space:nowrap}.ivb em i{font-style:normal;font-size:9px;margin-left:1px}.ivb.up em i{color:#d83a30}.ivb.dn em i{color:#3a6ad8}
+.gy-pop .win:has(.mp-head) .iv-hex.bar{grid-template-columns:1fr!important}.gy-pop .win:has(.mp-head) .iv-hex.bar .iv-bars{width:100%}

@@ -942,16 +942,17 @@ function statsOf(sp, lv, iv, nat) {
 }
 function ivHex(P, m) {
   const iv = P.iv || [0, 0, 0, 0, 0, 0], nt = D.nt[m.nat] || ['', '', ''], R = 52, cx = 90, cy = 72, pt = (k, r) => { const a = -Math.PI / 2 + k * Math.PI / 3; return [cx + Math.cos(a) * r, cy + Math.sin(a) * r]; };
-  const st = statsOf(P.sp ?? m.sp, m.lv || 1, iv, m.nat), mx = Math.max(...st) * 1.05;
+  const st = statsOf(P.sp ?? m.sp, m.lv || 1, iv, m.nat), st0 = statsOf(P.sp ?? m.sp, m.lv || 1, iv, 'hardy'), mx = Math.max(...st) * 1.05;
+  const nd = i => { const d = st[i] - st0[i]; return d ? `(${d > 0 ? '+' : ''}${d})` : ''; };   // 성격으로 오르내린 만큼 괄호로 (경완 2026-10-29)
   const ring = f => IV_ORD.map((_, k) => pt(k, R * f).map(v => v.toFixed(1)).join(',')).join(' ');
   const poly = IV_ORD.map(([i], k) => pt(k, R * Math.max(.06, st[i] / mx)).map(v => v.toFixed(1)).join(',')).join(' ');
   const cOf = key => key && key === nt[1] ? 'up' : key && key === nt[2] ? 'dn' : '', arw = c => c === 'up' ? '▲' : c === 'dn' ? '▼' : '';   // 성격으로 오른 능력 ▲, 내린 능력 ▼ (경완 2026-10-28)
-  const lab = IV_ORD.map(([i, n, key], k) => { const [x, y] = pt(k, R + 17), c = cOf(key); return `<text x="${x.toFixed(1)}" y="${(y - 3).toFixed(1)}" class="${c}">${n}${arw(c)}</text><text x="${x.toFixed(1)}" y="${(y + 9).toFixed(1)}" class="v">${st[i]}</text>`; }).join('');
-  const sum = iv.reduce((a, b) => a + b, 0), best = IV_ORD.reduce((a, o) => iv[o[0]] > iv[a[0]] ? o : a, IV_ORD[0]);
+  const lab = IV_ORD.map(([i, n, key], k) => { const [x, y] = pt(k, R + 17), c = cOf(key); return `<text x="${x.toFixed(1)}" y="${(y - 3).toFixed(1)}" class="${c}">${n}${arw(c)}</text><text x="${x.toFixed(1)}" y="${(y + 9).toFixed(1)}" class="v">${st[i]}${nd(i)}</text>`; }).join('');
+  const sum = iv.reduce((a, b) => a + b, 0), best = IV_ORD.reduce((a, o) => st[o[0]] > st[a[0]] ? o : a, IV_ORD[0]);
   // 누르면 육각형 ↔ 가로 막대 (경완 2026-10-28). 막대 쪽엔 능력마다 개체값 판정
-  const bars = `<div class="iv-bars">${[[0, 'HP', ''], [1, '공격', 'atk'], [2, '방어', 'def'], [3, '특공', 'spa'], [4, '특방', 'spd'], [5, '스피드', 'spe']].map(([i, n, key]) => { const c = cOf(key); return `<div class="ivb ${c}"><span>${n}<i>${arw(c)}</i></span><b><i style="width:${(st[i] / mx * 100).toFixed(1)}%"></i></b><em>${st[i]}</em><small>${ivJudge(iv[i])}</small></div>`; }).join('')}</div>`;
+  const bars = `<div class="iv-bars">${[[0, 'HP', ''], [1, '공격', 'atk'], [2, '방어', 'def'], [3, '특공', 'spa'], [4, '특방', 'spd'], [5, '스피드', 'spe']].map(([i, n, key]) => { const c = cOf(key); return `<div class="ivb ${c}"><span>${n}<i>${arw(c)}</i></span><b><i style="width:${(st[i] / mx * 100).toFixed(1)}%"></i></b><em>${st[i]}<i>${nd(i)}</i></em><small>${ivJudge(iv[i])}</small></div>`; }).join('')}</div>`;
   return `<div class="iv-hex${ivBar ? ' bar' : ''}" role="button" tabindex="0" aria-label="능력치 (누르면 보기 바꾸기)">${bars}<svg viewBox="0 -12 180 164" role="img" aria-label="능력치"><polygon points="${ring(1)}" class="r0"/><polygon points="${ring(2 / 3)}" class="r1"/><polygon points="${ring(1 / 3)}" class="r1"/><polygon points="${poly}" class="iv"/>${lab}</svg>
-    <div class="iv-sum"><b>능력치</b><span>합계 ${st.reduce((a, b) => a + b, 0)}</span><span>개체값 판정: ${ivJudge(Math.round(sum / 6))}</span><span>가장 좋은 개체값: ${best[1]}</span></div></div>`;
+    <div class="iv-sum"><b>능력치</b><span>합계 ${st.reduce((a, b) => a + b, 0)}</span><span>판정: ${ivJudge(Math.round(sum / 6))}</span><span>가장 좋은 능력치: ${best[1]}</span></div></div>`;
 }
 // 포켓몬 박스 창: 본 게임 포켓몬 박스와 같은 모양(검색·정렬·칸)으로 화면 전체에 뜬다. 체육관 타입 포켓몬만, 기본은 레벨순 (경완 2026-10-27)
 // add=true 면 라인업 빈 칸에서 연 것: 누르면 바로 라인업에 넣는다. 아니면 누르면 정보 창
