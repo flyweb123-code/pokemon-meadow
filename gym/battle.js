@@ -568,6 +568,12 @@ function partyIdx(side, line) {
 }
 // 맞는 소리는 효과(굉장/별로)에 따라 다르다: 이어지는 줄을 미리 본다
 function effAhead(id) { const L = B.btl.log; for (let k = B.li; k < Math.min(L.length, B.li + 4); k++) { const x = L[k].split('|'); if (x[1] === '-supereffective' && x[2] === id) return 'H'; if (x[1] === '-resisted' && x[2] === id) return 'L'; if (x[1] === 'move' || x[1] === '-damage') break; } return 'M'; }
+// 정보 카드 친밀도 줄 (경완 2026-10-29 '체육관 상세 정보카드에서도 확인'): 하트 + 숫자 + 지금 하트로 배틀에서 생기는 효과
+function frRow(P) {
+  const fr = Math.min(255, P.fr || 0), h = fr >= 255 ? 5 : Math.min(4, Math.floor(fr / 51));
+  const ef = [h >= 3 && `버티기 ${FR_END[h]}%`, h >= 4 && '급소 +1', h >= 4 && '상태 이상 회복', h >= 5 && '회피 10%'].filter(Boolean);
+  return `<div class="mp-fr"><small>친밀도</small><b class="${h >= 5 ? 'max' : ''}">${'♥'.repeat(h)}${'♡'.repeat(5 - h)}</b><em>${fr} / 255</em><p>${ef.length ? '배틀 효과: ' + ef.join(' · ') : '하트 3개부터 배틀에서 관장님을 위해 힘내요.'}</p></div>`;
+}
 // 친밀도 기믹 (경완 2026-10-29 '배틀에 친밀도 기믹'): 하트(친밀도 51마다 1개, 255 = 만점)가 많을수록 내 포켓몬이 관장을 위해 힘낸다 (본가 소드·실드 '어펙션' 느낌)
 // ♥3 이상: 쓰러질 공격을 HP 1로 버팀 (15·20·25%) · ♥4 이상: 급소 +1, 턴 끝에 상태 이상을 스스로 고침 (20%) · ♥5(만점): 공격을 피함 (10%)
 const FR_END = [0, 0, 0, 15, 20, 25];
@@ -964,6 +970,7 @@ function monPop(id, fromBox, dir = 0) {
     <div class="mp-nat"><small>성격</small><b>${natKo(m.nat)}</b>${nt[1] ? `<span><i class="up">${STAT_KO[nt[1]]} ▲</i><i class="dn">${STAT_KO[nt[2]]} ▼</i></span>` : '<span><i>능력 변화 없음</i></span>'}</div>
     <div class="mp-ab"><div class="mp-abh"><small>특성</small><b>${abKo(m.ab)}</b>${m.ha ? '<em class="ha-tag">숨겨진 특성</em>' : ''}</div><p>${esc(ad || '효과 설명이 아직 없어요.')}</p>${!m.ha && h && h !== m.ab ? `<p class="mp-ha">숨겨진 특성 <b>${abKo(h)}</b> · 20마리 중 1마리꼴로 가진 특별한 특성</p>` : m.ha ? '<p class="mp-ha">20마리 중 1마리꼴로만 가진 특별한 특성이에요.</p>' : ''}</div>
     ${ivHex(P, m)}
+    ${frRow(P)}
     <div class="mp-mvh"><small>기술</small><button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button></div>
     <div class="mp-moves mp-line">${mv.map(x => `<button type="button" class="mp-mv" data-a="i${x[0]}" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}">${tyTag(x[2], x[3])}<b>${esc(x[1])}</b><em>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'} · PP ${x[6] || '—'}</em></button>`).join('')}</div>
     <div class="gy-btns mp-btns"><button data-a="tm">기술 가르치기</button>${inLu ? '<button data-a="rm" class="danger">라인업에서 빼기</button>' : `<button data-a="add" class="main" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업에 넣기</button>`}</div><button class="mp-x" data-a="x" aria-label="닫기">✕</button>`,
