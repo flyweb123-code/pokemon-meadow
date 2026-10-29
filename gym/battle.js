@@ -657,8 +657,8 @@ async function handle(a) {
     case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); X.fntS = true; hbBalls(s); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s === 'e') await expGain(X); break; }
     case '-immune': await msg(`${who(a[2])}에게는 효과가 없는 것 같다…`); break;
     case '-miss': await msg(a[3] ? `${who(a[3])}에게는 맞지 않았다!` : `${who(a[2])}의 공격은 빗나갔다!`); break;
-    case '-fail': await msg('그러나 실패했다!'); break;
-    case '-nothing': await msg('그러나 아무 일도 일어나지 않았다!'); break;
+    case '-fail': await wait(750); await msg('그러나 실패했다!'); break;   // 기술 이름을 읽을 틈 (경완 2026-10-29 '내던지기 > 그러나 실패했다! 너무 빨라')
+    case '-nothing': await wait(750); await msg('그러나 아무 일도 일어나지 않았다!'); break;
     case '-status': { const s = sideOf(a[2]), X = A(s); if (X) { X.st = a[3]; setSt(s, a[3]); } await stFx(s, a[3]); await msg(statusMsg(who(a[2]), a[3])); break; }
     case '-curestatus': { const s = sideOf(a[2]), X = A(s); if (X) { X.st = ''; setSt(s, ''); } await msg(cureMsg(who(a[2]), a[3])); break; }
     case 'cant': if (ST_P[a[3]]) await stFx(sideOf(a[2]), a[3]); await msg(cantMsg(who(a[2]), a[3])); break;
