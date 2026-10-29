@@ -23,11 +23,13 @@ async function neutralRun() {
   try {
     await p.goto(`http://127.0.0.1:${s.address().port}/studio/`);
     await p.waitForFunction(() => typeof A !== 'undefined' && A && typeof ORIG !== 'undefined' && ORIG, null, { timeout: 120000 });
-    const r = await p.evaluate(() => window.__neuRun()); r.text = '';
+    const r = await p.evaluate(() => window.__neuRun()); r.text = ''; const [GI, GO] = await p.evaluate(() => [NEU.GOLD_IN, NEU.GOLD_OUT]);
     const R = rd('neutral.json', { runs: [] }); R.runs = [r, ...(R.runs || [])].slice(0, 60); wr('neutral.json', R);
     console.log(`게임 ${r.app} · 데이터 v${r.data} · 도감 ${r.s.N}종 · ${r.s.users}명 ${r.s.days}일`);
     for (const j of r.J) console.log(`[${j.lv}] ${j.n}: ${j.txt} (적당 ${j.lo}~${j.hi}) ${j.lv === 'ok' ? '' : j.why}`);
     console.log('\n생활 패턴별 (가운데 사람)'); for (const [k, o] of Object.entries(r.s.by)) console.log(`${o.name}: 하루 ${o.km.toFixed(1)}km, 도감 30일 ${Math.round(o.dex30 * 100)}% / 90일 ${Math.round(o.dex90 * 100)}%, 첫 에픽 ${o.fE}일, 첫 전설 ${o.fL}일 (90일 동안 못 본 사람 ${Math.round(o.noL * 100)}%), 하루 골드 ${Math.round(o.gpd)}G (출처 ${JSON.stringify(o.src)}), 진화의 돌 ${o.buy}개 삼, 친밀도 160 ${o.fr160}일·만점 ${o.frMax}일, 30일 가방 ${o.bag30}개`);
+    const sum = o => Object.values(o || {}).reduce((x, y) => x + y, 0), pd = v => Math.round((v || 0) / r.s.days);
+    console.log('\n골드 들어오고 나가는 곳 (90일 하루 평균 G, 가운데 사람)'); for (const o of Object.values(r.s.by)) if (o.out) console.log(`${o.name}: 들어옴 ${pd(sum(o.src))} (${GI.map(([k, n, g]) => `${g} ${n} ${pd(o.src[k])}`).join(' · ')}) / 나감 ${pd(sum(o.out))} (${GO.map(([k, n, g]) => `${g} ${n} ${pd(o.out[k])}`).join(' · ')}) / 체육관 순수익 ${Math.round(o.gymNet)} · 트레이너 ${o.sfN}명 · 90일째 남은 골드 ${Math.round(o.gold90)}`);
     console.log(`\n제일 드문 포켓몬: ${r.s.rare?.n} (${['', '일반', '우수', '레어', '에픽', '전설'][r.s.rare?.g]} 알) ${Math.round(r.s.rare?.km || 0)}km에 하나꼴`);
     console.log('\n고칠 거리:'); for (const x of r.P) console.log(`- ${x.t}: ${x.why}${x.after?.length ? ' → 고치면 ' + x.after.map(a => `${a.n} ${a.from}→${a.to}(${a.lv})`).join(', ') : ''}`);
     if (R.runs[1]) { const o = R.runs[1]; console.log(`\n지난번(${new Date(o.at).toLocaleDateString('ko-KR')}, 게임 ${o.app}, 데이터 v${o.data}): ` + o.J.map(j => `${j.n} ${j.txt}`).join(' · ')); }

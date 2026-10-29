@@ -167,7 +167,7 @@ textarea.json{width:100%;min-height:260px;background:var(--deep);border:1px soli
 .stf{max-width:1100px}.stf .wide2{grid-column:1/-1}.stf-hd{grid-template-columns:auto minmax(0,1fr);align-items:start;gap:14px}.stf-face{display:inline-grid;place-items:center;background:var(--deep);border:2px solid var(--c);border-radius:8px;padding:4px;line-height:0;flex:none}
 .stf-say{background:var(--deep);border-radius:8px;padding:8px 12px;margin:8px 0;font-size:13.5px;line-height:1.6;max-width:68ch}.stf-say p{margin:4px 0}
 .nb{display:grid;gap:0 18px;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}.nb-r{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:2px 10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}.nb-n small{display:block;color:var(--mute);font-size:11.5px}.nb-band{grid-column:1/-1}
-.nb-s{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}.tblw{overflow-x:auto}.nb-t td{vertical-align:top}.nb-h{display:grid;gap:4px}.nb-h summary{display:flex;gap:8px;align-items:center;cursor:pointer;flex-wrap:wrap}.nb-h .sp{flex:1}
+.nb-s{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}.tblw{overflow-x:auto}.nb-t td{vertical-align:top}.nb-g th,.nb-g td{white-space:nowrap}.nb-g th.gh{text-align:center;border-bottom:1px solid var(--line)}h4.gin{color:var(--good);margin:6px 0 2px}h4.gout{color:var(--bad);margin:14px 0 2px}.nb-h{display:grid;gap:4px}.nb-h summary{display:flex;gap:8px;align-items:center;cursor:pointer;flex-wrap:wrap}.nb-h .sp{flex:1}
 .sc-it .chips{margin-top:4px}
 .sc-vc{padding:0!important}#scaC{display:grid;gap:0;max-width:none}.sc-me{display:grid}
 .sc-top{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:12px;padding:12px;border-bottom:1px solid var(--line);background:var(--panel)}.sc-top .stf-say{max-width:none;margin:6px 0 0}.sc-side{display:grid;gap:8px;align-content:start}
@@ -547,11 +547,11 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 </div>
 <div id="zoom" hidden></div>
 <div class="toast" id="toast"></div>
-<script src="neutral.js?v=3.76"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
+<script src="neutral.js?v=3.95"></script>   <!-- v3.41: 고친 neutral.js 가 예전 것으로 남지 않게 (작업실 판마다 올린다) -->
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.94';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.95';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -1901,9 +1901,11 @@ const BAL = [
   ['상태 게이지', [['CLEAN_DAYS', '청결 100 → 0 걸리는 날', '', 'cd'], ['HUNGER_RATE', '배부름이 떨어지는 속도'], ['JOY_HOURS', '즐거움 100 → 0 걸리는 시간 (깨어 있을 때)', '', 'jh']]],
   ['알·기타', [['MAX_EGGS', '부화기 칸 수'], ['MAX_BAG', '가방 최대 알 수'], ['SHINY_N', '이로치 확률 1/N', '', 'sh']]],
   ['미니게임·미션 골드', [['MG_PTS', '미니게임 점수 몇 점마다 1G'], ['#', '일일 미션'], ['MQ_DAY_G', '일일 미션 골드', '', 'mq'], ['#', '도전 미션 (단계마다)'], ['MQ_PH_G', '페이즈 도달', '', 'mq'], ['MQ_PLAY_G', '게임 판 수', '', 'mq'], ['MQ_SUM_G', '누적 점수', '', 'mq'], ['MQ_KILL_G', '포켓몬 물리치기', '', 'mq'], ['MQ_TY_G', '타입별 미션 (한 판 점수)', '', 'mq']]],
+  ['체육관 골드', [['GYM_G', '도전자를 이기면 받는 골드', '난이도마다', 'mq'], ['GYM_SF_PCT', '고용 트레이너가 도전자를 막으면 그 골드의 몇 %']]],   // v3.95 경완: 체육관으로 버는 골드·직원 월급은 따로 (창 배치가 번호로 기억돼서 맨 뒤에 붙임)
+  ['직원 고용 · 월급', [['WAGE_BASE', '고용 트레이너 기본 월급 (가장 적은 월급)'], ['WAGE_LV', '트레이너 포켓몬 레벨 1마다 더하는 월급'], ['WAGE_MAX', '월급 최대']]],
 ];
 // v3.25 경완: 게임 미션별 골드 — 단계 이름 (게임 MQ·MQ_DAY·MQ_TY 순서 그대로)
-const MQL = { MQ_DAY_G: ['게임 5판', '포켓몬 3종과', '한 판 3,000점'], MQ_PH_G: ['페이즈 3', '페이즈 5', '페이즈 7', '페이즈 10'], MQ_PLAY_G: ['5판', '20판', '50판', '100판', '300판'], MQ_SUM_G: ['2만점', '10만점', '30만점', '100만점'], MQ_KILL_G: ['100마리', '500마리', '2,000마리', '5,000마리'], MQ_TY_G: ['1,500점', '3,000점', '5,000점', '7,000점', '10,000점'] };
+const MQL = { MQ_DAY_G: ['게임 5판', '포켓몬 3종과', '한 판 3,000점'], MQ_PH_G: ['페이즈 3', '페이즈 5', '페이즈 7', '페이즈 10'], MQ_PLAY_G: ['5판', '20판', '50판', '100판', '300판'], GYM_G: ['쉬움', '보통', '어려움·이름 있는'], MQ_SUM_G: ['2만점', '10만점', '30만점', '100만점'], MQ_KILL_G: ['100마리', '500마리', '2,000마리', '5,000마리'], MQ_TY_G: ['1,500점', '3,000점', '5,000점', '7,000점', '10,000점'] };
 // v1.8 경완: 줄마다 게임 아이콘
 // v2.8 경완: 필드 친밀도를 가로 그래프로 (게이지 평균 구간마다 1시간에 오르는 양)
 // v3.74 경완: 열심히 관리하면(필드 건강 80 이상 + 열매 + 쓰다듬기 5번 + 빗질 + 짝꿍 5km) 하루에 얼마, 만점까지 며칠
@@ -1915,8 +1917,8 @@ function frGraph(v, k = 'FR_TABLE', c = '') { const S = v.map((r, i) => [r[0], r
   // v2.10 경완: 구간마다 아래 칸에서 바로 고친다 (1시간에 오르는 양 · 구간 시작값)
   return `<div class="frg"><div class="small mute">건강 게이지 평균</div><div class="frw"><div class="frbar" style="grid-template-columns:${cols}">${seg.map(x => `<div class="sg" style="--a:${(.25 + .75 * x.r / mx).toFixed(2)}"><span class="num">${x.lo}~${x.hi}</span></div>`).join('')}</div>${seg.filter(x => x.lo > 0).map(x => `<b class="frk" data-fk="${k}" data-i="${x.i}" style="left:${x.lo}%" title="끌어서 구간 경계 옮기기 (${x.lo})" role="slider" aria-valuenow="${x.lo}" aria-valuemin="1" aria-valuemax="99" aria-label="구간 경계"></b>`).join('')}</div>
     <div class="frinf" style="grid-template-columns:${cols}">${seg.map(x => { const d = Math.min(x.r * 24, cap), cp = d < x.r * 24; return `<div><span>1시간에</span><label class="fi"><i class="pl">+</i><input class="inp${c}" data-b="${k}" data-i="${x.i}" data-j="1" inputmode="decimal" value="${x.r}" aria-label="${x.lo}~${x.hi} 1시간에 오르는 친밀도"></label><em class="num${cp ? ' cap' : ''}"${cp ? ' title="하루 한도에 걸림"' : ''}>하루 +${+d.toFixed(1)}</em>${cp ? '<span class="cap">하루 한도</span>' : ''}</div>`; }).join('')}</div></div>`; }
-const BICO = { DUP_G: 'coin', NEW_EGG_G: 'egg', NEW_G: 'star', RUN_G: 'shoe', FR_TABLE: 'clock', BERRY_FR_DAY: 'berry', JOY_HOLD: 'note', PET_FR: 'hand', PET_DAY: 'hand', WASH_FR1: 'brush', FLD_FR_DAY: 'note', WALK_FR: 'shoe', FR_EVO: 'star', FR_MAX: 'heart', CLEAN_DAYS: 'brush', HUNGER_RATE: 'berry', JOY_HOURS: 'note', MAX_EGGS: 'egg', MAX_BAG: 'bag', BAG_STEP: 'shoe', SHINY_N: 'star', MG_PTS: 'note', MQ_DAY_G: 'coin', MQ_PH_G: 'coin', MQ_PLAY_G: 'coin', MQ_SUM_G: 'coin', MQ_KILL_G: 'coin', MQ_TY_G: 'coin' }, SICO = ['coin', 'heart', 'clock', 'egg', 'coin'];
-const BUNIT = { DUP_G: 'G', NEW_EGG_G: 'G', NEW_G: 'G', RUN_G: 'G', BERRY_FR_DAY: '/일', JOY_HOLD: '분', PET_FR: '점', PET_DAY: '번', WASH_FR1: '점', FLD_FR_DAY: '/일', WALK_FR: '/km', FR_EVO: '점', FR_MAX: '점', CLEAN_DAYS: '일', HUNGER_RATE: '/초', JOY_HOURS: '시간', MAX_EGGS: '칸', MAX_BAG: '개', BAG_STEP: 'km', SHINY_N: '분의 1', MG_PTS: '점', MQ_DAY_G: 'G', MQ_PH_G: 'G', MQ_PLAY_G: 'G', MQ_SUM_G: 'G', MQ_KILL_G: 'G', MQ_TY_G: 'G' };
+const BICO = { DUP_G: 'coin', NEW_EGG_G: 'egg', NEW_G: 'star', RUN_G: 'shoe', FR_TABLE: 'clock', BERRY_FR_DAY: 'berry', JOY_HOLD: 'note', PET_FR: 'hand', PET_DAY: 'hand', WASH_FR1: 'brush', FLD_FR_DAY: 'note', WALK_FR: 'shoe', FR_EVO: 'star', FR_MAX: 'heart', CLEAN_DAYS: 'brush', HUNGER_RATE: 'berry', JOY_HOURS: 'note', MAX_EGGS: 'egg', MAX_BAG: 'bag', BAG_STEP: 'shoe', SHINY_N: 'star', MG_PTS: 'note', MQ_DAY_G: 'coin', MQ_PH_G: 'coin', MQ_PLAY_G: 'coin', MQ_SUM_G: 'coin', MQ_KILL_G: 'coin', MQ_TY_G: 'coin', GYM_G: 'coin', GYM_SF_PCT: 'coin', WAGE_BASE: 'coin', WAGE_LV: 'coin', WAGE_MAX: 'coin' }, SICO = ['coin', 'heart', 'clock', 'egg', 'coin', 'coin', 'coin'];
+const BUNIT = { DUP_G: 'G', NEW_EGG_G: 'G', NEW_G: 'G', RUN_G: 'G', BERRY_FR_DAY: '/일', JOY_HOLD: '분', PET_FR: '점', PET_DAY: '번', WASH_FR1: '점', FLD_FR_DAY: '/일', WALK_FR: '/km', FR_EVO: '점', FR_MAX: '점', CLEAN_DAYS: '일', HUNGER_RATE: '/초', JOY_HOURS: '시간', MAX_EGGS: '칸', MAX_BAG: '개', BAG_STEP: 'km', SHINY_N: '분의 1', MG_PTS: '점', MQ_DAY_G: 'G', MQ_PH_G: 'G', MQ_PLAY_G: 'G', MQ_SUM_G: 'G', MQ_KILL_G: 'G', MQ_TY_G: 'G', GYM_G: 'G', GYM_SF_PCT: '%', WAGE_BASE: 'G', WAGE_LV: 'G', WAGE_MAX: 'G' };
 // v2.4 경완: 숫자 칸을 문장 안에 넣어 읽히게 ([앞 글, 뒤 글, 덧붙임(값으로 계산)])
 const SENT = {
   NEW_G: ['진화로 새 포켓몬을 만나면', 'G'], RUN_G: ['런닝을 1번 할 때마다', 'G'],
@@ -1926,13 +1928,15 @@ const SENT = {
   FR_EVO: ['친밀도가', '이상이면 친밀도 진화'], FR_MAX: ['친밀도 만점은', ''],
   CLEAN_DAYS: ['청결 100이 0이 되기까지', '일'], HUNGER_RATE: ['배부름이 떨어지는 속도', '', v => `배부름 100 → 0 약 ${+(100 / v / 3600).toFixed(1)}시간 (깨어 있을 때, 자는 동안은 더 느려요)`],
   JOY_HOURS: ['즐거움 100이 0이 되기까지', '시간', () => '깨어 있을 때'],
+  GYM_SF_PCT: ['', '', v => `트레이너가 막으면 ${(bal('GYM_G') || []).map(x => Math.round(x * v / 100)).join(' · ')}G (쉬움 · 보통 · 어려움, 수완가 특성은 1.5배)`],
+  WAGE_BASE: ['', '', v => `월급 = ${v} + 평균 레벨 × ${bal('WAGE_LV')} + 포켓몬 수 × 35, 특성 따라 ×0.55~1.15, ${v}~${bal('WAGE_MAX')}G 안에서 10G 단위`],
   MAX_EGGS: ['부화기에 알을', '칸까지'], MAX_BAG: ['가방에 알을', '개까지'], BAG_STEP: ['알 1개를 평균', 'km마다 줍기', v => `1km에 평균 ${+(1 / v).toFixed(1)}개`], SHINY_N: ['이로치는', '마리 중 1마리 꼴'],
 };
 // v2.15 경완: 밸런스 레이아웃 정리 — 왼쪽 설명, 오른쪽 숫자 칸(+단위)으로 줄 맞춤
 const BLBL = { NEW_G: ['진화로 새 포켓몬을 만나면', 'G'], RUN_G: ['런닝 1번 할 때마다', 'G'], FLD_FR_DAY: ['필드에 있어서 오르는 친밀도 하루 최대', '/일'], BERRY_FR_DAY: ['열매로 오르는 친밀도 하루 최대', '/일'],
   PET_FR: ['쓰다듬어 즐거움을 채우면 친밀도', '씩'], PET_DAY: ['쓰다듬기 친밀도 하루 횟수', '번'], JOY_HOLD: ['즐거움 100을 채우면 안 떨어지는 시간', '분'], WASH_FR1: ['빗질로 씻길 때마다 친밀도', '씩'], WALK_FR: ['짝꿍이 1km 걸을 때마다 친밀도', '씩'],
   FR_EVO: ['친밀도 진화 기준', '이상'], FR_MAX: ['친밀도 만점', ''], CLEAN_DAYS: ['청결 100 → 0 걸리는 시간', '일'], HUNGER_RATE: ['배부름이 떨어지는 속도', ''], JOY_HOURS: ['즐거움 100 → 0 걸리는 시간', '시간'],
-  MG_PTS: ['미니게임 점수', '점마다 1G'], MAX_EGGS: ['부화기 칸 수', '칸'], MAX_BAG: ['가방에 넣을 수 있는 알', '개'], SHINY_N: ['이로치 확률 (몇 마리 중 1마리)', '마리'] };
+  MG_PTS: ['미니게임 점수', '점마다 1G'], GYM_SF_PCT: ['고용 트레이너가 도전자를 막으면 배틀 골드의', '%'], WAGE_BASE: ['고용 트레이너 월급 (7일마다) 가장 적게', 'G'], WAGE_LV: ['트레이너 포켓몬 평균 레벨 1마다 월급', 'G씩 더'], WAGE_MAX: ['월급 최대', 'G'], MAX_EGGS: ['부화기 칸 수', '칸'], MAX_BAG: ['가방에 넣을 수 있는 알', '개'], SHINY_N: ['이로치 확률 (몇 마리 중 1마리)', '마리'] };
 // v2.18 경완: 배부름 속도는 숫자 대신 매우 빠름~매우 느림 중에서 고른다 (값 = 1초에 떨어지는 양)
 const HUN_LV = [['매우 빠름', .022], ['빠름', .0155], ['보통', .011], ['느림', .0078], ['매우 느림', .0055]];
 const bico = k => BICO[k] === 'egg' ? `<span class="gi">${eggI(1)}</span>` : gi(BICO[k]);
@@ -2181,6 +2185,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.95', '10월 29일', ['밸런스에 \'체육관 골드\'(난이도별 배틀 골드, 고용 트레이너가 막았을 때 몇 %)와 \'직원 고용 · 월급\'(기본·레벨당·최대 월급) 칸이 따로 생겼어요. 배포하면 게임 체육관이 이 값을 써요 (게임 10.78)', '뉴트럴: 체육관 배틀·트레이너가 막아서 번 골드, 직원 월급, 상점(향로·부적·진화 도구)·체육관 상점(기술머신·꾸미기·의상)에 쓴 골드를 따로 나눠 90일 동안 돌려요. 뉴트럴 화면에 \'골드 들어오고 나가는 곳\' 표와 \'체육관 하루 순수익\' 칸이 생겼어요']],
   ['3.94', '10월 27일', ['맵 메뉴에서 배치 저장을 눌러도 배포하기에 안 들어가요. 소품 자리는 작업실에만 저장돼요']],
   ['3.93', '10월 26일', ['스칼렛 소품 상호작용마다 필드 일지 문장이 생겼어요. 상호작용 줄 아래에 작게 보여요 (예: 시소 "OO와 OO가 시소 양 끝에 앉아 번갈아 오르내린다")']],
   ['3.92', '10월 26일', ['시뮬레이터는 따로 쓰는 기기처럼: 시뮬레이터에서 바꾼 맵 배치(소품·연못·꽃 자리)는 배포하기·베타로 배포하기 모두 게임에 안 올라가고 작업실에만 남아요 (포켓몬 배치처럼). 소품 반응·그림 같은 데이터는 지금처럼 배포돼요']],
@@ -3441,15 +3446,25 @@ function renderNeu() {
   const sugg = (P, live) => !P?.length ? '<div class="empty">지금은 고칠 거리가 없어요. 너무 쉽지도 어렵지도 않아요.</div>' : P.map((x, i) => `<div class="nb-s"><div><b>${esc(x.t)}</b><div class="small mute">${esc(x.why)}</div>${x.after?.length ? `<div class="small">고치면 ${x.after.map(a => `${esc(a.n)} ${esc(a.from)} → <b style="color:${LVN[a.lv][1]}">${esc(a.to)}</b>`).join(', ')}</div>` : ''}</div>${live && x.patch ? `<button class="btn" data-np="${i}">작업본에 넣기</button>` : ''}</div>`).join('');
   const per = s => `<div class="tblw"><table class="tov nb-t"><tr><th>생활 패턴</th><th class="r">하루 km</th><th class="r">30일 도감</th><th class="r">첫 에픽</th><th class="r">첫 전설</th><th class="r">하루 골드</th><th class="r">친밀도 만점</th><th class="r">가방(30일)</th><th class="r">향로·부적<small>90일 쓴 수</small></th></tr>${NEU.PERSONAS.map(P => { const o = s.by[P.id]; if (!o) return ''; const d = v => v > s.days ? `${s.days}일+` : Math.round(v) + '일';
     return `<tr><td><b>${esc(P.name)}</b> <span class="small mute">${o.n}명</span><div class="small mute">${esc(P.d)}</div></td><td class="r num">${o.km.toFixed(1)}</td><td class="r num">${Math.round(o.dex30 * 100)}%</td><td class="r num">${d(o.fE)}</td><td class="r num">${d(o.fL)}</td><td class="r num">${Math.round(o.gpd).toLocaleString()}G</td><td class="r num">${d(o.frMax)}</td><td class="r num">${Math.round(o.bag30)}</td><td class="r num">${o.uI == null ? '-' : `${Math.round(o.uI)} · ${Math.round(o.uC)}`}</td></tr>`; }).join('')}</table></div>`;
+  // v3.95 경완: 골드를 들어오는 곳(부화·미션·체육관…)과 나가는 곳(상점·직원 월급·체육관 상점)으로 나눠 본다 — 90일 동안 하루 평균
+  const flow = s => { const L = NEU.PERSONAS.map(P => [P, s.by[P.id]]).filter(([, o]) => o?.out); if (!L.length) return '<div class="empty">이 분석엔 골드 분류가 없어요. 작업본으로 다시 돌려 보세요.</div>';
+    const d = v => v ? Math.round(v / s.days).toLocaleString() : '-', sum = o => Object.values(o || {}).reduce((a, x) => a + x, 0);
+    const grp = C => { const G = []; for (const [, , g] of C) { if (G.length && G[G.length - 1][0] === g) G[G.length - 1][1]++; else G.push([g, 1]); } return G.map(([g, n]) => `<th colspan="${n}" class="gh">${esc(g)}</th>`).join(''); };
+    const tbl = (C, key, cls, sign, extra) => `<div class="tblw"><table class="tov nb-t nb-g ${cls}"><tr><th rowspan="2">생활 패턴</th>${grp(C)}<th rowspan="2" class="r">합</th>${extra ? extra.map(x => `<th rowspan="2" class="r">${x[0]}</th>`).join('') : ''}</tr><tr>${C.map(([, n]) => `<th class="r">${esc(n)}</th>`).join('')}</tr>
+      ${L.map(([P, o]) => `<tr><td><b>${esc(P.name)}</b></td>${C.map(([k]) => `<td class="r num">${o[key]?.[k] ? sign + d(o[key][k]) : '-'}</td>`).join('')}<td class="r num"><b>${sum(o[key]) ? sign + d(sum(o[key])) : '-'}</b></td>${extra ? extra.map(x => `<td class="r num">${x[1](o)}</td>`).join('') : ''}</tr>`).join('')}</table></div>`;
+    return `<h4 class="gin">들어온 골드</h4>${tbl(NEU.GOLD_IN, 'src', 'gin', '')}
+      <h4 class="gout">나간 골드</h4>${tbl(NEU.GOLD_OUT, 'out', 'gout', '−', [['고용한<br>트레이너', o => o.sfN ? Math.round(o.sfN) + '명' : '-'], ['체육관<br>순수익', o => `<span style="color:${o.gymNet < 0 ? 'var(--bad)' : 'inherit'}">${Math.round(o.gymNet).toLocaleString()}</span>`], ['90일째<br>남은 골드', o => Math.round(o.gold90 ?? 0).toLocaleString()]])}
+      <div class="small mute">90일 동안 하루 평균 G, 가운데 사람 기준이라 칸을 더해도 합과 조금 다를 수 있어요. 체육관 순수익 = 체육관 배틀 + 트레이너가 막음 − 직원 월급. 체육관 상점·고용은 짐작한 규칙(골드가 넉넉할 때 사요)으로 돌려요.</div>`; };
   const text = last?.text ? `<div class="stf-say">${last.text.split(/\n+/).map(p => `<p>${esc(p)}</p>`).join('')}</div>` : '<div class="stf-say"><p>아직 아침 분석을 올리지 않았어요. 매일 아침에 100명이 90일 동안 게임하는 걸 돌려 보고 여기에 적어 둘게요. 지금 바로 보고 싶으면 아래 버튼을 눌러 주세요.</p></div>';
   $('#neuC').innerHTML = `<div class="card stf-hd">${face('neu', 5)}<div><h2 style="margin:0">뉴트럴 <span class="small mute">밸런스 담당</span></h2>${last ? `<div class="small mute">${whenD(last.at)} 분석 · 게임 ${esc(last.app || '')} · 데이터 v${last.data}</div>` : ''}${text}${fbBox('neu', 'all', '', '뉴트럴에게 피드백 남기기 (분석 방식·기준·말투 등)')}</div></div>
     <div class="card"><h2>지금 상태 ${NEU_L ? `<span class="small mute">작업본 기준 (바뀐 곳 ${NEU_L.draft}개) · ${whenD(NEU_L.at)}에 돌림</span>${stale ? ' <span class="tag" style="background:var(--warn)">그 뒤로 값이 바뀌었어요 · 다시 돌려 보세요</span>' : ''}` : last ? '<span class="small mute">배포된 값 기준 · 아침 분석</span>' : ''}</h2>
       ${R ? `<div class="nb">${R.J.map(bar).join('')}</div>` : '<div class="empty">아직 돌린 결과가 없어요.</div>'}
       <div class="chips"><button class="btn" id="neuRun"${NEU_BUSY || !A ? ' disabled' : ''}>${NEU_BUSY ? '100명이 90일 동안 노는 중…' : '작업본으로 지금 돌려 보기'}</button>${NEU_L && last ? '<button class="chip" id="neuBack">아침 분석으로 보기</button>' : ''}</div></div>
     <div class="card"><h2>고칠 거리</h2><div class="small mute">제안마다 그 값으로 한 번 더 돌려 본 결과를 붙였어요. 작업본에 넣어도 배포하기를 눌러야 게임에 들어가요.</div>${R ? sugg(R.P, !!A) : ''}</div>
-    ${R ? `<div class="card wide2"><h2>생활 패턴별 <span class="small mute">가운데 사람 기준 · 도감 ${R.s.N}종 중 · 제일 드문 포켓몬 ${esc(R.s.rare?.n || '')} ${Math.round(R.s.rare?.km || 0).toLocaleString()}km에 하나꼴</span></h2>${per(R.s)}</div>` : ''}
+    ${R ? `<div class="card wide2"><h2>생활 패턴별 <span class="small mute">가운데 사람 기준 · 도감 ${R.s.N}종 중 · 제일 드문 포켓몬 ${esc(R.s.rare?.n || '')} ${Math.round(R.s.rare?.km || 0).toLocaleString()}km에 하나꼴</span></h2>${per(R.s)}</div>
+    <div class="card wide2"><h2>골드 들어오고 나가는 곳 <span class="small mute">90일 동안 하루 평균 G · 상점과 체육관을 따로</span></h2>${flow(R.s)}</div>` : ''}
     ${runs.length ? `<div class="card"><h2>기록</h2><div class="nb-h">${runs.slice(0, 30).map(r => { const c = { easy: 0, hard: 0 }; r.J.forEach(j => c[j.lv] = (c[j.lv] || 0) + 1); return `<details><summary><b>${new Date(r.at).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}</b><span class="small mute">게임 ${esc(r.app || '')} · v${r.data}</span><span class="sp"></span>${c.easy ? `<span class="tag" style="background:var(--warn)">쉬움 ${c.easy}</span>` : ''}${c.hard ? `<span class="tag" style="background:var(--bad)">어려움 ${c.hard}</span>` : ''}${!c.easy && !c.hard ? '<span class="tag" style="background:var(--good)">적당</span>' : ''}</summary>${r.text ? `<div class="small">${esc(r.text)}</div>` : ''}<div class="small mute">${r.J.map(j => `${esc(j.n)} ${esc(j.txt)}`).join(' · ')}</div></details>`; }).join('')}</div></div>` : ''}`;
-  $('#neuI').innerHTML = `<h4>뉴트럴은 이렇게 일해요</h4><div class="small"><b>매일 아침 7시 43분</b>에 일을 시작해서, 보통 8시 전후에 새 분석이 올라와요.</div><div class="small mute">매일 아침, 생활 패턴이 다른 100명이 지금 버전 게임을 90일 동안 한다고 치고 돌려 봐요. 알 줍기·천장·부화기·골드·친밀도·짝꿍 진화·진화의 돌 사기·미니게임과 미션까지 게임 규칙 그대로예요.</div>
+  $('#neuI').innerHTML = `<h4>뉴트럴은 이렇게 일해요</h4><div class="small"><b>매일 아침 7시 43분</b>에 일을 시작해서, 보통 8시 전후에 새 분석이 올라와요.</div><div class="small mute">매일 아침, 생활 패턴이 다른 100명이 지금 버전 게임을 90일 동안 한다고 치고 돌려 봐요. 알 줍기·천장·부화기·골드·친밀도·짝꿍 진화·진화의 돌 사기·미니게임과 미션, 체육관(도전자 배틀·트레이너 고용과 월급·체육관 상점)까지 게임 규칙 그대로예요.</div>
     <div class="small mute">정해 둔 목표치는 없어요. 칸마다 '너무 쉬움 · 적당 · 너무 어려움'으로만 보고, 치우친 칸이 있으면 고칠 값을 제안해요.</div>
     <h4>100명</h4><div class="small">${NEU.PERSONAS.map(P => `<div><b>${esc(P.name)}</b> ${P.n}명 <span class="mute">· ${esc(P.d)}</span></div>`).join('')}</div>
     <div class="small mute">같은 값이면 늘 같은 결과가 나오게 돌려서, 값을 바꾼 효과만 비교돼요.</div><div class="small mute">위 칸에 피드백을 남기면 다음 날 아침 분석부터 반영해요.</div>`;
@@ -3683,7 +3698,7 @@ function hook() {
     const K = A.K; LIVE = A.cfg || { ver: 0 }; ORIG = { odds: K.ODDS, pity: { e: K.PITY_E, l: K.PITY_L }, eggTiers: JSON.parse(JSON.stringify(A.EGG_TIERS)), eggList: JSON.parse(JSON.stringify(A.EGG_LIST || [])), eggEx: JSON.parse(JSON.stringify(A.EGG_EX || [])), tierOrd: JSON.parse(JSON.stringify(A.TIER_ORD || {})), off: [...(A.SP_OFF || [])], tierK: { r: A.cfg?.data?.tierK?.r ?? 1, k: { ...(A.TIER_KT || {}) } }, bub: { ...(A.BUB_OV || {}) }, monSc: { ...(A.MON_SC || {}) }, monRot: { ...(A.MON_ROT || {}) }, monFly: { ...(A.MON_FLY || {}) }, monFlyA: JSON.parse(JSON.stringify(A.MON_FLYA || {})), monOffA: JSON.parse(JSON.stringify(A.MON_OFFA || {})), monSh: JSON.parse(JSON.stringify(A.MON_SH || {})), shop: JSON.parse(JSON.stringify(LIVE.data?.shop || {})), thSp: JSON.parse(JSON.stringify(A.TH_SP_OV || {})), thOv: JSON.parse(JSON.stringify(A.TH_OV || {})), spots: JSON.parse(JSON.stringify(A.SPOTS || [])).map(o => { delete o.tha; delete o.pn; return o; }), layout: A.defaultLayout(),
       bal: { ...(K.HATCH_KM ? { HATCH_KM: K.HATCH_KM } : {}), DUP_G: K.DUP_G, NEW_EGG_G: K.NEW_EGG_G, NEW_G: K.NEW_G, RUN_G: K.RUN_G, FR_TABLE: K.FR_TABLE, BERRY_FR_DAY: K.BERRY_FR_DAY, JOY_HOLD: K.JOY_HOLD, PET_FR: K.PET_FR ?? 1, PET_DAY: K.PET_DAY, WASH_FR1: K.WASH_FR1 ?? 3, FLD_FR_DAY: K.FLD_FR_DAY, WALK_FR: K.WALK_FR, FR_EVO: K.FR_EVO, FR_MAX: K.FR_MAX,
         CLEAN_DAYS: Math.round(100 / K.CLEAN_RATE / 86400 * 100) / 100, HUNGER_RATE: K.HUNGER_RATE, JOY_HOURS: Math.round(100 / K.JOY_RATE / 3600 * 100) / 100, MAX_EGGS: K.MAX_EGGS, MAX_BAG: K.MAX_BAG, BAG_STEP: K.BAG_STEP, SHINY_N: Math.round(1 / K.SHINY_RATE),
-        MG_PTS: K.MG_PTS ?? 30, MQ_DAY_G: K.MQ_DAY_G || [50, 150, 300], MQ_TY_G: K.MQ_TY_G || [60, 150, 300, 550, 1000], MQ_PH_G: K.MQ_PH_G || [100, 250, 500, 1000], MQ_PLAY_G: K.MQ_PLAY_G || [100, 300, 600, 1000, 2500], MQ_SUM_G: K.MQ_SUM_G || [150, 500, 1200, 3000], MQ_KILL_G: K.MQ_KILL_G || [150, 500, 1500, 3000] } };   // v3.25 경완: 미니게임·미션 골드
+        MG_PTS: K.MG_PTS ?? 30, MQ_DAY_G: K.MQ_DAY_G || [50, 150, 300], MQ_TY_G: K.MQ_TY_G || [60, 150, 300, 550, 1000], MQ_PH_G: K.MQ_PH_G || [100, 250, 500, 1000], MQ_PLAY_G: K.MQ_PLAY_G || [100, 300, 600, 1000, 2500], MQ_SUM_G: K.MQ_SUM_G || [150, 500, 1200, 3000], MQ_KILL_G: K.MQ_KILL_G || [150, 500, 1500, 3000], GYM_G: K.GYM_G || [40, 100, 300], GYM_SF_PCT: K.GYM_SF_PCT ?? 60, WAGE_BASE: K.WAGE_BASE ?? 150, WAGE_LV: K.WAGE_LV ?? 5, WAGE_MAX: K.WAGE_MAX ?? 600 } };   // v3.95: 체육관 골드·직원 월급   // v3.25 경완: 미니게임·미션 골드
     A.ensureSprite(1).then(() => { $('#logoI').src = thumb(25) || ''; A.ensureSprite(25).then(() => $('#logoI').src = thumb(25)); });
   }
   A.onTap = s => { if (s) mapTap(s); }; A.onBlank = () => { if (!$('#eWarn').hidden) $('#eWarn').hidden = true; else if (editing && !zoomK) $('#eMode').click(); else if (zoomK) closeZoom(); }; A.onSel = onSel; A.onMon = onMon; A.onLog = onLog; A.onLayout = onLayout; A.onHot = onHot; A.onMonSc = onMonSc; A.onSzSel = m => { szCur = m; szInfo(); }; applyInsets();

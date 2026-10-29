@@ -6,23 +6,29 @@
   const rng = s => () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const med = L => { const a = L.filter(v => v != null && isFinite(v)).sort((x, y) => x - y); if (!a.length) return null; const m = a.length >> 1; return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2; };
+  const rngI = (r, a, b) => a + Math.floor(r() * (b - a + 1));
   const pick = (r, L) => { let x = r() * L.reduce((a, o) => a + o[1], 0); for (const o of L) if ((x -= o[1]) <= 0) return o[0]; return L[L.length - 1][0]; };
 
-  // 생활 패턴 (n = 100명 중 몇 명). wd/we = 평일/주말 하루 km, run = 달리기 비율, care = 돌봄(0~1), mg = 하루 미니게임 판 수, sc = 평균 점수, on = 접속하는 날 비율
+  // 생활 패턴 (n = 100명 중 몇 명). wd/we = 평일/주말 하루 km, run = 달리기 비율, care = 돌봄(0~1), mg = 하루 미니게임 판 수, sc = 평균 점수, on = 접속하는 날 비율, gym = 접속한 날 기다리는 도전자와 직접 배틀하는 비율
   const PERSONAS = [
-    { id: 'home', n: 15, name: '집순이', d: '거의 집에 있고, 포켓몬을 자주 돌봐요', wd: 1.2, we: 2, run: 0, care: .9, mg: 3, sc: 2000, on: .95 },
-    { id: 'commute', n: 25, name: '출퇴근', d: '평일엔 출퇴근길 5km, 주말엔 조금', wd: 5, we: 2, run: 0, care: .5, mg: 1, sc: 2500, on: .9 },
-    { id: 'walk', n: 15, name: '산책 매니아', d: '매일 8km 넘게 걸어요', wd: 8, we: 9, run: 0, care: .7, mg: 1, sc: 2500, on: .95 },
-    { id: 'run', n: 10, name: '러너', d: '일주일에 네 번 10km 달리기', wd: 6, we: 8, run: .8, care: .4, mg: .5, sc: 2500, on: .9 },
-    { id: 'wkend', n: 15, name: '주말 몰아서', d: '평일엔 거의 안 걷고 주말에 12km', wd: 1, we: 12, run: 0, care: .4, mg: 1, sc: 2500, on: .85 },
-    { id: 'mg', n: 10, name: '미니게임 덕후', d: '많이는 안 걷고 미니게임을 하루 8판', wd: 2, we: 2.5, run: 0, care: .8, mg: 8, sc: 3500, on: .95 },
-    { id: 'casual', n: 10, name: '가끔 접속', d: '사흘에 한 번쯤 켜고 3km', wd: 3, we: 3, run: 0, care: .2, mg: .5, sc: 1800, on: .4 },
+    { id: 'home', n: 15, name: '집순이', d: '거의 집에 있고, 포켓몬을 자주 돌봐요', wd: 1.2, we: 2, run: 0, care: .9, mg: 3, sc: 2000, on: .95, gym: .9 },
+    { id: 'commute', n: 25, name: '출퇴근', d: '평일엔 출퇴근길 5km, 주말엔 조금', wd: 5, we: 2, run: 0, care: .5, mg: 1, sc: 2500, on: .9, gym: .6 },
+    { id: 'walk', n: 15, name: '산책 매니아', d: '매일 8km 넘게 걸어요', wd: 8, we: 9, run: 0, care: .7, mg: 1, sc: 2500, on: .95, gym: .6 },
+    { id: 'run', n: 10, name: '러너', d: '일주일에 네 번 10km 달리기', wd: 6, we: 8, run: .8, care: .4, mg: .5, sc: 2500, on: .9, gym: .5 },
+    { id: 'wkend', n: 15, name: '주말 몰아서', d: '평일엔 거의 안 걷고 주말에 12km', wd: 1, we: 12, run: 0, care: .4, mg: 1, sc: 2500, on: .85, gym: .5 },
+    { id: 'mg', n: 10, name: '미니게임 덕후', d: '많이는 안 걷고 미니게임을 하루 8판', wd: 2, we: 2.5, run: 0, care: .8, mg: 8, sc: 3500, on: .95, gym: .9 },
+    { id: 'casual', n: 10, name: '가끔 접속', d: '사흘에 한 번쯤 켜고 3km', wd: 3, we: 3, run: 0, care: .2, mg: .5, sc: 1800, on: .4, gym: .4 },
   ];
   // 미션: 조건은 게임과 같고, 골드는 작업실 밸런스 값(b.MQ_*_G)을 쓴다 (없으면 게임 기본값)
   const MQ_N = { MQ_DAY_G: [5, 3, 3000], MQ_TY_G: [1500, 3000, 5000, 7000, 10000], MQ_PLAY_G: [5, 20, 50, 100, 300], MQ_SUM_G: [20000, 100000, 300000, 1000000], MQ_PH_G: [3, 5, 7, 10], MQ_KILL_G: [100, 500, 2000, 5000] };
   const MQ_DEF = { MG_PTS: 30, MQ_DAY_G: [50, 150, 300], MQ_TY_G: [60, 150, 300, 550, 1000], MQ_PLAY_G: [100, 300, 600, 1000, 2500], MQ_SUM_G: [150, 500, 1200, 3000], MQ_PH_G: [100, 250, 500, 1000], MQ_KILL_G: [150, 500, 1500, 3000] };
   const mqL = (b, k) => MQ_N[k].map((x, i) => [x, (Array.isArray(b[k]) ? b[k] : MQ_DEF[k])[i] ?? 0]);
-  const EVO_FR = [0, 30, 60];
+  const EVO_FR = [0, 30, 60], GYM_D = 3;   // 체육관은 사흘째부터 연다고 친다 (짐작)
+  // 체육관 (게임 gym.js 와 같은 규칙, 기본값도 같게). 골드·월급 값은 작업실 밸런스(b.GYM_G 등)
+  const GYM_DEF = { GYM_G: [40, 100, 300], GYM_SF_PCT: 60, WAGE_BASE: 150, WAGE_LV: 5, WAGE_MAX: 600 };
+  const GYM_REP = [[2, -4], [5, -3], [15, -2]], GRADES = [0, 100, 250, 450, 700, 1000], EASY_P = [.75, .55, .4, .3, .2, .15];
+  const TRAIT_W = [1, 1, 1, 1.15, 1, .7, .55];   // 훈련광·인기인·수완가·근성·성장형·검소함·느긋함 의 월급 배율
+  const gv = (b, k) => b[k] ?? GYM_DEF[k];
 
   // model = { odds[5], pity{e,l}, b{밸런스 전부}, probs{g: [[sp, p]]}, SP{sp: {t, fr, kids, ev, eqx, gb(바탕 종 등급), st(진화 단계)}}, price{도구 이름: G} }
   function evoWay(model, c) { const ev = model.SP[c]?.ev || ''; if (!ev || ev === 'day' || ev === 'night') return { k: 'km' }; if (ev.startsWith('fr')) return { k: 'fr' };   // 게임 8.60: 낮·밤에만 진화 = 짝꿍 거리로
@@ -37,15 +43,38 @@
     const r = rng(seed), b = model.b, odds = model.odds, HK = b.HATCH_KM, mul = .6 + r() * .9, scM = .75 + r() * .6;
     const sub = .25, per = sub / (b.BAG_STEP || .25), EVN = [0, 5, 10, 15, 20, 25];
     const MQ_DAY = mqL(b, 'MQ_DAY_G'), MQ_TY = mqL(b, 'MQ_TY_G'), MQ_PLAY = mqL(b, 'MQ_PLAY_G'), MQ_SUM = mqL(b, 'MQ_SUM_G'), MQ_PH = mqL(b, 'MQ_PH_G'), MQ_KILL = mqL(b, 'MQ_KILL_G'), MG_PTS = b.MG_PTS || MQ_DEF.MG_PTS;
-    const U = { p: P.id, dex: new Set(), box: [], bag: [], inc: [], pe: 0, pl: 0, gold: 0, gs: { hatch: 0, run: 0, mg: 0, mq: 0, evo: 0 }, spent: 0, buy: 0, evo: 0, sh: 0, it: { inc: 0, charm: 0 }, use: { inc: 0, charm: 0 }, bI: 0, bC: 0, gW: { w: -1, best: 0, got: {} }, eggs: 0, hatched: 0, km: 0,
+    const U = { p: P.id, dex: new Set(), box: [], bag: [], inc: [], pe: 0, pl: 0, gold: 0, gs: { hatch: 0, run: 0, mg: 0, mq: 0, evo: 0, gym: 0, sf: 0 }, ss: { inc: 0, charm: 0, tool: 0, wage: 0, tm: 0, deco: 0 }, spent: 0, buy: 0, evo: 0, sh: 0, it: { inc: 0, charm: 0 }, use: { inc: 0, charm: 0 }, bI: 0, bC: 0, gW: { w: -1, best: 0, got: {} }, eggs: 0, hatched: 0, km: 0,
       fE: null, fL: null, d: {}, bud: [], frD: {}, q: { n: 0, sum: 0, ph: 0, kn: 0, ty: {}, cl: {} } };
     const addG = (k, v) => { U.gold += v; U.gs[k] += v; };
+    const pay = (k, v) => { U.gold -= v; U.spent += v; U.ss[k] += v; };
+    const Y = { rep: 0, sf: [], hireD: -99, tmD: -99, decoD: -99, cand: 0, w: 0, l: 0, blk: 0 };   // 체육관
     const getMon = (sp, day) => { const isNew = !U.dex.has(sp); U.dex.add(sp); const m = { sp, fr: 0, km: 0, sex: r() < .5 ? 'f' : 'm', d: day }; U.box.push(m); return [m, isNew]; };
     const kidsOk = (m, cond) => (model.SP[m.sp]?.kids || []).filter(c => { const d = model.SP[c]; if (!d) return false; if (d.eqx && (d.eqx === 1 ? 'f' : 'm') !== m.sex) return false; const w = evoWay(model, c); return w && cond(w, c); });
     const evolve = (m, c, day) => { m.sp = c; m.km = 0; m.fr = Math.min(b.FR_MAX, m.fr + (EVO_FR[model.SP[c].st] || 0)); U.evo++; if (!U.dex.has(c)) { U.dex.add(c); addG('evo', b.NEW_G); } };
     const need = m => model.SP[m.sp]?.ek || EVN[model.SP[m.sp]?.gb || 1] * (model.SP[m.sp]?.st ? 1.5 : 1);
     // 짝꿍(최대 3): 거리로 아직 못 본 종으로 진화할 수 있는 포켓몬을 고른다. 첫째 칸은 아끼는 포켓몬(친밀도 기록)
     const fillBud = () => { while (U.bud.length < 3) { const m = U.box.find(o => !U.bud.includes(o) && kidsOk(o, (w, c) => w.k !== 'item' && !U.dex.has(c)).length); if (!m) break; U.bud.push(m); } };
+    // 체육관 하루: 도전자 3~4명 → 고용 트레이너가 먼저 막고, 남은 도전자는 접속한 날 직접 배틀. 월급은 7일마다, 못 주면 그 트레이너는 쉰다.
+    // 짐작: 내 라인업 평균 레벨 = 10 + 0.4×날짜(최대 60), 트레이너 한 명이 막을 확률 55%, 직접 배틀 승률 쉬움 80%·보통 65%·이름 있는 50%.
+    // 짐작: 고용은 지원자가 있고(하루에 한 명꼴) 골드가 월급 4주치 이상일 때, 체육관 상점은 기술머신 3일에 하나(골드 ≥ 값×3)·꾸미기/의상 7일에 하나(골드 ≥ 값×4).
+    const GG = Array.isArray(b.GYM_G) && b.GYM_G.length === 3 ? b.GYM_G : GYM_DEF.GYM_G, SFP = gv(b, 'GYM_SF_PCT') / 100, WB = gv(b, 'WAGE_BASE'), WL = gv(b, 'WAGE_LV'), WM = gv(b, 'WAGE_MAX'), GS = model.gymShop || { tm: 1000, deco: 1500 };
+    const gradeI = () => { let i = 0; GRADES.forEach((v, j) => { if (Y.rep >= v) i = j; }); return i; };
+    const gymDay = (day, on) => {
+      const lv = Math.min(60, 10 + .4 * day), n = 3 + (r() < .5 ? 1 : 0), G = gradeI();
+      for (const s of Y.sf) while (s.pay <= day) { if (U.gold >= s.wage) { pay('wage', s.wage); s.pay += 7; s.rest = 0; } else { s.rest = 1; break; } }
+      for (let i = 0; i < n; i++) {
+        const named = lv >= 20 && r() < .1, d = named ? 2 : r() < EASY_P[G] ? 0 : 1;
+        if (!named) { let hit = null; for (const s of Y.sf) { if (s.rest || (s.lazy && r() < .2)) continue; if (r() < .55) { hit = s; break; } }
+          if (hit) { addG('sf', Math.round(GG[d] * SFP * (hit.money ? 1.5 : 1))); Y.rep += Math.max(1, Math.round(GYM_REP[d][0] * .6)); Y.blk++; continue; } }
+        if (!on || r() >= P.gym) continue;   // 기다리다 돌아감 (평판 그대로)
+        if (r() < [.8, .65, .5][d]) { addG('gym', GG[d]); Y.rep += GYM_REP[d][0]; Y.w++; Y.blk++; } else { Y.rep = Math.max(0, Y.rep + GYM_REP[d][1]); Y.l++; }
+      }
+      Y.cand = Math.min(3, Y.cand + 1.1);
+      if (on && Y.cand >= 1 && Y.sf.length < Math.min(5, gradeI()) && day - Y.hireD >= 2) { const t = Math.floor(r() * 7), m = rngI(r, 2, 4), wage = Math.round(Math.min(WM, Math.max(WB, (WB + lv * WL + m * 35) * TRAIT_W[t])) / 10) * 10;
+        if (U.gold >= wage * 4) { pay('wage', wage); Y.sf.push({ wage, pay: day + 7, rest: 0, money: t === 2, lazy: t === 6 }); Y.hireD = day; Y.cand--; } }
+      if (on && U.gold >= GS.tm * 3 && day - Y.tmD >= 3) { pay('tm', GS.tm); Y.tmD = day; }
+      if (on && U.gold >= GS.deco * 4 && day - Y.decoD >= 7) { pay('deco', GS.deco); Y.decoD = day; }
+    };
     for (let day = 1; day <= days; day++) {
       const wk = day % 7 === 6 || day % 7 === 0, on = r() < P.on;
       let km = 0;
@@ -54,8 +83,8 @@
       // v3.42 경완: 향로·빛나는 부적 — 골드가 넉넉하면 상점에서 사고(향로 하루 1개, 부적 1주 1개), 미니게임 기록 선물로도 받는다. 걷는 날 하나씩 써서 그 시간(분 → 걸음 빠르기로 km) 동안 줍는 알에 효과
       const SH = model.shop;
       if (on && SH && km >= 1) { const pI = SH.inc.p, pC = SH.charm.p;
-        if (!U.it.inc && U.gold >= pI * 3) { U.gold -= pI; U.spent += pI; U.bI++; U.it.inc++; }
-        if (!U.it.charm && U.gold >= pC * 1.5 && day - (U.cD ?? -99) >= 7) { U.gold -= pC; U.spent += pC; U.bC++; U.it.charm++; U.cD = day; } }
+        if (!U.it.inc && U.gold >= pI * 3) { pay('inc', pI); U.bI++; U.it.inc++; }
+        if (!U.it.charm && U.gold >= pC * 1.5 && day - (U.cD ?? -99) >= 7) { pay('charm', pC); U.bC++; U.it.charm++; U.cD = day; } }
       const kmh = 4.5 + 4.5 * P.run;
       let incL = 0, chL = 0; if (SH && km >= 1) { if (U.it.inc) { U.it.inc--; U.use.inc++; incL = SH.inc.min / 60 * kmh; } if (U.it.charm) { U.it.charm--; U.use.charm++; chL = SH.charm.min / 60 * kmh; } }
       const oddsI = SH ? (() => { const w = odds.map((x, j) => x * (SH.inc.mul[j] ?? 1)), t = w.reduce((a, x) => a + x, 0) || 1; return w.map(x => x / t); })() : odds;
@@ -97,13 +126,14 @@
       // 진화: 거리·친밀도 진화는 짝꿍, 도구 진화는 돈이 되면 상점에서 사서
       for (const m of [...U.bud]) { const L = kidsOk(m, (w, c) => w.k === 'km' || (w.k === 'fr' && m.fr >= b.FR_EVO)); if (L.length && m.km >= need(m)) { evolve(m, L.find(c => !U.dex.has(c)) ?? L[0], day);
           if (!kidsOk(m, (w, c) => w.k !== 'item' && !U.dex.has(c)).length && m !== U.bud[0]) U.bud.splice(U.bud.indexOf(m), 1); } }
-      if (on) for (const m of U.box) { const L = kidsOk(m, (w, c) => w.k === 'item' && !U.dex.has(c)); for (const c of L) { const p = evoWay(model, c).p; if (U.gold >= p) { U.gold -= p; U.spent += p; U.buy++; evolve(m, c, day); break; } } }
+      if (on) for (const m of U.box) { const L = kidsOk(m, (w, c) => w.k === 'item' && !U.dex.has(c)); for (const c of L) { const p = evoWay(model, c).p; if (U.gold >= p) { pay('tool', p); U.buy++; evolve(m, c, day); break; } } }
+      if (day >= GYM_D) gymDay(day, on);
       if (U.bud[0] && U.frD[b.FR_EVO] == null && U.bud[0].fr >= b.FR_EVO) U.frD[b.FR_EVO] = day;
       if (U.bud[0] && U.frD.max == null && U.bud[0].fr >= b.FR_MAX) U.frD.max = day;
       if (day === 7 || day === 30 || day === days) U.d[day] = { dex: U.dex.size, bag: U.bag.length, gold: U.gold, earn: Object.values(U.gs).reduce((a, x) => a + x, 0) };
     }
     const earn = Object.values(U.gs).reduce((a, x) => a + x, 0);
-    return { p: P.id, d: U.d, fE: U.fE, fL: U.fL, earn, gs: U.gs, spent: U.spent, buy: U.buy, bI: U.bI, bC: U.bC, uI: U.use.inc, uC: U.use.charm, evo: U.evo, sh: U.sh, eggs: U.eggs, hatched: U.hatched, km: U.km, fr160: U.frD[b.FR_EVO] ?? null, frMax: U.frD.max ?? null };
+    return { p: P.id, d: U.d, fE: U.fE, fL: U.fL, earn, gs: U.gs, ss: U.ss, sfN: Y.sf.length, rep: Y.rep, gymW: Y.w, gymL: Y.l, spent: U.spent, buy: U.buy, bI: U.bI, bC: U.bC, uI: U.use.inc, uC: U.use.charm, evo: U.evo, sh: U.sh, eggs: U.eggs, hatched: U.hatched, km: U.km, fr160: U.frD[b.FR_EVO] ?? null, frMax: U.frD.max ?? null };
   }
 
   function sim(model, o = {}) {
@@ -112,7 +142,9 @@
     const by = {}; for (const P of PERSONAS) { const L = users.filter(u => u.p === P.id), f = fn => med(L.map(fn));
       by[P.id] = { name: P.name, n: L.length, dex7: f(u => u.d[7].dex / N), dex30: f(u => u.d[30].dex / N), dex90: f(u => u.d[days].dex / N), fE: f(u => u.fE ?? days + 1), fL: f(u => u.fL ?? days + 1), noL: L.filter(u => u.fL == null).length / L.length,
         gpd: f(u => u.d[30].earn / 30), gold30: f(u => u.d[30].gold), bag30: f(u => u.d[30].bag), fr160: f(u => u.fr160 ?? days + 1), frMax: f(u => u.frMax ?? days + 1), km: f(u => u.km / days), buy: f(u => u.buy), uI: f(u => u.uI), uC: f(u => u.uC), sh: L.reduce((a, u) => a + u.sh, 0),
-        src: Object.fromEntries(Object.keys(L[0].gs).map(k => [k, Math.round(f(u => u.gs[k]))])) }; }
+        src: Object.fromEntries(Object.keys(L[0].gs).map(k => [k, Math.round(f(u => u.gs[k]))])),   // 90일 동안 받은 골드 (출처별)
+        out: Object.fromEntries(Object.keys(L[0].ss).map(k => [k, Math.round(f(u => u.ss[k]))])),   // 90일 동안 쓴 골드 (상점·직원 월급·체육관 상점)
+        gymNet: f(u => (u.gs.gym + u.gs.sf - u.ss.wage) / days), sfN: f(u => u.sfN), rep: f(u => u.rep), gold90: f(u => u.d[days].gold) }; }
     // 제일 드문 종: 그 알 등급 확률 × 그 종 확률 로 몇 km 에 하나꼴인지 (천장 빼고)
     let rare = null; const epk = 1 / (model.b.BAG_STEP || .25);
     for (let g = 1; g <= 5; g++) for (const [sp, p] of model.probs[g] || []) { const v = 1 / (epk * model.odds[g - 1] * p); if (p > 0 && (!rare || v > rare.km)) rare = { sp: +sp, g, km: v }; }
@@ -128,12 +160,14 @@
     { id: 'fL', n: '첫 전설 알 부화 (출퇴근)', of: s => s.by.commute.fL, lo: 10, hi: 60, f: v => Math.round(v) + '일', easy: '전설 알이 너무 흔해요', hard: '전설 알을 거의 못 봐요' },
     { id: 'gpd', n: '하루 골드 (출퇴근)', of: s => s.by.commute.gpd, lo: 120, hi: 600, f: v => Math.round(v).toLocaleString() + 'G', easy: '골드가 넘쳐서 상점 물건이 금방 다 사져요', hard: '진화의 돌 하나 사기까지 너무 오래 모아야 해요' },
     { id: 'gpdH', n: '하루 골드 (가끔 접속)', of: s => s.by.casual.gpd, lo: 25, hi: 400, f: v => Math.round(v).toLocaleString() + 'G', easy: '가끔 켜는 사람도 골드가 넘쳐요', hard: '가끔 켜는 사람은 골드를 거의 못 모아요' },
+    { id: 'gymNet', n: '체육관 하루 순수익 (출퇴근)', of: s => s.by.commute.gymNet, lo: 0, hi: 300, f: v => Math.round(v).toLocaleString() + 'G', easy: '체육관만 돌려도 골드가 넘쳐요', hard: '직원 월급이 체육관에서 버는 골드보다 많아요' },
     { id: 'fr160', n: '친밀도 진화까지 (출퇴근)', of: s => s.by.commute.fr160, lo: 3, hi: 30, f: v => Math.round(v) + '일', easy: '친밀도 진화가 너무 금방이에요', hard: '친밀도 진화까지 너무 오래 걸려요' },
     { id: 'frMax', n: '친밀도 만점까지 (출퇴근)', of: s => s.by.commute.frMax, lo: 7, hi: 60, f: v => Math.round(v) + '일', easy: '친밀도 만점이 너무 쉬워요', hard: '친밀도 만점까지 너무 멀어요' },
     { id: 'bag', n: '30일째 가방에 쌓인 알 (산책 매니아)', of: s => s.by.walk.bag30, lo: -1, hi: 120, f: v => Math.round(v) + '개', easy: '', hard: '부화기가 못 따라가서 가방에 알이 계속 쌓여요' },
     { id: 'rare', n: '제일 드문 포켓몬', of: s => s.rare?.km, lo: 300, hi: 2500, f: v => Math.round(v).toLocaleString() + 'km', easy: '제일 드문 포켓몬도 금방 나와요', hard: '제일 드문 포켓몬은 사실상 못 만나요' },
   ];
-  const lvOf = (B, v) => v == null ? 'ok' : v < B.lo ? (B.id === 'gpd' || B.id === 'gpdH' || B.id.startsWith('dex') ? 'hard' : 'easy') : v > B.hi ? (B.id === 'gpd' || B.id === 'gpdH' || B.id.startsWith('dex') ? 'easy' : 'hard') : 'ok';
+  const UPGOOD = new Set(['gpd', 'gpdH', 'gymNet']);   // 클수록 쉬운 칸
+  const lvOf = (B, v) => v == null ? 'ok' : v < B.lo ? (UPGOOD.has(B.id) || B.id.startsWith('dex') ? 'hard' : 'easy') : v > B.hi ? (UPGOOD.has(B.id) || B.id.startsWith('dex') ? 'easy' : 'hard') : 'ok';
   function judge(s) { return BANDS.map(B => { const v = B.of(s), lv = lvOf(B, v); return { id: B.id, n: B.n, v, txt: v == null ? '-' : B.f(v), lv, why: lv === 'easy' ? B.easy : lv === 'hard' ? B.hard : '적당해요', lo: B.f(Math.max(0, B.lo)), hi: B.f(B.hi) }; }); }
 
   // 고칠 거리: 치우친 칸마다 고칠 값(patch)을 만들고, 그 값으로 다시 돌려 본 결과를 함께 붙인다
@@ -142,7 +176,8 @@
   const g5 = (x, k) => Math.max(5, Math.round(x * k / 5) * 5);
   const gMQ = (x, k) => { const v = x * k; return v >= 1000 ? Math.round(v / 100) * 100 : Math.max(10, Math.round(v / 10) * 10); };   // v3.35 경완: 미션 골드는 10G 단위, 1,000G(4자리)부터는 100G 단위
   function allGold(b, k) { const o = { DUP_G: scG(b.DUP_G, k), NEW_EGG_G: scG(b.NEW_EGG_G, k), NEW_G: g5(b.NEW_G, k), RUN_G: Math.max(1, Math.round(b.RUN_G * k)), MG_PTS: Math.max(1, Math.round((b.MG_PTS || MQ_DEF.MG_PTS) / k)) };
-    for (const q of Object.keys(MQ_N)) o[q] = (Array.isArray(b[q]) ? b[q] : MQ_DEF[q]).map(x => gMQ(x, k)); return o; }
+    for (const q of Object.keys(MQ_N)) o[q] = (Array.isArray(b[q]) ? b[q] : MQ_DEF[q]).map(x => gMQ(x, k));
+    o.GYM_G = (Array.isArray(b.GYM_G) ? b.GYM_G : GYM_DEF.GYM_G).map(x => g5(x, k)); return o; }   // 체육관 배틀 골드도 같은 비율 (월급은 그대로)
   // v3.41 경완: 이미 작업본·배포본에 있는 미션 골드도 단위에 맞춘다 (바뀌는 칸만 돌려줌)
   function mqRound(b) { const o = {}; for (const q of Object.keys(MQ_N)) { const L = Array.isArray(b[q]) ? b[q] : MQ_DEF[q], R = L.map(x => gMQ(x, 1)); if (R.some((x, i) => x !== L[i])) o[q] = R; } return o; }
   function propose(model, s) {
@@ -155,9 +190,14 @@
     if (has('fL') === 'hard') add('pityL', `전설 천장 ${model.pity.l} → ${Math.round(model.pity.l * .75)}km`, '전설 알을 거의 못 봐요', { pity: { l: Math.round(model.pity.l * .75) } });
     if (has('fL') === 'easy') add('oddL', '전설 알 확률 30% 낮추기', '전설 알이 너무 흔해요', { odds: reOdds(model.odds, 4, .7) });
     // v3.25 경완: 골드는 부화만이 아니라 받을 수 있는 곳 모두(부화·진화·런닝·미니게임 점수·미션)를 같은 비율로
-    { const src = s.by?.commute?.src || {}, tot = Object.values(src).reduce((a, x) => a + x, 0) || 1, share = Object.entries({ 부화: src.hatch, 미니게임: src.mg, 미션: src.mq, 진화: src.evo, 런닝: src.run }).filter(([, v]) => v > 0).sort((x, y) => y[1] - x[1]).map(([n, v]) => `${n} ${Math.round(v / tot * 100)}%`).join(' · ');
+    { const src = s.by?.commute?.src || {}, tot = Object.values(src).reduce((a, x) => a + x, 0) || 1, share = Object.entries({ 부화: src.hatch, 미니게임: src.mg, 미션: src.mq, 진화: src.evo, 런닝: src.run, 체육관: (src.gym || 0) + (src.sf || 0) }).filter(([, v]) => v > 0).sort((x, y) => y[1] - x[1]).map(([n, v]) => `${n} ${Math.round(v / tot * 100)}%`).join(' · ');
       if (has('gpd') === 'hard' || has('gpdH') === 'hard') add('goldU', '모든 골드 30% 올리기', `골드가 너무 안 모여요 (출퇴근 골드: ${share})`, { bal: allGold(b, 1.3) });
       if (has('gpd') === 'easy') add('goldD', '모든 골드 25% 내리기', `골드가 넘쳐요 (출퇴근 골드: ${share})`, { bal: allGold(b, .75) }); }
+    // 체육관: 월급이 수입보다 많으면 월급을, 체육관만으로 골드가 넘치면 체육관 배틀 골드를 손본다
+    { const w10 = (x, k) => Math.max(10, Math.round(x * k / 10) * 10), GG = Array.isArray(b.GYM_G) ? b.GYM_G : GYM_DEF.GYM_G, o = s.by?.commute || {};
+      const why = `출퇴근 90일: 체육관 배틀 ${(o.src?.gym || 0).toLocaleString()}G · 트레이너가 막음 ${(o.src?.sf || 0).toLocaleString()}G · 직원 월급 −${(o.out?.wage || 0).toLocaleString()}G`;
+      if (has('gymNet') === 'hard') add('wageD', '직원 월급 20% 내리기', why, { bal: { WAGE_BASE: w10(gv(b, 'WAGE_BASE'), .8), WAGE_LV: Math.max(1, Math.round(gv(b, 'WAGE_LV') * .8)), WAGE_MAX: w10(gv(b, 'WAGE_MAX'), .8) } });
+      if (has('gymNet') === 'easy') add('gymD', `체육관 배틀 골드 25% 내리기 (${GG.join('·')} → ${GG.map(x => g5(x, .75)).join('·')}G)`, why, { bal: { GYM_G: GG.map(x => g5(x, .75)) } }); }
     if (has('fr160') === 'hard' || has('frMax') === 'hard') add('frU', `필드 친밀도 하루 최대 ${b.FLD_FR_DAY} → ${b.FLD_FR_DAY + 4}`, '친밀도가 너무 느려요', { bal: { FLD_FR_DAY: b.FLD_FR_DAY + 4 } });
     if (has('frMax') === 'easy') add('frD', `짝꿍 1km 친밀도 ${b.WALK_FR} → ${Math.max(1, b.WALK_FR - 1)}`, '친밀도가 너무 빨리 차요', { bal: { WALK_FR: Math.max(1, b.WALK_FR - 1) } });
     if (has('rare') === 'hard') add('rare', '티어 메뉴에서 드문 쪽 기울기 줄이기', `${s.rare?.g === 5 ? '전설' : '드문'} 알 안에서 제일 드문 종이 너무 안 나와요. 티어 안 순서 기울기는 작업실 티어 메뉴에서 직접 봐 주세요`, null);
@@ -172,6 +212,9 @@
     for (const x of P) { if (!x.patch) continue; const s2 = sim(patched(model, x.patch), o), J2 = judge(s2); x.after = J2.filter(j => { const a = J.find(q => q.id === j.id); return a.txt !== j.txt; }).map(j => ({ id: j.id, n: j.n, from: J.find(q => q.id === j.id).txt, to: j.txt, lv: j.lv })); }
     return { s, J, P }; }
 
-  const NEU = { PERSONAS, BANDS, sim, judge, propose, advise, patched, reach, mqRound };
+  // 골드 분류 [키, 이름, 묶음] — 작업실 뉴트럴 화면의 '골드 들어오고 나가는 곳' 표와 루틴 출력이 같이 쓴다
+  const GOLD_IN = [['hatch', '부화', '필드'], ['evo', '진화', '필드'], ['run', '런닝', '필드'], ['mg', '미니게임', '필드'], ['mq', '미션', '필드'], ['gym', '배틀', '체육관'], ['sf', '트레이너가 막음', '체육관']];
+  const GOLD_OUT = [['inc', '향로', '상점'], ['charm', '빛나는 부적', '상점'], ['tool', '진화 도구', '상점'], ['wage', '월급', '직원 고용'], ['tm', '기술머신', '체육관 상점'], ['deco', '꾸미기·의상', '체육관 상점']];
+  const NEU = { PERSONAS, BANDS, GOLD_IN, GOLD_OUT, GYM_DEF, sim, judge, propose, advise, patched, reach, mqRound };
   if (typeof module !== 'undefined' && module.exports) module.exports = NEU; else root.NEU = NEU;
 })(typeof window !== 'undefined' ? window : globalThis);
