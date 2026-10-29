@@ -554,10 +554,11 @@ function buyTm(id, can) {
 function shopIt(body) {
   const g = st(), H = GB().HOLD, ty = g.ty; g.itm = g.itm || {};
   const L = Object.keys(H).sort((a, b) => ((H[b][3] === ty) - (H[a][3] === ty)) || (!!H[a][3] - !!H[b][3]) || (H[b][1] - H[a][1]));   // 체육관 타입 강화 도구 먼저, 그다음 비싼 순, 타입 강화는 뒤
-  body.innerHTML = `<div class="sp-list">${L.map(id => GB().itRow(id, g.itm[id] || 0).replace('</button>', `<em>${gold(H[id][1])}</em></button>`)).join('')}</div>`;
-  body.onclick = (e, b) => { sfx('tap'); const id = b.dataset.it; if (!id) return; const x = H[id];
+  // 종류마다 하나만 살 수 있고, 가진 건 회색 '보유 중' (경완 2026-10-29)
+  body.innerHTML = `<div class="sp-list">${L.map(id => { const own = GB().itHave(id); return GB().itRow(id).replace('class="sp-tm sp-it"', `class="sp-tm sp-it${own ? ' own' : ''}"${own ? ' disabled' : ''}`).replace('</button>', `<em>${own ? '보유 중' : gold(H[id][1])}</em></button>`); }).join('')}</div>`;
+  body.onclick = (e, b) => { const id = b.dataset.it; if (!id || GB().itHave(id)) return; sfx('tap'); const x = H[id];
     GB().itInfo(id, `${gold(x[1])} 사기`, () => { if (!buy(x[1])) return say(`골드가 모자라요. ${x[1].toLocaleString()}G가 필요해요.`);
-      g.itm[id] = (g.itm[id] || 0) + 1; K.glog('tr', `도구 <b>${esc(x[0])}</b>${K.jong(x[0]) ? '을' : '를'} 샀다.`); K.save(); redraw(); say(`${esc(x[0])}${K.jong(x[0]) ? '을' : '를'} 창고에 넣었어요.`); }); };
+      if (GB().itHave(id)) return; g.itm[id] = 1; K.glog('tr', `도구 <b>${esc(x[0])}</b>${K.jong(x[0]) ? '을' : '를'} 샀다.`); K.save(); redraw(); say(`${esc(x[0])}${K.jong(x[0]) ? '을' : '를'} 창고에 넣었어요.`); }); };
 }
 // 꾸미기: 사면 빈 칸에 바로 놓인다. 놓인 것을 누르면 치우기, 가진 것을 누르면 놓기
 function shopDeco(body) {
