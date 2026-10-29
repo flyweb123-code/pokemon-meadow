@@ -531,7 +531,7 @@ function luPick() {
       if (a[0] === 'L') { sel = +a.slice(1); draw(); return; }
       if (a === 'go') { close(); g.luI = sel; save(); ok(sel); } });
     const draw = () => p.querySelectorAll('.lp-row').forEach((b, i) => b.setAttribute('aria-pressed', i === sel));
-    p.onclick = (f => e => { if (e.target === p) return; f(e); })(p.onclick);   // 바깥을 눌러도 안 닫힘
+    p.onclick = (f => e => { if (e.target === p) { p.remove(); return ok(null); } f(e); })(p.onclick);   // 빈 곳을 누르면 닫힘 → 도전자 말로 돌아감 (경완 2026-10-29)
     GB().fillTh(p); draw(); });
 }
 function myAvg() { const g = st(), L = luNow().map(P => g.mon?.[P.id]?.lv).filter(Boolean); return L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : 10; }
@@ -731,8 +731,9 @@ async function challenge() {
     const N = c.named && NAMED.find(n => n.id === c.named), me = trName() || '관장';
     const line = N ? N.ln[0].replace('{me}', me) : pick(CHAL_LINES[c.diff] || CHAL_LINES[1]);
     if (c.boss) await talk(`<span class="gy-who">승급 심사</span><b>${GRADES[c.boss][1]}</b> 승급을 걸고<br>${esc(c.cls)} ${esc(c.nm)}${jong(c.nm) ? '이' : '가'} 심사하러 왔다!<br>이기면 등급이 오르고 배지를 받는다.`);   // 등급 문턱마다 (경완 2026-10-29)
-    await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>${esc(line)}`, '라인업 고르기');   // 난이도·마리 수는 안 보여 줌 (경완 2026-10-28)
-    await luPick(); const my = luNow();
+    do await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>${esc(line)}`, '배틀 시작');   // 난이도·마리 수는 안 보여 줌 (경완 2026-10-28), 버튼 글자 '배틀 시작' (경완 2026-10-29)
+    while (await luPick() == null);
+    const my = luNow();
     const team = c.team.map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv); if (mv && mv.length) o.mv = mv; if (c.boss) o.iv = o.iv.map(() => 31); else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); return o; });
     // 배틀이 끝나면 배틀 화면에서 상대가 한마디 (경완 2026-10-28)
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : pick(WIN_LINES), lose: N ? N.ln[2].replace('{me}', me) : pick(LOSE_LINES) };
