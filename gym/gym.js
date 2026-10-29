@@ -51,7 +51,7 @@ const DESIGNS_FR = [
   { id: 'cerulean', pt: 'snowpoint', n: '물 위 다리', sub: '블루시티 체육관', w: 17, h: 20, leader: [8, 6], door: [8, 18], guy: [7, 18],
     deco: [[2, 3], [14, 3], [1, 8], [15, 8], [1, 13], [15, 13], [5, 18], [11, 18]],
     path: [[8, 18], [8, 16], [9, 16], [9, 10], [8, 10], [8, 7]], slots: [[8, 13, 'r'], [10, 10, 'l'], [6, 10, 'r'], [9, 8, 'l'], [7, 8, 'r'], [11, 7, 'l'], [5, 7, 'r']], inY: 15, tiny: [[8, 16], [[3, 5], [12, 14]]],
-    fix: { t: [[3, 7, 4, 7, 1, 1], [9, 7, 4, 7, 1, 1, 1], [5, 8, 7, 17, 3, .5]], 1: [[9, 8.5, 9, 8, 1, .5], [12, 7, 4, 7, 1, 1, 1], [12, 8, 4, 8, 1, 1, 1], [13, 7, 11, 12, 1, 2]],
+    fix: { t: [[3, 7, 4, 7, 1, 1], [9, 7, 4, 7, 1, 1, 1], [5, 8, 7, 17, 3, .5]], 0: [[9, 8.5, 9, 8, 1, .5], [12, 7, 4, 7, 1, 1, 1], [12, 8, 4, 8, 1, 1, 1], [13, 7, 11, 12, 1, 2]], 1: [[9, 8.5, 9, 8, 1, .5], [12, 7, 4, 7, 1, 1, 1], [12, 8, 4, 8, 1, 1, 1], [13, 7, 11, 12, 1, 2]],
       2: [[4, 10.5, 4, 7.5, 1, .5], [4, 11, 4, 8, 1, 1], [5, 11, 6, 8, 1, 1]], 3: [[4, 10.5, 4, 7.5, 1, .5], [4, 11, 4, 8, 1, 1], [5, 11, 6, 8, 1, 1]] }, cuts: [[9, 15], [9, 15], [12, 15], [12, 15], [15, 16]] },
   { id: 'vermilion', pt: 'pastoria', n: '번개 관문', sub: '갈색시티 체육관', w: 11, h: 21, leader: [5, 2], door: [5, 19], guy: [4, 18],
     deco: [[1, 3], [9, 3], [1, 9], [9, 9], [1, 13], [9, 13], [1, 18], [9, 18]],
@@ -72,13 +72,13 @@ const DESIGNS = MAP_SET === 'fr' ? DESIGNS_FR : DESIGNS_PT;
 const dzBase = id => DESIGNS.find(d => d.id === id) || DESIGNS.find(d => d.old === id || d.pt === id) || DESIGNS[0];
 // 체육관은 처음엔 관장 주변 + 입구만 작게, 평판(등급)이 오를수록 가운데 홀이 열린다 (경완 2026-10-27).
 // 닫힌 줄은 맵 그림에서 잘라 내고 위아래를 붙인다. 저장하는 칸(꾸미기·트레이너 자리)은 원래 맵 좌표(toF), 화면은 줄인 좌표(toV)
-const OPEN = [0, .2, .4, .6, .8, 1];
+const OPEN = [0, 1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6, 1];
 // cuts[등급] = [a, b]: 위아래 줄 그림이 이어지는 자리를 골라 둠 (경완 2026-10-27 '맵 줄인거 티나지 않게')
 // tiny = 새내기(등급 0) 체육관: [줄 [a, b], 칸 [[a, b], …]] 나·입구 기둥·안내원만 겨우 들어가게 (경완 2026-10-27 '맨 처음은 진짜 겁나 좁아야')
 function cutOf(D, gi) { if (gi == null) { const g = st(); if (!g) return null; gi = bigOf(g); }
-  const f = D.fix?.[gi === 0 && D.tiny ? 't' : gi];
+  const f = D.fix?.[gi === 0 && D.tiny ? 't' : gi - 1];   // 7단계: 0 = tiny, 1~5 = cuts[0~4], 6 = 다 열림 (fix 숫자 키는 cuts 번호)
   if (gi === 0 && D.tiny) return { y: D.tiny[0], x: D.tiny[1] || [], f };
-  if (D.cuts) { const c = D.cuts[gi]; return c ? { y: [c[0], c[1]], x: c[2] || [], f } : null; }   // [a, b, 칸 자르기?]
+  if (D.cuts) { const c = D.cuts[gi - 1]; return c ? { y: [c[0], c[1]], x: c[2] || [], f } : null; }   // [a, b, 칸 자르기?]
   const a0 = D.leader[1] + 3, b0 = D.door[1] - 3; if (b0 - a0 < 2) return null;
   const a = a0 + Math.round((b0 - a0) * OPEN[gi]); return a < b0 ? { y: [a, b0], x: [] } : null; }
 // 잘라 낸 구간 R([[a, b], …], 오름차순)에 대해 원래 좌표 → 보이는 좌표(잘린 곳은 null), 그 반대
@@ -118,11 +118,11 @@ const REP_MAX = 500;
 // 평판 ≈ 막은 도전자 수 (경완 2026-10-29). 등급마다 배지 그림: 동 테 · 은 테 · 금 테 · 동 월계수 · 은 · 금 · 프리즘
 const GRADES = [[0, '새내기 체육관'], [30, '동네 체육관'], [60, '떠오르는 체육관'], [100, '이름난 체육관'], [200, '인기 체육관'], [300, '명문 체육관'], [500, '전설의 체육관']];
 // 체육관 크기·트레이너·훈련장 단계 (6단계 그대로): 떠오르는 체육관은 동네와 같은 단계
-const STAGE = [0, 1, 1, 2, 3, 4, 5], STAGES = 6;
+const STAGE = [0, 1, 1, 2, 3, 4, 5], STAGES = 7;   // STAGE = 트레이너·훈련장 단계. 체육관 크기는 등급마다 한 단계씩 7단계 (경완 2026-10-29 '체육관 크기 7단계')
 const GRADES_OLD = [0, 100, 250, 450, 700, 1000];   // 10.87 까지의 평판 문턱 (예전 저장 옮기기)
 // 체육관 크기 단계: 평판으로 등급이 오르면 체육관 정보에서 넓힌다 (경완 2026-10-28 '돈 내고 넓히는 것보다 평판 오르면'). g.big 없으면 예전 저장 = 등급 그대로
-const bigOf = (g = st()) => { const gi = gradeOf(g?.rep || 0).s; return g?.big == null ? gi : Math.min(g.big, gi); };
-const canBig = (g = st()) => !!g?.d && gradeOf(g.rep || 0).s > bigOf(g);
+const bigOf = (g = st()) => { const gi = gradeOf(g?.rep || 0).i; return g?.big == null ? gi : Math.min(g.big, gi); };
+const canBig = (g = st()) => !!g?.d && gradeOf(g.rep || 0).i > bigOf(g);
 // 등급 배지 = 지금 체육관 타입의 그 등급 배지 그림 (경완 2026-10-29 '이 배지를 체육관 등급 배지로')
 const gEmb = i => bdHtml(st().ty, i + 1);
 const gradeOf = rep => { let i = 0; GRADES.forEach(([v], k) => { if (rep >= v) i = k; }); return { i, s: STAGE[i], n: GRADES[i][1], lo: GRADES[i][0], hi: GRADES[i + 1]?.[0] ?? REP_MAX }; };
@@ -493,7 +493,8 @@ function gInit() {
   }
   // 칸토 디자인에서 플라티나 체육관으로: 같은 분위기 맵으로 옮기고, 직접 놓은 장식 자리는 새로 잡는다
   if (g.d && !DESIGNS.some(d => d.id === g.d)) g.d = dzBase(g.d).id;   // 맵 묶음이 바뀌면 짝 맵으로 (자리는 맵 id 로 저장돼 있어 그대로 둔다)
-  if (g.d && g.big == null) g.big = gradeOf(g.rep || 0).s;   // 지금 크기에서부터 직접 넓히기
+  if (g.d && g.big == null) g.big = gradeOf(g.rep || 0).i;   // 지금 크기에서부터 직접 넓히기
+  if (g.big != null && !g.bz) { if (g.big > 0) g.big++; g.bz = 1; }   // 6단계 → 7단계: 1단계 위는 한 칸씩 밀림 (보이는 크기는 그대로)
   if (!g.cands) g.cands = g.cand ? [g.cand] : []; delete g.cand;   // 지원서는 여러 장 (경완 2026-10-28 '카드 슬라이드해서 넘기는')
   return g;
 }
@@ -933,7 +934,7 @@ function infoPop() {
 function perkPop() {
   const g = st(), gi = gradeOf(g.rep || 0).i;
   const row = ([v, n], i) => { const k = STAGE[i];
-    const L = [`체육관 크기 ${k + 1}단계`, `트레이너 ${Math.min(5, k)}명 고용`, `훈련장 ${2 + Math.min(4, k)}칸`];   // 도전자 수·꾸미기·의상은 등급 차등 없음 (경완 2026-10-28)
+    const L = [`체육관 크기 ${i + 1}단계`, `트레이너 ${Math.min(5, k)}명 고용`, `훈련장 ${2 + Math.min(4, k)}칸`];   // 도전자 수·꾸미기·의상은 등급 차등 없음 (경완 2026-10-28)
     return `<li class="${i === gi ? 'cur' : i < gi ? 'done' : ''}">${i > gi ? `<span class="bdw sil"><img alt="" src="${bdImg(g.ty, i + 1)}"></span>` : gEmb(i)}<div><b>${n}</b><small>평판 ${v}</small>${i === gi ? '<em>지금</em>' : ''}</div><ul>${L.map(t => `<li>${t}</li>`).join('')}</ul></li>`; };
   pop(`<h4>체육관 등급</h4><ol class="gy-perk">${GRADES.map(row).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }
@@ -1198,7 +1199,7 @@ async function exit() {
   await wait(200); gymLoad.hide(); leaving = false;
 }
 
-window.Gym = { prepare, enter, exit, isOpen: () => open, renderGold: renderGoldG, DESIGNS, _walk: walk, _ent: ent, _tick: tick,
+window.Gym = { prepare, enter, exit, isOpen: () => open, renderGold: renderGoldG, DESIGNS, _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
   k: { GRADES, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
