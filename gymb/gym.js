@@ -831,11 +831,11 @@ const lockedT = t => (t === 'train' || t === 'staff') && gradeOf(st()?.rep || 0)
 // 잠긴 메뉴는 실제 화면을 흐리게 깔고 그 위에 안내 (경완 2026-10-29 '팝업 말고 화면을 비활성화하고 그 위에 안내문구')
 function lockOv(sh, t) {
   const o = document.createElement('div'); o.className = 'gy-lockov';
-  o.innerHTML = `<div class="win"><i class="lk-ic" aria-hidden="true"></i><h4>${t === 'train' ? '훈련장' : '트레이너'}은 아직 잠겨 있어요</h4><p>${t === 'train' ? '포켓몬을 맡겨 키우는 훈련장은' : '함께 체육관을 지킬 트레이너 고용은'}<br><b>${GRADES[1][1]}</b>이 되면 열려요.</p><small>평판 ${GRADES[1][0]}을 채우고 승급 심사를 통과해 보세요.</small></div>`;
+  o.innerHTML = `<div class="win"><i class="lk-ic" aria-hidden="true"></i><h4>아직 잠겨 있어요</h4><p>${t === 'train' ? '포켓몬을 맡겨 키우는 훈련장은' : '함께 체육관을 지킬 트레이너 고용은'}<br><b>${GRADES[1][1]}</b>이 되면 열려요.</p><small>평판 ${GRADES[1][0]}을 채우고 승급 심사를 통과해 보세요.</small></div>`;
   ['click', 'pointerdown', 'pointerup', 'touchstart'].forEach(k => o.addEventListener(k, e => e.stopPropagation()));
   sh.classList.add('lk'); sh.scrollTop = 0; sh.appendChild(o);
 }
-function menuDot() { const g = st(), b = $g('.gy-menu [data-t="staff"]'); if (!b) return; ['train', 'staff'].forEach(t => $g(`.gy-menu [data-t="${t}"]`)?.classList.toggle('lk', lockedT(t))); const on = !!(g?.cands?.length && !g.candSeen) && !lockedT('staff'); let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot"></i>'); if (!on && d) d.remove(); }
+function menuDot() { const g = st(), b = $g('.gy-menu [data-t="staff"]'); if (!b) return; const on = !!(g?.cands?.length && !g.candSeen) && !lockedT('staff'); let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot"></i>'); if (!on && d) d.remove(); }
 function renderHome(quiet) {
   if (ded && !quiet) return ded.draw();
   const g = gInit(), D = dzOf(g.d);
@@ -992,21 +992,22 @@ async function shutFx(t1, s1, t2, s2, mid) {
   await mid?.(); fx.querySelector('.re-sign').innerHTML = `<b>${t2}</b><span>${s2}</span><small></small>`;
   sfx('tap'); await wait(1100); fx.classList.remove('down'); fx.classList.add('up'); await wait(900); fx.remove();
 }
-const gCard = (x, i) => { const G = gradeOf(x.rep || 0), cur = x === st();
-  return `<div class="mg-card${cur ? ' cur' : ''}" data-ty="${x.ty}"><button type="button" class="mg-go" data-i="${i}"><span class="mg-th"><img alt="" data-ms="${x.d}" data-gi="${bigOf(x)}"><em class="mg-st">${cur ? '운영 중' : '휴업 중'}</em></span><span class="mg-tx"><b>${esc(x.nm)}</b><span class="mg-ty">${tyIcon(x.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[x.ty]} 타입</span><small>${G.n} · 평판 ${x.rep || 0}</small></span></button><button type="button" class="mg-del" data-del="${i}">폐업</button></div>`; };
+const gCard = (x, i) => { const G = gradeOf(x.rep || 0), cur = x === st(), sm = Math.min(5, G.s), tI = tyIcon(x.ty).replace(/ data-tip="[^"]*"/, '');
+  return `<div class="mg-card${cur ? ' cur' : ''}" data-ty="${x.ty}"><button type="button" class="mg-go" data-i="${i}"><span class="mg-th"><img alt="" data-ms="${x.d}" data-gi="${bigOf(x)}"><em class="mg-st">${cur ? '운영 중' : '휴업 중'}</em></span><span class="mg-tx"><b>${esc(x.nm)}</b><span class="mg-ty">${tI}${TYPE_KO[x.ty]} · ${G.n}</span><span class="mg-ch"><i>평판 <b>${x.rep || 0}</b></i><i>트레이너 <b>${sm ? `${(x.sf || []).length}/${sm}` : '잠김'}</b></i></span></span></button><button type="button" class="mg-del" data-del="${i}">폐업</button></div>`; };
 let mgTy = 0;
 function mgPop() {
   $g('.gy-mgs')?.remove(); const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-mgs'; $g('.gy-main').appendChild(el);
   const draw = () => { const L = gList(), used = gUsedTy(), T = [...used].sort((a, b) => a - b); if (mgTy && !used.has(mgTy)) mgTy = 0;
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 관리</b><span class="mg-n">${L.length} / 18곳</span></div>
-      <div class="gy-body">${T.length > 1 ? `<div class="mg-tyf"><button type="button" data-tf="0" aria-pressed="${!mgTy}">전체</button>${T.map(t => `<button type="button" data-tf="${t}" aria-pressed="${mgTy === t}" aria-label="${TYPE_KO[t]}">${tyIcon(t).replace(/ data-tip="[^"]*"/, '')}</button>`).join('')}</div>` : ''}
+      <div class="gy-body">${T.length > 1 ? `<div class="mg-tyf"><button type="button" class="mg-tyb${mgTy ? ' on' : ''}" data-tfp aria-label="타입 고르기">${mgTy ? tyIcon(mgTy).replace(/ data-tip="[^"]*"/, '') + `<b>${TYPE_KO[mgTy]}</b>` : '<b>전체 타입</b>'}<i>▾</i></button></div>` : ''}
       <div class="mg-list">${L.map((x, i) => !mgTy || x.ty === mgTy ? gCard(x, i) : '').join('')}</div>
-      <button type="button" class="mg-new" data-new ${used.size >= 18 ? 'disabled' : ''}><span>+</span><b>새 체육관 세우기</b><small>${used.size >= 18 ? '모든 타입의 체육관이 있어요' : '타입마다 하나씩 세울 수 있어요'}</small></button></div>`;
+      <button type="button" class="mg-new" data-new ${used.size >= 18 ? 'disabled' : ''}><span>+</span><b>새 체육관 세우기</b></button></div>`;
     fillMs(el); };
   const ask = (html, yes, ok) => pop(`<h4>${html}</h4><div class="gy-btns"><button data-a="x">아니요</button><button class="main" data-a="ok">${yes}</button></div>`, (k, close) => { close(); if (k === 'ok') ok(); });
   el.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap'); const L = gList(), g = st();
     if (b.dataset.a === 'x') return el.remove();
-    if (b.dataset.tf != null) { mgTy = +b.dataset.tf; return draw(); }
+    if (b.hasAttribute('data-tfp')) { const cell = (t, lab) => `<button class="${mgTy === t ? 'on' : ''}" data-a="${t}">${t ? tyIcon(t).replace(/ data-tip="[^"]*"/, '') : ''}<span>${lab}</span></button>`;
+      return pop(`<h4>타입 고르기</h4><div class="bw-tyg">${cell(0, '전체')}${[...gUsedTy()].sort((a, b) => a - b).map(t => cell(t, TYPE_KO[t])).join('')}</div>`, (a, close) => { close(); if (a !== 'x') { mgTy = +a; draw(); } }); }
     if (b.dataset.i != null) { const x = L[+b.dataset.i]; if (x === g) return;
       return ask(`지금 체육관을 휴업하고<br><b>${esc(x.nm)}</b>을 관리하시겠습니까?`, '예', () => { el.remove(); root.querySelector('.gy-infos')?.remove();
         shutFx('휴 업', esc(g.nm), '다시 열어요', esc(x.nm), async () => { gSwap(x); renderHome(); renderTop(); }).then(() => say(`<b>${esc(st().nm)}</b>의 문을 다시 열었다!`, `${TYPE_KO[st().ty]} 타입 체육관`)); }); }

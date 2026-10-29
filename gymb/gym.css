@@ -1520,9 +1520,9 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .if-re.if-mg{background:var(--gy-btn)!important;border-color:#23232f!important;box-shadow:0 3px 0 #23232f}
 .gy-mgs .gy-sh{display:flex;align-items:center;gap:8px}.gy-mgs .mg-n{margin-left:auto;font-size:12px;color:var(--dim)}
 .gy-mgs .gy-body{gap:10px}
-.mg-tyf{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
-.mg-tyf button{flex:none;height:32px;min-width:32px;padding:0 8px;display:flex;align-items:center;justify-content:center;border:2px solid var(--inner);background:#fff;color:var(--win-ink);font:inherit;font-size:12px;opacity:.6}
-.mg-tyf button .tyi{width:18px;height:18px}.mg-tyf button[aria-pressed=true]{opacity:1;border-color:var(--frame);background:var(--win);box-shadow:inset 0 0 0 1px var(--frame)}
+.mg-tyf{display:flex}
+.gy-mgs .mg-tyf .mg-tyb{display:flex;align-items:center;gap:5px;height:32px;padding:0 10px;border:2px solid var(--inner);border-radius:6px;background:#fff;color:var(--win-ink);font:inherit;font-size:13px}.gy-mgs .mg-tyb .tyi{width:18px;height:18px}.gy-mgs .mg-tyb b{font-weight:400}.gy-mgs .mg-tyb i{font-style:normal;font-size:10px;opacity:.6;margin-left:2px}
+.gy-mgs .mg-tyb.on{border-color:var(--frame);background:var(--win);box-shadow:inset 0 0 0 1px var(--frame)}
 .mg-list{display:flex;flex-direction:column;gap:8px}
 .gy-mgs .mg-card{position:relative;display:grid;padding:0!important;grid-template-columns:minmax(0,1fr) auto;align-items:center;border:3px solid var(--frame);border-radius:8px;background:#fff;box-shadow:0 3px 0 rgba(0,0,0,.25);overflow:hidden}
 .gy-mgs .mg-card.cur{background:#fff6c8;box-shadow:0 0 0 2px #ffd84a,0 3px 0 rgba(0,0,0,.25)}
@@ -1530,14 +1530,31 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .gy-mgs .mg-card .mg-th{position:relative;display:block;width:60px;height:60px;margin:0!important}
 .gy-mgs .mg-card img{display:block;width:60px;height:60px;object-fit:cover;object-position:top;image-rendering:pixelated;border:2px solid var(--frame);border-radius:4px;background:#222;box-sizing:border-box}
 .gy-mgs .mg-card .mg-tx{display:flex!important;flex-direction:column;align-items:stretch;gap:3px;min-width:0;width:auto}
-.gy-mgs .mg-card .mg-tx b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gy-mgs .mg-card .mg-tx>b{font-size:15px;color:var(--win-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gy-mgs .mg-card .mg-st{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);display:block!important;width:auto!important;white-space:nowrap;font-style:normal;font-size:10px;font-weight:700;line-height:1;padding:3px 5px;border:2px solid var(--frame);border-radius:5px;background:#e4e4ec;color:#6a6a80}
 .gy-mgs .mg-card.cur .mg-st{background:#3a9a4a;color:#fff}
 .gy-mgs .mg-card .mg-ty{display:flex;align-items:center;gap:4px;font-size:12px;white-space:nowrap}.gy-mgs .mg-card .mg-ty .tyi{width:16px;height:16px;flex:none}
-.gy-mgs .mg-card .mg-tx small{font-size:11px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gy-mgs .mg-card .mg-ty{color:var(--dim)}
+.gy-mgs .mg-card .mg-ch{display:flex;gap:4px;flex-wrap:wrap}.gy-mgs .mg-card .mg-ch i{font-style:normal;font-size:11px;line-height:1;padding:3px 6px;border-radius:5px;background:rgba(0,0,0,.06);color:var(--dim);white-space:nowrap}.gy-mgs .mg-card .mg-ch b{font-size:inherit;font-weight:700;color:var(--win-ink)}
 .gy-mgs .mg-card .mg-del{display:grid!important;place-items:center;width:auto!important;height:28px!important;min-height:0!important;margin:0 8px 0 2px!important;padding:0 9px!important;border:2px solid #d9a49c!important;border-radius:6px!important;background:#fff!important;box-shadow:none!important;font:inherit;font-size:12px;color:#b8443a;white-space:nowrap}
 .gy-mgs .mg-card .mg-del:active{background:#fbe4e0!important}
 .mg-new{display:flex;flex-direction:column;align-items:center;gap:2px;padding:14px;border:3px dashed #c4c4d2;border-radius:8px;background:repeating-linear-gradient(135deg,rgba(0,0,0,.025) 0 6px,transparent 6px 12px);font:inherit;color:var(--win-ink)}
 .mg-new span{width:34px;height:34px;display:grid;place-items:center;border:2px solid #c4c4d2;border-radius:50%;font-size:22px;color:#a8a8b8;background:#fff}
-.mg-new b{font-size:14px}.mg-new small{font-size:11px;color:var(--dim)}.mg-new:disabled{opacity:.5}
+.mg-new b{font-size:14px}.mg-new:disabled{opacity:.5}
 .gy-ty.used{opacity:.4;filter:grayscale(1)}
+/* 기술 줄 위력·명중·PP 열 맞춤 (경완 2026-10-29) */
+.mp-line .mp-mv em.mv-st{margin-left:auto;display:grid!important;grid-template-columns:50px 50px 38px;flex:none;font-style:normal;font-size:11px;color:var(--dim);white-space:nowrap}
+.mp-mv em.mv-st i{font-style:normal;display:block}.mp-mv em.mv-st b{font-size:11px!important;font-weight:700;color:var(--win-ink);display:inline!important;overflow:visible!important;margin:0!important}
+/* 라인업 화면 스크롤 없이 (경완 2026-10-29): 칸 높이는 남은 자리만큼 50~72px, 썸네일 틀 크기 통일 */
+.gy-sheet:has(>.lu-grid)>*{flex:none}
+.gy-sheet:has(>.lu-grid) .lu-grid{flex:1 1 auto!important;min-height:0;grid-template-rows:repeat(6,minmax(50px,72px));align-content:start;gap:7px!important}
+.gy-sheet:has(>.lu-grid) .lu-act{margin-top:10px}
+.lu-grid .lu-slot{height:auto!important;min-height:0!important}
+.lu-slot>.rk-fr{height:calc(100% - 6px)!important;max-height:56px;width:auto!important;aspect-ratio:1;box-sizing:border-box;display:grid!important;place-items:center}
+.lu-slot[data-p]>.rk-fr img{width:100%!important;height:100%!important;object-fit:contain}
+.ivb{grid-template-columns:40px 1fr 28px 38px!important}.ivb small{font-size:10px;font-weight:400;color:var(--dim);text-align:right;white-space:nowrap}
+/* 숨겨진 특성 카드: 노란 계열 + 은은하게 빛나는 테두리 (경완 2026-10-29) */
+.mp-na .mp-ab.ha{background:linear-gradient(180deg,#fff7d0,#ffefb0)!important;border-color:#e0b030!important;animation:haGlow 2.4s ease-in-out infinite}
+.mp-na .mp-ab.ha small{color:#a87a10!important}.mp-na .mp-ab.ha b{color:#7a5208!important}
+@keyframes haGlow{0%,100%{box-shadow:0 0 0 1px rgba(255,210,60,.35),0 0 4px rgba(255,200,40,.35)}50%{box-shadow:0 0 0 2px rgba(255,214,70,.7),0 0 12px rgba(255,200,40,.75)}}
+.iv-hex.bar .iv-sum span:nth-of-type(3){display:none}
