@@ -512,13 +512,13 @@ function hire(c) {
 }
 
 // ======================= 상점 (5단계) =======================
-const SHOP_T = [['tm', '기술머신'], ['deco', '꾸미기'], ['fit', '의상']];   // 넓히기는 빼고 등급 따라 저절로 (경완 2026-10-28)
+const SHOP_T = [['tm', '기술머신'], ['it', '도구'], ['deco', '꾸미기'], ['fit', '의상']];   // 넓히기는 빼고 등급 따라 저절로 (경완 2026-10-28)
 const tmPrice = x => x[3] === 2 ? 500 : (x[4] || 0) <= 50 ? 300 : x[4] <= 70 ? 700 : x[4] <= 85 ? 1200 : x[4] <= 100 ? 2000 : 3000;
 function drawShop() {
   if (!SHOP_T.some(([k]) => k === shopT)) shopT = 'tm';
   sh.innerHTML = `<h3>체육관 상점</h3><div class="sp-tabs" role="tablist">${SHOP_T.map(([k, n]) => `<button role="tab" data-st="${k}" aria-selected="${shopT === k}">${n}</button>`).join('')}</div><div class="sp-body"></div>`;   // 탭은 다시 위 작은 탭 (경완 2026-10-28)
   const body = sh.querySelector('.sp-body');
-  ({ tm: shopTm, deco: shopDeco, fit: shopFit })[shopT](body);
+  ({ tm: shopTm, it: shopIt, deco: shopDeco, fit: shopFit })[shopT](body);
   const inner = body.onclick; body.onclick = null;
   sh.onclick = e => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.st) { sfx('tap'); shopT = b.dataset.st; redraw(); return; } inner?.(e, b); };
 }
@@ -549,6 +549,15 @@ function buyTm(id, can) {
     close(); g.tms = g.tms || {}; g.tms[id] = (g.tms[id] || 0) + 1; K.glog('tr', `기술머신 <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 샀다.`); K.save(); redraw();
     say(`기술머신 ${esc(x[1])}${K.jong(x[1]) ? '을' : '를'} 창고에 넣었어요.`);   // 경완 2026-10-29 '여기까지만'
   });
+}
+// 지니는 도구 (경완 2026-10-29): 계속 효과 있는 것만. 사면 창고(g.itm)로, 지니게 하기는 창고·도구 사용에서
+function shopIt(body) {
+  const g = st(), H = GB().HOLD, ty = g.ty; g.itm = g.itm || {};
+  const L = Object.keys(H).sort((a, b) => ((H[b][3] === ty) - (H[a][3] === ty)) || (!!H[a][3] - !!H[b][3]) || (H[b][1] - H[a][1]));   // 체육관 타입 강화 도구 먼저, 그다음 비싼 순, 타입 강화는 뒤
+  body.innerHTML = `<div class="sp-list">${L.map(id => GB().itRow(id, g.itm[id] || 0).replace('</button>', `<em>${gold(H[id][1])}</em></button>`)).join('')}</div>`;
+  body.onclick = (e, b) => { sfx('tap'); const id = b.dataset.it; if (!id) return; const x = H[id];
+    GB().itInfo(id, `${gold(x[1])} 사기`, () => { if (!buy(x[1])) return say(`골드가 모자라요. ${x[1].toLocaleString()}G가 필요해요.`);
+      g.itm[id] = (g.itm[id] || 0) + 1; K.glog('tr', `도구 <b>${esc(x[0])}</b>${K.jong(x[0]) ? '을' : '를'} 샀다.`); K.save(); redraw(); say(`${esc(x[0])}${K.jong(x[0]) ? '을' : '를'} 창고에 넣었어요.`); }); };
 }
 // 꾸미기: 사면 빈 칸에 바로 놓인다. 놓인 것을 누르면 치우기, 가진 것을 누르면 놓기
 function shopDeco(body) {
