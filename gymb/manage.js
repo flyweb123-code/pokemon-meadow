@@ -91,11 +91,27 @@ const yWob = (q, cls = 'wob') => { if (!q) return; const t = q.mp || q.el; t.cla
 const RD = { ol: '#3a1010', d2: '#5e1c18', d1: '#7e2a22', m: '#a03a2c', l: '#c0503a', h: '#dc7454', hh: '#f0a07c' };
 const WH = { ol: '#3c3c48', d2: '#9090a0', d1: '#b0b0bc', m: '#c8c8d4', l: '#dcdce6', h: '#ececf4', hh: '#ffffff' };
 let BUOY = null;
+// 물 위에 뜬 튜브 (경완 2026-10-29 '선 위 말고 물 위에, 입체'): 윗면 + 두께(옆면) + 구멍 안쪽 벽, 아래쪽은 물에 잠겨 파랗게, 둘레 물결
 function buoyArt() {
-  if (BUOY) return BUOY; const { ART } = GA.art(), S = ART.sheet(28, 18, 41);
-  for (let y = -6; y <= 6; y++) for (let x = -11; x <= 11; x++) { const o = (x / 10.5) ** 2 + (y / 5.6) ** 2, i = (x / 4) ** 2 + (y / 2.2) ** 2; if (o > 1 || i < 1) continue;
-    const P = (Math.atan2(y, x) + Math.PI) / (Math.PI / 2) % 2 < 1 ? RD : WH, lt = -y / 6 - x / 22; S.set(14 + x, 8 + y, lt > .35 ? P.h : lt > -.1 ? P.l : lt > -.45 ? P.m : P.d1, 0, P.ol); }
-  S.outline(); return (BUOY = S.canvas().toDataURL());
+  if (BUOY) return BUOY; const w = 32, h = 22, c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
+  const cx = 15.5, cy = 8.5, RX = 14, RY = 7, rx = 6.4, ry = 3.3, T = 3, wl = cy + 5.5;   // 바깥·안 타원, 두께, 물 높이
+  const inE = (x, y, a, b) => ((x - cx) / a) ** 2 + ((y - cy) / b) ** 2 <= 1, seg = (x, y) => (Math.atan2((y - cy) / RY, (x - cx) / RX) + Math.PI + Math.PI / 4) / (Math.PI / 2) % 2 < 1 ? RD : WH;
+  const sea = (col, t) => '#' + [1, 3, 5].map(i => Math.round(parseInt(col.substr(i, 2), 16) * (1 - t) + [0x3a, 0x86, 0xc8][(i - 1) / 2] * t).toString(16).padStart(2, '0')).join('');
+  const M = [];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const X = x + .5, Y2 = y + .5; let col = null;
+    if (inE(X, Y2, RX, RY) && !inE(X, Y2, rx, ry)) { const P = seg(X, Y2), lt = -(Y2 - cy) / RY * .7 - (X - cx) / RX * .35 + (((X - cx) / RX) ** 2 + ((Y2 - cy) / RY) ** 2 > .62 ? -.2 : .15); col = lt > .55 ? P.hh : lt > .2 ? P.h : lt > -.2 ? P.l : P.m; }
+    else if (inE(X, Y2, rx, ry)) { if (!inE(X, Y2 - T, rx, ry)) col = seg(X, Y2 + 3).d1; }   // 구멍: 안쪽 벽(먼 쪽) / 물
+    else { for (let k = 1; k <= T; k++) if (inE(X, Y2 - k, RX, RY)) { const P = seg(X, Y2 - k); col = k > T - 1 ? P.d2 : P.d1; break; } }   // 옆면
+    if (col && Y2 > wl) col = sea(col, Math.min(.75, .35 + (Y2 - wl) * .12));   // 물에 잠긴 아래
+    if (col) M.push([x, y, col]); }
+  const has = new Set(M.map(([x, y]) => x + ',' + y));
+  // 물결 (둘레, 물 높이 아래)
+  for (let a = 0; a < 6.283; a += .05) { const x = Math.round(cx + Math.cos(a) * (RX + 2)), y = Math.round(wl + 1 + Math.sin(a) * (RY * .55)); if (Math.sin(a) > -.2 && !has.has(x + ',' + y)) { g.fillStyle = Math.sin(a) > .5 ? '#a8dcfa' : '#e4f6ff'; g.fillRect(x, y, 1, 1); } }
+  // 외곽선 (물 위만 진하게)
+  for (const [x, y] of M) for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) if (!has.has((x + dx) + ',' + (y + dy))) { g.fillStyle = y + dy > wl + 1 ? 'rgba(20,50,90,.55)' : '#3a1418'; g.fillRect(x + dx, y + dy, 1, 1); }
+  for (const [x, y, col] of M) { g.fillStyle = col; g.fillRect(x, y, 1, 1); }
+  g.fillStyle = '#ffffff'; g.fillRect(9, 4, 3, 1); g.fillRect(8, 5, 1, 1);   // 반짝
+  return (BUOY = c.toDataURL());
 }
 function yardBg(c) {
   const { ART, seasonCv } = GA.art(), PW = c.width = Math.ceil(Y.W / 2), PH = c.height = Math.ceil(Y.H / 2), g = c.getContext('2d'); g.imageSmoothingEnabled = false;
@@ -112,9 +128,10 @@ function yardBg(c) {
   // ---- 배틀 코트 선 (흰 선, 가운데 몬스터볼 무늬) ----
   const C = Y.court, cx0 = C.x0 / 2, cy0 = C.y0 / 2, cx1 = C.x1 / 2, cy1 = C.y1 / 2, my = (cy0 + cy1) / 2, mx = (cx0 + cx1) / 2, LN = '#f8f4e8', LS = '#cdb27e';
   const hl = (x0, x1, y) => { px(x0, y + 1, x1 - x0 + 1, 1, LS); px(x0, y, x1 - x0 + 1, 1, LN); }, vl = (x, y0, y1) => { px(x + 1, y0, 1, y1 - y0 + 1, LS); px(x, y0, 1, y1 - y0 + 1, LN); };
-  hl(cx0, cx1, cy0); hl(cx0, cx1, cy1); vl(cx0, cy0, cy1); vl(cx1, cy0, cy1); hl(cx0, cx1, Math.round(my));
-  hl(cx0 + 12, cx1 - 12, Math.round(cy0 + 10)); hl(cx0 + 12, cx1 - 12, Math.round(cy1 - 10));
-  const r = Math.min(20, (cy1 - cy0) * .28);
+  // 가로 코트 (경완 2026-10-29 '세로 말고 가로로'): 가운데 선이 세로, 양쪽 끝에 서는 칸
+  hl(cx0, cx1, cy0); hl(cx0, cx1, cy1); vl(cx0, cy0, cy1); vl(cx1, cy0, cy1); vl(Math.round(mx), cy0, cy1);
+  const bw = Math.round((cx1 - cx0) * .14); vl(cx0 + bw, cy0 + 6, cy1 - 6); vl(cx1 - bw, cy0 + 6, cy1 - 6); hl(cx0, cx0 + bw, cy0 + 6); hl(cx0, cx0 + bw, cy1 - 6); hl(cx1 - bw, cx1, cy0 + 6); hl(cx1 - bw, cx1, cy1 - 6);
+  const r = Math.min(26, (cy1 - cy0) * .36);
   for (let a = 0; a < 6.283; a += .02) { const x = Math.round(mx + Math.cos(a) * r), y = Math.round(my + Math.sin(a) * r * .62); px(x, y + 1, 1, 1, LS); px(x, y, 1, 1, LN); }
   for (let y = -6; y <= 6; y++) for (let x = -9; x <= 9; x++) { const d = (x / 9) ** 2 + (y / 5.6) ** 2; if (d > 1) continue; px(mx + x, my + y, 1, 1, d > .72 ? '#3a3a48' : Math.abs(y) < 1 ? '#3a3a48' : y < 0 ? (x + y < -6 ? '#f07060' : '#d84030') : '#f4f0e8'); }
   for (let y = -2; y <= 2; y++) for (let x = -3; x <= 3; x++) if ((x / 3) ** 2 + (y / 2) ** 2 <= 1) px(mx + x, my + y, 1, 1, (x / 3) ** 2 + (y / 2) ** 2 > .5 ? '#3a3a48' : '#fff');
@@ -160,17 +177,17 @@ async function drawTrain() {
   const el = sh.querySelector('.ty-yd'); await loadYA(); if (!el.isConnected) return;
   const W = Math.max(280, el.clientWidth || 360), H = Math.max(520, el.clientHeight || 640);
   Y = { el, W, H, L: el.querySelector('.ty-l'), pr: {}, mons: [], pos: Y?.pos || {}, last: 0,
-    pond: { x0: W * .5, y0: H * .79, x1: W - 16, y1: H - 16 }, court: { x0: 22, y0: H * .43, x1: W - 22, y1: H * .63 } };
+    pond: { x0: 16, y0: H * .74, x1: W * .54, y1: H - 16 }, court: { x0: 22, y0: H * .43, x1: W - 22, y1: H * .63 } };
   Y.pond.x = (Y.pond.x0 + Y.pond.x1) / 2; Y.pond.y = (Y.pond.y0 + Y.pond.y1) / 2;
   yardBg(el.querySelector('.ty-bg'));
-  const r1 = H * .27, r2 = H * .39, r3 = H * .73;
-  yProp('bench', 'garden-bench', W * .2, r1); yProp('cool', 'cooler-box', W * .2 + 52, r1 + 2); yProp('chair', 'camp-chair', W * .8, r1);
+  const r1 = H * .29, r2 = H * .39, r3 = H * .82;   // 의자·아이스박스 없앰, 후프링 위로, 수영장 왼쪽 (경완 2026-10-29)
   yProp('bag1', 'punch-bag', W * .1, r2); yProp('bag2', 'punch-bag', W * .27, r2); yProp('tramp', 'spring-trampoline', W * .5, r2); yProp('tgt', 'target-easel', W * .9, r2);
-  yProp('h1', 'track-hurdle', W * .17, r3); yProp('h2', 'track-hurdle', W * .33, r3); yProp('flag', 'start-flag', W * .47, r3 - 2);
-  [.09, .23, .37].forEach((f, i) => yProp('ring' + i, 'hoop-ring', W * f, H * .985, { z: -30 }));
-  Y.lane = { x0: W * .05, x1: W * .43, y: r3 + 4 };
-  { const q = document.createElement('i'), y = Y.pond.y + 6; q.className = 'ty-eq eq-water'; q.style.cssText = `left:${W * .62}px;top:${y}px;z-index:${Math.round(y)};background-image:url(${buoyArt()})`; Y.L.append(q); Y.pr.water = { k: 'water', x: W * .62, y, w: 56, h: 36, el: q }; }
-  yProp('canoe', 'wood-canoe', W * .86, Y.pond.y1 - 10);
+  yProp('flag', 'start-flag', W * .62, r3 - 2); yProp('h1', 'track-hurdle', W * .73, r3); yProp('h2', 'track-hurdle', W * .87, r3);
+  [.24, .5, .76].forEach((f, i) => yProp('ring' + i, 'hoop-ring', W * f, r1, { z: -30 }));
+  Y.lane = { x0: W * .6, x1: W * .95, y: r3 + 4 };
+  // 부표: 줄 위가 아니라 줄 아래 물 위에 둥둥 (입체 튜브)
+  { const q = document.createElement('i'), x = Y.pond.x0 + (Y.pond.x1 - Y.pond.x0) * .66, y = Y.pond.y + (Y.pond.y1 - Y.pond.y) * .55; q.className = 'ty-eq eq-water'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y)};background-image:url(${buoyArt()})`; Y.L.append(q); Y.pr.water = { k: 'water', x, y, w: 64, h: 44, el: q }; }
+  yProp('canoe', 'wood-canoe', Y.pond.x0 + (Y.pond.x1 - Y.pond.x0) * .3, Y.pond.y0 + 26);
   g.tr.forEach((e, i) => { const P = boxOf(e.id); if (P) yardMon(P, e, i); });
   // 코치 (훈련장에 배치한 트레이너): 코트 가장자리에서 응원
   Y.co = g.sf.filter(x => x.yard).slice(0, YARD_SF).map((x, i) => { const q = document.createElement('i'), cx = W * (i ? .9 : .1), cy = H * .6; q.className = 'ty-co' + (K.owW(x.ow) > 16 ? ' w32' : ''); q.dataset.co = i;
@@ -222,10 +239,7 @@ function yGo(m, k, x, y, then) { m.st = 'go'; m.k = k; m.tx = x; m.ty = y; m.the
 // 다음 할 일 (경완 2026-10-29 '6마리가 상호작용'): 타입에 맞는 기구를 고르고, 둘이 비어 있으면 가운데 코트에서 대련
 function yNext(m, now) {
   m.k = null; m.air = 0; m.one = null; m.zb = 0;
-  if (leftOf(m.e) <= 0) {   // 오늘 8시간 다 쓴 포켓몬은 벤치·의자에서 잠
-    const seat = ['bench', 'chair'].find(k => !yBusy(k, m)), q = Y.pr[seat];
-    if (q && !m.fish) return yGo(m, seat, q.x + (seat === 'bench' ? -18 : 0), q.y + 4, 'sleep');
-    m.st = 'sleep'; m.until = now + 99; return; }
+  if (leftOf(m.e) <= 0) { m.st = 'sleep'; m.until = now + 99; return; }   // 오늘 8시간 다 쓴 포켓몬은 그 자리에서 잠
   if (m.fish) { const q = Y.pr.water; if (!yBusy('water', m) && Math.random() < .6) return yGo(m, 'water', q.x - 44, q.y - 2, 'buoy'); const [sx, sy] = yardSpot(true); return yGo(m, 'swim', sx, sy, 'rest'); }
   // 대련: 아직 대련 상대가 없고 코트가 비어 있으면 30%
   const mates = Y.mons.filter(o => o !== m && !o.fish && !o.mate && leftOf(o.e) > 0 && (o.st === 'rest' || now > o.until - 1.5));
@@ -235,7 +249,6 @@ function yNext(m, now) {
   const add = (k, w) => { if (w > 0 && !yBusy(k, m)) W8.push([k, w]); };
   if (m.flyer) { add('hoop', 4); add('tgt', m.shooter ? 2 : .5); add('bag1', 1); add('bag2', 1); }
   else { add('bag1', m.fighter ? 4 : 1.4); add('bag2', m.fighter ? 4 : 1.4); add('tgt', m.shooter ? 4 : .6); add('tramp', 1.6); add('run', 1.8); if (m.swimmer) add('water', 3); }
-  if (Math.random() < .12) add('chair', 1);
   if (!W8.length) { m.st = 'train'; m.k = null; m.until = now + 4 + Math.random() * 3; return; }   // 다 차 있으면 그 자리에서 섀도 훈련
   let r = Math.random() * W8.reduce((a, x) => a + x[1], 0), k = W8[0][0]; for (const [kk, w] of W8) { r -= w; if (r <= 0) { k = kk; break; } }
   const q = Y.pr[k];
@@ -244,7 +257,6 @@ function yNext(m, now) {
   if (k === 'tramp') return yGo(m, k, q.x, q.y - 8, 'tramp');
   if (k === 'run') return yGo(m, k, Y.lane.x0, Y.lane.y, 'run');
   if (k === 'water') return yGo(m, k, q.x - 44, q.y - 2, 'buoy');
-  if (k === 'chair') return yGo(m, k, q.x, q.y + 3, 'sit');
   if (k === 'hoop') { const R = Y.pr.ring0; return yGo(m, k, R.x - 30, R.y - 6, 'hoop'); }
 }
 // 도착하면 그 기구 훈련 시작
