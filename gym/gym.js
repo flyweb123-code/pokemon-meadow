@@ -194,8 +194,11 @@ function layout(D = dzOf(st().d)) {
   const W = stg.clientWidth, H = stg.clientHeight, T = parseFloat(getComputedStyle(stg).paddingTop) || 104, B = ACT_H + 8, cy = T + (H - T - B) / 2;
   const lx = (D.leader[0] + .5) * 16 * sc, ly = (D.leader[1] + .5) * 16 * sc, pl = Math.max(8, W / 2 - lx), pr = Math.max(8, W / 2 - (mw * sc - lx));
   stg.style.paddingLeft = pl + 'px'; stg.style.paddingRight = pr + 'px';
-  map.style.marginTop = Math.max(0, cy - T - ly) + 'px'; map.style.marginBottom = Math.max(0, (H - cy) - (mh * sc - ly) - B) + 'px';
-  const vk = mk + '|' + sc + '|' + W + 'x' + H; if (stg.dataset.vk !== vk) { stg.dataset.vk = vk; requestAnimationFrame(() => { const mt = parseFloat(map.style.marginTop), s1 = T + mt + ly - cy, s2 = T + mt + mh * sc - (H - B);   // 레이아웃 C: 관장이 보이면 문(아래 끝)이 행동 줄 바로 위에 오게
+  // 체육관이 화면에 다 들어올 만큼 작으면 위 타이틀·버튼과 아래 도전자 받기 사이 가운데에 (경완 2026-10-29 '위아래 여백 정렬')
+  const sr = stg.getBoundingClientRect(), bot = q => { const r = $g(q)?.getBoundingClientRect(); return r && r.height ? r.bottom - sr.top : 0; };
+  const t0 = Math.max(bot('.gy-rpa'), bot('.gy-deco'), bot('.gy-store'), bot('.gy-plate')) + 8, qr = $g('.gy-qbtn')?.getBoundingClientRect(), b0 = (qr?.height ? qr.top - sr.top : H - B) - 8, fits = t0 > 0 && mh * sc <= b0 - t0;
+  map.style.marginTop = (fits ? Math.max(0, t0 + (b0 - t0 - mh * sc) / 2 - T) : Math.max(0, cy - T - ly)) + 'px'; map.style.marginBottom = (fits ? 0 : Math.max(0, (H - cy) - (mh * sc - ly) - B)) + 'px';
+  const vk = mk + '|' + sc + '|' + W + 'x' + H + '|' + fits; if (fits) { stg.dataset.vk = vk; stg.scrollTop = 0; stg.scrollLeft = pl + lx - W / 2; } else if (stg.dataset.vk !== vk) { stg.dataset.vk = vk; requestAnimationFrame(() => { const mt = parseFloat(map.style.marginTop), s1 = T + mt + ly - cy, s2 = T + mt + mh * sc - (H - B);   // 레이아웃 C: 관장이 보이면 문(아래 끝)이 행동 줄 바로 위에 오게
       stg.scrollTop = s2 > s1 && ly - (s2 - mt) > 24 ? s2 : s1; stg.scrollLeft = pl + lx - W / 2; }); }
   ents.forEach(place);
 }
@@ -774,13 +777,13 @@ const GUY_TOUR = () => [
 ];
 function guyAsk() {
   root.classList.remove('dhide');   // 홈은 대화창을 숨겨 두니 물음 띄울 때 보이게 (경완 2026-10-29 '안내원 눌러도 안 뜸')
-  $g('.gy-dlg').innerHTML = `<span class="gy-who">안내원</span>관장님, 체육관 설명을 처음부터 들어 보실래요?<span class="gy-dsub">체육관이 어떻게 돌아가는지 차근차근 알려 드려요</span><div class="gy-dyn"><button class="gy-dbtn2" type="button" data-a="n">괜찮아요</button><button class="gy-dbtn2 main" type="button" data-a="y">들을래요</button></div>`;
+  $g('.gy-dlg').innerHTML = `<span class="gy-who">안내원</span>관장님, 체육관 설명을 처음부터 들어 보실래요?<div class="gy-dyn"><button class="gy-dbtn2" type="button" data-a="n">괜찮아요</button><button class="gy-dbtn2 main" type="button" data-a="y">들을래요</button></div>`;
   $g('.gy-dyn').onclick = async e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); sfx('tap');
     off(); const guy = { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1 };
-    if (b.dataset.a === 'n') { await kang(['알겠어요! 궁금한 게 생기면\n언제든 불러 주세요.'], guy); homeSay(); return; }   // 괜찮아요 = 설명 없이 끝 (경완 2026-10-27)
+    if (b.dataset.a === 'n') return homeSay();   // 괜찮아요 = 말 없이 창만 닫힘 (경완 2026-10-29)
     await kang(GUY_TOUR(), guy); homeSay(); };
   // 물음 밖(대화창·빈 곳)을 누르면 박사 창처럼 닫힌다 (경완 2026-10-27)
-  const shut = e => { if (e.target.closest('.gy-dyn button, .gy-kang')) return; off(); if ($g('.gy-dyn')) homeSay(); };
+  const shut = e => { if (e.target.closest('.gy-dyn button, .gy-kang')) return; off(); if ($g('.gy-dyn')) { e.stopPropagation(); homeSay(); } };   // 빈 곳을 눌러도 이 창만 닫히고 화면 숨기기(gview)는 안 됨 (경완 2026-10-29)
   const off = () => root.removeEventListener('click', shut, true);
   setTimeout(() => root.addEventListener('click', shut, true));
 }
@@ -841,7 +844,7 @@ function homeSay() {
   if (!ded) { root.classList.add('dhide'); $g('.gy-dlg').innerHTML = ''; }   // 꾸미기·자리 정하기 중엔 그대로 (20초마다 불려서 창이 비던 버그, 경완 2026-10-28)
   // 도전자 받기 (경완 2026-10-29): 기다리는 도전자가 없으면 비활성, 있으면 'N명의 도전자가 기다리고 있어요' + 새로 온 도전자가 있으면 빨간 점 (누르면 사라짐)
   const n = g.q.length, qb = $g('.gy-qbtn'), cap = $g('.gy-qcap'), dot = $g('.gy-qdot'), nw = g.q.some(c => c.id > (g.qSeen | 0));
-  if (qb) { qb.disabled = !n; qb.classList.toggle('has', !!n); } if (cap) { cap.hidden = !n; cap.textContent = `${n}명의 도전자가 기다리고 있어요`; } if (dot) dot.hidden = !(n && nw);
+  if (qb) { qb.disabled = !n; qb.classList.toggle('has', !!n); } if (cap) { cap.hidden = false; cap.classList.toggle('none', !n); cap.textContent = n ? `${n}명의 도전자가 기다리고 있어요` : '아직 도전자가 없어요'; }   // 없을 때도 안내 (경완 2026-10-29) if (dot) dot.hidden = !(n && nw);
   const pw = root.querySelector('.gy-qw'); if (pw) pw.redraw?.();
 }
 // 도전자 명단 (경완 2026-10-28 '화면 하단에 도전자 명단 아이콘, 누르면 새 화면에서'): 기다리는 도전자만 (체육관 일지는 없앰, 경완 2026-10-28)
