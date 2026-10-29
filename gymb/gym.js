@@ -459,7 +459,9 @@ const DIFF_KO = ['쉬움', '보통', '어려움'];
 const BD_AT = [100, 200, 300, 500], BD_KO = ['동', '은', '금', '프리즘'];
 const BD_MID = [35, 70, 135, 170, 235, 270, 340, 380, 420, 460];   // 중간중간 이름 있는 트레이너가 오는 자리
 const bdLv = (g, t) => (g.bdl || {})[t] | 0;
-const bdImg = (t, L) => `${IMG}badge/${Math.max(1, L)}/${t}.png?v=5`;
+const bdImg = (t, L) => `${IMG}badge/${Math.max(1, L)}/${t}.png?v=6`;
+// 배지 그림 + 빛 지나가기(모든 등급 같게) + 반짝이(동 0 · 은 1 · 금 2 · 프리즘 4, 경완 2026-10-29 '갈수록 반짝이는 느낌')
+const bdHtml = (t, L, cls = '') => { const u = bdImg(t, L); return `<span class="bdw t${L}${cls ? ' ' + cls : ''}" style="--m:url('${u}')"><img alt="" src="${u}">${L ? '<i class="bd-sw"></i>' + '<i class="bd-tw"></i>'.repeat([0, 0, 1, 2, 4][L]) : ''}</span>`; };
 const bdPh = bk => Math.min(1, (bk || 0) / 500);   // 500명까지 갈수록 어려워짐 (0~1)
 const RIVAL_GYMS = ['무쇠시티 체육관', '영원시티 체육관', '베일시티 체육관', '늪지시티 체육관', '연고시티 체육관', '운하시티 체육관', '선단시티 체육관', '물가시티 체육관'];
 let NAMED = [];
@@ -719,7 +721,7 @@ async function repAnim(p, rep) {
 }
 function badgeGet(ty) {
   st().newBdg = 0; save();
-  return new Promise(ok => { sfx('tap'); const L = Math.max(1, bdLv(st(), ty)); pop(`<h4>${BD_KO[L - 1]} 자격 배지를 받았다!</h4><div class="bd-get t${L}"><img alt="" src="${bdImg(ty, L)}"></div><p class="gy-msg" style="text-align:center">${TYPE_KO[ty]} 타입으로 도전자 ${BD_AT[L - 1]}명을 막아 냈어요.<br><b>${TYPE_KO[ty]} ${BD_KO[L - 1]} 자격 배지</b>는 프로필에서도 볼 수 있어요.${BD_AT[L] ? `<br><small>${BD_AT[L]}명을 막으면 ${BD_KO[L]} 배지 심사가 열려요.</small>` : ''}</p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); });
+  return new Promise(ok => { sfx('tap'); const L = Math.max(1, bdLv(st(), ty)); pop(`<h4>${BD_KO[L - 1]} 자격 배지를 받았다!</h4><div class="bd-get t${L}">${bdHtml(ty, L)}</div><p class="gy-msg" style="text-align:center">${TYPE_KO[ty]} 타입으로 도전자 ${BD_AT[L - 1]}명을 막아 냈어요.<br><b>${TYPE_KO[ty]} ${BD_KO[L - 1]} 자격 배지</b>는 프로필에서도 볼 수 있어요.${BD_AT[L] ? `<br><small>${BD_AT[L]}명을 막으면 ${BD_KO[L]} 배지 심사가 열려요.</small>` : ''}</p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); });
 }
 
 // ---------- 홈 ----------
@@ -876,7 +878,7 @@ function infoPop() {
         <div class="if-staff"><small>고용할 수 있는 트레이너</small><b>${staffMax()}<em>명</em></b></div>
         <div class="if-big"><small>체육관 크기</small><b>${bigOf(g) + 1}<em>/ ${GRADES.length}단계</em></b>${canBig(g) ? '<button class="gy-key main" type="button" data-a="big">넓히기</button>' : ''}</div>
       </div>
-      <button class="if-bdg" type="button" data-a="bdg"><img alt="" src="${bdImg(g.ty, bL)}" class="${bL ? 'on' : ''}"><div><small class="if-bt">${TYPE_KO[g.ty]} 자격 배지${bL ? ` · ${BD_KO[bL - 1]}` : ''}<em>전체 보기 ›</em></small><b>${bA ? `${BD_KO[bL]}까지 도전자 ${bk} / ${bA}${bk >= bA - 1 ? ' <span class="if-sim">심사 대기</span>' : ''}` : `프리즘 달성! 막은 도전자 ${bk}명`}</b><i class="gy-bar"><i style="width:${bP}%"></i></i></div></button>
+      <button class="if-bdg" type="button" data-a="bdg">${bdHtml(g.ty, bL, bL ? 'on' : '')}<div><small class="if-bt">${TYPE_KO[g.ty]} 자격 배지${bL ? ` · ${BD_KO[bL - 1]}` : ''}<em>전체 보기 ›</em></small><b>${bA ? `${BD_KO[bL]}까지 도전자 ${bk} / ${bA}${bk >= bA - 1 ? ' <span class="if-sim">심사 대기</span>' : ''}` : `프리즘 달성! 막은 도전자 ${bk}명`}</b><i class="gy-bar"><i style="width:${bP}%"></i></i></div></button>
       <button class="if-re" type="button" data-a="re">폐업하고 새로 세우기</button>
     </div>`;
   fillMs(el);
@@ -967,7 +969,7 @@ function simPop() {
 function badgePop() {
   const g = st(), n = Object.keys(g.bdg || {}).length;
   pop(`<h4>자격 배지</h4>
-    <div class="gy-bdgs">${TYPE_KO.map((nm, t) => { if (!t) return ''; const L = bdLv(g, t); return `<div class="${L ? 'on' : ''}${g.ty === t ? ' cur' : ''}"><img alt="" src="${bdImg(t, L)}"><b>${nm}</b><small>${L ? BD_KO[L - 1] : `${(g.bk || {})[t] || 0}/100`}</small></div>`; }).join('')}</div>
+    <div class="gy-bdgs">${TYPE_KO.map((nm, t) => { if (!t) return ''; const L = bdLv(g, t); return `<div class="${L ? 'on' : ''}${g.ty === t ? ' cur' : ''}">${bdHtml(t, L)}<b>${nm}</b><small>${L ? BD_KO[L - 1] : `${(g.bk || {})[t] || 0}/100`}</small></div>`; }).join('')}</div>
     <p class="bd-tiers">${BD_AT.map((a, i) => `<span class="t${i + 1}">${BD_KO[i]} ${a}명</span>`).join('')}</p>
     <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }
