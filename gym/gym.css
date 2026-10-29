@@ -1348,6 +1348,6 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 #gym button.gy-qbtn.gy-qbtn:disabled .ga-l{color:#6a6a78;text-shadow:none}
 #gym button.gy-qbtn.gy-qbtn:disabled:active{transform:translateX(-50%)!important}
 #gym button.gy-qbtn.gy-qbtn.has{animation:none}
-.gy-qdot{position:absolute;right:-7px;top:-7px;width:16px;height:16px;border-radius:50%;background:#e04838;box-shadow:0 0 0 2px #fff,0 0 0 4px #20202c}
+.gy-qdot{position:absolute;top:6px;right:7px;width:6px;height:6px;background:var(--gy-red)}   /* 메뉴 빨간 점과 같은 모양·크기 (경완 2026-10-29) */
 .gy-qcap{position:absolute;z-index:3;left:0;right:0;bottom:6px;margin:0;text-align:center;font-size:12px;font-weight:700;color:#fff;pointer-events:none;text-shadow:1px 0 0 #20202c,-1px 0 0 #20202c,0 1px 0 #20202c,0 -1px 0 #20202c}
 #gym:is(.gview,.ded,.busy,.pre) .gy-qcap,#gym:has(.gy-sheet:not([hidden]),.gy-infos,.gy-kang) .gy-qcap,#gym:not(.dhide):has(.gy-dlg:not(:empty)) .gy-qcap,#gym.dedc .gy-qcap{visibility:hidden!important}
