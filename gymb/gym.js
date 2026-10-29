@@ -488,6 +488,14 @@ const REW = d => ({ ...REW0[d], g: GYMB().GYM_G[d] ?? REW0[d].g });
 const stkBonus = n => n < 2 ? 0 : Math.min(30, Math.max(n - 1, Math.round(1.3 ** (n - 2))));   // 연승마다 적어도 +1씩은 오른다 (경완 2026-10-29): 2연승 +1 · 3연승 +2 … 10연승 +9 · 11연승 +11 · 12연승 +14 · 15연승 +30
 // 그만큼 연승 중엔 도전자도 세진다: 연승 0.6 마다 레벨 +1 (최대 +10). 고용 트레이너가 막을 때도 같은 레벨로 싸운다
 const stkLv = n => Math.min(10, Math.floor((n | 0) * .6));
+// 평판은 초반엔 쉽게, 뒤로 갈수록 어렵게 (경완 2026-10-29): 지금 등급에 따라 이기면 ×3 … ×0.7, 지면 -1 … -4
+const REP_GM = [3, 2.5, 2, 1.4, 1, .7, .7], REP_RL = [-1, -1, -1, -2, -3, -4, -4];
+const repGi = () => gradeOf(st().rep || 0).i;
+const repWin = r => Math.max(1, Math.round(r * REP_GM[repGi()]));
+const repLose = () => REP_RL[repGi()];
+// 고용 트레이너가 막으면 관장 기본 평판의 2~4배 (좋은 지원자일수록, 인기인 ×1.5): 연승 보너스가 없는 대신 확실히 체감되게 (경완 2026-10-29 '좋은 지원자면 평판 잘 쌓이는 거 체감')
+const sfQ = s => 2 + clampN((teamLv(s.team) - (myAvg() - 6)) / 9, 0, 1) * 1.5 + clampN(s.team.length - 2, 0, 2) * .25;
+const sfRep = (s, r) => Math.max(1, Math.round(r * REP_GM[repGi()] * sfQ(s) * (s.trait === 'star' ? 1.5 : 1)));
 const rewOf = c => { const R = REW(c.diff); return c.boss ? { ...R, g: R.g * (1 + c.boss), r: R.r * 2 } : R; };
 const DIFF_KO = ['쉬움', '보통', '어려움'];
 // 체육관 등급 배지 (경완 2026-10-29 '배지 개념을 체육관 등급이랑 통합'): 다음 등급 문턱 바로 앞에서 '승급 심사' 보스를 이겨야 올라간다.
@@ -662,7 +670,8 @@ function arrive(c) {
     const { s, lost } = staffFight(c); beat = lost.length;
     if (s) {
       const R = REW(c.diff), r0 = g.rep || 0;
-      const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? 1.5 : 1))); g.stk = (g.stk | 0) + 1; addRep(Math.max(1, Math.round(R.r * (s.trait === 'star' ? 1.5 : 1))));   // 트레이너가 막으면 연승은 이어 주지만 연승 보너스는 관장이 직접 이길 때만 const rep = (g.rep || 0) - r0;
+      const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? 1.5 : 1))); g.stk = (g.stk | 0) + 1; addRep(sfRep(s, R.r));   // 트레이너가 막으면 연승은 이어 주지만 연승 보너스는 관장이 직접 이길 때만
+      const rep = (g.rep || 0) - r0;
       blocked(c);
       glog('sf', `${sfName(s)}${jong(s.nm) ? '이' : '가'} ${cn}${jong(c.nm) ? '을' : '를'} 막아 냈다! <small>+${gold}G · 평판 +${rep}</small>`, c.t); return;
     }
@@ -772,18 +781,19 @@ async function challenge() {
     document.body.classList.add('gymBattle');
     let res;
     dlg(''); root.classList.add('dhide');   // 배틀 화면이 닫힐 때 승부 대사가 잠깐 비치지 않게 미리 비운다 (경완 2026-10-29)
-    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: rewOf(c).g, r: rewOf(c).r + stkBonus((g.stk | 0) + 1), rl: Math.max(-(g.rep || 0), rewOf(c).rl) }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.max(-(g.rep || 0), repLose()) }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); }   // 배틀 끝나고 돌아오면 아래 대화창은 숨김 (경완 2026-10-29)
     g.q.shift(); const R = rewOf(c), won = !!res?.won, now = Date.now();
     let gold = 0, rep = 0;
     const r0 = g.rep || 0;
-    if (won) { g.stk = (g.stk | 0) + 1; gold = addG(R.g); addRep(R.r + stkBonus(g.stk)); g.w++; if (g.wk) g.wk.w++; blocked(c); res.used.forEach(id => GA.addFr(id, R.fr)); }
-    else { g.stk = 0; if (c.boss) g.bsN.r = now + rnd(2, 4) * H; addRep(R.rl); g.l++; if (g.wk) g.wk.l++; }   // 승급 심사에서 지면 몇 시간 뒤 다시 온다
+    if (won) { g.stk = (g.stk | 0) + 1; gold = addG(R.g); addRep(repWin(R.r) + stkBonus(g.stk)); g.w++; if (g.wk) g.wk.w++; blocked(c); res.used.forEach(id => GA.addFr(id, R.fr)); }
+    else { g.stk = 0; if (c.boss) g.bsN.r = now + rnd(2, 4) * H; addRep(repLose()); g.l++; if (g.wk) g.wk.l++; }   // 승급 심사에서 지면 몇 시간 뒤 다시 온다
     rep = (g.rep || 0) - r0;
     if (N && !c.sc) { const x = g.nt[N.id] || { s: 0 }; g.nt[N.id] = won ? { s: x.s + 1, n: now + rnd(2, 3.5) * DAY } : { s: x.s, n: now + rnd(.8, 1.5) * DAY }; }
     glog(won ? 'win' : 'lose', `${esc(c.cls)} <b>${esc(c.nm)}</b>${won ? `에게 이겼다! <small>+${gold}G · 평판 +${rep}</small>` : `에게 졌다… <small>평판 ${rep}</small>`}`);
     setAt(); save(); renderTop();
     await resultPop(c, res, gold, rep, R);
+    if (res?.quit) { root.classList.remove('dhide'); await talk(who + esc(sayEnd.lose)); }   // 기권: 기록창 다음 도전자가 이긴 한마디를 하고 나간다 (경완 2026-10-29)
     if (g.newBdg) await badgeGet(g.newBdg);
     await unlockChk();
     // 배웅하기 창 없이, 알림을 다 닫으면 도전자가 걸어 나간다 (경완 2026-10-28)
@@ -1443,7 +1453,7 @@ async function exit() {
 
 window.Gym = { prepare, enter, exit, isOpen: () => open, renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
+  k: { GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, sfRep, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 window.gymDot = () => { const g = S.gym; return !!(g && g.d && ((g.q && g.q.length) || (g.at && Date.now() >= g.at))); };
 })();

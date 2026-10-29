@@ -21,13 +21,13 @@ const J = (w, a, b) => w + (jong(w) ? a : b);
 const eun = w => J(w, '은', '는'), iga = w => J(w, '이', '가'), eul = w => J(w, '을', '를'), wa = w => J(w, '과', '와');
 
 // ---------- 데이터 (기술·특성·성격·배울 기술: gym/data.json, tools/gym/mkdata.js) ----------
-let D = null, AB_D = {}, MVI = null, FEM = new Set(), ANIM = {}, MFX = {}, dataP = null;
+let D = null, AB_D = {}, MVI = null, FEM = new Set(), ANIM = {}, FMA = {}, MFX = {}, dataP = null;
 const getJ = u => fetch(`${u}?v=${VER}`).then(r => r.ok ? r.json() : null).catch(() => null);
 function loadData() {
   return dataP || (dataP = Promise.all([
     fetch(`gym/data.json?v=${VER}`).then(r => { if (!r.ok) throw new Error('data'); return r.json(); }),
-    getJ(`${IMG}pk/fem.json`), getJ(`${IMG}pk/anim.json`), getJ('gym/mvfx.json'), getJ('gym/desc.json')
-  ]).then(([d, fem, an, fx, ds]) => { D = d; AB_D = ds?.ab || {}; MVI = new Map(d.mv.map((m, i) => [m[0], i])); FEM = new Set(fem || []); ANIM = an || {}; MFX = fx || {}; mfxAdd(); }).catch(e => { dataP = null; throw e; }));
+    getJ(`${IMG}pk/fem.json`), getJ(`${IMG}pk/anim.json`), getJ('gym/mvfx.json'), getJ('gym/desc.json'), getJ(`${IMG}pk/fm/fm.json`)
+  ]).then(([d, fem, an, fx, ds, fm]) => { FMA = fm || {}; D = d; AB_D = ds?.ab || {}; MVI = new Map(d.mv.map((m, i) => [m[0], i])); FEM = new Set(fem || []); ANIM = an || {}; MFX = fx || {}; mfxAdd(); }).catch(e => { dataP = null; throw e; }));
 }
 let simP = null;
 const loadSim = () => window.PSim ? Promise.resolve() : simP || (simP = new Promise((ok, no) => { const s = document.createElement('script'); s.src = `gym/psim.js?v=${VER}`; s.onload = () => window.PSim ? ok() : no(new Error('sim')); s.onerror = () => { simP = null; no(new Error('sim')); }; document.head.appendChild(s); }));
@@ -281,7 +281,11 @@ function monEl(side) { return $b(`.bt-mon.${side}`); }
 // 1~649 는 블랙·화이트 움직이는 gif 를 smogon/sprites(고정 커밋)에서 바로 받아 계속 움직인다. 못 받으면 저장소 그림
 const G5 = 'https://raw.githubusercontent.com/smogon/sprites/18fc3d83b8bc6746f0052273232c1794ef2d7d42/src/sprites/gen5/';
 const G5K = ['-b', '-s', '-f', '-b-s', '-b-f', '-f-s', '-b-f-s'];
-function gifUrl(sp, b, sh, f) {
+// 배틀 중 바뀐 폼 (tools/gym/mkforms.py): 1~649 는 블랙·화이트 gif 폼 이름, 650~ 은 gym/img/pk/fm/<쇼다운 id>.png
+const FM_G = { castformrainy: 'castform-orainy', castformsunny: 'castform-osunny', castformsnowy: 'castform-osnowy', cherrimsunshine: 'cherrim-osunshine', darmanitanzen: 'darmanitan-ozen', meloettapirouette: 'meloetta-opirouette' };
+const anOf = A => A && (FMA[A.fm] || ANIM[A.sp]);
+function gifUrl(sp, b, sh, f, fm) {
+  if (FM_G[fm]) return `${G5}s${FM_G[fm]}${b ? '-b' : ''}${sh ? '-s' : ''}.gif`;
   const g = ANIM.g?.[sp]; if (!g) return null; const [nm, bits] = g, has = k => !k || (bits >> G5K.indexOf(k) & 1);
   const fs = f ? ['-f', ''] : [''], ss = sh ? ['-s', ''] : [''];
   for (const fk of fs) for (const sk of ss) { const k = (b ? '-b' : '') + fk + sk; if (has(k)) return `${G5}s${nm}${k}.gif`; }
@@ -295,7 +299,7 @@ function gifLoad(u) {
 }
 // 나올 그림 고르기: gif 가 1.5초 안에 오면 gif, 아니면 저장소 그림 (늦게라도 오면 다음 번엔 gif)
 async function pickGif(side, A) {
-  const u = gifUrl(A.sp, side === 'p', A.shiny, A.g === 'F'); if (!u) return null;
+  const u = gifUrl(A.sp, side === 'p', A.shiny, A.g === 'F', A.fm); if (!u) return null;
   return (await Promise.race([gifLoad(u), wait(1500).then(() => false)])) ? u : null;
 }
 // 새 그림이 다 올 때까지 숨긴다: 아이폰은 새 주소를 받는 동안 앞 포켓몬 그림을 그대로 보여 줘서 이름과 그림이 어긋났다 (경완 2026-10-27 '모래두지인데 깨비참')
@@ -307,18 +311,18 @@ function showMon(side, A, on = true) {
   const m = monEl(side), img = m.querySelector('img');
   if (A && A.gif) { img.onerror = null; setSrc(img, A.gif); img.alt = ''; m.classList.remove('pl2'); m.classList.add('gf'); img.style.transform = ''; m.style.left = m.style.top = ''; }
   else if (A) {
-    m.classList.remove('gf'); const a = ANIM[A.sp], sheet = !!a; img.onerror = () => { img.onerror = null; setSrc(img, pkSrc(A.sp, { b: side === 'p', s: A.shiny })); }; setSrc(img, pkSrc(A.sp, { b: side === 'p', s: A.shiny, f: A.g === 'F' })); img.alt = '';
+    m.classList.remove('gf'); const a = anOf(A), sheet = !!a, fm = FMA[A.fm] ? A.fm : ''; img.onerror = () => { img.onerror = null; setSrc(img, pkSrc(A.sp, { b: side === 'p', s: A.shiny })); }; setSrc(img, fm ? `${IMG}pk/fm/${fm}${side === 'p' ? 'b' : ''}${A.shiny ? 's' : ''}.png?v=${VER}` : pkSrc(A.sp, { b: side === 'p', s: A.shiny, f: A.g === 'F' })); img.alt = '';
     m.classList.toggle('pl2', sheet); img.style.transform = '';
     if (sheet) { m.style.left = (side === 'e' ? 136 : 40) + 'px'; m.style.top = (side === 'e' ? E_Y + a[0] : P_Y + a[1]) + 'px'; }
     else { m.style.left = m.style.top = ''; }
   }
   // 한 장짜리 그림(650~ 뒷모습 등)은 bw: 고르는 동안 스프라이트는 가만히, 정보 박스만 까딱 (경완 2026-10-28)
-  const an = A && !A.gif && ANIM[A.sp]; m.classList.toggle('bw', !!A && !A.gif && A.sp >= 494 && (side === 'p' || !an || !(an[3] || []).length));
+  const an = A && !A.gif && anOf(A); m.classList.toggle('bw', !!A && !A.gif && A.sp >= 494 && (side === 'p' || !an || !(an[3] || []).length));
   m.classList.toggle('on', on);
 }
 // 본가 움직임: [장, 지연(1/30초), x, y], 장이 -2 보다 작으면 그 칸으로 지연 횟수만큼 되돌아가기
 function playAnim(side, A) {
-  const a = ANIM[A?.sp], m = monEl(side); if (!a || A.gif) return;
+  const a = anOf(A), m = monEl(side); if (!a || A.gif) return;
   const fr = side === 'e' ? a[3] : a[5], st = side === 'e' ? a[2] : a[4], img = m.querySelector('img'), tok = (m._tok = (m._tok || 0) + 1);
   const set = (f, x, y) => { img.style.transform = `translate(${-80 * f + (side === 'p' ? -x : x)}px,${y}px)`; };
   (async () => {
@@ -336,7 +340,7 @@ function playAnim(side, A) {
 // 볼 던지기 → 펑 → 하얗게 커지며 나타남 (4세대)
 async function sendOut(side, A) {
   A.gif = await pickGif(side, A); if (!B) return;
-  const m = monEl(side); m.classList.remove('faint', 'on', 'recall', 'fm-hangry', 'fmc'); showMon(side, A, false); m.classList.add('ball');
+  const m = monEl(side); m.classList.remove('faint', 'on', 'recall', 'fmc'); showMon(side, A, false); m.classList.add('ball');
   await throwBall(side);
   ballPoof(side); se('BOWA2', { pan: panOf(side) }); m.classList.add('on'); await wait(60);
   m.classList.remove('ball'); await wait(260); try { GA.cry?.(A.sp); } catch (e) {} playAnim(side, A);
@@ -611,9 +615,22 @@ async function play() {
     let c1 = null;
     if (r1 && !r1.wait) { c1 = await choose(r1); if (!B) return; if (c1 === 'quit') { B.out = 'quit'; btl.choose('p1', 'forfeit'); await readLog(); return; } }
     const c2 = r2 && !r2.wait ? aiChoice(btl, B.diff) : null;
+    if (c2 && !c1 && r2.forceSwitch && btl.p2.active[0]?.fainted && /^switch/.test(c2)) { await shiftAsk(c2); if (!B) return; }
     idlePanel();
     if (c1 && c2) btl.makeChoices(c1, c2); else if (c1) btl.choose('p1', c1); else if (c2) btl.choose('p2', c2); else return;
   }
+}
+// 교체 룰 (본가 기본): 상대가 쓰러진 포켓몬 대신 다음을 내보내기 전에 '포켓몬을 바꾸겠습니까?' (경완 2026-10-29). 바꾸면 내 쪽이 먼저 나온다
+async function shiftAsk(c2) {
+  const btl = B.btl, me = btl.p1.active[0];
+  if (!me || me.fainted || !btl.p1.pokemon.some(p => !p.fainted && !p.isActive)) return;
+  const nx = btl.p2.pokemon[+c2.split(' ')[1] - 1], nm = B.foe[B.o.e.indexOf(nx)]?.nm || nx?.name || '';
+  await msg(`${eun(B.foeNm)} ${eul(nm)} 내보내려 하고 있다!`, 0);
+  if (!await yesNo('포켓몬을 바꾸겠습니까?')) return;
+  const i = await partyPanel({ side: btl.p1.getRequestData() }, false); if (i == null || !B) return;
+  const pk = btl.p1.pokemon[i]; if (!pk || pk.fainted || pk.isActive) return;
+  btl.actions.switchIn(pk, 0); btl.queue.list = btl.queue.list.filter(x => !(x.choice === 'runSwitch' && x.pokemon === pk)); btl.actions.runSwitch(pk);
+  await readLog();
 }
 async function choose(req) {
   const A = B.act.p;
@@ -669,6 +686,16 @@ async function readLog() {
     try { await handle(line.split('|')); } catch (e) { console.error(e, line); }
   }
 }
+// 이 기술 줄 뒤 (다음 행동 전까지)에 '효과 없음·실패·방어' 가 오면 연출을 건너뛴다
+function noFx() {
+  const L = B.btl.log;
+  for (let j = B.li; j < L.length && j < B.li + 12; j++) {
+    const t = L[j].split('|'), k = t[1];
+    if (k === '-immune' || k === '-fail' || (k === '-activate' && /Protect|Detect|King's Shield|Spiky Shield|Baneful Bunker|Obstruct|Silk Trap|Burning Bulwark|Max Guard/.test(t[3] || ''))) return true;
+    if (k === 'move' || k === 'turn' || k === 'switch' || k === 'drag' || k === '-damage' || k === 'faint' || k === 'upkeep' || k === '-hitcount' || k === '-heal' || k === '-boost' || k === '-unboost' || k === '-status' || k === '-start') return false;
+  }
+  return false;
+}
 const hpOf = s => { const [a] = String(s || '').split(' '); if (a === '0') return [0, 0]; const [h, m] = a.split('/').map(Number); return [h || 0, m || 0]; };
 const stOf = s => (String(s || '').split(' ')[1] || '').replace('fnt', '');
 // 급소·상성 말은 본가처럼 체력바가 다 줄어든 뒤에 (경완 2026-10-28). 쇼다운은 -damage 앞에 보내므로 모아 뒀다가 낸다
@@ -698,7 +725,8 @@ async function handle(a) {
       const old = A(s);
       if (old && !old.fnt) { await msg(s === 'p' ? `돌아와! ${old.nm}!` : `${eun(B.foeNm)} ${eul(old.nm)} 되돌렸다!`, 0); await recall(s); }
       const sp = PSim.Dex.species.get(det[0]).num || src.sp;
-      const X = B.act[s] = { i, pk, nm: src.nm, sp, lv: +(det.find(d => /^L\d+/.test(d)) || 'L100').slice(1), g: det.includes('F') ? 'F' : det.includes('M') ? 'M' : '', shiny: det.includes('shiny'), hp, mhp, st: stOf(a[4]), fnt: false };
+      const X = B.act[s] = { i, pk, nm: src.nm, sp, fm: toID(det[0]) === 'minior' && hp * 2 > mhp ? 'miniormeteor' : toID(det[0]),   // 메테오나 (리밋실드): 체력 절반 넘으면 껍질 모습으로 나온다
+      lv: +(det.find(d => /^L\d+/.test(d)) || 'L100').slice(1), g: det.includes('F') ? 'F' : det.includes('M') ? 'M' : '', shiny: det.includes('shiny'), hp, mhp, st: stOf(a[4]), fnt: false };
       if (s === 'p') { X.xpg = xpGauge(src); X.pid = src.pid; B.used.add(src.pid); }
       if (s === 'e') { if (!B.eOut) { B.eOut = 1; $b('.bt-tr.e').classList.add('away'); $b('.bt-pty.e').classList.remove('on'); } await msg(`${eun(B.foeNm)} ${eul(X.nm)} 내보냈다!`, 0); }
       else { if (!B.pOut) { B.pOut = 1; $b('.bt-tr.p').classList.add('throw'); $b('.bt-pty.p').classList.remove('on'); } await msg(`가랏! ${X.nm}!`, 0); }
@@ -708,7 +736,8 @@ async function handle(a) {
     case 'move': {
       const s = sideOf(a[2]), X = A(s); const id = toID(a[3]); B.lastMove = { s, id };
       await msg(`${who(a[2])}의 ${mvKo(id)}!`, 0);
-      if (a.includes('[notarget]')) break;   // 상대가 먼저 쓰러져 맞을 대상이 없으면 연출 없이 '하지만 상대가 없었다' (본가처럼, 경완 2026-10-29)
+      if (a.includes('[notarget]')) break;
+      if (noFx()) break;   // 효과가 없는 기술·실패·방어에 막힘은 본가처럼 연출 없이 바로 그 말 (경완 2026-10-29)   // 상대가 먼저 쓰러져 맞을 대상이 없으면 연출 없이 '하지만 상대가 없었다' (본가처럼, 경완 2026-10-29)
       await moveFx(s, id, a.includes('[miss]') || a.some(x => x === '[still]'));
       break;
     }
@@ -716,12 +745,15 @@ async function handle(a) {
     case '-damage': {
       const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); const from = (a[4] || '').replace('[from] ', '');
       if (ST_P[from]) await stFx(s, from, true);   // 화상·독 데미지는 본가처럼 연출 뒤 HP
+      else if (from) await resFx(s, from, a);   // 씨뿌리기·스텔스록·압정·조이기·모래바람 등 (경완 2026-10-29 '지속 데미지·패시브 기술 모션')
       if (from) { const t = dmgFrom(from, a[2]); if (t) await msg(t, 300); }
       if (from === 'confusion') { await moveFx(other(s), 'pound'); await hitFx(s, 'M'); }   // 혼란 자해: 본가처럼 막치기 연출·소리 → 깜빡 → HP (경완 2026-10-28)
       if (!from) await hitFx(s, effAhead(a[2]));
       if (mhp) X.mhp = mhp; await drainHp(s, X, hp); X.st = stOf(a[3]) || X.st; await flushPend(); break;
     }
-    case '-heal': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); if (mhp) X.mhp = mhp; await drainHp(s, X, hp); await msg(`${who(a[2])}의 체력이 회복되었다!`); break; }
+    case '-heal': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); if (mhp) X.mhp = mhp; const from = (a.find(x => /^\[from\] /.test(x)) || '').slice(7), sil = a.includes('[silent]');
+      if (!sil && HEAL_FX[from.replace(/^(item|ability|move): /, '')]) await moveFx(s, HEAL_FX[from.replace(/^(item|ability|move): /, '')]);
+      await drainHp(s, X, hp); if (!sil) await msg(healMsg(who(a[2]), from)); break; }
     case '-sethp': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp] = hpOf(a[3]); await drainHp(s, X, hp); break; }
     case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); X.fntS = true; hbBalls(s); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s === 'e') await expGain(X); break; }
     case '-immune': await msg(`${who(a[2])}에게는 효과가 없는 것 같다…`); break;
@@ -732,7 +764,8 @@ async function handle(a) {
     case '-curestatus': { const s = sideOf(a[2]), X = A(s); if (X) { X.st = ''; setSt(s, ''); } await msg(cureMsg(who(a[2]), a[3])); break; }
     case 'cant': if (ST_P[a[3]]) await stFx(sideOf(a[2]), a[3]); await msg(cantMsg(who(a[2]), a[3])); break;
     case '-boost': case '-unboost': { const n = +a[4] || 0, up = k === '-boost', s = sideOf(a[2]); await statFx(s, up); await msg(`${who(a[2])}의 ${iga(STAT_KO[a[3]] || a[3])} ${n >= 3 ? '매우 크게 ' : n === 2 ? '크게 ' : n === 0 ? '더 이상 ' : ''}${n === 0 ? (up ? '올라가지 않는다!' : '떨어지지 않는다!') : up ? '올라갔다!' : '떨어졌다!'}`); break; }
-    case '-weather': { const w = a[2]; if (a.includes('[upkeep]')) break; const T = { RainDance: '비가 내리기 시작했다!', SunnyDay: '햇살이 강해졌다!', Sandstorm: '모래바람이 불기 시작했다!', Hail: '싸라기눈이 내리기 시작했다!', Snow: '눈이 내리기 시작했다!', none: '날씨가 원래대로 돌아왔다!' }; if (T[w]) await msg(T[w]); break; }
+    case '-weather': { const w = a[2]; if (a.includes('[upkeep]')) { const u = { Sandstorm: ['sandstorm', '모래바람이 세차게 분다'], Hail: ['hail', '싸라기눈이 계속 내리고 있다'], Snow: ['hail', '눈이 계속 내리고 있다'], RainDance: ['raindance', '비가 계속 내리고 있다'], SunnyDay: ['sunnyday', '햇살이 강하다'] }[w];   // 턴 끝마다 본가처럼 날씨 연출 (경완 2026-10-29)
+        if (u) { await moveFx('p', u[0]); await msg(u[1], 300); } break; } const T = { RainDance: '비가 내리기 시작했다!', SunnyDay: '햇살이 강해졌다!', Sandstorm: '모래바람이 불기 시작했다!', Hail: '싸라기눈이 내리기 시작했다!', Snow: '눈이 내리기 시작했다!', none: '날씨가 원래대로 돌아왔다!' }; if (T[w]) await msg(T[w]); break; }
     case '-start': { if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); const t = startMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
     case '-end': { const t = endMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
     case '-activate': { if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); const t = actMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
@@ -746,10 +779,11 @@ async function handle(a) {
     case '-fieldstart': case '-fieldend': { const on = k === '-fieldstart', w = (a[2] || '').replace('move: ', ''), t = FIELD_T[w]; const tr = TERR[w];   // 필드 (경완 2026-10-29 '일렉트릭필드 발동이 안 됨')
       if (tr) { const f = $b('.bt-terr'); f.className = 'bt-terr' + (on ? ' on ' + tr : ''); }
       if (t) await msg(t[on ? 0 : 1]); break; }
-    case '-formechange': { const s = sideOf(a[2]), m = monEl(s);   // 폼 체인지 (꼬르륵스위치 등): 하얗게 번쩍이며 모습이 바뀐다
+    case '-formechange': case 'detailschange': { const s = sideOf(a[2]), X = A(s), m = monEl(s); if (!X) break;   // 폼 체인지 (리밋실드·꼬르륵스위치·배틀스위치·탈 등): 하얗게 번쩍이며 그 폼 그림으로 (경완 2026-10-29)
+      const fm = toID((a[3] || '').split(', ')[0]); if (fm === X.fm) break; X.fm = fm; X.gif = await pickGif(s, X); if (!B) break;
       se('KOUKA_M', { pan: panOf(s) }); m.classList.remove('fmc'); void m.offsetWidth; m.classList.add('fmc'); await wait(260);
-      m.classList.toggle('fm-hangry', /Hangry/.test(a[3] || '')); await wait(420); m.classList.remove('fmc');
-      await msg(`${who(a[2])}의 모습이 바뀌었다!`); break; }
+      m._tok = (m._tok || 0) + 1; showMon(s, X, true); playAnim(s, X); await wait(420); m.classList.remove('fmc');
+      await msg(/busted/.test(fm) ? `${who(a[2])}의 탈이 벗겨졌다!` : `${who(a[2])}의 모습이 바뀌었다!`); break; }
     case 'turn': break;
     case 'win': break;
   }
@@ -757,7 +791,22 @@ async function handle(a) {
 const TERR = { 'Electric Terrain': 'el', 'Grassy Terrain': 'gr', 'Misty Terrain': 'mi', 'Psychic Terrain': 'ps' };
 const FIELD_T = { 'Electric Terrain': ['발밑에 전기가 흐르기 시작했다!', '발밑의 전기가 사라졌다!'], 'Grassy Terrain': ['발밑에 풀이 무성해졌다!', '발밑의 풀이 사라졌다!'], 'Misty Terrain': ['발밑에 안개가 자욱해졌다!', '발밑의 안개가 사라졌다!'], 'Psychic Terrain': ['발밑이 이상한 느낌이 되었다!', '발밑의 이상한 느낌이 사라졌다!'],
   'Trick Room': ['시공이 뒤틀렸다!', '뒤틀린 시공이 원래대로 돌아왔다!'], Gravity: ['중력이 강해졌다!', '중력이 원래대로 돌아왔다!'], 'Magic Room': ['도구의 효과가 사라지는 공간이 되었다!', '도구의 효과가 원래대로 돌아왔다!'], 'Wonder Room': ['방어와 특수방어가 뒤바뀌는 공간이 되었다!', '방어와 특수방어가 원래대로 돌아왔다!'], 'Mud Sport': ['전기의 위력이 약해졌다!', '흙놀이의 효과가 사라졌다!'], 'Water Sport': ['불꽃의 위력이 약해졌다!', '물놀이의 효과가 사라졌다!'] };
-const dmgFrom = (f, id) => { const n = who(id); f = f.replace(/^item: |^ability: /, ''); const T = { brn: `${n}${jong(nmIn(id)) ? '은' : '는'} 화상 데미지를 입었다!`, psn: `${n}${jong(nmIn(id)) ? '은' : '는'} 독에 의한 데미지를 입었다!`, tox: `${n}${jong(nmIn(id)) ? '은' : '는'} 독에 의한 데미지를 입었다!`, Recoil: `${n}${jong(nmIn(id)) ? '은' : '는'} 공격의 반동을 받았다!`, confusion: '영문도 모른 채 자신을 공격했다!', Sandstorm: `모래바람이 ${n}${jong(nmIn(id)) ? '을' : '를'} 덮쳤다!`, Hail: `싸라기눈이 ${n}${jong(nmIn(id)) ? '을' : '를'} 덮쳤다!`, 'Leech Seed': `씨뿌리기가 ${n}의 체력을 빼앗는다!` }; return T[f] || ''; };
+// 지속 데미지 연출: 씨뿌리기 = 심은 쪽이 흡수, 스텔스록·압정 = 박힘, 조이기류 = 그 기술, 저주·악몽 = 그 기술
+const TRAP = { 'Bind': 'bind', 'Wrap': 'wrap', 'Fire Spin': 'firespin', 'Whirlpool': 'whirlpool', 'Sand Tomb': 'sandtomb', 'Magma Storm': 'magmastorm', 'Clamp': 'clamp', 'Infestation': 'infestation', 'Snap Trap': 'bind', 'Thunder Cage': 'bind' };
+async function resFx(s, from, a) {
+  const f = from.replace(/^(move|item|ability): /, ''), of = (a.find(x => /^\[of\] /.test(x)) || '').slice(5);
+  if (f === 'Leech Seed') return moveFx(of ? sideOf(of) : other(s), 'absorb');
+  if (f === 'Stealth Rock') return moveFx(other(s), 'rockthrow');
+  if (f === 'Spikes') return hitFx(s);
+  if (TRAP[f]) return moveFx(other(s), mvOf(TRAP[f]) && MFX[TRAP[f]] ? TRAP[f] : 'bind');
+  if (f === 'Curse' || f === 'Nightmare') return moveFx(other(s), f === 'Curse' ? 'curse' : 'nightmare');
+  if (f === 'Sandstorm' || f === 'Hail' || f === 'confusion' || f === 'Recoil') return;
+  if (/^(Life Orb|Rocky Helmet|Rough Skin|Iron Barbs|Black Sludge|Sticky Barb|Solar Power|Dry Skin|Bad Dreams|Salt Cure|Aftermath|Liquid Ooze)$/.test(f)) return hitFx(s);
+}
+const HEAL_FX = { 'Leftovers': 'aquaring', 'Black Sludge': 'aquaring', 'Shell Bell': 'aquaring', 'Aqua Ring': 'aquaring', 'Ingrain': 'ingrain', 'Wish': 'wish', 'Grassy Terrain': 'aquaring', 'Rain Dish': 'aquaring', 'Ice Body': 'aquaring', 'Poison Heal': 'aquaring', 'Dry Skin': 'aquaring' };
+function healMsg(n, from) { const f = from.replace(/^(move|item|ability): /, ''), T = { 'Leftovers': '먹다남은음식으로 조금 회복했다!', 'Black Sludge': '검은진흙으로 조금 회복했다!', 'Aqua Ring': '아쿠아링으로 체력을 회복했다!', 'Ingrain': '뿌리로부터 양분을 흡수했다!', 'Wish': '희망사항이 이루어졌다!', 'Shell Bell': '조개껍질방울로 조금 회복했다!', 'Grassy Terrain': '그래스필드로 체력이 회복되었다!' }; return T[f] ? `${eun(n)} ${T[f]}` : `${n}의 체력이 회복되었다!`; }
+const dmgFrom = (f, id) => { const n = who(id); f = f.replace(/^item: |^ability: /, ''); const T = { brn: `${n}${jong(nmIn(id)) ? '은' : '는'} 화상 데미지를 입었다!`, psn: `${n}${jong(nmIn(id)) ? '은' : '는'} 독에 의한 데미지를 입었다!`, tox: `${n}${jong(nmIn(id)) ? '은' : '는'} 독에 의한 데미지를 입었다!`, Recoil: `${n}${jong(nmIn(id)) ? '은' : '는'} 공격의 반동을 받았다!`, confusion: '영문도 모른 채 자신을 공격했다!', Sandstorm: `모래바람이 ${n}${jong(nmIn(id)) ? '을' : '를'} 덮쳤다!`, Hail: `싸라기눈이 ${n}${jong(nmIn(id)) ? '을' : '를'} 덮쳤다!`, 'Leech Seed': `씨뿌리기가 ${n}의 체력을 빼앗는다!`, 'Stealth Rock': `뾰족한 바위가 ${n}에게 박혔다!`, Spikes: `${n}${jong(nmIn(id)) ? '은' : '는'} 압정의 데미지를 입었다!`, Curse: `${n}${jong(nmIn(id)) ? '은' : '는'} 저주를 받고 있다!`, Nightmare: `${n}${jong(nmIn(id)) ? '은' : '는'} 악몽에 시달리고 있다!`, 'Life Orb': `${n}${jong(nmIn(id)) ? '은' : '는'} 생명이 조금 깎였다!`, 'Rocky Helmet': `${n}${jong(nmIn(id)) ? '은' : '는'} 울퉁불퉁멧으로 데미지를 입었다!` };
+  const tr = f.replace(/^move: /, ''); if (TRAP[tr]) return `${n}${jong(nmIn(id)) ? '은' : '는'} ${mvKo(TRAP[tr])}의 데미지를 입었다!`; return T[f] || ''; };
 function statusMsg(n, st) { const T = { brn: '화상을 입었다!', par: '마비되어 기술이 나오기 어려워졌다!', slp: '잠들어 버렸다!', frz: '얼어붙었다!', psn: '독에 걸렸다!', tox: '맹독을 입었다!' }; return `${eun(n)} ${T[st] || '상태 이상이 되었다!'}`; }
 function cureMsg(n, st) { const T = { slp: '눈을 떴다!', frz: '얼음 상태가 나았다!', par: '마비가 풀렸다!', brn: '화상이 나았다!', psn: '독이 사라졌다!', tox: '독이 사라졌다!' }; return `${eun(n)} ${T[st] || '상태가 나았다!'}`; }
 function cantMsg(n, r) { const T = { par: '몸이 저려서 움직일 수 없다!', slp: '쿨쿨 잠들어 있다.', frz: '얼어버려서 움직일 수 없다!', flinch: '풀이 죽어 기술을 쓸 수 없었다!', recharge: '공격의 반동으로 움직일 수 없다!', nopp: '기술의 남은 PP 가 없다!' }; return `${eun(n)} ${T[r] || '움직일 수 없다!'}`; }
