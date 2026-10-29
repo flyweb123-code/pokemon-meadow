@@ -367,12 +367,14 @@ function yDraw(m, dt) {
 function pickTrain() {
   const g = st(), ty = g.ty, inTr = id => g.tr.some(e => e.id === id);
   GB().boxWin(false, null, () => redraw(), {
-    title: () => `훈련장에 보낼 포켓몬 <small>${g.tr.length}/${trMax()}</small>`, tip: `${TYPE_KO[ty]} 타입이 먼저 보여요 · 필드에 나가 있는 포켓몬은 필드에서 빠져요`,
+    title: () => `훈련장에 보낼 포켓몬 <small>${g.tr.length}/${trMax()}</small>`, tip: `${TYPE_KO[ty]} 타입이 먼저 보여요`,
     list: () => S.box.filter(P => GB().gm(P).lv < GB().LV_MAX || inTr(P.id)), ok: () => true, first: P => (SPECIES[P.sp]?.t || []).includes(ty),
     tag: P => inTr(P.id) ? '훈련 중' : onField(P.id) ? '필드' : '',
-    pick: (P, w) => { const i = g.tr.findIndex(e => e.id === P.id);
+    pick: function this_pick(P, w) { const i = g.tr.findIndex(e => e.id === P.id);
       if (i >= 0) { tickTrain(Date.now()); g.tr.splice(i, 1); K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '을' : '를'} 훈련장에서 데려왔다.`); }
       else { if (g.tr.length >= trMax()) return say('훈련장이 가득 찼어요. 6마리까지 보낼 수 있어요.');
+        // 보내기 전에 한 번 더 묻기, 필드에 나가 있으면 빠진다고 안내 (경완 2026-10-29)
+        if (!w.ok) { const n = esc(nmOf(P)); GB().gymPop(`<h4>${n}${K.jong(nmOf(P)) ? '을' : '를'} 훈련장에 보낼까요?</h4>${onField(P.id) ? `<p class="gy-msg">지금 필드에 나가 있어서 보내면 <b>필드에서 빠져요</b>.</p>` : ''}<div class="gy-btns"><button data-a="x">취소</button><button class="main" data-a="ok">보내기</button></div>`, (a, close) => { close(); if (a === 'ok') { w.ok = 1; try { this_pick(P, w); } finally { w.ok = 0; } } }); return; }
         const m = S.mons.find(o => o.pid === P.id); if (m) { try { GA.removeMon(m, true); } catch (e) {} }
         const now = Date.now(); g.tr.push({ id: P.id, t: now, d: K.dayStart(now), h: 0, j: now, l0: GB().gm(P).lv, x: 0, mv: [] }); K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '을' : '를'} 훈련장에 보냈다.`);
         if (g.tr.length >= trMax()) { K.save(); w.close(); return redraw(); } }
