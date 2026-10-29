@@ -1245,10 +1245,10 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 /* 자격 배지 등급 (동·은·금·프리즘) */
 .bd-tiers{display:flex;justify-content:center;gap:4px;margin:6px 0 2px;font-size:11px}
 .bd-tiers span{padding:2px 5px;border-radius:9px;border:2px solid #20202a;font-weight:700;font-size:10px;white-space:nowrap}
-.bd-tiers .t1{background:#e8a878}.bd-tiers .t2{background:#dfe4ec}.bd-tiers .t3{background:#ffd860}.bd-tiers .t4{background:linear-gradient(90deg,#ffb0c8,#ffe890,#a8f0c0,#a8d8ff,#d0b0ff)}
+.bd-tiers{flex-wrap:wrap}.bd-tiers .t1{background:#eef0f4}.bd-tiers .t2{background:#9aa4b0}.bd-tiers .t3{background:#e8a878}.bd-tiers .t4{background:#dfe4ec}.bd-tiers .t5{background:#ffd860}.bd-tiers .t6{background:linear-gradient(90deg,#ffb0c8,#ffe890,#a8f0c0,#a8d8ff,#d0b0ff)}
 .qw-bs{color:#c0302a !important;font-weight:700}
 .if-sim{display:inline-block;margin-left:4px;padding:0 5px;border-radius:6px;background:#c0302a;color:#fff;font-size:10px;vertical-align:1px}
-.bd-get.t4 img{filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 12px #c8b0ff)}
+.bd-get.t6 img{filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 12px #c8b0ff)}
 /* 친밀도 기믹: 내 포켓몬 위로 떠오르는 하트 */
 .bt-hrt{position:absolute;left:50%;top:10%;z-index:4;font-style:normal;font-size:22px;color:#ff5a8a;text-shadow:0 0 0 #fff,1px 1px 0 #6a1030,-1px -1px 0 #fff;pointer-events:none;animation:btHrt 1.4s ease-out forwards}
 @keyframes btHrt{0%{opacity:0;transform:translate(-50%,10px) scale(.4)}25%{opacity:1;transform:translate(-50%,-6px) scale(1.2)}60%{transform:translate(-50%,-16px) scale(1)}100%{opacity:0;transform:translate(-50%,-30px) scale(1)}}
@@ -1256,3 +1256,16 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .mp-fr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 8px;padding:8px 10px;border-radius:8px;background:#fbfaf6;border:2px solid rgba(0,0,0,.12);text-align:left}
 .mp-fr b{color:#e8507a;font-size:15px;letter-spacing:1px}.mp-fr b.max{text-shadow:0 0 4px #ffb0c8}.mp-fr em{font-style:normal;font-size:11px;color:var(--dim);margin-left:auto}
 .mp-fr p{flex-basis:100%;margin:0;font-size:11px;color:var(--dim)}
+
+/* 체육관 등급 배지 (10.88, 경완 2026-10-29): 홈 타이틀 박스 가운데에 배지, 왼쪽 이름·평판 / 오른쪽 등급·숫자 */
+.gy-top .gy-plate{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-areas:"nm bd gr" "rep bd rn";gap:5px 8px;padding:7px 12px 8px!important}
+.gy-plate .gy-bd{grid-area:bd;align-self:center;line-height:0;margin:-4px 0}
+.gy-plate .gy-bd .bdw img{width:56px;height:56px;image-rendering:pixelated;filter:drop-shadow(0 2px 0 rgba(0,0,0,.25))}
+.gy-plate .gy-grade{justify-self:end}
+.gy-plate .gy-rep{grid-template-columns:auto 1fr}
+.gy-plate .gy-repn{grid-area:rn;justify-self:end;align-self:center}
+.if-grade>.bdw img{width:64px;height:64px;image-rendering:pixelated}
+.gy-perk>li>.bdw{grid-row:1/3}.gy-perk>li>.bdw img{width:42px;height:42px;image-rendering:pixelated}
+.rr-bd{line-height:0}.rr-bd .bdw img{width:34px;height:34px;image-rendering:pixelated}
+.rs-rep.gup .rr-bd{animation:rrBadge .8s cubic-bezier(.3,1.6,.5,1)}
+.if-bdg .if-bs{display:block;font-size:11px;color:var(--dim);margin-top:2px}
