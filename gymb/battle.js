@@ -867,7 +867,7 @@ function drawTab() {
   sh.innerHTML = `<h3>배틀</h3>
     <div class="lu-tabs" role="tablist">${L.map((l, i) => `<button role="tab" aria-selected="${i === g.luI}" data-lu="${i}">라인업 ${i + 1}<small>${l.length}/6</small></button>`).join('')}</div>
     <div class="lu-grid">${[0, 1, 2, 3, 4, 5].map(i => { const P = boxOf(cur[i]); if (!P) return `<button class="lu-slot empty" data-add="${i}" ${can.length ? '' : 'disabled'}><span>+</span></button>`; const m = gm(P);
-      return `<button class="lu-slot" data-p="${P.id}"><i class="lu-n">${i + 1}</i><span class="lu-x" data-rm="${P.id}" role="button" aria-label="라인업에서 빼기">✕</span>${thumb(P)}<b>${esc(nmOf(P))}</b><span>Lv.${m.lv}</span></button>`; }).join('')}</div>
+      return `<button class="lu-slot" data-p="${P.id}"><i class="lu-n">${i + 1}</i><span class="lu-x" data-rm="${P.id}" role="button" aria-label="라인업에서 빼기"><svg viewBox="0 0 8 8" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M0 0h2v1h1v1h2V1h1V0h2v2H7v1H6v2h1v1h1v2H6V7H5V6H3v1H2v1H0V6h1V5h1V3H1V2H0z"/></svg></span>${thumb(P)}<b>${esc(nmOf(P))}</b><span>Lv.${m.lv}</span></button>`; }).join('')}</div>
     ${can.length ? '' : `<p class="lu-none">${TYPE_KO[ty]} 타입 포켓몬이 아직 없어요. 알을 부화시켜 데려와 주세요.</p>`}
     <div class="lu-act"><div class="lu-row2"><button class="gy-key" data-box>포켓몬 박스</button><button class="gy-key main" data-go ${cur.length ? '' : 'disabled'}>연습 배틀</button></div></div>`;
   fillTh(sh);
