@@ -1725,3 +1725,18 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 /* 도전자 받기 안내 문구는 버튼 위로 (경완 2026-10-29) */
 #gym button.gy-qbtn.gy-qbtn{bottom:12px!important}
 #gym .gy-qcap{bottom:72px}
+
+/* 연승 보너스 도장 (경완 2026-10-29) */
+.rs-stk{position:relative;overflow:visible;display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 0 7px!important;font-size:12px!important;opacity:0;animation:none!important;
+  background:linear-gradient(180deg,#ff7a2a,#e03020)!important;border:3px solid #20202c;box-shadow:0 3px 0 #20202c,inset 0 2px 0 rgba(255,255,255,.35)}
+.rs-stk b{font-size:22px;line-height:1.1;letter-spacing:1px;color:#fff6c8;text-shadow:2px 2px 0 #7a1808,-1px -1px 0 #7a1808,1px -1px 0 #7a1808,-1px 1px 0 #7a1808}
+.rs-stk span{color:#fff;font-weight:700}.rs-stk span em{font-style:normal;color:#ffe45a;font-size:15px}
+.rs-stk.go{animation:skStamp .5s cubic-bezier(.2,1.8,.4,1) forwards, skGlow 1.2s ease-in-out .5s infinite!important}
+@keyframes skStamp{0%{opacity:0;transform:scale(2.6) rotate(-8deg)}55%{opacity:1;transform:scale(.92) rotate(2deg)}100%{opacity:1;transform:none}}
+@keyframes skGlow{50%{box-shadow:0 3px 0 #20202c,inset 0 2px 0 rgba(255,255,255,.35),0 0 16px 4px rgba(255,140,40,.85)}}
+.rs-stk .sk-fl{position:absolute;bottom:2px;width:22px;height:30px;opacity:0;background:radial-gradient(ellipse at 50% 90%,#fff2a0 0 18%,#ffb020 34%,#ff5a10 58%,transparent 70%);border-radius:50% 50% 40% 40%;filter:blur(.3px)}
+.rs-stk .sk-fl.l{left:10px}.rs-stk .sk-fl.r{right:10px}
+.rs-stk.go .sk-fl{animation:skFl .35s steps(2,end) .4s infinite alternate;opacity:1}
+@keyframes skFl{from{transform:scaleY(1) translateY(0)}to{transform:scaleY(1.25) translateY(-3px) scaleX(.85)}}
+.gy-pop .win.rs-shk{animation:rsShk .36s steps(6)}
+@keyframes rsShk{20%{transform:translate(-5px,2px)}40%{transform:translate(4px,-3px)}60%{transform:translate(-3px,1px)}80%{transform:translate(2px,-1px)}}
