@@ -79,7 +79,8 @@ const OPEN = [0, 1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6, 1];
 // STEPS[맵][단계 0~5] = [남길 줄, 남길 칸('' = 전부), 이음매 패치?]. 단계 6 = 다 열림. 예전 tiny/cuts/fix 는 이걸로 바뀌어 안 쓴다
 const STEPS = {
   pewter: [['0-2,5-6,11-12,14-15', '0-1,4-8,11-12'], ['0-6,11-12,14-15', '0-1,4-8,11-12'], ['0-6,11-12,14-15', '0-1,3-9,11-12'], ['0-6,11-15', '0-1,3-9,11-12'], ['0-8,11-15', '0-1,3-9,11-12'], ['0-8,11-15', '']],
-  cerulean: [['0-7,16-19', '0-2,5-11,14-16', [[3, 7, 4, 7, 1, 1], [9, 7, 4, 7, 1, 1, 1], [5, 8, 7, 17, 3, .5]]], ['0-8,15-19', '0-2,5-11,14-16'], ['0-8,15-19', '', [[12, 7, 4, 7, 1, 2, 1], [13, 7, 3, 7, 1, 2, 1]]], ['0-10,14,16-19', ''], ['0-11,13-14,16-19', ''], ['0-14,16-19', '']],
+  cerulean: [['0-7,16-19', '0-2,6-10,14-16', [[3, 7, 4, 7, 1, 1], [7, 7, 4, 7, 1, 1, 1], [4, 8, 7, 17, 3, .5]]],   // 1단계 더 좁게 (경완 2026-10-29 '다른 1단계에 비해 너무 넓어서')
+  ['0-8,15-19', '0-2,5-11,14-16'], ['0-8,15-19', '', [[12, 7, 4, 7, 1, 2, 1], [13, 7, 3, 7, 1, 2, 1]]], ['0-10,14,16-19', ''], ['0-11,13-14,16-19', ''], ['0-14,16-19', '']],
   vermilion: [['0-3,16-20', '0,3-7,10', [0, 6].flatMap((x, i) => [4, 5, 6, 7].map(y => [x, y, i * 10, 4, 1, 1]))], ['0-3,16-20', '', [0, 10].flatMap(x => [4, 5, 6, 7].map(y => [x, y, x, 4, 1, 1]))], ['0-9,15-20', ''], ['0-11,15-20', ''], ['0-11,14-20', ''], ['0-8,10-20', '']],
   celadon: [['0-5,15-19', '0-1,4-8,11-12'], ['0-5,15-19', '0-1,3-9,11-12', [[2, 5, 5, 4, 1, 1]]], ['0-5,14-19', '', [[3, 5, 2, 5, 1, 1], [5, 6, 5, 9, 3, 1], ...[3, 4, 8, 9].map(x => [x, 6, 2, 14, 1, 1])]], ['0-8,14-19', '', [[5, 9, 5, 9, 3, 1]]], ['0-5,8-19', ''], ['0-12,14-19', '']],
   // 넓은 무대: 정사각형으로 커지고 왼쪽 그늘 줄(0)·양끝 기둥(14)은 늘 남긴다. 13칸 단계는 반쪽 창문 대신 민벽(4·10번 칸)으로 덮음 (경완 2026-10-29 '이음새 안 보이게')
@@ -117,7 +118,11 @@ function dzOf(id, gi) {
 // 미리보기 그림을 지금 크기(data-gi 가 있으면 그 등급, 처음 열 때는 0 = 새내기)의 잘라 붙인 맵으로 (경완 2026-10-27)
 // 디자인 썸네일을 미리 그려 둔다 (경완 2026-10-28 '맵 썸네일이 바로 안 나오고 박스 텍스트 먼저')
 const preMs = gi => DESIGNS.forEach(d => mapSrc(dzOf(d.id, gi)).then(u => { const im = new Image(); im.src = u; im.decode?.().catch(() => {}); }));
-function fillMs(el) { el.querySelectorAll('img[data-ms]').forEach(im => { const gi = im.dataset.gi === '' || im.dataset.gi == null ? undefined : +im.dataset.gi; mapSrc(dzOf(im.dataset.ms, gi)).then(u => { im.src = u; }); }); }
+function fillMs(el) { el.querySelectorAll('img[data-ms]').forEach(im => { const gi = im.dataset.gi === '' || im.dataset.gi == null ? undefined : +im.dataset.gi, D = dzOf(im.dataset.ms, gi); mapSrc(D).then(u => im.hasAttribute('data-me') ? withMe(u, D) : u).then(u => { im.src = u; }); }); }
+// 이름 정하기 썸네일: 관장 자리에 내 캐릭터 (경완 2026-10-29 '내 캐릭터가 있을 위치에 캐릭터를 놔서 미리 알 수 있게')
+const withMe = (u, D) => Promise.all([u, owSrc(myOw())].map(src => new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; }))).then(([m, o]) => { if (!m) return u;
+  const c = document.createElement('canvas'); c.width = m.width; c.height = m.height; const g = c.getContext('2d'); g.drawImage(m, 0, 0);
+  if (o) { const fw = owW(myOw()), [x, y] = D.leader; g.drawImage(o, 0, 0, fw, 32, x * 16 - (fw - 16) / 2, y * 16 - 16, fw, 32); } return c.toDataURL(); });
 // 잘라 붙인 맵 그림 (이음매 없이)
 const mapCache = {};
 function mapSrc(D) { const u = `${IMG}map/${D.id}.png${D.iv ? `?v=${D.iv}` : ""}`; if (!D.cut) return Promise.resolve(u); const k = D.id + JSON.stringify(D.cut); if (mapCache[k]) return mapCache[k];
@@ -1012,13 +1017,13 @@ function mgPop() {
       return ask(`지금 체육관을 휴업하고<br><b>${esc(x.nm)}</b>을 관리하시겠습니까?`, '예', () => { el.remove(); root.querySelector('.gy-infos')?.remove();
         shutFx('휴 업', esc(g.nm), '다시 열어요', esc(x.nm), async () => { gSwap(x); renderHome(); renderTop(); }).then(() => say(`<b>${esc(st().nm)}</b>의 문을 다시 열었다!`, `${TYPE_KO[st().ty]} 타입 체육관`)); }); }
     if (b.hasAttribute('data-new')) return ask('지금 체육관을 휴업하고<br>새로운 체육관을 관리하시겠습니까?', '예', () => { el.remove(); root.querySelector('.gy-infos')?.remove();
-      shutFx('휴 업', esc(g.nm), '새 체육관', '어떤 체육관으로 열지 골라 주세요').then(() => { if (open) setup(['d', 'ty', 'nm'], 'new'); }); });
+      shutFx('휴 업', esc(g.nm), '새 체육관', '어떤 체육관으로 열지 골라 주세요').then(() => { if (open) setup(['ty', 'd', 'nm'], 'new'); }); });
     if (b.dataset.del != null) { const x = L[+b.dataset.del], cur = x === g;
       return ask(`<b>${esc(x.nm)}</b>을 정말 폐업하시겠습니까?<br><small>평판·트레이너·꾸미기 자리가 모두 사라져요.${cur ? (g.shelf?.length ? ' 휴업 중인 다른 체육관을 다시 열어요.' : ' 새 체육관을 세워요.') : ''}</small>`, '폐업하기', () => {
         if (!cur) { g.shelf = g.shelf.filter(y => y !== x); glog('in', `휴업 중이던 <b>${esc(x.nm)}</b>을 폐업했다.`); save(); return draw(); }
         el.remove(); root.querySelector('.gy-infos')?.remove(); const nx = g.shelf?.[g.shelf.length - 1];
         if (nx) return shutFx('폐 업', esc(g.nm), '다시 열어요', esc(nx.nm), async () => { gSwap(nx, true); glog('in', `<b>${esc(x.nm)}</b>을 폐업했다.`); renderHome(); renderTop(); }).then(() => say(`<b>${esc(st().nm)}</b>의 문을 다시 열었다!`));
-        closeFx().then(() => { if (open) setup(['d', 'ty', 'nm'], 'close'); }); }); }
+        closeFx().then(() => { if (open) setup(['ty', 'd', 'nm'], 'close'); }); }); }
   };
   draw();
 }
@@ -1122,14 +1127,14 @@ function reportPop(any) {
   return new Promise(ok => pop(`<h4>주간 보고서</h4>${body}${cur}<p class="gy-msg rk-how">점수 = 이긴 배틀 ×3 + 막은 도전자 ×2 + 올린 평판</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => { close(); ok(); }));
 }
 
-// ---------- 처음 설정: 디자인 → 타입 → 이름 (바꾸기는 그 단계 하나만) ----------
+// ---------- 처음 설정: 타입 → 디자인 → 이름 (바꾸기는 그 단계 하나만) ----------
 function setup(only, re) {
   const g = st(), first = !g?.d;
   const dr = { d: g?.d || DESIGNS[0].id, ty: g?.ty || 0, nm: g?.nm || '' };
   if (re && dr.nm === defName(dr.ty)) dr.nm = '';
   const used = re ? new Set(gList().filter(x => !(re === 'close' && x === g)).map(x => x.ty)) : new Set();   // 이미 관리 중인 타입은 못 고름
   if (re) { if (used.has(dr.ty)) dr.ty = 0; dr.nm = ''; }
-  const steps = Array.isArray(only) ? only : only ? [only] : ['d', 'ty', 'nm'];
+  const steps = Array.isArray(only) ? only : only ? [only] : ['ty', 'd', 'nm'];   // 타입 먼저 (경완 2026-10-29)
   let i = 0;
   const el = document.createElement('section'); el.className = 'gy-setup'; root.appendChild(el);
   const counts = myTypes();
@@ -1141,7 +1146,7 @@ function setup(only, re) {
       const D = dzBase(dr.d), di = DESIGNS.indexOf(D);
       body = `<h3>${re ? '새 체육관 디자인' : '체육관 디자인'}</h3><p class="gy-lead">${re ? '새로 세울 체육관 모양을 골라요.' : '본가 관동 지방 체육관이에요. 나중에 바꿀 수 있어요.'}</p>
         <div class="gy-dz"><div class="gy-dz-view"><img data-ms="${D.id}" data-gi="${first ? 0 : ''}" alt=""><button class="gy-dz-arw l" type="button" data-m="-1" aria-label="이전">◀</button><button class="gy-dz-arw r" type="button" data-m="1" aria-label="다음">▶</button></div>
-        <div class="gy-dz-nm">${D.n}</div><div class="gy-dz-sub">${D.sub}</div><div class="gy-dots">${DESIGNS.map((_, j) => `<i class="${j === di ? 'on' : ''}"></i>`).join('')}</div></div>`;
+        <div class="gy-dz-nm">${D.n}</div><div class="gy-dots">${DESIGNS.map((_, j) => `<i class="${j === di ? 'on' : ''}"></i>`).join('')}</div></div>`;
     } else if (k === 'ty') {
       body = `<h3>체육관 타입</h3><p class="gy-lead">배틀에는 이 타입 포켓몬만 낼 수 있어요. 등급이 오를 때마다 이 타입의 등급 배지를 받아요.</p>
         <div class="gy-types">${TYPE_KO.map((n, t) => t ? `<button type="button" class="gy-ty${counts[t] ? '' : ' none'}${used.has(t) ? ' used' : ''}" data-ty="${t}" aria-pressed="${dr.ty === t}" ${used.has(t) ? 'disabled' : ''}>${tyIcon(t)}<span>${n}<small>${used.has(t) ? '이미 있는 체육관' : counts[t] ? `내 포켓몬 ${counts[t]}` : '아직 없어요'}</small></span></button>` : '').join('')}</div>`;
@@ -1150,7 +1155,7 @@ function setup(only, re) {
       if (!dr.nm) dr.nm = defName(dr.ty);
       body = `<h3>체육관 이름</h3><p class="gy-lead">도전자들이 보는 이름이에요.</p>
         <div class="gy-name"><input type="text" maxlength="8" value="${esc(dr.nm)}" aria-label="체육관 이름"><span class="gy-cnt"></span></div>
-        ${first || re ? `<div class="gy-sum"><div class="sm-map"><img data-ms="${dr.d}" data-gi="${first ? 0 : ''}" alt=""></div><div class="sm-row"><b>${dzBase(dr.d).n}</b><span class="sm-ty" style="--tc:${GA.TYPE_C?.[dr.ty] || '#888'}">${tyIcon(dr.ty)}${TYPE_KO[dr.ty]} 타입</span></div></div>` : ''}`;
+        ${first || re ? `<div class="gy-sum"><div class="sm-map"><img data-ms="${dr.d}" data-gi="${first ? 0 : ''}" data-me alt=""></div><div class="sm-row"><b>${dzBase(dr.d).n}</b><span class="sm-ty" style="--tc:${GA.TYPE_C?.[dr.ty] || '#888'}">${tyIcon(dr.ty)}${TYPE_KO[dr.ty]} 타입</span></div></div>` : ''}`;
     }
     el.innerHTML = `${head}<div class="gy-body">${body}</div><button class="gy-key main gy-next" type="button" ${k === 'ty' && !dr.ty ? 'disabled' : ''}>${btn}</button>`;
     fillMs(el); const inp = el.querySelector('input');
@@ -1181,14 +1186,29 @@ function setup(only, re) {
   };
   draw();
 }
-function opened() {
-  sfx('tap'); const fx = document.createElement('div'); fx.className = 'gy-fx'; const C = ['#e04838', '#ffd84a', '#58a8e0', '#6ab84a', '#f8f8f8'];
-  for (let k = 0; k < 46; k++) { const i = document.createElement('i'); i.style.left = Math.random() * 100 + '%'; i.style.background = C[k % C.length]; i.style.setProperty('--dx', (Math.random() * 80 - 40) + 'px'); i.style.animationDelay = Math.random() * .6 + 's'; i.style.animationDuration = 1.6 + Math.random() * 1.2 + 's'; fx.appendChild(i); }
-  root.appendChild(fx); setTimeout(() => fx.remove(), 3600);
-  say(`<b>${esc(st().nm)}</b>의 문을 열었다!`);   // '안내원을 눌러 보세요' 문구 없앰 (경완 2026-10-28)
-  setTimeout(() => { root.querySelector('.gy-note')?.remove(); kang(KANG_OPEN(), { lit: true }); }, 1400);
+// 개장 축하 (경완 2026-10-29 '좀 더 길고 축하받는 느낌으로 임팩트'): 번쩍 → 팡파르 → 'GRAND OPEN' 현수막 + 꽃가루 세 번 → 문구 → 강박사 설명 → 첫 도전자
+async function opened() {
+  const M = window.GymBGM; try { M?.stop(.3); } catch (e) {}
+  const fx = document.createElement('div'); fx.className = 'gy-grand';
+  fx.innerHTML = `<i class="gg-flash"></i><i class="gg-rays"></i><div class="gg-ban"><small>GRAND OPEN</small><b>${esc(st().nm)}</b><span>${tyIcon(st().ty)}${TYPE_KO[st().ty]} 타입 체육관</span></div>`;
+  root.appendChild(fx); await wait(350);
+  try { M?.se('ME_FANFA5'); M?.se('DP_KIRAKIRA2'); } catch (e) {}
+  fx.classList.add('go'); $g('.gy-stage')?.animate([{ translate: '0 0' }, { translate: '0 -4px' }, { translate: '0 4px' }, { translate: '0 -2px' }, { translate: '0 0' }], { duration: 420, iterations: 2 });
+  confetti(); setTimeout(confetti, 900); setTimeout(confetti, 1800);
+  await wait(3600); fx.classList.add('out'); await wait(500); fx.remove();
+  say(`<b>${esc(st().nm)}</b>의 문을 열었다!`, '축하해요! 오늘부터 관장님이에요');
+  await wait(2200); root.querySelector('.gy-note')?.remove();
+  await kang(KANG_OPEN(), { lit: true });
+  firstChal();
 }
-
+// 튜토리얼이 끝나면 바로 첫 도전자 (경완 2026-10-29): 도전자 받기 단추가 켜지며 통통 + 효과음
+async function firstChal() {
+  if (!open) return; bgmPlay('gym'); const g = st(); if (!g || g.q.length) return homeSay();
+  let c = mkChal(Date.now()); for (let i = 0; i < 30 && (c.named || c.boss); i++) c = mkChal(Date.now());
+  await wait(700); arrive(c); save(); homeSay();
+  const qb = $g('.gy-qbtn'); if (qb) { qb.classList.remove('qact'); void qb.offsetWidth; qb.classList.add('qact'); setTimeout(() => qb.classList.remove('qact'), 1800); }
+  try { window.GymBGM?.se('DP_PINPON'); } catch (e) {}
+}
 // 폐업 → 공사 → 새 체육관 개장 연출 (경완 2026-10-27 '손바닥 뒤집듯 바꾸는게 아니라 폐업하고 다시 새로 설립하는 연출')
 // 폐업 (경완 2026-10-28 '폐업하기 누르면 바로 폐업 연출 → 오픈 연출 → 새 디자인 정하기')
 const confetti = () => { const cf = document.createElement('div'); cf.className = 'gy-fx'; const C = ['#e04838', '#ffd84a', '#58a8e0', '#6ab84a', '#f8f8f8'];
@@ -1213,10 +1233,10 @@ async function refound(dr, mode) {   // mode 'new': 지금 체육관은 휴업, 
 // ---------- 강박사 안내 (처음 체육관에 올 때, 체육관을 연 뒤) ----------
 const KANG_HI = () => [
   '오, 왔구나!\n기다리고 있었단다.',
-  '여기는 오랫동안 문을 닫아 둔\n빈 체육관이란다.',
+  '이 건물은 오랫동안 문을 닫아 둔\n빈 체육관이란다.',
   trName() ? `${trName()}, 오늘부터 네가\n이 체육관의 관장이다!` : '오늘부터 네가\n이 체육관의 관장이다!',
   '관장은 찾아오는 도전자와\n배틀해서 실력을 보여 주는\n사람이지.',
-  '먼저 체육관을 꾸며 보자.\n체육관 모양과 타입을\n고르렴.',
+  '먼저 체육관을 꾸며 보자.\n체육관 타입과 모양을\n고르렴.',
   '타입을 정하면 그 타입\n포켓몬만 배틀에 낼 수 있단다.\n잘 고르렴!',
 ];
 // 훈련장이 처음 열리고 들어갔을 때 (경완 2026-10-29)
@@ -1260,22 +1280,45 @@ const preload = src => new Promise(ok => { const i = new Image(); i.onload = i.o
 async function prepare() {
   if (!root) build();
   const g = st(); const L = [preload(`${IMG}ow/${myOw()}.png`), preload(owSrc(GUY_OW))];
-  if (g?.d) L.push(preload(`${IMG}map/${dzOf(g.d).id}.png${dzOf(g.d).iv ? `?v=${dzOf(g.d).iv}` : ""}`)); else DESIGNS.forEach(D => L.push(preload(`${IMG}map/${D.id}.png`)));
-  L.push(loadJs('gym/bgm.js', 'GymBGM').then(() => { try { window.GymBGM?.prep('gym'); window.GymBGM?.sePrep?.(['DP_DOOR', 'DP_REGI']); } catch (e) {} }));   // 출근 로딩 동안 체육관 곡을 미리 만든다
+  if (g?.d) L.push(preload(`${IMG}map/${dzOf(g.d).id}.png${dzOf(g.d).iv ? `?v=${dzOf(g.d).iv}` : ""}`)); else { DESIGNS.forEach(D => L.push(preload(`${IMG}map/${D.id}.png`))); L.push(preload(`${IMG}map/${TOWN.img}.png`)); }
+  L.push(loadJs('gym/bgm.js', 'GymBGM').then(() => { try { window.GymBGM?.prep('gym'); window.GymBGM?.sePrep?.(['DP_DOOR', 'DP_REGI', ...(st()?.d ? [] : ['ME_FANFA5', 'DP_KIRAKIRA2', 'DP_PINPON', 'DP_KON'])]); } catch (e) {} }));   // 출근 로딩 동안 체육관 곡을 미리 만든다
   L.push(loadNamed(), loadJs('gym/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => loadJs('gym/manage.js', 'GymManage')).catch(() => {}));   // 도전자 방문·훈련장 계산에 배틀 자료가 필요
   if (g?.fit) L.push(fitSrc('ow'), fitSrc('trb'), fitSrc('tr'));   // 옷 칠한 그림을 미리
   await Promise.all(L);
 }
-// 처음: 빈 체육관(회색시티 모양)에 불이 켜지고, 내가 문으로 들어오면 강박사가 설명 → 디자인·타입·이름 정하기
+// 처음 (경완 2026-10-29 '내부 디자인은 정해져 있지 않으니 체육관 건물 외관 입구 앞에 먼저 도착'):
+// 마을을 한 번 쭉 내려다보다(스크롤) 체육관 앞에서 멈추고 → 내 캐릭터가 걸어와 입구 앞에 서면 → 강박사 → 타입·디자인·이름 정하기
+const TOWN = { img: 'town', w: 48, h: 40, from: [23.5, 33], to: [15.5, 14.5], walk: [[6, 18], [15, 18], [15, 17]] };   // 회색시티 (pokefirered 맵), 체육관 문 (15, 16)
+async function townScene() {
+  const T = TOWN, W = root.clientWidth || innerWidth, H = root.clientHeight || innerHeight, k = Math.max(1.5, W / (13 * 16)), fw = owW(myOw());
+  const el = document.createElement('div'); el.className = 'gy-town';
+  el.innerHTML = `<div class="tw-map" style="width:${T.w * 16 * k}px;height:${T.h * 16 * k}px;background-image:url(${IMG}map/${T.img}.png)"><i class="tw-me" hidden></i></div><i class="tw-veil"></i>`;
+  root.appendChild(el); const map = el.firstChild, me = map.querySelector('.tw-me');
+  const cam = (cx, cy) => { const x = clampN(cx * 16 * k - W / 2, 0, T.w * 16 * k - W), y = clampN(cy * 16 * k - H / 2, 0, T.h * 16 * k - H); map.style.transform = `translate(${-Math.round(x)}px,${-Math.round(y)}px)`; };
+  const put = (x, y, f, st) => { const fr = FR[f][st]; Object.assign(me.style, { width: fw * k + 'px', height: 32 * k + 'px', left: (x * 16 - (fw - 16) / 2) * k + 'px', top: (y * 16 - 16) * k + 'px', backgroundImage: `url(${owSrc(myOw())})`, backgroundSize: `auto ${32 * k}px`, backgroundPosition: `${-fr * fw * k}px 0` }); me.classList.toggle('flip', f === 'r'); };
+  cam(...T.from); requestAnimationFrame(() => el.classList.add('on')); await wait(900);
+  // 마을을 따라 천천히 올라가다 체육관 가운데에서 멈춘다
+  await new Promise(ok => { const t0 = performance.now(), D = 5200, e = t => t < .5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
+    const f = now => { const t = Math.min(1, (now - t0) / D), q = e(t); cam(T.from[0] + (T.to[0] - T.from[0]) * q, T.from[1] + (T.to[1] - T.from[1]) * q); t < 1 ? requestAnimationFrame(f) : ok(); }; requestAnimationFrame(f); });
+  await wait(600);
+  // 내 캐릭터가 길을 따라 걸어와 입구 앞에 선다
+  let [x, y] = T.walk[0], n = 0; me.hidden = false; put(x, y, 'r', 0);
+  for (const [tx, ty] of T.walk.slice(1)) while (x !== tx || y !== ty) {
+    const dx = Math.sign(tx - x), dy = Math.sign(ty - y), f = dx > 0 ? 'r' : dx < 0 ? 'l' : dy > 0 ? 'd' : 'u', x0 = x, y0 = y, t0 = performance.now(); n++;
+    await new Promise(ok => { const s = now => { const q = Math.min(1, (now - t0) / 240); put(x0 + dx * q, y0 + dy * q, f, q < .5 ? (n % 2 ? 1 : 2) : 0); q < 1 ? requestAnimationFrame(s) : ok(); }; requestAnimationFrame(s); });
+    x += dx; y += dy; }
+  put(x, y, 'u', 0); await wait(500);
+  return el;
+}
 async function intro() {
   const D = DESIGNS[0]; clearEnts(); layout(D); dlg('', ''); root.classList.add('pre'); preMs(0);
-  const me = ent({ ow: myOw(), x: D.door[0], y: D.door[1], f: 'u' });
-  const k = kang(KANG_HI());
-  await wait(1500); await walk(me, [[D.door[0], D.door[1] - 4]]);
-  await k; root.classList.remove('pre'); if (!open) return; setup();
+  const tw = await townScene(); if (!open) return tw.remove();
+  await kang(KANG_HI(), { lit: true });
+  tw.classList.remove('on'); await wait(450); tw.remove();
+  root.classList.remove('pre'); if (!open) return; setup();
 }
 function enter() {
-  open = true; tab = null; root.hidden = false; root.classList.remove('gview'); root.classList.toggle('sim', !!window.gymSimOn); GA.gymIn(); openTab(null); bgmPlay('gym');   // 체육관 곡: 처음이면 플래티넘 원본 소리를 받아 오는 동안 잠깐 조용하다
+  open = true; tab = null; root.hidden = false; root.classList.remove('gview'); root.classList.toggle('sim', !!window.gymSimOn); GA.gymIn(); openTab(null); bgmPlay(st()?.d ? 'gym' : 'lab');   // 처음 연출·튜토리얼은 연구소 곡 (경완 2026-10-29)   // 체육관 곡: 처음이면 플래티넘 원본 소리를 받아 오는 동안 잠깐 조용하다
   requestAnimationFrame(() => root.classList.add('on'));
   if (st()?.d) { tick(); renderHome(); later(); } else intro();
   setTimeout(() => gymLoad.hide(), 120);

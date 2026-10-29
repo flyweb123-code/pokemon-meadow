@@ -13,6 +13,7 @@ const PART = {
   wBasic: [6573184, 458564], wField: [7031776, 30836], wBattle: [7062624, 33656],
   bField: [1628096, 3984], bBattle: [1632096, 3820],
   sGym: [829664, 8876], sBaGym: [987488, 13836], sBaTrain: [1013312, 8996], sBaRival: [1067936, 8272], sBaChamp: [1048928, 11672], sEyeElite: [941696, 6000], sEyeChamp: [964096, 6632],
+  sLab: [838560, 3556],   // SEQ_KENKYUJO 연구소 (튜토리얼, 경완 2026-10-29)
   sWinTrain: [1084160, 4204], sWinGym: [1088384, 7584],
   // 효과음: 배틀·기본 효과음 악보 묶음(gym/se.json 의 block), 악기, 소리 묶음
   seBlock: [1450624, 126400], fanBlock: [1244704, 7144], bSe: [1648288, 4416], bBasic: [1624352, 3720], wSe: [7219648, 85568],
@@ -22,6 +23,7 @@ const BANK = { field: { b: 'bField', w: ['wBasic', 'wField'] }, battle: { b: 'bB
 // 곡 이름 → 악보, 악기 묶음, 곡 볼륨(원본 SEQ 정보 값)
 const SONG = {
   gym: { s: 'sGym', bank: 'field', vol: 118 },            // 체육관
+  lab: { s: 'sLab', bank: 'field', vol: 127 },            // 처음 연출·튜토리얼 (연구소 곡)
   train: { s: 'sBaTrain', bank: 'battle', vol: 88 },      // 트레이너 배틀
   gymBattle: { s: 'sBaGym', bank: 'battle', vol: 88 },    // 체육관 관장 배틀
   rival: { s: 'sBaRival', bank: 'battle', vol: 88 },      // 라이벌 배틀
