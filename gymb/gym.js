@@ -485,7 +485,7 @@ const GYMB = () => GA.GYMB || { GYM_G: REW0.map(o => o.g), GYM_SF_PCT: 60, WAGE_
 const REW = d => ({ ...REW0[d], g: GYMB().GYM_G[d] ?? REW0[d].g });
 // 연승 보너스 (경완 2026-10-29 '연승하면 평판 더 오르게'): 막을 때마다 g.stk +1, 내가 지면 0
 // 연승이 쌓일수록 지수적으로 (경완 2026-10-29 '구간 말고 지수적으로, 대신 난이도 밸런스'): 1.3^(n-2), 2연승 +1 · 5연승 +2 · 8연승 +5 · 10연승 +8 · 12연승 +14 · 15연승 이상 +30
-const stkBonus = n => n < 2 ? 0 : Math.min(30, Math.round(1.3 ** (n - 2)));
+const stkBonus = n => n < 2 ? 0 : Math.min(30, Math.max(n - 1, Math.round(1.3 ** (n - 2))));   // 연승마다 적어도 +1씩은 오른다 (경완 2026-10-29): 2연승 +1 · 3연승 +2 … 10연승 +9 · 11연승 +11 · 12연승 +14 · 15연승 +30
 // 그만큼 연승 중엔 도전자도 세진다: 연승 0.6 마다 레벨 +1 (최대 +10). 고용 트레이너가 막을 때도 같은 레벨로 싸운다
 const stkLv = n => Math.min(10, Math.floor((n | 0) * .6));
 const rewOf = c => { const R = REW(c.diff); return c.boss ? { ...R, g: R.g * (1 + c.boss), r: R.r * 2 } : R; };
@@ -558,15 +558,15 @@ function refit(c, my) {
   const avg = Math.round(L.reduce((a, b) => a + b, 0) / L.length) + (c.boss ? 0 : stkLv(g.stk));   // 승급 심사 말고는 연승 중이면 도전자가 그만큼 세진다 (배틀 직전 연승 기준)
   if (c.named) {
     // 본가 단계 팀도 라인업 평균 +2 로 레벨만 옮긴다 (경완 2026-10-29 '여전히 라인업 기반이 아닌 듯'). 구성·기술은 그대로
-    if (!c.sc) { const d = Math.round(avg + 2 - teamLv(c.team)); c.team = c.team.map(m => [m[0], clampN(m[1] + d, 5, 100), m[2]]); return; }
+    if (!c.sc) { const d = Math.round(avg + 4 - teamLv(c.team)); c.team = c.team.map(m => [m[0], clampN(m[1] + d, 5, 100), m[2]]); return; }
     const n = NAMED.find(x => x.id === c.named), bn = c.bn ?? (c.boss ? [2, 3, 4, 6, 8, 11][c.boss - 1] : clampN((g.gmax | 0) - 2, 0, 3));
-    const T = n && nmTeam(n, avg + bn + rndI(-1, 1)); if (T) c.team = T;
+    const T = n && nmTeam(n, avg + bn + 2 + rndI(-1, 1)); if (T) c.team = T;
     return;
   }
   const C = CLS[c.k]; if (!C) return;
   const f = c.f ?? (c.ivm || 0) / 20, diff = c.diff;
-  const n = diff ? rndI(2, clampN(my.length + 1 + (f > .4) + (f > .8), 2, 6)) : clampN(rndI(1, 2) + (f > .5), 1, my.length);
-  c.team = mkTeam(C.t, Math.max(3, avg + (diff ? -2 + Math.round(f * 5) : -8 + Math.round(f * 6))), n);
+  const n = diff ? rndI(3, clampN(my.length + 1 + (f > .4) + (f > .8), 3, 6)) : clampN(rndI(2, 3) + (f > .5), 1, my.length);
+  c.team = mkTeam(C.t, Math.max(3, avg + (diff ? 1 + Math.round(f * 5) : -5 + Math.round(f * 6))), n);   // 예전보다 레벨 +3 (경완 2026-10-29 '전반적인 난이도')
 }
 function mkChal(t) {
   const g = st(), G = gradeOf(g.rep || 0), avg = myAvg();
@@ -578,10 +578,10 @@ function mkChal(t) {
   if (mid != null && !g.q.some(c => c.named)) { const c = mkScripted(L, t, 0); if (c) { ms.push(mid); return c; } }
   const nm = pickNamed(avg, t); if (nm && Math.random() < .12) return nm;
   // 보통 도전자: 막은 수가 늘수록 어려운 도전자가 많고, 레벨·마리 수·개체값이 오른다
-  const diff = Math.random() < [.75, .6, .5, .4, .3, .2, .15][G.i] * (1 - f * .8) ? 0 : 1;
+  const diff = Math.random() < [.55, .45, .35, .28, .2, .12, .08][G.i] * (1 - f * .8) ? 0 : 1;   // 전반 난이도 올림 (경완 2026-10-29): 쉬운 도전자가 덜 온다
   const k = pick(Object.keys(CLS).filter(x => !!CLS[x].e === !diff)), C = CLS[k];
-  const n = diff ? rndI(2, clampN(luNow().length + 1 + (f > .4) + (f > .8), 2, 6)) : rndI(1, 2) + (f > .5);
-  return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), diff, f, ivm: Math.round(f * 20), team: mkTeam(C.t, Math.max(3, avg + (diff ? -2 + Math.round(f * 5) : -8 + Math.round(f * 6))), n) };
+  const n = diff ? rndI(3, clampN(luNow().length + 1 + (f > .4) + (f > .8), 3, 6)) : rndI(2, 3) + (f > .5);
+  return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), diff, f, ivm: Math.min(31, 8 + Math.round(f * 20)), team: mkTeam(C.t, Math.max(3, avg + (diff ? 1 + Math.round(f * 5) : -5 + Math.round(f * 6))), n) };
 }
 // 이름 있는 트레이너 팀을 지금 내 라인업에 맞춰 (레벨 = 내 평균 + bonus). 가장 가까운 단계 팀을 골라 레벨만 옮긴다
 function nmTeam(n, tgt) {
@@ -592,7 +592,7 @@ function nmTeam(n, tgt) {
 const NM_POOL = L => NAMED.filter(n => L < 2 ? /관장|라이벌/.test(n.cls) : L < 3 ? /관장|사천왕/.test(n.cls) : /사천왕/.test(n.cls));
 function mkScripted(L, t, bonus, n0) {
   const g = st(), n = n0 || pick(NM_POOL(L).filter(x => !g.q.some(c => c.named === x.id))); if (!n) return null;
-  const team = nmTeam(n, myAvg() + bonus + L + rndI(-1, 1)); if (!team) return null;
+  const team = nmTeam(n, myAvg() + bonus + L + 2 + rndI(-1, 1)); if (!team) return null;
   return { id: ++g.cid, t, named: n.id, sc: 1, bn: bonus + L, cls: n.cls, tr: n.tr, ow: n.ow, nm: n.nm, diff: 2, music: n.music, team };
 }
 // 승급 심사 보스 (gi = 올라갈 등급 1~6): 동네·떠오르는·이름난 = 관장, 인기 = 라이벌·관장, 명문 = 사천왕, 전설 = 챔피언. 내 평균 +2/+3/+4/+6/+8/+11, 개체값 최고
