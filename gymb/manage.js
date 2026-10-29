@@ -189,7 +189,7 @@ async function drawTrain() {
   const g = st(); g.tr = g.tr || []; tickTrain(Date.now()); K.save();
   if (Y) { Y.mons.forEach(m => { Y.pos[m.id] = [m.x, m.y]; }); cancelAnimationFrame(Y.raf); }
   sh.classList.add('ty-on'); sh.scrollTop = 0;
-  sh.innerHTML = `<div class="ty-yd"><canvas class="ty-bg"></canvas><div class="ty-l"></div><button class="ty-st" type="button" data-stat="1" aria-label="훈련 현황"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M1 1h1v13H1zM1 14h14v1H1z"/><path fill="#e05a4a" d="M4 9h2v5H4z"/><path fill="#f0b030" d="M8 5h2v9H8z"/><path fill="#4a9ad8" d="M12 2h2v12h-2z"/></svg></button><button class="ty-add${g.tr.length ? '' : ' pulse'}" data-add="1" aria-label="포켓몬 보내기"><b>+</b><small>${g.tr.length}/${trMax()}</small></button></div>`;
+  sh.innerHTML = `<div class="ty-yd"><canvas class="ty-bg"></canvas><div class="ty-l"></div><button class="ty-add${g.tr.length ? '' : ' pulse'}" data-add="1" aria-label="포켓몬 보내기"><b>+</b><small>${g.tr.length}/${trMax()}</small></button></div>`;
   const el = sh.querySelector('.ty-yd'); await loadYA(); if (!el.isConnected) return;
   const W = Math.max(280, el.clientWidth || 360), H = Math.max(520, el.clientHeight || 640);
   Y = { el, W, H, L: el.querySelector('.ty-l'), pr: {}, mons: [], pos: Y?.pos || {}, last: 0,
@@ -210,9 +210,8 @@ async function drawTrain() {
     q.style.cssText = `left:${cx}px;top:${cy}px;z-index:${Math.round(cy)};background-image:url(${K.owSrc(x.ow)})`; Y.L.append(q); return { s: x, el: q, x: cx, y: cy, nx: performance.now() / 1000 + 1 + i * 1.7 }; });
   sh.onclick = ev => {
     const c = ev.target.closest('[data-co]'); if (c) { sfx('tap'); const o = Y.co[+c.dataset.co]?.s; if (o) sfDetail(o); return; }
-    if (ev.target.closest('[data-stat]')) { sfx('tap'); return statPop(); }
     const t = ev.target.closest('[data-p],[data-add]'); if (!t) return; sfx('tap');
-    if (t.dataset.add) return pickTrain();
+    if (t.dataset.add) return statPop();   // + = 훈련 현황 겸 슬롯 (경완 2026-10-29)
     trPop(+t.dataset.p || t.dataset.p);
   };
   { const x = coachX(); if (x > 1.001) el.insertAdjacentHTML('beforeend', `<div class="ty-info">💪 코치 보너스 <b>+${Math.round((x - 1) * 100)}%</b></div>`); }
@@ -364,9 +363,9 @@ function yDraw(m, dt) {
   st2.backgroundPosition = `${-f * (a[1] + (P.G || 0)) * s}px ${-a[0] * s}px`;
 }
 // 훈련장에 보낼 포켓몬: 포켓몬 박스와 같은 화면 (경완 2026-10-29). 누르면 넣기·빼기, 6마리까지
-function pickTrain() {
+function pickTrain(after) {
   const g = st(), ty = g.ty, inTr = id => g.tr.some(e => e.id === id);
-  GB().boxWin(false, null, () => redraw(), {
+  GB().boxWin(false, null, () => { redraw(); after?.(); }, {
     title: () => `훈련장에 보낼 포켓몬 <small>${g.tr.length}/${trMax()}</small>`, tip: `${TYPE_KO[ty]} 타입이 먼저 보여요`,
     list: () => S.box.filter(P => GB().gm(P).lv < GB().LV_MAX || inTr(P.id)), ok: () => true, first: P => (SPECIES[P.sp]?.t || []).includes(ty),
     tag: P => inTr(P.id) ? '훈련 중' : onField(P.id) ? '필드' : '',
@@ -377,33 +376,43 @@ function pickTrain() {
         if (!w.ok) { const n = esc(nmOf(P)); GB().gymPop(`<h4>${n}${K.jong(nmOf(P)) ? '을' : '를'} 훈련장에 보낼까요?</h4>${onField(P.id) ? `<p class="gy-msg">지금 필드에 나가 있어서 보내면 <b>필드에서 빠져요</b>.</p>` : ''}<div class="gy-btns"><button data-a="x">취소</button><button class="main" data-a="ok">보내기</button></div>`, (a, close) => { close(); if (a === 'ok') { w.ok = 1; try { this_pick(P, w); } finally { w.ok = 0; } } }); return; }
         const m = S.mons.find(o => o.pid === P.id); if (m) { try { GA.removeMon(m, true); } catch (e) {} }
         const now = Date.now(); g.tr.push({ id: P.id, t: now, d: K.dayStart(now), h: 0, j: now, l0: GB().gm(P).lv, x: 0, mv: [] }); K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '을' : '를'} 훈련장에 보냈다.`);
-        if (g.tr.length >= trMax()) { K.save(); w.close(); return redraw(); } }
+        if (g.tr.length >= trMax()) { K.save(); w.close(); redraw(); return after?.(); } }
       K.save(); w.redraw(); } });
 }
 // 상세카드 '훈련장으로' (경완 2026-10-29 '필드로 버튼처럼 눌렀다 뺐다'): 훈련 중이면 데려오고, 아니면 한 번 물어보고 보낸다
 function trSend(P, done) {
   const g = st(), i = g.tr.findIndex(e => e.id === P.id), n = esc(nmOf(P)), j = K.jong(nmOf(P)) ? '을' : '를';
-  if (i >= 0) { tickTrain(Date.now()); g.tr.splice(i, 1); K.glog('tr', `${n}${j} 훈련장에서 데려왔다.`); K.save(); redraw(); return done?.(); }
+  if (i >= 0) { tickTrain(Date.now()); g.tr.splice(i, 1); K.glog('tr', `${n}${j} 훈련장에서 데려왔다.`); K.save(); redraw(); slotRf?.(); return done?.(); }
   if (g.tr.length >= trMax()) return say('훈련장이 가득 찼어요. 6마리까지 보낼 수 있어요.');
   if (GB().gm(P).lv >= GB().LV_MAX) return say('이미 최고 레벨이에요.');
   GB().gymPop(`<h4>${n}${j} 훈련장에 보낼까요?</h4>${onField(P.id) ? `<p class="gy-msg">지금 필드에 나가 있어서 보내면 <b>필드에서 빠져요</b>.</p>` : ''}<div class="gy-btns"><button data-a="x">취소</button><button class="main" data-a="ok">보내기</button></div>`, (a, close) => { close(); if (a !== 'ok') return;
     const m = S.mons.find(o => o.pid === P.id); if (m) { try { GA.removeMon(m, true); } catch (e) {} }
-    const now = Date.now(); g.tr.push({ id: P.id, t: now, d: K.dayStart(now), h: 0, j: now, l0: GB().gm(P).lv, x: 0, mv: [] }); K.glog('tr', `${n}${j} 훈련장에 보냈다.`); K.save(); redraw(); done?.(); });
+    const now = Date.now(); g.tr.push({ id: P.id, t: now, d: K.dayStart(now), h: 0, j: now, l0: GB().gm(P).lv, x: 0, mv: [] }); K.glog('tr', `${n}${j} 훈련장에 보냈다.`); K.save(); redraw(); slotRf?.(); done?.(); });
 }
 // 훈련 현황 (경완 2026-10-29): 나와 있던 시간, 얻은 경험치, 오른 레벨, 배운 기술
 const hm = ms => { const m = Math.max(0, Math.floor(ms / 60000)), d = Math.floor(m / 1440), h = Math.floor(m % 1440 / 60); return d ? `${d}일 ${h}시간` : h ? `${h}시간 ${m % 60}분` : `${m}분`; };
-// 새 화면으로 (경완 2026-10-29 '훈련현황 새로운 화면에'): 포켓몬 박스처럼 전체 화면, ‹ 로 닫기
+// 훈련 현황 겸 슬롯 (경완 2026-10-29 '필드 슬롯처럼 3×2, + 버튼이랑 통합'): 찬 슬롯 = 상세카드, ✕ = 데려오기, 빈 슬롯 = 보내기
+let slotRf = null;
 function statPop() {
   const g = st(); tickTrain(Date.now()); K.save();
-  const L = g.tr.map(e => [e, boxOf(e.id)]).filter(([, P]) => P);
-  document.querySelector('#gym .gy-boxw')?.remove();
-  const w = document.createElement('div'); w.className = 'gy-boxw ts-win';
-  w.innerHTML = `<div class="win" role="dialog" aria-label="훈련 현황"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>훈련 현황 <small>${L.length}/${trMax()}</small></h4></div>
-    ${L.length ? `<div class="ts-list">${L.map(([e, P]) => { const m = GB().gm(P), up = m.lv - (e.l0 ?? m.lv), mv = (e.mv || []).map(id => GB().mvKo(id));
-    return `<div class="ts-row">${GB().thumb(P)}<div><b>${esc(nmOf(P))} <span>Lv.${m.lv}${up > 0 ? ` <em>▲${up}</em>` : ''}</span></b>
-      <dl><dt>훈련한 시간</dt><dd>${hm(e.j ? Date.now() - e.j : 0)} <small>· 오늘 ${Math.min(8, e.d === K.dayStart(Date.now()) ? e.h : 0).toFixed(1)}/8시간</small></dd><dt>얻은 경험치</dt><dd>${Math.round(e.x || 0).toLocaleString()}</dd><dt>배운 기술</dt><dd>${mv.length ? mv.map(esc).join(', ') : '아직 없어요'}</dd></dl></div></div>`; }).join('')}</div>` : '<p class="gy-msg">훈련장에 포켓몬이 없어요. + 를 눌러 보내 주세요.</p>'}</div>`;
-  document.querySelector('#gym .gy-main').appendChild(w); GB().fillTh(w);
-  w.onclick = e => { if (e.target.closest('[data-x]')) { sfx('tap'); w.remove(); } };
+  let w = document.querySelector('#gym .gy-boxw.ts-win');
+  if (!w) { document.querySelector('#gym .gy-boxw')?.remove(); w = document.createElement('div'); w.className = 'gy-boxw ts-win'; document.querySelector('#gym .gy-main').appendChild(w); }
+  const L = g.tr.map(e => [e, boxOf(e.id)]).filter(([, P]) => P), today = K.dayStart(Date.now());
+  w.innerHTML = `<div class="win" role="dialog" aria-label="훈련장"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>훈련장 <small>${L.length}/${trMax()}</small></h4></div>
+    <div class="ts-grid">${Array.from({ length: trMax() }, (_, i) => { const r = L[i]; if (!r) return `<button type="button" class="ts-slot empty" data-new="1"><span>+</span></button>`;
+      const [e, P] = r, m = GB().gm(P), up = m.lv - (e.l0 ?? m.lv), gr = GB().growth(P.sp), a0 = GB().xpAt(gr, m.lv), a1 = GB().xpAt(gr, m.lv + 1), f = m.lv >= GB().LV_MAX ? 1 : clampN(((m.xp ?? a0) - a0) / Math.max(1, a1 - a0), 0, 1), hh = Math.min(8, e.d === today ? e.h : 0);
+      return `<button type="button" class="ts-slot" data-id="${P.id}"><span class="ts-x" data-out="${P.id}" role="button" aria-label="훈련장에서 데려오기">✕</span>${GB().thumb(P)}<b>${esc(nmOf(P))}</b><span class="ts-lv">Lv.${m.lv}${up > 0 ? ` <em>▲${up}</em>` : ''}</span>
+        <span class="ts-g"><i>경험치</i><span class="mini"><i style="width:${(f * 100).toFixed(0)}%"></i></span></span><span class="ts-g h"><i>오늘</i><span class="mini"><i style="width:${(hh / 8 * 100).toFixed(0)}%"></i></span></span><small>${hm(e.j ? Date.now() - e.j : 0)} 훈련${(e.mv || []).length ? ` · 새 기술 ${(e.mv || []).length}` : ''}</small></button>`; }).join('')}</div>
+    <p class="ts-tip">빈 칸을 누르면 포켓몬을 보내요 · 하루 8시간까지 훈련해요</p></div>`;
+  GB().fillTh(w);
+  slotRf = () => { if (w.isConnected) statPop(); };
+  w.onclick = e => {
+    if (e.target.closest('[data-x]')) { sfx('tap'); w.remove(); slotRf = null; return; }
+    const x = e.target.closest('[data-out]'); if (x) { sfx('tap'); const P = boxOf(+x.dataset.out || x.dataset.out); if (P) trSend(P); return; }
+    const b = e.target.closest('.ts-slot'); if (!b) return; sfx('tap');
+    if (b.dataset.new) return pickTrain(() => statPop());
+    GB()._monPop(+b.dataset.id || b.dataset.id);
+  };
 }
 function trPop(id) {
   const P = boxOf(id); if (!P) return; const m = GB().gm(P), ph = perHour(P), g = GB().growth(P.sp), need = GB().xpAt(g, m.lv + 1) - GB().xpAt(g, m.lv);
