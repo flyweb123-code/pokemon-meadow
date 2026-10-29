@@ -483,8 +483,11 @@ const LOSE_LINES = ['해냈다! 제가 이겼어요!', '관장님한테 이기�
 const REW0 = [{ g: 40, r: 1, rl: -1, fr: 1 }, { g: 100, r: 1, rl: -1, fr: 2 }, { g: 300, r: 2, rl: -1, fr: 4 }];   // 평판은 막은 도전자 1명 ≈ 1 (경완 2026-10-29)
 const GYMB = () => GA.GYMB || { GYM_G: REW0.map(o => o.g), GYM_SF_PCT: 60, WAGE_BASE: 150, WAGE_LV: 5, WAGE_MAX: 600 };   // 골드·월급 값은 작업실 밸런스 (게임 10.78)
 const REW = d => ({ ...REW0[d], g: GYMB().GYM_G[d] ?? REW0[d].g });
-// 연승 보너스 (경완 2026-10-29 '연승하면 평판 더 오르게'): 막을 때마다 g.stk +1, 내가 지면 0. 2연승부터 +1, 6연승 +2, 10연승 +3
-const stkBonus = n => n >= 10 ? 3 : n >= 6 ? 2 : n >= 2 ? 1 : 0;   // 2연승부터 +1 (경완 2026-10-29)
+// 연승 보너스 (경완 2026-10-29 '연승하면 평판 더 오르게'): 막을 때마다 g.stk +1, 내가 지면 0
+// 연승이 쌓일수록 지수적으로 (경완 2026-10-29 '구간 말고 지수적으로, 대신 난이도 밸런스'): 1.3^(n-2), 2연승 +1 · 5연승 +2 · 8연승 +5 · 10연승 +8 · 12연승 +14 · 15연승 이상 +30
+const stkBonus = n => n < 2 ? 0 : Math.min(30, Math.round(1.3 ** (n - 2)));
+// 그만큼 연승 중엔 도전자도 세진다: 연승 0.6 마다 레벨 +1 (최대 +10). 고용 트레이너가 막을 때도 같은 레벨로 싸운다
+const stkLv = n => Math.min(10, Math.floor((n | 0) * .6));
 const rewOf = c => { const R = REW(c.diff); return c.boss ? { ...R, g: R.g * (1 + c.boss), r: R.r * 2 } : R; };
 const DIFF_KO = ['쉬움', '보통', '어려움'];
 // 체육관 등급 배지 (경완 2026-10-29 '배지 개념을 체육관 등급이랑 통합'): 다음 등급 문턱 바로 앞에서 '승급 심사' 보스를 이겨야 올라간다.
@@ -552,7 +555,7 @@ const teamLv = T => T.reduce((a, m) => a + m[1], 0) / T.length;
 // 배틀 직전에 고른 라인업으로 상대 레벨·마리 수를 다시 맞춘다 (경완 2026-10-29). 본가 단계 팀(pickNamed)은 그대로
 function refit(c, my) {
   const g = st(), L = my.map(P => (GB()?.gm?.(P) || g.mon?.[P.id])?.lv).filter(Boolean); if (!L.length) return;   // 아직 개체 정보가 없는 포켓몬도 gm() 으로 만들어서 센다
-  const avg = Math.round(L.reduce((a, b) => a + b, 0) / L.length);
+  const avg = Math.round(L.reduce((a, b) => a + b, 0) / L.length) + (c.boss ? 0 : stkLv(g.stk));   // 승급 심사 말고는 연승 중이면 도전자가 그만큼 세진다 (배틀 직전 연승 기준)
   if (c.named) {
     // 본가 단계 팀도 라인업 평균 +2 로 레벨만 옮긴다 (경완 2026-10-29 '여전히 라인업 기반이 아닌 듯'). 구성·기술은 그대로
     if (!c.sc) { const d = Math.round(avg + 2 - teamLv(c.team)); c.team = c.team.map(m => [m[0], clampN(m[1] + d, 5, 100), m[2]]); return; }
@@ -609,7 +612,7 @@ function pickNamed(avg, t) {
 }
 // 하루 시간표: 등급이 오를수록 많이 온다 (2~5명, 오전 8시 ~ 밤 10시 사이 아무 때나)
 function mkSch(d0, from = 0) {
-  const n = 3 + (Math.random() < .5);   // 하루 3~4명, 등급 상관없음 (경완 2026-10-28)
+  const n = rndI(9, 11);   // 하루 10명 안팎 (경완 2026-10-29, 예전 3~4명), 등급 상관없음
   return Array.from({ length: n }, () => d0 + rnd(8, 22) * H).filter(t => t > from).sort((a, b) => a - b);
 }
 function glog(k, html, t = Date.now()) { const g = st(); g.log.unshift([t, k, html]); if (g.log.length > 80) g.log.length = 80; }
@@ -653,6 +656,7 @@ function staffFight(c) {
 function arrive(c) {
   const g = st(), cn = `${c.cls} <b>${esc(c.nm)}</b>`;
   let beat = 0;
+  if (c.team && !c.boss && !c.stkL) { c.stkL = stkLv(g.stk); if (c.stkL) c.team = c.team.map(m => [m[0], clampN(m[1] + c.stkL, 5, 100), m[2]]); }   // 연승 난이도
   if (!c.named && g.sf.length) {
     const { s, lost } = staffFight(c); beat = lost.length;
     if (s) {
