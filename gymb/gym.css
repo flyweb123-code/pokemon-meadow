@@ -1681,3 +1681,10 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .ivb{grid-template-columns:auto 1fr auto!important;gap:6px!important;line-height:14px}.ivb span{white-space:nowrap;width:50px}.ivb em{min-width:48px;white-space:nowrap}
 .gy-pop .win:has(.mp-head) .iv-hex.bar{height:auto!important;min-height:130px}
 .ivb-lg{flex-wrap:nowrap;white-space:nowrap;gap:2px 6px}
+
+/* 체육관 이름칸 연필 아이콘 (경완 2026-10-29) */
+.gy-nmf{position:relative;display:block}.gy-nmf input{width:100%;box-sizing:border-box;padding-right:48px!important}
+.gy-pen{position:absolute;right:14px;top:50%;width:24px;height:24px;transform:translateY(-50%);pointer-events:none}
+/* 도전자 받기 활성화: 덜 튀고 더 빠르게 (경완 2026-10-29) */
+.gy-qbtn.qact{animation:qAct2 .7s ease-out!important}
+@keyframes qAct2{0%{scale:.75;filter:brightness(1.8) drop-shadow(0 0 0 #ffd84a)}35%{scale:1.1;filter:brightness(1.4) drop-shadow(0 0 10px #ffd84a)}60%{scale:.97}80%{scale:1.03}100%{scale:1;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.45))}}
