@@ -1154,10 +1154,19 @@ const HOLD = {
 };
 const itImg = id => `${IMG}item/${id}.png`;
 const itRow = (id, n, note) => { const x = HOLD[id]; return `<button type="button" class="sp-tm sp-it" data-it="${id}"><img class="tm-ic it-ic" alt="" src="${itImg(id)}"><span class="tm-nm"><b>${esc(x[0])}</b>${n ? `<i class="tm-own">×${n}</i>` : ''}</span><span class="tm-meta"><small>${esc(x[2])}</small>${note ? `<em class="it-note">${note}</em>` : ''}</span></button>`; };
+// 도구는 종류마다 하나만 (경완 2026-10-29): 창고에 있거나 누가 지니고 있으면 가진 것
+const itWho = id => { const M = S.gym?.mon || {}; for (const k in M) if (M[k]?.it === id) { const P = boxOf(+k || k); if (P) return P; } return null; };
+const itHave = id => (S.gym?.itm?.[id] > 0) || !!itWho(id);
+// 가진 도구 전부: [id, 지닌 포켓몬|null]. 창고에 있는 것 먼저
+const itAll = () => { const g = S.gym || {}, bag = Object.entries(g.itm || {}).filter(([id, n]) => n > 0 && HOLD[id]).map(([id]) => [id, null]), M = g.mon || {}, held = [];
+  for (const k in M) { const id = M[k]?.it, P = id && HOLD[id] && boxOf(+k || k); if (P) held.push([id, P]); } return [...bag, ...held]; };
+// 지닌 도구 카드: 회색 + 지닌 포켓몬 그림 + 돌려받기 (어느 화면에서든)
+const itRowAll = ([id, P]) => { if (!P) return itRow(id); const x = HOLD[id];
+  return `<div class="sp-tm sp-it held"><img class="tm-ic it-ic" alt="" src="${itImg(id)}"><span class="tm-nm"><b>${esc(x[0])}</b></span><span class="tm-meta it-who">${thumb(P)}<small>${esc(nmOf(P))}${jong(nmOf(P)) ? '이' : '가'} 지니고 있어요</small></span><button type="button" class="it-back" data-takeit="${P.id}">돌려받기</button></div>`; };
 // 도구 상세 카드: btn = [글자, 누르면] (없으면 닫기만)
 function itInfo(id, lab, act, foot = '') {
   const x = HOLD[id]; if (!x) return; const n = S.gym?.itm?.[id] || 0;
-  gymPop(`<h4 class="mi-h"><img class="tm-ic it-ic" alt="" src="${itImg(id)}">${esc(x[0])}</h4>${foot}<p class="gy-msg mi-d">${esc(x[2])}</p><p class="gy-msg it-own">가진 개수 ×${n}</p><div class="gy-btns${lab ? '' : ' one'}">${lab ? `<button data-a="x">닫기</button><button class="main" data-a="t">${lab}</button>` : '<button class="main" data-a="x">닫기</button>'}</div>`,
+  gymPop(`<h4 class="mi-h"><img class="tm-ic it-ic" alt="" src="${itImg(id)}">${esc(x[0])}</h4>${foot}<p class="gy-msg mi-d">${esc(x[2])}</p><div class="gy-btns${lab ? '' : ' one'}">${lab ? `<button data-a="x">닫기</button><button class="main" data-a="t">${lab}</button>` : '<button class="main" data-a="x">닫기</button>'}</div>`,
     (a, close) => { close(); if (a === 't') act?.(); });
 }
 // 지니게 하기: 이미 지닌 도구는 창고로 돌아온다
@@ -1175,10 +1184,10 @@ function usePop(P, done) {
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew tm-teach';
   const draw = () => { const m = gm(P), it = m.it;
     const TL = Object.entries(g.tms).filter(([, n]) => n > 0).map(([id, n]) => [mvOf(id), n, id]).filter(([x]) => x).map(r => [...r, tmCan(P, r[2])]).sort((a, b) => (b[3] - a[3]) || ((b[0][4] || 0) - (a[0][4] || 0)));
-    const IL = Object.entries(g.itm).filter(([id, n]) => n > 0 && HOLD[id]);
-    const T = [['tm', '기술머신', TL.reduce((a, r) => a + r[1], 0)], ['it', '도구', IL.reduce((a, r) => a + r[1], 0)]];
+    const IL = itAll();
+    const T = [['tm', '기술머신', TL.reduce((a, r) => a + r[1], 0)], ['it', '도구', IL.length]];
     const body = useT === 'tm' ? (TL.length ? `<div class="sp-list">${TL.map(([x, n, id, ok]) => tmRow(x, n, id, !ok, ok ? '' : (m.mv.includes(id) ? '이미 앎' : '못 배움'))).join('')}</div>` : '<p class="sf-none">가진 기술머신이 없어요. 상점에서 살 수 있어요.</p>')
-      : (IL.length ? `<div class="sp-list">${IL.map(([id, n]) => itRow(id, n)).join('')}</div>` : '<p class="sf-none">가진 도구가 없어요. 상점에서 살 수 있어요.</p>');
+      : (IL.length ? `<div class="sp-list">${IL.map(itRowAll).join('')}</div>` : '<p class="sf-none">가진 도구가 없어요. 상점에서 살 수 있어요.</p>');
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">도구 사용</b></div>
       <div class="gy-body"><p class="tt-who">${thumb(P)}<span><b>${esc(nmOf(P))}</b>${it && HOLD[it] ? `<small class="it-hold">지닌 도구 · ${esc(HOLD[it][0])}</small>` : '<small class="it-hold">지닌 도구 없음</small>'}</span>${it ? '<button type="button" class="it-take" data-take>돌려받기</button>' : ''}</p>
       <div class="sp-tabs st-tabs" role="tablist">${T.map(([k, n, c]) => `<button type="button" role="tab" data-ut="${k}" aria-selected="${useT === k}">${n} <small>${c}</small></button>`).join('')}</div>${body}</div>`;
@@ -1188,6 +1197,7 @@ function usePop(P, done) {
     if (b.dataset.a === 'x') { el.remove(); return done?.(); }
     if (b.dataset.ut) { useT = b.dataset.ut; return draw(); }
     if (b.hasAttribute('data-take')) { takeIt(P); return draw(); }
+    if (b.dataset.takeit) { const Q = boxOf(+b.dataset.takeit || b.dataset.takeit); if (Q) { takeIt(Q); se('DECIDE'); } return draw(); }
     if (b.dataset.tm) { const id = b.dataset.tm; return mvInfo(id, () => teachTm(P, id, draw)); }
     if (b.dataset.it) { const id = b.dataset.it; return itInfo(id, '지니게 하기', () => { giveIt(P, id); draw(); }); } };
 }
@@ -1252,5 +1262,5 @@ async function practice() {
   finally { document.body.classList.remove('gymBattle'); drawTab(); }
 }
 
-window.GymBattle = { HOLD, itImg, itRow, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, get _B() { return B; } };
+window.GymBattle = { HOLD, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, get _B() { return B; } };
 })();

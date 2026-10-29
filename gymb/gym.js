@@ -1067,13 +1067,13 @@ function storePop() {
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew'; root.appendChild(el);
   const draw = () => { const g = st(); g.tms = g.tms || {}; g.itm = g.itm || {}; g.own = g.own || {}; g.fits = g.fits || {}; g.dp = (g.dp || []).filter(Boolean);
     const nTm = Object.values(g.tms).reduce((a, n) => a + (n || 0), 0), dk = Object.keys(g.own).filter(k => g.own[k] && DECO[k]), fk = Object.keys(g.fits).filter(k => g.fits[k] && OUTFITS[k]);
-    const H = GB()?.HOLD, IL = H ? Object.entries(g.itm).filter(([id, n]) => n > 0 && H[id]) : [];
-    const T = [['tm', '기술머신', nTm], ['it', '도구', Object.values(g.itm).reduce((a, n) => a + (n || 0), 0)], ['deco', '꾸미기', dk.length], ['fit', '의상', fk.length + 1]];   // 도구 탭 (경완 2026-10-29)
+    const H = GB()?.HOLD, IL = H ? GB().itAll() : [];
+    const T = [['tm', '기술머신', nTm], ['it', '도구', IL.length], ['deco', '꾸미기', dk.length], ['fit', '의상', fk.length + 1]];   // 도구 탭 (경완 2026-10-29)
     let body = '';
     if (storeT === 'tm') { const D = GB()?.D, L = Object.entries(g.tms).filter(([, n]) => n > 0).map(([id, n]) => [GB()?.mvOf?.(id), n, id]).filter(([x]) => x);
       L.sort((a, b) => (a[0][2] - b[0][2]) || ((b[0][4] || 0) - (a[0][4] || 0)) * stPow);   // 타입별로 묶고 그 안에서 위력순 (경완 2026-10-29)   // 위력순 (경완 2026-10-29), 안내 문구 없음
       body = !D ? '<p class="gy-lead">불러오는 중…</p>' : L.length ? `<div class="tm-row"><button class="tm-sort" type="button" data-pow="1">위력순 ${stPow > 0 ? '▼' : '▲'}</button></div><div class="sp-list">${L.map(([x, n, id]) => GB().tmRow(x, n, id)).join('')}</div>` : '<p class="sf-none">가진 기술머신이 없어요. 상점에서 사 오세요.</p>'; }
-    if (storeT === 'it') body = !H ? '<p class="gy-lead">불러오는 중…</p>' : IL.length ? `<div class="sp-list">${IL.map(([id, n]) => GB().itRow(id, n)).join('')}</div>` : '<p class="sf-none">가진 도구가 없어요. 상점에서 사 오세요.</p>';
+    if (storeT === 'it') body = !H ? '<p class="gy-lead">불러오는 중…</p>' : IL.length ? `<div class="sp-list">${IL.map(GB().itRowAll).join('')}</div>` : '<p class="sf-none">가진 도구가 없어요. 상점에서 사 오세요.</p>';
     if (storeT === 'deco') body = dk.length ? `<div class="dc-grid">${dk.map(k => `<button type="button" data-dc="${k}" class="${g.dp.includes(k) ? 'own' : ''}"><span class="dc-pic"><img alt="" src="${IMG}deco/${k}.png" class="${DECO[k].w > 16 ? 'big' : ''}"></span><b>${DECO[k].n}</b><em>${g.dp.includes(k) ? '놓여 있음' : '창고에 있음'}</em></button>`).join('')}</div>` : '<p class="sf-none">가진 꾸미기가 없어요. 상점에서 사 오세요.</p>';
     if (storeT === 'fit') body = `<div class="ft-grid">${['', ...fk].map(k => `<button type="button" data-fit="${k}" class="${(g.fit || '') === k ? 'on' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${k ? OUTFITS[k].n : '기본 옷'}</b><em>${(g.fit || '') === k ? '입는 중' : '입기'}</em></button>`).join('')}</div>`;
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">창고</b></div>
@@ -1089,6 +1089,7 @@ function storePop() {
     // 기술머신 누르면 기술 상세 → 기술 가르치기 → 포켓몬 박스 화면에서 고르기 (경완 2026-10-29)
     if (b.dataset.tm) { const id = b.dataset.tm; return GB().mvInfo(id, () => { el.remove(); GB().teachPick(id, () => storePop()); }); }
     // 도구 누르면 상세 → 지니게 하기 → 포켓몬 박스에서 고르기 (경완 2026-10-29)
+    if (b.dataset.takeit) { const Q = GA.S.box.find(x => String(x.id) === b.dataset.takeit); if (Q) GB().takeIt(Q); return draw(); }   // 지닌 도구 돌려받기 (경완 2026-10-29)
     if (b.dataset.it) { const id = b.dataset.it; return GB().itInfo(id, '지니게 하기', () => { el.remove(); GB().itPick(id, () => storePop()); }); }
     if (b.dataset.a === 'place') { el.remove(); return decoEdit(); }
     if (b.dataset.dc) { const k = b.dataset.dc, i = g.dp.indexOf(k); if (i >= 0) { g.dp.splice(i, 1); delete g.dpos?.[k]; } else g.dp.push(k); save(); renderHome(true); return draw(); }

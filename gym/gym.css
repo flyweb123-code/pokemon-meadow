@@ -1605,3 +1605,13 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 #gym button.gy-qbtn.gy-qbtn.qact{transform-origin:0 50%}
 .lu-slot>.rk-fr{overflow:hidden}   /* 큰 스프라이트가 테두리 밖으로 나오지 않게 (경완 2026-10-29) */
 .mp-head>.mp-thb{flex:none;padding:0!important;margin:0;border:0!important;background:none!important;box-shadow:none!important;cursor:pointer;line-height:0}.mp-head>.mp-thb:active{transform:translate(1px,1px)}   /* 누르면 지닌 도구 (경완 2026-10-29) */
+/* 도구는 종류마다 하나 (경완 2026-10-29): 상점에서 가진 건 회색 '보유 중', 지닌 도구 카드는 회색 + 지닌 포켓몬 + 돌려받기 */
+.sp-tm.sp-it.own{opacity:.5;filter:grayscale(1);cursor:default!important}
+.sp-tm.sp-it.held{background:#ecedf2}
+.sp-tm.sp-it.held>.it-ic,.sp-tm.sp-it.held>.tm-nm{opacity:.45;filter:grayscale(1)}
+.sp-it.held .it-who{display:flex;align-items:center;gap:6px}.sp-it.held .it-who small{margin:0!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--win-ink)}
+.sp-it.held .it-who .rk-fr{width:28px!important;height:28px!important;padding:1px!important;flex:none;box-sizing:border-box}.sp-it.held .it-who .rk-fr .rk,.sp-it.held .it-who .th-it{display:none}.sp-it.held .it-who .rk-fr img{width:100%;height:100%;object-fit:contain}
+.sp-it.held .it-back{grid-column:3;grid-row:1/3;align-self:center;height:32px;padding:0 10px;border:2px solid var(--frame);border-radius:6px;background:#fff;font:inherit;font-size:12px;color:var(--win-ink);box-shadow:0 2px 0 var(--frame);cursor:pointer}.sp-it.held .it-back:active{transform:translateY(2px);box-shadow:none}
+/* 라인업 슬롯 프로필: 그림 높이(100%)가 안 잡혀 세로로 긴 스프라이트가 잘리던 것 → 틀 안에 통째로 줄여 넣기 (경완 2026-10-29) */
+.lu-slot>.rk-fr{position:relative}
+.lu-slot>.rk-fr>img[data-th]{position:absolute!important;left:3px!important;top:3px!important;width:calc(100% - 6px)!important;height:calc(100% - 6px)!important;object-fit:contain}
