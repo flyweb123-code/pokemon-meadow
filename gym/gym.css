@@ -1300,6 +1300,7 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 /* 친밀도 하트: 필드 정보카드와 같은 굵기 (경완 2026-10-29 '빈 하트 테두리가 너무 두꺼움') */
 .mp-frh b{font-weight:400!important;font-size:14px!important;color:#e04870!important;letter-spacing:1px;line-height:16px}
 .gy-pop small.mp-xpn,.gy-pop small.tp-xp{display:block!important;width:100%;text-align:right!important}
+.gy-pop .nat-d{display:flex;justify-content:center;gap:8px}.nat-c{font-size:13px;font-weight:700;padding:3px 10px;border-radius:12px;background:rgba(0,0,0,.06);color:var(--dim)}.nat-c.up{background:#fde3e0;color:#d83a30}.nat-c.dn{background:#e0e8fd;color:#3a6ad8}
 /* 체육관 등급 배지 (10.89, 경완 2026-10-29 '배지를 중심으로 펼쳐지는 느낌'): 큰 배지가 가운데, 양쪽으로 이름판 날개가 배지 밑에서 펼쳐진다 */
 .gy-top .gy-plate{display:grid!important;grid-template-columns:minmax(0,1fr) 104px minmax(0,1fr);align-items:center;gap:0;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;width:100%!important}
 /* 날개 = 등급 색 리본 (경완 2026-10-29 '등급 상태 박스 퀄리티'): 바깥 끝은 제비꼬리, 이중 테두리, 아래 등급 색 띠 */
