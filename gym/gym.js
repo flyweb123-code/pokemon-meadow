@@ -927,7 +927,7 @@ function qPop() {
   const draw = el.redraw = () => { const g = st(), Q = g.q;
     let body;
     // 명단은 최신 도전자가 맨 위, 맨 위부터 한 명씩만 받을 수 있다 (경완 2026-10-29)
-    const V = Q.map((c, i) => [c, i]).sort((a, b) => (b[0].t || 0) - (a[0].t || 0));
+    const V = Q.map((c, i) => [c, i]).sort((a, b) => (a[0].t || 0) - (b[0].t || 0));   // 가장 먼저 온 도전자부터 (경완 2026-10-29)
     body = Q.length ? `<div class="qw-list">${V.map(([c, i], k) => `<div class="qw-row${k ? ' wait' : ''}"><span class="qw-pic${c.named ? ' qw-sil' : ''}"><img alt="" src="${trSrc(c.tr)}"></span><div class="qw-tx"><small>${c.boss ? `<em class="qw-bs">${gShort(c.boss)} 승급 심사</em>` : c.named ? '<em>이름 있는 트레이너</em>' : esc(c.cls)}</small><b>${c.named ? '???' : esc(c.nm)}</b><span>${hhmm(c.t)}에 왔어요</span></div>${k ? '<span class="qw-wait">차례 대기</span>' : `<button class="gy-key main" type="button" data-c="${i}">도전 받기</button>`}</div>`).join('')}</div>`
       : '<p class="qw-none">지금 기다리는 도전자가 없어요.</p>';
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">도전자 명단</b></div>

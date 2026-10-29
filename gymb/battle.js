@@ -59,7 +59,8 @@ function xpAt(g, n) {
 const growth = sp => D.sp[sp]?.g || 2;
 // 개체마다 정해지는 난수 (같은 개체는 늘 같은 성격·특성·기술)
 const abNorm = sp => { const o = D.sp[sp]; if (!o) return ['noability']; const L = (o.ab || []).filter(a => a !== o.h); return L.length ? L : o.ab || ['noability']; };
-const hiddenRoll = k => seeded(k)() < .05;
+const HA_RATE = .02;   // 숨겨진 특성 2% (경완 2026-10-29 '여전히 너무 많다', 5%→2%)
+const hiddenRoll = k => seeded(k)() < HA_RATE;
 const seeded = s => { let h = 2166136261; for (const ch of String(s)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 1e6) / 1e6; }; };
 // 레벨 lv 까지 레벨업으로 배우는 기술 (진화 기술 0 포함, 최근 것 우선)
 function lvMoves(sp, lv) { const L = D.sp[sp]?.lv || [], out = []; for (let i = 0; i < L.length; i += 2) if (L[i] <= lv) out.push([L[i], L[i + 1]]); return out; }
@@ -86,6 +87,8 @@ function gm(P) {
   }
   // 특성 (경완 2026-10-27 '특성, 숨겨진 특성'): 보통 특성은 숨겨진 특성을 뺀 것 중에서, 숨겨진 특성은 5% (ha). 진화하면 같은 자리 특성으로
   const h = D.sp[P.sp]?.h, nm = abNorm(P.sp);
+  if (m.ha && !m.haK && !hiddenRoll('ha' + P.id)) { m.ha = 0; m.ab = nm[Math.floor(seeded('gm' + P.id + 'ab')() * Math.min(2, nm.length))] || nm[0]; }   // 5% 때 붙은 숨겨진 특성도 2% 기준으로 다시 (같은 씨앗이라 2% 안쪽은 그대로)
+  m.haK = 1;
   if (m.ha) { if (h && m.ab !== h) m.ab = h; else if (!h) { m.ha = 0; m.ab = nm[0] || m.ab; } }
   else if (!nm.includes(m.ab)) m.ab = nm[0] || m.ab;
   return m;
@@ -435,7 +438,7 @@ function myEntry(P) { const m = gm(P); return { pid: P.id, sp: P.sp, nm: nmOf(P)
 function foeEntry(sp, lv) {
   const r = Math.random, ab = D.sp[sp]?.ab || ['noability'], nats = NATS(), g = SPECIES[sp]?.g;
   const sex = /수컷만|♂만/.test(g || '') ? 'M' : /암컷만|♀만/.test(g || '') ? 'F' : Math.random() < .5 ? 'M' : 'F';
-  return { sp, nm: SPECIES[sp]?.n || String(sp), lv, mv: pickMoves(sp, lv, r), ab: Math.random() < .05 && D.sp[sp]?.h ? D.sp[sp].h : abNorm(sp)[Math.floor(r() * Math.min(2, abNorm(sp).length))], nat: pick(nats), iv: Array.from({ length: 6 }, () => Math.floor(rnd(8, 26))), g: sex, shiny: Math.random() < 1 / 4096 };
+  return { sp, nm: SPECIES[sp]?.n || String(sp), lv, mv: pickMoves(sp, lv, r), ab: Math.random() < HA_RATE && D.sp[sp]?.h ? D.sp[sp].h : abNorm(sp)[Math.floor(r() * Math.min(2, abNorm(sp).length))], nat: pick(nats), iv: Array.from({ length: 6 }, () => Math.floor(rnd(8, 26))), g: sex, shiny: Math.random() < 1 / 4096 };
 }
 
 // ---------- AI (난이도: 0 쉬움 1 보통 2 어려움) ----------
