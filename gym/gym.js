@@ -148,7 +148,7 @@ const gradeOf = rep => { let i = 0; GRADES.forEach(([v], k) => { if (rep >= v) i
 const st = () => S.gym;
 const myTypes = () => { const c = Array(19).fill(0); S.box.forEach(p => (SPECIES[p.sp]?.t || []).forEach(t => c[t]++)); return c; };
 const trName = () => (trOf().n || '').trim();
-const defName = ty => `${trName() || '나'}의 ${TYPE_KO[ty]} 체육관`;
+const defName = ty => `${TYPE_KO[ty]} 체육관`;   // 이름 8자 제한에 맞춰 (경완 2026-10-29)
 
 // ---------- 화면 ----------
 let root = null, open = false, tab = null, ents = [], sc = 2;
@@ -485,7 +485,7 @@ const DIFF_KO = ['쉬움', '보통', '어려움'];
 // 체육관 등급 배지 (경완 2026-10-29 '배지 개념을 체육관 등급이랑 통합'): 다음 등급 문턱 바로 앞에서 '승급 심사' 보스를 이겨야 올라간다.
 // g.gmax = 심사를 통과한 가장 높은 등급 (그 아래로 떨어졌다 다시 오를 땐 심사 없음), g.bdl[타입] = 그 타입으로 올라 본 가장 높은 등급 + 1 (= 배지 그림 번호, 0 = 아직)
 const BD_MID = [35, 70, 135, 170, 235, 270, 340, 380, 420, 460];   // 평판이 이 자리를 지날 때마다 이름 있는 트레이너가 한 번 온다
-const bdLv = (g, t) => (g.bdl || {})[t] | 0;
+const bdLv = (g, t) => Math.max((g.bdl || {})[t] | 0, gList().some(x => x.ty === t) ? 1 : 0);   // 등급 1 배지는 체육관을 열자마자 (경완 2026-10-29)
 const bdImg = (t, L) => `${IMG}badge/${Math.max(1, L)}/${t}.png?v=11`;
 // 배지 그림 + 빛 지나가기(모든 등급 같게) + 반짝이(동까지 0 · 은 1 · 금 2 · 프리즘 4, 경완 2026-10-29 '갈수록 반짝이는 느낌')
 const BD_TW = [0, 0, 0, 0, 0, 1, 2, 4];
@@ -607,6 +607,12 @@ const TRAITS = {
   train: { n: '훈련광', d: '훈련장 포켓몬 경험치 +20%' }, star: { n: '인기인', d: '도전자를 막으면 평판 +50%' }, money: { n: '수완가', d: '도전자를 막으면 골드 +50%' },
   guts: { n: '근성', d: '배틀에 강하다' }, grow: { n: '성장형', d: '이길수록 포켓몬 레벨이 빨리 오른다' }, thrift: { n: '검소함', d: '월급이 적다' }, lazy: { n: '느긋함', d: '가끔 배틀을 쉬지만 월급이 아주 적다' },
 };
+// 고용 트레이너 포켓몬은 시간이 지나도 조금씩 큰다: 하루 반마다(성장형은 하루마다) +1, 내 라인업 평균 -1 까지만. 쉬는 중엔 안 큼 (경완 2026-10-29)
+function sfGrow(now) {
+  const g = st(), cap = Math.max(5, myAvg() - 1);
+  for (const s of g.sf || []) { const step = (s.trait === 'grow' ? 24 : 36) * H; if (!s.gt) { s.gt = now; continue; }
+    let k = 0; while (now - s.gt >= step && k++ < 30) { s.gt += step; if (!s.rest && teamLv(s.team) < cap) s.team.forEach(m => { m[1] = Math.max(m[1], Math.min(100, cap, m[1] + 1)); }); } }
+}
 // 고용 트레이너가 차례로 도전자와 싸운다 (자동, 레벨·마릿수로 승패 확률)
 function staffFight(c) {
   const g = st(), lost = [];
@@ -683,7 +689,7 @@ function tick(now = Date.now()) {
   }
   if (g.day < today) { g.day = today; g.sch = mkSch(today, now); }
   while (g.sch.length && g.sch[0] <= now) arrive(mkChal(g.sch.shift()));
-  payDay(now);
+  payDay(now); sfGrow(now);
   g.cands = g.cands.filter(c => { if (now <= c.exp) return true; glog('sf', `면접 지원자 ${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 다른 체육관으로 갔다.`, c.exp); return false; });
   if (g.cands.length < 3 && now >= (g.candN || 0) && g.sf.length < 5) { g.cands.push(mkCand(now)); g.candSeen = 0; g.candN = now + rnd(14, 30) * H; }
   try { window.GymManage?.tickTrain(now); } catch (e) { console.error(e); }
@@ -934,32 +940,86 @@ function bodyCard(src, h, sub = '', btn = '', onClick, more = '') {
 // 타입별 등급 배지는 체육관 정보에서 빼고 내 프로필 카드에 (경완 2026-10-29 '배지랑 타입 이름 정도만')
 async function meCard() { const g = st(), O = OUTFITS[g.fit];
   const bd = `<div class="gy-bdgs me-bdgs">${TYPE_KO.map((nm, t) => { if (!t) return ''; const L = bdLv(g, t); return `<div class="${L ? 'on' : ''}${g.ty === t ? ' cur' : ''}">${bdHtml(t, L)}<b>${nm}</b></div>`; }).join('')}</div>`;
-  bodyCard(await fitSrc('tr'), `관장 ${esc(trName() || '나')}`, `${g.w}승 ${g.l}패 · 막은 도전자 ${g.blk}명${O ? `<br>입은 옷: ${O.n}` : ''}`, '', null, bd); }
-function sfCard(s) { bodyCard(trSrc(s.tr), sfName(s), `${TRAITS[s.trait]?.n || ''} · ${s.w || 0}승 ${s.l || 0}패${s.rest ? '<br>월급을 못 받아서 쉬고 있어요' : ''}`); }
+  bodyCard(await fitSrc('tr'), `관장 ${esc(trName() || '나')}`, `${g.w}승 ${g.l}패${O ? `<br>입은 옷: ${O.n}` : ''}`, '', null, bd); }
+function sfCard(s) { bodyCard(trSrc(s.tr), sfName(s), `${s.w || 0}승 ${s.l || 0}패<br>월급 7일에 ${(s.wage || 0).toLocaleString()}G${TRAITS[s.trait] ? ` · ${TRAITS[s.trait].n}` : ''}${s.rest ? '<br>월급을 못 받아서 쉬고 있어요' : ''}`); }   // 내 카드처럼 승패, 그리고 월급 (경완 2026-10-29)
 // 체육관 정보: 팝업이 아니라 자세한 새 화면 (경완 2026-10-27 '새로운 창으로 더 자세하게')
 function infoPop() {
   root.querySelector('.gy-infos')?.remove();
   const g = st(), D = dzOf(g.d), G = gradeOf(g.rep || 0), d0 = new Date(g.t0 || Date.now()), days = Math.max(1, Math.floor((dayStart(Date.now()) - dayStart(g.t0 || Date.now())) / DAY) + 1);
   const wl = (g.w || 0) + (g.l || 0), wr = wl ? Math.round((g.w || 0) / wl * 100) : 0, w = g.wk || {}, nb = Object.keys(g.bdg || {}).length, bL = bdLv(g, g.ty), exam = nx0 => nx0 && (g.gmax | 0) <= G.i && (g.rep || 0) >= nx0[0] - 1;
   const pct = G.hi > G.lo ? Math.min(100, ((g.rep || 0) - G.lo) / (G.hi - G.lo) * 100) : 100, nx = GRADES[G.i + 1];
-  const el = document.createElement('section'); el.className = 'gy-setup gy-infos'; root.appendChild(el);
+  const el = document.createElement('section'); el.className = 'gy-setup gy-infos'; $g('.gy-main').appendChild(el);   // 하단 메뉴는 늘 보이게 (경완 2026-10-29)
   el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 정보</b></div>
     <div class="gy-body">
       <div class="if-hero"><img alt="" data-ms="${g.d}"><div><span class="if-ty">${tyIcon(g.ty)}${TYPE_KO[g.ty]} 타입</span><h3>${esc(g.nm)} <button class="gy-chg gy-pen" type="button" data-a="nm" aria-label="이름 바꾸기"><svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M8 0h2v1H8zM7 1h1v1H7zM10 1h1v1h-1zM6 2h1v1H6zM11 2h1v1h-1zM5 3h1v1H5zM10 3h1v1h-1zM4 4h1v1H4zM9 4h1v1H9zM3 5h1v1H3zM8 5h1v1H8zM2 6h1v1H2zM7 6h1v1H7zM1 7h1v2H1zM6 7h1v1H6zM5 8h1v1H5zM0 9h1v3H0zM4 9h1v1H4zM1 11h3v1H1zM2 10h1v1H2z"/><path fill="#f0c040" d="M7 2h1v1H7zM6 3h2v1H6zM5 4h2v1H5zM4 5h2v1H4zM3 6h2v1H3zM2 7h2v1H2zM2 8h3v1H2zM1 9h3v1H1zM3 10h1v1H3z"/><path fill="#e86070" d="M8 1h2v1H8zM8 2h3v1H8zM8 3h2v1H8zM8 4h1v1H8z"/></svg></button></h3></div></div>
       <button class="if-grade" type="button" data-a="perk" data-g="${G.i}">${gEmb(G.i)}<div class="ig-tx"><div class="ig-top"><small>지금 등급</small><em>${nx ? `다음 ${nx[1]}` : '가장 높은 등급'} ›</em></div><b class="ig-gr" data-g="${G.i}">${G.n}</b><i class="gy-bar"><i style="width:${pct}%"></i></i><span class="ig-rep">평판 <b>${g.rep || 0}</b>${nx ? ` / ${nx[0]}` : ''}${exam(nx) ? ' <span class="if-sim">승급 심사 대기</span>' : ''}</span></div></button>
       <div class="if-two">
-        <div class="if-staff"><small>고용할 수 있는 트레이너</small><b>${staffMax()}<em>명</em></b></div>
+        <div class="if-staff"><small>고용할 수 있는 트레이너</small><b>${staffMax()}<em>/ 5명</em></b></div>
         <div class="if-big"><small>체육관 크기</small><b>${bigOf(g) + 1}<em>/ ${STAGES}단계</em></b>${canBig(g) ? '<button class="gy-key main" type="button" data-a="big">넓히기</button>' : ''}</div>
       </div>
-      <button class="if-re" type="button" data-a="re">폐업하고 새로 세우기</button>
+      <button class="if-re if-mg" type="button" data-a="mg">체육관 관리<small>관리하는 체육관 ${gList().length}곳</small></button>
     </div>`;
   fillMs(el);
   el.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap'); const a = b.dataset.a;
     if (a === 'x') return el.remove(); if (a === 'perk') return perkPop(); if (a === 'big') return bigUp(el); if (a === 'bdg') return badgePop();
     if (a === 'nm') { el.remove(); return setup('nm'); }
-    if (a === 're') return pop(`<h4>체육관 폐업</h4><p class="gy-msg" style="text-align:center">정말 폐업하시겠습니까?</p><div class="gy-btns"><button data-a="x">그만두기</button><button class="main" data-a="ok">폐업하기</button></div>`,
-      (k, close) => { close(); if (k === 'ok') { el.remove(); closeFx().then(() => { if (open) setup(['d', 'ty', 'nm'], true); }); } });
+    if (a === 'mg') return mgPop();
   };
+}
+// ---------- 여러 체육관 관리 (경완 2026-10-29 '폐업하고 새로 세우기 > 체육관 관리') ----------
+// S.gym = 지금 운영 중인 체육관, S.gym.shelf = 휴업 중인 체육관들. 타입마다 하나씩. 관장 몫(포켓몬 레벨·옷·꾸미기·기술머신·배지·전적)은 운영 중인 체육관이 들고 다닌다
+const G_SHARED = ['mon', 'fit', 'fits', 'own', 'tms', 'bdg', 'bdl', 'bk', 'tyLog', 'w', 'l', 'blk', 'nt', 'rv', 'pal', 'shelf'];
+const gList = () => { const g = st(); return g ? [g, ...(g.shelf || [])] : []; };
+const gUsedTy = () => new Set(gList().map(x => x.ty));
+// 휴업 중이던 시간은 없던 셈 (도전자·월급·면접·훈련 시계를 그만큼 민다)
+function gWake(g, now) { const dt = now - (g.off || now); delete g.off; g.day = 0; g.sch = []; g.q = [];
+  (g.sf || []).forEach(x => { if (x.pay) x.pay += dt; if (x.gt) x.gt += dt; }); (g.cands || []).forEach(c => { c.exp += dt; c.t += dt; }); if (g.candN) g.candN += dt; }
+// 지금 체육관을 휴업(drop 이면 폐업)하고 n 을 운영. 훈련장 포켓몬은 데리고 나온다
+function gSwap(n, drop) {
+  const g = st(), now = Date.now(); try { window.GymManage?.tickTrain(now); } catch (e) {}
+  const keep = {}; G_SHARED.forEach(k => { if (k in g) { keep[k] = g[k]; delete g[k]; } });
+  const shelf = (keep.shelf || []).filter(x => x !== n); delete keep.shelf;
+  if (g.tr?.length) { glog('tr', `휴업하면서 훈련장 포켓몬 ${g.tr.length}마리를 데려왔다.`); g.tr = []; }
+  if (!drop) { g.off = now; shelf.push(g); }
+  if (n.off) gWake(n, now); G_SHARED.forEach(k => { delete n[k]; });
+  S.gym = Object.assign(n, keep, { shelf }); gInit(); tick(now); save();
+}
+// 셔터: 내리고 → (mid) → 올리기
+async function shutFx(t1, s1, t2, s2, mid) {
+  openTab(null); preMs(); const fx = document.createElement('div'); fx.className = 'gy-re'; root.appendChild(fx);
+  fx.innerHTML = `<div class="re-shut"><i></i></div><div class="re-sign"><b>${t1}</b><span>${s1}</span><small></small></div>`; sfx('tap');
+  requestAnimationFrame(() => fx.classList.add('down')); await wait(2200);
+  await mid?.(); fx.querySelector('.re-sign').innerHTML = `<b>${t2}</b><span>${s2}</span><small></small>`;
+  sfx('tap'); await wait(1100); fx.classList.remove('down'); fx.classList.add('up'); await wait(900); fx.remove();
+}
+const gCard = (x, i) => { const G = gradeOf(x.rep || 0), cur = x === st();
+  return `<div class="mg-card${cur ? ' cur' : ''}" data-ty="${x.ty}"><button type="button" class="mg-go" data-i="${i}"><img alt="" data-ms="${x.d}" data-gi="${bigOf(x)}"><span class="mg-tx"><b>${esc(x.nm)}</b><span class="mg-ty">${tyIcon(x.ty)}${TYPE_KO[x.ty]} 타입</span><small>${G.n} · 평판 ${x.rep || 0}</small></span><em class="mg-st">${cur ? '운영 중' : '휴업 중'}</em></button><button type="button" class="mg-del" data-del="${i}">폐업</button></div>`; };
+let mgTy = 0;
+function mgPop() {
+  $g('.gy-mgs')?.remove(); const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-mgs'; $g('.gy-main').appendChild(el);
+  const draw = () => { const L = gList(), used = gUsedTy(), T = [...used].sort((a, b) => a - b); if (mgTy && !used.has(mgTy)) mgTy = 0;
+    el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 관리</b><span class="mg-n">${L.length} / 18곳</span></div>
+      <div class="gy-body">${T.length > 1 ? `<div class="mg-tyf"><button type="button" data-tf="0" aria-pressed="${!mgTy}">전체</button>${T.map(t => `<button type="button" data-tf="${t}" aria-pressed="${mgTy === t}" aria-label="${TYPE_KO[t]}">${tyIcon(t).replace(/ data-tip="[^"]*"/, '')}</button>`).join('')}</div>` : ''}
+      <div class="mg-list">${L.map((x, i) => !mgTy || x.ty === mgTy ? gCard(x, i) : '').join('')}</div>
+      <button type="button" class="mg-new" data-new ${used.size >= 18 ? 'disabled' : ''}><span>+</span><b>새 체육관 세우기</b><small>${used.size >= 18 ? '모든 타입의 체육관이 있어요' : '타입마다 하나씩 세울 수 있어요'}</small></button></div>`;
+    fillMs(el); };
+  const ask = (html, yes, ok) => pop(`<h4>${html}</h4><div class="gy-btns"><button data-a="x">아니요</button><button class="main" data-a="ok">${yes}</button></div>`, (k, close) => { close(); if (k === 'ok') ok(); });
+  el.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap'); const L = gList(), g = st();
+    if (b.dataset.a === 'x') return el.remove();
+    if (b.dataset.tf != null) { mgTy = +b.dataset.tf; return draw(); }
+    if (b.dataset.i != null) { const x = L[+b.dataset.i]; if (x === g) return;
+      return ask(`지금 체육관을 휴업하고<br><b>${esc(x.nm)}</b>을 관리하시겠습니까?`, '예', () => { el.remove(); root.querySelector('.gy-infos')?.remove();
+        shutFx('휴 업', esc(g.nm), '다시 열어요', esc(x.nm), async () => { gSwap(x); renderHome(); renderTop(); }).then(() => say(`<b>${esc(st().nm)}</b>의 문을 다시 열었다!`, `${TYPE_KO[st().ty]} 타입 체육관`)); }); }
+    if (b.hasAttribute('data-new')) return ask('지금 체육관을 휴업하고<br>새로운 체육관을 관리하시겠습니까?', '예', () => { el.remove(); root.querySelector('.gy-infos')?.remove();
+      shutFx('휴 업', esc(g.nm), '새 체육관', '어떤 체육관으로 열지 골라 주세요').then(() => { if (open) setup(['d', 'ty', 'nm'], 'new'); }); });
+    if (b.dataset.del != null) { const x = L[+b.dataset.del], cur = x === g;
+      return ask(`<b>${esc(x.nm)}</b>을 정말 폐업하시겠습니까?<br><small>평판·트레이너·꾸미기 자리가 모두 사라져요.${cur ? (g.shelf?.length ? ' 휴업 중인 다른 체육관을 다시 열어요.' : ' 새 체육관을 세워요.') : ''}</small>`, '폐업하기', () => {
+        if (!cur) { g.shelf = g.shelf.filter(y => y !== x); glog('in', `휴업 중이던 <b>${esc(x.nm)}</b>을 폐업했다.`); save(); return draw(); }
+        el.remove(); root.querySelector('.gy-infos')?.remove(); const nx = g.shelf?.[g.shelf.length - 1];
+        if (nx) return shutFx('폐 업', esc(g.nm), '다시 열어요', esc(nx.nm), async () => { gSwap(nx, true); glog('in', `<b>${esc(x.nm)}</b>을 폐업했다.`); renderHome(); renderTop(); }).then(() => say(`<b>${esc(st().nm)}</b>의 문을 다시 열었다!`));
+        closeFx().then(() => { if (open) setup(['d', 'ty', 'nm'], 'close'); }); }); }
+  };
+  draw();
 }
 // 체육관 등급 (경완 2026-10-28, 이름은 2026-10-29 '등급별 혜택 > 체육관 등급')
 function perkPop() {
@@ -1062,6 +1122,8 @@ function setup(only, re) {
   const g = st(), first = !g?.d;
   const dr = { d: g?.d || DESIGNS[0].id, ty: g?.ty || 0, nm: g?.nm || '' };
   if (re && dr.nm === defName(dr.ty)) dr.nm = '';
+  const used = re ? new Set(gList().filter(x => !(re === 'close' && x === g)).map(x => x.ty)) : new Set();   // 이미 관리 중인 타입은 못 고름
+  if (re) { if (used.has(dr.ty)) dr.ty = 0; dr.nm = ''; }
   const steps = Array.isArray(only) ? only : only ? [only] : ['d', 'ty', 'nm'];
   let i = 0;
   const el = document.createElement('section'); el.className = 'gy-setup'; root.appendChild(el);
@@ -1077,7 +1139,7 @@ function setup(only, re) {
         <div class="gy-dz-nm">${D.n}</div><div class="gy-dz-sub">${D.sub}</div><div class="gy-dots">${DESIGNS.map((_, j) => `<i class="${j === di ? 'on' : ''}"></i>`).join('')}</div></div>`;
     } else if (k === 'ty') {
       body = `<h3>체육관 타입</h3><p class="gy-lead">배틀에는 이 타입 포켓몬만 낼 수 있어요. 등급이 오를 때마다 이 타입의 등급 배지를 받아요.</p>
-        <div class="gy-types">${TYPE_KO.map((n, t) => t ? `<button type="button" class="gy-ty${counts[t] ? '' : ' none'}" data-ty="${t}" aria-pressed="${dr.ty === t}">${tyIcon(t)}<span>${n}<small>${counts[t] ? `내 포켓몬 ${counts[t]}` : '아직 없어요'}</small></span></button>` : '').join('')}</div>`;
+        <div class="gy-types">${TYPE_KO.map((n, t) => t ? `<button type="button" class="gy-ty${counts[t] ? '' : ' none'}${used.has(t) ? ' used' : ''}" data-ty="${t}" aria-pressed="${dr.ty === t}" ${used.has(t) ? 'disabled' : ''}>${tyIcon(t)}<span>${n}<small>${used.has(t) ? '이미 있는 체육관' : counts[t] ? `내 포켓몬 ${counts[t]}` : '아직 없어요'}</small></span></button>` : '').join('')}</div>`;
       if (!dr.ty) btn = '타입을 골라 주세요';
     } else {
       if (!dr.nm) dr.nm = defName(dr.ty);
@@ -1107,7 +1169,7 @@ function setup(only, re) {
   el.addEventListener('pointerup', e => { if (sx == null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 40) el.querySelector(`.gy-dz-arw.${dx < 0 ? 'r' : 'l'}`)?.click(); });
   const finish = () => {
     if (first) S.gym = { v: 1, d: dr.d, ty: dr.ty, nm: dr.nm, rep: 0, t0: Date.now() };
-    else if (re) { el.remove(); return refound(dr); }
+    else if (re) { el.remove(); return refound(dr, re); }
     else { if (only === 'ty' && dr.ty !== g.ty) { g.tyLog = g.tyLog || []; g.tyLog.push([g.ty, Date.now()]); } Object.assign(g, { d: dr.d, ty: dr.ty, nm: dr.nm }); }
     save(); el.remove(); renderHome();
     if (first) { tick(); renderHome(); opened(); }
@@ -1136,10 +1198,9 @@ async function closeFx() {
   fx.querySelector('.re-sign').innerHTML = `<b>새 단 장</b><span>새 체육관이 문을 열어요</span><small>어떤 체육관으로 열지 골라 주세요</small>`;
   sfx('tap'); await wait(1400); fx.classList.remove('down'); fx.classList.add('up'); confetti(); await wait(900); fx.remove();
 }
-async function refound(dr) {
+async function refound(dr, mode) {   // mode 'new': 지금 체육관은 휴업, 'close': 지금 체육관은 폐업. 새 체육관은 평판 0부터 (경완 2026-10-29)
   const g = st(), oldNm = g.nm;
-  if (dr.ty !== g.ty) { g.tyLog = g.tyLog || []; g.tyLog.push([g.ty, Date.now()]); }
-  Object.assign(g, { d: dr.d, ty: dr.ty, nm: dr.nm }); glog('in', `<b>${esc(oldNm)}</b>을 닫고 <b>${esc(dr.nm)}</b>을 새로 세웠다.`); save();
+  gSwap({ v: 1, d: dr.d, ty: dr.ty, nm: dr.nm, rep: 0, t0: Date.now() }, mode === 'close'); glog('in', mode === 'close' ? `<b>${esc(oldNm)}</b>을 닫고 <b>${esc(dr.nm)}</b>을 새로 세웠다.` : `<b>${esc(dr.nm)}</b>을 새로 세웠다.`); save();
   renderHome(); renderTop(); confetti();
   say(`<b>${esc(dr.nm)}</b>의 문을 새로 열었다!`, `${TYPE_KO[dr.ty]} 타입 체육관`);
 }
