@@ -944,7 +944,7 @@ function storePop() {
     const T = [['tm', '기술머신', nTm], ['deco', '꾸미기', dk.length], ['fit', '의상', fk.length + 1]];
     let body = '';
     if (storeT === 'tm') { const D = GB()?.D, L = Object.entries(g.tms).filter(([, n]) => n > 0).map(([id, n]) => [GB()?.mvOf?.(id), n, id]).filter(([x]) => x);
-      L.sort((a, b) => ((b[0][4] || 0) - (a[0][4] || 0)) * stPow);   // 위력순 (경완 2026-10-29), 안내 문구 없음
+      L.sort((a, b) => (a[0][2] - b[0][2]) || ((b[0][4] || 0) - (a[0][4] || 0)) * stPow);   // 타입별로 묶고 그 안에서 위력순 (경완 2026-10-29)   // 위력순 (경완 2026-10-29), 안내 문구 없음
       body = !D ? '<p class="gy-lead">불러오는 중…</p>' : L.length ? `<div class="tm-row"><button class="tm-sort" type="button" data-pow="1">위력순 ${stPow > 0 ? '▼' : '▲'}</button></div><div class="sp-list">${L.map(([x, n, id]) => GB().tmRow(x, n, id)).join('')}</div>` : '<p class="sf-none">가진 기술머신이 없어요. 상점에서 사 오세요.</p>'; }
     if (storeT === 'deco') body = dk.length ? `<div class="dc-grid">${dk.map(k => `<button type="button" data-dc="${k}" class="${g.dp.includes(k) ? 'own' : ''}"><span class="dc-pic"><img alt="" src="${IMG}deco/${k}.png" class="${DECO[k].w > 16 ? 'big' : ''}"></span><b>${DECO[k].n}</b><em>${g.dp.includes(k) ? '놓여 있음' : '창고에 있음'}</em></button>`).join('')}</div>` : '<p class="sf-none">가진 꾸미기가 없어요. 상점에서 사 오세요.</p>';
     if (storeT === 'fit') body = `<div class="ft-grid">${['', ...fk].map(k => `<button type="button" data-fit="${k}" class="${(g.fit || '') === k ? 'on' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${k ? OUTFITS[k].n : '기본 옷'}</b><em>${(g.fit || '') === k ? '입는 중' : '입기'}</em></button>`).join('')}</div>`;

@@ -524,7 +524,7 @@ function shopTm(body) {
   const can = new Map(); mons.forEach(P => (D.sp[P.sp]?.tm || []).forEach(i => { if (!can.has(i)) can.set(i, []); can.get(i).push(P); }));
   const types = [...new Set([...can.keys()].map(i => D.mv[i][2]))].sort((a, b) => a - b);
   if (tmTy !== -1 && !types.includes(tmTy)) tmTy = -1;   // -1 = 전체 (경완 2026-10-27 '에스퍼 포켓몬이라고 에스퍼 기술만 배우는 건 아닌데')
-  const L = [...can.keys()].map(i => D.mv[i]).filter(x => (tmTy === -1 || x[2] === tmTy) && (tmCat === -1 || x[3] === tmCat)).sort((a, b) => ((b[4] || 0) - (a[4] || 0)) * tmPow || a[2] - b[2]);
+  const L = [...can.keys()].map(i => D.mv[i]).filter(x => (tmTy === -1 || x[2] === tmTy) && (tmCat === -1 || x[3] === tmCat)).sort((a, b) => (tmTy === -1 ? a[2] - b[2] : 0) || ((b[4] || 0) - (a[4] || 0)) * tmPow || a[2] - b[2]);   // 모든 타입이면 타입별로 묶고 그 안에서 위력순 (경완 2026-10-29)
   body.innerHTML = `
     ${types.length ? `<div class="tm-row"><button class="fsel${tmTy !== -1 ? ' on' : ''}" data-f="ty">${tmTy === -1 ? '모든 타입' : TYPE_KO[tmTy]}</button><button class="fsel${tmCat !== -1 ? ' on' : ''}" data-f="cat">${tmCat === -1 ? '모든 형태' : ['물리', '특수', '변화'][tmCat]}</button><button class="tm-sort" data-pow="1">위력순 ${tmPow > 0 ? '▼' : '▲'}</button></div>` : `<p class="sf-none">${TYPE_KO[g.ty]} 타입 포켓몬이 아직 없어요.</p>`}
     ${types.length && !L.length ? '<p class="sf-none">조건에 맞는 기술머신이 없어요.</p>' : ''}
