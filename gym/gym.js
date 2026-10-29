@@ -680,7 +680,7 @@ async function repAnim(p, rep) {
 }
 function badgeGet(ty) {
   st().newBdg = 0; save();
-  return new Promise(ok => { sfx('tap'); pop(`<h4>자격 배지를 받았다!</h4><div class="bd-get"><img alt="" src="${IMG}badge/${ty}.png?v=2"></div><p class="gy-msg" style="text-align:center">${TYPE_KO[ty]} 타입으로 도전자 100명을 막아 냈어요.<br><b>${TYPE_KO[ty]} 자격 배지</b>는 프로필에서도 볼 수 있어요.</p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); });
+  return new Promise(ok => { sfx('tap'); pop(`<h4>자격 배지를 받았다!</h4><div class="bd-get"><img alt="" src="${IMG}badge/${ty}.png?v=3"></div><p class="gy-msg" style="text-align:center">${TYPE_KO[ty]} 타입으로 도전자 100명을 막아 냈어요.<br><b>${TYPE_KO[ty]} 자격 배지</b>는 프로필에서도 볼 수 있어요.</p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); });
 }
 
 // ---------- 홈 ----------
@@ -837,7 +837,7 @@ function infoPop() {
         <div class="if-staff"><small>고용할 수 있는 트레이너</small><b>${staffMax()}<em>명</em></b></div>
         <div class="if-big"><small>체육관 크기</small><b>${bigOf(g) + 1}<em>/ ${GRADES.length}단계</em></b>${canBig(g) ? '<button class="gy-key main" type="button" data-a="big">넓히기</button>' : ''}</div>
       </div>
-      <button class="if-bdg" type="button" data-a="bdg"><img alt="" src="${IMG}badge/${g.ty}.png?v=2" class="${g.bdg?.[g.ty] ? 'on' : ''}"><div><small class="if-bt">${TYPE_KO[g.ty]} 자격 배지<em>전체 보기 ›</em></small><b>${g.bdg?.[g.ty] ? '받았어요!' : `도전자 ${bk} / 100`}</b><i class="gy-bar"><i style="width:${bk}%"></i></i></div></button>
+      <button class="if-bdg" type="button" data-a="bdg"><img alt="" src="${IMG}badge/${g.ty}.png?v=3" class="${g.bdg?.[g.ty] ? 'on' : ''}"><div><small class="if-bt">${TYPE_KO[g.ty]} 자격 배지<em>전체 보기 ›</em></small><b>${g.bdg?.[g.ty] ? '받았어요!' : `도전자 ${bk} / 100`}</b><i class="gy-bar"><i style="width:${bk}%"></i></i></div></button>
       <button class="if-re" type="button" data-a="re">폐업하고 새로 세우기</button>
     </div>`;
   fillMs(el);
@@ -928,7 +928,7 @@ function simPop() {
 function badgePop() {
   const g = st(), n = Object.keys(g.bdg || {}).length;
   pop(`<h4>자격 배지</h4>
-    <div class="gy-bdgs">${TYPE_KO.map((nm, t) => t ? `<div class="${g.bdg[t] ? 'on' : ''}${g.ty === t ? ' cur' : ''}"><img alt="" src="${IMG}badge/${t}.png?v=2"><b>${nm}</b></div>` : '').join('')}</div>
+    <div class="gy-bdgs">${TYPE_KO.map((nm, t) => t ? `<div class="${g.bdg[t] ? 'on' : ''}${g.ty === t ? ' cur' : ''}"><img alt="" src="${IMG}badge/${t}.png?v=3"><b>${nm}</b></div>` : '').join('')}</div>
     <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }
 // 주간 보고서·랭킹 (월요일): 지난주 기록 / 이번 주 진행
