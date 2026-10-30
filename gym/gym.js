@@ -573,17 +573,11 @@ function gInit() {
 }
 const luOf = i => { const g = st(), L = (g.lu || [])[i] || []; return L.map(id => S.box.find(p => p.id === id)).filter(P => P && (SPECIES[P.sp]?.t || []).includes(g.ty)).slice(0, 6); };
 const luNow = () => luOf(st().luI | 0);
-// 배틀 시작 전에 라인업 고르기 (경완 2026-10-29): 라인업 1~3 중 하나, 빈 라인업은 못 고름, 처음엔 지금 라인업
-function luPick() {
-  const g = st(), L = [0, 1, 2].map(luOf); let sel = L[g.luI | 0]?.length ? g.luI | 0 : L.findIndex(l => l.length);
-  return new Promise(ok => {
-    const p = pop(`<h4>어떤 라인업으로 싸울까요?</h4><div class="lp-list">${L.map((l, i) => `<button type="button" class="lp-row" data-a="L${i}" ${l.length ? '' : 'disabled'}><b>라인업 ${i + 1}<small>${l.length}/6</small></b><span class="lp-th">${l.length ? l.map(P => `<img alt="" data-th="${P.id}">`).join('') : '<em>비어 있어요</em>'}</span></button>`).join('')}</div>
-      <div class="gy-btns one"><button class="main" data-a="go">배틀 시작</button></div>`, (a, close) => {
-      if (a[0] === 'L') { sel = +a.slice(1); draw(); return; }
-      if (a === 'go') { close(); g.luI = sel; save(); ok(sel); } });
-    const draw = () => p.querySelectorAll('.lp-row').forEach((b, i) => b.setAttribute('aria-pressed', i === sel));
-    p.onclick = (f => e => { if (e.target === p) { p.remove(); return ok(null); } f(e); })(p.onclick);   // 빈 곳을 누르면 닫힘 → 도전자 말로 돌아감 (경완 2026-10-29)
-    GB().fillTh(p); draw(); });
+// 배틀 시작 전에 라인업 고르기: 포켓몬 메뉴와 같은 라인업 화면에서 고르고 '이 라인업으로 결정' (경완 2026-10-30 '포켓몬 라인업 메뉴랑 동일한 레이아웃'). 다른 메뉴로 닫으면 null → 도전자 말로 돌아감
+let luRes = null;
+function luPick(title = '배틀 라인업') {
+  return new Promise(ok => { luRes = ok; root.classList.add('lupk');
+    openTab('battle', { title, pick: i => { luRes = null; root.classList.remove('lupk'); const g = st(); g.luI = i; save(); openTab(null); ok(i); } }); });
 }
 function myAvg() { const g = st(), L = luNow().map(P => (GB()?.gm?.(P) || g.mon?.[P.id])?.lv).filter(Boolean); return L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : 10; }
 // 레벨에 맞는 종 고르기: 종족값 합이 레벨에 어울리는 포켓몬 (전설·환상·아기 빼고), 타입 맞추기
@@ -705,6 +699,9 @@ function staffFight(c) {
   }
   return { s: null, lost };
 }
+// 배틀이 끝나고 나가면서 하는 말: BYE_LOST = 도전자가 졌을 때, BYE_WON = 도전자가 이겼을 때 (v12.20)
+const BYE_LOST = ['다음엔 더 강해져서 다시 올게요!', '{me} 관장님, 정말 강하시네요… 많이 배웠어요.', '으으, 분해! 꼭 다시 도전할 거야!', '포켓몬들이랑 더 수련하고 올게요. 그때 또 붙어요!', '역시 소문대로 대단한 체육관이네요.', '오늘은 졌지만 좋은 배틀이었어요. 고마워요!'];
+const BYE_WON = ['좋은 배틀이었어요! 다음에도 또 올게요.', '이 체육관, 앞으로가 더 기대되는데요?', '히히, 이겼다! 친구들한테 자랑해야지!', '{me} 관장님 포켓몬도 꽤 강했어요. 다음엔 모르겠는걸요?', '이번엔 제가 이겼네요. 다음 배틀도 기대할게요!', '좋은 승부였어요. 그럼 이만!'];
 function arrive(c) {
   const g = st(), cn = `${c.cls} <b>${esc(c.nm)}</b>`;
   let beat = 0;
@@ -842,7 +839,8 @@ async function challenge(picked) {
     glog(won ? 'win' : 'lose', `${esc(c.cls)} <b>${esc(c.nm)}</b>${won ? `에게 이겼다! <small>+${gold}G · 평판 +${rep}</small>` : `에게 졌다… <small>평판 ${rep}</small>`}`);
     setAt(); save(); renderTop();
     await resultPop(c, res, gold, rep, R);
-    if (res?.quit) { root.classList.remove('dhide'); await talk(who + esc(sayEnd.lose)); }   // 기권: 기록창 다음 도전자가 이긴 한마디를 하고 나간다 (경완 2026-10-29)
+    // 결과창 다음에 도전자가 한마디 더 하고 나간다 (v12.20 경완 '배틀 결과 안내창 나오고 한 마디씩 더 하고 퇴장'). 기권이면 이긴 한마디 (경완 2026-10-29)
+    { root.classList.remove('dhide'); const bye = res?.quit ? sayEnd.lose : c.named === 'red' ? '…………' : c.boss ? (won ? '훌륭한 배틀이었어요. 새 등급에 어울리는 체육관이 되길 바라요!' : '아직 조금 부족하네요. 준비되면 언제든 다시 심사를 신청해 주세요.') : pick(won ? BYE_LOST : BYE_WON).replace('{me}', me); await talk(who + esc(bye)); }
     if (g.newBdg) await badgeGet(g.newBdg);
     await unlockChk();
     // 배웅하기 창 없이, 알림을 다 닫으면 도전자가 걸어 나간다 (경완 2026-10-28)
@@ -875,7 +873,7 @@ function bsScreen() {
       <button class="gy-key main bsw-go" type="button" data-a="go">심사 받기</button></div>`;
   el.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap');
     if (b.dataset.a === 'x') { el.remove(); return homeSay(); }
-    if (b.dataset.a === 'go') { el.remove(); openTab('battle', { pick: () => bsStart(gi) }); } };   // 포켓몬 메뉴와 같은 라인업 화면에서 고르고 '이 라인업으로 결정'
+    if (b.dataset.a === 'go') { el.remove(); openTab('battle', { title: '승급 심사 라인업', pick: () => bsStart(gi) }); } };   // 포켓몬 메뉴와 같은 라인업 화면에서 고르고 '이 라인업으로 결정'
 }
 async function bsStart(gi) {
   const g = st(); openTab(null);
@@ -1078,6 +1076,7 @@ const SOON = {
 function openTab(t, opt) {
   // 꾸미기·자리 정하기 중에 다른 메뉴를 열면 그 모드를 끝낸다 (경완 2026-10-27 '꾸미기 하고 나서 맵에 그리드 안 사라지는 오류')
   if (t && ded) ded.end?.();
+  if (luRes && !opt?.pick) { const r = luRes; luRes = null; root.classList.remove('lupk'); setTimeout(() => r(null)); }   // 라인업 고르다 닫음
   if (t) root.querySelectorAll('.gy-infos').forEach(x => x.remove());   // 창고·도전자 명단을 연 채 아래 메뉴를 누르면 그 화면은 닫는다
   tab = t; root.querySelectorAll('.gy-menu button[data-t]').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === t));
   const sh = $g('.gy-sheet'); sh.classList.remove('ty-on', 'lk'); if (!t) { sh.hidden = true; return; }
@@ -1310,9 +1309,9 @@ function setup(only, re) {
     let body = '', btn = last ? (first ? '체육관 열기' : re ? '새로 세우기' : '저장') : '다음';
     if (k === 'd') {
       const DL = dzList(dr.ty), D = dzBase(dr.d), di = DL.indexOf(D);
-      body = `<h3>${re ? '새 체육관 디자인' : '체육관 디자인'}</h3><p class="gy-lead">${re ? '새로 세울 체육관 모양을 골라요.' : '처음엔 작게 시작해서, 등급이 오를 때마다 체육관이 점점 넓어져요.'}</p>
+      body = `<h3>${re ? '새 체육관 디자인' : '체육관 디자인'}</h3><p class="gy-lead">${re ? '새로 세울 체육관 모양을 골라요.' : '등급이 오를 때마다 체육관이 점점 넓어져요.'}</p>
         <div class="gy-dz"><div class="gy-dz-view"><img data-ms="${D.id}" data-gi="${first ? 0 : ''}" alt=""><button class="gy-dz-arw l" type="button" data-m="-1" aria-label="이전">◀</button><button class="gy-dz-arw r" type="button" data-m="1" aria-label="다음">▶</button></div>
-        <div class="gy-dz-nm">${D.n}${D.ty ? `<span class="gy-dz-ty" style="--tc:${GA.TYPE_C?.[D.ty] || '#888'}">${tyIcon(D.ty)}${TYPE_KO[D.ty]}</span>` : ''}</div><div class="gy-dots">${DL.map((_, j) => `<i class="${j === di ? 'on' : ''}"></i>`).join('')}</div></div>`;
+        <div class="gy-dz-nm">${D.n}</div><div class="gy-dots">${DL.map((_, j) => `<i class="${j === di ? 'on' : ''}"></i>`).join('')}</div></div>`;
     } else if (k === 'ty') {
       body = `<h3>체육관 타입</h3><p class="gy-lead">배틀에는 이 타입 포켓몬만 낼 수 있어요. 등급이 오를 때마다 이 타입의 등급 배지를 받아요.</p>
         <div class="gy-types">${TYPE_KO.map((n, t) => t ? `<button type="button" class="gy-ty${counts[t] ? '' : ' none'}${used.has(t) ? ' used' : ''}" data-ty="${t}" aria-pressed="${dr.ty === t}" ${used.has(t) ? 'disabled' : ''}>${tyIcon(t)}<span>${n}<small>${used.has(t) ? '이미 있는 체육관' : counts[t] ? `내 포켓몬 ${counts[t]}` : '아직 없어요'}</small></span></button>` : '').join('')}</div>`;
@@ -1474,7 +1473,8 @@ async function prepare() {
 }
 // 처음 (경완 2026-10-29 '내부 디자인은 정해져 있지 않으니 체육관 건물 외관 입구 앞에 먼저 도착'):
 // 마을을 한 번 쭉 내려다보다(스크롤) 체육관 앞에서 멈추고 → 내 캐릭터가 걸어와 입구 앞에 서면 → 강박사 → 타입·디자인·이름 정하기
-const TOWN = { img: 'town', w: 48, h: 40, from: [23.5, 33], to: [15.5, 14.5], walk: [[6, 18], [15, 18], [15, 17]] };   // 회색시티 (pokefirered 맵), 체육관 문 (15, 16)
+// v12.21 경완 '스크롤이 직선으로 아래에서 위로': 시작 x = 끝 x
+const TOWN = { img: 'town', w: 48, h: 40, from: [15.5, 33], to: [15.5, 14.5], walk: [[6, 18], [15, 18], [15, 17]] };   // 회색시티 (pokefirered 맵), 체육관 문 (15, 16)
 async function townScene() {
   const T = TOWN, W = root.clientWidth || innerWidth, H = root.clientHeight || innerHeight, k = Math.max(1.5, W / (13 * 16)), fw = owW(myOw());
   const el = document.createElement('div'); el.className = 'gy-town';
