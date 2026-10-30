@@ -198,6 +198,7 @@ function buildUI() {
       <i class="bt-tr e"></i><i class="bt-tr p"></i>
       <div class="bt-mw e"><div class="bt-mon e"><div class="clip"><img alt=""></div></div></div>
       <div class="bt-mw p"><div class="bt-mon p"><div class="clip"><img alt=""></div></div></div>
+      <i class="bt-wx"></i><div class="bt-lvw" hidden></div>
       <canvas class="bt-ptc" width="256" height="192"></canvas>
       <div class="bt-hb e"><span class="hbb"></span><b class="nm"></b><span class="lv"><i class="sx"></i><em class="lvn"></em></span><i class="st"></i><i class="hp"><i></i></i></div>
       <div class="bt-hb p"><span class="hbb"></span><b class="nm"></b><span class="lv"><i class="sx"></i><em class="lvn"></em></span><i class="st"></i><i class="hp"><i></i></i><span class="hpn"><b class="c"></b><b class="m"></b></span><i class="xp"><i></i></i></div>
@@ -587,7 +588,7 @@ async function run(opts) {
   trE.style.backgroundImage = `url(${uE})`; trP.style.backgroundImage = `url(${uP})`;
   await Promise.race([Promise.all([uE, uP].map(u => new Promise(r => { const im = new Image(); im.onload = im.onerror = r; im.src = u; }))), wait(1200)]);   // 그림이 늦게 떠서 멈춰 보이지 않게 미리 받기
   ['e', 'p'].forEach(s => { $b(`.bt-pty.${s}`).classList.remove('on'); $b(`.bt-hb.${s}`).classList.remove('on'); monEl(s).className = `bt-mon ${s}`; setSt(s, ''); });
-  $b('.bt-msg .t').textContent = ''; idlePanel();
+  $b('.bt-msg .t').textContent = ''; idlePanel(); wxSet(''); $b('.bt-terr').className = 'bt-terr'; $b('.bt-lvw').hidden = true;
   // 등장: 화면이 번쩍이며 가로줄로 열리고, 발판·트레이너가 양옆에서 미끄러져 들어온다
   M('sePrep', SE_BASE.map(n => 'DP_' + n)); await wait(40); el.classList.add('now', 'open'); void el.offsetWidth; el.classList.remove('now'); encDone(); se('SLIDEIN');   // 배틀 화면은 바로 불투명하게 (서서히 나타나면 걷히는 전환 화면 사이로 체육관이 비쳤다, 경완 2026-10-28)
   await wait(900); el.classList.remove('intro');
@@ -774,7 +775,7 @@ async function handle(a) {
     case '-curestatus': { const s = sideOf(a[2]), X = A(s); if (X) { X.st = ''; setSt(s, ''); } await msg(cureMsg(who(a[2]), a[3])); break; }
     case 'cant': if (ST_P[a[3]]) await stFx(sideOf(a[2]), a[3]); await msg(cantMsg(who(a[2]), a[3])); break;
     case '-boost': case '-unboost': { const n = +a[4] || 0, up = k === '-boost', s = sideOf(a[2]); await statFx(s, up); await msg(`${who(a[2])}의 ${iga(STAT_KO[a[3]] || a[3])} ${n >= 3 ? '매우 크게 ' : n === 2 ? '크게 ' : n === 0 ? '더 이상 ' : ''}${n === 0 ? (up ? '올라가지 않는다!' : '떨어지지 않는다!') : up ? '올라갔다!' : '떨어졌다!'}`); break; }
-    case '-weather': { const w = a[2]; if (a.includes('[upkeep]')) { const u = { Sandstorm: ['sandstorm', '모래바람이 세차게 분다'], Hail: ['hail', '싸라기눈이 계속 내리고 있다'], Snow: ['hail', '눈이 계속 내리고 있다'], RainDance: ['raindance', '비가 계속 내리고 있다'], SunnyDay: ['sunnyday', '햇살이 강하다'] }[w];   // 턴 끝마다 본가처럼 날씨 연출 (경완 2026-10-29)
+    case '-weather': { const w = a[2]; wxSet(w); if (a.includes('[upkeep]')) { const u = { Sandstorm: ['sandstorm', '모래바람이 세차게 분다'], Hail: ['hail', '싸라기눈이 계속 내리고 있다'], Snow: ['hail', '눈이 계속 내리고 있다'], RainDance: ['raindance', '비가 계속 내리고 있다'], SunnyDay: ['sunnyday', '햇살이 강하다'] }[w];   // 턴 끝마다 본가처럼 날씨 연출 (경완 2026-10-29)
         if (u) { await moveFx('p', u[0]); await msg(u[1], 300); } break; } const T = { RainDance: '비가 내리기 시작했다!', SunnyDay: '햇살이 강해졌다!', Sandstorm: '모래바람이 불기 시작했다!', Hail: '싸라기눈이 내리기 시작했다!', Snow: '눈이 내리기 시작했다!', none: '날씨가 원래대로 돌아왔다!' }; if (T[w]) await msg(T[w]); break; }
     case '-start': { if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); if (/Substitute/.test(a[3])) subFx(sideOf(a[2]), true); const t = startMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
     case '-end': { if (/Substitute/.test(a[3])) subFx(sideOf(a[2]), false); const t = endMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
@@ -997,9 +998,18 @@ async function abPop(id, ab) {
   $b('.bt-top')?.appendChild(w) || el.appendChild(w);
   await wait(30); w.classList.add('on'); await wait(B.fast ? 500 : 1100); w.classList.remove('on'); await wait(220); w.remove(); }
 // 혼란: 본가처럼 머리 위로 병아리 셋이 빙글빙글 (플래티넘 status_effect 그림, 경완 2026-10-28)
+// 그림에서 가장 위쪽 불투명 줄(머리)의 위치: 포켓몬 칸 기준 [x, y] (그림을 못 읽으면 null)
+function headAt(m) {
+  try { const im = m.querySelector('img'); if (!im || !im.naturalWidth || !im.offsetWidth) return null; const W = im.naturalWidth, H = im.naturalHeight, c = document.createElement('canvas'); c.width = W; c.height = H;
+    const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(im, 0, 0); const d = g.getImageData(0, 0, W, H).data;
+    let top = -1, sx = 0, n = 0; for (let y = 0; y < H && (top < 0 || y < top + 6); y++) for (let x = 0; x < W; x++) if (d[(y * W + x) * 4 + 3] > 40) { if (top < 0) top = y; sx += x; n++; }
+    if (top < 0) return null; const kx = im.offsetWidth / W, ky = im.offsetHeight / H, ir = im.getBoundingClientRect(), mr = m.getBoundingClientRect(), z = mr.width / m.offsetWidth || 1;
+    return [(ir.left - mr.left) / z + sx / n * kx, (ir.top - mr.top) / z + (top + 4) * ky]; } catch (e) { return null; }
+}
 async function confFx(s) {
   const m = monEl(s); if (!m) return; stSe(s, 'conf');
   const w = document.createElement('div'); w.className = 'bt-conf'; w.innerHTML = '<i></i><i></i><i></i>'; m.appendChild(w);
+  const hd = headAt(m); if (hd) { w.style.left = hd[0] + 'px'; w.style.top = hd[1] + 'px'; }   // 병아리는 포켓몬 머리 위를 돈다 (경완 2026-10-30)
   const T = B?.fast ? 700 : 1300, N = 16;
   [...w.children].forEach((d, k) => d.animate(Array.from({ length: N + 1 }, (_, i) => { const t = (i / N + k / 3) * Math.PI * 2, z = Math.sin(t);
     return { transform: `translate(${Math.cos(t) * 26}px,${z * 6}px) scale(${.8 + z * .2})`, zIndex: z > 0 ? 2 : 0, opacity: i === 0 || i === N ? 0 : 1 }; }), { duration: T, easing: `steps(${N})` }));
@@ -1010,6 +1020,26 @@ async function stFx(s, st, hurt = false) {
   if (P) { w = document.createElement('div'); w.className = `bt-stp ${P[0]}`; w.innerHTML = Array.from({ length: P[1] }, (_, i) => `<i style="--x:${Math.round((P[0] === 'z' ? 58 + i * 10 : 18 + (i * 64 / Math.max(1, P[1] - 1)) + (i % 2 ? 6 : -6)))}%;--d:${i * (P[0] === 'z' ? 260 : 90)}ms">${P[0] === 'z' ? 'Z' : ''}</i>`).join(''); m.appendChild(w); }
   if (hurt) m.animate([{ opacity: 1 }, { opacity: .15 }, { opacity: 1 }, { opacity: .15 }, { opacity: 1 }], { duration: 520, easing: 'steps(5)', delay: 260 });
   await wait(P ? (P[0] === 'z' ? 1100 : 900) : 520); m.classList.remove('glow'); w?.remove(); }
+// 날씨가 이어지는 동안 위 화면에 비·모래바람·싸라기눈·눈이 계속 흩날리고, 쾌청이면 햇살이 비친다 (경완 2026-10-30)
+const WX_C = { RainDance: 'rain', PrimordialSea: 'rain', SunnyDay: 'sun', DesolateLand: 'sun', Sandstorm: 'sand', Hail: 'hail', Snow: 'snow' };
+function wxSet(w) { const f = $b('.bt-wx'); if (f) f.className = 'bt-wx' + (WX_C[w] ? ' on ' + WX_C[w] : ''); }
+// 레벨업 능력치 창 (본가처럼): 먼저 오른 만큼(+N), 누르면 새 능력치. 다시 누르면 닫힘 (경완 2026-10-30)
+const LV_ST = ['최대HP', '공격', '방어', '특수공격', '특수방어', '스피드'];
+function lvWin(P, lv0, lv) {
+  const m = gm(P), a = statsOf(P.sp, lv0, P.iv || [], m.nat), b = statsOf(P.sp, lv, P.iv || [], m.nat), w = $b('.bt-lvw');
+  const show = f => { w.innerHTML = `<table>${LV_ST.map((n, i) => `<tr><th>${n}</th><td>${f(i)}</td></tr>`).join('')}</table><b class="cur">▼</b>`; };
+  const tap = () => new Promise(r => { if (!B) return r(); B.tapWake = r; });
+  return { a, b, run: async () => { show(i => '+' + (b[i] - a[i])); w.hidden = false; se('SELECT'); await tap();
+  if (B) { show(i => b[i]); await tap(); }
+  w.hidden = true; } };
+}
+// 배틀 중 레벨업: 쇼다운 쪽 능력치·HP 도 새 레벨로 (본가처럼 오른 최대HP 만큼 지금 HP 도 오른다)
+function lvApply(pk, X, lv, a, b) {
+  try { if (!pk || pk.fainted) return; pk.level = lv; pk.details = String(pk.details || '').replace(/, L\d+/, ', L' + lv);
+    const d = b[0] - a[0]; pk.maxhp = pk.baseMaxhp = pk.maxhp + d; pk.hp = Math.min(pk.maxhp, pk.hp + d);
+    ['atk', 'def', 'spa', 'spd', 'spe'].forEach((k, j) => { if (pk.baseStoredStats) pk.baseStoredStats[k] += b[j + 1] - a[j + 1]; if (pk.storedStats) pk.storedStats[k] += b[j + 1] - a[j + 1]; });
+    if (X) { X.lv = lv; X.mhp = pk.maxhp; X.hp = pk.hp; setHp('p', X.hp, X.mhp); } } catch (e) { console.error(e); }
+}
 // 상대를 쓰러뜨리면 나왔던 내 포켓몬(쓰러지지 않은)이 경험치를 받는다. 나와 있는 포켓몬은 경험치 막대가 차오르고 레벨업
 async function expGain(X) {
   const foe = B.foe[X.i]; if (!foe) return;
@@ -1022,7 +1052,7 @@ async function expGain(X) {
     if (on) { const hb = $b('.bt-hb.p .xp>i'), g = growth(P.sp); let lv = r.lv0;
       for (;;) { const goal = lv < r.lv ? 1 : xpGauge(B.my[i]); se('EXP', { dur: B.fast ? .25 : .6 }); hb.style.transition = 'width .6s linear'; hb.style.width = clampN(goal, 0, 1) * 96 + 'px'; await wait(B.fast ? 250 : 620); if (lv >= r.lv) break; lv++; A.lv = lv; $b('.bt-hb.p .lvn').textContent = lv; se('EXPMAX');   /* 경완 2026-10-28: 경험치 막대 차는 본가 소리(SEQ_SE_DP_EXP), 꽉 차면 EXPMAX */ hb.style.transition = 'none'; hb.style.width = '0px'; await wait(30); }
       hb.style.transition = ''; A.xpg = xpGauge(B.my[i]); }
-    if (r.lv > r.lv0) await msg(`${nm}의 레벨이 ${r.lv}${/[036]$/.test(String(r.lv)) ? '으로' : '로'} 올랐다!`);
+    if (r.lv > r.lv0) { await msg(`${nm}의 레벨이 ${r.lv}${/[036]$/.test(String(r.lv)) ? '으로' : '로'} 올랐다!`, 0); const L = lvWin(P, r.lv0, r.lv); lvApply(pk, on ? A : null, r.lv, L.a, L.b); if (on && B) await L.run(); }
     for (const [id, f] of r.learned) await msg(f ? `${eun(nm)} ${eul(mvKo(f))} 잊고 ${eul(mvKo(id))} 배웠다!` : `${eun(nm)} 새로 ${eul(mvKo(id))} 배웠다!`);
   }
   if (!B.practice) GA.save();
