@@ -5,8 +5,8 @@ body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop
 /*gym-hook5*/#pfGymBdg[hidden]{display:none}html:not(.op) #pfGymBdg,html:not(.gym-on) #pfGymBdg{display:none!important}
 #pfGymBdg .gb-grid{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:4px}#pfGymBdg img{width:100%;max-width:30px;aspect-ratio:1;justify-self:center;image-rendering:pixelated;filter:brightness(0);opacity:.18}#pfGymBdg img.on{filter:none;opacity:1}#pfGymBdg .bdw{width:100%;max-width:30px;justify-self:center}#pfGymBdg .bdw img{max-width:none}
 .bdw{position:relative;display:inline-block;line-height:0;vertical-align:middle}.bdw>img{display:block}
-.bd-sw{position:absolute;inset:0;pointer-events:none;-webkit-mask:var(--m) center/100% 100% no-repeat;mask:var(--m) center/100% 100% no-repeat;background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.85) 50%,transparent 62%) no-repeat;background-size:250% 100%;animation:bdSw 3.2s ease-in-out infinite}
-@keyframes bdSw{0%{background-position:160% 0}45%,100%{background-position:-60% 0}}
+.bd-sw{position:absolute;inset:0;pointer-events:none;-webkit-mask:var(--m) center/100% 100% no-repeat;mask:var(--m) center/100% 100% no-repeat;background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.85) 50%,transparent 62%) no-repeat;background-size:250% 100%;animation:bdSw 7s ease-in-out infinite}
+@keyframes bdSw{0%{background-position:160% 0}34%,100%{background-position:-60% 0}}   /* v11.99 경완 '빛 지나가는 주기·속도 너무 빨라': 7초마다, 한 번 지나가는 데 약 2.4초 */
 .bd-tw{position:absolute;width:26%;height:26%;pointer-events:none;background:#fff;clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);filter:drop-shadow(0 0 2px #fff);opacity:0;animation:bdTw 1.8s ease-in-out infinite}
 .bd-tw:nth-of-type(2){left:6%;top:10%}.bd-tw:nth-of-type(3){right:2%;top:30%;animation-delay:.6s}.bd-tw:nth-of-type(4){left:12%;bottom:6%;animation-delay:1.1s}.bd-tw:nth-of-type(5){right:12%;bottom:12%;animation-delay:.35s}
 @keyframes bdTw{0%,100%{opacity:0;transform:scale(.2) rotate(0)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
@@ -6579,7 +6579,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '11.98';   /* v11.91 경완: 체육관 승급 심사 = 평판 차면 알림·버튼·심사 화면·라인업 고르기 · v11.90 경완: 기술 바꾸기 상세 카드는 기술 창 위에 겹쳐 뜸. v11.89 경완: 포켓몬 박스 타입 아이콘, 체육관 포켓몬 메뉴 라인업 1 기본·순서 바꾸기 설명 없앰 · v11.88 경완: 뒤로 버튼 옆 제목을 눌러도 뒤로 · v11.86 경완: 체육관 도전자마다 기다리는 시간·남은 시간 표시, 프로필 체육관 배지 안 그려지던 것 고침. v11.79 경완: 타이어 그네 — 친구가 밀어 주면 타던 포켓몬은 다 밀 때까지 계속 타고 즐거운 말풍선. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '11.99';   /* v11.91 경완: 체육관 승급 심사 = 평판 차면 알림·버튼·심사 화면·라인업 고르기 · v11.90 경완: 기술 바꾸기 상세 카드는 기술 창 위에 겹쳐 뜸. v11.89 경완: 포켓몬 박스 타입 아이콘, 체육관 포켓몬 메뉴 라인업 1 기본·순서 바꾸기 설명 없앰 · v11.88 경완: 뒤로 버튼 옆 제목을 눌러도 뒤로 · v11.86 경완: 체육관 도전자마다 기다리는 시간·남은 시간 표시, 프로필 체육관 배지 안 그려지던 것 고침. v11.79 경완: 타이어 그네 — 친구가 밀어 주면 타던 포켓몬은 다 밀 때까지 계속 타고 즐거운 말풍선. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
