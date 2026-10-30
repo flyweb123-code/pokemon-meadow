@@ -421,7 +421,7 @@ function decoEdit() {
     grid.innerHTML = z ? `<i class="gg-foot" style="left:${z[1] * T()}px;top:${(z[2] - h + 1) * T()}px;width:${w * T()}px;height:${h * T()}px"></i><button class="gg-x" type="button" aria-label="창고에 넣기" style="left:${(z[1] + w) * T() + 12 > stage.scrollLeft + stage.clientWidth - map.offsetLeft ? z[1] * T() : (z[1] + w) * T()}px;top:${Math.max(z[2] - h + 1, .4) * T()}px">${XSVG}</button>` : '';
     const bag = Object.keys(g.own).filter(k => g.own[k] && DECO[k] && !on.has(k)); if (ded.pick && !bag.includes(ded.pick)) ded.pick = null;
     list.innerHTML = bag.length ? bag.map(k => `<button class="db-it" type="button" data-k="${k}" aria-pressed="${ded.pick === k}"><img alt="" src="${IMG}deco/t/${k}.png"><span>${DECO[k].n}</span></button>`).join('')
-      : '<p class="db-none">창고에 놓을 꾸미기가 없어요.<br>체육관의 꾸미기를 빼면 여기로 들어와요.</p>';
+      : '<p class="db-none">창고에 아이템이 없어요.<br>상점에서 구매해보세요.</p>';
   };
   const put = (k, x, y) => { if (!okAt(k, x, y)) { sfx('no'); warn('여기엔 놓을 수 없어요'); return draw(); }
     if (!g.dp.includes(k)) g.dp.push(k); g.dpos[k] = [D.toFx(x), D.toF(y), D.id]; ded.sel = k; ded.pick = null; sfx('tap'); draw(); };
