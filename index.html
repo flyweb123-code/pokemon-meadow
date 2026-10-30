@@ -50,7 +50,7 @@ body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop
 .slot.empty,.eslot.add,.bd-empty{transition:background .12s}
 .pp-x{border:0;background:none;font:inherit;font-size:20px;line-height:1;padding:6px 4px 6px 12px;margin:-6px -4px -6px 0;color:var(--dim);cursor:pointer}
 .pp-body{border:0!important;background:none!important;padding:0!important;margin:0 0 12px!important}.pp-body .ivs{margin-top:8px}
-.pp-na{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:baseline;margin-top:8px;padding:8px 10px;border:2px solid var(--inner);background:rgba(255,255,255,.5);font-size:14px}.pp-na .na-l{font-size:12px;font-weight:700;color:var(--dim)}.pp-na small{font-size:11.5px;color:var(--dim)}.ha-tag{display:inline-block;margin-left:4px;padding:0 5px;border-radius:4px;background:#7a3ec8;color:#fff;font-size:10.5px;font-style:normal;font-weight:700;vertical-align:1px}   /* v10.35: 성격·특성 */
+.pp-na{display:flex;gap:8px;margin-top:8px;font-size:14px}.pp-na .na-b{flex:1 1 0;min-width:0;display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 8px;padding:8px 10px;border:2px solid var(--inner);background:rgba(255,255,255,.5)}.pp-na .na-l{font-size:12px;font-weight:700;color:var(--dim)}.pp-na small{font-size:11.5px;color:var(--dim)}.ha-tag{display:inline-block;margin-left:4px;padding:0 5px;border-radius:4px;background:#7a3ec8;color:#fff;font-size:10.5px;font-style:normal;font-weight:700;vertical-align:1px}   /* v10.35: 성격·특성 */
 .ivs .fr-l{margin-top:4px}.ivs .hearts{margin-top:4px}
 .hearts.frtap{display:inline-flex;align-items:center;line-height:1;height:16px;color:#e04870;letter-spacing:1px;font-size:14px}.frbar>span:first-child,.ivs .fr-l{line-height:16px}
 .dexpop .boxbtn.white{background:#fff;color:var(--frame);border-color:var(--frame)}
@@ -4830,7 +4830,7 @@ function rideTy(m, H) {   // 태운 포켓몬 그림의 맨 위(타는 자리 �
   for (let i = c - 3; i <= c + 3; i++) if (i >= 0 && i < ah[1]) T0 = Math.min(T0, MH.t[i]); if (T0 >= ah[2]) T0 = MH.top;
   return H.y + (T0 - ah[5] - Ph.fy) * sh + H.vOy + 2 - (m.y + (MR.b - ar[5] - Pr.fy) * sr);
 }
-const ANIM_DX = { 177: { Sleep: 2 } }, ANIM_DY = { 936: { Shoot: [-1, -3, -3, -3, -3, -3] } };   // v9.91 경완 '투구뿌논 가로등 불 켜기 때 그림자가 몸통에 가까워짐': 쏘기 그림 몸이 3칸 내려앉아 그림자를 덮었다 → 그 칸만 올린다 (칸별, 없는 칸은 0)   // v9.87 경완 '네이티 자는 모션 중앙이 안 맞음': 그림 칸 기준점이 몸 가운데와 어긋난 동작은 칸 단위로 옮긴다
+const ANIM_DX = { 177: { Sleep: 2 } }, ANIM_DY = { 936: { Shoot: [-1, -3, -3, -3, -3, -3] }, 860: { Idle: [0, 4, 6, 7, 6, 4, 2] } };   // 11.92 경완 '쏘겨모 왜 떠다니냐': 가만히 있는 그림이 칸마다 최대 7칸 위로 떠오름 → 발을 땅에 붙인다   // v9.91 경완 '투구뿌논 가로등 불 켜기 때 그림자가 몸통에 가까워짐': 쏘기 그림 몸이 3칸 내려앉아 그림자를 덮었다 → 그 칸만 올린다 (칸별, 없는 칸은 0)   // v9.87 경완 '네이티 자는 모션 중앙이 안 맞음': 그림 칸 기준점이 몸 가운데와 어긋난 동작은 칸 단위로 옮긴다
 function drawSprite(m, dt) {
   const P = SPRITES[m.sk || m.form], A = P.a;
   let name = baseAnim(m), t;
@@ -6563,7 +6563,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '11.91';   /* v11.91 경완: 체육관 승급 심사 = 평판 차면 알림·버튼·심사 화면·라인업 고르기 · v11.90 경완: 기술 바꾸기 상세 카드는 기술 창 위에 겹쳐 뜸. v11.89 경완: 포켓몬 박스 타입 아이콘, 체육관 포켓몬 메뉴 라인업 1 기본·순서 바꾸기 설명 없앰 · v11.88 경완: 뒤로 버튼 옆 제목을 눌러도 뒤로 · v11.86 경완: 체육관 도전자마다 기다리는 시간·남은 시간 표시, 프로필 체육관 배지 안 그려지던 것 고침. v11.79 경완: 타이어 그네 — 친구가 밀어 주면 타던 포켓몬은 다 밀 때까지 계속 타고 즐거운 말풍선. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '11.92';   /* v11.91 경완: 체육관 승급 심사 = 평판 차면 알림·버튼·심사 화면·라인업 고르기 · v11.90 경완: 기술 바꾸기 상세 카드는 기술 창 위에 겹쳐 뜸. v11.89 경완: 포켓몬 박스 타입 아이콘, 체육관 포켓몬 메뉴 라인업 1 기본·순서 바꾸기 설명 없앰 · v11.88 경완: 뒤로 버튼 옆 제목을 눌러도 뒤로 · v11.86 경완: 체육관 도전자마다 기다리는 시간·남은 시간 표시, 프로필 체육관 배지 안 그려지던 것 고침. v11.79 경완: 타이어 그네 — 친구가 밀어 주면 타던 포켓몬은 다 밀 때까지 계속 타고 즐거운 말풍선. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8617,9 +8617,9 @@ function natAb(P) {
 }
 const STAT_K = { atk: '공격', def: '방어', spa: '특수공격', spd: '특수방어', spe: '스피드' };
 function natAbHtml(P) {
-  const o = natAb(P); if (!o) { nabLoad().then(() => document.querySelectorAll(`.pp-na[data-na="${P.id}"]`).forEach(e => { e.innerHTML = natAbHtml(P); })); return '<span class="na-l">성격</span><span>…</span><span class="na-l">특성</span><span>…</span>'; }
+  const o = natAb(P); if (!o) { nabLoad().then(() => document.querySelectorAll(`.pp-na[data-na="${P.id}"]`).forEach(e => { e.innerHTML = natAbHtml(P); })); return '<span class="na-b"><span class="na-l">성격</span><b>…</b></span><span class="na-b"><span class="na-l">특성</span><b>…</b></span>'; }
   const n = NAB.ntm[o.nat] || [o.nat, o.nat];
-  return `<span class="na-l">성격</span><span><b>${esc(n[1])}</b>${n[2] ? ` <small>${STAT_K[n[2]]}↑ ${STAT_K[n[3]]}↓</small>` : ' <small>보정 없음</small>'}</span><span class="na-l">특성</span><span><b>${esc(NAB.ab[o.ab] || o.ab)}</b>${o.ha ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</span>`;
+  return `<span class="na-b"><span class="na-l">성격</span><b>${esc(n[1])}</b></span><span class="na-b"><span class="na-l">특성</span><b>${esc(NAB.ab[o.ab] || o.ab)}</b>${o.ha ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</span>`;   // v11.92 경완: 성격·특성은 한 줄에 박스 둘, 성격 능력치 변화는 안 보임
 }
 function openPoke(id, dir = 0, quiet = false, noCry = false) {
   const P = boxOf(id); if (!P) return; if (!quiet && P.nw) { P.nw = false; save(); renderBox(); } if (!quiet && !noCry && ($('#pokePop').hidden || pokeId !== id)) playCry(P.sp, .1); pokeId = id;
