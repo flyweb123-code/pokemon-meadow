@@ -618,7 +618,7 @@ function mkChal(t) {
   // 중간 이름 있는 트레이너 (자리마다 한 번)
   const ms = g.ms.r || (g.ms.r = []), mid = BD_MID.find(a => rep >= a && a < (nx ? nx[0] : 1e9) && !ms.includes(a));
   if (mid != null && !g.q.some(c => c.named)) { const c = mkScripted(L, t, 0); if (c) { ms.push(mid); return c; } }
-  const nm = (g.gmax | 0) >= 1 && pickNamed(avg, t); if (nm && Math.random() < .06) return nm;   // v12.22 경완 '이름 있는 트레이너가 너무 빨리': 첫 승급 뒤부터, 12% → 6%
+  if ((g.nc | 0) >= 9 && !g.q.some(c => c.named)) { const nm = pickNamed(avg, t); if (nm) { g.nc = 0; return nm; } }   // v12.23 경완 '페이즈 느낌으로, 9명 방어하면 10번째에는 반드시 이름 있는 트레이너' (확률로는 안 옴)
   // 보통 도전자: 막은 수가 늘수록 어려운 도전자가 많고, 레벨·마리 수·개체값이 오른다
   const diff = Math.random() < [.7, .55, .4, .28, .18, .1, .06][G.i] * (1 - f * .8) ? 0 : 1;   // 초반엔 쉬운 도전자가 많고 등급이 오를수록 줄어든다
   const k = pick(Object.keys(CLS).filter(x => !!CLS[x].e === !diff)), C = CLS[k];
@@ -667,6 +667,7 @@ function addG(n) { const v = GA.addGold(n) || 0; if (st().wk) st().wk.g += v; re
 // 막은 도전자 (내가 이기거나 트레이너가 막음). 승급 심사 보스를 이기면 등급이 오르고 그 등급 배지를 받는다
 function blocked(c) {
   const g = st(), ty = g.ty; g.blk++; if (g.wk) g.wk.b++; g.bk[ty] = (g.bk[ty] || 0) + 1;
+  if (c && !c.named && !c.boss) g.nc = (g.nc | 0) + 1;   // 보통 도전자를 막은 수 → 9명이면 다음은 이름 있는 트레이너 (v12.23)
   if (!c?.boss) return;
   const gi = c.boss, r0 = g.rep || 0; g.gmax = Math.max(g.gmax | 0, gi); g.rep = Math.max(r0, GRADES[gi][0]); if (g.wk) g.wk.r += g.rep - r0;
   g.bdl[ty] = Math.max(bdLv(g, ty), gi + 1); g.bdg[ty] = g.bdg[ty] || Date.now(); g.newBdg = ty; g.newG = gi;
