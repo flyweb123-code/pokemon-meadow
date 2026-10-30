@@ -1464,12 +1464,12 @@ const mvSt = x => `<em class="mv-st"><i>위력 <b>${x[4] || '—'}</b></i><i>명
 const mvRow = (x, a) => `<button type="button" class="mp-mv" data-a="${a}" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}">${tyTag(x[2], x[3])}<b>${esc(x[1])}</b>${mvSt(x)}</button>`;
 // 기술 바꾸기: 잊을 기술(또는 빈 칸)을 고르고 → 배울 기술을 고른다. 잊은 기술은 '아는 기술'로 남아 다시 배울 수 있다
 // 기술 순서 (경완 2026-10-29): 기술 줄을 꾹 눌러 위아래로 끌면 순서가 바뀐다
-function movesPop(P, done) {
+function movesPop(P, done, hi = -1) {   // hi: 방금 바꾼 칸 — 테두리가 한 번 빛나고, 창 안 다른 곳을 누르면 꺼진다 (경완 2026-10-31)
   const m = gm(P), C = mvCands(P, m).map(id => [id, mvOf(id)]).filter(([, x]) => x).sort((a, b) => (a[1][2] - b[1][2]) || ((b[1][4] || 0) - (a[1][4] || 0))).map(([id]) => id);   // 배울 기술은 타입순 (경완 2026-10-29)
   let drag = 0, ord = false;
   // 안내 줄 오른쪽 '순서 바꾸기' (경완 2026-10-30): 누르면 길게 누르지 않고 바로 끌어서 순서를 바꾸고, '완료'로 끝
   const p = gymPop(`<h4>${esc(nmOf(P))}의 기술</h4><div class="mv-hd"><p class="gy-msg">바꿀 기술을 고르세요</p>${m.mv.length > 1 ? '<button type="button" class="mv-ordb" data-a="ord">순서 바꾸기</button>' : ''}</div>
-    <div class="mp-moves mp-line pick mv-ord">${m.mv.map((id, i) => mvOf(id) ? mvRow(mvOf(id), 's' + i) : '').join('')}${m.mv.length < 4 ? `<button class="mp-mv empty" data-a="s${m.mv.length}"><b>빈 칸</b></button>` : ''}</div>
+    <div class="mp-moves mp-line pick mv-ord">${m.mv.map((id, i) => mvOf(id) ? mvRow(mvOf(id), 's' + i).replace('class="mp-mv"', `class="mp-mv${i === hi ? ' just' : ''}"`) : '').join('')}${m.mv.length < 4 ? `<button class="mp-mv empty" data-a="s${m.mv.length}"><b>빈 칸</b></button>` : ''}</div>
     <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close, btn) => {
     if (a === 'ord') { ord = !ord; list.classList.toggle('on', ord); btn.textContent = ord ? '완료' : '순서 바꾸기'; btn.classList.toggle('on', ord); p.querySelector('.mv-hd .gy-msg').textContent = ord ? '기술을 끌어서 순서를 바꾸세요' : '바꿀 기술을 고르세요'; return; }
     if (drag || (ord && a !== 'x')) return;
@@ -1485,12 +1485,13 @@ function movesPop(P, done) {
     // 배울 기술을 누르면 바로 바뀌지 않고 상세 창 → '바꾸기' (경완 2026-10-29)
     const learn = () => gymPop(`<h4>${old ? `${esc(mvKo(old))} 대신` : '새로'} 배울 기술</h4><div class="mp-moves mp-line pick mv-learn">${C.map(id => mvRow(mvOf(id), 'n' + id)).join('')}</div><div class="gy-btns"><button data-a="x">뒤로</button><button class="main" data-a="tm">기술 가르치기</button></div>`, (b, c2) => {
       if (b === 'x') { c2(); return movesPop(P, done); }
-      if (b === 'tm') { c2(); return tmPop(P, () => movesPop(P, done), k); }   // 기술머신으로 이 칸에 가르치기 (경완 2026-10-29)
+      if (b === 'tm') { c2(); return tmPop(P, () => movesPop(P, done, Math.min(k, gm(P).mv.length - 1)), k); }   // 기술머신으로 이 칸에 가르치기 (경완 2026-10-29)
       const id = b.slice(1);
-      mvInfo(id, () => { c2(); m.kn = (m.kn || []).filter(x => x !== id); if (old) { m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); } else m.mv.push(id); GA.save(); se('DECIDE'); movesPop(P, done); }, old ? '바꾸기' : '배우기', () => {}); });
+      mvInfo(id, () => { c2(); m.kn = (m.kn || []).filter(x => x !== id); if (old) { m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); } else m.mv.push(id); GA.save(); se('DECIDE'); movesPop(P, done, old ? k : m.mv.length - 1); }, old ? '바꾸기' : '배우기', () => {}); });
     learn();
   }
   const list = p.querySelector('.mv-ord'); let lp = null;
+  if (hi >= 0) p.addEventListener('pointerdown', () => p.querySelector('.mp-mv.just')?.classList.remove('just'), { once: true });
   const end = () => { if (!lp) return; clearTimeout(lp.t); const on = lp.on; lp.b.classList.remove('drag'); lp = null; if (!on) return;
     const rows = [...list.querySelectorAll('.mp-mv:not(.empty)')], o2 = rows.map(b => +b.dataset.a.slice(1)), mv0 = m.mv.slice();
     m.mv = o2.map(i => mv0[i]); GA.save();

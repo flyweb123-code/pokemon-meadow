@@ -1956,3 +1956,6 @@ body.gymBattle .gy-vtit{display:none}
 /* 체육관 정보: 이름 연필은 카드 우상단 (경완 2026-10-30) · 체육관 관리 정렬 토글 */
 .if-hero2{position:relative}.gy-infos .if-hero2 .gy-pen{position:absolute!important;top:8px;right:8px;z-index:2}.if-hero2 h3{padding-right:34px}
 .mg-tyf{display:flex;align-items:center;justify-content:space-between;gap:8px}.mg-sort{display:inline-flex;flex:none;border:2px solid #20202c;background:#20202c;gap:2px}.mg-sort button{font:inherit;font-size:12px;font-weight:700;padding:5px 10px;border:0;background:#fff;color:#70707c;cursor:pointer}.mg-sort button[aria-pressed=true]{background:#3a3f52;color:#fff}
+/* 방금 바꾼 기술 칸: 테두리가 한 번 빛나고 남음, 창을 누르면 꺼짐 (2026-10-31) */
+.mv-ord .mp-mv.just{position:relative;z-index:1;box-shadow:inset 3px 0 0 var(--tc),inset 0 0 0 3px #f0b020!important;animation:mvJust .9s ease-out 1}
+@keyframes mvJust{0%{background:#fff3c0}100%{background:#fff}}
