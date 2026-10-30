@@ -1187,7 +1187,7 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .mp-nat span i.up{background:#fde3e0;color:#d83a30}.mp-nat span i.dn{background:#e0e8fd;color:#3a6ad8}
 .mp-abh{display:flex;align-items:center;gap:8px}.mp-abh .ha-tag{margin-left:auto}
 .mp-ab p{margin:5px 0 0!important;font-size:12px;line-height:1.5;color:#40404c}
-.mp-ab p.mp-ha{margin-top:6px!important;padding-top:6px;border-top:1px dashed rgba(0,0,0,.15);font-size:11px;color:var(--dim)}.mp-ha b{color:#7a3ec8}
+.mp-ab p.mp-ha{margin-top:6px!important;padding-top:6px;border-top:1px dashed rgba(0,0,0,.15);font-size:11px;color:var(--dim)}.mp-ha b{color:#a87a10}
 .gy-pop .win:has(.mp-head) .iv-hex{position:relative;height:124px;box-sizing:border-box;padding-right:24px;cursor:pointer}
 .gy-pop .win:has(.mp-head) .iv-hex.bar{grid-template-columns:1fr 104px!important}
 .gy-pop .win:has(.mp-head) .iv-hex.bar .iv-bars{gap:4px;padding:0}
@@ -1296,7 +1296,7 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 /* 누르는 버튼은 눌리는 모션 (경완 2026-10-29) */
 :where(#gym) button:not(:disabled):active{translate:0 2px;filter:brightness(.94)}
 .ab-hid{display:flex;align-items:center;gap:8px;width:100%;margin:0 0 4px;padding:8px 10px!important;border-radius:8px;border:2px solid rgba(122,62,200,.35)!important;background:#f6f0fd!important;box-shadow:none!important;text-align:left;font:inherit;color:inherit}
-.ab-hid small{font-size:11px;color:#7a3ec8;font-weight:700}.ab-hid b{font-size:14px;color:#7a3ec8}.ab-hid i{margin-left:auto;font-style:normal;color:#7a3ec8}
+.ab-hid small{font-size:11px;color:#a87a10;font-weight:700}.ab-hid b{font-size:14px;color:#7a5208}.ab-hid i{margin-left:auto;font-style:normal;color:#a87a10}
 /* 친밀도 하트: 필드 정보카드와 같은 굵기 (경완 2026-10-29 '빈 하트 테두리가 너무 두꺼움') */
 .mp-frh b{font-weight:400!important;font-size:14px!important;color:#e04870!important;letter-spacing:1px;line-height:16px}
 .gy-pop small.mp-xpn,.gy-pop small.tp-xp{display:block!important;width:100%;text-align:right!important}
@@ -1566,6 +1566,7 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .tt-who{position:relative}.tt-who>span{display:flex;flex-direction:column;gap:2px;min-width:0}.tt-who .it-hold{font-size:11px;color:var(--dim)}
 .tt-who .it-take{margin-left:auto;flex:none;height:30px;padding:0 10px;border:2px solid var(--inner);border-radius:6px;background:#fff;font:inherit;font-size:12px;color:var(--win-ink)}
 .lu-slot .lu-hab small{background:#d8a020!important;color:#fff}
+#gym .ha-tag,.gy-pop .ha-tag{background:#d89a10}   /* 본 게임 index.html 의 .ha-tag(body 안 style)가 나중에 읽혀 덮던 것 (12.03) */
 .gy-sheet:has(>.lu-grid) .lu-grid{flex:0 1 auto!important}
 .tt-who>span{align-items:flex-start;text-align:left}
 /* 박스 타입 고르기 = 버튼 모양 (경완 2026-10-29) */
