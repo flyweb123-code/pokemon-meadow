@@ -1984,3 +1984,5 @@ body.gymBattle .gy-vtit{display:none}
 .bp-card .bc-mt{flex-wrap:wrap;row-gap:1px}.bp-card .bc-mt b{flex:1 1 0;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .bp-card .bc-mt small{flex-basis:100%;margin-left:0}
 .bp-card .bc-mt .tg{gap:1px}.bp-card .bc-mt .tg .ct{width:24px;height:12px;background-size:24px 12px;margin-top:0}
+/* 잠긴 훈련장·트레이너: 뒤 배경 흐리게 (경완 2026-10-30) */
+.gy-lockov{-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}.gy-lockov .win{margin:auto}
