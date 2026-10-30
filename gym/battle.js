@@ -59,7 +59,7 @@ function xpAt(g, n) {
 const growth = sp => D.sp[sp]?.g || 2;
 // 개체마다 정해지는 난수 (같은 개체는 늘 같은 성격·특성·기술)
 const abNorm = sp => { const o = D.sp[sp]; if (!o) return ['noability']; const L = (o.ab || []).filter(a => a !== o.h); return L.length ? L : o.ab || ['noability']; };
-const HA_RATE = .02;   // 숨겨진 특성 2% (경완 2026-10-29 '여전히 너무 많다', 5%→2%)
+const HA_RATE = .05;   // 숨겨진 특성 5% (경완 2026-10-31: 종의 숨특 칸 때문에 많아 보였던 것 → 다시 5%)
 const hiddenRoll = k => seeded(k)() < HA_RATE;
 const seeded = s => { let h = 2166136261; for (const ch of String(s)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 1e6) / 1e6; }; };
 // 레벨 lv 까지 레벨업으로 배우는 기술 (진화 기술 0 포함, 최근 것 우선)
@@ -113,8 +113,7 @@ function gm(P) {
   }
   // 특성 (경완 2026-10-27 '특성, 숨겨진 특성'): 보통 특성은 숨겨진 특성을 뺀 것 중에서, 숨겨진 특성은 5% (ha). 진화하면 같은 자리 특성으로
   const h = D.sp[P.sp]?.h, nm = abNorm(P.sp);
-  if (m.ha && !m.haK && !hiddenRoll('ha' + P.id)) { m.ha = 0; m.ab = nm[Math.floor(seeded('gm' + P.id + 'ab')() * Math.min(2, nm.length))] || nm[0]; }   // 5% 때 붙은 숨겨진 특성도 2% 기준으로 다시 (같은 씨앗이라 2% 안쪽은 그대로)
-  m.haK = 1;
+  if (!m.haK5) { if (!m.ha && hiddenRoll('ha' + P.id)) m.ha = 1; m.haK5 = 1; }   // v12.10: 2% 때 빠진 숨겨진 특성을 5% 기준으로 되돌림 (같은 씨앗이라 그때 가졌던 개체만)
   if (m.ha) { if (h && m.ab !== h) m.ab = h; else if (!h) { m.ha = 0; m.ab = nm[0] || m.ab; } }
   else if (!nm.includes(m.ab)) m.ab = nm[0] || m.ab;
   return m;
@@ -1277,7 +1276,7 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
     (a, close) => { const c = curLu(), i = c.indexOf(P.id);
       if (a[0] === 'i' && a.length > 1) return mvInfo(a.slice(1));
       if (a === 'nat') return gymPop(`<h4>${natKo(m.nat)}</h4><p class="gy-msg nat-d">${nt[1] ? `<span class="nat-c up">${STAT_KO[nt[1]]} ▲</span><span class="nat-c dn">${STAT_KO[nt[2]]} ▼</span>` : '<span class="nat-c">능력 변화 없음</span>'}</p><p class="gy-msg ab-d">${nt[1] ? `${STAT_KO[nt[1]]}${jong(STAT_KO[nt[1]]) ? '이' : '가'} 잘 오르고, ${STAT_KO[nt[2]]}${jong(STAT_KO[nt[2]]) ? '이' : '가'} 덜 오르는 성격이에요.` : '모든 능력이 고르게 오르는 성격이에요.'}</p><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b2, c2) => c2());   // 성격 효과도 눌러서 (경완 2026-10-29)
-      if (a === 'ab') return abShow(m.ab, m.ha, !m.ha && h && h !== m.ab ? h : null);   // 특성 효과는 눌러서 팝업 (경완 2026-10-29)
+      if (a === 'ab') return abShow(m.ab, m.ha, null);   // 특성 효과는 눌러서 팝업 (경완 2026-10-29). v12.10 경완: 숨특은 진짜 가진 개체만 (종의 숨특 칸 없앰)
       if (a === 'mv') { close(); movesPop(P, () => monPop(P.id, fromBox, null, lst)); return; }
       if (a === 'tm') { close(); usePop(P, () => monPop(P.id, fromBox, null, lst)); return; }
       // 프로필 그림을 누르면 지닌 도구 정보 + 돌려받기 (경완 2026-10-29)
