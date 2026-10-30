@@ -233,7 +233,7 @@ function build() {
   const dlg = $g('.gy-dlg');
   dlg.addEventListener('click', e => { if (e.target.closest('button') || root.classList.contains('ded') || busy || root.classList.contains('dhide')) return; e.stopPropagation(); sfx('tap'); homeSay(); });
   // 도전자 명단 아이콘 → 새 화면 (도전자 / 체육관 일지)
-  $g('.gy-qbtn').onclick = () => { const g = st(); if (!g?.q?.length) return; sfx('tap'); if (ded) ded.end?.(); g.qSeen = Math.max(g.qSeen | 0, ...g.q.map(c => c.id)); save(); $g('.gy-qdot').hidden = true; qPop(); };
+  $g('.gy-qbtn').onclick = () => { const g = st(); if (!g?.q?.length) return; sfx('tap'); if (ded) ded.end?.(); g.qSeen = Math.max(g.qSeen | 0, ...g.q.map(c => c.id)); setAt(); save(); $g('.gy-qdot').hidden = true; qPop(); };
   [['.gy-deco', '꾸미기'], ['.gy-store', '창고'], ['.gy-qbtn', '도전자 받기']].forEach(([c, n]) => $g(c).insertAdjacentHTML('beforeend', `<small class="ga-l">${n}</small>`));   // 홈 레이아웃 C: 메뉴 위 행동 줄 (경완 2026-10-29)
   // 빈 곳을 한 번 누르면 이름판·버튼을 다 숨겨 메뉴만 남김, 다시 누르면 다 펼침 (경완 2026-10-28, 필드 fview 와 같음)
   $g('.gy-stage').addEventListener('click', e => { if (ded || busy || root.classList.contains('pre') || root.querySelector('.gy-kang,.gy-pop,.gy-setup') || e.target.closest('.tap,.gy-prop.tap')) return;
@@ -771,7 +771,7 @@ function tick(now = Date.now()) {
 }
 // 필드 체육관 버튼의 빨간 점 (gym.js 없이도 훅이 S.gym.at 만 보고 띄운다)
 function setAt(now = Date.now()) {
-  const g = st(); let a = g.q.length ? g.q[0].t : (g.sch[0] || nextDay(now) + 9 * H);
+  const g = st(), nq = g.q.filter(c => c.id > (g.qSeen | 0)); let a = nq.length ? nq[0].t : (g.sch[0] || nextDay(now) + 9 * H);
   if (g.cands?.length && !g.candSeen) a = Math.min(a, Math.max(...g.cands.map(c => c.t)));
   a = Math.min(a, weekStart(now) + 7 * DAY + 7 * H);
   g.at = a;
@@ -1492,5 +1492,6 @@ window.Gym = { prepare, enter, exit, isOpen: () => open, renderGold: renderGoldG
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
   k: { GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
-window.gymDot = () => { const g = S.gym; return !!(g && g.d && ((g.q && g.q.length) || (g.at && Date.now() >= g.at))); };
+// 이미 명단에서 본 도전자(qSeen)는 기다리고 있어도 점을 띄우지 않는다 — 체육관 안 점과 똑같이 (경완 2026-10-30 '빨간점 다 확인했는데 아이콘 점이 안 사라짐')
+window.gymDot = () => { const g = S.gym; return !!(g && g.d && ((g.q && g.q.some(c => c.id > (g.qSeen | 0))) || (g.at && Date.now() >= g.at))); };
 })();
