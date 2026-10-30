@@ -661,7 +661,11 @@ function pickNamed(avg, t) {
 // 하루 시간표: 등급이 오를수록 많이 온다 (2~5명, 오전 8시 ~ 밤 10시 사이 아무 때나)
 function mkSch(d0, from = 0) {
   const n = rndI(9, 11);   // 하루 10명 안팎 (경완 2026-10-29, 예전 3~4명), 등급 상관없음
-  return Array.from({ length: n }, () => d0 + rnd(8, 22) * H).filter(t => t > from).sort((a, b) => a - b);
+  // 도착 시각 = 내가 앱을 쓰는 시간대 기준 (경완 2026-10-30 '사용자의 실제 이용시간 기준으로'): GA.useH() 시간대별 사용 분. 기록이 1시간 안 되면 예전처럼 8~22시
+  const U = GA.useH?.(), tot = U ? U.reduce((a, b) => a + b, 0) : 0, mx = U ? Math.max(...U) : 0;
+  const W = tot >= 60 ? U.map((x, h) => x + (h >= 8 && h < 22 ? mx * .05 : 0)) : null, wt = W && W.reduce((a, b) => a + b, 0);
+  const at = () => { if (!W) return d0 + rnd(8, 22) * H; let r = Math.random() * wt, h = 0; while (h < 23 && (r -= W[h]) > 0) h++; return d0 + (h + Math.random()) * H; };
+  return Array.from({ length: n }, at).filter(t => t > from).sort((a, b) => a - b);
 }
 function glog(k, html, t = Date.now()) { const g = st(); g.log.unshift([t, k, html]); if (g.log.length > 80) g.log.length = 80; }
 function addRep(n) { const g = st(); const r0 = g.rep || 0; g.rep = clampN(r0 + n, 0, Math.max(r0, repCap(g))); if (g.wk) g.wk.r += g.rep - r0; }
@@ -1456,6 +1460,7 @@ function kang(lines, { lit = false, nm = '강박사', pic = GA.KANG, ow = 0, ski
 
 
 // ---------- 들어가기·나가기 ----------
+const iconKeep = [];
 const preload = src => new Promise(ok => { const i = new Image(); i.onload = i.onerror = () => ok(); i.src = src; });
 async function prepare() {
   if (!root) build();
@@ -1508,6 +1513,8 @@ function enter() {
   if (st()?.d) { tick(); renderHome(); later(); } else intro();
   setTimeout(() => gymLoad.hide(), 120);
   // 아래 메뉴(포켓몬·훈련장·트레이너·상점)가 쓰는 배틀 자료·관리 코드를 미리 받아 둔다: 처음 누를 때 '불러오는 중'에 멈춰 있지 않게 (경완 2026-10-30 '훈련장 처음 눌렀을 때 화면 바로 안 뜸')
+  // 정보 카드·기술 창의 타입·분류 아이콘을 미리 받아 둔다 (처음 열 때 글자만 보이다 늦게 뜨던 것, 경완 2026-10-30)
+  if (!iconKeep.length) for (const n of [...Array.from({ length: 18 }, (_, i) => 'ty_' + (i + 1)), 'cat_0', 'cat_1', 'cat_2']) { const im = new Image(); im.src = `${IMG}bt/${n}.png`; im.decode?.().catch(() => {}); iconKeep.push(im); }
   setTimeout(() => { if (open) loadJs('gym/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => loadJs('gym/manage.js', 'GymManage')).catch(() => {}); }, 900);
   clearInterval(tickT); tickT = setInterval(() => { if (!open || busy || !st()?.d) return; const n0 = st().q.length; tick(); renderTop(); if (st().q.length > n0) { homeSay(); qDing(); } else if (!st().q.length) homeSay(); }, 20e3);
 }
