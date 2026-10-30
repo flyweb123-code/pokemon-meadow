@@ -1271,7 +1271,7 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
   if (!document.querySelector(".gy-pop .mp-head")) ivBar = false;   // 정보 카드를 새로 열면 능력치는 늘 육각형부터 (경완 2026-10-29)
   const P = boxOf(+id || id); if (!P) return; const m = gm(P), nt = D.nt[m.nat] || ['', '', ''], h = D.sp[P.sp]?.h;
   // 특성 팝업: 숨겨진 특성은 안내 문구 대신 눌러서 효과 (경완 2026-10-29)
-  const abShow = (k, hid, hk) => gymPop(`<h4>${abKo(k)}${hid ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</h4><p class="gy-msg ab-d">${esc(AB_D?.[k] || '효과 설명이 아직 없어요.')}</p>${hk ? `<button type="button" class="ab-hid" data-a="hab"><small>숨겨진 특성</small><b>${abKo(hk)}</b><i>›</i></button>` : ''}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b, c2) => { if (b === 'hab') return abShow(hk, true); c2(); });
+  const abShow = (k, hid, hk) => gymPop(`<h4>${abKo(k)}${hid ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</h4><p class="gy-msg ab-d">${esc(AB_D?.[k] || '효과 설명이 아직 없어요.')}</p>${hk ? `<button type="button" class="ab-hid" data-a="hab"><small>이 종의 숨겨진 특성</small><b>${abKo(hk)}</b><i>›</i></button>` : ''}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b, c2) => { if (b === 'hab') return abShow(hk, true); c2(); });
   // 정보 카드 (경완 2026-10-29): 이름 밑 타입·레벨·경험치 왼쪽 맞춤, 경험치 막대는 끝까지 / 성격·특성 한 줄(눌러서 효과) / 개체값 › / 기술(누르면 상세, 위에 '기술 바꾸기') / 기술 가르치기
   const p = gymPop(monHtml(P, fromBox),
     (a, close) => { const c = curLu(), i = c.indexOf(P.id);
