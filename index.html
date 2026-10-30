@@ -50,7 +50,8 @@ body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop
 .slot.empty,.eslot.add,.bd-empty{transition:background .12s}
 .pp-x{border:0;background:none;font:inherit;font-size:20px;line-height:1;padding:6px 4px 6px 12px;margin:-6px -4px -6px 0;color:var(--dim);cursor:pointer}
 .pp-body{border:0!important;background:none!important;padding:0!important;margin:0 0 12px!important}.pp-body .ivs{margin-top:8px}
-.pp-na{display:flex;gap:8px;margin-top:8px;font-size:14px}.pp-na .na-b{flex:1 1 0;min-width:0;display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 8px;padding:8px 10px;border:2px solid var(--inner);background:rgba(255,255,255,.5)}.pp-na .na-l{font-size:12px;font-weight:700;color:var(--dim)}.pp-na small{font-size:11.5px;color:var(--dim)}.ha-tag{display:inline-block;margin-left:4px;padding:0 5px;border-radius:4px;background:#7a3ec8;color:#fff;font-size:10.5px;font-style:normal;font-weight:700;vertical-align:1px}   /* v10.35: 성격·특성 */
+.pp-na{display:flex;gap:8px;margin-top:8px;font-size:14px}.pp-na .na-b.ha{background:linear-gradient(180deg,#fff7d0,#ffeca8)!important;border-color:#e0b030!important;animation:naHa 2.4s ease-in-out infinite}.pp-na .na-b.ha .na-l{color:#a87a10}.pp-na .na-b.ha b{color:#7a5208}.pp-na .ha-tag{display:inline-block;padding:0 5px;border-radius:4px;background:#d89a10;color:#fff;font-size:10.5px;font-style:normal;font-weight:700}@keyframes naHa{0%,100%{box-shadow:0 0 0 1px rgba(255,210,60,.3),0 0 3px rgba(255,200,40,.3)}50%{box-shadow:0 0 0 2px rgba(255,214,70,.65),0 0 10px rgba(255,200,40,.7)}}   /* v11.93 경완: 숨겨진 특성 박스는 금빛 + 은은한 테두리 */
+.pp-na .na-b{flex:1 1 0;min-width:0;display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 8px;padding:8px 10px;border:2px solid var(--inner);background:rgba(255,255,255,.5)}.pp-na .na-l{font-size:12px;font-weight:700;color:var(--dim)}.pp-na small{font-size:11.5px;color:var(--dim)}.ha-tag{display:inline-block;margin-left:4px;padding:0 5px;border-radius:4px;background:#7a3ec8;color:#fff;font-size:10.5px;font-style:normal;font-weight:700;vertical-align:1px}   /* v10.35: 성격·특성 */
 .ivs .fr-l{margin-top:4px}.ivs .hearts{margin-top:4px}
 .hearts.frtap{display:inline-flex;align-items:center;line-height:1;height:16px;color:#e04870;letter-spacing:1px;font-size:14px}.frbar>span:first-child,.ivs .fr-l{line-height:16px}
 .dexpop .boxbtn.white{background:#fff;color:var(--frame);border-color:var(--frame)}
@@ -6563,7 +6564,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '11.92';   /* v11.91 경완: 체육관 승급 심사 = 평판 차면 알림·버튼·심사 화면·라인업 고르기 · v11.90 경완: 기술 바꾸기 상세 카드는 기술 창 위에 겹쳐 뜸. v11.89 경완: 포켓몬 박스 타입 아이콘, 체육관 포켓몬 메뉴 라인업 1 기본·순서 바꾸기 설명 없앰 · v11.88 경완: 뒤로 버튼 옆 제목을 눌러도 뒤로 · v11.86 경완: 체육관 도전자마다 기다리는 시간·남은 시간 표시, 프로필 체육관 배지 안 그려지던 것 고침. v11.79 경완: 타이어 그네 — 친구가 밀어 주면 타던 포켓몬은 다 밀 때까지 계속 타고 즐거운 말풍선. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '11.93';   /* v11.91 경완: 체육관 승급 심사 = 평판 차면 알림·버튼·심사 화면·라인업 고르기 · v11.90 경완: 기술 바꾸기 상세 카드는 기술 창 위에 겹쳐 뜸. v11.89 경완: 포켓몬 박스 타입 아이콘, 체육관 포켓몬 메뉴 라인업 1 기본·순서 바꾸기 설명 없앰 · v11.88 경완: 뒤로 버튼 옆 제목을 눌러도 뒤로 · v11.86 경완: 체육관 도전자마다 기다리는 시간·남은 시간 표시, 프로필 체육관 배지 안 그려지던 것 고침. v11.79 경완: 타이어 그네 — 친구가 밀어 주면 타던 포켓몬은 다 밀 때까지 계속 타고 즐거운 말풍선. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8611,15 +8612,15 @@ let NAB = null; const nabLoad = () => NAB ? Promise.resolve(NAB) : (nabLoad.p = 
 const nabSeed = s => { let h = 2166136261; for (const ch of String(s)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 1e6) / 1e6; }; };
 function natAb(P) {
   if (!NAB) return null; const m = S.gym?.mon?.[P.id], L = NAB.sp[P.sp] || [['noability']], nm = L[0], h = L[1];
-  if (m?.nat) return { nat: m.nat, ab: m.ha && h ? h : nm.includes(m.ab) ? m.ab : nm[0], ha: !!(m.ha && h) };
-  const r = nabSeed('gm' + P.id), nat = NAB.nt[Math.floor(r() * NAB.nt.length)][0], ab = nm[Math.floor(r() * Math.min(2, nm.length))], ha = !!h && nabSeed('ha' + P.id)() < .05;
+  if (m?.nat) { const ha = !!(m.ha && h && (m.haK || nabSeed('ha' + P.id)() < .02)); return { nat: m.nat, ab: ha ? h : nm.includes(m.ab) ? m.ab : nm[0], ha }; }   // v11.93: 5% 때 붙고 아직 체육관에서 다시 안 본 숨특도 2% 기준으로
+  const r = nabSeed('gm' + P.id), nat = NAB.nt[Math.floor(r() * NAB.nt.length)][0], ab = nm[Math.floor(r() * Math.min(2, nm.length))], ha = !!h && nabSeed('ha' + P.id)() < .02;   // v11.93 경완 '숨특 여전히 너무 많다': 체육관과 같은 2%
   return { nat, ab: ha ? h : ab, ha };
 }
 const STAT_K = { atk: '공격', def: '방어', spa: '특수공격', spd: '특수방어', spe: '스피드' };
 function natAbHtml(P) {
   const o = natAb(P); if (!o) { nabLoad().then(() => document.querySelectorAll(`.pp-na[data-na="${P.id}"]`).forEach(e => { e.innerHTML = natAbHtml(P); })); return '<span class="na-b"><span class="na-l">성격</span><b>…</b></span><span class="na-b"><span class="na-l">특성</span><b>…</b></span>'; }
   const n = NAB.ntm[o.nat] || [o.nat, o.nat];
-  return `<span class="na-b"><span class="na-l">성격</span><b>${esc(n[1])}</b></span><span class="na-b"><span class="na-l">특성</span><b>${esc(NAB.ab[o.ab] || o.ab)}</b>${o.ha ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</span>`;   // v11.92 경완: 성격·특성은 한 줄에 박스 둘, 성격 능력치 변화는 안 보임
+  return `<span class="na-b"><span class="na-l">성격</span><b>${esc(n[1])}</b></span><span class="na-b${o.ha ? ' ha' : ''}"><span class="na-l">특성</span><b>${esc(NAB.ab[o.ab] || o.ab)}</b>${o.ha ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</span>`;   // v11.92 경완: 성격·특성은 한 줄에 박스 둘, 성격 능력치 변화는 안 보임
 }
 function openPoke(id, dir = 0, quiet = false, noCry = false) {
   const P = boxOf(id); if (!P) return; if (!quiet && P.nw) { P.nw = false; save(); renderBox(); } if (!quiet && !noCry && ($('#pokePop').hidden || pokeId !== id)) playCry(P.sp, .1); pokeId = id;
