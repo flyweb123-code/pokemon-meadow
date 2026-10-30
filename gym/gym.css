@@ -1979,3 +1979,8 @@ body.gymBattle .gy-vtit{display:none}
 /* 민트 (경완 2026-10-30) */
 .sp-sub{margin:14px 2px 6px;font-size:12px;font-weight:700;color:var(--dim)}
 .sp-mint .tm-meta small{font-size:11px;color:var(--dim)}
+/* 교체 카드 기술 = 원래처럼 2×2, 타입·형태 딱지 같은 크기 (경완 2026-10-30) */
+.bp-card .bc-mv{grid-template-columns:1fr 1fr;gap:3px}
+.bp-card .bc-mt{flex-wrap:wrap;row-gap:1px}.bp-card .bc-mt b{flex:1 1 0;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.bp-card .bc-mt small{flex-basis:100%;margin-left:0}
+.bp-card .bc-mt .tg{gap:1px}.bp-card .bc-mt .tg .ct{width:24px;height:12px;background-size:24px 12px;margin-top:0}
