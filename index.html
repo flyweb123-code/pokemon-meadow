@@ -6558,7 +6558,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '11.73';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '11.74';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8283,7 +8283,7 @@ let cardSp = null, cardEvo = null;   // cardEvo: 진화 끝에 띄운 카드 —
 const dexOrd = sp => { const o = dexBtns[sp].style.order; return o === '' ? +sp : +o; };   // 등록순 맨 앞(order 0)도 그대로
 const cardList = () => Object.keys(dexBtns).filter(k => !dexBtns[k].hidden).map(Number).sort((a, b) => dexOrd(a) - dexOrd(b));
 async function openCard(sp, dir = 0) {
-  if (S.dexNew?.delete(sp)) { lockDexBtn(sp); save(); }
+  if (!cardEvo && S.dexNew?.delete(sp)) { lockDexBtn(sp); save(); }   // 11.74 경완 '진화해서 도감 채우는 연출에도 NEW': 진화 끝에 저절로 뜬 카드는 본 것으로 치지 않는다 (도감 등록 연출에 NEW 가 붙게)
   cardSp = sp; const pop = $('#dexPop'), lock = dexLocked(sp), d = SPECIES[sp];
   if (!lock) playCry(sp, .15);
   pop.hidden = false;
