@@ -233,7 +233,7 @@ function build() {
   const dlg = $g('.gy-dlg');
   dlg.addEventListener('click', e => { if (e.target.closest('button') || root.classList.contains('ded') || busy || root.classList.contains('dhide')) return; e.stopPropagation(); sfx('tap'); homeSay(); });
   // 도전자 명단 아이콘 → 새 화면 (도전자 / 체육관 일지)
-  $g('.gy-qbtn').onclick = () => { const g = st(); if (!g?.q?.length) return; sfx('tap'); if (ded) ded.end?.(); g.qSeen = Math.max(g.qSeen | 0, ...g.q.map(c => c.id)); setAt(); save(); $g('.gy-qdot').hidden = true; qPop(); };
+  $g('.gy-qbtn').onclick = () => { const g = st(); if (bsReady(g)) { sfx('tap'); if (ded) ded.end?.(); return bsGo(); } if (!g?.q?.length) return; sfx('tap'); if (ded) ded.end?.(); g.qSeen = Math.max(g.qSeen | 0, ...g.q.map(c => c.id)); setAt(); save(); $g('.gy-qdot').hidden = true; qPop(); };
   [['.gy-deco', '꾸미기'], ['.gy-store', '창고'], ['.gy-qbtn', '도전자 받기']].forEach(([c, n]) => $g(c).insertAdjacentHTML('beforeend', `<small class="ga-l">${n}</small>`));   // 홈 레이아웃 C: 메뉴 위 행동 줄 (경완 2026-10-29)
   // 빈 곳을 한 번 누르면 이름판·버튼을 다 숨겨 메뉴만 남김, 다시 누르면 다 펼침 (경완 2026-10-28, 필드 fview 와 같음)
   $g('.gy-stage').addEventListener('click', e => { if (ded || busy || root.classList.contains('pre') || root.querySelector('.gy-kang,.gy-pop,.gy-setup') || e.target.closest('.tap,.gy-prop.tap')) return;
@@ -545,6 +545,7 @@ const BD_TW = [0, 0, 0, 0, 0, 1, 2, 4];
 const bdHtml = (t, L, cls = '') => { const u = bdImg(t, L); return `<span class="bdw t${L}${cls ? ' ' + cls : ''}" style="--m:url('${u}')"><img alt="" src="${u}">${L >= 4 ? '<i class="bd-sw"></i>' : ''}${L ? '<i class="bd-tw"></i>'.repeat(BD_TW[L] || 0) : ''}</span>`; };   // 빛 지나가기는 월계수(4등급)부터 (경완 2026-10-29)
 const gShort = i => GRADES[i][1].replace(/ 체육관$/, '');
 const bdPh = rep => Math.min(1, (rep || 0) / REP_MAX) ** 1.5;   // 평판이 오를수록 도전자가 어려워짐 (0~1): 초반 쉽고 뒤로 갈수록 가파르게 (경완 2026-10-29)
+const bsReady = g => { const nx = g && GRADES[(g.gmax | 0) + 1]; return !!nx && (g.rep || 0) >= nx[0] - 1; };   // 평판이 이 등급 끝까지 찼다 = 승급 심사를 받을 수 있다
 const repCap = g => { const nx = GRADES[(g.gmax | 0) + 1]; return nx ? nx[0] - 1 : REP_MAX; };   // 승급 심사 전에는 문턱 바로 앞까지만
 const RIVAL_GYMS = ['무쇠시티 체육관', '영원시티 체육관', '베일시티 체육관', '늪지시티 체육관', '연고시티 체육관', '운하시티 체육관', '선단시티 체육관', '물가시티 체육관'];
 let NAMED = [];
@@ -553,6 +554,7 @@ const loadNamed = () => NAMED.length ? Promise.resolve() : fetch(`gymb/named.jso
 function gInit() {
   const g = st(); if (!g) return null;
   for (const [k, v] of Object.entries({ sch: [], q: [], log: [], w: 0, l: 0, blk: 0, bk: {}, bdg: {}, nt: {}, sf: [], cid: 0, bdl: {}, ms: {}, bsN: {}, gmax: 0 })) if (g[k] == null) g[k] = v;
+  if (g.q.some(c => c.boss)) g.q = g.q.filter(c => !c.boss);   // 예전에 명단으로 온 승급 심사 도전자는 지움 (이제 버튼으로)
   for (const t of Object.keys(g.bdg)) if (!g.bdl[t]) g.bdl[t] = 1;   // 예전 배지(100명) = 동
   if ((g.rv | 0) < 3) {   // 10.90: 평판 문턱을 막은 도전자 수에 맞춰 줄이고(예전 등급 → 새 등급 0·1·3·4·5·6), 타입 배지(동~프리즘 1~4)를 등급 배지 번호(4~7)로
     const NEW = [0, 30, 100, 200, 300, 500], r = g.rep || 0, i = GRADES_OLD.findLastIndex(v => r >= v), lo = GRADES_OLD[i], hi = GRADES_OLD[i + 1];
@@ -618,7 +620,7 @@ function mkChal(t) {
   const g = st(), G = gradeOf(g.rep || 0), avg = myAvg();
   const rep = g.rep || 0, L = clampN((g.gmax | 0) - 2, 0, 3), f = bdPh(rep), nx = GRADES[(g.gmax | 0) + 1];
   // 다음 등급 문턱 바로 앞(평판 74·149·249·499·749·1249): 승급 심사 보스. 지면 몇 시간 뒤 다시 온다
-  if (nx && rep >= nx[0] - 1 && !g.q.some(c => c.boss) && t >= (g.bsN.r || 0)) { const b = mkBoss((g.gmax | 0) + 1, t); if (b) return b; }
+  // 승급 심사는 도전자로 오지 않고, 평판이 차면 관장이 '승급 심사' 버튼으로 받는다 (경완 2026-10-30)
   // 중간 이름 있는 트레이너 (자리마다 한 번)
   const ms = g.ms.r || (g.ms.r = []), mid = BD_MID.find(a => rep >= a && a < (nx ? nx[0] : 1e9) && !ms.includes(a));
   if (mid != null && !g.q.some(c => c.named)) { const c = mkScripted(L, t, 0); if (c) { ms.push(mid); return c; } }
@@ -793,7 +795,7 @@ function talk(html, btn = '다음', sub = '') {
     $g('.gy-dbtn').onclick = e => { e.stopPropagation(); sfx('tap'); ok(); }; });
 }
 const doorSe = () => { try { window.GymBGM?.se('DP_DOOR', { gain: 2.4 }); } catch (e) {} };   // 도전자가 드나들 때 철컥 문 소리 (플래티넘 SEQ_SE_DP_DOOR, 경완 2026-10-28 '자동문 말고 철컥')
-async function challenge() {
+async function challenge(picked) {
   const g = st(), c = g.q[0]; if (!c || busy) return;
   if (![0, 1, 2].some(i => luOf(i).length)) { say('라인업이 비어 있어요.', '배틀 메뉴에서 라인업을 먼저 짜 주세요'); openTab('battle'); return; }
   busy = true; openTab(null); root.classList.add('busy');
@@ -813,7 +815,7 @@ async function challenge() {
     const L = [line, ...(N?.ex || []).map(t => t.replace('{me}', me))], who = `<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>`;
     for (const t of L.slice(0, -1)) await talk(who + esc(t));
     do await talk(who + esc(L[L.length - 1]), '배틀 시작');   // 난이도·마리 수는 안 보여 줌 (경완 2026-10-28), 버튼 글자 '배틀 시작' (경완 2026-10-29)
-    while (await luPick() == null);
+    while (!picked && await luPick() == null);   // 승급 심사는 포켓몬 화면에서 라인업을 이미 골랐다
     const my = luNow();
     refit(c, my);
     // 어려운 도전자·이름 있는 트레이너는 실전 기술 배치 (경완 2026-10-29)
@@ -829,7 +831,7 @@ async function challenge() {
     let gold = 0, rep = 0;
     const r0 = g.rep || 0;
     if (won) { g.stk = (g.stk | 0) + 1; gold = addG(R.g); addRep(repWin(R.r) + stkBonus(g.stk)); g.w++; if (g.wk) g.wk.w++; blocked(c); res.used.forEach(id => GA.addFr(id, R.fr)); }
-    else { g.stk = 0; if (c.boss) g.bsN.r = now + rnd(2, 4) * H; addRep(repLose()); g.l++; if (g.wk) g.wk.l++; }   // 승급 심사에서 지면 몇 시간 뒤 다시 온다
+    else { g.stk = 0; if (!c.boss) addRep(repLose()); g.l++; if (g.wk) g.wk.l++; }   // 승급 심사는 져도 평판이 그대로라 버튼으로 바로 다시 받을 수 있다 (경완 2026-10-30)
     rep = (g.rep || 0) - r0;
     if (N && !c.sc) { const x = g.nt[N.id] || { s: 0 }; g.nt[N.id] = won ? { s: x.s + 1, n: now + rnd(2, 3.5) * DAY } : { s: x.s, n: now + rnd(.8, 1.5) * DAY }; }
     glog(won ? 'win' : 'lose', `${esc(c.cls)} <b>${esc(c.nm)}</b>${won ? `에게 이겼다! <small>+${gold}G · 평판 +${rep}</small>` : `에게 졌다… <small>평판 ${rep}</small>`}`);
@@ -841,8 +843,42 @@ async function challenge() {
     // 배웅하기 창 없이, 알림을 다 닫으면 도전자가 걸어 나간다 (경완 2026-10-28)
     dlg(''); root.classList.add('dhide'); await walk(e, D.path.slice(0, -1).reverse()); await wait(250); doorSe(); await wait(120); e.el.remove(); ents = ents.filter(x => x !== e);
   } catch (err) { console.error(err); GA.toast?.('배틀을 시작하지 못했어요'); }
-  finally { busy = false; root.classList.remove('busy'); if (open) renderHome(); }
+  finally { busy = false; root.classList.remove('busy'); if (g.q.some(x => x.boss)) g.q = g.q.filter(x => !x.boss); if (open) renderHome(); }
 }
+// ---------- 승급 심사 (경완 2026-10-30) ----------
+// 평판이 이 등급 끝까지 차면 한 번: 알림창 + 다음 등급 배지 연출
+function bsAlert() {
+  const g = st(), gi = (g.gmax | 0) + 1; g.bsAl = gi; save();
+  try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
+  const p = pop(`<div class="bsa-hd"><i class="bsa-ray"></i><div class="bsa-bd">${bdHtml(g.ty, gi + 1)}</div></div><h4>평판이 가득 찼어요!</h4><p class="gy-msg" style="text-align:center"><b>${GRADES[gi][1]}</b> 승급 심사를<br>받을 수 있어요.<br><small>아래 [승급 심사] 버튼을 눌러 보세요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아요</button></div>`, (a, close) => { close(); homeSay(); });
+  p.classList.add('bsa-pop'); confetti();
+}
+// 승급 심사 버튼 → 줄무늬가 화면을 가르며 '승급 심사' → 심사 화면
+function bsGo() {
+  const fx = document.createElement('div'); fx.className = 'bs-tr'; fx.innerHTML = '<i class="a"></i><i class="b"></i><b>승급 심사</b>';
+  $g('.gy-main').appendChild(fx); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
+  setTimeout(bsScreen, 700); setTimeout(() => fx.remove(), 1400);
+}
+// 심사 화면: 지금 등급 배지 → 승급하면 받을 다음 등급 배지, '심사 받기'
+function bsScreen() {
+  const g = st(); if (!bsReady(g)) return homeSay();
+  root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
+  const gi = (g.gmax | 0) + 1, el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-bsw'; $g('.gy-main').appendChild(el);
+  el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">승급 심사</b></div>
+    <div class="gy-body"><div class="bsw-row"><div class="bsw-g now"><small>지금 등급</small><span class="bsw-b">${bdHtml(g.ty, gi)}</span><b>${GRADES[gi - 1][1]}</b></div><i class="bsw-arw" aria-hidden="true"></i><div class="bsw-g nx"><small>승급하면</small><span class="bsw-b"><i class="bsa-ray"></i>${bdHtml(g.ty, gi + 1)}</span><b>${GRADES[gi][1]}</b></div></div>
+      <p class="bsw-tx">심사관을 이기면 <b>${GRADES[gi][1]}</b>으로 올라가고<br>새 등급 배지를 받아요.</p><p class="bsw-sub">져도 평판은 그대로예요. 언제든 다시 받을 수 있어요.</p>
+      <button class="gy-key main bsw-go" type="button" data-a="go">심사 받기</button></div>`;
+  el.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap');
+    if (b.dataset.a === 'x') { el.remove(); return homeSay(); }
+    if (b.dataset.a === 'go') { el.remove(); openTab('battle', { pick: () => bsStart(gi) }); } };   // 포켓몬 메뉴와 같은 라인업 화면에서 고르고 '이 라인업으로 결정'
+}
+async function bsStart(gi) {
+  const g = st(); openTab(null);
+  await loadNamed(); const c = bsReady(g) && mkBoss(gi, Date.now());
+  if (!c) return say('심사관을 부르지 못했어요.', '잠시 뒤 다시 해 주세요');
+  g.q = g.q.filter(x => !x.boss); g.q.unshift(c); challenge(true);
+}
+
 // 배틀 결과 (경완 2026-10-29 '보상 좀 더 보기 쉽고 임팩트 있게, 경험치·친밀도는 안 보여도 됨'): 승리 현수막 + 꽃가루 → 골드 세기 → 평판 막대
 function resultPop(c, res, gold, rep, R) {
   const won = !!res?.won, stk = st().stk | 0, sb = won ? stkBonus(stk) : 0;
@@ -910,7 +946,7 @@ const GUY_TOUR = () => [
   '[훈련장]에 포켓몬을 보내 두면\n앱을 꺼도 경험치가 쌓여요.\n하루 8시간까지 훈련해요.',
   '[상점]에서는 기술머신,\n꾸미기, 관장 의상을\n살 수 있어요. 평판이 오르면\n체육관이 저절로 넓어져요.',
   '이름판을 누르면 체육관 정보와\n등급 배지를 볼 수 있어요.',
-  '평판이 다음 등급 문턱에 닿으면\n승급 심사가 와요. 이기면\n등급 배지를 받아요.\n그럼 힘내세요, 관장님!',
+  '평판이 등급 끝까지 차면\n[승급 심사] 버튼이 생겨요.\n이기면 등급 배지를 받아요.\n그럼 힘내세요, 관장님!',
 ];
 function guyAsk() {
   root.classList.remove('dhide');   // 홈은 대화창을 숨겨 두니 물음 띄울 때 보이게 (경완 2026-10-29 '안내원 눌러도 안 뜸')
@@ -990,8 +1026,11 @@ function homeSay() {
   if (!ded) { root.classList.add('dhide'); $g('.gy-dlg').innerHTML = ''; }   // 꾸미기·자리 정하기 중엔 그대로 (20초마다 불려서 창이 비던 버그, 경완 2026-10-28)
   // 도전자 받기 (경완 2026-10-29): 기다리는 도전자가 없으면 비활성, 있으면 'N명의 도전자가 기다리고 있어요' + 새로 온 도전자가 있으면 빨간 점 (누르면 사라짐)
   const n = g.q.length, qb = $g('.gy-qbtn'), cap = $g('.gy-qcap'), dot = $g('.gy-qdot'), nw = g.q.some(c => c.id > (g.qSeen | 0));
-  if (qb) { qb.disabled = !n; qb.classList.toggle('has', !!n); } if (cap) { cap.hidden = false; cap.classList.toggle('none', !n); cap.textContent = n ? `${n}명의 도전자가 기다리고 있어요` : '아직 도전자가 없어요'; }   // 없을 때도 안내 (경완 2026-10-29)
-  if (dot) dot.hidden = !(n && nw);   // 주석 뒤에 붙어 있어서 빨간 점이 안 나오던 버그 (경완 2026-10-29)
+  const bs = bsReady(g), gl = qb?.querySelector('.ga-l');
+  if (qb) { qb.disabled = !n && !bs; qb.classList.toggle('has', !!n && !bs); qb.classList.toggle('bs', bs); qb.setAttribute('aria-label', bs ? '승급 심사' : '도전자 받기'); if (gl) gl.textContent = bs ? '승급 심사' : '도전자 받기'; }
+  if (cap) { cap.hidden = false; cap.classList.toggle('none', !n && !bs); cap.textContent = bs ? `${GRADES[(g.gmax | 0) + 1][1]} 승급 심사를 받을 수 있어요` : n ? `${n}명의 도전자가 기다리고 있어요` : '아직 도전자가 없어요'; }   // 없을 때도 안내 (경완 2026-10-29)
+  if (dot) dot.hidden = !(n && nw) || bs;
+  if (bs && open && !busy && g.bsAl !== (g.gmax | 0) + 1 && $g('.gy-sheet').hidden && !root.querySelector('.gy-pop, .gy-kang, .gy-infos') && !ded) bsAlert();   // 평판이 꽉 찼을 때 한 번 (경완 2026-10-30)   // 주석 뒤에 붙어 있어서 빨간 점이 안 나오던 버그 (경완 2026-10-29)
   const pw = root.querySelector('.gy-qw'); if (pw) pw.redraw?.();
 }
 // 도전자 명단 (경완 2026-10-28 '화면 하단에 도전자 명단 아이콘, 누르면 새 화면에서'): 기다리는 도전자만 (체육관 일지는 없앰, 경완 2026-10-28)
@@ -1031,13 +1070,13 @@ const SOON = {
   staff: { t: '트레이너', ic: 'tr/cool_trainer_f', d: '체육관에 트레이너를 5명까지 고용해요.', li: ['가끔 오는 면접 제안', '트레이너마다 특성 (예: 훈련광)', '도전자를 먼저 상대해 주고, 월급은 7일마다'] },
   shop: { t: '체육관 상점', ic: 'tr/gentleman', d: '체육관 운영에 필요한 것을 사요.', li: ['기술머신으로 포켓몬에게 기술 가르치기', '체육관 꾸미기 아이템', '관장 의상'] },
 };
-function openTab(t) {
+function openTab(t, opt) {
   // 꾸미기·자리 정하기 중에 다른 메뉴를 열면 그 모드를 끝낸다 (경완 2026-10-27 '꾸미기 하고 나서 맵에 그리드 안 사라지는 오류')
   if (t && ded) ded.end?.();
   if (t) root.querySelectorAll('.gy-infos').forEach(x => x.remove());   // 창고·도전자 명단을 연 채 아래 메뉴를 누르면 그 화면은 닫는다
   tab = t; root.querySelectorAll('.gy-menu button[data-t]').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === t));
   const sh = $g('.gy-sheet'); sh.classList.remove('ty-on', 'lk'); if (!t) { sh.hidden = true; return; }
-  if (t === 'battle') { sh.hidden = false; sh.scrollTop = 0; sh.innerHTML = '<h3>포켓몬</h3><p class="gy-lead">불러오는 중…</p>'; loadJs('gymb/battle.js', 'GymBattle').then(() => { if (tab === 'battle' && window.GymBattle) GymBattle.tab(sh); }); return; }
+  if (t === 'battle') { sh.hidden = false; sh.scrollTop = 0; sh.innerHTML = '<h3>포켓몬</h3><p class="gy-lead">불러오는 중…</p>'; loadJs('gymb/battle.js', 'GymBattle').then(() => { if (tab === 'battle' && window.GymBattle) GymBattle.tab(sh, opt); }); return; }
   if (t === 'train' || t === 'staff' || t === 'shop') { sh.hidden = false; sh.scrollTop = 0; sh.innerHTML = `<h3>${SOON[t].t}</h3><p class="gy-lead">불러오는 중…</p>`;
     loadJs('gymb/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => loadJs('gymb/manage.js', 'GymManage')).then(() => { if (tab === t && window.GymManage) { GymManage.tab(t, sh); const g = st(); if (lockedT(t)) return; if (t === 'train' && !g.trTut) { g.trTut = 1; save(); if (!g.tr?.length) kang(KANG_TR(), { lit: true }); } } }); return; }
   const o = SOON[t];
@@ -1393,7 +1432,7 @@ const KANG_OPEN = () => [
   '누가 오면 필드의 체육관\n버튼에 빨간 점이 뜨지.',
   '도전자를 이기면 골드를 받고\n평판이 오른단다. 평판이 오르면\n체육관도 커지지.',
   '훈련장에서 포켓몬을 키우고,\n트레이너를 고용해 함께\n체육관을 지킬 수도 있단다.',
-  '평판이 등급 문턱에 닿으면\n승급 심사가 오지. 이기면\n등급 배지를 준단다!',
+  '평판이 등급 끝까지 차면\n승급 심사를 받을 수 있지.\n이기면 등급 배지를 준단다!',
   '모르는 게 있으면 안내원에게\n물어보렴. 그럼 힘내라,\n관장님!',
 ];
 // lines 를 강박사가 한 줄씩 말한다 (화면을 누르면 다음). lit: 처음부터 밝게 / 아니면 어두운 체육관에 불이 켜지며 시작

@@ -1915,3 +1915,30 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .mv-ord.on .mp-mv:not(.empty)::after{content:'≡';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:20px;line-height:1;color:#a08850}
 
 .gy-qw .qw-tx span.qw-left.low,.gy-qw .qw-row.next .qw-tx span.qw-left.low,.gy-qw .qw-row.wait .qw-tx span.qw-left.low{color:#d83838;font-weight:700}   /* 떠나기 30분 전 (경완 2026-10-30) */
+
+/* 승급 심사 (경완 2026-10-30): 버튼 테두리가 은은하게 빛남, 알림 연출, 화면 전환, 심사 화면 */
+#gym button.gy-qbtn.gy-qbtn.bs{border-color:#8a5a00!important;background:linear-gradient(180deg,#fffbe0 0,#ffe68a 45%,#f2b838 100%)!important;animation:bsGlow 2.4s ease-in-out infinite!important}
+#gym button.gy-qbtn.gy-qbtn.bs .ga-l{color:#5a3400}
+@keyframes bsGlow{0%,100%{filter:drop-shadow(0 0 1px rgba(255,214,80,.3))}50%{filter:drop-shadow(0 0 9px rgba(255,206,60,.95)) drop-shadow(0 0 3px #fff6c0)}}
+.bsa-hd{position:relative;height:120px;display:grid;place-items:center;overflow:hidden;margin:-4px 0 4px}
+.bsa-ray{position:absolute;left:50%;top:50%;width:220px;height:220px;margin:-110px 0 0 -110px;border-radius:50%;background:repeating-conic-gradient(rgba(255,214,80,.55) 0 12deg,transparent 12deg 30deg);-webkit-mask:radial-gradient(circle,#000 30%,transparent 70%);mask:radial-gradient(circle,#000 30%,transparent 70%);animation:bsRay 6s linear infinite;pointer-events:none}
+@keyframes bsRay{to{transform:rotate(360deg)}}
+.bsa-bd{position:relative;animation:bsPop .7s cubic-bezier(.3,1.6,.5,1) both}.bsa-bd .bdw img,.bsw-b .bdw img{width:84px;height:84px;image-rendering:pixelated}
+@keyframes bsPop{0%{transform:scale(.2) rotate(-25deg);opacity:0}100%{transform:none;opacity:1}}
+.bs-tr{position:absolute;inset:0;z-index:80;pointer-events:none;overflow:hidden;display:grid;place-items:center}
+.bs-tr>i{position:absolute;left:0;right:0;height:50%;background:repeating-linear-gradient(-45deg,#20202c 0 14px,#3a2a10 14px 28px);border-bottom:4px solid #ffd84a}
+.bs-tr>i.a{top:0;animation:bsTrA 1.4s ease-in-out both}.bs-tr>i.b{bottom:0;border-bottom:0;border-top:4px solid #ffd84a;animation:bsTrB 1.4s ease-in-out both}
+.bs-tr>b{position:relative;z-index:1;font-size:30px;color:#ffd84a;letter-spacing:4px;text-shadow:3px 3px 0 #20202c,0 0 14px rgba(255,214,80,.8);animation:bsTrT 1.4s ease-out both}
+@keyframes bsTrA{0%{transform:translateX(-100%)}30%,65%{transform:none}100%{transform:translateY(-100%)}}
+@keyframes bsTrB{0%{transform:translateX(100%)}30%,65%{transform:none}100%{transform:translateY(100%)}}
+@keyframes bsTrT{0%,20%{transform:scale(2.4);opacity:0}35%{transform:scale(1);opacity:1}65%{opacity:1}100%{opacity:0;transform:scale(.9)}}
+.gy-bsw .gy-body{display:flex;flex-direction:column;align-items:center;gap:12px;padding-top:18px}
+.bsw-row{display:flex;align-items:center;justify-content:center;gap:10px;width:100%}
+.bsw-g{flex:1;max-width:150px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;border:3px solid var(--frame);background:var(--win);box-shadow:0 3px 0 var(--frame)}
+.bsw-g small{font-size:12px;color:var(--dim)}.bsw-g>b{font-size:14px;text-align:center}
+.bsw-g.now .bdw{opacity:.85}.bsw-g.nx{border-color:#8a5a00;background:linear-gradient(180deg,#fffbe8,#fff0b8);animation:bsGlow 2.4s ease-in-out infinite}
+.bsw-b{position:relative;display:grid;place-items:center;width:96px;height:96px}.bsw-b .bsa-ray{width:150px;height:150px;margin:-75px 0 0 -75px}.bsw-b .bdw{position:relative}
+.bsw-arw{flex:none;width:0;height:0;border:12px solid transparent;border-left:16px solid #f0b030;border-right:0;filter:drop-shadow(1px 1px 0 #20202c);animation:bsArw 1s ease-in-out infinite}
+@keyframes bsArw{50%{transform:translateX(4px)}}
+.bsw-tx{margin:4px 0 0;text-align:center;font-size:14px;line-height:1.5}.bsw-sub{margin:0;font-size:12px;color:var(--dim);text-align:center}
+.bsw-go{min-width:200px;margin-top:6px;font-size:17px}
