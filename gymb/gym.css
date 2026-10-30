@@ -1959,3 +1959,7 @@ body.gymBattle .gy-vtit{display:none}
 /* 방금 바꾼 기술 칸: 테두리가 한 번 빛나고 남음, 창을 누르면 꺼짐 (2026-10-31) */
 .mv-ord .mp-mv.just{position:relative;z-index:1;box-shadow:inset 3px 0 0 var(--tc),inset 0 0 0 3px #f0b020!important;animation:mvJust .9s ease-out 1}
 @keyframes mvJust{0%{background:#fff3c0}100%{background:#fff}}
+.gy-nme{flex:0 1 auto!important;display:inline-flex;align-items:center;gap:3px;max-width:100%;min-width:0;cursor:text}
+.gy-nme input{font:inherit;font-size:inherit;font-weight:inherit;color:inherit;background:none;border:0;border-bottom:2px solid transparent;padding:1px 0;margin:0;min-width:0;max-width:100%;outline:0;border-radius:0;box-shadow:none;-webkit-appearance:none;appearance:none}
+.gy-nme input:focus{border-bottom-color:currentColor}
+.gy-nme .pen-b{width:.8em;height:.8em;opacity:.8}
