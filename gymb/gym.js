@@ -618,7 +618,7 @@ function mkChal(t) {
   // 중간 이름 있는 트레이너 (자리마다 한 번)
   const ms = g.ms.r || (g.ms.r = []), mid = BD_MID.find(a => rep >= a && a < (nx ? nx[0] : 1e9) && !ms.includes(a));
   if (mid != null && !g.q.some(c => c.named)) { const c = mkScripted(L, t, 0); if (c) { ms.push(mid); return c; } }
-  const nm = pickNamed(avg, t); if (nm && Math.random() < .12) return nm;
+  const nm = (g.gmax | 0) >= 1 && pickNamed(avg, t); if (nm && Math.random() < .06) return nm;   // v12.22 경완 '이름 있는 트레이너가 너무 빨리': 첫 승급 뒤부터, 12% → 6%
   // 보통 도전자: 막은 수가 늘수록 어려운 도전자가 많고, 레벨·마리 수·개체값이 오른다
   const diff = Math.random() < [.7, .55, .4, .28, .18, .1, .06][G.i] * (1 - f * .8) ? 0 : 1;   // 초반엔 쉬운 도전자가 많고 등급이 오를수록 줄어든다
   const k = pick(Object.keys(CLS).filter(x => !!CLS[x].e === !diff)), C = CLS[k];
@@ -799,7 +799,7 @@ function talk(html, btn = '다음', sub = '') {
 const doorSe = () => { try { window.GymBGM?.se('DP_DOOR', { gain: 2.4 }); } catch (e) {} };   // 도전자가 드나들 때 철컥 문 소리 (플래티넘 SEQ_SE_DP_DOOR, 경완 2026-10-28 '자동문 말고 철컥')
 async function challenge(picked) {
   const g = st(), c = g.q[0]; if (!c || busy) return;
-  if (![0, 1, 2].some(i => luOf(i).length)) { say('라인업이 비어 있어요.', '배틀 메뉴에서 라인업을 먼저 짜 주세요'); openTab('battle'); return; }
+  if (![0, 1, 2].some(i => luOf(i).length)) { say('라인업이 비어 있어요.', '라인업을 짜고 배틀하기를 눌러 주세요'); openTab('battle', { title: '배틀 라인업', go: '배틀하기', pick: i => { const g2 = st(); g2.luI = i; save(); openTab(null); challenge(true); } }); return; }   // 라인업 화면의 '연습 배틀' 자리가 '배틀하기' → 그 도전자와 바로 배틀 (v12.22 경완)
   busy = true; openTab(null); root.classList.add('busy');
   try {
     await loadJs('gymb/battle.js', 'GymBattle'); await GB().loadData();
