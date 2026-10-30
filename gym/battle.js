@@ -1466,11 +1466,13 @@ const mvRow = (x, a) => `<button type="button" class="mp-mv" data-a="${a}" style
 // 기술 순서 (경완 2026-10-29): 기술 줄을 꾹 눌러 위아래로 끌면 순서가 바뀐다
 function movesPop(P, done) {
   const m = gm(P), C = mvCands(P, m).map(id => [id, mvOf(id)]).filter(([, x]) => x).sort((a, b) => (a[1][2] - b[1][2]) || ((b[1][4] || 0) - (a[1][4] || 0))).map(([id]) => id);   // 배울 기술은 타입순 (경완 2026-10-29)
-  let drag = 0;
-  const p = gymPop(`<h4>${esc(nmOf(P))}의 기술</h4><p class="gy-msg">바꿀 기술을 고르세요</p>
+  let drag = 0, ord = false;
+  // 안내 줄 오른쪽 '순서 바꾸기' (경완 2026-10-30): 누르면 길게 누르지 않고 바로 끌어서 순서를 바꾸고, '완료'로 끝
+  const p = gymPop(`<h4>${esc(nmOf(P))}의 기술</h4><div class="mv-hd"><p class="gy-msg">바꿀 기술을 고르세요</p>${m.mv.length > 1 ? '<button type="button" class="mv-ordb" data-a="ord">순서 바꾸기</button>' : ''}</div>
     <div class="mp-moves mp-line pick mv-ord">${m.mv.map((id, i) => mvOf(id) ? mvRow(mvOf(id), 's' + i) : '').join('')}${m.mv.length < 4 ? `<button class="mp-mv empty" data-a="s${m.mv.length}"><b>빈 칸</b></button>` : ''}</div>
-    <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => {
-    if (drag) return;
+    <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close, btn) => {
+    if (a === 'ord') { ord = !ord; list.classList.toggle('on', ord); btn.textContent = ord ? '완료' : '순서 바꾸기'; btn.classList.toggle('on', ord); p.querySelector('.mv-hd .gy-msg').textContent = ord ? '기술을 끌어서 순서를 바꾸세요' : '바꿀 기술을 고르세요'; return; }
+    if (drag || (ord && a !== 'x')) return;
     close(); if (a === 'x') return done?.();
     const k = +a.slice(1), old = m.mv[k];
     // 지금 기술을 누르면 먼저 상세 카드, 거기서 '기술 바꾸기'를 눌러야 배울 기술 고르기로 (경완 2026-10-30). 빈 칸은 바로
@@ -1482,17 +1484,21 @@ function movesPop(P, done) {
     // 배울 기술을 누르면 바로 바뀌지 않고 상세 창 → '바꾸기' (경완 2026-10-29)
     const learn = () => gymPop(`<h4>${old ? `${esc(mvKo(old))} 대신` : '새로'} 배울 기술</h4><div class="mp-moves mp-line pick mv-learn">${C.map(id => mvRow(mvOf(id), 'n' + id)).join('')}</div><div class="gy-btns"><button data-a="x">뒤로</button><button class="main" data-a="tm">기술 가르치기</button></div>`, (b, c2) => {
       c2(); if (b === 'x') return movesPop(P, done);
-      if (b === 'tm') return tmPop(P, () => movesPop(P, done), k);   // 기술머신으로 이 칸에 가르치기 (경완 2026-10-29) const id = b.slice(1);
+      if (b === 'tm') return tmPop(P, () => movesPop(P, done), k);   // 기술머신으로 이 칸에 가르치기 (경완 2026-10-29)
+      const id = b.slice(1);
       mvInfo(id, () => { m.kn = (m.kn || []).filter(x => x !== id); if (old) { m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); } else m.mv.push(id); GA.save(); se('DECIDE'); movesPop(P, done); }, old ? '바꾸기' : '배우기', learn); });
     learn();
   }
   const list = p.querySelector('.mv-ord'); let lp = null;
   const end = () => { if (!lp) return; clearTimeout(lp.t); const on = lp.on; lp.b.classList.remove('drag'); lp = null; if (!on) return;
-    const ord = [...list.querySelectorAll('.mp-mv:not(.empty)')].map(b => +b.dataset.a.slice(1)), mv0 = m.mv.slice();
-    m.mv = ord.map(i => mv0[i]); GA.save(); setTimeout(() => { drag = 0; p.remove(); movesPop(P, done); }, 0); };
+    const rows = [...list.querySelectorAll('.mp-mv:not(.empty)')], o2 = rows.map(b => +b.dataset.a.slice(1)), mv0 = m.mv.slice();
+    m.mv = o2.map(i => mv0[i]); GA.save();
+    if (ord) { rows.forEach((b, i) => { b.dataset.a = 's' + i; }); setTimeout(() => { drag = 0; }, 0); return; }   // 순서 바꾸기 중엔 창을 그대로 두고 번호만 새로
+    setTimeout(() => { drag = 0; p.remove(); movesPop(P, done); }, 0); };
   list.addEventListener('contextmenu', e => e.preventDefault());
   list.addEventListener('pointerdown', e => { const b = e.target.closest('.mp-mv:not(.empty)'); if (!b || m.mv.length < 2) return;
     addEventListener('pointerup', end, { once: true }); addEventListener('pointercancel', end, { once: true });
+    if (ord) { e.preventDefault(); lp = { b, y: e.clientY, on: true }; drag = 1; b.classList.add('drag'); sfx('tap'); return; }
     lp = { b, y: e.clientY, on: false, t: setTimeout(() => { if (!lp) return; lp.on = true; drag = 1; b.classList.add('drag'); sfx('tap'); try { navigator.vibrate?.(15); } catch (e) {} }, 380) }; });
   list.addEventListener('pointermove', e => { if (!lp) return;
     if (!lp.on) { if (Math.abs(e.clientY - lp.y) > 8) { clearTimeout(lp.t); lp = null; } return; }

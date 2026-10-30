@@ -82,7 +82,7 @@ Xcode Cloud 는 개발자 계정에 한 달 25시간 무료 (빌드 한 번 10~2
 
 카드에 항목(대표 포켓몬 등)을 더해도 `card` 하나에 JSON 으로 들어가서 스키마를 다시 배포할 필요가 없다. 3단계 필드가 하나라도 빠지면 카드 올리기가 실패한다.
 
-### 도감 랭킹·미니게임 랭킹 (11.79)
+### 도감 랭킹·미니게임 랭킹 (11.80)
 
 CloudKit Console › **Development** › Schema 에서 아래를 더하고, 다시 **Deploy Schema Changes…** 로 Production 에 배포한다.
 
