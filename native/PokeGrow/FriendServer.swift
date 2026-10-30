@@ -44,6 +44,9 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
                 guard let id = acctId(body["id"]), let k = body["k"] as? String, k.count == 64, let data = body["data"] as? String, data.utf8.count < 20_000_000 else { return (nil, "잘못된 요청") }
                 try await acctSave(id, k: k, data: data)
                 return (true, nil)
+            case "acctPull":   // v12.09: 켤 때 다른 폰이 더 최근에 올린 기록이 있는지 (가장 최근 저장 하나)
+                guard let id = acctId(body["id"]), let k = body["k"] as? String, k.count == 64 else { return (nil, "잘못된 요청") }
+                return (try await newestSave(id, k: k), nil)
             case "mgtop":
                 guard let game = body["game"] as? String, !game.isEmpty else { return (nil, "잘못된 요청") }
                 return (try await mgTop(game), nil)
@@ -169,18 +172,25 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
         let parts = pwh.split(separator: "$").map(String.init)
         guard parts.count == 2, pwHash(pw, salt: parts[0]) == parts[1] else { throw FriendError("비밀번호가 맞지 않아요") }
         let k = keyOf(id, pw)
-        // 이 계정으로 올린 저장 중 서명이 맞는 가장 최근 것
+        var out: [String: Any] = ["id": id, "k": k]
+        out.merge(try await newestSave(id, k: k)) { _, b in b }
+        return out
+    }
+
+    // 이 계정으로 올린 저장(기기마다 하나) 중 서명이 맞고 가장 최근에 '한' 것. v12.09: 올린 시각이 아니라 게임 안 저장 시각(savedAt)으로 고른다
+    // (오프라인으로 하다 늦게 올린 폰이 더 최근 기록을 덮지 않게)
+    private func newestSave(_ id: String, k: String) async throws -> [String: Any] {
         let (rs, _) = try await db.records(matching: CKQuery(recordType: "Save", predicate: NSPredicate(format: "acct == %@", id)), resultsLimit: 20)
-        var best: (Date, String)? = nil
+        var best: (Double, String)? = nil
         for (_, res) in rs {
             guard case .success(let r) = res, let sig = r["sig"] as? String, let asset = r["data"] as? CKAsset, let url = asset.fileURL,
                   let d = try? Data(contentsOf: url), let txt = String(data: d, encoding: .utf8), sha(k + sha(txt)) == sig else { continue }
-            let t = r.modificationDate ?? .distantPast
+            let sa = ((try? JSONSerialization.jsonObject(with: d)) as? [String: Any])?["savedAt"] as? NSNumber
+            let t = sa?.doubleValue ?? (r.modificationDate ?? .distantPast).timeIntervalSince1970 * 1000
             if best == nil || t > best!.0 { best = (t, txt) }
         }
-        var out: [String: Any] = ["id": id, "k": k]
-        if let best { out["data"] = best.1; out["t"] = best.0.timeIntervalSince1970 * 1000 }
-        return out
+        guard let best else { return [:] }
+        return ["data": best.1, "t": best.0]
     }
 
     private func acctSave(_ id: String, k: String, data: String) async throws {
