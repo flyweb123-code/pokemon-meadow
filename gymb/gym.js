@@ -1009,6 +1009,9 @@ function lockOv(sh, t) {
   o.innerHTML = `<div class="win"><i class="lk-ic" aria-hidden="true"></i><h4>아직 잠겨 있어요</h4><p>${t === 'train' ? '포켓몬을 맡겨 키우는 훈련장은' : '함께 체육관을 지킬 트레이너 고용은'}<br><b>${GRADES[1][1]}</b>이 되면 열려요.</p><small>평판 ${GRADES[1][0]}을 채우고 승급 심사를 통과해 보세요.</small></div>`;
   ['click', 'pointerdown', 'pointerup', 'touchstart'].forEach(k => o.addEventListener(k, e => e.stopPropagation()));
   sh.classList.add('lk'); sh.scrollTop = 0; sh.appendChild(o);
+  // 보이는 칸(아래 메뉴 위, 화면 안) 가운데에 오게 (경완 2026-10-30 '안내창 중앙 정렬')
+  requestAnimationFrame(() => { const r = sh.getBoundingClientRect(), m = $g('.gy-menu')?.getBoundingClientRect(), vh = window.innerHeight;
+    o.style.top = Math.max(0, -r.top) + 'px'; o.style.bottom = Math.max(0, r.bottom - Math.min(vh, m && m.top > r.top ? m.top : vh)) + 'px'; });
 }
 function menuDot() { const g = st(), b = $g('.gy-menu [data-t="staff"]'); if (!b) return; const on = !!(g?.cands?.length && !g.candSeen) && !lockedT('staff'); let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot"></i>'); if (!on && d) d.remove(); }
 function renderHome(quiet) {
