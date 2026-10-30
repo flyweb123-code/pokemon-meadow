@@ -232,7 +232,7 @@ body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop
 body:has(.tcv-pop) #itemPop{z-index:6300}
 .tcv button.tr-badge{cursor:pointer}
 .tr-rep{position:absolute;right:1px;bottom:1px;z-index:2;width:34px;height:34px;padding:0;box-sizing:border-box;display:grid;place-items:end center;border:0;background:none;cursor:pointer;font:inherit;-webkit-tap-highlight-color:transparent}   /* v12.30 경완: 캐릭터 칸(.tr-pic) 우하단에 작게, 고른 포켓몬은 박스 없이 그림만 */
-.tr-rep:active{transform:translate(1px,1px)}.tr-rep .fr-pic,.tr-rep .fr-pic img{display:block;width:34px;height:34px;image-rendering:pixelated}
+.tr-rep:active{transform:translate(1px,1px)}.tr-rep .fr-pic,.tr-rep .fr-pic img{display:block;width:34px;height:34px;image-rendering:pixelated}.tr-rep .fr-pic img{object-fit:contain;object-position:center bottom}   /* v12.33 경완: 찌그러지지 않게 */
 .tr-rep.empty{right:3px;bottom:3px;width:20px;height:20px;place-items:center;border:2px dashed var(--dim);background:rgba(255,255,255,.6);color:var(--dim);font-size:13px;line-height:1}
 .tr-rep .fr-pic img{filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff) drop-shadow(0 0 2px rgba(255,255,255,.9))}.tr-rep.empty{box-shadow:0 0 0 2px #fff,0 0 5px 1px rgba(255,255,255,.95)}   /* v12.33 경완: 캐릭터와 살짝 떨어져 보이게 바깥 빛 */
 #pfPage .tr-card{cursor:pointer}
