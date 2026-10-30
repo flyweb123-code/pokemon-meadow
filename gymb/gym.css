@@ -1912,3 +1912,9 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .gy-vtit{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translateX(-50%);z-index:30;display:flex;flex-direction:column;align-items:center;padding:6px 18px;min-width:180px;text-align:center;pointer-events:none}
 .gy-vtit b{font-size:18px}.gy-vtit span{font-size:13px;opacity:.75}
 body.gymBattle .gy-vtit{display:none}
+/* 기술 창 안내 줄 오른쪽 '순서 바꾸기' (2026-10-30) */
+.mv-hd{display:flex;align-items:center;gap:8px;margin:0 0 10px}.mv-hd .gy-msg{flex:1;margin:0!important}
+.mv-ordb{flex:none;font:inherit;font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;border:1.5px solid #c9b98f;background:#fffaf0;color:#6b5a32;cursor:pointer}
+.mv-ordb.on{background:#d89a20;border-color:#d89a20;color:#fff}
+.mv-ord.on .mp-mv:not(.empty){cursor:grab;padding-right:30px!important}
+.mv-ord.on .mp-mv:not(.empty)::after{content:'≡';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:20px;line-height:1;color:#a08850}

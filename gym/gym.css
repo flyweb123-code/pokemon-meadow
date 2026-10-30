@@ -1907,3 +1907,9 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .gy-infos .if-two .if-big::before{background:#58a8e0}
 .gy-infos .if-re.if-mg{border-radius:6px}
 .ty-yd{background:linear-gradient(#3c4460 0 28px,#e9dec4 28px 108px,#868a96 108px 120px,#e4cc96 120px)!important}   /* 바닥 그림이 그려지기 전 잠깐 보이는 색 (훈련장 바로 뜨게, 2026-10-30) */
+/* 기술 창 안내 줄 오른쪽 '순서 바꾸기' (2026-10-30) */
+.mv-hd{display:flex;align-items:center;gap:8px;margin:0 0 10px}.mv-hd .gy-msg{flex:1;margin:0!important}
+.mv-ordb{flex:none;font:inherit;font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;border:1.5px solid #c9b98f;background:#fffaf0;color:#6b5a32;cursor:pointer}
+.mv-ordb.on{background:#d89a20;border-color:#d89a20;color:#fff}
+.mv-ord.on .mp-mv:not(.empty){cursor:grab;padding-right:30px!important}
+.mv-ord.on .mp-mv:not(.empty)::after{content:'≡';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:20px;line-height:1;color:#a08850}
