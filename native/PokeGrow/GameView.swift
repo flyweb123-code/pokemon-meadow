@@ -18,6 +18,8 @@ struct GameView: UIViewRepresentable {
         config.userContentController.add(WeakHandler(bridge), name: "pokeRun")
         config.userContentController.add(HapticHandler(), name: "haptic")
         config.userContentController.add(HumHandler(), name: "hum")
+        // 친구 서버(CloudKit): 게임이 Promise 로 답을 받는다 (FriendServer)
+        config.userContentController.addScriptMessageHandler(FriendServer.shared, contentWorld: .page, name: "friends")
         let web = WKWebView(frame: .zero, configuration: config)
         web.navigationDelegate = context.coordinator
         web.isOpaque = false

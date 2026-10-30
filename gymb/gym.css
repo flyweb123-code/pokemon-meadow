@@ -1907,3 +1907,8 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .gy-infos .if-two .if-big::before{background:#58a8e0}
 .gy-infos .if-re.if-mg{border-radius:6px}
 .ty-yd{background:linear-gradient(#3c4460 0 28px,#e9dec4 28px 108px,#868a96 108px 120px,#e4cc96 120px)!important}   /* 바닥 그림이 그려지기 전 잠깐 보이는 색 (훈련장 바로 뜨게, 2026-10-30) */
+/* v11.76 친구 체육관 놀러 가기 (Gym.visit): 내 체육관 메뉴·버튼은 숨기고 친구 체육관 이름판만 */
+#gym.visit .gy-top,#gym.visit .gy-menu,#gym.visit .gy-deco,#gym.visit .gy-store,#gym.visit .gy-qbtn,#gym.visit .gy-qcap,#gym.visit .gy-simb,#gym.visit .gy-dbar{display:none!important}
+.gy-vtit{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translateX(-50%);z-index:30;display:flex;flex-direction:column;align-items:center;padding:6px 18px;min-width:180px;text-align:center;pointer-events:none}
+.gy-vtit b{font-size:18px}.gy-vtit span{font-size:13px;opacity:.75}
+body.gymBattle .gy-vtit{display:none}

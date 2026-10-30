@@ -228,7 +228,7 @@ function build() {
     openTab(tab === t ? null : t); };
   // 퇴근은 손가락이 닿는 순간 로딩 화면부터 (click 을 기다리지 않음, 경완 2026-10-27 '여전히 바로 안 뜸')
   $g('.gy-menu .gy-out').addEventListener('pointerdown', e => { if (e.button) return; e.preventDefault(); exit(); });
-  addEventListener('resize', () => { if (open) layout(st()?.d ? undefined : DESIGNS[0]); });
+  addEventListener('resize', () => { if (open && !root.classList.contains('visit')) layout(st()?.d ? undefined : DESIGNS[0]); });
   // 홈 화면엔 일지창이 없다 (경완 2026-10-28 '체육관 일지창 없애주고'): 대화창은 알림이 있을 때만 뜨고, 누르면 닫힌다
   const dlg = $g('.gy-dlg');
   dlg.addEventListener('click', e => { if (e.target.closest('button') || root.classList.contains('ded') || busy || root.classList.contains('dhide')) return; e.stopPropagation(); sfx('tap'); homeSay(); });
@@ -1490,7 +1490,63 @@ async function exit() {
   await wait(200); gymLoad.hide(); leaving = false;
 }
 
-window.Gym = { prepare, enter, exit, isOpen: () => open, renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D),
+
+// ---------- 친구 체육관 놀러 가기 (v11.76 경완 '친구 체육관 놀러가서 배틀', 베타): 내가 도전자가 되어 친구 체육관 문으로 들어가 친구 관장과 배틀 ----------
+// F = 친구 카드 { n 이름, sex, gym: { nm, ty, d 맵, gi 크기, fit 옷, lu: [배틀 개체 sp·nm·lv·mv·ab·nat·it·iv·g·shiny] } } (beta.html frCard 가 만들어 CloudKit 에 올린다)
+// 연습 배틀처럼 경험치·골드·평판은 그대로. 승패만 S.gym.fv[친구 코드] 에 남긴다
+const FV_HI = ['어서 와! 내 체육관에 온 걸 환영해.', '왔구나! 기다리고 있었어.', '드디어 왔네! 내 포켓몬들 실력 좀 볼래?'];
+const FV_WIN = ['내가 이겼다! 다음에 또 와!', '훈련을 더 하고 다시 도전해 줘!'], FV_LOSE = ['졌다… 대단한데!', '내 체육관을 이기다니! 다음엔 안 질 거야.'];
+const fvMon = o => o && SPECIES[o.sp] && Array.isArray(o.mv) && o.mv.length ? { sp: +o.sp, nm: String(o.nm || SPECIES[o.sp].n).slice(0, 12), lv: clampN(o.lv | 0, 1, 100), mv: o.mv.filter(m => typeof m === 'string').slice(0, 4),
+  ab: typeof o.ab === 'string' ? o.ab : undefined, nat: typeof o.nat === 'string' ? o.nat : undefined, it: typeof o.it === 'string' ? o.it : undefined,
+  iv: Array.isArray(o.iv) && o.iv.length === 6 ? o.iv.map(v => clampN(v | 0, 0, 31)) : undefined, g: o.g === 'F' || o.g === 'M' ? o.g : '', shiny: !!o.shiny } : null;
+async function visit(F, code) {
+  const G = F?.gym, g = st();
+  if (open || busy) return;
+  const team = (G?.lu || []).map(fvMon).filter(Boolean).slice(0, 6);
+  if (!G?.d || !team.length) { GA.toast?.('친구 체육관에 아직 라인업이 없어요'); gymLoad.hide(); return; }
+  if (!g?.d || ![0, 1, 2].some(i => luOf(i).length)) { gymLoad.hide(); alert('친구 체육관에 도전하려면 내 체육관을 열고 라인업을 먼저 짜 주세요.'); return; }
+  if (!root) build();
+  open = true; busy = true; root.hidden = false; root.classList.add('visit', 'busy'); root.classList.remove('gview'); GA.gymIn(); openTab(null);
+  const fN = String(F.n || '친구').slice(0, 8), fF = F.sex === 'f', fOw = fF ? 'pt_f' : 'pt_m', D = dzOf(G.d, clampN(G.gi | 0, 0, STAGES - 1));
+  const tit = document.createElement('div'); tit.className = 'win gy-vtit'; tit.innerHTML = `<b>${esc(String(G.nm || defName(G.ty)).slice(0, 10))}</b><span>관장 ${esc(fN)}</span>`; $g('.gy-main').appendChild(tit);
+  bgmPlay('gym'); requestAnimationFrame(() => root.classList.add('on'));
+  let e = null;
+  try {
+    clearEnts(); layout(D);
+    const ldr = ent({ ow: fOw, x: D.leader[0], y: D.leader[1], f: 'd' });
+    setTimeout(() => gymLoad.hide(), 120); await wait(700);
+    await loadJs('gymb/battle.js', 'GymBattle'); await GB().loadData();
+    try { window.GymBGM?.prep('gymBattle'); } catch (er) {}
+    doorSe(); await wait(180);
+    e = ent({ ow: myOw(), x: D.door[0], y: D.door[1], f: 'u' });
+    if (g.fit) fitSrc('ow').then(u => { if (e.el.isConnected) e.el.style.backgroundImage = `url(${u})`; });
+    dlg(`<b>${esc(fN)}</b>의 체육관에 놀러 왔다!`); await wait(650);
+    await walk(e, D.path.slice(1)); e.f = 'u'; place(e);
+    const who = `<span class="gy-who">관장 ${esc(fN)}</span>`, rec = (g.fv ||= {})[code] || { w: 0, l: 0 };
+    await talk(who + esc(pick(FV_HI)), '다음', rec.w + rec.l ? `지금까지 ${rec.w}승 ${rec.l}패` : '');
+    for (;;) { await talk(who + `내 포켓몬 ${team.length}마리와 승부다!`, '배틀 시작'); if (await luPick() != null) break; }
+    const my = luNow(), say = { win: pick(FV_LOSE), lose: pick(FV_WIN) };
+    // 친구 관장 앞모습: 옷을 입었으면 그 옷 그림 (gym/img/fit), 아니면 기본 그림
+    const tr = G.fit && OUTFITS[G.fit] ? `../fit/${G.fit}_${fF ? 'f' : 'm'}` : fOw;
+    document.body.classList.add('gymBattle'); dlg(''); root.classList.add('dhide');
+    let res;
+    try { res = await GB().run({ my, foe: { tr, cls: '관장', nm: fN, team, say }, practice: true, diff: 2, bg: pick(['in1', 'in2', 'in3']), music: 'gymBattle', meBackUrl: await fitSrc('trb') }); }
+    finally { document.body.classList.remove('gymBattle'); }
+    if (res && !res.quit) { res.won ? rec.w++ : rec.l++; g.fv[code] = rec; save(); }
+    root.classList.remove('dhide');
+    await talk(who + esc(res?.quit ? '벌써 가는 거야? 다음에 또 와!' : res?.won ? `대단해! ${trName() || '너'}의 승리야!` : '좋은 승부였어! 또 놀러 와.'), '다음', `${fN}의 체육관에서 ${rec.w}승 ${rec.l}패`);
+    dlg(''); root.classList.add('dhide'); ldr.f = 'd'; place(ldr);
+    await walk(e, D.path.slice(0, -1).reverse()); await wait(250); doorSe(); await wait(120);
+  } catch (err) { console.error(err); GA.toast?.('친구 체육관에 들어가지 못했어요'); }
+  // 나가기: 필드로 바로 돌아간다 (내 체육관 홈은 거치지 않음)
+  gymLoad.show('필드로 돌아가는 중', '', true); await wait(900);
+  try { window.GymBGM?.free(); } catch (er) {}
+  tit.remove(); clearEnts(); busy = false; open = false; root.classList.remove('on', 'visit', 'busy', 'dhide'); root.hidden = true; GA.gymOut();
+  try { menuDots(); } catch (er) {}
+  await wait(200); gymLoad.hide();
+}
+
+window.Gym = { prepare, enter, exit, visit, isOpen: () => open, renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
   k: { GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)

@@ -45,6 +45,9 @@ targets:
       properties:
         com.apple.developer.healthkit: true
         com.apple.developer.healthkit.access: []
+        # 친구 서버: iCloud 컨테이너의 공개 DB 를 쓴다 (FriendServer.swift)
+        com.apple.developer.icloud-container-identifiers: [iCloud.com.flyweb123.pokerun]
+        com.apple.developer.icloud-services: [CloudKit]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.flyweb123.pokerun

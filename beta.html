@@ -168,6 +168,7 @@ body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop
 #evoFull .ef-ok{width:100%;overflow:hidden;display:block;font:inherit;font-size:16px;border:3px solid var(--frame);background:var(--frame);color:var(--win);padding:11px 16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35),0 0 0 2px var(--inner);cursor:pointer}#evoFull .ef-ok[hidden]{display:none}#evoFull .ef-ok{transition:transform .08s,box-shadow .08s,filter .08s}#evoFull .ef-ok:active,#evoFull .ef-ok.prs,#dpAct:active,#dpAct.prs{transform:translateY(3px);box-shadow:none;filter:brightness(.82)}#dpAct{transition:transform .08s,box-shadow .08s,filter .08s}
 .pf-runs .runs{max-height:none}.pf-link{display:flex;align-items:center;gap:10px;width:100%;margin-top:14px;padding:14px 16px;border:3px solid var(--frame);background:var(--win);color:var(--win-ink);font:inherit;font-size:16px;text-align:left;cursor:pointer;box-shadow:3px 3px 0 rgba(0,0,0,.18)}.pf-link:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(0,0,0,.18)}.pf-link .pf-lt{font-weight:700;flex:1}.pf-link .pf-arr{font-size:12px;color:var(--dim)}
 .pf-runs .runs>:first-child{margin-top:0}
+/* v11.76 경완: 친구 (아이폰 앱 CloudKit 친구 서버) */#pfPage .pf-link+.pf-link{margin-top:8px}.fr-code{display:flex;align-items:center;gap:10px;margin-top:6px}.fr-code b{flex:1;font-size:26px;letter-spacing:3px}.fr-add{display:flex;gap:8px;margin-top:6px}.fr-add input{flex:1;min-width:0;font:inherit;font-size:18px;letter-spacing:2px;text-transform:uppercase;padding:8px 10px;border:3px solid var(--frame);background:#fff;color:var(--win-ink)}.fr-code .lk-btn,.fr-add .lk-btn{margin:0;white-space:nowrap}.fr-note{margin:6px 0 0;font-size:13px;color:var(--dim)}.fr-note.err{color:#c03838}.fr-list{display:flex;flex-direction:column;gap:6px;margin-top:6px}.fr-row{display:flex;align-items:center;gap:8px;padding:5px 8px 5px 6px;border:2px solid var(--inner);background:#fff}.fr-row.me{background:#fff6d8;border-color:#e0b840}.fr-rk{width:24px;text-align:center;font-weight:700;font-size:16px}.fr-rk.r1{color:#c89a00}.fr-rk.r2{color:#8a8aa0}.fr-rk.r3{color:#b06a30}.fr-pic{width:40px;height:40px;flex:none;display:grid;place-items:center}.fr-pic img{max-width:40px;max-height:40px;image-rendering:pixelated}.fr-mid{flex:1;min-width:0;line-height:1.3}.fr-mid b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fr-mid span{display:block;font-size:12px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fr-km{text-align:right;font-size:12px;color:var(--dim)}.fr-km b{display:block;font-size:17px;color:var(--win-ink)}.fr-x{font:inherit;font-size:12px;border:2px solid var(--inner);background:var(--win);color:var(--dim);padding:4px 6px;cursor:pointer}.fr-x.sure{background:#c03838;border-color:#c03838;color:#fff}.fr-empty{font-size:13px;color:var(--dim);margin:4px 0}.fr-row{flex-wrap:wrap}.fr-acts{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding-left:32px}.fr-acts .fr-x{margin-left:auto}.fr-b{font:inherit;font-size:13px;border:2px solid var(--frame);background:#fff3c8;color:var(--win-ink);padding:4px 8px;cursor:pointer}.fr-b.gym{background:#ffd8d0}.fr-pend{font-style:normal;font-size:11px;color:var(--dim)}.fr-gpop{position:fixed;inset:0;z-index:6000;display:grid;place-items:center;background:rgba(0,0,0,.35);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}.fr-gwin{width:min(340px,calc(100vw - 32px));max-height:80vh;overflow:auto;border:3px solid var(--frame);background:var(--win);color:var(--win-ink);padding:12px 14px;box-shadow:3px 3px 0 rgba(0,0,0,.25)}.fr-gwin h4{margin:0 0 8px}.fr-gwin .lk-btn{width:100%;margin-top:8px;justify-content:center}.fr-glist{display:grid;grid-template-columns:1fr 1fr;gap:6px}.fr-gi{display:flex;align-items:center;gap:6px;font:inherit;font-size:13px;text-align:left;border:2px solid var(--inner);background:#fff;padding:4px 6px;cursor:pointer}.fr-gi .egg{width:28px;height:34px;flex:none}.fr-gi b{flex:1;min-width:0}.fr-gi span{color:var(--dim);font-size:12px}
 .pf-diag{margin:14px 0 0;font-size:11px;line-height:1.4;color:#c03838;border:2px dashed #c03838;padding:3px 6px}.pf-diag:empty{display:none}
 .test-btn{font:inherit;font-size:11px;background:none;border:2px dashed #c03838;color:#c03838;padding:3px 6px;cursor:pointer}
 .run-eggs{padding:2px 0 6px 6px}.run-eggs .re-row{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);margin-top:3px}.re-eggs{display:flex;gap:1px;flex:none}.re-eggs .egg{width:12px;height:15px}.re-eggs .egg svg{width:100%;height:100%}.re-pl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1713,10 +1714,16 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
         </div>
       </section>
       <button class="pf-link" id="pfRunBtn" type="button"><span class="pf-lt">런닝 기록</span><span class="tcount" id="runTotal"></span><span class="pf-arr">▶</span></button>
+      <button class="pf-link" id="pfFrBtn" type="button" hidden><span class="pf-lt">친구</span><span class="tcount" id="frCount"></span><span class="pf-arr">▶</span></button>   <!-- v11.76: 아이폰 앱에서만 (CloudKit 친구 서버) -->
       <p class="pf-diag test-only" id="pfDiag"></p></div>
       <div id="runPage" hidden><section class="set-sec pf-sec pf-runs">
         <div class="runs" id="runs"></div>
       </section></div>
+      <div id="frPage" hidden>
+        <section class="set-sec pf-sec"><h4>내 친구 코드</h4><div class="fr-code"><b id="frMyCode">····-····</b><button class="lk-btn main" id="frCopy" type="button">복사</button></div><p class="fr-note" id="frNote">친구에게 이 코드를 알려 주세요.</p></section>
+        <section class="set-sec pf-sec"><h4>친구 추가</h4><div class="fr-add"><input id="frIn" maxlength="9" placeholder="친구 코드 8글자" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="친구 코드"><button class="lk-btn main" id="frAddBtn" type="button">추가</button></div><p class="fr-note" id="frAddNote" hidden></p></section>
+        <section class="set-sec pf-sec"><h4>이번 주 걸음 랭킹</h4><div class="fr-list" id="frList"></div><p class="fr-note">월요일 0시부터 걸은 거리예요. 친구 카드는 앱을 켤 때와 15분마다 올라가요.</p></section>
+      </div>
       <div id="setPage" hidden>
       <section class="set-sec">
         <h4>소리</h4>
@@ -6194,7 +6201,7 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, hunger: m.hunger, slpB: m.slpB, slpW: m.slpW, social: m.social, joy: m.joy, joyH: m.joyH || 0, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk, red: !!b.red })), lockT: S.lockT,
-    gold: S.gold, box: S.box, gym: S.gym || undefined, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], dexFix1: !!S.dexFix1, buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, evoPend: S.evoPend || undefined, fx1173: S.fx1173 || undefined, mg: S.mg || {}, fbag: S.fbag || {}, fbagT: S.fbagT || {}, lay: S.lay || {}, layAdd: S.layAdd || [], fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])], dexDot: !!S.dexDot };
+    gold: S.gold, box: S.box, gym: S.gym || undefined, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], dexFix1: !!S.dexFix1, buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, evoPend: S.evoPend || undefined, fx1173: S.fx1173 || undefined, mg: S.mg || {}, fbag: S.fbag || {}, fbagT: S.fbagT || {}, lay: S.lay || {}, layAdd: S.layAdd || [], fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])], dexDot: !!S.dexDot, friends: S.friends || [], wk: S.wk || undefined, frOut: S.frOut?.length ? S.frOut : undefined, frGot: S.frGot?.length ? S.frGot : undefined };
 }
 let saveFrozen = false, tutFreeze = false, introPv = false;   // introPv: 튜토리얼 미리 보기 (끝나도 저장 안 함)
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { const o = serialize(); window.gymSimFix?.(o); const t = JSON.stringify(o); localStorage.setItem(KEY, t); bakTick(t, o); } catch (e) {} }
@@ -6230,7 +6237,7 @@ async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
   S.lockT = d.lockT || 0; S.gym = d.gym || null; S.tree = d.tree || null; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { rkMig(P); if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.bagDry = d.bagDry || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.trI = d.trI ?? null; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.autoInc = !!d.autoInc; S.noti = { on: true, egg: true, hatch: true, evo: true, ...(d.noti || {}) }; S.bagQ = Array.isArray(d.bagQ) ? d.bagQ : [];   /* v4.23 경완: 부화기 자동 채우기가 다시 켜면 꺼지던 문제 — 저장에 빠져 있었다 */ S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
-  if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1; S.items = d.items || {}; S.itemSeen = d.itemSeen || { ...S.items }; S.evoPend = d.evoPend || null; S.fx1173 = d.fx1173 || 0;   /* v7.48: 예전 저장은 가진 것 모두 본 것으로 */ S.mg = d.mg || {}; S.fbag = d.fbag || {}; S.lay = d.lay && typeof d.lay === 'object' ? d.lay : {}; S.layAdd = Array.isArray(d.layAdd) ? d.layAdd : []; S.fbagT = d.fbagT || {}; S.fx = d.fx || {}; S.colT = d.colT || 0;
+  if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.friends = Array.isArray(d.friends) ? d.friends : []; S.wk = d.wk || null; S.frOut = d.frOut || []; S.frGot = d.frGot || []; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1; S.items = d.items || {}; S.itemSeen = d.itemSeen || { ...S.items }; S.evoPend = d.evoPend || null; S.fx1173 = d.fx1173 || 0;   /* v7.48: 예전 저장은 가진 것 모두 본 것으로 */ S.mg = d.mg || {}; S.fbag = d.fbag || {}; S.lay = d.lay && typeof d.lay === 'object' ? d.lay : {}; S.layAdd = Array.isArray(d.layAdd) ? d.layAdd : []; S.fbagT = d.fbagT || {}; S.fx = d.fx || {}; S.colT = d.colT || 0;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
   cleanPlaces();
   S.dexNew = new Set(d.dexNew || []); S.dexDot = d.dexDot ?? !!S.dexNew.size;   /* v10.02 경완: 도감 빨간 점은 도감 탭에 들어가면 사라진다 (NEW 표시는 닫을 때) */
@@ -6476,6 +6483,11 @@ document.addEventListener('click', e => {
   window.GA = { cardPager: (p, o) => cardPager(p, o), get S() { return S; }, get SP_OFF() { return SP_OFF; }, get SPECIES() { return SPECIES; }, get TYPE_KO() { return TYPE_KO; }, get TYPE_C() { return TYPE_C; }, get RANKS() { return RANKS; }, get LEARN() { return LEARN; },
     tyIcon: (...a) => tyIcon(...a), sfx: (...a) => sfx(...a), save: () => save(), trOf: () => trOf(), esc: s => esc(s), menuDots: () => menuDots(), addGold: n => addGold(n), renderGold: () => renderGold(),
     boxOf: id => boxOf(id), removeMon: (m, q) => removeMon(m, q), log: (...a) => log(...a), ivSum: p => ivSum(p), rankOf: p => rankOf(p), addFr: (id, n) => addFr(id, n), haptic: n => haptic(n), rumble: (st, g) => rumble(st, g) };
+  // 친구 체육관 놀러 가기 (v11.76 베타, 프로필 › 친구 › 체육관 도전): 체육관 코드를 불러와 Gym.visit
+  window.gymVisit = async (F, code) => { if (busy || window.Gym?.isOpen?.()) return; busy = true; select(null); gymLoad.show(`${String(F.n || '친구').slice(0, 8)}의 체육관으로 가는 중`); const t0 = Date.now();
+    try { await loadGymJs(); await Gym.prepare(); await new Promise(r => setTimeout(r, Math.max(0, 2200 - (Date.now() - t0)))); await Gym.visit(F, code); }
+    catch (e) { gymLoad.sub('체육관 문이 잠겨 있어요. 인터넷 연결을 확인하고 다시 해 주세요.'); await new Promise(r => setTimeout(r, 2200)); gymLoad.hide(); }
+    busy = false; };
   let busy = false;
   $('#btnGym').onclick = async () => { if (busy || window.Gym?.isOpen?.()) return; busy = true; sfx('tap'); select(null);
     gymLoad.show('체육관 출근 중'); const t0 = Date.now();
@@ -6558,17 +6570,153 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '11.75';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '11.76';   /* v11.76 경완: 친구 서버(아이폰 앱 CloudKit, 베타) — 프로필 › 친구: 친구 코드·걸음 랭킹·알 선물·친구 체육관 도전. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
-function setPage(on) { if (on === true) on = 'set'; $('#setPage').hidden = on !== 'set'; if (on === 'set') { window.paintNoti?.(); } $('#runPage').hidden = on !== 'runs'; $('#pfPage').hidden = !!on; $('#pfGear').hidden = !!on; $('#setBack').hidden = !on; $('#setTitle').textContent = on === 'set' ? '설정' : on === 'runs' ? '런닝 기록' : '프로필'; setEl.querySelector('.set-body').scrollTop = 0; }
+function setPage(on) { if (on === true) on = 'set'; $('#setPage').hidden = on !== 'set'; if (on === 'set') { window.paintNoti?.(); } $('#runPage').hidden = on !== 'runs'; $('#frPage').hidden = on !== 'friends'; $('#pfPage').hidden = !!on; $('#pfGear').hidden = !!on; $('#setBack').hidden = !on; $('#setTitle').textContent = on === 'set' ? '설정' : on === 'runs' ? '런닝 기록' : on === 'friends' ? '친구' : '프로필'; setEl.querySelector('.set-body').scrollTop = 0; }
 $('#pfGear').onclick = () => { sfx('tap'); setPage(true); };
 $('#setBack').onclick = () => { sfx('tap'); setPage(false); };
 $('#pfRunBtn').onclick = () => { sfx('tap'); renderRunLog(); setPage('runs'); };
+// ---------- 친구 (v11.76 경완 '친구들끼리 서버'): 아이폰 앱의 CloudKit 친구 서버 (native FriendServer.swift) ----------
+// 내 카드(트레이너·짝꿍·도감·이번 주 걸은 거리)를 iCloud 공개 DB 에 올리고, 친구 코드로 친구 카드를 받아 와 랭킹을 보여 준다.
+// 친구 코드 목록은 저장(S.friends)에, 마지막으로 받은 카드는 이 기기 localStorage 'pk-fr-cards' 에 둔다 (인터넷이 안 될 때 보여 주기).
+const frH = IS_BETA && window.webkit?.messageHandlers?.friends;   // 경완 2026-10-30 '일단 이건 베타로': beta.html 을 본 게임에 그대로 복사해도 본 게임엔 안 보이게
+const frAsk = o => frH ? frH.postMessage(o) : Promise.reject(new Error('아이폰 앱에서만 쓸 수 있어요'));
+const frFmt = c => c ? c.slice(0, 4) + '-' + c.slice(4) : '····-····';
+const frClean = t => String(t || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+// 이번 주(월요일 0시부터) 걸은 거리. 처음 만들 땐 오늘 걸은 거리부터 센다
+const wkKey = (t = Date.now()) => { const d = new Date(t); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return dayKey(+d); };
+function wkNow() { const k = wkKey(); if (!S.wk) S.wk = { k, km: S.today?.d === dayKey() ? S.today.walk || 0 : 0 }; else if (S.wk.k !== k) S.wk = { k, km: 0 }; return S.wk; }
+let frMe = '', frCards = {}, frLast = '', frBusy = false;
+try { frCards = JSON.parse(localStorage.getItem('pk-fr-cards') || '{}') || {}; } catch (e) {}
+// 친구가 놀러 와서 싸울 내 체육관 (Gym.visit): 맵·크기·옷·지금 라인업 (체육관에서 한 번이라도 본 포켓몬만, 개체 정보 S.gym.mon)
+function frGym() {
+  const g = S.gym; if (!g?.d || !g.ty) return null;
+  const lu = ids => (ids || []).map(id => boxOf(id)).filter(P => P && (SPECIES[P.sp]?.t || []).includes(g.ty) && g.mon?.[P.id]?.mv?.length).slice(0, 6);
+  let L = lu((g.lu || [])[g.luI | 0]); if (!L.length) L = [0, 1, 2].map(i => lu((g.lu || [])[i])).find(x => x.length) || [];
+  if (!L.length) return null;
+  return { nm: g.nm || '', ty: g.ty, d: g.d, gi: g.big | 0, fit: g.fit || '', lu: L.map(P => { const m = g.mon[P.id]; return { sp: P.sp, nm: nameOf(P), lv: m.lv, mv: m.mv, ab: m.ab, nat: m.nat, it: m.it || '', iv: P.iv, g: P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '', shiny: !!P.shiny }; }) };
+}
+// 알 선물: 보낸 알은 내 카드 gifts 에 {id, to, e, t} 로 올려 두고, 친구가 받으면 친구 카드 got 에 그 id 가 올라온다 → 내 목록에서 지움.
+// 30일 동안 아무도 안 받으면 내 가방으로 돌아온다. 받는 쪽은 S.frGot 에 받은 id 를 남겨 두 번 받지 않는다
+const FR_GIFT_DAYS = 30;
+function frTidy() {
+  const got = new Set(Object.values(frCards).flatMap(c => Array.isArray(c?.got) ? c.got : [])), now = Date.now();
+  S.frOut = (S.frOut || []).filter(x => { if (got.has(x.id)) return false;
+    if (now - x.t > FR_GIFT_DAYS * 864e5) { S.bag.push({ ...x.e, id: S.eid++, t: now, isNew: true, place: '돌아온 선물' }); log(`${frCards[x.to]?.n || '친구'}에게 보낸 ${eggName(x.e)}이 아무도 안 받아서 돌아왔다.`, [], true); return false; }
+    return true; });
+}
+function frClaim() {
+  if (!frMe) return 0; const have = new Set(S.frGot ||= []); let n = 0;
+  for (const code of S.friends || []) { const c = frCards[code]; if (!Array.isArray(c?.gifts)) continue;
+    for (const x of c.gifts) { if (x?.to !== frMe || !x.id || have.has(x.id) || !GRADE[x.e?.g]) continue;
+      const e = { id: S.eid++, g: x.e.g, t: Date.now(), isNew: true, place: `${String(c.n || '친구').slice(0, 8)}의 선물` };
+      if (SPECIES[x.e.sp]) { e.sp = +x.e.sp; e.spot = 1; } if (x.e.sh) e.sh = 1; if (x.e.lt) e.lt = x.e.lt;
+      S.bag.push(e); have.add(x.id); S.frGot.push(x.id); n++;
+      log(`${esc(c.n || '친구')}에게서 ${eggName(e)}을 선물 받았다! 가방에 넣었다.`, [], true); } }
+  if (n) { S.frGot = S.frGot.slice(-200); sfx('pickup'); try { renderBag.sig = ''; } catch (e) {} autoInc(); save(); }
+  return n;
+}
+function frGive(code, key) {
+  const e = S.bag.find(x => eggName(x) === key); if (!e) return;
+  S.bag = S.bag.filter(x => x !== e); try { renderBag.sig = ''; } catch (er) {}
+  const out = { g: e.g, sp: eggSp(e) }; if (e.sh) out.sh = 1; if (e.lt) out.lt = e.lt;
+  (S.frOut ||= []).push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), to: code, e: out, t: Date.now() });
+  log(`${esc(frCards[code]?.n || '친구')}에게 ${eggName(e)}을 선물했다.`, [], true); save();
+}
+function frCard() {
+  const b = (S.buds || [])[0], P = b ? boxOf(b.pid) : null, w = wkNow(), r2 = v => Math.round(v * 100) / 100;
+  frTidy();
+  return JSON.stringify({ v: 1, n: S.tr?.n || '트레이너', sex: S.tr?.sex || 'm', gym: frGym(), gifts: S.frOut || [], got: (S.frGot || []).slice(-60), sp: b ? b.sp : 0, sx: P?.sex || '', bn: P ? nameOf(P) : b ? SPECIES[b.sp].n : '', dex: S.unlocked?.size || 0, wk: w.k, wkm: r2(w.km), tot: r2(S.totalKm || 0), walk: r2(S.walkKm || 0) });
+}
+async function frPush(force) {
+  if (!frH) return;
+  const c = frCard(); if (!force && c === frLast) return;
+  try { if (!frMe) frMe = await frAsk({ op: 'me' }); await frAsk({ op: 'publish', card: c }); frLast = c; } catch (e) { if (force) throw e; }
+}
+async function frPull() {
+  const codes = S.friends || []; if (!frH || !codes.length) return;
+  const got = await frAsk({ op: 'get', codes });
+  for (const g of got || []) { try { frCards[g.code] = { ...JSON.parse(g.card), at: g.at }; } catch (e) {} }
+  try { localStorage.setItem('pk-fr-cards', JSON.stringify(frCards)); } catch (e) {}
+  if (frClaim()) await frPush(true).catch(() => {});   // 받은 걸 바로 알려야 보낸 쪽 목록에서 지워진다
+}
+function frNote(id, msg, err) { const el = $(id); el.textContent = msg; el.hidden = !msg; el.classList.toggle('err', !!err); }
+function renderFriends() {
+  $('#frMyCode').textContent = frFmt(frMe);
+  $('#frCount').textContent = (S.friends || []).length ? `${S.friends.length}명` : '';
+  const wk = wkKey(), me = JSON.parse(frCard());
+  const rows = [{ code: frMe, me: true, c: me }, ...(S.friends || []).map(code => ({ code, c: frCards[code] }))];
+  const kmOf = r => r.c && r.c.wk === wk ? +r.c.wkm || 0 : 0;   // 지난주 카드는 이번 주 0km
+  rows.sort((a, b) => kmOf(b) - kmOf(a));
+  $('#frList').innerHTML = rows.map((r, i) => {
+    const c = r.c, nm = c ? esc(c.n || '트레이너') : '아직 카드를 못 받았어요', sp = c && SPECIES[c.sp] ? c.sp : 0;
+    const sub = c ? `${sp ? '짝꿍 ' + esc(c.bn || SPECIES[sp].n) + ' · ' : ''}도감 ${c.dex || 0}` : frFmt(r.code);
+    return `<div class="fr-row${r.me ? ' me' : ''}"><span class="fr-rk${i < 3 ? ' r' + (i + 1) : ''}">${i + 1}</span><span class="fr-pic" data-sp="${sp}" data-sx="${c?.sx || ''}"></span>`
+      + `<span class="fr-mid"><b>${nm}${r.me ? ' (나)' : ''}</b><span>${sub}</span></span><span class="fr-km"><b>${fmtKm(kmOf(r))}</b>km</span>`
+      + (r.me ? '' : `<span class="fr-acts">${c ? `<button class="fr-b" type="button" data-gift="${esc(r.code)}">알 선물</button>` : ''}${c?.gym?.lu?.length ? `<button class="fr-b gym" type="button" data-gym="${esc(r.code)}">체육관 도전</button>` : ''}`
+      + `${(S.frOut || []).some(x => x.to === r.code) ? `<em class="fr-pend">보낸 알 ${(S.frOut || []).filter(x => x.to === r.code).length}개 기다리는 중</em>` : ''}<button class="fr-x" type="button" data-code="${esc(r.code)}">지우기</button></span>`) + '</div>';
+  }).join('') + ((S.friends || []).length ? '' : '<p class="fr-empty">친구 코드를 받아서 위에 넣어 보세요.</p>');
+  $('#frList').querySelectorAll('.fr-pic').forEach(el => { const sp = +el.dataset.sp; if (!sp) return;
+    ensureSprite(sp).then(() => { const u = thumbOf(fKey(sp, el.dataset.sx)); if (u) el.innerHTML = `<img src="${u}" alt="">`; }).catch(() => {}); });
+}
+// 알 선물 고르기: 가방의 알을 이름(등급·전설 알)별로 묶어 하나 고르면 확인 후 보낸다
+function frGiftPick(code) {
+  const c = frCards[code], groups = {}; for (const e of S.bag) (groups[eggName(e)] ||= { e, n: 0 }).n++;
+  const L = Object.entries(groups).sort((a, b) => (b[1].e.lt ? 9 : b[1].e.g) - (a[1].e.lt ? 9 : a[1].e.g));
+  const box = document.createElement('div'); box.className = 'fr-gpop';
+  box.innerHTML = `<div class="fr-gwin"><h4>${esc(c?.n || '친구')}에게 알 선물</h4>${L.length ? `<div class="fr-glist">${L.map(([k, o]) => `<button type="button" class="fr-gi" data-k="${esc(k)}">${eggHtml(o.e.g, '', o.e.lt || 0)}<b>${esc(k)}</b><span>${o.n}개</span></button>`).join('')}</div>` : '<p class="fr-empty">가방에 알이 없어요.</p>'}
+    <p class="fr-note">친구도 나를 친구로 추가해야 받을 수 있어요. ${FR_GIFT_DAYS}일 동안 안 받으면 돌아와요.</p><button type="button" class="lk-btn" data-k="">닫기</button></div>`;
+  setEl.appendChild(box);
+  box.onclick = async ev => { const b = ev.target.closest('[data-k]'); if (ev.target !== box && !b) return; sfx('tap');
+    const k = b?.dataset.k; if (!k) return box.remove();
+    if (!confirm(`${c?.n || '친구'}에게 ${k}을 선물할까요?`)) return;
+    box.remove(); frGive(code, k); renderFriends(); frNote('#frNote', '보내는 중…');
+    try { await frPush(true); frNote('#frNote', `${k}을 보냈어요. 친구가 친구 화면을 열면 받아요.`); } catch (er) { frNote('#frNote', '선물을 올리지 못했어요. 인터넷이 되면 다시 올라가요.', true); } };
+}
+async function frOpen() {
+  renderFriends(); frNote('#frNote', '친구 서버에 연결하는 중…');
+  try { await frPush(true); frNote('#frNote', '친구에게 이 코드를 알려 주세요.'); } catch (e) { frNote('#frNote', e.message || String(e), true); }
+  renderFriends();
+  try { await frPull(); } catch (e) { frNote('#frNote', e.message || String(e), true); }
+  renderFriends();
+}
+if (frH) {
+  $('#pfFrBtn').hidden = false;
+  $('#pfFrBtn').onclick = () => { sfx('tap'); setPage('friends'); frOpen(); };
+  $('#frCopy').onclick = async () => { if (!frMe) return; sfx('tap'); const b = $('#frCopy'); try { await navigator.clipboard.writeText(frFmt(frMe)); b.textContent = '복사했어요!'; } catch (e) { prompt('친구 코드', frFmt(frMe)); } setTimeout(() => b.textContent = '복사', 2000); };
+  $('#frAddBtn').onclick = async () => {
+    const code = frClean($('#frIn').value); sfx('tap');
+    if (code.length !== 8) return frNote('#frAddNote', '친구 코드는 8글자예요.', true);
+    if (code === frMe) return frNote('#frAddNote', '내 코드예요. 친구 코드를 넣어 주세요.', true);
+    if ((S.friends ||= []).includes(code)) return frNote('#frAddNote', '이미 친구예요.', true);
+    if (S.friends.length >= 50) return frNote('#frAddNote', '친구는 50명까지예요.', true);
+    if (frBusy) return; frBusy = true; frNote('#frAddNote', '찾는 중…');
+    try {
+      const got = await frAsk({ op: 'get', codes: [code] });
+      if (!got?.length) { frNote('#frAddNote', '그 코드의 트레이너를 못 찾았어요. 친구가 앱에서 친구 화면을 한 번 열어야 해요.', true); return; }
+      try { frCards[code] = { ...JSON.parse(got[0].card), at: got[0].at }; localStorage.setItem('pk-fr-cards', JSON.stringify(frCards)); } catch (e) {}
+      S.friends.push(code); frClaim(); save(); $('#frIn').value = '';
+      frNote('#frAddNote', `${frCards[code]?.n || '트레이너'}와(과) 친구가 됐어요!`); renderFriends();
+    } catch (e) { frNote('#frAddNote', e.message || String(e), true); } finally { frBusy = false; }
+  };
+  $('#frList').addEventListener('click', e => {   // 지우기는 두 번 눌러야 (한 번 누르면 빨갛게)
+    const gb = e.target.closest('[data-gift]'); if (gb) { sfx('tap'); return frGiftPick(gb.dataset.gift); }
+    const gy = e.target.closest('[data-gym]'); if (gy) { sfx('tap'); const c = frCards[gy.dataset.gym]; if (!c?.gym || !window.gymVisit) return;
+      setPage(false); $('#closeSet').click(); window.gymVisit(c, gy.dataset.gym); return; }
+    const x = e.target.closest('.fr-x'); if (!x) return; sfx('tap');
+    if (!x.classList.contains('sure')) { x.classList.add('sure'); x.textContent = '정말?'; setTimeout(() => { x.classList.remove('sure'); x.textContent = '지우기'; }, 3000); return; }
+    S.friends = (S.friends || []).filter(c => c !== x.dataset.code); save(); renderFriends();
+  });
+  // 내 카드는 켤 때(5초 뒤)와 15분마다, 바뀐 게 있을 때만 올린다
+  setTimeout(() => frPush().then(() => frPull()).catch(() => {}).then(() => { $('#frCount').textContent = (S.friends || []).length ? `${S.friends.length}명` : ''; }), 5000);   // 켤 때 선물 받은 알도 확인
+  setInterval(() => frPush().then(() => frPull()).catch(() => {}), 15 * 60 * 1000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') frPush(); });
+}
 // 하위 화면(런닝 기록·설정): 화면 아무 데서나 오른쪽으로 밀면, 왼쪽에서 프로필 창이 들어오며 지금 창을 옆으로 밀어내고 뒤로 간다
 { const body = setEl.querySelector('.set-body'); let sw = null, swEnd = 0;
-  const sub = () => ['#runPage', '#setPage'].map(q => $(q)).find(e => !e.hidden);
+  const sub = () => ['#runPage', '#frPage', '#setPage'].map(q => $(q)).find(e => !e.hidden);
   setEl.addEventListener('pointerdown', e => {   // 창 전체(양옆 여백 포함)에서 받는다
     const pg = sub(); if (!pg || e.button > 0) return;
     const r = body.getBoundingClientRect(); if (e.target.closest('input, .vol, [data-noswipe]')) return;
@@ -10075,7 +10223,7 @@ function catThemes(c) {
 window.pokeRunWalk = (km, place, tags, la, lo) => {
   place = cleanPlace(place); km = +km; if (!(km > 0 && km <= 200)) return false;
   const ll = isFinite(la) && isFinite(lo) && la !== null && lo !== null && (+la || +lo) ? [+(+la).toFixed(5), +(+lo).toFixed(5)] : null;   // v5.18: 아이폰 앱이 걸은 곳 좌표도 보낸다 (출현 지역)
-  S.walkSync = true; S.walkKm += km; today().walk += km;
+  S.walkSync = true; S.walkKm += km; today().walk += km; wkNow().km += km;
   // 걷는 동안 이미 쌓은 만큼은 빼고 나머지만 알·짝꿍에 (앱이 꺼져 있던 동안 걸은 거리 등)
   const rest = km - S.fedPend; S.fedPend = Math.max(0, S.fedPend - km); if (rest > .005) { const n = Date.now(); feedKm(rest); noteFed(n, n, rest); }
   { const raw = String(tags || '').split(','), ct = catThemes(raw.find(k => k.startsWith('cat:'))); tags = ct.length ? ct : raw.filter(k => THEMES[k]); }   // v5.67 경완: 카카오 세부 종류가 게임 테마 낱말에 맞으면 그걸로
