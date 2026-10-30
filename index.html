@@ -13,6 +13,7 @@ body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop
 .bdw.t7>img{animation:bdHue 3s linear infinite}@keyframes bdHue{0%,100%{filter:drop-shadow(0 0 2px rgba(255,180,220,.9))}33%{filter:drop-shadow(0 0 2px rgba(180,255,200,.9))}66%{filter:drop-shadow(0 0 2px rgba(180,200,255,.9))}}
 #pfGymBdg .bdw:not(.on) i{display:none}
 #pfGymBdg h4 small{font-size:12px;font-weight:400;color:var(--dim);margin-left:6px}
+.pk .pk-tys{display:flex;justify-content:center;gap:2px;margin:1px 0;line-height:0}.pk .pk-tys .tyi{width:14px;height:14px}   /* v11.89 경완: 포켓몬 박스 타입 아이콘 */
 </style></head><body><title>포켓몬 키우기</title>
 <script>
 // v5.74 경완: 베타 판 — 운영자 칸 '베타 판 쓰기'를 켠 기기만 beta.html(새 기능 시험판)로 넘어간다. 저장은 본 게임과 같다
@@ -6562,7 +6563,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '11.88';   /* v11.88 경완: 뒤로 버튼 옆 제목을 눌러도 뒤로 · v11.86 경완: 체육관 도전자마다 기다리는 시간·남은 시간 표시, 프로필 체육관 배지 안 그려지던 것 고침. v11.79 경완: 타이어 그네 — 친구가 밀어 주면 타던 포켓몬은 다 밀 때까지 계속 타고 즐거운 말풍선. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '11.89';   /* v11.89 경완: 포켓몬 박스 타입 아이콘, 체육관 포켓몬 메뉴 라인업 1 기본·순서 바꾸기 설명 없앰 · v11.88 경완: 뒤로 버튼 옆 제목을 눌러도 뒤로 · v11.86 경완: 체육관 도전자마다 기다리는 시간·남은 시간 표시, 프로필 체육관 배지 안 그려지던 것 고침. v11.79 경완: 타이어 그네 — 친구가 밀어 주면 타던 포켓몬은 다 밀 때까지 계속 타고 즐거운 말풍선. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8549,7 +8550,7 @@ function boxList(all, keepAll) {
 }
 // 상자 칸은 한 번 만든 걸 다시 쓴다: 정렬이 바뀌면 순서만 옮기고, 내용이 바뀐 칸만 새로 만든다
 const pkEls = new Map(), pkTpl = document.createElement('template');
-const pkHtml = (p, tag, rk) => `<button class="pk${p.shiny ? ' shiny' : ''}${pkCls(p)}${tierOf(+p.sp) ? ' t-' + tierOf(+p.sp) : ''}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rk}">${rk}</span>${p.nw ? '<i class="pk-new" aria-label="새 포켓몬"></i>' : ''}${tag ? `<span class="tgs">${tag & 1 ? '<span class="tg">필드</span>' : ''}${tag & 2 ? '<span class="tg bud">짝꿍</span>' : ''}</span>` : ''}<img alt="" data-sp="${p.sp}" data-sx="${p.sex || ''}" src="${thumbP(p) || ''}"><span class="nm">${esc(nameOf(p))}${sexHtml(p.sex)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="hearts">${hearts(p.fr)}</span></button>`;
+const pkHtml = (p, tag, rk) => `<button class="pk${p.shiny ? ' shiny' : ''}${pkCls(p)}${tierOf(+p.sp) ? ' t-' + tierOf(+p.sp) : ''}" data-id="${p.id}" style="--shue:${shinyHue(p.sp)}deg"><span class="rk ${rk}">${rk}</span>${p.nw ? '<i class="pk-new" aria-label="새 포켓몬"></i>' : ''}${tag ? `<span class="tgs">${tag & 1 ? '<span class="tg">필드</span>' : ''}${tag & 2 ? '<span class="tg bud">짝꿍</span>' : ''}</span>` : ''}<img alt="" data-sp="${p.sp}" data-sx="${p.sex || ''}" src="${thumbP(p) || ''}"><span class="nm">${esc(nameOf(p))}${sexHtml(p.sex)}${p.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="pk-tys">${(SPECIES[p.sp]?.t || []).map(t => tyIcon(t).replace(/ data-tip="[^"]*"/, '')).join('')}</span><span class="hearts">${hearts(p.fr)}</span></button>`;   // v11.89 경완: 체육관 박스처럼 타입 아이콘
 // 박스 탭을 본 뒤 다른 탭으로 가거나 창이 닫히면 NEW 표시를 지운다 (가방과 같은 규칙)
 function seeDex() { if (!S.dexNew?.size) return; const L = [...S.dexNew]; S.dexNew.clear(); L.forEach(sp => dexBtns[sp] && lockDexBtn(sp)); save(); }
 { let was = !sheet.hidden; new MutationObserver(() => { const now = !sheet.hidden; if (was && !now && dexMode !== 'buddy') seeDex(); was = now; }).observe(sheet, { attributes: true, attributeFilter: ['class'] }); }   // 도감을 봤다가 닫으면 NEW 지움
