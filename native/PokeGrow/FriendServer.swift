@@ -37,6 +37,13 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
                       let card = body["card"] as? String, card.utf8.count < 5_000 else { return (nil, "잘못된 요청") }
                 try await score(game, best: (body["best"] as? NSNumber)?.doubleValue ?? 0, card: card)
                 return (true, nil)
+            case "acctNew", "acctLogin":
+                guard let id = acctId(body["id"]), let pw = body["pw"] as? String, (4...64).contains(pw.count) else { return (nil, "아이디는 영문 소문자·숫자 4~12글자, 비밀번호는 4글자 이상이에요") }
+                return op == "acctNew" ? (try await acctNew(id, pw), nil) : (try await acctLogin(id, pw), nil)
+            case "acctSave":
+                guard let id = acctId(body["id"]), let k = body["k"] as? String, k.count == 64, let data = body["data"] as? String, data.utf8.count < 20_000_000 else { return (nil, "잘못된 요청") }
+                try await acctSave(id, k: k, data: data)
+                return (true, nil)
             case "mgtop":
                 guard let game = body["game"] as? String, !game.isEmpty else { return (nil, "잘못된 요청") }
                 return (try await mgTop(game), nil)
@@ -125,6 +132,72 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
             guard case .success(let r) = res, let card = r["card"] as? String, id.recordName.hasPrefix("T_") else { return nil }
             return ["code": String(id.recordName.dropFirst(2)), "card": card, "at": (r.modificationDate ?? Date()).timeIntervalSince1970 * 1000]
         }
+    }
+
+    // ---------- 계정 (v11.97 경완 2026-10-30 '아이디·비밀번호 계정, 데이터 저장, 너가 보게') ----------
+    // Account: 이름 "A_" + 아이디, pwh = 소금$해시(비밀번호 2만 번). 만든 사람만 고칠 수 있어 아이디를 뺏기지 않는다.
+    // Save: 이름 "V_" + 아이디 + "_" + 친구 코드 (기기 = iCloud 마다 하나, 다른 폰에서 로그인해도 각자 올림), acct(Queryable)·sig·data(Asset).
+    // sig = SHA256(k + SHA256(data)), k = SHA256("pkgk:" + 아이디 + ":" + 비밀번호) — 비밀번호를 모르면 남의 계정에 가짜 저장을 끼워 넣을 수 없다.
+    private func acctId(_ v: Any?) -> String? {
+        guard let s = (v as? String)?.lowercased(), (4...12).contains(s.count), s.allSatisfy({ ($0.isLetter && $0.isASCII) || $0.isNumber || $0 == "_" }) else { return nil }
+        return s
+    }
+    private func hex(_ d: some Sequence<UInt8>) -> String { d.map { String(format: "%02x", $0) }.joined() }
+    private func sha(_ s: String) -> String { hex(SHA256.hash(data: Data(s.utf8))) }
+    private func pwHash(_ pw: String, salt: String) -> String {
+        var h = Data(SHA256.hash(data: Data((salt + ":" + pw).utf8)))
+        for _ in 0..<20_000 { h = Data(SHA256.hash(data: h + Data(salt.utf8))) }
+        return hex(h)
+    }
+    private func keyOf(_ id: String, _ pw: String) -> String { sha("pkgk:\(id):\(pw)") }
+
+    private func acctNew(_ id: String, _ pw: String) async throws -> [String: Any] {
+        let code = try await code()
+        let salt = hex((0..<16).map { _ in UInt8.random(in: 0...255) })
+        let r = CKRecord(recordType: "Account", recordID: CKRecord.ID(recordName: "A_" + id))
+        r["pwh"] = "\(salt)$\(pwHash(pw, salt: salt))" as CKRecordValue
+        r["code"] = code as CKRecordValue
+        // 한 레코드씩 저장 결과가 따로 와서 (async modifyRecords 는 레코드 실패를 던지지 않는다) 직접 본다
+        do { try await saveOne(r, .ifServerRecordUnchanged) }
+        catch let e as CKError where e.code == .serverRecordChanged || e.code == .permissionFailure { throw FriendError("이미 있는 아이디예요. 다른 아이디를 골라 주세요") }
+        return ["id": id, "k": keyOf(id, pw)]
+    }
+
+    private func acctLogin(_ id: String, _ pw: String) async throws -> [String: Any] {
+        let found = try await db.records(for: [CKRecord.ID(recordName: "A_" + id)])
+        guard case .success(let a) = found[CKRecord.ID(recordName: "A_" + id)], let pwh = a["pwh"] as? String else { throw FriendError("없는 아이디예요") }
+        let parts = pwh.split(separator: "$").map(String.init)
+        guard parts.count == 2, pwHash(pw, salt: parts[0]) == parts[1] else { throw FriendError("비밀번호가 맞지 않아요") }
+        let k = keyOf(id, pw)
+        // 이 계정으로 올린 저장 중 서명이 맞는 가장 최근 것
+        let (rs, _) = try await db.records(matching: CKQuery(recordType: "Save", predicate: NSPredicate(format: "acct == %@", id)), resultsLimit: 20)
+        var best: (Date, String)? = nil
+        for (_, res) in rs {
+            guard case .success(let r) = res, let sig = r["sig"] as? String, let asset = r["data"] as? CKAsset, let url = asset.fileURL,
+                  let d = try? Data(contentsOf: url), let txt = String(data: d, encoding: .utf8), sha(k + sha(txt)) == sig else { continue }
+            let t = r.modificationDate ?? .distantPast
+            if best == nil || t > best!.0 { best = (t, txt) }
+        }
+        var out: [String: Any] = ["id": id, "k": k]
+        if let best { out["data"] = best.1; out["t"] = best.0.timeIntervalSince1970 * 1000 }
+        return out
+    }
+
+    private func acctSave(_ id: String, k: String, data: String) async throws {
+        let code = try await code()
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("save_\(id).json")
+        try Data(data.utf8).write(to: url, options: .atomic)
+        defer { try? FileManager.default.removeItem(at: url) }
+        let r = CKRecord(recordType: "Save", recordID: CKRecord.ID(recordName: "V_\(id)_\(code)"))
+        r["acct"] = id as CKRecordValue
+        r["sig"] = sha(k + sha(data)) as CKRecordValue
+        r["data"] = CKAsset(fileURL: url)
+        try await saveOne(r, .allKeys)
+    }
+
+    private func saveOne(_ r: CKRecord, _ policy: CKModifyRecordsOperation.RecordSavePolicy) async throws {
+        let (res, _) = try await db.modifyRecords(saving: [r], deleting: [], savePolicy: policy)
+        if case .failure(let e) = res[r.recordID] { throw e }
     }
 
     private func clean(_ s: String) -> String { s.uppercased().filter { $0.isLetter || $0.isNumber } }
