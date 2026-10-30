@@ -773,6 +773,7 @@ function tick(now = Date.now()) {
   }
   if (g.day < today) { g.day = today; g.sch = mkSch(today, now); }
   while (g.sch.length && g.sch[0] <= now) { const t = g.sch.shift(); qLeave(t); arrive(mkChal(t)); }
+  if (g.pull && g.pull <= now) { const t = g.pull; g.pull = 0; qLeave(t); arrive(mkChal(t)); }   // 사용 기록이 쌓이기 전 접속하면 당겨 온 도전자 (beta gymPull, 경완 2026-10-30)
   qLeave(now);
   payDay(now); sfGrow(now);
   g.cands = g.cands.filter(c => { if (now <= c.exp) return true; glog('sf', `면접 지원자 ${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 다른 체육관으로 갔다.`, c.exp); return false; });
@@ -782,7 +783,7 @@ function tick(now = Date.now()) {
 }
 // 필드 체육관 버튼의 빨간 점 (gym.js 없이도 훅이 S.gym.at 만 보고 띄운다)
 function setAt(now = Date.now()) {
-  const g = st(), nq = g.q.filter(c => c.id > (g.qSeen | 0)); let a = nq.length ? nq[0].t : (g.sch[0] || nextDay(now) + 9 * H);
+  const g = st(), nq = g.q.filter(c => c.id > (g.qSeen | 0)); let a = nq.length ? nq[0].t : (g.sch[0] || nextDay(now) + 9 * H); if (g.pull && !nq.length) a = Math.min(a, g.pull);
   if (g.cands?.length && !g.candSeen) a = Math.min(a, Math.max(...g.cands.map(c => c.t)));
   a = Math.min(a, weekStart(now) + 7 * DAY + 7 * H);
   g.at = a;
