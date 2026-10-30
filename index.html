@@ -73,7 +73,7 @@ body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop
 .bag-sort button{white-space:nowrap}#boxSort button[data-dir]:not([data-dir=''])::after{content:attr(data-dir);font-size:9px;margin-left:3px;vertical-align:1px}
 .legdark{position:absolute;inset:0;z-index:1040;pointer-events:none;opacity:0;transition:opacity .5s;background:radial-gradient(circle at var(--lx) var(--ly),color-mix(in srgb,var(--lc) 30%,transparent) 0,rgba(6,4,18,.55) 120px,rgba(6,4,18,.82) 320px)}.legdark.on{opacity:1}
 .legflash{position:absolute;inset:0;z-index:1090;pointer-events:none;mix-blend-mode:screen}
-#boxSort{flex:1 1 100%;min-width:0}#boxSort button{flex:1 1 0;min-width:0;padding-left:0;padding-right:0;text-align:center}
+#boxSort{flex:1 1 100%;min-width:0}#boxType{flex:none;width:auto;min-width:96px;font-size:13px;padding-top:5px;padding-bottom:5px}#boxSort button{flex:1 1 0;min-width:0;padding-left:0;padding-right:0;text-align:center}
 .bd-card.ready{border-color:#e8a020;animation:bdGlow 4s ease-in-out infinite}
 @keyframes bdGlow{0%,100%{box-shadow:3px 3px 0 rgba(0,0,0,.2),0 0 0 2px #ffd75e,0 0 4px 0 rgba(255,200,60,.3)}50%{box-shadow:3px 3px 0 rgba(0,0,0,.2),0 0 0 2px #ffe4a0,0 0 12px 3px rgba(255,200,60,.5)}}
 .bd-evo .row>span:last-child{white-space:nowrap}
@@ -1786,7 +1786,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
     <div class="mtab boxtab" data-t="box" hidden>
       <div class="bag-test"><button id="boxReset" class="test-btn">전체 포켓몬 초기화</button><button id="boxGen" class="test-btn">포켓몬 생성하기</button><button id="boxGenEgg" class="test-btn">알로 1,000마리</button></div>
       <div class="filters boxq"><span class="qw"><input id="boxQ" type="search" placeholder="이름이나 번호" aria-label="포켓몬 이름이나 번호로 찾기" autocomplete="off"><svg class="qi" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10 10l4.5 4.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/></svg><button type="button" class="qx" aria-label="검색어 지우기">✕</button></span></div>
-      <div class="mgr-tools"><div class="bag-sort" id="boxSort"><button data-sort="new">날짜</button><button data-sort="rank">랭크</button><button data-sort="bs">종족값</button><button data-sort="fr">친밀도</button><button data-sort="no">번호</button><button data-sort="field">필드</button></div><span class="tcount" id="boxCount"></span></div>
+      <div class="mgr-tools"><div class="bag-sort" id="boxSort"><button data-sort="new">날짜</button><button data-sort="rank">랭크</button><button data-sort="bs">종족값</button><button data-sort="fr">친밀도</button><button data-sort="no">번호</button><button data-sort="field">필드</button></div><button class="fsel" id="boxType" data-v="0" aria-haspopup="listbox">모든 타입</button><span class="tcount" id="boxCount"></span></div>
       <div class="boxgrid" id="boxGrid"></div>
     </div>
     <div class="runtabs mtabs" id="mgrTabs" role="tablist"><button class="runtab" role="tab" data-t="box">박스</button><button class="runtab" role="tab" data-t="dex">도감</button><button class="runtab" role="tab" data-t="field">필드</button><button class="runtab" role="tab" data-t="buddy">짝꿍</button></div>
@@ -6579,7 +6579,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '11.97';   /* v11.91 경완: 체육관 승급 심사 = 평판 차면 알림·버튼·심사 화면·라인업 고르기 · v11.90 경완: 기술 바꾸기 상세 카드는 기술 창 위에 겹쳐 뜸. v11.89 경완: 포켓몬 박스 타입 아이콘, 체육관 포켓몬 메뉴 라인업 1 기본·순서 바꾸기 설명 없앰 · v11.88 경완: 뒤로 버튼 옆 제목을 눌러도 뒤로 · v11.86 경완: 체육관 도전자마다 기다리는 시간·남은 시간 표시, 프로필 체육관 배지 안 그려지던 것 고침. v11.79 경완: 타이어 그네 — 친구가 밀어 주면 타던 포켓몬은 다 밀 때까지 계속 타고 즐거운 말풍선. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '11.98';   /* v11.91 경완: 체육관 승급 심사 = 평판 차면 알림·버튼·심사 화면·라인업 고르기 · v11.90 경완: 기술 바꾸기 상세 카드는 기술 창 위에 겹쳐 뜸. v11.89 경완: 포켓몬 박스 타입 아이콘, 체육관 포켓몬 메뉴 라인업 1 기본·순서 바꾸기 설명 없앰 · v11.88 경완: 뒤로 버튼 옆 제목을 눌러도 뒤로 · v11.86 경완: 체육관 도전자마다 기다리는 시간·남은 시간 표시, 프로필 체육관 배지 안 그려지던 것 고침. v11.79 경완: 타이어 그네 — 친구가 밀어 주면 타던 포켓몬은 다 밀 때까지 계속 타고 즐거운 말풍선. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8272,6 +8272,7 @@ const io = new IntersectionObserver(es => es.forEach(en => {
 // 필터: 시스템 선택창 대신 도트 창에 목록을 띄운다
 const FILTERS = {
   dexType: { t: '타입', all: '모든 타입', opts: TYPE_KO.slice(1).map((n, i) => [i + 1, n, TYPE_C[i + 1]]) },
+  boxType: { t: '타입', all: '모든 타입', opts: TYPE_KO.slice(1).map((n, i) => [i + 1, n, TYPE_C[i + 1]]) },
   dexGen: { t: '세대', all: '모든 세대', opts: [1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => [g, `${g}세대`]) },
   dexSort: { t: '정렬', all: '등록순', opts: [[1, '번호순']] },
 };
@@ -8286,9 +8287,9 @@ function openFilter(id) {
 function setFilter(id, v) {
   const b = $('#' + id), F = FILTERS[id], was = +b.dataset.v; b.dataset.v = v;
   b.classList.toggle('on', id === 'dexSort' ? false : !!v);   // 정렬의 켜진 모양은 도감을 처음 열었을 때만 (다시 고르면 꺼진 모양)
-  b.textContent = v ? F.opts.find(o => o[0] === v)[1] : F.all; filterDex();
+  b.textContent = v ? F.opts.find(o => o[0] === v)[1] : F.all; if (id === 'boxType') { boxTy = v; renderBox(); $('#boxGrid').scrollTop = 0; } else filterDex();
 }
-['dexType', 'dexGen', 'dexSort'].forEach(id => $('#' + id).onclick = () => openFilter(id));
+['dexType', 'dexGen', 'dexSort', 'boxType'].forEach(id => $('#' + id).onclick = () => openFilter(id));
 $('#fPop').addEventListener('click', e => { const o = e.target.closest('[data-v]'); if (o) setFilter(fFor, +o.dataset.v); if (o || e.target.id === 'fPop') $('#fPop').hidden = true; });
 Object.keys(SPECIES).map(Number).forEach(sp => {
   const d = SPECIES[sp], b = document.createElement('button');
@@ -8553,10 +8554,11 @@ function boxTop() { let el = $('#boxGrid'); while (el && !(el.scrollHeight > el.
 // 검색: 별명·종 이름에 들어 있거나 도감 번호가 같으면
 let boxQv = '';
 const boxQ = () => boxQv;
-const boxHit = (p, q) => !q || nameHit(nameOf(p), q) || nameHit(SPECIES[p.sp].n, q) || String(p.sp) === q.replace(/^0+/, '');
+let boxTy = 0;   // v11.97 경완: 박스 타입 버튼 (도감 타입 고르기와 같은 창 위 창)
+const boxHit = (p, q, noTy) => (noTy || !boxTy || (SPECIES[p.sp]?.t || []).includes(boxTy)) && (!q || nameHit(nameOf(p), q) || nameHit(SPECIES[p.sp].n, q) || String(p.sp) === q.replace(/^0+/, ''));
 function boxList(all, keepAll) {
   const q = all ? '' : boxQ();
-  const L = (boxSort === 'field' && !keepAll ? S.box.filter(p => onField(p.id)) : S.box.slice()).filter(p => boxHit(p, q));   // 필드: 필드에 나가 있는 포켓몬만
+  const L = (boxSort === 'field' && !keepAll ? S.box.filter(p => onField(p.id)) : S.box.slice()).filter(p => boxHit(p, q, all));   // 필드: 필드에 나가 있는 포켓몬만
   const d = boxSort === 'field' ? 1 : boxDir, idx = new Map(S.box.map((p, i) => [p, i]));
   const key = { field: p => (onField(p.id) ? 1e6 : 0) + idx.get(p), rank: p => { const s = rankScore(p), i = RANKS.findIndex(([, v]) => s >= v); return (RANKS.length - (i < 0 ? RANKS.length - 1 : i)) * 1e4 + bsSum(p.sp); }, bs: p => bsSum(p.sp), fr: p => p.fr || 0, no: p => -p.sp }[boxSort] || (p => idx.get(p));   // 날짜: 상자에 들어온 순서. v7.82 경완: 랭크순은 같은 랭크 안에서 종족값 높은 순
   // 키는 한 번씩만 계산해 두고 정렬 (1000마리도 바로)
@@ -8582,8 +8584,8 @@ function seeBuds() { if (S.buds.some(b => b.nw || budNew(b))) { S.buds.forEach(b
 function renderBox() {
   document.querySelectorAll('#boxSort [data-sort]').forEach(b => { const on = b.dataset.sort === boxSort; b.setAttribute('aria-pressed', on); b.dataset.dir = on && boxSort !== 'field' ? (boxDir > 0 ? '▼' : '▲') : ''; });
   const L = boxList(true, true), q = boxQ(), bud = new Set(S.buds.map(b => b.pid)), field = new Set(S.mons.map(m => m.pid)), grid = $('#boxGrid'), fo = boxSort === 'field';   /* 필드 보기도 칸은 지우지 않고 숨긴다 → 다른 정렬로 돌아갈 때 바로 */
-  const hits = q ? L.filter(p => boxHit(p, q)).length : 0;
-  $('#boxCount').innerHTML = q ? `찾은 포켓몬 <b>${hits}</b>마리` : `${S.box.some(p => p.shiny) ? `이로치 ${S.box.filter(p => p.shiny).length} · ` : ''}전체 <b>${S.box.length}</b>마리`;
+  const hits = q || boxTy ? L.filter(p => boxHit(p, q)).length : 0;
+  $('#boxCount').innerHTML = q || boxTy ? `찾은 포켓몬 <b>${hits}</b>마리` : `${S.box.some(p => p.shiny) ? `이로치 ${S.box.filter(p => p.shiny).length} · ` : ''}전체 <b>${S.box.length}</b>마리`;
   if (!L.length) { pkEls.clear(); grid.innerHTML = `<p class="empty-msg">아직 부화시킨 포켓몬이 없다.</p>`; return; }
   grid.querySelector('.empty-msg')?.remove();
   if (fo && !L.some(p => field.has(p.id))) grid.insertAdjacentHTML('afterbegin', '<p class="empty-msg" style="grid-column:1/-1">필드에 나가 있는 포켓몬이 없다.</p>');
