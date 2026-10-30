@@ -1644,5 +1644,6 @@ window.Gym = { prepare, enter, exit, visit, isOpen: () => open, renderGold: rend
   k: { fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 // 이미 명단에서 본 도전자(qSeen)는 기다리고 있어도 점을 띄우지 않는다 — 체육관 안 점과 똑같이 (경완 2026-10-30 '빨간점 다 확인했는데 아이콘 점이 안 사라짐')
-window.gymDot = () => { const g = S.gym; return !!(g && g.d && ((g.q && g.q.some(c => c.id > (g.qSeen | 0))) || (g.at && Date.now() >= g.at))); };
+// 점 = 안 본 도전자, 또는 새 도전자가 올 시각이 지남(일정·당겨 온 도전자). 저장된 at 은 쓰지 않는다 (경완 2026-10-30 '명단만 확인해도 꺼지게')
+window.gymDot = () => { const g = S.gym, now = Date.now(); return !!(g && g.d && ((g.q && g.q.some(c => c.id > (g.qSeen | 0))) || (g.sch?.length && g.sch[0] <= now) || (g.pull && g.pull <= now))); };
 })();
