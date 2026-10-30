@@ -3,8 +3,9 @@ import CryptoKit
 import WebKit
 
 // 친구 서버: iCloud 공개 DB(CloudKit)에 내 트레이너 카드를 올리고, 친구 코드로 친구 카드를 받아 온다.
-// 레코드 종류 Trainer, 레코드 이름 = "T_" + 친구 코드, 필드는 card(문자열, 게임이 만든 JSON) 하나뿐이라
+// 레코드 종류 Trainer, 레코드 이름 = "T_" + 친구 코드. 카드 내용은 card(문자열, 게임이 만든 JSON) 하나에 넣어서
 // 카드에 항목을 더해도 CloudKit 콘솔에서 스키마를 다시 배포할 필요가 없다.
+// 전체 랭킹용으로 wk(이번 주 월요일, Queryable)·wkm(이번 주 km, Sortable) 두 필드를 따로 둔다.
 // 친구 코드는 이 앱의 iCloud 사용자 ID 에서 만들어서 앱을 지웠다 깔거나 기기를 바꿔도 그대로다.
 // 게임은 webkit.messageHandlers.friends.postMessage({op}) 의 Promise 로 답을 받는다.
 final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
@@ -22,11 +23,14 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
             case "me": return (try await code(), nil)
             case "publish":
                 guard let card = body["card"] as? String, card.utf8.count < 50_000 else { return (nil, "카드가 너무 커요") }
-                try await publish(card)
+                try await publish(card, wk: body["wk"] as? String ?? "", wkm: (body["wkm"] as? NSNumber)?.doubleValue ?? 0)
                 return (true, nil)
             case "get":
                 let codes = (body["codes"] as? [String] ?? []).map(clean).filter { $0.count == 8 }
                 return (try await fetch(Array(Set(codes)).prefix(100).map { $0 }), nil)
+            case "top":
+                guard let wk = body["wk"] as? String, !wk.isEmpty else { return (nil, "잘못된 요청") }
+                return (try await top(wk), nil)
             default: return (nil, "모르는 요청")
             }
         } catch {
@@ -52,9 +56,11 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
 
     private func recordID(_ code: String) -> CKRecord.ID { CKRecord.ID(recordName: "T_" + code) }
 
-    private func publish(_ card: String) async throws {
+    private func publish(_ card: String, wk: String, wkm: Double) async throws {
         let r = CKRecord(recordType: "Trainer", recordID: recordID(try await code()))
         r["card"] = card as CKRecordValue
+        r["wk"] = wk as CKRecordValue
+        r["wkm"] = max(0, wkm) as CKRecordValue
         // 가져오지 않고 바로 덮어쓴다 (내 레코드는 나만 쓸 수 있다)
         _ = try await db.modifyRecords(saving: [r], deleting: [], savePolicy: .allKeys)
     }
@@ -69,6 +75,17 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
         }
     }
 
+    // 전체 랭킹: 이번 주 카드 중 많이 걸은 순서로 100명
+    private func top(_ wk: String) async throws -> [[String: Any]] {
+        let q = CKQuery(recordType: "Trainer", predicate: NSPredicate(format: "wk == %@", wk))
+        q.sortDescriptors = [NSSortDescriptor(key: "wkm", ascending: false)]
+        let (found, _) = try await db.records(matching: q, resultsLimit: 100)
+        return found.compactMap { id, res in
+            guard case .success(let r) = res, let card = r["card"] as? String, id.recordName.hasPrefix("T_") else { return nil }
+            return ["code": String(id.recordName.dropFirst(2)), "card": card, "at": (r.modificationDate ?? Date()).timeIntervalSince1970 * 1000]
+        }
+    }
+
     private func clean(_ s: String) -> String { s.uppercased().filter { $0.isLetter || $0.isNumber } }
 
     private func describe(_ error: Error) -> String {
@@ -80,6 +97,7 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
         case .serviceUnavailable, .requestRateLimited, .zoneBusy: return "친구 서버가 바빠요. 잠시 뒤 다시 해 주세요"
         case .quotaExceeded: return "친구 서버 저장 공간이 가득 찼어요"
         case .permissionFailure: return "친구 서버에 쓸 권한이 없어요"
+        case .invalidArguments: return "친구 서버 설정이 아직 덜 됐어요 (CloudKit 필드·인덱스)"
         default: return "친구 서버 오류 (\(ck.code.rawValue)): \(ck.localizedDescription)"
         }
     }

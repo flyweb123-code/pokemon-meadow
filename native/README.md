@@ -72,11 +72,15 @@ Xcode Cloud 는 개발자 계정에 한 달 25시간 무료 (빌드 한 번 10~2
 
 1. developer.apple.com › Certificates, Identifiers & Profiles › Identifiers › 오른쪽 위 필터를 **iCloud Containers** 로 바꾸고 + → `iCloud.com.flyweb123.pokerun` 만들기.
 2. Identifiers › `com.flyweb123.pokerun` (App ID) › **iCloud** 체크 → Edit/Configure 에서 방금 만든 컨테이너 선택 → Save.
-3. icloud.developer.apple.com (CloudKit Console) › 그 컨테이너 › **Development** › Schema › Record Types › + → 이름 `Trainer`, 필드 하나 `card` (String) → Save.
+3. icloud.developer.apple.com (CloudKit Console) › 그 컨테이너 › **Development** › Schema › Record Types › + → 이름 `Trainer`, 필드 세 개 → Save.
+   - `card` (String)
+   - `wk` (String) — 이번 주 월요일 (전체 랭킹 거르기)
+   - `wkm` (Double) — 이번 주 걸은 km (전체 랭킹 순서)
+   그다음 Schema › Indexes › `Trainer` 에 인덱스 두 개 추가: `wk` **Queryable**, `wkm` **Sortable** → Save.
 4. 같은 화면 왼쪽 아래 **Deploy Schema Changes…** → Production 으로 배포 (TestFlight 앱은 Production DB 를 쓴다).
 5. 이 PR 을 합친 뒤 Xcode Cloud 빌드가 TestFlight 에 올라오면 끝. 1·2 를 안 하면 서명 단계에서 빌드가 실패한다.
 
-카드에 항목을 더해도 `card` 하나에 JSON 으로 들어가서 스키마를 다시 배포할 필요가 없다.
+카드에 항목(대표 포켓몬 등)을 더해도 `card` 하나에 JSON 으로 들어가서 스키마를 다시 배포할 필요가 없다. 3단계 필드가 하나라도 빠지면 카드 올리기가 실패한다.
 
 ## 쓰는 법
 
