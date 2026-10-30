@@ -145,8 +145,13 @@ function yardBg(c) {
 function yardBg0(c) {
   const { ART, seasonCv } = GA.art(), PW = c.width = Math.ceil(Y.W / 2), PH = c.height = Math.ceil(Y.H / 2), g = c.getContext('2d'); g.imageSmoothingEnabled = false;
   let seed = 23; const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  const px = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(Math.round(x), Math.round(y), w, h); };
-  const put = (cv, x, y) => g.drawImage(cv, Math.round(x - cv.width / 2), Math.round(y - cv.height));
+  // 점 하나마다 fillRect 를 부르면 느린 폰에서 훈련장이 늦게 떴다 (경완 2026-10-30 '훈련장 여전히 지연'): 픽셀 배열에 직접 쓰고 한 번에 올린다
+  let im = g.createImageData(PW, PH), D = im.data; const CC = {};
+  const rgba = col => CC[col] || (CC[col] = col[0] === '#' ? [parseInt(col.substr(1, 2), 16), parseInt(col.substr(3, 2), 16), parseInt(col.substr(5, 2), 16), 1] : col.match(/[\d.]+/g).map(Number));
+  const px = (x, y, w, h, col) => { const [r0, g0, b0, a] = rgba(col), X0 = Math.max(0, Math.round(x)), Y0 = Math.max(0, Math.round(y)), X1 = Math.min(PW, Math.round(x) + w), Y1 = Math.min(PH, Math.round(y) + h);
+    for (let yy = Y0; yy < Y1; yy++) for (let xx = X0; xx < X1; xx++) { const i = (yy * PW + xx) * 4; if (a >= 1) { D[i] = r0; D[i + 1] = g0; D[i + 2] = b0; D[i + 3] = 255; } else { D[i] += (r0 - D[i]) * a; D[i + 1] += (g0 - D[i + 1]) * a; D[i + 2] += (b0 - D[i + 2]) * a; D[i + 3] = Math.max(D[i + 3], 255 * a); } } };
+  const flush = () => g.putImageData(im, 0, 0);
+  const put = (cv, x, y) => { flush(); g.drawImage(cv, Math.round(x - cv.width / 2), Math.round(y - cv.height)); im = g.getImageData(0, 0, PW, PH); D = im.data; };
   const tc = GA.TYPE_C[st().ty] || '#c03028', mix = (a, b, t) => '#' + [1, 3, 5].map(i => Math.round(parseInt(a.substr(i, 2), 16) * (1 - t) + parseInt(b.substr(i, 2), 16) * t).toString(16).padStart(2, '0')).join('');
   const BAY = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]], dith = (x, y, a) => a * 16 > BAY[y & 3][x & 3] + .5;
   const WB = 60;   // 벽 아래 끝 (반 크기 칸)
@@ -194,7 +199,7 @@ function yardBg0(c) {
   for (let y = WB; y < WB + 4; y++) for (let x = 0; x < PW; x++) if (dith(x, y, 1 - (y - WB) / 4)) px(x, y, 1, 1, 'rgba(60,40,10,.22)');
   // 문 양옆 화분 (계절 색)
   for (const sx of [-1, 1]) { const x = PW / 2 + sx * (doorW / 2 + 10); for (let y = 0; y < 6; y++) px(x - 6, WB - 1 + y, 12, 1, y === 0 ? '#c86848' : y < 4 ? '#a85030' : '#7a3820'); put(ART.bush(), x, WB + 1); }
-  try { seasonCv(c, 'bg', { ox: 0, oy: 0 }); } catch (e) {}
+  flush(); try { seasonCv(c, 'bg', { ox: 0, oy: 0 }); } catch (e) {}
 }
 // 훈련장 다시 꾸미기 (경완 2026-10-29): 6마리가 서로 다른 기구에서 — 샌드백 둘·과녁(기술 쏘기)·트램펄린·허들 달리기·후프링(나는 포켓몬)·수영장(물)·가운데 코트 대련 둘·벤치 쉬기
 async function drawTrain() {
@@ -207,7 +212,7 @@ async function drawTrain() {
   Y = { el, W, H, L: el.querySelector('.ty-l'), pr: {}, mons: [], pos: Y?.pos || {}, last: 0,
     pond: { x0: 16, y0: H * .74, x1: W * .54, y1: H - 16 }, court: { x0: 22, y0: H * .43, x1: W - 22, y1: H * .63 } };
   Y.pond.x = (Y.pond.x0 + Y.pond.x1) / 2; Y.pond.y = (Y.pond.y0 + Y.pond.y1) / 2;
-  yardBg(el.querySelector('.ty-bg'));
+  { const bg = el.querySelector('.ty-bg'), y0 = Y; requestAnimationFrame(() => setTimeout(() => { if (bg.isConnected && Y === y0) yardBg(bg); }, 0)); }   // 바닥 그림은 화면이 먼저 뜬 다음에 (처음 한 번만 무겁다)
   const r1 = H * .29, r2 = H * .39;   // 의자·아이스박스 없앰, 후프링 위로, 수영장 왼쪽 (경완 2026-10-29)
   yProp('bag1', 'punch-bag', W * .1, r2); yProp('bag2', 'punch-bag', W * .27, r2); yProp('tramp', 'spring-trampoline', W * .5, r2); yProp('tgt', 'target-easel', W * .9, r2);
   // 깃발 없애고 허들은 위아래로 (경완 2026-10-29): 오른쪽 아래 세로 트랙, 위에서 아래로 달리며 넘기
