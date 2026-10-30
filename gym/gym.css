@@ -762,7 +762,7 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 /* 창고 (경완 2026-10-28) */
 .gy-top .gy-store{pointer-events:auto;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:62px!important;min-height:62px;padding:6px 4px!important;font-size:12px;line-height:1;transition:transform .08s ease-out}
 .gy-store svg{width:32px;height:32px}.gy-store:active{transform:translateY(3px) scale(.97)}
-.gy-storew .st-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}.gy-storew .st-tabs small{font-size:11px;opacity:.75}
+.gy-storew .st-tabs{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}.gy-storew .st-tabs button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gy-storew .st-tabs small{font-size:11px;opacity:.75}
 .gy-storew .st-tip{font-size:12px;color:var(--dim);margin:0 0 8px}
 .gy-storew .sp-tm{cursor:default}
 /* 기술머신 형태 필터 + 위력순 (경완 2026-10-28) */
@@ -1971,3 +1971,11 @@ body.gymBattle .gy-vtit{display:none}
 .gy-nme .pen-b{width:.8em;height:.8em;opacity:.8}
 
 #gym.lupk .gy-menu button[data-t]:not(.gy-out):not([data-t="out"]){opacity:.4;filter:grayscale(1);pointer-events:none}   /* v12.24 라인업 고르기 중 메뉴 잠금 */
+
+/* 박스 위에서 연 도구 사용·기술 가르치기 창이 박스 뒤로 숨지 않게 (경완 2026-10-30) */
+.gy-storew.tm-teach{z-index:8}
+.mp-btns.mp-3{grid-template-columns:repeat(3,minmax(0,1fr))}.mp-btns.mp-3 button{white-space:nowrap;padding-left:2px;padding-right:2px}
+.mp-btns.mp-3 button{font-size:12px}.mp-btns.mp-3 button[data-a=add]{background:#e08a2a!important;color:#fff!important;border-color:#8a4a14!important}
+/* 민트 (경완 2026-10-30) */
+.sp-sub{margin:14px 2px 6px;font-size:12px;font-weight:700;color:var(--dim)}
+.sp-mint .tm-meta small{font-size:11px;color:var(--dim)}

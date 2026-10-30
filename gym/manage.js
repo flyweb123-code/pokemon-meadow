@@ -569,8 +569,13 @@ function shopIt(body) {
   const g = st(), H = GB().HOLD, ty = g.ty; g.itm = g.itm || {};
   const L = Object.keys(H).sort((a, b) => (H[a][1] - H[b][1]) * shopPr || ((H[b][3] === ty) - (H[a][3] === ty)));   // 가격순 (경완 2026-10-29)   // 체육관 타입 강화 도구 먼저, 그다음 비싼 순, 타입 강화는 뒤
   // 종류마다 하나만 살 수 있고, 가진 건 회색 '보유 중' (경완 2026-10-29)
-  body.innerHTML = `<div class="tm-row sp-prr">${prBtn()}</div><div class="sp-list">${L.map(id => { const own = GB().itHave(id); return GB().itRow(id).replace('class="sp-tm sp-it"', `class="sp-tm sp-it${own ? ' own' : ''}"${own ? ' disabled' : ''}`).replace('</button>', `<em>${own ? '보유 중' : gold(H[id][1])}</em></button>`); }).join('')}</div>`;
-  body.onclick = (e, b) => { const id = b.dataset.it; if (!id || GB().itHave(id)) return; sfx('tap'); const x = H[id];
+  body.innerHTML = `<div class="tm-row sp-prr">${prBtn()}</div><div class="sp-list">${L.map(id => { const own = GB().itHave(id); return GB().itRow(id).replace('class="sp-tm sp-it"', `class="sp-tm sp-it${own ? ' own' : ''}"${own ? ' disabled' : ''}`).replace('</button>', `<em>${own ? '보유 중' : gold(H[id][1])}</em></button>`); }).join('')}</div>
+    <p class="sp-sub">민트 · 먹이면 성격이 바뀌어요</p><div class="sp-list">${GB().MINT.map(k => GB().mintRow(k, g.mint?.[k] || 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)).join('')}</div>`;   // 민트 (경완 2026-10-30): 여러 개 살 수 있음
+  body.onclick = (e, b) => { const mk = b.dataset.mint;
+    if (mk) { sfx('tap'); const n = g.mint?.[mk] || 0, P = GB().MINT_P, nm = GB().mintNm(mk);
+      return GB().mintInfo(mk, `${gold(P)} 사기`, () => { if (!buy(P)) return say(`골드가 모자라요. ${P.toLocaleString()}G가 필요해요.`);
+        g.mint = g.mint || {}; g.mint[mk] = (g.mint[mk] || 0) + 1; K.glog('tr', `도구 <b>${esc(nm)}</b>${K.jong(nm) ? '을' : '를'} 샀다.`); K.save(); redraw(); say(`${esc(nm)}${K.jong(nm) ? '을' : '를'} 창고에 넣었어요.`); }, n ? `<p class="gy-msg it-own">${n}개 가지고 있어요</p>` : ''); }
+    const id = b.dataset.it; if (!id || GB().itHave(id)) return; sfx('tap'); const x = H[id];
     GB().itInfo(id, `${gold(x[1])} 사기`, () => { if (!buy(x[1])) return say(`골드가 모자라요. ${x[1].toLocaleString()}G가 필요해요.`);
       if (GB().itHave(id)) return; g.itm[id] = 1; K.glog('tr', `도구 <b>${esc(x[0])}</b>${K.jong(x[0]) ? '을' : '를'} 샀다.`); K.save(); redraw(); say(`${esc(x[0])}${K.jong(x[0]) ? '을' : '를'} 창고에 넣었어요.`); }); };
 }
