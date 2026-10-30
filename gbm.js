@@ -164,13 +164,13 @@ root.GBSynth = { render, parseAsm };
 // ---------- 곡 목록·불러오기 (게임 쪽) ----------
 // 커밋을 고정해 두어 악보가 바뀌지 않는다
 const BASE = { c: 'https://raw.githubusercontent.com/pret/pokecrystal/619f3703486b3b40f69d31b1911b58aa0a721a6e/', r: 'https://raw.githubusercontent.com/pret/pokered/171e2c204f9c1ff8e577ca387a4bbb009e130843/' };
-const TR = {   // 곡 이름표 → [저장소, 파일, 곡 이름]
+const TR = {   // 곡 이름표 → [저장소, 파일, 곡 이름, (되풀이 사이 쉼 초)]
   azalea: ['c', 'azaleatown', 'Music_AzaleaTown'], pallet: ['r', 'pallettown', 'Music_PalletTown'], oak: ['r', 'oakslab', 'Music_OaksLab'],
   violet: ['c', 'violetcity', 'Music_VioletCity'], kanto: ['c', 'viridiancity', 'Music_ViridianCity'], surf1: ['r', 'surfing', 'Music_Surfing'],
   goldenrod: ['c', 'goldenrodcity', 'Music_GoldenrodCity'], celadon: ['c', 'celadoncity', 'Music_CeladonCity'], ecruteak: ['c', 'ecruteakcity', 'Music_EcruteakCity'],
   park: ['c', 'nationalpark', 'Music_NationalPark'], surf2: ['c', 'surf', 'Music_Surf'], lavender: ['r', 'lavender', 'Music_Lavender'],
   evo: ['c', 'evolution', 'Music_Evolution'], title: ['c', 'profoak', 'Music_ProfOak'], intro: ['c', 'bicycle', 'Music_Bicycle'],
-  gymIn: ['c', 'route29', 'Music_Route29'], gymOut: ['c', 'pokemonlullaby', 'Music_PokemonLullaby'],   // 체육관 출근·퇴근 (경완 2026-10-30)
+  gymIn: ['c', 'healpokemon', 'Music_HealPokemon', .7], gymOut: ['c', 'healpokemon', 'Music_HealPokemon', .7],   // 체육관 출근·퇴근 (경완 2026-10-30) · v12.02 경완: 포켓몬 회복 소리를 로딩처럼 되풀이 (4번째 = 끝에 둘 쉼, 초)
 };
 let worker = null, wid = 0; const waits = new Map();
 function inWorker(src, opt) {
@@ -187,12 +187,12 @@ async function text(path, repo, cache) {
   memo.set(k, t); return t;
 }
 async function get(id, ctx, cache, sampleRate = 32000) {
-  const d = TR[id]; if (!d) return null; const [repo, file, start] = d;
+  const d = TR[id]; if (!d) return null; const [repo, file, start, gap = 0] = d;
   const music = await text(`audio/music/${file}.asm`, repo, cache), waves = await text('audio/wave_samples.asm', repo, cache), src = { music, waves };
   if (repo === 'c') src.drums = await text('audio/drumkits.asm', repo, cache);
   else { src.noise = {}; const ns = [...new Set([...music.matchAll(/drum_note\s+(\d+)/g)].map(m => +m[1]))]; await Promise.all(ns.map(async n => { src.noise[n] = await text(`audio/sfx/noise_instrument${String(n).padStart(2, '0')}_1.asm`, repo, cache); })); }
   const r = await inWorker(src, { start, sampleRate });
-  const b = ctx.createBuffer(2, r.L.length, r.sampleRate); b.getChannelData(0).set(r.L); b.getChannelData(1).set(r.R); b.gbLoop = [r.loopStart, r.loopEnd]; return b;
+  const pad = Math.round(gap * r.sampleRate), b = ctx.createBuffer(2, r.L.length + pad, r.sampleRate); b.getChannelData(0).set(r.L); b.getChannelData(1).set(r.R); b.gbLoop = [r.loopStart, r.loopEnd + pad / r.sampleRate]; return b;
 }
 root.GBSynth.TR = TR; root.GBSynth.get = get; root.GBSynth.has = id => !!TR[id];
 // 일꾼으로 띄웠을 때: 합성만
