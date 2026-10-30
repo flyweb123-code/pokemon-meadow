@@ -6194,7 +6194,7 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, hunger: m.hunger, slpB: m.slpB, slpW: m.slpW, social: m.social, joy: m.joy, joyH: m.joyH || 0, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk, red: !!b.red })), lockT: S.lockT,
-    gold: S.gold, box: S.box, gym: S.gym || undefined, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], dexFix1: !!S.dexFix1, buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, mg: S.mg || {}, fbag: S.fbag || {}, fbagT: S.fbagT || {}, lay: S.lay || {}, layAdd: S.layAdd || [], fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])], dexDot: !!S.dexDot };
+    gold: S.gold, box: S.box, gym: S.gym || undefined, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], dexFix1: !!S.dexFix1, buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, evoPend: S.evoPend || undefined, fx1173: S.fx1173 || undefined, mg: S.mg || {}, fbag: S.fbag || {}, fbagT: S.fbagT || {}, lay: S.lay || {}, layAdd: S.layAdd || [], fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])], dexDot: !!S.dexDot };
 }
 let saveFrozen = false, tutFreeze = false, introPv = false;   // introPv: 튜토리얼 미리 보기 (끝나도 저장 안 함)
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { const o = serialize(); window.gymSimFix?.(o); const t = JSON.stringify(o); localStorage.setItem(KEY, t); bakTick(t, o); } catch (e) {} }
@@ -6230,7 +6230,7 @@ async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
   S.lockT = d.lockT || 0; S.gym = d.gym || null; S.tree = d.tree || null; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { rkMig(P); if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.bagDry = d.bagDry || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.trI = d.trI ?? null; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.autoInc = !!d.autoInc; S.noti = { on: true, egg: true, hatch: true, evo: true, ...(d.noti || {}) }; S.bagQ = Array.isArray(d.bagQ) ? d.bagQ : [];   /* v4.23 경완: 부화기 자동 채우기가 다시 켜면 꺼지던 문제 — 저장에 빠져 있었다 */ S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
-  if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1; S.items = d.items || {}; S.itemSeen = d.itemSeen || { ...S.items };   /* v7.48: 예전 저장은 가진 것 모두 본 것으로 */ S.mg = d.mg || {}; S.fbag = d.fbag || {}; S.lay = d.lay && typeof d.lay === 'object' ? d.lay : {}; S.layAdd = Array.isArray(d.layAdd) ? d.layAdd : []; S.fbagT = d.fbagT || {}; S.fx = d.fx || {}; S.colT = d.colT || 0;
+  if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1; S.items = d.items || {}; S.itemSeen = d.itemSeen || { ...S.items }; S.evoPend = d.evoPend || null; S.fx1173 = d.fx1173 || 0;   /* v7.48: 예전 저장은 가진 것 모두 본 것으로 */ S.mg = d.mg || {}; S.fbag = d.fbag || {}; S.lay = d.lay && typeof d.lay === 'object' ? d.lay : {}; S.layAdd = Array.isArray(d.layAdd) ? d.layAdd : []; S.fbagT = d.fbagT || {}; S.fx = d.fx || {}; S.colT = d.colT || 0;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
   cleanPlaces();
   S.dexNew = new Set(d.dexNew || []); S.dexDot = d.dexDot ?? !!S.dexNew.size;   /* v10.02 경완: 도감 빨간 점은 도감 탭에 들어가면 사라진다 (NEW 표시는 닫을 때) */
@@ -6558,7 +6558,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '11.72';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '11.73';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6714,7 +6714,7 @@ function toolAsk(P, { c, it }) {   // 도구를 쓸지 한 번 더 묻는다 (�
   el.innerHTML = `<div class="win ipwin bag-ask" role="dialog" aria-label="${o.n} 쓰기"><img src="${ITEM_ART[o.a]}" alt=""><p>${J({ name: nm }, '을/를')} 써서 진화시킬까요?</p><span>${esc(nameOf(P))} · 가진 개수 ${I[it] || 0}</span><div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn main" data-yes>쓰기</button></div></div>`;
   el.hidden = false; sfx('open');
   el.onclick = e => { if (e.target === el || e.target.closest('[data-no]')) { el.hidden = true; sfx('tap'); return; } if (!e.target.closest('[data-yes]')) return;
-    el.hidden = true; if (evoNo({ c, it }) !== null || evolving || hatching) return; I[it] -= q.n; if (!I[it]) delete I[it]; save();
+    el.hidden = true; if (evoNo({ c, it }) !== null || evolving || hatching) return; I[it] -= q.n; if (!I[it]) delete I[it]; S.evoPend = { pid: P.id, to: c, it, n: q.n }; save();   /* 11.73: 도구를 쓴 것과 '진화 중'을 한 번에 저장 → 도중에 끊겨도 다시 켜면 이어서 진화 (evoResume) */
     log(`${esc(nameOf(P))}에게 ${J({ name: nm }, '을/를')} 썼다!`, [], true);
     const card = !$('#pokePop').hidden; if (card) closePoke(); if (!monPop.hidden) closeMon(); evolveWin(P, card, c, it); };
 }
@@ -11160,12 +11160,31 @@ async function evoToolIn(el, img, src) {
   const pr = el.querySelector('.ef-parts'); for (let i = 0; i < 14; i++) evoSpark(pr, cx, cy, false);
   await img.animate([{ filter: 'brightness(1)', transform: 'scale(1)' }, { filter: 'brightness(3) drop-shadow(0 0 14px #fff)', transform: 'scale(1.1)', offset: .3 }, { filter: 'brightness(2) drop-shadow(0 0 22px #ffe68a)', transform: 'scale(1)', offset: .7 }, { filter: 'brightness(2.6) drop-shadow(0 0 18px #fff)', transform: 'scale(1)' }], { duration: 750, easing: 'ease-out' }).finished.catch(() => {});
 }
+// 11.73 경완 '불꽃의 돌만 사라지는 오류': 도구 진화가 시작도 못 하고 멈추면 도구를 돌려준다
+function evoPendBack(P) { const q = S.evoPend; if (!q || (P && q.pid !== P.id)) return; const I = itemsOf(); I[q.it] = (I[q.it] || 0) + q.n; S.evoPend = null; itemSeenClamp(); save(); }
+// 다시 켰을 때 끊긴 도구 진화가 있으면 그 진화를 이어서 보여 준다
+function evoResume() {
+  const q = S.evoPend;
+  if (q) { const P = S.box.find(p => p.id === q.pid);
+    if (!P) return evoPendBack(null);
+    if (P.sp === q.to || !(CHILDREN[P.sp] || []).includes(q.to)) { S.evoPend = null; save(); }
+    else if (evolving || hatching || tutFreeze || notiOpen) return setTimeout(evoResume, 3000);
+    else return evolveWin(P, false, q.to, q.it); }
+  // 11.73 경완 '복구해줘': 식스테일에게 불꽃의돌을 썼는데 진화가 끊겨 돌만 사라졌던 저장 → 한 번만 불꽃의돌 1개를 돌려준다
+  if (S.fx1173) return; S.fx1173 = 1; const I = itemsOf();
+  if (I.fire || !S.box.some(p => p.sp === 37)) return save();
+  I.fire = 1; save(); menuDots(); log('끊겼던 진화 때문에 사라진 <b>불꽃의돌</b>을 돌려받았다!', [], true);
+  if (notiOpen) return; notiOpen = true;
+  $('#notiBody').innerHTML = `<div class="noti-mons"><img alt="" src="${ITEM_ART[ITEM.fire.a]}"></div><div class="ns"><p><b>불꽃의돌</b>을 돌려받았다!</p><div class="small">진화가 끊겨서 사라졌던 돌이에요. 가방에서 다시 써 보세요.</div></div>`;
+  $('#noti').hidden = false; sfx('newdex');
+  const done = () => { $('#noti').hidden = true; $('#noti').onclick = null; notiOpen = false; }; $('#notiOk').onclick = done; $('#noti').onclick = ev => { if (ev.target.id === 'noti') done(); };
+}
 async function evolveWin(P, card, forceTo, tool) {   // tool: 쓴 도구 id → 깜빡이기 전에 도구가 스프라이트로 날아 들어가 빛난다 (v8.88)
-  const kids = forceTo ? [forceTo] : evoKids(P.sp, P, true); if (!kids.length || evolving || hatching) return;   // forceTo: 도구로 진화 (v5.75)
+  const kids = forceTo ? [forceTo] : evoKids(P.sp, P, true); if (!kids.length || evolving || hatching) return tool ? evoPendBack(P) : undefined;   // forceTo: 도구로 진화 (v5.75)
   const b = S.buds.find(x => x.pid === P.id);
   evolving = true;
   const from = P.sp, to = pick(kids), fromN = SPECIES[from].n, toN = SPECIES[to].n, nm = nameOf(P);
-  try { await ensureSprite(from); await ensureSprite(to); } catch (e) { evolving = false; return; }
+  try { await ensureSprite(from); await ensureSprite(to); } catch (e) { evolving = false; evoPendBack(P); return; }
   const el = evoDom(), img = el.querySelector('.ef-img'), msg = el.querySelector('.ef-msg'), ok = el.querySelector('.ef-ok'), cardEl = el.querySelector('.ef-card'), parts = el.querySelector('.ef-parts');
   const fromSrc = thumbOf(fKey(from, P.sex)) || thumbOf(from), toSrc = thumbOf(fKey(to, P.sex)) || thumbOf(to), wh = el.querySelector('.ef-wh');
   let fromW = '', toW = ''; try { [fromW, toW] = await Promise.all([evoWhite(fromSrc), evoWhite(toSrc)]); } catch (e) {}
@@ -11179,7 +11198,10 @@ async function evolveWin(P, card, forceTo, tool) {   // tool: 쓴 도구 id → 
   await wait(500);
   // 박자 시계: 음악이 있으면 오디오 시각, 없으면 화면 시각
   const t0 = await evoMusicStart(), music = t0 != null, p0 = performance.now();
-  const now = () => music ? actx.currentTime - t0 : (performance.now() - p0) / 1000;
+  // 11.73 경완 '위치 허용 알람 뜨면서 진화 스킵': 시스템 창이 뜨면 오디오 시계가 멈춰 진화 화면이 끝나지 않았다 → 오디오 시각이 0.6초 넘게 안 가면 화면 시각으로 이어 간다
+  let aT = -1, aW = 0, wAt = null, wB = 0;
+  const now = () => { if (!music) return (performance.now() - p0) / 1000; const w = performance.now(); if (wAt != null) return wB + (w - wAt) / 1000;
+    const t = actx.currentTime - t0; if (t !== aT) { aT = t; aW = w; } else if (w - aW > 600) { wAt = w; wB = t; } return t; };
   if (!music) sfx('evotick', 0);
   el.classList.add('sil');   // 첫 모습 바꾸기(0.81초) 전에 하얗게 다 바뀐다 → 다음 모습이 색으로 비치지 않는다
   await new Promise(done => {
@@ -11213,9 +11235,10 @@ async function evolveWin(P, card, forceTo, tool) {   // tool: 쓴 도구 id → 
   await wait(180);
   evoMusicFade(1.2);
   const newTo = !S.unlocked.has(to); if (newTo) addGold(NEW_G);
-  P.sp = to; P.km = 0; if (b) { b.sp = to; b.km = 0; } unlock(to, true);
+  P.sp = to; P.km = 0; if (b) { b.sp = to; b.km = 0; } unlock(to, true); if (S.evoPend?.pid === P.id) S.evoPend = null;
   const fr0 = P.fr || 0; P.fr = Math.min(FR_MAX, fr0 + (EVO_FR[Math.min(2, evoStage(to))] || EVO_FR[1])); frMaxHit(P, fr0);   // 진화하면 친밀도가 오른다 (첫 진화 30, 두 번째 60)
   { const m = S.mons.find(x => x.pid === P.id); if (m) { m.sp = to; setForm(m, to); m.el.classList.remove('ditto'); if (m.name === fromN || m.name.startsWith(fromN + ' ')) { m.name = m.name.replace(fromN, toN); m.tag.textContent = m.name; } } }   // 필드에 있던 포켓몬도 새 모습으로
+  save();   // 11.73: 진화는 바뀌는 순간 바로 저장 (축하 화면 도중 앱이 꺼져도 진화는 남는다)
   await wait(700);
   sfx('evolve'); playCry(to, .9);
   let shut = false; setTimeout(() => { if (!shut && evoMus.have) evoMusicStart(2.5, evoMus.pos || 0).then(t => { if (shut && t != null) evoMusicFade(.3); }); }, 1800);   // 울음소리가 끝나면 진화 곡이 다시 흐른다
@@ -11813,6 +11836,7 @@ async function start(data) {
   requestAnimationFrame(t => { last = t; frame(t); });
   // 아이폰 앱에 준비됐다고 알리고, 현재 알 현황을 바로 보낸다
   window.pokeRunReady = true; postNative();
+  if (!isNew && !introPrev) setTimeout(evoResume, 2500);   // 11.73
   try { window.webkit?.messageHandlers?.pokeRun?.postMessage({ ready: true }); } catch (e) {}
 }
 // ---------- 작업실: 게임 화면을 작업실 안에서 미리보기·편집할 때만 (?studio) ----------
