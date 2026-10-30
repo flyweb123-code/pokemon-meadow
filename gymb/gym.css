@@ -1918,3 +1918,5 @@ body.gymBattle .gy-vtit{display:none}
 .mv-ordb.on{background:#d89a20;border-color:#d89a20;color:#fff}
 .mv-ord.on .mp-mv:not(.empty){cursor:grab;padding-right:30px!important}
 .mv-ord.on .mp-mv:not(.empty)::after{content:'≡';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:20px;line-height:1;color:#a08850}
+
+.gy-qw .qw-tx span.qw-left.low,.gy-qw .qw-row.next .qw-tx span.qw-left.low,.gy-qw .qw-row.wait .qw-tx span.qw-left.low{color:#d83838;font-weight:700}   /* 떠나기 30분 전 (경완 2026-10-30) */

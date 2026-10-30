@@ -715,6 +715,7 @@ function arrive(c) {
     if (lost.length) glog('in', `${cn}${jong(c.nm) ? '이' : '가'} 트레이너 ${lost.length}명을 이기고 올라왔다!`, c.t);
   }
   if (g.q.length >= 5) { glog('out', `${cn}${jong(c.nm) ? '은' : '는'} 기다리는 사람이 많아 그냥 돌아갔다.`, c.t); return; }
+  c.exp = c.t + (c.boss ? 8 * H : c.named ? 5 * H : rnd(2, 4) * H);   // 도전자마다 기다리는 시간 (경완 2026-10-30: 자정까지 대신)
   g.q.push(c); if (!beat || c.named) glog('in', `${cn}${jong(c.nm) ? '이' : '가'} 도전하러 왔다!${c.boss ? ` <small>${GRADES[c.boss][1]} 승급 심사</small>` : c.named ? ' <small>이름 있는 트레이너</small>' : ''}`, c.t);
 }
 // 지난주 보고서 (월요일): 전적·막은 도전자·번 골드, 가상 체육관들과 점수 순위
@@ -748,6 +749,10 @@ function mkCand(now) {
 }
 const SF_MAX = [0, 1, 2, 3, 4, 5, 5];   // 등급별 고용 한도: 떠오르는 2명 … 명문 5명 (경완 2026-10-29)
 const staffMax = () => SF_MAX[gradeOf(st().rep || 0).i];   // 새내기 체육관은 고용 못 함 (경완 2026-10-27)
+// 기다릴 시간이 지난 도전자는 돌아간다 (예전 저장은 그날 자정). 평판은 깎지 않는다 (경완 2026-10-28)
+const qExp = c => c.exp || nextDay(dayStart(c.t));
+function qLeave(upTo) { const g = st(); g.q = g.q.filter(c => { const e = qExp(c); if (e > upTo) return true; glog('out', `${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 기다리다 돌아갔다.`, e); return false; }); }
+const qLeft = (c, now = Date.now()) => { const m = Math.max(0, Math.ceil((qExp(c) - now) / 60e3)), h = Math.floor(m / 60); return m < 1 ? '곧 떠나요' : `${h ? h + '시간 ' : ''}${m % 60 || !h ? (m % 60) + '분 ' : ''}남았어요`; };
 function tick(now = Date.now()) {
   const g = gInit(); if (!g || !g.d) return;
   [...(g.q || []), ...(g.cands || [])].forEach(c => { if (c.team?.some(m => spOff(m[0]))) c.team = c.team.map(m => spOff(m[0]) ? [pickSp(SPECIES[m[0]]?.t || [], m[1]), m[1]] : m); });   // 이미 와 있는 도전자·지원자도 끈 포켓몬은 바꿈
@@ -755,14 +760,14 @@ function tick(now = Date.now()) {
   const today = dayStart(now);
   if (!g.day) { g.day = today; g.sch = mkSch(today, now); g.sch.unshift(now + 90e3); }   // 처음: 1분 반 뒤 첫 도전자
   let guard = 0;
-  while (g.day < today && guard++ < 14) {   // 지난 날: 남은 방문을 다 처리하고, 자정까지 안 받은 도전자는 돌아간다
+  while (g.day < today && guard++ < 14) {   // 지난 날: 남은 방문을 다 처리 (기다릴 시간이 지난 도전자는 그 시각에 돌아간다)
     const end = nextDay(g.day);
-    while (g.sch.length && g.sch[0] < end) arrive(mkChal(g.sch.shift()));
-    for (const c of g.q) glog('out', `${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 기다리다 돌아갔다.`, end - 1);   // 평판은 깎지 않는다 (경완 2026-10-28)
-    g.q = []; g.day = end; g.sch = mkSch(end);
+    while (g.sch.length && g.sch[0] < end) { const t = g.sch.shift(); qLeave(t); arrive(mkChal(t)); }
+    g.day = end; g.sch = mkSch(end);
   }
   if (g.day < today) { g.day = today; g.sch = mkSch(today, now); }
-  while (g.sch.length && g.sch[0] <= now) arrive(mkChal(g.sch.shift()));
+  while (g.sch.length && g.sch[0] <= now) { const t = g.sch.shift(); qLeave(t); arrive(mkChal(t)); }
+  qLeave(now);
   payDay(now); sfGrow(now);
   g.cands = g.cands.filter(c => { if (now <= c.exp) return true; glog('sf', `면접 지원자 ${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 다른 체육관으로 갔다.`, c.exp); return false; });
   if (g.cands.length < 3 && now >= (g.candN || 0) && g.sf.length < 5) { g.cands.push(mkCand(now)); g.candSeen = 0; g.candN = now + rnd(14, 30) * H; }
@@ -896,7 +901,7 @@ const GUY_OW = 'gym_guy';
 const GUY_TOUR = () => [
   `어서 와요, 관장님!\n${st().nm}의 안내원이에요.\n체육관 일을 차근차근 알려 드릴게요.`,
   '도전자는 하루에 몇 번\n아무 때나 찾아와요.\n오면 필드의 체육관 버튼에\n빨간 점이 떠요.',
-  '아래 상태창의 [도전 받기]를\n누르면 배틀이 시작돼요.\n도전자는 그날 밤 12시까지\n기다려 줘요.',
+  '아래 상태창의 [도전 받기]를\n누르면 배틀이 시작돼요.\n도전자마다 기다려 주는\n시간이 정해져 있어요.',
   `배틀에는 ${TYPE_KO[st().ty]} 타입 포켓몬만\n낼 수 있어요. [배틀] 메뉴에서\n라인업을 3개까지 짜 둘 수 있어요.`,
   '도전자를 이기면 골드와 평판을\n받아요. 평판이 쌓이면\n체육관 등급이 올라요.',
   '등급이 오르면 도전자가 더 자주\n오고, 트레이너를 더 고용하고,\n체육관을 넓힐 수 있어요.',
@@ -998,12 +1003,12 @@ function qPop() {
     // 명단은 최신 도전자가 맨 위, 맨 위부터 한 명씩만 받을 수 있다 (경완 2026-10-29)
     const V = Q.map((c, i) => [c, i]).sort((a, b) => (a[0].t || 0) - (b[0].t || 0));   // 가장 먼저 온 도전자부터 (경완 2026-10-29)
     // 명단 디자인 (경완 2026-10-29 '퀄리티 좀 높여줘'): 다음 차례는 큰 카드 + 배틀 받침, 나머지는 번호 붙은 줄
-    // 기다린 시간은 안 보여 준다, 온 시각만 (경완 2026-10-30)
+    // 온 시각 대신 떠나기까지 남은 시간 (경완 2026-10-30), 30분 안 남으면 빨갛게
     const tag = c => c.boss ? `<em class="qw-tag bs">${gShort(c.boss)} 승급 심사</em>` : c.named ? '<em class="qw-tag nm">이름 있는 트레이너</em>' : `<em class="qw-tag">${esc(c.cls)}</em>`;
     const pic = c => `<span class="qw-pic${c.named ? ' qw-sil' : ''}"><i class="qw-base"></i><img alt="" src="${trSrc(c.tr)}"></span>`;
-    body = Q.length ? `<div class="qw-sum"><b>기다리는 도전자 <em>${Q.length}</em>명</b><span>오늘 밤 12시까지 기다려 줘요</span><i class="qw-balls">${V.map(([c], k) => `<i class="${k ? '' : 'on'}${c.boss ? ' bs' : ''}"></i>`).join('')}</i></div><div class="qw-list">${V.map(([c, i], k) => k
-      ? `<div class="qw-row wait${c.boss ? ' boss' : ''}"><span class="qw-pw">${pic(c)}<span class="qw-no">${k + 1}</span></span><div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span>${hhmm(c.t)}에 왔어요</span></div><span class="qw-wait">대기</span></div>`
-      : `<div class="qw-row next${c.boss ? ' boss' : ''}${c.boss || c.named ? ' vs' : ''}"><span class="qw-rib">${c.boss ? '승급 심사 도전자' : '다음 차례'}</span>${c.boss || c.named ? '<i class="qw-spd"></i><i class="qw-vs">VS</i>' : ''}${pic(c)}<div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span>${hhmm(c.t)}에 왔어요</span></div><button class="gy-key main" type="button" data-c="${i}">${c.boss ? '심사 받기' : '도전 받기'}</button></div>`).join('')}</div>`
+    body = Q.length ? `<div class="qw-sum"><b>기다리는 도전자 <em>${Q.length}</em>명</b><span>시간이 지나면 돌아가요</span><i class="qw-balls">${V.map(([c], k) => `<i class="${k ? '' : 'on'}${c.boss ? ' bs' : ''}"></i>`).join('')}</i></div><div class="qw-list">${V.map(([c, i], k) => k
+      ? `<div class="qw-row wait${c.boss ? ' boss' : ''}"><span class="qw-pw">${pic(c)}<span class="qw-no">${k + 1}</span></span><div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span class="qw-left${qExp(c) - Date.now() < 30 * 60e3 ? ' low' : ''}">${qLeft(c)}</span></div><span class="qw-wait">대기</span></div>`
+      : `<div class="qw-row next${c.boss ? ' boss' : ''}${c.boss || c.named ? ' vs' : ''}"><span class="qw-rib">${c.boss ? '승급 심사 도전자' : '다음 차례'}</span>${c.boss || c.named ? '<i class="qw-spd"></i><i class="qw-vs">VS</i>' : ''}${pic(c)}<div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span class="qw-left${qExp(c) - Date.now() < 30 * 60e3 ? ' low' : ''}">${qLeft(c)}</span></div><button class="gy-key main" type="button" data-c="${i}">${c.boss ? '심사 받기' : '도전 받기'}</button></div>`).join('')}</div>`
       : '<div class="qw-none"><i class="qw-clip"></i><b>지금 기다리는 도전자가 없어요</b><span>도전자가 오면 체육관 버튼에 빨간 점이 떠요.</span></div>';
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">도전자 명단</b></div>
       <div class="gy-body">${body}</div>`; };
