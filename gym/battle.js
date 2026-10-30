@@ -1474,20 +1474,21 @@ function movesPop(P, done) {
     <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close, btn) => {
     if (a === 'ord') { ord = !ord; list.classList.toggle('on', ord); btn.textContent = ord ? '완료' : '순서 바꾸기'; btn.classList.toggle('on', ord); p.querySelector('.mv-hd .gy-msg').textContent = ord ? '기술을 끌어서 순서를 바꾸세요' : '바꿀 기술을 고르세요'; return; }
     if (drag || (ord && a !== 'x')) return;
-    close(); if (a === 'x') return done?.();
+    if (a === 'x') { close(); return done?.(); }
     const k = +a.slice(1), old = m.mv[k];
     // 지금 기술을 누르면 먼저 상세 카드, 거기서 '기술 바꾸기'를 눌러야 배울 기술 고르기로 (경완 2026-10-30). 빈 칸은 바로
-    if (old) return mvInfo(old, () => pickNew(k, old), '기술 바꾸기', () => movesPop(P, done));
-    pickNew(k, old);
+    // 상세 카드는 기술 창을 닫지 않고 그 위에 뜬다 (뒤는 흐리게, 경완 2026-10-31)
+    if (old) return mvInfo(old, () => { close(); pickNew(k, old); }, '기술 바꾸기', () => {});
+    close(); pickNew(k, old);
   });
   function pickNew(k, old) {
     if (!C.length) { gymPop(`<h4>기술 바꾸기</h4><p class="gy-msg">지금 배울 수 있는 다른 기술이 없어요. 레벨을 올리거나 기술머신·훈련장에서 익혀 보세요.</p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="tm">기술 가르치기</button></div>`, (b, c2) => { c2(); if (b === 'tm') return tmPop(P, () => movesPop(P, done), k); movesPop(P, done); }); return; }
     // 배울 기술을 누르면 바로 바뀌지 않고 상세 창 → '바꾸기' (경완 2026-10-29)
     const learn = () => gymPop(`<h4>${old ? `${esc(mvKo(old))} 대신` : '새로'} 배울 기술</h4><div class="mp-moves mp-line pick mv-learn">${C.map(id => mvRow(mvOf(id), 'n' + id)).join('')}</div><div class="gy-btns"><button data-a="x">뒤로</button><button class="main" data-a="tm">기술 가르치기</button></div>`, (b, c2) => {
-      c2(); if (b === 'x') return movesPop(P, done);
-      if (b === 'tm') return tmPop(P, () => movesPop(P, done), k);   // 기술머신으로 이 칸에 가르치기 (경완 2026-10-29)
+      if (b === 'x') { c2(); return movesPop(P, done); }
+      if (b === 'tm') { c2(); return tmPop(P, () => movesPop(P, done), k); }   // 기술머신으로 이 칸에 가르치기 (경완 2026-10-29)
       const id = b.slice(1);
-      mvInfo(id, () => { m.kn = (m.kn || []).filter(x => x !== id); if (old) { m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); } else m.mv.push(id); GA.save(); se('DECIDE'); movesPop(P, done); }, old ? '바꾸기' : '배우기', learn); });
+      mvInfo(id, () => { c2(); m.kn = (m.kn || []).filter(x => x !== id); if (old) { m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); } else m.mv.push(id); GA.save(); se('DECIDE'); movesPop(P, done); }, old ? '바꾸기' : '배우기', () => {}); });
     learn();
   }
   const list = p.querySelector('.mv-ord'); let lp = null;
