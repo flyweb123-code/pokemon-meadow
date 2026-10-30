@@ -50,6 +50,21 @@
 8. 아이폰에 **TestFlight** 앱(App Store)을 깔고 포켓몬 키우기 설치. 워치 앱은 Watch 앱 › 설치 가능한 앱에서 설치(또는 자동).
 9. 다음 업데이트 때는 project.yml 의 `CURRENT_PROJECT_VERSION` 숫자를 1 올리고 `xcodegen` → 5~6 반복.
 
+## Xcode Cloud 로 자동 업로드 (2026-10-30)
+
+`native/` 를 바꾼 커밋이 main 에 올라가면 애플 서버가 빌드해서 TestFlight 에 올려요. Mac 에서 Archive 할 필요가 없어요.
+`ci_scripts/ci_post_clone.sh` 가 xcodegen 실행, 빌드 번호(= Xcode Cloud 빌드 번호) 설정, 카카오 키 넣기를 해요.
+
+처음 한 번만 Xcode 에서 설정해요 (Report navigator ⌘9 › Cloud 탭 › 워크플로 Default 오른쪽 클릭 › Edit Workflow).
+1. **General**: Repository 는 이 저장소, Project or Workspace 는 `native/PokeGrow.xcodeproj` 그대로.
+2. **Environment**: 환경 변수에 `KAKAO_KEY` = 카카오 REST API 키, Secret 체크.
+3. **Start Conditions**: Branch Changes › Branch `main`, Files and Folders › `native` 폴더만 (게임 패치마다 빌드되지 않게).
+4. **Actions**: Build 를 지우고 + › **Archive** › Platform iOS, Deployment Preparation **TestFlight (Internal Testing Only)**.
+5. **Post-Actions**: + › **TestFlight Internal Testing** › 친구들 그룹.
+6. 저장 후 Start Build 로 한 번 돌려 보기.
+
+Xcode Cloud 는 개발자 계정에 한 달 25시간 무료 (빌드 한 번 10~20분).
+
 ## 쓰는 법
 
 - 워치에서 포켓몬 키우기 › **런닝 시작**. 화면이 꺼져도 계속 기록돼요.
