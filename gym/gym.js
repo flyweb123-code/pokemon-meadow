@@ -1193,12 +1193,19 @@ async function shutFx(t1, s1, t2, s2, mid, { hold = 0, under } = {}) {   // hold
 }
 const gCard = (x, i) => { const G = gradeOf(x.rep || 0), cur = x === st(), sm = SF_MAX[G.i], tI = tyIcon(x.ty).replace(/ data-tip="[^"]*"/, '');
   return `<div class="mg-card${cur ? ' cur' : ''}" data-ty="${x.ty}"><button type="button" class="mg-go" data-i="${i}"><span class="mg-th"><img alt="" data-ms="${x.d}" data-gi="${bigOf(x)}"><em class="mg-st">${cur ? '운영 중' : '휴업 중'}</em></span><span class="mg-tx"><b>${esc(x.nm)}</b><span class="mg-ty">${tI}${TYPE_KO[x.ty]} · ${G.n}</span><span class="mg-ch"><i>평판 <b>${x.rep || 0}</b></i><i>트레이너 <b>${sm ? `${(x.sf || []).length}/${sm}` : '잠김'}</b></i></span></span></button><button type="button" class="mg-del" data-del="${i}">폐업</button></div>`; };
+// 포켓몬 박스 타입 필터와 같은 목록 창 (경완 2026-10-30 '체육관 타입 필터 전부 포켓몬 박스랑 같게'): O = [[값, 이름, 타입번호(색 점)|null, 앞에 붙일 html]]
+function fPop(title, O, cur, pick) {
+  const fp = document.createElement('div'); fp.className = 'fpop gy-fpop';
+  fp.innerHTML = `<div class="win" role="listbox" aria-label="필터"><h4>${title}</h4><div class="fopts">${O.map(([v, n, t, pre], i) => `<button${i ? '' : ' class="all"'} data-v="${v}" aria-selected="${v === cur}">${t ? `<i class="sw" style="background:${GA.TYPE_C[t]}"></i>` : ''}${pre || ''}${n}</button>`).join('')}</div></div>`;
+  fp.onclick = e => { const o = e.target.closest('[data-v]'); if (o) { sfx('tap'); pick(+o.dataset.v); } if (o || e.target === fp) fp.remove(); };
+  document.body.appendChild(fp); return fp;
+}
 let mgTy = 0, mgSort = 'rep';   // 체육관 관리: 타입 고르기 + 평판순/날짜순 (경완 2026-10-30)
 function mgPop() {
   $g('.gy-mgs')?.remove(); const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-mgs'; $g('.gy-main').appendChild(el);
   const draw = () => { const L = gList(), used = gUsedTy(), T = [...used].sort((a, b) => a - b); if (mgTy && !used.has(mgTy)) mgTy = 0;
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 관리</b><span class="mg-n">${L.length} / 18곳</span></div>
-      <div class="gy-body"><div class="mg-tyf"><button type="button" class="mg-tyb${mgTy ? ' on' : ''}" data-tfp aria-label="타입 고르기">${mgTy ? tyIcon(mgTy).replace(/ data-tip="[^"]*"/, '') + `<b>${TYPE_KO[mgTy]}</b>` : '<b>전체 타입</b>'}<i>▾</i></button><span class="mg-sort">${[['rep', '평판순'], ['date', '날짜순']].map(([k, n]) => `<button type="button" data-sort="${k}" aria-pressed="${mgSort === k}">${n}</button>`).join('')}</span></div>
+      <div class="gy-body"><div class="mg-tyf"><button type="button" class="fsel mg-fsel${mgTy ? ' on' : ''}" data-tfp aria-haspopup="listbox">${mgTy ? TYPE_KO[mgTy] : '모든 타입'}</button><span class="mg-sort">${[['rep', '평판순'], ['date', '날짜순']].map(([k, n]) => `<button type="button" data-sort="${k}" aria-pressed="${mgSort === k}">${n}</button>`).join('')}</span></div>
       <div class="mg-list">${L.map((x, i) => [x, i]).filter(([x]) => !mgTy || x.ty === mgTy).sort(([a], [b]) => mgSort === 'date' ? (b.t0 || 0) - (a.t0 || 0) : (b.rep || 0) - (a.rep || 0)).map(([x, i]) => gCard(x, i)).join('')}</div>
       <button type="button" class="mg-new" data-new ${used.size >= 18 ? 'disabled' : ''}><span>+</span><b>새 체육관 세우기</b></button></div>`;
     fillMs(el); };
@@ -1206,8 +1213,7 @@ function mgPop() {
   el.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap'); const L = gList(), g = st();
     if (b.dataset.a === 'x') return el.remove();
     if (b.dataset.sort) { mgSort = b.dataset.sort; return draw(); }
-    if (b.hasAttribute('data-tfp')) { const cell = (t, lab) => `<button class="${mgTy === t ? 'on' : ''}" data-a="${t}">${t ? tyIcon(t).replace(/ data-tip="[^"]*"/, '') : ''}<span>${lab}</span></button>`;
-      return pop(`<h4>타입 고르기</h4><div class="bw-tyg">${cell(0, '전체')}${[...gUsedTy()].sort((a, b) => a - b).map(t => cell(t, TYPE_KO[t])).join('')}</div>`, (a, close) => { close(); if (a !== 'x') { mgTy = +a; draw(); } }); }
+    if (b.hasAttribute('data-tfp')) return fPop('타입', [[0, '모든 타입'], ...[...gUsedTy()].sort((a, b) => a - b).map(t => [t, TYPE_KO[t], t])], mgTy, v => { mgTy = v; draw(); });
     if (b.dataset.i != null) { const x = L[+b.dataset.i]; if (x === g) return;
       return ask(`지금 체육관을 휴업하고<br><b>${esc(x.nm)}</b>을 관리하시겠습니까?`, '예', () => { el.remove(); root.querySelector('.gy-infos')?.remove();
         shutFx('휴 업', esc(g.nm), '다시 열어요', esc(x.nm), async () => { gSwap(x); renderHome(); renderTop(); }).then(() => say(`<b>${esc(st().nm)}</b>의 문을 다시 열었다!`, `${TYPE_KO[st().ty]} 타입 체육관`)); }); }
@@ -1635,7 +1641,7 @@ async function visit(F, code) {
 
 window.Gym = { prepare, enter, exit, visit, isOpen: () => open, renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
+  k: { fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 // 이미 명단에서 본 도전자(qSeen)는 기다리고 있어도 점을 띄우지 않는다 — 체육관 안 점과 똑같이 (경완 2026-10-30 '빨간점 다 확인했는데 아이콘 점이 안 사라짐')
 window.gymDot = () => { const g = S.gym; return !!(g && g.d && ((g.q && g.q.some(c => c.id > (g.qSeen | 0))) || (g.at && Date.now() >= g.at))); };
