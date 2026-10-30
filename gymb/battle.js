@@ -1210,7 +1210,7 @@ const BX_SORT = [['lv', '레벨'], ['rank', '랭크'], ['new', '날짜']];   // 
 let bxSort = 'lv', bxDir = 1, bxQ = '', bxTy = 0, bxTyAll = [], bxRefresh = null;
 const tyI = t => GA.tyIcon(t).replace(/ data-tip="[^"]*"/, '');   // 박스·라인업 타입 아이콘은 눌러도 말풍선 없이 (경완 2026-10-29)   // bxTy: 타입 필터 (0 = 전체, 경완 2026-10-29)
 const RK_ORD = { S: 7, A: 6, B: 5, C: 4, D: 3, E: 2, F: 1 };
-function boxWin(add, tmId, done, O) {   // O: 다른 곳에서 쓰는 고르기 (훈련장 등) {title, tip, list, ok, first, tag, pick}   // tmId: 창고에서 기술머신 가르칠 포켓몬 고르기 (경완 2026-10-29)
+function boxWin(add, tmId, done, O) { bxTy = 0;   // 열 때마다 '모든 타입' (포켓몬 박스와 같게, 경완 2026-10-30)   // O: 다른 곳에서 쓰는 고르기 (훈련장 등) {title, tip, list, ok, first, tag, pick}   // tmId: 창고에서 기술머신 가르칠 포켓몬 고르기 (경완 2026-10-29)
   document.querySelector('#gym .gy-boxw')?.remove();
   const w = document.createElement('div'); w.className = 'gy-boxw';
   w.innerHTML = `<div class="win" role="dialog" aria-label="포켓몬 박스"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>${O ? O.title() : tmId ? `기술 가르치기 · ${esc(mvKo(tmId))}` : add ? `라인업 ${(S.gym.luI | 0) + 1}에 넣을 포켓몬 <small>${curLu().length}/6</small>` : '포켓몬 박스'}</h4></div>
@@ -1228,7 +1228,7 @@ function boxWin(add, tmId, done, O) {   // O: 다른 곳에서 쓰는 고르기 
     // 타입 필터: 목록에 있는 타입만 아이콘으로, 고르면 그 타입이 들어간 포켓몬만 (경완 2026-10-29)
     const gt = S.gym.ty, TY = [...new Set(all.flatMap(tys))].filter(t => t !== gt).sort((a, b) => a - b); if (bxTy && !TY.includes(bxTy)) bxTy = 0;   // 체육관 타입은 기본, 나머지 한 타입을 팝업에서 고르기 (경완 2026-10-29)
     bxTyAll = TY;
-    w.querySelector('.bw-tyf').innerHTML = TY.length ? `<button type="button" class="bw-tyb${bxTy ? ' on' : ''}" data-typop aria-label="타입 고르기">${bxTy ? `${tyI(bxTy)}<b>${TYPE_KO[bxTy]}</b>` : `<b>타입</b>`}</button>` : '';
+    w.querySelector('.bw-tyf').innerHTML = TY.length ? `<button type="button" class="fsel bw-fsel${bxTy ? ' on' : ''}" data-typop aria-haspopup="listbox">${bxTy ? TYPE_KO[bxTy] : '모든 타입'}</button>` : '';
     const L = all.filter(P => (!q || nmOf(P).toLowerCase().includes(q) || String(P.sp) === q.replace(/^0+/, '')) && (!bxTy || tys(P).includes(bxTy))).map(P => { const ok = O ? O.ok(P) : tyOk(P) && (!tmId || tmCan(P, tmId)); return { P, ok, f: O?.first ? +!!O.first(P) : 0, m: O || tyOk(P) ? gm(P) : null }; }).sort((a, b) => (b.ok - a.ok) || (b.f - a.f) || (key(b) - key(a)) * bxDir);
     w.querySelector('.tcount').innerHTML = q || bxTy ? `찾은 포켓몬 <b>${L.length}</b>마리` : `<b>${all.length}</b>마리`;   // 마릿수만 (경완 2026-10-29)
     grid.innerHTML = L.length ? L.map(({ P, m, ok }) => { const rk = GA.rankOf(P), on = lu.has(P.id);
@@ -1240,8 +1240,11 @@ function boxWin(add, tmId, done, O) {   // O: 다른 곳에서 쓰는 고르기 
   w.onclick = e => {
     if (e.target.closest('[data-x]')) { sfx('tap'); w.remove(); if (tmId || O) done?.(); return; }
     if (e.target.closest('.qx')) { inp.value = ''; bxQ = ''; draw(); return; }
-    if (e.target.closest('[data-typop]')) { sfx('tap'); const gt = S.gym.ty, cell = (t, on, lab) => `<button class="${on ? 'on' : ''}" data-a="${t}">${t ? tyI(t) : ''}<span>${lab}</span></button>`;
-      gymPop(`<h4>타입 고르기</h4><p class="bw-tyh"><span>${tyI(gt)}${TYPE_KO[gt]} 타입은 기본이에요.</span><span>같이 가진 타입을 하나 고르세요.</span></p><div class="bw-tyg">${cell(0, !bxTy, '전체')}${bxTyAll.map(t => cell(t, bxTy === t, TYPE_KO[t])).join('')}</div>`, (a, close) => { close(); bxTy = +a; draw(); grid.scrollTop = 0; }); return; }
+    if (e.target.closest('[data-typop]')) { sfx('tap');   // 포켓몬 박스 타입 필터와 같은 창 (경완 2026-10-30): 체육관 타입과 같이 가진 타입만
+      const fp = document.createElement('div'); fp.className = 'fpop gy-fpop';
+      fp.innerHTML = `<div class="win" role="listbox" aria-label="필터"><h4>타입</h4><div class="fopts"><button class="all" data-v="0" aria-selected="${!bxTy}">모든 타입</button>${bxTyAll.map(t => `<button data-v="${t}" aria-selected="${bxTy === t}"><i class="sw" style="background:${GA.TYPE_C[t]}"></i>${TYPE_KO[t]}</button>`).join('')}</div></div>`;
+      fp.onclick = ev => { const o = ev.target.closest('[data-v]'); if (o) { sfx('tap'); bxTy = +o.dataset.v; draw(); grid.scrollTop = 0; } if (o || ev.target === fp) fp.remove(); };
+      document.body.appendChild(fp); return; }
     const s = e.target.closest('[data-sort]'); if (s) { sfx('tap'); const k = s.dataset.sort; if (k === bxSort) bxDir = -bxDir; else { bxSort = k; bxDir = 1; } draw(); grid.scrollTop = 0; return; }
     const c = e.target.closest('.pk'); if (!c) return; sfx('tap');
     const id = +c.dataset.id || c.dataset.id;

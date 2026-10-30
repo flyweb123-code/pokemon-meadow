@@ -1992,3 +1992,18 @@ body.gymBattle .gy-vtit{display:none}
 .bp-card .bc-btns{margin-top:0}
 /* 잠긴 훈련장·트레이너: 뒤 배경 흐리게 (경완 2026-10-30) */
 .gy-lockov{-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}.gy-lockov .win{margin:auto}
+/* 배틀 결과 창 (경완 2026-10-30 '아래쪽 테두리 두 개 → 안쪽 없애고 레이아웃 정리') */
+.rs-pop .win{box-shadow:6px 6px 0 rgba(0,0,0,.35);padding:0 16px 16px;display:flex;flex-direction:column;gap:10px}
+.rs-pop .win>*{margin:0!important}
+.rs-pop .win>.rs-hd{margin:0 -16px 2px!important;padding:18px 12px 14px}
+.rs-pop .win>.gy-btns{margin-top:4px!important}
+/* 체육관 등급: 필요 평판 우하단 딱지, '지금'은 이름 옆 (경완 2026-10-30) */
+.gy-perk>li{position:relative;padding-bottom:10px}
+.gy-perk>li>div{align-items:center}.gy-perk>li>div em{margin-left:0;padding:1px 6px;border-radius:9px;background:#ffd84a;color:#5a3a08;font-size:10px;line-height:1.5}
+.gy-perk>li>.pk-rep{position:absolute;right:6px;bottom:6px;padding:1px 6px;border-radius:4px;background:#5a6078;color:#fff;font-style:normal;font-size:10px;font-weight:700;line-height:1.5}
+.gy-perk>li.cur>.pk-rep{background:#c08a14}.gy-perk>li.done>.pk-rep{background:#4f8a52}
+/* 체육관 박스 타입 필터 = 포켓몬 박스 타입 필터(.fsel '모든 타입' + 목록 창)와 같게 (경완 2026-10-30) */
+.gy-boxw .bw-tyf{overflow:visible;margin:0}
+.gy-boxw .bw-tyf button.bw-fsel{display:block;flex:none;height:auto;min-width:96px;width:auto;padding:5px 28px 5px 10px!important;border:3px solid var(--frame);border-radius:0;background:#fff;color:var(--win-ink);opacity:1;font-size:13px;text-align:left;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
+.gy-fpop{z-index:6200}
+.gy-boxw .bw-tyf button.bw-fsel.on{background:var(--frame);color:var(--win)}
