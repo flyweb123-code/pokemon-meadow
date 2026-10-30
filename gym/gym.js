@@ -788,7 +788,7 @@ function tick(now = Date.now()) {
 // 필드 체육관 버튼의 빨간 점 (gym.js 없이도 훅이 S.gym.at 만 보고 띄운다)
 function setAt(now = Date.now()) {
   const g = st(), nq = g.q.filter(c => c.id > (g.qSeen | 0)); let a = nq.length ? nq[0].t : (g.sch[0] || nextDay(now) + 9 * H); if (g.pull && !nq.length) a = Math.min(a, g.pull);
-  if (g.cands?.length && !g.candSeen) a = Math.min(a, Math.max(...g.cands.map(c => c.t)));
+  // 지원서(면접 지원자)는 필드 점에 넣지 않는다: 도전자 받기로 명단을 봐도 점이 남던 것 (경완 2026-10-30). 지원서 점은 체육관 안 트레이너 메뉴에만
   a = Math.min(a, weekStart(now) + 7 * DAY + 7 * H);
   g.at = a;
 }
