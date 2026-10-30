@@ -65,6 +65,23 @@
 
 Xcode Cloud 는 개발자 계정에 한 달 25시간 무료 (빌드 한 번 10~20분).
 
+## 친구 서버: CloudKit (2026-10-30, 베타)
+
+게임 베타 판의 프로필 › 친구 (친구 코드·이번 주 걸음 랭킹·알 선물·친구 체육관 도전)는 iCloud 공개 DB 를 쓴다 (`PokeGrow/FriendServer.swift`).
+앱 안에서만 보이고, 친구도 아이폰 설정에서 iCloud 에 로그인돼 있어야 한다. 처음 한 번 아래를 해 둔다.
+
+1. developer.apple.com › Certificates, Identifiers & Profiles › Identifiers › 오른쪽 위 필터를 **iCloud Containers** 로 바꾸고 + → `iCloud.com.flyweb123.pokerun` 만들기.
+2. Identifiers › `com.flyweb123.pokerun` (App ID) › **iCloud** 체크 → Edit/Configure 에서 방금 만든 컨테이너 선택 → Save.
+3. icloud.developer.apple.com (CloudKit Console) › 그 컨테이너 › **Development** › Schema › Record Types › + → 이름 `Trainer`, 필드 세 개 → Save.
+   - `card` (String)
+   - `wk` (String) — 이번 주 월요일 (전체 랭킹 거르기)
+   - `wkm` (Double) — 이번 주 걸은 km (전체 랭킹 순서)
+   그다음 Schema › Indexes › `Trainer` 에 인덱스 두 개 추가: `wk` **Queryable**, `wkm` **Sortable** → Save.
+4. 같은 화면 왼쪽 아래 **Deploy Schema Changes…** → Production 으로 배포 (TestFlight 앱은 Production DB 를 쓴다).
+5. 이 PR 을 합친 뒤 Xcode Cloud 빌드가 TestFlight 에 올라오면 끝. 1·2 를 안 하면 서명 단계에서 빌드가 실패한다.
+
+카드에 항목(대표 포켓몬 등)을 더해도 `card` 하나에 JSON 으로 들어가서 스키마를 다시 배포할 필요가 없다. 3단계 필드가 하나라도 빠지면 카드 올리기가 실패한다.
+
 ## 쓰는 법
 
 - 워치에서 포켓몬 키우기 › **런닝 시작**. 화면이 꺼져도 계속 기록돼요.
