@@ -553,6 +553,8 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}@media 
 .vpic .vn{position:absolute;right:-4px;top:-6px;font-style:normal;font-size:16px;color:var(--frame);text-shadow:1px 1px 0 #fff}
 .vin.pre .vpic svg{animation:vspin 1.6s steps(8) infinite}
 @keyframes vspin{to{transform:rotate(360deg)}}
+.vin .vdot{position:absolute;top:4px;right:4px;width:9px;height:9px;background:#e04838;box-shadow:0 0 0 2px #fff;pointer-events:none}   /* v12.14 상점 새 항목 */
+#shopList{grid-auto-rows:auto}.vgen{grid-column:1/-1;margin:6px 2px 0;display:flex;align-items:baseline;gap:6px;font-size:13px;color:var(--dim)}.vgen:first-child{margin-top:0}.vgen b{font-size:14px;color:var(--win-ink)}
 .vin.own{cursor:default;background:#ececf0;border-style:dashed}.vin.own .vpic svg{filter:grayscale(1) brightness(1.1);opacity:.55}.vin.own .vname{color:var(--dim)}.vin.own .vtag{background:#9a9aaa}
 .vin.nofile .vpic{opacity:.45}
 .vname{font-size:11px;line-height:1.3;text-align:center;word-break:keep-all;overflow-wrap:anywhere;min-height:2.6em;display:flex;align-items:center;justify-content:center;width:100%;max-width:100%;padding:0 3px;box-sizing:border-box;overflow:hidden}
@@ -2258,37 +2260,38 @@ function sfx(name, k = 0) { sfxN++; if (window.__sfxLog) window.__sfxLog.push(na
 }
 // ---------- 배경 음악: 경완이 가진 곡 파일을 이 기기 안(IndexedDB)에 넣어 두고 튼다 ----------
 // 곡 파일은 공개 사이트에 올리지 않는다. 설정 › 소리 › '곡 파일 가져오기'로 한 번 넣으면 이 기기에 남는다.
-const TRACKS = [
-  { id: 'azalea', n: '고동마을·검은먹시티', g: '금·은', price: 0, c: '#d8a040', key: /azalea|blackthorn/i },
-  { id: 'pallet', n: '태초마을', g: '레드·블루', price: 100, c: '#e85050', key: /pallet/i },
-  { id: 'oak', n: '오박사 연구소', g: '레드·블루', price: 100, c: '#a0a0b0', key: /oak/i },
-  { id: 'violet', n: '도라지시티·담청시티', g: '금·은', price: 100, c: '#9a6ad8', key: /violet|olivine/i },
-  { id: 'kanto', n: '상록·회색·블루·노랑시티·홍련섬', g: '금·은', price: 100, c: '#50a060', key: /viridian|pewter|cerulean|cinnabar/i },
-  { id: 'surf1', n: '파도타기 (레드·블루)', g: '레드·블루', price: 100, c: '#4080e0', key: /surfing/i },
-  { id: 'goldenrod', n: '금빛시티', g: '금·은', price: 100, c: '#f0c020', key: /goldenrod/i },
-  { id: 'celadon', n: '무지개시티·연분홍시티', g: '금·은', price: 100, c: '#e070b0', key: /celadon|fuchsia|fuschia/i },
-  { id: 'ecruteak', n: '인주시티·진청시티', g: '금·은', price: 100, c: '#c05030', key: /ecruteak|cianwood/i },
-  { id: 'park', n: '자연공원', g: '금·은', price: 100, c: '#70b040', key: /national.?park/i },
-  { id: 'surf2', n: '파도타기 (금·은)', g: '금·은', price: 100, c: '#30b0c0', key: /surf.?theme/i },
-  { id: 'lavender', n: '보라타운', g: '금·은', price: 100, c: '#7050a0', key: /lavender/i },
+const TRACKS = [   // v12.14 경완 '상점 음악 이름 정리': 세대 순으로, 이름은 대표 장소 하나 (같이 나오는 곳은 설명 줄 t.w). g = 나온 게임, gen = 세대 머리글
+  { id: 'pallet', n: '태초마을', g: '레드·블루', gen: 1, price: 100, c: '#e85050', key: /pallet/i },
+  { id: 'oak', n: '오박사 연구소', g: '레드·블루', gen: 1, price: 100, c: '#a0a0b0', key: /oak/i },
+  { id: 'surf1', n: '파도타기', g: '레드·블루', gen: 1, price: 100, c: '#4080e0', key: /surfing/i },
+  { id: 'azalea', n: '고동마을', w: '검은먹시티', g: '금·은', gen: 2, price: 0, c: '#d8a040', key: /azalea|blackthorn/i },
+  { id: 'violet', n: '도라지시티', w: '담청시티', g: '금·은', gen: 2, price: 100, c: '#9a6ad8', key: /violet|olivine/i },
+  { id: 'goldenrod', n: '금빛시티', g: '금·은', gen: 2, price: 100, c: '#f0c020', key: /goldenrod/i },
+  { id: 'ecruteak', n: '인주시티', w: '진청시티', g: '금·은', gen: 2, price: 100, c: '#c05030', key: /ecruteak|cianwood/i },
+  { id: 'park', n: '자연공원', g: '금·은', gen: 2, price: 100, c: '#70b040', key: /national.?park/i },
+  { id: 'surf2', n: '파도타기', g: '금·은', gen: 2, price: 100, c: '#30b0c0', key: /surf.?theme/i },
+  { id: 'kanto', n: '상록시티', w: '회색·블루·노랑시티·홍련섬', g: '금·은', gen: 2, price: 100, c: '#50a060', key: /viridian|pewter|cerulean|cinnabar/i },
+  { id: 'celadon', n: '무지개시티', w: '연분홍시티', g: '금·은', gen: 2, price: 100, c: '#e070b0', key: /celadon|fuchsia|fuschia/i },
+  { id: 'lavender', n: '보라타운', g: '금·은', gen: 2, price: 100, c: '#7050a0', key: /lavender/i },
   // v12.01 경완 '바로 가능한 다른 세대 곡 상점에': 4세대 원본 소리 (nds.js)
-  { id: 'hg_wakaba', n: '연두마을', g: '하트골드·소울실버', price: 100, c: '#7cc860' },
-  { id: 'hg_r29', n: '29번도로', g: '하트골드·소울실버', price: 100, c: '#58a848' },
-  { id: 'hg_yoshino', n: '무궁시티', g: '하트골드·소울실버', price: 100, c: '#e88aa0' },
-  { id: 'hg_kikyou', n: '도라지시티·담청시티', g: '하트골드·소울실버', price: 100, c: '#a07ae0' },
-  { id: 'hg_kogane', n: '금빛시티', g: '하트골드·소울실버', price: 100, c: '#f0c838' },
-  { id: 'hg_enju', n: '인주시티·진청시티', g: '하트골드·소울실버', price: 100, c: '#d06040' },
-  { id: 'hg_kouen', n: '자연공원', g: '하트골드·소울실버', price: 100, c: '#88c050' },
-  { id: 'hg_surf', n: '파도타기', g: '하트골드·소울실버', price: 100, c: '#40a8e0' },
-  { id: 'hg_bike', n: '자전거', g: '하트골드·소울실버', price: 100, c: '#e06050' },
-  { id: 'hg_masara', n: '태초마을', g: '하트골드·소울실버', price: 100, c: '#f07070' },
-  { id: 'hg_tamamushi', n: '무지개시티·연분홍시티', g: '하트골드·소울실버', price: 100, c: '#e880c0' },
-  { id: 'hg_tokiwa', n: '상록·회색·블루시티', g: '하트골드·소울실버', price: 100, c: '#60b070' },
-  { id: 'dp_futaba', n: '떡잎마을', g: '다이아몬드·펄', price: 100, c: '#98d070' },
-  { id: 'dp_kotobuki', n: '축복시티', g: '다이아몬드·펄', price: 100, c: '#f0a040' },
-  { id: 'dp_r201', n: '201번도로', g: '다이아몬드·펄', price: 100, c: '#70b858' },
-  { id: 'dp_snow', n: '216번도로 (눈길)', g: '다이아몬드·펄', price: 100, c: '#a8d0f0' },
+  { id: 'hg_wakaba', n: '연두마을', g: '하트골드·소울실버', gen: 4, price: 100, c: '#7cc860' },
+  { id: 'hg_r29', n: '29번도로', g: '하트골드·소울실버', gen: 4, price: 100, c: '#58a848' },
+  { id: 'hg_yoshino', n: '무궁시티', g: '하트골드·소울실버', gen: 4, price: 100, c: '#e88aa0' },
+  { id: 'hg_kikyou', n: '도라지시티', w: '담청시티', g: '하트골드·소울실버', gen: 4, price: 100, c: '#a07ae0' },
+  { id: 'hg_kogane', n: '금빛시티', g: '하트골드·소울실버', gen: 4, price: 100, c: '#f0c838' },
+  { id: 'hg_enju', n: '인주시티', w: '진청시티', g: '하트골드·소울실버', gen: 4, price: 100, c: '#d06040' },
+  { id: 'hg_kouen', n: '자연공원', g: '하트골드·소울실버', gen: 4, price: 100, c: '#88c050' },
+  { id: 'hg_surf', n: '파도타기', g: '하트골드·소울실버', gen: 4, price: 100, c: '#40a8e0' },
+  { id: 'hg_bike', n: '자전거', g: '하트골드·소울실버', gen: 4, price: 100, c: '#e06050' },
+  { id: 'hg_masara', n: '태초마을', g: '하트골드·소울실버', gen: 4, price: 100, c: '#f07070' },
+  { id: 'hg_tokiwa', n: '상록시티', w: '회색·블루시티', g: '하트골드·소울실버', gen: 4, price: 100, c: '#60b070' },
+  { id: 'hg_tamamushi', n: '무지개시티', w: '연분홍시티', g: '하트골드·소울실버', gen: 4, price: 100, c: '#e880c0' },
+  { id: 'dp_futaba', n: '떡잎마을', g: '다이아몬드·펄', gen: 4, price: 100, c: '#98d070' },
+  { id: 'dp_r201', n: '201번도로', g: '다이아몬드·펄', gen: 4, price: 100, c: '#70b858' },
+  { id: 'dp_kotobuki', n: '축복시티', g: '다이아몬드·펄', gen: 4, price: 100, c: '#f0a040' },
+  { id: 'dp_snow', n: '216번도로', w: '눈길', g: '다이아몬드·펄', gen: 4, price: 100, c: '#a8d0f0' },
 ];
+const trName = t => `${t.n} (${t.g})`;   // 설정 곡 고르기처럼 세대 머리글이 없는 곳에선 게임 이름까지
 const OLD_TRACKS = { forest: 500, lake: 800, sea: 1200, fest: 1800, battle: 2500 };   // 예전 직접 만든 곡: 산 골드는 돌려준다
 const inGym = () => document.body.classList.contains('gymMode');   /*gym-hook2*/
 let bgmOn = VOL.bgm > 0;
@@ -2431,6 +2434,9 @@ function bgmShow() { if (!bgmAway) return; bgmAway = false; clearTimeout(bgmAway
   const go = () => { if (bgm.gain && actx) { try { bgm.gain.gain.cancelScheduledValues(actx.currentTime); } catch (e) {} } bgmVol(); if (bgmOn && !bgm.preview) bgmSrcStart(); notiSoon(); };
   if (actx && actx.state !== 'running') actx.resume().then(go, go); else go(); }
 document.addEventListener('visibilitychange', () => { document.hidden ? bgmHide() : (bgmShow(), audioCheck()); });
+// v12.14 경완 '도전자 오는 거 사용자의 실제 이용시간 기준으로': 앱을 켜 둔 분을 시간대(0~23시)별로 센다. 하루 지날 때마다 ×0.9 (최근 2주쯤이 크게 남음). 체육관 도전자 일정(mkSch)이 이걸로 시간대를 고른다
+setInterval(() => { if (document.hidden) return; const d = new Date(), day = Math.floor((d - d.getTimezoneOffset() * 60e3) / 864e5); if (!S.useH) { S.useH = Array(24).fill(0); S.useHD = day; }
+  if (S.useHD && day > S.useHD) { const k = .9 ** Math.min(60, day - S.useHD); S.useH = S.useH.map(x => Math.round(x * k * 10) / 10); } S.useHD = day; S.useH[d.getHours()] += 1; }, 60e3);
 // 아이폰: 다른 앱에 갔다 오면 오디오가 'interrupted' 로 멈추거나, 'running' 인데도 시간이 안 가서 소리가 전부 안 나는 일이 있다.
 // 돌아올 때와 다음 터치 때 시간이 실제로 흐르는지 확인하고, 깨워도 안 되면 오디오를 새로 만든다 (곡은 처음부터 다시)
 let audioChk = 0;
@@ -6379,7 +6385,7 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, hunger: m.hunger, slpB: m.slpB, slpW: m.slpW, social: m.social, joy: m.joy, joyH: m.joyH || 0, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk, red: !!b.red })), lockT: S.lockT,
-    gold: S.gold, box: S.box, gym: S.gym || undefined, frAcc: S.frAcc, tracks: S.tracks, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], dexFix1: !!S.dexFix1, buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, evoPend: S.evoPend || undefined, fx1173: S.fx1173 || undefined, mg: S.mg || {}, fbag: S.fbag || {}, fbagT: S.fbagT || {}, lay: S.lay || {}, layAdd: S.layAdd || [], fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])], dexDot: !!S.dexDot, friends: S.friends || [], wk: S.wk || undefined, frOut: S.frOut?.length ? S.frOut : undefined, frGot: S.frGot?.length ? S.frGot : undefined, repP: S.repP ?? undefined };
+    gold: S.gold, box: S.box, gym: S.gym || undefined, frAcc: S.frAcc, tracks: S.tracks, useH: S.useH, useHD: S.useHD, shopSeen: S.shopSeen, shopSeenF: S.shopSeenF, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: S.bag, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, trI: S.trI, pity: S.pity, tree: S.tree, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], dexFix1: !!S.dexFix1, buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, evoPend: S.evoPend || undefined, fx1173: S.fx1173 || undefined, mg: S.mg || {}, fbag: S.fbag || {}, fbagT: S.fbagT || {}, lay: S.lay || {}, layAdd: S.layAdd || [], fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])], dexDot: !!S.dexDot, friends: S.friends || [], wk: S.wk || undefined, frOut: S.frOut?.length ? S.frOut : undefined, frGot: S.frGot?.length ? S.frGot : undefined, repP: S.repP ?? undefined };
 }
 let saveFrozen = false, tutFreeze = false, introPv = false;   // introPv: 튜토리얼 미리 보기 (끝나도 저장 안 함)
 function save() { try { menuDots(); } catch (e) {} if (saveFrozen) return; postNative(); try { const o = serialize(); window.gymSimFix?.(o); const t = JSON.stringify(o); localStorage.setItem(KEY, t); bakTick(t, o); } catch (e) {} }
@@ -6413,7 +6419,7 @@ async function bakOpen() {
 }
 async function restore(d) {
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
-  S.lockT = d.lockT || 0; S.gym = d.gym || null; S.tree = d.tree || null; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { rkMig(P); if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.bagDry = d.bagDry || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.trI = d.trI ?? null; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.autoInc = !!d.autoInc; S.noti = { on: true, egg: true, hatch: true, evo: true, ...(d.noti || {}) }; S.bagQ = Array.isArray(d.bagQ) ? d.bagQ : [];   /* v4.23 경완: 부화기 자동 채우기가 다시 켜면 꺼지던 문제 — 저장에 빠져 있었다 */ S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
+  S.lockT = d.lockT || 0; S.gym = d.gym || null; S.tree = d.tree || null; S.box = d.box || []; S.like = d.like || {}; S.box.forEach(P => { rkMig(P); if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); S.shopSeen = Array.isArray(d.shopSeen) ? d.shopSeen : null; S.useH = Array.isArray(d.useH) && d.useH.length === 24 ? d.useH.map(x => +x || 0) : null; S.useHD = d.useHD || 0; S.shopSeenF = d.shopSeenF || 0; (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; S.bagAcc = d.bagAcc || 0; S.bagDry = d.bagDry || 0; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.undo1 = !!d.undo1; S.trI = d.trI ?? null; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.autoInc = !!d.autoInc; S.noti = { on: true, egg: true, hatch: true, evo: true, ...(d.noti || {}) }; S.bagQ = Array.isArray(d.bagQ) ? d.bagQ : [];   /* v4.23 경완: 부화기 자동 채우기가 다시 켜면 꺼지던 문제 — 저장에 빠져 있었다 */ S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
   if (!d.buds && !d.bud && d.buddy != null) { const o = (d.mons || []).find(x => x.uid === d.buddy); if (o) S.buds = [{ sp: o.sp, km: d.buddyKm || 0 }]; } S.runs = d.runs || []; S.places = d.places || []; S.totalKm = d.totalKm || 0; S.tr = d.tr || { n: '', sex: 'm' }; S.friends = Array.isArray(d.friends) ? d.friends : []; S.wk = d.wk || null; S.frOut = d.frOut || []; S.frGot = d.frGot || []; S.repP = d.repP ?? null; S.bgmRand = !!d.bgmRand; S.eid = d.eid || 1; S.items = d.items || {}; S.itemSeen = d.itemSeen || { ...S.items }; S.evoPend = d.evoPend || null; S.fx1173 = d.fx1173 || 0;   /* v7.48: 예전 저장은 가진 것 모두 본 것으로 */ S.mg = d.mg || {}; S.fbag = d.fbag || {}; S.lay = d.lay && typeof d.lay === 'object' ? d.lay : {}; S.layAdd = Array.isArray(d.layAdd) ? d.layAdd : []; S.fbagT = d.fbagT || {}; S.fx = d.fx || {}; S.colT = d.colT || 0;
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
@@ -6440,7 +6446,7 @@ async function restore(d) {
 async function fresh() {
   S.base = midnight(); S.clock = realClock(); S.rel = {}; S.log = [];
   logEl.innerHTML = '';
-  S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.bagDry = 0; S.pity = { e: 0, l: 0 }; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked.clear(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1; S.undo1 = true;
+  S.gold = 0; S.box = []; S.frAcc = 0; S.shopSeen = null; S.shopSeenF = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.bagDry = 0; S.pity = { e: 0, l: 0 }; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked.clear(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1; S.undo1 = true;
   // 처음 시작: 가방에 일반·우수·레어 알 하나씩 (v4.44 경완: 에픽·전설은 빼기) (안의 포켓몬은 부화할 때 정해진다)
   const t = Date.now();   // v5.38 경완: 처음부터 부화 준비된 알은 주지 않는다 (튜토리얼에서 Mr.강이 가방의 일반 알 하나를 부화 준비로 바꿔 준다)
   for (const g of [1, 2, 3]) S.bag.push({ id: S.eid++, g, t, isNew: true });
@@ -6669,7 +6675,7 @@ document.addEventListener('click', e => { const t = e.target.closest?.('h3, h4, 
     const s = document.createElement('script'); s.src = `gymb/gym.js?v=${v}`; s.onload = () => window.Gym ? ok() : no(new Error('gym')); s.onerror = no; document.head.appendChild(s); });
   // 게임 본체는 함수 안에 있어서 gym.js 가 쓸 것만 꺼내 준다 (늦게 정의되는 것도 있어 getter)
   window.GA = { cardPager: (p, o) => cardPager(p, o), get S() { return S; }, get SP_OFF() { return SP_OFF; }, get SPECIES() { return SPECIES; }, get TYPE_KO() { return TYPE_KO; }, get TYPE_C() { return TYPE_C; }, get RANKS() { return RANKS; }, get LEARN() { return LEARN; },
-    tyIcon: (...a) => tyIcon(...a), sfx: (...a) => sfx(...a), save: () => save(), trOf: () => trOf(), esc: s => esc(s), menuDots: () => menuDots(), addGold: n => addGold(n), renderGold: () => renderGold(),
+    tyIcon: (...a) => tyIcon(...a), sfx: (...a) => sfx(...a), save: () => save(), trOf: () => trOf(), useH: () => S.useH, esc: s => esc(s), menuDots: () => menuDots(), addGold: n => addGold(n), renderGold: () => renderGold(),
     boxOf: id => boxOf(id), removeMon: (m, q) => removeMon(m, q), log: (...a) => log(...a), ivSum: p => ivSum(p), rankOf: p => rankOf(p), addFr: (id, n) => addFr(id, n), haptic: n => haptic(n), rumble: (st, g) => rumble(st, g) };
   // 친구 체육관 놀러 가기 (v11.78 베타, 프로필 › 친구 › 체육관 도전): 체육관 코드를 불러와 Gym.visit
   window.gymVisit = async (F, code) => { if (busy || window.Gym?.isOpen?.()) return; busy = true; select(null); gymLoad.show(`${String(F.n || '친구').slice(0, 8)}의 체육관으로 가는 중`); const t0 = Date.now();
@@ -6761,7 +6767,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '12.13';   /* v12.10 경완: 특성 팝업에서 종의 숨겨진 특성 칸 없앰 (숨특은 진짜 가진 개체만), 숨특 확률 다시 5% · v12.09 경완: 특성 팝업 아래 '숨겨진 특성' 칸이 그 포켓몬이 가진 것처럼 보이던 것 → '이 종의 숨겨진 특성'·회색 · v12.04 경완: 체육관 숨겨진 특성 표시를 보라색에서 금색으로 (본 게임 .ha-tag 가 체육관 금색을 덮던 것) · v11.91 경완: 체육관 승급 심사 = 평판 차면 알림·버튼·심사 화면·라인업 고르기 · v11.90 경완: 기술 바꾸기 상세 카드는 기술 창 위에 겹쳐 뜸. v11.89 경완: 포켓몬 박스 타입 아이콘, 체육관 포켓몬 메뉴 라인업 1 기본·순서 바꾸기 설명 없앰 · v11.88 경완: 뒤로 버튼 옆 제목을 눌러도 뒤로, 프로필 배지 위 점선 없애고 '체육관 배지' 제목 · v11.87 경완: 프로필 — 체육관 배지 카드 아래 가로로 꽉, 런닝 기록 없앰, 박스가 화면을 채움, 친구·설정·친구 추가·코드 버튼 박스 없이 그림자로 · v11.86 경완: 체육관 도전자마다 기다리는 시간(2~4시간, 이름 있는 5·심사 8)·남은 시간 표시, 필드 랭킹 트로피 아이콘 새로 (16칸, 손잡이·별·받침) · v11.85 경완: 열매·쓰다듬기 하트(+1)가 [object Object] 창으로 뜨던 것 고침(친구 창 함수 이름이 겹쳤음), 체육관 배지를 트레이너 카드 안으로, 프로필·친구 버튼 누를 수 있게, 친구 랭킹 도감 수 뺌, 랭킹 박스 테두리 하나·트레이너 가운데·포켓몬 랭크 테두리 (베타). v11.84 경완: 미니게임 랭킹 이번 주/역대 · 전체/친구, 끝나면 '○○을 제쳤어요!'·다음 사람까지 점수 (베타). v11.83 경완: 랭킹 줄 = 트레이너 박스(등급 테두리)+포켓몬 박스, 트레이너 등급 표시, 숫자·단위 붙임, 게이지·안내 문구·대표 글자 없앰, 친구 화면 아이콘 새로, 포켓몬 박스 → 상세 카드, 명예의 전당 디자인 (베타). v11.82 경완: 필드 트로피 테두리 검정·맵 편집 아이콘 크기, 프로필 친구·설정 버튼 박스 없앰 (베타). v11.81 경완: 필드 트로피 박스 없앰 · 랭킹 시상대 없이 1위부터 목록(내 줄만 표시) · 미니게임 랭킹은 게임 고르기 화면에서만 · 도감 랭킹을 걸음 랭킹 앞으로 · 메뉴 누르면 랭킹 닫힘 (베타). v11.80 경완: 랭킹 화면(필드 골드 아래 트로피: 걸음·도감·미니게임) + 친구는 프로필 톱니 옆 아이콘 + 미니게임 끝나면 기록 → 랭킹 (베타). v11.79 경완: 타이어 그네 — 친구가 밀어 주면 타던 포켓몬은 다 밀 때까지 계속 타고 즐거운 말풍선. v11.78 경완: 친구 서버(아이폰 앱 CloudKit, 베타) — 프로필 › 친구: 친구 코드·걸음 랭킹(친구/전체)·대표 포켓몬·알 선물·친구 체육관 도전. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '12.14';   /* v12.14 경완: 체육관 출근·퇴근 로딩 길이(3초)에 맞춘 새 곡, 상점 새 항목 빨간 점·음악 세대별 정리, 정보 카드 타입 아이콘 미리 받기, 도전자 = 내 앱 사용 시간대. v12.10 경완: 특성 팝업에서 종의 숨겨진 특성 칸 없앰 (숨특은 진짜 가진 개체만), 숨특 확률 다시 5% · v12.09 경완: 특성 팝업 아래 '숨겨진 특성' 칸이 그 포켓몬이 가진 것처럼 보이던 것 → '이 종의 숨겨진 특성'·회색 · v12.04 경완: 체육관 숨겨진 특성 표시를 보라색에서 금색으로 (본 게임 .ha-tag 가 체육관 금색을 덮던 것) · v11.91 경완: 체육관 승급 심사 = 평판 차면 알림·버튼·심사 화면·라인업 고르기 · v11.90 경완: 기술 바꾸기 상세 카드는 기술 창 위에 겹쳐 뜸. v11.89 경완: 포켓몬 박스 타입 아이콘, 체육관 포켓몬 메뉴 라인업 1 기본·순서 바꾸기 설명 없앰 · v11.88 경완: 뒤로 버튼 옆 제목을 눌러도 뒤로, 프로필 배지 위 점선 없애고 '체육관 배지' 제목 · v11.87 경완: 프로필 — 체육관 배지 카드 아래 가로로 꽉, 런닝 기록 없앰, 박스가 화면을 채움, 친구·설정·친구 추가·코드 버튼 박스 없이 그림자로 · v11.86 경완: 체육관 도전자마다 기다리는 시간(2~4시간, 이름 있는 5·심사 8)·남은 시간 표시, 필드 랭킹 트로피 아이콘 새로 (16칸, 손잡이·별·받침) · v11.85 경완: 열매·쓰다듬기 하트(+1)가 [object Object] 창으로 뜨던 것 고침(친구 창 함수 이름이 겹쳤음), 체육관 배지를 트레이너 카드 안으로, 프로필·친구 버튼 누를 수 있게, 친구 랭킹 도감 수 뺌, 랭킹 박스 테두리 하나·트레이너 가운데·포켓몬 랭크 테두리 (베타). v11.84 경완: 미니게임 랭킹 이번 주/역대 · 전체/친구, 끝나면 '○○을 제쳤어요!'·다음 사람까지 점수 (베타). v11.83 경완: 랭킹 줄 = 트레이너 박스(등급 테두리)+포켓몬 박스, 트레이너 등급 표시, 숫자·단위 붙임, 게이지·안내 문구·대표 글자 없앰, 친구 화면 아이콘 새로, 포켓몬 박스 → 상세 카드, 명예의 전당 디자인 (베타). v11.82 경완: 필드 트로피 테두리 검정·맵 편집 아이콘 크기, 프로필 친구·설정 버튼 박스 없앰 (베타). v11.81 경완: 필드 트로피 박스 없앰 · 랭킹 시상대 없이 1위부터 목록(내 줄만 표시) · 미니게임 랭킹은 게임 고르기 화면에서만 · 도감 랭킹을 걸음 랭킹 앞으로 · 메뉴 누르면 랭킹 닫힘 (베타). v11.80 경완: 랭킹 화면(필드 골드 아래 트로피: 걸음·도감·미니게임) + 친구는 프로필 톱니 옆 아이콘 + 미니게임 끝나면 기록 → 랭킹 (베타). v11.79 경완: 타이어 그네 — 친구가 밀어 주면 타던 포켓몬은 다 밀 때까지 계속 타고 즐거운 말풍선. v11.78 경완: 친구 서버(아이폰 앱 CloudKit, 베타) — 프로필 › 친구: 친구 코드·걸음 랭킹(친구/전체)·대표 포켓몬·알 선물·친구 체육관 도전. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7301,6 +7307,15 @@ function applyShop(o) { const D = { field: [], ord: {}, price: {}, inc: { min: 3
   if (o.ord && typeof o.ord === 'object') for (const t of ['item', 'tool', 'bgm']) if (Array.isArray(o.ord[t])) D.ord[t] = o.ord[t].filter(x => typeof x === 'string');   /* v9.09 경완: 상점 탭 순서 (작업실 상점 ▲▼) */
   SHOP = D; }
 // 작업실에서 정한 순서대로 (정하지 않은 건 원래 순서로 뒤에)
+// v12.14 경완 '상점에 새로 추가된 요소에는 빨간 점, 확인하면 사라지고': S.shopSeen = 본 항목 '탭:id'. 처음 받을 땐 지금 있는 걸 다 본 걸로 치고 12.01 에 새로 들어온 4세대 곡만 새것으로.
+// 앞으로 TRACKS·ITEMS·필드 상점에 넣는 건 저절로 새것(빨간 점) — 칸을 누르면 사라짐. 상점 버튼·탭에도 점
+const SHOP_TABS = ['item', 'tool', 'fashion', 'bgm'];
+const shopKeysOf = t => t === 'bgm' ? TRACKS.filter(x => !S.tracks?.includes(x.id)).map(x => x.id) : t === 'fashion' ? SHOP.field.filter(([k]) => fpInfo(k)).map(([k]) => k) : ITEMS.filter(o => o.k === t).map(o => o.id);
+function shopSeenInit() { if (!S.shopSeen) { S.shopSeen = []; for (const t of ['item', 'tool']) for (const id of shopKeysOf(t)) S.shopSeen.push(t + ':' + id); for (const x of TRACKS) if (!/^(hg|dp)_/.test(x.id)) S.shopSeen.push('bgm:' + x.id); }
+  if (!S.shopSeenF && SHOP.field.length) { S.shopSeenF = 1; for (const id of shopKeysOf('fashion')) if (!S.shopSeen.includes('fashion:' + id)) S.shopSeen.push('fashion:' + id); } }   // 필드 상점 목록은 설정이 들어온 뒤에 생겨서 따로
+const shopNew = (t, id) => { shopSeenInit(); return !S.shopSeen.includes(t + ':' + id); };
+const shopNewIn = t => shopKeysOf(t).some(id => shopNew(t, id));
+function shopSee(t, id) { if (!shopNew(t, id)) return; S.shopSeen.push(t + ':' + id); save(); }
 const shopOrd = (t, L, id) => { const O = SHOP.ord?.[t]; if (!O?.length) return L; const r = x => { const i = O.indexOf(id(x)); return i < 0 ? (t === 'bgm' ? -1 : 1e6) : i; };   /* 음악은 무료 곡(목록에 없음)이 맨 앞 */ return L.map((x, i) => [x, i]).sort((a, b) => r(a[0]) - r(b[0]) || a[1] - b[1]).map(a => a[0]); };
 const itemPrice = id => SHOP.price[id] ?? ITEM[id].p;
 const trackPrice = t => SHOP.price['bgm:' + t.id] ?? t.price;   // 배경 음악 가격도 작업실에서
@@ -8736,18 +8751,19 @@ shopEl.addEventListener('click', e => { if (e.target === shopEl) shopEl.hidden =
 let shopSel = null;
 function renderShop() {
   $('#shopGold').textContent = S.gold.toLocaleString();
+  let g0 = '';   // v12.14 경완 '세대도 섞여있고': 세대·게임별 머리글
   $('#shopList').innerHTML = shopOrd('bgm', TRACKS, t => t.id).map(t => {
-    const own = S.tracks.includes(t.id), cur = S.bgm === t.id, has = bgm.have.has(t.id);
-    return `<button class="vin${bgm.preview === t.id ? ' pre' : ''}${own ? ' own' : ''}${has ? '' : ' nofile'}" data-id="${t.id}" aria-current="${shopSel === t.id}"${own ? ' disabled' : ''}><span class="vpic">${vinylSvg(t.c)}</span><span class="vname">${t.n}</span><span class="vtag">${own ? '보유 중' : `${trackPrice(t).toLocaleString()}G`}</span></button>`;
+    const own = S.tracks.includes(t.id), cur = S.bgm === t.id, has = bgm.have.has(t.id), hd = t.g !== g0 ? `<p class="vgen"><b>${t.gen}세대</b>${t.g}</p>` : ''; g0 = t.g;
+    return hd + `<button class="vin${bgm.preview === t.id ? ' pre' : ''}${own ? ' own' : ''}${has ? '' : ' nofile'}" data-id="${t.id}" aria-current="${shopSel === t.id}"${own ? ' disabled' : ''}><span class="vpic">${vinylSvg(t.c)}</span><span class="vname">${t.n}</span><span class="vtag">${own ? '보유 중' : `${trackPrice(t).toLocaleString()}G`}</span>${!own && shopNew('bgm', t.id) ? '<i class="vdot" aria-label="새로 들어옴"></i>' : ''}</button>`;
   }).join('');
   const t = TRACKS.find(x => x.id === shopSel);
   $('#shopBar').hidden = !t; if (!t) return;
   const own = S.tracks.includes(t.id), cur = S.bgm === t.id, pre = bgm.preview === t.id, has = bgm.have.has(t.id);
-  $('#shopBar').innerHTML = `<div class="sb-name"><b>${t.n}</b><span>${t.g}${has ? '' : ' · 곡 파일 없음'}</span></div>`
+  $('#shopBar').innerHTML = `<div class="sb-name"><b>${t.n}</b><span>${t.gen}세대 ${t.g}${t.w ? ` · ${t.w}에서도 나와요` : ''}${has ? '' : ' · 곡 파일 없음'}</span></div>`
     + (own ? `<button class="lk-btn" disabled>보유 중</button>` : `<button class="lk-btn main" data-act="buy">구매</button>`);
 }
 // 곡을 누르면 바로 미리 듣기, 한 번 더 누르면(선택 해제) 멈춘다
-$('#shopList').addEventListener('click', e => { const v = e.target.closest('[data-id]'); if (!v) return; shopSel = shopSel === v.dataset.id ? null : v.dataset.id; $('#shopMsg').textContent = '';
+$('#shopList').addEventListener('click', e => { const v = e.target.closest('[data-id]'); if (!v) return; shopSee('bgm', v.dataset.id); shopSel = shopSel === v.dataset.id ? null : v.dataset.id; $('#shopMsg').textContent = '';
   if (shopSel && bgm.have.has(shopSel)) bgmPreview(shopSel); else if (bgm.preview) bgmStopPreview();
   renderShop(); });
 $('#shopBar').addEventListener('click', e => {
@@ -8777,10 +8793,10 @@ function setShopTab(t) {
 // v9.01 경완: 상점 필드 탭 = 작업실에서 고른 필드 소품 (사면 가방 필드 탭으로)
 let fpSel = null;
 function renderFpShop() { const L = SHOP.field.filter(([k]) => fpInfo(k)), F = S.fbag || {};
-  $('#fpList').innerHTML = L.length ? L.map(([k, p]) => { const o = fpInfo(k); return `<button class="vin itm" data-fp="${esc(k)}" aria-current="${fpSel === k}"><span class="vpic"><img class="fpth" src="${o.src}" alt=""></span>${F[k] ? `<i class="icnt">${F[k]}</i>` : ''}<span class="vname">${esc(o.n)}</span><span class="vtag">${p.toLocaleString()}G</span></button>`; }).join('') : '<p class="soon">아직 준비중입니다</p>';
+  $('#fpList').innerHTML = L.length ? L.map(([k, p]) => { const o = fpInfo(k); return `<button class="vin itm" data-fp="${esc(k)}" aria-current="${fpSel === k}"><span class="vpic"><img class="fpth" src="${o.src}" alt=""></span>${F[k] ? `<i class="icnt">${F[k]}</i>` : ''}<span class="vname">${esc(o.n)}</span><span class="vtag">${p.toLocaleString()}G</span>${shopNew('fashion', k) ? '<i class="vdot" aria-label="새로 들어옴"></i>' : ''}</button>`; }).join('') : '<p class="soon">아직 준비중입니다</p>';
   const r = L.find(([k]) => k === fpSel), bar = $('#fpBar'); bar.hidden = !r; if (!r) return; const o = fpInfo(r[0]);
   bar.innerHTML = `<img class="sb-pic fpth" src="${o.src}" alt=""><div class="sb-name"><b>${esc(o.n)}</b><span>${esc(o.d || '사면 가방 필드 탭에 들어가요. 맵 편집에서 필드에 놓을 수 있어요.')}</span></div><button class="lk-btn main" data-act="buy">구매</button>`; }
-$('#fpList').addEventListener('click', e => { const v = e.target.closest('[data-fp]'); if (!v) return; sfx('tap'); fpSel = fpSel === v.dataset.fp ? null : v.dataset.fp; $('#fpMsg').textContent = ''; renderFpShop(); });
+$('#fpList').addEventListener('click', e => { const v = e.target.closest('[data-fp]'); if (!v) return; sfx('tap'); shopSee('fashion', v.dataset.fp); fpSel = fpSel === v.dataset.fp ? null : v.dataset.fp; $('#fpMsg').textContent = ''; renderFpShop(); });
 $('#fpBar').addEventListener('click', e => { if (!e.target.closest('[data-act="buy"]')) return; const r = SHOP.field.find(([k]) => k === fpSel), o = r && fpInfo(r[0]), msg = $('#fpMsg'); if (!o) return;
   if (S.gold < r[1]) { msg.textContent = `골드가 ${(r[1] - S.gold).toLocaleString()}G 모자라요.`; sfx('wob'); return; }
   S.gold -= r[1]; fbagAdd(r[0]); renderGold(); sfx('newdex'); msg.textContent = ''; buyPop(`<img class="fpth" src="${o.src}" alt="">`, `${J({ name: o.n }, '을/를')} 샀다!`, `가방에 ${S.fbag[r[0]]}개`); fpSel = null; renderFpShop(); });
@@ -8793,14 +8809,14 @@ const ART_FIT = new Map();
 function artFit(box) { box.querySelectorAll('img[data-fit]').forEach(im => { const go = () => { let f = ART_FIT.get(im.src); if (!f) { const w = im.naturalWidth, h = im.naturalHeight; if (!w) return; const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(im, 0, 0); const d = x.getImageData(0, 0, w, h).data; let x0 = w, y0 = h, x1 = -1, y1 = -1; for (let y = 0; y < h; y++) for (let i = 0; i < w; i++) if (d[(y * w + i) * 4 + 3] > 20) { if (i < x0) x0 = i; if (i > x1) x1 = i; if (y < y0) y0 = y; if (y > y1) y1 = y; } if (x1 < 0) return; const k = Math.min(3, .86 * Math.min(w / (x1 - x0 + 1), h / (y1 - y0 + 1))); f = { k, dx: (w / 2 - (x0 + x1 + 1) / 2) / w, dy: (h / 2 - (y0 + y1 + 1) / 2) / h }; ART_FIT.set(im.src, f); } im.style.transform = `scale(${f.k.toFixed(3)}) translate(${(f.dx * 100).toFixed(1)}%,${(f.dy * 100).toFixed(1)}%)`; }; if (im.complete) go(); else im.addEventListener('load', go, { once: true }); }); }
 function renderItems(k) {
   const I = itemsOf(), L = shopOrd(k, ITEMS.filter(o => o.k === k), o => o.id), sel = itemSel[k];
-  $(`#${k}List`).innerHTML = L.map(o => `<button class="vin itm" data-it="${o.id}" aria-current="${sel === o.id}"><span class="vpic"><img src="${ITEM_ART[o.a]}" alt="" data-fit></span>${I[o.id] ? `<i class="icnt">${I[o.id]}</i>` : ''}<span class="vname">${o.n}</span><span class="vtag">${itemPrice(o.id).toLocaleString()}G</span></button>`).join(''); artFit($(`#${k}List`));
+  $(`#${k}List`).innerHTML = L.map(o => `<button class="vin itm" data-it="${o.id}" aria-current="${sel === o.id}"><span class="vpic"><img src="${ITEM_ART[o.a]}" alt="" data-fit></span>${I[o.id] ? `<i class="icnt">${I[o.id]}</i>` : ''}<span class="vname">${o.n}</span><span class="vtag">${itemPrice(o.id).toLocaleString()}G</span>${shopNew(k, o.id) ? '<i class="vdot" aria-label="새로 들어옴"></i>' : ''}</button>`).join(''); artFit($(`#${k}List`));
   const o = ITEM[sel], bar = $(`#${k}Bar`); bar.hidden = !o; if (!o) return;
   const left = o.k === 'item' ? fxLeft(o.id) : 0;
   bar.innerHTML = `<img class="sb-pic" src="${ITEM_ART[o.a]}" alt=""><div class="sb-name"><b>${o.n}</b><span>${itemDesc(o)}${left ? ` · 남은 시간 ${Math.ceil(left / 60e3)}분` : ''}</span></div>`
     + (o.bulk ? `<span class="sb-bulk">${[1, 10, 100].map(n => `<button class="lk-btn main" data-act="buy" data-n="${n}">${n}개</button>`).join('')}</span>` : `<button class="lk-btn main" data-act="buy">구매</button>`);   /* v10.11: 모아서 쓰는 도구는 10개·100개씩도 산다 */   /* v6.48 경완: 상점에선 쓰기 버튼 없이 구매만 (쓰기는 가방에서) */
 }
 for (const k of ['tool', 'item']) {
-  $(`#${k}List`).addEventListener('click', e => { const v = e.target.closest('[data-it]'); if (!v) return; sfx('tap'); itemSel[k] = itemSel[k] === v.dataset.it ? null : v.dataset.it; $(`#${k}Msg`).textContent = ''; renderItems(k); });
+  $(`#${k}List`).addEventListener('click', e => { const v = e.target.closest('[data-it]'); if (!v) return; sfx('tap'); shopSee(k, v.dataset.it); itemSel[k] = itemSel[k] === v.dataset.it ? null : v.dataset.it; $(`#${k}Msg`).textContent = ''; renderItems(k); });
   $(`#${k}Bar`).addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (!b) return; const o = ITEM[itemSel[k]]; if (!o) return; const I = itemsOf(), msg = $(`#${k}Msg`);
     if (b.dataset.act === 'buy') { const bn = +b.dataset.n || 1, p = itemPrice(o.id) * bn; if (S.gold < p) { msg.textContent = `골드가 ${(p - S.gold).toLocaleString()}G 모자라요.`; sfx('wob'); return; }
       S.gold -= p; I[o.id] = (I[o.id] || 0) + bn; renderGold(); sfx('newdex'); msg.textContent = ''; const bm = bn > 1 ? `${o.n} ${bn}개` : o.n; buyPop(`<img src="${ITEM_ART[o.a]}" alt="">`, `${J({ name: bm }, '을/를')} 샀다!`, `가진 개수 ${I[o.id].toLocaleString()}`); }
@@ -8810,9 +8826,9 @@ for (const k of ['tool', 'item']) {
 document.querySelectorAll('#shopTabs [data-st]').forEach(b => b.onclick = () => setShopTab(b.dataset.st));
 setShopTab('item');
 // 설정 › 소리 › 곡: 가진 곡 중에서 고른다
-function renderBgmPick() { const t = TRACKS.find(x => x.id === S.bgm) || TRACKS[0]; $('#bgmPick').textContent = S.bgmRand ? '무작위 재생' : t.n; }
+function renderBgmPick() { const t = TRACKS.find(x => x.id === S.bgm) || TRACKS[0]; $('#bgmPick').textContent = S.bgmRand ? '무작위 재생' : trName(t); }
 $('#bgmPick').onclick = () => {
-  $('#bgmOpts').innerHTML = `<button data-id="__rand" aria-selected="${!!S.bgmRand}"><i class="sw" style="background:repeating-linear-gradient(90deg,#e8679a 0 4px,#4f95dc 4px 8px,#ffc840 8px 12px)"></i>무작위 재생 <small>(가진 곡 섞어 듣기)</small></button>` + TRACKS.filter(t => S.tracks.includes(t.id)).map(t => `<button data-id="${t.id}" aria-selected="${!S.bgmRand && S.bgm === t.id}"><i class="sw" style="background:${t.c}"></i>${t.n}${bgm.have.has(t.id) ? '' : ' <small>(곡 파일 없음)</small>'}</button>`).join('');
+  $('#bgmOpts').innerHTML = `<button data-id="__rand" aria-selected="${!!S.bgmRand}"><i class="sw" style="background:repeating-linear-gradient(90deg,#e8679a 0 4px,#4f95dc 4px 8px,#ffc840 8px 12px)"></i>무작위 재생 <small>(가진 곡 섞어 듣기)</small></button>` + TRACKS.filter(t => S.tracks.includes(t.id)).map(t => `<button data-id="${t.id}" aria-selected="${!S.bgmRand && S.bgm === t.id}"><i class="sw" style="background:${t.c}"></i>${t.n} <small>${t.g}</small>${bgm.have.has(t.id) ? '' : ' <small>(곡 파일 없음)</small>'}</button>`).join('');
   $('#bgmPop').hidden = false;
 };
 $('#bgmPop').addEventListener('click', e => {
@@ -9160,7 +9176,7 @@ function seeBox() { let ch = false; S.box.forEach(p => { if (p.nw) { p.nw = fals
 let tuNoEgg = false;   // v8.49 경완: 튜토리얼에서 알을 받기 전에는 '알' 메뉴 빨간 점을 띄우지 않는다
 function menuDots() { const set = (b, on) => { let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot" aria-label="새 소식"></i>'); else if (!on && d) d.remove(); };
   set($('#openRun'), !tuNoEgg && S.bag.some(e => e.isNew) || S.eggs.some(e => (e.km >= e.need && !e.rs) || e.nwI));   /* v5.57 경완: 자동 채우기로 부화기에 바로 들어간 새 알도 빨간 점 (부화기 탭 점과 같은 조건) */ set($('#openMgr'), S.box.some(p => p.nw) || !!S.dexDot); set($('#openFld'), S.buds.some(b => b.nw || budNew(b))); { const b = $('#btnBag'); if (b) { itemSeenClamp(); set(b, itemNewK().length > 0); } }   /* v4.87 경완: 진화 준비된 짝꿍이 있으면 빨간 점 (진화할 때까지) */
-  set($('#openShop'), fpDot()); { const b = $('#btnGym'); if (b) set(b, !!window.gymDot?.() || (!window.Gym && !!S.gym?.at && Date.now() >= S.gym.at)); } { const b = document.querySelector('#shopTabs [data-st="fashion"]'), d = b && b.querySelector('.dot'); if (b && fpDot() && !d) b.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새 소식"></i>'); else if (b && !fpDot() && d) d.remove(); }
+  set($('#openShop'), fpDot() || SHOP_TABS.some(shopNewIn)); for (const t of SHOP_TABS) { const b = document.querySelector(`#shopTabs [data-st="${t}"]`), d = b && b.querySelector('.dot'), on = shopNewIn(t) || (t === 'fashion' && fpDot()); if (b && on && !d) b.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새 소식"></i>'); else if (b && !on && d) d.remove(); } { const b = $('#btnGym'); if (b) set(b, !!window.gymDot?.() || (!window.Gym && !!S.gym?.at && Date.now() >= S.gym.at)); } 
   for (const [t, on] of [['buddy', S.buds.some(b => b.nw || budNew(b))], ['dex', !!S.dexDot]]) { const b = document.querySelector(`#mgrTabs [data-t="${t}"]`), d = b && b.querySelector('.dot'); if (b && on && !d) b.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새 소식"></i>'); else if (b && !on && d) d.remove(); } }
 function seeBuds() { if (S.buds.some(b => b.nw || budNew(b))) { S.buds.forEach(b => { delete b.nw; if (budReady(b)) b.es = true; }); save(); menuDots(); } }   // v5.00 경완: 진화 빨간 점도 짝꿍 탭을 보고 나면 모두 사라진다
 function renderBox() {
@@ -10344,7 +10360,7 @@ function migrateBox() {
   for (const sp of S.unlocked) if (!S.box.some(p => p.sp === sp)) newPoke(sp, { shiny: false });
   for (const b of S.buds) if (b.pid == null || !boxOf(b.pid)) b.pid = (S.box.filter(p => p.sp === b.sp).sort((x, y) => ivSum(y) - ivSum(x))[0] || newPoke(b.sp, { shiny: false })).id;
 }
-S.gold = 0; S.box = []; S.frAcc = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.bagDry = 0; S.pity = { e: 0, l: 0 }; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked = new Set(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1;
+S.gold = 0; S.box = []; S.frAcc = 0; S.shopSeen = null; S.shopSeenF = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.bagDry = 0; S.pity = { e: 0, l: 0 }; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked = new Set(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1;
 const hatchQ = [];
 
 function unlock(sp, fx) { if (!S.unlocked.has(sp)) { S.unlocked.add(sp); trUpCheck(); (S.dexNew ||= new Set()).add(sp); S.dexDot = true; if (fx && dexBtns[sp]) { dexFx.q.push(sp); return; } if (dexBtns[sp]) { lockDexBtn(sp); dexCellReady(sp); } } }

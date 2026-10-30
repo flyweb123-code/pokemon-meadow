@@ -164,13 +164,150 @@ root.GBSynth = { render, parseAsm };
 // ---------- 곡 목록·불러오기 (게임 쪽) ----------
 // 커밋을 고정해 두어 악보가 바뀌지 않는다
 const BASE = { c: 'https://raw.githubusercontent.com/pret/pokecrystal/619f3703486b3b40f69d31b1911b58aa0a721a6e/', r: 'https://raw.githubusercontent.com/pret/pokered/171e2c204f9c1ff8e577ca387a4bbb009e130843/' };
+// 체육관 출근·퇴근 로딩 (약 3초 = 30칸 × 0.1초, 경완 2026-10-30 '로딩 길이에 맞춰서 bgm 새로'): 직접 만든 짧은 곡, 트레이너가 다 걸어갈 때 끝음
+const GYM_ASM = `
+Music_GymIn:
+	channel_count 3
+	channel 1, Music_GymIn_Ch1
+	channel 2, Music_GymIn_Ch2
+	channel 3, Music_GymIn_Ch3
+Music_GymIn_Ch1:
+	tempo 256
+	volume 7, 7
+	duty_cycle 2
+	note_type 6, 11, 2
+	octave 4
+	note G_, 2
+	octave 5
+	note C_, 2
+	note E_, 2
+	note G_, 2
+	note E_, 2
+	note G_, 2
+	octave 6
+	note C_, 4
+	octave 5
+	note F_, 2
+	note A_, 2
+	note G_, 2
+	note E_, 1
+	note D_, 1
+	note_type 6, 11, 4
+	octave 6
+	note C_, 6
+	sound_ret
+Music_GymIn_Ch2:
+	duty_cycle 1
+	note_type 6, 7, 2
+	octave 4
+	note E_, 2
+	note G_, 2
+	octave 5
+	note C_, 2
+	note E_, 2
+	note C_, 2
+	note E_, 2
+	note E_, 4
+	note C_, 2
+	note F_, 2
+	note E_, 2
+	note C_, 1
+	octave 4
+	note B_, 1
+	note_type 6, 7, 4
+	octave 5
+	note E_, 6
+	sound_ret
+Music_GymIn_Ch3:
+	note_type 6, 1, 2
+	octave 3
+	note C_, 2
+	note G_, 2
+	note C_, 2
+	note G_, 2
+	note C_, 2
+	note G_, 2
+	octave 4
+	note C_, 4
+	octave 3
+	note F_, 2
+	note F_, 2
+	note G_, 2
+	note G_, 2
+	note C_, 5
+	rest 1
+	sound_ret
+Music_GymOut:
+	channel_count 3
+	channel 1, Music_GymOut_Ch1
+	channel 2, Music_GymOut_Ch2
+	channel 3, Music_GymOut_Ch3
+Music_GymOut_Ch1:
+	tempo 256
+	volume 7, 7
+	duty_cycle 2
+	note_type 6, 10, 3
+	octave 6
+	note C_, 2
+	octave 5
+	note A_, 2
+	note G_, 2
+	note E_, 2
+	note F_, 2
+	note E_, 2
+	note D_, 4
+	note E_, 2
+	note C_, 2
+	note D_, 2
+	octave 4
+	note G_, 2
+	note_type 6, 10, 5
+	octave 5
+	note C_, 6
+	sound_ret
+Music_GymOut_Ch2:
+	duty_cycle 1
+	note_type 6, 6, 3
+	octave 5
+	note E_, 2
+	note F_, 2
+	note E_, 2
+	note C_, 2
+	octave 4
+	note A_, 2
+	octave 5
+	note C_, 2
+	octave 4
+	note B_, 4
+	octave 5
+	note C_, 2
+	octave 4
+	note A_, 2
+	note B_, 2
+	note F_, 2
+	note_type 6, 6, 5
+	note E_, 6
+	sound_ret
+Music_GymOut_Ch3:
+	note_type 6, 1, 2
+	octave 3
+	note F_, 4
+	note C_, 4
+	note D_, 4
+	note G_, 4
+	note C_, 4
+	note G_, 4
+	note C_, 5
+	rest 1
+	sound_ret
+`;
 const TR = {   // 곡 이름표 → [저장소, 파일, 곡 이름, (되풀이 사이 쉼 초)]
   azalea: ['c', 'azaleatown', 'Music_AzaleaTown'], pallet: ['r', 'pallettown', 'Music_PalletTown'], oak: ['r', 'oakslab', 'Music_OaksLab'],
   violet: ['c', 'violetcity', 'Music_VioletCity'], kanto: ['c', 'viridiancity', 'Music_ViridianCity'], surf1: ['r', 'surfing', 'Music_Surfing'],
   goldenrod: ['c', 'goldenrodcity', 'Music_GoldenrodCity'], celadon: ['c', 'celadoncity', 'Music_CeladonCity'], ecruteak: ['c', 'ecruteakcity', 'Music_EcruteakCity'],
   park: ['c', 'nationalpark', 'Music_NationalPark'], surf2: ['c', 'surf', 'Music_Surf'], lavender: ['r', 'lavender', 'Music_Lavender'],
   evo: ['c', 'evolution', 'Music_Evolution'], title: ['c', 'profoak', 'Music_ProfOak'], intro: ['c', 'bicycle', 'Music_Bicycle'],
-  gymIn: ['c', 'healpokemon', 'Music_HealPokemon', .7], gymOut: ['c', 'healpokemon', 'Music_HealPokemon', .7],   // 체육관 출근·퇴근 (경완 2026-10-30) · v12.02 경완: 포켓몬 회복 소리를 로딩처럼 되풀이 (4번째 = 끝에 둘 쉼, 초)
+  gymIn: ['c', null, 'Music_GymIn', .25], gymOut: ['c', null, 'Music_GymOut', .25],   // v12.13 경완 '출근 퇴근 로딩 길이에 맞춰서 bgm 새로': 위 GYM_ASM (예전: 포켓몬 회복 소리 되풀이)
 };
 let worker = null, wid = 0; const waits = new Map();
 function inWorker(src, opt) {
@@ -188,7 +325,7 @@ async function text(path, repo, cache) {
 }
 async function get(id, ctx, cache, sampleRate = 32000) {
   const d = TR[id]; if (!d) return null; const [repo, file, start, gap = 0] = d;
-  const music = await text(`audio/music/${file}.asm`, repo, cache), waves = await text('audio/wave_samples.asm', repo, cache), src = { music, waves };
+  const music = file ? await text(`audio/music/${file}.asm`, repo, cache) : GYM_ASM, waves = await text('audio/wave_samples.asm', repo, cache), src = { music, waves };
   if (repo === 'c') src.drums = await text('audio/drumkits.asm', repo, cache);
   else { src.noise = {}; const ns = [...new Set([...music.matchAll(/drum_note\s+(\d+)/g)].map(m => +m[1]))]; await Promise.all(ns.map(async n => { src.noise[n] = await text(`audio/sfx/noise_instrument${String(n).padStart(2, '0')}_1.asm`, repo, cache); })); }
   const r = await inWorker(src, { start, sampleRate });
