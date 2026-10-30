@@ -39,11 +39,21 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
                 return (true, nil)
             case "acctNew", "acctLogin":
                 guard let id = acctId(body["id"]), let pw = body["pw"] as? String, (4...64).contains(pw.count) else { return (nil, "아이디는 영문 소문자·숫자 4~12글자, 비밀번호는 4글자 이상이에요") }
-                return op == "acctNew" ? (try await acctNew(id, pw), nil) : (try await acctLogin(id, pw), nil)
+                var out: [String: Any]
+                if op == "acctNew" { out = try await acctNew(id, pw) } else { out = try await acctLogin(id, pw) }
+                out["sess"] = try await acctClaim(id, k: out["k"] as! String)   // v12.12: 이 기기가 이제 '쓰는 기기'
+                return (out, nil)
             case "acctSave":
                 guard let id = acctId(body["id"]), let k = body["k"] as? String, k.count == 64, let data = body["data"] as? String, data.utf8.count < 20_000_000 else { return (nil, "잘못된 요청") }
+                if let sess = body["sess"] as? String {   // v12.12: 밀려난 기기는 못 올림
+                    let alive = try await acctAlive(id, k: k, sess: sess)
+                    if !alive { return (nil, "다른 기기에서 로그인했어요") }
+                }
                 try await acctSave(id, k: k, data: data)
                 return (true, nil)
+            case "acctAlive":   // v12.12 경완 '한 번에 한 기기, 다른 기기에선 자동 로그아웃': 이 기기가 아직 '쓰는 기기'인지
+                guard let id = acctId(body["id"]), let k = body["k"] as? String, k.count == 64 else { return (nil, "잘못된 요청") }
+                return (try await acctAlive(id, k: k, sess: body["sess"] as? String), nil)
             case "acctPull":   // v12.09: 켤 때 다른 폰이 더 최근에 올린 기록이 있는지 (가장 최근 저장 하나)
                 guard let id = acctId(body["id"]), let k = body["k"] as? String, k.count == 64 else { return (nil, "잘못된 요청") }
                 return (try await newestSave(id, k: k), nil)
@@ -182,7 +192,7 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
     private func newestSave(_ id: String, k: String) async throws -> [String: Any] {
         let (rs, _) = try await db.records(matching: CKQuery(recordType: "Save", predicate: NSPredicate(format: "acct == %@", id)), resultsLimit: 20)
         var best: (Double, String)? = nil
-        for (_, res) in rs {
+        for (rid, res) in rs where !rid.recordName.hasPrefix("VL_") {
             guard case .success(let r) = res, let sig = r["sig"] as? String, let asset = r["data"] as? CKAsset, let url = asset.fileURL,
                   let d = try? Data(contentsOf: url), let txt = String(data: d, encoding: .utf8), sha(k + sha(txt)) == sig else { continue }
             let sa = ((try? JSONSerialization.jsonObject(with: d)) as? [String: Any])?["savedAt"] as? NSNumber
@@ -203,6 +213,35 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
         r["sig"] = sha(k + sha(data)) as CKRecordValue
         r["data"] = CKAsset(fileURL: url)
         try await saveOne(r, .allKeys)
+    }
+
+    // ---------- 한 번에 한 기기 (v12.12) ----------
+    // 로그인·계정 만들기 때 기기마다 Save 레코드 하나("VL_" + 아이디 + "_" + 친구 코드)에 {sess, at} 를 서명해서 올린다 (스키마 그대로).
+    // '쓰는 기기' = 서명이 맞는 로그인 기록 중 at 이 가장 늦은 것. 내 sess 가 그것과 다르면 밀려난 것.
+    private func acctClaim(_ id: String, k: String) async throws -> String {
+        let code = try await code(), sess = hex((0..<12).map { _ in UInt8.random(in: 0...255) })
+        let txt = "{\"sess\":\"\(sess)\",\"at\":\(Int(Date().timeIntervalSince1970 * 1000))}"
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("login_\(id).json")
+        try Data(txt.utf8).write(to: url, options: .atomic)
+        defer { try? FileManager.default.removeItem(at: url) }
+        let r = CKRecord(recordType: "Save", recordID: CKRecord.ID(recordName: "VL_\(id)_\(code)"))
+        r["acct"] = id as CKRecordValue
+        r["sig"] = sha("login:" + k + sha(txt)) as CKRecordValue   // 저장 서명과 달라서 예전 앱이 이걸 게임 저장으로 착각하지 않는다
+        r["data"] = CKAsset(fileURL: url)
+        try await saveOne(r, .allKeys)
+        return sess
+    }
+    private func acctAlive(_ id: String, k: String, sess: String?) async throws -> Bool {
+        let (rs, _) = try await db.records(matching: CKQuery(recordType: "Save", predicate: NSPredicate(format: "acct == %@", id)), resultsLimit: 20)
+        var best: (Double, String)? = nil
+        for (rid, res) in rs where rid.recordName.hasPrefix("VL_") {
+            guard case .success(let r) = res, let sig = r["sig"] as? String, let asset = r["data"] as? CKAsset, let url = asset.fileURL,
+                  let d = try? Data(contentsOf: url), let txt = String(data: d, encoding: .utf8), sha("login:" + k + sha(txt)) == sig,
+                  let o = (try? JSONSerialization.jsonObject(with: d)) as? [String: Any], let s = o["sess"] as? String, let at = (o["at"] as? NSNumber)?.doubleValue else { continue }
+            if best == nil || at > best!.0 { best = (at, s) }
+        }
+        guard let best else { return true }   // 아직 아무도 새 방식으로 로그인 안 함
+        return best.1 == sess
     }
 
     private func saveOne(_ r: CKRecord, _ policy: CKModifyRecordsOperation.RecordSavePolicy) async throws {
