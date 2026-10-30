@@ -38,6 +38,8 @@ targets:
         NSLocationWhenInUseUsageDescription: 알을 어느 동네에서 주웠는지 남기려고 위치를 써요.
         NSLocationAlwaysAndWhenInUseUsageDescription: 휴대폰이 잠겨 있어도 걸으면 알을 줍고, 주운 동네를 남기려고 위치를 써요.
         NSHealthShareUsageDescription: 애플워치나 다른 앱으로 달린 기록을 런닝 기록과 알에 반영하려고 건강 앱의 운동 기록을 읽어요.
+        # HealthKit 권한(entitlement)이 있으면 쓰기를 안 해도 업로드 검사에서 요구한다
+        NSHealthUpdateUsageDescription: 애플워치에서 한 런닝을 건강 앱에 운동 기록으로 남겨요.
     entitlements:
       path: PokeGrow/PokeGrow.entitlements
       properties:
