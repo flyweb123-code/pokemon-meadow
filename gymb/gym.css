@@ -536,7 +536,7 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .up-lv.done{opacity:1}.up-lv.done i{background:#2a8a3e;color:#fff}.up-lv.next{opacity:1;box-shadow:inset 0 0 0 2px #ffd84a;background:#fffbe6}.up-lv.next i{background:#ffd84a}
 .up-go{width:100%;min-height:44px;margin-bottom:10px}
 .gy-kang.guide{background:rgba(12,13,20,.55)}#gym:has(.gy-kang.guide) .gy-dlg{visibility:hidden}
-.ha-tag{display:inline-block;margin-left:4px;padding:0 5px;border-radius:4px;background:#7a3ec8;color:#fff;font-size:10.5px;font-style:normal;font-weight:700}
+.ha-tag{display:inline-block;margin-left:4px;padding:0 5px;border-radius:4px;background:#d89a10;color:#fff;font-size:10.5px;font-style:normal;font-weight:700}
 /* 배틀 메뉴: 박스 · 개체값 육각형 */
 .lu-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.lu-row2 .gy-key{min-height:46px}
 .iv-hex{display:grid;grid-template-columns:180px 1fr;gap:6px;align-items:center;margin:8px 0;padding:6px;border:2px solid rgba(0,0,0,.12);border-radius:8px;background:#fbfaf6}
@@ -1283,11 +1283,11 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .mp-na{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 8px}
 .mp-na .mp-nat,.mp-na .mp-ab{display:flex;flex-direction:column;align-items:stretch;gap:2px;margin:0;padding:5px 8px!important;min-height:0;border-radius:8px;background:#fbfaf6!important;border:2px solid rgba(0,0,0,.12)!important;box-shadow:none!important;text-align:left;font:inherit;color:inherit}
 .mp-na small{font-size:10.5px;color:var(--dim);font-weight:700;display:flex;align-items:center;gap:2px}.mp-na .mp-more{font-style:normal;margin-left:auto;font-size:13px;line-height:1}
-.mp-na p{margin:0!important;display:flex;align-items:center;gap:4px;flex-wrap:nowrap;min-width:0}.mp-na b{font-size:14px;white-space:nowrap}.mp-na b.ha{color:#7a3ec8}
+.mp-na p{margin:0!important;display:flex;align-items:center;gap:4px;flex-wrap:nowrap;min-width:0}.mp-na b{font-size:14px;white-space:nowrap}.mp-na b.ha{color:#7a5208}
 .mp-na span{margin-left:auto;display:flex;gap:2px}.mp-na span i{font-style:normal;font-size:10px;font-weight:700;padding:1px 4px;border-radius:8px;background:rgba(0,0,0,.06);color:var(--dim);white-space:nowrap}
 .mp-na span i.up{background:#fde3e0;color:#d83a30}.mp-na span i.dn{background:#e0e8fd;color:#3a6ad8}
 .mp-na .ha-tag{margin-left:auto;font-size:9.5px;padding:0 4px}
-.gy-pop .ab-d{text-align:left}.gy-pop p.mp-ha{font-size:12px;color:var(--dim);border-top:1px dashed rgba(0,0,0,.15);padding-top:8px}.gy-pop .mp-ha b{color:#7a3ec8}
+.gy-pop .ab-d{text-align:left}.gy-pop p.mp-ha{font-size:12px;color:var(--dim);border-top:1px dashed rgba(0,0,0,.15);padding-top:8px}.gy-pop .mp-ha b{color:#a87a10}
 /* 기술 순서 끌기 */
 .mv-ord .mp-mv{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .mv-ord .mp-mv.drag{position:relative;z-index:2;background:#fff4c8!important;box-shadow:inset 3px 0 0 var(--tc),0 0 0 2px #d89a20,0 4px 8px rgba(0,0,0,.25)!important;transform:scale(1.02)}
@@ -1947,3 +1947,7 @@ body.gymBattle .gy-vtit{display:none}
 @keyframes bsArw{50%{transform:translateX(4px)}}
 .bsw-tx{margin:4px 0 0;text-align:center;font-size:14px;line-height:1.5}.bsw-sub{margin:0;font-size:12px;color:var(--dim);text-align:center}
 .bsw-go{min-width:200px;margin-top:6px;font-size:17px}
+
+/* v11.93 경완: 라인업 칸 — 숨겨진 특성이면 특성 아래 '숨겨진 특성' 줄, 금빛 + 은은한 테두리 */
+.lu-slot .lu-inf>.lu-hab{padding:2px 5px;margin:-2px -5px 0;border-radius:6px;background:linear-gradient(180deg,#fff7d0,#ffeca8);box-shadow:0 0 0 1px #e0b030;animation:luHa 2.4s ease-in-out infinite;flex-direction:column;align-items:flex-start;gap:2px}.lu-slot .lu-hab>span{display:flex;align-items:center;gap:5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;color:#7a5208;font-weight:700}.lu-slot .lu-hab .ha-tag{margin:0;font-size:9.5px}
+@keyframes luHa{0%,100%{box-shadow:0 0 0 1px rgba(224,176,48,.6),0 0 3px rgba(255,200,40,.3)}50%{box-shadow:0 0 0 2px rgba(255,214,70,.8),0 0 9px rgba(255,200,40,.7)}}
