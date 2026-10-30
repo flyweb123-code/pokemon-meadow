@@ -1861,7 +1861,7 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .gy-qw .qw-row.wait{background:linear-gradient(180deg,#f4f4e4,#dcdcc4);border:3px solid #0c0d18;border-radius:4px 18px 4px 4px;box-shadow:inset 0 0 0 2px #fff,3px 3px 0 rgba(0,0,0,.4);color:#303830}
 .gy-qw .qw-row.wait .qw-pic,.gy-qw .qw-row.wait .qw-tx{opacity:1}
 .gy-qw .qw-row.wait .qw-tx b{color:#303830}.gy-qw .qw-row.wait .qw-tx span{color:#5a6458}
-.gy-qw .qw-no{width:26px;height:26px;background:#202028;color:#fff;font-size:12px;box-shadow:0 0 0 2px #e8402e,0 0 0 4px #0c0d18}
+.gy-qw .qw-no,.gy-qw .qw-pw .qw-no{border:0;left:-2px;top:-4px;width:auto;height:auto;padding:0 2px;border-radius:0;background:none;color:#6a6a80;font-size:15px;font-weight:700;box-shadow:none}   /* 번호는 숫자만 (경완 2026-10-30 "심플하게") */
 .gy-qw .qw-wait{background:#303848!important;color:#e8e8f0!important}
 .gy-qw .qw-none b{color:#fff}.gy-qw .qw-none span{color:#a8acc8}
 
@@ -1906,3 +1906,4 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .gy-infos .if-two>div::before{content:'';position:absolute;left:0;top:10px;bottom:10px;width:4px;border-radius:0 3px 3px 0;background:var(--gy-acc,#f0c040)}
 .gy-infos .if-two .if-big::before{background:#58a8e0}
 .gy-infos .if-re.if-mg{border-radius:6px}
+.ty-yd{background:linear-gradient(#3c4460 0 28px,#e9dec4 28px 108px,#868a96 108px 120px,#e4cc96 120px)!important}   /* 바닥 그림이 그려지기 전 잠깐 보이는 색 (훈련장 바로 뜨게, 2026-10-30) */
