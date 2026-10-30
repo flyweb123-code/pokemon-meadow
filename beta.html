@@ -711,7 +711,7 @@ ol.log li.big .txt{color:#c03838}
 #setBack{padding:4px 10px}#set .sheet-head{min-height:44px;box-sizing:border-box}/* 프로필(톱니)과 하위 화면(◀) 머리 높이를 같게: 밀어서 뒤로 갈 때 들어오는 창이 끝난 모습과 같은 자리 */#set #closeSet{display:none}
 .tr-card{display:flex;gap:12px;align-items:stretch;margin:4px 0 14px;padding:10px;border:3px solid var(--frame);background:var(--win);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner)}
 .tr-pic{flex:none;width:112px;height:112px;position:relative;background:#e4f2d0;border:3px solid var(--inner);box-shadow:inset 0 -14px 0 #cfe6b4;overflow:hidden}
-.tr-pic{display:grid;place-items:center}.tr-pic.walking .tr-ow{animation:trWalk .9s steps(1,end) infinite}@keyframes trWalk{0%{background-position:0 0;transform:none}25%{background-position:0 -288px;transform:none}50%{background-position:0 0;transform:none}75%{background-position:0 -288px;transform:scaleX(-1)}}   /* v4.37 경완: 걷는 중이면 트레이너가 정면으로 걷는다 */.tr-ow{width:96px;height:96px;margin:-16px;flex:none;background-repeat:no-repeat;background-size:96px 576px;background-position:0 0;image-rendering:pixelated}
+.tr-pic{display:grid;place-items:center}.tr-pic.walking .tr-ow{animation:trWalk .9s steps(1,end) infinite}@keyframes trWalk{0%{background-position:0 0;transform:none}25%{background-position:0 -288px;transform:none}50%{background-position:0 0;transform:none}75%{background-position:0 -288px;transform:scaleX(-1)}}   /* v4.37 경완: 걷는 중이면 트레이너가 정면으로 걷는다 */.tr-ow{translate:var(--tr-dx,0) var(--tr-dy,0);width:96px;height:96px;margin:-16px;flex:none;background-repeat:no-repeat;background-size:96px 576px;background-position:0 0;image-rendering:pixelated}
 .tr-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:10px}
 .tr-top{display:flex;align-items:center;gap:6px;min-width:0}
 .tr-nm{flex:1;min-width:0;display:flex;align-items:center;gap:4px;cursor:text}.tr-nm .pen-b{flex:none;width:14px;height:14px;color:var(--dim)}.tr-nm .pen-b svg{width:100%;height:100%;display:block}.tr-nm input{border:0;outline:0;background:none;padding:0;margin:0;color:var(--win-ink);font-family:inherit;font-size:20px;font-weight:700;max-width:100%}.tr-nm input::placeholder{color:var(--win-ink);opacity:1;font-weight:700}.tr-nm input:focus::placeholder{opacity:.3}.tr-nm input{caret-color:var(--win-ink)}
@@ -6558,7 +6558,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '11.74';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '11.75';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9805,9 +9805,16 @@ function trUpShow() {
   $('#frMaxOk').onclick = done; $('#frMax').onclick = ev => { if (ev.target.id === 'frMax') done(); };
 }
 function trLevel(k = S.unlocked?.size || 0) { let i = 0; while (i + 1 < TR_LV.length && k >= TR_LV[i + 1][0]) i++; return { i, k, name: TR_LV[i][1], next: TR_LV[i + 1] }; }
+// 프로필 트레이너 그림을 칸 한가운데로 (경완 2026-10-30): 32×32 첫 칸에서 그려진 부분의 가운데를 찾아 --tr-dx/--tr-dy 로 옮긴다 (3배 크기)
+const trCen = {};
+function trCenter(sex) { const k = TR_OW[sex] ? sex : 'm', set = c => { document.documentElement.style.setProperty('--tr-dx', c[0] + 'px'); document.documentElement.style.setProperty('--tr-dy', c[1] + 'px'); };
+  if (trCen[k]) return set(trCen[k]);
+  const im = new Image(); im.onload = () => { try { const c = document.createElement('canvas'); c.width = 32; c.height = 32; const g = c.getContext('2d'); g.drawImage(im, 0, 0); const d = g.getImageData(0, 0, 32, 32).data;
+    let x0 = 32, y0 = 32, x1 = -1, y1 = -1; for (let y = 0; y < 32; y++) for (let x = 0; x < 32; x++) if (d[(y * 32 + x) * 4 + 3] > 20) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+    if (x1 < 0) return; trCen[k] = [Math.round((15.5 - (x0 + x1) / 2) * 3), Math.round((15.5 - (y0 + y1) / 2) * 3)]; set(trCen[k]); } catch (e) {} }; im.src = TR_OW[k]; }
 function renderTrainer() {
   const t = trOf(), L = trLevel(), inp = $('#trName'), pen = document.querySelector('.tr-nm .pen-b'); if (!pen.firstChild) pen.innerHTML = PEN;
-  $('#trOw').style.backgroundImage = `url(${TR_OW[t.sex] || TR_OW.m})`;
+  $('#trOw').style.backgroundImage = `url(${TR_OW[t.sex] || TR_OW.m})`; trCenter(t.sex);
   if (document.activeElement !== inp) { inp.value = t.n; }
   inp.style.width = Math.max(2, (inp.value || inp.placeholder).length) + .3 + 'em';
   const sx = $('#trSex'); sx.className = 'tr-sex ' + t.sex; sx.textContent = t.sex === 'f' ? '♀' : '♂'; sx.setAttribute('aria-label', t.sex === 'f' ? '여자 (눌러서 바꾸기)' : '남자 (눌러서 바꾸기)');
