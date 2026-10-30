@@ -212,6 +212,37 @@ body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop
 .fr-rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0;max-height:50vh;overflow:auto}.fr-ri{display:flex;flex-direction:column;align-items:center;gap:2px;font:inherit;font-size:11px;border:2px solid var(--inner);background:#fff;padding:4px 2px;cursor:pointer}.fr-ri.on{border-color:#e0b840;background:#fff6d8}.fr-ri b{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:400}.fr-rbtns{display:flex;gap:6px}.fr-rbtns .lk-btn{flex:1;margin:0;justify-content:center}
 /* v11.80 경완: 미니게임 랭킹 (게임 고르기 카드 트로피 · 끝난 뒤 기록 → 랭킹) */
 /* v11.81 경완: 필드 트로피는 박스 없이 · 랭킹은 시상대 없이 1위부터 목록 (내 줄만 표시) */
+/* v11.83 경완: 랭킹 줄 = 트레이너 박스(등급 테두리) + 포켓몬 박스, 숫자·단위 붙임, 게이지·안내 문구 없앰 · 친구 화면 아이콘 글자 */
+.lb-show{display:flex;gap:4px;width:auto!important;height:auto!important;position:static}
+.tr-card.lb-trb,.lb-pk{position:relative;display:grid;place-items:center;flex:none;width:44px;height:44px;margin:0;padding:0;box-sizing:border-box;overflow:hidden}
+.tr-card.lb-trb{border-width:3px}.tr-card.lb-trb::before,.tr-card.lb-trb::after{animation:none!important}
+.lb-pk{border:3px solid var(--frame);background:var(--win);box-shadow:inset 0 0 0 2px var(--win),inset 0 0 0 3px var(--inner)}
+.lb-show .fr-tr,.lb-p .lb-show .fr-tr,#mgRk .lb-show .fr-tr{position:relative!important;left:auto!important;bottom:auto!important;z-index:1;width:36px!important;height:36px!important;background-size:36px 216px!important}
+.lb-show .fr-pic,.lb-p .lb-show .fr-pic,#mgRk .lb-show .fr-pic{position:static!important;width:34px!important;height:34px!important}
+#mgRk .tr-card.lb-trb,#mgRk .lb-pk{width:40px;height:40px}
+.lb-val{min-width:0}.lb-val b{display:inline;white-space:nowrap}.lb-val b small{font-size:13px;font-weight:700;color:var(--win-ink);margin-left:1px}
+.fr-rep .lb-show{flex:none}
+#set .sheet-head .fr-pgic{display:none;width:auto;height:auto;padding:0 4px}#set[data-pg=friends] .sheet-head .fr-pgic{display:flex;flex-direction:column;align-items:center;gap:1px}#set .sheet-head .fr-pgic small{font-size:10px;line-height:1;color:var(--win-ink);white-space:nowrap}#set .sheet-head .fr-pgic svg{width:28px;height:28px}
+/* v11.83 경완: 랭킹 전당 — 어두운 전당 + 금 테두리, 1~3위 메달·금은동 명판, 포켓몬 박스 → 보기 전용 상세 카드 */
+#pokePop.view .pp-btns,#pokePop.view .pp-free,#pokePop.view .pp-evo,#pokePop.view .sw-h{display:none!important}#pokePop.view.top{z-index:6200}.nm-ro{display:inline-flex;align-items:center;gap:4px;font-size:20px}
+.lb-pk[data-pv]{cursor:pointer}.lb-pk[data-pv]:active{transform:translate(1px,1px)}
+.lb-rk{position:relative}.lb-rk .lb-medal{position:absolute;left:50%;top:50%;width:30px;height:34px;transform:translate(-50%,-50%)}.lb-rk.r1,.lb-rk.r2,.lb-rk.r3{background:none!important;box-shadow:none!important;width:30px;height:38px}.lb-rk.r1 b,.lb-rk.r2 b,.lb-rk.r3 b{position:relative;z-index:1;margin-top:10px;font-size:12px;color:#20202c;text-shadow:0 1px 0 rgba(255,255,255,.7)}
+#rank .lb-win{background:radial-gradient(120% 60% at 50% 0%,#4a2a6a 0%,transparent 70%),repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 2px,transparent 2px 24px),linear-gradient(#2a1840,#160c26)}
+#rank .lb-head{background:linear-gradient(#3a1e58,#22103a);border-bottom:3px solid #f2c641;box-shadow:0 3px 0 #7a4a08,0 6px 0 rgba(0,0,0,.35)}
+#rank .lb-cup{background:radial-gradient(circle,#6a3a8a,#3a1e58);border-color:#f2c641;box-shadow:inset 0 0 0 2px #7a4a08,0 0 12px rgba(242,198,65,.55)}
+#rank .lb-tt b{color:#ffe27a;letter-spacing:3px;text-shadow:2px 2px 0 #5a3000,0 0 10px rgba(255,210,90,.45)}#rank .lb-tt small{color:#d8c8f0}
+#rank .lb-head .opt{border-color:#f2c641;color:#ffe27a}
+#rank .lb-tabs{border-color:#f2c641;background:#f2c641;box-shadow:0 0 0 3px #3a1e58,3px 3px 0 3px rgba(0,0,0,.35)}#rank .lb-tabs button{background:#2a1840;color:#b8a8d8}#rank .lb-tabs button+button{border-left-color:#f2c641}#rank .lb-tabs button[aria-pressed=true]{background:linear-gradient(#ffe98a,#f2c641 60%,#d9a32a);color:#3a2000}
+#rank .lb-games button{border-color:#f2c641;background:#2a1840;color:#d8c8f0}#rank .lb-games button[aria-pressed=true]{background:#f2c641;color:#3a2000}
+#rank .lb-row{border-color:#14081e;background:linear-gradient(#fbf4e2,#efe2c0);box-shadow:inset 0 0 0 2px #fffaf0,inset 0 0 0 3px #c8a868,2px 3px 0 rgba(0,0,0,.45)}
+#rank .lb-row.top1{background:linear-gradient(135deg,#fff7c8,#f6d466 55%,#ffe99a);box-shadow:inset 0 0 0 2px #fff6c0,inset 0 0 0 4px #c8901a,0 0 14px rgba(255,210,80,.55),2px 3px 0 rgba(0,0,0,.45)}
+#rank .lb-row.top2{background:linear-gradient(135deg,#ffffff,#d6dce8 55%,#f2f4f8);box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 4px #8a92a6,2px 3px 0 rgba(0,0,0,.45)}
+#rank .lb-row.top3{background:linear-gradient(135deg,#fff0e0,#e8b07a 55%,#f8d8b4);box-shadow:inset 0 0 0 2px #fff0e0,inset 0 0 0 4px #a05a20,2px 3px 0 rgba(0,0,0,.45)}
+#rank .lb-row.top1 .lb-mid b{font-size:17px}
+#rank .lb-row.me{outline:3px solid #7ae0ff;outline-offset:1px;animation:lbMe 1.6s steps(2,end) infinite}@keyframes lbMe{50%{outline-color:#ffffff}}
+#rank .lb-rk:not(.r1):not(.r2):not(.r3){background:#3a1e58;color:#ffe27a;box-shadow:inset 0 -3px 0 rgba(0,0,0,.35)}
+#rank .lb-val b{color:#3a2000}#rank .lb-mid span{color:#6a5a40}
+#rank .lb-load{color:#d8c8f0}
 .mapico.lb-btn{width:auto;height:auto;border:0!important;background:none!important;box-shadow:none!important;line-height:0;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35))}.mapico.lb-btn svg{width:40px;height:40px}.mapico.lb-btn svg path[fill="#20202c"]{fill:#000!important}   /* v11.82 경완: 테두리 검정(밤에도), 맵 편집·체육관 아이콘 크기 */
 #set .sheet-head .pf-gear{border:0;background:none;box-shadow:none}#set .sheet-head .pf-gear svg{width:30px;height:30px}#set .sheet-head .pf-gear+.pf-gear{margin-left:0}   /* v11.82 경완: 프로필 친구·설정 버튼 박스 없이 */.lb-tabs[hidden]{display:none}.lb-body{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 12px)}
 #rank.ontop{z-index:6050}
@@ -1744,7 +1775,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
 </div>
 <div class="sheet lb-sheet" id="rank" hidden>   <!-- v11.80 경완: 필드 골드 아래 트로피 → 랭킹 (서버를 쓰는 모든 트레이너, 걸음·도감 등록률) -->
   <div class="win lb-win" role="dialog" aria-label="랭킹">
-    <div class="lb-head"><i class="lb-cup"><svg viewBox="0 0 14 14" width="28" height="28" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 0h10v1h-10zM1 1h1v1h-1zM12 1h1v1h-1zM0 2h1v4h-1zM13 2h1v4h-1zM1 6h2v1h-2zM11 6h2v1h-2zM3 7h1v1h-1zM10 7h1v1h-1zM4 8h2v1h-2zM8 8h2v1h-2zM5 9h1v2h-1zM8 9h1v2h-1zM3 11h8v1h-8zM2 12h1v2h-1zM11 12h1v2h-1zM3 13h8v1h-8z"/><path fill="#f2c641" d="M2 1h10v5h-10zM3 6h8v1h-8zM4 7h6v1h-6zM6 8h2v3h-2zM3 12h8v1h-8z"/><path fill="#ffe98a" d="M3 1h2v4h-2zM4 6h1v1h-1z"/><path fill="#c98a10" d="M10 1h2v5h-2zM9 6h2v1h-2zM8 7h2v1h-2zM7 8h1v3h-1z"/><path fill="#d9a32a" d="M1 2h1v4h-1zM12 2h1v4h-1z"/></svg></i><div class="lb-tt"><b>랭킹</b><small id="lbSub"></small></div><button class="opt" id="lbX">닫기</button></div>
+    <div class="lb-head"><i class="lb-cup"><svg viewBox="0 0 14 14" width="28" height="28" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 0h10v1h-10zM1 1h1v1h-1zM12 1h1v1h-1zM0 2h1v4h-1zM13 2h1v4h-1zM1 6h2v1h-2zM11 6h2v1h-2zM3 7h1v1h-1zM10 7h1v1h-1zM4 8h2v1h-2zM8 8h2v1h-2zM5 9h1v2h-1zM8 9h1v2h-1zM3 11h8v1h-8zM2 12h1v2h-1zM11 12h1v2h-1zM3 13h8v1h-8z"/><path fill="#f2c641" d="M2 1h10v5h-10zM3 6h8v1h-8zM4 7h6v1h-6zM6 8h2v3h-2zM3 12h8v1h-8z"/><path fill="#ffe98a" d="M3 1h2v4h-2zM4 6h1v1h-1z"/><path fill="#c98a10" d="M10 1h2v5h-2zM9 6h2v1h-2zM8 7h2v1h-2zM7 8h1v3h-1z"/><path fill="#d9a32a" d="M1 2h1v4h-1zM12 2h1v4h-1z"/></svg></i><div class="lb-tt"><b>명예의 전당</b><small id="lbSub"></small></div><button class="opt" id="lbX">닫기</button></div>
     <div class="lb-tabs" id="lbTabs" role="tablist"><button type="button" data-t="dex" aria-pressed="true">도감 랭킹</button><button type="button" data-t="walk" aria-pressed="false">걸음 랭킹</button></div>
     <div class="lb-games" id="lbGames" hidden></div>
     <div class="lb-body" id="lbBody"><div class="lb-list" id="lbList"></div></div>
@@ -1752,7 +1783,7 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
 </div>
 <div class="sheet" id="set" hidden>
   <div class="win setwin" role="dialog" aria-label="프로필">
-    <div class="sheet-head"><button class="opt" id="setBack" hidden aria-label="프로필로">◀</button><h3 id="setTitle">프로필</h3><span class="pf-sp"></span><button class="pf-gear fr-hic pf-fric" id="pfFrIc" type="button" aria-label="친구"><svg viewBox="0 0 12 12" width="28" height="28" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 1h3v1h-3zM1 2h1v3h-1zM5 2h1v3h-1zM2 5h3v1h-3zM7 2h3v1h-3zM6 3h1v3h-1zM10 3h1v3h-1zM7 6h3v1h-3zM0 7h1v4h-1zM6 7h1v1h-1zM1 6h1v1h-1zM5 6h2v1h-2zM0 11h7v1h-7zM7 8h1v1h-1zM5 8h1v1h-1zM11 8h1v4h-1zM6 11h6v1h-6z"/><path fill="#f2b68a" d="M2 2h3v3h-3zM7 3h3v3h-3z"/><path fill="#e8607a" d="M1 7h5v4h-5zM2 6h3v1h-3z"/><path fill="#4a8ad8" d="M7 7h4v4h-4zM6 8h1v3h-1zM8 7h2v0h-2z"/></svg></button><button class="pf-gear fr-hic fr-pgic" id="frAddIc" type="button" aria-label="친구 추가"><svg viewBox="0 0 12 12" width="26" height="26" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 0h3v1h-3zM1 1h1v3h-1zM5 1h1v3h-1zM2 4h3v1h-3zM1 5h5v1h-5zM0 6h1v5h-1zM6 6h1v1h-1zM0 11h7v1h-7z"/><path fill="#f2b68a" d="M2 1h3v3h-3z"/><path fill="#4a8ad8" d="M1 6h5v5h-5z"/><path fill="#2a9a4a" d="M9 4h1v7h-1zM7 6h5v1h-5z"/><path fill="#20202c" d="M8 3h3v1h-3zM8 11h3v1h-3z"/></svg></button><button class="pf-gear fr-hic fr-pgic" id="frCodeIc" type="button" aria-label="내 친구 코드"><svg viewBox="0 0 12 12" width="26" height="26" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M0 1h12v1h-12zM0 2h1v8h-1zM11 2h1v8h-1zM0 10h12v1h-12z"/><path fill="#fff7d8" d="M1 2h10v8h-10z"/><path fill="#e8607a" d="M2 3h3v4h-3z"/><path fill="#f2b68a" d="M3 3h1v2h-1z"/><path fill="#20202c" d="M6 3h4v1h-4zM6 5h4v1h-4zM6 7h3v1h-3zM2 8h8v1h-8z"/></svg></button><button class="pf-gear" id="pfGear" type="button" aria-label="설정"><svg viewBox="0 0 10 10" width="30" height="30" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true"><rect x="4" y="0" width="1" height="1"/><rect x="5" y="0" width="1" height="1"/><rect x="2" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="5" y="1" width="1" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="1" y="2" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="3" y="2" width="1" height="1"/><rect x="4" y="2" width="1" height="1"/><rect x="5" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/><rect x="6" y="3" width="1" height="1"/><rect x="7" y="3" width="1" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="1" y="4" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="7" y="4" width="1" height="1"/><rect x="8" y="4" width="1" height="1"/><rect x="9" y="4" width="1" height="1"/><rect x="0" y="5" width="1" height="1"/><rect x="1" y="5" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="7" y="5" width="1" height="1"/><rect x="8" y="5" width="1" height="1"/><rect x="9" y="5" width="1" height="1"/><rect x="2" y="6" width="1" height="1"/><rect x="3" y="6" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/><rect x="7" y="6" width="1" height="1"/><rect x="1" y="7" width="1" height="1"/><rect x="2" y="7" width="1" height="1"/><rect x="3" y="7" width="1" height="1"/><rect x="4" y="7" width="1" height="1"/><rect x="5" y="7" width="1" height="1"/><rect x="6" y="7" width="1" height="1"/><rect x="7" y="7" width="1" height="1"/><rect x="8" y="7" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="4" y="8" width="1" height="1"/><rect x="5" y="8" width="1" height="1"/><rect x="7" y="8" width="1" height="1"/><rect x="4" y="9" width="1" height="1"/><rect x="5" y="9" width="1" height="1"/></svg></button><button class="opt" id="closeSet">닫기</button></div>
+    <div class="sheet-head"><button class="opt" id="setBack" hidden aria-label="프로필로">◀</button><h3 id="setTitle">프로필</h3><span class="pf-sp"></span><button class="pf-gear fr-hic pf-fric" id="pfFrIc" type="button" aria-label="친구"><svg viewBox="0 0 12 12" width="28" height="28" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 1h3v1h-3zM1 2h1v3h-1zM5 2h1v3h-1zM2 5h3v1h-3zM7 2h3v1h-3zM6 3h1v3h-1zM10 3h1v3h-1zM7 6h3v1h-3zM0 7h1v4h-1zM6 7h1v1h-1zM1 6h1v1h-1zM5 6h2v1h-2zM0 11h7v1h-7zM7 8h1v1h-1zM5 8h1v1h-1zM11 8h1v4h-1zM6 11h6v1h-6z"/><path fill="#f2b68a" d="M2 2h3v3h-3zM7 3h3v3h-3z"/><path fill="#e8607a" d="M1 7h5v4h-5zM2 6h3v1h-3z"/><path fill="#4a8ad8" d="M7 7h4v4h-4zM6 8h1v3h-1zM8 7h2v0h-2z"/></svg></button><button class="pf-gear fr-hic fr-pgic" id="frAddIc" type="button" aria-label="친구 추가"><svg viewBox="0 0 14 14" width="28" height="28" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M3 0h4v1h-4zM2 1h1v4h-1zM7 1h1v4h-1zM3 5h4v1h-4zM1 6h8v1h-8zM0 7h1v6h-1zM0 13h8v1h-8z"/><path fill="#f2b68a" d="M3 1h4v4h-4z"/><path fill="#5a3a2a" d="M3 1h4v1h-4z"/><path fill="#4a8ad8" d="M1 7h7v6h-7z"/><path fill="#20202c" d="M9 6h3v1h-3zM8 7h1v1h-1zM12 7h1v1h-1zM7 8h1v3h-1zM13 8h1v3h-1zM8 11h1v1h-1zM12 11h1v1h-1zM9 12h3v1h-3z"/><path fill="#3ab05a" d="M9 7h3v1h-3zM8 8h5v3h-5zM9 11h3v1h-3z"/><path fill="#fff" d="M10 8h1v3h-1zM9 9h3v1h-3z"/></svg><small>친구 추가</small></button><button class="pf-gear fr-hic fr-pgic" id="frCodeIc" type="button" aria-label="내 친구 코드"><svg viewBox="0 0 14 14" width="28" height="28" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M0 2h14v1h-14zM0 3h1v9h-1zM13 3h1v9h-1zM0 12h14v1h-14z"/><path fill="#fff7d8" d="M1 3h12v9h-12z"/><path fill="#f2c641" d="M1 3h12v2h-12z"/><path fill="#20202c" d="M2 6h4v1h-4zM2 10h4v1h-4zM2 7h1v3h-1zM5 7h1v3h-1z"/><path fill="#f2b68a" d="M3 7h2v3h-2z"/><path fill="#20202c" d="M7 6h5v1h-5zM7 8h5v1h-5zM7 10h3v1h-3z"/></svg><small>내 코드</small></button><button class="pf-gear" id="pfGear" type="button" aria-label="설정"><svg viewBox="0 0 10 10" width="30" height="30" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true"><rect x="4" y="0" width="1" height="1"/><rect x="5" y="0" width="1" height="1"/><rect x="2" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="5" y="1" width="1" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="1" y="2" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="3" y="2" width="1" height="1"/><rect x="4" y="2" width="1" height="1"/><rect x="5" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/><rect x="6" y="3" width="1" height="1"/><rect x="7" y="3" width="1" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="1" y="4" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="7" y="4" width="1" height="1"/><rect x="8" y="4" width="1" height="1"/><rect x="9" y="4" width="1" height="1"/><rect x="0" y="5" width="1" height="1"/><rect x="1" y="5" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="7" y="5" width="1" height="1"/><rect x="8" y="5" width="1" height="1"/><rect x="9" y="5" width="1" height="1"/><rect x="2" y="6" width="1" height="1"/><rect x="3" y="6" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/><rect x="7" y="6" width="1" height="1"/><rect x="1" y="7" width="1" height="1"/><rect x="2" y="7" width="1" height="1"/><rect x="3" y="7" width="1" height="1"/><rect x="4" y="7" width="1" height="1"/><rect x="5" y="7" width="1" height="1"/><rect x="6" y="7" width="1" height="1"/><rect x="7" y="7" width="1" height="1"/><rect x="8" y="7" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="4" y="8" width="1" height="1"/><rect x="5" y="8" width="1" height="1"/><rect x="7" y="8" width="1" height="1"/><rect x="4" y="9" width="1" height="1"/><rect x="5" y="9" width="1" height="1"/></svg></button><button class="opt" id="closeSet">닫기</button></div>
     <div class="set-body">
       <div id="pfPage"><section class="tr-card" aria-label="트레이너 카드">
         <div class="tr-pic" id="trPic"><i class="tr-ow" id="trOw"></i></div>
@@ -1788,7 +1819,6 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
         <div class="lb-tabs fr-tabs" id="frTabs" role="tablist"><button type="button" data-t="dex" aria-pressed="true">도감 랭킹</button><button type="button" data-t="walk" aria-pressed="false">걸음 랭킹</button></div>
         <p class="fr-note" id="frNote" hidden></p>
         <div class="lb-list fr-list" id="frList"></div>
-        <p class="fr-note fr-foot" id="frFoot"></p>
       </div>
       <div id="setPage" hidden>
       <section class="set-sec">
@@ -6637,7 +6667,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '11.82';   /* v11.82 경완: 필드 트로피 테두리 검정·맵 편집 아이콘 크기, 프로필 친구·설정 버튼 박스 없앰 (베타). v11.81 경완: 필드 트로피 박스 없앰 · 랭킹 시상대 없이 1위부터 목록(내 줄만 표시) · 미니게임 랭킹은 게임 고르기 화면에서만 · 도감 랭킹을 걸음 랭킹 앞으로 · 메뉴 누르면 랭킹 닫힘 (베타). v11.80 경완: 랭킹 화면(필드 골드 아래 트로피: 걸음·도감·미니게임) + 친구는 프로필 톱니 옆 아이콘 + 미니게임 끝나면 기록 → 랭킹 (베타). v11.79 경완: 타이어 그네 — 친구가 밀어 주면 타던 포켓몬은 다 밀 때까지 계속 타고 즐거운 말풍선. v11.78 경완: 친구 서버(아이폰 앱 CloudKit, 베타) — 프로필 › 친구: 친구 코드·걸음 랭킹(친구/전체)·대표 포켓몬·알 선물·친구 체육관 도전. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '11.83';   /* v11.83 경완: 랭킹 줄 = 트레이너 박스(등급 테두리)+포켓몬 박스, 트레이너 등급 표시, 숫자·단위 붙임, 게이지·안내 문구·대표 글자 없앰, 친구 화면 아이콘 새로, 포켓몬 박스 → 상세 카드, 명예의 전당 디자인 (베타). v11.82 경완: 필드 트로피 테두리 검정·맵 편집 아이콘 크기, 프로필 친구·설정 버튼 박스 없앰 (베타). v11.81 경완: 필드 트로피 박스 없앰 · 랭킹 시상대 없이 1위부터 목록(내 줄만 표시) · 미니게임 랭킹은 게임 고르기 화면에서만 · 도감 랭킹을 걸음 랭킹 앞으로 · 메뉴 누르면 랭킹 닫힘 (베타). v11.80 경완: 랭킹 화면(필드 골드 아래 트로피: 걸음·도감·미니게임) + 친구는 프로필 톱니 옆 아이콘 + 미니게임 끝나면 기록 → 랭킹 (베타). v11.79 경완: 타이어 그네 — 친구가 밀어 주면 타던 포켓몬은 다 밀 때까지 계속 타고 즐거운 말풍선. v11.78 경완: 친구 서버(아이폰 앱 CloudKit, 베타) — 프로필 › 친구: 친구 코드·걸음 랭킹(친구/전체)·대표 포켓몬·알 선물·친구 체육관 도전. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -6692,7 +6722,9 @@ function frGive(code, key) {
   (S.frOut ||= []).push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), to: code, e: out, t: Date.now() });
   log(`${esc(frCards[code]?.n || '친구')}에게 ${eggName(e)}을 선물했다.`, [], true); save();
 }
-function frRep() { const P = S.repP != null && boxOf(S.repP); return P ? { sp: P.sp, sx: P.sex || '', nm: nameOf(P), sh: P.shiny ? 1 : 0 } : undefined; }
+// 랭킹에서 남의 포켓몬 상세 카드를 열 수 있게 개체 정보를 같이 올린다 (만난 곳 이름은 빼고)
+const frPV = P => { const o = { id: P.id, sp: P.sp, sex: P.sex || '', iv: P.iv, shiny: P.shiny ? 1 : 0, fr: P.fr || 0, t: P.t, g: P.g || 0, nm: nameOf(P) }; const na = natAb(P); if (na) o.na = na; return o; };
+function frRep() { const P = S.repP != null && boxOf(S.repP) || boxOf((S.buds || [])[0]?.pid); return P ? { sp: P.sp, sx: P.sex || '', nm: nameOf(P), sh: P.shiny ? 1 : 0, p: frPV(P) } : undefined; }
 function frCard() {
   const b = (S.buds || [])[0], P = b ? boxOf(b.pid) : null, w = wkNow(), r2 = v => Math.round(v * 100) / 100;
   frTidy();
@@ -6719,7 +6751,7 @@ const lbVal = (c, k, wk = wkKey()) => !c ? 0 : lbMg(k) ? +c.best || 0 : k === 'd
 const lbTxt = (v, k) => lbMg(k) ? [Math.round(v).toLocaleString(), '점'] : k === 'dex' ? [(v / DEX_ALL() * 100).toFixed(1), '%'] : [fmtKm(v), 'km'];
 // v11.80 경완 '미니게임 별로 전체 랭킹': 게임마다 내 최고 기록을 Score 레코드로 올린다. 카드 rp = 그 기록을 낸 포켓몬 (트레이너 옆에 서 있다)
 const mgRecOf = id => id === 'jump' ? mgRec() : mgS()[id] || { best: 0 };
-function mgMeCard(id) { const R = mgRecOf(id); return { v: 1, n: S.tr?.n || '트레이너', sex: S.tr?.sex || 'm', rp: R.by && SPECIES[R.by.sp] ? R.by : frRep() || frRepOf(meCard()) || undefined, best: R.best || 0 }; }
+function mgMeCard(id) { const R = mgRecOf(id); return { v: 1, n: S.tr?.n || '트레이너', sex: S.tr?.sex || 'm', dex: S.unlocked?.size || 0, rp: R.by && SPECIES[R.by.sp] ? R.by : frRep() || frRepOf(meCard()) || undefined, best: R.best || 0 }; }
 const lbMeCard = k => lbMg(k) ? mgMeCard(lbMg(k)) : meCard();
 async function mgPush(id) {
   const R = mgRecOf(id); if (!frH || !(R.best > 0)) return;
@@ -6728,19 +6760,21 @@ async function mgPush(id) {
   await frAsk({ op: 'score', game: id, best: R.best, card: c }); R.up = c; save();
 }
 const trImg = c => TR_OW[c?.sex === 'f' ? 'f' : 'm'] || TR_OW.m;
-const lbShow = c => { const R = frRepOf(c); return `<span class="lb-show"><i class="fr-tr" style="background-image:url(${trImg(c)})"></i><span class="fr-pic" data-sp="${R?.sp || 0}" data-sx="${R?.sx || ''}" data-sh="${R?.sh ? 1 : ''}"></span></span>`; };
+const lbShow = c => { const R = frRepOf(c), L = trLevel(+c?.dex || 0);   // v11.83 경완: 트레이너 박스(등급 테두리 = 프로필 트레이너 카드) + 포켓몬 박스
+  return `<span class="lb-show"><span class="tr-card lb-trb r${L.i}"><i class="fr-tr" style="background-image:url(${trImg(c)})"></i></span><span class="lb-pk"${R?.p?.iv ? ` data-pv="${esc(JSON.stringify(R.p))}" role="button" aria-label="${esc(R.nm || SPECIES[R.sp].n)} 상세 카드"` : ''}><span class="fr-pic" data-sp="${R?.sp || 0}" data-sx="${R?.sx || ''}" data-sh="${R?.sh ? 1 : ''}"></span></span></span>`; };
 const isFr = code => (S.friends || []).includes(code);
 const ADD_IC = `<svg viewBox="0 0 12 12" width="22" height="22" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 0h3v1h-3zM1 1h1v3h-1zM5 1h1v3h-1zM2 4h3v1h-3zM1 5h5v1h-5zM0 6h1v5h-1zM6 6h1v1h-1zM0 11h7v1h-7z"/><path fill="#f2b68a" d="M2 1h3v3h-3z"/><path fill="#4a8ad8" d="M1 6h5v5h-5z"/><path fill="#2a9a4a" d="M9 4h1v7h-1zM7 6h5v1h-5z"/><path fill="#20202c" d="M8 3h3v1h-3zM8 11h3v1h-3z"/></svg>`;
 // mode: 'all' 랭킹 화면 (친구 추가 버튼) / 'fr' 친구 화면 (선물·체육관·지우기)
+const LB_MEDAL = { 1: '<svg class="lb-medal" viewBox="0 0 14 16" width="30" height="34" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 0h4v1h-4zM8 0h4v1h-4zM1 1h1v4h-1zM12 1h1v4h-1zM6 1h1v4h-1zM7 1h1v4h-1zM4 5h6v1h-6zM3 6h1v1h-1zM10 6h1v1h-1zM2 7h1v1h-1zM11 7h1v1h-1zM1 8h1v5h-1zM12 8h1v5h-1zM2 13h1v1h-1zM11 13h1v1h-1zM3 14h1v1h-1zM10 14h1v1h-1zM4 15h6v1h-6z"/><path fill="#d83a4a" d="M2 1h4v4h-4z"/><path fill="#3a6ad8" d="M8 1h4v4h-4z"/><path fill="#ff8a96" d="M2 1h1v4h-1z"/><path fill="#7aa2ff" d="M8 1h1v4h-1z"/><path fill="#f2c641" d="M4 6h6v1h-6zM3 7h8v1h-8zM2 8h10v5h-10zM3 13h8v1h-8zM4 14h6v1h-6z"/><path fill="#fff2a0" d="M4 7h2v1h-2zM3 8h2v2h-2zM3 10h1v2h-1z"/><path fill="#b8820a" d="M10 9h1v4h-1zM9 12h2v1h-2zM5 14h5v0h-5zM8 13h3v1h-3z"/></svg>', 2: '<svg class="lb-medal" viewBox="0 0 14 16" width="30" height="34" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 0h4v1h-4zM8 0h4v1h-4zM1 1h1v4h-1zM12 1h1v4h-1zM6 1h1v4h-1zM7 1h1v4h-1zM4 5h6v1h-6zM3 6h1v1h-1zM10 6h1v1h-1zM2 7h1v1h-1zM11 7h1v1h-1zM1 8h1v5h-1zM12 8h1v5h-1zM2 13h1v1h-1zM11 13h1v1h-1zM3 14h1v1h-1zM10 14h1v1h-1zM4 15h6v1h-6z"/><path fill="#d83a4a" d="M2 1h4v4h-4z"/><path fill="#3a6ad8" d="M8 1h4v4h-4z"/><path fill="#ff8a96" d="M2 1h1v4h-1z"/><path fill="#7aa2ff" d="M8 1h1v4h-1z"/><path fill="#cfd6e2" d="M4 6h6v1h-6zM3 7h8v1h-8zM2 8h10v5h-10zM3 13h8v1h-8zM4 14h6v1h-6z"/><path fill="#ffffff" d="M4 7h2v1h-2zM3 8h2v2h-2zM3 10h1v2h-1z"/><path fill="#8a92a6" d="M10 9h1v4h-1zM9 12h2v1h-2zM5 14h5v0h-5zM8 13h3v1h-3z"/></svg>', 3: '<svg class="lb-medal" viewBox="0 0 14 16" width="30" height="34" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 0h4v1h-4zM8 0h4v1h-4zM1 1h1v4h-1zM12 1h1v4h-1zM6 1h1v4h-1zM7 1h1v4h-1zM4 5h6v1h-6zM3 6h1v1h-1zM10 6h1v1h-1zM2 7h1v1h-1zM11 7h1v1h-1zM1 8h1v5h-1zM12 8h1v5h-1zM2 13h1v1h-1zM11 13h1v1h-1zM3 14h1v1h-1zM10 14h1v1h-1zM4 15h6v1h-6z"/><path fill="#d83a4a" d="M2 1h4v4h-4z"/><path fill="#3a6ad8" d="M8 1h4v4h-4z"/><path fill="#ff8a96" d="M2 1h1v4h-1z"/><path fill="#7aa2ff" d="M8 1h1v4h-1z"/><path fill="#e09a5a" d="M4 6h6v1h-6zM3 7h8v1h-8zM2 8h10v5h-10zM3 13h8v1h-8zM4 14h6v1h-6z"/><path fill="#ffd0a0" d="M4 7h2v1h-2zM3 8h2v2h-2zM3 10h1v2h-1z"/><path fill="#a05a20" d="M10 9h1v4h-1zM9 12h2v1h-2zM5 14h5v0h-5zM8 13h3v1h-3z"/></svg>' };   // v11.83 경완 '랭킹 전당': 1~3위 메달
 function lbRow(r, i, k, top, mode) {
   const c = r.c, v = lbVal(c, k), [vt, vu] = lbTxt(v, k), R = frRepOf(c), nm = c ? esc(c.n || '트레이너') : '아직 카드를 못 받았어요';
-  const sub = c ? lbMg(k) ? (R ? (n => `${esc(n)}${hasBat(n) ? '과' : '와'} 함께`)(R.nm || SPECIES[R.sp].n) : '') : (k === 'dex' ? `도감 ${c.dex || 0} / ${DEX_ALL()}` : `${R ? '대표 ' + esc(R.nm || SPECIES[R.sp].n) + ' · ' : ''}도감 ${c.dex || 0}`) : frFmt(r.code);
+  const sub = c ? `${trLevel(+c.dex || 0).name} · 도감 ${c.dex || 0}` : frFmt(r.code);
   const right = r.me ? '' : mode === 'all' ? (isFr(r.code) ? '<em class="lb-fd">친구</em>' : `<button class="lb-add" type="button" data-add="${esc(r.code)}" aria-label="친구 추가">${ADD_IC}</button>`) : '';
   const acts = mode === 'fr' && !r.me ? `<span class="fr-acts">${c ? `<button class="fr-b" type="button" data-gift="${esc(r.code)}">알 선물</button>` : ''}${c?.gym?.lu?.length ? `<button class="fr-b gym" type="button" data-gym="${esc(r.code)}">체육관 도전</button>` : ''}`
     + `${(S.frOut || []).some(x => x.to === r.code) ? `<em class="fr-pend">보낸 알 ${(S.frOut || []).filter(x => x.to === r.code).length}개 기다리는 중</em>` : ''}<button class="fr-x" type="button" data-code="${esc(r.code)}">지우기</button></span>` : '';
-  return `<div class="lb-row${r.me ? ' me' : ''}${k === 'dex' ? ' lb-dex' : lbMg(k) ? ' lb-mg' : ''}"><span class="lb-rk${i < 3 ? ' r' + (i + 1) : ''}">${i + 1}</span>${lbShow(c)}`
-    + `<span class="lb-mid"><b>${nm}${r.me ? ' (나)' : ''}</b><span>${sub}</span><i class="lb-bar"><i style="width:${top ? Math.max(2, Math.round(v / top * 100)) : 0}%"></i></i></span>`
-    + `<span class="lb-val"><b>${vt}</b><small>${vu}</small></span>${right}${acts}</div>`;
+  return `<div class="lb-row${r.me ? ' me' : ''}${i < 3 ? ' top' + (i + 1) : ''}${k === 'dex' ? ' lb-dex' : lbMg(k) ? ' lb-mg' : ''}"><span class="lb-rk${i < 3 ? ' r' + (i + 1) : ''}">${i < 3 ? LB_MEDAL[i + 1] : ''}<b>${i + 1}</b></span>${lbShow(c)}`
+    + `<span class="lb-mid"><b>${nm}${r.me ? ' (나)' : ''}</b><span>${sub}</span></span>`
+    + `<span class="lb-val"><b>${vt}<small>${vu}</small></b></span>${right}${acts}</div>`;
 }
 function frPics(root) { root.querySelectorAll('.fr-pic').forEach(el => { const sp = +el.dataset.sp; if (!sp || el.firstChild) return;
   ensureSprite(sp).then(() => { const u = thumbOf(fKey(sp, el.dataset.sx)); if (u) el.innerHTML = `<img src="${u}" alt=""${el.dataset.sh ? ` style="filter:hue-rotate(${shinyHue(sp)}deg)"` : ''}>`; }).catch(() => {}); }); }
@@ -6760,7 +6794,6 @@ function renderFriends() {
   (S.friends || []).forEach(code => { if (!rows.some(r => r.code === code)) rows.push({ code, c: frCards[code] }); });   // 이번 주 0km 친구도 아래에
   const top = Math.max(0, ...rows.map(r => lbVal(r.c, k)));
   $('#frList').innerHTML = rows.map((r, i) => lbRow(r, i, k, top, 'fr')).join('') + ((S.friends || []).length ? '' : '<p class="fr-empty">위쪽 사람+ 아이콘으로 친구 코드를 넣거나,<br>필드의 트로피 랭킹에서 친구를 추가해 보세요.</p>');
-  $('#frFoot').textContent = k === 'dex' ? `도감 등록률 = 등록한 포켓몬 / 전체 ${DEX_ALL()}종` : '월요일 0시부터 걸은 거리예요. 카드는 앱을 켤 때와 15분마다 올라가요.';
   frPics($('#frList'));
 }
 // ---------- 랭킹 화면 (필드 트로피): 서버를 쓰는 모든 트레이너 상위 100명 ----------
@@ -8416,7 +8449,7 @@ function mgCountUp(root) {
 function mgEnd(g) { mgFireHum(false);
   mgMus.stop(.6);
   const m = g.m, R = mgRec(), M = mgS(), dist = Math.round((Math.floor(g.dist / 25) + g.bonus) * (g.pas.score || 1)), prev = R.best, T = !!m.test, nb = !T && dist > prev, P = T ? null : boxOf(m.pid);   /* 시험 판은 기록·보상 없음 */
-  if (!T) { mqS(); R.n++; mqRec(g, m, dist); } if (nb) { R.best = dist; const Pb = boxOf(m.pid); R.by = { sp: SPECIES[+m.form] ? +m.form : Pb?.sp, sx: Pb?.sex || '', nm: m.name, sh: Pb?.shiny ? 1 : 0 }; }   /* v11.80: 랭킹에 기록 낸 포켓몬 */
+  if (!T) { mqS(); R.n++; mqRec(g, m, dist); } if (nb) { R.best = dist; const Pb = boxOf(m.pid); R.by = { sp: SPECIES[+m.form] ? +m.form : Pb?.sp, sx: Pb?.sex || '', nm: m.name, sh: Pb?.shiny ? 1 : 0, p: Pb ? frPV(Pb) : undefined }; }   /* v11.80: 랭킹에 기록 낸 포켓몬 */
   const d = dayKey(); if (M.gd !== d) { M.gd = d; M.gg = 0; }
   const goldV = Math.round((Math.floor(dist / MG_PTS) + (nb && prev > 0 ? 20 : 0)) * (g.pas.gold || 1)), gold = T ? 0 : goldV; M.gg += gold; M.gT = (M.gT || 0) + gold;   /* v7.46: 게임으로 받은 골드 전체 (운영자 골드 칸에 표시) */ addGold(gold);   /* v6.59: 시험 판도 받을 만큼 보여 주기만 (실제로는 안 받음) */   // v6.17 경완: 하루·한 판 제한 없이 점수 30점마다 1G (+최고 기록 20G). 5,000점 ≈ 166G → 빛나는 부적 3000G 는 5,000점 약 18판 (6.16 은 주석이 코드를 덮어 골드가 안 들어갔다)
   const frB = Math.floor(dist / 1000), fr = P && frB ? frB : 0;   /* v8.35 경완: 하루 6판 제한 없앰 */   /* v8.34 경완: 1,000점부터 +1 (300~999점은 0). v8.02 경완: 300점 +1, 2,000점 +2, 3,000점 +3 … (1,000점마다 +1, 상한 없음), 같은 포켓몬 하루 6판째부터는 +1 */   /* v8.00 경완: 평균 2,500점 기준 — 500점 +1, 1,500 +2, 2,500 +3, 3,500 +4, 4,500 이상 +5 (최대), 같은 포켓몬 하루 6판째부터는 +1 (v7.98 300점부터·1,000점마다·최대 +4) */ if (fr) addFr(m.pid, fr); const frV = T ? frB : fr;   /* v6.91 경완: 2259점에 +1 은 섭섭 — 100점부터 +1, 500점마다 +1 (최대 +6), 같은 포켓몬 하루 6판째부터는 절반 */   /* v6.52 경완: 하루 제한 없음 — 100점부터 +1, 800점마다 +1 (최대 +4), 같은 포켓몬 하루 6판째부터는 +1 */
@@ -8959,11 +8992,12 @@ function natAb(P) {
 }
 const STAT_K = { atk: '공격', def: '방어', spa: '특수공격', spd: '특수방어', spe: '스피드' };
 function natAbHtml(P) {
-  const o = natAb(P); if (!o) { nabLoad().then(() => document.querySelectorAll(`.pp-na[data-na="${P.id}"]`).forEach(e => { e.innerHTML = natAbHtml(P); })); return '<span class="na-l">성격</span><span>…</span><span class="na-l">특성</span><span>…</span>'; }
+  const o = P.na || natAb(P); if (!o) { nabLoad().then(() => document.querySelectorAll(`.pp-na[data-na="${P.id}"]`).forEach(e => { e.innerHTML = natAbHtml(P); })); return '<span class="na-l">성격</span><span>…</span><span class="na-l">특성</span><span>…</span>'; }
   const n = NAB.ntm[o.nat] || [o.nat, o.nat];
   return `<span class="na-l">성격</span><span><b>${esc(n[1])}</b>${n[2] ? ` <small>${STAT_K[n[2]]}↑ ${STAT_K[n[3]]}↓</small>` : ' <small>보정 없음</small>'}</span><span class="na-l">특성</span><span><b>${esc(NAB.ab[o.ab] || o.ab)}</b>${o.ha ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</span>`;
 }
 function openPoke(id, dir = 0, quiet = false, noCry = false) {
+  $('#pokePop').classList.remove('view');
   const P = boxOf(id); if (!P) return; if (!quiet && P.nw) { P.nw = false; save(); renderBox(); } if (!quiet && !noCry && ($('#pokePop').hidden || pokeId !== id)) playCry(P.sp, .1); pokeId = id;
   const L = pokeList(), i = L.indexOf(P), d = SPECIES[P.sp], rk = rankOf(P);
   $('#pokePop').hidden = false; { const bud = S.buds.some(b => b.pid === P.id); $('#pokePop .win').classList.toggle('bud', bud); setTier($('#pokePop .win'), P.sp); /* 지금 짝꿍이면 분홍 (등록·해제하면 바로 바뀐다) */ $('#ppBudTag').hidden = !bud; }
@@ -8995,7 +9029,21 @@ function setEvoBtn(btn, P) {
   if (tip) { btn.dataset.tip = tip; btn.dataset.tipc = ''; } else { delete btn.dataset.tip; delete btn.dataset.tipc; }
 }
 $('#ppDex').onclick = () => { const P = boxOf(pokeId); if (!P) return; sfx('open'); $('#dexPop').classList.add('ovr'); openCard(P.sp); };   // v6.00 경완: 포켓몬 카드에서 도감 카드로 (카드 위에 뜬다)
-const closePoke = () => { $('#pokePop').hidden = true; pokeId = null; freeArm = null; ppBud = false; ppSolo = false; if (!monPop.hidden) { if (!S.mons.includes(mgrSel)) closeMon(); else renderMgr(true); } if (S.sel) { if (!S.mons.includes(S.sel)) select(null); else { infoEl.dataset.uid = ''; renderInfo(); } } };
+// v11.83 경완: 랭킹의 포켓몬 박스 → 그 포켓몬 상세 카드 (남의 포켓몬이라 보기만: 버튼·이름 바꾸기·넘기기 없음)
+function openPokeView(P) {
+  if (!P || !SPECIES[P.sp] || !Array.isArray(P.iv)) return;
+  const pop = $('#pokePop'), w = pop.querySelector('.win'), d = SPECIES[P.sp], rk = rankOf(P);
+  pokeId = null; pop.classList.add('view'); pop.classList.toggle('top', !$('#rank').hidden && $('#rank').classList.contains('ontop') || !$('#mg').hidden);
+  playCry(P.sp, .1); pop.hidden = false; w.classList.remove('bud'); setTier(w, P.sp); $('#ppBudTag').hidden = true; $('#ppRk').innerHTML = rkBadge(P);
+  const pic = $('#ppPic'), img = $('#ppImg'); pic.classList.toggle('shiny', !!P.shiny); pic.classList.toggle('rkS', rk === 'S'); pic.classList.toggle('rkA', rk === 'A'); pic.dataset.rk = rk; pic.classList.toggle('frMax', (P.fr || 0) >= FR_MAX); pic.style.setProperty('--shue', shinyHue(P.sp) + 'deg');
+  img.src = thumbP(P) || ''; if (!thumbOf(P.sp)) ensureSprite(P.sp).then(() => { if (pop.classList.contains('view')) img.src = thumbP(P) || ''; }).catch(() => {});
+  const nm = P.nm || d.n;
+  $('#ppBody').innerHTML = infoHead(P, P.sp, `<span class="nm-ro"><b>${esc(nm)}</b>${sexHtml(P.sex)}</span>`, nm !== d.n ? `<span class="ih-sp">${esc(d.n)}</span>` : '').replace(/<button class="ih-game"[\s\S]*?<\/button>/, '')
+    + `<div class="ivs">${ivRows(P)}<span class="fr-l">친밀도</span><span class="hearts" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div>`
+    + `<div class="pp-na" data-na="${P.id}">${natAbHtml(P)}</div>` + moveCard(P.sp, P.fr || 0, (P.fr || 0) >= FR_MAX);
+}
+document.addEventListener('click', e => { const b = e.target.closest('.lb-pk[data-pv]'); if (!b || b.closest('.fr-rep')) return; e.stopPropagation(); let P; try { P = JSON.parse(b.dataset.pv); } catch (er) { return; } sfx('open'); openPokeView(P); }, true);
+const closePoke = () => { $('#pokePop').hidden = true; $('#pokePop').classList.remove('view'); pokeId = null; freeArm = null; ppBud = false; ppSolo = false; if (!monPop.hidden) { if (!S.mons.includes(mgrSel)) closeMon(); else renderMgr(true); } if (S.sel) { if (!S.mons.includes(S.sel)) select(null); else { infoEl.dataset.uid = ''; renderInfo(); } } };
 $('#monPop').addEventListener('click', e => { if (!e.target.closest('#mStage') || !mgrSel?.pid || !boxOf(mgrSel.pid)) return; sfx('tap'); ppBud = false; ppSolo = true; openPoke(mgrSel.pid, 0, false, true); });   // 필드 개체 정보의 그림을 누르면 그 포켓몬 정보 카드
 $('#ppX').onclick = () => { sfx('tap'); closePoke(); };
 // 놓아주기: 한 번 더 눌러야 숲으로 돌려보낸다 (필드·짝꿍에서도 빠짐, 도감 기록은 남음)
@@ -10167,7 +10215,7 @@ function renderTrainer() {
   const sx = $('#trSex'); sx.className = 'tr-sex ' + t.sex; sx.textContent = t.sex === 'f' ? '♀' : '♂'; sx.setAttribute('aria-label', t.sex === 'f' ? '여자 (눌러서 바꾸기)' : '남자 (눌러서 바꾸기)');
   $('#trRank').textContent = L.name;
   { const nx = $('#trNext'); nx.innerHTML = L.next ? `도감 <b>${L.k}</b>마리 모았어요.<br>다음 <b>${L.next[1]}</b>까지 <b>${L.next[0] - L.k}</b>마리 더 모으면 돼요.<div class="tr-bar"><i style="width:${Math.round((L.k - TR_LV[L.i][0]) / (L.next[0] - TR_LV[L.i][0]) * 100)}%"></i></div>` : `도감 <b>${L.k}</b>마리, 가장 높은 등급이에요!`; }
-  document.querySelector('.tr-card').className = 'tr-card r' + L.i + (L.i >= 6 ? ' tr-shine' : '') + (L.i >= 8 ? ' tr-spark' : '');
+  document.querySelector('#pfPage .tr-card').className = 'tr-card r' + L.i + (L.i >= 6 ? ' tr-shine' : '') + (L.i >= 8 ? ' tr-spark' : '');
 }
 $('#trName').addEventListener('input', e => { e.target.style.width = Math.max(2, (e.target.value || e.target.placeholder).length) + .3 + 'em'; });
 $('#trName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } });
