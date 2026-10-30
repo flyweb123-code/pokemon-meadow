@@ -842,7 +842,7 @@ async function challenge() {
 function resultPop(c, res, gold, rep, R) {
   const won = !!res?.won, stk = st().stk | 0, sb = won ? stkBonus(stk) : 0;
   return new Promise(ok => { const p = pop(`<div class="rs-hd ${won ? 'won' : 'lost'}"><i class="rs-ray"></i><b>${won ? '승리!' : res?.quit ? '기권했다' : '패배…'}</b><small>${esc(c.cls)} ${esc(c.nm)}${won ? '에게 이겼다' : '에게 졌다'}</small></div>
-      ${won ? `<div class="rs-gold"><i class="coin"></i><b class="rg-n">+0</b><span>G</span></div>` : ''}${sb ? `<div class="rs-stk"><i class="sk-fl l"></i><i class="sk-fl r"></i><b>🔥 ${stk}연승!</b><span>연승 보너스 평판 <em>+${sb}</em></span></div>` : ''}${repBox(rep)}
+      ${won ? `<div class="rs-gold"><i class="coin"></i><b class="rg-n">+0</b><span>G</span></div>` : ''}${sb ? `<div class="rs-stk"><b>${stk}연승</b><span>연승 보너스 평판 <em>+${sb}</em></span></div>` : ''}${repBox(rep)}
       <div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => { close(); ok(); });
     { const oc = p.onclick; p.onclick = e => { if (e.target === p) { p.remove(); return ok(); } oc(e); }; }   // 빈 곳을 눌러 닫아도 확인과 똑같이 (도전자가 떠나지 못하고 갇히던 것, 경완 2026-10-29)
     p.classList.add('rs-pop'); if (won) p.classList.add('rs-w');
@@ -853,10 +853,9 @@ function resultPop(c, res, gold, rep, R) {
         n.parentElement.classList.add('go'); const t0 = performance.now(), T = clampN(gold * 2, 600, 1100);
         await new Promise(done => { const f = now => { if (!p.isConnected) return done(); const k = Math.min(1, (now - t0) / T); n.textContent = '+' + Math.round(gold * (1 - (1 - k) ** 3)).toLocaleString(); k < 1 ? requestAnimationFrame(f) : done(); }; requestAnimationFrame(f); });
         n.parentElement.classList.add('end'); await wait(150); }
-      // 연승 보너스: 쾅 하고 찍히는 도장 + 불꽃 + 화면 흔들림 (경완 2026-10-29 '연승 보너스 확실하게 임팩트')
+      // 연승 보너스: 작은 띠가 살짝 튀어나오고 반짝 (경완 2026-10-30 '너무 과함' → 도장·불꽃·흔들림 뺌)
       const sk = p.querySelector('.rs-stk');
-      if (sk) { await wait(120); if (!p.isConnected) return; sk.classList.add('go'); try { window.GymBGM?.se?.('DP_DODON', { gain: 1.6 }); setTimeout(() => window.GymBGM?.se?.('DP_KIRAKIRA2'), 220); } catch (e) {}
-        const w = p.querySelector('.win'); w?.classList.remove('rs-shk'); void w?.offsetWidth; w?.classList.add('rs-shk'); await wait(750); }
+      if (sk) { await wait(120); if (!p.isConnected) return; sk.classList.add('go'); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} await wait(400); }
       repAnim(p, rep);
     })(); });
 }

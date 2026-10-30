@@ -1863,3 +1863,25 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .gy-qw .qw-no{width:26px;height:26px;background:#202028;color:#fff;font-size:12px;box-shadow:0 0 0 2px #e8402e,0 0 0 4px #0c0d18}
 .gy-qw .qw-wait{background:#303848!important;color:#e8e8f0!important}
 .gy-qw .qw-none b{color:#fff}.gy-qw .qw-none span{color:#a8acc8}
+
+/* 연승 보너스 차분하게 (경완 2026-10-30 '디자인 넘 과한듯'): 한 줄 띠, 살짝 튀어나옴, 불꽃·빛남 없음 */
+.rs-stk{flex-direction:row!important;justify-content:center;gap:8px!important;padding:5px 10px!important;margin:0 0 8px!important;border:2px solid #20202c;border-radius:6px!important;background:#fff4d0!important;color:#7a4a08!important;font-size:12px!important;opacity:0}
+.rs-stk b{font-size:13px!important;letter-spacing:0!important;color:#c0402a!important;text-shadow:none!important}
+.rs-stk span{color:#7a4a08!important;font-weight:700}.rs-stk span em{color:#c0402a!important;font-size:13px!important}
+.rs-stk.go{animation:skPop .3s cubic-bezier(.3,1.5,.5,1) forwards!important}
+@keyframes skPop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+
+/* 학습장치 창: 라인업 포켓몬 미니 그림 + 경험치 막대가 한꺼번에 찬다 (경완 2026-10-30) */
+.bt .bt-shw{position:absolute;left:6px;right:6px;top:6px;padding:6px 10px 10px;background:#fff;color:#484848;text-shadow:1px 1px 0 #d0d0c8;font-size:10px;line-height:12px;z-index:6;
+  box-shadow:inset 0 0 0 3px #94785c,inset 0 0 0 4px #b8a898,inset 0 0 0 5px #e0d8d0,0 0 0 2px #283028;border-radius:2px;animation:lvwIn .15s steps(3) both}
+.bt .bt-shw[hidden]{display:none}
+.bt .bt-shw p{margin:0 0 3px;font-size:10px}
+.bt .bt-shw .sh-r{display:grid;grid-template-columns:20px 1fr 34px 64px;align-items:center;column-gap:5px;height:20px;position:relative}
+.bt .bt-shw .sh-ic{width:20px;height:20px;overflow:hidden;display:grid;place-items:center}.bt .bt-shw .sh-ic img{width:20px;height:20px;object-fit:contain;image-rendering:pixelated}
+.bt .bt-shw .sh-r b{font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bt .bt-shw .lv{font-size:9px}.bt .bt-shw .lv em{font-style:normal;font-size:10px;margin-left:1px}
+.bt .bt-shw .xp{display:block;height:4px;background:#405060;border:1px solid #303830;border-radius:2px;overflow:hidden}.bt .bt-shw .xp>i{display:block;height:100%;width:0;background:#40c8f8}
+.bt .bt-shw .up{position:absolute;right:0;top:-5px;font-size:7px;color:#3a8ab8;text-shadow:none}
+.bt .bt-shw .sh-r.lvup .lv{color:#e04838;animation:shUp .5s steps(4)}
+@keyframes shUp{30%{transform:translateY(-3px)}}
+.bt .bt-shw .cur{position:absolute;right:6px;bottom:2px;color:#e04838;font-size:7px;font-weight:400;animation:btCur .7s steps(2) infinite}
