@@ -82,6 +82,21 @@ Xcode Cloud 는 개발자 계정에 한 달 25시간 무료 (빌드 한 번 10~2
 
 카드에 항목(대표 포켓몬 등)을 더해도 `card` 하나에 JSON 으로 들어가서 스키마를 다시 배포할 필요가 없다. 3단계 필드가 하나라도 빠지면 카드 올리기가 실패한다.
 
+### 도감 랭킹·미니게임 랭킹 (11.79)
+
+CloudKit Console › **Development** › Schema 에서 아래를 더하고, 다시 **Deploy Schema Changes…** 로 Production 에 배포한다.
+
+1. Record Types › `Trainer` › 필드 추가: `dex` (Int(64)) — 도감에 등록한 포켓몬 수.
+   Indexes › `Trainer` 에 `dex` **Queryable**, `dex` **Sortable** 두 줄 추가.
+2. Record Types › + → 이름 `Score` (미니게임 최고 기록, 게임마다 한 사람 한 개), 필드 세 개:
+   - `game` (String) — 게임 id (`jump` = 장애물 넘기)
+   - `best` (Double) — 최고 점수
+   - `card` (String) — 이름·성별·기록 낸 포켓몬 (JSON)
+   Indexes › `Score` 에 `game` **Queryable**, `best` **Queryable**, `best` **Sortable** 추가.
+3. Deploy Schema Changes… → Production.
+
+1번을 안 해도 걸음 랭킹·친구는 그대로 되고(앱이 dex 없이 다시 올린다) 도감 랭킹만 비어 있다. 2번을 안 하면 미니게임 랭킹 자리에 '설정이 아직 덜 됐어요' 가 뜬다.
+
 ## 쓰는 법
 
 - 워치에서 포켓몬 키우기 › **런닝 시작**. 화면이 꺼져도 계속 기록돼요.
