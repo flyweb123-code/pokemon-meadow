@@ -316,7 +316,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}@media 
 #mons{position:absolute;inset:0;pointer-events:none}#mons>*{pointer-events:auto;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 #night{position:absolute;inset:0;pointer-events:none;z-index:1000;mix-blend-mode:multiply;transition:background-color .6s}
 #tuShade{position:absolute;inset:0;pointer-events:none;z-index:1050;background:rgba(10,14,30,.6)}   /* v8.70 튜토리얼: 포켓몬(+1100)과 말풍선(#fx)만 이 그늘 위로 */
-#fx{position:absolute;inset:0;pointer-events:none;z-index:1100}
+#fx{position:absolute;inset:0;pointer-events:none;z-index:2500}   /* v11.77 경완 '열매 말풍선이 그루터기 밑으로': 밤에 빛나는 포켓몬 앞 소품이 +1100 으로 올라가(propNightLift) 말풍선(1100)을 덮었다 → 올라간 소품·포켓몬보다 위 */
 /* v3.54 경완: 필드 위쪽은 먼 숲과 하늘 (시간·날씨에 따라), 해·달·별·구름 */
 .stage #skyC{width:360px;height:120px;bottom:auto}
 #skyFx{position:absolute;left:0;top:0;width:360px;height:80px;overflow:hidden;pointer-events:none}
@@ -6558,7 +6558,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '11.76';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '11.77';   /* v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
