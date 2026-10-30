@@ -1110,7 +1110,7 @@ function infoPop() {
     <div class="gy-body">
       <div class="if-hero2" style="--tc:${GA.TYPE_C?.[g.ty] || '#5a6a9a'}"><img class="ih-map" alt="" data-ms="${g.d}"><div class="ih-tx"><span class="if-ty">${tyIcon(g.ty)}${TYPE_KO[g.ty]} 타입 체육관</span><h3><span>${esc(g.nm)}</span><button class="gy-chg gy-pen" type="button" data-a="nm" aria-label="이름 바꾸기"><svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M8 0h2v1H8zM7 1h1v1H7zM10 1h1v1h-1zM6 2h1v1H6zM11 2h1v1h-1zM5 3h1v1H5zM10 3h1v1h-1zM4 4h1v1H4zM9 4h1v1H9zM3 5h1v1H3zM8 5h1v1H8zM2 6h1v1H2zM7 6h1v1H7zM1 7h1v2H1zM6 7h1v1H6zM5 8h1v1H5zM0 9h1v3H0zM4 9h1v1H4zM1 11h3v1H1zM2 10h1v1H2z"/><path fill="#f0c040" d="M7 2h1v1H7zM6 3h2v1H6zM5 4h2v1H5zM4 5h2v1H4zM3 6h2v1H3zM2 7h2v1H2zM2 8h3v1H2zM1 9h3v1H1zM3 10h1v1H3z"/><path fill="#e86070" d="M8 1h2v1H8zM8 2h3v1H8zM8 3h2v1H8zM8 4h1v1H8z"/></svg></button></h3><span class="ih-sub">${d0.getFullYear()}.${d0.getMonth() + 1}.${d0.getDate()} 개장 · 운영 ${days}일째</span></div></div>
       <div class="if-stats"><div><small>전적</small><b>${g.w || 0}<em>승</em> ${g.l || 0}<em>패</em></b></div><div><small>방어율</small><b>${wr}<em>%</em></b></div><div><small>이번 주</small><b>${w.w || 0}<em>승</em> ${w.l || 0}<em>패</em></b></div></div>
-      <button class="if-grade" type="button" data-a="perk" data-g="${G.i}">${gEmb(G.i)}<div class="ig-tx"><div class="ig-top"><small>지금 등급</small><em>${nx ? `다음 ${nx[1]}` : '가장 높은 등급'} ›</em></div><b class="ig-gr" data-g="${G.i}">${G.n}</b><i class="gy-bar"><i style="width:${pct}%"></i></i><span class="ig-rep">평판 <b>${g.rep || 0}</b>${nx ? ` / ${nx[0]}` : ''}${exam(nx) ? ' <span class="if-sim">승급 심사 대기</span>' : ''}</span></div></button>
+      <button class="if-grade" type="button" data-a="perk" data-g="${G.i}">${gEmb(G.i)}<div class="ig-tx"><div class="ig-top"><small>지금 등급</small><em>${nx ? '다음' : '가장 높은 등급'} ›</em></div><b class="ig-gr" data-g="${G.i}">${G.n}</b><i class="gy-bar"><i style="width:${pct}%"></i></i><span class="ig-rep">평판 <b>${g.rep || 0}</b>${nx ? ` / ${nx[0]}` : ''}${exam(nx) ? ' <span class="if-sim">승급 심사 대기</span>' : ''}</span></div></button>
       <div class="if-two">
         <div class="if-staff"><small>고용할 수 있는 트레이너</small><b>${staffMax()}<em>/ 5명</em></b></div>
         <div class="if-big"><small>체육관 크기</small><b>${bigOf(g) + 1}<em>/ ${STAGES}단계</em></b>${canBig(g) ? '<button class="gy-key main" type="button" data-a="big">넓히기</button>' : ''}</div>
@@ -1156,18 +1156,19 @@ async function shutFx(t1, s1, t2, s2, mid, { hold = 0, under } = {}) {   // hold
 }
 const gCard = (x, i) => { const G = gradeOf(x.rep || 0), cur = x === st(), sm = SF_MAX[G.i], tI = tyIcon(x.ty).replace(/ data-tip="[^"]*"/, '');
   return `<div class="mg-card${cur ? ' cur' : ''}" data-ty="${x.ty}"><button type="button" class="mg-go" data-i="${i}"><span class="mg-th"><img alt="" data-ms="${x.d}" data-gi="${bigOf(x)}"><em class="mg-st">${cur ? '운영 중' : '휴업 중'}</em></span><span class="mg-tx"><b>${esc(x.nm)}</b><span class="mg-ty">${tI}${TYPE_KO[x.ty]} · ${G.n}</span><span class="mg-ch"><i>평판 <b>${x.rep || 0}</b></i><i>트레이너 <b>${sm ? `${(x.sf || []).length}/${sm}` : '잠김'}</b></i></span></span></button><button type="button" class="mg-del" data-del="${i}">폐업</button></div>`; };
-let mgTy = 0;
+let mgTy = 0, mgSort = 'rep';   // 체육관 관리: 타입 고르기 + 평판순/날짜순 (경완 2026-10-30)
 function mgPop() {
   $g('.gy-mgs')?.remove(); const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-mgs'; $g('.gy-main').appendChild(el);
   const draw = () => { const L = gList(), used = gUsedTy(), T = [...used].sort((a, b) => a - b); if (mgTy && !used.has(mgTy)) mgTy = 0;
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 관리</b><span class="mg-n">${L.length} / 18곳</span></div>
-      <div class="gy-body">${T.length > 1 ? `<div class="mg-tyf"><button type="button" class="mg-tyb${mgTy ? ' on' : ''}" data-tfp aria-label="타입 고르기">${mgTy ? tyIcon(mgTy).replace(/ data-tip="[^"]*"/, '') + `<b>${TYPE_KO[mgTy]}</b>` : '<b>전체 타입</b>'}<i>▾</i></button></div>` : ''}
-      <div class="mg-list">${L.map((x, i) => !mgTy || x.ty === mgTy ? gCard(x, i) : '').join('')}</div>
+      <div class="gy-body"><div class="mg-tyf"><button type="button" class="mg-tyb${mgTy ? ' on' : ''}" data-tfp aria-label="타입 고르기">${mgTy ? tyIcon(mgTy).replace(/ data-tip="[^"]*"/, '') + `<b>${TYPE_KO[mgTy]}</b>` : '<b>전체 타입</b>'}<i>▾</i></button><span class="mg-sort">${[['rep', '평판순'], ['date', '날짜순']].map(([k, n]) => `<button type="button" data-sort="${k}" aria-pressed="${mgSort === k}">${n}</button>`).join('')}</span></div>
+      <div class="mg-list">${L.map((x, i) => [x, i]).filter(([x]) => !mgTy || x.ty === mgTy).sort(([a], [b]) => mgSort === 'date' ? (b.t0 || 0) - (a.t0 || 0) : (b.rep || 0) - (a.rep || 0)).map(([x, i]) => gCard(x, i)).join('')}</div>
       <button type="button" class="mg-new" data-new ${used.size >= 18 ? 'disabled' : ''}><span>+</span><b>새 체육관 세우기</b></button></div>`;
     fillMs(el); };
   const ask = (html, yes, ok) => pop(`<h4>${html}</h4><div class="gy-btns"><button data-a="x">아니요</button><button class="main" data-a="ok">${yes}</button></div>`, (k, close) => { close(); if (k === 'ok') ok(); });
   el.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap'); const L = gList(), g = st();
     if (b.dataset.a === 'x') return el.remove();
+    if (b.dataset.sort) { mgSort = b.dataset.sort; return draw(); }
     if (b.hasAttribute('data-tfp')) { const cell = (t, lab) => `<button class="${mgTy === t ? 'on' : ''}" data-a="${t}">${t ? tyIcon(t).replace(/ data-tip="[^"]*"/, '') : ''}<span>${lab}</span></button>`;
       return pop(`<h4>타입 고르기</h4><div class="bw-tyg">${cell(0, '전체')}${[...gUsedTy()].sort((a, b) => a - b).map(t => cell(t, TYPE_KO[t])).join('')}</div>`, (a, close) => { close(); if (a !== 'x') { mgTy = +a; draw(); } }); }
     if (b.dataset.i != null) { const x = L[+b.dataset.i]; if (x === g) return;
