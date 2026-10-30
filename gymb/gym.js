@@ -151,9 +151,31 @@ function dzOf(id, gi) {
   const path = D.path.map(p => [near(vx, RX)(p[0]), near(v, RY)(p[1])]).filter((p, i, L) => !i || p[0] !== L[i - 1][0] || p[1] !== L[i - 1][1]);
   { const L0 = pn(D.leader), e = path[path.length - 1];   // 줄을 잘라 길 끝이 관장 칸과 겹치면(연구소·전당) 끝 줄을 한 칸 아래로 (v12.24 경완 '도전자가 내 캐릭터랑 겹침')
     if (e && e[0] === L0[0] && e[1] === L0[1]) for (let i = path.length - 1; i > 0 && path[i][1] === L0[1]; i--) path[i] = [path[i][0], L0[1] + 1]; }
-  return (dzCache[k] = Object.assign({}, D, { base: D, cut: c, h: D.h - ny, w: D.w - nx, leader: pn(D.leader), door: pn(D.door), guy: pn(D.guy), path,
+  return (dzCache[k] = routeFix(Object.assign({}, D, { base: D, cut: c, h: D.h - ny, w: D.w - nx, leader: pn(D.leader), door: pn(D.door), guy: pn(D.guy), path,
     stat: (D.stat || []).map(pn), deco: D.deco.filter(ok).map(pt), slots: D.slots.filter(ok).map(pt), free: D.free && D.free.filter((_, y) => v(y) != null).map(r => [...r].filter((_, x) => vx(x) != null).join('')),
-    toV: v, toF: cutF(RY), toVx: vx, toFx: cutF(RX) }));
+    toV: v, toF: cutF(RY), toVx: vx, toFx: cutF(RX) })));
+}
+// 도전자 길이 맵 소품(책상 등)을 지나거나 그 위에 서면 (경완 2026-10-30 "소품 있으면 내 옆에 서도 돼"):
+// 빈 바닥(D.free)만 따라 다시 길을 찾고, 관장 앞이 막혔으면 왼쪽(포켓몬이 없는 쪽) 또는 오른쪽 옆에 선다. R.cf = 도전자가 볼 쪽, R.mf = 관장이 볼 쪽
+function routeFix(R) {
+  const F = R.free, P = R.path; if (!F || !P?.length) return R;
+  // 입구 석상이 안내원 자리와 겹치거나, 짧은 맵에서 관장 앞 도전자 바로 옆에 붙으면 둘 다 한 칸씩 바깥으로 (경완 2026-10-30 "소품이랑 겹치지 않게")
+  if (R.stat?.length === 2) { let S = R.stat.map(q => [...q]); const E0 = P[P.length - 1];
+    const hit = S2 => S2.some(q => (q[0] === R.guy[0] && q[1] === R.guy[1]) || (q[1] - 1 <= E0[1] + 1 && Math.abs(q[0] - E0[0]) <= 1));
+    for (let n = 0; n < 2 && hit(S); n++) { const T = S.map(q => [q[0] + (q[0] < E0[0] ? -1 : 1), q[1]]); if (T.some(q => q[0] < 1 || q[0] > R.w - 2)) break; S = T; }
+    R.stat = S; }
+  const blk = new Set((R.stat || []).map(p => p[0] + ',' + p[1])), [dx, dy] = R.door, L = R.leader;
+  const ok = (x, y) => (x === dx && y === dy) || (F[y]?.[x] === '1' && !blk.has(x + ',' + y) && !(x === L[0] && y === L[1]));
+  const e = P[P.length - 1]; if (ok(e[0], e[1])) return R;   // 길 끝(관장 앞)이 빈 바닥이면 원래 길 그대로 (손으로 짠 길: 미로 맵 등)
+  const prev = new Map([[P[0][0] + ',' + P[0][1], null]]), Q = [P[0]];
+  while (Q.length) { const [x, y] = Q.shift(); for (const [ax, ay] of [[0, -1], [-1, 0], [1, 0], [0, 1]]) { const nx = x + ax, ny = y + ay, k = nx + ',' + ny; if (prev.has(k) || !ok(nx, ny)) continue; prev.set(k, [x, y]); Q.push([nx, ny]); } }
+  for (const [tx, ty, cf, mf] of [[L[0], L[1] + 1, 'u', 'd'], [L[0] - 1, L[1], 'r', 'l'], [L[0] + 1, L[1], 'l', 'r']]) {
+    if (!prev.has(tx + ',' + ty)) continue;
+    const st = []; for (let q = [tx, ty]; q; q = prev.get(q[0] + ',' + q[1])) st.unshift(q);
+    const path = st.filter((q, i) => !i || i === st.length - 1 || !((st[i - 1][0] === q[0] && q[0] === st[i + 1][0]) || (st[i - 1][1] === q[1] && q[1] === st[i + 1][1])));   // 꺾이는 점만
+    return Object.assign(R, { path, cf, mf });
+  }
+  return R;
 }
 // 미리보기 그림을 지금 크기(data-gi 가 있으면 그 등급, 처음 열 때는 0 = 새내기)의 잘라 붙인 맵으로 (경완 2026-10-27)
 // 디자인 썸네일을 미리 그려 둔다 (경완 2026-10-28 '맵 썸네일이 바로 안 나오고 박스 텍스트 먼저')
@@ -794,7 +816,7 @@ function setAt(now = Date.now()) {
 }
 
 // ---------- 도전 받기: 도전자가 문으로 들어와 관장 앞까지 걸어오고, 한마디 → 배틀 → 결과 ----------
-let busy = false;
+let busy = false, meEnt = null;   // meEnt: 맵 위 내 캐릭터 (도전자 쪽을 보게)
 function talk(html, btn = '다음', sub = '') {
   // 그냥 넘기는 대사는 버튼 대신 깜빡이는 ▼, 대화창이나 빈 곳을 누르면 다음으로 (경완 2026-10-29). '배틀 시작' 같은 글자 버튼은 그대로
   if (btn === '다음') return new Promise(ok => { $g('.gy-dlg').innerHTML = `${html}${sub ? `<span class="gy-dsub">${sub}</span>` : ''}<i class="gy-dnext" aria-hidden="true">▼</i>`;
@@ -816,7 +838,7 @@ async function challenge(picked) {
     doorSe(); await wait(180);
     const e = ent({ ow: c.ow, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(c.ow) });
     dlg(`${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 들어온다!`); await wait(650);
-    await walk(e, D.path.slice(1)); e.f = 'u'; place(e);
+    await walk(e, D.path.slice(1)); e.f = D.cf || 'u'; place(e); if (D.mf && meEnt) { meEnt.f = D.mf; place(meEnt); }   // 옆에 서면 서로 마주 봄
     const N = c.named && NAMED.find(n => n.id === c.named), me = trName() || '관장';
     const line = N ? N.ln[0].replace('{me}', me) : pick(CHAL_LINES[c.diff] || CHAL_LINES[1]);
     if (c.boss) await talk(`<span class="gy-who">승급 심사</span><b>${GRADES[c.boss][1]}</b> 승급을 걸고<br>${esc(c.cls)} ${esc(c.nm)}${jong(c.nm) ? '이' : '가'} 심사하러 왔다!<br>이기면 등급이 오르고 배지를 받는다.`);   // 등급 문턱마다 (경완 2026-10-29)
@@ -851,7 +873,7 @@ async function challenge(picked) {
     if (g.newBdg) await badgeGet(g.newBdg);
     await unlockChk();
     // 배웅하기 창 없이, 알림을 다 닫으면 도전자가 걸어 나간다 (경완 2026-10-28)
-    dlg(''); root.classList.add('dhide'); await walk(e, D.path.slice(0, -1).reverse()); await wait(250); doorSe(); await wait(120); e.el.remove(); ents = ents.filter(x => x !== e);
+    dlg(''); root.classList.add('dhide'); if (meEnt) { meEnt.f = 'd'; place(meEnt); } await walk(e, D.path.slice(0, -1).reverse()); await wait(250); doorSe(); await wait(120); e.el.remove(); ents = ents.filter(x => x !== e);
   } catch (err) { console.error(err); GA.toast?.('배틀을 시작하지 못했어요'); }
   finally { busy = false; root.classList.remove('busy'); if (g.q.some(x => x.boss)) g.q = g.q.filter(x => !x.boss); if (open) renderHome(); }
 }
@@ -997,7 +1019,7 @@ function renderHome(quiet) {
   // 꾸미기 → 고용 트레이너(자리마다 보는 방향) → 관장(나) → 안내원
   decoList(g, D).forEach(([k, x, y]) => prop(k, x, y));
   sfList(g, D).forEach(([s, x, y, f]) => { ent({ ow: s.ow, x, y, f, n3: N3.has(s.ow), onTap: () => { sfx('tap'); sfCard(s);  } }); });
-  const meE = ent({ ow: myOw(), x: D.leader[0], y: D.leader[1], f: 'd', n3: N3.has(myOw()), onTap: () => { sfx('tap'); meCard();  } });
+  const meE = meEnt = ent({ ow: myOw(), x: D.leader[0], y: D.leader[1], f: 'd', n3: N3.has(myOw()), onTap: () => { sfx('tap'); meCard();  } });
   if (g.fit) fitSrc('ow').then(u => { if (meE.el.isConnected) meE.el.style.backgroundImage = `url(${u})`; });
   palEnt(D);
   ent({ ow: GUY_OW, x: D.guy[0], y: D.guy[1], f: 'd', onTap: () => { sfx('tap'); guyAsk(); } });
