@@ -120,11 +120,12 @@ function gm(P) {
   return m;
 }
 // 경험치 (배틀·훈련장): 레벨업하면 그 레벨에 배우는 기술을 익힌다. 기술이 4개면 '아는 기술'(kn)에 넣고, 가장 약한 공격 기술보다 세면 바로 바꾼다 (변화 기술은 자동으로 안 바꿈)
-function gainXp(P, n) {
-  const m = gm(P), g = growth(P.sp), out = { lv0: m.lv, lv: m.lv, n: 0, learned: [] };   // learned: [[새 기술, 잊은 기술|'']]
+// ask: 배틀처럼 기술이 4개면 바로 바꾸지 않고 out.ask 에 모아 두었다가 본가처럼 물어본다 (경완 2026-10-30)
+function gainXp(P, n, ask = false) {
+  const m = gm(P), g = growth(P.sp), out = { lv0: m.lv, lv: m.lv, n: 0, learned: [], ask: ask ? [] : null };   // learned: [[새 기술, 잊은 기술|'']]
   if (m.lv >= LV_MAX || !(n > 0)) return out;
   n = Math.round(n); out.n = n; m.xp = Math.min(m.xp + n, xpAt(g, LV_MAX));
-  while (m.lv < LV_MAX && m.xp >= xpAt(g, m.lv + 1)) { m.lv++; const L = D.sp[P.sp]?.lv || []; for (let i = 0; i < L.length; i += 2) if (L[i] === m.lv) teach(m, D.mv[L[i + 1]][0], out); }
+  while (m.lv < LV_MAX && m.xp >= xpAt(g, m.lv + 1)) { m.lv++; const L = D.sp[P.sp]?.lv || []; for (let i = 0; i < L.length; i += 2) if (L[i] === m.lv) teach(m, D.mv[L[i + 1]][0], out, !ask); }
   out.lv = m.lv; return out;
 }
 const mvPow = id => { const d = mvOf(id); return !d ? 0 : d[3] === 2 ? -1 : (d[4] || 40); };
@@ -132,7 +133,7 @@ function teach(m, id, out, auto = true) {
   if (m.mv.includes(id)) return;
   if (m.mv.length < 4) { m.mv.push(id); out?.learned.push([id, '']); return; }
   m.kn = m.kn || []; if (!m.kn.includes(id)) m.kn.push(id);
-  if (!auto) return; const nw = mvPow(id); if (nw <= 0) return;
+  if (!auto) { out?.ask?.push(id); return; } const nw = mvPow(id); if (nw <= 0) return;
   let k = -1; m.mv.forEach((x, i) => { const p = mvPow(x); if (p >= 0 && p < nw && (k < 0 || p < mvPow(m.mv[k]))) k = i; });
   if (k < 0) return;
   const old = m.mv[k]; m.mv[k] = id; m.kn = m.kn.filter(x => x !== id); m.kn.push(old); out?.learned.push([id, old]);
@@ -924,10 +925,12 @@ const MFX_ADD = {
 };
 function mfxAdd() { for (const [k, L] of Object.entries(MFX_ADD)) { const v = MFX[k]; if (!v) continue;
   (Array.isArray(v[0]) ? v : [v]).forEach(A => { if (A.added) return; A.added = 1; A[1].push(...L); A[0] = Math.max(A[0], ...L.map(e => e[1] + (e[0] === 'k' ? (e[5] + 1) * e[6] * 2 : e[0] === 'e' ? e[3] : e[0] === 'z' ? e[5] : e[0] === 'f' ? e[5] : e[5] || 4))); }); } }
+// 본가 연출이 어색한 기술은 다른 기술 연출로 (경완 2026-10-30 '세차게 휘두르기 모션 물기라서 어색해' → 몸을 휘둘러 치는 힘껏치기)
+const MV_SUB = { thrash: 'slam' };
 const MV_LIKE = { poweruppunch: 'megapunch', jetpunch: 'machpunch', ragefist: 'shadowpunch', plasmafists: 'thunderpunch' };
 async function moveFx(s, id, miss) {
   const m = mvOf(id); if (!m || miss) return; const ty = m[2], cat = m[3], col = TY_FX[ty] || '#fff';
-  let A = MFX[id]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1];
+  let A = MFX[MV_SUB[id] || id]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1];
   // 5세대 이후 주먹 기술은 비슷한 4세대 주먹 연출로 (경완 2026-10-29 '그로우펀치가 당수 모션')
   if (!A && MV_LIKE[id]) { A = MFX[MV_LIKE[id]]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1]; }
   // 5세대 이후 기술: 같은 타입·분류의 4세대 기술 연출을 빌린다
@@ -1050,7 +1053,7 @@ async function expGain(X) {
   const SH = [];   // 학습장치로 받은 포켓몬: 나와 싸운 포켓몬이 다 받은 뒤 한 창에 미니 그림 + 경험치 막대로 한꺼번에 (경완 2026-10-30)
   for (const pid of [...B.used, ...B.my.map(o => o.pid).filter(p => !B.used.has(p))]) {
     const i = B.my.findIndex(o => o.pid === pid), pk = B.o.p[i], P = boxOf(pid); if (!P || !pk || pk.fainted) continue;
-    const share = !B.used.has(pid), m = gm(P), g0 = xpGauge(B.my[i]), r = gainXp(P, xpFor(foe, m.lv) * (share ? .5 : 1)); if (!r.n) continue;
+    const share = !B.used.has(pid), m = gm(P), g0 = xpGauge(B.my[i]), r = gainXp(P, xpFor(foe, m.lv) * (share ? .5 : 1), true); if (!r.n) continue;
     if (share) { const x = B.xr[pid] = B.xr[pid] || { n: 0, lv0: r.lv0, lv: r.lv0, learned: [] }; x.n += r.n; x.lv = r.lv; x.learned.push(...r.learned);
       if (r.lv > r.lv0) { const L = lvWin(P, r.lv0, r.lv); lvApply(pk, null, r.lv, L.a, L.b); B.my[i].lv = r.lv; }
       SH.push({ i, P, r, g0 }); continue; }
@@ -1062,9 +1065,41 @@ async function expGain(X) {
       hb.style.transition = ''; A.xpg = xpGauge(B.my[i]); }
     if (r.lv > r.lv0) { await msg(`${nm}의 레벨이 ${r.lv}${/[036]$/.test(String(r.lv)) ? '으로' : '로'} 올랐다!`, 0); const L = lvWin(P, r.lv0, r.lv); lvApply(pk, on ? A : null, r.lv, L.a, L.b); if (B) await L.run(); }
     for (const [id, f] of r.learned) await msg(f ? `${eun(nm)} ${eul(mvKo(f))} 잊고 ${eul(mvKo(id))} 배웠다!` : `${eun(nm)} 새로 ${eul(mvKo(id))} 배웠다!`);
+    for (const id of r.ask || []) if (B) await learnAsk(P, i, id);
   }
   if (SH.length && B) await shareWin(SH);
   if (!B.practice) GA.save();
+}
+// 새 기술을 배우려는데 기술이 4개일 때 (본가처럼): 잊을 기술을 고르거나 배우기를 포기한다 (경완 2026-10-30 '알아서 잊어버리는데 선택할 수 있게')
+async function learnAsk(P, i, id) {
+  const m = gm(P), nm = B.my[i].nm, nw = mvKo(id); if (m.mv.includes(id)) return;
+  await msg(`${eun(nm)} 새로 ${eul(nw)} 배우고 싶다…`); if (!B) return;
+  await msg(`그러나 ${eun(nm)} 기술을 4개 알고 있으므로 더 이상 기술을 배울 수 없다!`); if (!B) return;
+  for (;;) {
+    await msg(`${nw} 대신 다른 기술을 잊게 하겠습니까?`, 0);
+    if (await yesNo('기술을 잊게 하겠습니까?')) {
+      await msg('어느 기술을 잊게 하겠습니까?', 0); const k = await forgetPanel(m.mv); if (!B) return;
+      if (k != null) { const old = m.mv[k]; m.mv[k] = id; m.kn = (m.kn || []).filter(x => x !== id); if (!m.kn.includes(old)) m.kn.push(old);
+        const x = B.xr[P.id]; if (x) x.learned.push([id, old]);
+        try { const pk = B.o.p[i], mv = B.btl.dex.moves.get(id), j = pk.baseMoveSlots.findIndex(sl => sl.id === old);   // 쇼다운 쪽 기술도 바로 바꾼다
+          if (mv?.exists && j >= 0) { const sl = { id: mv.id, move: mv.name, pp: mv.pp * 8 / 5 | 0, maxpp: mv.pp * 8 / 5 | 0, target: mv.target, disabled: false, used: false }; pk.baseMoveSlots[j] = sl; const j2 = pk.moveSlots.findIndex(q => q.id === old); if (j2 >= 0) pk.moveSlots[j2] = { ...sl }; } } catch (e) { console.error(e); }
+        idlePanel(); await msg('1, 2, 그리고… 짠!'); if (!B) return;
+        await msg(`${eun(nm)} ${eul(mvKo(old))} 깨끗이 잊었다!`); if (!B) return;
+        await msg(`그리고 ${eun(nm)} 새로 ${eul(nw)} 배웠다!`); if (!B.practice) GA.save(); return; }
+    }
+    if (!B) return;
+    await msg(`${eul(nw)} 배우는 것을 포기하겠습니까?`, 0);
+    if (await yesNo('배우는 것을 포기하겠습니까?')) { idlePanel(); await msg(`${eun(nm)} ${eul(nw)} 배우지 않았다!`); return; }
+  }
+}
+// 잊을 기술 고르기: 지금 기술 4개를 배틀 기술 카드처럼, 취소는 잊지 않기
+function forgetPanel(L) {
+  return new Promise(res => {
+    const p = panel(`<div class="bp-moves bp-fg">${[0, 1, 2, 3].map(i => { const d = mvOf(L[i]); if (!d) return `<i class="mvb empty"></i>`; const ty = d[2] || 1;
+      return `<div class="mvw"><button class="mvb" data-i="${i}" style="background-image:url(${IMG}bt/mv_${ty}.png);--tc:${TY_C[ty]}"><b>${esc(d[1])}</b><span class="pw">위력 <em>${d[4] || '—'}</em> 명중 <em>${d[5] && d[5] !== true ? d[5] : '—'}</em></span>${tyTag(ty, d[3])}<span class="pp">PP <em>${d[6] || '—'}</em></span></button></div>`; }).join('')}
+      <button class="bb cancel" data-x><span>그만두기</span></button></div>`);
+    p.onclick = e => { const b = e.target.closest('button'); if (!b) return; tapSe(); res(b.hasAttribute('data-x') ? null : +b.dataset.i); };
+  });
 }
 async function shareWin(SH) {
   const w = $b('.bt-shw'); if (!w) return;
@@ -1076,7 +1111,8 @@ async function shareWin(SH) {
     for (;;) { const goal = lv < r.lv ? 1 : xpGauge(B.my[i]); bar.style.transition = 'width .7s linear'; bar.style.width = clampN(goal, 0, 1) * 100 + '%'; await wait(B?.fast ? 260 : 720); if (!B || lv >= r.lv) break;
       lv++; lvE.textContent = lv; row.classList.remove('lvup'); void row.offsetWidth; row.classList.add('lvup'); se('EXPMAX'); bar.style.transition = 'none'; bar.style.width = '0%'; await wait(30); } }));
   if (!B) return; await new Promise(r => { B.tapWake = r; }); w.hidden = true;
-  for (const { i, r } of SH) { const nm = B.my[i].nm; for (const [id, f] of r.learned) await msg(f ? `${eun(nm)} ${eul(mvKo(f))} 잊고 ${eul(mvKo(id))} 배웠다!` : `${eun(nm)} 새로 ${eul(mvKo(id))} 배웠다!`); }
+  for (const { i, P, r } of SH) { const nm = B.my[i].nm; for (const [id, f] of r.learned) await msg(f ? `${eun(nm)} ${eul(mvKo(f))} 잊고 ${eul(mvKo(id))} 배웠다!` : `${eun(nm)} 새로 ${eul(mvKo(id))} 배웠다!`);
+    for (const id of r.ask || []) if (B) await learnAsk(P, i, id); }
 }
 function xpGauge(src) { const P = boxOf(src.pid); if (!P) return 0; const m = gm(P), g = growth(P.sp), a = xpAt(g, m.lv), b = xpAt(g, m.lv + 1); return b > a ? (m.xp - a) / (b - a) : 1; }
 
