@@ -1002,9 +1002,9 @@ function qPop() {
     const ago = t => { const m = Math.max(0, Math.round((Date.now() - (t || Date.now())) / 60e3)); return m < 1 ? '방금 왔어요' : m < 60 ? `${m}분째 기다리는 중` : `${Math.floor(m / 60)}시간 ${m % 60}분째 기다리는 중`; };
     const tag = c => c.boss ? `<em class="qw-tag bs">${gShort(c.boss)} 승급 심사</em>` : c.named ? '<em class="qw-tag nm">이름 있는 트레이너</em>' : `<em class="qw-tag">${esc(c.cls)}</em>`;
     const pic = c => `<span class="qw-pic${c.named ? ' qw-sil' : ''}"><i class="qw-base"></i><img alt="" src="${trSrc(c.tr)}"></span>`;
-    body = Q.length ? `<div class="qw-sum"><b>기다리는 도전자 <em>${Q.length}</em>명</b><span>오늘 밤 12시까지 기다려 줘요</span></div><div class="qw-list">${V.map(([c, i], k) => k
+    body = Q.length ? `<div class="qw-sum"><b>기다리는 도전자 <em>${Q.length}</em>명</b><span>오늘 밤 12시까지 기다려 줘요</span><i class="qw-balls">${V.map(([c], k) => `<i class="${k ? '' : 'on'}${c.boss ? ' bs' : ''}"></i>`).join('')}</i></div><div class="qw-list">${V.map(([c, i], k) => k
       ? `<div class="qw-row wait${c.boss ? ' boss' : ''}"><span class="qw-pw">${pic(c)}<span class="qw-no">${k + 1}</span></span><div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span>${hhmm(c.t)} · ${ago(c.t)}</span></div><span class="qw-wait">대기</span></div>`
-      : `<div class="qw-row next${c.boss ? ' boss' : ''}"><span class="qw-rib">${c.boss ? '승급 심사 도전자' : '다음 차례'}</span>${pic(c)}<div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span>${hhmm(c.t)}에 왔어요 · ${ago(c.t)}</span></div><button class="gy-key main" type="button" data-c="${i}">${c.boss ? '심사 받기' : '도전 받기'}</button></div>`).join('')}</div>`
+      : `<div class="qw-row next${c.boss ? ' boss' : ''}"><span class="qw-rib">${c.boss ? '승급 심사 도전자' : '다음 차례'}</span><i class="qw-spd"></i><i class="qw-vs">VS</i>${pic(c)}<div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span>${hhmm(c.t)}에 왔어요 · ${ago(c.t)}</span></div><button class="gy-key main" type="button" data-c="${i}">${c.boss ? '심사 받기' : '도전 받기'}</button></div>`).join('')}</div>`
       : '<div class="qw-none"><i class="qw-clip"></i><b>지금 기다리는 도전자가 없어요</b><span>도전자가 오면 체육관 버튼에 빨간 점이 떠요.</span></div>';
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">도전자 명단</b></div>
       <div class="gy-body">${body}</div>`; };

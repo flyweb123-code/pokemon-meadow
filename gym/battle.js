@@ -184,6 +184,9 @@ let el = null, B = null;   // 화면, 진행 중인 배틀
 const $b = s => el.querySelector(s);
 // ---------- 효과음 (플래티넘 원본 SEQ_SE_DP_*, gym/bgm.js 가 받아 와 연주) ----------
 const se = (nm, o) => { try { window.GymBGM?.se('DP_' + nm, o); } catch (e) {} };
+// 배틀 진동 (경완 2026-10-30): 맞을 때(효과가 굉장하면 세게), 급소, 쓰러질 때 우르르. 본 게임 진동(아이폰 앱 haptic·안드로이드 vibrate)을 그대로 쓴다
+const vib = (n = 1) => { try { GA.haptic?.(n); } catch (e) {} };
+const vibBig = (st = 2, g = 2) => { try { GA.rumble?.(st, g); } catch (e) {} };
 const SE_BASE = ['DECIDE', 'SELECT', 'KOUKA_M', 'KOUKA_H', 'KOUKA_L', 'POKE_DEAD', 'BOWA2', 'SUIKOMU', 'SLIDEIN', 'HINSI', 'NAGERU'];
 const tapSe = (nm = 'DECIDE') => { try { GA.quietTap?.(); } catch (e) {} se(nm); };
 // 화면 x(0~256) → 소리 좌우
@@ -371,7 +374,7 @@ async function recall(side) { const m = monEl(side); se('SUIKOMU', { pan: panOf(
 // 쓰러짐: 울음소리 → 발판 아래로 쑥 내려감 (4세대)
 async function faint(side, A) {
   // 본가처럼 낮은 울음소리를 다 낸 뒤 쓰러진다 (경완 2026-10-28)
-  let d = 0; try { d = await GA.cry?.(A.sp, 0, .8) || 0; } catch (e) {} await wait(B?.fast ? 200 : clampN(d * 1000 - 120, 520, 1400));
+  let d = 0; try { d = await GA.cry?.(A.sp, 0, .8) || 0; } catch (e) {} await wait(B?.fast ? 200 : clampN(d * 1000 - 120, 520, 1400)); vibBig(side === 'p' ? 3 : 2, 2);
   se('POKE_DEAD', { pan: panOf(side) }); monEl(side).classList.add('faint'); await wait(420);
   $b(`.bt-hb.${side}`).classList.remove('on'); if (side === 'p') lowHp(false);
 }
@@ -713,7 +716,7 @@ const PEND = { '-crit': '급소에 맞았다!', '-supereffective': '효과가 �
 async function flushPend() { const L = B?.pend; if (!L?.length) return; B.pend = []; for (const t of L) { if (/버텼다!$/.test(t) && B.frq?.length) await frFx(B.frq.shift()); await msg(t); } }
 async function handle(a) {
   const k = a[1], A = s => B.act[s];
-  if (PEND[k]) { (B.pend = B.pend || []).push(PEND[k]); return; }
+  if (PEND[k]) { if (k === '-crit') setTimeout(() => vib(2), 120); (B.pend = B.pend || []).push(PEND[k]); return; }
   if (k === '-frmsg') {   // 친밀도: 버티기는 체력바가 줄어든 뒤에, 피하기·고치기는 바로
     const n = nmIn(a[2]), s = sideOf(a[2]);
     if (a[3] === 'endure') { (B.pend = B.pend || []).push(`${eun(n)} 관장님을 슬프게 하지 않으려고 버텼다!`); (B.frq = B.frq || []).push(s); return; }
@@ -983,7 +986,7 @@ async function moveFx(s, id, miss) {
   const d = $b('.bt-dim'); d.style.setProperty('--fd', '.2s'); d.style.opacity = 0;
 }
 // 맞음: 본가 효과음(굉장 H / 보통 M / 별로 L) + 4번 깜빡
-async function hitFx(s, eff = 'M') { se('KOUKA_' + eff, { pan: panOf(s) }); const m = monEl(s); for (let i = 0; i < 4; i++) { m.classList.add('blink'); await wait(B?.fast ? 34 : 66); m.classList.remove('blink'); await wait(B?.fast ? 34 : 66); } }
+async function hitFx(s, eff = 'M') { se('KOUKA_' + eff, { pan: panOf(s) }); vib(eff === 'H' ? 2 : eff === 'L' ? 0 : 1); const m = monEl(s); for (let i = 0; i < 4; i++) { m.classList.add('blink'); await wait(B?.fast ? 34 : 66); m.classList.remove('blink'); await wait(B?.fast ? 34 : 66); } }
 // 능력 변화·상태 이상: 플래티넘 공통 연출의 소리
 async function statFx(s, up) { const m = monEl(s); m.classList.add(up ? 'up' : 'down'); se(up ? 'W287' : 'W287B', { pan: panOf(s) }); await wait(640); m.classList.remove('up', 'down'); }
 // [소리, 간격(1/30초), 횟수] (common_anims: burn·paralysis·sleep·freeze·poison)
@@ -1040,19 +1043,22 @@ function lvApply(pk, X, lv, a, b) {
     ['atk', 'def', 'spa', 'spd', 'spe'].forEach((k, j) => { if (pk.baseStoredStats) pk.baseStoredStats[k] += b[j + 1] - a[j + 1]; if (pk.storedStats) pk.storedStats[k] += b[j + 1] - a[j + 1]; });
     if (X) { X.lv = lv; X.mhp = pk.maxhp; X.hp = pk.hp; setHp('p', X.hp, X.mhp); } } catch (e) { console.error(e); }
 }
-// 상대를 쓰러뜨리면 나왔던 내 포켓몬(쓰러지지 않은)이 경험치를 받는다. 나와 있는 포켓몬은 경험치 막대가 차오르고 레벨업
+// 상대를 쓰러뜨리면 나왔던 내 포켓몬(쓰러지지 않은)이 경험치를 받고, 나머지 라인업은 학습장치로 절반. 나와 있는 포켓몬은 경험치 막대가 차오르고 레벨업
 async function expGain(X) {
   const foe = B.foe[X.i]; if (!foe) return;
-  for (const pid of B.used) {
+  // 학습장치 (본가 6세대~처럼 늘 켜짐, 경완 2026-10-30): 나오지 않은 라인업 포켓몬도 절반을 받는다. 얻은 경험치 글은 한 번에
+  let shMsg = false;
+  for (const pid of [...B.used, ...B.my.map(o => o.pid).filter(p => !B.used.has(p))]) {
     const i = B.my.findIndex(o => o.pid === pid), pk = B.o.p[i], P = boxOf(pid); if (!P || !pk || pk.fainted) continue;
-    const m = gm(P), r = gainXp(P, xpFor(foe, m.lv)); if (!r.n) continue;
+    const share = !B.used.has(pid), m = gm(P), r = gainXp(P, xpFor(foe, m.lv) * (share ? .5 : 1)); if (!r.n) continue;
+    if (share && !shMsg) { shMsg = true; await msg('다른 포켓몬들도 학습장치로 경험치를 얻었다!'); }
     const x = B.xr[pid] = B.xr[pid] || { n: 0, lv0: r.lv0, lv: r.lv0, learned: [] }; x.n += r.n; x.lv = r.lv; x.learned.push(...r.learned);
     const nm = B.my[i].nm, A = B.act.p, on = A && A.pid === pid && !A.fnt;
-    await msg(`${eun(nm)} 경험치 ${eul(r.n.toLocaleString())} 얻었다!`, on ? 0 : 500);
+    if (!share) await msg(`${eun(nm)} 경험치 ${eul(r.n.toLocaleString())} 얻었다!`, on ? 0 : 500);
     if (on) { const hb = $b('.bt-hb.p .xp>i'), g = growth(P.sp); let lv = r.lv0;
       for (;;) { const goal = lv < r.lv ? 1 : xpGauge(B.my[i]); se('EXP', { dur: B.fast ? .25 : .6 }); hb.style.transition = 'width .6s linear'; hb.style.width = clampN(goal, 0, 1) * 96 + 'px'; await wait(B.fast ? 250 : 620); if (lv >= r.lv) break; lv++; A.lv = lv; $b('.bt-hb.p .lvn').textContent = lv; se('EXPMAX');   /* 경완 2026-10-28: 경험치 막대 차는 본가 소리(SEQ_SE_DP_EXP), 꽉 차면 EXPMAX */ hb.style.transition = 'none'; hb.style.width = '0px'; await wait(30); }
       hb.style.transition = ''; A.xpg = xpGauge(B.my[i]); }
-    if (r.lv > r.lv0) { await msg(`${nm}의 레벨이 ${r.lv}${/[036]$/.test(String(r.lv)) ? '으로' : '로'} 올랐다!`, 0); const L = lvWin(P, r.lv0, r.lv); lvApply(pk, on ? A : null, r.lv, L.a, L.b); if (on && B) await L.run(); }
+    if (r.lv > r.lv0) { await msg(`${nm}의 레벨이 ${r.lv}${/[036]$/.test(String(r.lv)) ? '으로' : '로'} 올랐다!`, 0); const L = lvWin(P, r.lv0, r.lv); lvApply(pk, on ? A : null, r.lv, L.a, L.b); if (B) await L.run(); }
     for (const [id, f] of r.learned) await msg(f ? `${eun(nm)} ${eul(mvKo(f))} 잊고 ${eul(mvKo(id))} 배웠다!` : `${eun(nm)} 새로 ${eul(mvKo(id))} 배웠다!`);
   }
   if (!B.practice) GA.save();
