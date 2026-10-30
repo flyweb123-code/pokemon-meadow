@@ -1722,11 +1722,11 @@ try { const q = location.search, st = /[?&]studio/.test(q), d = JSON.parse(local
       <div id="setPage" hidden>
       <section class="set-sec">
         <h4>소리</h4>
-        <p>배경 음악은 곡 파일을 한 번 가져와야 나와요(이 기기에만 저장).</p>
+        <p>배경 음악은 처음 틀 때 게임보이 악보를 받아 와서 직접 연주해요.</p>
         <div class="bgm-pick"><span class="vol-n">곡</span><button class="fsel" id="bgmPick" aria-haspopup="listbox"></button></div>
         <div class="vol" data-k="bgm"><span class="vol-n">배경 음악</span><button class="vol-b" data-d="-1" aria-label="배경 음악 작게">◀</button><div class="vol-bar" role="slider" aria-label="배경 음악 볼륨" aria-valuemin="0" aria-valuemax="10"></div><button class="vol-b" data-d="1" aria-label="배경 음악 크게">▶</button><b class="vol-v"></b></div>
         <div class="vol" data-k="sfx"><span class="vol-n">효과음</span><button class="vol-b" data-d="-1" aria-label="효과음 작게">◀</button><div class="vol-bar" role="slider" aria-label="효과음 볼륨" aria-valuemin="0" aria-valuemax="10"></div><button class="vol-b" data-d="1" aria-label="효과음 크게">▶</button><b class="vol-v"></b></div>
-        <div class="set-btns one"><button class="lk-btn main" id="musicImport">곡 파일 가져오기</button><input type="file" id="musicFile" accept="audio/*,.mp3,.zip,application/zip" multiple hidden><button class="lk-btn main" id="cryImport">울음소리 가져오기</button><input type="file" id="cryFile" accept=".zip,application/zip" hidden></div>
+        <div class="set-btns one"><button class="lk-btn main" id="musicImport" hidden>곡 파일 가져오기</button><input type="file" id="musicFile" accept="audio/*,.mp3,.zip,application/zip" multiple hidden><button class="lk-btn main" id="cryImport">울음소리 가져오기</button><input type="file" id="cryFile" accept=".zip,application/zip" hidden></div>
       </section>
       <section class="set-sec" id="notiSec">   <!-- v5.16 경완: 알림 설정 (전체 끄기 + 항목별) -->
         <h4>알림</h4>
@@ -2135,12 +2135,12 @@ async function bgmDecode(blob) {
 }
 function bgmSrcStop() { const x = bgm.src; bgm.src = null; if (x) { try { x.stop(); } catch (e) {} try { x.disconnect(); } catch (e) {} } }
 // 곡 위치 기억: 오디오를 새로 만들어도 멈췄던 자리부터 이어서 튼다
-const bgmPos = () => { if (!bgm.src || !actx || !bgm.buf) return bgm.pos || 0; return ((actx.currentTime - bgm.t0) % bgm.buf.duration + bgm.buf.duration) % bgm.buf.duration; };
+const bgmPos = () => { if (!bgm.src || !actx || !bgm.buf) return bgm.pos || 0; const t = actx.currentTime - bgm.t0, L = bgm.buf.gbLoop; if (L && t > L[1]) return L[0] + (t - L[0]) % (L[1] - L[0]); return (t % bgm.buf.duration + bgm.buf.duration) % bgm.buf.duration; };
 function bgmSrcStart(off = bgm.pos || 0) {
   if (bgm.src || !bgm.buf || (inGym() && !bgm.preview)) return; try { if (campMus.on && !bgm.preview) return; } catch (e) {}   /* v9.19 경완: 모닥불 노래 중엔 배경 음악이 다시 켜지지 않게 (곡을 받아 오던 게 늦게 끝나거나 무작위 다음 곡이 겹치던 것) — 노래가 끝나면 campBgm(false) 가 이어 튼다 */
   const a = audio(); if (!a) return; bgmRoute();
   off = off % bgm.buf.duration || 0;
-  const x = a.createBufferSource(); x.buffer = bgm.buf; x.loop = !(S.bgmRand && !bgm.preview); x.connect(bgm.gain); x.start(0, off); bgm.src = x; bgm.t0 = a.currentTime - off;
+  const x = a.createBufferSource(); x.buffer = bgm.buf; x.loop = !(S.bgmRand && !bgm.preview); if (bgm.buf.gbLoop) { x.loopStart = bgm.buf.gbLoop[0]; x.loopEnd = bgm.buf.gbLoop[1]; }   /* 게임보이 곡: 도입부 뒤 반복 구간만 돈다 */ x.connect(bgm.gain); x.start(0, off); bgm.src = x; bgm.t0 = a.currentTime - off;
   x.onended = () => { if (bgm.src !== x || x.loop) return; bgm.src = null; bgm.pos = 0; if (S.bgmRand && bgmOn && !bgm.preview) bgmPlay(bgmRandId(bgm.id)); };   // 무작위 재생: 한 곡이 끝나면 다른 곡
   if (bgm.fadeIn) { const g = bgm.gain.gain, t = a.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(0, t); g.linearRampToValueAtTime(.55 * volG(VOL.bgm), t + bgm.fadeIn); bgm.fadeIn = 0; }
 }
@@ -2160,16 +2160,20 @@ async function musicGet(id) {
   try { const r = await fetch(cryURL(sp)); if (!r.ok) return null; b = await r.blob(); musicPut(id, b).catch(() => {}); return b; } catch (e) { return null; }   // 한 번 받으면 오프라인에서도 나온다
 }
 const musicKeys = () => musicDo('readonly', st => st.getAllKeys()).catch(() => []).then(k => [...new Set([...(k || []), ...Array.from({ length: CRY_N }, (_, i) => 'cry' + (i + 1))])]);
-const evoMus = { have: false, buf: null, src: null, g: null };
+const evoMus = { have: true, buf: null, src: null, g: null };
 musicKeys().then(k => { (k || []).forEach(x => x === 'evo' ? (evoMus.have = true) : /^cry\d+$/.test(x) ? cry.have.add(+x.slice(3)) : bgm.have.add(x)); cryLabel(); if (bgmOn && bgm.id == null) bgmStart(); if (!$('#shop').hidden) renderShop(); }).catch(() => {});
+// v11.94 경완 '곡 파일 대신 다른 저장소에서': 곡은 pret 악보를 받아 게임보이 소리로 직접 연주한다 (gbm.js, 합성은 일꾼에서)
+const gbmLoad = () => window.GBSynth?.get ? Promise.resolve() : (gbmLoad.p = gbmLoad.p || new Promise((ok, no) => { const s = document.createElement('script'); s.src = 'gbm.js?v=' + encodeURIComponent(APP_VER); s.onload = ok; s.onerror = () => { gbmLoad.p = null; no(new Error('gbm')); }; document.head.appendChild(s); }));
+const gbmCache = { get: k => musicDo('readonly', st => st.get(k)), put: (k, t) => musicPut(k, t).catch(() => {}) };
+async function gbmBuf(id) { const a = audio(); if (!a) return null; await gbmLoad(); return window.GBSynth.has(id) ? window.GBSynth.get(id, a, gbmCache) : null; }
+for (const t of TRACKS) bgm.have.add(t.id); bgm.have.add('intro'); bgm.have.add('title');
 async function bgmPlay(id, pos) {
   if (bgm.id === id && bgm.buf) { if (pos != null) bgm.pos = pos; bgmSrcStart(); return; }
   bgm.id = id; bgmSrcStop(); bgm.buf = null; bgm.pos = pos || 0;
   let buf = bgm.cache.get(id);
   if (!buf) {
-    let blob = null; try { blob = await musicGet(id); } catch (e) {}
-    if (bgm.id !== id || !blob) return;
-    try { buf = await bgmDecode(blob); } catch (e) { return; }
+    try { buf = await gbmBuf(id); } catch (e) { buf = null; }
+    if (bgm.id !== id || !buf) return;
     if (bgm.id !== id) return;
     bgm.cache.set(id, buf); while (bgm.cache.size > 2) bgm.cache.delete(bgm.cache.keys().next().value);
   }
@@ -6471,11 +6475,18 @@ document.addEventListener('click', e => { const t = e.target.closest?.('h3, h4, 
   try { paintG(); } catch (e) {} setInterval(() => { if (de.classList.contains('gym-on') && !document.hidden) menuDots(); }, 30e3);
   const L = $('#gymLoad'), dots = L.querySelector('.gl-dots'); let dT = 0;
   // 로딩 화면: 트레이너가 체육관으로 걸어간다 (out: 퇴근 = 체육관에서 걸어 나온다)
+  // v11.94 경완 '체육관 출근할 때랑 퇴근할 때 별도 bgm': 로딩 화면 동안만 따로 튼다 (필드 곡은 멈추고, 끝나면 서서히 줄임)
+  const ldM = { src: null, g: null, k: 0 };
+  const loadMus = id => { const a = actx, k = ++ldM.k;
+    if (ldM.src && a) { const { src, g } = ldM, t = a.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + .6); try { src.stop(t + .65); } catch (e) {} ldM.src = ldM.g = null; }
+    if (!id || !bgmOn) return; try { bgm.pos = bgmPos(); bgmSrcStop(); } catch (e) {}
+    gbmBuf(id).then(buf => { const a = audio(); if (!buf || !a || k !== ldM.k) return; const src = a.createBufferSource(), g = a.createGain(); src.buffer = buf; src.loop = true; if (buf.gbLoop) { src.loopStart = buf.gbLoop[0]; src.loopEnd = buf.gbLoop[1]; }
+      g.gain.value = .55 * volG(VOL.bgm); src.connect(g).connect(a.destination); src.start(); ldM.src = src; ldM.g = g; }).catch(() => {}); };
   window.gymLoad = {
-    show(tx, sub = '', out = false) { L.querySelector('.gl-tx').textContent = tx; L.querySelector('.gl-s').textContent = sub; L.classList.toggle('out', out); L.querySelector('.gl-ow').style.backgroundImage = `url(${TR_OW[trOf().sex] || TR_OW.m})`;
+    show(tx, sub = '', out = false) { loadMus(out ? 'gymOut' : 'gymIn'); L.querySelector('.gl-tx').textContent = tx; L.querySelector('.gl-s').textContent = sub; L.classList.toggle('out', out); L.querySelector('.gl-ow').style.backgroundImage = `url(${TR_OW[trOf().sex] || TR_OW.m})`;
       L.hidden = false; void L.offsetWidth; L.classList.add('on'); clearInterval(dT); let n = 0; dT = setInterval(() => { n = (n + 1) % 4; dots.textContent = '.'.repeat(n) || ' '; }, 380); },
     sub(t) { L.querySelector('.gl-s').textContent = t; },
-    hide() { L.classList.remove('on'); clearInterval(dT); setTimeout(() => { if (!L.classList.contains('on')) L.hidden = true; }, 380); } };
+    hide() { loadMus(null); L.classList.remove('on'); clearInterval(dT); setTimeout(() => { if (!L.classList.contains('on')) L.hidden = true; }, 380); } };
   const loadGymJs = () => window.Gym ? Promise.resolve() : new Promise((ok, no) => { const v = encodeURIComponent(APP_VER), c = document.createElement('link'); c.rel = 'stylesheet'; c.href = `gym/gym.css?v=${v}`; document.head.appendChild(c);
     const s = document.createElement('script'); s.src = `gym/gym.js?v=${v}`; s.onload = () => window.Gym ? ok() : no(new Error('gym')); s.onerror = no; document.head.appendChild(s); });
   // 게임 본체는 함수 안에 있어서 gym.js 가 쓸 것만 꺼내 준다 (늦게 정의되는 것도 있어 getter)
@@ -6564,7 +6575,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '11.93';   /* v11.91 경완: 체육관 승급 심사 = 평판 차면 알림·버튼·심사 화면·라인업 고르기 · v11.90 경완: 기술 바꾸기 상세 카드는 기술 창 위에 겹쳐 뜸. v11.89 경완: 포켓몬 박스 타입 아이콘, 체육관 포켓몬 메뉴 라인업 1 기본·순서 바꾸기 설명 없앰 · v11.88 경완: 뒤로 버튼 옆 제목을 눌러도 뒤로 · v11.86 경완: 체육관 도전자마다 기다리는 시간·남은 시간 표시, 프로필 체육관 배지 안 그려지던 것 고침. v11.79 경완: 타이어 그네 — 친구가 밀어 주면 타던 포켓몬은 다 밀 때까지 계속 타고 즐거운 말풍선. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '11.94';   /* v11.91 경완: 체육관 승급 심사 = 평판 차면 알림·버튼·심사 화면·라인업 고르기 · v11.90 경완: 기술 바꾸기 상세 카드는 기술 창 위에 겹쳐 뜸. v11.89 경완: 포켓몬 박스 타입 아이콘, 체육관 포켓몬 메뉴 라인업 1 기본·순서 바꾸기 설명 없앰 · v11.88 경완: 뒤로 버튼 옆 제목을 눌러도 뒤로 · v11.86 경완: 체육관 도전자마다 기다리는 시간·남은 시간 표시, 프로필 체육관 배지 안 그려지던 것 고침. v11.79 경완: 타이어 그네 — 친구가 밀어 주면 타던 포켓몬은 다 밀 때까지 계속 타고 즐거운 말풍선. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -11131,10 +11142,10 @@ const EVO_SWAPS = (() => { const t = [], add = (a, b, st) => { for (let x = a; x
 async function evoMusicStart(fade = 0, off = 0) {
   const a = audio(); if (!a || !evoMus.have || !bgmOn) return null;
   try {
-    if (!evoMus.buf) { const blob = await musicGet('evo'); if (!blob) return null; evoMus.buf = await bgmDecode(blob); }
+    if (!evoMus.buf) { evoMus.buf = await gbmBuf('evo'); if (!evoMus.buf) return null; }
     const src = a.createBufferSource(), g = a.createGain(); g.gain.value = .6 * volG(VOL.bgm);
     src.buffer = evoMus.buf; src.connect(g).connect(a.destination); const t0 = a.currentTime + .05; off = off % evoMus.buf.duration || 0; src.start(t0, off);
-    if (fade) { src.loop = true; g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.6 * volG(VOL.bgm), t0 + fade); }   // 진화가 끝나고 끊겼던 자리부터 다시, 소리를 키우며
+    if (fade) { src.loop = true; if (evoMus.buf.gbLoop) { src.loopStart = evoMus.buf.gbLoop[0]; src.loopEnd = evoMus.buf.gbLoop[1]; } g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.6 * volG(VOL.bgm), t0 + fade); }   // 진화가 끝나고 끊겼던 자리부터 다시, 소리를 키우며
     evoMus.src = src; evoMus.g = g; evoMus.t0 = t0 - off; return t0;
   } catch (e) { return null; }
 }
@@ -11556,7 +11567,7 @@ const SETUP_MUS = () => [...TRACKS.map(t => t.id), 'evo', 'intro', 'title'];
 async function soundState() { let k = []; try { k = await musicKeys() || []; } catch (e) {} const ks = new Set(k), need = SETUP_MUS();
   return { mus: need.filter(x => ks.has(x)).length, musN: need.length, cry: k.filter(x => /^cry\d+$/.test(x)).length }; }
 async function setupFlow() {
-  let s = await soundState(); const okM = s => s.mus >= s.musN, okC = s => s.cry >= 1000;
+  let s = await soundState(); const okM = s => true, okC = s => s.cry >= 1000;   // v11.94: 곡은 받아서 연주하니 가져올 필요 없음
   if (okM(s) && okC(s)) return;
   if (!$('#setupCss')) { const st = document.createElement('style'); st.id = 'setupCss'; st.textContent = `
 #setup{position:fixed;inset:0;z-index:6500;background:#000;color:#f4f0e0;font-family:var(--px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px max(24px,env(safe-area-inset-left)) calc(24px + env(safe-area-inset-bottom));text-align:center;transition:opacity .6s}
@@ -11572,7 +11583,7 @@ async function setupFlow() {
 #setup .su-done{font-size:14px;color:#ffd75a;min-height:20px}`; document.head.append(st); }
   const ov = document.createElement('div'); ov.id = 'setup'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', '소리 준비');
   ov.innerHTML = `<h2>소리 준비</h2><p>게임 음악${CRY_NET ? '을' : '과 포켓몬 울음소리를'} 이 기기에 가져와 주세요.<br>파일은 이 기기에만 저장돼요.</p>
-<div class="su-row" data-k="m"><button class="lk-btn main" type="button">음악 가져오기</button><small></small></div>
+<div class="su-row" data-k="m" hidden><button class="lk-btn main" type="button">음악 가져오기</button><small></small></div>
 <div class="su-row" data-k="c"${CRY_NET ? ' hidden' : ''}><button class="lk-btn main" type="button">울음소리 가져오기</button><small></small></div>
 <div class="su-done" aria-live="polite"></div><button class="su-later" type="button">나중에 하기</button>`;
   document.body.append(ov);
