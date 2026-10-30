@@ -1012,7 +1012,7 @@ function headAt(m) {
 async function confFx(s) {
   const m = monEl(s); if (!m) return; stSe(s, 'conf');
   const w = document.createElement('div'); w.className = 'bt-conf'; w.innerHTML = '<i></i><i></i><i></i>'; m.appendChild(w);
-  const hd = headAt(m); if (hd) { w.style.left = hd[0] + 'px'; w.style.top = hd[1] + 'px'; }   // 병아리는 포켓몬 머리 위를 돈다 (경완 2026-10-30)
+  const hd = headAt(m); if (hd) w.style.top = hd[1] + 'px';   // 병아리 높이만 포켓몬 머리에 맞춘다. 좌우는 원래대로 가운데 (경완 2026-10-30 '좌우로 빠져나옴')
   const T = B?.fast ? 700 : 1300, N = 16;
   [...w.children].forEach((d, k) => d.animate(Array.from({ length: N + 1 }, (_, i) => { const t = (i / N + k / 3) * Math.PI * 2, z = Math.sin(t);
     return { transform: `translate(${Math.cos(t) * 26}px,${z * 6}px) scale(${.8 + z * .2})`, zIndex: z > 0 ? 2 : 0, opacity: i === 0 || i === N ? 0 : 1 }; }), { duration: T, easing: `steps(${N})` }));
