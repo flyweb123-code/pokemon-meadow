@@ -1172,8 +1172,7 @@ function gymPop(html, onClick) { const p = document.createElement('div'); p.clas
   p.onclick = e => { if (e.target === p) return p.remove(); const h = e.target.closest('.iv-hex'); if (h) { sfx('tap'); ivBar = h.classList.toggle('bar'); return; } const b = e.target.closest('button[data-a]'); if (b) { sfx('tap'); onClick?.(b.dataset.a, () => p.remove(), b); } };
   document.querySelector('#gym .gy-main').appendChild(p); fillTh(p); return p; }
 // 라인업에서 빼기 전에 묻는 창 (경완 2026-10-29)
-function luAsk(P, ok) { const n = P ? nmOf(P) : '이 포켓몬', c = n.charCodeAt(n.length - 1) - 0xac00, j = c >= 0 && c < 11172 && c % 28 ? '을' : '를';
-  gymPop(`<h4>${esc(n)}${j} 라인업에서 뺄까요?</h4><div class="gy-btns"><button data-a="x">취소</button><button class="main danger" data-a="ok">빼기</button></div>`, (a, close) => { close(); if (a === 'ok') ok(); }); }
+function luAsk(P, ok) { ok(); }   // 묻지 않고 바로 빼기 (경완 2026-10-30 '빼기·x 누르면 바로 빠지게')
 function pickMon() { boxWin(true); }
 // 개체값 육각형 (본가 '능력 판정'처럼): HP 위, 시계 방향으로 공격·방어·스피드·특방·특공. 성격으로 오르는 능력은 빨강, 내려가는 능력은 파랑
 const IV_ORD = [[0, 'HP', ''], [1, '공격', 'atk'], [2, '방어', 'def'], [5, '스피드', 'spe'], [4, '특방', 'spd'], [3, '특공', 'spa']];
