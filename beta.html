@@ -3573,7 +3573,7 @@ function arrive(m) {
   if (g.kind === 'prop') return propReact(m, g.p);
   if (g.kind === 'scpush') { const i = LAYOUT.sc.indexOf(g.r), A = LAYOUT.scArt[g.r[0]], rd = g.rd; m.goal = null;
     if (i < 0 || !A || !S.mons.includes(rd) || rd.scp?.r !== g.r || !scPlay(m, { k: 'sc', i }, g.a, null, null, false)) return setState(m, 'idle', 1);
-    m.propUntil = performance.now() + clamp(m.t || 3, 3, 24) * 1000; emote(m, '♪', '', 2.2, 'prop-play'); return log(`${J(m,'이/가')} ${J(rd,'이/가')} 탄 ${esc(A.n)}${hasBat(A.n) ? '을' : '를'} 밀어 흔들어 준다.`, [m, rd]); }
+    m.propUntil = performance.now() + clamp(m.t || 3, 3, 24) * 1000; rd.t = Math.max(rd.t || 0, m.t + 1.5); rd.propUntil = Math.max(rd.propUntil || 0, m.propUntil + 1500);   /* v11.79 경완: 친구가 밀어 주면 타던 포켓몬은 다 밀어 줄 때까지 계속 탄다 */ emote(m, '♪', '', 2.2, 'prop-play'); return log(`${J(m,'이/가')} ${J(rd,'이/가')} 탄 ${esc(A.n)}${hasBat(A.n) ? '을' : '를'} 밀어 흔들어 준다.`, [m, rd]); }
   if (g.kind === 'propWatch') return propWatch(m, g.cx);
   if (g.kind === 'treePerch') { treePerch(m); m.propUntil = performance.now() + 10000; sceneNext = Math.max(sceneNext, m.propUntil + rnd(3000, 6000)); return; }
   if (g.kind === 'forage' && g.tree && treeOn()) { setState(m, 'idle', 2.5); faceTo(m, PROPS.tree.x); anim(m, 'hop'); setTimeout(() => { if (S.mons.includes(m)) shakeTree(m); }, 250); return; }
@@ -5668,7 +5668,8 @@ function scTick(m, now) { const q = m.scp; if (!q) return; if (!q.G.el?.isConnec
   if (fx.swing) { ang = Math.sin(tt * 3) * .07; if (/그네/.test(G.A.n || '')) oy = G.t; }
   if (fx.rock) { const te = q.tw && G.el ? (now - (G.el.scTw ??= now)) / 1000 : tt; ang = Math.sin(te * 2.4) * .13; oy = G.t + G.H * .7; }   /* v10.21 경완 '시소 움직임이랑 포켓몬 움직임이 달라짐': 둘이 타는 소품은 탄 포켓몬마다 따로 시작한 시간이 아니라 소품 하나의 시계로 흔든다 (판과 두 포켓몬이 같은 각도) */
   if (q.tw) { const rs = S.mons.filter(o => o.scp?.r === q.r && o.scp.ride && now - o.scp.t0 > o.scp.ed * 1000); if (rs.length < 2) { ang = rs[0] ? (rs[0].scp.tx < G.cx ? -.13 : .13) : 0;   /* v10.05 경완 '혼자 타고 있을 땐 기울어진 채': 앉은 쪽이 내려간 채 멈춤 */ if (q.ride && now > q.dotT && tt > q.ed) { q.dotT = now + 3200; emote(m, '…', '', 2.4, 'seesaw-wait'); } } }   /* v9.98 경완: 둘이 타는 소품(시소)에 혼자 있으면 움직이지 않고 말풍선 … */
-  { const h = (now - (G.el?.scHit ?? -1e9)) / 1000; if (h < 1.6) ang += Math.sin(h * (q.ride ? 6 : 20)) * (q.ride ? .12 : .06) * Math.exp(-h * (q.ride ? 1.6 : 3.5)); }   /* v9.52: 밀어 준 힘은 소품에 남아 타고 있는 포켓몬도 크게 흔들린다 */
+  { const h = (now - (G.el?.scHit ?? -1e9)) / 1000; if (h < 1.6) ang += Math.sin(h * (q.ride ? 6 : 20)) * (q.ride ? .12 : .06) * Math.exp(-h * (q.ride ? 1.6 : 3.5)); }
+  if (q.ride && !q.tw && now > (q.joyT || 0) && S.mons.some(o => o !== m && o.scp?.r === q.r && o.scp.M.push && o.state === 'idle')) { q.joyT = now + rnd(3200, 4200); emote(m, pick(['♪', '♪♪', '야호!', '신난다!', '와아!']), 'note', 2.2, 'swing-joy'); }   /* v11.79 경완: 친구가 밀어 주는 동안 탄 포켓몬 위에 즐거운 말풍선 */   /* v9.52: 밀어 준 힘은 소품에 남아 타고 있는 포켓몬도 크게 흔들린다 */
   const e = G.el; let a2 = ang, px = ox, py = oy;
   if (e && q.ride) e.scRideT = now; const own = !(e && !q.ride && now - (e.scRideT || 0) < 300);   // 누가 타고 있으면 소품 흔들기는 탄 포켓몬 쪽이 맡는다
   if (MV) { px = G.l + MV.o[0] * G.kx; py = G.t + MV.o[1] * G.ky; a2 = MV.k === 'spin' ? (fx.spin ? tt * (M.flap ? 7 : 4) : 0) : ang * (MV.amp || 1.6); const tf = `rotate(${a2.toFixed(4)}rad)`; if (own) { e.mpEl.style.transform = tf; if (e.mbEl) e.mbEl.style.transform = tf; } }
@@ -6571,7 +6572,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '11.78';   /* v11.78 경완: 친구 서버(아이폰 앱 CloudKit, 베타) — 프로필 › 친구: 친구 코드·걸음 랭킹(친구/전체)·대표 포켓몬·알 선물·친구 체육관 도전. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '11.79';   /* v11.79 경완: 타이어 그네 — 친구가 밀어 주면 타던 포켓몬은 다 밀 때까지 계속 타고 즐거운 말풍선. v11.78 경완: 친구 서버(아이폰 앱 CloudKit, 베타) — 프로필 › 친구: 친구 코드·걸음 랭킹(친구/전체)·대표 포켓몬·알 선물·친구 체육관 도전. v4.46 경완: 짝꿍 칸 고르기·빈 슬롯에서 온 상태가 메뉴를 닫은 뒤에도 남아 박스 카드에서 '필드에 내보내기'가 사라지던 것 */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
