@@ -1295,8 +1295,8 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 #gym :is(.gy-pop,.gy-pop .win,.gy-boxw,.gy-boxw>.win,.gy-infos,.gy-setup,.gy-sheet,.gy-sheet .win){animation:none!important}
 /* 누르는 버튼은 눌리는 모션 (경완 2026-10-29) */
 :where(#gym) button:not(:disabled):active{translate:0 2px;filter:brightness(.94)}
-.ab-hid{display:flex;align-items:center;gap:8px;width:100%;margin:0 0 4px;padding:8px 10px!important;border-radius:8px;border:2px solid rgba(122,62,200,.35)!important;background:#f6f0fd!important;box-shadow:none!important;text-align:left;font:inherit;color:inherit}
-.ab-hid small{font-size:11px;color:#a87a10;font-weight:700}.ab-hid b{font-size:14px;color:#7a5208}.ab-hid i{margin-left:auto;font-style:normal;color:#a87a10}
+.ab-hid{display:flex;align-items:center;gap:8px;width:100%;margin:0 0 4px;padding:8px 10px!important;border-radius:8px;border:2px solid #d4d4de!important;background:#f1f1f5!important;box-shadow:none!important;text-align:left;font:inherit;color:inherit}   /* v12.09 경완: 이 개체가 가진 특성으로 오해 → 회색 (금색은 진짜 숨특만) */
+.ab-hid small{font-size:11px;color:#8a8a98;font-weight:700}.ab-hid b{font-size:14px;color:#55556a}.ab-hid i{margin-left:auto;font-style:normal;color:#8a8a98}
 /* 친밀도 하트: 필드 정보카드와 같은 굵기 (경완 2026-10-29 '빈 하트 테두리가 너무 두꺼움') */
 .mp-frh b{font-weight:400!important;font-size:14px!important;color:#e04870!important;letter-spacing:1px;line-height:16px}
 .gy-pop small.mp-xpn,.gy-pop small.tp-xp{display:block!important;width:100%;text-align:right!important}
