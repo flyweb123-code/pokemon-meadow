@@ -63,28 +63,28 @@ const DESIGNS_FR = [
     deco: [[2, 3], [12, 3], [2, 7], [12, 7], [3, 10], [11, 10], [2, 13], [12, 13]],
     path: [[7, 14], [7, 8]], slots: [[8, 10, 'l'], [6, 10, 'r'], [8, 8, 'l'], [6, 8, 'r'], [9, 9, 'l'], [5, 9, 'r'], [9, 7, 'l'], [5, 7, 'r']], inY: 10, tiny: [[8, 11], [[1, 6], [9, 14]]], cuts: [[8, 11, [[1, 5], [10, 14]]], [9, 11, [[1, 4], [11, 14]]], [9, 10, [[1, 4], [11, 14]]], [9, 10]] },   // 경완 2026-10-28 '넓은 무대는 줄어든 느낌이 없네': 기둥 사이 칸도 잘라 좁게
   // 타입별 맵 (경완 2026-10-29 '타입별로 고를 수 있게 없는 타입 다 추가'): tools/gym/mktypemaps.py 로 잘라 붙인 파이어레드 맵. ty = 어울리는 타입
-  { id: 'champion', ty: 1, n: '챔피언 로드', sub: '석영고원 챔피언의 방', w: 13, h: 20, leader: [6, 5], door: [6, 19], guy: [7, 18], path: [[6, 19], [6, 6]], inY: 13,
+  { id: 'champion', stat: [[5, 18], [7, 18]], ty: 1, n: '챔피언 로드', sub: '석영고원 챔피언의 방', w: 13, h: 20, leader: [6, 5], door: [6, 19], guy: [7, 18], path: [[6, 19], [6, 6]], inY: 13,
     deco: [[3, 6], [9, 6], [2, 8], [10, 8], [2, 10], [10, 10], [4, 12], [8, 12]], slots: [[7, 11, 'l'], [5, 11, 'r'], [7, 9, 'l'], [5, 9, 'r'], [8, 7, 'l'], [4, 7, 'r'], [9, 10, 'l'], [3, 10, 'r']] },
-  { id: 'dojo', ty: 2, n: '격투 도장', sub: '노랑시티 격투 도장', w: 13, h: 16, leader: [6, 4], door: [6, 14], guy: [7, 14], path: [[6, 14], [6, 5]], inY: 12,
+  { id: 'dojo', stat: [[3, 13], [9, 13]], ty: 2, n: '격투 도장', sub: '노랑시티 격투 도장', w: 13, h: 16, leader: [6, 4], door: [6, 14], guy: [7, 14], path: [[6, 14], [6, 5]], inY: 12,
     deco: [[1, 4], [11, 4], [1, 9], [11, 9], [2, 12], [10, 12], [1, 14], [11, 14]], slots: [[7, 10, 'l'], [5, 10, 'r'], [7, 8, 'l'], [5, 8, 'r'], [8, 11, 'l'], [4, 11, 'r'], [3, 7, 'r'], [9, 7, 'l']] },
-  { id: 'roof', ty: 3, n: '옥상 정원', sub: '무지개시티 백화점 옥상', w: 19, h: 10, leader: [8, 3], door: [15, 7], guy: [14, 8], path: [[15, 7], [8, 7], [8, 4]], inY: 9,
+  { id: 'roof', stat: [[13, 6], [16, 6]], ty: 3, n: '옥상 정원', sub: '무지개시티 백화점 옥상', w: 19, h: 10, leader: [8, 3], door: [15, 7], guy: [14, 8], path: [[15, 7], [8, 7], [8, 4]], inY: 9,
     deco: [[1, 4], [1, 8], [13, 4], [14, 4], [2, 3], [12, 8], [6, 8], [4, 3]], slots: [[10, 5, 'l'], [10, 8, 'l'], [12, 5, 'l'], [7, 5, 'r'], [11, 4, 'd'], [13, 6, 'l'], [9, 8, 'u'], [6, 4, 'r']] },
   { id: 'viridian', ty: 5, n: '회전 미로', sub: '상록시티 체육관', w: 20, h: 23, leader: [2, 2], door: [17, 22], guy: [16, 21], path: [[17, 22], [17, 21], [18, 21], [18, 3], [7, 3], [7, 6], [2, 6], [2, 3]], inY: 22,
     deco: [[1, 14], [3, 21], [8, 21], [11, 13], [13, 11], [9, 17], [15, 8], [5, 2]], slots: [[19, 12, 'l'], [19, 7, 'l'], [15, 2, 'd'], [10, 2, 'd'], [10, 6, 'l'], [4, 7, 'u'], [3, 5, 'r'], [14, 17, 'u']] },
-  { id: 'bush', ty: 7, n: '덤불 숲길', sub: '세븐섬 무늬 덤불', w: 17, h: 28, leader: [8, 4], door: [8, 27], guy: [9, 26], path: [[8, 27], [8, 5]], inY: 24,
+  { id: 'bush', stat: [[7, 26], [9, 26]], ty: 7, n: '덤불 숲길', sub: '세븐섬 무늬 덤불', w: 17, h: 28, leader: [8, 4], door: [8, 27], guy: [9, 26], path: [[8, 27], [8, 5]], inY: 24,
     deco: [[3, 6], [13, 6], [3, 11], [13, 11], [3, 16], [13, 16], [3, 24], [13, 24]], slots: [[5, 8, 'r'], [11, 8, 'l'], [5, 13, 'r'], [11, 13, 'l'], [5, 18, 'r'], [11, 18, 'l'], [4, 22, 'r'], [12, 22, 'l']] },
-  { id: 'tower', ty: 8, n: '혼령의 탑', sub: '보라타운 포켓몬타워', w: 20, h: 18, leader: [9, 3], door: [9, 17], guy: [11, 16], path: [[9, 17], [9, 4]], inY: 15,
+  { id: 'tower', stat: [[7, 16], [11, 16]], ty: 8, n: '혼령의 탑', sub: '보라타운 포켓몬타워', w: 20, h: 18, leader: [9, 3], door: [9, 17], guy: [11, 16], path: [[9, 17], [9, 4]], inY: 15,
     deco: [[0, 8], [18, 8], [1, 14], [17, 14], [3, 4], [15, 4], [2, 15], [16, 15]], slots: [[10, 12, 'l'], [8, 12, 'r'], [10, 9, 'l'], [8, 9, 'r'], [10, 6, 'l'], [8, 6, 'r'], [10, 15, 'l']] },
-  { id: 'lab', ty: 9, n: '실험실', sub: '홍련섬 포켓몬 연구소', w: 15, h: 10, leader: [7, 2], door: [7, 9], guy: [9, 9], path: [[7, 9], [7, 8], [5, 8], [5, 3], [7, 3]], inY: 9,
+  { id: 'lab', stat: [[3, 9], [11, 9]], ty: 9, n: '실험실', sub: '홍련섬 포켓몬 연구소', w: 15, h: 10, leader: [7, 2], door: [7, 9], guy: [9, 9], path: [[7, 9], [7, 8], [5, 8], [5, 3], [7, 3]], inY: 9,
     deco: [[0, 6], [0, 8], [11, 8], [13, 8], [3, 9], [11, 9], [10, 2], [4, 2]], slots: [[9, 5, 'l'], [9, 8, 'l'], [4, 8, 'r'], [2, 5, 'r'], [10, 3, 'd'], [3, 2, 'd'], [12, 8, 'l'], [1, 8, 'r']] },
   { id: 'cinnabar', ty: 10, n: '화산 퀴즈장', sub: '홍련마을 체육관', w: 9, h: 22, leader: [4, 3], door: [4, 21], guy: [5, 20], path: [[4, 21], [4, 14], [6, 14], [6, 10], [4, 10], [4, 4]], inY: 16,
     deco: [[1, 3], [7, 3], [1, 9], [7, 11], [2, 14], [7, 16], [1, 20], [7, 20]], slots: [[5, 6, 'l'], [3, 7, 'r'], [7, 8, 'l'], [2, 10, 'r'], [5, 16, 'l'], [3, 15, 'r'], [7, 4, 'l'], [1, 4, 'r']] },
   { id: 'saffron', ty: 14, n: '순간이동 방', sub: '노랑시티 체육관', w: 11, h: 14, leader: [5, 3], door: [5, 13], guy: [7, 12], path: [[5, 13], [5, 4]], inY: 10,
     deco: [[2, 3], [8, 3], [1, 7], [2, 10], [8, 12], [2, 12], [1, 5], [9, 5]], slots: [[7, 5, 'l'], [3, 5, 'r'], [6, 7, 'l'], [4, 7, 'r'], [8, 4, 'l'], [2, 4, 'r'], [8, 8, 'l'], [2, 8, 'r']] },
-  { id: 'lorelei', ty: 15, n: '얼음의 방', sub: '석영고원 칸나의 방', w: 13, h: 13, leader: [6, 4], door: [6, 12], guy: [7, 10], path: [[6, 12], [6, 5]], inY: 9, deco: [[1, 4], [11, 4], [1, 7], [11, 7], [3, 9], [9, 9], [1, 9], [11, 9]], slots: [[7, 8, 'l'], [5, 8, 'r'], [8, 6, 'l'], [4, 6, 'r'], [8, 4, 'l'], [4, 4, 'r'], [9, 7, 'l'], [3, 7, 'r']] },
-  { id: 'lance', ty: 16, n: '용의 방', sub: '석영고원 목호의 방', w: 13, h: 13, leader: [6, 4], door: [6, 12], guy: [7, 10], path: [[6, 12], [6, 5]], inY: 9, deco: [[1, 4], [11, 4], [1, 7], [11, 7], [3, 9], [9, 9], [1, 9], [11, 9]], slots: [[7, 8, 'l'], [5, 8, 'r'], [8, 6, 'l'], [4, 6, 'r'], [8, 4, 'l'], [4, 4, 'r'], [9, 7, 'l'], [3, 7, 'r']] },
-  { id: 'agatha', ty: 17, n: '그림자의 방', sub: '석영고원 국화의 방', w: 13, h: 13, leader: [6, 4], door: [6, 12], guy: [7, 10], path: [[6, 12], [6, 5]], inY: 9, deco: [[1, 4], [11, 4], [1, 7], [11, 7], [3, 9], [9, 9], [1, 9], [11, 9]], slots: [[7, 8, 'l'], [5, 8, 'r'], [8, 6, 'l'], [4, 6, 'r'], [8, 4, 'l'], [4, 4, 'r'], [9, 7, 'l'], [3, 7, 'r']] },
-  { id: 'hof', ty: 18, n: '전당의 방', sub: '석영고원 전당 등록', w: 11, h: 13, leader: [5, 5], door: [5, 12], guy: [6, 11], path: [[5, 12], [5, 6]], inY: 10,
+  { id: 'lorelei', stat: [[4, 9], [8, 9]], ty: 15, n: '얼음의 방', sub: '석영고원 칸나의 방', w: 13, h: 13, leader: [6, 4], door: [6, 12], guy: [7, 10], path: [[6, 12], [6, 5]], inY: 9, deco: [[1, 4], [11, 4], [1, 7], [11, 7], [3, 9], [9, 9], [1, 9], [11, 9]], slots: [[7, 8, 'l'], [5, 8, 'r'], [8, 6, 'l'], [4, 6, 'r'], [8, 4, 'l'], [4, 4, 'r'], [9, 7, 'l'], [3, 7, 'r']] },
+  { id: 'lance', stat: [[4, 9], [8, 9]], ty: 16, n: '용의 방', sub: '석영고원 목호의 방', w: 13, h: 13, leader: [6, 4], door: [6, 12], guy: [7, 10], path: [[6, 12], [6, 5]], inY: 9, deco: [[1, 4], [11, 4], [1, 7], [11, 7], [3, 9], [9, 9], [1, 9], [11, 9]], slots: [[7, 8, 'l'], [5, 8, 'r'], [8, 6, 'l'], [4, 6, 'r'], [8, 4, 'l'], [4, 4, 'r'], [9, 7, 'l'], [3, 7, 'r']] },
+  { id: 'agatha', stat: [[4, 9], [8, 9]], ty: 17, n: '그림자의 방', sub: '석영고원 국화의 방', w: 13, h: 13, leader: [6, 4], door: [6, 12], guy: [7, 10], path: [[6, 12], [6, 5]], inY: 9, deco: [[1, 4], [11, 4], [1, 7], [11, 7], [3, 9], [9, 9], [1, 9], [11, 9]], slots: [[7, 8, 'l'], [5, 8, 'r'], [8, 6, 'l'], [4, 6, 'r'], [8, 4, 'l'], [4, 4, 'r'], [9, 7, 'l'], [3, 7, 'r']] },
+  { id: 'hof', stat: [[4, 11], [6, 11]], ty: 18, n: '전당의 방', sub: '석영고원 전당 등록', w: 11, h: 13, leader: [5, 5], door: [5, 12], guy: [6, 11], path: [[5, 12], [5, 6]], inY: 10,
     deco: [[1, 5], [9, 5], [1, 8], [9, 8], [1, 11], [9, 11], [3, 11], [7, 11]], slots: [[6, 9, 'l'], [4, 9, 'r'], [7, 8, 'l'], [3, 8, 'r'], [7, 5, 'l'], [3, 5, 'r'], [6, 10, 'l'], [4, 10, 'r']] },
 ];
 // 꾸미기 놓을 수 있는 칸 (경완 2026-10-29 '기둥처럼 입체적인 소품 위에는 못 올리게'): pokefirered 맵 충돌·물 칸 + 석상 머리 칸은 막음. '1' = 놓을 수 있음
@@ -149,8 +149,10 @@ function dzOf(id, gi) {
   const ny = RY.reduce((t, [a, b]) => t + b - a, 0), nx = RX.reduce((t, [a, b]) => t + b - a, 0);
   const pn = p => [near(vx, RX)(p[0]), near(v, RY)(p[1]), ...p.slice(2)];   // 관장·문·안내원은 잘린 줄에 걸려도 가까운 남은 칸으로
   const path = D.path.map(p => [near(vx, RX)(p[0]), near(v, RY)(p[1])]).filter((p, i, L) => !i || p[0] !== L[i - 1][0] || p[1] !== L[i - 1][1]);
+  { const L0 = pn(D.leader), e = path[path.length - 1];   // 줄을 잘라 길 끝이 관장 칸과 겹치면(연구소·전당) 끝 줄을 한 칸 아래로 (v12.24 경완 '도전자가 내 캐릭터랑 겹침')
+    if (e && e[0] === L0[0] && e[1] === L0[1]) for (let i = path.length - 1; i > 0 && path[i][1] === L0[1]; i--) path[i] = [path[i][0], L0[1] + 1]; }
   return (dzCache[k] = Object.assign({}, D, { base: D, cut: c, h: D.h - ny, w: D.w - nx, leader: pn(D.leader), door: pn(D.door), guy: pn(D.guy), path,
-    deco: D.deco.filter(ok).map(pt), slots: D.slots.filter(ok).map(pt), free: D.free && D.free.filter((_, y) => v(y) != null).map(r => [...r].filter((_, x) => vx(x) != null).join('')),
+    stat: (D.stat || []).map(pn), deco: D.deco.filter(ok).map(pt), slots: D.slots.filter(ok).map(pt), free: D.free && D.free.filter((_, y) => v(y) != null).map(r => [...r].filter((_, x) => vx(x) != null).join('')),
     toV: v, toF: cutF(RY), toVx: vx, toFx: cutF(RX) }));
 }
 // 미리보기 그림을 지금 크기(data-gi 가 있으면 그 등급, 처음 열 때는 0 = 새내기)의 잘라 붙인 맵으로 (경완 2026-10-27)
@@ -163,15 +165,19 @@ const withMe = (u, D) => Promise.all([u, owSrc(myOw())].map(src => new Promise(o
   if (o) { const fw = owW(myOw()), [x, y] = D.leader; g.drawImage(o, 0, 0, fw, 32, x * 16 - (fw - 16) / 2, y * 16 - 16, fw, 32); } return c.toDataURL(); });
 // 잘라 붙인 맵 그림 (이음매 없이)
 const mapCache = {};
-function mapSrc(D) { const u = `${IMG}map/${D.id}.png${D.iv ? `?v=${D.iv}` : ""}`; if (!D.cut) return Promise.resolve(u); const k = D.id + JSON.stringify(D.cut); if (mapCache[k]) return mapCache[k];
-  return (mapCache[k] = new Promise(res => { const im = new Image(); im.onerror = () => res(u);
+// 입구 기둥 석상 (v12.24 경완 '모든 맵에 항상 입구에는 기둥 석상 2개'): 맵 그림에 석상이 없는 디자인은 D.stat [x, 발밑 y] 칸에 deco/statue.png 를 그려 넣는다
+let statIm = null; const statLoad = () => statIm || (statIm = new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = `${IMG}deco/gstat.png`; }));
+function mapSrc(D) { const u = `${IMG}map/${D.id}.png${D.iv ? `?v=${D.iv}` : ""}`, ST = D.stat || []; if (!D.cut && !ST.length) return Promise.resolve(u); const k = D.id + JSON.stringify(D.cut) + JSON.stringify(ST); if (mapCache[k]) return mapCache[k];
+  return (mapCache[k] = statLoad().then(si => new Promise(res => { const im = new Image(); im.onerror = () => res(u);
     im.onload = () => { const c = document.createElement('canvas'); c.width = D.w * 16; c.height = D.h * 16; const g = c.getContext('2d');
+      if (!D.cut) g.drawImage(im, 0, 0); else {
       const SY = keepSeg(yList(D.cut.y), Math.ceil(im.height / 16)), SX = keepSeg(D.cut.x, Math.ceil(im.width / 16));
       let dy = 0; for (const [y0, y1] of SY) { let dx = 0; const hh = Math.min(y1 * 16, im.height) - y0 * 16;
         for (const [x0, x1] of SX) { const ww = Math.min(x1 * 16, im.width) - x0 * 16; g.drawImage(im, x0 * 16, y0 * 16, ww, hh, dx, dy, ww, hh); dx += ww; } dy += hh; }
       // 이음매 메우기: [보이는 x, y, 원래 x, y, 너비, 높이(칸), 좌우 뒤집기] (경완 2026-10-27 '좁혔을 때 경계선 안 보이게')
-      (D.cut.f || []).forEach(([vx, vy, sx, sy, w, h, fl]) => { const W = w * 16, Hh = h * 16; g.save(); g.translate(vx * 16 + (fl ? W : 0), vy * 16); if (fl) g.scale(-1, 1); g.drawImage(im, sx * 16, sy * 16, W, Hh, 0, 0, W, Hh); g.restore(); });
-      res(c.toDataURL()); }; im.src = u; })); }
+      (D.cut.f || []).forEach(([vx, vy, sx, sy, w, h, fl]) => { const W = w * 16, Hh = h * 16; g.save(); g.translate(vx * 16 + (fl ? W : 0), vy * 16); if (fl) g.scale(-1, 1); g.drawImage(im, sx * 16, sy * 16, W, Hh, 0, 0, W, Hh); g.restore(); }); }
+      if (si) ST.forEach(([x, y]) => { g.fillStyle = 'rgba(0,0,0,.18)'; g.fillRect(x * 16 + 2, y * 16 + 12, 13, 4); g.drawImage(si, x * 16, (y - 1) * 16); });
+      res(c.toDataURL()); }; im.src = u; }))); }
 
 // ---------- 평판·등급 ----------
 const REP_MAX = 1250;   // 11.58: 평판 숫자 2.5배 (경완 2026-10-29 '잘하면 30일 정도에 다 채우게')
@@ -222,7 +228,7 @@ function build() {
   $g('.gy-store').onclick = () => { sfx('tap'); if (ded) ded.end?.(); storePop(); };
   $g('.gy-deco').onclick = () => { sfx('tap'); root.querySelectorAll('.gy-infos').forEach(x => x.remove()); if (!ded) decoEdit(); };
   $g('.gy-simb').onclick = () => { sfx('tap'); simPop(); };
-  $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = b.dataset.t; if (t === 'out') return exit(); sfx('tap');
+  $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = b.dataset.t; if (t === 'out') return exit(); if (root.classList.contains('lupk')) return; sfx('tap');
     root.querySelectorAll('.gy-pop').forEach(x => x.remove());   // 다른 메뉴를 누르면 포켓몬 정보 카드 같은 팝업도 닫힘 (경완 2026-10-29)
     const cov = root.querySelectorAll('.gy-boxw,.gy-infos'); if (cov.length) { cov.forEach(x => x.remove()); return openTab(t); }   // 포켓몬 고르기·정보 화면 위에서 메뉴를 누르면 그 화면을 닫고 그 메뉴로 (경완 2026-10-28)
     openTab(tab === t ? null : t); };
@@ -800,7 +806,7 @@ function talk(html, btn = '다음', sub = '') {
 const doorSe = () => { try { window.GymBGM?.se('DP_DOOR', { gain: 2.4 }); } catch (e) {} };   // 도전자가 드나들 때 철컥 문 소리 (플래티넘 SEQ_SE_DP_DOOR, 경완 2026-10-28 '자동문 말고 철컥')
 async function challenge(picked) {
   const g = st(), c = g.q[0]; if (!c || busy) return;
-  if (![0, 1, 2].some(i => luOf(i).length)) { say('라인업이 비어 있어요.', '라인업을 짜고 배틀하기를 눌러 주세요'); openTab('battle', { title: '배틀 라인업', go: '배틀하기', pick: i => { const g2 = st(); g2.luI = i; save(); openTab(null); challenge(true); } }); return; }   // 라인업 화면의 '연습 배틀' 자리가 '배틀하기' → 그 도전자와 바로 배틀 (v12.22 경완)
+  if (![0, 1, 2].some(i => luOf(i).length)) { say('라인업이 비어 있어요.', '라인업을 짜고 "이 라인업으로 결정"을 눌러 주세요'); openTab('battle', { title: '배틀 라인업', pick: i => { const g2 = st(); g2.luI = i; save(); openTab(null); challenge(true); } }); return; }   // 라인업 화면의 '연습 배틀' 자리가 '이 라인업으로 결정' → 그 도전자와 바로 배틀 (v12.22, v12.24 경완 '결정 버튼이랑 통일')
   busy = true; openTab(null); root.classList.add('busy');
   try {
     await loadJs('gymb/battle.js', 'GymBattle'); await GB().loadData();
@@ -1078,6 +1084,7 @@ function openTab(t, opt) {
   // 꾸미기·자리 정하기 중에 다른 메뉴를 열면 그 모드를 끝낸다 (경완 2026-10-27 '꾸미기 하고 나서 맵에 그리드 안 사라지는 오류')
   if (t && ded) ded.end?.();
   if (luRes && !opt?.pick) { const r = luRes; luRes = null; root.classList.remove('lupk'); setTimeout(() => r(null)); }   // 라인업 고르다 닫음
+  root.classList.toggle('lupk', !!(t === 'battle' && opt?.pick));   // 배틀 라인업 고르기 중엔 아래 메뉴 잠금 (퇴근만 됨, v12.24 경완 '메뉴도 똑같이 잠기고')
   if (t) root.querySelectorAll('.gy-infos').forEach(x => x.remove());   // 창고·도전자 명단을 연 채 아래 메뉴를 누르면 그 화면은 닫는다
   tab = t; root.querySelectorAll('.gy-menu button[data-t]').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === t));
   const sh = $g('.gy-sheet'); sh.classList.remove('ty-on', 'lk'); if (!t) { sh.hidden = true; return; }
@@ -1512,7 +1519,7 @@ async function intro() {
 function enter() {
   open = true; tab = null; root.hidden = false; root.classList.remove('gview'); root.classList.toggle('sim', !!window.gymSimOn); GA.gymIn(); openTab(null); bgmPlay(st()?.d ? 'gym' : 'lab');   // 처음 연출·튜토리얼은 연구소 곡 (경완 2026-10-29)   // 체육관 곡: 처음이면 플래티넘 원본 소리를 받아 오는 동안 잠깐 조용하다
   requestAnimationFrame(() => root.classList.add('on'));
-  if (st()?.d) { tick(); renderHome(); later(); } else intro();
+  if (st()?.d) { tick(); { const g = st(); if (g.q?.length) g.qSeen = Math.max(g.qSeen | 0, ...g.q.map(c => c.id)); setAt(); save(); } renderHome(); later(); } else intro();   // 체육관에 들어오면 필드 체육관 아이콘 빨간 점(도전자)은 확인한 것으로 (v12.24 경완 '들어가서 확인했는데 안 없어짐')
   setTimeout(() => gymLoad.hide(), 120);
   // 아래 메뉴(포켓몬·훈련장·트레이너·상점)가 쓰는 배틀 자료·관리 코드를 미리 받아 둔다: 처음 누를 때 '불러오는 중'에 멈춰 있지 않게 (경완 2026-10-30 '훈련장 처음 눌렀을 때 화면 바로 안 뜸')
   // 정보 카드·기술 창의 타입·분류 아이콘을 미리 받아 둔다 (처음 열 때 글자만 보이다 늦게 뜨던 것, 경완 2026-10-30)
