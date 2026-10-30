@@ -201,7 +201,7 @@ function buildUI() {
       <i class="bt-tr e"></i><i class="bt-tr p"></i>
       <div class="bt-mw e"><div class="bt-mon e"><div class="clip"><img alt=""></div></div></div>
       <div class="bt-mw p"><div class="bt-mon p"><div class="clip"><img alt=""></div></div></div>
-      <i class="bt-wx"></i><div class="bt-lvw" hidden></div>
+      <i class="bt-wx"></i><div class="bt-lvw" hidden></div><div class="bt-shw" hidden></div>
       <canvas class="bt-ptc" width="256" height="192"></canvas>
       <div class="bt-hb e"><span class="hbb"></span><b class="nm"></b><span class="lv"><i class="sx"></i><em class="lvn"></em></span><i class="st"></i><i class="hp"><i></i></i></div>
       <div class="bt-hb p"><span class="hbb"></span><b class="nm"></b><span class="lv"><i class="sx"></i><em class="lvn"></em></span><i class="st"></i><i class="hp"><i></i></i><span class="hpn"><b class="c"></b><b class="m"></b></span><i class="xp"><i></i></i></div>
@@ -591,7 +591,7 @@ async function run(opts) {
   trE.style.backgroundImage = `url(${uE})`; trP.style.backgroundImage = `url(${uP})`;
   await Promise.race([Promise.all([uE, uP].map(u => new Promise(r => { const im = new Image(); im.onload = im.onerror = r; im.src = u; }))), wait(1200)]);   // 그림이 늦게 떠서 멈춰 보이지 않게 미리 받기
   ['e', 'p'].forEach(s => { $b(`.bt-pty.${s}`).classList.remove('on'); $b(`.bt-hb.${s}`).classList.remove('on'); monEl(s).className = `bt-mon ${s}`; setSt(s, ''); });
-  $b('.bt-msg .t').textContent = ''; idlePanel(); wxSet(''); $b('.bt-terr').className = 'bt-terr'; $b('.bt-lvw').hidden = true;
+  $b('.bt-msg .t').textContent = ''; idlePanel(); wxSet(''); $b('.bt-terr').className = 'bt-terr'; $b('.bt-lvw').hidden = true; $b('.bt-shw').hidden = true;
   // 등장: 화면이 번쩍이며 가로줄로 열리고, 발판·트레이너가 양옆에서 미끄러져 들어온다
   M('sePrep', SE_BASE.map(n => 'DP_' + n)); await wait(40); el.classList.add('now', 'open'); void el.offsetWidth; el.classList.remove('now'); encDone(); se('SLIDEIN');   // 배틀 화면은 바로 불투명하게 (서서히 나타나면 걷히는 전환 화면 사이로 체육관이 비쳤다, 경완 2026-10-28)
   await wait(900); el.classList.remove('intro');
@@ -1047,21 +1047,36 @@ function lvApply(pk, X, lv, a, b) {
 async function expGain(X) {
   const foe = B.foe[X.i]; if (!foe) return;
   // 학습장치 (본가 6세대~처럼 늘 켜짐, 경완 2026-10-30): 나오지 않은 라인업 포켓몬도 절반을 받는다. 얻은 경험치 글은 한 번에
-  let shMsg = false;
+  const SH = [];   // 학습장치로 받은 포켓몬: 나와 싸운 포켓몬이 다 받은 뒤 한 창에 미니 그림 + 경험치 막대로 한꺼번에 (경완 2026-10-30)
   for (const pid of [...B.used, ...B.my.map(o => o.pid).filter(p => !B.used.has(p))]) {
     const i = B.my.findIndex(o => o.pid === pid), pk = B.o.p[i], P = boxOf(pid); if (!P || !pk || pk.fainted) continue;
-    const share = !B.used.has(pid), m = gm(P), r = gainXp(P, xpFor(foe, m.lv) * (share ? .5 : 1)); if (!r.n) continue;
-    if (share && !shMsg) { shMsg = true; await msg('다른 포켓몬들도 학습장치로 경험치를 얻었다!'); }
+    const share = !B.used.has(pid), m = gm(P), g0 = xpGauge(B.my[i]), r = gainXp(P, xpFor(foe, m.lv) * (share ? .5 : 1)); if (!r.n) continue;
+    if (share) { const x = B.xr[pid] = B.xr[pid] || { n: 0, lv0: r.lv0, lv: r.lv0, learned: [] }; x.n += r.n; x.lv = r.lv; x.learned.push(...r.learned);
+      if (r.lv > r.lv0) { const L = lvWin(P, r.lv0, r.lv); lvApply(pk, null, r.lv, L.a, L.b); B.my[i].lv = r.lv; }
+      SH.push({ i, P, r, g0 }); continue; }
     const x = B.xr[pid] = B.xr[pid] || { n: 0, lv0: r.lv0, lv: r.lv0, learned: [] }; x.n += r.n; x.lv = r.lv; x.learned.push(...r.learned);
     const nm = B.my[i].nm, A = B.act.p, on = A && A.pid === pid && !A.fnt;
-    if (!share) await msg(`${eun(nm)} 경험치 ${eul(r.n.toLocaleString())} 얻었다!`, on ? 0 : 500);
+    await msg(`${eun(nm)} 경험치 ${eul(r.n.toLocaleString())} 얻었다!`, on ? 0 : 500);
     if (on) { const hb = $b('.bt-hb.p .xp>i'), g = growth(P.sp); let lv = r.lv0;
       for (;;) { const goal = lv < r.lv ? 1 : xpGauge(B.my[i]); se('EXP', { dur: B.fast ? .25 : .6 }); hb.style.transition = 'width .6s linear'; hb.style.width = clampN(goal, 0, 1) * 96 + 'px'; await wait(B.fast ? 250 : 620); if (lv >= r.lv) break; lv++; A.lv = lv; $b('.bt-hb.p .lvn').textContent = lv; se('EXPMAX');   /* 경완 2026-10-28: 경험치 막대 차는 본가 소리(SEQ_SE_DP_EXP), 꽉 차면 EXPMAX */ hb.style.transition = 'none'; hb.style.width = '0px'; await wait(30); }
       hb.style.transition = ''; A.xpg = xpGauge(B.my[i]); }
     if (r.lv > r.lv0) { await msg(`${nm}의 레벨이 ${r.lv}${/[036]$/.test(String(r.lv)) ? '으로' : '로'} 올랐다!`, 0); const L = lvWin(P, r.lv0, r.lv); lvApply(pk, on ? A : null, r.lv, L.a, L.b); if (B) await L.run(); }
     for (const [id, f] of r.learned) await msg(f ? `${eun(nm)} ${eul(mvKo(f))} 잊고 ${eul(mvKo(id))} 배웠다!` : `${eun(nm)} 새로 ${eul(mvKo(id))} 배웠다!`);
   }
+  if (SH.length && B) await shareWin(SH);
   if (!B.practice) GA.save();
+}
+async function shareWin(SH) {
+  const w = $b('.bt-shw'); if (!w) return;
+  msg('다른 포켓몬들도 학습장치로 경험치를 얻었다!', 0); w.innerHTML = `<p>학습장치</p>${SH.map(({ i, P, r }) => `<div class="sh-r"><span class="sh-ic"><img alt="" data-th="${P.id}"></span><b>${esc(B.my[i].nm)}</b><span class="lv">Lv<em>${r.lv0}</em></span><i class="xp"><i></i></i><span class="up">+${r.n.toLocaleString()}</span></div>`).join('')}<b class="cur">▼</b>`;
+  fillTh(w); w.hidden = false; const R = [...w.querySelectorAll('.sh-r')];
+  R.forEach((row, k) => { row.querySelector('.xp>i').style.width = clampN(SH[k].g0, 0, 1) * 100 + '%'; });
+  await wait(250); se('EXP', { dur: .9 });
+  await Promise.all(SH.map(async ({ i, r }, k) => { const row = R[k], bar = row.querySelector('.xp>i'), lvE = row.querySelector('.lv em'); let lv = r.lv0;
+    for (;;) { const goal = lv < r.lv ? 1 : xpGauge(B.my[i]); bar.style.transition = 'width .7s linear'; bar.style.width = clampN(goal, 0, 1) * 100 + '%'; await wait(B?.fast ? 260 : 720); if (!B || lv >= r.lv) break;
+      lv++; lvE.textContent = lv; row.classList.remove('lvup'); void row.offsetWidth; row.classList.add('lvup'); se('EXPMAX'); bar.style.transition = 'none'; bar.style.width = '0%'; await wait(30); } }));
+  if (!B) return; await new Promise(r => { B.tapWake = r; }); w.hidden = true;
+  for (const { i, r } of SH) { const nm = B.my[i].nm; for (const [id, f] of r.learned) await msg(f ? `${eun(nm)} ${eul(mvKo(f))} 잊고 ${eul(mvKo(id))} 배웠다!` : `${eun(nm)} 새로 ${eul(mvKo(id))} 배웠다!`); }
 }
 function xpGauge(src) { const P = boxOf(src.pid); if (!P) return 0; const m = gm(P), g = growth(P.sp), a = xpAt(g, m.lv), b = xpAt(g, m.lv + 1); return b > a ? (m.xp - a) / (b - a) : 1; }
 
