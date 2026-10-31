@@ -581,6 +581,19 @@ const balls = s => { const L = B.o[s] || [], live = B.btl?.[s === 'p' ? 'p1' : '
   return Array.from({ length: 6 }, (_, i) => { const P = L[i], X = P && (live.find(q => q === P) || P), D = X && B.act?.[s]?.pk === X ? B.act[s] : null;
     // 나와 있는 포켓몬은 화면에 보인 상태로: 쓰러지는 연출이 끝나기 전엔 볼이 안 꺼진다 (경완 2026-10-28 '스포')
     return `<i class="${!X ? 'x' : D ? (D.fntS ? 'f' : D.st ? 's' : 'o') : X.fainted || X.hp <= 0 ? 'f' : X.status ? 's' : 'o'}"></i>`; }).join(''); };
+// 배틀 기록 (경완 2026-10-31 '내 배틀로그 못 보나?'): 최근 5판을 저장(S.gym.blog)에 남긴다. 서버 저장(V_ 레코드)에도 같이 올라가서 나중에 그 판을 그대로 읽어 볼 수 있다
+// {t 끝난 시각, v 버전, foe 상대, won, out(quit), pr 연습, turns, my [[sp,lv,'기술들',특성,친밀도,도구]], fo 상대 팀, ch [[턴, 관장 선택, 상대 선택]], log 쇼다운 기록(정확한 체력 줄만, 600줄까지)}
+const BLOG_N = 5, BLOG_L = 600, BLOG_SKIP = /^\|(t:|gametype|gen|tier|rule|player|teamsize|poke|teampreview|clearpoke|start|upkeep|debug)(\||$)/;
+function blogSave(opts, my, foeT, won, out) {
+  if (!B || !S.gym) return; const L = B.btl.log, lines = [];
+  for (let i = 0; i < L.length && lines.length < BLOG_L; i++) { const ln = L[i]; if (ln.startsWith('|split|')) { lines.push(L[i + 1]); i += 2; continue; } if (!ln || ln === '|' || BLOG_SKIP.test(ln)) continue; lines.push(ln); }
+  let v = ''; try { v = APP_VER; } catch (e) {}
+  const rec = { t: Date.now(), v, foe: B.foeNm || opts.foe?.nm || '', won: won ? 1 : 0, out: out || undefined, pr: B.practice ? 1 : 0, turns: B.btl.turn,
+    my: my.map(o => [o.sp, o.lv, (o.mv || []).join(' '), o.ab || '', o.fr || 0, o.it || '']), fo: foeT.map(o => [o.sp, o.lv, (o.mv || []).join(' '), o.ab || '', o.it || '']),
+    ch: B.picks || [], log: lines };
+  S.gym.blog = [rec, ...(S.gym.blog || [])].slice(0, BLOG_N);
+  try { GA.save(); } catch (e) {}
+}
 async function run(opts) {
   await Promise.all([loadData(), loadSim()]);
   if (!el) buildUI(); fit();
@@ -591,7 +604,7 @@ async function run(opts) {
   // 쇼다운은 교체할 때마다 pokemon 배열 순서를 바꾼다. 처음 순서(my·foe 와 같은 순서)를 따로 둔다 (경완 2026-10-27 '시라소몬인데 망키라고 나옴')
   const monSnap = opts.practice ? JSON.stringify(S.gym.mon || {}) : null;   // 연습 배틀: 연출은 다 보여 주고 경험치·레벨·기술은 끝나면 되돌림 (경완 2026-10-29)
   B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null }, li: 0, practice: !!opts.practice, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), xr: {} };
-  frHooks(btl);
+  frHooks(btl); B.picks = [];
   const meF = GA.trOf().sex === 'f';
   const music = opts.music || 'train'; M('prep', music === 'train' ? 'winTrain' : 'winGym');
   // 곡이 준비된 뒤에 연출 시작 (경완 2026-10-28 '시작 연출이랑 BGM 타이밍이 안 맞음'): 처음 만드는 곡이면 기다림, 최대 4초
@@ -613,8 +626,9 @@ async function run(opts) {
   tray(); await msg(`${iga(foeNm)} 승부를 걸어왔다!`, 900);
   my.forEach(o => gifLoad(gifUrl(o.sp, true, o.shiny, o.g === 'F'))); foeT.forEach(o => gifLoad(gifUrl(o.sp, false, o.shiny, o.g === 'F')));   // 미리 받기
   btl.makeChoices('default', 'default');   // 팀 미리보기: 라인업 순서 그대로
-  try { await play(); } catch (e) { console.error(e); }
+  try { await play(); } catch (e) { console.error(e); try { window.pkErr?.('battle: ' + (e?.message || e), e?.stack); } catch (e2) {} }
   const won = btl.winner === '관장', out = B?.out;
+  try { blogSave(opts, my, foeT, won, out); } catch (e) {}
   if (B) {
     if (out !== 'quit') {
       $b('.bt-tr.e').classList.add('back');
@@ -644,6 +658,7 @@ async function play() {
     const c2 = r2 && !r2.wait ? aiChoice(btl, B.diff) : null;
     if (c2 && !c1 && r2.forceSwitch && btl.p2.active[0]?.fainted && /^switch/.test(c2)) { await shiftAsk(c2); if (!B) return; }
     idlePanel();
+    if (B.picks) B.picks.push([btl.turn, c1 || '', c2 || '']);   // 배틀 기록: 이 턴에 관장이 고른 것·상대 AI 가 고른 것
     if (c1 && c2) btl.makeChoices(c1, c2); else if (c1) btl.choose('p1', c1); else if (c2) btl.choose('p2', c2); else return;
   }
 }
