@@ -6910,7 +6910,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.36';   /* v13.36 경완: 다른 앱 소리 없는데 배경 음악이 안 나던 것 (예전 앱 신호 무시, 새 앱은 게임 음악 꺼 달라는 신호로) */
+const APP_VER = '13.37';   /* v13.37 경완: 모닥불 불꽃(소품에 딸린 그림)을 꾹 눌러도 소품이 골라짐 */   /* v13.36 경완: 다른 앱 소리 없는데 배경 음악이 안 나던 것 (예전 앱 신호 무시, 새 앱은 게임 음악 꺼 달라는 신호로) */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7804,7 +7804,9 @@ $('#meX').onclick = e => { e.stopPropagation(); const el = meSelEl, v = el?.LV, 
   addEventListener('pointermove', e => { if (!D || e.pointerId !== D.id) return; const dx = e.clientX - D.x; if (Math.abs(dx) > 4) moved = 1; if (moved) ml.scrollLeft = D.l - dx; });
   addEventListener('pointerup', () => { D = null; }); ml.addEventListener('click', e => { if (moved) { moved = 0; e.stopImmediatePropagation(); e.preventDefault(); } }, true); }
 $('#meList').onclick = e => { const b = e.target.closest('[data-k]'); if (!b) return; mePick = mePick === b.dataset.k ? null : b.dataset.k; meRender(); sfx('tap'); };
-function meHitAt(cx, cy) { let best = null, bestA = 0; for (const el of itemsEl.querySelectorAll('.prop')) { const r = el.getBoundingClientRect(); if (cx >= r.left && cx <= r.right && cy >= r.top && cy <= r.bottom && meOpq(el, cx, cy) && (!best || +el.style.zIndex > +best.style.zIndex || (+el.style.zIndex === +best.style.zIndex && r.width * r.height < bestA))) { best = el; bestA = r.width * r.height; } } return best; }   // 누른 곳의 소품 (그림 있는 칸, 위에 그려진 것 먼저)
+function meHitAt(cx, cy) { let best = null, bestA = 0; for (const el of itemsEl.querySelectorAll('.prop')) { const r = el.getBoundingClientRect(); if (cx >= r.left && cx <= r.right && cy >= r.top && cy <= r.bottom && meOpq(el, cx, cy) && (!best || +el.style.zIndex > +best.style.zIndex || (+el.style.zIndex === +best.style.zIndex && r.width * r.height < bestA))) { best = el; bestA = r.width * r.height; } }
+  if (!best) for (const o of document.elementsFromPoint(cx, cy)) { if (!o.CO) continue; const el = [...itemsEl.querySelectorAll('.prop')].find(e => e.LV === o.CO); if (el) { best = el; break; } }   /* v13.37 경완 '모닥불은 꾹 눌러도 안 됨': 불꽃·연못 갈대·꽃밭 꽃처럼 소품에 딸린 그림(.CO)을 눌러도 그 소품 */
+  return best; }   // 누른 곳의 소품 (그림 있는 칸, 위에 그려진 것 먼저)
 $('#wrap').addEventListener('pointerdown', e => { if (!mapEdit || e.target.closest('#meX')) return; e.stopPropagation(); e.preventDefault();
   const best = meHitAt(e.clientX, e.clientY);
   if (!best && mePick) { const v = [...meSnap.keys()].find(o => meOut(o) && fpKeyOf(o) === mePick);   /* 가방에서 고른 소품을 누른 자리에 (땅에 닿는 자리 = 누른 곳, 안전 구역 안으로) */
