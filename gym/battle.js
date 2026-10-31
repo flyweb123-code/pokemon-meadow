@@ -314,7 +314,11 @@ function setSrc(img, u) {
 }
 function showMon(side, A, on = true) {
   const m = monEl(side), img = m.querySelector('img');
-  if (A && A.gif) { img.onerror = null; setSrc(img, A.gif); img.alt = ''; m.classList.remove('pl2'); m.classList.add('gf'); img.style.transform = ''; m.style.left = m.style.top = ''; }
+  img.style.width = '';
+  if (A && A.gif) { img.onerror = null; setSrc(img, A.gif); img.alt = ''; m.classList.remove('pl2'); m.classList.add('gf'); img.style.transform = ''; m.style.left = m.style.top = '';
+    // 블랙·화이트 뒷모습 gif 는 앞모습과 거의 같은 크기라 모두 같은 배율로 키운다: 종끼리 크기 비율은 그대로, 플래티나 뒷모습(2장 그림)과 비슷한 크기 (경완 2026-10-31 '밀탱크 뒷모습 너무 작아')
+    const k = side === 'p' ? 1.4 : 1, fw = () => { if (img.naturalWidth) img.style.width = img.naturalWidth * k + 'px'; };
+    if (k !== 1) { if (img.complete && img.naturalWidth && img.style.visibility !== 'hidden') fw(); else img.addEventListener('load', fw, { once: true }); } }
   else if (A) {
     m.classList.remove('gf'); const a = anOf(A), sheet = !!a, fm = FMA[A.fm] ? A.fm : ''; img.onerror = () => { img.onerror = null; setSrc(img, pkSrc(A.sp, { b: side === 'p', s: A.shiny })); }; setSrc(img, fm ? `${IMG}pk/fm/${fm}${side === 'p' ? 'b' : ''}${A.shiny ? 's' : ''}.png?v=${VER}` : pkSrc(A.sp, { b: side === 'p', s: A.shiny, f: A.g === 'F' })); img.alt = '';
     m.classList.toggle('pl2', sheet); img.style.transform = '';
