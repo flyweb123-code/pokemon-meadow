@@ -1076,7 +1076,7 @@ function lvApply(pk, X, lv, a, b) {
 }
 // 상대를 쓰러뜨리면 나왔던 내 포켓몬(쓰러지지 않은)이 경험치를 받고, 나머지 라인업은 학습장치로 절반. 나와 있는 포켓몬은 경험치 막대가 차오르고 레벨업
 async function expGain(X) {
-  const foe = B.foe[X.i]; if (!foe) return;
+  const foe = B.foe[X.i]; if (!foe || B.practice) return;   // v13.04 경완: 연습 배틀은 경험치 연출도 없음
   // 학습장치 (본가 6세대~처럼 늘 켜짐, 경완 2026-10-30): 나오지 않은 라인업 포켓몬도 절반을 받는다. 얻은 경험치 글은 한 번에
   const SH = [];   // 학습장치로 받은 포켓몬: 나와 싸운 포켓몬이 다 받은 뒤 한 창에 미니 그림 + 경험치 막대로 한꺼번에 (경완 2026-10-30)
   for (const pid of [...B.used, ...B.my.map(o => o.pid).filter(p => !B.used.has(p))]) {
@@ -1615,9 +1615,8 @@ async function practice() {
   const say = { win: pick(['으윽, 연습이라도 지는 건 분하네요!', '덕분에 좋은 연습이 됐어요!', '역시 관장님 포켓몬은 강하네요.', '다음 연습 땐 꼭 이길게요!']), lose: pick(['연습이라도 이긴 건 이긴 거죠!', '오늘은 제가 한 수 위였네요!', '좋은 연습 상대가 되어 드렸나요?']) };
   const foe = { tr: T.tr, cls: TR_KO[T.tr] || '트레이너', nm: pick(T.f ? NAMES_F : NAMES_M), team, say };
   document.body.classList.add('gymBattle');
-  // 연습 배틀 보상은 연출만 (경완 2026-10-29 '보상이 저장되지는 않게'): 골드·평판 문구는 보이고 실제로는 안 오름
-  const K = window.Gym?.k, g0 = K?.st?.(), rew = { g: 40, r: 2, rl: -Math.min(2, g0?.rep || 0) };
-  try { await run({ my, foe, diff: 1, practice: true, rew, bg: pick(['in1', 'in2', 'in3']) }); }
+  // 연습 배틀은 보상·경험치 연출 없음 (v13.04 경완)
+  try { await run({ my, foe, diff: 1, practice: true, bg: pick(['in1', 'in2', 'in3']) }); }
   catch (e) { console.error(e); GA.toast?.('배틀을 시작하지 못했어요'); }
   finally { document.body.classList.remove('gymBattle'); drawTab(); }
 }
