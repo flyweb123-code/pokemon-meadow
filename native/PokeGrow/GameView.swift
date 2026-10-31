@@ -23,6 +23,7 @@ struct GameView: UIViewRepresentable {
         config.userContentController.addScriptMessageHandler(FriendServer.shared, contentWorld: .page, name: "friends")
         // v13.40: 게임이 오디오를 재워 둔 틈에 '다른 앱 소리가 나는지' 묻는다 (PiP 영상이면 배경 음악을 멈춤)
         config.userContentController.addScriptMessageHandler(AudioPeek(), contentWorld: .page, name: "audioPeek")
+        config.userContentController.addScriptMessageHandler(AudioMix(), contentWorld: .page, name: "audioMix")
         let web = WKWebView(frame: .zero, configuration: config)
         web.navigationDelegate = context.coordinator
         web.isOpaque = false
@@ -147,5 +148,23 @@ final class HumHandler: NSObject, WKScriptMessageHandler {
 final class AudioPeek: NSObject, WKScriptMessageHandlerWithReply {
     func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage, replyHandler: @escaping (Any?, String?) -> Void) {
         replyHandler(AVAudioSession.sharedInstance().isOtherAudioPlaying, nil)
+    }
+}
+
+// v13.47 경완 'PiP 재생 중엔 무음 모드에서도 효과음만': 웹 오디오 설정은 '섞기(ambient, 무음 스위치에 꺼짐)' 아니면
+// '혼자 재생(playback, 영상이 멈춤)' 뿐이라, 앱이 직접 'playback + 다른 소리와 섞기' 로 바꿔 준다.
+// 게임이 조용 모드(영상 재생 중)에서 오디오를 깨울 때마다 "mix", 조용 모드가 끝나면 "playback" (설정에서 무음 모드에서 듣기를 껐으면 "ambient").
+final class AudioMix: NSObject, WKScriptMessageHandlerWithReply {
+    func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage, replyHandler: @escaping (Any?, String?) -> Void) {
+        let k = (message.body as? String) ?? ""
+        let s = AVAudioSession.sharedInstance()
+        do {
+            switch k {
+            case "mix": try s.setCategory(.playback, mode: .default, options: [.mixWithOthers])
+            case "ambient": try s.setCategory(.ambient, mode: .default, options: [])
+            default: try s.setCategory(.playback, mode: .default, options: [])
+            }
+            replyHandler(true, nil)
+        } catch { replyHandler(false, nil) }
     }
 }
