@@ -261,8 +261,8 @@ function build() {
   const dlg = $g('.gy-dlg');
   dlg.addEventListener('click', e => { if (e.target.closest('button') || root.classList.contains('ded') || busy || root.classList.contains('dhide')) return; e.stopPropagation(); sfx('tap'); homeSay(); });
   // 도전자 명단 아이콘 → 새 화면 (도전자 / 체육관 일지)
-  $g('.gy-qbtn').onclick = () => { const g = st(); if (g?.q?.length) { g.qSeen = Math.max(g.qSeen | 0, ...g.q.map(c => c.id)); setAt(); save(); $g('.gy-qdot').hidden = true; }   // 승급 심사로 가도 명단 점은 꺼짐 (경완 2026-10-30)
-    if (bsReady(g)) { sfx('tap'); if (ded) ded.end?.(); return bsGo(); } if (!g?.q?.length) return; sfx('tap'); if (ded) ded.end?.(); g.qSeen = Math.max(g.qSeen | 0, ...g.q.map(c => c.id)); setAt(); save(); $g('.gy-qdot').hidden = true; qPop(); };
+  $g('.gy-qbtn').onclick = () => { const g = st(); qSeen0 = g?.qSeen | 0; if (g?.q?.length) { g.qSeen = Math.max(g.qSeen | 0, ...g.q.map(c => c.id)); setAt(); save(); $g('.gy-qdot').hidden = true; }   // 승급 심사로 가도 명단 점은 꺼짐 (경완 2026-10-30)
+    if (bsReady(g)) { sfx('tap'); if (ded) ded.end?.(); return bsGo(); } if (!g?.q?.length) return; sfx('tap'); if (ded) ded.end?.(); const s0 = qSeen0 ?? (g.qSeen | 0); qSeen0 = null; qPop(s0); };
   [['.gy-deco', '꾸미기'], ['.gy-store', '창고'], ['.gy-qbtn', '도전자 받기']].forEach(([c, n]) => $g(c).insertAdjacentHTML('beforeend', `<small class="ga-l">${n}</small>`));   // 홈 레이아웃 C: 메뉴 위 행동 줄 (경완 2026-10-29)
   // 빈 곳을 한 번 누르면 이름판·버튼을 다 숨겨 메뉴만 남김, 다시 누르면 다 펼침 (경완 2026-10-28, 필드 fview 와 같음)
   $g('.gy-stage').addEventListener('click', e => { if (ded || busy || root.classList.contains('pre') || root.querySelector('.gy-kang,.gy-pop,.gy-setup') || e.target.closest('.tap,.gy-prop.tap')) return;
@@ -1112,7 +1112,9 @@ function homeSay() {
   const pw = root.querySelector('.gy-qw'); if (pw) pw.redraw?.();
 }
 // 도전자 명단 (경완 2026-10-28 '화면 하단에 도전자 명단 아이콘, 누르면 새 화면에서'): 기다리는 도전자만 (체육관 일지는 없앰, 경완 2026-10-28)
-function qPop() {
+// 확인 안 한 새 도전자 카드에 빨간 점 (경완 2026-10-31): 명단을 열기 전의 qSeen 보다 id 가 큰 도전자. 이번에 열면 확인한 걸로 쳐서 다음엔 안 보임
+let qSeen0 = null;
+function qPop(seen = st().qSeen | 0) {
   root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-qw'; $g('.gy-main').appendChild(el);   // 아래 메뉴는 가리지 않게 (경완 2026-10-29)
   const draw = el.redraw = () => { const g = st(), Q = g.q;
@@ -1125,8 +1127,8 @@ function qPop() {
     const qTm = c => `<em class="qw-tm${qExp(c) - Date.now() < 30 * 60e3 ? ' low' : ''}"><svg viewBox="0 0 8 8" aria-hidden="true"><path fill="currentColor" d="M2 0h4v1h1v1h1v4h-1v1h-1v1h-4v-1h-1v-1h-1v-4h1v-1h1zM2 1v1h-1v4h1v1h4v-1h1v-4h-1v-1zM3.5 2h1v2h1.5v1h-2.5z"/></svg>${qLeftS(c)}</em>`;   // 시계 그림 + 밝은 딱지: '대기'(어두운 딱지)와 구분 (경완 2026-10-31)   // 남은 시간 딱지, 30분 안 남으면 빨강
     const pic = c => `<span class="qw-pic${c.named ? ' qw-sil' : ''}"><i class="qw-base"></i><img alt="" src="${trSrc(c.tr)}"></span>`;
     body = Q.length ? `<div class="qw-sum"><b>기다리는 도전자 <em>${Q.length}</em>명</b><span>시간이 지나면 돌아가요</span><i class="qw-balls">${V.map(([c], k) => `<i class="${k ? '' : 'on'}${c.boss ? ' bs' : ''}"></i>`).join('')}</i></div><div class="qw-list">${V.map(([c, i], k) => k
-      ? `<div class="qw-row wait${c.boss ? ' boss' : ''}"><span class="qw-pw">${pic(c)}<span class="qw-no">${k + 1}</span></span><div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span class="qw-came">${qCame(c)}</span></div><span class="qw-wait">대기</span>${qTm(c)}</div>`
-      : `<div class="qw-row next${c.boss ? ' boss' : ''}${c.boss || c.named ? ' vs' : ''}"><span class="qw-rib">${c.boss ? '승급 심사 도전자' : '다음 차례'}</span>${c.boss || c.named ? '<i class="qw-spd"></i><i class="qw-vs">VS</i>' : ''}${pic(c)}<div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span class="qw-came">${qCame(c)}</span></div>${qTm(c)}<button class="gy-key main" type="button" data-c="${i}">${c.boss ? '심사 받기' : '도전 받기'}</button></div>`).join('')}</div>`
+      ? `<div class="qw-row wait${c.boss ? ' boss' : ''}">${c.id > seen ? '<i class="qw-nd" aria-label="새 도전자"></i>' : ''}<span class="qw-pw">${pic(c)}<span class="qw-no">${k + 1}</span></span><div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span class="qw-came">${qCame(c)}</span></div><span class="qw-wait">대기</span>${qTm(c)}</div>`
+      : `<div class="qw-row next${c.boss ? ' boss' : ''}${c.boss || c.named ? ' vs' : ''}">${c.id > seen ? '<i class="qw-nd" aria-label="새 도전자"></i>' : ''}<span class="qw-rib">${c.boss ? '승급 심사 도전자' : '다음 차례'}</span>${c.boss || c.named ? '<i class="qw-spd"></i><i class="qw-vs">VS</i>' : ''}${pic(c)}<div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span class="qw-came">${qCame(c)}</span></div>${qTm(c)}<button class="gy-key main" type="button" data-c="${i}">${c.boss ? '심사 받기' : '도전 받기'}</button></div>`).join('')}</div>`
       : '<div class="qw-none"><i class="qw-clip"></i><b>지금 기다리는 도전자가 없어요</b><span>도전자가 오면 체육관 버튼에 빨간 점이 떠요.</span></div>';
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">도전자 명단</b></div>
       <div class="gy-body">${body}</div>`; };
