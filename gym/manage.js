@@ -567,9 +567,11 @@ function buyTm(id, can) {
 // 지니는 도구 (경완 2026-10-29): 계속 효과 있는 것만. 사면 창고(g.itm)로, 지니게 하기는 창고·도구 사용에서
 function shopIt(body) {
   const g = st(), H = GB().HOLD, ty = g.ty; g.itm = g.itm || {};
-  const L = Object.keys(H).sort((a, b) => (H[a][1] - H[b][1]) * shopPr || ((H[b][3] === ty) - (H[a][3] === ty)));   // 가격순 (경완 2026-10-29)   // 체육관 타입 강화 도구 먼저, 그다음 비싼 순, 타입 강화는 뒤
-  // 종류마다 하나만 살 수 있고, 가진 건 회색 '보유 중' (경완 2026-10-29)
-  body.innerHTML = `<div class="tm-row sp-prr">${prBtn()}</div><div class="sp-list">${L.map(id => { const own = GB().itHave(id); return GB().itRow(id).replace('class="sp-tm sp-it"', `class="sp-tm sp-it${own ? ' own' : ''}"${own ? ' disabled' : ''}`).replace('</button>', `<em>${own ? '보유 중' : gold(H[id][1])}</em></button>`); }).join('')}</div>
+  // 분류별로 (경완 2026-10-31 '기존 도구들도 민트처럼 항목 분류', 열매 추가). 분류 안에서는 가격순, 타입 강화는 체육관 타입 먼저
+  const row = id => { const own = GB().itHave(id); return GB().itRow(id).replace('class="sp-tm sp-it"', `class="sp-tm sp-it${own ? ' own' : ''}"${own ? ' disabled' : ''}`).replace('</button>', `<em>${own ? '보유 중' : gold(H[id][1])}</em></button>`); };
+  const sec = ([k, nm, ids]) => { const L = ids.filter(id => H[id]).sort((a, b) => (k === 'type' && ((H[b][3] === ty) - (H[a][3] === ty))) || (H[a][1] - H[b][1]) * shopPr);
+    return `<p class="sp-sub">${nm}${k === 'berry' ? ' · 배틀에서 먹어도 도구는 남아요' : ''}</p><div class="sp-list">${L.map(row).join('')}</div>`; };
+  body.innerHTML = `<div class="tm-row sp-prr">${prBtn()}</div>${GB().IT_CAT.map(sec).join('')}
     <p class="sp-sub">민트 · 먹이면 성격이 바뀌어요</p><div class="sp-list">${GB().MINT.map(k => GB().mintRow(k, g.mint?.[k] || 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)).join('')}</div>`;   // 민트 (경완 2026-10-30): 여러 개 살 수 있음
   body.onclick = (e, b) => { const mk = b.dataset.mint;
     if (mk) { sfx('tap'); const n = g.mint?.[mk] || 0, P = GB().MINT_P, nm = GB().mintNm(mk);
