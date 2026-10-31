@@ -1950,7 +1950,7 @@ try { if (sessionStorage.getItem('pk-wf')) { sessionStorage.removeItem('pk-wf');
         <div class="bgm-pick"><span class="vol-n">곡</span><button class="fsel" id="bgmPick" aria-haspopup="listbox"></button></div>
         <div class="vol" data-k="bgm"><span class="vol-n">배경 음악</span><button class="vol-b" data-d="-1" aria-label="배경 음악 작게">◀</button><div class="vol-bar" role="slider" aria-label="배경 음악 볼륨" aria-valuemin="0" aria-valuemax="10"></div><button class="vol-b" data-d="1" aria-label="배경 음악 크게">▶</button><b class="vol-v"></b></div>
         <div class="vol" data-k="sfx"><span class="vol-n">효과음</span><button class="vol-b" data-d="-1" aria-label="효과음 작게">◀</button><div class="vol-bar" role="slider" aria-label="효과음 볼륨" aria-valuemin="0" aria-valuemax="10"></div><button class="vol-b" data-d="1" aria-label="효과음 크게">▶</button><b class="vol-v"></b></div>
-        <div class="op-row snd-mix"><span>다른 앱 소리와 같이 듣기</span><button class="op-sw" id="sndMix" role="switch" aria-checked="false"><i></i></button></div>
+        <div class="op-row snd-mix"><span>다른 앱 소리와 같이 듣기</span><button class="op-sw" id="sndMix" role="switch" aria-checked="true"><i></i></button></div>
         <p class="snd-mix-n">켜면 영상·음악을 틀어 둔 채 게임할 수 있어요. 대신 무음 모드에서는 게임 소리가 안 나요.</p>
         <div class="set-btns one"><button class="lk-btn main" id="musicImport" hidden>곡 파일 가져오기</button><input type="file" id="musicFile" accept="audio/*,.mp3,.zip,application/zip" multiple hidden><button class="lk-btn main" id="cryImport">울음소리 가져오기</button><input type="file" id="cryFile" accept=".zip,application/zip" hidden></div>
       </section>
@@ -2141,10 +2141,11 @@ const MAX_MONS = 9;   // 필드에는 최대 9마리 (2026-10-14 사용자 요�
 // ---------- 효과음: 파일 없이 사각파·잡음으로 만드는 옛 휴대용 게임기 소리 ----------
 // 볼륨 0~10 (0 = 끔). 예전 켜짐/꺼짐 설정은 10/0으로 옮긴다
 const VOL = { bgm: 5, sfx: 5 };   // 처음엔 5칸
-let sndMix = false; try { sndMix = localStorage.getItem('pk-snd-mix') === '1'; } catch (e) {}
+let sndMix = true; try {   // v13.27 경완: '다른 앱 소리와 같이 듣기' 기본 켜짐
+  sndMix = localStorage.getItem('pk-snd-mix') !== '0'; } catch (e) {}
 let otherAud = false;   // v13.24 경완 '영상 켜져 있을 땐 게임 소리 안 나게': 아이폰 앱이 다른 앱(소형 플레이·음악) 소리가 나는 동안 true 로 알려 준다 → 배경 음악만 0 (효과음은 그대로), 끊지 않게 ambient
 const volG = v => v > 0 ? .1 * Math.pow(10, (v - 5) / 5) : 0;   // 볼륨 칸 → 크기: 5칸이 예전 1칸만큼 작게, 10칸은 예전 최대 그대로
-const bgmV = () => otherAud && !sndMix ? 0 : volG(VOL.bgm);   // 영상이 나오는 동안엔 배경 음악만 0 (효과음은 그대로), 영상이 멈추면 원래 볼륨
+const bgmV = () => otherAud ? 0 : volG(VOL.bgm);   // 영상이 나오는 동안엔 배경 음악만 0 (효과음은 그대로), 영상이 멈추면 원래 볼륨
 try { for (const k of ['bgm', 'sfx']) { const v = localStorage.getItem('pk-' + k + '-vol'); VOL[k] = v != null ? Math.max(0, Math.min(10, +v || 0)) : localStorage.getItem('pk-' + k) === '0' ? 0 : 5; } } catch (e) {}
 let sfxOn = VOL.sfx > 0;
 let actx = null, noiseBuf = null;
@@ -6906,7 +6907,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.26';   /* v13.26 경완: 기술머신 익힘 창 레이아웃 · 기술 배울 때 늘 본가 배틀 기술 배우기 팡파르 */   /* v13.25 경완: 바꿀 기술 카드 둥둥 떠 있는 효과 · 기술 창 순서 바꾸기 눌러도 창 크기 그대로 */   /* v13.24 경완: 다른 앱(소형 플레이·음악) 소리가 나는 동안엔 배경 음악 자동으로 0, 효과음은 그대로, 멈추면 원래대로 (아이폰 앱이 알려 줌, 앱 업데이트 필요) */
+const APP_VER = '13.27';   /* v13.27 경완: '다른 앱 소리와 같이 듣기' 기본 켜짐, 영상이 나오는 동안 배경 음악 0 은 스위치와 상관없이 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
