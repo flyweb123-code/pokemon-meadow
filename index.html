@@ -1753,7 +1753,7 @@ body.mapEdit:not(.meHas) #items .prop{filter:drop-shadow(1px 0 0 rgba(255,255,25
 .me-bar{position:fixed;left:0;right:0;bottom:0;z-index:70;display:flex;flex-direction:column;align-items:stretch;pointer-events:none;color:#f8f8f8}.me-bar>*{pointer-events:auto}
 .me-tip{align-self:center;display:flex;align-items:baseline;gap:8px;margin:0 0 8px;padding:5px 12px;background:rgba(32,32,44,.88);border:2px solid #f8f8f8;box-shadow:2px 2px 0 rgba(0,0,0,.35);font-size:12px;pointer-events:none!important}.me-tip b{font-size:13px;color:#ffe27a}.me-tip[hidden]{display:none}.me-bar.fold .me-tip{margin-bottom:calc(var(--dlgH,0px) + 8px)}
 .me-pane{display:flex;flex-direction:column;gap:8px;padding:10px calc(var(--si-right,env(safe-area-inset-right)) + 8px) 10px calc(var(--si-left,env(safe-area-inset-left)) + 8px);background:var(--frame,#20202c);border-top:3px solid #23232f;box-shadow:0 -3px 0 rgba(0,0,0,.25)}.me-bar.fold .me-pane{display:none}
-.me-fold{display:grid;place-items:center;width:34px;height:28px;padding:0;color:#f8f8f8;background:#4b4b66;border:0;box-shadow:inset 0 2px 0 rgba(255,255,255,.2),inset 0 -3px 0 rgba(0,0,0,.4),0 2px 0 #1c1c26;cursor:pointer;-webkit-tap-highlight-color:transparent}.me-fold:active{transform:translateY(2px);box-shadow:inset 0 2px 0 rgba(0,0,0,.4),0 0 0 #1c1c26}
+
 .me-head{display:flex;align-items:center;gap:8px;padding:0 0 0 4px}.me-all{margin-left:auto;padding:6px 10px;font:inherit;font-size:12px;color:#f8f8f8;background:#4b4b66;border:0;box-shadow:inset 0 2px 0 rgba(255,255,255,.2),inset 0 -3px 0 rgba(0,0,0,.4),0 2px 0 #1c1c26;cursor:pointer;-webkit-tap-highlight-color:transparent}.me-all:active{transform:translateY(1px);box-shadow:inset 0 2px 0 rgba(0,0,0,.4),0 1px 0 #1c1c26}.me-head b{font-size:15px;color:#ffe27a}.me-head span{font-size:12px;color:#b8b8d0}
 .me-list{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 2px 4px;min-height:92px}.me-list::-webkit-scrollbar{display:none}
 .me-it{flex:0 0 76px;height:88px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;padding:4px 2px 6px;font:inherit;font-size:12px;color:#20202c;background:#f8f8f8;border:3px solid #20202c;
@@ -1797,7 +1797,7 @@ try { if (sessionStorage.getItem('pk-wf')) { sessionStorage.removeItem('pk-wf');
   <div class="me-bar" id="meBar" hidden>
     <div class="me-tip" id="meTitle" hidden><b>맵 편집</b><span>소품을 눌러서 옮겨요</span></div>
     <div class="me-pane" id="mePane">
-      <div class="me-head"><b>가방 소품</b><span>골라서 필드에 놓아요</span><button class="me-all" id="meAll" type="button">가방 전체보기</button><button class="me-fold" id="meFold" type="button" aria-label="소품 리스트 접기"><svg viewBox="0 0 7 4" width="14" height="8" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M0 0h7v1H0zM1 1h5v1H1zM2 2h3v1H2zM3 3h1v1H3z"/></svg></button></div>
+      <div class="me-head"><b>가방 소품</b><span>골라서 필드에 놓아요</span><button class="me-all" id="meAll" type="button">가방 전체보기</button></div>
       <div class="me-list" id="meList"></div>
     </div>
     <div class="me-keys" id="meKeys"><button class="opt" id="meCancel" type="button">취소</button><button class="opt me-tg" id="meToggle" type="button" aria-pressed="true">소품 <svg viewBox="0 0 7 4" width="12" height="7" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M3 0h1v1H3zM2 1h3v1H2zM1 2h5v1H1zM0 3h7v1H0z"/></svg></button><button class="opt me-ok" id="meSave" type="button">저장</button></div>
@@ -6930,7 +6930,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.41';   /* v13.41 경완: 맵 편집 = 화면 크기 그대로(버튼은 점선 자리), 하단 메뉴 자리에 취소·소품·저장, 소품 리스트 접기(빈 곳 누르면 접힘) · 필드에서 고른 소품은 밤에도 원래 색으로 환하게, 모닥불·연못은 예전처럼 */   /* v13.40 경완: PiP 영상 켜져 있으면 배경 음악 멈춤 (다시) — 게임 오디오가 자고 있을 때만 앱에 물어봄, 앱 업데이트 필요 */
+const APP_VER = '13.42';   /* v13.42 경완: 맵 편집 들어가면 소품 리스트 접힌 채로, 리스트 접기 화살표 없앰, 점선 자리 골드·랭킹 따로 */   /* v13.41 경완: 맵 편집 = 화면 크기 그대로(버튼은 점선 자리), 하단 메뉴 자리에 취소·소품·저장, 소품 리스트 접기(빈 곳 누르면 접힘) · 필드에서 고른 소품은 밤에도 원래 색으로 환하게, 모닥불·연못은 예전처럼 */   /* v13.40 경완: PiP 영상 켜져 있으면 배경 음악 멈춤 (다시) — 게임 오디오가 자고 있을 때만 앱에 물어봄, 앱 업데이트 필요 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7774,7 +7774,7 @@ function meZoneDraw() { const c = $('#meZone'); let g = c.getContext('2d'); cons
   g.setLineDash([4, 3]); g.lineWidth = 1.5; g.font = '10px Galmuri11, monospace'; g.textAlign = 'center'; g.textBaseline = 'middle';   /* v9.28 경완: 평소 화면의 버튼 자리를 반투명하게 (소품이 버튼 밑에 숨지 않게) */
   for (const b of meHud) { g.fillStyle = 'rgba(255,255,255,.32)'; g.beginPath(); g.roundRect(b.x, b.y, b.w, b.h, 6); g.fill(); g.strokeStyle = 'rgba(255,255,255,.85)'; g.stroke(); g.fillStyle = 'rgba(30,30,50,.8)'; g.fillText(b.n, b.x + b.w / 2, b.y + b.h / 2); } }
 // v9.79 경완: 가방·열매 버튼 칸은 '버튼'으로
-const ME_HUD = [['#clock', '시계'], ['#goldbar', '골드'], ['#btnMapEdit', '편집'], ['#btnGym', '체육관'], ['.berrybar', '버튼'], ['#dlg', '상태창']];   // v13.41: 하단 메뉴 자리는 편집 버튼이 차지
+const ME_HUD = [['#clock', '시계'], ['#gold', '골드'], ['#btnRank', '랭킹'], ['#btnMapEdit', '편집'], ['#btnGym', '체육관'], ['.berrybar', '버튼'], ['#dlg', '상태창']];   // v13.41: 하단 메뉴 자리는 편집 버튼이 차지
 // v13.41 경완: 편집 버튼 줄은 하단 메뉴(.menuwin + #cmd)가 있던 칸에 딱 맞춰 겹친다 (넓은 화면은 맵 아래쪽에)
 function meDock() { const bar = $('#meBar'), ks = $('#meKeys'), a = document.querySelector('.menuwin')?.getBoundingClientRect(), c = $('#cmd')?.getBoundingClientRect();
   const mob = matchMedia('(max-width: 760px), (max-height: 500px) and (orientation: landscape)').matches && a && c && a.width && c.width && Math.abs(a.top - c.top) < 4;
@@ -7784,7 +7784,7 @@ function meDock() { const bar = $('#meBar'), ks = $('#meKeys'), a = document.que
 addEventListener('resize', () => { if (mapEdit) meDock(); });
 function meFoldSet(f) { $('#meBar').classList.toggle('fold', f); $('#meToggle').setAttribute('aria-pressed', !f); }
 $('#meToggle').onclick = () => { sfx('tap'); meFoldSet(!$('#meBar').classList.contains('fold')); };
-$('#meFold').onclick = () => { sfx('tap'); meFoldSet(true); };
+
 let meHud = [];
 function meHudSnap() { const r = itemsEl.getBoundingClientRect(), k = r.width / itemsEl.offsetWidth || 1; return ME_HUD.map(([q, n]) => { const e = document.querySelector(q); if (!e || getComputedStyle(e).display === 'none') return null; const b = e.getBoundingClientRect(); if (!b.width || !b.height) return null; return { n, x: (b.left - r.left) / k, y: (b.top - r.top) / k, w: b.width / k, h: b.height / k }; }).filter(Boolean); }
 function meRender() { const F = S.fbag || {}, L = fbagList();   // v9.00: 가방에 있는 것만, 최근에 넣은 순
@@ -7814,7 +7814,7 @@ function meBgProps(on) { itemsEl.querySelectorAll('.prop.bgp').forEach(e => e.re
     g.drawImage(bg, p.l + BGOX, p.t, w, h, 0, 0, w, h); g.globalCompositeOperation = 'destination-in'; g.drawImage(p.cv, 0, 0);
     const e = document.createElement('div'); e.className = 'prop bgp ' + p.k; e.style.cssText = W2(c.toDataURL(), w * 2, h * 2) + `;left:${(p.l + w / 2) * 2}px;top:${(p.t + h) * 2}px`; e.style.setProperty('z-index', 0, 'important'); e.P = p; e.LV = p.v; itemsEl.prepend(e); } meFootAll(); }   /* 바탕 그림처럼 맨 아래 — 골라도 위의 꽃·나무를 덮지 않게 */
 function mapEditSet(on) { if (mapEdit === on) return; if (on && fme) fmeEnd(); if (on) meHud = meHudSnap(); mapEdit = on; document.body.classList.toggle('mapEdit', on); for (const id of ['meBar', 'meTitle', 'meZone', 'meLayer']) $('#' + id).hidden = !on;
-  if (on) { meFoldSet(false); meDock(); mePick = null; meBagD = {}; meXLR = [XL, XR]; meSnap = meSnapshot(); meBgProps(true); meZoneDraw(); meRender(); } else { meSel(null); meBgProps(false); meSnap = null; } sfx(on ? 'open' : 'tap'); }   /* v13.41: 화면 크기가 안 바뀌므로 resize 안 보냄 */
+  if (on) { meFoldSet(true); meDock();   /* v13.42 경완: 들어가면 소품 리스트는 접힌 채로 */ mePick = null; meBagD = {}; meXLR = [XL, XR]; meSnap = meSnapshot(); meBgProps(true); meZoneDraw(); meRender(); } else { meSel(null); meBgProps(false); meSnap = null; } sfx(on ? 'open' : 'tap'); }   /* v13.41: 화면 크기가 안 바뀌므로 resize 안 보냄 */
 $('#btnMapEdit').onclick = () => mapEditSet(true);
 // v9.78 경완 '맵 편집 검토': 포켓몬이 타거나 앉아 있던 소품(스프링·시소·그루터기·나무)을 옮겨도 포켓몬은 예전 자리 허공에서 계속 놀았다 → 저장하면 소품 놀이를 끝내고 그 자리에 내려온다
 function meFreeMons() { for (const m of S.mons) { if (m.scp) scEnd(m); const g = m.goal?.kind; if (m.propSit) { m.propSit = false; m.xl = 0; m.pzB = null; m.pzF = 0; if (m.state === 'idle') setState(m, 'idle', 1); } if (g && /^(prop|propWatch|treePerch|scpush)$/.test(g)) { m.goal = null; setState(m, 'idle', 1); } } }
