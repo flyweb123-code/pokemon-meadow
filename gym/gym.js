@@ -1054,11 +1054,12 @@ function guyAsk() {
   root.classList.remove('dhide');   // 홈은 대화창을 숨겨 두니 물음 띄울 때 보이게 (경완 2026-10-29 '안내원 눌러도 안 뜸')
   // v13.08 경완: 안내원 = 도전자 불러오기 · 체육관 설명 중 고르기. 불러오기는 기다리는 도전자가 없을 때만
   const g0 = st(), can = !g0.q.length && !bsReady(g0);
-  $g('.gy-dlg').innerHTML = `<span class="gy-who">안내원</span>${kjNm()}, 무엇을 도와 드릴까요?<div class="gy-dyn"><button class="gy-dbtn2" type="button" data-a="tour">체육관 설명</button><button class="gy-dbtn2${can ? ' main' : ' off'}" type="button" data-a="call">도전자 불러오기</button></div>`;
+  $g('.gy-dlg').innerHTML = `<span class="gy-who">안내원</span>${kjNm()}, 무엇을 도와 드릴까요?<div class="gy-dyn"><button class="gy-dbtn2" type="button" data-a="tour">체육관 설명</button><button class="gy-dbtn2 main" type="button" data-a="call">도전자 불러오기</button></div>`;
   $g('.gy-dyn').onclick = async e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); sfx('tap');
     const guy = { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1, skip: false };
-    if (b.dataset.a === 'call' && !can) { $g('.gy-dlg').innerHTML = `<span class="gy-who">안내원</span>${g0.q.length ? '기다리는 도전자가 있어요.<br>도전자를 먼저 받아 주세요!' : '승급 심사를 먼저 받아 주세요!'}`; return; }
     off();
+    // v13.18 경완: 도전자가 있어도 단추는 켜 두고, 누르면 ▼ 대화창(한 글자씩)으로 안내
+    if (b.dataset.a === 'call' && !can) { busy = true; try { await guySay(g0.q.length ? '기다리는 도전자가 있어요.\n도전자를 먼저 받아 주세요!' : '승급 심사를 먼저 받아 주세요!'); } finally { busy = false; homeSay(); } return; }
     if (b.dataset.a === 'call') return guyCall();
     await kang(GUY_TOUR(), Object.assign(guy, { skip: true })); homeSay(); };
   // 물음 밖(대화창·빈 곳)을 누르면 박사 창처럼 닫힌다 (경완 2026-10-27)

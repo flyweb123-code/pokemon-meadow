@@ -1223,7 +1223,7 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 #gym .gy-qbtn .gy-qn{right:6px;top:4px}
 #gym .gy-qbtn.has{box-shadow:0 0 0 2px #ffd84a!important}
 #gym .gy-simb{top:calc(var(--si-top,env(safe-area-inset-top)) + 88px)!important}
-#gym:not(.dhide):has(.gy-dlg:not(:empty)) :is(.gy-deco,.gy-store.gy-sq,.gy-qbtn){visibility:hidden!important}
+#gym:not(.dhide):has(.gy-dlg:not(:empty)) .gy-qbtn{visibility:hidden!important}   /* v13.18 경완: 꾸미기·창고는 위로 옮겨져 대화창이 떠도 그대로 */
 /* 훈련장 개편 (경완 2026-10-29): 스칼렛 소품·후프링·현황 */
 .ty-pr{position:absolute;background-size:100% 100%;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none;transform-origin:50% 100%}
 .ty-pr::after{content:'';position:absolute;left:12%;right:12%;bottom:-3px;height:7px;border-radius:50%;background:rgba(60,40,10,.22);z-index:-1}
