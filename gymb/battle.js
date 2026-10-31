@@ -1613,7 +1613,7 @@ function movesPop(P, done, hi = -1) {   // hi: 방금 바꾼 칸 — 테두리�
   list.addEventListener('pointerdown', e => { const b = e.target.closest('.mp-mv:not(.empty)'); if (!b || m.mv.length < 2) return;
     addEventListener('pointerup', end, { once: true }); addEventListener('pointercancel', end, { once: true });
     if (ord) { e.preventDefault(); lp = { b, y: e.clientY, on: true }; drag = 1; b.classList.add('drag'); sfx('tap'); return; }
-    lp = { b, y: e.clientY, on: false, t: setTimeout(() => { if (!lp) return; lp.on = true; drag = 1; b.classList.add('drag'); sfx('tap'); try { navigator.vibrate?.(15); } catch (e) {} }, 380) }; });
+    lp = { b, y: e.clientY, on: false, t: setTimeout(() => { if (!lp) return; lp.on = true; drag = 1; b.classList.add('drag'); sfx('tap'); vib(1); }, 380) }; });
   list.addEventListener('pointermove', e => { if (!lp) return;
     if (!lp.on) { if (Math.abs(e.clientY - lp.y) > 8) { clearTimeout(lp.t); lp = null; } return; }
     e.preventDefault(); const rows = [...list.querySelectorAll('.mp-mv:not(.empty)')];

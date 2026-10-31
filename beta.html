@@ -6907,7 +6907,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.32';   /* v13.32 경완: 라인업 꾹 눌러 끌 때 진동 (앱 진동 경로) */   /* v13.31 경완: 타이어 그네·스프링 등 조각 소품도 꾹 눌러 고르면 테두리·밝기 그대로 */   /* v13.30 경완: 소리 기본은 무음 모드에서도 나게, 스위치 이름 '무음 모드에서 듣기' (기본 켜짐) */
+const APP_VER = '13.33';   /* v13.33 경완: 기술 순서 꾹 눌러 끌 때도 진동 (앱 진동 경로) */   /* v13.32 경완: 라인업 꾹 눌러 끌 때 진동 (앱 진동 경로) */   /* v13.31 경완: 타이어 그네·스프링 등 조각 소품도 꾹 눌러 고르면 테두리·밝기 그대로 */   /* v13.30 경완: 소리 기본은 무음 모드에서도 나게, 스위치 이름 '무음 모드에서 듣기' (기본 켜짐) */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
