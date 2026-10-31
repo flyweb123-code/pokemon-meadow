@@ -910,11 +910,11 @@ function bsScreen() {
   const gi = (g.gmax | 0) + 1, el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-bsw'; el.insertAdjacentHTML('afterbegin', `<i class="bsw-bg" aria-hidden="true">${'<i></i>'.repeat(14)}</i>`); $g('.gy-main').appendChild(el);
   // 웅장하게 (경완 2026-10-31): 어두운 무대 + 빛줄기 속 다음 등급 배지, 금빛 리본, 등급 혜택, 금빛 버튼
   el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">승급 심사</b></div>
-    <div class="gy-body"><div class="bsw-top"><div class="bsw-rib"><b>승급 심사</b></div>
+    <div class="gy-body"><div class="bsw-mid"><div class="bsw-top"><div class="bsw-rib"><b>승급 심사</b></div>
         <div class="bsw-row2"><div class="bsw-c now"><small>지금 등급</small><span class="bsw-bb">${bdHtml(g.ty, gi)}</span><b>${GRADES[gi - 1][1]}</b></div>
           <i class="bsw-chev" aria-hidden="true"><i></i><i></i><i></i></i>
           <div class="bsw-c nx"><small>승급 후</small><span class="bsw-bb"><i class="bsw-halo"></i>${bdHtml(g.ty, gi + 1)}</span><b>${GRADES[gi][1]}</b></div></div></div>
-      <div class="bsw-ben"><h5>승급 혜택</h5>${perkHtml(gi)}</div>
+      <div class="bsw-ben"><h5>승급 혜택</h5>${perkHtml(gi)}</div></div>
       <button class="bsw-go" type="button" data-a="go"><span>심사 받기</span></button></div>`;   // 버튼은 맨 아래, 설명 문구 없음 (경완 2026-10-31)
   el.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap');
     if (b.dataset.a === 'x') { el.remove(); return homeSay(); }
