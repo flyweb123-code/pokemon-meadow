@@ -229,7 +229,7 @@ function build() {
     <div class="gy-main">
       <div class="gy-stage"><div class="gy-map"><img alt=""><div class="gy-ents"></div></div></div>
       <div class="gy-top">
-        <button class="gy-plate" type="button" aria-label="체육관 정보"><span class="gy-wing l"><span class="gy-nm"></span></span><span class="gy-bd"></span><span class="gy-wing r"><span class="gy-grade"></span></span><span class="gy-rpa"><i class="gy-bar"><i></i></i><b><em>평판</em><span class="gy-repn"></span></b></span></button>
+        <button class="gy-plate" type="button" aria-label="체육관 정보"><span class="gy-wing l"><span class="gy-nm"></span></span><span class="gy-bd"></span><span class="gy-wing r"><span class="gy-grade"></span><i class="gy-bigt" aria-hidden="true">넓히기!</i></span><span class="gy-rpa"><i class="gy-bar"><i></i></i><b><em>평판</em><span class="gy-repn"></span></b></span></button>
       </div>
       <!-- 필드와 같은 자리 (경완 2026-10-28): 꾸미기 = 맵 편집 자리(왼쪽 위), 창고 = 가방 자리(오른쪽) -->
       <button class="gy-deco" type="button" aria-label="꾸미기"><svg viewBox="0 0 17 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M1 0h3v1H1zM13 0h3v1H13zM0 1h17v1H0zM0 2h3v1H0zM14 2h3v1H14zM1 3h2v1H1zM14 3h2v1H14zM2 4h1v1H2zM14 4h1v1H14zM2 5h1v1H2zM6 5h1v1H6zM10 5h1v1H10zM14 5h1v1H14zM2 6h1v1H2zM8 6h1v1H8zM14 6h1v1H14zM2 7h1v1H2zM7 7h1v1H7zM9 7h1v1H9zM14 7h1v1H14zM3 8h1v1H3zM13 8h1v1H13zM2 9h1v1H2zM14 9h1v1H14zM2 10h1v1H2zM14 10h1v1H14zM2 11h1v1H2zM14 11h1v1H14zM2 12h1v1H2zM14 12h1v1H14zM3 13h1v1H3zM13 13h1v1H13zM4 14h1v1H4zM7 14h3v1H7zM12 14h1v1H12zM5 15h2v1H5zM10 15h2v1H10z"/><path fill="#ffd520" d="M3 2h1v1H3zM13 2h1v1H13zM3 3h2v1H3zM6 3h5v1H6zM12 3h2v1H12zM4 4h9v1H4zM4 5h2v1H4zM7 5h3v1H7zM11 5h2v1H11zM6 6h2v1H6zM9 6h2v1H9zM8 7h1v1H8zM5 8h1v1H5zM11 8h1v1H11zM4 9h2v1H4zM11 9h2v1H11z"/><path fill="#6a3908" d="M4 2h9v1H4zM5 3h1v1H5zM11 3h1v1H11zM3 4h1v1H3zM13 4h1v1H13zM3 5h1v1H3zM13 5h1v1H13zM3 6h1v1H3zM13 6h1v1H13zM3 7h1v1H3zM13 7h1v1H13zM4 8h1v1H4zM12 8h1v1H12zM3 9h1v1H3zM6 9h1v1H6zM10 9h1v1H10zM13 9h1v1H13zM3 10h1v1H3zM5 10h2v1H5zM10 10h2v1H10zM13 10h1v1H13zM3 11h1v1H3zM13 11h1v1H13zM3 12h1v1H3zM5 12h2v1H5zM10 12h2v1H10zM13 12h1v1H13zM4 13h1v1H4zM7 13h3v1H7zM12 13h1v1H12zM5 14h2v1H5zM10 14h2v1H10z"/><path fill="#e65262" d="M4 6h2v1H4zM11 6h2v1H11zM4 7h2v1H4zM11 7h2v1H11z"/><path fill="#de9c10" d="M6 7h1v1H6zM10 7h1v1H10zM6 8h5v1H6zM7 9h3v1H7zM4 10h1v1H4zM7 10h3v1H7zM12 10h1v1H12zM4 11h9v1H4zM4 12h1v1H4zM7 12h3v1H7zM12 12h1v1H12zM5 13h2v1H5zM10 13h2v1H10z"/></svg></button>
@@ -780,7 +780,15 @@ function mkCand(now) {
   const W = GYMB(), wage = Math.round(clampN((W.WAGE_BASE + lv * W.WAGE_LV + n * 35) * (trait === 'thrift' ? .7 : trait === 'lazy' ? .55 : trait === 'guts' ? 1.15 : 1), W.WAGE_BASE, Math.max(W.WAGE_BASE, W.WAGE_MAX)) / 10) * 10;
   return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), f: C.f, trait, wage, team: mkTeam(C.t, lv, n) };
 }
-const SF_MAX = [0, 1, 2, 3, 4, 5, 5];   // 등급별 고용 한도: 떠오르는 2명 … 명문 5명 (경완 2026-10-29)
+const SF_MAX = [0, 1, 2, 3, 4, 5, 5];
+// 등급 혜택 (승급 심사 화면·승급 축하창): 바로 앞 등급과 달라지는 것만, 앞→뒤 숫자로 (경완 2026-10-31 '등급 혜택이나 잘 보이게')
+const perks = i => { const g = st(), L = [], tc = k => Math.min(6, k), ar = (a, b, u) => `<s>${a}${u}</s><i class="pk-ar" aria-hidden="true"></i><b>${b}${u}</b>`;
+  if (i === GRADES.length - 1) return [['egg', `<span class="pk-le">${GA.eggIco?.(g.ty) || ''}</span>`, `${GA.LT_ADJ?.[g.ty] || ''} 전설 알`, '<b>지급</b>']];
+  L.push(['big', '', '체육관 크기', ar(i, i + 1, '단계')]);
+  if (SF_MAX[i] !== SF_MAX[i - 1]) L.push(['sf', '', '트레이너 고용', ar(SF_MAX[i - 1], SF_MAX[i], '명')]);
+  if (tc(i) !== tc(i - 1)) L.push(['tr', '', '훈련장', ar(tc(i - 1), tc(i), '칸')]);
+  return L; };
+const perkHtml = i => `<ul class="pk-ben">${perks(i).map(([k, ic, n, v]) => `<li class="${k}"><i class="pk-ic">${ic}</i><span>${n}</span><em>${v}</em></li>`).join('')}</ul>`;   // 등급별 고용 한도: 떠오르는 2명 … 명문 5명 (경완 2026-10-29)
 const staffMax = () => SF_MAX[gradeOf(st().rep || 0).i];   // 새내기 체육관은 고용 못 함 (경완 2026-10-27)
 // 기다릴 시간이 지난 도전자는 돌아간다 (예전 저장은 그날 자정). 평판은 깎지 않는다 (경완 2026-10-28)
 const qExp = c => c.exp || nextDay(dayStart(c.t));
@@ -860,7 +868,7 @@ async function challenge(picked) {
     document.body.classList.add('gymBattle');
     let res;
     dlg(''); root.classList.add('dhide');   // 배틀 화면이 닫힐 때 승부 대사가 잠깐 비치지 않게 미리 비운다 (경완 2026-10-29)
-    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.max(-(g.rep || 0), repLose()) }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.max(-(g.rep || 0), repLose()) }, diff: c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); }   // 배틀 끝나고 돌아오면 아래 대화창은 숨김 (경완 2026-10-29)
     g.q.shift(); const R = rewOf(c), won = !!res?.won, now = Date.now();
     let gold = 0, rep = 0;
@@ -900,10 +908,15 @@ function bsScreen() {
   const g = st(); if (!bsReady(g)) return homeSay();
   root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
   const gi = (g.gmax | 0) + 1, el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-bsw'; $g('.gy-main').appendChild(el);
+  // 웅장하게 (경완 2026-10-31): 어두운 무대 + 빛줄기 속 다음 등급 배지, 금빛 리본, 등급 혜택, 금빛 버튼
   el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">승급 심사</b></div>
-    <div class="gy-body"><div class="bsw-row"><div class="bsw-g now"><small>지금 등급</small><span class="bsw-b">${bdHtml(g.ty, gi)}</span><b>${GRADES[gi - 1][1]}</b></div><i class="bsw-arw" aria-hidden="true"></i><div class="bsw-g nx"><small>승급하면</small><span class="bsw-b"><i class="bsa-ray"></i>${bdHtml(g.ty, gi + 1)}</span><b>${GRADES[gi][1]}</b></div></div>
-      <p class="bsw-tx">심사관을 이기면 <b>${GRADES[gi][1]}</b>으로 올라가고<br>새 등급 배지를 받아요.</p><p class="bsw-sub">져도 평판은 그대로예요. 언제든 다시 받을 수 있어요.</p>
-      <button class="gy-key main bsw-go" type="button" data-a="go">심사 받기</button></div>`;
+    <div class="gy-body"><div class="bsw-stage"><i class="bsw-sky"></i><i class="bsa-ray"></i><i class="bsw-sp">${'<i></i>'.repeat(10)}</i>
+        <div class="bsw-rib"><b>승급 심사</b></div>
+        <div class="bsw-nx">${bdHtml(g.ty, gi + 1)}</div>
+        <b class="bsw-gn">${GRADES[gi][1]}</b>
+        <div class="bsw-from">${bdHtml(g.ty, gi)}<span>${GRADES[gi - 1][1]}</span><i class="pk-ar" aria-hidden="true"></i><b>${GRADES[gi][1]}</b></div></div>
+      <div class="bsw-ben"><h5>승급 혜택</h5>${perkHtml(gi)}</div>
+      <button class="bsw-go" type="button" data-a="go"><span>심사 받기</span></button><p class="bsw-sub">심사관을 이기면 등급이 올라요. 져도 평판은 그대로예요.</p></div>`;
   el.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap');
     if (b.dataset.a === 'x') { el.remove(); return homeSay(); }
     if (b.dataset.a === 'go') { el.remove(); openTab('battle', { title: '승급 심사 라인업', pick: () => bsStart(gi) }); } };   // 포켓몬 메뉴와 같은 라인업 화면에서 고르고 '이 라인업으로 결정'
@@ -957,14 +970,40 @@ async function repAnim(p, rep) {
 // 동네 체육관이 되어 훈련장·트레이너가 처음 열릴 때 한 번 (경완 2026-10-29)
 function unlockChk() { const g = st(); if (!g || g.unl || gradeOf(g.rep || 0).i < 1) return; g.unl = 1; save(); menuDot();
   if (g.tr?.length || g.sf?.length) return;   // 이미 쓰던 체육관은 조용히
-  return new Promise(ok => pop(`<h4>새 메뉴가 열렸어요!</h4><p class="gy-msg" style="text-align:center"><b>훈련장</b>과 <b>트레이너</b> 메뉴를<br>이제 쓸 수 있어요.<br><small>훈련장에 들어가면 강박사가 알려 줄 거예요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아요</button></div>`, (a, close) => { close(); ok(); })); }
+  // 안내창 디자인 (경완 2026-10-31): 두 메뉴 카드 + 그림, 열림 도장
+  try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {}
+  return new Promise(ok => { const p = pop(`<h4 class="ul-t"><small>체육관 등급 혜택</small>새 메뉴가 열렸어요!</h4><div class="ul-cards">
+      <div class="ul-c"><i class="ul-pic"><img alt="" src="${IMG}deco/tr_sandbag.png"></i><b>훈련장</b><span>포켓몬을 맡겨 두면<br>경험치가 쌓여요</span><em>OPEN</em></div>
+      <div class="ul-c"><i class="ul-pic tr"><img alt="" src="${IMG}tr/cool_trainer_f.png"></i><b>트레이너</b><span>고용하면 도전자를<br>먼저 막아 줘요</span><em>OPEN</em></div></div>
+      <div class="gy-btns one"><button class="main" data-a="x">좋아요</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('ul-pop'); }); }
 // 전설의 체육관 보상 알 받는 창 (경완 2026-10-29)
 function legEggPop() { const g = st(), t = g.legN; if (!t) return Promise.resolve(); delete g.legN; save();
   return new Promise(ok => { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
     pop(`<h4>${GA.LT_ADJ?.[t] || ''} 전설 알을 받았다!</h4><div class="le-get">${GA.eggIco?.(t) || ''}</div><p class="gy-msg" style="text-align:center">전설의 체육관이 된 기념으로<br><b>${TYPE_KO[t]} 타입 전설 포켓몬</b>이 나오는 알을 받았어요.<br><small>필드의 알 가방에 들어 있어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); }); }
-function badgeGet(ty) {
-  const g0 = st(), gN = g0.newG; g0.newBdg = 0; delete g0.newG; save();   // 방금 오른 등급 (없으면 지금 등급)
-  return new Promise(ok => { sfx('tap'); const gi = gN ?? gradeOf(g0.rep || 0).i, L = gi + 1, nx = GRADES[gi + 1]; pop(`<h4>${GRADES[gi][1]} 배지를 받았다!</h4><div class="bd-get t${L}">${bdHtml(ty, L)}</div><p class="gy-msg" style="text-align:center">승급 심사를 통과해서 체육관 등급이<br><b>${GRADES[gi][1]}</b>으로 올랐어요.<br>배지는 홈 화면과 프로필에서 볼 수 있어요.${nx ? `<br><small>평판 ${nx[0]}을 채우면 ${nx[1]} 승급 심사가 열려요.</small>` : ''}</p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); legEggPop().then(ok); }); });
+// 승급 (경완 2026-10-31): 홈 타이틀 배지가 밝게 빛나다가 번쩍 → 다음 등급 배지로 바뀜 → 축하창 (등급 혜택만, 설명 문구 없음)
+async function badgeGet(ty) {
+  const g0 = st(), gN = g0.newG, gi = gN ?? gradeOf(g0.rep || 0).i;
+  if (gN != null && open) await promoFx(gi); else { g0.newBdg = 0; delete g0.newG; save(); renderTop(); }
+  return new Promise(ok => { const p = pop(`<div class="pp-hd"><i class="bsa-ray"></i><i class="pp-halo"></i><div class="bsa-bd">${bdHtml(ty, gi + 1)}</div></div>
+      <h4 class="pp-t"><small>체육관 등급이 올랐어요!</small>${GRADES[gi][1]}</h4><div class="pp-ben"><h5>등급 혜택</h5>${perkHtml(gi)}</div>
+      <div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); legEggPop().then(ok); });
+    p.classList.add('pp-pop'); });
+}
+async function promoFx(gi) {
+  const g = st(), M = window.GymBGM; root.classList.remove('gview'); root.classList.add('dhide'); dlg('');
+  const pl = $g('.gy-plate'), bd = $g('.gy-bd'), dim = document.createElement('div'); dim.className = 'pf-dim'; $g('.gy-main').appendChild(dim);
+  pl.classList.add('pf-on'); try { M?.sePrep?.(['DP_KIRAKIRA2', 'ME_FANFA5']); } catch (e) {}
+  try { M?.se('DP_KIRAKIRA2'); } catch (e) {}
+  bd.classList.add('pf-glow'); await wait(1700);
+  const fl = document.createElement('i'); fl.className = 'pf-flash'; bd.appendChild(fl);
+  await wait(160);
+  g.newBdg = 0; delete g.newG; save(); renderTop();
+  bd.classList.remove('pf-glow'); bd.classList.add('pf-new'); bd.insertAdjacentHTML('afterbegin', '<i class="pf-ray"></i>'); bd.appendChild(fl);
+  $g('.gy-grade').classList.add('pf-gt');
+  try { M?.fan ? M.fan('ME_FANFA5') : M?.se('ME_FANFA5'); } catch (e) {}
+  confetti(); await wait(1700);
+  dim.classList.add('out'); await wait(350);
+  dim.remove(); pl.classList.remove('pf-on'); bd.classList.remove('pf-new'); bd.querySelector('.pf-ray')?.remove(); fl.remove(); $g('.gy-grade').classList.remove('pf-gt');
 }
 
 // ---------- 홈 ----------
@@ -999,8 +1038,9 @@ function guyAsk() {
 function renderTop() {
   const g = st(), G = gradeOf(g.rep || 0);
   { const n = $g('.gy-nm'); n.innerHTML = `<span>${esc(g.nm)}</span>`; const t = n.firstChild; t.style.fontSize = ''; requestAnimationFrame(() => { let f = parseFloat(getComputedStyle(t).fontSize); while (t.scrollWidth > t.clientWidth + 1 && f > 11) t.style.fontSize = (--f) + 'px'; }); }   // 타입 아이콘 빼고 이름만, 예전에 길게 지은 이름은 글자를 줄여 맞춤 (경완 2026-10-29)
-  $g('.gy-grade').textContent = G.n;
-  { const b = $g('.gy-bd'), k = `${g.ty}.${G.i}`; if (b.dataset.k !== k) { b.dataset.k = k; b.innerHTML = gEmb(G.i); } }   // 등급 배지를 타이틀 박스 가운데에 (경완 2026-10-29)
+  const gi = g.newG != null ? g.newG - 1 : G.i;   // 승급 연출 전까지는 예전 배지·등급 이름 (경완 2026-10-31)
+  $g('.gy-grade').textContent = GRADES[gi][1];
+  { const b = $g('.gy-bd'), k = `${g.ty}.${gi}`; if (b.dataset.k !== k) { b.dataset.k = k; b.innerHTML = gEmb(gi); } }   // 등급 배지를 타이틀 박스 가운데에 (경완 2026-10-29)
   $g('.gy-bar>i').style.width = (G.hi > G.lo ? clampN(((g.rep || 0) - G.lo) / (G.hi - G.lo), 0, 1) : 1) * 100 + '%';
   $g('.gy-repn').textContent = `${g.rep || 0}${G.hi > G.lo && G.hi < REP_MAX + 1 ? `/${G.hi}` : ''}`; $g('.gy-grade').dataset.g = G.i; $g('.gy-plate').dataset.g = G.i; $g('.gy-plate').classList.toggle('canup', canBig(g));
   renderGoldG(); menuDot();
