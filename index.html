@@ -6890,7 +6890,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.04';   /* v13.04 경완: 친구 요청이 오거나 수락되면 아이폰 알림 (CloudKit 구독, 설정 › 알림 '친구 요청이 왔을 때') */
+const APP_VER = '13.05';   /* v13.05 경완: 친구 요청이 오거나 수락되면 아이폰 알림 (CloudKit 구독, 설정 › 알림 '친구 요청이 왔을 때') */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7219,7 +7219,7 @@ function renderFriends() {
 // 친구 요청 취소: 서버의 요청 기록(S_<내코드>_fr<상대>)을 '취소' 카드로 덮어 쓴다 (받는 쪽은 cx 를 보면 목록에서 뺌)
 async function frReqCancel(code) {
   await frMeGet();
-  await frAsk({ op: 'score', game: 'fr' + code, best: 0, card: JSON.stringify({ v: 1, cx: 1 }) });   // v13.04: best 0 = 취소 (아이폰 알림 안 감)
+  await frAsk({ op: 'score', game: 'fr' + code, best: 0, card: JSON.stringify({ v: 1, cx: 1 }) });   // v13.05: best 0 = 취소 (아이폰 알림 안 감)
   if (S.frReqOut) delete S.frReqOut[code]; save();
 }
 // 상세카드의 친구 버튼들 (친구 화면·랭킹 어디서 열어도 같음)
@@ -7300,7 +7300,7 @@ async function frReqSend(code, c) {
 function frBefriend(code, c) { if (!isFr(code)) { (S.friends ||= []).push(code); if (c) { frCards[code] = { ...(frCards[code] || {}), ...c }; try { localStorage.setItem('pk-fr-cards', JSON.stringify(frCards)); } catch (e) {} } } if (S.frReqOut) delete S.frReqOut[code]; }
 async function frReqAccept(r) {
   if ((S.friends || []).length >= 50) throw new Error('친구는 50명까지예요.');
-  await frAsk({ op: 'score', game: 'fr' + r.code, best: -Date.now(), card: frReqCard(true) });   // v13.04 경완 '친구 요청 받으면 아이폰 알림': best > 0 = 요청, < 0 = 수락 → 앱이 CloudKit 구독으로 각각 다른 알림
+  await frAsk({ op: 'score', game: 'fr' + r.code, best: -Date.now(), card: frReqCard(true) });   // v13.05 경완 '친구 요청 받으면 아이폰 알림': best > 0 = 요청, < 0 = 수락 → 앱이 CloudKit 구독으로 각각 다른 알림
   frBefriend(r.code, r.c); (S.frReqDone ||= {})[r.code] = r.t; frReqIn = frReqIn.filter(x => x.code !== r.code); frReqKeep();
   save(); sfx('pickup'); log(`<b>${esc(r.c?.n || '트레이너')}</b>와(과) 친구가 됐다!`, [], true); frClaim(); menuDots(); try { renderFriends(); } catch (e) {} frPush(true).catch(() => {});
   frNewPop(r.code, r.c);

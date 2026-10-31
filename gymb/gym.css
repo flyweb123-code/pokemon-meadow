@@ -2244,4 +2244,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-plate:has(.gy-grade:active),#gym button.if-grade:has(.ig-gr:active){transform:none;filter:none;box-shadow:0 3px 0 var(--frame)}   /* v12.98 경완: 등급 딱지를 누를 땐 딱지만 눌림 (기능은 이름판·등급 박스와 같음) */
 #gym .gy-grade,#gym .ig-gr{cursor:pointer}
 #gym :is(.gr-tag,.gy-grade,.ig-gr):is([data-g="5"],[data-g="6"]){color:#4a2c00!important;text-shadow:0 1px 0 rgba(255,255,255,.7)}#gym :is(.gr-tag,.gy-grade,.ig-gr)[data-g="6"]{color:#3a2470!important}   /* v13.00 경완: 금·무지개 딱지는 진한 글자 */
-#gym .gy-top .gy-plate .gy-grade{font-size:12px;padding:4px 7px 6px!important;letter-spacing:-.3px}#gym .gy-top .gy-plate .gy-wing.r{padding-right:14px!important}   /* v13.03 경완: 긴 딱지(떠오르는·이름난·전설의)도 배지와 여백 */
+#gym .gy-top .gy-plate .gy-grade{font-size:12px;padding:4px 6px 6px!important;letter-spacing:-.5px}#gym .gy-top .gy-plate .gy-wing.r{padding:0 18px 6px 36px!important;align-items:center}   /* v13.04 경완: 딱지를 배지 끝과 오른쪽 홈 사이 가운데 */   /* v13.03 경완: 긴 딱지(떠오르는·이름난·전설의)도 배지와 여백 */
+/* v13.04 경완: 이름난·인기·명문은 띠 색이 새내기·동네·떠오르는(동·은·금)과 같아서 띠에 빛이 지나가는 효과로 구분 */
+#gym .gy-plate:is([data-g="3"],[data-g="4"],[data-g="5"]) .gy-wing::after{background:linear-gradient(100deg,transparent 42%,rgba(255,255,255,.85) 48%,#fff 50%,rgba(255,255,255,.85) 52%,transparent 58%) 0 100%/300% 16% no-repeat,linear-gradient(180deg,#fff 0,#fff 8%,var(--win) 9%,var(--win) 84%,var(--g2) 85%);animation:gwSheen 3.2s linear infinite}
+#gym .gy-plate .gy-wing.r::after{animation-delay:.35s}
+@keyframes gwSheen{0%{background-position:130% 100%,0 0}55%,100%{background-position:-30% 100%,0 0}}

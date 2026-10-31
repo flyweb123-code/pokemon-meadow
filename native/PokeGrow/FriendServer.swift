@@ -104,7 +104,7 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
         _ = try await db.modifyRecords(saving: [r], deleting: [], savePolicy: .allKeys)
     }
 
-    // ---------- 친구 요청 아이폰 알림 (v13.04 경완 2026-10-31 '친구 요청 받으면 아이폰 알림 뜨게') ----------
+    // ---------- 친구 요청 아이폰 알림 (v13.05 경완 2026-10-31 '친구 요청 받으면 아이폰 알림 뜨게') ----------
     // 서버 없이 CloudKit 구독(CKQuerySubscription)으로 받는다: 누가 Score 에 game == "fr"+내 코드 를 쓰면 iCloud 가 이 폰에 알림을 보낸다.
     // best > 0 = 새 친구 요청, best < 0 = 내 요청을 수락함, best == 0 = 보낸 쪽이 취소 (알림 없음).
     // 게임 설정 › 알림에서 끄면 구독을 지운다. 같은 상태면 다시 올리지 않는다 (UserDefaults frSub).
