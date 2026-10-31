@@ -2203,3 +2203,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .gy-bsw .bsw-rib{font-size:18px;padding:6px 34px}
 .bsw-c.now .bdw img{width:80px;height:80px}.bsw-c.nx .bdw img{width:120px;height:120px}
 .bsw-c{padding:16px 4px}
+/* v12.76 경완: 심사 받기 버튼은 화면 맨 아래, 배틀 시작 무대는 화면 전체로 열림 */
+.gy-bsw .gy-body{justify-content:flex-start;padding-top:max(10px,4vh);padding-bottom:4px}
+.gy-bsw .bsw-top{margin-top:auto}.gy-bsw .bsw-ben{margin-bottom:auto}
+#gym .gy-bsw .bsw-go{width:100%;max-width:380px;margin-top:8px;flex:none}
+.bt-enc.ex .ex-pn{top:0;bottom:0;height:auto;margin-top:0;box-shadow:none;transform-origin:50% 50%}
