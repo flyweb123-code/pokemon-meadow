@@ -6879,7 +6879,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '12.87';   /* v12.87 경완: 선물 도착 창 '○○이 알을 보냈어요'는 상자를 연 뒤 알 목록과 함께, 간격 정리. v12.86 경완: 선물 상자에서 나오는 알이 너무 높이 뜨던 것 → 상자 바로 위까지만. v12.85 경완: 체육관 아이콘 대기 도전자 수 배지를 파란 네모(F안)로. v12.84 경완: 설정 소리 박스의 '울음소리 연결됨' 버튼 숨김(울음소리는 저절로 받음, ogg 못 트는 기기만 가져오기 보임). v12.83 경완: 체육관 상점 도구를 민트처럼 분류(회복·공격 강화·방어·스피드·명중·급소·특수·타입 강화·열매), 열매 32종 추가(배틀에서 먹거나 뺏기거나 떨궈도 지닌 도구는 그대로), 필드 체육관 아이콘 숫자 원 가운데 정렬. v12.82 경완: 필드 체육관 아이콘 우하단에 기다리는 도전자 수 딱지, 알 메뉴 '가방' 탭 → '알 가방'. v12.81 경완: 도전자 명단 — 확인 안 한 새 도전자 카드 왼쪽 위에 빨간 점(명단을 열면 확인한 걸로). v12.80 경완: 승급 심사 화면 레이아웃 고르게(위·가운데·아래 여백 균등, 칸 크게), 빛 테두리 잘림 고침, 승급 심사 버튼 화면 전환도 줄무늬 없이. v12.79 경완: 걸음 랭킹 → 부화 랭킹(이번 주 부화시킨 알 개수), 선물 도착 창 레이아웃 정리(리본 띠 없이 제목, 상자 가운데, 알 목록 칩). v12.78 경완: 체육관이 열리기 전(배지 없음) 트레이너 상세카드 점선 없앰. 꾸미기 모드·다른 화면에서 체육관 띵동을 들었으면 필드로 돌아왔을 때 체육관 아이콘이 한 번 흔들림. 선물 도착 창 = 먼저 '선물이 도착했어요'(상자 들썩) → '선물 열어 보기' 누르면 상자가 열리며 알이 나오고 알 목록 박스가 늘어나며 나옴 → '가방에 넣기', 뚜껑이 열릴 때 잘리던 것 고침. v12.77 경완: 보낼 알은 알 가방 화면 그대로에서 고르기, 선물 도착 창 = 선물 상자가 열리며 알이 나옴·'가방에 넣기' 누르면 알이 알 메뉴로 날아감, 친구 화면에 보낸 알 개수 안 보임. v12.76 경완: 승급 심사 화면 '심사 받기' 버튼 맨 아래·밑 설명 문구 뺌, 심사 배틀 시작 무대가 화면 전체로 열림, 넓히기 알림 '훈련장 칸도 늘었어요' 뺌(훈련장 칸은 등급 따라 저절로). v12.75 경완: 알 선물 받으면 '알 선물이 도착했어요!' 알림창(보낸 친구·알 이름, 가방에 넣음), 친구 상세카드 체육관 도전 버튼 일단 없앰. v12.74 경완: 친구 목록에 보낸 친구 요청도 박스로(수락 기다리는 중) + 박스마다 '요청 취소'. v12.73 경완 '내 배틀로그 못 보나?': 최근 배틀 5판 턴 기록(S.gym.blog)·자바스크립트 오류 기록(S.errs)을 저장에 남김 (서버 저장으로 원인 찾기) */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '12.88';   /* v12.88 경완: 선물 받은 알 상세 정보 '○○에게 선물 받은 알' (예전엔 '○○의 선물 근처에서 주운 알'), 태어난 포켓몬도 '○○에게 선물 받은 알에서 태어났다' */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9966,7 +9966,7 @@ function infoHead(P, sp, nameHtml, extra = '') {
   const d = SPECIES[sp], rk = P ? rankOf(P) : '';
   return `<div class="ih-top${tnCls(sp)}">${nameHtml}${P?.shiny ? '<b class="sh" data-tip="이로치">✦</b>' : ''}${P ? `<button class="ih-game" data-mgp="${P.id}" aria-label="같이 게임하기">${ICO_JOY}</button>` : ''}</div>`   // v6.13 경완: 상세 카드 이름 줄 오른쪽에 게임 버튼
     + `<div class="ih-sub">${tyIcons(sp)}${esc(d.g || '')}${extra}</div>`
-    + (P ? `<div class="ih-met"><span class="md">${metDay(P)}</span>${P.place ? `${esc(P.place)} 근처에서 만났다` : '만남'}${P.g ? ` · ${GRADE[P.g].n} 알` : ''}</div>` : '');
+    + (P ? `<div class="ih-met"><span class="md">${metDay(P)}</span>${P.place ? giftMet(P.place) ?? `${esc(P.place)} 근처에서 만났다` : '만남'}${P.g ? ` · ${GRADE[P.g].n} 알` : ''}</div>` : '');
 }
 const nameEdit = (id, name, sex) => `<label class="nm-edit"><input id="${id}" maxlength="8" aria-label="이름 바꾸기" autocomplete="off" value="${esc(name)}" style="width:${Math.max(1, name.length) + .15}em"><span class="pen-b" aria-hidden="true">${PEN}</span>${sexHtml(sex)}</label>`;
 // v4.13 경완: 이름 칸을 누르면 커서는 맨 뒤에
@@ -10139,7 +10139,7 @@ const ivRows = P => { const bs = bsOf(P.sp); return P.iv.map((v, k) => { const t
 const shinyHue = sp => 70 + (sp * 47) % 220;
 // 알을 주운 곳 = 처음 만난 곳
 const metDay = P => { const d = new Date(P.t); return `${d.getMonth() + 1}/${d.getDate()}`; };
-const metHtml = (P, pre = '') => P && P.place ? `${pre}<span class="met">${metDay(P)} ${esc(P.place)} 근처에서 만났다</span>` : '';
+const metHtml = (P, pre = '') => P && P.place ? `${pre}<span class="met">${metDay(P)} ${giftMet(P.place) ?? `${esc(P.place)} 근처에서 만났다`}</span>` : '';
 // 친밀도 숫자는 하트를 누를 때만 말풍선으로
 document.addEventListener('click', e => {
   let h = e.target.closest('.frtap,[data-tip]'), tip = $('#frTip');
@@ -11302,6 +11302,8 @@ function eggThemes(e) {
   return [...out];
 }
 const NIGHT = { n: '밤', t: [8, 17], hab: [], fx: /밤|어둠|달/ };
+const giftOf = p => p === '돌아온 선물' ? '' : (/^(.+)의 선물$/.exec(p || '') || [])[1] ?? null;   // v12.88 경완 '선물 받은 알은 상세 정보 어떻게 나와?': place '○○의 선물'·'돌아온 선물' → 보낸 사람 이름 ('' = 돌아온 알, null = 선물 아님)
+const giftMet = p => { const n = giftOf(p); return n === null ? null : n ? `${esc(n)}에게 선물 받은 알에서 태어났다` : '선물했다가 돌아온 알에서 태어났다'; };
 const eggPlace = e => { if (!e.spN) return shortPlace(e.place || ''); const a = placeArea(e.place); return a && !e.spN.includes(a.split(' ').pop()) ? a + ' ' + e.spN : e.spN; };   // v5.27: 작업실 반경 안에서 주운 알은 반경 이름으로 (v5.70 경완: 앞에 시·동)
 const TH_ROLL = .4, TH_HINT_MIN = 20;   // v5.28 경완: 힌트는 알 속 포켓몬에게 가장 크게 작용한 특성 하나만 / v5.30: 가중치 ×20 이상일 때만 (직접 넣은 포켓몬, 또는 타입+도감 낱말처럼 여러 개가 겹칠 때)
 function themeHint(e) { const ks = eggThemes(e); if (!ks.length) return '어떤 기운인지 잘 모르겠다'; const sp = eggSp(e); let best = null, bw = 0;
@@ -11585,7 +11587,7 @@ function eggView(e, bag) {   // v4.51 경완: 부화기에서 고른 알을 한 
   const fill = k => { const x = L[k]; if (!x) return; const rd = !bag && x.km >= x.need; if (bag && x.isNew) { x.isNew = false; save(); }
     hatchStage.innerHTML = '<i class="ehalo"></i>' + eggHtml(x.g, 'wob' + (x.sh ? ' shx' : ''), x.lt);
     const need = bag ? GRADE[x.g].km : x.need, km = x.km || 0;
-    m.innerHTML = `<b class="evg">${eggName(x)}</b> <span class="state${rd ? ' ready' : ''}">${bag ? '가방' : rd ? '부화 준비 완료' : '부화 중'}</span><div class="prog"><i style="width:${Math.min(100, km / need * 100)}%"></i></div>${fmtKm(km)} / ${need}km${bag ? ' 쌓임' : ` · 앞으로 <b>${fmtKm(Math.max(0, need - km))}</b>km`}<div class="evd">${x.place || x.spN ? `${eggGotDay(x)}${esc(eggPlace(x))} 근처에서 <span style="white-space:nowrap">주운 알</span>` : x.t ? `${eggGotDay(x)}<span style="white-space:nowrap">주운 알</span>` : '주운 곳 기록 없음'}<br>${themeHint(x)}</div>`;
+    m.innerHTML = `<b class="evg">${eggName(x)}</b> <span class="state${rd ? ' ready' : ''}">${bag ? '가방' : rd ? '부화 준비 완료' : '부화 중'}</span><div class="prog"><i style="width:${Math.min(100, km / need * 100)}%"></i></div>${fmtKm(km)} / ${need}km${bag ? ' 쌓임' : ` · 앞으로 <b>${fmtKm(Math.max(0, need - km))}</b>km`}<div class="evd">${!x.spN && giftOf(x.place) !== null ? `${eggGotDay(x)}<span style="white-space:nowrap">${giftOf(x.place) ? `${esc(giftOf(x.place))}에게 선물 받은 알` : '선물했다가 돌아온 알'}</span>` : x.place || x.spN ? `${eggGotDay(x)}${esc(eggPlace(x))} 근처에서 <span style="white-space:nowrap">주운 알</span>` : x.t ? `${eggGotDay(x)}<span style="white-space:nowrap">주운 알</span>` : '주운 곳 기록 없음'}<br>${themeHint(x)}</div>`;
     $('#hlHl').hidden = k <= 0; $('#hlHr').hidden = k >= L.length - 1;
     if (bag) { arm = 0; dl.classList.remove('arm'); dl.textContent = '버리기'; const full = S.eggs.length >= MAX_EGGS; inB.disabled = full; inB.textContent = full ? '부화기가 꽉 찼어요' : '부화기에 넣기'; } };
   fill(i);
