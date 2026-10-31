@@ -2378,7 +2378,7 @@ function bgmSrcStop() { const x = bgm.src; bgm.src = null; if (x) { try { x.stop
 // 곡 위치 기억: 오디오를 새로 만들어도 멈췄던 자리부터 이어서 튼다
 const bgmPos = () => { if (!bgm.src || !actx || !bgm.buf) return bgm.pos || 0; const t = actx.currentTime - bgm.t0, L = bgm.buf.gbLoop; if (L && t > L[1]) return L[0] + (t - L[0]) % (L[1] - L[0]); return (t % bgm.buf.duration + bgm.buf.duration) % bgm.buf.duration; };
 function bgmSrcStart(off = bgm.pos || 0) {
-  if (bgm.src || !bgm.buf || (inGym() && !bgm.preview)) return; try { if (campMus.on && !bgm.preview) return; } catch (e) {}   /* v9.19 경완: 모닥불 노래 중엔 배경 음악이 다시 켜지지 않게 (곡을 받아 오던 게 늦게 끝나거나 무작위 다음 곡이 겹치던 것) — 노래가 끝나면 campBgm(false) 가 이어 튼다 */
+  if (bgm.src || !bgm.buf || ((inGym() || frMus) && !bgm.preview)) return; try { if (campMus.on && !bgm.preview) return; } catch (e) {}   /* v9.19 경완: 모닥불 노래 중엔 배경 음악이 다시 켜지지 않게 (곡을 받아 오던 게 늦게 끝나거나 무작위 다음 곡이 겹치던 것) — 노래가 끝나면 campBgm(false) 가 이어 튼다 */
   const a = audio(); if (!a) return; bgmRoute();
   off = off % bgm.buf.duration || 0;
   const x = a.createBufferSource(), rnd = S.bgmRand && !bgm.preview, L = bgm.buf.gbLoop; x.buffer = bgm.buf; x.loop = !rnd || !!L; if (L) { x.loopStart = L[0]; x.loopEnd = L[1]; }   /* 게임보이 곡: 도입부 뒤 반복 구간만 돈다 */
@@ -2513,9 +2513,11 @@ function gymPull() { const g = S.gym, now = Date.now(); if (!g?.d || (S.useH || 
   if ((g.sch || []).some(t => t > now && t < now + 10 * 60e3)) return; g.pullT = now + 30 * 60e3; g.pull = now + (60 + Math.random() * 120) * 1e3; g.at = Math.min(g.at || Infinity, g.pull); save(); }   // g.pull 은 체육관 tick 이 도전자로 바꾼다
 setTimeout(gymPull, 5000); document.addEventListener('visibilitychange', () => { if (!document.hidden) setTimeout(gymPull, 2000); });
 // v12.20 경완 '도전자 왔을 때 띵동 소리가 어떤 화면에서든, 필드에선 체육관 아이콘이 띵동에 맞춰 흔들리게': 체육관 밖에서는 도전자 시각(sch·pull)이 지나면 띵동 (체육관 안은 gym.js qDing)
+// 플래티넘 소리 엔진(gymb/bgm.js)을 필드에서도 쓸 때 한 번만 불러온다
+const gymSnd = () => window.GymBGM ? Promise.resolve() : (gymSnd.p = gymSnd.p || new Promise(ok => { const x = document.createElement('script'); x.src = 'gymb/bgm.js?v=' + encodeURIComponent(APP_VER); x.onload = x.onerror = () => { gymSnd.p = null; ok(); }; document.head.appendChild(x); }));
 let gymDingBusy = 0;
 async function gymDing() { if (gymDingBusy) return; gymDingBusy = 1;
-  try { if (!window.GymBGM) await new Promise(ok => { const x = document.createElement('script'); x.src = 'gymb/bgm.js?v=' + encodeURIComponent(APP_VER); x.onload = x.onerror = ok; document.head.appendChild(x); });
+  try { await gymSnd();
     await window.GymBGM?.se('DP_PINPON');
     gymShake(); if (!gymFldSeen()) gymDingPend = 1;   // v12.78 경완: 꾸미기·다른 화면에서 띵동을 들었으면 필드로 돌아왔을 때 한 번 더 흔들어 눈치 채게
   } catch (e) {} finally { gymDingBusy = 0; } }
@@ -6879,7 +6881,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '12.89';   /* v12.89 경완: 선물했다 돌아온 알은 원래 주운 곳 그대로, 가방 알 상태 창 '레어 알' 옆 '가방' 글자 뺌 */
+const APP_VER = '12.90';   /* v12.90 경완: 친밀도 만점 창은 확인 버튼으로만 닫힘, 어두워질 때 필드 곡 줄임·번쩍 반짝 소리·팡파르·같이 걷는 곡(플래티넘). v12.89 경완: 선물했다 돌아온 알은 원래 주운 곳 그대로, 가방 알 상태 창 '레어 알' 옆 '가방' 글자 뺌 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -10611,9 +10613,9 @@ function frMaxPre(P, then) {
   const stop = ev => { ev.preventDefault(); ev.stopPropagation(); };
   for (const t of ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchmove', 'touchend', 'mousedown', 'wheel', 'keydown']) ov.addEventListener(t, stop, { capture: true, passive: false });
   const key = ev => stop(ev); document.addEventListener('keydown', key, true);
-  document.body.append(ov);   // v4.85 경완: 어두워짐이 너무 빨라서 3.4초 동안 천천히, 빛과 같은 4단계로 함께 차오른다 (v4.86: 2.8초, v4.91 경완 최종: 2초)
+  document.body.append(ov); frMusIn();   // v4.85 경완: 어두워짐이 너무 빨라서 3.4초 동안 천천히, 빛과 같은 4단계로 함께 차오른다 (v4.86: 2.8초, v4.91 경완 최종: 2초)
   setTimeout(() => sfx('rise'), 1300);
-  setTimeout(() => ov.querySelector('.fp-fl').classList.add('on'), 2000);
+  setTimeout(() => { ov.querySelector('.fp-fl').classList.add('on'); try { window.GymBGM?.se('DP_KIRAKIRA2'); } catch (e) {} }, 2000);
   setTimeout(() => { then(); document.removeEventListener('keydown', key, true); ov.style.transition = 'opacity .25s'; ov.style.opacity = 0; ov.style.pointerEvents = 'none'; setTimeout(() => ov.remove(), 300); }, 2210);
 }
 // 축하 창 뒤로 도트 폭죽이 계속 터진다 (창을 닫으면 멈춤)
@@ -10644,11 +10646,20 @@ function frMaxWin(P) {
     + `<p>${J({ name: nm }, '과/와')} 마음이 완전히 통했다!</p><div class="fm-hearts">♥♥♥♥♥</div>`
     + (mv ? `${moveCard(P.sp, FR_MAX)}<div class="small">이제 ${J({ name: nm }, '은/는')} 기술 <b>${esc(mv)}</b>${hasBat(mv) ? '을' : '를'} 쓸 수 있게 되었다!</div>` : `<div class="small">이제 ${J({ name: nm }, '은/는')} 기술을 쓸 수 있게 되었다!</div>`) + `</div>`;
   const img = $('#frMaxBody img'); img.src = thumbP(P) || ''; if (!thumbOf(P.sp)) ensureSprite(P.sp).then(() => { img.src = thumbP(P); }).catch(() => {});
-  $('#frMax').hidden = false; sfx('newdex'); haptic(1); playCry(P.sp, .9); frMaxFw();
+  $('#frMax').hidden = false; haptic(1); frMaxFw(); frMusWin(P);   /* v12.86 경완: 연출부터 효과음, 창이 떠 있는 동안 배경 음악 */
   log(`${J({ name: nm }, '과/와')} 마음이 완전히 통했다! 이제 ${mv ? `기술 ${mv}${hasBat(mv) ? '을' : '를'}` : '기술을'} 쓸 수 있다.`, [], true);
-  const done = () => { $('#frMax').hidden = true; frMaxOpen = false; sfx('tap'); if (frMaxQ.length) { clearTimeout(frMaxT); frMaxT = setTimeout(frMaxShow, 400); } };
-  $('#frMaxOk').onclick = done; $('#frMax').onclick = ev => { if (ev.target.id === 'frMax') done(); };
+  const done = () => { $('#frMax').hidden = true; frMaxOpen = false; sfx('tap'); frMusOut(); if (frMaxQ.length) { clearTimeout(frMaxT); frMaxT = setTimeout(frMaxShow, 400); } };
+  $('#frMaxOk').onclick = done; $('#frMax').onclick = null;   /* v12.86 경완: 빈 곳 말고 확인 버튼으로만 닫힘 */
 }
+// v12.86 경완 '친밀도 만점 연출부터 효과음이랑 bgm': 어두워지기 시작하면 필드 곡이 줄어들고, 번쩍일 때 반짝 소리, 창이 뜨면 팡파르 → 같이 걷는 곡(플래티넘 SEQ_TSURETEKE). 확인을 누르면 필드 곡이 하던 자리부터 돌아온다
+let frMus = null;
+function frMusIn() { gymSnd().then(() => { try { const M = window.GymBGM; M?.sePrep(['DP_KIRAKIRA2', 'ME_FANFA1']); if (bgmOn) M?.prep('tsure'); } catch (e) {} }); if (!frMus) frMus = { id: bgm.id, pos: bgmPos(), had: !!bgm.src }; bgmDuck(0, 1.6); }
+async function frMusWin(P) { if (!frMus) frMus = { id: bgm.id, pos: bgmPos(), had: !!bgm.src }; const me = frMus; bgmSrcStop(); bgmDuck(1, .05);
+  await gymSnd(); const M = window.GymBGM; if (frMus !== me) return;
+  try { await M?.fan('ME_FANFA1'); } catch (e) {} if (frMus !== me) return; playCry(P.sp, .9);
+  await new Promise(r => setTimeout(r, 900)); if (frMus === me && bgmOn) try { M?.play('tsure', { fade: 1.2 }); } catch (e) {} }
+function frMusOut() { const r = frMus; if (!r) return; frMus = null; try { if (window.GymBGM?.name === 'tsure') window.GymBGM.stop(.8); } catch (e) {}
+  setTimeout(() => { if (frMus || inGym()) return; bgm.fadeIn = 1.5; if (bgmOn && r.had && r.id && r.id !== 'intro') bgmPlay(r.id, r.pos); else bgmStart(); }, 900); }
 // 필드에 나갈 개체: 같은 종 중 필드에 없는 것, 랭크 높은 순
 const freePoke = sp => S.box.filter(p => p.sp === sp && !onField(p.id)).sort((a, b) => inYard(a.id) - inYard(b.id) || ivSum(b) - ivSum(a))[0] || null;   // v10.35: 체육관 훈련장에 있는 포켓몬은 뒤로
 // v10.35 경완 '훈련장에 있는 포켓몬 다시 필드로 보낼 때 알림창': 훈련 중이면 먼저 물어본다
