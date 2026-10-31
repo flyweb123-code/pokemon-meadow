@@ -1223,7 +1223,7 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 #gym .gy-qbtn .gy-qn{right:6px;top:4px}
 #gym .gy-qbtn.has{box-shadow:0 0 0 2px #ffd84a!important}
 #gym .gy-simb{top:calc(var(--si-top,env(safe-area-inset-top)) + 88px)!important}
-#gym:not(.dhide):has(.gy-dlg:not(:empty)) :is(.gy-deco,.gy-store.gy-sq,.gy-qbtn){visibility:hidden!important}
+#gym:not(.dhide):has(.gy-dlg:not(:empty)) .gy-qbtn{visibility:hidden!important}   /* v13.18 경완: 꾸미기·창고는 위로 옮겨져 대화창이 떠도 그대로 */
 /* 훈련장 개편 (경완 2026-10-29): 스칼렛 소품·후프링·현황 */
 .ty-pr{position:absolute;background-size:100% 100%;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none;transform-origin:50% 100%}
 .ty-pr::after{content:'';position:absolute;left:12%;right:12%;bottom:-3px;height:7px;border-radius:50%;background:rgba(60,40,10,.22);z-index:-1}
@@ -2267,3 +2267,9 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .gy-qw .qw-row.next{overflow:visible}
 /* v13.16 경완 '교체 화면 효과 딱지가 기술 박스 넘어감': 교체 카드에선 효과 딱지를 PP 와 같은 맨 아래 줄 왼쪽에 (카드가 낮아도 PP 를 밀어내지 않게) */
 .bt.mob .bp-card .mvb .eff{position:absolute!important;left:12px!important;right:auto!important;top:auto!important;bottom:9px!important;transform:none!important;margin:0!important}
+/* v13.18 경완: 기술 바꾸기 — 배울 기술 목록 위에 바뀔 기술 카드 (흐린 회색·빨간 점선, 아래 ▼) */
+.mv-oldw{position:relative;margin:4px 0 16px;padding:14px 8px 6px;border:2px dashed #d06050;border-radius:8px;background:rgba(208,96,80,.08)}
+.mv-oldw .mv-oldl{position:absolute;top:-9px;left:10px;padding:1px 8px;border-radius:9px;background:#d06050;color:#fff;font-size:11px;font-weight:700;line-height:16px}
+.mv-oldw .mv-old{pointer-events:none;filter:saturate(.35);opacity:.8}
+.mv-oldw .mv-oldar{position:absolute;left:50%;bottom:-13px;transform:translateX(-50%);font-style:normal;font-size:12px;line-height:1;color:#d06050}
+.mv-oldw .mv-old{margin:0!important;max-height:none!important}
