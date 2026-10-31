@@ -2227,3 +2227,17 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 /* 12.93 입구 석상 (맵 위에 겹쳐 세움, 꾸미기 편집 빛 없음) */
 #gym .gy-statp{position:absolute;background-repeat:no-repeat;background-size:100% 100%;image-rendering:pixelated;pointer-events:none}
+/* 등급 딱지 (경완 2026-10-31 '눌러보고 싶은 느낌'): 홈 이름판 · 체육관 정보 등급 박스 · 등급 화면(열린 등급) 같은 모양 */
+#gym .gr-tag,#gym .gy-top .gy-plate .gy-grade,#gym .if-grade .ig-tx>b.ig-gr{display:inline-block;position:relative;padding:2px 10px 4px!important;border:2px solid #20202c!important;border-radius:9px!important;background:var(--gf)!important;color:#fff!important;font-weight:700;letter-spacing:0;line-height:1.15;white-space:nowrap;text-shadow:0 1px 0 var(--ge);box-shadow:inset 0 -3px 0 var(--ge),inset 0 2px 0 rgba(255,255,255,.5),0 2px 0 #20202c;max-width:none;overflow:visible;transition:transform .08s,box-shadow .08s}
+#gym :is(.gr-tag,.gy-grade,.ig-gr){--gf:#9aa3b8;--ge:#5c6478}
+#gym :is(.gr-tag,.gy-grade,.ig-gr)[data-g="1"]{--gf:#52b660;--ge:#2a7a36}
+#gym :is(.gr-tag,.gy-grade,.ig-gr)[data-g="2"]{--gf:#4f8be2;--ge:#24539c}
+#gym :is(.gr-tag,.gy-grade,.ig-gr)[data-g="3"]{--gf:#a062e2;--ge:#5f2fa0}
+#gym :is(.gr-tag,.gy-grade,.ig-gr)[data-g="4"]{--gf:#e8605c;--ge:#9c2a2a}
+#gym :is(.gr-tag,.gy-grade,.ig-gr)[data-g="5"]{--gf:linear-gradient(180deg,#ffe07a,#f2a724);--ge:#9a6200}
+#gym :is(.gr-tag,.gy-grade,.ig-gr)[data-g="6"]{--gf:linear-gradient(100deg,#ff8fb0,#ffd36a 30%,#8fe39a 55%,#7cc4ff 78%,#c89bff);--ge:#5a3c8a}
+#gym .gy-top .gy-plate .gy-grade{font-size:13px}
+#gym .if-grade .ig-tx>b.ig-gr{align-self:flex-start;font-size:17px;margin:4px 0 6px}
+#gym .gy-perk>li>div b.gr-tag{font-size:13px;margin-top:3px;padding:1px 8px 3px!important}
+#gym .gy-plate:active .gy-grade,#gym .if-grade:active .ig-gr{transform:translateY(2px);box-shadow:inset 0 -1px 0 var(--ge),inset 0 2px 0 rgba(255,255,255,.5),0 0 0 #20202c}
+#gym .gy-perk>li>.pk-rep{top:6px;bottom:auto}   /* 평판 딱지 = 우상단 (경완 2026-10-31) */
