@@ -305,7 +305,8 @@ body:has(.tcv-pop) #itemPop{z-index:6300}
 .tr-card.lb-trb{box-shadow:none!important}.lb-pk{box-shadow:none!important}
 .lb-show .fr-tr.m{translate:var(--lbtr-m,0 0)}.lb-show .fr-tr.f{translate:var(--lbtr-f,0 0)}
 .lb-pk[data-rk]:not([data-rk=""]){border-color:var(--rkc)}.lb-pk[data-rk="S"]{border-color:#c07c08;box-shadow:0 0 6px rgba(255,200,40,.8)!important}.lb-pk[data-rk="A"]{border-color:#d03838;box-shadow:0 0 5px rgba(240,80,80,.6)!important}
-.mapico.lb-btn{width:auto;height:auto;border:0!important;background:none!important;box-shadow:none!important;line-height:0;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35))}.mapico.lb-btn svg{width:45px;height:40px}.mapico.lb-btn svg path[fill="#20202c"]{fill:#000!important}   /* v11.82 경완: 테두리 검정(밤에도), 맵 편집·체육관 아이콘 크기 */
+.mapico.lb-btn{width:auto;height:auto;border:0!important;background:none!important;box-shadow:none!important;line-height:0;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35))}
+.mapico.lb-btn:active{transform:translate(2px,2px);filter:drop-shadow(0 0 0 rgba(0,0,0,.35))}   /* v12.94 경완: 필드 트로피 눌리는 모션 */.mapico.lb-btn svg{width:45px;height:40px}.mapico.lb-btn svg path[fill="#20202c"]{fill:#000!important}   /* v11.82 경완: 테두리 검정(밤에도), 맵 편집·체육관 아이콘 크기 */
 #set .sheet-head .pf-gear{border:0;background:none;box-shadow:none}#set .sheet-head .pf-gear svg{width:30px;height:30px}#set .sheet-head .pf-gear+.pf-gear{margin-left:0}   /* v11.82 경완: 프로필 친구·설정 버튼 박스 없이 */.lb-tabs[hidden]{display:none}.lb-body{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 12px)}
 #rank.ontop{z-index:6050}#rank.ontop{bottom:0}   /* v12.38 경완: 미니게임 위 랭킹은 아래 탭 자리까지 (탭이 가려져 있어 아래가 잘려 보이던 것) */
 .mgrk-mini{margin:8px 0 2px;cursor:pointer}.mgrk-mini:active{transform:translate(1px,1px)}.mgrk-mh{display:flex;align-items:center;gap:6px;margin:0 0 5px;font-size:13px}.mgrk-mh svg{width:18px;height:18px}.mgrk-mh i{margin-left:auto;font-style:normal;color:var(--dim)}.mgrk-mini .lb-list{display:flex;flex-direction:column;gap:4px;margin:0}.mgrk-mini .lb-row{padding:3px 6px 3px 4px;gap:6px;font-size:12px}.mgrk-mini .lb-show{width:52px;height:36px}.mgrk-mini .tr-card.lb-trb,.mgrk-mini .lb-pk{width:34px;height:34px}.mgrk-mini .lb-row.me{outline:3px solid #7ae0ff;outline-offset:-1px}.mgrk-mini .lb-mid b{font-size:13px}.mgrk-mini .lb-val b{font-size:14px}.mgrk-mini .lb-rk{min-width:22px}   /* v11.93 경완: 기록창 안 순위 3줄 */
@@ -942,6 +943,12 @@ body.petting #dlg,body.petting #info{display:none!important}
 .flyz .fz i::before,.flyz .fz i::after{content:'';position:absolute;top:-5px;width:5px;height:6px;border-radius:60% 60% 40% 40%;background:rgba(225,238,252,.88);box-shadow:0 0 0 1px rgba(60,70,90,.45);transform-origin:50% 100%;animation:fzW .08s steps(2) infinite}
 .flyz .fz i::before{left:-1px;rotate:-28deg}.flyz .fz i::after{left:2px;rotate:18deg;animation-delay:.04s}
 .flyz .fz:nth-child(2){animation-direction:reverse}.flyz .fz:nth-child(2) i,.flyz .fz:nth-child(3) i{transform:scaleX(-1)}
+/* v12.94 경완 '파리 넘 징그럽다': 파리 대신 머리 위로 피어오르는 냄새 줄(꼬불꼬불 도트 선) — 청결 20 아래 2줄, 10 아래 3줄 */
+#wrap .flyz .fz{left:var(--sx,0px);animation:stkU var(--d,2.2s) ease-out infinite var(--dl,0s)}
+#wrap .flyz .fz i{left:-4px;top:-14px;width:7px;height:17px;background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 12' shape-rendering='crispEdges'><g fill='%2396ad3c'><rect x='2' y='0' width='2' height='1'/><rect x='3' y='1' width='2' height='1'/><rect x='3' y='2' width='2' height='1'/><rect x='2' y='3' width='2' height='1'/><rect x='1' y='4' width='2' height='1'/><rect x='1' y='5' width='2' height='1'/><rect x='2' y='6' width='2' height='1'/><rect x='3' y='7' width='2' height='1'/><rect x='3' y='8' width='2' height='1'/><rect x='2' y='9' width='2' height='1'/><rect x='1' y='10' width='2' height='1'/><rect x='1' y='11' width='2' height='1'/></g></svg>") center/contain no-repeat;border-radius:0;box-shadow:none;filter:drop-shadow(0 0 1px rgba(255,255,255,.9));image-rendering:pixelated;animation:none}
+#wrap .flyz .fz i::before,#wrap .flyz .fz i::after{display:none}
+#wrap .flyz .fz i{filter:drop-shadow(1px 0 0 rgba(46,56,14,.75)) drop-shadow(-1px 0 0 rgba(46,56,14,.45))}
+@keyframes stkU{0%{transform:translate(0,6px) scaleY(.55);opacity:0}25%{opacity:1}70%{opacity:.85}100%{transform:translate(1px,-16px) scaleY(1.1);opacity:0}}
 @keyframes fzW{50%{transform:scaleY(.35)}}@keyframes fzJ{50%{translate:1px -1px}}
 @keyframes fzO{0%{transform:translate(calc(var(--rx) * -1),0)}12%{transform:translate(calc(var(--rx) * -.6),calc(var(--ry) * -1))}25%{transform:translate(0,calc(var(--ry) * -.3))}37%{transform:translate(calc(var(--rx) * .7),calc(var(--ry) * -1.1))}50%{transform:translate(var(--rx),0)}62%{transform:translate(calc(var(--rx) * .4),calc(var(--ry) * .8))}75%{transform:translate(0,calc(var(--ry) * .2))}87%{transform:translate(calc(var(--rx) * -.7),calc(var(--ry) * .9))}100%{transform:translate(calc(var(--rx) * -1),0)}}body.petting *{touch-action:none!important}
 .petbar{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,calc(100% - 24px));z-index:40;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;box-sizing:border-box;background:rgba(30,26,52,.9);color:#fff;border:3px solid #fff;box-shadow:0 0 0 3px #2a2440,5px 5px 0 3px rgba(0,0,0,.28);font-size:15px}.petbar[hidden]{display:none!important}
@@ -3397,7 +3404,7 @@ function dirtFx(m) { const c = m.clean ?? 100; if (c >= 40 || m.hidden || !m.el)
 // 파리 떼: 포켓몬 그림(liftEl) 안에 붙여서 걷고 뜨는 대로 같이 따라다닌다
 function flyVis(m) { if (!m.liftEl) return; const c = m.clean ?? 100, n = m.hidden || m.washing ? 0 : c < 10 ? 3 : c < 20 ? 2 : 0;
   let z = m.flyZ; if (!n) { if (z) { z.remove(); m.flyZ = null; } return; }
-  if (!z || !z.isConnected || z.childElementCount !== n) { z?.remove(); z = m.flyZ = document.createElement('span'); z.className = 'flyz'; z.innerHTML = Array.from({ length: n }, (_, k) => `<span class="fz" style="--d:${(1.7 + k * .45 + Math.random() * .3).toFixed(2)}s;--dl:-${(Math.random() * 2).toFixed(2)}s"><i></i></span>`).join(''); m.liftEl.append(z); }
+  if (!z || !z.isConnected || z.childElementCount !== n) { z?.remove(); z = m.flyZ = document.createElement('span'); z.className = 'flyz'; z.innerHTML = Array.from({ length: n }, (_, k) => `<span class="fz" style="--sx:${Math.round([-.22, .22, 0][k] * (m.w || 40))}px;--d:${(1.9 + k * .35 + Math.random() * .3).toFixed(2)}s;--dl:-${(Math.random() * 2).toFixed(2)}s"><i></i></span>`).join(''); m.liftEl.append(z); }
   const H = m.h || 50, W = m.w || 40, k = `${Math.round(H)},${Math.round(W)}`; if (z.dataset.k !== k) { z.dataset.k = k; z.style.bottom = Math.round(H * .78) + 'px'; z.style.setProperty('--rx', Math.round(Math.max(14, W * .42)) + 'px'); z.style.setProperty('--ry', Math.round(Math.max(7, H * .16)) + 'px'); } }
 const frRate = m => { if (!m.pid || m.hidden) return 0; const a = gaugeAvg(m); return FR_TABLE.find(([v]) => a >= v)[1] + (a >= 40 && withFriend(m) ? .5 : 0); };   // 친구 보너스는 돌봐 줄 때만
 // 앱이 꺼져 있던(화면을 떠나 있던) 동안의 필드 친밀도
@@ -6881,7 +6888,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '12.93';   /* v12.93 경완: 물 위 다리 가운데 다리 아래 모서리 이음새 메움, 실험실 석상 한 칸 위로(카펫 길이만큼), 입구 석상을 맵 위에 세워 뒤로 지나가는 사람이 가려지게. v12.92 경완: 물 위 다리 2·3단계 이음새(다리 옆 그림자) 메움, 실험실 석상은 카펫에서 한 칸 띄움. v12.91 경완: 체육관 맵 12종(챔피언 로드·격투 도장·옥상 정원·회전 미로·덤불 숲길·혼령의 탑·화산 퀴즈장·순간이동 방·얼음·용·그림자·전당의 방) 지움(그 맵 체육관은 타입에 맞는 남은 맵으로), 실험실 석상은 입구 카펫 양쪽. 알 가방에서 보고 있는 알 칸에 테두리(빈 곳 누르면 꺼짐). v12.90 경완: 친밀도 만점 창은 확인 버튼으로만 닫힘, 어두워질 때 필드 곡 줄임·번쩍 반짝 소리·팡파르·같이 걷는 곡(플래티넘). v12.89 경완: 선물했다 돌아온 알은 원래 주운 곳 그대로, 가방 알 상태 창 '레어 알' 옆 '가방' 글자 뺌 */
+const APP_VER = '12.94';   /* v12.94 경완: 노랑시티 격투 도장 맵 다시 (7단계, 1단계 더 좁게) · 필드 파리 → 냄새 선 · 친밀도 만점 창 뜨는 순간부터 BGM · 필드 트로피 눌림 · 체육관 등급 딱지(홈·정보·등급 화면) · 등급 화면 평판 딱지 우상단 */   /* v12.93 경완: 물 위 다리 가운데 다리 아래 모서리 이음새 메움, 실험실 석상 한 칸 위로(카펫 길이만큼), 입구 석상을 맵 위에 세워 뒤로 지나가는 사람이 가려지게. v12.92 경완: 물 위 다리 2·3단계 이음새(다리 옆 그림자) 메움, 실험실 석상은 카펫에서 한 칸 띄움. v12.91 경완: 체육관 맵 12종(챔피언 로드·격투 도장·옥상 정원·회전 미로·덤불 숲길·혼령의 탑·화산 퀴즈장·순간이동 방·얼음·용·그림자·전당의 방) 지움(그 맵 체육관은 타입에 맞는 남은 맵으로), 실험실 석상은 입구 카펫 양쪽. 알 가방에서 보고 있는 알 칸에 테두리(빈 곳 누르면 꺼짐). v12.90 경완: 친밀도 만점 창은 확인 버튼으로만 닫힘, 어두워질 때 필드 곡 줄임·번쩍 반짝 소리·팡파르·같이 걷는 곡(플래티넘). v12.89 경완: 선물했다 돌아온 알은 원래 주운 곳 그대로, 가방 알 상태 창 '레어 알' 옆 '가방' 글자 뺌 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -10656,8 +10663,8 @@ let frMus = null;
 function frMusIn() { gymSnd().then(() => { try { const M = window.GymBGM; M?.sePrep(['DP_KIRAKIRA2', 'ME_FANFA1']); if (bgmOn) M?.prep('tsure'); } catch (e) {} }); if (!frMus) frMus = { id: bgm.id, pos: bgmPos(), had: !!bgm.src }; bgmDuck(0, 1.6); }
 async function frMusWin(P) { if (!frMus) frMus = { id: bgm.id, pos: bgmPos(), had: !!bgm.src }; const me = frMus; bgmSrcStop(); bgmDuck(1, .05);
   await gymSnd(); const M = window.GymBGM; if (frMus !== me) return;
-  try { await M?.fan('ME_FANFA1'); } catch (e) {} if (frMus !== me) return; playCry(P.sp, .9);
-  await new Promise(r => setTimeout(r, 900)); if (frMus === me && bgmOn) try { M?.play('tsure', { fade: 1.2 }); } catch (e) {} }
+  if (bgmOn) try { M?.play('tsure', { fade: .15 }); } catch (e) {}   // v12.94 경완: 창이 뜨는 순간부터 BGM (팡파르 기다리지 않음)
+  setTimeout(() => { if (frMus === me) playCry(P.sp, .9); }, 350); }
 function frMusOut() { const r = frMus; if (!r) return; frMus = null; try { if (window.GymBGM?.name === 'tsure') window.GymBGM.stop(.8); } catch (e) {}
   setTimeout(() => { if (frMus || inGym()) return; bgm.fadeIn = 1.5; if (bgmOn && r.had && r.id && r.id !== 'intro') bgmPlay(r.id, r.pos); else bgmStart(); }, 900); }
 // 필드에 나갈 개체: 같은 종 중 필드에 없는 것, 랭크 높은 순
