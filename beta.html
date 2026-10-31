@@ -1954,7 +1954,7 @@ try { if (sessionStorage.getItem('pk-wf')) { sessionStorage.removeItem('pk-wf');
         <div class="bgm-pick"><span class="vol-n">곡</span><button class="fsel" id="bgmPick" aria-haspopup="listbox"></button></div>
         <div class="vol" data-k="bgm"><span class="vol-n">배경 음악</span><button class="vol-b" data-d="-1" aria-label="배경 음악 작게">◀</button><div class="vol-bar" role="slider" aria-label="배경 음악 볼륨" aria-valuemin="0" aria-valuemax="10"></div><button class="vol-b" data-d="1" aria-label="배경 음악 크게">▶</button><b class="vol-v"></b></div>
         <div class="vol" data-k="sfx"><span class="vol-n">효과음</span><button class="vol-b" data-d="-1" aria-label="효과음 작게">◀</button><div class="vol-bar" role="slider" aria-label="효과음 볼륨" aria-valuemin="0" aria-valuemax="10"></div><button class="vol-b" data-d="1" aria-label="효과음 크게">▶</button><b class="vol-v"></b></div>
-        <div class="op-row snd-mix"><span>무음 모드에서 듣기</span><button class="op-sw" id="sndMix" role="switch" aria-checked="true"><i></i></button></div>
+        <div class="op-row snd-mix"><span id="sndMixLb">무음 모드에서 듣기</span><button class="op-sw" id="sndMix" role="switch" aria-checked="true"><i></i></button></div>
         <div class="set-btns one"><button class="lk-btn main" id="musicImport" hidden>곡 파일 가져오기</button><input type="file" id="musicFile" accept="audio/*,.mp3,.zip,application/zip" multiple hidden><button class="lk-btn main" id="cryImport">울음소리 가져오기</button><input type="file" id="cryFile" accept=".zip,application/zip" hidden></div>
       </section>
       <section class="set-sec" id="notiSec">   <!-- v5.16 경완: 알림 설정 (전체 끄기 + 항목별) -->
@@ -2178,11 +2178,14 @@ const peekH = window.webkit?.messageHandlers?.audioPeek;
 let peekBusy = false, peekShow = false, quietT = 0, suspAt = 0;   // peekShow: 돌아와서 묻는 동안엔 효과음이 오디오를 깨우지 않게
 // v13.55 경완 'PiP 일시정지를 빠르게 반복하면 게임 소리가 안 켜짐': ① 앱 답이 안 오면 1초 뒤 '모름'(null, 아무것도 안 바꿈) ② 조용 모드인데 오디오가 늦게 깨어 켜진 채 남으면 다시 재움
 // ③ 다시 켜려는데 0.6초 안에 안 켜지면(밀려난 채 갇힘) 오디오를 새로 만든다
-const peekOther = () => peekH ? Promise.race([Promise.resolve(peekH.postMessage({})).then(v => !!v, () => false), new Promise(r => setTimeout(() => r(null), 1000))]) : Promise.resolve(false);
-function audWake(go) { if (!actx || document.hidden) { go && go(); return; } if (actx.state === 'running') { go && go(); return; }
+// v13.58 경완 '여전히 두 번째 일시정지부터 안 됨': 추측 대신 폰에서 기록을 본다 — 설정 › 소리 '무음 모드에서 듣기' 글자를 세 번 연달아 누르면 오디오 기록 창
+const audLogA = []; const audLog = ev => { try { const d = new Date(); audLogA.push(d.toTimeString().slice(3, 8) + '.' + String(d.getMilliseconds()).padStart(3, '0').slice(0, 1) + ' ' + ev + ' | ' + (actx ? actx.state : '-') + (otherAud ? ' 조용' : '') + (document.hidden ? ' 숨김' : '')); if (audLogA.length > 80) audLogA.shift(); } catch (e) {} };
+const peekOther = () => peekOther0().then(o => { audLog('물음 → ' + (o === null ? '답없음' : o ? '영상 나옴' : '영상 없음')); return o; });
+const peekOther0 = () => peekH ? Promise.race([Promise.resolve(peekH.postMessage({})).then(v => !!v, () => false), new Promise(r => setTimeout(() => r(null), 1000))]) : Promise.resolve(false);
+function audWake(go) { audLog('다시 켜기'); if (!actx || document.hidden) { go && go(); return; } if (actx.state === 'running') { go && go(); return; }
   actx.resume().then(() => go && go(), () => {}); setTimeout(() => { if (actx && actx.state !== 'running' && actx.state !== 'closed' && !document.hidden && !otherAud && Date.now() - wakeAt > 3000) { wakeAt = Date.now(); audioRebuild(); } }, 600); }
 function quietSleep() { clearTimeout(quietT); quietT = setTimeout(() => { if (otherAud && actx && actx.state === 'running') { actx.suspend().then(() => { suspAt = Date.now(); }, () => {}); } }, 700); }
-function setOther(on) { on = !!on; if (on === otherAud) return; otherAud = on; audSess();
+function setOther(on) { on = !!on; if (on === otherAud) return; audLog(on ? '조용 모드 켬' : '조용 모드 끔'); otherAud = on; audSess();
   try { if (on) { bgm.pos = bgmPos(); bgmSrcStop(); bgmVol(); quietSleep(); }
     else { clearTimeout(quietT); const go = () => { bgmVol(); if (bgmOn && !bgmAway && !document.hidden && !bgm.preview) bgmSrcStart(); }; audWake(go); } } catch (e) {} }
 // v13.56 경완 '여전히 두 번째 일시정지에선 게임 소리가 다시 안 남': 두 번째로 틀 때 영상을 못 알아채면(밀려난 순간 앱 답이 '아니'였다든지) 조용 모드도 아니고 오디오는 멈춘 채로 남는다
@@ -2205,7 +2208,7 @@ function audio() {
     actx = new A();
     try { const L = actx.createDynamicsCompressor(); L.threshold.value = -4; L.knee.value = 2; L.ratio.value = 20; L.attack.value = .002; L.release.value = .12; L.connect(actx.destination); Object.defineProperty(actx, 'destination', { value: L }); } catch (e) {}   // v13.45: 모든 소리가 이 리미터를 지나 나간다
     bgmRoute();
-    actx.onstatechange = () => { if (actx && actx.state === 'running') actxRan = true; if (actxHeld() && !document.hidden) checkInterrupt(); };
+    actx.onstatechange = () => { audLog('상태 바뀜'); if (actx && actx.state === 'running') actxRan = true; if (actxHeld() && !document.hidden) checkInterrupt(); };
   }
   if (actxHeld()) { if (!document.hidden) checkInterrupt(); }
   else if (actx.state !== 'running' && actx.state !== 'closed' && !document.hidden && !peekShow) actx.resume().catch(() => {});
@@ -2568,11 +2571,11 @@ function bgmKick() {
 ['pointerdown', 'touchend', 'click'].forEach(t => document.addEventListener(t, bgmKick, { capture: true, passive: true }));
 // 앱을 닫을 때: 소리를 먼저 0으로 내리고 멈춘 뒤 오디오를 재움(바로 재우면 늘어지는 소리가 남)
 let bgmAway = false, bgmAwayT = 0;
-function bgmHide() { if (bgmAway) return; bgmAway = true; clearTimeout(bgmAwayT); bgm.pos = bgmPos();
+function bgmHide() { audLog('앱 숨김'); if (bgmAway) return; bgmAway = true; clearTimeout(bgmAwayT); bgm.pos = bgmPos();
   if (bgm.gain && actx) { try { const g = bgm.gain.gain, t = actx.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0, t + .06); } catch (e) { bgm.gain.gain.value = 0; } }
   bgmAwayT = setTimeout(() => { if (actx && actx.state === 'running') actx.suspend().catch(() => {}); }, 80); }
 // 돌아오면 멈췄던 자리부터 이어서 (오디오를 재우면 버퍼 재생도 그 자리에 멈춰 있다)
-function bgmShow() { if (!bgmAway) return; bgmAway = false; clearTimeout(bgmAwayT);
+function bgmShow() { if (!bgmAway) return; audLog('앱 돌아옴'); bgmAway = false; clearTimeout(bgmAwayT);
   if (peekH && !peekBusy) { peekBusy = peekShow = true; peekOther().then(o => { peekBusy = peekShow = false; if (o) { setOther(true); notiSoon(); return; } if (otherAud) setOther(false); bgmShowGo(); }); return; }   // 오디오가 아직 자고 있을 때 영상 소리가 나는지 먼저 묻는다
   bgmShowGo(); }
 function bgmShowGo() {
@@ -2606,7 +2609,7 @@ setInterval(() => { const g = S.gym, now = Date.now(), H = document.documentElem
 // 아이폰: 다른 앱에 갔다 오면 오디오가 'interrupted' 로 멈추거나, 'running' 인데도 시간이 안 가서 소리가 전부 안 나는 일이 있다.
 // 돌아올 때와 다음 터치 때 시간이 실제로 흐르는지 확인하고, 깨워도 안 되면 오디오를 새로 만든다 (곡은 처음부터 다시)
 let audioChk = 0;
-function audioRebuild() {
+function audioRebuild() { audLog('오디오 새로 만듦');
   const pos = bgm.src ? (bgmAway ? bgm.pos : bgmPos()) : bgm.pos; bgm.pos = pos || 0;
   const old = actx; actx = null; bgm.gain = null; bgm.src = null; noiseBuf = null; if (tense.on) tenseStop(0);
   try { if (old && old.state !== 'closed') old.close().catch(() => {}); } catch (e) {}
@@ -6972,7 +6975,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.57';   /* v13.57 경완: 도전자 명단이 아래 메뉴 바로 위까지 꽉 차게 */   /* v13.56 경완: 두 번째 PiP 일시정지에도 게임 소리 다시 (조용 모드 아닐 때도 멈춘 오디오를 1초마다 살핌) */   /* v13.55 경완: PiP 일시정지를 빠르게 반복해도 게임 소리가 다시 켜지게 (갇힌 오디오 새로 만들기, 늦게 깬 오디오 다시 재우기) */   /* v13.54 경완: 미니게임 음악도 PiP 재생·멈춤에 바로 반응 (조용 모드 동안 음 예약 안 함) */   /* v13.53 경완: PiP 섞기 시도(audioMix) 끔 — 영상 재생 중엔 게임 소리 끄고 멈추면 다시 */   /* v13.52 경완: PiP 섞기 설정 바꿀 땐 한 번만 보내고 게임 오디오를 새로 만듦 (소리가 아예 사라지던 것) */   /* v13.51 경완: 가방 '필드에 놓기' = 맵 편집 화면 가운데에 그 소품을 놓고 고른 채로 */   /* v13.50 경완: 포켓몬마다 필드 친밀도 속도 다르게 — 거리로 마지막 진화하면 친밀도 약 215(4칸 조금 넘게) */   /* v13.49 경완: 맵 편집 아이콘 눌림 모션 없앰 — 누르면 노란 테두리만 */   /* v13.48 경완: 맵 편집 중 아이콘 = 박스 없이 아이콘 모양 따라 노란 테두리, 밝기 그대로 */   /* v13.47 경완: PiP 재생 중엔 무음 모드에서도 효과음은 나오게 (앱이 playback+섞기로 바꿈, 앱 업데이트 필요) */   /* v13.46 경완: 맵 편집 아이콘 = 편집 중엔 하단 메뉴처럼 눌린 칸(다시 누르면 취소), 나오면 원래 밝기로 */   /* v13.45 경완: 5칸 볼륨을 PiP 유튜브와 같이 들어도 잘 들리게 22dB 키움 + 리미터 */   /* v13.44 경완: 맵 편집 중 편집 아이콘은 꾹 눌린 채로 남음 */   /* v13.43 경완: 게임 켠 채로 PiP 영상을 다시 틀면 화면 눌러도 영상 안 멈추게 (밀려난 오디오는 다시 켜기 전에 앱에 물어봄) */   /* v13.42 경완: 맵 편집 들어가면 소품 리스트 접힌 채로, 리스트 접기 화살표 없앰, 점선 자리 골드·랭킹 따로 */   /* v13.41 경완: 맵 편집 = 화면 크기 그대로(버튼은 점선 자리), 하단 메뉴 자리에 취소·소품·저장, 소품 리스트 접기(빈 곳 누르면 접힘) · 필드에서 고른 소품은 밤에도 원래 색으로 환하게, 모닥불·연못은 예전처럼 */   /* v13.40 경완: PiP 영상 켜져 있으면 배경 음악 멈춤 (다시) — 게임 오디오가 자고 있을 때만 앱에 물어봄, 앱 업데이트 필요 */
+const APP_VER = '13.58';   /* v13.58 경완: 오디오 기록 창 (설정 › 소리 '무음 모드에서 듣기' 글자 세 번) — PiP 두 번째 일시정지 원인 찾기 */   /* v13.57 경완: 도전자 명단이 아래 메뉴 바로 위까지 꽉 차게 */   /* v13.56 경완: 두 번째 PiP 일시정지에도 게임 소리 다시 (조용 모드 아닐 때도 멈춘 오디오를 1초마다 살핌) */   /* v13.55 경완: PiP 일시정지를 빠르게 반복해도 게임 소리가 다시 켜지게 (갇힌 오디오 새로 만들기, 늦게 깬 오디오 다시 재우기) */   /* v13.54 경완: 미니게임 음악도 PiP 재생·멈춤에 바로 반응 (조용 모드 동안 음 예약 안 함) */   /* v13.53 경완: PiP 섞기 시도(audioMix) 끔 — 영상 재생 중엔 게임 소리 끄고 멈추면 다시 */   /* v13.52 경완: PiP 섞기 설정 바꿀 땐 한 번만 보내고 게임 오디오를 새로 만듦 (소리가 아예 사라지던 것) */   /* v13.51 경완: 가방 '필드에 놓기' = 맵 편집 화면 가운데에 그 소품을 놓고 고른 채로 */   /* v13.50 경완: 포켓몬마다 필드 친밀도 속도 다르게 — 거리로 마지막 진화하면 친밀도 약 215(4칸 조금 넘게) */   /* v13.49 경완: 맵 편집 아이콘 눌림 모션 없앰 — 누르면 노란 테두리만 */   /* v13.48 경완: 맵 편집 중 아이콘 = 박스 없이 아이콘 모양 따라 노란 테두리, 밝기 그대로 */   /* v13.47 경완: PiP 재생 중엔 무음 모드에서도 효과음은 나오게 (앱이 playback+섞기로 바꿈, 앱 업데이트 필요) */   /* v13.46 경완: 맵 편집 아이콘 = 편집 중엔 하단 메뉴처럼 눌린 칸(다시 누르면 취소), 나오면 원래 밝기로 */   /* v13.45 경완: 5칸 볼륨을 PiP 유튜브와 같이 들어도 잘 들리게 22dB 키움 + 리미터 */   /* v13.44 경완: 맵 편집 중 편집 아이콘은 꾹 눌린 채로 남음 */   /* v13.43 경완: 게임 켠 채로 PiP 영상을 다시 틀면 화면 눌러도 영상 안 멈추게 (밀려난 오디오는 다시 켜기 전에 앱에 물어봄) */   /* v13.42 경완: 맵 편집 들어가면 소품 리스트 접힌 채로, 리스트 접기 화살표 없앰, 점선 자리 골드·랭킹 따로 */   /* v13.41 경완: 맵 편집 = 화면 크기 그대로(버튼은 점선 자리), 하단 메뉴 자리에 취소·소품·저장, 소품 리스트 접기(빈 곳 누르면 접힘) · 필드에서 고른 소품은 밤에도 원래 색으로 환하게, 모닥불·연못은 예전처럼 */   /* v13.40 경완: PiP 영상 켜져 있으면 배경 음악 멈춤 (다시) — 게임 오디오가 자고 있을 때만 앱에 물어봄, 앱 업데이트 필요 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -11163,6 +11166,10 @@ function applyKm(km, t0 = 0, t1 = 0, feed = km, off = false) {
 }
 // v5.16 경완: 앱 푸시 알림 — 앞으로 걸으면 생길 일(알 줍기·부화 준비·진화 준비)을 '몇 km 더 걸으면'으로 앱에 넘긴다.
 // 앱은 화면이 꺼져 있는 동안 걸은 거리를 세다가 그 거리를 넘으면 진동과 함께 알림을 띄운다
+{ const lb = $('#sndMixLb'); let n = 0, t = 0; if (lb) lb.addEventListener('click', () => { const now = Date.now(); n = now - t < 500 ? n + 1 : 1; t = now; if (n < 3) return; n = 0;
+  const w = document.createElement('div'); w.style.cssText = 'position:fixed;inset:20px;z-index:99999;background:#111;color:#cfc;font:11px/1.45 monospace;padding:12px;border-radius:10px;display:flex;flex-direction:column';
+  const pre = document.createElement('pre'); pre.style.cssText = 'flex:1;overflow:auto;margin:0;white-space:pre-wrap;user-select:text;-webkit-user-select:text'; pre.textContent = 'v' + APP_VER + ' 앱묻기:' + (peekH ? 'O' : 'X') + '\n' + audLogA.join('\n'); w.appendChild(pre);
+  const x = document.createElement('button'); x.textContent = '닫기'; x.style.cssText = 'margin-top:8px;padding:10px;font-size:15px'; x.onclick = () => w.remove(); w.appendChild(x); document.body.appendChild(w); pre.scrollTop = 1e9; }); }
 { const b = $('#sndMix'); if (b) { const p = () => b.setAttribute('aria-checked', !sndMix); p(); b.addEventListener('click', () => { sndMix = !sndMix; try { localStorage.setItem('pk-snd-silent', sndMix ? '0' : '1'); } catch (e) {} audSess(); p(); }); } }   // v13.23 다른 앱 소리와 같이 듣기
 function notiPlan() {
   const N = S.noti || {}, items = [];
