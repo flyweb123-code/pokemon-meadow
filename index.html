@@ -227,7 +227,7 @@ html.wfIn body::before{content:'';position:fixed;inset:0;z-index:9900;background
 .tcv-pk.empty{width:84px;height:84px;margin:0 6px 14px;place-items:center;padding:0;border:3px dashed #8aa07a;background:rgba(255,255,255,.55);color:#6a8a5a;font:inherit;font-size:30px;line-height:1;cursor:pointer}.tcv-pk.empty:active{transform:translate(1px,1px)}
 .tcv-rep{flex-basis:100%;margin:0}
 /* v12.33 경완: 상세카드 이름·등급 가운데 + 연필로 이름 바꾸기, 도감 칸 정리 */
-.tcv .tcv-id{flex-basis:100%;align-items:center;text-align:center;gap:8px;padding:2px 0 10px;border-bottom:2px dashed color-mix(in srgb,var(--dim) 55%,transparent)}.tcv .tcv-id .tr-badge{align-self:center;font-size:14px;padding:4px 14px}
+.tcv .tcv-id{flex-basis:100%;align-items:center;text-align:center;gap:8px;padding:2px 0 10px;border-bottom:2px dashed color-mix(in srgb,var(--dim) 55%,transparent)}.tcv.nobd .tcv-id{border-bottom:0;padding-bottom:2px}   /* v12.78 경완: 체육관 배지가 없으면(체육관 열리기 전) 점선 없음 */.tcv .tcv-id .tr-badge{align-self:center;font-size:14px;padding:4px 14px}
 .tcv-nmr{display:flex;align-items:center;justify-content:center;gap:6px;max-width:100%;min-width:0}.tcv .tcv-nm{font-size:24px;letter-spacing:1px;text-shadow:2px 2px 0 rgba(0,0,0,.12)}
 .tcv-pen{flex:none;width:26px;height:26px;padding:4px;border:0;background:none;color:var(--win-ink);opacity:.75;cursor:pointer}.tcv-pen svg{width:100%;height:100%;display:block}.tcv-pen:active{transform:translate(1px,1px)}
 .tcv .tcv-dex{width:100%;margin-top:4px;text-align:left}.tcv .tcv-dex small{text-align:right}
@@ -6876,7 +6876,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '12.78';   /* v12.78 경완: 꾸미기 모드·다른 화면에서 체육관 띵동을 들었으면 필드로 돌아왔을 때 체육관 아이콘이 한 번 흔들림. 선물 도착 창 = 먼저 '선물이 도착했어요'(상자 들썩) → '선물 열어 보기' 누르면 상자가 열리며 알이 나오고 알 목록 박스가 늘어나며 나옴 → '가방에 넣기', 뚜껑이 열릴 때 잘리던 것 고침. v12.77 경완: 보낼 알은 알 가방 화면 그대로에서 고르기, 선물 도착 창 = 선물 상자가 열리며 알이 나옴·'가방에 넣기' 누르면 알이 알 메뉴로 날아감, 친구 화면에 보낸 알 개수 안 보임. v12.76 경완: 승급 심사 화면 '심사 받기' 버튼 맨 아래·밑 설명 문구 뺌, 심사 배틀 시작 무대가 화면 전체로 열림, 넓히기 알림 '훈련장 칸도 늘었어요' 뺌(훈련장 칸은 등급 따라 저절로). v12.75 경완: 알 선물 받으면 '알 선물이 도착했어요!' 알림창(보낸 친구·알 이름, 가방에 넣음), 친구 상세카드 체육관 도전 버튼 일단 없앰. v12.74 경완: 친구 목록에 보낸 친구 요청도 박스로(수락 기다리는 중) + 박스마다 '요청 취소'. v12.73 경완 '내 배틀로그 못 보나?': 최근 배틀 5판 턴 기록(S.gym.blog)·자바스크립트 오류 기록(S.errs)을 저장에 남김 (서버 저장으로 원인 찾기) */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
+const APP_VER = '12.78';   /* v12.78 경완: 체육관이 열리기 전(배지 없음) 트레이너 상세카드 점선 없앰. 꾸미기 모드·다른 화면에서 체육관 띵동을 들었으면 필드로 돌아왔을 때 체육관 아이콘이 한 번 흔들림. 선물 도착 창 = 먼저 '선물이 도착했어요'(상자 들썩) → '선물 열어 보기' 누르면 상자가 열리며 알이 나오고 알 목록 박스가 늘어나며 나옴 → '가방에 넣기', 뚜껑이 열릴 때 잘리던 것 고침. v12.77 경완: 보낼 알은 알 가방 화면 그대로에서 고르기, 선물 도착 창 = 선물 상자가 열리며 알이 나옴·'가방에 넣기' 누르면 알이 알 메뉴로 날아감, 친구 화면에 보낸 알 개수 안 보임. v12.76 경완: 승급 심사 화면 '심사 받기' 버튼 맨 아래·밑 설명 문구 뺌, 심사 배틀 시작 무대가 화면 전체로 열림, 넓히기 알림 '훈련장 칸도 늘었어요' 뺌(훈련장 칸은 등급 따라 저절로). v12.75 경완: 알 선물 받으면 '알 선물이 도착했어요!' 알림창(보낸 친구·알 이름, 가방에 넣음), 친구 상세카드 체육관 도전 버튼 일단 없앰. v12.74 경완: 친구 목록에 보낸 친구 요청도 박스로(수락 기다리는 중) + 박스마다 '요청 취소'. v12.73 경완 '내 배틀로그 못 보나?': 최근 배틀 5판 턴 기록(S.gym.blog)·자바스크립트 오류 기록(S.errs)을 저장에 남김 (서버 저장으로 원인 찾기) */   // 앱 버전: 2.28 = 228번째 판 (백의 자리.나머지)
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7110,7 +7110,7 @@ function openTrView(c) {
   const rp = c?.rp && SPECIES[c.rp.sp] ? c.rp : null, me = !!c?.me;   // v12.20 경완: 플라티나 전신 옆에 대표 포켓몬 배틀 그림, 내 카드면 대표 포켓몬 정하기
   document.querySelectorAll('.tcv-pop').forEach(x => x.remove());
   const box = document.createElement('div'); box.className = 'tcv-pop';
-  box.innerHTML = `<section class="tr-card tcv r${L.i}${L.i >= 6 ? ' tr-shine' : ''}${L.i >= 8 ? ' tr-spark' : ''}" role="dialog" aria-label="트레이너 카드">
+  box.innerHTML = `<section class="tr-card tcv r${L.i}${lv ? '' : ' nobd'}${L.i >= 6 ? ' tr-shine' : ''}${L.i >= 8 ? ' tr-spark' : ''}" role="dialog" aria-label="트레이너 카드">
     <div class="tcv-stage"><span class="tcv-tr"><i style="background-image:url(gym/img/tr/pt_${k}.png)"></i></span>${rp ? `<span class="tcv-pk" role="img" aria-label="${esc(rp.nm || SPECIES[rp.sp].n)}"></span>` : me ? '<button type="button" class="tcv-pk empty" data-rep aria-label="대표 포켓몬 정하기">+</button>' : ''}</div>
     <div class="tr-info tcv-id"><div class="tcv-nmr"><b class="tcv-nm">${esc(c?.n || '트레이너')}</b>${me ? `<button type="button" class="tcv-pen" data-rename aria-label="이름 바꾸기">${PEN}</button>` : ''}</div><button type="button" class="tr-badge" data-grades aria-haspopup="dialog"><b>${esc(L.name)}</b></button>
       <div class="tcv-dex"><span>도감 완성률</span><b>${pct >= 10 ? pct.toFixed(1) : pct.toFixed(2)}%</b><div class="tcv-bar"><i style="width:${pct.toFixed(1)}%"></i></div><small>${dex.toLocaleString()} / ${N.toLocaleString()}마리</small></div></div>
