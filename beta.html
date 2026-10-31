@@ -1739,7 +1739,7 @@ html:not(.op) #btnGym,html:not(.gym-on) #btnGym{display:none!important}#btnGym.l
   #btnGym{position:relative;left:auto;top:auto;grid-area:stage;align-self:start;justify-self:start;margin:calc(var(--si-top,env(safe-area-inset-top)) + 58px) 0 0 calc(var(--si-left,env(safe-area-inset-left)) + 62px)}
 }
 .metitle{flex-direction:column;align-items:flex-start;gap:2px}.metitle b{font-size:18px}.metitle span{font-size:12px;color:var(--dim,#666)}
-body.mapEdit :is(#mons,#fx,#propFx,#night,#lightC,#rain,#rainG,#tuShade,#edge,#side,#info,#petBar,#hint,#washBrush,#items .berry,#items .tb,#items .hole){display:none!important}body.mapEdit :is(.berrybar,#dlg,.menuwin,#cmd,#goldbar,#btnMapEdit,#clock,#btnGym){visibility:hidden!important;pointer-events:none!important}   /* v13.41 경완 '맵 편집 누르면 화면 크기는 그대로': 버튼·상태창·하단 메뉴는 자리를 그대로 두고 숨김 (점선 자리는 meHudCv) → 맵 크기·위치가 안 바뀜 */
+body.mapEdit :is(#mons,#fx,#propFx,#night,#lightC,#rain,#rainG,#tuShade,#edge,#side,#info,#petBar,#hint,#washBrush,#items .berry,#items .tb,#items .hole){display:none!important}body.mapEdit :is(.berrybar,#dlg,.menuwin,#cmd,#goldbar,#clock,#btnGym){visibility:hidden!important;pointer-events:none!important}body.mapEdit #btnMapEdit{transform:translate(2px,2px);filter:brightness(.82) drop-shadow(0 0 0 transparent);pointer-events:none}   /* v13.44 경완: 맵 편집 중엔 편집 아이콘이 꾹 눌린 채로 남음 */   /* v13.41 경완 '맵 편집 누르면 화면 크기는 그대로': 버튼·상태창·하단 메뉴는 자리를 그대로 두고 숨김 (점선 자리는 meHudCv) → 맵 크기·위치가 안 바뀜 */
 #meZone{position:absolute;left:0;top:0;width:360px;height:600px;pointer-events:none;z-index:0}
 #meLayer{position:absolute;left:0;top:0;width:360px;height:600px;pointer-events:none;z-index:9001}
 .me-foot{position:absolute;translate:-50% -50%;border:2px dashed #7cf08a;border-radius:50%;background:rgba(124,240,138,.22)}body.mapEdit #wrap{touch-action:none}
@@ -6938,7 +6938,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.43';   /* v13.43 경완: 게임 켠 채로 PiP 영상을 다시 틀면 화면 눌러도 영상 안 멈추게 (밀려난 오디오는 다시 켜기 전에 앱에 물어봄) */   /* v13.42 경완: 맵 편집 들어가면 소품 리스트 접힌 채로, 리스트 접기 화살표 없앰, 점선 자리 골드·랭킹 따로 */   /* v13.41 경완: 맵 편집 = 화면 크기 그대로(버튼은 점선 자리), 하단 메뉴 자리에 취소·소품·저장, 소품 리스트 접기(빈 곳 누르면 접힘) · 필드에서 고른 소품은 밤에도 원래 색으로 환하게, 모닥불·연못은 예전처럼 */   /* v13.40 경완: PiP 영상 켜져 있으면 배경 음악 멈춤 (다시) — 게임 오디오가 자고 있을 때만 앱에 물어봄, 앱 업데이트 필요 */
+const APP_VER = '13.44';   /* v13.44 경완: 맵 편집 중 편집 아이콘은 꾹 눌린 채로 남음 */   /* v13.43 경완: 게임 켠 채로 PiP 영상을 다시 틀면 화면 눌러도 영상 안 멈추게 (밀려난 오디오는 다시 켜기 전에 앱에 물어봄) */   /* v13.42 경완: 맵 편집 들어가면 소품 리스트 접힌 채로, 리스트 접기 화살표 없앰, 점선 자리 골드·랭킹 따로 */   /* v13.41 경완: 맵 편집 = 화면 크기 그대로(버튼은 점선 자리), 하단 메뉴 자리에 취소·소품·저장, 소품 리스트 접기(빈 곳 누르면 접힘) · 필드에서 고른 소품은 밤에도 원래 색으로 환하게, 모닥불·연못은 예전처럼 */   /* v13.40 경완: PiP 영상 켜져 있으면 배경 음악 멈춤 (다시) — 게임 오디오가 자고 있을 때만 앱에 물어봄, 앱 업데이트 필요 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7782,7 +7782,7 @@ function meZoneDraw() { const c = $('#meZone'); let g = c.getContext('2d'); cons
   g.setLineDash([4, 3]); g.lineWidth = 1.5; g.font = '10px Galmuri11, monospace'; g.textAlign = 'center'; g.textBaseline = 'middle';   /* v9.28 경완: 평소 화면의 버튼 자리를 반투명하게 (소품이 버튼 밑에 숨지 않게) */
   for (const b of meHud) { g.fillStyle = 'rgba(255,255,255,.32)'; g.beginPath(); g.roundRect(b.x, b.y, b.w, b.h, 6); g.fill(); g.strokeStyle = 'rgba(255,255,255,.85)'; g.stroke(); g.fillStyle = 'rgba(30,30,50,.8)'; g.fillText(b.n, b.x + b.w / 2, b.y + b.h / 2); } }
 // v9.79 경완: 가방·열매 버튼 칸은 '버튼'으로
-const ME_HUD = [['#clock', '시계'], ['#gold', '골드'], ['#btnRank', '랭킹'], ['#btnMapEdit', '편집'], ['#btnGym', '체육관'], ['.berrybar', '버튼'], ['#dlg', '상태창']];   // v13.41: 하단 메뉴 자리는 편집 버튼이 차지
+const ME_HUD = [['#clock', '시계'], ['#gold', '골드'], ['#btnRank', '랭킹'], ['#btnGym', '체육관'], ['.berrybar', '버튼'], ['#dlg', '상태창']];   // v13.41: 하단 메뉴 자리는 편집 버튼이 차지
 // v13.41 경완: 편집 버튼 줄은 하단 메뉴(.menuwin + #cmd)가 있던 칸에 딱 맞춰 겹친다 (넓은 화면은 맵 아래쪽에)
 function meDock() { const bar = $('#meBar'), ks = $('#meKeys'), a = document.querySelector('.menuwin')?.getBoundingClientRect(), c = $('#cmd')?.getBoundingClientRect();
   const mob = matchMedia('(max-width: 760px), (max-height: 500px) and (orientation: landscape)').matches && a && c && a.width && c.width && Math.abs(a.top - c.top) < 4;
