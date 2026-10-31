@@ -6906,7 +6906,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.24';   /* v13.24 경완: 다른 앱(소형 플레이·음악) 소리가 나는 동안엔 배경 음악 자동으로 0, 효과음은 그대로, 멈추면 원래대로 (아이폰 앱이 알려 줌, 앱 업데이트 필요) */
+const APP_VER = '13.26';   /* v13.26 경완: 기술머신 익힘 창 레이아웃 · 기술 배울 때 늘 본가 배틀 기술 배우기 팡파르 */   /* v13.25 경완: 바꿀 기술 카드 둥둥 떠 있는 효과 · 기술 창 순서 바꾸기 눌러도 창 크기 그대로 */   /* v13.24 경완: 다른 앱(소형 플레이·음악) 소리가 나는 동안엔 배경 음악 자동으로 0, 효과음은 그대로, 멈추면 원래대로 (아이폰 앱이 알려 줌, 앱 업데이트 필요) */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)

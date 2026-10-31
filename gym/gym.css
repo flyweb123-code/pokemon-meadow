@@ -2278,3 +2278,18 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .mv-neww>.mv-tagl{position:absolute;top:-11px;left:12px;z-index:1;padding:2px 10px;border-radius:10px;background:#3c78d8;color:#fff;font-size:12px;font-weight:700;line-height:16px;box-shadow:0 2px 0 rgba(0,0,0,.25)}
 /* v13.22 경완: 배울 기술이 많으면 창을 늘리지 않고 목록만 스크롤 (약 6줄) */
 .gy-pop .mp-moves.mv-learn{max-height:min(236px,38vh);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:1px 2px 1px 0}
+/* v13.23 경완: 바꿀 기술 카드는 둥둥 떠 있는 느낌 (부드럽게 위아래, 그림자도 따라 옅어짐) */
+@keyframes mvFloat{0%,100%{transform:translateY(0);box-shadow:0 6px 10px rgba(0,0,0,.28)}50%{transform:translateY(-6px);box-shadow:0 14px 16px rgba(0,0,0,.18)}}
+#gym .gy-pop .win.mv-oldc{animation:mvFloat 2.4s ease-in-out infinite!important}
+/* v13.25 경완: 기술 창 '순서 바꾸기'를 눌러도 창 크기 그대로 — 창 너비 고정, 단추 너비 고정, 줄 내용이 창을 밀지 않게 */
+.gy-pop .win:has(>.mv-hd){width:min(360px,calc(100vw - 32px));box-sizing:border-box}
+.mv-hd .gy-msg{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mv-ordb{min-width:88px;text-align:center}
+.mv-ord{min-width:0}.mv-ord .mp-mv{min-width:0}
+.mv-ord.on .mp-mv:not(.empty){padding-right:22px!important}.mv-ord.on .mp-mv:not(.empty)::after{right:6px;font-size:16px}
+/* v13.26 경완 '레이아웃 정렬': 기술머신 익힘 창 = 가운데 큰 문장 · 기술 카드 · 작은 안내 */
+.tm-done{text-align:center;margin:2px 0 14px}
+.tm-done .tm-dh{margin:0 0 12px;font-size:16px;line-height:1.5;color:#283040}
+.tm-done .tm-dh b{color:#2a58a8}
+.tm-done .tm-dmv{margin:0!important;grid-template-columns:1fr!important;pointer-events:none;text-align:left}
+.tm-done .tm-dsub{margin:10px 0 0;font-size:12px;color:var(--dim,#7a8090)}
