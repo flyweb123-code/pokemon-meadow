@@ -1,0 +1,11 @@
+Image 1 is my game's overworld walking sprite sheet (Pokémon Platinum / DS style pixel art). It has 9 frames, each 32x32 pixels, shown here at 8x: front stand, back stand, side stand (facing left), front walk A, front walk B, back walk A, back walk B, side walk A, side walk B.
+
+Image 2 is a character portrait: "Professor Kang" — messy brown hair, round glasses, white lab coat, navy-and-white striped shirt, dark teal pants, brown shoes.
+
+Make a NEW overworld sprite sheet of Professor Kang in exactly the same format as Image 1:
+- Same 9 frames, same order, same poses and walking leg/arm motion as Image 1.
+- Same body proportions and size as my character: big head (about half the height), short body, the character fits inside each 32x32 frame with feet at the same baseline.
+- Same pixel-art style as Image 1: 1-pixel dark outline, flat shading with 2–3 tones per color, no anti-aliasing, no gradients, no blur.
+- Keep Kang's design from Image 2 (hair, glasses, lab coat open over the striped shirt, pants, shoes). No hat, no bag, no Pokéball in hand.
+- Side frames face LEFT.
+- Output one image: 9 frames in a single horizontal row, each frame a 256x256 square (32x32 pixels scaled up 8x with hard pixel edges), on a flat solid magenta background (#FF00FF). No grid lines, no labels, no text, no shadows.
