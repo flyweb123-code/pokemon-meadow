@@ -1723,7 +1723,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 #hatch.hlock button{pointer-events:none!important}#hatch.hlock .win button{opacity:.55;transition:opacity .3s}   /* v6.37 hatchLock */
 /* v8.98 경완: 맵 편집 모드 */
 #ibag.ibag-fonly #ibagTabs{display:none}
-#btnMapEdit{left:20px;top:110px;position:absolute;z-index:25;padding:0;border:0;background:none;cursor:pointer;line-height:0;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35));-webkit-tap-highlight-color:transparent}#btnMapEdit:active{transform:translate(1px,1px)}
+#btnMapEdit{left:20px;top:110px;position:absolute;z-index:25;padding:0;border:0;background:none;cursor:pointer;line-height:0;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35));-webkit-tap-highlight-color:transparent}
 /*gym-hook*/#btnGym{left:74px;top:110px;position:absolute;z-index:25;padding:0;border:0;background:none;cursor:pointer;line-height:0;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35));-webkit-tap-highlight-color:transparent}#btnGym:active{transform:translate(1px,1px)}#btnGym .mdot{top:-2px;right:-2px;width:9px;height:9px;box-shadow:0 0 0 2px #20202c}#btnGym .gy-cnt{position:absolute;right:-5px;bottom:-4px;min-width:16px;height:16px;padding:0 3px;box-sizing:border-box;border-radius:3px;background:#3b82f6;color:#fff;font-size:10px;font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;box-shadow:0 0 0 2px #fff}#btnGym.ding svg{animation:gymDing 1.3s ease-out;transform-origin:50% 100%}@keyframes gymDing{0%,100%{transform:none}6%{transform:rotate(-12deg) scale(1.12)}14%{transform:rotate(10deg) scale(1.12)}22%{transform:rotate(-8deg) scale(1.08)}30%{transform:rotate(5deg)}38%{transform:none}44%{transform:rotate(-10deg) scale(1.1)}52%{transform:rotate(8deg) scale(1.1)}60%{transform:rotate(-5deg)}68%{transform:rotate(3deg)}78%{transform:none}}   /* v12.20 띵(1)·동(2) 두 번 흔들림 */
 html:not(.op) #btnGym,html:not(.gym-on) #btnGym{display:none!important}#btnGym.lock>svg:not(.gy-lk){filter:grayscale(1) brightness(1.15);opacity:.7}#btnGym.lock .mdot{display:none}#btnGym .gy-lk{display:none;position:absolute;right:-4px;bottom:-4px;width:20px;height:22px}#btnGym.lock .gy-lk{display:block}#btnGym.lock{animation:none!important}#btnGym>svg:not(.gy-lk){transition:filter .7s,opacity .7s}#btnGym.unlk .gy-lk{display:block;animation:gyUnlk .9s ease-in forwards}#btnGym.unlk{animation:gyPop .5s .45s ease-out}@keyframes gyUnlk{0%{transform:none}25%{transform:translateY(-4px) rotate(-14deg) scale(1.15)}100%{transform:translate(6px,-22px) rotate(-35deg);opacity:0}}@keyframes gyPop{0%,100%{transform:none}40%{transform:scale(1.18)}}   /* v12.46 경완: 베테랑 트레이너 전엔 잠금 */body.fview #btnGym{visibility:hidden!important}   /* 체육관 모드: 운영자 '체육관 모드 보이기'를 켠 기기만 */
 #gymLoad{position:fixed;inset:0;z-index:9800;display:grid;place-items:center;background:#181a2c;color:#f8f8f8;opacity:0;transition:opacity .35s;pointer-events:none}#gymLoad.on{opacity:1;pointer-events:auto}#gymLoad[hidden]{display:none}
@@ -1739,7 +1739,7 @@ html:not(.op) #btnGym,html:not(.gym-on) #btnGym{display:none!important}#btnGym.l
   #btnGym{position:relative;left:auto;top:auto;grid-area:stage;align-self:start;justify-self:start;margin:calc(var(--si-top,env(safe-area-inset-top)) + 58px) 0 0 calc(var(--si-left,env(safe-area-inset-left)) + 62px)}
 }
 .metitle{flex-direction:column;align-items:flex-start;gap:2px}.metitle b{font-size:18px}.metitle span{font-size:12px;color:var(--dim,#666)}
-body.mapEdit :is(#mons,#fx,#propFx,#night,#lightC,#rain,#rainG,#tuShade,#edge,#side,#info,#petBar,#hint,#washBrush,#items .berry,#items .tb,#items .hole){display:none!important}body.mapEdit :is(.berrybar,#dlg,.menuwin,#cmd,#goldbar,#clock,#btnGym){visibility:hidden!important;pointer-events:none!important}body.mapEdit #btnMapEdit{transform:translateY(2px);filter:none;background:#2b2b3c;box-shadow:0 0 0 3px #2b2b3c,0 0 0 5px #ffe27a,inset 0 3px 0 rgba(0,0,0,.4);border-radius:2px}body.mapEdit #btnMapEdit svg{opacity:.55;filter:grayscale(.35)}body.mapEdit #btnMapEdit:active{transform:translateY(3px)}   /* v13.46 경완: 맵 편집 중엔 편집 아이콘이 하단 메뉴 버튼처럼 눌린 채(어두운 칸·노란 테두리·흐린 아이콘), 다시 누르면 편집 취소 */   /* v13.41 경완 '맵 편집 누르면 화면 크기는 그대로': 버튼·상태창·하단 메뉴는 자리를 그대로 두고 숨김 (점선 자리는 meHudCv) → 맵 크기·위치가 안 바뀜 */
+body.mapEdit :is(#mons,#fx,#propFx,#night,#lightC,#rain,#rainG,#tuShade,#edge,#side,#info,#petBar,#hint,#washBrush,#items .berry,#items .tb,#items .hole){display:none!important}body.mapEdit :is(.berrybar,#dlg,.menuwin,#cmd,#goldbar,#clock,#btnGym){visibility:hidden!important;pointer-events:none!important}body.mapEdit #btnMapEdit{filter:drop-shadow(2px 0 0 #ffe27a) drop-shadow(-2px 0 0 #ffe27a) drop-shadow(0 2px 0 #ffe27a) drop-shadow(0 -2px 0 #ffe27a)}   /* v13.46 경완: 맵 편집 중엔 편집 아이콘이 눌린 채(그림자 없이 2px), 다시 누르면 편집 취소 · v13.48 경완: 박스 없이 아이콘 모양 따라 노란 테두리만, 밝기 그대로 */   /* v13.41 경완 '맵 편집 누르면 화면 크기는 그대로': 버튼·상태창·하단 메뉴는 자리를 그대로 두고 숨김 (점선 자리는 meHudCv) → 맵 크기·위치가 안 바뀜 */
 #meZone{position:absolute;left:0;top:0;width:360px;height:600px;pointer-events:none;z-index:0}
 #meLayer{position:absolute;left:0;top:0;width:360px;height:600px;pointer-events:none;z-index:9001}
 .me-foot{position:absolute;translate:-50% -50%;border:2px dashed #7cf08a;border-radius:50%;background:rgba(124,240,138,.22)}body.mapEdit #wrap{touch-action:none}
@@ -3463,20 +3463,32 @@ function flyVis(m) { if (!m.liftEl) return; const c = m.clean ?? 100, n = m.hidd
   let z = m.flyZ; if (!n) { if (z) { z.remove(); m.flyZ = null; } return; }
   if (!z || !z.isConnected || z.childElementCount !== n) { z?.remove(); z = m.flyZ = document.createElement('span'); z.className = 'flyz'; z.innerHTML = Array.from({ length: n }, (_, k) => `<span class="fz" style="--sx:${Math.round([-.22, .22, 0][k] * (m.w || 40))}px;--d:${(1.9 + k * .35 + Math.random() * .3).toFixed(2)}s;--dl:-${(Math.random() * 2).toFixed(2)}s"><i></i></span>`).join(''); m.liftEl.append(z); }
   const H = m.h || 50, W = m.w || 40, k = `${Math.round(H)},${Math.round(W)}`; if (z.dataset.k !== k) { z.dataset.k = k; z.style.bottom = Math.round(H * .78) + 'px'; z.style.setProperty('--rx', Math.round(Math.max(14, W * .42)) + 'px'); z.style.setProperty('--ry', Math.round(Math.max(7, H * .16)) + 'px'); } }
-const frRate = m => { if (!m.pid || m.hidden) return 0; const a = gaugeAvg(m); return FR_TABLE.find(([v]) => a >= v)[1] + (a >= 40 && withFriend(m) ? .5 : 0); };   // 친구 보너스는 돌봐 줄 때만
+const frRate = m => { if (!m.pid || m.hidden) return 0; const a = gaugeAvg(m); return (FR_TABLE.find(([v]) => a >= v)[1] + (a >= 40 && withFriend(m) ? .5 : 0)) * fldMul(m.sp); };   // 친구 보너스는 돌봐 줄 때만
 // 앱이 꺼져 있던(화면을 떠나 있던) 동안의 필드 친밀도
 let FLD_FR_DAY = 12, OFF_PAL = .5;   // 필드에 있는 시간으로 받는 친밀도 하루 한도 (v3.74: 12 = 평균 80 이상 하루 종일. 구간마다 하루 12 · 7.2 · 4.3 · 2.9 로 다 다름)
+// v13.50 경완: 포켓몬마다 필드 친밀도 속도가 다름 — 거리로 마지막 진화까지 가면 친밀도가 FR_GOAL(4칸 조금 넘게) 쯤 되게.
+// 진화까지 거리 K(가장 긴 길), 하루 FR_PACE km 걷는다고 보고 D = K/FR_PACE 일. 걷기(WALK_FR·K) + 진화 보너스 + 쓰다듬기·열매 등(FR_ETC·D) 을 빼고 남는 만큼을 필드가 채움.
+// 배수 = 그 하루 몫 / FLD_FR_DAY (0.1 ~ 3). 거리로 진화하지 않는 포켓몬은 1 (지금 그대로). 한 가족은 같은 배수.
+let FR_PACE = 3, FR_GOAL = 215, FR_ETC = 3, FLD_MIN = .1, FLD_MAX = 3; let fldMulC = {};
+function frFam(sp) { const b = baseOf(sp); if (fldMulC['f' + b]) return fldMulC['f' + b]; let best = { k: 0, n: 0 };
+  const go = (s, k, n) => { const L = (CHILDREN[s] || []).filter(c => { const ev = SPECIES[c].ev || ''; return !ev || ev.startsWith('fr') || ev === 'day' || ev === 'night' || ev === EV_DARK; });
+    if (!L.length) { if (k > best.k) best = { k, n }; return; } const d = evoNeed({ sp: s }); for (const c of L) go(c, k + d, n + 1); };
+  go(b, 0, 0); return fldMulC['f' + b] = best; }
+function fldMul(sp) { if (sp == null || !SPECIES[sp]) return 1; const b = baseOf(sp); if (fldMulC[b] != null) return fldMulC[b]; const { k, n } = frFam(sp); if (!(k > 0)) return fldMulC[b] = 1;
+  let bon = 0; for (let i = 1; i <= n; i++) bon += EVO_FR[Math.min(2, i)] || EVO_FR[1]; const D = k / FR_PACE, f = (FR_GOAL - WALK_FR * k - bon - FR_ETC * D) / D;
+  return fldMulC[b] = Math.max(FLD_MIN, Math.min(FLD_MAX, f / FLD_FR_DAY)); }
+const fldCap = m => Math.max(1, Math.round(FLD_FR_DAY * fldMul(m.sp)));
 // 꺼져 있던 시간을 1분씩 따라가며 배부름·즐거움·청결이 떨어지는 대로 친밀도를 쌓는다
 // 배고픔은 80까지만 오른다 (켰을 때 먹여 줄 틈이 있게). 필드 몫은 날마다 10까지.
 function offFr(m, sec) {
   if (!(sec > 1)) return; sec = Math.min(sec, 120 * 864e2);
   const hun = HUNGER_RATE * (T(m).hun || 1) * .6 * 60, joy = JOY_RATE * .65 * 60, fr0 = m.pid && !m.hidden && withFriend(m), pal = S.mons.some(o => o !== m && !o.hidden);   /* v8.69 경완: 꺼 둔 동안 필드에 다른 포켓몬이 있으면 같이 놀아 즐거움이 절반 속도로만 떨어짐 (v8.68 의 오르기는 '안 떨어지게 된다'고 되돌림) */
   const end = Date.now(), steps = Math.min(20000, Math.ceil(sec / 60)), dt = sec / steps; let t = end - sec * 1000, day = dayKey(t), got = 0, acc = m.frT || 0; const nm = x => { const q = new Date(x); q.setHours(24, 0, 0, 0); return +q; }; let mid = nm(t);
-  const flush = () => { if (day === dayKey()) { while (got-- > 0 && dayCap(m, 'fld', FLD_FR_DAY)) addFr(m.pid, 1); } else if (got > 0) addFr(m.pid, Math.min(got, FLD_FR_DAY)); got = 0; };
+  const flush = () => { if (day === dayKey()) { while (got-- > 0 && dayCap(m, 'fld', fldCap(m))) addFr(m.pid, 1); } else if (got > 0) addFr(m.pid, Math.min(got, fldCap(m))); got = 0; };
   for (let k = 0; k < steps; k++) {
     if (m.hunger < 80) m.hunger = Math.min(80, m.hunger + hun * dt / 60);
     if (!(m.joyH > t)) m.joy = Math.max(0, (m.joy ?? 60) - joy * (pal ? OFF_PAL : 1) * dt / 60); m.clean = Math.max(0, (m.clean ?? 100) - CLEAN_RATE * dt);
-    const a = gaugeAvg(m), r = m.pid && !m.hidden ? FR_TABLE.find(([v]) => a >= v)[1] + (a >= 40 && fr0 ? .5 : 0) : 0;
+    const a = gaugeAvg(m), r = m.pid && !m.hidden ? (FR_TABLE.find(([v]) => a >= v)[1] + (a >= 40 && fr0 ? .5 : 0)) * fldMul(m.sp) : 0;
     acc += r * dt; while (acc >= 3600) { acc -= 3600; got++; }
     t += dt * 1000; if (t >= mid) { flush(); day = dayKey(t); mid = nm(t); }
   }
@@ -6949,7 +6961,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.47';   /* v13.47 경완: PiP 재생 중엔 무음 모드에서도 효과음은 나오게 (앱이 playback+섞기로 바꿈, 앱 업데이트 필요) */   /* v13.46 경완: 맵 편집 아이콘 = 편집 중엔 하단 메뉴처럼 눌린 칸(다시 누르면 취소), 나오면 원래 밝기로 */   /* v13.45 경완: 5칸 볼륨을 PiP 유튜브와 같이 들어도 잘 들리게 22dB 키움 + 리미터 */   /* v13.44 경완: 맵 편집 중 편집 아이콘은 꾹 눌린 채로 남음 */   /* v13.43 경완: 게임 켠 채로 PiP 영상을 다시 틀면 화면 눌러도 영상 안 멈추게 (밀려난 오디오는 다시 켜기 전에 앱에 물어봄) */   /* v13.42 경완: 맵 편집 들어가면 소품 리스트 접힌 채로, 리스트 접기 화살표 없앰, 점선 자리 골드·랭킹 따로 */   /* v13.41 경완: 맵 편집 = 화면 크기 그대로(버튼은 점선 자리), 하단 메뉴 자리에 취소·소품·저장, 소품 리스트 접기(빈 곳 누르면 접힘) · 필드에서 고른 소품은 밤에도 원래 색으로 환하게, 모닥불·연못은 예전처럼 */   /* v13.40 경완: PiP 영상 켜져 있으면 배경 음악 멈춤 (다시) — 게임 오디오가 자고 있을 때만 앱에 물어봄, 앱 업데이트 필요 */
+const APP_VER = '13.51';   /* v13.51 경완: 가방 '필드에 놓기' = 맵 편집 화면 가운데에 그 소품을 놓고 고른 채로 */   /* v13.50 경완: 포켓몬마다 필드 친밀도 속도 다르게 — 거리로 마지막 진화하면 친밀도 약 215(4칸 조금 넘게) */   /* v13.49 경완: 맵 편집 아이콘 눌림 모션 없앰 — 누르면 노란 테두리만 */   /* v13.48 경완: 맵 편집 중 아이콘 = 박스 없이 아이콘 모양 따라 노란 테두리, 밝기 그대로 */   /* v13.47 경완: PiP 재생 중엔 무음 모드에서도 효과음은 나오게 (앱이 playback+섞기로 바꿈, 앱 업데이트 필요) */   /* v13.46 경완: 맵 편집 아이콘 = 편집 중엔 하단 메뉴처럼 눌린 칸(다시 누르면 취소), 나오면 원래 밝기로 */   /* v13.45 경완: 5칸 볼륨을 PiP 유튜브와 같이 들어도 잘 들리게 22dB 키움 + 리미터 */   /* v13.44 경완: 맵 편집 중 편집 아이콘은 꾹 눌린 채로 남음 */   /* v13.43 경완: 게임 켠 채로 PiP 영상을 다시 틀면 화면 눌러도 영상 안 멈추게 (밀려난 오디오는 다시 켜기 전에 앱에 물어봄) */   /* v13.42 경완: 맵 편집 들어가면 소품 리스트 접힌 채로, 리스트 접기 화살표 없앰, 점선 자리 골드·랭킹 따로 */   /* v13.41 경완: 맵 편집 = 화면 크기 그대로(버튼은 점선 자리), 하단 메뉴 자리에 취소·소품·저장, 소품 리스트 접기(빈 곳 누르면 접힘) · 필드에서 고른 소품은 밤에도 원래 색으로 환하게, 모닥불·연못은 예전처럼 */   /* v13.40 경완: PiP 영상 켜져 있으면 배경 음악 멈춤 (다시) — 게임 오디오가 자고 있을 때만 앱에 물어봄, 앱 업데이트 필요 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7731,7 +7743,7 @@ function renderFBag() { const F = S.fbag || {}, L = fbagList(); if (ibagFSel && 
   if (mul) { for (const k of [...ibagPick]) if (!(F[k] > 0)) ibagPick.delete(k); const bar = $('#ibagBar'), T2 = L.filter(([k]) => ibagPick.has(k)); bar.hidden = false;
     bar.innerHTML = `<div class="sb-name"><b>${T2.length ? `${T2.length}종 ${T2.reduce((a, [k]) => a + F[k], 0)}개 골랐어요` : '버릴 것을 골라 주세요'}</b><span><button class="opt" data-all>${T2.length === L.length && L.length ? '모두 풀기' : '모두 고르기'}</button></span></div><button class="lk-btn warn" data-toss${T2.length ? '' : ' disabled'}>버리기</button>`; return; }
   const bar = $('#ibagBar'), o = L.find(([k]) => k === ibagFSel); bar.hidden = !o; if (!o) return;
-  bar.innerHTML = `<img class="sb-pic fpth" src="${o[2]}" alt=""><div class="sb-name"><b>${esc(o[1])} ×${F[o[0]]}</b><span>${esc(fpInfo(o[0])?.d ? fpInfo(o[0]).d + ' ' : '')}맵 편집에서 필드에 놓을 수 있어요.</span></div>` + (mapEdit ? '' : '<button class="lk-btn main" data-place>놓으러 가기</button>'); }
+  bar.innerHTML = `<img class="sb-pic fpth" src="${o[2]}" alt=""><div class="sb-name"><b>${esc(o[1])} ×${F[o[0]]}</b><span>${esc(fpInfo(o[0])?.d ? fpInfo(o[0]).d + ' ' : '')}맵 편집에서 필드에 놓을 수 있어요.</span></div>` + (mapEdit ? '' : '<button class="lk-btn main" data-place>필드에 놓기</button>'); }
 // v12.17 경완 '가방에 음악 탭': 배경 음악 목록에서 뺀 곡. 누르면 아래 막대에서 '다시 넣기'
 let ibagMSel = null;
 function renderMBag() { const L = TRACKS.filter(t => S.trOff?.includes(t.id)); if (ibagMSel && !L.some(t => t.id === ibagMSel)) ibagMSel = null;
@@ -7858,24 +7870,26 @@ $('#meList').onclick = e => { const b = e.target.closest('[data-k]'); if (!b) re
 function meHitAt(cx, cy) { let best = null, bestA = 0; for (const el of itemsEl.querySelectorAll('.prop')) { const r = el.getBoundingClientRect(); if (cx >= r.left && cx <= r.right && cy >= r.top && cy <= r.bottom && meOpq(el, cx, cy) && (!best || +el.style.zIndex > +best.style.zIndex || (+el.style.zIndex === +best.style.zIndex && r.width * r.height < bestA))) { best = el; bestA = r.width * r.height; } }
   if (!best) for (const o of document.elementsFromPoint(cx, cy)) { if (!o.CO) continue; const el = [...itemsEl.querySelectorAll('.prop')].find(e => e.LV === o.CO); if (el) { best = el; break; } }   /* v13.37 경완 '모닥불은 꾹 눌러도 안 됨': 불꽃·연못 갈대·꽃밭 꽃처럼 소품에 딸린 그림(.CO)을 눌러도 그 소품 */
   return best; }   // 누른 곳의 소품 (그림 있는 칸, 위에 그려진 것 먼저)
+// v13.51 경완: 가방에서 고른 소품을 화면 (cx, cy) 자리에 놓는다 (누른 자리 / 가방 '필드에 놓기'는 화면 가운데). done(v) = 자리 잡은 뒤
+function mePlaceAt(cx, cy, done) { const v = [...meSnap.keys()].find(o => meOut(o) && fpKeyOf(o) === mePick);   /* 가방에서 고른 소품을 누른 자리에 (땅에 닿는 자리 = 누른 곳, 안전 구역 안으로) */
+    if (v) { const r = itemsEl.getBoundingClientRect(), k = r.width / itemsEl.offsetWidth || 1, Z = meZoneRect(); lvSet(v, Math.round(clamp((cx - r.left) / k, Z.x0 + 10, Z.x1 - 10)), Math.round(clamp((cy - r.top) / k, Z.y0 + 10, Z.y1))); const pk = mePick; meBag(pk, -1); if (!(S.fbag?.[pk] > 0)) mePick = null; sfx('tap'); meRedraw(v); meRender(); mePlaceFit(v, () => { lvSet(v, ME_OUT, ME_OUT); meBag(pk, 1); mePick = pk; }, 0, done); return; }
+    const r = itemsEl.getBoundingClientRect(), k = r.width / itemsEl.offsetWidth || 1, Z = meZoneRect(), mk = fpMake(mePick, Math.round(clamp((cx - r.left) / k, Z.x0 + 10, Z.x1 - 10)), Math.round(clamp((cy - r.top) / k, Z.y0 + 10, Z.y1)));   /* 새로 산 소품: 목록 끝에 새로 (저장하면 S.layAdd) */
+    if (!mk) return; mk[1].pa = 1; mk[1].paN = 1; (LAYOUT[mk[0]] = LAYOUT[mk[0]] || []).push(mk[1]); const pk = mePick; meBag(pk, -1); if (!(S.fbag?.[pk] > 0)) mePick = null; sfx('tap'); meRedraw(mk[1]); meRender(); mePlaceFit(mk[1], () => { const A = LAYOUT[mk[0]], i = A.indexOf(mk[1]); if (i >= 0) A.splice(i, 1); meBag(pk, 1); mePick = pk; }, 0, done); return; }
 $('#wrap').addEventListener('pointerdown', e => { if (!mapEdit || e.target.closest('#meX')) return; e.stopPropagation(); e.preventDefault();
   const best = meHitAt(e.clientX, e.clientY);
-  if (!best && mePick) { const v = [...meSnap.keys()].find(o => meOut(o) && fpKeyOf(o) === mePick);   /* 가방에서 고른 소품을 누른 자리에 (땅에 닿는 자리 = 누른 곳, 안전 구역 안으로) */
-    if (v) { const r = itemsEl.getBoundingClientRect(), k = r.width / itemsEl.offsetWidth || 1, Z = meZoneRect(); lvSet(v, Math.round(clamp((e.clientX - r.left) / k, Z.x0 + 10, Z.x1 - 10)), Math.round(clamp((e.clientY - r.top) / k, Z.y0 + 10, Z.y1))); const pk = mePick; meBag(pk, -1); if (!(S.fbag?.[pk] > 0)) mePick = null; sfx('tap'); meRedraw(v); meRender(); mePlaceFit(v, () => { lvSet(v, ME_OUT, ME_OUT); meBag(pk, 1); mePick = pk; }); return; }
-    const r = itemsEl.getBoundingClientRect(), k = r.width / itemsEl.offsetWidth || 1, Z = meZoneRect(), mk = fpMake(mePick, Math.round(clamp((e.clientX - r.left) / k, Z.x0 + 10, Z.x1 - 10)), Math.round(clamp((e.clientY - r.top) / k, Z.y0 + 10, Z.y1)));   /* 새로 산 소품: 목록 끝에 새로 (저장하면 S.layAdd) */
-    if (!mk) return; mk[1].pa = 1; mk[1].paN = 1; (LAYOUT[mk[0]] = LAYOUT[mk[0]] || []).push(mk[1]); const pk = mePick; meBag(pk, -1); if (!(S.fbag?.[pk] > 0)) mePick = null; sfx('tap'); meRedraw(mk[1]); meRender(); mePlaceFit(mk[1], () => { const A = LAYOUT[mk[0]], i = A.indexOf(mk[1]); if (i >= 0) A.splice(i, 1); meBag(pk, 1); mePick = pk; }); return; }
+  if (!best && mePick) { mePlaceAt(e.clientX, e.clientY); return; }
   if (!best && !$('#meBar').classList.contains('fold')) { meFoldSet(true); sfx('tap'); }   /* v13.41 경완: 빈 곳을 누르면 소품 리스트가 접힌다 */
   if (best !== meSelEl) meSel(best); if (best) meDrag = { el: best, x0: e.clientX, y0: e.clientY, on: false, l0: parseFloat(best.style.left), t0: parseFloat(best.style.top), id: e.pointerId }; }, true);
 // v9.06 경완: 고른 소품을 끌어 옮긴다 — 손가락을 따라 부드럽게, 땅에 닿는 자리는 안전 구역 안으로만, 다른 소품·연못과 겹치면 빨갛게 → 놓으면 제자리로
 let meDrag = null, meSnap = null;
 // v9.78 경완 '맵 편집 검토': 가방에서 놓은 소품이 다른 소품과 겹치거나 땅 자리가 안전 구역 밖으로 나가도 그대로 놓였다 → 안전 구역 안으로 당기고, 겹치면 가까운 빈 자리로 옮기고, 빈 자리가 없으면 가방으로 되돌린다 (undo)
-function mePlaceFit(v, undo, n = 0) { const P = [...itemsEl.querySelectorAll('.prop')], el = P.find(o => o.LV === v); if (!el || !mapEdit) return;
-  if (P.some(o => o.LV && o.FP === undefined) && n < 30) return setTimeout(() => mePlaceFit(v, undo, n + 1), 50);   /* 다른 소품의 땅 자리(그림에서 재는 중)가 다 나온 뒤에 겹침을 본다 */
+function mePlaceFit(v, undo, n = 0, done) { const P = [...itemsEl.querySelectorAll('.prop')], el = P.find(o => o.LV === v); if (!el || !mapEdit) return;
+  if (P.some(o => o.LV && o.FP === undefined) && n < 30) return setTimeout(() => mePlaceFit(v, undo, n + 1, done), 50);   /* 다른 소품의 땅 자리(그림에서 재는 중)가 다 나온 뒤에 겹침을 본다 */
   meFoot(el, F => { el.FP = F; if (!F || !mapEdit) return; const E = meEll(el), Z = meZoneRect(); if (!E) return;
     const cx = clamp(E.x, Z.x0 + E.rx, Z.x1 - E.rx) - E.x, cy = clamp(E.y, Z.y0 + E.ry, Z.y1 - E.ry) - E.y, okAt = (dx, dy) => E.x + dx - E.rx >= Z.x0 && E.x + dx + E.rx <= Z.x1 && E.y + dy - E.ry >= Z.y0 && E.y + dy + E.ry <= Z.y1 && !meHits(el, dx, dy);
     let d = okAt(cx, cy) ? [cx, cy] : null; for (let r = 8; !d && r <= 160; r += 8) for (let i = 0; i < 16 && !d; i++) { const a = i / 16 * 6.283, dx = Math.round(cx + Math.cos(a) * r), dy = Math.round(cy + Math.sin(a) * r * .6); if (okAt(dx, dy)) d = [dx, dy]; }
     if (!d) { undo(); meSay('여기엔 놓을 자리가 없어요'); meRedraw(null); meRender(); return; }
-    if (d[0] || d[1]) { lvMove(v, d[0], d[1]); meRedraw(v); } }); }
+    if (d[0] || d[1]) { lvMove(v, d[0], d[1]); meRedraw(v); } done?.(v); }); }
 addEventListener('pointermove', e => { const D = meDrag; if (!D || !(mapEdit || fme) || e.pointerId !== D.id) return; const el = D.el;
   if (!D.on) { if (Math.hypot(e.clientX - D.x0, e.clientY - D.y0) < 5) return; D.on = true; D.k = el.getBoundingClientRect().width / el.offsetWidth || 1; $('#meX').hidden = true; el.classList.add('meDrag'); if (el.classList.contains('bgp')) { el.style.setProperty('z-index', 8999, 'important'); BG_SKIP = el.LV; drawBg(); meZoneDraw(); }   /* 끄는 동안은 맨 위, 바탕엔 원래 자리 그림을 지움 */
     D.co = [...itemsEl.children, ...document.querySelectorAll('.glint')].filter(o => o.CO && o.CO === el.LV).map(o => [o, parseFloat(o.style.left), parseFloat(o.style.top)]); }   /* v9.07 경완: 꽃밭 꽃·연못 갈대·수련잎·모닥불 불꽃도 같이 */
@@ -7945,7 +7959,8 @@ ibagEl.addEventListener('click', e => {
   { const m = e.target.closest('[data-mk]'); if (m) { sfx('tap'); ibagMSel = ibagMSel === m.dataset.mk ? null : m.dataset.mk; renderIBag(); return; } }
   if (e.target.closest('#ibagBar [data-mback]') && ibagMSel) { sfx('pickup'); S.trOff = S.trOff.filter(x => x !== ibagMSel); ibagMSel = null; save(); renderIBag(); renderBgmPick(); return; }
   { const f = e.target.closest('[data-fk]'); if (f) { sfx('tap'); if (mapEdit) { ibagEl.hidden = true; mePick = f.dataset.fk; meRender(); return; }   /* 편집 중엔 고르면 바로 아래 줄에서 골라 둔 상태로 */ if (ibagMul) { const k = f.dataset.fk; ibagPick.has(k) ? ibagPick.delete(k) : ibagPick.add(k); $('#ibagMsg').textContent = ''; renderIBag(); return; } ibagFSel = ibagFSel === f.dataset.fk ? null : f.dataset.fk; renderIBag(); return; } }
-  if (e.target.closest('#ibagBar [data-place]')) { const k = ibagFSel; ibagEl.hidden = true; mapEditSet(true); mePick = k; meRender(); return; }
+  if (e.target.closest('#ibagBar [data-place]')) { const k = ibagFSel; ibagEl.hidden = true; mapEditSet(true); mePick = k; meRender();   /* v13.51 경완: 필드에 놓기 = 맵 편집 화면 가운데에 놓고 고른 채로 */
+    requestAnimationFrame(() => { if (!mapEdit || mePick !== k) return; const bt = $('#meBar')?.getBoundingClientRect().top || innerHeight; mePlaceAt(innerWidth / 2, Math.min(innerHeight, bt) * .55, v => { mePick = null; meRender(); const el = [...itemsEl.querySelectorAll('.prop')].find(o => o.LV === v); if (el) meSel(el); }); }); return; }
   if (e.target.closest('#ibagMulti')) { ibagMul = !ibagMul; ibagPick.clear(); ibagSel = null; ibagFSel = null; $('#ibagMsg').textContent = ''; renderIBag(); return; }
   const v = e.target.closest('[data-it]'); if (v) { const k = v.dataset.it; ibagFresh.delete(k);   /* v7.56 경완: 한 번 누르면 빨간 점 사라짐 */ if (ibagMul) ibagPick.has(k) ? ibagPick.delete(k) : ibagPick.add(k); else ibagSel = ibagSel === k ? null : k; $('#ibagMsg').textContent = ''; renderIBag(); return; }
   if (e.target.closest('#ibagBar [data-all]') && ibagTab === 'field') { const K = fbagList().map(([k]) => k); if (K.every(k => ibagPick.has(k))) ibagPick.clear(); else K.forEach(k => ibagPick.add(k)); renderIBag(); return; }
@@ -12455,7 +12470,7 @@ function frameIn(now, cov) {
   acc += real; if (acc > .5) { acc = 0; S.mons.forEach(m => { if (!m.washing) dirtVis(m); dirtFx(m); flyVis(m); }); sky(); rotBerries(); for (const g of [...$('#glows').children]) if (!S.mons.some(m => m.gl === g || m.glA === g)) g.remove(); }   /* 필드에서 빠진 포켓몬의 빛이 남지 않게 */
   try { tickMoves(real); } catch (e) { frameErr(e); }
   infoT -= real; if (infoT <= 0 && S.sel) { infoT = .5; renderInfo(); }
-  S.mons.forEach(m => { if (!m.hidden && !m.washing) m.clean = Math.max(0, (m.clean ?? 100) - real * CLEAN_RATE); m.frT = (m.frT || 0) + real * frRate(m); if (m.frT >= 3600) { m.frT -= 3600; if (dayCap(m, 'fld', FLD_FR_DAY)) { addFr(m.pid, 1); if (fieldSeen(m)) frPop(m); } } });   /* 필드에 있는 시간: 세 게이지가 찰수록 빨리 (FR_TABLE) */
+  S.mons.forEach(m => { if (!m.hidden && !m.washing) m.clean = Math.max(0, (m.clean ?? 100) - real * CLEAN_RATE); m.frT = (m.frT || 0) + real * frRate(m); if (m.frT >= 3600) { m.frT -= 3600; if (dayCap(m, 'fld', fldCap(m))) { addFr(m.pid, 1); if (fieldSeen(m)) frPop(m); } } });   /* 필드에 있는 시간: 세 게이지가 찰수록 빨리 (FR_TABLE) */
   mgrT -= real; if (mgrT <= 0) { mgrT = .5; refreshCap(); renderMgr(); renderRun();
     if (hatchQ.length && !hatching) playHatch(); }
   if (!cov) { placeInfo(); placeMark(); mirrorPf(); }
@@ -12513,7 +12528,7 @@ function applyBal(b) {
   const num = v => typeof v === 'number' && isFinite(v), arr = (A, v) => { if (Array.isArray(v) && v.length === A.length) A.splice(0, A.length, ...v); };
   arr(DUP_G, b.DUP_G); arr(NEW_EGG_G, b.NEW_EGG_G); if (Array.isArray(b.FR_TABLE) && b.FR_TABLE.every(r => r.length === 2)) FR_TABLE.splice(0, FR_TABLE.length, ...b.FR_TABLE);
   if (num(b.NEW_G)) NEW_G = b.NEW_G; if (num(b.RUN_G)) RUN_G = b.RUN_G; if (num(b.BERRY_FR_DAY)) BERRY_FR_DAY = b.BERRY_FR_DAY; if (num(b.PET_DAY)) PET_DAY = b.PET_DAY; if (num(b.JOY_HOLD)) JOY_HOLD = b.JOY_HOLD; if (num(b.WASH_DAY)) WASH_DAY = b.WASH_DAY; if (num(b.PET_FR)) PET_FR = b.PET_FR; if (num(b.WASH_FR1)) WASH_FR = b.WASH_FR1;
-  if (num(b.FLD_FR_DAY)) FLD_FR_DAY = b.FLD_FR_DAY; if (num(b.WALK_FR)) WALK_FR = b.WALK_FR; if (num(b.FR_EVO)) FR_EVO = b.FR_EVO; if (num(b.FR_MAX)) FR_MAX = b.FR_MAX; if (num(b.HUNGER_RATE)) HUNGER_RATE = b.HUNGER_RATE;
+  if (num(b.FLD_FR_DAY)) FLD_FR_DAY = b.FLD_FR_DAY; if (num(b.FR_PACE)) FR_PACE = b.FR_PACE; if (num(b.FR_GOAL)) FR_GOAL = b.FR_GOAL; if (num(b.FR_ETC)) FR_ETC = b.FR_ETC; fldMulC = {}; if (num(b.WALK_FR)) WALK_FR = b.WALK_FR; if (num(b.FR_EVO)) FR_EVO = b.FR_EVO; if (num(b.FR_MAX)) FR_MAX = b.FR_MAX; if (num(b.HUNGER_RATE)) HUNGER_RATE = b.HUNGER_RATE;
   if (num(b.CLEAN_DAYS) && b.CLEAN_DAYS > 0) CLEAN_RATE = 100 / (b.CLEAN_DAYS * 86400); if (num(b.JOY_HOURS) && b.JOY_HOURS > 0) JOY_RATE = 100 / (b.JOY_HOURS * 3600);
   if (Array.isArray(b.GYM_G) && b.GYM_G.length === 3 && b.GYM_G.every(x => num(x) && x >= 0)) GYM_G = [...b.GYM_G]; if (num(b.GYM_SF_PCT) && b.GYM_SF_PCT >= 0) GYM_SF_PCT = b.GYM_SF_PCT;
   if (num(b.WAGE_BASE) && b.WAGE_BASE >= 0) WAGE_BASE = b.WAGE_BASE; if (num(b.WAGE_LV) && b.WAGE_LV >= 0) WAGE_LV = b.WAGE_LV; if (num(b.WAGE_MAX) && b.WAGE_MAX > 0) WAGE_MAX = b.WAGE_MAX;
