@@ -1,0 +1,12 @@
+Image 1 is a finished overworld walking sprite sheet in Pokémon Platinum (Nintendo DS) pixel-art style. 9 frames, each 32x32 pixels, shown at 8x: front stand, back stand, side stand (facing left), front walk A, front walk B, back walk A, back walk B, side walk A, side walk B.
+
+Image 2 is the character it should become: "Professor Kang" — messy, fluffy brown hair with a few strands sticking out, round dark glasses, white lab coat worn OPEN over a navy-and-white horizontal striped T-shirt, dark teal pants, brown shoes.
+
+EDIT Image 1 only. Do NOT redraw the character from scratch.
+- Keep EXACTLY the same silhouette size, body proportions, head size, pose, arm/leg positions and pixel grid of every frame in Image 1. Same 1-pixel black outline, same flat 2–3 tone shading, no anti-aliasing, no gradients.
+- Change the hair into Kang's messy brown hair (same overall head size, just a messier fluffier outline and brown tones).
+- Open the lab coat at the front so a narrow strip of the navy/white striped shirt shows down the middle on the front frames; back frames stay plain white coat.
+- Pants dark teal, shoes brown.
+- Keep the glasses dark and round.
+- Side frames face LEFT.
+- Output: the same 9 frames in one horizontal row, each frame a 256x256 square (32x32 pixels at 8x, hard pixel edges), flat solid magenta background (#FF00FF). No grid, no labels, no text, no shadow.
