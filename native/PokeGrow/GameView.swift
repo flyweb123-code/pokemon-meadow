@@ -50,6 +50,15 @@ struct GameView: UIViewRepresentable {
             NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { [weak self] _ in
                 self?.leftAt = Date()
             }
+            // v13.59 경완 'PiP 두 번째 재생 땐 게임이 아무 신호도 못 받음': 아이폰이 앱 오디오를 끊고(began) 풀어 줄 때(ended) 게임에 알려 준다
+            NotificationCenter.default.addObserver(forName: AVAudioSession.interruptionNotification, object: nil, queue: .main) { [weak web] n in
+                guard let raw = n.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt, let t = AVAudioSession.InterruptionType(rawValue: raw) else { return }
+                web?.evaluateJavaScript(t == .began ? "window.pkAudInt&&pkAudInt(1)" : "window.pkAudInt&&pkAudInt(0)")
+            }
+            NotificationCenter.default.addObserver(forName: AVAudioSession.silenceSecondaryAudioHintNotification, object: nil, queue: .main) { [weak web] n in
+                guard let raw = n.userInfo?[AVAudioSessionSilenceSecondaryAudioHintTypeKey] as? UInt else { return }
+                web?.evaluateJavaScript("window.pkAudInt&&pkAudInt(\(raw == 1 ? 2 : 3))")
+            }
             NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self, weak web] _ in
                 guard let self, let web, Date().timeIntervalSince(self.leftAt) > 30 * 60 else { return }
                 web.load(URLRequest(url: gameURL, cachePolicy: .reloadRevalidatingCacheData))
