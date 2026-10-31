@@ -2141,14 +2141,19 @@ const MAX_MONS = 9;   // 필드에는 최대 9마리 (2026-10-14 사용자 요�
 // ---------- 효과음: 파일 없이 사각파·잡음으로 만드는 옛 휴대용 게임기 소리 ----------
 // 볼륨 0~10 (0 = 끔). 예전 켜짐/꺼짐 설정은 10/0으로 옮긴다
 const VOL = { bgm: 5, sfx: 5 };   // 처음엔 5칸
+let sndMix = false; try { sndMix = localStorage.getItem('pk-snd-mix') === '1'; } catch (e) {}
+let otherAud = false;   // v13.24 경완 '영상 켜져 있을 땐 게임 소리 안 나게': 아이폰 앱이 다른 앱(소형 플레이·음악) 소리가 나는 동안 true 로 알려 준다 → 배경 음악만 0 (효과음은 그대로), 끊지 않게 ambient
 const volG = v => v > 0 ? .1 * Math.pow(10, (v - 5) / 5) : 0;   // 볼륨 칸 → 크기: 5칸이 예전 1칸만큼 작게, 10칸은 예전 최대 그대로
+const bgmV = () => otherAud && !sndMix ? 0 : volG(VOL.bgm);   // 영상이 나오는 동안엔 배경 음악만 0 (효과음은 그대로), 영상이 멈추면 원래 볼륨
 try { for (const k of ['bgm', 'sfx']) { const v = localStorage.getItem('pk-' + k + '-vol'); VOL[k] = v != null ? Math.max(0, Math.min(10, +v || 0)) : localStorage.getItem('pk-' + k) === '0' ? 0 : 5; } } catch (e) {}
 let sfxOn = VOL.sfx > 0;
 let actx = null, noiseBuf = null;
 // v13.23 경완 '무음 모드일 때 소리 듣고싶은데': 기본은 무음 스위치와 상관없이 소리 (playback, 다른 앱 소리는 끊김).
 // 설정 › 소리 '다른 앱 소리와 같이 듣기' 를 켜면 ambient (소형 플레이·음악과 같이, 대신 무음 모드에선 조용). 아이폰 웹 게임은 둘 다는 안 된다
-let sndMix = false; try { sndMix = localStorage.getItem('pk-snd-mix') === '1'; } catch (e) {}
-const audSess = () => { try { if (navigator.audioSession) navigator.audioSession.type = sndMix ? 'ambient' : 'playback'; } catch (e) {} };
+const audSess = () => { try { if (navigator.audioSession) navigator.audioSession.type = sndMix || otherAud ? 'ambient' : 'playback'; } catch (e) {} };
+window.pkOtherAudio = on => { on = !!on; if (on === otherAud) return; otherAud = on; audSess();
+  try { if (bgm.gain && actx) bgm.gain.gain.cancelScheduledValues(actx.currentTime); bgmVol(); } catch (e) {}
+  if (!on && !document.hidden) setTimeout(() => { try { audioCheck(); } catch (e) {} }, 300); };   // 영상이 멈추면 게임 소리를 다시 (끊겼던 오디오는 audioCheck 가 깨운다)
 function audio() {
   if (!actx) {
     const A = window.AudioContext || window.webkitAudioContext; if (!A) return null;
@@ -2380,7 +2385,7 @@ let bgmOn = VOL.bgm > 0;
 // 메모리를 아끼려고 32kHz 모노로 풀어 둔다 (게임보이 곡이라 소리 차이가 거의 없다).
 const bgm = { id: null, buf: null, src: null, gain: null, preview: null, prevT: 0, have: new Set(), cache: new Map() };
 function bgmRoute() { if (bgm.gain || !actx) return; bgm.gain = actx.createGain(); bgm.gain.connect(actx.destination); bgmVol(); }
-function bgmVol() { if (bgm.gain) bgm.gain.gain.value = .55 * volG(VOL.bgm); }
+function bgmVol() { if (bgm.gain) bgm.gain.gain.value = .55 * bgmV(); }
 async function bgmDecode(blob) {
   const ab = await blob.arrayBuffer(), O = window.OfflineAudioContext || window.webkitOfflineAudioContext;
   const c = new O(1, 1, 32000);
@@ -2403,7 +2408,7 @@ function bgmSrcStart(off = bgm.pos || 0) {
   if (rnd && L) { const per = L[1] - L[0], n = Math.max(2, Math.ceil((150 - L[0]) / per)), left = Math.max(4, L[0] + n * per - off), t = a.currentTime, F = Math.min(3, left / 2);
     g.gain.setValueAtTime(ng, t + left - F); g.gain.linearRampToValueAtTime(0, t + left); x.stop(t + left); }
   x.onended = () => { if (bgm.src !== x || !rnd) return; bgm.src = null; bgm.pos = 0; if (S.bgmRand && bgmOn && !bgm.preview) { bgm.fadeIn = bgm.fadeIn || 1; bgmPlay(bgmRandId(bgm.id)); } };   // 무작위 재생: 한 곡이 끝나면 다른 곡
-  if (bgm.fadeIn) { const g = bgm.gain.gain, t = a.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(0, t); g.linearRampToValueAtTime(.55 * volG(VOL.bgm), t + bgm.fadeIn); bgm.fadeIn = 0; }
+  if (bgm.fadeIn) { const g = bgm.gain.gain, t = a.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(0, t); g.linearRampToValueAtTime(.55 * bgmV(), t + bgm.fadeIn); bgm.fadeIn = 0; }
 }
 // IndexedDB: 곡 이름표 → 파일
 function musicDB() {
@@ -2467,7 +2472,7 @@ function bgmStopPreview() {
   bgmSrcStop(); bgm.fadeIn = 1.5; bgmPlay(id, pos);
 }
 // 메인 곡 잠깐 줄이기/되돌리기 (전설 알 부화)
-function bgmDuck(to, sec) { const a = actx; if (!a || !bgm.gain) return; const g = bgm.gain.gain, t = a.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(.55 * volG(VOL.bgm) * to, t + sec); }
+function bgmDuck(to, sec) { const a = actx; if (!a || !bgm.gain) return; const g = bgm.gain.gain, t = a.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(.55 * bgmV() * to, t + sec); }
 // 전설 알: 긴장감 있는 8비트 곡 (D 단조, 두드릴수록 빨라지고 높은 음이 더해진다). 직접 만든 곡이라 파일이 필요 없다
 const tense = { on: false, g: null, t: 0, step: 0, f: 0, iv: 0 };
 function tenseNote(f, t0, dur, type, vol) { const a = actx, o = a.createOscillator(), g = a.createGain(); o.type = type; o.frequency.setValueAtTime(f, t0); g.gain.setValueAtTime(vol, t0); g.gain.setValueAtTime(vol, t0 + dur * .7); g.gain.linearRampToValueAtTime(0, t0 + dur); o.connect(g).connect(tense.g); o.start(t0); o.stop(t0 + dur + .02); }
@@ -2492,7 +2497,7 @@ function tenseStart() {
   const a = audio(); if (!a || tense.on) return;
   bgmDuck(0, .8);
   if (!(VOL.bgm > 0)) { tense.on = true; return; }
-  tense.g = a.createGain(); tense.g.connect(a.destination); const v = .9 * volG(VOL.bgm);
+  tense.g = a.createGain(); tense.g.connect(a.destination); const v = .9 * bgmV();
   tense.g.gain.setValueAtTime(0, a.currentTime); tense.g.gain.linearRampToValueAtTime(v, a.currentTime + 1);
   tense.on = true; tense.f = 0; tense.step = 0; tense.t = a.currentTime + .6; tense.iv = setInterval(tenseTick, 60); tenseTick();
 }
@@ -6789,7 +6794,7 @@ document.addEventListener('click', e => { const t = e.target.closest?.('h3, h4, 
     if (ldM.src && a) { const { src, g } = ldM, t = a.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + .6); try { src.stop(t + .65); } catch (e) {} ldM.src = ldM.g = null; }
     if (!id || !bgmOn) return; try { bgm.pos = bgmPos(); bgmSrcStop(); } catch (e) {}
     gbmBuf(id).then(buf => { const a = audio(); if (!buf || !a || k !== ldM.k) return; const src = a.createBufferSource(), g = a.createGain(); src.buffer = buf; src.loop = false;   /* v12.17 경완 '끝에 잔여 음': 로딩 곡은 3초짜리라 한 번만 (되풀이하면 사라질 때 첫 음이 다시 들림) */
-      g.gain.value = .55 * volG(VOL.bgm) * (buf.ng || 1); src.connect(g).connect(a.destination); src.start(); ldM.src = src; ldM.g = g; }).catch(() => {}); };
+      g.gain.value = .55 * bgmV() * (buf.ng || 1); src.connect(g).connect(a.destination); src.start(); ldM.src = src; ldM.g = g; }).catch(() => {}); };
   window.gymLoad = {
     show(tx, sub = '', out = false) { loadMus(out ? 'gymOut' : 'gymIn'); L.querySelector('.gl-tx').textContent = tx; L.querySelector('.gl-s').textContent = sub; L.classList.toggle('out', out); L.querySelector('.gl-ow').style.backgroundImage = `url(${TR_OW[trOf().sex] || TR_OW.m})`;
       L.hidden = false; void L.offsetWidth; L.classList.add('on'); clearInterval(dT); let n = 0; dT = setInterval(() => { n = (n + 1) % 4; dots.textContent = '.'.repeat(n) || ' '; }, 380); },
@@ -6901,7 +6906,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.23';   /* v13.23 경완: 소리 기본은 다시 무음 모드에서도 나게, 설정 › 소리 '다른 앱 소리와 같이 듣기' 켜면 영상·음악과 같이 */
+const APP_VER = '13.24';   /* v13.24 경완: 다른 앱(소형 플레이·음악) 소리가 나는 동안엔 배경 음악 자동으로 0, 효과음은 그대로, 멈추면 원래대로 (아이폰 앱이 알려 줌, 앱 업데이트 필요) */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8146,7 +8151,7 @@ const MG_MUS = { jump: { bpm: 152, ch: [48, 45, 41, 43, 48, 45, 41, 43, 41, 43, 
 // 직접 만든 곡을 Web Audio 로 한 음씩 예약해서 트는 작은 연주기 (미니게임·모닥불 노래가 같이 쓴다)
 function chipSeq(songs) { return { on: false, g: null, iv: 0, step: 0, t: 0, id: null,
   start(id) { this.stop(); const a = audio(); if (!a || !bgmOn || !songs[id]) return; this.id = id; this.on = true; this.step = 0; this.t = a.currentTime + .08;
-    this.g = a.createGain(); this.g.gain.value = (songs[id].vol || .9) * volG(VOL.bgm); this.g.connect(a.destination); this.iv = setInterval(() => this.tick(), 60); this.tick(); },
+    this.g = a.createGain(); this.g.gain.value = (songs[id].vol || .9) * bgmV(); this.g.connect(a.destination); this.iv = setInterval(() => this.tick(), 60); this.tick(); },
   stop(fade = 0) { clearInterval(this.iv); this.on = false; const g = this.g; this.g = null; if (!g) return; try { const t = actx.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + Math.max(.03, fade)); setTimeout(() => { try { g.disconnect(); } catch (e) {} }, (fade + .3) * 1000); } catch (e) {} },
   note(f, t0, dur, type, vol, to) { const a = actx, o = a.createOscillator(), g = a.createGain(); o.type = type; o.frequency.setValueAtTime(f, t0); if (to) o.frequency.exponentialRampToValueAtTime(to, t0 + dur);
     g.gain.setValueAtTime(vol, t0); g.gain.setValueAtTime(vol, t0 + dur * .7); g.gain.linearRampToValueAtTime(0, t0 + dur); o.connect(g).connect(this.g); o.start(t0); o.stop(t0 + dur + .02); },
@@ -12198,9 +12203,9 @@ async function evoMusicStart(fade = 0, off = 0) {
   const a = audio(); if (!a || !evoMus.have || !bgmOn) return null;
   try {
     if (!evoMus.buf) { evoMus.buf = await gbmBuf('evo'); if (!evoMus.buf) return null; }
-    const src = a.createBufferSource(), g = a.createGain(); g.gain.value = .6 * volG(VOL.bgm);
+    const src = a.createBufferSource(), g = a.createGain(); g.gain.value = .6 * bgmV();
     src.buffer = evoMus.buf; src.connect(g).connect(a.destination); const t0 = a.currentTime + .05; off = off % evoMus.buf.duration || 0; src.start(t0, off);
-    if (fade) { src.loop = true; if (evoMus.buf.gbLoop) { src.loopStart = evoMus.buf.gbLoop[0]; src.loopEnd = evoMus.buf.gbLoop[1]; } g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.6 * volG(VOL.bgm), t0 + fade); }   // 진화가 끝나고 끊겼던 자리부터 다시, 소리를 키우며
+    if (fade) { src.loop = true; if (evoMus.buf.gbLoop) { src.loopStart = evoMus.buf.gbLoop[0]; src.loopEnd = evoMus.buf.gbLoop[1]; } g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.6 * bgmV(), t0 + fade); }   // 진화가 끝나고 끊겼던 자리부터 다시, 소리를 키우며
     evoMus.src = src; evoMus.g = g; evoMus.t0 = t0 - off; return t0;
   } catch (e) { return null; }
 }
