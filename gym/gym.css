@@ -2013,3 +2013,6 @@ body.gymBattle .gy-vtit{display:none}
 .lu-slot .lu-x{padding:10px 10px 16px 18px!important;z-index:3}
 .mp-x{right:2px;top:2px;width:46px;height:46px}
 .mp-btns button[data-a=add]:disabled{filter:grayscale(1);opacity:.5}
+/* v12.60 경완: 교체 카드 기술 = 배틀 기술 박스와 같은 모양 (2×2, 우상단 ? 기술 설명) */
+.bt .bp-card .bc-mv{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:minmax(52px,1fr);gap:7px;padding:2px 0 3px}
+.bt .bp-card .bc-mv .mvw{position:relative!important;left:auto!important;top:auto!important;width:auto;height:auto;min-height:0}

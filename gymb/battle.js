@@ -415,11 +415,13 @@ function effTag(d) {
   const e = effOf(TY_EN[d[2]]); if (e == null) return '';
   return e === 0 ? '<i class="eff no">효과 없음</i>' : e > 1 ? '<i class="eff hi">효과 굉장!</i>' : e < 1 ? '<i class="eff lo">효과 별로</i>' : '<i class="eff">효과 있음</i>';
 }
+// 배틀 기술 박스 한 칸 (기술 고르기·잊을 기술 고르기·교체 카드 같은 모양, 우상단 ? = 기술 설명)
+const mvBox = (i, d, pp, maxpp, dis, eff = true) => { const ty = d[2] || 1; return `<div class="mvw"><button class="mvb" data-i="${i}" style="background-image:url(${IMG}bt/mv_${ty}.png);--tc:${TY_C[ty]}" ${dis ? 'disabled' : ''}><b>${esc(d[1])}</b><span class="pw">위력 <em>${d[4] || '—'}</em> 명중 <em>${d[5] && d[5] !== true ? d[5] : '—'}</em></span>${eff ? effTag(d) : ''}${tyTag(ty, d[3])}<span class="pp">PP <em>${pp}/${maxpp}</em></span></button><button class="mvi" data-info="${i}" aria-label="기술 설명">?</button></div>`; };
 function movePanel(req) {
   return new Promise(res => {
     const mv = req.active[0].moves;
-    const p = panel(`<div class="bp-moves">${[0, 1, 2, 3].map(i => { const m = mv[i]; if (!m) return `<i class="mvb empty"></i>`; const d = mvOf(m.id) || ['', m.move, 1, 0]; const ty = d[2] || 1;
-      return `<div class="mvw"><button class="mvb" data-i="${i}" style="background-image:url(${IMG}bt/mv_${ty}.png);--tc:${TY_C[ty]}" ${m.disabled || m.pp <= 0 ? 'disabled' : ''}><b>${esc(d[1])}</b><span class="pw">위력 <em>${d[4] || '—'}</em> 명중 <em>${d[5] && d[5] !== true ? d[5] : '—'}</em></span>${effTag(d)}${tyTag(ty, d[3])}<span class="pp">PP <em>${m.pp}/${m.maxpp}</em></span></button><button class="mvi" data-info="${i}" aria-label="기술 설명">?</button></div>`; }).join('')}
+    const p = panel(`<div class="bp-moves">${[0, 1, 2, 3].map(i => { const m = mv[i]; if (!m) return `<i class="mvb empty"></i>`; const d = mvOf(m.id) || ['', m.move, 1, 0];
+      return mvBox(i, d, m.pp, m.maxpp, m.disabled || m.pp <= 0); }).join('')}
       <button class="bb cancel" data-x><span>취소</span></button></div>`);
     p.onclick = e => {
       const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe();
@@ -457,9 +459,9 @@ function partyPanel(req, forced) {
       const sl = B.btl.p1.pokemon[i]?.moveSlots || [], mv = (m.moves || A.mv || []).map(id => { const d = mvOf(toID(id)); if (!d) return null; const s0 = sl.find(x => x.id === toID(id)); return { d, id: toID(id), move: d[1], pp: s0?.pp ?? d[6], maxpp: s0?.maxpp ?? d[6] }; }).filter(Boolean);   // 기술마다 위력·명중·PP, 누르면 기술 설명 (v12.20 경완)
       const p = panel(`<div class="bp-card"><div class="bc-hd">${P ? thumb(P) : ''}<div class="bc-tx"><b>${esc(A.nm)}${sx(A.g)}</b><span class="bc-lv">Lv.${A.lv}<span class="pty-ty">${tys(A)}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `HP ${hp}/${mhp}`}</span></div></div>
         <p class="bc-ab"><small>특성</small><b>${esc(abKo(A.ab))}</b>${A.it && HOLD[A.it] ? `<small>도구</small><img class="bc-it" alt="" src="${itImg(A.it)}">${esc(HOLD[A.it][0])}` : ''}${AB_D[A.ab] ? `<span class="bc-abd">${esc(AB_D[A.ab])}</span>` : ''}</p>
-        <div class="bc-mv">${mv.map((x, k) => `<button type="button" class="bc-m" data-m="${k}" style="--tc:${TY_C[x.d[2]]}"><span class="bc-mt">${tyTag(x.d[2] || 1, x.d[3])}<small class="bc-pp">PP <b>${x.pp}</b>/${x.maxpp}</small></span><b class="bc-mn">${esc(x.move)}</b><small class="bc-st">위력 <b>${x.d[4] || '—'}</b> · 명중 <b>${x.d[5] && x.d[5] !== true ? x.d[5] : '—'}</b></small>${x.d[8] ? `<em>${esc(x.d[8])}</em>` : ''}</button>`).join('')}</div>
+        <div class="bc-mv">${mv.map((x, k) => mvBox(k, x.d, x.pp, x.maxpp, false)).join('')}</div>
         <div class="bc-btns"><button class="bb cancel" data-x><span>뒤로</span></button><button class="bb go" data-go ${can ? '' : 'disabled'}><span>${m.active ? '나와 있음' : fnt ? '기절' : '바꾸기'}</span></button></div></div>`); fillTh(p);
-      p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.dataset.m) return moveInfo(mv[+b.dataset.m]).then(() => card(i)); if (b.hasAttribute('data-x')) return list(); if (b.hasAttribute('data-go')) { panel(''); res(i); } }; };   // 바꾸기를 누르면 아래 화면 포켓몬 정보는 닫는다 (v12.24 경완)
+      p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.dataset.i != null || b.dataset.info) return moveInfo(mv[+(b.dataset.info ?? b.dataset.i)]).then(() => card(i)); if (b.hasAttribute('data-x')) return list(); if (b.hasAttribute('data-go')) { panel(''); res(i); } }; };   // 바꾸기를 누르면 아래 화면 포켓몬 정보는 닫는다 (v12.24 경완)
     list();
   });
 }
@@ -1095,10 +1097,12 @@ async function learnAsk(P, i, id) {
 // 잊을 기술 고르기: 지금 기술 4개를 배틀 기술 카드처럼, 취소는 잊지 않기
 function forgetPanel(L) {
   return new Promise(res => {
-    const p = panel(`<div class="bp-moves bp-fg">${[0, 1, 2, 3].map(i => { const d = mvOf(L[i]); if (!d) return `<i class="mvb empty"></i>`; const ty = d[2] || 1;
-      return `<div class="mvw"><button class="mvb" data-i="${i}" style="background-image:url(${IMG}bt/mv_${ty}.png);--tc:${TY_C[ty]}"><b>${esc(d[1])}</b><span class="pw">위력 <em>${d[4] || '—'}</em> 명중 <em>${d[5] && d[5] !== true ? d[5] : '—'}</em></span>${tyTag(ty, d[3])}<span class="pp">PP <em>${d[6] || '—'}</em></span></button></div>`; }).join('')}
+    const p = panel(`<div class="bp-moves bp-fg">${[0, 1, 2, 3].map(i => { const d = mvOf(L[i]); if (!d) return `<i class="mvb empty"></i>`;
+      return mvBox(i, d, d[6] || '—', d[6] || '—', false, false); }).join('')}
       <button class="bb cancel" data-x><span>그만두기</span></button></div>`);
-    p.onclick = e => { const b = e.target.closest('button'); if (!b) return; tapSe(); res(b.hasAttribute('data-x') ? null : +b.dataset.i); };
+    p.onclick = e => { const b = e.target.closest('button'); if (!b) return; tapSe();
+      if (b.dataset.info) { const d = mvOf(L[+b.dataset.info]); return moveInfo({ id: L[+b.dataset.info], move: d[1], pp: d[6], maxpp: d[6] }).then(() => forgetPanel(L).then(res)); }   // ? = 기술 설명 (경완 2026-10-31)
+      res(b.hasAttribute('data-x') ? null : +b.dataset.i); };
   });
 }
 async function shareWin(SH) {
@@ -1277,6 +1281,7 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
   // 정보 카드 (경완 2026-10-29): 이름 밑 타입·레벨·경험치 왼쪽 맞춤, 경험치 막대는 끝까지 / 성격·특성 한 줄(눌러서 효과) / 개체값 › / 기술(누르면 상세, 위에 '기술 바꾸기') / 기술 가르치기
   const p = gymPop(monHtml(P, fromBox),
     (a, close) => { const c = curLu(), i = c.indexOf(P.id);
+      if (a === 'x') return close();   // ✕ 는 그냥 닫기 (아래 fin 으로 빠져 카드를 다시 열던 것, 경완 2026-10-31)
       if (a[0] === 'i' && a.length > 1) return mvInfo(a.slice(1));
       if (a === 'nat') return gymPop(`<h4>${natKo(m.nat)}</h4><p class="gy-msg nat-d">${nt[1] ? `<span class="nat-c up">${STAT_KO[nt[1]]} ▲</span><span class="nat-c dn">${STAT_KO[nt[2]]} ▼</span>` : '<span class="nat-c">능력 변화 없음</span>'}</p><p class="gy-msg ab-d">${nt[1] ? `${STAT_KO[nt[1]]}${jong(STAT_KO[nt[1]]) ? '이' : '가'} 잘 오르고, ${STAT_KO[nt[2]]}${jong(STAT_KO[nt[2]]) ? '이' : '가'} 덜 오르는 성격이에요.` : '모든 능력이 고르게 오르는 성격이에요.'}</p><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b2, c2) => c2());   // 성격 효과도 눌러서 (경완 2026-10-29)
       if (a === 'ab') return abShow(m.ab, m.ha, null);   // 특성 효과는 눌러서 팝업 (경완 2026-10-29). v12.10 경완: 숨특은 진짜 가진 개체만 (종의 숨특 칸 없앰)
