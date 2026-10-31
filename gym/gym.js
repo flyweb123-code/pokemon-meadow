@@ -1657,13 +1657,14 @@ function storyTalk() {
     choose: opts => new Promise(ok => { const m = document.createElement('div'); m.className = 'tw-ch in-menu'; m.innerHTML = opts.map((o, i) => `<button class="win" type="button" data-i="${i}">${esc(o)}</button>`).join(''); box.appendChild(m);
       m.onclick = e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); sfx('tap'); m.remove(); ok(+b.dataset.i); }; }),
     // 이름 적기: 새 화면 없이 대사창 안에서 (경완 2026-11-01)
-    name: (t, v) => new Promise(ok => { nmEl.textContent = '강박사'; k.querySelector('.gy-k-t').textContent = t; k.querySelector('.gy-k-cur').hidden = true;
-      const f = document.createElement('div'); f.className = 'tw-nm in-name'; f.innerHTML = `<input type="text" maxlength="8" value="${esc(v)}" aria-label="체육관 이름"><span>${v.length}/8</span><button class="main" type="button">결정</button>`; box.appendChild(f);
+    // v13.72 경완: 물음 대사창을 넘기면 대사창 위에 이름 정하는 팝업
+    name: async (t, v) => { await T.say(t); return new Promise(ok => { k.querySelector('.gy-k-cur').hidden = true;
+      const f = document.createElement('div'); f.className = 'win tw-nm in-name'; f.innerHTML = `<b class="tw-nmh">체육관 이름</b><div class="tw-nmr"><input type="text" maxlength="8" value="${esc(v)}" aria-label="체육관 이름"><span>${v.length}/8</span></div><button class="main" type="button">결정</button>`; box.appendChild(f);
       const inp = f.querySelector('input'), cnt = f.querySelector('span'), btn = f.querySelector('button');
       f.addEventListener('pointerup', e => e.stopPropagation());
       inp.oninput = () => { cnt.textContent = `${inp.value.length}/8`; btn.disabled = !inp.value.trim(); };
       const go = e => { e?.preventDefault(); const nm = inp.value.trim().slice(0, 8); if (!nm) return; sfx('tap'); inp.blur(); f.remove(); ok(nm); };
-      btn.onclick = go; inp.onkeydown = e => { if (e.key === 'Enter') go(e); }; }),
+      btn.onclick = go; inp.onkeydown = e => { if (e.key === 'Enter') go(e); }; }); },
     end: async () => { k.classList.add('bye'); await wait(450); k.remove(); },
   };
   return T;
