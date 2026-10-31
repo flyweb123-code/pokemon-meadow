@@ -2301,3 +2301,26 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* 13.34 도전자 명단: 아래 메뉴 바로 위까지 꽉 차게 (메뉴가 아래 안전 영역을 이미 맡음, 경완 2026-11-01) */
 .gy-setup.gy-qw{padding-bottom:0!important}
 .gy-qw .gy-body{padding-bottom:14px!important}
+/* v13.70 튜토리얼 스토리: 마을 위 사람·말풍선·서류, 이어 말하는 대사창, 고르기·이름 적기, 캄캄한 체육관 불 켜기 */
+.gy-town .tw-sp{position:absolute;background-repeat:no-repeat;image-rendering:pixelated}.gy-town .tw-sp.flip{transform:scaleX(-1)}
+.tw-bub{position:absolute;z-index:900;transform:translate(-50%,-100%);background:#fff;border:2px solid #303040;border-radius:6px;padding:0 7px;font-size:15px;font-weight:700;line-height:1.35;color:#303040;white-space:nowrap;animation:twPop .2s steps(3,end)}
+.tw-bub::after{content:'';position:absolute;left:50%;bottom:-8px;margin-left:-4px;border:4px solid transparent;border-top-color:#303040}
+.tw-bub.blink{animation:twPop .2s steps(3,end),gyBlink 1s steps(1) .2s infinite}
+@keyframes twPop{from{transform:translate(-50%,-70%) scale(.3)}}
+.tw-paper{position:absolute;z-index:900;width:10px;height:13px;background:#f6f6ee;border:1px solid #9a9a92;animation:twPaper 1.2s ease-out forwards}
+@keyframes twPaper{to{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
+.gy-kang.tw-talk.nop .gy-k-pic{opacity:0;transition:none}
+.gy-kang.tw-talk.off{visibility:hidden}
+.tw-ch{position:absolute;right:0;bottom:calc(100% + 10px);display:flex;flex-direction:column;gap:8px;min-width:140px}
+.gy-k-box:has(.tw-ch){overflow:visible}
+.tw-ch button{font:inherit;font-size:16px;padding:10px 16px;text-align:left;cursor:pointer;color:inherit}
+.tw-nm{display:flex;align-items:center;gap:8px;margin-top:8px}
+.tw-nm input{flex:1;min-width:0;font:inherit;font-size:17px;padding:6px 8px;border:2px solid #b8bccc;border-radius:6px;background:#fff;color:#222}
+.tw-nm span{font-size:12px;color:var(--dim)}
+.tw-nm button{font:inherit;font-size:15px;padding:8px 14px;border:0;border-radius:6px;cursor:pointer;background:#ffd84a;color:#20202c;font-weight:700;box-shadow:inset 0 -3px 0 #d89a2a}.tw-nm button:active{transform:translateY(2px);box-shadow:none}
+.tw-nm button:disabled{opacity:.4}
+.gy-setup.story{z-index:13}
+.gy-lights{position:absolute;inset:0;z-index:2000;pointer-events:none;display:flex;flex-direction:column}
+.gy-lights i{flex:1;background:#06070c;opacity:.96;transition:opacity .22s steps(3,end)}
+.gy-lights i.on{opacity:0}
+#gym.pre :is(.gy-deco,.gy-store,.gy-simb,.gy-menu){visibility:hidden}
