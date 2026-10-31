@@ -61,12 +61,16 @@ struct GameView: UIViewRepresentable {
         private var otherTimer: Timer?
         func otherAudio(_ web: WKWebView?, force: Bool = false) {
             guard let web else { return }
-            let on = AVAudioSession.sharedInstance().isOtherAudioPlaying
+            // v13.36: isOtherAudioPlaying 은 웹뷰(게임 자기) 오디오도 세서 배경 음악이 안 돌아왔다 → 게임 음악을 꺼 달라는 신호(다른 앱이 끊는 소리를 낼 때만 true)를 쓴다
+            let on = AVAudioSession.sharedInstance().secondaryAudioShouldBeSilencedHint
             if !force, on == otherLast { return }
             otherLast = on
-            web.evaluateJavaScript("window.pkOtherAudio && window.pkOtherAudio(\(on))")
+            web.evaluateJavaScript("window.pkSecAudio && window.pkSecAudio(\(on))")
         }
         func startOtherAudioWatch(_ web: WKWebView) {
+            NotificationCenter.default.addObserver(forName: AVAudioSession.silenceSecondaryAudioHintNotification, object: nil, queue: .main) { [weak self, weak web] _ in
+                self?.otherAudio(web)
+            }
             otherTimer?.invalidate()
             otherTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { [weak self, weak web] _ in
                 guard UIApplication.shared.applicationState == .active else { return }
