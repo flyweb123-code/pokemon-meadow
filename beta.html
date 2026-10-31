@@ -6896,7 +6896,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.21';   /* v13.21 경완: 게임 소리를 다른 앱(OTT·음악·소형 플레이)과 같이 (audioSession ambient, 무음 스위치 따름) */
+const APP_VER = '13.22';   /* v13.22 경완: 바꿀 기술 딱지 · 배울 기술 창 제목 대신 '새로 배울 기술' 딱지 · 배울 기술 많으면 목록만 스크롤 */   /* v13.21 경완: 게임 소리를 다른 앱(OTT·음악·소형 플레이)과 같이 (audioSession ambient, 무음 스위치 따름) */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
