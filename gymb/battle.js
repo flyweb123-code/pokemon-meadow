@@ -245,8 +245,8 @@ async function msg(t, hold = 650) {
 }
 // 누를 때까지 기다리는 대화 (승부 끝 등)
 // 본가 {WAIT 5}{WAIT 2}: 글이 다 나오면 팡파르(레벨 업·새 기술), 끝날 때까지 기다렸다가 눌러서 다음 (경완 2026-10-31 본가 타이밍)
-// v13.26 경완: 기술을 배울 때는 늘 본가 배틀에서 기술 배울 때 팡파르 (ME_FANFA1, 곡은 잠깐 줄어듦)
-const learnFan = () => { try { const f = window.GymBGM?.fan?.('ME_FANFA1'); f?.catch?.(() => {}); if (!f) se('DECIDE'); } catch (e) {} };
+// v13.26 경완: 기술을 배울 때는 늘 본가 배틀에서 기술 배울 때 팡파르 (ME_FANFA1)
+const learnFan = () => { try { if (window.GymBGM?.se) window.GymBGM.se('ME_FANFA1'); else se('DECIDE'); } catch (e) {} };   // v13.28 경완: 배틀 밖에선 배경곡을 줄이지 않고 그 위에 팡파르만
 async function msgFan(t) { await msg(t, 0); if (!B) return; try { await window.GymBGM?.fan?.('ME_FANFA1'); } catch (e) {} if (!B) return; $b('.bt-msg .cur').hidden = false; await new Promise(r => { B.tapWake = r; }); if (B) { B.tapWake = null; $b('.bt-msg .cur').hidden = true; } }
 async function msgTap(t) { await msg(t, 0); if (!B) return; $b('.bt-msg .cur').hidden = false; await new Promise(r => { B.tapWake = r; }); $b('.bt-msg .cur').hidden = true; }
 
@@ -1182,22 +1182,26 @@ function drawTab() {
   // 옮길 자리는 칸이 아니라 칸과 칸 사이 여백 가운데에 막대로 보인다 (경완 2026-10-29)
   if (luOrd) grid.classList.add('lu-wig');   // 순서 바꾸기 중엔 칸이 흔들흔들
   const bar = document.createElement('i'); bar.className = 'lu-bar'; bar.hidden = true; grid.appendChild(bar);
-  const insAt = (x, y) => { const F = [...grid.querySelectorAll('.lu-slot[data-p]')]; if (F.length < 2) return null; const gr = grid.getBoundingClientRect();
-    let best = null, bd = 1e9; F.forEach((el, i) => { if (el.classList.contains('lu-drag')) return; const r = el.getBoundingClientRect(), d = Math.hypot(Math.max(r.left - x, 0, x - r.right), Math.max(r.top - y, 0, y - r.bottom)); if (d < bd) { bd = d; best = [i, r]; } });
-    const [i, r] = best, after = y > r.top + r.height / 2, k = i + (after ? 1 : 0), gap = parseFloat(getComputedStyle(grid).rowGap) || 8;   // 한 줄 한 칸이라 위아래 사이에 가로 막대
-    bar.hidden = false; bar.style.left = (r.left - gr.left) + 'px'; bar.style.width = r.width + 'px'; bar.style.top = ((after ? r.bottom + gap / 2 : r.top - gap / 2) - gr.top) + 'px'; bar.style.height = ''; return k; };
   // 순서 바꾸기 모드에선 바로 끌고, 아니면 슬롯을 꾹 누르면 끌 수 있다 (경완 2026-10-29)
   grid.oncontextmenu = e => e.preventDefault();
   grid.addEventListener('touchmove', e => { if (dg?.ready) e.preventDefault(); }, { passive: false });   // 꾹 누른 뒤엔 화면이 스크롤되지 않게
   grid.onpointerdown = e => { const b = e.target.closest('.lu-slot[data-p]'); if (!b || e.button || e.target.closest('.lu-x')) return; const d = dg = { b, x: e.clientX, y: e.clientY, pid: e.pointerId, on: false, ready: luOrd };
     if (!luOrd) d.t = setTimeout(() => { if (dg !== d) return; d.ready = true; noTap = Date.now() + 1e4; b.classList.add('lu-hold'); grid.classList.add('lu-wig'); sfx('tap'); try { navigator.vibrate?.(15); } catch (er) {} }, 380); };
   grid.onpointermove = e => { if (!dg || e.pointerId !== dg.pid) return; const dx = e.clientX - dg.x, dy = e.clientY - dg.y;
-    if (!dg.on) { if (!dg.ready) { if (Math.hypot(dx, dy) > 8) { clearTimeout(dg.t); dg = null; } return; } if (Math.hypot(dx, dy) < (luOrd ? 8 : 3)) return; dg.on = true; try { grid.setPointerCapture(e.pointerId); } catch (er) {} dg.b.classList.add('lu-drag'); }
-    dg.b.style.transform = `translate(${dx}px,${dy}px) scale(1.06)`; dg.ins = insAt(e.clientX, e.clientY); };
+    if (!dg.on) { if (!dg.ready) { if (Math.hypot(dx, dy) > 8) { clearTimeout(dg.t); dg = null; } return; } if (Math.hypot(dx, dy) < (luOrd ? 8 : 3)) return; dg.on = true; try { grid.setPointerCapture(e.pointerId); } catch (er) {} dg.F = [...grid.querySelectorAll('.lu-slot[data-p]')]; dg.R = dg.F.map(el => { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }); dg.from = dg.F.indexOf(dg.b); dg.to = dg.from; dg.b.classList.add('lu-drag'); grid.classList.add('lu-live'); }
+    dg.b.style.transform = `translate(${dx}px,${dy}px) scale(1.06)`; luLive(dg, dx, dy); };
+  // 끌고 있는 카드 자리에 맞춰 다른 카드가 바로바로 비켜 준다 (경완 2026-10-31)
+  const luLive = (d, dx, dy) => { const { F, R, from } = d, cx = R[from].x + dx, cy = R[from].y + dy;
+    let to = from, bd = 1e9; R.forEach((r, k) => { const dd = Math.hypot(r.x - cx, r.y - cy); if (dd < bd) { bd = dd; to = k; } });
+    if (to === d.to) return; d.to = to; const O = F.filter(el => el !== d.b); O.splice(to, 0, d.b);
+    O.forEach((el, n) => { const j = F.indexOf(el), nEl = el.querySelector('.lu-n'); if (nEl) nEl.textContent = n + 1; if (el !== d.b) el.style.transform = n === j ? '' : `translate(${R[n].x - R[j].x}px,${R[n].y - R[j].y}px)`; });
+    sfx('tap'); };
   grid.onpointerup = grid.onpointercancel = e => { if (!dg || e.pointerId !== dg.pid) return; const d = dg; dg = null; clearTimeout(d.t); d.b.classList.remove('lu-hold'); if (!luOrd) grid.classList.remove('lu-wig'); bar.hidden = true; if (!d.on) { if (d.ready && !luOrd) noTap = Date.now(); return; }
-    noTap = Date.now(); const from = cur.indexOf(+d.b.dataset.p || d.b.dataset.p), ins = e.type === 'pointerup' ? d.ins ?? -1 : -1, to = ins < 0 ? -1 : ins > from ? ins - 1 : ins;
-    if (from >= 0 && to >= 0 && to !== from) { const [id] = cur.splice(from, 1); cur.splice(to, 0, id); GA.save(); sfx('tap'); }
-    drawTab(); };
+    noTap = Date.now(); const from = cur.indexOf(+d.b.dataset.p || d.b.dataset.p), to = e.type === 'pointerup' ? d.to ?? -1 : -1;
+    if (from >= 0 && to >= 0 && to !== from) { const [id] = cur.splice(from, 1); cur.splice(to, 0, id); GA.save(); }
+    const k = to >= 0 ? to : d.from, j = d.from; if (d.R && k >= 0) { d.b.classList.add('lu-land'); d.b.style.transform = `translate(${d.R[k].x - d.R[j].x}px,${d.R[k].y - d.R[j].y}px)`; }   // 놓으면 제자리로 쏙
+    if (to < 0) d.F?.forEach(el => { if (el !== d.b) el.style.transform = ''; });
+    setTimeout(drawTab, 150); };
   sh.onclick = e => {
     const x = e.target.closest('.lu-x'); if (x && Date.now() - noTap >= 400) { sfx('tap'); const id = +x.dataset.rm || x.dataset.rm; luAsk(boxOf(id), () => { const j = cur.indexOf(id); if (j >= 0) { cur.splice(j, 1); GA.save(); } drawTab(); }); return; }   // 슬롯 ✕ = 바로 빼기 (경완 2026-10-29)
     const b = e.target.closest('button'); if (!b || b.disabled || Date.now() - noTap < 400) return; sfx('tap');

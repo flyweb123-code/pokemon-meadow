@@ -6907,7 +6907,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.27';   /* v13.27 경완: '다른 앱 소리와 같이 듣기' 기본 켜짐, 영상이 나오는 동안 배경 음악 0 은 스위치와 상관없이 */
+const APP_VER = '13.29';   /* v13.29 경완: 라인업 끌어 옮길 때 다른 카드가 바로바로 비켜 줌 */   /* v13.28 경완: 기술 배울 때 팡파르는 배경곡을 줄이지 않고 */   /* v13.27 경완: '다른 앱 소리와 같이 듣기' 기본 켜짐, 영상이 나오는 동안 배경 음악 0 은 스위치와 상관없이 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
