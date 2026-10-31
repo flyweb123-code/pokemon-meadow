@@ -73,8 +73,9 @@ DESIGNS_FR.forEach(d => { if (FR_FREE[d.id]) d.free = FR_FREE[d.id]; });
 // 맵 묶음: 'fr' 파이어레드 칸토 체육관 / 'pt' 플라티나 (경완 2026-10-27 '맵은 이전 버전으로 바꿔줘봐 지금 캐릭터랑 묻는지 함 보게')
 const MAP_SET = 'fr';
 const DESIGNS = MAP_SET === 'fr' ? DESIGNS_FR : DESIGNS_PT;
-// 디자인 고르기 순서: 고른 타입 맵이 맨 앞, 나머지는 타입 번호 순
-const dzList = ty => [...DESIGNS].sort((a, b) => (b.ty === ty) - (a.ty === ty) || (a.ty || 99) - (b.ty || 99));
+// 디자인 고르기 순서 (경완 2026-11-01): 꽃 > 물 > 번개 > 바위 > 격투 > 실험실 > 넓은 무대 (목록에 없는 맵은 맨 뒤)
+const DZ_ORD = ['celadon', 'cerulean', 'vermilion', 'pewter', 'dojo', 'lab', 'fuchsia'];
+const dzList = () => [...DESIGNS].sort((a, b) => ((DZ_ORD.indexOf(a.id) + 1) || 99) - ((DZ_ORD.indexOf(b.id) + 1) || 99));
 const dzBase = id => DESIGNS.find(d => d.id === id) || DESIGNS.find(d => d.old === id || d.pt === id) || DESIGNS[0];
 // 체육관은 처음엔 관장 주변 + 입구만 작게, 평판(등급)이 오를수록 가운데 홀이 열린다 (경완 2026-10-27).
 // 닫힌 줄은 맵 그림에서 잘라 내고 위아래를 붙인다. 저장하는 칸(꾸미기·트레이너 자리)은 원래 맵 좌표(toF), 화면은 줄인 좌표(toV)
@@ -563,7 +564,7 @@ const loadNamed = () => NAMED.length ? Promise.resolve() : fetch(`gymb/named.jso
 function gInit() {
   const g = st(); if (!g) return null;
   for (const [k, v] of Object.entries({ sch: [], q: [], log: [], w: 0, l: 0, blk: 0, bk: {}, bdg: {}, nt: {}, sf: [], cid: 0, bdl: {}, ms: {}, bsN: {}, gmax: 0 })) if (g[k] == null) g[k] = v;
-  if (g.d && !DESIGNS.some(d => d.id === g.d || d.old === g.d || d.pt === g.d)) { g.d = dzList(g.ty)[0].id; }   // 12.91 경완: 지운 맵(챔피언 로드 등 12종)으로 세운 체육관은 타입에 맞는 남은 맵으로
+  if (g.d && !DESIGNS.some(d => d.id === g.d || d.old === g.d || d.pt === g.d)) { g.d = (DESIGNS.find(d => d.ty === g.ty) || dzList()[0]).id; }   // 12.91 경완: 지운 맵(챔피언 로드 등 12종)으로 세운 체육관은 타입에 맞는 남은 맵으로
   if (g.q.some(c => c.boss)) g.q = g.q.filter(c => !c.boss);   // 예전에 명단으로 온 승급 심사 도전자는 지움 (이제 버튼으로)
   for (const t of Object.keys(g.bdg)) if (!g.bdl[t]) g.bdl[t] = 1;   // 예전 배지(100명) = 동
   if ((g.rv | 0) < 3) {   // 10.90: 평판 문턱을 막은 도전자 수에 맞춰 줄이고(예전 등급 → 새 등급 0·1·3·4·5·6), 타입 배지(동~프리즘 1~4)를 등급 배지 번호(4~7)로
@@ -1418,7 +1419,7 @@ function reportPop(any) {
 // ---------- 처음 설정: 타입 → 디자인 → 이름 (바꾸기는 그 단계 하나만) ----------
 function setup(only, re) {
   const g = st(), first = !g?.d;
-  const dr = { d: g?.d || DESIGNS[0].id, ty: g?.ty || 0, nm: g?.nm || '' };
+  const dr = { d: g?.d || dzList()[0].id, ty: g?.ty || 0, nm: g?.nm || '' };
   if (re && dr.nm === defName(dr.ty)) dr.nm = '';
   const used = re ? new Set(gList().filter(x => !(re === 'close' && x === g)).map(x => x.ty)) : new Set();   // 이미 관리 중인 타입은 못 고름
   if (re) { if (used.has(dr.ty)) dr.ty = 0; dr.nm = ''; }
@@ -1431,7 +1432,7 @@ function setup(only, re) {
     const head = `<div class="gy-sh">${i === 0 && re ? '' : i === 0 && first ? '<button class="gy-back" type="button" data-x aria-label="체육관 나가기">✕</button>' : '<button class="gy-back" type="button" aria-label="뒤로">◀</button>'}${steps.length > 1 ? `<span class="gy-steps">${steps.map((_, j) => `<i class="${j <= i ? 'on' : ''}"></i>`).join('')}</span>` : ''}</div>`;
     let body = '', btn = last ? (first ? '체육관 열기' : re ? '새로 세우기' : '저장') : '다음';
     if (k === 'd') {
-      const DL = dzList(dr.ty), D = dzBase(dr.d), di = DL.indexOf(D);
+      const DL = dzList(), D = dzBase(dr.d), di = DL.indexOf(D);
       body = `<h3>${re ? '새 체육관 디자인' : '체육관 디자인'}</h3><p class="gy-lead">${re ? '새로 세울 체육관 모양을 골라요.' : '등급이 오를 때마다 체육관이 점점 넓어져요.'}</p>
         <div class="gy-dz"><div class="gy-dz-view"><img data-ms="${D.id}" data-gi="${first ? 0 : ''}" alt=""><button class="gy-dz-arw l" type="button" data-m="-1" aria-label="이전">◀</button><button class="gy-dz-arw r" type="button" data-m="1" aria-label="다음">▶</button></div>
         <div class="gy-dz-nm">${D.n}</div><div class="gy-dots">${DL.map((_, j) => `<i class="${j === di ? 'on' : ''}"></i>`).join('')}</div></div>`;
@@ -1453,8 +1454,8 @@ function setup(only, re) {
     const b = e.target.closest('button'); if (!b) return; sfx('tap');
     if (b.hasAttribute('data-x')) { exit(); return; }
     if (b.classList.contains('gy-back')) { if (i > 0) { i--; draw(); } else el.remove(); return; }
-    if (b.dataset.m) { const DL = dzList(dr.ty), n = DL.length, j = DL.findIndex(D => D.id === dr.d); dr.d = DL[(j + +b.dataset.m + n) % n].id; dr.dPick = 1; draw(); return; }
-    if (b.dataset.ty) { const t = +b.dataset.ty, auto = !dr.nm || dr.nm === defName(dr.ty); dr.ty = t; if (auto) dr.nm = ''; if (!dr.dPick) dr.d = dzList(t)[0].id; draw(); return; }   // 타입을 고르면 그 타입 맵부터 (경완 2026-10-29)
+    if (b.dataset.m) { const DL = dzList(), n = DL.length, j = DL.findIndex(D => D.id === dr.d); dr.d = DL[(j + +b.dataset.m + n) % n].id; dr.dPick = 1; draw(); return; }
+    if (b.dataset.ty) { const t = +b.dataset.ty, auto = !dr.nm || dr.nm === defName(dr.ty); dr.ty = t; if (auto) dr.nm = ''; if (!dr.dPick) dr.d = (DESIGNS.find(d => d.ty === t) || DESIGNS.find(d => d.id === dr.d) || dzList()[0]).id; draw(); return; }   // 타입을 고르면 그 타입 맵부터 (경완 2026-10-29)
     if (b.classList.contains('gy-next')) {
       if (steps[i] === 'ty' && !dr.ty) return;
       if (steps[i] === 'nm') { dr.nm = (el.querySelector('input').value || '').trim().slice(0, 8) || defName(dr.ty); }
