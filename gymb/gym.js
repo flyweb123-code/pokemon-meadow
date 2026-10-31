@@ -761,10 +761,10 @@ function mkCand(now) {
   const W = GYMB(), wage = Math.round(clampN((W.WAGE_BASE + lv * W.WAGE_LV + n * 35) * (trait === 'thrift' ? .7 : trait === 'lazy' ? .55 : trait === 'guts' ? 1.15 : 1), W.WAGE_BASE, Math.max(W.WAGE_BASE, W.WAGE_MAX)) / 10) * 10;
   return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), f: C.f, trait, wage, team: mkTeam(C.t, lv, n) };
 }
-const SF_MAX = [0, 1, 2, 3, 4, 5, 5];
+const SF_MAX = [0, 1, 2, 3, 4, 5, 6];   // v13.01 경완: 전설 6명
 // 등급 혜택 (승급 심사 화면·승급 축하창): 바로 앞 등급과 달라지는 것만, 앞→뒤 숫자로 (경완 2026-10-31 '등급 혜택이나 잘 보이게')
 const perks = i => { const g = st(), L = [], tc = k => Math.min(6, k), ar = (a, b, u) => `<s>${a}${u}</s><i class="pk-ar" aria-hidden="true"></i><b>${b}${u}</b>`;
-  if (i === GRADES.length - 1) return [['egg', `<span class="pk-le">${GA.eggIco?.(g.ty) || ''}</span>`, `${GA.LT_ADJ?.[g.ty] || ''} 전설 알`, '<b>지급</b>']];
+  if (i === GRADES.length - 1) L.push(['egg', `<span class="pk-le">${GA.eggIco?.(g.ty) || ''}</span>`, `${GA.LT_ADJ?.[g.ty] || ''} 전설 알`, '<b>지급</b>']);   // v13.01 경완: 전설도 크기·트레이너·훈련장을 알 밑에
   L.push(['big', '', '체육관 크기', ar(i, i + 1, '단계')]);
   if (SF_MAX[i] !== SF_MAX[i - 1]) L.push(['sf', '', '트레이너 고용', ar(SF_MAX[i - 1], SF_MAX[i], '명')]);
   if (tc(i) !== tc(i - 1)) L.push(['tr', '', '훈련장', ar(tc(i - 1), tc(i), '칸')]);
@@ -1177,7 +1177,7 @@ function infoPop() {
       <div class="if-stats"><div><small>전적</small><b>${g.w || 0}<em>승</em> ${g.l || 0}<em>패</em></b></div><div><small>방어율</small><b>${wr}<em>%</em></b></div><div><small>이번 주</small><b>${w.w || 0}<em>승</em> ${w.l || 0}<em>패</em></b></div></div>
       <button class="if-grade" type="button" data-a="perk" data-g="${G.i}">${gEmb(G.i)}<div class="ig-tx"><div class="ig-top"><small>지금 등급</small><em>${nx ? '다음' : '가장 높은 등급'} ›</em></div><b class="ig-gr" data-g="${G.i}">${G.n}</b><i class="gy-bar"><i style="width:${pct}%"></i></i><span class="ig-rep">평판 <b>${g.rep || 0}</b>${nx ? ` / ${nx[0]}` : ''}${exam(nx) ? ' <span class="if-sim">승급 심사 대기</span>' : ''}</span></div></button>
       <div class="if-two">
-        <div class="if-staff"><small>고용할 수 있는 트레이너</small><b>${staffMax()}<em>/ 5명</em></b></div>
+        <div class="if-staff"><small>고용할 수 있는 트레이너</small><b>${staffMax()}<em>/ ${SF_MAX[SF_MAX.length - 1]}명</em></b></div>
         <div class="if-big"><small>체육관 크기</small><b>${bigOf(g) + 1}<em>/ ${STAGES}단계</em></b>${canBig(g) ? '<button class="gy-key main" type="button" data-a="big">넓히기</button>' : ''}</div>
       </div>
       <button class="if-re if-mg" type="button" data-a="mg">체육관 관리<small>관리하는 체육관 ${gList().length}곳</small></button>
@@ -1262,7 +1262,7 @@ function perkPop() {
   const g = st(), gi = gradeOf(g.rep || 0).i;
   const row = ([v, n], i) => { const k = STAGE[i];
     const L = [`체육관 크기 ${i + 1}단계`, SF_MAX[i] ? `트레이너 ${SF_MAX[i]}명 고용` : '트레이너 고용 잠김', i ? `훈련장 ${Math.min(6, i)}칸` : '훈련장 잠김'];
-    if (i === GRADES.length - 1) L.splice(0, 3, `<span class="pk-le">${GA.eggIco?.(g.ty) || ''}</span>${GA.LT_ADJ?.[g.ty] || ''} 전설 알 지급`);   // 전설 등급은 이것만 (경완 2026-10-29)   // 훈련장은 등급마다 한 칸 (경완 2026-10-29)   // 도전자 수·꾸미기·의상은 등급 차등 없음 (경완 2026-10-28)
+    if (i === GRADES.length - 1) L.unshift(`<span class="pk-le">${GA.eggIco?.(g.ty) || ''}</span>${GA.LT_ADJ?.[g.ty] || ''} 전설 알 지급`);   // 전설 = 알 지급 + 크기·트레이너·훈련장 (v13.01 경완)   // 훈련장은 등급마다 한 칸 (경완 2026-10-29)   // 도전자 수·꾸미기·의상은 등급 차등 없음 (경완 2026-10-28)
     return `<li class="${i === gi ? 'cur' : i < gi ? 'done' : ''}">${i > gi ? `<span class="bdw sil"><img alt="" src="${bdImg(g.ty, i + 1)}"></span>` : gEmb(i)}<div><b${i <= gi ? ` class="gr-tag" data-g="${i}"` : ''}>${n}</b>${i === gi ? '<em>지금</em>' : ''}</div><ul>${L.map(t => `<li>${t}</li>`).join('')}</ul><i class="pk-rep">평판 ${v}</i></li>`; };   // 필요 평판 = 우하단 딱지, '지금'은 등급 이름 옆 (경완 2026-10-30)
   pop(`<h4>체육관 등급</h4><ol class="gy-perk">${GRADES.map(row).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }
