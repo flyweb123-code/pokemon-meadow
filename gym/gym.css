@@ -2298,3 +2298,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .lu-grid.lu-live .lu-slot[data-p]:not(.lu-drag){transition:transform .16s ease-out!important}
 .lu-grid.lu-live .lu-bar{display:none!important}
 .lu-slot.lu-drag.lu-land{transition:transform .14s ease-out!important}
+/* 13.34 도전자 명단: 아래 메뉴 바로 위까지 꽉 차게 (메뉴가 아래 안전 영역을 이미 맡음, 경완 2026-11-01) */
+.gy-setup.gy-qw{padding-bottom:0!important}
+.gy-qw .gy-body{padding-bottom:14px!important}
