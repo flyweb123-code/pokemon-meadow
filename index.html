@@ -2278,8 +2278,10 @@ function mgAbSfx(k, t) {
   }
 }
 let sfxN = 0;
+var fTick = false;   /* v13.11 경완 '미니게임 중 놀래키기 소리': 필드가 내는 소리는 미니게임 창이 열려 있으면 안 남 (필드 시간은 그대로 흐름) */
+function fMute() { return fTick && !document.getElementById('mg')?.hidden; }
 function sfx(name, k = 0) { sfxN++; if (window.__sfxLog) window.__sfxLog.push(name + ' ' + new Error().stack.split('\n')[2]?.trim());
-  if (!sfxOn) return; const a = audio(); if (!a) return;
+  if (!sfxOn || fMute()) return; const a = audio(); if (!a) return;
   const t = a.currentTime + .01;
   switch (name) {
     case 'tap': tone(1320, t, .035, { vol: .045 }); break;
@@ -2585,7 +2587,7 @@ function cryGain(b) { const d = b.getChannelData(0), W = Math.max(64, Math.round
   for (let i = 0; i + W <= d.length; i += W) { let q = 0; for (let j = i; j < i + W; j++) q += d[j] * d[j]; E.push(q / W); }
   if (!E.length) return .25; const mx = Math.max(...E), A = E.filter(e => e >= mx * .05), rms = Math.sqrt(A.reduce((x, y) => x + y, 0) / A.length) || .1; return Math.min(.09 / rms, 4); }
 let cryLimN = null; const cryLim = a => { if (!cryLimN || cryLimN.context !== a) { cryLimN = a.createDynamicsCompressor(); const c = cryLimN; c.threshold.value = -8; c.knee.value = 4; c.ratio.value = 12; c.attack.value = .002; c.release.value = .12; c.connect(a.destination); } return cryLimN; };
-async function playCry(sp, delay = 0, rate = 1, boost = 1) {   // boost: 체육관 배틀은 곡이 커서 더 크게 (v12.20 경완 '배틀 울음소리가 bgm 에 비해 너무 작음')   // rate: 쓰러질 때 낮게 (본가 4세대)
+async function playCry(sp, delay = 0, rate = 1, boost = 1) { if (fMute()) return;   // boost: 체육관 배틀은 곡이 커서 더 크게 (v12.20 경완 '배틀 울음소리가 bgm 에 비해 너무 작음')   // rate: 쓰러질 때 낮게 (본가 4세대)
   if (!sfxOn || !cry.have.has(sp)) return; const a = audio(); if (!a) return;
   try {
     let buf = cry.buf.get(sp);
@@ -6890,7 +6892,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.10';   /* v13.10 경완: 안내원 영업 동안 버튼 그대로 보이되 잠금(.gcall) · 영업 멘트 수마다 4가지 · 안내원 물음 단추 눌림 모션 */   /* v13.09 경완: 도전자 불러오기 = 같은 대화창 · 나가고·들어올 때 틈 · 1~5명 랜덤 · 수에 따라 영업 멘트 · 닉네임 관장님 · 불러오기 단추 오른쪽 */   /* v13.08 경완: 안내원 = 도전자 불러오기(도전자 없을 때, 홍보 → 띵동 3명 → 영업 성공) · 체육관 설명 */   /* v13.07 경완: 체육관 관장 대표 포켓몬은 관장 왼쪽 */   /* v13.06 경완: 전설 이름판 띠 = 무지개가 흐르는 프리즘 */   /* v13.05 경완: 친구 요청이 오거나 수락되면 아이폰 알림 (CloudKit 구독, 설정 › 알림 '친구 요청이 왔을 때') */
+const APP_VER = '13.11';   /* v13.11 경완: 미니게임 창이 열려 있는 동안 필드가 내는 효과음·울음소리는 안 남 */   /* v13.10 경완: 안내원 영업 동안 버튼 그대로 보이되 잠금(.gcall) · 영업 멘트 수마다 4가지 · 안내원 물음 단추 눌림 모션 */   /* v13.09 경완: 도전자 불러오기 = 같은 대화창 · 나가고·들어올 때 틈 · 1~5명 랜덤 · 수에 따라 영업 멘트 · 닉네임 관장님 · 불러오기 단추 오른쪽 */   /* v13.08 경완: 안내원 = 도전자 불러오기(도전자 없을 때, 홍보 → 띵동 3명 → 영업 성공) · 체육관 설명 */   /* v13.07 경완: 체육관 관장 대표 포켓몬은 관장 왼쪽 */   /* v13.06 경완: 전설 이름판 띠 = 무지개가 흐르는 프리즘 */   /* v13.05 경완: 친구 요청이 오거나 수락되면 아이폰 알림 (CloudKit 구독, 설정 › 알림 '친구 요청이 왔을 때') */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -12339,7 +12341,7 @@ function frame(now) {
   const cov = fieldCovered(); if (cov !== fCov) { fCov = cov; document.body.classList.toggle('fcov', cov); }
   if (inGym()) { last = now; return; }   // 체육관에 있는 동안 필드는 멈춤
   if (now - fLast < (cov ? 100 : fGap()) && !drag && !petM) return; fLast = now;
-  const t0 = performance.now(); try { frameIn(now, cov); } catch (e) { frameErr(e); } if (!cov) fCost += (performance.now() - t0 - fCost) * .05;
+  const t0 = performance.now(); fTick = true; try { frameIn(now, cov); } catch (e) { frameErr(e); } fTick = false; if (!cov) fCost += (performance.now() - t0 - fCost) * .05;
 }
 function frameIn(now, cov) {
   const real = Math.min(.1, (now - last) / 1000); last = now;
