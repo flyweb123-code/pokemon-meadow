@@ -728,7 +728,7 @@ function arrive(c) {
     }
     if (lost.length) glog('in', `${cn}${jong(c.nm) ? '이' : '가'} 트레이너 ${lost.length}명을 이기고 올라왔다!`, c.t);
   }
-  if (g.q.length >= 5) { glog('out', `${cn}${jong(c.nm) ? '은' : '는'} 기다리는 사람이 많아 그냥 돌아갔다.`, c.t); return; }
+  // v13.66 경완 '명단 제한 없애줘': 명단이 많아도 도전자는 돌아가지 않는다
   c.exp = c.t + (c.boss ? 8 * H : c.named ? 5 * H : rnd(2, 4) * H);   // 도전자마다 기다리는 시간 (경완 2026-10-30: 자정까지 대신)
   g.q.push(c); if (!beat || c.named) glog('in', `${cn}${jong(c.nm) ? '이' : '가'} 도전하러 왔다!${c.boss ? ` <small>${GRADES[c.boss][1]} 승급 심사</small>` : c.named ? ' <small>이름 있는 트레이너</small>' : ''}`, c.t);
 }
@@ -1160,7 +1160,7 @@ function qPop(seen = st().qSeen | 0) {
     const tag = c => c.boss ? `<em class="qw-tag bs">${gShort(c.boss)} 승급 심사</em>` : c.named ? '<em class="qw-tag nm">이름 있는 트레이너</em>' : `<em class="qw-tag">${esc(c.cls)}</em>`;
     const qTm = c => `<em class="qw-tm${qExp(c) - Date.now() < 30 * 60e3 ? ' low' : ''}"><svg viewBox="0 0 8 8" aria-hidden="true"><path fill="currentColor" d="M2 0h4v1h1v1h1v4h-1v1h-1v1h-4v-1h-1v-1h-1v-4h1v-1h1zM2 1v1h-1v4h1v1h4v-1h1v-4h-1v-1zM3.5 2h1v2h1.5v1h-2.5z"/></svg>${qLeftS(c)}</em>`;   // 시계 그림 + 밝은 딱지: '대기'(어두운 딱지)와 구분 (경완 2026-10-31)   // 남은 시간 딱지, 30분 안 남으면 빨강
     const pic = c => `<span class="qw-pic${c.named ? ' qw-sil' : ''}"><i class="qw-base"></i><img alt="" src="${trSrc(c.tr)}"></span>`;
-    body = Q.length ? `<div class="qw-sum"><b>기다리는 도전자 <em>${Q.length}</em>명</b><span>시간이 지나면 돌아가요</span><i class="qw-balls">${V.map(([c], k) => `<i class="${k ? '' : 'on'}${c.boss ? ' bs' : ''}"></i>`).join('')}</i></div><div class="qw-list">${V.map(([c, i], k) => k
+    body = Q.length ? `<div class="qw-sum"><b>기다리는 도전자 <em>${Q.length}</em>명</b><span>시간이 지나면 돌아가요</span><i class="qw-balls">${V.slice(0, 8).map(([c], k) => `<i class="${k ? '' : 'on'}${c.boss ? ' bs' : ''}"></i>`).join('')}</i></div><div class="qw-list">${V.map(([c, i], k) => k
       ? `<div class="qw-row wait${c.boss ? ' boss' : ''}">${c.id > seen ? '<i class="qw-nd" aria-label="새 도전자"></i>' : ''}<span class="qw-pw">${pic(c)}<span class="qw-no">${k + 1}</span></span><div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span class="qw-came">${qCame(c)}</span></div><span class="qw-wait">대기</span>${qTm(c)}</div>`
       : `<div class="qw-row next${c.boss ? ' boss' : ''}${c.boss || c.named ? ' vs' : ''}">${c.id > seen ? '<i class="qw-nd" aria-label="새 도전자"></i>' : ''}<span class="qw-rib">${c.boss ? '승급 심사 도전자' : '다음 차례'}</span>${c.boss || c.named ? '<i class="qw-spd"></i><i class="qw-vs">VS</i>' : ''}${pic(c)}<div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span class="qw-came">${qCame(c)}</span></div>${qTm(c)}<button class="gy-key main" type="button" data-c="${i}">${c.boss ? '심사 받기' : '도전 받기'}</button></div>`).join('')}</div>`
       : '<div class="qw-none"><i class="qw-clip"></i><b>지금 기다리는 도전자가 없어요</b><span>도전자가 오면 체육관 버튼에 빨간 점이 떠요.</span></div>';
