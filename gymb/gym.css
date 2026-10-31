@@ -2239,5 +2239,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-top .gy-plate .gy-grade{font-size:13px}
 #gym .if-grade .ig-tx>b.ig-gr{align-self:flex-start;font-size:17px;margin:4px 0 6px}
 #gym .gy-perk>li>div b.gr-tag{font-size:13px;margin-top:3px;padding:1px 8px 3px!important}
-#gym .gy-plate:active .gy-grade,#gym .if-grade:active .ig-gr{transform:translateY(2px);box-shadow:inset 0 -1px 0 var(--ge),inset 0 2px 0 rgba(255,255,255,.5),0 0 0 #20202c}
+#gym .gy-grade:active,#gym .if-grade .ig-gr:active{transform:translateY(2px);box-shadow:inset 0 -1px 0 var(--ge),inset 0 2px 0 rgba(255,255,255,.5),0 0 0 #20202c}
 #gym .gy-perk>li>.pk-rep{top:6px;bottom:auto}   /* 평판 딱지 = 우상단 (경완 2026-10-31) */
+#gym .gy-plate:has(.gy-grade:active),#gym button.if-grade:has(.ig-gr:active){transform:none;filter:none;box-shadow:0 3px 0 var(--frame)}   /* v12.98 경완: 등급 딱지를 누를 땐 딱지만 눌림 (기능은 이름판·등급 박스와 같음) */
+#gym .gy-grade,#gym .ig-gr{cursor:pointer}
