@@ -2265,3 +2265,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v13.15 경완 '명단 빨간 점 잘림': 카드 밖 왼쪽 위 점(-5px)이 목록 스크롤 칸·다음 차례 카드에 잘리지 않게 */
 .gy-qw .gy-body{padding:6px 6px 0;margin:-6px -6px 0}
 .gy-qw .qw-row.next{overflow:visible}
+/* v13.16 경완 '교체 화면 효과 딱지가 기술 박스 넘어감': 교체 카드에선 효과 딱지를 PP 와 같은 맨 아래 줄 왼쪽에 (카드가 낮아도 PP 를 밀어내지 않게) */
+.bt.mob .bp-card .mvb .eff{position:absolute!important;left:12px!important;right:auto!important;top:auto!important;bottom:9px!important;transform:none!important;margin:0!important}

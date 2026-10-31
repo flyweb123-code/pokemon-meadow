@@ -745,6 +745,8 @@ const PEND = { '-crit': '급소에 맞았다!', '-supereffective': '효과가 �
 async function flushPend() { const L = B?.pend; if (!L?.length) return; B.pend = []; for (const t of L) { if (/버텼다!$/.test(t) && B.frq?.length) await frFx(B.frq.shift()); await msg(t); } }
 async function handle(a) {
   const k = a[1], A = s => B.act[s];
+  // v13.16 경완 '맞지 않았다! 가 너무 빨리': 기술 이름 바로 뒤에 오는 결과 말은 이름을 읽을 틈(0.75초)을 둔다
+  const pk = B.prevK; B.prevK = k; const gap = () => pk === 'move' ? wait(750) : null;
   if (PEND[k]) { if (k === '-crit') setTimeout(() => vib(2), 120); (B.pend = B.pend || []).push(PEND[k]); return; }
   if (k === '-frmsg') {   // 친밀도: 버티기는 체력바가 줄어든 뒤에, 피하기·고치기는 바로
     const n = nmIn(a[2]), s = sideOf(a[2]);
@@ -784,7 +786,7 @@ async function handle(a) {
       await moveFx(s, id, a.includes('[miss]') || a.some(x => x === '[still]'));
       break;
     }
-    case '-notarget': await msg('하지만 공격할 상대가 없었다!', 500); break;
+    case '-notarget': await gap(); await msg('하지만 공격할 상대가 없었다!', 500); break;
     case '-damage': {
       const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); const from = (a[4] || '').replace('[from] ', '');
       if (ST_P[from]) await stFx(s, from, true);   // 화상·독 데미지는 본가처럼 연출 뒤 HP
@@ -799,8 +801,8 @@ async function handle(a) {
       await drainHp(s, X, hp); if (!sil) await msg(healMsg(who(a[2]), from)); break; }
     case '-sethp': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp] = hpOf(a[3]); await drainHp(s, X, hp); break; }
     case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); X.fntS = true; hbBalls(s); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s === 'e') await expGain(X); break; }
-    case '-immune': await msg(`${who(a[2])}에게는 효과가 없는 것 같다…`); break;
-    case '-miss': await msg(a[3] ? `${who(a[3])}에게는 맞지 않았다!` : `${who(a[2])}의 공격은 빗나갔다!`); break;
+    case '-immune': await gap(); await msg(`${who(a[2])}에게는 효과가 없는 것 같다…`); break;
+    case '-miss': await gap(); await msg(a[3] ? `${who(a[3])}에게는 맞지 않았다!` : `${who(a[2])}의 공격은 빗나갔다!`); break;
     case '-fail': await wait(750); await msg('그러나 실패했다!'); break;   // 기술 이름을 읽을 틈 (경완 2026-10-29 '내던지기 > 그러나 실패했다! 너무 빨라')
     case '-nothing': await wait(750); await msg('그러나 아무 일도 일어나지 않았다!'); break;
     case '-status': { const s = sideOf(a[2]), X = A(s); if (X) { X.st = a[3]; setSt(s, a[3]); } await stFx(s, a[3]); await msg(statusMsg(who(a[2]), a[3])); break; }
@@ -811,7 +813,7 @@ async function handle(a) {
         if (u) { await moveFx('p', u[0]); await msg(u[1], 300); } break; } const T = { RainDance: '비가 내리기 시작했다!', SunnyDay: '햇살이 강해졌다!', Sandstorm: '모래바람이 불기 시작했다!', Hail: '싸라기눈이 내리기 시작했다!', Snow: '눈이 내리기 시작했다!', none: '날씨가 원래대로 돌아왔다!' }; if (T[w]) await msg(T[w]); break; }
     case '-start': { if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); if (/Substitute/.test(a[3])) subFx(sideOf(a[2]), true); const t = startMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
     case '-end': { if (/Substitute/.test(a[3])) subFx(sideOf(a[2]), false); const t = endMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
-    case '-activate': { if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); const t = actMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
+    case '-activate': { if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); else await gap(); const t = actMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
     case '-ability': await msg(`${who(a[2])}의 ${abKo(toID(a[3]))}!`, 500); break;
     case '-hitcount': await msg(`${a[3]}번 맞았다!`); break;
     case '-ohko': await msg('일격필살!'); break;
