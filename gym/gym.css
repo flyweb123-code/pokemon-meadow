@@ -1344,8 +1344,8 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .gy-plate .gy-wing{position:relative;z-index:1;isolation:isolate;min-width:0;height:60px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;gap:6px;background:none;border:0;filter:drop-shadow(0 3px 0 rgba(0,0,0,.4))}
 .gy-plate .gy-wing::before,.gy-plate .gy-wing::after{content:'';position:absolute;z-index:-1;clip-path:var(--cp)}
 .gy-plate .gy-wing::before{inset:0;background:var(--frame)}
-.gy-plate .gy-wing::after{inset:3px;background:linear-gradient(180deg,#fff 0,#fff 8%,var(--win) 9%,var(--win) 70%,var(--g1) 71%,var(--g1) 84%,var(--g2) 85%)}
-.gy-plate[data-g="6"] .gy-wing::after{background:linear-gradient(180deg,#fff 0,#fff 8%,var(--win) 9%,var(--win) 70%,var(--g1) 71%,var(--g1) 84%,transparent 85%),linear-gradient(90deg,#ff9ec4,#ffe27a,#9ef0b8,#9ed4ff,#c8a8ff)}
+.gy-plate .gy-wing::after{inset:3px;background:linear-gradient(180deg,#fff 0,#fff 8%,var(--win) 9%,var(--win) 76%,var(--g1) 77%)}   /* v13.02 경완: 아래 줄 한 줄 */
+.gy-plate[data-g="6"] .gy-wing::after{background:linear-gradient(180deg,#fff 0,#fff 8%,var(--win) 9%,var(--win) 76%,transparent 77%),linear-gradient(90deg,#ff9ec4,#ffe27a,#9ef0b8,#9ed4ff,#c8a8ff)}
 .gy-plate .gy-wing.l{--cp:polygon(0 0,100% 0,100% 100%,0 100%,13px 50%);margin-right:-36px;padding:0 44px 6px 20px;align-items:stretch}
 .gy-plate .gy-wing.r{--cp:polygon(0 0,100% 0,calc(100% - 13px) 50%,100% 100%,0 100%);margin-left:-36px;padding:0 20px 6px 44px;align-items:flex-end}
 .gy-plate .gy-bd{position:relative;z-index:2;justify-self:center;line-height:0;margin:-10px 0 -10px}
