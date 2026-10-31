@@ -2260,3 +2260,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v13.10 경완: 안내원 물음 단추 눌리는 모션 (그림자만큼 내려앉음) */
 #gym .gy-dbtn2:active{transform:translateY(3px);box-shadow:0 0 0 var(--frame)}
 #gym .gy-dbtn2.off:active{box-shadow:0 0 0 #9aa0b0}
+/* v13.12 경완: 안내원·강박사 대사 박스 = 가장 긴 대사 줄 수(--kn, 최소 3)에 맞춘 높이 */
+#gym .gy-k-box{height:calc(132px + (var(--kn,3) - 3) * 1.6em + (var(--kn,3) - 3) * 6px)}
+/* v13.15 경완 '명단 빨간 점 잘림': 카드 밖 왼쪽 위 점(-5px)이 목록 스크롤 칸·다음 차례 카드에 잘리지 않게 */
+.gy-qw .gy-body{padding:6px 6px 0;margin:-6px -6px 0}
+.gy-qw .qw-row.next{overflow:visible}
