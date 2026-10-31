@@ -1186,7 +1186,7 @@ function drawTab() {
   grid.oncontextmenu = e => e.preventDefault();
   grid.addEventListener('touchmove', e => { if (dg?.ready) e.preventDefault(); }, { passive: false });   // 꾹 누른 뒤엔 화면이 스크롤되지 않게
   grid.onpointerdown = e => { const b = e.target.closest('.lu-slot[data-p]'); if (!b || e.button || e.target.closest('.lu-x')) return; const d = dg = { b, x: e.clientX, y: e.clientY, pid: e.pointerId, on: false, ready: luOrd };
-    if (!luOrd) d.t = setTimeout(() => { if (dg !== d) return; d.ready = true; noTap = Date.now() + 1e4; b.classList.add('lu-hold'); grid.classList.add('lu-wig'); sfx('tap'); try { navigator.vibrate?.(15); } catch (er) {} }, 380); };
+    if (!luOrd) d.t = setTimeout(() => { if (dg !== d) return; d.ready = true; noTap = Date.now() + 1e4; b.classList.add('lu-hold'); grid.classList.add('lu-wig'); sfx('tap'); vib(1); }, 380); };   // 꾹 누르면 진동 (경완 2026-10-31: 앱 진동 경로 GA.haptic)
   grid.onpointermove = e => { if (!dg || e.pointerId !== dg.pid) return; const dx = e.clientX - dg.x, dy = e.clientY - dg.y;
     if (!dg.on) { if (!dg.ready) { if (Math.hypot(dx, dy) > 8) { clearTimeout(dg.t); dg = null; } return; } if (Math.hypot(dx, dy) < (luOrd ? 8 : 3)) return; dg.on = true; try { grid.setPointerCapture(e.pointerId); } catch (er) {} dg.F = [...grid.querySelectorAll('.lu-slot[data-p]')]; dg.R = dg.F.map(el => { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }); dg.from = dg.F.indexOf(dg.b); dg.to = dg.from; dg.b.classList.add('lu-drag'); grid.classList.add('lu-live'); }
     dg.b.style.transform = `translate(${dx}px,${dy}px) scale(1.06)`; luLive(dg, dx, dy); };
@@ -1195,7 +1195,7 @@ function drawTab() {
     let to = from, bd = 1e9; R.forEach((r, k) => { const dd = Math.hypot(r.x - cx, r.y - cy); if (dd < bd) { bd = dd; to = k; } });
     if (to === d.to) return; d.to = to; const O = F.filter(el => el !== d.b); O.splice(to, 0, d.b);
     O.forEach((el, n) => { const j = F.indexOf(el), nEl = el.querySelector('.lu-n'); if (nEl) nEl.textContent = n + 1; if (el !== d.b) el.style.transform = n === j ? '' : `translate(${R[n].x - R[j].x}px,${R[n].y - R[j].y}px)`; });
-    sfx('tap'); };
+    sfx('tap'); vib(0); };
   grid.onpointerup = grid.onpointercancel = e => { if (!dg || e.pointerId !== dg.pid) return; const d = dg; dg = null; clearTimeout(d.t); d.b.classList.remove('lu-hold'); if (!luOrd) grid.classList.remove('lu-wig'); bar.hidden = true; if (!d.on) { if (d.ready && !luOrd) noTap = Date.now(); return; }
     noTap = Date.now(); const from = cur.indexOf(+d.b.dataset.p || d.b.dataset.p), to = e.type === 'pointerup' ? d.to ?? -1 : -1;
     if (from >= 0 && to >= 0 && to !== from) { const [id] = cur.splice(from, 1); cur.splice(to, 0, id); GA.save(); }
