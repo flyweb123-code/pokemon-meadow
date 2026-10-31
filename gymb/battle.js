@@ -1438,8 +1438,45 @@ const HOLD = {
   nevermeltice: ["녹지않는얼음", 1500, "얼음 타입 기술의 위력이 조금 올라간다.", 15],
   dragonfang: ["용의이빨", 1500, "드래곤 타입 기술의 위력이 조금 올라간다.", 16],
   blackglasses: ["검은안경", 1500, "악 타입 기술의 위력이 조금 올라간다.", 17],
-  fairyfeather: ["요정의깃털", 1500, "페어리 타입 기술의 위력이 조금 올라간다.", 18]
+  fairyfeather: ["요정의깃털", 1500, "페어리 타입 기술의 위력이 조금 올라간다.", 18],
+  // 열매 (경완 2026-10-31): 배틀에선 먹으면 없어지지만 지닌 도구(S.gym.mon[id].it)는 그대로 — 배틀은 늘 지닌 도구를 새로 넣고 시작한다
+  oranberry: ["오렌열매", 800, "HP가 절반 이하가 되면 먹고 HP를 10 회복한다.", 0],
+  sitrusberry: ["자뭉열매", 2500, "HP가 절반 이하가 되면 먹고 최대 HP의 1/4을 회복한다.", 0],
+  lumberry: ["리샘열매", 3000, "상태 이상이나 혼란에 걸리면 먹고 낫는다.", 0],
+  cheriberry: ["버치열매", 1000, "마비되면 먹고 낫는다.", 0],
+  chestoberry: ["유루열매", 1000, "잠들면 먹고 깨어난다.", 0],
+  pechaberry: ["복슝열매", 1000, "독에 걸리면 먹고 낫는다.", 0],
+  rawstberry: ["복분열매", 1000, "화상을 입으면 먹고 낫는다.", 0],
+  aspearberry: ["배리열매", 1000, "얼면 먹고 녹는다.", 0],
+  persimberry: ["시몬열매", 1000, "혼란에 빠지면 먹고 낫는다.", 0],
+  liechiberry: ["치리열매", 3000, "HP가 1/4 이하가 되면 먹고 공격이 오른다.", 0],
+  ganlonberry: ["용아열매", 3000, "HP가 1/4 이하가 되면 먹고 방어가 오른다.", 0],
+  salacberry: ["캄라열매", 3000, "HP가 1/4 이하가 되면 먹고 스피드가 오른다.", 0],
+  petayaberry: ["야타비열매", 3000, "HP가 1/4 이하가 되면 먹고 특수공격이 오른다.", 0],
+  apicotberry: ["규살열매", 3000, "HP가 1/4 이하가 되면 먹고 특수방어가 오른다.", 0],
+  chilanberry: ["카리열매", 2000, "노말 타입 기술에 맞을 때 먹고 대미지를 반으로 줄인다.", 0],
+  chopleberry: ["로플열매", 2000, "격투 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0],
+  cobaberry: ["바코열매", 2000, "비행 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0],
+  kebiaberry: ["으름열매", 2000, "독 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0],
+  shucaberry: ["슈캐열매", 2000, "땅 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0],
+  chartiberry: ["루미열매", 2000, "바위 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0],
+  tangaberry: ["리체열매", 2000, "벌레 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0],
+  kasibberry: ["수불열매", 2000, "고스트 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0],
+  babiriberry: ["바리비열매", 2000, "강철 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0],
+  occaberry: ["오카열매", 2000, "불꽃 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0],
+  passhoberry: ["꼬시개열매", 2000, "물 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0],
+  rindoberry: ["린드열매", 2000, "풀 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0],
+  wacanberry: ["초나열매", 2000, "전기 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0],
+  payapaberry: ["야파열매", 2000, "에스퍼 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0],
+  yacheberry: ["플카열매", 2000, "얼음 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0],
+  habanberry: ["하반열매", 2000, "드래곤 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0],
+  colburberry: ["마코열매", 2000, "악 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0],
+  roseliberry: ["로셀열매", 2000, "페어리 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0]
 };
+// 상점·창고 분류 (경완 2026-10-31 '민트처럼 항목 분류')
+const IT_CAT = [['heal', '회복', ['leftovers', 'blacksludge', 'shellbell']], ['atk', '공격 강화', ['choiceband', 'choicespecs', 'lifeorb', 'expertbelt', 'muscleband', 'wiseglasses', 'metronome']],
+  ['def', '방어·스피드', ['choicescarf', 'assaultvest', 'eviolite', 'rockyhelmet', 'focusband', 'lightclay']], ['acc', '명중·급소', ['scopelens', 'widelens', 'zoomlens', 'brightpowder', 'kingsrock', 'quickclaw']],
+  ['etc', '특수', ['bigroot', 'flameorb', 'toxicorb']], ['type', '타입 강화', Object.keys(HOLD).filter(k => HOLD[k][3])], ['berry', '열매', Object.keys(HOLD).filter(k => /berry$/.test(k))]];
 const itImg = id => `${IMG}item/${id}.png`;
 const itRow = (id, n, note) => { const x = HOLD[id]; return `<button type="button" class="sp-tm sp-it" data-it="${id}"><img class="tm-ic it-ic" alt="" src="${itImg(id)}"><span class="tm-nm"><b>${esc(x[0])}</b>${n ? `<i class="tm-own">×${n}</i>` : ''}</span><span class="tm-meta"><small>${esc(x[2])}</small>${note ? `<em class="it-note">${note}</em>` : ''}</span></button>`; };
 // 도구는 종류마다 하나만 (경완 2026-10-29): 창고에 있거나 누가 지니고 있으면 가진 것
@@ -1585,5 +1622,5 @@ async function practice() {
   finally { document.body.classList.remove('gymBattle'); drawTab(); }
 }
 
-window.GymBattle = { HOLD, MINT, MINT_P, mintNm, mintImg, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+window.GymBattle = { HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
 })();
