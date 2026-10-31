@@ -810,10 +810,22 @@ function setAt(now = Date.now()) {
 
 // ---------- 도전 받기: 도전자가 문으로 들어와 관장 앞까지 걸어오고, 한마디 → 배틀 → 결과 ----------
 let busy = false, meEnt = null, guyEnt = null;   // meEnt: 맵 위 내 캐릭터 (도전자 쪽을 보게)
+// 대화창 글자를 한 글자씩 드러냄 (이름표 .gy-who 는 바로). 다 보이면 ▼ 를 켬
+function dlgType(el) {
+  const W = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement.closest('.gy-who, .gy-dnext') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  const N = []; for (let n; (n = W.nextNode());) N.push(n);
+  // 남은 글자는 안 보이는 칸(visibility hidden)으로 자리를 잡아 두어 창 크기·줄바꿈이 처음부터 그대로
+  const L = N.map(n => { const h = document.createElement('span'); h.style.visibility = 'hidden'; h.textContent = n.data; const t = n.data; n.data = ''; n.after(h); return [n, h, t]; });
+  const nx = el.querySelector('.gy-dnext'), st = { done: false };
+  let i = 0, c = 0; const end = () => { clearInterval(id); L.forEach(([n, h, t]) => { n.data = t; h.remove(); }); st.done = true; if (nx) nx.hidden = false; };
+  const id = setInterval(() => { if (!el.isConnected || !L[i]) return end(); const [n, h, t] = L[i]; c++; n.data = t.slice(0, c); h.textContent = t.slice(c); if (c >= t.length) { i++; c = 0; } if (!L[i]) end(); }, 38);
+  st.all = end; if (!L.length) end(); return st;
+}
 function talk(html, btn = '다음', sub = '') {
   // 그냥 넘기는 대사는 버튼 대신 깜빡이는 ▼, 대화창이나 빈 곳을 누르면 다음으로 (경완 2026-10-29). '배틀 시작' 같은 글자 버튼은 그대로
-  if (btn === '다음') return new Promise(ok => { $g('.gy-dlg').innerHTML = `${html}${sub ? `<span class="gy-dsub">${sub}</span>` : ''}<i class="gy-dnext" aria-hidden="true">▼</i>`;
-    const t0 = Date.now(), on = e => { if (Date.now() - t0 < 200 || e.target.closest('button, .gy-pop')) return; e.stopPropagation(); root.removeEventListener('click', on, true); sfx('tap'); ok(); };
+  if (btn === '다음') return new Promise(ok => { const el = $g('.gy-dlg'); el.innerHTML = `${html}${sub ? `<span class="gy-dsub">${sub}</span>` : ''}<i class="gy-dnext" aria-hidden="true" hidden>▼</i>`;
+    const ty = dlgType(el);   // v13.12 경완: ▼ 대화창은 첫 글자부터 한 글자씩 (누르면 먼저 다 보이고, 다 보인 뒤 누르면 다음)
+    const t0 = Date.now(), on = e => { if (Date.now() - t0 < 200 || e.target.closest('button, .gy-pop')) return; e.stopPropagation(); if (!ty.done) { ty.all(); return; } root.removeEventListener('click', on, true); sfx('tap'); ok(); };
     root.addEventListener('click', on, true); });
   return new Promise(ok => { $g('.gy-dlg').innerHTML = `${html}${sub ? `<span class="gy-dsub">${sub}</span>` : ''}<button class="gy-dbtn" type="button">${btn} ▶</button>`;
     $g('.gy-dbtn').onclick = e => { e.stopPropagation(); sfx('tap'); ok(); }; });
@@ -1555,6 +1567,7 @@ function kang(lines, { lit = false, nm = '강박사', pic = GA.KANG, ow = 0, ski
   return new Promise(done => {
     const k = document.createElement('div'); k.className = 'gy-kang' + (lit ? ' lit' : '') + (ow ? ' guide' : '');
     k.innerHTML = `<i class="gy-k-veil"></i>${ow ? `<i class="gy-k-pic ow${/\/pt\/|pt_/.test(pic) ? ' w32' : ''}" style="background-image:url(${pic})"></i>` : `<img class="gy-k-pic" alt="${nm}" src="${pic}">`}${skip ? '<button class="gy-k-skip" type="button">건너뛰기</button>' : ''}<div class="win gy-k-box" aria-live="polite"><span class="gy-k-nm">${nm}</span><span class="gy-k-t"></span><b class="gy-k-cur" hidden>▼</b></div>`;
+    k.style.setProperty('--kn', Math.max(3, ...lines.map(t => String(t).split('\n').length)));   // v13.12 경완 '설명 박스 삐져나옴': 4줄 대사가 있으면 박스를 처음부터 그만큼 높게
     root.appendChild(k);
     const talk = GA.inTyper(k, k.querySelector('.gy-k-t'), k.querySelector('.gy-k-cur'));
     let stop = false; const end = async () => { if (k.classList.contains('bye')) return; stop = true; k.classList.add('bye'); await wait(450); k.remove(); done(); };
