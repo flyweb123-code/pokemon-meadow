@@ -2156,16 +2156,27 @@ const audSess = () => { try { if (navigator.audioSession) navigator.audioSession
 window.pkOtherAudio = () => {};
 // v13.38 경완 '또 소리가 끊겼다가 재생됐다가 난리': 이 신호도 게임 자기 소리를 섞어 세서(끊는 모드 ↔ 섞는 모드를 오가며) 번갈아 바뀐다 → 자동 감지는 끔. 앱 신호는 받기만 하고 아무것도 안 한다
 window.pkSecAudio = () => {};
-const pkSecAudioOff = on => { on = !!on; if (on === otherAud) return; otherAud = on; audSess();
-  try { if (on) { bgm.pos = bgmPos(); bgmSrcStop(); } if (bgm.gain && actx) bgm.gain.gain.cancelScheduledValues(actx.currentTime); bgmVol(); if (!on && bgmOn && !bgmAway && !document.hidden) bgmSrcStart(); } catch (e) {}
-  if (!on && !document.hidden) setTimeout(() => { try { audioCheck(); } catch (e) {} }, 300); };
+// v13.40 경완 'PiP 영상 켜져 있으면 배경 음악 안 나게' (다시): 아이폰 신호는 게임 오디오가 켜져 있으면 게임 소리까지 센다.
+// 그래서 게임 오디오가 꺼져 있을 때만 앱에 묻는다(audioPeek): ① 앱으로 돌아오는 순간(숨길 때 오디오를 재워 둠) ② 조용 모드 동안 효과음 사이 쉬는 틈.
+// 조용 모드(otherAud) = 배경 음악 멈춤 + ambient(영상과 섞임) + 효과음 낼 때만 오디오를 깨웠다가 0.7초 뒤 다시 재움. 영상이 끝난 걸 알면 원래대로.
+const peekH = window.webkit?.messageHandlers?.audioPeek;
+let peekBusy = false, peekShow = false, quietT = 0, suspAt = 0;   // peekShow: 돌아와서 묻는 동안엔 효과음이 오디오를 깨우지 않게
+const peekOther = () => peekH ? Promise.resolve(peekH.postMessage({})).then(v => !!v, () => false) : Promise.resolve(false);
+function quietSleep() { clearTimeout(quietT); quietT = setTimeout(() => { if (otherAud && actx && actx.state === 'running') { actx.suspend().then(() => { suspAt = Date.now(); }, () => {}); } }, 700); }
+function setOther(on) { on = !!on; if (on === otherAud) return; otherAud = on; audSess();
+  try { if (on) { bgm.pos = bgmPos(); bgmSrcStop(); bgmVol(); quietSleep(); }
+    else { clearTimeout(quietT); const go = () => { bgmVol(); if (bgmOn && !bgmAway && !document.hidden && !bgm.preview) bgmSrcStart(); }; if (actx && actx.state !== 'running' && !document.hidden) actx.resume().then(go, go); else go(); } } catch (e) {} }
+setInterval(() => { if (!otherAud || !peekH || document.hidden || peekBusy || bgmAway) return; if (actx && actx.state === 'running') return; if (Date.now() - suspAt < 300) return;
+  peekBusy = true; peekOther().then(o => { peekBusy = false; if (!o && otherAud && !(actx && actx.state === 'running')) setOther(false); }); }, 1000);
+setTimeout(() => { if (!peekH || (actx && actx.state === 'running')) return; peekBusy = true; peekOther().then(o => { peekBusy = false; if (o) setOther(true); }); }, 0);   // 앱을 켤 때 (오디오 만들기 전)
 function audio() {
   if (!actx) {
     const A = window.AudioContext || window.webkitAudioContext; if (!A) return null;
     audSess();
     actx = new A(); bgmRoute();
   }
-  if (actx.state !== 'running' && actx.state !== 'closed' && !document.hidden) actx.resume().catch(() => {});
+  if (actx.state !== 'running' && actx.state !== 'closed' && !document.hidden && !peekShow) actx.resume().catch(() => {});
+  if (otherAud) quietSleep();   // 조용 모드: 효과음이 끝나면 다시 재운다
   return actx;
 }
 // 아이폰은 사용자가 화면을 처음 누를 때 소리를 켜 준다
@@ -2529,6 +2540,9 @@ function bgmHide() { if (bgmAway) return; bgmAway = true; clearTimeout(bgmAwayT)
   bgmAwayT = setTimeout(() => { if (actx && actx.state === 'running') actx.suspend().catch(() => {}); }, 80); }
 // 돌아오면 멈췄던 자리부터 이어서 (오디오를 재우면 버퍼 재생도 그 자리에 멈춰 있다)
 function bgmShow() { if (!bgmAway) return; bgmAway = false; clearTimeout(bgmAwayT);
+  if (peekH && !peekBusy) { peekBusy = peekShow = true; peekOther().then(o => { peekBusy = peekShow = false; if (o) { setOther(true); notiSoon(); return; } if (otherAud) setOther(false); bgmShowGo(); }); return; }   // 오디오가 아직 자고 있을 때 영상 소리가 나는지 먼저 묻는다
+  bgmShowGo(); }
+function bgmShowGo() {
   const go = () => { if (bgm.gain && actx) { try { bgm.gain.gain.cancelScheduledValues(actx.currentTime); } catch (e) {} } bgmVol(); if (bgmOn && !bgm.preview) bgmSrcStart(); notiSoon(); };
   if (actx && actx.state !== 'running') actx.resume().then(go, go); else go(); }
 document.addEventListener('visibilitychange', () => { document.hidden ? bgmHide() : (bgmShow(), audioCheck()); });
@@ -2566,13 +2580,13 @@ function audioRebuild() {
   if (!audio()) return; if (bgmOn && !bgm.preview && !document.hidden && bgm.buf) bgmSrcStart();
 }
 function audioCheck() {
-  if (!actx || document.hidden || audioChk) return;
+  if (!actx || document.hidden || audioChk || otherAud || peekBusy) return;
   if (actx.state !== 'running') actx.resume().catch(() => {});
   const t0 = actx.currentTime;
   audioChk = setTimeout(() => { audioChk = 0; if (!actx || document.hidden) return;
     if (actx.state !== 'running' || actx.currentTime - t0 < .05) audioRebuild(); }, 400);
 }
-['pointerdown', 'touchend'].forEach(t => document.addEventListener(t, () => { if (actx && actx.state !== 'running' && !document.hidden) { actx.resume().catch(() => {}); audioCheck(); } }, { capture: true, passive: true }));
+['pointerdown', 'touchend'].forEach(t => document.addEventListener(t, () => { if (actx && actx.state !== 'running' && !document.hidden && !otherAud && !peekBusy) { actx.resume().catch(() => {}); audioCheck(); } }, { capture: true, passive: true }));
 addEventListener('pagehide', bgmHide); addEventListener('pageshow', () => { if (!document.hidden) { bgmShow(); audioCheck(); } });
 addEventListener('focus', () => { if (!document.hidden) { bgmShow(); audioCheck(); } });
 // 곡 파일 가져오기: 파일 이름으로 어느 곡인지 맞춘다
@@ -6912,7 +6926,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.39';   /* v13.39 경완: 모닥불·연못·꽃밭 등 바탕 소품도 꾹 눌러 고르면 테두리 또렷, 밤 밝기 그대로 */   /* v13.38 경완: 영상 감지 자동 배경 음악 끄기 끔 (소리가 끊겼다 났다 반복) */
+const APP_VER = '13.40';   /* v13.40 경완: PiP 영상 켜져 있으면 배경 음악 멈춤 (다시) — 게임 오디오가 자고 있을 때만 앱에 물어봄, 앱 업데이트 필요 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
