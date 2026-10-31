@@ -2252,3 +2252,4 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-plate[data-g="6"] .gy-wing::after{background:linear-gradient(180deg,#fff 0,#fff 8%,var(--win) 9%,var(--win) 84%,transparent 85%),linear-gradient(90deg,#ff9ec4,#ffe27a,#9ef0b8,#9ed4ff,#c8a8ff,#ff9ec4,#ffe27a,#9ef0b8,#9ed4ff,#c8a8ff,#ff9ec4) 0 0/200% 100%;animation:gwPrism 4s linear infinite}   /* v13.05 경완: 전설 띠 = 무지개가 흐르는 프리즘 */
 #gym .gy-plate[data-g="6"] .gy-wing.r::after{animation-delay:-2s}
 @keyframes gwPrism{0%{background-position:0 0,0 0}100%{background-position:0 0,-100% 0}}
+#gym .gy-dbtn2.off{background:#e4e6ec;color:#9aa0b0;box-shadow:0 3px 0 #9aa0b0;border-color:#9aa0b0}   /* v13.08 도전자 불러오기 못 할 때 */
