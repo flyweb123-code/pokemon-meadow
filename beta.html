@@ -305,7 +305,8 @@ body:has(.tcv-pop) #itemPop{z-index:6300}
 .tr-card.lb-trb{box-shadow:none!important}.lb-pk{box-shadow:none!important}
 .lb-show .fr-tr.m{translate:var(--lbtr-m,0 0)}.lb-show .fr-tr.f{translate:var(--lbtr-f,0 0)}
 .lb-pk[data-rk]:not([data-rk=""]){border-color:var(--rkc)}.lb-pk[data-rk="S"]{border-color:#c07c08;box-shadow:0 0 6px rgba(255,200,40,.8)!important}.lb-pk[data-rk="A"]{border-color:#d03838;box-shadow:0 0 5px rgba(240,80,80,.6)!important}
-.mapico.lb-btn{width:auto;height:auto;border:0!important;background:none!important;box-shadow:none!important;line-height:0;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35))}.mapico.lb-btn svg{width:45px;height:40px}.mapico.lb-btn svg path[fill="#20202c"]{fill:#000!important}   /* v11.82 경완: 테두리 검정(밤에도), 맵 편집·체육관 아이콘 크기 */
+.mapico.lb-btn{width:auto;height:auto;border:0!important;background:none!important;box-shadow:none!important;line-height:0;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35))}
+.mapico.lb-btn:active{transform:translate(2px,2px);filter:drop-shadow(0 0 0 rgba(0,0,0,.35))}   /* v12.94 경완: 필드 트로피 눌리는 모션 */.mapico.lb-btn svg{width:45px;height:40px}.mapico.lb-btn svg path[fill="#20202c"]{fill:#000!important}   /* v11.82 경완: 테두리 검정(밤에도), 맵 편집·체육관 아이콘 크기 */
 #set .sheet-head .pf-gear{border:0;background:none;box-shadow:none}#set .sheet-head .pf-gear svg{width:30px;height:30px}#set .sheet-head .pf-gear+.pf-gear{margin-left:0}   /* v11.82 경완: 프로필 친구·설정 버튼 박스 없이 */.lb-tabs[hidden]{display:none}.lb-body{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 12px)}
 #rank.ontop{z-index:6050}#rank.ontop{bottom:0}   /* v12.38 경완: 미니게임 위 랭킹은 아래 탭 자리까지 (탭이 가려져 있어 아래가 잘려 보이던 것) */
 .mgrk-mini{margin:8px 0 2px;cursor:pointer}.mgrk-mini:active{transform:translate(1px,1px)}.mgrk-mh{display:flex;align-items:center;gap:6px;margin:0 0 5px;font-size:13px}.mgrk-mh svg{width:18px;height:18px}.mgrk-mh i{margin-left:auto;font-style:normal;color:var(--dim)}.mgrk-mini .lb-list{display:flex;flex-direction:column;gap:4px;margin:0}.mgrk-mini .lb-row{padding:3px 6px 3px 4px;gap:6px;font-size:12px}.mgrk-mini .lb-show{width:52px;height:36px}.mgrk-mini .tr-card.lb-trb,.mgrk-mini .lb-pk{width:34px;height:34px}.mgrk-mini .lb-row.me{outline:3px solid #7ae0ff;outline-offset:-1px}.mgrk-mini .lb-mid b{font-size:13px}.mgrk-mini .lb-val b{font-size:14px}.mgrk-mini .lb-rk{min-width:22px}   /* v11.93 경완: 기록창 안 순위 3줄 */
@@ -942,6 +943,12 @@ body.petting #dlg,body.petting #info{display:none!important}
 .flyz .fz i::before,.flyz .fz i::after{content:'';position:absolute;top:-5px;width:5px;height:6px;border-radius:60% 60% 40% 40%;background:rgba(225,238,252,.88);box-shadow:0 0 0 1px rgba(60,70,90,.45);transform-origin:50% 100%;animation:fzW .08s steps(2) infinite}
 .flyz .fz i::before{left:-1px;rotate:-28deg}.flyz .fz i::after{left:2px;rotate:18deg;animation-delay:.04s}
 .flyz .fz:nth-child(2){animation-direction:reverse}.flyz .fz:nth-child(2) i,.flyz .fz:nth-child(3) i{transform:scaleX(-1)}
+/* v12.94 경완 '파리 넘 징그럽다': 파리 대신 머리 위로 피어오르는 냄새 줄(꼬불꼬불 도트 선) — 청결 20 아래 2줄, 10 아래 3줄 */
+#wrap .flyz .fz{left:var(--sx,0px);animation:stkU var(--d,2.2s) ease-out infinite var(--dl,0s)}
+#wrap .flyz .fz i{left:-4px;top:-14px;width:7px;height:17px;background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 12' shape-rendering='crispEdges'><g fill='%2396ad3c'><rect x='2' y='0' width='2' height='1'/><rect x='3' y='1' width='2' height='1'/><rect x='3' y='2' width='2' height='1'/><rect x='2' y='3' width='2' height='1'/><rect x='1' y='4' width='2' height='1'/><rect x='1' y='5' width='2' height='1'/><rect x='2' y='6' width='2' height='1'/><rect x='3' y='7' width='2' height='1'/><rect x='3' y='8' width='2' height='1'/><rect x='2' y='9' width='2' height='1'/><rect x='1' y='10' width='2' height='1'/><rect x='1' y='11' width='2' height='1'/></g></svg>") center/contain no-repeat;border-radius:0;box-shadow:none;filter:drop-shadow(0 0 1px rgba(255,255,255,.9));image-rendering:pixelated;animation:none}
+#wrap .flyz .fz i::before,#wrap .flyz .fz i::after{display:none}
+#wrap .flyz .fz i{filter:drop-shadow(1px 0 0 rgba(46,56,14,.75)) drop-shadow(-1px 0 0 rgba(46,56,14,.45))}
+@keyframes stkU{0%{transform:translate(0,6px) scaleY(.55);opacity:0}25%{opacity:1}70%{opacity:.85}100%{transform:translate(1px,-16px) scaleY(1.1);opacity:0}}
 @keyframes fzW{50%{transform:scaleY(.35)}}@keyframes fzJ{50%{translate:1px -1px}}
 @keyframes fzO{0%{transform:translate(calc(var(--rx) * -1),0)}12%{transform:translate(calc(var(--rx) * -.6),calc(var(--ry) * -1))}25%{transform:translate(0,calc(var(--ry) * -.3))}37%{transform:translate(calc(var(--rx) * .7),calc(var(--ry) * -1.1))}50%{transform:translate(var(--rx),0)}62%{transform:translate(calc(var(--rx) * .4),calc(var(--ry) * .8))}75%{transform:translate(0,calc(var(--ry) * .2))}87%{transform:translate(calc(var(--rx) * -.7),calc(var(--ry) * .9))}100%{transform:translate(calc(var(--rx) * -1),0)}}body.petting *{touch-action:none!important}
 .petbar{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,calc(100% - 24px));z-index:40;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;box-sizing:border-box;background:rgba(30,26,52,.9);color:#fff;border:3px solid #fff;box-shadow:0 0 0 3px #2a2440,5px 5px 0 3px rgba(0,0,0,.28);font-size:15px}.petbar[hidden]{display:none!important}
@@ -1121,6 +1128,7 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 @media (hover:hover){.slot:hover{border-color:var(--frame)}}
 .slot:focus-visible{border-color:var(--frame);outline:0}
 .slot[aria-current="true"]{border-color:var(--cursor);background:var(--card)}
+.slot.warn:not([aria-current="true"]){border-color:#e8705e;animation:slWarn 1.8s ease-in-out infinite}@keyframes slWarn{0%,100%{border-color:#eea092;box-shadow:0 0 0 rgba(232,80,60,0)}50%{border-color:#e0503c;box-shadow:0 0 6px rgba(232,80,60,.55)}}   /* v12.95 경완: 게이지 20% 미만 경고 테두리 */
 .slot .ph{flex:1;display:flex;align-items:flex-end;justify-content:center;min-height:56px}
 .slot img{max-height:64px;max-width:100%;image-rendering:pixelated;object-fit:contain}
 .slot .nm{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.slot .nmw{display:flex;align-items:center;justify-content:center;gap:2px;max-width:100%;min-width:0}.slot .nmw .nm{min-width:0}.slot .nmw .sx{flex:none;font-size:.9em;line-height:1}
@@ -2378,7 +2386,7 @@ function bgmSrcStop() { const x = bgm.src; bgm.src = null; if (x) { try { x.stop
 // 곡 위치 기억: 오디오를 새로 만들어도 멈췄던 자리부터 이어서 튼다
 const bgmPos = () => { if (!bgm.src || !actx || !bgm.buf) return bgm.pos || 0; const t = actx.currentTime - bgm.t0, L = bgm.buf.gbLoop; if (L && t > L[1]) return L[0] + (t - L[0]) % (L[1] - L[0]); return (t % bgm.buf.duration + bgm.buf.duration) % bgm.buf.duration; };
 function bgmSrcStart(off = bgm.pos || 0) {
-  if (bgm.src || !bgm.buf || (inGym() && !bgm.preview)) return; try { if (campMus.on && !bgm.preview) return; } catch (e) {}   /* v9.19 경완: 모닥불 노래 중엔 배경 음악이 다시 켜지지 않게 (곡을 받아 오던 게 늦게 끝나거나 무작위 다음 곡이 겹치던 것) — 노래가 끝나면 campBgm(false) 가 이어 튼다 */
+  if (bgm.src || !bgm.buf || ((inGym() || frMus) && !bgm.preview)) return; try { if (campMus.on && !bgm.preview) return; } catch (e) {}   /* v9.19 경완: 모닥불 노래 중엔 배경 음악이 다시 켜지지 않게 (곡을 받아 오던 게 늦게 끝나거나 무작위 다음 곡이 겹치던 것) — 노래가 끝나면 campBgm(false) 가 이어 튼다 */
   const a = audio(); if (!a) return; bgmRoute();
   off = off % bgm.buf.duration || 0;
   const x = a.createBufferSource(), rnd = S.bgmRand && !bgm.preview, L = bgm.buf.gbLoop; x.buffer = bgm.buf; x.loop = !rnd || !!L; if (L) { x.loopStart = L[0]; x.loopEnd = L[1]; }   /* 게임보이 곡: 도입부 뒤 반복 구간만 돈다 */
@@ -2513,9 +2521,11 @@ function gymPull() { const g = S.gym, now = Date.now(); if (!g?.d || (S.useH || 
   if ((g.sch || []).some(t => t > now && t < now + 10 * 60e3)) return; g.pullT = now + 30 * 60e3; g.pull = now + (60 + Math.random() * 120) * 1e3; g.at = Math.min(g.at || Infinity, g.pull); save(); }   // g.pull 은 체육관 tick 이 도전자로 바꾼다
 setTimeout(gymPull, 5000); document.addEventListener('visibilitychange', () => { if (!document.hidden) setTimeout(gymPull, 2000); });
 // v12.20 경완 '도전자 왔을 때 띵동 소리가 어떤 화면에서든, 필드에선 체육관 아이콘이 띵동에 맞춰 흔들리게': 체육관 밖에서는 도전자 시각(sch·pull)이 지나면 띵동 (체육관 안은 gym.js qDing)
+// 플래티넘 소리 엔진(gymb/bgm.js)을 필드에서도 쓸 때 한 번만 불러온다
+const gymSnd = () => window.GymBGM ? Promise.resolve() : (gymSnd.p = gymSnd.p || new Promise(ok => { const x = document.createElement('script'); x.src = 'gymb/bgm.js?v=' + encodeURIComponent(APP_VER); x.onload = x.onerror = () => { gymSnd.p = null; ok(); }; document.head.appendChild(x); }));
 let gymDingBusy = 0;
 async function gymDing() { if (gymDingBusy) return; gymDingBusy = 1;
-  try { if (!window.GymBGM) await new Promise(ok => { const x = document.createElement('script'); x.src = 'gymb/bgm.js?v=' + encodeURIComponent(APP_VER); x.onload = x.onerror = ok; document.head.appendChild(x); });
+  try { await gymSnd();
     await window.GymBGM?.se('DP_PINPON');
     gymShake(); if (!gymFldSeen()) gymDingPend = 1;   // v12.78 경완: 꾸미기·다른 화면에서 띵동을 들었으면 필드로 돌아왔을 때 한 번 더 흔들어 눈치 채게
   } catch (e) {} finally { gymDingBusy = 0; } }
@@ -3395,7 +3405,7 @@ function dirtFx(m) { const c = m.clean ?? 100; if (c >= 40 || m.hidden || !m.el)
 // 파리 떼: 포켓몬 그림(liftEl) 안에 붙여서 걷고 뜨는 대로 같이 따라다닌다
 function flyVis(m) { if (!m.liftEl) return; const c = m.clean ?? 100, n = m.hidden || m.washing ? 0 : c < 10 ? 3 : c < 20 ? 2 : 0;
   let z = m.flyZ; if (!n) { if (z) { z.remove(); m.flyZ = null; } return; }
-  if (!z || !z.isConnected || z.childElementCount !== n) { z?.remove(); z = m.flyZ = document.createElement('span'); z.className = 'flyz'; z.innerHTML = Array.from({ length: n }, (_, k) => `<span class="fz" style="--d:${(1.7 + k * .45 + Math.random() * .3).toFixed(2)}s;--dl:-${(Math.random() * 2).toFixed(2)}s"><i></i></span>`).join(''); m.liftEl.append(z); }
+  if (!z || !z.isConnected || z.childElementCount !== n) { z?.remove(); z = m.flyZ = document.createElement('span'); z.className = 'flyz'; z.innerHTML = Array.from({ length: n }, (_, k) => `<span class="fz" style="--sx:${Math.round([-.22, .22, 0][k] * (m.w || 40))}px;--d:${(1.9 + k * .35 + Math.random() * .3).toFixed(2)}s;--dl:-${(Math.random() * 2).toFixed(2)}s"><i></i></span>`).join(''); m.liftEl.append(z); }
   const H = m.h || 50, W = m.w || 40, k = `${Math.round(H)},${Math.round(W)}`; if (z.dataset.k !== k) { z.dataset.k = k; z.style.bottom = Math.round(H * .78) + 'px'; z.style.setProperty('--rx', Math.round(Math.max(14, W * .42)) + 'px'); z.style.setProperty('--ry', Math.round(Math.max(7, H * .16)) + 'px'); } }
 const frRate = m => { if (!m.pid || m.hidden) return 0; const a = gaugeAvg(m); return FR_TABLE.find(([v]) => a >= v)[1] + (a >= 40 && withFriend(m) ? .5 : 0); };   // 친구 보너스는 돌봐 줄 때만
 // 앱이 꺼져 있던(화면을 떠나 있던) 동안의 필드 친밀도
@@ -6879,7 +6889,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '12.89';   /* v12.89 경완: 선물했다 돌아온 알은 원래 주운 곳 그대로, 가방 알 상태 창 '레어 알' 옆 '가방' 글자 뺌 */
+const APP_VER = '12.99';   /* v12.99 경완: 프로필 성별 아이콘 → '성별을 바꾸시겠습니까?' → 네 → 효과음 + 바뀜 알림 */   /* v12.98 경완: 체육관 등급 딱지 버튼처럼 눌림 (딱지만 눌리고 기능은 이름판·등급 박스와 같음) */   /* v12.97 경완: 필드 슬롯 경고 테두리 깜빡임 = 게이지 깜빡임과 같은 박자(1.8초, 시작 맞춤) */   /* v12.96 경완: 필드 슬롯 경고 테두리는 청결·즐거움·배고픔 셋 다 20% 미만일 때만 */   /* v12.95 경완: 필드 슬롯 청결·즐거움·배고픔 중 하나라도 20% 미만이면 빨간 테두리 은은히 · 승급 심사 라인업 고른 걸로 나감 */   /* v12.94 경완: 노랑시티 격투 도장 맵 다시 (7단계, 1단계 더 좁게) · 필드 파리 → 냄새 선 · 친밀도 만점 창 뜨는 순간부터 BGM · 필드 트로피 눌림 · 체육관 등급 딱지(홈·정보·등급 화면) · 등급 화면 평판 딱지 우상단 */   /* v12.93 경완: 물 위 다리 가운데 다리 아래 모서리 이음새 메움, 실험실 석상 한 칸 위로(카펫 길이만큼), 입구 석상을 맵 위에 세워 뒤로 지나가는 사람이 가려지게. v12.92 경완: 물 위 다리 2·3단계 이음새(다리 옆 그림자) 메움, 실험실 석상은 카펫에서 한 칸 띄움. v12.91 경완: 체육관 맵 12종(챔피언 로드·격투 도장·옥상 정원·회전 미로·덤불 숲길·혼령의 탑·화산 퀴즈장·순간이동 방·얼음·용·그림자·전당의 방) 지움(그 맵 체육관은 타입에 맞는 남은 맵으로), 실험실 석상은 입구 카펫 양쪽. 알 가방에서 보고 있는 알 칸에 테두리(빈 곳 누르면 꺼짐). v12.90 경완: 친밀도 만점 창은 확인 버튼으로만 닫힘, 어두워질 때 필드 곡 줄임·번쩍 반짝 소리·팡파르·같이 걷는 곡(플래티넘). v12.89 경완: 선물했다 돌아온 알은 원래 주운 곳 그대로, 가방 알 상태 창 '레어 알' 옆 '가방' 글자 뺌 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9746,7 +9756,7 @@ function renderMgr(force) { refreshCap();
     const m = S.mons.find(x => x.uid === +b.dataset.uid); if (!m) return;
     const [cls, txt] = slotState(m), st = b.querySelector('.st');
     if (st) { st.className = 'st ' + cls; st.textContent = txt; }   /* v6.12 경완: 슬롯 좌상단은 상태 대신 랭크 */
-    const w = { cl: m.clean ?? 100, hu: 100 - m.hunger, jo: m.joy ?? 60 }; for (const [k, ok, bad] of GG) { const g = b.querySelector(`.gr.${k}`), low = w[k] < LOW_G; g.querySelector('.mini i').style.width = Math.round(w[k]) + '%'; if (g.classList.contains('low') !== low) { g.classList.toggle('low', low); g.querySelector('.gi').innerHTML = low ? bad : ok; } }   // v3.99 경완: 칸 아래 건강 게이지 3개 (청결·배부름·즐거움)
+    const w = { cl: m.clean ?? 100, hu: 100 - m.hunger, jo: m.joy ?? 60 }; for (const [k, ok, bad] of GG) { const g = b.querySelector(`.gr.${k}`), low = w[k] < LOW_G; g.querySelector('.mini i').style.width = Math.round(w[k]) + '%'; if (g.classList.contains('low') !== low) { g.classList.toggle('low', low); g.querySelector('.gi').innerHTML = low ? bad : ok; } } if (b.classList.contains('warn') !== Object.values(w).every(v => v < LOW_G)) { b.classList.toggle('warn'); requestAnimationFrame(() => b.getAnimations({ subtree: true }).forEach(x => { if (/^(lowglow|slWarn)$/.test(x.animationName)) x.startTime = 0; })); }   // v12.97 경완: 테두리 깜빡임을 게이지 깜빡임(lowglow 1.8s)과 같은 박자로   // v12.96 경완: 청결·즐거움·배고픔 셋 다 20% 미만일 때만 슬롯 테두리 빨갛게 은은히   // v3.99 경완: 칸 아래 건강 게이지 3개 (청결·배부름·즐거움)
     b.title = `${m.name} · ${doingText(m)}`;
   });
   renderMgrDetail(key !== mgrKey || force);
@@ -10611,9 +10621,9 @@ function frMaxPre(P, then) {
   const stop = ev => { ev.preventDefault(); ev.stopPropagation(); };
   for (const t of ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchmove', 'touchend', 'mousedown', 'wheel', 'keydown']) ov.addEventListener(t, stop, { capture: true, passive: false });
   const key = ev => stop(ev); document.addEventListener('keydown', key, true);
-  document.body.append(ov);   // v4.85 경완: 어두워짐이 너무 빨라서 3.4초 동안 천천히, 빛과 같은 4단계로 함께 차오른다 (v4.86: 2.8초, v4.91 경완 최종: 2초)
+  document.body.append(ov); frMusIn();   // v4.85 경완: 어두워짐이 너무 빨라서 3.4초 동안 천천히, 빛과 같은 4단계로 함께 차오른다 (v4.86: 2.8초, v4.91 경완 최종: 2초)
   setTimeout(() => sfx('rise'), 1300);
-  setTimeout(() => ov.querySelector('.fp-fl').classList.add('on'), 2000);
+  setTimeout(() => { ov.querySelector('.fp-fl').classList.add('on'); try { window.GymBGM?.se('DP_KIRAKIRA2'); } catch (e) {} }, 2000);
   setTimeout(() => { then(); document.removeEventListener('keydown', key, true); ov.style.transition = 'opacity .25s'; ov.style.opacity = 0; ov.style.pointerEvents = 'none'; setTimeout(() => ov.remove(), 300); }, 2210);
 }
 // 축하 창 뒤로 도트 폭죽이 계속 터진다 (창을 닫으면 멈춤)
@@ -10644,11 +10654,20 @@ function frMaxWin(P) {
     + `<p>${J({ name: nm }, '과/와')} 마음이 완전히 통했다!</p><div class="fm-hearts">♥♥♥♥♥</div>`
     + (mv ? `${moveCard(P.sp, FR_MAX)}<div class="small">이제 ${J({ name: nm }, '은/는')} 기술 <b>${esc(mv)}</b>${hasBat(mv) ? '을' : '를'} 쓸 수 있게 되었다!</div>` : `<div class="small">이제 ${J({ name: nm }, '은/는')} 기술을 쓸 수 있게 되었다!</div>`) + `</div>`;
   const img = $('#frMaxBody img'); img.src = thumbP(P) || ''; if (!thumbOf(P.sp)) ensureSprite(P.sp).then(() => { img.src = thumbP(P); }).catch(() => {});
-  $('#frMax').hidden = false; sfx('newdex'); haptic(1); playCry(P.sp, .9); frMaxFw();
+  $('#frMax').hidden = false; haptic(1); frMaxFw(); frMusWin(P);   /* v12.86 경완: 연출부터 효과음, 창이 떠 있는 동안 배경 음악 */
   log(`${J({ name: nm }, '과/와')} 마음이 완전히 통했다! 이제 ${mv ? `기술 ${mv}${hasBat(mv) ? '을' : '를'}` : '기술을'} 쓸 수 있다.`, [], true);
-  const done = () => { $('#frMax').hidden = true; frMaxOpen = false; sfx('tap'); if (frMaxQ.length) { clearTimeout(frMaxT); frMaxT = setTimeout(frMaxShow, 400); } };
-  $('#frMaxOk').onclick = done; $('#frMax').onclick = ev => { if (ev.target.id === 'frMax') done(); };
+  const done = () => { $('#frMax').hidden = true; frMaxOpen = false; sfx('tap'); frMusOut(); if (frMaxQ.length) { clearTimeout(frMaxT); frMaxT = setTimeout(frMaxShow, 400); } };
+  $('#frMaxOk').onclick = done; $('#frMax').onclick = null;   /* v12.86 경완: 빈 곳 말고 확인 버튼으로만 닫힘 */
 }
+// v12.86 경완 '친밀도 만점 연출부터 효과음이랑 bgm': 어두워지기 시작하면 필드 곡이 줄어들고, 번쩍일 때 반짝 소리, 창이 뜨면 팡파르 → 같이 걷는 곡(플래티넘 SEQ_TSURETEKE). 확인을 누르면 필드 곡이 하던 자리부터 돌아온다
+let frMus = null;
+function frMusIn() { gymSnd().then(() => { try { const M = window.GymBGM; M?.sePrep(['DP_KIRAKIRA2', 'ME_FANFA1']); if (bgmOn) M?.prep('tsure'); } catch (e) {} }); if (!frMus) frMus = { id: bgm.id, pos: bgmPos(), had: !!bgm.src }; bgmDuck(0, 1.6); }
+async function frMusWin(P) { if (!frMus) frMus = { id: bgm.id, pos: bgmPos(), had: !!bgm.src }; const me = frMus; bgmSrcStop(); bgmDuck(1, .05);
+  await gymSnd(); const M = window.GymBGM; if (frMus !== me) return;
+  if (bgmOn) try { M?.play('tsure', { fade: .15 }); } catch (e) {}   // v12.94 경완: 창이 뜨는 순간부터 BGM (팡파르 기다리지 않음)
+  setTimeout(() => { if (frMus === me) playCry(P.sp, .9); }, 350); }
+function frMusOut() { const r = frMus; if (!r) return; frMus = null; try { if (window.GymBGM?.name === 'tsure') window.GymBGM.stop(.8); } catch (e) {}
+  setTimeout(() => { if (frMus || inGym()) return; bgm.fadeIn = 1.5; if (bgmOn && r.had && r.id && r.id !== 'intro') bgmPlay(r.id, r.pos); else bgmStart(); }, 900); }
 // 필드에 나갈 개체: 같은 종 중 필드에 없는 것, 랭크 높은 순
 const freePoke = sp => S.box.filter(p => p.sp === sp && !onField(p.id)).sort((a, b) => inYard(a.id) - inYard(b.id) || ivSum(b) - ivSum(a))[0] || null;   // v10.35: 체육관 훈련장에 있는 포켓몬은 뒤로
 // v10.35 경완 '훈련장에 있는 포켓몬 다시 필드로 보낼 때 알림창': 훈련 중이면 먼저 물어본다
@@ -10839,7 +10858,8 @@ document.querySelector('.tr-top').addEventListener('click', e => { if (!e.target
 $('#trBadge').addEventListener('click', e => { e.stopPropagation(); sfx('tap'); trGrades(); });   /* v12.20 경완: 등급 박스를 누르면 모든 등급과 필요한 도감 수 */
 $('#trRep').addEventListener('click', e => { e.stopPropagation(); sfx('open'); openMyCard(); });   // v12.33 경완: 빈 칸을 눌러도 상세카드
 document.querySelector('#pfPage .tr-card').addEventListener('click', e => { if (e.target.closest('.tr-top,.tr-badge,.tr-rep,.tr-bdgs')) return; sfx('open'); openMyCard(); });   // v12.20 경완: 프로필 박스를 누르면 상세카드
-$('#trSex').addEventListener('click', () => { const t = trOf(); t.sex = t.sex === 'f' ? 'm' : 'f'; sfx('tap'); save(); renderTrainer(); });
+$('#trSex').addEventListener('click', async () => { sfx('tap'); if (!await askPop('성별을 바꾸시겠습니까?', '네', '아니요')) return;   // v12.99 경완: 묻고 → 네 → 효과음과 함께 바로 바뀜 알림
+  const t = trOf(); t.sex = t.sex === 'f' ? 'm' : 'f'; save(); renderTrainer(); sfx('shiny'); sayPop(`성별이 ${t.sex === 'f' ? '여자' : '남자'}로 바뀌었어요!`); });
 // 프로필 '다음까지': 부화기 알 중 가장 빨리 깨는 알, 짝꿍 중 가장 빨리 진화하는 포켓몬까지 남은 km. 줄어들면 잠깐 초록색
 const kmUp = v => (Math.ceil(v * 100 - 1e-6) / 100).toFixed(2);   // 남은 거리는 올림 (다 차기 전엔 0.00 이 안 보이게)
 function renderNext() {
@@ -11586,7 +11606,7 @@ function eggView(e, bag) {   // v4.51 경완: 부화기에서 고른 알을 한 
   if (bag && !L.includes(e)) L.unshift(e);
   let i = Math.max(0, L.indexOf(e));
   // v5.77 경완: 정보 카드처럼 좌우로 밀거나 옆을 눌러 부화기의 다른 알로 넘긴다
-  const fill = k => { const x = L[k]; if (!x) return; const rd = !bag && x.km >= x.need; if (bag && x.isNew) { x.isNew = false; save(); }
+  const fill = k => { const x = L[k]; if (!x) return; const rd = !bag && x.km >= x.need; if (bag && x.isNew) { x.isNew = false; save(); } if (bag && bagHl !== x.id) { bagHl = x.id; renderBag(); }   /* v12.91 경완: 보고 있는 가방 알 칸에 부화기처럼 테두리 */
     hatchStage.innerHTML = '<i class="ehalo"></i>' + eggHtml(x.g, 'wob' + (x.sh ? ' shx' : ''), x.lt);
     const need = bag ? GRADE[x.g].km : x.need, km = x.km || 0;
     m.innerHTML = `<b class="evg">${eggName(x)}</b>${bag ? '' : ` <span class="state${rd ? ' ready' : ''}">${rd ? '부화 준비 완료' : '부화 중'}</span>`}<div class="prog"><i style="width:${Math.min(100, km / need * 100)}%"></i></div>${fmtKm(km)} / ${need}km${bag ? ' 쌓임' : ` · 앞으로 <b>${fmtKm(Math.max(0, need - km))}</b>km`}<div class="evd">${!x.spN && giftOf(x.place) !== null ? `${eggGotDay(x)}<span style="white-space:nowrap">${giftOf(x.place) ? `${esc(giftOf(x.place))}에게 선물 받은 알` : '선물했다가 돌아온 알'}</span>` : x.place || x.spN ? `${eggGotDay(x)}${esc(eggPlace(x))} 근처에서 <span style="white-space:nowrap">주운 알</span>` : x.t ? `${eggGotDay(x)}<span style="white-space:nowrap">주운 알</span>` : '주운 곳 기록 없음'}<br>${themeHint(x)}</div>`;
@@ -11911,7 +11931,7 @@ $('#openRun').onclick = () => tabTo(runEl, () => { runTab = bagNext ? 'bag' : 'e
 $('#closeRun').onclick = () => { seeBag(); if (runEl.classList.contains('gpick')) return frGiftBack(); runEl.hidden = true; };
 runEl.addEventListener('click', e => { if (e.target === runEl) runEl.hidden = true; });
 let eggNone = false;   // 빈 곳을 눌러 알 선택을 지운 상태
-let runTab = 'egg', eggSel = null, bagG = 0, bagSel = null, bagSort = 'new', bagMul = null, delArm = 0;   // bagMul: 여러 개 고르는 중이면 고른 알 id 모음
+let runTab = 'egg', eggSel = null, bagG = 0, bagSel = null, bagHl = null, bagSort = 'new', bagMul = null, delArm = 0;   // bagMul: 여러 개 고르는 중이면 고른 알 id 모음
 try { bagSort = localStorage.getItem('pk-bag-sort') || 'new'; } catch (e) {}
 // 가방을 보고 나가면 NEW 표시를 지운다
 function seeBag(closing) { if (runTab !== 'bag' || (runEl.hidden && !closing)) return; let ch = false; S.bag.forEach(e => { if (e.isNew) { e.isNew = false; ch = true; } }); if (ch) { save(); renderBag.sig = ''; renderRun(); } }
@@ -11924,8 +11944,8 @@ function renderBag() {
   const hasNew = S.bag.some(e => e.isNew);
   const tb = document.querySelector('.runtab[data-tab="bag"]'); tb.innerHTML = '알 가방' + (hasNew ? '<i class="dot" aria-label="새 알"></i>' : '');
   const te = document.querySelector('.runtab[data-tab="egg"]'), rdy = S.eggs.some(e => (e.km >= e.need && !e.rs) || e.nwI); if (!!te.querySelector('.dot') !== rdy) te.innerHTML = '부화기' + (rdy ? '<i class="dot" aria-label="새 알"></i>' : '');
-  if (runTab !== 'bag') { $('#bagPop').hidden = true; bagSel = null; bagMul = null; return; }
-  const sig = [bagG, bagSort, bagSel?.id, bagMul ? 'm' + [...bagMul].join('.') : '', delArm, S.bag.length, S.bag.filter(e => e.isNew).length, S.eggs.length].join();
+  if (runTab !== 'bag') { $('#bagPop').hidden = true; bagSel = null; bagMul = null; bagHl = null; return; }
+  const sig = [bagG, bagSort, bagSel?.id, bagHl, bagMul ? 'm' + [...bagMul].join('.') : '', delArm, S.bag.length, S.bag.filter(e => e.isNew).length, S.eggs.length].join();
   if (sig === renderBag.sig) return; renderBag.sig = sig;
   $('#bagCount').innerHTML = `전체 <b>${S.bag.length}</b>개`;
   const cnt = g => S.bag.filter(e => !g || e.g === g).length, nw = g => S.bag.some(e => e.isNew && (!g || e.g === g));
@@ -11935,7 +11955,7 @@ function renderBag() {
   if (bagSort === 'km') list.sort((a, b) => (b.km || 0) / GRADE[b.g].km - (a.km || 0) / GRADE[a.g].km || (b.km || 0) - (a.km || 0));
   if (bagSort === 'grade') list.sort((a, b) => b.g - a.g || b.t - a.t);
   if (!S.bag.includes(bagSel)) bagSel = null;
-  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot${bagMul?.has(e.id) ? ' on' : ''}" data-id="${e.id}" aria-current="${e === bagSel}">${bagMul ? '<i class="chk"></i>' : ''}${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g, '' + (e.sh ? ' shx' : ''), e.lt)}<span>${e.lt ? LT_ADJ[e.lt] : GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm1(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.replace(/^(\S+ )?\S+(동|읍|면|리|\d가) (?=\S)/, '')) : fmtWhen(e.t)}</span></button>`).join('')
+  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot${bagMul?.has(e.id) ? ' on' : ''}" data-id="${e.id}" aria-current="${e === bagSel || (!bagMul && e.id === bagHl)}">${bagMul ? '<i class="chk"></i>' : ''}${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g, '' + (e.sh ? ' shx' : ''), e.lt)}<span>${e.lt ? LT_ADJ[e.lt] : GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm1(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.replace(/^(\S+ )?\S+(동|읍|면|리|\d가) (?=\S)/, '')) : fmtWhen(e.t)}</span></button>`).join('')
     : `<div class="bag-empty">${S.bag.length ? '이 등급 알이 없어요' : '움직이면 알을 주울 수 있어요'}</div>`;
   document.querySelector('.rtab[data-tab="bag"]').classList.toggle('none', !S.bag.length);   // 알이 하나도 없으면 안내 문구를 남은 공간 정중앙에
   $('#bagMulti').setAttribute('aria-pressed', !!bagMul); $('#bagMulti').textContent = bagMul ? '취소' : '선택';
@@ -11965,6 +11985,7 @@ document.addEventListener('click', ev => {
   const sl = ev.target.closest('#bagGrid .bslot');
   // 여러 개 고르는 중에 가방의 빈 곳(알·버튼이 아닌 곳)을 누르면 고르기 취소 (v3.37 경완)
   if (bagMul && !sl && ev.target.closest('.rtab[data-tab="bag"]') && !ev.target.closest('button, input, [role=tab]')) { bagMul = null; delArm = 0; renderBag(); return; }
+  if (bagHl != null && !sl && ev.target.closest('.rtab[data-tab="bag"]') && !ev.target.closest('button, input, [role=tab]')) { bagHl = null; renderBag(); }   // v12.91 경완: 가방 빈 곳을 누르면 고른 알 테두리 꺼짐
   if (sl && bagMul) { const id = +sl.dataset.id; bagMul.has(id) ? bagMul.delete(id) : bagMul.add(id); delArm = 0; const e = S.bag.find(x => x.id === id); if (e && e.isNew) { e.isNew = false; save(); } renderBag(); return; }
   if (sl && frEggTo && runEl.classList.contains('gpick')) { const e = S.bag.find(x => x.id === +sl.dataset.id); if (e) { sfx('tap'); if (e.isNew) { e.isNew = false; save(); } frGiftEgg(e); } return; }   // v12.77 알 선물 고르기
   if (sl) { delArm = 0; const e = S.bag.find(x => x.id === +sl.dataset.id); bagSel = null; if (e) eggView(e, true); renderBag(); return; }   // v5.94 경완: 부화기 알 카드와 같은 창으로
