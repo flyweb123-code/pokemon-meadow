@@ -1061,7 +1061,7 @@ function palPick() { const g = st(), L = luNow(), P = g.pal && luAll().find(p =>
 let palRaf = 0;
 function palEnt(D) {
   cancelAnimationFrame(palRaf); const P = GB()?.gm && palPick(); if (!P) return;
-  const e = { prop: 1, x: D.leader[0] + .85, y: D.leader[1] - .35, w: 16, h: 16, el: document.createElement('i'), pal: 1 }; e.el.className = 'gy-pal tap';
+  const e = { prop: 1, x: D.leader[0] - .85, y: D.leader[1] - .35, w: 16, h: 16, el: document.createElement('i'), pal: 1 }; e.el.className = 'gy-pal tap';   // v13.07 경완: 관장 왼쪽 (오른쪽이면 머리가 가려짐)
   e.el.innerHTML = '<i class="gp-sh"></i><i class="gp-sp"></i>'; e.el.onclick = ev => { ev.stopPropagation(); sfx('tap'); palChoose(); };
   $g('.gy-ents').appendChild(e.el); ents.push(e); place(e); e.el.style.zIndex = Math.round(D.leader[1] * 10) + 8;   // 내 캐릭터보다 뒤
   GA.pmd(P.sp, P.sex).then(M => { if (!e.el.isConnected) return; const sp = e.el.querySelector('.gp-sp'), k = sc / 2;
