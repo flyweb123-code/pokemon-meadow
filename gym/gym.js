@@ -915,7 +915,7 @@ function bsScreen() {
           <i class="bsw-chev" aria-hidden="true"><i></i><i></i><i></i></i>
           <div class="bsw-c nx"><small>승급 후</small><span class="bsw-bb"><i class="bsw-halo"></i>${bdHtml(g.ty, gi + 1)}</span><b>${GRADES[gi][1]}</b></div></div></div>
       <div class="bsw-ben"><h5>승급 혜택</h5>${perkHtml(gi)}</div>
-      <button class="bsw-go" type="button" data-a="go"><span>심사 받기</span></button><p class="bsw-sub">심사관을 이기면 등급이 올라요. 져도 평판은 그대로예요.</p></div>`;
+      <button class="bsw-go" type="button" data-a="go"><span>심사 받기</span></button></div>`;   // 버튼은 맨 아래, 설명 문구 없음 (경완 2026-10-31)
   el.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap');
     if (b.dataset.a === 'x') { el.remove(); return homeSay(); }
     if (b.dataset.a === 'go') { el.remove(); openTab('battle', { title: '승급 심사 라인업', pick: () => bsStart(gi) }); } };   // 포켓몬 메뉴와 같은 라인업 화면에서 고르고 '이 라인업으로 결정'
@@ -1305,7 +1305,7 @@ async function bigUp(el) {
     wf.remove(); await wait(1500);
     try { M?.play('gym'); } catch (e) {}
     busy = false; root.classList.remove('busy'); renderHome(true);
-    say('체육관이 넓어졌어요!', `+${B.w * B.h - A.w * A.h}칸 넓어졌어요 · 훈련장 칸도 늘었어요`);
+    say('체육관이 넓어졌어요!', `+${B.w * B.h - A.w * A.h}칸 넓어졌어요`);   // 훈련장 칸은 등급 따라 저절로 (넓히기와 무관), 문구 뺌 (경완 2026-10-31)
   } finally { busy = false; root.classList.remove('busy'); }
 }
 // 창고 (경완 2026-10-28 '꾸미기 모드 가방처럼'): 상점에서 산 기술머신·꾸미기·관장 의상을 한곳에서 본다
