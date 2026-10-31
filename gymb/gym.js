@@ -1642,16 +1642,16 @@ async function townScene() {
   await me.go(T.walk.slice(1)); me.turn('u'); await wait(550);
   return { el, me, sp, bub, papers, shake };
 }
-// 마을·체육관 위에서 이어 말하는 대사창 (강박사 큰 그림은 pic(true) 일 때만 = 인물 대사창). 대사마다 창을 새로 띄우지 않아 깜빡임 없이 이어진다
+// 마을·체육관 위에서 이어 말하는 대사창 (화면 아래, 강박사 큰 그림 없이). 대사마다 창을 새로 띄우지 않아 깜빡임 없이 이어진다
 function storyTalk() {
   const k = document.createElement('div'); k.className = 'gy-kang lit tw-talk nop';
-  k.innerHTML = `<img class="gy-k-pic" alt="강박사" src="${GA.KANG}"><div class="win gy-k-box" aria-live="polite"><span class="gy-k-nm">강박사</span><span class="gy-k-t"></span><b class="gy-k-cur" hidden>▼</b></div>`;
+  k.innerHTML = `<div class="win gy-k-box" aria-live="polite"><span class="gy-k-nm">강박사</span><span class="gy-k-t"></span><b class="gy-k-cur" hidden>▼</b></div>`;
   root.appendChild(k); requestAnimationFrame(() => k.classList.add('in'));
   const box = k.querySelector('.gy-k-box'), nmEl = k.querySelector('.gy-k-nm'), typer = GA.inTyper(k, k.querySelector('.gy-k-t'), k.querySelector('.gy-k-cur'));
   const T = {
     el: k,
     say: async (t, { who = '강박사', pic = null } = {}) => { T.hide(false); if (pic != null) T.pic(pic); nmEl.textContent = who; k.style.setProperty('--kn', Math.max(3, String(t).split('\n').length)); await typer(t); },
-    pic: on => k.classList.toggle('nop', !on),
+    pic: () => {},   // 경완 2026-11-01: 스토리 대사창엔 강박사 큰 그림을 띄우지 않는다
     hide: on => k.classList.toggle('off', on),
     // 고르기: 대사창 위에 단추 (누를 때까지 기다림)
     choose: opts => new Promise(ok => { const m = document.createElement('div'); m.className = 'tw-ch in-menu'; m.innerHTML = opts.map((o, i) => `<button class="win" type="button" data-i="${i}">${esc(o)}</button>`).join(''); box.appendChild(m);
