@@ -557,8 +557,9 @@ async function encounter(opts) {
   for (let i = 0; i < 2; i++) { w.classList.add('flash'); await wait(90); w.classList.remove('flash'); await wait(120); }
   if (opts.exam) {   // 승급 심사 (경완 2026-10-31 '배틀 시작할 때 연출도 웅장하게'): 암전 → 금빛 띠 → 빛줄기 속 배지 → '승급 심사' → 심사관 띠
     w.classList.add('ex');
-    w.insertAdjacentHTML('beforeend', `<i class="bk"></i><i class="ex-ray"></i><i class="ex-bar a"></i><i class="ex-bar b"></i><div class="ex-bd">${opts.exam.bd}</div><b class="ex-t"><small>${esc(opts.exam.g)}</small>승급 심사</b><div class="band ex-band"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>심사관 · ${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`);
-    se('KIRAKIRA2'); await wait(900); w.classList.add('hit'); se('KON'); await wait(1500); w.classList.add('foe'); se('SLIDEIN'); await wait(1600);
+    // 줄무늬·빛줄기 없이 (경완 2026-10-31 '구려'): 암전 → 금빛 실선이 가로로 그어지고 → 위아래로 열리는 어두운 무대 → 배지가 떠오름 → '승급 심사' → 심사관 띠
+    w.insertAdjacentHTML('beforeend', `<i class="bk"></i><i class="ex-ln"></i><div class="ex-pn"><i class="ex-glow"></i><div class="ex-bd">${opts.exam.bd}</div><b class="ex-t"><small>${esc(opts.exam.g)}</small>승급 심사</b></div><i class="ex-fl"></i><div class="band ex-band"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>심사관 · ${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`);
+    await wait(500); se('KIRAKIRA2'); await wait(1000); w.classList.add('hit'); se('KON'); await wait(1500); w.classList.add('foe'); se('SLIDEIN'); await wait(1600);
   } else if (!big) {
     w.insertAdjacentHTML('beforeend', Array.from({ length: 12 }, (_, i) => `<i class="st ${i % 2 ? 'r' : 'l'}" style="top:${(i * 100 / 12).toFixed(3)}%;animation-delay:${i * 28}ms"></i>`).join(''));
     await wait(760);
@@ -1112,7 +1113,7 @@ function forgetPanel(L, nw) {
     const N = nw && mvOf(nw), A = [...L, nw];
     const p = panel(`<div class="bp-moves bp-fg${N ? ' has-nw' : ''}">${[0, 1, 2, 3].map(i => { const d = mvOf(L[i]); if (!d) return `<i class="mvb empty"></i>`;
       return mvBox(i, d, d[6] || '—', d[6] || '—', false, false); }).join('')}
-      <button class="bb cancel" data-x><span>그만두기</span></button>${N ? `<div class="fg-nw"><small>새로 배울 기술</small>${mvBox(4, N, N[6] || '—', N[6] || '—', false, false)}</div>` : ''}</div>`);
+      <button class="bb cancel" data-x><span>그만두기</span></button>${N ? `<div class="fg-nw"><small><em>NEW</em>새로 배울 기술</small>${mvBox(4, N, N[6] || '—', N[6] || '—', false, false)}</div>` : ''}</div>`);
     p.onclick = e => { const b = e.target.closest('button'); if (!b) return; tapSe();
       const j = b.dataset.info ? +b.dataset.info : b.closest('.fg-nw') ? 4 : -1;
       if (j >= 0) { const d = mvOf(A[j]); return moveInfo({ id: A[j], move: d[1], pp: d[6], maxpp: d[6] }).then(() => forgetPanel(L, nw).then(res)); }   // ? = 기술 설명 (경완 2026-10-31)

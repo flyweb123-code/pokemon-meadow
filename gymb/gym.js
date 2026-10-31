@@ -907,14 +907,13 @@ function bsGo() {
 function bsScreen() {
   const g = st(); if (!bsReady(g)) return homeSay();
   root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
-  const gi = (g.gmax | 0) + 1, el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-bsw'; $g('.gy-main').appendChild(el);
+  const gi = (g.gmax | 0) + 1, el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-bsw'; el.insertAdjacentHTML('afterbegin', `<i class="bsw-bg" aria-hidden="true">${'<i></i>'.repeat(14)}</i>`); $g('.gy-main').appendChild(el);
   // 웅장하게 (경완 2026-10-31): 어두운 무대 + 빛줄기 속 다음 등급 배지, 금빛 리본, 등급 혜택, 금빛 버튼
   el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">승급 심사</b></div>
-    <div class="gy-body"><div class="bsw-stage"><i class="bsw-sky"></i><i class="bsa-ray"></i><i class="bsw-sp">${'<i></i>'.repeat(10)}</i>
-        <div class="bsw-rib"><b>승급 심사</b></div>
-        <div class="bsw-nx">${bdHtml(g.ty, gi + 1)}</div>
-        <b class="bsw-gn">${GRADES[gi][1]}</b>
-        <div class="bsw-from">${bdHtml(g.ty, gi)}<span>${GRADES[gi - 1][1]}</span><i class="pk-ar" aria-hidden="true"></i><b>${GRADES[gi][1]}</b></div></div>
+    <div class="gy-body"><div class="bsw-top"><div class="bsw-rib"><b>승급 심사</b></div>
+        <div class="bsw-row2"><div class="bsw-c now"><small>지금 등급</small><span class="bsw-bb">${bdHtml(g.ty, gi)}</span><b>${GRADES[gi - 1][1]}</b></div>
+          <i class="bsw-chev" aria-hidden="true"><i></i><i></i><i></i></i>
+          <div class="bsw-c nx"><small>승급 후</small><span class="bsw-bb"><i class="bsw-halo"></i>${bdHtml(g.ty, gi + 1)}</span><b>${GRADES[gi][1]}</b></div></div></div>
       <div class="bsw-ben"><h5>승급 혜택</h5>${perkHtml(gi)}</div>
       <button class="bsw-go" type="button" data-a="go"><span>심사 받기</span></button><p class="bsw-sub">심사관을 이기면 등급이 올라요. 져도 평판은 그대로예요.</p></div>`;
   el.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap');
@@ -1291,16 +1290,19 @@ async function bigUp(el) {
   busy = true; root.classList.add('busy', 'dhide');
   const M = window.GymBGM, map = $g('.gy-map'), r0 = map.getBoundingClientRect();
   try {
-    try { M?.sePrep?.(['ME_FANFA5', 'DP_KON']); M?.stop(.4); } catch (e) {}
-    await wait(500);
+    // 드드득(계단식 확대·흔들림) 없이: 빛나면서 하얘졌다가 → 바뀌고 → 빛이 걷힌다 (경완 2026-10-31)
+    try { M?.sePrep?.(['ME_FANFA5', 'DP_KIRAKIRA2']); M?.stop(.4); } catch (e) {}
+    const stg = $g('.gy-stage'), wf = document.createElement('i'); wf.className = 'gy-wf'; wf.style.cssText = `top:${stg.offsetTop}px;left:${stg.offsetLeft}px;width:${stg.offsetWidth}px;height:${stg.offsetHeight}px`; stg.after(wf);
+    await wait(300); try { M?.se('DP_KIRAKIRA2'); } catch (e) {}
+    map.animate([{ filter: 'none' }, { filter: 'brightness(1.6) saturate(.8)' }], { duration: 1200, easing: 'ease-in', fill: 'forwards' });
+    await wf.animate([{ opacity: 0 }, { opacity: .35, offset: .5 }, { opacity: 1 }], { duration: 1200, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {});
     g.big = prev + 1; save(); glog('in', `체육관을 ${g.big + 1}단계로 넓혔다!`);
-    try { M?.se('ME_FANFA5'); M?.se('DP_KON'); } catch (e) {}
-    renderHome(true); const B = dzOf(g.d), r1 = map.getBoundingClientRect();
-    const ox = (B.leader[0] + .5) * 16 * sc, oy = (B.leader[1] + .5) * 16 * sc;
-    map.style.transformOrigin = `${ox}px ${oy}px`;
-    const an = map.animate([{ transform: `scale(${r0.width / r1.width},${r0.height / r1.height})`, filter: 'brightness(1.7)' }, { transform: 'scale(1)', filter: 'brightness(1.15)', offset: .85 }, { transform: 'scale(1)', filter: 'none' }], { duration: 1800, easing: 'steps(9, end)' });
-    $g('.gy-stage').animate([{ translate: '0 0' }, { translate: '0 -3px' }, { translate: '0 3px' }, { translate: '0 -2px' }, { translate: '0 0' }], { duration: 480, iterations: 3 });
-    await an.finished.catch(() => {}); await wait(2500);
+    map.getAnimations().forEach(x => x.cancel()); renderHome(true); const B = dzOf(g.d);
+    try { M?.se('ME_FANFA5'); } catch (e) {}
+    await wait(350);
+    map.animate([{ filter: 'brightness(1.6) saturate(.8)' }, { filter: 'none' }], { duration: 1400, easing: 'ease-out' });
+    await wf.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 1400, easing: 'ease-out', fill: 'forwards' }).finished.catch(() => {});
+    wf.remove(); await wait(1500);
     try { M?.play('gym'); } catch (e) {}
     busy = false; root.classList.remove('busy'); renderHome(true);
     say('체육관이 넓어졌어요!', `+${B.w * B.h - A.w * A.h}칸 넓어졌어요 · 훈련장 칸도 늘었어요`);
