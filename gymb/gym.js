@@ -809,7 +809,7 @@ function setAt(now = Date.now()) {
 }
 
 // ---------- 도전 받기: 도전자가 문으로 들어와 관장 앞까지 걸어오고, 한마디 → 배틀 → 결과 ----------
-let busy = false, meEnt = null;   // meEnt: 맵 위 내 캐릭터 (도전자 쪽을 보게)
+let busy = false, meEnt = null, guyEnt = null;   // meEnt: 맵 위 내 캐릭터 (도전자 쪽을 보게)
 function talk(html, btn = '다음', sub = '') {
   // 그냥 넘기는 대사는 버튼 대신 깜빡이는 ▼, 대화창이나 빈 곳을 누르면 다음으로 (경완 2026-10-29). '배틀 시작' 같은 글자 버튼은 그대로
   if (btn === '다음') return new Promise(ok => { $g('.gy-dlg').innerHTML = `${html}${sub ? `<span class="gy-dsub">${sub}</span>` : ''}<i class="gy-dnext" aria-hidden="true">▼</i>`;
@@ -1003,13 +1003,40 @@ const GUY_TOUR = () => [
   '이름판을 누르면 체육관 정보와\n등급 배지를 볼 수 있어요.',
   '평판이 등급 끝까지 차면\n[승급 심사] 버튼이 생겨요.\n이기면 등급 배지를 받아요.\n그럼 힘내세요, 관장님!',
 ];
+// 도전자 불러오기 (v13.08 경완): 안내원이 나가서 홍보 → 띵동띵동 도전자 3명 → 안내원이 돌아와 문 앞에서 관장 보고 보고 → 제자리
+async function guyCall(guy) {
+  const g = st(), D = dzOf(g.d), e = guyEnt; if (busy || !e?.el.isConnected) return homeSay();
+  busy = true; root.classList.add('busy');
+  try {
+    await kang(['제가 밖에 나가서 체육관을 홍보하고\n도전자를 데려올게요!\n잠깐만 기다려 주세요, 관장님!'], guy);
+    root.classList.add('dhide'); $g('.gy-dlg').innerHTML = '';
+    const [dx, dy] = D.door, [gx, gy] = [e.x, e.y], mid = [dx, gy];
+    await walk(e, [mid, [dx, dy]].filter((p, i) => i || p[0] !== gx || p[1] !== gy)); e.f = 'd'; place(e); await wait(250); doorSe(); await wait(120); e.el.style.visibility = 'hidden';
+    root.classList.remove('busy'); await wait(900);   // 띵동 동안엔 도전자 받기 단추가 보이게 (busy 값은 그대로라 눌러도 안 열림)
+    for (let i = 0; i < 3; i++) {
+      let c = mkChal(Date.now()); for (let k = 0; k < 30 && (c.named || c.boss); k++) c = mkChal(Date.now());
+      c.exp = c.t + rnd(2, 4) * H; g.q.push(c); glog('in', `${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 홍보를 보고 도전하러 왔다!`, c.t);
+      save(); busy = false; homeSay(); busy = true; qDing(); await wait(520);
+    }
+    await wait(900); root.classList.add('busy');
+    doorSe(); await wait(180); e.x = dx; e.y = dy; e.f = 'u'; place(e); e.el.style.visibility = ''; await wait(300);
+    await walk(e, [[dx, dy - 1]]); e.f = 'u'; place(e); await wait(200);
+    await kang(['영업 성공이에요, 관장님!\n도전자 3명을 데려왔어요.\n도전자 받기를 눌러 맞이해 주세요!'], guy);
+    root.classList.add('dhide'); $g('.gy-dlg').innerHTML = '';
+    await walk(e, [[dx, gy], [gx, gy]].filter(p => p[0] !== e.x || p[1] !== e.y)); e.f = 'd'; place(e);
+  } finally { busy = false; root.classList.remove('busy'); homeSay(); }
+}
 function guyAsk() {
   root.classList.remove('dhide');   // 홈은 대화창을 숨겨 두니 물음 띄울 때 보이게 (경완 2026-10-29 '안내원 눌러도 안 뜸')
-  $g('.gy-dlg').innerHTML = `<span class="gy-who">안내원</span>관장님, 체육관 설명을 처음부터 들어 보실래요?<div class="gy-dyn"><button class="gy-dbtn2" type="button" data-a="n">괜찮아요</button><button class="gy-dbtn2 main" type="button" data-a="y">들을래요</button></div>`;
+  // v13.08 경완: 안내원 = 도전자 불러오기 · 체육관 설명 중 고르기. 불러오기는 기다리는 도전자가 없을 때만
+  const g0 = st(), can = !g0.q.length && !bsReady(g0);
+  $g('.gy-dlg').innerHTML = `<span class="gy-who">안내원</span>관장님, 무엇을 도와 드릴까요?<div class="gy-dyn"><button class="gy-dbtn2${can ? ' main' : ' off'}" type="button" data-a="call">도전자 불러오기</button><button class="gy-dbtn2" type="button" data-a="tour">체육관 설명</button></div>`;
   $g('.gy-dyn').onclick = async e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); sfx('tap');
-    off(); const guy = { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1 };
-    if (b.dataset.a === 'n') return homeSay();   // 괜찮아요 = 말 없이 창만 닫힘 (경완 2026-10-29)
-    await kang(GUY_TOUR(), guy); homeSay(); };
+    const guy = { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1, skip: false };
+    if (b.dataset.a === 'call' && !can) { $g('.gy-dlg').innerHTML = `<span class="gy-who">안내원</span>${g0.q.length ? '기다리는 도전자가 있어요.<br>도전자를 먼저 받아 주세요!' : '승급 심사를 먼저 받아 주세요!'}`; return; }
+    off();
+    if (b.dataset.a === 'call') return guyCall(guy);
+    await kang(GUY_TOUR(), Object.assign(guy, { skip: true })); homeSay(); };
   // 물음 밖(대화창·빈 곳)을 누르면 박사 창처럼 닫힌다 (경완 2026-10-27)
   const shut = e => { if (e.target.closest('.gy-dyn button, .gy-kang')) return; off(); if ($g('.gy-dyn')) { e.stopPropagation(); homeSay(); } };   // 빈 곳을 눌러도 이 창만 닫히고 화면 숨기기(gview)는 안 됨 (경완 2026-10-29)
   const off = () => root.removeEventListener('click', shut, true);
@@ -1050,7 +1077,7 @@ function renderHome(quiet) {
   const meE = meEnt = ent({ ow: myOw(), x: D.leader[0], y: D.leader[1], f: 'd', n3: N3.has(myOw()), onTap: () => { sfx('tap'); meCard();  } });
   if (g.fit) fitSrc('ow').then(u => { if (meE.el.isConnected) meE.el.style.backgroundImage = `url(${u})`; });
   palEnt(D);
-  ent({ ow: GUY_OW, x: D.guy[0], y: D.guy[1], f: 'd', onTap: () => { sfx('tap'); guyAsk(); } });
+  guyEnt = ent({ ow: GUY_OW, x: D.guy[0], y: D.guy[1], f: 'd', onTap: () => { sfx('tap'); if (!busy) guyAsk(); } });
   if (!quiet) homeSay();
 }
 // 관장 뒤 포켓몬 (경완 2026-10-27): 기본은 지금 라인업에서 레벨이 가장 높은 포켓몬, 눌러서 바꿀 수 있다 (g.pal)
