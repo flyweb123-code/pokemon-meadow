@@ -2173,13 +2173,20 @@ function setOther(on) { on = !!on; if (on === otherAud) return; otherAud = on; a
 setInterval(() => { if (!otherAud || !peekH || document.hidden || peekBusy || bgmAway) return; if (actx && actx.state === 'running') return; if (Date.now() - suspAt < 300) return;
   peekBusy = true; peekOther().then(o => { peekBusy = false; if (!o && otherAud && !(actx && actx.state === 'running')) setOther(false); }); }, 1000);
 setTimeout(() => { if (!peekH || (actx && actx.state === 'running')) return; peekBusy = true; peekOther().then(o => { peekBusy = false; if (o) setOther(true); }); }, 0);   // 앱을 켤 때 (오디오 만들기 전)
+// v13.43 경완 'PiP 일시정지했다가 다시 재생하면 게임 화면 누를 때 영상이 멈춤': 게임을 켜 둔 채 영상을 다시 틀면 게임 오디오가 영상에 밀려 'interrupted' 가 된다.
+// 이때 화면을 눌러 오디오를 다시 켜면 영상이 멈추므로, 다시 켜기 전에 앱에 묻고(게임 오디오는 멈춰 있어 믿을 수 있음) 영상이 나오면 조용 모드로 넘어간다
+function checkInterrupt() { if (peekBusy) return; peekBusy = true;
+  peekOther().then(o => { peekBusy = false; if (o) { setOther(true); return; } if (actx && actx.state !== 'running' && actx.state !== 'closed' && !document.hidden) actx.resume().catch(() => {}); }); }
+const actxHeld = () => peekH && actx && actx.state === 'interrupted' && !otherAud;
 function audio() {
   if (!actx) {
     const A = window.AudioContext || window.webkitAudioContext; if (!A) return null;
     audSess();
     actx = new A(); bgmRoute();
+    actx.onstatechange = () => { if (actxHeld() && !document.hidden) checkInterrupt(); };
   }
-  if (actx.state !== 'running' && actx.state !== 'closed' && !document.hidden && !peekShow) actx.resume().catch(() => {});
+  if (actxHeld()) { if (!document.hidden) checkInterrupt(); }
+  else if (actx.state !== 'running' && actx.state !== 'closed' && !document.hidden && !peekShow) actx.resume().catch(() => {});
   if (otherAud) quietSleep();   // 조용 모드: 효과음이 끝나면 다시 재운다
   return actx;
 }
@@ -2585,12 +2592,13 @@ function audioRebuild() {
 }
 function audioCheck() {
   if (!actx || document.hidden || audioChk || otherAud || peekBusy) return;
+  if (actxHeld()) { checkInterrupt(); return; }
   if (actx.state !== 'running') actx.resume().catch(() => {});
   const t0 = actx.currentTime;
   audioChk = setTimeout(() => { audioChk = 0; if (!actx || document.hidden) return;
     if (actx.state !== 'running' || actx.currentTime - t0 < .05) audioRebuild(); }, 400);
 }
-['pointerdown', 'touchend'].forEach(t => document.addEventListener(t, () => { if (actx && actx.state !== 'running' && !document.hidden && !otherAud && !peekBusy) { actx.resume().catch(() => {}); audioCheck(); } }, { capture: true, passive: true }));
+['pointerdown', 'touchend'].forEach(t => document.addEventListener(t, () => { if (actx && actx.state !== 'running' && !document.hidden && !otherAud && !peekBusy) { if (actxHeld()) { checkInterrupt(); return; } actx.resume().catch(() => {}); audioCheck(); } }, { capture: true, passive: true }));
 addEventListener('pagehide', bgmHide); addEventListener('pageshow', () => { if (!document.hidden) { bgmShow(); audioCheck(); } });
 addEventListener('focus', () => { if (!document.hidden) { bgmShow(); audioCheck(); } });
 // 곡 파일 가져오기: 파일 이름으로 어느 곡인지 맞춘다
@@ -6930,7 +6938,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.42';   /* v13.42 경완: 맵 편집 들어가면 소품 리스트 접힌 채로, 리스트 접기 화살표 없앰, 점선 자리 골드·랭킹 따로 */   /* v13.41 경완: 맵 편집 = 화면 크기 그대로(버튼은 점선 자리), 하단 메뉴 자리에 취소·소품·저장, 소품 리스트 접기(빈 곳 누르면 접힘) · 필드에서 고른 소품은 밤에도 원래 색으로 환하게, 모닥불·연못은 예전처럼 */   /* v13.40 경완: PiP 영상 켜져 있으면 배경 음악 멈춤 (다시) — 게임 오디오가 자고 있을 때만 앱에 물어봄, 앱 업데이트 필요 */
+const APP_VER = '13.43';   /* v13.43 경완: 게임 켠 채로 PiP 영상을 다시 틀면 화면 눌러도 영상 안 멈추게 (밀려난 오디오는 다시 켜기 전에 앱에 물어봄) */   /* v13.42 경완: 맵 편집 들어가면 소품 리스트 접힌 채로, 리스트 접기 화살표 없앰, 점선 자리 골드·랭킹 따로 */   /* v13.41 경완: 맵 편집 = 화면 크기 그대로(버튼은 점선 자리), 하단 메뉴 자리에 취소·소품·저장, 소품 리스트 접기(빈 곳 누르면 접힘) · 필드에서 고른 소품은 밤에도 원래 색으로 환하게, 모닥불·연못은 예전처럼 */   /* v13.40 경완: PiP 영상 켜져 있으면 배경 음악 멈춤 (다시) — 게임 오디오가 자고 있을 때만 앱에 물어봄, 앱 업데이트 필요 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
