@@ -1606,10 +1606,12 @@ async function townScene() {
   root.appendChild(el); const map = el.firstChild, me = map.querySelector('.tw-me');
   const cam = (cx, cy) => { const x = clampN(cx * 16 * k - W / 2, 0, T.w * 16 * k - W), y = clampN(cy * 16 * k - H / 2, 0, T.h * 16 * k - H); map.style.transform = `translate(${-Math.round(x)}px,${-Math.round(y)}px)`; };
   const put = (x, y, f, st) => { const fr = FR[f][st]; Object.assign(me.style, { width: fw * k + 'px', height: 32 * k + 'px', left: (x * 16 - (fw - 16) / 2) * k + 'px', top: (y * 16 - 16) * k + 'px', backgroundImage: `url(${owSrc(myOw())})`, backgroundSize: `auto ${32 * k}px`, backgroundPosition: `${-fr * fw * k}px 0` }); me.classList.toggle('flip', f === 'r'); };
+  // 강박사 그림이 내 캐릭터를 가리지 않게 카메라 멈출 자리를 미리 정해 한 번에 간다 (경완 2026-11-01 '올라갔다 살짝 다시 내려오는 것 없애줘')
+  const ty = Math.max(T.to[1], ((T.walk.at(-1)[1] + 1) * 16 * k - (H - 340) + H / 2) / (16 * k));
   cam(...T.from); requestAnimationFrame(() => el.classList.add('on')); await wait(900);
   // 마을을 따라 천천히 올라가다 체육관 가운데에서 멈춘다
   await new Promise(ok => { const t0 = performance.now(), D = 5200, e = t => t < .5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
-    const f = now => { const t = Math.min(1, (now - t0) / D), q = e(t); cam(T.from[0] + (T.to[0] - T.from[0]) * q, T.from[1] + (T.to[1] - T.from[1]) * q); t < 1 ? requestAnimationFrame(f) : ok(); }; requestAnimationFrame(f); });
+    const f = now => { const t = Math.min(1, (now - t0) / D), q = e(t); cam(T.from[0] + (T.to[0] - T.from[0]) * q, T.from[1] + (ty - T.from[1]) * q); t < 1 ? requestAnimationFrame(f) : ok(); }; requestAnimationFrame(f); });
   await wait(600);
   // 내 캐릭터가 길을 따라 걸어와 입구 앞에 선다
   let [x, y] = T.walk[0], n = 0; me.hidden = false; put(x, y, 'r', 0);
@@ -1618,9 +1620,6 @@ async function townScene() {
     await new Promise(ok => { const s = now => { const q = Math.min(1, (now - t0) / 240); put(x0 + dx * q, y0 + dy * q, f, q < .5 ? (n % 2 ? 1 : 2) : 0); q < 1 ? requestAnimationFrame(s) : ok(); }; requestAnimationFrame(s); });
     x += dx; y += dy; }
   put(x, y, 'u', 0); await wait(300);
-  // 강박사 그림이 내 캐릭터를 가리지 않게 (경완 2026-10-29): 캐릭터 발밑이 강박사 머리보다 위에 오도록 카메라를 조금 내린다
-  const cy0 = T.to[1], cy1 = Math.max(cy0, ((y + 1) * 16 * k - (H - 340) + H / 2) / (16 * k));
-  if (cy1 > cy0) await new Promise(ok => { const t0 = performance.now(); const f = now => { const q = Math.min(1, (now - t0) / 700), e = 1 - (1 - q) ** 2; cam(T.to[0], cy0 + (cy1 - cy0) * e); q < 1 ? requestAnimationFrame(f) : ok(); }; requestAnimationFrame(f); });
   await wait(250);
   return el;
 }
