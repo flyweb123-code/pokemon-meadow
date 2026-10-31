@@ -6896,7 +6896,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.18';   /* v13.18 경완: 기술 바꾸기 — 배울 기술 목록 위에 바뀔 기술 카드 · 도전자 불러오기 단추는 늘 켜 두고 못 할 땐 ▼ 대화창 · 안내원 대화 중에도 꾸미기·창고 보임 */   /* v13.17 경완: 스텔스록·압정 = 본가처럼 연출 없이 HP 먼저 줄고 말 · 울음소리·울부짖기·멀리짖기·하이퍼보이스·수다 = 쓰는 포켓몬 울음소리 */   /* v13.16 경완: 교체 카드 효과 딱지는 PP 줄 왼쪽 · 기술 이름 뒤 맞지 않았다·효과 없음·방어 등은 0.75초 뒤 */   /* v13.15 경완: 체육관 ▼ 대화창 글자 한 글자씩 · 안내원·강박사 설명 박스 4줄이면 높게 · 도전자 명단 빨간 점 안 잘림 */   /* v13.14 경완 '대로트 불 위에 있음': 모닥불 노래 자리가 불 바로 뒤·앞에 걸리지 않게 */
+const APP_VER = '13.19';   /* v13.19 경완: 필드 소품 꾹 눌러 고를 때 진동 세게 두 번, 웹은 손 뗄 때 */   /* v13.18 경완: 기술 바꾸기 — 배울 기술 목록 위에 바뀔 기술 카드 · 도전자 불러오기 단추는 늘 켜 두고 못 할 땐 ▼ 대화창 · 안내원 대화 중에도 꾸미기·창고 보임 */   /* v13.17 경완: 스텔스록·압정 = 본가처럼 연출 없이 HP 먼저 줄고 말 · 울음소리·울부짖기·멀리짖기·하이퍼보이스·수다 = 쓰는 포켓몬 울음소리 */   /* v13.16 경완: 교체 카드 효과 딱지는 PP 줄 왼쪽 · 기술 이름 뒤 맞지 않았다·효과 없음·방어 등은 0.75초 뒤 */   /* v13.15 경완: 체육관 ▼ 대화창 글자 한 글자씩 · 안내원·강박사 설명 박스 4줄이면 높게 · 도전자 명단 빨간 점 안 잘림 */   /* v13.14 경완 '대로트 불 위에 있음': 모닥불 노래 자리가 불 바로 뒤·앞에 걸리지 않게 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7822,7 +7822,10 @@ const meUp = e => { const D = meDrag; if (!D || e.pointerId !== D.id) return; me
 addEventListener('pointerup', meUp); addEventListener('pointercancel', meUp);
 // v13.10 경완 '필드 화면에서 꾹 눌러서도 소품 옮기거나 빼기': 맵 편집에 들어가지 않고 필드에서 소품을 꾹(0.45초) 누르면 골라진다 (빛 테두리·땅 자리·x) → 그대로 끌어 옮기고, 놓는 규칙은 맵 편집과 같다 (땅 자리가 안전 구역 안, 다른 소품·연못과 겹치면 빨갛게 → 제자리). 옮기거나 빼면 바로 저장. 빈 곳을 누르면 끝
 let fme = false, fmeLp = null;
-function fmeStart(el) { fme = true; document.body.classList.add('fme'); meXLR = [XL, XR]; meSnap = meSnapshot(); meBagD = {}; $('#meLayer').hidden = false; meSel(el); sfx('pickup'); haptic(1); }
+function fmeStart(el) { fme = true; document.body.classList.add('fme'); meXLR = [XL, XR]; meSnap = meSnapshot(); meBagD = {}; $('#meLayer').hidden = false; meSel(el); sfx('pickup'); fmeBuzz(); }
+// v13.19 경완 '꾹 눌렀을 때 진동 안 느껴짐': 고를 때 세게 두 번 (아이폰 앱 = 바로). 사파리·홈 화면 웹앱은 손가락을 뗄 때만 진동을 허락해서 그때 한 번 더
+let fmeHapPend = 0;
+function fmeBuzz() { haptic(2); setTimeout(() => haptic(1), 90); fmeHapPend = window.webkit?.messageHandlers?.haptic ? 0 : 1; }
 function fmeEnd() { if (!fme) return; fme = false; meDrag = null; BG_SKIP = null; document.body.classList.remove('fme'); meSel(null); meBgProps(false); $('#meLayer').hidden = true; meSnap = null; meXLR = null; meBagD = {}; }
 function fmeKeep() { layKeep(); for (const K of LAY_ARR) for (const v of LAYOUT[K] || []) delete v.paN; meSnap = meSnapshot(); meBagD = {}; try { meFreeMons(); } catch (e) {} }
 const fmeOff = () => { if (fmeLp) clearTimeout(fmeLp.t); fmeLp = null; };
@@ -7837,7 +7840,7 @@ $('#wrap').addEventListener('pointerdown', e => { if (mapEdit || e.button > 0 ||
     freeRub = null; fmeEat = 1; fmeStart(el); meDrag = { el, x0: L.x, y0: L.y, on: false, l0: parseFloat(el.style.left), t0: parseFloat(el.style.top), id: L.id }; }, 450) }; }, true);
 let fmeEat = 0;
 addEventListener('pointermove', e => { const L = fmeLp; if (L && e.pointerId === L.id && Math.hypot(e.clientX - L.x, e.clientY - L.y) > 8) fmeOff(); }, true);
-for (const t of ['pointerup', 'pointercancel']) addEventListener(t, e => { if (fmeLp && e.pointerId === fmeLp.id) fmeOff(); if (fmeEat) { fmeEat = 0; suppressClick = performance.now(); } }, true);
+for (const t of ['pointerup', 'pointercancel']) addEventListener(t, e => { if (fmeLp && e.pointerId === fmeLp.id) fmeOff(); if (fmeHapPend && t === 'pointerup') { fmeHapPend = 0; haptic(2); } if (fmeEat) { fmeEat = 0; suppressClick = performance.now(); } }, true);
 let meXLR = null;   // v9.07 경완: 안전 구역 = 편집 들어오기 전(평소 화면)의 포켓몬 가로 범위 — 편집 화면은 아래 메뉴 때문에 맵이 작아져 XL·XR 이 바뀜
 const meZoneRect = () => { const [l, r] = meXLR || [XL, XR]; return { x0: Math.max(0, l) + 6, x1: Math.min(W, r) - 6, y0: MIN_Y, y1: MAX_Y0 }; };
 // 땅에 닿는 자리(타원)끼리 겹치는지 — 둘레 16점 + 가운데로 어림
