@@ -785,6 +785,9 @@ const staffMax = () => SF_MAX[gradeOf(st().rep || 0).i];   // 새내기 체육�
 // 기다릴 시간이 지난 도전자는 돌아간다 (예전 저장은 그날 자정). 평판은 깎지 않는다 (경완 2026-10-28)
 const qExp = c => c.exp || nextDay(dayStart(c.t));
 function qLeave(upTo) { const g = st(); g.q = g.q.filter(c => { const e = qExp(c); if (e > upTo) return true; glog('out', `${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 기다리다 돌아갔다.`, e); return false; }); }
+// 명단 박스 우상단 딱지 = 남은 시간, 이름 밑 = 온 시각 (경완 2026-10-31)
+const qLeftS = (c, now = Date.now()) => { const m = Math.max(0, Math.ceil((qExp(c) - now) / 60e3)), h = Math.floor(m / 60); return m < 1 ? '곧 떠나요' : `${h ? h + '시간 ' : ''}${m % 60 || !h ? (m % 60) + '분 ' : ''}남음`; };
+const qCame = c => { const d = new Date(c.t || Date.now()), h = d.getHours(), y = dayStart(c.t || Date.now()) < dayStart(Date.now()); return `${y ? '어제 ' : ''}${h < 12 ? '오전' : '오후'} ${h % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')}에 왔어요`; };
 const qLeft = (c, now = Date.now()) => { const m = Math.max(0, Math.ceil((qExp(c) - now) / 60e3)), h = Math.floor(m / 60); return m < 1 ? '곧 떠나요' : `${h ? h + '시간 ' : ''}${m % 60 || !h ? (m % 60) + '분 ' : ''}남았어요`; };
 function tick(now = Date.now()) {
   const g = gInit(); if (!g || !g.d) return;
@@ -1080,10 +1083,11 @@ function qPop() {
     // 명단 디자인 (경완 2026-10-29 '퀄리티 좀 높여줘'): 다음 차례는 큰 카드 + 배틀 받침, 나머지는 번호 붙은 줄
     // 온 시각 대신 떠나기까지 남은 시간 (경완 2026-10-30), 30분 안 남으면 빨갛게
     const tag = c => c.boss ? `<em class="qw-tag bs">${gShort(c.boss)} 승급 심사</em>` : c.named ? '<em class="qw-tag nm">이름 있는 트레이너</em>' : `<em class="qw-tag">${esc(c.cls)}</em>`;
+    const qTm = c => `<em class="qw-tm${qExp(c) - Date.now() < 30 * 60e3 ? ' low' : ''}"><svg viewBox="0 0 8 8" aria-hidden="true"><path fill="currentColor" d="M2 0h4v1h1v1h1v4h-1v1h-1v1h-4v-1h-1v-1h-1v-4h1v-1h1zM2 1v1h-1v4h1v1h4v-1h1v-4h-1v-1zM3.5 2h1v2h1.5v1h-2.5z"/></svg>${qLeftS(c)}</em>`;   // 시계 그림 + 밝은 딱지: '대기'(어두운 딱지)와 구분 (경완 2026-10-31)   // 남은 시간 딱지, 30분 안 남으면 빨강
     const pic = c => `<span class="qw-pic${c.named ? ' qw-sil' : ''}"><i class="qw-base"></i><img alt="" src="${trSrc(c.tr)}"></span>`;
     body = Q.length ? `<div class="qw-sum"><b>기다리는 도전자 <em>${Q.length}</em>명</b><span>시간이 지나면 돌아가요</span><i class="qw-balls">${V.map(([c], k) => `<i class="${k ? '' : 'on'}${c.boss ? ' bs' : ''}"></i>`).join('')}</i></div><div class="qw-list">${V.map(([c, i], k) => k
-      ? `<div class="qw-row wait${c.boss ? ' boss' : ''}"><span class="qw-pw">${pic(c)}<span class="qw-no">${k + 1}</span></span><div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span class="qw-left${qExp(c) - Date.now() < 30 * 60e3 ? ' low' : ''}">${qLeft(c)}</span></div><span class="qw-wait">대기</span></div>`
-      : `<div class="qw-row next${c.boss ? ' boss' : ''}${c.boss || c.named ? ' vs' : ''}"><span class="qw-rib">${c.boss ? '승급 심사 도전자' : '다음 차례'}</span>${c.boss || c.named ? '<i class="qw-spd"></i><i class="qw-vs">VS</i>' : ''}${pic(c)}<div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span class="qw-left${qExp(c) - Date.now() < 30 * 60e3 ? ' low' : ''}">${qLeft(c)}</span></div><button class="gy-key main" type="button" data-c="${i}">${c.boss ? '심사 받기' : '도전 받기'}</button></div>`).join('')}</div>`
+      ? `<div class="qw-row wait${c.boss ? ' boss' : ''}"><span class="qw-pw">${pic(c)}<span class="qw-no">${k + 1}</span></span><div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span class="qw-came">${qCame(c)}</span></div><span class="qw-wait">대기</span>${qTm(c)}</div>`
+      : `<div class="qw-row next${c.boss ? ' boss' : ''}${c.boss || c.named ? ' vs' : ''}"><span class="qw-rib">${c.boss ? '승급 심사 도전자' : '다음 차례'}</span>${c.boss || c.named ? '<i class="qw-spd"></i><i class="qw-vs">VS</i>' : ''}${pic(c)}<div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span class="qw-came">${qCame(c)}</span></div>${qTm(c)}<button class="gy-key main" type="button" data-c="${i}">${c.boss ? '심사 받기' : '도전 받기'}</button></div>`).join('')}</div>`
       : '<div class="qw-none"><i class="qw-clip"></i><b>지금 기다리는 도전자가 없어요</b><span>도전자가 오면 체육관 버튼에 빨간 점이 떠요.</span></div>';
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">도전자 명단</b></div>
       <div class="gy-body">${body}</div>`; };

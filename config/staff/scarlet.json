@@ -1,6 +1,1194 @@
 {
  "days": [
   {
+   "at": 1793400547981,
+   "theme": "한옥 마당과 민속놀이",
+   "note": "늦가을이라 곶감 말리고 장 담그는 시골 한옥 마당을 그렸어요. 지난번 작고 납작한 소품이 지워진 걸 보고 장승·솟대·물레방아처럼 멀리서도 알아볼 실루엣과, 널뛰기·투호처럼 포켓몬이 직접 노는 소품을 함께 넣었어요.",
+   "items": [
+    {
+     "id": "jangdok-stand",
+     "n": "장독대",
+     "k": "장식",
+     "d": "돌 받침 위에 큰 항아리 하나와 작은 항아리 둘을 올린 장독대예요. 윤이 나는 갈색 옹기에 뚜껑이 덮여 있어요.",
+     "px": [
+      "..............kk..............",
+      "..........kkkkaakkkk..........",
+      ".........kbbccccccbbk.........",
+      ".........kbbbbbbbbbbk.........",
+      "..........kbbbbbbbbdk.........",
+      ".....kkkkkaaaaaacccckkkkk.....",
+      "...kkbbbbaaaaaaeeeeeebbbbkk...",
+      "..kbbccccbbfaccccccbbccccbbk..",
+      "..kdbbbbbbfacccccccdbbbbbbdk..",
+      ".kdaaaacccfdccccccdaaaaccccdk.",
+      "kdaaaaccccccdccccdaaaaccccccdk",
+      "kdaafcccccbbdcccbdaafcccccbbdk",
+      "kdafcccccbbbdcbbbdafcccccbbbdk",
+      "kdcccccbbbbbdbbbbdcccccbbbbbdk",
+      "kdccccbbbbdddbbbbdccccbbbbdddk",
+      "kdccbbbbbddddbbbddccbbbbbddddk",
+      ".kdbbbbdddddbbbddddbbbbdddddk.",
+      ".kkddbdddddkbdddddkddbdddddkk.",
+      "kggggddddggggggggggggddddggggk",
+      "khhhhhhhihhhhhhihhhhhhihhhhhhk",
+      "kiiiiiiijiiiiiijiiiiiijiiiiiik",
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#a8704e",
+      "b": "#583320",
+      "c": "#7c4a30",
+      "d": "#3c2216",
+      "e": "#b88a60",
+      "f": "#d8a888",
+      "g": "#d4d0c4",
+      "h": "#aca89c",
+      "i": "#84807a",
+      "j": "#5c5854"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "항아리 사이에 숨어 있다가 옆으로 고개만 빼꼼 내밀어요",
+       "x": {
+        "at": "side",
+        "m": "hide speek"
+       },
+       "l": [
+        "장독대 항아리 사이에 숨었다가 고개만 빼꼼 내밀었다.",
+        "항아리 틈에 몸을 숨기고 밖을 살핀다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "햇볕에 데워진 항아리에 등을 기대고 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "햇볕에 따뜻해진 장독에 기대어 꾸벅꾸벅 존다.",
+        "장독대 항아리에 등을 붙이고 낮잠을 잔다."
+       ]
+      },
+      {
+       "w": "고스트 타입",
+       "a": "큰 항아리 뒤로 스르르 사라졌다가 뚜껑 위로 다시 나타나요",
+       "x": {
+        "at": "top",
+        "m": "blink"
+       },
+       "l": [
+        "큰 항아리 뒤로 스르르 사라졌다가 뚜껑 위에 다시 나타났다.",
+        "장독 뚜껑 위에 슬며시 나타나 주위를 놀라게 한다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "큰 항아리 뚜껑 위에 날아와 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "장독대 큰 항아리 뚜껑 위에 날아와 앉았다.",
+        "항아리 뚜껑 위에 앉아 깃털을 고른다."
+       ]
+      }
+     ],
+     "fit": "마당 가장자리, 해 잘 드는 곳",
+     "glow": 0
+    },
+    {
+     "id": "jangseung",
+     "n": "나무 장승",
+     "k": "장식",
+     "d": "검은 갓을 쓰고 눈을 부릅뜬 나무 장승이에요. 몸통에 글씨가 새겨져 있어 마을 입구를 지켜요.",
+     "px": [
+      ".....kkkkkk.....",
+      "....kaaaaaak....",
+      "....kaabbbck....",
+      "....kaabbbck....",
+      "....kaabbbck....",
+      "..kkkaabbbckkk..",
+      ".kbbbbbbbbbbbbk.",
+      ".kccddddddddcck.",
+      "..kkeefffgghkk..",
+      "...keefffgghk...",
+      "...khhhffhhhk...",
+      "...kikiffikik...",
+      "...kikiffikik...",
+      "...kiiiefiiik...",
+      "...keeffggghk...",
+      "...keeffggghk...",
+      "...keeggggghk...",
+      "...khefffgghk...",
+      "...khiijiiihk...",
+      "...keljjjjlhk...",
+      "...keefffgghk...",
+      "...kggggggggk...",
+      "...keefhhgghk...",
+      "...keefhfgghk...",
+      "...keefhhgghk...",
+      "...keefhfgghk...",
+      "...keefhhgghk...",
+      "...keefhfgghk...",
+      "...keefhhgghk...",
+      "...keefhfgghk...",
+      "...keefffgghk...",
+      "....kkkkkkkk...."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#9a9aac",
+      "b": "#5c5c6e",
+      "c": "#40404e",
+      "d": "#2c2c38",
+      "e": "#c8aa82",
+      "f": "#9e7e5a",
+      "g": "#76583c",
+      "h": "#523c28",
+      "i": "#f4ecd8",
+      "j": "#9a3030",
+      "l": "#6e2228"
+     },
+     "acts": [
+      {
+       "w": "격투 타입",
+       "a": "장승 앞에 서서 몸통에 부딪치며 수련해요",
+       "x": {
+        "at": "front",
+        "m": "push",
+        "an": "Attack"
+       },
+       "l": [
+        "나무 장승에 몸을 부딪치며 수련했다.",
+        "장승을 상대로 연달아 부딪치기를 연습한다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "장승 아래에 기대앉아 쉬어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "나무 장승 아래에 기대앉아 쉬었다.",
+        "장승 밑동에 기대어 깜빡 잠이 들었다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "장승의 갓 위에 날아와 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "장승이 쓴 갓 위에 날아와 앉았다.",
+        "장승 갓 꼭대기에 앉아 마을 입구를 내려다본다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "장승 옆에 숨어 무서운 얼굴을 올려다봐요",
+       "x": {
+        "at": "side",
+        "m": "hide peek"
+       },
+       "l": [
+        "장승의 부릅뜬 눈을 올려다보다 옆으로 숨었다.",
+        "장승 뒤에 숨어 무서운 얼굴을 힐끔힐끔 본다."
+       ]
+      }
+     ],
+     "fit": "길 입구, 마을 경계",
+     "glow": 0
+    },
+    {
+     "id": "sotdae",
+     "n": "솟대",
+     "k": "장식",
+     "d": "긴 장대 끝에 나무로 깎은 새가 앉아 있는 솟대예요. 나무 새는 하늘을 향해 부리를 들고 있어요.",
+     "px": [
+      "................",
+      "..k.k...........",
+      "kkakbk........k.",
+      "cdbbbk.......kek",
+      "kkkbbkkkkkkkkebk",
+      "..kbbaaabbbbkbk.",
+      "..kbbbaaaabeek..",
+      "...kbbbbeeeefk..",
+      "....keefffffk...",
+      ".....kkghkkk....",
+      "......kghk......",
+      "......kghk......",
+      "......kghk......",
+      "......kghk......",
+      "......khik......",
+      "......kghk......",
+      "......kghk......",
+      "......kghk......",
+      "......kghk......",
+      "......kghk......",
+      "......kghk......",
+      "......khik......",
+      "......kghk......",
+      "......kghk......",
+      "......kghk......",
+      "......kghk......",
+      "......kghk......",
+      "......kghk......",
+      "......khik......",
+      "......kghk......",
+      "......kghk......",
+      "......kghk......",
+      "......kghk......",
+      ".....kghhhk.....",
+      ".....kghhhk.....",
+      "......kkkk......"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#f0cc90",
+      "b": "#dcaa6a",
+      "c": "#c08a38",
+      "d": "#e8b850",
+      "e": "#b0804a",
+      "f": "#805a34",
+      "g": "#b47a48",
+      "h": "#86542e",
+      "i": "#5c3820"
+     },
+     "acts": [
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "장대 끝 나무 새 곁으로 날아와 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "솟대 끝 나무 새 곁에 날아와 나란히 앉았다.",
+        "솟대 꼭대기에 앉아 나무 새와 함께 하늘을 본다."
+       ]
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "솟대 둘레를 빙빙 돌며 날아요",
+       "x": {
+        "m": "circ flap"
+       },
+       "l": [
+        "솟대 둘레를 빙글빙글 돌며 날았다.",
+        "솟대 장대를 감아 돌듯 날아다닌다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "장대 아래에서 고개를 들고 나무 새를 올려다봐요",
+       "x": {
+        "at": "side",
+        "m": "peek"
+       },
+       "l": [
+        "솟대 아래에서 고개를 들어 나무 새를 올려다본다.",
+        "장대 끝 나무 새가 진짜 새인지 한참 쳐다봤다."
+       ]
+      }
+     ],
+     "fit": "마을 입구, 장승 옆",
+     "glow": 0
+    },
+    {
+     "id": "water-mill",
+     "n": "물레방아",
+     "k": "놀이",
+     "d": "홈통에서 떨어진 물이 커다란 나무 바퀴를 돌리는 물레방아예요. 돌기둥이 바퀴 축을 받치고 있어요.",
+     "px": [
+      ".kkkkkkkkkkkkk..................",
+      "kaaaaaaaaaaaaak.................",
+      "kbcccccccccckbkk................",
+      ".kkkkkkkkkkkdkkakkkkk...........",
+      ".........kaaecafaaaggk..........",
+      ".......kkaaaaaafaaggggkk........",
+      "......kaafaffffkfgffgfggk.......",
+      ".....kaaaffkkkk.kgkkffgggk......",
+      "....kaaafbbk....kgk.kkfgggk.....",
+      "....kaafkkbbk..kgk....kfggk.....",
+      "...kaffk..kbk..kgk....kbffbk....",
+      "..kaaafk..kbbk.kgk..kkbbfbbbk...",
+      "..kaafk....kbbkkgk.kbbbkkfbbkkk.",
+      "..kaafkk....kbkkgkkbbkk.kfbbkhhk",
+      "..kaagggkkkkkkbgikbbk...kfbbkjlk",
+      "..kaafkkgggggiimibkk....kfbbkjlk",
+      ".kaffk..kkkkkgmnmgkkkkk..kffbklk",
+      "..kaafk....kkbimiigggggkkfbbkllk",
+      "..kggfk...kbbkigbkkkkkkgggbbkjlk",
+      "..kggfk.kkbbkkgkkbk....kkfbbkjlk",
+      "..kggfkkbbbk.kgkkbbk....kfbbkjlk",
+      "..kgggfbbkk..kgk.kbbk..kfbbbkjlk",
+      "...kgffbk....kgk..kbk..kffbklllk",
+      "....kggfk....kgk..kbbkkfbbkhjjlk",
+      "....kgggfkk.kgk....kbbfbbbkhjolk",
+      ".....kgggffkkgk.kkkkffbbbkkhjjlk",
+      "......kgbfbffgfkffffbfbbk.khjjlk",
+      ".......kkbbbbbbfbbbbbbkk..kllllk",
+      ".........kbbbbbfbbbbbk....khjjlk",
+      "..........kkkkkbkkkkk.....khjjlk",
+      "...............k...........kkkk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#d8a46a",
+      "b": "#86542e",
+      "c": "#7cbce8",
+      "d": "#c4e8f8",
+      "e": "#5090c8",
+      "f": "#5c3820",
+      "g": "#b47a48",
+      "h": "#d4d0c4",
+      "i": "#5c5c6e",
+      "j": "#aca89c",
+      "l": "#84807a",
+      "m": "#9a9aac",
+      "n": "#40404e",
+      "o": "#5c5854"
+     },
+     "acts": [
+      {
+       "w": "물 타입",
+       "a": "바퀴에 물 기술을 뿜어 물레방아를 빙글빙글 돌려요",
+       "x": {
+        "m": "skill",
+        "fx": "spin"
+       },
+       "l": [
+        "물레방아 바퀴에 물을 뿜어 빙글빙글 돌렸다.",
+        "물줄기로 물레방아를 힘차게 돌린다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "바퀴 앞에서 날갯짓해 바퀴를 돌려요",
+       "x": {
+        "m": "flap",
+        "fx": "spin"
+       },
+       "l": [
+        "물레방아 앞에서 날갯짓해 바퀴를 돌렸다.",
+        "날갯바람으로 물레방아 바퀴를 천천히 돌린다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "바퀴살을 밀어 물레방아를 돌려요",
+       "x": {
+        "at": "front",
+        "m": "push",
+        "fx": "spin"
+       },
+       "l": [
+        "물레방아 바퀴살을 힘껏 밀어 돌렸다.",
+        "물레방아를 손으로 밀어 돌리며 힘을 기른다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "돌기둥 옆에 앉아 도는 바퀴를 구경해요",
+       "x": {
+        "fx": "spin"
+       },
+       "l": [
+        "물레방아 옆에 앉아 도는 바퀴를 넋 놓고 바라본다.",
+        "삐걱삐걱 도는 물레방아 바퀴를 눈으로 쫓는다."
+       ]
+      }
+     ],
+     "fit": "연못 옆, 냇가",
+     "glow": 0,
+     "mv": {
+      "st": [
+       ".kkkkkkkkkkkkk..................",
+       "kaaaaaaaaaaaaak.................",
+       "kbcccccccccccbk.................",
+       ".kkkkkkkkkkkkk..................",
+       "................................",
+       "................................",
+       "................................",
+       "................................",
+       "................................",
+       "................................",
+       "................................",
+       "................................",
+       "...........................kkkk.",
+       "..........................khhhhk",
+       "..........................khjjlk",
+       ".........................knhjjlk",
+       ".........................knhjjlk",
+       ".........................knllllk",
+       "..........................khjjlk",
+       "..........................khojlk",
+       "..........................khjjlk",
+       "..........................khjjlk",
+       "..........................kllllk",
+       "..........................khjjlk",
+       "..........................khjolk",
+       "..........................khjjlk",
+       "..........................khjjlk",
+       "..........................kllllk",
+       "..........................khjjlk",
+       "..........................khjjlk",
+       "...........................kkkk."
+      ],
+      "mp": [
+       "................................",
+       "................................",
+       "............k..k................",
+       "..........kkdkkakkkkk...........",
+       ".........kaaecafaaaggk..........",
+       ".......kkaaaaaafaaggggkk........",
+       "......kaafaffffkfgffgfggk.......",
+       ".....kaaaffkkkk.kgkkffgggk......",
+       "....kaaafbbk....kgk.kkfgggk.....",
+       "....kaafkkbbk..kgk....kfggk.....",
+       "...kaffk..kbk..kgk....kbffbk....",
+       "..kaaafk..kbbk.kgk..kkbbfbbbk...",
+       "..kaafk....kbbkkgk.kbbbkkfbbk...",
+       "..kaafkk....kbkkgkkbbkk.kfbbk...",
+       "..kaagggkkkkkkbgikbbk...kfbbk...",
+       "..kaafkkgggggiimibkk....kfbbk...",
+       ".kaffk..kkkkkgmnmgkkkkk..kffbk..",
+       "..kaafk....kkbimiigggggkkfbbk...",
+       "..kggfk...kbbkigbkkkkkkgggbbk...",
+       "..kggfk.kkbbkkgkkbk....kkfbbk...",
+       "..kggfkkbbbk.kgkkbbk....kfbbk...",
+       "..kgggfbbkk..kgk.kbbk..kfbbbk...",
+       "...kgffbk....kgk..kbk..kffbk....",
+       "....kggfk....kgk..kbbkkfbbk.....",
+       "....kgggfkk.kgk....kbbfbbbk.....",
+       ".....kgggffkkgk.kkkkffbbbk......",
+       "......kgbfbffgfkffffbfbbk.......",
+       ".......kkbbbbbbfbbbbbbkk........",
+       ".........kbbbbbfbbbbbk..........",
+       "..........kkkkkbkkkkk...........",
+       "...............k................"
+      ],
+      "o": [
+       15.5,
+       16.5
+      ],
+      "k": "spin"
+     }
+    },
+    {
+     "id": "neol-board",
+     "n": "널뛰기 널",
+     "k": "놀이",
+     "d": "멍석을 둘둘 말아 받친 긴 널판이에요. 양 끝 빨강·파랑 자리에 하나씩 올라 번갈아 뛰어요.",
+     "px": [
+      "..................................",
+      "..................................",
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.",
+      "kaaaabbbbbbbbbbbbbbbbbbbbbbbbcccck",
+      "kddddefeeeeefeeeeeeeefeeeeefeggggk",
+      "khhhhffffffffffffffffffffffffiiiik",
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.",
+      "...........kjjjlllllmmk...........",
+      "...........kjllmlnmmmmk...........",
+      "...........kllllmmmmnnk...........",
+      "............klmmmmnnnk............",
+      ".............kkmnnnkk............."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#ec7a62",
+      "b": "#f0cc90",
+      "c": "#7aa6d8",
+      "d": "#c84a3c",
+      "e": "#dcaa6a",
+      "f": "#b0804a",
+      "g": "#4a74b4",
+      "h": "#9a3030",
+      "i": "#34548e",
+      "j": "#f4dc94",
+      "l": "#dcb86a",
+      "m": "#b48c4a",
+      "n": "#866434"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬 / 보통 크기 포켓몬",
+       "a": "둘이 널 양 끝에 올라타 번갈아 높이 뛰어요",
+       "x": {
+        "at": [
+         0.1,
+         0.25
+        ],
+        "m": "ride",
+        "fx": "rock",
+        "two": {
+         "at": [
+          0.9,
+          0.25
+         ]
+        }
+       },
+       "l2": [
+        "널 양 끝에 올라타 번갈아 높이 뛰어오른다.",
+        "널을 쿵덕쿵덕 번갈아 뛰며 논다."
+       ],
+       "l": [
+        "널 한쪽 끝에 올라타 같이 뛸 친구를 기다린다.",
+        "널 끝에 올라타 살짝살짝 굴러 본다."
+       ]
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "한쪽 끝을 쿵 밟아 반대편 작은 포켓몬을 높이 띄워 줘요",
+       "x": {
+        "at": [
+         0.9,
+         0.25
+        ],
+        "m": "ride",
+        "fx": "rock",
+        "two": {
+         "at": [
+          0.1,
+          0.25
+         ],
+         "w": "작은 포켓몬"
+        }
+       },
+       "l2": [
+        "{a:이/가} 널을 쿵 밟아 {b:을/를} 높이 띄워 줬다.",
+        "{a:이/가} 널뛰기로 {b:을/를} 하늘 높이 날려 준다."
+       ],
+       "l": [
+        "널 한쪽 끝에 올라타 같이 뛸 작은 친구를 기다린다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "누가 타고 있는 널 끝을 눌러 더 높이 띄워 줘요",
+       "x": {
+        "at": "side",
+        "m": "push",
+        "fx": "rock"
+       },
+       "l": [
+        "널 끝을 꾹 눌러 더 높이 띄워 줬다.",
+        "널판을 힘껏 눌러 널을 크게 흔든다."
+       ]
+      }
+     ],
+     "fit": "평평한 마당 가운데",
+     "glow": 0,
+     "mv": {
+      "st": [
+       "..................................",
+       "..................................",
+       "..................................",
+       "..................................",
+       "...............kkkk...............",
+       ".............kkjjjjkk.............",
+       "............kjjjjllllk............",
+       "...........kjjjlllllmmk...........",
+       "...........kjllmlnmmmmk...........",
+       "...........kllllmmmmnnk...........",
+       "............klmmmmnnnk............",
+       ".............kkmnnnkk............."
+      ],
+      "mp": [
+       "..................................",
+       "..................................",
+       ".kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.",
+       "kaaaabbbbbbbbbbbbbbbbbbbbbbbbcccck",
+       "kddddefeeeeefeeeeeeeefeeeeefeggggk",
+       "khhhhffffffffffffffffffffffffiiiik",
+       ".kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.",
+       "..................................",
+       "..................................",
+       "..................................",
+       "..................................",
+       ".................................."
+      ],
+      "o": [
+       17,
+       4.5
+      ],
+      "k": "swing",
+      "amp": 1.6
+     }
+    },
+    {
+     "id": "tuho-jar",
+     "n": "투호 항아리",
+     "k": "놀이",
+     "d": "양옆에 작은 귀가 달린 청화 항아리예요. 빨간 깃을 단 화살이 몇 개 꽂혀 있어 던져 넣으며 놀아요.",
+     "px": [
+      ".......k.kak......",
+      "......kakkbkk.....",
+      "......kckkdkak....",
+      "......kdkkdkck....",
+      "......kdkkdkdk....",
+      "...kkkkkddkkdkk...",
+      "..keeffeeeeffeek..",
+      "..kffkgffffhkffk..",
+      "..kffkgffffhkffk..",
+      "..kfhkgffffhkfhk..",
+      "..khhhhhhhhhhhhk..",
+      "...kgigggfffffk...",
+      "..kgigggfffffffk..",
+      "..kggggfffffffhk..",
+      ".kgjjjjjjjjjjjjhk.",
+      ".kggffffffffhhhhk.",
+      ".kgfflflfffhlhhhk.",
+      ".kffffjfjfhjhhhmk.",
+      ".kffffffhjhhjhmmk.",
+      ".kfffffhhhhhhmmmk.",
+      "..knnnnnnnnnnnnk..",
+      "..kffhhhhhmmmmmk..",
+      "...khhhhhmmmmmk...",
+      "....khhhmmmmmk....",
+      ".....kkkmmkkk.....",
+      "........kk........"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#c84a3c",
+      "b": "#ec7a62",
+      "c": "#9a3030",
+      "d": "#dcaa6a",
+      "e": "#26406a",
+      "f": "#f0eadc",
+      "g": "#fffaf0",
+      "h": "#d8d0bc",
+      "i": "#ffffff",
+      "j": "#4a74b4",
+      "l": "#7aa6d8",
+      "m": "#b0a690",
+      "n": "#34548e"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "항아리 앞에 서서 화살을 던져 넣어요",
+       "x": {
+        "at": "front",
+        "an": "Attack"
+       },
+       "l": [
+        "투호 항아리에 화살을 던져 쏙 넣었다.",
+        "투호 화살을 던졌다가 아깝게 빗나갔다."
+       ]
+      },
+      {
+       "w": "에스퍼 타입 / 고스트 타입",
+       "a": "기술로 화살을 띄워 항아리에 쏙 넣어요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "기술로 화살을 둥실 띄워 투호 항아리에 넣었다.",
+        "화살 셋을 차례로 띄워 항아리에 모두 넣었다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "항아리 입구에 앞발을 걸치고 안을 들여다봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "투호 항아리 입구에 매달려 안을 들여다본다.",
+        "항아리 속에 화살이 몇 개 들어갔나 세어 본다."
+       ]
+      }
+     ],
+     "fit": "마당, 널뛰기 옆",
+     "glow": 0
+    },
+    {
+     "id": "gamasot-hearth",
+     "n": "가마솥 아궁이",
+     "k": "장식",
+     "d": "흙과 돌로 쌓은 아궁이에 무쇠 가마솥을 올렸어요. 아궁이 안에서 장작불이 타고, 밤에는 둘레를 따뜻하게 밝혀요.",
+     "px": [
+      "............................",
+      ".............kk.............",
+      "............kaak............",
+      "..........kkbbbbkk..........",
+      "........kkaaaaaabbkk........",
+      ".......kaacaabbbbbbbk.......",
+      "......kaacbbbbbbbbdddk......",
+      "....kkabbbbbbbbddddddekk....",
+      "...kaaabbbbbdddddddeedddk...",
+      ".kkkaabbbbddddddeeeeddddkkk.",
+      "kaaaaaaaaaaaaaaaaaaaaaaaaaak",
+      "kddddddddddddddddddddddddddk",
+      ".kffffbdddddddddeeeeeeffffk.",
+      ".kffgggggdddeeeeeeeggggghhk.",
+      ".kffggggggggggggggggiigghhk.",
+      ".kffgiigggggggggggggjggghhk.",
+      ".kffgjgggggllllllggggiighhk.",
+      ".kffggggggllmmmmllgggjgghhk.",
+      ".kffgggggglmmmnmmlgggggghhk.",
+      ".kffggiigllmmooopllggggghhk.",
+      ".kffggjgglmqnooonqlgggiihhk.",
+      ".kffiiggglmpnnnnnplgggjghhk.",
+      ".khhjhhhhlmppppppplhhhhhhhk.",
+      "..kkkkkkklmmmmmmmmlkkkkkkk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#9a9aac",
+      "b": "#5c5c6e",
+      "c": "#d0d0dc",
+      "d": "#40404e",
+      "e": "#2c2c38",
+      "f": "#dcb48a",
+      "g": "#bc9066",
+      "h": "#946a46",
+      "i": "#aca89c",
+      "j": "#84807a",
+      "l": "#6a4a30",
+      "m": "#2a1810",
+      "n": "#ffc444",
+      "o": "#fff4a8",
+      "p": "#f47c2c",
+      "q": "#c8462a"
+     },
+     "acts": [
+      {
+       "w": "불꽃 타입",
+       "a": "아궁이 앞에 앉아 불을 뿜어 장작불을 키워요",
+       "x": {
+        "at": "front",
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "아궁이에 불을 뿜어 장작불을 활활 키웠다.",
+        "가마솥 아궁이에 불을 지펴 솥을 데운다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "아궁이 앞에 앉아 따뜻한 불을 쬐어요",
+       "x": {
+        "at": "front"
+       },
+       "l": [
+        "가마솥 아궁이 앞에 앉아 따뜻한 불을 쬔다.",
+        "아궁이 불 앞에서 몸을 녹이며 꾸벅꾸벅 존다."
+       ]
+      },
+      {
+       "w": "노말 타입 / 풀 타입",
+       "a": "솥 옆에 붙어 고개를 내밀고 냄새를 맡아요",
+       "x": {
+        "at": "side",
+        "m": "speek",
+        "an": "Eat"
+       },
+       "l": [
+        "가마솥 옆에서 고개를 내밀고 구수한 냄새를 맡는다.",
+        "솥에서 나는 냄새에 군침을 흘리며 기웃거린다."
+       ]
+      },
+      {
+       "w": "얼음 타입",
+       "a": "아궁이에 다가왔다가 뜨거운 열기에 놀라 피해 가요",
+       "x": {
+        "m": "avoid"
+       },
+       "l": [
+        "아궁이에 다가갔다가 뜨거운 열기에 놀라 물러났다.",
+        "가마솥 열기를 피해 슬금슬금 돌아간다."
+       ]
+      }
+     ],
+     "fit": "마당 한쪽, 장독대 옆",
+     "glow": 1
+    },
+    {
+     "id": "straw-coop",
+     "n": "초가 닭장",
+     "k": "놀이",
+     "d": "짚을 엮어 지붕을 얹은 작은 닭장이에요. 다리 위에 올라 있고, 둥근 문으로 경사판이 이어져요.",
+     "px": [
+      "............kk............",
+      "........kkkkaakkk.........",
+      ".....kkkbbbbbbbbbkkk......",
+      "....kabbbbbbabbccccak.....",
+      "..kkbbbbbabbbcccacccckk...",
+      ".kbbbbabbbbccaccccccacck..",
+      "kbbabbbbbcaccccccaccccaak.",
+      "kbbbbbbaccccccacccccaaaak.",
+      "bbbbaccccccaccccccaaaaaaak",
+      "babcccccaccccccacaaaaaaaak",
+      "bccccaccccccaccaaaaaaaaaak",
+      "dddddddddddddddddddddddddd",
+      "kkkkeeeeeefgggfeeeeeeekkkk",
+      "...khijjjjgggggjjjjjehk...",
+      "...khijjjjgggggjjljjehk...",
+      "...khijjljfgggfjjjjjehk...",
+      "...khijjjjjfgfjjjjjjehk...",
+      "..kmmmmmmmmmmmmmmmmmmmmk..",
+      "..khhhhhhhhhhhhhhhhhhhhk..",
+      "...kknhkkkkkkkknhkknhkk...",
+      "....knhk.......knhhnhk....",
+      "....knhk........kknhhk....",
+      "....knhk..........knhkk...",
+      "....knhk..........knnhhk..",
+      "....knhk..........knhknhk.",
+      ".....kk............kk.kk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#b48c4a",
+      "b": "#f4dc94",
+      "c": "#dcb86a",
+      "d": "#866434",
+      "e": "#ae9068",
+      "f": "#5c3820",
+      "g": "#2a1810",
+      "h": "#86542e",
+      "i": "#ecd8b4",
+      "j": "#d4b88c",
+      "l": "#86694a",
+      "m": "#d8a46a",
+      "n": "#b47a48"
+     },
+     "acts": [
+      {
+       "w": "작은 비행 타입 / 작은 노말 타입",
+       "a": "둥근 문 안에 쏙 숨어 얼굴만 내밀어요",
+       "x": {
+        "at": [
+         0.48,
+         0.55
+        ],
+        "m": "win"
+       },
+       "l": [
+        "초가 닭장 둥근 문 안에 숨어 얼굴만 내밀었다.",
+        "닭장 문으로 고개를 내밀고 마당을 구경한다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "초가지붕 위에 날아와 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "초가 닭장 지붕 위에 날아와 앉았다.",
+        "짚 지붕 꼭대기에 앉아 볕을 쬔다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "닭장 앞에 엎드려 졸아요",
+       "x": {
+        "at": "front",
+        "an": "Sleep"
+       },
+       "l": [
+        "초가 닭장 앞에 엎드려 꾸벅꾸벅 존다.",
+        "닭장 그늘 앞에서 낮잠을 잔다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "경사판을 타고 올라가 문 앞까지 가요",
+       "x": {
+        "m": "climb"
+       },
+       "l": [
+        "닭장 경사판을 타고 문 앞까지 올라갔다.",
+        "경사판을 오르내리며 논다."
+       ]
+      }
+     ],
+     "fit": "마당 구석, 곶감 걸이 옆",
+     "glow": 0
+    },
+    {
+     "id": "kite-pole",
+     "n": "방패연 장대",
+     "k": "장식",
+     "d": "대나무 장대에 매어 둔 방패연이에요. 가운데 둥근 구멍과 빨간 꼭지가 있고, 바람이 불면 흔들려요.",
+     "px": [
+      "....................",
+      "........kkkkkkkkkkk.",
+      ".......kaaabcbbbaaak",
+      ".......kadebbbbbeddk",
+      ".......kfedeebeedegk",
+      "...kkk.kfedeeeeedegk",
+      "..khkikkfeedeeedeegk",
+      "..kjlkikfeeeimieeegk",
+      "..kjlkikfeeimmmieegk",
+      "..kjlkkifeeimmmieegk",
+      "..kjlk.kfeeeimieeegk",
+      "..kjlk.kfeedeeedeegk",
+      "..knnk.kfedeeeeedegk",
+      "..kjlk.kfedeeeeedegk",
+      "..kjlk.kfdeeeeeeedgk",
+      "..kjlk.kfggggggggggk",
+      "..kjlk..kkkkkkkkkkk.",
+      "..kjlk..............",
+      "..kjlk..............",
+      "..knnk..............",
+      "..kjlk..............",
+      "..kjlk..............",
+      "..kjlk..............",
+      "..kjlk..............",
+      "..kjlk..............",
+      "..kjlk..............",
+      "..knnk..............",
+      "..kjlk..............",
+      "..kjlk..............",
+      "..kjlk..............",
+      "..kjlk..............",
+      ".kjlllk.............",
+      ".kjlllk.............",
+      "..kkkk.............."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#fffaf0",
+      "b": "#c84a3c",
+      "c": "#ec7a62",
+      "d": "#d8d0bc",
+      "e": "#f0eadc",
+      "f": "#4a74b4",
+      "g": "#34548e",
+      "h": "#e4d48a",
+      "i": "#b0a690",
+      "j": "#c4ae62",
+      "l": "#968240",
+      "m": "#8cc0e0",
+      "n": "#6a5a2a"
+     },
+     "acts": [
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "연 앞에서 날갯짓해 바람을 일으켜 연을 흔들어요",
+       "x": {
+        "m": "flap",
+        "fx": "swing"
+       },
+       "l": [
+        "방패연 앞에서 날갯짓해 연을 펄럭펄럭 흔들었다.",
+        "날갯바람으로 장대에 매인 연을 날려 본다."
+       ]
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "연 둘레를 빙빙 돌며 함께 날아요",
+       "x": {
+        "m": "circ",
+        "fx": "swing"
+       },
+       "l": [
+        "방패연 둘레를 빙빙 돌며 함께 날았다.",
+        "흔들리는 연을 따라 장대 둘레를 날아다닌다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "장대 아래에서 흔들리는 연을 올려다봐요",
+       "x": {
+        "at": "side",
+        "m": "peek",
+        "fx": "swing"
+       },
+       "l": [
+        "장대 아래에서 흔들리는 방패연을 올려다본다.",
+        "바람에 흔들리는 연을 넋 놓고 쳐다봤다."
+       ]
+      }
+     ],
+     "fit": "바람 부는 언덕, 마당 가장자리",
+     "glow": 0,
+     "mv": {
+      "st": [
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "...kk...............",
+       "..khlk..............",
+       "..kjlk..............",
+       "..kjlk..............",
+       "..kjlk..............",
+       "..kjlk..............",
+       "..kjlk..............",
+       "..knnk..............",
+       "..kjlk..............",
+       "..kjlk..............",
+       "..kjlk..............",
+       "..kjlk..............",
+       "..kjlk..............",
+       "..kjlk..............",
+       "..knnk..............",
+       "..kjlk..............",
+       "..kjlk..............",
+       "..kjlk..............",
+       "..kjlk..............",
+       "..kjlk..............",
+       "..kjlk..............",
+       "..knnk..............",
+       "..kjlk..............",
+       "..kjlk..............",
+       "..kjlk..............",
+       "..kjlk..............",
+       ".kjlllk.............",
+       ".kjlllk.............",
+       "..kkkk.............."
+      ],
+      "mp": [
+       "....................",
+       "........kkkkkkkkkkk.",
+       ".......kaaabcbbbaaak",
+       ".......kadebbbbbeddk",
+       ".......kfedeebeedegk",
+       ".....k.kfedeeeeedegk",
+       "....kikkfeedeeedeegk",
+       ".....kikfeeeimieeegk",
+       ".....kikfeeimmmieegk",
+       "......kifeeimmmieegk",
+       ".......kfeeeimieeegk",
+       ".......kfeedeeedeegk",
+       ".......kfedeeeeedegk",
+       ".......kfedeeeeedegk",
+       ".......kfdeeeeeeedgk",
+       ".......kfggggggggggk",
+       "........kkkkkkkkkkk.",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "...................."
+      ],
+      "o": [
+       5,
+       7
+      ],
+      "k": "swing",
+      "amp": 2
+     }
+    },
+    {
+     "id": "persimmon-rack",
+     "n": "곶감 걸이",
+     "k": "장식",
+     "d": "나무 틀에 새끼줄을 늘어뜨리고 감을 꿰어 말리는 곶감 걸이예요. 주황빛 곶감이 줄줄이 매달려 있어요.",
+     "px": [
+      "...........................",
+      "kkkkkkkkkkkkkkkkkkkkkkkkkkk",
+      "abbbbbbbbbbbbbbbbbbbbbbbbba",
+      "kaaaaaaaaaaaaaaaaaaaaaaaaak",
+      ".kbakkkckkkkkckkkkkckkkbak.",
+      ".kbakkdefk.kdefk.kdefkkbak.",
+      ".kbakkffgk.kffgk.kffgkkbak.",
+      ".kbakkgfgk.kgfgk.kgfgkkbak.",
+      ".kbak.kck...kck...kck.kbak.",
+      ".kbakkdefk.kdefk.kdefkkbak.",
+      ".kbakkffgk.kffgk.kffgkkbak.",
+      ".kbakkgfgk.kgfgk.kgfgkkbak.",
+      ".kbak.kck...kck...kck.kbak.",
+      ".kbakkdefk.kdefk.kdefkkbak.",
+      ".kbakkffgk.kffgk.kffgkkbak.",
+      ".kbakkgfgk.kgfgk.kgfgkkbak.",
+      ".kbak.kck...kck...kck.kbak.",
+      ".kbakkdefk..kck..kdefkkbak.",
+      ".kbakkffgk..kck..kffgkkbak.",
+      ".kbakkgfgk..khk..kgfgkkbak.",
+      ".kbak.kck...kck...kck.kbak.",
+      ".kbak.kck...kck...kck.kbak.",
+      ".kbak..k.....k.....k..kbak.",
+      ".kbak.................kbak.",
+      ".kbak.................kbak.",
+      "..kk...................kk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#86542e",
+      "b": "#d8a46a",
+      "c": "#b48c4a",
+      "d": "#f6ac5a",
+      "e": "#5c3820",
+      "f": "#e47e32",
+      "g": "#bc5a24",
+      "h": "#866434"
+     },
+     "acts": [
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "가로대 위에 날아와 앉아 곶감을 쪼아 먹어요",
+       "x": {
+        "at": "top",
+        "m": "fly",
+        "an": "Eat"
+       },
+       "l": [
+        "곶감 걸이 가로대에 날아와 앉아 곶감을 콕콕 쪼았다.",
+        "가로대 위에서 곶감을 몰래 쪼아 먹는다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "곶감 줄 앞에 서서 고개를 들고 냄새를 맡아요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "곶감 줄 앞에서 고개를 들고 달콤한 냄새를 맡는다.",
+        "매달린 곶감을 올려다보며 군침을 삼킨다."
+       ]
+      },
+      {
+       "w": "노말 타입 / 풀 타입 / 벌레 타입",
+       "a": "낮은 곶감에 매달려 한 입 먹어요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "낮게 매달린 곶감을 한 입 베어 먹었다.",
+        "곶감 하나를 냠냠 먹고 시치미를 뗀다."
+       ]
+      }
+     ],
+     "fit": "마당 처마 밑, 해 드는 곳",
+     "glow": 0
+    }
+   ]
+  },
+  {
    "at": 1793314096842,
    "theme": "할로윈 밤 축제",
    "note": "이번 주말이 할로윈이라 풀밭을 작은 할로윈 축제장으로 꾸몄어요. 지난번에 작고 납작한 가을 소품이 빠진 걸 보고, 이번엔 맵에서 멀리서도 알아볼 큰 실루엣(고목·마차·아치)과 밤에 빛나는 소품(호박 등·솥·수정구) 위주로 그렸어요.",

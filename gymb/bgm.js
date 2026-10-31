@@ -168,6 +168,7 @@ async function sePlay(nm, { pan = 0, at = 0, dur = 0, gain = 1 } = {}) {   // ga
   const src = ctx.createBufferSource(); src.buffer = buf;
   let node = src; if (gain !== 1) { const gn = ctx.createGain(); gn.gain.value = gain; src.connect(gn); node = gn; } if (pan && ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = pan; node.connect(p); node = p; }
   node.connect(seOut); const st = Math.max(ctx.currentTime, t0 + at); src.start(st); if (dur) src.stop(st + dur);
+  return dur || buf.duration;
 }
 const GymBGM = {
   // 곡 바꾸기. 처음이면 받아 오고 만드는 동안 조용하다가 준비되면 서서히 커진다
@@ -180,6 +181,9 @@ const GymBGM = {
   // 효과음: 미리 만들어 두기 / 틀기
   sePrep(L) { let ctx = null; try { ctx = GA.audio(); } catch (e) {} if (ctx) L.forEach(n => seGet(ctx, n).catch(() => {})); },
   se: (nm, o) => sePlay(nm, o).catch(() => {}),
+  // 팡파르(본가 Sound_PlayFanfare): 배경 곡을 잠깐 줄이고 끝까지 튼 뒤 다시 키운다. 끝나면 풀리는 Promise
+  async fan(nm) { const g = cur.g, c = cur.ctx; const dz = (to, s) => { try { const t = c.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(to, t + s); } catch (e) {} };
+    if (g && c) dz(0, .08); const d = await sePlay(nm).catch(() => 0) || 0; await new Promise(r => setTimeout(r, d * 1000 + 80)); if (g && c && cur.g === g) dz(1, .3); },
   get name() { return cur.want; },
   SONG,
 };
