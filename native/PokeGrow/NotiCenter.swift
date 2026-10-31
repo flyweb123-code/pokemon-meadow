@@ -49,7 +49,7 @@ final class NotiCenter: NSObject, UNUserNotificationCenterDelegate {
         let ids = Set(items.map(\.id))
         fired = fired.intersection(ids)
         if on { askPermission() }
-        // v13.00: 친구 요청·수락 알림 (CloudKit 구독). 게임이 fr 을 보낼 때만 (친구 기능이 있는 판)
+        // v13.02: 친구 요청·수락 알림 (CloudKit 구독). 게임이 fr 을 보낼 때만 (친구 기능이 있는 판)
         if let fr = dict["fr"] as? Bool {
             if fr { askPermission() }
             Task { @MainActor in FriendServer.shared.setReqPush(fr) }
