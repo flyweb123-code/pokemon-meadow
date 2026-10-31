@@ -809,11 +809,23 @@ function setAt(now = Date.now()) {
 }
 
 // ---------- 도전 받기: 도전자가 문으로 들어와 관장 앞까지 걸어오고, 한마디 → 배틀 → 결과 ----------
-let busy = false, meEnt = null;   // meEnt: 맵 위 내 캐릭터 (도전자 쪽을 보게)
+let busy = false, meEnt = null, guyEnt = null;   // meEnt: 맵 위 내 캐릭터 (도전자 쪽을 보게)
+// 대화창 글자를 한 글자씩 드러냄 (이름표 .gy-who 는 바로). 다 보이면 ▼ 를 켬
+function dlgType(el) {
+  const W = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement.closest('.gy-who, .gy-dnext') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  const N = []; for (let n; (n = W.nextNode());) N.push(n);
+  // 남은 글자는 안 보이는 칸(visibility hidden)으로 자리를 잡아 두어 창 크기·줄바꿈이 처음부터 그대로
+  const L = N.map(n => { const h = document.createElement('span'); h.style.visibility = 'hidden'; h.textContent = n.data; const t = n.data; n.data = ''; n.after(h); return [n, h, t]; });
+  const nx = el.querySelector('.gy-dnext'), st = { done: false };
+  let i = 0, c = 0; const end = () => { clearInterval(id); L.forEach(([n, h, t]) => { n.data = t; h.remove(); }); st.done = true; if (nx) nx.hidden = false; };
+  const id = setInterval(() => { if (!el.isConnected || !L[i]) return end(); const [n, h, t] = L[i]; c++; n.data = t.slice(0, c); h.textContent = t.slice(c); if (c >= t.length) { i++; c = 0; } if (!L[i]) end(); }, 38);
+  st.all = end; if (!L.length) end(); return st;
+}
 function talk(html, btn = '다음', sub = '') {
   // 그냥 넘기는 대사는 버튼 대신 깜빡이는 ▼, 대화창이나 빈 곳을 누르면 다음으로 (경완 2026-10-29). '배틀 시작' 같은 글자 버튼은 그대로
-  if (btn === '다음') return new Promise(ok => { $g('.gy-dlg').innerHTML = `${html}${sub ? `<span class="gy-dsub">${sub}</span>` : ''}<i class="gy-dnext" aria-hidden="true">▼</i>`;
-    const t0 = Date.now(), on = e => { if (Date.now() - t0 < 200 || e.target.closest('button, .gy-pop')) return; e.stopPropagation(); root.removeEventListener('click', on, true); sfx('tap'); ok(); };
+  if (btn === '다음') return new Promise(ok => { const el = $g('.gy-dlg'); el.innerHTML = `${html}${sub ? `<span class="gy-dsub">${sub}</span>` : ''}<i class="gy-dnext" aria-hidden="true" hidden>▼</i>`;
+    const ty = dlgType(el);   // v13.12 경완: ▼ 대화창은 첫 글자부터 한 글자씩 (누르면 먼저 다 보이고, 다 보인 뒤 누르면 다음)
+    const t0 = Date.now(), on = e => { if (Date.now() - t0 < 200 || e.target.closest('button, .gy-pop')) return; e.stopPropagation(); if (!ty.done) { ty.all(); return; } root.removeEventListener('click', on, true); sfx('tap'); ok(); };
     root.addEventListener('click', on, true); });
   return new Promise(ok => { $g('.gy-dlg').innerHTML = `${html}${sub ? `<span class="gy-dsub">${sub}</span>` : ''}<button class="gy-dbtn" type="button">${btn} ▶</button>`;
     $g('.gy-dbtn').onclick = e => { e.stopPropagation(); sfx('tap'); ok(); }; });
@@ -1003,13 +1015,53 @@ const GUY_TOUR = () => [
   '이름판을 누르면 체육관 정보와\n등급 배지를 볼 수 있어요.',
   '평판이 등급 끝까지 차면\n[승급 심사] 버튼이 생겨요.\n이기면 등급 배지를 받아요.\n그럼 힘내세요, 관장님!',
 ];
+// 도전자 불러오기 (v13.08 경완, v13.09 고침): 같은 대화창에서 한마디 → 안내원이 나감 → 잠시 뒤 띵동띵동 도전자 1~5명 → 잠시 뒤 안내원이 돌아와 문 앞에서 관장 보고 보고 → 제자리
+const kjNm = () => trName() ? `${esc(trName())} 관장님` : '관장님';   // v13.09 경완 '관장님 앞에 닉네임'
+const GUY_WIN = n => pick([   // v13.10 경완: 수마다 여러 버전
+  [`음… 오늘은 ${n}명밖에 못 데려왔어요.\n다음엔 더 열심히 홍보할게요!`, `한 명이라도 데려왔어요!\n오늘은 거리가 좀 한산하네요…`, `전단지를 잔뜩 돌렸는데 ${n}명만 왔어요.\n그래도 소중한 도전자예요!`, `${n}명이에요! 작은 시작이지만\n입소문은 이제부터예요!`],
+  [`도전자 ${n}명을 데려왔어요!\n조금 더 데려오고 싶었는데… 아쉽네요.`, `${n}명이 같이 따라왔어요!\n둘이 라이벌 사이래요.`, `홍보 성공! 도전자 ${n}명이에요.\n둘 다 의욕이 넘치던데요?`, `${n}명 데려왔어요!\n다음엔 더 많이 데려올게요!`],
+  [`영업 성공이에요!\n도전자 ${n}명을 데려왔어요.\n도전자 받기를 눌러 맞이해 주세요!`, `${n}명이나 데려왔어요!\n오늘 홍보 꽤 잘 먹혔네요.`, `광장에서 배틀 얘기를 했더니\n${n}명이 바로 따라왔어요!`, `도전자 ${n}명 도착이에요!\n관장님 소문이 슬슬 나나 봐요.`],
+  [`대성공이에요!\n도전자가 ${n}명이나 따라왔어요.\n오늘은 바빠지겠는데요?`, `무려 ${n}명이에요!\n줄 서서 기다리고 있어요!`, `관장님 얘기를 하니까\n${n}명이 서로 먼저 가겠대요!`, `${n}명 데려왔어요!\n이 정도면 영업왕 아닌가요?`],
+  [`완전 대박이에요!\n소문이 쫙 퍼져서 도전자가 ${n}명이나 왔어요!\n우리 체육관 인기 최고예요!`, `${n}명이에요, ${n}명!\n문 앞이 북적북적해요!`, `역대급 영업이에요!\n도전자 ${n}명이 한꺼번에 왔어요!`, `오늘 홍보는 전설이에요!\n${n}명이나 도전하러 왔어요!`],
+][n - 1]);
+const guySay = t => talk(`<span class="gy-who">안내원</span>${kjNm()},<br>${t.replace(/\n/g, ' ')}`);
+async function guyCall() {
+  const g = st(), D = dzOf(g.d), e = guyEnt; if (busy || !e?.el.isConnected) return homeSay();
+  busy = true; root.classList.add('gcall');
+  try {
+    root.classList.remove('dhide');
+    await guySay('제가 밖에 나가서 체육관을 홍보하고\n도전자를 데려올게요! 잠깐만 기다려 주세요!');
+    root.classList.add('dhide'); $g('.gy-dlg').innerHTML = '';
+    const [dx, dy] = D.door, [gx, gy] = [e.x, e.y], mid = [dx, gy];
+    await walk(e, [mid, [dx, dy]].filter((p, i) => i || p[0] !== gx || p[1] !== gy)); e.f = 'd'; place(e); await wait(250); doorSe(); await wait(120); e.el.style.visibility = 'hidden';
+    await wait(2600);
+    const n = rndI(1, 5);   // v13.09 경완: 매번 1~5명
+    for (let i = 0; i < n; i++) {
+      let c = mkChal(Date.now()); for (let k = 0; k < 30 && (c.named || c.boss); k++) c = mkChal(Date.now());
+      c.exp = c.t + rnd(2, 4) * H; g.q.push(c); glog('in', `${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 홍보를 보고 도전하러 왔다!`, c.t);
+      save(); busy = false; homeSay(); busy = true; qDing(); await wait(520);
+    }
+    await wait(2200);
+    doorSe(); await wait(180); e.x = dx; e.y = dy; e.f = 'u'; place(e); e.el.style.visibility = ''; await wait(300);
+    await walk(e, [[dx, dy - 1]]); e.f = 'u'; place(e); await wait(200);
+    root.classList.remove('dhide');
+    await guySay(GUY_WIN(n));
+    root.classList.add('dhide'); $g('.gy-dlg').innerHTML = '';
+    await walk(e, [[dx, gy], [gx, gy]].filter(p => p[0] !== e.x || p[1] !== e.y)); e.f = 'd'; place(e);
+  } finally { busy = false; root.classList.remove('gcall'); homeSay(); }
+}
 function guyAsk() {
   root.classList.remove('dhide');   // 홈은 대화창을 숨겨 두니 물음 띄울 때 보이게 (경완 2026-10-29 '안내원 눌러도 안 뜸')
-  $g('.gy-dlg').innerHTML = `<span class="gy-who">안내원</span>관장님, 체육관 설명을 처음부터 들어 보실래요?<div class="gy-dyn"><button class="gy-dbtn2" type="button" data-a="n">괜찮아요</button><button class="gy-dbtn2 main" type="button" data-a="y">들을래요</button></div>`;
+  // v13.08 경완: 안내원 = 도전자 불러오기 · 체육관 설명 중 고르기. 불러오기는 기다리는 도전자가 없을 때만
+  const g0 = st(), can = !g0.q.length && !bsReady(g0);
+  $g('.gy-dlg').innerHTML = `<span class="gy-who">안내원</span>${kjNm()}, 무엇을 도와 드릴까요?<div class="gy-dyn"><button class="gy-dbtn2" type="button" data-a="tour">체육관 설명</button><button class="gy-dbtn2 main" type="button" data-a="call">도전자 불러오기</button></div>`;
   $g('.gy-dyn').onclick = async e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); sfx('tap');
-    off(); const guy = { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1 };
-    if (b.dataset.a === 'n') return homeSay();   // 괜찮아요 = 말 없이 창만 닫힘 (경완 2026-10-29)
-    await kang(GUY_TOUR(), guy); homeSay(); };
+    const guy = { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1, skip: false };
+    off();
+    // v13.18 경완: 도전자가 있어도 단추는 켜 두고, 누르면 ▼ 대화창(한 글자씩)으로 안내
+    if (b.dataset.a === 'call' && !can) { busy = true; try { await guySay(g0.q.length ? '기다리는 도전자가 있어요.\n도전자를 먼저 받아 주세요!' : '승급 심사를 먼저 받아 주세요!'); } finally { busy = false; homeSay(); } return; }
+    if (b.dataset.a === 'call') return guyCall();
+    await kang(GUY_TOUR(), Object.assign(guy, { skip: true })); homeSay(); };
   // 물음 밖(대화창·빈 곳)을 누르면 박사 창처럼 닫힌다 (경완 2026-10-27)
   const shut = e => { if (e.target.closest('.gy-dyn button, .gy-kang')) return; off(); if ($g('.gy-dyn')) { e.stopPropagation(); homeSay(); } };   // 빈 곳을 눌러도 이 창만 닫히고 화면 숨기기(gview)는 안 됨 (경완 2026-10-29)
   const off = () => root.removeEventListener('click', shut, true);
@@ -1050,7 +1102,7 @@ function renderHome(quiet) {
   const meE = meEnt = ent({ ow: myOw(), x: D.leader[0], y: D.leader[1], f: 'd', n3: N3.has(myOw()), onTap: () => { sfx('tap'); meCard();  } });
   if (g.fit) fitSrc('ow').then(u => { if (meE.el.isConnected) meE.el.style.backgroundImage = `url(${u})`; });
   palEnt(D);
-  ent({ ow: GUY_OW, x: D.guy[0], y: D.guy[1], f: 'd', onTap: () => { sfx('tap'); guyAsk(); } });
+  guyEnt = ent({ ow: GUY_OW, x: D.guy[0], y: D.guy[1], f: 'd', onTap: () => { sfx('tap'); if (!busy) guyAsk(); } });
   if (!quiet) homeSay();
 }
 // 관장 뒤 포켓몬 (경완 2026-10-27): 기본은 지금 라인업에서 레벨이 가장 높은 포켓몬, 눌러서 바꿀 수 있다 (g.pal)
@@ -1061,7 +1113,7 @@ function palPick() { const g = st(), L = luNow(), P = g.pal && luAll().find(p =>
 let palRaf = 0;
 function palEnt(D) {
   cancelAnimationFrame(palRaf); const P = GB()?.gm && palPick(); if (!P) return;
-  const e = { prop: 1, x: D.leader[0] + .85, y: D.leader[1] - .35, w: 16, h: 16, el: document.createElement('i'), pal: 1 }; e.el.className = 'gy-pal tap';
+  const e = { prop: 1, x: D.leader[0] - .85, y: D.leader[1] - .35, w: 16, h: 16, el: document.createElement('i'), pal: 1 }; e.el.className = 'gy-pal tap';   // v13.07 경완: 관장 왼쪽 (오른쪽이면 머리가 가려짐)
   e.el.innerHTML = '<i class="gp-sh"></i><i class="gp-sp"></i>'; e.el.onclick = ev => { ev.stopPropagation(); sfx('tap'); palChoose(); };
   $g('.gy-ents').appendChild(e.el); ents.push(e); place(e); e.el.style.zIndex = Math.round(D.leader[1] * 10) + 8;   // 내 캐릭터보다 뒤
   GA.pmd(P.sp, P.sex).then(M => { if (!e.el.isConnected) return; const sp = e.el.querySelector('.gp-sp'), k = sc / 2;
@@ -1516,6 +1568,7 @@ function kang(lines, { lit = false, nm = '강박사', pic = GA.KANG, ow = 0, ski
   return new Promise(done => {
     const k = document.createElement('div'); k.className = 'gy-kang' + (lit ? ' lit' : '') + (ow ? ' guide' : '');
     k.innerHTML = `<i class="gy-k-veil"></i>${ow ? `<i class="gy-k-pic ow${/\/pt\/|pt_/.test(pic) ? ' w32' : ''}" style="background-image:url(${pic})"></i>` : `<img class="gy-k-pic" alt="${nm}" src="${pic}">`}${skip ? '<button class="gy-k-skip" type="button">건너뛰기</button>' : ''}<div class="win gy-k-box" aria-live="polite"><span class="gy-k-nm">${nm}</span><span class="gy-k-t"></span><b class="gy-k-cur" hidden>▼</b></div>`;
+    k.style.setProperty('--kn', Math.max(3, ...lines.map(t => String(t).split('\n').length)));   // v13.12 경완 '설명 박스 삐져나옴': 4줄 대사가 있으면 박스를 처음부터 그만큼 높게
     root.appendChild(k);
     const talk = GA.inTyper(k, k.querySelector('.gy-k-t'), k.querySelector('.gy-k-cur'));
     let stop = false; const end = async () => { if (k.classList.contains('bye')) return; stop = true; k.classList.add('bye'); await wait(450); k.remove(); done(); };

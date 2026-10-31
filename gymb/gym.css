@@ -752,10 +752,10 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 /* 일지 접기·빈 곳 눌러 숨기기 (경완 2026-10-28) */
 .gy-dfold{position:absolute;right:8px;top:6px;z-index:2;padding:2px 6px;font-size:13px;line-height:1;background:none;border:0;color:var(--dim)}
 .gy-dlg .gy-dmore{right:34px}
-#gym.dfold:not(.ded):not(.busy) .gy-dlg{left:auto;width:50px!important;height:38px;min-height:0;padding:0!important;box-sizing:border-box;cursor:pointer}
-#gym.dfold:not(.ded):not(.busy) .gy-dlg>:not(.gy-dfold){display:none!important}
-#gym.dfold:not(.ded):not(.busy) .gy-dlg .gy-dfold{top:auto;right:4px;bottom:0;padding:10px 14px;transform:rotate(180deg)}
-#gym.ded .gy-dfold,#gym.busy .gy-dfold{display:none}
+#gym.dfold:not(.ded):not(.busy):not(.gcall) .gy-dlg{left:auto;width:50px!important;height:38px;min-height:0;padding:0!important;box-sizing:border-box;cursor:pointer}
+#gym.dfold:not(.ded):not(.busy):not(.gcall) .gy-dlg>:not(.gy-dfold){display:none!important}
+#gym.dfold:not(.ded):not(.busy):not(.gcall) .gy-dlg .gy-dfold{top:auto;right:4px;bottom:0;padding:10px 14px;transform:rotate(180deg)}
+#gym.ded .gy-dfold,#gym.busy .gy-dfold,#gym.gcall .gy-dfold{display:none}
 #gym.gview .gy-top,#gym.gview .gy-store{visibility:hidden!important}
 .gy-infos .gy-chg.gy-pen{display:inline-grid;place-items:center;width:28px;height:28px;padding:0;margin-left:6px;vertical-align:2px;border:0;background:none;box-shadow:none}
 .gy-infos .gy-pen svg{width:18px;height:18px}.gy-infos .gy-pen:active{transform:translateY(2px)}
@@ -841,7 +841,7 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .gy-store svg{width:36px;height:36px;filter:drop-shadow(1px 2px 0 rgba(0,0,0,.45))}
 .gy-simb{top:calc(var(--si-top,env(safe-area-inset-top)) + 150px)}
 /* 접힌 일지에 글자(텍스트 노드)가 남던 것 */
-#gym.dfold:not(.ded):not(.busy) .gy-dlg{font-size:0;color:transparent}#gym.dfold:not(.ded):not(.busy) .gy-dlg .gy-dfold{font-size:13px;color:var(--dim)}
+#gym.dfold:not(.ded):not(.busy):not(.gcall) .gy-dlg{font-size:0;color:transparent}#gym.dfold:not(.ded):not(.busy):not(.gcall) .gy-dlg .gy-dfold{font-size:13px;color:var(--dim)}
 /* 일지 펼치기 (필드 관찰 일지처럼) */
 .gy-dlg:has(.gy-hlog){cursor:pointer}
 .gy-hlog.all{max-height:min(46vh,360px);overflow-y:auto;overscroll-behavior:contain;padding-right:2px}
@@ -902,7 +902,7 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 #gym.dlog .gy-hlog.all li{padding:4px 0;border-bottom:2px dotted rgba(80,120,190,.35)}
 /* 접기 화살표: 필드 일지와 같은 색·자리 */
 .gy-dfold{top:auto;bottom:0;right:4px;padding:8px 10px;font-size:14px;color:var(--cursor,#e04838)}
-#gym.dfold:not(.ded):not(.busy) .gy-dlg .gy-dfold{color:var(--cursor,#e04838);font-size:14px}
+#gym.dfold:not(.ded):not(.busy):not(.gcall) .gy-dlg .gy-dfold{color:var(--cursor,#e04838);font-size:14px}
 /* 꾸미기·창고: 이름표 바로 아래 양 끝, 같은 네모 틀 (경완 2026-10-28 '비슷한 위치에 레이아웃 맞춰서') */
 #gym .gy-deco,#gym .gy-store.mapico{top:calc(var(--si-top,env(safe-area-inset-top)) + 88px);bottom:auto;width:46px!important;height:46px;padding:0!important;display:grid;place-items:center;filter:none;border:3px solid var(--frame);background:var(--win);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner),3px 3px 0 rgba(0,0,0,.35);box-sizing:border-box}
 #gym .gy-deco{left:calc(var(--si-left,env(safe-area-inset-left)) + 8px)}
@@ -1223,7 +1223,7 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 #gym .gy-qbtn .gy-qn{right:6px;top:4px}
 #gym .gy-qbtn.has{box-shadow:0 0 0 2px #ffd84a!important}
 #gym .gy-simb{top:calc(var(--si-top,env(safe-area-inset-top)) + 88px)!important}
-#gym:not(.dhide):has(.gy-dlg:not(:empty)) :is(.gy-deco,.gy-store.gy-sq,.gy-qbtn){visibility:hidden!important}
+#gym:not(.dhide):has(.gy-dlg:not(:empty)) .gy-qbtn{visibility:hidden!important}   /* v13.18 경완: 꾸미기·창고는 위로 옮겨져 대화창이 떠도 그대로 */
 /* 훈련장 개편 (경완 2026-10-29): 스칼렛 소품·후프링·현황 */
 .ty-pr{position:absolute;background-size:100% 100%;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none;transform-origin:50% 100%}
 .ty-pr::after{content:'';position:absolute;left:12%;right:12%;bottom:-3px;height:7px;border-radius:50%;background:rgba(60,40,10,.22);z-index:-1}
@@ -2249,3 +2249,27 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-plate:is([data-g="3"],[data-g="4"],[data-g="5"]) .gy-wing::after{background:linear-gradient(100deg,transparent 42%,rgba(255,255,255,.85) 48%,#fff 50%,rgba(255,255,255,.85) 52%,transparent 58%) 0 100%/300% 16% no-repeat,linear-gradient(180deg,#fff 0,#fff 8%,var(--win) 9%,var(--win) 84%,var(--g2) 85%);animation:gwSheen 3.2s linear infinite}
 #gym .gy-plate .gy-wing.r::after{animation-delay:.35s}
 @keyframes gwSheen{0%{background-position:130% 100%,0 0}55%,100%{background-position:-30% 100%,0 0}}
+#gym .gy-plate[data-g="6"] .gy-wing::after{background:linear-gradient(180deg,#fff 0,#fff 8%,var(--win) 9%,var(--win) 84%,transparent 85%),linear-gradient(90deg,#ff9ec4,#ffe27a,#9ef0b8,#9ed4ff,#c8a8ff,#ff9ec4,#ffe27a,#9ef0b8,#9ed4ff,#c8a8ff,#ff9ec4) 0 0/200% 100%;animation:gwPrism 4s linear infinite}   /* v13.05 경완: 전설 띠 = 무지개가 흐르는 프리즘 */
+#gym .gy-plate[data-g="6"] .gy-wing.r::after{animation-delay:-2s}
+@keyframes gwPrism{0%{background-position:0 0,0 0}100%{background-position:0 0,-100% 0}}
+#gym .gy-dbtn2.off{background:#e4e6ec;color:#9aa0b0;box-shadow:0 3px 0 #9aa0b0;border-color:#9aa0b0}   /* v13.08 도전자 불러오기 못 할 때 */
+
+/* v13.10 경완: 안내원 영업 동안 버튼은 그대로 보이되 대화창 말고는 못 누름 */
+#gym.gcall *:not(.gy-dlg,.gy-dlg *){pointer-events:none!important}
+#gym.gcall .gy-menu{opacity:.6}
+/* v13.10 경완: 안내원 물음 단추 눌리는 모션 (그림자만큼 내려앉음) */
+#gym .gy-dbtn2:active{transform:translateY(3px);box-shadow:0 0 0 var(--frame)}
+#gym .gy-dbtn2.off:active{box-shadow:0 0 0 #9aa0b0}
+/* v13.12 경완: 안내원·강박사 대사 박스 = 가장 긴 대사 줄 수(--kn, 최소 3)에 맞춘 높이 */
+#gym .gy-k-box{height:calc(132px + (var(--kn,3) - 3) * 1.6em + (var(--kn,3) - 3) * 6px)}
+/* v13.15 경완 '명단 빨간 점 잘림': 카드 밖 왼쪽 위 점(-5px)이 목록 스크롤 칸·다음 차례 카드에 잘리지 않게 */
+.gy-qw .gy-body{padding:6px 6px 0;margin:-6px -6px 0}
+.gy-qw .qw-row.next{overflow:visible}
+/* v13.16 경완 '교체 화면 효과 딱지가 기술 박스 넘어감': 교체 카드에선 효과 딱지를 PP 와 같은 맨 아래 줄 왼쪽에 (카드가 낮아도 PP 를 밀어내지 않게) */
+.bt.mob .bp-card .mvb .eff{position:absolute!important;left:12px!important;right:auto!important;top:auto!important;bottom:9px!important;transform:none!important;margin:0!important}
+/* v13.19 경완: 기술 바꾸기 — 바뀔 기술은 배울 기술 창 위 바깥에 따로 뜨는 카드 */
+.gy-pop:has(>.mv-oldc){align-content:center;gap:14px}
+.gy-pop .win.mv-oldc{position:relative;padding:18px 12px 10px;border-color:#c04838;background:#fff4f0}
+.mv-oldc .mv-oldl{position:absolute;top:-11px;left:12px;padding:2px 10px;border-radius:10px;background:#d06050;color:#fff;font-size:12px;font-weight:700;line-height:16px;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.mv-oldc .mv-old{pointer-events:none;margin:0!important;max-height:none!important}
+.mv-oldc::after{content:'▼';position:absolute;left:50%;bottom:-17px;transform:translateX(-50%);font-size:13px;line-height:1;color:#ffb0a0;text-shadow:0 1px 0 rgba(0,0,0,.4)}

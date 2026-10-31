@@ -745,6 +745,8 @@ const PEND = { '-crit': '급소에 맞았다!', '-supereffective': '효과가 �
 async function flushPend() { const L = B?.pend; if (!L?.length) return; B.pend = []; for (const t of L) { if (/버텼다!$/.test(t) && B.frq?.length) await frFx(B.frq.shift()); await msg(t); } }
 async function handle(a) {
   const k = a[1], A = s => B.act[s];
+  // v13.16 경완 '맞지 않았다! 가 너무 빨리': 기술 이름 바로 뒤에 오는 결과 말은 이름을 읽을 틈(0.75초)을 둔다
+  const pk = B.prevK; B.prevK = k; const gap = () => pk === 'move' ? wait(750) : null;
   if (PEND[k]) { if (k === '-crit') setTimeout(() => vib(2), 120); (B.pend = B.pend || []).push(PEND[k]); return; }
   if (k === '-frmsg') {   // 친밀도: 버티기는 체력바가 줄어든 뒤에, 피하기·고치기는 바로
     const n = nmIn(a[2]), s = sideOf(a[2]);
@@ -784,23 +786,24 @@ async function handle(a) {
       await moveFx(s, id, a.includes('[miss]') || a.some(x => x === '[still]'));
       break;
     }
-    case '-notarget': await msg('하지만 공격할 상대가 없었다!', 500); break;
+    case '-notarget': await gap(); await msg('하지만 공격할 상대가 없었다!', 500); break;
     case '-damage': {
       const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); const from = (a[4] || '').replace('[from] ', '');
       if (ST_P[from]) await stFx(s, from, true);   // 화상·독 데미지는 본가처럼 연출 뒤 HP
       else if (from) await resFx(s, from, a);   // 씨뿌리기·스텔스록·압정·조이기·모래바람 등 (경완 2026-10-29 '지속 데미지·패시브 기술 모션')
-      if (from) { const t = dmgFrom(from, a[2]); if (t) await msg(t, 300); }
+      const hz = /^(move: )?(Stealth Rock|Spikes)$/.test(from);   // 스텔스록·압정은 HP 먼저, 말은 뒤 (본가)
+      if (from && !hz) { const t = dmgFrom(from, a[2]); if (t) await msg(t, 300); }
       if (from === 'confusion') { await moveFx(other(s), 'pound'); await hitFx(s, 'M'); }   // 혼란 자해: 본가처럼 막치기 연출·소리 → 깜빡 → HP (경완 2026-10-28)
       if (!from) await hitFx(s, effAhead(a[2]));
-      if (mhp) X.mhp = mhp; await drainHp(s, X, hp); X.st = stOf(a[3]) || X.st; await flushPend(); break;
+      if (mhp) X.mhp = mhp; await drainHp(s, X, hp); X.st = stOf(a[3]) || X.st; if (hz) { const t = dmgFrom(from, a[2]); if (t) await msg(t, 300); } await flushPend(); break;
     }
     case '-heal': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); if (mhp) X.mhp = mhp; const from = (a.find(x => /^\[from\] /.test(x)) || '').slice(7), sil = a.includes('[silent]');
       if (!sil && HEAL_FX[from.replace(/^(item|ability|move): /, '')]) await moveFx(s, HEAL_FX[from.replace(/^(item|ability|move): /, '')]);
       await drainHp(s, X, hp); if (!sil) await msg(healMsg(who(a[2]), from)); break; }
     case '-sethp': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp] = hpOf(a[3]); await drainHp(s, X, hp); break; }
     case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); X.fntS = true; hbBalls(s); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s === 'e') await expGain(X); break; }
-    case '-immune': await msg(`${who(a[2])}에게는 효과가 없는 것 같다…`); break;
-    case '-miss': await msg(a[3] ? `${who(a[3])}에게는 맞지 않았다!` : `${who(a[2])}의 공격은 빗나갔다!`); break;
+    case '-immune': await gap(); await msg(`${who(a[2])}에게는 효과가 없는 것 같다…`); break;
+    case '-miss': await gap(); await msg(a[3] ? `${who(a[3])}에게는 맞지 않았다!` : `${who(a[2])}의 공격은 빗나갔다!`); break;
     case '-fail': await wait(750); await msg('그러나 실패했다!'); break;   // 기술 이름을 읽을 틈 (경완 2026-10-29 '내던지기 > 그러나 실패했다! 너무 빨라')
     case '-nothing': await wait(750); await msg('그러나 아무 일도 일어나지 않았다!'); break;
     case '-status': { const s = sideOf(a[2]), X = A(s); if (X) { X.st = a[3]; setSt(s, a[3]); } await stFx(s, a[3]); await msg(statusMsg(who(a[2]), a[3])); break; }
@@ -811,7 +814,7 @@ async function handle(a) {
         if (u) { await moveFx('p', u[0]); await msg(u[1], 300); } break; } const T = { RainDance: '비가 내리기 시작했다!', SunnyDay: '햇살이 강해졌다!', Sandstorm: '모래바람이 불기 시작했다!', Hail: '싸라기눈이 내리기 시작했다!', Snow: '눈이 내리기 시작했다!', none: '날씨가 원래대로 돌아왔다!' }; if (T[w]) await msg(T[w]); break; }
     case '-start': { if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); if (/Substitute/.test(a[3])) subFx(sideOf(a[2]), true); const t = startMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
     case '-end': { if (/Substitute/.test(a[3])) subFx(sideOf(a[2]), false); const t = endMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
-    case '-activate': { if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); const t = actMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
+    case '-activate': { if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); else await gap(); const t = actMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
     case '-ability': await msg(`${who(a[2])}의 ${abKo(toID(a[3]))}!`, 500); break;
     case '-hitcount': await msg(`${a[3]}번 맞았다!`); break;
     case '-ohko': await msg('일격필살!'); break;
@@ -864,8 +867,7 @@ const TRAP = { 'Bind': 'bind', 'Wrap': 'wrap', 'Fire Spin': 'firespin', 'Whirlpo
 async function resFx(s, from, a) {
   const f = from.replace(/^(move|item|ability): /, ''), of = (a.find(x => /^\[of\] /.test(x)) || '').slice(5);
   if (f === 'Leech Seed') return moveFx(of ? sideOf(of) : other(s), 'absorb');
-  if (f === 'Stealth Rock') return moveFx(other(s), 'rockthrow');
-  if (f === 'Spikes') return hitFx(s);
+  if (f === 'Stealth Rock' || f === 'Spikes') return;   // v13.17 경완 '본가 효과로': 플래티넘은 연출·깜빡임 없이 HP 가 줄고 나서 '뾰족한 바위가 박혔다' (subscript_hazards_check)
   if (TRAP[f]) return moveFx(other(s), mvOf(TRAP[f]) && MFX[TRAP[f]] ? TRAP[f] : 'bind');
   if (f === 'Curse' || f === 'Nightmare') return moveFx(other(s), f === 'Curse' ? 'curse' : 'nightmare');
   if (f === 'Sandstorm' || f === 'Hail' || f === 'confusion' || f === 'Recoil') return;
@@ -956,8 +958,11 @@ function mfxAdd() { for (const [k, L] of Object.entries(MFX_ADD)) { const v = MF
 // 본가 연출이 어색한 기술은 다른 기술 연출로 (경완 2026-10-30 '세차게 휘두르기 모션 물기라서 어색해' → 몸을 휘둘러 치는 힘껏치기)
 const MV_SUB = { thrash: 'slam' };
 const MV_LIKE = { poweruppunch: 'megapunch', jetpunch: 'machpunch', ragefist: 'shadowpunch', plasmafists: 'thunderpunch' };
+// v13.17 경완 '울음소리 기술은 포켓몬 울음소리': 본가 플래티넘 연출(PlayPokemonCry)처럼 쓰는 포켓몬의 울음소리
+const CRY_MV = new Set(['growl', 'roar', 'howl', 'hypervoice', 'chatter', 'nobleroar', 'snarl', 'partingshot']);
 async function moveFx(s, id, miss) {
   const m = mvOf(id); if (!m || miss) return; const ty = m[2], cat = m[3], col = TY_FX[ty] || '#fff';
+  if (CRY_MV.has(id)) { const X = B.act[s]; try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} }
   let A = MFX[MV_SUB[id] || id]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1];
   // 5세대 이후 주먹 기술은 비슷한 4세대 주먹 연출로 (경완 2026-10-29 '그로우펀치가 당수 모션')
   if (!A && MV_LIKE[id]) { A = MFX[MV_LIKE[id]]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1]; }
@@ -1581,11 +1586,14 @@ function movesPop(P, done, hi = -1) {   // hi: 방금 바꾼 칸 — 테두리�
   function pickNew(k, old) {
     if (!C.length) { gymPop(`<h4>기술 바꾸기</h4><p class="gy-msg">지금 배울 수 있는 다른 기술이 없어요. 레벨을 올리거나 기술머신·훈련장에서 익혀 보세요.</p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="tm">기술 가르치기</button></div>`, (b, c2) => { c2(); if (b === 'tm') return tmPop(P, () => movesPop(P, done), k); movesPop(P, done); }); return; }
     // 배울 기술을 누르면 바로 바뀌지 않고 상세 창 → '바꾸기' (경완 2026-10-29)
-    const learn = () => gymPop(`<h4>${old ? `${esc(mvKo(old))} 대신` : '새로'} 배울 기술</h4><div class="mp-moves mp-line pick mv-learn">${C.map(id => mvRow(mvOf(id), 'n' + id)).join('')}</div><div class="gy-btns"><button data-a="x">뒤로</button><button class="main" data-a="tm">기술 가르치기</button></div>`, (b, c2) => {
+    const learn = () => oldCard(gymPop(`<h4>${old ? `${esc(mvKo(old))} 대신` : '새로'} 배울 기술</h4><div class="mp-moves mp-line pick mv-learn">${C.map(id => mvRow(mvOf(id), 'n' + id)).join('')}</div><div class="gy-btns"><button data-a="x">뒤로</button><button class="main" data-a="tm">기술 가르치기</button></div>`, (b, c2) => {
+      if (b === 'o') return;   // 바뀔 기술 카드는 보기만 (v13.18 경완)
       if (b === 'x') { c2(); return movesPop(P, done); }
       if (b === 'tm') { c2(); return tmPop(P, () => movesPop(P, done, Math.min(k, gm(P).mv.length - 1)), k); }   // 기술머신으로 이 칸에 가르치기 (경완 2026-10-29)
       const id = b.slice(1);
-      mvInfo(id, () => { c2(); m.kn = (m.kn || []).filter(x => x !== id); if (old) { m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); } else m.mv.push(id); GA.save(); se('DECIDE'); movesPop(P, done, old ? k : m.mv.length - 1); }, old ? '바꾸기' : '배우기', () => {}); });
+      mvInfo(id, () => { c2(); m.kn = (m.kn || []).filter(x => x !== id); if (old) { m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); } else m.mv.push(id); GA.save(); se('DECIDE'); movesPop(P, done, old ? k : m.mv.length - 1); }, old ? '바꾸기' : '배우기', () => {}); }));
+    // v13.19 경완: 바뀔 기술 = 창 위 바깥에 따로 뜨는 카드
+    function oldCard(p) { if (old && mvOf(old)) p.insertAdjacentHTML('afterbegin', `<div class="win mv-oldc"><span class="mv-oldl">바뀔 기술</span><div class="mp-moves mp-line mv-old">${mvRow(mvOf(old), 'o')}</div></div>`); return p; }
     learn();
   }
   const list = p.querySelector('.mv-ord'); let lp = null;

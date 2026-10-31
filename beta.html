@@ -1743,12 +1743,12 @@ body.mapEdit :is(#mons,#fx,#propFx,#night,#lightC,#rain,#rainG,#tuShade,.berryba
 #meZone{position:absolute;left:0;top:0;width:360px;height:600px;pointer-events:none;z-index:0}
 #meLayer{position:absolute;left:0;top:0;width:360px;height:600px;pointer-events:none;z-index:9001}
 .me-foot{position:absolute;translate:-50% -50%;border:2px dashed #7cf08a;border-radius:50%;background:rgba(124,240,138,.22)}body.mapEdit #wrap{touch-action:none}
-body.fview :is(#clock,#btnMapEdit,#goldbar,.berrybar,#side,#hint){visibility:hidden!important}   /* v9.87 경완: 페이드 없이 바로 · v9.85 경완: 빈 곳을 눌러 일지를 접으면 버튼·날짜·골드를 숨겨 필드만 보기 (v9.86: 아래 메뉴·접힌 일지 버튼은 남김) */.me-foot.bad{border-color:#ff6a5a;background:rgba(255,90,80,.3)}#items .prop.meDrag{filter:drop-shadow(0 6px 2px rgba(0,0,0,.35)) drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 -1px 0 #fff);animation:none}
+body.fview :is(#clock,#btnMapEdit,#goldbar,.berrybar,#side,#hint){visibility:hidden!important}   /* v9.87 경완: 페이드 없이 바로 · v9.85 경완: 빈 곳을 눌러 일지를 접으면 버튼·날짜·골드를 숨겨 필드만 보기 (v9.86: 아래 메뉴·접힌 일지 버튼은 남김) */.me-foot.bad{border-color:#ff6a5a;background:rgba(255,90,80,.3)}#items .prop.meDrag{filter:drop-shadow(0 6px 2px rgba(0,0,0,.35)) drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 0 3px #ffd84a);animation:none}#items .prop.meDrag.nightf{filter:url(#nightF) drop-shadow(0 6px 2px rgba(0,0,0,.35)) drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 0 3px #ffd84a)}
 .me-x{position:absolute;translate:-50% -50%;width:22px;height:22px;padding:0;display:grid;place-items:center;pointer-events:auto;color:#fff;background:#e04838;border:2px solid #20202c;box-shadow:inset 0 -2px 0 #9a2418,2px 2px 0 rgba(0,0,0,.35);cursor:pointer}
-.me-x svg{width:10px;height:10px}
+.me-x svg{width:10px;height:10px}.me-x:active{translate:-50% calc(-50% + 2px);box-shadow:inset 0 -1px 0 #9a2418,0 0 0 rgba(0,0,0,.35)}body.fme #meHudCv{display:none}body.fme #wrap,#items .prop,#bg{touch-action:none}
 body.mapEdit:not(.meHas) #items .prop{filter:drop-shadow(1px 0 0 rgba(255,255,255,.85)) drop-shadow(-1px 0 0 rgba(255,255,255,.85)) drop-shadow(0 1px 0 rgba(255,255,255,.85)) drop-shadow(0 -1px 0 rgba(255,255,255,.85)) drop-shadow(0 0 3px #ffe27a)}   /* v9.11 경완: 편집 모드에선 옮길 수 있는 소품 모두 테두리 빛, 고르면 그 소품만 */
-#items .prop.meSel{filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff) drop-shadow(0 0 4px #ffe27a) drop-shadow(0 0 2px #ffe27a);animation:meGlow 1.2s ease-in-out infinite;z-index:8999!important}
-@keyframes meGlow{50%{filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff) drop-shadow(0 0 7px #ffd84a) drop-shadow(0 0 3px #ffd84a)}}
+#items .prop.meSel{filter:drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 0 3px #ffd84a) drop-shadow(0 0 1px #ffd84a);animation:meGlow 1.2s ease-in-out infinite;z-index:8999!important}#items .prop.meSel.nightf{filter:url(#nightF) drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 0 3px #ffd84a) drop-shadow(0 0 1px #ffd84a);animation-name:meGlowN}@keyframes meGlowN{50%{filter:url(#nightF) drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 0 6px #ffd84a) drop-shadow(0 0 2px #ffd84a)}}/* v13.13 경완 '꾹 눌러 옮길 땐 확실히 테두리, 밝기는 원래대로': 테두리 2px, 밤·저녁 색(nightF)은 그대로 두고 테두리만 덧씌움 */
+@keyframes meGlow{50%{filter:drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 0 6px #ffd84a) drop-shadow(0 0 2px #ffd84a)}}
 .me-bar{position:fixed;left:0;right:0;bottom:0;z-index:70;background:var(--frame,#20202c);border-top:3px solid #23232f;color:#f8f8f8;display:flex;flex-direction:column;gap:8px;
   padding:10px calc(var(--si-right,env(safe-area-inset-right)) + 8px) calc(var(--sab,env(safe-area-inset-bottom)) + 8px) calc(var(--si-left,env(safe-area-inset-left)) + 8px)}
 .me-head{display:flex;align-items:center;gap:8px;padding:0 0 0 4px}.me-all{margin-left:auto;padding:6px 10px;font:inherit;font-size:12px;color:#f8f8f8;background:#4b4b66;border:0;box-shadow:inset 0 2px 0 rgba(255,255,255,.2),inset 0 -3px 0 rgba(0,0,0,.4),0 2px 0 #1c1c26;cursor:pointer;-webkit-tap-highlight-color:transparent}.me-all:active{transform:translateY(1px);box-shadow:inset 0 2px 0 rgba(0,0,0,.4),0 1px 0 #1c1c26}.me-head b{font-size:15px;color:#ffe27a}.me-head span{font-size:12px;color:#b8b8d0}
@@ -2278,8 +2278,10 @@ function mgAbSfx(k, t) {
   }
 }
 let sfxN = 0;
+var fTick = false;   /* v13.11 경완 '미니게임 중 놀래키기 소리': 필드가 내는 소리는 미니게임 창이 열려 있으면 안 남 (필드 시간은 그대로 흐름) */
+function fMute() { return fTick && !document.getElementById('mg')?.hidden; }
 function sfx(name, k = 0) { sfxN++; if (window.__sfxLog) window.__sfxLog.push(name + ' ' + new Error().stack.split('\n')[2]?.trim());
-  if (!sfxOn) return; const a = audio(); if (!a) return;
+  if (!sfxOn || fMute()) return; const a = audio(); if (!a) return;
   const t = a.currentTime + .01;
   switch (name) {
     case 'tap': tone(1320, t, .035, { vol: .045 }); break;
@@ -2585,7 +2587,7 @@ function cryGain(b) { const d = b.getChannelData(0), W = Math.max(64, Math.round
   for (let i = 0; i + W <= d.length; i += W) { let q = 0; for (let j = i; j < i + W; j++) q += d[j] * d[j]; E.push(q / W); }
   if (!E.length) return .25; const mx = Math.max(...E), A = E.filter(e => e >= mx * .05), rms = Math.sqrt(A.reduce((x, y) => x + y, 0) / A.length) || .1; return Math.min(.09 / rms, 4); }
 let cryLimN = null; const cryLim = a => { if (!cryLimN || cryLimN.context !== a) { cryLimN = a.createDynamicsCompressor(); const c = cryLimN; c.threshold.value = -8; c.knee.value = 4; c.ratio.value = 12; c.attack.value = .002; c.release.value = .12; c.connect(a.destination); } return cryLimN; };
-async function playCry(sp, delay = 0, rate = 1, boost = 1) {   // boost: 체육관 배틀은 곡이 커서 더 크게 (v12.20 경완 '배틀 울음소리가 bgm 에 비해 너무 작음')   // rate: 쓰러질 때 낮게 (본가 4세대)
+async function playCry(sp, delay = 0, rate = 1, boost = 1) { if (fMute()) return;   // boost: 체육관 배틀은 곡이 커서 더 크게 (v12.20 경완 '배틀 울음소리가 bgm 에 비해 너무 작음')   // rate: 쓰러질 때 낮게 (본가 4세대)
   if (!sfxOn || !cry.have.has(sp)) return; const a = audio(); if (!a) return;
   try {
     let buf = cry.buf.get(sp);
@@ -5991,9 +5993,13 @@ function campSeats(G) {   // 불 둘레 타원에 고르게 앉되, 화면 밖·
   const n = G.length, w = G.reduce((a, o) => a + (o.w || 40), 0) / n, x0 = XL + 30, x1 = XR - 30, rx = 50 + w * .4, ry = rx * .42;
   const at = a => ({ a: Math.atan2(Math.sin(a), Math.cos(a)), x: FIRE.x + Math.cos(a) * rx, y: FIRE.y + 6 + Math.sin(a) * ry });
   const okq = q => q.x >= x0 && q.x <= x1 && q.y >= MIN_Y && q.y <= MAX_Y && (h => Math.hypot(h.x - q.x, h.y - q.y) <= 4)(outOfHud(G[0], { x: q.x, y: q.y }));
-  const P = Array.from({ length: 72 }, (_, i) => at(Math.PI + i * Math.PI / 36)), ok = P.map(okq);
-  if (ok.every(Boolean)) { const off = n === 4 ? Math.PI / 4 : 0;   /* 왼쪽부터 고르게: 홀수면 불 바로 뒤·바로 앞 한가운데 자리를 피한다 */ return Array.from({ length: n }, (_, i) => at(Math.PI + off + i * 2 * Math.PI / n)); }
-  const d = ok.indexOf(false), A = []; for (let i = 1; i <= 72; i++) { const t = (d + i) % 72; if (ok[t]) A.push(P[t]); }
+  /* v13.14 경완 '대로트 불 위에 있음': 불 바로 뒤(화면 위)에 앉으면 몸이 불꽃에 겹쳐 불 위에 선 것처럼 보였다 → 불 뒤·앞 가운데 띠(불꽃 반폭 + 몸 반쯤)엔 앉지 않는다 (앞은 뒷모습이라 조금 덜 비킴) */
+  const fw = 20 * ZP('fire', FIRE) + w * .45, okf = q => Math.abs(q.x - FIRE.x) >= (q.y < FIRE.y + 6 ? fw : fw * .6);
+  const P = Array.from({ length: 72 }, (_, i) => at(Math.PI + i * Math.PI / 36)), ok0 = P.map(okq), ok = P.map((q, i) => ok0[i] && okf(q));
+  if (ok0.every(Boolean)) { const off = n === 4 ? Math.PI / 4 : 0, ev = r => Array.from({ length: n }, (_, i) => at(Math.PI + off + r + i * 2 * Math.PI / n));   /* 왼쪽부터 고르게: 홀수면 불 바로 뒤·바로 앞 한가운데 자리를 피한다 */
+    for (let k = 0; k * 5 <= 180 / n; k++) for (const r of k ? [k, -k] : [0]) { const S2 = ev(r * Math.PI / 36); if (S2.every(okf)) return S2; }   // 불 앞뒤 띠에 걸리면 조금씩 돌려 본다
+  }
+  const d = ok0.includes(false) ? ok0.indexOf(false) : ok.indexOf(false), A = []; for (let i = 1; i <= 72; i++) { const t = (d + i) % 72; if (ok[t]) A.push(P[t]); }
   if (A.length >= n) return n === 1 ? [A[A.length >> 1]] : Array.from({ length: n }, (_, i) => A[Math.round(i * (A.length - 1) / (n - 1))]);
   return G.map((o, i) => ({ a: 0, x: clamp(FIRE.x - rx + (i % 3) * 18, x0, x1), y: FIRE.y + 6 + (i - n / 2) * 14 }));
 }
@@ -6890,7 +6896,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.05';   /* v13.05 경완: 친구 요청이 오거나 수락되면 아이폰 알림 (CloudKit 구독, 설정 › 알림 '친구 요청이 왔을 때') */
+const APP_VER = '13.20';   /* v13.20 경완: 바뀔 기술 = 배울 기술 창 위 바깥에 따로 뜨는 카드 */   /* v13.19 경완: 필드 소품 꾹 눌러 고를 때 진동 세게 두 번, 웹은 손 뗄 때 */   /* v13.18 경완: 기술 바꾸기 — 배울 기술 목록 위에 바뀔 기술 카드 · 도전자 불러오기 단추는 늘 켜 두고 못 할 땐 ▼ 대화창 · 안내원 대화 중에도 꾸미기·창고 보임 */   /* v13.17 경완: 스텔스록·압정 = 본가처럼 연출 없이 HP 먼저 줄고 말 · 울음소리·울부짖기·멀리짖기·하이퍼보이스·수다 = 쓰는 포켓몬 울음소리 */   /* v13.16 경완: 교체 카드 효과 딱지는 PP 줄 왼쪽 · 기술 이름 뒤 맞지 않았다·효과 없음·방어 등은 0.75초 뒤 */   /* v13.15 경완: 체육관 ▼ 대화창 글자 한 글자씩 · 안내원·강박사 설명 박스 4줄이면 높게 · 도전자 명단 빨간 점 안 잘림 */   /* v13.14 경완 '대로트 불 위에 있음': 모닥불 노래 자리가 불 바로 뒤·앞에 걸리지 않게 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7763,7 +7769,7 @@ function meBgProps(on) { itemsEl.querySelectorAll('.prop.bgp').forEach(e => e.re
   for (const p of BGP) { const w = p.cv.width, h = p.cv.height, c = document.createElement('canvas'), g = c.getContext('2d'); c.width = w; c.height = h;
     g.drawImage(bg, p.l + BGOX, p.t, w, h, 0, 0, w, h); g.globalCompositeOperation = 'destination-in'; g.drawImage(p.cv, 0, 0);
     const e = document.createElement('div'); e.className = 'prop bgp ' + p.k; e.style.cssText = W2(c.toDataURL(), w * 2, h * 2) + `;left:${(p.l + w / 2) * 2}px;top:${(p.t + h) * 2}px`; e.style.setProperty('z-index', 0, 'important'); e.P = p; e.LV = p.v; itemsEl.prepend(e); } meFootAll(); }   /* 바탕 그림처럼 맨 아래 — 골라도 위의 꽃·나무를 덮지 않게 */
-function mapEditSet(on) { if (mapEdit === on) return; if (on) meHud = meHudSnap(); mapEdit = on; document.body.classList.toggle('mapEdit', on); for (const id of ['meBar', 'meTitle', 'meZone', 'meLayer']) $('#' + id).hidden = !on;
+function mapEditSet(on) { if (mapEdit === on) return; if (on && fme) fmeEnd(); if (on) meHud = meHudSnap(); mapEdit = on; document.body.classList.toggle('mapEdit', on); for (const id of ['meBar', 'meTitle', 'meZone', 'meLayer']) $('#' + id).hidden = !on;
   if (on) { mePick = null; meBagD = {}; meXLR = [XL, XR]; meSnap = meSnapshot(); meBgProps(true); meZoneDraw(); meRender(); } else { meSel(null); meBgProps(false); meSnap = null; } sfx(on ? 'open' : 'tap'); dispatchEvent(new Event('resize')); }
 $('#btnMapEdit').onclick = () => mapEditSet(true);
 // v9.78 경완 '맵 편집 검토': 포켓몬이 타거나 앉아 있던 소품(스프링·시소·그루터기·나무)을 옮겨도 포켓몬은 예전 자리 허공에서 계속 놀았다 → 저장하면 소품 놀이를 끝내고 그 자리에 내려온다
@@ -7777,15 +7783,16 @@ let meBagD = {};   // 이번 편집에서 가방에 넣고 뺀 수 (취소하면
 const meBag = (k, n) => { fbagAdd(k, n); meBagD[k] = (meBagD[k] || 0) + n; };
 $('#meX').onclick = e => { e.stopPropagation(); const el = meSelEl, v = el?.LV, k = v && fpKeyOf(v); if (!k) return meSel(null);
   if (ALLP('pond').includes(v) && ALLP('pond').filter(o => !meOut(o)).length < 2) { sfx('tap'); meSay('연못은 하나는 있어야 해요 (물 포켓몬이 지낼 곳)'); return; }
-  lvSet(v, ME_OUT, ME_OUT); meBag(k, 1); sfx('tap'); meRedraw(null); meRender(); };
+  lvSet(v, ME_OUT, ME_OUT); meBag(k, 1); sfx('tap'); meRedraw(null); meRender(); if (fme) { haptic(1); fmeKeep(); fmeEnd(); } };
 { const ml = $('#meList'); let D = null, moved = 0;   /* v9.41 경완 '맵 편집 하단 소품 리스트 좌우 스크롤이 안 됨': 마우스(작업실 시뮬레이터)로도 끌거나 휠로 좌우로 넘긴다 (손가락은 원래 됨) */
   ml.addEventListener('wheel', e => { if (ml.scrollWidth <= ml.clientWidth) return; const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY; if (!d) return; ml.scrollLeft += d; e.preventDefault(); }, { passive: false });
   ml.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse' || e.button > 0) return; D = { x: e.clientX, l: ml.scrollLeft, id: e.pointerId }; moved = 0; });
   addEventListener('pointermove', e => { if (!D || e.pointerId !== D.id) return; const dx = e.clientX - D.x; if (Math.abs(dx) > 4) moved = 1; if (moved) ml.scrollLeft = D.l - dx; });
   addEventListener('pointerup', () => { D = null; }); ml.addEventListener('click', e => { if (moved) { moved = 0; e.stopImmediatePropagation(); e.preventDefault(); } }, true); }
 $('#meList').onclick = e => { const b = e.target.closest('[data-k]'); if (!b) return; mePick = mePick === b.dataset.k ? null : b.dataset.k; meRender(); sfx('tap'); };
+function meHitAt(cx, cy) { let best = null, bestA = 0; for (const el of itemsEl.querySelectorAll('.prop')) { const r = el.getBoundingClientRect(); if (cx >= r.left && cx <= r.right && cy >= r.top && cy <= r.bottom && meOpq(el, cx, cy) && (!best || +el.style.zIndex > +best.style.zIndex || (+el.style.zIndex === +best.style.zIndex && r.width * r.height < bestA))) { best = el; bestA = r.width * r.height; } } return best; }   // 누른 곳의 소품 (그림 있는 칸, 위에 그려진 것 먼저)
 $('#wrap').addEventListener('pointerdown', e => { if (!mapEdit || e.target.closest('#meX')) return; e.stopPropagation(); e.preventDefault();
-  let best = null, bestA = 0; for (const el of itemsEl.querySelectorAll('.prop')) { const r = el.getBoundingClientRect(); if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom && meOpq(el, e.clientX, e.clientY) && (!best || +el.style.zIndex > +best.style.zIndex || (+el.style.zIndex === +best.style.zIndex && r.width * r.height < bestA))) { best = el; bestA = r.width * r.height; } }
+  const best = meHitAt(e.clientX, e.clientY);
   if (!best && mePick) { const v = [...meSnap.keys()].find(o => meOut(o) && fpKeyOf(o) === mePick);   /* 가방에서 고른 소품을 누른 자리에 (땅에 닿는 자리 = 누른 곳, 안전 구역 안으로) */
     if (v) { const r = itemsEl.getBoundingClientRect(), k = r.width / itemsEl.offsetWidth || 1, Z = meZoneRect(); lvSet(v, Math.round(clamp((e.clientX - r.left) / k, Z.x0 + 10, Z.x1 - 10)), Math.round(clamp((e.clientY - r.top) / k, Z.y0 + 10, Z.y1))); const pk = mePick; meBag(pk, -1); if (!(S.fbag?.[pk] > 0)) mePick = null; sfx('tap'); meRedraw(v); meRender(); mePlaceFit(v, () => { lvSet(v, ME_OUT, ME_OUT); meBag(pk, 1); mePick = pk; }); return; }
     const r = itemsEl.getBoundingClientRect(), k = r.width / itemsEl.offsetWidth || 1, Z = meZoneRect(), mk = fpMake(mePick, Math.round(clamp((e.clientX - r.left) / k, Z.x0 + 10, Z.x1 - 10)), Math.round(clamp((e.clientY - r.top) / k, Z.y0 + 10, Z.y1)));   /* 새로 산 소품: 목록 끝에 새로 (저장하면 S.layAdd) */
@@ -7801,18 +7808,39 @@ function mePlaceFit(v, undo, n = 0) { const P = [...itemsEl.querySelectorAll('.p
     let d = okAt(cx, cy) ? [cx, cy] : null; for (let r = 8; !d && r <= 160; r += 8) for (let i = 0; i < 16 && !d; i++) { const a = i / 16 * 6.283, dx = Math.round(cx + Math.cos(a) * r), dy = Math.round(cy + Math.sin(a) * r * .6); if (okAt(dx, dy)) d = [dx, dy]; }
     if (!d) { undo(); meSay('여기엔 놓을 자리가 없어요'); meRedraw(null); meRender(); return; }
     if (d[0] || d[1]) { lvMove(v, d[0], d[1]); meRedraw(v); } }); }
-addEventListener('pointermove', e => { const D = meDrag; if (!D || !mapEdit || e.pointerId !== D.id) return; const el = D.el;
+addEventListener('pointermove', e => { const D = meDrag; if (!D || !(mapEdit || fme) || e.pointerId !== D.id) return; const el = D.el;
   if (!D.on) { if (Math.hypot(e.clientX - D.x0, e.clientY - D.y0) < 5) return; D.on = true; D.k = el.getBoundingClientRect().width / el.offsetWidth || 1; $('#meX').hidden = true; el.classList.add('meDrag'); if (el.classList.contains('bgp')) { el.style.setProperty('z-index', 8999, 'important'); BG_SKIP = el.LV; drawBg(); meZoneDraw(); }   /* 끄는 동안은 맨 위, 바탕엔 원래 자리 그림을 지움 */
     D.co = [...itemsEl.children, ...document.querySelectorAll('.glint')].filter(o => o.CO && o.CO === el.LV).map(o => [o, parseFloat(o.style.left), parseFloat(o.style.top)]); }   /* v9.07 경완: 꽃밭 꽃·연못 갈대·수련잎·모닥불 불꽃도 같이 */
   let dx = (e.clientX - D.x0) / D.k, dy = (e.clientY - D.y0) / D.k; const F = el.FP, w = parseFloat(el.style.width), h = parseFloat(el.style.height);
   if (F) { const Z = meZoneRect(), fx = D.l0 - w / 2 + F.x * w, fy = D.t0 - h + F.y * h, rx = F.w * w / 2, ry = F.h * h / 2;   // 땅에 닿는 자리가 안전 구역 밖으로 못 나가게
     dx = Math.max(Z.x0 + rx - fx, Math.min(Z.x1 - rx - fx, dx)); dy = Math.max(Z.y0 + ry - fy, Math.min(Z.y1 - ry - fy, dy)); }
   D.dx = Math.round(dx); D.dy = Math.round(dy); el.style.left = D.l0 + D.dx + 'px'; el.style.top = D.t0 + D.dy + 'px'; for (const [o, l, t] of D.co) { o.style.left = l + D.dx + 'px'; o.style.top = t + D.dy + 'px'; } if (!el.classList.contains('bgp')) el.style.zIndex = Math.round(D.t0 + D.dy);
-  const f = $('#meFoot'); if (F) { f.style.left = D.l0 + D.dx - w / 2 + F.x * w + 'px'; f.style.top = D.t0 + D.dy - h + F.y * h + 'px'; } D.bad = meHits(el, 0, 0);   /* 자리는 이미 옮겨 둠 */ f.classList.toggle('bad', D.bad); }, { passive: true });
+  const f = $('#meFoot'); if (F) { f.style.left = D.l0 + D.dx - w / 2 + F.x * w + 'px'; f.style.top = D.t0 + D.dy - h + F.y * h + 'px'; } D.bad = meHits(el, 0, 0);   /* 자리는 이미 옮겨 둠 */ if (fme && D.bad && !D.wasBad) haptic(0); D.wasBad = D.bad; f.classList.toggle('bad', D.bad); }, { passive: true });
 const meUp = e => { const D = meDrag; if (!D || e.pointerId !== D.id) return; meDrag = null; if (!D.on) return; const el = D.el; el.classList.remove('meDrag'); if (el.classList.contains('bgp')) el.style.setProperty('z-index', 0, 'important');
-  BG_SKIP = null; if (D.bad || !(D.dx || D.dy)) { if (D.bad) sfx('tap'); return meRedraw(el.LV); }   /* 제자리로 (바탕·꽃까지 다시) */
-  const v = el.LV; if (!v) return meSel(el); lvMove(v, D.dx, D.dy); sfx('tap'); meRedraw(v); };
+  BG_SKIP = null; if (D.bad || !(D.dx || D.dy)) { if (D.bad) { sfx('tap'); if (fme) haptic(2); } return meRedraw(el.LV); }   /* 제자리로 (바탕·꽃까지 다시) */
+  const v = el.LV; if (!v) return meSel(el); lvMove(v, D.dx, D.dy); sfx('tap'); if (fme) haptic(0); meRedraw(v); if (fme) fmeKeep(); };
 addEventListener('pointerup', meUp); addEventListener('pointercancel', meUp);
+// v13.10 경완 '필드 화면에서 꾹 눌러서도 소품 옮기거나 빼기': 맵 편집에 들어가지 않고 필드에서 소품을 꾹(0.45초) 누르면 골라진다 (빛 테두리·땅 자리·x) → 그대로 끌어 옮기고, 놓는 규칙은 맵 편집과 같다 (땅 자리가 안전 구역 안, 다른 소품·연못과 겹치면 빨갛게 → 제자리). 옮기거나 빼면 바로 저장. 빈 곳을 누르면 끝
+let fme = false, fmeLp = null;
+function fmeStart(el) { fme = true; document.body.classList.add('fme'); meXLR = [XL, XR]; meSnap = meSnapshot(); meBagD = {}; $('#meLayer').hidden = false; meSel(el); sfx('pickup'); fmeBuzz(); }
+// v13.19 경완 '꾹 눌렀을 때 진동 안 느껴짐': 고를 때 세게 두 번 (아이폰 앱 = 바로). 사파리·홈 화면 웹앱은 손가락을 뗄 때만 진동을 허락해서 그때 한 번 더
+let fmeHapPend = 0;
+function fmeBuzz() { haptic(2); setTimeout(() => haptic(1), 90); fmeHapPend = window.webkit?.messageHandlers?.haptic ? 0 : 1; }
+function fmeEnd() { if (!fme) return; fme = false; meDrag = null; BG_SKIP = null; document.body.classList.remove('fme'); meSel(null); meBgProps(false); $('#meLayer').hidden = true; meSnap = null; meXLR = null; meBagD = {}; }
+function fmeKeep() { layKeep(); for (const K of LAY_ARR) for (const v of LAYOUT[K] || []) delete v.paN; meSnap = meSnapshot(); meBagD = {}; try { meFreeMons(); } catch (e) {} }
+const fmeOff = () => { if (fmeLp) clearTimeout(fmeLp.t); fmeLp = null; };
+$('#wrap').addEventListener('pointerdown', e => { if (mapEdit || e.button > 0 || window.__studio) return; fmeOff();
+  if (fme) { if (e.target.closest('#meX')) return; e.stopPropagation(); e.preventDefault(); fmeEat = 1;   /* 고른 동안 필드의 다른 누름(쓰다듬기·일지 접기)은 막는다 */
+    const el = meSelEl?.isConnected ? meHitAt(e.clientX, e.clientY) : null;
+    if (el && el === meSelEl) { meDrag = { el, x0: e.clientX, y0: e.clientY, on: false, l0: parseFloat(el.style.left), t0: parseFloat(el.style.top), id: e.pointerId }; return; }   /* 고른 소품은 바로 끌기 */
+    fmeEnd(); sfx('tap'); }   /* 다른 곳 = 끝 (다른 소품이면 그대로 꾹 눌러 고르기로 이어짐) */
+  if (!stage.contains(e.target) || e.target.closest('.mon,.berry,.bubble,button,input') || petM || SZB.on || S.tool === 'berry' || drag?.on) return;
+  const L = fmeLp = { id: e.pointerId, x: e.clientX, y: e.clientY, t: setTimeout(() => { if (fmeLp !== L) return; fmeLp = null; if (mapEdit || fme || petM || drag?.on || freeRub?.on) return;
+    meBgProps(true); const el = meHitAt(L.x, L.y); if (!el || !el.LV) { meBgProps(false); return; }   /* 바탕에 그려진 소품(꽃밭·연못·그루터기·모닥불)도 고를 수 있게 잠깐 낱개로 */
+    freeRub = null; fmeEat = 1; fmeStart(el); meDrag = { el, x0: L.x, y0: L.y, on: false, l0: parseFloat(el.style.left), t0: parseFloat(el.style.top), id: L.id }; }, 450) }; }, true);
+let fmeEat = 0;
+addEventListener('pointermove', e => { const L = fmeLp; if (L && e.pointerId === L.id && Math.hypot(e.clientX - L.x, e.clientY - L.y) > 8) fmeOff(); }, true);
+for (const t of ['pointerup', 'pointercancel']) addEventListener(t, e => { if (fmeLp && e.pointerId === fmeLp.id) fmeOff(); if (fmeHapPend && t === 'pointerup') { fmeHapPend = 0; haptic(2); } if (fmeEat) { fmeEat = 0; suppressClick = performance.now(); } }, true);
 let meXLR = null;   // v9.07 경완: 안전 구역 = 편집 들어오기 전(평소 화면)의 포켓몬 가로 범위 — 편집 화면은 아래 메뉴 때문에 맵이 작아져 XL·XR 이 바뀜
 const meZoneRect = () => { const [l, r] = meXLR || [XL, XR]; return { x0: Math.max(0, l) + 6, x1: Math.min(W, r) - 6, y0: MIN_Y, y1: MAX_Y0 }; };
 // 땅에 닿는 자리(타원)끼리 겹치는지 — 둘레 16점 + 가운데로 어림
@@ -12339,7 +12367,7 @@ function frame(now) {
   const cov = fieldCovered(); if (cov !== fCov) { fCov = cov; document.body.classList.toggle('fcov', cov); }
   if (inGym()) { last = now; return; }   // 체육관에 있는 동안 필드는 멈춤
   if (now - fLast < (cov ? 100 : fGap()) && !drag && !petM) return; fLast = now;
-  const t0 = performance.now(); try { frameIn(now, cov); } catch (e) { frameErr(e); } if (!cov) fCost += (performance.now() - t0 - fCost) * .05;
+  const t0 = performance.now(); fTick = true; try { frameIn(now, cov); } catch (e) { frameErr(e); } fTick = false; if (!cov) fCost += (performance.now() - t0 - fCost) * .05;
 }
 function frameIn(now, cov) {
   const real = Math.min(.1, (now - last) / 1000); last = now;
