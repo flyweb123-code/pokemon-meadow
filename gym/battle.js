@@ -791,10 +791,11 @@ async function handle(a) {
       const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); const from = (a[4] || '').replace('[from] ', '');
       if (ST_P[from]) await stFx(s, from, true);   // 화상·독 데미지는 본가처럼 연출 뒤 HP
       else if (from) await resFx(s, from, a);   // 씨뿌리기·스텔스록·압정·조이기·모래바람 등 (경완 2026-10-29 '지속 데미지·패시브 기술 모션')
-      if (from) { const t = dmgFrom(from, a[2]); if (t) await msg(t, 300); }
+      const hz = /^(move: )?(Stealth Rock|Spikes)$/.test(from);   // 스텔스록·압정은 HP 먼저, 말은 뒤 (본가)
+      if (from && !hz) { const t = dmgFrom(from, a[2]); if (t) await msg(t, 300); }
       if (from === 'confusion') { await moveFx(other(s), 'pound'); await hitFx(s, 'M'); }   // 혼란 자해: 본가처럼 막치기 연출·소리 → 깜빡 → HP (경완 2026-10-28)
       if (!from) await hitFx(s, effAhead(a[2]));
-      if (mhp) X.mhp = mhp; await drainHp(s, X, hp); X.st = stOf(a[3]) || X.st; await flushPend(); break;
+      if (mhp) X.mhp = mhp; await drainHp(s, X, hp); X.st = stOf(a[3]) || X.st; if (hz) { const t = dmgFrom(from, a[2]); if (t) await msg(t, 300); } await flushPend(); break;
     }
     case '-heal': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); if (mhp) X.mhp = mhp; const from = (a.find(x => /^\[from\] /.test(x)) || '').slice(7), sil = a.includes('[silent]');
       if (!sil && HEAL_FX[from.replace(/^(item|ability|move): /, '')]) await moveFx(s, HEAL_FX[from.replace(/^(item|ability|move): /, '')]);
@@ -866,8 +867,7 @@ const TRAP = { 'Bind': 'bind', 'Wrap': 'wrap', 'Fire Spin': 'firespin', 'Whirlpo
 async function resFx(s, from, a) {
   const f = from.replace(/^(move|item|ability): /, ''), of = (a.find(x => /^\[of\] /.test(x)) || '').slice(5);
   if (f === 'Leech Seed') return moveFx(of ? sideOf(of) : other(s), 'absorb');
-  if (f === 'Stealth Rock') return moveFx(other(s), 'rockthrow');
-  if (f === 'Spikes') return hitFx(s);
+  if (f === 'Stealth Rock' || f === 'Spikes') return;   // v13.17 경완 '본가 효과로': 플래티넘은 연출·깜빡임 없이 HP 가 줄고 나서 '뾰족한 바위가 박혔다' (subscript_hazards_check)
   if (TRAP[f]) return moveFx(other(s), mvOf(TRAP[f]) && MFX[TRAP[f]] ? TRAP[f] : 'bind');
   if (f === 'Curse' || f === 'Nightmare') return moveFx(other(s), f === 'Curse' ? 'curse' : 'nightmare');
   if (f === 'Sandstorm' || f === 'Hail' || f === 'confusion' || f === 'Recoil') return;
@@ -958,8 +958,11 @@ function mfxAdd() { for (const [k, L] of Object.entries(MFX_ADD)) { const v = MF
 // 본가 연출이 어색한 기술은 다른 기술 연출로 (경완 2026-10-30 '세차게 휘두르기 모션 물기라서 어색해' → 몸을 휘둘러 치는 힘껏치기)
 const MV_SUB = { thrash: 'slam' };
 const MV_LIKE = { poweruppunch: 'megapunch', jetpunch: 'machpunch', ragefist: 'shadowpunch', plasmafists: 'thunderpunch' };
+// v13.17 경완 '울음소리 기술은 포켓몬 울음소리': 본가 플래티넘 연출(PlayPokemonCry)처럼 쓰는 포켓몬의 울음소리
+const CRY_MV = new Set(['growl', 'roar', 'howl', 'hypervoice', 'chatter', 'nobleroar', 'snarl', 'partingshot']);
 async function moveFx(s, id, miss) {
   const m = mvOf(id); if (!m || miss) return; const ty = m[2], cat = m[3], col = TY_FX[ty] || '#fff';
+  if (CRY_MV.has(id)) { const X = B.act[s]; try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} }
   let A = MFX[MV_SUB[id] || id]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1];
   // 5세대 이후 주먹 기술은 비슷한 4세대 주먹 연출로 (경완 2026-10-29 '그로우펀치가 당수 모션')
   if (!A && MV_LIKE[id]) { A = MFX[MV_LIKE[id]]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1]; }
