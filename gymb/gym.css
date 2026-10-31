@@ -2267,9 +2267,9 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .gy-qw .qw-row.next{overflow:visible}
 /* v13.16 경완 '교체 화면 효과 딱지가 기술 박스 넘어감': 교체 카드에선 효과 딱지를 PP 와 같은 맨 아래 줄 왼쪽에 (카드가 낮아도 PP 를 밀어내지 않게) */
 .bt.mob .bp-card .mvb .eff{position:absolute!important;left:12px!important;right:auto!important;top:auto!important;bottom:9px!important;transform:none!important;margin:0!important}
-/* v13.18 경완: 기술 바꾸기 — 배울 기술 목록 위에 바뀔 기술 카드 (흐린 회색·빨간 점선, 아래 ▼) */
-.mv-oldw{position:relative;margin:4px 0 16px;padding:14px 8px 6px;border:2px dashed #d06050;border-radius:8px;background:rgba(208,96,80,.08)}
-.mv-oldw .mv-oldl{position:absolute;top:-9px;left:10px;padding:1px 8px;border-radius:9px;background:#d06050;color:#fff;font-size:11px;font-weight:700;line-height:16px}
-.mv-oldw .mv-old{pointer-events:none;filter:saturate(.35);opacity:.8}
-.mv-oldw .mv-oldar{position:absolute;left:50%;bottom:-13px;transform:translateX(-50%);font-style:normal;font-size:12px;line-height:1;color:#d06050}
-.mv-oldw .mv-old{margin:0!important;max-height:none!important}
+/* v13.19 경완: 기술 바꾸기 — 바뀔 기술은 배울 기술 창 위 바깥에 따로 뜨는 카드 */
+.gy-pop:has(>.mv-oldc){align-content:center;gap:14px}
+.gy-pop .win.mv-oldc{position:relative;padding:18px 12px 10px;border-color:#c04838;background:#fff4f0}
+.mv-oldc .mv-oldl{position:absolute;top:-11px;left:12px;padding:2px 10px;border-radius:10px;background:#d06050;color:#fff;font-size:12px;font-weight:700;line-height:16px;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.mv-oldc .mv-old{pointer-events:none;margin:0!important;max-height:none!important}
+.mv-oldc::after{content:'▼';position:absolute;left:50%;bottom:-17px;transform:translateX(-50%);font-size:13px;line-height:1;color:#ffb0a0;text-shadow:0 1px 0 rgba(0,0,0,.4)}
