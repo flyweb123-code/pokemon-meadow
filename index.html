@@ -2154,7 +2154,9 @@ const audSess = () => { try { if (navigator.audioSession) navigator.audioSession
 // v13.36 경완 '다른 앱 소리 안 나는데 bgm 이 안 들림': 예전 앱(13.24)이 보내는 isOtherAudioPlaying 은 게임 자기 오디오(효과음용으로 늘 켜 둠)도 세서 믿을 수 없다 → 무시.
 // 새 앱은 '다른 앱이 게임 음악을 꺼 달라는 신호'(secondaryAudioShouldBeSilencedHint)를 pkSecAudio 로 보낸다: 켜지면 배경 음악을 멈춰 두고, 꺼지면 그 자리부터
 window.pkOtherAudio = () => {};
-window.pkSecAudio = on => { on = !!on; if (on === otherAud) return; otherAud = on; audSess();
+// v13.37 경완 '또 소리가 끊겼다가 재생됐다가 난리': 이 신호도 게임 자기 소리를 섞어 세서(끊는 모드 ↔ 섞는 모드를 오가며) 번갈아 바뀐다 → 자동 감지는 끔. 앱 신호는 받기만 하고 아무것도 안 한다
+window.pkSecAudio = () => {};
+const pkSecAudioOff = on => { on = !!on; if (on === otherAud) return; otherAud = on; audSess();
   try { if (on) { bgm.pos = bgmPos(); bgmSrcStop(); } if (bgm.gain && actx) bgm.gain.gain.cancelScheduledValues(actx.currentTime); bgmVol(); if (!on && bgmOn && !bgmAway && !document.hidden) bgmSrcStart(); } catch (e) {}
   if (!on && !document.hidden) setTimeout(() => { try { audioCheck(); } catch (e) {} }, 300); };
 function audio() {
@@ -6910,7 +6912,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.36';   /* v13.36 경완: 다른 앱 소리 없는데 배경 음악이 안 나던 것 (예전 앱 신호 무시, 새 앱은 게임 음악 꺼 달라는 신호로) */
+const APP_VER = '13.37';   /* v13.37 경완: 영상 감지 자동 배경 음악 끄기 끔 (소리가 끊겼다 났다 반복) */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
