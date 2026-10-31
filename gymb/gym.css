@@ -2249,3 +2249,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-plate:is([data-g="3"],[data-g="4"],[data-g="5"]) .gy-wing::after{background:linear-gradient(100deg,transparent 42%,rgba(255,255,255,.85) 48%,#fff 50%,rgba(255,255,255,.85) 52%,transparent 58%) 0 100%/300% 16% no-repeat,linear-gradient(180deg,#fff 0,#fff 8%,var(--win) 9%,var(--win) 84%,var(--g2) 85%);animation:gwSheen 3.2s linear infinite}
 #gym .gy-plate .gy-wing.r::after{animation-delay:.35s}
 @keyframes gwSheen{0%{background-position:130% 100%,0 0}55%,100%{background-position:-30% 100%,0 0}}
+#gym .gy-plate[data-g="6"] .gy-wing::after{background:linear-gradient(180deg,#fff 0,#fff 8%,var(--win) 9%,var(--win) 84%,transparent 85%),linear-gradient(90deg,#ff9ec4,#ffe27a,#9ef0b8,#9ed4ff,#c8a8ff,#ff9ec4,#ffe27a,#9ef0b8,#9ed4ff,#c8a8ff,#ff9ec4) 0 0/200% 100%;animation:gwPrism 4s linear infinite}   /* v13.05 경완: 전설 띠 = 무지개가 흐르는 프리즘 */
+#gym .gy-plate[data-g="6"] .gy-wing.r::after{animation-delay:-2s}
+@keyframes gwPrism{0%{background-position:0 0,0 0}100%{background-position:0 0,-100% 0}}
