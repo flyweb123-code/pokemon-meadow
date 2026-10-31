@@ -6890,7 +6890,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.05';   /* v13.05 경완: 친구 요청이 오거나 수락되면 아이폰 알림 (CloudKit 구독, 설정 › 알림 '친구 요청이 왔을 때') */
+const APP_VER = '13.06';   /* v13.06 경완: 전설 이름판 띠 = 무지개가 흐르는 프리즘 */   /* v13.05 경완: 친구 요청이 오거나 수락되면 아이폰 알림 (CloudKit 구독, 설정 › 알림 '친구 요청이 왔을 때') */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
