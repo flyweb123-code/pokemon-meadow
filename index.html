@@ -6881,7 +6881,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '12.90';   /* v12.90 경완: 친밀도 만점 창은 확인 버튼으로만 닫힘, 어두워질 때 필드 곡 줄임·번쩍 반짝 소리·팡파르·같이 걷는 곡(플래티넘). v12.89 경완: 선물했다 돌아온 알은 원래 주운 곳 그대로, 가방 알 상태 창 '레어 알' 옆 '가방' 글자 뺌 */
+const APP_VER = '12.91';   /* v12.91 경완: 체육관 맵 12종(챔피언 로드·격투 도장·옥상 정원·회전 미로·덤불 숲길·혼령의 탑·화산 퀴즈장·순간이동 방·얼음·용·그림자·전당의 방) 지움(그 맵 체육관은 타입에 맞는 남은 맵으로), 실험실 석상은 입구 카펫 양쪽. 알 가방에서 보고 있는 알 칸에 테두리(빈 곳 누르면 꺼짐). v12.90 경완: 친밀도 만점 창은 확인 버튼으로만 닫힘, 어두워질 때 필드 곡 줄임·번쩍 반짝 소리·팡파르·같이 걷는 곡(플래티넘). v12.89 경완: 선물했다 돌아온 알은 원래 주운 곳 그대로, 가방 알 상태 창 '레어 알' 옆 '가방' 글자 뺌 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -11597,7 +11597,7 @@ function eggView(e, bag) {   // v4.51 경완: 부화기에서 고른 알을 한 
   if (bag && !L.includes(e)) L.unshift(e);
   let i = Math.max(0, L.indexOf(e));
   // v5.77 경완: 정보 카드처럼 좌우로 밀거나 옆을 눌러 부화기의 다른 알로 넘긴다
-  const fill = k => { const x = L[k]; if (!x) return; const rd = !bag && x.km >= x.need; if (bag && x.isNew) { x.isNew = false; save(); }
+  const fill = k => { const x = L[k]; if (!x) return; const rd = !bag && x.km >= x.need; if (bag && x.isNew) { x.isNew = false; save(); } if (bag && bagHl !== x.id) { bagHl = x.id; renderBag(); }   /* v12.91 경완: 보고 있는 가방 알 칸에 부화기처럼 테두리 */
     hatchStage.innerHTML = '<i class="ehalo"></i>' + eggHtml(x.g, 'wob' + (x.sh ? ' shx' : ''), x.lt);
     const need = bag ? GRADE[x.g].km : x.need, km = x.km || 0;
     m.innerHTML = `<b class="evg">${eggName(x)}</b>${bag ? '' : ` <span class="state${rd ? ' ready' : ''}">${rd ? '부화 준비 완료' : '부화 중'}</span>`}<div class="prog"><i style="width:${Math.min(100, km / need * 100)}%"></i></div>${fmtKm(km)} / ${need}km${bag ? ' 쌓임' : ` · 앞으로 <b>${fmtKm(Math.max(0, need - km))}</b>km`}<div class="evd">${!x.spN && giftOf(x.place) !== null ? `${eggGotDay(x)}<span style="white-space:nowrap">${giftOf(x.place) ? `${esc(giftOf(x.place))}에게 선물 받은 알` : '선물했다가 돌아온 알'}</span>` : x.place || x.spN ? `${eggGotDay(x)}${esc(eggPlace(x))} 근처에서 <span style="white-space:nowrap">주운 알</span>` : x.t ? `${eggGotDay(x)}<span style="white-space:nowrap">주운 알</span>` : '주운 곳 기록 없음'}<br>${themeHint(x)}</div>`;
@@ -11922,7 +11922,7 @@ $('#openRun').onclick = () => tabTo(runEl, () => { runTab = bagNext ? 'bag' : 'e
 $('#closeRun').onclick = () => { seeBag(); if (runEl.classList.contains('gpick')) return frGiftBack(); runEl.hidden = true; };
 runEl.addEventListener('click', e => { if (e.target === runEl) runEl.hidden = true; });
 let eggNone = false;   // 빈 곳을 눌러 알 선택을 지운 상태
-let runTab = 'egg', eggSel = null, bagG = 0, bagSel = null, bagSort = 'new', bagMul = null, delArm = 0;   // bagMul: 여러 개 고르는 중이면 고른 알 id 모음
+let runTab = 'egg', eggSel = null, bagG = 0, bagSel = null, bagHl = null, bagSort = 'new', bagMul = null, delArm = 0;   // bagMul: 여러 개 고르는 중이면 고른 알 id 모음
 try { bagSort = localStorage.getItem('pk-bag-sort') || 'new'; } catch (e) {}
 // 가방을 보고 나가면 NEW 표시를 지운다
 function seeBag(closing) { if (runTab !== 'bag' || (runEl.hidden && !closing)) return; let ch = false; S.bag.forEach(e => { if (e.isNew) { e.isNew = false; ch = true; } }); if (ch) { save(); renderBag.sig = ''; renderRun(); } }
@@ -11935,8 +11935,8 @@ function renderBag() {
   const hasNew = S.bag.some(e => e.isNew);
   const tb = document.querySelector('.runtab[data-tab="bag"]'); tb.innerHTML = '알 가방' + (hasNew ? '<i class="dot" aria-label="새 알"></i>' : '');
   const te = document.querySelector('.runtab[data-tab="egg"]'), rdy = S.eggs.some(e => (e.km >= e.need && !e.rs) || e.nwI); if (!!te.querySelector('.dot') !== rdy) te.innerHTML = '부화기' + (rdy ? '<i class="dot" aria-label="새 알"></i>' : '');
-  if (runTab !== 'bag') { $('#bagPop').hidden = true; bagSel = null; bagMul = null; return; }
-  const sig = [bagG, bagSort, bagSel?.id, bagMul ? 'm' + [...bagMul].join('.') : '', delArm, S.bag.length, S.bag.filter(e => e.isNew).length, S.eggs.length].join();
+  if (runTab !== 'bag') { $('#bagPop').hidden = true; bagSel = null; bagMul = null; bagHl = null; return; }
+  const sig = [bagG, bagSort, bagSel?.id, bagHl, bagMul ? 'm' + [...bagMul].join('.') : '', delArm, S.bag.length, S.bag.filter(e => e.isNew).length, S.eggs.length].join();
   if (sig === renderBag.sig) return; renderBag.sig = sig;
   $('#bagCount').innerHTML = `전체 <b>${S.bag.length}</b>개`;
   const cnt = g => S.bag.filter(e => !g || e.g === g).length, nw = g => S.bag.some(e => e.isNew && (!g || e.g === g));
@@ -11946,7 +11946,7 @@ function renderBag() {
   if (bagSort === 'km') list.sort((a, b) => (b.km || 0) / GRADE[b.g].km - (a.km || 0) / GRADE[a.g].km || (b.km || 0) - (a.km || 0));
   if (bagSort === 'grade') list.sort((a, b) => b.g - a.g || b.t - a.t);
   if (!S.bag.includes(bagSel)) bagSel = null;
-  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot${bagMul?.has(e.id) ? ' on' : ''}" data-id="${e.id}" aria-current="${e === bagSel}">${bagMul ? '<i class="chk"></i>' : ''}${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g, '' + (e.sh ? ' shx' : ''), e.lt)}<span>${e.lt ? LT_ADJ[e.lt] : GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm1(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.replace(/^(\S+ )?\S+(동|읍|면|리|\d가) (?=\S)/, '')) : fmtWhen(e.t)}</span></button>`).join('')
+  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot${bagMul?.has(e.id) ? ' on' : ''}" data-id="${e.id}" aria-current="${e === bagSel || (!bagMul && e.id === bagHl)}">${bagMul ? '<i class="chk"></i>' : ''}${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g, '' + (e.sh ? ' shx' : ''), e.lt)}<span>${e.lt ? LT_ADJ[e.lt] : GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm1(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.replace(/^(\S+ )?\S+(동|읍|면|리|\d가) (?=\S)/, '')) : fmtWhen(e.t)}</span></button>`).join('')
     : `<div class="bag-empty">${S.bag.length ? '이 등급 알이 없어요' : '움직이면 알을 주울 수 있어요'}</div>`;
   document.querySelector('.rtab[data-tab="bag"]').classList.toggle('none', !S.bag.length);   // 알이 하나도 없으면 안내 문구를 남은 공간 정중앙에
   $('#bagMulti').setAttribute('aria-pressed', !!bagMul); $('#bagMulti').textContent = bagMul ? '취소' : '선택';
@@ -11976,6 +11976,7 @@ document.addEventListener('click', ev => {
   const sl = ev.target.closest('#bagGrid .bslot');
   // 여러 개 고르는 중에 가방의 빈 곳(알·버튼이 아닌 곳)을 누르면 고르기 취소 (v3.37 경완)
   if (bagMul && !sl && ev.target.closest('.rtab[data-tab="bag"]') && !ev.target.closest('button, input, [role=tab]')) { bagMul = null; delArm = 0; renderBag(); return; }
+  if (bagHl != null && !sl && ev.target.closest('.rtab[data-tab="bag"]') && !ev.target.closest('button, input, [role=tab]')) { bagHl = null; renderBag(); }   // v12.91 경완: 가방 빈 곳을 누르면 고른 알 테두리 꺼짐
   if (sl && bagMul) { const id = +sl.dataset.id; bagMul.has(id) ? bagMul.delete(id) : bagMul.add(id); delArm = 0; const e = S.bag.find(x => x.id === id); if (e && e.isNew) { e.isNew = false; save(); } renderBag(); return; }
   if (sl && frEggTo && runEl.classList.contains('gpick')) { const e = S.bag.find(x => x.id === +sl.dataset.id); if (e) { sfx('tap'); if (e.isNew) { e.isNew = false; save(); } frGiftEgg(e); } return; }   // v12.77 알 선물 고르기
   if (sl) { delArm = 0; const e = S.bag.find(x => x.id === +sl.dataset.id); bagSel = null; if (e) eggView(e, true); renderBag(); return; }   // v5.94 경완: 부화기 알 카드와 같은 창으로
