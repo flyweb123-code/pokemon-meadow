@@ -21,6 +21,8 @@ struct GameView: UIViewRepresentable {
         config.userContentController.add(HumHandler(), name: "hum")
         // 친구 서버(CloudKit): 게임이 Promise 로 답을 받는다 (FriendServer)
         config.userContentController.addScriptMessageHandler(FriendServer.shared, contentWorld: .page, name: "friends")
+        // v13.40: 게임이 오디오를 재워 둔 틈에 '다른 앱 소리가 나는지' 묻는다 (PiP 영상이면 배경 음악을 멈춤)
+        config.userContentController.addScriptMessageHandler(AudioPeek(), contentWorld: .page, name: "audioPeek")
         let web = WKWebView(frame: .zero, configuration: config)
         web.navigationDelegate = context.coordinator
         web.isOpaque = false
@@ -32,7 +34,6 @@ struct GameView: UIViewRepresentable {
         // 패치가 바로 보이도록 서버에 새 버전이 있는지 매번 확인하고 받는다
         web.load(URLRequest(url: gameURL, cachePolicy: .reloadRevalidatingCacheData))
         context.coordinator.observeForeground(web)
-        context.coordinator.startOtherAudioWatch(web)
         return web
     }
 
@@ -49,37 +50,9 @@ struct GameView: UIViewRepresentable {
                 self?.leftAt = Date()
             }
             NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self, weak web] _ in
-                self?.otherAudio(web, force: true)   // 게임 소리가 다시 켜지기 전에 먼저 알려 준다
                 guard let self, let web, Date().timeIntervalSince(self.leftAt) > 30 * 60 else { return }
                 web.load(URLRequest(url: gameURL, cachePolicy: .reloadRevalidatingCacheData))
             }
-        }
-
-        // v13.24 경완 '영상 켜져 있을 땐 게임 배경 음악 안 나게, 꺼지면 원상 복구': 다른 앱(소형 플레이·음악) 소리가 나는지 1.5초마다 보고
-        // 바뀌면 게임에 window.pkOtherAudio(true/false) 를 알린다 → 게임은 배경 음악만 0, 효과음은 다른 앱 소리와 섞어서 낸다
-        private var otherLast: Bool?
-        private var otherTimer: Timer?
-        func otherAudio(_ web: WKWebView?, force: Bool = false) {
-            guard let web else { return }
-            // v13.36: isOtherAudioPlaying 은 웹뷰(게임 자기) 오디오도 세서 배경 음악이 안 돌아왔다 → 게임 음악을 꺼 달라는 신호(다른 앱이 끊는 소리를 낼 때만 true)를 쓴다
-            let on = AVAudioSession.sharedInstance().secondaryAudioShouldBeSilencedHint
-            if !force, on == otherLast { return }
-            otherLast = on
-            web.evaluateJavaScript("window.pkSecAudio && window.pkSecAudio(\(on))")
-        }
-        func startOtherAudioWatch(_ web: WKWebView) {
-            NotificationCenter.default.addObserver(forName: AVAudioSession.silenceSecondaryAudioHintNotification, object: nil, queue: .main) { [weak self, weak web] _ in
-                self?.otherAudio(web)
-            }
-            otherTimer?.invalidate()
-            otherTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { [weak self, weak web] _ in
-                guard UIApplication.shared.applicationState == .active else { return }
-                self?.otherAudio(web)
-            }
-        }
-
-        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            otherAudio(webView, force: true)
         }
 
         func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
@@ -166,5 +139,13 @@ final class HumHandler: NSObject, WKScriptMessageHandler {
     private func stop() {
         try? player?.stop(atTime: CHHapticTimeImmediate)
         player = nil
+    }
+}
+
+// v13.40 경완 'PiP 영상이 켜져 있으면 배경 음악 안 나게': 게임이 물을 때만 답한다.
+// isOtherAudioPlaying 은 웹뷰(게임 자기) 오디오도 세므로, 게임은 자기 오디오를 재워 둔 순간에만 묻는다.
+final class AudioPeek: NSObject, WKScriptMessageHandlerWithReply {
+    func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage, replyHandler: @escaping (Any?, String?) -> Void) {
+        replyHandler(AVAudioSession.sharedInstance().isOtherAudioPlaying, nil)
     }
 }
