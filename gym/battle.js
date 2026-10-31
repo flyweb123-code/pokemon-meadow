@@ -245,8 +245,8 @@ async function msg(t, hold = 650) {
 }
 // 누를 때까지 기다리는 대화 (승부 끝 등)
 // 본가 {WAIT 5}{WAIT 2}: 글이 다 나오면 팡파르(레벨 업·새 기술), 끝날 때까지 기다렸다가 눌러서 다음 (경완 2026-10-31 본가 타이밍)
-// v13.26 경완: 기술을 배울 때는 늘 본가 배틀에서 기술 배울 때 팡파르 (ME_FANFA1, 곡은 잠깐 줄어듦)
-const learnFan = () => { try { const f = window.GymBGM?.fan?.('ME_FANFA1'); f?.catch?.(() => {}); if (!f) se('DECIDE'); } catch (e) {} };
+// v13.26 경완: 기술을 배울 때는 늘 본가 배틀에서 기술 배울 때 팡파르 (ME_FANFA1)
+const learnFan = () => { try { if (window.GymBGM?.se) window.GymBGM.se('ME_FANFA1'); else se('DECIDE'); } catch (e) {} };   // v13.28 경완: 배틀 밖에선 배경곡을 줄이지 않고 그 위에 팡파르만
 async function msgFan(t) { await msg(t, 0); if (!B) return; try { await window.GymBGM?.fan?.('ME_FANFA1'); } catch (e) {} if (!B) return; $b('.bt-msg .cur').hidden = false; await new Promise(r => { B.tapWake = r; }); if (B) { B.tapWake = null; $b('.bt-msg .cur').hidden = true; } }
 async function msgTap(t) { await msg(t, 0); if (!B) return; $b('.bt-msg .cur').hidden = false; await new Promise(r => { B.tapWake = r; }); $b('.bt-msg .cur').hidden = true; }
 
