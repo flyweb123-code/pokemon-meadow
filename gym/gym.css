@@ -2287,3 +2287,9 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .mv-ordb{min-width:88px;text-align:center}
 .mv-ord{min-width:0}.mv-ord .mp-mv{min-width:0}
 .mv-ord.on .mp-mv:not(.empty){padding-right:22px!important}.mv-ord.on .mp-mv:not(.empty)::after{right:6px;font-size:16px}
+/* v13.26 경완 '레이아웃 정렬': 기술머신 익힘 창 = 가운데 큰 문장 · 기술 카드 · 작은 안내 */
+.tm-done{text-align:center;margin:2px 0 14px}
+.tm-done .tm-dh{margin:0 0 12px;font-size:16px;line-height:1.5;color:#283040}
+.tm-done .tm-dh b{color:#2a58a8}
+.tm-done .tm-dmv{margin:0!important;grid-template-columns:1fr!important;pointer-events:none;text-align:left}
+.tm-done .tm-dsub{margin:10px 0 0;font-size:12px;color:var(--dim,#7a8090)}
