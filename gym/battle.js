@@ -245,6 +245,8 @@ async function msg(t, hold = 650) {
 }
 // 누를 때까지 기다리는 대화 (승부 끝 등)
 // 본가 {WAIT 5}{WAIT 2}: 글이 다 나오면 팡파르(레벨 업·새 기술), 끝날 때까지 기다렸다가 눌러서 다음 (경완 2026-10-31 본가 타이밍)
+// v13.26 경완: 기술을 배울 때는 늘 본가 배틀에서 기술 배울 때 팡파르 (ME_FANFA1, 곡은 잠깐 줄어듦)
+const learnFan = () => { try { const f = window.GymBGM?.fan?.('ME_FANFA1'); f?.catch?.(() => {}); if (!f) se('DECIDE'); } catch (e) {} };
 async function msgFan(t) { await msg(t, 0); if (!B) return; try { await window.GymBGM?.fan?.('ME_FANFA1'); } catch (e) {} if (!B) return; $b('.bt-msg .cur').hidden = false; await new Promise(r => { B.tapWake = r; }); if (B) { B.tapWake = null; $b('.bt-msg .cur').hidden = true; } }
 async function msgTap(t) { await msg(t, 0); if (!B) return; $b('.bt-msg .cur').hidden = false; await new Promise(r => { B.tapWake = r; }); $b('.bt-msg .cur').hidden = true; }
 
@@ -1379,7 +1381,7 @@ function teachTm(P, id, done, slot) {   // slot: 기술 바꾸기에서 고른 �
   const g = S.gym, m = gm(P), x = mvOf(id); if (!x || !(g.tms?.[id] > 0)) return done?.();
   const use = k => { g.tms[id] = (g.tms[id] || 0) - 1; if (g.tms[id] <= 0) delete g.tms[id]; m.kn = (m.kn || []).filter(y => y !== id);
     if (k == null) { if (!m.kn.includes(id)) m.kn.push(id); } else if (k >= m.mv.length) m.mv.push(id); else { const old = m.mv[k]; m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); }
-    GA.save(); se('DECIDE'); gymPop(`<p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} ${esc(x[1])}${jong(x[1]) ? '을' : '를'} ${k == null ? '익혀 두었다! (기술 바꾸기에서 쓸 수 있어요)' : '배웠다!'}</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => { c(); done?.(); }); };
+    GA.save(); learnFan(); gymPop(`<div class="tm-done"><p class="tm-dh">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'}<br><b>${esc(x[1])}</b>${jong(x[1]) ? '을' : '를'} ${k == null ? '익혀 두었다!' : '배웠다!'}</p><div class="mp-moves mp-line tm-dmv">${mvRow(x, 'v')}</div>${k == null ? '<p class="tm-dsub">기술 바꾸기에서 쓸 수 있어요</p>' : ''}</div><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => { c(); done?.(); }); };
   if (slot != null) return use(Math.min(slot, m.mv.length));
   if (m.mv.length < 4) return use(m.mv.length);
   gymPop(`<h4>${esc(x[1])} 대신 잊을 기술</h4><p class="gy-msg">잊은 기술은 나중에 기술 바꾸기에서 다시 배울 수 있어요.</p><div class="mp-moves mp-line pick">${m.mv.map((y, k) => mvOf(y) ? mvRow(mvOf(y), 's' + k) : '').join('')}</div>
@@ -1591,7 +1593,7 @@ function movesPop(P, done, hi = -1) {   // hi: 방금 바꾼 칸 — 테두리�
       if (b === 'x') { c2(); return movesPop(P, done); }
       if (b === 'tm') { c2(); return tmPop(P, () => movesPop(P, done, Math.min(k, gm(P).mv.length - 1)), k); }   // 기술머신으로 이 칸에 가르치기 (경완 2026-10-29)
       const id = b.slice(1);
-      mvInfo(id, () => { c2(); m.kn = (m.kn || []).filter(x => x !== id); if (old) { m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); } else m.mv.push(id); GA.save(); se('DECIDE'); movesPop(P, done, old ? k : m.mv.length - 1); }, old ? '바꾸기' : '배우기', () => {}); }));
+      mvInfo(id, () => { c2(); m.kn = (m.kn || []).filter(x => x !== id); if (old) { m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); } else m.mv.push(id); GA.save(); learnFan(); movesPop(P, done, old ? k : m.mv.length - 1); }, old ? '바꾸기' : '배우기', () => {}); }));
     // v13.19 경완: 바뀔 기술 = 창 위 바깥에 따로 뜨는 카드
     function oldCard(p) { p.querySelector(':scope>.win').classList.add('mv-neww'); if (old && mvOf(old)) p.insertAdjacentHTML('afterbegin', `<div class="win mv-oldc"><span class="mv-oldl">바꿀 기술</span><div class="mp-moves mp-line mv-old">${mvRow(mvOf(old), 'o')}</div></div>`); return p; }
     learn();
