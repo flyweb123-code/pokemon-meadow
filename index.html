@@ -5993,9 +5993,13 @@ function campSeats(G) {   // 불 둘레 타원에 고르게 앉되, 화면 밖·
   const n = G.length, w = G.reduce((a, o) => a + (o.w || 40), 0) / n, x0 = XL + 30, x1 = XR - 30, rx = 50 + w * .4, ry = rx * .42;
   const at = a => ({ a: Math.atan2(Math.sin(a), Math.cos(a)), x: FIRE.x + Math.cos(a) * rx, y: FIRE.y + 6 + Math.sin(a) * ry });
   const okq = q => q.x >= x0 && q.x <= x1 && q.y >= MIN_Y && q.y <= MAX_Y && (h => Math.hypot(h.x - q.x, h.y - q.y) <= 4)(outOfHud(G[0], { x: q.x, y: q.y }));
-  const P = Array.from({ length: 72 }, (_, i) => at(Math.PI + i * Math.PI / 36)), ok = P.map(okq);
-  if (ok.every(Boolean)) { const off = n === 4 ? Math.PI / 4 : 0;   /* 왼쪽부터 고르게: 홀수면 불 바로 뒤·바로 앞 한가운데 자리를 피한다 */ return Array.from({ length: n }, (_, i) => at(Math.PI + off + i * 2 * Math.PI / n)); }
-  const d = ok.indexOf(false), A = []; for (let i = 1; i <= 72; i++) { const t = (d + i) % 72; if (ok[t]) A.push(P[t]); }
+  /* v13.14 경완 '대로트 불 위에 있음': 불 바로 뒤(화면 위)에 앉으면 몸이 불꽃에 겹쳐 불 위에 선 것처럼 보였다 → 불 뒤·앞 가운데 띠(불꽃 반폭 + 몸 반쯤)엔 앉지 않는다 (앞은 뒷모습이라 조금 덜 비킴) */
+  const fw = 20 * ZP('fire', FIRE) + w * .45, okf = q => Math.abs(q.x - FIRE.x) >= (q.y < FIRE.y + 6 ? fw : fw * .6);
+  const P = Array.from({ length: 72 }, (_, i) => at(Math.PI + i * Math.PI / 36)), ok0 = P.map(okq), ok = P.map((q, i) => ok0[i] && okf(q));
+  if (ok0.every(Boolean)) { const off = n === 4 ? Math.PI / 4 : 0, ev = r => Array.from({ length: n }, (_, i) => at(Math.PI + off + r + i * 2 * Math.PI / n));   /* 왼쪽부터 고르게: 홀수면 불 바로 뒤·바로 앞 한가운데 자리를 피한다 */
+    for (let k = 0; k * 5 <= 180 / n; k++) for (const r of k ? [k, -k] : [0]) { const S2 = ev(r * Math.PI / 36); if (S2.every(okf)) return S2; }   // 불 앞뒤 띠에 걸리면 조금씩 돌려 본다
+  }
+  const d = ok0.includes(false) ? ok0.indexOf(false) : ok.indexOf(false), A = []; for (let i = 1; i <= 72; i++) { const t = (d + i) % 72; if (ok[t]) A.push(P[t]); }
   if (A.length >= n) return n === 1 ? [A[A.length >> 1]] : Array.from({ length: n }, (_, i) => A[Math.round(i * (A.length - 1) / (n - 1))]);
   return G.map((o, i) => ({ a: 0, x: clamp(FIRE.x - rx + (i % 3) * 18, x0, x1), y: FIRE.y + 6 + (i - n / 2) * 14 }));
 }
@@ -6892,7 +6896,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '13.13';   /* v13.13 경완: 필드 소품 꾹 눌러 고르면 테두리 또렷하게(2px), 밤에도 소품 밝기 그대로, 고르기·놓기·못 놓는 자리·빼기 진동 */   /* v13.12 경완: 필드에서 소품을 꾹 누르면 옮기거나 x 로 가방에 뺀다 (겹치면 못 놓음) */   /* v13.11 경완: 미니게임 창이 열려 있는 동안 필드가 내는 효과음·울음소리는 안 남 */   /* v13.10 경완: 안내원 영업 동안 버튼 그대로 보이되 잠금(.gcall) · 영업 멘트 수마다 4가지 · 안내원 물음 단추 눌림 모션 */   /* v13.09 경완: 도전자 불러오기 = 같은 대화창 · 나가고·들어올 때 틈 · 1~5명 랜덤 · 수에 따라 영업 멘트 · 닉네임 관장님 · 불러오기 단추 오른쪽 */   /* v13.08 경완: 안내원 = 도전자 불러오기(도전자 없을 때, 홍보 → 띵동 3명 → 영업 성공) · 체육관 설명 */   /* v13.07 경완: 체육관 관장 대표 포켓몬은 관장 왼쪽 */   /* v13.06 경완: 전설 이름판 띠 = 무지개가 흐르는 프리즘 */   /* v13.05 경완: 친구 요청이 오거나 수락되면 아이폰 알림 (CloudKit 구독, 설정 › 알림 '친구 요청이 왔을 때') */
+const APP_VER = '13.14';   /* v13.14 경완 '대로트 불 위에 있음': 모닥불 노래 자리가 불 바로 뒤·앞에 걸리지 않게 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
