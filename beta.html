@@ -2146,8 +2146,8 @@ let actx = null, noiseBuf = null;
 function audio() {
   if (!actx) {
     const A = window.AudioContext || window.webkitAudioContext; if (!A) return null;
-    // 무음 스위치와 상관없이 소리가 나게(배경 음악이 원래 그랬다)
-    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+    // v13.21 경완: 소형 플레이(PiP)·음악과 같이 나오게 'ambient' (예전 'playback' 은 무음 스위치를 무시하는 대신 다른 앱 소리를 끊었다)
+    try { if (navigator.audioSession) navigator.audioSession.type = 'ambient'; } catch (e) {}
     actx = new A(); bgmRoute();
   }
   if (actx.state !== 'running' && actx.state !== 'closed' && !document.hidden) actx.resume().catch(() => {});
