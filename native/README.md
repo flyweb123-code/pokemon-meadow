@@ -130,3 +130,12 @@ CloudKit Console › **Development** › Schema 에서 아래를 더하고, 다�
 
 - `kakao-key.txt` 는 `.gitignore` 에 있어 저장소(공개)에 올라가지 않아요. 앱 안에만 들어가요.
 - 고르는 순서 (v5.66): 그 자리 건물 이름 → 1.5km 안 가장 가까운 곳(종류 상관없이). 알 테마는 고른 장소 하나로만 정해요.
+
+## 친구 요청 알림 (13.05, 2026-10-31)
+
+누가 친구 요청을 보내거나 내 요청을 수락하면 아이폰에 알림이 와요. 서버 없이 CloudKit 구독(`FriendServer.setReqPush`)으로 iCloud 가 보내 줘요.
+게임 설정 › 알림 › '친구 요청이 왔을 때' 를 끄면 구독을 지워요.
+
+처음 한 번: developer.apple.com › Identifiers › `com.flyweb123.pokerun` (App ID) › **Push Notifications** 체크 → Save.
+(인증서·키는 안 만들어도 된다. CloudKit 이 알아서 보낸다.) 안 켜 두면 Xcode Cloud 서명 단계에서 빌드가 실패할 수 있다.
+CloudKit 스키마는 그대로 (Score 의 `game`·`best` 가 이미 Queryable).

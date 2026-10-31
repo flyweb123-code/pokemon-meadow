@@ -1,5 +1,6 @@
 import CloudKit
 import CryptoKit
+import UIKit
 import WebKit
 
 // 친구 서버: iCloud 공개 DB(CloudKit)에 내 트레이너 카드를 올리고, 친구 코드로 친구 카드를 받아 온다.
@@ -98,9 +99,55 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
         let me = try await code()
         let r = CKRecord(recordType: "Score", recordID: CKRecord.ID(recordName: "S_\(me)_\(game)"))
         r["game"] = game as CKRecordValue
-        r["best"] = max(0, best) as CKRecordValue
+        r["best"] = (game.hasPrefix("fr") ? best : max(0, best)) as CKRecordValue   // 친구 요청: best > 0 요청, < 0 수락, 0 취소 (알림 구독이 이걸로 가른다)
         r["card"] = card as CKRecordValue
         _ = try await db.modifyRecords(saving: [r], deleting: [], savePolicy: .allKeys)
+    }
+
+    // ---------- 친구 요청 아이폰 알림 (v13.05 경완 2026-10-31 '친구 요청 받으면 아이폰 알림 뜨게') ----------
+    // 서버 없이 CloudKit 구독(CKQuerySubscription)으로 받는다: 누가 Score 에 game == "fr"+내 코드 를 쓰면 iCloud 가 이 폰에 알림을 보낸다.
+    // best > 0 = 새 친구 요청, best < 0 = 내 요청을 수락함, best == 0 = 보낸 쪽이 취소 (알림 없음).
+    // 게임 설정 › 알림에서 끄면 구독을 지운다. 같은 상태면 다시 올리지 않는다 (UserDefaults frSub).
+    private var subWant: String?
+    private var subBusy = false
+    @MainActor
+    func setReqPush(_ on: Bool) {
+        let key = "frSub"
+        guard !subBusy, subWant != (on ? "on" : "off") else { return }
+        subBusy = true
+        subWant = on ? "on" : "off"   // 이번 실행에서는 같은 요청을 한 번만 해 본다 (iCloud 가 없을 때 저장할 때마다 다시 묻지 않게)
+        Task { @MainActor in
+            defer { subBusy = false }
+            do {
+                let me = try await code()
+                let want = on ? "on:" + me : "off:" + me
+                if UserDefaults.standard.string(forKey: key) == want { if on { UIApplication.shared.registerForRemoteNotifications() }; return }
+                let ids = [CKSubscription.ID("frq_" + me), CKSubscription.ID("fra_" + me)]
+                if on {
+                    UIApplication.shared.registerForRemoteNotifications()
+                    func sub(_ id: CKSubscription.ID, _ op: String, _ title: String, _ body: String) -> CKQuerySubscription {
+                        let s = CKQuerySubscription(recordType: "Score", predicate: NSPredicate(format: "game == %@ AND best \(op) %@", "fr" + me, NSNumber(value: 0.0)),
+                                                    subscriptionID: id, options: [.firesOnRecordCreation, .firesOnRecordUpdate])
+                        let n = CKSubscription.NotificationInfo()
+                        n.title = title
+                        n.alertBody = body
+                        n.soundName = "default"
+                        s.notificationInfo = n
+                        return s
+                    }
+                    let (res, _) = try await db.modifySubscriptions(saving: [
+                        sub(ids[0], ">", "친구 요청이 왔어요!", "포켓몬 키우기를 열어 친구 요청을 확인해 보세요."),
+                        sub(ids[1], "<", "친구가 되었어요!", "친구 요청이 수락됐어요. 이제 알을 선물할 수 있어요."),
+                    ], deleting: [])
+                    for r in res.values { if case .failure(let e) = r { throw e } }
+                } else {
+                    _ = try await db.modifySubscriptions(saving: [], deleting: ids)
+                }
+                UserDefaults.standard.set(want, forKey: key)
+            } catch {
+                subWant = nil   // 다음 실행 때(또는 설정을 바꿨을 때) 다시 해 본다
+            }
+        }
     }
 
     // 미니게임 전체 랭킹: 그 게임 최고 기록 순서로 100명 [{code, card, best, at}]
