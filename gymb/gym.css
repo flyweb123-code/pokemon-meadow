@@ -2222,3 +2222,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bs-tr>i{background:linear-gradient(180deg,#231a4c,#0c0a1c)!important;border-color:#d8a830!important}
 .bs-tr>i.b{background:linear-gradient(0deg,#231a4c,#0c0a1c)!important}
 .bs-tr>b{color:#ffe27a;text-shadow:2px 2px 0 #20202c,0 0 12px rgba(255,200,60,.7)}
+/* v12.81 경완: 확인 안 한 새 도전자 카드의 빨간 점 (메뉴 점과 같은 네모) */
+.gy-qw .qw-row>.qw-nd{position:absolute;top:-5px;left:-5px;z-index:3;width:10px;height:10px;background:var(--gy-red,#e04838);box-shadow:0 0 0 2px #fff;grid-column:auto}
