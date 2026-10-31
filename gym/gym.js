@@ -1083,7 +1083,7 @@ function qPop() {
     // 명단 디자인 (경완 2026-10-29 '퀄리티 좀 높여줘'): 다음 차례는 큰 카드 + 배틀 받침, 나머지는 번호 붙은 줄
     // 온 시각 대신 떠나기까지 남은 시간 (경완 2026-10-30), 30분 안 남으면 빨갛게
     const tag = c => c.boss ? `<em class="qw-tag bs">${gShort(c.boss)} 승급 심사</em>` : c.named ? '<em class="qw-tag nm">이름 있는 트레이너</em>' : `<em class="qw-tag">${esc(c.cls)}</em>`;
-    const qTm = c => `<em class="qw-tm${qExp(c) - Date.now() < 30 * 60e3 ? ' low' : ''}">${qLeftS(c)}</em>`;   // 남은 시간 딱지, 30분 안 남으면 빨강
+    const qTm = c => `<em class="qw-tm${qExp(c) - Date.now() < 30 * 60e3 ? ' low' : ''}"><svg viewBox="0 0 8 8" aria-hidden="true"><path fill="currentColor" d="M2 0h4v1h1v1h1v4h-1v1h-1v1h-4v-1h-1v-1h-1v-4h1v-1h1zM2 1v1h-1v4h1v1h4v-1h1v-4h-1v-1zM3.5 2h1v2h1.5v1h-2.5z"/></svg>${qLeftS(c)}</em>`;   // 시계 그림 + 밝은 딱지: '대기'(어두운 딱지)와 구분 (경완 2026-10-31)   // 남은 시간 딱지, 30분 안 남으면 빨강
     const pic = c => `<span class="qw-pic${c.named ? ' qw-sil' : ''}"><i class="qw-base"></i><img alt="" src="${trSrc(c.tr)}"></span>`;
     body = Q.length ? `<div class="qw-sum"><b>기다리는 도전자 <em>${Q.length}</em>명</b><span>시간이 지나면 돌아가요</span><i class="qw-balls">${V.map(([c], k) => `<i class="${k ? '' : 'on'}${c.boss ? ' bs' : ''}"></i>`).join('')}</i></div><div class="qw-list">${V.map(([c, i], k) => k
       ? `<div class="qw-row wait${c.boss ? ' boss' : ''}"><span class="qw-pw">${pic(c)}<span class="qw-no">${k + 1}</span></span><div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span class="qw-came">${qCame(c)}</span></div><span class="qw-wait">대기</span>${qTm(c)}</div>`
