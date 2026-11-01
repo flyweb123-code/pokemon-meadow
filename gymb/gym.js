@@ -1789,7 +1789,7 @@ async function intro() {
   S1.hide(true);
   await kg.go([[T.door[0], T.door[1]]], 260); kg.el.hidden = true; doorSe();
   await me.go([[T.door[0], T.door[1] + 1]], 260); await me.go([[T.door[0], T.door[1]]], 260); me.el.hidden = true;
-  S.gym = { v: 1, d: dr.d, ty: dr.ty, nm: dr.nm, rep: 0, t0: Date.now() }; save();
+  S.gym = { v: 1, d: dr.d, ty: dr.ty, nm: dr.nm, rep: 0, t0: Date.now(), tut: 1 }; save();   // v13.96 경완 '튜토리얼 끝나기 전에 앱 종료하면 처음부터': tut 이 남아 있으면 불러올 때 체육관을 지움
   renderHome(true); const D = dzOf(dr.d);
   const dark = document.createElement('div'); dark.className = 'gy-lights'; dark.innerHTML = '<i></i>'.repeat(6); $g('.gy-map').appendChild(dark);
   guyEnt.el.style.visibility = 'hidden'; palRaf && cancelAnimationFrame(palRaf); root.querySelector('.gy-pal')?.remove();
@@ -1848,7 +1848,7 @@ async function intro() {
   // 16. 체육관 개설 알림창
   // v13.93 경완 '강박사 나가고 화면 한번 뜨고 → 개설 알림창 → 다 확인하면 도전자 받기 활성화되면서 알람'
   tutEnd = 1; root.classList.remove('pre'); renderHome(); await wait(1100);   // v13.95 경완 '도전자는 알림창 끄면 오게': 끝날 때까지 도전자 안 옴
-  await openNote(dr.nm); tutEnd = 0;   // v13.80 경완: 업데이트 알림창처럼 캡처와 함께 기본 설명
+  await openNote(dr.nm); tutEnd = 0; delete st().tut; save();   // v13.96: 개설 알림창까지 보면 튜토리얼 끝   // v13.80 경완: 업데이트 알림창처럼 캡처와 함께 기본 설명
   tick(); renderHome(); firstChal(true);
 }
 // 서로 바라보기: a 가 b 쪽을 본다 (가로가 더 멀면 좌우, 아니면 위아래)
