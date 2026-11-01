@@ -1802,16 +1802,20 @@ async function intro() {
   if (!open) return;
   // 11. 같이 체육관으로 들어간다 → 마을을 걷어내면 캄캄한 체육관
   S1.hide(true);
-  await kg.go([[T.door[0], T.door[1]]], 260); kg.el.hidden = true; doorSe();
-  await me.go([[T.door[0], T.door[1] + 1]], 260); await me.go([[T.door[0], T.door[1]]], 260); me.el.hidden = true;
+  // v13.99 경완 '건물 들어갈 때 모션 본가 기준': 문 앞에서 위를 보고 → 문 소리와 함께 한 칸 들어가 사라짐 → 화면이 까맣게 → 안에서 밝아지며 매트 위에 선 채로 시작
+  await kg.go([[T.door[0], T.door[1]]], 260); doorSe(); kg.el.hidden = true;
+  await me.go([[T.door[0], T.door[1] + 1]], 260); await wait(120); doorSe(); await me.go([[T.door[0], T.door[1]]], 220); me.el.hidden = true;
+  const bk = document.createElement('div'); bk.className = 'gy-warp'; root.appendChild(bk);
+  await bk.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {}); await wait(180);
   S.gym = { v: 1, d: dr.d, ty: dr.ty, nm: dr.nm, rep: 0, t0: Date.now(), tut: 1 }; save();   // v13.96 경완 '튜토리얼 끝나기 전에 앱 종료하면 처음부터': tut 이 남아 있으면 불러올 때 체육관을 지움
   renderHome(true); const D = dzOf(dr.d);
   const dark = document.createElement('div'); dark.className = 'gy-lights'; dark.innerHTML = '<i></i>'.repeat(6); $g('.gy-map').appendChild(dark);
   guyEnt.el.style.visibility = 'hidden'; palRaf && cancelAnimationFrame(palRaf); root.querySelector('.gy-pal')?.remove();
   meEnt.x = D.door[0]; meEnt.y = D.door[1]; meEnt.f = 'u'; place(meEnt);
-  const kE = ent({ ow: 'kang', src: KANG_OW, fw: 32, x: D.door[0], y: D.door[1], f: 'u' });
-  tw.el.classList.add('out'); await wait(850); tw.el.remove(); if (!open) return;
-  doorSe(); await wait(200);
+  const kE = ent({ ow: 'kang', src: KANG_OW, fw: 32, x: D.door[0], y: D.door[1] - 1, f: 'u' });   // 먼저 들어간 강박사는 한 칸 앞에
+  tw.el.remove(); await wait(60);
+  await bk.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 360, easing: 'ease-out', fill: 'forwards' }).finished.catch(() => {}); bk.remove(); if (!open) return;
+  await wait(150);
   const p1 = [D.door[0], D.door[1] - 2];   // 문에서 두 칸 들어가 캄캄한 데서 스위치를 찾는다
   await walk(kE, [p1]); kE.f = 'u'; place(kE);
   await walk(meEnt, [[D.door[0], D.door[1] - 1]]); meEnt.f = 'u'; place(meEnt);
@@ -1899,17 +1903,23 @@ async function openNote(nm) { let mu = `${IMG}open_map.webp`; try { mu = await P
 function dexRead() {   // v13.86 경완 '그 도감 말고 눌렀을 때 나오는 빨간 도감 레이아웃': 본게임 도감 카드(빨간 도감 기계)를 그대로 복제해 내 포켓몬을 한 장씩 넘김
   const L = [...(S.unlocked || [])].map(Number).filter(n => SPECIES[n]).sort((a, b) => a - b), N = L.length;
   if (!N || !GA.dexCardNode) return { close: async () => {} };
-  // v13.90 경완 '딴, 딴, 딴, 딴 하다가 따라라라라락 마지막 장 임팩트 있게 쿵 + 진동': 첫 장 → 4박자 → 빠르게 → 마지막 장 쿵
-  const show = Math.min(26, N), ids = [...new Set(Array.from({ length: show }, (_, k) => L[show < 2 ? 0 : Math.round(k * (N - 1) / (show - 1))]))];
+  // v13.99 경완 '촤라라락 넘기면서 빛나다가 임팩트 마무리 자연스럽게, 더 넘겨도 되니 리듬이 점진적으로 빨라지게': 첫 장 → 한 장씩 점점 빨라짐(끊김 없이) → 빠를수록 하얗게 빛남 → 가장 밝을 때 그대로 마지막 장이 쾅 하며 빛이 걷힘
+  const show = Math.min(44, N), ids = [...new Set(Array.from({ length: show }, (_, k) => L[show < 2 ? 0 : Math.round(k * (N - 1) / (show - 1))]))];
   const w = GA.dexCardNode(); w.classList.add('tw-dex'); w.removeAttribute('role'); let alive = 1;
   const stg = w.querySelector('.cdex'), ready = Promise.all(ids.map(id => GA.dexThumb ? GA.dexThumb(id) : 0));
   const put = (id, fx = '') => { GA.dexCardFill(w, id, `${L.indexOf(id) + 1} / ${N}`); w.classList.remove('beat', 'kung'); stg.classList.remove('nx'); if (!fx) return; void w.offsetWidth; w.classList.add(fx); if (fx !== 'kung') stg.classList.add('nx'); };
-  const run = (async () => { await Promise.race([ready, wait(1800)]); if (!alive) return; put(ids[0]); root.appendChild(w); await wait(900);
-    const n = ids.length - 1, beats = Math.min(4, n - 1);
-    for (let k = 1; k <= beats && alive; k++) { put(ids[k], 'beat'); gse('DP_SELECT', 1); GA.haptic?.(0); await wait(400); }   // 딴, 딴, 딴, 딴
-    for (let k = beats + 1, m = Math.max(1, n - beats - 1); k < n && alive; k++) { const q = (k - beats) / m; w.style.setProperty('--wh', Math.min(.92, q * q * 1.05).toFixed(3)); put(ids[k]); gse('DP_SELECT', .5); await wait(42); }   // 따라라라라락 — v13.98 경완 '점점 하얘지다가'
-    if (!alive || n < 1) return; await wait(140);
-    w.style.setProperty('--wh', 1); await wait(90); put(ids[n], 'kung'); w.style.setProperty('--wh', 0); /* 하얗게 번쩍 → 마지막 장 도감 모습이 쾅 */ gse('DP_KON', 1.4); gse('DP_GASHIN', .9); GA.haptic?.(2); setTimeout(() => GA.haptic?.(2), 110); shake2(); await wait(500); })();   // 쿵
+  const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  const run = (async () => { await Promise.race([ready, wait(1800)]); if (!alive) return; put(ids[0]); root.appendChild(w); await wait(1000);
+    const n = ids.length - 1;
+    for (let k = 1; k < n && alive; k++) {
+      const iv = Math.round(34 + 400 * Math.exp(-(k - 1) / 4.2)), q = k / n, lt = sm(.3, 1, q);   // 400ms 에서 34ms 까지 점점 빨라짐, 뒤 70% 동안 빛이 차오름
+      w.style.setProperty('--wh', (lt * .93).toFixed(3)); w.style.setProperty('--gl', lt.toFixed(3));
+      put(ids[k], iv > 150 ? 'beat' : ''); gse('DP_SELECT', iv > 150 ? 1 : .35 + .5 * (iv - 34) / 116);
+      if (iv > 150 || k % Math.max(2, Math.round(160 / iv)) === 0) GA.haptic?.(0);
+      await wait(iv); }
+    if (!alive || n < 1) return;
+    w.style.setProperty('--wh', 1); await wait(70);   // 가장 밝은 순간에 바로
+    put(ids[n], 'kung'); w.style.setProperty('--wh', 0); w.style.setProperty('--gl', 0); gse('DP_KON', 1.4); gse('DP_GASHIN', .9); GA.haptic?.(2); setTimeout(() => GA.haptic?.(2), 110); shake2(); await wait(650); })();   // 쾅
   return { close: async () => { await run; alive = 0; await wait(200); w.classList.add('bye'); await wait(220); w.remove(); } }; }
 // 불을 찾다 발가락을 찧을 때 화면이 살짝 흔들림
 const shake2 = () => $g('.gy-stage')?.animate([{ translate: '0 0' }, { translate: '-4px 0' }, { translate: '3px 0' }, { translate: '0 0' }], { duration: 220 });
