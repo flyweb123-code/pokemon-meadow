@@ -1629,7 +1629,7 @@ function kang(lines, { lit = false, nm = '강박사', pic = GA.KANG, ow = 0, ski
     k.style.setProperty('--kn', Math.max(3, ...lines.map(t => String(t).split('\n').length)));   // v13.12 경완 '설명 박스 삐져나옴': 4줄 대사가 있으면 박스를 처음부터 그만큼 높게
     root.appendChild(k);
     const talk = GA.inTyper(k, k.querySelector('.gy-k-t'), k.querySelector('.gy-k-cur'));
-    let stop = false; const end = async () => { if (k.classList.contains('bye')) return; stop = true; if (ow) { k.remove(); done(); return; } k.classList.add('bye'); await wait(450); k.remove(); done(); };   /* v14.08 경완: 안내원 대사창은 끝나면 대사창만 바로 닫힘 (어두운 막이 단계적으로 걷히며 화면이 바뀌는 느낌 없게) */
+    let stop = false; const end = async () => { if (k.classList.contains('bye')) return; stop = true; { const eat = e => { e.stopPropagation(); e.preventDefault(); }; root.addEventListener('click', eat, true); setTimeout(() => root.removeEventListener('click', eat, true), 600); } k.classList.add('bye'); await wait(450); k.remove(); done(); };   /* v14.10 경완: 마지막 대사를 넘긴 탭(pointerup 뒤 click)이 닫히는 막을 뚫고 밑의 라인업 칸을 눌러 포켓몬 고르는 박스로 넘어가던 것 → 그 click 은 먹는다. 대사창은 어두운 막과 같이 닫힘 (v14.08 즉시 닫기 되돌림) */
     if (skip) k.querySelector('.gy-k-skip').onclick = e => { e.stopPropagation(); sfx('tap'); end(); };
     (async () => {
       if (!lit) { await wait(500); for (const o of [.55, .9, .25, .6, 0]) { k.style.setProperty('--veil', o); await wait(o ? 110 : 0); } k.classList.add('lit'); await wait(500); }
@@ -1840,6 +1840,12 @@ async function intro() {
   await S1.say('지금은 좀 좁아 보여도 걱정 말게.\n체육관 등급이 오를수록\n넓게 증축할 수 있다네.', { pic: true });
   await S1.say('...그러니까 열심히 하라는\n뜻일세. 허허.');
   await S1.say('도전자는 매일 찾아올 거야.\n틈틈이 들러서 확인해 보게.');
+  // v14.10 경완 '안내원 들어오기 전에 강박사 대사창으로 체육관을 열심히 성장시키면 특별한 선물 + 타입별 전설 알 스프라이트 가운데 박스로'
+  { const lb = document.createElement('div'); lb.className = 'gy-legbox';
+    lb.innerHTML = `<div class="lb-e">${GA.eggIco?.(st()?.ty || 1) || ''}</div><b class="lb-n">${GA.LT_ADJ?.[st()?.ty] || ''} 전설 알</b>`;   /* 경완: 내 체육관 타입 전설 알 하나만 크게 */
+    root.appendChild(lb); try { GA.sfx?.('newdex'); } catch (e) {} GA.haptic?.(1);
+    await S1.say('그리고 체육관을 열심히 성장시키면\n특별한 선물도 준비되어 있다네!', { pic: true });
+    lb.classList.add('bye'); await wait(260); lb.remove(); }
   // 14. 안내원 등장: 문에서 뛰어 들어와 자기 자리에
   S1.hide(true); await wait(200);
   const gE = guyEnt; gE.x = D.door[0]; gE.y = D.door[1]; gE.f = 'u'; place(gE); doorSe(); await wait(180); gE.el.style.visibility = '';

@@ -2389,3 +2389,12 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v14.08 경완: 튜토리얼에서 안내원이 상점 얘기할 때 상점 메뉴 테두리가 은은하게 빛남 */
 #gym .gy-menu button.tglow{position:relative;z-index:62;box-shadow:inset 0 0 0 2px #ffd85e;animation:tGlow 1.8s ease-in-out infinite}
 @keyframes tGlow{50%{box-shadow:inset 0 0 0 2px #fff3b0,0 0 10px 2px rgba(255,216,94,.55)}}
+
+/* v14.10 경완: 튜토리얼 강박사 '특별한 선물' 대사 때 내 체육관 타입 전설 알 하나를 가운데 박스에 크게 */
+#gym .gy-legbox{position:absolute;left:0;right:0;top:40%;margin:0 auto;width:min(220px,64vw);transform:translateY(-50%);z-index:14;box-sizing:border-box;padding:18px 12px 12px;background:#fffdf3;border:4px solid #20202c;box-shadow:inset 0 0 0 3px #ffd85e,4px 4px 0 rgba(0,0,0,.35);animation:lbIn .34s cubic-bezier(.2,.8,.3,1.25);pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:8px}
+#gym .gy-legbox .lb-e{animation:lbEgg 1.6s ease-in-out .35s infinite}
+#gym .gy-legbox .egg{width:112px;height:137px}
+#gym .gy-legbox .lb-n{font-size:15px;color:#8a5a00}
+#gym .gy-legbox.bye{opacity:0;transform:translateY(-50%) scale(.92);transition:opacity .24s,transform .24s}
+@keyframes lbIn{from{opacity:0;transform:translateY(-50%) scale(.6)}}
+@keyframes lbEgg{50%{transform:translateY(-5px)}}
