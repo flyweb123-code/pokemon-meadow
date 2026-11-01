@@ -2376,3 +2376,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v13.93 경완: 튜토리얼 끝 안내원 대사창 동안 화면 잠금 (빈 곳 눌러도 대사만 넘어감) */
 #gym .gy-lock{position:absolute;inset:0;z-index:60;background:transparent}
 #gym.tlock .gy-dlg{z-index:61}
+
+/* v13.98 경완: 도감 빠르게 넘길 때 점점 하얘지다가 마지막 장에서 다시 도감 모습으로 쾅 */
+.tw-dex::after{content:"";position:absolute;inset:-4px;background:#fff;opacity:var(--wh,0);pointer-events:none;transition:opacity .06s linear}
+.tw-dex.kung::after{transition:opacity .55s ease-out}
