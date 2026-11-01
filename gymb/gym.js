@@ -632,7 +632,9 @@ const teamLv = T => T.reduce((a, m) => a + m[1], 0) / T.length;
 // 배틀 직전에 고른 라인업으로 상대 레벨·마리 수를 다시 맞춘다 (경완 2026-10-29). 본가 단계 팀(pickNamed)은 그대로
 function refit(c, my) {
   const g = st(), L = my.map(P => (GB()?.gm?.(P) || g.mon?.[P.id])?.lv).filter(Boolean); if (!L.length) return;   // 아직 개체 정보가 없는 포켓몬도 gm() 으로 만들어서 센다
-  const avg = Math.round(L.reduce((a, b) => a + b, 0) / L.length) + (c.boss ? 0 : stkLv(g.stk));   // 승급 심사 말고는 연승 중이면 도전자가 그만큼 세진다 (배틀 직전 연승 기준)
+  const mean = Math.round(L.reduce((a, b) => a + b, 0) / L.length);
+  // v13.88 경완 '막아줘': 승급 심사는 약한 포켓몬을 섞어 평균을 낮춰도 상대가 약해지지 않게 — 기준 레벨 = 평균과 (가장 높은 레벨 − BS_GAP) 중 큰 쪽
+  const avg = (c.boss ? Math.max(mean, Math.max(...L) - BS_GAP) : mean) + (c.boss ? 0 : stkLv(g.stk));   // 승급 심사 말고는 연승 중이면 도전자가 그만큼 세진다 (배틀 직전 연승 기준)
   if (c.named) {
     // 본가 단계 팀도 라인업 평균 +2 로 레벨만 옮긴다 (경완 2026-10-29 '여전히 라인업 기반이 아닌 듯'). 구성·기술은 그대로
     if (!c.sc) { const d = Math.round(avg + 4 - teamLv(c.team)); c.team = c.team.map(m => [m[0], clampN(m[1] + d, 5, 100), m[2]]); return; }
@@ -675,6 +677,7 @@ function mkScripted(L, t, bonus, n0) {
 // 승급 심사 보스 (gi = 올라갈 등급 1~6): 동네·떠오르는·이름난 = 관장, 인기 = 라이벌·관장, 명문 = 사천왕, 전설 = 챔피언
 // v13.87 경완 '승급심사는 초반에는 쉽고 갈수록 어려워지게' (시뮬레이션: 예전엔 첫 심사부터 통과율 3%): 등급마다 레벨(내 평균 + 표 + 2)·마리 수·개체값·AI 가 오른다
 const BS_LV = [-2, 0, 2, 4, 7, 10], BS_N = [3, 4, 5, 6, 6, 6], BS_IV = [[8, 20], [14, 26], [20, 31], [31, 31], [31, 31], [31, 31]], BS_AI = [1, 1, 2, 2, 2, 2];
+const BS_GAP = 3;   // 승급 심사 기준 레벨은 내 라인업 최고 레벨 − 3 보다 낮아지지 않음 (v13.88)
 const bsCut = (T, gi) => { const n = BS_N[gi - 1] || 6; return T.length <= n ? T : [...T.slice(0, n - 1), T[T.length - 1]]; };   // 마리 수 제한: 앞에서부터 + 마지막(에이스)
 function mkBoss(gi, t) {
   const g = st(), r = seeded('bs' + g.ty + gi), q = [/관장/, /관장/, /관장/, /라이벌|관장/, /사천왕/, /챔피언/][gi - 1], P = q && NAMED.filter(n => q.test(n.cls));
