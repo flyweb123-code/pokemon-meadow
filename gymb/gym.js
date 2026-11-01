@@ -1632,7 +1632,7 @@ async function townScene() {
   const shake = () => map.animate([{ translate: '0 0' }, { translate: '-6px 2px' }, { translate: '5px -2px' }, { translate: '-3px 1px' }, { translate: '0 0' }], { duration: 300 });
   // 강박사 그림이 내 캐릭터를 가리지 않게 카메라 멈출 자리를 미리 정해 한 번에 간다 (경완 2026-11-01 '올라갔다 살짝 다시 내려오는 것 없애줘')
   const ty = Math.max(T.to[1], ((T.walk.at(-1)[1] + 1) * 16 * k - (H - 340) + H / 2) / (16 * k));
-  cam(...T.from); requestAnimationFrame(() => el.classList.add('on')); await wait(900);
+  cam(...T.from); requestAnimationFrame(() => el.classList.add('on'));   // v13.80 경완: 튜토리얼 시작하자마자 스크롤
   // 마을을 따라 천천히 올라가다 체육관 가운데에서 멈춘다
   await new Promise(ok => { const t0 = performance.now(), D = 5200, e = t => t < .5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
     const f = now => { const t = Math.min(1, (now - t0) / D), q = e(t); cam(T.from[0] + (T.to[0] - T.from[0]) * q, T.from[1] + (ty - T.from[1]) * q); t < 1 ? requestAnimationFrame(f) : ok(); }; requestAnimationFrame(f); });
@@ -1640,6 +1640,9 @@ async function townScene() {
   // 내 캐릭터가 길을 따라 걸어와 체육관을 올려다본다
   const me = sp(owSrc(myOw()), owW(myOw())); [me.x, me.y] = T.walk[0]; me.f = 'r'; me.el.hidden = false; me.put();
   await me.go(T.walk.slice(1)); me.turn('u'); await wait(550);
+  // v13.80 경완: 강박사랑 부딪히기 전에 화면을 확대해 크게 (내 머리 위쪽을 가운데로)
+  { const r = el.getBoundingClientRect(), m = me.el.getBoundingClientRect(); el.style.transformOrigin = `${m.left + m.width / 2 - r.left}px ${m.top - r.top}px`;
+    await el.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.6)' }], { duration: 700, easing: 'ease-in-out', fill: 'forwards' }).finished; await wait(250); }
   return { el, me, sp, bub, papers, shake };
 }
 // 마을·체육관 위에서 이어 말하는 대사창 (화면 아래, 강박사 큰 그림 없이). 대사마다 창을 새로 띄우지 않아 깜빡임 없이 이어진다
@@ -1659,11 +1662,12 @@ function storyTalk() {
     // 이름 적기: 새 화면 없이 대사창 안에서 (경완 2026-11-01)
     // v13.72 경완: 물음 대사창을 넘기면 대사창 위에 이름 정하는 팝업
     name: async (t, v) => { await T.say(t); return new Promise(ok => { k.querySelector('.gy-k-cur').hidden = true;
-      const f = document.createElement('div'); f.className = 'win tw-nm in-name'; f.innerHTML = `<b class="tw-nmh">체육관 이름</b><div class="tw-nmr"><input type="text" maxlength="8" value="${esc(v)}" aria-label="체육관 이름"><span>${v.length}/8</span></div><button class="main" type="button">결정</button>`; box.appendChild(f);
+      // v13.80 경완: 이름 창은 화면 가운데, 뒤는 흐리게
+      const w = document.createElement('div'); w.className = 'tw-nmw'; const f = document.createElement('div'); f.className = 'win tw-nm in-name'; f.innerHTML = `<b class="tw-nmh">체육관 이름</b><div class="tw-nmr"><input type="text" maxlength="8" value="${esc(v)}" aria-label="체육관 이름"><span>${v.length}/8</span></div><button class="main" type="button">결정</button>`; w.appendChild(f); root.appendChild(w);
       const inp = f.querySelector('input'), cnt = f.querySelector('span'), btn = f.querySelector('button');
-      f.addEventListener('pointerup', e => e.stopPropagation());
+      w.addEventListener('pointerup', e => e.stopPropagation());
       inp.oninput = () => { cnt.textContent = `${inp.value.length}/8`; btn.disabled = !inp.value.trim(); };
-      const go = e => { e?.preventDefault(); const nm = inp.value.trim().slice(0, 8); if (!nm) return; sfx('tap'); inp.blur(); f.remove(); ok(nm); };
+      const go = e => { e?.preventDefault(); const nm = inp.value.trim().slice(0, 8); if (!nm) return; sfx('tap'); inp.blur(); w.remove(); ok(nm); };
       btn.onclick = go; inp.onkeydown = e => { if (e.key === 'Enter') go(e); }; }); },
     end: async () => { k.classList.add('bye'); await wait(450); k.remove(); },
   };
@@ -1777,22 +1781,52 @@ async function intro() {
   // 14. 안내원 등장: 문에서 뛰어 들어와 자기 자리에
   S1.hide(true); await wait(200);
   const gE = guyEnt; gE.x = D.door[0]; gE.y = D.door[1]; gE.f = 'u'; place(gE); doorSe(); await wait(180); gE.el.style.visibility = '';
-  await walk(gE, guyPath(D), 150); gE.f = 'd'; place(gE);
+  // v13.80 경완: 보는 방향 자연스럽게 — 문 소리에 둘 다 문 쪽을 보고, 안내원이 걷는 동안 고개로 따라가고, 서면 서로 마주 본다
+  await wait(120); face(kE, gE); await wait(140); face(meEnt, gE);
+  { let on = 1; const trk = () => { if (!on) return; face(kE, gE); face(meEnt, gE); requestAnimationFrame(trk); }; await wait(200); requestAnimationFrame(trk);
+    await walk(gE, guyPath(D), 150); on = 0; }
+  face(gE, meEnt); face(meEnt, gE); face(kE, gE); await wait(200);
   S1.hide(false);
   const GUY = { who: '안내원', pic: false };
   await S1.say('헉, 헉... 늦어서 죄송합니다!\n오늘부터 이 체육관 안내를\n맡게 됐어요!', GUY);
+  face(gE, kE); face(kE, meEnt);
   await S1.say('도전자 명단이나 손님맞이는\n이 친구가 도와줄 걸세. 도전자가\n뜸할 땐 직접 데려오기도 하지.', { pic: true });
+  face(gE, meEnt); face(kE, gE);
   await S1.say('영업은 자신 있습니다!', GUY);
   // 15. 작별
+  face(kE, meEnt); face(meEnt, kE); face(gE, kE);
   await S1.say(`그럼 화이팅이네, ${you}!!\n다음에 또 오겠네!`, { pic: true });
   S1.hide(true); S1.pic(false);
-  await walk(kE, [[kE.x, D.door[1]], D.door].filter(p => !offMap(D, p))); kE.f = 'd'; place(kE); await wait(250);
-  S1.hide(false); await S1.say('아, 협회에는 내가\n잘 말해 두지!'); await S1.end();
+  { let on = 1; const trk = () => { if (!on) return; face(meEnt, kE); face(gE, kE); requestAnimationFrame(trk); }; requestAnimationFrame(trk);
+    await walk(kE, [[kE.x, D.door[1]], D.door].filter(p => !offMap(D, p))); on = 0; }
+  kE.f = 'd'; place(kE); await wait(350); face(kE, meEnt); await wait(150);   // 문 앞에서 뒤돌아보며 한마디
+  S1.hide(false); await S1.say('아, 협회에는 내가\n잘 말해 두지!'); await S1.end(); kE.f = 'd'; place(kE); await wait(200);
   doorSe(); kE.el.remove(); ents.splice(ents.indexOf(kE), 1);
   // 16. 체육관 개설 알림창
-  await new Promise(ok => say(`<b>${esc(dr.nm)}</b>${jong(dr.nm) ? '이' : '가'} 문을 열었어요!`, '오늘부터 관장님이에요', ok));
+  await openNote(dr.nm);   // v13.80 경완: 업데이트 알림창처럼 캡처와 함께 기본 설명
   root.classList.remove('pre'); tick(); renderHome(); firstChal();
 }
+// 서로 바라보기: a 가 b 쪽을 본다 (가로가 더 멀면 좌우, 아니면 위아래)
+function face(a, b) { const dx = b.x - a.x, dy = b.y - a.y; if (!dx && !dy) return; const f = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'r' : 'l') : (dy > 0 ? 'd' : 'u'); if (a.f !== f) { a.f = f; place(a); } }
+// v13.80 경완: 튜토리얼 끝 체육관 개설 알림창 — 업데이트 알림창처럼 한 장씩 넘기며 캡처로 기본 설명
+function openNote(nm) { return new Promise(ok => {
+  const shot = (k, r) => `<div class="on-shot"><img src="${IMG}open_${k}.webp" alt="">${r ? `<i class="on-ring" style="left:${r[0]}%;top:${r[1]}%;width:${r[2]}%;height:${r[3]}%"></i>` : ''}</div>`;
+  const P = [
+    { c: '#d0407a', t: `${esc(nm)} 개설!`, b: `${shot('map')}<p>오늘부터 <em>관장님</em>이에요!<br>도전자를 맞아 체육관을 키워 봐요.</p>` },
+    { c: '#c8781e', t: '도전자를 받아요', b: `${shot('bot', [17, 21, 66, 36])}<p>도전자가 찾아오면 <em>도전자 받기</em>를<br>눌러 배틀해요.</p><p class="on-sm">이기면 골드와 평판을 받아요.</p>` },
+    { c: '#2f6fb0', t: '평판을 모아요', b: `${shot('top', [29, 51, 42, 22])}<p><em>평판</em>이 꽉 차면 승급 심사를 받아<br>체육관 등급을 올릴 수 있어요.</p>` },
+    { c: '#2f8a3e', t: '포켓몬을 정해요', b: `${shot('bot', [0, 64, 21, 33])}<p><em>포켓몬</em>에서 체육관 타입 포켓몬으로<br>라인업을 짜요.</p><p class="on-sm">훈련장·트레이너는 등급이 오르면 열려요.</p>` },
+    { c: '#8a5a2a', t: '체육관을 꾸며요', b: `${shot('top', [2, 45, 15, 30])}<p><em>꾸미기</em>로 소품을 옮기고<br><em>창고</em>에서 꺼내 놓아 꾸며요.</p>` }];
+  const w = document.createElement('div'); w.className = 'gy-on';
+  w.innerHTML = `<div class="win on-card"><div class="on-body"></div><div class="on-dots">${P.map(() => '<i></i>').join('')}</div><div class="on-btns"><button type="button" class="on-prev">이전</button><button type="button" class="on-ok">다음</button></div></div>`;
+  root.appendChild(w); const B = w.querySelector('.on-body'), ok1 = w.querySelector('.on-ok'), pr = w.querySelector('.on-prev'), last = P.length - 1; let i = 0, busy = 0;
+  const go = d => { const p = P[i]; B.innerHTML = `<div class="on-pg" style="--c:${p.c}"><b class="on-t">${p.t}</b>${p.b}</div>`; w.querySelectorAll('.on-dots i').forEach((e, k) => e.classList.toggle('on', k === i));
+    ok1.textContent = i < last ? '다음' : '확인'; pr.disabled = !i; if (d) B.firstChild.animate([{ transform: `translateX(${d * 60}%)`, opacity: .2 }, { transform: 'none', opacity: 1 }], { duration: 220, easing: 'cubic-bezier(.2,.8,.3,1)' }); };
+  const turn = d => { if (busy || i + d < 0 || i + d > last) return; busy = 1; sfx('tap'); B.firstChild.animate([{ transform: 'none', opacity: 1 }, { transform: `translateX(${-d * 60}%)`, opacity: .2 }], { duration: 140, easing: 'ease-in', fill: 'forwards' }).finished.then(() => { i += d; go(d); busy = 0; }); };
+  ok1.onclick = () => { if (i < last) return turn(1); sfx('tap'); w.classList.add('bye'); setTimeout(() => { w.remove(); ok(); }, 180); };
+  pr.onclick = () => turn(-1);
+  let sx = null; w.onpointerdown = e => { if (!e.target.closest('button')) sx = e.clientX; }; w.onpointerup = e => { if (sx == null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 45) turn(dx < 0 ? 1 : -1); };
+  go(); GA.haptic?.(1); }); }
 // 불을 찾다 발가락을 찧을 때 화면이 살짝 흔들림
 const shake2 = () => $g('.gy-stage')?.animate([{ translate: '0 0' }, { translate: '-4px 0' }, { translate: '3px 0' }, { translate: '0 0' }], { duration: 220 });
 // 걸을 수 없는 칸인지 (맵 밖만 막는다: 체육관 맵마다 막힌 칸 표가 따로 없음)
