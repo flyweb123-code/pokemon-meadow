@@ -63,7 +63,7 @@ body.gymMode{overflow:hidden}
 .gy-soon li::before{content:"▸ ";color:var(--cursor)}
 
 /* 팝업 */
-.gy-pop{position:absolute;inset:0;z-index:8;display:grid;place-items:center;padding:16px;background:rgba(12,13,20,.55);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.gy-pop{position:absolute;inset:0;z-index:8;display:grid;place-items:center;padding:16px;background:rgba(12,13,20,.3);-webkit-backdrop-filter:blur(1px);backdrop-filter:blur(1px)}   /* v13.81 경완: 알림창 뒤 배경이 보이게 */
 .gy-pop .win{width:min(360px,100%);padding:18px 18px 16px}
 .gy-pop h4{margin:0 0 10px;font-size:18px;text-align:center}
 .gy-pop p{margin:0 0 12px;font-size:14px;line-height:1.6;color:var(--win-ink)}
@@ -2334,11 +2334,13 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym.pre :is(.gy-deco,.gy-store,.gy-simb,.gy-menu){visibility:hidden}
 
 /* v13.80 경완: 튜토리얼 끝 체육관 개설 알림창 (업데이트 알림창처럼 캡처로 설명) */
-.gy-on{position:absolute;inset:0;z-index:30;display:grid;place-items:center;padding:16px;background:rgba(12,13,20,.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:twFade .2s ease-out}
+.gy-on{position:absolute;inset:0;z-index:30;display:grid;place-items:center;padding:16px;background:rgba(12,13,20,.3);-webkit-backdrop-filter:blur(1px);backdrop-filter:blur(1px);animation:twFade .2s ease-out}
 .gy-on.bye{opacity:0;transition:opacity .18s}
 .gy-on .on-card{width:min(360px,100%);box-sizing:border-box;padding:18px 16px 14px;display:flex;flex-direction:column;animation:twPop3 .22s steps(3,end);touch-action:pan-y}
 .on-body{min-height:300px;display:flex;flex-direction:column;overflow:hidden}
-.on-pg{display:flex;flex-direction:column;align-items:center;text-align:center}
+.on-pg{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center}
+.on-tx{flex:1;display:flex;flex-direction:column;justify-content:center;padding:6px 0}.on-tx p:first-child{margin-top:0}
+.on-shot.px img{image-rendering:pixelated;height:170px}
 .on-t{display:inline-block;font-size:17px;padding:3px 12px;margin:0 0 12px;color:#fff;background:var(--c)}
 .on-shot{position:relative;display:inline-block;line-height:0;border:3px solid #383848;box-shadow:3px 3px 0 rgba(0,0,0,.18);max-width:100%;box-sizing:border-box}
 .on-shot img{display:block;max-width:100%;max-height:170px;width:auto;height:auto}
@@ -2351,3 +2353,14 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .on-prev{flex:0 0 34%;color:#383848;background:#fff;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}.on-prev:disabled{opacity:.35;cursor:default}
 .on-ok{flex:1;color:#fff;background:#383848;box-shadow:inset 0 -4px 0 rgba(0,0,0,.35)}
 .on-btns button:not(:disabled):active{transform:translateY(3px) scale(.97);box-shadow:inset 0 -1px 0 rgba(0,0,0,.3)}
+
+/* v13.81 경완: 강박사가 내 도감을 펼쳐 읽는 연출 */
+.tw-dex{position:absolute;left:50%;top:max(56px,10%);z-index:15;width:min(310px,86vw);transform:translateX(-50%);background:#d8303a;border:3px solid #20202c;border-radius:12px 12px 8px 8px;padding:10px;box-sizing:border-box;box-shadow:0 6px 0 rgba(0,0,0,.25);animation:dxIn .3s cubic-bezier(.2,.8,.3,1.2)}
+@keyframes dxIn{from{transform:translateX(-50%) translateY(30px) scale(.7);opacity:0}}
+.tw-dex.bye{opacity:0;transform:translateX(-50%) translateY(20px) scale(.9);transition:all .2s}
+.dx-top{display:flex;justify-content:space-between;align-items:center;color:#fff;font-size:15px;padding:0 4px 8px}.dx-top em{font-style:normal;color:#ffe46a;font-size:17px}
+.dx-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:#f4f4ec;border:3px solid #20202c;border-radius:4px;padding:6px;transition:transform .16s,opacity .16s}
+.dx-grid.flip{transform:perspective(500px) rotateY(-70deg);opacity:.2}
+.dx-grid span{display:flex;flex-direction:column;align-items:center;background:#fff;border:2px solid #c8c8d4;border-radius:4px;padding:2px 0}.dx-grid span.e{background:#e6e6ea;border-style:dashed}
+.dx-grid span>i{width:52px;height:52px;image-rendering:pixelated;background-size:auto 100%;background-position:0 0;background-repeat:no-repeat}   /* 그림은 두 칸짜리 → 첫 칸만 */.dx-grid small{font-size:10px;color:#6a6a7a}
+.dx-bot{display:flex;gap:6px;justify-content:center;padding-top:8px}.dx-bot i{width:10px;height:10px;border-radius:50%;background:#20202c}.dx-bot i:first-child{background:#5ad0ff;box-shadow:0 0 6px #5ad0ff}
