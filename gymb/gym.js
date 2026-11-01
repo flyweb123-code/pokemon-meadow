@@ -1769,7 +1769,7 @@ async function intro() {
   // 5. 도감 읽기: 도감 창 없이 강박사 머리 위에 읽는 말풍선만 (경완 2026-11-01)
   // v13.81 경완 '도감 읽는 게 심심해서': 내 진짜 도감을 펼쳐 한 장씩 넘겨 본다
   S1.hide(true); const rb = bub(kg, '...', 0, true); gse('DP_ZUKAN02'); const dx = dexRead(); await wait(1500);
-  S1.hide(false); await S1.say('어디 보자... 하나, 둘...\n응? 응?? 응???'); await dx.close(); rb.remove();
+  dx.up(); S1.hide(false); await S1.say('어디 보자... 하나, 둘...\n응? 응?? 응???'); await dx.close(); rb.remove();
   // 6. 깜짝 (인물 대사창)
   const N = S.unlocked?.size || 0;
   gse('DP_PIRORIRO');
@@ -1905,22 +1905,24 @@ function dexRead() {   // v13.86 경완 '그 도감 말고 눌렀을 때 나오�
   if (!N || !GA.dexCardNode) return { close: async () => {} };
   // v13.99 경완 '촤라라락 넘기면서 빛나다가 임팩트 마무리 자연스럽게, 더 넘겨도 되니 리듬이 점진적으로 빨라지게': 첫 장 → 한 장씩 점점 빨라짐(끊김 없이) → 빠를수록 하얗게 빛남 → 가장 밝을 때 그대로 마지막 장이 쾅 하며 빛이 걷힘
   const show = Math.min(44, N), ids = [...new Set(Array.from({ length: show }, (_, k) => L[show < 2 ? 0 : Math.round(k * (N - 1) / (show - 1))]))];
-  const w = GA.dexCardNode(); w.classList.add('tw-dex'); w.removeAttribute('role'); let alive = 1;
+  const w = GA.dexCardNode(); w.classList.add('tw-dex'); w.removeAttribute('role'); let alive = 1, upd = 0, dy = 0;
   const stg = w.querySelector('.cdex'), ready = Promise.all(ids.map(id => GA.dexThumb ? GA.dexThumb(id) : 0));
   const put = (id, fx = '') => { GA.dexCardFill(w, id, `${L.indexOf(id) + 1} / ${N}`); w.classList.remove('beat', 'kung'); stg.classList.remove('nx'); if (!fx) return; void w.offsetWidth; w.classList.add(fx); if (fx !== 'kung') stg.classList.add('nx'); };
   const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
-  const run = (async () => { await Promise.race([ready, wait(1800)]); if (!alive) return; put(ids[0]); root.appendChild(w); await wait(1000);
+  const run = (async () => { await Promise.race([ready, wait(1800)]); if (!alive) return; put(ids[0]); root.appendChild(w);
+    if (!upd) { dy = Math.round((root.clientHeight - w.offsetHeight) / 2 - w.offsetTop); if (dy > 0) w.style.translate = `0 ${dy}px`; }   /* v14.06 경완: 처음엔 화면 가운데서 나오고, 대사창이 뜰 때 위로 부드럽게 (up) */
+    await wait(1000);
     const n = ids.length - 1;
     for (let k = 1; k < n && alive; k++) {
       const iv = Math.round(34 + 400 * Math.exp(-(k - 1) / 4.2)), q = k / n, lt = sm(.3, 1, q);   // 400ms 에서 34ms 까지 점점 빨라짐, 뒤 70% 동안 빛이 차오름
       w.style.setProperty('--wh', (lt * .93).toFixed(3)); w.style.setProperty('--gl', lt.toFixed(3));
-      put(ids[k], iv > 150 ? 'beat' : ''); gse('DP_SELECT', iv > 150 ? 1 : .35 + .5 * (iv - 34) / 116);
+      put(ids[k]); { const a = iv > 150 ? 1 : .55 + .45 * (iv - 34) / 116; w.animate([{ scale: 1 }, { scale: 1 + .045 * a, offset: .35 }, { scale: 1 }], { duration: Math.max(70, Math.min(200, iv)), easing: 'ease-out' }); }   /* v14.06 경완: 여러 장 빠르게 넘길 때도 한 장씩 톡 튀는 모션 (빠를수록 짧고 작게) */ gse('DP_SELECT', iv > 150 ? 1 : .35 + .5 * (iv - 34) / 116);
       if (iv > 150 || k % Math.max(2, Math.round(160 / iv)) === 0) GA.haptic?.(0);
       await wait(iv); }
     if (!alive || n < 1) return;
     w.style.setProperty('--wh', 1); await wait(70);   // 가장 밝은 순간에 바로
     put(ids[n], 'kung'); w.style.setProperty('--wh', 0); w.style.setProperty('--gl', 0); gse('DP_KON', 1.4); gse('DP_GASHIN', .9); GA.haptic?.(2); setTimeout(() => GA.haptic?.(2), 110); shake2(); await wait(650); })();   // 쾅
-  return { close: async () => { await run; alive = 0; await wait(200); w.classList.add('bye'); await wait(220); w.remove(); } }; }
+  return { up: () => { upd = 1; if (!w.isConnected || dy <= 0) return; w.animate([{ translate: `0 ${dy}px` }, { translate: '0 0' }], { duration: 520, easing: 'cubic-bezier(.3,.7,.2,1)' }); w.style.translate = '0 0'; dy = 0; }, close: async () => { await run; alive = 0; await wait(200); w.classList.add('bye'); await wait(220); w.remove(); } }; }
 // 불을 찾다 발가락을 찧을 때 화면이 살짝 흔들림
 const shake2 = () => $g('.gy-stage')?.animate([{ translate: '0 0' }, { translate: '-4px 0' }, { translate: '3px 0' }, { translate: '0 0' }], { duration: 220 });
 // 걸을 수 없는 칸인지 (맵 밖만 막는다: 체육관 맵마다 막힌 칸 표가 따로 없음)
