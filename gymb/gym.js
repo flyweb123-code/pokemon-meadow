@@ -865,7 +865,15 @@ const gse = (n, g = 1) => { try { window.GymBGM?.se(n, { gain: g }); } catch (e)
 const doorSe = () => { try { window.GymBGM?.se('DP_DOOR', { gain: 2.4 }); } catch (e) {} };   // 도전자가 드나들 때 철컥 문 소리 (플래티넘 SEQ_SE_DP_DOOR, 경완 2026-10-28 '자동문 말고 철컥')
 async function challenge(picked) {
   const g = st(), c = g.q[0]; if (!c || busy) return;
-  if (![0, 1, 2].some(i => luOf(i).length)) { say('라인업이 비어 있어요.', '라인업을 짜고 "이 라인업으로 결정"을 눌러 주세요'); openTab('battle', { title: '배틀 라인업', pick: i => { const g2 = st(); g2.luI = i; save(); openTab(null); challenge(true); } }); return; }   // 라인업 화면의 '연습 배틀' 자리가 '이 라인업으로 결정' → 그 도전자와 바로 배틀 (v12.22, v12.24 경완 '결정 버튼이랑 통일')
+  if (![0, 1, 2].some(i => luOf(i).length)) {
+    // v13.98 경완: 튜토리얼 뒤 첫 도전자 = 라인업 화면에서 안내원(그림 있는 대사창)이 설명 → 정하면 홈 대사창 3줄 → 도전자 입장·배틀
+    const tut = !g.luTut;
+    if (!tut) say('라인업이 비어 있어요.', '라인업을 짜고 "이 라인업으로 결정"을 눌러 주세요');
+    openTab('battle', { title: '배틀 라인업', pick: async i => { const g2 = st(); g2.luI = i; if (tut) g2.luTut = 1; save(); openTab(null);
+      if (tut) await tutTalk(['첫 라인업을 정하셨군요!', '상점에는 포켓몬에게 가르칠 기술머신과<br>지니게 할 도구들도 있으니 다음에 꼭 이용해 보세요!', '그럼 첫 배틀 화이팅입니다!!']);
+      challenge(true); } });
+    if (tut) { await wait(350); await kang(['여기서 배틀에 낼 포켓몬\n라인업을 결정해요!', '가장 자신 있는 포켓몬으로\n라인업을 짜 보세요!'], { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1, skip: false }); }
+    return; }   // 라인업 화면의 '연습 배틀' 자리가 '이 라인업으로 결정' → 그 도전자와 바로 배틀 (v12.22, v12.24 경완 '결정 버튼이랑 통일')
   busy = true; openTab(null); root.classList.add('busy');
   try {
     await loadJs('gymb/battle.js', 'GymBattle'); await GB().loadData();
@@ -1542,6 +1550,13 @@ async function firstChal(tut) {
   try { await talk(`<span class="gy-who">안내원</span>${kjNm()}! 벌써 도전자가 왔나 봐요.<br>도전자 받기를 눌러 보세요!`); }
   finally { lk.remove(); root.classList.remove('tlock'); busy = false; homeSay(); }
 }
+// v13.98 경완: 튜토리얼용 안내원 홈 대사창 — 화면을 잠그고 한 줄씩 (빈 곳을 눌러도 대사만 넘어감)
+async function tutTalk(lines) {
+  for (let i = 0; busy && i < 40; i++) await wait(100);
+  busy = true; const lk = document.createElement('div'); lk.className = 'gy-lock'; root.appendChild(lk); root.classList.add('tlock'); root.classList.remove('dhide');
+  try { for (const t of lines) await talk(`<span class="gy-who">안내원</span>${t}`); }
+  finally { lk.remove(); root.classList.remove('tlock'); root.classList.add('dhide'); $g('.gy-dlg').innerHTML = ''; busy = false; }
+}
 // 도전자가 올 때마다 띵동: 도전자 받기 단추 흔들림 + 효과음 (다른 창을 보고 있어도 소리는 난다) (경완 2026-10-29)
 function qDing() {
   try { window.GymBGM?.se('DP_PINPON'); } catch (e) {}
@@ -1892,9 +1907,9 @@ function dexRead() {   // v13.86 경완 '그 도감 말고 눌렀을 때 나오�
   const run = (async () => { await Promise.race([ready, wait(1800)]); if (!alive) return; put(ids[0]); root.appendChild(w); await wait(900);
     const n = ids.length - 1, beats = Math.min(4, n - 1);
     for (let k = 1; k <= beats && alive; k++) { put(ids[k], 'beat'); gse('DP_SELECT', 1); GA.haptic?.(0); await wait(400); }   // 딴, 딴, 딴, 딴
-    for (let k = beats + 1; k < n && alive; k++) { put(ids[k]); gse('DP_SELECT', .5); await wait(42); }   // 따라라라라락
+    for (let k = beats + 1, m = Math.max(1, n - beats - 1); k < n && alive; k++) { const q = (k - beats) / m; w.style.setProperty('--wh', Math.min(.92, q * q * 1.05).toFixed(3)); put(ids[k]); gse('DP_SELECT', .5); await wait(42); }   // 따라라라라락 — v13.98 경완 '점점 하얘지다가'
     if (!alive || n < 1) return; await wait(140);
-    put(ids[n], 'kung'); gse('DP_KON', 1.4); gse('DP_GASHIN', .9); GA.haptic?.(2); setTimeout(() => GA.haptic?.(2), 110); shake2(); await wait(500); })();   // 쿵
+    w.style.setProperty('--wh', 1); await wait(90); put(ids[n], 'kung'); w.style.setProperty('--wh', 0); /* 하얗게 번쩍 → 마지막 장 도감 모습이 쾅 */ gse('DP_KON', 1.4); gse('DP_GASHIN', .9); GA.haptic?.(2); setTimeout(() => GA.haptic?.(2), 110); shake2(); await wait(500); })();   // 쿵
   return { close: async () => { await run; alive = 0; await wait(200); w.classList.add('bye'); await wait(220); w.remove(); } }; }
 // 불을 찾다 발가락을 찧을 때 화면이 살짝 흔들림
 const shake2 = () => $g('.gy-stage')?.animate([{ translate: '0 0' }, { translate: '-4px 0' }, { translate: '3px 0' }, { translate: '0 0' }], { duration: 220 });
