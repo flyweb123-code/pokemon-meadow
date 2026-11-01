@@ -2364,3 +2364,11 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .tw-dex .cdex .dp-pic img{animation:none}.tw-dex .cdex.nx .dp-pic img,.tw-dex .cdex.nx .cd-r{animation:dxNx .14s steps(2)}
 @keyframes dxNx{from{opacity:.15}}
 .tw-dex .rd-top [data-k=dpPos]{margin-left:auto;color:#ffe3e3;font-size:13px}
+
+/* v13.90 경완: 도감 넘기기 박자(딴)·마지막 장 쿵 */
+.tw-dex.beat{animation:dxBeat .2s ease-out}
+@keyframes dxBeat{40%{transform:translateX(-50%) translateY(-6px) scale(1.03)}}
+.tw-dex.kung{animation:dxKung .45s cubic-bezier(.2,.8,.3,1)}
+@keyframes dxKung{0%{transform:translateX(-50%) translateY(-26px) scale(1.14)}35%{transform:translateX(-50%) translateY(4px) scale(.97)}50%{transform:translateX(calc(-50% - 5px)) translateY(0) scale(1.01)}65%{transform:translateX(calc(-50% + 4px))}80%{transform:translateX(calc(-50% - 2px))}100%{transform:translateX(-50%)}}
+.tw-dex.kung .cdex{animation:dxFlash .45s steps(3)}
+@keyframes dxFlash{0%{filter:brightness(1.8)}}
