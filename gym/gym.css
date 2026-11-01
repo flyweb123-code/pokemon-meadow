@@ -2356,7 +2356,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .on-btns button:not(:disabled):active{transform:translateY(3px) scale(.97);box-shadow:inset 0 -1px 0 rgba(0,0,0,.3)}
 
 /* v13.84 경완: 강박사가 내 도감을 펼쳐 읽는 연출 — 본게임 도감 창(.win .sheet-head .dex)과 같은 모양 */
-.tw-dex{position:absolute;left:0;right:0;margin:0 auto;top:max(48px,7%);z-index:15;width:min(400px,92vw);min-width:0;box-sizing:border-box;pointer-events:none}   /* v14.08: 등장은 JS 쫀득 애니(squash·stretch) */
+.tw-dex{position:absolute;left:0;right:0;margin:0 auto;top:max(48px,7%);z-index:15;width:min(400px,92vw);min-width:0;box-sizing:border-box;pointer-events:none;animation:dxIn .3s cubic-bezier(.2,.8,.3,1.2)}
 @keyframes dxIn{from{transform:translateY(30px) scale(.7);opacity:0}}   /* v14.06: 가운데 정렬은 margin auto, 세로 이동은 translate 속성(JS) → transform 애니와 안 겹침 */
 .tw-dex.bye{opacity:0;transform:translateY(20px) scale(.9);transition:opacity .2s,transform .2s}
 /* v13.86 경완: 본게임 빨간 도감 카드(#dexPop .win.rdex)를 복제해 씀 — 본게임 규칙이 #dexPop 아래로 묶여 있어 바깥 틀만 다시 */

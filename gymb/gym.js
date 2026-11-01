@@ -1910,21 +1910,19 @@ function dexRead() {   // v13.86 경완 '그 도감 말고 눌렀을 때 나오�
   const put = (id, fx = '') => { GA.dexCardFill(w, id, `${L.indexOf(id) + 1} / ${N}`); w.classList.remove('beat', 'kung'); stg.classList.remove('nx'); if (!fx) return; void w.offsetWidth; w.classList.add(fx); if (fx !== 'kung') stg.classList.add('nx'); };
   const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   const run = (async () => { await Promise.race([ready, wait(1800)]); if (!alive) return; put(ids[0]); root.appendChild(w);
-    if (!upd) { dy = Math.max(0, Math.round((root.clientHeight - w.offsetHeight) / 2 - w.offsetTop)); if (dy > 0) w.style.translate = `0 ${dy}px`; }
-    /* v14.08 경완 '더 맛있고 쫀득하게': 밑에서 작게 튀어나와 납작 → 길쭉 → 살짝 출렁이며 자리 잡음 */
-    w.animate([{ opacity: 0, scale: '.25 .25', translate: `0 ${dy + 70}px` }, { opacity: 1, scale: '1.13 .86', translate: `0 ${dy}px`, offset: .42 }, { scale: '.93 1.08', offset: .62 }, { scale: '1.04 .96', offset: .8 }, { scale: '.99 1.01', offset: .92 }, { opacity: 1, scale: '1 1', translate: `0 ${dy}px` }], { duration: 620, easing: 'cubic-bezier(.25,.8,.35,1)' }); GA.haptic?.(1);   /* v14.06 경완: 처음엔 화면 가운데서 나오고, 대사창이 뜰 때 위로 부드럽게 (up) */
+    if (!upd) { dy = Math.max(0, Math.round((root.clientHeight - w.offsetHeight) / 2 - w.offsetTop)); if (dy > 0) w.style.translate = `0 ${dy}px`; }   /* v14.06 경완: 처음엔 화면 가운데서 나오고, 대사창이 뜰 때 위로 부드럽게 (up) */
     await wait(1000);
     const n = ids.length - 1;
     for (let k = 1; k < n && alive; k++) {
       const iv = Math.round(34 + 400 * Math.exp(-(k - 1) / 4.2)), q = k / n, lt = sm(.3, 1, q);   // 400ms 에서 34ms 까지 점점 빨라짐, 뒤 70% 동안 빛이 차오름
       w.style.setProperty('--wh', (lt * .93).toFixed(3)); w.style.setProperty('--gl', lt.toFixed(3));
-      put(ids[k]); { const a = iv > 150 ? 1 : .55 + .45 * (iv - 34) / 116; const sg = k % 2 ? 1 : -1; w.animate([{ scale: '1 1', rotate: '0deg' }, { scale: `${1 + .07 * a} ${1 - .06 * a}`, rotate: `${(sg * 1.4 * a).toFixed(2)}deg`, offset: .22 }, { scale: `${1 - .03 * a} ${1 + .035 * a}`, rotate: `${(-sg * .5 * a).toFixed(2)}deg`, offset: .5 }, { scale: `${1 + .01 * a} ${1 - .01 * a}`, offset: .75 }, { scale: '1 1', rotate: '0deg' }], { duration: Math.max(80, Math.min(280, iv * 1.15)), easing: 'linear' });   /* v14.08: 넘길 때마다 납작·길쭉 + 좌우 번갈아 살짝 기울기 (쫀득) */ }   /* v14.06 경완: 여러 장 빠르게 넘길 때도 한 장씩 톡 튀는 모션 (빠를수록 짧고 작게) */ gse('DP_SELECT', iv > 150 ? 1 : .35 + .5 * (iv - 34) / 116);
+      put(ids[k]); { const a = iv > 150 ? 1 : .55 + .45 * (iv - 34) / 116; w.animate([{ scale: 1 }, { scale: 1 + .045 * a, offset: .35 }, { scale: 1 }], { duration: Math.max(70, Math.min(200, iv)), easing: 'ease-out' });   /* v14.09 경완: v14.08 쫀득 모션 되돌림 (v14.06 그대로) */ }   /* v14.06 경완: 여러 장 빠르게 넘길 때도 한 장씩 톡 튀는 모션 (빠를수록 짧고 작게) */ gse('DP_SELECT', iv > 150 ? 1 : .35 + .5 * (iv - 34) / 116);
       if (iv > 150 || k % Math.max(2, Math.round(160 / iv)) === 0) GA.haptic?.(0);
       await wait(iv); }
     if (!alive || n < 1) return;
     w.style.setProperty('--wh', 1); await wait(70);   // 가장 밝은 순간에 바로
     put(ids[n], 'kung'); w.style.setProperty('--wh', 0); w.style.setProperty('--gl', 0); gse('DP_KON', 1.4); gse('DP_GASHIN', .9); GA.haptic?.(2); setTimeout(() => GA.haptic?.(2), 110); shake2(); await wait(650); })();   // 쾅
-  return { up: () => { upd = 1; if (!w.isConnected || dy <= 0) return; w.animate([{ translate: `0 ${dy}px`, scale: '1 1' }, { translate: '0 -12px', scale: '.96 1.05', offset: .58 }, { translate: '0 4px', scale: '1.03 .97', offset: .78 }, { translate: '0 -1px', scale: '.995 1.005', offset: .9 }, { translate: '0 0', scale: '1 1' }], { duration: 640, easing: 'cubic-bezier(.3,.6,.3,1)' });   /* v14.08: 위로 올라갈 때 살짝 지나쳤다 출렁이며 멈춤 */ w.style.translate = '0 0'; dy = 0; }, close: async () => { await run; alive = 0; await wait(200); w.classList.add('bye'); await wait(220); w.remove(); } }; }
+  return { up: () => { upd = 1; if (!w.isConnected || dy <= 0) return; w.animate([{ translate: `0 ${dy}px` }, { translate: '0 0' }], { duration: 520, easing: 'cubic-bezier(.3,.7,.2,1)' }); w.style.translate = '0 0'; dy = 0; }, close: async () => { await run; alive = 0; await wait(200); w.classList.add('bye'); await wait(220); w.remove(); } }; }
 // 불을 찾다 발가락을 찧을 때 화면이 살짝 흔들림
 const shake2 = () => $g('.gy-stage')?.animate([{ translate: '0 0' }, { translate: '-4px 0' }, { translate: '3px 0' }, { translate: '0 0' }], { duration: 220 });
 // 걸을 수 없는 칸인지 (맵 밖만 막는다: 체육관 맵마다 막힌 칸 표가 따로 없음)
