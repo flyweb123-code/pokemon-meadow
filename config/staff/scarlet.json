@@ -1,6 +1,1012 @@
 {
  "days": [
   {
+   "at": 1793573316697,
+   "theme": "첫눈 오는 겨울 마당",
+   "note": "오늘은 11월 첫날이라 한 발 먼저 첫눈 오는 겨울 마당을 그렸어요. 눈사람·이글루·눈 언덕 미끄럼틀처럼 포켓몬이 직접 노는 것과, 군고구마 화로·호빵 수레·연탄 더미처럼 한국 겨울 골목 냄새가 나는 소품을 섞었고, 얼음 타입과 불꽃 타입이 서로 다르게 반응하게 했어요.",
+   "items": [
+    {
+     "id": "snowman",
+     "n": "양동이 눈사람",
+     "k": "장식",
+     "d": "첫눈이 오면 마당에 굴려 만든 두 단 눈사람이에요. 빨간 목도리를 두르고 양동이 모자, 당근 코, 나뭇가지 팔을 달았어요.",
+     "px": [
+      "........kkkkkkkk........",
+      ".......khhHHHHqqk.......",
+      ".......khHHHHHqqk.......",
+      ".......khHHHHHqqk.......",
+      "......khHHHHHHHqqk......",
+      "......kQQQQQQQQQQk......",
+      ".......kkkwwssskk.......",
+      ".k......kwwwssssk.....k.",
+      "kbkk...kwwwsssssSk..kkBk",
+      ".kbbk.kwwsnsssnsSSkkBBk.",
+      "..kbk.kssssssssSSZkkBk..",
+      "...kbkksssssooOSSZkkBk..",
+      "...kbkksssssSSSSZZkBk...",
+      "....kbkksSnSSSnZZkBk....",
+      ".....kkkkSSnZnZZkkk.....",
+      ".....krrrRRRRRRRDDDk....",
+      ".....kwwwwsssssDDsSk....",
+      "....kwwwwssssssRDSSSk...",
+      "....ksssssssnssDDSSSk...",
+      "....kssssssssssRDSSZk...",
+      "...ksssssssssssSSSSZZk..",
+      "....ksssssssnsSSSSZZk...",
+      "....kssssssSSSSSZZZZk...",
+      "....kSSSSSSSSSSZZZZZk...",
+      ".....kSSSSSSnZZZZZZk....",
+      "......kSSZZZZZZZZZk.....",
+      ".......kkZZZZZZZkk......",
+      ".........kkkkkkk........"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "w": "#f6f9fc",
+      "s": "#dfe8f2",
+      "S": "#b6c6da",
+      "Z": "#8796b4",
+      "h": "#9fb4c4",
+      "H": "#6f8aa0",
+      "q": "#4c6276",
+      "Q": "#33465a",
+      "n": "#2c2a34",
+      "o": "#f0963c",
+      "O": "#c4642a",
+      "r": "#e8705e",
+      "R": "#c4443a",
+      "D": "#86302c",
+      "b": "#9a6a44",
+      "B": "#6c4630"
+     },
+     "acts": [
+      {
+       "w": "얼음 타입",
+       "a": "눈사람 옆에 붙어 서서 차가운 숨을 불어 눈을 단단하게 다져 줘요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "눈사람에 차가운 숨을 불어 눈을 단단하게 다졌다.",
+        "녹아 가던 눈사람을 냉기로 다시 꽁꽁 얼려 줬다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "양동이 모자 꼭대기에 날아와 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "눈사람 양동이 모자 위에 날아와 앉았다.",
+        "눈사람 모자 꼭대기에서 깃털을 부풀리고 있다."
+       ]
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "눈사람에 다가갔다가 녹을까 봐 깜짝 놀라 뒤로 물러나요",
+       "x": {
+        "m": "avoid"
+       },
+       "l": [
+        "눈사람에 다가갔다가 녹을까 봐 얼른 물러났다.",
+        "눈사람 앞에서 꼬리 불꽃을 조심조심 감춘다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "눈사람 앞에 서서 당근 코를 신기하게 올려다봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "눈사람 앞에 서서 당근 코를 한참 올려다봤다.",
+        "눈사람과 눈싸움하듯 마주 보고 서 있다."
+       ]
+      }
+     ],
+     "fit": "마당 가운데, 눈 오는 날",
+     "glow": 0
+    },
+    {
+     "id": "wood-sled",
+     "n": "나무 썰매",
+     "k": "놀이",
+     "d": "등받이가 달린 옛날 나무 썰매예요. 쇠 날 앞이 동그랗게 말려 올라가 있고, 앞에 빨간 끌줄이 매여 있어요.",
+     "px": [
+      "...kkk......................",
+      ".kkWWskkk...................",
+      "kllwwwwwwk..................",
+      "kBBBBBBBBk................k.",
+      "klbkkkkwBk...............krk",
+      "klbk..kwBk.kkkkkk.......krRk",
+      "klbkkkkwBkkWWsssskkkkkkkrkk.",
+      "kllllllllllllllllllllllrk...",
+      "kbwwbwwbwbwwwbbwwwwbwwwwk...",
+      "kBBBBBBBBBBBBBBBBBBBBBBBkk..",
+      ".kkkkbBkkkkkbBkkkkkbBkkkmMk.",
+      "....kbBk...kbBk...kbBk..khMk",
+      "..kkkbBkkkkkbBkkkkkbBkkkkmMk",
+      ".kmmmmmmmmmmmmmmmmmmmmmmmMk.",
+      ".kMMMMMMMMMMMMMMMMMMMMMMkk..",
+      "..kkkkkkkkkkkkkkkkkkkkkk...."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "l": "#e8b878",
+      "w": "#c88e52",
+      "b": "#9a6438",
+      "B": "#6a4028",
+      "m": "#c8ccd8",
+      "M": "#7c8296",
+      "h": "#f4f6fa",
+      "r": "#d8564a",
+      "R": "#902e2c",
+      "W": "#f6f9fc",
+      "s": "#d4dfec"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "썰매 판자 위에 앉아 등받이에 기대고 끌어 줄 친구를 기다려요",
+       "x": {
+        "at": "top",
+        "an": "Sleep"
+       },
+       "l": [
+        "썰매 위에 앉아 등받이에 기대 꾸벅꾸벅 존다.",
+        "썰매에 앉아 누가 끌어 주기를 기다린다."
+       ]
+      },
+      {
+       "w": "격투 타입 / 큰 포켓몬",
+       "a": "빨간 끌줄을 잡고 썰매를 힘차게 끌어당겨요",
+       "x": {
+        "at": "front",
+        "m": "push"
+       },
+       "l": [
+        "썰매 끌줄을 잡고 힘차게 끌어당겼다.",
+        "눈밭에서 썰매를 영차영차 끌고 다닌다."
+       ]
+      },
+      {
+       "w": "얼음 타입",
+       "a": "썰매 날 아래 눈을 얼려 미끄럽게 길을 내 줘요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "썰매 날 아래를 꽁꽁 얼려 미끄러운 길을 냈다.",
+        "썰매가 잘 나가도록 얼음 길을 깔아 줬다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "썰매 옆에 서서 말려 올라간 쇠 날을 툭툭 건드려 봐요",
+       "x": {
+        "at": "side"
+       },
+       "l": [
+        "썰매의 동그란 쇠 날을 툭툭 건드려 봤다.",
+        "썰매 옆을 빙 돌며 이리저리 살펴본다."
+       ]
+      }
+     ],
+     "fit": "눈 덮인 언덕 아래, 겨울",
+     "glow": 0
+    },
+    {
+     "id": "igloo",
+     "n": "얼음 벽돌 이글루",
+     "k": "쉼터",
+     "d": "눈 벽돌을 쌓아 둥글게 지은 작은 이글루예요. 아치 입구 안쪽에서 따뜻한 등불 빛이 새어 나와요.",
+     "px": [
+      "............kkkkkk............",
+      ".........kkksssssskkk.........",
+      "........kwsSssssssSssk........",
+      "......kksSSSSSSSSSSSSZkk......",
+      ".....khhwssssssssssssSSSk.....",
+      "....khwwSssssssSssssSSZSSk....",
+      "....kwwsSssssssSsssSSSZSSk....",
+      "...ksssSSSSSSSSSSSZZZZZZZZk...",
+      "..kwwwssssssssssssSSSSSSSSZk..",
+      "..kwsssssssSsssssSZSSSSSSZZk..",
+      ".kwwSssssssSssssssZSSSSSZZZZk.",
+      ".kssSSSSSSSssssssssZZZZZZZZZk.",
+      "kwwssssssssssssssssSSSSZZZZZZk",
+      "ksssssssSswssDDDDssSSSZZZZZZZk",
+      "kSssssssSswsddddddsSSZZZZZZZZk",
+      "kSSSSSSSSwwsddddddsSSZZZZZZZZk",
+      "ksssssssswwdddyddddSSZZZZZZZZk",
+      "ksssSsssswwdddyYdddSSZZZZZZZZk",
+      "ksssSsssswwddyyyyddSSZZZZZZZZk",
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "h": "#ffffff",
+      "w": "#f6f9fc",
+      "s": "#dfe8f2",
+      "S": "#b6c6da",
+      "Z": "#8796b4",
+      "D": "#2e3448",
+      "d": "#46405a",
+      "y": "#f2b45a",
+      "Y": "#ffe08c"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "아치 입구로 쏙 숨었다가 고개만 빼꼼 내밀어요",
+       "x": {
+        "at": [
+         0.5,
+         0.95
+        ],
+        "m": "hide peek"
+       },
+       "l": [
+        "이글루 입구로 쏙 숨었다가 고개만 빼꼼 내민다.",
+        "이글루 안에 숨어 따뜻한 불빛을 쬐고 있다."
+       ]
+      },
+      {
+       "w": "얼음 타입",
+       "a": "이글루 옆에 기대 누워 시원하게 낮잠을 자요",
+       "x": {
+        "at": "side",
+        "an": "Sleep"
+       },
+       "l": [
+        "이글루 벽에 기대 시원하게 낮잠을 잔다.",
+        "얼음 벽돌에 몸을 붙이고 새근새근 잠들었다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "둥근 지붕 꼭대기에 날아와 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "이글루 둥근 지붕 꼭대기에 날아와 앉았다.",
+        "이글루 지붕 위에서 눈 덮인 마당을 내려다본다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "입구 앞에 서서 안쪽 불빛을 들여다봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "이글루 입구 앞에서 안쪽 불빛을 들여다봤다.",
+        "이글루 안이 궁금해 입구 앞을 서성인다."
+       ]
+      }
+     ],
+     "fit": "마당 구석, 눈 오는 날",
+     "glow": 1
+    },
+    {
+     "id": "snowy-fir",
+     "n": "눈 쌓인 전나무",
+     "k": "나무",
+     "d": "가지마다 첫눈이 소복이 쌓인 키 큰 전나무예요. 네 겹 가지 윗면은 하얗고, 그늘진 오른쪽은 짙은 초록이에요.",
+     "px": [
+      ".............k.............",
+      "............kwk............",
+      "...........kwsk............",
+      "..........kwwssk...........",
+      "..........kwwsssk..........",
+      ".........kwsGGqQQk.........",
+      ".........kwsGGqQQk.........",
+      "........kwsgGGqqQQk........",
+      "........kggGGGqqQQk........",
+      ".......kgsgGGGqqQQQk.......",
+      ".......kgggwwsssqQQk.......",
+      "........kQwsGGqqQkk........",
+      "........kwsGGGqqQQk........",
+      ".......kwsgGGGqqqQQk.......",
+      "......kgggGGGGqqqQQQk......",
+      ".....kgssgGsGGGqqqQQQk.....",
+      "....kggggGwwwssssqqQQQk....",
+      ".....kQQkwsGGGqqQQQQkk.....",
+      "......kwsggGGGqqqQQQk......",
+      ".....kwsggGGGGGqqqQQQk.....",
+      "...kkggggGGGGGGqqqQQQQkk...",
+      "..kgggssgGssGGGqqqqQQQQQk..",
+      ".kggggggGGwwwssssqqqQQQQQk.",
+      "..kQQkkQQwsGGGqqQQkQQkkkk..",
+      "...kk.kwsgGGGGqqqQQQk......",
+      "....kkwsggGGGGGqqqQQQkk....",
+      "...kgggggGGGGGGqqqqQQQQk...",
+      ".kkggssgGssGGGGqqqqqQQQQkk.",
+      "kggggggGGGGGGGGqqqqqqQQQQQk",
+      ".kQQkkQQkkQbbBBQkkQQkkQQkk.",
+      "..kk..kk..kbBBBk..kk..kk...",
+      "..........kbbBBk...........",
+      "..........kbbBBk...........",
+      "...........kkkk............"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "w": "#f6f9fc",
+      "s": "#d0dcea",
+      "g": "#5e9c62",
+      "G": "#3f7a50",
+      "q": "#2c5c42",
+      "Q": "#1e4234",
+      "b": "#8a5a3a",
+      "B": "#5c3a28"
+     },
+     "acts": [
+      {
+       "w": "풀 타입 / 벌레 타입",
+       "a": "전나무 아래 기대 앉아 눈을 피해 쉬어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "전나무 아래 기대 앉아 눈을 피해 쉰다.",
+        "눈 쌓인 가지 아래에서 몸을 웅크리고 잠들었다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "눈 쌓인 가지로 날아와 앉아 깃털을 털어요",
+       "x": {
+        "at": [
+         0.35,
+         0.4
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "눈 쌓인 전나무 가지에 날아와 앉았다.",
+        "가지에 앉아 깃털에 붙은 눈을 털어 낸다."
+       ]
+      },
+      {
+       "w": "격투 타입 / 큰 포켓몬",
+       "a": "나무 기둥에 몸통 박치기를 해서 가지 위 눈을 우수수 떨어뜨려요",
+       "x": {
+        "at": "front",
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "전나무에 몸통 박치기를 해서 눈을 우수수 떨어뜨렸다.",
+        "나무를 흔들다 머리 위로 눈벼락을 맞았다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "전나무 뒤에 숨어 옆으로 빼꼼 내다봐요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "전나무 뒤에 숨어 옆으로 빼꼼 내다본다.",
+        "눈 덮인 가지 사이로 몰래 마당을 살핀다."
+       ]
+      }
+     ],
+     "fit": "숲 가장자리, 겨울",
+     "glow": 0
+    },
+    {
+     "id": "sweetpotato-drum",
+     "n": "군고구마 드럼통 화로",
+     "k": "먹이",
+     "d": "겨울 길모퉁이의 빨간 드럼통 화로예요. 석쇠 위에서 군고구마가 익고, 통 아래 공기 구멍으로 불빛이 새어 나와요.",
+     "px": [
+      ".........k........",
+      "........kyk.......",
+      ".......kyYk.......",
+      ".......kYYyk......",
+      "......kokyok......",
+      ".....koyYYyok.....",
+      "..kkkroyyyoorkkkk.",
+      ".kpppokkkkkkopPPPk",
+      "kMmmMmmMmmMmmMmmMk",
+      "khHHHHHHHHHHHHuuuk",
+      "khHHHHHHHHHHHHuuuk",
+      "kHuuuuuuuuuuuuUUUk",
+      "khHHHHHHHHHHHHuuuk",
+      "khHUHHHHHHHHHHuuuk",
+      "khHHUHHHHHHHHUuuuk",
+      "khHHHHHHHHHHHHuuuk",
+      "kHuuuuuuuuuuuuUUUk",
+      "khHHHHHHHHHHHHuuuk",
+      "khHHHnnnnnnnHHuuuk",
+      "khHHHnooyoonHHuuuk",
+      "khHHHHHHHHHHHHuuuk",
+      "kHuuuuuuuuuuuuUUUk",
+      "khUHHHHHHHHHHHuuuk",
+      "kUUUUUUUUUUUUUUUUk",
+      ".knnkkkkkkkkkknnk.",
+      ".knnk........knnk.",
+      "..kk..........kk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "y": "#ffe07a",
+      "Y": "#fff4c4",
+      "o": "#f0963c",
+      "r": "#c8463a",
+      "m": "#b4b8c4",
+      "M": "#6c7080",
+      "p": "#a8566a",
+      "P": "#7a3a4e",
+      "h": "#e46a54",
+      "H": "#c4483c",
+      "u": "#9c3530",
+      "U": "#6a2626",
+      "n": "#2c2a34"
+     },
+     "acts": [
+      {
+       "w": "불꽃 타입",
+       "a": "화로 옆에 붙어 서서 불길에 불꽃을 더해 활활 키워요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "화로에 불꽃을 더해 활활 키웠다.",
+        "드럼통 화로 불길을 키워 군고구마를 노릇하게 구웠다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "화로 앞에 앉아 따뜻한 불을 쬐며 군고구마를 냠냠 먹어요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "화로 앞에 앉아 군고구마를 호호 불어 먹는다.",
+        "드럼통 화로 앞에서 손을 녹이며 불을 쬔다."
+       ]
+      },
+      {
+       "w": "얼음 타입",
+       "a": "화로에 다가갔다가 뜨거운 열기에 얼른 피해 가요",
+       "x": {
+        "m": "avoid"
+       },
+       "l": [
+        "화로에 다가갔다가 뜨거운 열기에 얼른 물러났다.",
+        "드럼통 화로를 멀찍이 돌아서 지나간다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "화로 옆에 숨어 군고구마가 익기를 옆으로 빼꼼 지켜봐요",
+       "x": {
+        "at": "side",
+        "m": "speek"
+       },
+       "l": [
+        "화로 옆에서 군고구마가 익기를 빼꼼 지켜본다.",
+        "석쇠 위 군고구마를 노리며 화로 옆을 맴돈다."
+       ]
+      }
+     ],
+     "fit": "마당 길목, 추운 저녁",
+     "glow": 1
+    },
+    {
+     "id": "winter-feeder",
+     "n": "겨울 새 모이대",
+     "k": "먹이",
+     "d": "빨간 지붕에 눈이 소복한 기둥 모이대예요. 상자 안에 해바라기씨와 곡식이 담겨 있어 겨울 새들이 들러요.",
+     "px": [
+      ".........kk.........",
+      ".......kkwskk.......",
+      "......kRwsRsDk......",
+      ".....kRwsrRRsDk.....",
+      "....kRwsrrRRRsDk....",
+      "...kRwsrrrRRRRsDk...",
+      "..kRwsrrrrRRRRRsDk..",
+      ".kRrrrrrrrRRRRRRRDk.",
+      "kwwwwwwwwwsssssssssk",
+      ".kkklwwwwwwwwwbbkkk.",
+      "...klwnnnnnnnnbbk...",
+      "...klwnnnnnnnnbbk...",
+      "...klwnennEnenbbk...",
+      "...klwEeEeEeEebbk...",
+      "...klwwwwwwwwwbbk...",
+      "...keBBBBBBBBBEBk...",
+      "..kllwwwwwwwwwwBBk..",
+      "..kBBBBBBBBBBBBBBk..",
+      "...kkkkkklbBkkkkk...",
+      "........klbBk.......",
+      "........klbBk.......",
+      "........klbBk.......",
+      "........klBBk.......",
+      "........klbBk.......",
+      "........klbBk.......",
+      "........klbBk.......",
+      "........klBBk.......",
+      ".......kblbBbk......",
+      "......kbblbBbBk.....",
+      "......kbblbBbBk.....",
+      ".......kkkkkkk......"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "w": "#f6f9fc",
+      "s": "#d0dcea",
+      "r": "#d8604c",
+      "R": "#b0403a",
+      "D": "#7c2c2a",
+      "l": "#e2b07a",
+      "b": "#a8723e",
+      "B": "#6e4628",
+      "n": "#3a2c26",
+      "e": "#e8c86a",
+      "E": "#a87c3c"
+     },
+     "acts": [
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "모이 상자 받침판에 날아와 앉아 씨앗을 콕콕 쪼아 먹어요",
+       "x": {
+        "at": [
+         0.5,
+         0.55
+        ],
+        "m": "fly",
+        "an": "Eat"
+       },
+       "l": [
+        "모이대 받침판에 날아와 앉아 씨앗을 콕콕 쪼았다.",
+        "모이대에서 해바라기씨를 하나씩 골라 먹는다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "눈 덮인 지붕 꼭대기에 날아와 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "모이대 눈 덮인 지붕 꼭대기에 날아와 앉았다.",
+        "모이대 지붕 위에서 차례를 기다린다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "기둥 아래에 서서 떨어진 씨앗을 주워 먹어요",
+       "x": {
+        "at": "under",
+        "an": "Eat"
+       },
+       "l": [
+        "모이대 기둥 아래에서 떨어진 씨앗을 주워 먹었다.",
+        "모이대 밑을 킁킁거리며 흘린 곡식을 찾는다."
+       ]
+      },
+      {
+       "w": "노말 타입 / 벌레 타입",
+       "a": "모이대 기둥을 타고 올라가 보려고 낑낑대요",
+       "x": {
+        "at": "front",
+        "m": "climb"
+       },
+       "l": [
+        "모이대 기둥을 타고 올라가려고 낑낑댔다.",
+        "모이대 기둥에 매달렸다가 스르륵 미끄러졌다."
+       ]
+      }
+     ],
+     "fit": "창가 마당, 겨울 아침",
+     "glow": 0
+    },
+    {
+     "id": "hoppang-cart",
+     "n": "호빵 찜기 수레",
+     "k": "먹이",
+     "d": "겨울 골목의 호빵 수레예요. 은빛 3단 찜기 창으로 하얀 팥호빵과 노란 야채호빵이 보이고, 앞에 노란 간판 천을 둘렀어요.",
+     "px": [
+      "...........kkkk.............",
+      "..........kmmMMk............",
+      "........kkkkkkkkkk..........",
+      "......kkhhhhmmmmmmkk........",
+      ".....khhhhmmmmmmmmMMk.......",
+      "....kmmmmmmmmmmmmMMMNk......",
+      "....kMMMMMMMMMMMMMNNNk......",
+      "....khmmccnQQncQnmMMMk......",
+      "....khmmccnqqncCnmMMMk....k.",
+      "....kMMMMMMMMMMMMMNNNk...kbk",
+      "....khmmmmmmmmmmmmMMMk...kbk",
+      "....khmmmmmmmmmmmmMMMk..kbk.",
+      ".kkkkMMMMMMMMMMMMMNNNkkkkbk.",
+      "kllwwwwwwwwwwwwwwwwwwwwwbk..",
+      "kBBBBBBBBBBBBBBBBBBBBBBBBk..",
+      ".krRRRRRRRRRRRRRRRRRRRDDk...",
+      ".krRRYYYDYYYDYYYDYDYYRDDk...",
+      ".krRRYYDYDYYDDYYYDYYYRDDk...",
+      ".krRRyyyyyyyyyyyyyyyyRDDk...",
+      ".krRRRRRRRRRRRRRRRRRRRDDk...",
+      ".kDDDtwwDDDDDDDDDDtwwDDDk...",
+      "..kktwwwTkkkkkkkktwwwTkk....",
+      "...kwwnTnk......kwwnTnk.....",
+      "...kwwTTnk......kwwTTnk.....",
+      "....knnnk........knnnk......",
+      ".....kkk..........kkk......."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "h": "#f2f4f8",
+      "m": "#c4c8d4",
+      "M": "#8a90a2",
+      "N": "#5c6274",
+      "n": "#3a3440",
+      "c": "#fbf3e4",
+      "C": "#d8c8b0",
+      "q": "#f2d27a",
+      "Q": "#c8a050",
+      "l": "#e6b87c",
+      "w": "#c48e54",
+      "B": "#7a4c2c",
+      "b": "#9a6438",
+      "r": "#e46a54",
+      "R": "#c4483c",
+      "D": "#86302c",
+      "Y": "#f2d26a",
+      "y": "#c8a040",
+      "t": "#6a6474",
+      "T": "#433e4c"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "수레 앞에 서서 찜기 창 속 호빵을 바라보다가 하나 받아 먹어요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "호빵 수레 앞에서 따끈한 호빵을 받아 먹었다.",
+        "찜기 창 속 호빵을 보며 침을 꼴깍 삼킨다."
+       ]
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "찜기 아래에 불꽃을 쏘아 호빵을 다시 따끈하게 데워요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "찜기 아래 불꽃을 쏘아 호빵을 따끈하게 데웠다.",
+        "식어 가던 호빵을 불꽃으로 다시 데워 줬다."
+       ]
+      },
+      {
+       "w": "격투 타입 / 큰 포켓몬",
+       "a": "손잡이를 잡고 수레를 끝에서 끝까지 밀고 다녀요",
+       "x": {
+        "m": "walk push"
+       },
+       "l": [
+        "호빵 수레 손잡이를 잡고 마당을 밀고 다녔다.",
+        "호빵 수레를 끌고 골목 장사를 흉내 낸다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "따뜻한 찜기 뚜껑 위에 날아와 앉아 몸을 녹여요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "따뜻한 찜기 뚜껑 위에 날아와 앉았다.",
+        "찜기 뚜껑 위에서 깃털을 부풀리고 몸을 녹인다."
+       ]
+      }
+     ],
+     "fit": "마당 길목, 추운 날",
+     "glow": 0
+    },
+    {
+     "id": "snow-slide",
+     "n": "눈 언덕 미끄럼틀",
+     "k": "놀이",
+     "d": "눈을 쌓아 다져 만든 미끄럼 언덕이에요. 왼쪽은 눈 계단, 오른쪽 비탈엔 반들반들한 얼음 길이 나 있고 꼭대기에 빨간 깃발이 꽂혀 있어요.",
+     "px": [
+      "..........kkk.....................",
+      ".........kbrrk....................",
+      ".........kbrRRk...................",
+      ".........kbkkk....................",
+      ".........kbk......................",
+      ".........kbkkkk...................",
+      ".........kiiiiik..................",
+      "........kwIIIIIikk................",
+      "........kssssssIiik...............",
+      ".......kwsSSSSSsIIik..............",
+      ".......ksSSSSSSSssIikk............",
+      "......kwSSSSSSSSSSsIiik...........",
+      ".....kwsSSSSSSSSSSSsIIik..........",
+      ".....ksSSSSSSSSSSSSSssIikk........",
+      "....kwSSSSSSSSSSSSSSSSsIiik.......",
+      "...kwsSSSSSSSSSSSSSSSSSsIIik......",
+      "...ksSSSSSZZZZZSSSSSSSSSssIikk....",
+      "..kwSZZZZZZZZZZZSSSSSSSSSSsIiik...",
+      "..ksSZZZZZZZZZZZZZSSSSSSSSSsIIik..",
+      ".kwSSZZZZZZZZZZZZZZSSSSSSSSSssIik.",
+      "kwsSSZZZZZZZZZZZZZZZSSSSSSSSSSsIwk",
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "w": "#f6f9fc",
+      "s": "#dfe8f2",
+      "S": "#b6c6da",
+      "Z": "#8796b4",
+      "i": "#c4ecf6",
+      "I": "#7cc0dc",
+      "b": "#8a5a3a",
+      "r": "#e2604e",
+      "R": "#a83c34"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "눈 계단으로 꼭대기에 올라가 얼음 길을 따라 쭈욱 미끄러져 내려와요",
+       "x": {
+        "m": "climb slide"
+       },
+       "l": [
+        "눈 언덕 얼음 길을 쭈욱 미끄러져 내려왔다.",
+        "눈 계단을 올라가 미끄럼을 몇 번이고 탄다."
+       ]
+      },
+      {
+       "w": "얼음 타입",
+       "a": "얼음 길에 냉기를 뿌려 더 반들반들하게 다듬어요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "얼음 길에 냉기를 뿌려 반들반들하게 다듬었다.",
+        "녹은 미끄럼 길을 꽁꽁 얼려 새로 만들었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "언덕 꼭대기에 올라가 깃발 옆에 서서 마당을 내려다봐요",
+       "x": {
+        "at": [
+         0.3,
+         0.3
+        ],
+        "m": "climb"
+       },
+       "l": [
+        "눈 언덕 꼭대기 깃발 옆에서 마당을 내려다봤다.",
+        "눈 언덕 위에 서서 우쭐하게 가슴을 편다."
+       ]
+      },
+      {
+       "w": "땅 타입 / 격투 타입",
+       "a": "언덕 옆에 서서 눈을 다져 무너진 계단을 고쳐요",
+       "x": {
+        "at": "side",
+        "m": "push"
+       },
+       "l": [
+        "눈 언덕 옆을 꾹꾹 다져 무너진 계단을 고쳤다.",
+        "미끄럼 언덕에 눈을 더 쌓아 높이를 올린다."
+       ]
+      }
+     ],
+     "fit": "마당 넓은 곳, 눈 많이 온 날",
+     "glow": 0
+    },
+    {
+     "id": "yeontan-pile",
+     "n": "연탄 더미",
+     "k": "장식",
+     "d": "겨울 준비로 담벼락 옆에 차곡차곡 쌓은 까만 연탄이에요. 맨 위에는 다 타서 하얘진 연탄 한 장이 얹혀 있어요.",
+     "px": [
+      "..........kkkk...........",
+      ".........kaaaak..........",
+      "........kaarrAAk.........",
+      "........karbbrAk.........",
+      "........kaarrAAk.........",
+      ".......kkkaAAAkkk........",
+      "......kwwshhkhhwsk.......",
+      "......khHooNhHooNNk......",
+      "......khonnohonnoNk......",
+      "......khhooNhhooNNk......",
+      "....kkkkhNNNkhNNNkkkk....",
+      "...kwshhhkhhhhkkhhhhsk...",
+      "...khHooNhHooNNhHooNNk...",
+      "...khonnohonnoNhonnoNk...",
+      "...khhooNhhooNNhhooNNk...",
+      "..kkkhNNNkhNNNkkhNNNkkk..",
+      ".khhhhkkhhhhkhhhhkkhhhhk.",
+      "khHooNNhHooNhHooNNhHooNNk",
+      "khonnoNhonnohonnoNhonnoNk",
+      "khhooNNhhooNhhooNNhhooNNk",
+      ".khNNNkkhNNNkhNNNkkhNNNk.",
+      "..kkkk..kkkk.kkkk..kkkk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "h": "#5a5664",
+      "H": "#7c7888",
+      "n": "#3c3946",
+      "N": "#2a2832",
+      "o": "#1a1820",
+      "a": "#e6ded4",
+      "A": "#a89c94",
+      "b": "#c8bcb0",
+      "r": "#d0705a",
+      "w": "#f6f9fc",
+      "s": "#d0dcea"
+     },
+     "acts": [
+      {
+       "w": "불꽃 타입",
+       "a": "연탄 더미 옆에 앉아 연탄에 불을 붙여 따뜻하게 쬐어요",
+       "x": {
+        "at": "side",
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "연탄에 불씨를 붙여 따뜻하게 쬐었다.",
+        "연탄 구멍마다 빨간 불씨를 지펴 놓았다."
+       ]
+      },
+      {
+       "w": "격투 타입 / 큰 포켓몬",
+       "a": "연탄을 한 장씩 들어 옆으로 날라 차곡차곡 다시 쌓아요",
+       "x": {
+        "at": "front",
+        "m": "push"
+       },
+       "l": [
+        "연탄을 한 장씩 날라 차곡차곡 다시 쌓았다.",
+        "연탄 배달하듯 영차영차 연탄을 옮긴다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "연탄 더미 뒤에 숨었다가 얼굴에 까만 검댕을 묻히고 고개를 내밀어요",
+       "x": {
+        "m": "hide peek",
+        "back": true
+       },
+       "l": [
+        "연탄 더미 뒤에 숨었다가 얼굴에 검댕을 묻히고 나왔다.",
+        "연탄 사이에서 까만 코를 하고 고개를 내민다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "연탄 앞에 서서 동글동글한 구멍을 신기하게 들여다봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "연탄 앞에서 동글동글한 구멍을 들여다봤다.",
+        "연탄 구멍 수를 세어 보다 고개를 갸웃한다."
+       ]
+      }
+     ],
+     "fit": "담벼락 옆, 겨울 내내",
+     "glow": 0
+    },
+    {
+     "id": "ice-fishing-hole",
+     "n": "얼음 낚시 구멍",
+     "k": "물가",
+     "d": "꽁꽁 언 웅덩이에 동그랗게 뚫은 얼음 낚시 구멍이에요. 구멍 위로 작은 나무 낚싯대가 드리워져 있고, 가장자리에는 눈이 쌓였어요.",
+     "px": [
+      "..............k.............",
+      ".............kmk............",
+      ".............kmbk...........",
+      ".............kmkbk..........",
+      "......kkkkkkkkmkkbkkkk......",
+      "....kkwwiiiiImIIIIbIwwkk....",
+      "..kkwiiiiiIIImIIIIIbIIIwkk..",
+      ".kwiiiIIIIIIImIIIIJJlWWWWwk.",
+      "kwwIJIIIIIDDDmDIIIIIjBBjjwwk",
+      "ksIIIJJIDDDDDrDDDIjjjjjjJJsk",
+      "kssIIIIIddfddddddjjjJJJJJssk",
+      ".ksIIIIIIjdddddjjjjJJJJJJsk.",
+      "..kksjjjjjjjjjjJJJJJJJJskk..",
+      "....kkssJJJJJJJJJJJJsskk....",
+      "......kkkkkkkkkkkkkkkk......"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "i": "#e2f4fa",
+      "I": "#b4dcec",
+      "j": "#8cc0dc",
+      "J": "#6a9cc0",
+      "w": "#f6f9fc",
+      "s": "#d0dcea",
+      "D": "#1e3a5a",
+      "d": "#2c5a82",
+      "f": "#9cd8f0",
+      "b": "#a8723e",
+      "B": "#6e4628",
+      "m": "#e8e8f0",
+      "r": "#d8564a",
+      "l": "#e2b07a",
+      "W": "#c48e54"
+     },
+     "acts": [
+      {
+       "w": "물 타입 / 헤엄치는 포켓몬",
+       "a": "얼음 구멍 속에서 헤엄치다 머리만 쏙 내밀어요",
+       "x": {
+        "at": "in",
+        "m": "peek"
+       },
+       "l": [
+        "얼음 구멍 속에서 헤엄치다 머리만 쏙 내밀었다.",
+        "차가운 얼음 구멍 물속을 빙글빙글 헤엄친다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "얼음 구멍 앞에 앉아 낚싯대를 지켜보며 물고기를 기다려요",
+       "x": {
+        "at": "front"
+       },
+       "l": [
+        "얼음 구멍 앞에 앉아 낚싯대 찌를 지켜본다.",
+        "얼음 낚시를 하다가 작은 물고기를 낚아 올렸다."
+       ]
+      },
+      {
+       "w": "얼음 타입",
+       "a": "얼음판 위를 끝에서 끝까지 미끄러지며 놀아요",
+       "x": {
+        "m": "walk wobble"
+       },
+       "l": [
+        "얼음판 위를 쭈욱 미끄러지며 놀았다.",
+        "얼음 위에서 비틀비틀 균형을 잡으며 미끄럼을 탄다."
+       ]
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "얼음 구멍에 다가갔다가 발이 시려 깜짝 놀라 물러나요",
+       "x": {
+        "m": "avoid"
+       },
+       "l": [
+        "얼음판에 발을 올렸다가 시려서 얼른 물러났다.",
+        "얼음 구멍을 멀찍이 돌아서 지나간다."
+       ]
+      }
+     ],
+     "fit": "연못 근처, 한겨울",
+     "glow": 0
+    }
+   ]
+  },
+  {
    "at": 1793486967327,
    "theme": "골목 문방구 앞",
    "note": "오늘은 해 질 녘 동네 골목 문방구 앞을 그렸어요. 바닷가 소품처럼 납작한 건 빼고, 뽑기 기계·오락기·자판기·공중전화처럼 실루엣만 봐도 알아볼 큰 소품과 동전 말·세발자전거처럼 포켓몬이 직접 타는 놀이기구를 함께 넣었어요.",
