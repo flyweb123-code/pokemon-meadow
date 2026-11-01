@@ -959,7 +959,7 @@ function mfxAdd() { for (const [k, L] of Object.entries(MFX_ADD)) { const v = MF
   (Array.isArray(v[0]) ? v : [v]).forEach(A => { if (A.added) return; A.added = 1; A[1].push(...L); A[0] = Math.max(A[0], ...L.map(e => e[1] + (e[0] === 'k' ? (e[5] + 1) * e[6] * 2 : e[0] === 'e' ? e[3] : e[0] === 'z' ? e[5] : e[0] === 'f' ? e[5] : e[5] || 4))); }); } }
 // 본가 연출이 어색한 기술은 다른 기술 연출로 (경완 2026-10-30 '세차게 휘두르기 모션 물기라서 어색해' → 몸을 휘둘러 치는 힘껏치기)
 const MV_SUB = { thrash: 'slam' };
-const MV_LIKE = { poweruppunch: 'megapunch', jetpunch: 'machpunch', ragefist: 'shadowpunch', plasmafists: 'thunderpunch' };
+const MV_LIKE = { honeclaws: 'sharpen', poweruppunch: 'megapunch', jetpunch: 'machpunch', ragefist: 'shadowpunch', plasmafists: 'thunderpunch' };   /* v14.08 경완 '손톱갈기 모션 어색': 악 타입 변화 대표(나쁜음모 검은 기운) 대신 같은 '갈아서 날 세우기' 기술인 각지기 연출 */
 // v13.17 경완 '울음소리 기술은 포켓몬 울음소리': 본가 플래티넘 연출(PlayPokemonCry)처럼 쓰는 포켓몬의 울음소리
 const CRY_MV = new Set(['growl', 'roar', 'howl', 'hypervoice', 'chatter', 'nobleroar', 'snarl', 'partingshot']);
 async function moveFx(s, id, miss) {

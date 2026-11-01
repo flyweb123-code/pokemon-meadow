@@ -2356,7 +2356,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .on-btns button:not(:disabled):active{transform:translateY(3px) scale(.97);box-shadow:inset 0 -1px 0 rgba(0,0,0,.3)}
 
 /* v13.84 경완: 강박사가 내 도감을 펼쳐 읽는 연출 — 본게임 도감 창(.win .sheet-head .dex)과 같은 모양 */
-.tw-dex{position:absolute;left:0;right:0;margin:0 auto;top:max(48px,7%);z-index:15;width:min(400px,92vw);min-width:0;box-sizing:border-box;pointer-events:none;animation:dxIn .3s cubic-bezier(.2,.8,.3,1.2)}
+.tw-dex{position:absolute;left:0;right:0;margin:0 auto;top:max(48px,7%);z-index:15;width:min(400px,92vw);min-width:0;box-sizing:border-box;pointer-events:none}   /* v14.08: 등장은 JS 쫀득 애니(squash·stretch) */
 @keyframes dxIn{from{transform:translateY(30px) scale(.7);opacity:0}}   /* v14.06: 가운데 정렬은 margin auto, 세로 이동은 translate 속성(JS) → transform 애니와 안 겹침 */
 .tw-dex.bye{opacity:0;transform:translateY(20px) scale(.9);transition:opacity .2s,transform .2s}
 /* v13.86 경완: 본게임 빨간 도감 카드(#dexPop .win.rdex)를 복제해 씀 — 본게임 규칙이 #dexPop 아래로 묶여 있어 바깥 틀만 다시 */
@@ -2385,3 +2385,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 /* v13.99 경완: 건물 드나들 때 본가처럼 까맣게 페이드 */
 #gym .gy-warp{position:absolute;inset:0;z-index:40;background:#000;pointer-events:none;opacity:0}
+
+/* v14.08 경완: 튜토리얼에서 안내원이 상점 얘기할 때 상점 메뉴 테두리가 은은하게 빛남 */
+#gym .gy-menu button.tglow{position:relative;z-index:62;box-shadow:inset 0 0 0 2px #ffd85e;animation:tGlow 1.8s ease-in-out infinite}
+@keyframes tGlow{50%{box-shadow:inset 0 0 0 2px #fff3b0,0 0 10px 2px rgba(255,216,94,.55)}}
