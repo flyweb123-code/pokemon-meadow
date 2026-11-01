@@ -1865,12 +1865,14 @@ async function openNote(nm) { const D = dzOf(st().d); let mu = `${IMG}open_map.w
 function dexRead() {   // v13.86 경완 '그 도감 말고 눌렀을 때 나오는 빨간 도감 레이아웃': 본게임 도감 카드(빨간 도감 기계)를 그대로 복제해 내 포켓몬을 한 장씩 넘김
   const L = [...(S.unlocked || [])].map(Number).filter(n => SPECIES[n]).sort((a, b) => a - b), N = L.length;
   if (!N || !GA.dexCardNode) return { close: async () => {} };
-  const show = Math.min(7, N), ids = [...new Set(Array.from({ length: show }, (_, k) => L[show < 2 ? 0 : Math.round(k * (N - 1) / (show - 1))]))];
+  // v13.89 경완 '처음에 보다가 띠리리리릭 여러개 넘기는 연출': 첫 장을 잠깐 보고 → 빠르게 여러 장 넘기며 번호가 올라감 → 마지막 장에서 멈춤
+  const show = Math.min(28, N), ids = [...new Set(Array.from({ length: show }, (_, k) => L[show < 2 ? 0 : Math.round(k * (N - 1) / (show - 1))]))];
   const w = GA.dexCardNode(); w.classList.add('tw-dex'); w.removeAttribute('role'); let alive = 1;
   const stg = w.querySelector('.cdex'), ready = Promise.all(ids.map(id => GA.dexThumb ? GA.dexThumb(id) : 0));
-  const put = id => { GA.dexCardFill(w, id, `${L.indexOf(id) + 1} / ${N}`); stg.classList.remove('nx'); void stg.offsetWidth; stg.classList.add('nx'); };
-  const run = (async () => { await Promise.race([ready, wait(1500)]); if (!alive) return; put(ids[0]); root.appendChild(w); await wait(650);
-    for (let k = 1; k < ids.length && alive; k++) { put(ids[k]); gse('DP_SELECT', .9); await wait(k < ids.length - 1 ? 420 : 300); } })();
+  const put = (id, fx = 1) => { GA.dexCardFill(w, id, `${L.indexOf(id) + 1} / ${N}`); if (!fx) return; stg.classList.remove('nx'); void stg.offsetWidth; stg.classList.add('nx'); };
+  const run = (async () => { await Promise.race([ready, wait(1800)]); if (!alive) return; put(ids[0]); root.appendChild(w); await wait(1100);
+    const n = ids.length - 1;
+    for (let k = 1; k <= n && alive; k++) { const last = k === n, q = k / n; put(ids[k], last); if (last || k % 2) gse('DP_SELECT', last ? .9 : .55); if (!last && k % 3 === 0) GA.haptic?.(0); await wait(last ? 300 : 45 + Math.round(70 * q * q)); } })();
   return { close: async () => { await run; alive = 0; await wait(200); w.classList.add('bye'); await wait(220); w.remove(); } }; }
 // 불을 찾다 발가락을 찧을 때 화면이 살짝 흔들림
 const shake2 = () => $g('.gy-stage')?.animate([{ translate: '0 0' }, { translate: '-4px 0' }, { translate: '3px 0' }, { translate: '0 0' }], { duration: 220 });
