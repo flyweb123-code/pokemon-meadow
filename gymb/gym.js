@@ -1856,15 +1856,18 @@ async function openNote(nm) { const D = dzOf(st().d); let mu = `${IMG}open_map.w
   let sx = null; w.onpointerdown = e => { if (!e.target.closest('button')) sx = e.clientX; }; w.onpointerup = e => { if (sx == null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 45) turn(dx < 0 ? 1 : -1); };
   go(); gse('DP_WIN_OPEN'); GA.haptic?.(1); }); }
 // v13.81 경완 '원래대로 내 진짜 도감 읽는 연출': 강박사가 내 도감을 펼쳐 한 장씩 넘긴다 (등록 수가 올라가며)
-function dexRead() {
-  const L = [...(S.unlocked || [])].map(Number).filter(n => SPECIES[n]).sort((a, b) => a - b), N = L.length, per = 12, pages = Math.max(1, Math.ceil(N / per)), show = Math.min(4, pages);
+function dexRead() {   // v13.84 경완 '도감 레이아웃으로 스프라이트도 동일하게': 본게임 도감 칸(.dex 단추)·썸네일 그대로
+  const L = [...(S.unlocked || [])].map(Number).filter(n => SPECIES[n]).sort((a, b) => a - b), N = L.length, TOT = Object.keys(SPECIES).length, per = 9, pages = Math.max(1, Math.ceil(N / per)), show = Math.min(4, pages);
   const pick = [...new Set(Array.from({ length: show }, (_, k) => show < 2 ? 0 : Math.round(k * (pages - 1) / (show - 1))))];
-  const w = document.createElement('div'); w.className = 'tw-dex'; w.innerHTML = `<div class="dx-top"><b>포켓몬 도감</b><span>등록 <em>0</em></span></div><div class="dx-grid"></div><div class="dx-bot"><i></i><i></i><i></i></div>`;
-  root.appendChild(w); const G = w.querySelector('.dx-grid'), C = w.querySelector('em'); let alive = 1;
-  const fill = pg => { const ids = L.slice(pg * per, pg * per + per); G.innerHTML = ids.map(id => `<span><i style="background-image:url(${IMG}pk/${id}.png)"></i><small>${String(id).padStart(3, '0')}</small></span>`).join('') + '<span class="e"></span>'.repeat(per - ids.length); return ids.at(-1) || 0; };
+  const w = document.createElement('div'); w.className = 'win tw-dex'; w.innerHTML = `<div class="sheet-head"><h3><span>포켓몬 도감</span><span class="cap"><b>0</b>/${TOT}</span></h3></div><div class="dex"></div>`;
+  const G = w.querySelector('.dex'), C = w.querySelector('.cap b'); let alive = 1;
+  const ids = pick.flatMap(pg => L.slice(pg * per, pg * per + per)), th = {};
+  const ready = Promise.all(ids.map(id => (GA.dexThumb ? GA.dexThumb(id) : Promise.resolve('')).then(u => { th[id] = u || `${IMG}pk/${id}.png`; })));
+  const fill = pg => { const P = L.slice(pg * per, pg * per + per); G.innerHTML = P.map(id => `<button type="button" tabindex="-1"><img alt="" src="${th[id] || ''}"><span class="nm">${esc(SPECIES[id].n)}</span><small>No.${String(id).padStart(4, '0')}</small></button>`).join('') + '<button type="button" tabindex="-1" class="locked" style="visibility:hidden"></button>'.repeat(per - P.length); };
   const cnt = (to, ms) => { const a = +C.textContent, t0 = performance.now(); const f = now => { if (!alive) return; const q = Math.min(1, (now - t0) / ms); C.textContent = Math.round(a + (to - a) * q); if (q < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); };
-  const run = (async () => { await wait(250); for (let k = 0; k < pick.length && alive; k++) { if (k) { G.classList.add('flip'); gse('DP_SELECT', .9); await wait(160); G.classList.remove('flip'); }
-    fill(pick[k]); cnt(k === pick.length - 1 ? N : Math.min(N, (pick[k] + 1) * per), 700); await wait(900); } })();
+  const run = (async () => { await Promise.race([ready, wait(1500)]); if (!alive) return; root.appendChild(w); await wait(200);
+    for (let k = 0; k < pick.length && alive; k++) { if (k) { G.classList.add('flip'); gse('DP_SELECT', .9); await wait(160); G.classList.remove('flip'); }
+      fill(pick[k]); cnt(k === pick.length - 1 ? N : Math.min(N, (pick[k] + 1) * per), 700); await wait(900); } })();
   return { close: async () => { await run; alive = 0; C.textContent = N; await wait(200); w.classList.add('bye'); await wait(220); w.remove(); } }; }
 // 불을 찾다 발가락을 찧을 때 화면이 살짝 흔들림
 const shake2 = () => $g('.gy-stage')?.animate([{ translate: '0 0' }, { translate: '-4px 0' }, { translate: '3px 0' }, { translate: '0 0' }], { duration: 220 });
