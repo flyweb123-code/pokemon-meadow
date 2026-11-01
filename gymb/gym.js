@@ -1529,10 +1529,16 @@ async function grandOpen() {
   bgmPlay('gym');   // 팡파르가 끝나면 체육관 곡을 바로 다시 (경완 2026-10-29 '그랜드 오픈 하고 bgm 끊김')
 }
 // 튜토리얼이 끝나면 바로 첫 도전자 (경완 2026-10-29): 도전자 받기 단추가 켜지며 통통 + 효과음
-async function firstChal() {
+async function firstChal(tut) {
   if (!open) return; bgmPlay('gym'); const g = st(); if (!g || g.q.length) return homeSay();
   let c = mkChal(Date.now()); for (let i = 0; i < 30 && (c.named || c.boss); i++) c = mkChal(Date.now());
   await wait(150); arrive(c); save(); homeSay(); qDing();   // v13.81 경완: 알림창 닫으면 바로 띵동
+  if (!tut) return;
+  // v13.93 경완 '도전자 받기 알림 한번 뜨고 화면 잠그고 바로 안내원 대사창 … 대사창 뜰 때 화면 잠금': 대사창을 넘길 때까지 다른 단추는 못 누름
+  await wait(1000); if (!open || busy) return;
+  busy = true; const lk = document.createElement('div'); lk.className = 'gy-lock'; root.appendChild(lk); root.classList.add('tlock'); root.classList.remove('dhide');
+  try { await talk(`<span class="gy-who">안내원</span>${kjNm()}! 벌써 도전자가 왔나 봐요.<br>도전자 받기를 눌러 보세요!`); }
+  finally { lk.remove(); root.classList.remove('tlock'); busy = false; homeSay(); }
 }
 // 도전자가 올 때마다 띵동: 도전자 받기 단추 흔들림 + 효과음 (다른 창을 보고 있어도 소리는 난다) (경완 2026-10-29)
 function qDing() {
@@ -1836,8 +1842,10 @@ async function intro() {
   S1.hide(false); await S1.say('아, 협회에는 내가\n잘 말해 두지!'); await S1.end(); kE.f = 'd'; place(kE); await wait(200);
   doorSe(); kE.el.remove(); ents.splice(ents.indexOf(kE), 1);
   // 16. 체육관 개설 알림창
+  // v13.93 경완 '강박사 나가고 화면 한번 뜨고 → 개설 알림창 → 다 확인하면 도전자 받기 활성화되면서 알람'
+  root.classList.remove('pre'); renderHome(); await wait(1100);
   await openNote(dr.nm);   // v13.80 경완: 업데이트 알림창처럼 캡처와 함께 기본 설명
-  root.classList.remove('pre'); tick(); renderHome(); firstChal();
+  tick(); renderHome(); firstChal(true);
 }
 // 서로 바라보기: a 가 b 쪽을 본다 (가로가 더 멀면 좌우, 아니면 위아래)
 function face(a, b) { const dx = b.x - a.x, dy = b.y - a.y; if (!dx && !dy) return; const f = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'r' : 'l') : (dy > 0 ? 'd' : 'u'); if (a.f !== f) { a.f = f; place(a); } }
@@ -1846,7 +1854,7 @@ async function openNote(nm) { const D = dzOf(st().d); let mu = `${IMG}open_map.w
   return new Promise(ok => {
   const shot = (k, r) => `<div class="on-shot${k === 'map' ? ' px' : ''}"><img src="${k === 'map' ? mu : `${IMG}open_${k}.webp`}" alt="">${r ? `<i class="on-ring" style="left:${r[0]}%;top:${r[1]}%;width:${r[2]}%;height:${r[3]}%"></i>` : ''}</div>`;
   const P = [   // v13.81 경완: 1장 = 내가 고른 체육관 그림, 마지막 장 = 상점 소개
-    { c: '#d0407a', t: `${esc(nm)} 개설!`, im: shot('map'), tx: `<p>오늘부터 <em>관장님</em>이에요!<br>도전자를 맞아 체육관을 키워 봐요.</p>` },
+    { c: '#d0407a', t: '체육관 개설', im: shot('map'), tx: `<p>오늘부터 <em>관장님</em>이에요!<br>도전자를 맞아 체육관을 키워 봐요.</p>` },
     { c: '#c8781e', t: '도전자를 받아요', im: shot('bot', [17, 21, 66, 36]), tx: `<p>도전자가 찾아오면 <em>도전자 받기</em>를<br>눌러 배틀해요.</p><p class="on-sm">이기면 골드와 평판을 받아요.</p>` },
     { c: '#2f6fb0', t: '평판을 모아요', im: shot('top', [29, 51, 42, 22]), tx: `<p><em>평판</em>이 꽉 차면 승급 심사를 받아<br>체육관 등급을 올릴 수 있어요.</p>` },
     { c: '#2f8a3e', t: '포켓몬을 정해요', im: shot('bot', [0, 64, 21, 33]), tx: `<p><em>포켓몬</em>에서 체육관 타입 포켓몬으로<br>라인업을 짜요.</p><p class="on-sm">훈련장·트레이너는 등급이 오르면 열려요.</p>` },
@@ -1860,7 +1868,7 @@ async function openNote(nm) { const D = dzOf(st().d); let mu = `${IMG}open_map.w
   ok1.onclick = () => { if (i < last) return turn(1); gse('DP_DECIDE'); w.classList.add('bye'); setTimeout(() => { w.remove(); ok(); }, 180); };
   pr.onclick = () => turn(-1);
   let sx = null; w.onpointerdown = e => { if (!e.target.closest('button')) sx = e.clientX; }; w.onpointerup = e => { if (sx == null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 45) turn(dx < 0 ? 1 : -1); };
-  go(); gse('DP_WIN_OPEN'); GA.haptic?.(1); }); }
+  go(); try { GA.sfx('newdex'); } catch (e) { gse('DP_WIN_OPEN'); } GA.haptic?.(1); }); }   // v13.93 경완 '개설 알림창 뜰 때 알림창 효과음': 본게임 업데이트 알림창과 같은 소리
 // v13.81 경완 '원래대로 내 진짜 도감 읽는 연출': 강박사가 내 도감을 펼쳐 한 장씩 넘긴다 (등록 수가 올라가며)
 function dexRead() {   // v13.86 경완 '그 도감 말고 눌렀을 때 나오는 빨간 도감 레이아웃': 본게임 도감 카드(빨간 도감 기계)를 그대로 복제해 내 포켓몬을 한 장씩 넘김
   const L = [...(S.unlocked || [])].map(Number).filter(n => SPECIES[n]).sort((a, b) => a - b), N = L.length;
