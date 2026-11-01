@@ -1530,12 +1530,14 @@ async function grandOpen() {
 }
 // 튜토리얼이 끝나면 바로 첫 도전자 (경완 2026-10-29): 도전자 받기 단추가 켜지며 통통 + 효과음
 async function firstChal(tut) {
-  if (!open) return; bgmPlay('gym'); const g = st(); if (!g || g.q.length) return homeSay();
-  let c = mkChal(Date.now()); for (let i = 0; i < 30 && (c.named || c.boss); i++) c = mkChal(Date.now());
-  await wait(150); arrive(c); save(); homeSay(); qDing();   // v13.81 경완: 알림창 닫으면 바로 띵동
+  if (!open) return; bgmPlay('gym'); const g = st(); if (!g) return homeSay();
+  // v13.94 경완 '3·4·5번 구현이 안 됐어': 튜토리얼이 길면 그사이 tick() 이 도전자를 먼저 데려와 여기서 바로 끝났음 → 튜토리얼 끝엔 도전자가 이미 있어도 띵동 + 안내원
+  if (g.q.length && !tut) return homeSay();
+  if (!g.q.length) { let c = mkChal(Date.now()); for (let i = 0; i < 30 && (c.named || c.boss); i++) c = mkChal(Date.now()); await wait(150); arrive(c); save(); } else await wait(150);
+  homeSay(); qDing();   // v13.81 경완: 알림창 닫으면 바로 띵동
   if (!tut) return;
   // v13.93 경완 '도전자 받기 알림 한번 뜨고 화면 잠그고 바로 안내원 대사창 … 대사창 뜰 때 화면 잠금': 대사창을 넘길 때까지 다른 단추는 못 누름
-  await wait(1000); if (!open || busy) return;
+  await wait(1000); if (!open) return; for (let i = 0; busy && i < 40; i++) await wait(100);
   busy = true; const lk = document.createElement('div'); lk.className = 'gy-lock'; root.appendChild(lk); root.classList.add('tlock'); root.classList.remove('dhide');
   try { await talk(`<span class="gy-who">안내원</span>${kjNm()}! 벌써 도전자가 왔나 봐요.<br>도전자 받기를 눌러 보세요!`); }
   finally { lk.remove(); root.classList.remove('tlock'); busy = false; homeSay(); }
@@ -1805,6 +1807,8 @@ async function intro() {
   S1.hide(true); await wait(200);
   // 탁, 탁, 탁: 입구부터 관장 자리까지 불이 하나씩
   const L = [...dark.children].reverse();
+  try { window.GymBGM?.stop(2.2); } catch (e) {}   // v13.94 경완 '조명 켜질 때 bgm 디졸브 꺼지기': 불이 켜지는 동안 곡이 서서히 사라짐 (그랜드 오픈 팡파르 뒤 체육관 곡)
+  noteImgs();   // v13.94 경완 '알림창 스크린샷 바로 안 뜨는 지연': 개설 알림창 그림을 미리 받아 둔다
   for (const s of L) { s.classList.add('on'); gse('DP_GASHIN', 1.2); GA.haptic?.(0); await wait(520); }   // v13.81 경완: 스포트라이트 켜지는 듯한 철컥
   await wait(300); dark.remove();
   // 내가 관장 자리까지 걸어가 선다, 강박사는 옆으로 비킨다
@@ -1850,7 +1854,13 @@ async function intro() {
 // 서로 바라보기: a 가 b 쪽을 본다 (가로가 더 멀면 좌우, 아니면 위아래)
 function face(a, b) { const dx = b.x - a.x, dy = b.y - a.y; if (!dx && !dy) return; const f = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'r' : 'l') : (dy > 0 ? 'd' : 'u'); if (a.f !== f) { a.f = f; place(a); } }
 // v13.80 경완: 튜토리얼 끝 체육관 개설 알림창 — 업데이트 알림창처럼 한 장씩 넘기며 캡처로 기본 설명
-async function openNote(nm) { const D = dzOf(st().d); let mu = `${IMG}open_map.webp`; try { mu = await mapSrc(D).then(u => withMe(u, D)); } catch (e) {}
+// v13.94 경완: 개설 알림창 그림(내 체육관 지도 + 캡처 2장)을 미리 만들어 디코드까지 해 둔다 — 알림창이 뜰 때 바로 보이게
+let notePre = null;
+function noteImgs() { if (notePre) return notePre; const D = dzOf(st().d);
+  const dec = u => new Promise(r => { const im = new Image(); im.onload = im.onerror = () => r(u); im.src = u; im.decode?.().then(() => r(u), () => {}); });
+  notePre = Promise.all([mapSrc(D).then(u => withMe(u, D)).catch(() => `${IMG}open_map.webp`).then(dec), dec(`${IMG}open_top.webp`), dec(`${IMG}open_bot.webp`)]).then(a => a[0]);
+  return notePre; }
+async function openNote(nm) { let mu = `${IMG}open_map.webp`; try { mu = await Promise.race([noteImgs(), wait(2500).then(() => mu)]); } catch (e) {} notePre = null;
   return new Promise(ok => {
   const shot = (k, r) => `<div class="on-shot${k === 'map' ? ' px' : ''}"><img src="${k === 'map' ? mu : `${IMG}open_${k}.webp`}" alt="">${r ? `<i class="on-ring" style="left:${r[0]}%;top:${r[1]}%;width:${r[2]}%;height:${r[3]}%"></i>` : ''}</div>`;
   const P = [   // v13.81 경완: 1장 = 내가 고른 체육관 그림, 마지막 장 = 상점 소개
@@ -1900,7 +1910,7 @@ function enter() {
   // 정보 카드·기술 창의 타입·분류 아이콘을 미리 받아 둔다 (처음 열 때 글자만 보이다 늦게 뜨던 것, 경완 2026-10-30)
   if (!iconKeep.length) for (const n of [...Array.from({ length: 18 }, (_, i) => 'ty_' + (i + 1)), 'cat_0', 'cat_1', 'cat_2']) { const im = new Image(); im.src = `${IMG}bt/${n}.png`; im.decode?.().catch(() => {}); iconKeep.push(im); }
   setTimeout(() => { if (open) loadJs('gymb/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => loadJs('gymb/manage.js', 'GymManage')).catch(() => {}); }, 900);
-  clearInterval(tickT); tickT = setInterval(() => { if (!open || busy || !st()?.d) return; const n0 = st().q.length; tick(); renderTop(); if (st().q.length > n0) { homeSay(); qDing(); } else if (!st().q.length) homeSay(); }, 20e3);
+  clearInterval(tickT); tickT = setInterval(() => { if (!open || busy || !st()?.d || root.classList.contains('pre') || root.querySelector('.gy-on, .gy-lock')) return;   /* v13.94: 튜토리얼·개설 알림창 중엔 도전자를 데려오지 않음 */ const n0 = st().q.length; tick(); renderTop(); if (st().q.length > n0) { homeSay(); qDing(); } else if (!st().q.length) homeSay(); }, 20e3);
 }
 let tickT = 0;
 // 들어온 뒤: 지난주 보고서 → 새 배지 → 면접 지원자 알림 (하나씩)
