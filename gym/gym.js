@@ -1848,7 +1848,8 @@ async function intro() {
   // 16. 체육관 개설 알림창
   // v13.93 경완 '강박사 나가고 화면 한번 뜨고 → 개설 알림창 → 다 확인하면 도전자 받기 활성화되면서 알람'
   tutEnd = 1; root.classList.remove('pre'); renderHome(); await wait(1100);   // v13.95 경완 '도전자는 알림창 끄면 오게': 끝날 때까지 도전자 안 옴
-  await openNote(dr.nm); tutEnd = 0; delete st().tut; save();   // v13.96: 개설 알림창까지 보면 튜토리얼 끝   // v13.80 경완: 업데이트 알림창처럼 캡처와 함께 기본 설명
+  delete st().tut; save();   // v13.97 경완 '알림창 뜨기 전까지만': 개설 알림창이 뜨면 튜토리얼 끝 (그 뒤에 꺼도 처음부터 아님)
+  await openNote(dr.nm); tutEnd = 0;   // v13.80 경완: 업데이트 알림창처럼 캡처와 함께 기본 설명
   tick(); renderHome(); firstChal(true);
 }
 // 서로 바라보기: a 가 b 쪽을 본다 (가로가 더 멀면 좌우, 아니면 위아래)
