@@ -1604,7 +1604,7 @@ async function prepare() {
 // v12.21 경완 '스크롤이 직선으로 아래에서 위로': 시작 x = 끝 x
 // v13.70 경완 튜토리얼 스토리: 관장이 은퇴해 문 닫은 낡은 체육관(town_old) → 강박사가 문에서 뛰어나와 쿵! → 도감 보고 관장 추천 → 타입·디자인·이름 → 같이 들어가 불 켜기 → 그랜드 오픈 → 안내원 → 작별
 const TOWN = { img: 'town_old', w: 48, h: 40, from: [15.5, 33], to: [15.5, 14.5], walk: [[6, 18], [15, 18]], door: [15, 16] };   // 회색시티 (pokefirered 맵), 체육관 문 (15, 16)
-const KANG_OW = `${IMG}ow/kang.png?v=5`;   // v13.73 경완 PixelLab 그림 (서 있기 = Idle, 걷기 = Walking 0·4번 칸), v13.74 내 캐릭터와 같은 키 (가로줄 5개 뺌), v13.75 머리 꼭대기·턱 줄을 빼서 덜 삼각, v13.76 끊긴 테두리 채움·입을 연구원처럼
+const KANG_OW = `${IMG}ow/kang.png?v=6`;   // v13.73 경완 PixelLab 그림 (서 있기 = Idle, 걷기 = Walking 0·4번 칸), v13.74 내 캐릭터와 같은 키 (가로줄 5개 뺌), v13.75 머리 꼭대기·턱 줄을 빼서 덜 삼각, v13.76 끊긴 테두리 채움·입을 연구원처럼, v13.77 피부·색감 연구원처럼, 정면·뒤 몸통 2칸 좁힘, 정면 머리 2칸 좁힘
 async function townScene() {
   const T = TOWN, W = root.clientWidth || innerWidth, H = root.clientHeight || innerHeight, k = Math.max(1.5, W / (13 * 16));
   const el = document.createElement('div'); el.className = 'gy-town';
