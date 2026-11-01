@@ -1781,7 +1781,7 @@ async function intro() {
   guyEnt.el.style.visibility = 'hidden'; palRaf && cancelAnimationFrame(palRaf); root.querySelector('.gy-pal')?.remove();
   meEnt.x = D.door[0]; meEnt.y = D.door[1]; meEnt.f = 'u'; place(meEnt);
   const kE = ent({ ow: 'kang', src: KANG_OW, fw: 32, x: D.door[0], y: D.door[1], f: 'u' });
-  tw.el.classList.remove('on'); await wait(850); tw.el.remove(); if (!open) return;
+  tw.el.classList.add('out'); await wait(850); tw.el.remove(); if (!open) return;
   doorSe(); await wait(200);
   const p1 = [D.door[0], D.door[1] - 2];   // 문에서 두 칸 들어가 캄캄한 데서 스위치를 찾는다
   await walk(kE, [p1]); kE.f = 'u'; place(kE);

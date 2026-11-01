@@ -1575,8 +1575,9 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .gy-boxw .bw-tyf button.bw-tyb:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)!important}
 .gy-boxw .bw-tyf button.bw-tyb.on{background:var(--win)!important}
 /* 처음 연출: 마을 (경완 2026-10-29) */
-.gy-town{position:absolute;inset:0;z-index:11;overflow:hidden;background:#000;opacity:0;transition:opacity .8s}
-.gy-town.on{opacity:1}
+.gy-town{position:absolute;inset:0;z-index:11;overflow:hidden;background:#000}   /* v13.82 경완 '처음 시작할 때 잔상': 바탕은 처음부터 까맣게 (뒤의 체육관 그림이 비치지 않게), 마을 그림만 서서히 밝아짐 */
+.gy-town .tw-map{opacity:0;transition:opacity 1s ease-out}.gy-town.on .tw-map{opacity:1}
+.gy-town.out{opacity:0;transition:opacity .8s}
 .gy-town .tw-map{position:absolute;left:0;top:0;background-size:100% 100%;image-rendering:pixelated;will-change:transform}
 .gy-town .tw-me{position:absolute;background-repeat:no-repeat;image-rendering:pixelated;z-index:2}.gy-town .tw-me.flip{transform:scaleX(-1)}
 /* 개장 축하 */
