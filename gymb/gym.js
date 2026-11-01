@@ -1856,19 +1856,16 @@ async function openNote(nm) { const D = dzOf(st().d); let mu = `${IMG}open_map.w
   let sx = null; w.onpointerdown = e => { if (!e.target.closest('button')) sx = e.clientX; }; w.onpointerup = e => { if (sx == null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 45) turn(dx < 0 ? 1 : -1); };
   go(); gse('DP_WIN_OPEN'); GA.haptic?.(1); }); }
 // v13.81 경완 '원래대로 내 진짜 도감 읽는 연출': 강박사가 내 도감을 펼쳐 한 장씩 넘긴다 (등록 수가 올라가며)
-function dexRead() {   // v13.84 경완 '도감 레이아웃으로 스프라이트도 동일하게': 본게임 도감 칸(.dex 단추)·썸네일 그대로
-  const L = [...(S.unlocked || [])].map(Number).filter(n => SPECIES[n]).sort((a, b) => a - b), N = L.length, TOT = Object.keys(SPECIES).length, per = 9, pages = Math.max(1, Math.ceil(N / per)), show = Math.min(4, pages);
-  const pick = [...new Set(Array.from({ length: show }, (_, k) => show < 2 ? 0 : Math.round(k * (pages - 1) / (show - 1))))];
-  const w = document.createElement('div'); w.className = 'win tw-dex'; w.innerHTML = `<div class="sheet-head"><h3><span>포켓몬 도감</span><span class="cap"><b>0</b>/${TOT}</span></h3></div><div class="dex"></div>`;
-  const G = w.querySelector('.dex'), C = w.querySelector('.cap b'); let alive = 1;
-  const ids = pick.flatMap(pg => L.slice(pg * per, pg * per + per)), th = {};
-  const ready = Promise.all(ids.map(id => (GA.dexThumb ? GA.dexThumb(id) : Promise.resolve('')).then(u => { th[id] = u || `${IMG}pk/${id}.png`; })));
-  const fill = pg => { const P = L.slice(pg * per, pg * per + per); G.innerHTML = P.map(id => `<button type="button" tabindex="-1"><img alt="" src="${th[id] || ''}"><span class="nm">${esc(SPECIES[id].n)}</span><small>No.${String(id).padStart(4, '0')}</small></button>`).join('') + '<button type="button" tabindex="-1" class="locked" style="visibility:hidden"></button>'.repeat(per - P.length); };
-  const cnt = (to, ms) => { const a = +C.textContent, t0 = performance.now(); const f = now => { if (!alive) return; const q = Math.min(1, (now - t0) / ms); C.textContent = Math.round(a + (to - a) * q); if (q < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); };
-  const run = (async () => { await Promise.race([ready, wait(1500)]); if (!alive) return; root.appendChild(w); await wait(200);
-    for (let k = 0; k < pick.length && alive; k++) { if (k) { G.classList.add('flip'); gse('DP_SELECT', .9); await wait(160); G.classList.remove('flip'); }
-      fill(pick[k]); cnt(k === pick.length - 1 ? N : Math.min(N, (pick[k] + 1) * per), 700); await wait(900); } })();
-  return { close: async () => { await run; alive = 0; C.textContent = N; await wait(200); w.classList.add('bye'); await wait(220); w.remove(); } }; }
+function dexRead() {   // v13.86 경완 '그 도감 말고 눌렀을 때 나오는 빨간 도감 레이아웃': 본게임 도감 카드(빨간 도감 기계)를 그대로 복제해 내 포켓몬을 한 장씩 넘김
+  const L = [...(S.unlocked || [])].map(Number).filter(n => SPECIES[n]).sort((a, b) => a - b), N = L.length;
+  if (!N || !GA.dexCardNode) return { close: async () => {} };
+  const show = Math.min(7, N), ids = [...new Set(Array.from({ length: show }, (_, k) => L[show < 2 ? 0 : Math.round(k * (N - 1) / (show - 1))]))];
+  const w = GA.dexCardNode(); w.classList.add('tw-dex'); w.removeAttribute('role'); let alive = 1;
+  const stg = w.querySelector('.cdex'), ready = Promise.all(ids.map(id => GA.dexThumb ? GA.dexThumb(id) : 0));
+  const put = id => { GA.dexCardFill(w, id, `${L.indexOf(id) + 1} / ${N}`); stg.classList.remove('nx'); void stg.offsetWidth; stg.classList.add('nx'); };
+  const run = (async () => { await Promise.race([ready, wait(1500)]); if (!alive) return; put(ids[0]); root.appendChild(w); await wait(650);
+    for (let k = 1; k < ids.length && alive; k++) { put(ids[k]); gse('DP_SELECT', .9); await wait(k < ids.length - 1 ? 420 : 300); } })();
+  return { close: async () => { await run; alive = 0; await wait(200); w.classList.add('bye'); await wait(220); w.remove(); } }; }
 // 불을 찾다 발가락을 찧을 때 화면이 살짝 흔들림
 const shake2 = () => $g('.gy-stage')?.animate([{ translate: '0 0' }, { translate: '-4px 0' }, { translate: '3px 0' }, { translate: '0 0' }], { duration: 220 });
 // 걸을 수 없는 칸인지 (맵 밖만 막는다: 체육관 맵마다 막힌 칸 표가 따로 없음)
