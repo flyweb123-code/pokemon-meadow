@@ -1263,11 +1263,12 @@ function ivHex(P, m) {
 // 포켓몬 박스 창: 본 게임 포켓몬 박스와 같은 모양(검색·정렬·칸)으로 화면 전체에 뜬다. 체육관 타입 포켓몬만, 기본은 레벨순 (경완 2026-10-27)
 // add=true 면 라인업 빈 칸에서 연 것: 누르면 바로 라인업에 넣는다. 아니면 누르면 정보 창
 // 팝업이 아니라 새 화면으로 (경완 2026-10-27): 체육관 화면 위를 통째로 덮고, 왼쪽 위 ‹ 로 돌아간다
-const BX_SORT = [['lv', '레벨'], ['rank', '랭크'], ['new', '날짜']];   // 경완 2026-10-28 '정렬은 레벨, 랭크, 날짜만'
-let bxSort = 'lv', bxDir = 1, bxQ = '', bxTy = 0, bxTyAll = [], bxRefresh = null;
+const BX_SORT = [['st', '능력치'], ['lv', '레벨'], ['rank', '랭크'], ['new', '날짜']];   // 경완 2026-10-28 '정렬은 레벨, 랭크, 날짜만'
+let bxSort = 'st', bxDir = 1, bxQ = '', bxTy = 0, bxTyAll = [], bxRefresh = null;
 const tyI = t => GA.tyIcon(t).replace(/ data-tip="[^"]*"/, '');   // 박스·라인업 타입 아이콘은 눌러도 말풍선 없이 (경완 2026-10-29)   // bxTy: 타입 필터 (0 = 전체, 경완 2026-10-29)
 const RK_ORD = { S: 7, A: 6, B: 5, C: 4, D: 3, E: 2, F: 1 };
-function boxWin(add, tmId, done, O) { bxTy = 0; if (O?.view) { bxSort = 'rank'; bxDir = 1; }   // v14.17 O.view: 체육관 열기 전(타입 고르기)에도 내 박스 전체를 같은 모양으로 보기만   // 열 때마다 '모든 타입' (포켓몬 박스와 같게, 경완 2026-10-30)   // O: 다른 곳에서 쓰는 고르기 (훈련장 등) {title, tip, list, ok, first, tag, pick}   // tmId: 창고에서 기술머신 가르칠 포켓몬 고르기 (경완 2026-10-29)
+function boxWin(add, tmId, done, O) { bxTy = 0; bxSort = O?.view ? 'rank' : 'st'; bxDir = 1;   // v14.31 경완: 열 때마다 능력치 순(라인업 고를 때도), 타입 고르기 보기만 랭크 순
+    // v14.17 O.view: 체육관 열기 전(타입 고르기)에도 내 박스 전체를 같은 모양으로 보기만   // 열 때마다 '모든 타입' (포켓몬 박스와 같게, 경완 2026-10-30)   // O: 다른 곳에서 쓰는 고르기 (훈련장 등) {title, tip, list, ok, first, tag, pick}   // tmId: 창고에서 기술머신 가르칠 포켓몬 고르기 (경완 2026-10-29)
   document.querySelector('#gym .gy-boxw')?.remove();
   const w = document.createElement('div'); w.className = 'gy-boxw';
   w.innerHTML = `<div class="win" role="dialog" aria-label="포켓몬 박스"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>${O ? O.title() : tmId ? `기술 가르치기 · ${esc(mvKo(tmId))}` : add ? `라인업 ${(S.gym.luI | 0) + 1}에 넣을 포켓몬 <small>${curLu().length}/6</small>` : '포켓몬 박스'}</h4></div>
@@ -1279,7 +1280,7 @@ function boxWin(add, tmId, done, O) { bxTy = 0; if (O?.view) { bxSort = 'rank'; 
   const draw = () => {
     w.querySelectorAll('[data-sort]').forEach(b => { const on = b.dataset.sort === bxSort; b.setAttribute('aria-pressed', on); b.dataset.dir = on ? (bxDir > 0 ? '▼' : '▲') : ''; });
     const lu = new Set(O?.view ? [] : curLu()), q = bxQ.toLowerCase();
-    const key = { lv: x => (x.m?.lv || 0) * 1e3 + GA.ivSum(x.P), rank: x => (RK_ORD[GA.rankOf(x.P)] || 0) * 1e5 + (x.m?.lv || 0), new: x => +x.P.t || +x.P.id || 0 }[bxSort] || (x => (x.m?.lv || 0));
+    const key = { st: x => statsOf(x.P.sp ?? x.m?.sp, x.m?.lv || 1, x.P.iv || [0, 0, 0, 0, 0, 0], x.m?.nat || 'hardy').reduce((a, b) => a + b, 0) * 1e3 + (x.m?.lv || 0), lv: x => (x.m?.lv || 0) * 1e3 + GA.ivSum(x.P), rank: x => (RK_ORD[GA.rankOf(x.P)] || 0) * 1e5 + (x.m?.lv || 0), new: x => +x.P.t || +x.P.id || 0 }[bxSort] || (x => (x.m?.lv || 0));
     // 라인업 고르기는 가진 포켓몬 전부: 다른 타입은 흐리게(못 고름), 고를 수 있는 포켓몬이 앞에 (경완 2026-10-28)
     const all = O ? O.list() : S.box.filter(tyOk), tys = P => SPECIES[P.sp]?.t || [];
     // 타입 필터: 목록에 있는 타입만 아이콘으로, 고르면 그 타입이 들어간 포켓몬만 (경완 2026-10-29)
