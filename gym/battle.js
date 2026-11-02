@@ -102,8 +102,9 @@ function smartMoves(sp, lv, tier, r) {
   return take.map(i => D.mv[i][0]);
 }
 // 체육관 개체 정보: 처음 볼 때 만든다
+let gmTmp = null;   // v14.18: 체육관을 열기 전(타입 고르기)에 상세 카드를 볼 때 쓰는 임시 칸 (저장 안 함, 시드라 나중에 같은 값)
 function gm(P) {
-  const g = S.gym; g.mon = g.mon || {};
+  const g = S.gym || (gmTmp ||= {}); g.mon = g.mon || {};
   let m = g.mon[P.id];
   if (!m || !D.sp[P.sp]) {
     const r = seeded('gm' + P.id), lv = BASE_LV[GA.rankOf(P)] || 5, ab = D.sp[P.sp]?.ab || ['noability'], nats = NATS();
@@ -144,12 +145,12 @@ function xpFor(foe, Lp) { const bs = SPECIES[foe.sp]?.bs || [60, 60, 60, 60, 60,
   return Math.floor(1.5 * b * L / 5 * ((2 * L + 10) / (L + Lp + 10)) ** 2.5) + 1; }
 const boxOf = id => S.box.find(p => p.id === id);
 const nmOf = P => P.nm || SPECIES[P.sp]?.n || '???';   // 지어 준 이름 먼저 (경완 2026-10-31 '체육관 정보카드에서도 이름 바꾸기')
-const tyOk = P => (SPECIES[P.sp]?.t || []).includes(S.gym.ty);
+const tyOk = P => (SPECIES[P.sp]?.t || []).includes(S.gym?.ty);
 
 const CRY_K = 2.2;   // 배틀 울음소리는 곡보다 잘 들리게 (v12.20 경완)
 // ---------- 라인업 (3개 저장, 6마리) ----------
 function lus() { const g = S.gym; if (!Array.isArray(g.lu)) g.lu = [[], [], []]; g.lu = g.lu.map(L => (L || []).filter(id => { const P = boxOf(id); return P && tyOk(P); }).slice(0, 6)); g.luI = clampN(g.luI | 0, 0, 2); return g.lu; }
-const curLu = () => lus()[S.gym.luI | 0];
+const curLu = () => S.gym ? lus()[S.gym.luI | 0] : [];
 
 // ---------- 그림 ----------
 // 라인업·고르기 그림은 포켓몬 상자와 같은 그림 (경완 2026-10-27)
@@ -1215,7 +1216,8 @@ function drawTab() {
 }
 function gymPop(html, onClick) { const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`;
   p.onclick = e => { if (e.target === p) return p.remove(); const h = e.target.closest('.iv-hex'); if (h) { sfx('tap'); ivBar = h.classList.toggle('bar'); return; } const b = e.target.closest('button[data-a]'); if (b) { sfx('tap'); onClick?.(b.dataset.a, () => p.remove(), b); } };
-  document.querySelector('#gym .gy-main').appendChild(p); fillTh(p); return p; }
+  if (S.gym) document.querySelector('#gym .gy-main').appendChild(p); else { p.style.zIndex = 16; document.querySelector('#gym').appendChild(p); }   // v14.18: 체육관 열기 전(타입 고르기 화면 위)엔 맨 위에
+  fillTh(p); return p; }
 // 라인업에서 빼기 전에 묻는 창 (경완 2026-10-29)
 function luAsk(P, ok) { ok(); }   // 묻지 않고 바로 빼기 (경완 2026-10-30 '빼기·x 누르면 바로 빠지게')
 function pickMon() { boxWin(true); }
@@ -1310,9 +1312,9 @@ function monHtml(P, mode) {
   return `<div class="mp-head"><button type="button" class="mp-thb" data-a="hit" aria-label="지닌 도구">${thumb(P)}</button><div class="mp-hd"><h4>${mode === 'view' || !GA.nmEdit ? esc(nmOf(P)) : GA.nmEdit(P)}${inTr(P.id) ? '<em class="tr-tag">훈련중</em>' : ''}</h4><p class="mp-tys">${(SPECIES[P.sp]?.t || []).map(t => tyTag(t)).join('')}</p><p class="mp-lv"><b>Lv.${m.lv}</b> · 랭크 ${GA.rankOf(P)}</p>${frRow(P)}<i class="mp-xp"><i style="width:${m.lv >= LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><small class="mp-xpn">${m.lv >= LV_MAX ? '최고 레벨' : `${Math.max(0, m.xp - a).toLocaleString()}/${(b - a).toLocaleString()}`}</small></div></div>
     <div class="mp-na"><button type="button" class="mp-nat" data-a="nat"><small>성격 <i class="mp-more">›</i></small><p><b>${natKo(m.nat)}</b></p></button><button type="button" class="mp-ab${m.ha ? ' ha' : ''}" data-a="ab"><small>특성 <i class="mp-more">›</i></small><p><b${m.ha ? ' class="ha"' : ''}>${abKo(m.ab)}</b>${m.ha ? '<em class="ha-tag">숨겨진</em>' : ''}</p></button></div>
     ${ivHex(P, m)}
-    <div class="mp-mvh"><small>기술</small>${mode === 'add' ? '' : '<button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button>'}</div>
+    <div class="mp-mvh"><small>기술</small>${mode === 'add' || mode === 'view' ? '' : '<button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button>'}</div>
     <div class="mp-moves mp-line">${mv.map(x => `<button type="button" class="mp-mv" data-a="i${x[0]}" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}">${tyTag(x[2], x[3])}<b>${esc(x[1])}</b>${mvSt(x)}</button>`).join('')}</div>
-    ${mode === 'add' ? `<div class="gy-btns one mp-btns">${inLu ? '<button data-a="rm" class="danger">라인업에서 빼기</button>' : `<button data-a="add" class="main" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업에 넣기</button>`}</div>` : `<div class="gy-btns mp-btns mp-3"><button data-a="tm">도구 사용</button>${inLu ? '<button data-a="rm" class="danger">라인업에서 빼기</button>' : `<button data-a="add" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업으로</button>`}<button data-a="tr" class="${inTr(P.id) ? 'tr-on' : 'tr-go'}">${inTr(P.id) ? '훈련장에서 빼기' : '훈련장으로'}</button></div>`}<button class="mp-x" data-a="x" aria-label="닫기">✕</button>`;
+    ${mode === 'view' ? '' : mode === 'add' ? `<div class="gy-btns one mp-btns">${inLu ? '<button data-a="rm" class="danger">라인업에서 빼기</button>' : `<button data-a="add" class="main" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업에 넣기</button>`}</div>` : `<div class="gy-btns mp-btns mp-3"><button data-a="tm">도구 사용</button>${inLu ? '<button data-a="rm" class="danger">라인업에서 빼기</button>' : `<button data-a="add" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업으로</button>`}<button data-a="tr" class="${inTr(P.id) ? 'tr-on' : 'tr-go'}">${inTr(P.id) ? '훈련장에서 빼기' : '훈련장으로'}</button></div>`}<button class="mp-x" data-a="x" aria-label="닫기">✕</button>`;
 }
 function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수). 없으면 라인업 (훈련장 슬롯은 훈련장 포켓몬끼리만, 경완 2026-10-29)
   if (!document.querySelector(".gy-pop .mp-head")) ivBar = false;   // 정보 카드를 새로 열면 능력치는 늘 육각형부터 (경완 2026-10-29)
