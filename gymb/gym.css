@@ -187,7 +187,7 @@ body.gymMode{overflow:hidden}
 .bt-mon.ball.on{transform:scale(.05)}
 .bt-mon.on:not(.ball){transition:transform .3s ease-out,filter .35s ease-out .1s,opacity .1s}
 .bt-mon.recall{transform:scale(.05);filter:brightness(0) invert(1) sepia(1) saturate(4) hue-rotate(300deg);opacity:0;transition:transform .38s ease-in,filter .15s,opacity .2s .25s}
-.bt-mon.faint .clip{transform:translateY(96px);transition:transform .4s cubic-bezier(.5,0,1,1)}
+.bt-mon.faint .clip{transform:translateY(calc(100% + 48px));transition:transform .4s cubic-bezier(.5,0,1,1)}   /* v14.11 경완 "피죤 쓰러졌을 때 날개 끝 남음": 96px 고정이면 키 큰·떠 있는 그림(90px 넘게)은 발판 위로 끝이 남았음 → 그림 키 + 48px 만큼 */
 .bt-mon.blink .clip{visibility:hidden}
 .bt-mon.lunge.p{transform:translate(18px,-10px);transition-duration:.12s}.bt-mon.lunge.e{transform:translate(-18px,8px);transition-duration:.12s}
 .bt-mon.glow .clip{filter:drop-shadow(0 0 3px var(--fx)) drop-shadow(0 0 6px var(--fx)) brightness(1.3)}
@@ -2391,7 +2391,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes tGlow{50%{box-shadow:inset 0 0 0 2px #fff3b0,0 0 10px 2px rgba(255,216,94,.55)}}
 
 /* v14.10 경완: 튜토리얼 강박사 '특별한 선물' 대사 때 내 체육관 타입 전설 알 하나를 가운데 박스에 크게 */
-#gym .gy-legbox{position:absolute;left:0;right:0;top:40%;margin:0 auto;width:min(220px,64vw);transform:translateY(-50%);z-index:14;box-sizing:border-box;padding:18px 12px 12px;background:#fffdf3;border:4px solid #20202c;box-shadow:inset 0 0 0 3px #ffd85e,4px 4px 0 rgba(0,0,0,.35);animation:lbIn .34s cubic-bezier(.2,.8,.3,1.25);pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:8px}
+#gym .gy-legbox{position:fixed;left:0;right:0;top:50%;margin:0 auto;width:min(220px,64vw);transform:translateY(-50%);z-index:14;box-sizing:border-box;padding:18px 12px 12px;background:#fffdf3;border:4px solid #20202c;box-shadow:inset 0 0 0 3px #ffd85e,4px 4px 0 rgba(0,0,0,.35);animation:lbIn .34s cubic-bezier(.2,.8,.3,1.25);pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:8px}
 #gym .gy-legbox .lb-e{animation:lbEgg 1.6s ease-in-out .35s infinite}
 #gym .gy-legbox .egg{width:112px;height:137px}
 #gym .gy-legbox .lb-n{font-size:15px;color:#8a5a00}
