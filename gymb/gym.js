@@ -1202,7 +1202,7 @@ function palEnt(D) {
     if (P.shiny) sp.style.filter = `hue-rotate(${GA.shinyHue(P.sp)}deg)`;
     if (!M.P) { sp.classList.add('one'); sp.style.backgroundImage = `url("${M.img}")`; return; }
     const s = M.s * k, A = M.P.a, a = A.Idle || Object.values(A)[0], durs = a[6], tot = durs.reduce((x, d) => x + d, 0) / 60, lift = (GA.lift?.(P.sp) || 0) * k;
-    Object.assign(sp.style, { backgroundImage: `url("${M.P.i}")`, backgroundSize: `${M.wh[0] * s}px ${M.wh[1] * s}px`, width: a[1] * s + 'px', height: a[2] * s + 'px', left: (8 * sc - a[4] * s) + 'px', top: (16 * sc - (a[5] + (M.P.fy || 0)) * s - lift) + 'px' });
+    Object.assign(sp.style, { backgroundImage: `url("${M.P.i}")`, backgroundSize: `${M.wh[0] * s}px ${M.wh[1] * s}px`, width: a[1] * s + 'px', height: a[2] * s + 'px', left: (8 * sc - a[4] * s) + 'px', top: (16 * sc - (a[5] + (M.P.fy || 0)) * s - lift) + 'px' }); GA.shBg?.(sp, P, M.P.i);
     let f0 = -1; const t0 = performance.now(); const tick = now => { if (!e.el.isConnected) return; let t = ((now - t0) / 1000) % tot, f = durs.length - 1; for (let i = 0, c = 0; i < durs.length; i++) { c += durs[i] / 60; if (t < c) { f = i; break; } }
       if (f !== f0) { f0 = f; sp.style.backgroundPosition = `${-f * (a[1] + (M.P.G || 0)) * s}px ${-a[0] * s}px`; } sp.style.translate = lift > 2 * k ? `0 ${(Math.sin(now / 260) * 4 * k).toFixed(1)}px` : ''; palRaf = requestAnimationFrame(tick); };
     palRaf = requestAnimationFrame(tick); }).catch(() => {});

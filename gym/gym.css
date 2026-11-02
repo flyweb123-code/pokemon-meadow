@@ -567,9 +567,9 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .bw-grid .pk.bw-off{opacity:.45}
 .bw-grid .pk.rkS img{animation:none;filter:drop-shadow(0 0 1px #fff6c0) drop-shadow(0 0 5px #ffc030)}
 .bw-grid .pk.rkA img{animation:none;filter:drop-shadow(0 0 1px #ffd0d0) drop-shadow(0 0 5px #ff4040)}
-.bw-grid .pk.shiny img{filter:hue-rotate(var(--shue)) saturate(1.25)}
-.bw-grid .pk.shiny.rkS img{filter:hue-rotate(var(--shue)) saturate(1.25) drop-shadow(0 0 4px #ffc830)}
-.bw-grid .pk.shiny.rkA img{filter:hue-rotate(var(--shue)) saturate(1.25) drop-shadow(0 0 4px #ff4040)}
+.bw-grid .pk.shiny img{filter:hue-rotate(var(--shue)) saturate(var(--shs,1.25))}
+.bw-grid .pk.shiny.rkS img{filter:hue-rotate(var(--shue)) saturate(var(--shs,1.25)) drop-shadow(0 0 4px #ffc830)}
+.bw-grid .pk.shiny.rkA img{filter:hue-rotate(var(--shue)) saturate(var(--shs,1.25)) drop-shadow(0 0 4px #ff4040)}
 /* 트레이너 탭 (v10.37): 카드 전체가 단추, 포켓몬은 상자 없이 그림 + 작은 레벨 */
 .sf-card{grid-template-columns:52px 1fr 14px;width:100%;text-align:left;font:inherit;color:var(--win-ink);background:var(--win);border:0;padding:10px 8px 10px 10px;cursor:pointer}
 .sf-card:active{background:rgba(0,0,0,.05)}
