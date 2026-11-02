@@ -2427,3 +2427,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v14.19 경완: 추천 타입 버튼 테두리 은은하게 */
 .gy-ty.rec{animation:tyRec 1.8s ease-in-out infinite}
 @keyframes tyRec{0%,100%{box-shadow:0 3px 0 var(--frame),0 0 0 2px rgba(255,216,94,.35),0 0 6px rgba(255,200,60,.25)}50%{box-shadow:0 3px 0 var(--frame),0 0 0 4px #ffd85e,0 0 14px rgba(255,200,60,.75)}}
+
+.mp-pg.num{font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums}.gy-pop .win:has(.mp-head) .mp-pg.num{height:auto}
+.mp-pg{flex-wrap:wrap;max-width:100%}
