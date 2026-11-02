@@ -1456,6 +1456,7 @@ function reportPop(any) {
 }
 
 // ---------- 처음 설정: 타입 → 디자인 → 이름 (바꾸기는 그 단계 하나만) ----------
+const tyIc0 = t => tyIcon(t).replace(/ data-tip="[^"]*"/, '');   // v14.14 경완: 체육관 타입 고르기 화면에선 타입 아이콘을 눌러도 말풍선 없음
 function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에서 한 단계만 띄우고 고른 값을 돌려받는다 (v13.70)
   const g = st(), first = !g?.d;
   const dr = opt?.dr || { d: g?.d || dzList()[0].id, ty: g?.ty || 0, nm: g?.nm || '' };
@@ -1467,6 +1468,12 @@ function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에
   const el = document.createElement('section'); el.className = 'gy-setup' + (opt ? ' story' : ''); root.appendChild(el);
   let fin; const P = opt ? new Promise(ok => { fin = ok; }) : null;
   const counts = myTypes();
+  // v14.14 경완: 타입 화면 아래 '포켓몬 박스 확인' — 켜 두면 고른 타입의 내 포켓몬을 랭크 순으로 랭크 테두리와 함께 빈 자리에 보여 준다
+  let pv = false; const RKO = { S: 7, A: 6, B: 5, C: 4, D: 3, E: 2, F: 1 }, PV_N = 17;
+  const tyPv = () => { if (!pv) return '<button type="button" class="gy-key gy-pvb" data-pv>포켓몬 박스 확인</button>';
+    const L = dr.ty ? S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(dr.ty)).map(P => [P, GA.rankOf(P)]).sort((a, b) => (RKO[b[1]] || 0) - (RKO[a[1]] || 0) || (+b[0].t || 0) - (+a[0].t || 0)) : [];
+    return `<div class="gy-typv"><div class="tp-hd"><b>${dr.ty ? `${TYPE_KO[dr.ty]} 타입 내 포켓몬 ${L.length}마리` : '포켓몬 박스'}</b><button type="button" data-pv aria-label="닫기">✕</button></div>${!dr.ty ? '<p>타입을 누르면 그 타입 포켓몬이 보여요.</p>' : L.length ? `<div class="tp-grid">${L.slice(0, PV_N).map(([P, rk]) => `<span class="rk-fr" data-rk="${rk}"><span class="rk ${rk}">${rk}</span><img alt="" data-pvth="${P.id}"${P.shiny ? ` class="shiny" style="--shue:${GA.shinyHue(P.sp)}deg"` : ''}></span>`).join('')}${L.length > PV_N ? `<span class="tp-more">+${L.length - PV_N}</span>` : ''}</div>` : '<p>이 타입 포켓몬이 아직 없어요.</p>'}</div>`; };
+  const pvFill = () => el.querySelectorAll('img[data-pvth]').forEach(im => { const P = S.box.find(p => String(p.id) === im.dataset.pvth); if (P) GA.thumb(P).then(u => { if (u) im.src = u; }).catch(() => {}); });
   const draw = () => {
     const k = steps[i], last = i === steps.length - 1;
     const head = `<div class="gy-sh">${i === 0 && opt?.back ? '<button class="gy-back" type="button" data-bk aria-label="뒤로">◀</button>' : i === 0 && re ? '' : i === 0 && first ? '<button class="gy-back" type="button" data-x aria-label="체육관 나가기">✕</button>' : '<button class="gy-back" type="button" aria-label="뒤로">◀</button>'}${steps.length > 1 ? `<span class="gy-steps">${steps.map((_, j) => `<i class="${j <= i ? 'on' : ''}"></i>`).join('')}</span>` : ''}</div>`;
@@ -1478,21 +1485,23 @@ function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에
         <div class="gy-dz-nm">${D.n}</div><div class="gy-dots">${DL.map((_, j) => `<i class="${j === di ? 'on' : ''}"></i>`).join('')}</div></div>`;
     } else if (k === 'ty') {
       body = `<h3>체육관 타입</h3><p class="gy-lead">배틀에는 이 타입 포켓몬만 낼 수 있어요. 등급이 오를 때마다 이 타입의 등급 배지를 받아요.</p>
-        <div class="gy-types">${TYPE_KO.map((n, t) => t ? `<button type="button" class="gy-ty${counts[t] ? '' : ' none'}${used.has(t) ? ' used' : ''}" data-ty="${t}" aria-pressed="${dr.ty === t}" ${used.has(t) ? 'disabled' : ''}>${tyIcon(t)}<span>${n}<small>${used.has(t) ? '이미 있는 체육관' : counts[t] ? `내 포켓몬 ${counts[t]}` : '아직 없어요'}</small></span></button>` : '').join('')}</div>`;
+        <div class="gy-types">${TYPE_KO.map((n, t) => t ? `<button type="button" class="gy-ty${counts[t] ? '' : ' none'}${used.has(t) ? ' used' : ''}" data-ty="${t}" aria-pressed="${dr.ty === t}" ${used.has(t) ? 'disabled' : ''}>${tyIc0(t)}<span>${n}<small>${used.has(t) ? '이미 있는 체육관' : counts[t] ? `내 포켓몬 ${counts[t]}` : '아직 없어요'}</small></span></button>` : '').join('')}</div>
+        ${tyPv()}`;
       if (!dr.ty) btn = '타입을 골라 주세요';
     } else {
       if (!dr.nm) dr.nm = defName(dr.ty);
       body = `<h3>체육관 이름</h3><p class="gy-lead">도전자들이 보는 이름이에요.</p>
         <div class="gy-name"><label class="gy-nmf"><input type="text" maxlength="8" value="${esc(dr.nm)}" aria-label="체육관 이름"><svg class="gy-pen" viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path fill="#e8a020" d="M10 2h2v1h1v1h1v2h-1v1h-1v1h-1v1h-1v1H9v1H8v1H7v1H6v-1H5v-1H4v-1H3v-1h1V9h1V8h1V7h1V6h1V5h1V4h1z"/><path fill="#f0a0a0" d="M12 2h1v1h1v1h1v1h-1V4h-1V3h-1z"/><path fill="#f6d8a8" d="M3 11h1v1h1v1h1v1H3z"/><path fill="#40404c" d="M2 13h2v1h1v1H2zM10 1h2v1h-2zM14 5h1v2h-1z"/></svg></label><span class="gy-cnt"></span></div>
-        ${first || re ? `<div class="gy-sum"><div class="sm-map"><img data-ms="${dr.d}" data-gi="${first ? 0 : ''}" data-me alt=""></div><div class="sm-row"><b>${dzBase(dr.d).n}</b><span class="sm-ty" style="--tc:${GA.TYPE_C?.[dr.ty] || '#888'}">${tyIcon(dr.ty)}${TYPE_KO[dr.ty]} 타입</span></div></div>` : ''}`;
+        ${first || re ? `<div class="gy-sum"><div class="sm-map"><img data-ms="${dr.d}" data-gi="${first ? 0 : ''}" data-me alt=""></div><div class="sm-row"><b>${dzBase(dr.d).n}</b><span class="sm-ty" style="--tc:${GA.TYPE_C?.[dr.ty] || '#888'}">${tyIc0(dr.ty)}${TYPE_KO[dr.ty]} 타입</span></div></div>` : ''}`;
     }
     el.innerHTML = `${head}<div class="gy-body">${body}</div><button class="gy-key main gy-next" type="button" ${k === 'ty' && !dr.ty ? 'disabled' : ''}>${btn}</button>`;
-    fillMs(el); const inp = el.querySelector('input');
+    fillMs(el); pvFill(); const inp = el.querySelector('input');
     if (inp) { const cnt = () => { el.querySelector('.gy-cnt').textContent = `${inp.value.length}/8`; }; cnt(); inp.oninput = () => { dr.nm = inp.value; cnt(); el.querySelector('.gy-next').disabled = !inp.value.trim(); }; }
   };
   el.onclick = e => {
     const b = e.target.closest('button'); if (!b) return; sfx('tap');
     if (b.hasAttribute('data-x')) { exit(); return; }
+    if (b.hasAttribute('data-pv')) { pv = !pv; draw(); if (pv) el.querySelector('.gy-typv')?.scrollIntoView({ block: 'nearest' }); return; }
     if (b.hasAttribute('data-bk')) { el.remove(); fin('back'); return; }   // v14.12 경완: 튜토리얼 디자인 고르기의 ✕ → 뒤로가기, 강박사가 타입 다시 고를지 묻는다
     if (b.classList.contains('gy-back')) { if (i > 0) { i--; draw(); } else el.remove(); return; }
     if (b.dataset.m) { const DL = dzList(), n = DL.length, j = DL.findIndex(D => D.id === dr.d); dr.d = DL[(j + +b.dataset.m + n) % n].id; dr.dPick = 1; draw(); return; }
