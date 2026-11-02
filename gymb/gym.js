@@ -1934,12 +1934,13 @@ function noteImgs() { if (notePre) return notePre; const D = dzOf(st().d);
 async function openNote(nm) { let mu = `${IMG}open_map.webp`; try { mu = await Promise.race([noteImgs(), wait(2500).then(() => mu)]); } catch (e) {} notePre = null;
   return new Promise(ok => {
   const shot = (k, r) => `<div class="on-shot${k === 'map' ? ' px' : ''}"><img src="${k === 'map' ? mu : `${IMG}open_${k}.webp`}" alt="">${r ? `<i class="on-ring" style="left:${r[0]}%;top:${r[1]}%;width:${r[2]}%;height:${r[3]}%"></i>` : ''}</div>`;
-  const P = [   // v13.81 경완: 1장 = 내가 고른 체육관 그림, 마지막 장 = 상점 소개
+  const P = [   // v13.81 경완: 1장 = 내가 고른 체육관 그림, 마지막 장 = 특별한 선물 (v14.3x 경완: 포켓몬·키우기·상점 장 뺌)
     { c: '#d0407a', t: '체육관 개설', im: shot('map'), tx: `<p>오늘부터 <em>관장님</em>이에요!<br>도전자를 맞아 체육관을 키워 봐요.</p>` },
     { c: '#c8781e', t: '도전자를 받아요', im: shot('bot', [17, 21, 66, 36]), tx: `<p>도전자가 찾아오면 <em>도전자 받기</em>를<br>눌러 배틀해요.</p><p class="on-sm">이기면 골드와 평판을 받아요.</p>` },
+    { c: '#3a5fc0', t: '도전자와 배틀해요', im: shot('bt'), tx: `<p>도전자와 <em>턴제 배틀</em>을 해요.<br>상성을 생각해서 기술을 골라요!</p>` },
     { c: '#2f6fb0', t: '평판을 모아요', im: shot('top', [29, 51, 42, 22]), tx: `<p><em>평판</em>이 꽉 차면 승급 심사를 받아<br>체육관 등급을 올릴 수 있어요.</p>` },
-    { c: '#2f8a3e', t: '포켓몬을 정해요', im: shot('bot', [0, 64, 21, 33]), tx: `<p><em>포켓몬</em>에서 체육관 타입 포켓몬으로<br>라인업을 짜요.</p><p class="on-sm">훈련장·트레이너는 등급이 오르면 열려요.</p>` },
-    { c: '#8a5a2a', t: '상점을 둘러봐요', im: shot('bot', [60, 64, 20, 33]), tx: `<p><em>상점</em>에서 기술머신·꾸미기 소품·<br>관장 의상을 골드로 사요.</p>` }];
+    { c: '#b8860b', t: '체육관 등급을 올려요', im: `<div class="on-bds">${bdHtml(st().ty, 1)}<i class="on-ar"></i>${bdHtml(st().ty, 5)}</div>`, tx: `<p>승급 심사를 통과하면<br><em>등급 배지</em>가 바뀌어요.</p><p class="on-sm">등급이 오르면 체육관이 넓어지고<br>훈련장·트레이너 고용이 열려요.</p>` },
+    { c: '#7a3aa8', t: '특별한 선물', im: `<div class="on-egg on-eggs">${[11, 10, 12].map(t => GA.eggIco?.(t) || '').join('')}</div>`, tx: `<p><em>전설의 체육관</em>이 되면<br>내 체육관 타입의 <em>전설 알</em>을 받아요!</p><p class="on-sm">알을 부화시키면<br>해당 타입을 가진 전설의 포켓몬이 태어나요.</p>` }];
   const w = document.createElement('div'); w.className = 'gy-on';
   w.innerHTML = `<div class="win on-card"><div class="on-body"></div><div class="on-dots">${P.map(() => '<i></i>').join('')}</div><div class="on-btns"><button type="button" class="on-prev">이전</button><button type="button" class="on-ok">다음</button></div></div>`;
   root.appendChild(w); const B = w.querySelector('.on-body'), ok1 = w.querySelector('.on-ok'), pr = w.querySelector('.on-prev'), last = P.length - 1; let i = 0, busy = 0;
