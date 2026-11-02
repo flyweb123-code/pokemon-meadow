@@ -6,8 +6,9 @@ import WebKit
 
 // 2026-11-02 경완: 권한(동작 및 피트니스·위치·건강)은 앱을 켤 때 묻지 않고,
 // 튜토리얼 끝에 강박사가 한 번에 설명한 뒤 한 번에 묻는다. 설정 › 권한 토글도 여기로.
-// 게임 → perm 'get' 상태 / 'ask' 아직 안 물은 것 전부 차례로 / 'ask:mot|loc|hk' 하나만 / 'settings' 설정 앱
-// 답: { mot, loc, hk } 각각 'ok' | 'no' | 'ask'  (건강은 iOS 가 읽기 허용 여부를 알려 주지 않아 물었으면 'ok')
+// v14.48 경완: 알림(noti)도 함께.
+// 게임 → perm 'get' 상태 / 'ask' 아직 안 물은 것 전부 차례로 / 'ask:mot|loc|hk|noti' 하나만 / 'settings' 설정 앱
+// 답: { mot, loc, hk, noti } 각각 'ok' | 'no' | 'ask'  (건강은 iOS 가 읽기 허용 여부를 알려 주지 않아 물었으면 'ok')
 enum Perm {
     private static let askedKey = "permAsked"
     private static let store = HKHealthStore()
@@ -36,7 +37,7 @@ enum Perm {
         }
     }
     static func state(_ done: @escaping ([String: String]) -> Void) {
-        hk { h in done(["mot": mot(), "loc": WalkTracker.shared.locState(), "hk": h]) }
+        hk { h in NotiCenter.state { n in done(["mot": mot(), "loc": WalkTracker.shared.locState(), "hk": h, "noti": n]) } }
     }
 
     private static func askMot(_ next: @escaping () -> Void) {
@@ -62,10 +63,11 @@ enum Perm {
     static func handle(_ body: String, reply: @escaping (Any?, String?) -> Void) {
         let fin = { begin(); state { reply($0, nil) } }
         switch body {
-        case "ask": askMot { askLoc { askHk(fin) } }
+        case "ask": askMot { askLoc { askHk { NotiCenter.ask(fin) } } }
         case "ask:mot": askMot(fin)
         case "ask:loc": askLoc(fin)
         case "ask:hk": askHk(fin)
+        case "ask:noti": NotiCenter.ask(fin)
         case "settings":
             if let u = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(u) }
             state { reply($0, nil) }
