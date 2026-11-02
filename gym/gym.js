@@ -1469,7 +1469,7 @@ function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에
   const counts = myTypes();
   const draw = () => {
     const k = steps[i], last = i === steps.length - 1;
-    const head = `<div class="gy-sh">${i === 0 && re ? '' : i === 0 && first ? '<button class="gy-back" type="button" data-x aria-label="체육관 나가기">✕</button>' : '<button class="gy-back" type="button" aria-label="뒤로">◀</button>'}${steps.length > 1 ? `<span class="gy-steps">${steps.map((_, j) => `<i class="${j <= i ? 'on' : ''}"></i>`).join('')}</span>` : ''}</div>`;
+    const head = `<div class="gy-sh">${i === 0 && opt?.back ? '<button class="gy-back" type="button" data-bk aria-label="뒤로">◀</button>' : i === 0 && re ? '' : i === 0 && first ? '<button class="gy-back" type="button" data-x aria-label="체육관 나가기">✕</button>' : '<button class="gy-back" type="button" aria-label="뒤로">◀</button>'}${steps.length > 1 ? `<span class="gy-steps">${steps.map((_, j) => `<i class="${j <= i ? 'on' : ''}"></i>`).join('')}</span>` : ''}</div>`;
     let body = '', btn = last ? (opt ? '결정' : first ? '체육관 열기' : re ? '새로 세우기' : '저장') : '다음';
     if (k === 'd') {
       const DL = dzList(), D = dzBase(dr.d), di = DL.indexOf(D);
@@ -1493,6 +1493,7 @@ function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에
   el.onclick = e => {
     const b = e.target.closest('button'); if (!b) return; sfx('tap');
     if (b.hasAttribute('data-x')) { exit(); return; }
+    if (b.hasAttribute('data-bk')) { el.remove(); fin('back'); return; }   // v14.12 경완: 튜토리얼 디자인 고르기의 ✕ → 뒤로가기, 강박사가 타입 다시 고를지 묻는다
     if (b.classList.contains('gy-back')) { if (i > 0) { i--; draw(); } else el.remove(); return; }
     if (b.dataset.m) { const DL = dzList(), n = DL.length, j = DL.findIndex(D => D.id === dr.d); dr.d = DL[(j + +b.dataset.m + n) % n].id; dr.dPick = 1; draw(); return; }
     if (b.dataset.ty) { const t = +b.dataset.ty, auto = !dr.nm || dr.nm === defName(dr.ty); dr.ty = t; if (auto) dr.nm = ''; if (!dr.dPick) dr.d = (DESIGNS.find(d => d.ty === t) || DESIGNS.find(d => d.id === dr.d) || dzList()[0]).id; draw(); return; }   // 타입을 고르면 그 타입 맵부터 (경완 2026-10-29)
@@ -1785,15 +1786,26 @@ async function intro() {
   await S1.say('가장 자신 있는 타입을 골라 보게.');
   if (!open) return;
   const dr = { d: dzList()[0].id, ty: 0, nm: '' };
-  S1.hide(true); await setup(['ty'], false, { dr }); if (!open) return; gse('DP_DECIDE');
-  // 9. 타입 설명 (다시 필드)
-  S1.pic(false); S1.hide(false);
-  await S1.say(`오호, ${TYPE_KO[dr.ty]} 타입이구먼!`);
-  await S1.say(KANG_TY[dr.ty] || '좋은 타입이야!');
+  const pickTy = async () => { S1.hide(true); await setup(['ty'], false, { dr }); if (!open) return false; gse('DP_DECIDE');
+    // 9. 타입 설명 (다시 필드)
+    S1.pic(false); S1.hide(false);
+    await S1.say(`오호, ${TYPE_KO[dr.ty]} 타입이구먼!`);
+    await S1.say(KANG_TY[dr.ty] || '좋은 타입이야!'); dr.d = (DESIGNS.find(d => d.ty === dr.ty) || dzList()[0]).id; return true; };
+  if (!await pickTy()) return;
   // 10. 디자인 → 이름 (이름은 다시 필드로 돌아와 대사창에서, 경완 2026-11-01)
   await S1.say('좋아, 그럼 이제 체육관 디자인을\n정해 볼까? 여기가 자네 집이나\n다름없으니까!');
-  dr.d = (DESIGNS.find(d => d.ty === dr.ty) || dzList()[0]).id;
-  S1.hide(true); await setup(['d'], false, { dr }); if (!open) return; gse('DP_DECIDE');
+  // v14.12 경완: 디자인 화면 왼쪽 위 = 뒤로가기 → 강박사가 타입을 다시 고를지 묻고, 예면 타입부터 다시
+  for (;;) {
+    S1.hide(true); const r = await setup(['d'], false, { dr, back: 1 }); if (!open) return;
+    if (r !== 'back') { gse('DP_DECIDE'); break; }
+    S1.hide(false);
+    await S1.say('응? 왜 그러나?\n타입을 다시 고르고 싶어졌나?');
+    if (await S1.choose(['예', '아니요']) === 0) {
+      await S1.say('허허, 그럴 수 있지.\n관장한테 타입은 평생 친구니까\n신중하게 골라야지!');
+      if (!await pickTy()) return;
+      await S1.say('자, 그럼 다시 디자인을\n골라 볼까?');
+    } else await S1.say('허허, 손이 미끄러졌구먼.\n그럼 디자인을 마저 골라 보게!');
+  }
   S1.hide(false);
   await S1.say('멋진 모양이구먼!\n그럼 마지막으로 제일 중요한 거!');
   dr.nm = await S1.name('체육관 이름은 뭐로 하겠나?', defName(dr.ty));
