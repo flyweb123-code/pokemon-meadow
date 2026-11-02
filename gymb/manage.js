@@ -432,14 +432,16 @@ function statPop() {
     GB()._monPop(+b.dataset.id || b.dataset.id, false, null, () => st().tr.map(e => e.id).filter(i => boxOf(i)));   // 카드는 훈련장 포켓몬끼리만 넘김 (경완 2026-10-29)
   };
 }
-function trPop(id) {
+function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예전 창 자리에 바로 바꿔 끼움 (v14.43)
   const P = boxOf(id); if (!P) return; const m = GB().gm(P), ph = perHour(P), g = GB().growth(P.sp), need = GB().xpAt(g, m.lv + 1) - GB().xpAt(g, m.lv);
   const a0 = GB().xpAt(g, m.lv), r = m.lv >= GB().LV_MAX ? 1 : clampN(((m.xp ?? a0) - a0) / Math.max(1, need), 0, 1);
-  pop(`<div class="mp-head">${GB().thumb(P)}<div><h4>${GA.nmEdit ? GA.nmEdit(P) : esc(nmOf(P))}</h4><i class="mp-xp"><i style="width:${(r * 100).toFixed(1)}%"></i></i><small class="tp-xp">${m.lv >= GB().LV_MAX ? '최고 레벨' : `${Math.max(0, Math.floor((m.xp ?? a0) - a0)).toLocaleString()}/${Math.ceil(need).toLocaleString()}`}</small><p>Lv.${m.lv} · 1시간에 약 ${m.lv >= GB().LV_MAX ? 0 : (ph / need).toFixed(2)}레벨<br>${(e => !e ? '' : leftOf(e) > 0 ? `오늘 ${Math.ceil(leftOf(e))}시간 더 훈련해요` : '오늘 훈련 끝 · 내일 다시')(st().tr.find(e => e.id === P.id))}</p></div></div>
+  const p = pop(`<div class="mp-head">${GB().thumb(P)}<div><h4>${GA.nmEdit ? GA.nmEdit(P) : esc(nmOf(P))}</h4><i class="mp-xp"><i style="width:${(r * 100).toFixed(1)}%"></i></i><small class="tp-xp">${m.lv >= GB().LV_MAX ? '최고 레벨' : `${Math.max(0, Math.floor((m.xp ?? a0) - a0)).toLocaleString()}/${Math.ceil(need).toLocaleString()}`}</small><p>Lv.${m.lv} · 1시간에 약 ${m.lv >= GB().LV_MAX ? 0 : (ph / need).toFixed(2)}레벨<br>${(e => !e ? '' : leftOf(e) > 0 ? `오늘 ${Math.ceil(leftOf(e))}시간 더 훈련해요` : '오늘 훈련 끝 · 내일 다시')(st().tr.find(e => e.id === P.id))}</p></div></div>
     <div class="mp-moves mp-line">${m.mv.map(x => GB().mvOf(x)).filter(Boolean).map(x => GB().mvRow(x, '')).join('')}</div>
     <div class="gy-btns three"><button data-a="mv">기술 바꾸기</button><button data-a="tm">기술 가르치기</button><button data-a="out">데려오기</button><button class="main" data-a="x">닫기</button></div>`,
-    (a, close) => { if (!a) return; close(); if (a === 'mv') return GB().movesPop(P, () => { redraw(); trPop(id); }); if (a === 'tm') return GB().tmPop(P, () => { redraw(); trPop(id); });
+    (a, close) => { if (!a) return; if (a === 'mv') return GB().movesPop(P, () => { redraw(); trPop(id, p); });   // v14.43 경완: 기술 창이 떠 있는 동안 뒤에 창 그대로
+      close(); if (a === 'tm') return GB().tmPop(P, () => { redraw(); trPop(id); }); 
       if (a === 'out') { tickTrain(Date.now()); st().tr = st().tr.filter(e => e.id !== P.id); K.save(); redraw(); } });
+  if (under) { const w = p.querySelector('.win'); if (w) w.style.animation = 'none'; under.remove(); }
 }
 
 // ======================= 트레이너 고용 (6단계) =======================
