@@ -657,7 +657,8 @@ function mkChal(t) {
   if (mid != null && !g.q.some(c => c.named)) { const c = mkScripted(L, t, 0); if (c) { ms.push(mid); return c; } }
   if ((g.nc | 0) >= 9 && !g.q.some(c => c.named)) { const nm = pickNamed(avg, t); if (nm) { g.nc = 0; return nm; } }   // v12.23 경완 '페이즈 느낌으로, 9명 방어하면 10번째에는 반드시 이름 있는 트레이너' (확률로는 안 옴)
   // 보통 도전자: 막은 수가 늘수록 어려운 도전자가 많고, 레벨·마리 수·개체값이 오른다
-  const diff = Math.random() < [.7, .55, .4, .28, .18, .1, .06][G.i] * (1 - f * .8) ? 0 : 1;   // 초반엔 쉬운 도전자가 많고 등급이 오를수록 줄어든다
+  // v14.31 경완: 처음 5명은 무조건 쉬운 도전자(g.ez = 만든 보통 도전자 수), 첫 등급의 어려운 도전자 확률 30% → 15%
+  const diff = (g.ez | 0) < 5 || Math.random() < [.85, .55, .4, .28, .18, .1, .06][G.i] * (1 - f * .8) ? 0 : 1; g.ez = (g.ez | 0) + 1;   // 초반엔 쉬운 도전자가 많고 등급이 오를수록 줄어든다
   const k = pick(Object.keys(CLS).filter(x => !!CLS[x].e === !diff)), C = CLS[k];
   const n = diff ? rndI(3, clampN(luNow().length + 1 + (f > .4) + (f > .8), 3, 6)) : rndI(2, 3) + (f > .5);
   return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), diff, f, ivm: Math.min(31, 8 + Math.round(f * 20)), team: mkTeam(C.t, chalLv(avg, diff, f), n) };
