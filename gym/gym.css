@@ -2400,7 +2400,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes lbEgg{50%{transform:translateY(-5px)}}
 
 /* v14.14 경완: 타입 화면 아래 포켓몬 박스 확인 (고른 타입 포켓몬을 랭크 순·랭크 테두리로) */
-.gy-setup .gy-pvb{margin:14px auto 0;padding:8px 18px;font-size:13px}
+.gy-setup .gy-btm{display:flex;gap:8px;margin-top:12px}.gy-setup .gy-btm .gy-next{flex:1;margin-top:0}.gy-setup .gy-pvb{flex:none;min-height:54px;padding:0 12px;font-size:13px;line-height:1.25;max-width:96px}
 .gy-typv{margin-top:12px;padding:8px;border:3px solid var(--frame);background:#fff;text-align:left}
 .gy-typv .tp-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}.gy-typv .tp-hd b{font-size:13px}.gy-typv .tp-hd button{width:26px;height:26px;padding:0;font-size:13px;background:none;box-shadow:none;color:var(--dim)}
 .gy-typv p{margin:4px 0;font-size:12px;color:var(--dim);text-align:center}
@@ -2408,3 +2408,14 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .gy-typv .rk-fr{width:100%;aspect-ratio:1;position:relative}.gy-typv .rk-fr img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}.gy-typv .rk-fr img.shiny{filter:hue-rotate(var(--shue,0deg))}
 .gy-typv .rk-fr .rk{position:absolute;left:1px;top:1px;z-index:3;font-size:9px;line-height:12px;padding:0 3px}
 .gy-typv .tp-more{display:grid;place-items:center;aspect-ratio:1;font-size:13px;font-weight:700;color:var(--dim);border:3px dashed #d0d0dc}
+
+/* v14.16 경완: 포켓몬 박스 전체 화면 (타입 고르기에서 엶) */
+.gy-boxall{position:absolute;inset:0;z-index:15;display:flex;flex-direction:column;background:var(--win);padding:12px 12px calc(12px + env(safe-area-inset-bottom))}
+.gy-boxall .ba-hd{display:flex;align-items:center;gap:8px}.gy-boxall .ba-hd h3{margin:0;flex:1;text-align:center}.gy-boxall .ba-hd span{font-size:12px;color:var(--dim);min-width:40px;text-align:right}
+.gy-boxall .ba-ty{display:flex;gap:6px;overflow-x:auto;padding:10px 0 8px;scrollbar-width:none}.gy-boxall .ba-ty::-webkit-scrollbar{display:none}
+.gy-boxall .ba-ty button{flex:none;display:flex;align-items:center;gap:3px;padding:4px 8px;font-size:12px;border:2px solid var(--frame);background:#fff;box-shadow:none}.gy-boxall .ba-ty button[aria-pressed="true"]{background:#ffe27a}.gy-boxall .ba-ty .tyi{width:16px;height:16px}
+.gy-boxall .ba-grid{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;align-content:start}
+.gy-boxall .ba-c{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}.gy-boxall .ba-c small{font-size:10px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.gy-boxall .rk-fr,.gy-typv .rk-fr{width:100%;aspect-ratio:1;position:relative}.gy-boxall .rk-fr img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}.gy-boxall .rk-fr img.shiny{filter:hue-rotate(var(--shue,0deg))}
+.gy-boxall .rk-fr .rk{position:absolute;left:1px;top:1px;z-index:3;font-size:9px;line-height:12px;padding:0 3px}
+.gy-boxall .rk-fr,.gy-typv .rk-fr{display:block;overflow:hidden;height:auto}.gy-boxall .rk-fr img,.gy-typv .rk-fr img{position:absolute;left:3px;top:3px;width:calc(100% - 6px);height:calc(100% - 6px);object-fit:contain}

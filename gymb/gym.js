@@ -1456,6 +1456,20 @@ function reportPop(any) {
 }
 
 // ---------- 처음 설정: 타입 → 디자인 → 이름 (바꾸기는 그 단계 하나만) ----------
+const RKO = { S: 7, A: 6, B: 5, C: 4, D: 3, E: 2, F: 1 };
+const rkSort = L => L.map(P => [P, GA.rankOf(P)]).sort((a, b) => (RKO[b[1]] || 0) - (RKO[a[1]] || 0) || (+b[0].t || 0) - (+a[0].t || 0));
+const pvCell = ([P, rk]) => `<span class="rk-fr" data-rk="${rk}"><span class="rk ${rk}">${rk}</span><img alt="" data-pvth="${P.id}"${P.shiny ? ` class="shiny" style="--shue:${GA.shinyHue(P.sp)}deg"` : ''}></span>`;
+const pvImg = im => { const P = S.box.find(p => String(p.id) === im.dataset.pvth); if (P) GA.thumb(P).then(u => { if (u) im.src = u; }).catch(() => {}); };
+// v14.16 경완: 타입 고르기 화면의 '포켓몬 박스 확인' = 내 포켓몬 전체를 랭크 순으로 보는 화면 (보기만, 타입으로 거르기)
+function boxAll() { root.querySelector('.gy-boxall')?.remove();
+  const w = document.createElement('div'); w.className = 'gy-boxall'; let f = 0;
+  const draw = () => { const tys = [...new Set(S.box.flatMap(P => SPECIES[P.sp]?.t || []))].sort((a, b) => a - b), L = rkSort(S.box.filter(P => !f || (SPECIES[P.sp]?.t || []).includes(f)));
+    w.innerHTML = `<div class="ba-hd"><button type="button" class="gy-back" data-bx aria-label="뒤로">◀</button><h3>포켓몬 박스</h3><span>${L.length}마리</span></div>
+      <div class="ba-ty"><button type="button" data-f="0" aria-pressed="${!f}">전체</button>${tys.map(t => `<button type="button" data-f="${t}" aria-pressed="${f === t}">${tyIc0(t)}${TYPE_KO[t]}</button>`).join('')}</div>
+      <div class="ba-grid">${L.map(([P, rk]) => `<div class="ba-c">${pvCell([P, rk])}<small>${esc(GA.SPECIES[P.sp]?.n || '')}</small></div>`).join('') || '<p>포켓몬이 없어요.</p>'}</div>`;
+    w.querySelectorAll('img[data-pvth]').forEach(pvImg); };
+  w.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap'); if (b.hasAttribute('data-bx')) { w.remove(); return; } if (b.dataset.f != null) { f = +b.dataset.f; draw(); w.querySelector('.ba-grid').scrollTop = 0; } };
+  draw(); root.appendChild(w); }
 const tyIc0 = t => tyIcon(t).replace(/ data-tip="[^"]*"/, '');   // v14.14 경완: 체육관 타입 고르기 화면에선 타입 아이콘을 눌러도 말풍선 없음
 function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에서 한 단계만 띄우고 고른 값을 돌려받는다 (v13.70)
   const g = st(), first = !g?.d;
@@ -1469,11 +1483,11 @@ function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에
   let fin; const P = opt ? new Promise(ok => { fin = ok; }) : null;
   const counts = myTypes();
   // v14.14 경완: 타입 화면 아래 '포켓몬 박스 확인' — 켜 두면 고른 타입의 내 포켓몬을 랭크 순으로 랭크 테두리와 함께 빈 자리에 보여 준다
-  let pv = false; const RKO = { S: 7, A: 6, B: 5, C: 4, D: 3, E: 2, F: 1 }, PV_N = 17;
-  const tyPv = () => { if (!pv) return '<button type="button" class="gy-key gy-pvb" data-pv>포켓몬 박스 확인</button>';
-    const L = dr.ty ? S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(dr.ty)).map(P => [P, GA.rankOf(P)]).sort((a, b) => (RKO[b[1]] || 0) - (RKO[a[1]] || 0) || (+b[0].t || 0) - (+a[0].t || 0)) : [];
-    return `<div class="gy-typv"><div class="tp-hd"><b>${dr.ty ? `${TYPE_KO[dr.ty]} 타입 내 포켓몬 ${L.length}마리` : '포켓몬 박스'}</b><button type="button" data-pv aria-label="닫기">✕</button></div>${!dr.ty ? '<p>타입을 누르면 그 타입 포켓몬이 보여요.</p>' : L.length ? `<div class="tp-grid">${L.slice(0, PV_N).map(([P, rk]) => `<span class="rk-fr" data-rk="${rk}"><span class="rk ${rk}">${rk}</span><img alt="" data-pvth="${P.id}"${P.shiny ? ` class="shiny" style="--shue:${GA.shinyHue(P.sp)}deg"` : ''}></span>`).join('')}${L.length > PV_N ? `<span class="tp-more">+${L.length - PV_N}</span>` : ''}</div>` : '<p>이 타입 포켓몬이 아직 없어요.</p>'}</div>`; };
-  const pvFill = () => el.querySelectorAll('img[data-pvth]').forEach(im => { const P = S.box.find(p => String(p.id) === im.dataset.pvth); if (P) GA.thumb(P).then(u => { if (u) im.src = u; }).catch(() => {}); });
+  // v14.16 경완 정정: 타입을 누르면 빈 자리에 바로 미리 보기, '포켓몬 박스 확인' 버튼은 내 포켓몬 박스 전체 화면을 연다
+  const PV_N = 17;
+  const tyPv = () => { const L = dr.ty ? rkSort(S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(dr.ty))) : [];
+    return `${dr.ty ? `<div class="gy-typv"><div class="tp-hd"><b>${TYPE_KO[dr.ty]} 타입 내 포켓몬 ${L.length}마리</b></div>${L.length ? `<div class="tp-grid">${L.slice(0, PV_N).map(pvCell).join('')}${L.length > PV_N ? `<span class="tp-more">+${L.length - PV_N}</span>` : ''}</div>` : '<p>이 타입 포켓몬이 아직 없어요.</p>'}</div>` : ''}`; };
+  const pvFill = () => el.querySelectorAll('img[data-pvth]').forEach(pvImg);
   const draw = () => {
     const k = steps[i], last = i === steps.length - 1;
     const head = `<div class="gy-sh">${i === 0 && opt?.back ? '<button class="gy-back" type="button" data-bk aria-label="뒤로">◀</button>' : i === 0 && re ? '' : i === 0 && first ? '<button class="gy-back" type="button" data-x aria-label="체육관 나가기">✕</button>' : '<button class="gy-back" type="button" aria-label="뒤로">◀</button>'}${steps.length > 1 ? `<span class="gy-steps">${steps.map((_, j) => `<i class="${j <= i ? 'on' : ''}"></i>`).join('')}</span>` : ''}</div>`;
@@ -1494,14 +1508,14 @@ function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에
         <div class="gy-name"><label class="gy-nmf"><input type="text" maxlength="8" value="${esc(dr.nm)}" aria-label="체육관 이름"><svg class="gy-pen" viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path fill="#e8a020" d="M10 2h2v1h1v1h1v2h-1v1h-1v1h-1v1h-1v1H9v1H8v1H7v1H6v-1H5v-1H4v-1H3v-1h1V9h1V8h1V7h1V6h1V5h1V4h1z"/><path fill="#f0a0a0" d="M12 2h1v1h1v1h1v1h-1V4h-1V3h-1z"/><path fill="#f6d8a8" d="M3 11h1v1h1v1h1v1H3z"/><path fill="#40404c" d="M2 13h2v1h1v1H2zM10 1h2v1h-2zM14 5h1v2h-1z"/></svg></label><span class="gy-cnt"></span></div>
         ${first || re ? `<div class="gy-sum"><div class="sm-map"><img data-ms="${dr.d}" data-gi="${first ? 0 : ''}" data-me alt=""></div><div class="sm-row"><b>${dzBase(dr.d).n}</b><span class="sm-ty" style="--tc:${GA.TYPE_C?.[dr.ty] || '#888'}">${tyIc0(dr.ty)}${TYPE_KO[dr.ty]} 타입</span></div></div>` : ''}`;
     }
-    el.innerHTML = `${head}<div class="gy-body">${body}</div><button class="gy-key main gy-next" type="button" ${k === 'ty' && !dr.ty ? 'disabled' : ''}>${btn}</button>`;
+    el.innerHTML = `${head}<div class="gy-body">${body}</div>${k === 'ty' ? '<div class="gy-btm"><button type="button" class="gy-key gy-pvb" data-pv>포켓몬 박스 확인</button>' : ''}<button class="gy-key main gy-next" type="button" ${k === 'ty' && !dr.ty ? 'disabled' : ''}>${btn}</button>${k === 'ty' ? '</div>' : ''}`;
     fillMs(el); pvFill(); const inp = el.querySelector('input');
     if (inp) { const cnt = () => { el.querySelector('.gy-cnt').textContent = `${inp.value.length}/8`; }; cnt(); inp.oninput = () => { dr.nm = inp.value; cnt(); el.querySelector('.gy-next').disabled = !inp.value.trim(); }; }
   };
   el.onclick = e => {
     const b = e.target.closest('button'); if (!b) return; sfx('tap');
     if (b.hasAttribute('data-x')) { exit(); return; }
-    if (b.hasAttribute('data-pv')) { pv = !pv; draw(); if (pv) el.querySelector('.gy-typv')?.scrollIntoView({ block: 'nearest' }); return; }
+    if (b.hasAttribute('data-pv')) { boxAll(); return; }
     if (b.hasAttribute('data-bk')) { el.remove(); fin('back'); return; }   // v14.12 경완: 튜토리얼 디자인 고르기의 ✕ → 뒤로가기, 강박사가 타입 다시 고를지 묻는다
     if (b.classList.contains('gy-back')) { if (i > 0) { i--; draw(); } else el.remove(); return; }
     if (b.dataset.m) { const DL = dzList(), n = DL.length, j = DL.findIndex(D => D.id === dr.d); dr.d = DL[(j + +b.dataset.m + n) % n].id; dr.dPick = 1; draw(); return; }
@@ -1796,7 +1810,13 @@ async function intro() {
   await S1.say('가장 자신 있는 타입을 골라 보게.');
   if (!open) return;
   const dr = { d: dzList()[0].id, ty: 0, nm: '' };
-  const pickTy = async () => { S1.hide(true); await setup(['ty'], false, { dr }); if (!open) return false; gse('DP_DECIDE');
+  const pickTy = async () => { for (;;) { S1.hide(true); const r = await setup(['ty'], false, { dr, back: 1 }); if (!open) return false; if (r !== 'back') break;
+      // v14.16 경완: 타입 화면 뒤로가기 → 강박사가 관장 자리를 더 고민할지 묻고, 예면 필드로 ('퇴근하는 중' 대신 '로딩 중')
+      S1.pic(false); S1.hide(false);
+      await S1.say('응? 왜 그러나.\n관장 자리를 좀 더\n고민해 보겠나?');
+      if (await S1.choose(['예', '아니요']) === 0) { await S1.say('허허, 그래. 큰 결정이니\n천천히 생각해 보게.'); await S1.say('마음이 정해지면\n언제든 다시 찾아오게나!'); if (open) exit('로딩 중'); return false; }
+      await S1.say('하하, 그래야지!\n그럼 타입을 다시 골라 보게.'); }
+    gse('DP_DECIDE');
     // 9. 타입 설명 (다시 필드)
     S1.pic(false); S1.hide(false);
     await S1.say(`오호, ${TYPE_KO[dr.ty]} 타입이구먼!`);
@@ -1976,10 +1996,10 @@ async function later() {
   await unlockChk();
 }
 let leaving = false;
-async function exit() {
+async function exit(tx = '퇴근하는 중') {
   if (leaving || !open) return; leaving = true;
   // 퇴근 누르면 로딩 화면부터 바로 (서서히 나타나지 않게, 경완 2026-10-27)
-  const L = document.getElementById('gymLoad'); L?.classList.add('inst'); gymLoad.show('퇴근하는 중', '', true); void L?.offsetWidth; L?.classList.remove('inst');
+  const L = document.getElementById('gymLoad'); L?.classList.add('inst'); gymLoad.show(tx, '', true); void L?.offsetWidth; L?.classList.remove('inst');
   // 로딩 화면이 실제로 그려진 다음에 정리한다: 체육관 화면은 곧바로 숨겨 휴대폰이 더 그리지 않게 (경완 2026-10-28 '화면 먼저 띄우고 뒤에서 로딩')
   const t0 = Date.now(); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   root.style.visibility = 'hidden'; clearInterval(tickT); cancelAnimationFrame(palRaf); try { openTab(null); } catch (e) {}
