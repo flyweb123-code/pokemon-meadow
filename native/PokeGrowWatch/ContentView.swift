@@ -15,8 +15,8 @@ struct ContentView: View {
                         Text(model.message).font(.footnote).foregroundStyle(.secondary)
                     }
                 }
-                if let b = model.state?.buddy {
-                    Section("같이 달리는 짝꿍") { BuddyRow(buddy: b) }
+                if let L = model.state?.allBuds, !L.isEmpty {
+                    Section("같이 달리는 짝꿍") { ForEach(L.indices, id: \.self) { BuddyRow(buddy: L[$0]) } }
                 }
                 Section("부화 중인 알") {
                     if let eggs = model.state?.eggs, !eggs.isEmpty {
