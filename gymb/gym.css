@@ -2459,3 +2459,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .hp-rows .hp-big{margin-left:0;min-width:64px}
 .hp-sc{flex:none;font-style:normal;color:#fff;font-size:13px;width:40px;text-align:center;padding:3px 0}
 .hp-st{gap:7px}
+
+/* v14.47 경완: 안내원 물음 = 튜토리얼 예/아니요처럼 대사창 오른쪽 위 세로 단추 */
+.gy-dlg:has(.gy-gch){overflow:visible}.gy-dlg .gy-gch{margin-top:0;justify-content:flex-start;z-index:5}
