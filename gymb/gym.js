@@ -872,7 +872,7 @@ async function challenge(picked) {
     openTab('battle', { title: '배틀 라인업', pick: async i => { const g2 = st(); g2.luI = i; if (tut) g2.luTut = 1; save(); openTab(null);
       if (tut) await tutTalk(['첫 라인업을 정하셨군요!', () => $g('.gy-menu [data-t=shop]')?.classList.add('tglow'), '상점에는 포켓몬에게 가르칠 기술머신과<br>지니게 할 도구들도 있으니 다음에 꼭 이용해 보세요!', () => $g('.gy-menu [data-t=shop]')?.classList.remove('tglow'), '그럼 첫 배틀 화이팅입니다!!']);   /* v14.08 경완: 상점 얘기할 때 상점 메뉴 테두리 은은하게 */
       challenge(true); } });
-    if (tut) { await wait(350); await kang(['여기서 배틀에 낼 포켓몬\n라인업을 결정해요!', '가장 자신 있는 포켓몬으로\n라인업을 짜 보세요!'], { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1, skip: false }); }
+    if (tut && !g.luGd) { g.luGd = 1; save(); await wait(350); await kang(['여기서 배틀에 낼 포켓몬\n라인업을 결정해요!', '가장 자신 있는 포켓몬으로\n라인업을 짜 보세요!'], { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1, skip: false }); }   // v14.26 경완: 라인업 안내원 대사창은 한 번만 (g.luGd)
     return; }   // 라인업 화면의 '연습 배틀' 자리가 '이 라인업으로 결정' → 그 도전자와 바로 배틀 (v12.22, v12.24 경완 '결정 버튼이랑 통일')
   busy = true; openTab(null); root.classList.add('busy');
   try {
@@ -1880,11 +1880,12 @@ async function intro() {
   S1.hide(false);
   await S1.say('지금은 좀 좁아 보여도 걱정 말게.\n체육관 등급이 오를수록\n넓게 증축할 수 있다네.', { pic: true });
   // v14.11 경완 '3번(증축)하고 4번(열심히 하라는 뜻) 사이에': 선물 얘기를 증축 바로 뒤로. v14.10 경완 '안내원 들어오기 전에 강박사 대사창으로 체육관을 열심히 성장시키면 특별한 선물 + 타입별 전설 알 스프라이트 가운데 박스로'
-  { const lb = document.createElement('div'); lb.className = 'gy-legbox';
+  { const lbg = document.createElement('div'); lbg.className = 'gy-lbbg'; root.appendChild(lbg);   // v14.26 경완: 전설 알 카드 뒤 배경 블러 (대사창 아래 층)
+    const lb = document.createElement('div'); lb.className = 'gy-legbox';
     lb.innerHTML = `<div class="lb-e">${GA.eggIco?.(st()?.ty || 1) || ''}</div><b class="lb-n">${GA.LT_ADJ?.[st()?.ty] || ''} 전설 알</b>`;   /* 경완: 내 체육관 타입 전설 알 하나만 크게 */
     root.appendChild(lb); try { GA.sfx?.('newdex'); } catch (e) {} GA.haptic?.(1);
     await S1.say('그리고 체육관을 열심히 성장시키면\n특별한 선물도 준비되어 있다네!', { pic: true });
-    lb.classList.add('bye'); await wait(260); lb.remove(); }
+    lb.classList.add('bye'); lbg.classList.add('bye'); await wait(260); lb.remove(); lbg.remove(); }
   await S1.say('...그러니까 열심히 하라는\n뜻일세. 허허.');
   await S1.say('도전자는 매일 찾아올 거야.\n틈틈이 들러서 확인해 보게.');
   // 14. 안내원 등장: 문에서 뛰어 들어와 자기 자리에
