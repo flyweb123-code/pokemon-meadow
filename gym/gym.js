@@ -1799,9 +1799,10 @@ async function intro() {
   await S1.say(`세상에! ${N}마리나?!\n자네 언제 이렇게 베테랑 트레이너가\n된 건가!`, { pic: true });
   await S1.say('내가 처음 알을 건네줄 때만 해도\n알 하나 들고 쩔쩔매더니...');
   // 7. 제안
-  await S1.say('혹시...\n비어 있는 관장 자리에\n도전해 볼 생각 없는가?');
+  await S1.say('그래서 말인데...\n이미 협회에 자네 이름을\n살짝 적어 냈다네.');   // v14.23 경완: 강박사가 관장을 은근 강요
+  await S1.say('허허, 살짝만!\n그러니 관장 자리,\n맡아 줄 거지?');
   const yes = await S1.choose(['물론이죠!', '제가요...?']) === 0;
-  await S1.say(yes ? '하하! 대답이 빠르구먼.\n관장에게 제일 필요한 게\n바로 그 기세야!' : '자네 말고 또 누가 있겠나!\n도감이 이렇게 증명하고 있는데.\n걱정 말게, 나도 옆에서 돕지.');
+  await S1.say(yes ? '하하! 대답이 빠르구먼.\n관장에게 제일 필요한 게\n바로 그 기세야!' : '응? 뭐라고? 잘 안 들렸네.\n나이가 드니 귀가 영 어두워서...\n\'물론이죠!\'라고 한 거지?');
   // 8. 타입 고르기
   await S1.say('자, 그럼 먼저 타입을 골라야겠지.\n타입은 체육관의 컨셉이라네!');
   await S1.say('어떤 타입이냐에 따라 체육관에서\n내보낼 수 있는 포켓몬이 정해지거든.');
@@ -1811,8 +1812,9 @@ async function intro() {
   const pickTy = async () => { for (;;) { S1.hide(true); const r = await setup(['ty'], false, { dr, back: 1 }); if (!open) return false; if (r !== 'back') break;
       // v14.16 경완: 타입 화면 뒤로가기 → 강박사가 관장 자리를 더 고민할지 묻고, 예면 필드로 ('퇴근하는 중' 대신 '로딩 중')
       S1.pic(false); S1.hide(false);
-      await S1.say('응? 왜 그러나.\n관장 자리를 좀 더\n고민해 보겠나?');
-      if (await S1.choose(['예', '아니요']) === 0) { await S1.say('허허, 그래. 큰 결정이니\n천천히 생각해 보게.'); await S1.say('마음이 정해지면\n언제든 다시 찾아오게나!'); if (open) exit('로딩 중'); return false; }
+      await S1.say('응? 설마 도망가려는 건\n아니겠지? 협회에 벌써\n연락해 뒀는데...');
+      await S1.say('...정말 오늘은\n그냥 가 보겠나?');
+      if (await S1.choose(['예', '아니요']) === 0) { await S1.say('허허... 그래,\n천천히 생각해 보게.'); await S1.say('관장 자리는\n어차피 자네 거니까!'); if (open) exit('로딩 중'); return false; }
       await S1.say('하하, 그래야지!\n그럼 타입을 다시 골라 보게.'); }
     gse('DP_DECIDE');
     // 9. 타입 설명 (다시 필드)
@@ -1829,7 +1831,7 @@ async function intro() {
     S1.hide(false);
     await S1.say('응? 왜 그러나?\n타입을 다시 고르고 싶어졌나?');
     if (await S1.choose(['예', '아니요']) === 0) {
-      await S1.say('허허, 그럴 수 있지.\n관장한테 타입은 평생 친구니까\n신중하게 골라야지!');
+      await S1.say('타입을 다시 고르겠다고?\n좋아, 관장만 그만두지\n않는다면야!');
       if (!await pickTy()) return;
       await S1.say('자, 그럼 다시 디자인을\n골라 볼까?');
     } else await S1.say('허허, 손이 미끄러졌구먼.\n그럼 디자인을 마저 골라 보게!');
