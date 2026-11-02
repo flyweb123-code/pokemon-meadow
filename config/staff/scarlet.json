@@ -1,6 +1,931 @@
 {
  "days": [
   {
+   "at": 1793659786141,
+   "theme": "산속 노천 온천",
+   "note": "오늘은 김이 모락모락 나는 산속 노천 온천 마당이에요. 나무 욕조·족욕탕처럼 쉬는 소품과 물 방아·탁구대처럼 노는 소품을 섞었고, 물·불꽃·얼음 타입 반응이 서로 다르게 나오게 했어요.",
+   "items": [
+    {
+     "id": "hot-spring-tub",
+     "n": "노천 나무 욕조",
+     "k": "쉼터",
+     "d": "편백 판자를 둘러 쇠테로 묶은 동그란 노천 욕조예요. 늘 따뜻한 물이 찰랑이고 위로 김이 피어올라요.",
+     "px": [
+      ".........k...kvk............",
+      "........kvk..kVvk....k......",
+      ".......kvVk..kVvk...kvk.....",
+      ".......kvVk...kVvk.kvVk.....",
+      "......kvVk....kVvk.kvVk.....",
+      "......kvVk...kVvk.kvVk......",
+      ".......kvVk.kVvk..kvVk......",
+      "......kkkvVkkkvkkkkkvVk.....",
+      "...kkkaaaaaaaaaaaabbbbVkk...",
+      "..kaaaaazzzzzzzzzzzzbbbbbk..",
+      ".kaaxxxxxxxxxxxxxxxyyyyybbk.",
+      ".kaawwwwwwwxxxxxxxxyyyyybbk.",
+      ".kaaawwwwwwxxxxxxxxyyyybbdk.",
+      ".kaabaaaaaaxxxxxxabbbbddddk.",
+      ".kaabaacbbcbbcbbdccdccddddk.",
+      ".kIIIIIIIIIIIIIIjjjjjjiiiik.",
+      ".kaabaacbbcbbcbbdccdccddddk.",
+      ".kaabaacbbcbbcbbdccdccddddk.",
+      "..kabaabbbcbbcbbdccdccdddk..",
+      "..kabaabbbcbbcbbdccdccdddk..",
+      "..kabaabbbcbbcbbdccdccdddk..",
+      "..kIIIIIIIIIIIIIjjjjjjiiik..",
+      "..kabaabbbcbbcbbdccdccdddk..",
+      "..kabaabbbcbbcbbdccdccdddk..",
+      "..kabaabbbcbbcbbdccdccdddk..",
+      "...kkaabbbcbbcbbdccdccdkk...",
+      ".....kkkkkkkkkkkkkkkkkk....."
+     ],
+     "pal": {
+      "a": "#ecc48e",
+      "b": "#d0a066",
+      "c": "#a87544",
+      "d": "#7a5030",
+      "i": "#4e5464",
+      "I": "#a4adbe",
+      "j": "#6c7384",
+      "w": "#c8eef0",
+      "x": "#8fd2dc",
+      "y": "#5ea9bc",
+      "z": "#3f7e96",
+      "v": "#f6f8fa",
+      "V": "#d2dbe4",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "물·불꽃 타입",
+       "a": "욕조 안에 몸을 담그고 눈을 지그시 감아요",
+       "x": {
+        "at": "in",
+        "an": "Sleep"
+       },
+       "l": [
+        "노천 욕조에 몸을 담그고 눈을 지그시 감았다.",
+        "김 나는 욕조 속에 어깨까지 푹 잠겨 있다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "욕조 가장자리에 날아와 앉아 따뜻한 김을 쐬어요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "노천 욕조 가장자리에 날아와 앉아 김을 쐬었다.",
+        "욕조 테두리에 앉아 깃털을 보송보송 말린다."
+       ]
+      },
+      {
+       "w": "얼음 타입",
+       "a": "뜨거운 김에 다가갔다가 깜짝 놀라 물러나요",
+       "x": {
+        "m": "avoid"
+       },
+       "l": [
+        "노천 욕조의 뜨거운 김에 놀라 얼른 물러났다.",
+        "욕조 쪽으로 가다가 김을 보고 발길을 돌렸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "욕조 앞에 서서 물 온도를 살펴봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "노천 욕조 앞에서 까치발로 물속을 들여다봤다.",
+        "욕조에 손끝을 살짝 대 보고 뜨끈함에 놀랐다."
+       ]
+      }
+     ],
+     "fit": "연못 근처, 쌀쌀한 날",
+     "glow": 0
+    },
+    {
+     "id": "bamboo-water-knocker",
+     "n": "대나무 물 방아",
+     "k": "장식",
+     "d": "대롱에서 떨어진 물이 차면 대나무 통이 기울어 돌을 \"딱\" 하고 치는 물 방아예요. 조용한 온천 마당에 일정한 소리를 내요.",
+     "px": [
+      "..........................",
+      "..........................",
+      "...kkkkkkkk...............",
+      "..kgGhgggggk..............",
+      "..kgGhGGGGGHk.............",
+      "..kgGhkkhhhHk.............",
+      "..kgGkHgkkkwk.............",
+      "..kgGkHGggkkk.............",
+      "..khhkhhGGghkk............",
+      "..kgGhkkhhGhggkk..........",
+      "..kgGhk.kkhHiGggkkk.......",
+      "..kgGhk...kkhhGGghgkk.....",
+      "..kgGhk....kkkhhGhGggk....",
+      "..kgGhk....kbckkhHhGGgk...",
+      "..khhHk....kbck.kkkhhGk...",
+      "..kgGhk....kbckkkkkkkhkk..",
+      "..kgGhk....kbcksssssskssk.",
+      "..kgGhk....kbctywxxxxxxytk",
+      ".ksssssk...kbctttttttttuqk",
+      ".kttttuk...kbcttttuttttuqk",
+      ".kttttuk..kcbcdtsttutttuqk",
+      ".kuuuuuk..kdddduuuuuuuuuuk"
+     ],
+     "pal": {
+      "g": "#c4d68a",
+      "G": "#93b257",
+      "h": "#6b8a3c",
+      "H": "#4d6a2e",
+      "s": "#d6d0c2",
+      "t": "#aaa496",
+      "u": "#827d72",
+      "q": "#5e5a53",
+      "b": "#d0a066",
+      "c": "#a87544",
+      "d": "#7a5030",
+      "w": "#c8eef0",
+      "x": "#8fd2dc",
+      "y": "#5ea9bc",
+      "i": "#4e5464",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "대나무 통이 \"딱\" 하고 돌을 칠 때마다 귀를 쫑긋 세워요",
+       "x": {
+        "at": "front",
+        "m": "peek",
+        "fx": "swing"
+       },
+       "l": [
+        "대나무 물 방아가 \"딱\" 하고 울릴 때마다 귀를 쫑긋 세웠다.",
+        "물 방아 앞에 앉아 대나무 통이 기우는 순간을 기다린다."
+       ]
+      },
+      {
+       "w": "작은 물 타입",
+       "a": "돌 물받이 옆에서 떨어지는 물방울을 머리로 받아요",
+       "x": {
+        "at": [
+         0.74,
+         0.85
+        ],
+        "fx": "swing"
+       },
+       "l": [
+        "돌 물받이 옆에서 떨어지는 물방울을 머리로 받았다.",
+        "물 방아에서 튄 물을 맞고 기분 좋게 몸을 털었다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "물 대롱 위에 날아와 앉아 흐르는 물을 마셔요",
+       "x": {
+        "at": [
+         0.2,
+         0.15
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "물 대롱 위에 날아와 앉아 흐르는 물을 콕콕 마셨다.",
+        "대나무 대롱 끝에 앉아 졸졸 흐르는 물을 구경한다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "대나무 통 끝을 꾹 눌러 \"딱\" 소리를 내 줘요",
+       "x": {
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "대나무 통 끝을 꾹 눌러 \"딱\" 소리를 냈다.",
+        "물 방아를 몇 번이고 눌러 돌 치는 소리를 즐겼다."
+       ]
+      }
+     ],
+     "fit": "돌 족욕탕 옆, 정원 구석",
+     "glow": 0,
+     "mv": {
+      "st": [
+       "..........................",
+       "..........................",
+       "...kkkkkkkk...............",
+       "..kgGhgggggk..............",
+       "..kgGhGGGGGHk.............",
+       "..kgGh..hhhHk.............",
+       "..kgG.....kwk.............",
+       "..kgG.......k.............",
+       "..khh.....................",
+       "..kgGh....................",
+       "..kgGhk...................",
+       "..kgGhk...................",
+       "..kgGhk....k..............",
+       "..kgGhk....kbc............",
+       "..khhHk....kbck...........",
+       "..kgGhk....kbckkkkk....k..",
+       "..kgGhk....kbckssssss.ssk.",
+       "..kgGhk....kbctywxxxxxxytk",
+       ".ksssssk...kbctttttttttuqk",
+       ".kttttuk...kbcttttuttttuqk",
+       ".kttttuk..kcbcdtsttutttuqk",
+       ".kuuuuuk..kdddduuuuuuuuuuk"
+      ],
+      "mp": [
+       "..........................",
+       "..........................",
+       "..........................",
+       "..........................",
+       "..........................",
+       "......kk..................",
+       ".....kHgkk................",
+       ".....kHGggkk..............",
+       ".....khhGGghkk............",
+       "......kkhhGhggkk..........",
+       "........kkhHiGggkkk.......",
+       "..........kkhhGGghgkk.....",
+       "............kkhhGhGggk....",
+       "..............kkhHhGGgk...",
+       "................kkkhhGk...",
+       "...................kkhk...",
+       ".....................k....",
+       "..........................",
+       "..........................",
+       "..........................",
+       "..........................",
+       ".........................."
+      ],
+      "o": [
+       12,
+       10
+      ],
+      "k": "swing",
+      "amp": 2.4
+     }
+    },
+    {
+     "id": "onsen-egg-basket",
+     "n": "온천 달걀 바구니",
+     "k": "먹이",
+     "d": "온천 김에 천천히 익힌 달걀을 대바구니에 소복이 담았어요. 껍질은 살짝 누렇고 아직 따끈해요.",
+     "px": [
+      "............kvk.....",
+      "............kVvk....",
+      "............kVvk....",
+      ".............kVvk...",
+      ".....kk..kk..kVvk...",
+      "....keEkkeEkkeEk....",
+      "...keeEfeeEfeeEfk...",
+      "...keeEeEeEeEeEfk...",
+      "...keeeeEfeeEfEfk...",
+      "..kkEEeeEfeeEfEfkk..",
+      ".kaaaaaabbbbbbcccck.",
+      ".kcccccccccccccccck.",
+      ".kbabacbcbcbdcdcddk.",
+      "..kbabbcbcbccdcddk..",
+      "...kbabbcbcbdcddk...",
+      "....kkkkkkkkkkkk...."
+     ],
+     "pal": {
+      "a": "#ecc48e",
+      "b": "#d0a066",
+      "c": "#a87544",
+      "d": "#7a5030",
+      "e": "#f8f0e0",
+      "E": "#e4d4b4",
+      "f": "#bfa47c",
+      "v": "#f6f8fa",
+      "V": "#d2dbe4",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "온천 달걀을 하나 집어 맛있게 먹어요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "온천 달걀을 하나 집어 맛있게 먹었다.",
+        "따끈한 온천 달걀을 호호 불며 먹는다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "바구니 옆에서 달걀을 몰래 들여다봐요",
+       "x": {
+        "at": "side",
+        "m": "speek"
+       },
+       "l": [
+        "바구니 옆에서 온천 달걀을 몰래 들여다봤다.",
+        "달걀 바구니 옆에 숨어 몇 개 남았는지 세어 본다."
+       ]
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "따뜻한 숨을 불어 식은 달걀을 데워 줘요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "식어 가는 온천 달걀에 따뜻한 숨을 불어 데웠다.",
+        "달걀 바구니를 불꽃으로 살살 데워 주고 있다."
+       ]
+      }
+     ],
+     "fit": "노천 욕조 옆, 평상 근처",
+     "glow": 0
+    },
+    {
+     "id": "wooden-bath-pail",
+     "n": "나무 들통과 바가지",
+     "k": "놀이",
+     "d": "구리 테를 두른 작은 나무 들통에 물이 가득하고, 긴 대나무 바가지가 꽂혀 있어요. 욕조에 들어가기 전에 몸을 헹구는 통이에요.",
+     "px": [
+      ".............kack.",
+      ".............kack.",
+      "............kack..",
+      "............kack..",
+      "...........kack...",
+      "...........kck....",
+      "......kkkkkack....",
+      "..kkkkzzzzzckkk...",
+      ".kzzzzzzzaczzzzk..",
+      ".kwwwwwxxddyyyydk.",
+      ".kaabbwxxxxccdddk.",
+      ".khhhhhhhhHHHHHHk.",
+      "..kababcbbdccddk..",
+      "..kababcbbdccddk..",
+      "..kababcbbdccddk..",
+      "..kababcbbdccddk..",
+      "...khhhhhHHHHHk...",
+      "...kaabcbbdcddk...",
+      "...kaabcbbdcddk...",
+      "....kkkkkkkkkk...."
+     ],
+     "pal": {
+      "a": "#ecc48e",
+      "b": "#d0a066",
+      "c": "#a87544",
+      "d": "#7a5030",
+      "w": "#c8eef0",
+      "x": "#8fd2dc",
+      "y": "#5ea9bc",
+      "z": "#3f7e96",
+      "h": "#d89058",
+      "H": "#a05e30",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "작은 물 타입",
+       "a": "들통 속에서 고개만 쏙 내밀어요",
+       "x": {
+        "at": "in",
+        "m": "peek"
+       },
+       "l": [
+        "나무 들통 속에서 고개만 쏙 내밀었다.",
+        "들통 물속에 쏙 잠겨 눈만 동그랗게 뜨고 있다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "들통에 고개를 넣고 물을 할짝할짝 마셔요",
+       "x": {
+        "at": "side",
+        "an": "Eat"
+       },
+       "l": [
+        "나무 들통에 고개를 넣고 물을 할짝할짝 마셨다.",
+        "들통 물을 마시다 바가지에 코를 부딪쳤다."
+       ]
+      },
+      {
+       "w": "물 타입",
+       "a": "물대포를 쏘아 들통을 가득 채워 줘요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "물을 뿜어 나무 들통을 찰랑찰랑 채웠다.",
+        "바닥난 들통에 물을 쏘아 가득 채워 줬다."
+       ]
+      }
+     ],
+     "fit": "노천 욕조 앞",
+     "glow": 0
+    },
+    {
+     "id": "towel-rack",
+     "n": "온천 수건 걸이",
+     "k": "장식",
+     "d": "나무 틀에 빨간 줄무늬 수건과 파란 수건을 널어 말리는 수건 걸이예요. 바람이 불면 수건 끝이 살랑거려요.",
+     "px": [
+      "kkkkkkkkkkkkkkkkkkkkkkkk",
+      "baaaaaaaaaaaaaaaaaaaaaad",
+      "cccccccccccccccccccccccd",
+      "kkbckRRRRRRkkNNNNNNkbckk",
+      ".kbckeeeeEEkknnnNNNkbck.",
+      ".kbckeeeeEEkknnnNNNkbck.",
+      ".kbckrrrrRRkknnnNNNkbck.",
+      ".kbckrrrrRRkknnnNNNkbck.",
+      ".kbckrrrrRRkkmmmmmmkbck.",
+      ".kbckrrrrRRkknnnNNNkbck.",
+      ".kbckeeeeEEkknnnNNNkbck.",
+      ".kbckeeeeEEkknnnNNNkbck.",
+      ".kbckrrrrRRkkNkNkNmkbck.",
+      ".kbccrrrrRRcccccccccbck.",
+      ".kbckrrrrRRkkkkkkkkkbck.",
+      ".kbckrrrrRRk.......kbck.",
+      ".kbckeeeeEEk.......kbck.",
+      ".kbckRkRkRRk.......kbck.",
+      ".kbckk.k.kk........kbck.",
+      ".kbck..............kbck.",
+      ".kbck..............kbck.",
+      "kkbckk............kkbckk",
+      "bbbbbbk..........kbbbbbb",
+      "ddddddk..........kdddddd"
+     ],
+     "pal": {
+      "a": "#ecc48e",
+      "b": "#d0a066",
+      "c": "#a87544",
+      "d": "#7a5030",
+      "r": "#e2766a",
+      "R": "#b84c46",
+      "e": "#f6efe4",
+      "E": "#d8cbb8",
+      "n": "#7aa6d0",
+      "N": "#4f78a6",
+      "m": "#36557e",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "위 가로대에 날아와 앉아 젖은 날개를 말려요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "수건 걸이 가로대에 날아와 앉아 날개를 말렸다.",
+        "수건 걸이 위에서 날개를 활짝 펴고 바람을 쐰다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "줄무늬 수건 뒤에 숨었다가 빼꼼 고개를 내밀어요",
+       "x": {
+        "at": "front",
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "줄무늬 수건 뒤에 숨었다가 빼꼼 고개를 내밀었다.",
+        "수건 걸이 뒤에서 숨바꼭질을 하고 있다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "수건에 몸을 비벼 물기를 닦아요",
+       "x": {
+        "at": "front",
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "보송한 수건에 몸을 비벼 물기를 닦았다.",
+        "수건 걸이에 기대 수건으로 얼굴을 쓱쓱 문질렀다."
+       ]
+      }
+     ],
+     "fit": "온천 입구 옆",
+     "glow": 0
+    },
+    {
+     "id": "onsen-noren-gate",
+     "n": "온천 입구 포렴",
+     "k": "놀이",
+     "d": "나무 문틀에 온천 표시가 찍힌 남색 포렴을 세 폭으로 늘어뜨렸어요. 머리로 젖히고 지나가면 온천 마당이에요.",
+     "px": [
+      "kbbbbbbbbbbbbbbbbbbbbbbbbbbk",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "cccccccccccccccccccccccccccc",
+      "kkbcmmmmmmmmmmmmmmmmmmmmbckk",
+      ".kbconnnnnNonnnnnNonnnnNbck.",
+      ".kbconnnnnNonnnnnNonnnnNbck.",
+      ".kbconnnnnNonnnnnNonnnnNbck.",
+      ".kbconnnnnNonnnnnNonnnnNbck.",
+      ".kbconnnnnkonnnnnkonnnnNbck.",
+      ".kbconnnnnkoennenkonnnnNbck.",
+      ".kbconnnnnkonennekonnnnNbck.",
+      ".kbconnnnnkoennenkonnnnNbck.",
+      ".kbconnnnnkennnnekonnnnNbck.",
+      ".kbconnnnnkoeeeenkonnnnNbck.",
+      ".kbconnnnnkonnnnnkonnnnNbck.",
+      ".kbconnnnnkonnnnnkonnnnNbck.",
+      ".kbconnnnnkonnnnnkonnnnNbck.",
+      ".kbconnnnnkonnnnnkonnnnNbck.",
+      ".kbckkkkkk.kkkkkk.kkkkkkbck.",
+      ".kbck..................kbck.",
+      ".kbck..................kbck.",
+      ".kbck..................kbck.",
+      ".kbck..................kbck.",
+      ".kbck..................kbck.",
+      ".kbck..................kbck.",
+      ".kbck..................kbck.",
+      ".kbck..................kbck."
+     ],
+     "pal": {
+      "a": "#ecc48e",
+      "b": "#d0a066",
+      "c": "#a87544",
+      "n": "#5a6c9c",
+      "N": "#3e4d7a",
+      "m": "#2c375c",
+      "o": "#7f92c0",
+      "e": "#f6efe4",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "포렴을 머리로 젖히고 문 아래를 지나가요",
+       "x": {
+        "m": "through",
+        "fx": "swing"
+       },
+       "l": [
+        "남색 포렴을 머리로 젖히고 온천 문을 지나갔다.",
+        "포렴 사이로 들어갔다 나왔다 하며 논다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "포렴 틈으로 얼굴만 빼꼼 내밀어요",
+       "x": {
+        "at": [
+         0.5,
+         0.6
+        ],
+        "m": "win"
+       },
+       "l": [
+        "포렴 틈으로 얼굴만 빼꼼 내밀었다.",
+        "온천 포렴 사이로 바깥을 살짝 엿본다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "문 위 가로대에 날아와 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "온천 문 가로대에 날아와 앉아 마당을 내려다봤다.",
+        "포렴 위 가로대에 앉아 깃털을 고른다."
+       ]
+      }
+     ],
+     "fit": "온천 마당 들어가는 길",
+     "glow": 0
+    },
+    {
+     "id": "stone-foot-bath",
+     "n": "돌 족욕탕",
+     "k": "쉼터",
+     "d": "둥근 돌을 둘러 쌓은 낮고 긴 족욕탕이에요. 얕은 온천물이 찰랑여서 걸터앉아 발만 담그기 좋아요.",
+     "px": [
+      "..kkk.kkk.kkk.kkk.kkk.kkk.kk..",
+      ".kssskssskssskssskssskssskssk.",
+      "ksssstssstssstssstssstssstssuk",
+      "kssszzzzzzzzzzzzzzzzzzzzzztuuk",
+      "ksssyyyyyyyyyyyyyyyyyyyyyytuuk",
+      "ksssxwwxxwwxxwwxxwwxxwwxxxtuuk",
+      "ksssxxxxxxxxxxxxxxxxxxxxxxtuuk",
+      "ksssxxxxxxxxxxxxxxxxxxxxxxtuuk",
+      "ksttuuuuuuuuuuuuuuuuuuuuuuttuk",
+      "kutsttutsttutsttutsttutsttutsk",
+      "kuttttuttttuttttuttttuttttuttk",
+      ".kuuuuuuuuuuuuuuuuuuuuuuuuuuk.",
+      "..kkkkkkkkkkkkkkkkkkkkkkkkkk.."
+     ],
+     "pal": {
+      "s": "#d6d0c2",
+      "t": "#aaa496",
+      "u": "#827d72",
+      "w": "#c8eef0",
+      "x": "#8fd2dc",
+      "y": "#5ea9bc",
+      "z": "#3f7e96",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "돌 가장자리에 앉아 발을 담그고 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": "front",
+        "an": "Sleep"
+       },
+       "l": [
+        "돌 족욕탕에 발을 담그고 꾸벅꾸벅 졸았다.",
+        "족욕탕 가장자리에 앉아 발끝을 꼼지락거린다."
+       ]
+      },
+      {
+       "w": "헤엄치는 포켓몬",
+       "a": "얕은 족욕탕 물을 끝에서 끝까지 헤엄쳐요",
+       "x": {
+        "at": "in",
+        "m": "walk"
+       },
+       "l": [
+        "얕은 족욕탕을 끝에서 끝까지 헤엄쳤다.",
+        "족욕탕 물속을 빙글빙글 맴돌며 논다."
+       ]
+      },
+      {
+       "w": "물 타입",
+       "a": "물을 뿜어 족욕탕을 새 물로 채워 줘요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "물을 뿜어 족욕탕을 새 물로 채웠다.",
+        "족욕탕에 물을 뿌려 찰랑찰랑하게 만들었다."
+       ]
+      }
+     ],
+     "fit": "연못 근처 평평한 곳",
+     "glow": 0
+    },
+    {
+     "id": "onsen-pingpong-table",
+     "n": "온천 탁구대",
+     "k": "놀이",
+     "d": "온천 휴게실에서 꺼내 온 초록 탁구대예요. 가운데 네트가 있고 빨간 라켓과 공이 올려져 있어요.",
+     "px": [
+      "...............k................",
+      "..............kMk...............",
+      "..............keek..............",
+      "..............kMEk..............",
+      "...kkkkkkkkkkkkMEkkkkkkkkkkkk...",
+      "..keeeeeeeeeeeeMEeeeeeeeeeeeek..",
+      "..kegggrrgggGGGMEGGGGvGGGGhhek..",
+      ".kegggrrrRggGGGMEGGGGGGGGGhhhek.",
+      ".keggggrrgbcGGGMEGGGGGGGGGhhhek.",
+      "keggggggggggGGGMEGGGGGGGGGhhhhek",
+      "keeeeeeeeeeeeeeMEeeeeeeeeeeeeeek",
+      "kccccccccccccccMccccccccccccccck",
+      "kdddmMddddddddddddddddddddmMdddk",
+      ".kkkmMkkkkkkkkkkkkkkkkkkkkmMkkk.",
+      "...kmMk..................kmMk...",
+      "...kmMk..................kmMk...",
+      "...kmMk..................kmMk...",
+      "...kmMk..................kmMk...",
+      "..kMMMMk................kMMMMk.."
+     ],
+     "pal": {
+      "g": "#4f8f6a",
+      "G": "#3b7055",
+      "h": "#2b5442",
+      "e": "#eef0ea",
+      "r": "#d0504a",
+      "R": "#962f30",
+      "m": "#8a8f9a",
+      "M": "#5c616c",
+      "b": "#d0a066",
+      "c": "#a87544",
+      "d": "#7a5030",
+      "E": "#c8ccd0",
+      "v": "#fff6d8",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "탁구대 끝에 서서 공을 톡톡 쳐요",
+       "x": {
+        "m": "push",
+        "two": true
+       },
+       "l": [
+        "탁구대 앞에서 혼자 벽치기 하듯 공을 톡톡 쳤다.",
+        "탁구 라켓을 들고 공을 튕기며 연습한다."
+       ],
+       "l2": [
+        "탁구대 양쪽에 서서 공을 똑딱똑딱 주고받는다.",
+        "탁구대를 사이에 두고 한 점 한 점 승부를 겨룬다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "번쩍이는 스매시로 공을 세게 내리쳐요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "번쩍이는 스매시로 탁구공을 세게 내리쳤다.",
+        "탁구대 위로 전기 스매시를 꽂아 넣었다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "네트 기둥 위에 날아와 앉아 심판을 봐요",
+       "x": {
+        "at": [
+         0.5,
+         0.1
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "탁구 네트 기둥에 날아와 앉아 심판을 봤다.",
+        "네트 위에 앉아 공을 따라 고개를 좌우로 돌린다."
+       ]
+      }
+     ],
+     "fit": "평평한 풀밭 가운데",
+     "glow": 0
+    },
+    {
+     "id": "steaming-lava-rocks",
+     "n": "김 나는 화산석",
+     "k": "쉼터",
+     "d": "땅속 열기가 올라오는 화산석 무더기예요. 갈라진 틈이 붉게 달아 있고 사이사이로 김이 피어올라요.",
+     "px": [
+      ".........kvk...k........",
+      "........kvVk..kvk.......",
+      "........kvVk..kVvk......",
+      ".......kvVk...kVvk......",
+      ".......kvVk....kVvk.....",
+      "........kvVk...kVvk.....",
+      ".........kvVkkkVvk......",
+      "........kPPrrrRvk.......",
+      ".....kkkPPPrrrRRk.......",
+      "...kkPrPPPPorrRRRk......",
+      "..kPPPrPPPPrOrRRRrkkk...",
+      ".kPPPPrrrrrrorRRRrrRRk..",
+      ".kPPPRrrrrrrroRRrrrRRRk.",
+      ".krrrrrrrrrrrrRrrrrRRRRk",
+      ".krrrrorrrRrrrrrrroRRRRk",
+      ".krrrrrOrrRrrrrrrrrORRRk",
+      ".krrRrrorrRrrrrrrroRRRRk",
+      "..krrrrrrRQQrrrrRrrRRRk.",
+      "...kkrrrrrQkkrrrrrrQQk..",
+      ".....kkkkkk..kkkrrkkk..."
+     ],
+     "pal": {
+      "P": "#a39689",
+      "r": "#7d736a",
+      "R": "#5f5750",
+      "Q": "#45403b",
+      "o": "#b8503a",
+      "O": "#d9824a",
+      "v": "#f6f8fa",
+      "V": "#d2dbe4",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "불꽃·바위·땅 타입",
+       "a": "따뜻한 돌에 기대 몸을 녹이며 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "따뜻한 화산석에 기대 몸을 녹이며 졸았다.",
+        "김 나는 돌 옆에 몸을 붙이고 뜨끈함을 즐긴다."
+       ]
+      },
+      {
+       "w": "얼음 타입",
+       "a": "뜨거운 김에 다가갔다가 피해 돌아가요",
+       "x": {
+        "m": "avoid"
+       },
+       "l": [
+        "화산석의 뜨거운 김을 피해 빙 돌아갔다.",
+        "김 나는 돌 앞에서 움찔하고 물러났다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "돌 꼭대기에 올라가 김을 쐬어요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "화산석 꼭대기에 올라가 따뜻한 김을 쐬었다.",
+        "화산석 위에 올라앉아 몸을 데운다."
+       ]
+      }
+     ],
+     "fit": "온천 마당 가장자리, 추운 날",
+     "glow": 0
+    },
+    {
+     "id": "geta-shoe-rack",
+     "n": "나막신 신발장",
+     "k": "장식",
+     "d": "온천 입구에 두는 세 칸 나무 신발장이에요. 칸마다 빨간 끈을 단 나막신이 두 켤레씩 가지런히 놓여 있어요.",
+     "px": [
+      "kaaaaaaaaaaaaaaaaaaaak",
+      "bbbbbbbbbbbbbbbbbbbbbb",
+      "kbcddddddddddddddddbdk",
+      "kbcddddddddddddddddbdk",
+      "kbcddrddrdddrddrdddbdk",
+      "kbcdaaaaaadaaaaaaddbdk",
+      "kbcdbbbbbbdbbbbbbddbdk",
+      "kbcdcdccdcdcdccdcddbdk",
+      "kbcaaaaaaaaaaaaaaaabdk",
+      "kbcddddddddddddddddbdk",
+      "kbcddddddddddddddddbdk",
+      "kbcddrddrdddrddrdddbdk",
+      "kbcdaaaaaadaaaaaaddbdk",
+      "kbcdbbbbbbdbbbbbbddbdk",
+      "kbcdcdccdcdcdccdcddbdk",
+      "kbcaaaaaaaaaaaaaaaabdk",
+      "kbcddddddddddddddddbdk",
+      "kbcddddddddddddddddbdk",
+      "kbcddrddrdddrddrdddbdk",
+      "kbcdaaaaaadaaaaaaddbdk",
+      "kbcdbbbbbbdbbbbbbddbdk",
+      "kbcdcdccdcdcdccdcddbdk",
+      "kbcaaaaaaaaaaaaaaaabdk",
+      "kbcccccccccccccccccbdk"
+     ],
+     "pal": {
+      "a": "#ecc48e",
+      "b": "#d0a066",
+      "c": "#a87544",
+      "d": "#7a5030",
+      "r": "#d0504a",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "신발장 칸에 쏙 숨어 고개만 내밀어요",
+       "x": {
+        "at": [
+         0.5,
+         0.6
+        ],
+        "m": "hide peek"
+       },
+       "l": [
+        "나막신 신발장 칸에 쏙 숨어 고개만 내밀었다.",
+        "신발장 칸 안에서 나막신 사이에 끼어 놀고 있다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "신발장 지붕에 날아와 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "나막신 신발장 지붕에 날아와 앉았다.",
+        "신발장 위에 앉아 들어오는 포켓몬을 구경한다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "나막신을 들여다보며 고개를 갸웃해요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "나막신을 한참 들여다보며 고개를 갸웃했다.",
+        "신발장 앞에서 나막신 끈을 코로 툭툭 건드린다."
+       ]
+      }
+     ],
+     "fit": "온천 입구 포렴 옆",
+     "glow": 0
+    }
+   ]
+  },
+  {
    "at": 1793573316697,
    "theme": "첫눈 오는 겨울 마당",
    "note": "오늘은 11월 첫날이라 한 발 먼저 첫눈 오는 겨울 마당을 그렸어요. 눈사람·이글루·눈 언덕 미끄럼틀처럼 포켓몬이 직접 노는 것과, 군고구마 화로·호빵 수레·연탄 더미처럼 한국 겨울 골목 냄새가 나는 소품을 섞었고, 얼음 타입과 불꽃 타입이 서로 다르게 반응하게 했어요.",
