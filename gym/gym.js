@@ -1478,6 +1478,8 @@ function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에
   const counts = myTypes();
   // v14.14 경완: 타입 화면 아래 '포켓몬 박스 확인' — 켜 두면 고른 타입의 내 포켓몬을 랭크 순으로 랭크 테두리와 함께 빈 자리에 보여 준다
   // v14.16 경완 정정: 타입을 누르면 빈 자리에 바로 미리 보기, '포켓몬 박스 확인' 버튼은 내 포켓몬 박스 전체 화면을 연다
+  // v14.19 경완: 추천 타입 하나 = 그 타입 내 포켓몬 랭크 상위 6마리 점수가 가장 높은 타입, 버튼 테두리 은은하게 (타입을 한 번이라도 누르면 사라짐)
+  let recOff = false; const recTy = (() => { let bt = 0, bs = -1; for (let t = 1; t < TYPE_KO.length; t++) { if (used.has(t) || !counts[t]) continue; const sc = rkSort(S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(t))).slice(0, 6).reduce((a, x) => a + (RKO[x[1]] || 0), 0); if (sc > bs) { bs = sc; bt = t; } } return bt; })();
   const tyPv = () => { const L = dr.ty ? rkSort(S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(dr.ty))) : [];
     return `${dr.ty ? `<div class="gy-typv"><div class="tp-hd"><b>${TYPE_KO[dr.ty]} 타입 내 포켓몬 ${L.length}마리</b></div>${L.length ? `<div class="tp-row">${L.map(x => `<button type="button" class="tp-c" data-mp="${x[0].id}">${pvCell(x)}</button>`).join('')}</div>` : '<p>이 타입 포켓몬이 아직 없어요.</p>'}</div>` : ''}`; };
   const pvFill = () => el.querySelectorAll('img[data-pvth]').forEach(pvImg);
@@ -1492,7 +1494,7 @@ function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에
         <div class="gy-dz-nm">${D.n}</div><div class="gy-dots">${DL.map((_, j) => `<i class="${j === di ? 'on' : ''}"></i>`).join('')}</div></div>`;
     } else if (k === 'ty') {
       body = `<h3>체육관 타입</h3><p class="gy-lead">배틀에는 이 타입 포켓몬만 낼 수 있어요. 등급이 오를 때마다 이 타입의 등급 배지를 받아요.</p>
-        <div class="gy-types">${TYPE_KO.map((n, t) => t ? `<button type="button" class="gy-ty${counts[t] ? '' : ' none'}${used.has(t) ? ' used' : ''}" data-ty="${t}" aria-pressed="${dr.ty === t}" ${used.has(t) ? 'disabled' : ''}>${tyIc0(t)}<span>${n}<small>${used.has(t) ? '이미 있는 체육관' : counts[t] ? `내 포켓몬 ${counts[t]}` : '아직 없어요'}</small></span></button>` : '').join('')}</div>
+        <div class="gy-types">${TYPE_KO.map((n, t) => t ? `<button type="button" class="gy-ty${counts[t] ? '' : ' none'}${used.has(t) ? ' used' : ''}${!recOff && t === recTy ? ' rec' : ''}" data-ty="${t}" aria-pressed="${dr.ty === t}" ${used.has(t) ? 'disabled' : ''}>${tyIc0(t)}<span>${n}<small>${used.has(t) ? '이미 있는 체육관' : counts[t] ? `내 포켓몬 ${counts[t]}` : '아직 없어요'}</small></span></button>` : '').join('')}</div>
         ${tyPv()}`;
       if (!dr.ty) btn = '타입을 골라 주세요';
     } else {
@@ -1513,6 +1515,7 @@ function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에
     if (b.hasAttribute('data-bk')) { el.remove(); fin('back'); return; }   // v14.12 경완: 튜토리얼 디자인 고르기의 ✕ → 뒤로가기, 강박사가 타입 다시 고를지 묻는다
     if (b.classList.contains('gy-back')) { if (i > 0) { i--; draw(); } else el.remove(); return; }
     if (b.dataset.m) { const DL = dzList(), n = DL.length, j = DL.findIndex(D => D.id === dr.d); dr.d = DL[(j + +b.dataset.m + n) % n].id; dr.dPick = 1; draw(); return; }
+    if (b.dataset.ty && !recOff) { recOff = true; el.querySelector('.gy-ty.rec')?.classList.remove('rec'); }
     if (b.dataset.ty && !counts[+b.dataset.ty]) { if (root.querySelector('.gy-kang.tyno:not(.bye)')) return; kang([`${trName() ? trName() + '…\n' : '음…\n'}그 타입은 아직 어려워 보이는구나.\n다른 타입을 골라 보렴.`], { lit: true }); root.lastElementChild.classList.add('tyno'); root.lastElementChild.style.zIndex = 14; return; }   // v14.14 경완: 내 포켓몬이 0마리인 타입은 못 고른다 — 강박사가 그 화면 위 대사창으로 말리고 막는다
     if (b.dataset.ty && +b.dataset.ty === dr.ty) { dr.ty = 0; draw(); return; }   // v14.18 경완: 고른 타입을 한 번 더 누르면 선택 취소
     if (b.dataset.ty) { const t = +b.dataset.ty, auto = !dr.nm || dr.nm === defName(dr.ty); dr.ty = t; if (auto) dr.nm = ''; if (!dr.dPick) dr.d = (DESIGNS.find(d => d.ty === t) || DESIGNS.find(d => d.id === dr.d) || dzList()[0]).id; draw(); return; }   // 타입을 고르면 그 타입 맵부터 (경완 2026-10-29)
