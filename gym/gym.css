@@ -2433,3 +2433,4 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .mp-pg.num{font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums}.gy-pop .win:has(.mp-head) .mp-pg.num{height:auto}
 .mp-pg{flex-wrap:wrap;max-width:100%}
 .iv-hex{transition:transform .08s,filter .08s}.iv-hex:active{transform:scale(.97);filter:brightness(.95)}   /* v14.21 경완: 능력치 박스 누르면 눌림 */
+#gym .gy-lbbg{position:fixed;inset:0;z-index:11;background:rgba(20,20,30,.18);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);pointer-events:none;animation:lbBg .3s ease-out}#gym .gy-lbbg.bye{opacity:0;transition:opacity .24s}@keyframes lbBg{from{opacity:0}}   /* v14.26 경완: 전설 알 카드 뒤 배경 블러 (대사창은 또렷하게) */
