@@ -908,7 +908,8 @@ async function challenge(picked) {
     let gold = 0, rep = 0;
     const r0 = g.rep || 0;
     if (won) { g.stk = (g.stk | 0) + 1; gold = addG(R.g); addRep(repWin(R.r) + stkBonus(g.stk)); g.w++; if (g.wk) g.wk.w++; blocked(c); res.used.forEach(id => GA.addFr(id, R.fr)); }
-    else { g.stk = 0; if (!c.boss) addRep(repLose()); g.l++; if (g.wk) g.wk.l++; }   // 승급 심사는 져도 평판이 그대로라 버튼으로 바로 다시 받을 수 있다 (경완 2026-10-30)
+    else { g.stk = 0; if (!c.boss) addRep(repLose()); g.l++; if (g.wk) g.wk.l++; }
+    if (!g.fb1 && !c.boss) { g.fb1 = 1; if ((g.w | 0) + (g.l | 0) <= 1) fbNext = won ? ['첫 승리 축하드립니다, 관장님!!<br>역시 배틀에 재능이 있으시군요!', '앞으로 이렇게만 하시면 돼요.<br>궁금한 점이 있으면 언제든 저한테 물어보세요!'] : ['아쉽네요, 관장님…<br>첫 배틀이라 긴장하셨나 봐요.', '라인업을 다시 짜 보거나 포켓몬을 키워서<br>다음 도전자는 꼭 막아 봐요!', '궁금한 점이 있으면 언제든 저한테 물어보세요!']; }   // v14.33 경완: 첫 배틀 뒤 안내원 대사창 (이기면 축하, 지면 아쉬움)   // 승급 심사는 져도 평판이 그대로라 버튼으로 바로 다시 받을 수 있다 (경완 2026-10-30)
     rep = (g.rep || 0) - r0;
     if (N && !c.sc) { const x = g.nt[N.id] || { s: 0 }; g.nt[N.id] = won ? { s: x.s + 1, n: now + rnd(2, 3.5) * DAY } : { s: x.s, n: now + rnd(.8, 1.5) * DAY }; }
     glog(won ? 'win' : 'lose', `${esc(c.cls)} <b>${esc(c.nm)}</b>${won ? `에게 이겼다! <small>+${gold}G · 평판 +${rep}</small>` : `에게 졌다… <small>평판 ${rep}</small>`}`);
@@ -921,8 +922,9 @@ async function challenge(picked) {
     // 배웅하기 창 없이, 알림을 다 닫으면 도전자가 걸어 나간다 (경완 2026-10-28)
     dlg(''); root.classList.add('dhide'); if (meEnt) { meEnt.f = 'd'; place(meEnt); } await walk(e, outRoute(D, e) || D.path.slice(0, -1).reverse()); await wait(250); doorSe(); await wait(120); e.el.remove(); ents = ents.filter(x => x !== e);
   } catch (err) { console.error(err); GA.toast?.('배틀을 시작하지 못했어요'); }
-  finally { busy = false; root.classList.remove('busy'); if (g.q.some(x => x.boss)) g.q = g.q.filter(x => !x.boss); if (open) renderHome(); }
+  finally { busy = false; root.classList.remove('busy'); if (g.q.some(x => x.boss)) g.q = g.q.filter(x => !x.boss); if (open) renderHome(); if (fbNext && open) { const L = fbNext; fbNext = null; setTimeout(() => tutTalk(L), 300); } }
 }
+let fbNext = null;
 // ---------- 승급 심사 (경완 2026-10-30) ----------
 // 평판이 이 등급 끝까지 차면 한 번: 알림창 + 다음 등급 배지 연출
 function bsAlert() {
