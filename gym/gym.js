@@ -1838,14 +1838,14 @@ async function intro() {
   // 13. 운영 설명
   S1.hide(false);
   await S1.say('지금은 좀 좁아 보여도 걱정 말게.\n체육관 등급이 오를수록\n넓게 증축할 수 있다네.', { pic: true });
-  await S1.say('...그러니까 열심히 하라는\n뜻일세. 허허.');
-  await S1.say('도전자는 매일 찾아올 거야.\n틈틈이 들러서 확인해 보게.');
-  // v14.10 경완 '안내원 들어오기 전에 강박사 대사창으로 체육관을 열심히 성장시키면 특별한 선물 + 타입별 전설 알 스프라이트 가운데 박스로'
+  // v14.11 경완 '3번(증축)하고 4번(열심히 하라는 뜻) 사이에': 선물 얘기를 증축 바로 뒤로. v14.10 경완 '안내원 들어오기 전에 강박사 대사창으로 체육관을 열심히 성장시키면 특별한 선물 + 타입별 전설 알 스프라이트 가운데 박스로'
   { const lb = document.createElement('div'); lb.className = 'gy-legbox';
     lb.innerHTML = `<div class="lb-e">${GA.eggIco?.(st()?.ty || 1) || ''}</div><b class="lb-n">${GA.LT_ADJ?.[st()?.ty] || ''} 전설 알</b>`;   /* 경완: 내 체육관 타입 전설 알 하나만 크게 */
     root.appendChild(lb); try { GA.sfx?.('newdex'); } catch (e) {} GA.haptic?.(1);
     await S1.say('그리고 체육관을 열심히 성장시키면\n특별한 선물도 준비되어 있다네!', { pic: true });
     lb.classList.add('bye'); await wait(260); lb.remove(); }
+  await S1.say('...그러니까 열심히 하라는\n뜻일세. 허허.');
+  await S1.say('도전자는 매일 찾아올 거야.\n틈틈이 들러서 확인해 보게.');
   // 14. 안내원 등장: 문에서 뛰어 들어와 자기 자리에
   S1.hide(true); await wait(200);
   const gE = guyEnt; gE.x = D.door[0]; gE.y = D.door[1]; gE.f = 'u'; place(gE); doorSe(); await wait(180); gE.el.style.visibility = '';
