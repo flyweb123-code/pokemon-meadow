@@ -255,7 +255,7 @@ function build() {
   $g('.gy-store').onclick = () => { sfx('tap'); if (ded) ded.end?.(); storePop(); };
   $g('.gy-deco').onclick = () => { sfx('tap'); root.querySelectorAll('.gy-infos').forEach(x => x.remove()); if (!ded) decoEdit(); };
   $g('.gy-simb').onclick = () => { sfx('tap'); simPop(); };
-  $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = b.dataset.t; if (t === 'out') return exit(); if (root.classList.contains('lupk')) return; sfx('tap');
+  $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = b.dataset.t; if (t === 'out') return exit(); sfx('tap');   /* v14.14 경완: 라인업 고르기 중에도 메뉴 잠그지 않음 — 다른 메뉴나 포켓몬 메뉴를 다시 누르면 고르기를 그만두고(luRes null) 배틀 시작 전 대사로 돌아감 */
     root.querySelectorAll('.gy-pop').forEach(x => x.remove());   // 다른 메뉴를 누르면 포켓몬 정보 카드 같은 팝업도 닫힘 (경완 2026-10-29)
     const cov = root.querySelectorAll('.gy-boxw,.gy-infos'); if (cov.length) { cov.forEach(x => x.remove()); return openTab(t); }   // 포켓몬 고르기·정보 화면 위에서 메뉴를 누르면 그 화면을 닫고 그 메뉴로 (경완 2026-10-28)
     openTab(tab === t ? null : t); };
@@ -1496,6 +1496,7 @@ function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에
     if (b.hasAttribute('data-bk')) { el.remove(); fin('back'); return; }   // v14.12 경완: 튜토리얼 디자인 고르기의 ✕ → 뒤로가기, 강박사가 타입 다시 고를지 묻는다
     if (b.classList.contains('gy-back')) { if (i > 0) { i--; draw(); } else el.remove(); return; }
     if (b.dataset.m) { const DL = dzList(), n = DL.length, j = DL.findIndex(D => D.id === dr.d); dr.d = DL[(j + +b.dataset.m + n) % n].id; dr.dPick = 1; draw(); return; }
+    if (b.dataset.ty && !counts[+b.dataset.ty]) { if (root.querySelector('.gy-kang.tyno:not(.bye)')) return; kang([`${trName() ? trName() + '…\n' : '음…\n'}그 타입은 아직 어려워 보이는구나.\n다른 타입을 골라 보렴.`], { lit: true }); root.lastElementChild.classList.add('tyno'); root.lastElementChild.style.zIndex = 14; return; }   // v14.14 경완: 내 포켓몬이 0마리인 타입은 못 고른다 — 강박사가 그 화면 위 대사창으로 말리고 막는다
     if (b.dataset.ty) { const t = +b.dataset.ty, auto = !dr.nm || dr.nm === defName(dr.ty); dr.ty = t; if (auto) dr.nm = ''; if (!dr.dPick) dr.d = (DESIGNS.find(d => d.ty === t) || DESIGNS.find(d => d.id === dr.d) || dzList()[0]).id; draw(); return; }   // 타입을 고르면 그 타입 맵부터 (경완 2026-10-29)
     if (b.classList.contains('gy-next')) {
       if (steps[i] === 'ty' && !dr.ty) return;
