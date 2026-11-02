@@ -1494,7 +1494,7 @@ function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에
         <div class="gy-dz-nm">${D.n}</div><div class="gy-dots">${DL.map((_, j) => `<i class="${j === di ? 'on' : ''}"></i>`).join('')}</div></div>`;
     } else if (k === 'ty') {
       body = `<h3>체육관 타입</h3><p class="gy-lead">배틀에는 이 타입 포켓몬만 낼 수 있어요. 등급이 오를 때마다 이 타입의 등급 배지를 받아요.</p>
-        <div class="gy-types">${TYPE_KO.map((n, t) => t ? `<button type="button" class="gy-ty${counts[t] ? '' : ' none'}${used.has(t) ? ' used' : ''}${!recOff && t === recTy ? ' rec' : ''}" data-ty="${t}" aria-pressed="${dr.ty === t}" ${used.has(t) ? 'disabled' : ''}>${tyIc0(t)}<span>${n}<small>${used.has(t) ? '이미 있는 체육관' : (counts[t] || 0)   /* v14.21 경완: 숫자만 */}</small></span></button>` : '').join('')}</div>
+        <div class="gy-types">${TYPE_KO.map((n, t) => t ? `<button type="button" class="gy-ty${counts[t] ? '' : ' none'}${used.has(t) ? ' used' : ''}${!recOff && t === recTy ? ' rec' : ''}"${!recOff && t === recTy ? ` style="--rd:-${Math.round(performance.now() % 1800)}ms"` : ''} data-ty="${t}" aria-pressed="${dr.ty === t}" ${used.has(t) ? 'disabled' : ''}>${tyIc0(t)}<span>${n}<small>${used.has(t) ? '이미 있는 체육관' : (counts[t] || 0)   /* v14.21 경완: 숫자만 */}</small></span></button>` : '').join('')}</div>
         ${tyPv()}`;
       if (!dr.ty) btn = '타입을 골라 주세요';
     } else {
