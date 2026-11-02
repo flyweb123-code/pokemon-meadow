@@ -24,6 +24,8 @@ struct GameView: UIViewRepresentable {
         // v13.40: 게임이 오디오를 재워 둔 틈에 '다른 앱 소리가 나는지' 묻는다 (PiP 영상이면 배경 음악을 멈춤)
         config.userContentController.addScriptMessageHandler(AudioPeek(), contentWorld: .page, name: "audioPeek")
         config.userContentController.addScriptMessageHandler(AudioMix(), contentWorld: .page, name: "audioMix")
+        // 2026-11-02 경완: 위치 권한은 게임이 튜토리얼 끝에 묻는다 (WalkTracker.askLoc)
+        config.userContentController.addScriptMessageHandler(LocHandler(), contentWorld: .page, name: "loc")
         let web = WKWebView(frame: .zero, configuration: config)
         web.navigationDelegate = context.coordinator
         web.isOpaque = false
@@ -109,6 +111,18 @@ final class HapticHandler: NSObject, WKScriptMessageHandler {
 
 // 화염방사 버튼을 누르는 동안 끊기지 않는 연속 진동(우우웅): 게임이 hum 메시지로 1을 계속 보내면 이어지고,
 // 0이 오거나 0.3초 동안 1이 안 오면 멈춘다 (게임이 멈춰도 진동이 남지 않게)
+final class LocHandler: NSObject, WKScriptMessageHandlerWithReply {
+    func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage, replyHandler: @escaping (Any?, String?) -> Void) {
+        switch message.body as? String {
+        case "ask": WalkTracker.shared.askLoc(replyHandler)
+        case "settings":
+            if let u = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(u) }
+            replyHandler(WalkTracker.shared.locState(), nil)
+        default: replyHandler(WalkTracker.shared.locState(), nil)
+        }
+    }
+}
+
 final class HumHandler: NSObject, WKScriptMessageHandler {
     private var engine: CHHapticEngine?
     private var player: CHHapticAdvancedPatternPlayer?

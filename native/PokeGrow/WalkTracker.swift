@@ -32,7 +32,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
             UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: lastKey)
         }
         switch manager.authorizationStatus {
-        case .notDetermined: manager.requestAlwaysAuthorization()
+        case .notDetermined: break   // 2026-11-02 경완: 처음 묻는 건 게임(튜토리얼 끝 강박사 설명 뒤)이 loc 'ask' 로
         case .authorizedWhenInUse: manager.requestAlwaysAuthorization(); begin()
         case .authorizedAlways: begin()
         default: sync(place: nil)
@@ -157,6 +157,25 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
 
     func locationManagerDidChangeAuthorization(_ m: CLLocationManager) {
         if m.authorizationStatus == .authorizedAlways || m.authorizationStatus == .authorizedWhenInUse { begin() }
+        let st = locState()
+        if st != "ask" { let rs = locReplies; locReplies = []; rs.forEach { $0(st, nil) } }
+        PhoneBridge.shared.webView?.evaluateJavaScript("window.pokeLoc && window.pokeLoc('\(st)')")
+    }
+
+    // MARK: 위치 권한 (2026-11-02 경완: 튜토리얼 끝 강박사 설명 뒤에 묻고, 허용하지 않으면 게임을 시작할 수 없다)
+    // 게임 → loc 'get' 지금 상태 / 'ask' 처음이면 iOS 창을 띄우고 고른 뒤 답 / 'settings' 설정 앱 열기
+    private var locReplies: [(Any?, String?) -> Void] = []
+    func locState() -> String {
+        switch manager.authorizationStatus {
+        case .authorizedAlways, .authorizedWhenInUse: return "ok"
+        case .notDetermined: return "ask"
+        default: return "no"
+        }
+    }
+    func askLoc(_ reply: @escaping (Any?, String?) -> Void) {
+        guard manager.authorizationStatus == .notDetermined else { reply(locState(), nil); return }
+        locReplies.append(reply)
+        manager.requestAlwaysAuthorization()
     }
 
     func locationManager(_ m: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
