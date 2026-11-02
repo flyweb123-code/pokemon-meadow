@@ -1093,17 +1093,55 @@ async function guyCall() {
     await walk(e, [[dx, gy], [gx, gy]].filter(p => p[0] !== e.x || p[1] !== e.y)); e.f = 'd'; place(e);
   } finally { busy = false; root.classList.remove('gcall'); homeSay(); }
 }
+// v14.45 경완: 안내원 '배틀 설명' — 항목을 고르면 그림을 넘겨 가며 자세히
+const HPI = k => `<div class="on-shot hp-shot"><img src="${IMG}help/${k}.webp" alt=""></div>`;
+const hpT = t => `<span class="hp-tc" style="background:${GA.TYPE_C?.[t] || '#8890a8'}">${TYPE_KO[t]}</span>`;
+const hpTy = n => TYPE_KO.indexOf(n);
+const BT_HELP = () => { const W = hpTy('물'), F = hpTy('불꽃'), G = hpTy('풀'), N = hpTy('노말'), Gh = hpTy('고스트');
+  return [
+  { k: 'how', t: '배틀은 어떻게 해?', c: '#c8501e', P: [
+    { im: HPI('scene'), tx: `<p>도전자와 포켓몬을 한 마리씩 내보내<br><em>번갈아 기술</em>을 써요.</p><p class="on-sm">상대 포켓몬을 모두 쓰러뜨리면 이기고,<br>내 라인업이 모두 쓰러지면 져요.</p>` },
+    { im: HPI('menu'), tx: `<p><em>싸우다</em>로 기술을 고르고,<br><em>포켓몬</em>으로 다른 포켓몬과 교체해요.</p><p class="on-sm">체육관 배틀에선 가방을 쓸 수 없어요.<br>기권하면 진 것으로 처리돼요.</p>` },
+    { im: HPI('mon'), tx: `<p>상성이 나쁘면 <em>교체</em>해 보세요.</p><p class="on-sm">교체한 턴에는 공격하지 못하고,<br>새로 나온 포켓몬이 상대 공격을 받아요.</p>` }] },
+  { k: 'mv', t: '기술이 뭐야?', c: '#3a5fc0', P: [
+    { im: HPI('fight'), tx: `<p>기술마다 <em>타입</em>, <em>위력</em>, <em>명중</em>, <em>PP</em>가 있어요.</p><p class="on-sm">위력이 높을수록 세고, 명중이 낮으면 빗나가기 쉬워요.<br>PP를 다 쓰면 그 기술은 못 써요.</p>` },
+    { im: HPI('mvq'), tx: `<p><em>?</em>를 누르면 기술 설명을 볼 수 있어요.</p><p class="on-sm">주황 폭발은 물리, 보라 소용돌이는 특수,<br>회색은 능력을 바꾸는 변화 기술이에요.</p>` },
+    { im: `<div class="hp-box">${hpT(G)}<span class="hp-x">풀 타입 포켓몬이</span>${hpT(G)}<span class="hp-x">풀 기술을 쓰면</span><b class="hp-big">위력 ×1.5</b></div>`, tx: `<p>포켓몬과 <em>같은 타입</em>의 기술은<br>위력이 1.5배가 돼요.</p><p class="on-sm">기술은 레벨이 오르면 배우고,<br>기술머신으로 가르칠 수도 있어요.</p>` }] },
+  { k: 'ty', t: '상성이 뭐야?', c: '#2f8f4f', P: [
+    { im: `<div class="hp-box hp-cyc">${hpT(W)}<i class="hp-ar">▶</i>${hpT(F)}<i class="hp-ar">▶</i>${hpT(G)}<i class="hp-ar">▶</i>${hpT(W)}</div>`, tx: `<p>타입끼리 강하고 약한 관계를 <em>상성</em>이라고 해요.</p><p class="on-sm">물은 불꽃에, 불꽃은 풀에, 풀은 물에 강해요.</p>` },
+    { im: `<div class="hp-box hp-rows"><div>${hpT(W)}<i class="hp-ar">▶</i>${hpT(F)}<b class="hi">효과 굉장! ×2</b></div><div>${hpT(F)}<i class="hp-ar">▶</i>${hpT(W)}<b class="lo">효과 별로 ×0.5</b></div><div>${hpT(N)}<i class="hp-ar">▶</i>${hpT(Gh)}<b class="no">효과 없음 ×0</b></div></div>`, tx: `<p>강한 상대에겐 <em>2배</em>, 약한 상대에겐 <em>절반</em>.<br>아예 안 듣는 조합도 있어요.</p><p class="on-sm">상대가 타입이 둘이면 두 배수를 곱해요.</p>` },
+    { im: HPI('fight'), tx: `<p>기술 버튼에 지금 상대에게<br><em>얼마나 잘 듣는지</em> 나와요.</p><p class="on-sm">효과 굉장! 기술을 고르면 빨리 이길 수 있어요.</p>` }] },
+  { k: 'it', t: '도구가 뭐야?', c: '#b8860b', P: [
+    { im: HPI('item'), tx: `<p>포켓몬에게 <em>도구</em>를 하나 지니게 하면<br>배틀 중에 저절로 효과가 나요.</p><p class="on-sm">회복, 공격 강화, 열매처럼 종류가 많아요.</p>` },
+    { im: HPI('card'), tx: `<p>도구는 <em>상점</em>에서 사요.</p><p class="on-sm">상세 카드의 포켓몬 그림을 누르면<br>지니게 하거나 돌려받을 수 있어요.</p>` }] },
+  { k: 'ab', t: '특성이 뭐야?', c: '#7a3aa8', P: [
+    { im: HPI('ab'), tx: `<p>포켓몬마다 하나씩 가진 <em>특별한 능력</em>이에요.<br>배틀 중에 저절로 발휘돼요.</p><p class="on-sm">아주 드물게 <em>숨겨진 특성</em>을 가진 포켓몬도 있어요.<br>진화해도 특성은 이어져요.</p>` }] },
+  { k: 'nat', t: '성격·능력치가 뭐야?', c: '#d0407a', P: [
+    { im: HPI('nat'), tx: `<p><em>성격</em>에 따라 능력치 하나는 잘 오르고<br>하나는 덜 올라요.</p><p class="on-sm">▲는 10% 높게, ▼는 10% 낮게.<br>변화가 없는 성격도 있어요.</p>` },
+    { im: HPI('iv'), tx: `<p>육각형은 HP·공격·방어·특공·특방·스피드<br><em>능력치</em>예요.</p><p class="on-sm">랭크가 높을수록 타고난 능력(개체값)이 좋아요.<br>육각형을 누르면 막대로 볼 수 있어요.</p>` }] },
+  { k: 'lv', t: '레벨·경험치가 뭐야?', c: '#2f6fb0', P: [
+    { im: HPI('card'), tx: `<p>도전자의 포켓몬을 쓰러뜨리면 <em>경험치</em>를 받아<br>레벨이 올라요.</p><p class="on-sm">배틀에 나오지 않은 라인업 포켓몬도 절반을 받아요.<br>연습 배틀은 경험치가 없어요.</p>` },
+    { im: `<div class="hp-box hp-rows"><div><b class="hp-big">Lv.▲</b><span class="hp-x">능력치가 오르고 새 기술을 배워요</span></div><div><b class="hp-big">훈련장</b><span class="hp-x">맡겨 두면 앱을 꺼도 경험치가 쌓여요</span></div></div>`, tx: `<p>레벨이 오르면 <em>능력치</em>가 오르고<br>새 기술을 배워요.</p><p class="on-sm">훈련장에 맡겨도 경험치가 쌓여요.</p>` }] },
+  { k: 'st', t: '상태 이상이 뭐야?', c: '#6a6a7a', P: [
+    { im: `<div class="hp-box hp-rows hp-st"><div><i class="hp-sc" style="background:#a040a0">독</i><span class="hp-x">매 턴 HP가 줄어요</span></div><div><i class="hp-sc" style="background:#e05030">화상</i><span class="hp-x">매 턴 HP가 줄고 물리 공격이 약해져요</span></div><div><i class="hp-sc" style="background:#d8b020">마비</i><span class="hp-x">느려지고 가끔 움직이지 못해요</span></div><div><i class="hp-sc" style="background:#8888a0">잠</i><span class="hp-x">몇 턴 동안 움직이지 못해요</span></div><div><i class="hp-sc" style="background:#58a8d8">얼음</i><span class="hp-x">녹을 때까지 움직이지 못해요</span></div></div>`, tx: `<p>기술에 따라 상대를 <em>상태 이상</em>으로 만들 수 있어요.</p><p class="on-sm">교체해도 그대로 남아요 (잠·얼음은 저절로 나아요).</p>` }] }]; };
+function btHelp() {
+  const L = BT_HELP();
+  pop(`<h4>배틀 설명</h4><p class="gy-msg" style="text-align:center">궁금한 걸 골라 보세요!</p><div class="hp-list">${L.map(x => `<button type="button" data-a="${x.k}" style="--c:${x.c}"><i></i>${x.t}</button>`).join('')}</div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => {
+    close(); if (a === 'x') return; const x = L.find(y => y.k === a); if (!x) return;
+    gse('DP_WIN_OPEN'); notePager(x.P.map(q => ({ c: x.c, t: x.t, ...q })), () => btHelp()); });
+}
 function guyAsk() {
   root.classList.remove('dhide');   // 홈은 대화창을 숨겨 두니 물음 띄울 때 보이게 (경완 2026-10-29 '안내원 눌러도 안 뜸')
   // v13.08 경완: 안내원 = 도전자 불러오기 · 체육관 설명 중 고르기. 불러오기는 기다리는 도전자가 없을 때만
   const g0 = st(), can = !g0.q.length && !bsReady(g0);
-  $g('.gy-dlg').innerHTML = `<span class="gy-who">안내원</span>${kjNm()}, 무엇을 도와 드릴까요?<div class="gy-dyn"><button class="gy-dbtn2" type="button" data-a="tour">체육관 설명</button><button class="gy-dbtn2 main" type="button" data-a="call">도전자 불러오기</button></div>`;
+  $g('.gy-dlg').innerHTML = `<span class="gy-who">안내원</span>${kjNm()}, 무엇을 도와 드릴까요?<div class="gy-dyn"><button class="gy-dbtn2" type="button" data-a="tour">체육관 설명</button><button class="gy-dbtn2" type="button" data-a="bt">배틀 설명</button><button class="gy-dbtn2 main" type="button" data-a="call">도전자 불러오기</button></div>`;
   $g('.gy-dyn').onclick = async e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); sfx('tap');
     const guy = { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1, skip: false };
     off();
     // v13.18 경완: 도전자가 있어도 단추는 켜 두고, 누르면 ▼ 대화창(한 글자씩)으로 안내
     if (b.dataset.a === 'call' && !can) { busy = true; try { await guySay(g0.q.length ? '기다리는 도전자가 있어요.\n도전자를 먼저 받아 주세요!' : '승급 심사를 먼저 받아 주세요!'); } finally { busy = false; homeSay(); } return; }
     if (b.dataset.a === 'call') return guyCall();
+    if (b.dataset.a === 'bt') { homeSay(); return btHelp(); }
     await kang(GUY_TOUR(), Object.assign(guy, { skip: true })); homeSay(); };
   // 물음 밖(대화창·빈 곳)을 누르면 박사 창처럼 닫힌다 (경완 2026-10-27)
   const shut = e => { if (e.target.closest('.gy-dyn button, .gy-kang')) return; off(); if ($g('.gy-dyn')) { e.stopPropagation(); homeSay(); } };   // 빈 곳을 눌러도 이 창만 닫히고 화면 숨기기(gview)는 안 됨 (경완 2026-10-29)
@@ -1941,6 +1979,9 @@ async function openNote(nm) { let mu = `${IMG}open_map.webp`; try { mu = await P
     { c: '#2f6fb0', t: '평판을 모아요', im: shot('top', [29, 51, 42, 22]), tx: `<p><em>평판</em>이 꽉 차면 승급 심사를 받아<br>체육관 등급을 올릴 수 있어요.</p>` },
     { c: '#b8860b', t: '체육관 등급을 올려요', im: `<div class="on-bds">${bdHtml(st().ty, 1)}<i class="on-ar"></i>${bdHtml(st().ty, 5)}</div>`, tx: `<p>승급 심사를 통과하면<br><em>등급 배지</em>가 바뀌어요.</p><p class="on-sm">등급이 오르면 체육관이 넓어지고<br>훈련장·트레이너 고용이 열려요.</p>` },
     { c: '#7a3aa8', t: '특별한 선물', im: `<div class="on-egg on-eggs">${[11, 10, 12].map(t => GA.eggIco?.(t) || '').join('')}</div>`, tx: `<p><em>전설의 체육관</em>이 되면<br>내 체육관 타입의 <em>전설 알</em>을 받아요!</p><p class="on-sm">알을 부화시키면<br>해당 타입을 가진 전설의 포켓몬이 태어나요.</p>` }];
+  notePager(P, ok); try { GA.sfx('newdex'); } catch (e) { gse('DP_WIN_OPEN'); } GA.haptic?.(1); }); }   // v13.93 경완 '개설 알림창 뜰 때 알림창 효과음': 본게임 업데이트 알림창과 같은 소리
+// 넘겨 보는 알림창 (개설 알림창 · 안내원 배틀 설명): P = [{ c 색, t 제목, im 그림, tx 글 }]
+function notePager(P, ok) {
   const w = document.createElement('div'); w.className = 'gy-on';
   w.innerHTML = `<div class="win on-card"><div class="on-body"></div><div class="on-dots">${P.map(() => '<i></i>').join('')}</div><div class="on-btns"><button type="button" class="on-prev">이전</button><button type="button" class="on-ok">다음</button></div></div>`;
   root.appendChild(w); const B = w.querySelector('.on-body'), ok1 = w.querySelector('.on-ok'), pr = w.querySelector('.on-prev'), last = P.length - 1; let i = 0, busy = 0;
@@ -1950,7 +1991,7 @@ async function openNote(nm) { let mu = `${IMG}open_map.webp`; try { mu = await P
   ok1.onclick = () => { if (i < last) return turn(1); gse('DP_DECIDE'); w.classList.add('bye'); setTimeout(() => { w.remove(); ok(); }, 180); };
   pr.onclick = () => turn(-1);
   let sx = null; w.onpointerdown = e => { if (!e.target.closest('button')) sx = e.clientX; }; w.onpointerup = e => { if (sx == null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 45) turn(dx < 0 ? 1 : -1); };
-  go(); try { GA.sfx('newdex'); } catch (e) { gse('DP_WIN_OPEN'); } GA.haptic?.(1); }); }   // v13.93 경완 '개설 알림창 뜰 때 알림창 효과음': 본게임 업데이트 알림창과 같은 소리
+  go(); return w; }
 // v13.81 경완 '원래대로 내 진짜 도감 읽는 연출': 강박사가 내 도감을 펼쳐 한 장씩 넘긴다 (등록 수가 올라가며)
 function dexRead() {   // v13.86 경완 '그 도감 말고 눌렀을 때 나오는 빨간 도감 레이아웃': 본게임 도감 카드(빨간 도감 기계)를 그대로 복제해 내 포켓몬을 한 장씩 넘김
   const L = [...(S.unlocked || [])].map(Number).filter(n => SPECIES[n]).sort((a, b) => a - b), N = L.length;
