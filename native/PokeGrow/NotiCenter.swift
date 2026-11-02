@@ -54,6 +54,11 @@ final class NotiCenter: NSObject, UNUserNotificationCenterDelegate {
             if fr { askPermission() }
             Task { @MainActor in FriendServer.shared.setReqPush(fr) }
         }
+        // v14.37: 업데이트 공지 알림 (CloudKit Notice 구독). 게임이 nw 를 보낼 때만
+        if let nw = dict["nw"] as? Bool {
+            if nw { askPermission() }
+            Task { @MainActor in FriendServer.shared.setNewsPush(nw) }
+        }
     }
 
     // WalkTracker → 걸은 거리 (화면이 꺼져 있어도 주요 위치 변경·걷는 중 위치로 깨어날 때마다 들어온다)
