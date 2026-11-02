@@ -27,7 +27,10 @@ struct BuddyInfo: Codable {
 struct GameState: Codable {
     var eggs: [EggInfo]
     var buddy: BuddyInfo?
+    var buds: [BuddyInfo]?   // v14.53 경완: 짝꿍 전부 (예전 게임은 buddy 하나만 보냄)
     var total: Double
+
+    var allBuds: [BuddyInfo] { buds ?? (buddy.map { [$0] } ?? []) }
 }
 
 // 런닝은 HealthKit 운동 세션으로 기록한다. 화면이 꺼져도 워치가 계속 거리를 잰다.
@@ -137,11 +140,13 @@ final class WatchModel: NSObject, ObservableObject {
         WCSession.default.transferUserInfo(["km": km, "start": start?.timeIntervalSince1970 ?? 0, "end": Date().timeIntervalSince1970])
         if var s = state {
             for i in s.eggs.indices { s.eggs[i].km += km }
-            if var b = s.buddy, b.need > 0 {
+            let grow = { (b: inout BuddyInfo) in
+                guard b.need > 0 else { return }
                 b.km += km
                 if b.km >= b.need { b.ready = true }
-                s.buddy = b
             }
+            if var b = s.buddy { grow(&b); s.buddy = b }
+            if var L = s.buds { for i in L.indices { grow(&L[i]) }; s.buds = L }
             s.total += km
             state = s
         }
