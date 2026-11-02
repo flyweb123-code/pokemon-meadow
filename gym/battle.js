@@ -307,6 +307,15 @@ function gifLoad(u) {
   if (!gifOk.has(u)) gifOk.set(u, new Promise(r => { const i = new Image(); i.onload = () => r(true); i.onerror = () => r(false); i.src = u; }));
   return gifOk.get(u);
 }
+// v14.30 경완 '머리가 상대 정보 박스에 가려지지 않게': 뒷모습 gif 의 위쪽 빈 줄 수를 재서, 그림 윗끝이 박스 아래(GIF_TOP)보다 위면 그만큼 내림 (아래는 대사창 뒤로 잘려도 됨)
+const GIF_TOP = 56, gifTopC = new Map();
+function gifTop(u) {
+  if (!gifTopC.has(u)) gifTopC.set(u, new Promise(r => { const i = new Image(); i.crossOrigin = 'anonymous';
+    i.onload = () => { try { const w = i.naturalWidth, h = i.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(i, 0, 0); const d = x.getImageData(0, 0, w, h).data; let t = 0;
+      out: for (; t < h; t++) for (let j = 0; j < w; j++) if (d[(t * w + j) * 4 + 3] > 20) break out; r({ h, t }); } catch (e) { r(null); } };
+    i.onerror = () => r(null); i.src = u; }));
+  return gifTopC.get(u);
+}
 // 나올 그림 고르기: gif 가 1.5초 안에 오면 gif, 아니면 저장소 그림 (늦게라도 오면 다음 번엔 gif)
 async function pickGif(side, A) {
   const u = gifUrl(A.sp, side === 'p', A.shiny, A.g === 'F', A.fm); if (!u) return null;
@@ -323,9 +332,11 @@ function showMon(side, A, on = true) {
   if (A && A.gif) { img.onerror = null; setSrc(img, A.gif); img.alt = ''; m.classList.remove('pl2'); m.classList.add('gf'); img.style.transform = ''; m.style.left = m.style.top = '';
     // 블랙·화이트 뒷모습 gif 는 앞모습과 거의 같은 크기라 모두 같은 배율로 키운다: 종끼리 크기 비율은 그대로, 플래티나 뒷모습(2장 그림)과 비슷한 크기 (경완 2026-10-31 '밀탱크 뒷모습 너무 작아')
     const k = side === 'p' ? 1.4 : 1, fw = () => { if (img.naturalWidth) img.style.width = img.naturalWidth * k + 'px'; };
-    if (k !== 1) { if (img.complete && img.naturalWidth && img.style.visibility !== 'hidden') fw(); else img.addEventListener('load', fw, { once: true }); } }
+    if (k !== 1) { if (img.complete && img.naturalWidth && img.style.visibility !== 'hidden') fw(); else img.addEventListener('load', fw, { once: true }); }
+    if (side === 'p') { const u = A.gif; gifTop(u).then(g => { if (!g || m._gif !== u) return; const y = 144 - (g.h - g.t) * k; if (y < GIF_TOP) m.style.top = (48 + Math.round(GIF_TOP - y)) + 'px'; }); }
+    m._gif = A.gif; }
   else if (A) {
-    m.classList.remove('gf'); const a = anOf(A), sheet = !!a, fm = FMA[A.fm] ? A.fm : ''; img.onerror = () => { img.onerror = null; setSrc(img, pkSrc(A.sp, { b: side === 'p', s: A.shiny })); }; setSrc(img, fm ? `${IMG}pk/fm/${fm}${side === 'p' ? 'b' : ''}${A.shiny ? 's' : ''}.png?v=${VER}` : pkSrc(A.sp, { b: side === 'p', s: A.shiny, f: A.g === 'F' })); img.alt = '';
+    m._gif = null; m.classList.remove('gf'); const a = anOf(A), sheet = !!a, fm = FMA[A.fm] ? A.fm : ''; img.onerror = () => { img.onerror = null; setSrc(img, pkSrc(A.sp, { b: side === 'p', s: A.shiny })); }; setSrc(img, fm ? `${IMG}pk/fm/${fm}${side === 'p' ? 'b' : ''}${A.shiny ? 's' : ''}.png?v=${VER}` : pkSrc(A.sp, { b: side === 'p', s: A.shiny, f: A.g === 'F' })); img.alt = '';
     m.classList.toggle('pl2', sheet); img.style.transform = '';
     if (sheet) { m.style.left = (side === 'e' ? 136 : 40) + 'px'; m.style.top = (side === 'e' ? E_Y + a[0] : P_Y + a[1]) + 'px'; }
     else { m.style.left = m.style.top = ''; }
