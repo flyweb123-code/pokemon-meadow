@@ -1812,8 +1812,7 @@ async function intro() {
   const pickTy = async () => { for (;;) { S1.hide(true); const r = await setup(['ty'], false, { dr, back: 1 }); if (!open) return false; if (r !== 'back') break;
       // v14.16 경완: 타입 화면 뒤로가기 → 강박사가 관장 자리를 더 고민할지 묻고, 예면 필드로 ('퇴근하는 중' 대신 '로딩 중')
       S1.pic(false); S1.hide(false);
-      await S1.say('응? 설마 도망가려는 건\n아니겠지? 협회에 벌써\n연락해 뒀는데...');
-      await S1.say('...정말 오늘은\n그냥 가 보겠나?');
+      await S1.say('응? 설마 도망가려는 건\n아니겠지? 협회에 벌써\n연락해 뒀는데...');   // v14.25 경완: '정말 오늘은 그냥 가 보겠나?' 뺌
       if (await S1.choose(['예', '아니요']) === 0) { await S1.say('허허... 그래,\n천천히 생각해 보게.'); await S1.say('관장 자리는\n어차피 자네 거니까!'); if (open) exit('로딩 중'); return false; }
       await S1.say('하하, 그래야지!\n그럼 타입을 다시 골라 보게.'); }
     gse('DP_DECIDE');
