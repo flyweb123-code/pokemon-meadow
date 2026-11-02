@@ -1254,30 +1254,30 @@ const BX_SORT = [['lv', '레벨'], ['rank', '랭크'], ['new', '날짜']];   // 
 let bxSort = 'lv', bxDir = 1, bxQ = '', bxTy = 0, bxTyAll = [], bxRefresh = null;
 const tyI = t => GA.tyIcon(t).replace(/ data-tip="[^"]*"/, '');   // 박스·라인업 타입 아이콘은 눌러도 말풍선 없이 (경완 2026-10-29)   // bxTy: 타입 필터 (0 = 전체, 경완 2026-10-29)
 const RK_ORD = { S: 7, A: 6, B: 5, C: 4, D: 3, E: 2, F: 1 };
-function boxWin(add, tmId, done, O) { bxTy = 0;   // 열 때마다 '모든 타입' (포켓몬 박스와 같게, 경완 2026-10-30)   // O: 다른 곳에서 쓰는 고르기 (훈련장 등) {title, tip, list, ok, first, tag, pick}   // tmId: 창고에서 기술머신 가르칠 포켓몬 고르기 (경완 2026-10-29)
+function boxWin(add, tmId, done, O) { bxTy = 0; if (O?.view) { bxSort = 'rank'; bxDir = 1; }   // v14.17 O.view: 체육관 열기 전(타입 고르기)에도 내 박스 전체를 같은 모양으로 보기만   // 열 때마다 '모든 타입' (포켓몬 박스와 같게, 경완 2026-10-30)   // O: 다른 곳에서 쓰는 고르기 (훈련장 등) {title, tip, list, ok, first, tag, pick}   // tmId: 창고에서 기술머신 가르칠 포켓몬 고르기 (경완 2026-10-29)
   document.querySelector('#gym .gy-boxw')?.remove();
   const w = document.createElement('div'); w.className = 'gy-boxw';
   w.innerHTML = `<div class="win" role="dialog" aria-label="포켓몬 박스"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>${O ? O.title() : tmId ? `기술 가르치기 · ${esc(mvKo(tmId))}` : add ? `라인업 ${(S.gym.luI | 0) + 1}에 넣을 포켓몬 <small>${curLu().length}/6</small>` : '포켓몬 박스'}</h4></div>
         <div class="filters boxq"><span class="qw"><input type="search" placeholder="이름이나 번호" aria-label="포켓몬 이름이나 번호로 찾기" autocomplete="off" value="${esc(bxQ)}"><button type="button" class="qx" aria-label="검색어 지우기">✕</button></span></div>
     <div class="mgr-tools"><div class="bag-sort bw-sort">${BX_SORT.map(([k, n]) => `<button data-sort="${k}">${n}</button>`).join('')}</div><div class="bw-tyf" role="group" aria-label="타입 필터"></div><span class="tcount"></span></div>
     <div class="boxgrid bw-grid"></div></div>`;
-  document.querySelector('#gym .gy-main').appendChild(w);
+  (O?.host || document.querySelector('#gym .gy-main')).appendChild(w); if (O?.z) w.style.zIndex = O.z;
   const grid = w.querySelector('.bw-grid'), inp = w.querySelector('input');
   const draw = () => {
     w.querySelectorAll('[data-sort]').forEach(b => { const on = b.dataset.sort === bxSort; b.setAttribute('aria-pressed', on); b.dataset.dir = on ? (bxDir > 0 ? '▼' : '▲') : ''; });
-    const lu = new Set(curLu()), q = bxQ.toLowerCase();
+    const lu = new Set(O?.view ? [] : curLu()), q = bxQ.toLowerCase();
     const key = { lv: x => (x.m?.lv || 0) * 1e3 + GA.ivSum(x.P), rank: x => (RK_ORD[GA.rankOf(x.P)] || 0) * 1e5 + (x.m?.lv || 0), new: x => +x.P.t || +x.P.id || 0 }[bxSort] || (x => (x.m?.lv || 0));
     // 라인업 고르기는 가진 포켓몬 전부: 다른 타입은 흐리게(못 고름), 고를 수 있는 포켓몬이 앞에 (경완 2026-10-28)
     const all = O ? O.list() : S.box.filter(tyOk), tys = P => SPECIES[P.sp]?.t || [];
     // 타입 필터: 목록에 있는 타입만 아이콘으로, 고르면 그 타입이 들어간 포켓몬만 (경완 2026-10-29)
-    const gt = S.gym.ty, TY = [...new Set(all.flatMap(tys))].filter(t => t !== gt).sort((a, b) => a - b); if (bxTy && !TY.includes(bxTy)) bxTy = 0;   // 체육관 타입은 기본, 나머지 한 타입을 팝업에서 고르기 (경완 2026-10-29)
+    const gt = S.gym?.ty || 0, TY = [...new Set(all.flatMap(tys))].filter(t => t !== gt).sort((a, b) => a - b); if (bxTy && !TY.includes(bxTy)) bxTy = 0;   // 체육관 타입은 기본, 나머지 한 타입을 팝업에서 고르기 (경완 2026-10-29)
     bxTyAll = TY;
     w.querySelector('.bw-tyf').innerHTML = TY.length ? `<button type="button" class="fsel bw-fsel${bxTy ? ' on' : ''}" data-typop aria-haspopup="listbox">${bxTy ? TYPE_KO[bxTy] : '모든 타입'}</button>` : '';
-    const L = all.filter(P => (!q || nmOf(P).toLowerCase().includes(q) || String(P.sp) === q.replace(/^0+/, '')) && (!bxTy || tys(P).includes(bxTy))).map(P => { const ok = O ? O.ok(P) : tyOk(P) && (!tmId || tmCan(P, tmId)); return { P, ok, f: O?.first ? +!!O.first(P) : 0, m: O || tyOk(P) ? gm(P) : null }; }).sort((a, b) => (b.ok - a.ok) || (b.f - a.f) || (key(b) - key(a)) * bxDir);
+    const L = all.filter(P => (!q || nmOf(P).toLowerCase().includes(q) || String(P.sp) === q.replace(/^0+/, '')) && (!bxTy || tys(P).includes(bxTy))).map(P => { const ok = O ? O.ok(P) : tyOk(P) && (!tmId || tmCan(P, tmId)); return { P, ok, f: O?.first ? +!!O.first(P) : 0, m: O?.view ? null : O || tyOk(P) ? gm(P) : null }; }).sort((a, b) => (b.ok - a.ok) || (b.f - a.f) || (key(b) - key(a)) * bxDir);
     w.querySelector('.tcount').innerHTML = q || bxTy ? `찾은 포켓몬 <b>${L.length}</b>마리` : `<b>${all.length}</b>마리`;   // 마릿수만 (경완 2026-10-29)
     grid.innerHTML = L.length ? L.map(({ P, m, ok }) => { const rk = GA.rankOf(P), on = lu.has(P.id);
       return `<button class="pk${P.shiny ? ' shiny' : ''}${GA.pkCls?.(P) || ''}${ok ? '' : ' bw-no'}" data-id="${P.id}" ${ok ? '' : 'disabled'} style="--shue:${GA.shinyHue(P.sp)}deg"><span class="rk ${rk}">${rk}</span>${(T => T.length ? `<span class="tgs">${T.map(t => `<span class="tg${t === '훈련중' || t === '훈련 중' ? ' tg-tr' : ''}">${t}</span>`).join('')}</span>` : '')(O ? [O.tag?.(P)].filter(Boolean) : [on && '라인업', inTr(P.id) && '훈련중'].filter(Boolean))}<img alt="" data-th="${P.id}"><span class="nm">${esc(nmOf(P))}${P.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="bw-tys">${tys(P).map(tyI).join('')}</span>${tmId && !ok ? `<span class="bw-lv">${m?.mv.includes(tmId) ? '이미 앎' : '못 배움'}</span>` : m ? `<span class="bw-lv">Lv.${m.lv}</span>` : ''}</button>`; }).join('')
-      : `<p class="empty-msg">${q || bxTy ? '찾는 포켓몬이 없어요.' : `${TYPE_KO[S.gym.ty]} 타입 포켓몬이 아직 없어요.`}</p>`;
+      : `<p class="empty-msg">${q || bxTy ? '찾는 포켓몬이 없어요.' : (O?.view ? '포켓몬이 없어요.' : `${TYPE_KO[S.gym.ty]} 타입 포켓몬이 아직 없어요.`)}</p>`;
     fillTh(grid);
   };
   bxRefresh = () => w.isConnected && draw();
