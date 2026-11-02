@@ -1460,16 +1460,9 @@ const RKO = { S: 7, A: 6, B: 5, C: 4, D: 3, E: 2, F: 1 };
 const rkSort = L => L.map(P => [P, GA.rankOf(P)]).sort((a, b) => (RKO[b[1]] || 0) - (RKO[a[1]] || 0) || (+b[0].t || 0) - (+a[0].t || 0));
 const pvCell = ([P, rk]) => `<span class="rk-fr" data-rk="${rk}"><span class="rk ${rk}">${rk}</span><img alt="" data-pvth="${P.id}"${P.shiny ? ` class="shiny" style="--shue:${GA.shinyHue(P.sp)}deg"` : ''}></span>`;
 const pvImg = im => { const P = S.box.find(p => String(p.id) === im.dataset.pvth); if (P) GA.thumb(P).then(u => { if (u) im.src = u; }).catch(() => {}); };
-// v14.16 경완: 타입 고르기 화면의 '포켓몬 박스 확인' = 내 포켓몬 전체를 랭크 순으로 보는 화면 (보기만, 타입으로 거르기)
-function boxAll() { root.querySelector('.gy-boxall')?.remove();
-  const w = document.createElement('div'); w.className = 'gy-boxall'; let f = 0;
-  const draw = () => { const tys = [...new Set(S.box.flatMap(P => SPECIES[P.sp]?.t || []))].sort((a, b) => a - b), L = rkSort(S.box.filter(P => !f || (SPECIES[P.sp]?.t || []).includes(f)));
-    w.innerHTML = `<div class="ba-hd"><button type="button" class="gy-back" data-bx aria-label="뒤로">◀</button><h3>포켓몬 박스</h3><span>${L.length}마리</span></div>
-      <div class="ba-ty"><button type="button" data-f="0" aria-pressed="${!f}">전체</button>${tys.map(t => `<button type="button" data-f="${t}" aria-pressed="${f === t}">${tyIc0(t)}${TYPE_KO[t]}</button>`).join('')}</div>
-      <div class="ba-grid">${L.map(([P, rk]) => `<div class="ba-c">${pvCell([P, rk])}<small>${esc(GA.SPECIES[P.sp]?.n || '')}</small></div>`).join('') || '<p>포켓몬이 없어요.</p>'}</div>`;
-    w.querySelectorAll('img[data-pvth]').forEach(pvImg); };
-  w.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap'); if (b.hasAttribute('data-bx')) { w.remove(); return; } if (b.dataset.f != null) { f = +b.dataset.f; draw(); w.querySelector('.ba-grid').scrollTop = 0; } };
-  draw(); root.appendChild(w); }
+// v14.17 경완: 타입 고르기 화면의 '포켓몬 박스 확인' = 체육관 포켓몬 박스와 같은 화면 (GymBattle.boxWin view: 내 박스 전체, 보기만)
+function boxAll() { loadJs('gym/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => { if (!open) return;
+  GymBattle.boxWin(false, null, null, { view: 1, host: root, z: 15, title: () => '포켓몬 박스', list: () => S.box, ok: () => true, pick: () => {} }); }).catch(() => {}); }
 const tyIc0 = t => tyIcon(t).replace(/ data-tip="[^"]*"/, '');   // v14.14 경완: 체육관 타입 고르기 화면에선 타입 아이콘을 눌러도 말풍선 없음
 function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에서 한 단계만 띄우고 고른 값을 돌려받는다 (v13.70)
   const g = st(), first = !g?.d;
