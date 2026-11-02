@@ -1195,7 +1195,7 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .iv-hex::after{content:'›';position:absolute;right:8px;top:50%;transform:translateY(-55%);font-size:24px;font-weight:700;color:#9aa4b8}
 .mp-mvh{display:flex;align-items:center;justify-content:space-between;margin:2px 0 4px}
 .mp-mvh small{font-size:11px;color:var(--dim);font-weight:700}
-.mp-tx{min-height:0!important;padding:2px 2px!important;background:none!important;box-shadow:none!important;border:0!important;color:#2a68c8;font-size:13px;font-weight:700}
+.mp-tx{min-height:0!important;padding:10px 8px!important;margin:-10px -8px -10px 0;background:none!important;box-shadow:none!important;border:0!important;color:#2a68c8;font-size:13px;font-weight:700}.mp-tx:active{opacity:.6}   /* v14.32 경완: 기술 바꾸기 누르는 범위 넓게 (모양은 그대로) */
 .mp-line .mp-mv{justify-content:flex-start}
 .mp-line .mp-mv>.tg{order:-1;flex:none;width:76px}
 .mp-pg{display:flex;justify-content:center;gap:6px;margin:8px 0 0!important}
