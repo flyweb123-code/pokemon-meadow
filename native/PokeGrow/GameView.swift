@@ -26,6 +26,7 @@ struct GameView: UIViewRepresentable {
         config.userContentController.addScriptMessageHandler(AudioMix(), contentWorld: .page, name: "audioMix")
         // 2026-11-02 경완: 위치 권한은 게임이 튜토리얼 끝에 묻는다 (WalkTracker.askLoc)
         config.userContentController.addScriptMessageHandler(LocHandler(), contentWorld: .page, name: "loc")
+        config.userContentController.addScriptMessageHandler(PermHandler(), contentWorld: .page, name: "perm")   // 권한 셋을 한 번에 (Perm)
         let web = WKWebView(frame: .zero, configuration: config)
         web.navigationDelegate = context.coordinator
         web.isOpaque = false
