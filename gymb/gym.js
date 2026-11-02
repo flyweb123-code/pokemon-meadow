@@ -1515,7 +1515,7 @@ function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에
     if (b.hasAttribute('data-bk')) { el.remove(); fin('back'); return; }   // v14.12 경완: 튜토리얼 디자인 고르기의 ✕ → 뒤로가기, 강박사가 타입 다시 고를지 묻는다
     if (b.classList.contains('gy-back')) { if (i > 0) { i--; draw(); } else el.remove(); return; }
     if (b.dataset.m) { const DL = dzList(), n = DL.length, j = DL.findIndex(D => D.id === dr.d); dr.d = DL[(j + +b.dataset.m + n) % n].id; dr.dPick = 1; draw(); return; }
-    if (b.dataset.ty && !recOff) { recOff = true; el.querySelector('.gy-ty.rec')?.classList.remove('rec'); }
+    if (b.dataset.ty && +b.dataset.ty === recTy && !recOff) {   /* v14.22 경완: 추천은 그 타입을 누를 때만 꺼짐 */ recOff = true; el.querySelector('.gy-ty.rec')?.classList.remove('rec'); }
     if (b.dataset.ty && !counts[+b.dataset.ty]) { if (root.querySelector('.gy-kang.tyno:not(.bye)')) return; kang([`${trName() ? trName() + '…\n' : '음…\n'}그 타입은 아직 어려워 보이는구나.\n다른 타입을 골라 보렴.`], { lit: true }); root.lastElementChild.classList.add('tyno'); root.lastElementChild.style.zIndex = 14; return; }   // v14.14 경완: 내 포켓몬이 0마리인 타입은 못 고른다 — 강박사가 그 화면 위 대사창으로 말리고 막는다
     if (b.dataset.ty && +b.dataset.ty === dr.ty) { dr.ty = 0; draw(); return; }   // v14.18 경완: 고른 타입을 한 번 더 누르면 선택 취소
     if (b.dataset.ty) { const t = +b.dataset.ty, auto = !dr.nm || dr.nm === defName(dr.ty); dr.ty = t; if (auto) dr.nm = ''; if (!dr.dPick) dr.d = (DESIGNS.find(d => d.ty === t) || DESIGNS.find(d => d.id === dr.d) || dzList()[0]).id; draw(); return; }   // 타입을 고르면 그 타입 맵부터 (경완 2026-10-29)
@@ -1968,7 +1968,7 @@ function dexRead() {   // v13.86 경완 '그 도감 말고 눌렀을 때 나오�
     if (!alive || n < 1) return;
     w.style.setProperty('--wh', 1); await wait(70);   // 가장 밝은 순간에 바로
     put(ids[n], 'kung'); w.style.setProperty('--wh', 0); w.style.setProperty('--gl', 0); gse('DP_KON', 1.4); gse('DP_GASHIN', .9); GA.haptic?.(2); setTimeout(() => GA.haptic?.(2), 110); shake2(); await wait(650); })();   // 쾅
-  return { up: () => { upd = 1; if (!w.isConnected || dy <= 0) return; w.animate([{ translate: `0 ${dy}px` }, { translate: '0 0' }], { duration: 520, easing: 'cubic-bezier(.3,.7,.2,1)' }); w.style.translate = '0 0'; dy = 0; }, close: async () => { await run; alive = 0; await wait(200); w.classList.add('bye'); await wait(220); w.remove(); } }; }
+  return { up: () => { upd = 1; if (!w.isConnected || dy <= 0) return; w.animate([{ translate: `0 ${dy}px` }, { translate: '0 0' }], { duration: 820, easing: 'cubic-bezier(.45,.05,.25,1)' }); w.style.translate = '0 0'; dy = 0; }   /* v14.22 경완: 대사창 뜰 때 더 부드럽게 올라감 */, close: async () => { await run; alive = 0; await wait(200); w.classList.add('bye'); await wait(220); w.remove(); } }; }
 // 불을 찾다 발가락을 찧을 때 화면이 살짝 흔들림
 const shake2 = () => $g('.gy-stage')?.animate([{ translate: '0 0' }, { translate: '-4px 0' }, { translate: '3px 0' }, { translate: '0 0' }], { duration: 220 });
 // 걸을 수 없는 칸인지 (맵 밖만 막는다: 체육관 맵마다 막힌 칸 표가 따로 없음)
