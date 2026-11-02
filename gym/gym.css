@@ -1971,7 +1971,7 @@ body.gymBattle .gy-vtit{display:none}
 .gy-nme input:focus{border-bottom-color:currentColor}
 .gy-nme .pen-b{width:.8em;height:.8em;opacity:.8}
 
-#gym.lupk .gy-menu button[data-t]:not(.gy-out):not([data-t="out"]){opacity:.4;filter:grayscale(1);pointer-events:none}   /* v12.24 라인업 고르기 중 메뉴 잠금 */
+/* v14.14 경완: 라인업 고르기 중 메뉴 잠금 없앰 (v12.24 잠금) */
 
 /* 박스 위에서 연 도구 사용·기술 가르치기 창이 박스 뒤로 숨지 않게 (경완 2026-10-30) */
 .gy-storew.tm-teach{z-index:8}
