@@ -38,6 +38,10 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
                       !t.isEmpty, !m.isEmpty, t.count <= 40, m.count <= 160 else { return (nil, "제목과 내용을 확인해 주세요") }
                 try await notice(t, m)
                 return (true, nil)
+            case "noticeTest":   // v14.49 경완: 공지 푸시를 모두에게 보내기 전에 이 기기에만 5초 뒤 같은 알림
+                guard let t = body["title"] as? String, let m = body["body"] as? String, !t.isEmpty, !m.isEmpty else { return (nil, "제목과 내용을 확인해 주세요") }
+                if let er = await NotiCenter.test(t, m) { return (nil, er) }
+                return (true, nil)
             case "score":
                 guard let game = body["game"] as? String, game.count <= 20, game.allSatisfy({ $0.isLetter || $0.isNumber }),
                       let card = body["card"] as? String, card.utf8.count < 5_000 else { return (nil, "잘못된 요청") }

@@ -119,8 +119,22 @@ final class NotiCenter: NSObject, UNUserNotificationCenterDelegate {
         }
     }
 
-    // 앱 화면이 켜져 있을 때 온 알림은 띄우지 않는다 (게임이 직접 알려 준다)
+    // v14.49 경완: 운영자 공지 푸시 시험 — 이 기기에만 5초 뒤 같은 제목·내용 알림 (앱이 켜져 있어도 보이게)
+    static let testId = "noticeTest"
+    static func test(_ title: String, _ body: String) async -> String? {
+        let c = UNUserNotificationCenter.current()
+        var st = await c.notificationSettings().authorizationStatus
+        if st == .notDetermined { _ = try? await c.requestAuthorization(options: [.alert, .sound]); st = await c.notificationSettings().authorizationStatus }
+        guard st == .authorized || st == .provisional || st == .ephemeral else { return "알림 권한이 꺼져 있어요. 설정 › 권한에서 켜 주세요" }
+        let n = UNMutableNotificationContent()
+        n.title = title; n.body = body; n.sound = .default
+        do { try await c.add(UNNotificationRequest(identifier: testId, content: n, trigger: UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false))) }
+        catch { return "알림을 만들지 못했어요: \(error.localizedDescription)" }
+        return nil
+    }
+
+    // 앱 화면이 켜져 있을 때 온 알림은 띄우지 않는다 (게임이 직접 알려 준다). 공지 시험 알림만 띄움
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([])
+        completionHandler(notification.request.identifier == NotiCenter.testId ? [.banner, .list, .sound] : [])
     }
 }
