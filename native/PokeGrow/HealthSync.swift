@@ -16,10 +16,10 @@ final class HealthSync {
     private let lastKey = "healthLastSync.v2"
     private var busy = false
 
+    static let readTypes: Set<HKObjectType> = [HKObjectType.workoutType(), HKQuantityType(.distanceWalkingRunning), HKSeriesType.workoutRoute()]
     func refresh() {
-        guard HKHealthStore.isHealthDataAvailable(), !busy else { return }
-        let read: Set<HKObjectType> = [HKObjectType.workoutType(), HKQuantityType(.distanceWalkingRunning), HKSeriesType.workoutRoute()]
-        store.requestAuthorization(toShare: nil, read: read) { [weak self] _, _ in
+        guard HKHealthStore.isHealthDataAvailable(), !busy, Perm.asked else { return }   // 2026-11-02: 튜토리얼 끝에 묻기 전엔 건드리지 않는다 (Perm)
+        store.requestAuthorization(toShare: nil, read: HealthSync.readTypes) { [weak self] _, _ in
             DispatchQueue.main.async { self?.query() }
         }
     }

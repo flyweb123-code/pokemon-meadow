@@ -27,7 +27,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
     }
 
     func start() {
-        guard CMPedometer.isDistanceAvailable() else { return }
+        guard CMPedometer.isDistanceAvailable(), Perm.asked else { return }   // 2026-11-02: 튜토리얼 끝에 묻기 전엔 걸음·위치를 건드리지 않는다 (Perm)
         if UserDefaults.standard.object(forKey: lastKey) == nil {
             UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: lastKey)
         }
@@ -48,6 +48,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
     private var liveBest = 0.0
     private var liveDay = Date.distantPast
     func startLive() {
+        guard Perm.asked else { return }
         guard CMPedometer.isDistanceAvailable() else { PhoneBridge.shared.sendPedErr("이 기기는 만보기 거리를 지원하지 않아요"); return }
         switch CMPedometer.authorizationStatus() {
         case .denied: PhoneBridge.shared.sendPedErr("동작 및 피트니스 권한이 꺼져 있어요 (설정 › 개인정보 보호 › 동작 및 피트니스)"); return
@@ -92,6 +93,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
 
     // 앱을 열 때마다 한 번 더 확인한다
     func refresh() {
+        guard Perm.asked else { return }
         if manager.authorizationStatus == .authorizedAlways || manager.authorizationStatus == .authorizedWhenInUse {
             if tracking, let loc = manager.location { lookAt = nil; place(for: loc) } else { manager.requestLocation() }
         } else {
