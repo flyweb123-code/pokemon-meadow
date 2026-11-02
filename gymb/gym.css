@@ -2425,8 +2425,11 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .gy-typv .tp-c{flex:none;width:58px;padding:0;background:none;border:0;box-shadow:none}.gy-typv .tp-c:active{transform:translate(1px,1px)}
 
 /* v14.19 경완: 추천 타입 버튼 테두리 은은하게 */
-.gy-ty.rec{animation:tyRec 1.8s ease-in-out infinite}
-@keyframes tyRec{0%,100%{box-shadow:0 3px 0 var(--frame),0 0 0 2px rgba(255,216,94,.35),0 0 6px rgba(255,200,60,.25)}50%{box-shadow:0 3px 0 var(--frame),0 0 0 4px #ffd85e,0 0 14px rgba(255,200,60,.75)}}
+.gy-ty.rec{position:relative}   /* v14.21 경완: 추천 = 검정 테두리 자리를 금빛이 덮으며 은은하게 (버튼 안쪽에 그려서 오른쪽 칸도 안 잘림) + 추천! 딱지 */
+.gy-ty.rec::after{content:'';position:absolute;inset:-3px;border:3px solid #ffc83c;box-shadow:inset 0 0 8px rgba(255,200,60,.55);pointer-events:none;animation:tyRec 1.8s ease-in-out infinite}
+.gy-ty.rec::before{content:'추천!';position:absolute;top:-3px;right:-3px;padding:1px 5px 2px;font-size:10px;line-height:1.2;font-weight:700;color:#5a3a00;background:#ffd85e;border-left:2px solid #c9961c;border-bottom:2px solid #c9961c;pointer-events:none;z-index:1}
+@keyframes tyRec{0%,100%{opacity:.35}50%{opacity:1}}
 
 .mp-pg.num{font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums}.gy-pop .win:has(.mp-head) .mp-pg.num{height:auto}
 .mp-pg{flex-wrap:wrap;max-width:100%}
+.iv-hex{transition:transform .08s,filter .08s}.iv-hex:active{transform:scale(.97);filter:brightness(.95)}   /* v14.21 경완: 능력치 박스 누르면 눌림 */
