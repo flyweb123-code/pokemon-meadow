@@ -33,6 +33,11 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
             case "top":
                 guard let wk = body["wk"] as? String, !wk.isEmpty else { return (nil, "잘못된 요청") }
                 return (try await top(wk, dex: body["kind"] as? String == "dex"), nil)
+            case "notice":   // v14.37 운영자 공지 푸시 (Notice 만들기 권한은 CloudKit 콘솔 보안 역할로 운영자만)
+                guard let t = body["title"] as? String, let m = body["body"] as? String,
+                      !t.isEmpty, !m.isEmpty, t.count <= 40, m.count <= 160 else { return (nil, "제목과 내용을 확인해 주세요") }
+                try await notice(t, m)
+                return (true, nil)
             case "score":
                 guard let game = body["game"] as? String, game.count <= 20, game.allSatisfy({ $0.isLetter || $0.isNumber }),
                       let card = body["card"] as? String, card.utf8.count < 5_000 else { return (nil, "잘못된 요청") }
@@ -148,6 +153,52 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
                 subWant = nil   // 다음 실행 때(또는 설정을 바꿨을 때) 다시 해 본다
             }
         }
+    }
+
+    // ---------- 업데이트 공지 알림 (v14.37 경완 2026-11-02 '업데이트 됐다는 핸드폰 푸시') ----------
+    // 레코드 종류 Notice (title, body). 누가 Notice 를 새로 만들면 구독한 모든 폰에 그 제목·내용으로 알림이 간다.
+    // 알림 글은 레코드 필드에서 바로 가져온다: 지역화 키 "%1$@" 를 형식 문자열로 쓰고 인자로 필드 이름을 준다.
+    // 만들기 권한: CloudKit 콘솔 › Security Roles 에서 Notice 의 Create 를 _icloud(Authenticated) 에서 빼고 운영자 역할에만 준다.
+    private var nwWant: String?
+    private var nwBusy = false
+    @MainActor
+    func setNewsPush(_ on: Bool) {
+        let key = "nwSub", want = on ? "on" : "off"
+        guard !nwBusy, nwWant != want else { return }
+        nwBusy = true
+        nwWant = want
+        Task { @MainActor in
+            defer { nwBusy = false }
+            do {
+                if UserDefaults.standard.string(forKey: key) == want { if on { UIApplication.shared.registerForRemoteNotifications() }; return }
+                let id = CKSubscription.ID("news_all")
+                if on {
+                    UIApplication.shared.registerForRemoteNotifications()
+                    let s = CKQuerySubscription(recordType: "Notice", predicate: NSPredicate(value: true), subscriptionID: id, options: [.firesOnRecordCreation])
+                    let n = CKSubscription.NotificationInfo()
+                    n.titleLocalizationKey = "%1$@"
+                    n.titleLocalizationArgs = ["title"]
+                    n.alertLocalizationKey = "%1$@"
+                    n.alertLocalizationArgs = ["body"]
+                    n.soundName = "default"
+                    s.notificationInfo = n
+                    let (res, _) = try await db.modifySubscriptions(saving: [s], deleting: [])
+                    for r in res.values { if case .failure(let e) = r { throw e } }
+                } else {
+                    _ = try await db.modifySubscriptions(saving: [], deleting: [id])
+                }
+                UserDefaults.standard.set(want, forKey: key)
+            } catch {
+                nwWant = nil
+            }
+        }
+    }
+
+    private func notice(_ title: String, _ body: String) async throws {
+        let r = CKRecord(recordType: "Notice")
+        r["title"] = title as CKRecordValue
+        r["body"] = body as CKRecordValue
+        _ = try await db.modifyRecords(saving: [r], deleting: [], savePolicy: .allKeys)
     }
 
     // 미니게임 전체 랭킹: 그 게임 최고 기록 순서로 100명 [{code, card, best, at}]
