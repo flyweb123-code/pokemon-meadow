@@ -98,10 +98,25 @@ final class NotiCenter: NSObject, UNUserNotificationCenterDelegate {
         UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: id, content: c, trigger: nil))
     }
 
+    // v14.48 경완: 알림 권한도 앱 켤 때 묻지 않고 튜토리얼 끝 권한 묻기(Perm)에서 함께 묻는다
     private func askPermission() {
-        guard !asked else { return }
+        guard Perm.asked, !asked else { return }
         asked = true
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
+    }
+
+    static func state(_ done: @escaping (String) -> Void) {
+        UNUserNotificationCenter.current().getNotificationSettings { st in
+            let v: String
+            switch st.authorizationStatus { case .notDetermined: v = "ask"; case .denied: v = "no"; default: v = "ok" }
+            DispatchQueue.main.async { done(v) }
+        }
+    }
+    static func ask(_ next: @escaping () -> Void) {
+        state { v in
+            guard v == "ask" else { return next() }
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in DispatchQueue.main.async { next() } }
+        }
     }
 
     // 앱 화면이 켜져 있을 때 온 알림은 띄우지 않는다 (게임이 직접 알려 준다)
