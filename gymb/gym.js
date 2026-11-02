@@ -1462,7 +1462,8 @@ const pvCell = ([P, rk]) => `<span class="rk-fr" data-rk="${rk}"><span class="rk
 const pvImg = im => { const P = S.box.find(p => String(p.id) === im.dataset.pvth); if (P) GA.thumb(P).then(u => { if (u) im.src = u; }).catch(() => {}); };
 // v14.17 경완: 타입 고르기 화면의 '포켓몬 박스 확인' = 체육관 포켓몬 박스와 같은 화면 (GymBattle.boxWin view: 내 박스 전체, 보기만)
 function boxAll() { loadJs('gymb/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => { if (!open) return;
-  GymBattle.boxWin(false, null, null, { view: 1, host: root, z: 15, title: () => '포켓몬 박스', list: () => S.box, ok: () => true, pick: () => {} }); }).catch(() => {}); }
+  GymBattle.boxWin(false, null, null, { view: 1, host: root, z: 15, title: () => '포켓몬 박스', list: () => S.box, ok: () => true, pick: P => monView(P.id) }); }).catch(() => {}); }
+function monView(id, lst) { loadJs('gymb/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => { if (open) GymBattle._monPop(id, 'view', null, lst); }).catch(() => {}); }
 const tyIc0 = t => tyIcon(t).replace(/ data-tip="[^"]*"/, '');   // v14.14 경완: 체육관 타입 고르기 화면에선 타입 아이콘을 눌러도 말풍선 없음
 function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에서 한 단계만 띄우고 고른 값을 돌려받는다 (v13.70)
   const g = st(), first = !g?.d;
@@ -1477,9 +1478,8 @@ function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에
   const counts = myTypes();
   // v14.14 경완: 타입 화면 아래 '포켓몬 박스 확인' — 켜 두면 고른 타입의 내 포켓몬을 랭크 순으로 랭크 테두리와 함께 빈 자리에 보여 준다
   // v14.16 경완 정정: 타입을 누르면 빈 자리에 바로 미리 보기, '포켓몬 박스 확인' 버튼은 내 포켓몬 박스 전체 화면을 연다
-  const PV_N = 17;
   const tyPv = () => { const L = dr.ty ? rkSort(S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(dr.ty))) : [];
-    return `${dr.ty ? `<div class="gy-typv"><div class="tp-hd"><b>${TYPE_KO[dr.ty]} 타입 내 포켓몬 ${L.length}마리</b></div>${L.length ? `<div class="tp-grid">${L.slice(0, PV_N).map(pvCell).join('')}${L.length > PV_N ? `<span class="tp-more">+${L.length - PV_N}</span>` : ''}</div>` : '<p>이 타입 포켓몬이 아직 없어요.</p>'}</div>` : ''}`; };
+    return `${dr.ty ? `<div class="gy-typv"><div class="tp-hd"><b>${TYPE_KO[dr.ty]} 타입 내 포켓몬 ${L.length}마리</b></div>${L.length ? `<div class="tp-row">${L.map(x => `<button type="button" class="tp-c" data-mp="${x[0].id}">${pvCell(x)}</button>`).join('')}</div>` : '<p>이 타입 포켓몬이 아직 없어요.</p>'}</div>` : ''}`; };
   const pvFill = () => el.querySelectorAll('img[data-pvth]').forEach(pvImg);
   const draw = () => {
     const k = steps[i], last = i === steps.length - 1;
@@ -1509,10 +1509,12 @@ function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에
     const b = e.target.closest('button'); if (!b) return; sfx('tap');
     if (b.hasAttribute('data-x')) { exit(); return; }
     if (b.hasAttribute('data-pv')) { boxAll(); return; }
+    if (b.dataset.mp) { const ids = [...el.querySelectorAll('[data-mp]')].map(x => +x.dataset.mp || x.dataset.mp); monView(+b.dataset.mp || b.dataset.mp, () => ids); return; }   // v14.18 경완: 미리 보기 카드를 누르면 체육관 상세 카드 (보기만, 좌우로 넘김)
     if (b.hasAttribute('data-bk')) { el.remove(); fin('back'); return; }   // v14.12 경완: 튜토리얼 디자인 고르기의 ✕ → 뒤로가기, 강박사가 타입 다시 고를지 묻는다
     if (b.classList.contains('gy-back')) { if (i > 0) { i--; draw(); } else el.remove(); return; }
     if (b.dataset.m) { const DL = dzList(), n = DL.length, j = DL.findIndex(D => D.id === dr.d); dr.d = DL[(j + +b.dataset.m + n) % n].id; dr.dPick = 1; draw(); return; }
     if (b.dataset.ty && !counts[+b.dataset.ty]) { if (root.querySelector('.gy-kang.tyno:not(.bye)')) return; kang([`${trName() ? trName() + '…\n' : '음…\n'}그 타입은 아직 어려워 보이는구나.\n다른 타입을 골라 보렴.`], { lit: true }); root.lastElementChild.classList.add('tyno'); root.lastElementChild.style.zIndex = 14; return; }   // v14.14 경완: 내 포켓몬이 0마리인 타입은 못 고른다 — 강박사가 그 화면 위 대사창으로 말리고 막는다
+    if (b.dataset.ty && +b.dataset.ty === dr.ty) { dr.ty = 0; draw(); return; }   // v14.18 경완: 고른 타입을 한 번 더 누르면 선택 취소
     if (b.dataset.ty) { const t = +b.dataset.ty, auto = !dr.nm || dr.nm === defName(dr.ty); dr.ty = t; if (auto) dr.nm = ''; if (!dr.dPick) dr.d = (DESIGNS.find(d => d.ty === t) || DESIGNS.find(d => d.id === dr.d) || dzList()[0]).id; draw(); return; }   // 타입을 고르면 그 타입 맵부터 (경완 2026-10-29)
     if (b.classList.contains('gy-next')) {
       if (steps[i] === 'ty' && !dr.ty) return;
