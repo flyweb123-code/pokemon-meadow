@@ -980,7 +980,7 @@ function resultPop(c, res, gold, rep, R) {
     (async () => {
       if (won) { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} confetti(); }
       const n = p.querySelector('.rg-n'); let gDone; const gp = new Promise(r => gDone = r);
-      repAnim(p, rep, sb, gb && { n, g0, gb }, gp);   // v14.97 경완: 평판은 골드와 같이 오르고, 연승 딱지는 둘 다 끝난 뒤
+      repAnim(p, rep, sb, gb && { n, g0, gb }, gp, n && g0 ? clampN(g0 * 2, 600, 1100) : 0);   // v14.97 경완: 평판은 골드와 같이 오르고, 연승 딱지는 둘 다 끝난 뒤
       if (n && g0) { await wait(450); if (!p.isConnected) return; try { window.GymBGM?.se?.('DP_REGI'); } catch (e) {}
         n.parentElement.classList.add('go'); const t0 = performance.now(), T = clampN(g0 * 2, 600, 1100);
         await new Promise(done => { const f = now => { if (!p.isConnected) return done(); const k = clampN((now - t0) / T, 0, 1); n.textContent = '+' + Math.round(g0 * (1 - (1 - k) ** 3)).toLocaleString(); k < 1 ? requestAnimationFrame(f) : done(); }; requestAnimationFrame(f); });
@@ -992,19 +992,19 @@ function resultPop(c, res, gold, rep, R) {
 const repBox = (rep, sb = 0, stk = 0) => { const r1 = st().rep || 0, r0 = Math.max(0, r1 - rep), G = gradeOf(r0), pc = r => clampN((r - gradeOf(r).lo) / Math.max(1, gradeOf(r).hi - gradeOf(r).lo), 0, 1) * 100, base = rep - sb;
   return `<div class="rs-rep ${rep > 0 ? 'up' : rep < 0 ? 'dn' : ''}" data-r0="${r0}" data-r1="${r1}"><div class="rr-top"><span>평판</span><b class="rr-n">${r0}</b><em class="rr-d">${base >= 0 ? '+' : ''}${base}</em>${sb ? `<em class="rr-b">+${sb}</em>` : ''}</div>
     <div class="rr-g"><span class="rr-bd">${gEmb(G.i)}</span><span class="rr-gn">${G.n}</span><i class="gy-bar"><i style="width:${pc(r0)}%"></i></i></div>${sb ? `<div class="rs-stk2"><i class="sk-ray"></i><div class="sk-in"><b>${stk}<small>연승!</small></b>${'<i class="sk-sp"></i>'.repeat(8)}</div></div>` : ''}</div>`; };
-async function repAnim(p, rep, sb = 0, gx = null, gp = null) {
+async function repAnim(p, rep, sb = 0, gx = null, gp = null, gT = 0) {
   const el = p?.querySelector('.rs-rep'); if (!el || !rep) return;
   const r0 = +el.dataset.r0, r1 = +el.dataset.r1, n = el.querySelector('.rr-n'), bar = el.querySelector('.gy-bar>i'), g0 = gradeOf(r0).i, d = el.querySelector('.rr-d');
-  const run = (a, b, up, tick) => { const T = clampN(Math.abs(b - a) * 90, 500, 1100); window.GymBGM?.se?.(up ? 'DP_EXP' : 'DP_KOUKA_L', up ? { dur: T / 1000 } : undefined);   // 차오르는 소리는 막대가 다 찰 때 같이 멈춤 (경완 2026-10-29)
+  const run = (a, b, up, tick, T0, cub) => { const T = T0 || clampN(Math.abs(b - a) * 90, 500, 1100); window.GymBGM?.se?.(up ? 'DP_EXP' : 'DP_KOUKA_L', up ? { dur: T / 1000 } : undefined);   // 차오르는 소리는 막대가 다 찰 때 같이 멈춤 (경완 2026-10-29)
     const t0 = performance.now();
-    return new Promise(done => { const f = now => { if (!el.isConnected) return done(); const k = clampN((now - t0) / T, 0, 1), r = Math.round(a + (b - a) * (1 - (1 - k) ** 2)), G = gradeOf(r);
-      n.textContent = r; tick?.(r, 1 - (1 - k) ** 2); bar.style.width = clampN((r - G.lo) / Math.max(1, G.hi - G.lo), 0, 1) * 100 + '%';
+    return new Promise(done => { const f = now => { if (!el.isConnected) return done(); const k = clampN((now - t0) / T, 0, 1), r = Math.round(a + (b - a) * (1 - (1 - k) ** (cub ? 3 : 2))), G = gradeOf(r);
+      n.textContent = r; tick?.(r, 1 - (1 - k) ** (cub ? 3 : 2)); bar.style.width = clampN((r - G.lo) / Math.max(1, G.hi - G.lo), 0, 1) * 100 + '%';
       if (G.i !== +el.dataset.gi) { el.dataset.gi = G.i; el.querySelector('.rr-bd').innerHTML = gEmb(G.i); el.querySelector('.rr-gn').textContent = G.n; }
       k < 1 ? requestAnimationFrame(f) : done(); }; requestAnimationFrame(f); }); };
   el.dataset.gi = g0; await wait(450); if (!el.isConnected) return;
   el.classList.add('go'); const rm = r1 - sb;
   el.classList.add('dshow');   // v14.97 경완: 기본 점수 +N 은 평판이 오르기 시작할 때 같이 떠서 오르는 만큼 센다
-  if (rm !== r0) { const up = rm > r0; d.textContent = up ? '+1' : '-1'; await run(r0, rm, up, r => { d.textContent = (up ? '+' : '-') + Math.max(1, Math.abs(r - r0)); }); }
+  if (rm !== r0) { const up = rm > r0; d.textContent = up ? '+1' : '-1'; await run(r0, rm, up, r => { d.textContent = (up ? '+' : '-') + Math.max(1, Math.abs(r - r0)); }, gT, !!gT); }   // v14.97 경완: 골드와 같은 시간·같은 곡선으로 같이 오른다
   if (!el.isConnected) return;
   const mrg = async x => { await wait(380); if (!el.isConnected) return; x.classList.add('mrg'); await wait(220); n.classList.remove('bump'); void n.offsetWidth; n.classList.add('bump'); await wait(300); };   // v14.97 경완: 오른 점수 +N 이 평판 숫자로 합쳐진다
   if (rm !== r0) await mrg(d); if (!el.isConnected) return;
@@ -1015,6 +1015,7 @@ async function repAnim(p, rep, sb = 0, gx = null, gp = null) {
     sk.classList.add('go'); bx?.classList.add('on'); gbx?.classList.add('on'); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} await wait(330); if (!el.isConnected) return;
     await run(rm, r1, true, (r, k) => { if (bx) bx.textContent = '+' + Math.max(1, r - rm); if (gx && gbx) { const v = Math.max(1, Math.round(gx.gb * k)); gbx.textContent = '+' + v + 'G'; gx.n.textContent = '+' + (gx.g0 + v).toLocaleString(); } }); if (!el.isConnected) return; await wait(380); if (!el.isConnected) return;
     gbx?.classList.replace('on', 'off'); bx?.classList.add('mrg'); await wait(220); n.classList.remove('bump'); void n.offsetWidth; if (bx) n.classList.add('bump'); if (gx) { gx.n.textContent = '+' + (gx.g0 + gx.gb).toLocaleString(); const gb2 = gx.n.parentElement; gb2.classList.remove('end'); gx.n.classList.remove('bump'); void gb2.offsetWidth; gb2.classList.add('end'); gx.n.classList.add('bump'); } }
+  if (sb) await wait(460);   // 보너스가 합쳐지며 빨갛게 튄 뒤에 원래 색으로 (end 의 색 고정이 튐을 덮지 않게)
   el.classList.add('end');
   if (gradeOf(r1).i !== g0 && el.isConnected) { el.classList.add(gradeOf(r1).i > g0 ? 'gup' : 'gdn'); window.GymBGM?.se?.(gradeOf(r1).i > g0 ? 'DP_PINPON' : 'DP_KOUKA_L'); }
 }
