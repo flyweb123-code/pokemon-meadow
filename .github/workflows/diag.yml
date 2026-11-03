@@ -1,0 +1,29 @@
+name: Friend server diag
+on:
+  push:
+    branches: ['claude/diag-*']
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDKIT_API_TOKEN: ${{ secrets.CLOUDKIT_API_TOKEN }}
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm ci
+      - name: D1 rows
+        run: |
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="pokegrow") | .uuid'); sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
+          q() { npx wrangler d1 execute pokegrow --remote --json --command "$1" | jq -c '.[0].results[]'; }
+          echo "== trainer"; q "select code, wk, wkm, dex, datetime(at/1000,'unixepoch') t, length(card) n from trainer order by at desc"
+          echo "== account"; q "select substr(id,1,2)||'…' id, code, datetime(at/1000,'unixepoch') t, kh is not null k, dev is not null d from account order by at desc"
+          echo "== save"; q "select code, datetime(at/1000,'unixepoch') t, parts from save order by at desc"
+      - name: CloudKit accounts (old app)
+        run: |
+          curl -s -X POST "https://api.apple-cloudkit.com/database/1/iCloud.com.flyweb123.pokerun/production/public/records/query?ckAPIToken=$CLOUDKIT_API_TOKEN" -d '{"query":{"recordType":"Account"},"resultsLimit":200}' | jq -c '.records[] | {code: .fields.code.value, t: (.modified.timestamp/1000|todate)}'
