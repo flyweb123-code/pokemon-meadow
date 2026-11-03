@@ -1,0 +1,20 @@
+# CloudKit(아이폰 예전 친구 서버) → Cloudflare 친구 서버로 기록 옮기기. Actions 화면에서 직접 실행 (여러 번 해도 안전: 더 새 기록만 덮어씀).
+# 필요한 저장소 비밀 변수: CLOUDKIT_API_TOKEN (CloudKit Web Services 토큰, Production), SERVER_ADMIN_TOKEN (서버 ADMIN_TOKEN 과 같은 값)
+name: Migrate CloudKit to friend server
+
+on:
+  workflow_dispatch:
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Copy records
+        env:
+          CLOUDKIT_API_TOKEN: ${{ secrets.CLOUDKIT_API_TOKEN }}
+          SERVER_ADMIN_TOKEN: ${{ secrets.SERVER_ADMIN_TOKEN }}
+        run: node server/ck2cf.mjs

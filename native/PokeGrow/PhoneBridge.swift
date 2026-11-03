@@ -1,5 +1,6 @@
 import CoreLocation
 import Foundation
+import UIKit
 import WatchConnectivity
 import WebKit
 
@@ -129,6 +130,7 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
 
     func enqueueWalk(km: Double, place: String, tags: [String] = [], at: CLLocationCoordinate2D? = nil) {
         NotiCenter.shared.walked(km)   // 화면이 꺼져 있으면 알·부화·진화 알림을 확인한다
+        if UIApplication.shared.applicationState != .active { FriendServer.shared.poll() }   // 깨어난 김에 친구 요청·공지 확인
         var list = UserDefaults.standard.array(forKey: walkKey) as? [[String: Any]] ?? []
         var item: [String: Any] = ["km": km, "place": place, "tags": tags.joined(separator: ",")]
         if let at { item["la"] = at.latitude; item["lo"] = at.longitude }   // 출현 지역(작업실 지도) 확인용 좌표

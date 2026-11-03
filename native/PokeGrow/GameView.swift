@@ -19,7 +19,7 @@ struct GameView: UIViewRepresentable {
         config.userContentController.add(WeakHandler(bridge), name: "pokeRun")
         config.userContentController.add(HapticHandler(), name: "haptic")
         config.userContentController.add(HumHandler(), name: "hum")
-        // 친구 서버(CloudKit): 게임이 Promise 로 답을 받는다 (FriendServer)
+        // 친구 서버(Cloudflare, 안드로이드와 같은 서버): 게임이 Promise 로 답을 받는다 (FriendServer)
         config.userContentController.addScriptMessageHandler(FriendServer.shared, contentWorld: .page, name: "friends")
         // v13.40: 게임이 오디오를 재워 둔 틈에 '다른 앱 소리가 나는지' 묻는다 (PiP 영상이면 배경 음악을 멈춤)
         config.userContentController.addScriptMessageHandler(AudioPeek(), contentWorld: .page, name: "audioPeek")
