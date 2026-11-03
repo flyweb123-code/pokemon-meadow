@@ -2577,3 +2577,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .rs-rep .rr-b.on,#gym .rs-gold .rg-b.on{animation:rrbIn .34s cubic-bezier(.2,1.7,.4,1) .2s forwards}
 #gym .rs-rep .rr-b.into,#gym .rs-rep .rr-d.into{max-width:0;margin-left:-8px}#gym .rs-rep .rr-d.into{left:8px}
 #gym .rs-gold.end b.bump+span{display:inline-block;text-shadow:none;animation:rgSnR .55s linear forwards}
+#gym .rs-rep .rr-tot{transform-origin:left center;animation:rrTotPop .55s linear forwards}
+@keyframes rrTotPop{0%{opacity:0;transform:scale(.4);animation-timing-function:cubic-bezier(.2,.9,.3,1)}14%{opacity:1;transform:scale(1.35,1.25);animation-timing-function:cubic-bezier(.4,0,.6,1)}36%{opacity:1;transform:scale(.92,.97)}54%{opacity:1;transform:scale(1.05)}72%{opacity:1;transform:scale(.99)}100%{opacity:1;transform:none}}
+#gym .rs-rep .rr-n{position:relative}#gym .rs-rep .rr-n>.rr-tot{bottom:2px;text-shadow:none;line-height:1}
