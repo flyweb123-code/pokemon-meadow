@@ -1,0 +1,24 @@
+# 시험용 손님 봇: tools/visit-bot.mjs. Actions 화면에서 실행하거나 claude/visit-bot* 브랜치에 push 하면 돈다.
+name: Visit bot
+
+on:
+  push:
+    branches: ['claude/visit-bot**']
+  workflow_dispatch:
+    inputs:
+      to: { description: '놀러 갈 주인 친구 코드', default: '2X392NYD' }
+      stay: { description: '머무는 시간 (분)', default: '8' }
+
+jobs:
+  visit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - run: node tools/visit-bot.mjs
+        env:
+          TO: ${{ inputs.to || '2X392NYD' }}
+          STAY_MIN: ${{ inputs.stay || '8' }}
+          BOT_SEED: ${{ secrets.SERVER_ADMIN_TOKEN }}
