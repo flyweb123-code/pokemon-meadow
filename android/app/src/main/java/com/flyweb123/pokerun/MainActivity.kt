@@ -122,6 +122,7 @@ class MainActivity : ComponentActivity() {
         if (leftAt > 0 && SystemClock.elapsedRealtime() - leftAt > 30 * 60_000) web?.loadUrl(BuildConfig.GAME_URL)
         Walk.startLive(this)
         Walk.refresh(this)
+        AppUpdate.check(this)   // 새 APK 가 있으면 '받기' 창
     }
 
     override fun onPause() {
