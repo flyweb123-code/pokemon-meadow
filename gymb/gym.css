@@ -2498,3 +2498,14 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes sk2Sp{0%{opacity:1;transform:rotate(var(--a)) translateX(10px) scale(1)}100%{opacity:0;transform:rotate(var(--a)) translateX(46px) scale(.4)}}
 #gym .rs-rep .rr-d.bump{opacity:1;animation:rrBump .45s cubic-bezier(.3,1.8,.5,1) forwards}
 @keyframes rrBump{0%{opacity:1;transform:scale(1)}40%{opacity:1;transform:scale(1.45);color:#ef4a2c}100%{opacity:1;transform:none}}
+
+/* v14.97 경완: 딱지 뒤 은은한 빛줄기, 보너스 +N 은 평판 숫자 오른쪽에 잠깐 떴다 사라짐 */
+#gym .rs-stk2 .sk-ray{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px;border-radius:50%;opacity:0;pointer-events:none;background:repeating-conic-gradient(rgba(255,214,90,.55) 0 10deg,rgba(255,214,90,0) 10deg 30deg);-webkit-mask:radial-gradient(circle,#000 18%,transparent 68%);mask:radial-gradient(circle,#000 18%,transparent 68%)}
+#gym .rs-stk2.go .sk-ray{animation:skRayIn .6s ease-out forwards,skRaySpin 9s linear infinite}
+@keyframes skRayIn{from{opacity:0;transform:scale(.3)}to{opacity:.85;transform:scale(1)}}
+@keyframes skRaySpin{to{rotate:360deg}}
+#gym .rs-rep .rr-b{font-style:normal;font-size:15px;font-weight:800;color:#ef4a2c;opacity:0;transform:translateY(6px) scale(.5)}
+#gym .rs-rep .rr-b.on{animation:rrbIn .4s cubic-bezier(.3,1.8,.5,1) forwards}
+#gym .rs-rep .rr-b.off{animation:rrbOut .26s ease-in forwards}
+@keyframes rrbIn{to{opacity:1;transform:none}}
+@keyframes rrbOut{from{opacity:1;transform:none}to{opacity:0;transform:translate(-14px,-2px) scale(.6)}}

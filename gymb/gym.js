@@ -988,8 +988,8 @@ function resultPop(c, res, gold, rep, R) {
 }
 // 평판 오르내림 연출 (경완 2026-10-28 '평판 오르고 떨어지는 거 연출'): 숫자 세기 + 막대 + 튀는 +N/-N, 등급이 바뀌면 배지 반짝
 const repBox = (rep, sb = 0, stk = 0) => { const r1 = st().rep || 0, r0 = Math.max(0, r1 - rep), G = gradeOf(r0), pc = r => clampN((r - gradeOf(r).lo) / Math.max(1, gradeOf(r).hi - gradeOf(r).lo), 0, 1) * 100, base = rep - sb;
-  return `<div class="rs-rep ${rep > 0 ? 'up' : rep < 0 ? 'dn' : ''}" data-r0="${r0}" data-r1="${r1}"><div class="rr-top"><span>평판</span><b class="rr-n">${r0}</b><em class="rr-d">${base >= 0 ? '+' : ''}${base}</em></div>
-    <div class="rr-g"><span class="rr-bd">${gEmb(G.i)}</span><span class="rr-gn">${G.n}</span><i class="gy-bar"><i style="width:${pc(r0)}%"></i></i></div>${sb ? `<div class="rs-stk2"><div class="sk-in"><b>${stk}<small>연승</small></b><em>+${sb}</em>${'<i class="sk-sp"></i>'.repeat(8)}</div></div>` : ''}</div>`; };
+  return `<div class="rs-rep ${rep > 0 ? 'up' : rep < 0 ? 'dn' : ''}" data-r0="${r0}" data-r1="${r1}"><div class="rr-top"><span>평판</span><b class="rr-n">${r0}</b><em class="rr-d">${base >= 0 ? '+' : ''}${base}</em>${sb ? `<em class="rr-b">+${sb}</em>` : ''}</div>
+    <div class="rr-g"><span class="rr-bd">${gEmb(G.i)}</span><span class="rr-gn">${G.n}</span><i class="gy-bar"><i style="width:${pc(r0)}%"></i></i></div>${sb ? `<div class="rs-stk2"><i class="sk-ray"></i><div class="sk-in"><b>${stk}<small>연승!</small></b>${'<i class="sk-sp"></i>'.repeat(8)}</div></div>` : ''}</div>`; };
 async function repAnim(p, rep, sb = 0) {
   const el = p?.querySelector('.rs-rep'); if (!el || !rep) return;
   const r0 = +el.dataset.r0, r1 = +el.dataset.r1, n = el.querySelector('.rr-n'), bar = el.querySelector('.gy-bar>i'), g0 = gradeOf(r0).i, d = el.querySelector('.rr-d');
@@ -1004,8 +1004,9 @@ async function repAnim(p, rep, sb = 0) {
   if (rm !== r0) await run(r0, rm, rm > r0);
   // v14.96 경완: 연승 딱지가 평판 박스 오른쪽 위 모서리에 튀어나와 둥둥 뜨고, 그만큼 평판이 한 번 더 오른다
   const sk = el.querySelector('.rs-stk2');
-  if (sk && sb) { await wait(260); if (!el.isConnected) return; sk.classList.add('go'); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} await wait(520); if (!el.isConnected) return;
-    d.textContent = (rep >= 0 ? '+' : '') + rep; d.classList.remove('bump'); void d.offsetWidth; d.classList.add('bump'); await run(rm, r1, true); }
+  if (sk && sb) { await wait(260); if (!el.isConnected) return; sk.classList.add('go'); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} const bx = el.querySelector('.rr-b'); await wait(380); if (!el.isConnected) return;
+    bx?.classList.add('on'); await wait(200); await run(rm, r1, true); if (!el.isConnected) return; await wait(450);
+    bx?.classList.replace('on', 'off'); await wait(260); d.textContent = (rep >= 0 ? '+' : '') + rep; d.classList.remove('bump'); void d.offsetWidth; d.classList.add('bump'); }
   el.classList.add('end');
   if (gradeOf(r1).i !== g0 && el.isConnected) { el.classList.add(gradeOf(r1).i > g0 ? 'gup' : 'gdn'); window.GymBGM?.se?.(gradeOf(r1).i > g0 ? 'DP_PINPON' : 'DP_KOUKA_L'); }
 }
