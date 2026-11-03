@@ -1,0 +1,10 @@
+import { createHash } from 'node:crypto';
+const S = 'https://pokegrow.flyweb123.workers.dev', TO = process.env.TO;
+const DEV = 'bot:' + createHash('sha256').update('visitbot:' + (process.env.BOT_SEED || 'pokegrow')).digest('hex').slice(0, 40);
+const api = async o => (await (await fetch(S + '/v1', { method: 'POST', body: JSON.stringify({ ...o, dev: DEV }) })).json());
+console.log('bot me', JSON.stringify(await api({ op: 'me' })));
+const r = await api({ op: 'mgtop', game: 'fr' + TO });
+console.log('requests to', TO, JSON.stringify((r.v || r).map?.(x => ({ code: x.code, best: x.best, at: new Date(x.at).toISOString(), card: String(x.card).slice(0, 80) })) ?? r));
+const g = await api({ op: 'get', codes: [TO] });
+console.log('owner card', JSON.stringify(g).slice(0, 300));
+console.log('ticket', JSON.stringify(await api({ op: 'visitTicket', to: TO })).slice(0, 120));
