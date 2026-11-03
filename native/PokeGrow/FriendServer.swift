@@ -1,21 +1,22 @@
 import CloudKit
 import CryptoKit
 import UIKit
+import UserNotifications
 import WebKit
 
-// 친구 서버: iCloud 공개 DB(CloudKit)에 내 트레이너 카드를 올리고, 친구 코드로 친구 카드를 받아 온다.
-// 레코드 종류 Trainer, 레코드 이름 = "T_" + 친구 코드. 카드 내용은 card(문자열, 게임이 만든 JSON) 하나에 넣어서
-// 카드에 항목을 더해도 CloudKit 콘솔에서 스키마를 다시 배포할 필요가 없다.
-// 전체 랭킹용으로 wk(이번 주 월요일, Queryable)·wkm(이번 주 km, Sortable)·dex(도감 수, Queryable+Sortable) 필드를 따로 둔다.
-// 미니게임 랭킹은 레코드 종류 Score, 레코드 이름 = "S_" + 친구 코드 + "_" + 게임 id (game Queryable, best Sortable, card).
-// 친구 코드는 이 앱의 iCloud 사용자 ID 에서 만들어서 앱을 지웠다 깔거나 기기를 바꿔도 그대로다.
-// 게임은 webkit.messageHandlers.friends.postMessage({op}) 의 Promise 로 답을 받는다.
+// 친구 서버 (2026-11-03 경완: CloudKit → Cloudflare, 안드로이드와 같은 서버). 저장소 server/ 참고.
+// 게임은 webkit.messageHandlers.friends.postMessage({op}) 의 Promise 로 답을 받는다. 약속(op·답 모양)은 CloudKit 때와 같다.
+// 서버 요청: POST /v1 {op, dev, ...} → {ok, v | err}. dev = 기기 비밀값, 친구 코드 = SHA256(dev) → 8글자.
+// dev 는 iCloud 사용자 ID 를 그대로 써서 CloudKit 때와 친구 코드가 같다 (iCloud 가 없으면 이 기기에서 만든 값).
+// 계정으로 로그인하면 그 계정을 만든 기기의 dev 를 받아 같은 친구 코드를 쓴다 (아이폰·안드로이드·아이패드 어디서든).
+// 비밀번호는 서버로 보내지 않는다: 소금으로 2만 번 해시(ph)와 k = sha("pkgk:id:pw") 만 보낸다.
+// 알림(친구 요청·공지)은 서버가 푸시를 보내지 않으니, 앱이 깨어날 때(걷다가 위치 변경 등) poll() 로 물어본다.
 final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
     static let shared = FriendServer()
+    static let serverURL = URL(string: "https://pokegrow.flyweb123.workers.dev/v1")!
 
     private let container = CKContainer(identifier: "iCloud.com.flyweb123.pokerun")
-    private var db: CKDatabase { container.publicCloudDatabase }
-    private var myCode: String?
+    private let devKey = "frDev"
 
     @MainActor
     func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage) async -> (Any?, String?) {
@@ -23,230 +24,62 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
         do {
             switch op {
             case "me": return (try await code(), nil)
-            case "publish":
-                guard let card = body["card"] as? String, card.utf8.count < 50_000 else { return (nil, "카드가 너무 커요") }
-                try await publish(card, wk: body["wk"] as? String ?? "", wkm: (body["wkm"] as? NSNumber)?.doubleValue ?? 0, dex: (body["dex"] as? NSNumber)?.intValue ?? 0)
-                return (true, nil)
-            case "get":
-                let codes = (body["codes"] as? [String] ?? []).map(clean).filter { $0.count == 8 }
-                return (try await fetch(Array(Set(codes)).prefix(100).map { $0 }), nil)
-            case "top":
-                guard let wk = body["wk"] as? String, !wk.isEmpty else { return (nil, "잘못된 요청") }
-                return (try await top(wk, dex: body["kind"] as? String == "dex"), nil)
-            case "notice":   // v14.37 운영자 공지 푸시 (Notice 만들기 권한은 CloudKit 콘솔 보안 역할로 운영자만)
-                guard let t = body["title"] as? String, let m = body["body"] as? String,
-                      !t.isEmpty, !m.isEmpty, t.count <= 40, m.count <= 160 else { return (nil, "제목과 내용을 확인해 주세요") }
-                try await notice(t, m)
-                return (true, nil)
             case "noticeTest":   // v14.49 경완: 공지 푸시를 모두에게 보내기 전에 이 기기에만 5초 뒤 같은 알림
                 guard let t = body["title"] as? String, let m = body["body"] as? String, !t.isEmpty, !m.isEmpty else { return (nil, "제목과 내용을 확인해 주세요") }
                 if let er = await NotiCenter.test(t, m) { return (nil, er) }
                 return (true, nil)
-            case "score":
-                guard let game = body["game"] as? String, game.count <= 20, game.allSatisfy({ $0.isLetter || $0.isNumber }),
-                      let card = body["card"] as? String, card.utf8.count < 5_000 else { return (nil, "잘못된 요청") }
-                try await score(game, best: (body["best"] as? NSNumber)?.doubleValue ?? 0, card: card)
-                return (true, nil)
             case "acctNew", "acctLogin":
                 guard let id = acctId(body["id"]), let pw = body["pw"] as? String, (4...64).contains(pw.count) else { return (nil, "아이디는 영문 소문자·숫자 4~12글자, 비밀번호는 4글자 이상이에요") }
-                return op == "acctNew" ? (try await acctNew(id, pw), nil) : (try await acctLogin(id, pw), nil)
-            case "acctSave":
-                guard let id = acctId(body["id"]), let k = body["k"] as? String, k.count == 64, let data = body["data"] as? String, data.utf8.count < 20_000_000 else { return (nil, "잘못된 요청") }
-                try await acctSave(id, k: k, data: data)
-                return (true, nil)
-            case "acctPull":   // v12.09: 켤 때 다른 폰이 더 최근에 올린 기록이 있는지 (가장 최근 저장 하나)
-                guard let id = acctId(body["id"]), let k = body["k"] as? String, k.count == 64 else { return (nil, "잘못된 요청") }
-                return (try await newestSave(id, k: k), nil)
-            case "acctDel":   // v14.67 경완 '설정에 탈퇴하기': 이 계정 저장·아이디, 이 기기의 트레이너 카드·랭킹 기록을 서버에서 지운다
-                guard let id = acctId(body["id"]) else { return (nil, "잘못된 요청") }
-                let games = (body["games"] as? [String] ?? []).filter { $0.count <= 20 && $0.allSatisfy({ $0.isLetter || $0.isNumber }) }
-                return (try await acctDel(id, games: Array(Set(games)).prefix(500).map { $0 }), nil)
-            case "mgtop":
-                guard let game = body["game"] as? String, !game.isEmpty else { return (nil, "잘못된 요청") }
-                return (try await mgTop(game), nil)
-            default: return (nil, "모르는 요청")
+                return (try await acct(op, id, pw), nil)
+            default:
+                return (plain(try await call(body)), nil)
             }
+        } catch let e as FriendError {
+            return (nil, e.msg)
+        } catch let e as URLError {
+            return (nil, e.code == .notConnectedToInternet || e.code == .networkConnectionLost ? "인터넷 연결을 확인해 주세요" : "친구 서버에 연결하지 못했어요. 잠시 뒤 다시 해 주세요")
         } catch {
-            return (nil, describe(error))
+            return (nil, "친구 서버 오류: \(error.localizedDescription)")
         }
     }
 
-    // 친구 코드 8글자 (헷갈리는 0·O·1·I 는 뺀다)
-    private func code() async throws -> String {
-        if let myCode { return myCode }
+    // JSON null → nil (게임에 답으로 줄 수 있는 값만)
+    private func plain(_ v: Any?) -> Any? { v is NSNull ? nil : v }
+
+    // ---------- 기기 비밀값·친구 코드 ----------
+    private func dev() async throws -> String {
+        if let d = UserDefaults.standard.string(forKey: devKey), d.count >= 8 { return d }
+        let d: String
         switch try await container.accountStatus() {
-        case .available: break
-        case .noAccount: throw FriendError("아이폰 설정에서 iCloud 에 로그인해 주세요")
-        case .restricted: throw FriendError("이 아이폰은 iCloud 를 쓸 수 없게 막혀 있어요")
+        case .available: d = try await container.userRecordID().recordName   // CloudKit 때와 같은 친구 코드
+        case .noAccount, .restricted: d = "i:" + hex((0..<24).map { _ in UInt8.random(in: 0...255) })
         default: throw FriendError("iCloud 상태를 확인하지 못했어요. 잠시 뒤 다시 해 주세요")
         }
-        let uid = try await container.userRecordID().recordName
+        UserDefaults.standard.set(d, forKey: devKey)
+        return d
+    }
+
+    // 친구 코드 8글자 (헷갈리는 0·O·1·I 는 뺀다). 서버도 같은 식으로 계산한다
+    private func code() async throws -> String {
         let abc = Array("ABCDEFGHJKLMNPQRSTUVWXYZ23456789")
-        let code = String(SHA256.hash(data: Data(uid.utf8)).prefix(8).map { abc[Int($0) % abc.count] })
-        myCode = code
-        return code
+        return String(SHA256.hash(data: Data(try await dev().utf8)).prefix(8).map { abc[Int($0) % abc.count] })
     }
 
-    private func recordID(_ code: String) -> CKRecord.ID { CKRecord.ID(recordName: "T_" + code) }
-
-    private func publish(_ card: String, wk: String, wkm: Double, dex: Int) async throws {
-        let id = recordID(try await code())
-        func make(_ withDex: Bool) -> CKRecord {
-            let r = CKRecord(recordType: "Trainer", recordID: id)
-            r["card"] = card as CKRecordValue
-            r["wk"] = wk as CKRecordValue
-            r["wkm"] = max(0, wkm) as CKRecordValue
-            if withDex { r["dex"] = max(0, dex) as CKRecordValue }
-            return r
-        }
-        // 가져오지 않고 바로 덮어쓴다 (내 레코드는 나만 쓸 수 있다).
-        // 콘솔에 dex 필드를 아직 배포하지 않았으면 Production 이 거절하므로 dex 없이 한 번 더 올린다
-        do { _ = try await db.modifyRecords(saving: [make(true)], deleting: [], savePolicy: .allKeys) }
-        catch let e as CKError where ![CKError.Code.networkUnavailable, .networkFailure, .notAuthenticated, .requestRateLimited, .serviceUnavailable].contains(e.code) {
-            _ = try await db.modifyRecords(saving: [make(false)], deleting: [], savePolicy: .allKeys)
-        }
+    // ---------- 서버 요청 ----------
+    private func call(_ body: [String: Any]) async throws -> Any? {
+        var b = body
+        b["dev"] = try await dev()
+        var req = URLRequest(url: FriendServer.serverURL, timeoutInterval: 30)
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "content-type")
+        req.httpBody = try JSONSerialization.data(withJSONObject: b)
+        let (data, _) = try await URLSession.shared.data(for: req)
+        guard let j = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { throw FriendError("친구 서버가 이상한 답을 줬어요") }
+        guard j["ok"] as? Bool == true else { throw FriendError(j["err"] as? String ?? "친구 서버 오류") }
+        return j["v"]
     }
 
-    // 미니게임 최고 기록: 게임마다 레코드 하나 (덮어쓴다)
-    private func score(_ game: String, best: Double, card: String) async throws {
-        let me = try await code()
-        let r = CKRecord(recordType: "Score", recordID: CKRecord.ID(recordName: "S_\(me)_\(game)"))
-        r["game"] = game as CKRecordValue
-        r["best"] = (game.hasPrefix("fr") ? best : max(0, best)) as CKRecordValue   // 친구 요청: best > 0 요청, < 0 수락, 0 취소 (알림 구독이 이걸로 가른다)
-        r["card"] = card as CKRecordValue
-        _ = try await db.modifyRecords(saving: [r], deleting: [], savePolicy: .allKeys)
-    }
-
-    // ---------- 친구 요청 아이폰 알림 (v13.05 경완 2026-10-31 '친구 요청 받으면 아이폰 알림 뜨게') ----------
-    // 서버 없이 CloudKit 구독(CKQuerySubscription)으로 받는다: 누가 Score 에 game == "fr"+내 코드 를 쓰면 iCloud 가 이 폰에 알림을 보낸다.
-    // best > 0 = 새 친구 요청, best < 0 = 내 요청을 수락함, best == 0 = 보낸 쪽이 취소 (알림 없음).
-    // 게임 설정 › 알림에서 끄면 구독을 지운다. 같은 상태면 다시 올리지 않는다 (UserDefaults frSub).
-    private var subWant: String?
-    private var subBusy = false
-    @MainActor
-    func setReqPush(_ on: Bool) {
-        let key = "frSub"
-        guard !subBusy, subWant != (on ? "on" : "off") else { return }
-        subBusy = true
-        subWant = on ? "on" : "off"   // 이번 실행에서는 같은 요청을 한 번만 해 본다 (iCloud 가 없을 때 저장할 때마다 다시 묻지 않게)
-        Task { @MainActor in
-            defer { subBusy = false }
-            do {
-                let me = try await code()
-                let want = on ? "on:" + me : "off:" + me
-                if UserDefaults.standard.string(forKey: key) == want { if on { UIApplication.shared.registerForRemoteNotifications() }; return }
-                let ids = [CKSubscription.ID("frq_" + me), CKSubscription.ID("fra_" + me)]
-                if on {
-                    UIApplication.shared.registerForRemoteNotifications()
-                    func sub(_ id: CKSubscription.ID, _ op: String, _ title: String, _ body: String) -> CKQuerySubscription {
-                        let s = CKQuerySubscription(recordType: "Score", predicate: NSPredicate(format: "game == %@ AND best \(op) %@", "fr" + me, NSNumber(value: 0.0)),
-                                                    subscriptionID: id, options: [.firesOnRecordCreation, .firesOnRecordUpdate])
-                        let n = CKSubscription.NotificationInfo()
-                        n.title = title
-                        n.alertBody = body
-                        n.soundName = "default"
-                        s.notificationInfo = n
-                        return s
-                    }
-                    let (res, _) = try await db.modifySubscriptions(saving: [
-                        sub(ids[0], ">", "친구 요청이 왔어요!", "포켓몬 키우기를 열어 친구 요청을 확인해 보세요."),
-                        sub(ids[1], "<", "친구가 되었어요!", "친구 요청이 수락됐어요. 이제 알을 선물할 수 있어요."),
-                    ], deleting: [])
-                    for r in res.values { if case .failure(let e) = r { throw e } }
-                } else {
-                    _ = try await db.modifySubscriptions(saving: [], deleting: ids)
-                }
-                UserDefaults.standard.set(want, forKey: key)
-            } catch {
-                subWant = nil   // 다음 실행 때(또는 설정을 바꿨을 때) 다시 해 본다
-            }
-        }
-    }
-
-    // ---------- 업데이트 공지 알림 (v14.37 경완 2026-11-02 '업데이트 됐다는 핸드폰 푸시') ----------
-    // 레코드 종류 Notice (title, body). 누가 Notice 를 새로 만들면 구독한 모든 폰에 그 제목·내용으로 알림이 간다.
-    // 알림 글은 레코드 필드에서 바로 가져온다: 지역화 키 "%1$@" 를 형식 문자열로 쓰고 인자로 필드 이름을 준다.
-    // 만들기 권한: CloudKit 콘솔 › Security Roles 에서 Notice 의 Create 를 _icloud(Authenticated) 에서 빼고 운영자 역할에만 준다.
-    private var nwWant: String?
-    private var nwBusy = false
-    @MainActor
-    func setNewsPush(_ on: Bool) {
-        let key = "nwSub", want = on ? "on" : "off"
-        guard !nwBusy, nwWant != want else { return }
-        nwBusy = true
-        nwWant = want
-        Task { @MainActor in
-            defer { nwBusy = false }
-            do {
-                if UserDefaults.standard.string(forKey: key) == want { if on { UIApplication.shared.registerForRemoteNotifications() }; return }
-                let id = CKSubscription.ID("news_all")
-                if on {
-                    UIApplication.shared.registerForRemoteNotifications()
-                    let s = CKQuerySubscription(recordType: "Notice", predicate: NSPredicate(value: true), subscriptionID: id, options: [.firesOnRecordCreation])
-                    let n = CKSubscription.NotificationInfo()
-                    n.titleLocalizationKey = "%1$@"
-                    n.titleLocalizationArgs = ["title"]
-                    n.alertLocalizationKey = "%1$@"
-                    n.alertLocalizationArgs = ["body"]
-                    n.soundName = "default"
-                    s.notificationInfo = n
-                    let (res, _) = try await db.modifySubscriptions(saving: [s], deleting: [])
-                    for r in res.values { if case .failure(let e) = r { throw e } }
-                } else {
-                    _ = try await db.modifySubscriptions(saving: [], deleting: [id])
-                }
-                UserDefaults.standard.set(want, forKey: key)
-            } catch {
-                nwWant = nil
-            }
-        }
-    }
-
-    private func notice(_ title: String, _ body: String) async throws {
-        let r = CKRecord(recordType: "Notice")
-        r["title"] = title as CKRecordValue
-        r["body"] = body as CKRecordValue
-        _ = try await db.modifyRecords(saving: [r], deleting: [], savePolicy: .allKeys)
-    }
-
-    // 미니게임 전체 랭킹: 그 게임 최고 기록 순서로 100명 [{code, card, best, at}]
-    private func mgTop(_ game: String) async throws -> [[String: Any]] {
-        let q = CKQuery(recordType: "Score", predicate: NSPredicate(format: "game == %@", game))
-        q.sortDescriptors = [NSSortDescriptor(key: "best", ascending: false)]
-        let (found, _) = try await db.records(matching: q, resultsLimit: 100)
-        return found.compactMap { id, res in
-            guard case .success(let r) = res, let card = r["card"] as? String, id.recordName.hasPrefix("S_"), id.recordName.count >= 10 else { return nil }
-            return ["code": String(id.recordName.dropFirst(2).prefix(8)), "card": card, "best": (r["best"] as? Double) ?? 0,
-                    "at": (r.modificationDate ?? Date()).timeIntervalSince1970 * 1000]
-        }
-    }
-
-    // 없는 코드는 빼고 돌려준다: [{code, card, at(ms)}]
-    private func fetch(_ codes: [String]) async throws -> [[String: Any]] {
-        guard !codes.isEmpty else { return [] }
-        let found = try await db.records(for: codes.map(recordID))
-        return codes.compactMap { code in
-            guard case .success(let r) = found[recordID(code)], let card = r["card"] as? String else { return nil }
-            return ["code": code, "card": card, "at": (r.modificationDate ?? Date()).timeIntervalSince1970 * 1000]
-        }
-    }
-
-    // 전체 랭킹: 이번 주 카드 중 많이 걸은 순서로 100명 (dex 면 도감 많이 채운 순서로)
-    private func top(_ wk: String, dex: Bool) async throws -> [[String: Any]] {
-        let q = dex ? CKQuery(recordType: "Trainer", predicate: NSPredicate(format: "dex > 0"))
-                    : CKQuery(recordType: "Trainer", predicate: NSPredicate(format: "wk == %@", wk))
-        q.sortDescriptors = [NSSortDescriptor(key: dex ? "dex" : "wkm", ascending: false)]
-        let (found, _) = try await db.records(matching: q, resultsLimit: 100)
-        return found.compactMap { id, res in
-            guard case .success(let r) = res, let card = r["card"] as? String, id.recordName.hasPrefix("T_") else { return nil }
-            return ["code": String(id.recordName.dropFirst(2)), "card": card, "at": (r.modificationDate ?? Date()).timeIntervalSince1970 * 1000]
-        }
-    }
-
-    // ---------- 계정 (v11.97 경완 2026-10-30 '아이디·비밀번호 계정, 데이터 저장, 너가 보게') ----------
-    // Account: 이름 "A_" + 아이디, pwh = 소금$해시(비밀번호 2만 번). 만든 사람만 고칠 수 있어 아이디를 뺏기지 않는다.
-    // Save: 이름 "V_" + 아이디 + "_" + 친구 코드 (기기 = iCloud 마다 하나, 다른 폰에서 로그인해도 각자 올림), acct(Queryable)·sig·data(Asset).
-    // sig = SHA256(k + SHA256(data)), k = SHA256("pkgk:" + 아이디 + ":" + 비밀번호) — 비밀번호를 모르면 남의 계정에 가짜 저장을 끼워 넣을 수 없다.
+    // ---------- 계정 ----------
     private func acctId(_ v: Any?) -> String? {
         guard let s = (v as? String)?.lowercased(), (4...12).contains(s.count), s.allSatisfy({ ($0.isLetter && $0.isASCII) || $0.isNumber || $0 == "_" }) else { return nil }
         return s
@@ -258,107 +91,65 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
         for _ in 0..<20_000 { h = Data(SHA256.hash(data: h + Data(salt.utf8))) }
         return hex(h)
     }
-    private func keyOf(_ id: String, _ pw: String) -> String { sha("pkgk:\(id):\(pw)") }
 
-    private func acctNew(_ id: String, _ pw: String) async throws -> [String: Any] {
-        let code = try await code()
-        let salt = hex((0..<16).map { _ in UInt8.random(in: 0...255) })
-        let r = CKRecord(recordType: "Account", recordID: CKRecord.ID(recordName: "A_" + id))
-        r["pwh"] = "\(salt)$\(pwHash(pw, salt: salt))" as CKRecordValue
-        r["code"] = code as CKRecordValue
-        // 한 레코드씩 저장 결과가 따로 와서 (async modifyRecords 는 레코드 실패를 던지지 않는다) 직접 본다
-        do { try await saveOne(r, .ifServerRecordUnchanged) }
-        catch let e as CKError where e.code == .serverRecordChanged || e.code == .permissionFailure { throw FriendError("이미 있는 아이디예요. 다른 아이디를 골라 주세요") }
-        return ["id": id, "k": keyOf(id, pw)]
-    }
-
-    private func acctLogin(_ id: String, _ pw: String) async throws -> [String: Any] {
-        let found = try await db.records(for: [CKRecord.ID(recordName: "A_" + id)])
-        guard case .success(let a) = found[CKRecord.ID(recordName: "A_" + id)], let pwh = a["pwh"] as? String else { throw FriendError("없는 아이디예요") }
-        let parts = pwh.split(separator: "$").map(String.init)
-        guard parts.count == 2, pwHash(pw, salt: parts[0]) == parts[1] else { throw FriendError("비밀번호가 맞지 않아요") }
-        let k = keyOf(id, pw)
-        var out: [String: Any] = ["id": id, "k": k]
-        out.merge(try await newestSave(id, k: k)) { _, b in b }
-        return out
-    }
-
-    // 이 계정으로 올린 저장(기기마다 하나) 중 서명이 맞고 가장 최근에 '한' 것. v12.09: 올린 시각이 아니라 게임 안 저장 시각(savedAt)으로 고른다
-    // (오프라인으로 하다 늦게 올린 폰이 더 최근 기록을 덮지 않게)
-    private func newestSave(_ id: String, k: String) async throws -> [String: Any] {
-        let (rs, _) = try await db.records(matching: CKQuery(recordType: "Save", predicate: NSPredicate(format: "acct == %@", id)), resultsLimit: 20)
-        var best: (Double, String)? = nil
-        for (_, res) in rs {
-            guard case .success(let r) = res, let sig = r["sig"] as? String, let asset = r["data"] as? CKAsset, let url = asset.fileURL,
-                  let d = try? Data(contentsOf: url), let txt = String(data: d, encoding: .utf8), sha(k + sha(txt)) == sig else { continue }
-            let sa = ((try? JSONSerialization.jsonObject(with: d)) as? [String: Any])?["savedAt"] as? NSNumber
-            let t = sa?.doubleValue ?? (r.modificationDate ?? .distantPast).timeIntervalSince1970 * 1000
-            if best == nil || t > best!.0 { best = (t, txt) }
+    private func acct(_ op: String, _ id: String, _ pw: String) async throws -> Any? {
+        let k = sha("pkgk:\(id):\(pw)")
+        if op == "acctNew" {
+            let salt = hex((0..<16).map { _ in UInt8.random(in: 0...255) })
+            return plain(try await call(["op": op, "id": id, "salt": salt, "ph": pwHash(pw, salt: salt), "k": k]))
         }
-        guard let best else { return [:] }
-        return ["data": best.1, "t": best.0]
+        guard let salt = try await call(["op": "acctSalt", "id": id]) as? String else { throw FriendError("없는 아이디예요") }
+        guard var r = try await call(["op": "acctLogin", "id": id, "ph": pwHash(pw, salt: salt), "k": k]) as? [String: Any] else { throw FriendError("로그인하지 못했어요") }
+        if let d = r.removeValue(forKey: "dev") as? String, d.count >= 8 { UserDefaults.standard.set(d, forKey: devKey) }
+        return r
     }
 
-    private func acctSave(_ id: String, k: String, data: String) async throws {
-        let code = try await code()
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent("save_\(id).json")
-        try Data(data.utf8).write(to: url, options: .atomic)
-        defer { try? FileManager.default.removeItem(at: url) }
-        let r = CKRecord(recordType: "Save", recordID: CKRecord.ID(recordName: "V_\(id)_\(code)"))
-        r["acct"] = id as CKRecordValue
-        r["sig"] = sha(k + sha(data)) as CKRecordValue
-        r["data"] = CKAsset(fileURL: url)
-        try await saveOne(r, .allKeys)
-    }
+    // ---------- 알림 (친구 요청·공지) ----------
+    // 게임 설정 › 알림에서 켠 것만 (NotiCenter 가 게임 계획의 fr·nw 를 넘겨 줌)
+    @MainActor func setReqPush(_ on: Bool) { UserDefaults.standard.set(on, forKey: "pushFr"); if on { askAlert() } }
+    @MainActor func setNewsPush(_ on: Bool) { UserDefaults.standard.set(on, forKey: "pushNw"); if on { askAlert() } }
+    private func askAlert() { UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in } }
 
-    // 탈퇴: 지울 수 있는 건 이 iCloud 가 만든 레코드뿐이다 (CloudKit 공개 DB 는 만든 사람만 지움).
-    // 아이디(Account)를 다른 폰에서 만들었으면 남는다 → kept 로 알려 준다. 없는 레코드(unknownItem)는 이미 지워진 것으로 본다.
-    private func acctDel(_ id: String, games: [String]) async throws -> [String: Any] {
-        let me = try await code()
-        let acc = CKRecord.ID(recordName: "A_" + id)
-        var ids: [CKRecord.ID] = [acc, CKRecord.ID(recordName: "V_\(id)_\(me)"), recordID(me)]
-        ids += games.map { CKRecord.ID(recordName: "S_\(me)_\($0)") }
-        // 내가 만든 Save(이 아이디)·Score 도 찾아서 함께 (콘솔에 creator 인덱스가 없으면 위 목록만)
-        if let uid = try? await container.userRecordID() {
-            let ref = CKRecord.Reference(recordID: uid, action: .none)
-            for (type, pred) in [("Save", NSPredicate(format: "acct == %@ AND creatorUserRecordID == %@", id, ref)), ("Score", NSPredicate(format: "creatorUserRecordID == %@", ref))] {
-                if let (rs, _) = try? await db.records(matching: CKQuery(recordType: type, predicate: pred), resultsLimit: 400) { ids += rs.map { $0.0 } }
+    private var pollAt = Date.distantPast
+    // 앱이 깨어날 때마다 (최소 5분 간격) 서버에 새 친구 요청·공지가 있는지 묻고, 있으면 알림
+    func poll() {
+        guard Date().timeIntervalSince(pollAt) > 300 else { return }
+        pollAt = Date()
+        let d = UserDefaults.standard
+        let fr = d.bool(forKey: "pushFr"), nw = d.bool(forKey: "pushNw")
+        guard fr || nw else { return }
+        Task {
+            if fr, let me = try? await code(), let rows = try? await call(["op": "mgtop", "game": "fr" + me]) as? [[String: Any]] {
+                let seen = d.double(forKey: "frSeenAt"); var top = seen
+                for r in rows {
+                    let at = (r["at"] as? NSNumber)?.doubleValue ?? 0, best = (r["best"] as? NSNumber)?.doubleValue ?? 0
+                    guard at > seen, best != 0 else { continue }
+                    top = max(top, at)
+                    guard seen > 0 else { continue }
+                    if best > 0 { post("frq-\(Int(at))", "친구 요청이 왔어요!", "포켓몬 키우기를 열어 친구 요청을 확인해 보세요.") }
+                    else { post("fra-\(Int(at))", "친구가 되었어요!", "친구 요청이 수락됐어요. 이제 알을 선물할 수 있어요.") }
+                }
+                d.set(seen == 0 ? max(top, Date().timeIntervalSince1970 * 1000) : top, forKey: "frSeenAt")
+            }
+            if nw {
+                let seen = d.object(forKey: "nwSeen") as? Int ?? -1
+                if let rows = try? await call(["op": "news", "after": max(0, seen)]) as? [[String: Any]] {
+                    var top = max(0, seen)
+                    for (i, r) in rows.enumerated() {
+                        let n = (r["n"] as? NSNumber)?.intValue ?? 0
+                        top = max(top, n)
+                        if seen >= 0, i == 0 { post("nw-\(n)", r["title"] as? String ?? "포켓몬 키우기", r["body"] as? String ?? "") }
+                    }
+                    d.set(top, forKey: "nwSeen")
+                }
             }
         }
-        var seen = Set<String>(), kept = false, failed = 0
-        let uniq = ids.filter { seen.insert($0.recordName).inserted }
-        for i in stride(from: 0, to: uniq.count, by: 300) {
-            let part = Array(uniq[i..<min(i + 300, uniq.count)])
-            let (_, del) = try await db.modifyRecords(saving: [], deleting: part, savePolicy: .allKeys)
-            for (rid, res) in del {
-                guard case .failure(let e) = res else { continue }
-                if (e as? CKError)?.code == .unknownItem { continue }
-                if rid == acc { kept = true } else { failed += 1 }
-            }
-        }
-        return ["ok": true, "kept": kept, "failed": failed]
     }
 
-    private func saveOne(_ r: CKRecord, _ policy: CKModifyRecordsOperation.RecordSavePolicy) async throws {
-        let (res, _) = try await db.modifyRecords(saving: [r], deleting: [], savePolicy: policy)
-        if case .failure(let e) = res[r.recordID] { throw e }
-    }
-
-    private func clean(_ s: String) -> String { s.uppercased().filter { $0.isLetter || $0.isNumber } }
-
-    private func describe(_ error: Error) -> String {
-        if let e = error as? FriendError { return e.msg }
-        guard let ck = error as? CKError else { return error.localizedDescription }
-        switch ck.code {
-        case .notAuthenticated: return "아이폰 설정에서 iCloud 에 로그인해 주세요"
-        case .networkUnavailable, .networkFailure: return "인터넷 연결을 확인해 주세요"
-        case .serviceUnavailable, .requestRateLimited, .zoneBusy: return "친구 서버가 바빠요. 잠시 뒤 다시 해 주세요"
-        case .quotaExceeded: return "친구 서버 저장 공간이 가득 찼어요"
-        case .permissionFailure: return "친구 서버에 쓸 권한이 없어요"
-        case .invalidArguments: return "친구 서버 설정이 아직 덜 됐어요 (CloudKit 필드·인덱스)"
-        case .unknownItem: return "친구 서버 설정이 아직 덜 됐어요 (CloudKit 레코드 종류)"
-        default: return "친구 서버 오류 (\(ck.code.rawValue)): \(ck.localizedDescription)"
-        }
+    private func post(_ id: String, _ title: String, _ body: String) {
+        let c = UNMutableNotificationContent()
+        c.title = title; c.body = body; c.sound = .default
+        UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: id, content: c, trigger: nil))
     }
 }
 

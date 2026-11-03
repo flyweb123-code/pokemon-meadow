@@ -34,7 +34,10 @@ npx wrangler d1 execute pokegrow --local --file schema.sql
 npx wrangler dev
 ```
 
-## CloudKit 에서 옮기기 (아이폰 전환 때)
+## CloudKit 에서 옮기기 (아이폰 전환)
 
-`POST /admin/import` (헤더 `Authorization: Bearer <SERVER_ADMIN_TOKEN>`) `{table, rows}` 로 trainer·score·account·save 를 넣습니다.
+`server/ck2cf.mjs` 가 CloudKit 공개 DB 의 Account·Save·Trainer·Score(미니게임 역대·이번 주, 친구 요청)를 읽어
+`POST /admin/import` (헤더 `Authorization: Bearer <ADMIN_TOKEN>`) 로 넣습니다. 이미 있는 것보다 새 기록만 덮어써서 여러 번 돌려도 안전합니다.
+GitHub Actions › **Migrate CloudKit to friend server** › Run workflow (비밀 변수 `CLOUDKIT_API_TOKEN`, `SERVER_ADMIN_TOKEN` 필요).
+아이폰 새 빌드가 친구들 폰에 깔리기 전까지 예전 빌드는 CloudKit 에 쓰므로, 다 바뀐 뒤 한 번 더 돌리면 됩니다.
 옮겨 온 계정은 처음 로그인(또는 저장 서명 확인) 때 k 확인값이 채워집니다.

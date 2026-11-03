@@ -212,10 +212,13 @@ async function adminImport(env, req, b) {
   const st = [];
   for (const r of rows) {
     switch (b.table) {
-      case 'trainer': st.push(db.prepare('INSERT OR REPLACE INTO trainer (code, card, wk, wkm, dex, at) VALUES (?, ?, ?, ?, ?, ?)').bind(r.code, r.card, r.wk || '', +r.wkm || 0, +r.dex || 0, +r.at || 0)); break;
-      case 'score': st.push(db.prepare('INSERT OR REPLACE INTO score (code, game, best, card, at) VALUES (?, ?, ?, ?, ?)').bind(r.code, r.game, +r.best || 0, r.card, +r.at || 0)); break;
+      // 이미 있는 것보다 새 기록일 때만 덮어쓴다 (옮긴 뒤 새 서버에 쓴 게 지워지지 않게, 여러 번 돌려도 안전)
+      case 'trainer': st.push(db.prepare('INSERT INTO trainer (code, card, wk, wkm, dex, at) VALUES (?1, ?2, ?3, ?4, ?5, ?6) ON CONFLICT(code) DO UPDATE SET card = ?2, wk = ?3, wkm = ?4, dex = ?5, at = ?6 WHERE trainer.at < ?6').bind(r.code, r.card, r.wk || '', +r.wkm || 0, +r.dex || 0, +r.at || 0)); break;
+      case 'score': st.push(db.prepare('INSERT INTO score (code, game, best, card, at) VALUES (?1, ?2, ?3, ?4, ?5) ON CONFLICT(code, game) DO UPDATE SET best = ?3, card = ?4, at = ?5 WHERE score.at < ?5').bind(r.code, r.game, +r.best || 0, r.card, +r.at || 0)); break;
       case 'account': st.push(db.prepare('INSERT OR IGNORE INTO account (id, pwh, kh, code, dev, at) VALUES (?, ?, NULL, ?, NULL, ?)').bind(r.id, r.pwh, r.code || '', +r.at || 0)); break;
       case 'save': {
+        const old = await db.prepare('SELECT at FROM save WHERE acct = ? AND code = ?').bind(r.acct, r.code).first();
+        if (old && old.at >= (+r.at || 0)) break;
         const parts = [];
         for (let i = 0; i < r.data.length; i += PART) parts.push(r.data.slice(i, i + PART));
         st.push(db.prepare('DELETE FROM save_part WHERE acct = ? AND code = ?').bind(r.acct, r.code));
