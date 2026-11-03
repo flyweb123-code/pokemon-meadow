@@ -2523,3 +2523,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .rs-rep.go .rr-d,#gym .rs-rep .rr-b.on{max-width:4em;margin-left:0}
 #gym .rs-gold .rg-b{max-width:0;margin-left:-6px;white-space:nowrap;transition:max-width .3s ease,margin .3s ease}
 #gym .rs-gold .rg-b.on{max-width:5em;margin-left:0}
+#gym .rs-gold.end b.bump{animation:rgBump .45s cubic-bezier(.3,1.8,.5,1) forwards}
+@keyframes rgBump{0%{transform:scale(1)}40%{transform:scale(1.15);color:#ef4a2c}100%{transform:none}}

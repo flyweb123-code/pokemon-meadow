@@ -979,19 +979,20 @@ function resultPop(c, res, gold, rep, R) {
     p.classList.add('rs-pop'); if (won) p.classList.add('rs-w');
     (async () => {
       if (won) { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} confetti(); }
-      const n = p.querySelector('.rg-n');
+      const n = p.querySelector('.rg-n'); let gDone; const gp = new Promise(r => gDone = r);
+      repAnim(p, rep, sb, gb && { n, g0, gb }, gp);   // v14.97 경완: 평판은 골드와 같이 오르고, 연승 딱지는 둘 다 끝난 뒤
       if (n && g0) { await wait(450); if (!p.isConnected) return; try { window.GymBGM?.se?.('DP_REGI'); } catch (e) {}
         n.parentElement.classList.add('go'); const t0 = performance.now(), T = clampN(g0 * 2, 600, 1100);
         await new Promise(done => { const f = now => { if (!p.isConnected) return done(); const k = Math.min(1, (now - t0) / T); n.textContent = '+' + Math.round(g0 * (1 - (1 - k) ** 3)).toLocaleString(); k < 1 ? requestAnimationFrame(f) : done(); }; requestAnimationFrame(f); });
         n.parentElement.classList.add('end'); await wait(150); }
-      repAnim(p, rep, sb, gb && { n, g0, gb });   // v14.96 경완: 배틀 평판이 먼저 오르고, 연승 딱지가 평판 박스 모서리에 뜨면서 보너스가 더 오른다
+      gDone();   // v14.96 경완: 배틀 평판이 먼저 오르고, 연승 딱지가 평판 박스 모서리에 뜨면서 보너스가 더 오른다
     })(); });
 }
 // 평판 오르내림 연출 (경완 2026-10-28 '평판 오르고 떨어지는 거 연출'): 숫자 세기 + 막대 + 튀는 +N/-N, 등급이 바뀌면 배지 반짝
 const repBox = (rep, sb = 0, stk = 0) => { const r1 = st().rep || 0, r0 = Math.max(0, r1 - rep), G = gradeOf(r0), pc = r => clampN((r - gradeOf(r).lo) / Math.max(1, gradeOf(r).hi - gradeOf(r).lo), 0, 1) * 100, base = rep - sb;
   return `<div class="rs-rep ${rep > 0 ? 'up' : rep < 0 ? 'dn' : ''}" data-r0="${r0}" data-r1="${r1}"><div class="rr-top"><span>평판</span><b class="rr-n">${r0}</b><em class="rr-d">${base >= 0 ? '+' : ''}${base}</em>${sb ? `<em class="rr-b">+${sb}</em>` : ''}</div>
     <div class="rr-g"><span class="rr-bd">${gEmb(G.i)}</span><span class="rr-gn">${G.n}</span><i class="gy-bar"><i style="width:${pc(r0)}%"></i></i></div>${sb ? `<div class="rs-stk2"><i class="sk-ray"></i><div class="sk-in"><b>${stk}<small>연승!</small></b>${'<i class="sk-sp"></i>'.repeat(8)}</div></div>` : ''}</div>`; };
-async function repAnim(p, rep, sb = 0, gx = null) {
+async function repAnim(p, rep, sb = 0, gx = null, gp = null) {
   const el = p?.querySelector('.rs-rep'); if (!el || !rep) return;
   const r0 = +el.dataset.r0, r1 = +el.dataset.r1, n = el.querySelector('.rr-n'), bar = el.querySelector('.gy-bar>i'), g0 = gradeOf(r0).i, d = el.querySelector('.rr-d');
   const run = (a, b, up, tick) => { const T = clampN(Math.abs(b - a) * 90, 500, 1100); window.GymBGM?.se?.(up ? 'DP_EXP' : 'DP_KOUKA_L', up ? { dur: T / 1000 } : undefined);   // 차오르는 소리는 막대가 다 찰 때 같이 멈춤 (경완 2026-10-29)
@@ -1000,15 +1001,16 @@ async function repAnim(p, rep, sb = 0, gx = null) {
       n.textContent = r; tick?.(r, 1 - (1 - k) ** 2); bar.style.width = clampN((r - G.lo) / Math.max(1, G.hi - G.lo), 0, 1) * 100 + '%';
       if (G.i !== +el.dataset.gi) { el.dataset.gi = G.i; el.querySelector('.rr-bd').innerHTML = gEmb(G.i); el.querySelector('.rr-gn').textContent = G.n; }
       k < 1 ? requestAnimationFrame(f) : done(); }; requestAnimationFrame(f); }); };
-  el.dataset.gi = g0; await wait(380); if (!el.isConnected) return;
+  el.dataset.gi = g0; await wait(450); if (!el.isConnected) return;
   el.classList.add('go'); const rm = r1 - sb;
   if (rm !== r0) await run(r0, rm, rm > r0);
   // v14.96 경완: 연승 딱지가 평판 박스 오른쪽 위 모서리에 튀어나와 둥둥 뜨고, 그만큼 평판이 한 번 더 오른다
   const sk = el.querySelector('.rs-stk2');
+  if (gp) await gp;
   if (sk && sb) { await wait(260); if (!el.isConnected) return; const bx = el.querySelector('.rr-b'), gbx = p.querySelector('.rg-b'); if (bx) bx.textContent = '+1'; if (gbx) gbx.textContent = '+1G';
     sk.classList.add('go'); bx?.classList.add('on'); gbx?.classList.add('on'); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} await wait(330); if (!el.isConnected) return;
     await run(rm, r1, true, (r, k) => { if (bx) bx.textContent = '+' + Math.max(1, r - rm); if (gx && gbx) { const v = Math.max(1, Math.round(gx.gb * k)); gbx.textContent = '+' + v + 'G'; gx.n.textContent = '+' + (gx.g0 + v).toLocaleString(); } }); if (!el.isConnected) return; await wait(450);
-    bx?.classList.replace('on', 'off'); gbx?.classList.replace('on', 'off'); await wait(260); if (gx) { gx.n.textContent = '+' + (gx.g0 + gx.gb).toLocaleString(); const gb2 = gx.n.parentElement; gb2.classList.remove('end'); void gb2.offsetWidth; gb2.classList.add('end'); } d.textContent = (rep >= 0 ? '+' : '') + rep; d.classList.remove('bump'); void d.offsetWidth; d.classList.add('bump'); }
+    bx?.classList.replace('on', 'off'); gbx?.classList.replace('on', 'off'); await wait(260); if (gx) { gx.n.textContent = '+' + (gx.g0 + gx.gb).toLocaleString(); const gb2 = gx.n.parentElement; gb2.classList.remove('end'); gx.n.classList.remove('bump'); void gb2.offsetWidth; gb2.classList.add('end'); gx.n.classList.add('bump'); } d.textContent = (rep >= 0 ? '+' : '') + rep; d.classList.remove('bump'); void d.offsetWidth; d.classList.add('bump'); }
   el.classList.add('end');
   if (gradeOf(r1).i !== g0 && el.isConnected) { el.classList.add(gradeOf(r1).i > g0 ? 'gup' : 'gdn'); window.GymBGM?.se?.(gradeOf(r1).i > g0 ? 'DP_PINPON' : 'DP_KOUKA_L'); }
 }
