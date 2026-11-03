@@ -2527,3 +2527,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes rgBump{0%{transform:scale(1)}40%{transform:scale(1.15);color:#ef4a2c}100%{transform:none}}
 #gym .rs-rep .rr-d.mrg,#gym .rs-rep .rr-b.mrg{animation:rrbOut .26s ease-in forwards;max-width:0;margin-left:-8px}
 #gym .rs-rep .rr-n.bump{display:inline-block;animation:rgBump .45s cubic-bezier(.3,1.8,.5,1)}
+/* v14.97 경완: 평판 기본 점수가 오르는 동안 +N 은 자리를 차지하지 않고 옆에 떠서, 평판 숫자는 계속 가운데 */
+#gym .rs-rep.dshow .rr-d,#gym .rs-rep .rr-d{max-width:0;margin-left:-8px;position:relative;left:8px;overflow:visible}
