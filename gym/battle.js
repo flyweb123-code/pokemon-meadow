@@ -436,9 +436,11 @@ const TY_EN = ['', 'Normal', 'Fighting', 'Flying', 'Poison', 'Ground', 'Rock', '
 const CAT_KO = ['물리', '특수', '변화'];
 // 본가(플래티넘) 타입 꼬리표 + 물리·특수·변화 아이콘. 꼬리표 글자는 한국어로 위에 쓴다
 const tyTag = (ty, cat) => `<span class="tg"><i class="ty" style="background-image:url(${IMG}bt/ty_${ty}.png)">${TYPE_KO[ty] || ''}</i>${cat == null ? '' : `<i class="ct" style="background-image:url(${IMG}bt/cat_${cat | 0}.png)" title="${CAT_KO[cat | 0]}"></i>`}</span>`;
+const FIX_DMG = new Set(['nightshade', 'seismictoss', 'dragonrage', 'sonicboom', 'superfang', 'psywave', 'endeavor', 'finalgambit', 'ruination', 'naturesmadness', 'guardianofalola', 'counter', 'mirrorcoat', 'metalburst', 'comeuppance', 'bide', 'fissure', 'guillotine', 'horndrill', 'sheercold']);
 function effTag(d) {
   if (!d || d[3] === 2) return '';
-  const e = effOf(TY_EN[d[2]]); if (e == null) return '';
+  let e = effOf(TY_EN[d[2]]); if (e == null) return '';
+  if (e && FIX_DMG.has(d[0])) e = 1;   // v14.95 경완: 레벨·HP 만큼 고정 데미지(나이트헤드 등)·일격필살은 상성이 위력에 안 들어감 → 효과 없음만 보여 주고 나머진 '효과 있음'
   return e === 0 ? '<i class="eff no">효과 없음</i>' : e > 1 ? '<i class="eff hi">효과 굉장!</i>' : e < 1 ? '<i class="eff lo">효과 별로</i>' : '<i class="eff">효과 있음</i>';
 }
 // 배틀 기술 박스 한 칸 (기술 고르기·잊을 기술 고르기·교체 카드 같은 모양, 우상단 ? = 기술 설명)
