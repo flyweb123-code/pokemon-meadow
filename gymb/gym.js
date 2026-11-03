@@ -178,7 +178,8 @@ function route(D, from, to, occ = []) {
   return null; }
 // 도전자(손님)가 문에서 관장 앞까지: 관장 바로 앞 → 왼쪽 옆 → 오른쪽 옆 순서로 비어 있는 칸. { path(문 다음 칸부터), cf 손님이 볼 쪽, mf 관장이 볼 쪽 }
 function chalRoute(D, skip = []) { const L = D.leader, occ = occOf(skip).filter(q => !(q[0] === L[0] && q[1] === L[1]));
-  for (const [tx, ty, cf, mf] of [[L[0], L[1] + 1, 'u', 'd'], [L[0] - 1, L[1], 'r', 'l'], [L[0] + 1, L[1], 'l', 'r']]) { const P = route(D, D.door, [tx, ty], occ); if (P?.length) return { path: P, cf, mf: ty === L[1] ? mf : 'd' }; }
+  const fr = (x, y) => !D.free || (D.free[y]?.[x] === '1' && !(D.stat || []).some(q => q[0] === x && q[1] === y));   // v14.76 경완 '또 소품이랑 겹치네': 서는 칸이 책상 등 소품이면 건너뜀 (route 는 도착 칸을 안 따짐)
+  for (const [tx, ty, cf, mf] of [[L[0], L[1] + 1, 'u', 'd'], [L[0] - 1, L[1], 'r', 'l'], [L[0] + 1, L[1], 'l', 'r']]) { if (!fr(tx, ty)) continue; const P = route(D, D.door, [tx, ty], occ); if (P?.length) return { path: P, cf, mf: ty === L[1] ? mf : 'd' }; }
   return { path: D.path.slice(1), cf: D.cf || 'u', mf: D.mf }; }
 // 지금 자리에서 문까지 (나가기)
 const outRoute = (D, e) => route(D, [Math.round(e.x), Math.round(e.y)], D.door, occOf([e])) || null;
