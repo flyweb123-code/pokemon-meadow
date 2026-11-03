@@ -11,11 +11,11 @@
 //   {t:'mons', L}                 주인만: 포켓몬 자리 [[uid,x,y,...]] — 손님이 있을 때만 보낸다
 //   {t:'ev', e}                   주인만: 그 밖의 일 (손님들에게 그대로)
 // 보내는 말 (방 → 모두)
-//   {t:'hi', me, own, on, ppl, chat, field, fat}   들어왔을 때 한 번 (on = 주인이 있는지, ppl = 지금 있는 사람)
+//   {t:'hi', me, own, on, ppl, chat, field, fat, pend, acts}   들어왔을 때 한 번 (on = 주인이 있는지, ppl = 지금 있는 사람, acts = 주인에게만: 손님이 한 일 최근 50개 → 방명록)
 //   {t:'join', p} / {t:'leave', c} / {t:'chat', c, n, m, at} / {t:'tr', c, ...} / {t:'act', c, n, k, u} / {t:'mons', L} / {t:'ev', e} / {t:'field', d, at}
 //   {t:'own', on}                 주인이 들어오거나 나감
 
-const MAX_PPL = 8, CHAT_KEEP = 50, CHAT_LEN = 100, ACTS = ['pet', 'wash', 'feed', 'berry'];
+const MAX_PPL = 8, CHAT_KEEP = 50, ACT_KEEP = 50, CHAT_LEN = 100, ACTS = ['pet', 'wash', 'feed', 'berry'];
 
 export class FieldRoom {
   constructor(ctx, env) {
@@ -46,9 +46,9 @@ export class FieldRoom {
     const a = { c, n, sx, o, at: Date.now() };
     sv.serializeAttachment(a);
 
-    const [chat, fld, pend] = await Promise.all([this.ctx.storage.get('chat'), this.field(owner), o ? this.ctx.storage.get('pend') : null]);
+    const [chat, fld, pend, acts] = await Promise.all([this.ctx.storage.get('chat'), this.field(owner), o ? this.ctx.storage.get('pend') : null, o ? this.ctx.storage.get('acts') : null]);
     if (pend?.length) await this.ctx.storage.delete('pend');
-    this.send(sv, { t: 'hi', me: c, own: o, on: o || ppl.some(x => x.a.o), ppl: ppl.map(x => this.pub(x.a)), chat: chat || [], field: o ? null : fld?.d || null, fat: fld?.at || 0, pend: pend || [] });
+    this.send(sv, { t: 'hi', me: c, own: o, on: o || ppl.some(x => x.a.o), ppl: ppl.map(x => this.pub(x.a)), chat: chat || [], field: o ? null : fld?.d || null, fat: fld?.at || 0, pend: pend || [], acts: o ? acts || [] : [] });
     this.cast({ t: 'join', p: this.pub(a) }, sv);
     if (o) this.cast({ t: 'own', on: true }, sv);
     return new Response(null, { status: 101, webSocket: cl });
@@ -97,6 +97,8 @@ export class FieldRoom {
         const o = { t: 'act', c: a.c, n: a.n, k: m.k, u: m.u | 0, x: num(m.x), y: num(m.y), at: Date.now() };
         // 주인이 없으면 모아 뒀다가 주인이 들어올 때 준다 (쓰다듬기·열매가 주인 포켓몬에게 남게)
         if (!this.people().some(x => x.a.o)) { const L = (await this.ctx.storage.get('pend')) || []; L.push(o); await this.ctx.storage.put('pend', L.slice(-30)); }
+        // 방명록: 손님이 한 일도 말과 같이 남긴다 (v14.99 경완 '방명록에 상호작용도 일지처럼')
+        const A = (await this.ctx.storage.get('acts')) || []; A.push({ c: o.c, n: o.n, k: o.k, u: o.u, at: o.at }); await this.ctx.storage.put('acts', A.slice(-ACT_KEEP));
         return this.cast(o);
       }
       case 'field': {
