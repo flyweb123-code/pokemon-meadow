@@ -32,7 +32,12 @@ object FriendServer {
             val c = URL(BuildConfig.GAME_URL + "config/server.json").openConnection() as HttpURLConnection
             c.connectTimeout = 8000; c.readTimeout = 8000; c.useCaches = false
             val u = JSONObject(c.inputStream.bufferedReader().readText()).optString("url").trimEnd('/')
-            if (u.startsWith("https://")) p.edit().putString("serverUrl", u).apply()
+            if (u.startsWith("https://") && u != url) {
+                val first = url == null
+                p.edit().putString("serverUrl", u).commit()
+                // 처음 알게 됐으면 게임을 다시 불러 friends 창구를 만든다 (창구는 페이지를 열 때 정해짐)
+                if (first) android.os.Handler(android.os.Looper.getMainLooper()).post { GameLink.web?.reload() }
+            }
         }
     }
 
