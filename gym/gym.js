@@ -972,7 +972,7 @@ async function bsStart(gi) {
 function resultPop(c, res, gold, rep, R) {
   const won = !!res?.won, stk = st().stk | 0, sb = won ? stkBonus(stk) : 0;
   return new Promise(ok => { const p = pop(`<div class="rs-hd ${won ? 'won' : 'lost'}"><i class="rs-ray"></i><b>${won ? '승리!' : res?.quit ? '기권했다' : '패배…'}</b><small>${esc(c.cls)} ${esc(c.nm)}${won ? '에게 이겼다' : '에게 졌다'}</small></div>
-      ${won ? `<div class="rs-gold"><i class="coin"></i><b class="rg-n">+0</b><span>G</span></div>` : ''}${sb ? `<div class="rs-stk"><b>${stk}연승</b><span>보너스 평판 <em>+${sb}</em></span></div>` : ''}${repBox(rep)}
+      ${won ? `<div class="rs-gold"><i class="coin"></i><b class="rg-n">+0</b><span>G</span></div>` : ''}${repBox(rep, sb, stk)}
       <div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => { close(); ok(); });
     { const oc = p.onclick; p.onclick = e => { if (e.target === p) { p.remove(); return ok(); } oc(e); }; }   // 빈 곳을 눌러 닫아도 확인과 똑같이 (도전자가 떠나지 못하고 갇히던 것, 경완 2026-10-29)
     p.classList.add('rs-pop'); if (won) p.classList.add('rs-w');
@@ -983,30 +983,33 @@ function resultPop(c, res, gold, rep, R) {
         n.parentElement.classList.add('go'); const t0 = performance.now(), T = clampN(gold * 2, 600, 1100);
         await new Promise(done => { const f = now => { if (!p.isConnected) return done(); const k = Math.min(1, (now - t0) / T); n.textContent = '+' + Math.round(gold * (1 - (1 - k) ** 3)).toLocaleString(); k < 1 ? requestAnimationFrame(f) : done(); }; requestAnimationFrame(f); });
         n.parentElement.classList.add('end'); await wait(150); }
-      // 연승 보너스: 작은 띠가 살짝 튀어나오고 반짝 (경완 2026-10-30 '너무 과함' → 도장·불꽃·흔들림 뺌)
-      const sk = p.querySelector('.rs-stk');
-      if (sk) { await wait(120); if (!p.isConnected) return; sk.classList.add('go'); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} await wait(400); }
-      repAnim(p, rep);
+      repAnim(p, rep, sb);   // v14.96 경완: 배틀 평판이 먼저 오르고, 연승 딱지가 평판 박스 모서리에 뜨면서 보너스가 더 오른다
     })(); });
 }
 // 평판 오르내림 연출 (경완 2026-10-28 '평판 오르고 떨어지는 거 연출'): 숫자 세기 + 막대 + 튀는 +N/-N, 등급이 바뀌면 배지 반짝
-const repBox = rep => { const r1 = st().rep || 0, r0 = Math.max(0, r1 - rep), G = gradeOf(r0), pc = r => clampN((r - gradeOf(r).lo) / Math.max(1, gradeOf(r).hi - gradeOf(r).lo), 0, 1) * 100;
-  return `<div class="rs-rep ${rep > 0 ? 'up' : rep < 0 ? 'dn' : ''}" data-r0="${r0}" data-r1="${r1}"><div class="rr-top"><span>평판</span><b class="rr-n">${r0}</b><em class="rr-d">${rep >= 0 ? '+' : ''}${rep}</em></div>
-    <div class="rr-g"><span class="rr-bd">${gEmb(G.i)}</span><span class="rr-gn">${G.n}</span><i class="gy-bar"><i style="width:${pc(r0)}%"></i></i></div></div>`; };
-async function repAnim(p, rep) {
+const repBox = (rep, sb = 0, stk = 0) => { const r1 = st().rep || 0, r0 = Math.max(0, r1 - rep), G = gradeOf(r0), pc = r => clampN((r - gradeOf(r).lo) / Math.max(1, gradeOf(r).hi - gradeOf(r).lo), 0, 1) * 100, base = rep - sb;
+  return `<div class="rs-rep ${rep > 0 ? 'up' : rep < 0 ? 'dn' : ''}" data-r0="${r0}" data-r1="${r1}"><div class="rr-top"><span>평판</span><b class="rr-n">${r0}</b><em class="rr-d">${base >= 0 ? '+' : ''}${base}</em></div>
+    <div class="rr-g"><span class="rr-bd">${gEmb(G.i)}</span><span class="rr-gn">${G.n}</span><i class="gy-bar"><i style="width:${pc(r0)}%"></i></i></div>${sb ? `<div class="rs-stk2"><div class="sk-in"><b>${stk}<small>연승</small></b><em>+${sb}</em>${'<i class="sk-sp"></i>'.repeat(8)}</div></div>` : ''}</div>`; };
+async function repAnim(p, rep, sb = 0) {
   const el = p?.querySelector('.rs-rep'); if (!el || !rep) return;
-  const r0 = +el.dataset.r0, r1 = +el.dataset.r1, n = el.querySelector('.rr-n'), bar = el.querySelector('.gy-bar>i'), g0 = gradeOf(r0).i;
-  await wait(380); if (!el.isConnected) return;
-  const T = clampN(Math.abs(r1 - r0) * 90, 500, 1100);
-  el.classList.add('go'); window.GymBGM?.se?.(rep > 0 ? 'DP_EXP' : 'DP_KOUKA_L', rep > 0 ? { dur: T / 1000 } : undefined);   // 차오르는 소리는 막대가 다 찰 때 같이 멈춤 (경완 2026-10-29)
-  const t0 = performance.now();
-  await new Promise(done => { const f = now => { if (!el.isConnected) return done(); const k = Math.min(1, (now - t0) / T), r = Math.round(r0 + (r1 - r0) * (1 - (1 - k) ** 2)), G = gradeOf(r);
-    n.textContent = r; bar.style.width = clampN((r - G.lo) / Math.max(1, G.hi - G.lo), 0, 1) * 100 + '%';
-    if (G.i !== +el.dataset.gi) { el.dataset.gi = G.i; el.querySelector('.rr-bd').innerHTML = gEmb(G.i); el.querySelector('.rr-gn').textContent = G.n; }
-    k < 1 ? requestAnimationFrame(f) : done(); }; el.dataset.gi = g0; requestAnimationFrame(f); });
+  const r0 = +el.dataset.r0, r1 = +el.dataset.r1, n = el.querySelector('.rr-n'), bar = el.querySelector('.gy-bar>i'), g0 = gradeOf(r0).i, d = el.querySelector('.rr-d');
+  const run = (a, b, up) => { const T = clampN(Math.abs(b - a) * 90, 500, 1100); window.GymBGM?.se?.(up ? 'DP_EXP' : 'DP_KOUKA_L', up ? { dur: T / 1000 } : undefined);   // 차오르는 소리는 막대가 다 찰 때 같이 멈춤 (경완 2026-10-29)
+    const t0 = performance.now();
+    return new Promise(done => { const f = now => { if (!el.isConnected) return done(); const k = Math.min(1, (now - t0) / T), r = Math.round(a + (b - a) * (1 - (1 - k) ** 2)), G = gradeOf(r);
+      n.textContent = r; bar.style.width = clampN((r - G.lo) / Math.max(1, G.hi - G.lo), 0, 1) * 100 + '%';
+      if (G.i !== +el.dataset.gi) { el.dataset.gi = G.i; el.querySelector('.rr-bd').innerHTML = gEmb(G.i); el.querySelector('.rr-gn').textContent = G.n; }
+      k < 1 ? requestAnimationFrame(f) : done(); }; requestAnimationFrame(f); }); };
+  el.dataset.gi = g0; await wait(380); if (!el.isConnected) return;
+  el.classList.add('go'); const rm = r1 - sb;
+  if (rm !== r0) await run(r0, rm, rm > r0);
+  // v14.96 경완: 연승 딱지가 평판 박스 오른쪽 위 모서리에 튀어나와 둥둥 뜨고, 그만큼 평판이 한 번 더 오른다
+  const sk = el.querySelector('.rs-stk2');
+  if (sk && sb) { await wait(260); if (!el.isConnected) return; sk.classList.add('go'); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} await wait(520); if (!el.isConnected) return;
+    d.textContent = (rep >= 0 ? '+' : '') + rep; d.classList.remove('bump'); void d.offsetWidth; d.classList.add('bump'); await run(rm, r1, true); }
   el.classList.add('end');
   if (gradeOf(r1).i !== g0 && el.isConnected) { el.classList.add(gradeOf(r1).i > g0 ? 'gup' : 'gdn'); window.GymBGM?.se?.(gradeOf(r1).i > g0 ? 'DP_PINPON' : 'DP_KOUKA_L'); }
 }
+
 // 동네 체육관이 되어 훈련장·트레이너가 처음 열릴 때 한 번 (경완 2026-10-29)
 function unlockChk() { const g = st(); if (!g || g.unl || gradeOf(g.rep || 0).i < 1) return; g.unl = 1; save(); menuDot();
   if (g.tr?.length || g.sf?.length) return;   // 이미 쓰던 체육관은 조용히

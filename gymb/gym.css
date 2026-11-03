@@ -2479,3 +2479,22 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .rs-stk span em{font-size:12px!important}
 #gym .gy-qbtn{overflow:visible}#gym .gy-qbtn .gy-qcnt{position:absolute;right:-5px;top:-5px;min-width:16px;height:16px;padding:0 3px;box-sizing:border-box;border-radius:3px;background:#3b82f6;color:#fff;font-size:10px;font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;box-shadow:0 0 0 2px #fff;pointer-events:none}#gym .gy-qbtn .gy-qcnt[hidden]{display:none}   /* v14.83 경완: 도전자 받기 숫자 딱지 = 필드 체육관 아이콘 딱지, 오른쪽 위 모서리 */
 .bt-hb .tym{position:absolute;top:31px;display:flex;gap:0;pointer-events:none}.bt-hb.e .tym{left:14px}.bt-hb.p .tym{left:30px}.bt-hb .tym{gap:1px}.bt-hb .tym .tyi{width:9px;height:9px;display:block;filter:drop-shadow(1px 1px 0 rgba(0,0,0,.4))}   /* v14.85 경완: 배틀 HP 박스 타입 아이콘 (시안 C) */
+
+/* v14.96 경완: 연승 딱지 = 평판 박스 오른쪽 위 모서리에 걸쳐 둥둥 뜨는 납작한 딱지 (명암·테두리 없음) */
+#gym .rs-rep{position:relative;overflow:visible}
+#gym .rs-stk2{position:absolute;right:-6px;top:-14px;z-index:4;pointer-events:none;opacity:0}
+#gym .rs-stk2.go{opacity:1}
+#gym .rs-stk2 .sk-in{position:relative;display:flex;align-items:center;gap:6px;padding:4px 10px 4px 11px;border-radius:10px;background:#ef4a2c;color:#fff;transform:rotate(5deg) scale(0);transform-origin:70% 80%}
+#gym .rs-stk2.go .sk-in{animation:sk2In .5s cubic-bezier(.25,1.9,.45,1) forwards,sk2Float 1.8s ease-in-out .5s infinite}
+#gym .rs-stk2 b{font-size:18px;line-height:1;font-weight:800;letter-spacing:.5px;display:flex;align-items:baseline;gap:1px}
+#gym .rs-stk2 b small{font-size:12px;font-weight:800}
+#gym .rs-stk2 em{font-style:normal;font-size:14px;font-weight:800;line-height:1;padding:3px 6px;border-radius:7px;background:#ffd23a;color:#a8260e}
+#gym .rs-stk2 .sk-sp{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:2px;background:#ffd23a;opacity:0}
+#gym .rs-stk2 .sk-sp:nth-of-type(2n){background:#ef4a2c;width:5px;height:5px}
+#gym .rs-stk2.go .sk-sp{animation:sk2Sp .55s ease-out .08s both}
+#gym .rs-stk2 .sk-sp:nth-of-type(1){--a:20deg}#gym .rs-stk2 .sk-sp:nth-of-type(2){--a:65deg}#gym .rs-stk2 .sk-sp:nth-of-type(3){--a:110deg}#gym .rs-stk2 .sk-sp:nth-of-type(4){--a:155deg}#gym .rs-stk2 .sk-sp:nth-of-type(5){--a:200deg}#gym .rs-stk2 .sk-sp:nth-of-type(6){--a:245deg}#gym .rs-stk2 .sk-sp:nth-of-type(7){--a:290deg}#gym .rs-stk2 .sk-sp:nth-of-type(8){--a:335deg}
+@keyframes sk2In{0%{transform:rotate(-14deg) scale(0)}60%{transform:rotate(9deg) scale(1.28)}100%{transform:rotate(5deg) scale(1)}}
+@keyframes sk2Float{0%,100%{transform:rotate(5deg) translateY(0)}50%{transform:rotate(3deg) translateY(-4px)}}
+@keyframes sk2Sp{0%{opacity:1;transform:rotate(var(--a)) translateX(10px) scale(1)}100%{opacity:0;transform:rotate(var(--a)) translateX(46px) scale(.4)}}
+#gym .rs-rep .rr-d.bump{opacity:1;animation:rrBump .45s cubic-bezier(.3,1.8,.5,1) forwards}
+@keyframes rrBump{0%{opacity:1;transform:scale(1)}40%{opacity:1;transform:scale(1.45);color:#ef4a2c}100%{opacity:1;transform:none}}
