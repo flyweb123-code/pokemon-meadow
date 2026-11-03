@@ -8,6 +8,8 @@
 // 계정 비밀번호는 서버로 보내지 않는다: 기기가 소금으로 2만 번 해시(ph)와 k = sha("pkgk:id:pw") 를 계산해 보낸다
 // (무료 요금제 CPU 10ms 한도 + CloudKit 에서 옮겨 온 pwh 형식 그대로 쓰려고).
 
+export { FieldRoom } from './room.js';
+
 const ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const PART = 600_000;   // 저장 조각 크기 (글자). 한글이 섞여도 D1 한 칸 한도(2MB) 안 넘게
 const enc = new TextEncoder();
@@ -31,6 +33,8 @@ export default {
     const url = new URL(req.url);
     const out = (o, st = 200) => new Response(JSON.stringify(o), { status: st, headers: { 'content-type': 'application/json; charset=utf-8', ...cors } });
     if (req.method === 'GET' && url.pathname === '/') return out({ ok: true, v: 'pokegrow' });
+    const rm = url.pathname.match(/^\/room\/([A-Z0-9]{8})$/);
+    if (req.method === 'GET' && rm) return room(env, req, rm[1], url.searchParams.get('t') || '');
     if (req.method !== 'POST') return out({ ok: false, err: 'POST 만 받아요' }, 405);
     let body;
     try { body = await req.json(); } catch (e) { return out({ ok: false, err: '잘못된 요청' }, 400); }
@@ -165,8 +169,55 @@ async function handle(env, b) {
       ]);
       return { ok: true, kept: false, failed: 0, games: games.length };
     }
+    // ---------- 친구 필드 놀러가기 (베타) ----------
+    case 'fieldPut': {   // 주인이 없을 때 친구들에게 보여 줄 내 필드 + 들어올 수 있는 친구 코드
+      const data = str(b.data, 300_000); if (data == null) bad('필드가 너무 커요');
+      const fr = [...new Set((Array.isArray(b.fr) ? b.fr : []).map(cleanCode).filter(c => c.length === 8))].slice(0, 200).join(',');
+      await db.prepare('INSERT INTO field (code, data, fr, at) VALUES (?1, ?2, ?3, ?4) ON CONFLICT(code) DO UPDATE SET data = ?2, fr = ?3, at = ?4').bind(me, data, fr, now).run();
+      return true;
+    }
+    case 'visitTicket': {   // 방에 들어갈 2분짜리 표. 내 방이거나, 그 친구의 친구 목록에 내가 있어야 한다
+      const to = cleanCode(b.to); if (to.length !== 8) bad('잘못된 요청');
+      if (to !== me) {
+        const f = await db.prepare('SELECT fr FROM field WHERE code = ?').bind(to).first();
+        if (!f) bad('친구가 아직 필드를 열지 않았어요. 친구가 베타 판으로 게임을 한 번 켜야 해요');
+        if (!f.fr.split(',').includes(me)) bad('서로 친구여야 놀러 갈 수 있어요');
+      }
+      let n = '트레이너', sx = 'm';
+      try { const t = await db.prepare('SELECT card FROM trainer WHERE code = ?').bind(me).first(); const c = t && JSON.parse(t.card); if (c?.n) n = String(c.n).slice(0, 12); if (c?.sex === 'f') sx = 'f'; } catch (e) {}
+      const body = b64u(enc.encode(JSON.stringify({ c: me, r: to, n, sx, e: now + 120_000 })));
+      return { t: body + '.' + await sign(env, body), me };
+    }
     default: bad('모르는 요청');
   }
+}
+
+// ---------- 놀러가기 표 ----------
+const b64u = u8 => btoa(String.fromCharCode(...u8)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const unb64u = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), ch => ch.charCodeAt(0)));
+let keyP = null;
+async function hmacKey(env) {   // 서명 열쇠는 처음 한 번 만들어 D1 kv 에 둔다 (비밀 변수 따로 안 만들어도 되게)
+  return keyP ||= (async () => {
+    let row = await env.DB.prepare("SELECT v FROM kv WHERE k = 'visit'").first();
+    if (!row) {
+      const v = hex(crypto.getRandomValues(new Uint8Array(32)));
+      await env.DB.prepare("INSERT INTO kv (k, v) VALUES ('visit', ?) ON CONFLICT(k) DO NOTHING").bind(v).run();
+      row = await env.DB.prepare("SELECT v FROM kv WHERE k = 'visit'").first();
+    }
+    return crypto.subtle.importKey('raw', enc.encode(row.v), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']);
+  })().catch(e => { keyP = null; throw e; });
+}
+async function sign(env, body) { return b64u(new Uint8Array(await crypto.subtle.sign('HMAC', await hmacKey(env), enc.encode(body)))); }
+
+async function room(env, req, code, t) {
+  if (req.headers.get('Upgrade') !== 'websocket') return new Response('websocket 만', { status: 426 });
+  const [body, sig] = t.split('.');
+  let p = null;
+  try { if (body && sig && sig === await sign(env, body)) p = JSON.parse(unb64u(body)); } catch (e) {}
+  if (!p || p.r !== code || !(p.e > Date.now())) return new Response('표가 맞지 않아요', { status: 403 });
+  const h = new Headers(req.headers);
+  h.set('x-c', p.c); h.set('x-n', encodeURIComponent(p.n || '')); h.set('x-sx', p.sx || 'm'); h.set('x-o', p.c === code ? '1' : '0'); h.set('x-r', code);
+  return env.ROOM.get(env.ROOM.idFromName(code)).fetch(new Request(req.url, { headers: h }));
 }
 
 // k 확인: kh 가 있으면 그것과, 없으면(CloudKit 에서 옮겨 온 계정) 옮겨 온 저장의 서명으로 확인하고 kh 를 채운다

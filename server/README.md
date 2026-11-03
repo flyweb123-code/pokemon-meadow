@@ -41,3 +41,13 @@ npx wrangler dev
 GitHub Actions › **Migrate CloudKit to friend server** › Run workflow (비밀 변수 `CLOUDKIT_API_TOKEN`, `SERVER_ADMIN_TOKEN` 필요).
 아이폰 새 빌드가 친구들 폰에 깔리기 전까지 예전 빌드는 CloudKit 에 쓰므로, 다 바뀐 뒤 한 번 더 돌리면 됩니다.
 옮겨 온 계정은 처음 로그인(또는 저장 서명 확인) 때 k 확인값이 채워집니다.
+
+## 친구 필드 놀러가기 (베타, v14.99~)
+
+필드(주인 친구 코드)마다 방 하나 = Durable Object `FieldRoom` (`src/room.js`, 무료 요금제 SQLite 저장소). `wrangler.toml` 의 `[[migrations]] new_sqlite_classes` 로 처음 배포 때 만들어집니다.
+
+- `POST /v1 {op:'fieldPut', data, fr}` — 주인이 없을 때 보여 줄 내 필드(저장 모양 JSON)와 들어올 수 있는 친구 코드. D1 `field` 표.
+- `POST /v1 {op:'visitTicket', to}` → `{t, me}` — 방에 들어갈 2분짜리 표. 내 방이거나, 그 방 주인의 친구 목록(fr)에 내가 있어야 함. 서명 열쇠는 처음 한 번 만들어 D1 `kv` 표에 둠 (비밀 변수 따로 없음).
+- `GET /room/<주인코드>?t=<표>` (WebSocket) — 채팅(최근 50개 = 방명록), 트레이너 자리, 주인 포켓몬 자리(주인 기기가 손님 있을 때 0.3초마다), 손님이 한 쓰다듬기·열매(주인이 없으면 모아 뒀다가 들어올 때). 말 모양은 `src/room.js` 맨 위 설명.
+
+게임은 표만 친구 창구(frAsk)로 받고 WebSocket 은 게임 페이지가 직접 엽니다 → 아이폰·안드로이드 앱 새 빌드가 필요 없습니다.
