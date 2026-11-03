@@ -1137,7 +1137,7 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 .rr-n{font-size:22px;font-variant-numeric:tabular-nums;min-width:2.5em;text-align:center}
 .rr-d{font-style:normal;font-size:16px;opacity:0;transform:translateY(6px) scale(.6)}
 .rs-rep.up .rr-d{color:#2a8a3e}.rs-rep.dn .rr-d{color:#c03030}
-.rs-rep.go .rr-d{animation:rrPop .45s cubic-bezier(.3,1.6,.5,1) forwards}
+.rs-rep.dshow .rr-d{animation:rrPop .45s cubic-bezier(.3,1.6,.5,1) forwards}
 .rs-rep.up.go .rr-n{animation:rrUp .5s ease-out 2}.rs-rep.dn.go{animation:rrShake .4s steps(6)}
 .rs-rep.dn.go .rr-n{color:#c03030}.rs-rep.up.go .rr-n{color:#2a8a3e}
 .rs-rep.up.end{animation:rrFlash .6s ease-out}
@@ -2162,7 +2162,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bsw-c.now{background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 2px rgba(200,190,240,.25)}.bsw-c.now small{color:#b8b0e0}.bsw-c.now>b{color:#e0dcf4}
 .bsw-c.now .bdw img{width:72px;height:72px;image-rendering:pixelated;opacity:.9}
 .bsw-c.nx{background:linear-gradient(180deg,rgba(255,226,122,.18),rgba(255,226,122,.04));box-shadow:inset 0 0 0 2px #d8a830,0 0 18px rgba(255,200,60,.35);animation:bsGlow 2.6s ease-in-out infinite}
-.bsw-c.nx small{color:#ffe27a}.bsw-c.nx>b{font-size:18px;color:#ffe27a;text-shadow:0 0 8px rgba(255,200,60,.7),2px 2px 0 #20202c}
+.bsw-c.nx small{color:#ffe27a}.bsw-c.nx>b{font-size:18px;color:#ffe27a;text-shadow:0 0 8px rgba(255,170,20,.95),2px 2px 0 #20202c}
 .bsw-bb{position:relative;display:grid;place-items:center}.bsw-c.nx .bdw{position:relative;animation:bswFloat 3s ease-in-out infinite}
 .bsw-c.nx .bdw img{width:108px;height:108px;image-rendering:pixelated;filter:drop-shadow(0 0 6px rgba(255,230,140,.95))}
 .bsw-halo{position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px;border-radius:50%;background:radial-gradient(circle,rgba(255,236,160,.55),rgba(255,210,90,.15) 45%,transparent 70%);animation:bswPulse 2.4s ease-in-out infinite}
@@ -2222,7 +2222,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* 승급 심사 버튼 → 화면 전환도 줄무늬 없이 (경완 2026-10-31) */
 .bs-tr>i{background:linear-gradient(180deg,#231a4c,#0c0a1c)!important;border-color:#d8a830!important}
 .bs-tr>i.b{background:linear-gradient(0deg,#231a4c,#0c0a1c)!important}
-.bs-tr>b{color:#ffe27a;text-shadow:2px 2px 0 #20202c,0 0 12px rgba(255,200,60,.7)}
+.bs-tr>b{color:#ffe27a;text-shadow:2px 2px 0 #20202c,0 0 12px rgba(255,170,20,.95)}
 /* v12.81 경완: 확인 안 한 새 도전자 카드의 빨간 점 (메뉴 점과 같은 네모) */
 .gy-qw .qw-row>.qw-nd{position:absolute;top:-5px;left:-5px;z-index:3;width:10px;height:10px;background:var(--gy-red,#e04838);box-shadow:0 0 0 2px #fff;grid-column:auto}
 
@@ -2498,3 +2498,50 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes sk2Sp{0%{opacity:1;transform:rotate(var(--a)) translateX(10px) scale(1)}100%{opacity:0;transform:rotate(var(--a)) translateX(46px) scale(.4)}}
 #gym .rs-rep .rr-d.bump{opacity:1;animation:rrBump .45s cubic-bezier(.3,1.8,.5,1) forwards}
 @keyframes rrBump{0%{opacity:1;transform:scale(1)}40%{opacity:1;transform:scale(1.45);color:#ef4a2c}100%{opacity:1;transform:none}}
+
+/* v14.97 경완: 딱지 뒤 은은한 빛줄기, 보너스 +N 은 평판 숫자 오른쪽에 잠깐 떴다 사라짐 */
+#gym .rs-stk2 .sk-ray{position:absolute;left:50%;top:50%;width:136px;height:136px;margin:-68px;opacity:0;pointer-events:none;filter:blur(1px);
+  background:conic-gradient(from 8deg,transparent 0 6deg,rgba(255,170,20,1) 7deg,transparent 9deg 38deg,rgba(255,190,50,.8) 40deg,transparent 43deg 71deg,rgba(255,160,10,1) 72deg,transparent 74deg 112deg,rgba(255,200,70,.75) 115deg,transparent 119deg 151deg,rgba(255,170,20,.95) 152deg,transparent 154deg 196deg,rgba(255,185,40,.85) 198deg,transparent 202deg 236deg,rgba(255,160,10,1) 237deg,transparent 239deg 281deg,rgba(255,200,70,.75) 284deg,transparent 288deg 318deg,rgba(255,170,20,.95) 319deg,transparent 321deg 360deg);
+  -webkit-mask:radial-gradient(circle,#000 14%,rgba(0,0,0,.75) 34%,transparent 70%);mask:radial-gradient(circle,#000 14%,rgba(0,0,0,.75) 34%,transparent 70%)}
+#gym .rs-stk2 .sk-ray::before{content:"";position:absolute;inset:28px;border-radius:50%;background:radial-gradient(circle,rgba(255,250,225,.8) 0,rgba(255,215,90,.4) 35%,rgba(255,180,40,0) 70%)}
+#gym .rs-stk2 .sk-ray::after{content:"";position:absolute;inset:0;background:conic-gradient(from 25deg,transparent 0 55deg,rgba(255,245,200,.95) 58deg,transparent 64deg 175deg,rgba(255,245,200,.9) 179deg,transparent 185deg 290deg,rgba(255,245,200,.95) 293deg,transparent 299deg);filter:blur(2px);animation:skRayTw 2.6s ease-in-out infinite}
+#gym .rs-stk2.go .sk-ray{animation:skRayIn .6s ease-out forwards,skRayBr 3.2s ease-in-out .6s infinite,skRaySpin 24s linear infinite}
+@keyframes skRayIn{from{opacity:0;transform:scale(.3)}to{opacity:.8;transform:scale(1)}}
+@keyframes skRayBr{0%,100%{opacity:.8;transform:scale(1)}50%{opacity:.6;transform:scale(.95)}}
+@keyframes skRayTw{0%,100%{opacity:.2;rotate:0deg}50%{opacity:1;rotate:-14deg}}
+@keyframes skRaySpin{to{rotate:360deg}}
+#gym .rs-rep .rr-b{font-style:normal;font-size:15px;font-weight:800;color:#ef4a2c;opacity:0;transform:translateY(6px) scale(.5)}
+#gym .rs-rep .rr-b.on{animation:rrbIn .4s cubic-bezier(.3,1.8,.5,1) .3s forwards}
+#gym .rs-rep .rr-b.off{animation:rrbOut .26s ease-in forwards}
+@keyframes rrbIn{to{opacity:1;transform:none}}
+@keyframes rrbOut{from{opacity:1;transform:none}to{opacity:0;transform:translate(-14px,-2px) scale(.6)}}
+#gym .rs-gold .rg-b{font-style:normal;font-size:18px;font-weight:800;color:#ef4a2c;opacity:0;transform:translateY(6px) scale(.5);font-variant-numeric:tabular-nums}
+#gym .rs-gold .rg-b.on{animation:rrbIn .4s cubic-bezier(.3,1.8,.5,1) .3s forwards}
+#gym .rs-gold .rg-b.off{animation:rrbOut .26s ease-in forwards}
+/* v14.97 경완: 오르는 점수가 뜨기 전·보너스가 합쳐진 뒤엔 숫자가 가운데 (빈 자리 안 남김) */
+#gym .rs-rep .rr-d,#gym .rs-rep .rr-b{max-width:0;margin-left:-8px;white-space:nowrap;transition:max-width .3s ease,margin .3s ease}
+#gym .rs-rep.dshow .rr-d,#gym .rs-rep .rr-b.on{max-width:4em;margin-left:0}
+#gym .rs-gold .rg-b{max-width:0;margin-left:-6px;white-space:nowrap;transition:max-width .3s ease,margin .3s ease}
+#gym .rs-gold .rg-b.on{max-width:5em;margin-left:0}
+#gym .rs-gold.end b.bump{animation:rgBump .45s cubic-bezier(.3,1.8,.5,1) forwards}
+@keyframes rgBump{0%{transform:scale(1)}40%{transform:scale(1.15);color:#ef4a2c}100%{transform:none}}
+#gym .rs-rep .rr-d.mrg,#gym .rs-rep .rr-b.mrg{animation:rrbOut .26s ease-in forwards;max-width:0;margin-left:-8px}
+#gym .rs-rep .rr-n.bump{display:inline-block;animation:rgBump .45s cubic-bezier(.3,1.8,.5,1)}
+/* v14.97 경완: 평판 기본 점수가 오르는 동안 +N 은 자리를 차지하지 않고 옆에 떠서, 평판 숫자는 계속 가운데 */
+#gym .rs-rep.dshow .rr-d,#gym .rs-rep .rr-d{max-width:0;margin-left:-8px;position:relative;left:8px;overflow:visible}
+/* v14.97 경완: 평판 숫자는 오르는 동안 튀지 않고 끝(합쳐질 때)에만 튐, 기본 점수 합쳐질 땐 빨간색 없이 */
+#gym .rs-rep.up.go .rr-n{animation:none}
+#gym .rs-rep .rr-n.bump0{display:inline-block;animation:rgBump0 .45s cubic-bezier(.3,1.8,.5,1)}
+@keyframes rgBump0{0%{transform:scale(1)}40%{transform:scale(1.15)}100%{transform:none}}
+/* v14.97 경완: 오르는 동안 평판 숫자는 검정 그대로 */
+#gym .rs-rep.up.go .rr-n,#gym .rs-rep.dn.go .rr-n{color:var(--win-ink,#20202c)}
+/* v14.97 경완: 합쳐질 때 튐 + 빛 (골드 박스처럼 평판 박스도) */
+#gym .rs-rep.flash{animation:rpFlash .5s cubic-bezier(.3,1.8,.5,1)}
+@keyframes rpFlash{40%{transform:scale(1.04);box-shadow:inset 0 0 0 2px #f0c850,0 0 18px #ffd84a}}
+@keyframes rgBump0{0%{transform:scale(1)}40%{transform:scale(1.2);text-shadow:0 0 10px #ffd84a,0 0 2px #fff}100%{transform:none}}
+@keyframes rgBump{0%{transform:scale(1)}40%{transform:scale(1.15);color:#ef4a2c;text-shadow:0 0 10px #ffd84a,0 0 2px #fff}100%{transform:none}}
+/* 연승 시안: 평판 숫자 합쳐질 때 크게 커졌다 작아지고, 합쳐지는 숫자 색(기본 초록·보너스 빨강)이 잠깐 됐다가 검정으로 (경완 2026-11-03) */
+#gym .rs-rep .rr-n.bump0,#gym .rs-rep.up.go .rr-n.bump0{animation:rpMrgG .7s cubic-bezier(.3,1.6,.5,1)}
+#gym .rs-rep .rr-n.bump,#gym .rs-rep.up.go .rr-n.bump{animation:rpMrgR .7s cubic-bezier(.3,1.6,.5,1)}
+@keyframes rpMrgG{0%{transform:scale(1)}25%{transform:scale(1.4);color:#2a8a3e;text-shadow:0 0 10px #ffd84a,0 0 2px #fff}65%{transform:scale(1);color:#2a8a3e}100%{transform:none}}
+@keyframes rpMrgR{0%{transform:scale(1)}25%{transform:scale(1.4);color:#ef4a2c;text-shadow:0 0 10px #ffd84a,0 0 2px #fff}65%{transform:scale(1);color:#ef4a2c}100%{transform:none}}
