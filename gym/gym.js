@@ -1226,8 +1226,9 @@ function homeSay() {
   const n = g.q.length, qb = $g('.gy-qbtn'), cap = $g('.gy-qcap'), dot = $g('.gy-qdot'), nw = g.q.some(c => c.id > (g.qSeen | 0));
   const bs = bsReady(g), gl = qb?.querySelector('.ga-l');
   if (qb) { qb.disabled = !n && !bs; qb.classList.toggle('has', !!n && !bs); qb.classList.toggle('bs', bs); qb.setAttribute('aria-label', bs ? '승급 심사' : '도전자 받기'); if (gl) gl.textContent = bs ? '승급 심사' : '도전자 받기'; }
-  if (cap) { cap.hidden = false; cap.classList.toggle('none', !n && !bs); cap.textContent = bs ? `${GRADES[(g.gmax | 0) + 1][1]} 승급 심사를 받을 수 있어요` : n ? `${n}명의 도전자가 기다리고 있어요` : '아직 도전자가 없어요'; }   // 없을 때도 안내 (경완 2026-10-29)
-  if (dot) dot.hidden = !(n && nw) || bs;
+  if (qb) { let qc = qb.querySelector('.gy-qcnt'); const on = !!n && !bs; if (on && !qc) { qc = document.createElement('b'); qc.className = 'gy-qcnt'; qb.appendChild(qc); } if (qc) { qc.hidden = !on; qc.textContent = n > 9 ? '9+' : n; } }   // 도전자 수 = 필드 체육관 아이콘과 같은 파란 딱지, 버튼 오른쪽 위 모서리 (경완 2026-11-03)
+  if (cap) { cap.hidden = !!n && !bs; cap.classList.toggle('none', !n && !bs); cap.textContent = bs ? `${GRADES[(g.gmax | 0) + 1][1]} 승급 심사를 받을 수 있어요` : n ? `${n}명의 도전자가 기다리고 있어요` : '아직 도전자가 없어요'; }   // 없을 때도 안내 (경완 2026-10-29)
+  if (dot) dot.hidden = true;   // 숫자 딱지가 대신함 (경완 2026-11-03)
   if (bs && open && !busy && g.bsAl !== (g.gmax | 0) + 1 && $g('.gy-sheet').hidden && !root.querySelector('.gy-pop, .gy-kang, .gy-infos') && !ded) bsAlert();   // 평판이 꽉 찼을 때 한 번 (경완 2026-10-30)   // 주석 뒤에 붙어 있어서 빨간 점이 안 나오던 버그 (경완 2026-10-29)
   const pw = root.querySelector('.gy-qw'); if (pw) pw.redraw?.();
 }

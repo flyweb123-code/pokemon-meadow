@@ -2477,3 +2477,4 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .rs-stk{width:fit-content;max-width:100%;align-self:center;margin:0 auto 8px!important;padding:3px 11px 3px 9px!important;gap:6px!important;align-items:center;border-radius:999px!important;font-size:11px!important;box-sizing:border-box}
 .rs-stk b{font-size:12px!important;padding:1px 7px;border-radius:999px;background:#c0402a;color:#fff6c8!important}
 .rs-stk span em{font-size:12px!important}
+#gym .gy-qbtn{overflow:visible}#gym .gy-qbtn .gy-qcnt{position:absolute;right:-5px;top:-5px;min-width:16px;height:16px;padding:0 3px;box-sizing:border-box;border-radius:3px;background:#3b82f6;color:#fff;font-size:10px;font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;box-shadow:0 0 0 2px #fff;pointer-events:none}#gym .gy-qbtn .gy-qcnt[hidden]{display:none}   /* v14.83 경완: 도전자 받기 숫자 딱지 = 필드 체육관 아이콘 딱지, 오른쪽 위 모서리 */
