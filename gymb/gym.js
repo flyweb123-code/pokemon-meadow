@@ -993,7 +993,7 @@ function resultPop(c, res, gold, rep, R) {
  if (!p.isConnected) return; try { window.GymBGM?.se?.('DP_REGI'); } catch (e) {}
         n.parentElement.classList.add('go'); const t0 = performance.now(), T = gT;   // v14.97 경완: 평판 기본 점수와 같이, 조금 천천히
         await new Promise(done => { const f = now => { if (!p.isConnected) return done(); const k = clampN((now - t0) / T, 0, 1); n.textContent = '+' + Math.round(g0 * (1 - (1 - k) ** 3)).toLocaleString(); k < 1 ? requestAnimationFrame(f) : done(); }; requestAnimationFrame(f); });
-        gDone(); if (!(rep && rep - sb)) gEnd(true); await ge; if (!p.isConnected) return; n.parentElement.classList.add('end'); }   // v14.97 경완: 골드 박스는 평판 +N 이 합쳐질 때 같이 튄다
+        if (!p.isConnected) return; n.parentElement.classList.add('end'); gDone(); }   // 경완 2026-11-03: 골드 먼저 다 오르고 튐 → 평판 기본 점수 → 골드·평판 보너스 같이   // v14.97 경완: 골드 박스는 평판 +N 이 합쳐질 때 같이 튄다
       else gDone();   // v14.96 경완: 배틀 평판이 먼저 오르고, 연승 딱지가 평판 박스 모서리에 뜨면서 보너스가 더 오른다
     })(); });
 }
@@ -1010,7 +1010,7 @@ async function repAnim(p, rep, sb = 0, gx = null, gp = null, gT = 0, onMrg = nul
       if (!keepN) n.textContent = r; tick?.(r, 1 - (1 - k) ** (cub ? 3 : 2)); bar.style.width = clampN((r - G.lo) / Math.max(1, G.hi - G.lo), 0, 1) * 100 + '%';
       if (G.i !== +el.dataset.gi) { el.dataset.gi = G.i; el.querySelector('.rr-bd').innerHTML = gEmb(G.i); el.querySelector('.rr-gn').textContent = G.n; }
       k < 1 ? requestAnimationFrame(f) : done(); }; requestAnimationFrame(f); }); };
-  el.dataset.gi = g0; await wait(450); if (!el.isConnected) return;
+  el.dataset.gi = g0; await wait(450); if (gp) { await gp; await wait(350); } if (!el.isConnected) return;   // 경완 2026-11-03: 평판은 골드가 다 오른 뒤에
   el.classList.add('go'); const rm = r1 - sb;
   el.classList.add('dshow');   // v14.97 경완: 기본 점수 +N 은 평판이 오르기 시작할 때 같이 떠서 오르는 만큼 센다
   if (rm !== r0) { const up = rm > r0; d.textContent = up ? '+1' : '-1'; await run(r0, rm, up, r => { d.textContent = (up ? '+' : '-') + Math.max(1, Math.abs(r - r0)); }, gT, !!gT, true); }   // v14.97 경완: 골드와 같은 시간·같은 곡선으로 같이 오른다 (평판 숫자는 +N 이 합쳐질 때 한 번에)
