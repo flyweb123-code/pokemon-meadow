@@ -2550,3 +2550,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes rgMrgR{0%{transform:scale(1)}25%{transform:scale(1.2);color:#ef4a2c;text-shadow:0 0 10px #ffd84a,0 0 2px #fff}65%{transform:scale(1);color:#ef4a2c}100%{transform:none}}
 /* 경완 2026-11-03: 골드 보너스 합칠 때 G 글자도 숫자와 같이 튀고 빨갛게 */
 #gym .rs-gold.end b.bump+span{display:inline-block;transform-origin:left center;animation:rgMrgR .7s cubic-bezier(.3,1.6,.5,1) forwards}
+/* 경완 2026-11-03: 다 합쳐진 뒤 총 오른 점수 (+N) — 떠 있어서 평판 숫자 위치는 안 움직임 */
+#gym .rs-rep .rr-top{position:relative}
+#gym .rs-rep .rr-tot{position:absolute;bottom:3px;font-style:normal;font-size:14px;font-weight:700;color:var(--dim,#8a8790);white-space:nowrap;opacity:0;animation:rrTot .35s ease-out .15s forwards}
+@keyframes rrTot{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}

@@ -1027,6 +1027,7 @@ async function repAnim(p, rep, sb = 0, gx = null, gp = null, gT = 0, onMrg = nul
     gbx?.classList.replace('on', 'off'); bx?.classList.add('mrg'); await wait(150); n.textContent = r1; n.classList.remove('bump', 'bump0'); void n.offsetWidth; if (bx) { n.classList.add('bump'); flash(); } if (gx) { gx.n.textContent = '+' + (gx.g0 + gx.gb).toLocaleString(); const gb2 = gx.n.parentElement; gb2.classList.remove('end'); gx.n.classList.remove('bump'); void gb2.offsetWidth; gb2.classList.add('end'); gx.n.classList.add('bump'); } }
   await wait(720);   // 보너스가 합쳐지며 빨갛게 튄 뒤에 원래 색으로 (end 의 색 고정이 튐을 덮지 않게)
   el.classList.add('end');
+  if (r1 !== r0 && el.isConnected) { const tp = el.querySelector('.rr-top'), t = document.createElement('i'); t.className = 'rr-tot'; t.textContent = `(${r1 > r0 ? '+' : ''}${r1 - r0})`; tp.appendChild(t); const rg = document.createRange(); rg.selectNodeContents(n); t.style.left = (rg.getBoundingClientRect().right - tp.getBoundingClientRect().left) / (tp.getBoundingClientRect().width / tp.offsetWidth || 1) + 5 + 'px'; }   // 경완 2026-11-03: 다 합쳐진 뒤 총 오른 점수를 숫자 옆 괄호로 (글자 위치는 그대로)
   if (gradeOf(r1).i !== g0 && el.isConnected) { el.classList.add(gradeOf(r1).i > g0 ? 'gup' : 'gdn'); window.GymBGM?.se?.(gradeOf(r1).i > g0 ? 'DP_PINPON' : 'DP_KOUKA_L'); }
 }
 
