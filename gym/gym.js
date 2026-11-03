@@ -869,7 +869,7 @@ async function challenge(picked) {
   const g = st(), c = g.q[0]; if (!c || busy) return;
   if (![0, 1, 2].some(i => luOf(i).length)) {
     // v13.98 경완: 튜토리얼 뒤 첫 도전자 = 라인업 화면에서 안내원(그림 있는 대사창)이 설명 → 정하면 홈 대사창 3줄 → 도전자 입장·배틀
-    const tut = !g.luTut;
+    const tut = !g.luTut && !((g.w | 0) + (g.l | 0)) && !gList().some(x => x.luTut);   // v14.75 경완 '휴업하고 새로 세웠을 때 라인업 안내원 대사창 X': 이미 배틀해 봤거나 다른 체육관에서 봤으면 튜토리얼 아님
     if (!tut) say('라인업이 비어 있어요.', '라인업을 짜고 "이 라인업으로 결정"을 눌러 주세요');
     openTab('battle', { title: '배틀 라인업', pick: async i => { const g2 = st(); g2.luI = i; if (tut) g2.luTut = 1; save(); openTab(null);
       if (tut) await tutTalk(['첫 라인업을 정하셨군요!', () => $g('.gy-menu [data-t=shop]')?.classList.add('tglow'), '상점에는 포켓몬에게 가르칠 기술머신과<br>지니게 할 도구들도 있으니 다음에 꼭 이용해 보세요!', () => $g('.gy-menu [data-t=shop]')?.classList.remove('tglow'), '그럼 첫 배틀 화이팅입니다!!']);   /* v14.08 경완: 상점 얘기할 때 상점 메뉴 테두리 은은하게 */
@@ -1277,7 +1277,7 @@ function openTab(t, opt) {
   const sh = $g('.gy-sheet'); sh.classList.remove('ty-on', 'lk'); if (!t) { sh.hidden = true; return; }
   if (t === 'battle') { sh.hidden = false; sh.scrollTop = 0; sh.innerHTML = '<h3>포켓몬</h3><p class="gy-lead">불러오는 중…</p>'; loadJs('gym/battle.js', 'GymBattle').then(() => { if (tab === 'battle' && window.GymBattle) GymBattle.tab(sh, opt); }); return; }
   if (t === 'train' || t === 'staff' || t === 'shop') { sh.hidden = false; sh.scrollTop = 0; sh.innerHTML = `<h3>${SOON[t].t}</h3><p class="gy-lead">불러오는 중…</p>`;
-    loadJs('gym/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => loadJs('gym/manage.js', 'GymManage')).then(() => { if (tab === t && window.GymManage) { GymManage.tab(t, sh); const g = st(); if (lockedT(t)) return; if (t === 'train' && !g.trTut) { g.trTut = 1; save(); if (!g.tr?.length) kang(KANG_TR(), { lit: true }); } } }); return; }
+    loadJs('gym/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => loadJs('gym/manage.js', 'GymManage')).then(() => { if (tab === t && window.GymManage) { GymManage.tab(t, sh); const g = st(); if (lockedT(t)) return; if (t === 'train' && !g.trTut && !gList().some(x => x.trTut)) { g.trTut = 1; save(); if (!g.tr?.length) kang(KANG_TR(), { lit: true }); } } }); return; }
   const o = SOON[t];
   sh.innerHTML = `<h3>${o.t}</h3><p class="gy-lead">${o.d}</p><div class="gy-soon"><i class="gy-soon-ic" style="background-image:url(${IMG}${o.ic}.png)"></i><b>준비 중이에요</b><p>이 메뉴는 다음 단계에서 열려요.</p><ul>${o.li.map(x => `<li>${x}</li>`).join('')}</ul></div>`;
   sh.hidden = false; sh.scrollTop = 0;
@@ -1325,7 +1325,7 @@ function infoPop() {
 }
 // ---------- 여러 체육관 관리 (경완 2026-10-29 '폐업하고 새로 세우기 > 체육관 관리') ----------
 // S.gym = 지금 운영 중인 체육관, S.gym.shelf = 휴업 중인 체육관들. 타입마다 하나씩. 관장 몫(포켓몬 레벨·옷·꾸미기·기술머신·배지·전적)은 운영 중인 체육관이 들고 다닌다
-const G_SHARED = ['mon', 'fit', 'fits', 'own', 'tms', 'itm', 'bdg', 'bdl', 'bk', 'tyLog', 'w', 'l', 'blk', 'nt', 'rv', 'pal', 'shelf'];
+const G_SHARED = ['mon', 'fit', 'fits', 'own', 'tms', 'itm', 'bdg', 'bdl', 'bk', 'tyLog', 'w', 'l', 'blk', 'nt', 'rv', 'pal', 'luTut', 'luGd', 'trTut', 'fb1', 'shelf'];   // v14.75 경완: 튜토리얼 안내(라인업·훈련장·첫 배틀)도 관장 몫 — 새로 세운 체육관에서 다시 안 나옴
 const gList = () => { const g = st(); return g ? [g, ...(g.shelf || [])] : []; };
 const gUsedTy = () => new Set(gList().map(x => x.ty));
 // 휴업 중이던 시간은 없던 셈 (도전자·월급·면접·훈련 시계를 그만큼 민다)
