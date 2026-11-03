@@ -80,4 +80,5 @@ dependencies {
     implementation("androidx.webkit:webkit:1.12.1")
     implementation("androidx.work:work-runtime-ktx:2.9.1")
     implementation("com.google.firebase:firebase-messaging:24.0.0")   // 친구 방문 푸시 (Push.kt)
+    implementation("androidx.fragment:fragment-ktx:1.8.5")   // firebase 가 옛 fragment 를 끌고 와서 권한 요청(ActivityResult) 린트가 막음 → 새 버전으로
 }
