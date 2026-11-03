@@ -57,6 +57,10 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
             case "acctPull":   // v12.09: 켤 때 다른 폰이 더 최근에 올린 기록이 있는지 (가장 최근 저장 하나)
                 guard let id = acctId(body["id"]), let k = body["k"] as? String, k.count == 64 else { return (nil, "잘못된 요청") }
                 return (try await newestSave(id, k: k), nil)
+            case "acctDel":   // v14.67 경완 '설정에 탈퇴하기': 이 계정 저장·아이디, 이 기기의 트레이너 카드·랭킹 기록을 서버에서 지운다
+                guard let id = acctId(body["id"]) else { return (nil, "잘못된 요청") }
+                let games = (body["games"] as? [String] ?? []).filter { $0.count <= 20 && $0.allSatisfy({ $0.isLetter || $0.isNumber }) }
+                return (try await acctDel(id, games: Array(Set(games)).prefix(500).map { $0 }), nil)
             case "mgtop":
                 guard let game = body["game"] as? String, !game.isEmpty else { return (nil, "잘못된 요청") }
                 return (try await mgTop(game), nil)
@@ -305,6 +309,34 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
         r["sig"] = sha(k + sha(data)) as CKRecordValue
         r["data"] = CKAsset(fileURL: url)
         try await saveOne(r, .allKeys)
+    }
+
+    // 탈퇴: 지울 수 있는 건 이 iCloud 가 만든 레코드뿐이다 (CloudKit 공개 DB 는 만든 사람만 지움).
+    // 아이디(Account)를 다른 폰에서 만들었으면 남는다 → kept 로 알려 준다. 없는 레코드(unknownItem)는 이미 지워진 것으로 본다.
+    private func acctDel(_ id: String, games: [String]) async throws -> [String: Any] {
+        let me = try await code()
+        let acc = CKRecord.ID(recordName: "A_" + id)
+        var ids: [CKRecord.ID] = [acc, CKRecord.ID(recordName: "V_\(id)_\(me)"), recordID(me)]
+        ids += games.map { CKRecord.ID(recordName: "S_\(me)_\($0)") }
+        // 내가 만든 Save(이 아이디)·Score 도 찾아서 함께 (콘솔에 creator 인덱스가 없으면 위 목록만)
+        if let uid = try? await container.userRecordID() {
+            let ref = CKRecord.Reference(recordID: uid, action: .none)
+            for (type, pred) in [("Save", NSPredicate(format: "acct == %@ AND creatorUserRecordID == %@", id, ref)), ("Score", NSPredicate(format: "creatorUserRecordID == %@", ref))] {
+                if let (rs, _) = try? await db.records(matching: CKQuery(recordType: type, predicate: pred), resultsLimit: 400) { ids += rs.map { $0.0 } }
+            }
+        }
+        var seen = Set<String>(), kept = false, failed = 0
+        let uniq = ids.filter { seen.insert($0.recordName).inserted }
+        for i in stride(from: 0, to: uniq.count, by: 300) {
+            let part = Array(uniq[i..<min(i + 300, uniq.count)])
+            let (_, del) = try await db.modifyRecords(saving: [], deleting: part, savePolicy: .allKeys)
+            for (rid, res) in del {
+                guard case .failure(let e) = res else { continue }
+                if (e as? CKError)?.code == .unknownItem { continue }
+                if rid == acc { kept = true } else { failed += 1 }
+            }
+        }
+        return ["ok": true, "kept": kept, "failed": failed]
     }
 
     private func saveOne(_ r: CKRecord, _ policy: CKModifyRecordsOperation.RecordSavePolicy) async throws {
