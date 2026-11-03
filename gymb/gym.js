@@ -993,10 +993,10 @@ const repBox = (rep, sb = 0, stk = 0) => { const r1 = st().rep || 0, r0 = Math.m
 async function repAnim(p, rep, sb = 0) {
   const el = p?.querySelector('.rs-rep'); if (!el || !rep) return;
   const r0 = +el.dataset.r0, r1 = +el.dataset.r1, n = el.querySelector('.rr-n'), bar = el.querySelector('.gy-bar>i'), g0 = gradeOf(r0).i, d = el.querySelector('.rr-d');
-  const run = (a, b, up) => { const T = clampN(Math.abs(b - a) * 90, 500, 1100); window.GymBGM?.se?.(up ? 'DP_EXP' : 'DP_KOUKA_L', up ? { dur: T / 1000 } : undefined);   // 차오르는 소리는 막대가 다 찰 때 같이 멈춤 (경완 2026-10-29)
+  const run = (a, b, up, tick) => { const T = clampN(Math.abs(b - a) * 90, 500, 1100); window.GymBGM?.se?.(up ? 'DP_EXP' : 'DP_KOUKA_L', up ? { dur: T / 1000 } : undefined);   // 차오르는 소리는 막대가 다 찰 때 같이 멈춤 (경완 2026-10-29)
     const t0 = performance.now();
     return new Promise(done => { const f = now => { if (!el.isConnected) return done(); const k = Math.min(1, (now - t0) / T), r = Math.round(a + (b - a) * (1 - (1 - k) ** 2)), G = gradeOf(r);
-      n.textContent = r; bar.style.width = clampN((r - G.lo) / Math.max(1, G.hi - G.lo), 0, 1) * 100 + '%';
+      n.textContent = r; tick?.(r); bar.style.width = clampN((r - G.lo) / Math.max(1, G.hi - G.lo), 0, 1) * 100 + '%';
       if (G.i !== +el.dataset.gi) { el.dataset.gi = G.i; el.querySelector('.rr-bd').innerHTML = gEmb(G.i); el.querySelector('.rr-gn').textContent = G.n; }
       k < 1 ? requestAnimationFrame(f) : done(); }; requestAnimationFrame(f); }); };
   el.dataset.gi = g0; await wait(380); if (!el.isConnected) return;
@@ -1004,8 +1004,9 @@ async function repAnim(p, rep, sb = 0) {
   if (rm !== r0) await run(r0, rm, rm > r0);
   // v14.96 경완: 연승 딱지가 평판 박스 오른쪽 위 모서리에 튀어나와 둥둥 뜨고, 그만큼 평판이 한 번 더 오른다
   const sk = el.querySelector('.rs-stk2');
-  if (sk && sb) { await wait(260); if (!el.isConnected) return; sk.classList.add('go'); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} const bx = el.querySelector('.rr-b'); await wait(380); if (!el.isConnected) return;
-    bx?.classList.add('on'); await wait(200); await run(rm, r1, true); if (!el.isConnected) return; await wait(450);
+  if (sk && sb) { await wait(260); if (!el.isConnected) return; const bx = el.querySelector('.rr-b'); if (bx) bx.textContent = '+1';
+    sk.classList.add('go'); bx?.classList.add('on'); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} await wait(420); if (!el.isConnected) return;
+    await run(rm, r1, true, r => { if (bx) bx.textContent = '+' + Math.max(1, r - rm); }); if (!el.isConnected) return; await wait(450);
     bx?.classList.replace('on', 'off'); await wait(260); d.textContent = (rep >= 0 ? '+' : '') + rep; d.classList.remove('bump'); void d.offsetWidth; d.classList.add('bump'); }
   el.classList.add('end');
   if (gradeOf(r1).i !== g0 && el.isConnected) { el.classList.add(gradeOf(r1).i > g0 ? 'gup' : 'gdn'); window.GymBGM?.se?.(gradeOf(r1).i > g0 ? 'DP_PINPON' : 'DP_KOUKA_L'); }
