@@ -18,6 +18,7 @@ const abKo = nameMap(rd('abilities.csv'), rd('ability_names.csv'), 'ability_id')
 const ntKo = nameMap(rd('natures.csv'), rd('nature_names.csv'), 'nature_id');
 // 기술 설명: 가장 최근 판의 한국어 설명
 const mvRows = rd('moves.csv'), mvIdent = Object.fromEntries(mvRows.map(r => [r.move_id || r.id, id(r.identifier)]));
+const DESC9 = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, 'desc_ko9.json'), 'utf8'));   // 9세대 등 PokeAPI 에 한국어 설명이 없는 기술 (v14.92 경완 '아쿠아커터 설명 없음')
 const desc = {}; rd('move_flavor_text.csv').filter(r => r.language_id == KO).forEach(r => { let k = mvIdent[r.move_id]; if (!k) return; if (k === 'vicegrip') k = 'visegrip'; if (/사용할 수 없는 기술입니다/.test(r.flavor_text)) return; if (!desc[k] || +r.version_group_id > desc[k][0]) desc[k] = [+r.version_group_id, r.flavor_text.replace(/\s+/g, ' ').trim()]; });
 const growth = Object.fromEntries(rd('pokemon_species.csv').map(r => [+r.id, +r.growth_rate_id]));
 const TYPES = ['', 'Normal', 'Fighting', 'Flying', 'Poison', 'Ground', 'Rock', 'Bug', 'Ghost', 'Steel', 'Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Ice', 'Dragon', 'Dark', 'Fairy'];
@@ -45,7 +46,7 @@ for (const s of base) {
   lv.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
   SP[s.num] = { id: s.id, g: growth[s.num] || 2, ab: Object.values(s.abilities).filter((a, i, A) => A.indexOf(a) === i).map(a => id(a)), lv: lv.flat(), tm, ex };
 }
-const mv = MV.map(m => { const d = Dex.moves.get(m); return [m, mvKo[m] || d.name, TYPES.indexOf(d.type), d.category === 'Physical' ? 0 : d.category === 'Special' ? 1 : 2, d.basePower || 0, d.accuracy === true ? 0 : d.accuracy, d.pp, d.priority || 0, (desc[m] || [0, ''])[1]]; });
+const mv = MV.map(m => { const d = Dex.moves.get(m); return [m, mvKo[m] || d.name, TYPES.indexOf(d.type), d.category === 'Physical' ? 0 : d.category === 'Special' ? 1 : 2, d.basePower || 0, d.accuracy === true ? 0 : d.accuracy, d.pp, d.priority || 0, ((desc[m] || DESC9[m]) || [0, ''])[1]]; });
 const ab = {}; Object.values(SP).forEach(s => s.ab.forEach(a => { ab[a] = abKo[a] || Dex.abilities.get(a).name; }));
 const nt = {}; Dex.natures.all().forEach(n => { nt[n.id] = [ntKo[n.id] || n.name, n.plus || '', n.minus || '']; });
 const out = { v: 1, mv, ab, nt, sp: SP };
