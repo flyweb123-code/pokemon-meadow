@@ -1025,7 +1025,7 @@ async function repAnim(p, rep, sb = 0, gx = null, gp = null, gT = 0, onMrg = nul
     sk.classList.add('go'); bx?.classList.add('on'); gbx?.classList.add('on'); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} await wait(330); if (!el.isConnected) return;
     await run(rm, r1, true, (r, k) => { if (bx) bx.textContent = '+' + Math.max(1, r - rm); if (gx && gbx) { const v = Math.max(1, Math.round(gx.gb * k)); gbx.textContent = '+' + v + 'G'; } }, 0, false, true); if (!el.isConnected) return; await wait(380); if (!el.isConnected) return;
     gbx?.classList.replace('on', 'off'); bx?.classList.add('mrg'); await wait(220); n.textContent = r1; n.classList.remove('bump', 'bump0'); void n.offsetWidth; if (bx) { n.classList.add('bump'); flash(); } if (gx) { gx.n.textContent = '+' + (gx.g0 + gx.gb).toLocaleString(); const gb2 = gx.n.parentElement; gb2.classList.remove('end'); gx.n.classList.remove('bump'); void gb2.offsetWidth; gb2.classList.add('end'); gx.n.classList.add('bump'); } }
-  if (sb) await wait(460);   // 보너스가 합쳐지며 빨갛게 튄 뒤에 원래 색으로 (end 의 색 고정이 튐을 덮지 않게)
+  await wait(720);   // 보너스가 합쳐지며 빨갛게 튄 뒤에 원래 색으로 (end 의 색 고정이 튐을 덮지 않게)
   el.classList.add('end');
   if (gradeOf(r1).i !== g0 && el.isConnected) { el.classList.add(gradeOf(r1).i > g0 ? 'gup' : 'gdn'); window.GymBGM?.se?.(gradeOf(r1).i > g0 ? 'DP_PINPON' : 'DP_KOUKA_L'); }
 }

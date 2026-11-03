@@ -2540,3 +2540,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes rpFlash{40%{transform:scale(1.04);box-shadow:inset 0 0 0 2px #f0c850,0 0 18px #ffd84a}}
 @keyframes rgBump0{0%{transform:scale(1)}40%{transform:scale(1.2);text-shadow:0 0 10px #ffd84a,0 0 2px #fff}100%{transform:none}}
 @keyframes rgBump{0%{transform:scale(1)}40%{transform:scale(1.15);color:#ef4a2c;text-shadow:0 0 10px #ffd84a,0 0 2px #fff}100%{transform:none}}
+/* 연승 시안: 평판 숫자 합쳐질 때 크게 커졌다 작아지고, 합쳐지는 숫자 색(기본 초록·보너스 빨강)이 잠깐 됐다가 검정으로 (경완 2026-11-03) */
+#gym .rs-rep .rr-n.bump0,#gym .rs-rep.up.go .rr-n.bump0{animation:rpMrgG .7s cubic-bezier(.3,1.6,.5,1)}
+#gym .rs-rep .rr-n.bump,#gym .rs-rep.up.go .rr-n.bump{animation:rpMrgR .7s cubic-bezier(.3,1.6,.5,1)}
+@keyframes rpMrgG{0%{transform:scale(1)}25%{transform:scale(1.4);color:#2a8a3e;text-shadow:0 0 10px #ffd84a,0 0 2px #fff}65%{transform:scale(1);color:#2a8a3e}100%{transform:none}}
+@keyframes rpMrgR{0%{transform:scale(1)}25%{transform:scale(1.4);color:#ef4a2c;text-shadow:0 0 10px #ffd84a,0 0 2px #fff}65%{transform:scale(1);color:#ef4a2c}100%{transform:none}}
