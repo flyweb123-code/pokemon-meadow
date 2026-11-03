@@ -1438,7 +1438,7 @@ function storePop() {
   const draw = () => { const g = st(); g.tms = g.tms || {}; g.itm = g.itm || {}; g.own = g.own || {}; g.fits = g.fits || {}; g.dp = (g.dp || []).filter(Boolean);
     const nTm = Object.values(g.tms).reduce((a, n) => a + (n || 0), 0), dk = Object.keys(g.own).filter(k => g.own[k] && DECO[k]), fk = Object.keys(g.fits).filter(k => g.fits[k] && fitOf(k));
     const H = GB()?.HOLD, IL = H ? GB().itAll() : [], ML = H ? GB().mintAll() : [];   // 민트 (경완 2026-10-30)
-    const T = [['tm', '기술머신', nTm], ['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0)], ['deco', '꾸미기', dk.length], ['fit', '의상', fk.length]];   // v14.78 경완: 새 의상 그림으로 의상 탭 다시 (v14.59 에 뺐던 것)   // 도구 탭 (경완 2026-10-29)
+    const T = [['tm', '기술머신', nTm], ['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0)], ['deco', '꾸미기', dk.length]];   // v14.79 경완 '의상 탭 아직 넣지마': 필드 걸음 그림까지 바꾼 뒤에   // 도구 탭 (경완 2026-10-29)
     let body = ''; if (!T.some(([k]) => k === storeT)) storeT = 'tm';
     if (storeT === 'tm') { const D = GB()?.D, L = Object.entries(g.tms).filter(([, n]) => n > 0).map(([id, n]) => [GB()?.mvOf?.(id), n, id]).filter(([x]) => x);
       L.sort((a, b) => (a[0][2] - b[0][2]) || ((b[0][4] || 0) - (a[0][4] || 0)) * stPow);   // 타입별로 묶고 그 안에서 위력순 (경완 2026-10-29)   // 위력순 (경완 2026-10-29), 안내 문구 없음
