@@ -979,7 +979,7 @@ function mfxAdd() { for (const [k, L] of Object.entries(MFX_ADD)) { const v = MF
 const MV_SUB = { thrash: 'slam' };
 const MV_LIKE = { honeclaws: 'sharpen', poweruppunch: 'megapunch', jetpunch: 'machpunch', ragefist: 'shadowpunch', plasmafists: 'thunderpunch' };   /* v14.08 경완 '손톱갈기 모션 어색': 악 타입 변화 대표(나쁜음모 검은 기운) 대신 같은 '갈아서 날 세우기' 기술인 각지기 연출 */
 // v13.17 경완 '울음소리 기술은 포켓몬 울음소리': 본가 플래티넘 연출(PlayPokemonCry)처럼 쓰는 포켓몬의 울음소리
-const CRY_MV = new Set(['growl', 'roar', 'howl', 'hypervoice', 'chatter', 'nobleroar', 'snarl', 'partingshot']);
+const CRY_MV = new Set(['growl', 'roar', 'howl', 'hypervoice', 'chatter', 'nobleroar', 'snarl', 'partingshot', 'echoedvoice', 'round', 'boomburst', 'disarmingvoice', 'relicsong', 'sparklingaria', 'overdrive', 'clangingscales', 'torchsong', 'alluringvoice', 'psychicnoise']);   // v14.81 경완 '에코보이스 효과음 없음': 하이퍼보이스 연출을 빌리는 5세대 이후 소리 기술도 울음소리
 async function moveFx(s, id, miss) {
   const m = mvOf(id); if (!m || miss) return; const ty = m[2], cat = m[3], col = TY_FX[ty] || '#fff';
   if (CRY_MV.has(id)) { const X = B.act[s]; try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} }

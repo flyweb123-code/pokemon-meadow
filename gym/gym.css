@@ -2464,8 +2464,12 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .gy-dlg:has(.gy-gch){overflow:visible}.gy-dlg .gy-gch{margin-top:0;justify-content:flex-start;z-index:5}.gy-gch [data-a=call]{background:#ffd84a!important;color:#20202c!important;font-weight:700;box-shadow:inset 0 3px 0 #fff2a8,inset 0 -4px 0 #d89a2a,0 3px 0 #1c1c26}   /* v14.52 경완: 도전자 불러오기는 노란색 */
 /* v14.64 경완 '버튼 내 정렬 무너짐': 교체 카드의 기술 버튼은 낮아서 효과 딱지가 위력 줄·PP 와 겹쳤다 → 효과 딱지는 PP 와 같은 맨 아래 줄 왼쪽 */
 /* v14.72: (v14.64 의 position:relative 가 버튼을 글자 폭으로 줄여 카드가 어긋났음 → 원래 absolute 꽉 채움 유지) */
-.bt.mob .bp-card .bc-mv .mvb .eff{position:absolute!important;left:8px!important;right:auto!important;top:auto!important;bottom:9px!important;transform:scale(.86)!important;transform-origin:left bottom;margin:0!important}
+.bt.mob .bp-card .bc-mv .mvb .eff{position:absolute!important;left:8px!important;right:auto!important;top:auto!important;bottom:7.5px!important;transform:scale(.86)!important;transform-origin:left bottom;margin:0!important}
 /* v14.77 경완 '여전히 어긋나는데': 아이폰 사파리는 inset:0 인 절대 위치 button 을 글자 폭으로 줄여서 교체 카드 기술 박스 폭이 제각각 → 칸을 꽉 채우게 */
 .bt .bp-card .bc-mv .mvb{left:0!important;top:0!important;right:auto!important;bottom:auto!important;width:100%!important;height:100%!important;box-sizing:border-box}
 /* v14.80 경완: 잠긴 '훈련장으로'는 눌러지게 두고(말풍선 '동네 체육관이 되면 열려요') 모양만 비활성처럼 */
 .gy-pop .gy-btns button.tr-lk[aria-disabled]{opacity:.45}
+/* v14.81 경완 '여기서 PP 텍스트 삐져나가는거': 기술 잊기 화면 칸이 짧아 PP 가 박스 밖으로 → 그만두기 줄을 줄이고 칸 위아래 여백을 좁힘 */
+.bt.mob .bp-fg.has-nw{grid-template-rows:auto repeat(2,minmax(48px,1fr)) minmax(28px,34px)}
+.bt.mob .bp-fg>.mvw .mvb{padding-top:5px!important;padding-bottom:5px!important;gap:1px!important}
+.bt.mob .bp-fg>.mvw .mvb .pp{padding-top:0!important}
