@@ -1005,7 +1005,7 @@ async function repAnim(p, rep, sb = 0) {
   // v14.96 경완: 연승 딱지가 평판 박스 오른쪽 위 모서리에 튀어나와 둥둥 뜨고, 그만큼 평판이 한 번 더 오른다
   const sk = el.querySelector('.rs-stk2');
   if (sk && sb) { await wait(260); if (!el.isConnected) return; const bx = el.querySelector('.rr-b'); if (bx) bx.textContent = '+1';
-    sk.classList.add('go'); bx?.classList.add('on'); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} await wait(700); if (!el.isConnected) return;
+    sk.classList.add('go'); bx?.classList.add('on'); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} await wait(330); if (!el.isConnected) return;
     await run(rm, r1, true, r => { if (bx) bx.textContent = '+' + Math.max(1, r - rm); }); if (!el.isConnected) return; await wait(450);
     bx?.classList.replace('on', 'off'); await wait(260); d.textContent = (rep >= 0 ? '+' : '') + rep; d.classList.remove('bump'); void d.offsetWidth; d.classList.add('bump'); }
   el.classList.add('end');
