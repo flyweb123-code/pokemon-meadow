@@ -980,19 +980,20 @@ function resultPop(c, res, gold, rep, R) {
     (async () => {
       if (won) { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} confetti(); }
       const n = p.querySelector('.rg-n'); let gDone; const gp = new Promise(r => gDone = r);
-      repAnim(p, rep, sb, gb && { n, g0, gb }, gp, n && g0 ? clampN(g0 * 2, 600, 1100) : 0);   // v14.97 경완: 평판은 골드와 같이 오르고, 연승 딱지는 둘 다 끝난 뒤
+      const gT = n && g0 ? clampN(g0 * 6, 1100, 1600) : 0; let gEnd; const ge = new Promise(r => gEnd = r);
+      const rmv = repAnim(p, rep, sb, gb && { n, g0, gb }, gp, gT, () => gEnd(true));   // v14.97 경완: 평판은 골드와 같이 오르고, 연승 딱지는 둘 다 끝난 뒤
       if (n && g0) { await wait(450); if (!p.isConnected) return; try { window.GymBGM?.se?.('DP_REGI'); } catch (e) {}
-        n.parentElement.classList.add('go'); const t0 = performance.now(), T = clampN(g0 * 2, 600, 1100);
+        n.parentElement.classList.add('go'); const t0 = performance.now(), T = gT;   // v14.97 경완: 평판 기본 점수와 같이, 조금 천천히
         await new Promise(done => { const f = now => { if (!p.isConnected) return done(); const k = clampN((now - t0) / T, 0, 1); n.textContent = '+' + Math.round(g0 * (1 - (1 - k) ** 3)).toLocaleString(); k < 1 ? requestAnimationFrame(f) : done(); }; requestAnimationFrame(f); });
-        n.parentElement.classList.add('end'); await wait(150); }
-      gDone();   // v14.96 경완: 배틀 평판이 먼저 오르고, 연승 딱지가 평판 박스 모서리에 뜨면서 보너스가 더 오른다
+        gDone(); if (!(rep && rep - sb)) gEnd(true); await ge; if (!p.isConnected) return; n.parentElement.classList.add('end'); }   // v14.97 경완: 골드 박스는 평판 +N 이 합쳐질 때 같이 튄다
+      else gDone();   // v14.96 경완: 배틀 평판이 먼저 오르고, 연승 딱지가 평판 박스 모서리에 뜨면서 보너스가 더 오른다
     })(); });
 }
 // 평판 오르내림 연출 (경완 2026-10-28 '평판 오르고 떨어지는 거 연출'): 숫자 세기 + 막대 + 튀는 +N/-N, 등급이 바뀌면 배지 반짝
 const repBox = (rep, sb = 0, stk = 0) => { const r1 = st().rep || 0, r0 = Math.max(0, r1 - rep), G = gradeOf(r0), pc = r => clampN((r - gradeOf(r).lo) / Math.max(1, gradeOf(r).hi - gradeOf(r).lo), 0, 1) * 100, base = rep - sb;
   return `<div class="rs-rep ${rep > 0 ? 'up' : rep < 0 ? 'dn' : ''}" data-r0="${r0}" data-r1="${r1}"><div class="rr-top"><span>평판</span><b class="rr-n">${r0}</b><em class="rr-d">${base >= 0 ? '+' : ''}${base}</em>${sb ? `<em class="rr-b">+${sb}</em>` : ''}</div>
     <div class="rr-g"><span class="rr-bd">${gEmb(G.i)}</span><span class="rr-gn">${G.n}</span><i class="gy-bar"><i style="width:${pc(r0)}%"></i></i></div>${sb ? `<div class="rs-stk2"><i class="sk-ray"></i><div class="sk-in"><b>${stk}<small>연승!</small></b>${'<i class="sk-sp"></i>'.repeat(8)}</div></div>` : ''}</div>`; };
-async function repAnim(p, rep, sb = 0, gx = null, gp = null, gT = 0) {
+async function repAnim(p, rep, sb = 0, gx = null, gp = null, gT = 0, onMrg = null) {
   const el = p?.querySelector('.rs-rep'); if (!el || !rep) return;
   const r0 = +el.dataset.r0, r1 = +el.dataset.r1, n = el.querySelector('.rr-n'), bar = el.querySelector('.gy-bar>i'), g0 = gradeOf(r0).i, d = el.querySelector('.rr-d');
   const run = (a, b, up, tick, T0, cub, keepN) => { const T = T0 || clampN(Math.abs(b - a) * 90, 500, 1100); window.GymBGM?.se?.(up ? 'DP_EXP' : 'DP_KOUKA_L', up ? { dur: T / 1000 } : undefined);   // 차오르는 소리는 막대가 다 찰 때 같이 멈춤 (경완 2026-10-29)
@@ -1006,7 +1007,7 @@ async function repAnim(p, rep, sb = 0, gx = null, gp = null, gT = 0) {
   el.classList.add('dshow');   // v14.97 경완: 기본 점수 +N 은 평판이 오르기 시작할 때 같이 떠서 오르는 만큼 센다
   if (rm !== r0) { const up = rm > r0; d.textContent = up ? '+1' : '-1'; await run(r0, rm, up, r => { d.textContent = (up ? '+' : '-') + Math.max(1, Math.abs(r - r0)); }, gT, !!gT, true); }   // v14.97 경완: 골드와 같은 시간·같은 곡선으로 같이 오른다 (평판 숫자는 +N 이 합쳐질 때 한 번에)
   if (!el.isConnected) return;
-  const mrg = async (x, v) => { await wait(380); if (!el.isConnected) return; x.classList.add('mrg'); await wait(220); n.textContent = v; n.classList.remove('bump', 'bump0'); void n.offsetWidth; n.classList.add('bump0'); await wait(300); };   // v14.97 경완: 오른 점수 +N 이 평판 숫자로 합쳐진다
+  const mrg = async (x, v) => { await wait(380); if (!el.isConnected) return; x.classList.add('mrg'); await wait(220); n.textContent = v; n.classList.remove('bump', 'bump0'); void n.offsetWidth; n.classList.add('bump0'); if (x === d) onMrg?.(); await wait(300); };   // v14.97 경완: 오른 점수 +N 이 평판 숫자로 합쳐진다
   if (rm !== r0) await mrg(d, rm); if (!el.isConnected) return;
   // v14.96 경완: 연승 딱지가 평판 박스 오른쪽 위 모서리에 튀어나와 둥둥 뜨고, 그만큼 평판이 한 번 더 오른다
   const sk = el.querySelector('.rs-stk2');

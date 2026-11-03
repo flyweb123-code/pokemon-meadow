@@ -2533,3 +2533,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .rs-rep.up.go .rr-n{animation:none}
 #gym .rs-rep .rr-n.bump0{display:inline-block;animation:rgBump0 .45s cubic-bezier(.3,1.8,.5,1)}
 @keyframes rgBump0{0%{transform:scale(1)}40%{transform:scale(1.15)}100%{transform:none}}
+/* v14.97 경완: 오르는 동안 평판 숫자는 검정 그대로 */
+#gym .rs-rep.up.go .rr-n,#gym .rs-rep.dn.go .rr-n{color:var(--win-ink,#20202c)}
