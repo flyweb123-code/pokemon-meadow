@@ -2556,7 +2556,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes rrTot{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 
 /* 경완 2026-11-03 '연승 연출 더 부드럽고 촥촥 달라붙게' */
-#gym .rs-rep .rr-b.on,#gym .rs-gold .rg-b.on{animation:rrbIn .3s cubic-bezier(.2,1.7,.4,1) forwards}
 #gym .rs-rep .rr-n.bump0,#gym .rs-rep.up.go .rr-n.bump0{animation:rpSnG .55s linear}
 #gym .rs-rep .rr-n.bump,#gym .rs-rep.up.go .rr-n.bump{animation:rpSnR .55s linear}
 #gym .rs-gold.end b.bump,#gym .rs-gold.end b.bump+span{animation:rgSnR .55s linear forwards}
@@ -2570,7 +2569,10 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .rs-rep .rr-tot{animation:rrTot2 .3s cubic-bezier(.2,1.6,.4,1) .05s forwards}
 @keyframes rrTot2{from{opacity:0;transform:translateX(-8px) scale(.6)}to{opacity:1;transform:none}}
 #gym .rs-rep .rr-b.on.mrg,#gym .rs-rep .rr-d.mrg{animation:rrbOut .26s ease-in forwards}#gym .rs-gold .rg-b.on.off{animation:rrbOut .26s ease-in forwards}
-#gym .rs-rep .rr-b{max-width:0!important;margin-left:-8px!important;position:relative;overflow:visible;transition:none}
-#gym .rs-gold .rg-b{max-width:0!important;margin-left:-6px!important;position:relative;left:10px;overflow:visible;transition:none}
 #gym .rs-rep .rr-d.into,#gym .rs-rep .rr-b.into,#gym .rs-gold .rg-b.into{animation:rrInto .2s cubic-bezier(.5,0,.9,.5) forwards!important}
 @keyframes rrInto{0%{opacity:1;transform:none}100%{opacity:0;transform:translateX(var(--dx,-20px)) scale(.4)}}
+/* 경완 2026-11-03: 보너스가 나올 때 숫자가 부드럽게 밀리고, 합쳐질 때 부드럽게 가운데로 */
+#gym .rs-rep .rr-d,#gym .rs-rep .rr-b,#gym .rs-gold .rg-b{transition:max-width .42s cubic-bezier(.25,.8,.3,1),margin .42s cubic-bezier(.25,.8,.3,1),left .42s cubic-bezier(.25,.8,.3,1)}
+#gym .rs-rep .rr-d.keep{max-width:4em;margin-left:0;left:0}
+#gym .rs-rep .rr-b.on,#gym .rs-gold .rg-b.on{animation:rrbIn .34s cubic-bezier(.2,1.7,.4,1) .2s forwards}
+#gym .rs-rep .rr-b.into,#gym .rs-rep .rr-d.into{max-width:0;margin-left:-8px}#gym .rs-rep .rr-d.into{left:8px}
