@@ -54,13 +54,13 @@ setInterval(() => send({ t: 'ping' }), 25e3);
 
 // 3) 걸어 다니기 (필드 아래쪽 풀밭 위주), 가끔 말하고 쓰다듬기
 const pick = () => { tx = 50 + Math.random() * 260; ty = 380 + Math.random() * 170; };
-let step = 0, pause = 0;
+let step = 0, pause = 0, lastF = 0;
 setInterval(() => {
-  if (pause > 0) { pause--; send({ t: 'tr', x, y, d: 0, w: 0, f: 0 }); return; }
+  if (pause > 0) { pause--; send({ t: 'tr', x, y, d: 0, w: 0, f: lastF }); return; }
   const dx = tx - x, dy = ty - y, d = Math.hypot(dx, dy);
   if (d < 4) { pause = 5 + Math.floor(Math.random() * 15); pick(); return; }
-  const v = Math.min(d, 72 * 0.25); x += dx / d * v; y += dy / d * v;
-  send({ t: 'tr', x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10, d: Math.abs(dx) > Math.abs(dy) ? 2 : dy < 0 ? 1 : 0, w: 1, f: dx < 0 ? 1 : 0 });
+  const v = Math.min(d, 72 * 0.25); if (Math.abs(dx) > 1) lastF = dx > 0 ? 1 : 0; x += dx / d * v; y += dy / d * v;
+  send({ t: 'tr', x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10, d: Math.abs(dx) > Math.abs(dy) ? 2 : dy < 0 ? 1 : 0, w: 1, f: dx > 0 ? 1 : 0 });   // f = 오른쪽을 봄 (게임 stepMe 와 같게)
   step++;
 }, 250);
 pick();
