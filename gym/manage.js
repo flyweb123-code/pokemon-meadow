@@ -528,7 +528,7 @@ function hire(c) {
 }
 
 // ======================= 상점 (5단계) =======================
-const SHOP_T = [['tm', '기술머신'], ['it', '도구'], ['deco', '꾸미기']];   // v14.57 경완: 의상 탭은 업그레이드 전까지 뺌 (shopFit 은 남겨 둠)
+const SHOP_T = [['tm', '기술머신'], ['it', '도구'], ['deco', '꾸미기'], ['fit', '의상']];   // v14.78 경완: 새 의상 그림(PixelLab)으로 의상 탭 다시
 // 이전:   // 넓히기는 빼고 등급 따라 저절로 (경완 2026-10-28)
 const tmPrice = x => x[3] === 2 ? 500 : (x[4] || 0) <= 50 ? 300 : x[4] <= 70 ? 700 : x[4] <= 85 ? 1200 : x[4] <= 100 ? 2000 : 3000;
 const prBtn = () => `<button class="tm-sort" type="button" data-pr="1">${shopPr > 0 ? '가격 낮은 순 ▲' : '가격 높은 순 ▼'}</button>`;
@@ -605,12 +605,12 @@ function shopDeco(body) {
 function shopFit(body) {
   const g = st(), G = K.gradeOf(g.rep || 0).i; g.fits = g.fits || {};
   const need = o => K.GRADES[o.lv][1];
-  const row = (k, o) => { const own = !k || g.fits[k], on = (g.fit || '') === k, lock = o.lv && G < o.lv;
+  const row = (k, o) => { const own = !k || g.fits[k], on = (K.fitOf(g.fit) ? g.fit : '') === k, lock = o.lv && G < o.lv;
     return `<button data-fit="${k}" class="${on ? 'on' : ''}${lock ? ' lock' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${o.n}</b><em>${on ? '입는 중' : own ? '입기' : lock ? `${need(o)}부터` : gold(o.g)}</em></button>`; };
-  body.innerHTML = `<div class="tm-row sp-prr">${prBtn()}</div><div class="ft-grid">${row('', { n: '기본 옷' })}${Object.entries(K.OUTFITS).sort((a, b) => ((a[1].g || 0) - (b[1].g || 0)) * shopPr).map(([k, o]) => row(k, o)).join('')}</div>`;
+  body.innerHTML = `<div class="tm-row sp-prr">${prBtn()}</div><div class="ft-grid">${row('', { n: '기본 옷' })}${Object.entries(K.OUTFITS).filter(([k]) => K.fitOf(k)).sort((a, b) => ((a[1].g || 0) - (b[1].g || 0)) * shopPr).map(([k, o]) => row(k, o)).join('')}</div>`;
   body.querySelectorAll('img[data-fk]').forEach(im => K.fitSrc('tr', im.dataset.fk).then(u => { im.src = u; }));
   body.onclick = async (e, b) => {
-    sfx('tap'); const k = b.dataset.fit; if (k == null) return; const o = k ? K.OUTFITS[k] : { n: '기본 옷' }, own = !k || g.fits[k], on = (g.fit || '') === k, lock = o.lv && G < o.lv;
+    sfx('tap'); const k = b.dataset.fit; if (k == null) return; const o = k ? K.OUTFITS[k] : { n: '기본 옷' }, own = !k || g.fits[k], on = (K.fitOf(g.fit) ? g.fit : '') === k, lock = o.lv && G < o.lv;
     const btn = on ? '<div class="gy-btns one"><button data-a="x">입는 중</button></div>'
       : own ? '<div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="w">입기</button></div>'
       : lock ? `<div class="gy-btns one"><button data-a="x">${need(o)}이 되면 살 수 있어요</button></div>`
