@@ -2120,5 +2120,6 @@ window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) =>
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 // 이미 명단에서 본 도전자(qSeen)는 기다리고 있어도 점을 띄우지 않는다 — 체육관 안 점과 똑같이 (경완 2026-10-30 '빨간점 다 확인했는데 아이콘 점이 안 사라짐')
 // 점 = 안 본 도전자, 또는 새 도전자가 올 시각이 지남(일정·당겨 온 도전자). 저장된 at 은 쓰지 않는다 (경완 2026-10-30 '명단만 확인해도 꺼지게')
-window.gymDot = () => { const g = S.gym, now = Date.now(); return !!(g && g.d && ((g.q && g.q.some(c => c.id > (g.qSeen | 0))) || (g.sch?.length && g.sch[0] <= now) || (g.pull && g.pull <= now))); };
+// v14.71 경완 '도전자 왔다가 가 버려도 빨간 점': 기다리다 돌아간 도전자(exp 지남)·도착하고 2시간 지난 예약은 빼고 센다
+window.gymDot = () => { const g = S.gym, now = Date.now(), live = t => t && t <= now && now < t + 2 * 36e5; return !!(g && g.d && ((g.q && g.q.some(c => c.id > (g.qSeen | 0) && (c.exp || Infinity) > now)) || (g.sch || []).some(live) || live(g.pull))); };
 })();
