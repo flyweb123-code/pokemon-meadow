@@ -1003,15 +1003,18 @@ async function repAnim(p, rep, sb = 0, gx = null, gp = null) {
       k < 1 ? requestAnimationFrame(f) : done(); }; requestAnimationFrame(f); }); };
   el.dataset.gi = g0; await wait(450); if (!el.isConnected) return;
   el.classList.add('go'); const rm = r1 - sb;
-  if (rm !== r0) await run(r0, rm, rm > r0);
-  if (!el.isConnected) return; el.classList.add('dshow');   // v14.97 경완: 기본 점수가 다 오를 때까지는 평판 숫자 가운데, 다 오르면 +N
+  el.classList.add('dshow');   // v14.97 경완: 기본 점수 +N 은 평판이 오르기 시작할 때 같이 떠서 오르는 만큼 센다
+  if (rm !== r0) { const up = rm > r0; d.textContent = up ? '+1' : '-1'; await run(r0, rm, up, r => { d.textContent = (up ? '+' : '-') + Math.max(1, Math.abs(r - r0)); }); }
+  if (!el.isConnected) return;
+  const mrg = async x => { await wait(380); if (!el.isConnected) return; x.classList.add('mrg'); await wait(220); n.classList.remove('bump'); void n.offsetWidth; n.classList.add('bump'); await wait(300); };   // v14.97 경완: 오른 점수 +N 이 평판 숫자로 합쳐진다
+  if (rm !== r0) await mrg(d); if (!el.isConnected) return;
   // v14.96 경완: 연승 딱지가 평판 박스 오른쪽 위 모서리에 튀어나와 둥둥 뜨고, 그만큼 평판이 한 번 더 오른다
   const sk = el.querySelector('.rs-stk2');
   if (gp) await gp;
   if (sk && sb) { await wait(260); if (!el.isConnected) return; const bx = el.querySelector('.rr-b'), gbx = p.querySelector('.rg-b'); if (bx) bx.textContent = '+1'; if (gbx) gbx.textContent = '+1G';
     sk.classList.add('go'); bx?.classList.add('on'); gbx?.classList.add('on'); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} await wait(330); if (!el.isConnected) return;
-    await run(rm, r1, true, (r, k) => { if (bx) bx.textContent = '+' + Math.max(1, r - rm); if (gx && gbx) { const v = Math.max(1, Math.round(gx.gb * k)); gbx.textContent = '+' + v + 'G'; gx.n.textContent = '+' + (gx.g0 + v).toLocaleString(); } }); if (!el.isConnected) return; await wait(450);
-    bx?.classList.replace('on', 'off'); gbx?.classList.replace('on', 'off'); await wait(260); if (gx) { gx.n.textContent = '+' + (gx.g0 + gx.gb).toLocaleString(); const gb2 = gx.n.parentElement; gb2.classList.remove('end'); gx.n.classList.remove('bump'); void gb2.offsetWidth; gb2.classList.add('end'); gx.n.classList.add('bump'); } d.textContent = (rep >= 0 ? '+' : '') + rep; d.classList.remove('bump'); void d.offsetWidth; d.classList.add('bump'); }
+    await run(rm, r1, true, (r, k) => { if (bx) bx.textContent = '+' + Math.max(1, r - rm); if (gx && gbx) { const v = Math.max(1, Math.round(gx.gb * k)); gbx.textContent = '+' + v + 'G'; gx.n.textContent = '+' + (gx.g0 + v).toLocaleString(); } }); if (!el.isConnected) return; await wait(380); if (!el.isConnected) return;
+    gbx?.classList.replace('on', 'off'); bx?.classList.add('mrg'); await wait(220); n.classList.remove('bump'); void n.offsetWidth; if (bx) n.classList.add('bump'); if (gx) { gx.n.textContent = '+' + (gx.g0 + gx.gb).toLocaleString(); const gb2 = gx.n.parentElement; gb2.classList.remove('end'); gx.n.classList.remove('bump'); void gb2.offsetWidth; gb2.classList.add('end'); gx.n.classList.add('bump'); } }
   el.classList.add('end');
   if (gradeOf(r1).i !== g0 && el.isConnected) { el.classList.add(gradeOf(r1).i > g0 ? 'gup' : 'gdn'); window.GymBGM?.se?.(gradeOf(r1).i > g0 ? 'DP_PINPON' : 'DP_KOUKA_L'); }
 }
