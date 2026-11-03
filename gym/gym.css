@@ -2473,3 +2473,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob .bp-fg.has-nw{grid-template-rows:auto repeat(2,minmax(48px,1fr)) minmax(28px,34px)}
 .bt.mob .bp-fg>.mvw .mvb{padding-top:5px!important;padding-bottom:5px!important;gap:1px!important}
 .bt.mob .bp-fg>.mvw .mvb .pp{padding-top:0!important}
+/* v14.82 경완 '연승이 행 전체 박스 → 딱지 형태로': 가운데 작은 알약 딱지 */
+.rs-stk{width:fit-content;max-width:100%;align-self:center;margin:0 auto 8px!important;padding:3px 11px 3px 9px!important;gap:6px!important;align-items:center;border-radius:999px!important;font-size:11px!important;box-sizing:border-box}
+.rs-stk b{font-size:12px!important;padding:1px 7px;border-radius:999px;background:#c0402a;color:#fff6c8!important}
+.rs-stk span em{font-size:12px!important}
