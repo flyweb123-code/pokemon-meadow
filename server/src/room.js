@@ -100,7 +100,7 @@ export class FieldRoom {
         return this.cast({ t: 'chat', ...line });
       }
       case 'tr': {
-        a.p = { x: num(m.x), y: num(m.y), d: m.d | 0, w: m.w ? 1 : 0, f: m.f ? 1 : 0, k: String(m.k || '').slice(0, 40), out: m.out ? 1 : 0 };
+        a.p = { x: num(m.x), y: num(m.y), d: m.d | 0, w: m.w ? 1 : 0, f: m.f ? 1 : 0, k: String(m.k || '').slice(0, 40), out: m.out ? 1 : 0, j: (m.j | 0) % 1000 };   // j = 점프 횟수 (바뀌면 다른 화면에서 뜀)
         ws.serializeAttachment(a);
         return this.cast({ t: 'tr', c: a.c, ...a.p }, ws);
       }

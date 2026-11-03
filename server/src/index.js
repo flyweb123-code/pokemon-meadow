@@ -59,7 +59,8 @@ async function handle(env, b) {
 
     case 'publish': {
       const card = str(b.card, 50_000); if (card == null) bad('카드가 너무 커요');
-      const wk = str(b.wk, 40) || '', wkm = Math.max(0, +b.wkm || 0), dex = Math.max(0, Math.floor(+b.dex || 0));
+      let wk = str(b.wk, 40) || '', wkm = Math.max(0, +b.wkm || 0), dex = Math.max(0, Math.floor(+b.dex || 0));
+      if (dev.startsWith('bot:')) { wk = ''; wkm = 0; dex = 0; }   // 시험용 봇은 랭킹에 안 나옴 (2026-11-03 경완)
       await db.prepare('INSERT INTO trainer (code, card, wk, wkm, dex, at) VALUES (?1, ?2, ?3, ?4, ?5, ?6) ON CONFLICT(code) DO UPDATE SET card = ?2, wk = ?3, wkm = ?4, dex = ?5, at = ?6')
         .bind(me, card, wk, wkm, dex, now).run();
       return true;
