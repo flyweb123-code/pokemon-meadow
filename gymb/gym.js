@@ -330,16 +330,17 @@ async function walk(e, pts, spd = 260) {
 
 // ---------- 관장 의상 (상점): 얼굴·머리는 그대로 두고 옷 색만 바꾼다 (경완 2026-10-27 '얼굴은 그대로고 옷만').
 // a 윗옷(모자·상의), b 아래옷 색. 내 기본 그림(레드/리프)의 옷 색 묶음을 이 색으로 칠한다. g 값, lv 필요한 체육관 등급
-const OUTFITS = {
-  red: { n: '빨간 재킷', a: '#d83a30', b: '#34449a', g: 800 }, leaf: { n: '하늘 셔츠', a: '#4aa0e0', b: '#d84848', g: 800 },
-  brendan: { n: '호연 모험복', a: '#e85030', b: '#383840', g: 2500 }, may: { n: '호연 반다나', a: '#e04850', b: '#3a7a48', g: 2500 },
-  cooltrainer_m: { n: '엘리트 제복', a: '#3870c8', b: '#383848', g: 1500 }, cooltrainer_f: { n: '엘리트 드레스', a: '#e05878', b: '#383848', g: 1500 },
-  black_belt: { n: '도복', a: '#f2f2f2', b: '#303034', g: 1500 }, beauty: { n: '분홍 원피스', a: '#f088b8', b: '#f6a0c8', g: 1500 }, gentleman: { n: '정장', a: '#3a3a4c', b: '#2c2c38', g: 1500 },
-  blue: { n: '라이벌 스타일', a: '#7050a8', b: '#404050', g: 3000, lv: 1 }, brock: { n: '바위 관장 옷', a: '#b07840', b: '#5e7a3a', g: 3000, lv: 1 }, misty: { n: '물 관장 옷', a: '#f0d040', b: '#e05050', g: 3000, lv: 1 },
-  lt_surge: { n: '군복', a: '#6a8440', b: '#585e44', g: 3500, lv: 2 }, erika: { n: '꽃 기모노', a: '#e8a040', b: '#c84868', g: 3500, lv: 2 }, koga: { n: '닌자복', a: '#5a4a80', b: '#2e2838', g: 4000, lv: 3 },
-  sabrina: { n: '초능력 드레스', a: '#c03060', b: '#24242c', g: 4000, lv: 3 }, blaine: { n: '연구 가운', a: '#f4f4f4', b: '#e04420', g: 4500, lv: 4 }, giovanni: { n: '보스 정장', a: '#d06830', b: '#2e2e30', g: 5000, lv: 4 },
-  lorelei: { n: '얼음 정장', a: '#7ab8f0', b: '#303848', g: 6000, lv: 5 }, lance: { n: '드래곤 망토', a: '#30303e', b: '#d03030', g: 6000, lv: 5 },
+const OUTFITS = {   // v14.78 경완 '맘에 든 것들만': PixelLab 으로 다시 그린 앞모습 20장만. sx = 그림이 있는 성별 (없는 성별에겐 안 보임)
+  red: { n: '빨간 재킷', a: '#d83a30', b: '#34449a', g: 800, sx: 'mf' }, leaf: { n: '하늘 셔츠', a: '#4aa0e0', b: '#d84848', g: 800, sx: 'mf' },
+  brendan: { n: '호연 모험복', a: '#e85030', b: '#383840', g: 2500, sx: 'm' }, may: { n: '호연 반다나', a: '#e04850', b: '#3a7a48', g: 2500, sx: 'mf' },
+  cooltrainer_m: { n: '엘리트 제복', a: '#3870c8', b: '#383848', g: 1500, sx: 'm' }, cooltrainer_f: { n: '엘리트 드레스', a: '#e05878', b: '#383848', g: 1500, sx: 'f' },
+  black_belt: { n: '도복', a: '#f2f2f2', b: '#303034', g: 1500, sx: 'm' }, gentleman: { n: '정장', a: '#3a3a4c', b: '#2c2c38', g: 1500, sx: 'mf' },
+  blue: { n: '라이벌 스타일', a: '#7050a8', b: '#404050', g: 3000, sx: 'm' }, brock: { n: '바위 관장 옷', a: '#b07840', b: '#5e7a3a', g: 3000, sx: 'm' },
+  lt_surge: { n: '군복', a: '#6a8440', b: '#585e44', g: 3500, sx: 'mf' }, koga: { n: '닌자복', a: '#5a4a80', b: '#2e2838', g: 4000, sx: 'f' },
+  giovanni: { n: '보스 정장', a: '#d06830', b: '#2e2e30', g: 5000, sx: 'm' }, lance: { n: '드래곤 망토', a: '#30303e', b: '#d03030', g: 6000, sx: 'mf' },
 };
+// 이 성별로 입을 수 있는 옷이면 그 옷, 아니면 null (기본 옷)
+const fitOf = (k, f = myF()) => (k && OUTFITS[k]?.sx.includes(f ? 'f' : 'm')) ? OUTFITS[k] : null;
 const myF = () => trOf().sex === 'f';
 const myOw = () => myF() ? 'pt_f' : 'pt_m';   // 경완 2026-10-27: 주인공은 플라티나 광휘·빛나 (32x32 걸음 칸)
 // 그림마다 옷 색 묶음 (a 윗옷, b 아래옷). 이 색만 바꾸고 피부·머리·모자는 그대로. 빛나는 a 비니·목도리, b 치마·부츠
@@ -362,7 +363,7 @@ function clothMap(list, to) { const T = rgb2hsl(hx(to)), L = list.map(c => rgb2h
 const fitCache = {};
 // 옷을 칠한 그림 (dataURL). kind: ow 맵 걸음 그림 / tr 전신 / trb 배틀 뒷모습. 옷이 없으면 원래 그림
 function fitSrc(kind, fit = st()?.fit) {
-  const base = myOw(), key = `${kind}/${base}`, url = `${IMG}${key}.png`, O = OUTFITS[fit];
+  const base = myOw(), key = `${kind}/${base}`, url = `${IMG}${key}.png`, O = fitOf(fit);
   if (!O || !CLOTH[key]) return Promise.resolve(url);
   // 앞모습(전신 카드·상점)은 옷 모양까지 새로 그린 그림 (Figma 이미지 모델, 경완 2026-10-27 '색 바꾸기 수준이 아니라 옷 좀 바꿔줘')
   if (kind === 'tr') return Promise.resolve(`${IMG}fit/${fit}_${myF() ? 'f' : 'm'}.png`);
@@ -763,7 +764,7 @@ function arrive(c) {
     if (lost.length) glog('in', `${cn}${jong(c.nm) ? '이' : '가'} 트레이너 ${lost.length}명을 이기고 올라왔다!`, c.t);
   }
   // v13.66 경완 '명단 제한 없애줘': 명단이 많아도 도전자는 돌아가지 않는다
-  c.exp = c.t + (c.boss ? 8 * H : c.named ? 5 * H : rnd(2, 4) * H);   // 도전자마다 기다리는 시간 (경완 2026-10-30: 자정까지 대신)
+  c.exp = c.t + (c.boss ? 8 * H : c.named ? 5 * H : qWait(c.t));   // v14.78: 기다리는 시간은 도착 시각으로 정해짐 → 체육관 밖 필드 아이콘 숫자도 같은 값으로 셈   // 도전자마다 기다리는 시간 (경완 2026-10-30: 자정까지 대신)
   g.q.push(c); if (!beat || c.named) glog('in', `${cn}${jong(c.nm) ? '이' : '가'} 도전하러 왔다!${c.boss ? ` <small>${GRADES[c.boss][1]} 승급 심사</small>` : c.named ? ' <small>이름 있는 트레이너</small>' : ''}`, c.t);
 }
 // 지난주 보고서 (월요일): 전적·막은 도전자·번 골드, 가상 체육관들과 점수 순위
@@ -807,6 +808,8 @@ const perkHtml = i => `<ul class="pk-ben">${perks(i).map(([k, ic, n, v]) => `<li
 const staffMax = () => SF_MAX[gradeOf(st().rep || 0).i];   // 새내기 체육관은 고용 못 함 (경완 2026-10-27)
 // 기다릴 시간이 지난 도전자는 돌아간다 (예전 저장은 그날 자정). 평판은 깎지 않는다 (경완 2026-10-28)
 const qExp = c => c.exp || nextDay(dayStart(c.t));
+// 도착 시각 t 로 정해지는 기다림 2~4시간 (beta.html gymWait 와 같은 식, 경완 2026-11-03 '도전자가 있었는데 아이콘에 숫자가 없었던')
+function qWait(t) { const x = Math.sin((t % 1e9) * 12.9898) * 43758.5453; return (2 + 2 * (x - Math.floor(x))) * H; }
 function qLeave(upTo) { const g = st(); g.q = g.q.filter(c => { const e = qExp(c); if (e > upTo) return true; glog('out', `${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 기다리다 돌아갔다.`, e); return false; }); }
 // 명단 박스 우상단 딱지 = 남은 시간, 이름 밑 = 온 시각 (경완 2026-10-31)
 const qLeftS = (c, now = Date.now()) => { const m = Math.max(0, Math.ceil((qExp(c) - now) / 60e3)), h = Math.floor(m / 60); return m < 1 ? '곧 떠나요' : `${h ? h + '시간 ' : ''}${m % 60 || !h ? (m % 60) + '분 ' : ''}남음`; };
@@ -1295,7 +1298,7 @@ function bodyCard(src, h, sub = '', btn = '', onClick, more = '') {
   return pop(`<div class="gy-body"><div class="bd-pic"><img alt="" src="${src}" onload="this.style.width=this.naturalWidth*2+'px';this.style.height=this.naturalHeight*2+'px'"></div><h4>${h}</h4>${sub ? `<p>${sub}</p>` : ''}${more}</div>${btn || '<div class="gy-btns one"><button data-a="x">닫기</button></div>'}`, (a, close, p) => { if (a === 'x') close(); else onClick?.(a, close, p); });
 }
 // 타입별 등급 배지는 체육관 정보에서 빼고 내 프로필 카드에 (경완 2026-10-29 '배지랑 타입 이름 정도만')
-async function meCard() { const g = st(), O = OUTFITS[g.fit];
+async function meCard() { const g = st(), O = fitOf(g.fit);
   const bd = `<div class="gy-bdgs me-bdgs">${TYPE_KO.map((nm, t) => { if (!t) return ''; const L = bdLv(g, t); return `<div class="${L ? 'on' : ''}${g.ty === t ? ' cur' : ''}">${bdHtml(t, L)}<b>${nm}</b></div>`; }).join('')}</div>`;
   bodyCard(await fitSrc('tr'), `관장 ${esc(trName() || '나')}`, `${g.w}승 ${g.l}패${O ? `<br>입은 옷: ${O.n}` : ''}`, '', null, bd); }
 function sfCard(s) { bodyCard(trSrc(s.tr), sfName(s), `${s.w || 0}승 ${s.l || 0}패<br>월급 7일에 ${(s.wage || 0).toLocaleString()}G${TRAITS[s.trait] ? ` · ${TRAITS[s.trait].n}` : ''}${s.rest ? '<br>월급을 못 받아서 쉬고 있어요' : ''}`); }   // 내 카드처럼 승패, 그리고 월급 (경완 2026-10-29)
@@ -1433,16 +1436,16 @@ function storePop() {
   root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew'; $g('.gy-main').appendChild(el);   // 아래 메뉴는 가리지 않게 (경완 2026-10-29)
   const draw = () => { const g = st(); g.tms = g.tms || {}; g.itm = g.itm || {}; g.own = g.own || {}; g.fits = g.fits || {}; g.dp = (g.dp || []).filter(Boolean);
-    const nTm = Object.values(g.tms).reduce((a, n) => a + (n || 0), 0), dk = Object.keys(g.own).filter(k => g.own[k] && DECO[k]), fk = Object.keys(g.fits).filter(k => g.fits[k] && OUTFITS[k]);
+    const nTm = Object.values(g.tms).reduce((a, n) => a + (n || 0), 0), dk = Object.keys(g.own).filter(k => g.own[k] && DECO[k]), fk = Object.keys(g.fits).filter(k => g.fits[k] && fitOf(k));
     const H = GB()?.HOLD, IL = H ? GB().itAll() : [], ML = H ? GB().mintAll() : [];   // 민트 (경완 2026-10-30)
-    const T = [['tm', '기술머신', nTm], ['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0)], ['deco', '꾸미기', dk.length]];   // v14.59 경완: 의상 탭은 업그레이드 전까지 뺌   // 도구 탭 (경완 2026-10-29)
+    const T = [['tm', '기술머신', nTm], ['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0)], ['deco', '꾸미기', dk.length], ['fit', '의상', fk.length]];   // v14.78 경완: 새 의상 그림으로 의상 탭 다시 (v14.59 에 뺐던 것)   // 도구 탭 (경완 2026-10-29)
     let body = ''; if (!T.some(([k]) => k === storeT)) storeT = 'tm';
     if (storeT === 'tm') { const D = GB()?.D, L = Object.entries(g.tms).filter(([, n]) => n > 0).map(([id, n]) => [GB()?.mvOf?.(id), n, id]).filter(([x]) => x);
       L.sort((a, b) => (a[0][2] - b[0][2]) || ((b[0][4] || 0) - (a[0][4] || 0)) * stPow);   // 타입별로 묶고 그 안에서 위력순 (경완 2026-10-29)   // 위력순 (경완 2026-10-29), 안내 문구 없음
       body = !D ? '<p class="gy-lead">불러오는 중…</p>' : L.length ? `<div class="tm-row"><button class="tm-sort" type="button" data-pow="1">위력순 ${stPow > 0 ? '▼' : '▲'}</button></div><div class="sp-list">${L.map(([x, n, id]) => GB().tmRow(x, n, id)).join('')}</div>` : '<p class="sf-none">가진 기술머신이 없어요. 상점에서 사 오세요.</p>'; }
     if (storeT === 'it') body = !H ? '<p class="gy-lead">불러오는 중…</p>' : IL.length + ML.length ? `<div class="sp-list">${IL.map(GB().itRowAll).join('')}${ML.map(([k, n]) => GB().mintRow(k, n)).join('')}</div>` : '<p class="sf-none">가진 도구가 없어요. 상점에서 사 오세요.</p>';
     if (storeT === 'deco') body = dk.length ? `<div class="dc-grid">${dk.map(k => `<button type="button" data-dc="${k}" class="${g.dp.includes(k) ? 'own' : ''}"><span class="dc-pic"><img alt="" src="${IMG}deco/${k}.png" class="${DECO[k].w > 16 ? 'big' : ''}"></span><b>${DECO[k].n}</b><em>${g.dp.includes(k) ? '놓여 있음' : '창고에 있음'}</em></button>`).join('')}</div>` : '<p class="sf-none">가진 꾸미기가 없어요. 상점에서 사 오세요.</p>';
-    if (storeT === 'fit') body = `<div class="ft-grid">${['', ...fk].map(k => `<button type="button" data-fit="${k}" class="${(g.fit || '') === k ? 'on' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${k ? OUTFITS[k].n : '기본 옷'}</b><em>${(g.fit || '') === k ? '입는 중' : '입기'}</em></button>`).join('')}</div>`;
+    if (storeT === 'fit') { const cf = fitOf(g.fit) ? g.fit : ''; body = `<div class="ft-grid">${['', ...fk].map(k => `<button type="button" data-fit="${k}" class="${cf === k ? 'on' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${k ? OUTFITS[k].n : '기본 옷'}</b><em>${cf === k ? '입는 중' : '입기'}</em></button>`).join('')}</div>`; }
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">창고</b></div>
       <div class="gy-body"><div class="sp-tabs st-tabs" role="tablist">${T.map(([k, n, c]) => `<button type="button" role="tab" data-st="${k}" aria-selected="${storeT === k}">${n} <small>${c}</small></button>`).join('')}</div>${body}</div>`;
     el.querySelectorAll('img[data-fk]').forEach(im => fitSrc('tr', im.dataset.fk).then(u => { im.src = u; }));
@@ -2096,7 +2099,7 @@ async function visit(F, code) {
     for (;;) { await talk(who + `내 포켓몬 ${team.length}마리와 승부다!`, '배틀 시작'); if (await luPick() != null) break; }
     const my = luNow(), say = { win: pick(FV_LOSE), lose: pick(FV_WIN) };
     // 친구 관장 앞모습: 옷을 입었으면 그 옷 그림 (gym/img/fit), 아니면 기본 그림
-    const tr = G.fit && OUTFITS[G.fit] ? `../fit/${G.fit}_${fF ? 'f' : 'm'}` : fOw;
+    const tr = fitOf(G.fit, fF) ? `../fit/${G.fit}_${fF ? 'f' : 'm'}` : fOw;
     document.body.classList.add('gymBattle'); dlg(''); root.classList.add('dhide');
     let res;
     try { res = await GB().run({ my, foe: { tr, cls: '관장', nm: fN, team, say }, practice: true, diff: 2, bg: pick(['in1', 'in2', 'in3']), music: 'gymBattle', meBackUrl: await fitSrc('trb') }); }
@@ -2117,10 +2120,10 @@ async function visit(F, code) {
 
 window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) => dzOf(id, gi), _routes: () => DESIGNS.flatMap(d => GRADES.map((_, gi) => { const D = dzOf(d.id, gi), C = chalRoute(D, ents); return { id: d.id, gi, door: D.door, leader: D.leader, guy: D.guy, free: !!D.free, chal: C.path, cf: C.cf, old: D.path, guyR: route(D, D.door, D.guy, []), oldGuy: guyPath(D) }; })), renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
+  k: { fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 // 이미 명단에서 본 도전자(qSeen)는 기다리고 있어도 점을 띄우지 않는다 — 체육관 안 점과 똑같이 (경완 2026-10-30 '빨간점 다 확인했는데 아이콘 점이 안 사라짐')
 // 점 = 안 본 도전자, 또는 새 도전자가 올 시각이 지남(일정·당겨 온 도전자). 저장된 at 은 쓰지 않는다 (경완 2026-10-30 '명단만 확인해도 꺼지게')
 // v14.71 경완 '도전자 왔다가 가 버려도 빨간 점': 기다리다 돌아간 도전자(exp 지남)·도착하고 2시간 지난 예약은 빼고 센다
-window.gymDot = () => { const g = S.gym, now = Date.now(), live = t => t && t <= now && now < t + 2 * 36e5; return !!(g && g.d && ((g.q && g.q.some(c => c.id > (g.qSeen | 0) && (c.exp || Infinity) > now)) || (g.sch || []).some(live) || live(g.pull))); };
+window.gymDot = () => { const g = S.gym, now = Date.now(), live = t => t && t <= now && now < t + qWait(t); return !!(g && g.d && ((g.q && g.q.some(c => c.id > (g.qSeen | 0) && (c.exp || Infinity) > now)) || (g.sch || []).some(live) || live(g.pull))); };
 })();
