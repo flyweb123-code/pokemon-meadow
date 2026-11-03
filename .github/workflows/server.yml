@@ -21,12 +21,19 @@ jobs:
       run:
         working-directory: server
     steps:
+      - name: Check secrets
+        if: env.CLOUDFLARE_API_TOKEN == ''
+        run: echo "::warning::CLOUDFLARE_API_TOKEN 비밀 변수가 아직 없어서 서버를 올리지 않았어요 (server/README.md)"
       - uses: actions/checkout@v4
+        if: env.CLOUDFLARE_API_TOKEN != ''
       - uses: actions/setup-node@v4
+        if: env.CLOUDFLARE_API_TOKEN != ''
         with:
           node-version: '20'
       - run: npm ci
+        if: env.CLOUDFLARE_API_TOKEN != ''
       - name: Find or create D1 database
+        if: env.CLOUDFLARE_API_TOKEN != ''
         run: |
           id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="pokegrow") | .uuid')
           if [ -z "$id" ]; then
@@ -36,11 +43,13 @@ jobs:
           echo "D1 id: $id"
           sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
       - name: Create tables
+        if: env.CLOUDFLARE_API_TOKEN != ''
         run: npx wrangler d1 execute pokegrow --remote --file schema.sql -y
       - name: Admin token (for CloudKit import)
         env:
           ADMIN_TOKEN: ${{ secrets.SERVER_ADMIN_TOKEN }}
-        if: env.ADMIN_TOKEN != ''
+        if: env.ADMIN_TOKEN != '' && env.CLOUDFLARE_API_TOKEN != ''
         run: echo "$ADMIN_TOKEN" | npx wrangler secret put ADMIN_TOKEN
       - name: Deploy
+        if: env.CLOUDFLARE_API_TOKEN != ''
         run: npx wrangler deploy
