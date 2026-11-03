@@ -262,6 +262,7 @@ const hpPx = (hp, mhp) => hp <= 0 || !mhp ? 0 : Math.max(1, Math.ceil(hp / mhp *
 function paintHb(side, A) {
   const hb = $b(`.bt-hb.${side}`); if (!A) { hb.classList.remove('on'); return; }
   hb.querySelector('.nm').textContent = A.nm; hb.querySelector('.lvn').textContent = A.lv;
+  { let ty = hb.querySelector('.tym'); if (!ty) { ty = document.createElement('span'); ty.className = 'tym'; hb.appendChild(ty); } const k = String(A.sp); if (ty.dataset.sp !== k) { ty.dataset.sp = k; ty.innerHTML = (SPECIES[A.sp]?.t || []).map(t => tyI(t)).join(''); } }   // v14.85 경완: HP 막대 왼쪽 빈 칸에 타입 아이콘 (시안 C)
   const sx = hb.querySelector('.sx'); sx.className = 'sx ' + (A.g || ''); sx.textContent = A.g === 'M' ? '♂' : A.g === 'F' ? '♀' : '';
   setHp(side, A.hp, A.mhp); setSt(side, A.st);
   if (side === 'p') { const g = A.xpg; hb.querySelector('.xp>i').style.width = (g ? clampN(g, 0, 1) * 96 : 0) + 'px'; }
