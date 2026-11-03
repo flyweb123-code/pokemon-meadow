@@ -1,0 +1,369 @@
+{
+ "rule": "전신(full)과 필드(ow) 스프라이트가 둘 다 있는 의상만 상점에 넣는다 (경완, 2026-11-04).",
+ "sizes": {
+  "full": "80x80",
+  "field": "288x32, 32x32 9프레임: 0정면 1뒤 2왼쪽 3·4정면걷기 5·6뒤걷기 7·8왼쪽걷기 (오른쪽은 왼쪽 좌우반전)"
+ },
+ "outfits": [
+  {
+   "key": "beauty_m",
+   "name": "아가씨",
+   "gender": "남",
+   "full": "full/beauty_m.png",
+   "field": null,
+   "shop": false,
+   "note": ""
+  },
+  {
+   "key": "beauty_f",
+   "name": "아가씨",
+   "gender": "여",
+   "full": "full/beauty_f.png",
+   "field": null,
+   "shop": false,
+   "note": ""
+  },
+  {
+   "key": "black_belt_m",
+   "name": "격투가",
+   "gender": "남",
+   "full": "full/black_belt_m.png",
+   "field": "ow/black_belt_m_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "black_belt_f",
+   "name": "격투가",
+   "gender": "여",
+   "full": null,
+   "field": null,
+   "shop": false,
+   "note": "전신 제외(경완, 11/04)"
+  },
+  {
+   "key": "blaine_m",
+   "name": "강연",
+   "gender": "남",
+   "full": "full/blaine_m.png",
+   "field": null,
+   "shop": false,
+   "note": ""
+  },
+  {
+   "key": "blaine_f",
+   "name": "강연",
+   "gender": "여",
+   "full": "full/blaine_f.png",
+   "field": null,
+   "shop": false,
+   "note": ""
+  },
+  {
+   "key": "blue_m",
+   "name": "블루",
+   "gender": "남",
+   "full": "full/blue_m.png",
+   "field": "ow/blue_m_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "blue_f",
+   "name": "블루",
+   "gender": "여",
+   "full": "full/blue_f.png",
+   "field": "ow/blue_f_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "brendan_m",
+   "name": "휘웅",
+   "gender": "남",
+   "full": "full/brendan_m.png",
+   "field": "ow/brendan_m_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "brendan_f",
+   "name": "휘웅",
+   "gender": "여",
+   "full": null,
+   "field": null,
+   "shop": false,
+   "note": "전신 제외(경완, 11/04)"
+  },
+  {
+   "key": "brock_m",
+   "name": "웅",
+   "gender": "남",
+   "full": "full/brock_m.png",
+   "field": "ow/brock_m_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "brock_f",
+   "name": "웅",
+   "gender": "여",
+   "full": "full/brock_f.png",
+   "field": "ow/brock_f_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "cooltrainer_m_m",
+   "name": "엘리트 트레이너(남)",
+   "gender": "남",
+   "full": "full/cooltrainer_m_m.png",
+   "field": "ow/cooltrainer_m_m_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "cooltrainer_m_f",
+   "name": "엘리트 트레이너(남)",
+   "gender": "여",
+   "full": "full/cooltrainer_m_f.png",
+   "field": null,
+   "shop": false,
+   "note": ""
+  },
+  {
+   "key": "cooltrainer_f_m",
+   "name": "엘리트 트레이너(여)",
+   "gender": "남",
+   "full": "full/cooltrainer_f_m.png",
+   "field": null,
+   "shop": false,
+   "note": ""
+  },
+  {
+   "key": "cooltrainer_f_f",
+   "name": "엘리트 트레이너(여)",
+   "gender": "여",
+   "full": "full/cooltrainer_f_f.png",
+   "field": "ow/cooltrainer_f_f_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "erika_m",
+   "name": "민화",
+   "gender": "남",
+   "full": "full/erika_m.png",
+   "field": null,
+   "shop": false,
+   "note": ""
+  },
+  {
+   "key": "erika_f",
+   "name": "민화",
+   "gender": "여",
+   "full": "full/erika_f.png",
+   "field": null,
+   "shop": false,
+   "note": ""
+  },
+  {
+   "key": "gentleman_m",
+   "name": "신사",
+   "gender": "남",
+   "full": "full/gentleman_m.png",
+   "field": "ow/gentleman_m_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "gentleman_f",
+   "name": "신사",
+   "gender": "여",
+   "full": "full/gentleman_f.png",
+   "field": "ow/gentleman_f_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "giovanni_m",
+   "name": "비주기",
+   "gender": "남",
+   "full": "full/giovanni_m.png",
+   "field": "ow/giovanni_m_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "giovanni_f",
+   "name": "비주기",
+   "gender": "여",
+   "full": "full/giovanni_f.png",
+   "field": "ow/giovanni_f_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "koga_m",
+   "name": "독수",
+   "gender": "남",
+   "full": "full/koga_m.png",
+   "field": "ow/koga_m_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "koga_f",
+   "name": "독수",
+   "gender": "여",
+   "full": "full/koga_f.png",
+   "field": "ow/koga_f_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "lance_m",
+   "name": "목호",
+   "gender": "남",
+   "full": "full/lance_m.png",
+   "field": "ow/lance_m_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "lance_f",
+   "name": "목호",
+   "gender": "여",
+   "full": "full/lance_f.png",
+   "field": "ow/lance_f_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "leaf_m",
+   "name": "리프",
+   "gender": "남",
+   "full": "full/leaf_m.png",
+   "field": "ow/leaf_m_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "leaf_f",
+   "name": "리프",
+   "gender": "여",
+   "full": "full/leaf_f.png",
+   "field": "ow/leaf_f_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "lorelei_m",
+   "name": "칸나",
+   "gender": "남",
+   "full": "full/lorelei_m.png",
+   "field": null,
+   "shop": false,
+   "note": ""
+  },
+  {
+   "key": "lorelei_f",
+   "name": "칸나",
+   "gender": "여",
+   "full": "full/lorelei_f.png",
+   "field": null,
+   "shop": false,
+   "note": ""
+  },
+  {
+   "key": "lt_surge_m",
+   "name": "마티스(군복)",
+   "gender": "남",
+   "full": "full/lt_surge_m.png",
+   "field": "ow/lt_surge_m_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "lt_surge_f",
+   "name": "마티스(군복)",
+   "gender": "여",
+   "full": "full/lt_surge_f.png",
+   "field": null,
+   "shop": false,
+   "note": "필드 제외(경완)"
+  },
+  {
+   "key": "may_m",
+   "name": "봄이",
+   "gender": "남",
+   "full": "full/may_m.png",
+   "field": "ow/may_m_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "may_f",
+   "name": "봄이",
+   "gender": "여",
+   "full": "full/may_f.png",
+   "field": "ow/may_f_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "misty_m",
+   "name": "이슬",
+   "gender": "남",
+   "full": "full/misty_m.png",
+   "field": null,
+   "shop": false,
+   "note": ""
+  },
+  {
+   "key": "misty_f",
+   "name": "이슬",
+   "gender": "여",
+   "full": "full/misty_f.png",
+   "field": "ow/misty_f_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "red_m",
+   "name": "레드",
+   "gender": "남",
+   "full": "full/red_m.png",
+   "field": "ow/red_m_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "red_f",
+   "name": "레드",
+   "gender": "여",
+   "full": "full/red_f.png",
+   "field": "ow/red_f_ow.png",
+   "shop": true,
+   "note": ""
+  },
+  {
+   "key": "sabrina_m",
+   "name": "초련",
+   "gender": "남",
+   "full": "full/sabrina_m.png",
+   "field": null,
+   "shop": false,
+   "note": ""
+  },
+  {
+   "key": "sabrina_f",
+   "name": "초련",
+   "gender": "여",
+   "full": "full/sabrina_f.png",
+   "field": null,
+   "shop": false,
+   "note": ""
+  }
+ ]
+}
