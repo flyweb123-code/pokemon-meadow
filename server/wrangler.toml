@@ -1,0 +1,13 @@
+# 포켓몬 키우기 친구 서버. GitHub Actions(.github/workflows/server.yml)가 D1 을 만들고 database_id 를 채워 배포한다.
+name = "pokegrow"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "pokegrow"
+database_id = "00000000-0000-0000-0000-000000000000"
+
+[vars]
+# 공지 보내기를 허락할 친구 코드 (쉼표로)
+ADMIN_CODES = "2X392NYD"
