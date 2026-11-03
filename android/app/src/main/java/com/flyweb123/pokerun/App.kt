@@ -15,6 +15,7 @@ class App : Application() {
         nm.createNotificationChannel(NotificationChannel(NotiCenter.CHANNEL, getString(R.string.noti_channel), NotificationManager.IMPORTANCE_DEFAULT))
         if (Perm.asked) WalkWorker.schedule(this)
         FriendServer.refreshUrl()
+        Push.init(this)
     }
 
     companion object {

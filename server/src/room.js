@@ -15,6 +15,8 @@
 //   {t:'join', p} / {t:'leave', c} / {t:'chat', c, n, m, at} / {t:'tr', c, ...} / {t:'act', c, n, k, u} / {t:'mons', L} / {t:'ev', e} / {t:'field', d, at}
 //   {t:'own', on}                 주인이 들어오거나 나감
 
+import { pushTo, iGa } from './push.js';
+
 const MAX_PPL = 8, CHAT_KEEP = 50, ACT_KEEP = 50, CHAT_LEN = 100, ACTS = ['pet', 'wash', 'feed', 'berry'];
 
 export class FieldRoom {
@@ -51,7 +53,17 @@ export class FieldRoom {
     this.send(sv, { t: 'hi', me: c, own: o, on: o || ppl.some(x => x.a.o), ppl: ppl.map(x => this.pub(x.a)), chat: chat || [], field: o ? null : fld?.d || null, fat: fld?.at || 0, pend: pend || [], acts: o ? acts || [] : [] });
     this.cast({ t: 'join', p: this.pub(a) }, sv);
     if (o) this.cast({ t: 'own', on: true }, sv);
+    // 주인이 방에 없으면 주인 폰에 푸시 '친구가 놀러 왔어요!' (같은 친구는 30분에 한 번)
+    if (!o && !ppl.some(x => x.a.o)) this.ring(owner || await this.ctx.storage.get('owner'), c, n).catch(e => console.log('ring', e.message));
     return new Response(null, { status: 101, webSocket: cl });
+  }
+
+  async ring(owner, c, n) {
+    if (!owner || owner === c) return;
+    const k = 'rang:' + c, last = (await this.ctx.storage.get(k)) || 0;
+    if (Date.now() - last < 30 * 60e3) return;
+    await this.ctx.storage.put(k, Date.now());
+    await pushTo(this.env, owner, { kind: 'visit', title: '친구가 놀러 왔어요!', body: `${n}${iGa(n)} 내 필드에 놀러 왔어요. 들어가서 같이 놀아요.`, collapse: 'visit-' + c, thread: 'visit' });
   }
 
   // 마지막 필드: 주인이 방에 보낸 것과 D1(주인이 없을 때 올려 둔 것) 중 나중 것
