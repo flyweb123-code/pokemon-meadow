@@ -51,3 +51,20 @@ GitHub Actions › **Migrate CloudKit to friend server** › Run workflow (비�
 - `GET /room/<주인코드>?t=<표>` (WebSocket) — 채팅(최근 50개 = 방명록), 트레이너 자리, 주인 포켓몬 자리(주인 기기가 손님 있을 때 0.3초마다), 손님이 한 쓰다듬기·열매(주인이 없으면 모아 뒀다가 들어올 때). 말 모양은 `src/room.js` 맨 위 설명.
 
 게임은 표만 친구 창구(frAsk)로 받고 WebSocket 은 게임 페이지가 직접 엽니다 → 아이폰·안드로이드 앱 새 빌드가 필요 없습니다.
+
+## 푸시 알림 (친구가 내 필드에 놀러 오면, 2026-11-03)
+
+주인이 게임을 켜 두지 않았을 때 친구가 필드에 들어오면, 주인 폰에 "친구가 놀러 왔어요!" 푸시가 간다 (같은 친구는 30분에 한 번).
+앱이 푸시 토큰을 `pushReg` 로 맡기고 (게임 설정 › 알림 › '친구가 내 필드에 놀러 왔을 때', 베타), 방(room.js)이 `push.js` 로 애플·구글에 보낸다.
+
+GitHub 저장소 비밀 변수 (Settings › Secrets and variables › Actions). 넣은 뒤 Actions › Friend server 를 한 번 실행하면 서버에 들어간다.
+
+| 비밀 변수 | 어디서 |
+|---|---|
+| `APNS_KEY` | developer.apple.com › Certificates, IDs & Profiles › Keys › + › Apple Push Notifications service (APNs) 체크 → 받은 `.p8` 파일 내용 전체 |
+| `APNS_KEY_ID` | 그 키 화면의 Key ID (10글자) |
+| `APNS_TEAM_ID` | developer.apple.com › Membership details 의 Team ID (10글자) |
+| `FCM_SA` | console.firebase.google.com 에서 프로젝트 만들기 → 프로젝트 설정 › 서비스 계정 › 새 비공개 키 생성 → 받은 JSON 내용 전체 |
+| `GOOGLE_SERVICES_JSON` | 같은 Firebase 프로젝트 › 프로젝트 설정 › 일반 › 앱 추가 › Android, 패키지 이름 `com.flyweb123.pokerun` → 받은 `google-services.json` 내용 전체 (안드로이드 APK 빌드에 씀) |
+
+아이폰은 App ID 에 Push Notifications 가 이미 켜져 있다 (aps-environment). 앱은 새로 빌드해야 한다 (Xcode Cloud).

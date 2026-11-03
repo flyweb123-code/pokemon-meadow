@@ -42,6 +42,8 @@ object NotiCenter {
         // 친구 요청(fr)·공지(nw) 알림: 게임이 보낼 때만 (FriendServer.poll 이 15분마다 서버에 물어본다)
         if (d.has("fr")) p.edit().putBoolean("pushFr", d.optBoolean("fr")).apply()
         if (d.has("nw")) p.edit().putBoolean("pushNw", d.optBoolean("nw")).apply()
+        // 친구가 내 필드에 놀러 오면 진짜 푸시 (Push.kt, 베타 게임만 fv 를 보냄)
+        if (d.has("fv")) Push.setVisit(d.optBoolean("fv"))
     }
 
     @Synchronized fun walked(km: Double) {

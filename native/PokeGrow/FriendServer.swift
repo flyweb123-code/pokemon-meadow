@@ -146,6 +146,38 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
         }
     }
 
+    // ---------- 진짜 푸시: 친구가 내 필드에 놀러 오면 (2026-11-03, 서버 server/src/push.js) ----------
+    @MainActor func setVisitPush(_ on: Bool) {
+        let d = UserDefaults.standard
+        let was = d.object(forKey: "pushFv") as? Bool
+        d.set(on, forKey: "pushFv")
+        if on && (was != true || d.string(forKey: "pushTok") == nil) {   // 저장할 때마다 오므로 바뀔 때만
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { ok, _ in
+                if ok { DispatchQueue.main.async { UIApplication.shared.registerForRemoteNotifications() } }
+            }
+        } else if was != false { pushSync() }
+    }
+    func setPushToken(_ tok: String) { UserDefaults.standard.set(tok, forKey: "pushTok"); pushSync() }
+    private func pushSync() {
+        let d = UserDefaults.standard
+        guard let tok = d.string(forKey: "pushTok") else { return }
+        let on = d.bool(forKey: "pushFv")
+        #if DEBUG
+        let env = "dev"      // Xcode 에서 바로 설치한 앱 = 애플 시험 서버
+        #else
+        let env = "prod"     // TestFlight·앱스토어
+        #endif
+        let sig = "\(tok):\(on):\(env)"
+        // 바뀌었거나 사흘 지났을 때만 (서버가 오래된 토큰을 정리할 수 있게 가끔 다시 알림)
+        guard sig != d.string(forKey: "pushRegSig") || Date().timeIntervalSince1970 - d.double(forKey: "pushRegAt") > 3 * 86400 else { return }
+        Task {
+            do {
+                _ = try await call(["op": "pushReg", "tok": tok, "plat": "ios", "env": env, "kinds": on ? ["visit"] : [String]()])
+                d.set(sig, forKey: "pushRegSig"); d.set(Date().timeIntervalSince1970, forKey: "pushRegAt")
+            } catch { print("pushReg fail:", error) }
+        }
+    }
+
     private func post(_ id: String, _ title: String, _ body: String) {
         let c = UNMutableNotificationContent()
         c.title = title; c.body = body; c.sound = .default

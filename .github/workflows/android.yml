@@ -27,6 +27,7 @@ jobs:
         working-directory: android
         env:
           KAKAO_KEY: ${{ secrets.KAKAO_KEY }}
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}   # 친구 방문 푸시 (없으면 푸시만 빠짐)
         run: |
           chmod +x gradlew
           ./gradlew --no-daemon assembleRelease

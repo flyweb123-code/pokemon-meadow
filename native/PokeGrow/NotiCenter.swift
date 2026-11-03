@@ -54,6 +54,10 @@ final class NotiCenter: NSObject, UNUserNotificationCenterDelegate {
             if fr { askPermission() }
             Task { @MainActor in FriendServer.shared.setReqPush(fr) }
         }
+        // 2026-11-03: 친구가 내 필드에 놀러 오면 진짜 푸시 (게임이 fv 를 보낼 때만, 베타)
+        if let fv = dict["fv"] as? Bool {
+            Task { @MainActor in FriendServer.shared.setVisitPush(fv) }
+        }
         // v14.37: 업데이트 공지 알림 (CloudKit Notice 구독). 게임이 nw 를 보낼 때만
         if let nw = dict["nw"] as? Bool {
             if nw { askPermission() }

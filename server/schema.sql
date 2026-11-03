@@ -71,3 +71,14 @@ CREATE TABLE IF NOT EXISTS kv (
   k TEXT PRIMARY KEY,
   v TEXT NOT NULL
 );
+
+-- 진짜 푸시 (2026-11-03): 기기 푸시 토큰. kinds = 켜 둔 알림 종류 (쉼표, 예: visit)
+CREATE TABLE IF NOT EXISTS push (
+  tok   TEXT PRIMARY KEY,
+  code  TEXT NOT NULL,
+  plat  TEXT NOT NULL,
+  env   TEXT NOT NULL DEFAULT 'prod',
+  kinds TEXT NOT NULL DEFAULT '',
+  at    INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS push_code ON push (code);

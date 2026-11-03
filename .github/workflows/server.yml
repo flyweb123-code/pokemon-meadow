@@ -18,6 +18,11 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       ADMIN_TOKEN: ${{ secrets.SERVER_ADMIN_TOKEN }}
+      # 진짜 푸시 (친구가 필드에 놀러 오면). 없으면 그 쪽 푸시만 안 감 (server/README.md '푸시 알림')
+      APNS_KEY: ${{ secrets.APNS_KEY }}
+      APNS_KEY_ID: ${{ secrets.APNS_KEY_ID }}
+      APNS_TEAM_ID: ${{ secrets.APNS_TEAM_ID }}
+      FCM_SA: ${{ secrets.FCM_SA }}
     defaults:
       run:
         working-directory: server
@@ -50,6 +55,12 @@ jobs:
       - name: Admin token (for CloudKit import)
         if: env.ADMIN_TOKEN != '' && env.CLOUDFLARE_API_TOKEN != ''
         run: echo "$ADMIN_TOKEN" | npx wrangler secret put ADMIN_TOKEN
+      - name: Push secrets
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        run: |
+          for k in APNS_KEY APNS_KEY_ID APNS_TEAM_ID FCM_SA; do
+            if [ -n "${!k}" ]; then printf '%s' "${!k}" | npx wrangler secret put "$k"; else echo "$k 없음 (건너뜀)"; fi
+          done
       - name: Deploy
         if: env.CLOUDFLARE_API_TOKEN != ''
         run: npx wrangler deploy

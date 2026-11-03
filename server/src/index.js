@@ -169,6 +169,17 @@ async function handle(env, b) {
       ]);
       return { ok: true, kept: false, failed: 0, games: games.length };
     }
+    // ---------- 진짜 푸시 (2026-11-03, push.js) ----------
+    case 'pushReg': {   // {tok, plat, env, kinds:['visit',...]}. kinds 가 비면 이 기기 토큰을 지운다
+      const tok = str(b.tok, 400), plat = b.plat === 'ios' || b.plat === 'android' ? b.plat : null; if (!tok || !plat || !/^[\w:.\-]+$/.test(tok)) bad('잘못된 요청');
+      const kinds = [...new Set((Array.isArray(b.kinds) ? b.kinds : []).filter(k => /^[a-z]{1,12}$/.test(k)))].slice(0, 10).join(',');
+      if (!kinds) { await db.prepare('DELETE FROM push WHERE tok = ?').bind(tok).run(); return true; }
+      await db.prepare('INSERT INTO push (tok, code, plat, env, kinds, at) VALUES (?1, ?2, ?3, ?4, ?5, ?6) ON CONFLICT(tok) DO UPDATE SET code = ?2, plat = ?3, env = ?4, kinds = ?5, at = ?6')
+        .bind(tok, me, plat, b.env === 'dev' ? 'dev' : 'prod', kinds, now).run();
+      // 한 사람 기기는 5대까지 (오래된 것부터 지움)
+      await db.prepare('DELETE FROM push WHERE code = ?1 AND tok NOT IN (SELECT tok FROM push WHERE code = ?1 ORDER BY at DESC LIMIT 5)').bind(me).run();
+      return true;
+    }
     // ---------- 친구 필드 놀러가기 (베타) ----------
     case 'fieldPut': {   // 주인이 없을 때 친구들에게 보여 줄 내 필드 + 들어올 수 있는 친구 코드
       const data = str(b.data, 300_000); if (data == null) bad('필드가 너무 커요');
