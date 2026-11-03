@@ -14,6 +14,7 @@ class WalkWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, params) {
         if (!Perm.asked) return Result.success()
         Walk.readOnce(applicationContext)?.let { Walk.account(it) }
         Walk.syncNow(applicationContext, 0.25)
+        FriendServer.poll()
         return Result.success()
     }
 

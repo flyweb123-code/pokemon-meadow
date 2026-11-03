@@ -13,9 +13,10 @@ import org.json.JSONObject
 class Bridge(private val a: MainActivity) {
     private val main = Handler(Looper.getMainLooper())
 
-    // 친구·계정 서버(friends)는 아이폰은 CloudKit 이라 안드로이드에선 아직 없음 → 게임은 앱이 아닌 것처럼 그 기능을 숨긴다
+    // 친구·계정 서버(friends)는 서버 주소를 알 때만 만든다 → 모르면 게임은 친구·계정 기능을 숨긴다
     @JavascriptInterface
-    fun handlers(): String = JSONArray(listOf("pokeRun", "haptic", "hum", "audioPeek", "audioMix", "loc", "perm")).toString()
+    fun handlers(): String = JSONArray(listOf("pokeRun", "haptic", "hum", "audioPeek", "audioMix", "loc", "perm") +
+        (if (FriendServer.url != null) listOf("friends") else emptyList())).toString()
 
     @JavascriptInterface
     fun post(name: String, json: String, id: Int) {
@@ -45,6 +46,7 @@ class Bridge(private val a: MainActivity) {
             "audioMix" -> reply(id, true)
             "perm" -> Perm.handle(a, body as? String ?: "get") { reply(id, it) }
             "loc" -> Perm.handleLoc(a, body as? String ?: "get") { reply(id, it) }
+            "friends" -> FriendServer.handle(body as? JSONObject) { ok, v -> main.post { if (ok) reply(id, v) else fail(id, v as? String ?: "친구 서버 오류") } }
             else -> fail(id, "모르는 요청")
         }
     }

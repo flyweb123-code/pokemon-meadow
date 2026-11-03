@@ -1,0 +1,46 @@
+# 친구 서버(Cloudflare Workers + D1) 올리기. server/ 가 main 에 합쳐지거나 Actions 화면에서 직접 실행하면 돈다.
+# 필요한 저장소 비밀 변수: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID (README: server/README.md)
+# 처음 실행 때 D1 데이터베이스 'pokegrow' 를 만들고, 표(schema.sql)를 만들고, 서버를 올린다. 서버 주소는 맨 아래 'Deploy' 단계 로그에 나온다.
+name: Friend server
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'server/**'
+      - '.github/workflows/server.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Find or create D1 database
+        run: |
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="pokegrow") | .uuid')
+          if [ -z "$id" ]; then
+            npx wrangler d1 create pokegrow
+            id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="pokegrow") | .uuid')
+          fi
+          echo "D1 id: $id"
+          sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
+      - name: Create tables
+        run: npx wrangler d1 execute pokegrow --remote --file schema.sql -y
+      - name: Admin token (for CloudKit import)
+        env:
+          ADMIN_TOKEN: ${{ secrets.SERVER_ADMIN_TOKEN }}
+        if: env.ADMIN_TOKEN != ''
+        run: echo "$ADMIN_TOKEN" | npx wrangler secret put ADMIN_TOKEN
+      - name: Deploy
+        run: npx wrangler deploy

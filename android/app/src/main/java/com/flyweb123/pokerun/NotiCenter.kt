@@ -39,6 +39,9 @@ object NotiCenter {
         }
         val plan = JSONObject().put("on", on).put("items", keep).put("base", total - pendingKm)
         p.edit().putString("notiPlan", plan.toString()).putStringSet("notiFired", fired().intersect(ids)).apply()
+        // 친구 요청(fr)·공지(nw) 알림: 게임이 보낼 때만 (FriendServer.poll 이 15분마다 서버에 물어본다)
+        if (d.has("fr")) p.edit().putBoolean("pushFr", d.optBoolean("fr")).apply()
+        if (d.has("nw")) p.edit().putBoolean("pushNw", d.optBoolean("nw")).apply()
     }
 
     @Synchronized fun walked(km: Double) {
@@ -64,23 +67,30 @@ object NotiCenter {
             val g = hit.filter { it.optString("id").startsWith("$kind-") }
             val first = g.firstOrNull() ?: continue
             val title = first.optString("title")
-            if (g.size == 1) { post(first.optString("id"), title, first.optString("body")); continue }
+            if (g.size == 1) { post(first.optString("id"), title, first.optString("body"), force = false); continue }
             val n = g.sumOf { maxOf(1, it.optInt("n", 1)) }
             val body = when (kind) {
                 "egg" -> "걷다가 알 ${n}개를 주웠어요. 가방을 확인해 보세요."
                 "hatch" -> "알 ${g.size}개가 움직이기 시작했어요. 부화기에서 부화시켜 보세요."
                 else -> "짝꿍 ${g.size}마리가 진화할 수 있어요. 짝꿍 탭에서 진화시켜 보세요."
             }
-            post(first.optString("id"), title, body)
+            post(first.optString("id"), title, body, force = false)
         }
     }
 
     fun allowed(): Boolean = NotificationManagerCompat.from(App.app).areNotificationsEnabled() &&
         (Build.VERSION.SDK_INT < 33 || ContextCompat.checkSelfPermission(App.app, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED)
 
+    // 운영자 공지 시험: 이 기기에만 5초 뒤 같은 알림
+    fun test(title: String, body: String) {
+        if (!allowed()) throw Exception("알림 권한이 꺼져 있어요. 설정 › 권한에서 켜 주세요")
+        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ post("noticeTest", title, body, force = true) }, 5000)
+    }
+
+    // force = 앱이 켜져 있어도 띄움 (공지). 그 밖엔 앱이 켜져 있으면 게임이 직접 알려 주므로 띄우지 않는다
     @Suppress("MissingPermission")
-    private fun post(id: String, title: String, body: String) {
-        if (!allowed()) return
+    fun post(id: String, title: String, body: String, force: Boolean) {
+        if (!allowed() || (!force && App.foreground)) return
         val ctx = App.app
         val open = PendingIntent.getActivity(ctx, 0, Intent(ctx, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)

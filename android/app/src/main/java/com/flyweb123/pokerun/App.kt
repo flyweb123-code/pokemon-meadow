@@ -14,6 +14,7 @@ class App : Application() {
         val nm = getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(NotificationChannel(NotiCenter.CHANNEL, getString(R.string.noti_channel), NotificationManager.IMPORTANCE_DEFAULT))
         if (Perm.asked) WalkWorker.schedule(this)
+        FriendServer.refreshUrl()
     }
 
     companion object {

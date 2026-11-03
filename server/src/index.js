@@ -1,0 +1,231 @@
+// 포켓몬 키우기 친구 서버 (Cloudflare Workers + D1).
+// 아이폰 앱 FriendServer(CloudKit)와 같은 일을 아이폰·안드로이드 모두를 위해 한다.
+//
+// 요청: POST /v1  {op, dev, ...}  →  {ok:true, v} | {ok:false, err}
+//   dev = 기기 비밀값. 친구 코드 = SHA256(dev) 앞 8바이트 → 32글자표 (아이폰은 dev = iCloud 사용자 ID 라 지금 코드 그대로).
+//   서버는 dev 로 코드를 계산하므로, 남의 코드로 카드·기록을 덮어쓸 수 없다.
+//
+// 계정 비밀번호는 서버로 보내지 않는다: 기기가 소금으로 2만 번 해시(ph)와 k = sha("pkgk:id:pw") 를 계산해 보낸다
+// (무료 요금제 CPU 10ms 한도 + CloudKit 에서 옮겨 온 pwh 형식 그대로 쓰려고).
+
+const ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const PART = 600_000;   // 저장 조각 크기 (글자). 한글이 섞여도 D1 한 칸 한도(2MB) 안 넘게
+const enc = new TextEncoder();
+
+async function shaBytes(s) { return new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(s))); }
+const hex = b => [...b].map(x => x.toString(16).padStart(2, '0')).join('');
+async function sha(s) { return hex(await shaBytes(s)); }
+async function codeOf(dev) { const h = await shaBytes(dev); return [...h.slice(0, 8)].map(b => ABC[b % ABC.length]).join(''); }
+
+class E extends Error {}
+const bad = m => { throw new E(m); };
+const str = (v, max) => typeof v === 'string' && v.length <= max ? v : null;
+const gameOk = g => typeof g === 'string' && g.length > 0 && g.length <= 20 && /^[\p{L}\p{N}]+$/u.test(g);
+const acctId = v => { const s = typeof v === 'string' ? v.toLowerCase() : ''; return /^[a-z0-9_]{4,12}$/.test(s) ? s : null; };
+const cleanCode = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+export default {
+  async fetch(req, env) {
+    const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
+    if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
+    const url = new URL(req.url);
+    const out = (o, st = 200) => new Response(JSON.stringify(o), { status: st, headers: { 'content-type': 'application/json; charset=utf-8', ...cors } });
+    if (req.method === 'GET' && url.pathname === '/') return out({ ok: true, v: 'pokegrow' });
+    if (req.method !== 'POST') return out({ ok: false, err: 'POST 만 받아요' }, 405);
+    let body;
+    try { body = await req.json(); } catch (e) { return out({ ok: false, err: '잘못된 요청' }, 400); }
+    try {
+      if (url.pathname === '/admin/import') return out({ ok: true, v: await adminImport(env, req, body) });
+      if (url.pathname !== '/v1') return out({ ok: false, err: '없는 주소' }, 404);
+      return out({ ok: true, v: await handle(env, body) });
+    } catch (e) {
+      if (e instanceof E) return out({ ok: false, err: e.message });
+      return out({ ok: false, err: '친구 서버 오류: ' + (e?.message || e) }, 500);
+    }
+  }
+};
+
+async function handle(env, b) {
+  const db = env.DB, now = Date.now();
+  const dev = str(b.dev, 200);
+  if (!dev || dev.length < 8) bad('기기 정보가 없어요');
+  const me = await codeOf(dev);
+  switch (b.op) {
+    case 'me': return me;
+
+    case 'publish': {
+      const card = str(b.card, 50_000); if (card == null) bad('카드가 너무 커요');
+      const wk = str(b.wk, 40) || '', wkm = Math.max(0, +b.wkm || 0), dex = Math.max(0, Math.floor(+b.dex || 0));
+      await db.prepare('INSERT INTO trainer (code, card, wk, wkm, dex, at) VALUES (?1, ?2, ?3, ?4, ?5, ?6) ON CONFLICT(code) DO UPDATE SET card = ?2, wk = ?3, wkm = ?4, dex = ?5, at = ?6')
+        .bind(me, card, wk, wkm, dex, now).run();
+      return true;
+    }
+
+    case 'get': {
+      const codes = [...new Set((Array.isArray(b.codes) ? b.codes : []).map(cleanCode).filter(c => c.length === 8))].slice(0, 100);
+      if (!codes.length) return [];
+      const { results } = await db.prepare(`SELECT code, card, at FROM trainer WHERE code IN (${codes.map(() => '?').join(',')})`).bind(...codes).all();
+      return results;
+    }
+
+    case 'top': {
+      const wk = str(b.wk, 40); if (!wk) bad('잘못된 요청');
+      const q = b.kind === 'dex'
+        ? db.prepare('SELECT code, card, at FROM trainer WHERE dex > 0 ORDER BY dex DESC LIMIT 100')
+        : db.prepare('SELECT code, card, at FROM trainer WHERE wk = ? ORDER BY wkm DESC LIMIT 100').bind(wk);
+      return (await q.all()).results;
+    }
+
+    case 'score': {
+      if (!gameOk(b.game)) bad('잘못된 요청');
+      const card = str(b.card, 5_000); if (card == null) bad('잘못된 요청');
+      const best = String(b.game).startsWith('fr') ? (+b.best || 0) : Math.max(0, +b.best || 0);   // 친구 요청: >0 요청, <0 수락, 0 취소
+      await db.prepare('INSERT INTO score (code, game, best, card, at) VALUES (?1, ?2, ?3, ?4, ?5) ON CONFLICT(code, game) DO UPDATE SET best = ?3, card = ?4, at = ?5')
+        .bind(me, b.game, best, card, now).run();
+      return true;
+    }
+
+    case 'mgtop': {
+      const game = str(b.game, 40); if (!game) bad('잘못된 요청');
+      return (await db.prepare('SELECT code, card, best, at FROM score WHERE game = ? ORDER BY best DESC LIMIT 100').bind(game).all()).results;
+    }
+
+    case 'notice': {
+      const admins = String(env.ADMIN_CODES || '').split(',').map(s => s.trim());
+      if (!admins.includes(me)) bad('공지는 운영자만 보낼 수 있어요');
+      const t = str(b.title, 40), m = str(b.body, 160);
+      if (!t || !m) bad('제목과 내용을 확인해 주세요');
+      await db.prepare('INSERT INTO notice (title, body, at) VALUES (?, ?, ?)').bind(t, m, now).run();
+      return true;
+    }
+    case 'news': {   // 공지 목록 (n 보다 새 것) — 알림은 앱이 이걸 보고 띄운다
+      const after = Math.floor(+b.after || 0);
+      return (await db.prepare('SELECT n, title, body, at FROM notice WHERE n > ? ORDER BY n DESC LIMIT 20').bind(after).all()).results;
+    }
+
+    // ---------- 계정 ----------
+    case 'acctSalt': {   // 로그인 1단계: 소금 받기
+      const id = acctId(b.id); if (!id) bad('아이디는 영문 소문자·숫자 4~12글자예요');
+      const a = await db.prepare('SELECT pwh FROM account WHERE id = ?').bind(id).first();
+      if (!a) bad('없는 아이디예요');
+      return a.pwh.split('$')[0];
+    }
+    case 'acctNew': {
+      const id = acctId(b.id); if (!id) bad('아이디는 영문 소문자·숫자 4~12글자, 비밀번호는 4글자 이상이에요');
+      const salt = str(b.salt, 64), ph = str(b.ph, 64), k = str(b.k, 64);
+      if (!salt || !ph || ph.length !== 64 || !k || k.length !== 64) bad('잘못된 요청');
+      const r = await db.prepare('INSERT INTO account (id, pwh, kh, code, dev, at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO NOTHING')
+        .bind(id, salt + '$' + ph, await sha(k), me, dev, now).run();
+      if (!r.meta.changes) bad('이미 있는 아이디예요. 다른 아이디를 골라 주세요');
+      return { id, k };
+    }
+    case 'acctLogin': {
+      const id = acctId(b.id); if (!id) bad('없는 아이디예요');
+      const ph = str(b.ph, 64), k = str(b.k, 64); if (!ph || !k) bad('잘못된 요청');
+      const a = await db.prepare('SELECT pwh, kh, dev FROM account WHERE id = ?').bind(id).first();
+      if (!a) bad('없는 아이디예요');
+      if (a.pwh.split('$')[1] !== ph) bad('비밀번호가 맞지 않아요');
+      const kh = await sha(k);
+      if (a.kh !== kh) await db.prepare('UPDATE account SET kh = ? WHERE id = ?').bind(kh, id).run();
+      // dev: 안드로이드는 다시 깔아도 같은 친구 코드를 쓰도록 계정을 만든 기기의 dev 를 받아 간다
+      return { id, k, ...(await newestSave(db, id, k)), dev: a.dev || undefined };
+    }
+    case 'acctSave': {
+      const id = acctId(b.id), k = str(b.k, 64), data = str(b.data, 20_000_000);
+      if (!id || !k || k.length !== 64 || data == null) bad('잘못된 요청');
+      await checkK(db, id, k);
+      const sig = await sha(k + await sha(data));
+      let saved = 0; try { saved = +JSON.parse(data).savedAt || 0; } catch (e) {}
+      const parts = [];
+      for (let i = 0; i < data.length; i += PART) parts.push(data.slice(i, i + PART));
+      const st = [
+        db.prepare('DELETE FROM save_part WHERE acct = ? AND code = ?').bind(id, me),
+        ...parts.map((p, i) => db.prepare('INSERT INTO save_part (acct, code, i, data) VALUES (?, ?, ?, ?)').bind(id, me, i, p)),
+        db.prepare('INSERT INTO save (acct, code, sig, saved, parts, at) VALUES (?1, ?2, ?3, ?4, ?5, ?6) ON CONFLICT(acct, code) DO UPDATE SET sig = ?3, saved = ?4, parts = ?5, at = ?6')
+          .bind(id, me, sig, saved, parts.length, now),
+      ];
+      await db.batch(st);
+      return true;
+    }
+    case 'acctPull': {
+      const id = acctId(b.id), k = str(b.k, 64); if (!id || !k) bad('잘못된 요청');
+      await checkK(db, id, k);
+      return await newestSave(db, id, k);
+    }
+    case 'acctDel': {
+      const id = acctId(b.id), k = str(b.k, 64); if (!id || !k) bad('잘못된 요청');
+      await checkK(db, id, k);
+      const games = (Array.isArray(b.games) ? b.games : []).filter(gameOk).slice(0, 500);
+      await db.batch([
+        db.prepare('DELETE FROM account WHERE id = ?').bind(id),
+        db.prepare('DELETE FROM save WHERE acct = ?').bind(id),
+        db.prepare('DELETE FROM save_part WHERE acct = ?').bind(id),
+        db.prepare('DELETE FROM trainer WHERE code = ?').bind(me),
+        db.prepare('DELETE FROM score WHERE code = ?').bind(me),
+      ]);
+      return { ok: true, kept: false, failed: 0, games: games.length };
+    }
+    default: bad('모르는 요청');
+  }
+}
+
+// k 확인: kh 가 있으면 그것과, 없으면(CloudKit 에서 옮겨 온 계정) 옮겨 온 저장의 서명으로 확인하고 kh 를 채운다
+async function checkK(db, id, k) {
+  const a = await db.prepare('SELECT kh FROM account WHERE id = ?').bind(id).first();
+  if (!a) bad('없는 아이디예요');
+  const kh = await sha(k);
+  if (a.kh) { if (a.kh !== kh) bad('계정 정보가 맞지 않아요. 다시 로그인해 주세요'); return; }
+  const { results } = await db.prepare('SELECT code, sig, parts FROM save WHERE acct = ?').bind(id).all();
+  for (const s of results) {
+    const data = await readSave(db, id, s.code, s.parts);
+    if (data != null && await sha(k + await sha(data)) === s.sig) {
+      await db.prepare('UPDATE account SET kh = ? WHERE id = ?').bind(kh, id).run();
+      return;
+    }
+  }
+  if (results.length) bad('계정 정보가 맞지 않아요. 다시 로그인해 주세요');
+  await db.prepare('UPDATE account SET kh = ? WHERE id = ?').bind(kh, id).run();   // 저장이 하나도 없는 옮겨 온 계정: 처음 온 k 로
+}
+
+async function readSave(db, id, code, parts) {
+  const { results } = await db.prepare('SELECT i, data FROM save_part WHERE acct = ? AND code = ? ORDER BY i').bind(id, code).all();
+  if (results.length !== parts) return null;
+  return results.map(r => r.data).join('');
+}
+
+// 이 계정의 저장(기기마다 하나) 중 서명이 맞고 게임 안 저장 시각(savedAt)이 가장 나중인 것
+async function newestSave(db, id, k) {
+  const { results } = await db.prepare('SELECT code, sig, saved, parts, at FROM save WHERE acct = ? ORDER BY saved DESC, at DESC LIMIT 20').bind(id).all();
+  for (const s of results) {
+    const data = await readSave(db, id, s.code, s.parts);
+    if (data != null && await sha(k + await sha(data)) === s.sig) return { data, t: s.saved || s.at };
+  }
+  return {};
+}
+
+// ---------- CloudKit 에서 옮겨 오기 (운영자만, 비밀 변수 ADMIN_TOKEN) ----------
+// body: {table, rows:[...]} — 행을 그대로 넣는다 (이미 있으면 덮어씀). save 는 {acct, code, sig, saved, at, data}
+async function adminImport(env, req, b) {
+  const tok = req.headers.get('authorization') || '';
+  if (!env.ADMIN_TOKEN || tok !== 'Bearer ' + env.ADMIN_TOKEN) bad('권한 없음');
+  const db = env.DB, rows = Array.isArray(b.rows) ? b.rows : [];
+  const st = [];
+  for (const r of rows) {
+    switch (b.table) {
+      case 'trainer': st.push(db.prepare('INSERT OR REPLACE INTO trainer (code, card, wk, wkm, dex, at) VALUES (?, ?, ?, ?, ?, ?)').bind(r.code, r.card, r.wk || '', +r.wkm || 0, +r.dex || 0, +r.at || 0)); break;
+      case 'score': st.push(db.prepare('INSERT OR REPLACE INTO score (code, game, best, card, at) VALUES (?, ?, ?, ?, ?)').bind(r.code, r.game, +r.best || 0, r.card, +r.at || 0)); break;
+      case 'account': st.push(db.prepare('INSERT OR IGNORE INTO account (id, pwh, kh, code, dev, at) VALUES (?, ?, NULL, ?, NULL, ?)').bind(r.id, r.pwh, r.code || '', +r.at || 0)); break;
+      case 'save': {
+        const parts = [];
+        for (let i = 0; i < r.data.length; i += PART) parts.push(r.data.slice(i, i + PART));
+        st.push(db.prepare('DELETE FROM save_part WHERE acct = ? AND code = ?').bind(r.acct, r.code));
+        parts.forEach((p, i) => st.push(db.prepare('INSERT INTO save_part (acct, code, i, data) VALUES (?, ?, ?, ?)').bind(r.acct, r.code, i, p)));
+        st.push(db.prepare('INSERT OR REPLACE INTO save (acct, code, sig, saved, parts, at) VALUES (?, ?, ?, ?, ?, ?)').bind(r.acct, r.code, r.sig, +r.saved || 0, parts.length, +r.at || 0));
+        break;
+      }
+      default: bad('모르는 표');
+    }
+  }
+  if (st.length) await db.batch(st);
+  return { n: rows.length };
+}
