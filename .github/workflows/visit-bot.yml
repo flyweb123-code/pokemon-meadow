@@ -1,4 +1,5 @@
-# 시험용 손님 봇: tools/visit-bot.mjs. Actions 화면에서 실행하거나 claude/visit-bot* 브랜치에 push 하면 돈다.
+# 시험용 봇: tools/visit-bot.mjs. Actions 화면에서 실행하거나 claude/visit-bot* 브랜치에 push 하면 돈다.
+# host = yes (또는 브랜치 이름에 host) 면 봇이 자기 필드를 열어 두고 주인으로 기다린다 (to 가 놀러 올 사람).
 name: Visit bot
 
 on:
@@ -8,6 +9,7 @@ on:
     inputs:
       to: { description: '놀러 갈 주인 친구 코드', default: '2X392NYD' }
       stay: { description: '머무는 시간 (분)', default: '8' }
+      host: { description: '봇 필드 열어 두기 (yes/no)', default: 'no' }
 
 jobs:
   visit:
@@ -20,5 +22,6 @@ jobs:
       - run: node tools/visit-bot.mjs
         env:
           TO: ${{ inputs.to || '2X392NYD' }}
-          STAY_MIN: ${{ inputs.stay || '8' }}
+          STAY_MIN: ${{ inputs.stay || (contains(github.ref_name, 'host') && '40' || '8') }}
+          HOST: ${{ (inputs.host == 'yes' || contains(github.ref_name, 'host')) && '1' || '' }}
           BOT_SEED: ${{ secrets.SERVER_ADMIN_TOKEN }}
