@@ -16,7 +16,7 @@ async function api(o) {
 if (TO.length !== 8) { console.log('TO (주인 친구 코드 8글자) 가 필요해요'); process.exit(1); }
 const me = await api({ op: 'me' });
 const card = JSON.stringify({ v: 1, n: NAME, sex: 'm', dex: 1 });
-await api({ op: 'publish', card, wk: '', wkm: 0, dex: 1 });
+await api({ op: 'publish', card, wk: '', wkm: 0, dex: 0 });   // dex 0 = 랭킹에 안 나옴
 log('봇 코드', me, '→ 주인', TO);
 
 // 0) 주인 모드 (HOST=1, 2026-11-03 경완 '클로드 봇도 필드 열어놔줘'): 내 필드를 올려 두고 내 방에 주인으로 있으면서
