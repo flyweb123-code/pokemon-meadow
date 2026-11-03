@@ -57,3 +57,17 @@ CREATE TABLE IF NOT EXISTS notice (
   body  TEXT NOT NULL,
   at    INTEGER NOT NULL
 );
+
+-- 친구 필드 놀러가기 (베타, 2026-11-03). 주인이 없을 때 보여 줄 마지막 필드와, 들어올 수 있는 친구 코드 목록(fr, 쉼표)
+CREATE TABLE IF NOT EXISTS field (
+  code TEXT PRIMARY KEY,
+  data TEXT NOT NULL,
+  fr   TEXT NOT NULL DEFAULT '',
+  at   INTEGER NOT NULL
+);
+
+-- 서버 혼자 쓰는 값 (놀러가기 표 서명 열쇠 등)
+CREATE TABLE IF NOT EXISTS kv (
+  k TEXT PRIMARY KEY,
+  v TEXT NOT NULL
+);

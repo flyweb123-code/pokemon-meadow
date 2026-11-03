@@ -11,3 +11,12 @@ database_id = "00000000-0000-0000-0000-000000000000"
 [vars]
 # 공지 보내기를 허락할 친구 코드 (쉼표로)
 ADMIN_CODES = "2X392NYD"
+
+# 친구 필드 놀러가기 (베타): 필드마다 방 하나 (Durable Object, 무료 요금제는 SQLite 저장소만)
+[[durable_objects.bindings]]
+name = "ROOM"
+class_name = "FieldRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["FieldRoom"]
