@@ -973,7 +973,7 @@ async function bsStart(gi) {
 function resultPop(c, res, gold, rep, R) {
   const won = !!res?.won, stk = st().stk | 0, sb = won ? stkBonus(stk) : 0, gb = won && gold ? Math.min(gold, stkGold(stk, R?.g || 0)) : 0, g0 = gold - gb;
   return new Promise(ok => { const p = pop(`<div class="rs-hd ${won ? 'won' : 'lost'}"><i class="rs-ray"></i><b>${won ? '승리!' : res?.quit ? '기권했다' : '패배…'}</b><small>${esc(c.cls)} ${esc(c.nm)}${won ? '에게 이겼다' : '에게 졌다'}</small></div>
-      ${won ? `<div class="rs-gold"><i class="coin"></i><b class="rg-n">+0</b><span>G</span>${gb ? `<em class="rg-b">+${gb}</em>` : ''}</div>` : ''}${repBox(rep, sb, stk)}
+      ${won ? `<div class="rs-gold"><i class="coin"></i><b class="rg-n">+0</b><span>G</span>${gb ? `<em class="rg-b">+${gb}G</em>` : ''}</div>` : ''}${repBox(rep, sb, stk)}
       <div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => { close(); ok(); });
     { const oc = p.onclick; p.onclick = e => { if (e.target === p) { p.remove(); return ok(); } oc(e); }; }   // 빈 곳을 눌러 닫아도 확인과 똑같이 (도전자가 떠나지 못하고 갇히던 것, 경완 2026-10-29)
     p.classList.add('rs-pop'); if (won) p.classList.add('rs-w');
@@ -1005,9 +1005,9 @@ async function repAnim(p, rep, sb = 0, gx = null) {
   if (rm !== r0) await run(r0, rm, rm > r0);
   // v14.96 경완: 연승 딱지가 평판 박스 오른쪽 위 모서리에 튀어나와 둥둥 뜨고, 그만큼 평판이 한 번 더 오른다
   const sk = el.querySelector('.rs-stk2');
-  if (sk && sb) { await wait(260); if (!el.isConnected) return; const bx = el.querySelector('.rr-b'), gbx = p.querySelector('.rg-b'); if (bx) bx.textContent = '+1'; if (gbx) gbx.textContent = '+1';
+  if (sk && sb) { await wait(260); if (!el.isConnected) return; const bx = el.querySelector('.rr-b'), gbx = p.querySelector('.rg-b'); if (bx) bx.textContent = '+1'; if (gbx) gbx.textContent = '+1G';
     sk.classList.add('go'); bx?.classList.add('on'); gbx?.classList.add('on'); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} await wait(330); if (!el.isConnected) return;
-    await run(rm, r1, true, (r, k) => { if (bx) bx.textContent = '+' + Math.max(1, r - rm); if (gx && gbx) { const v = Math.max(1, Math.round(gx.gb * k)); gbx.textContent = '+' + v; gx.n.textContent = '+' + (gx.g0 + v).toLocaleString(); } }); if (!el.isConnected) return; await wait(450);
+    await run(rm, r1, true, (r, k) => { if (bx) bx.textContent = '+' + Math.max(1, r - rm); if (gx && gbx) { const v = Math.max(1, Math.round(gx.gb * k)); gbx.textContent = '+' + v + 'G'; gx.n.textContent = '+' + (gx.g0 + v).toLocaleString(); } }); if (!el.isConnected) return; await wait(450);
     bx?.classList.replace('on', 'off'); gbx?.classList.replace('on', 'off'); await wait(260); if (gx) { gx.n.textContent = '+' + (gx.g0 + gx.gb).toLocaleString(); const gb2 = gx.n.parentElement; gb2.classList.remove('end'); void gb2.offsetWidth; gb2.classList.add('end'); } d.textContent = (rep >= 0 ? '+' : '') + rep; d.classList.remove('bump'); void d.offsetWidth; d.classList.add('bump'); }
   el.classList.add('end');
   if (gradeOf(r1).i !== g0 && el.isConnected) { el.classList.add(gradeOf(r1).i > g0 ? 'gup' : 'gdn'); window.GymBGM?.se?.(gradeOf(r1).i > g0 ? 'DP_PINPON' : 'DP_KOUKA_L'); }
