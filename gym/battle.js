@@ -1137,7 +1137,7 @@ async function learnAsk(P, i, id) {
         const x = B.xr[P.id]; if (x) x.learned.push([id, old]);
         try { const pk = B.o.p[i], mv = B.btl.dex.moves.get(id), j = pk.baseMoveSlots.findIndex(sl => sl.id === old);   // 쇼다운 쪽 기술도 바로 바꾼다
           if (mv?.exists && j >= 0) { const sl = { id: mv.id, move: mv.name, pp: mv.pp * 8 / 5 | 0, maxpp: mv.pp * 8 / 5 | 0, target: mv.target, disabled: false, used: false }; pk.baseMoveSlots[j] = sl; const j2 = pk.moveSlots.findIndex(q => q.id === old); if (j2 >= 0) pk.moveSlots[j2] = { ...sl }; } } catch (e) { console.error(e); }
-        idlePanel(); await msg('1, ⏸2의⏸… ⏸… ⏸… ⏸\u0007짠!'); if (!B) return;   // 본가: '1, {PAUSE 20}2, and{PAUSE 20}... {PAUSE 20}... {PAUSE 20}Poof!' (경완 2026-10-31)
+        idlePanel(); await msg('1, ⏸2, ⏸… ⏸… ⏸… ⏸\u0007짠!'); if (!B) return;   // 본가: '1, {PAUSE 20}2, and{PAUSE 20}... {PAUSE 20}... {PAUSE 20}Poof!' (경완 2026-10-31)
         await msg(`${eun(nm)} ${eul(mvKo(old))} 깨끗이 잊었다!`); if (!B) return;
         await msg('그리고…'); if (!B) return;   // 본가: '{0} forgot how to use {1}.' → 'And...' → '{0} learned {1}!'
         await msgFan(`${eun(nm)} 새로 ${eul(nw)} 배웠다!`); if (!B) return; if (!B.practice) GA.save(); return; }
