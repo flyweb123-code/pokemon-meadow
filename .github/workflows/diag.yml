@@ -27,3 +27,9 @@ jobs:
       - name: CloudKit accounts (old app)
         run: |
           curl -s -X POST "https://api.apple-cloudkit.com/database/1/iCloud.com.flyweb123.pokerun/production/public/records/query?ckAPIToken=$CLOUDKIT_API_TOKEN" -d '{"query":{"recordType":"Account"},"resultsLimit":200}' | jq -c '.records[] | {code: .fields.code.value, t: (.modified.timestamp/1000|todate)}'
+      - name: CloudKit trainers (old app)
+        run: |
+          U="https://api.apple-cloudkit.com/database/1/iCloud.com.flyweb123.pokerun/production/public/records"
+          codes=$(curl -s -X POST "$U/query?ckAPIToken=$CLOUDKIT_API_TOKEN" -d '{"query":{"recordType":"Account"},"resultsLimit":200}' | jq -c '[.records[].fields.code.value | {recordName: ("T_"+.)}] | unique')
+          curl -s -X POST "$U/lookup?ckAPIToken=$CLOUDKIT_API_TOKEN" -d "{\"records\":$codes}" | jq -c '.records[] | {r: .recordName, err: .serverErrorCode, wk: .fields.wk.value, wkm: .fields.wkm.value, dex: .fields.dex.value, t: ((.modified.timestamp // 0)/1000|todate), card: (.fields.card.value // "" | (fromjson? // {}) | {hk, hn, dex, n: (.n|type)})}'
+          echo "== Save"; curl -s -X POST "$U/query?ckAPIToken=$CLOUDKIT_API_TOKEN" -d '{"query":{"recordType":"Save"},"resultsLimit":200}' | jq -c '.records[] | {r: (.recordName|.[-8:]), t: (.modified.timestamp/1000|todate)}'
