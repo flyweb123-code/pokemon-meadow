@@ -335,9 +335,10 @@ const OUTFITS = {   // v14.78 경완 '맘에 든 것들만': PixelLab 으로 다
   brendan: { n: '호연 모험복', a: '#e85030', b: '#383840', g: 2500, sx: 'm' }, may: { n: '호연 반다나', a: '#e04850', b: '#3a7a48', g: 2500, sx: 'mf' },
   cooltrainer_m: { n: '엘리트 제복', a: '#3870c8', b: '#383848', g: 1500, sx: 'm' }, cooltrainer_f: { n: '엘리트 드레스', a: '#e05878', b: '#383848', g: 1500, sx: 'f' },
   black_belt: { n: '도복', a: '#f2f2f2', b: '#303034', g: 1500, sx: 'm' }, gentleman: { n: '정장', a: '#3a3a4c', b: '#2c2c38', g: 1500, sx: 'mf' },
-  blue: { n: '라이벌 스타일', a: '#7050a8', b: '#404050', g: 3000, sx: 'm' }, brock: { n: '바위 관장 옷', a: '#b07840', b: '#5e7a3a', g: 3000, sx: 'm' },
-  lt_surge: { n: '군복', a: '#6a8440', b: '#585e44', g: 3500, sx: 'm' }, koga: { n: '닌자복', a: '#5a4a80', b: '#2e2838', g: 4000, sx: 'f' },
-  giovanni: { n: '보스 정장', a: '#d06830', b: '#2e2e30', g: 5000, sx: 'm' }, lance: { n: '드래곤 망토', a: '#30303e', b: '#d03030', g: 6000, sx: 'mf' },
+  blue: { n: '라이벌 스타일', a: '#7050a8', b: '#404050', g: 3000, sx: 'mf' }, brock: { n: '바위 관장 옷', a: '#b07840', b: '#5e7a3a', g: 3000, sx: 'mf' },
+  lt_surge: { n: '군복', a: '#6a8440', b: '#585e44', g: 3500, sx: 'm' }, koga: { n: '닌자복', a: '#5a4a80', b: '#2e2838', g: 4000, sx: 'mf' },
+  giovanni: { n: '보스 정장', a: '#d06830', b: '#2e2e30', g: 5000, sx: 'mf' }, lance: { n: '드래곤 망토', a: '#30303e', b: '#d03030', g: 6000, sx: 'mf' },
+  misty: { n: '물 관장 옷', a: '#f0c030', b: '#d84830', g: 3000, sx: 'f' },   // v14.99 경완: 이슬(여) 추가
 };
 // 이 성별로 입을 수 있는 옷이면 그 옷, 아니면 null (기본 옷)
 const fitOf = (k, f = myF()) => (k && OUTFITS[k]?.sx.includes(f ? 'f' : 'm')) ? OUTFITS[k] : null;
@@ -367,12 +368,18 @@ function fitSrc(kind, fit = st()?.fit) {
   if (!O || !CLOTH[key]) return Promise.resolve(url);
   // 앞모습(전신 카드·상점)은 옷 모양까지 새로 그린 그림 (Figma 이미지 모델, 경완 2026-10-27 '색 바꾸기 수준이 아니라 옷 좀 바꿔줘')
   if (kind === 'tr') return Promise.resolve(`${IMG}fit/${fit}_${myF() ? 'f' : 'm'}.png`);
+  // v14.99 경완: 걸음 그림도 옷마다 새로 그린 그림 (fit/ow9 = 9칸 가로, 필드는 fit/ow 6칸 세로). 그림이 없으면 아래 색 바꾸기
+  if (kind === 'ow') { const u = `${IMG}fit/ow9/${fit}_${myF() ? 'f' : 'm'}.png`, ck = 'ow9|' + u; if (fitCache[ck]) return fitCache[ck];
+    return (fitCache[ck] = new Promise(ok => { const im = new Image(); im.onload = () => ok(u); im.onerror = () => ok(null); im.src = u; })).then(r => r || recolor()); }
+  return recolor();
+  function recolor() {
   const ck = key + '|' + fit; if (fitCache[ck]) return fitCache[ck];
   return (fitCache[ck] = new Promise(ok => { const im = new Image(); im.onload = () => {
     const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const x = c.getContext('2d'); x.drawImage(im, 0, 0);
     const d = x.getImageData(0, 0, c.width, c.height), A = clothMap(CLOTH[key].a, O.a), B = clothMap(CLOTH[key].b, O.b);
     for (let i = 0; i < d.data.length; i += 4) { if (!d.data[i + 3]) continue; const h = '#' + [0, 1, 2].map(k => d.data[i + k].toString(16).padStart(2, '0')).join(''), n = A.get(h) || B.get(h); if (n) { d.data[i] = n[0]; d.data[i + 1] = n[1]; d.data[i + 2] = n[2]; } }
     x.putImageData(d, 0, 0); ok(c.toDataURL()); }; im.onerror = () => ok(url); im.src = url; }));
+  }
 }
 // ---------- 꾸미기 (상점): 인형·쿠션·석상. w 크기(16·32), g 값 ----------
 const DECO = {};
