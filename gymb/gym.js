@@ -992,7 +992,7 @@ function resultPop(c, res, gold, rep, R) {
       if (n && g0) { n.textContent = '+' + g0.toLocaleString(); n.style.minWidth = n.offsetWidth + 'px'; n.textContent = '+0'; await wait(450);   // v14.97 경완: 골드가 오르는 동안 글자가 옆으로 움직이지 않게 (보너스 때만 움직임)
  if (!p.isConnected) return; try { window.GymBGM?.se?.('DP_REGI'); } catch (e) {}
         n.parentElement.classList.add('go'); const t0 = performance.now(), T = gT;   // v14.97 경완: 평판 기본 점수와 같이, 조금 천천히
-        await new Promise(done => { const f = now => { if (!p.isConnected) return done(); const k = clampN((now - t0) / T, 0, 1); n.textContent = '+' + Math.round(g0 * (1 - (1 - k) ** 3)).toLocaleString(); k < 1 ? requestAnimationFrame(f) : done(); }; requestAnimationFrame(f); });
+        await new Promise(done => { const f = now => { if (!p.isConnected) return done(); const k = clampN((now - t0) / T, 0, 1), v = Math.round(g0 * (1 - (1 - k) ** 3)); n.textContent = '+' + v.toLocaleString(); v < g0 && k < 1 ? requestAnimationFrame(f) : done(); }; requestAnimationFrame(f); });   // 경완 2026-11-03: 숫자가 마지막 값에 닿는 순간 멈추고 박스가 튐
         if (!p.isConnected) return; n.parentElement.classList.add('end'); gDone(); }   // 경완 2026-11-03: 골드 먼저 다 오르고 튐 → 평판 기본 점수 → 골드·평판 보너스 같이   // v14.97 경완: 골드 박스는 평판 +N 이 합쳐질 때 같이 튄다
       else gDone();   // v14.96 경완: 배틀 평판이 먼저 오르고, 연승 딱지가 평판 박스 모서리에 뜨면서 보너스가 더 오른다
     })(); });
