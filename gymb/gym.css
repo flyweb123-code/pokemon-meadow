@@ -2465,3 +2465,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v14.64 경완 '버튼 내 정렬 무너짐': 교체 카드의 기술 버튼은 낮아서 효과 딱지가 위력 줄·PP 와 겹쳤다 → 효과 딱지는 PP 와 같은 맨 아래 줄 왼쪽 */
 /* v14.72: (v14.64 의 position:relative 가 버튼을 글자 폭으로 줄여 카드가 어긋났음 → 원래 absolute 꽉 채움 유지) */
 .bt.mob .bp-card .bc-mv .mvb .eff{position:absolute!important;left:8px!important;right:auto!important;top:auto!important;bottom:9px!important;transform:scale(.86)!important;transform-origin:left bottom;margin:0!important}
+/* v14.77 경완 '여전히 어긋나는데': 아이폰 사파리는 inset:0 인 절대 위치 button 을 글자 폭으로 줄여서 교체 카드 기술 박스 폭이 제각각 → 칸을 꽉 채우게 */
+.bt .bp-card .bc-mv .mvb{left:0!important;top:0!important;right:auto!important;bottom:auto!important;width:100%!important;height:100%!important;box-sizing:border-box}
