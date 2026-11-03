@@ -2,8 +2,12 @@
 # 필요한 저장소 비밀 변수: CLOUDKIT_API_TOKEN (CloudKit Web Services 토큰, Production), SERVER_ADMIN_TOKEN (서버 ADMIN_TOKEN 과 같은 값)
 name: Migrate CloudKit to friend server
 
+# 2026-11-03 경완: 친구들이 새 아이폰 빌드로 다 넘어올 때까지 매시간 자동으로 옮김 (옛 빌드가 CloudKit 에 쓴 것만 더 새면 들어감).
+# 2026-11-24 (한국 시간) 이 지나면 자동 실행은 그냥 끝남. 직접 실행은 언제나 됨.
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '23 * * * *'
 
 jobs:
   migrate:
@@ -17,4 +21,6 @@ jobs:
         env:
           CLOUDKIT_API_TOKEN: ${{ secrets.CLOUDKIT_API_TOKEN }}
           SERVER_ADMIN_TOKEN: ${{ secrets.SERVER_ADMIN_TOKEN }}
-        run: node server/ck2cf.mjs
+        run: |
+          if [ "${{ github.event_name }}" = schedule ] && [ "$(TZ=Asia/Seoul date +%Y%m%d)" -gt 20261124 ]; then echo '자동 이전 기간 끝남'; exit 0; fi
+          node server/ck2cf.mjs
