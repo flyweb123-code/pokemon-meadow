@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 const SERVER = (process.env.SERVER || 'https://pokegrow.flyweb123.workers.dev').replace(/\/$/, '');
 const TO = (process.env.TO || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 const DEV = 'bot:' + createHash('sha256').update('visitbot:' + (process.env.BOT_SEED || 'pokegrow')).digest('hex').slice(0, 40);
-const STAY = (+process.env.STAY_MIN || 8) * 60e3, WAIT = (+process.env.WAIT_MIN || 25) * 60e3;
+const STAY = (+process.env.STAY_MIN || 8) * 60e3, WAIT = (+process.env.WAIT_MIN || 30) * 60e3;
 const NAME = process.env.BOT_NAME || '클로드';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const log = (...a) => console.log(new Date().toISOString().slice(11, 19), ...a);
