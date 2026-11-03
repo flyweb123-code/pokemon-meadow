@@ -2529,3 +2529,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .rs-rep .rr-n.bump{display:inline-block;animation:rgBump .45s cubic-bezier(.3,1.8,.5,1)}
 /* v14.97 경완: 평판 기본 점수가 오르는 동안 +N 은 자리를 차지하지 않고 옆에 떠서, 평판 숫자는 계속 가운데 */
 #gym .rs-rep.dshow .rr-d,#gym .rs-rep .rr-d{max-width:0;margin-left:-8px;position:relative;left:8px;overflow:visible}
+/* v14.97 경완: 평판 숫자는 오르는 동안 튀지 않고 끝(합쳐질 때)에만 튐, 기본 점수 합쳐질 땐 빨간색 없이 */
+#gym .rs-rep.up.go .rr-n{animation:none}
+#gym .rs-rep .rr-n.bump0{display:inline-block;animation:rgBump0 .45s cubic-bezier(.3,1.8,.5,1)}
+@keyframes rgBump0{0%{transform:scale(1)}40%{transform:scale(1.15)}100%{transform:none}}
