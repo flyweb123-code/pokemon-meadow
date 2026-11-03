@@ -68,6 +68,9 @@ enum Perm {
         case "ask:loc": askLoc(fin)
         case "ask:hk": askHk(fin)
         case "ask:noti": NotiCenter.ask(fin)
+        case "settings:noti":   // v14.68: 알림 토글은 이 앱의 알림 설정 화면으로 바로
+            if let u = URL(string: UIApplication.openNotificationSettingsURLString) { UIApplication.shared.open(u) }
+            state { reply($0, nil) }
         case "settings":
             if let u = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(u) }
             state { reply($0, nil) }
