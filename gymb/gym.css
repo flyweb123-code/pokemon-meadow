@@ -2570,3 +2570,4 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .rs-rep .rr-tot{animation:rrTot2 .3s cubic-bezier(.2,1.6,.4,1) .05s forwards}
 @keyframes rrTot2{from{opacity:0;transform:translateX(-8px) scale(.6)}to{opacity:1;transform:none}}
 #gym .rs-rep .rr-b.on.mrg,#gym .rs-rep .rr-d.mrg{animation:rrbOut .26s ease-in forwards}#gym .rs-gold .rg-b.on.off{animation:rrbOut .26s ease-in forwards}
+#gym .rs-rep .rr-d.keep{max-width:4em;margin-left:0;left:0}

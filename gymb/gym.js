@@ -1017,14 +1017,15 @@ async function repAnim(p, rep, sb = 0, gx = null, gp = null, gT = 0, onMrg = nul
   if (!el.isConnected) return;
   const flash = () => { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); };
   const mrg = async (x, v) => { x.classList.add('mrg'); await wait(120); if (!el.isConnected) return; n.textContent = v; n.classList.remove('bump', 'bump0'); void n.offsetWidth; n.classList.add('bump0'); flash(); if (x === d) onMrg?.(); await wait(140); };   // v14.97 경완: 오른 점수 +N 이 다 오르자마자 평판 숫자로 합쳐지고(골드 박스와 같은 순간) 튐+빛   // v14.97 경완: 오른 점수 +N 이 평판 숫자로 합쳐진다
-  if (rm !== r0) await mrg(d, rm); if (!el.isConnected) return;
+  const sk0 = el.querySelector('.rs-stk2'), combo = !!(sk0 && sb && rm !== r0);   // 경완 2026-11-03: 연승이면 기본 +N 은 남겨 두고 보너스까지 다 오른 뒤 한번에 합침
+  if (rm !== r0 && !combo) await mrg(d, rm); if (!el.isConnected) return;
   // v14.96 경완: 연승 딱지가 평판 박스 오른쪽 위 모서리에 튀어나와 둥둥 뜨고, 그만큼 평판이 한 번 더 오른다
   const sk = el.querySelector('.rs-stk2');
   if (gp) await gp;
   if (sk && sb) { await wait(60); if (!el.isConnected) return; const bx = el.querySelector('.rr-b'), gbx = p.querySelector('.rg-b'); if (bx) bx.textContent = '+1'; if (gbx) gbx.textContent = '+1G';
-    sk.classList.add('go'); bx?.classList.add('on'); gbx?.classList.add('on'); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} await wait(180); if (!el.isConnected) return;
+    if (combo) { d.classList.add('keep'); await wait(200); if (!el.isConnected) return; } sk.classList.add('go'); bx?.classList.add('on'); gbx?.classList.add('on'); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} await wait(180); if (!el.isConnected) return;
     await run(rm, r1, true, (r, k) => { if (bx) bx.textContent = '+' + Math.max(1, r - rm); if (gx && gbx) { const v = Math.max(1, Math.round(gx.gb * k)); gbx.textContent = '+' + v + 'G'; } }, 420, true, true); if (!el.isConnected) return; await wait(110); if (!el.isConnected) return;
-    gbx?.classList.replace('on', 'off'); bx?.classList.add('mrg'); await wait(150); n.textContent = r1; n.classList.remove('bump', 'bump0'); void n.offsetWidth; if (bx) { n.classList.add('bump'); flash(); } if (gx) { gx.n.textContent = '+' + (gx.g0 + gx.gb).toLocaleString(); const gb2 = gx.n.parentElement; gb2.classList.remove('end'); gx.n.classList.remove('bump'); void gb2.offsetWidth; gb2.classList.add('end'); gx.n.classList.add('bump'); } }
+    gbx?.classList.replace('on', 'off'); bx?.classList.add('mrg'); if (combo) { d.classList.remove('keep'); d.classList.add('mrg'); onMrg?.(); } await wait(combo ? 220 : 150); n.textContent = r1; n.classList.remove('bump', 'bump0'); void n.offsetWidth; if (bx) { n.classList.add('bump'); flash(); } if (gx) { gx.n.textContent = '+' + (gx.g0 + gx.gb).toLocaleString(); const gb2 = gx.n.parentElement; gb2.classList.remove('end'); gx.n.classList.remove('bump'); void gb2.offsetWidth; gb2.classList.add('end'); gx.n.classList.add('bump'); } }
   await wait(560);   // 보너스가 합쳐지며 빨갛게 튄 뒤에 원래 색으로 (end 의 색 고정이 튐을 덮지 않게)
   el.classList.add('end');
   if (r1 !== r0 && el.isConnected) { const tp = el.querySelector('.rr-top'), t = document.createElement('i'); t.className = 'rr-tot'; t.textContent = `(${r1 > r0 ? '+' : ''}${r1 - r0})`; tp.appendChild(t); const rg = document.createRange(); rg.selectNodeContents(n); t.style.left = (rg.getBoundingClientRect().right - tp.getBoundingClientRect().left) / (tp.getBoundingClientRect().width / tp.offsetWidth || 1) + 5 + 'px'; }   // 경완 2026-11-03: 다 합쳐진 뒤 총 오른 점수를 숫자 옆 괄호로 (글자 위치는 그대로)
