@@ -595,6 +595,7 @@ const bdHtml = (t, L, cls = '') => { const u = bdImg(t, L); return `<span class=
 const gShort = i => GRADES[i][1].replace(/ 체육관$/, '');
 const bdPh = rep => Math.min(1, (rep || 0) / REP_MAX) ** 1.5;   // 평판이 오를수록 도전자가 어려워짐 (0~1): 초반 쉽고 뒤로 갈수록 가파르게 (경완 2026-10-29)
 const bsReady = g => { const nx = g && GRADES[(g.gmax | 0) + 1]; return !!nx && (g.rep || 0) >= nx[0]; };   // 평판이 이 등급 끝까지 찼다 = 승급 심사를 받을 수 있다
+const repFloor = g => GRADES[g.gmax | 0]?.[0] | 0;   /* v15.67 경완: 승급한 등급의 문턱 아래로는 평판이 안 떨어진다 */
 const repCap = g => { const nx = GRADES[(g.gmax | 0) + 1]; return nx ? nx[0] : REP_MAX; };   // 승급 심사 전에는 문턱까지만 (v15.42: 문턱 바로 앞 → 문턱에 꽉 차게)
 const RIVAL_GYMS = ['무쇠시티 체육관', '영원시티 체육관', '베일시티 체육관', '늪지시티 체육관', '연고시티 체육관', '운하시티 체육관', '선단시티 체육관', '물가시티 체육관'];
 let NAMED = [];
@@ -616,6 +617,7 @@ function gInit() {
   if (g.rv === 3) { g.rep = Math.round((g.rep || 0) * 2.5); g.ms = {}; g.rv = 4; }   // 11.58: 평판 문턱 2.5배에 맞춰 옮김
   if (g.rv === 4) { g.rep = Math.min(g.rep || 0, repCap(g)); g.rv = 5; }
   if (g.rv === 5) { const nx = GRADES[(g.gmax | 0) + 1]; if (nx && (g.rep || 0) === nx[0] - 1) g.rep = nx[0]; g.rv = 6; }   // v15.42: 문턱 바로 앞에서 심사를 기다리던 체육관은 문턱에 꽉 차게   // v14.58: 문턱이 내려가도 승급 심사 없이 등급이 오르지 않게 (심사 전 문턱 바로 앞까지)
+  if ((g.rep || 0) < repFloor(g)) g.rep = repFloor(g);   /* v15.67: 승급한 등급 문턱 밑에 있던 옛 저장은 문턱으로 */
   // 칸토 디자인에서 플라티나 체육관으로: 같은 분위기 맵으로 옮기고, 직접 놓은 장식 자리는 새로 잡는다
   if (g.d && !DESIGNS.some(d => d.id === g.d)) g.d = dzBase(g.d).id;   // 맵 묶음이 바뀌면 짝 맵으로 (자리는 맵 id 로 저장돼 있어 그대로 둔다)
   if (g.d && g.big == null) g.big = gradeOf(g.rep || 0).i;   // 지금 크기에서부터 직접 넓히기
@@ -721,7 +723,7 @@ function mkSch(d0, from = 0) {
   return T.filter(t => t > from).sort((a, b) => a - b);
 }
 function glog(k, html, t = Date.now()) { const g = st(); g.log.unshift([t, k, html]); if (g.log.length > 400) g.log.length = 400; }   /* v15.66 일지에서 날짜별로 보려고 80 → 400 */
-function addRep(n) { const g = st(); const r0 = g.rep || 0; g.rep = clampN(r0 + n, 0, Math.max(r0, repCap(g))); if (g.wk) g.wk.r += g.rep - r0; }
+function addRep(n) { const g = st(); const r0 = g.rep || 0; g.rep = clampN(r0 + n, Math.min(r0, repFloor(g)), Math.max(r0, repCap(g))); if (g.wk) g.wk.r += g.rep - r0; }
 /* 날짜별 체육관 일지 (v15.66 경완): 찾아온 도전자 n, 막은 도전자 b{이름: 수}, 관장이 진 배틀 l, 그냥 돌아감 o, 번 골드 g, 월급 p, 상점 s, 평판 r */
 function dayRec(t = Date.now()) { const g = st(); if (!g.days) dayFill(g); const k = dayStart(t); let d = g.days[k];
   if (!d) { d = g.days[k] = { n: 0, b: {}, l: 0, o: 0, g: 0, p: 0, s: 0, r: 0 }; Object.keys(g.days).map(Number).sort((a, b) => b - a).slice(90).forEach(x => delete g.days[x]); } return d; }
@@ -936,7 +938,7 @@ async function challenge(picked) {
     document.body.classList.add('gymBattle');
     let res;
     dlg(''); root.classList.add('dhide');   // 배틀 화면이 닫힐 때 승부 대사가 잠깐 비치지 않게 미리 비운다 (경완 2026-10-29)
-    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.max(-(g.rep || 0), repLose()) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); }   // 배틀 끝나고 돌아오면 아래 대화창은 숨김 (경완 2026-10-29)
     if (res?.cut) {   /* 오류로 멈춘 배틀: 승패·평판·연승 그대로, 도전자는 명단에 남아 다시 도전 (경완 2026-11-04) */
       await new Promise(ok => { const p = pop(`<h4>배틀 중 오류가 났어요</h4><p class="gy-msg" style="text-align:center">오류 내용은 자동으로 보내졌어요.<br>곧 고쳐서 업데이트할게요.<br><small>이번 배틀은 없던 걸로 해서 평판·연승은 그대로예요.</small></p><div class="gy-btns"><button class="main" data-a="ok">확인</button></div>`, (a, close) => { close(); ok(); }); const par = p.parentElement, o = new MutationObserver(() => { if (!p.isConnected) { o.disconnect(); ok(); } }); if (par) o.observe(par, { childList: true }); });   /* 오류 창 (경완 2026-11-04) */
