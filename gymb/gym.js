@@ -917,6 +917,10 @@ async function challenge(picked) {
     dlg(''); root.classList.add('dhide');   // 배틀 화면이 닫힐 때 승부 대사가 잠깐 비치지 않게 미리 비운다 (경완 2026-10-29)
     try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.max(-(g.rep || 0), repLose()) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); }   // 배틀 끝나고 돌아오면 아래 대화창은 숨김 (경완 2026-10-29)
+    if (res?.cut) {   /* 오류로 멈춘 배틀: 승패·평판·연승 그대로, 도전자는 명단에 남아 다시 도전 (경완 2026-11-04) */
+      root.classList.remove('dhide'); await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>` + esc('어라, 배틀이 중간에 멈춰 버렸네요. 다음에 다시 붙어요!'));
+      dlg(''); root.classList.add('dhide'); if (meEnt) { meEnt.f = 'd'; place(meEnt); } await walk(e, outRoute(D, e) || D.path.slice(0, -1).reverse()); await wait(250); doorSe(); await wait(120); e.el.remove(); ents = ents.filter(x => x !== e); return;
+    }
     g.q.shift(); const R = rewOf(c), won = !!res?.won, now = Date.now();
     let gold = 0, rep = 0;
     const r0 = g.rep || 0;
@@ -2129,7 +2133,7 @@ async function visit(F, code) {
     let res;
     try { res = await GB().run({ my, foe: { tr, cls: '관장', nm: fN, team, say }, practice: true, diff: 2, bg: pick(['in1', 'in2', 'in3']), music: 'gymBattle', meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); }
-    if (res && !res.quit) { res.won ? rec.w++ : rec.l++; g.fv[code] = rec; save(); }
+    if (res && !res.quit && !res.cut) { res.won ? rec.w++ : rec.l++; g.fv[code] = rec; save(); }
     root.classList.remove('dhide');
     await talk(who + esc(res?.quit ? '벌써 가는 거야? 다음에 또 와!' : res?.won ? `대단해! ${trName() || '너'}의 승리야!` : '좋은 승부였어! 또 놀러 와.'), '다음', `${fN}의 체육관에서 ${rec.w}승 ${rec.l}패`);
     dlg(''); root.classList.add('dhide'); ldr.f = 'd'; place(ldr);
