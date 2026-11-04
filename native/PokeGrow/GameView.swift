@@ -34,6 +34,7 @@ struct GameView: UIViewRepresentable {
         web.scrollView.isScrollEnabled = false
         web.scrollView.bounces = false
         web.scrollView.contentInsetAdjustmentBehavior = .never
+        web.scrollView.delegate = context.coordinator.noScroll   // 2026-11-04 경완: 키보드가 올라올 때 화면이 밀렸다 돌아오는 출렁임 — 밀리는 즉시 0 으로
         bridge.webView = web
         // 패치가 바로 보이도록 서버에 새 버전이 있는지 매번 확인하고 받는다
         web.load(URLRequest(url: gameURL, cachePolicy: .reloadRevalidatingCacheData))
@@ -46,6 +47,7 @@ struct GameView: UIViewRepresentable {
     final class Coordinator: NSObject, WKNavigationDelegate {
         let bridge: PhoneBridge
         init(bridge: PhoneBridge) { self.bridge = bridge }
+        let noScroll = NoScroll()
         private var leftAt = Date()
 
         // 백그라운드에 30분 넘게 있다가 돌아오면 새 버전이 있을 수 있으니 다시 불러온다
@@ -68,7 +70,7 @@ struct GameView: UIViewRepresentable {
                 guard let web, let end = (n.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
                 let r = web.convert(end, from: nil), h = max(0, web.bounds.maxY - r.minY)
                 web.evaluateJavaScript("window.pkKb&&pkKb(\(Int(h)))")
-                for t in [0.0, 0.05, 0.3] { DispatchQueue.main.asyncAfter(deadline: .now() + t) { web.scrollView.setContentOffset(.zero, animated: false) } }
+                web.scrollView.setContentOffset(.zero, animated: false)
             }
             NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { [weak web] _ in
                 web?.evaluateJavaScript("window.pkKb&&pkKb(0)")
@@ -203,4 +205,9 @@ final class AudioMix: NSObject, WKScriptMessageHandlerWithReply {
             replyHandler(true, nil)
         } catch { replyHandler(false, nil) }
     }
+}
+
+// 게임 화면은 스크롤하지 않는다: 아이폰이 입력칸을 보이려고 웹 화면을 밀어 올리면 그 자리에서 바로 되돌린다 (키보드 높이는 게임이 window.pkKb 로 받아 채팅창만 올림)
+final class NoScroll: NSObject, UIScrollViewDelegate {
+    func scrollViewDidScroll(_ s: UIScrollView) { if s.contentOffset != .zero { s.contentOffset = .zero } }
 }
