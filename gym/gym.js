@@ -764,14 +764,15 @@ function arrive(c) {
   const g = st(), cn = `${c.cls} <b>${esc(c.nm)}</b>`;
   let beat = 0;
   if (c.team && !c.boss && !c.stkL) { c.stkL = stkLv(g.stk); if (c.stkL) c.team = c.team.map(m => [m[0], clampN(m[1] + c.stkL, 5, 100), m[2]]); }   // 연승 난이도
-  if (!c.named && g.sf.length) {
+  if (!c.named && !c.sfOk && g.sf.length) {
     const { s, lost } = staffFight(c); beat = lost.length;
     if (s) {
       const R = REW(c.diff), r0 = g.rep || 0;
       const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? 1.5 : 1))); addRep(sfRep(s, R.r));   // v14.97 경완: 트레이너가 대신 막은 건 연승으로 치지 않는다 (연승·평판 보너스 없음)
       const rep = (g.rep || 0) - r0;
       blocked(c);
-      glog('sf', `${sfName(s)}${jong(s.nm) ? '이' : '가'} ${cn}${jong(c.nm) ? '을' : '를'} 막아 냈다! <small>+${gold}G · 평판 +${rep}</small>`, c.t); return;
+      glog('sf', `${sfName(s)}${jong(s.nm) ? '이' : '가'} ${cn}${jong(c.nm) ? '을' : '를'} 막아 냈다! <small>+${gold}G · 평판 +${rep}</small>`, c.t);
+      const c2 = mkChal(c.t); c2.sfOk = 1; arrive(c2); return;   // v15.62 경완 '트레이너를 많이 세웠다고 명단이 줄면 안 돼': 트레이너가 막은 도전자는 덤, 관장 명단엔 다른 도전자가 그대로 온다
     }
     if (lost.length) glog('in', `${cn}${jong(c.nm) ? '이' : '가'} 트레이너 ${lost.length}명을 이기고 올라왔다!`, c.t);
   }
