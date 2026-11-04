@@ -240,6 +240,7 @@ function build() {
       <!-- 필드와 같은 자리 (경완 2026-10-28): 꾸미기 = 맵 편집 자리(왼쪽 위), 창고 = 가방 자리(오른쪽) -->
       <button class="gy-deco" type="button" aria-label="꾸미기"><svg viewBox="0 0 17 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M1 0h3v1H1zM13 0h3v1H13zM0 1h17v1H0zM0 2h3v1H0zM14 2h3v1H14zM1 3h2v1H1zM14 3h2v1H14zM2 4h1v1H2zM14 4h1v1H14zM2 5h1v1H2zM6 5h1v1H6zM10 5h1v1H10zM14 5h1v1H14zM2 6h1v1H2zM8 6h1v1H8zM14 6h1v1H14zM2 7h1v1H2zM7 7h1v1H7zM9 7h1v1H9zM14 7h1v1H14zM3 8h1v1H3zM13 8h1v1H13zM2 9h1v1H2zM14 9h1v1H14zM2 10h1v1H2zM14 10h1v1H14zM2 11h1v1H2zM14 11h1v1H14zM2 12h1v1H2zM14 12h1v1H14zM3 13h1v1H3zM13 13h1v1H13zM4 14h1v1H4zM7 14h3v1H7zM12 14h1v1H12zM5 15h2v1H5zM10 15h2v1H10z"/><path fill="#ffd520" d="M3 2h1v1H3zM13 2h1v1H13zM3 3h2v1H3zM6 3h5v1H6zM12 3h2v1H12zM4 4h9v1H4zM4 5h2v1H4zM7 5h3v1H7zM11 5h2v1H11zM6 6h2v1H6zM9 6h2v1H9zM8 7h1v1H8zM5 8h1v1H5zM11 8h1v1H11zM4 9h2v1H4zM11 9h2v1H11z"/><path fill="#6a3908" d="M4 2h9v1H4zM5 3h1v1H5zM11 3h1v1H11zM3 4h1v1H3zM13 4h1v1H13zM3 5h1v1H3zM13 5h1v1H13zM3 6h1v1H3zM13 6h1v1H13zM3 7h1v1H3zM13 7h1v1H13zM4 8h1v1H4zM12 8h1v1H12zM3 9h1v1H3zM6 9h1v1H6zM10 9h1v1H10zM13 9h1v1H13zM3 10h1v1H3zM5 10h2v1H5zM10 10h2v1H10zM13 10h1v1H13zM3 11h1v1H3zM13 11h1v1H13zM3 12h1v1H3zM5 12h2v1H5zM10 12h2v1H10zM13 12h1v1H13zM4 13h1v1H4zM7 13h3v1H7zM12 13h1v1H12zM5 14h2v1H5zM10 14h2v1H10z"/><path fill="#e65262" d="M4 6h2v1H4zM11 6h2v1H11zM4 7h2v1H4zM11 7h2v1H11z"/><path fill="#de9c10" d="M6 7h1v1H6zM10 7h1v1H10zM6 8h5v1H6zM7 9h3v1H7zM4 10h1v1H4zM7 10h3v1H7zM12 10h1v1H12zM4 11h9v1H4zM4 12h1v1H4zM7 12h3v1H7zM12 12h1v1H12zM5 13h2v1H5zM10 13h2v1H10z"/></svg></button>
       <button class="gy-store gy-sq" type="button" aria-label="창고"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 3h12v1H2zM1 4h1v3H1zM14 4h1v3h-1zM2 7h12v1H2zM2 8h1v6H2zM13 8h1v6h-1zM3 14h10v1H3zM6 9h4v1H6zM6 10h1v1H6zM9 10h1v1H9zM6 11h4v1H6z"/><path fill="#c8783c" d="M2 4h12v3H2zM3 8h10v6H3z"/><path fill="#e8a060" d="M2 4h12v1H2zM3 8h10v1H3z"/><path fill="#f0c040" d="M7 10h2v1H7z"/><path fill="#8a4a24" d="M3 13h10v1H3zM7 4h2v3H7z"/></svg></button>
+      <button class="gy-jnl gy-sq" type="button" aria-label="체육관 일지"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M3 1h10v1H3zM2 2h1v13H2zM13 2h1v13h-1zM3 15h10v1H3z"/><path fill="#3c7cc8" d="M3 2h10v13H3z"/><path fill="#2a5a98" d="M3 2h2v13H3z"/><path fill="#f8f4e8" d="M6 3h6v11H6z"/><path fill="#8890a8" d="M7 5h4v1H7zM7 7h4v1H7zM7 9h4v1H7zM7 11h3v1H7z"/><path fill="#e84838" d="M10 1h2v4l-1-1-1 1z"/></svg></button>
       <button class="gy-qbtn" type="button" aria-label="도전자 받기"><i class="gy-qdot" hidden></i></button><p class="gy-qcap" hidden></p>
       <button class="win gy-simb" type="button">시뮬</button>
       <div class="win blue gy-dlg" aria-live="polite"></div>
@@ -254,6 +255,7 @@ function build() {
   document.body.appendChild(root);
   $g('.gy-plate').onclick = () => { sfx('tap'); infoPop(); };
   $g('.gy-store').onclick = () => { sfx('tap'); if (ded) ded.end?.(); storePop(); };
+  $g('.gy-jnl').onclick = () => { sfx('tap'); if (ded) ded.end?.(); jnlPop(); };
   $g('.gy-deco').onclick = () => { sfx('tap'); root.querySelectorAll('.gy-infos').forEach(x => x.remove()); if (!ded) decoEdit(); };
   $g('.gy-simb').onclick = () => { sfx('tap'); simPop(); };
   $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = b.dataset.t; if (t === 'out') return exit(); sfx('tap');   /* v14.14 경완: 라인업 고르기 중에도 메뉴 잠그지 않음 — 다른 메뉴나 포켓몬 메뉴를 다시 누르면 고르기를 그만두고(luRes null) 배틀 시작 전 대사로 돌아감 */
@@ -269,7 +271,7 @@ function build() {
   // 도전자 명단 아이콘 → 새 화면 (도전자 / 체육관 일지)
   $g('.gy-qbtn').onclick = () => { const g = st(); qSeen0 = g?.qSeen | 0; if (g?.q?.length) { g.qSeen = Math.max(g.qSeen | 0, ...g.q.map(c => c.id)); setAt(); save(); $g('.gy-qdot').hidden = true; }   // 승급 심사로 가도 명단 점은 꺼짐 (경완 2026-10-30)
     if (bsReady(g)) { sfx('tap'); if (ded) ded.end?.(); return bsGo(); } if (!g?.q?.length) return; sfx('tap'); if (ded) ded.end?.(); const s0 = qSeen0 ?? (g.qSeen | 0); qSeen0 = null; qPop(s0); };
-  [['.gy-deco', '꾸미기'], ['.gy-store', '창고'], ['.gy-qbtn', '도전자 받기']].forEach(([c, n]) => $g(c).insertAdjacentHTML('beforeend', `<small class="ga-l">${n}</small>`));   // 홈 레이아웃 C: 메뉴 위 행동 줄 (경완 2026-10-29)
+  [['.gy-deco', '꾸미기'], ['.gy-store', '창고'], ['.gy-jnl', '일지'], ['.gy-qbtn', '도전자 받기']].forEach(([c, n]) => $g(c).insertAdjacentHTML('beforeend', `<small class="ga-l">${n}</small>`));   // 홈 레이아웃 C: 메뉴 위 행동 줄 (경완 2026-10-29)
   // 빈 곳을 한 번 누르면 이름판·버튼을 다 숨겨 메뉴만 남김, 다시 누르면 다 펼침 (경완 2026-10-28, 필드 fview 와 같음)
   $g('.gy-stage').addEventListener('click', e => { if (ded || busy || root.classList.contains('pre') || root.querySelector('.gy-kang,.gy-pop,.gy-setup') || e.target.closest('.tap,.gy-prop.tap')) return;
     root.classList.toggle('gview'); sfx('tap'); });
@@ -291,7 +293,7 @@ function layout(D = dzOf(st().d)) {
   stg.style.paddingLeft = pl + 'px'; stg.style.paddingRight = pr + 'px';
   // 체육관이 화면에 다 들어올 만큼 작으면 위 타이틀·버튼과 아래 도전자 받기 사이 가운데에 (경완 2026-10-29 '위아래 여백 정렬')
   const sr = stg.getBoundingClientRect(), bot = q => { const r = $g(q)?.getBoundingClientRect(); return r && r.height ? r.bottom - sr.top : 0; };
-  const t0 = Math.max(bot('.gy-rpa'), bot('.gy-deco'), bot('.gy-store'), bot('.gy-plate')) + 8, qr = $g('.gy-qbtn')?.getBoundingClientRect(), b0 = (qr?.height ? qr.top - sr.top : H - B) - 8, fits = t0 > 0 && mh * sc <= b0 - t0;
+  const t0 = Math.max(bot('.gy-rpa'), bot('.gy-deco'), bot('.gy-store'), bot('.gy-jnl'), bot('.gy-plate')) + 8, qr = $g('.gy-qbtn')?.getBoundingClientRect(), b0 = (qr?.height ? qr.top - sr.top : H - B) - 8, fits = t0 > 0 && mh * sc <= b0 - t0;
   if (!(root.classList.contains('ded') && map.style.marginTop)) map.style.marginTop = (fits ? Math.max(0, t0 + (b0 - t0 - mh * sc) / 2 - T) : Math.max(0, cy - T - ly)) + 'px', map.style.marginBottom = (fits ? 0 : Math.max(0, (H - cy) - (mh * sc - ly) - B)) + 'px';   /* v15.56 경완: 꾸미기 모드에선 체육관 위치 그대로 */
   const vk = mk + '|' + sc + '|' + W + 'x' + H + '|' + fits; stg.classList.toggle('fit', fits);   // 화면에 다 들어오면 위아래·좌우 스크롤 막기 (경완 2026-10-29)
   if (fits) { stg.dataset.vk = vk; stg.scrollTop = 0; stg.scrollLeft = pl + lx - W / 2; } else if (stg.dataset.vk !== vk) { stg.dataset.vk = vk; requestAnimationFrame(() => { const mt = parseFloat(map.style.marginTop), s1 = T + mt + ly - cy, s2 = T + mt + mh * sc - (H - B);   // 레이아웃 C: 관장이 보이면 문(아래 끝)이 행동 줄 바로 위에 오게
@@ -718,8 +720,20 @@ function mkSch(d0, from = 0) {
   B.forEach((w, k) => { const n = k >= 2 || (w > 0 && w >= bm * .15) ? rndI(2, 3) : (Math.random() < .3 ? 1 : 0); for (let i = 0; i < n; i++) T.push(d0 + (k * 3 + Math.random() * 3) * H); });
   return T.filter(t => t > from).sort((a, b) => a - b);
 }
-function glog(k, html, t = Date.now()) { const g = st(); g.log.unshift([t, k, html]); if (g.log.length > 80) g.log.length = 80; }
+function glog(k, html, t = Date.now()) { const g = st(); g.log.unshift([t, k, html]); if (g.log.length > 400) g.log.length = 400; }   /* v15.66 일지에서 날짜별로 보려고 80 → 400 */
 function addRep(n) { const g = st(); const r0 = g.rep || 0; g.rep = clampN(r0 + n, 0, Math.max(r0, repCap(g))); if (g.wk) g.wk.r += g.rep - r0; }
+/* 날짜별 체육관 일지 (v15.66 경완): 찾아온 도전자 n, 막은 도전자 b{이름: 수}, 관장이 진 배틀 l, 그냥 돌아감 o, 번 골드 g, 월급 p, 상점 s, 평판 r */
+function dayRec(t = Date.now()) { const g = st(); if (!g.days) dayFill(g); const k = dayStart(t); let d = g.days[k];
+  if (!d) { d = g.days[k] = { n: 0, b: {}, l: 0, o: 0, g: 0, p: 0, s: 0, r: 0 }; Object.keys(g.days).map(Number).sort((a, b) => b - a).slice(90).forEach(x => delete g.days[x]); } return d; }
+/* 일지가 없던 옛 저장: 남아 있는 체육관 기록(g.log)으로 날짜별 일지를 한 번 채운다 */
+function dayFill(g) { g.days = {}; const txt = h => String(h).replace(/<[^>]*>/g, ''), num = (h, re) => +((txt(h).match(re) || [])[1] || 0);
+  for (const [t, k, h] of (g.log || []).slice().reverse()) { const T = txt(h), d = dayRec(t);
+    if (k === 'in' && /도전하러 왔다|이기고 올라왔다/.test(T)) d.n++;
+    else if (k === 'sf' && /막아 냈다/.test(T)) { const nm = (g.sf || []).map(x => `${x.cls} ${x.nm}`).find(n => T.startsWith(n)) || T.split(' ').slice(0, 2).join(' ').replace(/[이가]$/, ''); d.n++; d.b[nm] = (d.b[nm] || 0) + 1; d.g += num(h, /\+(\d+)G/); d.r += num(h, /평판 \+(\d+)/); }
+    else if (k === 'win') { d.b['관장'] = (d.b['관장'] || 0) + 1; d.g += num(h, /\+(\d+)G/); d.r += num(h, /평판 \+(\d+)/); }
+    else if (k === 'lose') { d.l++; d.r -= num(h, /평판 -(\d+)/); }
+    else if (k === 'out') d.o++;
+    else if (k === 'pay') d.p += num(h, /(\d+)G/); } }
 function addG(n) { const v = GA.addGold(n) || 0; if (st().wk) st().wk.g += v; renderGoldG(); return v; }
 // 막은 도전자 (내가 이기거나 트레이너가 막음). 승급 심사 보스를 이기면 등급이 오르고 그 등급 배지를 받는다
 function blocked(c) {
@@ -761,7 +775,7 @@ function staffFight(c) {
 const BYE_LOST = ['다음엔 더 강해져서 다시 올게요!', '{me} 관장님, 정말 강하시네요… 많이 배웠어요.', '으으, 분해! 꼭 다시 도전할 거야!', '포켓몬들이랑 더 수련하고 올게요. 그때 또 붙어요!', '역시 소문대로 대단한 체육관이네요.', '오늘은 졌지만 좋은 배틀이었어요. 고마워요!'];
 const BYE_WON = ['좋은 배틀이었어요! 다음에도 또 올게요.', '이 체육관, 앞으로가 더 기대되는데요?', '히히, 이겼다! 친구들한테 자랑해야지!', '{me} 관장님 포켓몬도 꽤 강했어요. 다음엔 모르겠는걸요?', '이번엔 제가 이겼네요. 다음 배틀도 기대할게요!', '좋은 승부였어요. 그럼 이만!'];
 function arrive(c) {
-  const g = st(), cn = `${c.cls} <b>${esc(c.nm)}</b>`;
+  const g = st(), cn = `${c.cls} <b>${esc(c.nm)}</b>`; dayRec(c.t).n++;
   let beat = 0;
   if (c.team && !c.boss && !c.stkL) { c.stkL = stkLv(g.stk); if (c.stkL) c.team = c.team.map(m => [m[0], clampN(m[1] + c.stkL, 5, 100), m[2]]); }   // 연승 난이도
   if (!c.named && !c.sfOk && g.sf.length) {
@@ -770,7 +784,7 @@ function arrive(c) {
       const R = REW(c.diff), r0 = g.rep || 0;
       const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? 1.5 : 1))); addRep(sfRep(s, R.r));   // v14.97 경완: 트레이너가 대신 막은 건 연승으로 치지 않는다 (연승·평판 보너스 없음)
       const rep = (g.rep || 0) - r0;
-      blocked(c);
+      blocked(c); { const d = dayRec(c.t), nm = `${s.cls} ${s.nm}`; d.b[nm] = (d.b[nm] || 0) + 1; d.g += gold; d.r += rep; }
       glog('sf', `${sfName(s)}${jong(s.nm) ? '이' : '가'} ${cn}${jong(c.nm) ? '을' : '를'} 막아 냈다! <small>+${gold}G · 평판 +${rep}</small>`, c.t);
       const c2 = mkChal(c.t); c2.sfOk = 1; arrive(c2); return;   // v15.62 경완 '트레이너를 많이 세웠다고 명단이 줄면 안 돼': 트레이너가 막은 도전자는 덤, 관장 명단엔 다른 도전자가 그대로 온다
     }
@@ -797,7 +811,7 @@ function payDay(now) {
   for (const s of g.sf) {
     let k = 0;
     while (now >= s.pay && k++ < 20) {
-      if (S.gold >= s.wage) { S.gold -= s.wage; s.pay += 7 * DAY; if (s.rest) glog('sf', `${sfName(s)}에게 밀린 월급 ${s.wage}G를 줬다. 다시 체육관을 지킨다.`); else glog('pay', `${sfName(s)} 월급 ${s.wage}G`); s.rest = 0; }
+      if (S.gold >= s.wage) { S.gold -= s.wage; dayRec(s.pay).p += s.wage; s.pay += 7 * DAY; if (s.rest) glog('sf', `${sfName(s)}에게 밀린 월급 ${s.wage}G를 줬다. 다시 체육관을 지킨다.`); else glog('pay', `${sfName(s)} 월급 ${s.wage}G`); s.rest = 0; }
       else { if (!s.rest) glog('sf', `골드가 모자라 ${sfName(s)}에게 월급(${s.wage}G)을 못 줬다. 월급을 줄 때까지 쉰다.`); s.rest = 1; break; }
     }
   }
@@ -823,7 +837,7 @@ const staffMax = () => SF_MAX[gradeOf(st().rep || 0).i];   // 새내기 체육�
 const qExp = c => c.exp || nextDay(dayStart(c.t));
 // 도착 시각 t 로 정해지는 기다림 2~4시간 (beta.html gymWait 와 같은 식, 경완 2026-11-03 '도전자가 있었는데 아이콘에 숫자가 없었던')
 function qWait(t) { const x = Math.sin((t % 1e9) * 12.9898) * 43758.5453; return (2 + 2 * (x - Math.floor(x))) * H; }
-function qLeave(upTo) { const g = st(); g.q = g.q.filter(c => { const e = qExp(c); if (e > upTo) return true; glog('out', `${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 기다리다 돌아갔다.`, e); return false; }); }
+function qLeave(upTo) { const g = st(); g.q = g.q.filter(c => { const e = qExp(c); if (e > upTo) return true; glog('out', `${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 기다리다 돌아갔다.`, e); dayRec(e).o++; return false; }); }
 // 명단 박스 우상단 딱지 = 남은 시간, 이름 밑 = 온 시각 (경완 2026-10-31)
 const qLeftS = (c, now = Date.now()) => { const m = Math.max(0, Math.ceil((qExp(c) - now) / 60e3)), h = Math.floor(m / 60); return m < 1 ? '곧 떠나요' : `${h ? h + '시간 ' : ''}${m % 60 || !h ? (m % 60) + '분 ' : ''}남음`; };
 const qCame = c => { const d = new Date(c.t || Date.now()), h = d.getHours(), y = dayStart(c.t || Date.now()) < dayStart(Date.now()); return `${y ? '어제 ' : ''}${h < 12 ? '오전' : '오후'} ${h % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')}에 왔어요`; };
@@ -936,6 +950,7 @@ async function challenge(picked) {
     else { g.stk = 0; if (!c.boss) addRep(repLose()); g.l++; if (g.wk) g.wk.l++; }
     if (!g.fb1 && !c.boss) { g.fb1 = 1; if ((g.w | 0) + (g.l | 0) <= 1) fbNext = won ? ['첫 승리 축하드립니다, 관장님!!<br>역시 배틀에 재능이 있으시군요!', '앞으로 이렇게만 하시면 돼요.<br>궁금한 점이 있으면 언제든 저한테 물어보세요!'] : ['아쉽네요, 관장님…<br>첫 배틀이라 긴장하셨나 봐요.', '라인업을 다시 짜 보거나 포켓몬을 키워서<br>다음 도전자는 꼭 막아 봐요!', '궁금한 점이 있으면 언제든 저한테 물어보세요!']; }   // v14.33 경완: 첫 배틀 뒤 안내원 대사창 (이기면 축하, 지면 아쉬움)   // 승급 심사는 져도 평판이 그대로라 버튼으로 바로 다시 받을 수 있다 (경완 2026-10-30)
     rep = (g.rep || 0) - r0;
+    { const d = dayRec(now); if (won) d.b['관장'] = (d.b['관장'] || 0) + 1; else d.l++; d.g += gold; d.r += rep; }
     if (N && !c.sc) { const x = g.nt[N.id] || { s: 0 }; g.nt[N.id] = won ? { s: x.s + 1, n: now + rnd(2, 3.5) * DAY } : { s: x.s, n: now + rnd(.8, 1.5) * DAY }; }
     glog(won ? 'win' : 'lose', `${esc(c.cls)} <b>${esc(c.nm)}</b>${won ? `에게 이겼다! <small>+${gold}G · 평판 +${rep}</small>` : `에게 졌다… <small>평판 ${rep}</small>`}`);
     setAt(); save(); renderTop();
@@ -1475,6 +1490,29 @@ async function bigUp(el) {
     busy = false; root.classList.remove('busy'); renderHome(true);
     say('체육관이 넓어졌어요!', `+${B.w * B.h - A.w * A.h}칸 넓어졌어요`);   // 훈련장 칸은 등급 따라 저절로 (넓히기와 무관), 문구 뺌 (경완 2026-10-31)
   } finally { busy = false; root.classList.remove('busy'); }
+}
+// 체육관 일지 (v15.66 경완 '날짜별로 몇 명 왔고 누가 몇 명 막았고 번 돈은 얼마고'): 창고 자리 아이콘 → 날짜별 카드, 누르면 그날 기록
+let jnlOpen = null;
+function jnlPop() {
+  root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
+  const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew gy-jnlw'; $g('.gy-main').appendChild(el);
+  const g = st(); dayRec();   /* 오늘 칸은 늘 있게 (옛 저장이면 여기서 기록으로 채움) */
+  const WD = '일월화수목금토', fmt = n => n.toLocaleString(), keys = Object.keys(g.days).map(Number).sort((a, b) => b - a);
+  const card = k => { const d = g.days[k], t = new Date(k), today = k === dayStart(Date.now()), B = Object.entries(d.b).sort((a, b) => (b[0] === '관장') - (a[0] === '관장') || b[1] - a[1]), nb = B.reduce((a, x) => a + x[1], 0), out = d.p + d.s;
+    const logs = (g.log || []).filter(x => dayStart(x[0]) === k), open = jnlOpen === k;
+    return `<div class="jn-day${open ? ' on' : ''}"><button type="button" class="jn-hd" data-day="${k}"><b>${t.getMonth() + 1}월 ${t.getDate()}일 <small>(${WD[t.getDay()]})</small></b>${today ? '<i class="jn-today">오늘</i>' : ''}<em>${logs.length ? (open ? '▲' : '▼') : ''}</em></button>
+      <dl class="jn-st"><dt>찾아온 도전자</dt><dd>${d.n}명</dd>
+      <dt>막은 도전자</dt><dd>${nb}명</dd>${B.map(([n, c]) => `<dt class="jn-sub">${esc(n)}</dt><dd class="jn-sub">${c}명</dd>`).join('')}
+      <dt>관장이 진 배틀</dt><dd>${d.l}번</dd><dt>기다리다 돌아감</dt><dd>${d.o}명</dd>
+      <dt>번 골드</dt><dd class="jn-g">+${fmt(d.g)}G</dd>${out ? `<dt>쓴 골드</dt><dd class="jn-m">-${fmt(out)}G</dd>${d.p ? `<dt class="jn-sub">월급</dt><dd class="jn-sub">${fmt(d.p)}G</dd>` : ''}${d.s ? `<dt class="jn-sub">상점</dt><dd class="jn-sub">${fmt(d.s)}G</dd>` : ''}` : ''}
+      <dt>평판</dt><dd class="${d.r < 0 ? 'jn-m' : 'jn-g'}">${d.r < 0 ? d.r : '+' + d.r}</dd></dl>
+      ${open ? `<ul class="jn-log">${logs.map(x => `<li><time>${hhmm(x[0])}</time><span>${x[2]}</span></li>`).join('')}</ul>` : ''}</div>`; };
+  const draw = () => { el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 일지</b></div>
+      <div class="gy-body">${keys.map(card).join('')}</div>`; };
+  draw();
+  el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap');
+    if (b.dataset.a === 'x') return el.remove();
+    if (b.dataset.day) { const k = +b.dataset.day, y = b.getBoundingClientRect().top; jnlOpen = jnlOpen === k ? null : k; draw(); const nb = el.querySelector(`[data-day="${k}"]`), bd = el.querySelector('.gy-body'); if (nb && bd) bd.scrollTop += nb.getBoundingClientRect().top - y; } };
 }
 // 창고 (경완 2026-10-28 '꾸미기 모드 가방처럼'): 상점에서 산 기술머신·꾸미기·관장 의상을 한곳에서 본다
 let storeT = 'tm', stPow = 1;
@@ -2166,7 +2204,7 @@ async function visit(F, code) {
 
 window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) => dzOf(id, gi), _routes: () => DESIGNS.flatMap(d => GRADES.map((_, gi) => { const D = dzOf(d.id, gi), C = chalRoute(D, ents); return { id: d.id, gi, door: D.door, leader: D.leader, guy: D.guy, free: !!D.free, chal: C.path, cf: C.cf, old: D.path, guyR: route(D, D.door, D.guy, []), oldGuy: guyPath(D) }; })), renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
+  k: { dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 // 이미 명단에서 본 도전자(qSeen)는 기다리고 있어도 점을 띄우지 않는다 — 체육관 안 점과 똑같이 (경완 2026-10-30 '빨간점 다 확인했는데 아이콘 점이 안 사라짐')
 // 점 = 안 본 도전자, 또는 새 도전자가 올 시각이 지남(일정·당겨 온 도전자). 저장된 at 은 쓰지 않는다 (경완 2026-10-30 '명단만 확인해도 꺼지게')
