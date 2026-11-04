@@ -1,0 +1,24 @@
+# 일회용 진단 (경완 2026-11-04 허락): 경완 계정 서버 저장의 배틀 기록·오류 목록만 출력. 확인 후 지움
+name: Peek battle log
+on:
+  push:
+    branches: [claude/project-thread-wlqncg]
+    paths: ['tools/peek/**', '.github/workflows/peek.yml']
+jobs:
+  peek:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm ci
+        working-directory: server
+      - name: Set D1 id
+        working-directory: server
+        run: |
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="pokegrow") | .uuid')
+          sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
+      - run: node tools/peek/peek.mjs
