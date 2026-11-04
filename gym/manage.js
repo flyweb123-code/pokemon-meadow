@@ -386,7 +386,7 @@ function pickTrain(after) {
   GB().boxWin(false, null, () => { redraw(); after?.(); }, {
     title: () => `훈련장에 보낼 포켓몬 <small>${g.tr.length}/${trMax()}</small>`, tip: `${TYPE_KO[ty]} 타입이 먼저 보여요`,
     list: () => S.box.filter(P => GB().gm(P).lv < GB().LV_MAX || inTr(P.id)), ok: () => true, first: P => (SPECIES[P.sp]?.t || []).includes(ty),
-    tag: P => inTr(P.id) ? '훈련 중' : onField(P.id) ? '필드' : '',
+    tag: P => inTr(P.id) ? '훈련장' : onField(P.id) ? '필드' : '',
     pick: function this_pick(P, w) { const i = g.tr.findIndex(e => e.id === P.id);
       if (i >= 0) { tickTrain(Date.now()); g.tr.splice(i, 1); K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '을' : '를'} 훈련장에서 데려왔다.`); }
       else { if (g.tr.length >= trMax()) return say(trFull());
