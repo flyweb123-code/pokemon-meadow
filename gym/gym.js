@@ -724,18 +724,22 @@ function mkSch(d0, from = 0) {
 }
 function glog(k, html, t = Date.now()) { const g = st(); g.log.unshift([t, k, html]); if (g.log.length > 400) g.log.length = 400; }   /* v15.66 일지에서 날짜별로 보려고 80 → 400 */
 function addRep(n) { const g = st(); const r0 = g.rep || 0; g.rep = clampN(r0 + n, Math.min(r0, repFloor(g)), Math.max(r0, repCap(g))); if (g.wk) g.wk.r += g.rep - r0; }
-/* 날짜별 체육관 일지 (v15.66 경완): 찾아온 도전자 n, 막은 도전자 b{이름: 수}, 관장이 진 배틀 l, 그냥 돌아감 o, 번 골드 g, 월급 p, 상점 s, 평판 r */
-function dayRec(t = Date.now()) { const g = st(); if (!g.days) dayFill(g); const k = dayStart(t); let d = g.days[k];
-  if (!d) { d = g.days[k] = { n: 0, b: {}, l: 0, o: 0, g: 0, p: 0, s: 0, r: 0 }; Object.keys(g.days).map(Number).sort((a, b) => b - a).slice(90).forEach(x => delete g.days[x]); } return d; }
-/* 일지가 없던 옛 저장: 남아 있는 체육관 기록(g.log)으로 날짜별 일지를 한 번 채운다 */
-function dayFill(g) { g.days = {}; const txt = h => String(h).replace(/<[^>]*>/g, ''), num = (h, re) => +((txt(h).match(re) || [])[1] || 0);
+/* 날짜별 체육관 일지 (v15.66 경완): 찾아온 도전자 n, 그냥 돌아감 o, 월급 p, 상점 s,
+   관장(나) me = {w 막음, l 짐, g 골드, r 평판}, 트레이너 sf = {이름: {w 막음, g 골드, r 평판}} (v15.68 경완 '트레이너가 번 돈·평판과 내가 번 돈·평판 구분') */
+const dayNew = () => ({ n: 0, o: 0, p: 0, s: 0, me: { w: 0, l: 0, g: 0, r: 0 }, sf: {} });
+function dayRec(t = Date.now()) { const g = st(); if (!g.days || g.daysV !== 2) dayFill(g); const k = dayStart(t); let d = g.days[k];
+  if (!d) { d = g.days[k] = dayNew(); Object.keys(g.days).map(Number).sort((a, b) => b - a).slice(90).forEach(x => delete g.days[x]); } return d; }
+const daySf = (d, nm) => d.sf[nm] || (d.sf[nm] = { w: 0, g: 0, r: 0 });
+/* 일지가 없던(또는 v15.66 모양) 저장: 남아 있는 체육관 기록(g.log)으로 날짜별 일지를 다시 채운다. 기록에 없는 월급·상점은 옛 일지에서 옮김 */
+function dayFill(g) { const old = g.days || {}; g.days = {}; g.daysV = 2; const txt = h => String(h).replace(/<[^>]*>/g, ''), num = (h, re) => +((txt(h).match(re) || [])[1] || 0);
   for (const [t, k, h] of (g.log || []).slice().reverse()) { const T = txt(h), d = dayRec(t);
     if (k === 'in' && /도전하러 왔다|이기고 올라왔다/.test(T)) d.n++;
-    else if (k === 'sf' && /막아 냈다/.test(T)) { const nm = (g.sf || []).map(x => `${x.cls} ${x.nm}`).find(n => T.startsWith(n)) || T.split(' ').slice(0, 2).join(' ').replace(/[이가]$/, ''); d.n++; d.b[nm] = (d.b[nm] || 0) + 1; d.g += num(h, /\+(\d+)G/); d.r += num(h, /평판 \+(\d+)/); }
-    else if (k === 'win') { d.b['관장'] = (d.b['관장'] || 0) + 1; d.g += num(h, /\+(\d+)G/); d.r += num(h, /평판 \+(\d+)/); }
-    else if (k === 'lose') { d.l++; d.r -= num(h, /평판 -(\d+)/); }
+    else if (k === 'sf' && /막아 냈다/.test(T)) { const nm = (g.sf || []).map(x => `${x.cls} ${x.nm}`).find(n => T.startsWith(n)) || T.split(' ').slice(0, 2).join(' ').replace(/[이가]$/, ''), x = daySf(d, nm); d.n++; x.w++; x.g += num(h, /\+(\d+)G/); x.r += num(h, /평판 \+(\d+)/); }
+    else if (k === 'win') { d.me.w++; d.me.g += num(h, /\+(\d+)G/); d.me.r += num(h, /평판 \+(\d+)/); }
+    else if (k === 'lose') { d.me.l++; d.me.r -= num(h, /평판 -(\d+)/); }
     else if (k === 'out') d.o++;
-    else if (k === 'pay') d.p += num(h, /(\d+)G/); } }
+    else if (k === 'pay') d.p += num(h, /(\d+)G/); }
+  for (const [k, o] of Object.entries(old)) { if (!o.p && !o.s) continue; const d = g.days[k] || (g.days[k] = dayNew()); d.p = Math.max(d.p, o.p || 0); d.s = o.s || 0; } }
 function addG(n) { const v = GA.addGold(n) || 0; if (st().wk) st().wk.g += v; renderGoldG(); return v; }
 // 막은 도전자 (내가 이기거나 트레이너가 막음). 승급 심사 보스를 이기면 등급이 오르고 그 등급 배지를 받는다
 function blocked(c) {
@@ -786,7 +790,7 @@ function arrive(c) {
       const R = REW(c.diff), r0 = g.rep || 0;
       const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? 1.5 : 1))); addRep(sfRep(s, R.r));   // v14.97 경완: 트레이너가 대신 막은 건 연승으로 치지 않는다 (연승·평판 보너스 없음)
       const rep = (g.rep || 0) - r0;
-      blocked(c); { const d = dayRec(c.t), nm = `${s.cls} ${s.nm}`; d.b[nm] = (d.b[nm] || 0) + 1; d.g += gold; d.r += rep; }
+      blocked(c); { const x = daySf(dayRec(c.t), `${s.cls} ${s.nm}`); x.w++; x.g += gold; x.r += rep; }
       glog('sf', `${sfName(s)}${jong(s.nm) ? '이' : '가'} ${cn}${jong(c.nm) ? '을' : '를'} 막아 냈다! <small>+${gold}G · 평판 +${rep}</small>`, c.t);
       const c2 = mkChal(c.t); c2.sfOk = 1; arrive(c2); return;   // v15.62 경완 '트레이너를 많이 세웠다고 명단이 줄면 안 돼': 트레이너가 막은 도전자는 덤, 관장 명단엔 다른 도전자가 그대로 온다
     }
@@ -952,7 +956,7 @@ async function challenge(picked) {
     else { g.stk = 0; if (!c.boss) addRep(repLose()); g.l++; if (g.wk) g.wk.l++; }
     if (!g.fb1 && !c.boss) { g.fb1 = 1; if ((g.w | 0) + (g.l | 0) <= 1) fbNext = won ? ['첫 승리 축하드립니다, 관장님!!<br>역시 배틀에 재능이 있으시군요!', '앞으로 이렇게만 하시면 돼요.<br>궁금한 점이 있으면 언제든 저한테 물어보세요!'] : ['아쉽네요, 관장님…<br>첫 배틀이라 긴장하셨나 봐요.', '라인업을 다시 짜 보거나 포켓몬을 키워서<br>다음 도전자는 꼭 막아 봐요!', '궁금한 점이 있으면 언제든 저한테 물어보세요!']; }   // v14.33 경완: 첫 배틀 뒤 안내원 대사창 (이기면 축하, 지면 아쉬움)   // 승급 심사는 져도 평판이 그대로라 버튼으로 바로 다시 받을 수 있다 (경완 2026-10-30)
     rep = (g.rep || 0) - r0;
-    { const d = dayRec(now); if (won) d.b['관장'] = (d.b['관장'] || 0) + 1; else d.l++; d.g += gold; d.r += rep; }
+    { const m = dayRec(now).me; if (won) m.w++; else m.l++; m.g += gold; m.r += rep; }
     if (N && !c.sc) { const x = g.nt[N.id] || { s: 0 }; g.nt[N.id] = won ? { s: x.s + 1, n: now + rnd(2, 3.5) * DAY } : { s: x.s, n: now + rnd(.8, 1.5) * DAY }; }
     glog(won ? 'win' : 'lose', `${esc(c.cls)} <b>${esc(c.nm)}</b>${won ? `에게 이겼다! <small>+${gold}G · 평판 +${rep}</small>` : `에게 졌다… <small>평판 ${rep}</small>`}`);
     setAt(); save(); renderTop();
@@ -1493,28 +1497,34 @@ async function bigUp(el) {
     say('체육관이 넓어졌어요!', `+${B.w * B.h - A.w * A.h}칸 넓어졌어요`);   // 훈련장 칸은 등급 따라 저절로 (넓히기와 무관), 문구 뺌 (경완 2026-10-31)
   } finally { busy = false; root.classList.remove('busy'); }
 }
-// 체육관 일지 (v15.66 경완 '날짜별로 몇 명 왔고 누가 몇 명 막았고 번 돈은 얼마고'): 창고 자리 아이콘 → 날짜별 카드, 누르면 그날 기록
-let jnlOpen = null;
+// 체육관 일지 (v15.66 경완, v15.68 '날짜별로 한 화면'): 하루 한 화면, ◀ ▶ 로 날짜 넘김. 관장(나)과 트레이너 몫을 나눠서
+let jnlK = null;
 function jnlPop() {
   root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew gy-jnlw'; $g('.gy-main').appendChild(el);
   const g = st(); dayRec();   /* 오늘 칸은 늘 있게 (옛 저장이면 여기서 기록으로 채움) */
-  const WD = '일월화수목금토', fmt = n => n.toLocaleString(), keys = Object.keys(g.days).map(Number).sort((a, b) => b - a);
-  const card = k => { const d = g.days[k], t = new Date(k), today = k === dayStart(Date.now()), B = Object.entries(d.b).sort((a, b) => (b[0] === '관장') - (a[0] === '관장') || b[1] - a[1]), nb = B.reduce((a, x) => a + x[1], 0), out = d.p + d.s;
-    const logs = (g.log || []).filter(x => dayStart(x[0]) === k), open = jnlOpen === k;
-    return `<div class="jn-day${open ? ' on' : ''}"><button type="button" class="jn-hd" data-day="${k}"><b>${t.getMonth() + 1}월 ${t.getDate()}일 <small>(${WD[t.getDay()]})</small></b>${today ? '<i class="jn-today">오늘</i>' : ''}<em>${logs.length ? (open ? '▲' : '▼') : ''}</em></button>
-      <dl class="jn-st"><dt>찾아온 도전자</dt><dd>${d.n}명</dd>
-      <dt>막은 도전자</dt><dd>${nb}명</dd>${B.map(([n, c]) => `<dt class="jn-sub">${esc(n)}</dt><dd class="jn-sub">${c}명</dd>`).join('')}
-      <dt>관장이 진 배틀</dt><dd>${d.l}번</dd><dt>기다리다 돌아감</dt><dd>${d.o}명</dd>
-      <dt>번 골드</dt><dd class="jn-g">+${fmt(d.g)}G</dd>${out ? `<dt>쓴 골드</dt><dd class="jn-m">-${fmt(out)}G</dd>${d.p ? `<dt class="jn-sub">월급</dt><dd class="jn-sub">${fmt(d.p)}G</dd>` : ''}${d.s ? `<dt class="jn-sub">상점</dt><dd class="jn-sub">${fmt(d.s)}G</dd>` : ''}` : ''}
-      <dt>평판</dt><dd class="${d.r < 0 ? 'jn-m' : 'jn-g'}">${d.r < 0 ? d.r : '+' + d.r}</dd></dl>
-      ${open ? `<ul class="jn-log">${logs.map(x => `<li><time>${hhmm(x[0])}</time><span>${x[2]}</span></li>`).join('')}</ul>` : ''}</div>`; };
-  const draw = () => { el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 일지</b></div>
-      <div class="gy-body">${keys.map(card).join('')}</div>`; };
+  const WD = '일월화수목금토', G = n => `${n < 0 ? '-' : '+'}${Math.abs(n).toLocaleString()}G`, R = n => n < 0 ? `${n}` : `+${n}`, cl = n => n < 0 ? 'jn-m' : n > 0 ? 'jn-g' : '';
+  const keys = Object.keys(g.days).map(Number).sort((a, b) => b - a); if (!keys.includes(jnlK)) jnlK = keys[0];
+  const row = (a, b, c = '') => `<dt>${a}</dt><dd class="${c}">${b}</dd>`;
+  const draw = () => { const k = jnlK, i = keys.indexOf(k), d = g.days[k], t = new Date(k), today = k === dayStart(Date.now()), m = d.me;
+    const SF = Object.entries(d.sf).sort((a, b) => b[1].w - a[1].w), sw = SF.reduce((a, [, x]) => a + x.w, 0), sg = SF.reduce((a, [, x]) => a + x.g, 0), sr = SF.reduce((a, [, x]) => a + x.r, 0), out = d.p + d.s;
+    const logs = (g.log || []).filter(x => dayStart(x[0]) === k);
+    el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 일지</b></div>
+      <div class="jn-nav"><button type="button" data-mv="1" ${i >= keys.length - 1 ? 'disabled' : ''} aria-label="전날">◀</button><b>${t.getMonth() + 1}월 ${t.getDate()}일 <small>(${WD[t.getDay()]})</small>${today ? '<i class="jn-today">오늘</i>' : ''}</b><button type="button" data-mv="-1" ${i <= 0 ? 'disabled' : ''} aria-label="다음날">▶</button></div>
+      <div class="gy-body">
+      <div class="jn-day"><h5>체육관</h5><dl class="jn-st">${row('찾아온 도전자', `${d.n}명`)}${row('막은 도전자', `${m.w + sw}명`)}${row('기다리다 돌아감', `${d.o}명`)}${row('번 골드', G(m.g + sg), 'jn-g')}${out ? row('쓴 골드', G(-out), 'jn-m') : ''}${d.p ? row('<span class="jn-sub">월급</span>', `${d.p.toLocaleString()}G`, 'jn-sub') : ''}${d.s ? row('<span class="jn-sub">상점</span>', `${d.s.toLocaleString()}G`, 'jn-sub') : ''}${row('평판', R(m.r + sr), cl(m.r + sr))}</dl></div>
+      <div class="jn-day"><h5>관장 (나)</h5><dl class="jn-st">${row('막은 도전자', `${m.w}명`)}${row('진 배틀', `${m.l}번`)}${row('번 골드', G(m.g), 'jn-g')}${row('평판', R(m.r), cl(m.r))}</dl></div>
+      <div class="jn-day"><h5>트레이너</h5>${SF.length ? `<dl class="jn-st">${row('막은 도전자', `${sw}명`)}${row('번 골드', G(sg), 'jn-g')}${row('평판', R(sr), cl(sr))}</dl>
+        <ul class="jn-sfl">${SF.map(([n, x]) => `<li><b>${esc(n)}</b><span>${x.w}명 · <em class="jn-g">${G(x.g)}</em> · 평판 <em class="${cl(x.r)}">${R(x.r)}</em></span></li>`).join('')}</ul>` : '<p class="jn-none">이날 트레이너가 막은 도전자는 없어요.</p>'}</div>
+      <div class="jn-day"><h5>기록</h5>${logs.length ? `<ul class="jn-log">${logs.map(x => `<li><time>${hhmm(x[0])}</time><span>${x[2]}</span></li>`).join('')}</ul>` : '<p class="jn-none">기록이 없어요.</p>'}</div>
+      </div>`; };
   draw();
-  el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap');
+  el.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap');
     if (b.dataset.a === 'x') return el.remove();
-    if (b.dataset.day) { const k = +b.dataset.day, y = b.getBoundingClientRect().top; jnlOpen = jnlOpen === k ? null : k; draw(); const nb = el.querySelector(`[data-day="${k}"]`), bd = el.querySelector('.gy-body'); if (nb && bd) bd.scrollTop += nb.getBoundingClientRect().top - y; } };
+    if (b.dataset.mv) { jnlK = keys[keys.indexOf(jnlK) + +b.dataset.mv] ?? jnlK; draw(); el.querySelector('.gy-body').scrollTop = 0; } };
+  /* 옆으로 밀어서 날짜 넘기기 */
+  let sx = null; el.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+  el.addEventListener('touchend', e => { if (sx == null) return; const dx = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(dx) < 60) return; const b = el.querySelector(`.jn-nav [data-mv="${dx > 0 ? 1 : -1}"]`); if (b && !b.disabled) b.click(); });
 }
 // 창고 (경완 2026-10-28 '꾸미기 모드 가방처럼'): 상점에서 산 기술머신·꾸미기·관장 의상을 한곳에서 본다
 let storeT = 'tm', stPow = 1;
