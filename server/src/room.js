@@ -106,7 +106,7 @@ export class FieldRoom {
         a.p = { x: num(m.x), y: num(m.y), d: m.d | 0, w: m.w ? 1 : 0, f: m.f ? 1 : 0, k: String(m.k || '').slice(0, 40), out: m.out ? 1 : 0, j: (m.j | 0) % 1000 };   // j = 점프 횟수 (바뀌면 다른 화면에서 뜀)
         ws.serializeAttachment(a);
         if (a.o && was !== !!a.p.out) this.cast({ t: 'own', on: !!a.p.out }, ws);   // 주인이 필드에 나옴/들어감
-        return this.cast({ t: 'tr', c: a.c, ...a.p }, ws);
+        return this.cast({ t: 'tr', c: a.c, ...a.p, ts: +m.ts || 0 }, ws);   // ts = 보낸 기기 시각 (받는 쪽 보간 버퍼)
       }
       case 'act': {
         if (a.o || !ACTS.includes(m.k) || !this.ok(ws, 'act', 2, 3)) return;
@@ -125,7 +125,7 @@ export class FieldRoom {
       }
       case 'mons': case 'ev': {
         if (!a.o) return;
-        return this.cast(m.t === 'mons' ? { t: 'mons', L: Array.isArray(m.L) ? m.L.slice(0, 40) : [] } : { t: 'ev', e: m.e }, ws);
+        return this.cast(m.t === 'mons' ? { t: 'mons', L: Array.isArray(m.L) ? m.L.slice(0, 40) : [], ts: +m.ts || 0 } : { t: 'ev', e: m.e }, ws);
       }
       case 'call': {   // 손님 '친구 부르기' → 주인이 없으면 주인 폰에 푸시
         if (a.o || !this.ok(ws, 'call', 5, 1)) return;
