@@ -292,7 +292,7 @@ function layout(D = dzOf(st().d)) {
   // 체육관이 화면에 다 들어올 만큼 작으면 위 타이틀·버튼과 아래 도전자 받기 사이 가운데에 (경완 2026-10-29 '위아래 여백 정렬')
   const sr = stg.getBoundingClientRect(), bot = q => { const r = $g(q)?.getBoundingClientRect(); return r && r.height ? r.bottom - sr.top : 0; };
   const t0 = Math.max(bot('.gy-rpa'), bot('.gy-deco'), bot('.gy-store'), bot('.gy-plate')) + 8, qr = $g('.gy-qbtn')?.getBoundingClientRect(), b0 = (qr?.height ? qr.top - sr.top : H - B) - 8, fits = t0 > 0 && mh * sc <= b0 - t0;
-  map.style.marginTop = (fits ? Math.max(0, t0 + (b0 - t0 - mh * sc) / 2 - T) : Math.max(0, cy - T - ly)) + 'px'; map.style.marginBottom = (fits ? 0 : Math.max(0, (H - cy) - (mh * sc - ly) - B)) + 'px';
+  if (!(root.classList.contains('ded') && map.style.marginTop)) map.style.marginTop = (fits ? Math.max(0, t0 + (b0 - t0 - mh * sc) / 2 - T) : Math.max(0, cy - T - ly)) + 'px', map.style.marginBottom = (fits ? 0 : Math.max(0, (H - cy) - (mh * sc - ly) - B)) + 'px';   /* v15.56 경완: 꾸미기 모드에선 체육관 위치 그대로 */
   const vk = mk + '|' + sc + '|' + W + 'x' + H + '|' + fits; stg.classList.toggle('fit', fits);   // 화면에 다 들어오면 위아래·좌우 스크롤 막기 (경완 2026-10-29)
   if (fits) { stg.dataset.vk = vk; stg.scrollTop = 0; stg.scrollLeft = pl + lx - W / 2; } else if (stg.dataset.vk !== vk) { stg.dataset.vk = vk; requestAnimationFrame(() => { const mt = parseFloat(map.style.marginTop), s1 = T + mt + ly - cy, s2 = T + mt + mh * sc - (H - B);   // 레이아웃 C: 관장이 보이면 문(아래 끝)이 행동 줄 바로 위에 오게
       stg.scrollTop = s2 > s1 && ly - (s2 - mt) > 24 ? s2 : s1; stg.scrollLeft = pl + lx - W / 2; }); }
@@ -439,7 +439,7 @@ function decoEdit() {
     grid.innerHTML = z ? `<i class="gg-foot" style="left:${z[1] * T()}px;top:${(z[2] - h + 1) * T()}px;width:${w * T()}px;height:${h * T()}px"></i><button class="gg-x" type="button" aria-label="창고에 넣기" style="left:${(z[1] + w) * T() + 12 > stage.scrollLeft + stage.clientWidth - map.offsetLeft ? z[1] * T() : (z[1] + w) * T()}px;top:${Math.max(z[2] - h + 1, .4) * T()}px">${XSVG}</button>` : '';
     const bag = Object.keys(g.own).filter(k => g.own[k] && DECO[k] && !on.has(k)); if (ded.pick && !bag.includes(ded.pick)) ded.pick = null;
     list.innerHTML = bag.length ? bag.map(k => `<button class="db-it" type="button" data-k="${k}" aria-pressed="${ded.pick === k}"><img alt="" src="${IMG}deco/t/${k}.png"><span>${DECO[k].n}</span></button>`).join('')
-      : '<p class="db-none">창고에 아이템이 없어요.<br>상점에서 구매해보세요.</p>';
+      : '<p class="db-none">창고에 아이템이 없어요.<br>상점에서 구입해보세요.</p>';
   };
   const put = (k, x, y) => { if (!okAt(k, x, y)) { sfx('no'); warn('여기엔 놓을 수 없어요'); return draw(); }
     if (!g.dp.includes(k)) g.dp.push(k); g.dpos[k] = [D.toFx(x), D.toF(y), D.id]; ded.sel = k; ded.pick = null; sfx('tap'); draw(); };
@@ -1486,9 +1486,9 @@ function storePop() {
     let body = ''; if (!T.some(([k]) => k === storeT)) storeT = 'tm';
     if (storeT === 'tm') { const D = GB()?.D, L = Object.entries(g.tms).filter(([, n]) => n > 0).map(([id, n]) => [GB()?.mvOf?.(id), n, id]).filter(([x]) => x);
       L.sort((a, b) => (a[0][2] - b[0][2]) || ((b[0][4] || 0) - (a[0][4] || 0)) * stPow);   // 타입별로 묶고 그 안에서 위력순 (경완 2026-10-29)   // 위력순 (경완 2026-10-29), 안내 문구 없음
-      body = !D ? '<p class="gy-lead">불러오는 중…</p>' : L.length ? `<div class="tm-row"><button class="tm-sort" type="button" data-pow="1">위력순 ${stPow > 0 ? '▼' : '▲'}</button></div><div class="sp-list">${L.map(([x, n, id]) => GB().tmRow(x, n, id)).join('')}</div>` : '<p class="sf-none">가진 기술머신이 없어요. 상점에서 사 오세요.</p>'; }
-    if (storeT === 'it') body = !H ? '<p class="gy-lead">불러오는 중…</p>' : IL.length + ML.length ? `<div class="sp-list">${IL.map(GB().itRowAll).join('')}${ML.map(([k, n]) => GB().mintRow(k, n)).join('')}</div>` : '<p class="sf-none">가진 도구가 없어요. 상점에서 사 오세요.</p>';
-    if (storeT === 'deco') body = dk.length ? `<div class="dc-grid">${dk.map(k => `<button type="button" data-dc="${k}" class="${g.dp.includes(k) ? 'own' : ''}"><span class="dc-pic"><img alt="" src="${IMG}deco/${k}.png" class="${DECO[k].w > 16 ? 'big' : ''}"></span><b>${DECO[k].n}</b><em>${g.dp.includes(k) ? '놓여 있음' : '창고에 있음'}</em></button>`).join('')}</div>` : '<p class="sf-none">가진 꾸미기가 없어요. 상점에서 사 오세요.</p>';
+      body = !D ? '<p class="gy-lead">불러오는 중…</p>' : L.length ? `<div class="tm-row"><button class="tm-sort" type="button" data-pow="1">위력순 ${stPow > 0 ? '▼' : '▲'}</button></div><div class="sp-list">${L.map(([x, n, id]) => GB().tmRow(x, n, id)).join('')}</div>` : '<p class="sf-none st-empty">가진 기술머신이 없어요.<br>상점에서 구입해보세요.</p>'; }
+    if (storeT === 'it') body = !H ? '<p class="gy-lead">불러오는 중…</p>' : IL.length + ML.length ? `<div class="sp-list">${IL.map(GB().itRowAll).join('')}${ML.map(([k, n]) => GB().mintRow(k, n)).join('')}</div>` : '<p class="sf-none st-empty">가진 도구가 없어요.<br>상점에서 구입해보세요.</p>';
+    if (storeT === 'deco') body = dk.length ? `<div class="dc-grid">${dk.map(k => `<button type="button" data-dc="${k}" class="${g.dp.includes(k) ? 'own' : ''}"><span class="dc-pic"><img alt="" src="${IMG}deco/${k}.png" class="${DECO[k].w > 16 ? 'big' : ''}"></span><b>${DECO[k].n}</b><em>${g.dp.includes(k) ? '놓여 있음' : '창고에 있음'}</em></button>`).join('')}</div>` : '<p class="sf-none st-empty">가진 꾸미기가 없어요.<br>상점에서 구입해보세요.</p>';
     if (storeT === 'fit') { const cf = fitOf(g.fit) ? g.fit : ''; body = `<div class="ft-grid">${['', ...fk].map(k => `<button type="button" data-fit="${k}" class="${cf === k ? 'on' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${k ? OUTFITS[k].n : '기본 옷'}</b><em>${cf === k ? '입는 중' : '입기'}</em></button>`).join('')}</div>`; }
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">창고</b></div>
       <div class="gy-body"><div class="sp-tabs st-tabs" role="tablist">${T.map(([k, n, c]) => `<button type="button" role="tab" data-st="${k}" aria-selected="${storeT === k}">${n} <small>${c}</small></button>`).join('')}</div>${body}</div>`;
