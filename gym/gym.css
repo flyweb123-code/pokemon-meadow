@@ -2584,3 +2584,23 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-storew .st-empty{position:fixed;left:0;right:0;top:50%;transform:translateY(-50%);margin:0;text-align:center;line-height:1.6;pointer-events:none}   /* v15.56 경완: 창고가 비었을 때 문구는 화면 정중앙 */
 #gym .sf-card .sf-st .sf-pay{color:#b07a10;font-style:normal}   /* v15.60 경완: 고용 관리 슬롯에 월급 */
 #gym .ts-win>.win{display:flex;flex-direction:column}#gym .ts-win .ts-grid{flex:1;grid-auto-rows:1fr;padding-bottom:10px}#gym .ts-win .ts-slot{min-height:76px;height:auto}   /* v15.60 경완: 훈련장 슬롯은 창을 꽉 채우고 크기를 같게 */
+/* v15.66 경완: 창고는 꾸미기 오른쪽, 그 자리(오른쪽 위)엔 체육관 일지 */
+#gym .gy-store.gy-sq.gy-sq{left:calc(var(--si-left,env(safe-area-inset-left)) + 64px)!important;right:auto!important}
+#gym .gy-jnl.gy-sq.gy-sq{position:absolute!important;top:calc(var(--si-top,env(safe-area-inset-top)) + 80px)!important;bottom:auto!important;left:auto!important;right:calc(var(--si-right,env(safe-area-inset-right)) + 6px)!important;width:58px!important;height:auto!important;min-height:0;padding:2px 0!important;margin:0;background:none!important;box-shadow:none!important;border:0!important;transform:none!important;display:flex!important;flex-direction:column;align-items:center;gap:2px;color:#fff;font-weight:700}
+#gym .gy-jnl svg{width:32px!important;height:32px!important;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.45))!important}
+#gym .gy-jnl .ga-l{font-size:11px;text-shadow:1px 0 0 #20202c,-1px 0 0 #20202c,0 1px 0 #20202c,0 -1px 0 #20202c,1px 1px 0 #20202c}
+#gym .gy-jnl:active{transform:translateY(2px)!important}
+#gym:is(.gview,.ded,.busy,.sim-hide,.pre) .gy-jnl,#gym:has(.gy-sheet:not([hidden]),.gy-infos) .gy-jnl{visibility:hidden!important}
+#gym:is(.dedc,.visit) .gy-jnl{display:none!important}
+#gym .gy-jnlw .gy-body{display:flex;flex-direction:column;gap:10px}
+#gym .jn-day{border:3px solid #383848;background:#f8f8f8;box-shadow:inset 0 0 0 2px #f8f8f8,inset 0 0 0 4px #c8c8d8;padding:8px 12px 10px;color:#20202c}
+#gym .jn-hd{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:8px;width:100%;cursor:pointer;padding:2px 0 6px;border-bottom:2px dashed #c8c8d8;margin-bottom:6px}
+#gym .jn-hd b{font-size:15px}#gym .jn-hd b small{font-weight:400;color:#68687a}
+#gym .jn-hd em{margin-left:auto;font-style:normal;font-size:11px;color:#68687a}
+#gym .jn-today{font-style:normal;font-size:11px;font-weight:700;color:#fff;background:#e85840;padding:1px 6px;border-radius:3px}
+#gym .jn-st{display:grid;grid-template-columns:1fr auto;gap:3px 12px;margin:0;font-size:13px}
+#gym .jn-st dt{color:#484858;text-align:left}#gym .jn-st dd{margin:0;text-align:right;font-weight:700}
+#gym .jn-st .jn-sub{font-size:12px;font-weight:400;color:#68687a}#gym .jn-st dt.jn-sub{padding-left:12px}#gym .jn-st dt.jn-sub::before{content:'· '}
+#gym .jn-g{color:#2a8a3a!important}#gym .jn-m{color:#c83828!important}
+#gym .jn-log{list-style:none;margin:8px 0 0;padding:8px 0 0;border-top:2px dashed #c8c8d8;display:flex;flex-direction:column;gap:4px;font-size:12px;line-height:1.45}
+#gym .jn-log li{display:flex;gap:8px;text-align:left}#gym .jn-log time{flex:none;width:36px;color:#68687a;font-variant-numeric:tabular-nums}
