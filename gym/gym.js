@@ -1068,6 +1068,8 @@ async function promoFx(gi) {
   const g = st(), M = window.GymBGM; root.classList.remove('gview'); root.classList.add('dhide'); dlg('');
   const pl = $g('.gy-plate'), bd = $g('.gy-bd'), dim = document.createElement('div'); dim.className = 'pf-dim'; $g('.gy-main').appendChild(dim);
   pl.classList.add('pf-on'); try { M?.sePrep?.(['DP_KIRAKIRA2', 'ME_FANFA5']); } catch (e) {}
+  { const P = pl.getBoundingClientRect(), L = $g('.gy-wing.l').getBoundingClientRect(), R = $g('.gy-wing.r').getBoundingClientRect(), k = pl.offsetWidth / (P.width || 1), br = document.createElement('i'); br.className = 'pf-br';   /* 배지가 빠진 자리를 리본으로 이어 빈칸 없게 (경완 2026-11-04) */
+    Object.assign(br.style, { left: (L.right - P.left) * k - 12 + 'px', width: (R.left - L.right) * k + 24 + 'px', top: (L.top - P.top) * k + 'px', height: L.height * k + 'px' }); pl.appendChild(br); }
   void bd.offsetWidth; pl.classList.add('pf-zoom'); await wait(600);   /* 경완 2026-11-04 '타이틀 배지 바뀔 때 화면 포커싱': 배지가 화면 가운데로 크게 다가옴 */
   try { M?.se('DP_KIRAKIRA2'); } catch (e) {}
   bd.classList.add('pf-glow'); await wait(1700);
@@ -1080,7 +1082,7 @@ async function promoFx(gi) {
   confetti(); await wait(1700);
   pl.classList.remove('pf-zoom'); await wait(550);
   dim.classList.add('out'); await wait(350);
-  dim.remove(); pl.classList.remove('pf-on'); bd.classList.remove('pf-new'); bd.querySelector('.pf-ray')?.remove(); fl.remove(); $g('.gy-grade').classList.remove('pf-gt');
+  dim.remove(); pl.classList.remove('pf-on'); pl.querySelector('.pf-br')?.remove(); bd.classList.remove('pf-new'); bd.querySelector('.pf-ray')?.remove(); fl.remove(); $g('.gy-grade').classList.remove('pf-gt');
 }
 
 // ---------- 홈 ----------
