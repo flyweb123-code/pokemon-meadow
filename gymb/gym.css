@@ -2568,3 +2568,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym button.gy-qbtn.gy-qbtn.bs::after{content:'';position:absolute;inset:0;border-radius:9px;pointer-events:none;background:linear-gradient(110deg,transparent 42%,rgba(255,255,255,.75) 50%,transparent 58%) no-repeat;background-size:300% 100%;animation:qbShine 2.6s ease-in-out infinite}
 @keyframes qbShine{0%,55%{background-position:100% 0}100%{background-position:0 0}}
 #gym .gy-bsw .gy-body{margin-left:-14px;margin-right:-14px;padding-left:14px;padding-right:14px;padding-bottom:18px}   /* v15.42 경완: 심사 받기 버튼·승급 후 카드 빛이 가장자리에서 잘려서 빛 들어갈 자리 */
+/* 경완 2026-11-04: 승급 때 타이틀 배지가 화면 가운데로 크게 다가와 포커싱, 끝나면 제자리 */
+#gym .gy-plate.pf-on .gy-bd{transition:transform .55s cubic-bezier(.2,.9,.3,1)}
+#gym .gy-plate.pf-on.pf-zoom .gy-bd{transform:translateY(150px) scale(2)}
+/* 경완 2026-11-04 '넓히기 떠서 들어가면 넓히기 버튼 빨강 계열' */
+.gy-infos .if-big .gy-key.main{background:#e8402e!important;color:#fff!important;box-shadow:inset 0 3px 0 #ff8a70,inset 0 -4px 0 #a02418,0 3px 0 #0c0d18;text-shadow:1px 1px 0 #7a1810}

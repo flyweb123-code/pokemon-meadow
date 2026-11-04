@@ -1068,6 +1068,7 @@ async function promoFx(gi) {
   const g = st(), M = window.GymBGM; root.classList.remove('gview'); root.classList.add('dhide'); dlg('');
   const pl = $g('.gy-plate'), bd = $g('.gy-bd'), dim = document.createElement('div'); dim.className = 'pf-dim'; $g('.gy-main').appendChild(dim);
   pl.classList.add('pf-on'); try { M?.sePrep?.(['DP_KIRAKIRA2', 'ME_FANFA5']); } catch (e) {}
+  void bd.offsetWidth; pl.classList.add('pf-zoom'); await wait(600);   /* 경완 2026-11-04 '타이틀 배지 바뀔 때 화면 포커싱': 배지가 화면 가운데로 크게 다가옴 */
   try { M?.se('DP_KIRAKIRA2'); } catch (e) {}
   bd.classList.add('pf-glow'); await wait(1700);
   const fl = document.createElement('i'); fl.className = 'pf-flash'; bd.appendChild(fl);
@@ -1077,6 +1078,7 @@ async function promoFx(gi) {
   $g('.gy-grade').classList.add('pf-gt');
   try { M?.fan ? M.fan('ME_FANFA5') : M?.se('ME_FANFA5'); } catch (e) {}
   confetti(); await wait(1700);
+  pl.classList.remove('pf-zoom'); await wait(550);
   dim.classList.add('out'); await wait(350);
   dim.remove(); pl.classList.remove('pf-on'); bd.classList.remove('pf-new'); bd.querySelector('.pf-ray')?.remove(); fl.remove(); $g('.gy-grade').classList.remove('pf-gt');
 }
