@@ -219,7 +219,7 @@ const bigOf = (g = st()) => { const gi = gradeOf(g?.rep || 0).i; return g?.big =
 const canBig = (g = st()) => !!g?.d && gradeOf(g.rep || 0).i > bigOf(g);
 // 등급 배지 = 지금 체육관 타입의 그 등급 배지 그림 (경완 2026-10-29 '이 배지를 체육관 등급 배지로')
 const gEmb = i => bdHtml(st().ty, i + 1);
-const gradeOf = rep => { let i = 0; GRADES.forEach(([v], k) => { if (rep >= v) i = k; }); return { i, s: STAGE[i], n: GRADES[i][1], lo: GRADES[i][0], hi: GRADES[i + 1]?.[0] ?? REP_MAX }; };
+const gradeOf = (rep, gm = st()?.gmax ?? 99) => { let i = 0; GRADES.forEach(([v], k) => { if (rep > v || (rep === v && k <= gm)) i = k; });   /* v15.41 경완 '50이면 50 꽉 차게': 승급 심사 전엔 문턱에 딱 닿아도 아직 아래 등급 (막대 꽉 참) */ return { i, s: STAGE[i], n: GRADES[i][1], lo: GRADES[i][0], hi: GRADES[i + 1]?.[0] ?? REP_MAX }; };
 
 // ---------- 저장 ----------
 const st = () => S.gym;
@@ -592,8 +592,8 @@ const BD_TW = [0, 0, 0, 0, 0, 1, 2, 4];
 const bdHtml = (t, L, cls = '') => { const u = bdImg(t, L); return `<span class="bdw t${L}${cls ? ' ' + cls : ''}" style="--m:url('${u}')"><img alt="" src="${u}">${L >= 4 ? '<i class="bd-sw"></i>' : ''}${L ? '<i class="bd-tw"></i>'.repeat(BD_TW[L] || 0) : ''}</span>`; };   // 빛 지나가기는 월계수(4등급)부터 (경완 2026-10-29)
 const gShort = i => GRADES[i][1].replace(/ 체육관$/, '');
 const bdPh = rep => Math.min(1, (rep || 0) / REP_MAX) ** 1.5;   // 평판이 오를수록 도전자가 어려워짐 (0~1): 초반 쉽고 뒤로 갈수록 가파르게 (경완 2026-10-29)
-const bsReady = g => { const nx = g && GRADES[(g.gmax | 0) + 1]; return !!nx && (g.rep || 0) >= nx[0] - 1; };   // 평판이 이 등급 끝까지 찼다 = 승급 심사를 받을 수 있다
-const repCap = g => { const nx = GRADES[(g.gmax | 0) + 1]; return nx ? nx[0] - 1 : REP_MAX; };   // 승급 심사 전에는 문턱 바로 앞까지만
+const bsReady = g => { const nx = g && GRADES[(g.gmax | 0) + 1]; return !!nx && (g.rep || 0) >= nx[0]; };   // 평판이 이 등급 끝까지 찼다 = 승급 심사를 받을 수 있다
+const repCap = g => { const nx = GRADES[(g.gmax | 0) + 1]; return nx ? nx[0] : REP_MAX; };   // 승급 심사 전에는 문턱까지만 (v15.41: 문턱 바로 앞 → 문턱에 꽉 차게)
 const RIVAL_GYMS = ['무쇠시티 체육관', '영원시티 체육관', '베일시티 체육관', '늪지시티 체육관', '연고시티 체육관', '운하시티 체육관', '선단시티 체육관', '물가시티 체육관'];
 let NAMED = [];
 const loadNamed = () => NAMED.length ? Promise.resolve() : fetch(`gym/named.json?v=${VER}`).then(r => r.ok ? r.json() : []).then(j => { NAMED = j || []; }).catch(() => {});
@@ -607,12 +607,13 @@ function gInit() {
   if ((g.rv | 0) < 3) {   // 10.90: 평판 문턱을 막은 도전자 수에 맞춰 줄이고(예전 등급 → 새 등급 0·1·3·4·5·6), 타입 배지(동~프리즘 1~4)를 등급 배지 번호(4~7)로
     const NEW = [0, 30, 100, 200, 300, 500], r = g.rep || 0, i = GRADES_OLD.findLastIndex(v => r >= v), lo = GRADES_OLD[i], hi = GRADES_OLD[i + 1];
     g.rep = hi ? Math.round(NEW[i] + (r - lo) / (hi - lo) * (NEW[i + 1] - NEW[i])) : REP_MAX;
-    g.gmax = gradeOf(g.rep).i; for (const t of Object.keys(g.bdl)) if (g.bdl[t]) g.bdl[t] += 3;
+    g.gmax = gradeOf(g.rep, 99).i; for (const t of Object.keys(g.bdl)) if (g.bdl[t]) g.bdl[t] += 3;
     if (g.ty && g.gmax) { g.bdl[g.ty] = Math.max(bdLv(g, g.ty), g.gmax + 1); g.bdg[g.ty] = g.bdg[g.ty] || Date.now(); }
     g.q = g.q.filter(c => !c.boss); g.bsN = {}; g.ms = {}; g.rv = 3;
   }
   if (g.rv === 3) { g.rep = Math.round((g.rep || 0) * 2.5); g.ms = {}; g.rv = 4; }   // 11.58: 평판 문턱 2.5배에 맞춰 옮김
-  if (g.rv === 4) { g.rep = Math.min(g.rep || 0, repCap(g)); g.rv = 5; }   // v14.58: 문턱이 내려가도 승급 심사 없이 등급이 오르지 않게 (심사 전 문턱 바로 앞까지)
+  if (g.rv === 4) { g.rep = Math.min(g.rep || 0, repCap(g)); g.rv = 5; }
+  if (g.rv === 5) { const nx = GRADES[(g.gmax | 0) + 1]; if (nx && (g.rep || 0) === nx[0] - 1) g.rep = nx[0]; g.rv = 6; }   // v15.41: 문턱 바로 앞에서 심사를 기다리던 체육관은 문턱에 꽉 차게   // v14.58: 문턱이 내려가도 승급 심사 없이 등급이 오르지 않게 (심사 전 문턱 바로 앞까지)
   // 칸토 디자인에서 플라티나 체육관으로: 같은 분위기 맵으로 옮기고, 직접 놓은 장식 자리는 새로 잡는다
   if (g.d && !DESIGNS.some(d => d.id === g.d)) g.d = dzBase(g.d).id;   // 맵 묶음이 바뀌면 짝 맵으로 (자리는 맵 id 로 저장돼 있어 그대로 둔다)
   if (g.d && g.big == null) g.big = gradeOf(g.rep || 0).i;   // 지금 크기에서부터 직접 넓히기
@@ -936,6 +937,7 @@ async function challenge(picked) {
     glog(won ? 'win' : 'lose', `${esc(c.cls)} <b>${esc(c.nm)}</b>${won ? `에게 이겼다! <small>+${gold}G · 평판 +${rep}</small>` : `에게 졌다… <small>평판 ${rep}</small>`}`);
     setAt(); save(); renderTop();
     await resultPop(c, res, gold, rep, R);
+    if (g.stk && (bsReady(g) || (c.boss && won))) { g.stk = 0; save(); renderTop(); }   /* v15.41 경완: 연승은 등급 안에서만. 결과창 뒤 승급 심사가 열리면(또는 심사 통과) 연승 끊김 */
     // 결과창 다음에 도전자가 한마디 더 하고 나간다 (v12.20 경완 '배틀 결과 안내창 나오고 한 마디씩 더 하고 퇴장'). 기권이면 이긴 한마디 (경완 2026-10-29)
     { root.classList.remove('dhide'); const bye = res?.quit ? sayEnd.lose : c.named === 'red' ? '…………' : c.boss ? (won ? '훌륭한 배틀이었어요. 새 등급에 어울리는 체육관이 되길 바라요!' : '아직 조금 부족하네요. 준비되면 언제든 다시 심사를 신청해 주세요.') : pick(won ? BYE_LOST : BYE_WON).replace('{me}', me); await talk(who + esc(bye)); }
     if (g.newBdg) await badgeGet(g.newBdg);
@@ -986,7 +988,7 @@ async function bsStart(gi) {
 
 // 배틀 결과 (경완 2026-10-29 '보상 좀 더 보기 쉽고 임팩트 있게, 경험치·친밀도는 안 보여도 됨'): 승리 현수막 + 꽃가루 → 골드 세기 → 평판 막대
 function resultPop(c, res, gold, rep, R) {
-  const won = !!res?.won, stk = st().stk | 0, sb = won ? stkBonus(stk) : 0, gb = won && gold ? Math.min(gold, stkGold(stk, R?.g || 0)) : 0, g0 = gold - gb;
+  const won = !!res?.won, stk = st().stk | 0, sb = won ? Math.max(0, rep - Math.min(rep, repWin(R?.r || 0))) : 0,   /* v15.41: 평판이 문턱에서 막히면 기본 점수부터 채우고 남는 만큼만 연승 보너스 (기본 점수가 -로 보이던 것) */ gb = won && gold ? Math.min(gold, stkGold(stk, R?.g || 0)) : 0, g0 = gold - gb;
   return new Promise(ok => { const p = pop(`<div class="rs-hd ${won ? 'won' : 'lost'}"><i class="rs-ray"></i><b>${won ? '승리!' : res?.quit ? '기권했다' : '패배…'}</b><small>${esc(c.cls)} ${esc(c.nm)}${won ? '에게 이겼다' : '에게 졌다'}</small></div>
       ${won ? `<div class="rs-gold"><i class="coin"></i><b class="rg-n">+0</b><span>G</span>${gb ? `<em class="rg-b">+${gb}G</em>` : ''}</div>` : ''}${repBox(rep, sb, stk)}
       <div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => { close(); ok(); });
@@ -1192,6 +1194,7 @@ function renderTop() {
   $g('.gy-grade').textContent = GRADES[gi][1];
   { const b = $g('.gy-bd'), k = `${g.ty}.${gi}`; if (b.dataset.k !== k) { b.dataset.k = k; b.innerHTML = gEmb(gi); } }   // 등급 배지를 타이틀 박스 가운데에 (경완 2026-10-29)
   $g('.gy-bar>i').style.width = (G.hi > G.lo ? clampN(((g.rep || 0) - G.lo) / (G.hi - G.lo), 0, 1) : 1) * 100 + '%';
+  $g('.gy-plate').classList.toggle('full', bsReady(g));   /* v15.41 경완: 평판이 꽉 차면 게이지 테두리가 은은하게 빛남 */
   { const sk = $g('.gy-stk'), n = g.stk | 0; if (sk) { sk.hidden = n < 2; sk.textContent = `${n}연승 중!`; } }   /* 홈 평판 아래 연승 딱지 (경완 2026-11-04 시안 A) */
   $g('.gy-repn').textContent = `${g.rep || 0}${G.hi > G.lo && G.hi < REP_MAX + 1 ? `/${G.hi}` : ''}`; $g('.gy-grade').dataset.g = G.i; $g('.gy-plate').dataset.g = G.i; $g('.gy-plate').classList.toggle('canup', canBig(g));
   renderGoldG(); menuDot();
@@ -1340,7 +1343,7 @@ function sfCard(s) { bodyCard(trSrc(s.tr), sfName(s), `${s.w || 0}승 ${s.l || 0
 function infoPop() {
   root.querySelector('.gy-infos')?.remove();
   const g = st(), D = dzOf(g.d), G = gradeOf(g.rep || 0), d0 = new Date(g.t0 || Date.now()), days = Math.max(1, Math.floor((dayStart(Date.now()) - dayStart(g.t0 || Date.now())) / DAY) + 1);
-  const wl = (g.w || 0) + (g.l || 0), wr = wl ? Math.round((g.w || 0) / wl * 100) : 0, w = g.wk || {}, nb = Object.keys(g.bdg || {}).length, bL = bdLv(g, g.ty), exam = nx0 => nx0 && (g.gmax | 0) <= G.i && (g.rep || 0) >= nx0[0] - 1;
+  const wl = (g.w || 0) + (g.l || 0), wr = wl ? Math.round((g.w || 0) / wl * 100) : 0, w = g.wk || {}, nb = Object.keys(g.bdg || {}).length, bL = bdLv(g, g.ty), exam = nx0 => nx0 && (g.gmax | 0) <= G.i && (g.rep || 0) >= nx0[0];
   const pct = G.hi > G.lo ? Math.min(100, ((g.rep || 0) - G.lo) / (G.hi - G.lo) * 100) : 100, nx = GRADES[G.i + 1];
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos'; $g('.gy-main').appendChild(el);   // 하단 메뉴는 늘 보이게 (경완 2026-10-29)
   el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 정보</b></div>
@@ -1391,7 +1394,7 @@ async function shutFx(t1, s1, t2, s2, mid, { hold = 0, under } = {}) {   // hold
   await mid?.(); fx.querySelector('.re-sign').innerHTML = `<b>${t2}</b><span>${s2}</span><small></small>`;
   sfx('tap'); await wait(1100 + hold / 2); under?.(); await wait(60); fx.classList.remove('down'); fx.classList.add('up'); shutSe(0); await wait(900); fx.remove();
 }
-const gCard = (x, i) => { const G = gradeOf(x.rep || 0), cur = x === st(), sm = SF_MAX[G.i], tI = tyIcon(x.ty).replace(/ data-tip="[^"]*"/, '');
+const gCard = (x, i) => { const G = gradeOf(x.rep || 0, x.gmax ?? 99), cur = x === st(), sm = SF_MAX[G.i], tI = tyIcon(x.ty).replace(/ data-tip="[^"]*"/, '');
   return `<div class="mg-card${cur ? ' cur' : ''}" data-ty="${x.ty}"><button type="button" class="mg-go" data-i="${i}"><span class="mg-th"><img alt="" data-ms="${x.d}" data-gi="${bigOf(x)}"><em class="mg-st">${cur ? '운영 중' : '휴업 중'}</em></span><span class="mg-tx"><b>${esc(x.nm)}</b><span class="mg-ty">${tI}${TYPE_KO[x.ty]} · ${G.n}</span><span class="mg-ch"><i>평판 <b>${x.rep || 0}</b></i><i>트레이너 <b>${sm ? `${(x.sf || []).length}/${sm}` : '잠김'}</b></i></span></span></button><button type="button" class="mg-del" data-del="${i}">폐업</button></div>`; };
 // 포켓몬 박스 타입 필터와 같은 목록 창 (경완 2026-10-30 '체육관 타입 필터 전부 포켓몬 박스랑 같게'): O = [[값, 이름, 타입번호(색 점)|null, 앞에 붙일 html]]
 function fPop(title, O, cur, pick) {
@@ -1508,7 +1511,7 @@ function simPop() {
     close(); if (a === 'x') return; const now = Date.now();
     if (a === 'cand1' || a === 'cand3') { for (let i = a === 'cand1' ? 1 : 3; i--;) g.cands.push(mkCand(now)); g.candSeen = 0; save(); menuDot(); return say(`지원자가 왔어요! (지원서 ${g.cands.length}장)`, '트레이너 메뉴 › 지원서'); }
     if (a === 'chal' || a === 'named') { let c = mkChal(now); if (a === 'named') { for (let i = 0; i < 30 && !c.named; i++) c = mkChal(now); } arrive(c); save(); homeSay(); return qDing(); }
-    if (a === 'rep+' || a === 'rep-') { g.rep = clampN((g.rep || 0) + (a === 'rep+' ? 125 : -125), 0, REP_MAX); g.gmax = Math.max(g.gmax | 0, gradeOf(g.rep).i); save(); renderTop(); return say(`평판 ${g.rep} (${gradeOf(g.rep).n})`); }
+    if (a === 'rep+' || a === 'rep-') { g.rep = clampN((g.rep || 0) + (a === 'rep+' ? 125 : -125), 0, REP_MAX); g.gmax = Math.max(g.gmax | 0, gradeOf(g.rep, 99).i); save(); renderTop(); return say(`평판 ${g.rep} (${gradeOf(g.rep).n})`); }
     if (a === 'gold') { S.gold += 100000; save(); renderGoldG(); return say(`골드 ${S.gold.toLocaleString()}G`); }
     if (a === 'rpt') { g.rpt = g.rpt || { w: 3, l: 1, b: 12, g: 4200, rank: 7, seen: 0 }; return reportPop(true); }
     if (a === 'bdg') return badgeGet(g.ty);
