@@ -481,7 +481,7 @@ function drawStaff() {
       : `<p class="sf-none">지금은 지원서가 없어요. 새 지원자가 오면 트레이너 단추에 빨간 점이 떠요.</p>`;
   const gL = K.sfList ? K.sfList() : [], gNo = x => gL.findIndex(z => z[0] === x);
   const list = `<div class="sf-list">${g.sf.map((s, i) => `<button class="sf-card${s.rest ? ' rest' : ''}" data-sf="${i}"><img class="sf-pic" alt="" src="${K.trSrc(s.tr)}"><div class="sf-mid"><b>${esc(s.cls)} ${esc(s.nm)}</b>${trtBox(s.trait)}
-      <span class="sf-st">${s.rest ? '<em class="r">쉬는 중</em>' : ''}${K.inGym(s) ? `<em class="g">체육관 ${gNo(s) >= 0 ? gNo(s) + 1 + '번' : ''}</em>` : ''}${s.yard ? '<em class="y">훈련장 코치</em>' : ''}${!K.inGym(s) && !s.yard && !s.rest ? '<em>대기 중</em>' : ''}<i>${s.w || 0}승 ${s.l || 0}패</i></span>${teamIc(s.team)}</div><i class="sf-go">›</i></button>`).join('') || '<p class="sf-none sf-empty">아직 고용한 트레이너가 없어요.</p>'}</div>`;
+      <span class="sf-st">${s.rest ? '<em class="r">쉬는 중</em>' : ''}${K.inGym(s) ? `<em class="g">체육관 ${gNo(s) >= 0 ? gNo(s) + 1 + '번' : ''}</em>` : ''}${s.yard ? '<em class="y">훈련장 코치</em>' : ''}${!K.inGym(s) && !s.yard && !s.rest ? '<em>대기 중</em>' : ''}<i>${s.w || 0}승 ${s.l || 0}패</i><i class="sf-pay">월급 ${s.wage}G</i></span>${teamIc(s.team)}</div><i class="sf-go">›</i></button>`).join('') || '<p class="sf-none sf-empty">아직 고용한 트레이너가 없어요.</p>'}</div>`;
   sh.innerHTML = `<h3>트레이너</h3>${tabs}${sfT === 'cand' ? cand : list}`;
   const dk = sh.querySelector('.cv-deck'); if (dk) dk.onscroll = () => { const i = Math.round(dk.scrollLeft / (dk.firstElementChild.offsetWidth + 12)); sh.querySelectorAll('.cv-dots i').forEach((d, j) => d.classList.toggle('on', i === j)); };
   sh.onclick = e => {
@@ -522,9 +522,15 @@ function reject(c) {
 function hire(c) {
   const g = st(); if (!c) return;
   if (g.sf.length >= K.staffMax()) return pop(`<h4>트레이너 자리가 꽉 찼어요</h4><p class="gy-msg">지금 ${g.sf.length}/${K.staffMax()}명이에요. 체육관 등급을 올리거나 한 명을 해고하면 고용할 수 있어요.</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => close());
-  if (!spend(c.wage)) return say(`골드가 모자라요. 첫 주 월급 ${c.wage}G가 필요해요.`);
-  const now = Date.now(); g.sf.push(Object.assign({}, c, { hired: now, pay: now + 7 * K.DAY, w: 0, l: 0, xp: 0 })); dropCand(c);
-  K.glog('sf', `${esc(c.cls)} <b>${esc(c.nm)}</b>${K.jong(c.nm) ? '을' : '를'} 고용했다! <small>월급 ${c.wage}G</small>`); K.save(); redraw(); K.renderHome();
+  /* v15.60 경완: 고용할지 한 번 묻고, 고용하면 효과음과 함께 고용 관리 탭으로 */
+  pop(`<h4>고용할까요?</h4><p class="gy-msg">${esc(c.cls)} <b>${esc(c.nm)}</b>${K.jong(c.nm) ? '을' : '를'} 고용해요.<br>첫 주 월급 <b>${c.wage}G</b>를 바로 내요.</p><div class="gy-btns"><button data-a="x">아니요</button><button class="main" data-a="y">고용하기</button></div>`, (a, close) => {
+    close(); if (a !== 'y') return;
+    if (!spend(c.wage)) return say(`골드가 모자라요. 첫 주 월급 ${c.wage}G가 필요해요.`);
+    const now = Date.now(); g.sf.push(Object.assign({}, c, { hired: now, pay: now + 7 * K.DAY, w: 0, l: 0, xp: 0 })); dropCand(c);
+    K.glog('sf', `${esc(c.cls)} <b>${esc(c.nm)}</b>${K.jong(c.nm) ? '을' : '를'} 고용했다! <small>월급 ${c.wage}G</small>`); K.save();
+    try { const M = window.GymBGM; M?.fan ? M.fan('ME_FANFA1') : M?.se('ME_FANFA1'); } catch (e) {}
+    sfT = 'sf'; redraw(); K.renderHome();
+  });
 }
 
 // ======================= 상점 (5단계) =======================
