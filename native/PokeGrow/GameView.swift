@@ -62,6 +62,18 @@ struct GameView: UIViewRepresentable {
                 guard let raw = n.userInfo?[AVAudioSessionSilenceSecondaryAudioHintTypeKey] as? UInt else { return }
                 web?.evaluateJavaScript("window.pkAudInt&&pkAudInt(\(raw == 1 ? 2 : 3))")
             }
+            // 2026-11-04 경완 '채팅 칠 때 필드는 가만히, 채팅창만 위로': 키보드가 웹 화면을 가리는 높이를 게임에 알려 주고 (window.pkKb),
+            // 아이폰이 입력칸을 보이려고 화면을 밀어 올린 것은 되돌린다 (스크롤은 꺼 둔 화면이라 늘 0 이 맞다)
+            NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillChangeFrameNotification, object: nil, queue: .main) { [weak web] n in
+                guard let web, let end = (n.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
+                let r = web.convert(end, from: nil), h = max(0, web.bounds.maxY - r.minY)
+                web.evaluateJavaScript("window.pkKb&&pkKb(\(Int(h)))")
+                for t in [0.0, 0.05, 0.3] { DispatchQueue.main.asyncAfter(deadline: .now() + t) { web.scrollView.setContentOffset(.zero, animated: false) } }
+            }
+            NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { [weak web] _ in
+                web?.evaluateJavaScript("window.pkKb&&pkKb(0)")
+                web?.scrollView.setContentOffset(.zero, animated: false)
+            }
             NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self, weak web] _ in
                 guard let self, let web, Date().timeIntervalSince(self.leftAt) > 30 * 60 else { return }
                 web.load(URLRequest(url: gameURL, cachePolicy: .reloadRevalidatingCacheData))
