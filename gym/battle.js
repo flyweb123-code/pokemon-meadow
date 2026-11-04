@@ -649,10 +649,11 @@ async function run(opts) {
   my.forEach(o => gifLoad(gifUrl(o.sp, true, o.shiny, o.g === 'F'))); foeT.forEach(o => gifLoad(gifUrl(o.sp, false, o.shiny, o.g === 'F')));   // 미리 받기
   btl.makeChoices('default', 'default');   // 팀 미리보기: 라인업 순서 그대로
   try { await play(); } catch (e) { console.error(e); try { window.pkErr?.('battle: ' + (e?.message || e), e?.stack); } catch (e2) {} }
-  const won = btl.winner === '관장', out = B?.out;
-  try { blogSave(opts, my, foeT, won, out); } catch (e) {}
+  const won = btl.winner === '관장', out = B?.out, cut = !btl.ended && out !== 'quit';   /* 오류로 중간에 멈춘 배틀은 없던 배틀 (경완 2026-11-04 '질 상황이 아니었는데 진 걸로') */
+  try { blogSave(opts, my, foeT, won, out || (cut ? 'cut' : undefined)); } catch (e) {}
   if (B) {
-    if (out !== 'quit') {
+    if (cut) await msgTap('배틀이 중간에 멈췄다! 이번 승부는 없던 걸로 한다.');
+    else if (out !== 'quit') {
       $b('.bt-tr.e').classList.add('back');
       if (won) { M('play', music === 'train' ? 'winTrain' : 'winGym', { fade: .05 }); await msgTap(`${wa(foeNm)}의 승부에서 이겼다!`); }
       else await msgTap('승부에서 졌다…');
@@ -665,7 +666,7 @@ async function run(opts) {
   lowHp(false); M('play', 'gym', { fade: 1.2 });
   // 끝나면 까맣게 어두워졌다가 체육관이 밝아지며 돌아온다 (본가처럼, 경완 2026-10-28)
   const fd = document.createElement('i'); fd.className = 'bt-fade'; (el.parentElement || document.body).appendChild(fd); void fd.offsetWidth; fd.classList.add('on'); await wait(420);
-  el.classList.add('off'); el.hidden = true; await wait(120); fd.classList.remove('on'); setTimeout(() => fd.remove(), 800); await wait(650); const res = { won, quit: out === 'quit', turns: btl.turn, my: B?.my, used: [...(B?.used || [])], xr: B?.xr || {} }; B = null; return res;
+  el.classList.add('off'); el.hidden = true; await wait(120); fd.classList.remove('on'); setTimeout(() => fd.remove(), 800); await wait(650); const res = { won: won && !cut, cut, quit: out === 'quit', turns: btl.turn, my: B?.my, used: [...(B?.used || [])], xr: B?.xr || {} }; B = null; return res;
 }
 
 // 쇼다운 기록을 한 줄씩 읽어 화면에 보여 준다. 고를 차례가 오면 아래 화면 메뉴
@@ -703,7 +704,7 @@ async function choose(req) {
   for (;;) {
     const a = await mainPanel(A);
     if (a === 'fight') { if (req.active[0].moves.every(m => m.disabled || m.pp <= 0)) return 'move 1'; const i = await movePanel(req); if (i == null) continue; return 'move ' + (i + 1); }
-    if (a === 'mon') { const i = await partyPanel(req, false); if (i == null) continue; if (req.active[0].trapped) { await msg(`${eun(A.nm)} 교체할 수 없다!`); continue; } return 'switch ' + (i + 1); }
+    if (a === 'mon') { const i = await partyPanel(req, false); if (i == null) continue; if (req.active[0].trapped || B.btl.p1.active[0]?.trapped) { await msg(`${eun(A.nm)} 교체할 수 없다!`); continue; }   /* 그림자밟기처럼 아직 안 드러난 특성으로 묶이면 요청엔 maybeTrapped 만 와서 교체를 보냈다가 배틀이 멈췄음 (경완 2026-11-04) */ return 'switch ' + (i + 1); }
     if (a === 'bag') { await msg('체육관 배틀에서는 가방을 쓸 수 없다!'); continue; }
     if (a === 'run') { if (await yesNo(B.practice ? '연습 배틀을 그만둘까요?' : '기권할까요? 진 것으로 처리돼요.')) return 'quit'; continue; }
   }
