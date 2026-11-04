@@ -2579,3 +2579,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-plate .pf-br::after{inset:3px 0;background:linear-gradient(180deg,#fff 0,#fff 8%,var(--win) 9%,var(--win) 84%,var(--g2) 85%)}   /* 배지가 빠진 자리를 잇는 리본 (경완 2026-11-04 '타이틀 박스 가운데 빈 공간 없게') */
 /* 경완 2026-11-04 '넓히기 떠서 들어가면 넓히기 버튼 빨강 계열' */
 .gy-infos .if-big .gy-key.main{background:#e8402e!important;color:#fff!important;box-shadow:inset 0 3px 0 #ff8a70,inset 0 -4px 0 #a02418,0 3px 0 #0c0d18;text-shadow:1px 1px 0 #7a1810}
+#gym .gy-top .gy-plate::before{content:'';position:absolute;z-index:2;left:calc(50% - 28px);width:56px;top:50%;height:60px;margin-top:-30px;box-sizing:border-box;border-block:3px solid var(--frame);background:linear-gradient(180deg,#fff 0,#fff 8%,var(--win) 9%,var(--win) 84%,var(--g2) 85%);filter:drop-shadow(0 3px 0 rgba(0,0,0,.4));pointer-events:none}   /* v15.51 경완: 배지 뒤 타이틀 리본은 늘 이어져 있게 */
+#gym .gy-plate.pf-on .gy-bd{z-index:5}   /* v15.51 경완: 승급 배지가 나올 때 평판 게이지보다 앞 */
