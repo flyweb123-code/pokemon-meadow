@@ -965,7 +965,7 @@ function bsGo() {
 // 심사 화면: 지금 등급 배지 → 승급하면 받을 다음 등급 배지, '심사 받기'
 function bsScreen() {
   const g = st(); if (!bsReady(g)) return homeSay();
-  root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
+  root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null); bsMus = true; bgmPlay('league');
   const gi = (g.gmax | 0) + 1, el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-bsw'; el.insertAdjacentHTML('afterbegin', `<i class="bsw-bg" aria-hidden="true">${'<i></i>'.repeat(14)}</i>`); $g('.gy-main').appendChild(el);
   // 웅장하게 (경완 2026-10-31): 어두운 무대 + 빛줄기 속 다음 등급 배지, 금빛 리본, 등급 혜택, 금빛 버튼
   el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">승급 심사</b></div>
@@ -976,11 +976,11 @@ function bsScreen() {
       <div class="bsw-ben"><h5>승급 혜택</h5>${perkHtml(gi)}</div></div>
       <button class="bsw-go" type="button" data-a="go"><span>심사 받기</span></button></div>`;   // 버튼은 맨 아래, 설명 문구 없음 (경완 2026-10-31)
   el.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap');
-    if (b.dataset.a === 'x') { el.remove(); return homeSay(); }
+    if (b.dataset.a === 'x') { el.remove(); if (bsMus) { bsMus = false; bgmPlay('gym'); } return homeSay(); }
     if (b.dataset.a === 'go') { el.remove(); openTab('battle', { title: '승급 심사 라인업', pick: i => { const g2 = st(); g2.luI = i; save(); bsStart(gi); } }); } };   // 포켓몬 메뉴와 같은 라인업 화면에서 고르고 '이 라인업으로 결정' (12.95: 고른 라인업으로 나감)
 }
 async function bsStart(gi) {
-  const g = st(); openTab(null);
+  const g = st(); bsMus = false; openTab(null);
   await loadNamed(); const c = bsReady(g) && mkBoss(gi, Date.now());
   if (!c) return say('심사관을 부르지 못했어요.', '잠시 뒤 다시 해 주세요');
   g.q = g.q.filter(x => !x.boss); g.q.unshift(c); challenge(true);
@@ -1308,7 +1308,9 @@ const SOON = {
   staff: { t: '트레이너', ic: 'tr/cool_trainer_f', d: '체육관에 트레이너를 5명까지 고용해요.', li: ['가끔 오는 면접 제안', '트레이너마다 특성 (예: 훈련광)', '도전자를 먼저 상대해 주고, 월급은 7일마다'] },
   shop: { t: '체육관 상점', ic: 'tr/gentleman', d: '체육관 운영에 필요한 것을 사요.', li: ['기술머신으로 포켓몬에게 기술 가르치기', '배틀 도구', '체육관 꾸미기 아이템'] },
 };
+let bsMus = false;   // 승급 심사 화면 곡(포켓몬리그)이 나오는 중 (경완 2026-11-04 '승급심사 화면 들어가면 bgm 웅장하게')
 function openTab(t, opt) {
+  if (bsMus && !(t === 'battle' && opt?.pick)) { bsMus = false; bgmPlay('gym'); }   // 심사 화면·라인업에서 다른 곳으로 가면 체육관 곡으로
   // 꾸미기·자리 정하기 중에 다른 메뉴를 열면 그 모드를 끝낸다 (경완 2026-10-27 '꾸미기 하고 나서 맵에 그리드 안 사라지는 오류')
   if (t && ded) ded.end?.();
   if (luRes && !opt?.pick) { const r = luRes; luRes = null; root.classList.remove('lupk'); setTimeout(() => r(null)); }   // 라인업 고르다 닫음
