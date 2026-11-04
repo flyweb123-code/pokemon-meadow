@@ -804,9 +804,9 @@ function payDay(now) {
 }
 // 면접 지원자 (하루~이틀에 한 명, 30시간 동안 기다린다)
 function mkCand(now) {
-  const k = pick(Object.keys(CLS)), C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS));
+  const ty = st().ty, KS = Object.keys(CLS).filter(x => ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS)),   // v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS));
   const W = GYMB(), wage = Math.round(clampN((W.WAGE_BASE + lv * W.WAGE_LV + n * 35) * (trait === 'thrift' ? .7 : trait === 'lazy' ? .55 : trait === 'guts' ? 1.15 : 1), W.WAGE_BASE, Math.max(W.WAGE_BASE, W.WAGE_MAX)) / 10) * 10;
-  return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), f: C.f, trait, wage, team: mkTeam(C.t, lv, n) };
+  return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), f: C.f, trait, wage, team: mkTeam(ty ? [ty] : C.t, lv, n) };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
 }
 const SF_MAX = [0, 1, 2, 3, 4, 5, 6];   // v13.01 경완: 전설 6명
 // 등급 혜택 (승급 심사 화면·승급 축하창): 바로 앞 등급과 달라지는 것만, 앞→뒤 숫자로 (경완 2026-10-31 '등급 혜택이나 잘 보이게')
@@ -830,6 +830,7 @@ const qLeft = (c, now = Date.now()) => { const m = Math.max(0, Math.ceil((qExp(c
 function tick(now = Date.now()) {
   const g = gInit(); if (!g || !g.d) return;
   [...(g.q || []), ...(g.cands || [])].forEach(c => { if (c.team?.some(m => spOff(m[0]))) c.team = c.team.map(m => spOff(m[0]) ? [pickSp(SPECIES[m[0]]?.t || [], m[1]), m[1]] : m); });   // 이미 와 있는 도전자·지원자도 끈 포켓몬은 바꿈
+  if (g.ty) (g.cands || []).forEach(c => { if (c.team?.some(m => !(SPECIES[m[0]]?.t || []).includes(g.ty))) c.team = c.team.map(m => (SPECIES[m[0]]?.t || []).includes(g.ty) ? m : [pickSp([g.ty], m[1]), m[1]]); });   // v15.48 경완: 이미 와 있는 지원서도 체육관 타입 포켓몬으로
   rollWeek(now);
   const today = dayStart(now);
   if (!g.day) { g.day = today; g.sch = mkSch(today, now); g.sch.unshift(now + 90e3); }   // 처음: 1분 반 뒤 첫 도전자
