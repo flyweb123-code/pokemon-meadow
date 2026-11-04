@@ -2,7 +2,8 @@
  "rule": "전신(full)과 필드(ow) 스프라이트가 둘 다 있는 의상만 상점에 넣는다 (경완, 2026-11-04).",
  "sizes": {
   "full": "80x80",
-  "field": "288x32, 32x32 9프레임: 0정면 1뒤 2왼쪽 3·4정면걷기 5·6뒤걷기 7·8왼쪽걷기 (오른쪽은 왼쪽 좌우반전)"
+  "field": "288x32, 32x32 9프레임: 0정면 1뒤 2왼쪽 3·4정면걷기 5·6뒤걷기 7·8왼쪽걷기 (오른쪽은 왼쪽 좌우반전)",
+  "battle_back": "80x80 한 장 (gym/img/trb/pt_m.png·pt_f.png와 같은 자세·크기)"
  },
  "outfits": [
   {
@@ -12,7 +13,8 @@
    "full": "full/beauty_m.png",
    "field": null,
    "shop": false,
-   "note": ""
+   "note": "",
+   "battle_back": null
   },
   {
    "key": "beauty_f",
@@ -21,7 +23,8 @@
    "full": "full/beauty_f.png",
    "field": null,
    "shop": false,
-   "note": ""
+   "note": "",
+   "battle_back": null
   },
   {
    "key": "black_belt_m",
@@ -30,7 +33,8 @@
    "full": "full/black_belt_m.png",
    "field": "ow/black_belt_m_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/black_belt_m_trb.png"
   },
   {
    "key": "black_belt_f",
@@ -39,7 +43,8 @@
    "full": null,
    "field": null,
    "shop": false,
-   "note": "전신 제외(경완, 11/04)"
+   "note": "전신 제외(경완, 11/04)",
+   "battle_back": null
   },
   {
    "key": "blaine_m",
@@ -48,7 +53,8 @@
    "full": "full/blaine_m.png",
    "field": null,
    "shop": false,
-   "note": ""
+   "note": "",
+   "battle_back": null
   },
   {
    "key": "blaine_f",
@@ -57,7 +63,8 @@
    "full": "full/blaine_f.png",
    "field": null,
    "shop": false,
-   "note": ""
+   "note": "",
+   "battle_back": null
   },
   {
    "key": "blue_m",
@@ -66,7 +73,8 @@
    "full": "full/blue_m.png",
    "field": "ow/blue_m_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/blue_m_trb.png"
   },
   {
    "key": "blue_f",
@@ -75,7 +83,8 @@
    "full": "full/blue_f.png",
    "field": "ow/blue_f_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/blue_f_trb.png"
   },
   {
    "key": "brendan_m",
@@ -84,7 +93,8 @@
    "full": "full/brendan_m.png",
    "field": "ow/brendan_m_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/brendan_m_trb.png"
   },
   {
    "key": "brendan_f",
@@ -93,7 +103,8 @@
    "full": null,
    "field": null,
    "shop": false,
-   "note": "전신 제외(경완, 11/04)"
+   "note": "전신 제외(경완, 11/04)",
+   "battle_back": null
   },
   {
    "key": "brock_m",
@@ -102,7 +113,8 @@
    "full": "full/brock_m.png",
    "field": "ow/brock_m_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/brock_m_trb.png"
   },
   {
    "key": "brock_f",
@@ -111,7 +123,8 @@
    "full": "full/brock_f.png",
    "field": "ow/brock_f_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/brock_f_trb.png"
   },
   {
    "key": "cooltrainer_m_m",
@@ -120,7 +133,8 @@
    "full": "full/cooltrainer_m_m.png",
    "field": "ow/cooltrainer_m_m_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/cooltrainer_m_m_trb.png"
   },
   {
    "key": "cooltrainer_m_f",
@@ -129,7 +143,8 @@
    "full": "full/cooltrainer_m_f.png",
    "field": null,
    "shop": false,
-   "note": ""
+   "note": "",
+   "battle_back": null
   },
   {
    "key": "cooltrainer_f_m",
@@ -138,7 +153,8 @@
    "full": "full/cooltrainer_f_m.png",
    "field": null,
    "shop": false,
-   "note": ""
+   "note": "",
+   "battle_back": null
   },
   {
    "key": "cooltrainer_f_f",
@@ -147,7 +163,8 @@
    "full": "full/cooltrainer_f_f.png",
    "field": "ow/cooltrainer_f_f_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/cooltrainer_f_f_trb.png"
   },
   {
    "key": "erika_m",
@@ -156,7 +173,8 @@
    "full": "full/erika_m.png",
    "field": null,
    "shop": false,
-   "note": ""
+   "note": "",
+   "battle_back": null
   },
   {
    "key": "erika_f",
@@ -165,7 +183,8 @@
    "full": "full/erika_f.png",
    "field": null,
    "shop": false,
-   "note": ""
+   "note": "",
+   "battle_back": null
   },
   {
    "key": "gentleman_m",
@@ -174,7 +193,8 @@
    "full": "full/gentleman_m.png",
    "field": "ow/gentleman_m_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/gentleman_m_trb.png"
   },
   {
    "key": "gentleman_f",
@@ -183,7 +203,8 @@
    "full": "full/gentleman_f.png",
    "field": "ow/gentleman_f_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/gentleman_f_trb.png"
   },
   {
    "key": "giovanni_m",
@@ -192,7 +213,8 @@
    "full": "full/giovanni_m.png",
    "field": "ow/giovanni_m_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/giovanni_m_trb.png"
   },
   {
    "key": "giovanni_f",
@@ -201,7 +223,8 @@
    "full": "full/giovanni_f.png",
    "field": "ow/giovanni_f_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/giovanni_f_trb.png"
   },
   {
    "key": "koga_m",
@@ -210,7 +233,8 @@
    "full": "full/koga_m.png",
    "field": "ow/koga_m_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/koga_m_trb.png"
   },
   {
    "key": "koga_f",
@@ -219,7 +243,8 @@
    "full": "full/koga_f.png",
    "field": "ow/koga_f_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/koga_f_trb.png"
   },
   {
    "key": "lance_m",
@@ -228,7 +253,8 @@
    "full": "full/lance_m.png",
    "field": "ow/lance_m_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/lance_m_trb.png"
   },
   {
    "key": "lance_f",
@@ -237,7 +263,8 @@
    "full": "full/lance_f.png",
    "field": "ow/lance_f_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/lance_f_trb.png"
   },
   {
    "key": "leaf_m",
@@ -246,7 +273,8 @@
    "full": "full/leaf_m.png",
    "field": "ow/leaf_m_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/leaf_m_trb.png"
   },
   {
    "key": "leaf_f",
@@ -255,7 +283,8 @@
    "full": "full/leaf_f.png",
    "field": "ow/leaf_f_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/leaf_f_trb.png"
   },
   {
    "key": "lorelei_m",
@@ -264,7 +293,8 @@
    "full": "full/lorelei_m.png",
    "field": null,
    "shop": false,
-   "note": ""
+   "note": "",
+   "battle_back": null
   },
   {
    "key": "lorelei_f",
@@ -273,7 +303,8 @@
    "full": "full/lorelei_f.png",
    "field": null,
    "shop": false,
-   "note": ""
+   "note": "",
+   "battle_back": null
   },
   {
    "key": "lt_surge_m",
@@ -282,7 +313,8 @@
    "full": "full/lt_surge_m.png",
    "field": "ow/lt_surge_m_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/lt_surge_m_trb.png"
   },
   {
    "key": "lt_surge_f",
@@ -291,7 +323,8 @@
    "full": "full/lt_surge_f.png",
    "field": null,
    "shop": false,
-   "note": "필드 제외(경완)"
+   "note": "필드 제외(경완)",
+   "battle_back": null
   },
   {
    "key": "may_m",
@@ -300,7 +333,8 @@
    "full": "full/may_m.png",
    "field": "ow/may_m_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/may_m_trb.png"
   },
   {
    "key": "may_f",
@@ -309,7 +343,8 @@
    "full": "full/may_f.png",
    "field": "ow/may_f_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/may_f_trb.png"
   },
   {
    "key": "misty_m",
@@ -318,7 +353,8 @@
    "full": "full/misty_m.png",
    "field": null,
    "shop": false,
-   "note": ""
+   "note": "",
+   "battle_back": null
   },
   {
    "key": "misty_f",
@@ -327,7 +363,8 @@
    "full": "full/misty_f.png",
    "field": "ow/misty_f_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/misty_f_trb.png"
   },
   {
    "key": "red_m",
@@ -336,7 +373,8 @@
    "full": "full/red_m.png",
    "field": "ow/red_m_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/red_m_trb.png"
   },
   {
    "key": "red_f",
@@ -345,7 +383,8 @@
    "full": "full/red_f.png",
    "field": "ow/red_f_ow.png",
    "shop": true,
-   "note": ""
+   "note": "",
+   "battle_back": "trb/red_f_trb.png"
   },
   {
    "key": "sabrina_m",
@@ -354,7 +393,8 @@
    "full": "full/sabrina_m.png",
    "field": null,
    "shop": false,
-   "note": ""
+   "note": "",
+   "battle_back": null
   },
   {
    "key": "sabrina_f",
@@ -363,7 +403,8 @@
    "full": "full/sabrina_f.png",
    "field": null,
    "shop": false,
-   "note": ""
+   "note": "",
+   "battle_back": null
   }
  ]
 }
