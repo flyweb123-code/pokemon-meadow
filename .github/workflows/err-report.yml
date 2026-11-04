@@ -1,0 +1,40 @@
+# 게임 오류 보고 → GitHub 이슈 (경완 2026-11-04 '어느 계정에서든 오류창이 띄워지면 자동으로 고쳐줘', 전부 진행 허락)
+# 친구 서버 D1 err 표에서 새 오류(st 0)를 읽어 'auto-err' 이슈로 올리고 st 1 로 표시한다. 이슈는 Claude 가 하루 3번 보고 고친다.
+# 이슈에는 친구 코드·계정을 쓰지 않는다 (겪은 사람 수만).
+name: Error reports
+
+on:
+  schedule:
+    - cron: '7,37 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        if: env.CLOUDFLARE_API_TOKEN != ''
+      - uses: actions/setup-node@v4
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        with:
+          node-version: '20'
+      - run: npm ci
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        working-directory: server
+      - name: Set D1 id
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        working-directory: server
+        run: |
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="pokegrow") | .uuid')
+          sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
+      - name: New errors to issues
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        run: node tools/err-report.mjs

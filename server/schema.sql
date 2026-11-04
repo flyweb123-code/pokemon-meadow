@@ -82,3 +82,21 @@ CREATE TABLE IF NOT EXISTS push (
   at    INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS push_code ON push (code);
+
+-- 게임 오류 보고 (2026-11-04): 오류 창이 뜬 오류. k = 메시지+위치 해시, n 횟수, codes 겪은 친구 코드(쉼표, 50개까지), ctx 마지막 상황(JSON)
+-- st: 0 새로 들어옴, 1 GitHub 이슈로 올림, 2 고침 (고친 뒤 다시 나면 0)
+CREATE TABLE IF NOT EXISTS err (
+  k      TEXT PRIMARY KEY,
+  msg    TEXT NOT NULL,
+  where_ TEXT NOT NULL DEFAULT '',
+  ver    TEXT NOT NULL DEFAULT '',
+  beta   INTEGER NOT NULL DEFAULT 0,
+  ctx    TEXT NOT NULL DEFAULT '',
+  n      INTEGER NOT NULL DEFAULT 1,
+  codes  TEXT NOT NULL DEFAULT '',
+  at0    INTEGER NOT NULL,
+  at     INTEGER NOT NULL,
+  st     INTEGER NOT NULL DEFAULT 0,
+  issue  INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS err_st ON err (st);
