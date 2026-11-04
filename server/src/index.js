@@ -191,7 +191,7 @@ async function handle(env, b) {
       await db.prepare('DELETE FROM push WHERE code = ?1 AND tok NOT IN (SELECT tok FROM push WHERE code = ?1 ORDER BY at DESC LIMIT 5)').bind(me).run();
       return true;
     }
-    // ---------- 친구 필드 놀러가기 (베타) ----------
+    // ---------- 친구 필드 놀러가기 (v15.34~ 본게임) ----------
     case 'fieldPut': {   // 주인이 없을 때 친구들에게 보여 줄 내 필드 + 들어올 수 있는 친구 코드
       const data = str(b.data, 300_000); if (data == null) bad('필드가 너무 커요');
       const fr = [...new Set((Array.isArray(b.fr) ? b.fr : []).map(cleanCode).filter(c => c.length === 8))].slice(0, 200).join(',');
@@ -202,7 +202,7 @@ async function handle(env, b) {
       const to = cleanCode(b.to); if (to.length !== 8) bad('잘못된 요청');
       if (to !== me) {
         const f = await db.prepare('SELECT fr FROM field WHERE code = ?').bind(to).first();
-        if (!f) bad('친구가 아직 필드를 열지 않았어요. 친구가 베타 판으로 게임을 한 번 켜야 해요');
+        if (!f) bad('친구가 아직 필드를 열지 않았어요. 친구가 새 버전으로 게임을 한 번 켜야 해요');
         if (!f.fr.split(',').includes(me)) bad('서로 친구여야 놀러 갈 수 있어요');
       }
       let n = '트레이너', sx = 'm';
