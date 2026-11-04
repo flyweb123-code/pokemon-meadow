@@ -2581,3 +2581,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-top .gy-plate::before{content:'';position:absolute;z-index:2;left:calc(50% - 28px);width:56px;top:50%;height:60px;margin-top:-30px;box-sizing:border-box;border-block:3px solid var(--frame);background:linear-gradient(180deg,#fff 0,#fff 8%,var(--win) 9%,var(--win) 84%,var(--g2) 85%);filter:drop-shadow(0 3px 0 rgba(0,0,0,.4));pointer-events:none}   /* v15.51 경완: 배지 뒤 타이틀 리본은 늘 이어져 있게 */
 #gym .gy-plate.pf-on .gy-bd{z-index:5}   /* v15.51 경완: 승급 배지가 나올 때 평판 게이지보다 앞 */
 #gym .gy-storew .st-empty{position:fixed;left:0;right:0;top:50%;transform:translateY(-50%);margin:0;text-align:center;line-height:1.6;pointer-events:none}   /* v15.56 경완: 창고가 비었을 때 문구는 화면 정중앙 */
+#gym .sf-card .sf-st .sf-pay{color:#b07a10;font-style:normal}   /* v15.60 경완: 고용 관리 슬롯에 월급 */
+#gym .ts-win>.win{display:flex;flex-direction:column}#gym .ts-win .ts-grid{flex:1;grid-auto-rows:1fr;padding-bottom:10px}#gym .ts-win .ts-slot{min-height:76px;height:auto}   /* v15.60 경완: 훈련장 슬롯은 창을 꽉 채우고 크기를 같게 */
