@@ -960,12 +960,13 @@ function bsAlert() {
 function bsGo() {
   const fx = document.createElement('div'); fx.className = 'bs-tr'; fx.innerHTML = '<i class="a"></i><i class="b"></i><b>승급 심사</b>';
   $g('.gy-main').appendChild(fx); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
+  bsMus = true; bgmPlay('league');   /* 경완 2026-11-04 '승급심사 버튼 누르고 바로 bgm 바뀌게' */
   setTimeout(bsScreen, 700); setTimeout(() => fx.remove(), 1400);
 }
 // 심사 화면: 지금 등급 배지 → 승급하면 받을 다음 등급 배지, '심사 받기'
 function bsScreen() {
   const g = st(); if (!bsReady(g)) return homeSay();
-  root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null); bsMus = true; bgmPlay('league');
+  root.querySelectorAll('.gy-infos').forEach(x => x.remove()); bsMus = false; openTab(null); bsMus = true; if (window.GymBGM?.name !== 'league') bgmPlay('league');
   const gi = (g.gmax | 0) + 1, el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-bsw'; el.insertAdjacentHTML('afterbegin', `<i class="bsw-bg" aria-hidden="true">${'<i></i>'.repeat(14)}</i>`); $g('.gy-main').appendChild(el);
   // 웅장하게 (경완 2026-10-31): 어두운 무대 + 빛줄기 속 다음 등급 배지, 금빛 리본, 등급 혜택, 금빛 버튼
   el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">승급 심사</b></div>
@@ -1261,6 +1262,7 @@ function homeSay() {
   // 도전자 받기 (경완 2026-10-29): 기다리는 도전자가 없으면 비활성, 있으면 'N명의 도전자가 기다리고 있어요' + 새로 온 도전자가 있으면 빨간 점 (누르면 사라짐)
   const n = g.q.length, qb = $g('.gy-qbtn'), cap = $g('.gy-qcap'), dot = $g('.gy-qdot'), nw = g.q.some(c => c.id > (g.qSeen | 0));
   const bs = bsReady(g), gl = qb?.querySelector('.ga-l');
+  if (bs) try { window.GymBGM?.prep('league'); } catch (e) {}   /* 승급 심사 곡을 미리 만들어 두어 버튼 누르자마자 나오게 */
   if (qb) { qb.disabled = !n && !bs; qb.classList.toggle('has', !!n && !bs); qb.classList.toggle('bs', bs); qb.setAttribute('aria-label', bs ? '승급 심사' : '도전자 받기'); if (gl) gl.textContent = bs ? '승급 심사' : '도전자 받기'; }
   if (qb) { let qc = qb.querySelector('.gy-qcnt'); const on = !!n && !bs; if (on && !qc) { qc = document.createElement('b'); qc.className = 'gy-qcnt'; qb.appendChild(qc); } if (qc) { qc.hidden = !on; qc.textContent = n > 9 ? '9+' : n; } }   // 도전자 수 = 필드 체육관 아이콘과 같은 파란 딱지, 버튼 오른쪽 위 모서리 (경완 2026-11-03)
   if (cap) { cap.hidden = !!n && !bs; cap.classList.toggle('none', !n && !bs); cap.textContent = bs ? `${GRADES[(g.gmax | 0) + 1][1]} 승급 심사를 받을 수 있어요` : n ? `${n}명의 도전자가 기다리고 있어요` : '아직 도전자가 없어요'; }   // 없을 때도 안내 (경완 2026-10-29)
