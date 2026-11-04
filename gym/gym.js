@@ -1066,7 +1066,7 @@ async function badgeGet(ty) {
     p.classList.add('pp-pop'); });
 }
 async function promoFx(gi) {
-  const g = st(), M = window.GymBGM; root.classList.remove('gview'); root.classList.add('dhide'); dlg('');
+  const g = st(), M = window.GymBGM; root.classList.remove('gview'); dlg(''); root.classList.add('dhide');   /* v15.52: dlg('') 가 dhide 를 지워 빈 대사창이 뜨던 것 */
   const pl = $g('.gy-plate'), bd = $g('.gy-bd'), dim = document.createElement('div'); dim.className = 'pf-dim'; $g('.gy-main').appendChild(dim);
   pl.classList.add('pf-on'); try { M?.sePrep?.(['DP_KIRAKIRA2', 'ME_FANFA5']); } catch (e) {}
   void bd.offsetWidth; pl.classList.add('pf-zoom'); await wait(600);   /* 경완 2026-11-04 '타이틀 배지 바뀔 때 화면 포커싱': 배지가 화면 가운데로 크게 다가옴 */
