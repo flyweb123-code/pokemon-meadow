@@ -479,7 +479,7 @@ function partyPanel(req, forced) {
     const tys = A => (SPECIES[A.sp]?.t || []).map(t => tyI(t)).join('');
     // 포켓몬 버튼: 정사각형 프로필 + 이름·성별 + 타입 (경완 2026-10-29)
     const list = () => { const p = panel(`<div class="bp-party">${L.map((m, i) => { const [hp, mhp, r, fnt] = hpOfM(m), A = B.my[myIx(i)];
-      return `<button class="pty${m.active ? ' act' : ''}${fnt ? ' fnt' : ''}" data-i="${i}">${boxOf(A.pid) ? thumb(boxOf(A.pid)) : ''}<b>${esc(A.nm)}${sx(A.g)}</b><span class="lv">Lv${A.lv}</span><span class="pty-ty">${tys(A)}</span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${hp}/${mhp}`}</span></button>`; }).join('')}
+      return `<button class="pty${m.active ? ' act' : ''}${fnt ? ' fnt' : ''}" data-i="${i}">${boxOf(A.pid) ? thumb(boxOf(A.pid)) : ''}<b>${esc(A.nm)}${sx(A.g)}</b><span class="pty-ty">${tys(A)}<span class="lv">Lv${A.lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${hp}/${mhp}`}</span></button>`; }).join('')}
       ${forced ? '' : '<button class="bb cancel" data-x><span>취소</span></button>'}</div>`); fillTh(p);
       p.onclick = e => { const b = e.target.closest('button'); if (!b) return; tapSe(); if (b.hasAttribute('data-x')) return res(null); card(+b.dataset.i); }; };
     // 누르면 바로 바뀌지 않고 상세 카드 → '바꾸기' (경완 2026-10-29)
