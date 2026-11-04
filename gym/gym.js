@@ -804,7 +804,7 @@ function payDay(now) {
 }
 // 면접 지원자 (하루~이틀에 한 명, 30시간 동안 기다린다)
 function mkCand(now) {
-  const ty = st().ty, KS = Object.keys(CLS).filter(x => ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS)),   // v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS));
+  const ty = st().ty, KS = Object.keys(CLS).filter(x => ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS)), /* v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 */ C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS));
   const W = GYMB(), wage = Math.round(clampN((W.WAGE_BASE + lv * W.WAGE_LV + n * 35) * (trait === 'thrift' ? .7 : trait === 'lazy' ? .55 : trait === 'guts' ? 1.15 : 1), W.WAGE_BASE, Math.max(W.WAGE_BASE, W.WAGE_MAX)) / 10) * 10;
   return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), f: C.f, trait, wage, team: mkTeam(ty ? [ty] : C.t, lv, n) };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
 }
