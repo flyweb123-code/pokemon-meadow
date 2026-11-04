@@ -709,14 +709,14 @@ function pickNamed(avg, t) {
   const n = pick(ok), s = (g.nt[n.id] || {}).s || 0;
   return { id: ++g.cid, t, named: n.id, s, cls: n.cls, tr: n.tr, ow: n.ow, nm: n.nm, diff: 2, music: n.music, team: n.st[s].filter(m => !spOff(m[0])).map(m => [m[0], m[1], m[2]]) };
 }
-// 하루 시간표: 등급이 오를수록 많이 온다 (2~5명, 오전 8시 ~ 밤 10시 사이 아무 때나)
+// 하루 시간표 (v15.61 경완 '3시간에 2-3명씩은 와야'): 하루를 3시간 칸 8개로 나눠, 칸마다 2~3명씩 그 칸 안 아무 때나 (6~24시 6칸 = 하루 12~18명, 예전 9~11명).
+// 새벽 칸(0~3·3~6시)은 0~1명, 단 그 시간에 앱을 자주 쓰면(사용 기록 GA.useH 이 가장 많은 칸의 15% 이상) 똑같이 2~3명
 function mkSch(d0, from = 0) {
-  const n = rndI(9, 11);   // 하루 10명 안팎 (경완 2026-10-29, 예전 3~4명), 등급 상관없음
-  // 도착 시각 = 내가 앱을 쓰는 시간대 기준 (경완 2026-10-30 '사용자의 실제 이용시간 기준으로'): GA.useH() 시간대별 사용 분. 기록이 1시간 안 되면 예전처럼 8~22시
-  const U = GA.useH?.(), tot = U ? U.reduce((a, b) => a + b, 0) : 0, mx = U ? Math.max(...U) : 0;
-  const W = tot >= 60 ? U.map((x, h) => x + (h >= 8 && h < 22 ? mx * .05 : 0)) : null, wt = W && W.reduce((a, b) => a + b, 0);
-  const at = () => { if (!W) return d0 + rnd(8, 22) * H; let r = Math.random() * wt, h = 0; while (h < 23 && (r -= W[h]) > 0) h++; return d0 + (h + Math.random()) * H; };
-  return Array.from({ length: n }, at).filter(t => t > from).sort((a, b) => a - b);
+  const U = GA.useH?.(), tot = U ? U.reduce((a, b) => a + b, 0) : 0;
+  const B = Array.from({ length: 8 }, (_, k) => tot >= 60 ? U[k * 3] + U[k * 3 + 1] + U[k * 3 + 2] : 0), bm = Math.max(...B);
+  const T = [];
+  B.forEach((w, k) => { const n = k >= 2 || (w > 0 && w >= bm * .15) ? rndI(2, 3) : (Math.random() < .3 ? 1 : 0); for (let i = 0; i < n; i++) T.push(d0 + (k * 3 + Math.random() * 3) * H); });
+  return T.filter(t => t > from).sort((a, b) => a - b);
 }
 function glog(k, html, t = Date.now()) { const g = st(); g.log.unshift([t, k, html]); if (g.log.length > 80) g.log.length = 80; }
 function addRep(n) { const g = st(); const r0 = g.rep || 0; g.rep = clampN(r0 + n, 0, Math.max(r0, repCap(g))); if (g.wk) g.wk.r += g.rep - r0; }
@@ -833,7 +833,7 @@ function tick(now = Date.now()) {
   if (g.ty) (g.cands || []).forEach(c => { if (c.team?.some(m => !(SPECIES[m[0]]?.t || []).includes(g.ty))) c.team = c.team.map(m => (SPECIES[m[0]]?.t || []).includes(g.ty) ? m : [pickSp([g.ty], m[1]), m[1]]); });   // v15.48 경완: 이미 와 있는 지원서도 체육관 타입 포켓몬으로
   rollWeek(now);
   const today = dayStart(now);
-  if (!g.day) { g.day = today; g.sch = mkSch(today, now); g.sch.unshift(now + 90e3); }   // 처음: 1분 반 뒤 첫 도전자
+  if (!g.day) { g.day = today; g.schV = 2; g.sch = mkSch(today, now); g.sch.unshift(now + 90e3); }   // 처음: 1분 반 뒤 첫 도전자
   let guard = 0;
   while (g.day < today && guard++ < 14) {   // 지난 날: 남은 방문을 다 처리 (기다릴 시간이 지난 도전자는 그 시각에 돌아간다)
     const end = nextDay(g.day);
@@ -841,6 +841,7 @@ function tick(now = Date.now()) {
     g.day = end; g.sch = mkSch(end);
   }
   if (g.day < today) { g.day = today; g.sch = mkSch(today, now); }
+  if ((g.schV | 0) < 2) { g.schV = 2; g.sch = mkSch(today, now); }   // v15.61: 오늘 남은 시간표도 새 빈도(3시간 칸마다 2~3명)로 바로
   while (g.sch.length && g.sch[0] <= now) { const t = g.sch.shift(); qLeave(t); arrive(mkChal(t)); }
   if (g.pull && g.pull <= now) { const t = g.pull; g.pull = 0; qLeave(t); arrive(mkChal(t)); }   // 사용 기록이 쌓이기 전 접속하면 당겨 온 도전자 (beta gymPull, 경완 2026-10-30)
   qLeave(now);
@@ -1089,7 +1090,7 @@ async function promoFx(gi) {
 const GUY_OW = 'gym_guy';
 const GUY_TOUR = () => [
   `어서 와요, 관장님!\n${st().nm}의 안내원이에요.\n체육관 일을 차근차근 알려 드릴게요.`,
-  '도전자는 하루에 몇 번\n아무 때나 찾아와요.\n오면 필드의 체육관 버튼에\n빨간 점이 떠요.',
+  '도전자는 하루에 여러 번\n아무 때나 찾아와요.\n오면 필드의 체육관 버튼에\n빨간 점이 떠요.',
   '아래 상태창의 [도전 받기]를\n누르면 배틀이 시작돼요.\n도전자마다 기다려 주는\n시간이 정해져 있어요.',
   `배틀에는 ${TYPE_KO[st().ty]} 타입 포켓몬만\n낼 수 있어요. [배틀] 메뉴에서\n라인업을 3개까지 짜 둘 수 있어요.`,
   '도전자를 이기면 골드와 평판을\n받아요. 평판이 쌓이면\n체육관 등급이 올라요.',
@@ -1727,7 +1728,7 @@ const KANG_TR = () => [
 ];
 const KANG_OPEN = () => [
   '멋진 체육관이구나!',
-  '도전자는 하루에 몇 번,\n아무 때나 찾아온단다.',
+  '도전자는 하루에 여러 번,\n아무 때나 찾아온단다.',
   '누가 오면 필드의 체육관\n버튼에 빨간 점이 뜨지.',
   '도전자를 이기면 골드를 받고\n평판이 오른단다. 평판이 오르면\n체육관도 커지지.',
   '훈련장에서 포켓몬을 키우고,\n트레이너를 고용해 함께\n체육관을 지킬 수도 있단다.',
