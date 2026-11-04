@@ -171,6 +171,16 @@ async function handle(env, b) {
       return { ok: true, kept: false, failed: 0, games: games.length };
     }
     // ---------- 진짜 푸시 (2026-11-03, push.js) ----------
+    case 'errRep': {   // 게임에서 오류 창이 뜬 오류 (경완 2026-11-04). 같은 오류(메시지+위치)는 한 줄로 모아 셈. GitHub Actions(err-report.yml)가 새 줄을 이슈로 올림
+      const msg = str(b.msg, 300), where = str(b.where, 1500) || '', ver = str(b.ver, 20) || '', ctx = str(b.ctx, 60000) || '';
+      if (!msg) bad('잘못된 요청');
+      const k = (await sha(msg.replace(/\d+/g, '#') + '|' + where.split(' | ')[0].replace(/:\d+:\d+/g, ''))).slice(0, 24);
+      const o = await db.prepare('SELECT n, codes, st FROM err WHERE k = ?').bind(k).first();
+      if (!o) await db.prepare('INSERT INTO err (k, msg, where_, ver, beta, ctx, n, codes, at0, at, st) VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?, 0)').bind(k, msg, where, ver, b.beta ? 1 : 0, ctx, me, now, now).run();
+      else { const cs = o.codes ? o.codes.split(',') : []; if (!cs.includes(me) && cs.length < 50) cs.push(me);
+        await db.prepare('UPDATE err SET n = n + 1, codes = ?, ver = ?, ctx = ?, where_ = ?, at = ?, st = CASE WHEN st = 2 THEN 0 ELSE st END WHERE k = ?').bind(cs.join(','), ver, ctx, where, now, k).run(); }   // 고친 뒤(st 2) 다시 나면 새로
+      return k;
+    }
     case 'pushReg': {   // {tok, plat, env, kinds:['visit',...]}. kinds 가 비면 이 기기 토큰을 지운다
       const tok = str(b.tok, 400), plat = b.plat === 'ios' || b.plat === 'android' ? b.plat : null; if (!tok || !plat || !/^[\w:.\-]+$/.test(tok)) bad('잘못된 요청');
       const kinds = [...new Set((Array.isArray(b.kinds) ? b.kinds : []).filter(k => /^[a-z]{1,12}$/.test(k)))].slice(0, 10).join(',');

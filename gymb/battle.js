@@ -648,11 +648,12 @@ async function run(opts) {
   tray(); await msg(`${iga(foeNm)} 승부를 걸어왔다!`, 900);
   my.forEach(o => gifLoad(gifUrl(o.sp, true, o.shiny, o.g === 'F'))); foeT.forEach(o => gifLoad(gifUrl(o.sp, false, o.shiny, o.g === 'F')));   // 미리 받기
   btl.makeChoices('default', 'default');   // 팀 미리보기: 라인업 순서 그대로
-  try { await play(); } catch (e) { console.error(e); try { window.pkErr?.('battle: ' + (e?.message || e), e?.stack); } catch (e2) {} }
+  try { await play(); } catch (e) { console.error(e); if (B) B.err = e; try { window.pkErr?.('battle: ' + (e?.message || e), e?.stack); } catch (e2) {} }
   const won = btl.winner === '관장', out = B?.out, cut = !btl.ended && out !== 'quit';   /* 오류로 중간에 멈춘 배틀은 없던 배틀 (경완 2026-11-04 '질 상황이 아니었는데 진 걸로') */
   try { blogSave(opts, my, foeT, won, out || (cut ? 'cut' : undefined)); } catch (e) {}
+  if (cut) try { const er = B?.err; window.pkErrRep?.('battle: ' + (er ? er.message || er : '고를 것이 없어 멈춤'), er?.stack || '', { foe: B?.foeNm || '', blog: S.gym?.blog?.[0] }); } catch (e) {}   /* 오류 창이 뜬 배틀은 서버로 보고 → 자동으로 고침 (경완 2026-11-04) */
   if (B) {
-    if (cut) await msgTap('배틀이 중간에 멈췄다! 이번 승부는 없던 걸로 한다.');
+    if (cut) await msgTap('배틀이 중간에 멈췄다!');
     else if (out !== 'quit') {
       $b('.bt-tr.e').classList.add('back');
       if (won) { M('play', music === 'train' ? 'winTrain' : 'winGym', { fade: .05 }); await msgTap(`${wa(foeNm)}의 승부에서 이겼다!`); }
