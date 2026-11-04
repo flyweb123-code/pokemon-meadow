@@ -30,6 +30,8 @@ export class FieldRoom {
 
   people() { return this.ctx.getWebSockets().filter(ws => ws.readyState === 1).map(ws => { let a = {}; try { a = ws.deserializeAttachment() || {}; } catch (e) {} return { ws, a }; }).filter(x => x.a.c); }
   send(ws, o) { try { ws.send(typeof o === 'string' ? o : JSON.stringify(o)); } catch (e) {} }
+  // v15.39 경완: 주인이 '필드에 나가기'를 눌러 트레이너가 필드에 나와 있을 때만 '필드에 있음' (앱만 켜져 있으면 없음)
+  here() { return this.people().some(x => x.a.o && x.a.p?.out); }
   cast(o, but) { const s = JSON.stringify(o); for (const { ws } of this.people()) if (ws !== but) this.send(ws, s); }
   pub(a) { return { c: a.c, n: a.n, sx: a.sx, o: !!a.o, p: a.p || null }; }
 
@@ -51,9 +53,8 @@ export class FieldRoom {
 
     const [chat, fld, pend, acts] = await Promise.all([this.ctx.storage.get('chat'), this.field(owner), o ? this.ctx.storage.get('pend') : null, o ? this.ctx.storage.get('acts') : null]);
     if (pend?.length) await this.ctx.storage.delete('pend');
-    this.send(sv, { t: 'hi', me: c, own: o, on: o || ppl.some(x => x.a.o), ppl: ppl.map(x => this.pub(x.a)), chat: chat || [], field: o ? null : fld?.d || null, fat: fld?.at || 0, pend: pend || [], acts: o ? acts || [] : [] });
+    this.send(sv, { t: 'hi', me: c, own: o, on: o || ppl.some(x => x.a.o && x.a.p?.out), ppl: ppl.map(x => this.pub(x.a)), chat: chat || [], field: o ? null : fld?.d || null, fat: fld?.at || 0, pend: pend || [], acts: o ? acts || [] : [] });
     this.cast({ t: 'join', p: this.pub(a) }, sv);
-    if (o) this.cast({ t: 'own', on: true }, sv);
     // v15.35 경완: 들어올 때 자동 푸시는 없앰 — 손님이 '친구 부르기'를 눌렀을 때만 (case 'call')
     return new Response(null, { status: 101, webSocket: cl });
   }
@@ -101,8 +102,10 @@ export class FieldRoom {
         return this.cast({ t: 'chat', ...line });
       }
       case 'tr': {
+        const was = !!(a.o && a.p?.out);
         a.p = { x: num(m.x), y: num(m.y), d: m.d | 0, w: m.w ? 1 : 0, f: m.f ? 1 : 0, k: String(m.k || '').slice(0, 40), out: m.out ? 1 : 0, j: (m.j | 0) % 1000 };   // j = 점프 횟수 (바뀌면 다른 화면에서 뜀)
         ws.serializeAttachment(a);
+        if (a.o && was !== !!a.p.out) this.cast({ t: 'own', on: !!a.p.out }, ws);   // 주인이 필드에 나옴/들어감
         return this.cast({ t: 'tr', c: a.c, ...a.p }, ws);
       }
       case 'act': {
@@ -126,7 +129,7 @@ export class FieldRoom {
       }
       case 'call': {   // 손님 '친구 부르기' → 주인이 없으면 주인 폰에 푸시
         if (a.o || !this.ok(ws, 'call', 5, 1)) return;
-        if (this.people().some(x => x.a.o)) return this.send(ws, { t: 'called', r: 'here' });
+        if (this.here()) return this.send(ws, { t: 'called', r: 'here' });
         let r = 'no'; try { r = await this.ring(await this.ctx.storage.get('owner'), a.c, a.n); } catch (e) { console.log('ring', e.message); }
         return this.send(ws, { t: 'called', r });
       }
@@ -143,6 +146,6 @@ export class FieldRoom {
     // 같은 사람이 새로 연결했으면 (다시 연결) 나갔다고 알리지 않는다
     if (this.people().some(x => x.a.c === a.c)) return;
     this.cast({ t: 'leave', c: a.c });
-    if (a.o) this.cast({ t: 'own', on: false });
+    if (a.o && a.p?.out) this.cast({ t: 'own', on: false });
   }
 }
