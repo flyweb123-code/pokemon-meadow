@@ -18,7 +18,8 @@
 import { pushTo, iGa } from './push.js';
 
 const MAX_PPL = 8, CHAT_KEEP = 50, ACT_KEEP = 50, CHAT_LEN = 100, ACTS = ['pet', 'wash', 'feed', 'berry'];
-const RING_GAP = 5 * 60e3;   // v15.35 경완: 친구 부르기 — 같은 손님은 5분에 한 번
+const RING_GAP = 5 * 60e3;
+const STALE_MS = 70e3, STALE_CHK = 30e3;   // v15.35 경완: 친구 부르기 — 같은 손님은 5분에 한 번
 
 export class FieldRoom {
   constructor(ctx, env) {
@@ -48,7 +49,7 @@ export class FieldRoom {
 
     const pair = new WebSocketPair(), [cl, sv] = Object.values(pair);
     this.ctx.acceptWebSocket(sv);
-    const a = { c, n, sx, o, at: Date.now() };
+    const a = { c, n, sx, o, at: Date.now(), seen: Date.now() };
     sv.serializeAttachment(a);
 
     const [chat, fld, pend, acts] = await Promise.all([this.ctx.storage.get('chat'), this.field(owner), o ? this.ctx.storage.get('pend') : null, o ? this.ctx.storage.get('acts') : null]);
@@ -56,7 +57,18 @@ export class FieldRoom {
     this.send(sv, { t: 'hi', me: c, own: o, on: o || ppl.some(x => x.a.o && x.a.p?.out), ppl: ppl.map(x => this.pub(x.a)), chat: chat || [], field: o ? null : fld?.d || null, fat: fld?.at || 0, pend: pend || [], acts: o ? acts || [] : [] });
     this.cast({ t: 'join', p: this.pub(a) }, sv);
     // v15.35 경완: 들어올 때 자동 푸시는 없앰 — 손님이 '친구 부르기'를 눌렀을 때만 (case 'call')
+    try { if (!(await this.ctx.storage.getAlarm())) await this.ctx.storage.setAlarm(Date.now() + STALE_CHK); } catch (e) {}
     return new Response(null, { status: 101, webSocket: cl });
+  }
+
+  // 경완 '친구가 돌아갔는데 내 필드에 계속 보임': 앱을 그냥 닫거나 뒤로 보내면 연결이 끊겼다는 소식이 안 와서 방에 남아 있었음
+  // → 30초마다 STALE_MS 넘게 아무 소식(ping 포함)이 없는 연결은 닫고 '나감'을 알림
+  async alarm() {
+    const now = Date.now(); let left = 0;
+    for (const ws of this.ctx.getWebSockets()) { let a = {}; try { a = ws.deserializeAttachment() || {}; } catch (e) {} if (!a.c) continue;
+      let pg = 0; try { pg = +this.ctx.getWebSocketAutoResponseTimestamp(ws) || 0; } catch (e) {}   // ping 은 방을 깨우지 않고 자동 답장 → 그 시각
+      if (now - Math.max(a.seen || a.at || 0, pg) > STALE_MS) { this.gone(ws); try { ws.close(4001, '연결이 끊겼어요'); } catch (e) {} } else left++; }
+    if (left) await this.ctx.storage.setAlarm(now + STALE_CHK);
   }
 
   async ring(owner, c, n) {   // → 'sent' | 'wait' | 'no'
@@ -90,6 +102,7 @@ export class FieldRoom {
     if (typeof raw !== 'string' || raw.length > 200_000) return;
     let m; try { m = JSON.parse(raw); } catch (e) { return; }
     const a = ws.deserializeAttachment() || {}; if (!a.c || !m || typeof m.t !== 'string') return;
+    if (Date.now() - (a.seen || 0) > 10e3) { a.seen = Date.now(); ws.serializeAttachment(a); }   // 살아 있음 (게임은 25초마다 ping)
     if (!this.ok(ws, 'all', 1, 30)) return;
     const num = v => Number.isFinite(+v) ? Math.round(+v * 10) / 10 : 0;
     switch (m.t) {
