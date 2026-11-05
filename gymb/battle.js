@@ -1626,7 +1626,7 @@ function mintPick(k, done) {
     tag: P => natKo(gm(P).nat), pick: (P, w) => { w.close(); mintUse(P, k); done?.(); } });
 }
 // 도구 사용 (경완 2026-10-29 '기술 가르치기 > 도구 사용'): 창고와 같은 화면, 탭은 기술머신·도구
-let useT = 'it';   // v17.33 경완 '도구 탭이 제일 먼저': 처음 열면 도구 탭
+let useT = 'it';   // v17.34 경완 '도구 탭이 제일 먼저': 처음 열면 도구 탭
 function usePop(P, done) {
   const g = S.gym; g.tms = g.tms || {}; g.itm = g.itm || {};
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew tm-teach';

@@ -2968,11 +2968,11 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .gy-pop h4.has-own{position:relative;padding:0 46px}.gy-pop h4 .gy-own{position:absolute;right:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:3px;font-size:12px;font-weight:400;font-style:normal;color:var(--ink,#20202c);line-height:1}.gy-pop h4 .gy-own svg{display:block}.gy-pop h4 .gy-own b{font-weight:400}   /* v17.03 경완: 상점 구매 창 제목 줄 오른쪽 가방 × N */
 .gy-pop h4.mi-h{justify-content:center}#gym .aw-pop .mi-box .mi-h{justify-content:flex-start}   /* v17.05 경완: 도구·민트 창 제목도 가운데 */
 
-/* v17.33 경완: 체육관 상점 위쪽(제목·골드·탭·필터) 고정 — 시트 위 여백만큼 끌어올려 덮는다 */
+/* v17.34 경완: 체육관 상점 위쪽(제목·골드·탭·필터) 고정 — 시트 위 여백만큼 끌어올려 덮는다 */
 .gy-sheet .sp-top{--spt:calc(var(--si-top,env(safe-area-inset-top)) + 14px);position:sticky;top:calc(-1 * var(--spt));z-index:3;flex:none;background:var(--win);margin:calc(-1 * var(--spt)) calc(-1 * (var(--si-right,env(safe-area-inset-right)) + 14px)) 0 calc(-1 * (var(--si-left,env(safe-area-inset-left)) + 14px));padding:var(--spt) calc(var(--si-right,env(safe-area-inset-right)) + 14px) 0 calc(var(--si-left,env(safe-area-inset-left)) + 14px);box-shadow:0 2px 0 rgba(0,0,0,.08)}
 .gy-sheet .sp-top .tm-row{margin-bottom:10px}
-/* v17.33 경완: 라인업 슬롯에서도 지닌 도구 그림을 프로필 칸 오른쪽 아래에 (칸이 overflow:hidden 이라 안쪽 모서리에) */
+/* v17.34 경완: 라인업 슬롯에서도 지닌 도구 그림을 프로필 칸 오른쪽 아래에 (칸이 overflow:hidden 이라 안쪽 모서리에) */
 .lu-slot[data-p]>.rk-fr>img.th-it{left:auto!important;top:auto!important;right:1px!important;bottom:1px!important;width:42%!important;height:42%!important;z-index:2}
-/* v17.33 경완 '지닌 도구 설명 텍스트 왜 이렇게 흐리냐': 도구 설명은 본문 색, '…가 지니고 있어요'도 덜 흐리게 */
+/* v17.34 경완 '지닌 도구 설명 텍스트 왜 이렇게 흐리냐': 도구 설명은 본문 색, '…가 지니고 있어요'도 덜 흐리게 */
 #gym .gy-pop .gy-msg.mi-d{color:var(--win-ink,#282830)!important}
 #gym .gy-pop .gy-msg.it-own{opacity:1;color:#6a6a80!important}
