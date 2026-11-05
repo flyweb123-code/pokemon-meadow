@@ -1518,7 +1518,7 @@ async function bigUp(el) {
   } finally { busy = false; root.classList.remove('busy'); }
 }
 // 체육관 일지 (v15.66 경완, v15.68 '날짜별로 한 화면'): 하루 한 화면, ◀ ▶ 로 날짜 넘김. 관장(나)과 트레이너 몫을 나눠서
-let jnlK = null;
+let jnlK = null;   /* v16.21 경완: 트레이너별 박스는 없애고 합계 표에 트레이너 이름별 줄 */
 function jnlPop() {
   root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew gy-jnlw'; $g('.gy-main').appendChild(el);
@@ -1536,11 +1536,10 @@ function jnlPop() {
         <div class="jn-chips"><span>찾아온 도전자<b>${d.n}명</b></span><span>막은 도전자<b>${m.w + sw}명</b></span><span>진 배틀<b>${m.l}번</b></span><span>돌아감<b>${d.o}명</b></span></div>
         <table class="jn-tb"><thead><tr><th></th><th>막은</th><th>번 골드</th><th>평판</th></tr></thead>
         <tbody><tr><th><i class="jn-dot me"></i>관장 (나)</th><td>${m.w}명</td><td class="jn-g">${Gc(m.g)}</td><td class="${cl(m.r)}">${R(m.r)}</td></tr>
-        <tr><th><i class="jn-dot sf"></i>트레이너</th><td>${sw}명</td><td class="jn-g">${Gc(sg)}</td><td class="${cl(sr)}">${R(sr)}</td></tr></tbody>
+        ${SF.map(([n, x]) => `<tr><th><i class="jn-dot sf"></i>${esc(n)}</th><td>${x.w}명</td><td class="jn-g">${Gc(x.g)}</td><td class="${cl(x.r)}">${R(x.r)}</td></tr>`).join('')}</tbody>
         <tfoot><tr><th>합계</th><td>${m.w + sw}명</td><td class="jn-g">${Gc(m.g + sg)}</td><td class="${cl(m.r + sr)}">${R(m.r + sr)}</td></tr></tfoot></table>
         ${m.g + sg > 0 ? `<div class="jn-bar" aria-hidden="true"><i class="me" style="flex:${m.g}"></i><i class="sf" style="flex:${sg}"></i></div>` : ''}
         ${out ? `<dl class="jn-st jn-out">${d.p ? row('월급', Gc(-d.p), 'jn-m') : ''}${d.s ? row('상점', Gc(-d.s), 'jn-m') : ''}${row('<b>남긴 골드</b>', `<b>${Gc(m.g + sg - out)}</b>`, cl(m.g + sg - out))}</dl>` : ''}</div>
-      ${SF.length ? `<div class="jn-day"><h5>트레이너별</h5><ul class="jn-sfl">${SF.map(([n, x]) => `<li><b>${esc(n)}</b><span>${x.w}명 · <em class="jn-g">${Gc(x.g)}</em> · 평판 <em class="${cl(x.r)}">${R(x.r)}</em></span></li>`).join('')}</ul></div>` : ''}
       <div class="jn-day jn-fd${g.jnlO ? ' on' : ''}"><h5><button class="jn-fold" type="button" data-fold aria-expanded="${g.jnlO ? 'true' : 'false'}">기록 <small>${logs.length}개</small><i aria-hidden="true">▼</i></button></h5>${!g.jnlO ? '' : logs.length ? `<ul class="jn-log">${logs.map(x => `<li><time>${hhmm(x[0])}</time><span>${x[2]}</span></li>`).join('')}</ul>` : '<p class="jn-none">기록이 없어요.</p>'}</div>
       </div>`; };
   draw();
