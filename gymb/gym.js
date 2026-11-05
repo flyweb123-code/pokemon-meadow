@@ -240,7 +240,7 @@ function build() {
       <!-- 필드와 같은 자리 (경완 2026-10-28): 꾸미기 = 맵 편집 자리(왼쪽 위), 창고 = 가방 자리(오른쪽) -->
       <button class="gy-deco" type="button" aria-label="꾸미기"><svg viewBox="0 0 17 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M1 0h3v1H1zM13 0h3v1H13zM0 1h17v1H0zM0 2h3v1H0zM14 2h3v1H14zM1 3h2v1H1zM14 3h2v1H14zM2 4h1v1H2zM14 4h1v1H14zM2 5h1v1H2zM6 5h1v1H6zM10 5h1v1H10zM14 5h1v1H14zM2 6h1v1H2zM8 6h1v1H8zM14 6h1v1H14zM2 7h1v1H2zM7 7h1v1H7zM9 7h1v1H9zM14 7h1v1H14zM3 8h1v1H3zM13 8h1v1H13zM2 9h1v1H2zM14 9h1v1H14zM2 10h1v1H2zM14 10h1v1H14zM2 11h1v1H2zM14 11h1v1H14zM2 12h1v1H2zM14 12h1v1H14zM3 13h1v1H3zM13 13h1v1H13zM4 14h1v1H4zM7 14h3v1H7zM12 14h1v1H12zM5 15h2v1H5zM10 15h2v1H10z"/><path fill="#ffd520" d="M3 2h1v1H3zM13 2h1v1H13zM3 3h2v1H3zM6 3h5v1H6zM12 3h2v1H12zM4 4h9v1H4zM4 5h2v1H4zM7 5h3v1H7zM11 5h2v1H11zM6 6h2v1H6zM9 6h2v1H9zM8 7h1v1H8zM5 8h1v1H5zM11 8h1v1H11zM4 9h2v1H4zM11 9h2v1H11z"/><path fill="#6a3908" d="M4 2h9v1H4zM5 3h1v1H5zM11 3h1v1H11zM3 4h1v1H3zM13 4h1v1H13zM3 5h1v1H3zM13 5h1v1H13zM3 6h1v1H3zM13 6h1v1H13zM3 7h1v1H3zM13 7h1v1H13zM4 8h1v1H4zM12 8h1v1H12zM3 9h1v1H3zM6 9h1v1H6zM10 9h1v1H10zM13 9h1v1H13zM3 10h1v1H3zM5 10h2v1H5zM10 10h2v1H10zM13 10h1v1H13zM3 11h1v1H3zM13 11h1v1H13zM3 12h1v1H3zM5 12h2v1H5zM10 12h2v1H10zM13 12h1v1H13zM4 13h1v1H4zM7 13h3v1H7zM12 13h1v1H12zM5 14h2v1H5zM10 14h2v1H10z"/><path fill="#e65262" d="M4 6h2v1H4zM11 6h2v1H11zM4 7h2v1H4zM11 7h2v1H11z"/><path fill="#de9c10" d="M6 7h1v1H6zM10 7h1v1H10zM6 8h5v1H6zM7 9h3v1H7zM4 10h1v1H4zM7 10h3v1H7zM12 10h1v1H12zM4 11h9v1H4zM4 12h1v1H4zM7 12h3v1H7zM12 12h1v1H12zM5 13h2v1H5zM10 13h2v1H10z"/></svg></button>
       <button class="gy-store gy-sq" type="button" aria-label="창고"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 3h12v1H2zM1 4h1v3H1zM14 4h1v3h-1zM2 7h12v1H2zM2 8h1v6H2zM13 8h1v6h-1zM3 14h10v1H3zM6 9h4v1H6zM6 10h1v1H6zM9 10h1v1H9zM6 11h4v1H6z"/><path fill="#c8783c" d="M2 4h12v3H2zM3 8h10v6H3z"/><path fill="#e8a060" d="M2 4h12v1H2zM3 8h10v1H3z"/><path fill="#f0c040" d="M7 10h2v1H7z"/><path fill="#8a4a24" d="M3 13h10v1H3zM7 4h2v3H7z"/></svg></button>
-      <button class="gy-jnl gy-sq" type="button" aria-label="체육관 일지"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M3 1h10v1H3zM2 2h1v13H2zM13 2h1v13h-1zM3 15h10v1H3z"/><path fill="#3c7cc8" d="M3 2h10v13H3z"/><path fill="#2a5a98" d="M3 2h2v13H3z"/><path fill="#f8f4e8" d="M6 3h6v11H6z"/><path fill="#8890a8" d="M7 5h4v1H7zM7 7h4v1H7zM7 9h4v1H7zM7 11h3v1H7z"/><path fill="#e84838" d="M10 1h2v4l-1-1-1 1z"/></svg></button>
+      <button class="gy-jnl gy-sq" type="button" aria-label="체육관 일지"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M3 1h10v1H3zM2 2h1v13H2zM13 2h1v13h-1zM3 15h10v1H3z"/><path fill="#3c7cc8" d="M3 2h10v13H3z"/><path fill="#2a5a98" d="M3 2h2v13H3z"/><path fill="#f8f4e8" d="M6 3h6v11H6z"/><path fill="#8890a8" d="M7 5h4v1H7zM7 7h4v1H7zM7 9h4v1H7zM7 11h3v1H7z"/></svg></button>
       <button class="gy-qbtn" type="button" aria-label="도전자 받기"><i class="gy-qdot" hidden></i></button><p class="gy-qcap" hidden></p>
       <button class="win gy-simb" type="button">시뮬</button>
       <div class="win blue gy-dlg" aria-live="polite"></div>
@@ -791,7 +791,7 @@ function arrive(c) {
       const R = REW(c.diff), r0 = g.rep || 0;
       const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? 1.5 : 1))); s.eg = (s.eg || 0) + gold; addRep(sfRep(s, R.r));   // v14.97 경완: 트레이너가 대신 막은 건 연승으로 치지 않는다 (연승·평판 보너스 없음)
       const rep = (g.rep || 0) - r0;
-      blocked(c, 1); { const x = daySf(dayRec(c.t), `${s.cls} ${s.nm}`); x.w++; x.g += gold; x.r += rep; }
+      awSf(s, gold, rep); blocked(c, 1); { const x = daySf(dayRec(c.t), `${s.cls} ${s.nm}`); x.w++; x.g += gold; x.r += rep; }
       glog('sf', `${sfName(s)}${jong(s.nm) ? '이' : '가'} ${cn}${jong(c.nm) ? '을' : '를'} 막아 냈다! <small>+${gold}G · 평판 +${rep}</small>`, c.t);
       const c2 = mkChal(c.t); c2.sfOk = 1; arrive(c2); return;   // v15.62 경완 '트레이너를 많이 세웠다고 명단이 줄면 안 돼': 트레이너가 막은 도전자는 덤, 관장 명단엔 다른 도전자가 그대로 온다
     }
@@ -1517,7 +1517,7 @@ function jnlPop() {
   root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew gy-jnlw'; $g('.gy-main').appendChild(el);
   const g = st(); dayRec();   /* 오늘 칸은 늘 있게 (옛 저장이면 여기서 기록으로 채움) */
-  const WD = '일월화수목금토', G = n => `${n < 0 ? '-' : '+'}${Math.abs(n).toLocaleString()}G`, R = n => n < 0 ? `${n}` : `+${n}`, cl = n => n < 0 ? 'jn-m' : n > 0 ? 'jn-g' : '';
+  const WD = '일월화수목금토', G = n => `${n < 0 ? '-' : '+'}${Math.abs(n).toLocaleString()}G`, Gc = n => `<span class="jn-gc"><i class="coin"></i>${n < 0 ? '-' : '+'}${Math.abs(n).toLocaleString()}</span>`, R = n => n < 0 ? `${n}` : `+${n}`, cl = n => n < 0 ? 'jn-m' : n > 0 ? 'jn-g' : '';
   const keys = Object.keys(g.days).map(Number).sort((a, b) => b - a); if (!keys.includes(jnlK)) jnlK = keys[0];
   const row = (a, b, c = '') => `<dt>${a}</dt><dd class="${c}">${b}</dd>`;
   const draw = () => { const k = jnlK, i = keys.indexOf(k), d = g.days[k], t = new Date(k), today = k === dayStart(Date.now()), m = d.me;
@@ -1526,10 +1526,15 @@ function jnlPop() {
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 일지</b></div>
       <div class="jn-nav"><button type="button" data-mv="1" ${i >= keys.length - 1 ? 'disabled' : ''} aria-label="전날">◀</button><b>${t.getMonth() + 1}월 ${t.getDate()}일 <small>(${WD[t.getDay()]})</small>${today ? '<i class="jn-today">오늘</i>' : ''}</b><button type="button" data-mv="-1" ${i <= 0 ? 'disabled' : ''} aria-label="다음날">▶</button></div>
       <div class="gy-body">
-      <div class="jn-day"><h5>체육관</h5><dl class="jn-st">${row('찾아온 도전자', `${d.n}명`)}${row('막은 도전자', `${m.w + sw}명`)}${row('기다리다 돌아감', `${d.o}명`)}${row('번 골드', G(m.g + sg), 'jn-g')}${out ? row('쓴 골드', G(-out), 'jn-m') : ''}${d.p ? row('<span class="jn-sub">월급</span>', `${d.p.toLocaleString()}G`, 'jn-sub') : ''}${d.s ? row('<span class="jn-sub">상점</span>', `${d.s.toLocaleString()}G`, 'jn-sub') : ''}${row('평판', R(m.r + sr), cl(m.r + sr))}</dl></div>
-      <div class="jn-day"><h5>관장 (나)</h5><dl class="jn-st">${row('막은 도전자', `${m.w}명`)}${row('진 배틀', `${m.l}번`)}${row('번 골드', G(m.g), 'jn-g')}${row('평판', R(m.r), cl(m.r))}</dl></div>
-      <div class="jn-day"><h5>트레이너</h5>${SF.length ? `<dl class="jn-st">${row('막은 도전자', `${sw}명`)}${row('번 골드', G(sg), 'jn-g')}${row('평판', R(sr), cl(sr))}</dl>
-        <ul class="jn-sfl">${SF.map(([n, x]) => `<li><b>${esc(n)}</b><span>${x.w}명 · <em class="jn-g">${G(x.g)}</em> · 평판 <em class="${cl(x.r)}">${R(x.r)}</em></span></li>`).join('')}</ul>` : '<p class="jn-none">이날 트레이너가 막은 도전자는 없어요.</p>'}</div>
+      <div class="jn-day jn-sum"><h5>체육관 합계</h5>
+        <div class="jn-chips"><span>찾아온 도전자<b>${d.n}명</b></span><span>막은 도전자<b>${m.w + sw}명</b></span><span>진 배틀<b>${m.l}번</b></span><span>돌아감<b>${d.o}명</b></span></div>
+        <table class="jn-tb"><thead><tr><th></th><th>막은</th><th>번 골드</th><th>평판</th></tr></thead>
+        <tbody><tr><th><i class="jn-dot me"></i>관장 (나)</th><td>${m.w}명</td><td class="jn-g">${Gc(m.g)}</td><td class="${cl(m.r)}">${R(m.r)}</td></tr>
+        <tr><th><i class="jn-dot sf"></i>트레이너</th><td>${sw}명</td><td class="jn-g">${Gc(sg)}</td><td class="${cl(sr)}">${R(sr)}</td></tr></tbody>
+        <tfoot><tr><th>합계</th><td>${m.w + sw}명</td><td class="jn-g">${Gc(m.g + sg)}</td><td class="${cl(m.r + sr)}">${R(m.r + sr)}</td></tr></tfoot></table>
+        ${m.g + sg > 0 ? `<div class="jn-bar" aria-hidden="true"><i class="me" style="flex:${m.g}"></i><i class="sf" style="flex:${sg}"></i></div>` : ''}
+        ${out ? `<dl class="jn-st jn-out">${d.p ? row('월급', Gc(-d.p), 'jn-m') : ''}${d.s ? row('상점', Gc(-d.s), 'jn-m') : ''}${row('<b>남긴 골드</b>', `<b>${Gc(m.g + sg - out)}</b>`, cl(m.g + sg - out))}</dl>` : ''}</div>
+      ${SF.length ? `<div class="jn-day"><h5>트레이너별</h5><ul class="jn-sfl">${SF.map(([n, x]) => `<li><b>${esc(n)}</b><span>${x.w}명 · <em class="jn-g">${Gc(x.g)}</em> · 평판 <em class="${cl(x.r)}">${R(x.r)}</em></span></li>`).join('')}</ul></div>` : ''}
       <div class="jn-day jn-fd${g.jnlO ? ' on' : ''}"><h5><button class="jn-fold" type="button" data-fold aria-expanded="${g.jnlO ? 'true' : 'false'}">기록 <small>${logs.length}개</small><i aria-hidden="true">▼</i></button></h5>${!g.jnlO ? '' : logs.length ? `<ul class="jn-log">${logs.map(x => `<li><time>${hhmm(x[0])}</time><span>${x[2]}</span></li>`).join('')}</ul>` : '<p class="jn-none">기록이 없어요.</p>'}</div>
       </div>`; };
   draw();
@@ -2150,10 +2155,46 @@ function enter() {
   clearInterval(tickT); tickT = setInterval(() => { if (!open || busy || !st()?.d || tutEnd || root.classList.contains('pre') || root.querySelector('.gy-on, .gy-lock')) return;   /* v13.94: 튜토리얼·개설 알림창 중엔 도전자를 데려오지 않음 */ const n0 = st().q.length; tick(); renderTop(); if (st().q.length > n0) { homeSay(); qDing(); } else if (!st().q.length) homeSay(); }, 20e3);
 }
 let tickT = 0;
+/* v15.88 경완 '고용한 트레이너가 평판 올렸거나 골드 벌었을 때, 훈련장에서 특별한 기술 배웠을 때 체육관 들어가면 알림창':
+   g.aw = { sf: {트레이너 id: [막은 수, 골드, 평판]}, mv: [[포켓몬 id, 기술 id, 기술 이름, 타입]] } 에 모았다가 들어올 때 한 번 보여 주고 비운다 */
+const awOf = () => { const g = st(); return g.aw || (g.aw = { sf: {}, mv: [] }); };
+function awSf(s, gold, rep) { const a = awOf().sf, x = a[s.id] || (a[s.id] = [0, 0, 0]); x[0]++; x[1] += gold; x[2] += rep; }
+const awMv = (id, mv, nm, ty) => awOf().mv.push([id, mv, nm, ty]);
+async function awayPop() {
+  const g = st(), A = g.aw; if (!A || !open) return; const SF = Object.entries(A.sf).map(([id, v]) => [g.sf.find(s => String(s.id) === id), v]).filter(x => x[0]).sort((a, b) => b[1][1] - a[1][1]), MV = A.mv.map(([id, mv, nm, ty]) => [S.box.find(P => P.id === id), mv, nm, ty]).filter(x => x[0]);
+  g.aw = null; save();
+  if (SF.length) await awSfPop(SF);
+  for (let i = 0; i < MV.length && open; i++) await awMvPop(MV[i], i, MV.length);
+}
+const awR = n => `${n < 0 ? '' : '+'}${Math.round(n * 10) / 10}`;
+/* 트레이너 알림창: 위 띠(트레이너들이 줄지어 섬) → 합계 큰 숫자 → 트레이너별 줄 */
+function awSfPop(SF) {
+  const tg = SF.reduce((a, [, v]) => a + v[1], 0), tr = SF.reduce((a, [, v]) => a + v[2], 0), tb = SF.reduce((a, [, v]) => a + v[0], 0);
+  try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {}
+  return new Promise(ok => pop(`<div class="aw-pop aw-sf">
+    <div class="aw-hd"><small>내가 없는 동안</small><b>트레이너들이 체육관을 지켰어요!</b><div class="aw-crew">${SF.slice(0, 5).map(([s]) => `<img alt="" src="${trSrc(s.tr)}">`).join('')}</div></div>
+    <div class="aw-tot"><div><span>막은 도전자</span><b>${tb}<small>명</small></b></div><div><span>번 골드</span><b class="aw-g"><i class="coin"></i>+${tg.toLocaleString()}</b></div><div><span>평판</span><b class="aw-r">${awR(tr)}</b></div></div>
+    <ul class="aw-l">${SF.map(([s, v]) => `<li><span class="aw-pic"><img alt="" src="${trSrc(s.tr)}"></span><div><b>${esc(sfName(s))}</b><span>${v[0]}명 막음</span></div><em><i class="aw-g"><i class="coin"></i>+${v[1].toLocaleString()}</i><i class="aw-r">평판 ${awR(v[2])}</i></em></li>`).join('')}</ul>
+    <div class="gy-btns one"><button class="main" data-a="x">확인</button></div></div>`, (a, close) => { close(); ok(); }).classList.add('aw-wrap'));
+}
+/* 기술 알림창: 포켓몬 그림 + 반짝임 → 배틀 기술 카드 모양 (타입 색) */
+function awMvPop([P, mv, nm, ty], i, n) {
+  const d = GB()?.D?.mv?.find(x => x[0] === mv), t = d ? d[2] : ty, cat = d ? d[3] : 0, pw = d && d[4] ? d[4] : '-', pn = P.nm || SPECIES[P.sp]?.n || '???';
+  try { window.GymBGM?.se?.('ME_WAZA'); } catch (e) {} try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
+  return new Promise(ok => { const p = pop(`<div class="aw-pop aw-mvp">
+    ${n > 1 ? `<i class="aw-cnt">${i + 1} / ${n}</i>` : ''}<div class="aw-hd"><small>훈련장</small><b>특별한 기술을 익혔다!</b></div>
+    <div class="aw-mon"><i class="aw-rays"></i><img alt="" data-awp="${P.id}"><i class="aw-st s1"></i><i class="aw-st s2"></i><i class="aw-st s3"></i></div>
+    <p class="aw-say"><b>${esc(pn)}</b>${jong(pn) ? '은' : '는'}<br><b class="aw-mvn">${esc(nm)}</b>${jong(nm) ? '을' : '를'} 익혔다!</p>
+    <div class="aw-card" style="background-image:url(${IMG}bt/mv_${t || 1}.png)"><b>${esc(nm)}</b><span><i class="aw-ty">${tyIc0(t || 1)}${TYPE_KO[t || 1] || ''}</i><img alt="" src="${IMG}bt/cat_${cat}.png"><em>위력 ${pw}</em></span></div>
+    <p class="aw-tip">기술 바꾸기에서 쓸 수 있어요</p>
+    <div class="gy-btns one"><button class="main" data-a="x">${i + 1 < n ? '다음' : '확인'}</button></div></div>`, (a, close) => { close(); ok(); }); p.classList.add('aw-wrap');
+    p.querySelectorAll('[data-awp]').forEach(im => GA.thumb(P).then(u => { if (u) im.src = u; }).catch(() => {})); });
+}
 // 들어온 뒤: 지난주 보고서 → 새 배지 → 면접 지원자 알림 (하나씩)
 async function later() {
   await wait(700); if (!open) return; const g = st();
   if (g.newBdg) await badgeGet(g.newBdg);
+  await awayPop();
   await unlockChk();
 }
 let leaving = false;
@@ -2231,7 +2272,7 @@ async function visit(F, code) {
 
 window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) => dzOf(id, gi), _routes: () => DESIGNS.flatMap(d => GRADES.map((_, gi) => { const D = dzOf(d.id, gi), C = chalRoute(D, ents); return { id: d.id, gi, door: D.door, leader: D.leader, guy: D.guy, free: !!D.free, chal: C.path, cf: C.cf, old: D.path, guyR: route(D, D.door, D.guy, []), oldGuy: guyPath(D) }; })), renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
+  k: { awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 // 이미 명단에서 본 도전자(qSeen)는 기다리고 있어도 점을 띄우지 않는다 — 체육관 안 점과 똑같이 (경완 2026-10-30 '빨간점 다 확인했는데 아이콘 점이 안 사라짐')
 // 점 = 안 본 도전자, 또는 새 도전자가 올 시각이 지남(일정·당겨 온 도전자). 저장된 at 은 쓰지 않는다 (경완 2026-10-30 '명단만 확인해도 꺼지게')
