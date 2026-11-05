@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import WatchKit
 
 private let gold = Color(red: 1, green: 0.886, blue: 0.478)
 private let grass = Color(red: 0.43, green: 0.72, blue: 0.28)
@@ -12,8 +13,11 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
-                // 2026-11-05 경완: 런닝하기 버튼 대신 게임 프로필의 '이동 거리' (걸으면 초록으로 켜짐)
-                Section { WalkCard() }
+                // 2026-11-05 경완: 켜자마자 한 화면 가득 내 캐릭터 + 그 위에 이동 거리. 밑으로 내리면 짝꿍·알
+                WalkCard()
+                    .frame(height: max(150, WKInterfaceDevice.current().screenBounds.height - 44))
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
                 if let L = model.shown?.allBuds, !L.isEmpty {
                     Section("짝꿍") { ForEach(L.indices, id: \.self) { BuddyRow(buddy: L[$0]) } }
                 }
@@ -31,7 +35,6 @@ struct ContentView: View {
                     }
                 }
             }
-            .navigationTitle("포켓몬 키우기")
         }
         .onAppear { model.refresh(); model.startLive() }
         .onChange(of: scenePhase) { _, p in
@@ -51,9 +54,10 @@ struct EggRow: View {
                 Text(String(format: "%.1f/%gkm", min(egg.km, egg.need), egg.need))
                     .font(.footnote.monospacedDigit()).foregroundStyle(.secondary)
             }
-            ProgressView(value: min(egg.km, egg.need), total: egg.need).tint(grass)
-            Text(egg.km >= egg.need ? "아이폰에서 열면 부화해요!" : String(format: "앞으로 %.2fkm", egg.need - egg.km))
+            ReadyBar(value: egg.km, total: egg.need, tint: grass, ready: egg.km >= egg.need)
+            Text(egg.km >= egg.need ? "부화 준비 완료! 핸드폰에서 확인하세요" : String(format: "앞으로 %.2fkm", egg.need - egg.km))
                 .font(.caption2).foregroundStyle(egg.km >= egg.need ? gold : .secondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.vertical, 2)
     }
@@ -77,9 +81,10 @@ struct BuddyRow: View {
                     Text(buddy.species).font(.caption2).foregroundStyle(.secondary)
                 }
                 if buddy.need > 0 {
-                    ProgressView(value: min(buddy.km, buddy.need), total: buddy.need).tint(gold)
-                    Text(buddy.ready ? "진화 준비 완료!" : String(format: "진화까지 %.2fkm", buddy.need - buddy.km))
+                    ReadyBar(value: buddy.km, total: buddy.need, tint: gold, ready: buddy.ready)
+                    Text(buddy.ready ? "진화 준비 완료! 핸드폰에서 확인하세요" : String(format: "진화까지 %.2fkm", buddy.need - buddy.km))
                         .font(.caption2).foregroundStyle(buddy.ready ? gold : .secondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 } else {
                     Text("더 진화하지 않아요").font(.caption2).foregroundStyle(.secondary)
                 }
@@ -89,7 +94,7 @@ struct BuddyRow: View {
     }
 }
 
-// 게임 프로필의 '이동 거리' 칸과 같은 모양: 걷는 중이면 테두리·숫자가 초록으로, 왼쪽 위 점이 깜빡인다
+// 첫 화면: 게임 프로필의 '이동 거리' + 캐릭터 칸을 한 화면 가득. 걷는 중이면 테두리·숫자가 초록, 점이 깜빡이고 캐릭터가 걷는다
 struct WalkCard: View {
     @EnvironmentObject var model: WatchModel
     @State private var now = Date()
@@ -98,12 +103,37 @@ struct WalkCard: View {
     var body: some View {
         let walking = now.timeIntervalSince(model.walkAt) < WatchModel.walkLive
         let blink = Int(now.timeIntervalSinceReferenceDate / 0.6) % 2 == 0
-        HStack(alignment: .center, spacing: 4) {
-            VStack(alignment: .leading, spacing: 2) {
+        ZStack(alignment: .top) {
+            // 캐릭터 (아래쪽 가운데, 발밑 그림자)
+            GeometryReader { g in
+                let side = min(g.size.width * 0.8, g.size.height * 0.72)
+                VStack(spacing: 0) {
+                    Spacer(minLength: 0)
+                    ZStack(alignment: .bottom) {
+                        Ellipse().fill(Color.black.opacity(0.28))
+                            .frame(width: side * 0.42, height: side * 0.09)
+                            .offset(y: -side * 0.1)
+                        if let fr = model.trFrames {
+                            TrainerSprite(frames: fr, walking: walking, side: side)
+                        } else {
+                            Image(systemName: walking ? "figure.walk" : "figure.stand")
+                                .resizable().scaledToFit()
+                                .frame(width: side * 0.45, height: side * 0.6)
+                                .foregroundStyle(walking ? walkGreen : .secondary)
+                                .padding(.bottom, side * 0.12)
+                        }
+                    }
+                    .frame(width: side, height: side)
+                }
+                .frame(width: g.size.width, height: g.size.height)
+            }
+            // 위: 이동 거리
+            VStack(spacing: 0) {
                 HStack(spacing: 5) {
                     Rectangle().fill(walkGreen).frame(width: 7, height: 7)
                         .opacity(walking && blink ? 1 : 0)
                     Text(walking ? "걷는 중" : "이동 거리").font(.caption2).foregroundStyle(walking ? walkGreen : .secondary)
+                    Rectangle().fill(Color.clear).frame(width: 7, height: 7)
                 }
                 HStack(alignment: .firstTextBaseline, spacing: 3) {
                     Text(String(format: "%.2f", model.todayKm))
@@ -112,16 +142,65 @@ struct WalkCard: View {
                     Text("km").font(.footnote).foregroundStyle(.secondary)
                 }
             }
-            Spacer(minLength: 0)
-            Image(systemName: walking ? "figure.walk" : "figure.stand")
-                .font(.title2).foregroundStyle(walking ? walkGreen : .secondary)
+            .padding(.top, 8)
         }
-        .padding(.vertical, 6)
-        .onReceive(tick) { now = $0 }
-        .listRowBackground(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.white.opacity(0.08))
-                .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(walkGreen, lineWidth: 2).opacity(walking ? 1 : 0))
+        .background(
+            RoundedRectangle(cornerRadius: 14)
+                .fill(LinearGradient(colors: [Color.white.opacity(0.06), grass.opacity(0.28)], startPoint: .top, endPoint: .bottom))
+                .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(walkGreen, lineWidth: 2).opacity(walking ? 1 : 0))
         )
+        .onReceive(tick) { now = $0 }
+    }
+}
+
+// 2026-11-05 경완: 아이폰 프로필처럼 걸을 땐 내 캐릭터가 걷고, 안 걸을 땐 서 있는다.
+// 게임 trWalk(0.9초): 선 모습 → 걸음 → 선 모습 → 걸음(좌우 뒤집기)
+struct TrainerSprite: View {
+    let frames: (stand: CGImage, step: CGImage)
+    let walking: Bool
+    var side: CGFloat = 52
+
+    var body: some View {
+        TimelineView(.periodic(from: .now, by: walking ? 0.225 : 60)) { ctx in
+            let i = walking ? Int(ctx.date.timeIntervalSinceReferenceDate / 0.225) % 4 : 0
+            Image(decorative: i % 2 == 1 ? frames.step : frames.stand, scale: 1)
+                .interpolation(.none)
+                .resizable()
+                .frame(width: side, height: side)
+                .scaleEffect(x: i == 3 ? -1 : 1, y: 1)
+        }
+        .frame(width: side, height: side)
+    }
+}
+
+// 2026-11-05 경완: 진화·부화 준비가 끝나면 게이지 테두리가 은은하게 빛난다 (워치에선 진화·부화 못 함 → 문구로 아이폰 안내)
+struct ReadyBar: View {
+    let value: Double
+    let total: Double
+    let tint: Color
+    let ready: Bool
+    @State private var glow = false
+
+    var body: some View {
+        GeometryReader { g in
+            let p = total > 0 ? min(max(value / total, 0), 1) : 0
+            ZStack(alignment: .leading) {
+                Capsule().fill(Color.white.opacity(0.15))
+                Capsule().fill(tint).frame(width: g.size.width * p)
+            }
+            .overlay(
+                Capsule().strokeBorder(gold, lineWidth: 1.5)
+                    .shadow(color: gold.opacity(0.9), radius: glow ? 4 : 1)
+                    .opacity(ready ? (glow ? 0.95 : 0.35) : 0)
+            )
+        }
+        .frame(height: 7)
+        .onAppear { startGlow() }
+        .onChange(of: ready) { _, _ in startGlow() }
+    }
+
+    private func startGlow() {
+        guard ready else { glow = false; return }
+        withAnimation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true)) { glow = true }
     }
 }
