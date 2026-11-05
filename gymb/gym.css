@@ -2807,3 +2807,23 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .ts-win .ts-slot .tsc-out{top:8px;transform:none;padding:4px 7px}
 #gym .ts-win .tsc-grid{grid-auto-rows:auto}
 #gym .tsc-mid{padding-right:0}#gym .tsc-nm{padding-right:70px}
+/* v16.40 경완: 일지 합계 표 — 골드 아이콘과 숫자 사이 띄우고, 아이콘은 줄마다 같은 자리(칸 왼쪽)에 */
+#gym .jn-tb .jn-gc{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-width:64px;font-variant-numeric:tabular-nums}
+#gym .jn-tb .jn-gc .coin{flex:none;margin:0!important;position:static;vertical-align:middle}
+#gym .jn-tb td.jn-g,#gym .jn-tb td.jn-m{padding-left:10px}
+/* v16.40 경완 '트레이너 상세 카드 정렬 다 틀어짐': 창 안쪽 여백 하나로 맞춤 — 위 그림도 테두리 상자로 같은 폭, 칸들 좌우 여백 없앰, 버튼 한 줄 */
+#gym .gy-pop .win:has(.sd2){padding:14px 14px 14px;overflow:hidden auto;max-height:calc(100% - 8px)}
+#gym .sd2-hero{border:3px solid var(--frame);box-shadow:3px 3px 0 rgba(0,0,0,.15)}
+#gym .sd2-trt,#gym .sd2-team,#gym .sd2-num{padding-left:0;padding-right:0}
+#gym .sd2-h{margin-left:0!important;margin-right:0!important}
+#gym .sd2-team{display:flex;justify-content:center;gap:6px}
+#gym .sd2-team>span{flex:0 1 25%;max-width:25%;box-sizing:border-box}
+#gym .sd2 .sd-btns{margin:14px 0 0}
+#gym .sd2 .sd-btns button{font-size:14px;white-space:nowrap;padding:10px 4px}
+#gym .sd2-num>span{justify-content:flex-start}
+#gym .gy-jnlw .jn-out .jn-gc{gap:6px}#gym .gy-jnlw .jn-out .jn-gc .coin{margin:0!important}
+#gym .jn-tb .jn-gc{display:inline-flex;width:74px;min-width:0;margin-left:auto}
+#gym .jn-tb td.jn-g,#gym .jn-tb td.jn-m{padding-left:4px}
+#gym .jn-tb .jn-gc,#gym .gy-jnlw .jn-out .jn-gc{display:inline-flex;justify-content:space-between;align-items:center;gap:6px;width:calc(18px + 5.4ch);font-variant-numeric:tabular-nums}
+#gym .gy-jnlw .jn-out dd{text-align:right}
+#gym .jn-tb .jn-gc,#gym .gy-jnlw .jn-out .jn-gc{width:68px}
