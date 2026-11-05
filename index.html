@@ -13839,18 +13839,15 @@ const eggHtml = (g, cls = '', lt = 0) => `<div class="egg g${g}${lt ? ` lt lt${l
 const LT_ADJ = ['', '포근한', '불끈한', '산뜻한', '끈적한', '묵직한', '단단한', '꿈틀대는', '으스스한', '매끈한', '화끈한', '촉촉한', '파릇한', '짜릿한', '신비한', '서늘한', '웅장한', '음흉한', '반짝이는'];
 const eggName = e => e.lt ? `${LT_ADJ[e.lt]} 전설 알` : `${GRADE[e.g].n} 알`;
 function legEggSp(t) { const L = legEggL(t);   /* v17.27 경완 '전설 환상 같은 본가 기준 말고 우리가 정한 티어 기준': 전설 알에서 나오는 포켓몬(작업실 티어표) 중 그 타입 전부 */
-  const W = legWs(L), tot = W.reduce((a, x) => a + x, 0); if (!(tot > 0)) return L[Math.random() * L.length | 0];
+  const W = legWs(L, t), tot = W.reduce((a, x) => a + x, 0); if (!(tot > 0)) return L[Math.random() * L.length | 0];
   let r = Math.random() * tot; for (let i = 0; i < L.length; i++) if ((r -= W[i]) < 0) return L[i]; return L[L.length - 1]; }
 /* v17.24 경완 '방금 전으로 다시' (v17.19 '티어 안에 순서 있잖아'): 타입 전설 알도 티어표 순서대로. 1티어 맨 앞이 가장 드물고 3티어 맨 끝이 가장 흔하게, 줄을 따라 고르게 (티어 하나 = 약 2배, 알 티어 안 차이 K 와 같은 값). 전체 부화율 가중치(v17.21)는 무한다이노가 독 91%·드래곤 75%라 되돌림 */
-const legW = sp => { const t = TIER[sp], k = eggEffK()?.[2] ?? TIER_KT[2] ?? .6931; return Math.exp(-k * ((3 - Math.min(3, Math.max(1, t || 3))) + (TIER_Z[sp] ?? .5))); };
+const legW = sp => { const t = TIER[sp], k = eggEffK()?.[2] ?? TIER_KT[2] ?? .6931; return Math.exp(-k * ((3 - Math.min(3, Math.max(1, t || 3))) + .9 * (TIER_Z[sp] ?? .5))); };   /* v17.30: 티어 안 순서는 0.9칸만 써서 앞 티어 맨 끝이 다음 티어 맨 앞보다 늘 드물게 (경완 '1티어가 2티어보다 앞 순서') */
+/* v17.30 경완 '7.3%로 맞춰달라한건 독 타입 내에서만': 고정 확률은 그 타입 알에서만 (독 알 무한다이노 7.3%), 나머지는 티어표 순서 */
+const LEG_FIX = { 4: { 890: .073 } }, legWs = (L, t) => { const W = L.map(legW), F = LEG_FIX[t] || {}, fx = L.map(sp => F[sp]), fs = fx.reduce((a, p) => a + (p || 0), 0);
+  if (!fs || fs >= 1) return W; const rest = W.reduce((a, w, i) => a + (fx[i] ? 0 : w), 0); if (!(rest > 0)) return W; return W.map((w, i) => fx[i] ? rest * fx[i] / (1 - fs) : w); };
 const legEggL = t => { const has = sp => (SPECIES[sp].t || []).includes(t) && !SP_OFF.has(sp); let L = POOL[5].filter(sp => has(sp) && spInEgg(5, sp) > 0); if (!L.length) L = POOL[5].filter(has); if (!L.length) L = POOL[5]; return L; };
-/* v17.28 경완 '무한다이노 독 타입에서도 7.3%로': 1티어는 어느 타입 알에서든 한 마리당 7.3% (드래곤 알 무한다이노와 같게), 나머지 몫을 티어표 순서대로 나눔 */
-const LEG_T1 = .073, legWs = L => { let W = L.map(legW); const one = L.map(sp => TIER[sp] === 1), n1 = one.filter(Boolean).length;
-  if (!n1 || n1 * LEG_T1 >= 1) return W; const left = 1 - n1 * LEG_T1, R = W.filter((w, i) => !one[i]); if (!R.length) return W;
-  /* v17.29 경완 '1티어가 2티어보다 앞 순서': 1티어보다 덜 나오는 2티어가 없게, 가장 드문 2티어도 1티어의 1.05배 이상이 될 때까지 나머지 차이를 고르게 줄임 */
-  let a = 1; for (; a > 0; a -= .05) { const P = R.map(w => w ** a), s = P.reduce((x, y) => x + y, 0); if (Math.min(...P) / s * left >= LEG_T1 * 1.05) break; } a = Math.max(0, a);
-  W = W.map((w, i) => one[i] ? 0 : w ** a); const rest = W.reduce((x, y) => x + y, 0), w1 = rest * LEG_T1 / left; return W.map((w, i) => one[i] ? w1 : w); };
-GA.legEggW = t => { const L = legEggL(t), W = legWs(L); return L.map((sp, i) => [sp, W[i], TIER[sp]]); };
+GA.legEggW = t => { const L = legEggL(t), W = legWs(L, t); return L.map((sp, i) => [sp, W[i], TIER[sp]]); };
 GA.LT_ADJ = LT_ADJ; GA.eggIco = lt => eggHtml(5, '', lt);
 GA.legEgg = (t, from) => { const e = { id: S.eid++, g: 5, t: Date.now(), isNew: true, lt: t, sp: legEggSp(t), spot: 1, place: from || '체육관' }; S.bag.push(e); save(); return e; };
 const hatchEl = $('#hatch'), hatchStage = $('#hatchStage');
