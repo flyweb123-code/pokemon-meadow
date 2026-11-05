@@ -2964,3 +2964,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .rs-gold>.coin,#gym .jn-tb .jn-gc .coin,#gym .gy-jnlw .jn-out .jn-gc .coin{margin-right:0!important}
 #gym .aw-tot b{gap:0}
 #gym .sf-cap>span:has(.sp-gold){background:none;box-shadow:none;padding:3px 0 4px}   /* v16.89 경완: 상점 보유 골드 뒤 박스 없앰 */
+
+.gy-pop h4.has-own{position:relative;padding:0 46px}.gy-pop h4 .gy-own{position:absolute;right:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:3px;font-size:12px;font-weight:400;font-style:normal;color:var(--ink,#20202c);line-height:1}.gy-pop h4 .gy-own svg{display:block}.gy-pop h4 .gy-own b{font-weight:400}   /* v17.01 경완: 상점 구매 창 제목 줄 오른쪽 가방 × N */

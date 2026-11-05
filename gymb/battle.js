@@ -1590,9 +1590,10 @@ const itAll = () => { const g = S.gym || {}, bag = Object.entries(g.itm || {}).f
 const itRowAll = ([id, P]) => { if (!P) return itRow(id); const x = HOLD[id];
   return `<div class="sp-tm sp-it held"><img class="tm-ic it-ic" alt="" src="${itImg(id)}"><span class="tm-nm"><b>${esc(x[0])}</b></span><span class="tm-meta it-who"><span class="it-wth"><img alt="" data-th="${P.id}"></span><small>${esc(nmOf(P))}${jong(nmOf(P)) ? '이' : '가'} 지니고 있어요</small></span><button type="button" class="it-back" data-takeit="${P.id}">돌려받기</button></div>`; };
 // 도구 상세 카드: btn = [글자, 누르면] (없으면 닫기만)
-function itInfo(id, lab, act, foot = '') {
+const bagN = n => `<i class="gy-own" aria-label="창고에 ${n | 0}개"><svg viewBox="0 0 12 12" width="14" height="14" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M4 0h4v1h1v2h1v1h1v7h-1v1H2v-1H1V4h1V3h1V1h1zM5 1v2h2V1z"/><path fill="#e8783c" d="M2 4h8v7H2z"/><path fill="#ffb27a" d="M2 4h8v1H2zM2 5h1v5H2z"/><path fill="#b8502a" d="M3 10h7v1H3zM9 5h1v5H9z"/><path fill="#20202c" d="M3 6h6v1H3zM3 7h1v2H3zM8 7h1v2H8zM3 9h6v1H3z"/><path fill="#ffd84a" d="M5 6h2v2H5z"/></svg><b>×${(n | 0).toLocaleString()}</b></i>`;   /* v17.01 경완 '체육관 상점도 이런식으로': 가진 개수는 슬롯 대신 구매 창 제목 줄 오른쪽에 가방 × N */
+function itInfo(id, lab, act, foot = '', own) {
   const x = HOLD[id]; if (!x) return; const n = S.gym?.itm?.[id] || 0;
-  gymPop(`<h4 class="mi-h"><img class="tm-ic it-ic" alt="" src="${itImg(id)}">${esc(x[0])}</h4>${foot}<p class="gy-msg mi-d">${esc(x[2])}</p><div class="gy-btns${lab ? '' : ' one'}">${lab ? `<button data-a="x">닫기</button><button class="main" data-a="t">${lab}</button>` : '<button class="main" data-a="x">닫기</button>'}</div>`,
+  gymPop(`<h4 class="mi-h${own != null ? ' has-own' : ''}"><img class="tm-ic it-ic" alt="" src="${itImg(id)}">${esc(x[0])}${own != null ? bagN(own) : ''}</h4>${foot}<p class="gy-msg mi-d">${esc(x[2])}</p><div class="gy-btns${lab ? '' : ' one'}">${lab ? `<button data-a="x">닫기</button><button class="main" data-a="t">${lab}</button>` : '<button class="main" data-a="x">닫기</button>'}</div>`,
     (a, close) => { close(); if (a === 't') act?.(); });
 }
 // 지니게 하기: 이미 지닌 도구는 창고로 돌아온다
@@ -1610,8 +1611,8 @@ const mintNm = k => `${natKo(k)}민트`, mintImg = k => `${IMG}item/mint_${k}.pn
 const mintD = k => { const n = D?.nt?.[k] || []; return `먹이면 성격이 ${natKo(k)}${ro(natKo(k))} 바뀐다. ${n[1] ? `${STAT_KO[n[1]]}${jong(STAT_KO[n[1]]) ? '이' : '가'} 잘 오르고 ${STAT_KO[n[2]]}${jong(STAT_KO[n[2]]) ? '이' : '가'} 잘 오르지 않게 된다.` : '능력이 고르게 오르게 된다.'}`; };
 const mintAll = () => Object.entries(S.gym?.mint || {}).filter(([k, n]) => n > 0 && MINT.includes(k)).sort((a, b) => MINT.indexOf(a[0]) - MINT.indexOf(b[0]));
 const mintRow = (k, n, P) => { const same = P && gm(P).nat === k; return `<button type="button" class="sp-tm sp-it sp-mint${same ? ' off' : ''}" data-mint="${k}" ${same ? 'disabled' : ''}><img class="tm-ic it-ic" alt="" src="${mintImg(k)}"><span class="tm-nm"><b>${esc(mintNm(k))}</b>${n ? `<i class="tm-own">×${n}</i>` : ''}</span><span class="tm-meta"><small>${same ? '지금 성격' : esc(D?.nt?.[k]?.[1] ? `${STAT_KO[D.nt[k][1]]}▲ ${STAT_KO[D.nt[k][2]]}▼` : '변화 없음')}</small></span></button>`; };
-function mintInfo(k, lab, act, foot = '') {
-  gymPop(`<h4 class="mi-h"><img class="tm-ic it-ic" alt="" src="${mintImg(k)}">${esc(mintNm(k))}</h4>${foot}<p class="gy-msg mi-d">${esc(mintD(k))}</p><div class="gy-btns${lab ? '' : ' one'}">${lab ? `<button data-a="x">닫기</button><button class="main" data-a="t">${lab}</button>` : '<button data-a="x">닫기</button>'}</div>`,
+function mintInfo(k, lab, act, foot = '', own) {
+  gymPop(`<h4 class="mi-h${own != null ? ' has-own' : ''}"><img class="tm-ic it-ic" alt="" src="${mintImg(k)}">${esc(mintNm(k))}${own != null ? bagN(own) : ''}</h4>${foot}<p class="gy-msg mi-d">${esc(mintD(k))}</p><div class="gy-btns${lab ? '' : ' one'}">${lab ? `<button data-a="x">닫기</button><button class="main" data-a="t">${lab}</button>` : '<button data-a="x">닫기</button>'}</div>`,
     (a, close) => { close(); if (a === 't') act?.(); });
 }
 function mintUse(P, k) {
@@ -1726,5 +1727,5 @@ async function practice() {
   finally { document.body.classList.remove('gymBattle'); drawTab(); }
 }
 
-window.GymBattle = { mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+window.GymBattle = { bagN, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
 })();
