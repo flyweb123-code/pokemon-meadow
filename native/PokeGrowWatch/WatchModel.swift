@@ -30,8 +30,19 @@ struct GameState: Codable {
     var buddy: BuddyInfo?
     var buds: [BuddyInfo]?   // v14.53 경완: 짝꿍 전부 (예전 게임은 buddy 하나만 보냄)
     var total: Double
+    var tr: String?          // 2026-11-05 경완: 내 캐릭터(입은 옷) 필드 그림 띠 32×192 data URL (예전 게임은 안 보냄)
 
     var allBuds: [BuddyInfo] { buds ?? (buddy.map { [$0] } ?? []) }
+
+    // 그림 띠의 0번 칸 = 정면으로 서 있는 모습, 3번 칸 = 정면 걸음 (게임 프로필 trWalk 와 같은 칸)
+    var trFrames: (stand: CGImage, step: CGImage)? {
+        guard let tr, let comma = tr.firstIndex(of: ","), let data = Data(base64Encoded: String(tr[tr.index(after: comma)...])),
+              let cg = UIImage(data: data)?.cgImage, cg.width >= 32, cg.height >= 128 else { return nil }
+        let w = cg.width
+        guard let a = cg.cropping(to: CGRect(x: 0, y: 0, width: w, height: w)),
+              let b = cg.cropping(to: CGRect(x: 0, y: w * 3, width: w, height: w)) else { return nil }
+        return (a, b)
+    }
 }
 
 // 런닝은 HealthKit 운동 세션으로 기록한다. 화면이 꺼져도 워치가 계속 거리를 잰다.
@@ -149,6 +160,16 @@ final class WatchModel: NSObject, ObservableObject {
                 self.extraKm = max(self.extraKm, m / 1000)
             }
         }
+    }
+
+    // 내 캐릭터 그림 (같은 그림이면 다시 풀지 않는다)
+    private var trCache: (src: String, frames: (stand: CGImage, step: CGImage)?)?
+    var trFrames: (stand: CGImage, step: CGImage)? {
+        let src = state?.tr ?? ""
+        if let c = trCache, c.src == src { return c.frames }
+        let f = state?.trFrames
+        trCache = (src, f)
+        return f
     }
 
     // 화면에 보일 알 현황 = 받은 현황 + extraKm
