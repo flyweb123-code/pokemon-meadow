@@ -59,6 +59,10 @@ const SONG = {
   hgEyeRiv: { s: 'hsEyeRiv', bank: 'hB', vol: 89 },       // 실버 등장
   hgWin1: { s: 'hsWin1', bank: 'hB', vol: 110 },          // 트레이너에게 이겼다
   hgWin3: { s: 'hsWin3', bank: 'hB', vol: 102 },          // 관장·사천왕·챔피언에게 이겼다
+  // 에메랄드 (호연 트레이너)
+  emGym: { gba: 'mus_vs_gym_leader' }, emTenno: { gba: 'mus_vs_elite_four' }, emChamp: { gba: 'mus_vs_champion' }, emRival: { gba: 'mus_vs_rival' },
+  emEyeTenno: { gba: 'mus_encounter_elite_four' }, emEyeChamp: { gba: 'mus_encounter_champion' }, emEyeF: { gba: 'mus_encounter_female' }, emEyeInt: { gba: 'mus_encounter_intense' }, emEyeRiv: { gba: 'mus_encounter_brendan' },
+  emWinGym: { gba: 'mus_victory_gym_leader' }, emWinLeague: { gba: 'mus_victory_league' }, emWinTrain: { gba: 'mus_victory_trainer' },
 };
 
 // ---------- 받아 오기·저장 ----------
@@ -90,6 +94,34 @@ async function part(p) {
   })().catch(e => { delete mem[p]; throw e; }));
 }
 
+// ---------- 에메랄드(GBA) 곡 (v16.94 경완 '에메랄드 원곡') ----------
+// 악보(.mid)·소리 조각(.wav/.pcm)은 pret/pokeemerald 고정 커밋에서 받아 이 기기에 둔다. 음색 설정은 gymb/gba.json, 연주는 gymb/gba.js 일꾼
+const GSRC = 'https://raw.githubusercontent.com/pret/pokeemerald/731ad5bfd6e6f265508d0efcca0ba42f9dcf5881/sound/';
+let gbaMan = null;
+const gbaJson = () => gbaMan || (gbaMan = fetch(`gymb/gba.json?v=${VER}`).then(r => r.json()).catch(e => { gbaMan = null; throw e; }));
+async function gfile(f) {
+  const k = 'gba:' + f; if (mem[k]) return mem[k];
+  return (mem[k] = (async () => {
+    let b = null; try { b = await idb('readonly', st => st.get(key(k))); } catch (e) {}
+    if (b instanceof Blob) b = await b.arrayBuffer();
+    if (b && b.byteLength) return b;
+    const r = await fetch(GSRC + f); if (!r.ok) throw new Error('http ' + r.status); b = await r.arrayBuffer();
+    idb('readwrite', st => st.put(new Blob([b]), key(k))).catch(() => {});
+    return b;
+  })().catch(e => { delete mem[k]; throw e; }));
+}
+let gworker = null, gwid = 0; const gwaits = new Map();
+function gwork(msg) {
+  if (!gworker) { gworker = new Worker(`gymb/gba.js?v=${VER}`); gworker.onmessage = e => { const w = gwaits.get(e.data.id); if (!w) return; gwaits.delete(e.data.id); e.data.err ? w.no(new Error(e.data.err)) : w.ok(e.data); }; gworker.onerror = e => { gwaits.forEach(w => w.no(e)); gwaits.clear(); try { gworker.terminate(); } catch (x) {} gworker = null; }; }
+  const id = ++gwid; return new Promise((ok, no) => { gwaits.set(id, { ok, no }); gworker.postMessage(Object.assign({ id }, msg)); });
+}
+async function makeGba(S) {
+  const J = await gbaJson(), sg = J.songs[S.gba];
+  const [mid, ...sm] = await Promise.all([gfile(sg.mid), ...sg.smp.map(f => gfile('' + f))]);
+  const smp = {}; sg.smp.forEach((f, i) => { smp[f] = sm[i].slice(0); });
+  return gwork({ mid: mid.slice(0), man: Object.assign({}, sg, { v: J.v, ks: J.ks }), smp });
+}
+
 // ---------- 연주(일꾼) ----------
 let worker = null, wid = 0;
 const waits = new Map();
@@ -106,6 +138,7 @@ const pcm = new Map();    // 곡 → 만든 소리 (지금 곡과 체육관 곡�
 async function make(name) {
   if (pcm.has(name)) return pcm.get(name);
   const S = SONG[name], B = BANK[S.bank];
+  if (S.gba) { const p = makeGba(S); pcm.set(name, p); p.catch(() => pcm.delete(name)); return p; }
   const p = (async () => {
     const [seq, bank, ...wars] = await Promise.all([part(S.s), part(B.b), ...B.w.map(part)]);
     const bk = sent.has(B.b) ? null : bank.slice(0), ws = B.w.map((w, i) => sent.has(w) ? null : wars[i].slice(0));
@@ -205,7 +238,7 @@ const GymBGM = {
   // 다음에 틀 곡을 미리 만들어 둔다 (배틀 시작하면 승리 곡)
   prep(name) { if (SONG[name]) make(name).catch(() => {}); },
   // 체육관에서 나가면 메모리를 비운다
-  free() { this.stop(.3); pcm.clear(); bufs.clear(); seBuf.clear(); if (worker) { try { worker.terminate(); } catch (e) {} worker = null; sent.clear(); } },
+  free() { this.stop(.3); pcm.clear(); bufs.clear(); seBuf.clear(); if (worker) { try { worker.terminate(); } catch (e) {} worker = null; sent.clear(); } if (gworker) { try { gworker.terminate(); } catch (e) {} gworker = null; } },
   // 효과음: 미리 만들어 두기 / 틀기
   sePrep(L) { let ctx = null; try { ctx = GA.audio(); } catch (e) {} if (ctx) L.forEach(n => seGet(ctx, n).catch(() => {})); },
   se: (nm, o) => sePlay(nm, o).catch(() => {}),

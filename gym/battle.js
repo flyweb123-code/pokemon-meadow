@@ -593,7 +593,7 @@ function aiChoice(btl, diff) {
 // 관장·사천왕·챔피언·라이벌(music 이 gymBattle·champ·rival)은 어두운 화면에 트레이너 얼굴 띠가 미끄러져 들어온다.
 // 끝나면 배틀 화면을 그 밑에 띄우고 돌려준 함수로 전환 화면을 걷는다.
 async function encounter(opts) {
-  const host = el.parentElement || document.body, w = document.createElement('div'), big = ['gymBattle', 'champ', 'rival', 'tenno', 'hgGymJ', 'hgGymK', 'hgRival', 'hgChamp'].includes(opts.music);
+  const host = el.parentElement || document.body, w = document.createElement('div'), big = ['gymBattle', 'champ', 'rival', 'tenno', 'hgGymJ', 'hgGymK', 'hgRival', 'hgChamp', 'emGym', 'emTenno', 'emChamp', 'emRival'].includes(opts.music);
   w.className = 'bt-enc'; host.append(w);
   for (let i = 0; i < 2; i++) { w.classList.add('flash'); await wait(90); w.classList.remove('flash'); await wait(120); }
   if (opts.exam) {   // 승급 심사 (경완 2026-10-31 '배틀 시작할 때 연출도 웅장하게'): 암전 → 금빛 띠 → 빛줄기 속 배지 → '승급 심사' → 심사관 띠
