@@ -849,7 +849,7 @@ ol.log li.big .txt{color:#c03838}
 .mon.wet img,.mon.wet .spr{clip-path:polygon(-80px -80px,calc(100% + 80px) -80px,calc(100% + 80px) 62%,100.0% 62%,90.0% 62%,90.0% 63%,80.0% 63%,80.0% 62%,70.0% 62%,70.0% 61%,60.0% 61%,60.0% 60%,50.0% 60%,50.0% 61%,40.0% 61%,40.0% 63%,30.0% 63%,30.0% 64%,20.0% 64%,20.0% 63%,10.0% 63%,10.0% 61%,0.0% 61%,-80px 61%);animation:wline 1.6s steps(1,end) infinite}@keyframes wline{0%{clip-path:polygon(-80px -80px,calc(100% + 80px) -80px,calc(100% + 80px) 62%,100.0% 62%,90.0% 62%,90.0% 63%,80.0% 63%,80.0% 62%,70.0% 62%,70.0% 61%,60.0% 61%,60.0% 60%,50.0% 60%,50.0% 61%,40.0% 61%,40.0% 63%,30.0% 63%,30.0% 64%,20.0% 64%,20.0% 63%,10.0% 63%,10.0% 61%,0.0% 61%,-80px 61%)}50%{clip-path:polygon(-80px -80px,calc(100% + 80px) -80px,calc(100% + 80px) 61%,100.0% 61%,90.0% 61%,90.0% 60%,80.0% 60%,80.0% 61%,70.0% 61%,70.0% 63%,60.0% 63%,60.0% 64%,50.0% 64%,50.0% 63%,40.0% 63%,40.0% 62%,30.0% 62%,30.0% 61%,20.0% 61%,20.0% 62%,10.0% 62%,10.0% 63%,0.0% 63%,-80px 63%)}}   /* v4.70 경완: 물에 잠긴 아래쪽만 자른다 — 위·옆까지 그림 상자로 자르면 후광(쓰다듬기 점멸·랭크 빛)이 네모 상자로 잘려 보였다 */
 .mon .ripple{position:absolute;left:0;top:0;width:60px;height:14px;margin:-7px 0 0 -30px;border-radius:50%;border:2px solid rgba(255,255,255,.55);display:none}
 .mon.wet .ripple{display:none}
-.mon.wet .shadow{display:none}
+.mon.wet .shadow{display:none}.mon .shadow.pdsh{border-radius:0;background:rgba(20,40,10,.36);-webkit-mask:var(--pm) 0 0/100% 100% no-repeat;mask:var(--pm) 0 0/100% 100% no-repeat}.mon.selflit .shadow.pdsh{background:rgba(40,24,0,.58)}   /* v16.66 경완: 원본(불가사의 던전) 도트 타원 그림자 */
 .mon.flop .act>img,.mon.flop .act>.spr{transform-origin:50% 100%;animation:flop .55s ease-in-out infinite}
 @keyframes flop{0%,100%{transform:none}25%{transform:translateY(-5px) rotate(-14deg)}50%{transform:translateY(0) rotate(0)}75%{transform:translateY(-3px) rotate(12deg)}}
 .mon.ghost img,.mon.ghost .spr{opacity:.82}
@@ -3311,12 +3311,30 @@ function shGeo(k, form, mw) {
   const up = pm ? (P.fy || 0) * s * .35 : 0;   // v5.72 경완(노고치·단단지·헤라크로스 등 그림자가 몸에서 떨어져 보임): 던전 그림의 그림자 자리(fy) 쪽으로 35% 올린다
   return { W: Math.round(W), H: Hh, top: -Math.round(h * .62 + fh * .3 + up + (Hh - h) / 2) + sy, x: (pm ? (P.fx || 0) * s : 0) + sx, r: (g[3] || 0) + (o[3] || 0), s };   // x·r 은 오른쪽을 볼 때(face 1) 값
 }
+// v16.66 경완 '원본 저장소에 있는거 싹 다 받아. 그림자도 적용해.': 불가사의 던전 원본 그림자 — 종마다 크기(작게·보통·크게 도트 타원), 동작 그림마다 그림자 가운데 자리(shd.json, tools/mkshadow.py)를 따라간다. false 면 예전 둥근 그림자
+const PMD_SH = true;
+const PSH = [[-2, [[3, 2], [4, 3], [4, 3], [3, 2]]], [-3, [[3, 2], [6, 5], [7, 6], [7, 6], [6, 5], [3, 2]]], [-4, [[4, 3], [8, 7], [10, 9], [11, 10], [11, 10], [10, 9], [8, 7], [4, 3]]]];   // 원본 Shadow.png 의 세 타원 (가운데 점 기준 줄마다 왼쪽·오른쪽 칸 수)
+const PSH_D = PSH.map(([T, R]) => [Math.max(...R.map(r => r[0])), Math.max(...R.map(r => r[1])), T, R.length]);
+let SHD = null, shdP = null; const PSHC = {};
+const shdGet = () => shdP || (shdP = fetch('shd.json?v=1').then(r => r.json()).then(d => (SHD = d)).catch(() => { shdP = null; return (SHD = {}); }));
+const shdOf = k => SHD && (SHD[k] || SHD[parseInt(k)]);
+function pshMask(z, ps) { const key = z + ':' + ps.toFixed(3); if (PSHC[key]) return PSHC[key]; const [L, R, T, n] = PSH_D[z], dp = Math.min(3, window.devicePixelRatio || 1), W = Math.round((L + R + 1) * ps), H = Math.round(n * ps);
+  const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(W * dp)); c.height = Math.max(1, Math.round(H * dp)); const x = c.getContext('2d'); x.fillStyle = '#000'; const u = ps * dp;
+  PSH[z][1].forEach(([a, b], r) => { const x0 = Math.round((L - a) * u), x1 = Math.round((L + b + 1) * u), y0 = Math.round(r * u), y1 = Math.round((r + 1) * u); x.fillRect(x0, y0, x1 - x0, y1 - y0); });
+  return (PSHC[key] = c.toDataURL('image/png')); }
+// 지금 그림 칸의 그림자 자리 (원본 px, Idle 첫 칸 기준 차이)
+function pshOff(Q, name, f) { const v = Q[1][name] || Q[1]._, p = typeof v[0] === 'number' ? v : (v[f] || v[v.length - 1]); return [p[0] - Q[1]._[0], p[1] - Q[1]._[1]]; }
 function shadowFit(m) {
   const sh = m.el.querySelector('.shadow'); if (!sh) return;
   const G = shGeo(m.sk || m.form, m.form, m.w);
   if (m.sk && m.sk !== m.form && isPmd(m.form) && SPRITES[m.form].G == null) padAtlas(m.form).then(() => { if (m.el?.isConnected) shadowFit(m); });   // 기본 모습 그림을 아직 안 불렀으면 불러서 다시 맞춘다
+  const k = m.sk || m.form; if (PMD_SH && isPmd(k) && !SHD) shdGet().then(() => { if (m.el?.isConnected) shadowFit(m); });
+  const Q = PMD_SH && isPmd(k) && shdOf(k); m.shQ = Q || null; m.shDx = m.shDy = 0; sh.classList.toggle('pdsh', !!Q); if (!Q) sh.style.removeProperty('--pm');
+  if (Q) { const [L, R, T, n] = PSH_D[Q[0]], g = MON_SH[0] || [1, 0, 0, 0], o = MON_SH[m.form] || [1, 0, 0, 0], ps = G.s * g[0] * o[0], W = Math.round((L + R + 1) * ps), H = Math.round(n * ps);
+    sh.style.setProperty('--pm', `url(${pshMask(Q[0], ps)})`); sh.style.transform = ''; sh.style.width = W + 'px'; sh.style.height = H + 'px'; sh.style.margin = `${-Math.round((-T + .5) * ps)}px 0 0 ${-Math.round((L + .5) * ps)}px`;
+    m.shEl = sh; m.shX = g[1] + o[1] + Q[1]._[0] * G.s; m.shY = g[2] + o[2] + (Q[1]._[1] - (SPRITES[k].fy || 0)) * G.s; m.shR = G.r; m.shF = null; m.frameKey = null; return; }
   sh.style.transform = ''; sh.style.width = G.W + 'px'; sh.style.height = G.H + 'px'; sh.style.margin = `${G.top}px 0 0 ${-Math.round(G.W / 2)}px`;
-  m.shEl = sh; m.shX = G.x; m.shR = G.r; m.shF = null;   // 발 가운데가 몸 가운데와 다르면 그쪽으로 (바라보는 쪽 따라 뒤집힘)
+  m.shEl = sh; m.shX = G.x; m.shY = 0; m.shR = G.r; m.shF = null;   // 발 가운데가 몸 가운데와 다르면 그쪽으로 (바라보는 쪽 따라 뒤집힘)
 }
 function scale2x(src) {
   const w = src.width, h = src.height, s = new Uint32Array(src.getContext('2d').getImageData(0, 0, w, h).data.buffer);
@@ -5556,6 +5574,7 @@ function drawSprite(m, dt) {
   st.width = a2[1] * s + 'px'; st.height = a2[2] * s + 'px';
   st.left = ((dx - a2[4]) * s) + 'px'; st.top = ((dy - a2[5] - P.fy) * s) + 'px';
   st.backgroundPosition = `${-f * (a2[1] + (P.G || 0)) * s}px ${-a2[0] * s}px`; if (m.grimy) st.setProperty('--bp', st.backgroundPosition);
+  if (m.shQ) { const [ox, oy] = pshOff(m.shQ, name, f), qx = (ox + dx) * s, qy = oy * s; if (qx !== m.shDx || qy !== m.shDy) { m.shDx = qx; m.shDy = qy; m.shF = null; } }   /* v16.66: 원본 그림자는 그림 칸마다 자리를 따라감 */
   if (m.shEl) { const L = name === 'Hop' && P.hopL, k = L ? 1 - .42 * (L[f] || 0) / Math.max(4, ...L) : 1;   // v8.13 경완: 깡충 뛰어 높이 뜰수록 그림자가 작고 옅게
     if (m.shK !== k) { m.shK = k; m.shEl.style.scale = k === 1 ? '' : k.toFixed(3); m.shEl.style.opacity = k === 1 ? '' : (.45 + .55 * k).toFixed(2); } }
   if (name === 'Sleep') { m.snot.style.left = ((dx - a2[4]) * s + a2[1] * s * .18) + 'px'; m.snot.style.bottom = (a2[2] * s * .35) + 'px'; }
@@ -5689,7 +5708,7 @@ function render(m, now) {
   if (m.flop && now > (m.swT || 0)) { m.swT = now + rnd(180, 360); for (const s of [-1, 1]) if (Math.random() < .75) particle(m.x + s * rnd(6, m.w * .32), m.y - m.h * .2 - rnd(0, 10), 'sweat', '', d => d.style.setProperty('--dx', s * rnd(12, 26) + 'px')); }
   if (m.rFc !== m.face || m.flipEl.style.transform === '') { m.rFc = m.face; m.flipEl.style.transform = `scaleX(${m.face})`; m.flipEl.style.setProperty('--f', m.face); }
   { const sy = m.propSit && !m.held ? Math.round(m.lift || 0) : 0, k = m.face + ':' + sy;   // v9.35 경완 '그루터기 앉을 때 그림자랑 포켓몬이 분리': 그루터기·바위 위에 앉으면 그림자도 앉은 자리(위)로
-  if (m.shEl && m.shF !== k) { m.shF = k; m.shEl.style.translate = m.shX || sy ? `${((m.shX || 0) * m.face).toFixed(1)}px ${-sy}px` : ''; m.shEl.style.rotate = m.shR ? m.shR * m.face + 'deg' : ''; } }
+  if (m.shEl && m.shF !== k) { m.shF = k; const tx = (m.shX || 0) + (m.shDx || 0), ty = (m.shY || 0) + (m.shDy || 0) - sy; m.shEl.style.translate = tx || ty ? `${(tx * m.face).toFixed(1)}px ${ty.toFixed(1)}px` : ''; m.shEl.style.rotate = m.shR ? m.shR * m.face + 'deg' : ''; } }
   { const r = (MON_ROT[m.form] || 0) * m.face, o = Math.round(m.h / 2); if (r !== m.rotV || o !== m.rotO) { m.rotV = r; m.rotO = o; m.flipEl.style.rotate = r ? r + 'deg' : ''; m.flipEl.style.transformOrigin = r ? `0 ${-o}px` : ''; } }   /* 기울기는 몸 가운데를 축으로 (transform 애니메이션과 따로 도는 rotate 속성) */
   if (isPmd(m.form)) drawSprite(m, m.frz && !m.szAn ? 0 : m.realDt || 0);
   else { const want = m.state === 'sleep' ? (stillCache[m.form] || SPRITES[m.form]) : SPRITES[m.form]; if (m.curSrc !== want) { m.curSrc = want; m.img.src = want; } }
@@ -7342,7 +7361,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '16.68';   /* v16.68 경완: 훈련 일지 문장·머리 맞춤, 빼기, 홈 트레이너 카드 통일 */ /* v16.67 경완: 지원서 없음 화면 메일 아이콘 뺌, 고용 관리 탭을 왼쪽으로 */ /* v16.66 경완: 트레이너 상세카드 딱지·발판·코치 빼기 */ /* v16.65 경완: 청결·즐거움·배부름이 셋 다 0 인 포켓몬은 가끔 멈춰서 움찔. */   /* v16.64 경완: 놀랄 때 움찔 동작 뺌, 둘이 붙을 때(싸움·박치기) 중간중간 아파함, 쓰다듬은 뒤엔 빙글·깡총 대신 포즈(포즈 그림 있는 종). */   /* v16.63 경완: 트레이너 상세카드 레이아웃·기록 정리 */ /* v16.64 경완: 체육관 내 캐릭터 상세카드 등급별 디자인 */ /* v16.61 경완: 상태창 왼쪽 포켓몬 얼굴 끔 (필드 스프라이트 표정을 물어본 거였음) — 필드 새 동작은 그대로. */   /* v16.60 경완: 얼굴 표정·필드 동작 — 상태창 왼쪽에 문장 속 포켓몬 얼굴(말풍선 상황마다 기쁨·놀람·걱정·화남 등 표정, face/), 끄덕이기·올려다보기·포즈·춤·노래·깨어나기·움찔 등 원본 나머지 동작(mx/, 필드에 있는 포켓몬부터 하나씩 받아 둠)을 상호작용마다. */   /* v16.59 경완: 랭킹의 내 줄 → 프로필 내 카드와 동일 */ /* v16.60 경완: 진화구슬 기술 5차 — 파도 큰 구슬도 뜸(무거울수록 천천히), 폭풍 더 세게, 용해액 방울 작게·안 녹는 구슬은 튕겨내는 막, 사이코 떠오르는 구슬도 밀림 */
+const APP_VER = '16.69';   /* v16.69 경완: 원본 그림자 — 종마다 작게·보통·크게 도트 타원, 동작 그림마다 그림자 자리가 몸을 따라감(shd.json). */   /* v16.68 경완: 훈련 일지 문장·머리 맞춤, 빼기, 홈 트레이너 카드 통일 */ /* v16.67 경완: 지원서 없음 화면 메일 아이콘 뺌, 고용 관리 탭을 왼쪽으로 */ /* v16.66 경완: 트레이너 상세카드 딱지·발판·코치 빼기 */ /* v16.65 경완: 청결·즐거움·배부름이 셋 다 0 인 포켓몬은 가끔 멈춰서 움찔. */   /* v16.64 경완: 놀랄 때 움찔 동작 뺌, 둘이 붙을 때(싸움·박치기) 중간중간 아파함, 쓰다듬은 뒤엔 빙글·깡총 대신 포즈(포즈 그림 있는 종). */   /* v16.63 경완: 트레이너 상세카드 레이아웃·기록 정리 */ /* v16.64 경완: 체육관 내 캐릭터 상세카드 등급별 디자인 */ /* v16.61 경완: 상태창 왼쪽 포켓몬 얼굴 끔 (필드 스프라이트 표정을 물어본 거였음) — 필드 새 동작은 그대로. */   /* v16.60 경완: 얼굴 표정·필드 동작 — 상태창 왼쪽에 문장 속 포켓몬 얼굴(말풍선 상황마다 기쁨·놀람·걱정·화남 등 표정, face/), 끄덕이기·올려다보기·포즈·춤·노래·깨어나기·움찔 등 원본 나머지 동작(mx/, 필드에 있는 포켓몬부터 하나씩 받아 둠)을 상호작용마다. */   /* v16.59 경완: 랭킹의 내 줄 → 프로필 내 카드와 동일 */ /* v16.60 경완: 진화구슬 기술 5차 — 파도 큰 구슬도 뜸(무거울수록 천천히), 폭풍 더 세게, 용해액 방울 작게·안 녹는 구슬은 튕겨내는 막, 사이코 떠오르는 구슬도 밀림 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
