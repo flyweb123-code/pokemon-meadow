@@ -815,7 +815,9 @@ function rollWeek(now) {
 // 월급 (7일마다). 골드가 모자라면 그 트레이너는 쉰다(배틀 안 함). 골드가 생기면 다음에 바로 낸다
 function payDay(now) {
   const g = st();
+  for (const c of g.cands || []) if (c.wv !== 2) { c.wage = sfWage(teamLv(c.team) - myAvg(), c.team.length, c.trait); c.wv = 2; }
   for (const s of g.sf) {
+    if (s.wv !== 2) { const o = s.wage; s.wage = sfWage(teamLv(s.team) - myAvg(), s.team.length, s.trait); s.wv = 2; if (o !== s.wage) glog('sf', `${sfName(s)} 월급이 실력에 맞게 바뀌었다: ${o}G → ${s.wage}G`); }   /* v15.83 경완 "지금 트레이너들도 바꿔줘": 기존 트레이너 월급을 바로 새 기준(sfWage)으로 */
     let k = 0;
     while (now >= s.pay && k++ < 20) {
       if (S.gold >= s.wage) { S.gold -= s.wage; dayRec(s.pay).p += s.wage; s.lastE = s.eg || 0; s.eg = 0; s.pay += 7 * DAY; if (s.rest) glog('sf', `${sfName(s)}에게 밀린 월급 ${s.wage}G를 줬다. 다시 체육관을 지킨다.`); else glog('pay', `${sfName(s)} 월급 ${s.wage}G`); s.rest = 0; }
@@ -838,7 +840,7 @@ const sfWage = (rel, n, trait) => { const mid = Math.max(1, sfEV(-2, 3, '')), ev
 function mkCand(now) {
   const ty = st().ty, KS = Object.keys(CLS).filter(x => ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS)), /* v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 */ C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS));
   const wage = sfWage(lv - avg, n, trait);
-  return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), f: C.f, trait, wage, team: mkTeam(ty ? [ty] : C.t, lv, n) };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
+  return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), f: C.f, trait, wage, wv: 2, team: mkTeam(ty ? [ty] : C.t, lv, n) };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
 }
 const SF_MAX = [0, 1, 2, 3, 4, 5, 6];   // v13.01 경완: 전설 6명
 // 등급 혜택 (승급 심사 화면·승급 축하창): 바로 앞 등급과 달라지는 것만, 앞→뒤 숫자로 (경완 2026-10-31 '등급 혜택이나 잘 보이게')
