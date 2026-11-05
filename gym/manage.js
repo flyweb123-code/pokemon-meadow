@@ -623,7 +623,7 @@ function shopFit(body) {
       : lock ? `<div class="gy-btns one"><button data-a="x">${need(o)}이 되면 살 수 있어요</button></div>`
       : `<div class="gy-btns"><button data-a="x">그만두기</button><button class="main" data-a="y">${gold(o.g)} 사기</button></div>`;
     K.bodyCard(await K.fitSrc('tr', k), o.n, own ? '' : lock ? '아직 살 수 없어요' : '사면 바로 입어요', btn, (a, close) => {
-      close(); if (a === 'y' && !buy(o.g)) return say('골드가 모자라요.'); if (a === 'y') g.fits[k] = 1; g.fit = k; K.save(); redraw(); K.renderHome(); });
+      close(); if (a === 'y' && !buy(o.g)) return say('골드가 모자라요.'); if (a === 'y') g.fits[k] = 1; K.fitSet(k); K.save(); redraw(); K.renderHome(); });
   };
 }
 window.GymManage = { tab, tickTrain, redraw, trSend };
