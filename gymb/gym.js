@@ -743,9 +743,9 @@ function dayFill(g) { const old = g.days || {}; g.days = {}; g.daysV = 2; const 
   for (const [k, o] of Object.entries(old)) { if (!o.p && !o.s) continue; const d = g.days[k] || (g.days[k] = dayNew()); d.p = Math.max(d.p, o.p || 0); d.s = o.s || 0; } }
 function addG(n) { const v = GA.addGold(n) || 0; if (st().wk) st().wk.g += v; renderGoldG(); return v; }
 // 막은 도전자 (내가 이기거나 트레이너가 막음). 승급 심사 보스를 이기면 등급이 오르고 그 등급 배지를 받는다
-function blocked(c) {
+function blocked(c, sf) {
   const g = st(), ty = g.ty; g.blk++; if (g.wk) g.wk.b++; g.bk[ty] = (g.bk[ty] || 0) + 1;
-  if (c && !c.named && !c.boss) g.nc = (g.nc | 0) + 1;   // 보통 도전자를 막은 수 → 9명이면 다음은 이름 있는 트레이너 (v12.23)
+  if (c && !c.named && !c.boss && !sf) g.nc = (g.nc | 0) + 1;   /* v15.85 경완: 고용 트레이너가 막은 건 안 셈 */   // 보통 도전자를 막은 수 → 9명이면 다음은 이름 있는 트레이너 (v12.23)
   if (!c?.boss) return;
   const gi = c.boss, r0 = g.rep || 0; g.gmax = Math.max(g.gmax | 0, gi); g.rep = Math.max(r0, GRADES[gi][0]); if (g.wk) g.wk.r += g.rep - r0;
   g.bdl[ty] = Math.max(bdLv(g, ty), gi + 1); g.bdg[ty] = g.bdg[ty] || Date.now(); g.newBdg = ty; g.newG = gi;
@@ -791,14 +791,14 @@ function arrive(c) {
       const R = REW(c.diff), r0 = g.rep || 0;
       const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? 1.5 : 1))); s.eg = (s.eg || 0) + gold; addRep(sfRep(s, R.r));   // v14.97 경완: 트레이너가 대신 막은 건 연승으로 치지 않는다 (연승·평판 보너스 없음)
       const rep = (g.rep || 0) - r0;
-      blocked(c); { const x = daySf(dayRec(c.t), `${s.cls} ${s.nm}`); x.w++; x.g += gold; x.r += rep; }
+      blocked(c, 1); { const x = daySf(dayRec(c.t), `${s.cls} ${s.nm}`); x.w++; x.g += gold; x.r += rep; }
       glog('sf', `${sfName(s)}${jong(s.nm) ? '이' : '가'} ${cn}${jong(c.nm) ? '을' : '를'} 막아 냈다! <small>+${gold}G · 평판 +${rep}</small>`, c.t);
       const c2 = mkChal(c.t); c2.sfOk = 1; arrive(c2); return;   // v15.62 경완 '트레이너를 많이 세웠다고 명단이 줄면 안 돼': 트레이너가 막은 도전자는 덤, 관장 명단엔 다른 도전자가 그대로 온다
     }
     if (lost.length) glog('in', `${cn}${jong(c.nm) ? '이' : '가'} 트레이너 ${lost.length}명을 이기고 올라왔다!`, c.t);
   }
   // v13.66 경완 '명단 제한 없애줘': 명단이 많아도 도전자는 돌아가지 않는다
-  c.exp = c.t + (c.boss ? 8 * H : c.named ? 5 * H : qWait(c.t));   // v14.78: 기다리는 시간은 도착 시각으로 정해짐 → 체육관 밖 필드 아이콘 숫자도 같은 값으로 셈   // 도전자마다 기다리는 시간 (경완 2026-10-30: 자정까지 대신)
+  c.exp = c.named && !c.boss ? 0 : c.t + (c.boss ? 8 * H : qWait(c.t));   /* v15.85: 이름 있는 트레이너는 기다리는 시간 없음 (exp 0 = 필드 아이콘도 계속 셈) */   // v14.78: 기다리는 시간은 도착 시각으로 정해짐 → 체육관 밖 필드 아이콘 숫자도 같은 값으로 셈   // 도전자마다 기다리는 시간 (경완 2026-10-30: 자정까지 대신)
   g.q.push(c); if (!beat || c.named) glog('in', `${cn}${jong(c.nm) ? '이' : '가'} 도전하러 왔다!${c.boss ? ` <small>${GRADES[c.boss][1]} 승급 심사</small>` : c.named ? ' <small>이름 있는 트레이너</small>' : ''}`, c.t);
 }
 // 지난주 보고서 (월요일): 전적·막은 도전자·번 골드, 가상 체육관들과 점수 순위
@@ -853,7 +853,7 @@ const perks = i => { const g = st(), L = [], tc = k => Math.min(6, k), ar = (a, 
 const perkHtml = i => `<ul class="pk-ben">${perks(i).map(([k, ic, n, v]) => `<li class="${k}"><i class="pk-ic">${ic}</i><span>${n}</span><em>${v}</em></li>`).join('')}</ul>`;   // 등급별 고용 한도: 떠오르는 2명 … 명문 5명 (경완 2026-10-29)
 const staffMax = () => SF_MAX[gradeOf(st().rep || 0).i];   // 새내기 체육관은 고용 못 함 (경완 2026-10-27)
 // 기다릴 시간이 지난 도전자는 돌아간다 (예전 저장은 그날 자정). 평판은 깎지 않는다 (경완 2026-10-28)
-const qExp = c => c.exp || nextDay(dayStart(c.t));
+const qExp = c => c.named && !c.boss ? Infinity : c.exp || nextDay(dayStart(c.t));   /* v15.85 경완: 이름 있는 트레이너는 배틀할 때까지 안 돌아감 */
 // 도착 시각 t 로 정해지는 기다림 2~4시간 (beta.html gymWait 와 같은 식, 경완 2026-11-03 '도전자가 있었는데 아이콘에 숫자가 없었던')
 function qWait(t) { const x = Math.sin((t % 1e9) * 12.9898) * 43758.5453; return (2 + 2 * (x - Math.floor(x))) * H; }
 function qLeave(upTo) { const g = st(); g.q = g.q.filter(c => { const e = qExp(c); if (e > upTo) return true; glog('out', `${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 기다리다 돌아갔다.`, e); dayRec(e).o++; return false; }); }
@@ -865,6 +865,7 @@ function tick(now = Date.now()) {
   const g = gInit(); if (!g || !g.d) return;
   [...(g.q || []), ...(g.cands || [])].forEach(c => { if (c.team?.some(m => spOff(m[0]))) c.team = c.team.map(m => spOff(m[0]) ? [pickSp(SPECIES[m[0]]?.t || [], m[1]), m[1]] : m); });   // 이미 와 있는 도전자·지원자도 끈 포켓몬은 바꿈
   if (g.ty) (g.cands || []).forEach(c => { if (c.team?.some(m => !(SPECIES[m[0]]?.t || []).includes(g.ty))) c.team = c.team.map(m => (SPECIES[m[0]]?.t || []).includes(g.ty) ? m : [pickSp([g.ty], m[1]), m[1]]); });   // v15.48 경완: 이미 와 있는 지원서도 체육관 타입 포켓몬으로
+  (g.q || []).forEach(c => { if (c.named && !c.boss) c.exp = 0; });
   rollWeek(now);
   const today = dayStart(now);
   if (!g.day) { g.day = today; g.schV = 2; g.sch = mkSch(today, now); g.sch.unshift(now + 90e3); }   // 처음: 1분 반 뒤 첫 도전자
@@ -1322,7 +1323,7 @@ function qPop(seen = st().qSeen | 0) {
     // 명단 디자인 (경완 2026-10-29 '퀄리티 좀 높여줘'): 다음 차례는 큰 카드 + 배틀 받침, 나머지는 번호 붙은 줄
     // 온 시각 대신 떠나기까지 남은 시간 (경완 2026-10-30), 30분 안 남으면 빨갛게
     const tag = c => c.boss ? `<em class="qw-tag bs">${gShort(c.boss)} 승급 심사</em>` : c.named ? '<em class="qw-tag nm">이름 있는 트레이너</em>' : `<em class="qw-tag">${esc(c.cls)}</em>`;
-    const qTm = c => `<em class="qw-tm${qExp(c) - Date.now() < 30 * 60e3 ? ' low' : ''}"><svg viewBox="0 0 8 8" aria-hidden="true"><path fill="currentColor" d="M2 0h4v1h1v1h1v4h-1v1h-1v1h-4v-1h-1v-1h-1v-4h1v-1h1zM2 1v1h-1v4h1v1h4v-1h1v-4h-1v-1zM3.5 2h1v2h1.5v1h-2.5z"/></svg>${qLeftS(c)}</em>`;   // 시계 그림 + 밝은 딱지: '대기'(어두운 딱지)와 구분 (경완 2026-10-31)   // 남은 시간 딱지, 30분 안 남으면 빨강
+    const qTm = c => qExp(c) === Infinity ? '' : `<em class="qw-tm${qExp(c) - Date.now() < 30 * 60e3 ? ' low' : ''}"><svg viewBox="0 0 8 8" aria-hidden="true"><path fill="currentColor" d="M2 0h4v1h1v1h1v4h-1v1h-1v1h-4v-1h-1v-1h-1v-4h1v-1h1zM2 1v1h-1v4h1v1h4v-1h1v-4h-1v-1zM3.5 2h1v2h1.5v1h-2.5z"/></svg>${qLeftS(c)}</em>`;   // 시계 그림 + 밝은 딱지: '대기'(어두운 딱지)와 구분 (경완 2026-10-31)   // 남은 시간 딱지, 30분 안 남으면 빨강
     const pic = c => `<span class="qw-pic${c.named ? ' qw-sil' : ''}"><i class="qw-base"></i><img alt="" src="${trSrc(c.tr)}"></span>`;
     body = Q.length ? `<div class="qw-sum"><b>기다리는 도전자 <em>${Q.length}</em>명</b><span>시간이 지나면 돌아가요</span><i class="qw-balls">${V.slice(0, 8).map(([c], k) => `<i class="${k ? '' : 'on'}${c.boss ? ' bs' : ''}"></i>`).join('')}</i></div><div class="qw-list">${V.map(([c, i], k) => k
       ? `<div class="qw-row wait${c.boss ? ' boss' : ''}">${c.id > seen ? '<i class="qw-nd" aria-label="새 도전자"></i>' : ''}<span class="qw-pw">${pic(c)}<span class="qw-no">${k + 1}</span></span><div class="qw-tx">${tag(c)}<b>${c.named ? '???' : esc(c.nm)}</b><span class="qw-came">${qCame(c)}</span></div><span class="qw-wait">대기</span>${qTm(c)}</div>`
@@ -1529,11 +1530,12 @@ function jnlPop() {
       <div class="jn-day"><h5>관장 (나)</h5><dl class="jn-st">${row('막은 도전자', `${m.w}명`)}${row('진 배틀', `${m.l}번`)}${row('번 골드', G(m.g), 'jn-g')}${row('평판', R(m.r), cl(m.r))}</dl></div>
       <div class="jn-day"><h5>트레이너</h5>${SF.length ? `<dl class="jn-st">${row('막은 도전자', `${sw}명`)}${row('번 골드', G(sg), 'jn-g')}${row('평판', R(sr), cl(sr))}</dl>
         <ul class="jn-sfl">${SF.map(([n, x]) => `<li><b>${esc(n)}</b><span>${x.w}명 · <em class="jn-g">${G(x.g)}</em> · 평판 <em class="${cl(x.r)}">${R(x.r)}</em></span></li>`).join('')}</ul>` : '<p class="jn-none">이날 트레이너가 막은 도전자는 없어요.</p>'}</div>
-      <div class="jn-day"><h5>기록</h5>${logs.length ? `<ul class="jn-log">${logs.map(x => `<li><time>${hhmm(x[0])}</time><span>${x[2]}</span></li>`).join('')}</ul>` : '<p class="jn-none">기록이 없어요.</p>'}</div>
+      <div class="jn-day jn-fd${g.jnlO ? ' on' : ''}"><h5><button class="jn-fold" type="button" data-fold aria-expanded="${g.jnlO ? 'true' : 'false'}">기록 <small>${logs.length}개</small><i aria-hidden="true">▼</i></button></h5>${!g.jnlO ? '' : logs.length ? `<ul class="jn-log">${logs.map(x => `<li><time>${hhmm(x[0])}</time><span>${x[2]}</span></li>`).join('')}</ul>` : '<p class="jn-none">기록이 없어요.</p>'}</div>
       </div>`; };
   draw();
   el.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap');
     if (b.dataset.a === 'x') return el.remove();
+    if (b.dataset.fold != null) { g.jnlO = g.jnlO ? 0 : 1; save(); const y = el.querySelector('.gy-body').scrollTop; draw(); el.querySelector('.gy-body').scrollTop = y; return; }   /* v15.85 경완: 기록은 접었다 펼쳤다 (처음엔 접힘) */
     if (b.dataset.mv) { jnlK = keys[keys.indexOf(jnlK) + +b.dataset.mv] ?? jnlK; draw(); el.querySelector('.gy-body').scrollTop = 0; } };
   /* 옆으로 밀어서 날짜 넘기기 */
   let sx = null; el.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
