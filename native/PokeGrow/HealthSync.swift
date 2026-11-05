@@ -19,8 +19,29 @@ final class HealthSync {
     static let readTypes: Set<HKObjectType> = [HKObjectType.workoutType(), HKQuantityType(.distanceWalkingRunning), HKSeriesType.workoutRoute()]
     func refresh() {
         guard HKHealthStore.isHealthDataAvailable(), !busy, Perm.asked else { return }   // 2026-11-02: 튜토리얼 끝에 묻기 전엔 건드리지 않는다 (Perm)
+        startObserving()
         store.requestAuthorization(toShare: nil, read: HealthSync.readTypes) { [weak self] _, _ in
             DispatchQueue.main.async { self?.query() }
+        }
+    }
+
+    // 2026-11-05 경완 '앱 켰을 때 바로 반영': 워치 기록(운동·걷기 거리)이 건강 앱에 들어오면 iOS 가 앱을 백그라운드에서 깨운다.
+    // 그때 미리 계산해 대기열에 넣어 두면(PhoneBridge), 앱을 열자마자 게임에 들어간다. (아이폰이 잠겨 있으면 못 읽어 열 때 다시)
+    private var observing = false
+    private func startObserving() {
+        guard !observing else { return }
+        observing = true
+        let types: [HKSampleType] = [HKObjectType.workoutType(), HKQuantityType(.distanceWalkingRunning)]
+        for t in types {
+            let q = HKObserverQuery(sampleType: t, predicate: nil) { [weak self] _, done, error in
+                guard error == nil else { done(); return }
+                DispatchQueue.main.async {
+                    self?.refresh()   // 운동 → 런닝 기록, 끝에 WatchWalk(워치 걷기 거리)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 8) { done() }   // 조회할 시간을 조금 준 뒤 끝났다고 알린다
+                }
+            }
+            store.execute(q)
+            store.enableBackgroundDelivery(for: t, frequency: .immediate) { _, _ in }
         }
     }
 

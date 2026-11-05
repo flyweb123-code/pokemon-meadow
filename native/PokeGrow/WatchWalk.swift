@@ -13,6 +13,7 @@ import CoreMotion
 // 게임이 같은 거리를 두 번 쌓지 않게 한다 (fedKm).
 //
 // 워치 기록은 아이폰으로 몇 분~몇 시간 늦게 넘어오므로, 워치 기록이 넘어온 시각까지만 보고 커서를 옮긴다.
+// 2026-11-05 경완 '무슨 운동을 하든': 달리기·걷기·하이킹 말고 다른 종목(풋살 등) 시간은 건너뛰지 않는다 → 그 시간 워치 거리도 여기서 들어간다.
 // 아이폰이 잠겨 있으면 건강 데이터를 못 읽는다 → 실패하면 커서를 두고 다음에(앱을 열 때 등) 다시 본다.
 final class WatchWalk {
     static let shared = WatchWalk()
@@ -37,12 +38,11 @@ final class WatchWalk {
         busy = true
         newestWatchEnd(after: from) { [weak self] newest in
             guard let self else { return }
-            // 지금 걷는 중일 수 있으니 마지막 15분은 다음에 본다. 워치 기록이 넘어온 곳까지만.
+            // 워치 기록이 넘어온 곳(가장 늦게 끝난 기록)까지만. 2026-11-05 경완 '앱 켜면 바로': 예전의 '마지막 15분 기다림'은 뺐다
+            // (아이폰 몫은 실시간 만보기로 한 번 더 빼니, 아이폰 기록이 건강 앱에 늦게 적혀도 두 번 세지 않는다)
             guard let newest else { self.busy = false; return }
-            let limit = min(now.addingTimeInterval(-15 * 60), newest)
-            let n = floor(limit.timeIntervalSince(from) / WatchWalk.step)
-            guard n >= 1 else { self.busy = false; return }
-            let to = from.addingTimeInterval(n * WatchWalk.step)
+            let to = min(now, newest)
+            guard to.timeIntervalSince(from) >= 30 else { self.busy = false; return }
             self.compute(from: from, to: to)
         }
     }
@@ -126,7 +126,7 @@ final class WatchWalk {
             var cands: [(Date, Date, Double)] = []
             var t = from
             while t < to {
-                let e = t.addingTimeInterval(WatchWalk.step)
+                let e = min(t.addingTimeInterval(WatchWalk.step), to)   // 마지막 칸은 짧을 수 있다
                 let inWorkout = workouts.contains { $0.0 < e.addingTimeInterval(60) && $0.1 > t.addingTimeInterval(-60) }
                 if !inWorkout {
                     let add = min(km(watch, t), max(0, km(merged, t) - km(phone, t)))

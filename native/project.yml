@@ -45,6 +45,8 @@ targets:
       properties:
         com.apple.developer.healthkit: true
         com.apple.developer.healthkit.access: []
+        # 2026-11-05: 워치 기록이 건강 앱에 들어오면 앱을 백그라운드에서 깨워 미리 계산 (HealthSync.startObserving)
+        com.apple.developer.healthkit.background-delivery: true
         # 친구 서버: iCloud 컨테이너의 공개 DB 를 쓴다 (FriendServer.swift)
         com.apple.developer.icloud-container-identifiers: [iCloud.com.flyweb123.pokerun]
         com.apple.developer.icloud-services: [CloudKit]
