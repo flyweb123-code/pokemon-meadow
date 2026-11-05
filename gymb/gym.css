@@ -2920,3 +2920,26 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .sd2-rec b.pay{color:#b07a10}#gym .sd2-rec b.up{color:#2a8a3e}#gym .sd2-rec b.dn{color:#c0402c}
 #gym .sd2 .sd-btns.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 #gym .sd2 .sd-btns.three button{font-size:13px}
+/* v16.66 경완: 발판이 그림 칸 밖으로 안 나오게, 자리 딱지는 창 좌상단 모서리, 훈련장 코치는 그림 칸 우상단 다른 딱지, 코치 중이면 '코치 빼기' 눌려 들어간 버튼 */
+#gym .gy-pop .win:has(.sd2){position:relative}
+#gym .gy-pop .win:has(.sd2-corner){padding-top:30px}
+#gym .sd2>.sd2-corner{top:0;left:0;font-size:12px;padding:4px 14px 5px 10px;box-shadow:2px 2px 0 rgba(0,0,0,.2)}
+#gym .sd2-hero{overflow:hidden}
+#gym .sd2-hero::after{bottom:-24px}
+#gym .sd2-coach{position:absolute;right:8px;top:8px;z-index:2;font-style:normal;font-size:12px;font-weight:700;line-height:1;padding:4px 9px 5px;color:#b04a14;background:#fff4e2;border:2px solid #d0602a;border-radius:999px;box-shadow:0 2px 0 rgba(0,0,0,.18)}
+#gym .sd2-coach::before{content:'';display:inline-block;width:7px;height:7px;margin-right:5px;vertical-align:1px;border-radius:50%;background:#e8782e;box-shadow:0 0 0 2px #ffd7b0}
+#gym .gy-pop .gy-btns button.sd2-in{transform:translateY(3px);box-shadow:inset 0 3px 0 rgba(0,0,0,.14);background:#e6e3da;color:#8a8a98}
+#gym .gy-pop .gy-btns button.sd2-in:active{transform:translateY(3px);box-shadow:inset 0 3px 0 rgba(0,0,0,.2)}
+/* v16.68 경완: 훈련 일지 = 상세카드와 같은 배경·머리, 문장 일지, 경험치 막대는 아래 선 오른쪽 끝까지 */
+#gym .tp2-hd>div{flex:1;min-width:0}
+#gym .gy-pop.tl-wrap{background:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+#gym .tl-pop .tl-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+#gym .tl-pop .tl-h .tl-sum{display:inline;font-size:11px;font-weight:400}
+#gym .tl-ss{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+#gym .tl-list li .tl-s{display:block;padding:0 0 0 12px;position:relative;font-size:13px;line-height:1.45;background:none;box-shadow:none}
+#gym .tl-s::before{content:'';position:absolute;left:2px;top:.6em;width:5px;height:5px;background:#b8b4a4}
+#gym .tl-s.x b{color:#2a6ab8}#gym .tl-s.up{color:#c0302a;font-weight:700}#gym .tl-s.up b{color:#d83a30}#gym .tl-s.up::before{background:#d83a30}
+#gym .tl-s.fr b{color:#d0508a}#gym .tl-s.fr::before{background:#d0508a}
+#gym .tl-s.mv{color:#2a6a30}#gym .tl-s.mv::before{background:#2a8a3e}#gym .tl-s .mv-chip{vertical-align:1px;margin:0 1px}
+#gym .tl-d i{font-style:normal}
+#gym .tp2-hd h4{min-height:28px;display:flex;align-items:center}
