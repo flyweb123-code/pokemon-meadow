@@ -331,7 +331,7 @@ html.wfIn body::before{content:'';position:fixed;inset:0;z-index:9900;background
 .tcv-stage{flex-basis:100%;position:relative;height:160px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:22px;box-sizing:border-box;background:url(gym/img/bt/bg_in1c.png) center bottom/cover no-repeat,#e8c070;border:3px solid var(--inner);overflow:hidden;image-rendering:pixelated}   /* v12.24 경완 '뒷 배경 퀄': 체육관 배틀 배경 + 받침 (지원서 사진처럼) */
 .tcv-stage::before{content:'';position:absolute;left:50%;bottom:-36px;width:272px;height:136px;margin-left:-136px;background:url(gym/img/bt/pl_e.png) 0 0/100% 100% no-repeat;image-rendering:pixelated}
 .tcv-pk.tap{cursor:pointer}.tcv-tr,.tcv-pk{position:relative;flex:none;width:120px;height:120px;display:grid;place-items:end center}
-.tcv-pk:not(.empty){margin-left:-34px}   /* v12.24 경완: 포켓몬을 트레이너 가까이 */
+.tcv-pk:not(.empty){margin-left:-34px}.tcv-pk i.idle{transform-origin:50% 92%;animation:pkIdle 1.5s ease-in-out infinite}@keyframes pkIdle{0%,100%{transform:scale(1,1)}50%{transform:scale(1.035,.955)}}   /* v12.24 경완: 포켓몬을 트레이너 가까이 */
 .tcv-tr i,.tcv-pk i{position:relative;width:120px;height:120px;background:0 0/120px 120px no-repeat;image-rendering:pixelated}.tcv-pk i{background-size:240px 120px}
 .tcv-pk img{position:relative;display:block;image-rendering:pixelated;margin-bottom:6px}
 .tcv-pk.empty{width:84px;height:84px;margin:0 6px 14px;place-items:center;padding:0;border:3px dashed #8aa07a;background:rgba(255,255,255,.55);color:#6a8a5a;font:inherit;font-size:30px;line-height:1;cursor:pointer}.tcv-pk.empty:active{transform:translate(1px,1px)}
@@ -7281,7 +7281,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '16.55';   /* v16.55 경완: 진화구슬 기술 4차 — 바톤터치 둥근 판 앞에서 그 자리 그대로 교체, 폭풍 전체 구슬 무게대로 들썩+바람 소리, 용해액 피카츄 이하만·틈 없어도 찐득하게 흐름, 돌떨구기 라이츄 이하만 깨짐, 파도 수면 위로 안 뜸, 사이코 서서히 점선 아래까지·떨림 고침, 얼음 = 고드름침(구슬만 밀리고 고드름은 바닥까지) */
+const APP_VER = '16.56';   /* v16.56 경완 '초롱순 안 움직임': 8·9세대 179종은 그림 두 장이 똑같아 상세카드에서 안 움직이던 것 → 숨쉬듯 들썩이기. */ /* v16.55 경완: 진화구슬 기술 4차 — 바톤터치 둥근 판 앞에서 그 자리 그대로 교체, 폭풍 전체 구슬 무게대로 들썩+바람 소리, 용해액 피카츄 이하만·틈 없어도 찐득하게 흐름, 돌떨구기 라이츄 이하만 깨짐, 파도 수면 위로 안 뜸, 사이코 서서히 점선 아래까지·떨림 고침, 얼음 = 고드름침(구슬만 밀리고 고드름은 바닥까지) */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8446,12 +8446,14 @@ function pkFront(el, rp) {   // v16.52 경완: 494~649 는 한 장짜리 그림�
   const tok = el._pk = (el._pk || 0) + 1, live = () => el.isConnected && el._pk === tok, put = n => { const f0 = el.firstElementChild; if (f0 && !f0.classList.contains('tcv-tw')) f0.replaceWith(n); else el.prepend(n); };
   let gif = false; el.querySelectorAll(':scope>i,:scope>img').forEach(x => x.remove());
   const png = new Image(); png.alt = ''; png.onload = () => { if (gif || !live()) return; const w = png.naturalWidth, h = png.naturalHeight;
-    if (w === 160 && h === 80) { const i = document.createElement('i'); i.style.backgroundImage = `url(${png.src})`; put(i); if (+rp.sp >= 650) pkAnimG().then(() => pkSheetAnim(el, i, tok, rp.sp)); }
+    if (w === 160 && h === 80) { const i = document.createElement('i'); i.style.backgroundImage = `url(${png.src})`; put(i); if (+rp.sp >= 650) { if (pkSame(png)) i.classList.add('idle'); else pkAnimG().then(() => pkSheetAnim(el, i, tok, rp.sp)); } }
     else { png.style.width = w * 1.5 + 'px'; png.style.height = h * 1.5 + 'px'; put(png); } };
   png.src = `gym/img/pk/${RFORM[rp.sp] ? 'rf/' + RFORM[rp.sp].bk : rp.sp}${rp.sh ? 's' : ''}.png`;
   pkAnimG().then(g => { const u = pkGif(g, rp.sp, !!rp.sh, rp.sx === 'f'); if (!u) return; const im = new Image(); im.alt = '';
     im.onload = () => { if (!live()) return; gif = true; im.style.width = im.naturalWidth * 1.5 + 'px'; im.style.height = im.naturalHeight * 1.5 + 'px'; put(im); }; im.src = u; });
 }
+// v16.56 경완 '초롱순 안 움직임': 8·9세대 179종은 2장 판의 두 장이 똑같음 → 번갈아도 안 움직이니 숨쉬듯 들썩이기
+function pkSame(im) { try { const c = document.createElement('canvas'); c.width = 160; c.height = 80; const g = c.getContext('2d'); g.drawImage(im, 0, 0); const a = g.getImageData(0, 0, 80, 80).data, b = g.getImageData(80, 0, 80, 80).data; for (let k = 0; k < a.length; k++) if (a[k] !== b[k]) return false; return true; } catch (e) { return false; } }
 // 650~ 2장 판 움직임 (체육관 배틀 playAnim 과 같은 데이터: [장, 지연(1/30초), x, y], 장 < -1 이면 그 칸으로 되돌아가기). 데이터 없는 종은 두 장을 번갈아
 function pkSheetAnim(el, i, tok, sp) {
   const a = pkAnimJ && ANIM_FULL[sp], fr = a?.[3]?.some(x => x[0] === 1 || x[2] || x[3]) ? a[3] : [[1, 8, 0, 0], [0, 8, 0, 0], [1, 8, 0, 0], [0, 1, 0, 0]], st = a?.[2] || 0, ok = () => el.isConnected && el._pk === tok && i.isConnected;
