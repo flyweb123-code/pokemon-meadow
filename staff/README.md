@@ -5,13 +5,13 @@
 
 | 직원 | 하는 일 | 작업실 메뉴 | 성격·절차 |
 |---|---|---|---|
-| 뉴트럴 | 100명 × 90일 시뮬레이션으로 밸런스(포켓몬 확률·친밀도·골드) 진단, 고칠 값 제안 | 뉴트럴의 조언 | [neutral.md](neutral.md) |
 | 스칼렛 | 필드 소품 매일 10개 디자인 + 포켓몬 상호작용 정리 | 스칼렛의 작업물 | [scarlet.md](scarlet.md) |
 
 ## 피드백
-경완은 작업실에서 작업물(뉴트럴의 분석, 스칼렛의 소품 하나하나 또는 스칼렛 전체)에 피드백을 남겨요.
-피드백은 `config/staff/feedback.json` (`to` = neu|sca, `ref` = 소품 id 또는 all), 반영 기록은 `config/staff/feedback-done.json`.
-- 받은 피드백 중 앞으로도 지킬 것은 `staff/notes/<neutral|scarlet>.md` 에 한두 줄로 적어 두고, 일할 때마다 먼저 읽어요.
+경완은 작업실에서 작업물(스칼렛의 소품 하나하나 또는 스칼렛 전체)에 피드백을 남겨요.
+(뉴트럴 밸런스 시뮬레이터는 2026-11-06 작업실 3.97 에서 없앴어요. 밸런스는 경완이 Claude 에게 바로 물어봐요. 예전 `to = neu` 피드백은 건너뛰어요.)
+피드백은 `config/staff/feedback.json` (`to` = sca, `ref` = 소품 id 또는 all), 반영 기록은 `config/staff/feedback-done.json`.
+- 받은 피드백 중 앞으로도 지킬 것은 `staff/notes/scarlet.md` 에 한두 줄로 적어 두고, 일할 때마다 먼저 읽어요.
 - 피드백마다 반영하고 나서 `node tools/staff/staff.js fb-done <id> <글 파일>` 로 무엇을 했는지 한두 문장 남겨요 (작업실에 "반영했어요" 로 보여요).
 
 ## 지켜야 할 것
@@ -25,9 +25,7 @@
 1. `node tools/staff/staff.js fb-pending` → 피드백을 직원별로 먼저 반영해요.
    - 스칼렛 소품 피드백(ref = 소품 id): `config/staff/scarlet.json` 에서 그 소품을 찾아 직접 고쳐 그리거나 상호작용을 고쳐요. 오늘 작업에도 적용해요.
    - 전체 피드백(ref = all): 오늘 작업부터 적용하고, 앞으로도 지킬 것이면 notes 에 적어요.
-   - 뉴트럴 피드백: 분석 방식·기준·글에 반영해요. 시뮬레이터(studio/neutral.js) 자체를 바꿔야 하면 직원 몫이 아니라서 fb-done 에 "Claude 에게 시뮬레이터 수정을 부탁해 주세요" 라고 적어요.
    - 게임에 넣어 달라는 피드백도 직원 몫이 아니에요: fb-done 에 "Claude 에게 게임에 넣어 달라고 말해 주세요" 라고 적어요.
-2. 뉴트럴: [neutral.md](neutral.md) 의 '매일 할 일'.
-3. 스칼렛: [scarlet.md](scarlet.md) 의 '매일 할 일'.
-4. 피드백마다 `fb-done`.
-5. 한 커밋으로 올려요: `직원 아침 작업 (MM/DD)`.
+2. 스칼렛: [scarlet.md](scarlet.md) 의 '매일 할 일'.
+3. 피드백마다 `fb-done`.
+4. 한 커밋으로 올려요: `직원 아침 작업 (MM/DD)`.
