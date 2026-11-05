@@ -113,8 +113,12 @@ struct WalkCard: View {
                 }
             }
             Spacer(minLength: 0)
-            Image(systemName: walking ? "figure.walk" : "figure.stand")
-                .font(.title2).foregroundStyle(walking ? walkGreen : .secondary)
+            if let fr = model.trFrames {
+                TrainerSprite(frames: fr, walking: walking)
+            } else {
+                Image(systemName: walking ? "figure.walk" : "figure.stand")
+                    .font(.title2).foregroundStyle(walking ? walkGreen : .secondary)
+            }
         }
         .padding(.vertical, 6)
         .onReceive(tick) { now = $0 }
@@ -123,5 +127,24 @@ struct WalkCard: View {
                 .fill(Color.white.opacity(0.08))
                 .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(walkGreen, lineWidth: 2).opacity(walking ? 1 : 0))
         )
+    }
+}
+
+// 2026-11-05 경완: 아이폰 프로필처럼 걸을 땐 내 캐릭터가 걷고, 안 걸을 땐 서 있는다.
+// 게임 trWalk(0.9초): 선 모습 → 걸음 → 선 모습 → 걸음(좌우 뒤집기)
+struct TrainerSprite: View {
+    let frames: (stand: CGImage, step: CGImage)
+    let walking: Bool
+
+    var body: some View {
+        TimelineView(.periodic(from: .now, by: walking ? 0.225 : 60)) { ctx in
+            let i = walking ? Int(ctx.date.timeIntervalSinceReferenceDate / 0.225) % 4 : 0
+            Image(decorative: i % 2 == 1 ? frames.step : frames.stand, scale: 1)
+                .interpolation(.none)
+                .resizable()
+                .frame(width: 52, height: 52)
+                .scaleEffect(x: i == 3 ? -1 : 1, y: 1)
+        }
+        .frame(width: 52, height: 52)
     }
 }
