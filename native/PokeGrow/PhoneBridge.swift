@@ -209,18 +209,10 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
         guard let km = userInfo["km"] as? Double, km > 0 else { return }
         let start = userInfo["start"] as? Double ?? 0
         let end = userInfo["end"] as? Double ?? 0
-        DispatchQueue.main.async {
-            // 2026-11-05 경완 '워치 런닝으로 짝꿍은 크는데 알은 안 주워짐': 예전엔 그 시간 아이폰 만보기 거리(phoneKm)를 안 보내서
-            // 게임이 '아이폰이 이미 셌다'고 보고 알을 줍지 않았다. 이제 건강 앱 운동처럼 아이폰 만보기 거리
-            // (+ WatchWalk 로 먼저 넣은 만큼)를 보내 아이폰을 두고 간 만큼 알을 줍는다.
-            guard start > 0, end > start else { self.enqueueRun(km: km, start: start, end: end, kind: 0); return }
-            let s = Date(timeIntervalSince1970: start), e = Date(timeIntervalSince1970: end)
-            let ww = WatchWalk.shared.fedKm(s, e)
-            HealthSync.shared.phoneKm(s, e) { ph in
-                let all = ph >= 0 ? ph + ww : (ww > 0 ? ww : -1)
-                self.enqueueRun(km: km, start: start, end: end, kind: 0, phoneKm: all)
-            }
-        }
+        // 2026-11-05 경완 '런닝 기록 개념 빼기': 예전 워치 앱의 런닝도 런닝 기록으로 넣지 않는다.
+        // 그 운동 거리는 워치가 건강 앱에 남기므로 WatchWalk 가 '워치로 움직인 거리'로 (아이폰과 겹친 만큼은 빼고) 넣는다.
+        _ = (km, start, end)
+        DispatchQueue.main.async { WatchWalk.shared.sync() }
     }
 
     // 워치가 열릴 때 최신 알 현황을 바로 달라고 한다

@@ -70,15 +70,9 @@ final class HealthSync {
                     let meters = w.statistics(for: HKQuantityType(.distanceWalkingRunning))?.sumQuantity()?.doubleValue(for: .meter())
                         ?? w.totalDistance?.doubleValue(for: .meter()) ?? 0
                     let km = meters / 1000
-                    if km >= 0.1 {
-                        self.phoneKm(w.startDate, w.endDate) { ph in
-                            // 2026-11-05: 운동이 저장되기 전에 '워치만 차고 걸은 거리'(WatchWalk)로 이미 넣은 만큼도 '이미 쌓인 거리'에 더한다
-                            let ww = WatchWalk.shared.fedKm(w.startDate, w.endDate)
-                            let all = ww > 0 ? max(ph, 0) + ww : ph
-                            PhoneBridge.shared.enqueueRun(km: km, start: w.startDate.timeIntervalSince1970, end: w.endDate.timeIntervalSince1970, kind: 2, phoneKm: all)
-                            self.routePlaces(w)
-                        }
-                    }
+                    // 2026-11-05 경완 '런닝 기록 개념 빼기': 운동은 런닝 기록으로 보내지 않는다. 그 거리는 WatchWalk 가 워치로 움직인 거리로 넣는다.
+                    // 운동 경로(GPS)는 그 시간에 주운 알의 '주운 곳'을 채우는 데만 쓴다.
+                    if km >= 0.1 { self.routePlaces(w) }
                 }
                 UserDefaults.standard.set(newest.timeIntervalSince1970, forKey: self.lastKey)
                 self.backfillRoutes()

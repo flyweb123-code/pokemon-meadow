@@ -14,7 +14,7 @@ struct ContentView: View {
                 // 2026-11-05 경완: 런닝하기 버튼 대신 게임 프로필의 '이동 거리' (걸으면 초록으로 켜짐)
                 Section { WalkCard() }
                 if let L = model.shown?.allBuds, !L.isEmpty {
-                    Section("같이 달리는 짝꿍") { ForEach(L.indices, id: \.self) { BuddyRow(buddy: L[$0]) } }
+                    Section("짝꿍") { ForEach(L.indices, id: \.self) { BuddyRow(buddy: L[$0]) } }
                 }
                 Section("부화 중인 알") {
                     if let eggs = model.shown?.eggs, !eggs.isEmpty {

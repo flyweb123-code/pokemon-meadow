@@ -37,9 +37,9 @@ targets:
         NSMotionUsageDescription: 걸은 거리만큼 가방에 알을 넣으려고 걸음 기록을 읽어요.
         NSLocationWhenInUseUsageDescription: 알을 어느 동네에서 주웠는지 남기려고 위치를 써요.
         NSLocationAlwaysAndWhenInUseUsageDescription: 휴대폰이 잠겨 있어도 걸으면 알을 줍고, 주운 동네를 남기려고 위치를 써요.
-        NSHealthShareUsageDescription: 애플워치나 다른 앱으로 달리거나 걸은 기록을 런닝 기록과 알에 반영하려고 건강 앱의 운동·걷기 기록을 읽어요.
+        NSHealthShareUsageDescription: 애플워치로 움직인 거리를 알·짝꿍에 반영하려고 건강 앱의 걷기·운동 기록을 읽어요.
         # HealthKit 권한(entitlement)이 있으면 쓰기를 안 해도 업로드 검사에서 요구한다
-        NSHealthUpdateUsageDescription: 애플워치에서 한 런닝을 건강 앱에 운동 기록으로 남겨요.
+        NSHealthUpdateUsageDescription: 애플워치에서 한 운동을 건강 앱에 운동 기록으로 남겨요.
     entitlements:
       path: PokeGrow/PokeGrow.entitlements
       properties:
@@ -73,8 +73,8 @@ targets:
         WKCompanionAppBundleIdentifier: com.flyweb123.pokerun
         WKBackgroundModes: [workout-processing]
         NSMotionUsageDescription: 오늘 걸은 이동 거리를 워치에서 보여 주려고 걸음 기록을 읽어요.
-        NSHealthShareUsageDescription: 달린 거리를 알에 쌓으려고 건강 데이터를 읽어요.
-        NSHealthUpdateUsageDescription: 런닝을 운동 기록으로 저장해요.
+        NSHealthShareUsageDescription: 움직인 거리를 알에 쌓으려고 건강 데이터를 읽어요.
+        NSHealthUpdateUsageDescription: 운동을 건강 앱에 저장해요.
         ITSAppUsesNonExemptEncryption: false
     entitlements:
       path: PokeGrowWatch/PokeGrowWatch.entitlements

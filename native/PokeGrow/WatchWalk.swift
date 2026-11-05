@@ -8,12 +8,10 @@ import CoreMotion
 // 더 넣는다. 둘 다 들고 걸은 칸은 거의 0 이 되고, 아이폰을 두고 워치만 차고 걸은 칸은 워치 거리가 그대로 들어간다.
 // (그 칸에 워치 기록이 없으면 넣지 않는다 → 워치가 없는 사람은 지금과 같다)
 //
-// 운동(달리기·걷기·하이킹)이 있는 시간은 건너뛴다: 그건 HealthSync / 워치 앱 런닝이 런닝 기록으로 넣는다.
-// 운동이 아직 저장되기 전에 이쪽에서 먼저 넣었으면, 그 운동이 들어올 때 넣은 만큼을 '이미 쌓인 거리'(phoneKm)에 더해
-// 게임이 같은 거리를 두 번 쌓지 않게 한다 (fedKm).
+// 2026-11-05 경완 '런닝 기록 개념 빼기': 운동(달리기·풋살 등 종목 상관없이) 시간도 건너뛰지 않는다. 런닝 기록은 더 없고
+// 워치로 움직인 거리는 전부 여기로 들어간다. (fedKm 은 예전 기록과 맞추려고 남겨 둠)
 //
 // 워치 기록은 아이폰으로 몇 분~몇 시간 늦게 넘어오므로, 워치 기록이 넘어온 시각까지만 보고 커서를 옮긴다.
-// 2026-11-05 경완 '무슨 운동을 하든': 달리기·걷기·하이킹 말고 다른 종목(풋살 등) 시간은 건너뛰지 않는다 → 그 시간 워치 거리도 여기서 들어간다.
 // 아이폰이 잠겨 있으면 건강 데이터를 못 읽는다 → 실패하면 커서를 두고 다음에(앱을 열 때 등) 다시 본다.
 final class WatchWalk {
     static let shared = WatchWalk()
@@ -80,22 +78,7 @@ final class WatchWalk {
     private func compute(from: Date, to: Date) {
         let group = DispatchGroup()
         var failed = false
-        var workouts: [(Date, Date)] = []
         var merged: HKStatisticsCollection?, phone: HKStatisticsCollection?, watch: HKStatisticsCollection?
-
-        // 그 사이의 운동 (출처 상관없이: 워치 운동 앱, 이 앱의 워치 런닝, NRC 등)
-        group.enter()
-        let wPred = NSCompoundPredicate(andPredicateWithSubpredicates: [
-            NSCompoundPredicate(orPredicateWithSubpredicates: [HKWorkoutActivityType.running, .walking, .hiking].map { HKQuery.predicateForWorkouts(with: $0) }),
-            HKQuery.predicateForSamples(withStart: from, end: to, options: []),
-        ])
-        store.execute(HKSampleQuery(sampleType: .workoutType(), predicate: wPred, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, samples, error in
-            DispatchQueue.main.async {
-                if error != nil { failed = true }
-                workouts = (samples ?? []).map { ($0.startDate, $0.endDate) }
-                group.leave()
-            }
-        })
 
         func sums(_ extra: NSPredicate?, _ set: @escaping (HKStatisticsCollection?) -> Void) {
             group.enter()
@@ -127,8 +110,8 @@ final class WatchWalk {
             var t = from
             while t < to {
                 let e = min(t.addingTimeInterval(WatchWalk.step), to)   // 마지막 칸은 짧을 수 있다
-                let inWorkout = workouts.contains { $0.0 < e.addingTimeInterval(60) && $0.1 > t.addingTimeInterval(-60) }
-                if !inWorkout {
+                // 2026-11-05 경완 '런닝 기록 개념 빼기': 운동 중이든 아니든 워치로 움직인 거리는 다 여기서 넣는다
+                do {
                     let add = min(km(watch, t), max(0, km(merged, t) - km(phone, t)))
                     if add >= 0.001 { cands.append((t, e, add)) }
                 }
