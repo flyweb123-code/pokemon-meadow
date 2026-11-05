@@ -1435,13 +1435,18 @@ function bodyCard(src, h, sub = '', btn = '', onClick, more = '') {
   return pop(`<div class="gy-body"><div class="bd-pic"><img alt="" src="${src}" onload="this.style.width=this.naturalWidth*2+'px';this.style.height=this.naturalHeight*2+'px'"></div><h4>${h}</h4>${sub ? `<p>${sub}</p>` : ''}${more}</div>${btn || '<div class="gy-btns one"><button data-a="x">닫기</button></div>'}`, (a, close, p) => { if (a === 'x') close(); else onClick?.(a, close, p); });
 }
 // 타입별 등급 배지는 체육관 정보에서 빼고 내 프로필 카드에 (경완 2026-10-29 '배지랑 타입 이름 정도만')
-/* v16.52 경완 '내 캐릭터 상세카드: 입은 옷 표시·점선 빼고, 체육관 등급에 따라 카드 디자인': 등급 색(테두리·머리띠·무대)과 등급 배지, 위로 갈수록 장식이 늘고 전설은 무지개 */
-async function meCard() { const g = st(), G = gradeOf(g.rep || 0, g.gmax ?? 99), src = await fitSrc('tr');
-  const bd = `<div class="gy-bdgs me-bdgs">${TYPE_KO.map((nm, t) => { if (!t) return ''; const L = bdLv(g, t); return `<div class="${L ? 'on' : ''}${g.ty === t ? ' cur' : ''}">${bdHtml(t, L)}<b>${nm}</b></div>`; }).join('')}</div>`;
-  const p = pop(`<div class="gy-body mec"><div class="mec-hd"><span class="mec-bd">${gEmb(G.i)}</span><span class="mec-gr"><small>${esc(g.nm)}</small><b>${G.n}</b></span>${G.i >= 3 ? `<span class="mec-sts" aria-hidden="true">${'<i class="mec-st"></i>'.repeat(Math.min(3, G.i - 2))}</span>` : ''}</div>
-    <div class="bd-pic"><img alt="" src="${src}" onload="this.style.width=this.naturalWidth*2+'px';this.style.height=this.naturalHeight*2+'px'"></div>
-    <h4>관장 ${esc(trName() || '나')}</h4><p class="mec-wl"><b>${g.w || 0}</b>승 <b>${g.l || 0}</b>패</p>${bd}</div><div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); });
-  p.classList.add('mec-wrap'); const w = p.querySelector('.win'); if (w) w.dataset.g = G.i; }
+/* v16.52 경완 '내 캐릭터 상세카드: 입은 옷 표시·점선 빼고, 체육관 등급에 따라 카드 디자인', '퀄 좀 높여줘':
+   관장 카드 = 등급 색 카드 위에 (머리줄: 관장 카드·등급 배지) (정보판 | 무대 위 관장) (배지 케이스 18칸). 등급 색은 홈 등급 딱지와 같은 줄, 인기부터 광택이 지나가고 전설은 무지개 */
+async function meCard() { const g = st(), G = gradeOf(g.rep || 0, g.gmax ?? 99), src = await fitSrc('tr'), n = (g.w || 0) + (g.l || 0), got = TYPE_KO.filter((x, t) => t && bdLv(g, t)).length;
+  const row = (k, v) => `<div class="m2-r"><small>${k}</small><b>${v}</b></div>`;
+  const cs = TYPE_KO.map((nm, t) => { if (!t) return ''; const L = bdLv(g, t); return `<span class="m2-s${L ? ' on' : ''}${g.ty === t ? ' cur' : ''}" title="${nm}">${L ? `<img alt="${nm}" src="${bdImg(t, L)}">` : ''}</span>`; }).join('');
+  const p = pop(`<div class="m2"><div class="m2-hd"><b>관장 카드</b><span class="m2-gr">${gEmb(G.i)}<i>${G.n}</i></span></div>
+    <div class="m2-mid"><div class="m2-info"><div class="m2-nm"><small>관장</small><b>${esc(trName() || '나')}</b></div>
+      ${row('체육관', esc(g.nm))}${row('타입', `${tyIcon(g.ty)}${TYPE_KO[g.ty] || '-'}`)}${row('전적', `${g.w || 0}승 ${g.l || 0}패`)}${row('승률', n ? `${Math.round((g.w || 0) / n * 100)}%` : '-')}${row('평판', (g.rep || 0).toLocaleString())}</div>
+      <div class="m2-pic"><img alt="" src="${src}"></div></div>
+    <div class="m2-case"><div class="m2-ch"><b>배지 케이스</b><small>${got} / 18</small></div><div class="m2-slots">${cs}</div></div></div>
+    <div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); });
+  p.classList.add('m2-wrap'); const w = p.querySelector('.win'); if (w) w.dataset.g = G.i; }
 function sfCard(s) { bodyCard(trSrc(s.tr), sfName(s), `${s.w || 0}승 ${s.l || 0}패<br>월급 7일에 ${(s.wage || 0).toLocaleString()}G${TRAITS[s.trait] ? ` · ${TRAITS[s.trait].n}` : ''}${s.rest ? '<br>월급을 못 받아서 쉬고 있어요' : ''}`); }   // 내 카드처럼 승패, 그리고 월급 (경완 2026-10-29)
 // 체육관 정보: 팝업이 아니라 자세한 새 화면 (경완 2026-10-27 '새로운 창으로 더 자세하게')
 function infoPop() {
