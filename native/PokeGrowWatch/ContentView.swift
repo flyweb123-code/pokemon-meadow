@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import WatchKit
 
 private let gold = Color(red: 1, green: 0.886, blue: 0.478)
 private let grass = Color(red: 0.43, green: 0.72, blue: 0.28)
@@ -12,8 +13,11 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
-                // 2026-11-05 경완: 런닝하기 버튼 대신 게임 프로필의 '이동 거리' (걸으면 초록으로 켜짐)
-                Section { WalkCard() }
+                // 2026-11-05 경완: 켜자마자 한 화면 가득 내 캐릭터 + 그 위에 이동 거리. 밑으로 내리면 짝꿍·알
+                WalkCard()
+                    .frame(height: max(150, WKInterfaceDevice.current().screenBounds.height - 44))
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
                 if let L = model.shown?.allBuds, !L.isEmpty {
                     Section("짝꿍") { ForEach(L.indices, id: \.self) { BuddyRow(buddy: L[$0]) } }
                 }
@@ -31,7 +35,6 @@ struct ContentView: View {
                     }
                 }
             }
-            .navigationTitle("포켓몬 키우기")
         }
         .onAppear { model.refresh(); model.startLive() }
         .onChange(of: scenePhase) { _, p in
@@ -89,7 +92,7 @@ struct BuddyRow: View {
     }
 }
 
-// 게임 프로필의 '이동 거리' 칸과 같은 모양: 걷는 중이면 테두리·숫자가 초록으로, 왼쪽 위 점이 깜빡인다
+// 첫 화면: 게임 프로필의 '이동 거리' + 캐릭터 칸을 한 화면 가득. 걷는 중이면 테두리·숫자가 초록, 점이 깜빡이고 캐릭터가 걷는다
 struct WalkCard: View {
     @EnvironmentObject var model: WatchModel
     @State private var now = Date()
@@ -98,12 +101,37 @@ struct WalkCard: View {
     var body: some View {
         let walking = now.timeIntervalSince(model.walkAt) < WatchModel.walkLive
         let blink = Int(now.timeIntervalSinceReferenceDate / 0.6) % 2 == 0
-        HStack(alignment: .center, spacing: 4) {
-            VStack(alignment: .leading, spacing: 2) {
+        ZStack(alignment: .top) {
+            // 캐릭터 (아래쪽 가운데, 발밑 그림자)
+            GeometryReader { g in
+                let side = min(g.size.width * 0.8, g.size.height * 0.72)
+                VStack(spacing: 0) {
+                    Spacer(minLength: 0)
+                    ZStack(alignment: .bottom) {
+                        Ellipse().fill(Color.black.opacity(0.28))
+                            .frame(width: side * 0.42, height: side * 0.09)
+                            .offset(y: -side * 0.1)
+                        if let fr = model.trFrames {
+                            TrainerSprite(frames: fr, walking: walking, side: side)
+                        } else {
+                            Image(systemName: walking ? "figure.walk" : "figure.stand")
+                                .resizable().scaledToFit()
+                                .frame(width: side * 0.45, height: side * 0.6)
+                                .foregroundStyle(walking ? walkGreen : .secondary)
+                                .padding(.bottom, side * 0.12)
+                        }
+                    }
+                    .frame(width: side, height: side)
+                }
+                .frame(width: g.size.width, height: g.size.height)
+            }
+            // 위: 이동 거리
+            VStack(spacing: 0) {
                 HStack(spacing: 5) {
                     Rectangle().fill(walkGreen).frame(width: 7, height: 7)
                         .opacity(walking && blink ? 1 : 0)
                     Text(walking ? "걷는 중" : "이동 거리").font(.caption2).foregroundStyle(walking ? walkGreen : .secondary)
+                    Rectangle().fill(Color.clear).frame(width: 7, height: 7)
                 }
                 HStack(alignment: .firstTextBaseline, spacing: 3) {
                     Text(String(format: "%.2f", model.todayKm))
@@ -112,21 +140,14 @@ struct WalkCard: View {
                     Text("km").font(.footnote).foregroundStyle(.secondary)
                 }
             }
-            Spacer(minLength: 0)
-            if let fr = model.trFrames {
-                TrainerSprite(frames: fr, walking: walking)
-            } else {
-                Image(systemName: walking ? "figure.walk" : "figure.stand")
-                    .font(.title2).foregroundStyle(walking ? walkGreen : .secondary)
-            }
+            .padding(.top, 8)
         }
-        .padding(.vertical, 6)
-        .onReceive(tick) { now = $0 }
-        .listRowBackground(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.white.opacity(0.08))
-                .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(walkGreen, lineWidth: 2).opacity(walking ? 1 : 0))
+        .background(
+            RoundedRectangle(cornerRadius: 14)
+                .fill(LinearGradient(colors: [Color.white.opacity(0.06), grass.opacity(0.28)], startPoint: .top, endPoint: .bottom))
+                .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(walkGreen, lineWidth: 2).opacity(walking ? 1 : 0))
         )
+        .onReceive(tick) { now = $0 }
     }
 }
 
@@ -135,6 +156,7 @@ struct WalkCard: View {
 struct TrainerSprite: View {
     let frames: (stand: CGImage, step: CGImage)
     let walking: Bool
+    var side: CGFloat = 52
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: walking ? 0.225 : 60)) { ctx in
@@ -142,9 +164,9 @@ struct TrainerSprite: View {
             Image(decorative: i % 2 == 1 ? frames.step : frames.stand, scale: 1)
                 .interpolation(.none)
                 .resizable()
-                .frame(width: 52, height: 52)
+                .frame(width: side, height: side)
                 .scaleEffect(x: i == 3 ? -1 : 1, y: 1)
         }
-        .frame(width: 52, height: 52)
+        .frame(width: side, height: side)
     }
 }
