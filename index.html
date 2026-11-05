@@ -13830,13 +13830,13 @@ const eggHtml = (g, cls = '', lt = 0) => `<div class="egg g${g}${lt ? ` lt lt${l
 // 전설의 체육관 보상: 체육관 타입 전설 포켓몬이 나오는 타입 전설 알 (e.lt = 타입, 알 둘레에 타입 효과) (경완 2026-10-29)
 const LT_ADJ = ['', '포근한', '불끈한', '산뜻한', '끈적한', '묵직한', '단단한', '꿈틀대는', '으스스한', '매끈한', '화끈한', '촉촉한', '파릇한', '짜릿한', '신비한', '서늘한', '웅장한', '음흉한', '반짝이는'];
 const eggName = e => e.lt ? `${LT_ADJ[e.lt]} 전설 알` : `${GRADE[e.g].n} 알`;
-function legEggSp(t) { const has = sp => (SPECIES[sp].t || []).includes(t) && !SP_OFF.has(sp), all = Object.keys(SPECIES).map(Number);
-  let L = POOL[5].filter(sp => SPECIES[sp].leg && has(sp)); if (!L.length) L = all.filter(sp => SPECIES[sp].leg && has(sp)); if (!L.length) L = all.filter(sp => SPECIES[sp].my && has(sp)); if (!L.length) L = POOL[5];
+function legEggSp(t) { const L = legEggL(t);   /* v17.25 경완 '전설 환상 같은 본가 기준 말고 우리가 정한 티어 기준': 전설 알에서 나오는 포켓몬(작업실 티어표) 중 그 타입 전부 */
   const W = L.map(legW), tot = W.reduce((a, x) => a + x, 0); if (!(tot > 0)) return L[Math.random() * L.length | 0];
   let r = Math.random() * tot; for (let i = 0; i < L.length; i++) if ((r -= W[i]) < 0) return L[i]; return L[L.length - 1]; }
 /* v17.24 경완 '방금 전으로 다시' (v17.19 '티어 안에 순서 있잖아'): 타입 전설 알도 티어표 순서대로. 1티어 맨 앞이 가장 드물고 3티어 맨 끝이 가장 흔하게, 줄을 따라 고르게 (티어 하나 = 약 2배, 알 티어 안 차이 K 와 같은 값). 전체 부화율 가중치(v17.21)는 무한다이노가 독 91%·드래곤 75%라 되돌림 */
 const legW = sp => { const t = TIER[sp], k = eggEffK()?.[2] ?? TIER_KT[2] ?? .6931; return Math.exp(-k * ((3 - Math.min(3, Math.max(1, t || 3))) + (TIER_Z[sp] ?? .5))); };
-GA.legEggW = t => { const has = sp => (SPECIES[sp].t || []).includes(t) && !SP_OFF.has(sp); let L = POOL[5].filter(sp => SPECIES[sp].leg && has(sp)); if (!L.length) L = Object.keys(SPECIES).map(Number).filter(sp => (SPECIES[sp].leg || SPECIES[sp].my) && has(sp)); return L.map(sp => [sp, legW(sp), TIER[sp]]); };
+const legEggL = t => { const has = sp => (SPECIES[sp].t || []).includes(t) && !SP_OFF.has(sp); let L = POOL[5].filter(sp => has(sp) && spInEgg(5, sp) > 0); if (!L.length) L = POOL[5].filter(has); if (!L.length) L = POOL[5]; return L; };
+GA.legEggW = t => legEggL(t).map(sp => [sp, legW(sp), TIER[sp]]);
 GA.LT_ADJ = LT_ADJ; GA.eggIco = lt => eggHtml(5, '', lt);
 GA.legEgg = (t, from) => { const e = { id: S.eid++, g: 5, t: Date.now(), isNew: true, lt: t, sp: legEggSp(t), spot: 1, place: from || '체육관' }; S.bag.push(e); save(); return e; };
 const hatchEl = $('#hatch'), hatchStage = $('#hatchStage');
