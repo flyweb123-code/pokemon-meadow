@@ -1,4 +1,4 @@
-# 일회용 읽기 (경완 OK 2026-11-05): 라인업만 출력. 끝나면 지움
+# 일회용 읽기 (2) (경완 OK 2026-11-05): 라인업만 출력. 끝나면 지움
 name: rd-lu
 on:
   push:
@@ -17,5 +17,7 @@ jobs:
       - working-directory: server
         run: |
           npm ci >/dev/null
-          npx wrangler d1 execute pokegrow --remote --json --command "SELECT code, i, data FROM save_part WHERE acct = 'flyweb'" > /tmp/r.json
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="pokegrow") | .uuid')
+          sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
+          npx wrangler d1 execute pokegrow --remote --json --command "SELECT code, i, data FROM save_part WHERE acct = 'flyweb'" > /tmp/r.json || { head -c 600 /tmp/r.json; exit 1; }
           node ../tools/rd/lu.mjs /tmp/r.json
