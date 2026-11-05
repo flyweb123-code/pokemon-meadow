@@ -1,0 +1,21 @@
+# 일회용 읽기 (경완 OK 2026-11-05): 라인업만 출력. 끝나면 지움
+name: rd-lu
+on:
+  push:
+    branches: [claude/project-thread-wlqncg]
+    paths: ['.github/workflows/rd-lu.yml', 'tools/rd/**']
+jobs:
+  rd:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - working-directory: server
+        run: |
+          npm ci >/dev/null
+          npx wrangler d1 execute pokegrow --remote --json --command "SELECT code, i, data FROM save_part WHERE acct = 'flyweb'" > /tmp/r.json
+          node ../tools/rd/lu.mjs /tmp/r.json
