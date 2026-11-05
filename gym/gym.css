@@ -2975,4 +2975,4 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .lu-slot[data-p]>.rk-fr>img.th-it{left:auto!important;top:auto!important;right:1px!important;bottom:1px!important;width:42%!important;height:42%!important;z-index:2}
 /* v17.34 경완 '지닌 도구 설명 텍스트 왜 이렇게 흐리냐': 도구 설명은 본문 색, '…가 지니고 있어요'도 덜 흐리게 */
 #gym .gy-pop .gy-msg.mi-d{color:var(--win-ink,#282830)!important}
-#gym .gy-pop .gy-msg.it-own{opacity:1;color:#6a6a80!important}
+#gym .gy-pop .gy-msg.it-own{opacity:1;color:#6a6a80!important;text-align:center}
