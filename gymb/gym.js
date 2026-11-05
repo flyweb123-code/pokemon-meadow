@@ -1532,7 +1532,7 @@ function storePop() {
   root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew'; $g('.gy-main').appendChild(el);   // 아래 메뉴는 가리지 않게 (경완 2026-10-29)
   const draw = () => { const g = st(); g.tms = g.tms || {}; g.itm = g.itm || {}; g.own = g.own || {}; g.fits = g.fits || {}; g.dp = (g.dp || []).filter(Boolean);
-    const nTm = Object.values(g.tms).reduce((a, n) => a + (n || 0), 0), dk = Object.keys(g.own).filter(k => g.own[k] && DECO[k]), fk = Object.keys(g.fits).filter(k => g.fits[k] && fitOf(k));
+    const nTm = Object.entries(g.tms).reduce((a, [id, n]) => a + (n > 0 ? (GB()?.isTR?.(id) ? n : 1) : 0), 0), dk = Object.keys(g.own).filter(k => g.own[k] && DECO[k]), fk = Object.keys(g.fits).filter(k => g.fits[k] && fitOf(k));
     const H = GB()?.HOLD, IL = H ? GB().itAll() : [], ML = H ? GB().mintAll() : [];   // 민트 (경완 2026-10-30)
     const T = [['tm', '기술머신', nTm], ['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0)], ['deco', '꾸미기', dk.length]];   // v14.79 경완 '의상 탭 아직 넣지마': 필드 걸음 그림까지 바꾼 뒤에   // 도구 탭 (경완 2026-10-29)
     let body = ''; if (!T.some(([k]) => k === storeT)) storeT = 'tm';
