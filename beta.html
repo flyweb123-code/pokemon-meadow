@@ -123,7 +123,7 @@ body.visitMode #infBudGo,body.visitMode #infGame,body.visitMode #info .mvuse{dis
 body.visitMode #info .nm-edit{pointer-events:none}
 body.visitMode #info{align-self:start;margin-top:calc(env(safe-area-inset-top) + 74px)}   /* v15.05 경완: 손님 화면 포켓몬 상세카드는 위 '○○의 필드' 막대 밑으로 */
 body.visitMode.petting :is(.vpad,.vjump,.vchat-b){display:none}   /* v15.16 경완: 포켓몬 상세카드를 볼 땐 채팅창·방향키 그대로 */
-</style></head><body><title>포켓몬 키우기</title>
+.dlg .now .dface{float:left;width:40px;height:40px;margin:1px 9px 0 0;background-repeat:no-repeat;image-rendering:pixelated;border-radius:4px;box-shadow:0 0 0 2px rgba(255,255,255,.85),0 0 0 3px rgba(0,0,0,.25)}.dlg .now.hasF{min-height:42px}</style></head><body><title>포켓몬 키우기</title>
 <script>
 // v5.74 경완: 베타 판 — 운영자 칸 '베타 판 쓰기'를 켠 기기만 beta.html(새 기능 시험판)로 넘어간다. 저장은 본 게임과 같다
 (() => { try { const beta = /beta\.html$/.test(location.pathname), q = location.search; if (!beta && !/[?&]studio/.test(q) && localStorage.getItem('pk-beta') === '1') location.replace('beta.html' + q + location.hash); } catch (e) {} })();
@@ -3536,7 +3536,7 @@ function fit3(el) { if (!el) return; el.style.fontSize = ''; el.classList.remove
   for (let f = f0; n() > 3.2 && f > f0 * .75; ) { f -= 1; el.style.fontSize = f + 'px'; } if (n() > 3.2) el.classList.add('l3'); }
 function renderDlg() {
   const pe = pinOf(), [a0, a1] = S.log, a = pe || a0, b = pe ? (a0 !== pe ? a0 : a1) : a1;
-  $('#dlgNow').innerHTML = a ? stripHint(a.html) : ''; fit3($('#dlgNow'));
+  { const fm = a && a.who?.length ? dlgWho(a) : null, fh = fm ? faceHtml(fm) : ''; $('#dlgNow').innerHTML = a ? fh + stripHint(a.html) : ''; $('#dlgNow').classList.toggle('hasF', !!fh); } fit3($('#dlgNow'));
   $('#dlgPrev').innerHTML = b ? `${clockStr(b.t)}  ${b.html.replace(/<[^>]+>/g, '')}` : '';
 }
 
@@ -3594,12 +3594,13 @@ let BUB_OV = {};   // 장면 id → 바꾼 말풍선 키 ('' = 이 장면엔 말
 function emote(m, text, cls = '', dur = 2.2, sc = '') {
   if (sc && sc in BUB_OV) { const k = BUB_OV[sc], B = BUBK_M[k]; if (!B) return; text = B[1] ?? shoutOf(m.sp); cls = B[2]; }
   if (text === '#') text = '💢';
+  try { emoHook(m, text, sc); } catch (er) {}   /* v16.60: 얼굴 표정·동작 (열매 말풍선에 가려져도) */
   if (cls !== 'feed' && m.bub.classList.contains('feed') && !m.bub.hidden && m.hunger > FEED_BUB) return;   /* v6.31 경완: 열매 말풍선이 떠 있는 동안엔 다른 말풍선으로 덮지 않는다 */
   m.bub.className = 'bubble ' + cls; if (PIXE[text]) m.bub.innerHTML = PIXE[text]; else m.bub.textContent = text; m.bub.hidden = false; m.bubT = dur;
   m.bub.style.animation = 'none'; void m.bub.offsetWidth; m.bub.style.animation = '';
 }
 document.addEventListener('animationend', e => { const c = e.target.classList; if (c && c.contains('act') && ['appear', 'emerge', 'hop', 'phop', 'shake', 'stretch'].includes(e.animationName)) c.remove(e.animationName); });   /* v3.80 경완: 숨었다 다시 보이면 CSS 애니메이션이 처음부터 다시 돈다 */
-function anim(m, cls) { m.act.classList.remove('hop', 'phop', 'shake', 'emerge', 'appear', 'stretch'); void m.act.offsetWidth; m.act.classList.add(cls); if (cls === 'hop' && m.spr && !m.one) playOnce(m, 'Hop'); }
+function anim(m, cls) { m.act.classList.remove('hop', 'phop', 'shake', 'emerge', 'appear', 'stretch'); void m.act.offsetWidth; m.act.classList.add(cls); if (cls === 'hop' && m.spr && !m.one) playOnce(m, 'Hop'); else if (cls === 'nod' && m.spr && !m.one) playX(m, 'Nod'); }
 
 // ---------- create ----------
 async function spawn(sp, opts = {}) {
@@ -4079,6 +4080,7 @@ function wake(m, why) {
   m.awakeT = S.clock + rnd(8, 14);   /* 깨면 적어도 8~14분은 놀다가 잔다 */
   if (!sleepyTime(m)) m.slpB = bedRoll(m);   // 아침에 깼으면 오늘 밤 잠들 시각을 새로
   setState(m, 'idle', rnd(1, 3));
+  if (!why) playX(m, ['Wake', 'DeepBreath']);   /* v16.60: 깨어나는 동작 */
   if (why) { emote(m, '!', '', 2.2, 'wake-noise'); log(why, [m]); }
   else if (Math.random() < .35) log(`${J(m,'이/가')} 기지개를 켜며 일어났다.`, [m]);
 }
@@ -4973,7 +4975,7 @@ const TPL = {
   music: { dur: 8,
     init(sc, a, b) { faceTo(a, b.x); faceTo(b, a.x); },
     tick(sc, a, b) {
-      if (every(sc, 'k', .8)) { strike(a); particle(a.x + rnd(-10, 10), a.y - a.h - 4, 'note', pick([].concat(sc.p.t || ['♪', '♫', '♬']))); setTimeout(() => S.mons.includes(b) && anim(b, 'hop'), 220); }
+      if (every(sc, 'k', .8)) { if (!['Sing', 'Sound'].includes(a.one?.name) && !playX(a, ['Sing', 'Sound'])) strike(a); particle(a.x + rnd(-10, 10), a.y - a.h - 4, 'note', pick([].concat(sc.p.t || ['♪', '♫', '♬']))); setTimeout(() => S.mons.includes(b) && anim(b, 'hop'), 220); }
     } },
   // a copies whatever b does, a beat late
   mimic: { dur: 8,
@@ -5049,7 +5051,7 @@ const TPL = {
     init(sc, a, b) { sc.c = sceneCenter(a, b, 50); },
     tick(sc, a, b) {
       place(a, sc.c.x - 34, sc.c.y); place(b, sc.c.x + 34, sc.c.y);
-      if (every(sc, 'k', .7)) { sc.beat = (sc.beat || 0) + 1; const f = sc.beat % 4 < 2 ? 1 : -1; a.face = b.face = f; anim(a, 'hop'); anim(b, 'hop'); particle(sc.c.x + rnd(-20, 20), sc.c.y - 60, sc.p.cls || 'note', pick([].concat(sc.p.t || ['♪', '♫']))); }
+      if (every(sc, 'k', .7)) { sc.beat = (sc.beat || 0) + 1; const f = sc.beat % 4 < 2 ? 1 : -1; a.face = b.face = f; for (const q of [a, b]) { if (['Dance', 'Twirl', 'Rotate'].includes(q.one?.name)) continue; if (!playX(q, ['Dance', 'Twirl', 'Rotate'])) anim(q, 'hop'); }   /* v16.60: 춤 동작 */ particle(sc.c.x + rnd(-20, 20), sc.c.y - 60, sc.p.cls || 'note', pick([].concat(sc.p.t || ['♪', '♫']))); }
     } },
 };
 const motOf = sc => sc && (MOT[sc.key] || (sc.mo && TPL[sc.mo]));
@@ -5449,6 +5451,60 @@ function playOnce(m, name, hold = false) {
 }
 const strike = m => { if (!playOnce(m, 'Attack')) anim(m, 'shake'); };
 const hurt = m => { playOnce(m, 'Hurt'); anim(m, 'shake'); };
+// v16.60 경완 '얼굴 표정, 필드 동작 다 받아주고 상호작용 별로 알맞게': 불가사의 던전 그림 모음의 나머지 동작(끄덕이기·앉기·올려다보기 등 mx/<키>.json)과
+// 얼굴 표정(face/<키>.png 40칸 가로 띠, face.json)을 필요할 때만 받는다. 동작은 받으면 원래 아틀라스 아래에 이어 붙여 같은 그림으로 쓴다 (drawSprite 그대로)
+const MXP = {};
+function loadMx(k) { const P = SPRITES[k]; if (!P || !isPmd(k)) return Promise.resolve(false); if (P.mx) return Promise.resolve(true); if (P.mxNo) return Promise.resolve(false);
+  return MXP[k] ||= (async () => { try {
+    await padAtlas(k); const r = await fetch(`mx/${k}.json?v=1`); if (!r.ok) { P.mxNo = 1; return false; } const X = await r.json();
+    const ld = u => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = u; }), [bi, xi] = await Promise.all([ld(P.i), ld(X.i)]);
+    const G = P.G || 0, A = P.a; let W = 0, H = 0; for (const n in A) { const a = A[n]; W = Math.max(W, a[3] * (a[1] + G)); H = Math.max(H, a[0] + a[2] + G); }
+    const R = Math.max(1, Math.round(bi.width / Math.max(1, W))), names = Object.keys(X.a).filter(n => !A[n]); if (!names.length) { P.mx = 1; return true; }
+    let w2 = 0, h2 = 0; const ny = {}; for (const n of names) { const a = X.a[n]; ny[n] = h2; h2 += a[2] + G; w2 = Math.max(w2, a[3] * (a[1] + G)); }
+    let ex = document.createElement('canvas'); ex.width = w2; ex.height = h2; const eg = ex.getContext('2d');
+    for (const n of names) { const a = X.a[n]; for (let f = 0; f < a[3]; f++) eg.drawImage(xi, f * a[1], a[0], a[1], a[2], f * (a[1] + G), ny[n], a[1], a[2]); }
+    if (R === 2) ex = scale2x(ex);
+    const c = document.createElement('canvas'); c.width = Math.max(bi.width, ex.width); c.height = H * R + ex.height; const g = c.getContext('2d'); g.imageSmoothingEnabled = false;
+    g.drawImage(bi, 0, 0); g.drawImage(ex, 0, H * R, ex.width, ex.height);
+    for (const n of names) { const a = X.a[n]; A[n] = [H + ny[n], a[1], a[2], a[3], a[4], a[5], a[6], a[7]]; }
+    P.i = c.toDataURL('image/png'); P.mx = 1; delete atlasDims[k];
+    for (const m of S.mons) if ((m.sk || m.form) === k && m.spr) { const one = m.one; setMode(m); if (one && A[one.name]) m.one = one; }
+    return true; } catch (e) { P.mxNo = 1; return false; } })(); }
+// 그 동작 그림이 있으면 한 번 (아직 안 받았으면 받고 나서, 그사이 다른 걸 하고 있으면 건너뜀)
+const mxBusy = m => !S.mons.includes(m) || m.held || m.hj || m.scp || m.state === 'move' || m.state === 'sleep' || m.hidden || m.evolving || m.one;
+function playX(m, names, hold = false) { if (!m?.spr || !isPmd(m.form)) return false; const k = m.sk || m.form, P = SPRITES[k]; if (!P) return false; const L = [].concat(names);
+  const go = () => { const n = L.find(x => P.a[x]); return n && !mxBusy(m) ? playOnce(m, n, hold) : false; };
+  if (P.mx || L.some(x => P.a[x])) return go(); const t0 = performance.now(); loadMx(k).then(ok => { if (ok && performance.now() - t0 < 2500) go(); }); return false; }
+// 말풍선 상황(SCN 키)마다 얼굴 표정과 동작. 동작은 앞에서부터 그 종에 있는 것 하나
+const EMO_N = ['Normal', 'Happy', 'Joyous', 'Inspired', 'Surprised', 'Determined', 'Angry', 'Shouting', 'Sad', 'Crying', 'Teary-Eyed', 'Worried', 'Pain', 'Dizzy', 'Sigh', 'Stunned'];
+const EMO_ALT = { Joyous: ['Happy'], Inspired: ['Joyous', 'Happy'], Shouting: ['Angry', 'Determined'], Crying: ['Teary-Eyed', 'Sad'], 'Teary-Eyed': ['Sad'], Stunned: ['Surprised'], Dizzy: ['Pain', 'Worried'], Sigh: ['Sad', 'Worried'], Pain: ['Sad'], Worried: ['Sad'], Determined: ['Angry'] };
+const EMO_SC = {
+  'berry-see': ['Surprised'], 'tree-see': ['Surprised'], hold: ['Surprised', 'Cringe'], 'bush-out': ['Surprised', 'Pose'], 'rock-pose': ['Determined', ['Pose', 'Appeal']], 'dig-near': ['Surprised', 'Cringe'], roar: ['Surprised', 'Cringe'],
+  'wake-noise': ['Surprised', 'Wake'], 'fight-chase': ['Angry'], 'fight-hit': ['Pain', 'Pain'], 'ghost-scared': ['Stunned', ['Cringe', 'TumbleBack']], 'fire-back': ['Worried', ['TumbleBack', 'Cringe']], 'puddle-fire': ['Pain', 'Cringe'],
+  'self-shock': ['Dizzy', ['Shock', 'Pain', 'Cringe']], 'move-shock': ['Surprised', 'Cringe'], 'sp-startle': ['Surprised', 'Cringe'], 'karp-land': ['Worried'], 'late-berry': ['Sad'], 'pet-start': ['Surprised', 'LookUp'],
+  'no-answer': ['Worried', 'LookUp'], 'fight-scare': ['Determined', ['Appeal', 'Pose']], headache: ['Pain', 'Pain'], 'sp-curious': ['Surprised', 'LookUp'], 'wash-start': ['Worried', 'LookUp'], 'sp-late': ['Stunned'],
+  'idle-alone': ['Normal', ['LookUp', 'DeepBreath', 'Sit']], 'pet-quit': ['Sad'], 'tree-empty': ['Sad', 'LookUp'], 'tree-shake': ['Determined'], 'ash-sniff': ['Sad'], 'heavy-flower': ['Worried'], 'rock-lean': ['Sigh'], 'chase-lost': ['Sigh', 'LookUp'],
+  'meet-fail': ['Sad'], 'play-lose': ['Teary-Eyed', ['Trip', 'TumbleBack', 'Pain']], 'move-calm': ['Determined', 'DeepBreath'], 'sp-ponder': ['Worried', 'LookUp'], 'pet-done': ['Joyous', ['Twirl', 'Rotate', 'Pose']], 'pet-ing': ['Happy', 'Nod'],
+  'prop-play': ['Happy', ['Twirl', 'Rotate']], 'prop-watch': ['Surprised', 'LookUp'], 'tree-peck': ['Happy'], 'flower-sniff': ['Happy', 'Nod'], 'fire-warm': ['Happy'], prank: ['Joyous', ['Appeal', 'Twirl']], 'fight-win': ['Joyous', ['Pose', 'Appeal', 'Twirl']],
+  'ghost-scare': ['Joyous', ['Appeal', 'Twirl']], chat: ['Happy', 'Nod'], evolve: ['Inspired', ['Pose', 'Appeal']], 'sp-end': ['Happy', 'Nod'], sing: ['Joyous', ['Sing', 'Sound', 'DeepBreath']], 'berry-given': ['Joyous', 'Nod'],
+  'friend-meet': ['Happy', ['Twirl', 'Nod']], care: ['Happy', 'Nod'], 'flower-happy': ['Joyous', ['Twirl', 'Rotate']], 'sp-love': ['Joyous', ['Twirl', 'Nod']], 'shy-meet': ['Happy', 'Nod'], eat: ['Happy'], 'full-refuse': ['Sigh', 'Shake'],
+  'full-eat': ['Happy'], hungry: ['Sad'], 'karp-gasp': ['Pain'], taunt: ['Angry', ['Appeal', 'Rumble', 'Pose']], 'move-annoy': ['Angry', 'Cringe'], puff: ['Angry', 'Swell'], sun: ['Happy', ['LookUp', 'DeepBreath']], moon: ['Inspired', 'LookUp'],
+  'sleep-move': ['Sigh'], snore: ['Normal'], 'drop-target': ['Surprised', 'Cringe'], 'wash-ing': ['Happy'], 'wash-no': ['Sigh', 'Shake'], shout: ['Shouting'], 'hoop-big': ['Worried', 'Cringe'], 'hoop-no': ['Worried'], 'follow-end': ['Happy', 'Nod'] };
+const EMO_SYM = { '!': 'Surprised', '!!': 'Surprised', '!?': 'Surprised', '?': 'Worried', '…?': 'Worried', '…': 'Sigh', '♪': 'Happy', '♪♪': 'Joyous', '♥': 'Joyous', '…♥': 'Happy', '💢': 'Angry', '😋': 'Happy', '💦': 'Worried', '✧': 'Happy', '★': 'Surprised' };
+function emoHook(m, text, sc) { if (!m) return; const E = EMO_SC[sc], e = E ? E[0] : EMO_SYM[text]; if (!e) return; m.emoE = e; m.emoT = performance.now();
+  if (E && E[1] && !(sc === 'idle-alone' && Math.random() < .5)) playX(m, E[1]);
+  if (dlgFaceM() === m) renderDlg(); }
+let FACE = null, faceP = null;
+const loadFace = () => faceP ||= fetch('face.json?v=1').then(r => r.ok ? r.json() : null).then(d => { FACE = d; try { renderDlg(); } catch (e) {} return d; }).catch(() => null);
+// 상태창 얼굴: 이 줄의 첫 포켓몬, 4초 안에 말풍선이 떴으면 그 표정 (없는 표정은 비슷한 표정 → 기본)
+const FACE_ON = false;   /* v16.61 경완 '저 포켓몬 얼굴이 아니야': 상태창 얼굴은 끔 (표정 데이터·코드는 남겨 둠, 필드 동작은 그대로) */
+function faceHtml(m) { if (!FACE_ON) return ''; if (!FACE) { loadFace(); return ''; } const k = String(m.sk || m.form), L = FACE.k[k]; if (!L) return '';
+  let e = m.state === 'sleep' ? 'Normal' : (m.emoT && performance.now() - m.emoT < 4000 ? m.emoE : 'Normal'); const has = n => L.includes(EMO_N.indexOf(n));
+  if (!has(e)) e = (EMO_ALT[e] || []).find(has) || 'Normal'; let i = L.indexOf(EMO_N.indexOf(e)); if (i < 0) i = 0;
+  return `<i class="dface${boxOf(m.pid)?.shiny ? ' shy' : ''}" style="background-image:url('face/${k}.png?v=1');background-position:${-i * 40}px 0"></i>`; }
+setInterval(() => { if (document.hidden || !S?.mons) return; const m = S.mons.find(o => { const k = o.sk || o.form, P = SPRITES[k]; return P && isPmd(k) && !P.mx && !P.mxNo && !MXP[k]; }); if (m) loadMx(m.sk || m.form); }, 2500);   /* 필드 포켓몬 동작 그림은 하나씩 천천히 미리 받아 둔다 */
+function dlgWho(a) { const L = a.who.map(u => S.mons.find(o => o.uid === u)).filter(Boolean); if (L.length < 2) return L[0] || null; const t = a.html.replace(/<[^>]+>/g, ''), at = o => { const i = t.indexOf(o.name); return i < 0 ? 1e9 : i; }; return L.reduce((p, o) => at(o) < at(p) ? o : p); }   /* 문장에 먼저 나오는 포켓몬 얼굴 */
+function dlgFaceM() { const pe = pinOf(), a = pe || S.log[0]; if (!a || !a.who?.length) return null; return dlgWho(a); }
 function baseAnim(m) {
   if (m.state === 'sleep') return m.act.classList.contains('doze') && m.sleepAge < 2.3 ? 'Idle' : 'Sleep';
   if (m.state === 'move') return m.up ? 'WalkUp' : 'Walk';
@@ -5495,6 +5551,7 @@ function drawSprite(m, dt) {
   } else { if (m.sprKey !== name) { m.sprKey = name; m.at = 0; } m.at += dt * (name === 'Eat' ? .75 : 1); t = m.at % total; }   // 먹는 동작은 천천히 오물오물
   if (f == null) { let acc = 0; f = durs.length - 1; for (let i = 0; i < durs.length; i++) { acc += durs[i] / 60; if (t < acc) { f = i; break; } } }
   if (m.backSit && name === 'WalkUp' && !m.one) f = 0;
+  if (m.vFr && !A[m.vFr[0]] && !P.mx) loadMx(m.sk || m.form);   /* v16.60: 친구 화면에서 새 동작을 하면 그 그림 받기 */
   let a2 = a; if (m.vFr && A[m.vFr[0]]) { name = m.vFr[0]; a2 = A[name]; f = Math.max(0, Math.min(m.vFr[1] | 0, a2[6].length - 1)); m.anName = name; }   // v15.72 놀러가기: 주인 화면과 같은 그림 칸
   const key = name + ':' + f;
   if (m.frameKey === key) return;
@@ -7289,7 +7346,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '16.59';   /* v16.59 경완: 랭킹의 내 줄 → 프로필 내 카드와 동일 */ /* v16.58 경완: 진화구슬 기술 5차 — 파도 큰 구슬도 뜸(무거울수록 천천히), 폭풍 더 세게, 용해액 방울 작게·안 녹는 구슬은 튕겨내는 막, 사이코 떠오르는 구슬도 밀림 */
+const APP_VER = '16.61';   /* v16.61 경완: 상태창 왼쪽 포켓몬 얼굴 끔 (필드 스프라이트 표정을 물어본 거였음) — 필드 새 동작은 그대로. */   /* v16.60 경완: 얼굴 표정·필드 동작 — 상태창 왼쪽에 문장 속 포켓몬 얼굴(말풍선 상황마다 기쁨·놀람·걱정·화남 등 표정, face/), 끄덕이기·올려다보기·포즈·춤·노래·깨어나기·움찔 등 원본 나머지 동작(mx/, 필드에 있는 포켓몬부터 하나씩 받아 둠)을 상호작용마다. */   /* v16.59 경완: 랭킹의 내 줄 → 프로필 내 카드와 동일 */ /* v16.60 경완: 진화구슬 기술 5차 — 파도 큰 구슬도 뜸(무거울수록 천천히), 폭풍 더 세게, 용해액 방울 작게·안 녹는 구슬은 튕겨내는 막, 사이코 떠오르는 구슬도 밀림 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
