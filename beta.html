@@ -735,7 +735,8 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}@media 
 .vtag{font-size:10px;padding:1px 5px;background:var(--frame);color:var(--win)}
 .vin:not(.own) .vtag{background:#a86a00}
 .shopwin .stab .shop-bar{margin-top:auto;min-height:87px;box-sizing:border-box;flex:none}   /* v7.28 경완: 구매 상자는 탭마다 항상 아래쪽 같은 자리 */
-.shop-bar{display:flex;align-items:center;gap:8px;margin-top:10px;border:3px solid var(--frame);background:var(--card);padding:8px}
+.shop-bar{display:flex;align-items:center;gap:8px;margin-top:10px;border:3px solid var(--frame);background:var(--card);padding:8px;position:relative}
+.shop-bar .sb-own{position:absolute;top:4px;right:6px;display:flex;align-items:center;gap:3px;font:12px var(--px);font-style:normal;color:var(--ink,#20202c);line-height:1}.shop-bar .sb-own svg{display:block}.shop-bar .sb-own b{font-weight:400}
 .sb-name{flex:1;min-width:0}.sb-bulk{display:flex;gap:4px;flex:none}.sb-bulk .lk-btn{padding-left:10px;padding-right:10px}.sb-name b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sb-name span{font-size:12px;color:var(--dim)}
 .shop-bar .lk-btn{padding:8px 10px;font-size:13px;flex:none}.shop-bar .lk-btn[disabled]{opacity:.5}
 @media (max-width:520px){.shop-inv{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -11119,10 +11120,11 @@ function setShopTab(t) {
 }
 // v9.01 경완: 상점 필드 탭 = 작업실에서 고른 필드 소품 (사면 가방 필드 탭으로)
 let fpSel = null;
+const sbOwn = n => `<i class="sb-own" aria-label="가방에 ${n | 0}개"><svg viewBox="0 0 12 12" width="14" height="14" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M4 0h4v1h1v2h1v1h1v7h-1v1H2v-1H1V4h1V3h1V1h1zM5 1v2h2V1z"/><path fill="#e8783c" d="M2 4h8v7H2z"/><path fill="#ffb27a" d="M2 4h8v1H2zM2 5h1v5H2z"/><path fill="#b8502a" d="M3 10h7v1H3zM9 5h1v5H9z"/><path fill="#20202c" d="M3 6h6v1H3zM3 7h1v2H3zM8 7h1v2H8zM3 9h6v1H3z"/><path fill="#ffd84a" d="M5 6h2v2H5z"/></svg><b>×${(n | 0).toLocaleString()}</b></i>`;   /* v16.97 경완: 가진 개수는 슬롯 대신 구매 상자 오른쪽 위에 가방 아이콘 × N */
 function renderFpShop() { const L = SHOP.field.filter(([k]) => fpInfo(k)).map((r, i) => [r, i]).sort((a, b) => (a[0][1] || 0) - (b[0][1] || 0) || a[1] - b[1]).map(a => a[0]), F = S.fbag || {};
-  $('#fpList').innerHTML = L.length ? L.map(([k, p]) => { const o = fpInfo(k); return `<button class="vin itm" data-fp="${esc(k)}" aria-current="${fpSel === k}"><span class="vpic"><img class="fpth" src="${o.src}" alt=""></span>${F[k] ? `<i class="icnt">${F[k]}</i>` : ''}<span class="vname">${esc(o.n)}</span><span class="vtag">${p.toLocaleString()}G</span>${shopNew('fashion', k) ? '<i class="vdot" aria-label="새로 들어옴"></i>' : ''}</button>`; }).join('') : '<p class="soon">아직 준비중입니다</p>';
+  $('#fpList').innerHTML = L.length ? L.map(([k, p]) => { const o = fpInfo(k); return `<button class="vin itm" data-fp="${esc(k)}" aria-current="${fpSel === k}"><span class="vpic"><img class="fpth" src="${o.src}" alt=""></span><span class="vname">${esc(o.n)}</span><span class="vtag">${p.toLocaleString()}G</span>${shopNew('fashion', k) ? '<i class="vdot" aria-label="새로 들어옴"></i>' : ''}</button>`; }).join('') : '<p class="soon">아직 준비중입니다</p>';
   const r = L.find(([k]) => k === fpSel), bar = $('#fpBar'); bar.hidden = !r; if (!r) return; const o = fpInfo(r[0]);
-  bar.innerHTML = `<img class="sb-pic fpth" src="${o.src}" alt=""><div class="sb-name"><b>${esc(o.n)}</b><span>${esc(o.d || '사면 가방 필드 탭에 들어가요. 맵 편집에서 필드에 놓을 수 있어요.')}</span></div><button class="lk-btn main" data-act="buy">구매</button>`; }
+  bar.innerHTML = sbOwn(F[r[0]]) + `<img class="sb-pic fpth" src="${o.src}" alt=""><div class="sb-name"><b>${esc(o.n)}</b><span>${esc(o.d || '사면 가방 필드 탭에 들어가요. 맵 편집에서 필드에 놓을 수 있어요.')}</span></div><button class="lk-btn main" data-act="buy">구매</button>`; }
 $('#fpList').addEventListener('click', e => { const v = e.target.closest('[data-fp]'); if (!v) return; sfx('tap'); shopSee('fashion', v.dataset.fp); fpSel = fpSel === v.dataset.fp ? null : v.dataset.fp; $('#fpMsg').textContent = ''; renderFpShop(); });
 $('#fpBar').addEventListener('click', e => { if (!e.target.closest('[data-act="buy"]')) return; const r = SHOP.field.find(([k]) => k === fpSel), o = r && fpInfo(r[0]), msg = $('#fpMsg'); if (!o) return;
   if (S.gold < r[1]) { msg.textContent = `골드가 ${(r[1] - S.gold).toLocaleString()}G 모자라요.`; sfx('wob'); return; }
@@ -11181,10 +11183,10 @@ const ART_FIT = new Map();
 function artFit(box) { box.querySelectorAll('img[data-fit]').forEach(im => { const go = () => { let f = ART_FIT.get(im.src); if (!f) { const w = im.naturalWidth, h = im.naturalHeight; if (!w) return; const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(im, 0, 0); const d = x.getImageData(0, 0, w, h).data; let x0 = w, y0 = h, x1 = -1, y1 = -1; for (let y = 0; y < h; y++) for (let i = 0; i < w; i++) if (d[(y * w + i) * 4 + 3] > 20) { if (i < x0) x0 = i; if (i > x1) x1 = i; if (y < y0) y0 = y; if (y > y1) y1 = y; } if (x1 < 0) return; const k = Math.min(3, .86 * Math.min(w / (x1 - x0 + 1), h / (y1 - y0 + 1))); f = { k, dx: (w / 2 - (x0 + x1 + 1) / 2) / w, dy: (h / 2 - (y0 + y1 + 1) / 2) / h }; ART_FIT.set(im.src, f); } im.style.transform = `scale(${f.k.toFixed(3)}) translate(${(f.dx * 100).toFixed(1)}%,${(f.dy * 100).toFixed(1)}%)`; }; if (im.complete) go(); else im.addEventListener('load', go, { once: true }); }); }
 function renderItems(k) {
   const I = itemsOf(), L = shopOrd(k, ITEMS.filter(o => o.k === k), o => o.id, o => (o.bulk ? 1e9 : 0) + itemPrice(o.id)), sel = itemSel[k];   // 경완 2026-11-03: 모으령 코인·멜탄 사탕(묶음 사는 것)은 맨 뒤로
-  $(`#${k}List`).innerHTML = L.map(o => `<button class="vin itm" data-it="${o.id}" aria-current="${sel === o.id}"><span class="vpic"><img src="${ITEM_ART[o.a]}" alt="" data-fit></span>${I[o.id] ? `<i class="icnt">${I[o.id]}</i>` : ''}<span class="vname">${o.n}</span><span class="vtag">${itemPrice(o.id).toLocaleString()}G</span>${shopNew(k, o.id) ? '<i class="vdot" aria-label="새로 들어옴"></i>' : ''}</button>`).join(''); artFit($(`#${k}List`));
+  $(`#${k}List`).innerHTML = L.map(o => `<button class="vin itm" data-it="${o.id}" aria-current="${sel === o.id}"><span class="vpic"><img src="${ITEM_ART[o.a]}" alt="" data-fit></span><span class="vname">${o.n}</span><span class="vtag">${itemPrice(o.id).toLocaleString()}G</span>${shopNew(k, o.id) ? '<i class="vdot" aria-label="새로 들어옴"></i>' : ''}</button>`).join(''); artFit($(`#${k}List`));
   const o = ITEM[sel], bar = $(`#${k}Bar`); bar.hidden = !o; if (!o) return;
   const left = o.k === 'item' ? fxLeft(o.id) : 0;
-  bar.innerHTML = `<img class="sb-pic" src="${ITEM_ART[o.a]}" alt=""><div class="sb-name"><b>${o.n}</b><span>${itemDesc(o)}${left ? ` · 남은 시간 ${Math.ceil(left / 60e3)}분` : ''}</span></div>`
+  bar.innerHTML = sbOwn(I[o.id]) + `<img class="sb-pic" src="${ITEM_ART[o.a]}" alt=""><div class="sb-name"><b>${o.n}</b><span>${itemDesc(o)}${left ? ` · 남은 시간 ${Math.ceil(left / 60e3)}분` : ''}</span></div>`
     + (o.bulk ? `<span class="sb-bulk">${[1, 10, 100].map(n => `<button class="lk-btn main" data-act="buy" data-n="${n}">${n}개</button>`).join('')}</span>` : `<button class="lk-btn main" data-act="buy">구매</button>`);   /* v10.11: 모아서 쓰는 도구는 10개·100개씩도 산다 */   /* v6.48 경완: 상점에선 쓰기 버튼 없이 구매만 (쓰기는 가방에서) */
 }
 for (const k of ['tool', 'item']) {
