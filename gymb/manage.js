@@ -556,7 +556,7 @@ function sfDetail(s) {
   const bar = (f, c) => `<i class="sd2-bar ${c || ''}"><i style="width:${Math.round(Math.max(0, Math.min(1, f)) * 100)}%"></i></i>`;
   const rib = K.inGym(s) ? `<i class="sfc-rib g">체육관${gi >= 0 ? ` ${gi + 1}번` : ''}</i>` : s.yard ? '<i class="sfc-rib y">훈련장 코치</i>' : '<i class="sfc-rib">대기 중</i>';
   /* v16.35~36 경완 '상세 카드 디자인 퀄': 위는 지원서처럼 배경 + 받침 위 전신과 자리 딱지, 아래는 라인업 · 막대가 있는 숫자 칸 */
-  const p = pop(`<div class="sd2"><div class="sd2-hero">${rib}${K.inGym(s) && s.yard ? '<i class="sfc-rib y sd2-rib2">훈련장 코치</i>' : ''}<img alt="" src="${K.trSrc(s.tr)}"><div class="sd2-nm"><small>${esc(s.cls)}</small><b>${esc(s.nm)}</b></div>${s.rest ? '<em class="sd2-rest">쉬는 중</em>' : ''}</div>
+  const p = pop(`<div class="sd2">${K.inGym(s) || !s.yard ? rib.replace('sfc-rib', 'sfc-rib sd2-corner') : ''}<div class="sd2-hero">${s.yard ? '<i class="sd2-coach">훈련장 코치</i>' : ''}<img alt="" src="${K.trSrc(s.tr)}"><div class="sd2-nm"><small>${esc(s.cls)}</small><b>${esc(s.nm)}</b></div>${s.rest ? '<em class="sd2-rest">쉬는 중</em>' : ''}</div>
     <div class="sd2-trt">${trtBox(s.trait, true)}</div>
     <p class="sd2-h">라인업 <small>평균 Lv.${lv}</small></p>
     <div class="sd2-team">${s.team.map(([sp, l]) => `<span><img alt="" data-sp="${sp}"><b>${esc(SPECIES[sp]?.n || '???')}</b><small>Lv.${l}</small></span>`).join('')}</div>
@@ -566,7 +566,7 @@ function sfDetail(s) {
       <div><span>월급</span><b class="pay">${s.wage.toLocaleString()}G</b><em>${s.rest ? '<b class="dn">밀렸어요</b>' : `7일마다 · <b>${dd}일 뒤</b>`}</em></div>
       <div><span>번 돈</span><b class="${eg >= s.wage ? 'up' : 'dn'}">${eg.toLocaleString()}G</b><em>최근 7일 · 오늘 ${tg.toLocaleString()}G</em></div>
       <div><span>고용</span><b>${s.hired ? `${Math.max(0, Math.floor((now - s.hired) / K.DAY)) + 1}일째` : '-'}</b><em>${s.lastE != null ? `지난주 ${s.lastE.toLocaleString()}G` : '첫 주예요'}</em></div></div>
-    <div class="gy-btns sd-btns${i > 0 ? '' : ' three'}"><button data-a="gym">${K.inGym(s) ? '자리 바꾸기' : '체육관에 배치'}</button><button data-a="yd" ${!s.yard && yN >= YARD_SF ? 'disabled' : ''}>${s.yard ? '코치 그만하기' : '코치 맡기기'}</button>
+    <div class="gy-btns sd-btns${i > 0 ? '' : ' three'}"><button data-a="gym">${K.inGym(s) ? '자리 바꾸기' : '체육관에 배치'}</button><button data-a="yd" ${s.yard ? 'class="sd2-in"' : !s.yard && yN >= YARD_SF ? 'disabled' : ''}>${s.yard ? '코치 빼기' : '코치 맡기기'}</button>
       ${i > 0 ? '<button data-a="up">순서 앞으로</button>' : ''}<button data-a="fire" class="danger">해고</button><button class="main" data-a="x" style="grid-column:1/-1">닫기</button></div></div>`,
     (a, close) => {
       if (a === 'x') return close();
