@@ -513,9 +513,13 @@ function sfPlace(s, back) {
   const map = $g('.gy-map'); let grid = map.querySelector('.gy-grid'); if (!grid) { grid = document.createElement('div'); grid.className = 'gy-grid'; map.appendChild(grid); }
   const draw = () => {
     renderHome(true); const me = sfList(g, D).find(z => z[0] === s);
-    grid.style.setProperty('--t', 16 * sc + 'px'); grid.innerHTML = me ? `<i class="gg-sel" style="left:${me[1] * 16 * sc}px;top:${me[2] * 16 * sc}px;width:${16 * sc}px;height:${16 * sc}px"></i>` : '';
+    grid.style.setProperty('--t', 16 * sc + 'px');
+    /* v16.76 경완 '자리 바꾸기 눌렀을 때 갈 수 있는 자리 은은하게': 설 수 있는 칸을 옅게 표시 */
+    const used = new Set([...sfList(g, D).filter(z => z[0] !== s).map(z => z[1] + ',' + z[2]), ...decoUsed(decoList(g, D))]), T = 16 * sc, cw = Math.ceil(map.scrollWidth / T), ch = Math.ceil(map.scrollHeight / T); let ok = '';
+    for (let y = 0; y < ch; y++) for (let x = 0; x < cw; x++) { if (me && me[1] === x && me[2] === y) continue; try { if (trTile(D, x, y, used)) ok += `<i class="gg-can" style="left:${x * T}px;top:${y * T}px;width:${T}px;height:${T}px"></i>`; } catch (e) {} }
+    grid.innerHTML = ok + (me ? `<i class="gg-sel" style="left:${me[1] * T}px;top:${me[2] * T}px;width:${T}px;height:${T}px"></i>` : '');
     $g('.gy-dlg').innerHTML = `<span class="gy-who">${sfName(s)} 자리 정하기</span><span class="gy-dsub">맵에서 설 칸을 누르세요. 길 옆에 서면 지나가는 도전자를 막아요.</span>
-      <div class="gy-dyn">${inGym(s) ? '<button class="gy-dbtn2" type="button" data-a="rm">체육관에서 빼기</button>' : ''}<button class="gy-dbtn2 main" type="button" data-a="ok">완료</button></div>`;
+      <div class="gy-dyn"><button class="gy-dbtn2 main" type="button" data-a="ok">완료</button></div>`;
   };
   ded.draw = draw;
   const done = (quiet) => { ded = null; root.classList.remove('ded'); $g('.gy-map .gy-grid')?.remove(); map.onclick = null; $g('.gy-dlg').onclick = null; renderHome(); if (!quiet) back?.(); };
