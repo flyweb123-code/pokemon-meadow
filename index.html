@@ -8754,6 +8754,7 @@ const itemEvos = P => (CHILDREN[P.sp] || []).filter(c => { const d = SPECIES[c];
 const toolEvos = P => !P || evoKids(P.sp, P).length ? [] : itemEvos(P).filter(x => evoNo(x) === null && (!SPECIES[x.c].rs || (P.km || 0) >= evoNeed(P)));
 // v16.04 경완: 지역 폼으로도 진화할 수 있는 종은 진화할 때 고른다 (도구가 없어도 선택지는 보임). 지역 돌은 짝꿍 거리도 채워야
 const evoMix = P => !!P && (RS_PAR.has(P.sp) || (CHILDREN[P.sp] || []).length > 1 && itemEvos(P).length > 0);   /* v16.08 경완: 도구 진화가 섞인 종은 진화하기 → 고르는 창 (도구 쓰기 버튼 없이) */
+const evoMixGo = P => evoMix(P) && ((P.km || 0) >= evoNeed(P) || evoChoices(P).some(x => x.ok));   /* v16.10 경완 '거리가 덜 찼으면 진화하기 버튼 꺼지는 게 맞다': 지금 되는 칸(천둥의돌 라이츄 등)이 없으면 꺼짐 */
 const evoChoices = P => (CHILDREN[P.sp] || []).filter(c => { const d = SPECIES[c]; return !(d.eqx && (d.eqx === 1 ? 'f' : 'm') !== P.sex); }).map(c => { const d = SPECIES[c], it = evoItem(c), need = evoNeed(P), km = P.km || 0, short = need - km;
   if (!it || it === 'link' && !d.ev) { const ok = km >= need && evoKids(P.sp, P, true).includes(c); return { c, km: 1, ok, why: ok ? '' : short > 0 ? `${fmtKm(short)}km 더` : evoWhy(c).replace(/ 진화해요$/, '') }; }
   const has = (itemsOf()[it] || 0) >= evoReq(c).n, no = evoNo({ c, it }), kmOk = !d.rs || short <= 0; return { c, it, km: d.rs ? 1 : 0, has, ok: has && no === null && kmOk, why: !kmOk ? `${fmtKm(short)}km 더` : no || '' }; });
@@ -10892,7 +10893,7 @@ function openPoke(id, dir = 0, quiet = false, noCry = false) {
 function setEvoBtn(btn, P) {
   const kids = CHILDREN[P.sp]; let cls = '', html = '진화하기', tip = '';
   if (!kids) { cls = 'fin'; html = `<span>같이 달린 거리</span><b>${fmtKm(P.runKm || 0)}</b><small>km</small>`; }
-  else if (evoMix(P)) { const C = evoChoices(P), need = evoNeed(P), km = P.km || 0; if (C.some(x => x.ok)) html = '<span>진화하기</span>'; else if (km < need && C.every(x => x.km)) { cls = 'dis km'; btn.style.setProperty('--p', Math.min(100, km / need * 100).toFixed(1) + '%'); html = `<span>진화하기</span><b>${fmtKm(km)}</b><small>/ ${need}km</small>`; } else { cls = 'spc'; html = `<span class="sp-tag">진화 고르기</span><span class="sp-why">${C.length}가지 모습으로 진화할 수 있어요</span>`; } }   /* v16.04 지역 폼으로도 진화하는 종: 누르면 고르는 창 */
+  else if (evoMix(P)) { const C = evoChoices(P), need = evoNeed(P), km = P.km || 0; if (C.some(x => x.ok)) html = '<span>진화하기</span>'; else if (km < need) { cls = 'dis km'; btn.style.setProperty('--p', Math.min(100, km / need * 100).toFixed(1) + '%'); html = `<span>진화하기</span><b>${fmtKm(km)}</b><small>/ ${need}km</small>`; } else { cls = 'spc'; html = `<span class="sp-tag">진화 고르기</span><span class="sp-why">${C.length}가지 모습으로 진화할 수 있어요</span>`; } }   /* v16.04 지역 폼으로도 진화하는 종: 누르면 고르는 창 */
   else if (toolEvos(P).length) { const o = ITEM[toolEvos(P)[0].it]; html = `<img class="evo-tl" src="${ITEM_ART[o.a]}" alt=""><span>진화하기</span>`; }   /* v8.88 경완: 특별한 진화 도구를 가졌으면 켜진 진화하기 (누르면 도구 쓸지 묻는다) */
   else if (!evoKids(P.sp, P).length) { cls = 'spc'; html = `<span class="sp-tag">특별한 진화</span><span class="sp-why">${esc(spWhy(P))}</span>`; }   /* 달린 거리로는 진화하지 않는 포켓몬: 힌트를 바로 보여 준다 */
   else if (!pokeReady(P)) { const ok = evoKids(P.sp, P), need = evoNeed(P), km = P.km || 0; cls = 'dis'; if (km < need) { cls = 'dis km'; btn.style.setProperty('--p', Math.min(100, km / need * 100).toFixed(1) + '%'); html = `<span>진화하기</span><b>${fmtKm(km)}</b><small>/ ${need}km</small>`; } else tip = evoWhy(ok[0]); }   /* v5.62 경완: 남은 거리는 말풍선 말고 버튼에 바로 */
@@ -10979,7 +10980,7 @@ $('#ppField').onclick = async () => {
     try { markNew(await spawn(P.sp, { pid: P.id })); } catch (e) {} if (boxFromSlot && S.mons.some(x => x.pid === P.id)) { refreshCap(); save(); closePoke(); setMgrTab('field'); return; } }
   refreshCap(); renderBox(); openPoke(P.id); save();
 };
-$('#ppEvoBtn').onclick = () => { const b = $('#ppEvoBtn'), P = boxOf(pokeId); if (evoMix(P)) return evoPick(P); if (P && toolEvos(P).length) return toolGo(P); if (b.classList.contains('spc') && P && itemEvos(P).length) return itemPop(P); if (b.classList.contains('dis') || b.classList.contains('fin')) return; evolvePoke(P); };
+$('#ppEvoBtn').onclick = () => { const b = $('#ppEvoBtn'), P = boxOf(pokeId); if (evoMix(P)) return evoMixGo(P) ? evoPick(P) : undefined; if (P && toolEvos(P).length) return toolGo(P); if (b.classList.contains('spc') && P && itemEvos(P).length) return itemPop(P); if (b.classList.contains('dis') || b.classList.contains('fin')) return; evolvePoke(P); };
 $('#ppItem').onclick = () => { const P = boxOf(pokeId); if (P) itemPop(P); };   // v5.75: 특수 진화 도구 쓰기
 $('#ppBud').onclick = () => {
   const P = boxOf(pokeId); if (!P) return;
@@ -11105,7 +11106,7 @@ function renderMgrDetail(rebuild) {
     const h = (P ? `<div class="ivs">${ivRows(P)}</div>`
       : '')
       + moveCard(m.sp, P?.fr || 0, (P?.fr || 0) >= FR_MAX) + (P ? '<button class="boxbtn evobtn" id="mEvo"></button>' : '');
-    if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; const eb = $('#mEvo'); if (eb) eb.onclick = () => { const Q = boxOf(m.pid); if (evoMix(Q)) return evoPick(Q); if (!Q || eb.classList.contains('dis') || eb.classList.contains('fin')) return; if (toolEvos(Q).length) return toolGo(Q); closeMon(); evolvePoke(Q); }; }
+    if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; const eb = $('#mEvo'); if (eb) eb.onclick = () => { const Q = boxOf(m.pid); if (evoMix(Q)) return evoMixGo(Q) ? evoPick(Q) : undefined; if (!Q || eb.classList.contains('dis') || eb.classList.contains('fin')) return; if (toolEvos(Q).length) return toolGo(Q); closeMon(); evolvePoke(Q); }; }
     if (P && $('#mEvo')) setEvoBtn($('#mEvo'), P); }
 }
 // v8.47 경완: 트레이너 이름이 나오는 상태·생각은 친밀도 단계로. v8.48 경완: 단계 = 하트 칸 수 (0~4칸, 5 = 만점) — 칸마다 생각 5개, 상태 5개
@@ -13366,7 +13367,7 @@ $('#buddy').addEventListener('click', e => {
   if (!a) { const c = e.target.closest('.bd-card'), b = c && S.buds[+c.dataset.i]; if (b && boxOf(b.pid)) { sfx('tap'); budPick = null; if (b.nw) { delete b.nw; save(); renderBuddy(); } ppBud = true; openPoke(b.pid); } return; }   // 짝꿍 칸을 누르면 그 포켓몬 정보 카드
   const i = +e.target.closest('[data-i]').dataset.i;
   if (a === 'pick') { budPick = i; setMgrTab('box'); }
-  else if (a === 'evo') { const P = boxOf(S.buds[i]?.pid); if (evoMix(P)) evoPick(P); else if (toolEvos(P).length) toolGo(P); else if (budReady(S.buds[i])) evolvePoke(P); }
+  else if (a === 'evo') { const P = boxOf(S.buds[i]?.pid); if (evoMix(P)) { if (evoMixGo(P)) evoPick(P); } else if (toolEvos(P).length) toolGo(P); else if (budReady(S.buds[i])) evolvePoke(P); }
   else if (S.buds[i]) { log(`${J({ name: SPECIES[S.buds[i].sp].n },'과/와')} 짝꿍을 해제했다.`); S.buds.splice(i, 1); save(); renderRun(); }
 });
 let eggSelI = 0;   // 선택한 부화기 칸 번호
@@ -13456,7 +13457,7 @@ function renderBuddy() {
     if (!m) return `<button class="bd-empty" data-act="pick" data-i="${s}" aria-label="짝꿍 추가">+</button>`;
     const P = boxOf(m.pid);
     return `<div class="bd-card${budKm(m) ? ' ready' : ''}${m.pid === budFocus ? ' focus' : ''}${tierOf(+m.sp) ? ' ' + tierOf(+m.sp) : ''}" data-i="${i}"><button class="bd-x" data-act="stop" aria-label="짝꿍에서 빼기">✕</button>${m.nw || budNew(m) ? '<i class="bd-new" aria-label="새 소식"></i>' : ''}<div class="bd-row"><div class="bd-pic${pkCls(P)}${P?.shiny ? ' shiny' : ''}" data-rk="${P ? rankOf(P) : ''}" style="--shue:${shinyHue(m.sp)}deg"><img alt="" src="${(P ? thumbP(P) : thumbOf(m.sp)) || ''}"><span class="bd-rk">${rkBadge(P)}</span></div><div class="bd-main"><span class="pk-tys bd-tys">${(SPECIES[m.sp]?.t || []).map(t => tyIcon(t).replace(/ data-tip="[^"]*"/, '')).join('')}</span><div class="bd-name"><b class="${tnCls(m.sp)}">${esc(P ? nameOf(P) : SPECIES[m.sp].n)}</b>${sexHtml(P?.sex)}${P?.shiny ? SH_ICO : ''}</div><div class="bd-ind">${indivHtml(m, true)}</div>`
-      + (!evoKids(m.sp, P).length && CHILDREN[m.sp] ? `<div><span class="bd-tag">특별한 진화</span> <span class="bd-why">${esc(evoMix(P) ? `${evoChoices(P).length}가지로 진화해요` : spWhy(P || m))}</span></div><div class="bd-sprow">${toolEvos(P).length || evoMix(P) ? '<button class="bd-evobtn" data-act="evo">진화하기</button>' : ''}<div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div></div>` : CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) || m.km < evoNeed(m) ? `<button class="bd-evobtn" data-act="evo"${budReady(m) || evoMix(P) ? '' : ' disabled'}>진화하기</button>` : `<span class="bd-why">${esc(evoWhy(evoKids(m.sp, P)[0]))}</span>`}</span><span><b>${fmtKm(Math.min(m.km, evoNeed(m)))}</b> / ${evoNeed(m)}km</span></div></div>` : `<div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>`)
+      + (!evoKids(m.sp, P).length && CHILDREN[m.sp] ? `<div><span class="bd-tag">특별한 진화</span> <span class="bd-why">${esc(evoMix(P) ? `${evoChoices(P).length}가지로 진화해요` : spWhy(P || m))}</span></div><div class="bd-sprow">${toolEvos(P).length || evoMix(P) ? `<button class="bd-evobtn" data-act="evo"${toolEvos(P).length || evoMixGo(P) ? '' : ' disabled'}>진화하기</button>` : ''}<div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div></div>` : CHILDREN[m.sp] ? `<div class="bd-evo"><div class="prog evo"><i style="width:${Math.min(100, m.km / evoNeed(m) * 100)}%"></i></div><div class="row"><span>${budReady(m) || m.km < evoNeed(m) ? `<button class="bd-evobtn" data-act="evo"${budReady(m) || evoMixGo(P) ? '' : ' disabled'}>진화하기</button>` : `<span class="bd-why">${esc(evoWhy(evoKids(m.sp, P)[0]))}</span>`}</span><span><b>${fmtKm(Math.min(m.km, evoNeed(m)))}</b> / ${evoNeed(m)}km</span></div></div>` : `<div class="bd-runkm">같이 달린 거리 <b>${fmtKm(P?.runKm || 0)}</b>km</div>`)
       + `</div></div></div>`;
   }).join('');
   const be = $('#buddy'); if (be.dataset.h === bh) return; be.dataset.h = bh; be.innerHTML = bh;   /* 바뀐 게 없으면 다시 그리지 않는다 (테두리 빛이 처음부터 다시 돌지 않게) */
