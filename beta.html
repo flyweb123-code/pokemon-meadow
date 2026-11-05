@@ -3628,7 +3628,7 @@ function anim(m, cls) { m.act.classList.remove('hop', 'phop', 'shake', 'emerge',
 // ---------- create ----------
 async function spawn(sp, opts = {}) {
   await ensureSprite(sp);
-  const sx = opts.pid != null ? (boxOf(opts.pid)?.sex || '') : (opts.sex ?? rollSex(sp)), key = fKey(sp, sx);
+  const sx = opts.pid != null ? (boxOf(opts.pid)?.sex || '') : (opts.sex ?? rollSex(sp)), f0 = opts.pid != null ? fmOf(boxOf(opts.pid), sp) : '', key = f0 && await fmLoad(sp + '~' + f0) ? sp + '~' + f0 : fKey(sp, sx);
   const d = await measure(key); makeStill(sp);
   // 같은 종이 여러 마리여도 이름에 번호를 붙이지 않는다 (예전 저장의 '피카츄 2' 도 '피카츄' 로)
   const nm0 = opts.name && opts.name.replace(/ \d+$/, '') === DEX[sp].n ? DEX[sp].n : opts.name;
@@ -5429,9 +5429,12 @@ function healArrive(m, o) {
   setState(m, 'idle', 2);
 }
 function setForm(m, sp) {
-  const apply = d => { m.form = sp; m.sk = fKey(sp, sexOf(m)); m.w = d.w * scaleOf(m.sk); m.h = d.h * scaleOf(m.sk); m.img.width = m.w; m.img.height = m.h; if (!isPmd(sp)) { m.img.src = SPRITES[sp]; m.curSrc = SPRITES[sp]; } setMode(m); shadowFit(m); };
-  if (SPRITES[sp] && dims[fKey(sp, sexOf(m))]) apply(dims[fKey(sp, sexOf(m))]);
-  else ensureSprite(sp).then(() => { makeStill(sp); return measure(fKey(sp, sexOf(m))); }).then(apply);
+  const P = m.pid != null ? boxOf(m.pid) : null, f = P && fmOf(P, sp), fk = f && sp + '~' + f;   /* v16.74 폼 그림 */
+  if (fk && typeof SPRITES[fk] !== 'object') fmLoad(fk).then(ok => { if (ok && m.form === sp && m.el?.isConnected) setForm(m, sp); });
+  const K = fk && typeof SPRITES[fk] === 'object' ? fk : fKey(sp, sexOf(m));
+  const apply = d => { m.form = sp; m.sk = K; m.w = d.w * scaleOf(m.sk); m.h = d.h * scaleOf(m.sk); m.img.width = m.w; m.img.height = m.h; if (!isPmd(sp)) { m.img.src = SPRITES[sp]; m.curSrc = SPRITES[sp]; } setMode(m); shadowFit(m); };
+  if (SPRITES[sp] && dims[K]) apply(dims[K]);
+  else ensureSprite(sp).then(() => { makeStill(sp); return measure(K); }).then(apply);
   m.el.classList.toggle('ditto', sp !== m.sp);
 }
 function revert(m) {
@@ -7376,7 +7379,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '16.73';   /* v16.73 경완: 머리·등·배 위에 올라타는 상호작용을 원본 몸 부위표(머리·몸 가운데) 자리에 맞춤, 태워 주는 포켓몬 동작 따라 자리도 따라감. */   /* v16.72 경완: 진화구슬도 골드(모든 미니게임), 사이코키네시스 2초 고정·뜨는 동안 안 합쳐짐, 진화구슬 패시브 = 랭크별 특성 (F 픽업 골드, E 프렌드가드 친밀도, D 대운, C 위협, B 싱크로, A 프레셔, S 자력), 사이코키네시스 무게(큰 구슬일수록 덜 뜸) */   /* v16.71 경완: 훈련 일지 하루씩 넘기기·코치가 가르쳤다, 훈련 현황 누적, 라인업 박스 뺌 */ /* v16.70 경완: 다른 방향 그림 — 걷는 쪽 따라 아래·옆·위 모습(오른쪽은 뒤집기), 마주 보고 얘기할 땐 옆모습. 몸 부위 위치표로 말풍선을 머리 위에. */   /* v16.69 경완: 원본 그림자 — 종마다 작게·보통·크게 도트 타원, 동작 그림마다 그림자 자리가 몸을 따라감(shd.json). */   /* v16.68 경완: 훈련 일지 문장·머리 맞춤, 빼기, 홈 트레이너 카드 통일 */ /* v16.67 경완: 지원서 없음 화면 메일 아이콘 뺌, 고용 관리 탭을 왼쪽으로 */ /* v16.66 경완: 트레이너 상세카드 딱지·발판·코치 빼기 */ /* v16.65 경완: 청결·즐거움·배부름이 셋 다 0 인 포켓몬은 가끔 멈춰서 움찔. */   /* v16.64 경완: 놀랄 때 움찔 동작 뺌, 둘이 붙을 때(싸움·박치기) 중간중간 아파함, 쓰다듬은 뒤엔 빙글·깡총 대신 포즈(포즈 그림 있는 종). */   /* v16.63 경완: 트레이너 상세카드 레이아웃·기록 정리 */ /* v16.64 경완: 체육관 내 캐릭터 상세카드 등급별 디자인 */ /* v16.61 경완: 상태창 왼쪽 포켓몬 얼굴 끔 (필드 스프라이트 표정을 물어본 거였음) — 필드 새 동작은 그대로. */   /* v16.60 경완: 얼굴 표정·필드 동작 — 상태창 왼쪽에 문장 속 포켓몬 얼굴(말풍선 상황마다 기쁨·놀람·걱정·화남 등 표정, face/), 끄덕이기·올려다보기·포즈·춤·노래·깨어나기·움찔 등 원본 나머지 동작(mx/, 필드에 있는 포켓몬부터 하나씩 받아 둠)을 상호작용마다. */   /* v16.59 경완: 랭킹의 내 줄 → 프로필 내 카드와 동일 */ /* v16.60 경완: 진화구슬 기술 5차 — 파도 큰 구슬도 뜸(무거울수록 천천히), 폭풍 더 세게, 용해액 방울 작게·안 녹는 구슬은 튕겨내는 막, 사이코 떠오르는 구슬도 밀림 */
+const APP_VER = '16.74';   /* v16.74 경완: 폼 257가지(66종) 필드 그림 — 본가 기준: 안농·비비용·플라베베·마휘핑 등은 태어날 때 무작위, 루가루암은 진화 시각, 시키지카는 계절, 도구·배틀 폼은 그림만. */   /* v16.73 경완: 머리·등·배 위에 올라타는 상호작용을 원본 몸 부위표(머리·몸 가운데) 자리에 맞춤, 태워 주는 포켓몬 동작 따라 자리도 따라감. */   /* v16.72 경완: 진화구슬도 골드(모든 미니게임), 사이코키네시스 2초 고정·뜨는 동안 안 합쳐짐, 진화구슬 패시브 = 랭크별 특성 (F 픽업 골드, E 프렌드가드 친밀도, D 대운, C 위협, B 싱크로, A 프레셔, S 자력), 사이코키네시스 무게(큰 구슬일수록 덜 뜸) */   /* v16.71 경완: 훈련 일지 하루씩 넘기기·코치가 가르쳤다, 훈련 현황 누적, 라인업 박스 뺌 */ /* v16.70 경완: 다른 방향 그림 — 걷는 쪽 따라 아래·옆·위 모습(오른쪽은 뒤집기), 마주 보고 얘기할 땐 옆모습. 몸 부위 위치표로 말풍선을 머리 위에. */   /* v16.69 경완: 원본 그림자 — 종마다 작게·보통·크게 도트 타원, 동작 그림마다 그림자 자리가 몸을 따라감(shd.json). */   /* v16.68 경완: 훈련 일지 문장·머리 맞춤, 빼기, 홈 트레이너 카드 통일 */ /* v16.67 경완: 지원서 없음 화면 메일 아이콘 뺌, 고용 관리 탭을 왼쪽으로 */ /* v16.66 경완: 트레이너 상세카드 딱지·발판·코치 빼기 */ /* v16.65 경완: 청결·즐거움·배부름이 셋 다 0 인 포켓몬은 가끔 멈춰서 움찔. */   /* v16.64 경완: 놀랄 때 움찔 동작 뺌, 둘이 붙을 때(싸움·박치기) 중간중간 아파함, 쓰다듬은 뒤엔 빙글·깡총 대신 포즈(포즈 그림 있는 종). */   /* v16.63 경완: 트레이너 상세카드 레이아웃·기록 정리 */ /* v16.64 경완: 체육관 내 캐릭터 상세카드 등급별 디자인 */ /* v16.61 경완: 상태창 왼쪽 포켓몬 얼굴 끔 (필드 스프라이트 표정을 물어본 거였음) — 필드 새 동작은 그대로. */   /* v16.60 경완: 얼굴 표정·필드 동작 — 상태창 왼쪽에 문장 속 포켓몬 얼굴(말풍선 상황마다 기쁨·놀람·걱정·화남 등 표정, face/), 끄덕이기·올려다보기·포즈·춤·노래·깨어나기·움찔 등 원본 나머지 동작(mx/, 필드에 있는 포켓몬부터 하나씩 받아 둠)을 상호작용마다. */   /* v16.59 경완: 랭킹의 내 줄 → 프로필 내 카드와 동일 */ /* v16.60 경완: 진화구슬 기술 5차 — 파도 큰 구슬도 뜸(무거울수록 천천히), 폭풍 더 세게, 용해액 방울 작게·안 녹는 구슬은 튕겨내는 막, 사이코 떠오르는 구슬도 밀림 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -12642,6 +12645,7 @@ function tickMoves(real) {
 }
 function newPoke(sp, o = {}) {
   const p = { id: S.eid++, sp, iv: Array.from({ length: 6 }, () => Math.floor(Math.random() * 32)), shiny: o.shiny ?? Math.random() < SHINY_RATE, fr: 0, t: Date.now(), sex: o.sex ?? rollSex(sp), rv: 1 };
+  { const f = o.fm ?? rollFm(sp); if (f) p.fm = f; }   /* v16.74 폼 */
   if (o.g) p.g = o.g; if (o.place) p.place = o.place; if (p.shiny) setTimeout(shPrepOwned, 0);
   S.box.push(p); boxSort = 'new'; boxDir = 1; try { localStorage.setItem('pk-box-sort', 'new'); localStorage.setItem('pk-box-dir', 1); } catch (e) {}   /* 새 포켓몬이 들어오면 상자는 날짜 최신순 */
   return p;
@@ -12653,7 +12657,27 @@ const sexOf = m => (m.pid != null ? boxOf(m.pid)?.sex : m.sex) || '';
 const sexHtml = x => x === 'f' ? '<b class="sx f">♀</b>' : x === 'm' ? '<b class="sx m">♂</b>' : '';
 // 암컷 모습이 따로 있는 종(피카츄 꼬리 하트 등)은 암컷 스프라이트 'NNf'
 const fKey = (sp, x) => x === 'f' && SPRITES[sp + 'f'] ? sp + 'f' : sp;
-const thumbP = P => thumbOf(fKey(P.sp, P.sex));
+// v16.74 경완 '폼 약 260개 적용, 폼 나오는 기준은 본가 기준': 필드 그림(fm/<번호>~<폼>.json, tools/mkpmdfm.py). 상자 P.fm = 폼 이름 ('' = 기본 모습)
+//   태어날 때 무작위(본가에서 무작위·지역마다 다른 폼): 안농 글자·도롱충이/도롱마담 망토·깝질무/트리토돈 동쪽·배쓰나이 파랑·비비용 무늬·플라베베 꽃색·호바귀/펌킨인 크기·춤추새·스트린더·마휘핑·싸리용
+//   진화할 때: 루가루암 = 진화한 시각(17시 황혼, 18~5시 한밤중, 낮 한낮), 우라오스 = 반반, 파밀리쥐 = 1% 세 식구. 시키지카·바라철록 = 지금 계절(실제 달)
+//   본가에서 도구·배틀·날씨로 바뀌는 폼(로토무 가전·아르세우스 플레이트·캐스퐁·달마모드 등)은 그림만 받아 두고 지금은 기본 모습
+const FMI = {"25":["Libre","Cosplay"],"150":["Shadow"],"172":["Spiky"],"201":["B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Exclamation","Question"],"249":["Shadow"],"351":["Sunny","Rainy","Snowy"],"352":["Purple"],"386":["Attack","Defense","Speed"],"412":["Sand","Trash"],"413":["Sand","Trash"],"421":["Sunshine"],"422":["East"],"423":["East"],"479":["Heat","Wash","Frost","Fan","Mow","Drone"],"483":["Origin"],"484":["Origin"],"487":["Origin"],"492":["Sky"],"493":["Bug","Dark","Dragon","Electric","Fighting","Fire","Flying","Ghost","Grass","Ground","Ice","Poison","Psychic","Rock","Steel","Water","Fairy","Question_Mark"],"550":["Blue","White"],"555":["Zen"],"585":["Summer","Autumn","Winter"],"586":["Summer","Autumn","Winter"],"645":["Therian"],"646":["Black","White"],"648":["Pirouette"],"649":["Douse","Shock","Burn","Chill"],"666":["Icy_Snow","Polar","Tundra","Continental","Garden","Elegant","Modern","Marine","Archipelago","High_Plains","Sandstorm","River","Monsoon","Savannah","Sun","Ocean","Jungle","Fancy","Pokeball"],"669":["Yellow","Orange","Blue","White"],"670":["Yellow","Orange","Blue","White","Eternal"],"671":["Yellow","Orange","Blue","White"],"676":["Kabuki"],"681":["Blade"],"710":["Small","Large","Super"],"711":["Super"],"716":["Neutral"],"718":["10","Complete"],"720":["Unbound"],"741":["Pom_Pom","Pa_U","Sensu"],"745":["Midnight","Dusk"],"746":["School"],"773":["Fighting","Flying","Poison","Ground","Rock","Bug","Ghost","Steel","Fire","Water","Grass","Electric","Psychic","Ice","Dragon","Dark","Fairy"],"774":["Red","Orange","Yellow","Green","Blue","Indigo","Violet"],"778":["Busted"],"800":["Ultra"],"801":["Original"],"840":["No_Apple"],"849":["Lowkey"],"869":["Berry_Sweet","Love_Sweet","Star_Sweet","Clover_Sweet","Flower_Sweet","Ribbon_Sweet","Ruby_Cream_Strawberry_Sweet","Ruby_Cream_Berry_Sweet","Ruby_Cream_Love_Sweet","Ruby_Cream_Star_Sweet","Ruby_Cream_Clover_Sweet","Ruby_Cream_Flower_Sweet","Ruby_Cream_Ribbon_Sweet","Matcha_Cream_Strawberry_Sweet","Matcha_Cream_Berry_Sweet","Matcha_Cream_Love_Sweet","Matcha_Cream_Star_Sweet","Matcha_Cream_Clover_Sweet","Matcha_Cream_Flower_Sweet","Matcha_Cream_Ribbon_Sweet","Mint_Cream_Strawberry_Sweet","Mint_Cream_Berry_Sweet","Mint_Cream_Love_Sweet","Mint_Cream_Star_Sweet","Mint_Cream_Clover_Sweet","Mint_Cream_Flower_Sweet","Mint_Cream_Ribbon_Sweet","Lemon_Cream_Strawberry_Sweet","Lemon_Cream_Berry_Sweet","Lemon_Cream_Love_Sweet","Lemon_Cream_Star_Sweet","Lemon_Cream_Clover_Sweet","Lemon_Cream_Flower_Sweet","Lemon_Cream_Ribbon_Sweet","Salted_Cream_Strawberry_Sweet","Salted_Cream_Berry_Sweet","Salted_Cream_Love_Sweet","Salted_Cream_Star_Sweet","Salted_Cream_Clover_Sweet","Salted_Cream_Flower_Sweet","Salted_Cream_Ribbon_Sweet","Ruby_Swirl_Strawberry_Sweet","Ruby_Swirl_Berry_Sweet","Ruby_Swirl_Love_Sweet","Ruby_Swirl_Star_Sweet","Ruby_Swirl_Clover_Sweet","Ruby_Swirl_Flower_Sweet","Ruby_Swirl_Ribbon_Sweet","Caramel_Swirl_Strawberry_Sweet","Caramel_Swirl_Berry_Sweet","Caramel_Swirl_Love_Sweet","Caramel_Swirl_Star_Sweet","Caramel_Swirl_Clover_Sweet","Caramel_Swirl_Flower_Sweet","Caramel_Swirl_Ribbon_Sweet","Rainbow_Swirl_Strawberry_Sweet","Rainbow_Swirl_Berry_Sweet","Rainbow_Swirl_Love_Sweet","Rainbow_Swirl_Star_Sweet","Rainbow_Swirl_Clover_Sweet","Rainbow_Swirl_Flower_Sweet","Rainbow_Swirl_Ribbon_Sweet"],"870":["Brass","Trooper"],"875":["Noice"],"877":["Hangry"],"888":["Crowned_Sword"],"889":["Crowned_Shield"],"892":["Rapid_Strike"],"901":["Bloodmoon"],"905":["Therian"],"924":["Shirt","Pants"],"925":["Three","Baby"],"964":["Hero"],"978":["Stretchy","Droopy"],"999":["Roaming"],"1003":["Temp"],"1008":["Low_Power"],"1017":["Wellspring","Hearthflame","Cornerstone","Teal_Mask","Wellspring_Mask","Hearthflame_Mask","Cornerstone_Mask"],"1024":["Terastal"]};
+const FM_RND = { 201: 1, 412: 1, 413: 1, 422: 1, 423: 1, 550: ['Blue'], 666: ['Icy_Snow', 'Polar', 'Tundra', 'Continental', 'Garden', 'Elegant', 'Modern', 'Marine', 'Archipelago', 'High_Plains', 'Sandstorm', 'River', 'Monsoon', 'Savannah', 'Sun', 'Ocean', 'Jungle'], 669: 1, 670: ['Yellow', 'Orange', 'Blue', 'White'], 671: 1, 710: 1, 711: 1, 741: 1, 849: 1, 869: 1, 978: 1 };
+function rollFm(sp) { const R = FM_RND[sp], L = R === 1 ? FMI[sp] || [] : R || []; if (!L.length) return '';
+  if (sp === 710 || sp === 711) { const r = Math.random(); return r < .1 && L.includes('Super') ? 'Super' : r < .4 && L.includes('Small') ? 'Small' : r < .7 && L.includes('Large') ? 'Large' : ''; }   // 크기: 보통이 가장 흔하고 특대는 드물게
+  if (sp === 849) return Math.random() < .48 ? 'Lowkey' : '';   // 성격 25가지 중 12가지가 로우폼
+  const i = Math.floor(Math.random() * (L.length + 1)); return i < L.length ? L[i] : ''; }
+function evoFm(to, fm) { if (fm && FMI[to]?.includes(fm)) return fm; const h = new Date().getHours();
+  if (to === 745) return h === 17 ? 'Dusk' : h >= 18 || h < 6 ? 'Midnight' : '';
+  if (to === 892) return Math.random() < .5 ? 'Rapid_Strike' : ''; if (to === 925) return Math.random() < .01 ? 'Three' : ''; return FM_RND[to] ? rollFm(to) : ''; }
+const fmSeason = () => { const mo = new Date().getMonth() + 1; return mo >= 6 && mo <= 8 ? 'Summer' : mo >= 9 && mo <= 11 ? 'Autumn' : mo === 12 || mo <= 2 ? 'Winter' : ''; };
+function fmOf(P, sp = P?.sp) { if (!P) return ''; if (sp === 585 || sp === 586) return fmSeason(); const f = sp === P.sp ? P.fm : ''; return f && FMI[sp]?.includes(f) ? f : ''; }
+const FMP = {};
+function fmLoad(k) { if (typeof SPRITES[k] === 'object') return Promise.resolve(true); return FMP[k] ||= fetch(`fm/${k}.json?v=1`).then(r => r.ok ? r.json() : null).then(d => { if (d) SPRITES[k] = d; return !!d; }).catch(() => { delete FMP[k]; return false; }); }
+// 상자 포켓몬의 그림 열쇠: 폼 그림을 받았으면 폼, 아직이면 받으면서 기본(암컷) 모습
+const pKey = (P, sp = P.sp) => { const f = fmOf(P, sp), k = f && sp + '~' + f; if (k) { if (typeof SPRITES[k] === 'object') return k; fmLoad(k); } return fKey(sp, P.sex); };
+setTimeout(() => { for (const P of S.box || []) { const f = fmOf(P); if (f) fmLoad(P.sp + '~' + f); } }, 1500);
+const thumbP = P => thumbOf(pKey(P));
 const nameOf = P => P.nm || SPECIES[P.sp].n;
 const onField = id => S.mons.some(m => m.pid === id);
 function addFr(id, n) { const p = boxOf(id); if (p && n > 0) { const f0 = p.fr || 0; p.fr = Math.min(255, f0 + n); frMaxHit(p, f0); } }
@@ -13982,7 +14006,7 @@ async function evolve(m) {
   let gap = 520, now = to;
   while (gap > 60) { setForm(m, now); now = now === to ? from : to; await wait(gap); gap *= .84; }
   m.sp = to; setForm(m, to); m.el.classList.remove('ditto');
-  { const P = boxOf(m.pid), b = S.buds.find(x => x.pid === m.pid); if (P) { P.sp = to; P.km = 0; } if (b) { b.sp = to; b.km = 0; } }
+  { const P = boxOf(m.pid), b = S.buds.find(x => x.pid === m.pid); if (P) { const ef = evoFm(to, P.fm); if (ef) P.fm = ef; else delete P.fm; P.sp = to; P.km = 0; } if (b) { b.sp = to; b.km = 0; } }
   await wait(500);
   m.el.classList.remove('evo'); veil.classList.remove('on');
   for (let i = 0; i < 3; i++) setTimeout(() => ring(m.x, m.y - m.h / 2), i * 180);
@@ -14359,6 +14383,7 @@ async function evolveWin(P, card, forceTo, tool) {   // tool: 쓴 도구 id → 
   await wait(180);
   evoMusicFade(1.2);
   const newTo = !S.unlocked.has(dxK(to)); if (newTo) addGold(NEW_G);
+  { const ef = evoFm(to, P.fm); if (ef) P.fm = ef; else delete P.fm; }   /* v16.74: 진화하면 폼 이어받기 (본가 기준) */
   P.sp = to; P.km = 0; if (b) { b.sp = to; b.km = 0; } unlock(to, true); if (S.evoPend?.pid === P.id) S.evoPend = null;
   const fr0 = P.fr || 0; P.fr = Math.min(FR_MAX, fr0 + (EVO_FR[Math.min(2, evoStage(to))] || EVO_FR[1])); frMaxHit(P, fr0);   // 진화하면 친밀도가 오른다 (첫 진화 30, 두 번째 60)
   { const m = S.mons.find(x => x.pid === P.id); if (m) { m.sp = to; setForm(m, to); m.el.classList.remove('ditto'); if (m.name === fromN || m.name.startsWith(fromN + ' ')) { m.name = m.name.replace(fromN, toN); m.tag.textContent = m.name; } } }   // 필드에 있던 포켓몬도 새 모습으로
