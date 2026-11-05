@@ -6769,7 +6769,7 @@ function renderInfo() {
   if (box.dataset.uid !== String(m.uid)) {
     box.dataset.uid = m.uid; queueMicrotask(() => { try { mirrorPf(); } catch (e) {} });   /* v8.16 경완: 정보카드를 열 때 그림 칸이 다음 프레임까지 비어 1프레임 안 보이던 것 — 그리기 전에 바로 채운다 */
     // 다른 포켓몬 정보창과 같은 차림: 랭크(좌상단) · 이름/분류/만난 곳 · 청결~친밀도 · 친구/상태/생각
-    box.innerHTML = `<div class="dp-head m-head"><span class="bud-tag" id="infoBud" role="button" hidden>짝꿍</span><button class="inf-bud" id="infBudGo" hidden>짝꿍으로</button><span class="inf-acts"><button class="inf-ico" id="infGame" aria-label="미니게임">${ICO_JOY}</button><button class="inf-ico" id="infWash" aria-label="씻기기">${ICO_BRUSH}</button><button class="inf-ico" id="infHoop" aria-label="후프링 넘기">${ICO_HOOP}</button><button class="inf-ico" id="infPet" aria-label="쓰다듬기">${ICO_HAND}</button><button class="inf-ico" id="infFeed" aria-label="나무열매 주기">${ICO_BERRY}</button></span></div>
+    box.innerHTML = `<div class="dp-head m-head"><span class="bud-tag" id="infoBud" role="button" hidden>짝꿍</span><button class="inf-bud" id="infBudGo" hidden>짝꿍으로</button><span class="inf-acts"><button class="inf-ico" id="infGame" aria-label="미니게임">${ICO_JOY}</button><button class="inf-ico" id="infHoop" aria-label="후프링 넘기">${ICO_HOOP}</button><button class="inf-ico" id="infWash" aria-label="씻기기">${ICO_BRUSH}</button><button class="inf-ico" id="infPet" aria-label="쓰다듬기">${ICO_HAND}</button><button class="inf-ico" id="infFeed" aria-label="나무열매 주기">${ICO_BERRY}</button></span></div>
       <div class="ihead"><div class="ih-top${tnCls(m.sp)}">${nameEdit('iName', m.name, sexOf(m))}${P?.shiny ? SH_ICO : ''}<span class="ih-r">${tyIcons(m.sp)}${esc(d.g || '')}</span></div></div>
       <div class="pbody"><div class="pf" id="pPf" data-rk="${P ? rankOf(P) : ''}"><div class="pf-in"></div><div class="pf-in"></div><span class="pf-rk">${rkBadge(P)}</span><span class="pf-z"></span></div><div class="bars" id="pbars"></div></div>
       <div class="memo" id="pMemo"></div>
@@ -7281,7 +7281,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '16.53';   /* v16.53 경완: 진화구슬 기술 3차 — 폭풍 밑 가운데서 방사형, 용해액 구슬 위로 흘러 라이츄 단계 이하 녹임, 돌 다시 그림, 고스트 점선 앞에, 파도 점선까지·무게별 둥실, 방전 세게, 사이코 무조건 띄움, 버튼 취소는 그냥 원래대로, 도둑질 소리, 알림창 고정, 꾹 눌러 옮기기 빨리 */
+const APP_VER = '16.54';   /* v16.54 경완: 타이어 그네처럼 기둥·타이어가 따로 된 소품도 '타기' 테두리가 다 빛남, 상세카드 후프 버튼을 씻기기 왼쪽으로, 너무 큰 포켓몬이 난감해할 때도 자고 있었으면 깸. */   /* v16.53 경완: 진화구슬 기술 3차 — 폭풍 밑 가운데서 방사형, 용해액 구슬 위로 흘러 라이츄 단계 이하 녹임, 돌 다시 그림, 고스트 점선 앞에, 파도 점선까지·무게별 둥실, 방전 세게, 사이코 무조건 띄움, 버튼 취소는 그냥 원래대로, 도둑질 소리, 알림창 고정, 꾹 눌러 옮기기 빨리 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7600,7 +7600,7 @@ const Visit = (() => {
       if (fr.length && d < bd) { bd = d; best = { i, s: fr[0] }; } });
     return best; }
   let rbT = 0, rdHot = '', idleClean = 0;
-  let rdGE = null; const rdGlow = e => { if (rdGE && rdGE !== e) rdGE.classList.remove('rdGlow'); rdGE = e || null; rdGE?.classList.add('rdGlow'); };
+  let rdGE = []; const rdGlow = e => { const L = e ? [e, ...[...itemsEl.querySelectorAll('.prop.scmb')].filter(q => q.CO && q.CO === e.LV)] : []; rdGE.forEach(q => { if (!L.includes(q)) q.classList.remove('rdGlow'); }); rdGE = L; L.forEach(q => q.classList.add('rdGlow')); };   /* v16.50 경완 '타이어 그네 테두리 안 보임': 그네는 기둥·타이어·가로대가 따로 된 그림(scmb, .CO) → 다 같이 빛 */
   function rdClear() { const b = qs('.vride'); if (b) b.hidden = true; if (rdHot) { rdHot = ''; rdGlow(null); } }
   function rdBtn(now) { if (now - rbT < 150) return; rbT = now; const b = qs('.vride');
     if (b) { const n = me && pad && !pad.hidden && !me.rd ? rdNear() : null, show = !!(n || (me?.rd && pad && !pad.hidden)); b.hidden = !show; if (show) b.querySelector('span').textContent = me.rd ? '내리기' : '타기';
@@ -7675,7 +7675,7 @@ const Visit = (() => {
   const HD = 14, HX = 12, HOOP_JOY = 6;
   // v16.48 경완: 상세카드 후프 버튼 — 그 포켓몬만 와서 넘음 (링보다 크면 난감해함)
   V.hoopOne = m => { if (!me || !m) return; sfx('tap'); try { haptic(0); } catch (e) {} try { select(null); } catch (e) {}
-    if ((m.h || 40) > 50) { m.bub.classList.remove('feed'); emote(m, '💦', '', 2.6, 'hoop-big'); monSay(m, `${J(m, '은/는')} 후프링 구멍이 너무 작아서 난감해하는 것 같다.`, true); return; }
+    if ((m.h || 40) > 50) { if (m.state === 'sleep' || !awake(m)) wake(m, `${J(m, '이/가')} 후프링 소리에 눈을 떴다.`); m.bub.classList.remove('feed'); emote(m, '💦', '', 2.6, 'hoop-big'); monSay(m, `${J(m, '은/는')} 후프링 구멍이 너무 작아서 난감해하는 것 같다.`, true); return; }
     if (m.held || m.hidden || m.evolving || m.camp || m.state === 'eat' || T(m).mv === 'swim' || isFish(m.sp)) { m.bub.classList.remove('feed'); emote(m, '…', '', 1.8, 'hoop-no'); monSay(m, `${J(m, '은/는')} 지금은 후프링을 넘을 수 없는 것 같다.`, true); return; }
     /* v16.49 경완 '자는 중이나 놀고 있을 때도 후프링이 우선': 깨우고 하던 놀이를 끊고 바로 후프로 */
     if (m.partner) { const o = m.partner; m.partner = null; o.partner = null; o.scene = null; o.special = null; if (S.mons.includes(o) && ['interact', 'special'].includes(o.state)) setState(o, 'idle', 1); }
