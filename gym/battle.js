@@ -950,6 +950,8 @@ const MV_REP = { 1: ['tackle', 'hypervoice', 'growl'], 2: ['brickbreak', 'aurasp
 // 원본 대본에서 포켓몬 그림 조작(어둡게·늘이기 등)이 빠져 소리만 나던 기술 31개에 비슷한 움직임을 더한다 (경완 2026-10-28 '나이트헤드 연출이 없음')
 // [종류, 시각(1/30초), …] — f 색 덮기 [대상, 색, 세기(16), 길이] / k 흔들기 [대상, x, y, 간격, 횟수] / m 움직임 [대상, x, y, 프레임] / z 늘이기 [대상, 가로, 세로, 길이] / e 불꽃 [대상, 길이]
 const MFX_ADD = {
+  psychic: [['y', 3, 'd', 27, 9], ['f', 6, 'd', '#e070d0', 9, 22]],   /* v16.20 경완 '사이코키네시스 효과가 없네': 본가처럼 맞는 쪽이 일렁이고 분홍 빛 */
+  confusion: [['y', 3, 'd', 21, 6]],
   nightshade: [['f', 6, 'a', '#201830', 16, 30], ['e', 24, 'ad', 16], ['f', 40, 'd', '#000', 14, 16], ['k', 40, 'd', 3, 0, 1, 5]],
   constrict: [['f', 2, 'd', '#c8a060', 10, 16], ['z', 2, 'd', .85, 1, 16], ['k', 6, 'd', 2, 0, 1, 5]],
   magnitude: [['k', 0, 'bg', 4, 2, 1, 10], ['k', 0, 'd', 4, 0, 1, 10]],
@@ -982,7 +984,7 @@ const MFX_ADD = {
   trickroom: [['k', 0, 'bg', 2, 2, 1, 8]],
 };
 function mfxAdd() { for (const [k, L] of Object.entries(MFX_ADD)) { const v = MFX[k]; if (!v) continue;
-  (Array.isArray(v[0]) ? v : [v]).forEach(A => { if (A.added) return; A.added = 1; A[1].push(...L); A[0] = Math.max(A[0], ...L.map(e => e[1] + (e[0] === 'k' ? (e[5] + 1) * e[6] * 2 : e[0] === 'e' ? e[3] : e[0] === 'z' ? e[5] : e[0] === 'f' ? e[5] : e[5] || 4))); }); } }
+  (Array.isArray(v[0]) ? v : [v]).forEach(A => { if (A.added) return; A.added = 1; A[1].push(...L); A[0] = Math.max(A[0], ...L.map(e => e[1] + (e[0] === 'k' ? (e[5] + 1) * e[6] * 2 : e[0] === 'e' || e[0] === 'y' ? e[3] : e[0] === 'z' ? e[5] : e[0] === 'f' ? e[5] : e[5] || 4))); }); } }
 // 본가 연출이 어색한 기술은 다른 기술 연출로 (경완 2026-10-30 '세차게 휘두르기 모션 물기라서 어색해' → 몸을 휘둘러 치는 힘껏치기)
 const MV_SUB = { thrash: 'slam' };
 const MV_LIKE = { falsesurrender: 'feintattack', honeclaws: 'sharpen', poweruppunch: 'megapunch', jetpunch: 'machpunch', ragefist: 'shadowpunch', plasmafists: 'thunderpunch', brutalswing: 'thrash' };   /* v14.91 경완 '세차게휘두르기가 물기 모션': 몸을 휘두르는 난동부리기 연출로 */   /* v14.08 경완 '손톱갈기 모션 어색': 악 타입 변화 대표(나쁜음모 검은 기운) 대신 같은 '갈아서 날 세우기' 기술인 각지기 연출 */
@@ -1039,6 +1041,8 @@ async function moveFx(s, id, miss) {
       } else if (k === 'e') emit(e[2], s, col, Math.max(10, e[3]) * F);
       else if (k === 'h') monEl(side(e[2])).style.visibility = e[3] ? 'hidden' : '';
       else if (k === 'z') { const c = monEl(side(e[2])).querySelector('.clip'); c.style.transformOrigin = '50% 100%'; c.animate([{ transform: 'none' }, { transform: `scale(${e[3]},${e[4]})` }, { transform: 'none' }], { duration: e[5] * F }); }
+      else if (k === 'y') { const c = monEl(side(e[2])).querySelector('.clip'), a = e[4] || 8, cyc = 8 * F; c.style.transformOrigin = '50% 70%';   /* 일렁임: 좌우로 기울며 위아래로 출렁 (염동력) */
+        c.animate([{ transform: 'none' }, { transform: `skewX(${a}deg) scale(${1 + a / 120},${1 - a / 160})` }, { transform: 'none' }, { transform: `skewX(${-a}deg) scale(${1 - a / 120},${1 + a / 160})` }, { transform: 'none' }], { duration: cyc, iterations: Math.max(1, Math.round(e[3] * F / cyc)), easing: 'ease-in-out' }); }
       else if (k === 'w') { const d = $b('.bt-dim'); d.style.background = col; d.style.setProperty('--fd', 8 * F + 'ms'); d.style.opacity = e[2] ? .35 : 0; }
       res();
     }, t)));
