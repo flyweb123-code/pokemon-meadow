@@ -15,7 +15,7 @@ self.addEventListener('fetch', e => {
   const u = new URL(e.request.url);
   if (e.request.method !== 'GET' || u.origin !== location.origin) return;
   if (u.pathname.includes('/studio/') || u.pathname.includes('/config/')) return;   // 작업실과 배포 데이터는 늘 네트워크로
-  if (/\/s\d+\.json$/.test(u.pathname) || /\.png$/.test(u.pathname)) {
+  if (/\/s\d+\.json$/.test(u.pathname) || /\/mx\/[^/]+\.json$/.test(u.pathname) || /\/face\.json$/.test(u.pathname) || /\.png$/.test(u.pathname)) {   // v16.60: 추가 동작(mx/)·얼굴 표정(face/)도 한 번 받으면 기기에 담아 둠
     e.respondWith(caches.open(CACHE).then(async c => (await c.match(e.request)) || fetch(e.request).then(r => { if (r.ok) c.put(e.request, r.clone()); return r; })));
   } else if (e.request.mode === 'navigate' && !u.pathname.includes('/studio/')) {   // 작업실(/studio/) 화면은 게임 첫 화면으로 담지 않는다
     const pg = /beta\.html$/.test(u.pathname) ? 'beta.html' : 'index.html';   // 베타 판은 따로 담는다
