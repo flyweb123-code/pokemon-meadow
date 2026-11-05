@@ -61,7 +61,7 @@ function tickTrain(now) {
       const step = Math.min(1, left), tot = perHour(P) * step + (e.fx || 0), n = Math.floor(tot); e.fx = tot - n;
       e.fa = (e.fa || 0) + step * trFr(P); while (e.fa >= 1) { e.fa -= 1; if ((P.fr || 0) < 255) { P.fr = Math.min(255, (P.fr || 0) + 1); R.f += 1; } }   /* 필드처럼 쌓이다 1이 차면 +1 */
       if (n > 0) { e.x = (e.x || 0) + n; R.x += n; GB().gainXp(P, n).learned.forEach(([id]) => { got.push(GB().mvKo(id)); (e.mv = e.mv || []).push(id); R.mv.push(id); }); }
-      e.acc = (e.acc || 0) + step; while (e.acc >= 1) { e.acc -= 1; if (Math.random() < .05) { const x = special(P); if (x) { (e.mv = e.mv || []).push(x[0]); R.mv.push(x[0]); } if (x) K.awMv?.(P.id, x[0], x[1], x[2]); if (x) K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '이' : '가'} 훈련장에서 특별한 기술 <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 익혔다! <small>기술 바꾸기에서 쓸 수 있어요</small>`, now); } }
+      e.acc = (e.acc || 0) + step; while (e.acc >= 1) { e.acc -= 1; if (Math.random() < .05) { const x = special(P); if (x) { (e.mv = e.mv || []).push(x[0]); R.mv.push(x[0]); if (st().sf.some(s => s.yard && !s.rest)) (R.cm = R.cm || []).push(x[0]); else (R.sm = R.sm || []).push(x[0]); }   /* v16.71 경완: 코치 덕에 배운 기술은 일지에 '코치가 가르쳤다' */ if (x) K.awMv?.(P.id, x[0], x[1], x[2]); if (x) K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '이' : '가'} 훈련장에서 특별한 기술 <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 익혔다! <small>기술 바꾸기에서 쓸 수 있어요</small>`, now); } }
     }
     R.lv += GB().gm(P).lv - lvA; R.to = GB().gm(P).lv; }
     const lv = GB().gm(P).lv;
@@ -453,17 +453,19 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
   const P = boxOf(id); if (!P) return; const m = GB().gm(P), ph = perHour(P), g = GB().growth(P.sp), need = GB().xpAt(g, m.lv + 1) - GB().xpAt(g, m.lv);
   const a0 = GB().xpAt(g, m.lv), r = m.lv >= GB().LV_MAX ? 1 : clampN(((m.xp ?? a0) - a0) / Math.max(1, need), 0, 1);
   const e = st().tr.find(x => x.id === P.id), lf = e ? Math.max(0, Math.ceil(leftOf(e))) : 0, mx = m.lv >= GB().LV_MAX, today = K.dayStart(Date.now()), T = trLog(P.id)[today] || { h: 0, x: 0, lv: 0, f: 0, mv: [] };
+  /* v16.71 경완 '훈련 일지 옆 통합 점수를 앞 화면 박스에, 오늘 훈련 → 훈련 현황': 훈련 일지 전체를 더한 값 */
+  const TT = Object.values(trLog(P.id)).reduce((a, d) => { a.d++; a.x += d.x; a.lv += d.lv; a.f += d.f; a.mv.push(...d.mv); return a; }, { d: 0, x: 0, lv: 0, f: 0, mv: [] });
   /* v16.41 경완: 레벨 옆 ▲ 딱지 빼고 훈련 중 / 오늘 훈련 끝만. 숫자 칸 넷 대신 '오늘 훈련' 상자(경험치·레벨·친밀도·새 기술) → 누르면 날짜별 훈련 일지. 기술 버튼 둘은 빼고 체육관 상세카드처럼 '기술 바꾸기 ›' */
   const p = pop(`<div class="tp2">${trHead(P, true)}
-    <div class="tp2-today" role="button" tabindex="0"><span class="tp2-th"><b>오늘 훈련</b><small>${Math.floor(T.h)}/8시간 · 훈련 일지 ›</small></span>
-      <span class="tp2-g"><span><small>경험치</small><b>+${T.x.toLocaleString()}</b></span><span><small>레벨</small><b class="${T.lv ? 'up' : ''}">${T.lv ? `▲${T.lv}` : '-'}</b></span><span><small>친밀도</small><b class="${T.f ? 'fr' : ''}">${T.f ? `+${T.f}` : '-'}</b></span>${T.mv.length ? `<button type="button" class="tp2-mvc" data-a="${T.mv.length > 1 ? 'mvs' : 'i' + T.mv[0]}"><small>새 기술</small><b class="mv">${T.mv.length}개 ›</b></button>` : '<span><small>새 기술</small><b>-</b></span>'}</span>
-      ${T.mv.length ? `<span class="tp2-mvs">${mvChips(T.mv)}</span>` : ''}</div>
+    <div class="tp2-today" role="button" tabindex="0"><span class="tp2-th"><b>훈련 현황</b><small>${TT.d}일 · 오늘 ${Math.floor(T.h)}/8시간 · 훈련 일지 ›</small></span>
+      <span class="tp2-g"><span><small>경험치</small><b>+${TT.x.toLocaleString()}</b></span><span><small>레벨</small><b class="${TT.lv ? 'up' : ''}">${TT.lv ? `▲${TT.lv}` : '-'}</b></span><span><small>친밀도</small><b class="${TT.f ? 'fr' : ''}">${TT.f ? `+${TT.f}` : '-'}</b></span>${TT.mv.length ? `<button type="button" class="tp2-mvc" data-a="${TT.mv.length > 1 ? 'mvs' : 'i' + TT.mv[0]}"><small>새 기술</small><b class="mv">${TT.mv.length}개 ›</b></button>` : '<span><small>새 기술</small><b>-</b></span>'}</span>
+      ${TT.mv.length ? `<span class="tp2-mvs">${mvChips(TT.mv)}</span>` : ''}</div>
     <div class="mp-mvh"><small>기술</small><button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button></div>
     <div class="mp-moves mp-line">${m.mv.map(x => GB().mvOf(x)).filter(Boolean).map(x => GB().mvRow(x, 'i' + x[0])).join('')}</div>
     <div class="gy-btns tp2-btns"><button data-a="out" class="danger">빼기</button><button class="main" data-a="x">닫기</button></div></div>`,
     (a, close) => { if (!a) return; if (a[0] === 'i' && a.length > 1) return GB().mvInfo(a.slice(1));
       if (a === 'mv') return GB().movesPop(P, () => { redraw(); trPop(id, p); });   // v14.43 경완: 기술 창이 떠 있는 동안 뒤에 창 그대로
-      if (a === 'mvs') return mvListPop(T.mv);
+      if (a === 'mvs') return mvListPop(TT.mv);
       close();
       if (a === 'out') { tickTrain(Date.now()); st().tr = st().tr.filter(e => e.id !== P.id); K.save(); redraw(); } });
   p.querySelector('.tp2-today').onclick = ev => { if (ev.target.closest('button')) return; sfx('tap'); trLogPop(P, p); };   /* 상자 = 훈련 일지, 안의 새 기술 = 기술 창 */
@@ -484,12 +486,20 @@ function trLogPop(P, from) {
     const ln = [`<li class="tl-s x">경험치가 <b>${d.x.toLocaleString()}</b> 올랐다!</li>`];
     if (up) ln.push(`<li class="tl-s up">레벨이 올랐다! ${d.to ? `Lv.${d.to - d.lv} → <b>Lv.${d.to}</b>` : `<b>▲${d.lv}</b>`}</li>`);
     if (d.f) ln.push(`<li class="tl-s fr">친밀도가 <b>${d.f}</b> 올랐다!</li>`);
-    d.mv.forEach(id => ln.push(`<li class="tl-s mv">새로운 기술 ${mvChips([id])}${K.jong(GB().mvKo(id)) ? '을' : '를'} 배웠다!</li>`));
-    return `<li class="${up ? 'lvup' : ''}${mv ? ' newmv' : ''}"><div class="tl-d"><b>${t.getMonth() + 1}월 ${t.getDate()}일</b><small>${WD[t.getDay()]}${k === today ? ' · 오늘' : ''}</small><i>${Math.floor(d.h)}시간 훈련</i></div><ul class="tl-ss">${ln.join('')}</ul></li>`; };
+    d.mv.forEach(id => { const j = K.jong(GB().mvKo(id)) ? '을' : '를'; ln.push((d.cm || []).includes(id) ? `<li class="tl-s mv cm">코치가 새로운 기술 ${mvChips([id])}${j} 가르쳤다!</li>` : (d.sm || []).includes(id) ? `<li class="tl-s mv">훈련장에서 특별한 기술 ${mvChips([id])}${j} 익혔다!</li>` : `<li class="tl-s mv">새로운 기술 ${mvChips([id])}${j} 배웠다!</li>`); });
+    return `<li class="${up ? 'lvup' : ''}${mv ? ' newmv' : ''}"><div class="tl-d"><small>${Math.floor(d.h)}시간 훈련했다.</small></div><ul class="tl-ss">${ln.join('')}</ul></li>`; };
+  /* v16.71 경완 '훈련 일지는 날짜별로 좌우 화살표로 넘겨서': 하루 한 장, ◀ 전날 · ▶ 다음날, 옆으로 밀어도 넘어감 */
+  let i = 0;
+  const page = () => { const k = ks[i], t = new Date(k);
+    return ks.length ? `<div class="jn-nav tl-nav"><button type="button" data-mv="1" ${i >= ks.length - 1 ? 'disabled' : ''} aria-label="전날">◀</button><b>${t.getMonth() + 1}월 ${t.getDate()}일 <small>(${WD[t.getDay()]})</small>${k === today ? '<i class="jn-today">오늘</i>' : ''}</b><button type="button" data-mv="-1" ${i <= 0 ? 'disabled' : ''} aria-label="다음날">▶</button></div>
+      <ul class="tl-list">${row(k)}</ul><p class="tl-pg">${ks.length - i} / ${ks.length}일</p>` : '<p class="gy-msg tl-none">아직 훈련 기록이 없어요.<br>훈련한 만큼 날마다 여기에 쌓여요.</p>'; };
   const p = pop(`<div class="tl-pop">${trHead(P)}
-    <div class="mp-mvh tl-h"><small>훈련 일지</small><small class="tl-sum">${ks.length}일 · 경험치 +${tot.x.toLocaleString()}${tot.lv ? ` · <b class="up">레벨 ▲${tot.lv}</b>` : ''}${tot.mv ? ` · <b class="mv">새 기술 ${tot.mv}개</b>` : ''}</small></div>
-    ${ks.length ? `<ul class="tl-list">${ks.map(row).join('')}</ul>` : '<p class="gy-msg tl-none">아직 훈련 기록이 없어요.<br>훈련한 만큼 날마다 여기에 쌓여요.</p>'}
+    <div class="mp-mvh tl-h"><small>훈련 일지</small></div><div class="tl-body">${page()}</div>
     <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div></div>`, (a, close) => { if (a === 'x') return close(); if (a && a[0] === 'i') GB().mvInfo(a.slice(1)); });
+  const bd = p.querySelector('.tl-body');
+  bd.addEventListener('click', ev => { const b = ev.target.closest('[data-mv]'); if (!b || b.disabled) return; ev.stopPropagation(); sfx('tap'); i = Math.max(0, Math.min(ks.length - 1, i + +b.dataset.mv)); bd.innerHTML = page(); });
+  let sx = null; bd.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+  bd.addEventListener('touchend', e => { if (sx == null) return; const dx = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(dx) < 50) return; bd.querySelector(`[data-mv="${dx > 0 ? 1 : -1}"]`)?.click(); });
   GB().fillTh?.(p); if (from) p.classList.add('tl-wrap');   /* 뒤 상세카드 위에 겹쳐 떠서 배경이 두 번 어두워지던 것 → 겹친 창은 배경을 안 깔고 그대로 */
   const fw = from?.querySelector('.win'), w = p.querySelector('.win'); if (fw && w) { const r = fw.getBoundingClientRect(); w.style.width = r.width + 'px'; w.style.height = r.height + 'px'; w.style.maxWidth = 'none'; }   /* 상세카드와 같은 크기 */
 }
