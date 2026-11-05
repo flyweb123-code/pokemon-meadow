@@ -491,7 +491,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
     // 지난번 이후 걸은 거리를 만보기에서 읽는다 (만보기는 최근 7일치만 갖고 있다)
     // at: 걸은 곳 좌표 (작업실 지도의 출현 지역 확인용). 위치를 모르면 nil
     private func sync(place: String?, tags: [String] = [], at: CLLocationCoordinate2D? = nil) {
-        detectRuns()
+        // detectRuns()  2026-11-05 경완 '런닝 기록 개념 빼기': 달리기 구간도 그냥 만보기 거리(움직인 거리)로 이미 들어간다
         WatchWalk.shared.sync()   // 워치만 차고 걸은 거리 (아이폰이 잠겨 있으면 건강 앱을 못 읽어 다음에)
         guard !busy, CMPedometer.isDistanceAvailable() else { return }
         busy = true
