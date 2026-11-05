@@ -581,7 +581,7 @@ function aiChoice(btl, diff) {
 // 관장·사천왕·챔피언·라이벌(music 이 gymBattle·champ·rival)은 어두운 화면에 트레이너 얼굴 띠가 미끄러져 들어온다.
 // 끝나면 배틀 화면을 그 밑에 띄우고 돌려준 함수로 전환 화면을 걷는다.
 async function encounter(opts) {
-  const host = el.parentElement || document.body, w = document.createElement('div'), big = ['gymBattle', 'champ', 'rival', 'tenno'].includes(opts.music);
+  const host = el.parentElement || document.body, w = document.createElement('div'), big = ['gymBattle', 'champ', 'rival', 'tenno', 'hgGymJ', 'hgGymK', 'hgRival', 'hgChamp'].includes(opts.music);
   w.className = 'bt-enc'; host.append(w);
   for (let i = 0; i < 2; i++) { w.classList.add('flash'); await wait(90); w.classList.remove('flash'); await wait(120); }
   if (opts.exam) {   // 승급 심사 (경완 2026-10-31 '배틀 시작할 때 연출도 웅장하게'): 암전 → 금빛 띠 → 빛줄기 속 배지 → '승급 심사' → 심사관 띠
@@ -627,6 +627,7 @@ async function run(opts) {
   await Promise.all([loadData(), loadSim()]);
   if (!el) buildUI(); fit();
   const my = opts.my.map(myEntry), foeT = opts.foe.team;
+  if (opts.foe.hold != null) try { foeItems(foeT, opts.foe.hold); } catch (e) {}   // 도전자 지닌 도구 (v16.89)
   const btl = new PSim.Battle({ formatid: 'gen9customgame', seed: [1, 2, 3, 4].map(() => Math.floor(Math.random() * 65536)) });
   btl.setPlayer('p1', { name: '관장', team: my.map(psSet) });
   btl.setPlayer('p2', { name: opts.foe.nm, team: foeT.map(psSet) });
@@ -635,7 +636,7 @@ async function run(opts) {
   B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null }, li: 0, practice: !!opts.practice, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {} };
   frHooks(btl); B.picks = [];
   const meF = GA.trOf().sex === 'f';
-  const music = opts.music || 'train'; const winM = music === 'train' ? 'winTrain' : music === 'champ' ? 'winChamp' : music === 'tenno' ? 'winTenno' : 'winGym'; M('prep', winM);   // v16.88: 사천왕·챔피언은 그 승리 곡
+  const music = opts.music || 'train'; const winM = opts.win || (music === 'train' ? 'winTrain' : music === 'champ' ? 'winChamp' : music === 'tenno' ? 'winTenno' : 'winGym'); M('prep', winM);   /* v16.89: 이름 있는 트레이너는 그 버전 승리 곡 (opts.win) */   // v16.88: 사천왕·챔피언은 그 승리 곡
   // 곡이 준비된 뒤에 연출 시작 (경완 2026-10-28 '시작 연출이랑 BGM 타이밍이 안 맞음'): 처음 만드는 곡이면 기다림, 최대 4초
   await Promise.race([(async () => { try { await window.GymBGM?.play(music, { fade: .05 }); } catch (e) {} })(), wait(4000)]);
   const encDone = await encounter(opts);
@@ -1527,6 +1528,40 @@ const HOLD = {
   colburberry: ["마코열매", 2000, "악 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0],
   roseliberry: ["로셀열매", 2000, "페어리 타입 기술에 효과가 굉장하게 맞을 때 먹고 대미지를 반으로 줄인다.", 0]
 };
+// 도전자 지닌 도구 (v16.89 경완 '도전자들도 지닌 도구 활용, 난이도 어려워질수록 도구 활용 잘하고')
+// 0 쉬움: 셋 중 하나꼴로 아무 도구 / 1 보통: 대부분 무난한 도구 (자속 타입 강화·자뭉열매·먹다남은음식) / 2 어려움: 모두가 역할에 맞는 도구, 팀 안에서 겹치지 않게
+const TY_ORD = ['Normal', 'Fighting', 'Flying', 'Poison', 'Ground', 'Rock', 'Bug', 'Ghost', 'Steel', 'Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Ice', 'Dragon', 'Dark', 'Fairy'];
+const TY_IT = Object.fromEntries(TY_ORD.map((t, i) => [t, Object.keys(HOLD).find(k => HOLD[k][3] === i + 1)]));
+const TY_BERRY = Object.fromEntries(TY_ORD.map((t, i) => [t, ['chilan', 'chople', 'coba', 'kebia', 'shuca', 'charti', 'tanga', 'kasib', 'babiri', 'occa', 'passho', 'rindo', 'wacan', 'payapa', 'yache', 'haban', 'colbur', 'roseli'][i] + 'berry']));
+function foeItems(team, tier) {
+  const dx = PSim.Dex, used = new Set(), r = Math.random;
+  team.forEach(o => {
+    if (o.it) return;
+    const sp = dx.species.get(o.fm || D.sp[o.sp]?.id || String(o.sp)); if (!sp?.exists) return;
+    const mv = (o.mv || []).map(m => dx.moves.get(m)).filter(m => m.exists), atk = mv.filter(m => m.category !== 'Status'), bs = sp.baseStats;
+    const stab = atk.filter(m => sp.types.includes(m.type)).sort((a, b) => (b.basePower || 0) - (a.basePower || 0))[0] || atk[0];
+    let L;
+    if (!tier) { if (r() > .35) return; L = [pick(['oranberry', 'oranberry', 'quickclaw', 'brightpowder', 'kingsrock', 'cheriberry', 'pechaberry', TY_IT[pick(TY_ORD)]])]; }
+    else if (tier === 1) { if (r() > .75) return; L = [r() < .55 && stab ? TY_IT[stab.type] : r() < .5 ? 'sitrusberry' : 'leftovers', 'sitrusberry', 'oranberry']; }
+    else {
+      const ab = toID(o.ab), phys = atk.filter(m => m.category === 'Physical').length >= atk.filter(m => m.category === 'Special').length;
+      const off = phys ? bs.atk : bs.spa, bulk = bs.hp + bs.def + bs.spd, set = mv.some(m => m.id in MV_SETUP), heal = mv.some(m => m.flags?.heal || /recover|roost|softboiled|slackoff|moonlight|synthesis|morningsun|milkdrink|rest|wish/.test(m.id));
+      const w4 = TY_ORD.find(t => dx.getImmunity(t, sp.types) && dx.getEffectiveness(t, sp.types) >= 2);
+      L = [];
+      if (ab === 'guts' && !sp.types.includes('Fire')) L.push('flameorb');
+      if (ab === 'poisonheal') L.push('toxicorb');
+      if (sp.nfe) L.push('eviolite');
+      if (heal || (bulk >= 270 && atk.length <= 2)) L.push(sp.types.includes('Poison') ? 'blacksludge' : 'leftovers');
+      if (atk.length === 4 && mv.length === 4) { if (bs.spe >= 70 && bs.spe <= 100 && off >= 90) L.push('choicescarf'); L.push(phys ? 'choiceband' : 'choicespecs'); if (bs.hp + bs.spd >= 160) L.push('assaultvest'); }
+      if (set || off >= 100) L.push('lifeorb');
+      if (w4) L.push(TY_BERRY[w4]);
+      if (bs.def >= 100 && phys === false) L.push('rockyhelmet');
+      if (set) L.push('sitrusberry');
+      L.push('expertbelt', stab ? TY_IT[stab.type] : 'sitrusberry', 'lumberry', 'sitrusberry', 'leftovers', phys ? 'muscleband' : 'wiseglasses', 'shellbell', 'scopelens');
+    }
+    o.it = L.find(k => k && HOLD[k] && (!tier || !used.has(k))) || null; if (o.it) used.add(o.it);
+  });
+}
 // 상점·창고 분류 (경완 2026-10-31 '민트처럼 항목 분류')
 const IT_CAT = [['heal', '회복', ['leftovers', 'blacksludge', 'shellbell']], ['atk', '공격 강화', ['choiceband', 'choicespecs', 'lifeorb', 'expertbelt', 'muscleband', 'wiseglasses', 'metronome']],
   ['def', '방어·스피드', ['choicescarf', 'assaultvest', 'eviolite', 'rockyhelmet', 'focusband', 'lightclay']], ['acc', '명중·급소', ['scopelens', 'widelens', 'zoomlens', 'brightpowder', 'kingsrock', 'quickclaw']],
