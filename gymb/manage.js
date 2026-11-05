@@ -480,6 +480,8 @@ setInterval(() => document.querySelectorAll('.cv-left[data-exp]').forEach(e => {
 /* v16.35 경완 '지원서·고용 관리 없을 때 문구 화면 중앙 정렬 줄나눔 가독성': 그림 + 굵은 한 줄 + 설명 두 줄, 남은 자리 한가운데 */
 const SF_IC = { mail: '<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#383848" d="M1 3h14v11H1z"/><path fill="#fffdf4" d="M2 4h12v9H2z"/><path fill="#383848" d="M3 5h1v1H3zM4 6h1v1H4zM5 7h1v1H5zM6 8h1v1H6zM7 9h2v1H7zM9 8h1v1H9zM10 7h1v1h-1zM11 6h1v1h-1zM12 5h1v1h-1z"/><path fill="#e84a3a" d="M7 10h2v2H7z"/></svg>',
   crew: '<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#383848" d="M5 1h6v1h1v4h-1v1H5V6H4V2h1zM3 8h10v1h1v6H2V9h1z"/><path fill="#ffd8b0" d="M5 3h6v3H5z"/><path fill="#e84a3a" d="M5 2h6v1H5z"/><path fill="#4a7ad8" d="M3 9h10v5H3z"/><path fill="#fffdf4" d="M7 9h2v3H7z"/></svg>' };
+/* v16.40 경완 '오늘 630G인데 이번 주 90G?': 이번 주(s.eg)는 월급날에 0으로 돌아가서 오늘보다 작을 수 있었다 → 둘 다 일지(g.days)에서 오늘 / 최근 7일(오늘 포함)로 */
+const sfEarn = x => { const g = st(), nm = `${x.cls} ${x.nm}`, t0 = K.dayStart(Date.now()); let d1 = 0, d7 = 0; try { K.dayRec(); } catch (e) {} for (const [k, d] of Object.entries(g.days || {})) { const v = d?.sf?.[nm]?.g || 0; if (!v) continue; const kk = +k; if (kk === t0) d1 += v; if (kk > t0 - 7 * K.DAY) d7 += v; } return [d1, d7]; };
 const sfFace = x => `<div class="sf-face"><i class="sfc-base"></i><img alt="" src="${K.trSrc(x.tr)}"></div>`;
 const sfEmpty = (ic, t, d) => `<div class="sf-void"><span class="sf-void-ic">${SF_IC[ic]}</span><b>${t}</b><p>${d}</p></div>`;
 function drawStaff() {
@@ -496,13 +498,13 @@ function drawStaff() {
       ${C.length > 1 ? `<div class="cv-dots">${C.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : ''}`
       : sfEmpty('mail', '지금은 지원서가 없어요', '새 지원자가 오면<br>트레이너 단추에 빨간 점이 떠요.');
   const gL = K.sfList ? K.sfList() : [], gNo = x => gL.findIndex(z => z[0] === x);
-  const td = (() => { try { return K.dayRec(); } catch (e) { return null; } })(), tdG = x => td?.sf?.[`${x.cls} ${x.nm}`]?.g || 0;   /* v16.36 경완 '번 돈이 일지랑 안 맞음': 일지는 하루, 카드는 월급날부터라 달랐음 → 카드에 '오늘'(일지와 같은 값)과 '이번 주'를 따로 */
+   /* v16.36 경완 '번 돈이 일지랑 안 맞음': 일지는 하루, 카드는 월급날부터라 달랐음 → 카드에 '오늘'(일지와 같은 값)과 '이번 주'를 따로 */
   const rib = x => K.inGym(x) ? `<i class="sfc-rib g">체육관${gNo(x) >= 0 ? ` ${gNo(x) + 1}번` : ''}</i>` : x.yard ? '<i class="sfc-rib y">훈련장 코치</i>' : '<i class="sfc-rib">대기 중</i>';
   const list = g.sf.length ? `<div class="sf-list sfl2">${g.sf.map((s, i) => { const st = [s.rest ? '<em class="r">쉬는 중</em>' : '', K.inGym(s) && s.yard ? '<em class="y">훈련장 코치</em>' : ''].join('');
       return `<button class="sfc${s.rest ? ' rest' : ''}${s.yard ? ' yard' : ''}" data-sf="${i}">${rib(s)}<span class="sfc-pic"><i class="sfc-base"></i><img alt="" src="${K.trSrc(s.tr)}"></span>
       <span class="sfc-mid"><span class="sfc-nm"><small>${esc(s.cls)}</small><b>${esc(s.nm)}</b></span>${trtBox(s.trait)}${st ? `<span class="sfc-st">${st}</span>` : ''}</span><i class="sfc-go" aria-hidden="true">›</i>
       <span class="sfc-team"><i class="sfc-tag">라인업</i>${teamIc(s.team)}</span>
-      <span class="sfc-num"><span><small>전적</small><b>${s.w || 0}승 ${s.l || 0}패</b></span><span><small>월급 (7일)</small><b class="pay">${s.wage}G</b></span><span><small>오늘 번 돈</small><b class="${tdG(s) ? 'up' : ''}">${tdG(s).toLocaleString()}G</b></span><span><small>이번 주</small><b class="${(s.eg || 0) >= s.wage ? 'up' : 'dn'}">${(s.eg || 0).toLocaleString()}G</b></span></span></button>`; }).join('')}</div>`
+      <span class="sfc-num"><span><small>전적</small><b>${s.w || 0}승 ${s.l || 0}패</b></span><span><small>월급 (7일)</small><b class="pay">${s.wage}G</b></span>${(([d1, d7]) => `<span><small>오늘 번 돈</small><b class="${d1 ? 'up' : ''}">${d1.toLocaleString()}G</b></span><span><small>최근 7일</small><b class="${d7 >= s.wage ? 'up' : 'dn'}">${d7.toLocaleString()}G</b></span>`)(sfEarn(s))}</span></button>`; }).join('')}</div>`
     : sfEmpty('crew', '아직 고용한 트레이너가 없어요', '지원서 탭에서 마음에 드는<br>트레이너를 고용해 보세요.');
   sh.innerHTML = `<div class="sf-hd"><h3>트레이너</h3><span class="sf-cap"><span><small>고용</small><b>${g.sf.length}<em>/${max}명</em></b></span><span><small>훈련장 코치</small><b>${yN}<em>/${YARD_SF}명</em></b></span></span></div>${tabs}${sfT === 'cand' ? cand : list}`;
   const dk = sh.querySelector('.cv-deck'); if (dk) dk.onscroll = () => { const i = Math.round(dk.scrollLeft / (dk.firstElementChild.offsetWidth + 12)); sh.querySelectorAll('.cv-dots i').forEach((d, j) => d.classList.toggle('on', i === j)); };
@@ -519,7 +521,7 @@ function drawStaff() {
 function sfDetail(s) {
   const g = st(), now = Date.now(); if (!s) return; const i = g.sf.indexOf(s), yN = g.sf.filter(x => x.yard).length, lv = Math.round(K.teamLv(s.team));
   const gi = K.sfList ? K.sfList().findIndex(z => z[0] === s) : -1, dd = Math.max(0, Math.ceil((s.pay - now) / K.DAY));
-  const W = s.w || 0, L = s.l || 0, wr = W + L ? W / (W + L) : 0, eg = s.eg || 0, tg = (() => { try { return K.dayRec()?.sf?.[`${s.cls} ${s.nm}`]?.g || 0; } catch (e) { return 0; } })();
+  const W = s.w || 0, L = s.l || 0, wr = W + L ? W / (W + L) : 0, [tg, eg] = sfEarn(s);
   const bar = (f, c) => `<i class="sd2-bar ${c || ''}"><i style="width:${Math.round(Math.max(0, Math.min(1, f)) * 100)}%"></i></i>`;
   const rib = K.inGym(s) ? `<i class="sfc-rib g">체육관${gi >= 0 ? ` ${gi + 1}번` : ''}</i>` : s.yard ? '<i class="sfc-rib y">훈련장 코치</i>' : '<i class="sfc-rib">대기 중</i>';
   /* v16.35~36 경완 '상세 카드 디자인 퀄': 위는 지원서처럼 배경 + 받침 위 전신과 자리 딱지, 아래는 라인업 · 막대가 있는 숫자 칸 */
@@ -530,9 +532,9 @@ function sfDetail(s) {
     <p class="sd2-h">기록</p>
     <div class="sd2-num"><span><small>전적</small><b>${W}승 ${L}패</b>${bar(wr, 'w')}<i>승률 ${Math.round(wr * 100)}%</i></span>
       <span><small>월급 (7일)</small><b class="pay">${s.wage}G</b>${bar(s.rest ? 1 : 1 - dd / 7, s.rest ? 'r' : 'p')}<i>${s.rest ? '밀린 월급을 주면 다시 일해요' : `${dd}일 뒤에 줘요`}</i></span>
-      <span><small>이번 주 번 돈</small><b class="${eg >= s.wage ? 'up' : 'dn'}">${eg.toLocaleString()}G</b>${bar(eg / Math.max(1, s.wage), eg >= s.wage ? 'w' : 'r')}<i>오늘 ${tg.toLocaleString()}G · 월급의 ${Math.round(eg / Math.max(1, s.wage) * 100)}%</i></span>
+      <span><small>최근 7일 번 돈</small><b class="${eg >= s.wage ? 'up' : 'dn'}">${eg.toLocaleString()}G</b>${bar(eg / Math.max(1, s.wage), eg >= s.wage ? 'w' : 'r')}<i>오늘 ${tg.toLocaleString()}G</i></span>
       <span><small>고용</small><b>${s.hired ? `${Math.max(0, Math.floor((now - s.hired) / K.DAY)) + 1}일째` : '-'}</b><i>${s.lastE != null ? `지난주 ${s.lastE.toLocaleString()}G 벌었어요` : '첫 주예요'}</i></span></div>
-    <div class="gy-btns sd-btns"><button data-a="gym">${K.inGym(s) ? '체육관 자리 바꾸기' : '체육관에 배치'}</button><button data-a="yd" ${!s.yard && yN >= YARD_SF ? 'disabled' : ''}>${s.yard ? '훈련장 코치 그만' : '훈련장 코치 맡기기'}</button>
+    <div class="gy-btns sd-btns"><button data-a="gym">${K.inGym(s) ? '자리 바꾸기' : '체육관에 배치'}</button><button data-a="yd" ${!s.yard && yN >= YARD_SF ? 'disabled' : ''}>${s.yard ? '코치 그만하기' : '코치 맡기기'}</button>
       ${i > 0 ? '<button data-a="up">순서 앞으로</button>' : ''}<button data-a="fire" class="danger">해고</button><button class="main" data-a="x" style="grid-column:1/-1">닫기</button></div></div>`,
     (a, close) => {
       if (a === 'x') return close();
