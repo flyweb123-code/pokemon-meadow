@@ -42,7 +42,7 @@ function special(P) {
   const pref = L.filter(x => t.includes(x[2])), pool = pref.length && Math.random() < .5 ? pref : L; if (!pool.length) return null;   // 자기 타입이 아니어도 배운다 (반반)
   const x = K.pick(pool); GB().teach(m, x[0], null, false); return x;
 }
-const TR_FR = 1;
+const trFr = P => { try { return GA.frHr(P.sp) || .5; } catch (e) { return .5; } };   /* v16.42 경완 '친밀도 오르는건 필드 기준': 잘 돌본 필드와 같은 시간당 속도 (FR_TABLE 맨 위 × 포켓몬별 배수) */
 /* 날짜별 훈련 기록: g.tlog[포켓몬 id] = {하루 시작: {h 시간, x 경험치, lv 오른 레벨, f 친밀도, mv [새 기술]}} (60일) */
 const trLog = id => (st().tlog || {})[id] || {};
 function trDay(id, dk) { const g = st(), L = g.tlog || (g.tlog = {}), T = L[id] || (L[id] = {}); if (!T[dk]) { T[dk] = { h: 0, x: 0, lv: 0, f: 0, mv: [] }; const ks = Object.keys(T).map(Number).sort((a, b) => b - a); ks.slice(60).forEach(k => delete T[k]); } return T[dk]; }
@@ -59,7 +59,7 @@ function tickTrain(now) {
     for (const [dk, sh] of seg) { const R = trDay(P.id, dk), lvA = GB().gm(P).lv; R.h += sh;
     for (let left = sh; left > 1e-6; left -= 1) {
       const step = Math.min(1, left), tot = perHour(P) * step + (e.fx || 0), n = Math.floor(tot); e.fx = tot - n;
-      e.fa = (e.fa || 0) + step; while (e.fa >= 1) { e.fa -= 1; if ((P.fr || 0) < 255) { P.fr = Math.min(255, (P.fr || 0) + TR_FR); R.f += TR_FR; } }   /* 훈련 1시간마다 친밀도 +TR_FR */
+      e.fa = (e.fa || 0) + step * trFr(P); while (e.fa >= 1) { e.fa -= 1; if ((P.fr || 0) < 255) { P.fr = Math.min(255, (P.fr || 0) + 1); R.f += 1; } }   /* 필드처럼 쌓이다 1이 차면 +1 */
       if (n > 0) { e.x = (e.x || 0) + n; R.x += n; GB().gainXp(P, n).learned.forEach(([id]) => { got.push(GB().mvKo(id)); (e.mv = e.mv || []).push(id); R.mv.push(id); }); }
       e.acc = (e.acc || 0) + step; while (e.acc >= 1) { e.acc -= 1; if (Math.random() < .05) { const x = special(P); if (x) { (e.mv = e.mv || []).push(x[0]); R.mv.push(x[0]); } if (x) K.awMv?.(P.id, x[0], x[1], x[2]); if (x) K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '이' : '가'} 훈련장에서 특별한 기술 <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 익혔다! <small>기술 바꾸기에서 쓸 수 있어요</small>`, now); } }
     }
@@ -595,7 +595,7 @@ const tmPrice = x => x[3] === 2 ? 500 : (x[4] || 0) <= 50 ? 300 : x[4] <= 70 ? 7
 const prBtn = () => `<button class="tm-sort" type="button" data-pr="1">${shopPr > 0 ? '가격 낮은 순 ▲' : '가격 높은 순 ▼'}</button>`;
 function drawShop() {
   if (!SHOP_T.some(([k]) => k === shopT)) shopT = 'tm';
-  sh.innerHTML = `<h3>체육관 상점</h3><div class="sp-tabs" role="tablist">${SHOP_T.map(([k, n]) => `<button role="tab" data-st="${k}" aria-selected="${shopT === k}">${n}</button>`).join('')}</div><div class="sp-body"></div>`;   // 탭은 다시 위 작은 탭 (경완 2026-10-28)
+  sh.innerHTML = `<div class="sf-hd"><h3>체육관 상점</h3><span class="sf-cap"><span><small>보유 골드</small><b class="sp-gold"><i class="coin"></i><span class="gy-goldn">${/[?&]studio/.test(location.search) ? '∞' : S.gold.toLocaleString()}</span>G</b></span></span></div><div class="sp-tabs" role="tablist">${SHOP_T.map(([k, n]) => `<button role="tab" data-st="${k}" aria-selected="${shopT === k}">${n}</button>`).join('')}</div><div class="sp-body"></div>`;   // 탭은 다시 위 작은 탭 (경완 2026-10-28)
   const body = sh.querySelector('.sp-body');
   ({ tm: b => shopTm(b, false), tr: b => shopTm(b, true), it: shopIt, deco: shopDeco, fit: shopFit })[shopT](body);
   const inner = body.onclick; body.onclick = null;
