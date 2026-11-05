@@ -2909,32 +2909,26 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes rrTotPop{0%{opacity:0;transform:scale(.4);animation-timing-function:cubic-bezier(.2,.9,.3,1)}14%{opacity:1;transform:scale(1.35,1.25);animation-timing-function:cubic-bezier(.4,0,.6,1)}36%{opacity:1;transform:scale(.92,.97)}54%{opacity:1;transform:scale(1.05)}72%{opacity:1;transform:scale(.99)}100%{opacity:1;transform:none}}
 #gym .rs-rep .rr-n{position:relative}#gym .rs-rep .rr-n>.rr-tot{bottom:2px;text-shadow:none;line-height:1}
 #gym .rs-rep .rr-d.tot{color:#2a8a3e;transform-origin:left center;animation:rrTotPop .55s linear forwards!important}
-/* v16.52 경완 '내 캐릭터 상세카드: 입은 옷·점선 빼고, 체육관 등급에 따라 카드 디자인', '카드 디자인·스프라이트 퀄': 테두리·머리띠·별·장식 = 도트 그림 (tools/gym/mkcard.py → gym/img/card)
-   f{등급} 9칸 금속 테두리(2배), h{등급} 머리띠 무늬, c{등급} 이름난부터 위 가운데 월계수 장식, star 별. 색 줄은 홈 등급 딱지와 같음 */
-#gym .gy-pop.mec-wrap .win{--k1:#e4e8f0;--k2:#a2a9bc;--k3:#2e3344;--kb:#fbfbfd;--f:url(../gym/img/card/f0.png);position:relative;padding:0 8px 10px;overflow:visible;background:var(--kb);background-clip:padding-box;border:16px solid transparent;border-image:var(--f) 8 / 16px stretch;image-rendering:pixelated;box-shadow:none;filter:drop-shadow(4px 6px 0 rgba(0,0,0,.3))}
-#gym .gy-pop.mec-wrap .win[data-g="1"]{--k1:#dcf4d2;--k2:#6cc45a;--k3:#173e1c;--kb:#fafdf8;--f:url(../gym/img/card/f1.png)}
-#gym .gy-pop.mec-wrap .win[data-g="2"]{--k1:#dbe9ff;--k2:#5a96ec;--k3:#112858;--kb:#f8fbff;--f:url(../gym/img/card/f2.png)}
-#gym .gy-pop.mec-wrap .win[data-g="3"]{--k1:#eee0ff;--k2:#a874ee;--k3:#2a1258;--kb:#fcf9ff;--f:url(../gym/img/card/f3.png)}
-#gym .gy-pop.mec-wrap .win[data-g="4"]{--k1:#ffe0dc;--k2:#ec6458;--k3:#4a0c0c;--kb:#fffafa;--f:url(../gym/img/card/f4.png)}
-#gym .gy-pop.mec-wrap .win[data-g="5"]{--k1:#fff2c0;--k2:#f0b830;--k3:#4a2e00;--kb:#fffdf4;--f:url(../gym/img/card/f5.png)}
-#gym .gy-pop.mec-wrap .win[data-g="6"]{--k1:#ece4ff;--k2:#b8a8f0;--k3:#241c5c;--kb:#fdfcff;--f:url(../gym/img/card/f6.png)}
-#gym .gy-pop.mec-wrap .win[data-g="6"]::before{content:'';position:absolute;inset:-16px;z-index:-1;background:linear-gradient(120deg,#ff9ec4,#ffe27a,#9ef0b8,#9ed4ff,#c8a8ff,#ff9ec4) 0 0/300% 300%;animation:mecPrism 6s linear infinite;opacity:.3;pointer-events:none}
-@keyframes mecPrism{to{background-position:-300% 0}}
-#gym .mec{text-align:center;overflow:visible}
-#gym .gy-pop .gy-body.mec{overflow:visible;max-height:none}
-#gym .mec-crest{position:absolute;left:50%;top:-22px;z-index:3;width:92px;height:28px;transform:translateX(-50%);background:no-repeat 0 0/100% 100%;image-rendering:pixelated;pointer-events:none}
-#gym .gy-pop.mec-wrap .win[data-g="6"] .mec-hd{background:linear-gradient(180deg,rgba(255,255,255,.3) 0 2px,transparent 2px 48%,rgba(0,0,0,.1) 48% 100%),linear-gradient(90deg,#e886b4,#e8b04a,#5cc48a,#5a9ee8,#9a7ae8,#e886b4) 0 0/200% 100%;animation:gwPrism 5s linear infinite}
-#gym .mec-hd{position:relative;display:flex;align-items:center;gap:8px;margin:0 -8px 12px;padding:8px 10px;background:linear-gradient(180deg,rgba(255,255,255,.28) 0 2px,transparent 2px 48%,rgba(0,0,0,.12) 48% 100%),var(--k2);border-bottom:2px solid var(--k3);box-shadow:inset 0 -2px 0 rgba(0,0,0,.15);text-align:left}
+/* v16.52 경완 '내 캐릭터 상세카드: 입은 옷·점선 빼고, 체육관 등급에 따라 카드 디자인' → '테두리 얇게, 상단 타이틀 박스 빼고 배경 그라데이션으로 통일'
+   등급 색 줄은 홈 등급 딱지와 같음 (회색·초록·파랑·보라·빨강·금·무지개). --k1 연한 색, --k2 중간, --k3 진한 색 */
+#gym .gy-pop.mec-wrap .win{--k1:#dde2ec;--k2:#a2a9bc;--k3:#3e4558;background:linear-gradient(180deg,#fff 0%,#fbfbfd 30%,var(--k1) 100%);border-color:var(--k3)}
+#gym .gy-pop.mec-wrap .win[data-g="1"]{--k1:#cdeec2;--k2:#6cc45a;--k3:#24602c}
+#gym .gy-pop.mec-wrap .win[data-g="2"]{--k1:#cfe0ff;--k2:#5a96ec;--k3:#1c4590}
+#gym .gy-pop.mec-wrap .win[data-g="3"]{--k1:#e6d4ff;--k2:#a874ee;--k3:#47208a}
+#gym .gy-pop.mec-wrap .win[data-g="4"]{--k1:#ffd4cf;--k2:#ec6458;--k3:#7e1818}
+#gym .gy-pop.mec-wrap .win[data-g="5"]{--k1:#ffe8a0;--k2:#f0b830;--k3:#6e4600}
+#gym .gy-pop.mec-wrap .win[data-g="6"]{--k1:#e6dcff;--k2:#b8a8f0;--k3:#3e2f8a;background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.75) 35%,rgba(255,255,255,.2) 100%),linear-gradient(120deg,#ffc2dc,#ffe9a0,#c2f2d2,#c2e2ff,#dccaff,#ffc2dc) 0 0/100% 100%,#fff;background-size:auto,300% 300%;animation:mecPrism 8s linear infinite}
+@keyframes mecPrism{to{background-position:0 0,-300% 0}}
+#gym .mec{text-align:center}
+#gym .mec-gr{display:flex;align-items:center;justify-content:center;gap:6px;margin:-4px 0 8px;text-align:left}
 #gym .mec-bd{flex:none;line-height:0}
-#gym .mec-bd .bdw img{width:52px;height:52px;image-rendering:pixelated;filter:drop-shadow(0 2px 0 rgba(0,0,0,.4))}
-#gym .mec-gr{display:flex;flex-direction:column;gap:1px;min-width:0;color:#fff;text-shadow:1px 1px 0 var(--k3),-1px 0 0 var(--k3),0 -1px 0 var(--k3),0 1px 0 var(--k3),2px 2px 0 var(--k3)}
-#gym .mec-gr small{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#gym .mec-gr b{font-size:18px;letter-spacing:1px}
-#gym .mec-sts{display:flex;gap:2px;margin-left:auto;flex:none}
-#gym .mec-st{display:block;width:18px;height:20px;background:url(../gym/img/card/star.png) 0 0/100% 100%;image-rendering:pixelated;filter:drop-shadow(1px 1px 0 rgba(0,0,0,.3))}
-#gym .mec .bd-pic{width:168px;height:168px;border:8px solid transparent;border-radius:0;border-image:var(--f) 8 / 8px stretch;background:radial-gradient(circle at 50% 62%,#fff 0 36%,var(--k1) 100%) padding-box}
+#gym .mec-bd .bdw img{width:40px;height:40px;image-rendering:pixelated;filter:drop-shadow(0 1px 0 rgba(0,0,0,.3))}
+#gym .mec-gr>span:last-child{display:flex;flex-direction:column;line-height:1.2}
+#gym .mec-gr small{font-size:11px;color:var(--dim)}
+#gym .mec-gr b{font-size:15px;color:var(--k3)}
+#gym .mec .bd-pic{border:2px solid var(--k3);border-radius:10px;background:radial-gradient(circle at 50% 62%,#fff 0 38%,var(--k1) 100%)}
 #gym .mec h4{margin:0 0 2px}
 #gym .mec-wl{font-size:13px;color:var(--dim)}
 #gym .mec-wl b{color:var(--k3);font-size:15px}
-#gym .gy-body.mec .me-bdgs{margin:12px 0 2px;padding:8px 4px 6px;border:8px solid transparent;border-image:var(--f) 8 / 8px stretch;background:var(--k1) padding-box}
+#gym .gy-body.mec .me-bdgs{margin:12px 0 2px;padding:8px 4px 6px;border:0;border-radius:8px;background:rgba(255,255,255,.6);box-shadow:inset 0 0 0 2px rgba(255,255,255,.9)}
 #gym .mec .gy-bdgs .cur b{color:var(--k3)}
