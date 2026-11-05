@@ -16,6 +16,10 @@
 //   {t:'own', on}                 주인이 들어오거나 나감
 
 import { pushTo, iGa } from './push.js';
+import { maskText } from './nick.js';
+
+// 채팅·방명록 비속어 (2026-11-05 경완): 저장은 원래 글 그대로, 보낼 때 쓴 사람 말고는 * 로 가림
+const chatFor = (line, c) => line && line.c !== c && typeof line.m === 'string' ? { ...line, m: maskText(line.m) } : line;
 
 const MAX_PPL = 8, CHAT_KEEP = 50, ACT_KEEP = 50, CHAT_LEN = 100, ACTS = ['pet', 'wash', 'feed', 'berry'];
 const RING_GAP = 5 * 60e3;
@@ -54,7 +58,7 @@ export class FieldRoom {
 
     const [chat, fld, pend, acts] = await Promise.all([this.ctx.storage.get('chat'), this.field(owner), o ? this.ctx.storage.get('pend') : null, o ? this.ctx.storage.get('acts') : null]);
     if (pend?.length) await this.ctx.storage.delete('pend');
-    this.send(sv, { t: 'hi', me: c, own: o, on: o || ppl.some(x => x.a.o && x.a.p?.out), ppl: ppl.map(x => this.pub(x.a)), chat: chat || [], field: o ? null : fld?.d || null, fat: fld?.at || 0, pend: pend || [], acts: o ? acts || [] : [] });
+    this.send(sv, { t: 'hi', me: c, own: o, on: o || ppl.some(x => x.a.o && x.a.p?.out), ppl: ppl.map(x => this.pub(x.a)), chat: (chat || []).map(x => chatFor(x, c)), field: o ? null : fld?.d || null, fat: fld?.at || 0, pend: pend || [], acts: o ? acts || [] : [] });
     this.cast({ t: 'join', p: this.pub(a) }, sv);
     // v15.35 경완: 들어올 때 자동 푸시는 없앰 — 손님이 '친구 부르기'를 눌렀을 때만 (case 'call')
     try { if (!(await this.ctx.storage.getAlarm())) await this.ctx.storage.setAlarm(Date.now() + STALE_CHK); } catch (e) {}
@@ -112,7 +116,8 @@ export class FieldRoom {
         const line = { c: a.c, n: a.n, m: t, at: Date.now() };
         const chat = (await this.ctx.storage.get('chat')) || []; chat.push(line);
         await this.ctx.storage.put('chat', chat.slice(-CHAT_KEEP));
-        return this.cast({ t: 'chat', ...line });
+        for (const x of this.people()) this.send(x.ws, { t: 'chat', ...chatFor(line, x.a.c) });
+        return;
       }
       case 'tr': {
         const was = !!(a.o && a.p?.out);
