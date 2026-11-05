@@ -1438,7 +1438,7 @@ function bodyCard(src, h, sub = '', btn = '', onClick, more = '') {
 /* v16.52 경완 '내 캐릭터 상세카드: 입은 옷 표시·점선 빼고, 체육관 등급에 따라 카드 디자인': 등급 색(테두리·머리띠·무대)과 등급 배지, 위로 갈수록 장식이 늘고 전설은 무지개 */
 async function meCard() { const g = st(), G = gradeOf(g.rep || 0, g.gmax ?? 99), src = await fitSrc('tr');   /* v16.52 경완 '테두리 얇게, 상단 타이틀 박스 빼고 배경 그라데이션으로 통일' */
   const bd = `<div class="gy-bdgs me-bdgs">${TYPE_KO.map((nm, t) => { if (!t) return ''; const L = bdLv(g, t); return `<div class="${L ? 'on' : ''}${g.ty === t ? ' cur' : ''}">${bdHtml(t, L)}<b>${nm}</b></div>`; }).join('')}</div>`;
-  const p = pop(`<div class="gy-body mec"><div class="mec-gr"><span class="mec-bd">${gEmb(G.i)}</span><span><small>${esc(g.nm)}</small><b>${G.n}</b></span></div>
+  const p = pop(`<div class="gy-body mec">
     <div class="bd-pic"><img alt="" src="${src}" onload="this.style.width=this.naturalWidth*2+'px';this.style.height=this.naturalHeight*2+'px'"></div>
     <h4>관장 ${esc(trName() || '나')}</h4><p class="mec-wl"><b>${g.w || 0}</b>승 <b>${g.l || 0}</b>패</p>${bd}</div><div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); });
   p.classList.add('mec-wrap'); const w = p.querySelector('.win'); if (w) w.dataset.g = G.i; }

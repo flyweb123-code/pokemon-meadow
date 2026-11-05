@@ -2909,24 +2909,25 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes rrTotPop{0%{opacity:0;transform:scale(.4);animation-timing-function:cubic-bezier(.2,.9,.3,1)}14%{opacity:1;transform:scale(1.35,1.25);animation-timing-function:cubic-bezier(.4,0,.6,1)}36%{opacity:1;transform:scale(.92,.97)}54%{opacity:1;transform:scale(1.05)}72%{opacity:1;transform:scale(.99)}100%{opacity:1;transform:none}}
 #gym .rs-rep .rr-n{position:relative}#gym .rs-rep .rr-n>.rr-tot{bottom:2px;text-shadow:none;line-height:1}
 #gym .rs-rep .rr-d.tot{color:#2a8a3e;transform-origin:left center;animation:rrTotPop .55s linear forwards!important}
-/* v16.52 경완 '내 캐릭터 상세카드: 입은 옷·점선 빼고, 체육관 등급에 따라 카드 디자인' → '테두리 얇게, 상단 타이틀 박스 빼고 배경 그라데이션으로 통일'
-   등급 색 줄은 홈 등급 딱지와 같음 (회색·초록·파랑·보라·빨강·금·무지개). --k1 연한 색, --k2 중간, --k3 진한 색 */
-#gym .gy-pop.mec-wrap .win{--k1:#dde2ec;--k2:#a2a9bc;--k3:#3e4558;background:linear-gradient(180deg,#fff 0%,#fbfbfd 30%,var(--k1) 100%);border-color:var(--k3)}
-#gym .gy-pop.mec-wrap .win[data-g="1"]{--k1:#cdeec2;--k2:#6cc45a;--k3:#24602c}
-#gym .gy-pop.mec-wrap .win[data-g="2"]{--k1:#cfe0ff;--k2:#5a96ec;--k3:#1c4590}
-#gym .gy-pop.mec-wrap .win[data-g="3"]{--k1:#e6d4ff;--k2:#a874ee;--k3:#47208a}
-#gym .gy-pop.mec-wrap .win[data-g="4"]{--k1:#ffd4cf;--k2:#ec6458;--k3:#7e1818}
-#gym .gy-pop.mec-wrap .win[data-g="5"]{--k1:#ffe8a0;--k2:#f0b830;--k3:#6e4600}
-#gym .gy-pop.mec-wrap .win[data-g="6"]{--k1:#e6dcff;--k2:#b8a8f0;--k3:#3e2f8a;background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.75) 35%,rgba(255,255,255,.2) 100%),linear-gradient(120deg,#ffc2dc,#ffe9a0,#c2f2d2,#c2e2ff,#dccaff,#ffc2dc) 0 0/100% 100%,#fff;background-size:auto,300% 300%;animation:mecPrism 8s linear infinite}
-@keyframes mecPrism{to{background-position:0 0,-300% 0}}
-#gym .mec{text-align:center}
-#gym .mec-gr{display:flex;align-items:center;justify-content:center;gap:6px;margin:-4px 0 8px;text-align:left}
-#gym .mec-bd{flex:none;line-height:0}
-#gym .mec-bd .bdw img{width:40px;height:40px;image-rendering:pixelated;filter:drop-shadow(0 1px 0 rgba(0,0,0,.3))}
-#gym .mec-gr>span:last-child{display:flex;flex-direction:column;line-height:1.2}
-#gym .mec-gr small{font-size:11px;color:var(--dim)}
-#gym .mec-gr b{font-size:15px;color:var(--k3)}
+/* v16.52 경완 '내 캐릭터 상세카드: 입은 옷·점선 빼고, 체육관 등급에 따라 카드 디자인' → '상단 타이틀 박스 빼고 배경 그라데이션' → '테두리도 등급 따라, 위 체육관 표시 빼고, 갈수록 확실히 좋아지게'
+   등급 색은 홈 등급 딱지와 같음 (회색·초록·파랑·보라·빨강·금·무지개). --k1 연한 색, --k2 중간, --k3 진한 색
+   테두리: 새내기 얇은 한 줄 → 동네 안쪽 가는 줄 → 떠오르는 두 줄 → 이름난 굵은 두 줄 → 인기 금속 테 → 명문 금 테+빛 쓸기 → 전설 무지개 테+반짝 */
+#gym .gy-pop.mec-wrap .win{--k1:#e4e7ef;--k2:#a2a9bc;--k3:#5a6276;position:relative;border:2px solid var(--k3);background:linear-gradient(180deg,#fff 0%,#fcfcfd 45%,var(--k1) 100%);box-shadow:inset 0 0 0 3px #fff,5px 5px 0 rgba(0,0,0,.3)}
+#gym .gy-pop.mec-wrap .win[data-g="1"]{--k1:#d6f0cc;--k2:#7cc86a;--k3:#2c6a34;box-shadow:inset 0 0 0 3px #fff,inset 0 0 0 4px var(--k2),5px 5px 0 rgba(0,0,0,.3)}
+#gym .gy-pop.mec-wrap .win[data-g="2"]{--k1:#c8dcff;--k2:#5a96ec;--k3:#1c4590;border-width:3px;background:linear-gradient(180deg,#fff 0%,#f6f9ff 35%,var(--k1) 100%);box-shadow:inset 0 0 0 3px #fff,inset 0 0 0 5px var(--k2),5px 5px 0 rgba(0,0,0,.32)}
+#gym .gy-pop.mec-wrap .win[data-g="3"]{--k1:#e0ccff;--k2:#a874ee;--k3:#47208a;border-width:3px;background:linear-gradient(180deg,#fff 0%,#f8f3ff 30%,var(--k1) 100%);box-shadow:inset 0 0 0 3px var(--k2),inset 0 0 0 5px #fff,inset 0 0 0 7px var(--k3),5px 5px 0 rgba(0,0,0,.34)}
+#gym .gy-pop.mec-wrap .win[data-g="4"]{--k1:#ffcbc4;--k2:#ec6458;--k3:#7e1818;border:4px solid transparent;background:linear-gradient(180deg,#fff 0%,#fff6f4 28%,var(--k1) 100%) padding-box,linear-gradient(135deg,#f2a69c,#7e1818 30%,#ec6458 50%,#7e1818 70%,#f2a69c) border-box;box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 4px var(--k2),5px 5px 0 rgba(0,0,0,.36)}
+#gym .gy-pop.mec-wrap .win[data-g="5"]{--k1:#ffe08a;--k2:#f0b830;--k3:#6e4600;border:5px solid transparent;background:linear-gradient(180deg,#fff 0%,#fffaea 25%,var(--k1) 100%) padding-box,linear-gradient(135deg,#fff3b8,#b07800 22%,#ffe27a 42%,#8a5a00 60%,#ffe8a0 80%,#b07800) border-box;box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 4px #e8b030,0 0 14px rgba(255,200,60,.55),5px 5px 0 rgba(0,0,0,.38)}
+#gym .gy-pop.mec-wrap .win[data-g="6"]{--k1:#e6dcff;--k2:#b8a8f0;--k3:#3e2f8a;border:5px solid transparent;background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.8) 30%,rgba(255,255,255,.25) 100%) padding-box,linear-gradient(120deg,#ffc2dc,#ffe9a0,#c2f2d2,#c2e2ff,#dccaff,#ffc2dc) padding-box,linear-gradient(120deg,#ff6fa8,#ffcf3a,#4fd88a,#4aa8ff,#a070ff,#ff6fa8) border-box;background-size:auto,300% 300%,300% 300%;animation:mecPrism 6s linear infinite;box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 4px rgba(160,120,255,.55),0 0 18px rgba(170,130,255,.6),5px 5px 0 rgba(0,0,0,.4)}
+@keyframes mecPrism{to{background-position:0 0,-300% 0,-300% 0}}
+/* 명문·전설: 카드 위로 비스듬한 빛이 지나감 */
+#gym .gy-pop.mec-wrap .win[data-g="5"]::after,#gym .gy-pop.mec-wrap .win[data-g="6"]::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.75) 50%,transparent 60%) 0 0/300% 100% no-repeat;background-position:150% 0;animation:mecSweep 3.6s ease-in-out infinite;mix-blend-mode:soft-light}
+@keyframes mecSweep{0%,55%{background-position:150% 0}100%{background-position:-50% 0}}
+#gym .mec{text-align:center;overflow:visible}
 #gym .mec .bd-pic{border:2px solid var(--k3);border-radius:10px;background:radial-gradient(circle at 50% 62%,#fff 0 38%,var(--k1) 100%)}
+#gym .mec-wrap .win[data-g="3"] .mec .bd-pic,#gym .mec-wrap .win[data-g="4"] .mec .bd-pic{box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 3px var(--k2)}
+#gym .mec-wrap .win[data-g="5"] .mec .bd-pic{border-color:#b07800;box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 3px #f0b830,0 0 10px rgba(255,200,60,.5)}
+#gym .mec-wrap .win[data-g="6"] .mec .bd-pic{border-color:#7a5ae0;box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 3px #c8b0ff,0 0 12px rgba(170,130,255,.55)}
 #gym .mec h4{margin:0 0 2px}
 #gym .mec-wl{font-size:13px;color:var(--dim)}
 #gym .mec-wl b{color:var(--k3);font-size:15px}
