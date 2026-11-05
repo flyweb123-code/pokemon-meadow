@@ -19,8 +19,29 @@ final class HealthSync {
     static let readTypes: Set<HKObjectType> = [HKObjectType.workoutType(), HKQuantityType(.distanceWalkingRunning), HKSeriesType.workoutRoute()]
     func refresh() {
         guard HKHealthStore.isHealthDataAvailable(), !busy, Perm.asked else { return }   // 2026-11-02: 튜토리얼 끝에 묻기 전엔 건드리지 않는다 (Perm)
+        startObserving()
         store.requestAuthorization(toShare: nil, read: HealthSync.readTypes) { [weak self] _, _ in
             DispatchQueue.main.async { self?.query() }
+        }
+    }
+
+    // 2026-11-05 경완 '앱 켰을 때 바로 반영': 워치 기록(운동·걷기 거리)이 건강 앱에 들어오면 iOS 가 앱을 백그라운드에서 깨운다.
+    // 그때 미리 계산해 대기열에 넣어 두면(PhoneBridge), 앱을 열자마자 게임에 들어간다. (아이폰이 잠겨 있으면 못 읽어 열 때 다시)
+    private var observing = false
+    private func startObserving() {
+        guard !observing else { return }
+        observing = true
+        let types: [HKSampleType] = [HKObjectType.workoutType(), HKQuantityType(.distanceWalkingRunning)]
+        for t in types {
+            let q = HKObserverQuery(sampleType: t, predicate: nil) { [weak self] _, done, error in
+                guard error == nil else { done(); return }
+                DispatchQueue.main.async {
+                    self?.refresh()   // 운동 → 런닝 기록, 끝에 WatchWalk(워치 걷기 거리)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 8) { done() }   // 조회할 시간을 조금 준 뒤 끝났다고 알린다
+                }
+            }
+            store.execute(q)
+            store.enableBackgroundDelivery(for: t, frequency: .immediate) { _, _ in }
         }
     }
 
@@ -49,15 +70,9 @@ final class HealthSync {
                     let meters = w.statistics(for: HKQuantityType(.distanceWalkingRunning))?.sumQuantity()?.doubleValue(for: .meter())
                         ?? w.totalDistance?.doubleValue(for: .meter()) ?? 0
                     let km = meters / 1000
-                    if km >= 0.1 {
-                        self.phoneKm(w.startDate, w.endDate) { ph in
-                            // 2026-11-05: 운동이 저장되기 전에 '워치만 차고 걸은 거리'(WatchWalk)로 이미 넣은 만큼도 '이미 쌓인 거리'에 더한다
-                            let ww = WatchWalk.shared.fedKm(w.startDate, w.endDate)
-                            let all = ww > 0 ? max(ph, 0) + ww : ph
-                            PhoneBridge.shared.enqueueRun(km: km, start: w.startDate.timeIntervalSince1970, end: w.endDate.timeIntervalSince1970, kind: 2, phoneKm: all)
-                            self.routePlaces(w)
-                        }
-                    }
+                    // 2026-11-05 경완 '런닝 기록 개념 빼기': 운동은 런닝 기록으로 보내지 않는다. 그 거리는 WatchWalk 가 워치로 움직인 거리로 넣는다.
+                    // 운동 경로(GPS)는 그 시간에 주운 알의 '주운 곳'을 채우는 데만 쓴다.
+                    if km >= 0.1 { self.routePlaces(w) }
                 }
                 UserDefaults.standard.set(newest.timeIntervalSince1970, forKey: self.lastKey)
                 self.backfillRoutes()
