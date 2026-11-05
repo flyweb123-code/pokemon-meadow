@@ -2854,7 +2854,9 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v16.42 경완 '상점 보유 골드 우상단' */
 #gym .sp-gold{display:inline-flex;align-items:center;gap:0;font-variant-numeric:tabular-nums}
 #gym .sp-gold .coin{width:12px;height:12px;margin:0 5px 0 1px}
-/* v16.42 자동 휴업 알림창: 셔터 위 '휴업' 팻말 */
-#gym .aw-shut .sh-sign{position:relative;width:132px;height:74px;margin:14px auto 6px;justify-self:center;align-self:center;background:repeating-linear-gradient(#9aa0ac 0 6px,#7d8391 6px 8px);box-shadow:0 0 0 3px #3a3c48,inset 0 4px 0 #5a5e6c}
-#gym .aw-shut .sh-sign b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-4deg);padding:4px 14px;background:#fff6d8;color:#c83a2a;font-size:18px;letter-spacing:.1em;box-shadow:0 0 0 2px #6a4400,3px 3px 0 rgba(0,0,0,.25);white-space:nowrap}
-#gym .aw-shut .aw-say{line-height:1.6;text-align:center;word-break:keep-all}
+/* v16.43 자동 휴업 입장: 들어올 때 이미 내려간 셔터 (움직임 없이), 다시 개업하기 창 */
+#gym .gy-re.now .re-shut,#gym .gy-re.now .re-sign{transition:none!important}
+#gym .gy-shut{z-index:12}
+#gym .gy-pop.sh-rewrap .sh-re{display:grid;justify-items:center;gap:4px;padding:10px 6px 14px;text-align:center}
+#gym .gy-pop.sh-rewrap .sh-re b{font-size:18px}
+#gym .gy-pop.sh-rewrap .sh-re span{font-size:13px;color:var(--dim)}
