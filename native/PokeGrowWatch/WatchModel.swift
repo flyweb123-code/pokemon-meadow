@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import HealthKit
+import CoreMotion
 import WatchConnectivity
 
 struct EggInfo: Codable, Identifiable {
@@ -41,6 +42,66 @@ final class WatchModel: NSObject, ObservableObject {
     @Published var distanceKm = 0.0
     @Published var message = ""
 
+    // MARK: 오늘 이동 거리 (게임 프로필의 '이동 거리'와 같은 것)
+    // 2026-11-05 경완: 프로필처럼 걸으면 켜지는 이동 거리를 워치에서도. 아이폰이 보낸 오늘 거리(아이폰 만보기)와
+    // 워치가 직접 잰 오늘 거리 중 큰 쪽을 보여 준다 (아이폰을 두고 나가도 늘어난다). 워치가 잰 거리가 최근 20초 안에 늘었으면 '걷는 중'.
+    @Published var todayKm = 0.0
+    @Published var walkAt = Date.distantPast
+    static let walkLive: TimeInterval = 20
+    private let pedometer = CMPedometer()
+    private var phoneToday = 0.0, phoneDay = Date.distantPast
+    private var watchToday = 0.0, liveDay = Date.distantPast
+    private var liveTimer: Timer?
+
+    func startLive() {
+        let day = Calendar.current.startOfDay(for: Date())
+        if day != liveDay { stopLive(); liveDay = day; watchToday = 0 }
+        guard liveTimer == nil else { return }
+        if CMPedometer.isDistanceAvailable() {
+            pedometer.startUpdates(from: day) { [weak self] data, _ in
+                guard let m = data?.distance?.doubleValue else { return }
+                DispatchQueue.main.async { self?.gotWatch(km: m / 1000, day: day) }
+            }
+        }
+        pollWatch()
+        // 실시간 알림이 늦게 오기도 해서 5초마다 직접 물어본다 (아이폰 앱과 같은 방식)
+        let t = Timer(timeInterval: 5, repeats: true) { [weak self] _ in self?.pollWatch() }
+        RunLoop.main.add(t, forMode: .common)
+        liveTimer = t
+    }
+    func stopLive() {
+        pedometer.stopUpdates(); liveTimer?.invalidate(); liveTimer = nil
+    }
+    private func pollWatch() {
+        pollExtra()
+        let now = Date(), day = Calendar.current.startOfDay(for: now)
+        if day != liveDay { stopLive(); startLive(); return }   // 자정이 지나면 새 날
+        guard CMPedometer.isDistanceAvailable() else { recompute(); return }
+        pedometer.queryPedometerData(from: day, to: now) { [weak self] data, _ in
+            guard let m = data?.distance?.doubleValue else { return }
+            DispatchQueue.main.async { self?.gotWatch(km: m / 1000, day: day) }
+        }
+    }
+    private func gotWatch(km: Double, day: Date) {
+        guard day == liveDay, km > watchToday + 1e-4 else { return }
+        if watchToday > 0 { walkAt = Date() }   // 손목의 워치가 더 걸었다 = 지금 걷는 중
+        watchToday = km
+        recompute()
+    }
+    fileprivate func gotPhone(km: Double, dayTs: Double) {
+        let day = Date(timeIntervalSince1970: dayTs)
+        guard day >= phoneDay else { return }
+        if day > phoneDay { phoneToday = 0 }
+        phoneDay = day
+        phoneToday = max(phoneToday, km)
+        recompute()
+    }
+    private func recompute() {
+        let today = Calendar.current.startOfDay(for: Date())
+        let v = max(liveDay == today ? watchToday : 0, phoneDay == today ? phoneToday : 0)
+        if v != todayKm { todayKm = v }
+    }
+
     private let health = HKHealthStore()
     private var session: HKWorkoutSession?
     private var builder: HKLiveWorkoutBuilder?
@@ -57,17 +118,62 @@ final class WatchModel: NSObject, ObservableObject {
 
     // MARK: 알 현황
 
-    private func decode(_ data: Data) {
+    // fresh: 아이폰이 방금 보낸 것 (at = 아이폰이 보낸 시각). 그때부터 워치가 걸은 거리를 '미리 보기'로 더한다.
+    private func decode(_ data: Data, fresh: Bool = false, at: Double? = nil) {
         guard !data.isEmpty, let s = try? JSONDecoder().decode(GameState.self, from: data) else { return }
         UserDefaults.standard.set(data, forKey: stateKey)
-        DispatchQueue.main.async { self.state = s }
+        DispatchQueue.main.async {
+            self.state = s
+            if fresh {
+                let t = min(Date().timeIntervalSince1970, at ?? Date().timeIntervalSince1970)
+                UserDefaults.standard.set(t, forKey: self.baseKey)
+                self.extraKm = 0
+                self.pollExtra()
+            }
+        }
+    }
+
+    // MARK: 아이폰과 끊겨 있는 동안 (2026-11-05 경완: 알·짝꿍 진행도가 이어지게)
+    // 아이폰이 마지막으로 알 현황을 보낸 뒤 워치가 걸은 거리(extraKm)를 화면의 알·짝꿍·총 거리에 미리 더해 보여 준다.
+    // 진짜 반영은 아이폰 앱이 건강 앱 기록으로 한다 (WatchWalk). 새 현황이 오면 0 부터 다시.
+    @Published var extraKm = 0.0
+    private let baseKey = "stateAt"
+    private func pollExtra() {
+        let base = UserDefaults.standard.double(forKey: baseKey)
+        guard base > 0, CMPedometer.isDistanceAvailable() else { return }
+        let from = Date(timeIntervalSince1970: base)
+        pedometer.queryPedometerData(from: from, to: Date()) { [weak self] data, error in
+            guard error == nil, let m = data?.distance?.doubleValue else { return }
+            DispatchQueue.main.async {
+                guard let self, UserDefaults.standard.double(forKey: self.baseKey) == base else { return }
+                self.extraKm = max(self.extraKm, m / 1000)
+            }
+        }
+    }
+
+    // 화면에 보일 알 현황 = 받은 현황 + extraKm
+    var shown: GameState? {
+        guard var s = state else { return nil }
+        let k = extraKm
+        guard k > 0 else { return s }
+        for i in s.eggs.indices { s.eggs[i].km += k }
+        let grow = { (b: inout BuddyInfo) in
+            guard b.need > 0 else { return }
+            b.km += k
+            if b.km >= b.need { b.ready = true }
+        }
+        if var b = s.buddy { grow(&b); s.buddy = b }
+        if var L = s.buds { for i in L.indices { grow(&L[i]) }; s.buds = L }
+        s.total += k
+        return s
     }
 
     func refresh() {
         let s = WCSession.default
         guard s.activationState == .activated, s.isReachable else { return }
         s.sendMessage(["get": true], replyHandler: { [weak self] reply in
-            if let data = reply["state"] as? Data { self?.decode(data) }
+            if let data = reply["state"] as? Data { self?.decode(data, fresh: true, at: reply["at"] as? Double) }
+            self?.takeToday(reply)
         }, errorHandler: nil)
     }
 
@@ -175,11 +281,19 @@ extension WatchModel: HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate {
 
 extension WatchModel: WCSessionDelegate {
     func session(_ session: WCSession, activationDidCompleteWith state: WCSessionActivationState, error: Error?) {
-        if let data = session.receivedApplicationContext["state"] as? Data { decode(data) }
+        let c = session.receivedApplicationContext
+        if let data = c["state"] as? Data { decode(data, fresh: true, at: c["at"] as? Double) }
+        takeToday(session.receivedApplicationContext)
         DispatchQueue.main.async { self.refresh() }
     }
 
     func session(_ session: WCSession, didReceiveApplicationContext context: [String: Any]) {
-        if let data = context["state"] as? Data { decode(data) }
+        if let data = context["state"] as? Data { decode(data, fresh: true, at: context["at"] as? Double) }
+        takeToday(context)
+    }
+
+    fileprivate func takeToday(_ c: [String: Any]) {
+        guard let km = c["today"] as? Double, let day = c["day"] as? Double else { return }
+        DispatchQueue.main.async { self.gotPhone(km: km, dayTs: day) }
     }
 }
