@@ -2906,3 +2906,17 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .mec-wl b{color:var(--k3);font-size:15px}
 #gym .gy-body.mec .me-bdgs{margin:12px 0 2px;padding:8px 4px 6px;border:0;border-radius:8px;background:rgba(255,255,255,.6);box-shadow:inset 0 0 0 2px rgba(255,255,255,.9)}
 #gym .mec .gy-bdgs .cur b{color:var(--k3)}
+/* v16.63 경완 '트레이너 상세카드 레이아웃 무너짐, 기록 보기 쉽게': 그림 칸이 오른쪽 테두리를 넘던 것(border-box), 길면 창 테두리 안쪽에서만 스크롤, 기록은 한 줄씩 */
+#gym .gy-pop .win:has(.sd2){display:flex;flex-direction:column;overflow:hidden;padding:14px 6px 12px}
+#gym .sd2{flex:1 1 auto;min-height:0;overflow:hidden auto;padding:0 8px 2px;scrollbar-width:none}#gym .sd2::-webkit-scrollbar{display:none}
+#gym .sd2-hero{box-sizing:border-box;width:100%}
+#gym .sd2-rec{margin:7px 0 0;background:#fffdf4;box-shadow:inset 0 0 0 2px #e2ded0;padding:2px 12px}
+#gym .sd2-rec>div{display:grid;grid-template-columns:44px auto 1fr;align-items:baseline;gap:8px;padding:7px 0;line-height:1.2}
+#gym .sd2-rec>div+div{border-top:1px solid #ebe6d6}
+#gym .sd2-rec span{font-size:12px;color:var(--dim)}
+#gym .sd2-rec>div>b{font-size:15px;white-space:nowrap}
+#gym .sd2-rec em{font-style:normal;font-size:12px;color:var(--dim);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#gym .sd2-rec em b{font-size:12px}
+#gym .sd2-rec b.pay{color:#b07a10}#gym .sd2-rec b.up{color:#2a8a3e}#gym .sd2-rec b.dn{color:#c0402c}
+#gym .sd2 .sd-btns.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+#gym .sd2 .sd-btns.three button{font-size:13px}

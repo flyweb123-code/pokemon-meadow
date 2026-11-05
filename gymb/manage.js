@@ -561,12 +561,13 @@ function sfDetail(s) {
     <p class="sd2-h">라인업 <small>평균 Lv.${lv}</small></p>
     <div class="sd2-team">${s.team.map(([sp, l]) => `<span><img alt="" data-sp="${sp}"><b>${esc(SPECIES[sp]?.n || '???')}</b><small>Lv.${l}</small></span>`).join('')}</div>
     <p class="sd2-h">기록</p>
-    <div class="sd2-num"><span><small>전적</small><b>${W}승 ${L}패</b>${bar(wr, 'w')}<i>승률 ${Math.round(wr * 100)}%</i></span>
-      <span><small>월급 (7일)</small><b class="pay">${s.wage}G</b>${bar(s.rest ? 1 : 1 - dd / 7, s.rest ? 'r' : 'p')}<i>${s.rest ? '밀린 월급을 주면 다시 일해요' : `${dd}일 뒤에 줘요`}</i></span>
-      <span><small>최근 7일 번 돈</small><b class="${eg >= s.wage ? 'up' : 'dn'}">${eg.toLocaleString()}G</b>${bar(eg / Math.max(1, s.wage), eg >= s.wage ? 'w' : 'r')}<i>오늘 ${tg.toLocaleString()}G</i></span>
-      <span><small>고용</small><b>${s.hired ? `${Math.max(0, Math.floor((now - s.hired) / K.DAY)) + 1}일째` : '-'}</b><i>${s.lastE != null ? `지난주 ${s.lastE.toLocaleString()}G 벌었어요` : '첫 주예요'}</i></span></div>
-    <div class="gy-btns sd-btns"><button data-a="gym">${K.inGym(s) ? '자리 바꾸기' : '체육관에 배치'}</button><button data-a="yd" ${!s.yard && yN >= YARD_SF ? 'disabled' : ''}>${s.yard ? '코치 그만하기' : '코치 맡기기'}</button>
-      ${i > 0 ? '<button data-a="up">순서 앞으로</button>' : ''}<button data-a="fire" class="danger"${i > 0 ? '' : ' style="grid-column:1/-1"'}>해고</button><button class="main" data-a="x" style="grid-column:1/-1">닫기</button></div></div>`,
+    <div class="sd2-rec">   <!-- v16.63 경완 '기록 부분 보기 쉽게': 네 칸 막대 대신 한 줄씩 (이름 · 값 · 설명) -->
+      <div><span>전적</span><b>${W}승 ${L}패</b><em>${W + L ? `승률 <b class="${wr >= .5 ? 'up' : 'dn'}">${Math.round(wr * 100)}%</b>` : '아직 없어요'}</em></div>
+      <div><span>월급</span><b class="pay">${s.wage.toLocaleString()}G</b><em>${s.rest ? '<b class="dn">밀렸어요</b>' : `7일마다 · <b>${dd}일 뒤</b>`}</em></div>
+      <div><span>번 돈</span><b class="${eg >= s.wage ? 'up' : 'dn'}">${eg.toLocaleString()}G</b><em>최근 7일 · 오늘 ${tg.toLocaleString()}G</em></div>
+      <div><span>고용</span><b>${s.hired ? `${Math.max(0, Math.floor((now - s.hired) / K.DAY)) + 1}일째` : '-'}</b><em>${s.lastE != null ? `지난주 ${s.lastE.toLocaleString()}G` : '첫 주예요'}</em></div></div>
+    <div class="gy-btns sd-btns${i > 0 ? '' : ' three'}"><button data-a="gym">${K.inGym(s) ? '자리 바꾸기' : '체육관에 배치'}</button><button data-a="yd" ${!s.yard && yN >= YARD_SF ? 'disabled' : ''}>${s.yard ? '코치 그만하기' : '코치 맡기기'}</button>
+      ${i > 0 ? '<button data-a="up">순서 앞으로</button>' : ''}<button data-a="fire" class="danger">해고</button><button class="main" data-a="x" style="grid-column:1/-1">닫기</button></div></div>`,
     (a, close) => {
       if (a === 'x') return close();
       if (a === 'gym') { close(); return K.sfPlace(s, () => { K.openTab?.('staff'); }); }
