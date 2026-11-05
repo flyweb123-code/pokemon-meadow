@@ -32,7 +32,19 @@ const SKIP = /[^\p{L}]/u;
 
 const hideSpan = n => n <= 1 ? [0] : n === 2 ? [1] : Array.from({ length: n - 2 }, (_, i) => i + 1);
 
-export function maskNick(name) {
+// 채팅·방명록 글 (문장): 띄어쓰기로 나눈 낱말마다 본다. 문장에 흔히 섞이는 말은 따로 다룬다.
+// EXACT = 낱말 전체가 그 말일 때만 (가보지·여자지·성교육·자위대 안 가림), START = 낱말 앞에 올 때만 (시발점·미친듯이 정도만 가림)
+// SKIP_CHAT = 문장에선 안 봄 (불 꺼져·뒤져 봐 같은 보통 말)
+const EXACT = new Set(['보지', '자지', '잠지', '성교', '자위', 'ㅗ', '야스']);
+const START = new Set(['미친', '미췬', '새끼', '색끼', '시발', '애미', '애비', '호로', '니미', '졸라', '조낸', '꼬추', '등신', 'dick', 'fag', 'sex', '느금', '씹']);
+const SKIP_CHAT = new Set(['꺼져', '뒤져', '죽어라', '자살', '머저리', '또라이', '똘추']);
+
+export function maskText(text) {
+  if (typeof text !== 'string' || !text) return text;
+  return text.split(/(\s+)/).map(t => /^\s*$/.test(t) ? t : maskNick(t, true)).join('');
+}
+
+export function maskNick(name, chat = false) {
   if (typeof name !== 'string' || !name) return name;
   const ch = [...name.normalize('NFC')];
   const pos = [], low = [];   // 건너뛸 글자를 뺀 글자들과 원래 자리
@@ -40,6 +52,7 @@ export function maskNick(name) {
   const s = low.join(''), hide = new Set();
   const used = new Array(low.length).fill(false);
   for (const w of SORTED) {
+    if (chat && SKIP_CHAT.has(w)) continue;
     const L = [...w].length;
     let from = 0;
     while (true) {
@@ -47,6 +60,8 @@ export function maskNick(name) {
       const a = [...s.slice(0, at)].length;   // 글자 단위 자리
       from = at + w.length;
       if (used.slice(a, a + L).some(Boolean)) continue;
+      if (chat && EXACT.has(w) && (a !== 0 || L !== low.length)) continue;
+      if (chat && START.has(w) && a !== 0) continue;
       for (let k = a; k < a + L; k++) used[k] = true;
       const span = pos.slice(a, a + L);   // 원래 이름에서의 자리 (사이 기호 포함 구간)
       const full = [];
