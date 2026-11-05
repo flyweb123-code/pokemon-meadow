@@ -2911,19 +2911,20 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .rs-rep .rr-d.tot{color:#2a8a3e;transform-origin:left center;animation:rrTotPop .55s linear forwards!important}
 /* v16.52 경완 '내 캐릭터 상세카드: 입은 옷·점선 빼고, 체육관 등급에 따라 카드 디자인', '카드 디자인·스프라이트 퀄': 테두리·머리띠·별·장식 = 도트 그림 (tools/gym/mkcard.py → gym/img/card)
    f{등급} 9칸 금속 테두리(2배), h{등급} 머리띠 무늬, c{등급} 이름난부터 위 가운데 월계수 장식, star 별. 색 줄은 홈 등급 딱지와 같음 */
-#gym .gy-pop.mec-wrap .win{--k1:#e4e8f0;--k2:#a2a9bc;--k3:#2e3344;--kb:#fbfbfd;--f:url(../gym/img/card/f0.png);--h:url(../gym/img/card/h0.png);position:relative;padding:0 8px 10px;overflow:visible;background:var(--kb);background-clip:padding-box;border:16px solid transparent;border-image:var(--f) 8 / 16px stretch;image-rendering:pixelated;box-shadow:none;filter:drop-shadow(4px 6px 0 rgba(0,0,0,.3))}
-#gym .gy-pop.mec-wrap .win[data-g="1"]{--k1:#dcf4d2;--k2:#6cc45a;--k3:#173e1c;--kb:#fafdf8;--f:url(../gym/img/card/f1.png);--h:url(../gym/img/card/h1.png)}
-#gym .gy-pop.mec-wrap .win[data-g="2"]{--k1:#dbe9ff;--k2:#5a96ec;--k3:#112858;--kb:#f8fbff;--f:url(../gym/img/card/f2.png);--h:url(../gym/img/card/h2.png)}
-#gym .gy-pop.mec-wrap .win[data-g="3"]{--k1:#eee0ff;--k2:#a874ee;--k3:#2a1258;--kb:#fcf9ff;--f:url(../gym/img/card/f3.png);--h:url(../gym/img/card/h3.png)}
-#gym .gy-pop.mec-wrap .win[data-g="4"]{--k1:#ffe0dc;--k2:#ec6458;--k3:#4a0c0c;--kb:#fffafa;--f:url(../gym/img/card/f4.png);--h:url(../gym/img/card/h4.png)}
-#gym .gy-pop.mec-wrap .win[data-g="5"]{--k1:#fff2c0;--k2:#f0b830;--k3:#4a2e00;--kb:#fffdf4;--f:url(../gym/img/card/f5.png);--h:url(../gym/img/card/h5.png)}
-#gym .gy-pop.mec-wrap .win[data-g="6"]{--k1:#ece4ff;--k2:#b8a8f0;--k3:#241c5c;--kb:#fdfcff;--f:url(../gym/img/card/f6.png);--h:url(../gym/img/card/h6.png)}
+#gym .gy-pop.mec-wrap .win{--k1:#e4e8f0;--k2:#a2a9bc;--k3:#2e3344;--kb:#fbfbfd;--f:url(../gym/img/card/f0.png);position:relative;padding:0 8px 10px;overflow:visible;background:var(--kb);background-clip:padding-box;border:16px solid transparent;border-image:var(--f) 8 / 16px stretch;image-rendering:pixelated;box-shadow:none;filter:drop-shadow(4px 6px 0 rgba(0,0,0,.3))}
+#gym .gy-pop.mec-wrap .win[data-g="1"]{--k1:#dcf4d2;--k2:#6cc45a;--k3:#173e1c;--kb:#fafdf8;--f:url(../gym/img/card/f1.png)}
+#gym .gy-pop.mec-wrap .win[data-g="2"]{--k1:#dbe9ff;--k2:#5a96ec;--k3:#112858;--kb:#f8fbff;--f:url(../gym/img/card/f2.png)}
+#gym .gy-pop.mec-wrap .win[data-g="3"]{--k1:#eee0ff;--k2:#a874ee;--k3:#2a1258;--kb:#fcf9ff;--f:url(../gym/img/card/f3.png)}
+#gym .gy-pop.mec-wrap .win[data-g="4"]{--k1:#ffe0dc;--k2:#ec6458;--k3:#4a0c0c;--kb:#fffafa;--f:url(../gym/img/card/f4.png)}
+#gym .gy-pop.mec-wrap .win[data-g="5"]{--k1:#fff2c0;--k2:#f0b830;--k3:#4a2e00;--kb:#fffdf4;--f:url(../gym/img/card/f5.png)}
+#gym .gy-pop.mec-wrap .win[data-g="6"]{--k1:#ece4ff;--k2:#b8a8f0;--k3:#241c5c;--kb:#fdfcff;--f:url(../gym/img/card/f6.png)}
 #gym .gy-pop.mec-wrap .win[data-g="6"]::before{content:'';position:absolute;inset:-16px;z-index:-1;background:linear-gradient(120deg,#ff9ec4,#ffe27a,#9ef0b8,#9ed4ff,#c8a8ff,#ff9ec4) 0 0/300% 300%;animation:mecPrism 6s linear infinite;opacity:.3;pointer-events:none}
 @keyframes mecPrism{to{background-position:-300% 0}}
 #gym .mec{text-align:center;overflow:visible}
 #gym .gy-pop .gy-body.mec{overflow:visible;max-height:none}
 #gym .mec-crest{position:absolute;left:50%;top:-22px;z-index:3;width:92px;height:28px;transform:translateX(-50%);background:no-repeat 0 0/100% 100%;image-rendering:pixelated;pointer-events:none}
-#gym .mec-hd{position:relative;display:flex;align-items:center;gap:8px;margin:0 -8px 12px;padding:8px 10px;background:var(--h) 0 0/16px 16px;image-rendering:pixelated;border-bottom:2px solid var(--k3);box-shadow:inset 0 2px 0 rgba(255,255,255,.35);text-align:left}
+#gym .gy-pop.mec-wrap .win[data-g="6"] .mec-hd{background:linear-gradient(180deg,rgba(255,255,255,.3) 0 2px,transparent 2px 48%,rgba(0,0,0,.1) 48% 100%),linear-gradient(90deg,#e886b4,#e8b04a,#5cc48a,#5a9ee8,#9a7ae8,#e886b4) 0 0/200% 100%;animation:gwPrism 5s linear infinite}
+#gym .mec-hd{position:relative;display:flex;align-items:center;gap:8px;margin:0 -8px 12px;padding:8px 10px;background:linear-gradient(180deg,rgba(255,255,255,.28) 0 2px,transparent 2px 48%,rgba(0,0,0,.12) 48% 100%),var(--k2);border-bottom:2px solid var(--k3);box-shadow:inset 0 -2px 0 rgba(0,0,0,.15);text-align:left}
 #gym .mec-bd{flex:none;line-height:0}
 #gym .mec-bd .bdw img{width:52px;height:52px;image-rendering:pixelated;filter:drop-shadow(0 2px 0 rgba(0,0,0,.4))}
 #gym .mec-gr{display:flex;flex-direction:column;gap:1px;min-width:0;color:#fff;text-shadow:1px 1px 0 var(--k3),-1px 0 0 var(--k3),0 -1px 0 var(--k3),0 1px 0 var(--k3),2px 2px 0 var(--k3)}

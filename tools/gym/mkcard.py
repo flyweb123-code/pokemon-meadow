@@ -102,6 +102,6 @@ def crest(i):   # 위 가운데 장식 (이름난부터): 양쪽 월계수 + 가
       if 0 <= cx + dx < W and 0 <= cy + dy < Hh: px[cx + dx, cy + dy] = c
   im.save(os.path.join(OUT, f'c{i}.png'))
 
-for i in range(7): frame(i); head(i)
+for i in range(7): frame(i)
 for i in range(3, 7): crest(i)
 star()
