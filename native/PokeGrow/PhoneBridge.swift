@@ -191,7 +191,14 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
         guard let km = userInfo["km"] as? Double, km > 0 else { return }
         let start = userInfo["start"] as? Double ?? 0
         let end = userInfo["end"] as? Double ?? 0
-        DispatchQueue.main.async { self.enqueueRun(km: km, start: start, end: end, kind: 0) }
+        DispatchQueue.main.async {
+            // 2026-11-05: 런닝이 끝나기 전에 '워치만 차고 걸은 거리'(WatchWalk)로 이미 넣은 만큼이 있으면, 그 시간 아이폰 만보기 거리와 함께 알려 두 번 쌓지 않게
+            let ww = start > 0 && end > start ? WatchWalk.shared.fedKm(Date(timeIntervalSince1970: start), Date(timeIntervalSince1970: end)) : 0
+            guard ww > 0 else { self.enqueueRun(km: km, start: start, end: end, kind: 0); return }
+            HealthSync.shared.phoneKm(Date(timeIntervalSince1970: start), Date(timeIntervalSince1970: end)) { ph in
+                self.enqueueRun(km: km, start: start, end: end, kind: 0, phoneKm: max(ph, 0) + ww)
+            }
+        }
     }
 
     // 워치가 열릴 때 최신 알 현황을 바로 달라고 한다
