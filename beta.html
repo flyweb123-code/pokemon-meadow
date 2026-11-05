@@ -5497,7 +5497,8 @@ function emoHook(m, text, sc) { if (!m) return; const E = EMO_SC[sc], e = E ? E[
 let FACE = null, faceP = null;
 const loadFace = () => faceP ||= fetch('face.json?v=1').then(r => r.ok ? r.json() : null).then(d => { FACE = d; try { renderDlg(); } catch (e) {} return d; }).catch(() => null);
 // 상태창 얼굴: 이 줄의 첫 포켓몬, 4초 안에 말풍선이 떴으면 그 표정 (없는 표정은 비슷한 표정 → 기본)
-function faceHtml(m) { if (!FACE) { loadFace(); return ''; } const k = String(m.sk || m.form), L = FACE.k[k]; if (!L) return '';
+const FACE_ON = false;   /* v16.61 경완 '저 포켓몬 얼굴이 아니야': 상태창 얼굴은 끔 (표정 데이터·코드는 남겨 둠, 필드 동작은 그대로) */
+function faceHtml(m) { if (!FACE_ON) return ''; if (!FACE) { loadFace(); return ''; } const k = String(m.sk || m.form), L = FACE.k[k]; if (!L) return '';
   let e = m.state === 'sleep' ? 'Normal' : (m.emoT && performance.now() - m.emoT < 4000 ? m.emoE : 'Normal'); const has = n => L.includes(EMO_N.indexOf(n));
   if (!has(e)) e = (EMO_ALT[e] || []).find(has) || 'Normal'; let i = L.indexOf(EMO_N.indexOf(e)); if (i < 0) i = 0;
   return `<i class="dface${boxOf(m.pid)?.shiny ? ' shy' : ''}" style="background-image:url('face/${k}.png?v=1');background-position:${-i * 40}px 0"></i>`; }
@@ -7345,7 +7346,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '16.60';   /* v16.60 경완: 얼굴 표정·필드 동작 — 상태창 왼쪽에 문장 속 포켓몬 얼굴(말풍선 상황마다 기쁨·놀람·걱정·화남 등 표정, face/), 끄덕이기·올려다보기·포즈·춤·노래·깨어나기·움찔 등 원본 나머지 동작(mx/, 필드에 있는 포켓몬부터 하나씩 받아 둠)을 상호작용마다. */   /* v16.59 경완: 랭킹의 내 줄 → 프로필 내 카드와 동일 */ /* v16.60 경완: 진화구슬 기술 5차 — 파도 큰 구슬도 뜸(무거울수록 천천히), 폭풍 더 세게, 용해액 방울 작게·안 녹는 구슬은 튕겨내는 막, 사이코 떠오르는 구슬도 밀림 */
+const APP_VER = '16.61';   /* v16.61 경완: 상태창 왼쪽 포켓몬 얼굴 끔 (필드 스프라이트 표정을 물어본 거였음) — 필드 새 동작은 그대로. */   /* v16.60 경완: 얼굴 표정·필드 동작 — 상태창 왼쪽에 문장 속 포켓몬 얼굴(말풍선 상황마다 기쁨·놀람·걱정·화남 등 표정, face/), 끄덕이기·올려다보기·포즈·춤·노래·깨어나기·움찔 등 원본 나머지 동작(mx/, 필드에 있는 포켓몬부터 하나씩 받아 둠)을 상호작용마다. */   /* v16.59 경완: 랭킹의 내 줄 → 프로필 내 카드와 동일 */ /* v16.60 경완: 진화구슬 기술 5차 — 파도 큰 구슬도 뜸(무거울수록 천천히), 폭풍 더 세게, 용해액 방울 작게·안 녹는 구슬은 튕겨내는 막, 사이코 떠오르는 구슬도 밀림 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
