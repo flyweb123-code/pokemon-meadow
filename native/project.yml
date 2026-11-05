@@ -70,6 +70,7 @@ targets:
         WKApplication: true
         WKCompanionAppBundleIdentifier: com.flyweb123.pokerun
         WKBackgroundModes: [workout-processing]
+        NSMotionUsageDescription: 오늘 걸은 이동 거리를 워치에서 보여 주려고 걸음 기록을 읽어요.
         NSHealthShareUsageDescription: 달린 거리를 알에 쌓으려고 건강 데이터를 읽어요.
         NSHealthUpdateUsageDescription: 런닝을 운동 기록으로 저장해요.
         ITSAppUsesNonExemptEncryption: false

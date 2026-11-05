@@ -44,7 +44,19 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
     private func sendState(_ data: Data) {
         let s = WCSession.default
         guard WCSession.isSupported(), s.activationState == .activated, s.isPaired, s.isWatchAppInstalled else { return }
-        try? s.updateApplicationContext(["state": data, "at": Date().timeIntervalSince1970])
+        try? s.updateApplicationContext(watchContext(data))
+    }
+    // 2026-11-05 경완: 워치에서도 프로필의 '이동 거리'(오늘 0시부터, 아이폰 만보기)를 보게 같이 보낸다
+    private func watchContext(_ data: Data) -> [String: Any] {
+        var c: [String: Any] = ["state": data, "at": Date().timeIntervalSince1970]
+        if let km = todayKm { c["today"] = km; c["day"] = todayDay }
+        return c
+    }
+    private var watchTodaySent = -1.0
+    private func sendTodayToWatch() {
+        guard let km = todayKm, abs(km - watchTodaySent) >= 0.005 || km < watchTodaySent else { return }
+        watchTodaySent = km
+        sendState(UserDefaults.standard.data(forKey: stateKey) ?? Data())
     }
 
     // MARK: watch → app
@@ -100,8 +112,10 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
     private var todayKm: Double?
     private var todayDay = 0.0
     func sendToday(km: Double, day: Date) {
+        if day.timeIntervalSince1970 != todayDay { watchTodaySent = -1 }
         todayKm = km; todayDay = day.timeIntervalSince1970
         flushToday()
+        sendTodayToWatch()
     }
     private func flushToday() {
         guard gameReady, let web = webView, let km = todayKm else { return }
@@ -204,7 +218,7 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
     // 워치가 열릴 때 최신 알 현황을 바로 달라고 한다
     func session(_ session: WCSession, didReceiveMessage message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
         let data = UserDefaults.standard.data(forKey: stateKey) ?? Data()
-        replyHandler(["state": data])
+        replyHandler(watchContext(data))
     }
 
     func session(_ session: WCSession, activationDidCompleteWith state: WCSessionActivationState, error: Error?) {
