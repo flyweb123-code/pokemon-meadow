@@ -2827,3 +2827,27 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .jn-tb .jn-gc,#gym .gy-jnlw .jn-out .jn-gc{display:inline-flex;justify-content:space-between;align-items:center;gap:6px;width:calc(18px + 5.4ch);font-variant-numeric:tabular-nums}
 #gym .gy-jnlw .jn-out dd{text-align:right}
 #gym .jn-tb .jn-gc,#gym .gy-jnlw .jn-out .jn-gc{width:68px}
+/* v16.41 경완: 훈련장 포켓몬 상세 — '오늘 훈련' 상자(누르면 훈련 일지), 기술 바꾸기는 기술 제목 오른쪽 */
+#gym .tp2-today{display:flex;flex-direction:column;gap:8px;width:100%;margin:12px 0 4px;padding:10px 12px 11px;text-align:left;font:inherit;color:var(--win-ink);background:#f2f8ee;border:3px solid #6aa85a;box-shadow:3px 3px 0 rgba(0,0,0,.15);cursor:pointer}
+#gym .tp2-today:active{translate:2px 2px;box-shadow:1px 1px 0 rgba(0,0,0,.15)}
+#gym .tp2-th{display:flex;align-items:baseline;justify-content:space-between;gap:8px}#gym .tp2-th b{font-size:14px;color:#2f6a26}#gym .tp2-th small{font-size:11px;color:#4a7a40}
+#gym .tp2-g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+#gym .tp2-g>span{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 2px 7px;background:#fff;box-shadow:inset 0 0 0 2px #d8e8cc;line-height:1.2}
+#gym .tp2-g small{font-size:10px;color:var(--dim)}#gym .tp2-g b{font-size:14px;color:var(--win-ink)}
+#gym .tp2-g b.up{color:#d83a30}#gym .tp2-g b.fr{color:#d0508a}#gym .tp2-g b.mv{color:#2a8a3e}
+#gym .tp2-mvs,#gym .tl-mv{display:flex;flex-wrap:wrap;gap:4px;margin:0}
+#gym .tp2-mvs i,#gym .tl-mv i{font-style:normal;font-size:11px;font-weight:700;padding:1px 7px;background:#2a8a3e;color:#fff}
+#gym .tp2 .mp-mvh{margin-top:10px}
+#gym .tp2-btns{margin-top:12px}
+/* 훈련 일지 */
+#gym .gy-pop .win:has(.tl-pop){max-height:calc(100% - 8px);display:flex;flex-direction:column}
+#gym .tl-pop{display:flex;flex-direction:column;min-height:0}
+#gym .tl-tot{margin:0 0 10px}#gym .tl-tot>span{background:#f2f8ee;box-shadow:inset 0 0 0 2px #cfe2c2}
+#gym .tl-list{list-style:none;margin:0;padding:0 2px 2px;display:flex;flex-direction:column;gap:6px;overflow:auto;min-height:0;max-height:52vh}
+#gym .tl-list li{display:flex;flex-direction:column;gap:6px;padding:8px 10px;background:#fffdf4;box-shadow:inset 0 0 0 2px #e2ded0}
+#gym .tl-d{display:flex;align-items:baseline;gap:6px}#gym .tl-d b{font-size:14px}#gym .tl-d small{font-size:11px;color:var(--dim)}#gym .tl-d i{margin-left:auto;font-style:normal;font-size:11px;color:var(--dim)}
+#gym .tl-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+#gym .tl-g>span{display:flex;align-items:baseline;justify-content:space-between;gap:4px;padding:3px 7px;background:#f6f3e8}
+#gym .tl-g small{font-size:10px;color:var(--dim)}#gym .tl-g b{font-size:13px}#gym .tl-g b.up{color:#d83a30}#gym .tl-g b.fr{color:#d0508a}
+#gym .tl-mv{align-items:center;font-size:11px;color:var(--dim)}
+#gym .tl-none{text-align:center;margin:18px 0!important}
