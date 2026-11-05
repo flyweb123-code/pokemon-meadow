@@ -1439,7 +1439,7 @@ async function meCard() { const g = st(), G = gradeOf(g.rep || 0, g.gmax ?? 99),
     <div class="bd-pic"><img alt="" src="${src}" onload="this.style.width=this.naturalWidth*2+'px';this.style.height=this.naturalHeight*2+'px'"></div>
     <h4>관장 ${esc(trName() || '나')}</h4><p class="mec-wl"><b>${g.w || 0}</b>승 <b>${g.l || 0}</b>패</p>${bd}</div><div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); });
   p.classList.add('mec-wrap'); const w = p.querySelector('.win'); if (w) w.dataset.g = G.i; }
-function sfCard(s) { bodyCard(trSrc(s.tr), sfName(s), `${s.w || 0}승 ${s.l || 0}패<br>월급 7일에 ${(s.wage || 0).toLocaleString()}G${TRAITS[s.trait] ? ` · ${TRAITS[s.trait].n}` : ''}${s.rest ? '<br>월급을 못 받아서 쉬고 있어요' : ''}`); }   // 내 카드처럼 승패, 그리고 월급 (경완 2026-10-29)
+function sfCard(s) { loadJs('gymb/battle.js', 'GymBattle').then(() => loadJs('gymb/manage.js', 'GymManage')).then(() => { if (window.GymManage?.sfDetail) GymManage.sfDetail(s, true); else bodyCard(trSrc(s.tr), sfName(s), `${s.w || 0}승 ${s.l || 0}패`); }); }   // v16.68 경완 '체육관 홈 트레이너 상세카드도 고용 트레이너 상세카드로 통일' (+ 자리 바꾸기)
 // 체육관 정보: 팝업이 아니라 자세한 새 화면 (경완 2026-10-27 '새로운 창으로 더 자세하게')
 function infoPop() {
   root.querySelector('.gy-infos')?.remove();

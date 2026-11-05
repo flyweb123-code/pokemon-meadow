@@ -2930,3 +2930,16 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .sd2-coach::before{content:'';display:inline-block;width:7px;height:7px;margin-right:5px;vertical-align:1px;border-radius:50%;background:#e8782e;box-shadow:0 0 0 2px #ffd7b0}
 #gym .gy-pop .gy-btns button.sd2-in{transform:translateY(3px);box-shadow:inset 0 3px 0 rgba(0,0,0,.14);background:#e6e3da;color:#8a8a98}
 #gym .gy-pop .gy-btns button.sd2-in:active{transform:translateY(3px);box-shadow:inset 0 3px 0 rgba(0,0,0,.2)}
+/* v16.68 경완: 훈련 일지 = 상세카드와 같은 배경·머리, 문장 일지, 경험치 막대는 아래 선 오른쪽 끝까지 */
+#gym .tp2-hd>div{flex:1;min-width:0}
+#gym .gy-pop.tl-wrap{background:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+#gym .tl-pop .tl-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+#gym .tl-pop .tl-h .tl-sum{display:inline;font-size:11px;font-weight:400}
+#gym .tl-ss{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+#gym .tl-list li .tl-s{display:block;padding:0 0 0 12px;position:relative;font-size:13px;line-height:1.45;background:none;box-shadow:none}
+#gym .tl-s::before{content:'';position:absolute;left:2px;top:.6em;width:5px;height:5px;background:#b8b4a4}
+#gym .tl-s.x b{color:#2a6ab8}#gym .tl-s.up{color:#c0302a;font-weight:700}#gym .tl-s.up b{color:#d83a30}#gym .tl-s.up::before{background:#d83a30}
+#gym .tl-s.fr b{color:#d0508a}#gym .tl-s.fr::before{background:#d0508a}
+#gym .tl-s.mv{color:#2a6a30}#gym .tl-s.mv::before{background:#2a8a3e}#gym .tl-s .mv-chip{vertical-align:1px;margin:0 1px}
+#gym .tl-d i{font-style:normal}
+#gym .tp2-hd h4{min-height:28px;display:flex;align-items:center}
