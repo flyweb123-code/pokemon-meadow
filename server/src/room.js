@@ -116,7 +116,7 @@ export class FieldRoom {
       }
       case 'tr': {
         const was = !!(a.o && a.p?.out);
-        a.p = { x: num(m.x), y: num(m.y), d: m.d | 0, w: m.w ? 1 : 0, f: m.f ? 1 : 0, k: String(m.k || '').slice(0, 40), out: m.out ? 1 : 0, j: (m.j | 0) % 1000 };   // j = 점프 횟수 (바뀌면 다른 화면에서 뜀)
+        a.p = { x: num(m.x), y: num(m.y), d: m.d | 0, w: m.w ? 1 : 0, f: m.f ? 1 : 0, k: String(m.k || '').slice(0, 40), out: m.out ? 1 : 0, j: (m.j | 0) % 1000, r: Array.isArray(m.r) && m.r.length === 2 ? [m.r[0] | 0, m.r[1] | 0] : 0, h: m.h ? 1 : 0 };   // r = 탄 소품 [번호, 자리], h = 후프링 들기 (v16.04)   // j = 점프 횟수 (바뀌면 다른 화면에서 뜀)
         ws.serializeAttachment(a);
         if (a.o && was !== !!a.p.out) this.cast({ t: 'own', on: !!a.p.out }, ws);   // 주인이 필드에 나옴/들어감
         return this.cast({ t: 'tr', c: a.c, ...a.p, ts: +m.ts || 0 }, ws);   // ts = 보낸 기기 시각 (받는 쪽 보간 버퍼)
