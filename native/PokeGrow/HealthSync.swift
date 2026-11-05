@@ -68,12 +68,32 @@ final class HealthSync {
     }
 
     // 그 운동 시간에 아이폰 만보기가 잰 거리(km). 모르면 -1 (게임은 예전처럼 처리)
+    // 2026-11-05 경완 '아이폰 두고 운동 → 알 거리는 늦게 들어오는데 알은 안 주워짐': 만보기가 실패해 -1 이 가면
+    // 게임은 '아이폰이 이미 셌다'고 보고 알 줍기를 건너뛴다. 만보기가 실패하면 건강 앱의 아이폰 걷기 거리로 대신 잰다.
     func phoneKm(_ start: Date, _ end: Date, done: @escaping (Double) -> Void) {
-        guard CMPedometer.isDistanceAvailable() else { done(-1); return }
-        pedometer.queryPedometerData(from: start, to: end) { data, error in
-            let km = error == nil ? (data?.distance?.doubleValue ?? 0) / 1000 : -1
+        guard CMPedometer.isDistanceAvailable() else { healthPhoneKm(start, end, done: done); return }
+        pedometer.queryPedometerData(from: start, to: end) { [weak self] data, error in
+            DispatchQueue.main.async {
+                if error == nil { done((data?.distance?.doubleValue ?? 0) / 1000) }
+                else if let self { self.healthPhoneKm(start, end, done: done) }
+                else { done(-1) }
+            }
+        }
+    }
+
+    // 그 시간 건강 앱에 '아이폰'이 적은 걷기+달리기 거리 (km). 못 읽으면 -1
+    private func healthPhoneKm(_ start: Date, _ end: Date, done: @escaping (Double) -> Void) {
+        let pred = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            HKQuery.predicateForSamples(withStart: start, end: end, options: []),
+            HKQuery.predicateForObjects(withDeviceProperty: HKDevicePropertyKeyModel, allowedValues: ["iPhone" as AnyHashable]),
+        ])
+        let q = HKStatisticsQuery(quantityType: HKQuantityType(.distanceWalkingRunning), quantitySamplePredicate: pred, options: .cumulativeSum) { _, stats, error in
+            // 아이폰 기록이 하나도 없으면 결과가 비어 오고 오류 코드(데이터 없음)가 올 수 있다 → 0 km 로 본다
+            let noData = (error as? HKError)?.code == .errorNoData
+            let km = error == nil || noData ? (stats?.sumQuantity()?.doubleValue(for: .meter()) ?? 0) / 1000 : -1
             DispatchQueue.main.async { done(km) }
         }
+        store.execute(q)
     }
 
     // MARK: 운동 경로(GPS) → 알을 주운 곳
