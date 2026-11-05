@@ -934,6 +934,7 @@ function tick0(now) {
   g.cands = g.cands.filter(c => { if (now <= c.exp) return true; glog('sf', `면접 지원자 ${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 다른 체육관으로 갔다.`, c.exp); return false; });
   if (g.cands.length < 3 && now >= (g.candN || 0) && g.sf.length < 5) { g.cands.push(mkCand(now)); g.candSeen = 0; g.candN = now + rnd(14, 30) * H; }
   try { window.GymManage?.tickTrain(now); } catch (e) { console.error(e); }
+  try { warmImgs(); } catch (e) {}
   setAt(now); save();
 }
 // 필드 체육관 버튼의 빨간 점 (gym.js 없이도 훅이 S.gym.at 만 보고 띄운다)
@@ -2209,6 +2210,12 @@ function enter() {
   clearInterval(tickT); tickT = setInterval(() => { if (!open || busy || !st()?.d || tutEnd || root.classList.contains('pre') || root.querySelector('.gy-on, .gy-lock')) return;   /* v13.94: 튜토리얼·개설 알림창 중엔 도전자를 데려오지 않음 */ const n0 = st().q.length; tick(); renderTop(); if (st().q.length > n0) { homeSay(); qDing(); } else if (!st().q.length) homeSay(); }, 20e3);
 }
 let tickT = 0;
+/* v16.48 경완 '트레이너 메뉴 눌렀을 때 트레이너 스프라이트 바로 안 뜸': 메뉴를 열 때 처음 받던 그림을 체육관에 들어올 때·지원자가 올 때 미리 받아 둔다
+   (고용·지원 트레이너, 명단 도전자, 카드 배경·발판) */
+const warmSeen = new Set();
+function warmImgs() { const g = st(); if (!g) return; const L = [`${IMG}bt/bg_in1c.png`, `${IMG}bt/pl_e.png`];
+  [...(g.sf || []), ...(g.cands || []), ...(g.q || [])].forEach(x => { if (x?.tr) L.push(trSrc(x.tr)); });
+  for (const u of L) { if (warmSeen.has(u)) continue; warmSeen.add(u); const im = new Image(); im.src = u; im.decode?.().catch(() => {}); iconKeep.push(im); } }
 /* v15.88 경완 '고용한 트레이너가 평판 올렸거나 골드 벌었을 때, 훈련장에서 특별한 기술 배웠을 때 체육관 들어가면 알림창':
    g.aw = { sf: {트레이너 id: [막은 수, 골드, 평판]}, mv: [[포켓몬 id, 기술 id, 기술 이름, 타입]] } 에 모았다가 들어올 때 한 번 보여 주고 비운다 */
 const awOf = () => { const g = st(); return g.aw || (g.aw = { sf: {}, mv: [] }); };
