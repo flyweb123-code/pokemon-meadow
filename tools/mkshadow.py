@@ -2,6 +2,7 @@
 # python3 tools/mkshadow.py <SpriteCollab 폴더>
 #   shd.json = {키: [크기, {동작: [dx, dy] 또는 [[dx, dy], ...프레임마다]}]}
 #   [2] = 머리 자리 {동작: …} (<동작>-Offsets.png 의 검은 점, 같은 기준) — 말풍선·코 풍선 자리 (경완 '몸 부위 위치표 적용')
+#   [3] = 몸 가운데 {동작: …} (Offsets 초록 점) — 등·배 위에 태울 자리 (경완 '올라타는 상호작용 다 몸 부위 적용')
 #   크기 = AnimData.xml 의 ShadowSize (0 작게·1 보통·2 크게), dx·dy = <동작>-Shadow.png 의 흰 점(그림자 가운데) - 그림 칸 가운데 (원본 px)
 #   줄은 게임 아틀라스와 같게: 7번(왼쪽 아래), WalkUp 5번, Attack 6번(옆, mkatkside), 8줄이 없으면 0번. 대기 그림으로 만든 동작(gen)·다시 그린 종(rd)은 Idle 첫 칸 자리
 import sys, json, os, re, glob
@@ -75,6 +76,14 @@ for key, (rp, v) in sorted(keys.items()):
         if v.get('rd'): continue
         s = spots(d, A, nm)
         if s and s != i0: M[nm] = s
-    OUT[key] = [sz, M, Hd] if Hd else [sz, M]
+    CT = lambda nm: spots(d, A, nm, 'Offsets', lambda p: p[1] > 200 and p[0] < 60 and p[2] < 60)   # 몸 가운데 (초록 점) — 등·배 위에 태울 자리
+    c0 = CT('Idle'); c0 = (c0[0] if isinstance(c0[0], list) else c0) if c0 else None; Cd = {}
+    if c0:
+        for nm in names + ['WalkD', 'WalkN', 'WalkS', 'IdleS']:
+            s = None if v.get('rd') or nm in gen else CT(nm)
+            s = s and (s[0] if isinstance(s[0], list) else s)
+            if s and s != c0: Cd[nm] = s
+        Cd['_'] = c0
+    OUT[key] = [sz, M, Hd, Cd] if Cd else [sz, M, Hd] if Hd else [sz, M]
 json.dump(OUT, open('shd.json', 'w'), separators=(',', ':'))
 print('shd', len(OUT), 'miss', miss, os.path.getsize('shd.json'))
