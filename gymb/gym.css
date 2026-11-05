@@ -2678,3 +2678,72 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 /* v16.19 경완: 트레이너·훈련장 알림창은 업데이트 알림창처럼 커지며 뜬다 (체육관 창 모션 끔보다 우선) */
 #gym .gy-pop.aw-wrap>.win{animation:awNpop .32s steps(4,end)!important}
+/* v16.35 경완: 체육관 일지 '체육관 합계' 제목 밑 점선 뺌 */
+#gym .jn-sum>h5{border-bottom:0;padding-bottom:0}
+/* v16.35 경완 '트레이너 메뉴 디자인 · 창들하고 슬롯들 디자인 퀄': 머리줄(인원), 탭, 슬롯 카드, 빈 화면, 상세 창, 확인 창 */
+#gym .gy-sheet:has(.sf-hd){gap:0}
+#gym .sf-hd{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin:0 0 8px}
+#gym .sf-hd h3{margin:0;font-size:20px}
+#gym .sf-cap{display:flex;gap:6px}
+#gym .sf-cap>span{display:flex;flex-direction:column;align-items:flex-end;padding:3px 8px 4px;background:#f3f1ea;box-shadow:inset 0 0 0 2px #d8d4c4;line-height:1.15}
+#gym .sf-cap small{font-size:10px;color:var(--dim)}#gym .sf-cap b{font-size:15px}#gym .sf-cap em{font-style:normal;font-size:11px;color:var(--dim);font-weight:400;margin-left:1px}
+#gym .gy-sheet:has(.sf-hd) .sp-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:0;margin:0 0 12px;border:3px solid var(--frame);background:var(--frame);box-shadow:0 3px 0 rgba(0,0,0,.18)}
+#gym .gy-sheet:has(.sf-hd) .sp-tabs button{padding:9px 4px;font-size:14px;background:var(--win);box-shadow:none;border:0}
+#gym .gy-sheet:has(.sf-hd) .sp-tabs button+button{border-left:3px solid var(--frame)}
+#gym .gy-sheet:has(.sf-hd) .sp-tabs button[aria-selected="true"]{background:#2a3a5c;color:#fff;font-weight:700;box-shadow:inset 0 -3px 0 #ffd84a}
+#gym .gy-sheet:has(.sf-hd) .sp-tabs .tdot{margin-left:2px;box-shadow:0 0 0 2px var(--win)}
+/* 빈 화면: 남은 자리 한가운데 */
+#gym .gy-sheet:has(.sf-void){display:flex;flex-direction:column}
+#gym .sf-void{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:240px;padding:0 16px 40px;text-align:center}
+#gym .sf-void-ic{display:grid;place-items:center;width:84px;height:84px;margin-bottom:6px;border-radius:50%;background:#f3f1ea;box-shadow:inset 0 0 0 3px #e2ded0}
+#gym .sf-void-ic svg{width:48px;height:48px;image-rendering:pixelated}
+#gym .sf-void b{font-size:16px;color:var(--win-ink)}
+#gym .sf-void p{margin:0;font-size:13px;line-height:1.7;color:var(--dim);word-break:keep-all}
+/* 고용 관리 슬롯 */
+#gym .sfl2{display:flex;flex-direction:column;gap:12px;padding:0 2px 6px}
+#gym .sfc{position:relative;display:grid;grid-template-columns:76px 1fr 12px;grid-template-areas:"p m g" "t t t" "n n n";gap:0 10px;width:100%;padding:0;text-align:left;font:inherit;color:var(--win-ink);background:#fffdf4;border:3px solid var(--frame);box-shadow:4px 4px 0 rgba(0,0,0,.18);cursor:pointer;overflow:hidden}
+#gym .sfc:active{translate:2px 2px;box-shadow:2px 2px 0 rgba(0,0,0,.18)}
+#gym .sfc-pic{grid-area:p;position:relative;display:grid;place-items:end center;height:84px;background:url(../gym/img/bt/bg_in1c.png) center bottom/cover no-repeat,#e8c070;border-right:3px solid var(--frame);border-bottom:3px solid var(--frame)}
+#gym .sfc-pic img{position:relative;z-index:1;width:72px;height:72px;object-fit:contain;image-rendering:pixelated;margin-bottom:4px}
+#gym .sfc-base{position:absolute;left:8px;right:8px;bottom:4px;height:14px;border-radius:50%;background:radial-gradient(ellipse at 50% 40%,#fff4d0,#d8b070 70%);box-shadow:0 2px 0 #9a7040}
+#gym .sfc-mid{grid-area:m;display:flex;flex-direction:column;justify-content:center;gap:4px;min-width:0;padding:8px 0}
+#gym .sfc-nm{display:flex;flex-direction:column;line-height:1.2}#gym .sfc-nm small{font-size:11px;color:var(--dim)}#gym .sfc-nm b{font-size:16px}
+#gym .sfc .trt{margin:0}
+#gym .sfc-st{display:flex;flex-wrap:wrap;gap:4px}
+#gym .sfc-st em{font-style:normal;font-size:11px;font-weight:700;padding:1px 6px;background:#e8e8ee;color:#5a5a6a;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+#gym .sfc-st em.g{background:#e3ecff;color:#2a58a8}#gym .sfc-st em.y{background:#fff1e6;color:#d0602a}#gym .sfc-st em.r{background:#ffe8e8;color:#b8402c}
+#gym .sfc-go{grid-area:g;align-self:center;font-style:normal;font-size:22px;color:var(--dim)}
+#gym .sfc-team{grid-area:t;display:flex;align-items:center;padding:6px 10px 4px;background:#f6f3e8}
+#gym .sfc-team .sf-team{gap:0 10px;margin:0}
+#gym .sfc-num{grid-area:n;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid #e2ded0}
+#gym .sfc-num>span{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 2px 7px;line-height:1.2;text-align:center}
+#gym .sfc-num>span+span{border-left:2px solid #e2ded0}
+#gym .sfc-num small{font-size:10px;color:var(--dim)}#gym .sfc-num b{font-size:13px}#gym .sfc-num i{font-style:normal;font-size:10px;color:var(--dim)}
+#gym .sfc-num b.pay{color:#b07a10}#gym .sfc-num b.up{color:#2a8a3a}#gym .sfc-num b.dn{color:#c83828}
+#gym .sfc.yard{background:#fff8ef}
+#gym .sfc.rest{background:#f1f0ec}#gym .sfc.rest .sfc-pic img{filter:grayscale(.7) brightness(.95)}
+/* 상세 창 */
+#gym .gy-pop .win:has(.sd2){padding:0 0 14px;overflow:hidden auto;max-height:calc(100% - 8px)}
+#gym .sd2-hero{position:relative;display:grid;place-items:end center;height:136px;background:url(../gym/img/bt/bg_in1c.png) center bottom/cover no-repeat,#e8c070;border-bottom:3px solid var(--frame)}
+#gym .sd2-hero::after{content:'';position:absolute;left:50%;bottom:-30px;width:150px;height:72px;transform:translateX(-50%);background:url(../gym/img/bt/pl_e.png) 0 0/100% 100%;image-rendering:pixelated}
+#gym .sd2-hero img{position:relative;z-index:1;width:128px;height:128px;object-fit:contain;image-rendering:pixelated;margin-bottom:8px}
+#gym .sd2-nm{position:absolute;left:10px;bottom:10px;z-index:2;display:flex;flex-direction:column;padding:3px 9px 4px;background:rgba(255,253,244,.95);border:2px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.2);line-height:1.2}
+#gym .sd2-nm small{font-size:11px;color:var(--dim)}#gym .sd2-nm b{font-size:17px}
+#gym .sd2-rest{position:absolute;right:10px;top:10px;z-index:2;font-style:normal;font-size:12px;font-weight:700;padding:2px 8px;background:#ffe8e8;color:#b8402c;border:2px solid #b8402c}
+#gym .sd2-trt{padding:12px 14px 0}#gym .sd2-trt .trt{margin:0;width:100%;box-sizing:border-box}
+#gym .sd2-team{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:10px 14px 0}
+#gym .sd2-team span{display:flex;flex-direction:column;align-items:center;padding:4px 2px 6px;background:#f6f3e8;box-shadow:inset 0 0 0 2px #e2ded0;font-size:12px;line-height:1.25;min-width:0}
+#gym .sd2-team img{width:48px;height:48px;object-fit:contain;image-rendering:pixelated}
+#gym .sd2-team b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#gym .sd2-team small{font-size:10px;color:var(--dim);font-weight:700}
+#gym .sd2-num{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:10px 14px 0}
+#gym .sd2-num>span{display:flex;flex-direction:column;gap:2px;padding:7px 10px 8px;background:#fffdf4;box-shadow:inset 0 0 0 2px #e2ded0;line-height:1.2;min-width:0}
+#gym .sd2-num small{font-size:10px;color:var(--dim)}#gym .sd2-num b{font-size:14px}#gym .sd2-num i{font-style:normal;font-size:10.5px;color:var(--dim);word-break:keep-all}
+#gym .sd2-num b.pay{color:#b07a10}
+#gym .sd2 .sd-btns{margin:14px 14px 0}
+/* 고용·해고·꽉 참 확인 창: 위에 트레이너 */
+#gym .sf-face{position:relative;display:grid;place-items:end center;width:96px;height:96px;margin:-4px auto 6px}
+#gym .sf-face img{position:relative;z-index:1;width:88px;height:88px;object-fit:contain;image-rendering:pixelated}
+#gym .sf-face .sfc-base{left:10px;right:10px;bottom:2px;height:18px}
+#gym .sf-face.full{display:flex;justify-content:center;align-items:flex-end;gap:0;width:auto;height:72px}
+#gym .sf-face.full img{width:60px;height:60px;margin:0 -8px}
+#gym .gy-pop .win:has(.sf-face) .gy-msg{text-align:center;word-break:keep-all}

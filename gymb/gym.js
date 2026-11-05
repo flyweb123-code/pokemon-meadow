@@ -1538,7 +1538,6 @@ function jnlPop() {
         <tbody><tr><th><i class="jn-dot me"></i>관장 (나)</th><td>${m.w}명</td><td class="jn-g">${Gc(m.g)}</td><td class="${cl(m.r)}">${R(m.r)}</td></tr>
         ${SF.map(([n, x]) => `<tr><th><i class="jn-dot sf"></i>${esc(n)}</th><td>${x.w}명</td><td class="jn-g">${Gc(x.g)}</td><td class="${cl(x.r)}">${R(x.r)}</td></tr>`).join('')}</tbody>
         <tfoot><tr><th>합계</th><td>${m.w + sw}명</td><td class="jn-g">${Gc(m.g + sg)}</td><td class="${cl(m.r + sr)}">${R(m.r + sr)}</td></tr></tfoot></table>
-        ${m.g + sg > 0 ? `<div class="jn-bar" aria-hidden="true"><i class="me" style="flex:${m.g}"></i><i class="sf" style="flex:${sg}"></i></div>` : ''}
         ${out ? `<dl class="jn-st jn-out">${d.p ? row('월급', Gc(-d.p), 'jn-m') : ''}${d.s ? row('상점', Gc(-d.s), 'jn-m') : ''}${row('<b>남긴 골드</b>', `<b>${Gc(m.g + sg - out)}</b>`, cl(m.g + sg - out))}</dl>` : ''}</div>
       <div class="jn-day jn-fd${g.jnlO ? ' on' : ''}"><h5><button class="jn-fold" type="button" data-fold aria-expanded="${g.jnlO ? 'true' : 'false'}">기록 <small>${logs.length}개</small><i aria-hidden="true">▼</i></button></h5>${!g.jnlO ? '' : logs.length ? `<ul class="jn-log">${logs.map(x => `<li><time>${hhmm(x[0])}</time><span>${x[2]}</span></li>`).join('')}</ul>` : '<p class="jn-none">기록이 없어요.</p>'}</div>
       </div>`; };
