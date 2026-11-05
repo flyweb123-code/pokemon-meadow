@@ -100,7 +100,7 @@ final class HealthSync {
     private func healthPhoneKm(_ start: Date, _ end: Date, done: @escaping (Double) -> Void) {
         let pred = NSCompoundPredicate(andPredicateWithSubpredicates: [
             HKQuery.predicateForSamples(withStart: start, end: end, options: []),
-            HKQuery.predicateForObjects(withDeviceProperty: HKDevicePropertyKeyModel, allowedValues: ["iPhone" as AnyHashable]),
+            HKQuery.predicateForObjects(withDeviceProperty: HKDevicePropertyKeyModel, allowedValues: ["iPhone"]),
         ])
         let q = HKStatisticsQuery(quantityType: HKQuantityType(.distanceWalkingRunning), quantitySamplePredicate: pred, options: .cumulativeSum) { _, stats, error in
             // 아이폰 기록이 하나도 없으면 결과가 비어 오고 오류 코드(데이터 없음)가 올 수 있다 → 0 km 로 본다
