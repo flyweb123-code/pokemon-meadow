@@ -54,9 +54,10 @@ struct EggRow: View {
                 Text(String(format: "%.1f/%gkm", min(egg.km, egg.need), egg.need))
                     .font(.footnote.monospacedDigit()).foregroundStyle(.secondary)
             }
-            ProgressView(value: min(egg.km, egg.need), total: egg.need).tint(grass)
-            Text(egg.km >= egg.need ? "아이폰에서 열면 부화해요!" : String(format: "앞으로 %.2fkm", egg.need - egg.km))
+            ReadyBar(value: egg.km, total: egg.need, tint: grass, ready: egg.km >= egg.need)
+            Text(egg.km >= egg.need ? "부화 준비 완료! 핸드폰에서 확인하세요" : String(format: "앞으로 %.2fkm", egg.need - egg.km))
                 .font(.caption2).foregroundStyle(egg.km >= egg.need ? gold : .secondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.vertical, 2)
     }
@@ -80,9 +81,10 @@ struct BuddyRow: View {
                     Text(buddy.species).font(.caption2).foregroundStyle(.secondary)
                 }
                 if buddy.need > 0 {
-                    ProgressView(value: min(buddy.km, buddy.need), total: buddy.need).tint(gold)
-                    Text(buddy.ready ? "진화 준비 완료!" : String(format: "진화까지 %.2fkm", buddy.need - buddy.km))
+                    ReadyBar(value: buddy.km, total: buddy.need, tint: gold, ready: buddy.ready)
+                    Text(buddy.ready ? "진화 준비 완료! 핸드폰에서 확인하세요" : String(format: "진화까지 %.2fkm", buddy.need - buddy.km))
                         .font(.caption2).foregroundStyle(buddy.ready ? gold : .secondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 } else {
                     Text("더 진화하지 않아요").font(.caption2).foregroundStyle(.secondary)
                 }
@@ -168,5 +170,37 @@ struct TrainerSprite: View {
                 .scaleEffect(x: i == 3 ? -1 : 1, y: 1)
         }
         .frame(width: side, height: side)
+    }
+}
+
+// 2026-11-05 경완: 진화·부화 준비가 끝나면 게이지 테두리가 은은하게 빛난다 (워치에선 진화·부화 못 함 → 문구로 아이폰 안내)
+struct ReadyBar: View {
+    let value: Double
+    let total: Double
+    let tint: Color
+    let ready: Bool
+    @State private var glow = false
+
+    var body: some View {
+        GeometryReader { g in
+            let p = total > 0 ? min(max(value / total, 0), 1) : 0
+            ZStack(alignment: .leading) {
+                Capsule().fill(Color.white.opacity(0.15))
+                Capsule().fill(tint).frame(width: g.size.width * p)
+            }
+            .overlay(
+                Capsule().strokeBorder(gold, lineWidth: 1.5)
+                    .shadow(color: gold.opacity(0.9), radius: glow ? 4 : 1)
+                    .opacity(ready ? (glow ? 0.95 : 0.35) : 0)
+            )
+        }
+        .frame(height: 7)
+        .onAppear { startGlow() }
+        .onChange(of: ready) { _, _ in startGlow() }
+    }
+
+    private func startGlow() {
+        guard ready else { glow = false; return }
+        withAnimation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true)) { glow = true }
     }
 }
