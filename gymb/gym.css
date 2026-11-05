@@ -2747,3 +2747,83 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .sf-face.full{display:flex;justify-content:center;align-items:flex-end;gap:0;width:auto;height:72px}
 #gym .sf-face.full img{width:60px;height:60px;margin:0 -8px}
 #gym .gy-pop .win:has(.sf-face) .gy-msg{text-align:center;word-break:keep-all}
+/* v16.36 경완: 고용 관리 슬롯 — 사진은 박스 안쪽 여백, 자리 딱지는 왼쪽 위, 포켓몬 줄에 '라인업' 딱지, 숫자 넷 */
+#gym .sfc{grid-template-columns:84px 1fr 12px;padding:0;gap:0 12px}
+#gym .sfc-pic{margin:24px 0 10px 10px;height:76px;border:2px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.15)}
+#gym .sfc-pic img{width:68px;height:68px;margin-bottom:3px}
+#gym .sfc-mid{padding:24px 0 10px}
+#gym .sfc-rib{position:absolute;left:0;top:0;z-index:2;font-style:normal;font-size:11px;font-weight:700;padding:2px 10px 3px 8px;background:#6a6a7a;color:#fff;clip-path:polygon(0 0,100% 0,calc(100% - 7px) 100%,0 100%)}
+#gym .sfc-rib.g{background:#2a58a8}#gym .sfc-rib.y{background:#d0602a}
+#gym .sfc-team{gap:10px;padding:6px 10px;border-top:2px solid #e2ded0}
+#gym .sfc-tag{flex:none;font-style:normal;font-size:10px;font-weight:700;padding:2px 6px;background:#383848;color:#fff;letter-spacing:.5px}
+#gym .sfc-num{grid-template-columns:1.1fr 1fr 1fr 1fr}
+#gym .sfc-num b{font-size:12.5px}
+/* 트레이너 상세 */
+#gym .sd2-hero .sfc-rib{top:8px;left:8px;font-size:12px;padding:3px 12px 4px 9px;box-shadow:2px 2px 0 rgba(0,0,0,.2)}
+#gym .sd2-hero .sd2-rib2{top:34px}
+#gym .sd2-h{display:flex;align-items:baseline;gap:6px;margin:12px 14px 0!important;padding-left:7px;border-left:4px solid var(--frame);font-size:13px!important;font-weight:700;line-height:1.2!important;color:var(--win-ink)!important}
+#gym .sd2-h small{font-size:11px;font-weight:400;color:var(--dim)}
+#gym .sd2-h+.sd2-team,#gym .sd2-h+.sd2-num{padding-top:7px}
+#gym .sd2-bar{display:block;height:6px;margin:3px 0 1px;background:#e6e2d4;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+#gym .sd2-bar>i{display:block;height:100%;background:#4a9ad8}
+#gym .sd2-bar.w>i{background:#3e9a52}#gym .sd2-bar.p>i{background:#d8a020}#gym .sd2-bar.r>i{background:#d05040}
+#gym .sd2-num b em{font-style:normal;font-size:11px;color:var(--dim);font-weight:400}
+#gym .sd2-num>span>i:not(.sd2-bar){font-style:normal}
+/* 훈련장 슬롯 (가로 카드) */
+#gym .ts-win .bw-hd{display:flex;align-items:center;gap:8px}
+#gym .tsc-co{margin-left:auto;font-size:11px;padding:3px 8px;background:#fff1e6;color:#d0602a;box-shadow:inset 0 0 0 2px #f0b080}#gym .tsc-co b{font-size:12px}
+#gym .ts-win .tsc-grid{gap:10px;padding:2px 2px 8px}
+#gym .ts-slot.tsc{display:grid!important;grid-template-columns:72px 1fr;grid-template-rows:auto;align-items:center;gap:0 12px;min-height:0;padding:10px 12px 10px 10px!important;text-align:left;background:#fffdf4!important;border:3px solid var(--frame)!important;box-shadow:4px 4px 0 rgba(0,0,0,.18)!important}
+#gym .ts-slot.tsc:active{translate:2px 2px;box-shadow:2px 2px 0 rgba(0,0,0,.18)!important}
+#gym .tsc-th{display:grid;place-items:center;width:72px;height:72px;background:#eef3ff;box-shadow:inset 0 0 0 2px #d4dcf0}
+#gym .tsc-th img{margin:0!important}
+#gym .tsc-mid{display:flex;flex-direction:column;gap:4px;min-width:0;padding-right:62px}
+#gym .tsc-nm{display:flex;align-items:baseline;gap:6px;min-width:0}
+#gym .tsc-nm b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#gym .tsc-lv{flex:none;font-size:12px;color:var(--dim)}
+#gym .tsc-up{flex:none;font-style:normal;font-size:11px;font-weight:700;padding:0 5px;background:#ffe8e4;color:#d83a30}
+#gym .tsc-g{display:grid;grid-template-columns:52px 1fr 46px;align-items:center;gap:6px;font-size:10.5px;color:var(--dim)}
+#gym .tsc-g>i{font-style:normal}
+#gym .tsc-g .mini{height:7px;background:#e4e4ec;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}#gym .tsc-g .mini i{display:block;height:100%;background:#4a9ad8}#gym .tsc-g.h .mini i{background:#3e9a52}
+#gym .tsc-g small{text-align:right;font-size:10.5px;color:var(--win-ink)}
+#gym .tsc-ft{margin:0!important;font-size:10.5px;color:var(--dim)}#gym .tsc-ft b{color:#2a8a3e}
+#gym .ts-slot .tsc-out{top:8px;right:8px;padding:4px 7px;font-size:11px;font-weight:700;color:var(--win-ink);background:var(--win);border:2px solid var(--frame);box-shadow:0 2px 0 var(--frame);line-height:1.1}
+#gym .ts-slot .tsc-out:active{translate:0 2px;box-shadow:none}
+#gym .ts-slot.tsc-new{flex-direction:row!important;gap:8px;min-height:64px!important;border:3px dashed #b8b4a4!important;background:rgba(0,0,0,.025)!important}
+#gym .ts-slot.tsc-new span{font-size:24px;line-height:1}#gym .ts-slot.tsc-new b{font-size:14px;color:var(--dim)}
+#gym .ts-win .ts-slot.tsc-lock{min-height:52px!important;border:3px dashed #d4d0c4!important;background:repeating-linear-gradient(135deg,rgba(0,0,0,.02) 0 6px,transparent 6px 12px)!important}
+/* 훈련장 포켓몬 상세 */
+#gym .tp2 .tp2-hd{margin-bottom:0}
+#gym .tp2-lv{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin:2px 0 6px!important}
+#gym .tp2-lv b{font-size:14px}#gym .tp2-lv em{font-style:normal;font-size:11px;font-weight:700;padding:1px 6px;background:#ffe8e4;color:#d83a30}
+#gym .tp2-st{font-size:11px;font-weight:700;padding:1px 6px;background:#e6f4e8;color:#2a8a3e}#gym .tp2-st.done{background:#ececf0;color:#6a6a7a}
+#gym .tp2-num{padding:10px 0 0}
+#gym .tp2 .sd2-h{margin:12px 0 7px!important}
+#gym .tp2-btns{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+#gym .tp2-btns button[data-a=out]{color:#c03838}
+#gym .ts-win .ts-slot.tsc{grid-template-areas:none}
+#gym .ts-win .ts-slot.tsc :is(small,b,.tsc-th){grid-area:auto}
+#gym .ts-win .ts-slot.tsc>.tsc-th{grid-area:auto;justify-self:start}
+#gym .ts-win .ts-slot .tsc-out{top:8px;transform:none;padding:4px 7px}
+#gym .ts-win .tsc-grid{grid-auto-rows:auto}
+#gym .tsc-mid{padding-right:0}#gym .tsc-nm{padding-right:70px}
+/* v16.40 경완: 일지 합계 표 — 골드 아이콘과 숫자 사이 띄우고, 아이콘은 줄마다 같은 자리(칸 왼쪽)에 */
+#gym .jn-tb .jn-gc{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-width:64px;font-variant-numeric:tabular-nums}
+#gym .jn-tb .jn-gc .coin{flex:none;margin:0!important;position:static;vertical-align:middle}
+#gym .jn-tb td.jn-g,#gym .jn-tb td.jn-m{padding-left:10px}
+/* v16.40 경완 '트레이너 상세 카드 정렬 다 틀어짐': 창 안쪽 여백 하나로 맞춤 — 위 그림도 테두리 상자로 같은 폭, 칸들 좌우 여백 없앰, 버튼 한 줄 */
+#gym .gy-pop .win:has(.sd2){padding:14px 14px 14px;overflow:hidden auto;max-height:calc(100% - 8px)}
+#gym .sd2-hero{border:3px solid var(--frame);box-shadow:3px 3px 0 rgba(0,0,0,.15)}
+#gym .sd2-trt,#gym .sd2-team,#gym .sd2-num{padding-left:0;padding-right:0}
+#gym .sd2-h{margin-left:0!important;margin-right:0!important}
+#gym .sd2-team{display:flex;justify-content:center;gap:6px}
+#gym .sd2-team>span{flex:0 1 25%;max-width:25%;box-sizing:border-box}
+#gym .sd2 .sd-btns{margin:14px 0 0}
+#gym .sd2 .sd-btns button{font-size:14px;white-space:nowrap;padding:10px 4px}
+#gym .sd2-num>span{justify-content:flex-start}
+#gym .gy-jnlw .jn-out .jn-gc{gap:6px}#gym .gy-jnlw .jn-out .jn-gc .coin{margin:0!important}
+#gym .jn-tb .jn-gc{display:inline-flex;width:74px;min-width:0;margin-left:auto}
+#gym .jn-tb td.jn-g,#gym .jn-tb td.jn-m{padding-left:4px}
+#gym .jn-tb .jn-gc,#gym .gy-jnlw .jn-out .jn-gc{display:inline-flex;justify-content:space-between;align-items:center;gap:6px;width:calc(18px + 5.4ch);font-variant-numeric:tabular-nums}
+#gym .gy-jnlw .jn-out dd{text-align:right}
+#gym .jn-tb .jn-gc,#gym .gy-jnlw .jn-out .jn-gc{width:68px}
