@@ -869,21 +869,47 @@ function qLeave(upTo) { const g = st(); g.q = g.q.filter(c => { const e = qExp(c
 const qLeftS = (c, now = Date.now()) => { const m = Math.max(0, Math.ceil((qExp(c) - now) / 60e3)), h = Math.floor(m / 60); return m < 1 ? '곧 떠나요' : `${h ? h + '시간 ' : ''}${m % 60 || !h ? (m % 60) + '분 ' : ''}남음`; };
 const qCame = c => { const d = new Date(c.t || Date.now()), h = d.getHours(), y = dayStart(c.t || Date.now()) < dayStart(Date.now()); return `${y ? '어제 ' : ''}${h < 12 ? '오전' : '오후'} ${h % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')}에 왔어요`; };
 const qLeft = (c, now = Date.now()) => { const m = Math.max(0, Math.ceil((qExp(c) - now) / 60e3)), h = Math.floor(m / 60); return m < 1 ? '곧 떠나요' : `${h ? h + '시간 ' : ''}${m % 60 || !h ? (m % 60) + '분 ' : ''}남았어요`; };
-/* v16.42 경완 '체육관 오래 관리 안 하면 자동 휴업 (골드 계속 버는 것 방지)', 7일: 마지막으로 체육관에 있던 때(g.vis)부터 7일이 지나면 그때 문을 닫는다.
-   닫힌 동안은 없던 셈: 도전자·트레이너 수입·월급·면접·훈련장 시계를 돌아온 때로 민다 (gWake 처럼). 기다리던 이름 있는 트레이너는 남긴다. 돌아오면 shutPop 으로 알리고 바로 다시 연다 */
+/* v16.42 경완 '체육관 오래 관리 안 하면 자동 휴업 (골드 계속 버는 것 방지)', 7일: 마지막으로 체육관에 있던 때(g.vis)부터 7일이 지나면 그때 문을 닫는다 (g.shutAt).
+   v16.43 경완: 닫힌 체육관에 들어오면 셔터 내린 채 '휴업' 간판 → 셔터가 올라가고 안내원이 호들갑 → [다시 개업하기] 를 눌러야 다시 연다 (reopen).
+   경완 '트레이너들은 자동 휴업되면 다 떠나가게': 휴업하는 순간 고용 트레이너는 모두 떠난다.
+   닫힌 동안은 없던 셈: 도전자·트레이너 수입·월급·면접·훈련장 시계를 다시 연 때로 민다 (gWake 처럼). 기다리던 이름 있는 트레이너는 남긴다 */
 const SHUT = 7 * DAY;
 function tick(now = Date.now()) {
-  const g = gInit(); if (!g || !g.d) return;
+  const g = gInit(); if (!g || !g.d || g.shutAt) return;
   if (!g.vis) g.vis = now;
   const cut = g.vis + SHUT;
-  if (now > cut) {
-    tick0(cut); const dt = now - cut;
-    g.day = 0; g.sch = []; g.pull = 0; g.q = (g.q || []).filter(c => c.named && !c.boss);
-    (g.sf || []).forEach(x => { if (x.pay) x.pay += dt; if (x.gt) x.gt += dt; }); (g.cands || []).forEach(c => { c.exp += dt; c.t += dt; }); if (g.candN) g.candN += dt;
-    (g.tr || []).forEach(e => { if (e.t) e.t = now; });
-    g.shut = Math.floor((now - g.vis) / DAY); glog('in', `${g.shut}일 동안 비워서 체육관이 쉬었다. 다시 문을 열었다.`, now);
-  }
+  if (now > cut) { tick0(cut); g.shutAt = cut; g.shutSf = (g.sf || []).length; (g.sf || []).forEach(x => glog('sf', `${sfName(x)}${jong(x.nm) ? '은' : '는'} 체육관이 휴업해서 떠나갔다.`, cut)); g.sf = []; glog('in', `${Math.floor((now - g.vis) / DAY)}일 동안 비워서 체육관이 휴업했다.`, cut); save(); return; }
   tick0(now); g.vis = now; save();
+}
+function reopen(now = Date.now()) {
+  const g = st(); if (!g?.shutAt) return; const dt = now - g.shutAt; delete g.shutAt; delete g.shutSf;
+  g.day = 0; g.sch = []; g.pull = 0; g.q = (g.q || []).filter(c => c.named && !c.boss);
+  (g.sf || []).forEach(x => { if (x.pay) x.pay += dt; if (x.gt) x.gt += dt; }); (g.cands || []).forEach(c => { c.exp += dt; c.t += dt; }); if (g.candN) g.candN += dt;
+  (g.tr || []).forEach(e => { if (e.t) e.t = now; });
+  g.vis = now; glog('in', `<b>${esc(g.nm)}</b>의 문을 다시 열었다!`, now); tick(now); setAt(now); save();
+}
+const SHUT_SAY = (n, sf) => [
+  `관…관장님!? 진짜 관장님 맞죠!?\n${n}일이나 안 오셔서\n무슨 일 난 줄 알았잖아요!`,
+  '관장님 없이는 체육관을 열 수가 없어서\n셔터 내리고 문 앞만\n하염없이 지키고 있었어요…!',
+  sf ? '그 사이에 도전자들은 발길을 뚝 끊고,\n트레이너들은 하나둘 짐 싸서\n떠나 버렸어요!\n이대로 망하는 줄 알았다고요!' : '그 사이에 도전자들은\n발길을 뚝 끊어 버렸어요!\n이대로 망하는 줄 알았다고요!',
+  '자자, 얼른 다시 열어요!\n오늘부터 다시 북적북적하게\n만들어 봐요!',
+];
+let shutFx0 = null;   // 들어올 때 바로 깔아 두는 내려간 셔터
+function shutCover() {
+  const g = st(); if (!g?.shutAt || shutFx0?.isConnected) return; const fx = shutFx0 = document.createElement('div'); fx.className = 'gy-re now down gy-shut'; root.appendChild(fx);
+  fx.innerHTML = `<div class="re-shut"><i></i></div><div class="re-sign"><b>휴 업</b><span>${esc(g.nm)}</span><small>${Math.max(7, Math.floor((Date.now() - (g.vis || g.shutAt)) / DAY))}일 동안 비워서 쉬고 있어요</small></div>`;
+}
+async function shutEnter() {
+  const fx = shutFx0; if (!fx) return; busy = true;
+  try {
+    const n = Math.max(7, Math.floor((Date.now() - (st().vis || st().shutAt)) / DAY));
+    await wait(1700); if (!open) return; fx.classList.remove('now'); void fx.offsetWidth;
+    fx.classList.remove('down'); fx.classList.add('up'); shutSe(0); await wait(950); fx.remove(); shutFx0 = null;
+    await kang(SHUT_SAY(n, st().shutSf), { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1, skip: false }); if (!open) return;
+    await new Promise(ok => { const p = pop(`<div class="sh-re"><b>다시 개업할까요?</b><span>${esc(st().nm)}</span></div><div class="gy-btns one"><button class="main" data-a="ok">다시 개업하기</button></div>`, (a, close) => { if (a !== 'ok') return; close(); ok(); }); p.classList.add('sh-rewrap'); const oc = p.onclick; p.onclick = e => { if (e.target !== p) oc(e); }; });   /* 바깥을 눌러도 안 닫힘: 다시 개업해야 체육관이 돌아간다 */
+    reopen(); renderHome(); renderTop();
+    await grandOpen();
+  } finally { busy = false; }
 }
 function tick0(now) {
   const g = st();
@@ -2174,7 +2200,7 @@ const guyPath = D => { const [dx, dy] = D.door, [gx, gy] = D.guy; return [[dx, d
 function enter() {
   open = true; tab = null; root.hidden = false; root.classList.remove('gview'); root.classList.toggle('sim', !!window.gymSimOn); GA.gymIn(); openTab(null); bgmPlay(st()?.d ? 'gym' : 'lab');   // 처음 연출·튜토리얼은 연구소 곡 (경완 2026-10-29)   // 체육관 곡: 처음이면 플래티넘 원본 소리를 받아 오는 동안 잠깐 조용하다
   requestAnimationFrame(() => root.classList.add('on'));
-  if (st()?.d) { tick(); { setAt(); save(); } renderHome(); later(); } else intro();   // 필드 체육관 아이콘 빨간 점(도전자)은 들어가기만 해선 안 꺼지고 도전자 받기를 눌러야 꺼짐 (경완 2026-10-30)
+  if (st()?.d) { tick(); { setAt(); save(); } renderHome(); shutCover(); if (shutFx0) shutEnter().then(later); else later(); } else intro();   /* v16.43 자동 휴업: 셔터 내린 채로 시작 */   // 필드 체육관 아이콘 빨간 점(도전자)은 들어가기만 해선 안 꺼지고 도전자 받기를 눌러야 꺼짐 (경완 2026-10-30)
   setTimeout(() => gymLoad.hide(), 120);
   // 아래 메뉴(포켓몬·훈련장·트레이너·상점)가 쓰는 배틀 자료·관리 코드를 미리 받아 둔다: 처음 누를 때 '불러오는 중'에 멈춰 있지 않게 (경완 2026-10-30 '훈련장 처음 눌렀을 때 화면 바로 안 뜸')
   // 정보 카드·기술 창의 타입·분류 아이콘을 미리 받아 둔다 (처음 열 때 글자만 보이다 늦게 뜨던 것, 경완 2026-10-30)
@@ -2188,16 +2214,6 @@ let tickT = 0;
 const awOf = () => { const g = st(); return g.aw || (g.aw = { sf: {}, mv: [] }); };
 function awSf(s, gold, rep) { const a = awOf().sf, x = a[s.id] || (a[s.id] = [0, 0, 0]); x[0]++; x[1] += gold; x[2] += rep; }
 const awMv = (id, mv, nm, ty) => awOf().mv.push([id, mv, nm, ty]);
-function shutPop() {
-  const g = st(), n = g.shut; if (!n || !open) return; delete g.shut; save();
-  try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {} GA.haptic?.(1);
-  return new Promise(ok => pop(`<div class="aw-pop aw-shut">
-    <div class="aw-hd"><small>자동 휴업</small><b>${n}일 동안 비워서 쉬었어요</b></div>
-    <div class="sh-sign" aria-hidden="true"><b>휴업</b></div>
-    <p class="aw-say">체육관에 7일 넘게 안 들어오면 문을 닫아요.<br>쉬는 동안엔 도전자도, 트레이너 수입도,<br>월급도 멈춰 있었어요.</p>
-    <p class="aw-tip">지금 다시 문을 열었어요. 곧 도전자가 와요!</p>
-    <div class="gy-btns one"><button class="main" data-a="x">확인</button></div></div>`, (a, close) => { close(); ok(); }).classList.add('aw-wrap'));
-}
 async function awayPop() {
   const g = st(), A = g.aw; if (!A || !open) return; const SF = Object.entries(A.sf).map(([id, v]) => [g.sf.find(s => String(s.id) === id), v]).filter(x => x[0]).sort((a, b) => b[1][1] - a[1][1]), MV = A.mv.map(([id, mv, nm, ty]) => [S.box.find(P => P.id === id), mv, nm, ty]).filter(x => x[0]);
   g.aw = null; save();
@@ -2232,7 +2248,6 @@ function awMvPop([P, mv, nm, ty], i, n) {
 async function later() {
   await wait(700); if (!open) return; const g = st();
   if (g.newBdg) await badgeGet(g.newBdg);
-  await shutPop();
   await awayPop();
   await unlockChk();
 }
