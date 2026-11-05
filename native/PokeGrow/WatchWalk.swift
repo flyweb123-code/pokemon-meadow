@@ -59,7 +59,7 @@ final class WatchWalk {
     private func fedLog() -> [[Double]] { UserDefaults.standard.array(forKey: fedKey) as? [[Double]] ?? [] }
 
     private func modelPred(_ model: String) -> NSPredicate {
-        HKQuery.predicateForObjects(withDeviceProperty: HKDevicePropertyKeyModel, allowedValues: [model as AnyHashable])
+        HKQuery.predicateForObjects(withDeviceProperty: HKDevicePropertyKeyModel, allowedValues: [model])
     }
 
     // 워치가 잰 걷기 거리 중 가장 늦게 끝난 시각 (없으면 nil)
