@@ -2860,3 +2860,25 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-pop.sh-rewrap .sh-re{display:grid;justify-items:center;gap:4px;padding:10px 6px 14px;text-align:center}
 #gym .gy-pop.sh-rewrap .sh-re b{font-size:18px}
 #gym .gy-pop.sh-rewrap .sh-re span{font-size:13px;color:var(--dim)}
+/* v16.48 훈련장: 새 기술 칸·딱지 누르면 기술 창, 훈련 일지 = 상세카드 크기 + 프로필 상자 + 레벨업·새 기술 강조 */
+#gym .tp2-g>.tp2-mvc{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 2px 7px;background:#eaf6e4;border:0;box-shadow:inset 0 0 0 2px #6aa85a;line-height:1.2;font:inherit;color:inherit;cursor:pointer}
+#gym .tp2-g>.tp2-mvc:active{translate:1px 1px}
+#gym .mv-chip{font:inherit;font-size:11px;font-weight:700;padding:2px 8px;border:0;background:var(--tc,#2a8a3e);color:#fff;text-shadow:1px 1px 0 rgba(0,0,0,.35);box-shadow:inset 0 -2px 0 rgba(0,0,0,.2);cursor:pointer}
+#gym .mv-chip:active{translate:1px 1px}
+#gym .gy-pop .win:has(.tl-pop){display:flex;flex-direction:column;max-height:calc(100% - 8px)}
+#gym .tl-pop{display:flex;flex-direction:column;min-height:0;flex:1}
+#gym .tl-pop .tp2-hd{margin-bottom:0}
+#gym .tl-sum{display:block;font-size:11px;color:var(--dim);line-height:1.5}
+#gym .tl-sum b.up{color:#d83a30}
+#gym .tl-sum b.mv{color:#2a8a3e}
+#gym .tl-pop .tl-h{margin:10px 0 6px}
+#gym .tl-pop .tl-list{flex:1;max-height:none}
+#gym .tl-list li.lvup{background:#fff4ec;box-shadow:inset 0 0 0 2px #f0a890}
+#gym .tl-list li.newmv:not(.lvup){background:#f2f8ee;box-shadow:inset 0 0 0 2px #b8dca8}
+#gym .tl-d{flex-wrap:wrap}
+#gym .tl-up{font-style:normal;font-size:11px;font-weight:700;padding:1px 7px;background:#d83a30;color:#fff;animation:none}
+#gym .tl-up b{color:#fff3a0}
+#gym .tl-g{grid-template-columns:repeat(2,minmax(0,1fr))}
+#gym .tl-mv{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+#gym .tl-mv small{font-size:10px;color:#2a8a3e;font-weight:700;margin-right:2px}
+#gym .tl-pop .tp2-hd h4{text-align:left;margin:0}
