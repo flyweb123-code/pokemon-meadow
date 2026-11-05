@@ -110,7 +110,7 @@ function gm(P) {
     const r = seeded('gm' + P.id), lv = BASE_LV[GA.rankOf(P)] || 5, ab = D.sp[P.sp]?.ab || ['noability'], nats = NATS();
     const nm = abNorm(P.sp), ha = hiddenRoll('ha' + P.id) && D.sp[P.sp]?.h;
     m = g.mon[P.id] = { lv, xp: xpAt(growth(P.sp), lv), nat: nats[Math.floor(r() * nats.length)], ab: nm[Math.floor(r() * Math.min(2, nm.length))], mv: pickMoves(P.sp, lv, r) };
-    if (ha) { m.ab = ha; m.ha = 1; }
+    if (ha) { m.ab = ha; m.ha = 1; } else if (P.sp === 744 && seeded('ot' + P.id)() < .05) m.ab = 'owntempo';   // v16.85: 암멍이 5% 마이페이스 (본게임 natAb 와 같은 씨앗)
   }
   // 특성 (경완 2026-10-27 '특성, 숨겨진 특성'): 보통 특성은 숨겨진 특성을 뺀 것 중에서, 숨겨진 특성은 5% (ha). 진화하면 같은 자리 특성으로
   const h = D.sp[P.sp]?.h, nm = abNorm(P.sp);
@@ -302,7 +302,7 @@ const G5K = ['-b', '-s', '-f', '-b-s', '-b-f', '-f-s', '-b-f-s'];
 const FM_G = { castformrainy: 'castform-orainy', castformsunny: 'castform-osunny', castformsnowy: 'castform-osnowy', cherrimsunshine: 'cherrim-osunshine', darmanitanzen: 'darmanitan-ozen', meloettapirouette: 'meloetta-opirouette',
   rotomheat: 'rotom-oheat', rotomwash: 'rotom-owash', rotomfrost: 'rotom-ofrost', rotomfan: 'rotom-ofan', rotommow: 'rotom-omow', tornadustherian: 'tornadus-otherian', thundurustherian: 'thundurus-otherian', landorustherian: 'landorus-otherian' };
 // v16.81 경완: 필드에서 바꾼 폼(로토무 가전제품·영물폼)은 배틀에서도 그 폼 (타입·능력치·그림)
-const BFM = { 479: { Heat: 'rotomheat', Wash: 'rotomwash', Frost: 'rotomfrost', Fan: 'rotomfan', Mow: 'rotommow' }, 641: { Therian: 'tornadustherian' }, 642: { Therian: 'thundurustherian' }, 645: { Therian: 'landorustherian' }, 905: { Therian: 'enamorustherian' }, 892: { Rapid_Strike: 'urshifurapidstrike' }, 849: { Lowkey: 'toxtricitylowkey' } };
+const BFM = { 479: { Heat: 'rotomheat', Wash: 'rotomwash', Frost: 'rotomfrost', Fan: 'rotomfan', Mow: 'rotommow' }, 641: { Therian: 'tornadustherian' }, 642: { Therian: 'thundurustherian' }, 645: { Therian: 'landorustherian' }, 905: { Therian: 'enamorustherian' }, 892: { Rapid_Strike: 'urshifurapidstrike' }, 849: { Lowkey: 'toxtricitylowkey' }, 745: { Midnight: 'lycanrocmidnight', Dusk: 'lycanrocdusk' } };
 const anOf = A => A && (FMA[A.fm] || ANIM[A.sp]);
 function gifUrl(sp, b, sh, f, fm) {
   if (RFA[fm] || rfKey(sp)) return null;   /* 지역 폼은 gif 없이 저장소 그림 */
