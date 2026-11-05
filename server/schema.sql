@@ -100,3 +100,18 @@ CREATE TABLE IF NOT EXISTS err (
   issue  INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS err_st ON err (st);
+
+-- 밸런스 기록 (2026-11-05 경완 '체육관 배틀이랑 미니게임은 유저들 로그 수집해서 주기적으로 밸런스 체크'). 한 판마다 한 줄.
+-- kind: gym (관장 배틀), sf (트레이너가 도전자를 막음/짐), mg (미니게임). d = 그 판 숫자들(JSON). 120일 지난 줄은 서버가 지운다
+-- 매주 .github/workflows/bal-report.yml 이 모아서 'auto-bal' 이슈로 올린다 (친구 코드 없이 사람 수만)
+CREATE TABLE IF NOT EXISTS bal (
+  id   INTEGER PRIMARY KEY AUTOINCREMENT,
+  code TEXT NOT NULL,
+  kind TEXT NOT NULL,
+  ver  TEXT NOT NULL DEFAULT '',
+  beta INTEGER NOT NULL DEFAULT 0,
+  t    INTEGER NOT NULL,
+  at   INTEGER NOT NULL,
+  d    TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS bal_t ON bal (kind, t);

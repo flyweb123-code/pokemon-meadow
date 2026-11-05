@@ -181,6 +181,19 @@ async function handle(env, b) {
         await db.prepare('UPDATE err SET n = n + 1, codes = ?, ver = ?, ctx = ?, where_ = ?, at = ?, st = CASE WHEN st = 2 THEN 0 ELSE st END WHERE k = ?').bind(cs.join(','), ver, ctx, where, now, k).run(); }   // 고친 뒤(st 2) 다시 나면 새로
       return k;
     }
+    case 'balLog': {   // 밸런스 기록 (경완 2026-11-05): 게임이 모아 둔 판 기록 {ev:[{k,t,v,d}]} 최대 50개. 매주 bal-report.yml 이 모아 'auto-bal' 이슈로
+      const ev = Array.isArray(b.ev) ? b.ev.slice(0, 50) : []; if (!ev.length) return 0;
+      const st = [];
+      for (const e of ev) {
+        const k = ['gym', 'sf', 'mg'].includes(e?.k) ? e.k : null, d = JSON.stringify(e?.d ?? null), t = +e?.t || now;
+        if (!k || d.length > 2000) continue;
+        st.push(db.prepare('INSERT INTO bal (code, kind, ver, beta, t, at, d) VALUES (?, ?, ?, ?, ?, ?, ?)').bind(me, k, str(e.v, 20) || '', b.beta ? 1 : 0, Math.min(t, now), now, d));
+      }
+      const n = st.length;
+      if (Math.random() < .02) st.push(db.prepare('DELETE FROM bal WHERE at < ?').bind(now - 120 * 864e5));   // 120일 지난 기록은 가끔 지움
+      if (st.length) await db.batch(st);
+      return n;
+    }
     case 'pushReg': {   // {tok, plat, env, kinds:['visit',...]}. kinds 가 비면 이 기기 토큰을 지운다
       const tok = str(b.tok, 400), plat = b.plat === 'ios' || b.plat === 'android' ? b.plat : null; if (!tok || !plat || !/^[\w:.\-]+$/.test(tok)) bad('잘못된 요청');
       const kinds = [...new Set((Array.isArray(b.kinds) ? b.kinds : []).filter(k => /^[a-z]{1,12}$/.test(k)))].slice(0, 10).join(',');

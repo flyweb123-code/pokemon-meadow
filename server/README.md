@@ -68,3 +68,13 @@ GitHub 저장소 비밀 변수 (Settings › Secrets and variables › Actions).
 | `GOOGLE_SERVICES_JSON` | 같은 Firebase 프로젝트 › 프로젝트 설정 › 일반 › 앱 추가 › Android, 패키지 이름 `com.flyweb123.pokerun` → 받은 `google-services.json` 내용 전체 (안드로이드 APK 빌드에 씀) |
 
 아이폰은 App ID 에 Push Notifications 가 이미 켜져 있다 (aps-environment). 앱은 새로 빌드해야 한다 (Xcode Cloud).
+
+## 밸런스 기록 (체육관·미니게임, 2026-11-05)
+
+게임이 판마다 작은 기록을 `pk-bal`(localStorage)에 모았다가 `POST /v1 {op:'balLog', ev:[{k,t,v,d}]}` 로 50개씩 보낸다 (앱에서만). D1 `bal` 표, 120일 지나면 지움.
+
+- `gym` 관장 배틀: c(chal·named·boss) df 난이도 bs 심사 등급 gr 관장 등급 w 승 q 기권 tn 턴 gd 골드 rp 평판 stk 연승 ma/mx/mn 내 라인업 평균·최고 레벨·마리 fa/fn 상대 평균 레벨·마리 sp 내 포켓몬
+- `sf` 트레이너: w 막음 df n 나선 트레이너 수 gd 골드 cl/sl 도전자·트레이너 평균 레벨
+- `mg` 미니게임: sc 점수 gd 골드 t 초 ph 단계 cm 최대 콤보 ab 기술 타입 rk 랭크 sp fh 하트 nb 최고 기록 day 오늘 미니게임 골드
+
+매주 월요일 07:13 KST `.github/workflows/bal-report.yml` → `tools/bal-report.mjs` 가 지난 7일을 모아 'auto-bal' 이슈로 올린다 (친구 코드 없이 사람 수만). 로컬 시험: `node tools/bal-report.mjs --dry rows.json`.
