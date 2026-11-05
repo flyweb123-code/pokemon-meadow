@@ -827,7 +827,7 @@ const loadCh = k => chL[k] || (chL[k] = fetch(`${CHB}s${k}.json`).then(r => { if
 // 작업실용 작은 그림 모음(thumbs.json, 약 1MB)을 열자마자 한 번에 받는다. 없거나 실패하면 그림 묶음(s*.json)으로
 // v1.7: 게임이 먼저 뜨도록 그림 모음은 처음 필요할 때(또는 게임이 뜬 뒤) 받는다
 let thP = null; const thumbsReady = () => thP || (thP = fetch('thumbs.json?v=c5a76091').then(r => r.ok ? r.json() : null).then(d => { if (d) for (const k in d) if (d[k] && !TH[k]) TH[k] = d[k]; }).catch(() => {}));
-const ensureTh = sp => TH[sp] ? Promise.resolve() : thumbsReady().then(() => TH[sp] ? 0 : loadCh(Math.floor((sp - 1) / 50)));
+const ensureTh = sp => TH[sp] ? Promise.resolve() : sp > 10000 ? (A?.ensureSprite ? A.ensureSprite(sp).then(() => { TH[sp] = A.thumbOf(sp); }) : Promise.reject(new Error('game'))) : thumbsReady().then(() => TH[sp] ? 0 : loadCh(Math.floor((sp - 1) / 50)));   /* 게임 v15.93 지역 폼(10091~)은 게임의 rf.json 에서 */
 const thumb = sp => TH[sp] || A?.thumbOf?.(sp) || '';
 function tierOfSp(sp) { return D.tierOv?.[sp] ?? A.TIER[sp]; }
 // v2.46 경완: 꺼진 포켓몬(D.off)은 확률 계산에서 빠진다. 티어 박스 화면·순서는 all = true 로 모두
@@ -838,7 +838,7 @@ function toggleOff(sp) { const O = offSet(), on = O.has(sp); if (on) O.delete(sp
   saveDraft(); if (!!offSet().has(sp) === on) return; toast(on ? `${spName(sp)} 켰어요: 다시 알에서 나와요` : `${spName(sp)} 껐어요: 알에서 안 나오고 그 몫은 같은 ${tierOfSp(sp)}티어 포켓몬이 나눠 가져요`); }
 // v2.3 경완: 티어 안 순서. 직접 정한 티어는 앞일수록 드물게(z 1 → 0), 안 정한 티어는 가족 최고 종족값 기준 (게임 retier 와 같은 계산)
 const tierOrdOf = t => D.tierOrd && t in D.tierOrd ? D.tierOrd[t] : ORIG?.tierOrd?.[t] || null;
-function orderTier(t, T) { const O = tierOrdOf(t), byB = (a, b) => b - a; /* v2.13 경완: 정한 순서가 없으면 도감 번호 높은 순 */ if (!O?.length) return [...T].sort(byB); const have = new Set(T), q = O.filter(b => have.has(b)); return [...q, ...T.filter(b => !q.includes(b)).sort(byB)]; }
+function orderTier(t, T) { const O = tierOrdOf(t), byB = (a, b) => b - a; /* v2.13 경완: 정한 순서가 없으면 도감 번호 높은 순 */ if (A?.tierArr) return A.tierArr(T, O);   /* 게임 v15.93: 지역 폼은 원래 폼 바로 뒤 (게임과 같은 순서) */ if (!O?.length) return [...T].sort(byB); const have = new Set(T), q = O.filter(b => have.has(b)); return [...q, ...T.filter(b => !q.includes(b)).sort(byB)]; }
 function tierZ(L) { const Z = {}; L.forEach((T, t) => { if (!T.length) return; const all = orderTier(t, T); all.forEach((b, i) => { Z[b] = all.length > 1 ? 1 - i / (all.length - 1) : .5; }); }); return Z; }   // v2.44: 보이는 순서 그대로 (앞일수록 드물게, 기본 = 도감 번호 높은 순)
 // 알 등급 g 에서 종마다 나올 확률 (장소 테마·최근 부화는 빼고 기본값)
 // v2.4 경완: 티어 경계 보장 (게임 tierGuard 와 같은 계산). 실제로 뽑을 때 쓰는 티어 비율
