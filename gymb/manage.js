@@ -466,6 +466,11 @@ let sfT = 'cand';
 // 지원서 남은 시간 (경완 2026-10-28): 우상단에 시:분, 가운데 : 가 깜빡
 const cvLeft = ms => { const m = Math.max(0, Math.ceil(ms / 60000)); return `${Math.floor(m / 60)}h ${m % 60}m`; };   // 경완 2026-10-28: '남은 시간' 상태박스 안에 h m
 setInterval(() => document.querySelectorAll('.cv-left[data-exp]').forEach(e => { e.innerHTML = cvLeft(+e.dataset.exp - Date.now()); }), 20e3);
+/* v16.35 경완 '지원서·고용 관리 없을 때 문구 화면 중앙 정렬 줄나눔 가독성': 그림 + 굵은 한 줄 + 설명 두 줄, 남은 자리 한가운데 */
+const SF_IC = { mail: '<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#383848" d="M1 3h14v11H1z"/><path fill="#fffdf4" d="M2 4h12v9H2z"/><path fill="#383848" d="M3 5h1v1H3zM4 6h1v1H4zM5 7h1v1H5zM6 8h1v1H6zM7 9h2v1H7zM9 8h1v1H9zM10 7h1v1h-1zM11 6h1v1h-1zM12 5h1v1h-1z"/><path fill="#e84a3a" d="M7 10h2v2H7z"/></svg>',
+  crew: '<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#383848" d="M5 1h6v1h1v4h-1v1H5V6H4V2h1zM3 8h10v1h1v6H2V9h1z"/><path fill="#ffd8b0" d="M5 3h6v3H5z"/><path fill="#e84a3a" d="M5 2h6v1H5z"/><path fill="#4a7ad8" d="M3 9h10v5H3z"/><path fill="#fffdf4" d="M7 9h2v3H7z"/></svg>' };
+const sfFace = x => `<div class="sf-face"><i class="sfc-base"></i><img alt="" src="${K.trSrc(x.tr)}"></div>`;
+const sfEmpty = (ic, t, d) => `<div class="sf-void"><span class="sf-void-ic">${SF_IC[ic]}</span><b>${t}</b><p>${d}</p></div>`;
 function drawStaff() {
   const g = st(), now = Date.now(), max = K.staffMax();
   const C = g.cands || (g.cands = []); if (C.length && !g.candSeen && sfT === 'cand') { g.candSeen = 1; K.setAt(); K.save(); K.menuDot(); }   // 지원서 탭을 보면 빨간 점이 꺼진다 (경완 2026-10-29)
@@ -478,11 +483,15 @@ function drawStaff() {
       <dl class="cv-dl"><dt>특성</dt><dd>${trtBox(x.trait, true, true)}</dd><dt>포켓몬</dt><dd>${teamIc(x.team, x.id)}</dd><dt>평균 레벨</dt><dd>Lv.${Math.round(K.teamLv(x.team))}</dd><dt>희망 월급</dt><dd>7일에 <b>${x.wage}G</b></dd></dl>
       <div class="cv-btns"><button class="gy-key" data-no="${i}">돌려보내기</button><button class="gy-key main" data-hire="${i}">고용하기</button></div></article>`).join('')}</div>
       ${C.length > 1 ? `<div class="cv-dots">${C.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : ''}`
-      : `<p class="sf-none">지금은 지원서가 없어요. 새 지원자가 오면 트레이너 단추에 빨간 점이 떠요.</p>`;
+      : sfEmpty('mail', '지금은 지원서가 없어요', '새 지원자가 오면<br>트레이너 단추에 빨간 점이 떠요.');
   const gL = K.sfList ? K.sfList() : [], gNo = x => gL.findIndex(z => z[0] === x);
-  const list = `<div class="sf-list">${g.sf.map((s, i) => `<button class="sf-card${s.rest ? ' rest' : ''}" data-sf="${i}"><img class="sf-pic" alt="" src="${K.trSrc(s.tr)}"><div class="sf-mid"><b>${esc(s.cls)} ${esc(s.nm)}</b>${trtBox(s.trait)}
-      <span class="sf-st">${s.rest ? '<em class="r">쉬는 중</em>' : ''}${K.inGym(s) ? `<em class="g">체육관 ${gNo(s) >= 0 ? gNo(s) + 1 + '번' : ''}</em>` : ''}${s.yard ? '<em class="y">훈련장 코치</em>' : ''}${!K.inGym(s) && !s.yard && !s.rest ? '<em>대기 중</em>' : ''}<i>${s.w || 0}승 ${s.l || 0}패</i><i class="sf-pay">월급 ${s.wage}G</i><i class="sf-earn${(s.eg || 0) >= s.wage ? ' up' : ''}">이번 주 수입 ${(s.eg || 0).toLocaleString()}G${s.lastE != null ? ` · 지난주 ${s.lastE.toLocaleString()}G` : ''}</i></span>${teamIc(s.team)}</div><i class="sf-go">›</i></button>`).join('') || '<p class="sf-none sf-empty">아직 고용한 트레이너가 없어요.</p>'}</div>`;
-  sh.innerHTML = `<h3>트레이너</h3>${tabs}${sfT === 'cand' ? cand : list}`;
+  const list = g.sf.length ? `<div class="sf-list sfl2">${g.sf.map((s, i) => { const st = [s.rest ? '<em class="r">쉬는 중</em>' : '', K.inGym(s) ? `<em class="g">체육관${gNo(s) >= 0 ? ` ${gNo(s) + 1}번` : ''}</em>` : '', s.yard ? '<em class="y">훈련장 코치</em>' : '', !K.inGym(s) && !s.yard && !s.rest ? '<em>대기 중</em>' : ''].join('');
+      return `<button class="sfc${s.rest ? ' rest' : ''}${s.yard ? ' yard' : ''}" data-sf="${i}"><span class="sfc-pic"><i class="sfc-base"></i><img alt="" src="${K.trSrc(s.tr)}"></span>
+      <span class="sfc-mid"><span class="sfc-nm"><small>${esc(s.cls)}</small><b>${esc(s.nm)}</b></span>${trtBox(s.trait)}<span class="sfc-st">${st}</span></span><i class="sfc-go" aria-hidden="true">›</i>
+      <span class="sfc-team">${teamIc(s.team)}</span>
+      <span class="sfc-num"><span><small>전적</small><b>${s.w || 0}승 ${s.l || 0}패</b></span><span><small>월급 (7일)</small><b class="pay">${s.wage}G</b></span><span><small>이번 주 수입</small><b class="${(s.eg || 0) >= s.wage ? 'up' : 'dn'}">${(s.eg || 0).toLocaleString()}G</b>${s.lastE != null ? `<i>지난주 ${s.lastE.toLocaleString()}G</i>` : ''}</span></span></button>`; }).join('')}</div>`
+    : sfEmpty('crew', '아직 고용한 트레이너가 없어요', '지원서 탭에서 마음에 드는<br>트레이너를 고용해 보세요.');
+  sh.innerHTML = `<div class="sf-hd"><h3>트레이너</h3><span class="sf-cap"><span><small>고용</small><b>${g.sf.length}<em>/${max}명</em></b></span><span><small>훈련장 코치</small><b>${yN}<em>/${YARD_SF}명</em></b></span></span></div>${tabs}${sfT === 'cand' ? cand : list}`;
   const dk = sh.querySelector('.cv-deck'); if (dk) dk.onscroll = () => { const i = Math.round(dk.scrollLeft / (dk.firstElementChild.offsetWidth + 12)); sh.querySelectorAll('.cv-dots i').forEach((d, j) => d.classList.toggle('on', i === j)); };
   sh.onclick = e => {
     const tp = e.target.closest('[data-tsp]'); if (tp) { sfx('tap'); return GB().foePop(+tp.dataset.tsp, +tp.dataset.tlv, tp.dataset.tk); }   // 지원서 포켓몬 → 상세카드 (경완 2026-10-29)
@@ -496,20 +505,21 @@ function drawStaff() {
 // 고용 트레이너 자세히 (경완 2026-10-27 '고용한 트레이너 카드 누르면 상세 정보'): 전신·특성·포켓몬·전적·월급과 배치 단추
 function sfDetail(s) {
   const g = st(), now = Date.now(); if (!s) return; const i = g.sf.indexOf(s), yN = g.sf.filter(x => x.yard).length, lv = Math.round(K.teamLv(s.team));
-  const p = pop(`<div class="sd-head"><div class="sd-pic"><img alt="" src="${K.trSrc(s.tr)}" onload="this.style.width=this.naturalWidth*1.5+'px';this.style.height=this.naturalHeight*1.5+'px'"></div><div><h4>${esc(s.cls)} ${esc(s.nm)}</h4>${trtBox(s.trait, true)}</div></div>
-    <div class="sd-team">${s.team.map(([sp, l]) => `<span><img alt="" data-sp="${sp}"><b>${esc(SPECIES[sp]?.n || '???')}</b><small>Lv.${l}</small></span>`).join('')}</div>
-    <dl class="gy-info sd-dl"><dt>전적</dt><dd><span>${s.w || 0}승 ${s.l || 0}패 · 평균 Lv.${lv}</span></dd><i></i>
-      <dt>자리</dt><dd><span>${[K.inGym(s) ? '체육관' : '', s.yard ? '훈련장 코치' : ''].filter(Boolean).join(' · ') || '대기 중'}${s.rest ? ' <em class="sd-r">쉬는 중</em>' : ''}</span></dd><i></i>
-      <dt>월급</dt><dd><span>7일에 ${s.wage}G · ${s.rest ? '밀린 월급을 주면 다시 일해요' : `다음 ${Math.max(0, Math.ceil((s.pay - now) / K.DAY))}일 뒤`}</span></dd><i></i>
-      ${s.hired ? `<dt>고용</dt><dd><span>${Math.max(0, Math.floor((now - s.hired) / K.DAY))}일째</span></dd><i></i>` : ''}</dl>
+  const gi = K.sfList ? K.sfList().findIndex(z => z[0] === s) : -1, where = [K.inGym(s) ? `체육관${gi >= 0 ? ` ${gi + 1}번` : ''}` : '', s.yard ? '훈련장 코치' : ''].filter(Boolean).join(' · ') || '대기 중', dd = Math.max(0, Math.ceil((s.pay - now) / K.DAY));
+  /* v16.35 경완 '트레이너 메뉴에서 띄우는 창들 디자인 퀄': 위는 지원서처럼 배경 + 받침 위 전신, 아래는 숫자 칸 */
+  const p = pop(`<div class="sd2"><div class="sd2-hero"><img alt="" src="${K.trSrc(s.tr)}"><div class="sd2-nm"><small>${esc(s.cls)}</small><b>${esc(s.nm)}</b></div>${s.rest ? '<em class="sd2-rest">쉬는 중</em>' : ''}</div>
+    <div class="sd2-trt">${trtBox(s.trait, true)}</div>
+    <div class="sd2-team">${s.team.map(([sp, l]) => `<span><img alt="" data-sp="${sp}"><b>${esc(SPECIES[sp]?.n || '???')}</b><small>Lv.${l}</small></span>`).join('')}</div>
+    <div class="sd2-num"><span><small>전적</small><b>${s.w || 0}승 ${s.l || 0}패</b><i>평균 Lv.${lv}</i></span><span><small>자리</small><b>${where}</b></span>
+      <span><small>월급 (7일)</small><b class="pay">${s.wage}G</b><i>${s.rest ? '밀린 월급을 주면 다시 일해요' : `${dd}일 뒤에 줘요`}</i></span><span><small>고용</small><b>${s.hired ? `${Math.max(0, Math.floor((now - s.hired) / K.DAY)) + 1}일째` : '-'}</b></span></div>
     <div class="gy-btns sd-btns"><button data-a="gym">${K.inGym(s) ? '체육관 자리 바꾸기' : '체육관에 배치'}</button><button data-a="yd" ${!s.yard && yN >= YARD_SF ? 'disabled' : ''}>${s.yard ? '훈련장 코치 그만' : '훈련장 코치 맡기기'}</button>
-      ${i > 0 ? '<button data-a="up">순서 앞으로</button>' : ''}<button data-a="fire" class="danger">해고</button><button class="main" data-a="x" style="grid-column:1/-1">닫기</button></div>`,
+      ${i > 0 ? '<button data-a="up">순서 앞으로</button>' : ''}<button data-a="fire" class="danger">해고</button><button class="main" data-a="x" style="grid-column:1/-1">닫기</button></div></div>`,
     (a, close) => {
       if (a === 'x') return close();
       if (a === 'gym') { close(); return K.sfPlace(s, () => { K.openTab?.('staff'); }); }
       if (a === 'yd') { tickTrain(Date.now()); s.yard = s.yard ? 0 : 1; K.glog('sf', `${esc(s.cls)} ${esc(s.nm)}${K.jong(s.nm) ? '을' : '를'} ${s.yard ? '훈련장 코치로 배치했다.' : '훈련장 코치에서 뺐다.'}`); K.save(); close(); redraw(); K.renderHome(); return sfDetail(s); }
       if (a === 'up') { const k = g.sf.indexOf(s); if (k > 0) { [g.sf[k - 1], g.sf[k]] = [g.sf[k], g.sf[k - 1]]; K.save(); } close(); redraw(); K.renderHome(); return sfDetail(s); }
-      if (a === 'fire') { close(); pop(`<h4>해고할까요?</h4><p class="gy-msg">${esc(s.cls)} ${esc(s.nm)}${K.jong(s.nm) ? '을' : '를'} 해고해요. 이미 준 월급은 돌려받지 못해요.</p><div class="gy-btns"><button data-a="x">아니요</button><button class="main" data-a="y">해고</button></div>`,
+      if (a === 'fire') { close(); pop(`${sfFace(s)}<h4>해고할까요?</h4><p class="gy-msg">${esc(s.cls)} <b>${esc(s.nm)}</b>${K.jong(s.nm) ? '을' : '를'} 해고해요.<br>이미 준 월급은 돌려받지 못해요.</p><div class="gy-btns"><button data-a="x">아니요</button><button class="main" data-a="y">해고</button></div>`,
         (b2, c2) => { c2(); if (b2 !== 'y') return sfDetail(s); g.sf = g.sf.filter(x => x !== s); K.glog('sf', `${esc(s.cls)} ${esc(s.nm)}${K.jong(s.nm) ? '을' : '를'} 해고했다.`); K.save(); redraw(); K.renderHome(); }); }
     });
   return p;
@@ -521,9 +531,9 @@ function reject(c) {
 }
 function hire(c) {
   const g = st(); if (!c) return;
-  if (g.sf.length >= K.staffMax()) return pop(`<h4>트레이너 자리가 꽉 찼어요</h4><p class="gy-msg">지금 ${g.sf.length}/${K.staffMax()}명이에요. 체육관 등급을 올리거나 한 명을 해고하면 고용할 수 있어요.</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => close());
+  if (g.sf.length >= K.staffMax()) return pop(`<div class="sf-face full">${g.sf.slice(0, 5).map(x => `<img alt="" src="${K.trSrc(x.tr)}">`).join('')}</div><h4>트레이너 자리가 꽉 찼어요</h4><p class="gy-msg">지금 <b>${g.sf.length}/${K.staffMax()}명</b>이에요.<br>체육관 등급을 올리거나<br>한 명을 해고하면 고용할 수 있어요.</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => close());
   /* v15.60 경완: 고용할지 한 번 묻고, 고용하면 효과음과 함께 고용 관리 탭으로 */
-  pop(`<h4>고용할까요?</h4><p class="gy-msg">${esc(c.cls)} <b>${esc(c.nm)}</b>${K.jong(c.nm) ? '을' : '를'} 고용해요.<br>첫 주 월급 <b>${c.wage}G</b>를 바로 내요.</p><div class="gy-btns"><button data-a="x">아니요</button><button class="main" data-a="y">고용하기</button></div>`, (a, close) => {
+  pop(`${sfFace(c)}<h4>고용할까요?</h4><p class="gy-msg">${esc(c.cls)} <b>${esc(c.nm)}</b>${K.jong(c.nm) ? '을' : '를'} 고용해요.<br>첫 주 월급 <b>${c.wage}G</b>를 바로 내요.</p><div class="gy-btns"><button data-a="x">아니요</button><button class="main" data-a="y">고용하기</button></div>`, (a, close) => {
     close(); if (a !== 'y') return;
     if (!spend(c.wage)) return say(`골드가 모자라요. 첫 주 월급 ${c.wage}G가 필요해요.`); try { K.dayRec().p += c.wage; } catch (e) {}
     const now = Date.now(); g.sf.push(Object.assign({}, c, { hired: now, pay: now + 7 * K.DAY, w: 0, l: 0, xp: 0 })); dropCand(c);
