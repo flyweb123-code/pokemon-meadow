@@ -567,7 +567,7 @@ const CHAL_LINES = [
 const WIN_LINES = ['으으… 졌다! 더 연습하고 올게요!', '역시 관장님은 강하네요.', '다음엔 꼭 이길 거예요!', '좋은 배틀이었어요. 고맙습니다!'];
 const LOSE_LINES = ['해냈다! 제가 이겼어요!', '관장님한테 이기다니… 꿈 같아요!', '좋은 승부였어요, 관장님!'];
 const REW0 = [{ g: 40, r: 1, rl: -1, fr: 1 }, { g: 100, r: 1, rl: -1, fr: 2 }, { g: 300, r: 2, rl: -1, fr: 4 }];   // 평판은 막은 도전자 1명 ≈ 1 (경완 2026-10-29)
-const GYMB = () => GA.GYMB || { GYM_G: REW0.map(o => o.g), GYM_SF_PCT: 60, WAGE_BASE: 150, WAGE_LV: 5, WAGE_MAX: 600 };   // 골드·월급 값은 작업실 밸런스 (게임 10.78)
+const GYMB = () => GA.GYMB || { GYM_G: REW0.map(o => o.g), GYM_SF_PCT: 30, WAGE_BASE: 150, WAGE_LV: 5, WAGE_MAX: 600 };   // 골드·월급 값은 작업실 밸런스 (게임 10.78)
 const REW = d => ({ ...REW0[d], g: GYMB().GYM_G[d] ?? REW0[d].g });
 // 연승 보너스 (경완 2026-10-29 '연승하면 평판 더 오르게'): 막을 때마다 g.stk +1, 내가 지면 0
 // 연승이 쌓일수록 지수적으로 (경완 2026-10-29 '구간 말고 지수적으로, 대신 난이도 밸런스'): 1.3^(n-2), 2연승 +1 · 5연승 +2 · 8연승 +5 · 10연승 +8 · 12연승 +14 · 15연승 이상 +30
@@ -579,7 +579,8 @@ const stkLv = n => Math.min(10, Math.floor((n | 0) * .6));
 // 고용 트레이너가 막아도 같은 규칙 (연승 보너스 포함, 인기인은 기본 평판 ×1.5)
 const repWin = r => r;
 const repLose = () => -1;
-const sfRep = (s, r) => Math.max(1, Math.round(r * (s.trait === 'star' ? 1.5 : 1)));
+/* v15.80 경완 '골드 30%·평판 2명당 +1': 트레이너가 막은 평판은 반씩 쌓아 두었다가 1이 차면 오른다 (인기인 ×1.5) */
+const sfRep = (s, r) => { const g = st(); g.sfR = (g.sfR || 0) + r * .5 * (s.trait === 'star' ? 1.5 : 1); const n = Math.floor(g.sfR + 1e-9); g.sfR -= n; return n; };
 // 도전자 레벨: 난이도 f(0~1)가 초반엔 천천히, 뒤로 갈수록 가파르게 오른다 (bdPh). 보통 = 내 평균 -1 → +8, 쉬움 = -7 → +1
 const chalLv = (avg, diff, f) => Math.max(3, avg + (diff ? -1 + Math.round(f * 9) : -7 + Math.round(f * 8)));
 const rewOf = c => { const R = REW(c.diff); return c.boss ? { ...R, g: R.g * (1 + c.boss), r: R.r * 2 } : R; };
