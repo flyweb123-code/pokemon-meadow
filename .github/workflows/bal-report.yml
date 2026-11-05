@@ -1,0 +1,39 @@
+# 체육관·미니게임 밸런스 주간 보고 (경완 2026-11-05 '유저들 로그 수집해서 주기적으로 밸런스 체크')
+# 친구 서버 D1 bal 표의 지난 7일 기록을 모아 'auto-bal' 이슈로 올린다 (친구 코드 없이 사람 수만). Claude 예약 작업이 이슈를 읽고 경완에게 제안한다.
+name: Balance report
+
+on:
+  schedule:
+    - cron: '13 22 * * 0'   # 매주 월요일 07:13 KST
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        if: env.CLOUDFLARE_API_TOKEN != ''
+      - uses: actions/setup-node@v4
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        with:
+          node-version: '20'
+      - run: npm ci
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        working-directory: server
+      - name: Set D1 id
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        working-directory: server
+        run: |
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="pokegrow") | .uuid')
+          sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
+      - name: Weekly balance issue
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        run: node tools/bal-report.mjs
