@@ -73,6 +73,7 @@ final class WatchModel: NSObject, ObservableObject {
         pedometer.stopUpdates(); liveTimer?.invalidate(); liveTimer = nil
     }
     private func pollWatch() {
+        pollExtra()
         let now = Date(), day = Calendar.current.startOfDay(for: now)
         if day != liveDay { stopLive(); startLive(); return }   // 자정이 지나면 새 날
         guard CMPedometer.isDistanceAvailable() else { recompute(); return }
@@ -117,17 +118,61 @@ final class WatchModel: NSObject, ObservableObject {
 
     // MARK: 알 현황
 
-    private func decode(_ data: Data) {
+    // fresh: 아이폰이 방금 보낸 것 (at = 아이폰이 보낸 시각). 그때부터 워치가 걸은 거리를 '미리 보기'로 더한다.
+    private func decode(_ data: Data, fresh: Bool = false, at: Double? = nil) {
         guard !data.isEmpty, let s = try? JSONDecoder().decode(GameState.self, from: data) else { return }
         UserDefaults.standard.set(data, forKey: stateKey)
-        DispatchQueue.main.async { self.state = s }
+        DispatchQueue.main.async {
+            self.state = s
+            if fresh {
+                let t = min(Date().timeIntervalSince1970, at ?? Date().timeIntervalSince1970)
+                UserDefaults.standard.set(t, forKey: self.baseKey)
+                self.extraKm = 0
+                self.pollExtra()
+            }
+        }
+    }
+
+    // MARK: 아이폰과 끊겨 있는 동안 (2026-11-05 경완: 알·짝꿍 진행도가 이어지게)
+    // 아이폰이 마지막으로 알 현황을 보낸 뒤 워치가 걸은 거리(extraKm)를 화면의 알·짝꿍·총 거리에 미리 더해 보여 준다.
+    // 진짜 반영은 아이폰 앱이 건강 앱 기록으로 한다 (WatchWalk). 새 현황이 오면 0 부터 다시.
+    @Published var extraKm = 0.0
+    private let baseKey = "stateAt"
+    private func pollExtra() {
+        let base = UserDefaults.standard.double(forKey: baseKey)
+        guard base > 0, CMPedometer.isDistanceAvailable() else { return }
+        let from = Date(timeIntervalSince1970: base)
+        pedometer.queryPedometerData(from: from, to: Date()) { [weak self] data, error in
+            guard error == nil, let m = data?.distance?.doubleValue else { return }
+            DispatchQueue.main.async {
+                guard let self, UserDefaults.standard.double(forKey: self.baseKey) == base else { return }
+                self.extraKm = max(self.extraKm, m / 1000)
+            }
+        }
+    }
+
+    // 화면에 보일 알 현황 = 받은 현황 + extraKm
+    var shown: GameState? {
+        guard var s = state else { return nil }
+        let k = extraKm
+        guard k > 0 else { return s }
+        for i in s.eggs.indices { s.eggs[i].km += k }
+        let grow = { (b: inout BuddyInfo) in
+            guard b.need > 0 else { return }
+            b.km += k
+            if b.km >= b.need { b.ready = true }
+        }
+        if var b = s.buddy { grow(&b); s.buddy = b }
+        if var L = s.buds { for i in L.indices { grow(&L[i]) }; s.buds = L }
+        s.total += k
+        return s
     }
 
     func refresh() {
         let s = WCSession.default
         guard s.activationState == .activated, s.isReachable else { return }
         s.sendMessage(["get": true], replyHandler: { [weak self] reply in
-            if let data = reply["state"] as? Data { self?.decode(data) }
+            if let data = reply["state"] as? Data { self?.decode(data, fresh: true, at: reply["at"] as? Double) }
             self?.takeToday(reply)
         }, errorHandler: nil)
     }
@@ -236,13 +281,14 @@ extension WatchModel: HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate {
 
 extension WatchModel: WCSessionDelegate {
     func session(_ session: WCSession, activationDidCompleteWith state: WCSessionActivationState, error: Error?) {
-        if let data = session.receivedApplicationContext["state"] as? Data { decode(data) }
+        let c = session.receivedApplicationContext
+        if let data = c["state"] as? Data { decode(data, fresh: true, at: c["at"] as? Double) }
         takeToday(session.receivedApplicationContext)
         DispatchQueue.main.async { self.refresh() }
     }
 
     func session(_ session: WCSession, didReceiveApplicationContext context: [String: Any]) {
-        if let data = context["state"] as? Data { decode(data) }
+        if let data = context["state"] as? Data { decode(data, fresh: true, at: context["at"] as? Double) }
         takeToday(context)
     }
 

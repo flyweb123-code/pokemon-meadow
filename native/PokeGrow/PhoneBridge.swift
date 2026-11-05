@@ -14,6 +14,7 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
     var gameReady = false { didSet { if gameReady { flushPending() } } }
 
     private let stateKey = "lastState"
+    private let stateAtKey = "lastStateAt"
     private let pendingKey = "pendingKm"
 
     override init() {
@@ -38,6 +39,7 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
         if let noti = state.removeValue(forKey: "noti") as? [String: Any] { NotiCenter.shared.update(noti, pendingKm: pendingWalkKm()) }
         guard let data = try? JSONSerialization.data(withJSONObject: state) else { return }
         UserDefaults.standard.set(data, forKey: stateKey)
+        UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: stateAtKey)
         sendState(data)
     }
 
@@ -48,7 +50,9 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
     }
     // 2026-11-05 경완: 워치에서도 프로필의 '이동 거리'(오늘 0시부터, 아이폰 만보기)를 보게 같이 보낸다
     private func watchContext(_ data: Data) -> [String: Any] {
-        var c: [String: Any] = ["state": data, "at": Date().timeIntervalSince1970]
+        // at = 게임이 이 알 현황을 저장한 시각 (워치는 그 뒤에 걸은 거리를 미리 더해 보여 준다)
+        let at = UserDefaults.standard.double(forKey: stateAtKey)
+        var c: [String: Any] = ["state": data, "at": at > 0 ? at : Date().timeIntervalSince1970]
         if let km = todayKm { c["today"] = km; c["day"] = todayDay }
         return c
     }
