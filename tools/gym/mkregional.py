@@ -33,7 +33,7 @@ for sp in sorted(os.listdir(PX)):
         pn = d + 'normal.pal' if os.path.exists(d + 'normal.pal') else d0 + '/normal.pal'
         ps = d + 'shiny.pal' if os.path.exists(d + 'shiny.pal') else d0 + '/shiny.pal'
         if not os.path.exists(bk): bk = fr
-        k = (sp + fo).replace('_', ''); Pn, Ps = pal(pn), pal(ps)
+        k = (sp + fo).replace('_', '').replace('darmanitangalarstandard', 'darmanitangalar'); Pn, Ps = pal(pn), pal(ps)   # 쇼다운 id
         for side, p in (('', fr), ('b', bk)):
             for s, P in (('', Pn), ('s', Ps)): sheet(p, P, side == '').save(f'{OUT}{k}{side}{s}.png', optimize=True)
         two = Image.open(fr).size[1] >= 128
