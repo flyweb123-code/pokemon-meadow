@@ -989,7 +989,7 @@ async function challenge(picked) {
     await loadJs('gym/battle.js', 'GymBattle'); await GB().loadData();
     // 문 소리 → 문 앞 카펫에 나타나 잠깐 섰다가 → 관장 앞까지 걸어온다 (경완 2026-10-28 '소리랑 타이밍 맞춰서, 카펫 위에 잠깐 멈췄다가')
     const D = dzOf(g.d), NM = c.named && NAMED.find(n => n.id === c.named), bm = (!c.boss && NM?.music) || c.music || (c.named ? 'gymBattle' : 'train');   /* v16.88 경완: 이름 있는 트레이너는 지금 named.json 의 곡 (예전에 줄 선 도전자도) */
-    try { window.GymBGM?.prep(bm); if (c.named) window.GymBGM?.play((!c.boss && NM?.eye) || (bm === 'champ' ? 'eyeChamp' : bm === 'tenno' ? 'eyeTenno' : 'eyeElite'), { fade: .1 }); } catch (e) {}   // 이름 있는 트레이너는 들어올 때부터 등장 곡 (배틀 곡과 다름, 경완 2026-10-28)
+    try { window.GymBGM?.prep(bm); if (c.named) { const ey = (!c.boss && NM?.eye) || (/champ/i.test(bm) ? 'eyeChamp' : bm === 'tenno' ? 'eyeTenno' : 'eyeElite'); if (ey === 'none') window.GymBGM?.stop(.8); else window.GymBGM?.play(ey, { fade: .1 }); } } catch (e) {}   /* v16.89: 레드는 원작처럼 말없이 다가온다 (등장 곡 없음) */   // 이름 있는 트레이너는 들어올 때부터 등장 곡 (배틀 곡과 다름, 경완 2026-10-28)
     doorSe(); await wait(180);
     const e = ent({ ow: c.ow, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(c.ow) });
     dlg(`${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 들어온다!`); await wait(650);
@@ -1011,7 +1011,7 @@ async function challenge(picked) {
     document.body.classList.add('gymBattle');
     let res;
     dlg(''); root.classList.add('dhide');   // 배틀 화면이 닫힐 때 승부 대사가 잠깐 비치지 않게 미리 비운다 (경완 2026-10-29)
-    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd, hold: c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : (c.diff | 0) }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, win: (NM && bm === NM.music && NM.win) || null, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); }   // 배틀 끝나고 돌아오면 아래 대화창은 숨김 (경완 2026-10-29)
     if (res?.cut) {   /* 오류로 멈춘 배틀: 승패·평판·연승 그대로, 도전자는 명단에 남아 다시 도전 (경완 2026-11-04) */
       await new Promise(ok => { const p = pop(`<h4>배틀 중 오류가 났어요</h4><p class="gy-msg" style="text-align:center">오류 내용은 자동으로 보내졌어요.<br>곧 고쳐서 업데이트할게요.<br><small>이번 배틀은 없던 걸로 해서 평판·연승은 그대로예요.</small></p><div class="gy-btns"><button class="main" data-a="ok">확인</button></div>`, (a, close) => { close(); ok(); }); const par = p.parentElement, o = new MutationObserver(() => { if (!p.isConnected) { o.disconnect(); ok(); } }); if (par) o.observe(par, { childList: true }); });   /* 오류 창 (경완 2026-11-04) */
