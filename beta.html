@@ -3323,13 +3323,16 @@ const PMD_SH = true;
 const PSH = [[-2, [[3, 2], [4, 3], [4, 3], [3, 2]]], [-3, [[3, 2], [6, 5], [7, 6], [7, 6], [6, 5], [3, 2]]], [-4, [[4, 3], [8, 7], [10, 9], [11, 10], [11, 10], [10, 9], [8, 7], [4, 3]]]];   // 원본 Shadow.png 의 세 타원 (가운데 점 기준 줄마다 왼쪽·오른쪽 칸 수)
 const PSH_D = PSH.map(([T, R]) => [Math.max(...R.map(r => r[0])), Math.max(...R.map(r => r[1])), T, R.length]);
 let SHD = null, shdP = null; const PSHC = {};
-const shdGet = () => shdP || (shdP = fetch('shd.json?v=2').then(r => r.json()).then(d => (SHD = d)).catch(() => { shdP = null; return (SHD = {}); }));
+const shdGet = () => shdP || (shdP = fetch('shd.json?v=3').then(r => r.json()).then(d => (SHD = d)).catch(() => { shdP = null; return (SHD = {}); }));
 const shdOf = k => SHD && (SHD[k] || SHD[parseInt(k)]);
 function pshMask(z, ps) { const key = z + ':' + ps.toFixed(3); if (PSHC[key]) return PSHC[key]; const [L, R, T, n] = PSH_D[z], dp = Math.min(3, window.devicePixelRatio || 1), W = Math.round((L + R + 1) * ps), H = Math.round(n * ps);
   const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(W * dp)); c.height = Math.max(1, Math.round(H * dp)); const x = c.getContext('2d'); x.fillStyle = '#000'; const u = ps * dp;
   PSH[z][1].forEach(([a, b], r) => { const x0 = Math.round((L - a) * u), x1 = Math.round((L + b + 1) * u), y0 = Math.round(r * u), y1 = Math.round((r + 1) * u); x.fillRect(x0, y0, x1 - x0, y1 - y0); });
   return (PSHC[key] = c.toDataURL('image/png')); }
 // v16.70 경완 '몸 부위 위치표': 머리 가운데(원본 Offsets 검은 점)의 좌우 자리 — 말풍선을 머리 위에
+// v16.71 경완 '올라타는 상호작용 다 몸 부위 적용': 태워 주는 포켓몬의 머리·등·배 자리 (좌우 화면 px, 바라보는 쪽 반영). 원본 부위표가 없으면 null
+function bodyX(m, at) { const k = m.sk || m.form, Q = PMD_SH && isPmd(k) && shdOf(k); if (!Q?.[2]) return null; const H = Q[2], C = Q[3] || {}, h = (H[m.anName] || H._)[0], c = (C[m.anName] || C._ || [h])[0], s = scaleOf(k) * (m.face || 1);
+  return (at === 'head' ? h : at === 'back' ? c - (h - c) * .8 : c) * s; }
 function headX(m) { const k = m.sk || m.form, Q = PMD_SH && isPmd(k) && shdOf(k), H = Q?.[2]; if (!H) return 0; const v = H[m.anName] || H._; return (v[0] + (ANIM_DX[k]?.[m.anName] || 0)) * scaleOf(k) * (m.face || 1); }
 // 지금 그림 칸의 그림자 자리 (원본 px, Idle 첫 칸 기준 차이)
 function pshOff(Q, name, f) { const v = Q[1][name] || Q[1]._, p = typeof v[0] === 'number' ? v : (v[f] || v[v.length - 1]); return [p[0] - Q[1]._[0], p[1] - Q[1]._[1]]; }
@@ -3625,7 +3628,7 @@ function anim(m, cls) { m.act.classList.remove('hop', 'phop', 'shake', 'emerge',
 // ---------- create ----------
 async function spawn(sp, opts = {}) {
   await ensureSprite(sp);
-  const sx = opts.pid != null ? (boxOf(opts.pid)?.sex || '') : (opts.sex ?? rollSex(sp)), key = fKey(sp, sx);
+  const sx = opts.pid != null ? (boxOf(opts.pid)?.sex || '') : (opts.sex ?? rollSex(sp)), f0 = opts.pid != null ? fmOf(boxOf(opts.pid), sp) : '', key = f0 && await fmLoad(sp + '~' + f0) ? sp + '~' + f0 : fKey(sp, sx);
   const d = await measure(key); makeStill(sp);
   // 같은 종이 여러 마리여도 이름에 번호를 붙이지 않는다 (예전 저장의 '피카츄 2' 도 '피카츄' 로)
   const nm0 = opts.name && opts.name.replace(/ \d+$/, '') === DEX[sp].n ? DEX[sp].n : opts.name;
@@ -4400,18 +4403,18 @@ const EXTRA_PAIRS = [
   [[455], SMALLW, 'show', 'snip', { t: ['덥석!', '!'], cls: 'hit', hurt: 1, after: '!!', y: .6 }, (a, b) => `${J(a,'이/가')} ${J(b,'을/를')} 덥석 물려고 입을 벌린다! ${J(b,'은/는')} 간신히 피했다.`],
   [[731, 732, 733], [102, 103, 70, 1, 187], 'chat', 'snip', { t: ['콕', '콕콕'], cls: 'hit', hurt: 1, after: '#' }, (a, b) => `${J(a,'이/가')} 부리로 ${J(b,'을/를')} 콕콕 쪼아 본다. 나무인 줄 알았나 보다.`],
   // riding on top
-  [[95, 208], [74, 75, 524, 837], 'play', 'perch', { h: .45, t: ['♪', '!'] }, (a, b) => `${J(b,'이/가')} ${N(a)} 머리 위에 올라타 필드를 구경한다.`],
-  [[131], SMALLW, 'care', 'perch', { h: .55 }, (a, b) => `${J(b,'이/가')} ${N(a)}의 등에 올라탔다. ${J(a,'은/는')} 천천히 헤엄치듯 걸어 준다.`, 18],
-  [[6, 149, 373], SMALLW, 'play', 'perch', { h: .5, fly: 1, t: ['♪', '야호!'] }, (a, b) => `${J(a,'이/가')} ${J(b,'을/를')} 등에 태우고 필드 위를 한 바퀴 날아 준다!`, 15],
-  [[26, 25], [172], 'care', 'perch', { h: .8, t: ['♥', '♪'], cls: 'heart' }, (a, b) => `${J(b,'이/가')} ${N(a)} 머리 위에 폴짝 올라가 앉았다.`],
-  [[115], SMALLW, 'care', 'perch', { h: .25, front: 1, t: '♥', cls: 'heart' }, (a, b) => `${J(b,'이/가')} ${N(a)}의 배 주머니에 쏙 들어갔다. 따뜻해 보인다.`, 15],
-  [[143, 446], [446, 175, 25, 133], 'care', 'perch', { h: .6, t: ['♪', 'Zz'] }, (a, b) => `${J(b,'이/가')} ${N(a)}의 커다란 배 위로 기어올라가 신이 났다.`, 10],
-  [[672, 673], SMALLW, 'play', 'perch', { h: .7, t: ['♪', '이랴!'] }, (a, b) => `${J(b,'이/가')} ${N(a)} 등에 올라타 필드를 달린다!`, 15],
-  [[333, 334], SMALLW, 'care', 'perch', { h: .45, t: ['♥', 'zz'], cls: 'heart' }, (a, b) => `${J(b,'이/가')} ${N(a)}의 솜구름 날개 위에 폭 안겼다.`, 12],
-  [[977], [978], 'care', 'perch', { h: .55, front: 1, t: ['!', '♪'] }, (a, b) => `${J(b,'이/가')} ${N(a)}의 입속에 쏙 들어가 자리를 잡았다. 명콤비다.`],
-  [[527, 528], ANY, 'play', 'perch', { rev: 1, h: .9, t: '♥', cls: 'heart' }, (a, b) => `${J(a,'이/가')} 하트 모양 코로 ${N(b)}에게 철썩 달라붙었다.`, 6],
-  [[713], [712], 'care', 'perch', { h: .62, grp: 712, t: ['♪', '❄'] }, (a, b) => `${J(b,'이/가')} ${N(a)}의 얼음 등 위로 폴짝 올라탔다. 크레베이스는 천천히 걸어 준다.`, 40],   // v4.69 경완: 꽁어름이 크레베이스 등에 올라탄다, 꽁어름이 여럿이면 다 같이
-  [[416], [415], 'care', 'perch', { h: .9, t: ['♪', '윙윙'] }, (a, b) => `${J(b,'이/가')} ${N(a)} 머리 위를 맴돌며 시중을 든다.`],
+  [[95, 208], [74, 75, 524, 837], 'play', 'perch', { h: .45, at: 'head', t: ['♪', '!'] }, (a, b) => `${J(b,'이/가')} ${N(a)} 머리 위에 올라타 필드를 구경한다.`],
+  [[131], SMALLW, 'care', 'perch', { h: .55, at: 'back' }, (a, b) => `${J(b,'이/가')} ${N(a)}의 등에 올라탔다. ${J(a,'은/는')} 천천히 헤엄치듯 걸어 준다.`, 18],
+  [[6, 149, 373], SMALLW, 'play', 'perch', { h: .5, at: 'back', fly: 1, t: ['♪', '야호!'] }, (a, b) => `${J(a,'이/가')} ${J(b,'을/를')} 등에 태우고 필드 위를 한 바퀴 날아 준다!`, 15],
+  [[26, 25], [172], 'care', 'perch', { h: .8, at: 'head', t: ['♥', '♪'], cls: 'heart' }, (a, b) => `${J(b,'이/가')} ${N(a)} 머리 위에 폴짝 올라가 앉았다.`],
+  [[115], SMALLW, 'care', 'perch', { h: .25, at: 'belly', front: 1, t: '♥', cls: 'heart' }, (a, b) => `${J(b,'이/가')} ${N(a)}의 배 주머니에 쏙 들어갔다. 따뜻해 보인다.`, 15],
+  [[143, 446], [446, 175, 25, 133], 'care', 'perch', { h: .6, at: 'belly', t: ['♪', 'Zz'] }, (a, b) => `${J(b,'이/가')} ${N(a)}의 커다란 배 위로 기어올라가 신이 났다.`, 10],
+  [[672, 673], SMALLW, 'play', 'perch', { h: .7, at: 'back', t: ['♪', '이랴!'] }, (a, b) => `${J(b,'이/가')} ${N(a)} 등에 올라타 필드를 달린다!`, 15],
+  [[333, 334], SMALLW, 'care', 'perch', { h: .45, at: 'back', t: ['♥', 'zz'], cls: 'heart' }, (a, b) => `${J(b,'이/가')} ${N(a)}의 솜구름 날개 위에 폭 안겼다.`, 12],
+  [[977], [978], 'care', 'perch', { h: .55, at: 'head', front: 1, t: ['!', '♪'] }, (a, b) => `${J(b,'이/가')} ${N(a)}의 입속에 쏙 들어가 자리를 잡았다. 명콤비다.`],
+  [[527, 528], ANY, 'play', 'perch', { rev: 1, h: .9, at: 'head', hov: 1, t: '♥', cls: 'heart' }, (a, b) => `${J(a,'이/가')} 하트 모양 코로 ${N(b)}에게 철썩 달라붙었다.`, 6],
+  [[713], [712], 'care', 'perch', { h: .62, at: 'back', grp: 712, t: ['♪', '❄'] }, (a, b) => `${J(b,'이/가')} ${N(a)}의 얼음 등 위로 폴짝 올라탔다. 크레베이스는 천천히 걸어 준다.`, 40],   // v4.69 경완: 꽁어름이 크레베이스 등에 올라탄다, 꽁어름이 여럿이면 다 같이
+  [[416], [415], 'care', 'perch', { h: .9, at: 'head', hov: 1, t: ['♪', '윙윙'] }, (a, b) => `${J(b,'이/가')} ${N(a)} 머리 위를 맴돌며 시중을 든다.`],
   // chasing
   [[52, 53, 431, 509], [19, 20, 504, 734], 'play', 'tag', { t: ['찍!', '!'] }, (a, b) => `${J(a,'이/가')} ${J(b,'을/를')} 보더니 사냥 본능이 깨어났다! 쫓고 쫓기는 추격전이 시작됐다.`],
   [[16, 17, 21, 22, 396, 519, 661, 821], [10, 13, 265, 401, 412, 736, 824], 'play', 'tag', { t: ['!', '콕!'], spd: 2.4 }, (a, b) => `${J(a,'이/가')} ${J(b,'을/를')} 쪼아 보려고 쫓아다닌다! ${J(b,'은/는')} 필사적으로 도망친다.`],
@@ -4612,10 +4615,10 @@ const PROC = [
   { w: 2, when: (a, b) => [[8, 2], [2, 8], [1, 9], [9, 1]].some(([x, y]) => SPm(a).c === x && SPm(b).c === y), kind: 'show', mo: 'bonk', p: { t: ['팟!', '!'] }, lines: [
     (a, b) => `${COLOR_ADJ[SPm(a).c]} ${J(a,'과/와')} ${COLOR_ADJ[SPm(b).c]} ${N(b)}, 정반대 색깔끼리 묘한 경쟁심이 붙었다!`] },
   // body and size
-  { w: 5, when: (a, b) => winged(a) && kg(a) < 40 && kg(b) > kg(a) * 6 && walker(b), kind: 'care', mo: 'perch', p: { rev: 1, h: .9, t: ['♪', '휴'] }, lines: [
+  { w: 5, when: (a, b) => winged(a) && kg(a) < 40 && kg(b) > kg(a) * 6 && walker(b), kind: 'care', mo: 'perch', p: { rev: 1, h: .9, at: 'head', t: ['♪', '휴'] }, lines: [
     (a, b) => `${J(a,'이/가')} 날갯짓을 멈추고 ${N(b)}의 머리 위에 사뿐히 내려앉았다.`,
     (a, b) => `${J(a,'이/가')} ${N(b)} 머리 위를 쉼터로 삼았다. ${J(b,'은/는')} 개의치 않는다.`] },
-  { w: 4, when: (a, b) => isSmall(a) && walker(a) && walker(b) && kg(b) > 80 && !winged(a), kind: 'play', mo: 'perch', p: { rev: 1, h: .6 }, lines: [
+  { w: 4, when: (a, b) => isSmall(a) && walker(a) && walker(b) && kg(b) > 80 && !winged(a), kind: 'play', mo: 'perch', p: { rev: 1, h: .6, at: 'back' }, lines: [
     (a, b) => `${J(a,'이/가')} 영차영차 ${N(b)}의 등 위로 기어올라 갔다.`,
     (a, b) => `${J(a,'이/가')} 덩치 큰 ${N(b)} 등에 올라타 높은 곳에서 필드를 내려다본다.`] },
   { w: 3, when: (a, b) => tailed(b) && prankster(a), kind: 'chat', mo: 'snip', p: { t: ['꾹!', '!'], cls: 'hit', hurt: 1, after: '#', y: .3 }, lines: [
@@ -4918,7 +4921,7 @@ const TPL = {
     } },
   // the partner (b) rides on the actor's (a) head or back while a strolls, or flies when p.fly; p.rev swaps who rides
   perch: { dur: 26,   // v8.52 경완: 머리·등 위에 타는 장면은 길게, 태운 채로 필드를 여기저기 다닌다 (예전 8초, 제자리 좌우 60px)
-    init(sc, a, b) { const [m, r] = sc.p.rev ? [b, a] : [a, b]; sc.c = { x: clamp(m.x, XL + 90, XR - 90), y: clamp(m.y, MIN_Y + 30, MAX_Y - 20) }; sc.dx = rnd(-m.w * .1, m.w * .1); anim(r, 'hop');
+    init(sc, a, b) { const [m, r] = sc.p.rev ? [b, a] : [a, b]; sc.c = { x: clamp(m.x, XL + 90, XR - 90), y: clamp(m.y, MIN_Y + 30, MAX_Y - 20) }; sc.dx = sc.p.at ? 0 : rnd(-m.w * .1, m.w * .1); anim(r, 'hop');
       if (sc.p.grp) {   // 같은 종이 더 있으면 다 같이 등에 올라탄다 (c.ride = 태워 주는 포켓몬, render 가 자리를 맞춘다)
         const X = S.mons.filter(c => c !== r && c.sp === sc.p.grp && !c.hidden && !c.held && !c.szb && !c.ride && c.state !== 'interact' && c.state !== 'special' && c.state !== 'sleep' && dist(c, m) < 420).slice(0, 3), n = X.length + 1, st = Math.min(r.w * .62, m.w * .95 / n);
         sc.dx = -(n - 1) / 2 * st;
@@ -4931,8 +4934,8 @@ const TPL = {
       else if (sc.mt > .6) { const wet = (x, y) => pondWalk(m) && pondVal(x, y) < 1.2, cross = q => { for (let i = 1; i <= 8; i++) { const u = i / 8; if (wet(m.x + (q.x - m.x) * u, m.y + (q.y - m.y) * u)) return true; } return false; };   /* v9.38 경완 '머리 위에 타고 필드 달릴 때 연못 근처에서 버벅임': 연못을 지나가는 목적지는 고르지 않고, 물가에 닿으면 새로 고른다 */
         if (!sc.tg || (Math.abs(sc.tg.x - m.x) < 6 && Math.abs(sc.tg.y - m.y) < 4)) { let q = null; for (let i = 0; i < 12 && !q; i++) { let c = { x: clamp(m.x + rnd(-170, 170), XL + 50, XR - 50), y: clamp(m.y + rnd(-90, 90), MIN_Y + 30, MAX_Y - 20) }; c = inHud({ w: m.w || 60, h: m.h || 60 }, c.x, c.y) ? outOfHud({ w: m.w || 60, h: m.h || 60 }, c) : c; if (!cross(c) || i === 11) q = c; } sc.tg = cross(q) ? { x: m.x, y: m.y } : q; }
         const v = 26 * sc.dt, dx = sc.tg.x - m.x, dy = sc.tg.y - m.y, d = Math.hypot(dx, dy) || 1, k = Math.min(1, v / d), nx = m.x + dx * k, ny = m.y + dy * k; faceTo(m, sc.tg.x); if (wet(nx, ny) && !wet(m.x, m.y)) sc.tg = null; else place(m, nx, ny); }
-      r.x = m.x + sc.dx; r.y = m.y + (sc.p.front ? 2 : -1); r.face = m.face; r.zAdd = sc.p.front ? 3 : 2;
-      r.xl = (m.xl || 0) + m.h * (sc.p.h || .62); if ((sc.p.h || .62) < .9) { r.rdH = m; r.rdT = performance.now(); }
+      sc.ax = sc.p.at ? bodyX(m, sc.p.at) ?? 0 : 0; r.x = m.x + sc.ax + sc.dx; r.y = m.y + (sc.p.front ? 2 : -1); r.face = m.face; r.zAdd = sc.p.front ? 3 : 2;   /* v16.71: 머리·등·배 자리는 원본 부위표로 (동작마다 따라감) */
+      r.xl = (m.xl || 0) + m.h * (sc.p.h || .62); if ((sc.p.h || .62) < .9 || (sc.p.at && !sc.p.hov)) { r.rdH = m; r.rdT = performance.now(); }
       if (every(sc, 'n', 1.4)) particle(r.x, r.y - r.xl - r.h, sc.p.cls || 'note', pick([].concat(sc.p.t || ['♪', '♫'])));
     },
     end(sc, a, b) { const [m, r] = sc.p.rev ? [b, a] : [a, b]; place(r, m.x + (r.x < m.x ? -1 : 1) * Math.max(30, (r.w + m.w) * .35), m.y + 4); dustAt(r); } },
@@ -5426,9 +5429,12 @@ function healArrive(m, o) {
   setState(m, 'idle', 2);
 }
 function setForm(m, sp) {
-  const apply = d => { m.form = sp; m.sk = fKey(sp, sexOf(m)); m.w = d.w * scaleOf(m.sk); m.h = d.h * scaleOf(m.sk); m.img.width = m.w; m.img.height = m.h; if (!isPmd(sp)) { m.img.src = SPRITES[sp]; m.curSrc = SPRITES[sp]; } setMode(m); shadowFit(m); };
-  if (SPRITES[sp] && dims[fKey(sp, sexOf(m))]) apply(dims[fKey(sp, sexOf(m))]);
-  else ensureSprite(sp).then(() => { makeStill(sp); return measure(fKey(sp, sexOf(m))); }).then(apply);
+  const P = m.pid != null ? boxOf(m.pid) : null, f = P && fmOf(P, sp), fk = f && sp + '~' + f;   /* v16.74 폼 그림 */
+  if (fk && typeof SPRITES[fk] !== 'object') fmLoad(fk).then(ok => { if (ok && m.form === sp && m.el?.isConnected) setForm(m, sp); });
+  const K = fk && typeof SPRITES[fk] === 'object' ? fk : fKey(sp, sexOf(m));
+  const apply = d => { m.form = sp; m.sk = K; m.w = d.w * scaleOf(m.sk); m.h = d.h * scaleOf(m.sk); m.img.width = m.w; m.img.height = m.h; if (!isPmd(sp)) { m.img.src = SPRITES[sp]; m.curSrc = SPRITES[sp]; } setMode(m); shadowFit(m); };
+  if (SPRITES[sp] && dims[K]) apply(dims[K]);
+  else ensureSprite(sp).then(() => { makeStill(sp); return measure(K); }).then(apply);
   m.el.classList.toggle('ditto', sp !== m.sp);
 }
 function revert(m) {
@@ -5687,7 +5693,7 @@ function render(m, now) {
   const t = T(m), flyer = t.mv === 'fly' || t.mv === 'hover';
   const grounded = !m.held && !(flyer && pondVal(m.x, m.y) < 1.05) && (m.state === 'sleep' || m.state === 'eat' || (t.mv === 'fly' && SPm(m).sh === 9 && !FLAP_IDLE.has(m.sp)));   /* v9.71 경완 '안 나는 모션들은 떠 있기 0으로 다 맞춰놨어 나는 건 떠 있고': 날개 접고 서는 새는 움직일 때도 40px 띄우지 않고 작업실 떠 있기(MON_FLY + 동작별 MON_FLYA)만 따른다 (연못 위는 그대로 날아서) */   /* v4.91: 호수 위에서는 앉지 않고 떠 있다 */   // v3.62 경완: 새는 날개를 접고 서 있을 땐 땅에, 날아갈 때만 떠 있다
   if (m.perch) { const p = m.perch; if (S.mons.includes(p) && p.state === 'sleep' && m.state === 'sleep') { m.x = p.x + m.perchDx; m.y = p.y + 1; m.xl = p.h * .45; } else { m.perch = null; m.xl = 0; } }
-  if (m.ride) { const h = m.ride; if (S.mons.includes(h) && h.scene === m.rideSc && h.state === 'interact' && !m.held && m.state !== 'interact' && m.state !== 'special') { m.x = h.x + m.rideDx; m.y = h.y; m.xl = (h.xl || 0) + h.h * .62; m.rdH = h; m.rdT = now; m.face = h.face; m.zAdd = 2; m.goal = null; if (m.state === 'move') setState(m, 'idle', 30); m.t = Math.max(m.t, 1); }
+  if (m.ride) { const h = m.ride; if (S.mons.includes(h) && h.scene === m.rideSc && h.state === 'interact' && !m.held && m.state !== 'interact' && m.state !== 'special') { m.x = h.x + m.rideDx + (m.rideSc.ax || 0); m.y = h.y; m.xl = (h.xl || 0) + h.h * .62; m.rdH = h; m.rdT = now; m.face = h.face; m.zAdd = 2; m.goal = null; if (m.state === 'move') setState(m, 'idle', 30); m.t = Math.max(m.t, 1); }
     else { m.ride = null; m.rideSc = null; m.xl = 0; m.zAdd = 0; if (!m.held && S.mons.includes(h)) { place(m, h.x + (m.rideDx < 0 ? -1 : 1) * Math.max(34, (m.w + h.w) * .4) + rnd(-12, 12), h.y + rnd(4, 16)); dustAt(m); } } }
   { const xl = m.xl || 0; if (xl !== m.xlP) { m.xlP = xl; m.xlC = now; } else if (xl && !m.perch && !m.propSit && !m.ride && !m.scp && !m.held && m.state !== 'interact' && now - m.xlC > 1500) { m.xl = m.xlP = 0; m.zAdd = 0; } }   // v14.98 경완 '걷거나 할 때도 떠 있음': 장면·놀이가 끝났는데 높이(xl)가 그대로 남아 1.5초 넘게 안 바뀌면 땅으로 (배 위·소품·태우기·들기·상호작용 중은 그대로)
   const fly0 = MON_FLY[m.form] || 0, rdOn = m.rdH && !m.held && now - (m.rdT || 0) < 200 && S.mons.includes(m.rdH), scR = m.scp && m.scp.ride, targetLift = m.scp && !m.held ? Math.max(0, (m.xl || 0) + (scR ? 0 : fly0)) : Math.max(0, m.szb ? liftBase(m.sp) + fly0 : m.held ? 26 : (flyer ? (grounded ? (t.mv === 'hover' ? 6 : 0) : (t.mv === 'fly' ? 40 : 16)) : 0) + (m.xl || 0) + fly0);   /* v5.20: MON_FLY 는 원래 높이에 더하는 값 (음수면 낮게) */   /* 들면 나는 포켓몬도 손가락(몸통) 기준: 그림자 위 높이를 더하지 않는다 */
@@ -7373,7 +7379,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '16.72';   /* v16.72 경완: 진화구슬도 골드(모든 미니게임), 사이코키네시스 2초 고정·뜨는 동안 안 합쳐짐, 진화구슬 패시브 = 랭크별 특성 (F 픽업 골드, E 프렌드가드 친밀도, D 대운, C 위협, B 싱크로, A 프레셔, S 자력), 사이코키네시스 무게(큰 구슬일수록 덜 뜸) */   /* v16.71 경완: 훈련 일지 하루씩 넘기기·코치가 가르쳤다, 훈련 현황 누적, 라인업 박스 뺌 */ /* v16.70 경완: 다른 방향 그림 — 걷는 쪽 따라 아래·옆·위 모습(오른쪽은 뒤집기), 마주 보고 얘기할 땐 옆모습. 몸 부위 위치표로 말풍선을 머리 위에. */   /* v16.69 경완: 원본 그림자 — 종마다 작게·보통·크게 도트 타원, 동작 그림마다 그림자 자리가 몸을 따라감(shd.json). */   /* v16.68 경완: 훈련 일지 문장·머리 맞춤, 빼기, 홈 트레이너 카드 통일 */ /* v16.67 경완: 지원서 없음 화면 메일 아이콘 뺌, 고용 관리 탭을 왼쪽으로 */ /* v16.66 경완: 트레이너 상세카드 딱지·발판·코치 빼기 */ /* v16.65 경완: 청결·즐거움·배부름이 셋 다 0 인 포켓몬은 가끔 멈춰서 움찔. */   /* v16.64 경완: 놀랄 때 움찔 동작 뺌, 둘이 붙을 때(싸움·박치기) 중간중간 아파함, 쓰다듬은 뒤엔 빙글·깡총 대신 포즈(포즈 그림 있는 종). */   /* v16.63 경완: 트레이너 상세카드 레이아웃·기록 정리 */ /* v16.64 경완: 체육관 내 캐릭터 상세카드 등급별 디자인 */ /* v16.61 경완: 상태창 왼쪽 포켓몬 얼굴 끔 (필드 스프라이트 표정을 물어본 거였음) — 필드 새 동작은 그대로. */   /* v16.60 경완: 얼굴 표정·필드 동작 — 상태창 왼쪽에 문장 속 포켓몬 얼굴(말풍선 상황마다 기쁨·놀람·걱정·화남 등 표정, face/), 끄덕이기·올려다보기·포즈·춤·노래·깨어나기·움찔 등 원본 나머지 동작(mx/, 필드에 있는 포켓몬부터 하나씩 받아 둠)을 상호작용마다. */   /* v16.59 경완: 랭킹의 내 줄 → 프로필 내 카드와 동일 */ /* v16.60 경완: 진화구슬 기술 5차 — 파도 큰 구슬도 뜸(무거울수록 천천히), 폭풍 더 세게, 용해액 방울 작게·안 녹는 구슬은 튕겨내는 막, 사이코 떠오르는 구슬도 밀림 */
+const APP_VER = '16.75';   /* v16.75 경완: 사이코키네시스를 힘으로 끌어올림 — 위에 얹힌 구슬 무게만큼 덜 올라감 */   /* v16.74 경완: 폼 257가지(66종) 필드 그림 — 본가 기준: 안농·비비용·플라베베·마휘핑 등은 태어날 때 무작위, 루가루암은 진화 시각, 시키지카는 계절, 도구·배틀 폼은 그림만. */   /* v16.73 경완: 머리·등·배 위에 올라타는 상호작용을 원본 몸 부위표(머리·몸 가운데) 자리에 맞춤, 태워 주는 포켓몬 동작 따라 자리도 따라감. */   /* v16.72 경완: 진화구슬도 골드(모든 미니게임), 사이코키네시스 2초 고정·뜨는 동안 안 합쳐짐, 진화구슬 패시브 = 랭크별 특성 (F 픽업 골드, E 프렌드가드 친밀도, D 대운, C 위협, B 싱크로, A 프레셔, S 자력), 사이코키네시스 무게(큰 구슬일수록 덜 뜸) */   /* v16.71 경완: 훈련 일지 하루씩 넘기기·코치가 가르쳤다, 훈련 현황 누적, 라인업 박스 뺌 */ /* v16.70 경완: 다른 방향 그림 — 걷는 쪽 따라 아래·옆·위 모습(오른쪽은 뒤집기), 마주 보고 얘기할 땐 옆모습. 몸 부위 위치표로 말풍선을 머리 위에. */   /* v16.69 경완: 원본 그림자 — 종마다 작게·보통·크게 도트 타원, 동작 그림마다 그림자 자리가 몸을 따라감(shd.json). */   /* v16.68 경완: 훈련 일지 문장·머리 맞춤, 빼기, 홈 트레이너 카드 통일 */ /* v16.67 경완: 지원서 없음 화면 메일 아이콘 뺌, 고용 관리 탭을 왼쪽으로 */ /* v16.66 경완: 트레이너 상세카드 딱지·발판·코치 빼기 */ /* v16.65 경완: 청결·즐거움·배부름이 셋 다 0 인 포켓몬은 가끔 멈춰서 움찔. */   /* v16.64 경완: 놀랄 때 움찔 동작 뺌, 둘이 붙을 때(싸움·박치기) 중간중간 아파함, 쓰다듬은 뒤엔 빙글·깡총 대신 포즈(포즈 그림 있는 종). */   /* v16.63 경완: 트레이너 상세카드 레이아웃·기록 정리 */ /* v16.64 경완: 체육관 내 캐릭터 상세카드 등급별 디자인 */ /* v16.61 경완: 상태창 왼쪽 포켓몬 얼굴 끔 (필드 스프라이트 표정을 물어본 거였음) — 필드 새 동작은 그대로. */   /* v16.60 경완: 얼굴 표정·필드 동작 — 상태창 왼쪽에 문장 속 포켓몬 얼굴(말풍선 상황마다 기쁨·놀람·걱정·화남 등 표정, face/), 끄덕이기·올려다보기·포즈·춤·노래·깨어나기·움찔 등 원본 나머지 동작(mx/, 필드에 있는 포켓몬부터 하나씩 받아 둠)을 상호작용마다. */   /* v16.59 경완: 랭킹의 내 줄 → 프로필 내 카드와 동일 */ /* v16.60 경완: 진화구슬 기술 5차 — 파도 큰 구슬도 뜸(무거울수록 천천히), 폭풍 더 세게, 용해액 방울 작게·안 녹는 구슬은 튕겨내는 막, 사이코 떠오르는 구슬도 밀림 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9985,7 +9991,7 @@ function evoDropOpen(o = {}) {
         MT.Body.applyForce(b.body, b.body.position, { x: ux * m * gF * 1.5 * f, y: uy * m * gF * 1.5 * f }); if (b.y < -rad(b) * .2) { b.fly = now; b.body.collisionFilter.mask = 1; } } }
     for (const b of B) { if (b.dead) continue;
       if (b.psy) { const q = (now - b.psy.t) / 1000; if (q < 2) { const w = Math.min(1, Math.max(.25, (30 / b.r) ** 1.1)), ty = TOP + rad(b) + 6, vUp = 5 * w * Math.min(1, q / .3), v = b.body.velocity;   /* 경완: 염력 시간은 2초로 고정 — 같은 힘으로 끌어올려서 가벼운 구슬은 점선 아래까지, 무거운 구슬은 올라가다 시간이 끝나 떨어짐. 뜨는 동안은 같은 구슬과 안 합쳐짐 */
-          MT.Body.setVelocity(b.body, { x: v.x * .9 + (b.psy.x0 - b.x) * .01, y: b.y > ty ? Math.max(-vUp, Math.min(v.y, (ty - b.y) * .25)) : (ty - b.y) * .25 }); MT.Body.setAngularVelocity(b.body, b.body.angularVelocity * .9); }
+          const vt = Math.max(-vUp, (ty - b.y) * .25), m = b.body.mass, up = Math.max(-1, Math.min(1.6 * w, (v.y - vt) * .6)); MT.Body.setVelocity(b.body, { x: v.x * .9 + (b.psy.x0 - b.x) * .01, y: v.y }); MT.Body.applyForce(b.body, b.body.position, { x: 0, y: -m * gF * (1 + up) }); MT.Body.setAngularVelocity(b.body, b.body.angularVelocity * .9); }   // 경완: 속도를 정하지 않고 힘으로 끌어올림 → 위에 얹힌 구슬 무게만큼 덜 올라감
         else { b.psy = null; MT.Body.setVelocity(b.body, { x: 0, y: 0 }); MT.Body.setAngularVelocity(b.body, 0); boom(b.x, b.y, 10, '#f090e0', 120, 'spark', 500); } }
       let s = b.fr || 1; if (b.gone) { const q = Math.max(0, Math.min(1, (now - b.gone.t) / GD[b.gone.k])); s *= b.gone.k === 'burn' ? (q < .6 ? 1 : 1 - (q - .6) / .4 * .85) : 1 - q * .85; } if (b.gw) { const q = Math.min(1, (now - b.gw) / 420); s *= .3 + .7 * (1 - (1 - q) ** 2); if (q >= 1) b.gw = 0; }
       if (Math.abs(s - b.s) > 1e-4) { const f = s / b.s; MT.Body.scale(b.body, f, f); b.s = s; } } };
@@ -12639,6 +12645,7 @@ function tickMoves(real) {
 }
 function newPoke(sp, o = {}) {
   const p = { id: S.eid++, sp, iv: Array.from({ length: 6 }, () => Math.floor(Math.random() * 32)), shiny: o.shiny ?? Math.random() < SHINY_RATE, fr: 0, t: Date.now(), sex: o.sex ?? rollSex(sp), rv: 1 };
+  { const f = o.fm ?? rollFm(sp); if (f) p.fm = f; }   /* v16.74 폼 */
   if (o.g) p.g = o.g; if (o.place) p.place = o.place; if (p.shiny) setTimeout(shPrepOwned, 0);
   S.box.push(p); boxSort = 'new'; boxDir = 1; try { localStorage.setItem('pk-box-sort', 'new'); localStorage.setItem('pk-box-dir', 1); } catch (e) {}   /* 새 포켓몬이 들어오면 상자는 날짜 최신순 */
   return p;
@@ -12650,7 +12657,27 @@ const sexOf = m => (m.pid != null ? boxOf(m.pid)?.sex : m.sex) || '';
 const sexHtml = x => x === 'f' ? '<b class="sx f">♀</b>' : x === 'm' ? '<b class="sx m">♂</b>' : '';
 // 암컷 모습이 따로 있는 종(피카츄 꼬리 하트 등)은 암컷 스프라이트 'NNf'
 const fKey = (sp, x) => x === 'f' && SPRITES[sp + 'f'] ? sp + 'f' : sp;
-const thumbP = P => thumbOf(fKey(P.sp, P.sex));
+// v16.74 경완 '폼 약 260개 적용, 폼 나오는 기준은 본가 기준': 필드 그림(fm/<번호>~<폼>.json, tools/mkpmdfm.py). 상자 P.fm = 폼 이름 ('' = 기본 모습)
+//   태어날 때 무작위(본가에서 무작위·지역마다 다른 폼): 안농 글자·도롱충이/도롱마담 망토·깝질무/트리토돈 동쪽·배쓰나이 파랑·비비용 무늬·플라베베 꽃색·호바귀/펌킨인 크기·춤추새·스트린더·마휘핑·싸리용
+//   진화할 때: 루가루암 = 진화한 시각(17시 황혼, 18~5시 한밤중, 낮 한낮), 우라오스 = 반반, 파밀리쥐 = 1% 세 식구. 시키지카·바라철록 = 지금 계절(실제 달)
+//   본가에서 도구·배틀·날씨로 바뀌는 폼(로토무 가전·아르세우스 플레이트·캐스퐁·달마모드 등)은 그림만 받아 두고 지금은 기본 모습
+const FMI = {"25":["Libre","Cosplay"],"150":["Shadow"],"172":["Spiky"],"201":["B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Exclamation","Question"],"249":["Shadow"],"351":["Sunny","Rainy","Snowy"],"352":["Purple"],"386":["Attack","Defense","Speed"],"412":["Sand","Trash"],"413":["Sand","Trash"],"421":["Sunshine"],"422":["East"],"423":["East"],"479":["Heat","Wash","Frost","Fan","Mow","Drone"],"483":["Origin"],"484":["Origin"],"487":["Origin"],"492":["Sky"],"493":["Bug","Dark","Dragon","Electric","Fighting","Fire","Flying","Ghost","Grass","Ground","Ice","Poison","Psychic","Rock","Steel","Water","Fairy","Question_Mark"],"550":["Blue","White"],"555":["Zen"],"585":["Summer","Autumn","Winter"],"586":["Summer","Autumn","Winter"],"645":["Therian"],"646":["Black","White"],"648":["Pirouette"],"649":["Douse","Shock","Burn","Chill"],"666":["Icy_Snow","Polar","Tundra","Continental","Garden","Elegant","Modern","Marine","Archipelago","High_Plains","Sandstorm","River","Monsoon","Savannah","Sun","Ocean","Jungle","Fancy","Pokeball"],"669":["Yellow","Orange","Blue","White"],"670":["Yellow","Orange","Blue","White","Eternal"],"671":["Yellow","Orange","Blue","White"],"676":["Kabuki"],"681":["Blade"],"710":["Small","Large","Super"],"711":["Super"],"716":["Neutral"],"718":["10","Complete"],"720":["Unbound"],"741":["Pom_Pom","Pa_U","Sensu"],"745":["Midnight","Dusk"],"746":["School"],"773":["Fighting","Flying","Poison","Ground","Rock","Bug","Ghost","Steel","Fire","Water","Grass","Electric","Psychic","Ice","Dragon","Dark","Fairy"],"774":["Red","Orange","Yellow","Green","Blue","Indigo","Violet"],"778":["Busted"],"800":["Ultra"],"801":["Original"],"840":["No_Apple"],"849":["Lowkey"],"869":["Berry_Sweet","Love_Sweet","Star_Sweet","Clover_Sweet","Flower_Sweet","Ribbon_Sweet","Ruby_Cream_Strawberry_Sweet","Ruby_Cream_Berry_Sweet","Ruby_Cream_Love_Sweet","Ruby_Cream_Star_Sweet","Ruby_Cream_Clover_Sweet","Ruby_Cream_Flower_Sweet","Ruby_Cream_Ribbon_Sweet","Matcha_Cream_Strawberry_Sweet","Matcha_Cream_Berry_Sweet","Matcha_Cream_Love_Sweet","Matcha_Cream_Star_Sweet","Matcha_Cream_Clover_Sweet","Matcha_Cream_Flower_Sweet","Matcha_Cream_Ribbon_Sweet","Mint_Cream_Strawberry_Sweet","Mint_Cream_Berry_Sweet","Mint_Cream_Love_Sweet","Mint_Cream_Star_Sweet","Mint_Cream_Clover_Sweet","Mint_Cream_Flower_Sweet","Mint_Cream_Ribbon_Sweet","Lemon_Cream_Strawberry_Sweet","Lemon_Cream_Berry_Sweet","Lemon_Cream_Love_Sweet","Lemon_Cream_Star_Sweet","Lemon_Cream_Clover_Sweet","Lemon_Cream_Flower_Sweet","Lemon_Cream_Ribbon_Sweet","Salted_Cream_Strawberry_Sweet","Salted_Cream_Berry_Sweet","Salted_Cream_Love_Sweet","Salted_Cream_Star_Sweet","Salted_Cream_Clover_Sweet","Salted_Cream_Flower_Sweet","Salted_Cream_Ribbon_Sweet","Ruby_Swirl_Strawberry_Sweet","Ruby_Swirl_Berry_Sweet","Ruby_Swirl_Love_Sweet","Ruby_Swirl_Star_Sweet","Ruby_Swirl_Clover_Sweet","Ruby_Swirl_Flower_Sweet","Ruby_Swirl_Ribbon_Sweet","Caramel_Swirl_Strawberry_Sweet","Caramel_Swirl_Berry_Sweet","Caramel_Swirl_Love_Sweet","Caramel_Swirl_Star_Sweet","Caramel_Swirl_Clover_Sweet","Caramel_Swirl_Flower_Sweet","Caramel_Swirl_Ribbon_Sweet","Rainbow_Swirl_Strawberry_Sweet","Rainbow_Swirl_Berry_Sweet","Rainbow_Swirl_Love_Sweet","Rainbow_Swirl_Star_Sweet","Rainbow_Swirl_Clover_Sweet","Rainbow_Swirl_Flower_Sweet","Rainbow_Swirl_Ribbon_Sweet"],"870":["Brass","Trooper"],"875":["Noice"],"877":["Hangry"],"888":["Crowned_Sword"],"889":["Crowned_Shield"],"892":["Rapid_Strike"],"901":["Bloodmoon"],"905":["Therian"],"924":["Shirt","Pants"],"925":["Three","Baby"],"964":["Hero"],"978":["Stretchy","Droopy"],"999":["Roaming"],"1003":["Temp"],"1008":["Low_Power"],"1017":["Wellspring","Hearthflame","Cornerstone","Teal_Mask","Wellspring_Mask","Hearthflame_Mask","Cornerstone_Mask"],"1024":["Terastal"]};
+const FM_RND = { 201: 1, 412: 1, 413: 1, 422: 1, 423: 1, 550: ['Blue'], 666: ['Icy_Snow', 'Polar', 'Tundra', 'Continental', 'Garden', 'Elegant', 'Modern', 'Marine', 'Archipelago', 'High_Plains', 'Sandstorm', 'River', 'Monsoon', 'Savannah', 'Sun', 'Ocean', 'Jungle'], 669: 1, 670: ['Yellow', 'Orange', 'Blue', 'White'], 671: 1, 710: 1, 711: 1, 741: 1, 849: 1, 869: 1, 978: 1 };
+function rollFm(sp) { const R = FM_RND[sp], L = R === 1 ? FMI[sp] || [] : R || []; if (!L.length) return '';
+  if (sp === 710 || sp === 711) { const r = Math.random(); return r < .1 && L.includes('Super') ? 'Super' : r < .4 && L.includes('Small') ? 'Small' : r < .7 && L.includes('Large') ? 'Large' : ''; }   // 크기: 보통이 가장 흔하고 특대는 드물게
+  if (sp === 849) return Math.random() < .48 ? 'Lowkey' : '';   // 성격 25가지 중 12가지가 로우폼
+  const i = Math.floor(Math.random() * (L.length + 1)); return i < L.length ? L[i] : ''; }
+function evoFm(to, fm) { if (fm && FMI[to]?.includes(fm)) return fm; const h = new Date().getHours();
+  if (to === 745) return h === 17 ? 'Dusk' : h >= 18 || h < 6 ? 'Midnight' : '';
+  if (to === 892) return Math.random() < .5 ? 'Rapid_Strike' : ''; if (to === 925) return Math.random() < .01 ? 'Three' : ''; return FM_RND[to] ? rollFm(to) : ''; }
+const fmSeason = () => { const mo = new Date().getMonth() + 1; return mo >= 6 && mo <= 8 ? 'Summer' : mo >= 9 && mo <= 11 ? 'Autumn' : mo === 12 || mo <= 2 ? 'Winter' : ''; };
+function fmOf(P, sp = P?.sp) { if (!P) return ''; if (sp === 585 || sp === 586) return fmSeason(); const f = sp === P.sp ? P.fm : ''; return f && FMI[sp]?.includes(f) ? f : ''; }
+const FMP = {};
+function fmLoad(k) { if (typeof SPRITES[k] === 'object') return Promise.resolve(true); return FMP[k] ||= fetch(`fm/${k}.json?v=1`).then(r => r.ok ? r.json() : null).then(d => { if (d) SPRITES[k] = d; return !!d; }).catch(() => { delete FMP[k]; return false; }); }
+// 상자 포켓몬의 그림 열쇠: 폼 그림을 받았으면 폼, 아직이면 받으면서 기본(암컷) 모습
+const pKey = (P, sp = P.sp) => { const f = fmOf(P, sp), k = f && sp + '~' + f; if (k) { if (typeof SPRITES[k] === 'object') return k; fmLoad(k); } return fKey(sp, P.sex); };
+setTimeout(() => { for (const P of S.box || []) { const f = fmOf(P); if (f) fmLoad(P.sp + '~' + f); } }, 1500);
+const thumbP = P => thumbOf(pKey(P));
 const nameOf = P => P.nm || SPECIES[P.sp].n;
 const onField = id => S.mons.some(m => m.pid === id);
 function addFr(id, n) { const p = boxOf(id); if (p && n > 0) { const f0 = p.fr || 0; p.fr = Math.min(255, f0 + n); frMaxHit(p, f0); } }
@@ -13979,7 +14006,7 @@ async function evolve(m) {
   let gap = 520, now = to;
   while (gap > 60) { setForm(m, now); now = now === to ? from : to; await wait(gap); gap *= .84; }
   m.sp = to; setForm(m, to); m.el.classList.remove('ditto');
-  { const P = boxOf(m.pid), b = S.buds.find(x => x.pid === m.pid); if (P) { P.sp = to; P.km = 0; } if (b) { b.sp = to; b.km = 0; } }
+  { const P = boxOf(m.pid), b = S.buds.find(x => x.pid === m.pid); if (P) { const ef = evoFm(to, P.fm); if (ef) P.fm = ef; else delete P.fm; P.sp = to; P.km = 0; } if (b) { b.sp = to; b.km = 0; } }
   await wait(500);
   m.el.classList.remove('evo'); veil.classList.remove('on');
   for (let i = 0; i < 3; i++) setTimeout(() => ring(m.x, m.y - m.h / 2), i * 180);
@@ -14356,6 +14383,7 @@ async function evolveWin(P, card, forceTo, tool) {   // tool: 쓴 도구 id → 
   await wait(180);
   evoMusicFade(1.2);
   const newTo = !S.unlocked.has(dxK(to)); if (newTo) addGold(NEW_G);
+  { const ef = evoFm(to, P.fm); if (ef) P.fm = ef; else delete P.fm; }   /* v16.74: 진화하면 폼 이어받기 (본가 기준) */
   P.sp = to; P.km = 0; if (b) { b.sp = to; b.km = 0; } unlock(to, true); if (S.evoPend?.pid === P.id) S.evoPend = null;
   const fr0 = P.fr || 0; P.fr = Math.min(FR_MAX, fr0 + (EVO_FR[Math.min(2, evoStage(to))] || EVO_FR[1])); frMaxHit(P, fr0);   // 진화하면 친밀도가 오른다 (첫 진화 30, 두 번째 60)
   { const m = S.mons.find(x => x.pid === P.id); if (m) { m.sp = to; setForm(m, to); m.el.classList.remove('ditto'); if (m.name === fromN || m.name.startsWith(fromN + ' ')) { m.name = m.name.replace(fromN, toN); m.tag.textContent = m.name; } } }   // 필드에 있던 포켓몬도 새 모습으로
