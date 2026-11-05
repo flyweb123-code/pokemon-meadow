@@ -2963,3 +2963,4 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .coin{margin-right:6px!important}
 #gym .rs-gold>.coin,#gym .jn-tb .jn-gc .coin,#gym .gy-jnlw .jn-out .jn-gc .coin{margin-right:0!important}
 #gym .aw-tot b{gap:0}
+#gym .sf-cap>span:has(.sp-gold){background:none;box-shadow:none;padding:3px 0 4px}   /* v16.89 경완: 상점 보유 골드 뒤 박스 없앰 */

@@ -8,6 +8,8 @@ const VER = ((document.currentScript && document.currentScript.src.match(/[?&]v=
 // 커밋을 고정해 두어 바이트 위치가 바뀌지 않는다
 const SRC = 'https://raw.githubusercontent.com/pret/pokeplatinum/6eeb1b04c6433761f3049811b7e1383619c59743/res/prebuilt/data/sound/sound_data.sdat';
 const SDAT_SIZE = 7484768;
+// v16.89 경완 '다른 저장소에서 해당 버전 시그니처 bgm': 성도·관동 트레이너 곡은 하트골드 원본 소리 데이터(pret/pokeheartgold, 커밋 고정)에서
+const SRCS = { pt: [SRC, SDAT_SIZE], hg: ['https://raw.githubusercontent.com/pret/pokeheartgold/e1d5a4606640e31c44d36714ad0b5cdd9c8763fd/files/data/sound/gs_sound_data.sdat', 8660096] };
 // [시작 바이트, 길이]
 const PART = {
   wBasic: [6573184, 458564], wField: [7031776, 30836], wBattle: [7062624, 33656],
@@ -21,8 +23,15 @@ const PART = {
   // 효과음: 배틀·기본 효과음 악보 묶음(gym/se.json 의 block), 악기, 소리 묶음
   seBlock: [1450624, 126400], fanBlock: [1244704, 7144], bSe: [1648288, 4416], bBasic: [1624352, 3720], wSe: [7219648, 85568],
   bSeF: [1643904, 4368], wSeF: [7158592, 61032],   // 필드 효과음 (문 소리, 경완 2026-10-28)
+  // 하트골드 (세 번째 값 'hg' = SRCS.hg 파일)
+  hwBasic: [6937120, 431288, 'hg'], hbBasic: [1764256, 4288, 'hg'],
+  hbBa1: [1852256, 4392, 'hg'], hwBa1: [7588672, 13252, 'hg'], hbBa2: [1856672, 4356, 'hg'], hwBa2: [7601952, 13956, 'hg'],
+  hbBa3: [1861056, 4348, 'hg'], hwBa3: [7615936, 8452, 'hg'], hbBa5: [1869856, 4392, 'hg'], hwBa5: [7653248, 27708, 'hg'],
+  hsGymJ: [714656, 11596, 'hg'], hsGymK: [839424, 20568, 'hg'], hsRival: [726272, 15056, 'hg'], hsChamp: [794112, 12628, 'hg'],
+  hsEyeRiv: [578240, 6976, 'hg'], hsWin1: [860000, 3164, 'hg'], hsWin3: [868960, 6180, 'hg'],
 };
-const BANK = { field: { b: 'bField', w: ['wBasic', 'wField'] }, battle: { b: 'bBattle', w: ['wBasic', 'wBattle'] }, S: { b: 'bSe', w: ['wBasic', 'wSe'] }, B: { b: 'bBasic', w: ['wBasic'] }, F: { b: 'bSeF', w: ['wBasic', 'wSeF'] }, dungeon: { b: 'bDungeon', w: ['wBasic', 'wDungeon'] } };
+const BANK = { field: { b: 'bField', w: ['wBasic', 'wField'] }, battle: { b: 'bBattle', w: ['wBasic', 'wBattle'] }, S: { b: 'bSe', w: ['wBasic', 'wSe'] }, B: { b: 'bBasic', w: ['wBasic'] }, F: { b: 'bSeF', w: ['wBasic', 'wSeF'] }, dungeon: { b: 'bDungeon', w: ['wBasic', 'wDungeon'] },
+  hB: { b: 'hbBasic', w: ['hwBasic'] }, h1: { b: 'hbBa1', w: ['hwBasic', 'hwBa1'] }, h2: { b: 'hbBa2', w: ['hwBasic', 'hwBa2'] }, h3: { b: 'hbBa3', w: ['hwBasic', 'hwBa3'] }, h5: { b: 'hbBa5', w: ['hwBasic', 'hwBa5'] } };
 // 곡 이름 → 악보, 악기 묶음, 곡 볼륨(원본 SEQ 정보 값)
 const SONG = {
   gym: { s: 'sGym', bank: 'field', vol: 118 },            // 체육관
@@ -42,6 +51,14 @@ const SONG = {
   theRiv: { s: 'sTheRiv', bank: 'B', vol: 70 },           // 라이벌 용식 테마 (등장)
   winTenno: { s: 'sWinTenno', bank: 'battle', vol: 90 },  // 사천왕에게 이겼다
   winChamp: { s: 'sWinChamp', bank: 'battle', vol: 105 }, // 챔피언에게 이겼다
+  // 하트골드: 성도·관동 관장, 라이벌 실버, 챔피언(목호·레드), 승리
+  hgGymJ: { s: 'hsGymJ', bank: 'h1', vol: 108 },          // 성도 관장·사천왕 배틀
+  hgGymK: { s: 'hsGymK', bank: 'h5', vol: 75 },           // 관동 관장 배틀
+  hgRival: { s: 'hsRival', bank: 'h2', vol: 84 },         // 라이벌 실버 배틀
+  hgChamp: { s: 'hsChamp', bank: 'h3', vol: 113 },        // 챔피언 목호·레드 배틀
+  hgEyeRiv: { s: 'hsEyeRiv', bank: 'hB', vol: 89 },       // 실버 등장
+  hgWin1: { s: 'hsWin1', bank: 'hB', vol: 110 },          // 트레이너에게 이겼다
+  hgWin3: { s: 'hsWin3', bank: 'hB', vol: 102 },          // 관장·사천왕·챔피언에게 이겼다
 };
 
 // ---------- 받아 오기·저장 ----------
@@ -49,10 +66,11 @@ const db = () => new Promise((res, rej) => { const r = indexedDB.open('pk-music'
 async function idb(mode, fn) { const d = await db(); return new Promise((res, rej) => { const tx = d.transaction('t', mode), r = fn(tx.objectStore('t')); tx.oncomplete = () => res(r && r.result); tx.onerror = () => rej(tx.error); }); }
 const key = p => 'gsnd:' + p;
 const mem = {};
-let whole = null;   // 바이트 범위 요청이 안 되는 경우 파일 통째로(한 번만)
-async function fetchWhole() {
-  if (!whole) whole = fetch(SRC).then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.arrayBuffer(); }).then(b => { if (b.byteLength !== SDAT_SIZE) throw new Error('size'); return b; }).catch(e => { whole = null; throw e; });
-  return whole;
+const whole = {};   // 바이트 범위 요청이 안 되는 경우 파일 통째로(파일마다 한 번만)
+async function fetchWhole(k) {
+  const [url, size] = SRCS[k];
+  if (!whole[k]) whole[k] = fetch(url).then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.arrayBuffer(); }).then(b => { if (b.byteLength !== size) throw new Error('size'); return b; }).catch(e => { delete whole[k]; throw e; });
+  return whole[k];
 }
 async function part(p) {
   if (mem[p]) return mem[p];
@@ -60,13 +78,13 @@ async function part(p) {
     let b = null; try { b = await idb('readonly', st => st.get(key(p))); } catch (e) {}
     if (b instanceof Blob) b = await b.arrayBuffer();
     if (b && b.byteLength === PART[p][1]) return b;
-    const [o, n] = PART[p];
+    const [o, n, k = 'pt'] = PART[p], [url, size] = SRCS[k];
     try {
-      const r = await fetch(SRC, { headers: { Range: `bytes=${o}-${o + n - 1}` } });
+      const r = await fetch(url, { headers: { Range: `bytes=${o}-${o + n - 1}` } });
       if (r.status === 206) { b = await r.arrayBuffer(); if (b.byteLength !== n) b = null; }
-      else if (r.ok) { const all = await r.arrayBuffer(); b = all.byteLength === SDAT_SIZE ? all.slice(o, o + n) : null; }
+      else if (r.ok) { const all = await r.arrayBuffer(); b = all.byteLength === size ? all.slice(o, o + n) : null; }
     } catch (e) { b = null; }
-    if (!b) b = (await fetchWhole()).slice(o, o + n);
+    if (!b) b = (await fetchWhole(k)).slice(o, o + n);
     idb('readwrite', st => st.put(new Blob([b]), key(p))).catch(() => {});
     return b;
   })().catch(e => { delete mem[p]; throw e; }));
