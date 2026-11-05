@@ -869,8 +869,24 @@ function qLeave(upTo) { const g = st(); g.q = g.q.filter(c => { const e = qExp(c
 const qLeftS = (c, now = Date.now()) => { const m = Math.max(0, Math.ceil((qExp(c) - now) / 60e3)), h = Math.floor(m / 60); return m < 1 ? '곧 떠나요' : `${h ? h + '시간 ' : ''}${m % 60 || !h ? (m % 60) + '분 ' : ''}남음`; };
 const qCame = c => { const d = new Date(c.t || Date.now()), h = d.getHours(), y = dayStart(c.t || Date.now()) < dayStart(Date.now()); return `${y ? '어제 ' : ''}${h < 12 ? '오전' : '오후'} ${h % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')}에 왔어요`; };
 const qLeft = (c, now = Date.now()) => { const m = Math.max(0, Math.ceil((qExp(c) - now) / 60e3)), h = Math.floor(m / 60); return m < 1 ? '곧 떠나요' : `${h ? h + '시간 ' : ''}${m % 60 || !h ? (m % 60) + '분 ' : ''}남았어요`; };
+/* v16.42 경완 '체육관 오래 관리 안 하면 자동 휴업 (골드 계속 버는 것 방지)', 7일: 마지막으로 체육관에 있던 때(g.vis)부터 7일이 지나면 그때 문을 닫는다.
+   닫힌 동안은 없던 셈: 도전자·트레이너 수입·월급·면접·훈련장 시계를 돌아온 때로 민다 (gWake 처럼). 기다리던 이름 있는 트레이너는 남긴다. 돌아오면 shutPop 으로 알리고 바로 다시 연다 */
+const SHUT = 7 * DAY;
 function tick(now = Date.now()) {
   const g = gInit(); if (!g || !g.d) return;
+  if (!g.vis) g.vis = now;
+  const cut = g.vis + SHUT;
+  if (now > cut) {
+    tick0(cut); const dt = now - cut;
+    g.day = 0; g.sch = []; g.pull = 0; g.q = (g.q || []).filter(c => c.named && !c.boss);
+    (g.sf || []).forEach(x => { if (x.pay) x.pay += dt; if (x.gt) x.gt += dt; }); (g.cands || []).forEach(c => { c.exp += dt; c.t += dt; }); if (g.candN) g.candN += dt;
+    (g.tr || []).forEach(e => { if (e.t) e.t = now; });
+    g.shut = Math.floor((now - g.vis) / DAY); glog('in', `${g.shut}일 동안 비워서 체육관이 쉬었다. 다시 문을 열었다.`, now);
+  }
+  tick0(now); g.vis = now; save();
+}
+function tick0(now) {
+  const g = st();
   [...(g.q || []), ...(g.cands || [])].forEach(c => { if (c.team?.some(m => spOff(m[0]))) c.team = c.team.map(m => spOff(m[0]) ? [pickSp(SPECIES[m[0]]?.t || [], m[1]), m[1]] : m); });   // 이미 와 있는 도전자·지원자도 끈 포켓몬은 바꿈
   if (g.ty) (g.cands || []).forEach(c => { if (c.team?.some(m => !(SPECIES[m[0]]?.t || []).includes(g.ty))) c.team = c.team.map(m => (SPECIES[m[0]]?.t || []).includes(g.ty) ? m : [pickSp([g.ty], m[1]), m[1]]); });   // v15.48 경완: 이미 와 있는 지원서도 체육관 타입 포켓몬으로
   (g.q || []).forEach(c => { if (c.named && !c.boss) c.exp = 0; });
@@ -2172,6 +2188,16 @@ let tickT = 0;
 const awOf = () => { const g = st(); return g.aw || (g.aw = { sf: {}, mv: [] }); };
 function awSf(s, gold, rep) { const a = awOf().sf, x = a[s.id] || (a[s.id] = [0, 0, 0]); x[0]++; x[1] += gold; x[2] += rep; }
 const awMv = (id, mv, nm, ty) => awOf().mv.push([id, mv, nm, ty]);
+function shutPop() {
+  const g = st(), n = g.shut; if (!n || !open) return; delete g.shut; save();
+  try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {} GA.haptic?.(1);
+  return new Promise(ok => pop(`<div class="aw-pop aw-shut">
+    <div class="aw-hd"><small>자동 휴업</small><b>${n}일 동안 비워서 쉬었어요</b></div>
+    <div class="sh-sign" aria-hidden="true"><b>휴업</b></div>
+    <p class="aw-say">체육관에 7일 넘게 안 들어오면 문을 닫아요.<br>쉬는 동안엔 도전자도, 트레이너 수입도,<br>월급도 멈춰 있었어요.</p>
+    <p class="aw-tip">지금 다시 문을 열었어요. 곧 도전자가 와요!</p>
+    <div class="gy-btns one"><button class="main" data-a="x">확인</button></div></div>`, (a, close) => { close(); ok(); }).classList.add('aw-wrap'));
+}
 async function awayPop() {
   const g = st(), A = g.aw; if (!A || !open) return; const SF = Object.entries(A.sf).map(([id, v]) => [g.sf.find(s => String(s.id) === id), v]).filter(x => x[0]).sort((a, b) => b[1][1] - a[1][1]), MV = A.mv.map(([id, mv, nm, ty]) => [S.box.find(P => P.id === id), mv, nm, ty]).filter(x => x[0]);
   g.aw = null; save();
@@ -2206,6 +2232,7 @@ function awMvPop([P, mv, nm, ty], i, n) {
 async function later() {
   await wait(700); if (!open) return; const g = st();
   if (g.newBdg) await badgeGet(g.newBdg);
+  await shutPop();
   await awayPop();
   await unlockChk();
 }
