@@ -563,7 +563,7 @@ const CLS = {
   battle_girl: { ow: 'battle_girl', f: 1, t: [2] }, ninja_boy: { ow: 'ninja_boy', f: 0, t: [4, 7, 17] }, ruin_maniac: { ow: 'ruin_maniac', f: 0, t: [5, 6, 9] },
   dragon_tamer: { ow: 'dragon_tamer', f: 0, t: [16] }, skier_f: { ow: 'skier_f', f: 1, t: [15] }, artist: { ow: 'artist', f: 0, t: [18, 14, 1] },
 };
-const N3 = new Set(['agatha', 'blaine', 'brock', 'bruno', 'erika', 'koga', 'lance', 'lt_surge', 'misty', 'sabrina']);   // 걸음 프레임이 없는 그림(3칸)
+const N3 = new Set(['agatha', 'blaine', 'brock', 'bruno', 'erika', 'koga', 'lance', 'lt_surge', 'misty', 'sabrina', 'roxanne', 'brawly', 'wattson', 'flannery', 'winona', 'tate', 'liza', 'sidney', 'phoebe', 'glacia', 'drake']);   // 걸음 프레임이 없는 그림(3칸)
 const CHAL_LINES = [
   ['관장님! 저랑 배틀해 주세요!', '오늘은 꼭 배지를 받아 갈 거예요!', '제 포켓몬도 많이 컸어요. 봐 주세요!', '떨리지만… 승부예요!'],
   ['소문 듣고 왔어요. 실력 좀 보여 주시죠.', '이 체육관을 넘어서 더 위로 갈 겁니다!', '준비는 끝났어요. 진지하게 부탁드려요.', '제 전략을 막을 수 있을까요?'],
