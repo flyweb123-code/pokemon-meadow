@@ -2176,7 +2176,7 @@ const awR = n => `${n < 0 ? '' : '+'}${Math.round(n * 10) / 10}`;
 /* 트레이너 알림창: 위 띠(트레이너들이 줄지어 섬) → 합계 큰 숫자 → 트레이너별 줄 */
 function awSfPop(SF) {
   const tg = SF.reduce((a, [, v]) => a + v[1], 0), tr = SF.reduce((a, [, v]) => a + v[2], 0), tb = SF.reduce((a, [, v]) => a + v[0], 0);
-  try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {}
+  try { GA.sfx('newdex'); } catch (e) { try { window.GymBGM?.se?.('DP_PINPON'); } catch (e2) {} } GA.haptic?.(1);   /* v16.18 경완: 업데이트 알림창처럼 뜨는 모션 + 소리 */
   return new Promise(ok => pop(`<div class="aw-pop aw-sf">
     <div class="aw-hd"><small>내가 없는 동안</small><b>트레이너들이 체육관을 지켰어요!</b><div class="aw-crew">${SF.slice(0, 5).map(([s]) => `<img alt="" src="${trSrc(s.tr)}">`).join('')}</div></div>
     <div class="aw-tot"><div><span>막은 도전자</span><b>${tb}<small>명</small></b></div><div><span>번 골드</span><b class="aw-g"><i class="coin"></i>+${tg.toLocaleString()}</b></div><div><span>평판</span><b class="aw-r">${awR(tr)}</b></div></div>
@@ -2186,7 +2186,7 @@ function awSfPop(SF) {
 /* 기술 알림창: 포켓몬 그림 + 반짝임 → 배틀 기술 카드 모양 (타입 색) */
 function awMvPop([P, mv, nm, ty], i, n) {
   const d = GB()?.D?.mv?.find(x => x[0] === mv), t = d ? d[2] : ty, cat = d ? d[3] : 0, pw = d && d[4] ? d[4] : '-', pn = P.nm || SPECIES[P.sp]?.n || '???';
-  try { window.GymBGM?.se?.('ME_WAZA'); } catch (e) {} try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
+  try { window.GymBGM?.se?.('ME_WAZA'); } catch (e) {} try { GA.sfx('newdex'); } catch (e) { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e2) {} } GA.haptic?.(1);
   return new Promise(ok => { const p = pop(`<div class="aw-pop aw-mvp">
     ${n > 1 ? `<i class="aw-cnt">${i + 1} / ${n}</i>` : ''}<div class="aw-hd"><small>훈련장</small><b>특별한 기술을 익혔다!</b></div>
     <div class="aw-mon"><i class="aw-rays"></i><img alt="" data-awp="${P.id}"><i class="aw-st s1"></i><i class="aw-st s2"></i><i class="aw-st s3"></i></div>

@@ -2619,7 +2619,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-setup.gy-jnlw{padding-bottom:0!important}#gym .gy-jnlw .gy-body{padding-bottom:12px}   /* v15.77 경완: 일지 아래 여백 없앰 (메뉴가 아래 안전 영역을 이미 차지) */
 #gym .sf-card .sf-st .sf-earn{font-style:normal;color:#c83828}#gym .sf-card .sf-st .sf-earn.up{color:#2a8a3a}
 #gym .jn-fd:not(.on) h5{margin:0;padding:0;border:0}#gym .jn-fold{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:6px;width:100%;cursor:pointer;font:inherit;color:inherit}#gym .jn-fold small{color:#707080;font-size:12px}#gym .jn-fold i{margin-left:auto;font-style:normal;font-size:11px;color:#585868;transition:transform .15s}#gym .jn-fd:not(.on) .jn-fold i{transform:rotate(-90deg)}
-#gym .gy-pop.aw-wrap .win{padding:0;overflow:hidden;max-width:360px}
+#gym .gy-pop.aw-wrap .win{padding:0;overflow:hidden;max-width:360px}@keyframes awNpop{0%{transform:scale(.3)}60%{transform:scale(1.08)}100%{transform:none}}
 #gym .aw-pop{display:flex;flex-direction:column;gap:12px;padding:0 0 14px;position:relative;color:#20202c}
 #gym .aw-pop>:not(.aw-hd):not(.aw-cnt){margin-inline:14px}
 #gym .aw-hd{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:14px 12px 12px;background:repeating-linear-gradient(135deg,#2c3a6a 0 10px,#33437a 10px 20px);color:#fff;text-align:center;border-bottom:3px solid #20202c}
@@ -2676,3 +2676,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .aw-pop .aw-g{color:#a86400}#gym .aw-pop .aw-r{color:#2a8a3e}#gym .aw-tot>div:has(.aw-g){background:linear-gradient(#fff8d8,#ffeeb0);box-shadow:inset 0 0 0 2px #f0c850}#gym .aw-tot>div:has(.aw-g) span{color:#a86400}
 #gym .gy-jnlw .jn-g .jn-gc,#gym .gy-jnlw .jn-gc{color:#a86400}#gym .gy-jnlw .jn-m .jn-gc{color:#c03030}#gym .gy-jnlw .jn-g{color:#2a8a3e}
 #gym .aw-pop .mi-box{display:flex;flex-direction:column;gap:6px;padding:10px 12px;background:#fff;box-shadow:inset 0 0 0 2px #d8d8e4;text-align:left}#gym .aw-pop .mi-box .mi-h{margin:0}#gym .aw-pop .mi-box .mi-d{margin:0}
+
+/* v16.18 경완: 트레이너·훈련장 알림창은 업데이트 알림창처럼 커지며 뜬다 (체육관 창 모션 끔보다 우선) */
+#gym .gy-pop.aw-wrap>.win{animation:awNpop .32s steps(4,end)!important}

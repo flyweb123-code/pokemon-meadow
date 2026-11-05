@@ -6372,7 +6372,7 @@ function campStart(c) {
 const CAMP_P = .35;
 // v5.93 경완: 모닥불 노래 동안은 따로 만든 캠프송을 틀고, 끝나면 듣던 곡을 멈춘 자리부터 다시
 function campBgm(on) { try {
-  if (on) { if (!bgmOn || !mgEl.hidden || campMus.on) return false; bgm.camp = { id: bgm.id, pos: bgmPos() }; bgmSrcStop(); campMus.start(campPick()); return campMus.on; }
+  if (on) { if (!bgmOn || !mgEl.hidden || campMus.on || inGym()) return false; bgm.camp = { id: bgm.id, pos: bgmPos() }; bgmSrcStop(); campMus.start(campPick()); return campMus.on; }
   if (!campMus.on && !bgm.camp) return false; campMus.stop(2); const r = bgm.camp; bgm.camp = null; if (!r || !mgEl.hidden || bgm.mg) return false;
   setTimeout(() => { if (campMus.on || bgm.mg) return; bgm.fadeIn = 2; if (bgmOn && r.id && r.id !== 'intro') bgmPlay(r.id, r.pos); else bgmStart(); }, 1200); return false; } catch (e) { return false; } }
 const PROP_JOY = 3;
@@ -7179,7 +7179,7 @@ document.addEventListener('click', e => { const t = e.target.closest?.('h3, h4, 
 { let inAt = 0; Object.defineProperty(GA, 'KANG', { get: () => KANG }); GA.dexThumb = sp => ensureSprite(sp).then(() => thumbOf(sp)).catch(() => '');   /* v13.84 경완: 체육관 튜토리얼 도감 읽기에 진짜 도감 그림 */ GA.dexCardNode = () => { const w = $('#dexPop .win').cloneNode(true); w.querySelectorAll('.dp-arr,#dpAct,#dpClose').forEach(e => e.remove()); w.querySelectorAll('[id]').forEach(e => { e.dataset.k = e.id; e.removeAttribute('id'); }); return w; };   /* v13.86 경완: 체육관 튜토리얼 도감 읽기 = 포켓몬 눌렀을 때 뜨는 빨간 도감 카드 그대로 */
   GA.dexCardFill = (w, sp, pos) => { const d = SPECIES[sp], q = k => w.querySelector(`[data-k="${k}"]`); if (!d) return; q('dpPos').textContent = pos || ''; q('dpImg').src = thumbOf(sp) || ''; q('dpNo').textContent = `No.${String(dxK(sp)).padStart(4, '0')}`;
     q('dpMeta').innerHTML = `<b class="cd-n">${esc(d.n)}</b><span class="cd-g">${esc(d.g || '')}</span><span class="cd-ty">${tyIcons(sp)}</span><span class="cd-hw"><i>키</i>${(d.h / 10).toFixed(1)} m</span><span class="cd-hw"><i>몸무게</i>${(d.w / 10).toFixed(1)} kg</span>`; q('dpFx').innerHTML = esc(d.fx || ''); }; Object.defineProperty(GA, 'GYMB', { get: () => ({ GYM_G, GYM_SF_PCT, WAGE_BASE, WAGE_LV, WAGE_MAX }) }); GA.inTyper = (...a) => inTyper(...a);
-  GA.gymIn = () => { inAt = Date.now(); document.body.classList.add('gymMode'); try { bgm.pos = bgmPos(); bgmSrcStop(); } catch (e) {} };
+  GA.gymIn = () => { inAt = Date.now(); document.body.classList.add('gymMode'); try { if (campMus.on || bgm.camp) { const r = bgm.camp; bgm.camp = null; campMus.stop(.3); if (r) { bgm.pos = r.pos; if (r.id && r.id !== bgm.id) bgm.id = r.id; } } else bgm.pos = bgmPos(); bgmSrcStop(); } catch (e) {} };   /* v16.18 경완 '모닥불 노래 중 체육관 들어가면 안 꺼짐': 캠프송도 끄고 나올 땐 듣던 곡 자리부터 */
   GA.gymOut = () => { document.body.classList.remove('gymMode'); const sec = inAt ? (Date.now() - inAt) / 1000 : 0; inAt = 0;
     try { S.mons.forEach(m => offFr(m, sec)); } catch (e) {} save(); last = performance.now(); try { if (bgmOn && !bgmAway) bgmSrcStart(); } catch (e) {} notiSoon(1200); };
   let arm = 0; $('#gymReset').onclick = () => { const b = $('#gymReset');
