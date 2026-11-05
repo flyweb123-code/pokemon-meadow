@@ -7624,14 +7624,17 @@ const Visit = (() => {
     if (VISIT && G.live) return;
     const all = [...TR.values(), me];
     for (const tr of all) { if (!tr?.ho || tr.rd || tr.jf) continue; const hs = tr.hs ||= { cur: null, next: 0, done: new Map() };
-      if (hs.cur) { const m = hs.cur; if (!S.mons.includes(m) || (!m.hj && m.goal?.kind !== 'hoop' && now - hs.t0 > 400) || (!m.hj && now - hs.t0 > 9000)) { if (m.goal?.kind === 'hoop') m.goal = null; hs.cur = null; hs.next = now + 600; } continue; }
+      if (hs.cur) { const m = hs.cur; if (!S.mons.includes(m) || (!m.hj && m.goal?.kind !== 'hoop' && now - hs.t0 > 400) || (!m.hj && now - hs.t0 > 15000)) { if (m.goal?.kind === 'hoop') m.goal = null; hs.cur = null; hs.next = now + 600; } continue; }
       if (now < hs.next) continue;
-      const hx = tr.hx ?? tr.x + 42, hy = tr.hy ?? tr.y + 1, C = S.mons.filter(m => monOk(m) && T(m).mv !== 'swim' && !isFish(m.sp) && !m.scp && !m.camp && !m.follow && !m.hj && !m.propSit && (hs.done.get(m.uid) || 0) < now && Math.hypot(m.x - hx, m.y - hy) < 260 && !all.some(o => o?.hs?.cur === m))
+      const hx = tr.hx ?? tr.x + 42, hy = tr.hy ?? tr.y + 1, C = S.mons.filter(m => monOk(m) && T(m).mv !== 'swim' && !isFish(m.sp) && !m.scp && !m.camp && !m.follow && !m.hj && !m.propSit && (m.h || 40) <= 50 && (hs.done.get(m.uid) || 0) < now && Math.hypot(m.x - hx, m.y - hy) < 260 && !all.some(o => o?.hs?.cur === m))
         .sort((a, b) => Math.hypot(a.x - hx, a.y - hy) - Math.hypot(b.x - hx, b.y - hy)), m = C[0];
       if (!m) { hs.next = now + 1500; continue; }
       hs.done.set(m.uid, now + 14000); hs.cur = m; hs.t0 = now; emote(m, '!', '', 1, 'hoop-see');
       let side = m.y >= hy ? 1 : -1; if (hy + side * HD < MIN_Y + 4 || hy + side * HD > MAX_Y - 4) side = -side;
-      moveTo(m, { x: clampN(hx, XL + 20, XR - 20), y: hy + side * HD }, { kind: 'hoop', go: () => hoopJump(m, tr) }, 1.3); } }
+      // v16.25 경완 '트레이너 위로 지나감': 링 줄(트레이너 옆)을 가로지르지 않게 먼저 링 앞(또는 뒤) 멀찍이로 갔다가 링 앞 자리로
+      const st = { x: clampN(hx, XL + 20, XR - 20), y: hy + side * HD }, go2 = () => moveTo(m, st, { kind: 'hoop', go: () => hoopJump(m, tr) }, 1.1);
+      const far = clampN(hy + side * 72, MIN_Y, MAX_Y), go1 = () => Math.abs(m.x - hx) > 14 ? moveTo(m, { x: st.x, y: far }, { kind: 'hoop', go: go2 }, 1.3) : go2();   // 트레이너 몸(위로 60px쯤)과 안 겹치는 줄을 따라 링 쪽으로
+      if (Math.abs(m.y - hy) < 72 && Math.abs(m.x - hx) > 14) moveTo(m, { x: clampN(m.x, XL + 20, XR - 20), y: far }, { kind: 'hoop', go: go1 }, 1.3); else go1(); } }
   function hoopJump(m, tr) { const hs = tr.hs; if (!tr.ho || !hs || hs.cur !== m || !S.mons.includes(m)) { if (hs?.cur === m) hs.cur = null; return; }
     const hx = tr.hx ?? tr.x + 42, hy = tr.hy ?? tr.y + 1, side = m.y >= hy ? 1 : -1; setState(m, 'idle', 3);
     m.hj = { t0: performance.now() + 380, x0: m.x, x1: clampN(hx, XL + 20, XR - 20), y0: m.y, y1: clampN(hy - side * HD, MIN_Y, MAX_Y), pk: clampN(40 - (m.h || 40) * .5, 10, 32), tr }; HJ.add(m); anim(m, 'hop'); }   // v16.22 경완 '높이 개념': 앞뒤로는 조금만(HD), 위로는 링 가운데까지 높이 뛰고 땅 그림자는 그대로   // 링 앞에서 뒤로(또는 뒤에서 앞으로), 링 가운데 높이로 폴짝
