@@ -19,7 +19,7 @@ body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop
 
 /* 트레이너 (필드 좌표, #mons 안: 발밑이 기준점) */
 .vt{position:absolute;left:0;top:0;width:0;height:0;pointer-events:none}
-.vt-s{position:absolute;left:-32px;top:-62px;width:64px;height:64px;background:no-repeat 0 0/64px 384px;image-rendering:pixelated;filter:drop-shadow(0 1px 0 rgba(0,0,0,.25))}
+.vt-s{position:absolute;left:-32px;top:-62px;width:64px;height:64px;background:no-repeat 0 0/64px 384px;image-rendering:pixelated}   /* v16.04 경완 '발열': 움직이는 트레이너 그림에 filter(그림자) 빼서 매 프레임 다시 그리기 줄임 (발밑 그림자는 ::before) */
 .vt::before{content:'';position:absolute;left:-17px;top:-5px;width:34px;height:10px;border-radius:50%;background:rgba(0,0,0,.22)}
 .vt-n{position:absolute;left:0;top:3px;transform:translateX(-50%);font:11px/1.25 var(--px);color:#fff;background:rgba(32,32,44,.8);border-radius:3px;padding:0 4px;white-space:nowrap}
 .vt.me .vt-n{background:rgba(42,106,176,.88)}
@@ -29,6 +29,10 @@ body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop
 
 /* 방향키 */
 .vjump{position:fixed;z-index:6200;right:22px;bottom:calc(var(--vpad-b, 170px) + 44px);width:72px;height:44px;border-radius:8px;border:3px solid var(--frame,#20202c);background:rgba(244,236,216,.9);color:#20202c;box-shadow:0 3px 0 rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font:14px var(--px);padding:0;touch-action:none;user-select:none;-webkit-user-select:none}.vjump svg{display:none}.vjump.on{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.35);background:#ffd34a}.vjump[hidden]{display:none}
+.vt.rd::before{display:none}.vt-s{transform-origin:50% 90%}
+.vhoop{position:absolute;left:0;top:0;width:16px;height:46px;margin:-54px 0 0 -8px;border-radius:50%;border:3px solid #ef5a3c;border-top-color:#ffd34a;border-bottom-color:#ffd34a;box-shadow:0 0 0 1px rgba(32,32,44,.8),inset 0 0 0 1px rgba(32,32,44,.8);pointer-events:none}   /* v16.04 경완: 트레이너가 드는 후프링 */
+.vjump.vride{bottom:calc(var(--vpad-b, 170px) + 100px);width:auto;min-width:72px;padding:0 12px}   /* v16.04 경완: 탈 수 있는 소품 근처에서 '타기' */
+.berrybar #btnHoop{display:none}body.visitMode .berrybar #btnHoop{display:grid}#btnHoop:active{transform:translate(2px,2px);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner)}
 .vt.jp .vt-s{animation:vtJump .38s cubic-bezier(.3,.7,.4,1)}.vt.jp::before{animation:vtJs .38s cubic-bezier(.3,.7,.4,1)}@keyframes vtJump{45%{translate:0 -24px}}@keyframes vtJs{45%{scale:.55;opacity:.6}}
 .vpad{position:fixed;z-index:6200;left:14px;bottom:var(--vpad-b, 170px);width:132px;height:132px;display:grid;grid-template:repeat(3,44px)/repeat(3,44px);touch-action:none;user-select:none;-webkit-user-select:none}
 .vpad[hidden]{display:none}
@@ -99,7 +103,7 @@ body.vOut #dlg{visibility:hidden}
 @keyframes vfIn{from{opacity:0}}
 
 /* 놀러가기 창 안 (?visit) */
-body.visitMode .hud:not(.berrybar,#dlg,.menuwin),body.visitMode #side,body.visitMode #edge,body.visitMode #btnBag,body.visitMode #frTest,body.visitMode .mapico:not(#btnBerry),body.visitMode #vOwn{display:none!important}
+body.visitMode .hud:not(.berrybar,#dlg,.menuwin),body.visitMode #side,body.visitMode #edge,body.visitMode #btnBag,body.visitMode #frTest,body.visitMode .mapico:not(#btnBerry,#btnHoop),body.visitMode #vOwn{display:none!important}
 body.visitMode :is(#dlg,.menuwin){visibility:hidden!important;pointer-events:none!important}   /* v15.05 경완: 손님 화면 필드 크기 = 기본 게임 화면 (대화창·메뉴 자리는 비워 둠) */
 body.visitMode .vchat-b{min-height:var(--vchat-min,0px);box-sizing:border-box}body.kbOn .vchat-b{min-height:0;padding-bottom:10px}body.kbOn .vchat-b::after{content:'';position:absolute;left:0;right:0;top:100%;height:100vh;background:#20202c}   /* v15.23 경완: 키보드와 채팅창 사이로 필드가 비치지 않게 */
 body.visitMode.fview :is(.vpad,.vjump,.vhud){visibility:hidden!important}   /* v15.16 경완: 빈 곳 누르면 열매 버튼처럼 방향키·위 상태창도 숨김 */
@@ -1955,6 +1959,7 @@ try { if (sessionStorage.getItem('pk-wf')) { sessionStorage.removeItem('pk-wf');
 
   <div class="hud berrybar">
     <button class="mapico" id="btnBag" aria-label="도구 가방"><svg viewBox="0 0 12 12" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M4 0h4v1h1v2h1v1h1v7h-1v1H2v-1H1V4h1V3h1V1h1zM5 1v2h2V1z"/><path fill="#e8783c" d="M2 4h8v7H2z"/><path fill="#ffb27a" d="M2 4h8v1H2zM2 5h1v5H2z"/><path fill="#b8502a" d="M3 10h7v1H3zM9 5h1v5H9z"/><path fill="#20202c" d="M3 6h6v1H3zM3 7h1v2H3zM8 7h1v2H8zM3 9h6v1H3z"/><path fill="#ffd84a" d="M5 6h2v2H5z"/></svg></button>
+    <button class="mapico" id="btnHoop" aria-pressed="false" aria-label="후프링 들기"><svg viewBox="0 0 12 12" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" fill-rule="evenodd" d="M4 0h4v1h2v1h1v2h1v4h-1v2h-1v1H8v1H4v-1H2v-1H1V8H0V4h1V2h1V1h2zM4 3h4v1h1v4H8v1H4V8H3V4h1z"/><path fill="#ef5a3c" fill-rule="evenodd" d="M4 1h4v1h2v2h1v4h-1v2H8v1H4v-1H2V8H1V4h1V2h2zM4 2v1H3v1H2v4h1v1h1v1h4V9h1V8h1V4H9V3H8V2z"/><path fill="#ffd34a" d="M4 1h2v1H4zM9 2h1v2H9zM10 6h1v2h-1zM6 10h2v1H6zM2 8h1v2H2zM1 4h1v2H1z"/></svg></button>
     <button class="mapico" id="btnBerry" aria-pressed="false" aria-label="열매 주기"><svg class="b-day" viewBox="0 0 12 12" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><path fill="#3a7a2a" d="M6 0h2v1h1v1H7v1H6z"/><path fill="#5aa83a" d="M4 1h2v2H4z"/><path fill="#20202c" d="M3 3h6v1h1v1h1v4h-1v1H9v1H3v-1H2V9H1V5h1V4h1z"/><path fill="#d8344a" d="M3 4h6v1h1v4H9v1H3V9H2V5h1z"/><path fill="#ff7a8a" d="M3 5h2v2H3z"/><path fill="#fff" d="M3 5h1v1H3z"/><path fill="#9a1a30" d="M8 8h1v1H8zM4 9h4v1H4z"/></svg><svg class="b-night" viewBox="0 0 12 12" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><path fill="#2a5a4a" d="M6 0h2v1h1v1H7v1H6z"/><path fill="#3e7a5e" d="M4 1h2v2H4z"/><path fill="#0e1024" d="M3 3h6v1h1v1h1v4h-1v1H9v1H3v-1H2V9H1V5h1V4h1z"/><path fill="#7a3a8a" d="M3 4h6v1h1v4H9v1H3V9H2V5h1z"/><path fill="#b070c8" d="M3 5h2v2H3z"/><path fill="#e8e2ff" d="M3 5h1v1H3z"/><path fill="#46205a" d="M8 8h1v1H8zM4 9h4v1H4z"/></svg></button>
     <button id="frTest" class="test-btn" aria-pressed="false">친밀도 만점 (테스트)</button>
   </div>
@@ -4116,7 +4121,7 @@ function think(m) {
     const rd = S.mons.find(o => o !== m && o.scp?.ride && LAYOUT.sc.includes(o.scp.r) && Math.hypot(m.x - o.scp.G.cx, m.y - o.scp.G.gy) < 260 && !S.mons.some(k => k !== o && k.scp?.r === o.scp.r && k.scp.M.push) && !S.mons.some(k => k.goal?.kind === 'scpush' && k.goal.r === o.scp.r)), A = rd && LAYOUT.scArt[rd.scp.r[0]], pa = A && (A.acts || []).find(a => scSpec(a, A).M.push && scFit(m, a.w || ''));
     if (pa) { m.pushCd = rnd(40, 80); const G = rd.scp.G; return moveTo(m, { x: clamp(G.cx + (m.x < G.cx ? -1 : 1) * (G.W / 2 + (m.w || 40) * .4), XL + 20, XR - 20), y: Math.min(MAX_Y, G.gy + 2) }, { kind: 'scpush', r: rd.scp.r, a: pa, rd }); } }
   if (t.mv !== 'swim' && !isFish(m.sp) && !m.scp && Math.random() < .6) {   /* v9.98 경완: 시소에 혼자 앉아 기다리면 근처 포켓몬이 걸어와 같이 탄다 */
-    const lo = S.mons.find(o => o !== m && o.scp?.tw && o.scp.ride && awake(o) && Math.hypot(m.x - o.scp.G.cx, m.y - o.scp.G.gy) < 420 && !S.mons.some(k => k !== o && k.scp?.r === o.scp.r)), i = lo ? LAYOUT.sc.indexOf(lo.scp.r) : -1, A = i >= 0 && LAYOUT.scArt[lo.scp.r[0]], a = A && (A.acts || []).find(x => x.x?.two?.at);
+    const lo = S.mons.find(o => o !== m && o.scp?.tw && o.scp.ride && awake(o) && Math.hypot(m.x - o.scp.G.cx, m.y - o.scp.G.gy) < 420 && !S.mons.some(k => k !== o && k.scp?.r === o.scp.r) && !trOnSc(o.scp.r).length), i = lo ? LAYOUT.sc.indexOf(lo.scp.r) : -1, A = i >= 0 && LAYOUT.scArt[lo.scp.r[0]], a = A && (A.acts || []).find(x => x.x?.two?.at);
     if (a && scPlay(m, { k: 'sc', i }, a, null, a.x.two)) { m.propUntil = performance.now() + 10000; return log(scLog(lo, A, a, m), [lo, m]); } }
   { const lv = likeOf(m) && relWho(likeOf(m))?.m;
     if (lv && lv !== m && !lv.hidden && awake(lv) && lv.state !== 'interact' && !(m.likeCd > 0) && sceneFree(m) && t.mv !== 'swim' && Math.random() < .3) {
@@ -4134,7 +4139,7 @@ function think(m) {
     if (o) return moveTo(m, o, { kind: 'meet', mon: o });
   }
   if (treeOn() && winged(m) && !(m.treeCd > 0) && sceneFree(m) && Math.random() < (m.hunger > 50 && S.tree?.n ? .12 : .05)) { m.treeCd = rnd(240, 480); return moveTo(m, { x: PROPS.tree.x + rnd(-24, 24) * LS('tree'), y: PROPS.tree.y + 4 }, { kind: 'treePerch' }); }   // v4.55 경완: 새 포켓몬은 가끔 열매나무에 날아올라 앉고, 배고프면 달린 열매를 쪼아 먹는다
-  if (t.mv !== 'swim' && !(m.propCd > 0) && propFree(m) && Math.random() < .4) {   /* v9.56 경완 '스프링 타는 게 아예 없음': 포켓몬끼리 장면이 거의 늘 진행 중이라 sceneFree 가 95% 막았다 → 소품 놀이는 다른 소품 놀이만 없으면 시작 */ m.propCd = rnd(30, 80);   /* v9.57 경완: 소품 우선 규칙(9.55) 없앰 — 다시 포켓몬끼리 만나기 다음 · v9.53 경완 '소품 상호작용 빈도 더 높여야': .22 → .4, 쉬는 틈 60~150 → 30~80초 */   /* v9.37 경완 '소품 상호작용 빈도·시간 늘리기': .12 → .22, 쉬는 틈 120~300 → 60~150초 */ const used = q => S.mons.some(o => o !== m && propBusy(o) && (o.goal?.kind === 'prop' ? o.goal.p.k === q.k && o.goal.p.i === q.i : o.scp && q.k === 'sc' && o.scp.r === LAYOUT.sc[q.i])), L = propSpots().filter(q => q.k !== 'tree' && q.k !== 'puddle' && !used(q) && m.lastProp !== q.k + q.i && q.x > XL + 24 && q.x < XR - 24),   /* v9.58 경완 '같은 포켓몬이 같은 소품 반복 X': 바로 전에 논 소품은 건너뛴다 · '바위 없는 데서 바위 상호작용': 화면 밖(포켓몬이 못 가는 곳) 소품은 고르지 않는다 */ rideP = q => q.k === 'sc' && (LAYOUT.scArt[LAYOUT.sc[q.i]?.[0]]?.acts || []).some(a => /올라타|들어가 앉|구멍/.test(a.a || '') || a.x?.two?.at),   /* v9.87 경완 '시소를 잘 안 탐': 둘이 타는 소품(시소)도 탈 것처럼 자주 고른다 */ R = L.filter(rideP), q = L.length && (R.length && Math.random() < .45 ? pick(R) : pick(L));   /* v9.54: 탈 수 있는 소품(그네·스프링)을 더 자주 고른다 */ if (q) { m.lastProp0 = m.lastProp; m.lastProp = q.k + q.i; return moveTo(m, { x: q.x + (m.x < q.x ? -1 : 1) * q.rx * .6, y: q.y + q.ry * .5 }, { kind: 'prop', p: q }); } }
+  if (t.mv !== 'swim' && !(m.propCd > 0) && propFree(m) && Math.random() < .4) {   /* v9.56 경완 '스프링 타는 게 아예 없음': 포켓몬끼리 장면이 거의 늘 진행 중이라 sceneFree 가 95% 막았다 → 소품 놀이는 다른 소품 놀이만 없으면 시작 */ m.propCd = rnd(30, 80);   /* v9.57 경완: 소품 우선 규칙(9.55) 없앰 — 다시 포켓몬끼리 만나기 다음 · v9.53 경완 '소품 상호작용 빈도 더 높여야': .22 → .4, 쉬는 틈 60~150 → 30~80초 */   /* v9.37 경완 '소품 상호작용 빈도·시간 늘리기': .12 → .22, 쉬는 틈 120~300 → 60~150초 */ const used = q => (q.k === 'sc' && trBlk(q.i)) || S.mons.some(o => o !== m && propBusy(o) && (o.goal?.kind === 'prop' ? o.goal.p.k === q.k && o.goal.p.i === q.i : o.scp && q.k === 'sc' && o.scp.r === LAYOUT.sc[q.i])), L = propSpots().filter(q => q.k !== 'tree' && q.k !== 'puddle' && !used(q) && m.lastProp !== q.k + q.i && q.x > XL + 24 && q.x < XR - 24),   /* v9.58 경완 '같은 포켓몬이 같은 소품 반복 X': 바로 전에 논 소품은 건너뛴다 · '바위 없는 데서 바위 상호작용': 화면 밖(포켓몬이 못 가는 곳) 소품은 고르지 않는다 */ rideP = q => q.k === 'sc' && (LAYOUT.scArt[LAYOUT.sc[q.i]?.[0]]?.acts || []).some(a => /올라타|들어가 앉|구멍/.test(a.a || '') || a.x?.two?.at),   /* v9.87 경완 '시소를 잘 안 탐': 둘이 타는 소품(시소)도 탈 것처럼 자주 고른다 */ R = L.filter(rideP), q = L.length && (R.length && Math.random() < .45 ? pick(R) : pick(L));   /* v9.54: 탈 수 있는 소품(그네·스프링)을 더 자주 고른다 */ if (q) { m.lastProp0 = m.lastProp; m.lastProp = q.k + q.i; return moveTo(m, { x: q.x + (m.x < q.x ? -1 : 1) * q.rx * .6, y: q.y + q.ry * .5 }, { kind: 'prop', p: q }); } }
   if (Math.random() < .35) { setState(m, 'idle', rnd(2, 6)); if (Math.random() < .12) emote(m, pick(['…', '♪', '?']), '', 2.2, 'idle-alone'); return; }
   let p;
   if (t.mv === 'swim') p = randPond(.8, m);
@@ -4147,6 +4152,7 @@ function think(m) {
 function arrive(m) {
   const g = m.goal || { kind: 'wander' };
   if (g.kind === 'feedb') { m.goal = null; return g.go(); }
+  if (g.kind === 'hoop') { m.goal = null; return g.go(); }   // v16.04 경완: 후프링 앞까지 와서 뛰어넘기
   if (g.kind === 'follow') { faceTo(m, g.tr.x); setState(m, 'idle', rnd(.5, 1.1)); if (Math.random() < .12) { const r = pick(['♥', '♪']); emote(m, r, r === '♥' ? 'heart' : 'note', 1.6, 'follow'); } return; }
   if (g.kind === 'visit') {   // v15.16 경완 '포켓몬들이 놀러 온 사람한테 관심': 손님 트레이너 옆에 와서 쳐다보고 반응
     const tr = g.tr; faceTo(m, tr.x); setState(m, 'idle', rnd(3, 5)); anim(m, 'hop');
@@ -6227,7 +6233,7 @@ function scGap(G) { const R = G.A.px[Math.floor(G.A.px.length * .4)] || '', n = 
 function scPlay(m, p, a, ride, two, drag) { const r = LAYOUT.sc[p.i], G = r && scGeo(r); if (!G) return false; const S2 = scSpec(a, G.A), { M } = S2, P = SPRITES[m.sk || m.form], pmd = isPmd(m.form) && P?.a;
   const MW = m.w || 40, MH = m.h || 40, sideX = () => { let x = G.l + G.W + MW * .3; if (x > XR - 24 || (m.x < G.cx && G.l - MW * .3 > XL + 24)) x = G.l - MW * .3; return x; };
   let pos = two ? two.at : ride ? [.5, ride.fy] : S2.pos, tx, ty;
-  if (!ride && Array.isArray(a.x?.two?.at) && Array.isArray(S2.pos)) { const seats = [two ? a.x.two.at : S2.pos, two ? S2.pos : a.x.two.at], occ = S.mons.filter(o => o !== m && o.scp?.r === r && o.scp.tw).map(o => o.scp.tx), free = seats.filter(q => !occ.some(x => Math.abs(x - (G.l + G.W * q[0])) < G.W * .2));   /* v10.10 경완 '시소 두 마리가 같은 자리에': 둘이 타는 소품은 빈 자리로 (둘 다 차 있으면 안 탐) */
+  if (!ride && Array.isArray(a.x?.two?.at) && Array.isArray(S2.pos)) { const seats = [two ? a.x.two.at : S2.pos, two ? S2.pos : a.x.two.at], occ = S.mons.filter(o => o !== m && o.scp?.r === r && o.scp.tw).map(o => o.scp.tx).concat(trOnSc(r)), free = seats.filter(q => !occ.some(x => Math.abs(x - (G.l + G.W * q[0])) < G.W * .2));   /* v10.10 경완 '시소 두 마리가 같은 자리에': 둘이 타는 소품은 빈 자리로 (둘 다 차 있으면 안 탐) */
     if (!free.length) return false; pos = free[0]; }
   
   if (Array.isArray(pos)) { tx = G.l + G.W * pos[0]; ty = G.t + G.H * pos[1]; }
@@ -6246,6 +6252,9 @@ function scPlay(m, p, a, ride, two, drag) { const r = LAYOUT.sc[p.i], G = r && s
 function scEnd(m) { const q = m.scp; if (!q) return; if (q.G?.el?.mpH) q.G.el.mpH.style.zIndex = Math.round(q.G.gy) - 2; m.scp = null; m.scAn = null; m.scRot = 0; m.el.style.opacity = '';
   if (m.propSit) { m.propSit = false; m.xl = 0; m.pzB = null; m.pzF = 0; } if (q.ride || q.back || m.y < q.G.gy) { m.y = Math.max(m.y, q.G.gy + 4); m.x = clamp(m.x, XL + 20, XR - 20); }
   if (!S.mons.some(o => o.scp?.r === q.r)) scFxOff(q.G); }
+// v16.04 경완: 트레이너도 소품에 탐 — 탄 트레이너 자리 x (Visit 이 채움), 혼자 타는 소품은 트레이너가 타면 포켓몬이 안 고름
+let trOnSc = () => [];
+const trBlk = i => { const r = LAYOUT.sc[i]; if (!r) return false; const n = trOnSc(r).length; return n >= 2 || (n > 0 && !(LAYOUT.scArt[r[0]]?.acts || []).some(a => a.x?.two?.at)); };
 function scFxOff(G) { const e = G.el; if (!e) return; e.style.transform = ''; e.style.filter = ''; e.querySelectorAll('.scem,.scball').forEach(q => { q.style.display = ''; q.style.opacity = ''; }); e.querySelectorAll('.scfl').forEach(q => { q.style.transform = ''; }); if (e.mpEl) e.mpEl.style.transform = ''; if (e.mbEl) e.mbEl.style.transform = ''; }
 // 매 장면: 포켓몬 자리·높이·그림·소품 움직임
 function scTick(m, now) { const q = m.scp; if (!q) return; if (!q.G.el?.isConnected && LAYOUT.sc.includes(q.r)) { const G2 = scGeo(q.r); if (G2?.el) q.G = G2; }   // 소품을 다시 그렸으면 새 그림으로
@@ -6274,7 +6283,7 @@ function scTick(m, now) { const q = m.scp; if (!q) return; if (!q.G.el?.isConnec
   const fx = S2.fx, MV = G.A.mv?.st && G.A.mv?.mp && G.el?.mpEl ? G.A.mv : null; let ang = 0, ox = G.cx, oy = G.gy;
   if (fx.swing) { ang = Math.sin(tt * 3) * .07; if (/그네/.test(G.A.n || '')) oy = G.t; }
   if (fx.rock) { const te = q.tw && G.el ? (now - (G.el.scTw ??= now)) / 1000 : tt; ang = Math.sin(te * 2.4) * .13; oy = G.t + G.H * .7; }   /* v10.21 경완 '시소 움직임이랑 포켓몬 움직임이 달라짐': 둘이 타는 소품은 탄 포켓몬마다 따로 시작한 시간이 아니라 소품 하나의 시계로 흔든다 (판과 두 포켓몬이 같은 각도) */
-  if (q.tw) { const rs = S.mons.filter(o => o.scp?.r === q.r && o.scp.ride && now - o.scp.t0 > o.scp.ed * 1000); if (rs.length < 2) { ang = rs[0] ? (rs[0].scp.tx < G.cx ? -.13 : .13) : 0;   /* v10.05 경완 '혼자 타고 있을 땐 기울어진 채': 앉은 쪽이 내려간 채 멈춤 */ if (q.ride && now > q.dotT && tt > q.ed) { q.dotT = now + 3200; emote(m, '…', '', 2.4, 'seesaw-wait'); } } }   /* v9.98 경완: 둘이 타는 소품(시소)에 혼자 있으면 움직이지 않고 말풍선 … */
+  if (q.tw) { const rs = S.mons.filter(o => o.scp?.r === q.r && o.scp.ride && now - o.scp.t0 > o.scp.ed * 1000), xs = rs.map(o => o.scp.tx).concat(trOnSc(q.r)); if (xs.length < 2) { ang = xs.length ? (xs[0] < G.cx ? -.13 : .13) : 0;   /* v16.04: 트레이너가 탄 자리도 셈 */   /* v10.05 경완 '혼자 타고 있을 땐 기울어진 채': 앉은 쪽이 내려간 채 멈춤 */ if (q.ride && now > q.dotT && tt > q.ed) { q.dotT = now + 3200; emote(m, '…', '', 2.4, 'seesaw-wait'); } } }   /* v9.98 경완: 둘이 타는 소품(시소)에 혼자 있으면 움직이지 않고 말풍선 … */
   { const h = (now - (G.el?.scHit ?? -1e9)) / 1000; if (h < 1.6) ang += Math.sin(h * (q.ride ? 6 : 20)) * (q.ride ? .12 : .06) * Math.exp(-h * (q.ride ? 1.6 : 3.5)); }
   if (q.ride && !q.tw && now > (q.joyT || 0) && S.mons.some(o => o !== m && o.scp?.r === q.r && o.scp.M.push && o.state === 'idle')) { q.joyT = now + rnd(3200, 4200); emote(m, pick(['♪', '♪♪', '야호!', '신난다!', '와아!']), 'note', 2.2, 'swing-joy'); }   /* v11.79 경완: 친구가 밀어 주는 동안 탄 포켓몬 위에 즐거운 말풍선 */   /* v9.52: 밀어 준 힘은 소품에 남아 타고 있는 포켓몬도 크게 흔들린다 */
   const e = G.el; let a2 = ang, px = ox, py = oy;
@@ -7355,7 +7364,7 @@ const Visit = (() => {
   class Trainer {
     constructor(o) {
       this.c = o.c; this.n = o.n || '트레이너'; this.sx = o.sx === 'f' ? 'f' : 'm'; this.k = '';
-      this.x = this.tx = o.x ?? 180; this.y = this.ty = o.y ?? 420; this.d = 0; this.f = 0; this.w = 0; this.ph = 0; this.pt = 0;
+      this.x = this.tx = o.x ?? 180; this.y = this.ty = o.y ?? 420; this.ra = 0; this.d = 0; this.f = 0; this.w = 0; this.ph = 0; this.pt = 0;
       this.el = el('div', 'vt' + (o.me ? ' me' : ''));
       this.sp = el('i', 'vt-s'); this.nm = el('span', 'vt-n', esc(this.n)); this.bub = el('span', 'vt-b'); this.bub.hidden = true;
       this.el.append(this.sp, this.nm, this.bub);
@@ -7369,8 +7378,21 @@ const Visit = (() => {
       try { if (k) fitOw(k, this.sx, set); } catch (e) {}
     }
     jump() { try { jumpNear(this); sfx('jmp'); } catch (e) {} this.jumping = true; this.el.classList.remove('jp'); void this.el.offsetWidth; this.el.classList.add('jp'); clearTimeout(this.jt); this.jt = setTimeout(() => { this.el.classList.remove('jp'); this.jumping = false; }, 400); }
-    set(p) { if (p.j != null) { if (this.jn != null && p.j !== this.jn) this.jump(); this.jn = p.j; } if (p.k != null) this.look(p.k); if (!this.el.classList.contains('me') && p.x != null) { (this.ip ||= new Interp()).push(p.ts, [p.x, p.y, p.d | 0, p.f ? 1 : 0, p.w ? 1 : 0]); return; } if (p.x != null) { this.tx = p.x; this.ty = p.y; } if (p.d != null) this.d = p.d | 0; this.f = p.f ? 1 : 0; this.w = p.w ? 1 : 0; }
+    // v16.04 경완: 탈 수 있는 소품에 폴짝 올라탐 (rd = 소품 번호·자리), 내리면 원래 서 있던 자리로 폴짝
+    rideOn(i, s) { if (!rdAct(LAYOUT.sc[i])) return false; this.rd = { i, s, t0: performance.now(), fx: this.x, fy: this.y }; this.ra = 0; this.jf = { t0: performance.now(), x: this.x, y: this.y }; this.el.classList.add('rd'); try { sfx('jmp'); } catch (e) {} return true; }
+    rideOff(x, y) { const q = this.rd; if (!q) return; const r = LAYOUT.sc[q.i], g = r && scGeo(r); this.rd = null; this.el.classList.remove('rd'); this.ra = 0;
+      if (x == null) { x = q.fx; y = q.fy; if (g && (Math.abs(x - g.cx) > g.W / 2 + 50 || Math.abs(y - g.gy) > 70)) { x = g.cx; y = g.gy + 14; } }
+      this.jf = { t0: performance.now(), x: this.x, y: this.y }; this.x = this.tx = x; this.y = this.ty = y; this.d = 0; this.dv = ''; try { sfx('jmp'); } catch (e) {} }
+    rdPos(dt) { const q = this.rd, r = LAYOUT.sc[q.i], R = rdAct(r), G = R && scGeo(r); if (!G?.el) return null; const st = rdSeats(r, G)[q.s]; if (!st) return null;
+      const sx = G.l + G.W * st[0], sy = G.t + G.H * st[1], A = scAng(G); this.ra += (A.a - this.ra) * (dt ? Math.min(1, dt * 14) : 1);
+      const c = Math.cos(this.ra), si = Math.sin(this.ra), dx = sx - A.px, dy = sy - A.py; return { x: A.px + dx * c - dy * si, y: A.py + dx * si + dy * c, G, sx, two: R.two }; }
+    // v16.04 경완: 후프링 들기
+    hold(on) { on = !!on; if (on === !!this.ho) return; this.ho = on; if (on) { this.hoEl = el('i', 'vhoop'); monsEl.append(this.hoEl); } else { this.hoEl?.remove(); this.hoEl = null; } this.dv = ''; }
+    set(p) { if (p.h != null) this.hold(!!p.h);
+      if (p.r !== undefined && !this.el.classList.contains('me')) { const on = Array.isArray(p.r); if (on && (!this.rd || this.rd.i !== p.r[0] || this.rd.s !== p.r[1])) this.rideOn(p.r[0], p.r[1]); else if (!on && this.rd) this.rideOff(p.x, p.y); }
+      if (p.j != null) { if (this.jn != null && p.j !== this.jn) this.jump(); this.jn = p.j; } if (p.k != null) this.look(p.k); if (!this.el.classList.contains('me') && p.x != null) { (this.ip ||= new Interp()).push(p.ts, [p.x, p.y, p.d | 0, p.f ? 1 : 0, p.w ? 1 : 0]); return; } if (p.x != null) { this.tx = p.x; this.ty = p.y; } if (p.d != null) this.d = p.d | 0; this.f = p.f ? 1 : 0; this.w = p.w ? 1 : 0; }
     tick(dt) {
+      if (this.rd) { const p = this.rdPos(dt); if (p) { this.ip?.at(); this.x = this.tx = p.x; this.y = this.ty = p.y; this.rz = Math.round(p.G.gy) + 3; this.d = p.two ? 2 : 0; if (p.two) this.f = p.sx < p.G.cx ? 1 : 0; this.w = 0; this.ph = 0; this.draw(); return; } this.rideOff(); }
       const q = this.ip?.at(); if (q) { const v = q.v; this.tx = v[0]; this.ty = v[1]; this.d = v[2]; this.f = v[3]; this.w = v[4] || (q.mv ? 1 : 0); if (Math.hypot(v[0] - this.x, v[1] - this.y) < 80) { this.x = v[0]; this.y = v[1]; } }
       const dx = this.tx - this.x, dy = this.ty - this.y, dd = Math.hypot(dx, dy);
       if (dd > 80) { this.x = this.tx; this.y = this.ty; } else if (dd > .3) { const k = Math.min(1, dt * 9); this.x += dx * k; this.y += dy * k; }
@@ -7381,23 +7403,32 @@ const Visit = (() => {
     draw() {
       const side = this.d === 2, walk = this.ph % 2 === 1, fr = (walk ? 3 : 0) + this.d;
       const flip = side ? (this.f ? -1 : 1) : (this.ph === 3 ? -1 : 1);   // 옆: 오른쪽 보면 뒤집음, 위·아래 걷기: 두 번째 걸음은 다리 바꾸기
-      const v = `translate(${this.x.toFixed(1)}px,${this.y.toFixed(1)}px)|${fr}|${flip}`;
+      let x = this.x, y = this.y; const j = this.jf;   // v16.04: 소품에 타고 내릴 때 폴짝
+      if (j) { const u = Math.min(1, (performance.now() - j.t0) / 360), e = 1 - (1 - u) ** 2; x = j.x + (x - j.x) * e; y = j.y + (y - j.y) * e - Math.sin(u * Math.PI) * 28; if (u >= 1) this.jf = null; }
+      const rot = this.rd ? this.ra : 0; this.hx = this.x; this.hy = this.y + 20;   // 후프링은 몸 앞(아래)에 들고, 포켓몬이 앞을 가로질러 뛰어넘음
+      const v = `${x.toFixed(1)},${y.toFixed(1)}|${fr}|${flip}|${rot.toFixed(3)}|${this.ho ? 1 : 0}`;
       if (v === this.dv) return; this.dv = v;
-      this.el.style.transform = `translate(${this.x.toFixed(1)}px,${this.y.toFixed(1)}px)`; this.el.style.zIndex = Math.round(this.y);
-      this.sp.style.backgroundPosition = `0 ${-fr * FR}px`; this.sp.style.transform = `scaleX(${flip})`;
+      this.el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`; this.el.style.zIndex = this.rd && this.rz ? this.rz : Math.round(y);
+      this.sp.style.backgroundPosition = `0 ${-fr * FR}px`; this.sp.style.transform = `scaleX(${flip})`; this.sp.style.rotate = rot ? `${rot.toFixed(3)}rad` : '';
+      if (this.hoEl) { this.hoEl.style.transform = `translate(${x.toFixed(1)}px,${(y + 20).toFixed(1)}px)`; this.hoEl.style.zIndex = Math.round(y + 20) + 3; }
     }
     say(t) { this.bub.innerHTML = '<span>' + esc(t) + '</span>'; this.bub.hidden = false; clearTimeout(this.bt); this.bt = setTimeout(() => { this.bub.hidden = true; }, 4500); }
-    remove() { clearTimeout(this.bt); this.el.remove(); }
+    remove() { clearTimeout(this.bt); this.el.remove(); this.hoEl?.remove(); this.hoEl = null; this.ho = false; this.rd = null; }
   }
 
   // 모든 트레이너를 매 프레임 움직인다 (게임 frame 과 따로 — 필드가 가려져 멈춰도 상관없게 가볍게)
   const TR = new Map(); let me = null, loopOn = false, lastT = 0;
   function loop(t) {
     if (!loopOn) return; requestAnimationFrame(loop);
+    // v16.04 경완 '발열': 트레이너가 없으면 아무것도 안 하고, 아무도 안 움직이면 10fps 로만
+    if (!me && !TR.size) { lastT = t; return; }
+    const busy = keys.size || HJ.size || rdOn.size || (me && (me.jf || me.rd)) || [...TR.values()].some(tr => tr.w || tr.jf || tr.rd || Math.abs(tr.tx - tr.x) + Math.abs(tr.ty - tr.y) > .5);
+    if (!busy && lastT && t - lastT < 100) return;
     const dt = lastT ? Math.min(.1, (t - lastT) / 1000) : 0; lastT = t;
     if (me) stepMe(dt);
     for (const tr of TR.values()) tr.tick(dt);
     if (me) me.tick(dt);
+    try { rdTick(t); hoopTick(t); rdBtn(t); } catch (e) { console.error(e); }
     if (t - nearT > 300) { nearT = t; nearMons(); }
   }
   // v15.21 경완 '포켓몬한테 가까이 가면 상호작용, 점프하면 같이 점프'
@@ -7433,7 +7464,7 @@ const Visit = (() => {
     follow();
     const L = [...TR.values()]; if (me) L.push(me);
     for (const tr of L) for (const m of S.mons) {
-      if ((m.nearT || 0) > Date.now() || m.follow || !monOk(m) || Math.hypot(m.x - tr.x, m.y - tr.y) > 44) continue;
+      if ((m.nearT || 0) > Date.now() || m.follow || m.hj || m.goal?.kind === 'hoop' || tr.rd || !monOk(m) || Math.hypot(m.x - tr.x, m.y - tr.y) > 44) continue;
       m.nearT = Date.now() + 9e3;
       faceTo(m, tr.x); anim(m, 'hop');
       const r = pick(['♥', '♪', '!', '♥', '?']); emote(m, r, r === '♥' ? 'heart' : r === '♪' ? 'note' : '', 1.8, 'visit-near');
@@ -7455,9 +7486,9 @@ const Visit = (() => {
       if (VISIT) { if (G.live || !me) return; L = [me, ...[...TR.entries()].filter(([c]) => c !== G.owner?.c).map(x => x[1])]; }
       else { L = [...TR.values()]; if (me) L.push(me); }   // v16.00: 주인이 나와 있으면 주인한테도 다가옴
       for (const tr of L) {
-        if (Math.random() > .4) continue;
+        if (tr.rd || tr.ho || Math.random() > .4) continue;
         const near = S.mons.filter(m => m.goal?.kind === 'visit' && m.goal.tr === tr).length; if (near >= 2) continue;
-        const ok = m => awake(m) && !m.held && !m.pin && !m.evolving && !m.washing && !m.hidden && (m.state === 'idle' || m.state === 'move') && !['berry', 'feedb', 'greet', 'bed', 'visit'].includes(m.goal?.kind) && T(m).mv !== 'swim' && petM?.m !== m && (m.vcT || 0) < Date.now();
+        const ok = m => awake(m) && !m.held && !m.pin && !m.evolving && !m.washing && !m.hidden && (m.state === 'idle' || m.state === 'move') && !['berry', 'feedb', 'greet', 'bed', 'visit', 'hoop'].includes(m.goal?.kind) && !m.hj && T(m).mv !== 'swim' && petM?.m !== m && (m.vcT || 0) < Date.now();
         const C = S.mons.filter(m => ok(m) && Math.hypot(m.x - tr.x, m.y - tr.y) < 190 && Math.hypot(m.x - tr.x, m.y - tr.y) > 50).sort((a, b) => Math.hypot(a.x - tr.x, a.y - tr.y) - Math.hypot(b.x - tr.x, b.y - tr.y));
         const m = C[Math.random() < .6 ? 0 : Math.floor(Math.random() * Math.min(3, C.length))]; if (!m) continue;
         m.vcT = Date.now() + 25e3;   // 같은 포켓몬은 25초에 한 번
@@ -7512,6 +7543,11 @@ const Visit = (() => {
     const jOff = () => jb.classList.remove('on');
     jb.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); jb.classList.add('on'); try { jb.setPointerCapture(e.pointerId); } catch (er) {} if (!me) return; me.jn = ((me.jn || 0) + 1) % 1000; me.jump(); try { haptic(0); } catch (er) {} sendTr(); });
     for (const t of ['pointerup', 'pointercancel', 'lostpointercapture']) jb.addEventListener(t, jOff);
+    { const rb = el('button', 'vjump vride', '<span>타기</span>'); rb.type = 'button'; rb.hidden = true;   // v16.04 경완: 탈 수 있는 소품 근처에서만 '타기', 타고 있으면 '내리기'
+      rb.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); rb.classList.add('on'); try { rb.setPointerCapture(e.pointerId); } catch (er) {} if (!me) return; try { haptic(0); } catch (er) {}
+        if (me.rd) me.rideOff(); else { const n = rdNear(); if (!n) return; if (me.ho) me.hold(false); me.rideOn(n.i, n.s); } rbT = 0; sendTr(); });
+      for (const t of ['pointerup', 'pointercancel', 'lostpointercapture']) rb.addEventListener(t, () => rb.classList.remove('on'));
+      document.body.append(rb); }
     document.body.append(jb); new MutationObserver(() => { jb.hidden = pad.hidden; }).observe(pad, { attributes: true, attributeFilter: ['hidden'] }); jb.hidden = pad.hidden;
     // 방향키는 아래쪽 창(손님 채팅·주인 상태창) 바로 위에
     const pos = () => { const wr = qs('#wrap'); if (wr) document.body.style.setProperty('--vchat-min', Math.max(0, Math.round(innerHeight - wr.getBoundingClientRect().bottom)) + 'px');   // v15.16 경완: 아래 채팅창이 대화창·메뉴 자리(빈 줄)를 덮게
@@ -7521,7 +7557,80 @@ const Visit = (() => {
     addEventListener('keyup', e => { const k = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' }[e.key]; if (k) keys.delete(k); });
     return pad;
   }
+  // ---------- v16.04 경완: 소품 타기 · 후프링 ----------
+  function rdAct(r) { const A = r && LAYOUT.scArt[r[0]]; if (!A) return null; const L = A.acts || [], tw = L.find(a => Array.isArray(a.x?.two?.at)); if (tw) return { A, a: tw, two: true };
+    const rd = L.find(a => /올라타|들어가 앉|구멍/.test(a.a || '')); return rd ? { A, a: rd, two: false, tire: /구멍/.test(rd.a) } : null; }
+  function rdSeats(r, G) { const R = rdAct(r); if (!R) return []; if (R.two) { const p = scSpec(R.a, G.A).pos; return [Array.isArray(p) ? p : [.15, .22], R.a.x.two.at]; } return [[.5, R.tire ? .8 : .22]]; }
+  const rotOf = t => +(/rotate\((-?[\d.e-]+)rad\)/.exec(t || '') || [])[1] || 0;
+  function scAng(G) { const e = G.el, MV = G.A.mv?.st && G.A.mv?.mp && e?.mpEl ? G.A.mv : null;
+    if (MV) return MV.k === 'spin' ? { a: 0, px: G.cx, py: G.gy } : { a: rotOf(e.mpEl.style.transform), px: G.l + MV.o[0] * G.kx, py: G.t + MV.o[1] * G.ky };
+    const o = (e?.style.transformOrigin || '').split(' ').map(parseFloat); return { a: rotOf(e?.style.transform), px: G.l + G.W * (isNaN(o[0]) ? 50 : o[0]) / 100, py: G.t + G.H * (isNaN(o[1]) ? 100 : o[1]) / 100 }; }
+  const rdAll = () => [...TR.values(), me].filter(t => t?.rd);
+  trOnSc = r => { const i = LAYOUT.sc.indexOf(r), L = i < 0 ? [] : rdAll().filter(t => t.rd.i === i); if (!L.length) return []; const g = scGeo(r); if (!g) return []; const st = rdSeats(r, g); return L.map(t => g.l + g.W * (st[t.rd.s]?.[0] ?? .5)); };
+  // 가까운 탈 수 있는 소품의 빈 자리 (포켓몬이 탄 자리는 빼고)
+  function rdNear() { let best = null, bd = 1e9;
+    LAYOUT.sc.forEach((r, i) => { const R = rdAct(r); if (!R) return; const g = scGeo(r); if (!g?.el) return;
+      const d = Math.abs(me.tx - g.cx); if (d > g.W / 2 + 28 || me.ty < g.gy - 34 || me.ty > g.gy + 50) return;
+      const X = rdSeats(r, g).map(q => g.l + g.W * q[0]), taken = new Set();
+      for (const t of rdAll()) if (t.rd.i === i) taken.add(t.rd.s);
+      for (const m of S.mons) { const mine = m.scp?.r === r && m.scp.ride, on = mine || ((m.lift || m.xl || 0) > 3 && Math.abs(m.y - g.gy) < 12 && m.x > g.l && m.x < g.l + g.W); if (!on) continue;
+        if (!R.two) X.forEach((_, s) => taken.add(s)); else { const mx = mine ? m.scp.tx : m.x; X.forEach((x, s) => { if (Math.abs(mx - x) < g.W * .2) taken.add(s); }); } }
+      const fr = X.map((_, s) => s).filter(s => !taken.has(s)).sort((a, b) => Math.abs(X[a] - me.tx) - Math.abs(X[b] - me.tx));
+      if (fr.length && d < bd) { bd = d; best = { i, s: fr[0] }; } });
+    return best; }
+  let rbT = 0;
+  function rdBtn(now) { if (now - rbT < 150) return; rbT = now; const b = qs('.vride');
+    if (b) { const show = !!(me && pad && !pad.hidden && (me.rd || rdNear())); b.hidden = !show; if (show) b.querySelector('span').textContent = me.rd ? '내리기' : '타기'; }
+    const hb = qs('#btnHoop'); if (hb) hb.setAttribute('aria-pressed', me?.ho ? 'true' : 'false'); }
+  // 트레이너만 탄 소품 흔들기 (포켓몬이 같이 타면 포켓몬 쪽 scTick 이 흔듦) + 시소에 혼자면 가까운 포켓몬이 와서 반대쪽에
+  let rdOn = new Set();
+  function rdTick(now) {
+    const by = new Map(); for (const t of rdAll()) { const i = t.rd.i; if (!by.has(i)) by.set(i, []); by.get(i).push(t); }
+    const sim = !(VISIT && G.live);
+    for (const i of rdOn) if (!by.has(i)) { const r = LAYOUT.sc[i], g = r && scGeo(r); if (g?.el) { g.el.scTr = null; if (sim && !S.mons.some(m => m.scp?.r === r)) scFxOff(g); } }
+    rdOn = new Set(by.keys()); if (!sim) return;
+    for (const [i, L] of by) { const r = LAYOUT.sc[i], R = rdAct(r), g = R && scGeo(r); if (!g?.el) continue; const e = g.el, seated = L.filter(t => !t.jf);
+      if (!S.mons.some(m => m.scp?.r === r && m.scp.ride)) {
+        let ang = 0;
+        if (R.two) { if (seated.length >= 2) ang = Math.sin((now - (e.scTw ??= now)) / 1000 * 2.4) * .13; else { e.scTw = null; ang = seated[0] ? (rdSeats(r, g)[seated[0].rd.s][0] < .5 ? -.13 : .13) : 0; } }
+        else ang = Math.sin((now - (e.scTr ??= now)) / 1000 * 3) * .08;
+        const MV = R.A.mv?.st && R.A.mv?.mp && e.mpEl ? R.A.mv : null;
+        if (MV) { const a2 = MV.k === 'spin' ? 0 : ang * (MV.amp || 1.6), tf = a2 ? `rotate(${a2.toFixed(4)}rad)` : ''; e.mpEl.style.transform = tf; if (e.mbEl) e.mbEl.style.transform = tf; }
+        else { const oy = R.two ? g.t + g.H * .7 : /그네/.test(R.A.n || '') ? g.t : g.gy; e.style.transformOrigin = `50% ${((oy - g.t) / g.H * 100).toFixed(1)}%`; e.style.transform = ang ? `translate(-50%,-100%) rotate(${ang.toFixed(4)}rad)` : ''; }
+      }
+      if (R.two && L.length === 1 && seated.length === 1 && !S.mons.some(m => m.scp?.r === r) && now > (e.rdCd || 0) && now - L[0].rd.t0 > 1200) { e.rdCd = now + 5000;
+        const ok = o => monOk(o) && T(o).mv !== 'swim' && !isFish(o.sp) && !o.scp && !o.camp && !o.follow && !o.hj && o.goal?.kind !== 'hoop' && Math.hypot(o.x - g.cx, o.y - g.gy) < 480,
+          o2 = S.mons.filter(ok).sort((u, v) => Math.hypot(u.x - g.cx, u.y - g.gy) - Math.hypot(v.x - g.cx, v.y - g.gy))[0], tr = L[0];
+        if (o2 && scPlay(o2, { k: 'sc', i, x: g.cx, y: g.gy }, R.a, null, R.a.x.two)) { o2.propUntil = performance.now() + 10000; emote(o2, '!', '', 1.2, 'seesaw-come');
+          if (tr === me) monSay(o2, `${J(o2, '이/가')} ${esc(R.A.n)} 반대쪽에 폴짝 올라탔다.`, true);
+          setTimeout(() => { if (S.mons.includes(o2) && o2.scp?.r === r && tr.rd) emote(o2, '♥', 'heart', 2.2, 'seesaw-joy'); }, 2800); } }
+    } }
+  // 후프링: 들고 있으면 근처 포켓몬이 한 마리씩 와서 뛰어넘는다 (포켓몬 움직임은 주인 화면이, 주인이 없으면 손님 화면이)
+  const HJ = new Set();
+  function hoopTick(now) {
+    for (const m of HJ) { const h = m.hj; if (!S.mons.includes(m) || m.held || !h) { HJ.delete(m); m.hj = null; m.xl = 0; continue; }
+      const u = (now - h.t0) / 760; if (u < 0) continue;
+      if (u < 1) { m.x = h.x0 + (h.x1 - h.x0) * u; m.y = h.y; m.xl = Math.sin(u * Math.PI) * h.pk; m.state = 'idle'; m.t = Math.max(m.t || 0, 1); continue; }
+      m.x = h.x1; m.xl = 0; m.hj = null; HJ.delete(m); anim(m, 'hop'); emote(m, pick(['♪', '♪', '♥', '야호!']), 'note', 1.8, 'hoop-done'); setState(m, 'idle', rnd(1.5, 3));
+      if (h.tr === me) monSay(m, pick([`${J(m, '이/가')} 후프링을 폴짝 뛰어넘었다!`, `${J(m, '이/가')} 후프링 사이로 쏙 통과했다!`]), true);
+      if (h.tr.hs?.cur === m) { h.tr.hs.cur = null; h.tr.hs.next = now + 600; } }
+    if (VISIT && G.live) return;
+    const all = [...TR.values(), me];
+    for (const tr of all) { if (!tr?.ho || tr.rd || tr.jf) continue; const hs = tr.hs ||= { cur: null, next: 0, done: new Map() };
+      if (hs.cur) { const m = hs.cur; if (!S.mons.includes(m) || (!m.hj && m.goal?.kind !== 'hoop' && now - hs.t0 > 400) || (!m.hj && now - hs.t0 > 9000)) { if (m.goal?.kind === 'hoop') m.goal = null; hs.cur = null; hs.next = now + 600; } continue; }
+      if (now < hs.next) continue;
+      const hx = tr.hx ?? tr.x, hy = tr.hy ?? tr.y + 20, C = S.mons.filter(m => monOk(m) && T(m).mv !== 'swim' && !isFish(m.sp) && !m.scp && !m.camp && !m.follow && !m.hj && !m.propSit && (hs.done.get(m.uid) || 0) < now && Math.hypot(m.x - hx, m.y - hy) < 260 && !all.some(o => o?.hs?.cur === m))
+        .sort((a, b) => Math.hypot(a.x - hx, a.y - hy) - Math.hypot(b.x - hx, b.y - hy)), m = C[0];
+      if (!m) { hs.next = now + 1500; continue; }
+      hs.done.set(m.uid, now + 14000); hs.cur = m; hs.t0 = now; emote(m, '!', '', 1, 'hoop-see');
+      const side = m.x < hx ? -1 : 1, D = 44 + (m.w || 40) * .3;
+      moveTo(m, { x: clampN(hx + side * D, XL + 20, XR - 20), y: hy + 1 }, { kind: 'hoop', go: () => hoopJump(m, tr) }, 1.3); } }
+  function hoopJump(m, tr) { const hs = tr.hs; if (!tr.ho || !hs || hs.cur !== m || !S.mons.includes(m)) { if (hs?.cur === m) hs.cur = null; return; }
+    const hx = tr.hx ?? tr.x, hy = tr.hy ?? tr.y + 20, side = m.x < hx ? -1 : 1, D = 44 + (m.w || 40) * .3; faceTo(m, hx); setState(m, 'idle', 3);
+    m.hj = { t0: performance.now() + 380, x0: m.x, x1: clampN(hx - side * D, XL + 20, XR - 20), y: hy + 1, pk: clampN(38 - (m.h || 40) * .45, 10, 30), tr }; HJ.add(m); }
+  { const hb = qs('#btnHoop'); if (hb) hb.addEventListener('click', e => { e.stopPropagation(); if (!me) return; sfx('tap'); try { haptic(0); } catch (er) {} if (me.rd) { me.rideOff(); } me.hold(!me.ho); rbT = 0; sendTr(); }); }
   function stepMe(dt) {
+    if (me.rd) { if (!keys.size) return; me.rideOff(); sendTr(); }   // v16.04: 방향키를 누르면 소품에서 내림
     let vx = (keys.has('right') ? 1 : 0) - (keys.has('left') ? 1 : 0), vy = (keys.has('down') ? 1 : 0) - (keys.has('up') ? 1 : 0);
     const mv = vx || vy;
     if (mv) {
@@ -7750,6 +7859,7 @@ const Visit = (() => {
     if (bs !== OWN.bSig) { OWN.bSig = bs; c.send({ t: 'ev', e: { b: B } }); }
     // v15.72 경완 '소품이랑 노는 모습도 친구 화면에 똑같이': 움직이는 소품 모습 + 말풍선·폴짝 같은 짧은 연출
     const PE = new Map(); for (const m of S.mons) { const e = m.scp?.G?.el, i = m.scp ? LAYOUT.sc.indexOf(m.scp.r) : -1; if (e && i >= 0) PE.set(i, e); }
+    for (const t of rdAll()) { const r = LAYOUT.sc[t.rd.i], e = r && scGeo(r)?.el; if (e) PE.set(t.rd.i, e); }   // v16.04: 트레이너가 탄 소품도
     for (const i of OWN.pOn) if (!PE.has(i)) { const r = LAYOUT.sc[i], e = r && scGeo(r)?.el; if (e) PE.set(i, e); }
     const PL = [...PE].map(([i, e]) => [i, e.style.transform || '', e.style.transformOrigin || '', e.mpEl?.style.transform || '', e.style.filter || '']), ps = JSON.stringify(PL);
     OWN.pOn = new Set(PL.filter(r => r[1] || r[3] || r[4]).map(r => r[0]));
@@ -7781,7 +7891,7 @@ const Visit = (() => {
     { const em0 = emote, an0 = anim, has = () => OWN.conn && [...OWN.ppl.values()].some(p => !p.o) && !document.hidden;   // 주인 화면의 말풍선·폴짝을 친구 화면에도
       emote = (m, ...a) => { const r = em0(m, ...a); if (m?.uid != null && has() && S.mons.includes(m)) OWN.fxq.push(['e', m.uid, ...a.slice(0, 4)]); return r; };
       anim = (m, cls) => { const r = an0(m, cls); if (m?.uid != null && has() && S.mons.includes(m)) OWN.fxq.push(['a', m.uid, cls]); return r; }; }
-    sendTr = () => { if (!OWN.conn) return; OWN.conn.send(me ? { t: 'tr', x: me.tx, y: me.ty, d: me.d, w: me.w, f: me.f, k: fitNow(), out: 1, j: me.jn || 0, ts: Date.now() } : { t: 'tr', out: 0 }); };
+    sendTr = () => { if (!OWN.conn) return; OWN.conn.send(me ? { t: 'tr', x: me.tx, y: me.ty, d: me.d, w: me.w, f: me.f, k: fitNow(), out: 1, j: me.jn || 0, r: me.rd ? [me.rd.i, me.rd.s] : 0, h: me.ho ? 1 : 0, ts: Date.now() } : { t: 'tr', out: 0 }); };
     setInterval(ownTick, 100);
     setInterval(() => { if (!document.hidden) { putField(); if (!OWN.conn) ownConnect(); } }, 5 * 60e3);
     document.addEventListener('visibilitychange', () => {
@@ -7897,7 +8007,7 @@ const Visit = (() => {
     G.me = m.me;
     me = new Trainer({ c: G.me, n: HP.nm || '나', sx: HP.sx, k: HP.k || '', me: true, ...landSpot() });
     me.d = 0;   // v15.31 경완: 처음 들어오면 뒷모습 말고 앞모습
-    sendTr = () => G.conn?.send({ t: 'tr', x: me.tx, y: me.ty, d: me.d, w: me.w, f: me.f, k: HP.k || '', out: 1, j: me.jn || 0, ts: Date.now() });
+    sendTr = () => G.conn?.send({ t: 'tr', x: me.tx, y: me.ty, d: me.d, w: me.w, f: me.f, k: HP.k || '', out: 1, j: me.jn || 0, r: me.rd ? [me.rd.i, me.rd.s] : 0, h: me.ho ? 1 : 0, ts: Date.now() });
     padMake().hidden = false; loopStart(); parent.postMessage({ visit: 'shown' }, location.origin);
     guestHi(m); sendTr();
     // v15.21 경완: 다시 들어오면 예전 채팅은 안 보이게 (방명록에는 남음)
