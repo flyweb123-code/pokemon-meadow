@@ -2920,7 +2920,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .sd2-rec b.pay{color:#b07a10}#gym .sd2-rec b.up{color:#2a8a3e}#gym .sd2-rec b.dn{color:#c0402c}
 #gym .sd2 .sd-btns.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 #gym .sd2 .sd-btns.three button{font-size:13px}
-/* v16.65 경완: 발판이 그림 칸 밖으로 안 나오게, 자리 딱지는 창 좌상단 모서리, 훈련장 코치는 그림 칸 우상단 다른 딱지, 코치 중이면 '코치 빼기' 눌려 들어간 버튼 */
+/* v16.66 경완: 발판이 그림 칸 밖으로 안 나오게, 자리 딱지는 창 좌상단 모서리, 훈련장 코치는 그림 칸 우상단 다른 딱지, 코치 중이면 '코치 빼기' 눌려 들어간 버튼 */
 #gym .gy-pop .win:has(.sd2){position:relative}
 #gym .gy-pop .win:has(.sd2-corner){padding-top:30px}
 #gym .sd2>.sd2-corner{top:0;left:0;font-size:12px;padding:4px 14px 5px 10px;box-shadow:2px 2px 0 rgba(0,0,0,.2)}
