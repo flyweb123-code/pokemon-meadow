@@ -299,7 +299,10 @@ function monEl(side) { return $b(`.bt-mon.${side}`); }
 const G5 = 'https://raw.githubusercontent.com/smogon/sprites/18fc3d83b8bc6746f0052273232c1794ef2d7d42/src/sprites/gen5/';
 const G5K = ['-b', '-s', '-f', '-b-s', '-b-f', '-f-s', '-b-f-s'];
 // 배틀 중 바뀐 폼 (tools/gym/mkforms.py): 1~649 는 블랙·화이트 gif 폼 이름, 650~ 은 gym/img/pk/fm/<쇼다운 id>.png
-const FM_G = { castformrainy: 'castform-orainy', castformsunny: 'castform-osunny', castformsnowy: 'castform-osnowy', cherrimsunshine: 'cherrim-osunshine', darmanitanzen: 'darmanitan-ozen', meloettapirouette: 'meloetta-opirouette' };
+const FM_G = { castformrainy: 'castform-orainy', castformsunny: 'castform-osunny', castformsnowy: 'castform-osnowy', cherrimsunshine: 'cherrim-osunshine', darmanitanzen: 'darmanitan-ozen', meloettapirouette: 'meloetta-opirouette',
+  rotomheat: 'rotom-oheat', rotomwash: 'rotom-owash', rotomfrost: 'rotom-ofrost', rotomfan: 'rotom-ofan', rotommow: 'rotom-omow', tornadustherian: 'tornadus-otherian', thundurustherian: 'thundurus-otherian', landorustherian: 'landorus-otherian' };
+// v16.81 경완: 필드에서 바꾼 폼(로토무 가전제품·영물폼)은 배틀에서도 그 폼 (타입·능력치·그림)
+const BFM = { 479: { Heat: 'rotomheat', Wash: 'rotomwash', Frost: 'rotomfrost', Fan: 'rotomfan', Mow: 'rotommow' }, 641: { Therian: 'tornadustherian' }, 642: { Therian: 'thundurustherian' }, 645: { Therian: 'landorustherian' }, 905: { Therian: 'enamorustherian' }, 892: { Rapid_Strike: 'urshifurapidstrike' }, 849: { Lowkey: 'toxtricitylowkey' } };
 const anOf = A => A && (FMA[A.fm] || ANIM[A.sp]);
 function gifUrl(sp, b, sh, f, fm) {
   if (RFA[fm] || rfKey(sp)) return null;   /* 지역 폼은 gif 없이 저장소 그림 */
@@ -503,13 +506,14 @@ function yesNo(q) {
 // ---------- 쇼다운 세트 ----------
 const toID = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 function psSet(o) {
-  const dx = PSim.Dex, sp = dx.species.get(D.sp[o.sp]?.id || String(o.sp));
+  const dx = PSim.Dex, sp = dx.species.get(o.fm || D.sp[o.sp]?.id || String(o.sp));
   const iv = o.iv || [20, 20, 20, 20, 20, 20];
-  return { name: o.nm, species: sp.name, level: o.lv, moves: o.mv, ability: o.ab, nature: dx.natures.get(o.nat || 'hardy').name, item: o.it && HOLD[o.it] ? dx.items.get(o.it).name : '',
+  let ab = o.ab; if (o.fm) { const b0 = dx.species.get(D.sp[o.sp]?.id || String(o.sp)), k = Object.keys(b0.abilities || {}).find(k => toID(b0.abilities[k]) === toID(ab)); if (k && sp.abilities) ab = toID(sp.abilities[k] || sp.abilities[0]); }   // 영물폼은 특성도 그 칸의 영물폼 특성
+  return { name: o.nm, species: sp.name, level: o.lv, moves: o.mv, ability: ab, nature: dx.natures.get(o.nat || 'hardy').name, item: o.it && HOLD[o.it] ? dx.items.get(o.it).name : '',
     gender: o.g === 'M' || o.g === 'F' ? o.g : '', shiny: !!o.shiny,
     ivs: { hp: iv[0], atk: iv[1], def: iv[2], spa: iv[3], spd: iv[4], spe: iv[5] }, evs: o.evs || { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 } };
 }
-function myEntry(P) { const m = gm(P); return { pid: P.id, sp: P.sp, nm: nmOf(P), lv: m.lv, mv: m.mv, ab: m.ab, nat: m.nat, it: m.it, iv: P.iv, fr: P.fr || 0, g: P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '', shiny: !!P.shiny }; }
+function myEntry(P) { const m = gm(P); return { pid: P.id, sp: P.sp, nm: nmOf(P), lv: m.lv, mv: m.mv, ab: m.ab, nat: m.nat, it: m.it, iv: P.iv, fr: P.fr || 0, g: P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '', shiny: !!P.shiny, fm: BFM[P.sp]?.[P.fm] }; }
 // 상대 포켓몬: 그 레벨에 배우는 기술 중 무작위 4개
 function foeEntry(sp, lv, tier = 0) {
   const r = Math.random, ab = D.sp[sp]?.ab || ['noability'], nats = NATS(), g = SPECIES[sp]?.g;
@@ -648,7 +652,7 @@ async function run(opts) {
   await wait(900); el.classList.remove('intro');
   const foeNm = B.foeNm = `${opts.foe.cls} ${opts.foe.nm}`;
   tray(); await msg(`${iga(foeNm)} 승부를 걸어왔다!`, 900);
-  my.forEach(o => gifLoad(gifUrl(o.sp, true, o.shiny, o.g === 'F'))); foeT.forEach(o => gifLoad(gifUrl(o.sp, false, o.shiny, o.g === 'F')));   // 미리 받기
+  my.forEach(o => gifLoad(gifUrl(o.sp, true, o.shiny, o.g === 'F', o.fm))); foeT.forEach(o => gifLoad(gifUrl(o.sp, false, o.shiny, o.g === 'F')));   // 미리 받기
   btl.makeChoices('default', 'default');   // 팀 미리보기: 라인업 순서 그대로
   try { await play(); } catch (e) { console.error(e); if (B) B.err = e; try { window.pkErr?.('battle: ' + (e?.message || e), e?.stack); } catch (e2) {} }
   const won = btl.winner === '관장', out = B?.out, cut = !btl.ended && out !== 'quit';   /* 오류로 중간에 멈춘 배틀은 없던 배틀 (경완 2026-11-04 '질 상황이 아니었는데 진 걸로') */
