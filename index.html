@@ -30,7 +30,8 @@ body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop
 /* 방향키 */
 .vjump{position:fixed;z-index:6200;right:22px;bottom:calc(var(--vpad-b, 170px) + 44px);width:72px;height:44px;border-radius:8px;border:3px solid var(--frame,#20202c);background:rgba(244,236,216,.9);color:#20202c;box-shadow:0 3px 0 rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font:14px var(--px);padding:0;touch-action:none;user-select:none;-webkit-user-select:none}.vjump svg{display:none}.vjump.on{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.35);background:#ffd34a}.vjump[hidden]{display:none}
 .vt.rd::before{display:none}.vt-s{transform-origin:50% 90%}
-.vhoop{position:absolute;left:0;top:0;width:16px;height:46px;margin:-54px 0 0 -8px;border-radius:50%;border:3px solid #ef5a3c;border-top-color:#ffd34a;border-bottom-color:#ffd34a;box-shadow:0 0 0 1px rgba(32,32,44,.8),inset 0 0 0 1px rgba(32,32,44,.8);pointer-events:none}   /* v16.04 경완: 트레이너가 드는 후프링 */
+.vhoop{position:absolute;left:0;top:0;width:40px;height:40px;margin:-54px 0 0 -20px;border-radius:50%;box-sizing:border-box;border:3px solid #ef5a3c;border-top-color:#ffd34a;border-bottom-color:#ffd34a;box-shadow:0 0 0 1px rgba(32,32,44,.8),inset 0 0 0 1px rgba(32,32,44,.8);pointer-events:none}   /* v16.04 경완: 트레이너가 드는 후프링 · v16.09 경완: 옆모습 말고 앞모습(동그란 링)으로 몸 옆에 */
+#propHot.on.soft{animation:photS 1.3s ease-in-out infinite alternate}@keyframes photS{from{opacity:.25}to{opacity:.65}}   /* v16.09 경완: '타기' 버튼이 뜨면 그 소품 테두리가 살짝 빛남 */
 .vjump.vride{bottom:calc(var(--vpad-b, 170px) + 100px);width:auto;min-width:72px;padding:0 12px}   /* v16.04 경완: 탈 수 있는 소품 근처에서 '타기' */
 .berrybar #btnHoop{display:none}body.visitMode .berrybar #btnHoop{display:grid}#btnHoop:active{transform:translate(2px,2px);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner)}
 .vt.jp .vt-s{animation:vtJump .38s cubic-bezier(.3,.7,.4,1)}.vt.jp::before{animation:vtJs .38s cubic-bezier(.3,.7,.4,1)}@keyframes vtJump{45%{translate:0 -24px}}@keyframes vtJs{45%{scale:.55;opacity:.6}}
@@ -62,7 +63,7 @@ body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop
 .vc-none{margin:4px 0;font-size:12px;opacity:.7;line-height:1.5}
 #set .sheet-head #frGbIc[hidden]{display:none!important}#notiFv[hidden]{display:none!important}
 .vchat-b{position:fixed;z-index:6100;left:0;right:0;bottom:var(--kb,0px);transition:bottom .25s ease-out;background:rgba(32,32,44,.92);border-top:3px solid #f4ecd8;padding:8px 10px calc(10px + env(safe-area-inset-bottom))}.vchat-b .vc-log{max-height:120px}
-body.vOut:has(#info:not([hidden])) .vchat-b,body.vOut.petting .vchat-b{display:none}
+body.vOut.petting .vchat-b{display:none}   /* v16.09 경완: 필드에 나가 있을 때 포켓몬 상세카드를 열어도 아래 상태창·방향키 자리 그대로 */
 #set[data-pg=book],#set[data-pg=book] .win{background:#20202c;border-color:#20202c;box-shadow:none}
 #set[data-pg=book] .sheet-head{background:#20202c;margin-bottom:0;padding-top:12px;padding-bottom:10px;border-bottom:3px solid #f4ecd8}
 #set[data-pg=book] .sheet-head h3,#set[data-pg=book] #setBack{color:#ffd34a}
@@ -7405,12 +7406,12 @@ const Visit = (() => {
       const flip = side ? (this.f ? -1 : 1) : (this.ph === 3 ? -1 : 1);   // 옆: 오른쪽 보면 뒤집음, 위·아래 걷기: 두 번째 걸음은 다리 바꾸기
       let x = this.x, y = this.y; const j = this.jf;   // v16.04: 소품에 타고 내릴 때 폴짝
       if (j) { const u = Math.min(1, (performance.now() - j.t0) / 360), e = 1 - (1 - u) ** 2; x = j.x + (x - j.x) * e; y = j.y + (y - j.y) * e - Math.sin(u * Math.PI) * 28; if (u >= 1) this.jf = null; }
-      const rot = this.rd ? this.ra : 0; this.hx = this.x; this.hy = this.y + 20;   // 후프링은 몸 앞(아래)에 들고, 포켓몬이 앞을 가로질러 뛰어넘음
+      const rot = this.rd ? this.ra : 0, hs = this.d === 2 && !this.f ? -1 : 1; this.hx = this.x + hs * 34; this.hy = this.y + 1;   // v16.09 경완: 후프링은 몸 옆에 앞모습으로 들고, 포켓몬이 링 앞↔뒤로 뛰어넘음
       const v = `${x.toFixed(1)},${y.toFixed(1)}|${fr}|${flip}|${rot.toFixed(3)}|${this.ho ? 1 : 0}`;
       if (v === this.dv) return; this.dv = v;
       this.el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`; this.el.style.zIndex = this.rd && this.rz ? this.rz : Math.round(y);
       this.sp.style.backgroundPosition = `0 ${-fr * FR}px`; this.sp.style.transform = `scaleX(${flip})`; this.sp.style.rotate = rot ? `${rot.toFixed(3)}rad` : '';
-      if (this.hoEl) { this.hoEl.style.transform = `translate(${x.toFixed(1)}px,${(y + 20).toFixed(1)}px)`; this.hoEl.style.zIndex = Math.round(y + 20) + 3; }
+      if (this.hoEl) { this.hoEl.style.transform = `translate(${(x + hs * 34).toFixed(1)}px,${(y + 1).toFixed(1)}px)`; this.hoEl.style.zIndex = Math.round(y + 1); }
     }
     say(t) { this.bub.innerHTML = '<span>' + esc(t) + '</span>'; this.bub.hidden = false; clearTimeout(this.bt); this.bt = setTimeout(() => { this.bub.hidden = true; }, 4500); }
     remove() { clearTimeout(this.bt); this.el.remove(); this.hoEl?.remove(); this.hoEl = null; this.ho = false; this.rd = null; }
@@ -7551,7 +7552,7 @@ const Visit = (() => {
     document.body.append(jb); new MutationObserver(() => { jb.hidden = pad.hidden; }).observe(pad, { attributes: true, attributeFilter: ['hidden'] }); jb.hidden = pad.hidden;
     // 방향키는 아래쪽 창(손님 채팅·주인 상태창) 바로 위에
     const pos = () => { const wr = qs('#wrap'); if (wr) document.body.style.setProperty('--vchat-min', Math.max(0, Math.round(innerHeight - wr.getBoundingClientRect().bottom)) + 'px');   // v15.16 경완: 아래 채팅창이 대화창·메뉴 자리(빈 줄)를 덮게
-      const ref = qs('.vchat-b') || qs('#dlg'), top = ref && ref.getClientRects().length ? ref.getBoundingClientRect().top : innerHeight; document.body.style.setProperty('--vpad-b', Math.max(12, Math.round(innerHeight - top + 10)) + 'px'); };
+      const ref = qs('.vchat-b') || qs('#dlg'); if (ref && !ref.getClientRects().length) return; const top = ref ? ref.getBoundingClientRect().top : innerHeight; document.body.style.setProperty('--vpad-b', Math.max(12, Math.round(innerHeight - top + 10)) + 'px'); };
     pos(); padPos = pos; setInterval(() => { if (!pad.hidden) pos(); }, 700); addEventListener('resize', pos);
     addEventListener('keydown', e => { const k = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' }[e.key]; if (k && pad && !pad.hidden && !(e.target instanceof HTMLInputElement)) { keys.add(k); e.preventDefault(); } });
     addEventListener('keyup', e => { const k = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' }[e.key]; if (k) keys.delete(k); });
@@ -7573,14 +7574,16 @@ const Visit = (() => {
       const d = Math.abs(me.tx - g.cx); if (d > g.W / 2 + 28 || me.ty < g.gy - 34 || me.ty > g.gy + 50) return;
       const X = rdSeats(r, g).map(q => g.l + g.W * q[0]), taken = new Set();
       for (const t of rdAll()) if (t.rd.i === i) taken.add(t.rd.s);
+      const monAt = new Set();   // v16.09 경완: 포켓몬이 타고 있어도 탈 수 있음 (포켓몬이 비켜 줌) — 빈 자리를 먼저
       for (const m of S.mons) { const mine = m.scp?.r === r && m.scp.ride, on = mine || ((m.lift || m.xl || 0) > 3 && Math.abs(m.y - g.gy) < 12 && m.x > g.l && m.x < g.l + g.W); if (!on) continue;
-        if (!R.two) X.forEach((_, s) => taken.add(s)); else { const mx = mine ? m.scp.tx : m.x; X.forEach((x, s) => { if (Math.abs(mx - x) < g.W * .2) taken.add(s); }); } }
-      const fr = X.map((_, s) => s).filter(s => !taken.has(s)).sort((a, b) => Math.abs(X[a] - me.tx) - Math.abs(X[b] - me.tx));
+        if (!R.two) X.forEach((_, s) => monAt.add(s)); else { const mx = mine ? m.scp.tx : m.x; X.forEach((x, s) => { if (Math.abs(mx - x) < g.W * .2) monAt.add(s); }); } }
+      const fr = X.map((_, s) => s).filter(s => !taken.has(s)).sort((a, b) => (monAt.has(a) - monAt.has(b)) || Math.abs(X[a] - me.tx) - Math.abs(X[b] - me.tx));
       if (fr.length && d < bd) { bd = d; best = { i, s: fr[0] }; } });
     return best; }
-  let rbT = 0;
+  let rbT = 0, rdHot = '';
   function rdBtn(now) { if (now - rbT < 150) return; rbT = now; const b = qs('.vride');
-    if (b) { const show = !!(me && pad && !pad.hidden && (me.rd || rdNear())); b.hidden = !show; if (show) b.querySelector('span').textContent = me.rd ? '내리기' : '타기'; }
+    if (b) { const n = me && pad && !pad.hidden && !me.rd ? rdNear() : null, show = !!(n || (me?.rd && pad && !pad.hidden)); b.hidden = !show; if (show) b.querySelector('span').textContent = me.rd ? '내리기' : '타기';
+      const k = n ? 'sc:' + n.i : ''; if (k !== rdHot) { rdHot = k; try { if (n) { markProp({ k: 'sc', i: n.i }); propHotEl.classList.add('soft'); } else { propHotEl.classList.remove('soft'); markProp(null); } } catch (e) {} } }   // v16.09 경완: 탈 소품 테두리 살짝 빛
     const hb = qs('#btnHoop'); if (hb) hb.setAttribute('aria-pressed', me?.ho ? 'true' : 'false'); }
   // 트레이너만 탄 소품 흔들기 (포켓몬이 같이 타면 포켓몬 쪽 scTick 이 흔듦) + 시소에 혼자면 가까운 포켓몬이 와서 반대쪽에
   let rdOn = new Set();
@@ -7590,7 +7593,11 @@ const Visit = (() => {
     for (const i of rdOn) if (!by.has(i)) { const r = LAYOUT.sc[i], g = r && scGeo(r); if (g?.el) { g.el.scTr = null; if (sim && !S.mons.some(m => m.scp?.r === r)) scFxOff(g); } }
     rdOn = new Set(by.keys()); if (!sim) return;
     for (const [i, L] of by) { const r = LAYOUT.sc[i], R = rdAct(r), g = R && scGeo(r); if (!g?.el) continue; const e = g.el, seated = L.filter(t => !t.jf);
-      if (!S.mons.some(m => m.scp?.r === r && m.scp.ride)) {
+      // v16.09 경완: 트레이너가 탄 자리에 포켓몬이 있으면 포켓몬이 폴짝 내려 비켜 줌
+      { const st = rdSeats(r, g); for (const t of L) { const X = g.l + g.W * (st[t.rd.s]?.[0] ?? .5); for (const m of S.mons) if (m.scp?.r === r && m.scp.ride && (!R.two || Math.abs(m.scp.tx - X) < g.W * .2)) {
+        scEnd(m); m.goal = null; m.propCd = 25; m.y = Math.max(m.y, g.gy + 10); anim(m, 'hop'); emote(m, '!', '', 1.2, 'ride-yield'); setState(m, 'idle', rnd(1.2, 2.4));
+        if (t === me) monSay(m, `${J(m, '이/가')} ${esc(R.A.n)}에서 폴짝 내려 자리를 비켜 줬다.`, true); } } }
+      if (!S.mons.some(m => m.scp?.r === r)) {
         let ang = 0;
         if (R.two) { if (seated.length >= 2) ang = Math.sin((now - (e.scTw ??= now)) / 1000 * 2.4) * .13; else { e.scTw = null; ang = seated[0] ? (rdSeats(r, g)[seated[0].rd.s][0] < .5 ? -.13 : .13) : 0; } }
         else ang = Math.sin((now - (e.scTr ??= now)) / 1000 * 3) * .08;
@@ -7610,8 +7617,8 @@ const Visit = (() => {
   function hoopTick(now) {
     for (const m of HJ) { const h = m.hj; if (!S.mons.includes(m) || m.held || !h) { HJ.delete(m); m.hj = null; m.xl = 0; continue; }
       const u = (now - h.t0) / 760; if (u < 0) continue;
-      if (u < 1) { m.x = h.x0 + (h.x1 - h.x0) * u; m.y = h.y; m.xl = Math.sin(u * Math.PI) * h.pk; m.state = 'idle'; m.t = Math.max(m.t || 0, 1); continue; }
-      m.x = h.x1; m.xl = 0; m.hj = null; HJ.delete(m); anim(m, 'hop'); emote(m, pick(['♪', '♪', '♥', '야호!']), 'note', 1.8, 'hoop-done'); setState(m, 'idle', rnd(1.5, 3));
+      if (u < 1) { m.x = h.x0 + (h.x1 - h.x0) * u; m.y = h.y0 + (h.y1 - h.y0) * u; m.xl = Math.sin(u * Math.PI) * h.pk; m.state = 'idle'; m.t = Math.max(m.t || 0, 1); continue; }
+      m.x = h.x1; m.y = h.y1; m.xl = 0; m.hj = null; HJ.delete(m); anim(m, 'hop'); emote(m, pick(['♪', '♪', '♥', '야호!']), 'note', 1.8, 'hoop-done'); setState(m, 'idle', rnd(1.5, 3));
       if (h.tr === me) monSay(m, pick([`${J(m, '이/가')} 후프링을 폴짝 뛰어넘었다!`, `${J(m, '이/가')} 후프링 사이로 쏙 통과했다!`]), true);
       if (h.tr.hs?.cur === m) { h.tr.hs.cur = null; h.tr.hs.next = now + 600; } }
     if (VISIT && G.live) return;
@@ -7619,15 +7626,16 @@ const Visit = (() => {
     for (const tr of all) { if (!tr?.ho || tr.rd || tr.jf) continue; const hs = tr.hs ||= { cur: null, next: 0, done: new Map() };
       if (hs.cur) { const m = hs.cur; if (!S.mons.includes(m) || (!m.hj && m.goal?.kind !== 'hoop' && now - hs.t0 > 400) || (!m.hj && now - hs.t0 > 9000)) { if (m.goal?.kind === 'hoop') m.goal = null; hs.cur = null; hs.next = now + 600; } continue; }
       if (now < hs.next) continue;
-      const hx = tr.hx ?? tr.x, hy = tr.hy ?? tr.y + 20, C = S.mons.filter(m => monOk(m) && T(m).mv !== 'swim' && !isFish(m.sp) && !m.scp && !m.camp && !m.follow && !m.hj && !m.propSit && (hs.done.get(m.uid) || 0) < now && Math.hypot(m.x - hx, m.y - hy) < 260 && !all.some(o => o?.hs?.cur === m))
+      const hx = tr.hx ?? tr.x + 34, hy = tr.hy ?? tr.y + 1, C = S.mons.filter(m => monOk(m) && T(m).mv !== 'swim' && !isFish(m.sp) && !m.scp && !m.camp && !m.follow && !m.hj && !m.propSit && (hs.done.get(m.uid) || 0) < now && Math.hypot(m.x - hx, m.y - hy) < 260 && !all.some(o => o?.hs?.cur === m))
         .sort((a, b) => Math.hypot(a.x - hx, a.y - hy) - Math.hypot(b.x - hx, b.y - hy)), m = C[0];
       if (!m) { hs.next = now + 1500; continue; }
       hs.done.set(m.uid, now + 14000); hs.cur = m; hs.t0 = now; emote(m, '!', '', 1, 'hoop-see');
-      const side = m.x < hx ? -1 : 1, D = 44 + (m.w || 40) * .3;
-      moveTo(m, { x: clampN(hx + side * D, XL + 20, XR - 20), y: hy + 1 }, { kind: 'hoop', go: () => hoopJump(m, tr) }, 1.3); } }
+      let side = m.y >= hy ? 1 : -1; if (hy + side * HD < MIN_Y + 4 || hy + side * HD > MAX_Y - 4) side = -side;
+      moveTo(m, { x: clampN(hx, XL + 20, XR - 20), y: hy + side * HD }, { kind: 'hoop', go: () => hoopJump(m, tr) }, 1.3); } }
   function hoopJump(m, tr) { const hs = tr.hs; if (!tr.ho || !hs || hs.cur !== m || !S.mons.includes(m)) { if (hs?.cur === m) hs.cur = null; return; }
-    const hx = tr.hx ?? tr.x, hy = tr.hy ?? tr.y + 20, side = m.x < hx ? -1 : 1, D = 44 + (m.w || 40) * .3; faceTo(m, hx); setState(m, 'idle', 3);
-    m.hj = { t0: performance.now() + 380, x0: m.x, x1: clampN(hx - side * D, XL + 20, XR - 20), y: hy + 1, pk: clampN(38 - (m.h || 40) * .45, 10, 30), tr }; HJ.add(m); }
+    const hx = tr.hx ?? tr.x + 34, hy = tr.hy ?? tr.y + 1, side = m.y >= hy ? 1 : -1; setState(m, 'idle', 3);
+    m.hj = { t0: performance.now() + 380, x0: m.x, x1: clampN(hx, XL + 20, XR - 20), y0: m.y, y1: clampN(hy - side * HD, MIN_Y, MAX_Y), pk: clampN(34 - (m.h || 40) * .5, 6, 26), tr }; HJ.add(m); }   // 링 앞에서 뒤로(또는 뒤에서 앞으로), 링 가운데 높이로 폴짝
+  const HD = 26;
   { const hb = qs('#btnHoop'); if (hb) hb.addEventListener('click', e => { e.stopPropagation(); if (!me) return; sfx('tap'); try { haptic(0); } catch (er) {} if (me.rd) { me.rideOff(); } me.hold(!me.ho); rbT = 0; sendTr(); }); }
   function stepMe(dt) {
     if (me.rd) { if (!keys.size) return; me.rideOff(); sendTr(); }   // v16.04: 방향키를 누르면 소품에서 내림
