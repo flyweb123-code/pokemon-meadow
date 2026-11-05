@@ -2927,7 +2927,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .mec .bd-pic{border:2px solid var(--k3);border-radius:10px;background:radial-gradient(circle at 50% 62%,#fff 0 38%,var(--k1) 100%)}
 #gym .mec-wrap .win[data-g="3"] .mec .bd-pic,#gym .mec-wrap .win[data-g="4"] .mec .bd-pic{box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 3px var(--k2)}
 #gym .mec-wrap .win[data-g="5"] .mec .bd-pic{border-color:#b07800;box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 3px #f0b830,0 0 10px rgba(255,200,60,.5)}
-#gym .mec-wrap .win[data-g="6"] .mec .bd-pic{border-color:#7a5ae0;box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 3px #c8b0ff,0 0 12px rgba(170,130,255,.55)}
+#gym .mec-wrap .win[data-g="6"] .mec .bd-pic{border:3px solid transparent;background:radial-gradient(circle at 50% 58%,#fff 0 34%,rgba(255,255,255,0) 78%) padding-box,linear-gradient(160deg,#ffe4ef,#fff4d6 30%,#e2f7ea 55%,#e2efff 75%,#ece4ff) padding-box,conic-gradient(from 210deg,#ff6fa8,#ffcf3a,#4fd88a,#4aa8ff,#a070ff,#ff6fa8) border-box;box-shadow:inset 0 0 0 2px rgba(255,255,255,.95),0 0 12px rgba(255,190,120,.4),0 0 4px rgba(160,120,255,.45)}   /* v6.1 경완: 전설 그림 칸도 무지개 테 (보라 칸이 안 어울림) */
 #gym .mec h4{margin:0 0 2px}
 #gym .mec-wl{font-size:13px;color:var(--dim)}
 #gym .mec-wl b{color:var(--k3);font-size:15px}
