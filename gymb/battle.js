@@ -21,13 +21,14 @@ const J = (w, a, b) => w + (jong(w) ? a : b);
 const eun = w => J(w, '은', '는'), iga = w => J(w, '이', '가'), eul = w => J(w, '을', '를'), wa = w => J(w, '과', '와');
 
 // ---------- 데이터 (기술·특성·성격·배울 기술: gym/data.json, tools/gym/mkdata.js) ----------
+let FA = {};   /* v16.93 경완: 650~1025 앞모습 PixelLab 움직이는 그림 (gym/img/pk/fa, 칸 수 또는 [칸 수, 칸 크기]) */
 let D = null, AB_D = {}, MVI = null, FEM = new Set(), ANIM = {}, FMA = {}, MFX = {}, dataP = null, RFA = {};   /* RFA: 지역 폼 쇼다운 id → 배틀 그림 (gym/img/pk/rf, v15.93) */
 const getJ = u => fetch(`${u}?v=${VER}`).then(r => r.ok ? r.json() : null).catch(() => null);
 function loadData() {
   return dataP || (dataP = Promise.all([
     fetch(`gym/data.json?v=${VER}`).then(r => { if (!r.ok) throw new Error('data'); return r.json(); }),
-    getJ(`${IMG}pk/fem.json`), getJ(`${IMG}pk/anim.json`), getJ('gymb/mvfx.json'), getJ('gym/desc.json'), getJ(`${IMG}pk/fm/fm.json`), getJ(`${IMG}pk/rf/rf.json`)
-  ]).then(([d, fem, an, fx, ds, fm, rf]) => { FMA = fm || {}; RFA = rf || {}; for (const [k, v] of Object.entries(RFA)) FMA[k] = [v[2], v[3], 0, v[4] ? [[1, 15, 0, 0]] : [], 0, []]; D = d; AB_D = ds?.ab || {}; MVI = new Map(d.mv.map((m, i) => [m[0], i])); FEM = new Set(fem || []); ANIM = an || {}; MFX = fx || {}; mfxAdd(); }).catch(e => { dataP = null; throw e; }));
+    getJ(`${IMG}pk/fem.json`), getJ(`${IMG}pk/anim.json`), getJ('gymb/mvfx.json'), getJ('gym/desc.json'), getJ(`${IMG}pk/fm/fm.json`), getJ(`${IMG}pk/rf/rf.json`), getJ(`${IMG}pk/fa/fa.json`)
+  ]).then(([d, fem, an, fx, ds, fm, rf, fa]) => { FA = fa || {}; FMA = fm || {}; RFA = rf || {}; for (const [k, v] of Object.entries(RFA)) FMA[k] = [v[2], v[3], 0, v[4] ? [[1, 15, 0, 0]] : [], 0, []]; D = d; AB_D = ds?.ab || {}; MVI = new Map(d.mv.map((m, i) => [m[0], i])); FEM = new Set(fem || []); ANIM = an || {}; MFX = fx || {}; mfxAdd(); }).catch(e => { dataP = null; throw e; }));
 }
 let simP = null;
 const loadSim = () => window.PSim ? Promise.resolve() : simP || (simP = new Promise((ok, no) => { const s = document.createElement('script'); s.src = `gym/psim.js?v=${VER}`; s.onload = () => window.PSim ? ok() : no(new Error('sim')); s.onerror = () => { simP = null; no(new Error('sim')); }; document.head.appendChild(s); }));
@@ -341,7 +342,7 @@ function setSrc(img, u) {
 function showMon(side, A, on = true) {
   const m = monEl(side), img = m.querySelector('img');
   img.style.width = '';
-  if (A && A.gif) { img.onerror = null; setSrc(img, A.gif); img.alt = ''; m.classList.remove('pl2'); m.classList.add('gf'); img.style.transform = ''; m.style.left = m.style.top = '';
+  if (A && A.gif) { m._fa = null; m.classList.remove('fa'); img.style.height = ''; img.onerror = null; setSrc(img, A.gif); img.alt = ''; m.classList.remove('pl2'); m.classList.add('gf'); img.style.transform = ''; m.style.left = m.style.top = '';
     // 블랙·화이트 뒷모습 gif 는 앞모습과 거의 같은 크기라 모두 같은 배율로 키운다: 종끼리 크기 비율은 그대로, 플래티나 뒷모습(2장 그림)과 비슷한 크기 (경완 2026-10-31 '밀탱크 뒷모습 너무 작아')
     const k = side === 'p' ? 1.4 : 1, fw = () => { if (img.naturalWidth) img.style.width = img.naturalWidth * k + 'px'; };
     if (k !== 1) { if (img.complete && img.naturalWidth && img.style.visibility !== 'hidden') fw(); else img.addEventListener('load', fw, { once: true }); }
@@ -350,7 +351,12 @@ function showMon(side, A, on = true) {
   else if (A) {
     m._gif = null; m.classList.remove('gf'); const a = anOf(A), sheet = !!a, fm = FMA[A.fm] ? A.fm : ''; img.onerror = () => { img.onerror = null; setSrc(img, pkSrc(A.sp, { b: side === 'p', s: A.shiny })); }; setSrc(img, fm ? `${IMG}pk/${fmDir(fm)}/${fm}${side === 'p' ? 'b' : ''}${A.shiny ? 's' : ''}.png?v=${VER}` : pkSrc(A.sp, { b: side === 'p', s: A.shiny, f: A.g === 'F' })); img.alt = '';
     m.classList.toggle('pl2', sheet); img.style.transform = '';
-    if (sheet) { m.style.left = (side === 'e' ? 136 : 40) + 'px'; m.style.top = (side === 'e' ? E_Y + a[0] : P_Y + a[1]) + 'px'; }
+    const fa = side === 'e' && !fm && !A.shiny && !rfKey(A.sp) && FA[A.sp], clip = m.querySelector('.clip');
+    m._fa = fa ? (Array.isArray(fa) ? { n: fa[0], w: fa[1] } : { n: fa, w: 80 }) : null; m.classList.toggle('fa', !!fa);
+    if (clip) clip.style.width = clip.style.height = fa && m._fa.w !== 80 ? m._fa.w + 'px' : '';
+    if (fa) { img.onerror = () => { img.onerror = null; m._fa = null; m.classList.remove('fa'); img.style.width = img.style.height = ''; setSrc(img, pkSrc(A.sp, {})); }; setSrc(img, `${IMG}pk/fa/${A.sp}.png?v=${VER}`); img.style.width = m._fa.n * m._fa.w + 'px'; img.style.height = m._fa.w + 'px'; m.classList.add('pl2'); }
+    else if (sheet) img.style.width = img.style.height = '';
+    if (sheet || fa) { m.style.left = (side === 'e' ? 136 : 40) + 'px'; m.style.top = (side === 'e' ? E_Y + a[0] : P_Y + a[1]) + 'px'; }
     else { m.style.left = m.style.top = ''; }
   }
   // 한 장짜리 그림(650~ 뒷모습 등)은 bw: 고르는 동안 스프라이트는 가만히, 정보 박스만 까딱 (경완 2026-10-28)
@@ -359,7 +365,13 @@ function showMon(side, A, on = true) {
 }
 // 본가 움직임: [장, 지연(1/30초), x, y], 장이 -2 보다 작으면 그 칸으로 지연 횟수만큼 되돌아가기
 function playAnim(side, A) {
-  const a = anOf(A), m = monEl(side); if (!a || A.gif) return;
+  const m = monEl(side);
+  if (m._fa && !A.gif) {   // PixelLab 움직이는 그림: 왼쪽부터 칸마다 바꾸며 계속 (칸은 이미 왕복 순서)
+    const img = m.querySelector('img'), tok = (m._tok = (m._tok || 0) + 1), { n, w } = m._fa; if (n < 2) return;
+    (async () => { for (let f = 0; m._tok === tok && B && !A.fnt && m._fa; f = (f + 1) % n) { img.style.transform = `translateX(${-w * f}px)`; await wait(110); } })();
+    return;
+  }
+  const a = anOf(A); if (!a || A.gif) return;
   const fr = side === 'e' ? a[3] : a[5], st = side === 'e' ? a[2] : a[4], img = m.querySelector('img'), tok = (m._tok = (m._tok || 0) + 1);
   const set = (f, x, y) => { img.style.transform = `translate(${-80 * f + (side === 'p' ? -x : x)}px,${y}px)`; };
   (async () => {
