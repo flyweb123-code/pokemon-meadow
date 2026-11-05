@@ -580,7 +580,7 @@ function aiChoice(btl, diff) {
 // 관장·사천왕·챔피언·라이벌(music 이 gymBattle·champ·rival)은 어두운 화면에 트레이너 얼굴 띠가 미끄러져 들어온다.
 // 끝나면 배틀 화면을 그 밑에 띄우고 돌려준 함수로 전환 화면을 걷는다.
 async function encounter(opts) {
-  const host = el.parentElement || document.body, w = document.createElement('div'), big = ['gymBattle', 'champ', 'rival'].includes(opts.music);
+  const host = el.parentElement || document.body, w = document.createElement('div'), big = ['gymBattle', 'champ', 'rival', 'tenno'].includes(opts.music);
   w.className = 'bt-enc'; host.append(w);
   for (let i = 0; i < 2; i++) { w.classList.add('flash'); await wait(90); w.classList.remove('flash'); await wait(120); }
   if (opts.exam) {   // 승급 심사 (경완 2026-10-31 '배틀 시작할 때 연출도 웅장하게'): 암전 → 금빛 띠 → 빛줄기 속 배지 → '승급 심사' → 심사관 띠
@@ -634,7 +634,7 @@ async function run(opts) {
   B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null }, li: 0, practice: !!opts.practice, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {} };
   frHooks(btl); B.picks = [];
   const meF = GA.trOf().sex === 'f';
-  const music = opts.music || 'train'; M('prep', music === 'train' ? 'winTrain' : 'winGym');
+  const music = opts.music || 'train'; const winM = music === 'train' ? 'winTrain' : music === 'champ' ? 'winChamp' : music === 'tenno' ? 'winTenno' : 'winGym'; M('prep', winM);   // v16.8x: 사천왕·챔피언은 그 승리 곡
   // 곡이 준비된 뒤에 연출 시작 (경완 2026-10-28 '시작 연출이랑 BGM 타이밍이 안 맞음'): 처음 만드는 곡이면 기다림, 최대 4초
   await Promise.race([(async () => { try { await window.GymBGM?.play(music, { fade: .05 }); } catch (e) {} })(), wait(4000)]);
   const encDone = await encounter(opts);
@@ -662,7 +662,7 @@ async function run(opts) {
     if (cut) await msgTap('배틀이 중간에 멈췄다!');
     else if (out !== 'quit') {
       $b('.bt-tr.e').classList.add('back');
-      if (won) { M('play', music === 'train' ? 'winTrain' : 'winGym', { fade: .05 }); await msgTap(`${wa(foeNm)}의 승부에서 이겼다!`); }
+      if (won) { M('play', winM, { fade: .05 }); await msgTap(`${wa(foeNm)}의 승부에서 이겼다!`); }
       else await msgTap('승부에서 졌다…');
       const ln = opts.foe.say?.[won ? 'win' : 'lose']; if (ln && B) await msgTap(ln);   // 상대 한마디 (본가처럼 다시 나와서)
       // 보상 (경완 2026-10-28): 한마디 뒤 골드·평판

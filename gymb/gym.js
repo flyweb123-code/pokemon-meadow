@@ -988,8 +988,8 @@ async function challenge(picked) {
   try {
     await loadJs('gymb/battle.js', 'GymBattle'); await GB().loadData();
     // 문 소리 → 문 앞 카펫에 나타나 잠깐 섰다가 → 관장 앞까지 걸어온다 (경완 2026-10-28 '소리랑 타이밍 맞춰서, 카펫 위에 잠깐 멈췄다가')
-    const D = dzOf(g.d), bm = c.music || (c.named && NAMED.find(n => n.id === c.named)?.music) || (c.named ? 'gymBattle' : 'train');
-    try { window.GymBGM?.prep(bm); if (c.named) window.GymBGM?.play(bm === 'champ' ? 'eyeChamp' : 'eyeElite', { fade: .1 }); } catch (e) {}   // 이름 있는 트레이너는 들어올 때부터 등장 곡 (배틀 곡과 다름, 경완 2026-10-28)
+    const D = dzOf(g.d), NM = c.named && NAMED.find(n => n.id === c.named), bm = (!c.boss && NM?.music) || c.music || (c.named ? 'gymBattle' : 'train');   /* v16.8x 경완: 이름 있는 트레이너는 지금 named.json 의 곡 (예전에 줄 선 도전자도) */
+    try { window.GymBGM?.prep(bm); if (c.named) window.GymBGM?.play((!c.boss && NM?.eye) || (bm === 'champ' ? 'eyeChamp' : bm === 'tenno' ? 'eyeTenno' : 'eyeElite'), { fade: .1 }); } catch (e) {}   // 이름 있는 트레이너는 들어올 때부터 등장 곡 (배틀 곡과 다름, 경완 2026-10-28)
     doorSe(); await wait(180);
     const e = ent({ ow: c.ow, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(c.ow) });
     dlg(`${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 들어온다!`); await wait(650);
