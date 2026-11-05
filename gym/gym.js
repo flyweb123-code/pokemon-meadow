@@ -767,10 +767,10 @@ function staffFight(c) {
   const g = st(), lost = [];
   for (const s of g.sf) {
     if (s.rest || !inGym(s) || (s.trait === 'lazy' && Math.random() < .2)) continue;   // 체육관에 서 있는 트레이너만 도전자를 상대한다 (훈련장 코치를 겸해도 된다)
-    const z = (teamLv(s.team) - teamLv(c.team)) / 3 + (s.team.length - c.team.length) * .35 + (s.trait === 'guts' ? .6 : 0) + .3;
+    const z = (Math.min(teamLv(s.team), myAvg() + 3) - teamLv(c.team)) / 8 + (s.team.length - c.team.length) * .2 + (s.trait === 'guts' ? .4 : 0) - .2;   /* v15.79 경완 '13전 완승': 쉬운 도전자 상대 약 65%, 어려운 도전자 약 40% (예전 /3·+.3 은 90% 넘음). 트레이너 레벨은 내 평균 +3 까지만 친다 */
     if (Math.random() < 1 / (1 + Math.exp(-z))) {
       s.w = (s.w || 0) + 1; s.xp = (s.xp || 0) + 1;
-      if (s.xp >= (s.trait === 'grow' ? 2 : 3)) { s.xp = 0; s.team.forEach(m => { m[1] = Math.min(100, m[1] + 1); }); }
+      if (s.xp >= (s.trait === 'grow' ? 2 : 3)) { s.xp = 0; const cap = Math.min(100, myAvg() + 3); s.team.forEach(m => { m[1] = Math.max(m[1], Math.min(cap, m[1] + 1)); }); }
       return { s, lost };
     }
     s.l = (s.l || 0) + 1; lost.push(s);
