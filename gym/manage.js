@@ -514,12 +514,12 @@ const SF_IC = { mail: '<svg viewBox="0 0 16 16" shape-rendering="crispEdges" ari
 /* v16.40 경완 '오늘 630G인데 이번 주 90G?': 이번 주(s.eg)는 월급날에 0으로 돌아가서 오늘보다 작을 수 있었다 → 둘 다 일지(g.days)에서 오늘 / 최근 7일(오늘 포함)로 */
 const sfEarn = x => { const g = st(), nm = `${x.cls} ${x.nm}`, t0 = K.dayStart(Date.now()); let d1 = 0, d7 = 0; try { K.dayRec(); } catch (e) {} for (const [k, d] of Object.entries(g.days || {})) { const v = d?.sf?.[nm]?.g || 0; if (!v) continue; const kk = +k; if (kk === t0) d1 += v; if (kk > t0 - 7 * K.DAY) d7 += v; } return [d1, d7]; };
 const sfFace = x => `<div class="sf-face"><i class="sfc-base"></i><img alt="" src="${K.trSrc(x.tr)}"></div>`;
-const sfEmpty = (ic, t, d) => `<div class="sf-void"><span class="sf-void-ic">${SF_IC[ic]}</span><b>${t}</b><p>${d}</p></div>`;
+const sfEmpty = (ic, t, d) => `<div class="sf-void">${ic ? `<span class="sf-void-ic">${SF_IC[ic]}</span>` : ''}<b>${t}</b><p>${d}</p></div>`;
 function drawStaff() {
   const g = st(), now = Date.now(), max = K.staffMax();
   const C = g.cands || (g.cands = []); if (C.length && !g.candSeen && sfT === 'cand') { g.candSeen = 1; K.setAt(); K.save(); K.menuDot(); }   // 지원서 탭을 보면 빨간 점이 꺼진다 (경완 2026-10-29)
   const c = C.length, yN = g.sf.filter(s => s.yard).length;
-  const tabs = `<div class="sp-tabs" role="tablist"><button role="tab" data-sft="cand" aria-selected="${sfT === 'cand'}">지원서${c && !g.candSeen ? ' <i class="tdot"></i>' : ''}</button><button role="tab" data-sft="sf" aria-selected="${sfT === 'sf'}">고용 관리</button></div>`;
+  const tabs = `<div class="sp-tabs" role="tablist"><button role="tab" data-sft="sf" aria-selected="${sfT === 'sf'}">고용 관리</button><button role="tab" data-sft="cand" aria-selected="${sfT === 'cand'}">지원서${c && !g.candSeen ? ' <i class="tdot"></i>' : ''}</button></div>`;
   // 지원서 (경완 2026-10-28): 스프라이트가 잘 보이는 세로 카드, 여러 장이면 옆으로 넘긴다. 면접 내용도 카드 안에, 바로 고용하기
   const cand = c ? `<div class="cv-deck">${C.map((x, i) => `<article class="cv-card" data-i="${i}"><header><b>트레이너 지원서</b><span class="cv-tm"><em>남은 시간</em><b class="cv-left" data-exp="${x.exp}">${cvLeft(x.exp - now)}</b></span></header>
       <div class="cv-photo"><img alt="" src="${K.trSrc(x.tr)}"><div class="cv-nm"><small>${esc(x.cls)}</small><b>${esc(x.nm)}</b></div></div>
@@ -527,7 +527,7 @@ function drawStaff() {
       <dl class="cv-dl"><dt>특성</dt><dd>${trtBox(x.trait, true, true)}</dd><dt>포켓몬</dt><dd>${teamIc(x.team, x.id)}</dd><dt>평균 레벨</dt><dd>Lv.${Math.round(K.teamLv(x.team))}</dd><dt>희망 월급</dt><dd>7일에 <b>${x.wage}G</b></dd></dl>
       <div class="cv-btns"><button class="gy-key" data-no="${i}">돌려보내기</button><button class="gy-key main" data-hire="${i}">고용하기</button></div></article>`).join('')}</div>
       ${C.length > 1 ? `<div class="cv-dots">${C.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : ''}`
-      : sfEmpty('mail', '지금은 지원서가 없어요', '새 지원자가 오면<br>트레이너 단추에 빨간 점이 떠요.');
+      : sfEmpty('', '지금은 지원서가 없어요', '새 지원자가 오면<br>트레이너 단추에 빨간 점이 떠요.');
   const gL = K.sfList ? K.sfList() : [], gNo = x => gL.findIndex(z => z[0] === x);
    /* v16.36 경완 '번 돈이 일지랑 안 맞음': 일지는 하루, 카드는 월급날부터라 달랐음 → 카드에 '오늘'(일지와 같은 값)과 '이번 주'를 따로 */
   const rib = x => K.inGym(x) ? `<i class="sfc-rib g">체육관${gNo(x) >= 0 ? ` ${gNo(x) + 1}번` : ''}</i>` : x.yard ? '<i class="sfc-rib y">훈련장 코치</i>' : '<i class="sfc-rib">대기 중</i>';
