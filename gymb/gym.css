@@ -2943,3 +2943,11 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .tl-s.mv{color:#2a6a30}#gym .tl-s.mv::before{background:#2a8a3e}#gym .tl-s .mv-chip{vertical-align:1px;margin:0 1px}
 #gym .tl-d i{font-style:normal}
 #gym .tp2-hd h4{min-height:28px;display:flex;align-items:center}
+/* v16.70 경완: 고용 트레이너 라인업 포켓몬 뒤 박스 없앰, 훈련 일지 하루 한 장 (◀ ▶) */
+#gym .sd2-team>span{background:none;box-shadow:none}
+#gym .tl-body{display:flex;flex-direction:column;min-height:0;flex:1}
+#gym .tl-pop .tl-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 0 8px;color:#20202c}
+#gym .tl-pop .tl-nav b{font-size:16px}
+#gym .tl-pg{margin:6px 0 0!important;text-align:center;font-size:11px;color:var(--dim)}
+#gym .tl-list li .tl-d small{font-size:12px}
+#gym .tl-s.cm::before{background:#d0602a}
