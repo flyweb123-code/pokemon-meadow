@@ -2677,5 +2677,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-jnlw .jn-g .jn-gc,#gym .gy-jnlw .jn-gc{color:#a86400}#gym .gy-jnlw .jn-m .jn-gc{color:#c03030}#gym .gy-jnlw .jn-g{color:#2a8a3e}
 #gym .aw-pop .mi-box{display:flex;flex-direction:column;gap:6px;padding:10px 12px;background:#fff;box-shadow:inset 0 0 0 2px #d8d8e4;text-align:left}#gym .aw-pop .mi-box .mi-h{margin:0}#gym .aw-pop .mi-box .mi-d{margin:0}
 
-/* v16.18 경완: 트레이너·훈련장 알림창은 업데이트 알림창처럼 커지며 뜬다 (체육관 창 모션 끔보다 우선) */
+/* v16.19 경완: 트레이너·훈련장 알림창은 업데이트 알림창처럼 커지며 뜬다 (체육관 창 모션 끔보다 우선) */
 #gym .gy-pop.aw-wrap>.win{animation:awNpop .32s steps(4,end)!important}

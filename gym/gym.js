@@ -2176,7 +2176,7 @@ const awR = n => `${n < 0 ? '' : '+'}${Math.round(n * 10) / 10}`;
 /* 트레이너 알림창: 위 띠(트레이너들이 줄지어 섬) → 합계 큰 숫자 → 트레이너별 줄 */
 function awSfPop(SF) {
   const tg = SF.reduce((a, [, v]) => a + v[1], 0), tr = SF.reduce((a, [, v]) => a + v[2], 0), tb = SF.reduce((a, [, v]) => a + v[0], 0);
-  try { GA.sfx('newdex'); } catch (e) { try { window.GymBGM?.se?.('DP_PINPON'); } catch (e2) {} } GA.haptic?.(1);   /* v16.18 경완: 업데이트 알림창처럼 뜨는 모션 + 소리 */
+  try { GA.sfx('newdex'); } catch (e) { try { window.GymBGM?.se?.('DP_PINPON'); } catch (e2) {} } GA.haptic?.(1);   /* v16.19 경완: 업데이트 알림창처럼 뜨는 모션 + 소리 */
   return new Promise(ok => pop(`<div class="aw-pop aw-sf">
     <div class="aw-hd"><small>내가 없는 동안</small><b>트레이너들이 체육관을 지켰어요!</b><div class="aw-crew">${SF.slice(0, 5).map(([s]) => `<img alt="" src="${trSrc(s.tr)}">`).join('')}</div></div>
     <div class="aw-tot"><div><span>막은 도전자</span><b>${tb}<small>명</small></b></div><div><span>번 골드</span><b class="aw-g"><i class="coin"></i>+${tg.toLocaleString()}</b></div><div><span>평판</span><b class="aw-r">${awR(tr)}</b></div></div>
