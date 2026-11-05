@@ -3819,6 +3819,7 @@ let PET_N = 12, PET_LEN = 900, PET_DAY = 5, WASH_DAY = 1, JOY_HOLD = 5, PET_FR =
    // 게이지 바: 보통 빠르기로 약 1000px 문지르면 가득 (v4.10 경완: 1.7배 빠르게). 빠르게 문지를수록 더 빨리 차고, 멈추면 줄어든다. PET_N 은 반응(하트·진동) 구간 수
 let petM = null;
 function petStart(m, wash = false) {
+  try { loadMx(m.sk || m.form); } catch (e) {}   /* v16.64: 쓰다듬은 뒤 포즈 그림 미리 */
   select(null); if (!S.mons.includes(m) || m.held || m.evolving) return;
   if (wash && (m.clean ?? 100) >= 95) { emote(m, '아직 안 씻어도 돼', '', 1.8, 'wash-no'); log(`${J(m,'은/는')} 아직 깨끗해서 빗질은 괜찮다고 한다.`, [m]); return; }
   userAct(m, 60);
@@ -3867,6 +3868,7 @@ function petDone() {
   /* 기뻐서 왼쪽·오른쪽을 번갈아 보며 춤춘다 (그동안은 제자리) */
   petM.done = true; $('#petBar').hidden = true; const f0 = m.face || 1;
   if (haloOf(m)) { emote(m, '♪', 'heart', 1, 'pet-done'); setTimeout(() => { petEnd(); save(); }, 1000); return; }   /* 후광 포켓몬은 춤 없이 제자리에서 바로 점멸 */
+  { const kP = m.sk || m.form, Pa = isPmd(m.form) && SPRITES[kP]?.a?.Pose; if (Pa) { m.one = null; m.face = f0; emote(m, '♪', 'heart', 1.2, 'pet-done'); const ms = Pa[6].reduce((s, x) => s + x, 0) / 60 * 1000; setTimeout(() => { m.face = f0; petEnd(); save(); }, Math.max(900, ms + 150)); return; } }   /* v16.64 경완: 쓰다듬은 뒤엔 빙글·깡총 대신 포즈 (포즈 그림이 있는 종) */
   const NB = 5; for (let k = 0; k < NB; k++) setTimeout(() => { if (!S.mons.includes(m)) return; m.face = k % 2 ? f0 : -f0; if (k % 2 === 0) anim(m, 'phop'); if (k === 1) emote(m, '♪', 'heart', 1, 'pet-done'); }, k * 190);
   setTimeout(() => { m.face = f0; petEnd(); save(); }, NB * 190 + 50);
 }
@@ -5026,7 +5028,7 @@ const TPL = {
     tick(sc, a, b) {
       const ph = sc.mt % 1.8, off = ph < .5 ? -ph / .5 * 20 : ph < .75 ? -20 + (ph - .5) / .25 * 48 : Math.max(0, 28 - (ph - .75) * 50);
       place(a, sc.c.x - 60 + off, sc.c.y); place(b, sc.c.x + 60 - off, sc.c.y); a.face = -1; b.face = 1;
-      if (ph >= .75 && !sc.hit) { sc.hit = 1; strike(a); strike(b); particle(sc.c.x, sc.c.y - Math.max(a.h, b.h) * .6, 'hit', sc.p.t || '쿵!'); ring(sc.c.x, sc.c.y - 10); }
+      if (ph >= .75 && !sc.hit) { sc.hit = 1; strike(a); strike(b); setTimeout(() => { const q = Math.random() < .5 ? a : b; if (q.partner && Math.random() < .6) playX(q, 'Pain'); }, 650); particle(sc.c.x, sc.c.y - Math.max(a.h, b.h) * .6, 'hit', sc.p.t || '쿵!'); ring(sc.c.x, sc.c.y - 10); }
       if (ph < .75) sc.hit = 0;
     } },
   // a sprinkles something soothing over b
@@ -5131,7 +5133,7 @@ function tickInteract(m, dt) {
   if (!mot && m.beat <= 0) {
     m.beat = rnd(.6, 1.2);
     if (m.kind === 'play') { anim(m, 'hop'); if (Math.random() < .5) particle(m.x, m.y - m.h, 'heart', '♥'); m.x += rnd(-8, 8); m.face = o.x > m.x ? -1 : 1; }
-    if (m.kind === 'fight') { if (Math.random() < .5) strike(m); else hurt(m); particle((m.x + o.x) / 2 + rnd(-10, 10), (m.y + o.y) / 2 - 30, T(m).fire ? 'flame' : 'spark', T(m).fire ? '✹' : '✦'); }
+    if (m.kind === 'fight') { if (Math.random() < .5) strike(m); else if (!(Math.random() < .45 && playX(m, 'Pain'))) hurt(m);   /* v16.64 경완: 붙을 때 중간중간 아파함 */ particle((m.x + o.x) / 2 + rnd(-10, 10), (m.y + o.y) / 2 - 30, T(m).fire ? 'flame' : 'spark', T(m).fire ? '✹' : '✦'); }
     if (m.kind === 'show') { if (Math.random() < .6) { if (Math.random() < .5) anim(m, 'hop'); else strike(m); } }
     if (m.kind === 'care' && Math.random() < .5) particle(m.x + rnd(-10, 10), m.y - m.h * .8, 'heart', '♥');
     if (m.kind === 'chat' && Math.random() < .3) emote(m, pick(['…', '♪', '♥']), '', 1.4, 'chat');
@@ -5479,17 +5481,17 @@ function playX(m, names, hold = false) { if (!m?.spr || !isPmd(m.form)) return f
 const EMO_N = ['Normal', 'Happy', 'Joyous', 'Inspired', 'Surprised', 'Determined', 'Angry', 'Shouting', 'Sad', 'Crying', 'Teary-Eyed', 'Worried', 'Pain', 'Dizzy', 'Sigh', 'Stunned'];
 const EMO_ALT = { Joyous: ['Happy'], Inspired: ['Joyous', 'Happy'], Shouting: ['Angry', 'Determined'], Crying: ['Teary-Eyed', 'Sad'], 'Teary-Eyed': ['Sad'], Stunned: ['Surprised'], Dizzy: ['Pain', 'Worried'], Sigh: ['Sad', 'Worried'], Pain: ['Sad'], Worried: ['Sad'], Determined: ['Angry'] };
 const EMO_SC = {
-  'berry-see': ['Surprised'], 'tree-see': ['Surprised'], hold: ['Surprised', 'Cringe'], 'bush-out': ['Surprised', 'Pose'], 'rock-pose': ['Determined', ['Pose', 'Appeal']], 'dig-near': ['Surprised', 'Cringe'], roar: ['Surprised', 'Cringe'],
-  'wake-noise': ['Surprised', 'Wake'], 'fight-chase': ['Angry'], 'fight-hit': ['Pain', 'Pain'], 'ghost-scared': ['Stunned', ['Cringe', 'TumbleBack']], 'fire-back': ['Worried', ['TumbleBack', 'Cringe']], 'puddle-fire': ['Pain', 'Cringe'],
-  'self-shock': ['Dizzy', ['Shock', 'Pain', 'Cringe']], 'move-shock': ['Surprised', 'Cringe'], 'sp-startle': ['Surprised', 'Cringe'], 'karp-land': ['Worried'], 'late-berry': ['Sad'], 'pet-start': ['Surprised', 'LookUp'],
+  'berry-see': ['Surprised'], 'tree-see': ['Surprised'], hold: ['Surprised'], 'bush-out': ['Surprised', 'Pose'], 'rock-pose': ['Determined', ['Pose', 'Appeal']], 'dig-near': ['Surprised'], roar: ['Surprised'],
+  'wake-noise': ['Surprised', 'Wake'], 'fight-chase': ['Angry'], 'fight-hit': ['Pain', 'Pain'], 'ghost-scared': ['Stunned', 'TumbleBack'], 'fire-back': ['Worried', 'TumbleBack'], 'puddle-fire': ['Pain'],
+  'self-shock': ['Dizzy', ['Shock', 'Pain']], 'move-shock': ['Surprised'], 'sp-startle': ['Surprised'], 'karp-land': ['Worried'], 'late-berry': ['Sad'], 'pet-start': ['Surprised', 'LookUp'],
   'no-answer': ['Worried', 'LookUp'], 'fight-scare': ['Determined', ['Appeal', 'Pose']], headache: ['Pain', 'Pain'], 'sp-curious': ['Surprised', 'LookUp'], 'wash-start': ['Worried', 'LookUp'], 'sp-late': ['Stunned'],
   'idle-alone': ['Normal', ['LookUp', 'DeepBreath', 'Sit']], 'pet-quit': ['Sad'], 'tree-empty': ['Sad', 'LookUp'], 'tree-shake': ['Determined'], 'ash-sniff': ['Sad'], 'heavy-flower': ['Worried'], 'rock-lean': ['Sigh'], 'chase-lost': ['Sigh', 'LookUp'],
-  'meet-fail': ['Sad'], 'play-lose': ['Teary-Eyed', ['Trip', 'TumbleBack', 'Pain']], 'move-calm': ['Determined', 'DeepBreath'], 'sp-ponder': ['Worried', 'LookUp'], 'pet-done': ['Joyous', ['Twirl', 'Rotate', 'Pose']], 'pet-ing': ['Happy', 'Nod'],
+  'meet-fail': ['Sad'], 'play-lose': ['Teary-Eyed', ['Trip', 'TumbleBack', 'Pain']], 'move-calm': ['Determined', 'DeepBreath'], 'sp-ponder': ['Worried', 'LookUp'], 'pet-done': ['Joyous', 'Pose'], 'pet-ing': ['Happy', 'Nod'],
   'prop-play': ['Happy', ['Twirl', 'Rotate']], 'prop-watch': ['Surprised', 'LookUp'], 'tree-peck': ['Happy'], 'flower-sniff': ['Happy', 'Nod'], 'fire-warm': ['Happy'], prank: ['Joyous', ['Appeal', 'Twirl']], 'fight-win': ['Joyous', ['Pose', 'Appeal', 'Twirl']],
   'ghost-scare': ['Joyous', ['Appeal', 'Twirl']], chat: ['Happy', 'Nod'], evolve: ['Inspired', ['Pose', 'Appeal']], 'sp-end': ['Happy', 'Nod'], sing: ['Joyous', ['Sing', 'Sound', 'DeepBreath']], 'berry-given': ['Joyous', 'Nod'],
   'friend-meet': ['Happy', ['Twirl', 'Nod']], care: ['Happy', 'Nod'], 'flower-happy': ['Joyous', ['Twirl', 'Rotate']], 'sp-love': ['Joyous', ['Twirl', 'Nod']], 'shy-meet': ['Happy', 'Nod'], eat: ['Happy'], 'full-refuse': ['Sigh', 'Shake'],
-  'full-eat': ['Happy'], hungry: ['Sad'], 'karp-gasp': ['Pain'], taunt: ['Angry', ['Appeal', 'Rumble', 'Pose']], 'move-annoy': ['Angry', 'Cringe'], puff: ['Angry', 'Swell'], sun: ['Happy', ['LookUp', 'DeepBreath']], moon: ['Inspired', 'LookUp'],
-  'sleep-move': ['Sigh'], snore: ['Normal'], 'drop-target': ['Surprised', 'Cringe'], 'wash-ing': ['Happy'], 'wash-no': ['Sigh', 'Shake'], shout: ['Shouting'], 'hoop-big': ['Worried', 'Cringe'], 'hoop-no': ['Worried'], 'follow-end': ['Happy', 'Nod'] };
+  'full-eat': ['Happy'], hungry: ['Sad'], 'karp-gasp': ['Pain'], taunt: ['Angry', ['Appeal', 'Rumble', 'Pose']], 'move-annoy': ['Angry'], puff: ['Angry', 'Swell'], sun: ['Happy', ['LookUp', 'DeepBreath']], moon: ['Inspired', 'LookUp'],
+  'sleep-move': ['Sigh'], snore: ['Normal'], 'drop-target': ['Surprised'], 'wash-ing': ['Happy'], 'wash-no': ['Sigh', 'Shake'], shout: ['Shouting'], 'hoop-big': ['Worried'], 'hoop-no': ['Worried'], 'follow-end': ['Happy', 'Nod'] };
 const EMO_SYM = { '!': 'Surprised', '!!': 'Surprised', '!?': 'Surprised', '?': 'Worried', '…?': 'Worried', '…': 'Sigh', '♪': 'Happy', '♪♪': 'Joyous', '♥': 'Joyous', '…♥': 'Happy', '💢': 'Angry', '😋': 'Happy', '💦': 'Worried', '✧': 'Happy', '★': 'Surprised' };
 function emoHook(m, text, sc) { if (!m) return; const E = EMO_SC[sc], e = E ? E[0] : EMO_SYM[text]; if (!e) return; m.emoE = e; m.emoT = performance.now();
   if (E && E[1] && !(sc === 'idle-alone' && Math.random() < .5)) playX(m, E[1]);
@@ -7346,7 +7348,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '16.63';   /* v16.63 경완: 트레이너 상세카드 레이아웃·기록 정리 */ /* v16.62 경완: 체육관 내 캐릭터 상세카드 등급별 디자인 */ /* v16.61 경완: 상태창 왼쪽 포켓몬 얼굴 끔 (필드 스프라이트 표정을 물어본 거였음) — 필드 새 동작은 그대로. */   /* v16.60 경완: 얼굴 표정·필드 동작 — 상태창 왼쪽에 문장 속 포켓몬 얼굴(말풍선 상황마다 기쁨·놀람·걱정·화남 등 표정, face/), 끄덕이기·올려다보기·포즈·춤·노래·깨어나기·움찔 등 원본 나머지 동작(mx/, 필드에 있는 포켓몬부터 하나씩 받아 둠)을 상호작용마다. */   /* v16.59 경완: 랭킹의 내 줄 → 프로필 내 카드와 동일 */ /* v16.60 경완: 진화구슬 기술 5차 — 파도 큰 구슬도 뜸(무거울수록 천천히), 폭풍 더 세게, 용해액 방울 작게·안 녹는 구슬은 튕겨내는 막, 사이코 떠오르는 구슬도 밀림 */
+const APP_VER = '16.64';   /* v16.64 경완: 놀랄 때 움찔 동작 뺌, 둘이 붙을 때(싸움·박치기) 중간중간 아파함, 쓰다듬은 뒤엔 빙글·깡총 대신 포즈(포즈 그림 있는 종). */   /* v16.63 경완: 트레이너 상세카드 레이아웃·기록 정리 */ /* v16.64 경완: 체육관 내 캐릭터 상세카드 등급별 디자인 */ /* v16.61 경완: 상태창 왼쪽 포켓몬 얼굴 끔 (필드 스프라이트 표정을 물어본 거였음) — 필드 새 동작은 그대로. */   /* v16.60 경완: 얼굴 표정·필드 동작 — 상태창 왼쪽에 문장 속 포켓몬 얼굴(말풍선 상황마다 기쁨·놀람·걱정·화남 등 표정, face/), 끄덕이기·올려다보기·포즈·춤·노래·깨어나기·움찔 등 원본 나머지 동작(mx/, 필드에 있는 포켓몬부터 하나씩 받아 둠)을 상호작용마다. */   /* v16.59 경완: 랭킹의 내 줄 → 프로필 내 카드와 동일 */ /* v16.60 경완: 진화구슬 기술 5차 — 파도 큰 구슬도 뜸(무거울수록 천천히), 폭풍 더 세게, 용해액 방울 작게·안 녹는 구슬은 튕겨내는 막, 사이코 떠오르는 구슬도 밀림 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
