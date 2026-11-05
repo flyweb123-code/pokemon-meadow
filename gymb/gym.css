@@ -2959,3 +2959,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .tl-pop .tl-ss{gap:0}
 #gym .tl-pop .tl-list li .tl-s{padding:8px 0 8px 12px;border-bottom:1px dashed #c8c2b0}
 #gym .tl-pop .tl-s::before{top:calc(8px + .6em)}
+/* v16.86 경완 '골드 아이콘이랑 텍스트 여백, 골드 아이콘이랑 같이 표시할 때 항상': 체육관 어디서든 골드 아이콘 뒤 글자와 6px (flex gap 으로 이미 띄운 곳은 그대로) */
+#gym .coin{margin-right:6px!important}
+#gym .rs-gold>.coin,#gym .jn-tb .jn-gc .coin,#gym .gy-jnlw .jn-out .jn-gc .coin{margin-right:0!important}
+#gym .aw-tot b{gap:0}
