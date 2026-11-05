@@ -522,7 +522,7 @@ const teamIc = (T, key) => `<span class="sf-team">${T.map(([sp, lv], i) => `<spa
 // 특성은 상자로 (경완 2026-10-27 '트레이너 특성은 확실하게 박스로')
 const trtBox = (k, full, bare) => { const T = K.TRAITS[k]; return T ? `<span class="trt trt-${k}">${bare ? '' : '<b>특성</b>'}<i>${T.n}</i>${full ? `<small>${T.d}</small>` : ''}</span>` : ''; };
 // 트레이너: 지원서 탭 / 고용 관리 탭 (경완 2026-10-27)
-let sfT = 'cand';
+let sfT = 'sf';   // v17.39 경완: 트레이너 메뉴는 고용 관리 탭이 먼저
 // 지원서 남은 시간 (경완 2026-10-28): 우상단에 시:분, 가운데 : 가 깜빡
 const cvLeft = ms => { const m = Math.max(0, Math.ceil(ms / 60000)); return `${Math.floor(m / 60)}h ${m % 60}m`; };   // 경완 2026-10-28: '남은 시간' 상태박스 안에 h m
 setInterval(() => document.querySelectorAll('.cv-left[data-exp]').forEach(e => { e.innerHTML = cvLeft(+e.dataset.exp - Date.now()); }), 20e3);
