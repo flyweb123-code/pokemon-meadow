@@ -442,19 +442,25 @@ function statPop() {
     GB()._monPop(+b.dataset.id || b.dataset.id, false, null, () => st().tr.map(e => e.id).filter(i => boxOf(i)));   // 카드는 훈련장 포켓몬끼리만 넘김 (경완 2026-10-29)
   };
 }
+/* v16.68 경완 '훈련 일지 넘어갈 때 포켓몬 박스 옆 글자 위치 그 전 화면이랑 맞춰': 상세카드·훈련 일지가 같은 머리 (이름 · Lv · 경험치 막대 · 다음 레벨까지) */
+function trHead(P, ed) {
+  const m = GB().gm(P), g = GB().growth(P.sp), need = GB().xpAt(g, m.lv + 1) - GB().xpAt(g, m.lv), a0 = GB().xpAt(g, m.lv), mx = m.lv >= GB().LV_MAX, r = mx ? 1 : clampN(((m.xp ?? a0) - a0) / Math.max(1, need), 0, 1);
+  const e = st().tr.find(x => x.id === P.id), lf = e ? Math.max(0, Math.ceil(leftOf(e))) : 0;
+  return `<div class="mp-head tp2-hd">${GB().thumb(P)}<div><h4>${ed && GA.nmEdit ? GA.nmEdit(P) : esc(nmOf(P))}</h4><p class="tp2-lv"><b>Lv.${m.lv}</b>${e ? `<span class="tp2-st${lf ? '' : ' done'}">${lf ? '훈련 중' : '오늘 훈련 끝'}</span>` : ''}</p>
+      <i class="mp-xp"><i style="width:${(r * 100).toFixed(1)}%"></i></i><small class="tp-xp">${mx ? '최고 레벨' : `다음 레벨까지 ${Math.max(0, Math.ceil(need - ((m.xp ?? a0) - a0))).toLocaleString()} · ${Math.max(0, Math.floor((m.xp ?? a0) - a0)).toLocaleString()}/${Math.ceil(need).toLocaleString()}`}</small></div></div>`;
+}
 function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예전 창 자리에 바로 바꿔 끼움 (v14.43)
   const P = boxOf(id); if (!P) return; const m = GB().gm(P), ph = perHour(P), g = GB().growth(P.sp), need = GB().xpAt(g, m.lv + 1) - GB().xpAt(g, m.lv);
   const a0 = GB().xpAt(g, m.lv), r = m.lv >= GB().LV_MAX ? 1 : clampN(((m.xp ?? a0) - a0) / Math.max(1, need), 0, 1);
   const e = st().tr.find(x => x.id === P.id), lf = e ? Math.max(0, Math.ceil(leftOf(e))) : 0, mx = m.lv >= GB().LV_MAX, today = K.dayStart(Date.now()), T = trLog(P.id)[today] || { h: 0, x: 0, lv: 0, f: 0, mv: [] };
   /* v16.41 경완: 레벨 옆 ▲ 딱지 빼고 훈련 중 / 오늘 훈련 끝만. 숫자 칸 넷 대신 '오늘 훈련' 상자(경험치·레벨·친밀도·새 기술) → 누르면 날짜별 훈련 일지. 기술 버튼 둘은 빼고 체육관 상세카드처럼 '기술 바꾸기 ›' */
-  const p = pop(`<div class="tp2"><div class="mp-head tp2-hd">${GB().thumb(P)}<div><h4>${GA.nmEdit ? GA.nmEdit(P) : esc(nmOf(P))}</h4><p class="tp2-lv"><b>Lv.${m.lv}</b>${e ? `<span class="tp2-st${lf ? '' : ' done'}">${lf ? '훈련 중' : '오늘 훈련 끝'}</span>` : ''}</p>
-      <i class="mp-xp"><i style="width:${(r * 100).toFixed(1)}%"></i></i><small class="tp-xp">${mx ? '최고 레벨' : `다음 레벨까지 ${Math.max(0, Math.ceil(need - ((m.xp ?? a0) - a0))).toLocaleString()} · ${Math.max(0, Math.floor((m.xp ?? a0) - a0)).toLocaleString()}/${Math.ceil(need).toLocaleString()}`}</small></div></div>
+  const p = pop(`<div class="tp2">${trHead(P, true)}
     <div class="tp2-today" role="button" tabindex="0"><span class="tp2-th"><b>오늘 훈련</b><small>${Math.floor(T.h)}/8시간 · 훈련 일지 ›</small></span>
       <span class="tp2-g"><span><small>경험치</small><b>+${T.x.toLocaleString()}</b></span><span><small>레벨</small><b class="${T.lv ? 'up' : ''}">${T.lv ? `▲${T.lv}` : '-'}</b></span><span><small>친밀도</small><b class="${T.f ? 'fr' : ''}">${T.f ? `+${T.f}` : '-'}</b></span>${T.mv.length ? `<button type="button" class="tp2-mvc" data-a="${T.mv.length > 1 ? 'mvs' : 'i' + T.mv[0]}"><small>새 기술</small><b class="mv">${T.mv.length}개 ›</b></button>` : '<span><small>새 기술</small><b>-</b></span>'}</span>
       ${T.mv.length ? `<span class="tp2-mvs">${mvChips(T.mv)}</span>` : ''}</div>
     <div class="mp-mvh"><small>기술</small><button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button></div>
     <div class="mp-moves mp-line">${m.mv.map(x => GB().mvOf(x)).filter(Boolean).map(x => GB().mvRow(x, 'i' + x[0])).join('')}</div>
-    <div class="gy-btns tp2-btns"><button data-a="out" class="danger">데려오기</button><button class="main" data-a="x">닫기</button></div></div>`,
+    <div class="gy-btns tp2-btns"><button data-a="out" class="danger">빼기</button><button class="main" data-a="x">닫기</button></div></div>`,
     (a, close) => { if (!a) return; if (a[0] === 'i' && a.length > 1) return GB().mvInfo(a.slice(1));
       if (a === 'mv') return GB().movesPop(P, () => { redraw(); trPop(id, p); });   // v14.43 경완: 기술 창이 떠 있는 동안 뒤에 창 그대로
       if (a === 'mvs') return mvListPop(T.mv);
@@ -473,16 +479,18 @@ function mvListPop(L) { pop(`<h4>새로 배운 기술</h4><div class="mp-moves m
 function trLogPop(P, from) {
   const L = trLog(P.id), ks = Object.keys(L).map(Number).sort((a, b) => b - a), WD = '일월화수목금토', today = K.dayStart(Date.now()), m = GB().gm(P), e = st().tr.find(x => x.id === P.id), lf = e ? Math.max(0, Math.ceil(leftOf(e))) : 0;
   const tot = ks.reduce((a, k) => { const d = L[k]; a.x += d.x; a.lv += d.lv; a.f += d.f; a.mv += d.mv.length; return a; }, { x: 0, lv: 0, f: 0, mv: 0 });
-  const row = k => { const d = L[k], t = new Date(k), up = d.lv > 0, mv = d.mv.length > 0;
-    return `<li class="${up ? 'lvup' : ''}${mv ? ' newmv' : ''}"><div class="tl-d"><b>${t.getMonth() + 1}월 ${t.getDate()}일</b><small>${WD[t.getDay()]}${k === today ? ' · 오늘' : ''}</small>${up ? `<em class="tl-up">레벨 업! ${d.to ? `Lv.${d.to - d.lv} → <b>Lv.${d.to}</b>` : `▲${d.lv}`}</em>` : ''}<i>${Math.floor(d.h)}시간</i></div>
-    <div class="tl-g"><span><small>경험치</small><b>+${d.x.toLocaleString()}</b></span><span><small>친밀도</small><b class="${d.f ? 'fr' : ''}">${d.f ? `+${d.f}` : '-'}</b></span></div>
-    ${mv ? `<div class="tl-mv"><small>새 기술</small>${mvChips(d.mv)}</div>` : ''}</li>`; };
-  const p = pop(`<div class="tl-pop"><div class="mp-head tp2-hd">${GB().thumb(P)}<div><h4>${esc(nmOf(P))}</h4><p class="tp2-lv"><b>Lv.${m.lv}</b>${e ? `<span class="tp2-st${lf ? '' : ' done'}">${lf ? '훈련 중' : '오늘 훈련 끝'}</span>` : ''}</p>
-      <small class="tl-sum">훈련 ${ks.length}일 · 경험치 +${tot.x.toLocaleString()}${tot.lv ? ` · <b class="up">레벨 ▲${tot.lv}</b>` : ''}${tot.mv ? ` · <b class="mv">새 기술 ${tot.mv}개</b>` : ''}</small></div></div>
-    <div class="mp-mvh tl-h"><small>훈련 일지</small></div>
+  /* v16.68 경완 '경험치가 얼마 올랐다! 새로운 기술 무엇을 배웠다! 이런 식으로 문장으로': 하루 = 날짜 줄 + 문장 줄들 */
+  const row = k => { const d = L[k], t = new Date(k), up = d.lv > 0, mv = d.mv.length > 0, nm = esc(nmOf(P)), j = K.jong(nmOf(P));
+    const ln = [`<li class="tl-s x">경험치가 <b>${d.x.toLocaleString()}</b> 올랐다!</li>`];
+    if (up) ln.push(`<li class="tl-s up">레벨이 올랐다! ${d.to ? `Lv.${d.to - d.lv} → <b>Lv.${d.to}</b>` : `<b>▲${d.lv}</b>`}</li>`);
+    if (d.f) ln.push(`<li class="tl-s fr">친밀도가 <b>${d.f}</b> 올랐다!</li>`);
+    d.mv.forEach(id => ln.push(`<li class="tl-s mv">새로운 기술 ${mvChips([id])}${K.jong(GB().mvKo(id)) ? '을' : '를'} 배웠다!</li>`));
+    return `<li class="${up ? 'lvup' : ''}${mv ? ' newmv' : ''}"><div class="tl-d"><b>${t.getMonth() + 1}월 ${t.getDate()}일</b><small>${WD[t.getDay()]}${k === today ? ' · 오늘' : ''}</small><i>${Math.floor(d.h)}시간 훈련</i></div><ul class="tl-ss">${ln.join('')}</ul></li>`; };
+  const p = pop(`<div class="tl-pop">${trHead(P)}
+    <div class="mp-mvh tl-h"><small>훈련 일지</small><small class="tl-sum">${ks.length}일 · 경험치 +${tot.x.toLocaleString()}${tot.lv ? ` · <b class="up">레벨 ▲${tot.lv}</b>` : ''}${tot.mv ? ` · <b class="mv">새 기술 ${tot.mv}개</b>` : ''}</small></div>
     ${ks.length ? `<ul class="tl-list">${ks.map(row).join('')}</ul>` : '<p class="gy-msg tl-none">아직 훈련 기록이 없어요.<br>훈련한 만큼 날마다 여기에 쌓여요.</p>'}
     <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div></div>`, (a, close) => { if (a === 'x') return close(); if (a && a[0] === 'i') GB().mvInfo(a.slice(1)); });
-  GB().fillTh?.(p);
+  GB().fillTh?.(p); if (from) p.classList.add('tl-wrap');   /* 뒤 상세카드 위에 겹쳐 떠서 배경이 두 번 어두워지던 것 → 겹친 창은 배경을 안 깔고 그대로 */
   const fw = from?.querySelector('.win'), w = p.querySelector('.win'); if (fw && w) { const r = fw.getBoundingClientRect(); w.style.width = r.width + 'px'; w.style.height = r.height + 'px'; w.style.maxWidth = 'none'; }   /* 상세카드와 같은 크기 */
 }
 
@@ -549,9 +557,10 @@ function drawStaff() {
   };
 }
 // 고용 트레이너 자세히 (경완 2026-10-27 '고용한 트레이너 카드 누르면 상세 정보'): 전신·특성·포켓몬·전적·월급과 배치 단추
-function sfDetail(s) {
+/* v16.68 경완 '고용 트레이너 상세카드에 자리 바꾸기 없애고, 체육관 홈에서 트레이너 누르면 뜨는 카드(같은 카드)에 자리 바꾸기': home = 홈에서 연 카드 */
+function sfDetail(s, home) {
   const g = st(), now = Date.now(); if (!s) return; const i = g.sf.indexOf(s), yN = g.sf.filter(x => x.yard).length, lv = Math.round(K.teamLv(s.team));
-  const gi = K.sfList ? K.sfList().findIndex(z => z[0] === s) : -1, dd = Math.max(0, Math.ceil((s.pay - now) / K.DAY));
+  const gb = home || !K.inGym(s), up = !home && i > 0, bn = (gb ? 1 : 0) + 2 + (up ? 1 : 0), gi = K.sfList ? K.sfList().findIndex(z => z[0] === s) : -1, dd = Math.max(0, Math.ceil((s.pay - now) / K.DAY));
   const W = s.w || 0, L = s.l || 0, wr = W + L ? W / (W + L) : 0, [tg, eg] = sfEarn(s);
   const bar = (f, c) => `<i class="sd2-bar ${c || ''}"><i style="width:${Math.round(Math.max(0, Math.min(1, f)) * 100)}%"></i></i>`;
   const rib = K.inGym(s) ? `<i class="sfc-rib g">체육관${gi >= 0 ? ` ${gi + 1}번` : ''}</i>` : s.yard ? '<i class="sfc-rib y">훈련장 코치</i>' : '<i class="sfc-rib">대기 중</i>';
@@ -566,17 +575,17 @@ function sfDetail(s) {
       <div><span>월급</span><b class="pay">${s.wage.toLocaleString()}G</b><em>${s.rest ? '<b class="dn">밀렸어요</b>' : `7일마다 · <b>${dd}일 뒤</b>`}</em></div>
       <div><span>번 돈</span><b class="${eg >= s.wage ? 'up' : 'dn'}">${eg.toLocaleString()}G</b><em>최근 7일 · 오늘 ${tg.toLocaleString()}G</em></div>
       <div><span>고용</span><b>${s.hired ? `${Math.max(0, Math.floor((now - s.hired) / K.DAY)) + 1}일째` : '-'}</b><em>${s.lastE != null ? `지난주 ${s.lastE.toLocaleString()}G` : '첫 주예요'}</em></div></div>
-    <div class="gy-btns sd-btns${i > 0 ? '' : ' three'}"><button data-a="gym">${K.inGym(s) ? '자리 바꾸기' : '체육관에 배치'}</button><button data-a="yd" ${s.yard ? 'class="sd2-in"' : !s.yard && yN >= YARD_SF ? 'disabled' : ''}>${s.yard ? '코치 빼기' : '코치 맡기기'}</button>
-      ${i > 0 ? '<button data-a="up">순서 앞으로</button>' : ''}<button data-a="fire" class="danger">해고</button><button class="main" data-a="x" style="grid-column:1/-1">닫기</button></div></div>`,
+    <div class="gy-btns sd-btns${bn === 3 ? ' three' : ''}">${gb ? `<button data-a="gym">${K.inGym(s) ? '자리 바꾸기' : '체육관에 배치'}</button>` : ''}<button data-a="yd" ${s.yard ? 'class="sd2-in"' : !s.yard && yN >= YARD_SF ? 'disabled' : ''}>${s.yard ? '코치 빼기' : '코치 맡기기'}</button>
+      ${up ? '<button data-a="up">순서 앞으로</button>' : ''}<button data-a="fire" class="danger">해고</button><button class="main" data-a="x" style="grid-column:1/-1">닫기</button></div></div>`,
     (a, close) => {
       if (a === 'x') return close();
-      if (a === 'gym') { close(); return K.sfPlace(s, () => { K.openTab?.('staff'); }); }
-      if (a === 'yd') { tickTrain(Date.now()); s.yard = s.yard ? 0 : 1; K.glog('sf', `${esc(s.cls)} ${esc(s.nm)}${K.jong(s.nm) ? '을' : '를'} ${s.yard ? '훈련장 코치로 배치했다.' : '훈련장 코치에서 뺐다.'}`); K.save(); close(); redraw(); K.renderHome(); return sfDetail(s); }
+      if (a === 'gym') { close(); return K.sfPlace(s, home ? () => {} : () => { K.openTab?.('staff'); }); }   // 홈에서 연 카드는 자리 바꾼 뒤 홈 그대로
+      if (a === 'yd') { tickTrain(Date.now()); s.yard = s.yard ? 0 : 1; K.glog('sf', `${esc(s.cls)} ${esc(s.nm)}${K.jong(s.nm) ? '을' : '를'} ${s.yard ? '훈련장 코치로 배치했다.' : '훈련장 코치에서 뺐다.'}`); K.save(); close(); redraw(); K.renderHome(); return sfDetail(s, home); }
       if (a === 'up') { const k = g.sf.indexOf(s); if (k > 0) { [g.sf[k - 1], g.sf[k]] = [g.sf[k], g.sf[k - 1]]; K.save(); } close(); redraw(); K.renderHome(); return sfDetail(s); }
       if (a === 'fire') { close();   /* v16.41 경완 '해고할 때는 지금까지 일한 수당은 챙겨줘야 함': 이번 월급 주기에서 일한 날만큼 (쉬는 중이면 일 안 했으니 없음) */
         const wd = s.rest ? 0 : Math.max(1, Math.min(7, Math.ceil((now - (s.pay - 7 * K.DAY)) / K.DAY - .01))), amt = s.rest ? 0 : Math.round(s.wage * wd / 7);
         pop(`${sfFace(s)}<h4>해고할까요?</h4><p class="gy-msg">${esc(s.cls)} <b>${esc(s.nm)}</b>${K.jong(s.nm) ? '을' : '를'} 해고해요.${amt ? `<br>지금까지 일한 <b>${wd}일치 수당 ${amt.toLocaleString()}G</b>를 줘요.` : ''}</p><div class="gy-btns"><button data-a="x">아니요</button><button class="main" data-a="y">${amt ? `${amt.toLocaleString()}G 주고 해고` : '해고'}</button></div>`,
-        (b2, c2) => { c2(); if (b2 !== 'y') return sfDetail(s); if (amt && !spend(amt)) return say(`골드가 모자라요. 수당 ${amt.toLocaleString()}G가 필요해요.`); if (amt) { try { K.dayRec().p += amt; } catch (e) {} }
+        (b2, c2) => { c2(); if (b2 !== 'y') return sfDetail(s, home); if (amt && !spend(amt)) return say(`골드가 모자라요. 수당 ${amt.toLocaleString()}G가 필요해요.`); if (amt) { try { K.dayRec().p += amt; } catch (e) {} }
           g.sf = g.sf.filter(x => x !== s); K.glog('sf', `${esc(s.cls)} ${esc(s.nm)}${K.jong(s.nm) ? '을' : '를'} 해고했다.${amt ? ` <small>수당 ${amt.toLocaleString()}G</small>` : ''}`); K.save(); redraw(); K.renderHome(); }); }
     });
   return p;
@@ -693,5 +702,5 @@ function shopFit(body) {
       close(); if (a === 'y' && !buy(o.g)) return say('골드가 모자라요.'); if (a === 'y') g.fits[k] = 1; K.fitSet(k); K.save(); redraw(); K.renderHome(); });
   };
 }
-window.GymManage = { tab, tickTrain, redraw, trSend };
+window.GymManage = { tab, tickTrain, redraw, trSend, sfDetail };
 })();
