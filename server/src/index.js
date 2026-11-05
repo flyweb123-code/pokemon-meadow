@@ -9,6 +9,7 @@
 // (무료 요금제 CPU 10ms 한도 + CloudKit 에서 옮겨 온 pwh 형식 그대로 쓰려고).
 
 export { FieldRoom } from './room.js';
+import { maskNick, maskRows } from './nick.js';
 
 const ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const PART = 600_000;   // 저장 조각 크기 (글자). 한글이 섞여도 D1 한 칸 한도(2MB) 안 넘게
@@ -70,7 +71,7 @@ async function handle(env, b) {
       const codes = [...new Set((Array.isArray(b.codes) ? b.codes : []).map(cleanCode).filter(c => c.length === 8))].slice(0, 100);
       if (!codes.length) return [];
       const { results } = await db.prepare(`SELECT code, card, at FROM trainer WHERE code IN (${codes.map(() => '?').join(',')})`).bind(...codes).all();
-      return results;
+      return maskRows(results, me);   // 남의 닉네임 비속어는 * 로 (nick.js)
     }
 
     case 'top': {
@@ -78,7 +79,7 @@ async function handle(env, b) {
       const q = b.kind === 'dex'
         ? db.prepare('SELECT code, card, at FROM trainer WHERE dex > 0 ORDER BY dex DESC LIMIT 100')
         : db.prepare('SELECT code, card, at FROM trainer WHERE wk = ? ORDER BY wkm DESC LIMIT 100').bind(wk);
-      return (await q.all()).results;
+      return maskRows((await q.all()).results, me);
     }
 
     case 'score': {
@@ -92,7 +93,7 @@ async function handle(env, b) {
 
     case 'mgtop': {
       const game = str(b.game, 40); if (!game) bad('잘못된 요청');
-      return (await db.prepare('SELECT code, card, best, at FROM score WHERE game = ? ORDER BY best DESC LIMIT 100').bind(game).all()).results;
+      return maskRows((await db.prepare('SELECT code, card, best, at FROM score WHERE game = ? ORDER BY best DESC LIMIT 100').bind(game).all()).results, me);
     }
 
     case 'notice': {
@@ -219,7 +220,7 @@ async function handle(env, b) {
         if (!f.fr.split(',').includes(me)) bad('서로 친구여야 놀러 갈 수 있어요');
       }
       let n = '트레이너', sx = 'm';
-      try { const t = await db.prepare('SELECT card FROM trainer WHERE code = ?').bind(me).first(); const c = t && JSON.parse(t.card); if (c?.n) n = String(c.n).slice(0, 12); if (c?.sex === 'f') sx = 'f'; } catch (e) {}
+      try { const t = await db.prepare('SELECT card FROM trainer WHERE code = ?').bind(me).first(); const c = t && JSON.parse(t.card); if (c?.n) n = maskNick(String(c.n).slice(0, 12)); if (c?.sex === 'f') sx = 'f'; } catch (e) {}
       const body = b64u(enc.encode(JSON.stringify({ c: me, r: to, n, sx, e: now + 120_000 })));
       return { t: body + '.' + await sign(env, body), me };
     }
