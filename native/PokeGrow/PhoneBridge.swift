@@ -14,6 +14,7 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
     var gameReady = false { didSet { if gameReady { flushPending() } } }
 
     private let stateKey = "lastState"
+    private let stateAtKey = "lastStateAt"
     private let pendingKey = "pendingKm"
 
     override init() {
@@ -38,13 +39,28 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
         if let noti = state.removeValue(forKey: "noti") as? [String: Any] { NotiCenter.shared.update(noti, pendingKm: pendingWalkKm()) }
         guard let data = try? JSONSerialization.data(withJSONObject: state) else { return }
         UserDefaults.standard.set(data, forKey: stateKey)
+        UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: stateAtKey)
         sendState(data)
     }
 
     private func sendState(_ data: Data) {
         let s = WCSession.default
         guard WCSession.isSupported(), s.activationState == .activated, s.isPaired, s.isWatchAppInstalled else { return }
-        try? s.updateApplicationContext(["state": data, "at": Date().timeIntervalSince1970])
+        try? s.updateApplicationContext(watchContext(data))
+    }
+    // 2026-11-05 경완: 워치에서도 프로필의 '이동 거리'(오늘 0시부터, 아이폰 만보기)를 보게 같이 보낸다
+    private func watchContext(_ data: Data) -> [String: Any] {
+        // at = 게임이 이 알 현황을 저장한 시각 (워치는 그 뒤에 걸은 거리를 미리 더해 보여 준다)
+        let at = UserDefaults.standard.double(forKey: stateAtKey)
+        var c: [String: Any] = ["state": data, "at": at > 0 ? at : Date().timeIntervalSince1970]
+        if let km = todayKm { c["today"] = km; c["day"] = todayDay }
+        return c
+    }
+    private var watchTodaySent = -1.0
+    private func sendTodayToWatch() {
+        guard let km = todayKm, abs(km - watchTodaySent) >= 0.005 || km < watchTodaySent else { return }
+        watchTodaySent = km
+        sendState(UserDefaults.standard.data(forKey: stateKey) ?? Data())
     }
 
     // MARK: watch → app
@@ -100,8 +116,10 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
     private var todayKm: Double?
     private var todayDay = 0.0
     func sendToday(km: Double, day: Date) {
+        if day.timeIntervalSince1970 != todayDay { watchTodaySent = -1 }
         todayKm = km; todayDay = day.timeIntervalSince1970
         flushToday()
+        sendTodayToWatch()
     }
     private func flushToday() {
         guard gameReady, let web = webView, let km = todayKm else { return }
@@ -191,13 +209,20 @@ final class PhoneBridge: NSObject, ObservableObject, WKScriptMessageHandler, WCS
         guard let km = userInfo["km"] as? Double, km > 0 else { return }
         let start = userInfo["start"] as? Double ?? 0
         let end = userInfo["end"] as? Double ?? 0
-        DispatchQueue.main.async { self.enqueueRun(km: km, start: start, end: end, kind: 0) }
+        DispatchQueue.main.async {
+            // 2026-11-05: 런닝이 끝나기 전에 '워치만 차고 걸은 거리'(WatchWalk)로 이미 넣은 만큼이 있으면, 그 시간 아이폰 만보기 거리와 함께 알려 두 번 쌓지 않게
+            let ww = start > 0 && end > start ? WatchWalk.shared.fedKm(Date(timeIntervalSince1970: start), Date(timeIntervalSince1970: end)) : 0
+            guard ww > 0 else { self.enqueueRun(km: km, start: start, end: end, kind: 0); return }
+            HealthSync.shared.phoneKm(Date(timeIntervalSince1970: start), Date(timeIntervalSince1970: end)) { ph in
+                self.enqueueRun(km: km, start: start, end: end, kind: 0, phoneKm: max(ph, 0) + ww)
+            }
+        }
     }
 
     // 워치가 열릴 때 최신 알 현황을 바로 달라고 한다
     func session(_ session: WCSession, didReceiveMessage message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
         let data = UserDefaults.standard.data(forKey: stateKey) ?? Data()
-        replyHandler(["state": data])
+        replyHandler(watchContext(data))
     }
 
     func session(_ session: WCSession, activationDidCompleteWith state: WCSessionActivationState, error: Error?) {
