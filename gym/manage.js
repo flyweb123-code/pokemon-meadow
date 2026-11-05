@@ -63,7 +63,7 @@ function tickTrain(now) {
       if (n > 0) { e.x = (e.x || 0) + n; R.x += n; GB().gainXp(P, n).learned.forEach(([id]) => { got.push(GB().mvKo(id)); (e.mv = e.mv || []).push(id); R.mv.push(id); }); }
       e.acc = (e.acc || 0) + step; while (e.acc >= 1) { e.acc -= 1; if (Math.random() < .05) { const x = special(P); if (x) { (e.mv = e.mv || []).push(x[0]); R.mv.push(x[0]); } if (x) K.awMv?.(P.id, x[0], x[1], x[2]); if (x) K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '이' : '가'} 훈련장에서 특별한 기술 <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 익혔다! <small>기술 바꾸기에서 쓸 수 있어요</small>`, now); } }
     }
-    R.lv += GB().gm(P).lv - lvA; }
+    R.lv += GB().gm(P).lv - lvA; R.to = GB().gm(P).lv; }
     const lv = GB().gm(P).lv;
     if (lv > lv0) K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '이' : '가'} 훈련으로 Lv.${lv}${/[036]$/.test(String(lv)) ? '이' : '가'} 됐다!${got.length ? ` <small>새 기술: ${got.map(esc).join(', ')}</small>` : ''}`, now);
     return true;
@@ -449,30 +449,41 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
   /* v16.41 경완: 레벨 옆 ▲ 딱지 빼고 훈련 중 / 오늘 훈련 끝만. 숫자 칸 넷 대신 '오늘 훈련' 상자(경험치·레벨·친밀도·새 기술) → 누르면 날짜별 훈련 일지. 기술 버튼 둘은 빼고 체육관 상세카드처럼 '기술 바꾸기 ›' */
   const p = pop(`<div class="tp2"><div class="mp-head tp2-hd">${GB().thumb(P)}<div><h4>${GA.nmEdit ? GA.nmEdit(P) : esc(nmOf(P))}</h4><p class="tp2-lv"><b>Lv.${m.lv}</b>${e ? `<span class="tp2-st${lf ? '' : ' done'}">${lf ? '훈련 중' : '오늘 훈련 끝'}</span>` : ''}</p>
       <i class="mp-xp"><i style="width:${(r * 100).toFixed(1)}%"></i></i><small class="tp-xp">${mx ? '최고 레벨' : `다음 레벨까지 ${Math.max(0, Math.ceil(need - ((m.xp ?? a0) - a0))).toLocaleString()} · ${Math.max(0, Math.floor((m.xp ?? a0) - a0)).toLocaleString()}/${Math.ceil(need).toLocaleString()}`}</small></div></div>
-    <button type="button" class="tp2-today" data-a="log"><span class="tp2-th"><b>오늘 훈련</b><small>${Math.floor(T.h)}/8시간 · 훈련 일지 ›</small></span>
-      <span class="tp2-g"><span><small>경험치</small><b>+${T.x.toLocaleString()}</b></span><span><small>레벨</small><b class="${T.lv ? 'up' : ''}">${T.lv ? `▲${T.lv}` : '-'}</b></span><span><small>친밀도</small><b class="${T.f ? 'fr' : ''}">${T.f ? `+${T.f}` : '-'}</b></span><span><small>새 기술</small><b class="${T.mv.length ? 'mv' : ''}">${T.mv.length ? `${T.mv.length}개` : '-'}</b></span></span>
-      ${T.mv.length ? `<span class="tp2-mvs">${T.mv.map(id => `<i>${esc(GB().mvKo(id))}</i>`).join('')}</span>` : ''}</button>
+    <div class="tp2-today" role="button" tabindex="0"><span class="tp2-th"><b>오늘 훈련</b><small>${Math.floor(T.h)}/8시간 · 훈련 일지 ›</small></span>
+      <span class="tp2-g"><span><small>경험치</small><b>+${T.x.toLocaleString()}</b></span><span><small>레벨</small><b class="${T.lv ? 'up' : ''}">${T.lv ? `▲${T.lv}` : '-'}</b></span><span><small>친밀도</small><b class="${T.f ? 'fr' : ''}">${T.f ? `+${T.f}` : '-'}</b></span>${T.mv.length ? `<button type="button" class="tp2-mvc" data-a="${T.mv.length > 1 ? 'mvs' : 'i' + T.mv[0]}"><small>새 기술</small><b class="mv">${T.mv.length}개 ›</b></button>` : '<span><small>새 기술</small><b>-</b></span>'}</span>
+      ${T.mv.length ? `<span class="tp2-mvs">${mvChips(T.mv)}</span>` : ''}</div>
     <div class="mp-mvh"><small>기술</small><button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button></div>
     <div class="mp-moves mp-line">${m.mv.map(x => GB().mvOf(x)).filter(Boolean).map(x => GB().mvRow(x, 'i' + x[0])).join('')}</div>
     <div class="gy-btns tp2-btns"><button data-a="out" class="danger">데려오기</button><button class="main" data-a="x">닫기</button></div></div>`,
     (a, close) => { if (!a) return; if (a[0] === 'i' && a.length > 1) return GB().mvInfo(a.slice(1));
       if (a === 'mv') return GB().movesPop(P, () => { redraw(); trPop(id, p); });   // v14.43 경완: 기술 창이 떠 있는 동안 뒤에 창 그대로
-      if (a === 'log') return trLogPop(P);
+      if (a === 'mvs') return mvListPop(T.mv);
       close();
       if (a === 'out') { tickTrain(Date.now()); st().tr = st().tr.filter(e => e.id !== P.id); K.save(); redraw(); } });
+  p.querySelector('.tp2-today').onclick = ev => { if (ev.target.closest('button')) return; sfx('tap'); trLogPop(P, p); };   /* 상자 = 훈련 일지, 안의 새 기술 = 기술 창 */
   if (under) { const w = p.querySelector('.win'); if (w) w.style.animation = 'none'; under.remove(); }
 }
+/* v16.48 경완 '새 기술 박스는 따로 누르면 어떤 기술인지 팝업': 기술 이름 딱지(타입 색) → mvInfo. 여러 개면 목록 창에서 고름 */
+const mvChips = L => L.map(id => { const x = GB().mvOf(id); return `<button type="button" class="mv-chip" data-a="i${id}" style="--tc:${GA.TYPE_C?.[x?.[2]] || '#2a8a3e'}">${esc(GB().mvKo(id))}</button>`; }).join('');
+function mvListPop(L) { pop(`<h4>새로 배운 기술</h4><div class="mp-moves mp-line">${L.map(id => GB().mvOf(id)).filter(Boolean).map(x => GB().mvRow(x, 'i' + x[0])).join('')}</div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`,
+  (a, close) => { if (a === 'x') return close(); if (a && a[0] === 'i') GB().mvInfo(a.slice(1)); }); }
 
-/* v16.41 경완 '해당 박스 누르면 전체 훈련 일지 날짜별로': 위는 모두 더한 값, 아래는 날마다 한 줄 (최근 날짜가 위) */
-function trLogPop(P) {
-  const L = trLog(P.id), ks = Object.keys(L).map(Number).sort((a, b) => b - a), WD = '일월화수목금토', tot = ks.reduce((a, k) => { const d = L[k]; a.h += d.h; a.x += d.x; a.lv += d.lv; a.f += d.f; a.mv += d.mv.length; return a; }, { h: 0, x: 0, lv: 0, f: 0, mv: 0 }), today = K.dayStart(Date.now());
-  const row = k => { const d = L[k], t = new Date(k); return `<li><div class="tl-d"><b>${t.getMonth() + 1}월 ${t.getDate()}일</b><small>${WD[t.getDay()]}${k === today ? ' · 오늘' : ''}</small><i>${Math.floor(d.h)}시간</i></div>
-    <div class="tl-g"><span><small>경험치</small><b>+${d.x.toLocaleString()}</b></span><span><small>레벨</small><b class="${d.lv ? 'up' : ''}">${d.lv ? `▲${d.lv}` : '-'}</b></span><span><small>친밀도</small><b class="${d.f ? 'fr' : ''}">${d.f ? `+${d.f}` : '-'}</b></span></div>
-    ${d.mv.length ? `<p class="tl-mv">새 기술 ${d.mv.map(id => `<i>${esc(GB().mvKo(id))}</i>`).join('')}</p>` : ''}</li>`; };
-  pop(`<div class="tl-pop"><h4>${esc(nmOf(P))} 훈련 일지</h4>
-    <div class="tp2-g tl-tot"><span><small>훈련한 날</small><b>${ks.length}일</b></span><span><small>경험치</small><b>+${tot.x.toLocaleString()}</b></span><span><small>레벨</small><b class="${tot.lv ? 'up' : ''}">${tot.lv ? `▲${tot.lv}` : '-'}</b></span><span><small>친밀도</small><b class="${tot.f ? 'fr' : ''}">${tot.f ? `+${tot.f}` : '-'}</b></span></div>
+/* v16.41 경완 '해당 박스 누르면 전체 훈련 일지 날짜별로': 날마다 한 줄 (최근 날짜가 위)
+   v16.48 경완: 창 크기는 상세카드와 같게, 위에 포켓몬 프로필 상자, 오늘 훈련 상자는 빼고, 새 기술·레벨업이 잘 보이게 (딱지·색 띠, 기술 누르면 기술 창) */
+function trLogPop(P, from) {
+  const L = trLog(P.id), ks = Object.keys(L).map(Number).sort((a, b) => b - a), WD = '일월화수목금토', today = K.dayStart(Date.now()), m = GB().gm(P), e = st().tr.find(x => x.id === P.id), lf = e ? Math.max(0, Math.ceil(leftOf(e))) : 0;
+  const tot = ks.reduce((a, k) => { const d = L[k]; a.x += d.x; a.lv += d.lv; a.f += d.f; a.mv += d.mv.length; return a; }, { x: 0, lv: 0, f: 0, mv: 0 });
+  const row = k => { const d = L[k], t = new Date(k), up = d.lv > 0, mv = d.mv.length > 0;
+    return `<li class="${up ? 'lvup' : ''}${mv ? ' newmv' : ''}"><div class="tl-d"><b>${t.getMonth() + 1}월 ${t.getDate()}일</b><small>${WD[t.getDay()]}${k === today ? ' · 오늘' : ''}</small>${up ? `<em class="tl-up">레벨 업! ${d.to ? `Lv.${d.to - d.lv} → <b>Lv.${d.to}</b>` : `▲${d.lv}`}</em>` : ''}<i>${Math.floor(d.h)}시간</i></div>
+    <div class="tl-g"><span><small>경험치</small><b>+${d.x.toLocaleString()}</b></span><span><small>친밀도</small><b class="${d.f ? 'fr' : ''}">${d.f ? `+${d.f}` : '-'}</b></span></div>
+    ${mv ? `<div class="tl-mv"><small>새 기술</small>${mvChips(d.mv)}</div>` : ''}</li>`; };
+  const p = pop(`<div class="tl-pop"><div class="mp-head tp2-hd">${GB().thumb(P)}<div><h4>${esc(nmOf(P))}</h4><p class="tp2-lv"><b>Lv.${m.lv}</b>${e ? `<span class="tp2-st${lf ? '' : ' done'}">${lf ? '훈련 중' : '오늘 훈련 끝'}</span>` : ''}</p>
+      <small class="tl-sum">훈련 ${ks.length}일 · 경험치 +${tot.x.toLocaleString()}${tot.lv ? ` · <b class="up">레벨 ▲${tot.lv}</b>` : ''}${tot.mv ? ` · <b class="mv">새 기술 ${tot.mv}개</b>` : ''}</small></div></div>
+    <div class="mp-mvh tl-h"><small>훈련 일지</small></div>
     ${ks.length ? `<ul class="tl-list">${ks.map(row).join('')}</ul>` : '<p class="gy-msg tl-none">아직 훈련 기록이 없어요.<br>훈련한 만큼 날마다 여기에 쌓여요.</p>'}
-    <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div></div>`, (a, close) => { if (a === 'x') close(); });
+    <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div></div>`, (a, close) => { if (a === 'x') return close(); if (a && a[0] === 'i') GB().mvInfo(a.slice(1)); });
+  GB().fillTh?.(p);
+  const fw = from?.querySelector('.win'), w = p.querySelector('.win'); if (fw && w) { const r = fw.getBoundingClientRect(); w.style.width = r.width + 'px'; w.style.height = r.height + 'px'; w.style.maxWidth = 'none'; }   /* 상세카드와 같은 크기 */
 }
 
 // ======================= 트레이너 고용 (6단계) =======================
@@ -555,7 +566,7 @@ function sfDetail(s) {
       <span><small>최근 7일 번 돈</small><b class="${eg >= s.wage ? 'up' : 'dn'}">${eg.toLocaleString()}G</b>${bar(eg / Math.max(1, s.wage), eg >= s.wage ? 'w' : 'r')}<i>오늘 ${tg.toLocaleString()}G</i></span>
       <span><small>고용</small><b>${s.hired ? `${Math.max(0, Math.floor((now - s.hired) / K.DAY)) + 1}일째` : '-'}</b><i>${s.lastE != null ? `지난주 ${s.lastE.toLocaleString()}G 벌었어요` : '첫 주예요'}</i></span></div>
     <div class="gy-btns sd-btns"><button data-a="gym">${K.inGym(s) ? '자리 바꾸기' : '체육관에 배치'}</button><button data-a="yd" ${!s.yard && yN >= YARD_SF ? 'disabled' : ''}>${s.yard ? '코치 그만하기' : '코치 맡기기'}</button>
-      ${i > 0 ? '<button data-a="up">순서 앞으로</button>' : ''}<button data-a="fire" class="danger">해고</button><button class="main" data-a="x" style="grid-column:1/-1">닫기</button></div></div>`,
+      ${i > 0 ? '<button data-a="up">순서 앞으로</button>' : ''}<button data-a="fire" class="danger"${i > 0 ? '' : ' style="grid-column:1/-1"'}>해고</button><button class="main" data-a="x" style="grid-column:1/-1">닫기</button></div></div>`,
     (a, close) => {
       if (a === 'x') return close();
       if (a === 'gym') { close(); return K.sfPlace(s, () => { K.openTab?.('staff'); }); }
