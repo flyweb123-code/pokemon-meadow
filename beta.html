@@ -7410,12 +7410,12 @@ const Visit = (() => {
       const flip = side ? (this.f ? -1 : 1) : (this.ph === 3 ? -1 : 1);   // 옆: 오른쪽 보면 뒤집음, 위·아래 걷기: 두 번째 걸음은 다리 바꾸기
       let x = this.x, y = this.y; const j = this.jf;   // v16.04: 소품에 타고 내릴 때 폴짝
       if (j) { const u = Math.min(1, (performance.now() - j.t0) / 360), e = 1 - (1 - u) ** 2; x = j.x + (x - j.x) * e; y = j.y + (y - j.y) * e - Math.sin(u * Math.PI) * 28; if (u >= 1) this.jf = null; }
-      const rot = this.rd ? this.ra : 0, hs = this.f ? 1 : -1; this.hx = this.x + hs * 34; this.hy = this.y + 1;   // v16.09 경완: 후프링은 몸 옆에 앞모습으로 들고, 포켓몬이 링 앞↔뒤로 뛰어넘음
+      const rot = this.rd ? this.ra : 0, hs = this.f ? 1 : -1; this.hx = this.x + hs * 42; this.hy = this.y + 1;   // v16.09 경완: 후프링은 몸 옆에 앞모습으로 들고, 포켓몬이 링 앞↔뒤로 뛰어넘음
       const v = `${x.toFixed(1)},${y.toFixed(1)}|${fr}|${flip}|${rot.toFixed(3)}|${this.ho ? 1 : 0}`;
       if (v === this.dv) return; this.dv = v;
       this.el.style.transform = this.bw.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`; this.el.style.zIndex = this.rd && this.rz ? this.rz : Math.round(y);
       this.sp.style.backgroundPosition = `0 ${-fr * FR}px`; this.sp.style.transform = `scaleX(${flip})`; this.sp.style.rotate = rot ? `${rot.toFixed(3)}rad` : '';
-      if (this.hoEl) { this.hoEl.style.transform = `translate(${(x + hs * 34).toFixed(1)}px,${(y + 1).toFixed(1)}px)`; this.hoEl.style.zIndex = Math.round(y + 1); }
+      if (this.hoEl) { this.hoEl.style.transform = `translate(${(x + hs * 42).toFixed(1)}px,${(y + 1).toFixed(1)}px)`; this.hoEl.style.zIndex = Math.round(y + 1); }
     }
     say(t) { this.bub.innerHTML = '<span>' + esc(t) + '</span>'; this.bub.hidden = false; clearTimeout(this.bt); this.bt = setTimeout(() => { this.bub.hidden = true; }, 4500); }
     remove() { clearTimeout(this.bt); this.el.remove(); this.bw.remove(); this.hoEl?.remove(); this.hoEl = null; this.ho = false; this.rd = null; }
@@ -7630,14 +7630,14 @@ const Visit = (() => {
     for (const tr of all) { if (!tr?.ho || tr.rd || tr.jf) continue; const hs = tr.hs ||= { cur: null, next: 0, done: new Map() };
       if (hs.cur) { const m = hs.cur; if (!S.mons.includes(m) || (!m.hj && m.goal?.kind !== 'hoop' && now - hs.t0 > 400) || (!m.hj && now - hs.t0 > 9000)) { if (m.goal?.kind === 'hoop') m.goal = null; hs.cur = null; hs.next = now + 600; } continue; }
       if (now < hs.next) continue;
-      const hx = tr.hx ?? tr.x + 34, hy = tr.hy ?? tr.y + 1, C = S.mons.filter(m => monOk(m) && T(m).mv !== 'swim' && !isFish(m.sp) && !m.scp && !m.camp && !m.follow && !m.hj && !m.propSit && (hs.done.get(m.uid) || 0) < now && Math.hypot(m.x - hx, m.y - hy) < 260 && !all.some(o => o?.hs?.cur === m))
+      const hx = tr.hx ?? tr.x + 42, hy = tr.hy ?? tr.y + 1, C = S.mons.filter(m => monOk(m) && T(m).mv !== 'swim' && !isFish(m.sp) && !m.scp && !m.camp && !m.follow && !m.hj && !m.propSit && (hs.done.get(m.uid) || 0) < now && Math.hypot(m.x - hx, m.y - hy) < 260 && !all.some(o => o?.hs?.cur === m))
         .sort((a, b) => Math.hypot(a.x - hx, a.y - hy) - Math.hypot(b.x - hx, b.y - hy)), m = C[0];
       if (!m) { hs.next = now + 1500; continue; }
       hs.done.set(m.uid, now + 14000); hs.cur = m; hs.t0 = now; emote(m, '!', '', 1, 'hoop-see');
       let side = m.y >= hy ? 1 : -1; if (hy + side * HD < MIN_Y + 4 || hy + side * HD > MAX_Y - 4) side = -side;
       moveTo(m, { x: clampN(hx, XL + 20, XR - 20), y: hy + side * HD }, { kind: 'hoop', go: () => hoopJump(m, tr) }, 1.3); } }
   function hoopJump(m, tr) { const hs = tr.hs; if (!tr.ho || !hs || hs.cur !== m || !S.mons.includes(m)) { if (hs?.cur === m) hs.cur = null; return; }
-    const hx = tr.hx ?? tr.x + 34, hy = tr.hy ?? tr.y + 1, side = m.y >= hy ? 1 : -1; setState(m, 'idle', 3);
+    const hx = tr.hx ?? tr.x + 42, hy = tr.hy ?? tr.y + 1, side = m.y >= hy ? 1 : -1; setState(m, 'idle', 3);
     m.hj = { t0: performance.now() + 380, x0: m.x, x1: clampN(hx, XL + 20, XR - 20), y0: m.y, y1: clampN(hy - side * HD, MIN_Y, MAX_Y), pk: clampN(34 - (m.h || 40) * .5, 6, 26), tr }; HJ.add(m); }   // 링 앞에서 뒤로(또는 뒤에서 앞으로), 링 가운데 높이로 폴짝
   const HD = 26;
   { const hb = qs('#btnHoop'); if (hb) hb.addEventListener('click', e => { e.stopPropagation(); if (!me) return; sfx('tap'); try { haptic(0); } catch (er) {} if (me.rd) { me.rideOff(); } me.hold(!me.ho); rbT = 0; sendTr(); }); }
