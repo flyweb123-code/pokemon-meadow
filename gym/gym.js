@@ -602,8 +602,14 @@ const RIVAL_GYMS = ['무쇠시티 체육관', '영원시티 체육관', '베일�
 let NAMED = [];
 const loadNamed = () => NAMED.length ? Promise.resolve() : fetch(`gym/named.json?v=${VER}`).then(r => r.ok ? r.json() : []).then(j => { NAMED = j || []; }).catch(() => {});
 
+/* v15.92 경완 '체육관 들어가면 캐릭터 디자인이 기본으로 돌아가는 버그' (손인 계정): 의상이 필드(S.fit·S.fits)와 체육관(g.fit·g.fits)에 따로 있어서,
+   필드에서 입은 옷이 체육관에 안 넘어오거나 체육관에서 바꾼 옷이 필드에 안 넘어갔다 → 들어올 때 맞추고, 체육관에서 바꿀 때 둘 다 바꾼다 */
+function fitSync(g) { g.fits = g.fits || {}; if (Array.isArray(S.fits)) S.fits.forEach(k => { if (OUTFITS[k]) g.fits[k] = 1; });
+  if (S.fit && OUTFITS[S.fit]) g.fit = S.fit; else if (g.fit && OUTFITS[g.fit] && !S.fit) { S.fit = g.fit; if (Array.isArray(S.fits) && !S.fits.includes(g.fit)) S.fits.push(g.fit); } }
+function fitSet(k) { const g = st(); g.fits = g.fits || {}; g.fit = k; S.fit = k; if (k) { g.fits[k] = 1; if (Array.isArray(S.fits) && !S.fits.includes(k)) S.fits.push(k); } }
 function gInit() {
   const g = st(); if (!g) return null;
+  try { fitSync(g); } catch (e) {}
   for (const [k, v] of Object.entries({ sch: [], q: [], log: [], w: 0, l: 0, blk: 0, bk: {}, bdg: {}, nt: {}, sf: [], cid: 0, bdl: {}, ms: {}, bsN: {}, gmax: 0 })) if (g[k] == null) g[k] = v;
   if (g.d && !DESIGNS.some(d => d.id === g.d || d.old === g.d || d.pt === g.d)) { g.d = (DESIGNS.find(d => d.ty === g.ty) || dzList()[0]).id; }   // 12.91 경완: 지운 맵(챔피언 로드 등 12종)으로 세운 체육관은 타입에 맞는 남은 맵으로
   if (g.q.some(c => c.boss)) g.q = g.q.filter(c => !c.boss);   // 예전에 명단으로 온 승급 심사 도전자는 지움 (이제 버튼으로)
@@ -1580,7 +1586,7 @@ function storePop() {
     if (b.dataset.mint) { const k = b.dataset.mint; return GB().mintInfo(k, '먹이기', () => { el.remove(); GB().mintPick(k, () => storePop()); }); }
     if (b.dataset.a === 'place') { el.remove(); return decoEdit(); }
     if (b.dataset.dc) { const k = b.dataset.dc, i = g.dp.indexOf(k); if (i >= 0) { g.dp.splice(i, 1); delete g.dpos?.[k]; } else g.dp.push(k); save(); renderHome(true); return draw(); }
-    if (b.dataset.fit != null) { g.fit = b.dataset.fit; save(); renderHome(true); return draw(); } };
+    if (b.dataset.fit != null) { fitSet(b.dataset.fit); save(); renderHome(true); return draw(); } };
 }
 // 체육관 시뮬레이터 (운영자, 경완 2026-10-28): 기다려야 볼 수 있는 것을 바로 불러 본다. 나오면 원래 체육관으로 되돌아간다 (beta.html gymSim)
 function simPop() {
@@ -2272,7 +2278,7 @@ async function visit(F, code) {
 
 window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) => dzOf(id, gi), _routes: () => DESIGNS.flatMap(d => GRADES.map((_, gi) => { const D = dzOf(d.id, gi), C = chalRoute(D, ents); return { id: d.id, gi, door: D.door, leader: D.leader, guy: D.guy, free: !!D.free, chal: C.path, cf: C.cf, old: D.path, guyR: route(D, D.door, D.guy, []), oldGuy: guyPath(D) }; })), renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
+  k: { fitSet, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 // 이미 명단에서 본 도전자(qSeen)는 기다리고 있어도 점을 띄우지 않는다 — 체육관 안 점과 똑같이 (경완 2026-10-30 '빨간점 다 확인했는데 아이콘 점이 안 사라짐')
 // 점 = 안 본 도전자, 또는 새 도전자가 올 시각이 지남(일정·당겨 온 도전자). 저장된 at 은 쓰지 않는다 (경완 2026-10-30 '명단만 확인해도 꺼지게')
