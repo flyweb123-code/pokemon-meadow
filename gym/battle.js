@@ -1399,17 +1399,19 @@ function foePop(sp, lv, key) {
 // 기술 상세 (경완 2026-10-29): 정보 카드·창고에서 기술을 누르면. teach 가 있으면 '기술 가르치기'
 function mvInfo(id, teach, lab = '기술 가르치기', onX) {
   const x = mvOf(id); if (!x) return; const n = S.gym?.tms?.[id] || 0;
-  gymPop(`<h4 class="mi-h"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">${esc(x[1])}</h4><div class="mi-tg">${tyTag(x[2], x[3])}${teach && !onX ? `<span class="mi-own">가진 개수 ×${n}</span>` : ''}</div>
+  gymPop(`<h4 class="mi-h"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">${esc(x[1])}</h4><div class="mi-tg">${tyTag(x[2], x[3])}${teach && !onX ? (isTR(id) ? `<span class="mi-own">기술레코드 ×${n} · 한 번 쓰면 없어져요</span>` : '<span class="mi-own">기술머신 · 계속 쓸 수 있어요</span>') : ''}</div>
     <dl class="mi-st"><div><dt>위력</dt><dd>${x[4] || '—'}</dd></div><div><dt>명중</dt><dd>${x[5] && x[5] !== true ? x[5] : '—'}</dd></div><div><dt>PP</dt><dd>${x[6] || '—'}</dd></div></dl>
     <p class="gy-msg mi-d">${esc(x[8] || '설명이 아직 없어요.')}</p><div class="gy-btns${teach ? '' : ' one'}">${teach ? `<button data-a="x">닫기</button><button class="main" data-a="t">${lab}</button>` : '<button class="main" data-a="x">닫기</button>'}</div>`,
     (a, close) => { close(); if (a === 't') teach?.(); else onX?.(); });
 }
+/* 기술레코드 (v15.69 경완 '레코드 개념 적용'): 소드·실드 TR00~TR99 기술은 한 번 쓰면 없어지는 기술레코드, 나머지 기술머신은 한 번 사면 계속 쓴다 */
+const TR_IDS = new Set('swordsdance bodyslam flamethrower hydropump surf icebeam blizzard lowkick thunderbolt thunder earthquake psychic agility focusenergy metronome fireblast waterfall amnesia leechlife triattack substitute reversal sludgebomb spikes outrage psyshock endure sleeptalk megahorn batonpass encore irontail crunch shadowball futuresight uproar heatwave taunt trick superpower skillswap blazekick hypervoice overheat cosmicpower muddywater irondefense dragonclaw bulkup calmmind leafblade dragondance gyroball closecombat toxicspikes flareblitz aurasphere poisonjab darkpulse seedbomb xscissor bugbuzz dragonpulse powergem focusblast energyball bravebird earthpower nastyplot zenheadbutt flashcannon leafstorm powerwhip gunkshot ironhead stoneedge stealthrock grassknot sludgewave heavyslam electroball foulplay storedpower allyswitch scald workup wildcharge drillrun heatcrash hurricane playrough venomdrench dazzlinggleam darkestlariat highhorsepower throatchop pollenpuff psychicfangs liquidation bodypress'.split(' ')), isTR = id => TR_IDS.has(id), tmKind = id => isTR(id) ? '기술레코드' : '기술머신';
 // 이 포켓몬이 이 기술머신을 배울 수 있나 (이미 아는 기술은 못 배움)
 const tmCan = (P, id) => (D.sp[P.sp]?.tm || []).some(i => D.mv[i]?.[0] === id) && !gm(P).mv.includes(id);
 // 기술머신 하나를 P 에게: 기술이 4개면 잊을 기술 고르기(또는 익혀 두기만)
 function teachTm(P, id, done, slot) {   // slot: 기술 바꾸기에서 고른 칸이면 그 자리에 바로
   const g = S.gym, m = gm(P), x = mvOf(id); if (!x || !(g.tms?.[id] > 0)) return done?.();
-  const use = k => { g.tms[id] = (g.tms[id] || 0) - 1; if (g.tms[id] <= 0) delete g.tms[id]; m.kn = (m.kn || []).filter(y => y !== id);
+  const use = k => { if (isTR(id)) { g.tms[id] = (g.tms[id] || 0) - 1; if (g.tms[id] <= 0) delete g.tms[id]; } m.kn = (m.kn || []).filter(y => y !== id);
     if (k == null) { if (!m.kn.includes(id)) m.kn.push(id); } else if (k >= m.mv.length) m.mv.push(id); else { const old = m.mv[k]; m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); }
     GA.save(); learnFan(); gymPop(`<div class="tm-done"><p class="tm-dh">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'}<br><b>${esc(x[1])}</b>${jong(x[1]) ? '을' : '를'} ${k == null ? '익혀 두었다!' : '배웠다!'}</p><div class="mp-moves mp-line tm-dmv">${mvRow(x, 'v')}</div>${k == null ? '<p class="tm-dsub">기술 바꾸기에서 쓸 수 있어요</p>' : ''}</div><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => { c(); done?.(); }); };
   if (slot != null) return use(Math.min(slot, m.mv.length));
@@ -1429,7 +1431,7 @@ function tmPop(P, done, slot) {
     if (b.dataset.a === 'x') { el.remove(); return done?.(); }
     const id = b.dataset.tm; if (id) mvInfo(id, () => { el.remove(); teachTm(P, id, done, slot); }); };
 }
-const tmRow = (x, n, id, off, note) => `<button type="button" class="sp-tm${off ? ' off' : ''}" data-tm="${id}" ${off ? 'disabled' : ''}><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png"><span class="tm-nm"><b>${esc(x[1])}</b><i class="tm-own">×${n}</i></span><span class="tm-meta">${tyTag(x[2], x[3])}<small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}${note ? ` · ${note}` : ''}</small></span></button>`;
+const tmRow = (x, n, id, off, note) => `<button type="button" class="sp-tm${off ? ' off' : ''}" data-tm="${id}" ${off ? 'disabled' : ''}><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png"><span class="tm-nm">${isTR(id) ? '<i class="tm-tr">TR</i>' : ''}<b>${esc(x[1])}</b>${isTR(id) ? `<i class="tm-own">×${n}</i>` : ''}</span><span class="tm-meta">${tyTag(x[2], x[3])}<small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}${note ? ` · ${note}` : ''}</small></span></button>`;
 // ---------- 지니는 도구 (경완 2026-10-29): 본가처럼 포켓몬에게 하나씩. 일회용(상처약·열매 등)은 없고 계속 효과 있는 것만. 그림은 PokeAPI/sprites items
 // HOLD[id] = [이름, 가격, 설명, 타입 강화면 타입 번호]
 const HOLD = {
@@ -1568,7 +1570,7 @@ function usePop(P, done) {
   const draw = () => { const m = gm(P), it = m.it;
     const TL = Object.entries(g.tms).filter(([, n]) => n > 0).map(([id, n]) => [mvOf(id), n, id]).filter(([x]) => x).map(r => [...r, tmCan(P, r[2])]).sort((a, b) => (b[3] - a[3]) || ((b[0][4] || 0) - (a[0][4] || 0)));
     const IL = itAll(), ML = mintAll();
-    const T = [['tm', '기술머신', TL.reduce((a, r) => a + r[1], 0)], ['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0)]];
+    const T = [['tm', '기술머신', TL.reduce((a, r) => a + (isTR(r[2]) ? r[1] : 1), 0)], ['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0)]];
     const body = useT === 'tm' ? (TL.length ? `<div class="sp-list">${TL.map(([x, n, id, ok]) => tmRow(x, n, id, !ok, ok ? '' : (m.mv.includes(id) ? '이미 앎' : '못 배움'))).join('')}</div>` : '<p class="sf-none">가진 기술머신이 없어요. 상점에서 살 수 있어요.</p>')
       : (IL.length + ML.length ? `<div class="sp-list">${IL.map(itRowAll).join('')}${ML.map(([k, n]) => mintRow(k, n, P)).join('')}</div>` : '<p class="sf-none">가진 도구가 없어요. 상점에서 살 수 있어요.</p>');
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">도구 사용</b></div>
@@ -1661,5 +1663,5 @@ async function practice() {
   finally { document.body.classList.remove('gymBattle'); drawTab(); }
 }
 
-window.GymBattle = { HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+window.GymBattle = { isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
 })();

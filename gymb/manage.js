@@ -556,7 +556,7 @@ function shopTm(body) {
   body.innerHTML = `
     ${types.length ? `<div class="tm-row"><button class="fsel${tmTy !== -1 ? ' on' : ''}" data-f="ty">${tmTy === -1 ? '모든 타입' : TYPE_KO[tmTy]}</button><button class="fsel${tmCat !== -1 ? ' on' : ''}" data-f="cat">${tmCat === -1 ? '모든 형태' : ['물리', '특수', '변화'][tmCat]}</button>${prBtn()}</div>` : `<p class="sf-none">${TYPE_KO[g.ty]} 타입 포켓몬이 아직 없어요.</p>`}
     ${types.length && !L.length ? '<p class="sf-none">조건에 맞는 기술머신이 없어요.</p>' : ''}
-    <div class="sp-list">${L.map(x => `<button class="sp-tm" data-tm="${x[0]}"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png"><span class="tm-nm"><b>${esc(x[1])}</b>${g.tms[x[0]] ? `<i class="tm-own">×${g.tms[x[0]]}</i>` : ''}</span><span class="tm-meta">${GB().tyTag(x[2], x[3])}<small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}</small></span><em>${gold(tmPrice(x))}</em></button>`).join('')}</div>`;
+    <div class="sp-list">${L.map(x => { const tr = GB().isTR(x[0]), own = !tr && g.tms[x[0]] > 0; return `<button class="sp-tm${own ? ' own' : ''}" data-tm="${x[0]}"${own ? ' disabled' : ''}><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png"><span class="tm-nm">${tr ? '<i class="tm-tr">TR</i>' : ''}<b>${esc(x[1])}</b>${tr && g.tms[x[0]] ? `<i class="tm-own">×${g.tms[x[0]]}</i>` : ''}</span><span class="tm-meta">${GB().tyTag(x[2], x[3])}<small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}</small></span><em>${own ? '보유 중' : gold(tmPrice(x))}</em></button>`; }).join('')}</div>`;
   // 필터는 눌러서 고르는 목록으로 (경완 2026-10-28 '모든 항목을 나열하지 말고')
   // 필터: 도감처럼 단추를 누르면 목록 창 (경완 2026-10-28)
   const fPick = f => { const O = f === 'ty' ? [[-1, '모든 타입'], ...types.map(t => [t, TYPE_KO[t], t])] : [[-1, '모든 형태'], ...['물리', '특수', '변화'].map((n, c) => [c, n, null, `<img class="fo-cat" alt="" src="${K.IMG}bt/cat_${c}.png">`])];   // 포켓몬 박스 필터와 같은 목록 창 (경완 2026-10-30)
@@ -565,12 +565,13 @@ function shopTm(body) {
 }
 function buyTm(id, can) {
   const D = GB().D, g = st(), x = GB().mvOf(id), i = D.mv.indexOf(x), price = tmPrice(x), L = can.get(i) || [], n = g.tms?.[id] || 0;
-  pop(`<h4><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">기술머신 · ${esc(x[1])}</h4><div class="mp-moves one tm-card">${GB().mvRow(x, '')}</div><p class="gy-msg">${esc(x[8] || '')}</p>
+  const kd = GB().tmKind(id); if (!GB().isTR(id) && n > 0) return;   /* 기술머신은 한 번 사면 계속 (v15.69) */
+  pop(`<h4><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">${kd} · ${esc(x[1])}</h4><div class="mp-moves one tm-card">${GB().mvRow(x, '')}</div><p class="gy-msg">${esc(x[8] || '')}</p><p class="gy-msg tm-kd">${GB().isTR(id) ? '기술레코드는 한 번 가르치면 없어져요.' : '기술머신은 한 번 사면 몇 번이든 가르칠 수 있어요.'}</p>
     <div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="buy">${gold(price)} 사기</button></div>`, (a, close) => {
     if (a === 'x') return close(); if (a !== 'buy') return;
     if (!buy(price)) { close(); return say(`골드가 모자라요. ${price.toLocaleString()}G가 필요해요.`); }
-    close(); g.tms = g.tms || {}; g.tms[id] = (g.tms[id] || 0) + 1; K.glog('tr', `기술머신 <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 샀다.`); K.save(); redraw();
-    say(`기술머신 ${esc(x[1])}${K.jong(x[1]) ? '을' : '를'} 창고에 넣었어요.`);   // 경완 2026-10-29 '여기까지만'
+    close(); g.tms = g.tms || {}; g.tms[id] = (g.tms[id] || 0) + 1; K.glog('tr', `${kd} <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 샀다.`); K.save(); redraw();
+    say(`${kd} ${esc(x[1])}${K.jong(x[1]) ? '을' : '를'} 창고에 넣었어요.`);   // 경완 2026-10-29 '여기까지만'
   });
 }
 // 지니는 도구 (경완 2026-10-29): 계속 효과 있는 것만. 사면 창고(g.itm)로, 지니게 하기는 창고·도구 사용에서
