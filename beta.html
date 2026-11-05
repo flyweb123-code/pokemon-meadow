@@ -3323,12 +3323,14 @@ const PMD_SH = true;
 const PSH = [[-2, [[3, 2], [4, 3], [4, 3], [3, 2]]], [-3, [[3, 2], [6, 5], [7, 6], [7, 6], [6, 5], [3, 2]]], [-4, [[4, 3], [8, 7], [10, 9], [11, 10], [11, 10], [10, 9], [8, 7], [4, 3]]]];   // 원본 Shadow.png 의 세 타원 (가운데 점 기준 줄마다 왼쪽·오른쪽 칸 수)
 const PSH_D = PSH.map(([T, R]) => [Math.max(...R.map(r => r[0])), Math.max(...R.map(r => r[1])), T, R.length]);
 let SHD = null, shdP = null; const PSHC = {};
-const shdGet = () => shdP || (shdP = fetch('shd.json?v=1').then(r => r.json()).then(d => (SHD = d)).catch(() => { shdP = null; return (SHD = {}); }));
+const shdGet = () => shdP || (shdP = fetch('shd.json?v=2').then(r => r.json()).then(d => (SHD = d)).catch(() => { shdP = null; return (SHD = {}); }));
 const shdOf = k => SHD && (SHD[k] || SHD[parseInt(k)]);
 function pshMask(z, ps) { const key = z + ':' + ps.toFixed(3); if (PSHC[key]) return PSHC[key]; const [L, R, T, n] = PSH_D[z], dp = Math.min(3, window.devicePixelRatio || 1), W = Math.round((L + R + 1) * ps), H = Math.round(n * ps);
   const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(W * dp)); c.height = Math.max(1, Math.round(H * dp)); const x = c.getContext('2d'); x.fillStyle = '#000'; const u = ps * dp;
   PSH[z][1].forEach(([a, b], r) => { const x0 = Math.round((L - a) * u), x1 = Math.round((L + b + 1) * u), y0 = Math.round(r * u), y1 = Math.round((r + 1) * u); x.fillRect(x0, y0, x1 - x0, y1 - y0); });
   return (PSHC[key] = c.toDataURL('image/png')); }
+// v16.70 경완 '몸 부위 위치표': 머리 가운데(원본 Offsets 검은 점)의 좌우 자리 — 말풍선을 머리 위에
+function headX(m) { const k = m.sk || m.form, Q = PMD_SH && isPmd(k) && shdOf(k), H = Q?.[2]; if (!H) return 0; const v = H[m.anName] || H._; return (v[0] + (ANIM_DX[k]?.[m.anName] || 0)) * scaleOf(k) * (m.face || 1); }
 // 지금 그림 칸의 그림자 자리 (원본 px, Idle 첫 칸 기준 차이)
 function pshOff(Q, name, f) { const v = Q[1][name] || Q[1]._, p = typeof v[0] === 'number' ? v : (v[f] || v[v.length - 1]); return [p[0] - Q[1]._[0], p[1] - Q[1]._[1]]; }
 function shadowFit(m) {
@@ -5477,7 +5479,7 @@ const hurt = m => { playOnce(m, 'Hurt'); anim(m, 'shake'); };
 const MXP = {};
 function loadMx(k) { const P = SPRITES[k]; if (!P || !isPmd(k)) return Promise.resolve(false); if (P.mx) return Promise.resolve(true); if (P.mxNo) return Promise.resolve(false);
   return MXP[k] ||= (async () => { try {
-    await padAtlas(k); const r = await fetch(`mx/${k}.json?v=1`); if (!r.ok) { P.mxNo = 1; return false; } const X = await r.json();
+    await padAtlas(k); const r = await fetch(`mx/${k}.json?v=2`); if (!r.ok) { P.mxNo = 1; return false; } const X = await r.json();
     const ld = u => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = u; }), [bi, xi] = await Promise.all([ld(P.i), ld(X.i)]);
     const G = P.G || 0, A = P.a; let W = 0, H = 0; for (const n in A) { const a = A[n]; W = Math.max(W, a[3] * (a[1] + G)); H = Math.max(H, a[0] + a[2] + G); }
     const R = Math.max(1, Math.round(bi.width / Math.max(1, W))), names = Object.keys(X.a).filter(n => !A[n]); if (!names.length) { P.mx = 1; return true; }
@@ -5528,7 +5530,8 @@ function dlgWho(a) { const L = a.who.map(u => S.mons.find(o => o.uid === u)).fil
 function dlgFaceM() { const pe = pinOf(), a = pe || S.log[0]; if (!a || !a.who?.length) return null; return dlgWho(a); }
 function baseAnim(m) {
   if (m.state === 'sleep') return m.act.classList.contains('doze') && m.sleepAge < 2.3 ? 'Idle' : 'Sleep';
-  if (m.state === 'move') return m.up ? 'WalkUp' : 'Walk';
+  if (m.state === 'move') return m.wd || (m.up ? 'WalkUp' : 'Walk');   /* v16.70 경완 '다른 방향 그림': 가는 쪽에 따라 아래·왼아래·옆·왼위·위 (오른쪽은 뒤집기) */
+  if (m.state === 'interact' && m.partner && !m.backSit && Math.abs(m.partner.y - m.y) < Math.abs(m.partner.x - m.x) * .6) return 'IdleS';   // 마주 보고 있을 땐 옆모습
   if (m.state === 'eat') return 'Eat';
   if (m.backSit) return 'WalkUp';   // 뒷모습으로 앉아 있기 (걷는 첫 장면에 멈춘다)
   return 'Idle';
@@ -5548,6 +5551,7 @@ function rideTy(m, H) {   // 태운 포켓몬 그림의 맨 위(타는 자리 �
   for (let i = c - 3; i <= c + 3; i++) if (i >= 0 && i < ah[1]) T0 = Math.min(T0, MH.t[i]); if (T0 >= ah[2]) T0 = MH.top;
   return H.y + (T0 - ah[5] - Ph.fy) * sh + H.vOy + 2 - (m.y + (MR.b - ar[5] - Pr.fy) * sr);
 }
+const DIR_ALT = { WalkN: 'WalkUp', WalkS: 'Walk', WalkD: 'Walk', IdleS: 'Idle' };
 const ANIM_DX = { 177: { Sleep: 2 } }, ANIM_DY = { 936: { Shoot: [-1, -3, -3, -3, -3, -3] }, 860: { Idle: [0, 4, 6, 7, 6, 4, 2] } };   // 11.92 경완 '쏘겨모 왜 떠다니냐': 가만히 있는 그림이 칸마다 최대 7칸 위로 떠오름 → 발을 땅에 붙인다   // v9.91 경완 '투구뿌논 가로등 불 켜기 때 그림자가 몸통에 가까워짐': 쏘기 그림 몸이 3칸 내려앉아 그림자를 덮었다 → 그 칸만 올린다 (칸별, 없는 칸은 0)   // v9.87 경완 '네이티 자는 모션 중앙이 안 맞음': 그림 칸 기준점이 몸 가운데와 어긋난 동작은 칸 단위로 옮긴다
 function drawSprite(m, dt) {
   const P = SPRITES[m.sk || m.form], A = P.a;
@@ -5557,6 +5561,7 @@ function drawSprite(m, dt) {
   if (m.szAn && !m.one && A[m.szAn]) name = m.szAn;
   if (m.scp && m.scAn && !m.one && A[m.scAn]) name = m.scAn;
   if (m.anOv && !m.one && !m.held && A[m.anOv] && m.anOvT > performance.now()) name = m.anOv;   // v9.35: 술래잡기처럼 장면 중에 달리는 동안 걷는 그림   // v9.29: 스칼렛 소품 놀이 동작 그림   // v5.69 작업실 크기 조절 모드: 고른 동작으로 보기
+  if (!A[name] && DIR_ALT[name]) { if (!P.mx) loadMx(m.sk || m.form); name = DIR_ALT[name]; }   // 다른 방향 그림을 아직 안 받았으면 받는 동안 원래 그림
   if (!A[name]) name = name === 'WalkUp' ? 'Walk' : 'Idle';
   if (!m.held && !m.scp && lowAn(m, name) && pondVal(m.x, m.y) < 1.05) { const alt = ['Walk', 'Idle'].find(n => A[n] && !lowAn(m, n)); if (alt) name = alt; if ((m.state === 'idle' || m.state === 'eat') && !m.goal && !m.pin && !m.pet && !m.partner) moveTo(m, shorePoint(m, 0), { kind: 'wander' }); }   // v9.55: 연못 위에서는 땅에 닿는 동작 대신 떠 있는 그림, 서 있던 거면 물가로
   m.anName = name;
@@ -5642,7 +5647,7 @@ function update(m, dt) {
       if (fireBlk(m) && fireVal(m, m.x + vx, m.y + vy) < 1) { const B = fireBox(m); let nx = (m.x - B.x) / B.rx ** 2, ny = (m.y - B.y) / B.ry ** 2; const nl = Math.hypot(nx, ny) || 1; nx /= nl; ny /= nl; const dot = vx * nx + vy * ny; if (dot < 0) { vx -= dot * nx; vy -= dot * ny; } }
       m.x += vx; m.y += vy;
       if (Math.abs(vx) > step * .25 && Math.abs(dx) > 2) m.face = vx > 0 ? -1 : 1;
-      m.up = dy < -Math.abs(dx) * .8;
+      m.up = dy < -Math.abs(dx) * .8; { const ax = Math.abs(dx); m.wd = dy < -ax * 2.414 ? 'WalkN' : dy < -ax * .414 ? 'WalkUp' : dy <= ax * .414 ? 'WalkS' : dy <= ax * 2.414 ? 'Walk' : 'WalkD'; }
       if (pondWalk(m) && pondVal(m.x, m.y) < 1.08) projectOut(m, 1.08);
       if (t.mv === 'swim' && !m.land && pondVal(m.x, m.y) > .9) projectOut(m, .9);
       m.x = clamp(m.x, XL + 20, XR - 20); m.y = clamp(m.y, MIN_Y, MAX_Y);
@@ -5731,7 +5736,7 @@ function render(m, now) {
   }
   if (m.state !== 'sleep' && m.bub.classList.contains('zz') && m.bubT > 50) { m.bubT = 0; }
   { const hg = m.hunger > FEED_BUB && !m.held && !m.evolving && !fedBusy(m); if (m.bub.classList.contains('feed')) { if (hg) m.bubT = Math.max(m.bubT, .3); else if (m.bubT > 0) m.bubT = 0; } else if (hg && !(m.bubT > 0)) hungryBub(m); }   /* v6.23 경완: 배고픈 동안 열매가 계속 떠 있다 (다른 말풍선이 끝나면 다시) */   /* v7.97 경완: 자는 동안에도 떠 있다 (누르면 깨서 먹음) */
-  if (!m.hidden && m.bubT > 0) { m.bub.hidden = false; m.bub.style.left = m.x + 'px'; m.bub.style.top = (top - 4 - hopLift(m)) + 'px'; }   /* v8.49 경완: 깡충 뛰면 말풍선도 같이 올라간다 */
+  if (!m.hidden && m.bubT > 0) { m.bub.hidden = false; m.bub.style.left = (m.x + headX(m)) + 'px'; m.bub.style.top = (top - 4 - hopLift(m)) + 'px'; }   /* v8.49 경완: 깡충 뛰면 말풍선도 같이 올라간다 */
   else m.bub.hidden = true;
   const sel = S.sel === m || lookMon === m;
   m.tag.hidden = !sel || m.hidden;
@@ -7368,7 +7373,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '16.70';   /* v16.70 경완: 훈련 일지 하루씩 넘기기·코치가 가르쳤다, 훈련 현황 누적, 라인업 박스 뺌 */ /* v16.69 경완: 원본 그림자 — 종마다 작게·보통·크게 도트 타원, 동작 그림마다 그림자 자리가 몸을 따라감(shd.json). */   /* v16.68 경완: 훈련 일지 문장·머리 맞춤, 빼기, 홈 트레이너 카드 통일 */ /* v16.67 경완: 지원서 없음 화면 메일 아이콘 뺌, 고용 관리 탭을 왼쪽으로 */ /* v16.66 경완: 트레이너 상세카드 딱지·발판·코치 빼기 */ /* v16.65 경완: 청결·즐거움·배부름이 셋 다 0 인 포켓몬은 가끔 멈춰서 움찔. */   /* v16.64 경완: 놀랄 때 움찔 동작 뺌, 둘이 붙을 때(싸움·박치기) 중간중간 아파함, 쓰다듬은 뒤엔 빙글·깡총 대신 포즈(포즈 그림 있는 종). */   /* v16.63 경완: 트레이너 상세카드 레이아웃·기록 정리 */ /* v16.64 경완: 체육관 내 캐릭터 상세카드 등급별 디자인 */ /* v16.61 경완: 상태창 왼쪽 포켓몬 얼굴 끔 (필드 스프라이트 표정을 물어본 거였음) — 필드 새 동작은 그대로. */   /* v16.60 경완: 얼굴 표정·필드 동작 — 상태창 왼쪽에 문장 속 포켓몬 얼굴(말풍선 상황마다 기쁨·놀람·걱정·화남 등 표정, face/), 끄덕이기·올려다보기·포즈·춤·노래·깨어나기·움찔 등 원본 나머지 동작(mx/, 필드에 있는 포켓몬부터 하나씩 받아 둠)을 상호작용마다. */   /* v16.59 경완: 랭킹의 내 줄 → 프로필 내 카드와 동일 */ /* v16.60 경완: 진화구슬 기술 5차 — 파도 큰 구슬도 뜸(무거울수록 천천히), 폭풍 더 세게, 용해액 방울 작게·안 녹는 구슬은 튕겨내는 막, 사이코 떠오르는 구슬도 밀림 */
+const APP_VER = '16.71';   /* v16.71 경완: 훈련 일지 하루씩 넘기기·코치가 가르쳤다, 훈련 현황 누적, 라인업 박스 뺌 */ /* v16.70 경완: 다른 방향 그림 — 걷는 쪽 따라 아래·옆·위 모습(오른쪽은 뒤집기), 마주 보고 얘기할 땐 옆모습. 몸 부위 위치표로 말풍선을 머리 위에. */   /* v16.69 경완: 원본 그림자 — 종마다 작게·보통·크게 도트 타원, 동작 그림마다 그림자 자리가 몸을 따라감(shd.json). */   /* v16.68 경완: 훈련 일지 문장·머리 맞춤, 빼기, 홈 트레이너 카드 통일 */ /* v16.67 경완: 지원서 없음 화면 메일 아이콘 뺌, 고용 관리 탭을 왼쪽으로 */ /* v16.66 경완: 트레이너 상세카드 딱지·발판·코치 빼기 */ /* v16.65 경완: 청결·즐거움·배부름이 셋 다 0 인 포켓몬은 가끔 멈춰서 움찔. */   /* v16.64 경완: 놀랄 때 움찔 동작 뺌, 둘이 붙을 때(싸움·박치기) 중간중간 아파함, 쓰다듬은 뒤엔 빙글·깡총 대신 포즈(포즈 그림 있는 종). */   /* v16.63 경완: 트레이너 상세카드 레이아웃·기록 정리 */ /* v16.64 경완: 체육관 내 캐릭터 상세카드 등급별 디자인 */ /* v16.61 경완: 상태창 왼쪽 포켓몬 얼굴 끔 (필드 스프라이트 표정을 물어본 거였음) — 필드 새 동작은 그대로. */   /* v16.60 경완: 얼굴 표정·필드 동작 — 상태창 왼쪽에 문장 속 포켓몬 얼굴(말풍선 상황마다 기쁨·놀람·걱정·화남 등 표정, face/), 끄덕이기·올려다보기·포즈·춤·노래·깨어나기·움찔 등 원본 나머지 동작(mx/, 필드에 있는 포켓몬부터 하나씩 받아 둠)을 상호작용마다. */   /* v16.59 경완: 랭킹의 내 줄 → 프로필 내 카드와 동일 */ /* v16.60 경완: 진화구슬 기술 5차 — 파도 큰 구슬도 뜸(무거울수록 천천히), 폭풍 더 세게, 용해액 방울 작게·안 녹는 구슬은 튕겨내는 막, 사이코 떠오르는 구슬도 밀림 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)

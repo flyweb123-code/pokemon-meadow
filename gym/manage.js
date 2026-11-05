@@ -61,7 +61,7 @@ function tickTrain(now) {
       const step = Math.min(1, left), tot = perHour(P) * step + (e.fx || 0), n = Math.floor(tot); e.fx = tot - n;
       e.fa = (e.fa || 0) + step * trFr(P); while (e.fa >= 1) { e.fa -= 1; if ((P.fr || 0) < 255) { P.fr = Math.min(255, (P.fr || 0) + 1); R.f += 1; } }   /* 필드처럼 쌓이다 1이 차면 +1 */
       if (n > 0) { e.x = (e.x || 0) + n; R.x += n; GB().gainXp(P, n).learned.forEach(([id]) => { got.push(GB().mvKo(id)); (e.mv = e.mv || []).push(id); R.mv.push(id); }); }
-      e.acc = (e.acc || 0) + step; while (e.acc >= 1) { e.acc -= 1; if (Math.random() < .05) { const x = special(P); if (x) { (e.mv = e.mv || []).push(x[0]); R.mv.push(x[0]); if (st().sf.some(s => s.yard && !s.rest)) (R.cm = R.cm || []).push(x[0]); else (R.sm = R.sm || []).push(x[0]); }   /* v16.70 경완: 코치 덕에 배운 기술은 일지에 '코치가 가르쳤다' */ if (x) K.awMv?.(P.id, x[0], x[1], x[2]); if (x) K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '이' : '가'} 훈련장에서 특별한 기술 <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 익혔다! <small>기술 바꾸기에서 쓸 수 있어요</small>`, now); } }
+      e.acc = (e.acc || 0) + step; while (e.acc >= 1) { e.acc -= 1; if (Math.random() < .05) { const x = special(P); if (x) { (e.mv = e.mv || []).push(x[0]); R.mv.push(x[0]); if (st().sf.some(s => s.yard && !s.rest)) (R.cm = R.cm || []).push(x[0]); else (R.sm = R.sm || []).push(x[0]); }   /* v16.71 경완: 코치 덕에 배운 기술은 일지에 '코치가 가르쳤다' */ if (x) K.awMv?.(P.id, x[0], x[1], x[2]); if (x) K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '이' : '가'} 훈련장에서 특별한 기술 <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 익혔다! <small>기술 바꾸기에서 쓸 수 있어요</small>`, now); } }
     }
     R.lv += GB().gm(P).lv - lvA; R.to = GB().gm(P).lv; }
     const lv = GB().gm(P).lv;
@@ -453,7 +453,7 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
   const P = boxOf(id); if (!P) return; const m = GB().gm(P), ph = perHour(P), g = GB().growth(P.sp), need = GB().xpAt(g, m.lv + 1) - GB().xpAt(g, m.lv);
   const a0 = GB().xpAt(g, m.lv), r = m.lv >= GB().LV_MAX ? 1 : clampN(((m.xp ?? a0) - a0) / Math.max(1, need), 0, 1);
   const e = st().tr.find(x => x.id === P.id), lf = e ? Math.max(0, Math.ceil(leftOf(e))) : 0, mx = m.lv >= GB().LV_MAX, today = K.dayStart(Date.now()), T = trLog(P.id)[today] || { h: 0, x: 0, lv: 0, f: 0, mv: [] };
-  /* v16.70 경완 '훈련 일지 옆 통합 점수를 앞 화면 박스에, 오늘 훈련 → 훈련 현황': 훈련 일지 전체를 더한 값 */
+  /* v16.71 경완 '훈련 일지 옆 통합 점수를 앞 화면 박스에, 오늘 훈련 → 훈련 현황': 훈련 일지 전체를 더한 값 */
   const TT = Object.values(trLog(P.id)).reduce((a, d) => { a.d++; a.x += d.x; a.lv += d.lv; a.f += d.f; a.mv.push(...d.mv); return a; }, { d: 0, x: 0, lv: 0, f: 0, mv: [] });
   /* v16.41 경완: 레벨 옆 ▲ 딱지 빼고 훈련 중 / 오늘 훈련 끝만. 숫자 칸 넷 대신 '오늘 훈련' 상자(경험치·레벨·친밀도·새 기술) → 누르면 날짜별 훈련 일지. 기술 버튼 둘은 빼고 체육관 상세카드처럼 '기술 바꾸기 ›' */
   const p = pop(`<div class="tp2">${trHead(P, true)}
@@ -488,7 +488,7 @@ function trLogPop(P, from) {
     if (d.f) ln.push(`<li class="tl-s fr">친밀도가 <b>${d.f}</b> 올랐다!</li>`);
     d.mv.forEach(id => { const j = K.jong(GB().mvKo(id)) ? '을' : '를'; ln.push((d.cm || []).includes(id) ? `<li class="tl-s mv cm">코치가 새로운 기술 ${mvChips([id])}${j} 가르쳤다!</li>` : (d.sm || []).includes(id) ? `<li class="tl-s mv">훈련장에서 특별한 기술 ${mvChips([id])}${j} 익혔다!</li>` : `<li class="tl-s mv">새로운 기술 ${mvChips([id])}${j} 배웠다!</li>`); });
     return `<li class="${up ? 'lvup' : ''}${mv ? ' newmv' : ''}"><div class="tl-d"><small>${Math.floor(d.h)}시간 훈련했다.</small></div><ul class="tl-ss">${ln.join('')}</ul></li>`; };
-  /* v16.70 경완 '훈련 일지는 날짜별로 좌우 화살표로 넘겨서': 하루 한 장, ◀ 전날 · ▶ 다음날, 옆으로 밀어도 넘어감 */
+  /* v16.71 경완 '훈련 일지는 날짜별로 좌우 화살표로 넘겨서': 하루 한 장, ◀ 전날 · ▶ 다음날, 옆으로 밀어도 넘어감 */
   let i = 0;
   const page = () => { const k = ks[i], t = new Date(k);
     return ks.length ? `<div class="jn-nav tl-nav"><button type="button" data-mv="1" ${i >= ks.length - 1 ? 'disabled' : ''} aria-label="전날">◀</button><b>${t.getMonth() + 1}월 ${t.getDate()}일 <small>(${WD[t.getDay()]})</small>${k === today ? '<i class="jn-today">오늘</i>' : ''}</b><button type="button" data-mv="-1" ${i <= 0 ? 'disabled' : ''} aria-label="다음날">▶</button></div>
