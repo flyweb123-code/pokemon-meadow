@@ -6751,6 +6751,7 @@ function relsHtml(m, nGood, nBad) {
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const infoEl = $('#info');
 infoEl.addEventListener('click', e => { if (e.target.closest('#infoX')) { e.stopPropagation(); sfx('tap'); select(null); return; }
+  if (e.target.closest('#infFeed,#infPet,#infGame,#infWash')) try { Visit.hoopOff?.(); } catch (er) {}   /* v16.55 경완: 후프 들고 있다가 다른 행동하면 후프 내려놓음 */
   if (e.target.closest('#infFeed') && S.sel) { e.stopPropagation(); feedNow(S.sel); return; }
   if (e.target.closest('#infoBud') && S.sel?.pid) { e.stopPropagation(); sfx('tap'); const pid = S.sel.pid; select(null); closeToggles(); hideSheets(); menuTo(fldOpen, 'fld'); budFocus = pid; setMgrTab('buddy'); return; }   // v8.79 경완: 정보 카드의 '짝꿍' 표시를 누르면 짝꿍 탭으로 가서 그 포켓몬 카드 테두리가 빛남
   if (e.target.closest('#infBudGo') && S.sel) { e.stopPropagation(); const P = boxOf(S.sel.pid); if (!P) return; budNorm(); const keep = S.buds.filter(b => b.pid !== P.id); if (keep.length >= MAX_BUDS) return;
@@ -7281,7 +7282,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '16.56';   /* v16.56 경완 '초롱순 안 움직임': 8·9세대 179종은 그림 두 장이 똑같아 상세카드에서 안 움직이던 것 → 숨쉬듯 들썩이기. */ /* v16.55 경완: 진화구슬 기술 4차 — 바톤터치 둥근 판 앞에서 그 자리 그대로 교체, 폭풍 전체 구슬 무게대로 들썩+바람 소리, 용해액 피카츄 이하만·틈 없어도 찐득하게 흐름, 돌떨구기 라이츄 이하만 깨짐, 파도 수면 위로 안 뜸, 사이코 서서히 점선 아래까지·떨림 고침, 얼음 = 고드름침(구슬만 밀리고 고드름은 바닥까지) */
+const APP_VER = '16.57';   /* v16.57 경완: 후프 들고 있다가 점프·열매 놓기·상세카드 행동(먹이·쓰다듬기·씻기기·놀이)을 하면 후프를 내려놓음 (움직이기·타기는 원래 그랬음). */   /* v16.56 경완 '초롱순 안 움직임': 8·9세대 179종은 그림 두 장이 똑같아 상세카드에서 안 움직이던 것 → 숨쉬듯 들썩이기. */ /* v16.55 경완: 진화구슬 기술 4차 — 바톤터치 둥근 판 앞에서 그 자리 그대로 교체, 폭풍 전체 구슬 무게대로 들썩+바람 소리, 용해액 피카츄 이하만·틈 없어도 찐득하게 흐름, 돌떨구기 라이츄 이하만 깨짐, 파도 수면 위로 안 뜸, 사이코 서서히 점선 아래까지·떨림 고침, 얼음 = 고드름침(구슬만 밀리고 고드름은 바닥까지) */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7463,6 +7464,7 @@ const Visit = (() => {
     bb.addEventListener('pointerdown', e => { if (!on()) return; e.preventDefault(); e.stopPropagation(); skip = performance.now(); drop(); });
     bb.onclick = e => { if (!on()) return oc(e); if (performance.now() - skip < 800) return; drop(); };
     const drop = () => {
+      try { V.hoopOff(); } catch (er) {}
       bb.classList.remove('tap'); void bb.offsetWidth; bb.classList.add('tap'); clearTimeout(bt); bt = setTimeout(() => bb.classList.remove('tap'), 140);
       if (S.tool === 'berry') setTool('look');
       const ox = me.d === 2 ? (me.f ? 36 : -36) : 0, oy = me.d === 0 ? 20 : me.d === 1 ? -34 : 4;   // 트레이너 그림(64px)에 가리지 않게
@@ -7561,7 +7563,7 @@ const Visit = (() => {
     const jb = el('button', 'vjump', '<svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M5 1h2v1h1v1h1v1h1v1h1v1h-3v5h-4v-5h-3v-1h1v-1h1v-1h1v-1h1z"/></svg><span>점프</span>'); jb.type = 'button'; jb.setAttribute('aria-label', '점프');
     // v15.21 경완: 방향키를 누른 채 눌러도 눌림 모션 (두 번째 손가락은 :active 가 안 먹어서 .on 으로), 점프 소리
     const jOff = () => jb.classList.remove('on');
-    jb.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); jb.classList.add('on'); try { jb.setPointerCapture(e.pointerId); } catch (er) {} if (!me) return; me.jn = ((me.jn || 0) + 1) % 1000; me.jump(); try { haptic(0); } catch (er) {} sendTr(); });
+    jb.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); jb.classList.add('on'); try { jb.setPointerCapture(e.pointerId); } catch (er) {} if (!me) return; V.hoopOff(); me.jn = ((me.jn || 0) + 1) % 1000; me.jump(); try { haptic(0); } catch (er) {} sendTr(); });
     for (const t of ['pointerup', 'pointercancel', 'lostpointercapture']) jb.addEventListener(t, jOff);
     { const rb = el('button', 'vjump vride', '<span>타기</span>'); rb.type = 'button'; rb.hidden = true;   // v16.04 경완: 탈 수 있는 소품 근처에서만 '타기', 타고 있으면 '내리기'
       rb.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); rb.classList.add('on'); try { rb.setPointerCapture(e.pointerId); } catch (er) {} if (!me) return; try { haptic(0); } catch (er) {}
@@ -7690,6 +7692,7 @@ const Visit = (() => {
   // v16.32 경완 '소품에 길 막힘': 링 앞(뒤) 자리가 소품·나무·모닥불·연못·버튼 자리에 걸리면 moveTo 가 딴 데로 옮겨서 끝없이 다시 부르던 것 → 갈 수 있는 쪽만 고름
   const hoopSpotOk = (m, p) => { const q = fireOut(m, outOfSc(outOfTree({ x: p.x, y: p.y })), 1.1); return Math.hypot(q.x - p.x, q.y - p.y) < 6 && !(pondWalk(m) && pondVal(p.x, p.y) < 1.1) && !inHud(m, p.x, p.y) && p.y > MIN_Y + 2 && p.y < MAX_Y - 2; };
   function hoopFlush() { for (const m of HJ) { const h = m.hj; if (h) { m.x = h.x1; m.y = h.y1; } m.xl = 0; m.hj = null; } HJ.clear(); for (const m of S.mons) if (m.goal?.kind === 'hoop') m.goal = null; }   // 트레이너가 다 나가면 뛰던 포켓몬은 바로 내려놓음
+  V.hoopOff = () => { if (me?.ho) { me.hold(false); rbT = 0; sendTr(); } };   /* v16.55 경완 '후프 들고 점프해도 취소, 다른 행동하면 다 취소' */
   { const hb = qs('#btnHoop'); if (hb) hb.addEventListener('click', e => { e.stopPropagation(); if (!me) return; sfx('tap'); try { haptic(0); } catch (er) {} if (me.rd) { me.rideOff(); } me.hold(!me.ho); rbT = 0; sendTr(); }); }
   function stepMe(dt) {
     if (me.rd) { if (!keys.size) return; me.rideOff(); sendTr(); }   // v16.04: 방향키를 누르면 소품에서 내림
