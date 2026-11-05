@@ -2687,11 +2687,11 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .sf-cap{display:flex;gap:6px}
 #gym .sf-cap>span{display:flex;flex-direction:column;align-items:flex-end;padding:3px 8px 4px;background:#f3f1ea;box-shadow:inset 0 0 0 2px #d8d4c4;line-height:1.15}
 #gym .sf-cap small{font-size:10px;color:var(--dim)}#gym .sf-cap b{font-size:15px}#gym .sf-cap em{font-style:normal;font-size:11px;color:var(--dim);font-weight:400;margin-left:1px}
-#gym .gy-sheet:has(.sf-hd) .sp-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:0;margin:0 0 12px;border:3px solid var(--frame);background:var(--frame);box-shadow:0 3px 0 rgba(0,0,0,.18)}
-#gym .gy-sheet:has(.sf-hd) .sp-tabs button{padding:9px 4px;font-size:14px;background:var(--win);box-shadow:none;border:0}
-#gym .gy-sheet:has(.sf-hd) .sp-tabs button+button{border-left:3px solid var(--frame)}
-#gym .gy-sheet:has(.sf-hd) .sp-tabs button[aria-selected="true"]{background:#2a3a5c;color:#fff;font-weight:700;box-shadow:inset 0 -3px 0 #ffd84a}
-#gym .gy-sheet:has(.sf-hd) .sp-tabs .tdot{margin-left:2px;box-shadow:0 0 0 2px var(--win)}
+#gym .gy-sheet:has(.sf-hd):not(:has(.sp-gold)) .sp-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:0;margin:0 0 12px;border:3px solid var(--frame);background:var(--frame);box-shadow:0 3px 0 rgba(0,0,0,.18)}
+#gym .gy-sheet:has(.sf-hd):not(:has(.sp-gold)) .sp-tabs button{padding:9px 4px;font-size:14px;background:var(--win);box-shadow:none;border:0}
+#gym .gy-sheet:has(.sf-hd):not(:has(.sp-gold)) .sp-tabs button+button{border-left:3px solid var(--frame)}
+#gym .gy-sheet:has(.sf-hd):not(:has(.sp-gold)) .sp-tabs button[aria-selected="true"]{background:#2a3a5c;color:#fff;font-weight:700;box-shadow:inset 0 -3px 0 #ffd84a}
+#gym .gy-sheet:has(.sf-hd):not(:has(.sp-gold)) .sp-tabs .tdot{margin-left:2px;box-shadow:0 0 0 2px var(--win)}
 /* 빈 화면: 남은 자리 한가운데 */
 #gym .gy-sheet:has(.sf-void){display:flex;flex-direction:column}
 #gym .sf-void{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:240px;padding:0 16px 40px;text-align:center}
@@ -2951,3 +2951,11 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .tl-pg{margin:6px 0 0!important;text-align:center;font-size:11px;color:var(--dim)}
 #gym .tl-list li .tl-d small{font-size:12px}
 #gym .tl-s.cm::before{background:#d0602a}
+.gy-grid .gg-can{position:absolute;background:rgba(255,236,140,.22);box-shadow:inset 0 0 0 1px rgba(255,236,140,.55);animation:ggCan 1.6s ease-in-out infinite}@keyframes ggCan{50%{background:rgba(255,236,140,.36)}}   /* v16.76 경완: 갈 수 있는 자리 은은하게 */
+/* v16.76 경완: 훈련 일지는 박스 없이 노트처럼 문장마다 점선, '다음 레벨까지'는 경험치 막대 왼쪽에 맞춤 */
+#gym .tp2-hd small.tp-xp{text-align:left!important}
+#gym .tl-pop .tl-list li,#gym .tl-pop .tl-list li.lvup,#gym .tl-pop .tl-list li.newmv{padding:0 2px;background:none;box-shadow:none;gap:0}
+#gym .tl-pop .tl-list li .tl-d{padding:2px 0 6px;border-bottom:1px dashed #c8c2b0}
+#gym .tl-pop .tl-ss{gap:0}
+#gym .tl-pop .tl-list li .tl-s{padding:8px 0 8px 12px;border-bottom:1px dashed #c8c2b0}
+#gym .tl-pop .tl-s::before{top:calc(8px + .6em)}
