@@ -2185,7 +2185,7 @@ function awMvPop([P, mv, nm, ty], i, n) {
     ${n > 1 ? `<i class="aw-cnt">${i + 1} / ${n}</i>` : ''}<div class="aw-hd"><small>훈련장</small><b>특별한 기술을 익혔다!</b></div>
     <div class="aw-mon"><i class="aw-rays"></i><img alt="" data-awp="${P.id}"><i class="aw-st s1"></i><i class="aw-st s2"></i><i class="aw-st s3"></i></div>
     <p class="aw-say"><b>${esc(pn)}</b>${jong(pn) ? '은' : '는'}<br><b class="aw-mvn">${esc(nm)}</b>${jong(nm) ? '을' : '를'} 익혔다!</p>
-    <div class="aw-card" style="background-image:url(${IMG}bt/mv_${t || 1}.png)"><b>${esc(nm)}</b><span><i class="aw-ty">${tyIc0(t || 1)}${TYPE_KO[t || 1] || ''}</i><img alt="" src="${IMG}bt/cat_${cat}.png"><em>위력 ${pw}</em></span></div>
+    ${GB()?.mvBoxHtml?.(mv) || `<div class="aw-card" style="background-image:url(${IMG}bt/mv_${t || 1}.png)"><b>${esc(nm)}</b><span><i class="aw-ty">${tyIc0(t || 1)}${TYPE_KO[t || 1] || ''}</i><img alt="" src="${IMG}bt/cat_${cat}.png"><em>위력 ${pw}</em></span></div>`}
     <p class="aw-tip">기술 바꾸기에서 쓸 수 있어요</p>
     <div class="gy-btns one"><button class="main" data-a="x">${i + 1 < n ? '다음' : '확인'}</button></div></div>`, (a, close) => { close(); ok(); }); p.classList.add('aw-wrap');
     p.querySelectorAll('[data-awp]').forEach(im => GA.thumb(P).then(u => { if (u) im.src = u; }).catch(() => {})); });

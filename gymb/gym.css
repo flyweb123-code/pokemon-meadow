@@ -2674,3 +2674,4 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .jn-out{margin-top:10px;padding-top:8px;border-top:2px dashed #c8c8d8}
 #gym .aw-pop .aw-g{color:#a86400}#gym .aw-pop .aw-r{color:#2a8a3e}#gym .aw-tot>div:has(.aw-g){background:linear-gradient(#fff8d8,#ffeeb0);box-shadow:inset 0 0 0 2px #f0c850}#gym .aw-tot>div:has(.aw-g) span{color:#a86400}
 #gym .gy-jnlw .jn-g .jn-gc,#gym .gy-jnlw .jn-gc{color:#a86400}#gym .gy-jnlw .jn-m .jn-gc{color:#c03030}#gym .gy-jnlw .jn-g{color:#2a8a3e}
+#gym .aw-pop .mi-box{display:flex;flex-direction:column;gap:6px;padding:10px 12px;background:#fff;box-shadow:inset 0 0 0 2px #d8d8e4;text-align:left}#gym .aw-pop .mi-box .mi-h{margin:0}#gym .aw-pop .mi-box .mi-d{margin:0}
