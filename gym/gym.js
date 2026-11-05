@@ -579,6 +579,8 @@ const stkGold = (n, g) => n < 2 ? 0 : Math.round(g * Math.min(.5, .05 * (n - 1))
 const stkBonus = n => n < 2 ? 0 : Math.min(30, Math.max(n - 1, Math.round(1.3 ** (n - 2))));   // 연승마다 적어도 +1씩은 오른다 (경완 2026-10-29): 2연승 +1 · 3연승 +2 … 10연승 +9 · 11연승 +11 · 12연승 +14 · 15연승 +30
 // 그만큼 연승 중엔 도전자도 세진다: 연승 0.6 마다 레벨 +1 (최대 +10). 고용 트레이너가 막을 때도 같은 레벨로 싸운다
 const stkLv = n => Math.min(10, Math.floor((n | 0) * .6));
+// v17.31 경완 '연승 보정처럼 연패 보정도': 내가 직접 싸워 진 게 2번 이어지면(g.lstk) 도전자 레벨 −2, 연패마다 −2 더 (최대 −8), 강함 보정(strOf)도 쉰다. 한 번 막으면 0. 승급 심사는 그대로
+const lsLv = n => n < 2 ? 0 : Math.min(8, ((n | 0) - 1) * 2);
 // 평판 규칙은 고정 (경완 2026-10-29 '수치 말고 도전자 난이도로 밸런스, 규칙성이 느껴지게'): 막으면 +1 (이름 있는 트레이너 +2) + 연승 보너스, 지면 -1.
 // 고용 트레이너가 막아도 같은 규칙 (연승 보너스 포함, 인기인은 기본 평판 ×1.5)
 const repWin = r => r;
@@ -648,15 +650,32 @@ function myAvg() { const g = st(), L = luNow().map(P => (GB()?.gm?.(P) || g.mon?
 // 레벨에 맞는 종 고르기: 종족값 합이 레벨에 어울리는 포켓몬 (전설·환상·아기 빼고), 타입 맞추기
 let spCache = null;
 const spOff = sp => !!GA.SP_OFF?.has(+sp);   // 작업실에서 끈 포켓몬은 도전자·지원자 팀에 안 나옴 (경완 2026-10-28)
-function pickSp(types, lv) {
+let spCacheL = null;
+function pickSp(types, lv, tg) {
   if (!spCache) spCache = Object.entries(SPECIES).filter(([n, o]) => +n <= 1025 && !o.leg && !o.my && !o.baby && o.bs).map(([n, o]) => ({ n: +n, t: o.t || [], b: o.bs.reduce((a, c) => a + c, 0) }));
-  const tgt = Math.min(530, 230 + lv * 6.5);
-  for (const w of [55, 90, 140, 400]) { const L = spCache.filter(x => !spOff(x.n) && Math.abs(x.b - tgt) <= w && (!types.length || x.t.some(t => types.includes(t)))); if (L.length) return pick(L).n; }
+  if (!spCacheL) spCacheL = Object.entries(SPECIES).filter(([n, o]) => +n <= 1025 && (o.leg || o.my) && o.bs).map(([n, o]) => ({ n: +n, t: o.t || [], b: o.bs.reduce((a, c) => a + c, 0) }));
+  const tgt = tg || spTgt(lv), P = tgt > 600 ? spCache.concat(spCacheL) : spCache;   // 강함 보정으로 600 넘으면 전설·환상도 (전설 등급만)
+  for (const w of [55, 90, 140, 400]) { const L = P.filter(x => !spOff(x.n) && Math.abs(x.b - tgt) <= w && (!types.length || x.t.some(t => types.includes(t)))); if (L.length) return pick(L).n; }
   return 19;
 }
-function mkTeam(types, lvB, n) {
+function mkTeam(types, lvB, n, sb) {
   const T = types.length ? types : [rndI(1, 18), rndI(1, 18)];
-  return Array.from({ length: n }, (_, i) => { const lv = clampN(lvB + rndI(-2, 1) + (i === n - 1 ? 1 : 0), 2, 100); return [pickSp([pick(T)], lv), lv]; });
+  return Array.from({ length: n }, (_, i) => { const lv = clampN(lvB + rndI(-2, 1) + (i === n - 1 ? 1 : 0), 2, 100); return [pickSp([pick(T)], lv, sb && sb > spTgt(lv) ? sb : 0), lv]; });
+}
+/* v17.31 경완 '보정 최댓값을 등급별로' + '하나만 센 포켓몬 넣고 나머지 약하게 넣는 허점': 라인업 강함 보정.
+   기준 = 종족값 합계가 가장 높은 3마리(종족값 평균·레벨 평균). 약한 포켓몬을 섞어도 기준이 안 내려간다.
+   도전자 종류: 레벨로 정한 종족값 목표(spTgt)보다 기준이 높으면 기준 근처에서 고르되 등급 최대(STR_BS)까지.
+   도전자 레벨: 기준 종족값이 레벨 목표보다 30 높을 때마다 +1 의 절반, 등급 최대(STR_LV)까지. 이름 있는 트레이너·승급 심사는 그대로 */
+const spTgt = lv => Math.min(530, 230 + lv * 6.5);
+const STR_BS = [450, 480, 510, 540, 570, 600, 680], STR_LV = [0, 1, 2, 3, 4, 5, 6];
+const bsOf = sp => (SPECIES[sp]?.bs || []).reduce((a, b) => a + b, 0);
+function strOf(my) {
+  const g = st(), gi = clampN(gradeOf(g.rep || 0).i, 0, STR_BS.length - 1);
+  const R = my.map(P => ({ b: bsOf(P.sp), lv: (GB()?.gm?.(P) || g.mon?.[P.id])?.lv || 0 })).filter(x => x.b && x.lv).sort((a, b) => b.b - a.b || b.lv - a.lv).slice(0, 3);
+  if (!R.length) return null;
+  const sb = R.reduce((a, x) => a + x.b, 0) / R.length, sl = Math.round(R.reduce((a, x) => a + x.lv, 0) / R.length);
+  const lvB = Math.min(STR_LV[gi], Math.round(Math.max(0, sb - spTgt(sl)) / 30 / 2));
+  return { sb: Math.min(STR_BS[gi], Math.round(sb)), sl, lvB, gi };
 }
 const teamLv = T => T.reduce((a, m) => a + m[1], 0) / T.length;
 // 배틀 직전에 고른 라인업으로 상대 레벨·마리 수를 다시 맞춘다 (경완 2026-10-29). 본가 단계 팀(pickNamed)은 그대로
@@ -664,7 +683,7 @@ function refit(c, my) {
   const g = st(), L = my.map(P => (GB()?.gm?.(P) || g.mon?.[P.id])?.lv).filter(Boolean); if (!L.length) return;   // 아직 개체 정보가 없는 포켓몬도 gm() 으로 만들어서 센다
   const mean = Math.round(L.reduce((a, b) => a + b, 0) / L.length);
   // v13.88 경완 '막아줘': 승급 심사는 약한 포켓몬을 섞어 평균을 낮춰도 상대가 약해지지 않게 — 기준 레벨 = 평균과 (가장 높은 레벨 − BS_GAP) 중 큰 쪽
-  const avg = (c.boss ? Math.max(mean, Math.max(...L) - BS_GAP) : mean) + (c.boss ? 0 : stkLv(g.stk));   // 승급 심사 말고는 연승 중이면 도전자가 그만큼 세진다 (배틀 직전 연승 기준)
+  const avg = (c.boss ? Math.max(mean, Math.max(...L) - BS_GAP) : mean) + (c.boss ? 0 : stkLv(g.stk) - lsLv(g.lstk));   // 승급 심사 말고는 연승 중이면 도전자가 그만큼 세진다 (배틀 직전 연승 기준)
   if (c.named) {
     // 본가 단계 팀도 라인업 평균 +2 로 레벨만 옮긴다 (경완 2026-10-29 '여전히 라인업 기반이 아닌 듯'). 구성·기술은 그대로
     if (!c.sc) { const d = Math.round(avg + 4 - teamLv(c.team)); c.team = c.team.map(m => [m[0], clampN(m[1] + d, 5, 100), m[2]]); return; }
@@ -673,9 +692,10 @@ function refit(c, my) {
     return;
   }
   const C = CLS[c.k]; if (!C) return;
-  const f = c.f ?? (c.ivm || 0) / 20, diff = c.diff;
+  const f = c.f ?? (c.ivm || 0) / 20, diff = c.diff, S3 = strOf(my);
   const n = diff ? rndI(3, clampN(my.length + 1 + (f > .4) + (f > .8), 3, 6)) : clampN(rndI(2, 3) + (f > .5), 1, my.length);
-  c.team = mkTeam(C.t, chalLv(avg, diff, f), n);
+  const ls = lsLv(g.lstk), base = S3 ? Math.max(avg, S3.sl + stkLv(g.stk) - ls) + (ls ? 0 : S3.lvB) : avg;   // 기준 레벨 = 평균과 센 3마리 평균 중 큰 쪽 + 강함 보정 (연패 중엔 강함 보정 쉼)
+  c.team = mkTeam(C.t, chalLv(base, diff, f), n, ls ? 0 : S3?.sb); c.str = S3 ? [S3.sb, S3.lvB, ls] : null;
 }
 function mkChal(t) {
   const g = st(), G = gradeOf(g.rep || 0), avg = myAvg();
@@ -1021,12 +1041,12 @@ async function challenge(picked) {
     g.q.shift(); const R = rewOf(c), won = !!res?.won, now = Date.now();
     let gold = 0, rep = 0;
     const r0 = g.rep || 0;
-    if (won) { g.stk = (g.stk | 0) + 1; gold = addG(R.g + stkGold(g.stk, R.g)); addRep(repWin(R.r) + stkBonus(g.stk)); g.w++; if (g.wk) g.wk.w++; blocked(c); res.used.forEach(id => GA.addFr(id, R.fr)); }
-    else { g.stk = 0; if (!c.boss) addRep(repLose()); g.l++; if (g.wk) g.wk.l++; }
+    if (won) { g.stk = (g.stk | 0) + 1; g.lstk = 0; gold = addG(R.g + stkGold(g.stk, R.g)); addRep(repWin(R.r) + stkBonus(g.stk)); g.w++; if (g.wk) g.wk.w++; blocked(c); res.used.forEach(id => GA.addFr(id, R.fr)); }
+    else { g.stk = 0; if (!c.boss) { addRep(repLose()); g.lstk = (g.lstk | 0) + 1; } g.l++; if (g.wk) g.wk.l++; }
     if (!g.fb1 && !c.boss) { g.fb1 = 1; if ((g.w | 0) + (g.l | 0) <= 1) fbNext = won ? ['첫 승리 축하드립니다, 관장님!!<br>역시 배틀에 재능이 있으시군요!', '앞으로 이렇게만 하시면 돼요.<br>궁금한 점이 있으면 언제든 저한테 물어보세요!'] : ['아쉽네요, 관장님…<br>첫 배틀이라 긴장하셨나 봐요.', '라인업을 다시 짜 보거나 포켓몬을 키워서<br>다음 도전자는 꼭 막아 봐요!', '궁금한 점이 있으면 언제든 저한테 물어보세요!']; }   // v14.33 경완: 첫 배틀 뒤 안내원 대사창 (이기면 축하, 지면 아쉬움)   // 승급 심사는 져도 평판이 그대로라 버튼으로 바로 다시 받을 수 있다 (경완 2026-10-30)
     rep = (g.rep || 0) - r0;
     try { const lv = L => (L || []).map(o => o?.lv | 0).filter(Boolean), ml = lv(res?.my), fl = lv(team), av = L => L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : 0;
-      window.pkBal?.('gym', { c: c.boss ? 'boss' : c.named ? 'named' : 'chal', df: c.diff | 0, bs: c.boss | 0, nm: c.named || '', gr: g.gmax | 0, w: won ? 1 : 0, q: res?.quit ? 1 : 0, tn: res?.turns | 0, gd: gold, rp: rep, stk: g.stk | 0, sl: c.stkL | 0, ma: av(ml), mx: ml.length ? Math.max(...ml) : 0, mn: ml.length, fa: av(fl), fn: fl.length, sp: (res?.my || []).map(o => o?.sp | 0) }); } catch (e) {}   /* 밸런스 기록 (경완 2026-11-05): 도전자 종류·등급·승패·턴·골드·평판·내/상대 레벨 */
+      window.pkBal?.('gym', { c: c.boss ? 'boss' : c.named ? 'named' : 'chal', df: c.diff | 0, bs: c.boss | 0, nm: c.named || '', gr: g.gmax | 0, w: won ? 1 : 0, q: res?.quit ? 1 : 0, tn: res?.turns | 0, gd: gold, rp: rep, stk: g.stk | 0, ls: g.lstk | 0, sl: c.stkL | 0, ma: av(ml), mx: ml.length ? Math.max(...ml) : 0, mn: ml.length, fa: av(fl), fn: fl.length, sp: (res?.my || []).map(o => o?.sp | 0) }); } catch (e) {}   /* 밸런스 기록 (경완 2026-11-05): 도전자 종류·등급·승패·턴·골드·평판·내/상대 레벨 */
     { const m = dayRec(now).me; if (won) m.w++; else m.l++; m.g += gold; m.r += rep; }
     if (N && !c.sc) { const x = g.nt[N.id] || { s: 0 }; g.nt[N.id] = won ? { s: x.s + 1, n: now + rnd(2, 3.5) * DAY } : { s: x.s, n: now + rnd(.8, 1.5) * DAY }; }
     glog(won ? 'win' : 'lose', `${esc(c.cls)} <b>${esc(c.nm)}</b>${won ? `에게 이겼다! <small>+${gold}G · 평판 +${rep}</small>` : `에게 졌다… <small>평판 ${rep}</small>`}`);
