@@ -1,6 +1,962 @@
 {
  "days": [
   {
+   "at": 1793918939462,
+   "theme": "아침 빵집과 동네 장터",
+   "note": "오늘은 아침 장터예요! 벽돌 빵 화덕을 중심으로 과일 가판대·꽃 수레·잼 선반까지, 한자리에 모아 두면 작은 장터 골목이 되게 색을 맞췄어요. 먹는 소품이 많아서 먹기 동작을 여러 타입에 고르게 나눴어요.",
+   "items": [
+    {
+     "id": "stone-bread-oven",
+     "n": "돌 빵 화덕",
+     "k": "장식",
+     "glow": 1,
+     "fit": "장터 한쪽, 평평한 흙바닥",
+     "d": "벽돌을 둥글게 쌓아 올린 빵 화덕이에요. 아치 입구 안에서 장작불이 타고, 돌 받침 아래 칸에는 장작을 넣어 둬서 아침마다 고소한 냄새가 나요.",
+     "acts": [
+      {
+       "w": "불꽃 타입",
+       "a": "화덕 입구 앞에 앉아 입김으로 장작불을 크게 살려요",
+       "x": {
+        "at": "front",
+        "m": "skill"
+       },
+       "l": [
+        "화덕 입구 앞에서 입김을 불어 장작불을 활활 살렸다.",
+        "화덕 불씨를 살려 주고 뿌듯하게 불을 바라본다."
+       ]
+      },
+      {
+       "w": "얼음 타입",
+       "a": "화덕에 다가갔다가 뜨거운 열기에 놀라 피해 가요",
+       "x": {
+        "m": "avoid"
+       },
+       "l": [
+        "화덕에 다가갔다가 뜨거운 열기에 화들짝 놀라 물러났다.",
+        "화덕 열기를 피해 멀찍이 돌아간다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "둥근 화덕 지붕에 올라가 따뜻한 벽돌 위에 엎드려 졸아요",
+       "x": {
+        "at": [
+         0.4,
+         0.2
+        ],
+        "an": "Sleep"
+       },
+       "l": [
+        "따뜻한 화덕 지붕에 엎드려 꾸벅꾸벅 존다.",
+        "둥근 화덕 꼭대기에서 몸을 녹이며 졸고 있다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "돌 받침에 등을 기대고 빵 굽는 냄새를 맡으며 쉬어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "화덕 돌 받침에 기대어 고소한 빵 냄새를 맡으며 쉰다.",
+        "화덕 옆에 기대 앉아 빵이 익기를 기다린다."
+       ]
+      }
+     ],
+     "px": [
+      "...............kkkkk......",
+      "..............ktuuuuk.....",
+      "...............kstuk......",
+      "...............kstuk......",
+      "........kkkkkkkkstuk......",
+      "......kkAACBBBBCBBuk......",
+      ".....kAAABCBBBBCBBCCk.....",
+      "....kmmmmmmmmmmmmmDDDk....",
+      "...kAAAACBBBBCBBBBDCCDk...",
+      "...kAAAACBBssttBBBDCCDk...",
+      "..kmmmmmmmssxxttmmDDDCCk..",
+      "..kBBBCBBssxoyxttBCCCDDk..",
+      "..kBBBCBssxoyoyxttCCCDDk..",
+      ".kmmmmmmssRyoyoRttDDDCCCk.",
+      ".kBBCBBBsxRRRRRRxtCDCDDDk.",
+      "kssssssssssssssssssssssstk",
+      "ktttttttttttttttttuuuuuuuk",
+      ".kkuuuuuuuuuuuuuuuuuuuukk.",
+      "..ksttttuxxxLwxxxqttuuqk..",
+      "..ksttttuxxxwdxxxqttuuqk..",
+      "..ksttttuxLwxxLwxqttuuqk..",
+      "..ksttttuxwdxxwdxqttuuqk..",
+      "..ksttttuWddddddWqttuuqk..",
+      "...kkkkkkkkkkkkkkkkkkkk..."
+     ],
+     "pal": {
+      "A": "#eab08a",
+      "B": "#c9764f",
+      "C": "#9c5236",
+      "D": "#6e3626",
+      "L": "#ecc68e",
+      "R": "#e0442c",
+      "W": "#623d1d",
+      "d": "#98632f",
+      "k": "#20202c",
+      "m": "#e2cfb0",
+      "o": "#ff9a3c",
+      "q": "#5e5a53",
+      "s": "#d6d0c2",
+      "t": "#aaa496",
+      "u": "#827d72",
+      "w": "#c99456",
+      "x": "#3a2620",
+      "y": "#ffe066"
+     }
+    },
+    {
+     "id": "baguette-basket",
+     "n": "바게트 바구니",
+     "k": "먹이",
+     "fit": "빵 화덕 옆, 가판대 앞",
+     "d": "갓 구운 바게트 세 개를 꽂아 둔 고리버들 바구니예요. 가장자리에 빨간 체크 천을 걸쳐서 장터 느낌을 냈어요.",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "바구니에 코를 대고 바게트 끝을 오물오물 먹어요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "바구니에 코를 박고 바게트 끝을 오물오물 먹었다.",
+        "바삭한 바게트 끝을 한 입 베어 물었다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "바구니 뒤에 숨었다가 바게트 사이로 고개를 쏙 내밀어요",
+       "x": {
+        "m": "hide peek",
+        "back": true
+       },
+       "l": [
+        "바구니 뒤에 숨었다가 바게트 사이로 고개를 쏙 내밀었다.",
+        "바게트 사이로 빼꼼 얼굴을 내밀고 두리번거린다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "가운데 바게트 끝에 날아와 앉아 빵 부스러기를 쪼아요",
+       "x": {
+        "at": [
+         0.5,
+         0.08
+        ],
+        "m": "fly",
+        "an": "Eat"
+       },
+       "l": [
+        "바게트 끝에 날아와 앉아 빵 부스러기를 콕콕 쪼았다.",
+        "바게트 꼭대기에 앉아 균형을 잡으며 빵을 쪼아 먹는다."
+       ]
+      }
+     ],
+     "px": [
+      "..k.....k3k.....k.",
+      ".k3k...k123k...k3k",
+      "k323k..k123k..k123",
+      ".k13k..k143k..k13k",
+      ".k143k.k123k.k423k",
+      ".k323k.k123k.k123k",
+      "..k14k.k143k.k13k.",
+      "..k123kk123kk123k.",
+      ".kk323kk123kk123k.",
+      "k5ncnc55555555556k",
+      "k6cncn66666666667k",
+      ".knnc67666766677k.",
+      ".kccn66676667668k.",
+      "..knc6667666767k..",
+      "..k566766676667k..",
+      "..k766766676667k..",
+      "...k7777777778k...",
+      "....kkkkkkkkkk...."
+     ],
+     "pal": {
+      "1": "#f6d79a",
+      "2": "#e0a85a",
+      "3": "#b8742e",
+      "4": "#7e4a1e",
+      "5": "#e8c487",
+      "6": "#c79a5a",
+      "7": "#946a34",
+      "8": "#6a4a24",
+      "c": "#fbf3e0",
+      "k": "#20202c",
+      "n": "#c9544a"
+     },
+     "glow": 0
+    },
+    {
+     "id": "milk-can",
+     "n": "우유 통",
+     "k": "장식",
+     "fit": "빵 화덕 옆, 그늘진 곳",
+     "d": "아침에 배달 온 은빛 우유 통이에요. 파란 띠에 우유 방울 무늬를 넣고, 뚜껑과 몸통 가장자리에 금속 반짝임을 한 줄씩 줬어요.",
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "우유 통 뚜껑 위에 올라가 앉아 장터를 둘러봐요",
+       "x": {
+        "at": "top"
+       },
+       "l": [
+        "우유 통 뚜껑 위에 올라앉아 장터를 둘러본다.",
+        "차가운 우유 통 위에 앉아 다리를 달랑거린다."
+       ]
+      },
+      {
+       "w": "얼음 타입",
+       "a": "우유 통에 차가운 숨을 불어 시원하게 식혀 줘요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "우유 통에 차가운 숨을 후 불어 시원하게 식혀 주었다.",
+        "우유 통에 서리를 살짝 입혀 놓고 만족스러워한다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "시원한 우유 통에 등을 기대고 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "시원한 우유 통에 등을 기대고 꾸벅꾸벅 존다.",
+        "우유 통 옆에 기대 앉아 낮잠을 잔다."
+       ]
+      }
+     ],
+     "px": [
+      ".....kkkk.....",
+      "....kMgggk....",
+      "...kkMkkgkk...",
+      "..kMMMMMMMGk..",
+      ".kGGGGGGGGGGk.",
+      "..kkMggggHkk..",
+      "...kMggggHk...",
+      "..kMMMMMMMMk..",
+      ".kGGGGGGGGGGk.",
+      "kGgMgggggGGHGk",
+      "kGgMgggggGGHGk",
+      ".kgMgggggGGHk.",
+      ".kbbbbcbbbVVk.",
+      ".kvvvvccvvVVk.",
+      ".kvvvvvvvvVVk.",
+      ".kgMgggggGGHk.",
+      ".kgMgggggGGHk.",
+      ".kgMgggggGGHk.",
+      ".kgGGGGGGGGHk.",
+      ".kHHHHHHHHHHk.",
+      "..kkkkkkkkkk.."
+     ],
+     "pal": {
+      "G": "#7e8696",
+      "H": "#4c5262",
+      "M": "#eef1f5",
+      "V": "#3c5f94",
+      "b": "#8cc0e8",
+      "c": "#fbf3e0",
+      "g": "#b4bcc8",
+      "k": "#20202c",
+      "v": "#5a8cc4"
+     },
+     "glow": 0
+    },
+    {
+     "id": "flour-sacks",
+     "n": "밀가루 포대 더미",
+     "k": "놀이",
+     "fit": "빵 화덕 뒤, 수레 옆",
+     "d": "누운 포대 위에 끈으로 묶은 포대를 하나 더 세워 둔 밀가루 더미예요. 밀 이삭 도장을 찍고, 오른쪽 끝에 밀가루가 살짝 새어 나와요.",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "누운 포대 위에 올라가 폭신하게 엎드려 자요",
+       "x": {
+        "at": [
+         0.72,
+         0.55
+        ],
+        "an": "Sleep"
+       },
+       "l": [
+        "폭신한 밀가루 포대 위에 엎드려 새근새근 잔다.",
+        "밀가루 포대에 몸을 파묻고 낮잠을 잔다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "포대 뒤에 숨었다가 밀가루를 뒤집어쓴 얼굴로 고개를 내밀어요",
+       "x": {
+        "m": "hide peek",
+        "back": true
+       },
+       "l": [
+        "포대 뒤에 숨었다가 밀가루를 뒤집어쓴 하얀 얼굴로 고개를 내밀었다.",
+        "밀가루 포대 뒤에서 빼꼼 고개를 내밀고 재채기를 했다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "포대 옆에서 날갯짓해 밀가루 먼지를 훅 날려요",
+       "x": {
+        "m": "flap"
+       },
+       "l": [
+        "포대 옆에서 날갯짓해 밀가루 먼지를 훅 날렸다.",
+        "날갯짓 한 번에 밀가루가 하얗게 흩날린다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "세워 둔 포대를 샌드백처럼 퍽퍽 쳐요",
+       "x": {
+        "at": "front",
+        "m": "push",
+        "an": "Attack"
+       },
+       "l": [
+        "밀가루 포대를 샌드백처럼 퍽! 퍽! 쳤다.",
+        "포대를 칠 때마다 밀가루가 폴폴 날린다."
+       ]
+      }
+     ],
+     "px": [
+      "......kkkkkkk.........",
+      ".....kccccccck........",
+      ".....kfeeeeefk........",
+      ".....kkce3efkk........",
+      "....kcc43444cfk.......",
+      "....kceeeeeeefk.......",
+      "....kceee2eeffk.......",
+      "...kceeee3eeeefk..k...",
+      "...kceee232eeefkkkck..",
+      "...kcefe232eeeecfcckk.",
+      "..kceefee3eeeeeeec4cfk",
+      ".kceeeeee3eeeeeeff4efk",
+      "kfefeeeeeeeeeeeeef4efk",
+      ".kfeeeeeeeeeeeeeef4efk",
+      "..kffeeeeeeeeeeeef4ffk",
+      "...kkffffffffffffkkkk.",
+      ".....kkkkkkkkkkkk....."
+     ],
+     "pal": {
+      "2": "#e0a85a",
+      "3": "#b8742e",
+      "4": "#7e4a1e",
+      "c": "#fbf3e0",
+      "e": "#e8dcc0",
+      "f": "#c4b494",
+      "k": "#20202c"
+     },
+     "glow": 0
+    },
+    {
+     "id": "market-scale",
+     "n": "장터 접시 저울",
+     "k": "놀이",
+     "fit": "과일 가판대 옆",
+     "d": "놋쇠 저울대 양쪽에 접시를 매단 장터 저울이에요. 왼쪽 접시엔 사과 두 알, 오른쪽엔 쇠 추를 올려 두었어요.",
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "추가 놓인 오른쪽 접시에 올라가 몸무게를 재 봐요",
+       "x": {
+        "at": [
+         0.8,
+         0.5
+        ],
+        "fx": "swing"
+       },
+       "l": [
+        "저울 접시에 올라가 사과와 몸무게를 견주어 보았다.",
+        "저울 접시 위에서 흔들흔들 균형을 잡는다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "저울 꼭대기 놋쇠 꼭지에 날아와 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "저울 꼭대기 놋쇠 꼭지에 날아와 앉았다.",
+        "반짝이는 저울 꼭지에 앉아 장터를 내려다본다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "저울 앞에서 고개를 갸웃하며 사과 접시를 구경해요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "저울 앞에서 고개를 갸웃하며 사과 접시를 바라본다.",
+        "저울이 기울 때마다 눈을 동그랗게 뜬다."
+       ]
+      },
+      {
+       "w": "강철 타입",
+       "a": "저울대를 톡톡 두드려 맑은 쇳소리를 내요",
+       "x": {
+        "m": "push"
+       },
+       "l": [
+        "저울대를 톡톡 두드려 맑은 쇳소리를 냈다.",
+        "저울대를 두드리며 소리를 듣는다."
+       ]
+      }
+     ],
+     "px": [
+      ".........kkkk.........",
+      "........kyyyyk........",
+      "........kOOOPk........",
+      "..kkkkkkkkMGkkkkkkkk..",
+      ".kyyyyyyyyyyyyyyyyyPk.",
+      ".kPPPPPPPPPPPPPPPPPPk.",
+      "..kkGkkkkkMkkkkkkkGk..",
+      "..kGGk...kMk....kGGk..",
+      ".k4GG4k..kMk....kGHk..",
+      "krnkrnk..kMk...kGgggk.",
+      "knNknNk..kMk...kGGGHk.",
+      "kyyyyyOk.kMGk.kyyyyyOk",
+      "kOOOOOPk.kMGk.kOOOOOPk",
+      ".kPPPPk..kMGk..kPPPPk.",
+      "..kkkk...kMGk...kkkk..",
+      "....kkkkkkMGkkkkkk....",
+      "...kLLLLLLLLLLLLLLk...",
+      "...kwwwwwwwwwwwwddk...",
+      "....kwwwWWOOWWwwdk....",
+      "....kwwwddddddwwdk....",
+      "....kWddddddddddWk....",
+      ".....kkkkkkkkkkkk....."
+     ],
+     "pal": {
+      "4": "#7e4a1e",
+      "G": "#7e8696",
+      "H": "#4c5262",
+      "L": "#ecc68e",
+      "M": "#eef1f5",
+      "N": "#94363a",
+      "O": "#ffb04a",
+      "P": "#e07f2c",
+      "W": "#623d1d",
+      "d": "#98632f",
+      "g": "#b4bcc8",
+      "k": "#20202c",
+      "n": "#c9544a",
+      "r": "#e8806e",
+      "w": "#c99456",
+      "y": "#ffe066"
+     },
+     "glow": 0
+    },
+    {
+     "id": "fruit-stall",
+     "n": "줄무늬 과일 가판대",
+     "k": "먹이",
+     "fit": "장터 가운데, 길가",
+     "d": "빨강·크림 줄무늬 차양을 씌운 나무 가판대예요. 사과, 귤, 포도 상자를 나란히 올리고, 차양 끝은 물결처럼 오려 냈어요.",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "가판대 앞에서 사과를 하나 골라 아삭아삭 먹어요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "가판대 앞에서 사과를 골라 아삭아삭 먹었다.",
+        "귤을 하나 집어 새콤달콤하게 먹는다."
+       ]
+      },
+      {
+       "w": "벌레·풀 타입",
+       "a": "포도 상자 옆에 붙어 달콤한 즙을 빨아요",
+       "x": {
+        "at": [
+         0.75,
+         0.55
+        ],
+        "an": "Eat"
+       },
+       "l": [
+        "포도 상자에 붙어 달콤한 즙을 쪽쪽 빨았다.",
+        "포도알 사이에 얼굴을 묻고 즙을 먹는다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "줄무늬 차양 위에 날아와 앉아 장터를 내려다봐요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "줄무늬 차양 위에 날아와 앉아 장터를 내려다본다.",
+        "차양 꼭대기에 앉아 깃털을 고른다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "가판대 아래 그늘에 숨었다가 옆으로 빼꼼 고개를 내밀어요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "가판대 뒤 그늘에 숨었다가 옆으로 빼꼼 고개를 내밀었다.",
+        "가판대 뒤에 숨어 떨어진 과일을 노린다."
+       ]
+      }
+     ],
+     "px": [
+      "....kkkkkkkkkkkkkkkkkkkk....",
+      "...kcccrrrcccrrrcccrrrcck...",
+      "...kccernnccernnccernncck...",
+      "..knccernnccernnccernnccek..",
+      "..knccernnccernnccernnccek..",
+      ".knnccernnccernnccernnccerk.",
+      ".knnccernnccernnccernnccerk.",
+      "kNNNeeeNNNeeeNNNeeeNNNeeeNNk",
+      "kNNkeekNNkeekNNkeekNjJeekNNk",
+      ".kkWkk4kk.kkkjk.kk.kphkkWkk.",
+      "..kdkrnnkk.kyOPkk.kphphkdk..",
+      "..kdrnrnrnkyOyOyOkphphphdk..",
+      "..kdnNnNnNkOPOPOPkhphphhdk..",
+      "..kdLLLLLLkLLLLLLkLLLLLLdk..",
+      ".kkdwwwwwdkwwwwwdkwwwwwddkk.",
+      "kLLLLLLLLLLLLLLLLLLLLLLLLLLk",
+      "kLdddddddddddddddddddddddddk",
+      "kLwwwwwdwwcccnncccwwdwwwwddk",
+      "kLwwwwwdwweeeeeeeewwdwwwwddk",
+      "kLdddddddddddddddddddddddddk",
+      "kLwwwwwdwwwwwwdwwwwwdwwwwddk",
+      "kLwwwwwdwwwwwwdwwwwwdwwwwddk",
+      "kLwwwwwdwwwwwwdwwwwwdwwwwddk",
+      "kLWWWWWWWWWWWWWWWWWWWWWWWWdk",
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkk.",
+      "............................"
+     ],
+     "pal": {
+      "4": "#7e4a1e",
+      "J": "#4a7a30",
+      "L": "#ecc68e",
+      "N": "#94363a",
+      "O": "#ffb04a",
+      "P": "#e07f2c",
+      "W": "#623d1d",
+      "c": "#fbf3e0",
+      "d": "#98632f",
+      "e": "#e8dcc0",
+      "h": "#7e58a8",
+      "j": "#6fa244",
+      "k": "#20202c",
+      "n": "#c9544a",
+      "p": "#b48ad8",
+      "r": "#e8806e",
+      "w": "#c99456",
+      "y": "#ffe066"
+     },
+     "glow": 0
+    },
+    {
+     "id": "flower-cart",
+     "n": "꽃 손수레",
+     "k": "장식",
+     "fit": "장터 길목, 꽃밭 옆",
+     "d": "나무 손수레에 함석 양동이 세 개를 싣고 분홍·노랑·하양 꽃을 꽂았어요. 큰 나무 바퀴에는 바큇살을 하나하나 넣었어요.",
+     "acts": [
+      {
+       "w": "풀·페어리 타입",
+       "a": "꽃 수레 둘레를 빙글빙글 돌며 꽃 냄새를 맡아요",
+       "x": {
+        "m": "circ"
+       },
+       "l": [
+        "꽃 수레 둘레를 빙글빙글 돌며 꽃 냄새를 맡았다.",
+        "꽃 수레 곁을 맴돌며 기분 좋게 콧노래를 부른다."
+       ]
+      },
+      {
+       "w": "나는 벌레 타입",
+       "a": "양동이 꽃에 날아와 앉아 꿀을 빨아요",
+       "x": {
+        "at": [
+         0.3,
+         0.1
+        ],
+        "m": "fly",
+        "an": "Eat"
+       },
+       "l": [
+        "양동이 꽃에 날아와 앉아 꿀을 쪽쪽 빨았다.",
+        "노란 꽃 위에 앉아 꽃가루를 잔뜩 묻혔다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "손잡이를 잡고 꽃 수레를 영차 밀어 줘요",
+       "x": {
+        "at": [
+         0.92,
+         1
+        ],
+        "m": "push"
+       },
+       "l": [
+        "손잡이를 잡고 꽃 수레를 영차 밀어 주었다.",
+        "꽃 수레를 밀며 바퀴 소리를 듣는다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "수레 바퀴 뒤에 숨어 옆으로 고개를 내밀어요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "수레 바퀴 뒤에 숨어 옆으로 빼꼼 고개를 내밀었다.",
+        "바퀴 뒤에서 꽃잎이 떨어지길 기다린다."
+       ]
+      }
+     ],
+     "px": [
+      "....kkk..kkk..kkk.........",
+      "...kzzZkkyyOkkccek........",
+      "..kzZZkkyOOkkceekk........",
+      "..kZjkzZOjkyOejkcek.......",
+      "..kjkJJkjkJJkjkJJk........",
+      ".kMggggMggggMggggGk.......",
+      "..kMggGkMggGkMggGk........",
+      "..kMggGkMggGkMggGk........",
+      "..kMggGkMggGkMggGkkkkkkkk.",
+      ".kLLLLLLLLLLLLLLLLLwwwwwdk",
+      ".kLwwwwwwwwwwwwwwwwdddddWk",
+      ".kLdddddddWdddddddddkkkkk.",
+      ".kLwwddkwkWWwwwwwwwdk.....",
+      ".kLWddwkwkwWWWWWWWWdk.....",
+      "..kkdkkLwwkkWkkkkwdk......",
+      "...kdwwwdwwwWk..kwdk......",
+      "...kdkkwwwkkWk..kwdk......",
+      "...kWWwkwkwWWk..kwdk......",
+      "....kWWkwkWWk...kwdk......",
+      ".....kWWWWWk.....kk.......",
+      "......kkkkk..............."
+     ],
+     "pal": {
+      "G": "#7e8696",
+      "J": "#4a7a30",
+      "L": "#ecc68e",
+      "M": "#eef1f5",
+      "O": "#ffb04a",
+      "W": "#623d1d",
+      "Z": "#d870a0",
+      "c": "#fbf3e0",
+      "d": "#98632f",
+      "e": "#e8dcc0",
+      "g": "#b4bcc8",
+      "j": "#6fa244",
+      "k": "#20202c",
+      "w": "#c99456",
+      "y": "#ffe066",
+      "z": "#f6a8c8"
+     },
+     "glow": 0
+    },
+    {
+     "id": "bakery-chalk-sign",
+     "n": "빵집 칠판 입간판",
+     "k": "장식",
+     "fit": "빵 화덕 앞, 길가",
+     "d": "나무 틀에 짙은 초록 칠판을 끼운 A자 입간판이에요. 분필로 빵 그림과 오늘의 빵 이름을 적어 두었어요.",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "입간판 앞에 서서 분필 빵 그림을 한참 바라봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "입간판 앞에 서서 분필 빵 그림을 한참 바라본다.",
+        "칠판 빵 그림을 보고 꼬르륵 소리를 냈다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "입간판 뒤에 숨었다가 옆으로 빼꼼 고개를 내밀어요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "입간판 뒤에 숨었다가 옆으로 빼꼼 고개를 내밀었다.",
+        "입간판 뒤에 숨어 숨바꼭질을 한다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "입간판 꼭대기 경첩에 날아와 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "입간판 꼭대기에 날아와 앉았다.",
+        "입간판 꼭대기에 앉아 지나가는 포켓몬을 구경한다."
+       ]
+      }
+     ],
+     "px": [
+      "...kkkkGGkkkk...",
+      "..kLLLLLLLLLLk..",
+      "..kLQQQQQQQQdk..",
+      "..kLQKKKKKKKdk..",
+      "..kLQKKcccKKdk..",
+      "..kLQKc2K2cKdk..",
+      "..kLQKcK2KcKdk..",
+      "..kLQKcccccKdk..",
+      "..kLQKKKKKKKdk..",
+      "..kLQKeeeeeKdk..",
+      "..kLQKKKKKKKdk..",
+      "..kLQKeeeKzKdk..",
+      "..kLQKKKKKKKdk..",
+      "..kLQKeeeeKKdk..",
+      "..kLQKKKKKKKdk..",
+      "..kLQKKKKKKKdk..",
+      "..kLdddddddddk..",
+      "..kwkkkkkkkkdk..",
+      "..kdk......kWk..",
+      ".kddk......kWWk.",
+      ".kddk......kWWk.",
+      "..kk........kk.."
+     ],
+     "pal": {
+      "2": "#e0a85a",
+      "G": "#7e8696",
+      "K": "#4a5a52",
+      "L": "#ecc68e",
+      "Q": "#34403a",
+      "W": "#623d1d",
+      "c": "#fbf3e0",
+      "d": "#98632f",
+      "e": "#e8dcc0",
+      "k": "#20202c",
+      "w": "#c99456",
+      "z": "#f6a8c8"
+     },
+     "glow": 0
+    },
+    {
+     "id": "pretzel-pole",
+     "n": "프레첼 걸이 기둥",
+     "k": "먹이",
+     "fit": "빵 화덕과 가판대 사이",
+     "d": "놋쇠 꼭지를 단 나무 기둥에 가로대를 두 단 달고, 고리에 소금 뿌린 프레첼을 네 개 걸었어요.",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "아래 단 프레첼을 톡 따서 짭짤하게 먹어요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "아래 단 프레첼을 톡 따서 짭짤하게 먹었다.",
+        "프레첼을 한 입 베어 물고 소금을 핥는다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "놋쇠 꼭지에 날아와 앉아 프레첼을 내려다봐요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "기둥 꼭대기 놋쇠 꼭지에 날아와 앉았다.",
+        "기둥 꼭대기에서 프레첼을 내려다보며 입맛을 다신다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "기둥을 툭 쳐서 프레첼이 흔들흔들하게 해요",
+       "x": {
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "기둥을 툭 쳐서 프레첼을 흔들흔들 흔들었다.",
+        "기둥을 두드려 떨어지는 프레첼을 받아 냈다."
+       ]
+      }
+     ],
+     "px": [
+      "......kyyyyk......",
+      "......kyOOPk......",
+      "......kOOOPk......",
+      ".......kLdk.......",
+      "..kkkkkkwdkkkkkk..",
+      ".kLwwwwwwwwwwwwwk.",
+      ".kddddddddddddddk.",
+      "..kkGkkkwdkkkGkk..",
+      ".kc2k23kwdkc2k23k.",
+      "k2..3..3wd2..3..3k",
+      "k2..2..cwd2..2..ck",
+      "k3.3.3.4wd3.3.3.4k",
+      ".kLwwwwwwwwwwwwwk.",
+      ".kddddddddddddddk.",
+      "..kkGkkkwdkkkGkk..",
+      ".kc2k23kwdkc2k23k.",
+      "k2..3..3wd2..3..3k",
+      "k2..2..cwd2..2..ck",
+      "k3.3.3.4wd3.3.3.4k",
+      ".k43.c4kwdk43.c4k.",
+      "..kkkkkkwdkkkkkk..",
+      "....kLLLLLLLLk....",
+      "...kkddddddddkk...",
+      "..kwwwwwwwwwwwwk..",
+      "..kWWWWWWWWWWWWk..",
+      "...kkkkkkkkkkkk..."
+     ],
+     "pal": {
+      "2": "#e0a85a",
+      "3": "#b8742e",
+      "4": "#7e4a1e",
+      "G": "#7e8696",
+      "L": "#ecc68e",
+      "O": "#ffb04a",
+      "P": "#e07f2c",
+      "W": "#623d1d",
+      "c": "#fbf3e0",
+      "d": "#98632f",
+      "k": "#20202c",
+      "w": "#c99456",
+      "y": "#ffe066"
+     },
+     "glow": 0
+    },
+    {
+     "id": "jam-shelf",
+     "n": "잼 병 선반",
+     "k": "장식",
+     "fit": "가판대 뒤, 벽 쪽",
+     "d": "두 칸짜리 나무 선반에 딸기·살구·포도잼 병을 여섯 개 올렸어요. 병마다 체크 천 뚜껑과 하얀 이름표를 붙였어요.",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "선반 앞에서 잼 병 뚜껑 천을 들추고 달콤한 냄새를 맡아요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "잼 병 뚜껑 천을 들추고 달콤한 냄새를 맡았다.",
+        "선반 앞에서 어떤 잼이 맛있을지 고민한다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "선반 맨 위에 올라가 앉아 장터를 내려다봐요",
+       "x": {
+        "at": "top"
+       },
+       "l": [
+        "선반 맨 위에 올라앉아 장터를 내려다본다.",
+        "선반 꼭대기에 앉아 꼬리를 살랑거린다."
+       ]
+      },
+      {
+       "w": "벌레·페어리 타입",
+       "a": "딸기잼 병 옆에 붙어 흘러내린 잼을 핥아요",
+       "x": {
+        "at": [
+         0.25,
+         0.48
+        ],
+        "an": "Eat"
+       },
+       "l": [
+        "딸기잼 병에 붙어 흘러내린 잼을 할짝할짝 핥았다.",
+        "잼 병 옆에서 달콤한 냄새에 취해 있다."
+       ]
+      },
+      {
+       "w": "고스트 타입",
+       "a": "선반 뒤로 스르르 사라졌다가 나타나요",
+       "x": {
+        "m": "blink"
+       },
+       "l": [
+        "선반 뒤로 스르르 사라졌다가 잼 병 옆에 다시 나타났다.",
+        "잼 병 사이로 사라졌다 나타나며 장난을 친다."
+       ]
+      }
+     ],
+     "px": [
+      ".kkkkkkkkkkkkkkkkkkkk.",
+      "kLLLLLLLLLLLLLLLLLLLLk",
+      "kwwwwwwwwwwwwwwwwwwwwk",
+      "kwLdddddddddddddddddWk",
+      "kwLWcncndcncndcncnWdWk",
+      "kwLnnnnnnnnnnnnnnnNdWk",
+      "kwLnnnnNnOOOPnhhhiNdWk",
+      "kwLW9nnNd9OOPd9hhiWdWk",
+      "kwLWrccNdyccPdpcciWdWk",
+      "kwLWnccNdOccPdhcciWdWk",
+      "kwLWnnnNdOOOPdhhhiWdWk",
+      "kLLLLLLLLLLLLLLLLLLLLk",
+      "kwwddddddddddddddddwwk",
+      "kwLWcncndcncndcncnWdWk",
+      "kwLnnnnnnnnnnnnnnnNdWk",
+      "kwLnPPP4niiiinRRRNNdWk",
+      "kwLW9PP4d9iiid9RRNWdWk",
+      "kwLWOcc4dhccidrccNWdWk",
+      "kwLWPcc4diccidRccNWdWk",
+      "kwLWPPP4diiiidRRRNWdWk",
+      "kLLLLLLLLLLLLLLLLLLLLk",
+      "kddddddddddddddddddddk",
+      ".kkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "4": "#7e4a1e",
+      "9": "#dff0f4",
+      "L": "#ecc68e",
+      "N": "#94363a",
+      "O": "#ffb04a",
+      "P": "#e07f2c",
+      "R": "#e0442c",
+      "W": "#623d1d",
+      "c": "#fbf3e0",
+      "d": "#98632f",
+      "h": "#7e58a8",
+      "i": "#553c7a",
+      "k": "#20202c",
+      "n": "#c9544a",
+      "p": "#b48ad8",
+      "r": "#e8806e",
+      "w": "#c99456",
+      "y": "#ffe066"
+     },
+     "glow": 0
+    }
+   ]
+  },
+  {
    "at": 1793832569080,
    "theme": "마을 대장간과 공방",
    "note": "오늘은 풀밭 한쪽에 작은 대장간과 공방을 차렸어요. 쇠는 차가운 은회색, 나무는 따뜻한 갈색, 불은 노랑·주황으로 세 가지 재질만 써서 통일했고, 물레·숫돌은 바퀴만 돌게 나눴어요.",
