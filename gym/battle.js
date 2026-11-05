@@ -1626,14 +1626,14 @@ function mintPick(k, done) {
     tag: P => natKo(gm(P).nat), pick: (P, w) => { w.close(); mintUse(P, k); done?.(); } });
 }
 // 도구 사용 (경완 2026-10-29 '기술 가르치기 > 도구 사용'): 창고와 같은 화면, 탭은 기술머신·도구
-let useT = 'tm';
+let useT = 'it';   // v17.34 경완 '도구 탭이 제일 먼저': 처음 열면 도구 탭
 function usePop(P, done) {
   const g = S.gym; g.tms = g.tms || {}; g.itm = g.itm || {};
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew tm-teach';
   const draw = () => { const m = gm(P), it = m.it;
     const TL = Object.entries(g.tms).filter(([, n]) => n > 0).map(([id, n]) => [mvOf(id), n, id]).filter(([x]) => x).map(r => [...r, tmCan(P, r[2])]).sort((a, b) => (b[3] - a[3]) || ((b[0][4] || 0) - (a[0][4] || 0)));
     const IL = itAll(), ML = mintAll();
-    const T = [['tm', '기술머신', TL.filter(r => !isTR(r[2])).length], ['tr', '기술레코드', TL.reduce((a, r) => a + (isTR(r[2]) ? r[1] : 0), 0)], ['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0)]];
+    const T = [['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0)], ['tm', '기술머신', TL.filter(r => !isTR(r[2])).length], ['tr', '기술레코드', TL.reduce((a, r) => a + (isTR(r[2]) ? r[1] : 0), 0)]];
     const TT = TL.filter(r => isTR(r[2]) === (useT === 'tr'));   /* v15.75 기술머신·기술레코드 탭 따로 */
     const body = useT !== 'it' ? (TT.length ? `<div class="sp-list">${TT.map(([x, n, id, ok]) => tmRow(x, n, id, !ok, ok ? '' : (m.mv.includes(id) ? '이미 앎' : '못 배움'))).join('')}</div>` : `<p class="sf-none">가진 ${useT === 'tr' ? '기술레코드가' : '기술머신이'} 없어요. 상점에서 살 수 있어요.</p>`)
       : (IL.length + ML.length ? `<div class="sp-list">${IL.map(itRowAll).join('')}${ML.map(([k, n]) => mintRow(k, n, P)).join('')}</div>` : '<p class="sf-none">가진 도구가 없어요. 상점에서 살 수 있어요.</p>');
