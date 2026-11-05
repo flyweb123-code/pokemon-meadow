@@ -47,13 +47,14 @@ def pack(d):
 
 
 BAD = ('Mega', 'Gigantamax', 'Primal', 'Eternamax', 'Beta', 'Cutscene', 'Altcolor', 'Skytemple', 'Alternate', 'Shiny', 'Female', 'Male', 'Alola', 'Galar', 'Hisui', 'Paldea')   # 경완 '배틀에 필요하잖아': 배틀·상태·합체·아이템 폼도 다 받음. 메가·거다이맥스·원시회귀는 '용량 커지니까 빼' (원본은 project-files spritecollab tar)
+NOT_MAIN = {(k, f) for k, L in {"150": ["Shadow"], "249": ["Shadow"], "352": ["Purple"], "479": ["Drone"], "493": ["Question_Mark"], "840": ["No_Apple"], "870": ["Brass", "Trooper"], "924": ["Shirt", "Pants"], "925": ["Baby"], "999": ["Roaming"], "1003": ["Temp"]}.items() for f in L}   # 경완 '본가 폼 아닌 것들은 다 빼줘' (v16.83)
 t = json.load(open(SC + '/tracker.json')); IDX = {}; os.makedirs('fm', exist_ok=True); miss = []
 for k, v in t.items():
     n = int(k)
     if n == 0: continue
     for f, sv in (v.get('subgroups') or {}).items():
         nm = sv.get('name', '')
-        if f == '0000' or not nm or any(b in nm for b in BAD): continue
+        if f == '0000' or not nm or any(b in nm for b in BAD) or (str(n), nm) in NOT_MAIN: continue
         r = pack(f'{SC}/sprite/{k}/{f}')
         if not r: miss.append(f'{n}~{nm}'); continue
         json.dump(r, open(f'fm/{n}~{nm}.json', 'w'), separators=(',', ':')); IDX.setdefault(n, []).append(nm)
