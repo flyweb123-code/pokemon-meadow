@@ -492,6 +492,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
     // at: 걸은 곳 좌표 (작업실 지도의 출현 지역 확인용). 위치를 모르면 nil
     private func sync(place: String?, tags: [String] = [], at: CLLocationCoordinate2D? = nil) {
         detectRuns()
+        WatchWalk.shared.sync()   // 워치만 차고 걸은 거리 (아이폰이 잠겨 있으면 건강 앱을 못 읽어 다음에)
         guard !busy, CMPedometer.isDistanceAvailable() else { return }
         busy = true
         let now = Date()

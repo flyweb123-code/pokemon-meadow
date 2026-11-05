@@ -51,20 +51,24 @@ final class HealthSync {
                     let km = meters / 1000
                     if km >= 0.1 {
                         self.phoneKm(w.startDate, w.endDate) { ph in
-                            PhoneBridge.shared.enqueueRun(km: km, start: w.startDate.timeIntervalSince1970, end: w.endDate.timeIntervalSince1970, kind: 2, phoneKm: ph)
+                            // 2026-11-05: 운동이 저장되기 전에 '워치만 차고 걸은 거리'(WatchWalk)로 이미 넣은 만큼도 '이미 쌓인 거리'에 더한다
+                            let ww = WatchWalk.shared.fedKm(w.startDate, w.endDate)
+                            let all = ww > 0 ? max(ph, 0) + ww : ph
+                            PhoneBridge.shared.enqueueRun(km: km, start: w.startDate.timeIntervalSince1970, end: w.endDate.timeIntervalSince1970, kind: 2, phoneKm: all)
                             self.routePlaces(w)
                         }
                     }
                 }
                 UserDefaults.standard.set(newest.timeIntervalSince1970, forKey: self.lastKey)
                 self.backfillRoutes()
+                WatchWalk.shared.sync()   // 운동 앱을 안 켜고 워치만 차고 걸은 거리
             }
         }
         store.execute(q)
     }
 
     // 그 운동 시간에 아이폰 만보기가 잰 거리(km). 모르면 -1 (게임은 예전처럼 처리)
-    private func phoneKm(_ start: Date, _ end: Date, done: @escaping (Double) -> Void) {
+    func phoneKm(_ start: Date, _ end: Date, done: @escaping (Double) -> Void) {
         guard CMPedometer.isDistanceAvailable() else { done(-1); return }
         pedometer.queryPedometerData(from: start, to: end) { data, error in
             let km = error == nil ? (data?.distance?.doubleValue ?? 0) / 1000 : -1
