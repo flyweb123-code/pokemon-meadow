@@ -1518,7 +1518,7 @@ async function bigUp(el) {
   } finally { busy = false; root.classList.remove('busy'); }
 }
 // 체육관 일지 (v15.66 경완, v15.68 '날짜별로 한 화면'): 하루 한 화면, ◀ ▶ 로 날짜 넘김. 관장(나)과 트레이너 몫을 나눠서
-let jnlK = null;   /* v16.21 경완: 트레이너별 박스는 없애고 합계 표에 트레이너 이름별 줄 */
+let jnlK = null;   /* v16.22 경완: 트레이너별 박스는 없애고 합계 표에 트레이너 이름별 줄 */
 function jnlPop() {
   root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew gy-jnlw'; $g('.gy-main').appendChild(el);
@@ -1545,7 +1545,11 @@ function jnlPop() {
   draw();
   el.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap');
     if (b.dataset.a === 'x') return el.remove();
-    if (b.dataset.fold != null) { g.jnlO = g.jnlO ? 0 : 1; save(); const y = el.querySelector('.gy-body').scrollTop; draw(); el.querySelector('.gy-body').scrollTop = y; return; }   /* v15.85 경완: 기록은 접었다 펼쳤다 (처음엔 접힘) */
+    if (b.dataset.fold != null) { g.jnlO = g.jnlO ? 0 : 1; save(); const y = el.querySelector('.gy-body').scrollTop; draw(); el.querySelector('.gy-body').scrollTop = y;
+      const L = g.jnlO && el.querySelector('.jn-fd .jn-log, .jn-fd .jn-none');   /* v16.22 경완: 관찰 일지처럼 펼쳐지는 모션 — 기록이 위에서부터 내려오며 늘어나고 줄이 떠오름 */
+      if (L && !matchMedia('(prefers-reduced-motion: reduce)').matches) { const h = L.offsetHeight; L.style.overflow = 'hidden'; L.animate([{ height: '0px', opacity: .4 }, { height: h + 'px', opacity: 1 }], { duration: Math.min(420, 200 + h / 4), easing: 'cubic-bezier(.2,.8,.3,1)' }).finished.then(() => { L.style.overflow = ''; }).catch(() => {});
+        [...L.children].slice(0, 12).forEach((x, i) => x.animate([{ opacity: 0, transform: 'translateY(-6px)' }, { opacity: 1, transform: 'none' }], { duration: 260, delay: 60 + i * 22, easing: 'ease-out', fill: 'backwards' })); }
+      return; }   /* v15.85 경완: 기록은 접었다 펼쳤다 (처음엔 접힘) */
     if (b.dataset.mv) { jnlK = keys[keys.indexOf(jnlK) + +b.dataset.mv] ?? jnlK; draw(); el.querySelector('.gy-body').scrollTop = 0; } };
   /* 옆으로 밀어서 날짜 넘기기 */
   let sx = null; el.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
