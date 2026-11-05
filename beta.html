@@ -7373,7 +7373,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '16.71';   /* v16.71 경완: 훈련 일지 하루씩 넘기기·코치가 가르쳤다, 훈련 현황 누적, 라인업 박스 뺌 */ /* v16.70 경완: 다른 방향 그림 — 걷는 쪽 따라 아래·옆·위 모습(오른쪽은 뒤집기), 마주 보고 얘기할 땐 옆모습. 몸 부위 위치표로 말풍선을 머리 위에. */   /* v16.69 경완: 원본 그림자 — 종마다 작게·보통·크게 도트 타원, 동작 그림마다 그림자 자리가 몸을 따라감(shd.json). */   /* v16.68 경완: 훈련 일지 문장·머리 맞춤, 빼기, 홈 트레이너 카드 통일 */ /* v16.67 경완: 지원서 없음 화면 메일 아이콘 뺌, 고용 관리 탭을 왼쪽으로 */ /* v16.66 경완: 트레이너 상세카드 딱지·발판·코치 빼기 */ /* v16.65 경완: 청결·즐거움·배부름이 셋 다 0 인 포켓몬은 가끔 멈춰서 움찔. */   /* v16.64 경완: 놀랄 때 움찔 동작 뺌, 둘이 붙을 때(싸움·박치기) 중간중간 아파함, 쓰다듬은 뒤엔 빙글·깡총 대신 포즈(포즈 그림 있는 종). */   /* v16.63 경완: 트레이너 상세카드 레이아웃·기록 정리 */ /* v16.64 경완: 체육관 내 캐릭터 상세카드 등급별 디자인 */ /* v16.61 경완: 상태창 왼쪽 포켓몬 얼굴 끔 (필드 스프라이트 표정을 물어본 거였음) — 필드 새 동작은 그대로. */   /* v16.60 경완: 얼굴 표정·필드 동작 — 상태창 왼쪽에 문장 속 포켓몬 얼굴(말풍선 상황마다 기쁨·놀람·걱정·화남 등 표정, face/), 끄덕이기·올려다보기·포즈·춤·노래·깨어나기·움찔 등 원본 나머지 동작(mx/, 필드에 있는 포켓몬부터 하나씩 받아 둠)을 상호작용마다. */   /* v16.59 경완: 랭킹의 내 줄 → 프로필 내 카드와 동일 */ /* v16.60 경완: 진화구슬 기술 5차 — 파도 큰 구슬도 뜸(무거울수록 천천히), 폭풍 더 세게, 용해액 방울 작게·안 녹는 구슬은 튕겨내는 막, 사이코 떠오르는 구슬도 밀림 */
+const APP_VER = '16.72';   /* v16.72 경완: 진화구슬 패시브 = 랭크별 특성 (F 픽업 골드, E 프렌드가드 친밀도, D 대운, C 위협, B 싱크로, A 프레셔, S 자력), 사이코키네시스 무게(큰 구슬일수록 덜 뜸) */   /* v16.71 경완: 훈련 일지 하루씩 넘기기·코치가 가르쳤다, 훈련 현황 누적, 라인업 박스 뺌 */ /* v16.70 경완: 다른 방향 그림 — 걷는 쪽 따라 아래·옆·위 모습(오른쪽은 뒤집기), 마주 보고 얘기할 땐 옆모습. 몸 부위 위치표로 말풍선을 머리 위에. */   /* v16.69 경완: 원본 그림자 — 종마다 작게·보통·크게 도트 타원, 동작 그림마다 그림자 자리가 몸을 따라감(shd.json). */   /* v16.68 경완: 훈련 일지 문장·머리 맞춤, 빼기, 홈 트레이너 카드 통일 */ /* v16.67 경완: 지원서 없음 화면 메일 아이콘 뺌, 고용 관리 탭을 왼쪽으로 */ /* v16.66 경완: 트레이너 상세카드 딱지·발판·코치 빼기 */ /* v16.65 경완: 청결·즐거움·배부름이 셋 다 0 인 포켓몬은 가끔 멈춰서 움찔. */   /* v16.64 경완: 놀랄 때 움찔 동작 뺌, 둘이 붙을 때(싸움·박치기) 중간중간 아파함, 쓰다듬은 뒤엔 빙글·깡총 대신 포즈(포즈 그림 있는 종). */   /* v16.63 경완: 트레이너 상세카드 레이아웃·기록 정리 */ /* v16.64 경완: 체육관 내 캐릭터 상세카드 등급별 디자인 */ /* v16.61 경완: 상태창 왼쪽 포켓몬 얼굴 끔 (필드 스프라이트 표정을 물어본 거였음) — 필드 새 동작은 그대로. */   /* v16.60 경완: 얼굴 표정·필드 동작 — 상태창 왼쪽에 문장 속 포켓몬 얼굴(말풍선 상황마다 기쁨·놀람·걱정·화남 등 표정, face/), 끄덕이기·올려다보기·포즈·춤·노래·깨어나기·움찔 등 원본 나머지 동작(mx/, 필드에 있는 포켓몬부터 하나씩 받아 둠)을 상호작용마다. */   /* v16.59 경완: 랭킹의 내 줄 → 프로필 내 카드와 동일 */ /* v16.60 경완: 진화구슬 기술 5차 — 파도 큰 구슬도 뜸(무거울수록 천천히), 폭풍 더 세게, 용해액 방울 작게·안 녹는 구슬은 튕겨내는 막, 사이코 떠오르는 구슬도 밀림 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9726,7 +9726,15 @@ const ED_AB = {
   18: { n: '천사의키스', k: 'kiss', s: 'heart', arm: '하트 구슬을 놓을 자리를 골라요', d: '하트 구슬을 떨어뜨려 처음 닿은 구슬을 한 단계 진화시켜요. 이 진화는 점수에 안 들어가요' },
 };
 const ED_USES = { F: 1, E: 2, D: 2, C: 3, B: 3, A: 4, S: 4 };   // 경완: 패시브 = 한 판에 액티브 쓰는 횟수 (버티기 시간 같은 건 없음)
-const ED_PASS = Object.fromEntries(Object.entries(ED_USES).map(([r, n]) => [r, { n: `액티브 ${n}번`, d: `한 판에 액티브 기술을 ${n}번 쓸 수 있어요` }]));
+const ED_PASS = {   // 경완 2026-11-05: 장애물 넘기처럼 랭크마다 본가 특성 하나 (점수·진화·크기·시간·버티기는 X). 시뮬(액티브 빼고): D +3% C +5% B +8% A +11% S +13%
+  F: { n: '픽업', d: '받는 골드 +10%', gold: 1.1 },
+  E: { n: '프렌드가드', d: '함께 논 포켓몬 친밀도 +20%', fr: 1.2 },
+  D: { n: '대운', d: '가끔(10%) 다음 구슬이 한 단계 높게 나와요', luck: .1 },
+  C: { n: '위협', d: '다음 구슬로 피츄가 조금 덜 나와요', intim: .3 },
+  B: { n: '싱크로', d: '다음 구슬이 상자 맨 위 구슬과 같은 종류로 더 자주 나와요', sync: .4 },
+  A: { n: '프레셔', d: '구슬이 합쳐질 때 주변 구슬을 세게 밀어내요', press: 8 },
+  S: { n: '자력', d: '놓은 구슬이 근처 같은 구슬 쪽으로 살짝 끌려가요', mag: .24 },
+};
 { const ts = $('#edtType'), rs = $('#edtRk'); if (ts && rs) {   /* 경완: 운영자 모드 진화구슬 기술 시험 — 고른 타입 대표 포켓몬·랭크로, 상자에 구슬이 반쯤 찬 채 바로 게임 시작 */
   if (!IS_BETA) ts.closest('.mgt-row').hidden = true;
   ts.innerHTML = Object.keys(ED_AB).map(t => `<option value="${t}">${TYPE_KO[t]} · ${ED_AB[t].n}</option>`).join('');
@@ -9805,7 +9813,9 @@ function evoDropOpen(o = {}) {
     const hud = box.querySelector('.ed-hud').getBoundingClientRect().bottom - r.top + 6, foot = 58 + (parseFloat(getComputedStyle(box).paddingBottom) || 0);
     const top = hud + 10, pb = parseFloat(getComputedStyle(box).paddingBottom) || 0; const av = vh - top - foot - NB; k = Math.min((vw - 20) / (W + WALL * 2), av / (440 + WALL + D)); H = Math.max(440, Math.min(HB, Math.floor(av / k - WALL - D)));   /* v16.06 경완 '둥근 판 자리 확보되게 상자 위아래 줄여도 돼': 작은 화면은 폭은 두고 높이만 (최소 440) */ ox = (vw - W * k) / 2; oy = Math.max(top + NB + D * k, vh - foot - (H + WALL) * k - 6); gY = oy + (H + WALL) * k + 4 * k; ladY = vh - pb - 29; bgC = jarC = fgC = null; mkWalls();
     if (abEl) { const L0 = Math.max(10, ox - WALL * k), cy0 = oy - D * k - 64, rl = ox + (W + WALL) * k - 114; abEl.style.left = L0 + 'px'; abEl.style.top = (cy0 - 26) + 'px'; abEl.style.maxWidth = Math.max(120, rl - 10 - L0) + 'px'; } };   // 상자는 아래(진화 줄 위)에 붙이고 남는 높이는 하늘   // v15.85 경완: 병은 점수판 밑 조금 띄우고, 남는 높이는 병을 길게 (아래 여백 없음), 진화 줄은 맨 아래
-  const rnd = () => Math.floor(Math.random() * 5);
+  const rnd0 = () => Math.floor(Math.random() * 5), PZ = IS_BETA && mgMon ? ED_PASS[mgRank(mgMon)] || {} : {};
+  const rnd = () => { let v = rnd0(); if (PZ.intim && v === 0 && Math.random() < PZ.intim) v = rnd0(); if (PZ.luck && v < 4 && Math.random() < PZ.luck) v++;   // 위협·대운
+    if (PZ.sync && B.length && Math.random() < PZ.sync) { const L = B.filter(b => !b.dead), tp = L.reduce((m, b) => !m || b.y - b.r < m.y - m.r ? b : m, null); if (tp && tp.t <= 4) v = tp.t; } return v; };   // 싱크로: 맨 위 구슬과 같은 종류
   // v16.04 경완 '다음 구슬 레이아웃 밤티': 상자 오른쪽 위에 둥근 유리 방울 + '다음' 팻말 (캔버스에 그림, 바뀔 때 통 튐)
   const upd = () => { box.querySelector('.ed-sc').textContent = sc.toLocaleString() + '점'; const bs = evoDropBest(); box.querySelector('.ed-best').textContent = bs ? `최고 기록 ${Math.max(sc, bs).toLocaleString()}점` : ''; };
   const MT = window.Matter, eng = MT.Engine.create({ gravity: { x: 0, y: 1, scale: .001 }, positionIterations: 8, velocityIterations: 6 }); let walls = [], acc = 0, mq = [];
@@ -9819,6 +9829,7 @@ function evoDropOpen(o = {}) {
   const merge = (a, b) => { a.dead = b.dead = 1; MT.Composite.remove(eng.world, [a.body, b.body]); const x = (a.x + b.x) / 2, y = (a.y + b.y) / 2, now = performance.now(), base = (a.t + 1) * (a.t + 2); combo++; lastM = now; cMax = Math.max(cMax, combo); const gain = Math.round(base * (1 + .1 * Math.min(combo - 1, 5))); sc += gain; nM++; if (combo >= 2) cmb = [{ x, y: y - ED_L[a.t][1], n: combo, t: now }]; try { sfx('edMerge', a.t); } catch (e) {} try { haptic(a.t >= 5 ? 2 : 1); } catch (e) {}
     const nt = Math.min(a.t + 1, ED_L.length - 1), col = ED_L[nt][2], n = 10 + a.t * 2;
     for (let i = 0; i < n; i++) { const an = Math.PI * 2 * i / n + Math.random() * .4, sp = 120 + Math.random() * 160 + a.t * 18; parts.push({ x, y, vx: Math.cos(an) * sp, vy: Math.sin(an) * sp - 60, r: 2 + Math.random() * 3 + a.t * .3, c: col, t: now }); }
+    if (PZ.press) { const R2 = ED_L[Math.min(ED_L.length - 1, a.t + 1)][1] * 2.2; for (const o of B) { if (o.dead) continue; const dx = o.x - x, dy = o.y - y, d = Math.hypot(dx, dy) || 1; if (d < R2 + o.r) { const v = o.body.velocity, f = PZ.press * (1 - d / (R2 + o.r + 1)); MT.Body.setVelocity(o.body, { x: v.x + dx / d * f, y: v.y + dy / d * f }); } } }   // 프레셔: 합쳐질 때 주변을 밀어냄
     if (a.t < ED_L.length - 1) { add(a.t + 1, x, y); pops.push({ x, y, r: ED_L[a.t + 1][1], t: now }); maxT = Math.max(maxT, a.t + 1); hiT = Math.max(hiT, a.t + 1); } else { sc += 500; pops.push({ x, y, r: 120, t: now }); }
     flt.push({ x, y: y - 10, s: '+' + gain, t: now }); if (a.t >= 5) shake = .25 + a.t * .02; upd(); };
   const step = ms => { const now0 = performance.now(); if (skA) skForce(now0); MT.Engine.update(eng, ms); for (const b of B) { const q = b.body.position; b.px = b.x; b.py = b.y; b.x = q.x; b.y = q.y; b.a = b.body.angle; } for (const e of XB) { const q = e.body.position; e.x = q.x; e.y = q.y; e.a = e.body.angle; }   // 안의 포켓몬도 구슬과 같이 돈다
@@ -9962,6 +9973,7 @@ function evoDropOpen(o = {}) {
   const GD = { burn: 900, acid: 550 };
   const acTouch = (b, now) => { if (live(b) && b.t <= 1) { b.coat = now; b.gone = { t: now + 120, k: 'acid' }; } else if (!b.gone && !(now - (b.res || 0) < 1400)) { b.res = now; boom(b.x, b.y - rad(b) * .6, 5, '#ffffff', 90, 'spark', 380); } };   // 경완: 안 녹는 구슬은 독이 튕겨 나가는 막(반짝)으로 알 수 있게
   const skForce = now => { const gF = .001;
+    if (PZ.mag) for (const b of B) { if (b.dead || now - b.born > 700 || b.gone) continue; let bd = 1e9, bc = null; for (const c of B) { if (c === b || c.t !== b.t || c.dead) continue; const d = Math.hypot(c.x - b.x, c.y - b.y); if (d < bd) { bd = d; bc = c; } } if (bc && bd < b.r * 4) { const m = b.body.mass; MT.Body.applyForce(b.body, b.body.position, { x: (bc.x - b.x) / bd * m * gF * PZ.mag, y: (bc.y - b.y) / bd * m * gF * PZ.mag }); } }   // 자력: 놓은 지 0.7초 동안 가까운 같은 구슬 쪽으로
     for (const e of XB) { if (e.dead || e.x9 !== 'icle') continue; if (!e.land) { e.v = Math.min(8, e.v + .32); e.y = Math.min(H - ICH * 2 / 3, e.y + e.v); MT.Body.setPosition(e.body, { x: e.x, y: e.y }); if (e.y >= H - ICH * 2 / 3) { e.land = now; shake = Math.max(shake, .25); boom(e.x, H - 4, 10, '#d8f0ff', 160, 'spark', 450); try { sfx('ab', 'ice'); haptic(1); } catch (er) {} } }   // 경완: 고드름은 안 밀리고 형태 그대로 바닥까지 — 구슬만 밀려남
       else if (now - e.land > 900) { e.dead = 1; MT.Composite.remove(eng.world, e.body); boom(e.x, e.y, 18, '#cfeaff', 200, 'shard', 700, 4); boom(e.x, e.y, 10, '#ffffff', 120, 'spark', 500); } }
     if (sk.sf) { const q = (now - sk.sf) / 4400; if (q >= 1) sk.sf = 0; else { const wy = H - (H - TOP) * wl(q); for (const b of B) { if (!live(b)) continue; const r = rad(b), d = Math.max(0, Math.min(1, (b.y + r - wy) / (2 * r))); if (d > 0) { const m = b.body.mass, v = b.body.velocity, bu = (b.hv ? .6 : 1.6 - b.r * .006), br = Math.max(0, wy + 3 - (b.y - r)) / r;   /* 경완: 수면 위로는 안 떠오름 — 가벼운 구슬은 수면 바로 아래까지, 무거운 구슬은 천천히 가라앉음 */
@@ -9972,8 +9984,8 @@ function evoDropOpen(o = {}) {
         if (b.fly) { MT.Body.applyForce(b.body, b.body.position, { x: (ux * 1.6 + Math.sign(dx || 1) * .5) * m * gF, y: -m * gF * .95 }); continue; } if (q > 1.6) continue;
         MT.Body.applyForce(b.body, b.body.position, { x: ux * m * gF * 1.5 * f, y: uy * m * gF * 1.5 * f }); if (b.y < -rad(b) * .2) { b.fly = now; b.body.collisionFilter.mask = 1; } } }
     for (const b of B) { if (b.dead) continue;
-      if (b.psy) { const q = (now - b.psy.t) / 1000; if (q < 2.3) { const u = Math.min(1, q / 1.8), e = u < .5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2, ty = Math.min(b.psy.y0, TOP + rad(b) + 6), y = b.psy.y0 + (ty - b.psy.y0) * e;   /* 경완: 물리 상관없이 서서히 점선 바로 아래까지 떴다가 염력이 풀리면 떨어짐 — 뜨는 동안은 고정된 몸(다른 구슬만 밀림, 떨림 없음) */
-          const v = b.body.velocity; MT.Body.setVelocity(b.body, { x: v.x * .9 + (b.psy.x0 - b.x) * .01, y: Math.max(-6, Math.min(6, (y - b.y) * .25)) }); MT.Body.setAngularVelocity(b.body, b.body.angularVelocity * .9); }   // 경완: 떠오르는 구슬도 어느 정도 밀림 (힘으로 끌어올림, 위치 고정 X)
+      if (b.psy) { const q = (now - b.psy.t) / 1000; if (q < 2.3) { const u = Math.min(1, q / 1.8), e = u < .5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2, w = Math.min(1, Math.max(.25, (30 / b.r) ** 1.1)), ty = Math.min(b.psy.y0, TOP + rad(b) + 6), y = b.psy.y0 + (ty - b.psy.y0) * e * w;   // 경완: 무게 — 큰 구슬일수록 덜 뜨고 덜 밀어냄   /* 경완: 물리 상관없이 서서히 점선 바로 아래까지 떴다가 염력이 풀리면 떨어짐 — 뜨는 동안은 고정된 몸(다른 구슬만 밀림, 떨림 없음) */
+          const v = b.body.velocity; MT.Body.setVelocity(b.body, { x: v.x * .9 + (b.psy.x0 - b.x) * .01, y: Math.max(-(.5 + 5.5 * w), Math.min(6, (y - b.y) * .25 * w)) }); MT.Body.setAngularVelocity(b.body, b.body.angularVelocity * .9); }   // 경완: 떠오르는 구슬도 어느 정도 밀림 (힘으로 끌어올림, 위치 고정 X)
         else { b.psy = null; MT.Body.setVelocity(b.body, { x: 0, y: 0 }); MT.Body.setAngularVelocity(b.body, 0); boom(b.x, b.y, 10, '#f090e0', 120, 'spark', 500); } }
       let s = b.fr || 1; if (b.gone) { const q = Math.max(0, Math.min(1, (now - b.gone.t) / GD[b.gone.k])); s *= b.gone.k === 'burn' ? (q < .6 ? 1 : 1 - (q - .6) / .4 * .85) : 1 - q * .85; } if (b.gw) { const q = Math.min(1, (now - b.gw) / 420); s *= .3 + .7 * (1 - (1 - q) ** 2); if (q >= 1) b.gw = 0; }
       if (Math.abs(s - b.s) > 1e-4) { const f = s / b.s; MT.Body.scale(b.body, f, f); b.s = s; } } };
@@ -10104,7 +10116,7 @@ function evoDropOpen(o = {}) {
     if (got.length) try { log(`진화구슬 키우기에서 ${sc.toLocaleString()}점을 냈다! 받은 것: ${got.map(o => giftName(o.it) + (o.n > 1 ? ' ×' + o.n : '')).join(' · ')}`, [], true); } catch (e) {}
     save(); mus(false); try { if (nb) setTimeout(() => sfx('newdex'), 900); else sfx('wob'); } catch (e) {} try { haptic(2); } catch (e) {}
     const top = SPECIES[ED_L[hiT][0]]?.n || `${hiT + 1}단계`;
-    const P = mgMon && !mgMon.test ? boxOf(mgMon.pid) : null, frV = Math.floor(sc / 1500), fr = !off && P ? frV : 0, frMx = !!P && (P.fr || 0) >= FR_MAX, fmW0 = frMaxQ.length; if (fr) { addFr(mgMon.pid, fr); save(); try { log(`${J({ name: mgMon.name }, '와/과')} 진화구슬 키우기에서 ${sc.toLocaleString()}점을 냈다! 친밀도 +${fr}`, [], true); } catch (e) {} } const fmW = frMaxQ.length > fmW0 || fmW0 > 0; if (fmW) { clearTimeout(frMaxT); frMaxT = 0; }   // v16.04 경완 '함께 논 포켓몬 친밀도': 1,500점마다 +1 (장애물 넘기처럼 기록창 하트 칸, 만점이면 MAX)
+    const P = mgMon && !mgMon.test ? boxOf(mgMon.pid) : null, frV = Math.floor(sc / 1500 * (PZ.fr || 1)), fr = !off && P ? frV : 0, frMx = !!P && (P.fr || 0) >= FR_MAX, fmW0 = frMaxQ.length; if (fr) { addFr(mgMon.pid, fr); save(); try { log(`${J({ name: mgMon.name }, '와/과')} 진화구슬 키우기에서 ${sc.toLocaleString()}점을 냈다! 친밀도 +${fr}`, [], true); } catch (e) {} } const fmW = frMaxQ.length > fmW0 || fmW0 > 0; if (fmW) { clearTimeout(frMaxT); frMaxT = 0; }   // v16.04 경완 '함께 논 포켓몬 친밀도': 1,500점마다 +1 (장애물 넘기처럼 기록창 하트 칸, 만점이면 MAX)
     const HEART = '<svg viewBox="0 0 7 6" width="20" height="18" shape-rendering="crispEdges" aria-hidden="true"><path fill="#2a1e28" d="M1 0h2v1h1V0h2v1h1v3H6v1H5v1H2V5H1V4H0V1h1z"/><path fill="#ff4a78" d="M1 1h2v1h1V1h2v2H5v1H4v1H3V4H2V3H1z"/><path fill="#ffc0d0" d="M1 1h1v1H1z"/></svg>';   // v15.89 경완: 기록창은 장애물 넘기와 똑같이 (점수 올라감 · 4칸 · 최고 기록 · 이번 주 랭킹 · 선물 팝업)
     const res = `<div class="mg-rec">${nb && prev > 0 ? '<i class="mg-nb">최고 기록!</i>' : ''}<b><em data-cnt="${sc}">0</em>점</b></div>
     <div class="mg-st"><div><small>놓은 구슬</small><b>${nD.toLocaleString()}개</b></div><div><small>합치기</small><b>${nM.toLocaleString()}번</b></div><div><small>최대 콤보</small><b>${cMax >= 2 ? cMax : '-'}</b></div><div><small>가장 큰 구슬</small><b>${esc(top)}</b></div></div>
