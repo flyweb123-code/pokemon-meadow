@@ -2515,6 +2515,9 @@ function mgAbSfx(k, t) {
     case 'shield': tone(660, t, .06, { type: 'triangle', vol: .07 }); tone(990, t + .05, .25, { type: 'triangle', vol: .05 }); break;   // 챙
     case 'ghost': tone(500, t, .45, { type: 'sine', vol: .07, to: 250 }); tone(520, t + .05, .4, { type: 'sine', vol: .04, to: 260 }); break;   // 우우웅
     case 'ram': tone(90, t, .3, { type: 'sawtooth', vol: .06, to: 180 }); noise(t, .25, .12, 1500); tone(1760, t + .02, .05, { type: 'triangle', vol: .04 }); break;   // 쿠웅-챙
+    case 'gust': { const a = actx; if (!noiseBuf) noise(t, .01, .001); const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain(), v = Math.max(.002, .2 * volG(VOL.sfx)); src.buffer = noiseBuf; src.loop = true; f.type = 'bandpass'; f.Q.value = 1.4;   // 휘이잉 (경완: 폭풍 바람 소리)
+      f.frequency.setValueAtTime(350, t); f.frequency.exponentialRampToValueAtTime(1500, t + .7); f.frequency.exponentialRampToValueAtTime(800, t + 1.4); f.frequency.exponentialRampToValueAtTime(1200, t + 1.9); f.frequency.exponentialRampToValueAtTime(450, t + 2.5);
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .35); g.gain.setValueAtTime(v, t + 1.5); g.gain.exponentialRampToValueAtTime(.001, t + 2.6); src.connect(f).connect(g).connect(a.destination); src.start(t); src.stop(t + 2.65); break; }
     case 'surf': noise(t, .5, .14, 1200); tone(300, t, .4, { type: 'sine', vol: .05, to: 600 }); break;   // 쏴아
     case 'bolt': for (let i = 0; i < 4; i++) tone(1400 - i * 200, t + i * .04, .04, { type: 'sawtooth', vol: .04 }); noise(t, .2, .1, 3000); break;   // 찌직
     case 'ice': arp([2093, 2637, 3136, 2349], .06, { type: 'triangle', vol: .04 }); noise(t, .3, .04, 6000); break;   // 반짝 띵
@@ -7285,7 +7288,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '16.54';   /* v16.54 경완: 타이어 그네처럼 기둥·타이어가 따로 된 소품도 '타기' 테두리가 다 빛남, 상세카드 후프 버튼을 씻기기 왼쪽으로, 너무 큰 포켓몬이 난감해할 때도 자고 있었으면 깸. */   /* v16.53 경완: 진화구슬 기술 3차 — 폭풍 밑 가운데서 방사형, 용해액 구슬 위로 흘러 라이츄 단계 이하 녹임, 돌 다시 그림, 고스트 점선 앞에, 파도 점선까지·무게별 둥실, 방전 세게, 사이코 무조건 띄움, 버튼 취소는 그냥 원래대로, 도둑질 소리, 알림창 고정, 꾹 눌러 옮기기 빨리 */
+const APP_VER = '16.55';   /* v16.55 경완: 진화구슬 기술 4차 — 바톤터치 둥근 판 앞에서 그 자리 그대로 교체, 폭풍 전체 구슬 무게대로 들썩+바람 소리, 용해액 피카츄 이하만·틈 없어도 찐득하게 흐름, 돌떨구기 라이츄 이하만 깨짐, 파도 수면 위로 안 뜸, 사이코 서서히 점선 아래까지·떨림 고침, 얼음 = 고드름침(구슬만 밀리고 고드름은 바닥까지) */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9616,10 +9619,10 @@ const ED_L = [[172, 15, '#fff3b0'], [25, 19, '#ffe680'], [26, 24, '#ffd0a0'], [4
 const ED_AB = {
   1: { n: '바톤터치', k: 'swap', s: 'tele', d: '들고 있는 구슬과 다음 구슬을 바꿔요' },
   2: { n: '엄청난힘', k: 'slam', s: 'punch', d: '상자를 쾅 내리쳐 구슬들을 통통 튀어 오르게 해요. 튀었다 떨어지며 자리가 바뀌어요' },
-  3: { n: '폭풍', k: 'wind', s: 'fly', d: '맨 위 줄에 거센 바람이 불어 작은 구슬을 상자 밖으로 날려요. 큰 구슬은 버텨요' },
-  4: { n: '용해액', k: 'acid', s: 'gas', d: '상자에 독이 흘러내려 가장 작은 구슬을 모두 녹여요' },
+  3: { n: '폭풍', k: 'wind', s: 'gust', d: '밑에서 거센 바람이 불어 구슬이 무게만큼 들썩이고, 가벼운 구슬은 상자 밖으로 날아가요' },
+  4: { n: '용해액', k: 'acid', s: 'gas', d: '찐득한 독이 구슬 위로 흘러내려 닿은 피츄·피카츄를 녹여요' },
   5: { n: '지진', k: 'quake', s: 'dig', d: '상자를 좌우로 세게 흔들어 구슬을 빈틈으로 다져 넣어요' },
-  6: { n: '돌떨구기', k: 'rock', s: 'rock', arm: '바위를 떨어뜨릴 자리를 골라요', d: '바위를 떨어뜨려 부딪힌 작은 구슬을 3개까지 깨뜨려요. 큰 구슬은 밀기만 해요' },
+  6: { n: '돌떨구기', k: 'rock', s: 'rock', arm: '바위를 떨어뜨릴 자리를 골라요', d: '바위를 떨어뜨려 부딪힌 라이츄 이하 구슬을 3개까지 깨뜨려요. 더 큰 구슬은 밀기만 해요' },
   7: { n: '유턴', k: 'uturn', s: 'qa', d: '방금 놓은 구슬을 손으로 다시 가져와요' },
   8: { n: '고스트다이브', k: 'ghost', s: 'ghost', arm: '구슬을 뚫고 들어갈 자리를 골라요', d: '다음 구슬이 다른 구슬을 뚫고 바닥까지 들어가 주변 구슬을 밀어내요' },
   9: { n: '헤비봄버', k: 'heavy', s: 'iron', arm: '무거운 구슬을 놓을 자리를 골라요', d: '다음 구슬이 쇳덩이처럼 무거워져 아래 구슬을 밀어내며 파고들어요. 합쳐질 때까지 무거워요' },
@@ -9627,8 +9630,8 @@ const ED_AB = {
   11: { n: '파도타기', k: 'surf', s: 'surf', d: '상자에 물이 천천히 차올라 구슬이 둥실 떴다가 가라앉으며 자리를 다시 잡아요' },
   12: { n: '성장', k: 'grow', s: 'fairy', d: '덩굴이 들고 있는 구슬을 감쌌다 풀리며 한 단계 진화시켜요' },
   13: { n: '방전', k: 'zap', s: 'bolt', d: '같은 구슬끼리 번쩍 한 번 끌어당겨요' },
-  14: { n: '사이코키네시스', k: 'psy', s: 'lev', pick: '띄울 구슬을 골라요', d: '고른 구슬을 염력으로 공중에 띄웠다가 떨어뜨려요. 주변 구슬은 밀려나요' },
-  15: { n: '눈보라', k: 'ice', s: 'ice', d: '지금 상자에 있는 구슬이 모두 얼어 작아져요. 합쳐지면 원래 크기예요' },
+  14: { n: '사이코키네시스', k: 'psy', s: 'lev', pick: '띄울 구슬을 골라요', d: '고른 구슬을 염력으로 점선 아래까지 서서히 띄웠다가 떨어뜨려요. 주변 구슬은 밀려나요' },
+  15: { n: '고드름침', k: 'icle', s: 'ice', arm: '고드름을 떨어뜨릴 자리를 골라요', d: '단단한 고드름이 바닥까지 곧장 떨어지며 길에 있는 구슬을 모두 옆으로 밀어내요' },   /* 경완: 눈보라 대신 — 구슬은 무조건 밀리고 고드름은 형태 그대로 바닥까지 */
   16: { n: '용의파동', k: 'pulse', s: 'beam', pick: '파동을 일으킬 자리를 골라요', d: '고른 자리에서 파동이 퍼져 주변 구슬을 밀어내요' },
   17: { n: '도둑질', k: 'steal', s: 'amb', pick: '훔쳐올 구슬을 골라요', ring: 1, d: '둥근 판에서 원하는 구슬을 골라 손으로 훔쳐 와요' },
   18: { n: '천사의키스', k: 'kiss', s: 'heart', arm: '하트 구슬을 놓을 자리를 골라요', d: '하트 구슬을 떨어뜨려 처음 닿은 구슬을 한 단계 진화시켜요. 이 진화는 점수에 안 들어가요' },
@@ -9772,9 +9775,9 @@ function evoDropOpen(o = {}) {
     g.drawImage(jarC, 0, 0, vw, vh);
     if (overT > 0) { const pul = .6 + .4 * Math.sin(now / 70), ly = oy + TOP * k; g.strokeStyle = `rgba(255,40,30,${pul})`; g.setLineDash([8 * k, 7 * k]); g.lineWidth = Math.max(3, 4 * k); g.beginPath(); g.moveTo(ox + 4, ly); g.lineTo(ox + W * k - 4, ly); g.stroke(); g.setLineDash([]); const gr = g.createLinearGradient(0, oy, 0, ly + 30 * k); gr.addColorStop(0, `rgba(255,60,40,${.2 * pul})`); gr.addColorStop(1, 'rgba(255,60,40,0)'); g.fillStyle = gr; g.fillRect(ox, oy, W * k, ly - oy + 30 * k); }   // 닿아 있는 동안 선 깜빡
     const P = (x, y) => [ox + x * k, oy + y * k];
-    if (!dead && now > drop && sk.mode !== 'pick') { const am = sk.mode === 'arm' ? skA.k : '', cr = am === 'rock' ? RKR : am === 'kiss' ? HTR : ED_L[cur][1] * cs, ax0 = am === 'rock' || am === 'kiss' ? Math.max(cr, Math.min(W - cr, aimX)) : aimX, [ax, ay] = P(ax0, 36), gp = am === 'ghost' ? ghostT(now) : null, ly = gp ? gp.y : landY(ax0, cr), [lxx, lyy] = P(gp ? gp.x : ax0, ly), by = ay + Math.sin(now / 300) * 2; if (am !== 'ghost') { g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 2; g.setLineDash([2, 6]); g.lineCap = 'round'; g.beginPath(); g.moveTo(ax, ay + cr * k); g.lineTo(lxx, lyy); g.stroke(); g.setLineDash([]);
+    if (!dead && now > drop && sk.mode !== 'pick') { const am = sk.mode === 'arm' ? skA.k : '', cr = am === 'rock' ? RKR : am === 'kiss' ? HTR : am === 'icle' ? ICW : ED_L[cur][1] * cs, ax0 = am === 'rock' || am === 'kiss' || am === 'icle' ? Math.max(cr, Math.min(W - cr, aimX)) : aimX, [ax, ay] = P(ax0, 36), gp = am === 'ghost' ? ghostT(now) : null, ly = gp ? gp.y : landY(ax0, cr), [lxx, lyy] = P(gp ? gp.x : ax0, ly), by = ay + Math.sin(now / 300) * 2; if (am !== 'ghost') { g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 2; g.setLineDash([2, 6]); g.lineCap = 'round'; g.beginPath(); g.moveTo(ax, ay + cr * k); g.lineTo(lxx, lyy); g.stroke(); g.setLineDash([]);
       g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = 2; g.beginPath(); g.arc(lxx, lyy, cr * k, 0, 7); g.stroke(); }   /* 고스트다이브 길·도착 자리는 구슬 앞에 (skFront) */
-      if (am === 'rock') drawRock(ax, by, cr * k, Math.sin(now / 500) * .12); else if (am === 'kiss') drawHeart(ax, by, cr * k, Math.sin(now / 400) * .2); else { if (am === 'ghost') g.globalAlpha = .55; edBallC(g, cur, ax, by, cr * k, Math.sin(now / 500) * .12, dpr); g.globalAlpha = 1; if (am === 'ghost') ghostFx(ax, by, cr * k, now); if (am === 'heavy') steel(ax, by, cr * k, now); } }
+      if (am === 'rock') drawRock(ax, by, cr * k, Math.sin(now / 500) * .12); else if (am === 'icle') drawIcicle(ax, by - ICH * k * .2, k, Math.sin(now / 500) * .04); else if (am === 'kiss') drawHeart(ax, by, cr * k, Math.sin(now / 400) * .2); else { if (am === 'ghost') g.globalAlpha = .55; edBallC(g, cur, ax, by, cr * k, Math.sin(now / 500) * .12, dpr); g.globalAlpha = 1; if (am === 'ghost') ghostFx(ax, by, cr * k, now); if (am === 'heavy') steel(ax, by, cr * k, now); } }
     if (skA) skBack(now, P); g.fillStyle = 'rgba(30,60,90,.16)'; for (const b of B) { const [x, y] = P(b.x, b.y), r = rad(b) * k; g.beginPath(); g.arc(x + r * .06, y + r * .1, r, 0, 7); g.fill(); }
     for (const b of B) drawOrb(b, now, P);
     if (skA) skFront(now, P);
@@ -9785,7 +9788,7 @@ function evoDropOpen(o = {}) {
     flt = flt.filter(f => now - f.t < 800); g.textAlign = 'center'; g.font = `${Math.round(15 + 5 * k)}px Galmuri11,system-ui,sans-serif`; g.lineJoin = 'round'; for (const f of flt) { const q = (now - f.t) / 800, [x, y] = P(f.x, f.y - q * 40); g.globalAlpha = 1 - q * q; g.lineWidth = 5; g.strokeStyle = '#20202c'; g.strokeText(f.s, x, y); g.fillStyle = '#ffe27a'; g.fillText(f.s, x, y); g.globalAlpha = 1; }
     cmb = cmb.filter(c => now - c.t < 900); for (const c of cmb) { const q = (now - c.t) / 900, sz = Math.round((24 + 8 * k) * (q < .15 ? .6 + q / .15 * .55 : q < .25 ? 1.15 - (q - .15) / .1 * .15 : 1)), [x0, y0] = P(c.x, c.y - 26 - q * 26), tx = Math.max(ox + 60 * k, Math.min(ox + (W - 60) * k, x0)), s = `${c.n} 콤보!`;   // v16.04 경완 '콤보': 원작처럼 큰 주황 글씨
       g.globalAlpha = q > .7 ? (1 - q) / .3 : 1; g.font = `${sz}px Galmuri11,system-ui,sans-serif`; g.lineWidth = 7; g.strokeStyle = '#20202c'; g.strokeText(s, tx, y0); g.fillStyle = c.n >= 5 ? '#ff5a3a' : '#ff9a2e'; g.fillText(s, tx, y0); g.lineWidth = 1; g.strokeStyle = 'rgba(255,240,180,.9)'; g.strokeText(s, tx, y0 - 1); g.globalAlpha = 1; }
-    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.drawImage(fgC, 0, 0, vw, vh); nextB(now); if (skA) { skRing(now); banner(now, P); } };
+    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.drawImage(fgC, 0, 0, vw, vh); nextB(now); if (anims.some(a => a.top)) { for (const a of anims) if (a.top) animOne(a, now, P); anims = anims.filter(a => !a.fin); } if (skA) { skRing(now); banner(now, P); } };
   const nextB = (now, dk) => { if (!nq.length) return; const Ro = 56, Ri = 31, cx = ox + (W + WALL) * k - Ro - 2, cy = oy - D * k - Ro - 8, u0 = Math.min(1, (now - nxT) / 360), u = 1 - (1 - u0) ** 3, rm = (Ro + Ri) / 2;
     let gr = g.createRadialGradient(cx, cy - Ro * .3, Ri, cx, cy, Ro); gr.addColorStop(0, '#fff8e6'); gr.addColorStop(1, '#f3dfb4'); g.fillStyle = gr; g.beginPath(); g.arc(cx, cy, Ro, 0, 7); g.fill(); g.lineWidth = 2; g.strokeStyle = 'rgba(190,150,90,.45)'; g.stroke(); g.lineWidth = 2; g.strokeStyle = 'rgba(255,255,255,.85)'; g.beginPath(); g.arc(cx, cy, Ro - 3.5, Math.PI * 1.08, Math.PI * 1.55); g.stroke();
     gr = g.createRadialGradient(cx - Ri * .35, cy - Ri * .4, 2, cx, cy, Ri); gr.addColorStop(0, 'rgba(255,255,255,.98)'); gr.addColorStop(.7, 'rgba(225,244,255,.95)'); gr.addColorStop(1, 'rgba(180,220,245,.95)'); g.fillStyle = gr; g.beginPath(); g.arc(cx, cy, Ri, 0, 7); g.fill(); g.lineWidth = 2; g.strokeStyle = 'rgba(255,255,255,.9)'; g.stroke();
@@ -9798,7 +9801,7 @@ function evoDropOpen(o = {}) {
       g.globalAlpha = a; edBallC(g, t, x, y, Math.round(r * (i === NQ ? .6 + .4 * u : 1)), 0, dpr * ringS); g.globalAlpha = 1; } };
   const layer = f => { const c = document.createElement('canvas'); c.width = cv.width; c.height = cv.height; const g0 = g; g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); try { f(); } finally { g = g0; } return c; };
   // ── 경완 (베타): 액티브 기술 = 함께 노는 포켓몬 타입 기술 (왼쪽 알약 버튼), 패시브 = 랭크에 따라 한 판에 쓰는 횟수 ──
-  const rad = b => b.r * (b.s || 1), RKR = 26, HTR = 18;
+  const rad = b => b.r * (b.s || 1), RKR = 26, HTR = 18, ICW = 12, ICH = 96;
   let ringHide = 0, ringS = 1;
   const skMsg = s => { sk.msg = { s, t: performance.now() }; };
   const updAb = () => { if (!abEl) return; abEl.querySelector('.ed-abd').innerHTML = Array.from({ length: USES }, (_, i) => `<i class="${i < sk.n ? 'on' : ''}"></i>`).join(''); abEl.classList.toggle('off', sk.n <= 0); abEl.classList.toggle('on', !!sk.mode); };
@@ -9821,15 +9824,15 @@ function evoDropOpen(o = {}) {
   const skNow = () => { const now = performance.now(), L = B.filter(live);
     switch (skA.k) {
       case 'swap': { if (nq[0] === cur) return '바꿔도 같은 구슬이에요'; const tIn = nq[0], tOut = cur, [rx, ry, rr0] = ringPos(0), [bx0, by0] = toBox(rx, ry); cur = tIn; nq[0] = tOut; nxt = nq[0]; aimX = cx(aimX);   /* 경완: 둥근 판 가운데 구슬이 나와서 들고 있던 구슬을 밀어내고 바뀜 */
-        anims.push({ t: tIn, x0: bx0, y0: by0, x1: aimX, y1: 36, t0: now, dur: 380, k: 'swap', s0: rr0 / (ED_L[tIn][1] * k), s1: 1, arc: 34 });
-        anims.push({ t: tOut, x0: aimX, y0: 36, x1: bx0, y1: by0, t0: now + 200, dur: 380, k: 'swap', s0: 1, s1: (14 + ED_L[tOut][1] * .22) / (ED_L[tOut][1] * k), arc: -24, hit: 1 });
-        ringHide = now + 590; drop = now + 590; return; }
+        anims.push({ t: tIn, x0: bx0, y0: by0, x1: aimX, y1: 36, t0: now, dur: 420, k: 'swap', top: 1, s0: rr0 / (ED_L[tIn][1] * k), s1: 1, arc: 26 });   /* 경완: 사라졌다 나오지 않고 그 자리에서 바로 서로 자리 바꿈, 둥근 판 앞에서 */
+        anims.push({ t: tOut, x0: aimX, y0: 36, x1: bx0, y1: by0, t0: now, dur: 420, k: 'swap', top: 1, s0: 1, s1: rr0 / (ED_L[tOut][1] * k), arc: -26 });
+        ringHide = now + 430; drop = now + 430; return; }
       case 'slam': { if (!L.length) return '상자가 비어 있어요'; for (const b of L) { const v = b.body.velocity; MT.Body.setVelocity(b.body, { x: v.x + (Math.random() - .5) * 2.6, y: -(3.4 + Math.random() * 2.8) }); MT.Body.setAngularVelocity(b.body, (Math.random() - .5) * .25); }
         shake = .55; sk.grace = now + 1700; fxs.push({ k: 'ring', x: W / 2, y: H - 2, vx: 0, vy: 0, t: now, life: 520, r: W * .3 }); for (let i = 0; i < 22; i++) fxs.push({ k: 'dust', x: Math.random() * W, y: H - 4, vx: (Math.random() - .5) * 140, vy: -40 - Math.random() * 90, g: 120, t: now, life: 700, r: 5 + Math.random() * 6, c: 'rgba(235,225,200,.7)' }); try { haptic(2); } catch (e) {} return; }
-      case 'wind': { if (!L.length) return '날릴 구슬이 없어요'; const S2 = L.slice().sort((a, b) => (a.y - rad(a)) - (b.y - rad(b))), top = S2[0].y - rad(S2[0]), sel = S2.filter(b => b.y - rad(b) < top + 60).slice(0, 6), dir = 0;   /* 경완: 밑 가운데에서 위로 부채꼴(방사형) 바람 */
+      case 'wind': { if (!L.length) return '날릴 구슬이 없어요'; const S2 = L.slice().sort((a, b) => (a.y - rad(a)) - (b.y - rad(b))), top = S2[0].y - rad(S2[0]), sel = S2, dir = 0;   /* 경완: 밑 가운데에서 위로 부채꼴(방사형) 바람 */
         sk.wd = { t: now, dir, y: top, sel }; sk.grace = now + 2800; for (let i = 0; i < 22; i++) { const an = -Math.PI / 2 + (Math.random() - .5) * 1.5, v = 420 + Math.random() * 260; fxs.push({ k: 'leaf', x: W / 2 + (Math.random() - .5) * 40, y: H - 6, vx: Math.cos(an) * v, vy: Math.sin(an) * v, g: 60, t: now + Math.random() * 900, life: 1300, r: 4 + Math.random() * 3, c: ['#7ccc54', '#a8dc6a', '#5fb44a'][i % 3], rot: Math.random() * 6 }); } return; }
-      case 'acid': { if (!L.length) return '녹일 구슬이 없어요'; const tY = Math.max(0, Math.min(...L.map(b => b.y - rad(b))) - 50); sk.ac = { t: now, last: now, ps: Array.from({ length: 110 }, () => ({ x: 4 + Math.random() * (W - 8), y: tY - Math.random() * 40, vx: 0, vy: 0, d: Math.random() * .45, tr: [] })) };   /* 경완: 독이 구슬 위로 흘러내리고, 독에 닿은 라이츄 단계 이하 구슬은 다 녹아 없어짐 */
-        sk.grace = now + 2600; try { sfx('poison'); } catch (e) {} return; }
+      case 'acid': { if (!L.some(b => b.t <= 1)) return '녹일 구슬이 없어요'; const tY = Math.max(0, Math.min(...L.map(b => b.y - rad(b))) - 50); sk.ac = { t: now, last: now, ps: Array.from({ length: 110 }, () => ({ x: 4 + Math.random() * (W - 8), y: tY - Math.random() * 40, vx: 0, vy: 0, d: Math.random() * .45, tr: [] })) };   /* 경완: 독이 구슬 위로 흘러내리고, 독에 닿은 라이츄 단계 이하 구슬은 다 녹아 없어짐 */
+        sk.grace = now + 3600; try { sfx('poison'); } catch (e) {} return; }
       case 'quake': { if (!L.length) return '상자가 비어 있어요'; sk.qk = now; sk.qkI = -1; sk.grace = now + 2300; for (let i = 0; i < 24; i++) fxs.push({ k: 'dust', x: Math.random() * W, y: H - 4, vx: (Math.random() - .5) * 90, vy: -30 - Math.random() * 70, g: 100, t: now + Math.random() * 1200, life: 700, r: 4 + Math.random() * 5, c: 'rgba(205,180,130,.65)' }); try { haptic(2); } catch (e) {} return; }
       case 'uturn': { const b = lastB; if (!b || !live(b) || !B.includes(b)) return '되돌릴 구슬이 없어요'; b.dead = 1; MT.Composite.remove(eng.world, b.body); toHand(b, 'uturn', 420); return; }
       case 'surf': { if (!L.length) return '상자가 비어 있어요'; sk.sf = now; sk.grace = now + 5600; return; }
@@ -9856,7 +9859,7 @@ function evoDropOpen(o = {}) {
     if (skA.k === 'steal') { const i = hit, [x, y, rr0] = ringPos(i, Z), [bx, by] = toBox(x, y), t = nq[i]; nq[i] = cur; cur = t; nxt = nq[0]; aimX = cx(aimX); anims.push({ t, x0: bx, y0: by, x1: aimX, y1: 36, t0: now, dur: 420, k: 'steal', s0: rr0 / (ED_L[t][1] * k) }); drop = now + 420; boom(bx, by, 10, '#b080e0', 140, 'spark', 450); return; }
     const b = hit;
     if (skA.k === 'burn') { b.gone = { t: now, k: 'burn' }; sk.grace = now + 1400; return; }   /* 경완: 밖에서 불꽃이 날아오는 대신 구슬이 밑에서부터 타며 없어짐 */
-    if (skA.k === 'psy') { b.psy = { t: now, y0: b.y, x0: b.x }; sk.grace = now + 3000; return; }   /* 경완: 염력으로 서서히 떠올라(다른 구슬은 밀려남) 공중에서 염력이 풀리며 저절로 떨어짐 */
+    if (skA.k === 'psy') { b.psy = { t: now, y0: b.y, x0: b.x }; MT.Body.setStatic(b.body, true); sk.grace = now + 3800; return; }   /* 경완: 염력으로 서서히 떠올라(다른 구슬은 밀려남) 공중에서 염력이 풀리며 저절로 떨어짐 */
     if (skA.k === 'pulse') { const R = 170; for (const o of B) { if (!live(o)) continue; const dx = o.x - b.x, dy = o.y - b.y, d = Math.hypot(dx, dy) || 1, m = R + rad(o); if (d >= m) continue; const f = 7 * (1 - d / m) ** .7 * Math.min(1.3, 30 / rad(o)), v = o.body.velocity; MT.Body.setVelocity(o.body, { x: v.x + dx / d * f, y: v.y + dy / d * f }); MT.Body.setAngularVelocity(o.body, (Math.random() - .5) * .2); }   /* 경완 골라 정함: 용의춤 대신 용의파동 — 고른 자리에서 파동이 퍼져 주변 구슬을 밀어냄 (작은 구슬일수록 멀리) */
       for (let i = 0; i < 3; i++) fxs.push({ k: 'pw', x: b.x, y: b.y, vx: 0, vy: 0, t: now + i * 90, life: 520, r: R }); boom(b.x, b.y, 18, '#9a8cff', 260, 'spark', 550); shake = Math.max(shake, .3); sk.grace = now + 1600; try { haptic(2); } catch (er) {} return; }
     if (skA.k === 'dragon') { b.evo = now + 750; return; } };
@@ -9865,20 +9868,23 @@ function evoDropOpen(o = {}) {
   const spawnX = (kd, x) => { const r = kd === 'rock' ? RKR : HTR, e = { x9: kd, t: -1, x, y: 36, a: 0, r, born: performance.now(), hits: 0 }; e.body = MT.Bodies.circle(x, 36, r, kd === 'rock' ? { density: .02, friction: .3, frictionStatic: .4, frictionAir: .012, restitution: .15 } : { ...BOD, restitution: .25 }); e.body.plugin.ed = e; MT.Composite.add(eng.world, e.body);
     if (kd === 'rock') { MT.Body.setVelocity(e.body, { x: (Math.random() - .5) * 1.4, y: -.6 }); MT.Body.setAngularVelocity(e.body, (Math.random() - .5) * .16); } else MT.Body.setVelocity(e.body, { x: 0, y: 2 }); XB.push(e); return e; };   /* 경완 '너무 직선으로 빨리': 살짝 떠올랐다 흔들리며 떨어짐 */
   const skHit = (a, b) => { const e = a.x9 ? a : b, o = a.x9 ? b : a; if (o.x9 || !live(o) || e.dead) return;
-    if (e.x9 === 'rock' && e.hits < 3 && !o.brk && e.body.speed > 2 && o.r <= 35) { o.brk = 1; e.hits++; xq.push(['brk', e, o]); }   // 경완: 큰(무거운) 구슬은 밀기만, 안 깨짐
+    if (e.x9 === 'rock' && e.hits < 3 && !o.brk && e.body.speed > 2 && o.t <= 2) { o.brk = 1; e.hits++; xq.push(['brk', e, o]); }   // 경완: 큰(무거운) 구슬은 밀기만, 안 깨짐
     else if (e.x9 === 'heart' && !e.used) { e.used = 1; xq.push(['kiss', e, o]); } };
   const GD = { burn: 900, acid: 550 };
   const skForce = now => { const gF = .001;
-    if (sk.sf) { const q = (now - sk.sf) / 4400; if (q >= 1) sk.sf = 0; else { const wy = H - (H - TOP) * wl(q); for (const b of B) { if (!live(b)) continue; const r = rad(b), d = Math.max(0, Math.min(1, (b.y + r - wy) / (2 * r))); if (d > 0) { const m = b.body.mass, v = b.body.velocity, bu = (b.hv ? .7 : 2.6 - b.r * .018); MT.Body.applyForce(b.body, b.body.position, { x: m * gF * (.55 - b.r * .004) * Math.sin(now / (200 + b.r * 4) + b.y / 45 + b.r), y: -m * gF * bu * d }); MT.Body.setVelocity(b.body, { x: v.x * .985, y: v.y * .975 }); } } } }   /* 경완: 물이 점선까지 차고, 작은 구슬은 높이 둥실·큰 구슬은 깊이 잠겨 천천히 (무게 따라 다르게) */
+    for (const e of XB) { if (e.dead || e.x9 !== 'icle') continue; if (!e.land) { e.v = Math.min(8, e.v + .32); e.y = Math.min(H - ICH * 2 / 3, e.y + e.v); MT.Body.setPosition(e.body, { x: e.x, y: e.y }); if (e.y >= H - ICH * 2 / 3) { e.land = now; shake = Math.max(shake, .25); boom(e.x, H - 4, 10, '#d8f0ff', 160, 'spark', 450); try { sfx('ab', 'ice'); haptic(1); } catch (er) {} } }   // 경완: 고드름은 안 밀리고 형태 그대로 바닥까지 — 구슬만 밀려남
+      else if (now - e.land > 900) { e.dead = 1; MT.Composite.remove(eng.world, e.body); boom(e.x, e.y, 18, '#cfeaff', 200, 'shard', 700, 4); boom(e.x, e.y, 10, '#ffffff', 120, 'spark', 500); } }
+    if (sk.sf) { const q = (now - sk.sf) / 4400; if (q >= 1) sk.sf = 0; else { const wy = H - (H - TOP) * wl(q); for (const b of B) { if (!live(b)) continue; const r = rad(b), d = Math.max(0, Math.min(1, (b.y + r - wy) / (2 * r))); if (d > 0) { const m = b.body.mass, v = b.body.velocity, bu = (b.hv ? .6 : Math.max(.75, 1.5 - b.r * .012)), br = Math.max(0, wy + 3 - (b.y - r)) / r;   /* 경완: 수면 위로는 안 떠오름 — 가벼운 구슬은 수면 바로 아래까지, 무거운 구슬은 천천히 가라앉음 */
+            MT.Body.applyForce(b.body, b.body.position, { x: m * gF * (.55 - b.r * .004) * Math.sin(now / (200 + b.r * 4) + b.y / 45 + b.r), y: -m * gF * bu * d + m * gF * 9 * br }); MT.Body.setVelocity(b.body, { x: v.x * .985, y: br > 0 ? Math.max(v.y, 0) * .9 : v.y * .975 }); } } } }   /* 경완: 물이 점선까지 차고, 작은 구슬은 높이 둥실·큰 구슬은 깊이 잠겨 천천히 (무게 따라 다르게) */
     if (sk.qk) { const q = (now - sk.qk) / 1600; if (q >= 1) sk.qk = 0; else { const f = Math.sin(q * Math.PI * 2 * 8) * (1 - q * .4), ki = Math.floor(q * 14), kick = ki !== sk.qkI; sk.qkI = ki; for (const b of B) if (live(b)) { MT.Body.applyForce(b.body, b.body.position, { x: b.body.mass * gF * 4 * f, y: 0 }); if (kick) { const v = b.body.velocity; MT.Body.setVelocity(b.body, { x: v.x + (Math.random() - .5) * 2.2, y: v.y - Math.random() * 2.4 }); } } } }   /* 경완 '거의 요지부동': 더 세게 + 툭툭 튀김 */
-    if (sk.wd) { const q = (now - sk.wd.t) / 1000; if (q >= 2.6) sk.wd = null; else for (const b of sk.wd.sel) { if (b.dead || b.gone) continue; const m = b.body.mass, f = Math.min(1.6, (34 / rad(b)) ** 2);   /* 경완 '무거운 구슬도 날아감': 바람 힘은 크기(단면)만큼 → 작은 구슬만 뜨고 큰 구슬은 흔들리기만 */
+    if (sk.wd) { const q = (now - sk.wd.t) / 1000; if (q >= 2.6) sk.wd = null; else for (const b of sk.wd.sel) { if (b.dead || b.gone) continue; const m = b.body.mass, f = Math.max(.55, Math.min(1.6, (34 / rad(b)) ** 2));   // 경완: 다 조금씩은 움직이게, 무게만큼 다르게    /* 경완 '무거운 구슬도 날아감': 바람 힘은 크기(단면)만큼 → 작은 구슬만 뜨고 큰 구슬은 흔들리기만 */
         const dx = b.x - W / 2, dy = b.y - (H + 80), dl = Math.hypot(dx, dy) || 1, ux = dx / dl, uy = dy / dl;   // 밑 가운데에서 이 구슬 쪽으로
         if (b.fly) { MT.Body.applyForce(b.body, b.body.position, { x: (ux * 1.6 + Math.sign(dx || 1) * .5) * m * gF, y: -m * gF * .95 }); continue; } if (q > 1.6) continue;
         MT.Body.applyForce(b.body, b.body.position, { x: ux * m * gF * 1.15 * f, y: uy * m * gF * 1.15 * f }); if (b.y < -rad(b) * .2) { b.fly = now; b.body.collisionFilter.mask = 1; } } }
     for (const b of B) { if (b.dead) continue;
-      if (b.psy) { const q = (now - b.psy.t) / 1000; if (q < 1.45) { const e = q < 1.05 ? (u => u < .5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2)(q / 1.05) : 1, ty = Math.max(rad(b) + 6, 30), y = b.psy.y0 + (ty - b.psy.y0) * e + (q >= 1.05 ? Math.sin((q - 1.05) * 12) * 2 : 0), py = b.body.position.y;   /* 경완: 물리와 상관없이 무조건 공중까지 떴다가(다른 구슬은 밀려남) 염력이 풀리면 떨어짐 */
-          MT.Body.setPosition(b.body, { x: b.psy.x0, y }); MT.Body.setVelocity(b.body, { x: 0, y: y - py }); MT.Body.setAngularVelocity(b.body, .02); }
-        else { b.psy = null; MT.Body.setVelocity(b.body, { x: 0, y: 0 }); boom(b.x, b.y, 10, '#f090e0', 120, 'spark', 500); } }
+      if (b.psy) { const q = (now - b.psy.t) / 1000; if (q < 2.3) { const u = Math.min(1, q / 1.8), e = u < .5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2, ty = Math.min(b.psy.y0, TOP + rad(b) + 6), y = b.psy.y0 + (ty - b.psy.y0) * e;   /* 경완: 물리 상관없이 서서히 점선 바로 아래까지 떴다가 염력이 풀리면 떨어짐 — 뜨는 동안은 고정된 몸(다른 구슬만 밀림, 떨림 없음) */
+          MT.Body.setPosition(b.body, { x: b.psy.x0, y }); }
+        else { b.psy = null; MT.Body.setStatic(b.body, false); MT.Body.setVelocity(b.body, { x: 0, y: 0 }); MT.Body.setAngularVelocity(b.body, 0); boom(b.x, b.y, 10, '#f090e0', 120, 'spark', 500); } }
       let s = b.fr || 1; if (b.gone) { const q = Math.max(0, Math.min(1, (now - b.gone.t) / GD[b.gone.k])); s *= b.gone.k === 'burn' ? (q < .6 ? 1 : 1 - (q - .6) / .4 * .85) : 1 - q * .85; } if (b.gw) { const q = Math.min(1, (now - b.gw) / 420); s *= .3 + .7 * (1 - (1 - q) ** 2); if (q >= 1) b.gw = 0; }
       if (Math.abs(s - b.s) > 1e-4) { const f = s / b.s; MT.Body.scale(b.body, f, f); b.s = s; } } };
   const wl = q => { const sm = u => u * u * (3 - 2 * u); return q < .42 ? sm(q / .42) : q < .62 ? 1 : 1 - sm((q - .62) / .38); };   /* 경완: 밑에서부터 천천히 차오르며 바로 뜸 */
@@ -9911,6 +9917,10 @@ function evoDropOpen(o = {}) {
     x.strokeStyle = 'rgba(255,255,250,.35)'; x.lineWidth = Math.max(1, R * .03); x.beginPath(); x.moveTo(-R * .02, -R * .19); x.lineTo(R * .23, R * .04); x.stroke(); x.restore();
     path(); x.lineWidth = Math.max(1.5, R * .06); x.strokeStyle = '#3b3732'; x.stroke(); x.save(); path(); x.clip(); x.translate(R * .05, R * .06); path(); x.strokeStyle = 'rgba(255,255,255,.35)'; x.lineWidth = Math.max(1, R * .08); x.stroke(); x.restore();
     RK_C.set(R, c); return c; };
+  const drawIcicle = (x, y, k2, a) => { const w = ICW * k2, t = -ICH / 3 * k2, b = ICH * 2 / 3 * k2; g.save(); g.translate(x, y); g.rotate(a);   // 고드름: 위 넓고 아래 뾰족 (무게중심 기준)
+    g.beginPath(); g.moveTo(-w, t + 3 * k2); g.quadraticCurveTo(-w, t, -w + 4 * k2, t); g.lineTo(w - 4 * k2, t); g.quadraticCurveTo(w, t, w, t + 3 * k2); g.lineTo(w * .55, t + (b - t) * .35); g.lineTo(w * .7, t + (b - t) * .5); g.lineTo(1.2 * k2, b - 2 * k2); g.lineTo(0, b); g.lineTo(-1.2 * k2, b - 2 * k2); g.lineTo(-w * .6, t + (b - t) * .45); g.lineTo(-w * .75, t + (b - t) * .25); g.closePath();
+    const gr = g.createLinearGradient(-w, 0, w, 0); gr.addColorStop(0, 'rgba(170,215,250,.95)'); gr.addColorStop(.4, 'rgba(240,250,255,.98)'); gr.addColorStop(1, 'rgba(120,180,235,.95)'); g.fillStyle = gr; g.fill(); g.lineWidth = 1.5; g.strokeStyle = 'rgba(70,130,200,.8)'; g.stroke();
+    g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 2 * k2; g.lineCap = 'round'; g.beginPath(); g.moveTo(-w * .35, t + 6 * k2); g.lineTo(-w * .1, t + (b - t) * .7); g.stroke(); g.restore(); };
   const drawRock = (x, y, r, a) => { const c = rockImg(r * dpr), d = c.width / dpr; g.save(); g.translate(x, y); g.rotate(a); g.drawImage(c, -d / 2, -d / 2, d, d); g.restore(); };
   const drawHeart = (x, y, r, a) => { let gr = g.createRadialGradient(x - r * .35, y - r * .4, r * .05, x, y, r); gr.addColorStop(0, '#ffe8f2'); gr.addColorStop(.6, '#ff9cc8'); gr.addColorStop(1, '#e0569a'); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); g.save(); g.translate(x, y); g.rotate(a); heartP(0, r * .05, r * .55, '#fff'); g.restore();
     g.fillStyle = 'rgba(255,255,255,.85)'; g.beginPath(); g.ellipse(x - r * .38, y - r * .48, r * .28, r * .13, -.55, 0, 7); g.fill(); g.lineWidth = Math.max(1, r * .07); g.strokeStyle = 'rgba(170,40,100,.8)'; g.beginPath(); g.arc(x, y, r - g.lineWidth / 2, 0, 7); g.stroke(); };
@@ -9948,19 +9958,22 @@ function evoDropOpen(o = {}) {
       g.save(); g.translate(x, y); g.rotate(now / 400); g.fillStyle = `rgba(255,240,170,${.25 + q * .35})`; for (let i = 0; i < 8; i++) { g.rotate(Math.PI / 4); g.beginPath(); g.moveTo(-3, 0); g.lineTo(3, 0); g.lineTo(0, -r * (1.3 + q * .6)); g.fill(); } g.restore(); }
     if (b.hv) steel(x, y, r, now, now - b.hv < 1500);
     if (b.fr) { g.fillStyle = 'rgba(225,245,255,.32)'; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); g.strokeStyle = 'rgba(255,255,255,.85)'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(x - r * .5, y + r * .15); g.lineTo(x - r * .1, y - r * .3); g.moveTo(x + r * .1, y + r * .45); g.lineTo(x + r * .45, y + r * .05); g.stroke(); g.strokeStyle = 'rgba(190,230,255,.9)'; g.lineWidth = 1.5; g.beginPath(); g.arc(x, y, r - 1, 0, 7); g.stroke(); }
-    if (b.psy) { const q = (now - b.psy.t) / 1000; psyFx(x, y, r, now, q < 1.2 ? Math.min(1, q / .2) : Math.max(0, 1 - (q - 1.2) / .25)); }
+    if (b.psy) { const q = (now - b.psy.t) / 1000; psyFx(x, y, r, now, q < 2 ? Math.min(1, q / .25) : Math.max(0, 1 - (q - 2) / .3)); }
     if (b.coat && now - b.coat < 1200 && !b.gone) { g.fillStyle = `rgba(140,215,50,${.38 * (1 - (now - b.coat) / 1200)})`; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); }
     if (b.gone?.k === 'acid' && now > b.gone.t) { const q = Math.min(1, (now - b.gone.t) / GD.acid); g.fillStyle = `rgba(130,215,50,${.35 + q * .45})`; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); } };
   const skBack = (now, P) => { if (sk.mode === 'pick' && !skA.ring) { g.fillStyle = 'rgba(12,16,38,.55)'; g.fillRect(-40, -40, vw + 80, vh + 80); } };   // 고르기 모드면 구슬 뒤가 어두워짐
   const skFront = (now, P) => {   // 구슬 앞
-    for (const e of XB) { if (e.dead) continue; const [x, y] = P(e.x, e.y); if (e.x9 === 'rock') drawRock(x, y, e.r * k, e.a); else drawHeart(x, y, e.r * k, e.a); }
+    for (const e of XB) { if (e.dead) continue; const [x, y] = P(e.x, e.y); if (e.x9 === 'rock') drawRock(x, y, e.r * k, e.a); else if (e.x9 === 'icle') drawIcicle(x, y, k, 0); else drawHeart(x, y, e.r * k, e.a); }
     if (sk.zp > now) { const a = Math.min(1, (sk.zp - now) / 200); g.globalAlpha = a; for (const [p1, c] of sk.zl.slice(0, 12)) { if (p1.dead || c.dead) continue; const [x0, y0] = P(p1.x, p1.y), [x1, y1] = P(c.x, c.y); bolt(x0, y0, x1, y1, 2.2); } g.globalAlpha = 1; }
-    if (sk.ac) { const q = (now - sk.ac.t) / 1000, dt = Math.min(.05, (now - sk.ac.last) / 1000); sk.ac.last = now; if (q > 3) sk.ac = null; else { const a = q > 2.4 ? 1 - (q - 2.4) / .6 : 1;   // 독 방울이 떨어져 구슬 표면을 타고 흘러내림
-        for (const p of sk.ac.ps) { if (q < p.d || p.y > H + 10) continue; p.vy = Math.min(300, p.vy + 700 * dt); let nx = p.x + p.vx * dt, ny = p.y + p.vy * dt;
-          for (const b of B) { if (b.dead || b.fly) continue; const r = rad(b) + 2, dx = nx - b.x, dy = ny - b.y, d = Math.hypot(dx, dy); if (d < r && d > 0) { const ux = dx / d, uy = dy / d; nx = b.x + ux * r; ny = b.y + uy * r; const tx = uy >= 0 ? 0 : (ux >= 0 ? -uy : uy), ty = Math.abs(ux) || .2, sp = Math.max(60, Math.hypot(p.vx, p.vy) * .7); p.vx = (ux >= 0 ? 1 : -1) * Math.abs(tx || ux) * sp; p.vy = Math.abs(ty) * sp * .9; b.coat = now; if (live(b) && b.t <= 2) b.gone = { t: now + 120, k: 'acid' }; } }
-          p.x = Math.max(2, Math.min(W - 2, nx)); p.y = ny; p.tr.push([p.x, p.y]); if (p.tr.length > 5) p.tr.shift(); }
+    if (sk.ac) { const q = (now - sk.ac.t) / 1000, dt = Math.min(.05, (now - sk.ac.last) / 1000); sk.ac.last = now; if (q > 3.8) sk.ac = null; else { const a = q > 3.1 ? 1 - (q - 3.1) / .7 : 1;   // 독 방울이 떨어져 구슬 표면을 타고 찐득하게 흘러내림 (경완: 빈틈 없어도 구슬 위로 흐름)
+        for (const p of sk.ac.ps) { if (q < p.d || p.y > H + 10) continue; const ox2 = p.x, oy2 = p.y;
+          if (p.th) { p.vx *= .9; p.vy = 46 + Math.sin(now / 160 + p.d * 40) * 10; p.x = Math.max(2, Math.min(W - 2, p.x + p.vx * dt)); p.y += p.vy * dt; for (const b of B) { if (b.dead || b.fly || b.gone) continue; if (Math.hypot(p.x - b.x, p.y - b.y) < rad(b)) { b.coat = now; if (live(b) && b.t <= 1) b.gone = { t: now + 120, k: 'acid' }; } } }   // 틈이 없으면 구슬 위를 그대로 타고 내려감
+          else { p.vy = Math.min(170, p.vy + 450 * dt); let nx = p.x + p.vx * dt, ny = p.y + p.vy * dt;
+            for (const b of B) { if (b.dead || b.fly) continue; const r = rad(b) + 2, dx = nx - b.x, dy = ny - b.y, d = Math.hypot(dx, dy); if (d < r && d > 0) { const ux = dx / d, uy = dy / d; nx = b.x + ux * r; ny = b.y + uy * r; const tx = uy >= 0 ? 0 : (ux >= 0 ? -uy : uy), ty = Math.abs(ux) || .2, sp = Math.max(35, Math.hypot(p.vx, p.vy) * .6); p.vx = (ux >= 0 ? 1 : -1) * Math.abs(tx || ux) * sp; p.vy = Math.abs(ty) * sp * .9; b.coat = now; if (live(b) && b.t <= 1) b.gone = { t: now + 120, k: 'acid' }; } }   // 경완: 피카츄 이하만 녹음
+            p.x = Math.max(2, Math.min(W - 2, nx)); p.y = ny; p.st = Math.hypot(p.x - ox2, p.y - oy2) < 10 * dt ? (p.st || 0) + dt : 0; if (p.st > .18) p.th = 1; }
+          p.tr.push([p.x, p.y]); if (p.tr.length > 9) p.tr.shift(); }
         const [cx0, cy0] = P(0, -40), [cx1, cy1] = P(W, H); g.save(); g.beginPath(); g.rect(cx0, cy0, cx1 - cx0, cy1 - cy0); g.clip(); g.globalAlpha = a; g.lineCap = 'round'; g.lineJoin = 'round';
-        for (const p of sk.ac.ps) { if (p.tr.length < 2) continue; g.beginPath(); p.tr.forEach(([x2, y2], j) => { const [sx2, sy2] = P(x2, y2); j ? g.lineTo(sx2, sy2) : g.moveTo(sx2, sy2); }); g.strokeStyle = 'rgba(140,215,50,.55)'; g.lineWidth = 6 * k; g.stroke(); const [hx, hy] = P(p.x, p.y); g.fillStyle = 'rgba(175,240,80,.95)'; g.beginPath(); g.ellipse(hx, hy, 3.6 * k, 4.6 * k, 0, 0, 7); g.fill(); }
+        for (const p of sk.ac.ps) { if (p.tr.length < 2) continue; g.beginPath(); p.tr.forEach(([x2, y2], j) => { const [sx2, sy2] = P(x2, y2); j ? g.lineTo(sx2, sy2) : g.moveTo(sx2, sy2); }); g.strokeStyle = 'rgba(105,170,30,.8)'; g.lineWidth = 8 * k; g.stroke(); g.strokeStyle = 'rgba(200,250,120,.55)'; g.lineWidth = 2.5 * k; g.stroke(); const [hx, hy] = P(p.x, p.y); g.fillStyle = 'rgba(120,190,40,.97)'; g.beginPath(); g.ellipse(hx, hy + 1.5 * k, 5 * k, 6.5 * k, 0, 0, 7); g.fill(); g.fillStyle = 'rgba(225,255,170,.8)'; g.beginPath(); g.arc(hx - 1.6 * k, hy - .5 * k, 1.6 * k, 0, 7); g.fill(); }
         g.restore(); g.globalAlpha = 1; } }
     if (sk.sf) { const q = (now - sk.sf) / 4400, wy = H - (H - TOP) * wl(Math.min(1, q)); if (wy < H - 2) { const wave = x => wy + Math.sin(x / 34 + now / 180) * 5 + Math.sin(x / 13 - now / 110) * 2; g.beginPath(); for (let x = 0; x <= W; x += 6) { const [sx2, sy2] = P(x, wave(x)); x ? g.lineTo(sx2, sy2) : g.moveTo(sx2, sy2); } const [ex, ey] = P(W, H), [bx2] = P(0, H); g.lineTo(ex, ey); g.lineTo(bx2, ey); g.closePath(); const gr = g.createLinearGradient(0, P(0, wy)[1], 0, ey); gr.addColorStop(0, 'rgba(110,190,250,.45)'); gr.addColorStop(1, 'rgba(40,110,210,.5)'); g.fillStyle = gr; g.fill();
         g.beginPath(); for (let x = 0; x <= W; x += 6) { const [sx2, sy2] = P(x, wave(x)); x ? g.lineTo(sx2, sy2) : g.moveTo(sx2, sy2); } g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 3; g.stroke();
@@ -9969,14 +9982,15 @@ function evoDropOpen(o = {}) {
     if (sk.mode === 'arm' && skA.k === 'ghost' && now > drop) { const p = ghostT(), r = ED_L[cur][1] * k, [ax, ay] = P(p.x, 36), [lx, ly] = P(p.x, p.y); g.lineCap = 'round'; g.setLineDash([3, 6]); g.lineWidth = 4; g.strokeStyle = 'rgba(40,10,70,.5)'; g.beginPath(); g.moveTo(ax, ay + r); g.lineTo(lx, ly - r); g.stroke(); g.lineWidth = 2; g.strokeStyle = 'rgba(215,180,255,1)'; g.stroke(); g.setLineDash([]);   /* 경완: 점선·도착 자리가 구슬에 가려지지 않게 */
       g.fillStyle = 'rgba(170,110,240,.22)'; g.beginPath(); g.arc(lx, ly, r, 0, 7); g.fill(); g.lineWidth = 2.5; g.setLineDash([5, 4]); g.strokeStyle = 'rgba(225,195,255,1)'; g.stroke(); g.setLineDash([]); }
     if (sk.gw) { const q = (now - sk.gw.t) / 950, e = u => 1 - (1 - u) ** 3, p = q < .45 ? e(q / .45) : q < .63 ? 1 : 1 - e((q - .63) / .37), [x, y] = P(aimX, 36); vines(x, y, ED_L[cur][1] * k, p); }
-    for (const a of anims) { const u = Math.max(0, Math.min(1, (now - a.t0) / a.dur)), e = a.k === 'ghost' ? u * u : u < .5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2, arc = a.arc ?? 50, bx = a.x0 + (a.x1 - a.x0) * e, by = a.y0 + (a.y1 - a.y0) * e - (a.k === 'ghost' ? 0 : Math.sin(u * Math.PI) * arc), [x, y] = P(bx, by), s0 = a.s0 ?? 1, s1 = a.s1 ?? 1, r = ED_L[a.t][1] * k * (s0 + (s1 - s0) * e);
+    for (const a of anims) if (!a.top) animOne(a, now, P);
+    anims = anims.filter(a => !a.fin);
+    fxDraw(now, P); };
+  const animOne = (a, now, P) => { const u = Math.max(0, Math.min(1, (now - a.t0) / a.dur)), e = a.k === 'ghost' ? u * u : u < .5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2, arc = a.arc ?? 50, bx = a.x0 + (a.x1 - a.x0) * e, by = a.y0 + (a.y1 - a.y0) * e - (a.k === 'ghost' ? 0 : Math.sin(u * Math.PI) * arc), [x, y] = P(bx, by), s0 = a.s0 ?? 1, s1 = a.s1 ?? 1, r = ED_L[a.t][1] * k * (s0 + (s1 - s0) * e);
       if (a.k === 'uturn' || a.k === 'steal') for (let j = 3; j > 0; j--) { const u2 = Math.max(0, u - j * .06), e2 = u2 < .5 ? 2 * u2 * u2 : 1 - (-2 * u2 + 2) ** 2 / 2, [tx, ty] = P(a.x0 + (a.x1 - a.x0) * e2, a.y0 + (a.y1 - a.y0) * e2 - Math.sin(u2 * Math.PI) * arc); g.fillStyle = a.k === 'uturn' ? `rgba(130,210,90,${.18 * j})` : `rgba(90,50,140,${.2 * j})`; g.beginPath(); g.arc(tx, ty, r * (1 - j * .1), 0, 7); g.fill(); }
       if (a.k === 'ghost') g.globalAlpha = .55; edBallC(g, a.t, x, y, r, 0, dpr); g.globalAlpha = 1;
       if (a.k === 'ghost') ghostFx(x, y, r, now);
       if (a.hit && u > 0 && !a.hitD) { a.hitD = 1; pops.push({ x: a.x0, y: a.y0, r: ED_L[a.t][1], t: now }); boom(a.x0, a.y0, 8, '#fff6c0', 140, 'spark', 400); try { sfx('ab', 'punch'); } catch (er) {} try { haptic(1); } catch (er) {} }
-      if (u >= 1 && !a.fin) { a.fin = 1; a.done?.(); } }
-    anims = anims.filter(a => !a.fin);
-    fxDraw(now, P); };
+      if (u >= 1 && !a.fin) { a.fin = 1; a.done?.(); } };
   const skRing = now => {   // 도둑질 고를 때: 판까지 어둡게, 판은 커지며 안쪽으로 (구슬만 밝게)
     if (sk.mode !== 'pick' || !skA?.ring) { ringS = 1; return; } const Z = ringZ(now); g.fillStyle = 'rgba(12,16,38,.55)'; g.fillRect(0, 0, vw, vh);
     g.save(); g.translate(Z.cx, Z.cy); g.scale(Z.s, Z.s); g.translate(-Z.cx0, -Z.cy0); ringS = Z.s; nextB(now, 1); ringS = 1; g.restore(); };
@@ -9988,6 +10002,7 @@ function evoDropOpen(o = {}) {
     g.font = `${f1}px Galmuri11,system-ui,sans-serif`; g.fillStyle = '#fff'; g.fillText(m.s, x, m.h ? y - 6 : y + 1); if (m.h) { g.font = '10px Galmuri11,system-ui,sans-serif'; g.fillStyle = '#c9cbe6'; g.fillText(m.h, x, y + 11); } g.restore(); };
   const doDrop = () => { const now = performance.now(), arm = sk.mode === 'arm' ? skA.k : '';
     if (arm) { sk.mode = null; skUse(); abPop(); }
+    if (arm === 'icle') { const x = Math.max(ICW, Math.min(W - ICW, aimX)), y = 36 - ICH * .2, e = { x9: 'icle', t: -1, x, y, a: 0, r: ICW, v: 0, born: now }; e.body = MT.Bodies.fromVertices(x, y, [[{ x: -ICW, y: -ICH / 3 }, { x: ICW, y: -ICH / 3 }, { x: 0, y: ICH * 2 / 3 }]], { isStatic: true }); MT.Body.setPosition(e.body, { x, y }); e.body.plugin.ed = e; MT.Composite.add(eng.world, e.body); XB.push(e); drop = now + 600; sk.grace = Math.max(sk.grace, now + 2600); return; }
     if (arm === 'rock' || arm === 'kiss') { spawnX(arm === 'rock' ? 'rock' : 'heart', Math.max(arm === 'rock' ? RKR : HTR, Math.min(W - (arm === 'rock' ? RKR : HTR), aimX))); drop = now + 500; sk.grace = Math.max(sk.grace, now + 1500); return; }
     if (arm === 'ghost') { const t = cur, p = ghostT(), dur = Math.max(300, Math.sqrt(2 * Math.max(1, p.y - 36) / 2000) * 1000); anims.push({ t, x0: p.x, y0: 36, x1: p.x, y1: p.y, t0: now, dur, k: 'ghost', done: () => { if (dead) return; const b = add(t, p.x, p.y); b.gw = performance.now(); b.s = 1; MT.Body.scale(b.body, .3, .3); b.s = .3; lastB = b; sk.grace = Math.max(sk.grace, performance.now() + 1500); boom(p.x, p.y, 12, '#b890f0', 160, 'spark', 500); try { haptic(1); } catch (er) {} } }); adv(); drop = now + dur + 150; return; }
     const b = add(cur, aimX, 36); lastB = b; if (arm === 'heavy') { MT.Body.setDensity(b.body, .012); MT.Body.setVelocity(b.body, { x: 0, y: 6 }); b.hv = now; sk.grace = Math.max(sk.grace, now + 1500); } adv(); };   /* 경완: 헤비봄버 무게는 계속 (합쳐지기 전까지) */
