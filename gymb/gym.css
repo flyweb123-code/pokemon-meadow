@@ -2909,3 +2909,31 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes rrTotPop{0%{opacity:0;transform:scale(.4);animation-timing-function:cubic-bezier(.2,.9,.3,1)}14%{opacity:1;transform:scale(1.35,1.25);animation-timing-function:cubic-bezier(.4,0,.6,1)}36%{opacity:1;transform:scale(.92,.97)}54%{opacity:1;transform:scale(1.05)}72%{opacity:1;transform:scale(.99)}100%{opacity:1;transform:none}}
 #gym .rs-rep .rr-n{position:relative}#gym .rs-rep .rr-n>.rr-tot{bottom:2px;text-shadow:none;line-height:1}
 #gym .rs-rep .rr-d.tot{color:#2a8a3e;transform-origin:left center;animation:rrTotPop .55s linear forwards!important}
+/* v16.52 경완 '내 캐릭터 상세카드: 입은 옷·점선 빼고, 체육관 등급에 따라 카드 디자인' — 등급 색 = 홈 등급 딱지와 같은 줄 (회색·초록·파랑·보라·빨강·금·무지개) */
+#gym .gy-pop.mec-wrap .win{--k1:#e4e8f0;--k2:#8a92a8;--k3:#4a5268;--kb:#fbfbfd;position:relative;padding:0 16px 14px;overflow:hidden;border:4px solid var(--k3);background:var(--kb);box-shadow:inset 0 0 0 2px var(--k1),5px 6px 0 rgba(0,0,0,.28)}
+#gym .gy-pop.mec-wrap .win[data-g="1"]{--k1:#d4f0cc;--k2:#5ab84a;--k3:#2f7a3a;--kb:#fafdf8}
+#gym .gy-pop.mec-wrap .win[data-g="2"]{--k1:#d4e4ff;--k2:#4a84e0;--k3:#2a58a8;--kb:#f8fbff}
+#gym .gy-pop.mec-wrap .win[data-g="3"]{--k1:#ead8ff;--k2:#9a60e8;--k3:#5a2aa0;--kb:#fcf9ff}
+#gym .gy-pop.mec-wrap .win[data-g="4"]{--k1:#ffd8d8;--k2:#e85050;--k3:#962020;--kb:#fffafa}
+#gym .gy-pop.mec-wrap .win[data-g="5"]{--k1:#fff0b8;--k2:#e8b020;--k3:#8a5a00;--kb:#fffdf4}
+#gym .gy-pop.mec-wrap .win[data-g="6"]{--k1:#efe6ff;--k2:#8478d0;--k3:#3e2f8a;--kb:#fdfcff;border-color:transparent;background:linear-gradient(var(--kb),var(--kb)) padding-box,linear-gradient(120deg,#ff9ec4,#ffe27a,#9ef0b8,#9ed4ff,#c8a8ff,#ff9ec4,#ffe27a,#9ef0b8,#9ed4ff,#c8a8ff) border-box;background-size:100% 100%,200% 200%;animation:mecPrism 5s linear infinite}
+@keyframes mecPrism{to{background-position:0 0,-200% 0}}
+#gym .mec{text-align:center}
+#gym .mec-hd{position:relative;display:flex;align-items:center;gap:10px;margin:0 -16px 12px;padding:10px 14px;background:repeating-linear-gradient(135deg,var(--k2) 0 10px,var(--k3) 10px 20px);border-bottom:3px solid var(--k3);text-align:left}
+#gym .gy-pop.mec-wrap .win[data-g="0"] .mec-hd,#gym .gy-pop.mec-wrap .win:not([data-g]) .mec-hd{background:var(--k2)}
+#gym .gy-pop.mec-wrap .win[data-g="6"] .mec-hd{background:linear-gradient(90deg,#c87ab0,#d8a840,#4aa870,#4a8ad0,#8a6ad0,#c87ab0) 0 0/200% 100%;animation:gwPrism 4s linear infinite}
+#gym .mec-bd{flex:none;line-height:0}
+#gym .mec-bd .bdw img{width:56px;height:56px;image-rendering:pixelated;filter:drop-shadow(0 2px 0 rgba(0,0,0,.35))}
+#gym .mec-gr{display:flex;flex-direction:column;gap:1px;min-width:0;color:#fff;text-shadow:1px 1px 0 var(--k3),-1px 0 0 var(--k3),0 -1px 0 var(--k3),0 1px 0 var(--k3)}
+#gym .mec-gr small{font-size:11px;opacity:.95;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#gym .mec-gr b{font-size:18px;letter-spacing:1px}
+#gym .mec-st{width:14px;height:14px;background:#fff6c0;clip-path:polygon(50% 0,62% 36%,100% 38%,70% 60%,80% 100%,50% 76%,20% 100%,30% 60%,0 38%,38% 36%);filter:drop-shadow(1px 1px 0 var(--k3));display:block}
+#gym .mec-sts{display:flex;gap:3px;margin-left:auto;flex:none}
+#gym .mec .bd-pic{border-color:var(--k3);background:radial-gradient(circle at 50% 62%,#fff 0 38%,var(--k1) 100%);box-shadow:inset 0 0 0 3px #fff}
+#gym .gy-pop.mec-wrap .win[data-g="5"] .bd-pic,#gym .gy-pop.mec-wrap .win[data-g="6"] .bd-pic{box-shadow:inset 0 0 0 3px #fff,0 0 0 3px var(--k1)}
+#gym .mec h4{margin:0 0 2px}
+#gym .mec-wl{font-size:13px;color:var(--dim)}
+#gym .mec-wl b{color:var(--k3);font-size:15px}
+#gym .gy-body.mec .me-bdgs{margin:12px 0 4px;padding:8px 4px 6px;border-top:0;background:var(--k1);box-shadow:inset 0 0 0 2px #fff}
+#gym .mec .gy-bdgs .cur b{color:var(--k3)}
+#gym .gy-pop .gy-body.mec{overflow:visible;max-height:none}
