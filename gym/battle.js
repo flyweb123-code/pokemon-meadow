@@ -104,29 +104,83 @@ function smartMoves(sp, lv, tier, r) {
 }
 // v17.57 경완 '추천 기술': 지금 기술 + 배울 수 있는 기술(레벨업·익힌 기술) 중에서, 이 개체의 실제 능력치(레벨·개체값·성격)로
 // 물리/특수를 정하고 자속 → 다른 타입 견제 → (느리면) 선공기 → 능력치 올리기·상태 이상·회복 하나 → 남은 칸은 센 기술. 상대 AI(smartMoves)와 같은 실전 기준
+// ---------- 추천 기술 (v17.59 경완 '기술 간 조합·특성도 다 넣어줘') ----------
+// 기술 4개 묶음 점수 setScore: 18타입 상대마다 (가장 잘 듣는 공격 기술 값 × 상성) 평균 = 공격 범위 + 변화기·조합 보너스.
+// 공격 값 = 위력 × 명중^1.5 × 자속(적응력 2) × 쓰는 능력치 비율(실제 능력치, 천하장사·순수한힘 ×2) × 특성(테크니션·철주먹·옹골찬턱·단단한발톱·메가런처·예리함·이판사판·우격다짐·스킬링크)
+// 조합: 쾌청/비바라기(가뭄·잔비 특성) → 불꽃·물 1.5배·솔라빔 한 턴·번개·폭풍 필중·웨더볼 / 잠자기+잠꼬대 / 수면기+꿈먹기 / 상태이상기+병상첨병·베놈쇼크 / 근성+객기 / 능력치 올리기+바톤터치 / 느리면 선공기
+let EFF = null;
+const effM = () => EFF ||= TY_EN.map(a => TY_EN.map(d => !a || !d ? 1 : !PSim.Dex.getImmunity(a, [d]) ? 0 : 2 ** PSim.Dex.getEffectiveness(a, [d])));
+const SLP_MV = new Set('spore sleeppowder hypnosis yawn lovelykiss sing grasswhistle darkvoid'.split(' ')), STS_MV = new Set('thunderwave willowisp toxic spore sleeppowder hypnosis glare stunspore poisonpowder nuzzle yawn'.split(' '));
+const HEAL_MV = new Set('recover roost softboiled slackoff synthesis moonlight morningsun milkdrink shoreup wish strengthsap'.split(' '));
+function mvCtx(P, m = gm(P)) {
+  const st = statsOf(P.sp, m.lv || 1, P.iv || [], m.nat), ab = toID(m.ab), bs = SPECIES[P.sp]?.bs || [60, 60, 60, 60, 60, 60];
+  const atk = st[1] * (ab === 'hugepower' || ab === 'purepower' ? 2 : ab === 'hustle' ? 1.5 : 1), spa = st[3];
+  return { P, m, st, ab, tys: SPECIES[P.sp]?.t || [], atk, spa, A: Math.max(atk, spa), phys: atk >= spa, slow: st[5] < Math.max(st[1], st[3]) * .75, bulky: bs[0] + bs[2] + bs[4] >= 250, dx: PSim.Dex };
+}
+function mvVal(i, c, has) {
+  const x = D.mv[i]; if (!x || x[3] === 2) return [0, 0]; const id = x[0], mv = c.dx.moves.get(id), fx = MV_FIX[id];
+  let bp = fx || x[4] || 0, ty = x[2], acc = x[5] === true || !x[5] ? 100 : x[5], k = 1;
+  const sun = has('sunnyday') || c.ab === 'drought', rain = has('raindance') || c.ab === 'drizzle', hail = has('hail') || has('snowscape') || c.ab === 'snowwarning', sand = has('sandstorm') || c.ab === 'sandstream';
+  if (id === 'weatherball' && (sun || rain || hail || sand)) { bp = 100; ty = TY_EN.indexOf(sun ? 'Fire' : rain ? 'Water' : hail ? 'Ice' : 'Rock'); }
+  if (id === 'facade' && (c.ab === 'guts' || c.ab === 'quickfeet')) bp = 140;
+  if (id === 'hex' && [...STS_MV].some(has)) bp = 130;
+  if (id === 'venoshock' && (has('toxic') || has('poisonpowder') || has('toxicspikes'))) bp = 130;
+  if (!bp) return [0, ty];
+  if (mv?.multihit) bp *= Array.isArray(mv.multihit) ? (c.ab === 'skilllink' ? mv.multihit[1] : 3) : mv.multihit;
+  if (c.ab === 'technician' && (x[4] || 0) <= 60) k *= 1.5;
+  const fl = mv?.flags || {};
+  if (c.ab === 'ironfist' && fl.punch) k *= 1.2; if (c.ab === 'strongjaw' && fl.bite) k *= 1.5; if (c.ab === 'toughclaws' && fl.contact) k *= 1.3; if (c.ab === 'megalauncher' && fl.pulse) k *= 1.5; if (c.ab === 'sharpness' && fl.slicing) k *= 1.5;
+  if (c.ab === 'reckless' && (mv?.recoil || mv?.hasCrashDamage)) k *= 1.2; if (c.ab === 'sheerforce' && (mv?.secondaries || mv?.secondary)) k *= 1.3;
+  if (c.ab === 'hustle' && x[3] === 0) acc *= .8;
+  if (sun) { if (ty === TY_EN.indexOf('Fire')) k *= 1.5; if (ty === TY_EN.indexOf('Water')) k *= .5; }
+  if (rain) { if (ty === TY_EN.indexOf('Water')) k *= 1.5; if (ty === TY_EN.indexOf('Fire')) k *= .5; if (id === 'thunder' || id === 'hurricane') acc = 100; }
+  if (hail && id === 'blizzard') acc = 100;
+  const stab = c.tys.includes(ty) || c.ab === 'protean' || c.ab === 'libero' ? (c.ab === 'adaptability' ? 2 : 1.5) : 1;
+  let bad = MV_BAD.has(id) ? .45 : 1;
+  if ((id === 'solarbeam' || id === 'solarblade') && sun) bad = 1;
+  if (id === 'dreameater' && [...SLP_MV].some(has)) bad = 1;
+  const two = MV_2T.has(id) && !((id === 'solarbeam' || id === 'solarblade') && sun) ? .7 : 1;
+  const v = bp * (acc / 100) ** 1.5 * (fx ? 1 : stab) * (fx ? 1 : (x[3] === 0 ? c.atk : c.spa) / c.A) * k * (x[7] > 0 ? .8 : 1) * two * bad;
+  return [v, ty];
+}
+function setScore(ids, c) {
+  const S2 = new Set(ids), has = id => S2.has(id), E = effM();
+  const A = ids.map(id => { const i = MVI.get(id); return i == null ? null : [id, ...mvVal(i, c, has)]; }).filter(a => a && a[1] > 0);
+  let off = 0; for (let d = 1; d < TY_EN.length; d++) off += Math.max(0, ...A.map(a => a[1] * E[a[2]][d])); off /= (TY_EN.length - 1) * (c.top || 100);
+  let b = 0, setup = 0, heal = 0, sts = 0;
+  for (const id of ids) { const x = mvOf(id); if (!x || x[3] !== 2) continue;
+    if (id in MV_SETUP) { const ok = MV_SETUP[id] < 0 || (MV_SETUP[id] === 1) === !c.phys; if (ok && !setup++) b += A.length >= 2 ? .32 : .1; continue; }
+    if (HEAL_MV.has(id)) { if (!heal++) b += c.bulky ? .24 : .12; continue; }
+    if (id === 'rest') { b += has('sleeptalk') ? .3 : .06; heal++; continue; } if (id === 'sleeptalk') { b += has('rest') ? .05 : -.05; continue; }
+    if (id === 'batonpass') { b += setup || ids.some(y => y in MV_SETUP) ? .18 : 0; continue; }
+    if (STS_MV.has(id)) { if (!sts++) b += (MV_STAT[id] || 2) * .05 + (has('hex') || (has('dreameater') && SLP_MV.has(id)) || (has('venoshock') && id === 'toxic') ? .12 : 0); continue; }
+    if (id === 'sunnyday' || id === 'raindance' || id === 'sandstorm' || id === 'hail' || id === 'snowscape') { b -= .04; continue; }
+    if (id === 'protect' || id === 'detect' || id === 'substitute') { b += .05; continue; }
+    b += (MV_STAT[id] ?? 0) > 0 ? .06 : MV_BAD.has(id) || /^(splash|celebrate|holdhands|happyhour)$/.test(id) ? -.1 : .01; }
+  if (c.slow && A.some(a => MV_PRIO.has(a[0]) || (mvOf(a[0])?.[7] || 0) > 0)) b += .06;
+  if (A.length < 2) b -= .35; if (!A.length) b -= .5;
+  return off + b;
+}
+function recCtx(P, m) { const c = mvCtx(P, m), pool = [...new Set([...m.mv, ...mvCands(P, m)])].filter(id => MVI.has(id));
+  c.top = Math.max(60, ...pool.map(id => mvVal(MVI.get(id), c, () => false)[0])); return [c, pool]; }
+// 가장 좋은 4개: 하나씩 더해 가며 점수 가장 많이 오르는 것 → 한 칸씩 바꿔 보며 더 나아지면 바꿈
+function bestSet(pool, c, n = 4) {
+  let cur = []; while (cur.length < Math.min(n, pool.length)) { let bi = null, bv = -1e9; for (const id of pool) { if (cur.includes(id)) continue; const v = setScore([...cur, id], c); if (v > bv) { bv = v; bi = id; } } cur.push(bi); }
+  for (let pass = 0; pass < 3; pass++) { let ch = false; for (let k = 0; k < cur.length; k++) { const base = setScore(cur, c); for (const id of pool) { if (cur.includes(id)) continue; const t = cur.slice(); t[k] = id; if (setScore(t, c) > base + 1e-6) { cur = t; ch = true; break; } } } if (!ch) break; }
+  return cur;
+}
+async function recMovesA(P, m = gm(P)) { await loadSim(); return recMoves(P, m); }
 function recMoves(P, m = gm(P)) {
-  const pool = [...new Set([...m.mv, ...mvCands(P, m)])].map(id => MVI.get(id)).filter(i => i != null && D.mv[i]);
-  if (pool.length <= 4) return m.mv.slice();
-  const st = statsOf(P.sp, m.lv || 1, P.iv || [], m.nat), tys = SPECIES[P.sp]?.t || [], A = Math.max(st[1], st[3]), phys = st[1] >= st[3];
-  const bad = i => MV_BAD.has(D.mv[i][0]);
-  const pw = i => { const x = D.mv[i]; if (x[3] === 2) return 0; const fx = MV_FIX[x[0]], bp = fx || x[4] || 0; if (!bp) return 0;
-    return bp * ((x[5] === true || !x[5] ? 100 : x[5]) / 100) ** 1.5 * (!fx && tys.includes(x[2]) ? 1.5 : 1) * (fx ? 1 : (x[3] === 0 ? st[1] : st[3]) / A) * (x[7] > 0 ? .8 : 1) * (MV_2T.has(x[0]) ? .7 : 1) * (bad(i) ? .6 : 1); };
-  const atk = pool.filter(i => pw(i) > 0).map(i => [i, pw(i)]).sort((a, b) => b[1] - a[1]), take = [], tyIn = new Set();
-  const add = i => { if (i != null && !take.includes(i) && take.length < 4) { take.push(i); tyIn.add(D.mv[i][2]); } };
-  for (const t of tys) add(atk.find(([i]) => D.mv[i][2] === t)?.[0]);   // 자속 하나씩
-  for (const [i] of atk) { if (take.length >= 3) break; if (!tyIn.has(D.mv[i][2])) add(i); }   // 다른 타입 견제기
-  const slow = st[5] < Math.max(...st.slice(1)) * .75;
-  if (slow && take.length < 4) { const pr = atk.find(([i]) => MV_PRIO.has(D.mv[i][0]) && (D.mv[i][3] === 0) === phys); if (pr) add(pr[0]); }
-  const sv = pool.filter(i => D.mv[i][3] === 2 && !bad(i)).map(i => { const k = D.mv[i][0]; let v = MV_STAT[k] ?? -1; if (k in MV_SETUP) v = MV_SETUP[k] < 0 ? 2 : (MV_SETUP[k] === 1) === !phys ? 6 : -1; return [i, v]; }).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]);
-  if (sv.length && take.length < 4) add(sv[0][0]);
-  for (const [i] of atk) add(i);
-  for (const [i] of sv) add(i);
-  if (!take.length) return m.mv.slice();
-  const ids = take.map(i => D.mv[i][0]), keep = m.mv.filter(id => ids.includes(id));   // 이미 아는 기술은 그 자리 그대로, 새 기술은 빈 자리에
-  const out = m.mv.map(id => ids.includes(id) ? id : null), nw = ids.filter(id => !keep.includes(id));
+  if (!window.PSim) return m.mv.slice();
+  const [c, pool] = recCtx(P, m); if (pool.length <= 4) return m.mv.slice();
+  const ids = bestSet(pool, c); if (setScore(ids, c) <= setScore(m.mv, c) + 1e-6) return m.mv.slice();
+  const keep = m.mv.filter(id => ids.includes(id)), out = m.mv.map(id => ids.includes(id) ? id : null), nw = ids.filter(id => !keep.includes(id));   // 이미 아는 기술은 그 자리 그대로
   for (let i = 0; i < out.length && nw.length; i++) if (out[i] == null) out[i] = nw.shift();
   return [...out.filter(Boolean), ...nw].slice(0, 4);
 }
+// 한 칸만 바꿀 때: 나머지 기술과 가장 잘 맞는 배울 기술 (지금 기술보다 나을 때만)
+function recSlot(P, k, C, m = gm(P)) { if (!window.PSim) return null; const [c] = recCtx(P, m), others = m.mv.filter((_, i) => i !== k), base = m.mv[k] ? setScore(m.mv, c) : setScore(others, c);
+  let bi = null, bv = base + .005; for (const id of C) { const v = setScore([...others, id], c); if (v > bv) { bv = v; bi = id; } } return bi; }
 // 체육관 개체 정보: 처음 볼 때 만든다
 let gmTmp = null;   // v14.18: 체육관을 열기 전(타입 고르기)에 상세 카드를 볼 때 쓰는 임시 칸 (저장 안 함, 시드라 나중에 같은 값)
 function gm(P) {
@@ -1410,19 +1464,16 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
       // 프로필 그림을 누르면 지닌 도구 정보 + 돌려받기 (경완 2026-10-29)
       if (a === 'hit') { const it = m.it, x = HOLD[it];
         // v17.57 경완: 추천 도구 하나 — 창고에 있으면 바로 지니게, 없으면 상점 도구 탭으로 넘어가 그 도구 사기 창
-        const recBox = `<div class="it-rec"><span class="it-recl">추천 도구</span><div class="it-recb"><small class="it-recw">고르는 중…</small></div></div>`;
-        const recFill = async (w, c2) => { const box = w.querySelector('.it-recb'); if (!box) return; const r = await recIt(P); if (!box.isConnected) return;
-          if (!r) { box.innerHTML = '<small class="it-recw">추천할 도구가 없어요</small>'; return; }
-          const inSt = S.gym?.itm?.[r] > 0, same = r === m.it;   // v17.58 경완: 큰 버튼 대신 추천 도구 줄 오른쪽 화살표, 줄을 누르면 상점 그 칸으로
-          box.innerHTML = same ? itRow(r).replace('<button type="button"', '<div').replace(/<\/button>$/, '</div>') + '<small class="it-recw">지금 지닌 도구가 추천 도구예요</small>'
-            : itRow(r, 0, inSt ? '창고에 있어요 · 누르면 지니게 해요' : '').replace('<button type="button" class="sp-tm sp-it"', `<button type="button" class="sp-tm sp-it it-recgo" data-a="${inSt ? 'rgive' : 'rbuy'}"`).replace(/<\/button>$/, `${inSt ? '' : `<em class="it-recp"><i class="coin"></i>${HOLD[r][1].toLocaleString()}G</em>`}<i class="it-arr" aria-hidden="true">›</i></button>`);
-          box.dataset.it = r; };
+        // v17.59 경완: 추천할 게 없거나(이미 지닌 도구가 추천) 고를 수 없으면 추천 칸 자체를 안 띄움 — 추천을 먼저 고른 다음 창을 연다
+        return recIt(P).then(r => { if (r === m.it) r = null; const inSt = r && S.gym?.itm?.[r] > 0;
+        const recBox = !r ? '' : `<div class="it-rec"><span class="it-recl">추천 도구</span><div class="it-recb" data-it="${r}">${itRow(r, 0, inSt ? '창고에 있어요 · 누르면 지니게 해요' : '').replace('<button type="button" class="sp-tm sp-it"', `<button type="button" class="sp-tm sp-it it-recgo" data-a="${inSt ? 'rgive' : 'rbuy'}"`).replace(/<\/button>$/, `${inSt ? '' : `<em class="it-recp"><i class="coin"></i>${HOLD[r][1].toLocaleString()}G</em>`}<i class="it-arr" aria-hidden="true">›</i></button>`)}</div></div>`;
+        const recFill = () => {};
         const recAct = (b, c2, w) => { const r = w.querySelector('.it-recb')?.dataset.it; if (!r) return false;
           if (b === 'rgive') { c2(); giveIt(P, r); close(); monPop(P.id, fromBox, null, lst); return true; }
           if (b === 'rbuy') { c2(); close(); document.querySelectorAll('#gym .gy-boxw').forEach(x => x.remove()); window.gymShopIt = r; window.Gym?.k?.openTab?.('shop'); return true; } return false; };
         let w0;
         if (!x) { w0 = gymPop(`<h4>지닌 도구 없음</h4><p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} 아무것도 지니고 있지 않아요.</p>${recBox}<div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="use">도구 사용</button></div>`, (b, c2) => { if (recAct(b, c2, w0)) return; if (b !== 'x' && b !== 'use') return; c2(); if (b === 'use') { close(); usePop(P, () => monPop(P.id, fromBox, null, lst)); } }); recFill(w0); return; }
-        w0 = gymPop(`<h4 class="mi-h"><img class="tm-ic it-ic" alt="" src="${itImg(it)}">${esc(x[0])}</h4><p class="gy-msg it-own">${esc(nmOf(P))}${jong(nmOf(P)) ? '이' : '가'} 지니고 있어요</p><p class="gy-msg mi-d">${esc(x[2])}</p>${recBox}<div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="take">돌려받기</button></div>`, (b, c2) => { if (recAct(b, c2, w0)) return; if (b !== 'x' && b !== 'take') return; c2(); if (b !== 'take') return; takeIt(P); se('DECIDE'); close(); monPop(P.id, fromBox, null, lst); }); recFill(w0); return; }
+        w0 = gymPop(`<h4 class="mi-h"><img class="tm-ic it-ic" alt="" src="${itImg(it)}">${esc(x[0])}</h4><p class="gy-msg it-own">${esc(nmOf(P))}${jong(nmOf(P)) ? '이' : '가'} 지니고 있어요</p><p class="gy-msg mi-d">${esc(x[2])}</p>${recBox}<div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="take">돌려받기</button></div>`, (b, c2) => { if (recAct(b, c2, w0)) return; if (b !== 'x' && b !== 'take') return; c2(); if (b !== 'take') return; takeIt(P); se('DECIDE'); close(); monPop(P.id, fromBox, null, lst); }); recFill(w0); }); }
       if (a === 'tr') return window.GymManage?.trSend(P, () => { drawTab(); bxRefresh?.(); monPop(P.id, fromBox, p, lst); });
       const fin = () => {
       if (a === 'rm' && i >= 0) c.splice(i, 1); if (a === 'add' && i < 0 && c.length < 6 && tyOk(P)) c.push(P.id); close(); GA.save(); drawTab();
@@ -1631,18 +1682,14 @@ async function recIt(P) { await loadSim(); const e = myEntry(P); e.it = null; e.
 // 상점 '추천받기' (경완): 이 포켓몬에게 어울리는 도구 목록 (앞이 더 추천)
 async function recIts(P) { await loadSim(); const e = myEntry(P); e.it = null; e.fmIt = null; const L = []; try { foeItems([e], 2, [], L); } catch (er) {} return L; }
 // 상점 '추천받기' 기술: 이 포켓몬이 배울 수 있는 기술머신(또는 기술레코드) 중 recMoves 기준 점수가 높은 것 — 지금 기술보다 센 자속·견제기, 쓸 만한 변화기
-function recTms(P, wantTR) {
-  const m = gm(P), st = statsOf(P.sp, m.lv || 1, P.iv || [], m.nat), tys = SPECIES[P.sp]?.t || [], A = Math.max(st[1], st[3]), phys = st[1] >= st[3];
-  const pw = i => { const x = D.mv[i]; if (x[3] === 2) return 0; const fx = MV_FIX[x[0]], bp = fx || x[4] || 0; if (!bp) return 0;
-    return bp * ((x[5] === true || !x[5] ? 100 : x[5]) / 100) ** 1.5 * (!fx && tys.includes(x[2]) ? 1.5 : 1) * (fx ? 1 : (x[3] === 0 ? st[1] : st[3]) / A) * (x[7] > 0 ? .8 : 1) * (MV_2T.has(x[0]) ? .7 : 1) * (MV_BAD.has(x[0]) ? .6 : 1); };
-  const own = [...new Set([...m.mv, ...mvCands(P, m)])].map(id => MVI.get(id)).filter(i => i != null);
-  const bestTy = {}; own.forEach(i => { const v = pw(i); if (v > (bestTy[D.mv[i][2]] || 0)) bestTy[D.mv[i][2]] = v; });
-  const top = Math.max(1, ...own.map(pw));
-  const L = (D.sp[P.sp]?.tm || []).filter(i => D.mv[i] && isTR(D.mv[i][0]) === !!wantTR && !own.includes(i)).map(i => { const x = D.mv[i], v = pw(i); let s = -1;
-    if (v > 0) { if (v > (bestTy[x[2]] || 0) * 1.1 && v >= top * .55) s = v / top + (tys.includes(x[2]) ? .3 : 0); }
-    else if (x[3] === 2 && !MV_BAD.has(x[0])) { const k = x[0]; let w = MV_STAT[k] ?? -1; if (k in MV_SETUP) w = MV_SETUP[k] < 0 ? 2 : (MV_SETUP[k] === 1) === !phys ? 5 : -1; if (w > 1) s = w / 6; }
-    return [x[0], s, x]; }).filter(([, s]) => s > 0).sort((a, b) => b[1] - a[1]);
-  const tyN = new Set(); return L.filter(([, , x]) => x[3] === 2 || (!tyN.has(x[2]) && tyN.add(x[2]))).slice(0, 8).map(([id]) => id);   // 공격 기술은 타입마다 가장 좋은 하나
+function recTms(P, wantTR) {   // 상점 추천받기: 지금 기술 한 칸과 바꿨을 때 묶음 점수가 가장 많이 오르는 기술머신(또는 기술레코드) 순
+  if (!window.PSim) return [];
+  const m = gm(P), [c, pool] = recCtx(P, m), own = new Set(pool), cur = m.mv.slice();
+  const T = (D.sp[P.sp]?.tm || []).map(i => D.mv[i]?.[0]).filter(id => id && MVI.has(id) && isTR(id) === !!wantTR && !own.has(id)); T.forEach(id => { c.top = Math.max(c.top, mvVal(MVI.get(id), c, () => false)[0]); });
+  const base = setScore(cur, c);
+  const L = T.map(id => {
+    let g = -1; for (let k = 0; k < Math.max(1, Math.min(4, cur.length + (cur.length < 4 ? 1 : 0))); k++) { const t = cur.slice(); t[k] = id; g = Math.max(g, setScore(t, c) - base); } return [id, g]; });
+  return L.filter(([, g]) => g > .015).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([id]) => id);
 }
 // 가진 도구 전부: [id, 지닌 포켓몬|null]. 창고에 있는 것 먼저
 const itAll = () => { const g = S.gym || {}, bag = Object.entries(g.itm || {}).filter(([id, n]) => n > 0 && HOLD[id]).map(([id]) => [id, null]), M = g.mon || {}, held = [];
@@ -1689,6 +1736,7 @@ function recNat(P, m = gm(P)) {
   return NATS().find(k => D.nt[k][1] === up && D.nt[k][2] === dn) || m.nat;
 }
 function natRec(rn, m) {
+  if (!rn || rn === m.nat) return '';   // v17.59 경완: 이미 추천 성격이면 추천 칸 안 띄움
   const g = S.gym || {}, own = g.mint?.[rn] > 0, nt = D.nt[rn] || ['', '', ''];
   const body = rn === m.nat ? '<small class="it-recw">지금 성격이 추천 성격이에요</small>'
     : `<button type="button" class="sp-tm sp-it sp-mint it-recgo" data-a="${own ? 'ngive' : 'nbuy'}"><img class="tm-ic it-ic" alt="" src="${mintImg(rn)}"><span class="tm-nm"><b>${esc(natKo(rn))}</b></span><span class="tm-meta"><small>${STAT_KO[nt[1]]}▲ ${STAT_KO[nt[2]]}▼</small>${own ? `<em class="it-note">창고에 ${esc(mintNm(rn))} · 누르면 먹여요</em>` : ''}</span>${own ? '' : `<em class="it-recp"><i class="coin"></i>${MINT_P.toLocaleString()}G</em>`}<i class="it-arr" aria-hidden="true">›</i></button>`;
@@ -1752,10 +1800,10 @@ function movesPop(P, done, hi = -1) {   // hi: 방금 바꾼 칸 — 테두리�
     <div class="mp-moves mp-line pick mv-ord">${m.mv.map((id, i) => mvOf(id) ? mvRow(mvOf(id), 's' + i).replace('class="mp-mv"', `class="mp-mv${(Array.isArray(hi) ? hi.includes(i) : i === hi) ? ' just' : ''}"`) : '').join('')}${m.mv.length < 4 ? `<button class="mp-mv empty" data-a="s${m.mv.length}"><b>빈 칸</b></button>` : ''}</div>
     <div class="mv-tools">${m.mv.length > 1 ? '<button type="button" class="mv-ordb" data-a="ord">순서 바꾸기</button>' : ''}<button type="button" class="mv-ordb mv-recb" data-a="rec">추천 기술</button></div>
     <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close, btn) => {
-    if (a === 'rec') { if (ord) return; const nw = recMoves(P, m), was = m.mv.slice();   // v17.57 경완 '추천 기술': 배울 수 있는 기술 중 능력치·실전 배틀 기준으로 알아서
+    if (a === 'rec') { if (ord) return; loadSim().then(() => { if (!p.isConnected) return; const nw = recMoves(P, m), was = m.mv.slice();   // v17.57 경완 '추천 기술': 배울 수 있는 기술 중 능력치·실전 배틀 기준으로 알아서
       if (nw.join() === was.join()) { p.querySelector('.mv-hd .gy-msg').textContent = '지금 기술이 추천 기술이에요'; return; }
       m.mv = nw; m.kn = [...new Set([...(m.kn || []), ...was.filter(id => !nw.includes(id))])].filter(id => !nw.includes(id)); GA.save(); learnFan?.();
-      close(); return movesPop(P, done, nw.map((id, i) => was[i] === id ? -1 : i).filter(i => i >= 0)); }
+      close(); movesPop(P, done, nw.map((id, i) => was[i] === id ? -1 : i).filter(i => i >= 0)); }); return; }
     if (a === 'ord') { ord = !ord; list.classList.toggle('on', ord); btn.textContent = ord ? '완료' : '순서 바꾸기'; btn.classList.toggle('on', ord); p.querySelector('.mv-hd .gy-msg').textContent = ord ? '기술을 끌어서 순서를 바꾸세요' : '바꿀 기술을 고르세요'; return; }
     if (drag || (ord && a !== 'x')) return;
     if (a === 'x') { close(); return done?.(); }
@@ -1768,12 +1816,14 @@ function movesPop(P, done, hi = -1) {   // hi: 방금 바꾼 칸 — 테두리�
   function pickNew(k, old) {
     if (!C.length) { gymPop(`<h4>기술 바꾸기</h4><p class="gy-msg">지금 배울 수 있는 다른 기술이 없어요. 레벨을 올리거나 기술머신·훈련장에서 익혀 보세요.</p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="tm">기술 가르치기</button></div>`, (b, c2) => { c2(); if (b === 'tm') return tmPop(P, () => movesPop(P, done), k); movesPop(P, done); }); return; }
     // 배울 기술을 누르면 바로 바뀌지 않고 상세 창 → '바꾸기' (경완 2026-10-29)
-    const learn = () => oldCard(gymPop(`<span class="mv-tagl new">새로 배울 기술</span><div class="mp-moves mp-line pick mv-learn">${C.map(id => mvRow(mvOf(id), 'n' + id)).join('')}</div><div class="gy-btns"><button data-a="x">뒤로</button><button class="main" data-a="tm">기술 가르치기</button></div>`, (b, c2) => {
+    const learn = () => recMark(oldCard(gymPop(`<span class="mv-tagl new">새로 배울 기술</span><div class="mp-moves mp-line pick mv-learn">${C.map(id => mvRow(mvOf(id), 'n' + id)).join('')}</div><div class="gy-btns"><button data-a="x">뒤로</button><button class="main" data-a="tm">기술 가르치기</button></div>`, (b, c2) => {
       if (b === 'o') return;   // 바뀔 기술 카드는 보기만 (v13.18 경완)
       if (b === 'x') { c2(); return movesPop(P, done); }
       if (b === 'tm') { c2(); return tmPop(P, () => movesPop(P, done, Math.min(k, gm(P).mv.length - 1)), k); }   // 기술머신으로 이 칸에 가르치기 (경완 2026-10-29)
       const id = b.slice(1);
-      mvInfo(id, () => { c2(); m.kn = (m.kn || []).filter(x => x !== id); if (old) { m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); } else m.mv.push(id); GA.save(); learnFan(); movesPop(P, done, old ? k : m.mv.length - 1); }, old ? '바꾸기' : '배우기', () => {}); }));
+      mvInfo(id, () => { c2(); m.kn = (m.kn || []).filter(x => x !== id); if (old) { m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); } else m.mv.push(id); GA.save(); learnFan(); movesPop(P, done, old ? k : m.mv.length - 1); }, old ? '바꾸기' : '배우기', () => {}); })));
+    // v17.59 경완 '기술 하나 바꿀 때도 다른 기술과의 조합으로 추천 기술 테두리 은은하게': 나머지 기술과 묶었을 때 가장 좋은 배울 기술 (지금보다 나을 때만)
+    function recMark(p) { loadSim().then(() => { if (!p.isConnected) return; const r = recSlot(P, k, C); const b = r && p.querySelector(`.mv-learn [data-a="n${r}"]`); if (b) { b.classList.add('mv-recm'); b.insertAdjacentHTML('beforeend', '<i class="mv-recl">추천</i>'); b.scrollIntoView({ block: 'nearest' }); } }); return p; }
     // v13.19 경완: 바뀔 기술 = 창 위 바깥에 따로 뜨는 카드
     function oldCard(p) { p.querySelector(':scope>.win').classList.add('mv-neww'); if (old && mvOf(old)) p.insertAdjacentHTML('afterbegin', `<div class="win mv-oldc"><span class="mv-oldl">바꿀 기술</span><div class="mp-moves mp-line mv-old">${mvRow(mvOf(old), 'o')}</div></div>`); return p; }
     learn();
@@ -1811,5 +1861,5 @@ async function practice() {
   finally { document.body.classList.remove('gymBattle'); drawTab(); }
 }
 
-window.GymBattle = { recIts, recTms, recNat, bagN, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+window.GymBattle = { recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
 })();
