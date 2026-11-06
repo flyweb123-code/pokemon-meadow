@@ -7,7 +7,9 @@ import sys, json, base64, io, os, re, glob
 import xml.etree.ElementTree as ET
 from PIL import Image
 SC = sys.argv[1]
-DIRS = {'WalkD': ('Walk', 0), 'WalkN': ('Walk', 4), 'WalkS': ('Walk', 6), 'IdleS': ('Idle', 6)}
+DIRS = {'WalkD': ('Walk', 0), 'WalkN': ('Walk', 4), 'WalkS': ('Walk', 6), 'IdleS': ('Idle', 6), 'AttackD': ('Attack', 7)}   # AttackD = 공격 7번 줄(왼쪽 아래) — v17.44 진화구슬 내리치는 기술
+ONLY = sys.argv[2].split(',') if len(sys.argv) > 2 else None   # 예: AttackD 만 다시 (나머지 줄은 그대로 둠)
+if ONLY: DIRS = {k: v for k, v in DIRS.items() if k in ONLY}
 ALIAS = {'128paldea': '128paldeacombat', '555galar': '555galarstandard'}
 def uri(im):
     b = io.BytesIO(); im.save(b, 'PNG', optimize=True); return 'data:image/png;base64,' + base64.b64encode(b.getvalue()).decode()
