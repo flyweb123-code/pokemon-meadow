@@ -3049,3 +3049,10 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .sp-recsx{border-left:0;padding:0 8px}
 #gym .sp-recs .sp-recth .rk-fr{width:24px;height:24px;display:inline-block}#gym .sp-recs .sp-recth .rk{display:none}
 #gym .sp-recsb b{font-weight:400}   /* v17.69 경완: 추천받기 글자 얇게 (필터 버튼과 같은 굵기) */
+/* v17.71 경완: 추천받기 글자·박스를 상점 탭과 같은 크기로 */
+#gym .sp-recs{height:33px;gap:0}
+#gym .sp-recsb,#gym .sp-recsx{border:0;font-size:13px;padding:0 10px;background:var(--win,#f8f8f8);box-shadow:inset 0 0 0 2px rgba(0,0,0,.12)}
+#gym .sp-recsb:active,#gym .sp-recsx:active{box-shadow:inset 0 0 0 2px rgba(0,0,0,.2);filter:brightness(.95)}
+#gym .sp-recs.on .sp-recsb{background:#fff4d6;padding:0 8px 0 4px}#gym .sp-recsx{padding:0 8px;margin-left:2px}
+#gym .sp-recic{font-size:12px}#gym .sp-recs .sp-recth .rk-fr{width:22px;height:22px}
+#gym .mv-hd .gy-msg{text-align:center}   /* v17.71 경완: 기술 창 안내 문장 가운데 */
