@@ -3057,3 +3057,18 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .sp-recic{font-size:12px}#gym .sp-recs .sp-recth .rk-fr{width:22px;height:22px}
 #gym .mv-hd .gy-msg{text-align:center}   /* v17.71 경완: 기술 창 안내 문장 가운데 */
 #gym .gy-plate .gy-rpa .gy-stk{animation:gyStkBl 2.4s ease-in-out infinite}@keyframes gyStkBl{50%{opacity:.62;box-shadow:0 0 6px 1px rgba(229,65,58,.45)}}@media (prefers-reduced-motion: reduce){#gym .gy-plate .gy-rpa .gy-stk{animation:none}}   /* v17.74 경완: 홈 연승 딱지 은은하게 깜빡 */
+/* v17.77 경완: 훈련장 시간·날씨·밤 조명 */
+#gym .ty-nt,#gym .ty-glow,#gym .ty-wx{position:absolute;inset:0;pointer-events:none;font-style:normal}
+#gym .ty-nt{z-index:3000;mix-blend-mode:multiply;background:#fff;transition:background-color 2s}
+#gym .ty-glow{z-index:3001;mix-blend-mode:screen;opacity:0;transition:opacity 1.5s}
+#gym .ty-wx{z-index:3002;overflow:hidden}
+#gym .ty-wx.rain::before{content:"";position:absolute;inset:-40px 0 0;background:repeating-linear-gradient(104deg,transparent 0 13px,rgba(200,220,255,.45) 13px 14px,transparent 14px 31px);background-size:62px 46px;animation:tyRain .45s linear infinite}
+#gym .ty-wx.rain.storm::before{animation-duration:.28s;background-image:repeating-linear-gradient(104deg,transparent 0 10px,rgba(210,225,255,.55) 10px 12px,transparent 12px 24px)}
+@keyframes tyRain{to{transform:translate(-10px,46px)}}
+#gym .ty-wx.snow::before{content:"";position:absolute;inset:-60px 0 0;background:radial-gradient(circle,#fff 0 1.6px,transparent 2px) 0 0/38px 42px,radial-gradient(circle,rgba(255,255,255,.8) 0 1.2px,transparent 1.6px) 17px 21px/38px 42px;animation:tySnow 3.2s linear infinite}
+@keyframes tySnow{to{transform:translate(12px,42px)}}
+#gym .ty-lp{position:absolute;width:4px;height:58px;margin:-58px 0 0 -2px;background:#4a4e5a;box-shadow:inset -1px 0 0 #2e3038;pointer-events:none;font-style:normal}
+#gym .ty-lp::before{content:"";position:absolute;left:-6px;top:-4px;width:16px;height:6px;background:#2e3038}
+#gym .ty-lp::after{content:"";position:absolute;left:-4px;top:2px;width:12px;height:3px;background:#9a9ca8;transition:background .8s,box-shadow .8s}
+#gym .ty-lp.on::after{background:#fff4c0;box-shadow:0 0 6px 2px rgba(255,220,140,.9)}
+@media (prefers-reduced-motion: reduce){#gym .ty-wx::before{animation:none}}
