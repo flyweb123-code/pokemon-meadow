@@ -5538,7 +5538,7 @@ const hurt = m => { playOnce(m, 'Hurt'); anim(m, 'shake'); };
 const MXP = {};
 function loadMx(k) { const P = SPRITES[k]; if (!P || !isPmd(k)) return Promise.resolve(false); if (P.mx) return Promise.resolve(true); if (P.mxNo) return Promise.resolve(false);
   return MXP[k] ||= (async () => { try {
-    await padAtlas(k); const r = await fetch(`mx/${k}.json?v=3`); if (!r.ok) { P.mxNo = 1; return false; } const X = await r.json();
+    await padAtlas(k); const r = await fetch(`mx/${k}.json?v=4`); if (!r.ok) { P.mxNo = 1; return false; } const X = await r.json();
     const ld = u => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = u; }), [bi, xi] = await Promise.all([ld(P.i), ld(X.i)]);
     const G = P.G || 0, A = P.a; let W = 0, H = 0; for (const n in A) { const a = A[n]; W = Math.max(W, a[3] * (a[1] + G)); H = Math.max(H, a[0] + a[2] + G); }
     const R = Math.max(1, Math.round(bi.width / Math.max(1, W))), names = Object.keys(X.a).filter(n => !A[n]); if (!names.length) { P.mx = 1; return true; }
@@ -5593,6 +5593,7 @@ function baseAnim(m) {
   if (m.state === 'interact' && m.partner && !m.backSit && Math.abs(m.partner.y - m.y) < Math.abs(m.partner.x - m.x) * .6) return 'IdleS';   // 마주 보고 있을 땐 옆모습
   if (m.state === 'eat') return 'Eat';
   if (m.backSit) return 'WalkUp';   // 뒷모습으로 앉아 있기 (걷는 첫 장면에 멈춘다)
+  if (m.wet && WET_UP.has(parseInt(m.sk || m.form))) return 'IdleU';   /* v17.48 경완 '가비루사 같은 애들 호수에서 얼굴이 잠겨 안 보임': 물속에서 가만히 있을 땐 위 대각(왼위 5번 줄) 대기 그림 */
   return 'Idle';
 }
 // v9.34 경완 '머리나 등 위에 올라타는 상호작용에서 포켓몬 사이에 여백 없게': 그림마다 칸별 맨 위 칠해진 줄(t)과 맨 아래 줄(b)
@@ -5610,7 +5611,9 @@ function rideTy(m, H) {   // 태운 포켓몬 그림의 맨 위(타는 자리 �
   for (let i = c - 3; i <= c + 3; i++) if (i >= 0 && i < ah[1]) T0 = Math.min(T0, MH.t[i]); if (T0 >= ah[2]) T0 = MH.top;
   return H.y + (T0 - ah[5] - Ph.fy) * sh + H.vOy + 2 - (m.y + (MR.b - ar[5] - Pr.fy) * sr);
 }
-const DIR_ALT = { WalkN: 'WalkUp', WalkS: 'Walk', WalkD: 'Walk', IdleS: 'Idle' };
+const DIR_ALT = { WalkN: 'WalkUp', WalkS: 'Walk', WalkD: 'Walk', IdleS: 'Idle', IdleU: 'Idle' };
+// v17.48: 가만히 있는 그림(왼아래 7번 줄)에서 머리가 물 높이(위에서 60%)보다 아래라 얼굴이 잠기고, 왼위 5번 줄에선 위쪽 절반에 있는 물 타입 55종 (tools/mkpmddir.py KEYS=… IdleU 로 mx 에 붙임)
+const WET_UP = new Set([8, 54, 72, 79, 86, 90, 98, 99, 116, 118, 119, 120, 140, 171, 184, 211, 223, 226, 278, 318, 319, 320, 321, 339, 340, 349, 363, 367, 368, 369, 370, 382, 400, 422, 456, 457, 458, 489, 550, 594, 647, 692, 721, 746, 747, 752, 767, 771, 846, 847, 902, 963, 964, 976, 977]);
 const ANIM_DX = { 177: { Sleep: 2 } }, ANIM_DY = { 936: { Shoot: [-1, -3, -3, -3, -3, -3] }, 860: { Idle: [0, 4, 6, 7, 6, 4, 2] } };   // 11.92 경완 '쏘겨모 왜 떠다니냐': 가만히 있는 그림이 칸마다 최대 7칸 위로 떠오름 → 발을 땅에 붙인다   // v9.91 경완 '투구뿌논 가로등 불 켜기 때 그림자가 몸통에 가까워짐': 쏘기 그림 몸이 3칸 내려앉아 그림자를 덮었다 → 그 칸만 올린다 (칸별, 없는 칸은 0)   // v9.87 경완 '네이티 자는 모션 중앙이 안 맞음': 그림 칸 기준점이 몸 가운데와 어긋난 동작은 칸 단위로 옮긴다
 function drawSprite(m, dt) {
   const P = SPRITES[m.sk || m.form], A = P.a;
