@@ -3038,5 +3038,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes rrTotPop{0%{opacity:0;transform:scale(.4);animation-timing-function:cubic-bezier(.2,.9,.3,1)}14%{opacity:1;transform:scale(1.35,1.25);animation-timing-function:cubic-bezier(.4,0,.6,1)}36%{opacity:1;transform:scale(.92,.97)}54%{opacity:1;transform:scale(1.05)}72%{opacity:1;transform:scale(.99)}100%{opacity:1;transform:none}}
 #gym .rs-rep .rr-n{position:relative}#gym .rs-rep .rr-n>.rr-tot{bottom:2px;text-shadow:none;line-height:1}
 #gym .rs-rep .rr-d.tot{color:#2a8a3e;transform-origin:left center;animation:rrTotPop .55s linear forwards!important}
-/* v17.65 경완: 상점 돌아가기는 제목 왼쪽 ‹ (박스 화면과 같은 버튼) */
+/* v17.66 경완: 상점 돌아가기는 제목 왼쪽 ‹ (박스 화면과 같은 버튼) */
 #gym .sp-hl{display:flex;align-items:center;gap:10px;min-width:0}#gym .sp-hl .sp-back{flex:none;width:40px;height:40px;font-size:26px;line-height:30px;padding:0 0 4px}
