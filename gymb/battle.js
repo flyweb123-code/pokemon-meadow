@@ -1413,8 +1413,9 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
         const recBox = `<div class="it-rec"><span class="it-recl">추천 도구</span><div class="it-recb"><small class="it-recw">고르는 중…</small></div></div>`;
         const recFill = async (w, c2) => { const box = w.querySelector('.it-recb'); if (!box) return; const r = await recIt(P); if (!box.isConnected) return;
           if (!r) { box.innerHTML = '<small class="it-recw">추천할 도구가 없어요</small>'; return; }
-          const inSt = S.gym?.itm?.[r] > 0, same = r === m.it;
-          box.innerHTML = itRow(r).replace('<button type="button"', '<div').replace(/<\/button>$/, '</div>') + (same ? '<small class="it-recw">지금 지닌 도구가 추천 도구예요</small>' : `<button type="button" class="gy-key it-recgo" data-a="${inSt ? 'rgive' : 'rbuy'}">${inSt ? '창고에서 지니게 하기' : `상점에서 사기 · ${HOLD[r][1].toLocaleString()}G`}</button>`);
+          const inSt = S.gym?.itm?.[r] > 0, same = r === m.it;   // v17.58 경완: 큰 버튼 대신 추천 도구 줄 오른쪽 화살표, 줄을 누르면 상점 그 칸으로
+          box.innerHTML = same ? itRow(r).replace('<button type="button"', '<div').replace(/<\/button>$/, '</div>') + '<small class="it-recw">지금 지닌 도구가 추천 도구예요</small>'
+            : itRow(r, 0, inSt ? '창고에 있어요 · 누르면 지니게 해요' : '').replace('<button type="button" class="sp-tm sp-it"', `<button type="button" class="sp-tm sp-it it-recgo" data-a="${inSt ? 'rgive' : 'rbuy'}"`).replace(/<\/button>$/, `${inSt ? '' : `<em class="it-recp"><i class="coin"></i>${HOLD[r][1].toLocaleString()}G</em>`}<i class="it-arr" aria-hidden="true">›</i></button>`);
           box.dataset.it = r; };
         const recAct = (b, c2, w) => { const r = w.querySelector('.it-recb')?.dataset.it; if (!r) return false;
           if (b === 'rgive') { c2(); giveIt(P, r); close(); monPop(P.id, fromBox, null, lst); return true; }
@@ -1585,7 +1586,7 @@ const HOLD = {
 const TY_ORD = ['Normal', 'Fighting', 'Flying', 'Poison', 'Ground', 'Rock', 'Bug', 'Ghost', 'Steel', 'Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Ice', 'Dragon', 'Dark', 'Fairy'];
 const TY_IT = Object.fromEntries(TY_ORD.map((t, i) => [t, Object.keys(HOLD).find(k => HOLD[k][3] === i + 1)]));
 const TY_BERRY = Object.fromEntries(TY_ORD.map((t, i) => [t, ['chilan', 'chople', 'coba', 'kebia', 'shuca', 'charti', 'tanga', 'kasib', 'babiri', 'occa', 'passho', 'rindo', 'wacan', 'payapa', 'yache', 'haban', 'colbur', 'roseli'][i] + 'berry']));
-function foeItems(team, tier, skip) {
+function foeItems(team, tier, skip, out) {
   const dx = PSim.Dex, used = new Set(skip || []), r = Math.random;
   team.forEach(o => {
     if (o.it) return;
@@ -1611,6 +1612,7 @@ function foeItems(team, tier, skip) {
       if (set) L.push('sitrusberry');
       L.push('expertbelt', stab ? TY_IT[stab.type] : 'sitrusberry', 'lumberry', 'sitrusberry', 'leftovers', phys ? 'muscleband' : 'wiseglasses', 'shellbell', 'scopelens');
     }
+    if (out) out.push(...[...new Set(L)].filter(k => k && HOLD[k] && !used.has(k) && !out.includes(k)));   // 추천 목록 (상점 추천받기)
     o.it = L.find(k => k && HOLD[k] && (!tier || !used.has(k))) || null; if (o.it) used.add(o.it);
   });
 }
@@ -1626,6 +1628,22 @@ const itHave = id => (S.gym?.itm?.[id] > 0) || !!itWho(id);
 // v17.57 경완 '지닌 도구 창에 추천 도구': 어려운 도전자가 도구를 고르는 기준(foeItems 2)을 이 개체의 기술·특성·종족값에 그대로. 다른 포켓몬이 지닌 도구는 빼고
 async function recIt(P) { await loadSim(); const e = myEntry(P); e.it = null; e.fmIt = null; const skip = Object.keys(HOLD).filter(k => { const w = itWho(k); return w && w.id !== P.id; });
   try { foeItems([e], 2, skip); } catch (er) { return null; } return e.it && HOLD[e.it] ? e.it : null; }
+// 상점 '추천받기' (경완): 이 포켓몬에게 어울리는 도구 목록 (앞이 더 추천)
+async function recIts(P) { await loadSim(); const e = myEntry(P); e.it = null; e.fmIt = null; const L = []; try { foeItems([e], 2, [], L); } catch (er) {} return L; }
+// 상점 '추천받기' 기술: 이 포켓몬이 배울 수 있는 기술머신(또는 기술레코드) 중 recMoves 기준 점수가 높은 것 — 지금 기술보다 센 자속·견제기, 쓸 만한 변화기
+function recTms(P, wantTR) {
+  const m = gm(P), st = statsOf(P.sp, m.lv || 1, P.iv || [], m.nat), tys = SPECIES[P.sp]?.t || [], A = Math.max(st[1], st[3]), phys = st[1] >= st[3];
+  const pw = i => { const x = D.mv[i]; if (x[3] === 2) return 0; const fx = MV_FIX[x[0]], bp = fx || x[4] || 0; if (!bp) return 0;
+    return bp * ((x[5] === true || !x[5] ? 100 : x[5]) / 100) ** 1.5 * (!fx && tys.includes(x[2]) ? 1.5 : 1) * (fx ? 1 : (x[3] === 0 ? st[1] : st[3]) / A) * (x[7] > 0 ? .8 : 1) * (MV_2T.has(x[0]) ? .7 : 1) * (MV_BAD.has(x[0]) ? .6 : 1); };
+  const own = [...new Set([...m.mv, ...mvCands(P, m)])].map(id => MVI.get(id)).filter(i => i != null);
+  const bestTy = {}; own.forEach(i => { const v = pw(i); if (v > (bestTy[D.mv[i][2]] || 0)) bestTy[D.mv[i][2]] = v; });
+  const top = Math.max(1, ...own.map(pw));
+  const L = (D.sp[P.sp]?.tm || []).filter(i => D.mv[i] && isTR(D.mv[i][0]) === !!wantTR && !own.includes(i)).map(i => { const x = D.mv[i], v = pw(i); let s = -1;
+    if (v > 0) { if (v > (bestTy[x[2]] || 0) * 1.1 && v >= top * .55) s = v / top + (tys.includes(x[2]) ? .3 : 0); }
+    else if (x[3] === 2 && !MV_BAD.has(x[0])) { const k = x[0]; let w = MV_STAT[k] ?? -1; if (k in MV_SETUP) w = MV_SETUP[k] < 0 ? 2 : (MV_SETUP[k] === 1) === !phys ? 5 : -1; if (w > 1) s = w / 6; }
+    return [x[0], s, x]; }).filter(([, s]) => s > 0).sort((a, b) => b[1] - a[1]);
+  const tyN = new Set(); return L.filter(([, , x]) => x[3] === 2 || (!tyN.has(x[2]) && tyN.add(x[2]))).slice(0, 8).map(([id]) => id);   // 공격 기술은 타입마다 가장 좋은 하나
+}
 // 가진 도구 전부: [id, 지닌 포켓몬|null]. 창고에 있는 것 먼저
 const itAll = () => { const g = S.gym || {}, bag = Object.entries(g.itm || {}).filter(([id, n]) => n > 0 && HOLD[id]).map(([id]) => [id, null]), M = g.mon || {}, held = [];
   for (const k in M) { const id = M[k]?.it, P = id && HOLD[id] && boxOf(+k || k); if (P) held.push([id, P]); } return [...bag, ...held]; };
@@ -1673,7 +1691,7 @@ function recNat(P, m = gm(P)) {
 function natRec(rn, m) {
   const g = S.gym || {}, own = g.mint?.[rn] > 0, nt = D.nt[rn] || ['', '', ''];
   const body = rn === m.nat ? '<small class="it-recw">지금 성격이 추천 성격이에요</small>'
-    : `<div class="sp-tm sp-it sp-mint"><img class="tm-ic it-ic" alt="" src="${mintImg(rn)}"><span class="tm-nm"><b>${esc(natKo(rn))}</b></span><span class="tm-meta"><small><span class="nat-c up">${STAT_KO[nt[1]]} ▲</span> <span class="nat-c dn">${STAT_KO[nt[2]]} ▼</span></small></span></div><button type="button" class="gy-key it-recgo" data-a="${own ? 'ngive' : 'nbuy'}">${own ? `${esc(mintNm(rn))} 먹이기` : `상점에서 ${esc(mintNm(rn))} 사기 · ${MINT_P.toLocaleString()}G`}</button>`;
+    : `<button type="button" class="sp-tm sp-it sp-mint it-recgo" data-a="${own ? 'ngive' : 'nbuy'}"><img class="tm-ic it-ic" alt="" src="${mintImg(rn)}"><span class="tm-nm"><b>${esc(natKo(rn))}</b></span><span class="tm-meta"><small>${STAT_KO[nt[1]]}▲ ${STAT_KO[nt[2]]}▼</small>${own ? `<em class="it-note">창고에 ${esc(mintNm(rn))} · 누르면 먹여요</em>` : ''}</span>${own ? '' : `<em class="it-recp"><i class="coin"></i>${MINT_P.toLocaleString()}G</em>`}<i class="it-arr" aria-hidden="true">›</i></button>`;
   return `<div class="it-rec"><span class="it-recl">추천 성격</span><div class="it-recb">${body}</div></div>`;
 }
 function mintUse(P, k) {
@@ -1793,5 +1811,5 @@ async function practice() {
   finally { document.body.classList.remove('gymBattle'); drawTab(); }
 }
 
-window.GymBattle = { bagN, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+window.GymBattle = { recIts, recTms, recNat, bagN, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
 })();
