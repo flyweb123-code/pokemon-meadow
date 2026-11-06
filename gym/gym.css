@@ -3040,3 +3040,11 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .rs-rep .rr-d.tot{color:#2a8a3e;transform-origin:left center;animation:rrTotPop .55s linear forwards!important}
 /* v17.66 경완: 상점 돌아가기는 제목 왼쪽 ‹ (박스 화면과 같은 버튼) */
 #gym .sp-hl{display:flex;align-items:center;gap:10px;min-width:0}#gym .sp-hl .sp-back{flex:none;width:40px;height:40px;font-size:26px;line-height:30px;padding:0 0 4px}
+/* v17.67 경완: 추천받기는 작게, 보유 골드 왼쪽 */
+#gym .sp-top .sf-cap{align-items:flex-end;gap:10px;min-width:0}
+#gym .sp-recs{display:flex;align-items:stretch;height:34px;flex:none;min-width:0}
+#gym .sp-recsb,#gym .sp-recsx{display:flex;align-items:center;gap:5px;font:inherit;font-size:13px;padding:0 9px;border:3px solid var(--frame);border-radius:0;background:#fff;color:var(--win-ink,#282830);box-shadow:inset 0 -3px 0 rgba(0,0,0,.12);cursor:pointer;white-space:nowrap}
+#gym .sp-recsb:active,#gym .sp-recsx:active{box-shadow:inset 0 3px 0 rgba(0,0,0,.12)}
+#gym .sp-recs.on .sp-recsb{background:#fff4d6;padding:0 6px 0 3px;min-width:0}#gym .sp-recs.on .sp-recsb b{max-width:5em;overflow:hidden;text-overflow:ellipsis}
+#gym .sp-recsx{border-left:0;padding:0 8px}
+#gym .sp-recs .sp-recth .rk-fr{width:24px;height:24px;display:inline-block}#gym .sp-recs .sp-recth .rk{display:none}
