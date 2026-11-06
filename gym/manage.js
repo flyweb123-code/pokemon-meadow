@@ -232,7 +232,10 @@ async function drawTrain() {
   g.tr.forEach((e, i) => { const P = boxOf(e.id); if (P) yardMon(P, e, i); });
   // 코치 (훈련장에 배치한 트레이너): 코트 가장자리에서 응원
   Y.co = g.sf.filter(x => x.yard).slice(0, YARD_SF).map((x, i) => { const q = document.createElement('i'), cx = W * (i ? .9 : .1), cy = H * .6; q.className = 'ty-co' + (K.owW(x.ow) > 16 ? ' w32' : ''); q.dataset.co = i;
-    q.style.cssText = `left:${cx}px;top:${cy}px;z-index:${Math.round(cy)};background-image:url(${K.owSrc(x.ow)})`; Y.L.append(q); return { s: x, el: q, x: cx, y: cy, nx: performance.now() / 1000 + 1 + i * 1.7, fw: K.owW(x.ow) * 2, i, tg: null, tn: 0, d: 'd', fx: 1, snap: 1 }; });   // v17.69 경완 '켤 때마다 같은 자리에서 걸어감': 처음엔 고른 포켓몬 옆에 바로 서 있음
+    q.style.cssText = `left:${cx}px;top:${cy}px;z-index:${Math.round(cy)};background-image:url(${K.owSrc(x.ow)})`; Y.L.append(q); return { s: x, el: q, x: cx, y: cy, nx: performance.now() / 1000 + 1 + i * 1.7, fw: K.owW(x.ow) * 2, i, tg: null, tn: 0, d: 'd', fx: 1, snap: 1, hx: cx, hy: cy }; });   // v17.69 경완 '켤 때마다 같은 자리에서 걸어감': 처음엔 고른 포켓몬 옆에 바로 서 있음
+  // v17.77 경완 '훈련장에도 필드처럼 날씨·시간, 어두워지면 조명': 필드와 같은 곱하기 색(GA.light) + 가로등 3개 + 비·눈
+  Y.lp = [[14, H * .42], [W - 14, H * .42], [Y.pond.x1 + 14, Y.pond.y0 - 6]].map(([x, y]) => { const q = document.createElement('i'); q.className = 'ty-lp'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y)}`; Y.L.append(q); return { x, y, el: q }; });
+  el.insertAdjacentHTML('beforeend', '<i class="ty-nt"></i><i class="ty-glow"></i><i class="ty-wx"></i>'); yLight();
   sh.onclick = ev => {
     const c = ev.target.closest('[data-co]'); if (c) { sfx('tap'); const o = Y.co[+c.dataset.co]?.s; if (o) sfDetail(o); return; }
     const t = ev.target.closest('[data-p],[data-add]'); if (!t) return; sfx('tap');
@@ -320,12 +323,20 @@ function hoopAt(t) { const R = [0, 1, 2].map(i => Y.pr['ring' + i]), x0 = R[0].x
 // 코치 (v17.59 경완): 훈련 중인 포켓몬을 하나 골라 그 옆(포켓몬 앞쪽, 40~60px)으로 걸어가 바라보며 지켜보고, 가끔 응원. 6~10초마다 다른 포켓몬으로.
 // 걸음 그림 = 9칸 걸음 그림(0 아래·1 위·2 왼쪽 서기, 3·4 아래 걸음, 5·6 위, 7·8 왼쪽), 오른쪽은 좌우 뒤집기. 수영장 안으로는 안 들어감
 const CO_FR = { d: [0, 3, 0, 4], u: [1, 5, 1, 6], l: [2, 7, 2, 8] };
+function yEmo2(c, t) { const q = document.createElement('i'); q.className = 'ty-emo co'; q.textContent = t; q.style.left = c.x + 'px'; q.style.top = (c.y - 74) + 'px'; q.style.zIndex = 9999; Y.L.append(q); setTimeout(() => q.remove(), 1300); }
 function yCoach(c, now, dt) {
-  const L = Y.mons.filter(m => m.st !== 'sleep'), pool = L.length ? L : Y.mons;
+  const pool = Y.mons.filter(m => m.st !== 'sleep');   // v17.77 경완 '훈련 중인 포켓몬 없으면 코치도 쉬게': 깨어 있는 포켓몬이 없으면 제자리(양 끝)로 가서 쉼
   if (!pool.includes(c.tg) || now > c.tn) { const o = (Y.co || []).find(x => x !== c)?.tg, P2 = pool.filter(m => m !== o); c.tg = pool.length ? K.pick(P2.length ? P2 : pool) : null; c.tn = now + 6 + Math.random() * 4; c.side = Math.random() < .5 ? -1 : 1; }
-  const t = c.tg; let tx = c.x, ty = c.y;
-  if (t) { tx = t.x + c.side * (44 + (t.k === 'spar' ? 26 : 0)); ty = t.y + 14; tx = Math.max(18, Math.min(Y.W - 18, tx)); ty = Math.max(Y.H * .3, Math.min(Y.H - 10, ty));
-    if (inPond(tx, ty, 12)) { const p = Y.pond; ty = p.y0 - 14; if (inPond(tx, ty, 12)) tx = p.x1 + 16; } }
+  const t = c.tg; let tx = c.hx, ty = c.hy;
+  if (t) {   // v17.77 경완 '코치랑 포켓몬 너무 겹치지 않게': 고른 포켓몬 양옆·조금 더 멀리 중 다른 포켓몬·다른 코치와 가장 덜 겹치는 자리
+    const near = (x, y) => Math.min(99, ...Y.mons.map(m => Math.hypot((m.x - x) * 1.2, m.y - y)), ...(Y.co || []).filter(o => o !== c).map(o => Math.hypot(o.x - x, o.y - y)));
+    const cl = (x, y) => { x = Math.max(18, Math.min(Y.W - 18, x)); y = Math.max(Y.H * .3, Math.min(Y.H - 10, y)); if (inPond(x, y, 12)) { const p = Y.pond; y = p.y0 - 14; if (inPond(x, y, 12)) x = p.x1 + 16; } return [x, y]; };
+    const gap = 58 + (t.k === 'spar' ? 26 : 0), C2 = [];
+    for (const r of [gap, gap + 26]) for (const a of [0, .45, -.45, .9, Math.PI, Math.PI - .45, Math.PI + .45, Math.PI - .9]) C2.push(cl(t.x + Math.cos(a) * r * (a < 2 ? c.side : -c.side) * (a < 2 ? 1 : -1), t.y + 10 + Math.abs(Math.sin(a)) * r * .55));
+    const sc = q => Math.min(48, near(q[0], q[1])) - Math.hypot(q[0] - c.x, q[1] - c.y) * .01;
+    if (!c.spot || c.spot.t !== t || now > c.spot.n) { let best = C2[0], bv = -1e9; for (const q of C2) { const v = sc(q); if (v > bv) { bv = v; best = q; } }
+      const keep = c.spot && c.spot.t === t && Math.hypot(c.spot.x - t.x, c.spot.y - t.y) < gap + 40 && sc([c.spot.x, c.spot.y]) > bv - 8; c.spot = keep ? { ...c.spot, n: now + .5 } : { t, n: now + .5, x: best[0], y: best[1] }; }
+    tx = c.spot.x; ty = c.spot.y; }
   if (c.snap && t) { c.x = tx; c.y = ty; } c.snap = 0;
   const dx = tx - c.x, dy = ty - c.y, d = Math.hypot(dx, dy), mv = d > 6;
   if (mv) { const v = Math.min(d, 52 * dt); let nx = c.x + dx / d * v, ny = c.y + dy / d * v; if (inPond(nx, ny, 10)) { ny = Math.min(ny, Y.pond.y0 - 12); nx = c.x + Math.sign(dx) * v; } c.x = nx; c.y = ny;
@@ -333,13 +344,23 @@ function yCoach(c, now, dt) {
   else if (t) { const ax = t.x - c.x, ay = t.y - c.y; c.d = Math.abs(ax) > Math.abs(ay) * .6 ? (ax < 0 ? 'l' : 'r') : ay < 0 ? 'u' : 'd'; }
   const k = c.d === 'r' ? 'l' : c.d, fr = CO_FR[k][mv ? Math.floor(now / .16) % 4 : 0];
   const e = c.el; e.style.left = c.x.toFixed(1) + 'px'; e.style.top = c.y.toFixed(1) + 'px'; e.style.zIndex = Math.round(c.y); e.style.backgroundPosition = `${-fr * c.fw}px 0`; e.style.setProperty('--fx', c.d === 'r' ? -1 : 1);
+  if (!mv && !t && !c.rs) { c.rs = 1; c.d = 'd'; yEmo2(c, '휴~'); } if (t) c.rs = 0;
   if (!mv && t && now > c.nx) { c.nx = now + 3 + Math.random() * 3; e.classList.remove('cheer'); void e.offsetWidth; e.classList.add('cheer');
     const q = document.createElement('i'); q.className = 'ty-emo co'; q.textContent = K.pick(['힘내!', '좋아!', '한 번 더!', '그렇지!', '!']); q.style.left = c.x + 'px'; q.style.top = (c.y - 74) + 'px'; q.style.zIndex = 9999; Y.L.append(q); setTimeout(() => q.remove(), 1300); }
+}
+function yLight() {
+  const F = GA.light?.(); if (!F || !Y) return; const e = Y.el, on = F.lamps;
+  e.querySelector('.ty-nt').style.backgroundColor = `rgb(${F.col.join(',')})`;
+  Y.lp.forEach(l => l.el.classList.toggle('on', on));
+  const gl = e.querySelector('.ty-glow'); gl.style.opacity = on ? Math.max(.35, F.dark).toFixed(2) : 0;
+  gl.style.background = Y.lp.map(l => `radial-gradient(ellipse 120px 90px at ${l.x}px ${l.y - 52}px, rgba(255,214,130,.55), rgba(255,200,110,.18) 45%, transparent 75%)`).join(',');
+  const wx = e.querySelector('.ty-wx'); wx.className = 'ty-wx' + (F.snow ? ' snow' : F.wx === 'rain' ? ' rain' + (F.storm ? ' storm' : '') : '');
 }
 function yardLoop(ts) {
   if (!Y || !Y.el.isConnected || sh.hidden || cur !== 'train') { Y && (Y.raf = 0); return; }
   const now = ts / 1000, dt = Math.min(.1, Y.last ? now - Y.last : 0); Y.last = now;
   if (now - (Y.ck ?? now) > 30) { tickTrain(Date.now()); K.save(); Y.ck = now; Y.mons.forEach(m => { try { yTag(m); } catch (x) {} }); } else Y.ck ??= now;   // 30초마다 남은 시간·레벨 새로
+  if (now - (Y.lk ?? 0) > 10) { Y.lk = now; yLight(); }   // v17.75: 10초마다 시간·날씨 다시
   for (const c of Y.co || []) yCoach(c, now, dt);   // v17.59 경완 '코치가 포켓몬들 따라다니면서 지켜보게': 한 마리씩 골라 옆으로 걸어가 지켜보고 응원
   for (const m of Y.mons) {
     if (m.st === 'go') {
