@@ -10325,6 +10325,7 @@ function evoDropOpen(o = {}) {
     for (let j = 0; j < 90; j++) step(1000 / 60);
     const t0 = performance.now() - 2000; for (const b of B) b.born = t0; sc = 0; nM = 0; nD = 0; combo = 0; cMax = 0; pops = []; parts = []; flt = []; cmb = []; fxs = []; lastB = null; overT = 0; hiT = Math.max(0, ...B.map(b => b.t)); upd(); };
   box.edAgain = () => { reset(); if (o.fill) prefill(); mus(true); };
+  box.edAdd = (t, x, y) => { const b = add(t, x, y); b.born = performance.now() - 2000; return 1; };   // 시험용: 구슬 넣기
   box.edMt = () => { const b = B.filter(live)[0]; mtShow(b ? b.x : W / 2, b ? b.y : H / 2); };   // 시험용
   box.edDbg = () => ({ B: B.filter(live).map(b => [ox + b.x * k, oy + b.y * k, b.t]), R: Array.from({ length: NQ + 1 }, (_, i) => ringPos(i, ringZ(performance.now()))), n: sk.n, mode: sk.mode, cur, nq: nq.slice(), xb: XB.length, cs });   // 시험용
   const loop = now => { if (!box.isConnected) return; const dt = Math.min(.05, (now - last) / 1000); last = now; if (shake > 0) shake = Math.max(0, shake - dt);
