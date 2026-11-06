@@ -1447,11 +1447,14 @@ const SOON = {
   shop: { t: '체육관 상점', ic: 'tr/gentleman', d: '체육관 운영에 필요한 것을 사요.', li: ['기술머신으로 포켓몬에게 기술 가르치기', '배틀 도구', '체육관 꾸미기 아이템'] },
 };
 let bsMus = false;   // 승급 심사 화면 곡(포켓몬리그)이 나오는 중 (경완 2026-11-04 '승급심사 화면 들어가면 bgm 웅장하게')
+let tabOpt = null;
 function openTab(t, opt) {
-  if (bsMus && !(t === 'battle' && opt?.pick)) { bsMus = false; bgmPlay('gym'); }   // 심사 화면·라인업에서 다른 곳으로 가면 체육관 곡으로
+  if (opt?.back === 1) opt = { back: { t: tab, opt: tabOpt } };   // v17.64 경완: 상세카드 추천 → 상점으로 넘어가도 원래 화면(배틀 라인업 고르기 등)으로 돌아갈 길. 라인업 고르기는 그대로 기다림
+  window.gymShopBack = t === 'shop' && opt?.back?.t ? opt.back : null; tabOpt = opt?.back ? null : opt;
+  if (bsMus && !(t === 'battle' && opt?.pick) && !opt?.back) { bsMus = false; bgmPlay('gym'); }   // 심사 화면·라인업에서 다른 곳으로 가면 체육관 곡으로
   // 꾸미기·자리 정하기 중에 다른 메뉴를 열면 그 모드를 끝낸다 (경완 2026-10-27 '꾸미기 하고 나서 맵에 그리드 안 사라지는 오류')
   if (t && ded) ded.end?.();
-  if (luRes && !opt?.pick) { const r = luRes; luRes = null; root.classList.remove('lupk'); setTimeout(() => r(null)); }   // 라인업 고르다 닫음
+  if (luRes && !opt?.pick && !opt?.back) { const r = luRes; luRes = null; root.classList.remove('lupk'); setTimeout(() => r(null)); }   // 라인업 고르다 닫음
   root.classList.toggle('lupk', !!(t === 'battle' && opt?.pick));   // 배틀 라인업 고르기 중엔 아래 메뉴 잠금 (퇴근만 됨, v12.24 경완 '메뉴도 똑같이 잠기고')
   if (t) root.querySelectorAll('.gy-infos').forEach(x => x.remove());   // 창고·도전자 명단을 연 채 아래 메뉴를 누르면 그 화면은 닫는다
   tab = t; root.querySelectorAll('.gy-menu button[data-t]').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === t));
@@ -2380,7 +2383,7 @@ async function visit(F, code) {
 
 window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) => dzOf(id, gi), _routes: () => DESIGNS.flatMap(d => GRADES.map((_, gi) => { const D = dzOf(d.id, gi), C = chalRoute(D, ents); return { id: d.id, gi, door: D.door, leader: D.leader, guy: D.guy, free: !!D.free, chal: C.path, cf: C.cf, old: D.path, guyR: route(D, D.door, D.guy, []), oldGuy: guyPath(D) }; })), renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: t => openTab(t), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
+  k: { fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 // 이미 명단에서 본 도전자(qSeen)는 기다리고 있어도 점을 띄우지 않는다 — 체육관 안 점과 똑같이 (경완 2026-10-30 '빨간점 다 확인했는데 아이콘 점이 안 사라짐')
 // 점 = 안 본 도전자, 또는 새 도전자가 올 시각이 지남(일정·당겨 온 도전자). 저장된 at 은 쓰지 않는다 (경완 2026-10-30 '명단만 확인해도 꺼지게')
