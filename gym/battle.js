@@ -1466,7 +1466,7 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
         // v17.57 경완: 추천 도구 하나 — 창고에 있으면 바로 지니게, 없으면 상점 도구 탭으로 넘어가 그 도구 사기 창
         // v17.59 경완: 추천할 게 없거나(이미 지닌 도구가 추천) 고를 수 없으면 추천 칸 자체를 안 띄움 — 추천을 먼저 고른 다음 창을 연다
         return recIt(P).then(r => { if (r === m.it) r = null; const inSt = r && S.gym?.itm?.[r] > 0;
-        const recBox = !r ? '' : `<div class="it-rec"><span class="it-recl">추천 도구</span><div class="it-recb" data-it="${r}">${itRow(r, 0, inSt ? '창고에 있어요 · 누르면 지니게 해요' : '').replace('<button type="button" class="sp-tm sp-it"', `<button type="button" class="sp-tm sp-it it-recgo" data-a="${inSt ? 'rgive' : 'rbuy'}"`).replace(/<\/button>$/, `${inSt ? '' : `<em class="it-recp"><i class="coin"></i>${HOLD[r][1].toLocaleString()}G</em>`}<i class="it-arr" aria-hidden="true">›</i></button>`)}</div></div>`;
+        const recBox = !r ? '' : `<div class="it-rec"><span class="it-recl">추천 도구</span><div class="it-recb" data-it="${r}">${itRow(r, 0, inSt ? '창고에 있어요 · 누르면 지니게 해요' : '').replace('<button type="button" class="sp-tm sp-it"', `<button type="button" class="sp-tm sp-it it-recgo" data-a="${inSt ? 'rgive' : 'rbuy'}"`).replace(/<\/button>$/, `<i class="it-arr" aria-hidden="true">›</i></button>`)}</div></div>`;
         const recFill = () => {};
         const recAct = (b, c2, w) => { const r = w.querySelector('.it-recb')?.dataset.it; if (!r) return false;
           if (b === 'rgive') { c2(); giveIt(P, r); close(); monPop(P.id, fromBox, null, lst); return true; }
