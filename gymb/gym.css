@@ -3002,7 +3002,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .mp-mv.mv-recm{position:relative;box-shadow:0 0 0 2px rgba(240,176,48,.85),0 0 10px 2px rgba(240,176,48,.45);animation:mvRecm 2.4s ease-in-out infinite}@keyframes mvRecm{50%{box-shadow:0 0 0 2px rgba(240,176,48,.55),0 0 4px 1px rgba(240,176,48,.2)}}
 #gym .mv-recl{position:absolute;right:6px;top:-8px;font-style:normal;font-size:10px;font-weight:700;line-height:1;padding:2px 5px;border-radius:4px;background:#f0b030;color:#fff;pointer-events:none}
 @media (prefers-reduced-motion: reduce){#gym .mp-mv.mv-recm{animation:none}}
-/* v17.60 경완: 추천받기 = 필터 줄 밑, 상점 필터 단추와 같은 네모 테두리 / 기술 추천 빛은 안쪽으로(왼쪽 잘림) / 추천 포켓몬 창 라인업 탭 */
+/* v17.61 경완: 추천받기 = 필터 줄 밑, 상점 필터 단추와 같은 네모 테두리 / 기술 추천 빛은 안쪽으로(왼쪽 잘림) / 추천 포켓몬 창 라인업 탭 */
 #gym .sp-top .sp-rec{margin:0 0 10px;gap:6px}
 #gym .sp-recb{border:3px solid var(--frame);border-radius:0;background:#fff;color:var(--win-ink,#282830);box-shadow:inset 0 -3px 0 rgba(0,0,0,.12);padding:6px 10px;min-height:38px;gap:8px}
 #gym .sp-recb:active{transform:none;box-shadow:inset 0 3px 0 rgba(0,0,0,.12)}#gym .sp-recic{font-style:normal;color:#e0a020;font-size:15px;line-height:1}#gym .sp-rect{font-size:14px}#gym .sp-recb small{color:var(--dim,#6a6a80);opacity:1}
