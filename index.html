@@ -4160,7 +4160,9 @@ function think(m) {
     if (Math.random() < .3) { setState(m, 'idle', rnd(1, 2.2)); emote(m, pick(['헉…헉…', '💦', '파닥파닥', '…!']), '', 1.6, 'karp-gasp'); return; }
     return moveTo(m, randPond(.45, m), { kind: 'wander' }, .3);
   }
-  if ((m.clean ?? 100) <= 0 && m.hunger >= 100 && (m.joy ?? 60) <= 0 && awake(m) && !m.held && !m.hj && Math.random() < .3) { setState(m, 'idle', rnd(2, 3.5)); m.one = null; playX(m, 'Cringe'); if (Math.random() < .5) emote(m, '…', '', 1.8, 'gauge-zero'); return; }   /* v16.65 경완: 청결·즐거움·배부름 셋 다 0 이면 가끔 움찔 */
+  { const z0 = (m.clean ?? 100) <= 0 && m.hunger >= 100 && (m.joy ?? 60) <= 0;   /* v17.44 경완: 청결·즐거움·배부름 셋 다 0 이면 움찔 대신 쓰러져 있음 (원본 기절·눕기 마지막 장면 고정, 없으면 잠 그림) */
+    if (!z0 && m.fnt) { m.fnt = 0; if (m.one?.hold === 'end') m.one = null; m.anOv = null; }
+    if (z0 && awake(m) && !m.held && !m.hj) { setState(m, 'idle', rnd(6, 10)); if (!m.fnt || !m.one) faintDown(m); if (!m.fnt && Math.random() < .5) emote(m, '…', '', 1.8, 'gauge-zero'); m.fnt = 1; return; } }
   if (m.sk === '555~Zen' && awake(m)) { if (m.hunger > FEED_BUB && !(m.hungryCd > 0) && Math.random() < .3) { m.hungryCd = rnd(40, 90); hungryBub(m); } return setState(m, 'idle', rnd(3, 6)); }   /* v16.81 경완: 달마모드는 배고픔이 풀릴 때까지 가만히 */
   const t = T(m);
   const b0 = !isFull(m) ? nearestBerry(m) : nearestBerry(m, true);
@@ -4770,6 +4772,8 @@ function sceneCandidates(a, b) {
   if (ta.mv !== 'swim' && tb.mv !== 'swim') {
     add(1.5, { key: 'g-tag', kind: 'play', mo: 'tag', p: { t: ['잡았다!', '!'] }, roles: [a, b], text: () => `${J(a,'과/와')} ${J(b,'이/가')} 술래잡기를 시작했다.` });
     add(1.2, { key: 'g-side', kind: 'chat', mo: 'side', p: {}, roles: [a, b], text: () => `${J(a,'이/가')} ${N(b)} 옆에 나란히 앉아 쉰다.` });
+    { const wx = weather(), h = hour(), sky = wx === 'rain' ? null : h >= 19.5 || h < 5 ? ['달', '☾'] : h < 7 ? ['해돋이', '☀'] : h >= 16.5 ? ['노을', '☀'] : wx === 'cloud' ? ['구름', '☁'] : ['해', '☀'];   /* v17.44 경완: 같이 해·달 보기 — 나란히 앉아 올려다보기 동작 */
+      if (sky) add(1, { key: 'g-sky', kind: 'chat', mo: 'side', p: { sky: sky[1] }, roles: [a, b], text: () => pick([`${J(a,'과/와')} ${J(b,'이/가')} 나란히 앉아 ${J({ name: sky[0] },'을/를')} 올려다본다.`, `${J(a,'이/가')} ${N(b)} 옆에 앉아 함께 ${J({ name: sky[0] },'을/를')} 바라본다.`]) }); }
   }
   return c;
 }
@@ -4973,8 +4977,10 @@ const TPL = {
   side: { dur: 9,
     init(sc, a, b) { const sd = a.x < b.x ? -1 : 1, x = clamp(b.x + sd * Math.max(24, (a.w + b.w) * .28), XL + 20, XR - 20); place(a, x, b.y); const cx = (XL + XR) / 2, f = (a.x + b.x) / 2 < cx ? -1 : 1; a.face = b.face = f; sc.sd = sd; },
     tick(sc, a, b) { const k = Math.min(1, sc.mt / 1.2) * .07; a.scRot = -sc.sd * k; b.scRot = sc.sd * k;
+      if (sc.p.sky) { for (const m of [a, b]) { const P = SPRITES[m.sk || m.form]; if (!P || !isPmd(m.sk || m.form)) continue; if (!P.mx && !P.mxNo) { loadMx(m.sk || m.form); continue; } const n = ['LookUp', 'Sit'].find(x => P.a[x]); if (n && m.one?.name !== n && !m.skyD) { m.one = { name: n, t: 0, hold: 'end' }; m.skyD = 1; } }   // 올려다본 마지막 장면에서 멈춤
+        if (every(sc, 'h', 2.2)) particle((a.x + b.x) / 2, Math.min(a.y - a.h, b.y - b.h) - 10, 'sun', pick([sc.p.sky, '✦', '♡'])); return; }
       if (every(sc, 'h', 2.4)) { const m = Math.random() < .5 ? a : b; particle((a.x + b.x) / 2, Math.min(a.y - a.h, b.y - b.h) - 4, 'heart', pick(['♥', '♪', '…♥'])); if (Math.random() < .5) anim(m, 'nod'); } },
-    end(sc, a, b) { a.scRot = b.scRot = 0; } },
+    end(sc, a, b) { a.scRot = b.scRot = 0; if (sc.p.sky) for (const m of [a, b]) { m.skyD = 0; if (m.one?.hold === 'end' && !m.fnt) m.one = null; } } },
   // both run a ring together
   circle: { dur: 7,
     init(sc, a, b) { sc.c = sceneCenter(a, b, 60); },
@@ -4989,7 +4995,7 @@ const TPL = {
     tick(sc, a, b) {
       const on = (sc.mt % 2) < 1.3;
       if (on && every(sc, 'p', .07)) lineFx(a, b, sc.p.cls || 'splash', pick([].concat(sc.p.t || '')));
-      if (on && every(sc, 'k', .9)) strike(a);
+      if (on && every(sc, 'k', .9)) { if (!playOnce(a, 'Shoot') && !playOnce(a, 'SpAttack')) strike(a); }   /* v17.44 경완: 물·불꽃·가루 뿜기는 쏘기 동작 */
       if (every(sc, 'h', 1.3)) { if (sc.p.soft) anim(b, 'hop'); else hurt(b); }
     } },
   // a hands b food or a gift that floats across, then b eats it
@@ -5042,11 +5048,12 @@ const TPL = {
     } },
   // a lifts b into the air: psychic, horns, muscles, balloons
   float: { dur: 7,
-    init(sc, a, b) { faceTo(a, b.x); faceTo(b, a.x); if (sc.p.aura) { a.el.classList.add('aura'); levFx(b); } else b.act.classList.add('wiggle'); strike(a); },   /* v8.05 경완: 염력으로 들린 포켓몬은 버둥대지 않고 미니게임 부유 고리를 두르고 둥둥 뜬다 */
+    init(sc, a, b) { faceTo(a, b.x); faceTo(b, a.x); if (sc.p.aura) { a.el.classList.add('aura'); levFx(b); } else b.act.classList.add('wiggle'); if (sc.p.aura && SPRITES[a.sk || a.form]?.a?.Charge) { a.anOv = 'Charge'; a.anOvT = performance.now() + 300; sc.chg = 1; } else strike(a); },   /* v17.44 경완: 염력으로 띄우는 동안 기 모으기(Charge) 동작 */   /* v8.05 경완: 염력으로 들린 포켓몬은 버둥대지 않고 미니게임 부유 고리를 두르고 둥둥 뜬다 */
     tick(sc, a, b) {
       const up = sc.mt < 5.5 ? Math.min(1, sc.mt / 1.2) : Math.max(0, 1 - (sc.mt - 5.5) / .6);
       b.xl = up * (sc.p.h || 50) + (sc.p.aura ? Math.sin(sc.mt * 2.2) * 7 : Math.sin(sc.mt * (sc.p.bob || 3)) * 6) * up;
       if (every(sc, 'p', .3)) particle(b.x + rnd(-14, 14), b.y - b.xl - b.h * .2, sc.p.cls || 'psy', pick([].concat(sc.p.t || ['·', '✧'])));
+      if (sc.chg && sc.mt < 5.8) a.anOvT = performance.now() + 300;   // 장면이 끊기면 곧 원래 동작으로
       if (sc.p.pump && every(sc, 'k', 1)) strike(a);
       if (once(sc, 'land', 6.1)) dustAt(b);
     } },
@@ -5491,13 +5498,47 @@ function playOnce(m, name, hold = false) {
   m.one = { name, t: 0, hold }; return true;
 }
 const strike = m => { if (!playOnce(m, 'Attack')) anim(m, 'shake'); };
+// v17.44 경완 '포켓몬별로 기술마다 어울리는 동작': 기술 종류마다 원본 동작 후보 (앞에서부터 그 종에 있는 것 하나 — 종마다 가진 동작이 달라 포켓몬별로 골라짐)
+const SK_MOT = {
+  punch: ['Punch', 'Jab', 'MultiStrike', 'Double', 'Strike', 'Attack'], slam: ['Slam', 'Stomp', 'HitGround', 'Double', 'Attack'], quake: ['Stomp', 'HitGround', 'Rumble', 'Slam', 'Attack'], dig: ['HitGround', 'Stomp', 'Attack'],
+  fly: ['FlapAround', 'Hover', 'Float', 'Hop'], wind: ['FlapAround', 'Rotate', 'Swing', 'Attack'], gas: ['Gas', 'Emit', 'Shoot', 'SpAttack', 'Attack'], acid: ['Gas', 'Emit', 'Shoot', 'SpAttack', 'Attack'],
+  rock: ['AttackD', 'Slam', 'Attack'], silk: ['Shoot', 'Emit', 'Attack'], scare: ['Appeal', 'Emit', 'Charge', 'Pose'], iron: ['Withdraw', 'Pose', 'Charge'],
+  fire: ['Shoot', 'Emit', 'SpAttack', 'Attack'], burn: ['Shoot', 'Emit', 'SpAttack', 'Attack'], surf: ['Swing', 'Attack'], vine: ['Slap', 'TailWhip', 'Swing', 'Double', 'Attack'],
+  bolt: ['Shock', 'Emit', 'Charge', 'Attack'], zap: ['Shock', 'Emit', 'Charge', 'Attack'], lev: ['Charge', 'Emit'], psy: ['Charge', 'Emit'],
+  ice: ['Emit', 'Shoot', 'SpAttack', 'Attack'], icle: ['AttackD', 'Chop', 'Attack'], beam: ['Shoot', 'Emit', 'SpAttack', 'Attack'], pulse: ['Shoot', 'Emit', 'SpAttack', 'Attack'],
+  amb: ['QuickStrike', 'Scratch', 'MultiScratch', 'Strike', 'Attack'], steal: ['QuickStrike', 'Scratch', 'Strike', 'Attack'], qa: ['QuickStrike', 'LeapForth', 'Attack'],
+  swap: ['Twirl', 'Swing', 'Pose', 'Attack'], uturn: ['LeapForth', 'QuickStrike', 'Attack'], ghost: ['Sink', 'AttackD', 'Attack'], heavy: ['Slam', 'Stomp', 'HitGround', 'AttackD', 'Attack'],
+  grow: ['DeepBreath', 'Charge', 'Pose'], kiss: ['Appeal', 'Lick', 'AttackD', 'Pose', 'Attack'],
+};
+const skMot = (k, kd) => { const A = SPRITES[k]?.a || {}; return (SK_MOT[kd] || ['Attack']).find(n => A[n]) || (A.Attack ? 'Attack' : 'Walk'); };
+// 필드 기술 이름·분류로 고르는 동작 후보
+function moveMotL(name = '', dc = 2) {
+  if (/펀치|주먹|연속.*치|메가톤|불릿/.test(name)) return SK_MOT.punch;
+  if (/킥|발차기|짓밟|스톰프|발구르/.test(name)) return ['Kick', 'Stomp', 'Attack'];
+  if (/물기|깨물|엄니|씹/.test(name)) return ['Bite', 'Attack'];
+  if (/할퀴|손톱|베기|칼|커터|참|가르/.test(name)) return ['Slice', 'Scratch', 'MultiScratch', 'Strike', 'Attack'];
+  if (/박치기|돌진|몸통|태클|부딪/.test(name)) return ['Head', 'LeapForth', 'Attack'];
+  if (/꼬리/.test(name)) return ['TailWhip', 'Swing', 'Attack'];
+  if (/노래|울음|소리|보이스|짖|하울|외치/.test(name)) return ['Sing', 'Sound', 'Emit', 'Charge'];
+  if (/지진|땅고르기|지면|흔들/.test(name)) return SK_MOT.quake;
+  if (/전기|번개|방전|볼트|스파크|전격/.test(name)) return SK_MOT.zap;
+  if (/날개|바람|회오리|폭풍|에어/.test(name)) return SK_MOT.wind;
+  if (/독|가스|오물|용해/.test(name)) return SK_MOT.gas;
+  if (/염력|사이코|키네시스|명상/.test(name)) return SK_MOT.psy;
+  if (/핥/.test(name)) return ['Lick', 'Attack'];
+  return dc === 3 ? ['Shoot', 'Emit', 'SpAttack', 'Attack'] : dc === 1 ? ['Charge', 'Emit', 'DeepBreath', 'Pose', 'SpAttack'] : ['Strike', 'Double', 'Swing', 'Attack'];
+}
+// v17.44 경완: 쓰러짐 — 그 종에 있는 기절(Faint)·눕기(Laying)·넘어짐(Trip) 중 하나를 끝 장면에서 멈춤
+function faintDown(m) { const k = m.sk || m.form, P = SPRITES[k]; if (!P || !isPmd(k)) return;
+  const go = () => { if (!S.mons.includes(m) || m.held) return; const n = ['Faint', 'Laying', 'Trip'].find(x => P.a[x]); if (n) { m.anOv = null; m.one = { name: n, t: 0, hold: 'end' }; } else { m.anOv = 'Sleep'; m.anOvT = performance.now() + 9e5; } };
+  if (P.mx || P.mxNo) go(); else loadMx(k).then(go); }
 const hurt = m => { playOnce(m, 'Hurt'); anim(m, 'shake'); };
 // v16.60 경완 '얼굴 표정, 필드 동작 다 받아주고 상호작용 별로 알맞게': 불가사의 던전 그림 모음의 나머지 동작(끄덕이기·앉기·올려다보기 등 mx/<키>.json)과
 // 얼굴 표정(face/<키>.png 40칸 가로 띠, face.json)을 필요할 때만 받는다. 동작은 받으면 원래 아틀라스 아래에 이어 붙여 같은 그림으로 쓴다 (drawSprite 그대로)
 const MXP = {};
 function loadMx(k) { const P = SPRITES[k]; if (!P || !isPmd(k)) return Promise.resolve(false); if (P.mx) return Promise.resolve(true); if (P.mxNo) return Promise.resolve(false);
   return MXP[k] ||= (async () => { try {
-    await padAtlas(k); const r = await fetch(`mx/${k}.json?v=2`); if (!r.ok) { P.mxNo = 1; return false; } const X = await r.json();
+    await padAtlas(k); const r = await fetch(`mx/${k}.json?v=3`); if (!r.ok) { P.mxNo = 1; return false; } const X = await r.json();
     const ld = u => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = u; }), [bi, xi] = await Promise.all([ld(P.i), ld(X.i)]);
     const G = P.G || 0, A = P.a; let W = 0, H = 0; for (const n in A) { const a = A[n]; W = Math.max(W, a[3] * (a[1] + G)); H = Math.max(H, a[0] + a[2] + G); }
     const R = Math.max(1, Math.round(bi.width / Math.max(1, W))), names = Object.keys(X.a).filter(n => !A[n]); if (!names.length) { P.mx = 1; return true; }
@@ -5589,7 +5630,8 @@ function drawSprite(m, dt) {
   let total = 0; for (const d of durs) total += d; total /= 60;
   let f;
   if (m.one) {
-    if (m.one.hold) f = t >= (durs.slice(0, a[7] + 1).reduce((s, d) => s + d, 0) / 60) ? a[7] : null;
+    if (m.one.hold === 'end') f = t >= total ? durs.length - 1 : null;
+    else if (m.one.hold) f = t >= (durs.slice(0, a[7] + 1).reduce((s, d) => s + d, 0) / 60) ? a[7] : null;
     else if (t >= total) { m.one = null; return drawSprite(m, 0); }
     if (f == null) f = null;
   } else { if (m.sprKey !== name) { m.sprKey = name; m.at = 0; } m.at += dt * (name === 'Eat' ? .75 : 1); t = m.at % total; }   // 먹는 동작은 천천히 오물오물
@@ -7392,7 +7434,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '17.43';   /* v17.43 경완: 미니게임 미션 게임별(진화구슬 미션·상금), 미션 버튼은 카드 랭킹 버튼 왼쪽·박스 없이 빛 테두리·크게, 액티브 버튼 포켓몬이 나와서 기술 자리까지 가서 기술별 동작 후 버튼 그림에 딱 맞게 돌아감 */ /* v17.42 경완: 놀래키기 울음소리, 시소는 가까운(200) 포켓몬만 */   /* v17.41 경완: 랭킹 진화구슬 키우기 필터 한 줄 (두 줄로 내려가던 것) */   /* v17.40 경완: 체육관 트레이너 메뉴 고용 관리 탭 먼저 */ /* v17.39 경완: 기록별 선물 가운데 칸은 가격 순 (높은 점수일수록 비싼 것) */   /* v17.38 경완: 라인업 슬롯 지닌 도구 프로필 칸 우하단에 걸치게 + 빛 테두리 */ /* v17.37 경완: 미니게임 그만하기 → 묻는 창, 그만하면 거기까지 기록창·보상 / 기록창 눌러도 새 판 시작되던 오류 / 선물 도구는 필요한 것만 / 액티브 박스 횟수 뺌 */   /* v17.36 경완: 진화구슬 상세창 패시브 박스에도 액티브 횟수, 기록별 선물에 이미 가진 소품은 가급적 안 나오게 */   /* v17.35 경완: 지닌 도구 창 '지니고 있어요' 줄 가운데, 라인업 슬롯 지닌 도구 크게 */ /* v17.34 경완: 체육관 상점 위쪽 고정·도구 사용 도구 탭 먼저·라인업 지닌 도구·도구 설명 진하게 */ /* v17.33 경완: 진화구슬 키우기 새로 나옴 업데이트 알림창 4장, 랭크별 패시브에 액티브 횟수 */   /* v17.32 경완: 체육관 어려울수록 상성 좋은 트레이너, 상성 포켓몬 비율만큼 강함 보정 덜 */ /* v17.31 경완: 체육관 도전자 라인업 강함 보정(센 3마리 기준, 등급별 최대) + 연패 보정 */ /* v17.30 경완: 독 알 무한다이노만 7.3%, 1티어는 늘 다음 티어보다 드물게 */ /* v17.29 경완: 타입 전설 알 1티어가 늘 가장 드물게 */ /* v17.28 경완: 타입 전설 알 1티어 한 마리당 7.3% */ /* v17.27 경완: 타입 전설 알 후보 = 전설 알 티어표 포켓몬 전부 (전설·환상 구분 안 함) */ /* v17.26 경완: 워치 이동 거리 칸에 내 캐릭터 걷는 그림 (postNative tr) */   /* v17.25 경완: 랭킹 미니게임 고르기는 열린 게임만 */   /* v17.24 경완: 타입 전설 알 다시 티어표 순서 가중치 */ /* v17.23 경완: 랭킹 미니게임 고르기에 진화구슬 키우기가 '준비 중'으로 나오던 것 */ /* v17.22 경완: 악의 족자·물의 족자 그림 PokeAPI 것으로 */   /* v17.21 경완: 타입 전설 알 가중치 = 게임 전체 부화율 */ /* v17.20 경완: 준비 중 미니게임 칸 임시 썸네일·제목 밑줄 */   /* v17.19 경완: 타입 전설 알도 티어표 순서대로 (1티어 앞쪽이 가장 드물게) */ /* v17.18 경완: 소품 때리기 동작을 수평 공격(Attack)으로 */ /* v17.17 경완: 트레이너가 필드에서 들어가면 근처 포켓몬이 그 자리를 아쉬운 듯 바라봄 */ /* v17.16 경완: 소품 탈 때 포켓몬 그림자 없앰 */ /* v17.15 경완: 소품 못 타는 기준 = 필드 스프라이트 크기 (괴력몬 이상) */ /* v17.14 경완: 상점에서 카세트 뺌 (ITEMS ns:1 = 상점에 안 나옴, 가진 건 가방에서 그대로 씀) */ /* v17.13 경완: 덩치 큰 포켓몬(100kg·1.6m 이상)은 타는 소품에 안 탐 */ /* v17.12 경완: 진화의 돌 10종·꿀맛사과·범작찻잔·예리한이빨 그림 교체 */ /* v17.11 경완: 도구 그림 v17.10 교체 되돌림 (예전 그림) */ /* v17.10 경완: 진화 돌·특수 진화 도구 그림을 PokeAPI 도구 그림으로 교체 */   /* v17.09 경완: 기록별 선물 칸마다 값어치(향로~부적 직선)에 맞는 가격만 */   /* v17.08 경완: 미니게임 셋째 칸 자물쇠 상자·진화구슬 랭킹 버튼·기술 바꿀 때 안 잘림·랭크별 패시브 펼침 고침·액티브 횟수 F E1 D C2 B A3 S4 */   /* v17.07 경완: 나무열매 받기 카드 썸네일·제목 빼고 '준비 중이에요'만 */   /* v17.06 경완: 진화구슬 기록 지우기(랭킹 새로)·처음부터 공개, 나무열매 받기는 '준비 중' */   /* v17.06 경완: 체육관 도구·민트 구매 창 제목 가운데 */ /* v17.04 경완 '베타로 개발한 거 다 본 게임에': 진화구슬 키우기 새 판(액티브·패시브·보상 기준)·체육관 베타 → 본 게임 */   /* v17.03 경완: 상점 구매 상자 버튼은 설명 줄·가방 개수는 제목 줄, 체육관 상점도 가방 × N */ /* v17.02 경완: 진화구슬 보상 기준 다시 (베타) — 선물 ×1.2, 친밀도 1,800점당, 골드 50점당 */ /* v17.03 경완: 상점 탭에 들어가기만 해도 그 탭 빨간 점 사라짐 */   /* v17.00 경완: 상점 보유 수량은 슬롯 대신 구매 상자 오른쪽 위 가방 아이콘 × N */ /* v16.99 경완: 카세트 8000 (게노세크트도 환상, 오거폰 가면과 같은 값) */ /* v17.02 경완: 오거폰 가면 4개 모두 8000 (벽록의가면도 전설 폼 도구, 배틀에서 가면 위력 1.2배) */   /* v16.97 경완: 진화구슬 밸런스 (베타) — 폭풍 1.2·파도 60%·용해액 4개·방전 ×0.8 */   /* v16.96 경완: 호연 트레이너 에메랄드 원곡 (GBA 재생기 gym/gba.js) */ /* v16.95 경완: 상세카드 숨쉬기 모션(.idle) 뺌 — 한 장짜리는 가만히. */ /* v16.94 경완: 랭킹·내 트레이너 상세카드 대표 포켓몬도 650~1025 PixelLab 움직이는 앞모습 (체육관 배틀과 같은 그림). */ /* v16.93 경완: 650~1025 앞모습 PixelLab 애니메이션(체육관 배틀)·호연 이름 있는 트레이너 15명 */ /* v16.92 경완: 하트골드 시그니처 곡·도전자 지닌 도구·레드 대사·상점 골드 박스 */ /* v16.91 경완: 플레이트 은색·카세트 밝은 회색, 지가르데 큐브 퍼펙트폼까지 고르기(배틀은 스웜체인지), 배틀 능력치가 바뀌는 폼 도구 가격 올림 */ /* v16.90 경완: 유전자쐐기(큐레무+제크로무·레시라무 필드에 함께 → 합체 연출, 다시 쓰면 분리), 폼 도구 쓸 때 확인 창, 상점 가격 종족·영향 기준 조정 */   /* v16.89 경완: 폼 도구 18개를 상점에 — 로토무 카탈로그, 꽃꿀·플레이트·카세트(하나로 모든 폼, 범용 색), 비추는거울, 그라시데아꽃(낮만, 밤엔 랜드폼), 운석, 큰금강옥·큰백옥·큰백금옥, 굴레의 항아리, 녹슨검·방패, 오거폰 가면 4개, 지가르데 큐브. 가방에서 쓰면 필드의 그 포켓몬이 빛나며 바뀜(없어지지 않음). 체육관 배틀도 그 폼·도구로. */   /* v16.88 경완: 이름 있는 트레이너 시그니처 곡 */ /* v16.87 경완: 루가루암 황혼의 모습은 본가처럼 마이페이스 암멍이(5%)만 17시에, 한낮(낮)·한밤중(밤) 모두 진화 가능, 배틀도 루가루암 폼. 하트사탕공예·물의 족자 그림을 본가 그림으로. */   /* v16.86 경완: 골드 아이콘 뒤 여백 */ /* v16.85 경완: 진화구슬 액티브 기술 쓰면 콤보 끊김 */   /* v16.84 경완: 물의 족자(악의 족자 색만 바꿈) — 악의 족자는 일격, 물의 족자는 연격 우라오스. 사탕공예는 하트사탕공예 하나 → 마휘핑은 바닐라크림 하트. 스트린더 하이·로우는 일렉툰 성격으로 (본가). 체육관 배틀도 연격·로우 폼. */   /* v16.83 경완: 본가 폼 아닌 그림 13개 뺌. 필드에서 맞붙으면 킬가르도 블레이드폼(1분), 맞붙고 나면 빙큐보 나이스페이스·돌핀맨 마이티·테라파고스 테라스탈(2분). 제르네아스는 맑지 않은 날 릴랙스, 약어리 셋 이상이면 합체해서 군집, 메테노는 배고프면 코어(색은 개체마다). 이런 폼은 도감·상자 그림은 기본. */   /* v16.82 경완: 체리꼬는 필드 날씨가 맑은 낮이면 포지폼(알에서 깨어날 때도), 도감·상자 그림은 기본 모습. */   /* v16.81 경완: 기술은 다 원래대로(로토무의 가구 상자 뺌), 숨겨진 특성 달마모드인 불비달마는 배고프면 달마모드로 바뀌어 가만히, 메로엣타는 친밀도 만점 기술 옛노래로 스텝폼 ↔ 하이퍼보이스로 보이스폼, 필드에서 바꾼 로토무·영물폼은 체육관 배틀에서도 그 폼. */   /* v16.80 경완: 로토무 친밀도 만점 기술 = 로토무의 가구 상자 — 누르면 전자레인지·세탁기·냉장고·선풍기·잔디깎이(또는 원래 모습)를 골라 폼이 바뀜. */   /* v16.79 경완: 사이코키네시스 염력 힘 키움(너무 안 올라감) — 무게 반영은 그대로 */   /* v16.78 경완: 캐스퐁·모르페코 폼이 바뀔 땐 깡충 대신 빛나면서. 배쓰나이 하양 줄무늬도 태어날 때 1/3 (대쓰여너로 진화하는 모습). 그림자는 크기·자리 모두 원본(예전 조정값 안 씀, 떠 있기는 그대로). */   /* v16.77 경완: 캐스퐁은 필드 날씨(눈·비·맑은 낮) 따라, 모르페코는 열매 말풍선이 뜰 만큼 배고프면 배고픈 모양으로 필드 폼이 바뀜. */   /* v16.76 경완: 상점 탭 되돌림, 자리 바꾸기 칸 표시·빼기 없앰, 훈련 일지 노트 */ /* v16.75 경완: 사이코키네시스를 힘으로 끌어올림 — 위에 얹힌 구슬 무게만큼 덜 올라감 */   /* v16.74 경완: 폼 257가지(66종) 필드 그림 — 본가 기준: 안농·비비용·플라베베·마휘핑 등은 태어날 때 무작위, 루가루암은 진화 시각, 시키지카는 계절, 도구·배틀 폼은 그림만. */   /* v16.73 경완: 머리·등·배 위에 올라타는 상호작용을 원본 몸 부위표(머리·몸 가운데) 자리에 맞춤, 태워 주는 포켓몬 동작 따라 자리도 따라감. */   /* v16.72 경완: 진화구슬도 골드(모든 미니게임), 사이코키네시스 2초 고정·뜨는 동안 안 합쳐짐, 진화구슬 패시브 = 랭크별 특성 (F 픽업 골드, E 프렌드가드 친밀도, D 대운, C 위협, B 싱크로, A 프레셔, S 자력), 사이코키네시스 무게(큰 구슬일수록 덜 뜸) */   /* v16.71 경완: 훈련 일지 하루씩 넘기기·코치가 가르쳤다, 훈련 현황 누적, 라인업 박스 뺌 */ /* v16.70 경완: 다른 방향 그림 — 걷는 쪽 따라 아래·옆·위 모습(오른쪽은 뒤집기), 마주 보고 얘기할 땐 옆모습. 몸 부위 위치표로 말풍선을 머리 위에. */   /* v16.69 경완: 원본 그림자 — 종마다 작게·보통·크게 도트 타원, 동작 그림마다 그림자 자리가 몸을 따라감(shd.json). */   /* v16.68 경완: 훈련 일지 문장·머리 맞춤, 빼기, 홈 트레이너 카드 통일 */ /* v16.67 경완: 지원서 없음 화면 메일 아이콘 뺌, 고용 관리 탭을 왼쪽으로 */ /* v16.66 경완: 트레이너 상세카드 딱지·발판·코치 빼기 */ /* v16.65 경완: 청결·즐거움·배부름이 셋 다 0 인 포켓몬은 가끔 멈춰서 움찔. */   /* v16.64 경완: 놀랄 때 움찔 동작 뺌, 둘이 붙을 때(싸움·박치기) 중간중간 아파함, 쓰다듬은 뒤엔 빙글·깡총 대신 포즈(포즈 그림 있는 종). */   /* v16.63 경완: 트레이너 상세카드 레이아웃·기록 정리 */ /* v16.64 경완: 체육관 내 캐릭터 상세카드 등급별 디자인 */ /* v16.61 경완: 상태창 왼쪽 포켓몬 얼굴 끔 (필드 스프라이트 표정을 물어본 거였음) — 필드 새 동작은 그대로. */   /* v16.60 경완: 얼굴 표정·필드 동작 — 상태창 왼쪽에 문장 속 포켓몬 얼굴(말풍선 상황마다 기쁨·놀람·걱정·화남 등 표정, face/), 끄덕이기·올려다보기·포즈·춤·노래·깨어나기·움찔 등 원본 나머지 동작(mx/, 필드에 있는 포켓몬부터 하나씩 받아 둠)을 상호작용마다. */   /* v16.59 경완: 랭킹의 내 줄 → 프로필 내 카드와 동일 */ /* v16.60 경완: 진화구슬 기술 5차 — 파도 큰 구슬도 뜸(무거울수록 천천히), 폭풍 더 세게, 용해액 방울 작게·안 녹는 구슬은 튕겨내는 막, 사이코 떠오르는 구슬도 밀림 */
+const APP_VER = '17.44';   /* v17.44 경완: 기술마다 어울리는 원본 동작(SK_MOT, 피카츄 방전=놀람)·진화구슬 기술 발동을 포켓몬 동작에 맞춤·파도타기 수면·사이코 구슬 옆·떨어뜨리는 기술 아래 공격(AttackD)·놓을 구슬 안 가림, 장애물 넘기 기술 동작·부유 기 모으기, 필드 기술 이름별 동작·뿜기 쏘기·염동력 기 모으기·해달 같이 보기·게이지 0 쓰러짐 */   /* v17.43 경완: 미니게임 미션 게임별(진화구슬 미션·상금), 미션 버튼은 카드 랭킹 버튼 왼쪽·박스 없이 빛 테두리·크게, 액티브 버튼 포켓몬이 나와서 기술 자리까지 가서 기술별 동작 후 버튼 그림에 딱 맞게 돌아감 */ /* v17.42 경완: 놀래키기 울음소리, 시소는 가까운(200) 포켓몬만 */   /* v17.41 경완: 랭킹 진화구슬 키우기 필터 한 줄 (두 줄로 내려가던 것) */   /* v17.40 경완: 체육관 트레이너 메뉴 고용 관리 탭 먼저 */ /* v17.39 경완: 기록별 선물 가운데 칸은 가격 순 (높은 점수일수록 비싼 것) */   /* v17.38 경완: 라인업 슬롯 지닌 도구 프로필 칸 우하단에 걸치게 + 빛 테두리 */ /* v17.37 경완: 미니게임 그만하기 → 묻는 창, 그만하면 거기까지 기록창·보상 / 기록창 눌러도 새 판 시작되던 오류 / 선물 도구는 필요한 것만 / 액티브 박스 횟수 뺌 */   /* v17.36 경완: 진화구슬 상세창 패시브 박스에도 액티브 횟수, 기록별 선물에 이미 가진 소품은 가급적 안 나오게 */   /* v17.35 경완: 지닌 도구 창 '지니고 있어요' 줄 가운데, 라인업 슬롯 지닌 도구 크게 */ /* v17.34 경완: 체육관 상점 위쪽 고정·도구 사용 도구 탭 먼저·라인업 지닌 도구·도구 설명 진하게 */ /* v17.33 경완: 진화구슬 키우기 새로 나옴 업데이트 알림창 4장, 랭크별 패시브에 액티브 횟수 */   /* v17.32 경완: 체육관 어려울수록 상성 좋은 트레이너, 상성 포켓몬 비율만큼 강함 보정 덜 */ /* v17.31 경완: 체육관 도전자 라인업 강함 보정(센 3마리 기준, 등급별 최대) + 연패 보정 */ /* v17.30 경완: 독 알 무한다이노만 7.3%, 1티어는 늘 다음 티어보다 드물게 */ /* v17.29 경완: 타입 전설 알 1티어가 늘 가장 드물게 */ /* v17.28 경완: 타입 전설 알 1티어 한 마리당 7.3% */ /* v17.27 경완: 타입 전설 알 후보 = 전설 알 티어표 포켓몬 전부 (전설·환상 구분 안 함) */ /* v17.26 경완: 워치 이동 거리 칸에 내 캐릭터 걷는 그림 (postNative tr) */   /* v17.25 경완: 랭킹 미니게임 고르기는 열린 게임만 */   /* v17.24 경완: 타입 전설 알 다시 티어표 순서 가중치 */ /* v17.23 경완: 랭킹 미니게임 고르기에 진화구슬 키우기가 '준비 중'으로 나오던 것 */ /* v17.22 경완: 악의 족자·물의 족자 그림 PokeAPI 것으로 */   /* v17.21 경완: 타입 전설 알 가중치 = 게임 전체 부화율 */ /* v17.20 경완: 준비 중 미니게임 칸 임시 썸네일·제목 밑줄 */   /* v17.19 경완: 타입 전설 알도 티어표 순서대로 (1티어 앞쪽이 가장 드물게) */ /* v17.18 경완: 소품 때리기 동작을 수평 공격(Attack)으로 */ /* v17.17 경완: 트레이너가 필드에서 들어가면 근처 포켓몬이 그 자리를 아쉬운 듯 바라봄 */ /* v17.16 경완: 소품 탈 때 포켓몬 그림자 없앰 */ /* v17.15 경완: 소품 못 타는 기준 = 필드 스프라이트 크기 (괴력몬 이상) */ /* v17.14 경완: 상점에서 카세트 뺌 (ITEMS ns:1 = 상점에 안 나옴, 가진 건 가방에서 그대로 씀) */ /* v17.13 경완: 덩치 큰 포켓몬(100kg·1.6m 이상)은 타는 소품에 안 탐 */ /* v17.12 경완: 진화의 돌 10종·꿀맛사과·범작찻잔·예리한이빨 그림 교체 */ /* v17.11 경완: 도구 그림 v17.10 교체 되돌림 (예전 그림) */ /* v17.10 경완: 진화 돌·특수 진화 도구 그림을 PokeAPI 도구 그림으로 교체 */   /* v17.09 경완: 기록별 선물 칸마다 값어치(향로~부적 직선)에 맞는 가격만 */   /* v17.08 경완: 미니게임 셋째 칸 자물쇠 상자·진화구슬 랭킹 버튼·기술 바꿀 때 안 잘림·랭크별 패시브 펼침 고침·액티브 횟수 F E1 D C2 B A3 S4 */   /* v17.07 경완: 나무열매 받기 카드 썸네일·제목 빼고 '준비 중이에요'만 */   /* v17.06 경완: 진화구슬 기록 지우기(랭킹 새로)·처음부터 공개, 나무열매 받기는 '준비 중' */   /* v17.06 경완: 체육관 도구·민트 구매 창 제목 가운데 */ /* v17.04 경완 '베타로 개발한 거 다 본 게임에': 진화구슬 키우기 새 판(액티브·패시브·보상 기준)·체육관 베타 → 본 게임 */   /* v17.03 경완: 상점 구매 상자 버튼은 설명 줄·가방 개수는 제목 줄, 체육관 상점도 가방 × N */ /* v17.02 경완: 진화구슬 보상 기준 다시 (베타) — 선물 ×1.2, 친밀도 1,800점당, 골드 50점당 */ /* v17.03 경완: 상점 탭에 들어가기만 해도 그 탭 빨간 점 사라짐 */   /* v17.00 경완: 상점 보유 수량은 슬롯 대신 구매 상자 오른쪽 위 가방 아이콘 × N */ /* v16.99 경완: 카세트 8000 (게노세크트도 환상, 오거폰 가면과 같은 값) */ /* v17.02 경완: 오거폰 가면 4개 모두 8000 (벽록의가면도 전설 폼 도구, 배틀에서 가면 위력 1.2배) */   /* v16.97 경완: 진화구슬 밸런스 (베타) — 폭풍 1.2·파도 60%·용해액 4개·방전 ×0.8 */   /* v16.96 경완: 호연 트레이너 에메랄드 원곡 (GBA 재생기 gym/gba.js) */ /* v16.95 경완: 상세카드 숨쉬기 모션(.idle) 뺌 — 한 장짜리는 가만히. */ /* v16.94 경완: 랭킹·내 트레이너 상세카드 대표 포켓몬도 650~1025 PixelLab 움직이는 앞모습 (체육관 배틀과 같은 그림). */ /* v16.93 경완: 650~1025 앞모습 PixelLab 애니메이션(체육관 배틀)·호연 이름 있는 트레이너 15명 */ /* v16.92 경완: 하트골드 시그니처 곡·도전자 지닌 도구·레드 대사·상점 골드 박스 */ /* v16.91 경완: 플레이트 은색·카세트 밝은 회색, 지가르데 큐브 퍼펙트폼까지 고르기(배틀은 스웜체인지), 배틀 능력치가 바뀌는 폼 도구 가격 올림 */ /* v16.90 경완: 유전자쐐기(큐레무+제크로무·레시라무 필드에 함께 → 합체 연출, 다시 쓰면 분리), 폼 도구 쓸 때 확인 창, 상점 가격 종족·영향 기준 조정 */   /* v16.89 경완: 폼 도구 18개를 상점에 — 로토무 카탈로그, 꽃꿀·플레이트·카세트(하나로 모든 폼, 범용 색), 비추는거울, 그라시데아꽃(낮만, 밤엔 랜드폼), 운석, 큰금강옥·큰백옥·큰백금옥, 굴레의 항아리, 녹슨검·방패, 오거폰 가면 4개, 지가르데 큐브. 가방에서 쓰면 필드의 그 포켓몬이 빛나며 바뀜(없어지지 않음). 체육관 배틀도 그 폼·도구로. */   /* v16.88 경완: 이름 있는 트레이너 시그니처 곡 */ /* v16.87 경완: 루가루암 황혼의 모습은 본가처럼 마이페이스 암멍이(5%)만 17시에, 한낮(낮)·한밤중(밤) 모두 진화 가능, 배틀도 루가루암 폼. 하트사탕공예·물의 족자 그림을 본가 그림으로. */   /* v16.86 경완: 골드 아이콘 뒤 여백 */ /* v16.85 경완: 진화구슬 액티브 기술 쓰면 콤보 끊김 */   /* v16.84 경완: 물의 족자(악의 족자 색만 바꿈) — 악의 족자는 일격, 물의 족자는 연격 우라오스. 사탕공예는 하트사탕공예 하나 → 마휘핑은 바닐라크림 하트. 스트린더 하이·로우는 일렉툰 성격으로 (본가). 체육관 배틀도 연격·로우 폼. */   /* v16.83 경완: 본가 폼 아닌 그림 13개 뺌. 필드에서 맞붙으면 킬가르도 블레이드폼(1분), 맞붙고 나면 빙큐보 나이스페이스·돌핀맨 마이티·테라파고스 테라스탈(2분). 제르네아스는 맑지 않은 날 릴랙스, 약어리 셋 이상이면 합체해서 군집, 메테노는 배고프면 코어(색은 개체마다). 이런 폼은 도감·상자 그림은 기본. */   /* v16.82 경완: 체리꼬는 필드 날씨가 맑은 낮이면 포지폼(알에서 깨어날 때도), 도감·상자 그림은 기본 모습. */   /* v16.81 경완: 기술은 다 원래대로(로토무의 가구 상자 뺌), 숨겨진 특성 달마모드인 불비달마는 배고프면 달마모드로 바뀌어 가만히, 메로엣타는 친밀도 만점 기술 옛노래로 스텝폼 ↔ 하이퍼보이스로 보이스폼, 필드에서 바꾼 로토무·영물폼은 체육관 배틀에서도 그 폼. */   /* v16.80 경완: 로토무 친밀도 만점 기술 = 로토무의 가구 상자 — 누르면 전자레인지·세탁기·냉장고·선풍기·잔디깎이(또는 원래 모습)를 골라 폼이 바뀜. */   /* v16.79 경완: 사이코키네시스 염력 힘 키움(너무 안 올라감) — 무게 반영은 그대로 */   /* v16.78 경완: 캐스퐁·모르페코 폼이 바뀔 땐 깡충 대신 빛나면서. 배쓰나이 하양 줄무늬도 태어날 때 1/3 (대쓰여너로 진화하는 모습). 그림자는 크기·자리 모두 원본(예전 조정값 안 씀, 떠 있기는 그대로). */   /* v16.77 경완: 캐스퐁은 필드 날씨(눈·비·맑은 낮) 따라, 모르페코는 열매 말풍선이 뜰 만큼 배고프면 배고픈 모양으로 필드 폼이 바뀜. */   /* v16.76 경완: 상점 탭 되돌림, 자리 바꾸기 칸 표시·빼기 없앰, 훈련 일지 노트 */ /* v16.75 경완: 사이코키네시스를 힘으로 끌어올림 — 위에 얹힌 구슬 무게만큼 덜 올라감 */   /* v16.74 경완: 폼 257가지(66종) 필드 그림 — 본가 기준: 안농·비비용·플라베베·마휘핑 등은 태어날 때 무작위, 루가루암은 진화 시각, 시키지카는 계절, 도구·배틀 폼은 그림만. */   /* v16.73 경완: 머리·등·배 위에 올라타는 상호작용을 원본 몸 부위표(머리·몸 가운데) 자리에 맞춤, 태워 주는 포켓몬 동작 따라 자리도 따라감. */   /* v16.72 경완: 진화구슬도 골드(모든 미니게임), 사이코키네시스 2초 고정·뜨는 동안 안 합쳐짐, 진화구슬 패시브 = 랭크별 특성 (F 픽업 골드, E 프렌드가드 친밀도, D 대운, C 위협, B 싱크로, A 프레셔, S 자력), 사이코키네시스 무게(큰 구슬일수록 덜 뜸) */   /* v16.71 경완: 훈련 일지 하루씩 넘기기·코치가 가르쳤다, 훈련 현황 누적, 라인업 박스 뺌 */ /* v16.70 경완: 다른 방향 그림 — 걷는 쪽 따라 아래·옆·위 모습(오른쪽은 뒤집기), 마주 보고 얘기할 땐 옆모습. 몸 부위 위치표로 말풍선을 머리 위에. */   /* v16.69 경완: 원본 그림자 — 종마다 작게·보통·크게 도트 타원, 동작 그림마다 그림자 자리가 몸을 따라감(shd.json). */   /* v16.68 경완: 훈련 일지 문장·머리 맞춤, 빼기, 홈 트레이너 카드 통일 */ /* v16.67 경완: 지원서 없음 화면 메일 아이콘 뺌, 고용 관리 탭을 왼쪽으로 */ /* v16.66 경완: 트레이너 상세카드 딱지·발판·코치 빼기 */ /* v16.65 경완: 청결·즐거움·배부름이 셋 다 0 인 포켓몬은 가끔 멈춰서 움찔. */   /* v16.64 경완: 놀랄 때 움찔 동작 뺌, 둘이 붙을 때(싸움·박치기) 중간중간 아파함, 쓰다듬은 뒤엔 빙글·깡총 대신 포즈(포즈 그림 있는 종). */   /* v16.63 경완: 트레이너 상세카드 레이아웃·기록 정리 */ /* v16.64 경완: 체육관 내 캐릭터 상세카드 등급별 디자인 */ /* v16.61 경완: 상태창 왼쪽 포켓몬 얼굴 끔 (필드 스프라이트 표정을 물어본 거였음) — 필드 새 동작은 그대로. */   /* v16.60 경완: 얼굴 표정·필드 동작 — 상태창 왼쪽에 문장 속 포켓몬 얼굴(말풍선 상황마다 기쁨·놀람·걱정·화남 등 표정, face/), 끄덕이기·올려다보기·포즈·춤·노래·깨어나기·움찔 등 원본 나머지 동작(mx/, 필드에 있는 포켓몬부터 하나씩 받아 둠)을 상호작용마다. */   /* v16.59 경완: 랭킹의 내 줄 → 프로필 내 카드와 동일 */ /* v16.60 경완: 진화구슬 기술 5차 — 파도 큰 구슬도 뜸(무거울수록 천천히), 폭풍 더 세게, 용해액 방울 작게·안 녹는 구슬은 튕겨내는 막, 사이코 떠오르는 구슬도 밀림 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9878,29 +9920,35 @@ function evoDropOpen(o = {}) {
   if (skA) box.insertAdjacentHTML('beforeend', `<button type="button" class="ed-ab" data-edab aria-label="액티브 기술 ${skA.n}"><span class="ed-abp"><img src="${thumbOf(mgMon.form) || ''}" alt=""></span><span class="ed-abx"><b>${tyIcon(mgTy(mgMon)).replace(' data-tip=', ' data-tn=')}<span>${skA.n}</span></b><span class="ed-abd"></span></span><i class="ed-abt"></i></button>`);
   const abEl = box.querySelector('.ed-ab'), abT = abEl?.querySelector('.ed-abt'); let sk = { n: 0, used: 0, mode: null, grace: 0, zl: [] }, cs = 1, XB = [], fxs = [], anims = [], xq = [], lastB = null, abTv = -1;
   /* v17.42 경완: 액티브 버튼 포켓몬은 오른쪽을 봄. 기술을 쓰면 버튼에서 미끄러지듯 나와 기술 효과가 나는 자리까지 가서(움직이는 던전 그림) 기술마다 다른 동작을 하고, 자연스럽게 버튼으로 돌아감 (튕김 없음) */
-  const hvK = mgMon?.form; let hvOk = false; if (skA && hvK) ensureSprite(hvK).then(() => { if (!isPmd(hvK)) return; if (mgImg[hvK] && !mgImg[hvK].im.src.endsWith(SPRITES[hvK].i.slice(-40))) delete mgImg[hvK]; mgImgOf(hvK).p.then(() => { if (mgBox(hvK)) { hvOk = true; abpDraw(); } }); }).catch(() => {});   /* 필드에 없는 포켓몬도 스프라이트 묶음을 불러와서 */
+  const hvK = mgMon?.form; let hvOk = false, hvKd = ''; if (skA && hvK) ensureSprite(hvK).then(() => isPmd(hvK) ? loadMx(hvK).catch(() => {}) : null).then(() => { if (!isPmd(hvK)) return; if (mgImg[hvK] && !mgImg[hvK].im.src.endsWith(SPRITES[hvK].i.slice(-40))) delete mgImg[hvK]; mgImgOf(hvK).p.then(() => { if (mgBox(hvK)) { hvOk = true; abpDraw(); } }); }).catch(() => {});   /* 필드에 없는 포켓몬도 스프라이트 묶음을 불러와서 */
   const hvS0 = () => { const Bx = mgBox(hvK); return Math.min(34 / Bx.h, 36 / Bx.w); }, hvFoot = () => 21 + mgBox(hvK).h * hvS0() / 2;   /* v17.43 경완: 버튼 안 그림도 같은 그림(Idle 첫 장)·같은 크기로 그려서 돌아올 때 딱 맞게 */
   const abpDraw = () => { const ap = abEl?.querySelector('.ed-abp'); if (!ap) return; let c = ap.querySelector('canvas'); if (!c) { c = document.createElement('canvas'); c.className = 'ed-abc'; ap.appendChild(c); } const DP = Math.min(3, devicePixelRatio || 1); c.width = c.height = 42 * DP; const g = c.getContext('2d'); g.imageSmoothingEnabled = false; g.setTransform(DP, 0, 0, DP, 0, 0); g.clearRect(0, 0, 42, 42); mgDraw(g, hvK, 'Idle', 0, 21, hvFoot(), hvS0(), true, 1); ap.classList.add('cv'); };
-  const skHelp = (tx, ty, mo = 'go') => { if (!hvOk) return; box.querySelector('.ed-hv')?.remove(); const im = abEl.querySelector('.ed-abp canvas'), Bx = mgBox(hvK); if (!im || !Bx || !mgImgOf(hvK).im.naturalWidth) return;
+  const skHelp = (tx, ty, mo = 'go', fx = null) => { if (!hvOk) return 0; box.querySelector('.ed-hv')?.remove(); const im = abEl.querySelector('.ed-abp canvas'), Bx = mgBox(hvK); if (!im || !Bx || !mgImgOf(hvK).im.naturalWidth) return 0;
     const cv2 = document.createElement('canvas'); cv2.className = 'ed-hv'; box.appendChild(cv2); const DP = Math.min(2, devicePixelRatio || 1), br = box.getBoundingClientRect(), W2 = br.width, H2 = br.height; cv2.width = W2 * DP; cv2.height = H2 * DP; const x = cv2.getContext('2d'); x.imageSmoothingEnabled = false;
-    const ir = im.getBoundingClientRect(), x0 = ir.left + ir.width / 2 - br.left, y0 = ir.top + hvFoot() * ir.height / 42 - br.top, x1 = Math.max(30, Math.min(W2 - 30, tx)), y1 = Math.max(70, Math.min(H2 - 10, ty)), sc = Math.min(60 / Bx.h, 68 / Bx.w), sc0 = hvS0() * ir.height / 42, A = SPRITES[hvK].a || {};
-    const an = (...L) => L.find(q => A[q]) || 'Walk', atk = an('Attack', 'Shoot', 'Strike'), chg = an('Charge', 'Shoot', 'Attack'), col = TYPE_C[mgTy(mgMon)] || '#ffd040', t0 = performance.now(), dIn = Math.min(560, 260 + Math.hypot(x1 - x0, y1 - y0) * .55), act = mo === 'ride' ? 1100 : mo === 'slam' ? 820 : 760, T1 = dIn, T2 = T1 + act, T3 = T2 + dIn;
+    const ir = im.getBoundingClientRect(), x0 = ir.left + ir.width / 2 - br.left, y0 = ir.top + hvFoot() * ir.height / 42 - br.top, [hbx, hby] = cvXY(aimX, 36), cl = Math.abs(tx - hbx) < 64 && ty < hby + 95, x1 = Math.max(30, Math.min(W2 - 30, cl ? hbx + (hbx < W2 / 2 ? 72 : -72) : tx)), y1 = Math.max(70, Math.min(H2 - 10, cl ? Math.max(ty, hby + 70) : ty)),   /* v17.44 경완: 놓을 구슬을 가리지 않게 옆으로 */ sc = Math.min(60 / Bx.h, 68 / Bx.w), sc0 = hvS0() * ir.height / 42, A = SPRITES[hvK].a || {};
+    const an = (...L) => L.find(q => A[q]) || 'Walk', mot = skMot(hvK, hvKd), MA = A[mot], mTot = MA ? MA[6].reduce((q, v) => q + v, 0) / 60 * 1000 : 400, mHit = MA ? MA[6].slice(0, MA[7] || 0).reduce((q, v) => q + v, 0) / 60 * 1000 : 120, lp = mo === 'charge' || mo === 'psy' || mo === 'ride', pre = mo === 'slam' ? 300 : mo === 'down' ? 240 : 0,   /* v17.44 경완: 기술마다 원본 동작(SK_MOT — 그 종에 있는 것), 기술은 동작이 맞는 장면(hit)에 나감 */
+      col = TYPE_C[mgTy(mgMon)] || '#ffd040', t0 = performance.now(), dIn = Math.min(560, 260 + Math.hypot(x1 - x0, y1 - y0) * .55), act = mo === 'ride' ? 1900 : mo === 'psy' ? 1500 : lp ? 900 : Math.max(mo === 'slam' ? 820 : 760, pre + mTot + 260), T1 = dIn, T2 = T1 + act, T3 = T2 + dIn;
     const ez = q => q < .5 ? 2 * q * q : 1 - (-2 * q + 2) ** 2 / 2, ring = (cx, cy, k2) => { x.save(); x.globalAlpha = .5 * (1 - k2); x.strokeStyle = col; x.lineWidth = 4; x.beginPath(); x.arc(cx, cy, 12 + k2 * 50, 0, Math.PI * 2); x.stroke(); x.restore(); };
     im.style.visibility = 'hidden'; try { haptic(0); } catch (e) {}
     const fr = now => { if (!cv2.isConnected) return; const e = now - t0; x.setTransform(DP, 0, 0, DP, 0, 0); x.clearRect(0, 0, W2, H2);
-      if (e < T1) { const q = ez(e / T1); mgDraw(x, hvK, e < 70 ? 'Idle' : 'Walk', e < 70 ? 0 : e / 1000, x0 + (x1 - x0) * q, y0 + (y1 - y0) * q, sc0 + (sc - sc0) * q, e < 70 || x1 >= x0, 1); }
-      else if (e < T2) { const k2 = (e - T1) / act, ta = (e - T1) / 1000; let px = x1, py = y1, a2 = atk, fl = true;
-        if (mo === 'ride') { px = x1 + (W2 - 60 - x1) * ez(k2); py = y1 + Math.sin(k2 * Math.PI * 4) * 5; a2 = 'Walk'; }
-        else if (mo === 'slam') { const u = k2 < .35 ? -Math.sin(k2 / .35 * Math.PI / 2) * 26 : k2 < .45 ? -26 + (k2 - .35) / .1 * 26 : 0; py = y1 + u; a2 = k2 < .45 ? an('Hop', 'Walk') : atk; if (k2 > .45 && k2 < .8) px += Math.sin(e / 18) * 2; }
-        else if (mo === 'charge') { a2 = chg; px += Math.sin(e / 22) * 1.5; }
-        else if (mo === 'hover') { py = y1 + Math.sin(k2 * Math.PI * 2) * 4; px = x1 + Math.sin(k2 * Math.PI * 2) * 8; }
-        ring(px + (fl ? 14 : -14), py - Bx.h * sc * .5, (k2 * 1.4) % 1); mgDraw(x, hvK, a2, ta, px, py, sc, fl, 1); }
-      else if (e < T3) { const q = ez((e - T2) / dIn), sx = mo === 'ride' ? W2 - 60 : x1; const ld = T3 - e < 90; mgDraw(x, hvK, ld ? 'Idle' : 'Walk', ld ? 0 : e / 1000, sx + (x0 - sx) * q, y1 + (y0 - y1) * q, sc + (sc0 - sc) * q, ld || x0 >= sx, 1); }
+      if (e < T1) { const q = ez(e / T1), yT = mo === 'ride' ? hvSurf(x1, now, Bx.h * sc) ?? y1 : y1; mgDraw(x, hvK, e < 70 ? 'Idle' : 'Walk', e < 70 ? 0 : e / 1000, x0 + (x1 - x0) * q, y0 + (yT - y0) * q, sc0 + (sc - sc0) * q, e < 70 || x1 >= x0, 1); }
+      else if (e < T2) { const k2 = (e - T1) / act, ta = lp ? (e - T1) / 1000 : Math.min(mTot - 1, Math.max(0, e - T1 - pre)) / 1000; let px = x1, py = y1, a2 = mot, fl = mo === 'down' ? hbx >= x1 : fx == null ? true : fx >= x1, tilt = 0;
+        if (mo === 'ride') { px = x1 + (W2 - 60 - x1) * ez(k2); py = hvSurf(px, now, Bx.h * sc) ?? y1; a2 = 'Walk'; }   /* v17.44 경완: 파도타기는 수면 줄에 맞춰 떠서 */
+        else if (mo === 'slam') { const u = k2 < .35 ? -Math.sin(k2 / .35 * Math.PI / 2) * 26 : k2 < .45 ? -26 + (k2 - .35) / .1 * 26 : 0; py = y1 + u; { const q2 = Math.min(1, (e - T1) / pre); py = y1 - Math.sin(q2 * Math.PI / 2) * 20 * (e - T1 < pre ? 1 : Math.max(0, 1 - (e - T1 - pre) / 90)); } a2 = e - T1 < pre ? an('Hop', 'Walk') : mot; if (e - T1 > pre + mHit && e - T1 < pre + mHit + 350) px += Math.sin(e / 18) * 2; }
+        else if (mo === 'charge') { a2 = mot; px += Math.sin(e / 22) * 1.5; }
+        else if (mo === 'down') { const u = k2 < .32 ? Math.sin(k2 / .32 * Math.PI / 2) : k2 < .42 ? 1 - (k2 - .32) / .1 * 1.6 : k2 < .7 ? -.6 : -.6 * (1 - (k2 - .7) / .3); py = y1 - u * 16; a2 = e - T1 < pre ? an('Hop', 'Walk') : mot; tilt = mot !== 'Attack' ? 0 : k2 < .32 ? -.25 * u : k2 < .7 ? .55 : .55 * (1 - (k2 - .7) / .3); }   /* 원본 아래 공격(AttackD)이 있으면 기울이지 않음 */   /* 아래로 내리치기: 살짝 떴다가 기울며 아래로 */
+        else if (mo === 'psy') { a2 = mot; py = y1 - 6 - Math.sin(Math.min(1, k2 * 2.5) * Math.PI / 2) * 10 + Math.sin(e / 160) * 3; }   /* v17.44 경완: 사이코키네시스 = 구슬 옆에서 둥실 떠서 기 모으기(염력), 구슬은 안 가림 */
+        else if (mo === 'hover') { py = y1 + Math.sin(k2 * Math.PI * 2) * 4; px = x1 + Math.sin(k2 * Math.PI * 2) * 8; a2 = mot; }
+        else a2 = mot;
+        ring(mo === 'psy' ? px : px + (fl ? 14 : -14), py - Bx.h * sc * .5, (k2 * (mo === 'psy' ? 2.2 : 1.4)) % 1); if (tilt) { const cy = py - Bx.h * sc * .5; x.save(); x.translate(px, cy); x.rotate(fl ? tilt : -tilt); x.translate(-px, -cy); mgDraw(x, hvK, a2, ta, px, py, sc, fl, 1); x.restore(); } else mgDraw(x, hvK, a2, ta, px, py, sc, fl, 1); }
+      else if (e < T3) { const q = ez((e - T2) / dIn), sx = mo === 'ride' ? W2 - 60 : x1, sy = mo === 'ride' ? hvSurf(sx, now, Bx.h * sc) ?? y1 : y1; const ld = T3 - e < 90; mgDraw(x, hvK, ld ? 'Idle' : 'Walk', ld ? 0 : e / 1000, sx + (x0 - sx) * q, sy + (y0 - sy) * q, sc + (sc0 - sc) * q, ld || x0 >= sx, 1); }
       else { im.style.visibility = ''; cv2.remove(); return; }
       requestAnimationFrame(fr); };
-    requestAnimationFrame(fr); };
+    requestAnimationFrame(fr); return T1 + (mo === 'ride' ? 0 : lp ? 220 : pre + Math.min(600, mHit)); };   // 기술은 포켓몬이 자리에 와서 동작할 때 나감 (v17.44 경완)
+  const hvSurf = (ex, now, hh) => { const r0 = cv.getBoundingClientRect(), r1 = box.getBoundingClientRect(), X = Math.max(0, Math.min(W, (ex - (r0.left - r1.left) - ox) / k)), wy = H - (H - TOP) * .6 * (sk.sf ? wl(Math.min(1, Math.max(0, now - sk.sf) / 4400)) : 0), y = wy + Math.sin(X / 34 + now / 180) * 5 + Math.sin(X / 13 - now / 110) * 2; return cvXY(X, y)[1] + hh * .3; };   // 수면(그리는 물결과 같은 식)에 몸 아래 30% 잠기게
   const cvXY = (bx, by) => { const r0 = cv.getBoundingClientRect(), r1 = box.getBoundingClientRect(); return [bx * k + ox + r0.left - r1.left, by * k + oy + r0.top - r1.top]; };
-  const skHelpAt = (kd, tg) => { try { const L = B.filter(live), topY = L.length ? Math.min(...L.map(b => b.y - rad(b))) : H * .6; let p, mo = 'go';
+  const skHelpAt = (kd, tg, mo0) => { hvKd = kd; try { const L = B.filter(live), topY = L.length ? Math.min(...L.map(b => b.y - rad(b))) : H * .6; let p, mo = mo0 || 'go';
+      if (tg && tg.r != null && kd === 'psy') { const r = rad(tg), sd = tg.x < W / 2 ? 1 : -1; p = cvXY(Math.max(18, Math.min(W - 18, tg.x + sd * (r + 34))), Math.min(H, tg.y + r * .6)); mo = 'psy'; return skHelp(p[0], p[1], mo, cvXY(tg.x, tg.y)[0]); }
       if (tg && tg.r != null) p = cvXY(tg.x, tg.y - rad(tg)); else if (tg && tg.x != null) p = cvXY(tg.x, tg.y); else if (Array.isArray(tg)) p = tg;
       else switch (kd) {
         case 'slam': case 'quake': p = cvXY(W / 2, topY); mo = 'slam'; break;
@@ -9909,7 +9957,7 @@ function evoDropOpen(o = {}) {
         case 'zap': p = cvXY(W / 2, Math.max(topY, H * .4)); mo = 'charge'; break;
         case 'acid': case 'ice': p = cvXY(W / 2, topY); mo = 'hover'; break;
         default: p = cvXY(aimX, 36 + 30); }
-      skHelp(p[0], p[1], mo); } catch (e) {} };
+      return skHelp(p[0], p[1], mo); } catch (e) { return 0; } };
   mgEl.appendChild(box);   // v15.89: 미니게임 창 안에 띄워서, 끝나면 장애물 넘기와 같은 기록창(#mgPop)이 게임 화면 위에 뜬다
   const cv = box.querySelector('.ed-cv'), W = 360, TOP = 70, GR = 900, WALL = 10, HB = 520;   // v15.97 경완 '기존 수박게임 정도 유리상자': 높이 고정 (점선 아래 450 = 폭의 1.25배) — 화면 크기에 따라 점수가 달라지지 않게
   let g = cv.getContext('2d'), jarC = null, fgC = null, fgM = -1, lastD = 0, H = HB, gY = 0, B, sc, cur, nxt, aimX, drop, overT, dead, pops, parts, flt, raf, shake = 0, maxT = 0, hiT = 0, nD = 0, nM = 0, last = performance.now(), vw = 0, vh = 0, dpr = 1, k = 1, ox = 0, oy = 0, ladY = 0, combo = 0, lastM = 0, cMax = 0, cmb = [], nxT = 0;   // v16.04 경완 '콤보': 한 번 놓아서 연달아 합쳐지면 콤보 (v16.05, 예전 1.2초 안) (점수 ×1.1 … 최대 ×1.5)
@@ -10027,25 +10075,25 @@ function evoDropOpen(o = {}) {
     try { sfx('edMerge', o.t + 1); } catch (e) {} try { haptic(kd === 'dragon' ? 2 : 1); } catch (e) {} return n; };
   const zapPairs = () => { const L = B.filter(live), P2 = []; for (const a of L) { let bd = 1e9, bc = null; for (const c of L) { if (c === a || c.t !== a.t) continue; const d = Math.hypot(c.x - a.x, c.y - a.y), m = rad(a) + rad(c); if (d < m * 3 + 80 && d < bd) { bd = d; bc = c; } } if (bc && !P2.some(([x, y]) => (x === bc && y === a))) P2.push([a, bc]); } return P2; };
   // 기술 시작 (고르기·겨누기 없는 것은 바로). 쓸 수 없으면 까닭을 돌려준다
-  const skNow = () => { const now = performance.now(), L = B.filter(live);
+  const skNow = dry => { const now = performance.now(), L = B.filter(live);
     switch (skA.k) {
-      case 'swap': { if (nq[0] === cur) return '바꿔도 같은 구슬이에요'; const tIn = nq[0], tOut = cur, [rx, ry, rr0] = ringPos(0), [bx0, by0] = toBox(rx, ry); cur = tIn; nq[0] = tOut; nxt = nq[0]; aimX = cx(aimX);   /* 경완: 둥근 판 가운데 구슬이 나와서 들고 있던 구슬을 밀어내고 바뀜 */
+      case 'swap': { if (nq[0] === cur) return '바꿔도 같은 구슬이에요'; if (dry) return; const tIn = nq[0], tOut = cur, [rx, ry, rr0] = ringPos(0), [bx0, by0] = toBox(rx, ry); cur = tIn; nq[0] = tOut; nxt = nq[0]; aimX = cx(aimX);   /* 경완: 둥근 판 가운데 구슬이 나와서 들고 있던 구슬을 밀어내고 바뀜 */
         anims.push({ t: tIn, x0: bx0, y0: by0, x1: aimX, y1: 36, t0: now, dur: 420, k: 'swap', top: 1, s0: rr0 / (ED_L[tIn][1] * k), s1: 1, arc: 26 });   /* 경완: 사라졌다 나오지 않고 그 자리에서 바로 서로 자리 바꿈, 둥근 판 앞에서 */
         anims.push({ t: tOut, x0: aimX, y0: 36, x1: bx0, y1: by0, t0: now, dur: 420, k: 'swap', top: 1, s0: 1, s1: rr0 / (ED_L[tOut][1] * k), arc: -26 });
         ringHide = now + 430; drop = now + 430; return; }
-      case 'slam': { if (!L.length) return '상자가 비어 있어요'; for (const b of L) { const v = b.body.velocity; MT.Body.setVelocity(b.body, { x: v.x + (Math.random() - .5) * 2.6, y: -(3.4 + Math.random() * 2.8) }); MT.Body.setAngularVelocity(b.body, (Math.random() - .5) * .25); }
+      case 'slam': { if (!L.length) return '상자가 비어 있어요'; if (dry) return; for (const b of L) { const v = b.body.velocity; MT.Body.setVelocity(b.body, { x: v.x + (Math.random() - .5) * 2.6, y: -(3.4 + Math.random() * 2.8) }); MT.Body.setAngularVelocity(b.body, (Math.random() - .5) * .25); }
         shake = .55; sk.grace = now + 1700; fxs.push({ k: 'ring', x: W / 2, y: H - 2, vx: 0, vy: 0, t: now, life: 520, r: W * .3 }); for (let i = 0; i < 22; i++) fxs.push({ k: 'dust', x: Math.random() * W, y: H - 4, vx: (Math.random() - .5) * 140, vy: -40 - Math.random() * 90, g: 120, t: now, life: 700, r: 5 + Math.random() * 6, c: 'rgba(235,225,200,.7)' }); try { haptic(2); } catch (e) {} return; }
-      case 'wind': { if (!L.length) return '날릴 구슬이 없어요'; const S2 = L.slice().sort((a, b) => (a.y - rad(a)) - (b.y - rad(b))), top = S2[0].y - rad(S2[0]), sel = S2, dir = 0;   /* 경완: 밑 가운데에서 위로 부채꼴(방사형) 바람 */
+      case 'wind': { if (!L.length) return '날릴 구슬이 없어요'; if (dry) return; const S2 = L.slice().sort((a, b) => (a.y - rad(a)) - (b.y - rad(b))), top = S2[0].y - rad(S2[0]), sel = S2, dir = 0;   /* 경완: 밑 가운데에서 위로 부채꼴(방사형) 바람 */
         sk.wd = { t: now, dir, y: top, sel }; sk.grace = now + 2800; for (let i = 0; i < 22; i++) { const an = -Math.PI / 2 + (Math.random() - .5) * 1.5, v = 420 + Math.random() * 260; fxs.push({ k: 'leaf', x: W / 2 + (Math.random() - .5) * 40, y: H - 6, vx: Math.cos(an) * v, vy: Math.sin(an) * v, g: 60, t: now + Math.random() * 900, life: 1300, r: 4 + Math.random() * 3, c: ['#7ccc54', '#a8dc6a', '#5fb44a'][i % 3], rot: Math.random() * 6 }); } return; }
-      case 'acid': { if (!L.some(b => b.t <= 1)) return '녹일 구슬이 없어요'; const tY = Math.max(0, Math.min(...L.map(b => b.y - rad(b))) - 50); sk.ac = { t: now, last: now, ps: Array.from({ length: 110 }, () => ({ x: 4 + Math.random() * (W - 8), y: tY - Math.random() * 40, vx: 0, vy: 0, d: Math.random() * .45, tr: [] })) };   /* 경완: 독이 구슬 위로 흘러내리고, 독에 닿은 라이츄 단계 이하 구슬은 다 녹아 없어짐 */
+      case 'acid': { if (!L.some(b => b.t <= 1)) return '녹일 구슬이 없어요'; if (dry) return; const tY = Math.max(0, Math.min(...L.map(b => b.y - rad(b))) - 50); sk.ac = { t: now, last: now, ps: Array.from({ length: 110 }, () => ({ x: 4 + Math.random() * (W - 8), y: tY - Math.random() * 40, vx: 0, vy: 0, d: Math.random() * .45, tr: [] })) };   /* 경완: 독이 구슬 위로 흘러내리고, 독에 닿은 라이츄 단계 이하 구슬은 다 녹아 없어짐 */
         sk.grace = now + 3600; try { sfx('poison'); } catch (e) {} return; }
-      case 'quake': { if (!L.length) return '상자가 비어 있어요'; sk.qk = now; sk.qkI = -1; sk.grace = now + 2300; for (let i = 0; i < 24; i++) fxs.push({ k: 'dust', x: Math.random() * W, y: H - 4, vx: (Math.random() - .5) * 90, vy: -30 - Math.random() * 70, g: 100, t: now + Math.random() * 1200, life: 700, r: 4 + Math.random() * 5, c: 'rgba(205,180,130,.65)' }); try { haptic(2); } catch (e) {} return; }
-      case 'uturn': { const b = lastB; if (!b || !live(b) || !B.includes(b)) return '되돌릴 구슬이 없어요'; b.dead = 1; MT.Composite.remove(eng.world, b.body); toHand(b, 'uturn', 420); return; }
-      case 'surf': { if (!L.length) return '상자가 비어 있어요'; sk.sf = now; sk.grace = now + 4200;   /* 경완 밸런스: 안 지는 시간 5.6→4.2초, 물은 상자의 60%까지 */ return; }
-      case 'grow': { if (cur >= ED_L.length - 1) return '더 진화할 수 없어요'; sk.gw = { t: now }; sk.lock = now + 950; return; }   /* 경완: 덩굴이 감쌌다 풀리며 진화 */
-      case 'zap': { const P2 = zapPairs(); if (!P2.length) return '끌어당길 같은 구슬이 없어요'; for (const [a, c] of P2) { const dx = c.x - a.x, dy = c.y - a.y, d = Math.hypot(dx, dy) || 1; for (const [o, sg] of [[a, 1], [c, -1]]) { const v = o.body.velocity; const f = (Math.min(7, 2.2 + d * .045) * Math.min(1.5, 32 / rad(o)) + 1.2) * .8;   /* 경완 밸런스: 힘 ×0.8 (시뮬 +16%→+7%) */ MT.Body.setVelocity(o.body, { x: v.x + sg * dx / d * f, y: v.y + sg * dy / d * f }); } }   /* 경완 '너무 사기': 찰나에 한 번 확 (v16.51 '요지부동이 많음': 더 세게, 멀수록·작을수록 세게) */
+      case 'quake': { if (!L.length) return '상자가 비어 있어요'; if (dry) return; sk.qk = now; sk.qkI = -1; sk.grace = now + 2300; for (let i = 0; i < 24; i++) fxs.push({ k: 'dust', x: Math.random() * W, y: H - 4, vx: (Math.random() - .5) * 90, vy: -30 - Math.random() * 70, g: 100, t: now + Math.random() * 1200, life: 700, r: 4 + Math.random() * 5, c: 'rgba(205,180,130,.65)' }); try { haptic(2); } catch (e) {} return; }
+      case 'uturn': { const b = lastB; if (!b || !live(b) || !B.includes(b)) return '되돌릴 구슬이 없어요'; if (dry) return; b.dead = 1; MT.Composite.remove(eng.world, b.body); toHand(b, 'uturn', 420); return; }
+      case 'surf': { if (!L.length) return '상자가 비어 있어요'; if (dry) return; sk.sf = now; sk.grace = now + 4200;   /* 경완 밸런스: 안 지는 시간 5.6→4.2초, 물은 상자의 60%까지 */ return; }
+      case 'grow': { if (cur >= ED_L.length - 1) return '더 진화할 수 없어요'; if (dry) return; sk.gw = { t: now }; sk.lock = now + 950; return; }   /* 경완: 덩굴이 감쌌다 풀리며 진화 */
+      case 'zap': { const P2 = zapPairs(); if (!P2.length) return '끌어당길 같은 구슬이 없어요'; if (dry) return; for (const [a, c] of P2) { const dx = c.x - a.x, dy = c.y - a.y, d = Math.hypot(dx, dy) || 1; for (const [o, sg] of [[a, 1], [c, -1]]) { const v = o.body.velocity; const f = (Math.min(7, 2.2 + d * .045) * Math.min(1.5, 32 / rad(o)) + 1.2) * .8;   /* 경완 밸런스: 힘 ×0.8 (시뮬 +16%→+7%) */ MT.Body.setVelocity(o.body, { x: v.x + sg * dx / d * f, y: v.y + sg * dy / d * f }); } }   /* 경완 '너무 사기': 찰나에 한 번 확 (v16.51 '요지부동이 많음': 더 세게, 멀수록·작을수록 세게) */
         sk.zl = P2; sk.zp = now + 450; sk.grace = now + 900; return; }
-      case 'ice': { if (L.every(b => b.fr)) return '이미 다 얼어 있어요'; for (const b of L) b.fr = .82; sk.grace = now + 600; for (let i = 0; i < 36; i++) fxs.push({ k: 'snow', x: Math.random() * W, y: -40 - Math.random() * 60, vx: (Math.random() - .5) * 60, vy: 160 + Math.random() * 120, g: 0, t: now + Math.random() * 500, life: 2400, r: 3 + Math.random() * 3 }); return; }   /* 경완: 시간 제한 없이 — 지금 있는 구슬이 얼어 작아진 채로 (합쳐지면 원래 크기) */
+      case 'ice': { if (L.every(b => b.fr)) return '이미 다 얼어 있어요'; if (dry) return; for (const b of L) b.fr = .82; sk.grace = now + 600; for (let i = 0; i < 36; i++) fxs.push({ k: 'snow', x: Math.random() * W, y: -40 - Math.random() * 60, vx: (Math.random() - .5) * 60, vy: 160 + Math.random() * 120, g: 0, t: now + Math.random() * 500, life: 2400, r: 3 + Math.random() * 3 }); return; }   /* 경완: 시간 제한 없이 — 지금 있는 구슬이 얼어 작아진 채로 (합쳐지면 원래 크기) */
     } };
   const toHand = (b, kd, dur) => { const now = performance.now(), t = b.t; anims.push({ t, x0: b.x, y0: b.y, x1: aimX, y1: 36, t0: now, dur, k: kd, s0: rad(b) / b.r }); nq.unshift(cur); nq.pop(); cur = t; nxt = nq[0]; nxT = 0; drop = now + dur; aimX = cx(aimX); };
   const skPress = () => { if (dead || !skA) return; const now = performance.now();
@@ -10054,21 +10102,22 @@ function evoDropOpen(o = {}) {
     if (now < drop || now < sk.lock || anims.length) return;
     if (skA.pick && !skA.ring && !B.some(b => live(b) && (skA.k !== 'dragon' || b.t < ED_L.length - 1))) { skMsg('고를 구슬이 없어요'); try { sfx('wob'); } catch (e) {} return; }
     if (skA.pick || skA.arm) { sk.mode = skA.pick ? 'pick' : 'arm'; sk.mt = now; updAb(); try { sfx('open'); } catch (e) {} try { haptic(0); } catch (e) {} return; }
-    const why = skNow(); if (why) { skMsg(why); try { sfx('wob'); } catch (e) {} return; } skUse(); skHelpAt(skA.k); };
+    const why = skNow(true); if (why) { skMsg(why); try { sfx('wob'); } catch (e) {} return; } skUse(); skLater(skHelpAt(skA.k), () => { const w2 = skNow(); if (w2) { sk.n++; sk.used--; updAb(); skMsg(w2); } }); };
+  const skLater = (dl, fn) => { if (!(dl > 0)) return fn(); const t = performance.now() + dl; drop = Math.max(drop, t); sk.lock = Math.max(sk.lock || 0, t); setTimeout(() => { if (!dead) fn(); }, dl); };   /* v17.44 경완: 기술 발동을 포켓몬 모션에 맞춰 늦춤 (그동안 놓기·기술 막음) */
   // 고르기: 구슬(또는 둥근 판 구슬)을 누르면 기술, 빈 곳을 누르면 그만
   const skPick = e => { const now = performance.now(), r0 = cv.getBoundingClientRect(), sx = e.clientX - r0.left, sy = e.clientY - r0.top; let hit = null; const Z = ringZ(now);
     if (skA.ring) { let bd = 1e9; for (let i = 0; i <= NQ; i++) { const [x, y, r] = ringPos(i, Z), d = Math.hypot(sx - x, sy - y); if (d < Math.max(r + 7, 18) && d < bd) { bd = d; hit = i; } } }
     else if (skA.k === 'pulse') { const [bx, by] = toBox(sx, sy); if (bx >= -6 && bx <= W + 6 && by >= -D && by <= H + 6) hit = { x: Math.max(0, Math.min(W, bx)), y: Math.min(H, by) }; }   // 용의파동: 상자 안 아무 데나 (밖을 누르면 그만)
     else { const [bx, by] = toBox(sx, sy); let bd = 1e9; for (const b of B) { if (!live(b) || (skA.k === 'dragon' && b.t >= ED_L.length - 1)) continue; const d = Math.hypot(bx - b.x, by - b.y); if (d < rad(b) + 8 / k && d < bd) { bd = d; hit = b; } } }
     sk.mode = null; if (hit == null) { updAb(); abPop(); try { sfx('tap'); } catch (er) {} return; }
-    skUse(); abPop(); skHelpAt(skA.k, skA.ring ? (() => { const [x2, y2] = ringPos(hit, Z), r0 = cv.getBoundingClientRect(), r1 = box.getBoundingClientRect(); return [x2 + r0.left - r1.left - 40, y2 + r0.top - r1.top + 20]; })() : hit);
+    skUse(); abPop(); skLater(skHelpAt(skA.k, skA.ring ? (() => { const [x2, y2] = ringPos(hit, Z), r0 = cv.getBoundingClientRect(), r1 = box.getBoundingClientRect(); return [x2 + r0.left - r1.left - 40, y2 + r0.top - r1.top + 20]; })() : hit), () => { const now = performance.now(); if (hit.r != null && !live(hit)) { sk.n++; sk.used--; updAb(); return; }   // 기다리는 사이 합쳐진 구슬이면 횟수 돌려줌
     if (skA.k === 'steal') { const i = hit, [x, y, rr0] = ringPos(i, Z), [bx, by] = toBox(x, y), t = nq[i]; nq[i] = cur; cur = t; nxt = nq[0]; aimX = cx(aimX); anims.push({ t, x0: bx, y0: by, x1: aimX, y1: 36, t0: now, dur: 420, k: 'steal', s0: rr0 / (ED_L[t][1] * k) }); drop = now + 420; boom(bx, by, 10, '#b080e0', 140, 'spark', 450); return; }
     const b = hit;
     if (skA.k === 'burn') { b.gone = { t: now, k: 'burn' }; sk.grace = now + 1400; return; }   /* 경완: 밖에서 불꽃이 날아오는 대신 구슬이 밑에서부터 타며 없어짐 */
     if (skA.k === 'psy') { b.psy = { t: now, y0: b.y, x0: b.x }; sk.grace = now + 3800; return; }   /* 경완: 염력으로 서서히 떠올라(다른 구슬은 밀려남) 공중에서 염력이 풀리며 저절로 떨어짐 */
     if (skA.k === 'pulse') { const R = 170; for (const o of B) { if (!live(o)) continue; const dx = o.x - b.x, dy = o.y - b.y, d = Math.hypot(dx, dy) || 1, m = R + rad(o); if (d >= m) continue; const f = 7 * (1 - d / m) ** .7 * Math.min(1.3, 30 / rad(o)), v = o.body.velocity; MT.Body.setVelocity(o.body, { x: v.x + dx / d * f, y: v.y + dy / d * f }); MT.Body.setAngularVelocity(o.body, (Math.random() - .5) * .2); }   /* 경완 골라 정함: 용의춤 대신 용의파동 — 고른 자리에서 파동이 퍼져 주변 구슬을 밀어냄 (작은 구슬일수록 멀리) */
       for (let i = 0; i < 3; i++) fxs.push({ k: 'pw', x: b.x, y: b.y, vx: 0, vy: 0, t: now + i * 90, life: 520, r: R }); boom(b.x, b.y, 18, '#9a8cff', 260, 'spark', 550); shake = Math.max(shake, .3); sk.grace = now + 1600; try { haptic(2); } catch (er) {} return; }
-    if (skA.k === 'dragon') { b.evo = now + 750; return; } };
+    if (skA.k === 'dragon') { b.evo = now + 750; return; } }); };
   // 겨눠서 놓기: 바위·하트는 들고 있는 구슬 대신, 고스트·강철은 들고 있는 구슬에 기술을 입힌다
   const ghostT = () => { const r = ED_L[cur][1]; return { x: Math.max(r, Math.min(W - r, aimX)), y: H - r }; };   /* 경완: 자리가 없어도 어디든 바닥까지 뚫고 들어가 주변 구슬을 밀어냄 */
   const spawnX = (kd, x) => { const r = kd === 'rock' ? RKR : HTR, e = { x9: kd, t: -1, x, y: 36, a: 0, r, born: performance.now(), hits: 0 }; e.body = MT.Bodies.circle(x, 36, r, kd === 'rock' ? { density: .02, friction: .3, frictionStatic: .4, frictionAir: .012, restitution: .15 } : { ...BOD, restitution: .25 }); e.body.plugin.ed = e; MT.Composite.add(eng.world, e.body);
@@ -10210,8 +10259,8 @@ function evoDropOpen(o = {}) {
     if (x0B) x = Math.min(x, x0B - bw / 2); x = Math.max(bw / 2 + 8, Math.min(vw - bw / 2 - 8, x)); y = Math.max(bh / 2 + 4, y);
     g.fillStyle = 'rgba(24,26,48,.88)'; g.beginPath(); g.roundRect(x - bw / 2, y - bh / 2, bw, bh, 10); g.fill(); g.lineWidth = 1.5; g.strokeStyle = 'rgba(255,226,122,.8)'; g.stroke();
     g.font = `${f1}px Galmuri11,system-ui,sans-serif`; g.fillStyle = '#fff'; g.fillText(m.s, x, m.h ? y - 6 : y + 1); if (m.h) { g.font = '10px Galmuri11,system-ui,sans-serif'; g.fillStyle = '#c9cbe6'; g.fillText(m.h, x, y + 11); } g.restore(); };
-  const doDrop = () => { const now = performance.now(), arm = sk.mode === 'arm' ? skA.k : '';
-    if (arm) { sk.mode = null; skUse(); abPop(); skHelpAt(arm, { x: aimX, y: 36 + 34 }); }
+  const doDrop = armD => { const now = performance.now(), arm = armD || (sk.mode === 'arm' ? skA.k : '');
+    if (arm && !armD) { sk.mode = null; skUse(); abPop(); const ax = aimX; return skLater(skHelpAt(arm, { x: aimX, y: 36 + 34 }, 'down'), () => { aimX = cx(ax); doDrop(arm); }); }   /* v17.44 경완: 겨눠 놓는 기술(고드름침·돌떨구기 등)은 포켓몬이 아래로 내리치는 순간에 떨어짐 */
     if (arm === 'icle') { const x = Math.max(ICW, Math.min(W - ICW, aimX)), y = 36 - ICH * .2, e = { x9: 'icle', t: -1, x, y, a: 0, r: ICW, v: 0, born: now }; e.body = MT.Bodies.fromVertices(x, y, [[{ x: -ICW, y: -ICH / 3 }, { x: ICW, y: -ICH / 3 }, { x: 0, y: ICH * 2 / 3 }]], { isStatic: true }); MT.Body.setPosition(e.body, { x, y }); e.body.plugin.ed = e; MT.Composite.add(eng.world, e.body); XB.push(e); drop = now + 600; sk.grace = Math.max(sk.grace, now + 2600); return; }
     if (arm === 'rock' || arm === 'kiss') { spawnX(arm === 'rock' ? 'rock' : 'heart', Math.max(arm === 'rock' ? RKR : HTR, Math.min(W - (arm === 'rock' ? RKR : HTR), aimX))); drop = now + 500; sk.grace = Math.max(sk.grace, now + 1500); return; }
     if (arm === 'ghost') { const t = cur, p = ghostT(), dur = Math.max(300, Math.sqrt(2 * Math.max(1, p.y - 36) / 2000) * 1000); anims.push({ t, x0: p.x, y0: 36, x1: p.x, y1: p.y, t0: now, dur, k: 'ghost', done: () => { if (dead) return; const b = add(t, p.x, p.y); b.gw = performance.now(); b.s = 1; MT.Body.scale(b.body, .3, .3); b.s = .3; lastB = b; sk.grace = Math.max(sk.grace, performance.now() + 1500); boom(p.x, p.y, 12, '#b890f0', 160, 'spark', 500); try { haptic(1); } catch (er) {} } }); adv(); drop = now + dur + 150; return; }
@@ -10311,6 +10360,7 @@ const MG_ROLE_N = { pace: '앞뒤로 왔다 갔다 해요', dash: '가까워지�
 async function mgPrep(me) {
   const want = [16, me, ...S.box.slice().sort(() => Math.random() - .5).slice(0, 3).map(P => P.sp)];
   await Promise.race([Promise.all(want.map(sp => ensureSprite(sp).catch(() => {}))), new Promise(r => setTimeout(r, 2500))]);
+  if (isPmd(me) && !SPRITES[me].mx) await Promise.race([loadMx(me).then(ok => { if (ok) delete mgImg[me]; }).catch(() => {}), new Promise(r => setTimeout(r, 1500))]);   /* v17.44 경완: 기술 쓸 때 원본 동작(펀치·내리찍기 등)을 쓰려고 추가 동작도 받아 둠 */
   // v5.88 경완: 장애물은 움직임마다 정해진 한 마리 — 포켓몬을 보면 어떻게 움직일지 알 수 있게
   await Promise.race([Promise.all(Object.values(MG_ROLE).flat().map(sp => ensureSprite(sp).catch(() => {}))), new Promise(r => setTimeout(r, 2500))]);
   const ok = k => SPRITES[k] && isPmd(k) && SPRITES[k].a?.Idle && SPECIES[k] && +k !== +me, roles = {};
@@ -10577,6 +10627,7 @@ const MG_BM_UP = .54, MG_BM_C = .32, MG_BM_IN = .17;   /* v7.17 경완: 꼭대�
 const MG_STR = { fire: { T: 3.6, L: 220, b: 26, s: .26, c: '#ff8a2a' }, beam: { T: 2.1, sT: 1.6, L: 0, b: 22, s: .45, c: '#8a7aff' }, gas: { T: 1.5, L: 200, b: 60, s: .5, c: '#b47ae0' } };
 const mgAbLeft = g => { const k = g.abK; return !k ? 0 : k === 'shield' ? (g.fx.shield ? 1 : 0) : Math.max(0, g.fx[MG_DUR[k]] || 0); };
 function mgAbStart(g, k) {
+  { const bk = g.ab?.k || k, mn = skMot(g.me, bk), MA = SPRITES[g.me]?.a?.[mn]; if (MA && mn !== 'Walk' && bk !== 'lev') g.mot = { n: mn, t: g.t, d: MA[6].reduce((q, v) => q + v, 0) / 60 }; }   /* v17.44 경완: 기술마다 그 포켓몬에게 어울리는 원본 동작 한 번 (펀치·내리찍기·쏘기·놀람 등) */
   const c = g.pas?.pow ? '#ffd84a' : MG_ABC[k] || '#fff'; if (g.pas?.pow) { g.sDarkT = 1; g.shake = Math.max(g.shake || 0, .3); g.shA = Math.max(g.shA || 0, 5); }   // S 랭크 = 금빛, 배경이 어두워지며 강하게 g.tint = { c, t: .28 }; mgRing(g, c); setTimeout(() => MGG === g && mgRing(g, '#ffffff'), 90); g.shake = Math.max(g.shake || 0, .14); g.shA = Math.max(g.shA || 0, 3);
   mgFx(g, g.PX, g.GY - g.y - MG_PH / 2, c, 12, 150); haptic(2); mgToast(g, (mgMon?.name ? mgMon.name + '! ' : '') + g.ab.n + '!');   // v6.69 경완: "피카츄! 오버드라이브!"
   g.cFr = 0; if (MG_DUR[k] || k === 'shield') { g.abK = k; g.abD = k === 'shield' ? 1 : g.fx[MG_DUR[k]]; g.abW = false; }
@@ -10912,7 +10963,7 @@ function mgRender(g, cv = $('#mgCv')) {
     const f = Math.min(1, (Math.floor(k * 8) + Math.min(1, (k * 8 % 1) * 3)) / 8), cyy = cr ? GY - phh / 2 * sy : up ? GY - phh / 2 - hh : dr ? GY - phh / 2 - h0 * (1 - k * k) : GY - phh / 2 + f * (phh + 22), ang = cr ? 0 : up ? Math.PI * Math.max(0, Math.min(1, (k - .35) / .65)) ** 1.5 : dr ? (g.digA != null ? Math.PI * Math.min(1, k * 1.6) : Math.PI) : Math.PI + jt * .12;
     x.save(); x.beginPath(); x.rect(-20, -400, W + 40, GY + 400); x.clip(); x.translate(g.PX + (cr ? 0 : up ? k * 6 : dr ? 6 : 6 + jt * 3), cyy); x.rotate(ang); x.scale(sx, sy); mgDraw(x, g.me, 'Walk', g.t * 3, 0, phh / 2, g.psc, true, 1); x.restore(); }   /* 파고들어 가는 모션: 흔들리며 땅속으로 */
   const pa = g.amb ? (g.amb.end != null && g.amb.t > g.amb.end - .1 ? clamp((g.amb.t - g.amb.end + .1) / .3, 0, 1) : Math.max(0, 1 - g.amb.t / .3)) : g.fx.dig > 0 ? 0 : g.scH != null ? Math.max(.16, 1 - .84 * Math.min(1, g.scH / .6)) : g.fx.ghost > 0 ? (g.abW && Math.floor(g.t * 14) % 2 ? .15 : .45) : g.inv > 0 && Math.floor(g.t * 12) % 2 ? .3 : g.abW && g.abK && Math.floor(g.t * 14) % 2 ? .55 : 1;
-  const rv = g.revT > 0 && g.revT < .7, anim = g.over && !rv ? 'Hurt' : 'Walk';
+  const rv = g.revT > 0 && g.revT < .7, lvA = g.fx.lev && g.fx.flying && !g.over && SPRITES[g.me]?.a?.Charge, moA = !g.over && g.mot && g.t - g.mot.t < g.mot.d ? g.mot : null, anim = g.over && !rv ? 'Hurt' : moA ? moA.n : lvA ? 'Charge' : 'Walk';   /* v17.44 경완: 부유(염력)로 떠 있는 동안 기 모으기 동작 */
   const qk = g.fx.qa > 0 ? 1 - g.fx.qa / MG_QA_T : 1, qb = false,   /* v7.48 경완: 돌아올 때도 뒤돌지 않고 원래 방향 */ qo = jx + (qk >= 1 ? 0 : qk < .35 ? g.qaD * Math.sin(qk / .35 * Math.PI / 2) : g.qaD * (1 - (qk - .35) / .65) ** 2);   /* v6.18 전광석화: 확 나갔다가(0.18초) 천천히 제자리로 */
   if (g.amb?.cl.length) { x.save(); try { x.filter = 'brightness(.45) saturate(.5) hue-rotate(220deg)'; } catch (_) {} for (const c of g.amb.cl) { const k = c.t / .4; for (let i = 2; i >= 0; i--) mgDraw(x, g.me, 'Walk', g.t * 2, c.x - c.d * i * 18 * (1.4 - k), c.y, g.psc, c.d > 0 ? !qb : qb, (i ? .35 : .95) * Math.min(1, k * 1.6)); } x.restore(); }   /* 기습 그림자 분신 */
   if (pa) { const sq = g.sq || 1, sy = clamp(sq, .6, 1.4), sx = clamp(1 + (1 - sq) * .8, .7, 1.35);
@@ -10920,7 +10971,7 @@ function mgRender(g, cv = $('#mgCv')) {
     const ir = g.fx.iron > 0, X = ir ? mgIronCtx(g, x) : x;   /* v6.27 철벽: 따로 그린 뒤 강철빛을 입힌다 */
     if (g.bB > 0) for (let i = 1; i <= 4; i++) mgDraw(x, g.me, anim, (g.at ?? g.t * 1.25) - i * .03, g.PX + qo + bo - i * 15 * g.bB, py, g.psc, !qb, (.5 - i * .1) * g.bB);   /* 오버드라이브 잔상 */
     X.save(); X.translate(g.PX + qo + bo, py - phh / 2); X.rotate(ang); X.translate(0, phh / 2); const bmk = g.fx.str > 0 && g.ab.k === 'beam' && g.bmGo && g.bmUp > 0 && g.bmUp < MG_BM_IN ? 1 - g.bmUp / MG_BM_IN : 0, gk = g.gasK || 0, sk = g.scK || 0, gw = (1 + .17 * bmk * bmk + Math.sin(g.t * 50) * .02 * bmk) * (gk ? 1 + gk * .6 + Math.sin(g.t * 34) * .035 * gk : 1) * (sk ? 1 + sk * .5 + Math.sin(g.t * 40) * .03 * sk : 1); X.scale(sx * (1 + .32 * bs) * gw, sy * (1 - .2 * bs) * gw);   /* v6.82 독가스: 몸이 부풀며 부들부들 */
-    mgDraw(X, g.me, anim, g.over ? g.t * .5 : (g.at ?? g.t * 1.25), 0, 0, g.psc, !qb, pa); X.restore();
+    mgDraw(X, g.me, anim, g.over ? g.t * .5 : moA ? g.t - moA.t : lvA ? g.t : (g.at ?? g.t * 1.25), 0, 0, g.psc, !qb, pa); X.restore();
     if (ir) { const c = X.canvas, D = g.dpr, bx = (g.PX + qo + bo) * D, top = (py - phh * 1.4) * D, hh = phh * 1.8 * D, k = (g.t * .9) % 1.3 - .3, fl = Math.max(0, g.irF || 0) / .35;
       X.setTransform(1, 0, 0, 1, 0, 0); X.globalCompositeOperation = 'source-atop'; X.fillStyle = `rgba(${Math.round(150 + 105 * fl)},${Math.round(164 + 91 * fl)},${Math.round(184 + 71 * fl)},${(.7 + .3 * fl).toFixed(2)})`; X.fillRect(0, 0, c.width, c.height);
       X.fillStyle = 'rgba(70,80,96,.35)'; X.fillRect(0, top + hh * .62, c.width, hh);   // 아래쪽은 어둡게
@@ -12477,7 +12528,7 @@ function useMove(m, i = 0, man = false) {
   const [name, t, dc] = L[Math.min(i, L.length - 1)];
   if (m.sp === 648 && m.form === m.sp && (name === '옛노래' || name === '하이퍼보이스') && man) return meloFlip(m, name === '옛노래'), true;   /* v16.81 경완: 메로엣타는 옛노래를 부르면 스텝폼, 스텝폼에서 하이퍼보이스를 누르면 보이스폼으로 */
   if (name === '옛노래') return false;
-  m.mvBusy = true; setTimeout(() => { m.mvBusy = false; }, 2000);
+  m.mvBusy = true; m.mvName = name; setTimeout(() => { m.mvBusy = false; }, 2000); { const k0 = m.sk || m.form; if (SPRITES[k0] && !SPRITES[k0].mx && !SPRITES[k0].mxNo) loadMx(k0); }
   if (isTop(m)) return legendMove(m, name, t, dc);   /* 상위 기술(화면 가득 연출)은 특별 1·2단계만. 3단계·기본은 일반 기술 */
   // 튀어오르기: 아무 효과 없이 제자리에서 몇 번 퐁퐁 튄다
   if (name === '튀어오르기') {
@@ -12692,8 +12743,9 @@ function legSnd(ty, d0) {
 const MOVE_MO = { '구멍파기': 'dig', '다이빙': 'dive', '고스트다이브': 'vanish', '야습': 'vanish', '섀도스틸': 'vanish', '순간이동': 'tele', '이차원홀': 'tele', '공중날기': 'fly', '뛰어오르기': 'fly', '드래곤다이브': 'fly', '브레이브버드': 'fly', '애크러뱃': 'fly', '데스윙': 'fly', '폭포오르기': 'fly', '고속스핀': 'spin', '화염바퀴': 'spin', '아이스스피너': 'spin', '지옥의바퀴': 'spin', '드릴라이너': 'spin', '하이퍼드릴': 'spin', '돌진': 'dash', '몸통박치기': 'dash', '이판사판태클': 'dash', '로켓박치기': 'dash', '전광석화': 'dash', '신속': 'dash', '와일드볼트': 'dash', '플레어드라이브': 'dash', '웨이브태클': 'dash', '니트로차지': 'dash', '아쿠아브레이크': 'dash', '덤벼들기': 'dash', '아이언헤드': 'dash', '사념의박치기': 'dash', '양날박치기': 'dash', '박치기': 'dash', '레이징불': 'dash', '스타어설트': 'dash', '지진': 'quake', '10만마력': 'quake', '땅고르기': 'quake', '분함의발구르기': 'quake', '짓밟기': 'quake', '대지의힘': 'quake', '단단해지기': 'harden', '코스믹파워': 'harden' };
 // 원작 도트의 기술 모션: 특수 기술은 SpAttack/Shoot(빔·발사), 변화 기술은 Charge(기 모으기), 물리 기술은 Attack
 function moveAnim(m, dc) {
-  const L = dc === 3 ? ['SpAttack', 'Shoot', 'Attack'] : dc === 1 ? ['Charge', 'SpAttack', 'Attack'] : ['Attack'];
-  for (const a of L) if (playOnce(m, a)) return; anim(m, 'shake');
+  const L = moveMotL(m.mvName, dc), P = SPRITES[m.sk || m.form];   /* v17.44 경완: 기술 이름에 어울리는 원본 동작 (펀치·킥·물기·할퀴기·소리·전기…) */
+  if (P && !P.mx && !P.mxNo) loadMx(m.sk || m.form);
+  for (const a of L) if (playOnce(m, a)) return; for (const a of (dc === 3 ? ['SpAttack', 'Shoot', 'Attack'] : dc === 1 ? ['Charge', 'SpAttack', 'Attack'] : ['Attack'])) if (playOnce(m, a)) return; anim(m, 'shake');
 }
 function moveMotion(m, mo, f, fire, dc) {
   const strike = m => moveAnim(m, dc);
