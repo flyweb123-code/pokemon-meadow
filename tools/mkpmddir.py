@@ -1,13 +1,14 @@
 # 다른 방향 그림 (경완 2026-11-05 '다른 방향 그림 … 게임에 적용해줘')
 # python3 tools/mkpmddir.py <SpriteCollab 폴더>   (mkpmdx.py 다음에 돌림)
 #   mx/<키>.json 아틀라스 아래에 원본 8방향 중 게임이 안 쓰던 줄을 붙인다 (오른쪽은 게임이 좌우 뒤집기)
+#   IdleU = 대기 5번 줄(왼위, v17.48 경완 '물에 얼굴 잠기는 포켓몬은 가만히 있을 때 위 대각') — 고른 종만: KEYS=339,976,… 환경 변수
 #   WalkD = 걷기 0번 줄(아래), WalkN = 4번(위), WalkS = 6번(옆), IdleS = 대기 6번(옆, 마주 보고 얘기할 때)
 #   다시 그린 종(rd)은 원본과 그림이 달라서 뺀다
 import sys, json, base64, io, os, re, glob
 import xml.etree.ElementTree as ET
 from PIL import Image
 SC = sys.argv[1]
-DIRS = {'WalkD': ('Walk', 0), 'WalkN': ('Walk', 4), 'WalkS': ('Walk', 6), 'IdleS': ('Idle', 6), 'AttackD': ('Attack', 7)}   # AttackD = 공격 7번 줄(왼쪽 아래) — v17.44 진화구슬 내리치는 기술
+DIRS = {'WalkD': ('Walk', 0), 'WalkN': ('Walk', 4), 'WalkS': ('Walk', 6), 'IdleS': ('Idle', 6), 'AttackD': ('Attack', 7), 'IdleU': ('Idle', 5)}   # AttackD = 공격 7번 줄(왼쪽 아래) — v17.44 진화구슬 내리치는 기술
 ONLY = sys.argv[2].split(',') if len(sys.argv) > 2 else None   # 예: AttackD 만 다시 (나머지 줄은 그대로 둠)
 if ONLY: DIRS = {k: v for k, v in DIRS.items() if k in ONLY}
 ALIAS = {'128paldea': '128paldeacombat', '555galar': '555galarstandard'}
@@ -49,8 +50,10 @@ for k, v in t.items():
         if not nm.startswith(('Alola', 'Galar', 'Hisui', 'Paldea')) or 'Alternate' in nm: continue
         key = ALIAS.get(f"{int(k)}{nm.lower().replace('_', '')}", f"{int(k)}{nm.lower().replace('_', '')}")
         if isinstance(RF.get(key), dict): keys[key] = f'{k}/{fo}'
+KEYS = set(os.environ['KEYS'].split(',')) if os.environ.get('KEYS') else None
 nd = 0
 for key, rp in sorted(keys.items()):
+    if KEYS and re.match(r'\d+', key).group() not in KEYS: continue
     S = strips(f'{SC}/sprite/{rp}')
     if not S: continue
     p = f'mx/{key}.json'; X = json.load(open(p)) if os.path.exists(p) else {'i': None, 'a': {}}
