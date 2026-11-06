@@ -1,6 +1,954 @@
 {
  "days": [
   {
+   "at": 1794005325047,
+   "theme": "숲속 작은 도서관",
+   "note": "오늘은 숲속 작은 도서관이에요! 책장·안락의자·독서 등·이야기 칠판까지 원목과 겨자색으로 색을 맞춰서 한데 모아 두면 아늑한 책 읽는 마당이 돼요. 앉기·숨기·날아와 앉기·기술 쓰기를 소품마다 고르게 나눠서 많은 포켓몬이 같이 놀 수 있게 했어요.",
+   "items": [
+    {
+     "id": "tall-bookshelf",
+     "n": "나무 책장",
+     "k": "장식",
+     "d": "원목 책장 세 칸에 알록달록한 책이 키 순서 없이 꽂혀 있고, 가운데 칸엔 모래시계가 놓여 있어요. 맨 아래엔 손잡이 달린 서랍이 있어요.",
+     "fit": "숲속 도서관 벽 쪽, 나무 그늘",
+     "acts": [
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 책장 꼭대기 장식판에 내려앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "책장 꼭대기에 날아올라 앉아 도서관을 내려다본다.",
+        "책장 위에 내려앉아 깃털을 고른다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "책장 옆에 숨어 있다가 고개만 쏙 내밀어요",
+       "x": {
+        "m": "hide speek"
+       },
+       "l": [
+        "책장 옆에 숨어 있다가 고개만 쏙 내밀었다.",
+        "책장 그늘에 숨어 숨바꼭질을 한다."
+       ]
+      },
+      {
+       "w": "에스퍼·고스트 타입",
+       "a": "책장 앞에서 염력으로 책 한 권을 꺼내 둥실 띄워 읽어요",
+       "x": {
+        "at": "front",
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "책장 앞에서 염력으로 책 한 권을 꺼내 둥실 띄워 읽는다.",
+        "책장의 책을 염력으로 넘기며 열심히 읽고 있다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "책장 앞에 서서 알록달록한 책등을 하나하나 구경해요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "책장 앞에서 알록달록한 책등을 하나하나 구경한다.",
+        "책장을 올려다보며 어떤 책을 읽을지 고민한다."
+       ]
+      }
+     ],
+     "px": [
+      ".kkkkkkkkkkkkkkkkkkkkkk.",
+      "kaaaaaaaaaaaaaaaaaaaaaak",
+      "kbbbbbbbbbbbbbbbbbbbbbbk",
+      "kbccccccccccccccccccccbk",
+      ".kabkkkkkkkkkkkkkkkkbck.",
+      ".kabeeDBeeeeeeeeeeeebck.",
+      ".kabERmmeeesTeeDDDDpbck.",
+      ".kabmmDBmYZmmeeCCCCqbck.",
+      ".kabERDBmoosTeEEEEEEbck.",
+      ".kabERDBmYZsTeSSSSSSbck.",
+      ".kabaaaaaaaaaaaaaaaabck.",
+      ".kabccccccccccccccccbck.",
+      ".kabeemYeeennneDBeeebck.",
+      ".kabsPooERSeleemmPQebck.",
+      ".kabmmmYEmmeneeDBPmmbck.",
+      ".kabsPmYERSllleDBPQebck.",
+      ".kabsPmYERSnnneDBPQebck.",
+      ".kabaaaaaaaaaaaaaaaabck.",
+      ".kabccccccccccccccccbck.",
+      ".kabEReeemYeeDBCeePQbck.",
+      ".kabmmsTUoosPDmmeemmbck.",
+      ".kabERsmmmYmmDBCERPQbck.",
+      ".kabERsTUmYsPDBCmmPQbck.",
+      ".kabERsTUmYsPDBCERPQbck.",
+      ".kabaaaaaaaaaaaaaaaabck.",
+      ".kabbbbbbbbbbbbbbbbbbck.",
+      ".kabbbddddddddddddbbbck.",
+      ".kabbbcccccmncccccbbbck.",
+      ".kabbbddddddddddddbbbck.",
+      ".kcccccccccccccccccccck.",
+      ".kdddkkkkkkkkkkkkkkdddk.",
+      "..kkk..............kkk.."
+     ],
+     "pal": {
+      "B": "#5c88c6",
+      "C": "#3e5c90",
+      "D": "#8fb2e0",
+      "E": "#f08a64",
+      "P": "#a070bc",
+      "Q": "#704a8c",
+      "R": "#d65a40",
+      "S": "#9c3c2c",
+      "T": "#5ea898",
+      "U": "#3e7466",
+      "Y": "#eec862",
+      "Z": "#b28e36",
+      "a": "#e6b880",
+      "b": "#c08452",
+      "c": "#8f5a36",
+      "d": "#603a26",
+      "e": "#46291c",
+      "k": "#20202c",
+      "l": "#ffd46a",
+      "m": "#f2d88c",
+      "n": "#c9a052",
+      "o": "#8c6c32",
+      "p": "#f6eed8",
+      "q": "#dccfae",
+      "s": "#d2d6de"
+     }
+    },
+    {
+     "id": "reading-armchair",
+     "n": "독서 안락의자",
+     "k": "쉼터",
+     "d": "겨자색 천을 씌운 푹신한 안락의자예요. 등받이엔 단추 주름이 잡혀 있고, 빨간 쿠션이 하나 놓여 있어요.",
+     "fit": "책장 앞, 독서 등 옆",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "의자에 올라가 푹신한 방석 위에 몸을 웅크리고 잠들어요",
+       "x": {
+        "at": [
+         0.5,
+         0.55
+        ],
+        "an": "Sleep"
+       },
+       "l": [
+        "안락의자 방석 위에 웅크리고 새근새근 잠들었다.",
+        "푹신한 안락의자에 파묻혀 낮잠을 잔다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "둥근 팔걸이 위에 올라가 앉아 다리를 달랑거려요",
+       "x": {
+        "at": [
+         0.15,
+         0.42
+        ],
+        "m": "climb"
+       },
+       "l": [
+        "안락의자 팔걸이에 올라앉아 다리를 달랑거린다.",
+        "둥근 팔걸이 위에 앉아 주위를 둘러본다."
+       ]
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "의자 옆에 기대어 앉아 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "안락의자에 등을 기대고 꾸벅꾸벅 존다.",
+        "안락의자 옆에 기대 앉아 느긋하게 쉰다."
+       ]
+      }
+     ],
+     "px": [
+      "........................",
+      "......kkkkkkkkkkkk......",
+      ".....kffffffffffffk.....",
+      "....kfffffffffffffGk....",
+      "....kfFFGFFGFFGFFFGk....",
+      "....kfFFHFFHFFHFFFGk....",
+      "....kfFFFFFFFFFFFFGk....",
+      "....kfFFFFEEEEFGFFGk....",
+      "...kkfFFFRRRRRFHFFGkk...",
+      "..kffffFFRRRRRFFFffffk..",
+      ".kfffffFFSSSSSFFFfffffk.",
+      ".kfFFFHFFFFFFFFFFHFFFGk.",
+      ".kfGHFHffffffffffHFGHGk.",
+      ".kfFGFHffffffffffHFGFGk.",
+      ".kfFFFHFFFFFFFFFFHFFFGk.",
+      ".kfFFFHGGGGGGGGGGHFFFGk.",
+      ".kGGGGGGGGGGGGGGGGGGGGk.",
+      ".kHHHHHHHHHHHHHHHHHHHHk.",
+      "..kbckkkkkkkkkkkkkkbck..",
+      "..kcck............kcck..",
+      "..kcdk............kcdk..",
+      "...kk..............kk..."
+     ],
+     "pal": {
+      "E": "#f08a64",
+      "F": "#eab24c",
+      "G": "#c68c30",
+      "H": "#905e20",
+      "R": "#d65a40",
+      "S": "#9c3c2c",
+      "b": "#c08452",
+      "c": "#8f5a36",
+      "d": "#603a26",
+      "f": "#f8d27a",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "book-cart",
+     "n": "책 수레",
+     "k": "놀이",
+     "d": "바퀴 넷 달린 원목 수레예요. 위 칸엔 반납된 책이 꽂혀 있고 한 권은 비스듬히 기대 있어요. 왼쪽 쇠 손잡이로 밀고 다녀요.",
+     "fit": "책장 사이 길, 평평한 땅",
+     "acts": [
+      {
+       "w": "격투 타입",
+       "a": "손잡이를 잡고 수레를 앞뒤로 힘껏 밀어요",
+       "x": {
+        "at": "side",
+        "m": "push"
+       },
+       "l": [
+        "책 수레 손잡이를 잡고 앞뒤로 힘껏 밀었다.",
+        "책 수레를 밀며 책을 나르는 시늉을 한다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "수레 위 칸 책 옆에 올라가 앉아요",
+       "x": {
+        "at": [
+         0.78,
+         0.4
+        ],
+        "m": "climb"
+       },
+       "l": [
+        "책 수레 위 칸에 올라가 책 옆에 나란히 앉았다.",
+        "수레 위에 앉아 책등에 그려진 그림을 본다."
+       ]
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "수레 둘레를 빙빙 날며 꽂힌 책을 살펴봐요",
+       "x": {
+        "m": "circ"
+       },
+       "l": [
+        "책 수레 둘레를 빙빙 날며 꽂힌 책을 살펴본다.",
+        "수레 위를 맴돌며 읽을 책을 고른다."
+       ]
+      }
+     ],
+     "px": [
+      "............................",
+      ".kkkk...kkk.................",
+      "ksssskkkDBCk.kk.............",
+      "kuuuukERDmmkksPkkk...kkk....",
+      "kustkkmmDBCmYmmsTUk.kERSk...",
+      ".kstkkERDBCoosPsmmkkERSk....",
+      ".kstkkERDBCmYsPsTUkERSkk....",
+      ".kstkkERDBCmYsPsTUERSqqqk...",
+      ".kstkkERDBCmYsPsTURSkpppk...",
+      ".kstbaaaaaaaaaaaaaaaaaaaak..",
+      ".kstbbbbbbbbbbbbbbbbbbbbbk..",
+      ".kstccccccccccccccccccccck..",
+      ".kstkabkkDDDDDpkkkkkkkbck...",
+      "..kkkabeeCCCCCqeEEEEEebck...",
+      "....kabemmmmmmmmRRRRRebck...",
+      "....kabeZZZZZZZZSSSSSebck...",
+      "....kaaaaaaaaaaaaaaaaaaak...",
+      "....kcuuuucccccccccuuuuck...",
+      ".....ktttukkkkkkkkktttuk....",
+      "....kutstuuk.....kutstuuk...",
+      ".....kuuuuk.......kuuuuk....",
+      ".....kuuuuk.......kuuuuk...."
+     ],
+     "pal": {
+      "B": "#5c88c6",
+      "C": "#3e5c90",
+      "D": "#8fb2e0",
+      "E": "#f08a64",
+      "P": "#a070bc",
+      "R": "#d65a40",
+      "S": "#9c3c2c",
+      "T": "#5ea898",
+      "U": "#3e7466",
+      "Y": "#eec862",
+      "Z": "#b28e36",
+      "a": "#e6b880",
+      "b": "#c08452",
+      "c": "#8f5a36",
+      "e": "#46291c",
+      "k": "#20202c",
+      "m": "#f2d88c",
+      "o": "#8c6c32",
+      "p": "#f6eed8",
+      "q": "#dccfae",
+      "s": "#d2d6de",
+      "t": "#9298a8",
+      "u": "#5c6272"
+     }
+    },
+    {
+     "id": "library-globe",
+     "n": "도서관 지구본",
+     "k": "장식",
+     "d": "놋쇠 고리에 걸린 파란 지구본이에요. 누런 대륙이 그려져 있고, 둥근 나무 받침 위에 서 있어요.",
+     "fit": "책상 옆, 책장 앞",
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "지구본을 앞발로 툭툭 밀어 보고 신기해해요",
+       "x": {
+        "at": "side",
+        "m": "push"
+       },
+       "l": [
+        "지구본을 앞발로 툭툭 밀어 보고 신기해한다.",
+        "지구본을 건드려 보고 깜짝 놀라 한 발 물러난다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 놋쇠 고리 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "지구본 놋쇠 고리 꼭대기에 날아올라 앉았다.",
+        "지구본 위에 앉아 고개를 갸웃거린다."
+       ]
+      },
+      {
+       "w": "에스퍼 타입",
+       "a": "지구본 앞에서 염력으로 지구본을 반짝이며 빙글 돌려요",
+       "x": {
+        "at": "front",
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "염력으로 지구본을 빙글빙글 돌려 본다.",
+        "지구본을 염력으로 돌리며 가 보고 싶은 곳을 찾는다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "지구본 앞에 서서 파란 바다와 누런 땅을 구경해요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "지구본 앞에서 파란 바다와 누런 땅을 구경한다.",
+        "지구본을 올려다보며 먼 곳을 상상한다."
+       ]
+      }
+     ],
+     "px": [
+      "........knnk........",
+      "........kmnk........",
+      "......kknnnk........",
+      "....kknnkkkk........",
+      "...knnkkBBCCkk......",
+      "..kmnkpDBBCZZCk.....",
+      "..kmkDmYDDBBZCCk....",
+      ".kmkBDDYYDBBBZCCk...",
+      ".kmkBDYYYDBZBBCCk...",
+      ".kmkBDDYDDBBZBBCk...",
+      ".knkBBBDYBBBBBBCk...",
+      ".knkBBBBYYBBBBBCk...",
+      ".knkBBBBBBBBZZCCk...",
+      ".knkBBBBBBBBZZCCk...",
+      "..knkBBBBBBBBCCk....",
+      "..knnkBBBBCCCCk.....",
+      "...knnkkBBCCkk......",
+      "....kknnkkkk........",
+      "......kknmok........",
+      "........kmok........",
+      "......kkkmokkk......",
+      ".....kaaaaaaaak.....",
+      "....kbabbbbbbbbk....",
+      "....kcccccccccck....",
+      ".....kkkkkkkkkk.....",
+      "...................."
+     ],
+     "pal": {
+      "B": "#5c88c6",
+      "C": "#3e5c90",
+      "D": "#8fb2e0",
+      "Y": "#eec862",
+      "Z": "#b28e36",
+      "a": "#e6b880",
+      "b": "#c08452",
+      "c": "#8f5a36",
+      "k": "#20202c",
+      "m": "#f2d88c",
+      "n": "#c9a052",
+      "o": "#8c6c32",
+      "p": "#f6eed8"
+     }
+    },
+    {
+     "id": "library-ladder",
+     "n": "책장 사다리",
+     "k": "놀이",
+     "d": "높은 책을 꺼낼 때 쓰는 원목 사다리예요. 발판 네 칸과 넓은 꼭대기 판이 있고, 다리 끝에 작은 바퀴가 달려 있어요.",
+     "fit": "책장 옆",
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "발판을 한 칸씩 밟고 꼭대기 판까지 올라가요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "사다리 발판을 한 칸씩 밟고 꼭대기까지 올라갔다.",
+        "사다리 꼭대기에 올라 뿌듯하게 주위를 본다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 사다리 꼭대기 판에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "사다리 꼭대기 판에 날아올라 앉았다.",
+        "사다리 위에 앉아 날개를 접고 쉰다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "사다리 뒤에 숨어 발판 사이로 고개를 내밀어요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "사다리 뒤에 숨어 발판 사이로 고개를 내밀었다.",
+        "사다리 발판 틈으로 바깥을 엿본다."
+       ]
+      }
+     ],
+     "px": [
+      ".....kkkkkkkk.....",
+      "...kkaaaaaaaakk...",
+      "..kaaaaaaaaaaaak..",
+      "..kbbbbbbbbbbbbk..",
+      "..kcccccccccccck..",
+      "...kabkkkkkkbck...",
+      "...kabk....kbck...",
+      "...kabk....kbck...",
+      "...kabkkkkkkbck...",
+      "...kabaaaaaabck...",
+      "..kabkcccccckbck..",
+      "..kabkkkkkkkkbck..",
+      "..kabk......kbck..",
+      "..kabkkkkkkkkbck..",
+      "..kabaaaaaaaabck..",
+      "..kabccccccccbck..",
+      "..kabkkkkkkkkbck..",
+      "..kabk......kbck..",
+      "..kabkkkkkkkkbck..",
+      "..kabaaaaaaaabck..",
+      "..kabccccccccbck..",
+      "..kabkkkkkkkkbck..",
+      "..kabk......kbck..",
+      ".kabkkkkkkkkkkbck.",
+      ".kabaaaaaaaaaabck.",
+      ".kabccccccccccbck.",
+      ".kabkkkkkkkkkkbck.",
+      ".kabk........kbck.",
+      ".kabk........kbck.",
+      ".kabk........kbck.",
+      ".ktuk........ktuk.",
+      "..kk..........kk.."
+     ],
+     "pal": {
+      "a": "#e6b880",
+      "b": "#c08452",
+      "c": "#8f5a36",
+      "k": "#20202c",
+      "t": "#9298a8",
+      "u": "#5c6272"
+     }
+    },
+    {
+     "id": "book-stack",
+     "n": "책 더미",
+     "k": "쉼터",
+     "d": "두꺼운 책 네 권을 엇갈려 쌓고 맨 위에 펼친 책을 얹었어요. 빨강·파랑·노랑·보라 책이 층층이 보여요.",
+     "fit": "안락의자 옆, 나무 아래",
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "책 더미 맨 위에 올라가 펼친 책 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "책 더미 맨 위에 올라가 펼친 책 위에 앉았다.",
+        "펼친 책 위에 앉아 그림을 한참 들여다본다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "책 더미에 기대어 앉아 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "책 더미에 기대어 앉아 꾸벅꾸벅 존다.",
+        "책 더미 옆에서 책 베개를 베고 잠들었다."
+       ]
+      },
+      {
+       "w": "에스퍼·고스트 타입",
+       "a": "책 더미 앞에서 기술로 펼친 책장을 한 장씩 넘겨요",
+       "x": {
+        "at": "front",
+        "m": "skill"
+       },
+       "l": [
+        "기술로 펼친 책장을 한 장씩 넘긴다.",
+        "책 더미 위의 책장을 사르르 넘기며 읽는다."
+       ]
+      }
+     ],
+     "px": [
+      ".....kkkk....kkkk.....",
+      "....kppppkkkkppppk....",
+      "...kprrrrprqprrrrpk...",
+      "...kqppppprqpppppqk...",
+      "..kqqqqqqqrqqqqqqqqk..",
+      "..kSSSSSSSSSSSSSSSSk..",
+      "...kPPPPPPPPPPPPPQk...",
+      "...kppqppqppqppqpQk...",
+      "..kkQQQQQQQQQQQQQQk...",
+      ".kmmmmommmmmommZkk....",
+      ".kYYYYoYYYYYoYYZk.....",
+      ".kZZZZoZZZZZoZZZkkk...",
+      "..kCBBBBBBBBBBBBBBBk..",
+      "..kCpqppqppqppqppqqk..",
+      ".kkCCCCCCCCCCCCCCCCk..",
+      "kEEEmEEEEEEEEEEEmEESk.",
+      "kRRRmRRRRRRRRRRRmRRSk.",
+      "kSSSmSSSSSSSSSSSmSSSk.",
+      ".kkkkkkkkkkkkkkkkkkk..",
+      "......................"
+     ],
+     "pal": {
+      "B": "#5c88c6",
+      "C": "#3e5c90",
+      "E": "#f08a64",
+      "P": "#a070bc",
+      "Q": "#704a8c",
+      "R": "#d65a40",
+      "S": "#9c3c2c",
+      "Y": "#eec862",
+      "Z": "#b28e36",
+      "k": "#20202c",
+      "m": "#f2d88c",
+      "o": "#8c6c32",
+      "p": "#f6eed8",
+      "q": "#dccfae",
+      "r": "#ac9c7e"
+     }
+    },
+    {
+     "id": "reading-lamp",
+     "n": "독서 등",
+     "k": "장식",
+     "d": "겨자색 갓을 씌운 놋쇠 스탠드예요. 갓 아래 전구가 따뜻하게 빛나고, 허리엔 찻잔을 올려 둔 작은 받침이 있어요. 끈을 당기면 켜져요.",
+     "fit": "안락의자 옆, 밤",
+     "acts": [
+      {
+       "w": "나는 벌레 타입",
+       "a": "갓 아래 전구 높이에 떠서 불빛 둘레를 빙빙 돌아요",
+       "x": {
+        "at": [
+         0.5,
+         0.35
+        ],
+        "m": "circ"
+       },
+       "l": [
+        "독서 등 불빛 둘레를 빙빙 날아다닌다.",
+        "따뜻한 전구 불빛에 이끌려 맴돈다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "스탠드 옆에서 전기를 흘려 넣어 전구를 반짝 밝혀요",
+       "x": {
+        "at": "side",
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "독서 등에 전기를 흘려 넣어 전구를 반짝 밝혔다.",
+        "독서 등 전구에 찌릿 전기를 넣어 준다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "불빛 아래 기대어 앉아 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "독서 등 불빛 아래 기대어 앉아 꾸벅꾸벅 존다.",
+        "따뜻한 불빛 아래에서 스르르 잠들었다."
+       ]
+      }
+     ],
+     "px": [
+      "......kkkkkk......",
+      ".....kGGGGGGk.....",
+      ".....kffffffk.....",
+      "....kffFFFFFGk....",
+      "...kffFFGFFFFGk...",
+      "..kffFFFFFFFFFGk..",
+      ".kffFFFFGFFFFFFGk.",
+      "kffFFFFFFFFFFFFFGk",
+      "kffFFFFFGFFFFFFFGk",
+      "HGGGGGGGGGGGGGGGGH",
+      "kkkkkklLLLLlktkkkk",
+      ".....kllllllktk...",
+      "......kjjjjkktk...",
+      ".......kmok.ktk...",
+      ".......kmok.kmk...",
+      "......kkmok..k....",
+      ".....kppmok.......",
+      ".....kqqmokkk.....",
+      "....kaaaaaaaak....",
+      "....kcccccccck....",
+      ".....kkkmokkk.....",
+      ".......kmok.......",
+      ".......kmok.......",
+      ".......kmok.......",
+      ".......kmok.......",
+      ".......kmok.......",
+      "......kkmokk......",
+      "....kknnmnnnkk....",
+      "...knmmmmmmmmnk...",
+      "...kooooooooook...",
+      "....kkkkkkkkkk....",
+      ".................."
+     ],
+     "pal": {
+      "F": "#eab24c",
+      "G": "#c68c30",
+      "H": "#905e20",
+      "L": "#fff4b8",
+      "a": "#e6b880",
+      "c": "#8f5a36",
+      "f": "#f8d27a",
+      "j": "#f0a040",
+      "k": "#20202c",
+      "l": "#ffd46a",
+      "m": "#f2d88c",
+      "n": "#c9a052",
+      "o": "#8c6c32",
+      "p": "#f6eed8",
+      "q": "#dccfae",
+      "t": "#9298a8"
+     },
+     "glow": 1
+    },
+    {
+     "id": "book-return-box",
+     "n": "책 반납함",
+     "k": "놀이",
+     "d": "둥근 지붕의 빨간 반납함이에요. 투입구 아래 파란 책 그림 명패가 붙어 있고, 회색 기둥 위에 서 있어요.",
+     "fit": "도서관 입구, 길가",
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "반납함 뒤에 숨었다가 옆으로 고개를 쏙 내밀어요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "반납함 뒤에 숨었다가 고개를 쏙 내밀었다.",
+        "반납함 뒤에서 숨바꼭질을 한다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 둥근 지붕 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "반납함 둥근 지붕 위에 날아올라 앉았다.",
+        "반납함 위에 앉아 책을 기다린다."
+       ]
+      },
+      {
+       "w": "고스트 타입",
+       "a": "반납함 앞에서 스르르 사라졌다가 다시 나타나요",
+       "x": {
+        "at": "front",
+        "m": "blink"
+       },
+       "l": [
+        "반납함 앞에서 스르르 사라졌다가 다시 나타났다.",
+        "반납함 속으로 들어간 척 스르르 사라진다."
+       ]
+      }
+     ],
+     "px": [
+      "........kk........",
+      ".....kkkESkkk.....",
+      "....kEEEERRRSk....",
+      "...kERRRRRRRRSk...",
+      "..kERRRRRRRRRRSk..",
+      ".kERRRRRRRRRRRSSk.",
+      ".kESSSSSSSSSSSSSk.",
+      ".kERRRRRRRRRRRSSk.",
+      ".kERSkkkkkkkkSSSk.",
+      ".kERRSSSSSSSSRSSk.",
+      ".kERRRRRRRRRRRSSk.",
+      ".kERRpppppppqRSSk.",
+      ".kERRppDBBCpqRSSk.",
+      ".kERRppDppCpqRSSk.",
+      ".kERRppDBBCpqRSSk.",
+      ".kERRqqqqqqqqRSSk.",
+      ".kERRRRRRRRRRRSSk.",
+      ".kERRRRRRRRRRRSSk.",
+      ".kSSSSSSSSSSSSSSk.",
+      "..kkkkksttukkkkk..",
+      "......ksttuk......",
+      "......ksttuk......",
+      ".....kksttukk.....",
+      "....kttttttttk....",
+      "....kuuuuuuuuk....",
+      ".....kkkkkkkk....."
+     ],
+     "pal": {
+      "B": "#5c88c6",
+      "C": "#3e5c90",
+      "D": "#8fb2e0",
+      "E": "#f08a64",
+      "R": "#d65a40",
+      "S": "#9c3c2c",
+      "k": "#20202c",
+      "p": "#f6eed8",
+      "q": "#dccfae",
+      "s": "#d2d6de",
+      "t": "#9298a8",
+      "u": "#5c6272"
+     }
+    },
+    {
+     "id": "story-chalkboard",
+     "n": "이야기 칠판",
+     "k": "놀이",
+     "d": "나무 이젤에 세운 초록 칠판이에요. 분필로 해님과 글 줄이 그려져 있고, 아래 받침엔 흰색·빨강·파랑 분필이 놓여 있어요.",
+     "fit": "도서관 마당, 의자들 앞",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "칠판 앞에 앉아 그려진 그림을 올려다봐요",
+       "x": {
+        "at": "front"
+       },
+       "l": [
+        "이야기 칠판 앞에 앉아 그림을 올려다본다.",
+        "칠판에 적힌 이야기를 귀 기울여 듣는 듯하다."
+       ]
+      },
+      {
+       "w": "에스퍼 타입",
+       "a": "칠판 옆에서 염력으로 분필을 띄워 그림을 그려요",
+       "x": {
+        "at": "side",
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "염력으로 분필을 띄워 칠판에 그림을 그렸다.",
+        "칠판에 분필로 동그란 얼굴을 그려 넣는다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "분필 받침 위에 올라가 앉아 분필을 만지작거려요",
+       "x": {
+        "at": [
+         0.3,
+         0.66
+        ],
+        "m": "climb"
+       },
+       "l": [
+        "칠판 분필 받침에 올라앉아 분필을 만지작거린다.",
+        "분필 받침 위에 앉아 손에 분필 가루를 묻혔다."
+       ]
+      }
+     ],
+     "px": [
+      ".kkkkkkkkkkkkkkkkkkkkkkkk.",
+      "kaaaaaaaaaaaaaaaaaaaaaaack",
+      "kabbbbbbbbbbbbbbbbbbbbbbck",
+      "kabWWWWWWWWWWWWWWWWWWWWbck",
+      "kabWVVlVVVVVVVVVVVVVVVVbck",
+      "kabWVlVVlVVVVVVVVVVVVVVbck",
+      "kabWlVllVVVVpppppppppVVbck",
+      "kabWVVllVlVVVVVVVVVVVVVbck",
+      "kabWVlVVlVVVssssssVVVVVbck",
+      "kabWVVVlVVVVVVVVVVVVVVVbck",
+      "kabWVVVVVVVVppppppppVVVbck",
+      "kabWVVDVVVVVVVVVVVVVVVVbck",
+      "kabWVVDVVVVVEEEEVssssVVbck",
+      "kabWVDDDVVVVVVVVVVVVVVVbck",
+      "kabWVVVVVVVVVVVVVVVVVVVbck",
+      "kabbbbbbbbbbbbbbbbbbbbbbck",
+      "kcccccpppcEEcccDDcccccccck",
+      ".kaaaaaaaaaaaaaaaaaaaaaak.",
+      ".kcccccccccccccccccccccck.",
+      "..kkabkkkkkkcckkkkkkbckk..",
+      "..kabkkkkkkkcckkkkkkkbck..",
+      "..kabccccccccccccccccbck..",
+      "..kabkkkkkkkcckkkkkkkbck..",
+      ".kabk......kcck......kbck.",
+      ".kabk......kcck......kbck.",
+      "..kk........kk........kk.."
+     ],
+     "pal": {
+      "D": "#8fb2e0",
+      "E": "#f08a64",
+      "V": "#3e504a",
+      "W": "#2e3a36",
+      "a": "#e6b880",
+      "b": "#c08452",
+      "c": "#8f5a36",
+      "k": "#20202c",
+      "l": "#ffd46a",
+      "p": "#f6eed8",
+      "s": "#d2d6de"
+     }
+    },
+    {
+     "id": "reading-tent",
+     "n": "책 읽는 천막",
+     "k": "쉼터",
+     "d": "크림색 천에 빨간 띠를 두른 원뿔 천막이에요. 앞문을 걷어 묶어 두어 안에 빨간 방석과 펼친 책이 보이고, 문 위엔 작은 깃발 줄이 걸려 있어요.",
+     "fit": "나무 사이 그늘, 조용한 곳",
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "천막 안에 숨어 방석 위에서 펼친 책을 봐요",
+       "x": {
+        "at": "in",
+        "m": "hide"
+       },
+       "l": [
+        "천막 안에 쏙 들어가 펼친 책을 본다.",
+        "천막 안 방석 위에서 몰래 그림책을 읽는다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "천막 입구에 엎드려 낮잠을 자요",
+       "x": {
+        "at": "front",
+        "an": "Sleep"
+       },
+       "l": [
+        "천막 입구에 엎드려 새근새근 낮잠을 잔다.",
+        "천막 그늘 아래에서 느긋하게 잠들었다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 천막 꼭대기 장대에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "천막 꼭대기 장대에 날아올라 앉았다.",
+        "천막 꼭대기에서 바람을 맞으며 쉰다."
+       ]
+      }
+     ],
+     "px": [
+      "..........k......k..........",
+      ".........kck....kck.........",
+      "..........kckkkkck..........",
+      "...........kcbbck...........",
+      "............kprk............",
+      "............kpqk............",
+      "...........kpqqrk...........",
+      "...........kpqqrk...........",
+      "..........kppqqrrk..........",
+      "..........kppqqqrk..........",
+      ".........kpppqqqrrk.........",
+      "........kpppqqqqrrrk........",
+      "........kcccceecccck........",
+      ".......kpYYBBeeqYYBBk.......",
+      ".......kpYpBqeeqqYrBk.......",
+      "......kppppqeeeeqrrrrk......",
+      "......kERRRqeeeeRRSSSk......",
+      ".....kRRRrqReeeeRRSSSSk.....",
+      "....kpppprqqeeeeqqrrrrrk....",
+      "....kppppnneeeeeeqqrrrrk....",
+      "...kpppprqpeepqpeqqrrrrrk...",
+      "...kpppprqpeEEEEEqqrrrrrk...",
+      "..kppppprqeeSSSSSeqrrrrrrk..",
+      ".kppppppppedddddddqqrrrrrrk.",
+      "..kkkkkkkkkkkkkkkkkkkkkkkk..",
+      "............................"
+     ],
+     "pal": {
+      "B": "#5c88c6",
+      "E": "#f08a64",
+      "R": "#d65a40",
+      "S": "#9c3c2c",
+      "Y": "#eec862",
+      "b": "#c08452",
+      "c": "#8f5a36",
+      "d": "#603a26",
+      "e": "#46291c",
+      "k": "#20202c",
+      "n": "#c9a052",
+      "p": "#f6eed8",
+      "q": "#dccfae",
+      "r": "#ac9c7e"
+     }
+    }
+   ]
+  },
+  {
    "at": 1793918939462,
    "theme": "아침 빵집과 동네 장터",
    "note": "오늘은 아침 장터예요! 벽돌 빵 화덕을 중심으로 과일 가판대·꽃 수레·잼 선반까지, 한자리에 모아 두면 작은 장터 골목이 되게 색을 맞췄어요. 먹는 소품이 많아서 먹기 동작을 여러 타입에 고르게 나눴어요.",
