@@ -60,7 +60,7 @@ function tickTrain(now) {
     for (let left = sh; left > 1e-6; left -= 1) {
       const step = Math.min(1, left), tot = perHour(P) * step + (e.fx || 0), n = Math.floor(tot); e.fx = tot - n;
       e.fa = (e.fa || 0) + step * trFr(P); while (e.fa >= 1) { e.fa -= 1; if ((P.fr || 0) < 255) { P.fr = Math.min(255, (P.fr || 0) + 1); R.f += 1; } }   /* 필드처럼 쌓이다 1이 차면 +1 */
-      if (n > 0) { e.x = (e.x || 0) + n; R.x += n; GB().gainXp(P, n).learned.forEach(([id]) => { got.push(GB().mvKo(id)); (e.mv = e.mv || []).push(id); R.mv.push(id); }); }
+      if (n > 0) { e.x = (e.x || 0) + n; R.x += n; GB().gainXp(P, n, 'keep').learned.forEach(([id]) => { got.push(GB().mvKo(id)); (e.mv = e.mv || []).push(id); R.mv.push(id); }); }
       e.acc = (e.acc || 0) + step; while (e.acc >= 1) { e.acc -= 1; if (Math.random() < .05) { const x = special(P); if (x) { (e.mv = e.mv || []).push(x[0]); R.mv.push(x[0]); if (st().sf.some(s => s.yard && !s.rest)) (R.cm = R.cm || []).push(x[0]); else (R.sm = R.sm || []).push(x[0]); }   /* v16.71 경완: 코치 덕에 배운 기술은 일지에 '코치가 가르쳤다' */ if (x) K.awMv?.(P.id, x[0], x[1], x[2]); if (x) K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '이' : '가'} 훈련장에서 특별한 기술 <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 익혔다! <small>기술 바꾸기에서 쓸 수 있어요</small>`, now); } }
     }
     R.lv += GB().gm(P).lv - lvA; R.to = GB().gm(P).lv; }
@@ -625,6 +625,8 @@ const SHOP_T = [['tm', '기술머신'], ['tr', '기술레코드'], ['it', '도�
 const tmPrice = x => x[3] === 2 ? 500 : (x[4] || 0) <= 50 ? 300 : x[4] <= 70 ? 700 : x[4] <= 85 ? 1200 : x[4] <= 100 ? 2000 : 3000;
 const prBtn = () => `<button class="tm-sort" type="button" data-pr="1">${shopPr > 0 ? '가격 낮은 순 ▲' : '가격 높은 순 ▼'}</button>`;
 function drawShop() {
+  const goIt = window.gymShopIt, goMint = window.gymShopMint; window.gymShopIt = window.gymShopMint = null;   // v17.57 경완: 상세카드 추천 도구·추천 성격 → 상점 도구 탭의 그 도구·민트 사기 창으로 바로
+  if (goIt || goMint) shopT = 'it';
   if (!SHOP_T.some(([k]) => k === shopT)) shopT = 'tm';
   sh.innerHTML = `<div class="sp-top"><div class="sf-hd"><h3>체육관 상점</h3><span class="sf-cap"><span><small>보유 골드</small><b class="sp-gold"><i class="coin"></i><span class="gy-goldn">${/[?&]studio/.test(location.search) ? '∞' : S.gold.toLocaleString()}</span>G</b></span></span></div><div class="sp-tabs" role="tablist">${SHOP_T.map(([k, n]) => `<button role="tab" data-st="${k}" aria-selected="${shopT === k}">${n}</button>`).join('')}</div></div><div class="sp-body"></div>`;   // 탭은 다시 위 작은 탭 (경완 2026-10-28)
   const body = sh.querySelector('.sp-body');
@@ -632,6 +634,7 @@ function drawShop() {
   { const f = body.firstElementChild; if (f?.classList.contains('tm-row')) sh.querySelector('.sp-top').appendChild(f); }   /* v17.34 경완 '꾸미기 상점처럼 위쪽 고정, 필터 포함': 제목·골드·탭·필터 줄은 스크롤해도 위에 붙어 있음 */
   const inner = body.onclick; body.onclick = null;
   sh.onclick = e => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.st) { sfx('tap'); shopT = b.dataset.st; redraw(); return; } if (b.dataset.pr) { sfx('tap'); shopPr = -shopPr; redraw(); return; } inner?.(e, b); };
+  if (goIt || goMint) { const b = sh.querySelector(goIt ? `.sp-body [data-it="${goIt}"]` : `.sp-body [data-mint="${goMint}"]`); if (b) { b.classList.add('sp-go'); b.scrollIntoView({ block: 'center' }); if (!b.disabled) b.click(); } }
 }
 // 기술머신: 내 체육관 타입 포켓몬이 배울 수 있는 기술. 사면 창고(g.tms {기술: 개수})에 들어가고, 가르치기는 포켓몬 정보 창의 '기술 가르치기'에서 (경완 2026-10-27)
 function shopTm(body, wantTR) {   /* v15.75 경완: 기술머신 탭·기술레코드 탭 따로 */
