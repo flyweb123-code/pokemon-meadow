@@ -264,7 +264,7 @@ const hpPx = (hp, mhp) => hp <= 0 || !mhp ? 0 : Math.max(1, Math.ceil(hp / mhp *
 function paintHb(side, A) {
   const hb = $b(`.bt-hb.${side}`); if (!A) { hb.classList.remove('on'); return; }
   hb.querySelector('.nm').textContent = A.nm; hb.querySelector('.lvn').textContent = A.lv;
-  { let ty = hb.querySelector('.tym'); if (!ty) { ty = document.createElement('span'); ty.className = 'tym'; hb.appendChild(ty); } const k = String(A.sp); if (ty.dataset.sp !== k) { ty.dataset.sp = k; ty.innerHTML = (SPECIES[A.sp]?.t || []).map(t => tyI(t)).join(''); } }   // v14.85 경완: HP 막대 왼쪽 빈 칸에 타입 아이콘 (시안 C)
+  { let ty = hb.querySelector('.tym'); if (!ty) { ty = document.createElement('span'); ty.className = 'tym'; hb.appendChild(ty); } const k = String(A.tsp || A.sp); if (ty.dataset.sp !== k) { ty.dataset.sp = k; ty.innerHTML = (SPECIES[A.tsp || A.sp]?.t || []).map(t => tyI(t)).join(''); } }   // v14.85 경완: HP 막대 왼쪽 빈 칸에 타입 아이콘 (시안 C)
   const sx = hb.querySelector('.sx'); sx.className = 'sx ' + (A.g || ''); sx.textContent = A.g === 'M' ? '♂' : A.g === 'F' ? '♀' : '';
   setHp(side, A.hp, A.mhp); setSt(side, A.st);
   if (side === 'p') { const g = A.xpg; hb.querySelector('.xp>i').style.width = (g ? clampN(g, 0, 1) * 96 : 0) + 'px'; }
@@ -494,7 +494,7 @@ function partyPanel(req, forced) {
   return new Promise(res => {
     const L = req.side.pokemon, sx = g => g === 'M' || g === 'F' ? `<i class="sx ${g}"></i>` : '';
     const hpOfM = m => { const [hp, mhp] = (m.condition.split(' ')[0] || '0/0').split('/').map(Number); return [hp, mhp, mhp ? hp / mhp : 0, /fnt/.test(m.condition)]; };
-    const tys = A => (SPECIES[A.sp]?.t || []).map(t => tyI(t)).join('');
+    const tys = A => (SPECIES[A.tsp || A.sp]?.t || []).map(t => tyI(t)).join('');
     // 포켓몬 버튼: 정사각형 프로필 + 이름·성별 + 타입 (경완 2026-10-29)
     const list = () => { const p = panel(`<div class="bp-party">${L.map((m, i) => { const [hp, mhp, r, fnt] = hpOfM(m), A = B.my[myIx(i)];
       return `<button class="pty${m.active ? ' act' : ''}${fnt ? ' fnt' : ''}" data-i="${i}">${boxOf(A.pid) ? thumb(boxOf(A.pid)) : ''}<b>${esc(A.nm)}${sx(A.g)}</b><span class="pty-ty">${tys(A)}<span class="lv">Lv${A.lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${hp}/${mhp}`}</span></button>`; }).join('')}
@@ -814,7 +814,7 @@ async function handle(a) {
       const old = A(s);
       if (old && !old.fnt) { await msg(s === 'p' ? `돌아와! ${old.nm}!` : `${eun(B.foeNm)} ${eul(old.nm)} 되돌렸다!`, 0); await recall(s); }
       const sp = PSim.Dex.species.get(det[0]).num || src.sp;
-      const X = B.act[s] = { i, pk, nm: src.nm, sp, fm: toID(det[0]) === 'minior' && hp * 2 > mhp ? 'miniormeteor' : toID(det[0]),   // 메테오나 (리밋실드): 체력 절반 넘으면 껍질 모습으로 나온다
+      const X = B.act[s] = { i, pk, nm: src.nm, sp, tsp: SPECIES[src.sp]?.rb === sp ? src.sp : sp, fm: toID(det[0]) === 'minior' && hp * 2 > mhp ? 'miniormeteor' : toID(det[0]),   // 메테오나 (리밋실드): 체력 절반 넘으면 껍질 모습으로 나온다   /* v17.46 경완: tsp = 타입 아이콘용 번호 (쇼다운 num 은 가라르 또도가스도 110 이라 지역 폼은 내 번호로) */
       lv: +(det.find(d => /^L\d+/.test(d)) || 'L100').slice(1), g: det.includes('F') ? 'F' : det.includes('M') ? 'M' : '', shiny: det.includes('shiny'), hp, mhp, st: stOf(a[4]), fnt: false };
       if (s === 'p') { X.xpg = xpGauge(src); X.pid = src.pid; B.used.add(src.pid); B.vs.add(src.pid); }
       if (s === 'e') { const P0 = B.act.p; B.vs = new Set(P0 && !P0.fnt ? [P0.pid] : []); }   // v14.94 경완: 경험치는 이 상대와 마주친 포켓몬만 다 받고, 나머지는 학습장치 (본가처럼 상대마다 새로)
@@ -869,7 +869,7 @@ async function handle(a) {
       const T = { fly: '하늘 높이 날아올랐다!', dig: '땅으로 파고들었다!', dive: '물속으로 숨었다!', bounce: '높이 뛰어올랐다!', phantomforce: '모습을 감췄다!', shadowforce: '모습을 감췄다!', solarbeam: '빛을 흡수했다!', solarblade: '빛을 흡수했다!', skullbash: '목을 움츠렸다!', skyattack: '격렬한 빛에 휩싸였다!', razorwind: '바람을 일으켰다!' };
       await msg(`${n}${e} ${T[id] || '힘을 모으고 있다!'}`); break; }
     case '-transform': { const s = sideOf(a[2]), X = A(s), T = A(other(s)); if (!X || !T) break;   // 변신: 상대 모습 그대로 (메타몽 등)
-      await moveFx(s, 'transform'); X.sp = T.sp; X.fm = T.fm; X.g = T.g; X.gif = await pickGif(s, X); if (!B) break; showMon(s, X, true); playAnim(s, X);
+      await moveFx(s, 'transform'); X.sp = T.sp; X.tsp = T.tsp; X.fm = T.fm; X.g = T.g; X.gif = await pickGif(s, X); if (!B) break; showMon(s, X, true); playAnim(s, X);
       await msg(`${eun(who(a[2]))} ${T.nm}${jong(T.nm) ? '으로' : '로'} 변신했다!`); break; }
     case '-enditem': { const n = who(a[2]), it = itKo(a[3]), eat = a.includes('[eat]'), from = (a.find(x => /^\[from\] /.test(x)) || '').slice(7);
       if (/stealeat|move: (Knock Off|Thief|Covet|Bug Bite|Pluck|Incinerate)/i.test(from)) { await msg(`${n}의 ${eun(it)} 사라졌다!`); break; }
