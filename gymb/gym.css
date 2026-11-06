@@ -3010,31 +3010,4 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .sp-recx{border:3px solid var(--frame);border-radius:0;background:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12);width:42px;color:var(--win-ink,#282830)}#gym .sp-recx:active{transform:none;box-shadow:inset 0 3px 0 rgba(0,0,0,.12)}
 #gym .sp-lut{grid-template-columns:repeat(3,minmax(0,1fr));margin:4px 0 10px}#gym .sp-recn{margin:14px 0}
 #gym .mp-mv.mv-recm{box-shadow:inset 0 0 0 2px rgba(240,176,48,.9),inset 0 0 8px 2px rgba(240,176,48,.35);animation:mvRecm2 2.4s ease-in-out infinite}@keyframes mvRecm2{50%{box-shadow:inset 0 0 0 2px rgba(240,176,48,.6),inset 0 0 3px 1px rgba(240,176,48,.15)}}
-#gym .mv-recl{position:static;display:inline-block;margin-left:5px;vertical-align:2px;font-size:10px;padding:2px 4px}
-
-/* 경완 2026-11-03 '연승 연출 더 부드럽고 촥촥 달라붙게' */
-#gym .rs-rep .rr-n.bump0,#gym .rs-rep.up.go .rr-n.bump0{animation:rpSnG .55s linear}
-#gym .rs-rep .rr-n.bump,#gym .rs-rep.up.go .rr-n.bump{animation:rpSnR .55s linear}
-#gym .rs-gold.end b.bump,#gym .rs-gold.end b.bump+span{animation:rgSnR .55s linear forwards}
-@keyframes rpSnG{0%{transform:scale(1);animation-timing-function:cubic-bezier(.2,.9,.3,1)}14%{transform:scale(1.42,1.3);color:#2a8a3e;text-shadow:0 0 10px #ffd84a,0 0 2px #fff;animation-timing-function:cubic-bezier(.4,0,.6,1)}36%{transform:scale(.92,.97);color:#2a8a3e}54%{transform:scale(1.05);color:#2a8a3e}72%{transform:scale(.99);color:#2a8a3e}100%{transform:none}}
-@keyframes rpSnR{0%{transform:scale(1);animation-timing-function:cubic-bezier(.2,.9,.3,1)}14%{transform:scale(1.42,1.3);color:#ef4a2c;text-shadow:0 0 10px #ffd84a,0 0 2px #fff;animation-timing-function:cubic-bezier(.4,0,.6,1)}36%{transform:scale(.92,.97);color:#ef4a2c}54%{transform:scale(1.05);color:#ef4a2c}72%{transform:scale(.99);color:#ef4a2c}100%{transform:none}}
-@keyframes rgSnR{0%{transform:scale(1);animation-timing-function:cubic-bezier(.2,.9,.3,1)}14%{transform:scale(1.24,1.16);color:#ef4a2c;text-shadow:0 0 10px #ffd84a,0 0 2px #fff;animation-timing-function:cubic-bezier(.4,0,.6,1)}36%{transform:scale(.95,.98);color:#ef4a2c}54%{transform:scale(1.03);color:#ef4a2c}72%{transform:scale(.995);color:#ef4a2c}100%{transform:none}}
-#gym .rs-gold.end{animation:rgSnap .45s linear}
-@keyframes rgSnap{0%{transform:none;animation-timing-function:cubic-bezier(.2,.9,.3,1)}22%{transform:scale(1.09);box-shadow:inset 0 0 0 2px #f0c850,0 0 18px #ffd84a;animation-timing-function:cubic-bezier(.4,0,.6,1)}50%{transform:scale(.98)}75%{transform:scale(1.01)}100%{transform:none}}
-#gym .rs-rep.flash{animation:rpSnap .4s linear}
-@keyframes rpSnap{0%{transform:none;animation-timing-function:cubic-bezier(.2,.9,.3,1)}25%{transform:scale(1.035);box-shadow:inset 0 0 0 2px #f0c850,0 0 18px #ffd84a;animation-timing-function:cubic-bezier(.4,0,.6,1)}55%{transform:scale(.995)}100%{transform:none}}
-#gym .rs-rep .rr-tot{animation:rrTot2 .3s cubic-bezier(.2,1.6,.4,1) .05s forwards}
-@keyframes rrTot2{from{opacity:0;transform:translateX(-8px) scale(.6)}to{opacity:1;transform:none}}
-#gym .rs-rep .rr-b.on.mrg,#gym .rs-rep .rr-d.mrg{animation:rrbOut .26s ease-in forwards}#gym .rs-gold .rg-b.on.off{animation:rrbOut .26s ease-in forwards}
-#gym .rs-rep .rr-d.into,#gym .rs-rep .rr-b.into,#gym .rs-gold .rg-b.into{animation:rrInto .2s cubic-bezier(.5,0,.9,.5) forwards!important}
-@keyframes rrInto{0%{opacity:1;transform:none}100%{opacity:0;transform:translateX(var(--dx,-20px)) scale(.4)}}
-/* 경완 2026-11-03: 보너스가 나올 때 숫자가 부드럽게 밀리고, 합쳐질 때 부드럽게 가운데로 */
-#gym .rs-rep .rr-d,#gym .rs-rep .rr-b,#gym .rs-gold .rg-b{transition:max-width .42s cubic-bezier(.25,.8,.3,1),margin .42s cubic-bezier(.25,.8,.3,1),left .42s cubic-bezier(.25,.8,.3,1)}
-#gym .rs-rep .rr-d.keep{max-width:4em;margin-left:0;left:0}
-#gym .rs-rep .rr-b.on,#gym .rs-gold .rg-b.on{animation:rrbIn .34s cubic-bezier(.2,1.7,.4,1) .2s forwards}
-#gym .rs-rep .rr-b.into,#gym .rs-rep .rr-d.into{max-width:0;margin-left:-8px}#gym .rs-rep .rr-d.into{left:8px}
-#gym .rs-gold.end b.bump+span{display:inline-block;text-shadow:none;animation:rgSnR .55s linear forwards}
-#gym .rs-rep .rr-tot{transform-origin:left center;animation:rrTotPop .55s linear forwards}
-@keyframes rrTotPop{0%{opacity:0;transform:scale(.4);animation-timing-function:cubic-bezier(.2,.9,.3,1)}14%{opacity:1;transform:scale(1.35,1.25);animation-timing-function:cubic-bezier(.4,0,.6,1)}36%{opacity:1;transform:scale(.92,.97)}54%{opacity:1;transform:scale(1.05)}72%{opacity:1;transform:scale(.99)}100%{opacity:1;transform:none}}
-#gym .rs-rep .rr-n{position:relative}#gym .rs-rep .rr-n>.rr-tot{bottom:2px;text-shadow:none;line-height:1}
-#gym .rs-rep .rr-d.tot{color:#2a8a3e;transform-origin:left center;animation:rrTotPop .55s linear forwards!important}
+#gym .mv-recl{position:absolute;right:8px;top:-7px;z-index:2;display:block;font-size:10px;padding:2px 5px;box-shadow:0 1px 0 rgba(0,0,0,.15)}#gym .mp-mv.mv-recm{scroll-margin-top:10px}   /* v17.62 경완: 추천 글자 다시, 줄 위 테두리에 얹어서 줄 폭은 그대로 */
