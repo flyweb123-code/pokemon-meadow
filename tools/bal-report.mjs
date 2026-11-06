@@ -37,7 +37,7 @@ const catKey = k => DF.includes(k) ? DF.indexOf(k) : k === '이름 있는 트레
 const catOf = d => d.c === 'boss' ? `승급 심사 ${d.bs}` : d.c === 'named' ? '이름 있는 트레이너' : DF[d.df] || `도전자 ${d.df}`;
 
 function stats(L) {
-  const G = L.filter(r => r.kind === 'gym'), F = L.filter(r => r.kind === 'sf'), M = L.filter(r => r.kind === 'mg');
+  const G = L.filter(r => r.kind === 'gym'), F = L.filter(r => r.kind === 'sf'), M = L.filter(r => r.kind === 'mg' && r.d.g !== 'drop'), D = L.filter(r => r.kind === 'mg' && r.d.g === 'drop');   // v17.54: 진화구슬(drop)은 따로
   const gym = {
     n: G.length, people: people(G), win: pct(G.filter(r => r.d.w).length, G.length), quit: pct(G.filter(r => r.d.q).length, G.length),
     turns: avg(G.map(r => r.d.tn | 0)),
@@ -57,8 +57,9 @@ function stats(L) {
     rank: [...group(M, r => r.d.rk || '?')].sort((a, b) => 'FEDCBAS'.indexOf(a[0]) - 'FEDCBAS'.indexOf(b[0])).map(([k, A]) => ({ k, n: A.length, p50: q(A.map(r => r.d.sc | 0), .5), p90: q(A.map(r => r.d.sc | 0), .9) })),
     ab: [...group(M, r => r.d.ab || '-')].map(([k, A]) => ({ k, n: A.length, p50: q(A.map(r => r.d.sc | 0), .5) })).sort((a, b) => (b.p50 || 0) - (a.p50 || 0)),
   };
+  const ed = { n: D.length, people: people(D), score: { p50: q(D.map(r => r.d.sc | 0), .5), p90: q(D.map(r => r.d.sc | 0), .9) }, sec: avg(D.map(r => r.d.t | 0)), goldPlay: avg(D.map(r => r.d.gd | 0)), ab: avg(D.map(r => r.d.ab | 0)) };
   const vers = [...group(L, r => r.ver || '?')].map(([k, A]) => [k, A.length]).sort((a, b) => b[1] - a[1]).slice(0, 5);
-  return { gym, sf, mg, vers };
+  return { gym, sf, mg, ed, vers };
 }
 const S = stats(cur), P = stats(prev);
 
@@ -99,6 +100,9 @@ const body = [
   `한 사람 하루 판 수: 중앙 ${v(S.mg.dayPlays.p50)} · 상위 10% ${v(S.mg.dayPlays.p90)}`, '',
   tbl(['랭크', '판', '점수 중앙', '점수 상위 10%'], S.mg.rank.map(r => [r.k, r.n, r.p50, r.p90])), '',
   tbl(['기술 타입', '판', '점수 중앙'], S.mg.ab.map(r => [r.k, r.n, r.p50])), '',
+  '## 미니게임 (진화구슬 키우기)',
+  `${v(S.ed.n)}판 · ${S.ed.people}명 · 한 판 평균 ${v(S.ed.sec)}초 · 기술 평균 ${v(S.ed.ab)}번`,
+  `점수: 중앙 ${v(S.ed.score.p50)} · 상위 10% ${v(S.ed.score.p90)} · 골드: 한 판 평균 ${v(S.ed.goldPlay)}G (1분에 ${S.ed.sec ? v(Math.round(S.ed.goldPlay / S.ed.sec * 60)) : '-'}G, 장애물 넘기 1분에 ${S.mg.sec ? v(Math.round(S.mg.goldPlay / S.mg.sec * 60)) : '-'}G)`, '',
   `버전: ${S.vers.map(([k, n]) => `${k} ${n}`).join(' · ') || '-'}`, '',
   '<details><summary>숫자 (JSON)</summary>', '', '```json', JSON.stringify({ cur: S, prev: P, flags }, null, 1).slice(0, 50000), '```', '</details>',
 ].join('\n');
