@@ -3048,3 +3048,4 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .sp-recs.on .sp-recsb{background:#fff4d6;padding:0 6px 0 3px;min-width:0}#gym .sp-recs.on .sp-recsb b{max-width:5em;overflow:hidden;text-overflow:ellipsis}
 #gym .sp-recsx{border-left:0;padding:0 8px}
 #gym .sp-recs .sp-recth .rk-fr{width:24px;height:24px;display:inline-block}#gym .sp-recs .sp-recth .rk{display:none}
+#gym .sp-recsb b{font-weight:400}   /* v17.69 경완: 추천받기 글자 얇게 (필터 버튼과 같은 굵기) */
