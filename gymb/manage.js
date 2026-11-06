@@ -234,7 +234,7 @@ async function drawTrain() {
   Y.co = g.sf.filter(x => x.yard).slice(0, YARD_SF).map((x, i) => { const q = document.createElement('i'), cx = W * (i ? .9 : .1), cy = H * .6; q.className = 'ty-co' + (K.owW(x.ow) > 16 ? ' w32' : ''); q.dataset.co = i;
     q.style.cssText = `left:${cx}px;top:${cy}px;z-index:${Math.round(cy)};background-image:url(${K.owSrc(x.ow)})`; Y.L.append(q); return { s: x, el: q, x: cx, y: cy, nx: performance.now() / 1000 + 1 + i * 1.7, fw: K.owW(x.ow) * 2, i, tg: null, tn: 0, d: 'd', fx: 1, snap: 1, hx: cx, hy: cy }; });   // v17.69 경완 '켤 때마다 같은 자리에서 걸어감': 처음엔 고른 포켓몬 옆에 바로 서 있음
   // v17.77 경완 '훈련장에도 필드처럼 날씨·시간, 어두워지면 조명': 필드와 같은 곱하기 색(GA.light) + 가로등 3개 + 비·눈
-  Y.lp = [[14, H * .42], [W - 14, H * .42], [Y.pond.x1 + 14, Y.pond.y0 - 6]].map(([x, y]) => { const q = document.createElement('i'); q.className = 'ty-lp'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y)}`; Y.L.append(q); return { x, y, el: q }; });
+  Y.lp = [[14, H * .42], [W - 14, H * .42], [Y.pond.x1 + 14, Y.pond.y0 - 6]].map(([x, y]) => { const q = document.createElement('i'); q.className = 'ty-lp'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y)}`; Y.L.append(q); return { x, y, el: q, dx: x < W / 2 ? 1 : -1 }; });
   el.insertAdjacentHTML('beforeend', '<i class="ty-nt"></i><i class="ty-glow"></i><i class="ty-wx"></i>'); yLight();
   sh.onclick = ev => {
     const c = ev.target.closest('[data-co]'); if (c) { sfx('tap'); const o = Y.co[+c.dataset.co]?.s; if (o) sfDetail(o); return; }
@@ -350,10 +350,18 @@ function yCoach(c, now, dt) {
 }
 function yLight() {
   const F = GA.light?.(); if (!F || !Y) return; const e = Y.el, on = F.lamps;
-  e.querySelector('.ty-nt').style.backgroundColor = `rgb(${F.col.join(',')})`;
+  const nt = e.querySelector('.ty-nt'); nt.style.backgroundColor = `rgb(${F.col.join(',')})`;
   Y.lp.forEach(l => l.el.classList.toggle('on', on));
-  const gl = e.querySelector('.ty-glow'); gl.style.opacity = on ? Math.max(.35, F.dark).toFixed(2) : 0;
-  gl.style.background = Y.lp.map(l => `radial-gradient(ellipse 120px 90px at ${l.x}px ${l.y - 52}px, rgba(255,214,130,.55), rgba(255,200,110,.18) 45%, transparent 75%)`).join(',');
+  // v17.79 경완 '불빛 더 희고 밝게, 실제로 훈련장을 밝히게 — 빛 엔진': 필드처럼 밤 그늘(곱하기)에 가로등 밑 땅만큼 구멍(원래 땅 색) + 흰 빛 더하기(screen)
+  const k0 = on ? Math.min(1, F.dark * 1.2) : 0, hole = [], gls = [];
+  if (k0 > .05) Y.lp.forEach(l => { const gx = l.x + l.dx * 30, gy = l.y + 14;
+    hole.push(`radial-gradient(170px 110px at ${gx}px ${gy}px,rgba(0,0,0,${(1 - .9 * k0).toFixed(2)}) 0,rgba(0,0,0,${(1 - .62 * k0).toFixed(2)}) 40%,rgba(0,0,0,${(1 - .22 * k0).toFixed(2)}) 72%,#000 100%)`,
+      `radial-gradient(26px 70px at ${l.x + l.dx * 6}px ${l.y - 22}px,rgba(0,0,0,${(1 - .7 * k0).toFixed(2)}) 0,#000 100%)`);
+    gls.push(`radial-gradient(14px 10px at ${l.x + l.dx * 6}px ${l.y - 55}px,rgba(255,255,250,.95),rgba(255,255,240,.35) 60%,transparent)`,
+      `radial-gradient(150px 96px at ${gx}px ${gy}px,rgba(255,252,238,.42),rgba(255,248,226,.16) 50%,transparent 80%)`); });
+  nt.style.webkitMaskImage = nt.style.maskImage = hole.join(',');
+  nt.style.webkitMaskComposite = hole.length > 1 ? 'source-in' : ''; nt.style.maskComposite = hole.length > 1 ? 'intersect' : '';
+  const gl = e.querySelector('.ty-glow'); gl.style.opacity = k0 > .05 ? Math.min(1, .35 + k0).toFixed(2) : 0; if (gls.length) gl.style.background = gls.join(',');
   const wx = e.querySelector('.ty-wx'); wx.className = 'ty-wx' + (F.snow ? ' snow' : F.wx === 'rain' ? ' rain' + (F.storm ? ' storm' : '') : '');
 }
 function yardLoop(ts) {
