@@ -10,7 +10,7 @@ const S = GA.S;
 const IMG = 'gym/img/';
 // 4세대 플라티나 그림 (경완 2026-10-27 'npc들도 4세대 pt에 맞춰야'): 있으면 pt/ 에서, 걸음 그림은 32칸
 const PT_TR = new Set('artist battle_girl beauty bird_keeper black_belt bug_catcher camper champion_cynthia channeler cool_trainer_f cool_trainer_m cyclist_m dragon_tamer elite_four_aaron elite_four_bertha elite_four_flint elite_four_lucian fisherman gentleman hiker jogger lass leader_byron leader_candice leader_fantina leader_gardenia leader_maylene leader_roark leader_volkner leader_wake ninja_boy picnicker poke_kid pokemaniac psychic_m rival_barry rocker ruin_maniac sailor skier_f super_nerd swimmer_f youngster'.split(' ')), PT_OW = new Set('aaron artist barry bird_keeper battle_girl beauty bertha black_belt boy bug_catcher byron camper candice channeler cooltrainer_f cooltrainer_m crasher_wake cyclist_m cynthia dragon_tamer fantina fisher flint gardenia gentleman gym_guy hiker jogger lass lucian man maylene ninja_boy picnicker poke_kid poke_maniac roark rocker ruin_maniac sailor scientist skier_f swimmer_f_land volkner youngster'.split(' '));
-const trSrc = k => `${IMG}${PT_TR.has(k) || /^hg_/.test(k || '') ? 'pt/' : ''}tr/${k}.png`, owSrc = k => `${IMG}${PT_OW.has(k) ? 'pt/' : ''}ow/${k}.png`, owW = k => PT_OW.has(k) || /^pt_/.test(k || '') ? 32 : 16;
+const trSrc = k => `${IMG}${PT_TR.has(k) || /^hg_/.test(k || '') ? 'pt/' : ''}tr/${k}.png`, owSrc = k => `${IMG}${PT_OW.has(k) ? 'pt/' : ''}ow/${k}.png?v=2`, owW = k => PT_OW.has(k) || /^pt_/.test(k || '') ? 32 : 16;
 const VER = ((document.currentScript && document.currentScript.src.match(/[?&]v=([^&]+)/)) || [])[1] || '';
 const loadJs = (src, g) => window[g] ? Promise.resolve() : new Promise(ok => { const x = document.createElement('script'); x.src = `${src}?v=${VER}`; x.onload = x.onerror = () => ok(); document.head.appendChild(x); });
 const bgmPlay = n => { try { window.GymBGM?.play(n); } catch (e) {} };
@@ -564,7 +564,7 @@ const CLS = {
   battle_girl: { ow: 'battle_girl', f: 1, t: [2] }, ninja_boy: { ow: 'ninja_boy', f: 0, t: [4, 7, 17] }, ruin_maniac: { ow: 'ruin_maniac', f: 0, t: [5, 6, 9] },
   dragon_tamer: { ow: 'dragon_tamer', f: 0, t: [16] }, skier_f: { ow: 'skier_f', f: 1, t: [15] }, artist: { ow: 'artist', f: 0, t: [18, 14, 1] },
 };
-const N3 = new Set(['agatha', 'blaine', 'brock', 'bruno', 'erika', 'koga', 'lance', 'lt_surge', 'misty', 'sabrina', 'roxanne', 'brawly', 'wattson', 'flannery', 'winona', 'tate', 'liza', 'sidney', 'phoebe', 'glacia', 'drake']);   // 걸음 프레임이 없는 그림(3칸)
+const N3 = new Set();   // v17.47 경완 '마티스가 걷는 모션이 없네': 3칸뿐이던 관장·사천왕 21명 그림에 걸음 6칸을 만들어 9칸으로 (tools/gym/owwalk.py, 다리 4줄 들기·보폭). 이제 3칸 그림 없음
 const CHAL_LINES = [
   ['관장님! 저랑 배틀해 주세요!', '오늘은 꼭 배지를 받아 갈 거예요!', '제 포켓몬도 많이 컸어요. 봐 주세요!', '떨리지만… 승부예요!'],
   ['소문 듣고 왔어요. 실력 좀 보여 주시죠.', '이 체육관을 넘어서 더 위로 갈 겁니다!', '준비는 끝났어요. 진지하게 부탁드려요.', '제 전략을 막을 수 있을까요?'],
