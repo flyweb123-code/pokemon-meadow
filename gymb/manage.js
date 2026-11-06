@@ -625,7 +625,7 @@ const SHOP_T = [['tm', '기술머신'], ['tr', '기술레코드'], ['it', '도�
 const tmPrice = x => x[3] === 2 ? 500 : (x[4] || 0) <= 50 ? 300 : x[4] <= 70 ? 700 : x[4] <= 85 ? 1200 : x[4] <= 100 ? 2000 : 3000;
 const prBtn = () => `<button class="tm-sort" type="button" data-pr="1">${shopPr > 0 ? '가격 낮은 순 ▲' : '가격 높은 순 ▼'}</button>`;
 function drawShop() {
-  const goIt = window.gymShopIt, goMint = window.gymShopMint; window.gymShopIt = window.gymShopMint = null;   // v17.50 경완: 상세카드 추천 도구·추천 성격 → 상점 도구 탭의 그 도구·민트 사기 창으로 바로
+  const goIt = window.gymShopIt, goMint = window.gymShopMint; window.gymShopIt = window.gymShopMint = null;   // v17.57 경완: 상세카드 추천 도구·추천 성격 → 상점 도구 탭의 그 도구·민트 사기 창으로 바로
   if (goIt || goMint) shopT = 'it';
   if (!SHOP_T.some(([k]) => k === shopT)) shopT = 'tm';
   sh.innerHTML = `<div class="sp-top"><div class="sf-hd"><h3>체육관 상점</h3><span class="sf-cap"><span><small>보유 골드</small><b class="sp-gold"><i class="coin"></i><span class="gy-goldn">${/[?&]studio/.test(location.search) ? '∞' : S.gold.toLocaleString()}</span>G</b></span></span></div><div class="sp-tabs" role="tablist">${SHOP_T.map(([k, n]) => `<button role="tab" data-st="${k}" aria-selected="${shopT === k}">${n}</button>`).join('')}</div></div><div class="sp-body"></div>`;   // 탭은 다시 위 작은 탭 (경완 2026-10-28)

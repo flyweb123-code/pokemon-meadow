@@ -2976,3 +2976,12 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v17.34 경완 '지닌 도구 설명 텍스트 왜 이렇게 흐리냐': 도구 설명은 본문 색, '…가 지니고 있어요'도 덜 흐리게 */
 #gym .gy-pop .gy-msg.mi-d{color:var(--win-ink,#282830)!important}
 #gym .gy-pop .gy-msg.it-own{opacity:1;color:#6a6a80!important;text-align:center}
+/* v17.57 경완: 상세카드 '훈련중' 딱지는 이름 옆(넘치면 다음 줄 왼쪽)에 */
+.mp-hd h4{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;text-align:left;justify-content:flex-start}.mp-hd h4 .tr-tag{margin-left:0;vertical-align:0}
+/* v17.57 경완: 기술 바꾸기 창 순서 바꾸기·추천 기술 = 기술 목록 밑 오른쪽 */
+.mv-tools{display:flex;justify-content:flex-end;gap:8px;margin:10px 0 0}.mv-recb{background:#eaf3ff;border-color:#8fb3e0;color:#2f5c9a}
+/* v17.57 경완: 지닌 도구·성격 창 추천 칸 */
+.it-rec{margin:10px 0 4px;padding:8px 10px 10px;border:2px dashed #c9b98f;border-radius:8px;background:#fffaf0;text-align:left}.it-recl{display:block;font-size:12px;font-weight:700;color:#8a6a2a;margin-bottom:6px}
+.it-recb{display:flex;flex-direction:column;gap:8px}.it-recb .sp-tm{pointer-events:none;margin:0;width:100%;box-sizing:border-box}.it-recw{color:#6a6a80;font-size:13px;text-align:center}
+.it-recgo{align-self:flex-end;font-size:13px;padding:6px 12px}
+.sp-tm.sp-go{outline:3px solid #f0b030;outline-offset:1px}

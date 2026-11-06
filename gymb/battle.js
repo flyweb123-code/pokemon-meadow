@@ -102,7 +102,7 @@ function smartMoves(sp, lv, tier, r) {
   if (!take.length) return pickMoves(sp, lv, r);
   return take.map(i => D.mv[i][0]);
 }
-// v17.50 경완 '추천 기술': 지금 기술 + 배울 수 있는 기술(레벨업·익힌 기술) 중에서, 이 개체의 실제 능력치(레벨·개체값·성격)로
+// v17.57 경완 '추천 기술': 지금 기술 + 배울 수 있는 기술(레벨업·익힌 기술) 중에서, 이 개체의 실제 능력치(레벨·개체값·성격)로
 // 물리/특수를 정하고 자속 → 다른 타입 견제 → (느리면) 선공기 → 능력치 올리기·상태 이상·회복 하나 → 남은 칸은 센 기술. 상대 AI(smartMoves)와 같은 실전 기준
 function recMoves(P, m = gm(P)) {
   const pool = [...new Set([...m.mv, ...mvCands(P, m)])].map(id => MVI.get(id)).filter(i => i != null && D.mv[i]);
@@ -153,7 +153,7 @@ const EVO_LV = {2:16,3:32,5:16,6:36,8:16,9:36,11:7,12:10,14:7,15:10,17:18,18:36,
 // 경험치 (배틀·훈련장): 레벨업하면 그 레벨에 배우는 기술을 익힌다. 기술이 4개면 '아는 기술'(kn)에 넣고, 가장 약한 공격 기술보다 세면 바로 바꾼다 (변화 기술은 자동으로 안 바꿈)
 // ask: 배틀처럼 기술이 4개면 바로 바꾸지 않고 out.ask 에 모아 두었다가 본가처럼 물어본다 (경완 2026-10-30)
 function gainXp(P, n, ask = false) {
-  const m = gm(P), g = growth(P.sp), out = { lv0: m.lv, lv: m.lv, n: 0, learned: [], ask: ask && ask !== 'keep' ? [] : null };   // ask 'keep' = 훈련장 (v17.50 경완 '기존 기술 갈아끼우지 말고 익혀두기만')   // learned: [[새 기술, 잊은 기술|'']]
+  const m = gm(P), g = growth(P.sp), out = { lv0: m.lv, lv: m.lv, n: 0, learned: [], ask: ask && ask !== 'keep' ? [] : null };   // ask 'keep' = 훈련장 (v17.57 경완 '기존 기술 갈아끼우지 말고 익혀두기만')   // learned: [[새 기술, 잊은 기술|'']]
   if (m.lv >= LV_MAX || !(n > 0)) return out;
   n = Math.round(n); out.n = n; m.xp = Math.min(m.xp + n, xpAt(g, LV_MAX));
   while (m.lv < LV_MAX && m.xp >= xpAt(g, m.lv + 1)) { m.lv++; const L = D.sp[P.sp]?.lv || []; for (let i = 0; i < L.length; i += 2) if (L[i] === m.lv) teach(m, D.mv[L[i + 1]][0], out, ask === 'keep' ? 'keep' : !ask); }
@@ -1409,7 +1409,7 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
       if (a === 'tm') { close(); usePop(P, () => monPop(P.id, fromBox, null, lst)); return; }
       // 프로필 그림을 누르면 지닌 도구 정보 + 돌려받기 (경완 2026-10-29)
       if (a === 'hit') { const it = m.it, x = HOLD[it];
-        // v17.50 경완: 추천 도구 하나 — 창고에 있으면 바로 지니게, 없으면 상점 도구 탭으로 넘어가 그 도구 사기 창
+        // v17.57 경완: 추천 도구 하나 — 창고에 있으면 바로 지니게, 없으면 상점 도구 탭으로 넘어가 그 도구 사기 창
         const recBox = `<div class="it-rec"><span class="it-recl">추천 도구</span><div class="it-recb"><small class="it-recw">고르는 중…</small></div></div>`;
         const recFill = async (w, c2) => { const box = w.querySelector('.it-recb'); if (!box) return; const r = await recIt(P); if (!box.isConnected) return;
           if (!r) { box.innerHTML = '<small class="it-recw">추천할 도구가 없어요</small>'; return; }
@@ -1623,7 +1623,7 @@ const itRow = (id, n, note) => { const x = HOLD[id]; return `<button type="butto
 // 도구는 종류마다 하나만 (경완 2026-10-29): 창고에 있거나 누가 지니고 있으면 가진 것
 const itWho = id => { const M = S.gym?.mon || {}; for (const k in M) if (M[k]?.it === id) { const P = boxOf(+k || k); if (P) return P; } return null; };
 const itHave = id => (S.gym?.itm?.[id] > 0) || !!itWho(id);
-// v17.50 경완 '지닌 도구 창에 추천 도구': 어려운 도전자가 도구를 고르는 기준(foeItems 2)을 이 개체의 기술·특성·종족값에 그대로. 다른 포켓몬이 지닌 도구는 빼고
+// v17.57 경완 '지닌 도구 창에 추천 도구': 어려운 도전자가 도구를 고르는 기준(foeItems 2)을 이 개체의 기술·특성·종족값에 그대로. 다른 포켓몬이 지닌 도구는 빼고
 async function recIt(P) { await loadSim(); const e = myEntry(P); e.it = null; e.fmIt = null; const skip = Object.keys(HOLD).filter(k => { const w = itWho(k); return w && w.id !== P.id; });
   try { foeItems([e], 2, skip); } catch (er) { return null; } return e.it && HOLD[e.it] ? e.it : null; }
 // 가진 도구 전부: [id, 지닌 포켓몬|null]. 창고에 있는 것 먼저
@@ -1658,7 +1658,7 @@ function mintInfo(k, lab, act, foot = '', own) {
   gymPop(`<h4 class="mi-h${own != null ? ' has-own' : ''}"><img class="tm-ic it-ic" alt="" src="${mintImg(k)}">${esc(mintNm(k))}${own != null ? bagN(own) : ''}</h4>${foot}<p class="gy-msg mi-d">${esc(mintD(k))}</p><div class="gy-btns${lab ? '' : ' one'}">${lab ? `<button data-a="x">닫기</button><button class="main" data-a="t">${lab}</button>` : '<button data-a="x">닫기</button>'}</div>`,
     (a, close) => { close(); if (a === 't') act?.(); });
 }
-// v17.50 경완 '성격 창에 추천 성격': 이 개체가 쓰는 공격 기술(물리·특수)과 종족값으로 — 쓰는 공격을 올리고 안 쓰는 공격을 내림.
+// v17.57 경완 '성격 창에 추천 성격': 이 개체가 쓰는 공격 기술(물리·특수)과 종족값으로 — 쓰는 공격을 올리고 안 쓰는 공격을 내림.
 // 빠른 편(스피드 종족값 80↑ 이고 공격 쪽이 강함)이면 스피드를, 공격이 약하고 막는 쪽이 강하면 방어·특방을 올린다
 function recNat(P, m = gm(P)) {
   const bs = SPECIES[P.sp]?.bs || [60, 60, 60, 60, 60, 60], mv = (m.mv || []).map(mvOf).filter(Boolean);
@@ -1734,7 +1734,7 @@ function movesPop(P, done, hi = -1) {   // hi: 방금 바꾼 칸 — 테두리�
     <div class="mp-moves mp-line pick mv-ord">${m.mv.map((id, i) => mvOf(id) ? mvRow(mvOf(id), 's' + i).replace('class="mp-mv"', `class="mp-mv${(Array.isArray(hi) ? hi.includes(i) : i === hi) ? ' just' : ''}"`) : '').join('')}${m.mv.length < 4 ? `<button class="mp-mv empty" data-a="s${m.mv.length}"><b>빈 칸</b></button>` : ''}</div>
     <div class="mv-tools">${m.mv.length > 1 ? '<button type="button" class="mv-ordb" data-a="ord">순서 바꾸기</button>' : ''}<button type="button" class="mv-ordb mv-recb" data-a="rec">추천 기술</button></div>
     <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close, btn) => {
-    if (a === 'rec') { if (ord) return; const nw = recMoves(P, m), was = m.mv.slice();   // v17.50 경완 '추천 기술': 배울 수 있는 기술 중 능력치·실전 배틀 기준으로 알아서
+    if (a === 'rec') { if (ord) return; const nw = recMoves(P, m), was = m.mv.slice();   // v17.57 경완 '추천 기술': 배울 수 있는 기술 중 능력치·실전 배틀 기준으로 알아서
       if (nw.join() === was.join()) { p.querySelector('.mv-hd .gy-msg').textContent = '지금 기술이 추천 기술이에요'; return; }
       m.mv = nw; m.kn = [...new Set([...(m.kn || []), ...was.filter(id => !nw.includes(id))])].filter(id => !nw.includes(id)); GA.save(); learnFan?.();
       close(); return movesPop(P, done, nw.map((id, i) => was[i] === id ? -1 : i).filter(i => i >= 0)); }
