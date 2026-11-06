@@ -3010,4 +3010,4 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .sp-recx{border:3px solid var(--frame);border-radius:0;background:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12);width:42px;color:var(--win-ink,#282830)}#gym .sp-recx:active{transform:none;box-shadow:inset 0 3px 0 rgba(0,0,0,.12)}
 #gym .sp-lut{grid-template-columns:repeat(3,minmax(0,1fr));margin:4px 0 10px}#gym .sp-recn{margin:14px 0}
 #gym .mp-mv.mv-recm{box-shadow:inset 0 0 0 2px rgba(240,176,48,.9),inset 0 0 8px 2px rgba(240,176,48,.35);animation:mvRecm2 2.4s ease-in-out infinite}@keyframes mvRecm2{50%{box-shadow:inset 0 0 0 2px rgba(240,176,48,.6),inset 0 0 3px 1px rgba(240,176,48,.15)}}
-#gym .mv-recl{position:static;display:inline-block;margin-left:5px;vertical-align:2px;font-size:10px;padding:2px 4px}
+#gym .mv-recl{position:absolute;right:8px;top:-7px;z-index:2;display:block;font-size:10px;padding:2px 5px;box-shadow:0 1px 0 rgba(0,0,0,.15)}#gym .mp-mv.mv-recm{scroll-margin-top:10px}   /* v17.62 경완: 추천 글자 다시, 줄 위 테두리에 얹어서 줄 폭은 그대로 */

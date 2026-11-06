@@ -1823,7 +1823,7 @@ function movesPop(P, done, hi = -1) {   // hi: 방금 바꾼 칸 — 테두리�
       const id = b.slice(1);
       mvInfo(id, () => { c2(); m.kn = (m.kn || []).filter(x => x !== id); if (old) { m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); } else m.mv.push(id); GA.save(); learnFan(); movesPop(P, done, old ? k : m.mv.length - 1); }, old ? '바꾸기' : '배우기', () => {}); })));
     // v17.59 경완 '기술 하나 바꿀 때도 다른 기술과의 조합으로 추천 기술 테두리 은은하게': 나머지 기술과 묶었을 때 가장 좋은 배울 기술 (지금보다 나을 때만)
-    function recMark(p) { loadSim().then(() => { if (!p.isConnected) return; const r = recSlot(P, k, C); const b = r && p.querySelector(`.mv-learn [data-a="n${r}"]`); if (b) { b.classList.add('mv-recm'); b.scrollIntoView({ block: 'nearest' }); } }); return p; }
+    function recMark(p) { loadSim().then(() => { if (!p.isConnected) return; const r = recSlot(P, k, C); const b = r && p.querySelector(`.mv-learn [data-a="n${r}"]`); if (b) { b.classList.add('mv-recm'); b.insertAdjacentHTML('beforeend', '<i class="mv-recl">추천</i>'); b.scrollIntoView({ block: 'nearest' }); } }); return p; }
     // v13.19 경완: 바뀔 기술 = 창 위 바깥에 따로 뜨는 카드
     function oldCard(p) { p.querySelector(':scope>.win').classList.add('mv-neww'); if (old && mvOf(old)) p.insertAdjacentHTML('afterbegin', `<div class="win mv-oldc"><span class="mv-oldl">바꿀 기술</span><div class="mp-moves mp-line mv-old">${mvRow(mvOf(old), 'o')}</div></div>`); return p; }
     learn();
