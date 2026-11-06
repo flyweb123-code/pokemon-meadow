@@ -1450,12 +1450,12 @@ let bsMus = false;   // 승급 심사 화면 곡(포켓몬리그)이 나오는 �
 let tabOpt = null;
 function openTab(t, opt) {
   if (opt?.back === 1) opt = { back: { t: tab, opt: tabOpt } };   // v17.64 경완: 상세카드 추천 → 상점으로 넘어가도 원래 화면(배틀 라인업 고르기 등)으로 돌아갈 길. 라인업 고르기는 그대로 기다림
-  window.gymShopBack = t === 'shop' && opt?.back?.t ? opt.back : null; tabOpt = opt?.back ? null : opt;
+  window.gymShopBack = t === 'shop' && opt?.back?.opt?.pick ? opt.back : null; tabOpt = opt?.back ? null : opt;   // v17.66 경완: ‹ 는 메뉴가 잠긴 때(배틀 라인업 고르기)만
   if (bsMus && !(t === 'battle' && opt?.pick) && !opt?.back) { bsMus = false; bgmPlay('gym'); }   // 심사 화면·라인업에서 다른 곳으로 가면 체육관 곡으로
   // 꾸미기·자리 정하기 중에 다른 메뉴를 열면 그 모드를 끝낸다 (경완 2026-10-27 '꾸미기 하고 나서 맵에 그리드 안 사라지는 오류')
   if (t && ded) ded.end?.();
   if (luRes && !opt?.pick && !opt?.back) { const r = luRes; luRes = null; root.classList.remove('lupk'); setTimeout(() => r(null)); }   // 라인업 고르다 닫음
-  root.classList.toggle('lupk', !!(t === 'battle' && opt?.pick));   // 배틀 라인업 고르기 중엔 아래 메뉴 잠금 (퇴근만 됨, v12.24 경완 '메뉴도 똑같이 잠기고')
+  root.classList.toggle('lupk', !!(t === 'battle' && opt?.pick || t === 'shop' && opt?.back?.opt?.pick));   // v17.66 경완: 라인업 고르다 상점에 가도 메뉴는 잠긴 채 (‹ 로만 돌아감)   // 배틀 라인업 고르기 중엔 아래 메뉴 잠금 (퇴근만 됨, v12.24 경완 '메뉴도 똑같이 잠기고')
   if (t) root.querySelectorAll('.gy-infos').forEach(x => x.remove());   // 창고·도전자 명단을 연 채 아래 메뉴를 누르면 그 화면은 닫는다
   tab = t; root.querySelectorAll('.gy-menu button[data-t]').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === t));
   const sh = $g('.gy-sheet'); sh.classList.remove('ty-on', 'lk'); if (!t) { sh.hidden = true; return; }
