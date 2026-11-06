@@ -659,9 +659,12 @@ function pickSp(types, lv, tg) {
   for (const w of [55, 90, 140, 400]) { const L = P.filter(x => !spOff(x.n) && Math.abs(x.b - tgt) <= w && (!types.length || x.t.some(t => types.includes(t)))); if (L.length) return pick(L).n; }
   return 19;
 }
-function mkTeam(types, lvB, n, sb, ct, q) {
+// v17.73 경완 '종종 본가랑 다르게 반전 킥 한 마리': tw 면 에이스(마지막) 말고 한 칸을 트레이너 종류와 상관없는 타입으로
+const TW_P = .2;
+function mkTeam(types, lvB, n, sb, ct, q, tw) {
   const T = types.length ? types : [rndI(1, 18), rndI(1, 18)], TC = ct?.length ? (types.length ? types.filter(x => ct.includes(x)) : ct) : [];
-  return Array.from({ length: n }, (_, i) => { const lv = clampN(lvB + rndI(-2, 1) + (i === n - 1 ? 1 : 0), 2, 100); return [pickSp([TC.length && Math.random() < q ? pick(TC) : pick(T)], lv, sb && sb > spTgt(lv) ? sb : 0), lv]; });
+  const twI = tw && types.length && n >= 2 ? rndI(0, n - 2) : -1, TO = Array.from({ length: 18 }, (_, k) => k + 1).filter(x => !types.includes(x));
+  return Array.from({ length: n }, (_, i) => { const lv = clampN(lvB + rndI(-2, 1) + (i === n - 1 ? 1 : 0), 2, 100); return [pickSp([i === twI ? pick(TO) : TC.length && Math.random() < q ? pick(TC) : pick(T)], lv, sb && sb > spTgt(lv) ? sb : 0), lv]; });
 }
 /* v17.31 경완 '보정 최댓값을 등급별로' + '하나만 센 포켓몬 넣고 나머지 약하게 넣는 허점': 라인업 강함 보정.
    기준 = 종족값 합계가 가장 높은 3마리(종족값 평균·레벨 평균). 약한 포켓몬을 섞어도 기준이 안 내려간다.
@@ -706,7 +709,7 @@ function refit(c, my) {
   const n = diff ? rndI(3, clampN(my.length + 1 + (f > .4) + (f > .8), 3, 6)) : clampN(rndI(2, 3) + (f > .5), 1, my.length);
   const ls = lsLv(g.lstk), base = S3 ? Math.max(avg, S3.sl + stkLv(g.stk) - ls) + (ls ? 0 : S3.lvB) : avg;   // 기준 레벨 = 평균과 센 3마리 평균 중 큰 쪽 + 강함 보정 (연패 중엔 강함 보정 쉼)
   const ct = CT_OF(g.ty), q = c.cq ?? 0;
-  c.team = mkTeam(C.t, chalLv(base, diff, f), n, ls ? 0 : S3?.sb, ct, q);
+  c.team = mkTeam(C.t, chalLv(base, diff, f), n, ls ? 0 : S3?.sb, ct, q, c.tw);
   // v17.32: 상성 좋은 포켓몬을 데려온 만큼 강함 보정 레벨을 덜 준다 (상성 포켓몬 비율만큼 lvB 빼기)
   const cs = c.team.filter(m => isCt(m[0], ct)).length / c.team.length, cut = S3 && !ls ? Math.round(S3.lvB * cs) : 0;
   if (cut) c.team = c.team.map(m => [m[0], clampN(m[1] - cut, 2, 100), m[2]]);
@@ -727,7 +730,7 @@ function mkChal(t) {
   const ct = CT_OF(g.ty), A = ctA(G.i, diff), KS = Object.keys(CLS).filter(x => !!CLS[x].e === !diff);
   const k = pickW(KS, KS.map(x => 1 + A * ctAdv(CLS[x].t, ct))), C = CLS[k], cq = ctQ(A);   // 상성 좋은 트레이너가 더 자주 (등급·어려움일수록)
   const n = diff ? rndI(3, clampN(luNow().length + 1 + (f > .4) + (f > .8), 3, 6)) : rndI(2, 3) + (f > .5);
-  return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), diff, f, cq, ivm: Math.min(31, 8 + Math.round(f * 20)), team: mkTeam(C.t, chalLv(avg, diff, f), n, 0, ct, cq) };
+  { const tw = Math.random() < TW_P ? 1 : 0; return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), diff, f, cq, ivm: Math.min(31, 8 + Math.round(f * 20)), tw, team: mkTeam(C.t, chalLv(avg, diff, f), n, 0, ct, cq, tw) }; }
 }
 // 이름 있는 트레이너 팀을 지금 내 라인업에 맞춰 (레벨 = 내 평균 + bonus). 가장 가까운 단계 팀을 골라 레벨만 옮긴다
 function nmTeam(n, tgt) {
