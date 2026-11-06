@@ -21,6 +21,7 @@ const gold = n => `<i class="coin"></i>${n.toLocaleString()}G`;
 const monImg = (sp, o = {}) => { const g = GB().gifUrl(sp, false, !!o.s, !!o.f), png = GB().pkSrc(sp, { s: o.s, f: o.f });
   return g ? `<img class="mi" alt="" src="${g}" onerror="this.onerror=null;this.src='${png}';this.classList.add('pn')">` : `<img class="mi pn" alt="" src="${png}">`; };
 const owIc = ow => `<i class="ow-ic${K.owW(ow) > 16 ? ' w32' : ''}" style="background-image:url(${K.owSrc(ow)})"></i>`;
+let shRec = null;   // v17.58 경완 '상점 추천받기': 고른 라인업 포켓몬 id (그 포켓몬 추천 항목만)
 let sh = null, cur = null, shopT = 'tm', tmTy = 0, tmCat = -1, tmPow = 1, shopPr = 1;   // shopPr: 상점 가격순 (1 싼 순 · -1 비싼 순, 경완 2026-10-29)   // 기술머신: 타입·형태(물리 0 특수 1 변화 2) 필터, 위력순 (1 높은 순 · -1 낮은 순, 경완 2026-10-28)
 function tab(t, el) { sh = el; cur = t; draw(); }
 function draw() { if (!sh || !st()) return; sh.onclick = null; sh.classList.remove('ty-on'); ({ train: drawTrain, staff: drawStaff, shop: drawShop })[cur]?.(); GB()?.fillTh(sh); sh.classList.remove('lk'); if (K.lockedT?.(cur)) K.lockOv(sh, cur); }
@@ -624,17 +625,26 @@ const SHOP_T = [['tm', '기술머신'], ['tr', '기술레코드'], ['it', '도�
 // 이전:   // 넓히기는 빼고 등급 따라 저절로 (경완 2026-10-28)
 const tmPrice = x => x[3] === 2 ? 500 : (x[4] || 0) <= 50 ? 300 : x[4] <= 70 ? 700 : x[4] <= 85 ? 1200 : x[4] <= 100 ? 2000 : 3000;
 const prBtn = () => `<button class="tm-sort" type="button" data-pr="1">${shopPr > 0 ? '가격 낮은 순 ▲' : '가격 높은 순 ▼'}</button>`;
+// v17.58 경완: 기술머신·기술레코드·도구 탭 위 줄 전체 '추천받기' → 라인업 포켓몬 고르기 → 그 포킷몬에게 추천할 만한 것만
+const recMon = () => { const P = shRec != null && S.box.find(p => p.id === shRec); return P && luMons().some(x => x.id === P.id) ? P : null; };
+const luMons = () => [...new Set((GB().lus() || []).flat())].map(id => S.box.find(p => p.id === id)).filter(Boolean);
+function recBar() { if (!['tm', 'tr', 'it'].includes(shopT)) return ''; const P = recMon();
+  return P ? `<div class="sp-rec on"><button type="button" class="sp-recb" data-rec="pick"><span class="sp-recth">${GB().thumb(P)}</span><span class="sp-rect"><b>${esc(nmOf(P))}</b> 추천만 보는 중</span><small>바꾸기</small></button><button type="button" class="sp-recx" data-rec="off" aria-label="추천 끄기">✕</button></div>`
+    : `<div class="sp-rec"><button type="button" class="sp-recb" data-rec="pick"><span class="sp-rect"><b>추천받기</b></span><small>라인업 포켓몬에게 맞는 것만 보기</small></button></div>`; }
+function recPick() { const L = luMons();
+  if (!L.length) return say('라인업에 포켓몬이 없어요. 포켓몬 메뉴에서 라인업을 먼저 짜 주세요.');
+  pop(`<h4>누구에게 추천할까요?</h4><div class="sp-recl">${L.map(P => `<button type="button" class="sp-recp${P.id === shRec ? ' on' : ''}" data-a="p${P.id}">${GB().thumb(P)}<b>${esc(nmOf(P))}</b><small>Lv.${GB().gm(P).lv}</small></button>`).join('')}</div><div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { close(); if (a[0] !== 'p') return; shRec = +a.slice(1) || a.slice(1); redraw(); }); }
 function drawShop() {
   const goIt = window.gymShopIt, goMint = window.gymShopMint; window.gymShopIt = window.gymShopMint = null;   // v17.57 경완: 상세카드 추천 도구·추천 성격 → 상점 도구 탭의 그 도구·민트 사기 창으로 바로
-  if (goIt || goMint) shopT = 'it';
+  if (goIt || goMint) { shopT = 'it'; shRec = null; }
   if (!SHOP_T.some(([k]) => k === shopT)) shopT = 'tm';
-  sh.innerHTML = `<div class="sp-top"><div class="sf-hd"><h3>체육관 상점</h3><span class="sf-cap"><span><small>보유 골드</small><b class="sp-gold"><i class="coin"></i><span class="gy-goldn">${/[?&]studio/.test(location.search) ? '∞' : S.gold.toLocaleString()}</span>G</b></span></span></div><div class="sp-tabs" role="tablist">${SHOP_T.map(([k, n]) => `<button role="tab" data-st="${k}" aria-selected="${shopT === k}">${n}</button>`).join('')}</div></div><div class="sp-body"></div>`;   // 탭은 다시 위 작은 탭 (경완 2026-10-28)
+  sh.innerHTML = `<div class="sp-top"><div class="sf-hd"><h3>체육관 상점</h3><span class="sf-cap"><span><small>보유 골드</small><b class="sp-gold"><i class="coin"></i><span class="gy-goldn">${/[?&]studio/.test(location.search) ? '∞' : S.gold.toLocaleString()}</span>G</b></span></span></div><div class="sp-tabs" role="tablist">${SHOP_T.map(([k, n]) => `<button role="tab" data-st="${k}" aria-selected="${shopT === k}">${n}</button>`).join('')}</div>${recBar()}</div><div class="sp-body"></div>`;   // 탭은 다시 위 작은 탭 (경완 2026-10-28)
   const body = sh.querySelector('.sp-body');
   ({ tm: b => shopTm(b, false), tr: b => shopTm(b, true), it: shopIt, deco: shopDeco, fit: shopFit })[shopT](body);
   { const f = body.firstElementChild; if (f?.classList.contains('tm-row')) sh.querySelector('.sp-top').appendChild(f); }   /* v17.34 경완 '꾸미기 상점처럼 위쪽 고정, 필터 포함': 제목·골드·탭·필터 줄은 스크롤해도 위에 붙어 있음 */
   const inner = body.onclick; body.onclick = null;
-  sh.onclick = e => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.st) { sfx('tap'); shopT = b.dataset.st; redraw(); return; } if (b.dataset.pr) { sfx('tap'); shopPr = -shopPr; redraw(); return; } inner?.(e, b); };
-  if (goIt || goMint) { const b = sh.querySelector(goIt ? `.sp-body [data-it="${goIt}"]` : `.sp-body [data-mint="${goMint}"]`); if (b) { b.classList.add('sp-go'); b.scrollIntoView({ block: 'center' }); if (!b.disabled) b.click(); } }
+  sh.onclick = e => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.st) { sfx('tap'); shopT = b.dataset.st; redraw(); return; } if (b.dataset.pr) { sfx('tap'); shopPr = -shopPr; redraw(); return; } if (b.dataset.rec) { sfx('tap'); if (b.dataset.rec === 'off') { shRec = null; redraw(); return; } return recPick(); } inner?.(e, b); };
+  if (goIt || goMint) { const b = sh.querySelector(goIt ? `.sp-body [data-it="${goIt}"]` : `.sp-body [data-mint="${goMint}"]`); if (b) { b.classList.add('sp-go'); b.scrollIntoView({ block: 'center' }); setTimeout(() => b.classList.remove('sp-go'), 3600); } }   // v17.58 경완: 그 칸을 가운데로 + 빛나게 (사기 창은 눌러서)
 }
 // 기술머신: 내 체육관 타입 포켓몬이 배울 수 있는 기술. 사면 창고(g.tms {기술: 개수})에 들어가고, 가르치기는 포켓몬 정보 창의 '기술 가르치기'에서 (경완 2026-10-27)
 function shopTm(body, wantTR) {   /* v15.75 경완: 기술머신 탭·기술레코드 탭 따로 */
@@ -642,10 +652,11 @@ function shopTm(body, wantTR) {   /* v15.75 경완: 기술머신 탭·기술레�
   const can = new Map(); mons.forEach(P => (D.sp[P.sp]?.tm || []).forEach(i => { if (GB().isTR(D.mv[i][0]) !== !!wantTR) return; if (!can.has(i)) can.set(i, []); can.get(i).push(P); }));
   const types = [...new Set([...can.keys()].map(i => D.mv[i][2]))].sort((a, b) => a - b);
   if (tmTy !== -1 && !types.includes(tmTy)) tmTy = -1;   // -1 = 전체 (경완 2026-10-27 '에스퍼 포켓몬이라고 에스퍼 기술만 배우는 건 아닌데')
-  const L = [...can.keys()].map(i => D.mv[i]).filter(x => (tmTy === -1 || x[2] === tmTy) && (tmCat === -1 || x[3] === tmCat)).sort((a, b) => (tmPrice(a) - tmPrice(b)) * shopPr || a[2] - b[2] || (b[4] || 0) - (a[4] || 0));   // 가격순 (경완 2026-10-29 '위력순 말고 가격순')   // 모든 타입이면 타입별로 묶고 그 안에서 위력순 (경완 2026-10-29)
+  const RP = recMon(), RL = RP && GB().recTms(RP, wantTR);   // 추천받기: 그 포켓몬 추천 기술만 (추천 순), 타입·형태 필터는 무시
+  const L = RP ? RL.map(id => GB().mvOf(id)).filter(Boolean) : [...can.keys()].map(i => D.mv[i]).filter(x => (tmTy === -1 || x[2] === tmTy) && (tmCat === -1 || x[3] === tmCat)).sort((a, b) => RP ? 0 : (tmPrice(a) - tmPrice(b)) * shopPr || a[2] - b[2] || (b[4] || 0) - (a[4] || 0));   // 가격순 (경완 2026-10-29 '위력순 말고 가격순')   // 모든 타입이면 타입별로 묶고 그 안에서 위력순 (경완 2026-10-29)
   body.innerHTML = `
-    ${types.length ? `<div class="tm-row"><button class="fsel${tmTy !== -1 ? ' on' : ''}" data-f="ty">${tmTy === -1 ? '모든 타입' : TYPE_KO[tmTy]}</button><button class="fsel${tmCat !== -1 ? ' on' : ''}" data-f="cat">${tmCat === -1 ? '모든 형태' : ['물리', '특수', '변화'][tmCat]}</button>${prBtn()}</div>` : `<p class="sf-none">${TYPE_KO[g.ty]} 타입 포켓몬이 아직 없어요.</p>`}
-    ${types.length && !L.length ? `<p class="sf-none">조건에 맞는 ${wantTR ? '기술레코드가' : '기술머신이'} 없어요.</p>` : ''}
+    ${RP ? (L.length ? '' : `<p class="sf-none">${esc(nmOf(RP))}에게 추천할 ${wantTR ? '기술레코드가' : '기술머신이'} 없어요.</p>`) : types.length ? `<div class="tm-row"><button class="fsel${tmTy !== -1 ? ' on' : ''}" data-f="ty">${tmTy === -1 ? '모든 타입' : TYPE_KO[tmTy]}</button><button class="fsel${tmCat !== -1 ? ' on' : ''}" data-f="cat">${tmCat === -1 ? '모든 형태' : ['물리', '특수', '변화'][tmCat]}</button>${prBtn()}</div>` : `<p class="sf-none">${TYPE_KO[g.ty]} 타입 포켓몬이 아직 없어요.</p>`}
+    ${!RP && types.length && !L.length ? `<p class="sf-none">조건에 맞는 ${wantTR ? '기술레코드가' : '기술머신이'} 없어요.</p>` : ''}
     <div class="sp-list">${L.map(x => { const tr = GB().isTR(x[0]), own = !tr && g.tms[x[0]] > 0; return `<button class="sp-tm${own ? ' own' : ''}" data-tm="${x[0]}"${own ? ' disabled' : ''}><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png"><span class="tm-nm">${tr ? '<i class="tm-tr">TR</i>' : ''}<b>${esc(x[1])}</b></span><span class="tm-meta">${GB().tyTag(x[2], x[3])}<small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}</small></span><em>${own ? '보유 중' : gold(tmPrice(x))}</em></button>`; }).join('')}</div>`;
   // 필터는 눌러서 고르는 목록으로 (경완 2026-10-28 '모든 항목을 나열하지 말고')
   // 필터: 도감처럼 단추를 누르면 목록 창 (경완 2026-10-28)
@@ -671,6 +682,12 @@ function shopIt(body) {
   const row = id => { const own = GB().itHave(id); return GB().itRow(id).replace('class="sp-tm sp-it"', `class="sp-tm sp-it${own ? ' own' : ''}"${own ? ' disabled' : ''}`).replace('</button>', `<em>${own ? '보유 중' : gold(H[id][1])}</em></button>`); };
   const sec = ([k, nm, ids]) => { const L = ids.filter(id => H[id]).sort((a, b) => (k === 'type' && ((H[b][3] === ty) - (H[a][3] === ty))) || (H[a][1] - H[b][1]) * shopPr);
     return `<p class="sp-sub">${nm}${k === 'berry' ? ' · 배틀에서 먹어도 도구는 남아요' : ''}</p><div class="sp-list">${L.map(row).join('')}</div>`; };
+  const RP = recMon();
+  if (RP) {   // 추천받기: 그 포켓몬에게 맞는 도구(추천 순) + 추천 민트
+    const nk = GB().recNat(RP), nOk = nk && nk !== GB().gm(RP).nat;
+    body.innerHTML = `<p class="sp-sub">${esc(nmOf(RP))}에게 맞는 도구</p><div class="sp-list sp-recit"><p class="sf-none">고르는 중…</p></div>${nOk ? `<p class="sp-sub">추천 성격 민트</p><div class="sp-list">${GB().mintRow(nk, 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)}</div>` : ''}`;
+    GB().recIts(RP).then(L => { const el = body.querySelector('.sp-recit'); if (!el || !el.isConnected) return; L = L.filter(id => H[id]).slice(0, 8); el.innerHTML = L.length ? L.map(row).join('') : '<p class="sf-none">추천할 도구가 없어요.</p>'; GB().fillTh?.(el); });
+  } else
   body.innerHTML = `<div class="tm-row sp-prr">${prBtn()}</div>${GB().IT_CAT.map(sec).join('')}
     <p class="sp-sub">민트 · 먹이면 성격이 바뀌어요</p><div class="sp-list">${GB().MINT.map(k => GB().mintRow(k, 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)).join('')}</div>`;   // 민트 (경완 2026-10-30): 여러 개 살 수 있음
   body.onclick = (e, b) => { const mk = b.dataset.mint;
