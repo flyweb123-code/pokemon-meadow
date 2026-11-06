@@ -232,7 +232,7 @@ async function drawTrain() {
   g.tr.forEach((e, i) => { const P = boxOf(e.id); if (P) yardMon(P, e, i); });
   // 코치 (훈련장에 배치한 트레이너): 코트 가장자리에서 응원
   Y.co = g.sf.filter(x => x.yard).slice(0, YARD_SF).map((x, i) => { const q = document.createElement('i'), cx = W * (i ? .9 : .1), cy = H * .6; q.className = 'ty-co' + (K.owW(x.ow) > 16 ? ' w32' : ''); q.dataset.co = i;
-    q.style.cssText = `left:${cx}px;top:${cy}px;z-index:${Math.round(cy)};background-image:url(${K.owSrc(x.ow)})`; Y.L.append(q); return { s: x, el: q, x: cx, y: cy, nx: performance.now() / 1000 + 1 + i * 1.7 }; });
+    q.style.cssText = `left:${cx}px;top:${cy}px;z-index:${Math.round(cy)};background-image:url(${K.owSrc(x.ow)})`; Y.L.append(q); return { s: x, el: q, x: cx, y: cy, nx: performance.now() / 1000 + 1 + i * 1.7, fw: K.owW(x.ow) * 2, i, tg: null, tn: 0, d: 'd', fx: 1 }; });
   sh.onclick = ev => {
     const c = ev.target.closest('[data-co]'); if (c) { sfx('tap'); const o = Y.co[+c.dataset.co]?.s; if (o) sfDetail(o); return; }
     const t = ev.target.closest('[data-p],[data-add]'); if (!t) return; sfx('tap');
@@ -317,12 +317,29 @@ function yArrive(m, now) {
 function hoopAt(t) { const R = [0, 1, 2].map(i => Y.pr['ring' + i]), x0 = R[0].x - 30, x1 = R[2].x + 30, gy = R[0].y - 6, ah = R[0].y - R[0].ring[1];
   if (t < .55) { const u = t / .55; return { x: x0 + (x1 - x0) * u, y: gy, air: ah, f: -1 }; }
   const u = (t - .55) / .45, a = Math.PI * u; return { x: x1 - (x1 - x0) * u, y: gy - Math.sin(a) * 18, air: ah + Math.sin(a) * 46, f: 1 }; }
+// 코치 (v17.59 경완): 훈련 중인 포켓몬을 하나 골라 그 옆(포켓몬 앞쪽, 40~60px)으로 걸어가 바라보며 지켜보고, 가끔 응원. 6~10초마다 다른 포켓몬으로.
+// 걸음 그림 = 9칸 걸음 그림(0 아래·1 위·2 왼쪽 서기, 3·4 아래 걸음, 5·6 위, 7·8 왼쪽), 오른쪽은 좌우 뒤집기. 수영장 안으로는 안 들어감
+const CO_FR = { d: [0, 3, 0, 4], u: [1, 5, 1, 6], l: [2, 7, 2, 8] };
+function yCoach(c, now, dt) {
+  const L = Y.mons.filter(m => m.st !== 'sleep'), pool = L.length ? L : Y.mons;
+  if (!pool.includes(c.tg) || now > c.tn) { const o = (Y.co || []).find(x => x !== c)?.tg, P2 = pool.filter(m => m !== o); c.tg = pool.length ? K.pick(P2.length ? P2 : pool) : null; c.tn = now + 6 + Math.random() * 4; c.side = Math.random() < .5 ? -1 : 1; }
+  const t = c.tg; let tx = c.x, ty = c.y;
+  if (t) { tx = t.x + c.side * (44 + (t.k === 'spar' ? 26 : 0)); ty = t.y + 14; tx = Math.max(18, Math.min(Y.W - 18, tx)); ty = Math.max(Y.H * .3, Math.min(Y.H - 10, ty));
+    if (inPond(tx, ty, 12)) { const p = Y.pond; ty = p.y0 - 14; if (inPond(tx, ty, 12)) tx = p.x1 + 16; } }
+  const dx = tx - c.x, dy = ty - c.y, d = Math.hypot(dx, dy), mv = d > 6;
+  if (mv) { const v = Math.min(d, 52 * dt); let nx = c.x + dx / d * v, ny = c.y + dy / d * v; if (inPond(nx, ny, 10)) { ny = Math.min(ny, Y.pond.y0 - 12); nx = c.x + Math.sign(dx) * v; } c.x = nx; c.y = ny;
+    c.d = Math.abs(dx) > Math.abs(dy) * .8 ? (dx < 0 ? 'l' : 'r') : dy < 0 ? 'u' : 'd'; }
+  else if (t) { const ax = t.x - c.x, ay = t.y - c.y; c.d = Math.abs(ax) > Math.abs(ay) * .6 ? (ax < 0 ? 'l' : 'r') : ay < 0 ? 'u' : 'd'; }
+  const k = c.d === 'r' ? 'l' : c.d, fr = CO_FR[k][mv ? Math.floor(now / .16) % 4 : 0];
+  const e = c.el; e.style.left = c.x.toFixed(1) + 'px'; e.style.top = c.y.toFixed(1) + 'px'; e.style.zIndex = Math.round(c.y); e.style.backgroundPosition = `${-fr * c.fw}px 0`; e.style.setProperty('--fx', c.d === 'r' ? -1 : 1);
+  if (!mv && t && now > c.nx) { c.nx = now + 3 + Math.random() * 3; e.classList.remove('cheer'); void e.offsetWidth; e.classList.add('cheer');
+    const q = document.createElement('i'); q.className = 'ty-emo co'; q.textContent = K.pick(['힘내!', '좋아!', '한 번 더!', '그렇지!', '!']); q.style.left = c.x + 'px'; q.style.top = (c.y - 74) + 'px'; q.style.zIndex = 9999; Y.L.append(q); setTimeout(() => q.remove(), 1300); }
+}
 function yardLoop(ts) {
   if (!Y || !Y.el.isConnected || sh.hidden || cur !== 'train') { Y && (Y.raf = 0); return; }
   const now = ts / 1000, dt = Math.min(.1, Y.last ? now - Y.last : 0); Y.last = now;
   if (now - (Y.ck ?? now) > 30) { tickTrain(Date.now()); K.save(); Y.ck = now; Y.mons.forEach(m => { try { yTag(m); } catch (x) {} }); } else Y.ck ??= now;   // 30초마다 남은 시간·레벨 새로
-  for (const c of Y.co || []) if (now > c.nx) { c.nx = now + 3 + Math.random() * 3; const t = Y.mons.length ? K.pick(Y.mons) : null; c.el.classList.toggle('l', !!t && t.x < c.x);
-    c.el.classList.remove('cheer'); void c.el.offsetWidth; c.el.classList.add('cheer'); const q = document.createElement('i'); q.className = 'ty-emo co'; q.textContent = K.pick(['힘내!', '좋아!', '한 번 더!', '그렇지!', '!']); q.style.left = c.x + 'px'; q.style.top = (c.y - 74) + 'px'; q.style.zIndex = 9999; Y.L.append(q); setTimeout(() => q.remove(), 1300); }
+  for (const c of Y.co || []) yCoach(c, now, dt);   // v17.59 경완 '코치가 포켓몬들 따라다니면서 지켜보게': 한 마리씩 골라 옆으로 걸어가 지켜보고 응원
   for (const m of Y.mons) {
     if (m.st === 'go') {
       const dx = m.tx - m.x, dy = m.ty - m.y, d = Math.hypot(dx, dy), v = (m.flyer ? 60 : 46) * dt;
@@ -652,6 +669,7 @@ function shopTm(body, wantTR) {   /* v15.75 경완: 기술머신 탭·기술레�
   const can = new Map(); mons.forEach(P => (D.sp[P.sp]?.tm || []).forEach(i => { if (GB().isTR(D.mv[i][0]) !== !!wantTR) return; if (!can.has(i)) can.set(i, []); can.get(i).push(P); }));
   const types = [...new Set([...can.keys()].map(i => D.mv[i][2]))].sort((a, b) => a - b);
   if (tmTy !== -1 && !types.includes(tmTy)) tmTy = -1;   // -1 = 전체 (경완 2026-10-27 '에스퍼 포켓몬이라고 에스퍼 기술만 배우는 건 아닌데')
+  if (recMon() && !window.PSim) { body.innerHTML = '<p class="sf-none">추천 고르는 중…</p>'; GB().loadSim().then(() => redraw()); return; }   // 추천 점수는 쇼다운 기술 정보(특성·연속기 등)를 써서 처음 한 번 받아 옴
   const RP = recMon(), RL = RP && GB().recTms(RP, wantTR);   // 추천받기: 그 포켓몬 추천 기술만 (추천 순), 타입·형태 필터는 무시
   const L = RP ? RL.map(id => GB().mvOf(id)).filter(Boolean) : [...can.keys()].map(i => D.mv[i]).filter(x => (tmTy === -1 || x[2] === tmTy) && (tmCat === -1 || x[3] === tmCat)).sort((a, b) => RP ? 0 : (tmPrice(a) - tmPrice(b)) * shopPr || a[2] - b[2] || (b[4] || 0) - (a[4] || 0));   // 가격순 (경완 2026-10-29 '위력순 말고 가격순')   // 모든 타입이면 타입별로 묶고 그 안에서 위력순 (경완 2026-10-29)
   body.innerHTML = `
