@@ -3072,3 +3072,10 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .ty-lp::after{content:"";position:absolute;left:-4px;top:2px;width:12px;height:3px;background:#9a9ca8;transition:background .8s,box-shadow .8s}
 #gym .ty-lp.on::after{background:#fffef6;box-shadow:0 0 8px 3px rgba(255,255,240,.95),0 0 18px 6px rgba(255,252,230,.5)}
 @media (prefers-reduced-motion: reduce){#gym .ty-wx::before{animation:none}}
+/* v17.81 경완 '처마 밑 조명': 벽등 (갓 + 아래 유리, 켜지면 흰 빛) */
+#gym .ty-wl{position:absolute;width:12px;height:7px;margin:-1px 0 0 -6px;pointer-events:none;font-style:normal;background:linear-gradient(#3a3e4c 0 2px,#5a5e6c 2px 5px,#2e3038 5px)}
+#gym .ty-wl::before{content:"";position:absolute;left:5px;top:-3px;width:2px;height:3px;background:#2e3038}
+#gym .ty-wl::after{content:"";position:absolute;left:2px;top:7px;width:8px;height:2px;background:#9a9ca8;transition:background .8s,box-shadow .8s}
+#gym .ty-wl.on::after{background:#fffef6;box-shadow:0 0 6px 2px rgba(255,255,240,.95),0 2px 14px 4px rgba(255,252,230,.45)}
+/* v17.81 그림자 엔진: 아침·저녁엔 해 반대쪽으로 길게 (--shl 길이 배, --shd 밀림, --sho 진하기) */
+#gym .ty-m:not(.swim) .ty-sh,#gym .ty-co::after{transform-origin:50% 50%;translate:calc(var(--shd,0) * 50%) 0;scale:var(--shl,1) 1;filter:opacity(var(--sho,1));transition:translate 2s,scale 2s,filter 2s;background:radial-gradient(closest-side,rgba(20,40,10,.32),rgba(20,40,10,.22) 60%,rgba(20,40,10,0))}

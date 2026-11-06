@@ -235,6 +235,9 @@ async function drawTrain() {
     q.style.cssText = `left:${cx}px;top:${cy}px;z-index:${Math.round(cy)};background-image:url(${K.owSrc(x.ow)})`; Y.L.append(q); return { s: x, el: q, x: cx, y: cy, nx: performance.now() / 1000 + 1 + i * 1.7, fw: K.owW(x.ow) * 2, i, tg: null, tn: 0, d: 'd', fx: 1, snap: 1, hx: cx, hy: cy }; });   // v17.69 경완 '켤 때마다 같은 자리에서 걸어감': 처음엔 고른 포켓몬 옆에 바로 서 있음
   // v17.77 경완 '훈련장에도 필드처럼 날씨·시간, 어두워지면 조명': 필드와 같은 곱하기 색(GA.light) + 가로등 3개 + 비·눈
   Y.lp = [[14, H * .42], [W - 14, H * .42], [Y.pond.x1 + 14, Y.pond.y0 - 6]].map(([x, y]) => { const q = document.createElement('i'); q.className = 'ty-lp'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y)}`; Y.L.append(q); return { x, y, el: q, dx: x < W / 2 ? 1 : -1 }; });
+  // v17.81 경완 '체육관 처마 밑에도 조명': 기둥마다·문 양옆 벽등 (처마 바로 밑), 켜지면 벽과 벽 앞 땅을 밝힘
+  { const PW = Math.ceil(W / 2), xs = [PW / 2 - 19, PW / 2 + 19]; for (let x = 8; x < PW; x += 46) if (Math.abs(x - PW / 2) >= 30) xs.push(x + 2.5);
+    Y.wl = xs.map(hx => { const x = Math.round(hx * 2), q = document.createElement('i'); q.className = 'ty-wl'; q.style.cssText = `left:${x}px;top:35px;z-index:40`; Y.L.append(q); return { x, y: 35, el: q }; }); }
   el.insertAdjacentHTML('beforeend', '<i class="ty-nt"></i><i class="ty-glow"></i><i class="ty-wx"></i>'); yLight();
   sh.onclick = ev => {
     const c = ev.target.closest('[data-co]'); if (c) { sfx('tap'); const o = Y.co[+c.dataset.co]?.s; if (o) sfDetail(o); return; }
@@ -351,7 +354,7 @@ function yCoach(c, now, dt) {
 function yLight() {
   const F = GA.light?.(); if (!F || !Y) return; const e = Y.el, on = F.lamps;
   const nt = e.querySelector('.ty-nt'); nt.style.backgroundColor = `rgb(${F.col.join(',')})`;
-  Y.lp.forEach(l => l.el.classList.toggle('on', on));
+  Y.lp.forEach(l => l.el.classList.toggle('on', on)); Y.wl?.forEach(l => l.el.classList.toggle('on', on));
   // v17.79 경완 '불빛 더 희고 밝게, 실제로 훈련장을 밝히게 — 빛 엔진': 필드처럼 밤 그늘(곱하기)에 가로등 밑 땅만큼 구멍(원래 땅 색) + 흰 빛 더하기(screen)
   const k0 = on ? Math.min(1, F.dark * 1.2) : 0, hole = [], gls = [];
   if (k0 > .05) Y.lp.forEach(l => { const gx = l.x + l.dx * 30, gy = l.y + 14;
@@ -359,9 +362,16 @@ function yLight() {
       `radial-gradient(26px 70px at ${l.x + l.dx * 6}px ${l.y - 22}px,rgba(0,0,0,${(1 - .7 * k0).toFixed(2)}) 0,#000 100%)`);
     gls.push(`radial-gradient(14px 10px at ${l.x + l.dx * 6}px ${l.y - 55}px,rgba(255,255,250,.95),rgba(255,255,240,.35) 60%,transparent)`,
       `radial-gradient(150px 96px at ${gx}px ${gy}px,rgba(255,252,238,.42),rgba(255,248,226,.16) 50%,transparent 80%)`); });
+  if (k0 > .05) Y.wl?.forEach(l => { hole.push(`radial-gradient(34px 46px at ${l.x}px ${l.y + 22}px,rgba(0,0,0,${(1 - .8 * k0).toFixed(2)}) 0,rgba(0,0,0,${(1 - .4 * k0).toFixed(2)}) 50%,#000 100%)`,
+      `radial-gradient(70px 30px at ${l.x}px 128px,rgba(0,0,0,${(1 - .7 * k0).toFixed(2)}) 0,rgba(0,0,0,${(1 - .3 * k0).toFixed(2)}) 50%,#000 100%)`);
+    gls.push(`radial-gradient(8px 6px at ${l.x}px ${l.y + 5}px,rgba(255,255,250,.95),rgba(255,255,240,.3) 60%,transparent)`, `radial-gradient(30px 44px at ${l.x}px ${l.y + 22}px,rgba(255,252,236,.32),transparent 80%)`, `radial-gradient(64px 26px at ${l.x}px 128px,rgba(255,250,230,.22),transparent 80%)`); });
   nt.style.webkitMaskImage = nt.style.maskImage = hole.join(',');
   nt.style.webkitMaskComposite = hole.length > 1 ? 'source-in' : ''; nt.style.maskComposite = hole.length > 1 ? 'intersect' : '';
   const gl = e.querySelector('.ty-glow'); gl.style.opacity = k0 > .05 ? Math.min(1, .35 + k0).toFixed(2) : 0; if (gls.length) gl.style.background = gls.join(',');
+  // v17.81 경완 '노을일 때 그림자 더 길게 — 그림자 엔진': 해 높이(아침·저녁 낮음)만큼 그림자를 해 반대쪽으로 늘림, 해가 지면 옅어짐. 비엔 발밑 그대로, 흐림은 반
+  { const ts = (F.h - 6) / 12.6, sun = ts > 0 && ts < 1 && F.wx !== 'rain' ? (F.wx === 'cloud' ? .5 : 1) : 0, el2 = Math.sin(Math.PI * clampN(ts, 0, 1)),
+      L = 1 + sun * Math.min(2.6, (1 / Math.max(el2, .22) - 1) * .95), dir = ts < .5 ? 1 : -1, op = sun ? clampN(el2 * 5, .35, 1) : 1;
+    e.style.setProperty('--shl', L.toFixed(2)); e.style.setProperty('--shd', (dir * (L - 1)).toFixed(2)); e.style.setProperty('--sho', (1 - .3 * (L - 1) / 2.6) * op); }
   const wx = e.querySelector('.ty-wx'); wx.className = 'ty-wx' + (F.snow ? ' snow' : F.wx === 'rain' ? ' rain' + (F.storm ? ' storm' : '') : '');
 }
 function yardLoop(ts) {
