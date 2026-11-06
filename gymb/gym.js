@@ -1449,8 +1449,8 @@ const SOON = {
 let bsMus = false;   // 승급 심사 화면 곡(포켓몬리그)이 나오는 중 (경완 2026-11-04 '승급심사 화면 들어가면 bgm 웅장하게')
 let tabOpt = null;
 function openTab(t, opt) {
-  if (opt?.back === 1) opt = { back: { t: tab, opt: tabOpt } };   // v17.64 경완: 상세카드 추천 → 상점으로 넘어가도 원래 화면(배틀 라인업 고르기 등)으로 돌아갈 길. 라인업 고르기는 그대로 기다림
-  window.gymShopBack = t === 'shop' && opt?.back?.opt?.pick ? opt.back : null; tabOpt = opt?.back ? null : opt;   // v17.66 경완: ‹ 는 메뉴가 잠긴 때(배틀 라인업 고르기)만
+  if (opt?.back === 1) opt = { back: { t: tab, opt: tabOpt, re: opt.re } };   // v17.68 경완: re = 상세카드 다시 열기   // v17.64 경완: 상세카드 추천 → 상점으로 넘어가도 원래 화면(배틀 라인업 고르기 등)으로 돌아갈 길. 라인업 고르기는 그대로 기다림
+  window.gymShopBack = t === 'shop' && opt?.back ? opt.back : null; tabOpt = opt?.back ? null : opt;   // v17.68 경완: 추천에서 왔으면 메뉴 잠김과 상관없이 ‹ (누르면 상세카드로)
   if (bsMus && !(t === 'battle' && opt?.pick) && !opt?.back) { bsMus = false; bgmPlay('gym'); }   // 심사 화면·라인업에서 다른 곳으로 가면 체육관 곡으로
   // 꾸미기·자리 정하기 중에 다른 메뉴를 열면 그 모드를 끝낸다 (경완 2026-10-27 '꾸미기 하고 나서 맵에 그리드 안 사라지는 오류')
   if (t && ded) ded.end?.();
