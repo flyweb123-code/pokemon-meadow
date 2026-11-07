@@ -228,6 +228,7 @@ function seGet(ctx, nm) {
   p = { ctx, p: seMake(ctx, nm) }; p.p.catch(() => seBuf.delete(nm)); seBuf.set(nm, p); return p.p;
 }
 // nm: 'DP_KOUKA_M' 처럼 SEQ_SE_ 뒤 이름. pan -1(왼쪽)~1(오른쪽), at: 몇 초 뒤
+const seLive = new Map(), fanEnd = new Map();   // 지금 나는 효과음 (seStop 으로 끊기)
 async function sePlay(nm, { pan = 0, at = 0, dur = 0, gain = 1 } = {}) {   // gain: 원본이 작은 소리 키우기   // dur: 그 초만큼만 (본가에서 멈추는 소리, 경험치 막대 등)
   let ctx = null; try { ctx = GA.audio(); } catch (e) {} if (!ctx) return;
   const v = (() => { try { return GA.sfxVol(); } catch (e) { return .1; } })(); if (!v) return;
@@ -238,6 +239,7 @@ async function sePlay(nm, { pan = 0, at = 0, dur = 0, gain = 1 } = {}) {   // ga
   const src = ctx.createBufferSource(); src.buffer = buf;
   let node = src; if (gain !== 1) { const gn = ctx.createGain(); gn.gain.value = gain; src.connect(gn); node = gn; } if (pan && ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = pan; node.connect(p); node = p; }
   node.connect(seOut); const st = Math.max(ctx.currentTime, t0 + at); src.start(st); if (dur) src.stop(st + dur);
+  let L = seLive.get(nm); if (!L) seLive.set(nm, L = new Set()); L.add(src); src.onended = () => L.delete(src);
   return dur || buf.duration;
 }
 const GymBGM = {
@@ -251,9 +253,11 @@ const GymBGM = {
   // 효과음: 미리 만들어 두기 / 틀기
   sePrep(L) { let ctx = null; try { ctx = GA.audio(); } catch (e) {} if (ctx) L.forEach(n => seGet(ctx, n).catch(() => {})); },
   se: (nm, o) => sePlay(nm, o).catch(() => {}),
+  // 나고 있는 효과음·팡파르 끊기 (팡파르면 배경 곡도 바로 다시 키움)
+  seStop(nm) { for (const s of seLive.get(nm) || []) { try { s.stop(); } catch (e) {} } seLive.delete(nm); fanEnd.get(nm)?.(); },
   // 팡파르(본가 Sound_PlayFanfare): 배경 곡을 잠깐 줄이고 끝까지 튼 뒤 다시 키운다. 끝나면 풀리는 Promise
   async fan(nm) { const g = cur.g, c = cur.ctx; const dz = (to, s) => { try { const t = c.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(to, t + s); } catch (e) {} };
-    if (g && c) dz(0, .08); const d = await sePlay(nm).catch(() => 0) || 0; await new Promise(r => setTimeout(r, d * 1000 + 80)); if (g && c && cur.g === g) dz(1, .3); },
+    if (g && c) dz(0, .08); const d = await sePlay(nm).catch(() => 0) || 0; await new Promise(r => { const t = setTimeout(r, d * 1000 + 80); fanEnd.set(nm, () => { clearTimeout(t); r(); }); }); fanEnd.delete(nm); if (g && c && cur.g === g) dz(1, .3); },
   get name() { return cur.want; },
   SONG,
 };
