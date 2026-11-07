@@ -1,6 +1,1063 @@
 {
  "days": [
   {
+   "at": 1794091648604,
+   "theme": "숲속 작은 우체국",
+   "note": "오늘은 숲속 작은 우체국이에요! 빨간 우체통·비둘기집·소포 더미·배달 자전거까지 빨강·원목·하늘색으로 색을 맞춰서 한데 놓으면 편지가 오가는 마당이 돼요. 날아와 앉기·숨기·미끄럼·기술 쓰기를 고르게 나눠서 비행·전기·에스퍼 타입도 할 일이 생기게 했어요.",
+   "items": [
+    {
+     "id": "round-postbox",
+     "n": "빨간 둥근 우체통",
+     "k": "장식",
+     "d": "꼭대기가 둥근 빨간 우체통이에요. 금색 띠 두 줄과 편지 넣는 구멍, 하얀 안내판이 붙어 있고 돌 받침 위에 서 있어요.",
+     "px": [
+      "......kkkk......",
+      "....kkRRRRkk....",
+      "...kLhRRRRddk...",
+      "..kLhRRRRRdddk..",
+      ".khLLRRRRRdddDk.",
+      ".khLLRRRRRdddDk.",
+      "kYYYYyyyyyoooook",
+      "kYYYYyyyyyoooook",
+      "khhLLRRRRRdddDDk",
+      "khhLSSSSSSSSdDDk",
+      "khhLssssssssdDDk",
+      "khhLLRRRRRdddDDk",
+      "khhLLWWWWWgddDDk",
+      "khhLLwDDDDgddDDk",
+      "khhLLwdddwgddDDk",
+      "khhLLwwwwwgddDDk",
+      "khhLLRRRRRdddDDk",
+      "khhLLRRRRRdddDDk",
+      "kYYYYyyyyyoooook",
+      "kYYYYyyyyyoooook",
+      "khhLLRRRRRdddDDk",
+      "kMMMMMMMMMMMMMMk",
+      "kmmmmmmmmmmmmnnk",
+      "kmmnnmmmmmmmmnnk",
+      "kmmmmmmmmnnnmnnk",
+      "kkkkkkkkkkkkkkkk"
+     ],
+     "pal": {
+      "R": "#c8423a",
+      "h": "#f0a08a",
+      "L": "#e2685a",
+      "d": "#9c2e2c",
+      "D": "#6e2026",
+      "y": "#e0b04a",
+      "Y": "#f6dc8a",
+      "o": "#a8782e",
+      "s": "#3a2026",
+      "S": "#5a3034",
+      "w": "#f2ece0",
+      "W": "#fffaf0",
+      "g": "#c8beb0",
+      "m": "#a8a4a0",
+      "M": "#cfccc6",
+      "n": "#7c7874",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "작은 비행 타입",
+       "a": "서 있던 자리에서 날아올라 둥근 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "빨간 우체통 둥근 꼭대기에 날아와 앉았다.",
+        "우체통 꼭대기에 앉아 편지를 기다리는 듯 두리번거린다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "편지 구멍에 얼굴을 대고 안을 들여다봐요",
+       "x": {
+        "at": [
+         0.5,
+         0.4
+        ],
+        "m": "peek"
+       },
+       "l": [
+        "우체통 편지 구멍에 얼굴을 대고 안을 들여다본다.",
+        "우체통 구멍 안이 궁금한지 고개를 쭉 뺀다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "우체통 뒤에 숨었다가 옆으로 고개를 쏙 내밀어요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "우체통 뒤에 숨었다가 옆으로 고개를 쏙 내민다.",
+        "빨간 우체통 뒤에서 숨바꼭질을 한다."
+       ]
+      }
+     ],
+     "fit": "우체국 마당 입구, 길가",
+     "glow": 0
+    },
+    {
+     "id": "pigeon-loft",
+     "n": "비둘기집 탑",
+     "k": "쉼터",
+     "d": "나무 기둥 위에 올린 하얀 비둘기집이에요. 동그란 출입구 세 개 앞에 횃대 막대가 달려 있고 빨간 지붕이 덮여 있어요. 우편을 나르는 새 포켓몬의 쉼터예요.",
+     "px": [
+      ".........kkkk.........",
+      "........kRrrrk........",
+      ".......kRRrrrrk.......",
+      "......krrrrrrrrk......",
+      ".....kRRRRrrrrrqk.....",
+      "....krrrrrrrrrrqqk....",
+      "...kRRRRRRrrrrrqqqk...",
+      "kkkrrrrrrrrrrrrqqqqkkk",
+      "kqqqqqqqqqqqqqqqqqqqqk",
+      "kkkWWsswwwsswvvssvvkkk",
+      "..kWsSsswsSssvsSssvk..",
+      "..kWsssswssssvssssvk..",
+      "..kWBBBBBBBBBBBBBBvk..",
+      "..kvvvvvvvvvvvvvvvvk..",
+      "..kWWsswwwsswvvssvvk..",
+      "..kWsSsswsSssvsSssvk..",
+      "..kWsssswssssvssssvk..",
+      "..kBBBBBBBBBBBBBBBBk..",
+      ".kBBBBBBBBBBBBBBBBBBk.",
+      ".kbbbbbbbbbbbbbbcccck.",
+      "..kkkkkkkBbcckkkkkkk..",
+      "........kBbcck........",
+      "........kBbcck........",
+      "........kBbcck........",
+      "........kBbcck........",
+      "........kBbcck........",
+      "........kBbcck........",
+      "........kBbcck........",
+      "......kkkBbcckkk......",
+      ".....kbbbbbbbbbbk.....",
+      ".....kcccccccccck.....",
+      ".....kkkkkkkkkkkk....."
+     ],
+     "pal": {
+      "b": "#a87444",
+      "B": "#d09c62",
+      "c": "#74502e",
+      "w": "#ece4d2",
+      "W": "#fff8ea",
+      "v": "#bdb2a0",
+      "s": "#3c2c2c",
+      "S": "#5c4a46",
+      "R": "#e0705a",
+      "r": "#b84a3c",
+      "q": "#82302c",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 출입구 앞 횃대에 앉아 깃털을 골라요",
+       "x": {
+        "at": [
+         0.36,
+         0.39
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "비둘기집 횃대에 날아와 앉아 깃털을 고른다.",
+        "비둘기집 출입구 앞 횃대에 앉아 쉰다."
+       ]
+      },
+      {
+       "w": "작은 날갯짓하는 포켓몬",
+       "a": "동그란 출입구 안에 들어가 얼굴만 내밀어요",
+       "x": {
+        "at": [
+         0.48,
+         0.47
+        ],
+        "m": "fly win"
+       },
+       "l": [
+        "비둘기집 동그란 구멍에서 얼굴만 빼꼼 내민다.",
+        "비둘기집 안에 쏙 들어가 밖을 내다본다."
+       ]
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "비둘기집 둘레를 빙글빙글 날아요",
+       "x": {
+        "m": "circ"
+       },
+       "l": [
+        "비둘기집 둘레를 빙글빙글 날아다닌다.",
+        "비둘기집 주위를 맴돌며 놀고 있다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "나무 기둥에 등을 기대고 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "비둘기집 기둥에 등을 기대고 꾸벅꾸벅 존다.",
+        "비둘기집 그늘 아래에서 낮잠을 잔다."
+       ]
+      }
+     ],
+     "fit": "우체국 옆, 나무 사이",
+     "glow": 0
+    },
+    {
+     "id": "parcel-stack",
+     "n": "소포 상자 더미",
+     "k": "놀이",
+     "d": "끈으로 십자 묶은 갈색 소포 상자 세 개를 쌓아 둔 더미예요. 상자마다 주소 쪽지와 빨간 우표가 붙어 있고, 맨 위 상자엔 리본 매듭이 있어요.",
+     "px": [
+      "....kkkkkkkkkkkk......",
+      "...kAAAAATAAAAddk.....",
+      "...kAAAAAtAAAAddk.....",
+      "...kaaWWWtaaaaddk.....",
+      "...kttwwwtttttttk.....",
+      "...kaaaaataaaaddk.....",
+      "...kaaaaataaaaddk.....",
+      "kkkkaaaaataaaaddk.....",
+      "kAAAAtAAAtddaaddk.....",
+      "kAAAAtAAAAddkkkkkkkkkk",
+      "kaaaataaaaAdAAAtAAAAdk",
+      "kaaaataaaaAdAAAtAAAAdk",
+      "ktxxxttttttdawWWWaaadk",
+      "kaxXxtaaaatdtwwwwttttk",
+      "kaxxxtaaaaddaaataaaadk",
+      "kaaaataaaaddaaataaaadk",
+      "kaaaataaaaddaaataaaadk",
+      "kkkkkkkkkkkkkkkkkkkkkk"
+     ],
+     "pal": {
+      "a": "#c89a5e",
+      "A": "#e6be84",
+      "d": "#9a6e3c",
+      "t": "#f0e2c0",
+      "T": "#f6ead0",
+      "w": "#f6f0e2",
+      "W": "#ffffff",
+      "x": "#d0504a",
+      "X": "#f2c0a0",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "상자 사이 틈에 숨었다가 위로 고개를 쏙 내밀어요",
+       "x": {
+        "m": "hide peek",
+        "back": true
+       },
+       "l": [
+        "소포 상자 더미 뒤에 숨었다가 고개를 쏙 내민다.",
+        "소포 상자 사이에 숨어 숨바꼭질을 한다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "상자를 밟고 올라가 맨 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "소포 상자를 밟고 올라가 맨 위에 앉았다.",
+        "소포 상자 더미 꼭대기에 앉아 주위를 둘러본다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "상자 더미를 톡톡 밀어 흔들어요",
+       "x": {
+        "m": "push",
+        "an": "Attack"
+       },
+       "l": [
+        "소포 상자 더미를 톡톡 밀어 본다. 흔들흔들!",
+        "소포 상자를 밀어 보며 힘자랑을 한다."
+       ]
+      }
+     ],
+     "fit": "우체국 문 앞, 수레 옆",
+     "glow": 0
+    },
+    {
+     "id": "delivery-bike",
+     "n": "배달 자전거",
+     "k": "놀이",
+     "d": "앞에 등나무 바구니를 단 초록 우편 배달 자전거예요. 바구니엔 하얀 편지와 분홍 봉투가 꽂혀 있고, 핸들 앞에 노란 전조등이 달려 있어요.",
+     "px": [
+      "...................kkkkkkk..",
+      "...................kwwwPppk.",
+      "...............kkkkVwwwpppVk",
+      "......kkkkk...kggggUuUuUuUuk",
+      ".....kEEEEEk..kzkfkUuUuUuUuk",
+      ".....keeeeek...kkfkUuUuUuUYk",
+      "......kkfkk......kfUuUuUuUYk",
+      "........kfkkkkkkkkfUuUuUuUuk",
+      "........kffffffffffUuUuUuUuk",
+      "...kkkkkfkfkkkkkfkkfkkkkkkk.",
+      "..kzzgzzfkfk..kfk.kfzzgzzk..",
+      ".kzzzgzfzkfk.kfk..kzfzgzzzk.",
+      "kzzkkgfkzzkfkkfk.kzzkfgkkzzk",
+      "kzkkkgfkkzkkffk..kzkkfgkkkzk",
+      "kggggffffffffk...kggggfggggk",
+      "kzkkgggkkzkkk....kzkkgggkkzk",
+      "kzk.kgk.kzk......kzk.kgk.kzk",
+      "kzzkkgkkzzk......kzzkkgkkzzk",
+      ".kzzzgzzzk........kzzzgzzzk.",
+      "..kkkkkkk..........kkkkkkk.."
+     ],
+     "pal": {
+      "z": "#3a3a44",
+      "g": "#a8acb4",
+      "f": "#4a9a6a",
+      "e": "#7a4a32",
+      "E": "#a46a48",
+      "u": "#c89a5a",
+      "U": "#94683a",
+      "V": "#e6c084",
+      "w": "#f4eee2",
+      "W": "#ffffff",
+      "p": "#f2a0b4",
+      "P": "#ffd0dc",
+      "Y": "#f6d860",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "앞 바구니 속에 쏙 숨어 고개만 내밀어요",
+       "x": {
+        "at": [
+         0.8,
+         0.4
+        ],
+        "m": "climb hide peek"
+       },
+       "l": [
+        "배달 자전거 바구니 속에 쏙 숨어 고개만 내민다.",
+        "자전거 바구니 편지 사이에 숨어 밖을 내다본다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "바퀴를 톡톡 밀어 굴려 보고 신기해해요",
+       "x": {
+        "at": [
+         0.2,
+         1
+        ],
+        "m": "push"
+       },
+       "l": [
+        "배달 자전거 바퀴를 톡톡 밀어 굴려 본다.",
+        "자전거 바퀴가 도는 걸 신기한 듯 바라본다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "전조등에 전기를 보내 반짝 켜요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "배달 자전거 전조등에 전기를 보내 반짝 켰다.",
+        "자전거 전조등을 깜빡깜빡 켜며 논다."
+       ]
+      },
+      {
+       "w": "작은 비행 타입",
+       "a": "서 있던 자리에서 날아올라 안장 위에 앉아요",
+       "x": {
+        "at": [
+         0.29,
+         0.2
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "배달 자전거 안장 위에 날아와 앉았다.",
+        "자전거 안장에 앉아 출발을 기다린다."
+       ]
+      }
+     ],
+     "fit": "우체통 옆, 길가",
+     "glow": 0
+    },
+    {
+     "id": "mail-sorting-shelf",
+     "n": "우편 분류함",
+     "k": "쉼터",
+     "d": "작은 칸 열여섯 개로 나뉜 원목 우편 분류함이에요. 칸마다 하얀 편지·분홍 봉투·노란 엽서가 꽂혀 있거나 비어 있어요.",
+     "px": [
+      "kkkkkkkkkkkkkkkkkkkkkkkk",
+      "kBBBBBBBBBBBBBBBBBBBBBBk",
+      "kBBBBBBBBBBBBBBBBBBBBcck",
+      "kbbbbbbbbbbbbbbbbbbbbcck",
+      "kbSSSSbSSSSbSSSSbSSSScck",
+      "kbsWwsbsWwsbsWwsbsWwscck",
+      "kbswwsbswwsbswwsbswwscck",
+      "kbswwsbswwsbswwsbswwscck",
+      "kbbbbbbbbbbbbbbbbbbbbcck",
+      "kbSSSSbSSSSbSSSSbSSSScck",
+      "kbsYysbsPpsbsYysbsPpscck",
+      "kbsyysbsppsbsyysbsppscck",
+      "kbsyysbsppsbsyysbsppscck",
+      "kbbbbbbbbbbbbbbbbbbbbcck",
+      "kbSSSSbSSSSbSSSSbSSSScck",
+      "kbssssbssssbsWwsbsWwscck",
+      "kbssssbssssbswwsbswwscck",
+      "kbssssbssssbswwsbswwscck",
+      "kbbbbbbbbbbbbbbbbbbbbcck",
+      "kbSSSSbSSSSbSSSSbSSSScck",
+      "kbsWwsbsWwsbsYysbsPpscck",
+      "kbswwsbswwsbsyysbsppscck",
+      "kbswwsbswwsbsyysbsppscck",
+      "kbbbbbbbbbbbbbbbbbbbbcck",
+      "kbbbbbbbbbbbbbbbbbbbbbbk",
+      "kkkkkkkkkkkkkkkkkkkkkkkk"
+     ],
+     "pal": {
+      "b": "#b07c48",
+      "B": "#d6a66c",
+      "L": "#ecc68e",
+      "c": "#7a5230",
+      "s": "#4a3024",
+      "S": "#3a241c",
+      "w": "#ece4d4",
+      "W": "#ffffff",
+      "p": "#ec98aa",
+      "P": "#ffc8d4",
+      "y": "#ecd070",
+      "Y": "#fff0a8",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "빈 칸 안에 들어가 얼굴만 내밀고 밖을 내다봐요",
+       "x": {
+        "at": [
+         0.5,
+         0.42
+        ],
+        "m": "climb win"
+       },
+       "l": [
+        "우편 분류함 빈 칸에 들어가 얼굴만 내민다.",
+        "우편 분류함 칸 속에서 밖을 빼꼼 내다본다."
+       ]
+      },
+      {
+       "w": "에스퍼 타입",
+       "a": "염력으로 편지를 하나씩 띄워 칸에 나눠 넣어요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "염력으로 편지를 띄워 분류함 칸에 하나씩 넣는다.",
+        "우편 분류함 편지를 염력으로 척척 정리했다."
+       ]
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 분류함 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "우편 분류함 꼭대기에 날아와 앉았다.",
+        "우편 분류함 위에 앉아 편지 칸을 내려다본다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "분류함 앞에 서서 꽂힌 편지를 구경해요",
+       "x": {
+        "at": "front"
+       },
+       "l": [
+        "우편 분류함에 꽂힌 편지를 하나하나 구경한다.",
+        "우편 분류함 앞에서 편지 냄새를 킁킁 맡는다."
+       ]
+      }
+     ],
+     "fit": "우체국 벽 앞, 도장 책상 옆",
+     "glow": 0
+    },
+    {
+     "id": "stamp-desk",
+     "n": "도장 찍는 책상",
+     "k": "놀이",
+     "d": "원목 책상 위에 빨간 손잡이의 큰 고무 도장과 잉크 패드, 도장이 찍힌 편지가 놓여 있어요. 서랍엔 금색 손잡이가 달려 있어요.",
+     "px": [
+      "......kkkk..............",
+      ".....kRrrrk.............",
+      ".....krrrrk.............",
+      "......kHhk........kkkk..",
+      "......khhk.......kwxxwk.",
+      "....kkkhhkkk..kkkkwwwwk.",
+      "...kGGGGGGGGkkniiiiiink.",
+      "kkkkggggggggkknnnnnnnnkk",
+      "kBBBBBBBBBBBBBBBBBBBBBBk",
+      "kbbbbbbbbbbbbbbbbbbbbbbk",
+      "kcccccccccccccccccccccck",
+      "kBbcccccccccccccccccBbck",
+      "kBbcdddddddyydddddddBbck",
+      "kBbcddddddddddddddddBbck",
+      "kBbckkkkkkkkkkkkkkkkBbck",
+      "kBbck..............kBbck",
+      "kBbck..............kBbck",
+      "kBbck..............kBbck",
+      "kBbck..............kBbck",
+      "kkkkk..............kkkkk"
+     ],
+     "pal": {
+      "b": "#b88450",
+      "B": "#deaa70",
+      "c": "#7c5432",
+      "d": "#946640",
+      "y": "#f0c860",
+      "r": "#d0483e",
+      "R": "#f08070",
+      "h": "#a87450",
+      "H": "#d0a070",
+      "g": "#5a5a66",
+      "G": "#8a8a96",
+      "n": "#4a4a58",
+      "i": "#c04050",
+      "w": "#f4eee2",
+      "x": "#d04848",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "큰 도장을 앞발로 쾅 눌러 편지에 찍어요",
+       "x": {
+        "at": [
+         0.3,
+         0.5
+        ],
+        "m": "push",
+        "an": "Attack"
+       },
+       "l": [
+        "큰 도장을 쾅 눌러 편지에 찍었다.",
+        "도장 책상에서 편지에 도장을 쾅쾅 찍는다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "책상 밑에 들어가 웅크리고 잠들어요",
+       "x": {
+        "at": [
+         0.5,
+         1
+        ],
+        "an": "Sleep",
+        "back": true
+       },
+       "l": [
+        "도장 책상 밑에 웅크리고 새근새근 잠들었다.",
+        "책상 아래 그늘에 들어가 낮잠을 잔다."
+       ]
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "책상 옆에 기대 앉아 쉬어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "도장 책상 옆에 기대 앉아 꾸벅꾸벅 존다.",
+        "도장 책상에 몸을 기대고 느긋하게 쉰다."
+       ]
+      }
+     ],
+     "fit": "우편 분류함 앞",
+     "glow": 0
+    },
+    {
+     "id": "mail-bag",
+     "n": "우편 배달 가방",
+     "k": "쉼터",
+     "d": "어깨끈이 달린 갈색 가죽 우편 가방이에요. 덮개 사이로 하얀 편지·분홍 봉투·노란 엽서가 삐죽 나와 있고 금색 버클이 달려 있어요.",
+     "px": [
+      "kkkkkkkkkkkkkkkkkk",
+      "kssssssssssssssssk",
+      "kskkkkkkYyykkkkksk",
+      "kskkkPppyyykkk.ksk",
+      "ksWwwpppyyyaadkksk",
+      "kswwwpppyyyaaddksk",
+      "ksFFFFFFFFFFFFFFsk",
+      "kfffffffffffffDDDk",
+      "kfffffffffffffDDDk",
+      "kAAAAaafggfaaddddk",
+      "kAAAAaaDDDDaaddddk",
+      "kaaaaaaaaaaaaddddk",
+      ".kaaaaaaaaaaadddk.",
+      "..kaaaaaaaaaaddk..",
+      "..kddddddddddddk..",
+      "..kkkkkkkkkkkkkk.."
+     ],
+     "pal": {
+      "a": "#a8683c",
+      "A": "#c88654",
+      "d": "#7c4a2a",
+      "D": "#6a3e24",
+      "f": "#8e5632",
+      "F": "#b4764a",
+      "g": "#f0c860",
+      "s": "#5a3a24",
+      "S": "#7a5232",
+      "w": "#f4eee2",
+      "W": "#ffffff",
+      "p": "#ec98aa",
+      "P": "#ffc8d4",
+      "y": "#ecd070",
+      "Y": "#fff0a8",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "가방 뒤에 숨었다가 위로 고개를 내밀어요",
+       "x": {
+        "m": "hide peek",
+        "back": true
+       },
+       "l": [
+        "우편 가방 뒤에 숨었다가 고개를 쏙 내민다.",
+        "우편 가방 뒤에 몸을 숨기고 두리번거린다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "가방을 베개 삼아 기대고 잠들어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "우편 가방을 베개 삼아 기대고 잠들었다.",
+        "폭신한 우편 가방에 기대 낮잠을 잔다."
+       ]
+      },
+      {
+       "w": "악 타입",
+       "a": "가방 옆에서 편지 냄새를 맡으며 몰래 들여다봐요",
+       "x": {
+        "m": "speek"
+       },
+       "l": [
+        "우편 가방 옆에서 편지를 몰래 들여다본다.",
+        "우편 가방 속 편지가 궁금한지 슬쩍 엿본다."
+       ]
+      }
+     ],
+     "fit": "배달 자전거 옆, 벤치 아래",
+     "glow": 0
+    },
+    {
+     "id": "letter-balloon",
+     "n": "편지 풍선",
+     "k": "장식",
+     "d": "하늘색 풍선에 커다란 편지 봉투 그림을 그려 나무 말뚝에 줄로 매어 둔 풍선이에요. 바람이 불면 풍선만 줄 끝에서 살랑살랑 흔들려요.",
+     "px": [
+      ".......kkkkkk.......",
+      ".....kkBBbbbbkk.....",
+      "....khBBBbbbbbdk....",
+      "...kWhBBBbbbbbddk...",
+      "..khhhBBBbbbbbdddk..",
+      ".khhhhBBBbbbbbddddk.",
+      ".khhhvWWWWWWWWvdddk.",
+      ".kBBBwvwwwwwwxxdddk.",
+      ".kBBBwwvvwwvvxxdddk.",
+      ".kBBBwwwwvvwwwwdddk.",
+      ".kBBBwwwwwwwwwwdddk.",
+      ".kBBBwwwwwwwwwwdddk.",
+      "..kBBBBBBbbbbbdddk..",
+      "...kBBBBBbbbbbddk...",
+      "....kBBBBbbbbbdk....",
+      ".....kkBBbbbbkk.....",
+      ".......kddddk.......",
+      "........kddk........",
+      "........ksk.........",
+      "........ksk.........",
+      "........ksk.........",
+      "........ksk.........",
+      "........kskk........",
+      ".......koOOok.......",
+      ".......kooook.......",
+      ".......kOooqk.......",
+      ".......kOooqk.......",
+      ".......kOooqk.......",
+      ".......kOooqk.......",
+      "......kkOooqkk......",
+      ".....kooooooook.....",
+      ".....kkkkkkkkkk....."
+     ],
+     "pal": {
+      "b": "#78b8e0",
+      "B": "#9ad0f0",
+      "h": "#e0f4ff",
+      "d": "#4e8ab8",
+      "w": "#f6f0e2",
+      "W": "#ffffff",
+      "v": "#c8bca8",
+      "x": "#d0504a",
+      "s": "#5a5a66",
+      "o": "#a87444",
+      "O": "#d09c62",
+      "q": "#74502e",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "나는 포켓몬",
+       "a": "풍선 둘레를 빙글빙글 날며 같이 놀아요",
+       "x": {
+        "m": "circ",
+        "fx": "swing"
+       },
+       "l": [
+        "편지 풍선 둘레를 빙글빙글 날며 논다.",
+        "편지 풍선 주위를 맴돌며 줄을 따라 오르내린다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "풍선 줄을 잡고 매달려 둥실둥실 오르내려요",
+       "x": {
+        "at": [
+         0.5,
+         0.62
+        ],
+        "m": "bob",
+        "fx": "swing"
+       },
+       "l": [
+        "편지 풍선 줄에 매달려 둥실둥실 오르내린다.",
+        "풍선 줄을 꼭 잡고 흔들흔들 매달려 논다."
+       ]
+      },
+      {
+       "w": "비행 타입",
+       "a": "날갯바람을 일으켜 풍선을 크게 흔들어요",
+       "x": {
+        "m": "skill",
+        "fx": "swing"
+       },
+       "l": [
+        "날갯바람으로 편지 풍선을 크게 흔들었다.",
+        "바람을 일으켜 편지 풍선을 살랑살랑 흔든다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "말뚝 옆에 서서 흔들리는 풍선을 올려다봐요",
+       "x": {
+        "at": "front"
+       },
+       "l": [
+        "흔들리는 편지 풍선을 고개 들어 올려다본다.",
+        "편지 풍선 말뚝 옆에서 풍선을 구경한다."
+       ]
+      }
+     ],
+     "fit": "우체국 마당 가운데, 탁 트인 곳",
+     "glow": 0,
+     "mv": {
+      "st": [
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       ".......koOOok.......",
+       ".......kooook.......",
+       ".......kOooqk.......",
+       ".......kOooqk.......",
+       ".......kOooqk.......",
+       ".......kOooqk.......",
+       "......kkOooqkk......",
+       ".....kooooooook.....",
+       ".....kkkkkkkkkk....."
+      ],
+      "mp": [
+       ".......kkkkkk.......",
+       ".....kkBBbbbbkk.....",
+       "....khBBBbbbbbdk....",
+       "...kWhBBBbbbbbddk...",
+       "..khhhBBBbbbbbdddk..",
+       ".khhhhBBBbbbbbddddk.",
+       ".khhhvWWWWWWWWvdddk.",
+       ".kBBBwvwwwwwwxxdddk.",
+       ".kBBBwwvvwwvvxxdddk.",
+       ".kBBBwwwwvvwwwwdddk.",
+       ".kBBBwwwwwwwwwwdddk.",
+       ".kBBBwwwwwwwwwwdddk.",
+       "..kBBBBBBbbbbbdddk..",
+       "...kBBBBBbbbbbddk...",
+       "....kBBBBbbbbbdk....",
+       ".....kkBBbbbbkk.....",
+       ".......kddddk.......",
+       "........kddk........",
+       "........ksk.........",
+       "........ksk.........",
+       "........ksk.........",
+       "........ksk.........",
+       "........kskk........",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "...................."
+      ],
+      "o": [
+       9.5,
+       23
+      ],
+      "k": "swing",
+      "amp": 1.4
+     }
+    },
+    {
+     "id": "parcel-chute",
+     "n": "소포 미끄럼 슈트",
+     "k": "놀이",
+     "d": "사다리 달린 나무 받침에서 소포 상자를 미끄러뜨려 내려보내는 금속 슈트예요. 받침 위에는 보낼 소포 상자가 하나 놓여 있어요.",
+     "px": [
+      "kkkkkkk.....................",
+      "kaatadk.....................",
+      "kaatadkk....................",
+      "kBBBBBBBk...................",
+      "kbbbbbbMkk..................",
+      "kbbbbbbgMMk.................",
+      "kbbbbbbmggMk................",
+      "kbckkbcnmmgMkk..............",
+      "kbckkbcknnmgMMk.............",
+      "kbckkbckkknmggMk............",
+      "kbckkbck..knmmgMkk..........",
+      "kbcBBbck...knnmgMMk.........",
+      "kbckkbck....kkbcggMk........",
+      "kbckkbck.....kbcmmgMkk......",
+      "kbckkbck.....kbcnnmgMMk.....",
+      "kbcBBbck.....kbckknmggMk....",
+      "kbckkbck.....kbck.knmmgMkk..",
+      "kbckkbck.....kbck..knnmgMMk.",
+      "kbckkbck.....kbck...kknmbcMk",
+      "kbcBBbck.....kbck.....knbcgk",
+      "kbckkbck.....kbck......kbcmk",
+      "kbckkbck.....kbck......kbcnk",
+      "kbckkbck.....kbck......kbck.",
+      "kkkkkkkk.....kkkk......kkkk."
+     ],
+     "pal": {
+      "b": "#b07c48",
+      "B": "#d6a66c",
+      "c": "#7a5230",
+      "m": "#9aa4b0",
+      "M": "#dce4ec",
+      "g": "#c0c8d2",
+      "n": "#6a7480",
+      "a": "#c89a5e",
+      "A": "#e6be84",
+      "t": "#f0e2c0",
+      "d": "#9a6e3c",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "사다리로 올라가 슈트를 타고 쭉 미끄러져 내려와요",
+       "x": {
+        "m": "slide"
+       },
+       "l": [
+        "사다리로 올라가 소포 슈트를 타고 쭉 미끄러져 내려왔다.",
+        "소포 미끄럼 슈트를 타고 신나게 내려온다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "받침 위로 올라가 소포 상자 옆에 앉아요",
+       "x": {
+        "at": [
+         0.14,
+         0.13
+        ],
+        "m": "climb"
+       },
+       "l": [
+        "소포 슈트 받침 위로 올라가 상자 옆에 앉았다.",
+        "소포 슈트 꼭대기에 앉아 아래를 내려다본다."
+       ]
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "슈트 아래 그늘에 기대 앉아 쉬어요",
+       "x": {
+        "at": [
+         0.55,
+         1
+        ],
+        "an": "Sleep"
+       },
+       "l": [
+        "소포 슈트 아래 그늘에 기대 꾸벅꾸벅 존다.",
+        "소포 미끄럼 슈트 밑에 기대 느긋하게 쉰다."
+       ]
+      }
+     ],
+     "fit": "우체국 뒷마당, 소포 상자 더미 옆",
+     "glow": 0
+    },
+    {
+     "id": "telegraph-pole",
+     "n": "나무 전신주",
+     "k": "장식",
+     "d": "가로 팔에 흰 사기 애자 네 개가 달린 오래된 나무 전신주예요. 기둥엔 나뭇결과 작은 노란 번호판이 있어요. 마을 우체국까지 소식을 잇는 기둥이에요.",
+     "px": [
+      ".........kkkk.........",
+      "..kk..kk.kBBk..kk..kk.",
+      ".kGgkkGgkkBBk.kGgkkGgk",
+      ".kggkkggkBbcckkggkkggk",
+      ".kggkkggkBbcckkggkkggk",
+      "kBBBBBBBBBBBBBBBBBBBBk",
+      "kbbbbbbbbbbbbbbbbbbbbk",
+      "kcccccccccccccccccccck",
+      ".kkkkkkkkBccckkkkkkkk.",
+      "........kBbcck........",
+      ".......kgBbccgk.......",
+      ".......kgBbccgk.......",
+      ".......kgBbccgk.......",
+      "........kBbcck........",
+      "........kBYyck........",
+      "........kByyck........",
+      "........kByyck........",
+      "........kBbcck........",
+      "........kBbcck........",
+      "........kBbcck........",
+      "........kBccck........",
+      "........kBbcck........",
+      "........kBbcck........",
+      "........kBbcck........",
+      "........kBbcck........",
+      "........kBbcck........",
+      "........kBccck........",
+      "........kBbcck........",
+      "........kBbcck........",
+      "........kBbcck........",
+      ".......kkBbcckk.......",
+      "......kbbbbbbbbk......",
+      "......kcccccccck......",
+      "......kkkkkkkkkk......"
+     ],
+     "pal": {
+      "b": "#8e6440",
+      "B": "#b4885a",
+      "c": "#5e4028",
+      "g": "#e8e8ea",
+      "G": "#ffffff",
+      "y": "#e6c050",
+      "Y": "#fff0a0",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 가로 팔 위에 나란히 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "전신주 가로 팔 위에 날아와 앉았다.",
+        "전신주 위에 앉아 마을을 내려다본다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "기둥 옆에서 전기를 모아 찌릿찌릿 충전해요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "전신주 옆에서 찌릿찌릿 전기를 모았다.",
+        "전신주 곁에서 전기를 충전하며 볼이 반짝인다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "기둥에 등을 기대고 낮잠을 자요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "전신주에 등을 기대고 낮잠을 잔다.",
+        "나무 전신주 아래에 기대 꾸벅꾸벅 존다."
+       ]
+      },
+      {
+       "w": "벌레·풀 타입",
+       "a": "나무 기둥을 타고 위로 기어 올라가요",
+       "x": {
+        "at": [
+         0.5,
+         0.5
+        ],
+        "m": "climb"
+       },
+       "l": [
+        "나무 전신주를 타고 엉금엉금 기어 올라간다.",
+        "전신주 기둥에 매달려 위로 올라간다."
+       ]
+      }
+     ],
+     "fit": "마을 길가, 우체국 옆",
+     "glow": 0
+    }
+   ]
+  },
+  {
    "at": 1794005325047,
    "theme": "숲속 작은 도서관",
    "note": "오늘은 숲속 작은 도서관이에요! 책장·안락의자·독서 등·이야기 칠판까지 원목과 겨자색으로 색을 맞춰서 한데 모아 두면 아늑한 책 읽는 마당이 돼요. 앉기·숨기·날아와 앉기·기술 쓰기를 소품마다 고르게 나눠서 많은 포켓몬이 같이 놀 수 있게 했어요.",
