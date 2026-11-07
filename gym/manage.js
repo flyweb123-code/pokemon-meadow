@@ -238,6 +238,10 @@ async function drawTrain() {
   // v17.81 경완 '체육관 처마 밑에도 조명': 기둥마다·문 양옆 벽등 (처마 바로 밑), 켜지면 벽과 벽 앞 땅을 밝힘
   { const PW = Math.ceil(W / 2), xs = [PW / 2 - 19, PW / 2 + 19]; for (let x = 8; x < PW; x += 46) if (Math.abs(x - PW / 2) >= 30) xs.push(x + 2.5);
     Y.wl = xs.map(hx => { const x = Math.round(hx * 2), q = document.createElement('i'); q.className = 'ty-wl'; q.style.cssText = `left:${x}px;top:35px;z-index:40`; Y.L.append(q); return { x, y: 35, el: q }; }); }
+  // v17.85 모양 그림자: 기구(.ty-pr, 움직이는 칸 포함)는 같은 그림을 검게 본떠 발밑에서 눕힘. 가로등은 막대, 코치는 지금 걸음 칸을 따라감(yardLoop)
+  Y.L.querySelectorAll('.ty-pr').forEach(q => { const d = q.cloneNode(true); d.className = 'ty-cs'; d.style.zIndex = ''; d.style.transform = ''; d.querySelectorAll('*').forEach(x => { x.style.animation = 'none'; }); Y.L.append(d); });
+  Y.lp.forEach(l => { const d = document.createElement('i'); d.className = 'ty-cs cs-lp'; d.style.cssText = `left:${l.x}px;top:${l.y}px`; Y.L.append(d); });
+  Y.co.forEach(o => { const d = document.createElement('i'); d.className = 'ty-cs cs-co'; d.style.backgroundImage = o.el.style.backgroundImage; Y.L.append(d); o.cs = d; });
   el.insertAdjacentHTML('beforeend', '<i class="ty-nt"></i><i class="ty-glow"></i><i class="ty-wx"></i>'); yLight();
   sh.onclick = ev => {
     const c = ev.target.closest('[data-co]'); if (c) { sfx('tap'); const o = Y.co[+c.dataset.co]?.s; if (o) sfDetail(o); return; }
@@ -371,6 +375,8 @@ function yLight() {
   // v17.81 경완 '노을일 때 그림자 더 길게 — 그림자 엔진': 해 높이(아침·저녁 낮음)만큼 그림자를 해 반대쪽으로 늘림, 해가 지면 옅어짐. 비엔 발밑 그대로, 흐림은 반
   { const ts = (F.h - 6) / 12.6, sun = ts > 0 && ts < 1 && F.wx !== 'rain' ? (F.wx === 'cloud' ? .5 : 1) : 0, el2 = Math.sin(Math.PI * clampN(ts, 0, 1)),
       L = 1 + sun * Math.min(2.6, (1 / Math.max(el2, .22) - 1) * .95), dir = ts < .5 ? 1 : -1, op = sun ? clampN(el2 * 5, .35, 1) : 1;
+    const tn = (L - 1) * .62, ska = -dir * Math.atan(tn) * 180 / Math.PI;   // v17.85 경완 '노을 그림자는 소품 모양으로': 기구·가로등·코치 그림을 본뜬 그림자를 땅에 눕혀 해 반대쪽으로 늘림
+    e.style.setProperty('--ska', ska.toFixed(1) + 'deg'); e.style.setProperty('--sks', (-(.4 + .15 * (L - 1) / 2.6)).toFixed(2)); e.style.setProperty('--cso', sun ? (.42 * op * (1 - .2 * (L - 1) / 2.6)).toFixed(3) : 0);
     e.style.setProperty('--shl', L.toFixed(2)); e.style.setProperty('--shd', (dir * (L - 1)).toFixed(2)); e.style.setProperty('--sho', (1 - .3 * (L - 1) / 2.6) * op); }
   const wx = e.querySelector('.ty-wx'); wx.className = 'ty-wx' + (F.snow ? ' snow' : F.wx === 'rain' ? ' rain' + (F.storm ? ' storm' : '') : '');
 }
@@ -378,7 +384,8 @@ function yardLoop(ts) {
   if (!Y || !Y.el.isConnected || sh.hidden || cur !== 'train') { Y && (Y.raf = 0); return; }
   const now = ts / 1000, dt = Math.min(.1, Y.last ? now - Y.last : 0); Y.last = now;
   if (now - (Y.ck ?? now) > 30) { tickTrain(Date.now()); K.save(); Y.ck = now; Y.mons.forEach(m => { try { yTag(m); } catch (x) {} }); } else Y.ck ??= now;   // 30초마다 남은 시간·레벨 새로
-  if (now - (Y.lk ?? 0) > 10) { Y.lk = now; yLight(); }   // v17.75: 10초마다 시간·날씨 다시
+  if (now - (Y.lk ?? 0) > 10) { Y.lk = now; yLight(); }
+  for (const o of Y.co || []) if (o.cs) { const st2 = o.cs.style; st2.left = o.el.style.left; st2.top = o.el.style.top; st2.backgroundPosition = o.el.style.backgroundPosition; st2.setProperty('--fx', o.el.style.getPropertyValue('--fx') || 1); o.cs.classList.toggle('w32', o.el.classList.contains('w32')); }   // 코치 그림자 따라가기   // v17.75: 10초마다 시간·날씨 다시
   for (const c of Y.co || []) yCoach(c, now, dt);   // v17.59 경완 '코치가 포켓몬들 따라다니면서 지켜보게': 한 마리씩 골라 옆으로 걸어가 지켜보고 응원
   for (const m of Y.mons) {
     if (m.st === 'go') {
@@ -691,7 +698,7 @@ function recBar() { if (!['tm', 'tr', 'it'].includes(shopT)) return ''; const P 
 // v17.82 경완 '추천받기 버튼 도구 탭이랑 정렬 맞추고 폰트·여백도 탭이랑, 테두리는 검정': 도구 탭과 같은 가로 자리·폭
 function recAlign() { const r = sh.querySelector('.sp-recs'), t = sh.querySelector('.sp-tabs [data-st=it]'), hd = sh.querySelector('.sf-hd'); if (!r || !t || !hd) return;
   const a = t.getBoundingClientRect(), h = hd.getBoundingClientRect(); if (!a.width) return; r.style.left = (a.left - h.left) + 'px';
-  if (r.classList.contains('on')) { const gd = sh.querySelector('.sp-gold')?.parentElement?.getBoundingClientRect(); r.style.width = ''; r.style.minWidth = a.width + 'px'; r.style.maxWidth = (gd ? gd.left - a.left - 8 : a.width * 1.5) + 'px'; } else r.style.width = a.width + 'px'; }   // 켜졌을 땐 이름이 보이게 골드 앞까지 넓어짐
+  if (r.classList.contains('on')) { r.style.width = ''; const b = r.querySelector('.sp-recsb'); if (b) b.style.width = a.width + 'px'; } else r.style.width = a.width + 'px'; }   // v17.83: 켜졌을 때도 상자는 도구 탭 폭, ✕ 는 상자 밖 글자만
 addEventListener('resize', () => { try { recAlign(); } catch (e) {} });
 function recPick() {   // v17.61 경완: 라인업 1·2·3 탭
   const LU = GB().lus() || [[], [], []], mons = k => (LU[k] || []).map(id => S.box.find(p => p.id === id)).filter(Boolean);
