@@ -40,3 +40,7 @@ layout_mock/F_<red|rings|steps|dots|spark|purple|navy|green|pink>.png, 알은 �
 ## 뽑기 버튼 색 시안 (금색 1 배경, 게이지 14px 내림)
 layout_mock/F_btn_<red|blue|green>_<f|e>.png
 red 면 #d8352c 아래 음영 #a81f1c / blue #2f7fd8, #1f5aa8 / green #2fa45e, #1d7a44
+
+## draw_mock/ 뽑기 연출 시안
+pachinko.html을 열면 재생됨(같은 폴더의 그림 사용). 효과음은 코드로 합성. 등급별 길이: 일반 약 3초, 우수 3.5초, 레어 4초, 에픽 6초, 전설 8.5초 (결과 창까지).
+일반: 포켓몬이 고개를 내밈 / 우수: 포켓몬이 달려 지나감 / 레어: 파랑 컷인 / 에픽: 파랑에서 보라로 승격, 포켓몬 행진 / 전설: 파랑, 보라, 암전 실루엣, 번쩍, 금빛 등장.
