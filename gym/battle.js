@@ -739,7 +739,7 @@ async function run(opts) {
   trE.className = 'bt-tr e'; trP.className = 'bt-tr p';
   trE.style.backgroundImage = `url(${uE})`; trP.style.backgroundImage = `url(${uP})`;
   await Promise.race([Promise.all([uE, uP].map(u => new Promise(r => { const im = new Image(); im.onload = im.onerror = r; im.src = u; }))), wait(1200)]);   // 그림이 늦게 떠서 멈춰 보이지 않게 미리 받기
-  ['e', 'p'].forEach(s => { $b(`.bt-pty.${s}`).classList.remove('on'); $b(`.bt-hb.${s}`).classList.remove('on'); monEl(s).className = `bt-mon ${s}`; setSt(s, ''); });
+  ['e', 'p'].forEach(s => { $b(`.bt-pty.${s}`).classList.remove('on'); $b(`.bt-hb.${s}`).classList.remove('on'); monEl(s).className = `bt-mon ${s}`; monEl(s).style.opacity = monEl(s).style.transition = ''; setSt(s, ''); });
   $b('.bt-msg .t').textContent = ''; idlePanel(); wxSet(''); $b('.bt-terr').className = 'bt-terr'; $b('.bt-lvw').hidden = true; $b('.bt-shw').hidden = true;
   // 등장: 화면이 번쩍이며 가로줄로 열리고, 발판·트레이너가 양옆에서 미끄러져 들어온다
   M('sePrep', SE_BASE.map(n => 'DP_' + n)); await wait(40); el.classList.add('now', 'open'); void el.offsetWidth; el.classList.remove('now'); encDone(); se('SLIDEIN');   // 배틀 화면은 바로 불투명하게 (서서히 나타나면 걷히는 전환 화면 사이로 체육관이 비쳤다, 경완 2026-10-28)
@@ -755,8 +755,10 @@ async function run(opts) {
   if (B) {
     if (cut) await msgTap('배틀이 중간에 멈췄다!');
     else if (out !== 'quit') {
+      { const fe = monEl('e'); if (getComputedStyle(fe).opacity !== '0') { fe.style.transition = 'opacity .35s'; fe.style.opacity = '0'; await wait(380); } }   /* v18.09 경완 '승부 끝나고 스프라이트 겹쳐 보임': 진 승부는 상대 포켓몬이 남아 있어 다시 나온 트레이너와 겹쳤다 → 포켓몬을 먼저 들여보냄 */
       $b('.bt-tr.e').classList.add('back');
-      if (won) { M('play', winM, { fade: .05 }); await msgTap(`${wa(foeNm)}의 승부에서 이겼다!`); }
+      M('play', winM, { fade: .05 });   /* v18.09 경완 '승부 끝난 bgm 안 나옴': 진 승부도 끝 곡 (도전자의 승리) */
+      if (won) await msgTap(`${wa(foeNm)}의 승부에서 이겼다!`);
       else await msgTap('승부에서 졌다…');
       const ln = opts.foe.say?.[won ? 'win' : 'lose']; if (ln && B) await msgTap(ln);   // 상대 한마디 (본가처럼 다시 나와서)
       // 보상 (경완 2026-10-28): 한마디 뒤 골드·평판
