@@ -26,3 +26,9 @@ machine_red_1을 스크립트로 수정. PixelLab 생성 0번.
 
 ## layout_mock/
 알 뽑기 화면 시안. 게임의 실제 CSS로 그린 390px 폭 화면이고 알 그림은 임시. cur=현재, A/B/C=시안, _f=알 있음, _e=빈 상태.
+
+## bg/ 알 뽑기 화면 배경
+PixelLab Create image, Pixen 모델, Side view, Highly detailed, Lineless, 불투명, 196x392 (2배로 쓰면 392x784, nearest만).
+bg_festival(축제 거리), bg_toyshop(장난감 가게), bg_tile(체크 타일 코너). raw/는 쓰지 않은 첫 시도.
+시안에서는 폭 390px에 맞춰 세로 위치를 위로 옮김: 2배 기준 toyshop 109px, festival 100px, tile 90px. 기계 밑면이 바닥이나 선반에 닿는 위치.
+layout_mock/D_*: 박스 없앤 배치 + 배경 시안.
