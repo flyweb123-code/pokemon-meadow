@@ -7,5 +7,8 @@
  "purple": "radial-gradient(circle at 195px 388px,#fdeeff 0,#e0a8ff 26%,#8a3fd0 60%,#2c1060 100%)",
  "navy": "radial-gradient(circle at 195px 388px,#eafcff 0,#8ce0f0 26%,#2a6cc0 60%,#101a55 100%)",
  "green": "radial-gradient(circle at 195px 388px,#f6ffe0 0,#b6ec8a 26%,#2fa868 60%,#0c4638 100%)",
- "pink": "radial-gradient(circle at 195px 388px,#fff0f4 0,#ffb0cc 26%,#e0467e 60%,#6a1048 100%)"
+ "pink": "radial-gradient(circle at 195px 388px,#fff0f4 0,#ffb0cc 26%,#e0467e 60%,#6a1048 100%)",
+ "gold1": "radial-gradient(circle at 195px 388px,#fffbe0 0,#ffe68a 26%,#e8a92a 60%,#7a4a10 100%)",
+ "gold2": "radial-gradient(circle at 195px 388px,#fff6c8 0,#f7d060 26%,#c98a1e 60%,#4a2a0c 100%)",
+ "gold3": "radial-gradient(circle at 195px 388px,#ffffff 0,#fff0b0 26%,#f4c542 60%,#b8761a 100%)"
 }
