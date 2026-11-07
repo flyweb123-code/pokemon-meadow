@@ -1,7 +1,7 @@
 # 본가(FRLG pret 디컴파일) 맵 하나를 체육관 이벤트 필드용으로 뽑는다 (경완 2026-11-07 '캐릭터 이동이랑 문 들어가고 이런거 본가에서')
 #   python3 -I frmap.py <frlg root> <LAYOUT_ID> <out dir> <name>
 #   → <name>.png 바닥 그림, <name>_o.png 사람 위에 덮이는 층(본가 NORMAL·SPLIT 위층 = 지붕·벽 윗부분·나무 꼭대기),
-#     <name>.json { w, h, col: 칸 줄들, door: {"x,y": 문 종류} }, 문 애니메이션 door_<종류>.png (16x48, 닫힘→열림 3장)
+#     <name>.json { w, h, col: 칸 줄들, door: {"x,y": 문 종류}, look: {"x,y": 살펴볼 것 종류} }, 문 애니메이션 door_<종류>.png (16x48, 닫힘→열림 3장)
 # col 글자: . 걸을 수 있음  # 막힘  c 카운터(너머 사람에게 말 걸기)  v ^ < > 그 방향으로 뛰어내리는 턱
 import sys, json, struct, os, re
 from PIL import Image
@@ -39,7 +39,10 @@ img = Image.new('RGBA', (W * 16, H * 16), (0, 0, 0, 255)); px = img.load(); ov =
 def tile(i): return TP[i] if i < NP else (TS[i - NP] if i - NP < len(TS) else None)
 DOOR = {0x03D: ('general', 2), 0x062: ('sliding_single', 3), 0x15B: ('sliding_double', 3), 0x2CE: ('pewter', 8)}   # field_door.c sDoorAnimGraphicsTable (쓰는 것만)
 JUMP = {0x38: '>', 0x39: '<', 0x3A: '^', 0x3B: 'v'}
-col, door, used = [], {}, {}
+# A 로 살펴볼 수 있는 칸 (include/constants/metatile_behaviors.h) → look: {"x,y": 종류}
+LOOKB = {0x81: 'bookshelf', 0x82: 'shelf', 0x83: 'pc', 0x84: 'sign', 0x85: 'map', 0x86: 'tv', 0x87: 'pcsign', 0x88: 'martsign', 0x89: 'cabinet', 0x8A: 'kitchen', 0x8F: 'quest',
+         0x93: 'blueprint', 0x95: 'machine', 0x96: 'phone', 0x97: 'computer', 0x98: 'poster', 0x9C: 'porthole', 0x9D: 'window', 0x9E: 'lights', 0x9F: 'tools'}
+col, door, used, look = [], {}, {}, {}
 for by in range(H):
     row = ''
     for bx in range(W):
@@ -47,6 +50,7 @@ for by in range(H):
         e = MP[m] if m < NP else MS[m - NP]
         a = AP[m] if m < NP else AS[m - NP]; lt = (a >> 29) & 3; bh = a & 0x1ff
         row += JUMP.get(bh) or ('c' if bh == 0x80 else '#' if c0 else '.')
+        if bh in LOOKB: look[f'{bx},{by}'] = LOOKB[bh]
         if m in DOOR: door[f'{bx},{by}'] = DOOR[m][0]; used[DOOR[m][0]] = DOOR[m][1]
         for layer in range(2):
             dst = po if (layer == 1 and lt != 1) else px
@@ -65,7 +69,7 @@ for by in range(H):
     col.append(row)
 os.makedirs(outd, exist_ok=True)
 img.save(f'{outd}/{nm}.png'); ov.save(f'{outd}/{nm}_o.png')
-json.dump({'w': W, 'h': H, 'col': col, 'door': door}, open(f'{outd}/{nm}.json', 'w'), ensure_ascii=False, separators=(',', ':'))
+json.dump({'w': W, 'h': H, 'col': col, 'door': door, 'look': look}, open(f'{outd}/{nm}.json', 'w'), ensure_ascii=False, separators=(',', ':'))
 for k, pi in used.items():   # 문 애니메이션: 4bpp 색 번호에 그 문 팔레트를 입힘
     src = Image.open(f'{root}/graphics/door_anims/{k}.png'); sp = src.load(); w, h = src.size; d = Image.new('RGBA', (w, h), (0, 0, 0, 0)); dp = d.load()
     for y in range(h):

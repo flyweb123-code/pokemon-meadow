@@ -40,7 +40,7 @@ const CSS = `
 #gym .ev-fld .tw-sp.gone{opacity:0;transition:opacity .35s}
 #gym .ev-fld .ev-ov{position:absolute;inset:0;z-index:5000;pointer-events:none;background-size:100% 100%;image-rendering:pixelated}
 #gym .ev-fld :is(.ev-door,.ev-pic){position:absolute;pointer-events:none;background-repeat:no-repeat;background-size:100% 100%;image-rendering:pixelated}#gym .ev-fld .ev-door{z-index:5001}
-#gym .ev-fld .tw-bub{z-index:6000}
+#gym .ev-fld .tw-bub{z-index:6000}#gym .ev-fld .tw-bub.heal{color:#d83060;border-color:#d83060}#gym .ev-fld .tw-bub.heal::after{border-top-color:#d83060}
 #gym .ev-fade{position:absolute;inset:0;z-index:950;background:#000;opacity:0;pointer-events:none;transition:opacity .38s}#gym .ev-fade.on{opacity:1}
 #gym .ev-loc{position:absolute;left:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:960;background:rgba(16,16,24,.72);color:#fff;font-size:13px;font-weight:700;padding:5px 12px;border-radius:6px;border:2px solid rgba(255,255,255,.22);pointer-events:none;transition:opacity .3s}
 #gym .ev-loc{display:none!important}   /* 경완 2026-11-07 '좌상단 마을 이름 없애줘' */
@@ -52,10 +52,12 @@ const CSS = `
 #gym .ev-pad [data-d=u]{left:52px;top:0}#gym .ev-pad [data-d=d]{left:52px;bottom:0}#gym .ev-pad [data-d=l]{left:0;top:52px}#gym .ev-pad [data-d=r]{right:0;top:52px}
 #gym .ev-pad [data-d=d]::after{transform:rotate(180deg)}#gym .ev-pad [data-d=l]::after{transform:rotate(-90deg)}#gym .ev-pad [data-d=r]::after{transform:rotate(90deg)}
 #gym .ev-a{position:absolute;right:max(22px,env(safe-area-inset-right,0px));bottom:calc(58px + env(safe-area-inset-bottom,0px));z-index:960;width:70px;height:70px;border-radius:50%;border:0;background:#d8343c;color:#fff;font:900 24px/1 sans-serif;box-shadow:0 5px 0 #7a1018,inset 0 0 0 3px rgba(255,255,255,.3);touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:opacity .25s,transform .05s,box-shadow .05s}
+#gym .ev-b{position:absolute;right:max(29px,calc(env(safe-area-inset-right,0px) + 7px));bottom:calc(150px + env(safe-area-inset-bottom,0px));z-index:960;width:56px;height:56px;border-radius:50%;border:0;padding:0;background:#3c3c4c;color:#fff;font:800 12px/1 sans-serif;box-shadow:0 4px 0 #18181f,inset 0 0 0 3px rgba(255,255,255,.22);touch-action:none;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;transition:opacity .25s,transform .05s,box-shadow .05s}
+#gym .ev-b.on{transform:translateY(4px);box-shadow:0 0 0 #18181f,inset 0 0 0 3px rgba(255,255,255,.45);background:#50506a}
 #gym .ev-a:active,#gym .ev-a.on{transform:translateY(5px);box-shadow:0 0 0 #7a1018,inset 0 0 0 3px rgba(255,255,255,.45)}
 #gym .ev-quit{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:960;border:0;border-radius:8px;background:rgba(16,16,24,.72);color:#fff;font-size:13px;font-weight:700;padding:7px 12px;box-shadow:0 3px 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22);transition:opacity .25s,transform .05s,box-shadow .05s}
 #gym .ev-quit:active{transform:translateY(3px);box-shadow:0 0 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22)}
-#gym .ev-fld.lock :is(.ev-pad,.ev-a,.ev-quit){opacity:0;pointer-events:none}
+#gym .ev-fld.lock :is(.ev-pad,.ev-a,.ev-b,.ev-quit){opacity:0;pointer-events:none}
 #gym .ev-ask{position:absolute;inset:0;z-index:990;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);padding:0 24px}
 #gym .ev-ask .win{max-width:320px;width:100%;padding:18px 16px 14px;text-align:center;display:flex;flex-direction:column;gap:12px}
 #gym .ev-ask p{margin:0;font-size:15px;line-height:1.55;white-space:pre-line}#gym .ev-ask small{display:block;color:#707080;font-size:12px;margin-top:4px}
@@ -89,7 +91,7 @@ function tools(I, def) {
     // 길이 없으면 움직이지 않는다 (가구·사람을 밟고 지나가던 것, 경완 2026-11-07). 닿으면 true
     walkTo: async (e, to, spd = 260, occ = []) => { const fx = Math.round(e.x), fy = Math.round(e.y); if (fx === to[0] && fy === to[1]) return true; const p = I.route(D, [fx, fy], to, [...I.occOf([e]), ...occ]); if (!p?.length) return false; await I.walk(e, p, spd); return true; },
     // 후보 칸 중 걸어서 갈 수 있는 첫 칸 (빈 바닥·소품·사람·석상 피해서)
-    reach: (e, cands, occ = []) => { const O = [...I.occOf([e]), ...occ], K = q => q[0] + ',' + q[1], bad = new Set(O.map(K)); for (const c of cands) { if (D.free?.[c[1]]?.[c[0]] !== '1' || bad.has(K(c)) || (D.stat || []).some(q => q[0] === c[0] && q[1] === c[1])) continue; if (Math.round(e.x) === c[0] && Math.round(e.y) === c[1]) return c; const p = I.route(D, [Math.round(e.x), Math.round(e.y)], c, O); if (p?.length) return c; } return null; },
+    reach: (e, cands, occ = []) => { const O = [...I.occOf([e]), ...occ], K = q => q[0] + ',' + q[1], bad = new Set(O.map(K)); let best = null; for (const c of cands) { if (D.free?.[c[1]]?.[c[0]] !== '1' || bad.has(K(c)) || (D.stat || []).some(q => q[0] === c[0] && q[1] === c[1])) continue; if (Math.round(e.x) === c[0] && Math.round(e.y) === c[1]) return c; const p = I.route(D, [Math.round(e.x), Math.round(e.y)], c, O); if (p?.length && (!best || p.length < best[1])) best = [c, p.length]; } return best ? best[0] : null; },   // 갈 수 있는 칸 중 가장 가까운 칸 (경완 2026-11-07 'NPC 는 나한테 올 때 최단 거리로')
     turn: (e, f) => { e.f = f; e.st = 0; I.place(e); },
     slide: (e, tx, ty, ms) => { const x0 = e.x, y0 = e.y; return anim(ms, q => { e.x = x0 + (tx - x0) * q; e.y = y0 + (ty - y0) * q; I.place(e); }); },
     // 머리 위 말풍선 ('!', '...')
@@ -126,6 +128,7 @@ function tools(I, def) {
     title: async (big, sub, tag = 'EVENT') => { const t = document.createElement('div'); t.className = 'ev-ttl'; t.innerHTML = `<i>${I.esc(tag)}</i><b>${I.esc(big)}</b>${sub ? `<em>${I.esc(sub)}</em>` : ''}`; root.appendChild(t); await wait(3200); t.remove(); },
     music: (n, o) => { try { n ? window.GymBGM?.play(n, o) : window.GymBGM?.stop(.8); } catch (e) {} },
     se: (n, gn = 1) => I.gse(n, gn),
+    fan: n => window.GymBGM?.fan?.(n),   // 팡파르: 배경 곡을 잠깐 줄이고 끝까지 (회복 소리 등)
     talk: () => I.storyTalk(),
     me: () => I.trName() || '관장',
     test: !!window.gymEvTest, retry: (g.ev?.try | 0) > 0,
@@ -160,13 +163,13 @@ function tools(I, def) {
 //   col 글자: . 걸음  # 막힘  c 카운터  v ^ < > 턱. 그 밖의 글자도 막힘
 // 걸음 그림 칸: 0 아래 1 위 2 왼쪽 3·4 아래 걷기 5·6 위 걷기 7·8 왼쪽 걷기 (오른쪽은 뒤집기)
 const FR = { d: [0, 3, 4], u: [1, 5, 6], l: [2, 7, 8], r: [2, 7, 8] }, DIR = { u: [0, -1], d: [0, 1], l: [-1, 0], r: [1, 0] }, OPP = { u: 'd', d: 'u', l: 'r', r: 'l' };
-const LEDGE = { d: 'v', u: '^', l: '<', r: '>' }, WALK = 267, TURN = 133, JUMP = 533, DOORF = 67;
+const LEDGE = { d: 'v', u: '^', l: '<', r: '>' }, WALK = 267, RUN = 133, TURN = 133, JUMP = 533, DOORF = 67;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 function field(I, o) {
   const root = I.root, W = root.clientWidth || innerWidth, H = root.clientHeight || innerHeight, k = Math.max(2, Math.round(W / (12 * 16) * 4) / 4);
   const el = document.createElement('div'); el.className = 'gy-town ev-fld lock';
   el.innerHTML = `<div class="tw-map"><i class="ev-ov"></i></div><b class="ev-loc">${I.esc(o.nm || '')}</b><i class="ev-fade"></i>
-    <div class="ev-pad">${['u', 'l', 'r', 'd'].map(d => `<button type="button" data-d="${d}" aria-label="${({ u: '위', d: '아래', l: '왼쪽', r: '오른쪽' })[d]}"></button>`).join('')}</div><button type="button" class="ev-a" aria-label="말 걸기">A</button><button type="button" class="ev-quit">나가기</button>`;
+    <div class="ev-pad">${['u', 'l', 'r', 'd'].map(d => `<button type="button" data-d="${d}" aria-label="${({ u: '위', d: '아래', l: '왼쪽', r: '오른쪽' })[d]}"></button>`).join('')}</div><button type="button" class="ev-a" aria-label="말 걸기">A</button><button type="button" class="ev-b" aria-label="달리기">달리기</button><button type="button" class="ev-quit">나가기</button>`;
   root.appendChild(el); const map = el.firstElementChild, ov = map.firstElementChild, fade = el.querySelector('.ev-fade'), pad = el.querySelector('.ev-pad'), aB = el.querySelector('.ev-a');
   const F = { el, map, k, sps: [], hold: null, aQ: false, quitQ: false, me: null, follow: true, warps: [], block: new Set(), cur: 'main', rooms: Object.assign({}, o.rooms || {}) };
   F.rooms.main = { nm: o.nm, img: o.img, over: o.over, w: o.w, h: o.h, col: o.col, door: o.door, warps: o.warps || [] };
@@ -184,16 +187,22 @@ function field(I, o) {
   const at = (s, x, y) => s.on && !s.el.hidden && here(s) && Math.round(s.x) === x && Math.round(s.y) === y;
   const cAt = (x, y) => x < 0 || y < 0 || x >= o.w || y >= o.h ? '#' : col[y][x];
   F.who = (x, y) => F.sps.find(s => s !== F.me && at(s, x, y));
-  F.solid = (x, y, who) => cAt(x, y) !== '.' || F.block.has(x + ',' + y) || F.sps.some(s => s !== who && at(s, x, y));
+  F.solid = (x, y, who) => cAt(x, y) !== '.' || F.block.has(x + ',' + y) || F.sps.some(s => s !== who && (at(s, x, y) || (s.res && s.on && here(s) && s.res[0] === x && s.res[1] === y)));
+  // 마을 사람이 제자리 근처(r 칸)를 어슬렁거린다 (경완 2026-11-07 '마을 사람들 좀 움직이고 있게'). 자유롭게 걷는 동안만
+  F.wander = (s, r = 2) => { s.home = [s.x, s.y]; s.wr = r; s.wt = performance.now() + 800 + Math.random() * 2500; return s; };
+  const wanderTick = now => { for (const s of F.sps) { if (!s.wr || s.wb || now < s.wt || !s.on || s.el.hidden || !here(s)) continue; s.wt = now + 1600 + Math.random() * 3200;
+    const d = 'udlr'[Math.random() * 4 | 0], [dx, dy] = DIR[d], nx = Math.round(s.x) + dx, ny = Math.round(s.y) + dy, m = F.me;
+    if (Math.random() < .35 || Math.abs(nx - s.home[0]) > s.wr || Math.abs(ny - s.home[1]) > s.wr || F.solid(nx, ny, s) || F.warpAt(nx, ny) || Math.abs(nx - Math.round(m.x)) + Math.abs(ny - Math.round(m.y)) < 2) { s.turn(d); continue; }
+    s.wb = true; s.go([[nx, ny]], WALK).then(() => { s.wb = false; }); } };
   // 맵 위 사람: ow 키(본가 걸음 그림) 또는 그림 주소. o2.room = 어느 방에 있는지 (기본 지금 방)
   F.npc = (ow, x, y, f = 'd', o2 = {}) => { const src = /[/.]/.test(ow) ? ow : I.owSrc(ow), fw = o2.fw || (/[/.]/.test(ow) ? 32 : I.owW(ow)); const s = Object.assign({ x, y, f, st: 0, on: true, fw, hop: 0, room: F.cur, el: document.createElement('i') }, o2); s.el.className = 'tw-sp'; map.appendChild(s.el);
-    s.put = () => { const fr = FR[s.f][s.st]; Object.assign(s.el.style, { width: s.fw * k + 'px', height: 32 * k + 'px', left: (s.x * 16 - (s.fw - 16) / 2) * k + 'px', top: (s.y * 16 - 16 - s.hop) * k + 'px', zIndex: Math.round(s.y * 10) + 2, backgroundImage: `url(${s.src || src})`, backgroundSize: `auto ${32 * k}px`, backgroundPosition: `${-fr * s.fw * k}px 0` }); s.el.classList.toggle('flip', s.f === 'r'); if (s === F.me && F.follow) F.cam(s.x, s.y); };
+    s.put = () => { const fr = FR[s.f][s.st]; Object.assign(s.el.style, { width: s.fw * k + 'px', height: 32 * k + 'px', left: (s.x * 16 - (s.fw - 16) / 2) * k + 'px', top: (s.y * 16 - 16 - s.hop) * k + 'px', zIndex: s.top ? 5500 : Math.round(s.y * 10) + 2, backgroundImage: `url(${s.src || src})`, backgroundSize: `auto ${32 * k}px`, backgroundPosition: `${-fr * s.fw * k}px 0` }); s.el.classList.toggle('flip', s.f === 'r'); if (s === F.me && F.follow) F.cam(s.x, s.y); };
     s.go = async (pts, ms = 210) => { let n = s.n || 0; for (const [tx, ty] of pts) while (s.x !== tx || s.y !== ty) {
-      const dx = Math.sign(tx - s.x), dy = dx ? 0 : Math.sign(ty - s.y), x0 = s.x, y0 = s.y; s.f = dx > 0 ? 'r' : dx < 0 ? 'l' : dy > 0 ? 'd' : 'u'; n++;
+      const dx = Math.sign(tx - s.x), dy = dx ? 0 : Math.sign(ty - s.y), x0 = s.x, y0 = s.y; s.f = dx > 0 ? 'r' : dx < 0 ? 'l' : dy > 0 ? 'd' : 'u'; n++; s.res = [x0 + dx, y0 + dy];   // 가는 칸은 미리 잡아 둔다 (둘이 한 칸에 겹치지 않게)
       await anim(ms, (e, q) => { s.x = x0 + dx * q; s.y = y0 + dy * q; s.st = q < .5 ? (n % 2 ? 1 : 2) : 0; s.put(); });
-      s.x = x0 + dx; s.y = y0 + dy; } s.n = n; s.st = 0; s.put(); };
+      s.x = x0 + dx; s.y = y0 + dy; s.res = null; } s.n = n; s.st = 0; s.put(); };
     // 본가 턱 뛰어내리기: 두 칸을 32프레임에 포물선으로
-    s.jump = async d => { const [dx, dy] = DIR[d], x0 = s.x, y0 = s.y; s.f = d; I.gse?.('DP_KON3', .5);
+    s.jump = async d => { const [dx, dy] = DIR[d], x0 = s.x, y0 = s.y; s.f = d; I.gse?.('se_ledge');
       await anim(JUMP, (e, q) => { s.x = x0 + dx * 2 * q; s.y = y0 + dy * 2 * q; s.hop = Math.sin(q * Math.PI) * 10; s.st = q < .5 ? 1 : 2; s.put(); }); s.x = x0 + dx * 2; s.y = y0 + dy * 2; s.hop = 0; s.st = 0; s.put(); };
     s.turn = f => { s.f = f; s.st = 0; s.put(); };
     s.face = t => { const dx = t.x - s.x, dy = t.y - s.y; s.turn(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'r' : 'l') : (dy > 0 ? 'd' : 'u')); };
@@ -207,18 +216,18 @@ function field(I, o) {
   // 본가 문 애니메이션 (field_door.c): 열기 = 원래 → 1·2·3장, 닫기 = 3·2·1장 → 원래. 열린 문은 사람 위에 그려져 사람이 문 안으로 사라진다
   F.door = async (x, y, open) => { const kd = F.doorAt?.[x + ',' + y], src = kd && o.doorImg?.[kd]; if (!src) return; const key = x + ',' + y; let d = doors[key];
     if (!d) { d = doors[key] = document.createElement('i'); d.className = 'ev-door'; Object.assign(d.style, { left: x * 16 * k + 'px', top: y * 16 * k + 'px', width: 16 * k + 'px', height: 16 * k + 'px', backgroundImage: `url(${src})`, backgroundSize: `${16 * k}px ${48 * k}px` }); d.hidden = true; map.appendChild(d); }
-    if (open) I.gse?.(/sliding/.test(kd) ? 'DP_DOOR10' : 'DP_DOOR_OPEN', .8);
+    if (open) I.gse?.(/sliding/.test(kd) ? 'se_sliding_door' : 'se_door');   // 본가 GBA 효과음 (field_door.c: 여닫이 SE_DOOR, 미닫이 SE_SLIDING_DOOR, 닫힐 땐 소리 없음)
     for (const f of open ? [0, 1, 2] : [1, 0, -1]) { if (f < 0) d.hidden = true; else { d.hidden = false; d.style.backgroundPosition = `0 ${-f * 16 * k}px`; } await wait(DOORF); }
-    if (!open) I.gse?.('DP_DOOR', .6); };
+  };
   F.fade = async on => { fade.classList.toggle('on', on); await wait(on ? 420 : 380); };
   // 문·매트로 다른 방에 들어가기: w = { to, at:[x,y,f] }
   F.enter = async w => { const me = F.me, isDoor = F.doorAt?.[w.x + ',' + w.y];
-    if (isDoor) { await F.door(w.x, w.y, true); await me.go([[w.x, w.y]], WALK); me.el.style.visibility = 'hidden'; await F.door(w.x, w.y, false); }
-    else I.gse?.('DP_DOOR', .6);
+    if (isDoor) { await F.door(w.x, w.y, true); me.top = true; await me.go([[w.x, w.y]], WALK); me.el.style.visibility = 'hidden'; me.top = false; await F.door(w.x, w.y, false); }   // 본가처럼 열린 문 위로 보이며 들어가고 다 들어가면 사라짐 (경완 2026-11-07)
+    else I.gse?.('se_exit');   // 매트로 나가기 (본가 SE_EXIT)
     await F.fade(true); const [tx, ty, tf] = w.at; F.setMap(w.to); me.x = tx; me.y = ty; me.turn(tf || 'u'); me.el.style.visibility = '';
     const outDoor = F.doorAt?.[tx + ',' + ty]; if (outDoor) me.el.style.visibility = 'hidden';
     F.follow = true; F.cam(me.x, me.y); await F.fade(false);
-    if (outDoor) { await F.door(tx, ty, true); me.el.style.visibility = ''; const [dx, dy] = DIR[tf || 'd']; await me.go([[tx + dx, ty + dy]], WALK); await F.door(tx, ty, false); } };
+    if (outDoor) { await F.door(tx, ty, true); me.top = true; me.el.style.visibility = ''; const [dx, dy] = DIR[tf || 'd']; await me.go([[tx + dx, ty + dy]], WALK); me.top = false; me.put(); await F.door(tx, ty, false); } };
   // 본가 트레이너 시야: 보는 방향으로 sight 칸 안에 내가 있으면 그 거리 (벽·사람에 막힘)
   F.sees = s => { if (!s.on || !s.sight || s.done || s.lost || !here(s)) return 0; const [dx, dy] = DIR[s.f]; for (let i = 1; i <= s.sight; i++) { const x = Math.round(s.x) + dx * i, y = Math.round(s.y) + dy * i;
     if (Math.round(F.me.x) === x && Math.round(F.me.y) === y) return i; if (cAt(x, y) !== '.' || F.who(x, y)) return 0; } return 0; };
@@ -230,20 +239,33 @@ function field(I, o) {
       for (const [dx, dy] of Object.values(DIR)) { const nx = x + dx, ny = y + dy, kk = key(nx, ny); if (prev.has(kk) || (F.solid(nx, ny, s) && !(nx === to[0] && ny === to[1]))) continue; if (nx < 0 || ny < 0 || nx >= o.w || ny >= o.h) continue; prev.set(kk, key(x, y)); q.push([nx, ny]); } }
     return null; };
   F.goTo = async (s, to, ms = 200) => { const p = F.path(s, to); if (p?.length) await s.go(p, ms); };
-  F.lock = on => { el.classList.toggle('lock', on); if (on) press(null); };
+  // 사람이 나(또는 t)에게 다가온다: 내 옆 네 칸 중 가장 짧은 길로 가서 나를 본다 (경완 2026-11-07 '최단 거리로')
+  F.approach = async (s, t = F.me, ms = 200) => { const tx = Math.round(t.x), ty = Math.round(t.y); let best = null;
+    for (const [dx, dy] of Object.values(DIR)) { const q = [tx + dx, ty + dy]; if (Math.round(s.x) === q[0] && Math.round(s.y) === q[1]) { best = [q, []]; break; } if (F.solid(q[0], q[1], s)) continue; const p = F.path(s, q); if (p && (!best || p.length < best[1].length)) best = [q, p]; }
+    if (best?.[1].length) await s.go(best[1], ms); s.face(t); t.face?.(s); return !!best; };
+  // 여러 사람을 자리들에 나눠 보낼 때: 사람마다 가장 가까운 빈 자리
+  F.nearest = (s, spots) => { let best = null; for (const q of spots) { const p = F.path(s, q); if (p && (!best || p.length < best[1].length)) best = [q, p]; } return best?.[0] || null; };
+  F.lock = on => { const was = el.classList.contains('lock'); el.classList.toggle('lock', on); if (on) { press(null); F.run = false; el.querySelector('.ev-b')?.classList.remove('on'); } else if (was) { F.unT = performance.now(); F.aQ = false; } };   // 풀린 직후 0.4초는 A 무시: 대화를 넘기던 탭이 A 로 또 눌려 대화가 다시 열리던 것 (경완 2026-11-07)
   F.show = () => new Promise(ok => { requestAnimationFrame(() => { el.classList.add('on'); setTimeout(ok, 650); }); });
   F.close = async () => { el.classList.add('out'); await wait(800); el.remove(); off(); };
   // 걷기: 누르고 있는 동안 계속 (손가락을 다른 화살표로 밀면 방향만 바뀜)
   const press = d => { if (d && d !== F.hold) F.holdT = performance.now(); F.hold = d; pad.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.d === d)); };
-  pad.addEventListener('pointerdown', e => { const b = e.target.closest('button'); if (!b) return; e.preventDefault(); try { pad.setPointerCapture(e.pointerId); } catch (x) {} press(b.dataset.d); });
-  pad.addEventListener('pointermove', e => { if (!F.hold) return; const b = document.elementFromPoint(e.clientX, e.clientY)?.closest?.('.ev-pad button'); if (b && b.dataset.d !== F.hold) press(b.dataset.d); });
+  pad.addEventListener('pointerdown', e => { const b = e.target.closest('button'); if (!b) return; e.preventDefault(); try { pad.setPointerCapture(e.pointerId); } catch (x) {} I.haptic?.(0); press(b.dataset.d); });   // 방향키 누를 때 살짝 진동 (경완 2026-11-07 '조작감')
+  pad.addEventListener('pointermove', e => { if (!F.hold) return; const b = document.elementFromPoint(e.clientX, e.clientY)?.closest?.('.ev-pad button'); if (b && b.dataset.d !== F.hold) { I.haptic?.(0); press(b.dataset.d); } });
   ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(n => pad.addEventListener(n, () => press(null)));
   pad.addEventListener('contextmenu', e => e.preventDefault());
-  aB.onclick = e => { e.stopPropagation(); F.aQ = true; };
+  // 달리기 (본가 달리기 신발: 누른 채로 걸으면 한 칸 8프레임, 경완 2026-11-07 'A 버튼 위에 달리기 버튼')
+  const bB = el.querySelector('.ev-b'), runOn = on => { F.run = on; bB.classList.toggle('on', on); };
+  bB.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); try { bB.setPointerCapture(e.pointerId); } catch (x) {} I.haptic?.(0); runOn(true); });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(n => bB.addEventListener(n, () => runOn(false))); bB.addEventListener('contextmenu', e => e.preventDefault());
+  aB.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); if (performance.now() - (F.unT || 0) < 400) return; aB.classList.add('on'); I.haptic?.(0); F.aQ = true; });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(n => aB.addEventListener(n, () => aB.classList.remove('on')));
+  // 아이폰 꾹 누르기 돋보기(글자 선택)가 뜨지 않게: 필드 위 터치는 기본 동작을 막고 버튼은 pointer 로만 (경완 2026-11-07)
+  el.addEventListener('touchstart', e => { if (e.target.closest('.ev-pad,.ev-a,.ev-b,.tw-map')) e.preventDefault(); }, { passive: false });
   el.querySelector('.ev-quit').onclick = async e => { e.stopPropagation(); I.sfx?.('tap'); F.lock(true); const y = await F.ask('이벤트를 멈추고 체육관에서 나갈까요?', '다음에 들어오면 이 장 처음부터 이어서 해요.', '나가기', '계속하기'); if (y) F.quitQ = true; else F.lock(false); };
   const KEY = { ArrowUp: 'u', ArrowDown: 'd', ArrowLeft: 'l', ArrowRight: 'r' };
-  const kd = e => { if (KEY[e.key]) { e.preventDefault(); if (!el.classList.contains('lock') && !e.repeat) press(KEY[e.key]); } else if (e.key === ' ' || e.key === 'Enter' || e.key === 'z') { if (!el.classList.contains('lock')) F.aQ = true; } };
-  const ku = e => { if (KEY[e.key] === F.hold) press(null); };
+  const kd = e => { if (e.key === 'Shift' || e.key === 'x') F.run = true; if (KEY[e.key]) { e.preventDefault(); if (!el.classList.contains('lock') && !e.repeat) press(KEY[e.key]); } else if (e.key === ' ' || e.key === 'Enter' || e.key === 'z') { if (!el.classList.contains('lock') && !e.repeat && performance.now() - (F.unT || 0) > 400) F.aQ = true; } };
+  const ku = e => { if (KEY[e.key] === F.hold) press(null); if (e.key === 'Shift' || e.key === 'x') F.run = false; };
   addEventListener('keydown', kd); addEventListener('keyup', ku);
   const off = () => { removeEventListener('keydown', kd); removeEventListener('keyup', ku); };
   F.ask = (t, sm, yes = '네', no = '아니요') => new Promise(ok => { const w = document.createElement('div'); w.className = 'ev-ask'; w.innerHTML = `<div class="win"><p>${I.esc(t)}${sm ? `<small>${I.esc(sm)}</small>` : ''}</p><div class="bt2 gy-btns"><button type="button" data-a="0">${I.esc(no)}</button><button type="button" class="main" data-a="1">${I.esc(yes)}</button></div></div>`;
@@ -259,6 +281,7 @@ function field(I, o) {
     const me = () => F.me;
     const tick = () => { if (end) return; if (!I.isOpen() || !el.isConnected) return fin('quit');
       if (!busy) {
+        wanderTick(performance.now());
         if (F.quitQ) return fin('quit');
         const m = F.me;
         if (F.aQ) { F.aQ = false; const [dx, dy] = DIR[m.f], tx = m.x + dx, ty = m.y + dy; let s = F.who(tx, ty); if (!s && cAt(tx, ty) === 'c') s = F.who(tx + dx, ty + dy);   // 카운터 너머
@@ -269,8 +292,8 @@ function field(I, o) {
           else if (mat && mat.mat && mat.d === d) goW(mat);   // 매트 위에서 그 방향 = 밖으로
           else if (w && !w.mat && (!w.d || w.d === d)) { m.turn(d); goW(w); }
           else if (cAt(tx, ty) === LEDGE[d] && !F.solid(tx + dx, ty + dy, m)) { busy = true; m.jump(d).then(after); }
-          else if (F.solid(tx, ty, m)) { if (m.f !== d) m.turn(d); }
-          else { busy = true; m.go([[tx, ty]], WALK).then(after); }   // 걷는 동안엔 잠그지 않아 꾹 누르면 계속 걷는다 (경완 2026-11-07)
+          else if (F.solid(tx, ty, m)) { if (m.f !== d) m.turn(d); const t = performance.now(); if (!(t - (F.bumpT || 0) < 300)) { F.bumpT = t; I.gse?.('se_wall_hit'); } }   // 벽에 부딪히는 소리 (본가 SE_WALL_HIT, 누르고 있으면 걸음마다)
+          else { busy = true; m.go([[tx, ty]], F.run ? RUN : WALK).then(after); }   // 걷는 동안엔 잠그지 않아 꾹 누르면 계속 걷는다 (경완 2026-11-07)
         }
       }
       requestAnimationFrame(tick); };
