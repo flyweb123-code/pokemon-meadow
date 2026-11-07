@@ -66,16 +66,34 @@ const CSS = `
 #gym :is(.ev-ask,.ev-rw) button{font:inherit;font-size:15px;font-weight:700;padding:11px 8px;border:0;border-radius:10px;background:#e4e4ec;color:#303040;box-shadow:0 4px 0 #a8a8b8;transition:transform .05s,box-shadow .05s;-webkit-tap-highlight-color:transparent}
 #gym :is(.ev-ask,.ev-rw) button.main{background:#3f8ee8;color:#fff;box-shadow:0 4px 0 #22589a}
 #gym :is(.ev-ask,.ev-rw) button:active{transform:translateY(4px);box-shadow:0 0 0 transparent}
-/* 보상 창 */
-#gym .ev-rw{position:absolute;inset:0;z-index:990;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:0 22px}
-#gym .ev-rw .win{max-width:330px;width:100%;padding:18px 16px 14px;text-align:center;display:flex;flex-direction:column;gap:10px;animation:evRw .45s cubic-bezier(.2,1.4,.4,1) both}
+/* 보상 창 (v18.54 경완 '이벤트 해결 창 디자인 좀 더'): 승급 보상창처럼 빛 무대 + 이벤트 문장 + 되찾은 동료들 + 보상 줄 */
+#gym .ev-rw{position:absolute;inset:0;z-index:990;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);padding:0 18px}
+#gym .ev-rw>.win{max-width:340px;width:100%;padding:12px 12px 14px;text-align:center;animation:evRw .45s cubic-bezier(.2,1.4,.4,1) both}
 @keyframes evRw{0%{opacity:0;transform:scale(.7)}100%{opacity:1;transform:none}}
-#gym .ev-rw h4{margin:0;font-size:18px}#gym .ev-rw .sub{margin:-4px 0 0;font-size:12px;color:#808090}
-#gym .ev-rw ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
-#gym .ev-rw li{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:rgba(0,0,0,.05);text-align:left;font-size:14px}
-#gym .ev-rw li img{width:44px;height:44px;object-fit:contain;image-rendering:pixelated}
-#gym .ev-rw li .coin{margin-right:6px}
-#gym .ev-rw li b{font-size:15px}
+#gym .ev-rw .rw-hd{position:relative;height:176px;margin:-6px -6px 4px;border-radius:6px;overflow:hidden;background:radial-gradient(circle at 50% 38%,var(--c1,#7a1c28) 0,var(--c2,#26070c) 62%,#0c0204 100%)}
+#gym .ev-rw .rw-hd .bsa-ray{top:38%;width:320px;height:320px;margin:-160px 0 0 -160px}
+#gym .ev-rw .rw-halo{position:absolute;left:50%;top:38%;width:130px;height:130px;margin:-65px;border-radius:50%;background:radial-gradient(circle,rgba(255,236,170,.6),transparent 70%);animation:bswPulse 2s ease-in-out infinite}
+#gym .ev-rw .rw-emb{position:absolute;left:50%;top:38%;width:62px;height:62px;margin:-31px;border-radius:50%;display:grid;place-items:center;background:#f4f0f0;box-shadow:0 0 0 4px #c01828,0 4px 0 4px #6a0a12;font:900 40px/1 Arial,sans-serif;color:#c01828;animation:rwEmb .5s .1s ease-out both}
+#gym .ev-rw .rw-emb::after{content:'';position:absolute;left:-8px;right:-8px;top:50%;height:7px;margin-top:-3.5px;border-radius:4px;background:#222;box-shadow:0 0 0 2px #fff;transform:rotate(-40deg) scaleX(0);transform-origin:left;animation:rwCut .25s .75s ease-out forwards}
+@keyframes rwEmb{0%{transform:scale(0) rotate(-30deg)}70%{transform:scale(1.15)}100%{transform:none}}
+@keyframes rwCut{to{transform:rotate(-40deg) scaleX(1)}}
+#gym .ev-rw .rw-stamp{position:absolute;left:50%;top:38%;margin:-14px 0 0 18px;padding:2px 9px 3px;border:3px solid #ffd84a;border-radius:6px;background:rgba(40,10,10,.55);color:#ffd84a;font-size:17px;font-weight:900;letter-spacing:2px;transform:rotate(-12deg);opacity:0;animation:rwStamp .35s 1.05s cubic-bezier(.3,1.6,.5,1) forwards}
+@keyframes rwStamp{0%{opacity:0;transform:rotate(-12deg) scale(2.4)}100%{opacity:1;transform:rotate(-12deg) scale(1)}}
+#gym .ev-rw .rw-crew{position:absolute;left:0;right:0;bottom:6px;display:flex;justify-content:center;align-items:flex-end;gap:2px}
+#gym .ev-rw .rw-crew i{display:block;height:64px;background-repeat:no-repeat;image-rendering:pixelated;opacity:0;animation:rwIn .3s var(--d) ease-out forwards,rwHop .5s calc(var(--d) + 1.2s) ease-in-out 2}
+#gym .ev-rw .rw-crew i.me{filter:drop-shadow(0 0 4px rgba(255,230,140,.9))}
+@keyframes rwIn{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:none}}
+@keyframes rwHop{50%{transform:translateY(-8px)}}
+#gym .ev-rw h4.pp-t{margin:6px 0 4px}
+#gym .ev-rw .rw-msg{margin:0 0 10px;font-size:13px;line-height:1.5;color:#5a5060}
+#gym .ev-rw .pk-ben{margin-bottom:12px}
+#gym .ev-rw .pk-ben li{animation:rwIn .3s var(--d) ease-out both}
+#gym .ev-rw .pk-ben .gold .pk-ic,#gym .ev-rw .pk-ben .fit .pk-ic{background:none;box-shadow:none}#gym .ev-rw .pk-ben .gold .pk-ic::before,#gym .ev-rw .pk-ben .fit .pk-ic::before{display:none}
+#gym .ev-rw .pk-ben .gold .coin{position:static;display:block;width:18px;height:18px;margin:0;image-rendering:pixelated}
+#gym .ev-rw .pk-ben .fit .pk-ic img{width:30px;height:30px;object-fit:contain;image-rendering:pixelated}
+#gym .ev-rw .pk-ben .rep .pk-ic{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M6 0h2v4h4v2h2v2h-3v2h1v4h-2v-1H8v-1H6v1H4v1H2v-4h1V8H0V6h2V4h4z'/%3E%3C/svg%3E")}
+#gym .ev-rw .pk-ben small{display:block;font-size:11px;font-weight:400;color:#8a7a50}
+#gym .ev-rw .rw-gn{font-variant-numeric:tabular-nums}
 `;
 let cssOn = false;
 const css = () => { if (cssOn) return; cssOn = true; const s = document.createElement('style'); s.textContent = CSS; document.head.appendChild(s); };
@@ -140,13 +158,21 @@ function tools(I, def) {
     // 곧바로 까만 화면 (장을 이어서 시작할 때 체육관이 비치지 않게)
     blackNow: () => { let b = $g('.ev-black'); if (!b) { b = document.createElement('div'); b.className = 'ev-black'; b.innerHTML = '<b></b><span></span>'; root.appendChild(b); } b.style.transition = 'none'; b.classList.add('on'); void b.offsetWidth; b.style.transition = ''; },
     // 이벤트 보상 창: def.reward { g 골드, rep 평판, fit 의상 } 를 주고 보여 준다
-    reward: () => new Promise(ok => { const R = def.reward || {}, f = I.myOw() === 'pt_f' ? 'f' : 'm', L = [];
-      if (R.g) { I.addG(R.g); L.push(`<li><i class="coin"></i><b>${R.g.toLocaleString()}G</b></li>`); }
-      if (R.rep) { I.addRep(R.rep); L.push(`<li><b>체육관 평판 +${R.rep}</b></li>`); }
-      if (R.fit) { I.giveFit(R.fit); L.push(`<li><img alt="" src="gym/img/fit/${R.fit}_${f}.png?v=${VER}" onerror="this.onerror=null;this.src='gym/img/pt/tr/hg_rocket_${f}.png'"><div><b>${I.esc(R.fitNm || '새 의상')}</b><br><small>상점 › 의상에서 입을 수 있어요</small></div></li>`); }
+    reward: () => new Promise(ok => { const R = def.reward || {}, f = I.myOw() === 'pt_f' ? 'f' : 'm', L = []; let d = 1.5; const dd = () => (d += .15).toFixed(2) + 's';
+      if (R.g) { I.addG(R.g); L.push(`<li class="gold" style="--d:${dd()}"><i class="pk-ic"><i class="coin"></i></i><span>골드</span><em><b class="rw-gn">+0G</b></em></li>`); }
+      if (R.rep) { I.addRep(R.rep); L.push(`<li class="rep" style="--d:${dd()}"><i class="pk-ic"></i><span>체육관 평판</span><em><b>+${R.rep}</b></em></li>`); }
+      if (R.fit) { I.giveFit(R.fit); L.push(`<li class="fit" style="--d:${dd()}"><i class="pk-ic"><img alt="" src="gym/img/fit/${R.fit}_${f}.png?v=${VER}" onerror="this.onerror=null;this.src='gym/img/pt/tr/hg_rocket_${f}.png'"></i><span>${I.esc(R.fitNm || '새 의상')}<small>상점 › 의상에서 입을 수 있어요</small></span><em><b>새 의상</b></em></li>`); }
       I.save(); I.renderTop?.(); I.glog?.('in', `이벤트 <b>${I.esc(def.nm)}</b>${'을'} 해결했다!`);
-      const w = document.createElement('div'); w.className = 'ev-rw'; w.innerHTML = `<div class="win"><h4>이벤트 해결!</h4><p class="sub">${I.esc(def.nm)}</p><ul>${L.join('')}</ul><div class="gy-btns one"><button type="button" class="main">받기</button></div></div>`;
-      root.appendChild(w); try { window.GymBGM?.se?.('ME_FANFA5'); } catch (e) {} I.confetti?.(); I.haptic?.(1);
+      // 무대 아래 줄: 나 + 되찾은 트레이너·안내원 (R.crew) 앞모습, 한 명씩 나타나 콩콩
+      const crew = [], fw = k => I.owW?.(k) || 32; if (R.crew) { crew.push(['me', I.myOw()]); for (const s of (I.st().sf || []).slice(0, 6)) if (s.ow) crew.push(['', s.ow]); if (I.GUY_OW) crew.push(['', I.GUY_OW]); }
+      const cH = crew.map(([c, k], n) => `<i class="${c}" data-ow="${I.esc(k)}" style="--d:${(.3 + n * .12).toFixed(2)}s;width:${fw(k) * 2}px;background-image:url(${I.owSrc(k)});background-size:auto 64px;background-position:0 0"></i>`).join('');
+      const w = document.createElement('div'); w.className = 'ev-rw gy-pop pp-pop rw-pop'; w.innerHTML = `<div class="win"><div class="rw-hd" style="${R.hd ? `--c1:${R.hd[0]};--c2:${R.hd[1]}` : ''}"><i class="bsa-ray"></i><i class="rw-halo"></i>${R.emb ? `<b class="rw-emb">${I.esc(R.emb)}</b>` : ''}<b class="rw-stamp">해결!</b><div class="rw-crew">${cH}</div></div>
+        <h4 class="pp-t"><small>이벤트 해결</small>${I.esc(def.nm)}</h4>${R.msg ? `<p class="rw-msg">${I.esc(R.msg).replace(/\n/g, '<br>')}</p>` : ''}<ul class="pk-ben">${L.join('')}</ul><div class="gy-btns one"><button type="button" class="main">좋아!</button></div></div>`;
+      root.appendChild(w); I.haptic?.(1);
+      I.fitSrc?.('ow').then(u => { const m = w.querySelector('.rw-crew .me'); if (u && m) m.style.backgroundImage = `url(${u})`; }).catch(() => {});
+      setTimeout(() => { try { window.GymBGM?.se?.('DP_KON', { gain: 1.3 }); } catch (e) {} I.haptic?.(0); }, 1050);   // 해결! 도장 쾅
+      setTimeout(() => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA5') : window.GymBGM?.se?.('ME_FANFA5'); } catch (e) {} I.confetti?.(); }, 1300);
+      const gn = w.querySelector('.rw-gn'); if (gn) { const t0 = performance.now() + 1700, T = 900, f2 = now => { const q = Math.max(0, Math.min(1, (now - t0) / T)); gn.textContent = `+${Math.round(R.g * (1 - (1 - q) ** 3)).toLocaleString()}G`; if (q < 1 && gn.isConnected) requestAnimationFrame(f2); }; requestAnimationFrame(f2); }
       w.querySelector('button').onclick = e => { e.stopPropagation(); I.sfx?.('tap'); w.remove(); ok(); }; }),
     // 지면 이 장 처음부터 (벌 없음, 경완 2026-11-07)
     lose: async () => { A.music(null); await A.black(true, '눈앞이 캄캄해졌다...!', '이 장의 처음부터 다시 도전해요.\n(잃는 것은 없어요)', true); return 'again'; },

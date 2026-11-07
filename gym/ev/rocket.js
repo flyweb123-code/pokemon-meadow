@@ -52,7 +52,7 @@ const ow = (A, F, k, x, y, f, o) => { const s = F.npc(k, x, y, f, o); s.ow = k; 
 GymEv.def({
   id: 'rocket', nm: '로켓단의 체육관 점거', sub: '로켓단이 내 체육관을 빼앗고 트레이너들을 데려갔다!',
   songs: ['hgEyeRoc', 'hgAjito', 'hgVsRoc', 'hgNibi'], imgs: ['pt/ow/hg_rocket_m', 'pt/ow/hg_rocket_f', 'pt/ow/hg_petrel', 'ev/rocket/crate', 'ev/rocket/machine', 'ev/rocket/pc'],
-  reward: { g: 3000, rep: 30, fit: 'rocket', fitNm: '로켓단 제복' },
+  reward: { g: 3000, rep: 30, fit: 'rocket', fitNm: '로켓단 제복', emb: 'R', hd: ['#7a1c28', '#26070c'], crew: true, msg: '로켓단을 몰아내고\n빼앗긴 체육관과 트레이너들을 모두 되찾았다!' },
   ch: [
     // 1장 · 점거당한 체육관
     async A => {
