@@ -14,3 +14,10 @@
 - layout.json: 캔버스 좌표. dome_inner(알 범위), knob_center, outlet(배출구)
 - 돔 유리는 #d8f0ff 불투명. 안은 비어 있음
 - 크기를 바꿀 때는 nearest-neighbor만 사용
+
+## machine_ball_1 (몬스터볼 색, 1번 기반)
+machine_red_1을 스크립트로 수정. PixelLab 생성 0번.
+- 점수 딱지 제거. 게임의 점수 표시(.ga-pl)는 다른 자리로 옮겨야 함
+- 위 빨강, 아래 하양, 가운데 검은 띠(y 204~208)가 손잡이 중심을 지남
+- 돔 테두리 4px에서 2px로. 돔 안쪽 172x153
+- knob_ball, shine_ball 함께 사용. 좌표는 layout.json의 ball
