@@ -3112,3 +3112,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 /* v18.04 경완 '훈련장도 소품 기존 그림자 없애야': 해가 있을 땐(모양 그림자) 기구 밑 예전 타원 그림자 숨김 */
 #gym .ty-pr::after,#gym .ty-pr.pr-punch-bag::before{transition:opacity 2s}#gym .sunSh .ty-pr::after,#gym .sunSh .ty-pr.pr-punch-bag::before{opacity:0}
+/* v18.07 경완 '상점 기술머신·기술레코드·꾸미기 탭 상단 박스 밑 슬롯 사이 여백': 위에 고정된 박스와 첫 줄 사이 띄움 */
+#gym .sp-body>:is(.sp-list,.dc-grid,.ft-grid):first-child{margin-top:10px}
