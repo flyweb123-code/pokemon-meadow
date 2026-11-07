@@ -4,10 +4,12 @@
 (function () {
 'use strict';
 const GR = ['hg_rocket_m', 'hg_rocket_f'];   // 하트골드 로켓단 조무래기 (pret/pokeheartgold mmodel 173·174)
-const PEWTER = ['################################################','#######################....#####################','####........#################.........##########','####........#################.........##########','####........####################......##########','####........###########...............##########','#######.....#####.#####..#######........########','#######..#######...##################...########','####....................................########','####............................#####...########','######..........................#####...########','######..........................#####...########','######..................................########','######...##.#######.##..................########','######...#############..................########','######...##.#######.##..................########','######...###..###...##....####..........########','######...............#....######........########','######...............#....######........########','######...............#.................#########','######################..........................','######..........................................','######.......#########..........................','######.......#########....##########............','######.......#########....##########....########','######.......#########....###########...########','######....................#.........#...########','######....................#.........#...########','######..#####.............#.........#...########','######..#####.............#.........#...########','######..#####.......#.....#####.#####...########','######..................................########','######..................................########','######..................................########','######..................................########','######..................................########','####################....########################','####################....########################','####################....########################','####################....########################'];
 const B1F = ['############################','############################','############......##########','############......##########','##########..........########','##########..........########','##########..........########','##########..........########','#..........................#','#..........................#','#..........................#','###..#####.......#####...###','###..#####.......#####...###','#......####.....###........#','#......###.......##.######.#','#..###..###.....###.######.#','#..###..##.......##.######.#','##......###.....###........#','#.......##.......##........#','####################..######','####################..######','####################..######','#...............####..######','#...............####..######','#...######........##..######','#...######........##..######','#.................##.......#','#.................##.......#','#............###############','#...######...###############','#...######......############','#...............############','#.................##########','#.................##########'];
 const B4F = ['########################','########################','#.#....#########.##.##.#','##.....#########..###..#','#.###..#########.#...#.#','#####.........###.....##','#.............##..###..#','#.............###.....##','#......##.....##.......#','#########.....##.......#','#########.....##.......#','###....##.....##.......#','#......##.....###..#####','#..###.##.....###..#####','#..###......####.....###','#...........####.....###','#...........####.......#','#.............##.......#','################.......#','################..######','###...............######','#.................######','#....######.......######','#....######.......######','#...........##.........#','#......................#'];
 const IM = 'gym/img/', G = '로켓단 조무래기', B = '로켓단 간부 람다';
+// 본가 맵 (tools/gym/frmap.py 로 뽑은 충돌·문·덮는 층): MAP('pewter') → { w, h, col, door }
+const MAPJ = {}, MAP = n => MAPJ[n] || (MAPJ[n] = fetch(`${IM}ev/rocket/${n}.json?v=3`).then(r => r.json()));
+const room = (n, m, warps) => ({ img: `${IM}ev/rocket/${n}.png?v=3`, over: `${IM}ev/rocket/${n}_o.png?v=3`, w: m.w, h: m.h, col: m.col, warps });
 // 상대 팀: 내 라인업 평균 레벨(A.lv) 기준. 레벨 28 이상이면 진화한 모습 (꼬렛→레트라, 아보→아보크, 주뱃→골뱃, 또가스→또도가스, 나옹→페르시온, 질퍽이→질뻐기)
 const POOL = [[19, 20], [23, 24], [41, 42], [109, 110], [52, 53], [88, 89]];
 const mon = (i, lv) => [POOL[i][lv >= 28 ? 1 : 0], lv];
@@ -99,14 +101,49 @@ GymEv.def({
     async A => {
       const { I, wait } = A, me0 = A.me();
       A.blackNow();
-      const F = A.field({ nm: '회색시티', img: `${IM}map/town.png?v=2`, w: 48, h: 40, col: PEWTER, warps: [{ x: 15, y: 16, d: 'u', id: 'gym' }, { x: 9, y: 30, d: 'u', id: 'house' }] });
+      // 본가 회색시티 그대로: 건물마다 들어가기(문 열림·매트로 나오기), 지붕 뒤로 걷기, 턱 뛰어내리기 (경완 2026-11-07)
+      const [PW, MT, CT, HS, MU] = await Promise.all(['pewter', 'mart', 'center', 'house', 'museum'].map(MAP));
+      const mats = (xs, y, to, at) => xs.map(x => ({ x, y, d: 'd', mat: true, to, at }));
+      const rooms = {
+        mart: room('mart', MT, mats([3, 4, 5], 7, 'main', [28, 18, 'd'])),
+        center: room('center', CT, mats([6, 7, 8], 8, 'main', [17, 25, 'd'])),
+        house1: room('house', HS, mats([3, 4, 5], 7, 'main', [33, 11, 'd'])),
+        house: room('house', HS, mats([3, 4, 5], 7, 'main', [9, 30, 'd'])),
+        museum: room('museum', MU, [...mats([13, 14, 15], 9, 'main', [17, 6, 'd']), ...mats([21, 22], 9, 'main', [25, 4, 'd'])]),
+      };
+      let gr;
+      const F = A.field({ nm: '회색시티', img: `${IM}ev/rocket/pewter.png?v=3`, over: `${IM}ev/rocket/pewter_o.png?v=3`, w: PW.w, h: PW.h, col: PW.col, door: PW.door, rooms,
+        doorImg: Object.fromEntries(['pewter', 'sliding_single', 'sliding_double'].map(k => [k, `${IM}ev/rocket/door_${k}.png?v=3`])),
+        warps: [{ x: 15, y: 16, d: 'u', id: 'gym' }, { x: 28, y: 18, d: 'u', to: 'mart', at: [4, 7, 'u'] }, { x: 17, y: 25, d: 'u', to: 'center', at: [7, 8, 'u'] }, { x: 33, y: 11, d: 'u', to: 'house1', at: [4, 7, 'u'] },
+          { x: 17, y: 6, d: 'u', to: 'museum', at: [14, 9, 'u'] }, { x: 25, y: 4, d: 'u', to: 'museum', at: [22, 9, 'u'] },
+          { x: 9, y: 30, d: 'u', to: 'house', at: [4, 7, 'u'], pre: async () => { if (gr.done) return true; await S.say('(문 앞을 로켓단이 막고 있다...)', { who: me0 }); S.hide(true); return false; } }] });
       const me = F.me = F.npc(I.myOw(), 15, 17, 'd'); I.fitMe(me);
       const lass = ow(A, F, 'lass', 8, 17, 'r'), man = ow(A, F, 'man', 29, 19, 'l'), old = ow(A, F, 'old_man_1', 21, 27, 'd'), boy = ow(A, F, 'boy', 33, 13, 'd');
-      const gr = ow(A, F, 'hg_rocket_m', 9, 31, 'r', { sight: 4 });
+      gr = ow(A, F, 'hg_rocket_m', 9, 31, 'd');   // 집 앞 조무래기: 말을 걸어야 시작 (시야 없음, 경완 2026-11-07)
+      // 다른 마을로 가는 길은 로켓단이 막고 있다 (경완 2026-11-07 '말 걸면 뭐야 꺼져!!')
+      const stop = [ow(A, F, 'hg_rocket_f', 21, 37, 'u'), ow(A, F, 'hg_rocket_m', 22, 37, 'u'), ow(A, F, 'hg_rocket_m', 45, 21, 'l'), ow(A, F, 'hg_rocket_f', 45, 22, 'l')];
+      [[20, 37], [23, 37], [45, 20], [45, 23]].forEach(([x, y]) => F.block.add(x + ',' + y));
+      stop.forEach(s => { s.stop = 1; s.say = ['뭐야, 꺼져!!', '이 길은 로켓단이 접수했다!\n아무도 못 지나가!']; s.say2 = ['꺼지라고 했지!!']; });
       lass.say = ['저 아래쪽 집이에요!\n문 앞에 검은 옷 입은 사람이\n지키고 서 있어요.'];
       man.say = ['로켓단이라니...\n아까부터 검은 옷 입은 사람들이\n마을을 어슬렁거리더라고.'];
       old.say = ['체육관이 털렸다고?\n허허, 이 조용한 마을에\n이게 무슨 날벼락인고...'];
       boy.say = ['관장님 체육관 문이\n안에서 잠겨 있어요!\n이상한 웃음소리도 났어요...'];
+      // 건물 안 사람들 (본가 회색시티 자리 그대로)
+      const R = (k, x, y, f, room, nm, say) => { const s = ow(A, F, k, x, y, f, { room }); s.nm = nm; s.say = say; return s; };
+      R('clerk', 2, 3, 'r', 'mart', '점원', ['어서 오세요!\n...아, 관장님이시군요.', '로켓단 때문에 오늘은\n손님이 하나도 없네요...']);
+      R('youngster', 8, 2, 'd', 'mart', '반바지 꼬마', ['검은 옷 사람들이\n물건을 잔뜩 집어 갔어요.\n돈은 한 푼도 안 내고요!']);
+      R('boy', 6, 4, 'l', 'mart', '소년', ['로켓단이 체육관을\n차지했다면서요?\n관장님, 힘내세요!']);
+      const nurse = R('nurse', 7, 2, 'd', 'center', '간호순', ['포켓몬 센터에 어서 오세요!']);
+      R('gentleman', 4, 7, 'u', 'center', '신사', ['로켓단이 마을 길을\n다 막아 버렸어.\n이래서야 어디도 못 가겠군.']);
+      R('youngster', 1, 2, 'd', 'center', '반바지 꼬마', ['로켓단 아지트가\n이 마을 어딘가에 있다는\n소문이 있어요... 설마요?']);
+      R('gba_kid', 10, 7, 'u', 'center', '꼬마', ['밖에 로켓단이 무서워서\n여기서 게임만 하고 있어요.']);
+      R('balding_man', 1, 2, 'd', 'house1', '아저씨', ['우리 집 앞에도 로켓단이\n서성거려서 밖에 나가질 못하겠어.']);
+      R('little_boy', 5, 3, 'l', 'house1', '꼬마', ['관장님이다!\n로켓단 혼내 주세요!']);
+      R('worker_m', 16, 5, 'l', 'museum', '박물관 직원', ['죄송해요, 오늘은 박물관 문을\n일찍 닫으려고 해요.', '로켓단이 화석을 노린다는\n소문이 있어서요...']);
+      R('old_man_1', 2, 4, 'r', 'museum', '할아버지', ['로켓단 녀석들...\n옛날에도 여기 화석을\n훔치려 들었지.']);
+      R('scientist', 26, 4, 'd', 'museum', '연구원', ['밖이 시끄러워서\n화석 연구가 손에 안 잡히네요...']);
+      const hOld = R('old_man_1', 3, 3, 'd', 'house', '할아버지', ['흐익! 또 로켓단...\n아, 아니구먼. 관장님이시군!', '그 검은 옷 녀석들, 우리 집을\n제멋대로 드나들더니...', '저 구석 화분 쪽에서 덜컹 소리가 나고\n감쪽같이 사라지더라고!']);
+      R('little_boy', 5, 3, 'd', 'house', '꼬마', ['아까 그 아저씨도\n화분 쪽으로 뛰어가더니\n없어져 버렸어요!']);
       F.cam(me.x, me.y); A.music('hgNibi'); await A.black(false); await F.show();
       const S = A.talk(); S.hide(true);
       if (!A.retry) {
@@ -122,13 +159,34 @@ GymEv.def({
         await F.camTo(9, 30, 1300); await wait(500); F.bub(gr, '...', 1000); await wait(1100); await F.camMe(900);
       } else { lass.x = 14; lass.y = 17; lass.turn('r'); }
       lass.say = ['저 아래쪽 집이에요!\n조심하세요, 관장님!'];
+      // 집 안 비밀 계단: 화분 둘 중 오른쪽 화분 밑 손잡이 (경완 2026-11-07 '집 안에서 비밀계단 찾는 것도, 텍스트로 퉁치지 말고')
+      let stairs = null, gotHint = false;
+      const POT = { '0,7': 0, '0,6': 0, '10,7': 1, '10,6': 1 };
+      const LOOK = { house: { '2,1': '책이 빼곡히 꽂혀 있다.', '3,1': '책이 빼곡히 꽂혀 있다.', '0,1': '부엌이다. 설거지가 잔뜩 쌓여 있다.', '1,1': '부엌이다. 설거지가 잔뜩 쌓여 있다.', '5,1': '냉장고다. 텅 비어 있다...\n로켓단이 다 먹어 치운 것 같다.', '7,1': '창밖으로 회색시티가 보인다.', '9,1': '회색시티 근처 지도다.' } };
+      const openStairs = async () => {
+        F.lock(true); A.se('DP_GASHIN', .9); F.el.animate([{ translate: '0 0' }, { translate: '-6px 2px' }, { translate: '5px -2px' }, { translate: '-3px 1px' }, { translate: '0 0' }], { duration: 300 }); I.haptic?.(1); await wait(500);
+        stairs = F.pic(`${IM}ev/rocket/stairs.png?v=3`, 9, 7); stairs.style.opacity = '0'; stairs.style.transition = 'opacity .5s'; void stairs.offsetWidth; stairs.style.opacity = '1'; A.se('DP_DOOR_OPEN', .8); await wait(600);
+        F.rooms.house.warps.push({ x: 9, y: 7, id: 'stairs' });
+        await S.say('(화분 옆 바닥이 열리면서\n지하로 내려가는 계단이 나타났다!)', { who: me0 }); S.hide(true);
+      };
       for (;;) {
         const r = await F.play({
-          step: async () => { if (!gr.done && F.sees(gr)) return (await meetGr()) ? undefined : undefined; },
-          talk: async s => { if (s === gr && !gr.done) return (await meetGr()) ? undefined : undefined;
-            for (const t of s.say || ['...']) await S.say(t, { who: s === lass ? '마을 아이' : '마을 사람' }); S.hide(true); },
+          talk: async s => {
+            if (s === gr && !gr.done) return (await meetGr()) ? undefined : undefined;
+            if (s.stop) { F.bub(s, '!', 700); A.se('DP_REGI', .6); await wait(500); for (const t of s.met ? s.say2 : s.say) await S.say(t, { who: G }); s.met = 1; S.hide(true); return; }
+            if (s === nurse) { await S.say('포켓몬 센터에 어서 오세요!\n지친 포켓몬을 회복시켜 드릴게요.', { who: s.nm }); S.hide(true); A.se('DP_KAIFUKU', .8); await wait(1400); await S.say('기다리셨습니다!\n포켓몬들이 모두 건강해졌어요.', { who: s.nm }); await S.say('로켓단 조심하세요, 관장님!', { who: s.nm }); S.hide(true); return; }
+            if (s === hOld) gotHint = true;
+            for (const t of s.say || ['...']) await S.say(t, { who: s.nm || (s === lass ? '마을 아이' : '마을 사람') }); S.hide(true); },
+          look: async ([x, y]) => { if (F.cur !== 'house') { const t = LOOK[F.cur]?.[x + ',' + y]; if (t) { await S.say(t, { who: me0 }); S.hide(true); } return; }
+            const pot = POT[x + ',' + y];
+            if (pot === 0) { await S.say('(평범한 화분이다.)', { who: me0 }); S.hide(true); return; }
+            if (pot === 1) { if (stairs) { await S.say('(화분 옆으로 계단이 이어져 있다.)', { who: me0 }); S.hide(true); return; }
+              await S.say('(화분 밑 바닥에\n작은 손잡이가 숨겨져 있다...!)', { who: me0 });
+              const y2 = await F.ask('손잡이를 당겨 볼까?', '', '당긴다', '그만둔다'); S.hide(true); if (y2) await openStairs(); return; }
+            const t = LOOK.house[x + ',' + y]; if (t) { await S.say(t, { who: me0 }); S.hide(true); } },
           warp: async w => { if (w.id === 'gym') { await S.say('(체육관 문이 안에서 굳게 잠겨 있다...)', { who: me0 }); S.hide(true); return; }
-            if (!gr.done) return; A.se('DP_DOOR'); return 'in'; },
+            if (w.id === 'stairs') return 'in'; },
+          room: async id => { if (id === 'house' && !gotHint && !stairs) { await wait(300); await S.say('(집 안이 어질러져 있다...\n로켓단이 드나든 흔적이다.)', { who: me0 }); S.hide(true); } },
         });
         if (r === 'quit') return 'stop';
         if (r === 'lose') return A.lose();
@@ -139,19 +197,22 @@ GymEv.def({
           say: { win: '이 정도로는\n안 비켜 준다고!', lose: '크윽...\n관장이라더니 제법이잖아!' },
           post: ['크윽... 아지트 입구를 들키다니!', '람다 님한테 알려야 해!\n관장이 온다고!'] });
         if (!ok) return false;
-        // 조무래기가 집 안으로 도망간다
-        await gr.go([[9, 31]], 150).catch(() => {}); gr.turn('u'); A.se('DP_DOOR'); await gr.slide(9, 30.4, 160); await gr.gone(); F.me.face({ x: 9, y: 30 });
+        // 조무래기가 문을 열고 집 안으로 도망간다
+        if (Math.round(gr.x) !== 9 || Math.round(gr.y) !== 31) await F.goTo(gr, [9, 31]);
+        gr.turn('u'); await F.door(9, 30, true); await gr.go([[9, 30]], 180); await gr.gone(); await F.door(9, 30, false); F.me.face({ x: 9, y: 30 });
         await S.say('(저 집이 아지트 입구구나...!\n따라 들어가 보자!)', { who: me0 }); S.hide(true); return true;
       }
+      // 계단을 내려간다
+      F.lock(true); await me.go([[9, 7]], 267); A.se('DP_DOOR', .7);
       S.end(); A.music(null);
-      await A.black(true, '집 안 마룻바닥 밑에\n비밀 계단이 숨겨져 있었다!', '어두운 계단이 땅속 깊이 이어져 있다...', true);
+      await A.black(true, '어두운 계단이\n땅속 깊이 이어져 있다...', '로켓단 아지트로 내려간다', true);
       await F.close();
     },
     // 3장 · 로켓단 아지트 (지하 1층): 조무래기들을 지나 엘리베이터로
     async A => {
       const { I, wait } = A, me0 = A.me();
       A.blackNow();
-      const F = A.field({ nm: '로켓단 아지트 지하 1층', img: `${IM}ev/rocket/b1f.png?v=2`, w: 28, h: 34, col: B1F,
+      const F = A.field({ nm: '로켓단 아지트 지하 1층', img: `${IM}ev/rocket/b1f.png?v=3`, over: `${IM}ev/rocket/b1f_o.png?v=3`, w: 28, h: 34, col: B1F,
         warps: [{ x: 12, y: 2, id: 'up' }, { x: 17, y: 2, id: 'no' }, { x: 15, y: 30, id: 'no' }, ...[23, 24, 25].map(x => ({ x, y: 25, d: 'u', id: 'lift' }))] });
       const me = F.me = F.npc(I.myOw(), 12, 3, 'd'); I.fitMe(me);
       const g1 = ow(A, F, 'hg_rocket_m', 4, 9, 'r', { sight: 5 }), g2 = ow(A, F, 'hg_rocket_f', 24, 12, 'l', { sight: 3 }), g3 = ow(A, F, 'hg_rocket_m', 24, 26, 'l', { sight: 4 });
@@ -187,7 +248,7 @@ GymEv.def({
     async A => {
       const { I, D, wait } = A, me0 = A.me(), sfs = I.sfList(), all = (I.st().sf || []);
       A.blackNow();
-      const F = A.field({ nm: '로켓단 아지트 지하 4층', img: `${IM}ev/rocket/b4f.png?v=2`, w: 24, h: 26, col: B4F, warps: [{ x: 20, y: 23, id: 'lift' }, { x: 21, y: 23, id: 'lift' }, { x: 11, y: 15, id: 'no' }] });
+      const F = A.field({ nm: '로켓단 아지트 지하 4층', img: `${IM}ev/rocket/b4f.png?v=3`, over: `${IM}ev/rocket/b4f_o.png?v=3`, w: 24, h: 26, col: B4F, warps: [{ x: 20, y: 23, id: 'lift' }, { x: 21, y: 23, id: 'lift' }, { x: 11, y: 15, id: 'no' }] });
       const me = F.me = F.npc(I.myOw(), 20, 24, 'd'); I.fitMe(me);
       const k1 = ow(A, F, 'hg_rocket_m', 16, 14, 'r', { sight: 2 }), k2 = ow(A, F, 'hg_rocket_f', 19, 14, 'l', { sight: 2 });
       const boss = ow(A, F, 'hg_petrel', 19, 8, 'd');
