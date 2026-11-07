@@ -688,7 +688,7 @@ function hire(c) {
 const SHOP_T = [['tm', '기술머신'], ['tr', '기술레코드'], ['it', '도구'], ['deco', '꾸미기']];   // v14.79 경완 '의상 탭 아직 넣지마': 필드 걸음 그림까지 바꾼 뒤에 (shopFit 은 남겨 둠)
 // 이전:   // 넓히기는 빼고 등급 따라 저절로 (경완 2026-10-28)
 const tmPrice = x => x[3] === 2 ? 500 : (x[4] || 0) <= 50 ? 300 : x[4] <= 70 ? 700 : x[4] <= 85 ? 1200 : x[4] <= 100 ? 2000 : 3000;
-const prBtn = () => `<button class="tm-sort" type="button" data-pr="1">${shopPr > 0 ? '가격 낮은 순 ▲' : '가격 높은 순 ▼'}</button>`;
+const prBtn = () => `<button class="tm-sort" type="button" data-pr="1">${shopPr > 0 ? '가격 낮은 순 ▼' : '가격 높은 순 ▲'}</button>`;
 // v17.58 경완: 기술머신·기술레코드·도구 탭 위 줄 전체 '추천받기' → 라인업 포켓몬 고르기 → 그 포킷몬에게 추천할 만한 것만
 const recMon = () => { const P = shRec != null && S.box.find(p => p.id === shRec); return P && luMons().some(x => x.id === P.id) ? P : null; };
 const luMons = () => [...new Set((GB().lus() || []).flat())].map(id => S.box.find(p => p.id === id)).filter(Boolean);
@@ -731,9 +731,9 @@ function shopTm(body, wantTR) {   /* v15.75 경완: 기술머신 탭·기술레�
   if (recMon() && !window.PSim) { body.innerHTML = '<p class="sf-none">추천 고르는 중…</p>'; GB().loadSim().then(() => redraw()); return; }   // 추천 점수는 쇼다운 기술 정보(특성·연속기 등)를 써서 처음 한 번 받아 옴
   const RP = recMon(), RL = RP && GB().recTms(RP, wantTR);   // 추천받기: 그 포켓몬 추천 기술만 (추천 순), (v17.82: 타입·형태 필터는 아래 fOk 로 적용)
   const fOk = x => (tmTy === -1 || x[2] === tmTy) && (tmCat === -1 || x[3] === tmCat);   // v17.82 경완 '추천받기 켜도 필터는 그대로': 추천 목록에도 타입·형태 필터
-  const L = RP ? RL.map(id => GB().mvOf(id)).filter(x => x && fOk(x)) : [...can.keys()].map(i => D.mv[i]).filter(x => (tmTy === -1 || x[2] === tmTy) && (tmCat === -1 || x[3] === tmCat)).sort((a, b) => RP ? 0 : (tmPrice(a) - tmPrice(b)) * shopPr || a[2] - b[2] || (b[4] || 0) - (a[4] || 0));   // 가격순 (경완 2026-10-29 '위력순 말고 가격순')   // 모든 타입이면 타입별로 묶고 그 안에서 위력순 (경완 2026-10-29)
+  const L = RP ? RL.map(id => GB().mvOf(id)).filter(x => x && fOk(x)).sort((a, b) => (tmPrice(a) - tmPrice(b)) * shopPr) : [...can.keys()].map(i => D.mv[i]).filter(x => (tmTy === -1 || x[2] === tmTy) && (tmCat === -1 || x[3] === tmCat)).sort((a, b) => RP ? 0 : (tmPrice(a) - tmPrice(b)) * shopPr || a[2] - b[2] || (b[4] || 0) - (a[4] || 0));   // 가격순 (경완 2026-10-29 '위력순 말고 가격순')   // 모든 타입이면 타입별로 묶고 그 안에서 위력순 (경완 2026-10-29)
   body.innerHTML = `
-    ${types.length ? `<div class="tm-row"><button class="fsel${tmTy !== -1 ? ' on' : ''}" data-f="ty">${tmTy === -1 ? '모든 타입' : TYPE_KO[tmTy]}</button><button class="fsel${tmCat !== -1 ? ' on' : ''}" data-f="cat">${tmCat === -1 ? '모든 형태' : ['물리', '특수', '변화'][tmCat]}</button>${RP ? '<i class="tm-sp"></i>' : prBtn()}</div>` : `<p class="sf-none">${TYPE_KO[g.ty]} 타입 포켓몬이 아직 없어요.</p>`}
+    ${types.length ? `<div class="tm-row"><button class="fsel${tmTy !== -1 ? ' on' : ''}" data-f="ty">${tmTy === -1 ? '모든 타입' : TYPE_KO[tmTy]}</button><button class="fsel${tmCat !== -1 ? ' on' : ''}" data-f="cat">${tmCat === -1 ? '모든 형태' : ['물리', '특수', '변화'][tmCat]}</button>${prBtn()}</div>` : `<p class="sf-none">${TYPE_KO[g.ty]} 타입 포켓몬이 아직 없어요.</p>`}
     ${RP && !L.length ? `<p class="sf-none">${esc(nmOf(RP))}에게 추천할 ${wantTR ? '기술레코드가' : '기술머신이'} 없어요${tmTy !== -1 || tmCat !== -1 ? ' (필터 조건)' : ''}.</p>` : ''}
     ${!RP && types.length && !L.length ? `<p class="sf-none">조건에 맞는 ${wantTR ? '기술레코드가' : '기술머신이'} 없어요.</p>` : ''}
     <div class="sp-list">${L.map(x => { const tr = GB().isTR(x[0]), own = !tr && g.tms[x[0]] > 0; return `<button class="sp-tm${own ? ' own' : ''}" data-tm="${x[0]}"${own ? ' disabled' : ''}><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png"><span class="tm-nm">${tr ? '<i class="tm-tr">TR</i>' : ''}<b>${esc(x[1])}</b></span><span class="tm-meta">${GB().tyTag(x[2], x[3])}<small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}</small></span><em>${own ? '보유 중' : gold(tmPrice(x))}</em></button>`; }).join('')}</div>`;
@@ -764,8 +764,8 @@ function shopIt(body) {
   const RP = recMon();
   if (RP) {   // 추천받기: 그 포켓몬에게 맞는 도구(추천 순) + 추천 민트
     const nk = GB().recNat(RP), nOk = nk && nk !== GB().gm(RP).nat;
-    body.innerHTML = `<p class="sp-sub">${esc(nmOf(RP))}에게 맞는 도구</p><div class="sp-list sp-recit"><p class="sf-none">고르는 중…</p></div>${nOk ? `<p class="sp-sub">추천 성격 민트</p><div class="sp-list">${GB().mintRow(nk, 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)}</div>` : ''}`;
-    GB().recIts(RP).then(L => { const el = body.querySelector('.sp-recit'); if (!el || !el.isConnected) return; L = L.filter(id => H[id]).slice(0, 8); el.innerHTML = L.length ? L.map(row).join('') : '<p class="sf-none">추천할 도구가 없어요.</p>'; GB().fillTh?.(el); });
+    body.innerHTML = `<div class="tm-row sp-prr">${prBtn()}</div><p class="sp-sub">${esc(nmOf(RP))}에게 맞는 도구</p><div class="sp-list sp-recit"><p class="sf-none">고르는 중…</p></div>${nOk ? `<p class="sp-sub">추천 성격 민트</p><div class="sp-list">${GB().mintRow(nk, 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)}</div>` : ''}`;
+    GB().recIts(RP).then(L => { const el = body.querySelector('.sp-recit'); if (!el || !el.isConnected) return; L = L.filter(id => H[id]).slice(0, 8).sort((a, b) => (H[a][1] - H[b][1]) * shopPr); el.innerHTML = L.length ? L.map(row).join('') : '<p class="sf-none">추천할 도구가 없어요.</p>'; GB().fillTh?.(el); });
   } else
   body.innerHTML = `<div class="tm-row sp-prr">${prBtn()}</div>${GB().IT_CAT.map(sec).join('')}
     <p class="sp-sub">민트 · 먹이면 성격이 바뀌어요</p><div class="sp-list">${GB().MINT.map(k => GB().mintRow(k, 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)).join('')}</div>`;   // 민트 (경완 2026-10-30): 여러 개 살 수 있음
