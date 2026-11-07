@@ -3109,3 +3109,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v17.88 경완 '꺼지는 느낌보다 밝아지는 느낌으로': 흐려지지 않고 밝아지며 빛남 */
 #gym .gy-plate .gy-rpa .gy-stk{animation:gyStkBr 2.4s ease-in-out infinite}@keyframes gyStkBr{0%,100%{filter:brightness(1);box-shadow:0 0 0 0 rgba(255,120,100,0)}50%{filter:brightness(1.35) saturate(1.15);box-shadow:0 0 8px 2px rgba(255,110,90,.6)}}
 @media (prefers-reduced-motion: reduce){#gym .gy-plate .gy-rpa .gy-stk{animation:none}}
+
+/* v18.04 경완 '훈련장도 소품 기존 그림자 없애야': 해가 있을 땐(모양 그림자) 기구 밑 예전 타원 그림자 숨김 */
+#gym .ty-pr::after,#gym .ty-pr.pr-punch-bag::before{transition:opacity 2s}#gym .sunSh .ty-pr::after,#gym .sunSh .ty-pr.pr-punch-bag::before{opacity:0}

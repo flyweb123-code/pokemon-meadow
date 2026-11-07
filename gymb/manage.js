@@ -377,7 +377,7 @@ function yLight() {
       L = 1 + sun * Math.min(2.6, (1 / Math.max(el2, .22) - 1) * .95), dir = ts < .5 ? 1 : -1, op = sun ? clampN(el2 * 5, .35, 1) : 1;
     const tn = (L - 1) * .62, ska = -dir * Math.atan(tn) * 180 / Math.PI;   // v17.85 경완 '노을 그림자는 소품 모양으로': 기구·가로등·코치 그림을 본뜬 그림자를 땅에 눕혀 해 반대쪽으로 늘림
     e.style.setProperty('--ska', ska.toFixed(1) + 'deg'); e.style.setProperty('--sks', (-(.4 + .15 * (L - 1) / 2.6)).toFixed(2)); e.style.setProperty('--cso', sun ? (.24 * op * (1 - .15 * (L - 1) / 2.6)).toFixed(3) : 0);   /* v18.02 경완: 예전 그림자 진하기 */
-    e.style.setProperty('--shl', L.toFixed(2)); e.style.setProperty('--shd', (dir * (L - 1)).toFixed(2)); e.style.setProperty('--sho', (1 - .3 * (L - 1) / 2.6) * op); }
+    e.style.setProperty('--shl', L.toFixed(2)); e.style.setProperty('--shd', (dir * (L - 1)).toFixed(2)); e.style.setProperty('--sho', (1 - .3 * (L - 1) / 2.6) * op); e.classList.toggle('sunSh', !!sun); }   /* v18.04 경완 '훈련장도 소품 기존 그림자 없애야': 해가 있어 모양 그림자가 생길 땐 기구 밑 예전 타원 그림자를 숨김 */
   const wx = e.querySelector('.ty-wx'); wx.className = 'ty-wx' + (F.snow ? ' snow' : F.wx === 'rain' ? ' rain' + (F.storm ? ' storm' : '') : '');
 }
 function yardLoop(ts) {
