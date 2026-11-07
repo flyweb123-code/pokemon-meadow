@@ -36,3 +36,7 @@ layout_mock/D_*: 박스 없앤 배치 + 배경 시안.
 ## 방사형 배경 (그림 파일 없이 CSS)
 기계를 화면 정중앙에 두고 그 중심에서 퍼짐. 값은 radial_bg_css.json. 중심 195px 388px은 시안 기준이라 실제 화면의 기계 중심으로 바꿀 것. 반짝이(spark)는 red에 작은 흰 점을 더한 것.
 layout_mock/F_<red|rings|steps|dots|spark|purple|navy|green|pink>.png, 알은 게임의 실제 그림.
+
+## 뽑기 버튼 색 시안 (금색 1 배경, 게이지 14px 내림)
+layout_mock/F_btn_<red|blue|green>_<f|e>.png
+red 면 #d8352c 아래 음영 #a81f1c / blue #2f7fd8, #1f5aa8 / green #2fa45e, #1d7a44
