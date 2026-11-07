@@ -292,7 +292,7 @@ body.visitMode.petting :is(.vpad,.vjump,.vchat-b){display:none}   /* v15.16 경�
 .ga-mach.out .ga-drop.multi .egg{animation-name:gaOutM}
 @keyframes gaOutM{0%{opacity:0;transform:translate(0,10px) scale(.5)}10%{opacity:1}58%{transform:translate(calc(var(--dx) * .88),calc(var(--dy) - 8px)) rotate(calc(var(--dr) * .5)) scale(.8)}76%{transform:translate(var(--dx),var(--dy)) rotate(var(--dr)) scale(.8)}88%{transform:translate(var(--dx),calc(var(--dy) - 4px)) rotate(var(--dr)) scale(.8)}100%{opacity:1;transform:translate(var(--dx),var(--dy)) rotate(var(--dr)) scale(.8)}}   /* v18.57 경완: 겹쳤다 흩어지지 말고 입구에서 바로 제자리로 흩어지며 나옴 */
 .ga-mach.out .ga-drop.multi .egg{animation-duration:.7s!important;animation-timing-function:ease-out!important}
-.ga-win .ga-hb{width:100%;margin:8px 0 0;height:46px;background:#3c9a4c!important;box-shadow:inset 0 -4px 0 #24702f,0 3px 0 #2c2838!important}.ga-win .ga-hb:active{box-shadow:inset 0 -4px 0 #24702f!important}
+.ga-win .ga-hb{width:100%;margin:0;height:46px;background:#3c9a4c!important;box-shadow:inset 0 -4px 0 #24702f,0 3px 0 #2c2838!important}.ga-win .ga-hb:active{box-shadow:inset 0 -4px 0 #24702f!important}
 body.gasbx #hatchSend,body.gasbx #hatchField{display:none!important}
 #gaMach .ga-in .gp-row:has(.gp-none){justify-content:flex-end!important;position:relative;min-height:26px}#gaMach .ga-in .gp-row:has(.gp-none) .gp-eggs{position:absolute;left:0;right:0;justify-content:center;pointer-events:none}
 .ga-dome .ga-plus{transition:transform .06s}
@@ -2481,7 +2481,7 @@ try { if (sessionStorage.getItem('pk-wf')) { sessionStorage.removeItem('pk-wf');
 </div>
 
 <div class="fpop" id="gaTyPop" hidden><div class="win ga-win" role="dialog" aria-label="타입 고르기"><button class="ga-x" id="gaTyX" aria-label="닫기">✕</button><h4>타입 고르기</h4><div class="ga-tys" id="gaTys"></div><p class="ga-note">고른 타입 포켓몬만 나와요</p></div></div>
-<div class="fpop" id="gaResPop" hidden><div class="win ga-win" role="dialog" aria-label="뽑기 결과"><button class="ga-x" id="gaResX" aria-label="닫기" style="font-size:22px;color:#5a4a30;right:6px;top:2px;padding:4px 6px">✕</button><div class="ga-res" id="gaRes"></div><div class="gm-btns"><button class="gb" id="gaMore"></button><button class="gb go" id="gaOk">확인</button></div><button class="gb go ga-hb" id="gaHatch">바로 부화</button></div></div>
+<div class="fpop" id="gaResPop" hidden><div class="win ga-win" role="dialog" aria-label="뽑기 결과"><button class="ga-x" id="gaResX" aria-label="닫기" style="font-size:22px;color:#5a4a30;right:6px;top:2px;padding:4px 6px">✕</button><div class="ga-res" id="gaRes"></div><button class="gb go ga-hb" id="gaHatch">바로 부화시키기</button><div class="gm-btns"><button class="gb" id="gaMore"></button><button class="gb go" id="gaOk">확인</button></div></div></div>
 <div class="fpop" id="bgmPop" hidden>
   <div class="win" role="listbox" aria-label="배경 음악"><h4>배경 음악</h4><div class="fopts bgm-opts" id="bgmRandB"></div><div class="bgm-gen" id="bgmGen"></div><div class="fopts bgm-opts" id="bgmOpts"></div><p class="bgm-note">곡은 상점에서 더 살 수 있어요.</p></div>
 </div>
@@ -7755,7 +7755,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '18.59';   /* 알 뽑기: 점수가 모자라요 비활성 회색, 자동 선택 주황, 빈 기계에도 + 넣기 */
+const APP_VER = '18.60';   /* 알 뽑기 결과 창: 안내 문구 뺌, 바로 부화시키기 버튼 위로 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -15038,9 +15038,9 @@ function gaPull(k = 1) { const s = gaSt(), t = s.t || 0, c = GA_COST[t]; if (gaB
   setTimeout(() => { m.classList.remove('spin'); S.bag.push(...es); save(); renderBag.sig = ''; gaBusy = false; gaPaint();
     const op = x => { const sp = SPECIES[x.sp]; return `${esc(sp?.n || '?')}·${(sp?.t || []).map(y => TYPE_KO[y]).join('/')}`; };
     if (k === 1) { const nm = eggName(e);
-      $('#gaRes').innerHTML = `${eggHtml(e.g, 'wob', e.lt || e.ct)}<div class="t"><b>${esc(nm)}</b>${/[가-힣]$/.test(nm) && (nm.charCodeAt(nm.length - 1) - 44032) % 28 ? '이' : '가'} 나왔다!</div><p class="ga-note">부화 준비된 채로 알 가방에 넣었어요</p>${GT ? `<p class="ga-note op">(시험) 알 속: ${op(e)}</p>` : ''}`; }
-    else $('#gaRes').innerHTML = `<div class="t">알 <b>${k}개</b>가 나왔다!</div><div class="ga-grid">${es.map((x, j) => `<div class="ga-gc g${x.g}${x.g >= 4 ? ' hi' : ''}" style="animation-delay:${j * 60}ms">${eggHtml(x.g, x.g >= 4 ? 'wob' : '', x.lt || x.ct)}<small>${esc(x.lt ? '전설' : GRADE[x.g].n)}</small></div>`).join('')}</div><p class="ga-note">부화 준비된 채로 알 가방에 넣었어요</p>${GT ? `<p class="ga-note op">(시험) 알 속: ${es.map(op).join(', ')}</p>` : ''}`;
-    const mo = $('#gaMore'), c2 = GA_COST[s.t || 0], k2 = k > 1 ? gaMaxK(s, c2) : 1; mo.dataset.k = k2 > 1 ? k2 : 1; mo.innerHTML = k2 > 1 ? `${k2}번 더<small>${k2 * c2}점</small>` : `한 번 더<small>${c2}점</small>`; mo.disabled = s.pt < c2; { const hb = $('#gaHatch'); hb.textContent = k > 1 ? `모두 부화 (${k})` : '바로 부화'; hb.disabled = false; }
+      $('#gaRes').innerHTML = `${eggHtml(e.g, 'wob', e.lt || e.ct)}<div class="t"><b>${esc(nm)}</b>${/[가-힣]$/.test(nm) && (nm.charCodeAt(nm.length - 1) - 44032) % 28 ? '이' : '가'} 나왔다!</div>${GT ? `<p class="ga-note op">(시험) 알 속: ${op(e)}</p>` : ''}`; }
+    else $('#gaRes').innerHTML = `<div class="t">알 <b>${k}개</b>가 나왔다!</div><div class="ga-grid">${es.map((x, j) => `<div class="ga-gc g${x.g}${x.g >= 4 ? ' hi' : ''}" style="animation-delay:${j * 60}ms">${eggHtml(x.g, x.g >= 4 ? 'wob' : '', x.lt || x.ct)}<small>${esc(x.lt ? '전설' : GRADE[x.g].n)}</small></div>`).join('')}</div>${GT ? `<p class="ga-note op">(시험) 알 속: ${es.map(op).join(', ')}</p>` : ''}`;
+    const mo = $('#gaMore'), c2 = GA_COST[s.t || 0], k2 = k > 1 ? gaMaxK(s, c2) : 1; mo.dataset.k = k2 > 1 ? k2 : 1; mo.innerHTML = k2 > 1 ? `${k2}번 더<small>${k2 * c2}점</small>` : `한 번 더<small>${c2}점</small>`; mo.disabled = s.pt < c2; { const hb = $('#gaHatch'); hb.textContent = k > 1 ? `모두 부화시키기 (${k})` : '바로 부화시키기';   /* v18.60 경완: 문구 '…시키기', 버튼은 한 번 더·확인 줄 위로 */ hb.disabled = false; }
     $('#gaResPop').hidden = false; sfx('newdex'); if (e.g >= 4) { setTimeout(() => sfx('shiny'), 260); haptic(2); } else haptic();   /* v17.90 경완: 결과 창이 뜰 때 효과음 (에픽·전설은 반짝 소리 더) */ }, 1600 + dl); }
 $('#gaGo').addEventListener('click', () => gaPull());
 /* v18.48 경완: 뽑기 결과 창에서 바로 부화 (여러 개면 모두 부화만). 안 하면 부화 준비 상태로 알 가방에.
