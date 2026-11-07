@@ -74,10 +74,11 @@ const CSS = `
 #gym .ev-rw .rw-hd .bsa-ray{top:38%;width:320px;height:320px;margin:-160px 0 0 -160px}
 #gym .ev-rw .rw-halo{position:absolute;left:50%;top:38%;width:130px;height:130px;margin:-65px;border-radius:50%;background:radial-gradient(circle,rgba(255,236,170,.6),transparent 70%);animation:bswPulse 2s ease-in-out infinite}
 #gym .ev-rw .rw-emb{position:absolute;left:50%;top:38%;width:62px;height:62px;margin:-31px;border-radius:50%;display:grid;place-items:center;background:#f4f0f0;box-shadow:0 0 0 4px #c01828,0 4px 0 4px #6a0a12;font:900 40px/1 Arial,sans-serif;color:#c01828;animation:rwEmb .5s .1s ease-out both}
-#gym .ev-rw .rw-emb::after{content:'';position:absolute;left:-8px;right:-8px;top:50%;height:7px;margin-top:-3.5px;border-radius:4px;background:#222;box-shadow:0 0 0 2px #fff;transform:rotate(-40deg) scaleX(0);transform-origin:left;animation:rwCut .25s .75s ease-out forwards}
+#gym .ev-rw .rw-emb img{width:40px;height:36px;image-rendering:pixelated}
+#gym .ev-rw .rw-emb::after{content:'';position:absolute;left:50%;top:50%;width:84px;height:7px;margin:-3.5px 0 0 -42px;border-radius:4px;background:#222;box-shadow:0 0 0 2px #fff;transform:rotate(-40deg) scaleX(0);transform-origin:50% 50%;animation:rwCut .25s .75s ease-out forwards}   /* 취소선은 마크 한가운데를 지나게 (경완 2026-11-07) */
 @keyframes rwEmb{0%{transform:scale(0) rotate(-30deg)}70%{transform:scale(1.15)}100%{transform:none}}
 @keyframes rwCut{to{transform:rotate(-40deg) scaleX(1)}}
-#gym .ev-rw .rw-stamp{position:absolute;left:50%;top:38%;margin:-14px 0 0 18px;padding:2px 9px 3px;border:3px solid #ffd84a;border-radius:6px;background:rgba(40,10,10,.55);color:#ffd84a;font-size:17px;font-weight:900;letter-spacing:2px;transform:rotate(-12deg);opacity:0;animation:rwStamp .35s 1.05s cubic-bezier(.3,1.6,.5,1) forwards}
+#gym .ev-rw .rw-stamp{position:absolute;left:50%;top:38%;margin:0 0 0 32px;padding:2px 9px 3px;border:3px solid #ffd84a;border-radius:6px;background:rgba(40,10,10,.55);color:#ffd84a;font-size:17px;font-weight:900;letter-spacing:2px;transform:rotate(-12deg);opacity:0;animation:rwStamp .35s 1.05s cubic-bezier(.3,1.6,.5,1) forwards}
 @keyframes rwStamp{0%{opacity:0;transform:rotate(-12deg) scale(2.4)}100%{opacity:1;transform:rotate(-12deg) scale(1)}}
 #gym .ev-rw .rw-crew{position:absolute;left:0;right:0;bottom:6px;display:flex;justify-content:center;align-items:flex-end;gap:2px}
 #gym .ev-rw .rw-crew i{display:block;height:64px;background-repeat:no-repeat;image-rendering:pixelated;opacity:0;animation:rwIn .3s var(--d) ease-out forwards,rwHop .5s calc(var(--d) + 1.2s) ease-in-out 2}
@@ -94,6 +95,12 @@ const CSS = `
 #gym .ev-rw .pk-ben .rep .pk-ic{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M6 0h2v4h4v2h2v2h-3v2h1v4h-2v-1H8v-1H6v1H4v1H2v-4h1V8H0V6h2V4h4z'/%3E%3C/svg%3E")}
 #gym .ev-rw .pk-ben small{display:block;font-size:11px;font-weight:400;color:#8a7a50}
 #gym .ev-rw .rw-gn{font-variant-numeric:tabular-nums}
+/* 새 의상 창 (v18.55 경완 '로켓단 제복은 옷 잘 보이게 새로운 창으로'): 빛 무대 위에 옷 입은 모습을 크게 */
+#gym .ev-rw .fw-hd{height:210px;display:grid;place-items:center}
+#gym .ev-rw .fw-hd .bsa-ray,#gym .ev-rw .fw-hd .rw-halo{top:50%}
+#gym .ev-rw .fw-pic{position:relative;width:160px;height:160px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 6px 0 rgba(0,0,0,.35));animation:fwIn .55s .1s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes fwIn{0%{opacity:0;transform:translateY(24px) scale(.6)}100%{opacity:1;transform:none}}
+#gym .ev-rw .fw-new{position:absolute;right:14px;top:12px;padding:2px 8px 3px;border-radius:6px;background:#ffd84a;color:#5a3a00;font-size:12px;font-weight:900;letter-spacing:1px;animation:rwStamp .35s .6s cubic-bezier(.3,1.6,.5,1) both}
 `;
 let cssOn = false;
 const css = () => { if (cssOn) return; cssOn = true; const s = document.createElement('style'); s.textContent = CSS; document.head.appendChild(s); };
@@ -166,14 +173,20 @@ function tools(I, def) {
       // 무대 아래 줄: 나 + 되찾은 트레이너·안내원 (R.crew) 앞모습, 한 명씩 나타나 콩콩
       const crew = [], fw = k => I.owW?.(k) || 32; if (R.crew) { crew.push(['me', I.myOw()]); for (const s of (I.st().sf || []).slice(0, 6)) if (s.ow) crew.push(['', s.ow]); if (I.GUY_OW) crew.push(['', I.GUY_OW]); }
       const cH = crew.map(([c, k], n) => `<i class="${c}" data-ow="${I.esc(k)}" style="--d:${(.3 + n * .12).toFixed(2)}s;width:${fw(k) * 2}px;background-image:url(${I.owSrc(k)});background-size:auto 64px;background-position:0 0"></i>`).join('');
-      const w = document.createElement('div'); w.className = 'ev-rw gy-pop pp-pop rw-pop'; w.innerHTML = `<div class="win"><div class="rw-hd" style="${R.hd ? `--c1:${R.hd[0]};--c2:${R.hd[1]}` : ''}"><i class="bsa-ray"></i><i class="rw-halo"></i>${R.emb ? `<b class="rw-emb">${I.esc(R.emb)}</b>` : ''}<b class="rw-stamp">해결!</b><div class="rw-crew">${cH}</div></div>
+      const w = document.createElement('div'); w.className = 'ev-rw gy-pop pp-pop rw-pop'; w.innerHTML = `<div class="win"><div class="rw-hd" style="${R.hd ? `--c1:${R.hd[0]};--c2:${R.hd[1]}` : ''}"><i class="bsa-ray"></i><i class="rw-halo"></i>${R.embImg ? `<b class="rw-emb"><img alt="" src="${R.embImg}"></b>` : R.emb ? `<b class="rw-emb">${I.esc(R.emb)}</b>` : ''}<b class="rw-stamp">해결!</b><div class="rw-crew">${cH}</div></div>
         <h4 class="pp-t"><small>이벤트 해결</small>${I.esc(def.nm)}</h4>${R.msg ? `<p class="rw-msg">${I.esc(R.msg).replace(/\n/g, '<br>')}</p>` : ''}<ul class="pk-ben">${L.join('')}</ul><div class="gy-btns one"><button type="button" class="main">좋아!</button></div></div>`;
       root.appendChild(w); I.haptic?.(1);
       I.fitSrc?.('ow').then(u => { const m = w.querySelector('.rw-crew .me'); if (u && m) m.style.backgroundImage = `url(${u})`; }).catch(() => {});
       setTimeout(() => { try { window.GymBGM?.se?.('DP_KON', { gain: 1.3 }); } catch (e) {} I.haptic?.(0); }, 1050);   // 해결! 도장 쾅
       setTimeout(() => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA5') : window.GymBGM?.se?.('ME_FANFA5'); } catch (e) {} I.confetti?.(); }, 1300);
       const gn = w.querySelector('.rw-gn'); if (gn) { const t0 = performance.now() + 1700, T = 900, f2 = now => { const q = Math.max(0, Math.min(1, (now - t0) / T)); gn.textContent = `+${Math.round(R.g * (1 - (1 - q) ** 3)).toLocaleString()}G`; if (q < 1 && gn.isConnected) requestAnimationFrame(f2); }; requestAnimationFrame(f2); }
-      w.querySelector('button').onclick = e => { e.stopPropagation(); I.sfx?.('tap'); w.remove(); ok(); }; }),
+      // 의상 보상은 해결 창을 닫으면 따로 크게 보여 준다 (경완 2026-11-07 '로켓단 제복은 옷 잘 보이게 새로운 창으로')
+      const fitWin = () => new Promise(ok2 => { if (!R.fit) return ok2(); const v = document.createElement('div'); v.className = 'ev-rw gy-pop pp-pop rw-pop';
+        v.innerHTML = `<div class="win"><div class="rw-hd fw-hd" style="${R.hd ? `--c1:${R.hd[0]};--c2:${R.hd[1]}` : ''}"><i class="bsa-ray"></i><i class="rw-halo"></i><img class="fw-pic" alt="" src="gym/img/fit/${R.fit}_${f}.png?v=${VER}" onerror="this.onerror=null;this.src='${R.fitAlt ? R.fitAlt.replace('$', f) : ''}'"><b class="fw-new">NEW</b></div>
+          <h4 class="pp-t"><small>새 의상을 받았다!</small>${I.esc(R.fitNm || '새 의상')}</h4><p class="rw-msg">상점 › 의상에서 언제든 갈아입을 수 있어요</p><div class="gy-btns one"><button type="button" class="main">좋아!</button></div></div>`;
+        root.appendChild(v); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} I.haptic?.(0);
+        v.querySelector('button').onclick = e => { e.stopPropagation(); I.sfx?.('tap'); v.remove(); ok2(); }; });
+      w.querySelector('button').onclick = e => { e.stopPropagation(); I.sfx?.('tap'); w.remove(); fitWin().then(ok); }; }),
     // 지면 이 장 처음부터 (벌 없음, 경완 2026-11-07)
     lose: async () => { A.music(null); await A.black(true, '눈앞이 캄캄해졌다...!', '이 장의 처음부터 다시 도전해요.\n(잃는 것은 없어요)', true); return 'again'; },
   };
