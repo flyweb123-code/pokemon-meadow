@@ -29,10 +29,10 @@ const PART = {
   hbBa3: [1861056, 4348, 'hg'], hwBa3: [7615936, 8452, 'hg'], hbBa5: [1869856, 4392, 'hg'], hwBa5: [7653248, 27708, 'hg'],
   hsGymJ: [714656, 11596, 'hg'], hsGymK: [839424, 20568, 'hg'], hsRival: [726272, 15056, 'hg'], hsChamp: [794112, 12628, 'hg'],
   hsEyeRiv: [578240, 6976, 'hg'], hsWin1: [860000, 3164, 'hg'], hsWin3: [868960, 6180, 'hg'],
-  hsEyeRoc: [665472, 3252, 'hg'], hsVsRoc: [741344, 10192, 'hg'], hsAjito: [528256, 4868, 'hg'], hbD9: [1924000, 4580, 'hg'], hwD9: [7893664, 4872, 'hg'],   // 체육관 이벤트 로켓단 (2026-11-07): SEQ_GS_EYE_ROCKET·VS_ROCKET·D_AJITO
+  hsEyeRoc: [665472, 3252, 'hg'], hsVsRoc: [741344, 10192, 'hg'], hsAjito: [528256, 4868, 'hg'], hbD9: [1924000, 4580, 'hg'], hwD9: [7893664, 4872, 'hg'], hsNibi: [354464, 6804, 'hg'], hbF16: [1838656, 4592, 'hg'], hwF16: [7568928, 6072, 'hg'],   // 체육관 이벤트 로켓단 (2026-11-07): SEQ_GS_EYE_ROCKET·VS_ROCKET·D_AJITO
 };
 const BANK = { field: { b: 'bField', w: ['wBasic', 'wField'] }, battle: { b: 'bBattle', w: ['wBasic', 'wBattle'] }, S: { b: 'bSe', w: ['wBasic', 'wSe'] }, B: { b: 'bBasic', w: ['wBasic'] }, F: { b: 'bSeF', w: ['wBasic', 'wSeF'] }, dungeon: { b: 'bDungeon', w: ['wBasic', 'wDungeon'] },
-  hB: { b: 'hbBasic', w: ['hwBasic'] }, h1: { b: 'hbBa1', w: ['hwBasic', 'hwBa1'] }, h2: { b: 'hbBa2', w: ['hwBasic', 'hwBa2'] }, h3: { b: 'hbBa3', w: ['hwBasic', 'hwBa3'] }, h5: { b: 'hbBa5', w: ['hwBasic', 'hwBa5'] }, hD9: { b: 'hbD9', w: ['hwBasic', 'hwD9'] } };
+  hB: { b: 'hbBasic', w: ['hwBasic'] }, h1: { b: 'hbBa1', w: ['hwBasic', 'hwBa1'] }, h2: { b: 'hbBa2', w: ['hwBasic', 'hwBa2'] }, h3: { b: 'hbBa3', w: ['hwBasic', 'hwBa3'] }, h5: { b: 'hbBa5', w: ['hwBasic', 'hwBa5'] }, hD9: { b: 'hbD9', w: ['hwBasic', 'hwD9'] }, hF16: { b: 'hbF16', w: ['hwBasic', 'hwF16'] } };
 // 곡 이름 → 악보, 악기 묶음, 곡 볼륨(원본 SEQ 정보 값)
 const SONG = {
   gym: { s: 'sGym', bank: 'field', vol: 118 },            // 체육관
@@ -60,7 +60,8 @@ const SONG = {
   hgEyeRiv: { s: 'hsEyeRiv', bank: 'hB', vol: 89 },       // 실버 등장
   hgEyeRoc: { s: 'hsEyeRoc', bank: 'hB', vol: 71 },       // 로켓단 등장 (이벤트)
   hgVsRoc: { s: 'hsVsRoc', bank: 'h1', vol: 102 },        // 로켓단 배틀 (이벤트)
-  hgAjito: { s: 'hsAjito', bank: 'hD9', vol: 81 },        // 로켓단 아지트 (이벤트)
+  hgAjito: { s: 'hsAjito', bank: 'hD9', vol: 81 },
+  hgNibi: { s: 'hsNibi', bank: 'hF16', vol: 59 },          // 회색시티 (하트골드 SEQ_GS_C_NIBI, 이벤트 2장 마을)        // 로켓단 아지트 (이벤트)
   hgWin1: { s: 'hsWin1', bank: 'hB', vol: 110 },          // 트레이너에게 이겼다
   hgWin3: { s: 'hsWin3', bank: 'hB', vol: 102 },          // 관장·사천왕·챔피언에게 이겼다
   // 에메랄드 (호연 트레이너)
