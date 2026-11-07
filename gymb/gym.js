@@ -1201,8 +1201,15 @@ function unlockChk() { const g = st(); if (!g || g.unl || gradeOf(g.rep || 0).i 
 // v18.27 경완 '골드랑 알 보상은 승급창 닫으면 바로 별도 알림창': 승급 보상 받는 창 (골드 + 체육관 타입 알)
 function rwPop() { const g = st(), i = g.grwN; if (i == null) return Promise.resolve(); delete g.grwN; save(); const n = GR_GOLD[i] || 0, E = GR_EGG[i];
   if (!n && !E) return Promise.resolve();
+  /* v18.28 경완 '보상 알림창도 디자인, 알 2개면 스프라이트 2개': 승급창처럼 빛 무대 위에 받은 알 개수만큼 하나씩 톡톡 떨어지고, 아래 보상 줄 (골드는 0 부터 올라감) */
+  const ne = E ? E[1] : 0, stage = ne ? Array.from({ length: ne }, (_, k) => `<i class="rw-egg" style="--d:${(.25 + k * .18).toFixed(2)}s">${grEggI(i)}</i>`).join('') : '<i class="rw-coin"><i class="coin"></i></i>';
   return new Promise(ok => { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
-    const p = pop(`<h4>승급 보상을 받았다!</h4><div class="rw-get">${n ? `<div class="rw-g"><i class="coin"></i><b>${n.toLocaleString()}G</b></div>` : ''}${E ? `<div class="rw-e"><span class="rw-eg">${grEggI(i)}</span><b>${grEggN(i)} <em>${E[1]}개</em></b></div>` : ''}</div><p class="gy-msg" style="text-align:center">${GRADES[i][1]}이 된 기념이에요.${E ? '<br><small>알은 필드의 알 가방에 들어 있어요.</small>' : ''}</p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('rw-pop'); }); }
+    const p = pop(`<div class="pp-hd rw-hd"><i class="bsa-ray"></i><i class="pp-halo"></i><div class="rw-stage${ne > 3 ? ' many' : ''}">${stage}</div></div>
+      <h4 class="pp-t"><small>승급 보상</small>${GRADES[i][1]}</h4>
+      <div class="pp-ben"><ul class="pk-ben">${n ? `<li class="gold"><i class="pk-ic"><i class="coin"></i></i><span>골드</span><em><b class="rw-gn">+0G</b></em></li>` : ''}${E ? `<li class="eg"><i class="pk-ic"><span class="pk-le">${grEggI(i)}</span></i><span>${grEggN(i)}</span><em><b>${ne}개</b></em></li>` : ''}</ul>${E ? '<p class="rw-note">알은 필드의 알 가방에 들어 있어요</p>' : ''}</div>
+      <div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('pp-pop', 'rw-pop');
+    const gn = p.querySelector('.rw-gn'); if (gn) { const t0 = performance.now() + 350, T = 800, f = now => { const k = Math.max(0, Math.min(1, (now - t0) / T)); gn.textContent = `+${Math.round(n * (1 - (1 - k) ** 3)).toLocaleString()}G`; if (k < 1 && gn.isConnected) requestAnimationFrame(f); }; requestAnimationFrame(f); }
+    for (let k = 0; k < ne; k++) setTimeout(() => { try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {} }, 250 + k * 180 + 220); }); }
 // 전설의 체육관 보상 알 받는 창 (경완 2026-10-29)
 function legEggPop() { const g = st(), t = g.legN; if (!t) return Promise.resolve(); delete g.legN; save();
   return new Promise(ok => { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
