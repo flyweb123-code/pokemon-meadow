@@ -43,6 +43,8 @@ const LOOKT = { bookshelf: '책장에 어려운 책이\n빼곡히 꽂혀 있다.
   pcsign: '포켓몬 센터\n"포켓몬의 체력을 회복합니다"', martsign: '프렌들리숍\n"포켓몬 용품은 여기서!"', sign: '표지판이다.' };
 // 이 칸에 쓰인 글: 방별 덧쓰기(sp) → 칸 종류 문구
 const lookText = (lk, sp, x, y) => { const k = x + ',' + y; return sp?.[k] || LOOKT[lk?.[k]] || null; };
+// 진 조무래기에게 다시 말 걸면: 그 조무래기 대사를 차례로 (경완 2026-11-07 '진 로켓단 다시 말 걸면 뭔가 대사가 있게')
+async function againSay(S, s, o) { const L = o?.again || ['...'], i = (s.ag | 0) % L.length; s.ag = (s.ag | 0) + 1; await S.say(L[i], { who: o?.who || G }); S.hide(true); }
 const ow = (A, F, k, x, y, f, o) => { const s = F.npc(k, x, y, f, o); s.ow = k; return s; };
 GymEv.def({
   id: 'rocket', nm: '로켓단의 체육관 점거', sub: '로켓단이 내 체육관을 빼앗고 트레이너들을 데려갔다!',
@@ -264,9 +266,9 @@ GymEv.def({
       const me = F.me = F.npc(I.myOw(), 12, 3, 'd'); I.fitMe(me);
       const g1 = ow(A, F, 'hg_rocket_m', 4, 9, 'r', { sight: 5 }), g2 = ow(A, F, 'hg_rocket_f', 24, 12, 'l', { sight: 3 }), g3 = ow(A, F, 'hg_rocket_m', 24, 26, 'l', { sight: 4 });
       const GS = [
-        [g1, { pre: ['침입자다!\n여긴 로켓단 아지트라고!'], team: gTeam(A, 2, -2, 1), g: 300, say: { win: '아지트는\n그렇게 만만한 데가 아니야!', lose: '말도 안 돼...!' }, post: ['젠장...\n이래서야 승진은 글렀군...'] }],
-        [g2, { pre: ['어머, 체육관 관장님이\n직접 오셨네?', '트레이너들은 못 돌려줘!\n전부 람다 님 거라고!'], team: gTeam(A, 2, -1, 3), g: 300, say: { win: '호호,\n얌전히 돌아가시지!', lose: '어머머...!\n이렇게 셀 줄은!' }, post: ['흥! 람다 님은\n나처럼 만만하지 않을걸!'] }],
-        [g3, { pre: ['멈춰라! 이 엘리베이터는\n관계자 외 출입 금지다!', '지하 4층 람다 님 방에는\n아무도 못 보낸다!'], team: gTeam(A, 3, -1, 4), g: 400, say: { win: '그러니까 말했잖아!\n출입 금지라고!', lose: '으윽...\n문지기 체면이...!' }, post: ['크윽... 람다 님,\n죄송합니다...!'] }],
+        [g1, { again: ['흥, 한 번 이겼다고\n우쭐대지 마라!', '아지트가 넓다고 길 잃지 마라.\n...아, 내가 왜 걱정을 해 주지?', '엘리베이터 열쇠?\n그런 건 몰라! 진짜 몰라!'], pre: ['침입자다!\n여긴 로켓단 아지트라고!'], team: gTeam(A, 2, -2, 1), g: 300, say: { win: '아지트는\n그렇게 만만한 데가 아니야!', lose: '말도 안 돼...!' }, post: ['젠장...\n이래서야 승진은 글렀군...'] }],
+        [g2, { again: ['흥! 다시 말 걸지 마!\n아직 화났거든?', '람다 님은 방에서\n뺏은 포켓몬 세느라 바쁘셔.', '...관장님 포켓몬, 좀 귀엽던데.\n아니, 아무것도 아니야!'], pre: ['어머, 체육관 관장님이\n직접 오셨네?', '트레이너들은 못 돌려줘!\n전부 람다 님 거라고!'], team: gTeam(A, 2, -1, 3), g: 300, say: { win: '호호,\n얌전히 돌아가시지!', lose: '어머머...!\n이렇게 셀 줄은!' }, post: ['흥! 람다 님은\n나처럼 만만하지 않을걸!'] }],
+        [g3, { again: ['문지기가 져 버렸으니\n난 이제 끝이야...', '엘리베이터는 지하 4층까지 가.\n...알려 준 거 아니다?', '람다 님한테 혼나기 전에\n휴가라도 내야겠다...'], pre: ['멈춰라! 이 엘리베이터는\n관계자 외 출입 금지다!', '지하 4층 람다 님 방에는\n아무도 못 보낸다!'], team: gTeam(A, 3, -1, 4), g: 400, say: { win: '그러니까 말했잖아!\n출입 금지라고!', lose: '으윽...\n문지기 체면이...!' }, post: ['크윽... 람다 님,\n죄송합니다...!'] }],
       ];
       F.cam(me.x, me.y); A.music('hgAjito'); await A.black(false); await F.show();
       const S = A.talk(); S.hide(true);
@@ -279,7 +281,7 @@ GymEv.def({
       for (;;) {
         const r = await F.play({
           step: async () => { const s = GS.map(x => x[0]).find(s => F.sees(s)); if (s) return (await meet(s)) ? undefined : undefined; },
-          talk: async s => { if (!s.done) return (await meet(s)) ? undefined : undefined; await S.say('...', { who: G }); S.hide(true); },
+          talk: async s => { if (!s.done) return (await meet(s)) ? undefined : undefined; await againSay(S, s, GS.find(x => x[0] === s)?.[1]); },
           look: async ([x, y]) => { const t = lookText(LK1, null, x, y); if (t) { for (const x of [].concat(t)) await S.say(x, { who: me0 }); S.hide(true); } },
           warp: async w => { if (w.id === 'lift') { if (!g3.done) return; A.se('se_exit'); return 'lift'; }
             await S.say(w.id === 'up' ? '(위로 돌아갈 때가 아니야.\n트레이너들을 구해야 해!)' : '(계단이 막혀 있다...\n다른 길을 찾아보자.)', { who: me0 }); S.hide(true); },
@@ -306,8 +308,8 @@ GymEv.def({
       const caps = all.slice(0, CAP.length).map((s, i) => ow(A, F, s.ow, CAP[i][0], CAP[i][1], 'd'));
       const guy = ow(A, F, I.GUY_OW, 19, 5, 'd');
       const GS = [
-        [k1, { pre: ['거기 서!\n이 앞은 람다 님 방이다!'], team: gTeam(A, 2, 0, 2), g: 400, say: { win: '람다 님 방엔\n한 발짝도 못 들어가!', lose: '이럴 수가...!' }, post: ['람다 님... 죄송합니다...'] }],
-        [k2, { pre: ['어머, 여기까지 왔어?\n그래도 여기서 끝이야!'], team: gTeam(A, 2, 0, 5), g: 400, say: { win: '호호!\n여기가 네 한계야!', lose: '말도 안 돼...\n람다 님한테 혼나겠네...' }, post: ['흥... 람다 님은\n훨씬 무섭다고!'] }],
+        [k1, { again: ['으으... 람다 님 방은\n바로 저 앞이야.', '람다 님은 우리보다\n훨씬 세다고! 각오해!', '...나도 사실 체육관 관장이\n되고 싶었는데.'], pre: ['거기 서!\n이 앞은 람다 님 방이다!'], team: gTeam(A, 2, 0, 2), g: 400, say: { win: '람다 님 방엔\n한 발짝도 못 들어가!', lose: '이럴 수가...!' }, post: ['람다 님... 죄송합니다...'] }],
+        [k2, { again: ['어머, 아직도 있어?\n얼른 람다 님한테나 가 봐.', '트레이너들은 안쪽 방에 있어.\n...내가 말했다고 하지 마.', '오늘 저녁은 컵라면이겠네...\n월급 깎이겠어.'], pre: ['어머, 여기까지 왔어?\n그래도 여기서 끝이야!'], team: gTeam(A, 2, 0, 5), g: 400, say: { win: '호호!\n여기가 네 한계야!', lose: '말도 안 돼...\n람다 님한테 혼나겠네...' }, post: ['흥... 람다 님은\n훨씬 무섭다고!'] }],
       ];
       F.cam(me.x, me.y); A.music('hgAjito'); await A.black(false); await F.show();
       const S = A.talk(); S.hide(true);
@@ -320,7 +322,7 @@ GymEv.def({
         const r = await F.play({
           step: async ([x, y]) => { const s = GS.map(x => x[0]).find(s => F.sees(s)); if (s) return (await meet(s)) ? undefined : undefined;
             if (y <= 11 && x >= 16) return 'boss'; },
-          talk: async s => { if (GS.some(x => x[0] === s) && !s.done) return (await meet(s)) ? undefined : undefined; if (s === boss) return 'boss'; await S.say('...', { who: G }); S.hide(true); },
+          talk: async s => { if (GS.some(x => x[0] === s) && !s.done) return (await meet(s)) ? undefined : undefined; if (s === boss) return 'boss'; await againSay(S, s, GS.find(x => x[0] === s)?.[1]); },
           look: async ([x, y]) => { const t = lookText(LK4, null, x, y); if (t) { for (const x of [].concat(t)) await S.say(x, { who: me0 }); S.hide(true); } },
           warp: async () => { await S.say('(트레이너들을 두고\n돌아갈 수는 없어!)', { who: me0 }); S.hide(true); },
         });
