@@ -56,6 +56,10 @@ const CSS = `
 #gym .ev-ask .win{max-width:320px;width:100%;padding:18px 16px 14px;text-align:center;display:flex;flex-direction:column;gap:12px}
 #gym .ev-ask p{margin:0;font-size:15px;line-height:1.55;white-space:pre-line}#gym .ev-ask small{display:block;color:#707080;font-size:12px;margin-top:4px}
 #gym .ev-ask .bt2{display:flex;gap:8px}#gym .ev-ask .bt2 button{flex:1}
+#gym .ev-ask .gy-btns.one{display:flex}#gym .ev-ask .gy-btns.one button{flex:1}
+#gym :is(.ev-ask,.ev-rw) button{font:inherit;font-size:15px;font-weight:700;padding:11px 8px;border:0;border-radius:10px;background:#e4e4ec;color:#303040;box-shadow:0 4px 0 #a8a8b8;transition:transform .05s,box-shadow .05s;-webkit-tap-highlight-color:transparent}
+#gym :is(.ev-ask,.ev-rw) button.main{background:#3f8ee8;color:#fff;box-shadow:0 4px 0 #22589a}
+#gym :is(.ev-ask,.ev-rw) button:active{transform:translateY(4px);box-shadow:0 0 0 transparent}
 /* 보상 창 */
 #gym .ev-rw{position:absolute;inset:0;z-index:990;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:0 22px}
 #gym .ev-rw .win{max-width:330px;width:100%;padding:18px 16px 14px;text-align:center;display:flex;flex-direction:column;gap:10px;animation:evRw .45s cubic-bezier(.2,1.4,.4,1) both}
@@ -174,7 +178,7 @@ function field(I, o) {
     F.sps.push(s); s.put(); return s; };
   F.bub = (s, t, ms = 900) => { const b = document.createElement('b'); b.className = 'tw-bub'; b.textContent = t; Object.assign(b.style, { left: (s.x * 16 + 8) * k + 'px', top: (s.y * 16 - 17) * k + 'px' }); map.appendChild(b); if (ms) setTimeout(() => b.remove(), ms); return b; };
   // 본가 트레이너 시야: 보는 방향으로 sight 칸 안에 내가 있으면 그 거리 (벽·사람에 막힘)
-  F.sees = s => { if (!s.on || !s.sight || s.done) return 0; const [dx, dy] = DIR[s.f]; for (let i = 1; i <= s.sight; i++) { const x = Math.round(s.x) + dx * i, y = Math.round(s.y) + dy * i;
+  F.sees = s => { if (!s.on || !s.sight || s.done || s.lost) return 0; const [dx, dy] = DIR[s.f]; for (let i = 1; i <= s.sight; i++) { const x = Math.round(s.x) + dx * i, y = Math.round(s.y) + dy * i;
     if (Math.round(F.me.x) === x && Math.round(F.me.y) === y) return i; if (x < 0 || y < 0 || x >= o.w || y >= o.h || col[y][x] === '#' || F.who(x, y)) return 0; } return 0; };
   // 나를 본 사람이 내 앞까지 걸어온다
   F.come = async s => { const n = F.sees(s) || 1, [dx, dy] = DIR[s.f], pts = []; for (let i = 1; i < n; i++) pts.push([Math.round(s.x) + dx * i, Math.round(s.y) + dy * i]); if (pts.length) await s.go(pts, 200); F.me.turn(OPP[s.f]); };

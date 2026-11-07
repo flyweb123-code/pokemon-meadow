@@ -2302,6 +2302,10 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
   // 이벤트 배틀: 지금 라인업 (비어 있으면 체육관 타입 포켓몬 레벨 높은 순 6마리)
   battle: async o => { await loadJs('gym/battle.js', 'GymBattle'); await GB().loadData(); const g = st();
     if (window.__evAutoWin && /[?&]debug/.test(location.search)) return { won: true };   // 시험 자동 진행
+    // 운영자 시험: 배틀마다 건너뛰기 (경완 2026-11-07 '운영자 모드에서 테스트하는 건 배틀 스킵 버튼')
+    if (window.gymEvTest) { const k = await new Promise(ok => { const w = document.createElement('div'); w.className = 'ev-ask'; w.innerHTML = `<div class="win"><p>운영자 시험\n<b>${esc(o.cls)} ${esc(o.nm)}</b> 배틀<small>건너뛰면 이긴 걸로(또는 진 걸로) 바로 넘어가요</small></p><div class="bt2 gy-btns"><button type="button" data-a="w">이긴 걸로</button><button type="button" data-a="l">진 걸로</button></div><div class="gy-btns one"><button type="button" class="main" data-a="b">배틀하기</button></div></div>`;
+      root.appendChild(w); w.onclick = e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); sfx('tap'); w.remove(); ok(b.dataset.a); }; });
+      if (k === 'w') return { won: true }; if (k === 'l') return { won: false }; }
     let my = luNow(); if (!my.length) my = luAll().slice(0, 6); if (!my.length) my = S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(g.ty)).sort((a, b) => GB().gm(b).lv - GB().gm(a).lv).slice(0, 6);
     if (!my.length) return { won: true, none: 1 };
     const team = o.team.map(([sp, lv]) => GB().foeEntry(sp, clampN(lv, 2, 100), o.tier | 0)); document.body.classList.add('gymBattle'); let res;
