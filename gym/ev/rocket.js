@@ -17,10 +17,10 @@ const trOf = ow => ow === 'hg_rocket_f' ? 'hg_rocket_f' : 'hg_rocket_m';
 async function fight(A, F, S, s, o) {
   F.lock(true); A.music('hgEyeRoc'); F.bub(s, '!', 900); A.se('DP_REGI', .8); await A.wait(1000);
   if (F.sees(s) > 1) await F.come(s); else { s.face(F.me); F.me.face(s); }
-  for (const t of o.pre) await S.say(t, { who: o.who || G });
+  for (const t of s.lost ? ['또 왔냐?\n몇 번을 와도 똑같다고!'] : o.pre) await S.say(t, { who: o.who || G });
   S.hide(true);
   const won = await A.battle({ tr: o.tr || trOf(s.ow), cls: o.cls || '로켓단', nm: o.nm || '조무래기', team: o.team, tier: o.tier | 0, g: o.g || 0, say: o.say, music: 'hgVsRoc', win: o.win });
-  if (!won) return false;
+  if (!won) { A.music(o.song || 'hgAjito'); s.lost = true; await A.wait(300); await S.say(o.again || '(포켓몬들이 지쳐 버렸다...\n다시 말을 걸면 또 배틀할 수 있다.)', { who: A.me() }); S.hide(true); return false; }   // 지면 그 자리에서 다시 말 걸어 재도전 (경완 2026-11-07)
   A.music(o.song || 'hgAjito'); s.done = true; await A.wait(300);
   for (const t of o.post || []) await S.say(t, { who: o.who || G });
   S.hide(true); return true;
@@ -124,8 +124,8 @@ GymEv.def({
       lass.say = ['저 아래쪽 집이에요!\n조심하세요, 관장님!'];
       for (;;) {
         const r = await F.play({
-          step: async () => { if (!gr.done && F.sees(gr)) return (await meetGr()) ? undefined : 'lose'; },
-          talk: async s => { if (s === gr && !gr.done) return (await meetGr()) ? undefined : 'lose';
+          step: async () => { if (!gr.done && F.sees(gr)) return (await meetGr()) ? undefined : undefined; },
+          talk: async s => { if (s === gr && !gr.done) return (await meetGr()) ? undefined : undefined;
             for (const t of s.say || ['...']) await S.say(t, { who: s === lass ? '마을 아이' : '마을 사람' }); S.hide(true); },
           warp: async w => { if (w.id === 'gym') { await S.say('(체육관 문이 안에서 굳게 잠겨 있다...)', { who: me0 }); S.hide(true); return; }
             if (!gr.done) return; A.se('DP_DOOR'); return 'in'; },
@@ -170,8 +170,8 @@ GymEv.def({
       const meet = async s => { const o = GS.find(x => x[0] === s)?.[1]; if (!o) return true; const ok = await fight(A, F, S, s, o); if (ok && s === g3) { await g3.go([[25, 26], [26, 26]], 200); g3.turn('l'); } return ok; };
       for (;;) {
         const r = await F.play({
-          step: async () => { const s = GS.map(x => x[0]).find(s => F.sees(s)); if (s) return (await meet(s)) ? undefined : 'lose'; },
-          talk: async s => { if (!s.done) return (await meet(s)) ? undefined : 'lose'; await S.say('...', { who: G }); S.hide(true); },
+          step: async () => { const s = GS.map(x => x[0]).find(s => F.sees(s)); if (s) return (await meet(s)) ? undefined : undefined; },
+          talk: async s => { if (!s.done) return (await meet(s)) ? undefined : undefined; await S.say('...', { who: G }); S.hide(true); },
           warp: async w => { if (w.id === 'lift') { if (!g3.done) return; A.se('DP_DOOR'); return 'lift'; }
             await S.say(w.id === 'up' ? '(위로 돌아갈 때가 아니야.\n트레이너들을 구해야 해!)' : '(계단이 막혀 있다...\n다른 길을 찾아보자.)', { who: me0 }); S.hide(true); },
         });
@@ -208,9 +208,9 @@ GymEv.def({
       const meet = async s => { const o = GS.find(x => x[0] === s)?.[1]; return o ? fight(A, F, S, s, o) : true; };
       for (;;) {
         const r = await F.play({
-          step: async ([x, y]) => { const s = GS.map(x => x[0]).find(s => F.sees(s)); if (s) return (await meet(s)) ? undefined : 'lose';
+          step: async ([x, y]) => { const s = GS.map(x => x[0]).find(s => F.sees(s)); if (s) return (await meet(s)) ? undefined : undefined;
             if (y <= 11 && x >= 16) return 'boss'; },
-          talk: async s => { if (GS.some(x => x[0] === s) && !s.done) return (await meet(s)) ? undefined : 'lose'; if (s === boss) return 'boss'; await S.say('...', { who: G }); S.hide(true); },
+          talk: async s => { if (GS.some(x => x[0] === s) && !s.done) return (await meet(s)) ? undefined : undefined; if (s === boss) return 'boss'; await S.say('...', { who: G }); S.hide(true); },
           warp: async () => { await S.say('(트레이너들을 두고\n돌아갈 수는 없어!)', { who: me0 }); S.hide(true); },
         });
         if (r === 'quit') return 'stop';
@@ -230,10 +230,18 @@ GymEv.def({
       await S.say('부하들을 다 쓰러뜨리고 오다니,\n관장 자리가 괜히 있는 게\n아니었군.', { who: B });
       await S.say('하지만 여기서 끝이다!\n체육관도, 트레이너도,\n몰려오는 손님들의 포켓몬도...', { who: B });
       await S.say('전부 이 람다 님이\n잘 맡아 두겠다! 우하하!', { who: B }); S.hide(true);
+      for (;;) {
       const won = await A.battle({ tr: 'hg_petrel', cls: '로켓단 간부', nm: '람다', tier: 2, g: 1000, music: 'hgVsRoc', win: 'winGym',
         team: [[A.lv() >= 28 ? 42 : 41, A.lv()], [A.lv() >= 28 ? 20 : 19, A.lv()], [A.lv() >= 28 ? 24 : 23, A.lv() + 1], [A.lv() >= 30 ? 110 : 109, A.lv() + 3]],
         say: { win: '우하하!\n관장도 별거 아니구먼!', lose: '이, 이럴 수가...!\n이 람다 님이 지다니!' } });
-      if (!won) return A.lose();
+      if (won) break;
+      // 졌다: 람다 앞에서 다시 말 걸면 재도전 (경완 2026-11-07)
+      A.music('hgAjito'); await wait(300); await S.say('우하하! 아직도 덤빌 셈인가?\n언제든 다시 와 보시지!', { who: B });
+      await S.say('(포켓몬들이 지쳐 버렸다...\n다시 말을 걸면 또 배틀할 수 있다.)', { who: me0 }); S.hide(true); F.camMe(400);
+      const r2 = await F.play({ talk: async s2 => { if (s2 === boss) return 'boss'; await S.say('관장님, 힘내세요!', { who: s2 === guy ? '안내원' : '트레이너' }); S.hide(true); }, warp: async () => { await S.say('(트레이너들을 두고\n돌아갈 수는 없어!)', { who: me0 }); S.hide(true); } });
+      if (r2 === 'quit') return 'stop';
+      F.lock(true); A.music('hgEyeRoc'); me.face(boss); await S.say('좋다, 다시 한번\n혼쭐을 내 주마!', { who: B }); S.hide(true);
+      }
       A.music('hgAjito'); await wait(300);
       await S.say('크윽...! 체육관 하나 털다가\n이게 무슨 꼴이람!', { who: B });
       await S.say('흥, 체육관이랑 트레이너들은\n돌려주마!', { who: B });
