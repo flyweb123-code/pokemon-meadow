@@ -241,7 +241,7 @@ async function drawTrain() {
   // v17.85 모양 그림자: 기구(.ty-pr, 움직이는 칸 포함)는 같은 그림을 검게 본떠 발밑에서 눕힘. 가로등은 막대, 코치는 지금 걸음 칸을 따라감(yardLoop)
   Y.L.querySelectorAll('.ty-pr').forEach(q => { const d = q.cloneNode(true); d.className = 'ty-cs'; d.style.zIndex = ''; d.style.transform = ''; d.querySelectorAll('*').forEach(x => { x.style.animation = 'none'; }); Y.L.append(d); });
   Y.lp.forEach(l => { const d = document.createElement('i'); d.className = 'ty-cs cs-lp'; d.style.cssText = `left:${l.x}px;top:${l.y}px`; Y.L.append(d); });
-  Y.co.forEach(o => { const d = document.createElement('i'); d.className = 'ty-cs cs-co'; d.style.backgroundImage = o.el.style.backgroundImage; Y.L.append(d); o.cs = d; });
+  /* v18.02 경완: 코치는 모양 그림자 없이 필드 포켓몬처럼 발밑 그림자만 */
   el.insertAdjacentHTML('beforeend', '<i class="ty-nt"></i><i class="ty-glow"></i><i class="ty-wx"></i>'); yLight();
   sh.onclick = ev => {
     const c = ev.target.closest('[data-co]'); if (c) { sfx('tap'); const o = Y.co[+c.dataset.co]?.s; if (o) sfDetail(o); return; }
@@ -258,7 +258,7 @@ function yardMon(P, e, i) {
   o.className = 'ty-m'; o.dataset.p = P.id; o.innerHTML = '<i class="ty-sh"></i><div class="ty-fl"><i class="ty-sp"></i></div><div class="ty-tag"></div>';
   // 물고기 포켓몬은 처음부터 수영장에서, 수영장에만 있다 (경완 2026-10-27)
   const fish = !!GA.isFish?.(P.sp), p0 = Y.pos[P.id], [x, y] = p0 && (!fish || inPond(p0[0], p0[1], -14)) ? p0 : yardSpot(fish); Y.L.append(o);
-  const m = { id: P.id, P, e, el: o, fl: o.querySelector('.ty-fl'), sp: o.querySelector('.ty-sp'), shd: o.querySelector('.ty-sh'), tag: o.querySelector('.ty-tag'), x, y, face: Math.random() < .5 ? 1 : -1, st: 'rest', until: performance.now() / 1000 + .5 + Math.random() * 2, at: 0,
+  const m = { id: P.id, P, e, el: o, fl: o.querySelector('.ty-fl'), sp: o.querySelector('.ty-sp'), shd: o.querySelector('.ty-sh'), tag: o.querySelector('.ty-tag'), x, y, face: Math.random() < .5 ? 1 : -1, st: leftOf(e) <= 0 ? 'sleep' : 'rest', until: performance.now() / 1000 + (leftOf(e) <= 0 ? 99 : .5 + Math.random() * 2), at: 0,   /* v18.02 경완 '훈련 끝났는데 들어가면 다시 깨어 있고 코치가 갔다가 돌아감': 오늘 훈련 다 한 포켓몬은 처음부터 잠든 채 */
     swimmer: t.includes(11), fish, flyer: t.includes(3) || (GA.lift?.(P.sp) || 0) > 8, fighter: t.includes(2), shooter: t.some(x => TY_SHOT.has(x)), ty: t[0], air: 0, D: null };
   Y.mons.push(m); place(m); try { yTag(m); } catch (x) {}
   GA.pmd?.(P.sp, P.sex).then(D => { if (!Y.mons.includes(m)) return; m.D = D;
@@ -376,7 +376,7 @@ function yLight() {
   { const ts = (F.h - 6) / 12.6, sun = ts > 0 && ts < 1 && F.wx !== 'rain' ? (F.wx === 'cloud' ? .5 : 1) : 0, el2 = Math.sin(Math.PI * clampN(ts, 0, 1)),
       L = 1 + sun * Math.min(2.6, (1 / Math.max(el2, .22) - 1) * .95), dir = ts < .5 ? 1 : -1, op = sun ? clampN(el2 * 5, .35, 1) : 1;
     const tn = (L - 1) * .62, ska = -dir * Math.atan(tn) * 180 / Math.PI;   // v17.85 경완 '노을 그림자는 소품 모양으로': 기구·가로등·코치 그림을 본뜬 그림자를 땅에 눕혀 해 반대쪽으로 늘림
-    e.style.setProperty('--ska', ska.toFixed(1) + 'deg'); e.style.setProperty('--sks', (-(.4 + .15 * (L - 1) / 2.6)).toFixed(2)); e.style.setProperty('--cso', sun ? (.42 * op * (1 - .2 * (L - 1) / 2.6)).toFixed(3) : 0);
+    e.style.setProperty('--ska', ska.toFixed(1) + 'deg'); e.style.setProperty('--sks', (-(.4 + .15 * (L - 1) / 2.6)).toFixed(2)); e.style.setProperty('--cso', sun ? (.24 * op * (1 - .15 * (L - 1) / 2.6)).toFixed(3) : 0);   /* v18.02 경완: 예전 그림자 진하기 */
     e.style.setProperty('--shl', L.toFixed(2)); e.style.setProperty('--shd', (dir * (L - 1)).toFixed(2)); e.style.setProperty('--sho', (1 - .3 * (L - 1) / 2.6) * op); }
   const wx = e.querySelector('.ty-wx'); wx.className = 'ty-wx' + (F.snow ? ' snow' : F.wx === 'rain' ? ' rain' + (F.storm ? ' storm' : '') : '');
 }
