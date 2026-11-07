@@ -40,7 +40,7 @@ const CSS = `
 #gym .ev-fld .tw-sp.gone{opacity:0;transition:opacity .35s}
 #gym .ev-fld .ev-ov{position:absolute;inset:0;z-index:5000;pointer-events:none;background-size:100% 100%;image-rendering:pixelated}
 #gym .ev-fld :is(.ev-door,.ev-pic){position:absolute;pointer-events:none;background-repeat:no-repeat;background-size:100% 100%;image-rendering:pixelated}#gym .ev-fld .ev-door{z-index:5001}
-#gym .ev-fld .tw-bub{z-index:6000}#gym .ev-fld .tw-bub.heal{color:#d83060;border-color:#d83060}#gym .ev-fld .tw-bub.heal::after{border-top-color:#d83060}
+#gym .ev-fld .tw-bub{z-index:6000}
 #gym .ev-fade{position:absolute;inset:0;z-index:950;background:#000;opacity:0;pointer-events:none;transition:opacity .38s}#gym .ev-fade.on{opacity:1}
 #gym .ev-loc{position:absolute;left:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:960;background:rgba(16,16,24,.72);color:#fff;font-size:13px;font-weight:700;padding:5px 12px;border-radius:6px;border:2px solid rgba(255,255,255,.22);pointer-events:none;transition:opacity .3s}
 #gym .ev-loc{display:none!important}   /* 경완 2026-11-07 '좌상단 마을 이름 없애줘' */
