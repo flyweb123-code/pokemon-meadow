@@ -21,3 +21,8 @@ machine_red_1을 스크립트로 수정. PixelLab 생성 0번.
 - 위 빨강, 아래 하양, 가운데 검은 띠(y 204~208)가 손잡이 중심을 지남
 - 돔 테두리 4px에서 2px로. 돔 안쪽 172x153
 - knob_ball, shine_ball 함께 사용. 좌표는 layout.json의 ball
+
+손잡이: machine_ball_1, knob_ball의 크림색을 흰색으로 교체 (면 #ffffff, 테두리 음영 #e2e7f0).
+
+## layout_mock/
+알 뽑기 화면 시안. 게임의 실제 CSS로 그린 390px 폭 화면이고 알 그림은 임시. cur=현재, A/B/C=시안, _f=알 있음, _e=빈 상태.
