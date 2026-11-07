@@ -799,6 +799,7 @@ function blocked(c, sf) {
   const gi = c.boss, r0 = g.rep || 0; g.gmax = Math.max(g.gmax | 0, gi); g.rep = Math.max(r0, GRADES[gi][0]); if (g.wk) g.wk.r += g.rep - r0;
   g.bdl[ty] = Math.max(bdLv(g, ty), gi + 1); g.bdg[ty] = g.bdg[ty] || Date.now(); g.newBdg = ty; g.newG = gi;
   glog('bdg', `승급 심사 통과! <b>${GRADES[gi][1]}</b> 배지를 받았다!`);
+  if (!(g.grw = g.grw || {})[gi]) { g.grw[gi] = 1; const n = GR_GOLD[gi] || 0, E = GR_EGG[gi]; if (n) addG(n); if (E) GA.tyEggs?.(ty, E[0], E[1], g.nm || '체육관'); }   // v18.17 경완: 등급 처음 오를 때 골드 + 체육관 타입 알 (등급마다 한 번)
   if (gi === GRADES.length - 1 && !(g.legE || {})[ty]) { const e = GA.legEgg?.(ty, g.nm); if (e) { (g.legE = g.legE || {})[ty] = e.id; g.legN = ty; } }   // 전설의 체육관 = 타입 전설 알 한 번 (경완 2026-10-29)
 }
 const sfName = s => `${s.cls} ${esc(s.nm)}`;
@@ -893,10 +894,16 @@ function mkCand(now) {
   const wage = sfWage(lv - avg, n, trait);
   return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), f: C.f, trait, wage, wv: 2, team: mkTeam(ty ? [ty] : C.t, lv, n) };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
 }
-const SF_MAX = [0, 1, 2, 3, 4, 5, 6];   // v13.01 경완: 전설 6명
+const SF_MAX = [0, 1, 2, 3, 4, 5, 6];
+/* v18.17 경완 '체육관 등급 올라갈 때마다 보상, 기본 골드': 동네 1,000 · 떠오르는 1,500 · 이름난 2,500 · 인기 4,000 · 명문 6,000 · 전설 10,000G (도전자 막기로 하루 2~3천G 버는 것 기준, 등급 사이 걸리는 날 수에 맞춰 늘림)
+   알 [등급, 개수]: 떠오르는 일반 5 · 이름난 우수 4 · 인기 레어 3 · 명문 에픽 2 (전설은 원래 타입 전설 알) */
+const GR_GOLD = [0, 1000, 1500, 2500, 4000, 6000, 10000], GR_EGG = [0, 0, [1, 5], [2, 4], [3, 3], [4, 2], 0];
+const grEggN = i => { const E = GR_EGG[i], t = st().ty; return E ? `${TYPE_KO[t] || ''} ${GA.EGG_GN?.(E[0]) || ''} 알` : ''; };   // v13.01 경완: 전설 6명
 // 등급 혜택 (승급 심사 화면·승급 축하창): 바로 앞 등급과 달라지는 것만, 앞→뒤 숫자로 (경완 2026-10-31 '등급 혜택이나 잘 보이게')
 const perks = i => { const g = st(), L = [], tc = k => Math.min(6, k), ar = (a, b, u) => `<s>${a}${u}</s><i class="pk-ar" aria-hidden="true"></i><b>${b}${u}</b>`;
-  if (i === GRADES.length - 1) L.push(['egg', `<span class="pk-le">${GA.eggIco?.(g.ty) || ''}</span>`, `${GA.LT_ADJ?.[g.ty] || ''} 전설 알`, '<b>지급</b>']);   // v13.01 경완: 전설도 크기·트레이너·훈련장을 알 밑에
+  if (GR_GOLD[i]) L.push(['gold', '<i class="coin"></i>', '골드', `<b>${GR_GOLD[i].toLocaleString()}G</b>`]);
+  if (GR_EGG[i]) L.push(['eg', `<span class="pk-le">${GA.eggIcoG?.(GR_EGG[i][0], g.ty) || ''}</span>`, grEggN(i), `<b>${GR_EGG[i][1]}개</b>`]);
+  if (i === GRADES.length - 1) L.push(['eg', `<span class="pk-le">${GA.eggIco?.(g.ty) || ''}</span>`, `${GA.LT_ADJ?.[g.ty] || ''} 전설 알`, '<b>지급</b>']);   // v13.01 경완: 전설도 크기·트레이너·훈련장을 알 밑에
   L.push(['big', '', '체육관 크기', ar(i, i + 1, '단계')]);
   if (SF_MAX[i] !== SF_MAX[i - 1]) L.push(['sf', '', '트레이너 고용', ar(SF_MAX[i - 1], SF_MAX[i], '명')]);
   if (tc(i) !== tc(i - 1)) L.push(['tr', '', '훈련장', ar(tc(i - 1), tc(i), '칸')]);
@@ -1588,7 +1595,9 @@ function perkPop() {
   const g = st(), gi = gradeOf(g.rep || 0).i;
   const row = ([v, n], i) => { const k = STAGE[i];
     const L = [`체육관 크기 ${i + 1}단계`, SF_MAX[i] ? `트레이너 ${SF_MAX[i]}명 고용` : '트레이너 고용 잠김', i ? `훈련장 ${Math.min(6, i)}칸` : '훈련장 잠김'];
-    if (i === GRADES.length - 1) L.unshift(`<span class="pk-le">${GA.eggIco?.(g.ty) || ''}</span>${GA.LT_ADJ?.[g.ty] || ''} 전설 알 지급`);   // 전설 = 알 지급 + 크기·트레이너·훈련장 (v13.01 경완)   // 훈련장은 등급마다 한 칸 (경완 2026-10-29)   // 도전자 수·꾸미기·의상은 등급 차등 없음 (경완 2026-10-28)
+    if (i === GRADES.length - 1) L.unshift(`<span class="pk-le">${GA.eggIco?.(g.ty) || ''}</span>${GA.LT_ADJ?.[g.ty] || ''} 전설 알 지급`);
+    if (GR_EGG[i]) L.unshift(`<span class="pk-le">${GA.eggIcoG?.(GR_EGG[i][0], g.ty) || ''}</span>${grEggN(i)} ${GR_EGG[i][1]}개`);
+    if (GR_GOLD[i]) L.unshift(`<i class="coin"></i>${GR_GOLD[i].toLocaleString()}G`);   // v18.17 경완: 등급 보상 골드·알   // 전설 = 알 지급 + 크기·트레이너·훈련장 (v13.01 경완)   // 훈련장은 등급마다 한 칸 (경완 2026-10-29)   // 도전자 수·꾸미기·의상은 등급 차등 없음 (경완 2026-10-28)
     return `<li class="${i === gi ? 'cur' : i < gi ? 'done' : ''}">${i > gi ? `<span class="bdw sil"><img alt="" src="${bdImg(g.ty, i + 1)}"></span>` : gEmb(i)}<div><b${i <= gi ? ` class="gr-tag" data-g="${i}"` : ''}>${n}</b>${i === gi ? '<em>지금</em>' : ''}</div><ul>${L.map(t => `<li>${t}</li>`).join('')}</ul><i class="pk-rep">평판 ${v}</i></li>`; };   // 필요 평판 = 우하단 딱지, '지금'은 등급 이름 옆 (경완 2026-10-30)
   pop(`<h4>${TYPE_KO[g.ty]} 체육관 등급</h4><ol class="gy-perk">${GRADES.map(row).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }

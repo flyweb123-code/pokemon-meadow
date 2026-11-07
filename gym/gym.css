@@ -3114,3 +3114,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .ty-pr::after,#gym .ty-pr.pr-punch-bag::before{transition:opacity 2s}#gym .sunSh .ty-pr::after,#gym .sunSh .ty-pr.pr-punch-bag::before{opacity:0}
 /* v18.07 경완 '상점 기술머신·기술레코드·꾸미기 탭 상단 박스 밑 슬롯 사이 여백': 위에 고정된 박스와 첫 줄 사이 띄움 */
 #gym .sp-body>:is(.sp-list,.dc-grid,.ft-grid):first-child{margin-top:10px}
+
+/* v18.17 경완: 등급 보상 골드 줄 — 동전 그대로 */
+.pk-ben .gold .pk-ic{background:none;box-shadow:none}.pk-ben .gold .pk-ic::before{display:none}#gym .gy-pop .pk-ben .gold .pk-ic .coin{width:18px;height:18px;margin:0}
+.gy-perk ul li .coin{vertical-align:-2px}
+.pk-ben .eg .pk-ic{background:none;box-shadow:none}.pk-ben .eg .pk-ic::before{display:none}.pk-ben .eg .pk-le .egg{width:22px;height:27px}   /* li 이름이 .egg 면 알 그림 CSS 가 줄 전체에 걸려 줄이 깨졌음 */
