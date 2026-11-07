@@ -212,6 +212,10 @@ let SE = null, seOut = null;
 const seList = () => SE || (SE = fetch(`gym/se.json?v=${VER}`).then(r => r.json()).catch(e => { SE = null; throw e; }));
 const seBuf = new Map();   // 이름 → Promise<AudioBuffer>
 async function seMake(ctx, nm) {
+  // 본가 GBA 효과음 (경완 2026-11-07 '효과음들도 본가 게임 효과음'): 'se_door' 처럼 pokeemerald 의 se_*·mus_rg_* 이름이면 GBA 연주기로 한 번 만든다. 끝 무음은 잘라 낸다
+  if (/^(se|mus)_/.test(nm)) { const r = await makeGba({ gba: nm }); let n = r.L.length; while (n > 1 && Math.abs(r.L[n - 1]) < 1e-4 && Math.abs(r.R[n - 1]) < 1e-4) n--; n = Math.min(r.L.length, n + Math.round(r.rate * .03));
+    const g = nm.startsWith('se_') ? .3 : .4, L = r.L.slice(0, n), R = r.R.slice(0, n); for (let i = 0; i < n; i++) { L[i] *= g; R[i] *= g; }   // GBA 연주기는 꽉 차게 나와서 플래티넘 효과음 크기에 맞춤
+    return toBuf(ctx, { L, R, rate: r.rate }); }
   const J = await seList(), e = J.se[nm]; if (!e) return null;
   const B = BANK[e[2]], [blk, bank, ...wars] = await Promise.all([part(e[4] || 'seBlock'), part(B.b), ...B.w.map(part)]);   // e[4]: 팡파레처럼 효과음 묶음 밖의 악보
   const bk = sent.has(B.b) ? null : bank.slice(0), ws = B.w.map((w, i) => sent.has(w) ? null : wars[i].slice(0));

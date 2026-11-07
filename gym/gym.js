@@ -2047,13 +2047,17 @@ const KANG_OW = `${IMG}ow/kang.png?v=8`;   // v13.73 경완 PixelLab 그림 (서
 async function townScene() {
   const T = TOWN, W = root.clientWidth || innerWidth, H = root.clientHeight || innerHeight, k = Math.max(1.5, W / (13 * 16));
   const el = document.createElement('div'); el.className = 'gy-town';
-  el.innerHTML = `<div class="tw-map" style="width:${T.w * 16 * k}px;height:${T.h * 16 * k}px;background-image:url(${IMG}map/${T.img}.png)"></div><i class="tw-veil"></i>`;
+  el.innerHTML = `<div class="tw-map" style="width:${T.w * 16 * k}px;height:${T.h * 16 * k}px;background-image:url(${IMG}map/${T.img}.png)"><i class="tw-ov" style="background-image:url(${IMG}map/${T.img}_o.png)"></i></div><i class="tw-veil"></i>`;
   root.appendChild(el); const map = el.firstChild;
+  // 본가(FR) 규칙 (경완 2026-11-07 '이 동작 규칙은 체육관 튜토리얼에도'): 지붕·벽 윗부분은 사람 위에 덮고(tw-ov), 체육관 문은 field_door.c 3장 열림/닫힘
+  const dEl = document.createElement('i'); dEl.className = 'tw-door'; dEl.hidden = true; Object.assign(dEl.style, { left: T.door[0] * 16 * k + 'px', top: T.door[1] * 16 * k + 'px', width: 16 * k + 'px', height: 16 * k + 'px', backgroundImage: `url(${IMG}map/door_gym_old.png)`, backgroundSize: `${16 * k}px ${48 * k}px` }); map.appendChild(dEl);
+  const door = async open => { if (open) gse('se_sliding_door');   // 본가 GBA 미닫이 문 소리 (경완 2026-11-07 '본가 효과음'), 닫힐 땐 소리 없음
+     for (const f of open ? [0, 1, 2] : [1, 0, -1]) { if (f < 0) dEl.hidden = true; else { dEl.hidden = false; dEl.style.backgroundPosition = `0 ${-f * 16 * k}px`; } await wait(67); } };
   const cam = (cx, cy) => { const x = clampN(cx * 16 * k - W / 2, 0, T.w * 16 * k - W), y = clampN(cy * 16 * k - H / 2, 0, T.h * 16 * k - H); map.style.transform = `translate(${-Math.round(x)}px,${-Math.round(y)}px)`; };
   // 마을 위 사람 그림 (내 캐릭터·강박사): x,y 칸, f 방향, st 걸음 칸
   const sp = (src, fw) => { const s = { x: 0, y: 0, f: 'd', st: 0, el: document.createElement('i') }; s.el.className = 'tw-sp'; s.el.hidden = true; map.appendChild(s.el);
-    s.put = () => { const fr = FR[s.f][s.st]; Object.assign(s.el.style, { width: fw * k + 'px', height: 32 * k + 'px', left: (s.x * 16 - (fw - 16) / 2) * k + 'px', top: (s.y * 16 - 16) * k + 'px', zIndex: Math.round(s.y * 10) + 2, backgroundImage: `url(${src})`, backgroundSize: `auto ${32 * k}px`, backgroundPosition: `${-fr * fw * k}px 0` }); s.el.classList.toggle('flip', s.f === 'r'); };
-    s.go = async (pts, ms = 240) => { let n = 0; for (const [tx, ty] of pts) while (s.x !== tx || s.y !== ty) {
+    s.put = () => { const fr = FR[s.f][s.st]; Object.assign(s.el.style, { width: fw * k + 'px', height: 32 * k + 'px', left: (s.x * 16 - (fw - 16) / 2) * k + 'px', top: (s.y * 16 - 16) * k + 'px', zIndex: s.top ? 5500 : Math.round(s.y * 10) + 2, backgroundImage: `url(${src})`, backgroundSize: `auto ${32 * k}px`, backgroundPosition: `${-fr * fw * k}px 0` }); s.el.classList.toggle('flip', s.f === 'r'); };
+    s.go = async (pts, ms = 267) => { let n = 0; for (const [tx, ty] of pts) while (s.x !== tx || s.y !== ty) {
       const dx = Math.sign(tx - s.x), dy = dx ? 0 : Math.sign(ty - s.y), x0 = s.x, y0 = s.y, t0 = performance.now(); s.f = dx > 0 ? 'r' : dx < 0 ? 'l' : dy > 0 ? 'd' : 'u'; n++;
       await new Promise(ok => { const st = now => { const q = Math.min(1, (now - t0) / ms); s.x = x0 + dx * q; s.y = y0 + dy * q; s.st = q < .5 ? (n % 2 ? 1 : 2) : 0; s.put(); q < 1 ? requestAnimationFrame(st) : ok(); }; requestAnimationFrame(st); });
       s.x = x0 + dx; s.y = y0 + dy; } s.st = 0; s.put(); };
@@ -2082,7 +2086,7 @@ async function townScene() {
   // v13.80 경완: 강박사랑 부딪히기 전에 화면을 확대해 크게 (내 머리 위쪽을 가운데로)
   { const r = el.getBoundingClientRect(), m = me.el.getBoundingClientRect(); el.style.transformOrigin = `${m.left + m.width / 2 - r.left}px ${m.top - r.top}px`;
     await el.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.6)' }], { duration: 700, easing: 'ease-in-out', fill: 'forwards' }).finished; await wait(250); }
-  return { el, me, sp, bub, papers, shake };
+  return { el, me, sp, bub, papers, shake, door };
 }
 // 마을·체육관 위에서 이어 말하는 대사창 (화면 아래, 강박사 큰 그림 없이). 대사마다 창을 새로 띄우지 않아 깜빡임 없이 이어진다
 function storyTalk() {
@@ -2122,11 +2126,11 @@ const KANG_TY = ['', '약점은 격투 하나뿐!\n평범해 보여도 제일 �
 async function intro() {
   const D0 = DESIGNS[0]; clearEnts(); layout(D0); dlg('', ''); root.classList.add('pre'); preMs(0);
   const tw = await townScene(); if (!open) return tw.el.remove();
-  const { me, sp, bub, papers, shake } = tw, T = TOWN, nm = trName(), you = nm ? `${nm} 군` : '자네', youN = nm || '자네';
+  const { me, sp, bub, papers, shake, door } = tw, T = TOWN, nm = trName(), you = nm ? `${nm} 군` : '자네', youN = nm || '자네';
   // 1. 우연한 만남: 체육관 문이 벌컥 열리고 강박사가 뛰어나오다 쿵!
   const kg = sp(KANG_OW, 32); [kg.x, kg.y] = T.door; kg.f = 'd'; kg.put();
-  doorSe(); await wait(160); kg.el.hidden = false; kg.put();
-  await kg.go([[T.door[0], T.door[1] + 1]], 120);
+  await door(true); kg.top = true; kg.el.hidden = false; kg.put();   // 문이 열리고 그 안에서 뛰어나온다 (본가처럼 문 위로 보임)
+  await kg.go([[T.door[0], T.door[1] + 1]], 120); kg.top = false; kg.put(); door(false);
   try { window.GymBGM?.se('DP_KON', { gain: 1.4 }); } catch (e) {} GA.haptic?.(1);
   shake(); papers(kg.x, kg.y + .5);
   await Promise.all([kg.slide(kg.x, kg.y - .45, 160), me.slide(me.x, me.y + .45, 160)]);
@@ -2206,8 +2210,8 @@ async function intro() {
   // 11. 같이 체육관으로 들어간다 → 마을을 걷어내면 캄캄한 체육관
   S1.hide(true);
   // v13.99 경완 '건물 들어갈 때 모션 본가 기준': 문 앞에서 위를 보고 → 문 소리와 함께 한 칸 들어가 사라짐 → 화면이 까맣게 → 안에서 밝아지며 매트 위에 선 채로 시작
-  await kg.go([[T.door[0], T.door[1]]], 260); doorSe(); kg.el.hidden = true;
-  await me.go([[T.door[0], T.door[1] + 1]], 260); await wait(120); doorSe(); await me.go([[T.door[0], T.door[1]]], 220); me.el.hidden = true;
+  await door(true); kg.top = true; await kg.go([[T.door[0], T.door[1]]], 267); kg.el.hidden = true;
+  await me.go([[T.door[0], T.door[1] + 1]], 267); await wait(120); me.top = true; await me.go([[T.door[0], T.door[1]]], 267); me.el.hidden = true; await door(false);
   const bk = document.createElement('div'); bk.className = 'gy-warp'; root.appendChild(bk);
   await bk.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {}); await wait(180);
   S.gym = { v: 1, d: dr.d, ty: dr.ty, nm: dr.nm, rep: 0, t0: Date.now(), tut: 1 }; save();   // v13.96 경완 '튜토리얼 끝나기 전에 앱 종료하면 처음부터': tut 이 남아 있으면 불러올 때 체육관을 지움
