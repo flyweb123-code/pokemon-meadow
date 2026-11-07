@@ -946,7 +946,7 @@ async function handle(a) {
     case '-hitcount': await msg(`${a[3]}번 맞았다!`); break;
     case '-ohko': await msg('일격필살!'); break;
     case '-prepare': { const id = toID(a[3]), n = who(a[2]), e = jong(nmIn(a[2])) ? '은' : '는';
-      if (HIDE_MV.test(id)) { await moveFx(sideOf(a[2]), id); monEl(sideOf(a[2])).classList.add('hid'); }
+      { const c = chgOf(id); if (c) await moveFx(sideOf(a[2]), id, false, c); } if (HIDE_MV.test(id)) monEl(sideOf(a[2])).classList.add('hid');   /* v18.17 경완 '솔라빔 연출이 없어': 모으는 턴은 _c 연출, 공격 턴은 본 연출 */
       const T = { fly: '하늘 높이 날아올랐다!', dig: '땅으로 파고들었다!', dive: '물속으로 숨었다!', bounce: '높이 뛰어올랐다!', phantomforce: '모습을 감췄다!', shadowforce: '모습을 감췄다!', solarbeam: '빛을 흡수했다!', solarblade: '빛을 흡수했다!', skullbash: '목을 움츠렸다!', skyattack: '격렬한 빛에 휩싸였다!', razorwind: '바람을 일으켰다!' };
       await msg(`${n}${e} ${T[id] || '힘을 모으고 있다!'}`); break; }
     case '-transform': { const s = sideOf(a[2]), X = A(s), T = A(other(s)); if (!X || !T) break;   // 변신: 상대 모습 그대로 (메타몽 등)
@@ -1089,10 +1089,13 @@ const MV_SUB = { thrash: 'slam' };
 const MV_LIKE = { falsesurrender: 'feintattack', honeclaws: 'sharpen', poweruppunch: 'megapunch', jetpunch: 'machpunch', ragefist: 'shadowpunch', plasmafists: 'thunderpunch', brutalswing: 'thrash' };   /* v14.91 경완 '세차게휘두르기가 물기 모션': 몸을 휘두르는 난동부리기 연출로 */   /* v14.08 경완 '손톱갈기 모션 어색': 악 타입 변화 대표(나쁜음모 검은 기운) 대신 같은 '갈아서 날 세우기' 기술인 각지기 연출 */
 // v13.17 경완 '울음소리 기술은 포켓몬 울음소리': 본가 플래티넘 연출(PlayPokemonCry)처럼 쓰는 포켓몬의 울음소리
 const CRY_MV = new Set(['growl', 'roar', 'howl', 'hypervoice', 'chatter', 'nobleroar', 'snarl', 'partingshot', 'echoedvoice', 'round', 'boomburst', 'disarmingvoice', 'relicsong', 'sparklingaria', 'overdrive', 'clangingscales', 'torchsong', 'alluringvoice', 'psychicnoise']);   // v14.81 경완 '에코보이스 효과음 없음': 하이퍼보이스 연출을 빌리는 5세대 이후 소리 기술도 울음소리
-async function moveFx(s, id, miss) {
-  const m = mvOf(id); if (!m || miss) return; const ty = m[2], cat = m[3], col = TY_FX[ty] || '#fff';
+// 2턴 기술 모으는 턴 연출 (mvfx.json 의 기술id_c). 플래티넘에 없는 기술은 비슷한 기술 것으로
+const CHG_LIKE = { solarblade: 'solarbeam', phantomforce: 'shadowforce', skydrop: 'fly', meteorbeam: 'skullbash', electroshot: 'skullbash', geomancy: 'solarbeam', freezeshock: 'skyattack', iceburn: 'skyattack' };
+const chgOf = id => MFX[id + '_c'] ? id + '_c' : CHG_LIKE[id] && MFX[CHG_LIKE[id] + '_c'] ? CHG_LIKE[id] + '_c' : null;
+async function moveFx(s, id, miss, fx) {
+  const m = mvOf(id); if (!m || miss) return; const ty = m[2], cat = fx ? 2 : m[3], col = TY_FX[ty] || '#fff';
   if (CRY_MV.has(id)) { const X = B.act[s]; try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} }
-  let A = MFX[MV_SUB[id] || id]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1];
+  let A = MFX[fx || MV_SUB[id] || id]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1];
   // 5세대 이후 주먹 기술은 비슷한 4세대 주먹 연출로 (경완 2026-10-29 '그로우펀치가 당수 모션')
   if (!A && MV_LIKE[id]) { A = MFX[MV_LIKE[id]]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1]; }
   // 5세대 이후 기술: 같은 타입·분류의 4세대 기술 연출을 빌린다
