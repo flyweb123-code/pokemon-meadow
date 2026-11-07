@@ -43,6 +43,9 @@ const LOOKT = { bookshelf: '책장에 어려운 책이\n빼곡히 꽂혀 있다.
   pcsign: '포켓몬 센터\n"포켓몬의 체력을 회복합니다"', martsign: '프렌들리숍\n"포켓몬 용품은 여기서!"', sign: '표지판이다.' };
 // 이 칸에 쓰인 글: 방별 덧쓰기(sp) → 칸 종류 문구
 const lookText = (lk, sp, x, y) => { const k = x + ',' + y; return sp?.[k] || LOOKT[lk?.[k]] || null; };
+// 한 판 이기고 나서 다른 조무래기 시야에 내가 있으면 바로 이어서 걸어와 배틀 (경완 2026-11-07 '양쪽에 있으면 한 쪽 끝나고 한 쪽이 바로 말 걸어서')
+async function chain(F, GS, s, one) { let ok = await one(s); while (ok) { const n = GS.map(x => x[0]).find(g => !g.done && F.sees(g)); if (!n) break; await A_wait(400); ok = await one(n); } return ok; }
+const A_wait = ms => new Promise(r => setTimeout(r, ms));
 // 진 조무래기에게 다시 말 걸면: 그 조무래기 대사를 차례로 (경완 2026-11-07 '진 로켓단 다시 말 걸면 뭔가 대사가 있게')
 async function againSay(S, s, o) { const L = o?.again || ['...'], i = (s.ag | 0) % L.length; s.ag = (s.ag | 0) + 1; await S.say(L[i], { who: o?.who || G }); S.hide(true); }
 const ow = (A, F, k, x, y, f, o) => { const s = F.npc(k, x, y, f, o); s.ow = k; return s; };
@@ -277,7 +280,8 @@ GymEv.def({
         await S.say('(여기가 로켓단 아지트...!)', { who: me0 });
         await S.say('(트레이너들은 더 깊은 곳에\n갇혀 있을 거야.\n아래로 내려가는 길을 찾자!)', { who: me0 }); S.hide(true);
       }
-      const meet = async s => { const o = GS.find(x => x[0] === s)?.[1]; if (!o) return true; const ok = await fight(A, F, S, s, o); if (ok && s === g3) { await g3.go([[25, 26], [26, 26]], 200); g3.turn('l'); } return ok; };
+      const meet1 = async s => { const o = GS.find(x => x[0] === s)?.[1]; if (!o) return true; const ok = await fight(A, F, S, s, o); if (ok && s === g3) { await g3.go([[25, 26], [26, 26]], 200); g3.turn('l'); } return ok; };
+      const meet = s => chain(F, GS, s, meet1);
       for (;;) {
         const r = await F.play({
           step: async () => { const s = GS.map(x => x[0]).find(s => F.sees(s)); if (s) return (await meet(s)) ? undefined : undefined; },
@@ -317,7 +321,7 @@ GymEv.def({
         await A.title('4장 · 구출 작전', '모두를 데리고 돌아가자!', 'CHAPTER 4');
         await S.say('(이 층 어딘가에\n람다와 트레이너들이 있을 거야...!)', { who: me0 }); S.hide(true);
       }
-      const meet = async s => { const o = GS.find(x => x[0] === s)?.[1]; return o ? fight(A, F, S, s, o) : true; };
+      const meet = s => chain(F, GS, s, async s2 => { const o = GS.find(x => x[0] === s2)?.[1]; return o ? fight(A, F, S, s2, o) : true; });
       for (;;) {
         const r = await F.play({
           step: async ([x, y]) => { const s = GS.map(x => x[0]).find(s => F.sees(s)); if (s) return (await meet(s)) ? undefined : undefined;
