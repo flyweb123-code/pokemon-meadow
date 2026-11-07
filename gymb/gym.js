@@ -2281,6 +2281,7 @@ const guyPath = D => { const [dx, dy] = D.door, [gx, gy] = D.guy; return [[dx, d
 function enter() {
   open = true; tab = null; root.hidden = false; root.classList.remove('gview'); root.classList.toggle('sim', !!window.gymSimOn); GA.gymIn(); openTab(null); if (!window.gymEvTest) bgmPlay(st()?.d ? 'gym' : 'lab');   // 처음 연출·튜토리얼은 연구소 곡 (경완 2026-10-29)   // 체육관 곡: 처음이면 플래티넘 원본 소리를 받아 오는 동안 잠깐 조용하다
   requestAnimationFrame(() => root.classList.add('on'));
+  if (st()?.ev?.test && !window.gymEvTest) { delete st().ev; save(); }   // 운영자 시험 도중 꺼졌던 것: 본 계정엔 남기지 않음
   const evId = st()?.d && !window.gymEvTest ? (st().ev?.cur || evDue()) : null;
   if (st()?.d && (window.gymEvTest || evId)) { tick(); setAt(); save(); evGo(evId); } else if (st()?.d) { tick(); { setAt(); save(); } renderHome(); shutCover(); if (shutFx0) shutEnter().then(later); else later(); } else intro();   /* v16.43 자동 휴업: 셔터 내린 채로 시작 */   // 필드 체육관 아이콘 빨간 점(도전자)은 들어가기만 해선 안 꺼지고 도전자 받기를 눌러야 꺼짐 (경완 2026-10-30)
   setTimeout(() => gymLoad.hide(), 120);
@@ -2293,7 +2294,7 @@ function enter() {
 let tickT = 0;
 /* 체육관 이벤트 스토리 (2026-11-07 경완): 이벤트 엔진 gymb/ev.js + 이벤트 파일 gymb/ev/<id>.js. 지금은 운영자 '체육관 이벤트 시험'(시뮬레이터 안)에서만 시작 */
 const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), sc: () => sc, ents: () => ents, ent, walk, place, route, occOf, clearEnts, renderHome, sfList: () => sfList(), myOw, N3, storyTalk, trName, gse, esc, sfx, isOpen: () => open,
-  haptic: n => GA.haptic?.(n), fitMe: e => { if (st()?.fit) fitSrc('ow').then(u => { if (e.el.isConnected) e.el.style.backgroundImage = `url(${u})`; }); },
+  haptic: n => GA.haptic?.(n), fitMe: e => { if (st()?.fit) fitSrc('ow').then(u => { if (!u) return; e.src = u; if (e.el.isConnected) e.el.style.backgroundImage = `url(${u})`; }); },   // e.src: 필드 맵에서 방향 바꿀 때 기본 옷으로 돌아가던 것 (경완 2026-11-07)
   addProp: (src, x, y, w, h) => { const e = { prop: 1, x, y, w, h, el: document.createElement('i') }; e.el.className = 'gy-prop'; e.el.style.backgroundImage = `url(${src})`; $g('.gy-ents').appendChild(e.el); ents.push(e); place(e); return e; },
   dropPeople: () => { cancelAnimationFrame(palRaf); ents = ents.filter(e => { const keep = e.prop && !e.pal; if (!keep) e.el.remove(); return keep; }); },
   owSrc, owW, trSrc, fitSrc, GUY_OW, sfName, addG: n => window.gymEvTest ? n : addG(n), addRep: n => { if (!window.gymEvTest) addRep(n); }, renderTop, confetti, glog,
@@ -2325,11 +2326,12 @@ function evDone(id) { const g = st(), now = Date.now(); if (window.gymEvTest) re
   g.vis = now; glog('in', `로켓단을 물리치고 <b>${esc(g.nm)}</b>${jong(g.nm) ? '을' : '를'} 되찾았다!`, now); tick(now); setAt(now); save(); }
 async function evGo(id0) {
   const test = !!window.gymEvTest, id = test ? window.gymEvTest : id0; busy = true; root.classList.add('pre'); let r = null;
+  const snap = test ? JSON.stringify(S.gym) : null; if (test && S.gym) S.gym.ev = { cur: id, ch: 0, t0: Date.now(), test: 1 };   // test: 시험 도중 앱이 꺼져도 다음에 진짜 점거로 이어지지 않게   // 운영자 시험은 본 계정에 아무것도 안 남긴다: 시작 전 체육관 저장을 통째로 떠 뒀다가 끝나면 되돌림 (경완 2026-11-07)
   try { await loadJs('gymb/ev.js', 'GymEv'); r = await window.GymEv?.run(EV_API, id, test ? (window.gymEvCh | 0) : null); if (!open) return;
     if (r === 'wip') await kang(['이 이벤트의 다음 장은 아직 만드는 중이에요.\n(운영자 시험이라 체육관은 그대로예요)'], { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1, skip: false });
   } catch (e) { console.error(e); }
-  finally { if (test) { window.gymEvTest = null; window.gymEvCh = 0; const g = st(); if (g) delete g.ev; }
-    root.querySelectorAll('.ev-tint,.ev-black,.ev-ttl,.ev-fld,.ev-ask,.ev-rw,.gy-kang.tw-talk').forEach(x => x.remove()); root.classList.remove('pre'); busy = false;
+  finally { if (test) { window.gymEvTest = null; window.gymEvCh = 0; try { S.gym = JSON.parse(snap); } catch (e) { const g = st(); if (g) delete g.ev; } save(); }
+    root.querySelectorAll('.ev-r,.ev-tint,.ev-black,.ev-ttl,.ev-fld,.ev-ask,.ev-rw,.gy-kang.tw-talk,.tw-bub').forEach(x => x.remove()); root.classList.remove('pre'); busy = false;
     if (open && r === 'quit') exit(); else if (open) { bgmPlay('gym'); renderHome(); later(); } }
 }
 /* v16.48 경완 '트레이너 메뉴 눌렀을 때 트레이너 스프라이트 바로 안 뜸': 메뉴를 열 때 처음 받던 그림을 체육관에 들어올 때·지원자가 올 때 미리 받아 둔다

@@ -39,7 +39,7 @@ const CSS = `
 #gym .ev-fld .tw-sp{z-index:2}
 #gym .ev-fld .tw-sp.gone{opacity:0;transition:opacity .35s}
 #gym .ev-loc{position:absolute;left:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:960;background:rgba(16,16,24,.72);color:#fff;font-size:13px;font-weight:700;padding:5px 12px;border-radius:6px;border:2px solid rgba(255,255,255,.22);pointer-events:none;transition:opacity .3s}
-#gym .ev-loc:empty{display:none}
+#gym .ev-loc{display:none!important}   /* 경완 2026-11-07 '좌상단 마을 이름 없애줘' */
 #gym .ev-pad{position:absolute;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(26px + env(safe-area-inset-bottom,0px));width:156px;height:156px;z-index:960;touch-action:none;-webkit-user-select:none;user-select:none;transition:opacity .25s}
 #gym .ev-pad::before{content:'';position:absolute;left:52px;top:52px;width:52px;height:52px;background:rgba(20,20,30,.5);border-radius:4px}
 #gym .ev-pad button{position:absolute;width:52px;height:52px;border:0;border-radius:10px;padding:0;background:rgba(24,24,36,.62);box-shadow:0 4px 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.24);touch-action:none;-webkit-tap-highlight-color:transparent;transition:transform .05s,box-shadow .05s}
@@ -82,7 +82,10 @@ function tools(I, def) {
     // 맵 위 사람 (본가 걸음 그림)
     npc: (ow, x, y, f = 'd') => I.ent({ ow, x, y, f, n3: I.N3.has(ow) }),
     // 칸 길찾기로 걸어가기 (길이 없으면 곧장)
-    walkTo: async (e, to, spd = 260) => { const p = I.route(D, [Math.round(e.x), Math.round(e.y)], to, I.occOf([e])); await I.walk(e, p?.length ? p : [[to[0], e.y], to], spd); },
+    // 길이 없으면 움직이지 않는다 (가구·사람을 밟고 지나가던 것, 경완 2026-11-07). 닿으면 true
+    walkTo: async (e, to, spd = 260, occ = []) => { const fx = Math.round(e.x), fy = Math.round(e.y); if (fx === to[0] && fy === to[1]) return true; const p = I.route(D, [fx, fy], to, [...I.occOf([e]), ...occ]); if (!p?.length) return false; await I.walk(e, p, spd); return true; },
+    // 후보 칸 중 걸어서 갈 수 있는 첫 칸 (빈 바닥·소품·사람·석상 피해서)
+    reach: (e, cands, occ = []) => { const O = [...I.occOf([e]), ...occ], K = q => q[0] + ',' + q[1], bad = new Set(O.map(K)); for (const c of cands) { if (D.free?.[c[1]]?.[c[0]] !== '1' || bad.has(K(c)) || (D.stat || []).some(q => q[0] === c[0] && q[1] === c[1])) continue; if (Math.round(e.x) === c[0] && Math.round(e.y) === c[1]) return c; const p = I.route(D, [Math.round(e.x), Math.round(e.y)], c, O); if (p?.length) return c; } return null; },
     turn: (e, f) => { e.f = f; e.st = 0; I.place(e); },
     slide: (e, tx, ty, ms) => { const x0 = e.x, y0 = e.y; return anim(ms, q => { e.x = x0 + (tx - x0) * q; e.y = y0 + (ty - y0) * q; I.place(e); }); },
     // 머리 위 말풍선 ('!', '...')
@@ -220,7 +223,7 @@ function field(I, o) {
         else if (F.hold) { const d = F.hold, [dx, dy] = DIR[d], tx = me.x + dx, ty = me.y + dy, w = F.warpAt(tx, ty);
           if (w && (!w.d || w.d === d) && h.warp) { me.turn(d); run(() => h.warp(w)); }
           else if (F.solid(tx, ty, me)) { if (me.f !== d) me.turn(d); else if (!F.bumpT || performance.now() - F.bumpT > 420) { F.bumpT = performance.now(); I.gse?.('DP_WALL_HIT', .5); } }
-          else { busy = true; me.go([[tx, ty]], 200).then(async () => { busy = false; if (end) return; if (h.step) { const r0 = h.step([me.x, me.y]); if (r0 && r0.then) { busy = true; F.lock(true); const r = await r0.catch(e => console.error(e)); busy = false; if (end) return; if (r !== undefined) return fin(r); F.lock(false); } else if (r0 !== undefined) fin(r0); } }); }
+          else { busy = true; me.go([[tx, ty]], 200).then(async () => { if (end) return; if (h.step) { const r = await Promise.resolve(h.step([me.x, me.y])).catch(e => console.error(e)); if (end) return; if (r !== undefined) { busy = false; return fin(r); } if (el.classList.contains('lock')) F.lock(false); } busy = false; }); }   // 걷는 동안엔 잠그지 않아 꾹 누르면 계속 걷는다 (경완 2026-11-07)
         }
       }
       requestAnimationFrame(tick); };
