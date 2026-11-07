@@ -1169,7 +1169,7 @@ async function repAnim(p, rep, sb = 0, gx = null, gp = null, gT = 0, onMrg = nul
   el.dataset.gi = g0; await wait(300); if (gp) { await gp; await wait(60); } if (!el.isConnected) return;   // 경완 2026-11-03: 평판은 골드가 다 오른 뒤에
   el.classList.add('go'); const rm = r1 - sb;
   el.classList.add('dshow');   // v14.97 경완: 기본 점수 +N 은 평판이 오르기 시작할 때 같이 떠서 오르는 만큼 센다
-  if (rm < r0 && !sb) { d.textContent = `-${r0 - rm}`; d.classList.add('dnS'); await run(r0, rm, false, null, 0, false, false); return; }   /* v18.09 경완 '평판 떨어지는 연출은 연패 기준이 없으니 합쳐지는 모션·괄호 없이 바로 떨어지는 것만 빨간 글자로': -N 은 처음부터 빨갛게 그대로, 평판 숫자만 바로 내려감 */
+  if (rm < r0 && !sb) { d.textContent = `-${r0 - rm}`; d.classList.add('dnS'); n.classList.add('dnF'); await run(r0, rm, false, null, 0, false, false); await wait(450); n.classList.remove('dnF'); return; }   /* v18.39 경완 '평판 깎일 때 평판 점수 잠깐 빨간색 됐다가 돌아오게' */   /* v18.09 경완 '평판 떨어지는 연출은 연패 기준이 없으니 합쳐지는 모션·괄호 없이 바로 떨어지는 것만 빨간 글자로': -N 은 처음부터 빨갛게 그대로, 평판 숫자만 바로 내려감 */
   if (rm !== r0) { const up = rm > r0; d.textContent = up ? '+1' : '-1'; await run(r0, rm, up, r => { d.textContent = (up ? '+' : '-') + Math.max(1, Math.abs(r - r0)); }, gT ? 550 : 0, !!gT, true); }   // v14.97 경완: 골드와 같은 시간·같은 곡선으로 같이 오른다 (평판 숫자는 +N 이 합쳐질 때 한 번에)
   if (!el.isConnected) return;
   const flash = () => { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); };
@@ -1205,8 +1205,9 @@ function rwPop() { const g = st(), i = g.grwN; if (i == null) return Promise.res
   if (!n && !E) return Promise.resolve();
   /* v18.28 경완 '보상 알림창도 디자인, 알 2개면 스프라이트 2개': 승급창처럼 빛 무대 위에 받은 알 개수만큼 하나씩 톡톡 떨어지고, 아래 보상 줄 (골드는 0 부터 올라감) */
   const ne = E ? E[1] : 0, stage = ne ? Array.from({ length: ne }, (_, k) => `<i class="rw-egg" style="--d:${(.25 + k * .18).toFixed(2)}s">${grEggI(i)}</i>`).join('') : '<i class="rw-coin"><i class="coin"></i></i>';
+  /* v18.39 경완 '동네 체육관 골드만 줄 땐 빵빠레 박스 없어도 될 듯': 알 없으면 무대 박스 없이 골드 줄만 */
   return new Promise(ok => { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
-    const p = pop(`<div class="pp-hd rw-hd"><i class="bsa-ray"></i><i class="pp-halo"></i><div class="rw-stage${ne > 3 ? ' many' : ''}">${stage}</div></div>
+    const p = pop(`${ne ? `<div class="pp-hd rw-hd"><i class="bsa-ray"></i><i class="pp-halo"></i><div class="rw-stage${ne > 3 ? ' many' : ''}">${stage}</div></div>` : ''}
       <h4 class="pp-t"><small>승급 보상</small>${GRADES[i][1]}</h4>
       <div class="pp-ben"><ul class="pk-ben">${n ? `<li class="gold"><i class="pk-ic"><i class="coin"></i></i><span>골드</span><em><b class="rw-gn">+0G</b></em></li>` : ''}${E ? `<li class="eg"><i class="pk-ic"><span class="pk-le">${grEggI(i)}</span></i><span>${grEggN(i)}</span><em><b>${ne}개</b></em></li>` : ''}</ul>${E ? '<p class="rw-note">알은 필드의 알 가방에 들어 있어요</p>' : ''}</div>
       <div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('pp-pop', 'rw-pop');
