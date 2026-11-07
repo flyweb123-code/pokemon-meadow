@@ -799,7 +799,7 @@ function blocked(c, sf) {
   const gi = c.boss, r0 = g.rep || 0; g.gmax = Math.max(g.gmax | 0, gi); g.rep = Math.max(r0, GRADES[gi][0]); if (g.wk) g.wk.r += g.rep - r0;
   g.bdl[ty] = Math.max(bdLv(g, ty), gi + 1); g.bdg[ty] = g.bdg[ty] || Date.now(); g.newBdg = ty; g.newG = gi;
   glog('bdg', `승급 심사 통과! <b>${GRADES[gi][1]}</b> 배지를 받았다!`);
-  if (!(g.grw = g.grw || {})[gi]) { g.grw[gi] = 1; const n = GR_GOLD[gi] || 0, E = GR_EGG[gi]; if (n) addG(n); if (E) GA.tyEggs?.(ty, E[0], E[1], g.nm || '체육관'); }   // v18.17 경완: 등급 처음 오를 때 골드 + 체육관 타입 알 (등급마다 한 번)
+  if (!(g.grw = g.grw || {})[gi]) { g.grw[gi] = 1; g.grwN = gi; const n = GR_GOLD[gi] || 0, E = GR_EGG[gi]; if (n) addG(n); if (E) GA.tyEggs?.(ty, E[0], E[1], g.nm || '체육관'); }   // v18.17 경완: 등급 처음 오를 때 골드 + 체육관 타입 알 (등급마다 한 번)
   if (gi === GRADES.length - 1 && !(g.legE || {})[ty]) { const e = GA.legEgg?.(ty, g.nm); if (e) { (g.legE = g.legE || {})[ty] = e.id; g.legN = ty; } }   // 전설의 체육관 = 타입 전설 알 한 번 (경완 2026-10-29)
 }
 const sfName = s => `${s.cls} ${esc(s.nm)}`;
@@ -902,15 +902,15 @@ const grEggT = i => { const E = GR_EGG[i], t = st().ty, g = E && GA.tyEggG ? GA.
 const grEggN = i => { const R = grEggT(i); return R ? `${R[1] ? TYPE_KO[R[1]] + ' ' : ''}${GA.EGG_GN?.(R[0]) || ''} 알` : ''; };
 const grEggI = i => { const R = grEggT(i); return R ? GA.eggIcoG?.(R[0], R[1]) || '' : ''; };   // v13.01 경완: 전설 6명
 // 등급 혜택 (승급 심사 화면·승급 축하창): 바로 앞 등급과 달라지는 것만, 앞→뒤 숫자로 (경완 2026-10-31 '등급 혜택이나 잘 보이게')
-const perks = i => { const g = st(), L = [], tc = k => Math.min(6, k), ar = (a, b, u) => `<s>${a}${u}</s><i class="pk-ar" aria-hidden="true"></i><b>${b}${u}</b>`;
-  if (GR_GOLD[i]) L.push(['gold', '<i class="coin"></i>', '골드', `<b>${GR_GOLD[i].toLocaleString()}G</b>`]);
-  if (GR_EGG[i]) L.push(['eg', `<span class="pk-le">${grEggI(i)}</span>`, grEggN(i), `<b>${GR_EGG[i][1]}개</b>`]);
+const perks = (i, noRw) => { const g = st(), L = [], tc = k => Math.min(6, k), ar = (a, b, u) => `<s>${a}${u}</s><i class="pk-ar" aria-hidden="true"></i><b>${b}${u}</b>`;
+  if (GR_GOLD[i] && !noRw) L.push(['gold', '<i class="coin"></i>', '골드', `<b>${GR_GOLD[i].toLocaleString()}G</b>`]);
+  if (GR_EGG[i] && !noRw) L.push(['eg', `<span class="pk-le">${grEggI(i)}</span>`, grEggN(i), `<b>${GR_EGG[i][1]}개</b>`]);
   if (i === GRADES.length - 1) L.push(['eg', `<span class="pk-le">${GA.eggIco?.(g.ty) || ''}</span>`, `${GA.LT_ADJ?.[g.ty] || ''} 전설 알`, '<b>지급</b>']);   // v13.01 경완: 전설도 크기·트레이너·훈련장을 알 밑에
   L.push(['big', '', '체육관 크기', ar(i, i + 1, '단계')]);
   if (SF_MAX[i] !== SF_MAX[i - 1]) L.push(['sf', '', '트레이너 고용', ar(SF_MAX[i - 1], SF_MAX[i], '명')]);
   if (tc(i) !== tc(i - 1)) L.push(['tr', '', '훈련장', ar(tc(i - 1), tc(i), '칸')]);
   return L; };
-const perkHtml = i => `<ul class="pk-ben">${perks(i).map(([k, ic, n, v]) => `<li class="${k}"><i class="pk-ic">${ic}</i><span>${n}</span><em>${v}</em></li>`).join('')}</ul>`;   // 등급별 고용 한도: 떠오르는 2명 … 명문 5명 (경완 2026-10-29)
+const perkHtml = (i, noRw) => `<ul class="pk-ben">${perks(i, noRw).map(([k, ic, n, v]) => `<li class="${k}"><i class="pk-ic">${ic}</i><span>${n}</span><em>${v}</em></li>`).join('')}</ul>`;   // 등급별 고용 한도: 떠오르는 2명 … 명문 5명 (경완 2026-10-29)
 const staffMax = () => SF_MAX[gradeOf(st().rep || 0).i];   // 새내기 체육관은 고용 못 함 (경완 2026-10-27)
 // 기다릴 시간이 지난 도전자는 돌아간다 (예전 저장은 그날 자정). 평판은 깎지 않는다 (경완 2026-10-28)
 const qExp = c => c.named && !c.boss ? Infinity : c.exp || nextDay(dayStart(c.t));   /* v15.85 경완: 이름 있는 트레이너는 배틀할 때까지 안 돌아감 */
@@ -1198,6 +1198,11 @@ function unlockChk() { const g = st(); if (!g || g.unl || gradeOf(g.rep || 0).i 
       <div class="ul-c"><i class="ul-pic"><img alt="" src="${IMG}deco/tr_sandbag.png"></i><b>훈련장</b><span>포켓몬을 맡겨 두면<br>경험치가 쌓여요</span><em>OPEN</em></div>
       <div class="ul-c"><i class="ul-pic tr"><img alt="" src="${IMG}tr/cool_trainer_f.png"></i><b>트레이너</b><span>고용하면 도전자를<br>먼저 막아 줘요</span><em>OPEN</em></div></div>
       <div class="gy-btns one"><button class="main" data-a="x">좋아요</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('ul-pop'); }); }
+// v18.27 경완 '골드랑 알 보상은 승급창 닫으면 바로 별도 알림창': 승급 보상 받는 창 (골드 + 체육관 타입 알)
+function rwPop() { const g = st(), i = g.grwN; if (i == null) return Promise.resolve(); delete g.grwN; save(); const n = GR_GOLD[i] || 0, E = GR_EGG[i];
+  if (!n && !E) return Promise.resolve();
+  return new Promise(ok => { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
+    const p = pop(`<h4>승급 보상을 받았다!</h4><div class="rw-get">${n ? `<div class="rw-g"><i class="coin"></i><b>${n.toLocaleString()}G</b></div>` : ''}${E ? `<div class="rw-e"><span class="rw-eg">${grEggI(i)}</span><b>${grEggN(i)} <em>${E[1]}개</em></b></div>` : ''}</div><p class="gy-msg" style="text-align:center">${GRADES[i][1]}이 된 기념이에요.${E ? '<br><small>알은 필드의 알 가방에 들어 있어요.</small>' : ''}</p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('rw-pop'); }); }
 // 전설의 체육관 보상 알 받는 창 (경완 2026-10-29)
 function legEggPop() { const g = st(), t = g.legN; if (!t) return Promise.resolve(); delete g.legN; save();
   return new Promise(ok => { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
@@ -1207,8 +1212,8 @@ async function badgeGet(ty) {
   const g0 = st(), gN = g0.newG, gi = gN ?? gradeOf(g0.rep || 0).i;
   if (gN != null && open) await promoFx(gi); else { g0.newBdg = 0; delete g0.newG; save(); renderTop(); }
   return new Promise(ok => { const p = pop(`<div class="pp-hd"><i class="bsa-ray"></i><i class="pp-halo"></i><div class="bsa-bd">${bdHtml(ty, gi + 1)}</div></div>
-      <h4 class="pp-t"><small>체육관 등급이 올랐어요!</small>${GRADES[gi][1]}</h4><div class="pp-ben"><h5>등급 혜택</h5>${perkHtml(gi)}</div>
-      <div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); legEggPop().then(ok); });
+      <h4 class="pp-t"><small>체육관 등급이 올랐어요!</small>${GRADES[gi][1]}</h4><div class="pp-ben"><h5>등급 혜택</h5>${perkHtml(gi, 1)}</div>
+      <div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); rwPop().then(legEggPop).then(ok); });
     p.classList.add('pp-pop'); });
 }
 async function promoFx(gi) {
