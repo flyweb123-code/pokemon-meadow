@@ -294,7 +294,7 @@ function field(I, o) {
           else if (mat && mat.mat && mat.d === d) goW(mat);   // 매트 위에서 그 방향 = 밖으로
           else if (w && !w.mat && (!w.d || w.d === d)) { m.turn(d); goW(w); }
           else if (cAt(tx, ty) === LEDGE[d] && !F.solid(tx + dx, ty + dy, m)) { busy = true; m.jump(d).then(after); }
-          else if (F.solid(tx, ty, m)) { if (m.f !== d) m.turn(d); const t = performance.now(); if (!(t - (F.bumpT || 0) < 300)) { F.bumpT = t; I.gse?.('se_wall_hit'); } }   // 벽에 부딪히는 소리 (본가 SE_WALL_HIT, 누르고 있으면 걸음마다)
+          else if (F.solid(tx, ty, m)) { if (m.f !== d) m.turn(d); const t = performance.now(); if (F.run && !(t - (F.bumpT || 0) < 300)) { F.bumpT = t; I.gse?.('se_wall_hit'); } }   // 벽에 부딪히는 소리는 달리다 부딪혔을 때만 (경완 2026-11-07 '본가처럼 달리다 부딪혔을 때만')
           else { busy = true; m.go([[tx, ty]], F.run ? RUN : WALK).then(after); }   // 걷는 동안엔 잠그지 않아 꾹 누르면 계속 걷는다 (경완 2026-11-07)
         }
       }
