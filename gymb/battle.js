@@ -757,8 +757,7 @@ async function run(opts) {
     else if (out !== 'quit') {
       { const fe = monEl('e'); if (getComputedStyle(fe).opacity !== '0') { fe.style.transition = 'opacity .35s'; fe.style.opacity = '0'; await wait(380); } }   /* v18.09 경완 '승부 끝나고 스프라이트 겹쳐 보임': 진 승부는 상대 포켓몬이 남아 있어 다시 나온 트레이너와 겹쳤다 → 포켓몬을 먼저 들여보냄 */
       $b('.bt-tr.e').classList.add('back');
-      M('play', winM, { fade: .05 });   /* v18.09 경완 '승부 끝난 bgm 안 나옴': 진 승부도 끝 곡 (도전자의 승리) */
-      if (won) await msgTap(`${wa(foeNm)}의 승부에서 이겼다!`);
+      if (won) { M('play', winM, { fade: .05 }); await msgTap(`${wa(foeNm)}의 승부에서 이겼다!`); }   /* v18.10 경완: 졌을 땐 원래대로 끝 곡 없음 */
       else await msgTap('승부에서 졌다…');
       const ln = opts.foe.say?.[won ? 'win' : 'lose']; if (ln && B) await msgTap(ln);   // 상대 한마디 (본가처럼 다시 나와서)
       // 보상 (경완 2026-10-28): 한마디 뒤 골드·평판
