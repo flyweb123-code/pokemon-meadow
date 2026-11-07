@@ -800,7 +800,7 @@ function shopFit(body) {
   const need = o => K.GRADES[o.lv][1];
   const row = (k, o) => { const own = !k || g.fits[k], on = (K.fitOf(g.fit) ? g.fit : '') === k, lock = o.lv && G < o.lv;
     return `<button data-fit="${k}" class="${on ? 'on' : ''}${lock ? ' lock' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${o.n}</b><em>${on ? '입는 중' : own ? '입기' : lock ? `${need(o)}부터` : gold(o.g)}</em></button>`; };
-  body.innerHTML = `<div class="tm-row sp-prr">${prBtn()}</div><div class="ft-grid">${row('', { n: '기본 옷' })}${Object.entries(K.OUTFITS).filter(([k]) => K.fitOf(k)).sort((a, b) => ((a[1].g || 0) - (b[1].g || 0)) * shopPr).map(([k, o]) => row(k, o)).join('')}</div>`;
+  body.innerHTML = `<div class="tm-row sp-prr">${prBtn()}</div><div class="ft-grid">${row('', { n: '기본 옷' })}${Object.entries(K.OUTFITS).filter(([k, o]) => K.fitOf(k) && (!o.ev || g.fits?.[k])).sort((a, b) => ((a[1].g || 0) - (b[1].g || 0)) * shopPr).map(([k, o]) => row(k, o)).join('')}</div>`;
   body.querySelectorAll('img[data-fk]').forEach(im => K.fitSrc('tr', im.dataset.fk).then(u => { im.src = u; }));
   body.onclick = async (e, b) => {
     sfx('tap'); const k = b.dataset.fit; if (k == null) return; const o = k ? K.OUTFITS[k] : { n: '기본 옷' }, own = !k || g.fits[k], on = (K.fitOf(g.fit) ? g.fit : '') === k, lock = o.lv && G < o.lv;
