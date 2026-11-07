@@ -91,7 +91,7 @@ function tools(I, def) {
     // 길이 없으면 움직이지 않는다 (가구·사람을 밟고 지나가던 것, 경완 2026-11-07). 닿으면 true
     walkTo: async (e, to, spd = 260, occ = []) => { const fx = Math.round(e.x), fy = Math.round(e.y); if (fx === to[0] && fy === to[1]) return true; const p = I.route(D, [fx, fy], to, [...I.occOf([e]), ...occ]); if (!p?.length) return false; await I.walk(e, p, spd); return true; },
     // 후보 칸 중 걸어서 갈 수 있는 첫 칸 (빈 바닥·소품·사람·석상 피해서)
-    reach: (e, cands, occ = []) => { const O = [...I.occOf([e]), ...occ], K = q => q[0] + ',' + q[1], bad = new Set(O.map(K)); let best = null; for (const c of cands) { if (D.free?.[c[1]]?.[c[0]] !== '1' || bad.has(K(c)) || (D.stat || []).some(q => q[0] === c[0] && q[1] === c[1])) continue; if (Math.round(e.x) === c[0] && Math.round(e.y) === c[1]) return c; const p = I.route(D, [Math.round(e.x), Math.round(e.y)], c, O); if (p?.length && (!best || p.length < best[1])) best = [c, p.length]; } return best ? best[0] : null; },   // 갈 수 있는 칸 중 가장 가까운 칸 (경완 2026-11-07 'NPC 는 나한테 올 때 최단 거리로')
+    reach: (e, cands, occ = []) => { const O = [...I.occOf([e]), ...occ], K = q => q[0] + ',' + q[1], bad = new Set(O.map(K)); for (const c of cands) { if (D.free?.[c[1]]?.[c[0]] !== '1' || bad.has(K(c)) || (D.stat || []).some(q => q[0] === c[0] && q[1] === c[1])) continue; if (Math.round(e.x) === c[0] && Math.round(e.y) === c[1]) return c; const p = I.route(D, [Math.round(e.x), Math.round(e.y)], c, O); if (p?.length) return c; } return null; },   // 후보는 앞에 둔 칸이 먼저 (내 바로 앞 등). 고른 칸까지는 walkTo 가 최단 길로 (경완 2026-11-07 '최단 거리로 가니까 멀찍이 떨어져서 얘기')
     turn: (e, f) => { e.f = f; e.st = 0; I.place(e); },
     slide: (e, tx, ty, ms) => { const x0 = e.x, y0 = e.y; return anim(ms, q => { e.x = x0 + (tx - x0) * q; e.y = y0 + (ty - y0) * q; I.place(e); }); },
     // 머리 위 말풍선 ('!', '...')
@@ -240,9 +240,11 @@ function field(I, o) {
     return null; };
   F.goTo = async (s, to, ms = 200) => { const p = F.path(s, to); if (p?.length) await s.go(p, ms); };
   // 사람이 나(또는 t)에게 다가온다: 내 옆 네 칸 중 가장 짧은 길로 가서 나를 본다 (경완 2026-11-07 '최단 거리로')
-  F.approach = async (s, t = F.me, ms = 200) => { const tx = Math.round(t.x), ty = Math.round(t.y); let best = null;
-    for (const [dx, dy] of Object.values(DIR)) { const q = [tx + dx, ty + dy]; if (Math.round(s.x) === q[0] && Math.round(s.y) === q[1]) { best = [q, []]; break; } if (F.solid(q[0], q[1], s)) continue; const p = F.path(s, q); if (p && (!best || p.length < best[1].length)) best = [q, p]; }
-    if (best?.[1].length) await s.go(best[1], ms); s.face(t); t.face?.(s); return !!best; };
+  F.approach = async (s, t = F.me, ms = 200) => { const tx = Math.round(t.x), ty = Math.round(t.y), [fx, fy] = DIR[t.f] || [0, 0], C = [];
+    for (const [dx, dy] of Object.values(DIR)) { const q = [tx + dx, ty + dy], here0 = Math.round(s.x) === q[0] && Math.round(s.y) === q[1]; const p = here0 ? [] : F.solid(q[0], q[1], s) ? null : F.path(s, q); if (p) C.push({ q, p, front: dx === fx && dy === fy }); }
+    // 내가 보는 쪽 바로 앞칸이 먼저 (경완 2026-11-07 '앞에서 얘기해야 할 것도 멀찍이'), 앞칸이 너무 돌아가야 하면(3칸 넘게 더) 가장 가까운 옆칸
+    const min = Math.min(...C.map(c => c.p.length)), f = C.find(c => c.front && c.p.length <= min + 3), best = f || C.find(c => c.p.length === min);
+    if (best?.p.length) await s.go(best.p, ms); s.face(t); t.face?.(s); return !!best; };
   // 여러 사람을 자리들에 나눠 보낼 때: 사람마다 가장 가까운 빈 자리
   F.nearest = (s, spots) => { let best = null; for (const q of spots) { const p = F.path(s, q); if (p && (!best || p.length < best[1].length)) best = [q, p]; } return best?.[0] || null; };
   F.lock = on => { const was = el.classList.contains('lock'); el.classList.toggle('lock', on); if (on) { press(null); F.run = false; el.querySelector('.ev-b')?.classList.remove('on'); } else if (was) { F.unT = performance.now(); F.aQ = false; } };   // 풀린 직후 0.4초는 A 무시: 대화를 넘기던 탭이 A 로 또 눌려 대화가 다시 열리던 것 (경완 2026-11-07)
