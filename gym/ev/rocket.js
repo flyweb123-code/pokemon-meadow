@@ -34,8 +34,9 @@ GymEv.def({
     // 1장 · 점거당한 체육관
     async A => {
       const { I, D, wait } = A, sfs = I.sfList(), nSf = (I.st().sf || []).length;   // 훈련장에 있던 트레이너까지 모두 납치
+      // 까만 화면 뒤에서 무대를 꾸미고, 밝아지면서 바로 스크롤 (경완 2026-11-07 '장 타이틀 없이, 체육관 전체 화면 먼저 X')
+      A.blackNow(); I.clearEnts(); I.renderHome(true);
       // 무대: 내 트레이너·안내원·나는 없고, 트레이너 자리엔 조무래기, 관장 자리엔 간부 람다, 바닥엔 R 상자·깃발
-      I.clearEnts(); I.renderHome(true);
       I.dropPeople();
       const spots = sfs.map(z => [z[1], z[2], z[3]]);
       for (const q of D.slots || []) { if (spots.length >= 3) break; if (!spots.some(p => p[0] === q[0] && p[1] === q[1])) spots.push([q[0], q[1], q[2]]); }
@@ -46,17 +47,15 @@ GymEv.def({
       // 파이어레드 로켓단 아지트 소품 (pret/pokefirered RocketHideout 위 칸만 그린 것): 상자·컴퓨터·기계. 문·관장 세로줄은 비워 둔다
       const lane = x => x === D.door[0] || x === D.leader[0] || Math.abs(x - D.leader[0]) <= 1;
       const fits = (x, y, w) => { for (let i = 0; i < w; i++) if (lane(x + i) || !ft.some(q => q[0] === x + i && q[1] === y)) return false; return true; };
-      for (const [k, n, sd] of [['machine', 1, 3], ['pc', 1, 5], ['crate', 3, 11]]) { const [w] = await A.size(k); let s = sd;
+      for (const [k, n, sd] of [['machine', 1, 3], ['crate', 1, 11]]) { const [w] = await A.size(k); let s = sd;
         for (let c = 0; c < n; c++) { const C = ft.filter(([x, y]) => fits(x, y, w)); if (!C.length) break; s = (s * 9301 + 49297) % 233280; const [x, y] = C[Math.floor(s / 233280 * C.length)];
           await A.prop(k, x, y); for (let i = 0; i < w; i++) { const j = ft.findIndex(q => q[0] === x + i && q[1] === y); if (j >= 0) ft.splice(j, 1); } } }
-      pick(2, 7).forEach(([x, y]) => { if (!lane(x)) A.rProp(x, y); });
+      pick(1, 7).forEach(([x, y]) => { if (!lane(x)) A.rProp(x, y); });
       const fl = [[D.leader[0] - 1, D.leader[1]], [D.leader[0] + 1, D.leader[1]]].filter(([x, y]) => D.free?.[y]?.[x] === '1');
       fl.forEach(([x, y]) => A.rProp(x, y, 'flag'));
-      // 연출: 어두워지며 로켓단 곡, 맵을 위에서 아래로 훑는다
-      await wait(900);   // 출근 로딩 화면이 걷히고 나서
-      A.tint(true); A.music('hgEyeRoc');
-      const tt = A.title('로켓단의 습격', '내 체육관이 이상하다...?');
-      await A.pan(5600); await tt;
+      // 연출: 밝아지면서 로켓단 곡, 맵을 위에서 아래로 훑는다
+      await wait(900); A.tint(true); A.music('hgEyeRoc'); await wait(300);
+      const pp = A.pan(5600); A.black(false); await pp;
       // 내가 문으로 들어온다
       const me = A.npc(I.myOw(), D.door[0], D.door[1], 'u'); I.fitMe(me);
       A.se('DP_DOOR'); await wait(300);
@@ -64,9 +63,10 @@ GymEv.def({
       A.bub(me, '!', 1000); A.se('DP_REGI', .8); await wait(1100);
       // 문에서 가까운 조무래기 둘이 다가온다
       const near = grunts.slice().sort((a, b) => Math.hypot(a.x - me.x, a.y - me.y) - Math.hypot(b.x - me.x, b.y - me.y)).slice(0, 2);
-      const fr = [[me.x, me.y - 1], [me.x - 1, me.y - 1], [me.x + 1, me.y - 1]].filter(([x, y]) => D.free?.[y]?.[x] === '1');
+      const FR0 = [[me.x, me.y - 1], [me.x - 1, me.y - 1], [me.x + 1, me.y - 1], [me.x - 1, me.y], [me.x + 1, me.y], [me.x, me.y - 2], [me.x - 1, me.y - 2], [me.x + 1, me.y - 2]], fr = [];
+      for (const e of near) { const c = A.reach(e, FR0.filter(q => !fr.some(f => f && f[0] === q[0] && f[1] === q[1])), fr.filter(Boolean)); fr.push(c); }   // 서로 다른 칸, 걸어서 갈 수 있는 칸만
       near.forEach(e => A.bub(e, '!', 900)); A.se('DP_REGI', .8); await wait(1000);
-      await Promise.all(near.map((e, i) => fr[i] ? A.walkTo(e, fr[i], 200).then(() => A.turn(e, 'd')) : null));
+      await Promise.all(near.map((e, i) => fr[i] ? A.walkTo(e, fr[i], 200, fr.filter((q, j) => q && j !== i)).then(() => { const dx = me.x - e.x, dy = me.y - e.y; A.turn(e, Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'r' : 'l') : 'd'); }) : null));
       const S = A.talk(); const G = '로켓단 조무래기', B = '로켓단 간부 람다';
       await S.say('어? 이 녀석...\n이 체육관 관장이잖아!', { who: G });
       if (near[1]) await S.say('람다 님!\n관장이 돌아왔습니다!', { who: G });
@@ -75,8 +75,8 @@ GymEv.def({
       A.bub(boss, '!', 900); A.se('DP_REGI', .8); await wait(1000);
       S.hide(false); await S.say('우하하!\n생각보다 빨리 돌아왔구먼!', { who: B });
       S.hide(true);
-      const by = Math.min(D.door[1] - 3, Math.max(boss.y, me.y - 3));
-      await Promise.all([A.walkTo(boss, [me.x, by], 300), (async () => { await wait(200); await A.look(me.y - 1, 1600); })()]); A.turn(boss, 'd');
+      const by = Math.min(D.door[1] - 3, Math.max(boss.y, me.y - 3)), bt = A.reach(boss, [[me.x, by], [me.x, by - 1], [me.x - 1, by], [me.x + 1, by], [me.x, by + 1], [me.x - 1, by - 1], [me.x + 1, by - 1]]);
+      await Promise.all([bt ? A.walkTo(boss, bt, 300) : null, (async () => { await wait(200); await A.look(me.y - 1, 1600); })()]); A.turn(boss, 'd');
       S.hide(false);
       await S.say('놀랐나? 요즘 이 체육관\n소문이 아주 자자하더군.\n매일같이 도전자가 몰려온다며?', { who: B });
       await S.say('그 도전자들이 데려오는 포켓몬...\n앞으로는 전부 로켓단이\n잘 맡아 주기로 했지!', { who: B });
@@ -89,7 +89,7 @@ GymEv.def({
       // 쫓겨난다
       S.hide(true); await wait(200);
       A.se('DP_KON', 1.2); A.shake(); I.haptic?.(1);
-      await Promise.all([A.slide(me, me.x, D.door[1], 260), ...near.map(e => A.slide(e, e.x, e.y + 1, 260))]);
+      await Promise.all([A.slide(me, me.x, D.door[1], 260), ...near.filter(e => e.y < me.y && e.x === me.x).map(e => A.slide(e, e.x, e.y + 1, 260))]);
       A.turn(me, 'u'); await wait(250); me.el.style.transition = 'opacity .4s'; me.el.style.opacity = '0';
       A.se('DP_DOOR'); await wait(500);
       await S.end(); A.music(null);
@@ -265,11 +265,11 @@ GymEv.def({
       A.tint(false); I.root.querySelectorAll('.ev-r,.ev-tint').forEach(x => x.remove()); I.clearEnts(); I.renderHome(true); I.dropPeople();
       const meE = A.npc(I.myOw(), D.door[0], D.door[1], 'u'); I.fitMe(meE);
       A.music('gym'); await A.black(false);
-      A.se('DP_DOOR'); await A.walkTo(meE, D.leader, 220); A.turn(meE, 'd');
+      A.se('DP_DOOR'); if (!await A.walkTo(meE, D.leader, 220)) { meE.x = D.leader[0]; meE.y = D.leader[1]; } A.turn(meE, 'd');
       const back = sfs.map(([s, x, y, f]) => [A.npc(s.ow, D.door[0], D.door[1], 'u'), x, y, f]);
       back.forEach(([e]) => { e.el.style.opacity = '0'; });
       const gE = A.npc(I.GUY_OW, D.door[0], D.door[1], 'u'); gE.el.style.opacity = '0';
-      for (const [e, x, y, f] of [...back, [gE, D.guy[0], D.guy[1], 'd']]) { e.el.style.opacity = '1'; A.se('DP_DOOR', .6); await Promise.race([A.walkTo(e, [x, y], 200).then(() => A.turn(e, f || 'd')), wait(700)]); }
+      for (const [e, x, y, f] of [...back, [gE, D.guy[0], D.guy[1], 'd']]) { e.el.style.opacity = '1'; A.se('DP_DOOR', .6); await Promise.race([A.walkTo(e, [x, y], 200).then(ok => { if (!ok) { e.x = x; e.y = y; } A.turn(e, f || 'd'); }), wait(700)]); }
       await wait(900);
       const S2 = A.talk();
       await S2.say('체육관이 다시\n우리 손에 돌아왔어요!', { who: '안내원' });
