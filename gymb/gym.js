@@ -1158,6 +1158,7 @@ async function repAnim(p, rep, sb = 0, gx = null, gp = null, gT = 0, onMrg = nul
   el.dataset.gi = g0; await wait(300); if (gp) { await gp; await wait(60); } if (!el.isConnected) return;   // 경완 2026-11-03: 평판은 골드가 다 오른 뒤에
   el.classList.add('go'); const rm = r1 - sb;
   el.classList.add('dshow');   // v14.97 경완: 기본 점수 +N 은 평판이 오르기 시작할 때 같이 떠서 오르는 만큼 센다
+  if (rm < r0 && !sb) { d.textContent = `-${r0 - rm}`; d.classList.add('dnS'); await run(r0, rm, false, null, 0, false, false); return; }   /* v18.09 경완 '평판 떨어지는 연출은 연패 기준이 없으니 합쳐지는 모션·괄호 없이 바로 떨어지는 것만 빨간 글자로': -N 은 처음부터 빨갛게 그대로, 평판 숫자만 바로 내려감 */
   if (rm !== r0) { const up = rm > r0; d.textContent = up ? '+1' : '-1'; await run(r0, rm, up, r => { d.textContent = (up ? '+' : '-') + Math.max(1, Math.abs(r - r0)); }, gT ? 550 : 0, !!gT, true); }   // v14.97 경완: 골드와 같은 시간·같은 곡선으로 같이 오른다 (평판 숫자는 +N 이 합쳐질 때 한 번에)
   if (!el.isConnected) return;
   const flash = () => { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); };
