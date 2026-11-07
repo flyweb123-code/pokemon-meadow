@@ -341,6 +341,7 @@ const OUTFITS = {   // v14.78 경완 '맘에 든 것들만': PixelLab 으로 다
   lt_surge: { n: '군복', a: '#6a8440', b: '#585e44', g: 3500, sx: 'm' }, koga: { n: '닌자복', a: '#5a4a80', b: '#2e2838', g: 4000, sx: 'mf' },
   giovanni: { n: '보스 정장', a: '#d06830', b: '#2e2e30', g: 5000, sx: 'mf' }, lance: { n: '드래곤 망토', a: '#30303e', b: '#d03030', g: 6000, sx: 'mf' },
   misty: { n: '물 관장 옷', a: '#f0c030', b: '#d84830', g: 3000, sx: 'f' },   // v14.99 경완: 이슬(여) 추가
+  rocket: { n: '로켓단 제복', a: '#34343c', b: '#2a2a30', g: 0, sx: 'mf', ev: 'rocket' },   // 체육관 이벤트 '로켓단의 체육관 점거' 보상 (2026-11-07, 상점엔 안 나옴). 걸음·뒷모습은 색 바꾸기
 };
 // 이 성별로 입을 수 있는 옷이면 그 옷, 아니면 null (기본 옷)
 const fitOf = (k, f = myF()) => (k && OUTFITS[k]?.sx.includes(f ? 'f' : 'm')) ? OUTFITS[k] : null;
@@ -931,6 +932,7 @@ function tick(now = Date.now()) {
   if (!g.vis) g.vis = now;
   const cut = g.vis + SHUT;
   if (now > cut) { tick0(cut); g.shutAt = cut; g.shutSf = (g.sf || []).length; (g.sf || []).forEach(x => glog('sf', `${sfName(x)}${jong(x.nm) ? '은' : '는'} 체육관이 휴업해서 떠나갔다.`, cut)); g.sf = []; glog('in', `${Math.floor((now - g.vis) / DAY)}일 동안 비워서 체육관이 휴업했다.`, cut); save(); return; }
+  if (g.ev?.cur && !window.gymEvTest) { g.vis = now; save(); return; }   // 로켓단 점거 중: 도전자·월급·면접·훈련장 멈춤 (경완 2026-11-07, 끝나면 evDone 이 시계를 민다)
   tick0(now); g.vis = now; save();
 }
 function reopen(now = Date.now()) {
@@ -2279,7 +2281,8 @@ const guyPath = D => { const [dx, dy] = D.door, [gx, gy] = D.guy; return [[dx, d
 function enter() {
   open = true; tab = null; root.hidden = false; root.classList.remove('gview'); root.classList.toggle('sim', !!window.gymSimOn); GA.gymIn(); openTab(null); if (!window.gymEvTest) bgmPlay(st()?.d ? 'gym' : 'lab');   // 처음 연출·튜토리얼은 연구소 곡 (경완 2026-10-29)   // 체육관 곡: 처음이면 플래티넘 원본 소리를 받아 오는 동안 잠깐 조용하다
   requestAnimationFrame(() => root.classList.add('on'));
-  if (st()?.d && window.gymEvTest) { tick(); setAt(); save(); evGo(); } else if (st()?.d) { tick(); { setAt(); save(); } renderHome(); shutCover(); if (shutFx0) shutEnter().then(later); else later(); } else intro();   /* v16.43 자동 휴업: 셔터 내린 채로 시작 */   // 필드 체육관 아이콘 빨간 점(도전자)은 들어가기만 해선 안 꺼지고 도전자 받기를 눌러야 꺼짐 (경완 2026-10-30)
+  const evId = st()?.d && !window.gymEvTest ? (st().ev?.cur || evDue()) : null;
+  if (st()?.d && (window.gymEvTest || evId)) { tick(); setAt(); save(); evGo(evId); } else if (st()?.d) { tick(); { setAt(); save(); } renderHome(); shutCover(); if (shutFx0) shutEnter().then(later); else later(); } else intro();   /* v16.43 자동 휴업: 셔터 내린 채로 시작 */   // 필드 체육관 아이콘 빨간 점(도전자)은 들어가기만 해선 안 꺼지고 도전자 받기를 눌러야 꺼짐 (경완 2026-10-30)
   setTimeout(() => gymLoad.hide(), 120);
   // 아래 메뉴(포켓몬·훈련장·트레이너·상점)가 쓰는 배틀 자료·관리 코드를 미리 받아 둔다: 처음 누를 때 '불러오는 중'에 멈춰 있지 않게 (경완 2026-10-30 '훈련장 처음 눌렀을 때 화면 바로 안 뜸')
   // 정보 카드·기술 창의 타입·분류 아이콘을 미리 받아 둔다 (처음 열 때 글자만 보이다 늦게 뜨던 것, 경완 2026-10-30)
@@ -2292,14 +2295,38 @@ let tickT = 0;
 const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), sc: () => sc, ents: () => ents, ent, walk, place, route, occOf, clearEnts, renderHome, sfList: () => sfList(), myOw, N3, storyTalk, trName, gse, esc, sfx, isOpen: () => open,
   haptic: n => GA.haptic?.(n), fitMe: e => { if (st()?.fit) fitSrc('ow').then(u => { if (e.el.isConnected) e.el.style.backgroundImage = `url(${u})`; }); },
   addProp: (src, x, y, w, h) => { const e = { prop: 1, x, y, w, h, el: document.createElement('i') }; e.el.className = 'gy-prop'; e.el.style.backgroundImage = `url(${src})`; $g('.gy-ents').appendChild(e.el); ents.push(e); place(e); return e; },
-  dropPeople: () => { cancelAnimationFrame(palRaf); ents = ents.filter(e => { const keep = e.prop && !e.pal; if (!keep) e.el.remove(); return keep; }); } };
-async function evGo() {
-  const id = window.gymEvTest, ch = window.gymEvCh | 0; busy = true; root.classList.add('pre');
-  try { await loadJs('gymb/ev.js', 'GymEv'); const r = await window.GymEv?.run(EV_API, id, ch); if (!open) return;
+  dropPeople: () => { cancelAnimationFrame(palRaf); ents = ents.filter(e => { const keep = e.prop && !e.pal; if (!keep) e.el.remove(); return keep; }); },
+  owSrc, owW, trSrc, fitSrc, GUY_OW, sfName, addG: n => window.gymEvTest ? n : addG(n), addRep: n => { if (!window.gymEvTest) addRep(n); }, renderTop, confetti, glog,
+  giveFit: k => { if (window.gymEvTest || !OUTFITS[k]) return; const g = st(); g.fits = g.fits || {}; g.fits[k] = 1; if (Array.isArray(S.fits) && !S.fits.includes(k)) S.fits.push(k); save(); },
+  lv: () => myAvg(), evDone: id => evDone(id),
+  // 이벤트 배틀: 지금 라인업 (비어 있으면 체육관 타입 포켓몬 레벨 높은 순 6마리)
+  battle: async o => { await loadJs('gymb/battle.js', 'GymBattle'); await GB().loadData(); const g = st();
+    if (window.__evAutoWin && /[?&]debug/.test(location.search)) return { won: true };   // 시험 자동 진행
+    let my = luNow(); if (!my.length) my = luAll().slice(0, 6); if (!my.length) my = S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(g.ty)).sort((a, b) => GB().gm(b).lv - GB().gm(a).lv).slice(0, 6);
+    if (!my.length) return { won: true, none: 1 };
+    const team = o.team.map(([sp, lv]) => GB().foeEntry(sp, clampN(lv, 2, 100), o.tier | 0)); document.body.classList.add('gymBattle'); let res;
+    try { res = await GB().run({ my, foe: { tr: o.tr, cls: o.cls, nm: o.nm, team, say: o.say, hold: o.tier | 0 }, rew: o.g ? { g: o.g, r: 0, rl: 0 } : null, diff: o.tier | 0, bg: o.bg || 'in2', music: o.music || 'hgVsRoc', win: o.win || 'winTrain', meBackUrl: await fitSrc('trb') }); }
+    finally { document.body.classList.remove('gymBattle'); }
+    if (res?.won && o.g && !window.gymEvTest) addG(o.g);
+    return res || {}; } };
+/* 실제 발동 (경완 2026-11-07 '유저별로 반복 X, 특정 층마다'): 이벤트마다 정해진 체육관 등급(g.gmax)에 처음 닿은 뒤 들어올 때 한 번.
+   승급 축하·배지 창이 남아 있으면 그게 먼저 (다음 입장 때 시작). 점거 중(g.ev.cur)엔 도전자·월급·면접·훈련장 시계가 멈추고, 끝나면 그만큼 민다 */
+const EV_LIVE = false;   // 경완이 2·3·4장을 확인하면 켠다 (그 전엔 운영자 시험만)
+const EV_AT = { rocket: 2 };   // 이벤트 id → 등급 (0 새내기 1 동네 2 떠오르는 …)
+function evDue() { const g = st(); if (!EV_LIVE || !g?.d || g.shutAt || tutEnd || g.newBdg || g.q?.some(c => c.boss) || !(g.sf || []).length) return null;
+  return Object.keys(EV_AT).find(id => !(g.evd || {})[id] && (g.gmax | 0) >= EV_AT[id]) || null; }
+function evDone(id) { const g = st(), now = Date.now(); if (window.gymEvTest) return; const dt = Math.max(0, now - (g.ev?.t0 || now)); delete g.ev; g.evd = g.evd || {}; g.evd[id] = now;
+  g.day = 0; g.sch = []; g.pull = 0; g.q = (g.q || []).filter(c => c.named && !c.boss);
+  (g.sf || []).forEach(x => { if (x.pay) x.pay += dt; if (x.gt) x.gt += dt; }); (g.cands || []).forEach(c => { c.exp += dt; c.t += dt; }); if (g.candN) g.candN += dt; (g.tr || []).forEach(e => { if (e.t) e.t = now; });
+  g.vis = now; glog('in', `로켓단을 물리치고 <b>${esc(g.nm)}</b>${jong(g.nm) ? '을' : '를'} 되찾았다!`, now); tick(now); setAt(now); save(); }
+async function evGo(id0) {
+  const test = !!window.gymEvTest, id = test ? window.gymEvTest : id0; busy = true; root.classList.add('pre'); let r = null;
+  try { await loadJs('gymb/ev.js', 'GymEv'); r = await window.GymEv?.run(EV_API, id, test ? (window.gymEvCh | 0) : null); if (!open) return;
     if (r === 'wip') await kang(['이 이벤트의 다음 장은 아직 만드는 중이에요.\n(운영자 시험이라 체육관은 그대로예요)'], { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1, skip: false });
   } catch (e) { console.error(e); }
-  finally { window.gymEvTest = null; window.gymEvCh = 0; const g = st(); if (g) delete g.ev; root.querySelectorAll('.ev-tint,.ev-black,.ev-ttl').forEach(x => x.remove()); root.classList.remove('pre'); busy = false;
-    if (open) { bgmPlay('gym'); renderHome(); later(); } }
+  finally { if (test) { window.gymEvTest = null; window.gymEvCh = 0; const g = st(); if (g) delete g.ev; }
+    root.querySelectorAll('.ev-tint,.ev-black,.ev-ttl,.ev-fld,.ev-ask,.ev-rw,.gy-kang.tw-talk').forEach(x => x.remove()); root.classList.remove('pre'); busy = false;
+    if (open && r === 'quit') exit(); else if (open) { bgmPlay('gym'); renderHome(); later(); } }
 }
 /* v16.48 경완 '트레이너 메뉴 눌렀을 때 트레이너 스프라이트 바로 안 뜸': 메뉴를 열 때 처음 받던 그림을 체육관에 들어올 때·지원자가 올 때 미리 받아 둔다
    (고용·지원 트레이너, 명단 도전자, 카드 배경·발판) */
