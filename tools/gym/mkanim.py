@@ -66,7 +66,7 @@ def parse(path):
         p = ln.split(None, 1); L.append((p[0], [a.strip() for a in p[1].split(',')] if len(p) > 1 else []))
     return L, lab
 
-def run(L, lab, side):
+def run(L, lab, side, turn2=False):
     t, task, emit, ev, pc, loops, guard = 0, 0, 0, [], 0, [], 0
     PS, EM, lastP = {}, {}, None
     def snd(a, pan, at=0):
@@ -79,7 +79,7 @@ def run(L, lab, side):
         if c == 'End': break
         elif c == 'Jump': pc = lab[a[0]]
         elif c == 'JumpIfBattlerSide': pc = lab[a[1] if side else a[2]]
-        elif c == 'JumpIfEffectChanceOdd': pc = lab[a[0]]
+        elif c == 'JumpIfEffectChanceOdd': pc = lab[a[1] if turn2 else a[0]]   # 2턴 기술: a[0] 모으는 턴, a[1] 공격 턴
         elif c in ('JumpIfContest', 'JumpIfFriendlyFire', 'JumpIfWeather', 'JumpIfNotContest'): pass
         elif c == 'BeginLoop': loops.append([pc, num(a[0])])
         elif c == 'EndLoop':
@@ -153,6 +153,7 @@ def run(L, lab, side):
 
 # 플래티넘 폴더 이름 → 쇼다운 기술 id
 ALIAS = {'faintattack': 'feintattack', 'hijumpkick': 'highjumpkick', 'smellingsalt': 'smellingsalts', 'vicegrip': 'visegrip'}
+TWO = {'solarbeam', 'razorwind', 'skullbash', 'skyattack', 'fly', 'dig', 'dive', 'bounce', 'shadowforce'}
 out = {}
 for d in sorted(os.listdir(SRC)):
     p = SRC + d + '/anim.s'
@@ -160,6 +161,10 @@ for d in sorted(os.listdir(SRC)):
     L, lab = parse(p)
     a0, a1 = run(L, lab, 0), run(L, lab, 1)
     if not a0[1] and not a1[1]: continue
-    k = d.replace('_', ''); out[ALIAS.get(k, k)] = a0 if a0 == a1 else [a0, a1]
+    k = d.replace('_', ''); k = ALIAS.get(k, k)
+    if k in TWO:   # 2턴 기술: 기술id = 공격 턴, 기술id_c = 모으는 턴 (v18.17 경완 '솔라빔 연출이 없어')
+        out[k + '_c'] = a0 if a0 == a1 else [a0, a1]
+        a0, a1 = run(L, lab, 0, True), run(L, lab, 1, True)
+    out[k] = a0 if a0 == a1 else [a0, a1]
 json.dump(out, open('gymb/mvfx.json', 'w'), separators=(',', ':'))
 print(len(out), 'moves', os.path.getsize('gymb/mvfx.json'), 'bytes')
