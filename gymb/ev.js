@@ -74,7 +74,7 @@ const CSS = `
 #gym .ev-rw .rw-hd .bsa-ray{top:38%;width:320px;height:320px;margin:-160px 0 0 -160px}
 #gym .ev-rw .rw-halo{position:absolute;left:50%;top:38%;width:130px;height:130px;margin:-65px;border-radius:50%;background:radial-gradient(circle,rgba(255,236,170,.6),transparent 70%);animation:bswPulse 2s ease-in-out infinite}
 #gym .ev-rw .rw-emb{position:absolute;left:50%;top:38%;width:62px;height:62px;margin:-31px;border-radius:50%;display:grid;place-items:center;background:#f4f0f0;box-shadow:0 0 0 4px #c01828,0 4px 0 4px #6a0a12;font:900 40px/1 Arial,sans-serif;color:#c01828;animation:rwEmb .5s .1s ease-out both}
-#gym .ev-rw .rw-emb img{width:40px;height:36px;image-rendering:pixelated}
+#gym .ev-rw .rw-emb img{width:44px;height:42px;image-rendering:pixelated}
 #gym .ev-rw .rw-emb::after{content:'';position:absolute;left:50%;top:50%;width:84px;height:7px;margin:-3.5px 0 0 -42px;border-radius:4px;background:#222;box-shadow:0 0 0 2px #fff;transform:rotate(-40deg) scaleX(0);transform-origin:50% 50%;animation:rwCut .25s .75s ease-out forwards}   /* 취소선은 마크 한가운데를 지나게 (경완 2026-11-07) */
 @keyframes rwEmb{0%{transform:scale(0) rotate(-30deg)}70%{transform:scale(1.15)}100%{transform:none}}
 @keyframes rwCut{to{transform:rotate(-40deg) scaleX(1)}}
@@ -92,7 +92,7 @@ const CSS = `
 #gym .ev-rw .pk-ben .gold .pk-ic,#gym .ev-rw .pk-ben .fit .pk-ic{background:none;box-shadow:none}#gym .ev-rw .pk-ben .gold .pk-ic::before,#gym .ev-rw .pk-ben .fit .pk-ic::before{display:none}
 #gym .ev-rw .pk-ben .gold .coin{position:static;display:block;width:18px;height:18px;margin:0;image-rendering:pixelated}
 #gym .ev-rw .pk-ben .fit .pk-ic img{width:30px;height:30px;object-fit:contain;image-rendering:pixelated}
-#gym .ev-rw .pk-ben .rep .pk-ic{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M6 0h2v4h4v2h2v2h-3v2h1v4h-2v-1H8v-1H6v1H4v1H2v-4h1V8H0V6h2V4h4z'/%3E%3C/svg%3E")}
+#gym .ev-rw .pk-ben .rep .pk-ic{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 13 13'%3E%3Cpath d='M6 0h1v2H6zM5 2h3v2H5zM0 4h13v1H0zM1 5h11v1H1zM2 6h9v1H2zM3 7h7v2H3zM2 9h9v1H2zM2 10h4v1H2zM7 10h4v1H7zM1 11h4v1H1zM8 11h4v1H8zM1 12h2v1H1zM10 12h2v1H10z'/%3E%3C/svg%3E")}#gym .ev-rw .pk-ben .rep .pk-ic::before{width:13px;height:13px}   /* 평판 별: 13칸 대칭 도트 별을 13px 그대로 (찌그러짐 고침) */
 #gym .ev-rw .pk-ben small{display:block;font-size:11px;font-weight:400;color:#8a7a50}
 #gym .ev-rw .rw-gn{font-variant-numeric:tabular-nums}
 /* 새 의상 창 (v18.55 경완 '로켓단 제복은 옷 잘 보이게 새로운 창으로'): 빛 무대 위에 옷 입은 모습을 크게 */
@@ -168,7 +168,7 @@ function tools(I, def) {
     reward: () => new Promise(ok => { const R = def.reward || {}, f = I.myOw() === 'pt_f' ? 'f' : 'm', L = []; let d = 1.5; const dd = () => (d += .15).toFixed(2) + 's';
       if (R.g) { I.addG(R.g); L.push(`<li class="gold" style="--d:${dd()}"><i class="pk-ic"><i class="coin"></i></i><span>골드</span><em><b class="rw-gn">+0G</b></em></li>`); }
       if (R.rep) { I.addRep(R.rep); L.push(`<li class="rep" style="--d:${dd()}"><i class="pk-ic"></i><span>체육관 평판</span><em><b>+${R.rep}</b></em></li>`); }
-      if (R.fit) { I.giveFit(R.fit); L.push(`<li class="fit" style="--d:${dd()}"><i class="pk-ic"><img alt="" src="gym/img/fit/${R.fit}_${f}.png?v=${VER}" onerror="this.onerror=null;this.src='gym/img/pt/tr/hg_rocket_${f}.png'"></i><span>${I.esc(R.fitNm || '새 의상')}<small>상점 › 의상에서 입을 수 있어요</small></span><em><b>새 의상</b></em></li>`); }
+      if (R.fit) I.giveFit(R.fit);   // 의상은 줄에 안 넣고 다음 새 의상 창에서만 보여 준다 (경완 2026-11-07)
       I.save(); I.renderTop?.(); I.glog?.('in', `이벤트 <b>${I.esc(def.nm)}</b>${'을'} 해결했다!`);
       // 무대 아래 줄: 나 + 되찾은 트레이너·안내원 (R.crew) 앞모습, 한 명씩 나타나 콩콩
       const crew = [], fw = k => I.owW?.(k) || 32; if (R.crew) { crew.push(['me', I.myOw()]); for (const s of (I.st().sf || []).slice(0, 6)) if (s.ow) crew.push(['', s.ow]); if (I.GUY_OW) crew.push(['', I.GUY_OW]); }
@@ -184,6 +184,7 @@ function tools(I, def) {
       const fitWin = () => new Promise(ok2 => { if (!R.fit) return ok2(); const v = document.createElement('div'); v.className = 'ev-rw gy-pop pp-pop rw-pop';
         v.innerHTML = `<div class="win"><div class="rw-hd fw-hd" style="${R.hd ? `--c1:${R.hd[0]};--c2:${R.hd[1]}` : ''}"><i class="bsa-ray"></i><i class="rw-halo"></i><img class="fw-pic" alt="" src="gym/img/fit/${R.fit}_${f}.png?v=${VER}" onerror="this.onerror=null;this.src='${R.fitAlt ? R.fitAlt.replace('$', f) : ''}'"><b class="fw-new">NEW</b></div>
           <h4 class="pp-t"><small>새 의상을 받았다!</small>${I.esc(R.fitNm || '새 의상')}</h4><p class="rw-msg">상점 › 의상에서 언제든 갈아입을 수 있어요</p><div class="gy-btns one"><button type="button" class="main">좋아!</button></div></div>`;
+        document.querySelectorAll('.gy-fx').forEach(x => x.remove()); try { window.GymBGM?.seStop?.('ME_FANFA5'); } catch (e) {}   // 의상 창엔 앞 창 빵빠레·꽃가루 안 이어지게 (경완 2026-11-07)
         root.appendChild(v); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} I.haptic?.(0);
         v.querySelector('button').onclick = e => { e.stopPropagation(); I.sfx?.('tap'); v.remove(); ok2(); }; });
       w.querySelector('button').onclick = e => { e.stopPropagation(); I.sfx?.('tap'); w.remove(); fitWin().then(ok); }; }),
