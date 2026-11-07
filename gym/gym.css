@@ -2994,7 +2994,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .it-recb .sp-tm.it-recgo{pointer-events:auto;cursor:pointer;grid-template-columns:36px minmax(0,1fr) auto auto;text-align:left;font:inherit}
 #gym .it-recb .it-recgo:active{transform:translateY(2px)}#gym .it-arr{grid-column:4;grid-row:1/3;align-self:center;font-style:normal;font-size:26px;line-height:1;color:#8a6a2a;font-weight:700}
 #gym .it-recp{grid-column:3;grid-row:1/3;align-self:center;font-style:normal;font-size:12px;font-weight:700;color:#6b5a32;display:flex;align-items:center;gap:3px;white-space:nowrap}#gym .it-recp .coin{margin-right:0}
-#gym .sp-tm.sp-go{position:relative;z-index:1;animation:spGo 3.6s ease-out}@keyframes spGo{0%,70%{box-shadow:0 0 0 3px #f0b030,0 0 14px 4px rgba(240,176,48,.75)}100%{box-shadow:none}}
+#gym .sp-tm.sp-go{position:relative;z-index:1;animation:spGo 1.2s ease-out,spGoL 2.4s ease-in-out 1.2s infinite;box-shadow:0 0 0 3px rgba(240,176,48,.75),0 0 10px 2px rgba(240,176,48,.35)}@keyframes spGoL{0%,100%{box-shadow:0 0 0 3px rgba(240,176,48,.75),0 0 10px 2px rgba(240,176,48,.35)}50%{box-shadow:0 0 0 3px rgba(240,176,48,.45),0 0 6px 1px rgba(240,176,48,.15)}}@keyframes spGo{0%,60%{box-shadow:0 0 0 3px #f0b030,0 0 14px 4px rgba(240,176,48,.75)}100%{box-shadow:0 0 0 3px rgba(240,176,48,.75),0 0 10px 2px rgba(240,176,48,.35)}}
 #gym .it-recb .it-recgo .tm-meta small{white-space:normal}
 /* v17.59 경완: 훈련장 코치가 포켓몬을 따라다니며 지켜봄 — 걸음 칸은 JS(yCoach), 오른쪽은 --fx 로 뒤집기 */
 #gym .ty-co{transform:scaleX(var(--fx,1))}#gym .ty-co.cheer{animation:tyCheer2 .5s steps(2,end) 2}@keyframes tyCheer2{50%{transform:scaleX(var(--fx,1)) translateY(-4px)}}
@@ -3107,7 +3107,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .sp-recs .sp-recth{flex:none;width:24px;height:24px;display:grid;place-items:center;overflow:hidden}
 #gym .sp-recs .sp-recth .rk-fr{width:24px;height:24px}#gym .sp-recs .sp-recth .rk-fr>img{max-width:24px;max-height:24px;object-fit:contain}
 /* v17.88 경완 '꺼지는 느낌보다 밝아지는 느낌으로': 흐려지지 않고 밝아지며 빛남 */
-#gym .gy-plate .gy-rpa .gy-stk{animation:gyStkBr 2.4s ease-in-out infinite}@keyframes gyStkBr{0%,100%{filter:brightness(1);box-shadow:0 0 0 0 rgba(255,120,100,0)}50%{filter:brightness(1.35) saturate(1.15);box-shadow:0 0 8px 2px rgba(255,110,90,.6)}}
+#gym .gy-plate .gy-rpa .gy-stk{animation:gyStkBr 2.4s ease-in-out infinite}@keyframes gyStkBr{0%,100%{filter:brightness(1.15) saturate(1.1);box-shadow:0 0 3px 0 rgba(255,120,100,.3)}50%{filter:brightness(1.3) saturate(1.15);box-shadow:0 0 9px 2px rgba(255,110,90,.65)}}   /* v18.08 경완 '연승중 딱지 어두워지지는 않게': 가장 옅을 때도 원래보다 밝게, 빛만 커졌다 작아졌다 */
 @media (prefers-reduced-motion: reduce){#gym .gy-plate .gy-rpa .gy-stk{animation:none}}
 
 /* v18.04 경완 '훈련장도 소품 기존 그림자 없애야': 해가 있을 땐(모양 그림자) 기구 밑 예전 타원 그림자 숨김 */
