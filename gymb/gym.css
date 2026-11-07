@@ -3119,3 +3119,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .pk-ben .gold .pk-ic{background:none;box-shadow:none}.pk-ben .gold .pk-ic::before{display:none}#gym .gy-pop .pk-ben .gold .pk-ic .coin{width:18px;height:18px;margin:0}
 .gy-perk ul li .coin{vertical-align:-2px}
 .pk-ben .eg .pk-ic{background:none;box-shadow:none}.pk-ben .eg .pk-ic::before{display:none}.pk-ben .eg .pk-le .egg{width:22px;height:27px}   /* li 이름이 .egg 면 알 그림 CSS 가 줄 전체에 걸려 줄이 깨졌음 */
+/* v18.27 경완: 승급 보상 알림창 */
+.gy-pop .rw-get{display:flex;flex-direction:column;align-items:center;gap:12px;padding:18px 0 12px}
+.gy-pop .rw-g{display:flex;align-items:center;gap:8px;font-size:22px}.gy-pop .rw-g b{color:#c07a08}#gym .gy-pop .rw-g .coin{width:22px;height:22px;margin:0!important}
+.gy-pop .rw-e{display:flex;align-items:center;gap:10px;font-size:15px}.gy-pop .rw-e em{font-style:normal;color:#c03a10}.gy-pop .rw-eg .egg{width:44px;height:54px}
