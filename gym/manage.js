@@ -693,20 +693,21 @@ const prBtn = () => `<button class="tm-sort" type="button" data-pr="1">${shopPr 
 const recMon = () => { const P = shRec != null && S.box.find(p => p.id === shRec); return P && luMons().some(x => x.id === P.id) ? P : null; };
 const luMons = () => [...new Set((GB().lus() || []).flat())].map(id => S.box.find(p => p.id === id)).filter(Boolean);
 function recBar() { if (!['tm', 'tr', 'it'].includes(shopT)) return ''; const P = recMon();   // v17.67 경완: 작은 버튼으로 보유 골드 왼쪽에
-  return P ? `<div class="sp-recs on"><button type="button" class="sp-recsb" data-rec="pick" aria-label="추천 포켓몬 바꾸기"><span class="sp-recth">${GB().thumb(P)}</span><b>${esc(nmOf(P))}</b></button><button type="button" class="sp-recsx" data-rec="off" aria-label="추천 끄기">✕</button></div>`
+  return P ? `<div class="sp-recs on"><button type="button" class="sp-recsb" data-rec="pick" aria-label="추천 포켓몬 바꾸기"><span class="sp-recth">${GB().thumb(P)}</span><b>${esc(nmOf(P))}</b></button></div>`
     : `<button type="button" class="sp-recs sp-recsb" data-rec="pick"><i class="sp-recic" aria-hidden="true">★</i><b>추천받기</b></button>`; }
 // v17.82 경완 '추천받기 버튼 도구 탭이랑 정렬 맞추고 폰트·여백도 탭이랑, 테두리는 검정': 도구 탭과 같은 가로 자리·폭
 function recAlign() { const r = sh.querySelector('.sp-recs'), t = sh.querySelector('.sp-tabs [data-st=it]'), hd = sh.querySelector('.sf-hd'); if (!r || !t || !hd) return;
   const a = t.getBoundingClientRect(), h = hd.getBoundingClientRect(); if (!a.width) return; r.style.left = (a.left - h.left) + 'px';
-  if (r.classList.contains('on')) { r.style.width = ''; const b = r.querySelector('.sp-recsb'); if (b) b.style.width = a.width + 'px'; } else r.style.width = a.width + 'px'; }   // v17.83: 켜졌을 때도 상자는 도구 탭 폭, ✕ 는 상자 밖 글자만
+  if (r.classList.contains('on')) { const tl = sh.querySelector('.sp-hl')?.getBoundingClientRect(); r.style.left = ''; r.style.width = ''; r.style.right = (h.right - a.right) + 'px'; r.style.minWidth = a.width + 'px'; r.style.maxWidth = (tl ? a.right - tl.right - 8 : a.width * 2) + 'px'; } else { r.style.right = ''; r.style.minWidth = r.style.maxWidth = ''; r.style.width = a.width + 'px'; } }   // v17.88 경완: 켜지면 도구 탭 오른쪽 끝에 맞추고 이름이 길면 왼쪽으로 늘어남
 addEventListener('resize', () => { try { recAlign(); } catch (e) {} });
 function recPick() {   // v17.61 경완: 라인업 1·2·3 탭
   const LU = GB().lus() || [[], [], []], mons = k => (LU[k] || []).map(id => S.box.find(p => p.id === id)).filter(Boolean);
   if (!LU.some((_, k) => mons(k).length)) return say('라인업에 포켓몬이 없어요. 포켓몬 메뉴에서 라인업을 먼저 짜 주세요.');
   let t = LU.findIndex(L => L.includes(shRec)); if (t < 0) t = st().luI | 0; if (!mons(t).length) t = LU.findIndex((_, k) => mons(k).length);
   const pane = k => { const L = mons(k); return L.length ? `<div class="sp-recl">${L.map(P => `<button type="button" class="sp-recp${P.id === shRec ? ' on' : ''}" data-a="p${P.id}">${GB().thumb(P)}<b>${esc(nmOf(P))}</b><small>Lv.${GB().gm(P).lv}</small></button>`).join('')}</div>` : '<p class="sf-none sp-recn">이 라인업은 비어 있어요.</p>'; };
-  const w = pop(`<h4>누구에게 추천할까요?</h4><div class="sp-tabs sp-lut" role="tablist">${[0, 1, 2].map(k => `<button type="button" role="tab" data-a="t${k}" aria-selected="${k === t}">라인업 ${k + 1}</button>`).join('')}</div><div class="sp-recpn">${pane(t)}</div><div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => {
+  const w = pop(`<h4>누구에게 추천할까요?</h4><div class="sp-tabs sp-lut" role="tablist">${[0, 1, 2].map(k => `<button type="button" role="tab" data-a="t${k}" aria-selected="${k === t}">라인업 ${k + 1}</button>`).join('')}</div><div class="sp-recpn">${pane(t)}</div><div class="gy-btns${shRec ? '' : ' one'}">${shRec ? '<button data-a="off">추천 끄기</button>' : ''}<button data-a="x">닫기</button></div>`, (a, close) => {   // v17.88 경완: ✕ 없애고 이 창에서 추천 끄기
     if (a[0] === 't') { sfx('tap'); t = +a.slice(1); w.querySelectorAll('.sp-lut [role=tab]').forEach((b, k) => b.setAttribute('aria-selected', k === t)); w.querySelector('.sp-recpn').innerHTML = pane(t); GB().fillTh(w); return; }
+    if (a === 'off') { close(); shRec = null; redraw(); return; }
     close(); if (a[0] !== 'p') return; shRec = +a.slice(1) || a.slice(1); redraw(); }); }
 function drawShop() {
   const goIt = window.gymShopIt, goMint = window.gymShopMint; window.gymShopIt = window.gymShopMint = null;   // v17.57 경완: 상세카드 추천 도구·추천 성격 → 상점 도구 탭의 그 도구·민트 사기 창으로 바로
