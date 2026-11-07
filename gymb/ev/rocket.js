@@ -17,8 +17,8 @@ const mon = (i, lv) => [POOL[i][lv >= 28 ? 1 : 0], lv];
 const gTeam = (A, n, add, seed) => { const L = A.lv() + add; return Array.from({ length: n }, (_, i) => mon((seed + i * 2) % POOL.length, Math.max(3, L + (i === n - 1 ? 1 : 0)))); };
 const trOf = ow => ow === 'hg_rocket_f' ? 'hg_rocket_f' : 'hg_rocket_m';
 // 조무래기 배틀 한 판: 나를 보면 '!' → 걸어와서 한마디 → 배틀 → 진 대사. 이기면 true
-// 배틀에서 이기고 필드로 돌아오면: 회복 소리 + 내 머리 위 반짝 (본가 회복처럼 포켓몬이 모두 기운을 되찾음)
-async function healFx(A, F) { A.fan('mus_rg_heal'); const b = F.bub(F.me, '♥ 회복!', 1300); b.classList.add('heal'); await A.wait(900); }
+// 배틀에서 이기고 필드로 돌아오면: 상처약 소리와 함께 포켓몬이 모두 기운을 되찾음
+async function healFx(A, F) { A.se('se_use_item'); await A.wait(500); }   // 본가 상처약 쓸 때 소리(SE_USE_ITEM), 말풍선 없이 (경완 2026-11-07)
 async function fight(A, F, S, s, o) {
   // 지친 채로는 다시 못 싸움: 돌담시티에선 포켓몬 센터에서 회복하고 와야 한다 (경완 2026-11-07)
   if (A.tired) { s.face(F.me); await S.say('(포켓몬들이 지쳐 있다...\n먼저 포켓몬 센터에 가서 회복시키자.)', { who: A.me() }); S.hide(true); return false; }
