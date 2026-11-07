@@ -1,0 +1,11 @@
+{
+ "red": "radial-gradient(circle at 195px 388px,#fff0dc 0,#ffb27a 26%,#e0483a 60%,#701226 100%)",
+ "rings": "repeating-radial-gradient(circle at 195px 388px,rgba(255,255,255,.10) 0 18px,transparent 18px 36px),radial-gradient(circle at 195px 388px,#fff0dc 0,#ffb27a 26%,#e0483a 60%,#701226 100%)",
+ "steps": "radial-gradient(circle at 195px 388px,#ffd9b0 0 150px,#ff9a6a 150px 215px,#e8503e 215px 285px,#b02a34 285px 365px,#701226 365px)",
+ "dots": "radial-gradient(circle,rgba(255,255,255,.2) 2px,transparent 2.6px) 0 0/18px 18px,radial-gradient(circle at 195px 388px,#fff0dc 0,#ffb27a 26%,#e0483a 60%,#701226 100%)",
+ "spark": "radial-gradient(circle at 195px 388px,#fff0dc 0,#ffb27a 26%,#e0483a 60%,#701226 100%)",
+ "purple": "radial-gradient(circle at 195px 388px,#fdeeff 0,#e0a8ff 26%,#8a3fd0 60%,#2c1060 100%)",
+ "navy": "radial-gradient(circle at 195px 388px,#eafcff 0,#8ce0f0 26%,#2a6cc0 60%,#101a55 100%)",
+ "green": "radial-gradient(circle at 195px 388px,#f6ffe0 0,#b6ec8a 26%,#2fa868 60%,#0c4638 100%)",
+ "pink": "radial-gradient(circle at 195px 388px,#fff0f4 0,#ffb0cc 26%,#e0467e 60%,#6a1048 100%)"
+}

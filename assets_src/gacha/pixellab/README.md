@@ -33,13 +33,6 @@ bg_festival(축제 거리), bg_toyshop(장난감 가게), bg_tile(체크 타일 
 시안에서는 폭 390px에 맞춰 세로 위치를 위로 옮김: 2배 기준 toyshop 109px, festival 100px, tile 90px. 기계 밑면이 바닥이나 선반에 닿는 위치.
 layout_mock/D_*: 박스 없앤 배치 + 배경 시안.
 
-## 방사형 배경 (경완이 고른 방향, 그림 파일 없이 CSS)
-bg/의 그림 대신 쓰는 시안. 기계를 화면 정중앙에 두고 그 중심에서 퍼짐. 388px는 시안 기준 값이라 실제 화면에서는 기계 중심 좌표로 바꿀 것.
-layout_mock/E_<gold|blue|red>_<f|e>.png
-
-gold:
-background:repeating-conic-gradient(from 0deg at 50% 388px,rgba(255,255,255,.17) 0 9deg,transparent 9deg 18deg),radial-gradient(circle at 50% 388px,#fff8cf 0,#ffdc6a 30%,#f7a12a 62%,#c9551c 100%);
-blue:
-background:repeating-conic-gradient(from 0deg at 50% 388px,rgba(255,255,255,.13) 0 9deg,transparent 9deg 18deg),radial-gradient(circle at 50% 388px,#f2fcff 0,#9fe0f7 30%,#3f95dc 64%,#1e3f94 100%);
-red:
-background:radial-gradient(circle at 50% 388px,#fff0dc 0,#ffb27a 26%,#e0483a 60%,#701226 100%);
+## 방사형 배경 (그림 파일 없이 CSS)
+기계를 화면 정중앙에 두고 그 중심에서 퍼짐. 값은 radial_bg_css.json. 중심 195px 388px은 시안 기준이라 실제 화면의 기계 중심으로 바꿀 것. 반짝이(spark)는 red에 작은 흰 점을 더한 것.
+layout_mock/F_<red|rings|steps|dots|spark|purple|navy|green|pink>.png, 알은 게임의 실제 그림.
