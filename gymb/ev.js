@@ -31,10 +31,10 @@ const CSS = `
 #gym .ev-ttl{animation:evTtl 3.2s ease both}
 @keyframes evTtl{0%{opacity:0;transform:scaleY(.2)}12%{opacity:1;transform:none}82%{opacity:1}100%{opacity:0}}
 #gym .ev-r{position:absolute;pointer-events:none;image-rendering:pixelated;background:linear-gradient(#b8b8c4,#9898a8);border:2px solid #303040;border-radius:2px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
-#gym .ev-r::after{content:'R';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:900 var(--rf,12px)/1 sans-serif;color:#d01828;text-shadow:1px 1px 0 #600}
+#gym .ev-r::after{content:'';position:absolute;inset:14%;background:url("gym/img/ev/rocket/r_emb.png?v=2") center/contain no-repeat;image-rendering:pixelated}   /* R 마크 = 해결 창과 같은 도트 로고 (경완 2026-11-07) */
 #gym .ev-r.flag{background:none;border:0;box-shadow:none}
 #gym .ev-r.flag::before{content:'';position:absolute;left:12%;top:4%;bottom:0;width:8%;background:#585868;border:1px solid #303040}
-#gym .ev-r.flag::after{inset:6% 4% auto 20%;height:46%;background:#1c1c24;border:2px solid #303040;color:#e02030;text-shadow:none}
+#gym .ev-r.flag::after{inset:6% 4% auto 20%;height:46%;background:url("gym/img/ev/rocket/r_emb.png?v=2") center/auto 76% no-repeat,#1c1c24;border:2px solid #303040}
 /* 필드 모험 (방향 패드) */
 #gym .ev-fld .tw-sp{z-index:2}
 #gym .ev-fld .tw-sp.gone{opacity:0;transition:opacity .35s}
@@ -182,9 +182,8 @@ function tools(I, def) {
       const gn = w.querySelector('.rw-gn'); if (gn) { const t0 = performance.now() + 1700, T = 900, f2 = now => { const q = Math.max(0, Math.min(1, (now - t0) / T)); gn.textContent = `+${Math.round(R.g * (1 - (1 - q) ** 3)).toLocaleString()}G`; if (q < 1 && gn.isConnected) requestAnimationFrame(f2); }; requestAnimationFrame(f2); }
       // 의상 보상은 해결 창을 닫으면 따로 크게 보여 준다 (경완 2026-11-07 '로켓단 제복은 옷 잘 보이게 새로운 창으로')
       const fitWin = () => new Promise(ok2 => { if (!R.fit) return ok2(); const v = document.createElement('div'); v.className = 'ev-rw gy-pop pp-pop rw-pop';
-        v.innerHTML = `<div class="win"><div class="rw-hd fw-hd" style="${R.hd ? `--c1:${R.hd[0]};--c2:${R.hd[1]}` : ''}"><i class="bsa-ray"></i><i class="rw-halo"></i><img class="fw-pic" alt="" src="gym/img/fit/${R.fit}_${f}.png?v=${VER}" onerror="this.onerror=null;this.src='${R.fitAlt ? R.fitAlt.replace('$', f) : ''}'"><b class="fw-new">NEW</b></div>
+        v.innerHTML = `<div class="win"><div class="rw-hd fw-hd" style="${R.hd ? `--c1:${R.hd[0]};--c2:${R.hd[1]}` : ''}"><i class="rw-halo"></i><img class="fw-pic" alt="" src="gym/img/fit/${R.fit}_${f}.png?v=${VER}" onerror="this.onerror=null;this.src='${R.fitAlt ? R.fitAlt.replace('$', f) : ''}'"><b class="fw-new">NEW</b></div>
           <h4 class="pp-t"><small>새 의상을 받았다!</small>${I.esc(R.fitNm || '새 의상')}</h4><p class="rw-msg">상점 › 의상에서 언제든 갈아입을 수 있어요</p><div class="gy-btns one"><button type="button" class="main">좋아!</button></div></div>`;
-        document.querySelectorAll('.gy-fx').forEach(x => x.remove()); try { window.GymBGM?.seStop?.('ME_FANFA5'); } catch (e) {}   // 의상 창엔 앞 창 빵빠레·꽃가루 안 이어지게 (경완 2026-11-07)
         root.appendChild(v); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} I.haptic?.(0);
         v.querySelector('button').onclick = e => { e.stopPropagation(); I.sfx?.('tap'); v.remove(); ok2(); }; });
       w.querySelector('button').onclick = e => { e.stopPropagation(); I.sfx?.('tap'); w.remove(); fitWin().then(ok); }; }),
