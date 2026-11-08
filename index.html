@@ -2722,8 +2722,9 @@ function cryChirp(sp) {
   tone(b, t, .09, { vol: .06, to: b * 1.5 }); tone(b * 1.4, t + .11, .16, { vol: .06, to: b * .8, steps: 4 });
 }
 // 기술 효과음 (타입별)
+function mvQuiet() { return document.getElementById('mg')?.hidden === false || !!document.querySelector('body > .sheet:not([hidden]):not(.off)') || document.body.classList.contains('gymMode') || document.body.classList.contains('visiting'); }   /* v18.70 경완: 필드 기술 소리는 미니게임 창뿐 아니라 다른 메뉴(가방·상점·도감 등 시트)가 열려 있을 때도 안 남 */
 function mvSnd(ty) {
-  if (!sfxOn || document.getElementById('mg')?.hidden === false) return;   /* v18.69 경완: 필드 기술 소리 — 미니게임 창 열려 있으면 늘 안 남 */ const a = audio(); if (!a) return; const t = a.currentTime + .05;
+  if (!sfxOn || mvQuiet()) return;   /* v18.69 경완: 필드 기술 소리 — 미니게임 창 열려 있으면 늘 안 남 */ const a = audio(); if (!a) return; const t = a.currentTime + .05;
   const hit = (d, f = 180) => { noise(t + d, .09, .16, 500); tone(f, t + d, .1, { vol: .07, to: f * .4 }); };
   switch (ty) {
     case 2: for (let i = 0; i < 4; i++) hit(i * .12, 160); break;
@@ -7757,7 +7758,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '18.69';   /* v18.69 경완: 미니게임 중 필드 기술 소리도 안 남, 진화구슬 골드 더 (한 판 10분) */ /*   /* v18.68 경완: 미니게임 중엔 필드에서 늦게 예약된 효과음·울음소리도 안 남 */ /*   /* v18.67 경완: 진화구슬 그만하기 창에 다시 하기(기록 없이 새 판)·정렬, 기록창 '가장 큰 구슬' 칸 없앰, 랭킹 포켓몬 칸 정가운데 */ /*   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
+const APP_VER = '18.70';   /* v18.70 경완: 메뉴 열려 있을 때도 필드 기술 소리 안 남 */ /*   /* v18.69 경완: 미니게임 중 필드 기술 소리도 안 남, 진화구슬 골드 더 (한 판 10분) */ /*   /* v18.68 경완: 미니게임 중엔 필드에서 늦게 예약된 효과음·울음소리도 안 남 */ /*   /* v18.67 경완: 진화구슬 그만하기 창에 다시 하기(기록 없이 새 판)·정렬, 기록창 '가장 큰 구슬' 칸 없앰, 랭킹 포켓몬 칸 정가운데 */ /*   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -12922,7 +12923,7 @@ const pfxReady = () => PFX ? Promise.resolve() : Promise.race([pfxLoad() || Prom
 const PSND = new Map(), PSND_U = 'https://raw.githubusercontent.com/audinowho/DumpAsset/master/Content/Sound/Battle/';
 function psBuf(n) { if (!CRY_NET) return Promise.resolve(null); let p = PSND.get(n); if (!p) { p = fetch(PSND_U + encodeURIComponent(n) + '.ogg').then(r => r.ok ? r.arrayBuffer() : null).then(ab => { const a = ab && audio(); return a ? new Promise((res, rej) => a.decodeAudioData(ab, res, rej)) : null; }).then(b => { if (b) b.g = Math.min(cryGain(b) * .8, 2.5); return b; }).catch(() => null); PSND.set(n, p); p.then(b => { if (!b) PSND.delete(n); }); } return p; }
 function pfxSndPre(name) { const L = PFX?.r[name]?.snd; if (L) for (const s of L) psBuf(s[1]); }
-function psPlay(n, at) { if (!sfxOn || fMute() || document.getElementById('mg')?.hidden === false) return; const a = audio(); if (!a) return; const T = a.currentTime + Math.max(0, at); psBuf(n).then(b => { if (!b || !sfxOn) return; const src = a.createBufferSource(), g = a.createGain(); g.gain.value = b.g * volG(VOL.sfx); src.buffer = b; src.connect(g).connect(cryLim(a)); if (a.currentTime - T > .4) return; src.start(Math.max(a.currentTime, T)); }); }
+function psPlay(n, at) { if (!sfxOn || fMute() || mvQuiet()) return; const a = audio(); if (!a) return; const T = a.currentTime + Math.max(0, at); psBuf(n).then(b => { if (!b || !sfxOn) return; const src = a.createBufferSource(), g = a.createGain(); g.gain.value = b.g * volG(VOL.sfx); src.buffer = b; src.connect(g).connect(cryLim(a)); if (a.currentTime - T > .4) return; src.start(Math.max(a.currentTime, T)); }); }
 // 기술 효과 하나 내기: 이름 연출(MV_NAME) → PMD 원본 효과(소리도 원본, 그 순간에) → 타입 효과. 원본 소리가 없으면 예전 타입 효과음
 function mvGo(name, t, o, f, m) { if (MV_NAME[name]) { mvSnd(t); MV_NAME[name](o, f, m); return; } const r = pfxMove(name, t, o, f, m); if (!r) { mvSnd(t); (MV_FX[t] || MV_FX[1])(o, f, m); return; }
   const L = CRY_NET && PFX.r[name]?.snd; if (!L || !L.length) { setTimeout(() => mvSnd(t), r.act * 1000); return; } for (const [ro, n, dl] of L) psPlay(n, r[ro] + (dl || 0) / 60); }
