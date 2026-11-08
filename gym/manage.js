@@ -39,7 +39,8 @@ const coachX = () => { const L = st().sf.filter(s => !s.rest); return 1 + L.redu
 const YARD_SF = 2;
 // 특별한 기술 = 포켓로그 알 기술 (v19.50 경완 '포켓로그 알 기술 목록에 있는거 배울 수 있게, 기댓값은 일주일에 1개 정도'):
 // gym/egg.json (tools/gym/mkegg.js) 의 4개 중 아직 모르는 것 하나. 4번째는 포켓로그의 레어 알 기술이라 뽑힐 몫을 ¼ 로.
-const SP_P = 1 / 56;   // 훈련 1시간마다 (하루 8시간 × 7일 = 56시간에 1개쯤)
+const SP_P = 1 / 168;   // 훈련 1시간마다 (v19.56 쉬지 않고 24시간 × 7일 = 168시간에 1개쯤)
+const TR_H = 24;   /* v19.56 경완 '체육관 훈련은 그냥 쉬는시간 없이 계속하게': 하루 8시간 상한 → 하루 내내 */
 function special(P) {
   const D = GB().D, m = GB().gm(P), E = GB().EGG?.[P.sp] || [];
   const L = E.map((id, i) => [id, i === 3 ? .25 : 1]).filter(([id]) => id && GB().mvOf(id) && !m.mv.includes(id) && !(m.kn || []).includes(id));
@@ -57,7 +58,7 @@ function tickTrain(now) {
     const P = boxOf(e.id); if (!P) return false;
     if (onField(e.id)) { K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '은' : '는'} 필드로 나가서 훈련장에서 빠졌다.`, now); return false; }
     let t = e.t, hrs = 0; const seg = [];   /* v16.41 경완 '오늘 훈련으로 경험치·레벨·친밀도·새 기술, 날짜별 훈련 일지': 날마다 나눠서 기록 */
-    while (t < now) { const d0 = K.dayStart(t), de = K.nextDay(t); if (e.d !== d0) { e.d = d0; e.h = 0; } const use = Math.min((Math.min(now, de) - t) / H, Math.max(0, 8 - e.h)); e.h += use; hrs += use; if (use > 0) seg.push([d0, use]); t = Math.min(now, de); }
+    while (t < now) { const d0 = K.dayStart(t), de = K.nextDay(t); if (e.d !== d0) { e.d = d0; e.h = 0; } const use = Math.min((Math.min(now, de) - t) / H, Math.max(0, TR_H - e.h)); e.h += use; hrs += use; if (use > 0) seg.push([d0, use]); t = Math.min(now, de); }
     e.t = now; if (hrs <= 0) return true;
     const lv0 = GB().gm(P).lv, got = [];
     for (const [dk, sh] of seg) { const R = trDay(P.id, dk), lvA = GB().gm(P).lv; R.h += sh;
@@ -76,7 +77,7 @@ function tickTrain(now) {
 // 훈련장 = 화면 가득한 체육관 뒤뜰 (경완 피드백 2026-10-27 '꾸미기 모드 필드처럼', '미사여구 다 빼고 전체 화면, 퀄리티 필드 수준', '필드랑 너무 비슷하다').
 // 체육관 건물 벽·모래 코트(배틀 코트 선)·돌 수영장·벤치·타이어. 기구는 본게임 필드와 같은 도트 그림 도구(GA.art: ART 덩어리·외곽선)로 그린다. 포켓몬은 필드와 같은 걸음 그림(GA.pmd)·크기.
 // 포켓몬이 돌아다니며 기구를 치고, 둘씩 대련하고, 쉬고, 오늘 8시간을 다 쓰면 잔다. 경험치 계산은 tickTrain 그대로(화면은 보여 주기만).
-const leftOf = e => e.d === K.dayStart(Date.now()) ? Math.max(0, 8 - e.h) : 8;
+const leftOf = e => e.d === K.dayStart(Date.now()) ? Math.max(0, TR_H - e.h) : TR_H;
 let Y = null;   // 마당: { el, W, H, L, pr: {소품}, mons, raf, last, pos: {id: [x, y]}, pond, court }
 const inPond = (x, y, m = 0) => { const p = Y.pond; return x > p.x0 - m && x < p.x1 + m && y > p.y0 - m && y < p.y1 + m; };   // 수영장(네모)
 const yTop = () => 138;   // 체육관 벽 아래부터 걸어 다님
@@ -504,7 +505,7 @@ function statPop() {
     <div class="ts-grid tsc-grid">${Array.from({ length: Math.max(TR_ALL, L.length) }, (_, i) => { const r = L[i]; if (!r && i >= trMax()) return `<div class="ts-slot lock tsc-lock">${LOCK_SVG}<span><b>${K.GRADES[i + 1]?.[1] || ''}</b>이 되면 열려요</span></div>`; if (!r) return `<button type="button" class="ts-slot empty tsc-new" data-new="1"><span>+</span><b>포켓몬 보내기</b></button>`;
       const [e, P] = r, m = GB().gm(P), up = m.lv - (e.l0 ?? m.lv), gr = GB().growth(P.sp), a0 = GB().xpAt(gr, m.lv), a1 = GB().xpAt(gr, m.lv + 1), mx = m.lv >= GB().LV_MAX, f = mx ? 1 : clampN(((m.xp ?? a0) - a0) / Math.max(1, a1 - a0), 0, 1), hh = Math.min(8, e.d === today ? e.h : 0), nmv = (e.mv || []).length;
       return `<button type="button" class="ts-slot tsc" data-id="${P.id}"><span class="tsc-th">${GB().thumb(P)}</span><span class="tsc-mid"><span class="tsc-nm"><b>${esc(nmOf(P))}</b><span class="tsc-lv">Lv.${m.lv}</span>${up > 0 ? `<em class="tsc-up">▲${up}</em>` : ''}</span>
-        <span class="tsc-g"><i>경험치</i><span class="mini"><i style="width:${(f * 100).toFixed(0)}%"></i></span><small>${mx ? '최고' : `${Math.floor(f * 100)}%`}</small></span><span class="tsc-g h"><i>오늘 훈련</i><span class="mini"><i style="width:${(hh / 8 * 100).toFixed(0)}%"></i></span><small>${Math.floor(hh)}/8시간</small></span>
+        <span class="tsc-g"><i>경험치</i><span class="mini"><i style="width:${(f * 100).toFixed(0)}%"></i></span><small>${mx ? '최고' : `${Math.floor(f * 100)}%`}</small></span><span class="tsc-g h"><i>오늘 훈련</i><span class="mini"><i style="width:${Math.min(100, hh / TR_H * 100).toFixed(0)}%"></i></span><small>${Math.floor(hh)}시간</small></span>
         <small class="tsc-ft">${hm(e.j ? now - e.j : 0)}째 훈련 중${nmv ? ` · <b>새 기술 ${nmv}</b>` : ''}</small></span><span class="ts-x tsc-out" data-out="${P.id}" role="button" aria-label="훈련장에서 데려오기">데려오기</span></button>`; }).join('')}</div>
     </div>`;   // 아래 안내 문구는 뺐다 (경완 2026-10-29)
   GB().fillTh(w);
@@ -530,9 +531,10 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
   const e = st().tr.find(x => x.id === P.id), lf = e ? Math.max(0, Math.ceil(leftOf(e))) : 0, mx = m.lv >= GB().LV_MAX, today = K.dayStart(Date.now()), T = trLog(P.id)[today] || { h: 0, x: 0, lv: 0, f: 0, mv: [] };
   /* v16.71 경완 '훈련 일지 옆 통합 점수를 앞 화면 박스에, 오늘 훈련 → 훈련 현황': 훈련 일지 전체를 더한 값 */
   const TT = Object.values(trLog(P.id)).reduce((a, d) => { a.d++; a.x += d.x; a.lv += d.lv; a.f += d.f; a.mv.push(...d.mv); return a; }, { d: 0, x: 0, lv: 0, f: 0, mv: [] });
+  { const E = GB().EGG?.[P.sp] || []; TT.mv = [...new Set(TT.mv)].filter(id => E.includes(id)); }   /* v19.56 경완 '레벨업으로 배운 기술은 새 기술 창에 안 나와도 돼': 새 기술 = 특별한 기술만 */
   /* v16.41 경완: 레벨 옆 ▲ 딱지 빼고 훈련 중 / 오늘 훈련 끝만. 숫자 칸 넷 대신 '오늘 훈련' 상자(경험치·레벨·친밀도·새 기술) → 누르면 날짜별 훈련 일지. 기술 버튼 둘은 빼고 체육관 상세카드처럼 '기술 바꾸기 ›' */
   const p = pop(`<div class="tp2">${trHead(P, true)}
-    <div class="tp2-today" role="button" tabindex="0"><span class="tp2-th"><b>훈련 현황</b><small>${TT.d}일 · 오늘 ${Math.floor(T.h)}/8시간 · 훈련 일지 ›</small></span>
+    <div class="tp2-today" role="button" tabindex="0"><span class="tp2-th"><b>훈련 현황</b><small>${TT.d}일 · 오늘 ${Math.floor(T.h)}시간 · 훈련 일지 ›</small></span>
       <span class="tp2-g"><span><small>경험치</small><b>+${TT.x.toLocaleString()}</b></span><span><small>레벨</small><b class="${TT.lv ? 'up' : ''}">${TT.lv ? `▲${TT.lv}` : '-'}</b></span><span><small>친밀도</small><b class="${TT.f ? 'fr' : ''}">${TT.f ? `+${TT.f}` : '-'}</b></span><button type="button" class="tp2-mvc" data-a="mvs"><small>새 기술</small><b class="${TT.mv.length ? 'mv' : ''}">${TT.mv.length ? `${TT.mv.length}개 ›` : '- ›'}</b></button></span>
       ${TT.mv.length ? `<span class="tp2-mvs">${mvChips(TT.mv)}</span>` : ''}</div>
     <div class="mp-mvh"><small>기술</small><button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button></div>
@@ -549,10 +551,10 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
 /* v16.48 경완 '새 기술 박스는 따로 누르면 어떤 기술인지 팝업': 기술 이름 딱지(타입 색) → mvInfo. 여러 개면 목록 창에서 고름 */
 const mvChips = L => L.map(id => { const x = GB().mvOf(id); return `<button type="button" class="mv-chip" data-a="i${id}" style="--tc:${GA.TYPE_C?.[x?.[2]] || '#2a8a3e'}">${esc(GB().mvKo(id))}</button>`; }).join('');
 /* v19.55 경완 '훈련 현황 새 기술 박스 → 새 기술 창: 특별한 기술은 처음엔 실루엣 박스로 가려져 있다가 배울 때마다 하나씩 열림, 기술마다 행 하나로 길게':
-   위 = 특별한 기술(알 기술 4줄, 4번째 레어), 아래 = 훈련 중 레벨업으로 배운 기술. 처음 보는 알 기술(m.egS 에 없음)은 열리는 연출 한 번 */
+   특별한 기술(알 기술 4줄, 4번째 레어)만 (v19.56 레벨업 기술은 뺌). 처음 보는 알 기술(m.egS 에 없음)은 열리는 연출 한 번 */
 function mvListPop(L, P) {
   const m = P && GB().gm(P), E = (P && GB().EGG?.[P.sp] || []).filter(id => id && GB().mvOf(id)), kn = new Set([...(m?.mv || []), ...(m?.kn || [])]), seen = new Set(m?.egS || []);
-  const lvL = [...new Set(L)].filter(id => !E.includes(id)).map(id => GB().mvOf(id)).filter(Boolean);
+  const lvL = [];   // v19.56: 레벨업 기술은 안 보여 줌
   let nNew = 0; const row = (id, k) => { const x = GB().mvOf(id), rare = k === 3, on = kn.has(id), nw = on && !seen.has(id); if (nw) nNew++;
     return `<div class="eg-r${rare ? ' rare' : ''}${on ? ' on' : ''}${nw ? ' new' : ''}" style="--d:${nw ? (nNew - 1) * .9 : 0}s">${on ? GB().mvRow(x, 'i' + id) : ''}${!on || nw ? '<i class="eg-cv"><b>???</b><small>아직 익히지 않은 특별한 기술</small></i>' : ''}${rare ? '<em class="eg-rt">레어</em>' : ''}</div>`; };
   const got = E.filter(id => kn.has(id)).length;
