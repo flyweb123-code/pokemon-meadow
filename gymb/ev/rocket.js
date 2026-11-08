@@ -184,7 +184,6 @@ GymEv.def({
     //   빈집: 발자국을 따라 화분을 포켓몬 기술로 옮기면 그 밑에 계단 (v19.37 경완 2026-11-08)
     async A => {
       const { I, wait, anim } = A, me0 = A.me(), WO = A.woTake();
-      if (WO && A.has('caught')) { delete A.I.st().ev.got.caught; A.I.save(); }   // 아지트에서 들켜 지고 센터로 오면 다시 변장한 모습으로 (경완 2026-11-08). 문지기는 다시 알아봄
       A.blackNow();
       const [PW, MT, CT, HS, MU] = await Promise.all(['pewter', 'mart', 'center', 'house', 'museum'].map(MAP));
       const HE = { ...HS, col: HS.col.map((r, y) => y === 7 ? r.slice(0, 10) + '.' : r) };   // 빈집: 오른쪽 화분은 옮길 수 있는 그림(그 칸은 화분 그림이 막음)
