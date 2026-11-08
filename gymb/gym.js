@@ -1271,15 +1271,17 @@ function unlockChk() { const g = st(); if (!g || g.unl || gradeOf(g.rep || 0).i 
       <div class="ul-c"><i class="ul-pic tr"><img alt="" src="${IMG}tr/cool_trainer_f.png"></i><b>트레이너</b><span>고용하면 도전자를<br>먼저 막아 줘요</span><em>OPEN</em></div></div>
       <div class="gy-btns one"><button class="main" data-a="x">좋아요</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('ul-pop'); }); }
 // v18.27 경완 '골드랑 알 보상은 승급창 닫으면 바로 별도 알림창': 승급 보상 받는 창 (골드 + 체육관 타입 알)
-function rwPop() { const g = st(), i = g.grwN; if (i == null) return Promise.resolve(); delete g.grwN; save(); const n = GR_GOLD[i] || 0, E = GR_EGG[i];
+let legLast = null;   // v19.21: 방금 전당 연출에서 받은 전설 알 타입 (보상창에 줄로)
+function rwPop() { const g = st(), i = g.grwN; if (i == null) return Promise.resolve(); delete g.grwN; save(); const n = GR_GOLD[i] || 0, E0 = GR_EGG[i], LT = legLast; legLast = null;
+  const E = E0 || (LT != null ? [0, 1] : 0), legI = LT != null ? (GA.eggIco?.(LT) || '') : '', legNm = LT != null ? `${GA.LT_ADJ?.[LT] || TYPE_KO[LT]} 전설 알` : '';   /* v19.21 경완 '보상 알림창에 전설 알 슬롯도' */
   if (!n && !E) return Promise.resolve();
   /* v18.28 경완 '보상 알림창도 디자인, 알 2개면 스프라이트 2개': 승급창처럼 빛 무대 위에 받은 알 개수만큼 하나씩 톡톡 떨어지고, 아래 보상 줄 (골드는 0 부터 올라감) */
-  const ne = E ? E[1] : 0, stage = ne ? Array.from({ length: ne }, (_, k) => `<i class="rw-egg" style="--d:${(.25 + k * .18).toFixed(2)}s">${grEggI(i)}</i>`).join('') : '<i class="rw-coin"><i class="coin"></i></i>';
+  const ne = E ? E[1] : 0, stage = ne ? Array.from({ length: ne }, (_, k) => `<i class="rw-egg" style="--d:${(.25 + k * .18).toFixed(2)}s">${E0 ? grEggI(i) : legI}</i>`).join('') : '<i class="rw-coin"><i class="coin"></i></i>';
   /* v18.39 경완 '동네 체육관 골드만 줄 땐 빵빠레 박스 없어도 될 듯': 알 없으면 무대 박스 없이 골드 줄만 */
   return new Promise(ok => { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
     const p = pop(`${ne ? `<div class="pp-hd rw-hd"><i class="bsa-ray"></i><i class="pp-halo"></i><div class="rw-stage${ne > 3 ? ' many' : ''}">${stage}</div></div>` : ''}
       <h4 class="pp-t"><small>승급 보상</small>${GRADES[i][1]}</h4>
-      <div class="pp-ben"><ul class="pk-ben">${n ? `<li class="gold"><i class="pk-ic"><i class="coin"></i></i><span>골드</span><em><b class="rw-gn">+0G</b></em></li>` : ''}${E ? `<li class="eg"><i class="pk-ic"><span class="pk-le">${grEggI(i)}</span></i><span>${grEggN(i)}</span><em><b>${ne}개</b></em></li>` : ''}</ul>${E ? '<p class="rw-note">알은 필드의 알 가방에 들어 있어요</p>' : ''}</div>
+      <div class="pp-ben"><ul class="pk-ben">${n ? `<li class="gold"><i class="pk-ic"><i class="coin"></i></i><span>골드</span><em><b class="rw-gn">+0G</b></em></li>` : ''}${E0 ? `<li class="eg"><i class="pk-ic"><span class="pk-le">${grEggI(i)}</span></i><span>${grEggN(i)}</span><em><b>${E0[1]}개</b></em></li>` : ''}${LT != null ? `<li class="eg"><i class="pk-ic"><span class="pk-le">${legI}</span></i><span>${legNm}</span><em><b>1개</b></em></li>` : ''}</ul>${E ? '<p class="rw-note">알은 필드의 알 가방에 들어 있어요</p>' : ''}</div>
       <div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('pp-pop', 'rw-pop');
     const gn = p.querySelector('.rw-gn'); if (gn) { const t0 = performance.now() + 350, T = 800, f = now => { const k = Math.max(0, Math.min(1, (now - t0) / T)); gn.textContent = `+${Math.round(n * (1 - (1 - k) ** 3)).toLocaleString()}G`; if (k < 1 && gn.isConnected) requestAnimationFrame(f); }; requestAnimationFrame(f); }
     for (let k = 0; k < ne; k++) setTimeout(() => { try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {} }, 250 + k * 180 + 220); }); }
@@ -1290,7 +1292,7 @@ function legEggBox(t) { return new Promise(ok => { try { window.GymBGM?.se?.('DP
     pop(`<h4>${GA.LT_ADJ?.[t] || ''} 전설 알을 받았다!</h4><div class="le-get">${GA.eggIco?.(t) || ''}</div><p class="gy-msg" style="text-align:center">강박사에게서<br><b>${TYPE_KO[t]} 타입 전설 포켓몬</b>이 나오는 알을 받았어요.<br><small>필드의 알 가방에 들어 있어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); }); }
 // 탭하면 바로 넘어가는 기다림 (전당 연출은 길어서 누르면 다음 장면으로)
 const hofWait = (ov, ms) => new Promise(ok => { let d = false; const f = () => { if (d) return; d = true; ov.removeEventListener('click', f); clearTimeout(tm); ok(); }, tm = setTimeout(f, ms); ov.addEventListener('click', f); });
-async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete g.legN; save();
+async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete g.legN; save(); legLast = t;
   // v19.18 경완 '승급 순간부터, 노크 쿵쿵쿵! 화면 흔들림 → 같이 갈 데가 있다며 데리고 나가기 → 본가 전당 맵 → 등록 기계에 볼 하나씩 → 체육관 복귀·축하·안내원 티키타카 → 강박사 나간 뒤 승급창·보상창'
   const D = g.d && dzOf(g.d), main = $g('.gy-main'); if (!D || !meEnt || !main || !meEnt.el.isConnected) return legEggBox(t);
   const M = window.GymBGM, nm = trName() || '관장', ty = TYPE_KO[t], adj = GA.LT_ADJ?.[t] || '', KW = '<span class="gy-who">강박사</span>', GW = '<span class="gy-who">안내원</span>';
@@ -1317,9 +1319,9 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     // ---- 2. 강박사가 앞장서고 관장이 한 칸 뒤에서 따라 나간다 ----
     dlg(''); root.classList.add('dhide'); bgmPlay('rgFollow');
     const P = outRoute(D, k) || [[D.door[0], Math.round(k.y)], D.door], L = [[Math.round(k.x), Math.round(k.y)], ...P], WS = 267;
-    if (gu) { gu.f = 'u'; place(gu); }
+    if (gu) { const ddx = D.door[0] - gu.x, ddy = D.door[1] - gu.y; gu.f = Math.abs(ddy) >= Math.abs(ddx) ? (ddy > 0 ? 'd' : 'u') : (ddx > 0 ? 'r' : 'l'); place(gu); }   /* 경완: 안내원은 나가는 쪽(문)을 바라봄 */
     await Promise.all([walk(k, P, WS).then(() => { doorSe(); k.el.style.visibility = 'hidden'; }), wait(WS).then(() => walk(meEnt, L, WS)).then(() => { doorSe(); meEnt.el.style.visibility = 'hidden'; })]);
-    if (gu) A.bub(gu, '...', 1100); await wait(900);
+    await wait(900);
     await A.black(true);
     // ---- 3. 명예의 전당 (본가 파이어레드 맵) ----
     const HJ = await fetch(`${IMG}ev/hof/hof.json?v=${VER}`).then(r => r.json());
@@ -1346,7 +1348,8 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     // ---- 4. 등록 화면 (본가처럼 도트 그림 느낌) ----
     const SP = Array.from({ length: 14 }, (_, n) => `<i style="left:${(n * 37 + 11) % 100}%;top:${(n * 53 + 7) % 78}%;animation-delay:${(n * .37 % 2.2).toFixed(2)}s"></i>`).join('');
     ov = document.createElement('div'); ov.className = 'hof gba';
-    ov.innerHTML = `<i class="hof-bg"></i><i class="hof-beam l"></i><i class="hof-beam r"></i><i class="hof-floor"></i><i class="hof-sp">${SP}</i>
+    const UP = Array.from({ length: 18 }, (_, n) => `<i style="left:${(n * 41 + 5) % 100}%;--s:${(.6 + (n * 7 % 5) * .18).toFixed(2)};animation-duration:${(5 + n * 1.3 % 4).toFixed(1)}s;animation-delay:-${(n * .83 % 6).toFixed(2)}s"></i>`).join('');   /* v19.21 경완 '더 웅장하게': 올라가는 빛 알갱이 */
+    ov.innerHTML = `<i class="hof-bg"></i><i class="hof-sun"></i><i class="hof-beam l"></i><i class="hof-beam r"></i><i class="hof-beam c"></i><i class="hof-floor"></i><i class="hof-ring"></i><i class="hof-sp">${SP}</i><i class="hof-up">${UP}</i><i class="hof-bar t"></i><i class="hof-bar b"></i>
       <div class="hof-ttl"><small>${ty} 타입 · 전설의 체육관</small><b>명예의 전당</b></div><div class="hof-st"></div><div class="hof-cap"></div><i class="hof-flash"></i>`;
     F.el.appendChild(ov); root.classList.add('lgOn'); void ov.offsetWidth; ov.classList.add('hOn'); M?.stop?.(.6); await wait(800);
     bgmPlay('rgHof'); ov.classList.add('hTtl'); await hofWait(ov, 2600); ov.classList.remove('hTtl'); await wait(500);
@@ -1355,9 +1358,11 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     for (const [n, P2] of mons.entries()) {
       const lv = (() => { try { return GB()?.gm?.(P2)?.lv; } catch (e) { return 0; } })(), pn = P2.nm || SPECIES[SPECIES[P2.sp]?.rb || P2.sp]?.n || '???';
       const el = document.createElement('div'); el.className = 'hof-pk in'; el.innerHTML = '<span></span>'; st0.appendChild(el); try { GA.pkFront?.(el.firstElementChild, { sp: P2.sp, sh: P2.shiny ? 1 : 0, sx: P2.sex }); } catch (e) {}
+      ov.classList.remove('hBurst'); void ov.offsetWidth; ov.classList.add('hBurst'); se('DP_DECIDE');
+      await wait(700); try { GA.cry?.(P2.sp, 0, 1, 2.2); } catch (e) {}   /* v19.21 경완: 포켓몬 나올 때마다 울음소리 */
       cap.innerHTML = `<i>No.${n + 1}</i><b>${esc(pn)}</b>${lv ? `<em>Lv.${lv}</em>` : ''}`; cap.classList.remove('on'); void cap.offsetWidth; cap.classList.add('on');
-      se('DP_DECIDE'); await hofWait(ov, 2300);
-      el.classList.remove('in'); el.classList.add('out'); cap.classList.remove('on'); await wait(380); el.remove(); }
+      await hofWait(ov, 3400);   /* v19.21 경완 '포켓몬 별로 지나가는 타이밍 늘려': 2.3초 → 4.1초 */
+      el.classList.remove('in'); el.classList.add('out'); cap.classList.remove('on'); await wait(700); el.remove(); }
     const trU = await fitSrc('tr').catch(() => `${IMG}tr/${myOw()}.png`);
     st0.innerHTML = `<div class="hof-all">${mons.map((P2, n) => `<span class="hof-mini" style="--n:${n};--c:${mons.length}"><span></span></span>`).join('')}<img class="hof-tr" alt="" src="${trU}"></div>`;
     st0.querySelectorAll('.hof-mini>span').forEach((e, n) => { try { GA.pkFront?.(e, { sp: mons[n].sp, sh: mons[n].shiny ? 1 : 0, sx: mons[n].sex }); } catch (x) {} });
@@ -1370,8 +1375,11 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     await wait(60); ov.classList.add('hDrop'); se('DP_KIRAKIRA2'); await wait(1900);
     se('DP_PINPON'); ov.classList.add('hWob'); await wait(900); ov.classList.remove('hWob'); void ov.offsetWidth; ov.classList.add('hWob'); se('DP_PINPON'); await wait(900);
     ov.classList.add('hGot'); confetti(); se('DP_KIRAKIRA2');
-    root.classList.remove('dhide'); await talk(`<b>${E}</b>${jo} <b>${adj} 전설 알</b>을 받았다!`, '다음', `${ty} 타입 전설 포켓몬이 태어나는 알 · 필드의 알 가방에 넣었어요`);
-    dlg(''); root.classList.add('dhide');
+    /* v19.21 경완: '전설 알을 받았다!' 는 대사창 말고 하단에 따로 디자인한 알림창 (팝업 모션·효과음, 버튼으로만 닫힘) */
+    await wait(500); await new Promise(ok => { const n2 = document.createElement('div'); n2.className = 'hof-got';
+      n2.innerHTML = `<i class="hg-shine"></i><div class="hg-ic"><i class="hg-halo"></i>${GA.eggIco?.(t) || ''}</div><div class="hg-tx"><small>전설 알 획득!</small><b>${adj} 전설 알</b><p>${ty} 타입 전설 포켓몬이 태어나요<br>필드의 알 가방에 넣었어요</p></div><button class="hg-ok">좋아!</button>`;
+      ov.appendChild(n2); se('DP_PINPON'); GA.haptic?.(1);
+      n2.querySelector('.hg-ok').addEventListener('click', e => { e.stopPropagation(); se('DP_DECIDE'); n2.classList.add('bye'); setTimeout(() => { n2.remove(); ok(); }, 260); }, { once: true }); });
     // ---- 5. 체육관으로 돌아옴 ----
     M?.stop?.(1); await A.black(true); ov.remove(); ov = null; root.classList.remove('lgOn'); F.el.remove(); F = null;
     meEnt.x = D.leader[0]; meEnt.y = D.leader[1]; meEnt.f = CR?.mf || 'd'; meEnt.el.style.visibility = ''; place(meEnt);
