@@ -15,7 +15,7 @@ const onField = id => S.mons.some(m => m.pid === id);
 const pop = (h, f) => { const p = K.pop(h, f); GB()?.fillTh(p); return p; };
 const say = msg => K.say(msg);   // 체육관 홈과 같은 가운데 알림 (경완 2026-10-29 '팝업창 중앙 정렬')
 const spend = n => { if (S.gold < n) return false; S.gold -= n; try { GA.renderGold(); } catch (e) {} K.renderGoldG(); K.save(); return true; };
-const buy = n => { if (!spend(n)) return false; try { K.dayRec().s += n; } catch (e) {} try { window.GymBGM?.se('DP_REGI'); } catch (e) {} return true; };   // 상점에서 살 때 본가 계산대 소리 (SEQ_SE_DP_REGI, 경완 2026-10-28)
+const buy = n => { if (!spend(n)) return false; try { window.pkGold?.('gym', n); } catch (e) {} try { K.dayRec().s += n; } catch (e) {} try { window.GymBGM?.se('DP_REGI'); } catch (e) {} return true; };   // 상점에서 살 때 본가 계산대 소리 (SEQ_SE_DP_REGI, 경완 2026-10-28)
 const gold = n => `<i class="coin"></i>${n.toLocaleString()}G`;
 // 포켓몬 정면 그림: 블랙·화이트 움직이는 gif (못 받으면 저장소 png 첫 칸)
 const monImg = (sp, o = {}) => { const g = GB().gifUrl(sp, false, !!o.s, !!o.f), png = GB().pkSrc(sp, { s: o.s, f: o.f });
@@ -667,7 +667,7 @@ function sfDetail(s, home) {
       if (a === 'fire') { close();   /* v16.41 경완 '해고할 때는 지금까지 일한 수당은 챙겨줘야 함': 이번 월급 주기에서 일한 날만큼 (쉬는 중이면 일 안 했으니 없음) */
         const wd = s.rest ? 0 : Math.max(1, Math.min(7, Math.ceil((now - (s.pay - 7 * K.DAY)) / K.DAY - .01))), amt = s.rest ? 0 : Math.round(s.wage * wd / 7);
         pop(`${sfFace(s)}<h4>해고할까요?</h4><p class="gy-msg">${esc(s.cls)} <b>${esc(s.nm)}</b>${K.jong(s.nm) ? '을' : '를'} 해고해요.${amt ? `<br>지금까지 일한 <b>${wd}일치 수당 ${amt.toLocaleString()}G</b>를 줘요.` : ''}</p><div class="gy-btns"><button data-a="x">아니요</button><button class="main" data-a="y">${amt ? `${amt.toLocaleString()}G 주고 해고` : '해고'}</button></div>`,
-        (b2, c2) => { c2(); if (b2 !== 'y') return sfDetail(s, home); if (amt && !spend(amt)) return say(`골드가 모자라요. 수당 ${amt.toLocaleString()}G가 필요해요.`); if (amt) { try { K.dayRec().p += amt; } catch (e) {} }
+        (b2, c2) => { c2(); if (b2 !== 'y') return sfDetail(s, home); if (amt && !spend(amt)) return say(`골드가 모자라요. 수당 ${amt.toLocaleString()}G가 필요해요.`); if (amt) { try { K.dayRec().p += amt; window.pkGold?.('wage', amt); } catch (e) {} }
           g.sf = g.sf.filter(x => x !== s); K.glog('sf', `${esc(s.cls)} ${esc(s.nm)}${K.jong(s.nm) ? '을' : '를'} 해고했다.${amt ? ` <small>수당 ${amt.toLocaleString()}G</small>` : ''}`); K.save(); redraw(); K.renderHome(); }); }
     });
   return p;
@@ -683,7 +683,7 @@ function hire(c) {
   /* v15.60 경완: 고용할지 한 번 묻고, 고용하면 효과음과 함께 고용 관리 탭으로 */
   pop(`${sfFace(c)}<h4>고용할까요?</h4><p class="gy-msg">${esc(c.cls)} <b>${esc(c.nm)}</b>${K.jong(c.nm) ? '을' : '를'} 고용해요.<br>첫 주 월급 <b>${c.wage}G</b>를 바로 내요.</p><div class="gy-btns"><button data-a="x">아니요</button><button class="main" data-a="y">고용하기</button></div>`, (a, close) => {
     close(); if (a !== 'y') return;
-    if (!spend(c.wage)) return say(`골드가 모자라요. 첫 주 월급 ${c.wage}G가 필요해요.`); try { K.dayRec().p += c.wage; } catch (e) {}
+    if (!spend(c.wage)) return say(`골드가 모자라요. 첫 주 월급 ${c.wage}G가 필요해요.`); try { window.pkGold?.('wage', c.wage); } catch (e) {} try { K.dayRec().p += c.wage; } catch (e) {}
     const now = Date.now(); g.sf.push(Object.assign({}, c, { hired: now, pay: now + 7 * K.DAY, w: 0, l: 0, xp: 0 })); dropCand(c);
     K.glog('sf', `${esc(c.cls)} <b>${esc(c.nm)}</b>${K.jong(c.nm) ? '을' : '를'} 고용했다! <small>월급 ${c.wage}G</small>`); K.save();
     try { const M = window.GymBGM; M?.fan ? M.fan('ME_FANFA1') : M?.se('ME_FANFA1'); } catch (e) {}
