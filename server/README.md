@@ -76,5 +76,6 @@ GitHub 저장소 비밀 변수 (Settings › Secrets and variables › Actions).
 - `gym` 관장 배틀: c(chal·named·boss) df 난이도 bs 심사 등급 gr 관장 등급 w 승 q 기권 tn 턴 gd 골드 rp 평판 stk 연승 ma/mx/mn 내 라인업 평균·최고 레벨·마리 fa/fn 상대 평균 레벨·마리 sp 내 포켓몬
 - `sf` 트레이너: w 막음 df n 나선 트레이너 수 gd 골드 cl/sl 도전자·트레이너 평균 레벨
 - `mg` 미니게임: sc 점수 gd 골드 t 초 ph 단계 cm 최대 콤보 ab 기술 타입 rk 랭크 sp fh 하트 nb 최고 기록 day 오늘 미니게임 골드
+- `gold` 골드 (v18.73, 하루 한 줄, 날짜 바뀐 뒤 올라옴): day YYYYMMDD b0 그날 시작 잔액 b1 끝 잔액 ern 번 골드(addGold 합, 체육관 포함) sp {item·field·fit·bgm·gym·wage: 쓴 골드} it {산 것 id: 횟수}
 
 매주 월요일 07:13 KST `.github/workflows/bal-report.yml` → `tools/bal-report.mjs` 가 지난 7일을 모아 'auto-bal' 이슈로 올린다 (친구 코드 없이 사람 수만). 로컬 시험: `node tools/bal-report.mjs --dry rows.json`.
