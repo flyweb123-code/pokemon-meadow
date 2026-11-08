@@ -7822,7 +7822,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '19.25';   /* v19.25 경완 '암해머는 원래꺼가 맞아': 암해머 효과 자리 되돌림 */
+const APP_VER = '19.26';   /* v19.26 경완: 체육관 주간 보고서는 월요일 오전 6시부터 뜸, 옛 보고서는 안 띄움 */   /* v19.25 경완 '암해머는 원래꺼가 맞아': 암해머 효과 자리 되돌림 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
