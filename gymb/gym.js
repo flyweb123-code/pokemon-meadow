@@ -48,7 +48,7 @@ const DESIGNS_FR = [
   { id: 'pewter', ty: 6, pt: 'oreburgh', n: '바위 계단', sub: '회색시티 체육관', w: 13, h: 16, leader: [6, 5], door: [6, 14], guy: [8, 13],
     deco: [[2, 5], [10, 5], [3, 9], [9, 9], [2, 11], [10, 11], [2, 13], [10, 13]],
     path: [[6, 14], [6, 6]], slots: [[7, 10, 'l'], [5, 9, 'r'], [7, 8, 'l'], [5, 8, 'r'], [8, 6, 'l'], [4, 6, 'r'], [9, 8, 'l']], inY: 10, tiny: [[7, 11], [[2, 3], [10, 11]]], cuts: [[9, 11], [9, 11], [9, 11], [9, 11], [9, 11]] },
-  { id: 'cerulean', ty: 11, pt: 'snowpoint', n: '물 위 다리', sub: '블루시티 체육관', w: 17, h: 20, leader: [8, 6], door: [8, 18], guy: [7, 18],
+  { id: 'cerulean', ty: 11, pt: 'snowpoint', n: '물 위 다리', sub: '블루시티 체육관', w: 17, h: 20, leader: [8, 6], door: [8, 18], guy: [7, 17],   /* v19.24 경완 '안내원이 체육관 밖에 있음': 문 줄(맨 아래 테두리) → 한 칸 위 다리 위 */
     deco: [[2, 3], [14, 3], [1, 8], [15, 8], [1, 13], [15, 13], [5, 18], [11, 18]],
     path: [[8, 18], [8, 16], [9, 16], [9, 10], [8, 10], [8, 7]], slots: [[8, 13, 'r'], [10, 10, 'l'], [6, 10, 'r'], [9, 8, 'l'], [7, 8, 'r'], [11, 7, 'l'], [5, 7, 'r']], inY: 15, tiny: [[8, 16], [[3, 5], [12, 14]]],
     fix: { t: [[3, 7, 4, 7, 1, 1], [9, 7, 4, 7, 1, 1, 1], [5, 8, 7, 17, 3, .5]], 0: [[9, 8.5, 9, 8, 1, .5], [12, 7, 4, 7, 1, 1, 1], [12, 8, 4, 8, 1, 1, 1], [13, 7, 11, 12, 1, 2]], 1: [[9, 8.5, 9, 8, 1, .5], [12, 7, 4, 7, 1, 1, 1], [12, 8, 4, 8, 1, 1, 1], [13, 7, 11, 12, 1, 2]],
@@ -1494,7 +1494,7 @@ function renderTop() {
   $g('.gy-bar>i').style.width = (G.hi > G.lo ? clampN(((g.rep || 0) - G.lo) / (G.hi - G.lo), 0, 1) : 1) * 100 + '%';
   $g('.gy-plate').classList.toggle('full', bsReady(g));   /* v15.42 경완: 평판이 꽉 차면 게이지 테두리가 은은하게 빛남 */
   { const sk = $g('.gy-stk'), n = g.stk | 0; if (sk) { sk.hidden = n < 2; sk.textContent = `${n}연승 중!`; } }   /* 홈 평판 아래 연승 딱지 (경완 2026-11-04 시안 A) */
-  $g('.gy-repn').textContent = `${g.rep || 0}${G.hi > G.lo && G.hi < REP_MAX + 1 ? `/${G.hi}` : ''}`; $g('.gy-grade').dataset.g = G.i; $g('.gy-plate').dataset.g = G.i; $g('.gy-plate').classList.toggle('canup', canBig(g));
+  $g('.gy-repn').textContent = `${g.rep || 0}${G.hi > G.lo && G.hi < REP_MAX + 1 ? `/${G.hi}` : ''}`; $g('.gy-grade').dataset.g = gi; $g('.gy-plate').dataset.g = gi;   /* v19.24 경완 '승급 전 리본이 승급 후 리본이랑 같음': 승급 연출 전엔 리본 색도 예전 등급 */ $g('.gy-plate').classList.toggle('canup', canBig(g));
   renderGoldG(); menuDot();
 }
 // 새내기 체육관(등급 1)에선 훈련장·트레이너가 잠겨 있다 (경완 2026-10-29 '고용할 수 있는 트레이너가 없으니까')
