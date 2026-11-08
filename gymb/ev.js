@@ -210,7 +210,7 @@ function tools(I, def) {
       b.classList.add('on'); await wait(850); if (big) { b.querySelector('b').textContent = big; b.querySelector('span').textContent = small || ''; b.classList.add('txt'); await wait(1300);
         if (tap) await new Promise(ok => { b.onclick = e => { e.stopPropagation(); I.sfx?.('tap'); b.onclick = null; ok(); }; }); b.classList.remove('txt'); await wait(600); } },
     // 이벤트 제목 띠
-    title: async (big, sub, tag = 'EVENT') => { const t = document.createElement('div'); t.className = 'ev-ttl'; t.innerHTML = `<i>${I.esc(tag)}</i><b>${I.esc(big)}</b>${sub ? `<em>${I.esc(sub)}</em>` : ''}`; root.appendChild(t); await wait(3200); t.remove(); },
+    title: async (big, sub, tag = 'EVENT') => { const t = document.createElement('div'); t.className = 'ev-ttl'; t.innerHTML = `<i>${I.esc(tag)}</i><b>${I.esc(big)}</b>${sub ? `<em>${I.esc(sub)}</em>` : ''}`; root.appendChild(t); try { A.se('DP_SLIDEIN', .9); } catch (e) {} await wait(3200); t.remove(); },   // 챕터 표시가 쉬익 하고 (경완 2026-11-08)
     music: (n, o) => { try { n ? window.GymBGM?.play(n, o) : window.GymBGM?.stop(.8); } catch (e) {} },
     se: (n, gn = 1) => I.gse(n, gn),
     fan: n => window.GymBGM?.fan?.(n),   // 팡파르: 배경 곡을 잠깐 줄이고 끝까지 (회복 소리 등)

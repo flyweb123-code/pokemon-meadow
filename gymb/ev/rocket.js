@@ -233,9 +233,11 @@ GymEv.def({
       R('youngster', 7, 2, 'd', 'mart', '반바지 꼬마 태호', ['검은 옷 사람들이\n물건을 잔뜩 사 갔어요.\n상자는 통로에 버려두고요!']);
       R('boy', 6, 4, 'l', 'mart', '소년 민재', ['로켓단이 체육관을\n차지했다면서요?\n관장님, 힘내세요!'], 1);
       const nurse = R('nurse', 7, 2, 'd', 'center', '간호순', ['포켓몬 센터에 어서 오세요!']);
+      try { window.GymBGM?.sePrep?.(['se_ball', 'mus_rg_heal']); } catch (e) {}   // 회복 소리 미리
       // 본가 FR 회복 연출 (field_effect.c PokecenterHeal): 간호순이 왼쪽 기계로 → 라인업 수만큼 몬스터볼 25프레임마다 하나씩(SE_BALL) → 32프레임 뒤 회복 곡 + 볼 반짝임·모니터 깜빡임 (경완 2026-11-08)
       const heal = async () => { const fr = n => wait(n * 1000 / 60), n = Math.max(1, Math.min(6, I.luN?.() || 1)), OFF = [[0, 0], [6, 0], [0, 4], [6, 4], [0, 8], [6, 8]], bs = [];
         const bf = k => bs.forEach(e => { e.style.backgroundPosition = `${k * 100 / 7}% 0`; });
+        const bi = new Image(); bi.src = `${IM}ev/rocket/heal_ball.png?${VA}`; await Promise.race([Promise.all([window.GymBGM?.sePrep?.(['se_ball', 'mus_rg_heal']), bi.decode?.().catch(() => {})]), wait(2500)]);   // 첫 볼 소리·그림이 늦게 준비돼 처음 두 개가 붙어 나오던 것 (경완 2026-11-08)
         nurse.turn('l'); await fr(16);
         for (let i = 0; i < n; i++) { const e = F.pic(`${IM}ev/rocket/heal_ball.png?${VA}`, (89 + OFF[i][0]) / 16, (24 + OFF[i][1]) / 16, 8, 8); Object.assign(e.style, { backgroundSize: '800% 100%', zIndex: 3 }); bs.push(e); bf(7); A.se('se_ball'); if (i < n - 1) await fr(25); }
         await fr(32); const song = A.fan('mus_rg_heal');
