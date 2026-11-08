@@ -2161,7 +2161,7 @@ body.mapEdit:not(.meHas) #items .prop{filter:drop-shadow(1px 0 0 rgba(255,255,25
 #pokePop .pp-ps .dp-pic{width:108px;height:108px!important;margin:0;box-sizing:border-box}#pokePop .pp-ps .dp-pic img{height:84px!important;max-width:100%}
 #pokePop .pp-ps .hd-rk{position:absolute;left:4px;top:4px;z-index:3;min-height:0}#pokePop .pp-ps .hd-rk .rk{width:24px;font-size:12px;line-height:16px}
 #pokePop .pp-ps .bud-tag{position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);margin:0;z-index:3;white-space:nowrap}
-#pokePop .pp-id{min-width:0;padding-right:28px}#pokePop .pp-id .ih-top{margin-top:0}#pokePop .pp-id{position:relative}#pokePop .pp-id .ih-top .ih-game{margin:0;position:absolute;right:0;top:auto;bottom:1px}   /* v18.64 경완: 게임 아이콘은 친밀도 줄 가운데에 맞춤 */
+#pokePop .pp-id{min-width:0;padding-right:28px}#pokePop .pp-id .ih-top{margin-top:0}#pokePop .pp-id{position:relative}#pokePop .win>.bud-tag{position:absolute;top:10px;left:50%;transform:translateX(-50%);margin:0;z-index:4;white-space:nowrap}#pokePop .win.bud:has(>.bud-tag:not([hidden])){padding-top:44px}#pokePop .win.bud:has(>.bud-tag:not([hidden])) .dp-head{top:10px}#pokePop .pp-top>.ih-met{grid-column:1/-1;margin:-2px 0 0;white-space:normal;overflow:visible;text-overflow:clip;font-size:12px;line-height:1.4;word-break:keep-all}#pokePop .pp-na .na-b{font:inherit;color:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .08s,filter .08s}#pokePop .pp-na .na-b:active{transform:scale(.97);filter:brightness(.95)}#pokePop .na-more{font-style:normal;font-weight:700;color:#9aa4b8;margin-left:2px}.na-pop .na-pt{margin:0 0 8px;font-size:17px;text-align:center}.na-pop .na-pt .ha-tag{font-style:normal;font-size:11px;color:#fff;background:#8a5cc8;padding:2px 6px;border-radius:6px;vertical-align:2px}.na-pop .na-pc{display:flex;gap:8px;justify-content:center;margin:0 0 8px}.na-pop .nat-c{font-weight:700;font-size:13px;padding:3px 9px;border-radius:999px;background:#eef0f4;color:#40404c}.na-pop .nat-c.up{background:#fde3e0;color:#d83a30}.na-pop .nat-c.dn{background:#e0e8fb;color:#3a6ad8}.na-pop .na-pd{font-size:14px;line-height:1.5;margin:0 0 12px;text-align:center;word-break:keep-all}   /* v18.66 경완: 짝꿍 딱지 위 가운데, 만난 날 줄, 성격·특성 상세창 */#pokePop .pp-id .ih-top .ih-game{margin:0;position:absolute;right:0;top:auto;bottom:1px}   /* v18.64 경완: 게임 아이콘은 친밀도 줄 가운데에 맞춤 */
 #pokePop .pp-id .ih-sub{margin-top:4px}#pokePop .pp-id .ih-met{margin-top:2px}#pokePop .pp-id .pv-fr{margin-top:6px}
 #pokePop .pp-na{margin-top:0}#pokePop .pp-na .na-b{position:relative;flex-direction:column;align-items:flex-start;gap:2px;padding:6px 12px 8px;border-radius:8px;border-color:rgba(0,0,0,.14);background:#fbfaf6}
 #pokePop .pp-na .na-b b{font-size:15px}
@@ -7755,7 +7755,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '18.65';   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
+const APP_VER = '18.66';   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -12140,12 +12140,23 @@ const STAT_K = { atk: '공격', def: '방어', spa: '특수공격', spd: '특수
 function natAbHtml(P) {
   const o = P.na || natAb(P); if (!o) { nabLoad().then(() => document.querySelectorAll(`.pp-na[data-na="${P.id}"]`).forEach(e => { e.innerHTML = natAbHtml(P); })); return '<span class="na-b"><span class="na-l">성격</span><b>…</b></span><span class="na-b"><span class="na-l">특성</span><b>…</b></span>'; }
   const n = NAB.ntm[o.nat] || [o.nat, o.nat];
-  return `<span class="na-b"><span class="na-l">성격</span><b>${esc(n[1])}</b></span><span class="na-b${o.ha ? ' ha' : ''}"><span class="na-l">${o.ha ? '숨겨진 특성' : '특성'}</span><b>${esc(NAB.ab[o.ab] || o.ab)}</b></span>`;   /* v14.10 경완: 숨겨진 특성 개체는 특성 하나뿐이니 '특성 … 숨겨진 특성' 대신 이름표만 '숨겨진 특성' */   // v11.92 경완: 성격·특성은 한 줄에 박스 둘, 성격 능력치 변화는 안 보임
+  return `<button type="button" class="na-b" data-nk="nat"><span class="na-l">성격 <i class="na-more">›</i></span><b>${esc(n[1])}</b></button><button type="button" class="na-b${o.ha ? ' ha' : ''}" data-nk="ab"><span class="na-l">${o.ha ? '숨겨진 특성' : '특성'} <i class="na-more">›</i></span><b>${esc(NAB.ab[o.ab] || o.ab)}</b></button>`;   /* v18.66 경완 '체육관 상세카드처럼 성격·특성 누르면 상세창' */   /* v14.10 경완: 숨겨진 특성 개체는 특성 하나뿐이니 '특성 … 숨겨진 특성' 대신 이름표만 '숨겨진 특성' */   // v11.92 경완: 성격·특성은 한 줄에 박스 둘, 성격 능력치 변화는 안 보임
 }
+// v18.66 경완: 꾸미기 상세카드 성격·특성을 누르면 체육관 상세카드처럼 효과 창 (성격 ▲▼, 특성 설명)
+let ABD = null; const abdLoad = () => ABD ? Promise.resolve(ABD) : fetch('gym/desc.json?v=' + encodeURIComponent(APP_VER)).then(r => r.json()).then(d => (ABD = d.ab || {})).catch(() => ({}));
+const NAT_ST = { atk: '공격', def: '방어', spa: '특수공격', spd: '특수방어', spe: '스피드' }, jongOf = w => { const c = (w || '').charCodeAt(w.length - 1) - 0xAC00; return c >= 0 && c <= 11171 && c % 28 > 0; };
+async function naPop(P, k) { const o = P.na || natAb(P); if (!o) return; sfx('open');
+  let h; if (k === 'nat') { const n = NAB.ntm[o.nat] || [o.nat, o.nat, '', ''], up = NAT_ST[n[2]], dn = NAT_ST[n[3]];
+    h = `<h4 class="na-pt">${esc(n[1])}</h4><p class="na-pc">${up ? `<span class="nat-c up">${up} ▲</span><span class="nat-c dn">${dn} ▼</span>` : '<span class="nat-c">능력 변화 없음</span>'}</p><p class="fr-note na-pd">${up ? `${up}${jongOf(up) ? '이' : '가'} 잘 오르고, ${dn}${jongOf(dn) ? '이' : '가'} 덜 오르는 성격이에요.` : '모든 능력이 고르게 오르는 성격이에요.'}</p>`; }
+  else { const d = await abdLoad(); h = `<h4 class="na-pt">${esc(NAB.ab[o.ab] || o.ab)}${o.ha ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</h4><p class="fr-note na-pd">${esc(d[o.ab] || '효과 설명이 아직 없어요.')}</p>`; }
+  const box = frGPop(h + '<button type="button" class="lk-btn main" data-a="y">닫기</button>'); box.classList.add('na-pop'); box.style.zIndex = 9900;
+  box.onclick = e => { if (e.target.closest('[data-a]') || e.target === box) { sfx('tap'); box.remove(); } }; }
+document.addEventListener('click', e => { const b = e.target.closest('#pokePop .na-b[data-nk]'); if (!b) return; const P = boxOf(pokeId); if (P) naPop(P, b.dataset.nk); });
 // v18.41 경완 '꾸미기 상세카드도 체육관 상세카드 레이아웃처럼 (프로필 박스 왼쪽)': 그림 칸·랭크·짝꿍 표시를 이름 왼쪽 칸으로 옮겨 끼움, 친밀도는 이름 밑
 function ppPark() { const w = $('#pokePop .win'), h = w.querySelector('.dp-head'); w.insertBefore($('#ppPic'), $('#ppBody')); h.prepend($('#ppBudTag')); h.prepend($('#ppRk')); }
-function ppTop(head, P) { return `<div class="pp-top"><div class="pp-ps"></div><div class="pp-id">${head}<div class="ivs pv-fr"><span class="fr-l">친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div></div></div>`; }
-function ppSlot() { const s = $('#ppBody .pp-ps'); if (s) s.append($('#ppPic'), $('#ppRk'), $('#ppBudTag')); }
+function ppTop(head, P) { const mm = head.match(/<div class="ih-met">[\s\S]*?<\/div>/), met = mm ? mm[0] : ''; if (met) head = head.replace(met, '');   /* v18.66 경완: 만난 날짜·장소는 프로필 박스 밑에 한 줄로 길게 (안 잘리게) */
+  return `<div class="pp-top"><div class="pp-ps"></div><div class="pp-id">${head}<div class="ivs pv-fr"><span class="fr-l">친밀도</span><span class="hearts frtap" data-fr="${Math.min(255, P.fr || 0)}">${hearts(P.fr)}</span></div></div>${met}</div>`; }
+function ppSlot() { const s = $('#ppBody .pp-ps'); if (s) s.append($('#ppPic'), $('#ppRk')); $('#pokePop .win').append($('#ppBudTag')); }   /* v18.66 경완: 짝꿍 딱지는 카드 위쪽을 늘려 가운데에 */
 function openPoke(id, dir = 0, quiet = false, noCry = false) {
   $('#pokePop').classList.remove('view');
   const P = boxOf(id); if (!P) return; if (!quiet && P.nw) { P.nw = false; save(); renderBox(); } if (!quiet && !noCry && ($('#pokePop').hidden || pokeId !== id)) playCry(P.sp, .1); pokeId = id;
