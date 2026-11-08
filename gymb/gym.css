@@ -3245,3 +3245,17 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .wr-now span{display:inline-flex;align-items:center;flex-wrap:wrap}
 #gym .wr-now .coin{width:11px;height:11px}
 #gym .wr-empty{margin:0 14px;font-size:13px;line-height:1.6;text-align:center;color:#50505e}
+/* v19.10 경완 '넘기게': 쪽 넘기기 — 모든 쪽을 한 칸에 겹쳐 두어 창 높이가 안 바뀜 */
+#gym .wr-pgs{display:grid;touch-action:pan-y}
+#gym .wr-pg{grid-area:1/1;display:flex;flex-direction:column;gap:9px;visibility:hidden}
+#gym .wr-pg.on{visibility:visible;animation:wrPg .18s steps(3,end)}
+@keyframes wrPg{from{opacity:.2;translate:10px 0}}
+#gym .wr-pg>*{margin-inline:14px}
+#gym .wr-pg>.wr-h{margin-bottom:-4px}
+#gym .wr-h small{font-size:10px;color:#9090a0;margin-left:4px}
+#gym .wr-dots{display:flex;justify-content:center;gap:6px;margin:0}
+#gym .wr-dots i{width:8px;height:8px;background:#c8c8d4;cursor:pointer}
+#gym .wr-dots i.on{background:#20202c}
+#gym .wr-btns button[disabled]{opacity:.4}
+@media (prefers-reduced-motion:reduce){#gym .wr-pg.on{animation:none}}
+#gym .wr-pop>.wr-pgs{margin-inline:0}

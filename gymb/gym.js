@@ -1887,14 +1887,28 @@ function reportPop(any) {
         <p class="wr-s">${x.co ? '포켓몬 훈련 담당 · 도전자는 안 받음' : `${x.w || 0}명 막음 · ${x.l || 0}번 짐`}</p>
         <div class="wr-bar"><i style="width:${x.co ? 0 : pc}%"></i></div><p class="wr-m"><span><i class="coin"></i>${G(x.e)}G 벌고</span><span>월급 ${G(x.wg)}G</span></p></div>
         <em class="wr-d">${x.co ? `<small>월급</small>−${G(x.wg)}G` : d >= 0 ? `<small>${x.wg ? `월급의 ${Math.round((x.e || 0) / x.wg * 10) / 10}배` : '이득'}</small>+${G(d)}G` : `<small>월급보다</small>−${G(-d)}G`}</em></li>`; };
+    // v19.10 경완 '다 들어가게 줄이지 말고 넘기게': 1쪽 결산, 2쪽부터 트레이너 3명씩 — 점·이전/다음으로 넘김 (밀어서도)
+    const PG = [`<div class="aw-tot"><div><span>전적</span><b>${r.w}<small>승</small> ${r.l}<small>패</small></b><span class="wr-sub">방어율 ${dr}%</span></div><div><span>막은 도전자</span><b>${r.b}<small>명</small></b></div><div><span>평판</span><b class="aw-r">${awR(r.r || 0)}</b></div></div>
+      <div class="wr-led"><p><span>관장 배틀</span><b class="p">+${G(mine)}G</b></p>${L.length ? `<p><span>트레이너가 번 골드</span><b class="p">+${G(sg)}G</b></p><p><span>트레이너 월급</span><b class="m">−${G(wg)}G</b></p>` : ''}<p class="sum"><span>순이익</span><b class="${net < 0 ? 'm' : 'p'}"><i class="coin"></i>${net < 0 ? '−' : '+'}${G(Math.abs(net))}G</b></p></div>${now}`];
+    const PER = 3, NP = Math.ceil(L.length / PER);
+    for (let k = 0; k < NP; k++) PG.push(`<h5 class="wr-h">트레이너별 월급 대비 수익${NP > 1 ? ` <small>${k + 1} / ${NP}</small>` : ''}</h5><ul class="aw-l wr-l">${L.slice(k * PER, k * PER + PER).map(row).join('')}</ul>`);
     body = `<div class="aw-hd wr-hd"><small>주간 보고서 · ${wrD(k0)} ~ ${wrD(k0 + 6 * DAY)}</small><b>지난주 체육관 결산</b><div class="wr-bd">${bdHtml(g.ty, gradeOf(g.rep || 0).i + 1)}</div></div>
-      <div class="aw-tot"><div><span>전적</span><b>${r.w}<small>승</small> ${r.l}<small>패</small></b><span class="wr-sub">방어율 ${dr}%</span></div><div><span>막은 도전자</span><b>${r.b}<small>명</small></b></div><div><span>평판</span><b class="aw-r">${awR(r.r || 0)}</b></div></div>
-      <div class="wr-led"><p><span>관장 배틀</span><b class="p">+${G(mine)}G</b></p>${L.length ? `<p><span>트레이너가 번 골드</span><b class="p">+${G(sg)}G</b></p><p><span>트레이너 월급</span><b class="m">−${G(wg)}G</b></p>` : ''}<p class="sum"><span>순이익</span><b class="${net < 0 ? 'm' : 'p'}"><i class="coin"></i>${net < 0 ? '−' : '+'}${G(Math.abs(net))}G</b></p></div>
-      ${L.length ? `<h5 class="wr-h">트레이너별 월급 대비 수익</h5><ul class="aw-l wr-l">${L.map(row).join('')}</ul>` : ''}${now}`;
+      <div class="wr-pgs">${PG.map((h, k) => `<div class="wr-pg${k ? '' : ' on'}">${h}</div>`).join('')}</div>`;
+    if (PG.length > 1) body += `<div class="wr-dots">${PG.map((_, k) => `<i data-k="${k}"${k ? '' : ' class="on"'}></i>`).join('')}</div>`;
   }
   if (r) r.seen = 1; setAt(); save();
   try { GA.sfx('newdex'); } catch (e) {} GA.haptic?.(1);
-  return new Promise(ok => { const p = pop(`<div class="aw-pop wr-pop">${body}<div class="gy-btns one"><button class="main" data-a="x">확인</button></div></div>`, (a, close) => { close(); ok(); }); p.classList.add('aw-wrap'); });
+  return new Promise(ok => { const many = !!r && (r.sf || []).length > 0;
+    const p = pop(`<div class="aw-pop wr-pop">${body}<div class="gy-btns${many ? '' : ' one'} wr-btns">${many ? '<button data-a="prev" disabled>이전</button><button class="main" data-a="next">다음</button>' : '<button class="main" data-a="x">확인</button>'}</div></div>`, (a, close) => {
+      if (a === 'x') { close(); return ok(); } go(cur + (a === 'prev' ? -1 : 1)); });
+    p.classList.add('aw-wrap'); if (!many) return;
+    const pg = [...p.querySelectorAll('.wr-pg')], dt = [...p.querySelectorAll('.wr-dots i')], bp = p.querySelector('[data-a=prev]'), bn = p.querySelector('[data-a=next]'); let cur = 0;
+    function go(k) { if (k >= pg.length) { p.remove(); return ok(); } cur = Math.max(0, k); pg.forEach((x, i) => x.classList.toggle('on', i === cur)); dt.forEach((x, i) => x.classList.toggle('on', i === cur)); bp.disabled = !cur; bn.textContent = cur === pg.length - 1 ? '확인' : '다음'; bn.dataset.a = 'next'; }
+    p.querySelector('.wr-dots').onclick = e => { const d = e.target.closest('[data-k]'); if (d) { sfx('tap'); go(+d.dataset.k); } };
+    const box = p.querySelector('.wr-pgs'); let x0 = null;
+    box.addEventListener('pointerdown', e => { x0 = e.clientX; });
+    box.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0; x0 = null; if (Math.abs(dx) < 40) return; const k = cur + (dx < 0 ? 1 : -1); if (k >= 0 && k < pg.length) { sfx('tap'); go(k); } });
+  });
 }
 
 // ---------- 처음 설정: 타입 → 디자인 → 이름 (바꾸기는 그 단계 하나만) ----------
