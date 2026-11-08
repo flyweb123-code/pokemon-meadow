@@ -4018,7 +4018,7 @@ function noticeBerry(b) {
   if (!b) return;
   for (const m of S.mons) {
     if (b.for && b.for !== m) continue;
-    if (!awake(m) || m.held || m.evolving || (isFull(m) && !b.gst) || T(m).mv === 'swim' || dist(m, b) > 300) continue;   // v15.28 경완: 손님이 준 열매는 배불러도 먹으러 감
+    if (!awake(m) || m.held || m.evolving || (isFull(m) && !(b.gst && b.for)) || T(m).mv === 'swim' || dist(m, b) > 300) continue;   // v15.28 경완: 손님이 준 열매는 배불러도 먹으러 감 → v19.28 경완: 필드에 놓은 열매(느낌표 띄우고 따라오기)는 배고픈 포켓몬만, 손님이 직접 준 열매(b.for)만 배불러도 먹음
     if (!(m.state === 'idle' || m.state === 'move') || (m.goal?.kind === 'berry' && m.goal.berry !== b && S.berries.includes(m.goal.berry) && dist(m, m.goal.berry) < dist(m, b))) continue;
     emote(m, '!', '', 1, 'berry-see'); moveTo(m, b, { kind: 'berry', berry: b }, 1.3);
   }
@@ -4532,10 +4532,10 @@ function arrive(m) {
         if (!m.lateCd || S.clock - m.lateCd > 240) { m.lateCd = S.clock; log(`${J(m,'이/가')} 한발 늦었다. ${J(b.eater,'이/가')} 열매를 먼저 먹어 버렸다.`, [m, b.eater]); addRel(m, b.eater, -3); }
       }
       const nb = nearestBerry(m);
-      if (nb && (!isFull(m) || nb.gst)) return moveTo(m, nb, { kind: 'berry', berry: nb }, 1.25);
+      if (nb && (!isFull(m) || (nb.gst && nb.for === m))) return moveTo(m, nb, { kind: 'berry', berry: nb }, 1.25);
       return setState(m, 'idle', 1.5);
     }
-    if (isFull(m) && !b.gst) { emote(m, '배불러', '', 2.2, 'full-refuse'); return setState(m, 'idle', 2); }
+    if (isFull(m) && !(b.gst && b.for)) { emote(m, '배불러', '', 2.2, 'full-refuse'); return setState(m, 'idle', 2); }
     const mine = b.for === m || !b.nat;   /* 내가 풀밭에 둔 열매도 내가 준 열매 (나무에서 떨어진 열매는 아님) */
     b.eater = m; if (b.by) { const u = Date.now() + rnd(35e3, 50e3); if (m.follow?.tr === b.by) m.follow.until = Math.max(m.follow.until, u); else m.follow = { tr: b.by, until: u }; }   /* v15.23 경완: 트레이너가 준 열매를 먹으면 한동안 그 트레이너를 따라다님 */
     S.berries = S.berries.filter(x => x !== b); if (mine && berryFr(m)) frPop(m); m.hunger = clamp(m.hunger - (mine ? BERRY_FILL_MINE : BERRY_FILL)); berryBoost(m, mine);
@@ -7916,7 +7916,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-/* v19.27 경완: 하늘에 일주일에 몇 번 칠색조(낮, 무지개 가루)·루기아(밤, 은빛 실루엣·은빛 가루)가 멀리 천천히 나무 뒤로 지나가고 몇몇이 올려다봄, 달 모양이 실제 날짜 주기를 따라감, 보름 무렵 같이 달 보기 자주·보름날 밤엔 다 모여 달 보기(올려다보는 그림 있는 포켓몬만) */ const APP_VER = '19.27';   /* v19.26 경완: 체육관 주간 보고서는 월요일 오전 6시부터 뜸, 옛 보고서는 안 띄움 */   /* v19.25 경완 '암해머는 원래꺼가 맞아': 암해머 효과 자리 되돌림 */
+/* v19.27 경완: 하늘에 일주일에 몇 번 칠색조(낮, 무지개 가루)·루기아(밤, 은빛 실루엣·은빛 가루)가 멀리 천천히 나무 뒤로 지나가고 몇몇이 올려다봄, 달 모양이 실제 날짜 주기를 따라감, 보름 무렵 같이 달 보기 자주·보름날 밤엔 다 모여 달 보기(올려다보는 그림 있는 포켓몬만) */ /* v19.28 경완: 놀러 온 손님이 필드에 놓은 열매는 배고픈 포켓몬만 따라와 먹고, 직접 준 열매는 배불러도 먹음 */ const APP_VER = '19.28';   /* v19.26 경완: 체육관 주간 보고서는 월요일 오전 6시부터 뜸, 옛 보고서는 안 띄움 */   /* v19.25 경완 '암해머는 원래꺼가 맞아': 암해머 효과 자리 되돌림 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
