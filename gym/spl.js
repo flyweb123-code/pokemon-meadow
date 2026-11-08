@@ -21,6 +21,11 @@ const KX = PPU * MX, KY = PPU * MY;
 // v19.22 경완 '뚝 끊긴 선 안 보이게 밑 부분이 대화창 뒤로 넘어가게 아래로': 다이빙 물보라 기둥처럼 밑단이 딱 끊긴 효과가 잘림선 위에 떠 보였음 → 원본 144 를 우리 156 에 (내 쪽 효과 8줄 아래로, 상대 쪽은 그대로)
 const PY0 = 56 + (112 - 48) * (156 - 56) / (144 - 48), PMY = (56 - PY0) / (DSY(0.75) - DSY(-1.5625)), POY = PY0 - DSY(-1.5625) * PMY;
 const MAX_EM = 20, MAX_PT = 200;
+// v19.24 경완 '잘림선 있는 기술 다': 밑단이 원본 대화창(144) 뒤로 숨게 잘라 그린 그림 (자원:방출기 번호).
+// 우리 화면은 내 쪽이 원본보다 위라 그 밑단이 잘림선 위로 떠 보임 → 그 방출기만 원본 144 줄이 우리 147 밑에 오게 내린다
+// (tools: 모든 기술을 양쪽에서 돌려 그림 테두리가 원본 144 아래서 끊기는데 우리 화면에선 보이는 것만 골랐음)
+const CUT = new Set(['thunder:1', 'withdraw:2', 'withdraw:3', 'hammer_arm:0', 'hammer_arm:1', 'clamp:0', 'clamp:1']);
+const cutDy = ey => { const e = DSY(ey); if (e < 100) return 0; return Math.max(0, 147 - (POY + e * PMY + (144 - e) * KY / PPU)); };
 
 // ---------- 난수 (원본 SPLRandom 그대로) ----------
 let rs = (Math.random() * 4294967296) >>> 0;
@@ -248,7 +253,7 @@ function drawP(g, e, p, child) {
   const ti = p.tex, key = child ? `${ti}|${ch.tS}|${ch.tT}|${ch.fS}|${ch.fT}` : `${ti}|${r.tS}|${r.tT}|${r.fS}|${r.fT}`;
   const base = child ? texImg(e.d, ti, ch.tS, ch.tT, ch.fS, ch.fT) : texImg(e.d, ti, r.tS, r.tT, r.fS, r.fT); if (!base) return;
   const img = tinted(e.d, key, base, p.col);
-  const X = OX + DSX(p.ep[0] + p.pos[0]) * MX, Y = POY + DSY(p.ep[1]) * PMY - p.pos[1] * KY;   // 방출기 자리만 PMY, 퍼지는 거리는 원래 비율(KY)
+  const X = OX + DSX(p.ep[0] + p.pos[0]) * MX, Y = POY + DSY(p.ep[1]) * PMY - p.pos[1] * KY + (e.cut ? cutDy(p.ep[1]) : 0);   // 방출기 자리만 PMY, 퍼지는 거리는 원래 비율(KY)
   g.globalAlpha = a / 31;
   g.setTransform(KX * A[0], -KY * A[1], -KX * B[0], KY * B[1], X, Y);
   g.drawImage(img, px - 1, -py - 1, 2, 2);
@@ -392,7 +397,7 @@ function start(canvas, ev, atk, F, ver, self) {   // self: 자기에게 쓰는 �
         if (S.E.filter(x => x.ps === e[2]).length >= MAX_EM) continue;
         const m = newEmitter(S, d, e[4], e[2]); if (!m) continue;
         m.rad = m.r.rad; m.len = m.r.len; m.vp = m.r.vp; m.va = m.r.va; m.sc = m.r.sc; m.plt = m.r.plt;
-        callback(S, m, e[5], e[6]); S.E.push(m); S.slot[e[7]] = m;
+        m.cut = CUT.has(e[3] + ':' + e[4]); callback(S, m, e[5], e[6]); S.E.push(m); S.slot[e[7]] = m;
       } else if (e[0] === 'pu') S.E = S.E.filter(x => x.ps !== e[2]);
       else startTask(S, e);
     }
