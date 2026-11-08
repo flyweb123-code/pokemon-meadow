@@ -16,6 +16,8 @@ struct GameView: UIViewRepresentable {
         config.allowsInlineMediaPlayback = true
         // 배경 음악이 앱을 켜자마자 나오게 (터치 없이 재생 허용)
         config.mediaTypesRequiringUserActionForPlayback = []
+        // 2026-11-07 경완 '꾹 누르면 돋보기처럼 나오는 거 게임에서 다 막아줘': 글자 선택·돋보기를 끈다 (입력 칸에 글자 치기는 그대로 됨)
+        config.preferences.isTextInteractionEnabled = false
         config.userContentController.add(WeakHandler(bridge), name: "pokeRun")
         config.userContentController.add(HapticHandler(), name: "haptic")
         config.userContentController.add(HumHandler(), name: "hum")
