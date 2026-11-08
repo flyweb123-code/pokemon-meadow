@@ -501,13 +501,14 @@ function statPop() {
   if (!w) { document.querySelector('#gym .gy-boxw')?.remove(); w = document.createElement('div'); w.className = 'gy-boxw ts-win'; document.querySelector('#gym .gy-main').appendChild(w); }
   const L = g.tr.map(e => [e, boxOf(e.id)]).filter(([, P]) => P), today = K.dayStart(Date.now());
   const cx = coachX(), now = Date.now();
-  /* v16.36 경완 '훈련장에 나간 포켓몬 보는 화면이랑 슬롯 디자인': 가로 카드(그림 · 이름 · 막대 둘 · 데려오기), 빈 칸은 '포켓몬 보내기' */
+  /* v16.36 경완 '훈련장에 나간 포켓몬 보는 화면이랑 슬롯 디자인': 가로 카드(그림 · 이름 · 막대 둘 · 데려오기), 빈 칸은 '포켓몬 보내기'
+     v19.63 경완: 찬 칸·빈 칸·잠긴 칸 크기 같게(1fr), 데려오기 → ✕ */
   w.innerHTML = `<div class="win" role="dialog" aria-label="훈련장"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>훈련장 <small>${L.length}/${trMax()}</small></h4>${cx > 1.001 ? `<span class="tsc-co">코치 보너스 <b>+${Math.round((cx - 1) * 100)}%</b></span>` : ''}</div>
     <div class="ts-grid tsc-grid">${Array.from({ length: Math.max(TR_ALL, L.length) }, (_, i) => { const r = L[i]; if (!r && i >= trMax()) return `<div class="ts-slot lock tsc-lock">${LOCK_SVG}<span><b>${K.GRADES[i + 1]?.[1] || ''}</b>이 되면 열려요</span></div>`; if (!r) return `<button type="button" class="ts-slot empty tsc-new" data-new="1"><span>+</span><b>포켓몬 보내기</b></button>`;
       const [e, P] = r, m = GB().gm(P), up = m.lv - (e.l0 ?? m.lv), gr = GB().growth(P.sp), a0 = GB().xpAt(gr, m.lv), a1 = GB().xpAt(gr, m.lv + 1), mx = m.lv >= GB().LV_MAX, f = mx ? 1 : clampN(((m.xp ?? a0) - a0) / Math.max(1, a1 - a0), 0, 1), hh = Math.min(8, e.d === today ? e.h : 0), nmv = (e.mv || []).length;
       return `<button type="button" class="ts-slot tsc" data-id="${P.id}"><span class="tsc-th">${GB().thumb(P)}</span><span class="tsc-mid"><span class="tsc-nm"><b>${esc(nmOf(P))}</b><span class="tsc-lv">Lv.${m.lv}</span>${up > 0 ? `<em class="tsc-up">▲${up}</em>` : ''}</span>
         <span class="tsc-g"><i>경험치</i><span class="mini"><i style="width:${(f * 100).toFixed(0)}%"></i></span><small>${mx ? '최고' : `${Math.floor(f * 100)}%`}</small></span>
-        <small class="tsc-ft">훈련 중${nmv ? ` · <b>새 기술 ${nmv}</b>` : ''}</small></span><span class="ts-x tsc-out" data-out="${P.id}" role="button" aria-label="훈련장에서 데려오기">데려오기</span></button>`; }).join('')}</div>
+        <small class="tsc-ft">훈련 중${nmv ? ` · <b>새 기술 ${nmv}</b>` : ''}</small></span><span class="ts-x tsc-out" data-out="${P.id}" role="button" aria-label="훈련장에서 데려오기">✕</span></button>`; }).join('')}</div>
     </div>`;   // 아래 안내 문구는 뺐다 (경완 2026-10-29)
   GB().fillTh(w);
   slotRf = () => { if (w.isConnected) statPop(); };
@@ -516,7 +517,7 @@ function statPop() {
     const x = e.target.closest('[data-out]'); if (x) { sfx('tap'); const P = boxOf(+x.dataset.out || x.dataset.out); if (P) trSend(P); return; }
     const b = e.target.closest('.ts-slot'); if (!b) return; sfx('tap');
     if (b.dataset.new) return pickTrain(() => statPop());
-    GB()._monPop(+b.dataset.id || b.dataset.id, false, null, () => st().tr.map(e => e.id).filter(i => boxOf(i)));   // 카드는 훈련장 포켓몬끼리만 넘김 (경완 2026-10-29)
+    trPop(+b.dataset.id || b.dataset.id);   /* v19.63 경완 '+ 목록에서 슬롯 눌러서 나오는 상세카드도 훈련장에서 포켓몬 직접 눌렀을 때 나오는 상세카드랑 동일하게' */
   };
 }
 /* v16.68 경완 '훈련 일지 넘어갈 때 포켓몬 박스 옆 글자 위치 그 전 화면이랑 맞춰': 상세카드·훈련 일지가 같은 머리 (이름 · Lv · 경험치 막대 · 다음 레벨까지) */
@@ -544,7 +545,7 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
       if (a === 'mv') return GB().movesPop(P, () => { redraw(); trPop(id, p); });   // v14.43 경완: 기술 창이 떠 있는 동안 뒤에 창 그대로
       if (a === 'mvs') return mvListPop(TT.mv, P);
       close();
-      if (a === 'out') { tickTrain(Date.now()); st().tr = st().tr.filter(e => e.id !== P.id); K.save(); redraw(); } });
+      if (a === 'out') { tickTrain(Date.now()); st().tr = st().tr.filter(e => e.id !== P.id); K.save(); redraw(); slotRf?.(); } });
   p.querySelector('.tp2-today').onclick = ev => { if (ev.target.closest('button')) return; sfx('tap'); trLogPop(P, p); };   /* 상자 = 훈련 일지, 안의 새 기술 = 기술 창 */
   if (under) { const w = p.querySelector('.win'); if (w) w.style.animation = 'none'; under.remove(); }
 }
