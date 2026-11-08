@@ -2797,6 +2797,8 @@ function mgAbSfx(k, t) {
 let sfxN = 0;
 var fTick = false;   /* v13.11 경완 '미니게임 중 놀래키기 소리': 필드가 내는 소리는 미니게임 창이 열려 있으면 안 남 (필드 시간은 그대로 흐름) */
 function fMute() { return fTick && !document.getElementById('mg')?.hidden; }
+{ const wrap = fn => typeof fn !== 'function' ? fn : function () { const o = fTick; fTick = true; try { return fn.apply(this, arguments); } finally { fTick = o; } }, sT = window.setTimeout, sI = window.setInterval;   /* v18.68 경완 '미니게임 할 때 필드 효과음 안 나게': 필드 프레임 안에서 예약한 setTimeout·setInterval 도 필드 소리로 쳐서 미니게임 창이 열려 있으면 안 남 (늦게 나는 울음소리·소품 소리 등) */
+  window.setTimeout = function (fn, ...a) { return sT.call(window, fTick ? wrap(fn) : fn, ...a); }; window.setInterval = function (fn, ...a) { return sI.call(window, fTick ? wrap(fn) : fn, ...a); }; }
 function sfx(name, k = 0) { sfxN++; if (window.__sfxLog) window.__sfxLog.push(name + ' ' + new Error().stack.split('\n')[2]?.trim());
   if (!sfxOn || fMute()) return; const a = audio(); if (!a) return;
   const t = a.currentTime + .01;
@@ -7019,7 +7021,7 @@ function stormBolt(host = fxEl, w0 = 0) { const W = w0 || 360;   /* v18.63 훈�
   setTimeout(() => sfx('thunder', near), near > .5 ? 80 + Math.random() * 250 : 700 + Math.random() * 1500); haptic(near > .7 ? 1 : 0);
 }
 function stormTick(now = performance.now()) { if (!storming() || document.hidden || inGym() || !rainEl?.classList.contains('on')) { stormT = 0; return; } if (!stormT) stormT = now + 2500 + Math.random() * 4000; else if (now >= stormT) { stormT = now + 6000 + Math.random() * 12000; stormBolt(); if (Math.random() < .3) setTimeout(stormBolt, 250 + Math.random() * 500); } }
-setInterval(stormTick, 400);
+setInterval(() => { const o = fTick; fTick = true; try { stormTick(); } finally { fTick = o; } }, 400);   /* v18.68 경완: 번개 소리도 필드 소리 — 미니게임 중엔 안 남 */
 function weather() {
   if (S.wxT) return S.wxT === 'snow' ? 'cloud' : S.wxT === 'storm' ? 'rain' : S.wxT; if (realWx && Date.now() - realWx.at < 12 * 3600e3) return realWx.w;   /* v4.33: 새 날씨가 오기 전엔 무작위 날씨보다 마지막 실제 날씨 */ const blk = Math.floor(Date.now() / (3 * 3600e3)); let x = (blk * 2654435761) >>> 0; x ^= x >>> 13; x = Math.imul(x, 0x5bd1e995) >>> 0; x ^= x >>> 15; const r = (x % 1000) / 1000;
   return r < .2 ? 'rain' : r < .5 ? 'cloud' : 'clear';
@@ -7647,7 +7649,7 @@ document.addEventListener('click', e => { const t = e.target.closest?.('h3, h4, 
   // 게임 본체는 함수 안에 있어서 gym.js 가 쓸 것만 꺼내 준다 (늦게 정의되는 것도 있어 getter)
   window.GA = { light: () => fieldLight(), bolt: (el, w) => stormBolt(el, w),   /* v17.77 경완: 훈련장도 필드처럼 시간·날씨 (곱하기 색·어두운 정도·조명·비·눈) */ cardPager: (p, o) => cardPager(p, o), frHr: sp => FR_TABLE[0][1] * fldMul(sp),   /* v16.42 경완 '훈련 친밀도는 필드 기준': 잘 돌본 필드와 같은 시간당 친밀도 */
   get S() { return S; }, get SP_OFF() { return SP_OFF; }, get SPECIES() { return SPECIES; }, get TYPE_KO() { return TYPE_KO; }, get TYPE_C() { return TYPE_C; }, get RANKS() { return RANKS; }, get LEARN() { return LEARN; },
-    tyIcon: (...a) => tyIcon(...a), sfx: (...a) => sfx(...a), save: () => save(), trOf: () => trOf(), useH: () => S.useH, esc: s => esc(s), menuDots: () => menuDots(), addGold: n => addGold(n), renderGold: () => renderGold(),
+    tyIcon: (...a) => tyIcon(...a), sfx: (...a) => { if (document.getElementById('mg')?.hidden === false) return; sfx(...a); },   /* v18.68: 미니게임 중엔 체육관 쪽 소리도 안 남 */ save: () => save(), trOf: () => trOf(), useH: () => S.useH, esc: s => esc(s), menuDots: () => menuDots(), addGold: n => addGold(n), renderGold: () => renderGold(),
     boxOf: id => boxOf(id), removeMon: (m, q) => removeMon(m, q), log: (...a) => log(...a), ivSum: p => ivSum(p), rankOf: p => rankOf(p), addFr: (id, n) => addFr(id, n), haptic: n => haptic(n), rumble: (st, g) => rumble(st, g) };
   // 친구 체육관 놀러 가기 (v11.78 베타, 프로필 › 친구 › 체육관 도전): 체육관 코드를 불러와 Gym.visit
   window.gymVisit = async (F, code) => { if (busy || window.Gym?.isOpen?.()) return; busy = true; select(null); gymLoad.show(`${String(F.n || '친구').slice(0, 8)}의 체육관으로 가는 중`); const t0 = Date.now();
@@ -7755,7 +7757,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '18.67';   /* v18.67 경완: 진화구슬 그만하기 창에 다시 하기(기록 없이 새 판)·정렬, 기록창 '가장 큰 구슬' 칸 없앰, 랭킹 포켓몬 칸 정가운데 */ /*   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
+const APP_VER = '18.68';   /* v18.68 경완: 미니게임 중엔 필드에서 늦게 예약된 효과음·울음소리도 안 남 */ /*   /* v18.67 경완: 진화구슬 그만하기 창에 다시 하기(기록 없이 새 판)·정렬, 기록창 '가장 큰 구슬' 칸 없앰, 랭킹 포켓몬 칸 정가운데 */ /*   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
