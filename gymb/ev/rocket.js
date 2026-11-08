@@ -631,7 +631,7 @@ GymEv.def({
       A.music(null); await wait(300); A.se('se_pin'); I.haptic?.(0);
       mon.style.backgroundImage = `url(${IM}ev/rocket/mon_on.png?${VC})`; const glow = F.pic('', 19 + 3 / 16, 2 + 2 / 16, 10, 10); glow.classList.add('ev-tv'); glow.style.backgroundImage = ''; glow.style.zIndex = 24;
       F.bub(boss, '!', 900); [boss, ...KS.map(x => x[0])].forEach(k => k.on !== false && k.turn('u')); await F.camTo(19, 5, 600); await wait(500);
-      await S.say('삐빅... 삐빅...', { who: '모니터' }); S.hide(true); await wait(200); A.music('rgSilph');   // 아테나: 본가 실프주식회사 곡 (경완 2026-11-08 'bgm 적절한걸로')
+      await S.say('삐빅... 삐빅...', { who: '모니터' }); S.hide(true); await wait(200); A.music('rgEyeRoc');   // 아테나: 파이어레드 로켓단 만남 곡 (경완 2026-11-08, 실프 곡은 로켓단 곡이 아니라서)
       const W = '???';
       await crt(A, async () => {
         await S.say('...치직... 람다.\n거기까지 해라.', { who: W });
