@@ -65,3 +65,4 @@ PixelLab Create image, Pixen, 64x64, 투명 배경, View None, Highly detailed, 
 type_icon/: 위 뽑기권의 알 가운데에 게임 타입 아이콘(tyIcon, 15x15: TY_BG 원 + TY_GL 흰 무늬)을 (24,24)에 그대로 얹음. ticket_all.png는 빨간 띠 + 어두운 원 안에 흰 도트 글자 ALL. 19장 64x64. preview.png 확인용.
 type_corner/: 경완 요청으로 타입 아이콘을 티켓 좌상단(5,14)으로 옮긴 19장. 아이콘 둘레에 1px 진한 테두리를 둘러 17x17, 티켓 모서리 밖으로 조금 나옴. 알은 그대로.
 pos_A~F/: 타입 아이콘 위치 시안, 각 19장 64x64. A 좌상단 배지(type_corner와 같음), B 우상단 배지, C 왼쪽 칸 안(테두리 없음), D 좌우 칸 안 대칭, E 알 오른쪽 아래에 겹침, F 티켓 아래 가운데 배지. pos_preview.png에 ALL·불꽃·물·풀·드래곤·고스트를 모아 둠.
+final/: 경완 확정본. 타입 18장은 pos_B(우상단 배지), ticket_all.png는 아이콘 없는 ticket_2_egg.png와 같음. 뽑기 화면 기본 버튼 아이콘도 ticket_all.png.
