@@ -2679,7 +2679,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .aw-pop .mi-box{display:flex;flex-direction:column;gap:6px;padding:10px 12px;background:#fff;box-shadow:inset 0 0 0 2px #d8d8e4;text-align:left}#gym .aw-pop .mi-box .mi-h{margin:0}#gym .aw-pop .mi-box .mi-d{margin:0}
 
 /* v16.19 경완: 트레이너·훈련장 알림창은 업데이트 알림창처럼 커지며 뜬다 (체육관 창 모션 끔보다 우선) */
-#gym .gy-pop.aw-wrap>.win{animation:awNpop .32s steps(4,end)!important}
+#gym .gy-pop.aw-wrap>.win,#gym .gy-pop.gy-np>.win{animation:awNpop .32s steps(4,end)!important}   /* v18.98 경완: 저절로 뜨는 알림창 팝업 모션 */
 /* v16.35 경완: 체육관 일지 '체육관 합계' 제목 밑 점선 뺌 */
 #gym .jn-sum>h5{border-bottom:0;padding-bottom:0}
 /* v16.35 경완 '트레이너 메뉴 디자인 · 창들하고 슬롯들 디자인 퀄': 머리줄(인원), 탭, 슬롯 카드, 빈 화면, 상세 창, 확인 창 */
