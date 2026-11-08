@@ -68,7 +68,7 @@ const DESIGNS_FR = [
   { id: 'lab', stat: [[5, 8], [9, 8]], ty: 9, n: '실험실', sub: '홍련섬 포켓몬 연구소', w: 15, h: 10, leader: [7, 2], door: [7, 9], guy: [10, 9], path: [[7, 9], [7, 8], [6, 8], [6, 7], [5, 7], [5, 3], [7, 3]], inY: 9,   /* 12.92~93 경완: 석상은 카펫에서 한 칸 띄우고 카펫 길이만큼 위로 */
     deco: [[0, 6], [0, 8], [11, 8], [13, 8], [3, 9], [11, 9], [10, 2], [4, 2]], slots: [[9, 5, 'l'], [10, 8, 'l'], [4, 8, 'r'], [2, 5, 'r'], [10, 3, 'd'], [3, 2, 'd'], [12, 8, 'l'], [1, 8, 'r']] },];
 // 꾸미기 놓을 수 있는 칸 (경완 2026-10-29 '기둥처럼 입체적인 소품 위에는 못 올리게'): pokefirered 맵 충돌·물 칸 + 석상 머리 칸은 막음. '1' = 놓을 수 있음
-const FR_FREE = {"pewter":["0000000000000","0000111110000","0000000000000","0111101011110","0111111111110","0111011101110","0111111111110","0110101010110","0011111111100","0111011101110","0011111111100","0111011101110","0111011101110","0111111111110","0111111111110","0000000000000"],"cerulean":["00000000000000000","00000000100000000","00000000000000000","01111111111111110","01111110001111110","01000000000000010","01000001110000010","01001111111110010","01000001110010010","01000000000010010","01001111111110010","01001000010000010","01001000010000010","01001111110000010","01000000010000010","01000000010000010","01000001110000010","01000001110000010","01111111111111110","00000000000000000"],"vermilion":["00000000000","00000000000","01101110110","01111111110","01111111110","01111111110","00000000000","00000000000","11111111111","11111111111","10101110101","11111111111","10101110101","11111111111","10101110101","11111111111","11101110111","11101110111","11111111111","11111111111","00000000000"],"celadon":["0000001000000","0000000000000","0111111111110","0110000000110","0010011110100","0111111110110","0110111111110","0110111110110","0110001000110","0110011100110","0111111111100","0011111111110","0111111111110","0110011100110","0110011100110","0111011101110","0111011101110","0111111111110","0111111111110","0000000000000"],"fuchsia":["000000000000000","000000000000000","111111111111111","111111111111111","111111111111111","111111000111111","111111000111111","111111000111111","111111111111111","111111111111111","111111111111111","111101111101111","111101111101111","111111111111111","111111101111111","000000000000000"],"champion":["0000000000000","0000001000000","0000001000000","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","0111111111110","0000011100000","0000011100000","0000011100000","0000011100000","0000011100000","0000011100000"],"dojo":["0000000000000","0000000000000","0000000000000","0111011101110","0111011101110","0111011101110","0111011101110","0111111111110","0111111111110","0111111111110","0111111111110","0111111111110","0111111111110","0110111110110","0111111111110","0000000000000"],"roof":["0000000000000000000","0000000000000000000","0000000000000000000","0111111110000000000","0111111111111111000","0111001111111111000","0111001111111111000","0111111111111111000","0111111111111111000","0000000000000000000"],"viridian":["00000000000000000000","00000000000000000000","01110111111111111111","01110111111111111111","01110001001000000011","01110001001000000011","01111111011011111011","01111110001111111011","00000010000000011011","00000010100000011011","11111010111111111011","11111010111111001011","11001010111111001011","11001010111111101011","11001110111111101011","11001000000000111111","11001000000000111111","11001111111111111111","11001111111111111111","11000000000000111111","11000000000000101110","11111111111111111111","11111111111111111111"],"bush":["00000000000000000","00000000000000000","00000000000000000","00000001110000000","00000011111000000","00000011111000000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011101110111000","00011101110111000","00000000000000000"],"tower":["00000000000000000000","00000000000000000000","00000001000100000000","00000110111011000000","00011000111000110000","00100001111100001000","01000001111100000100","00000001111100000000","10000001111100000010","00000001111100000000","00000001111100000000","00000001111100000000","00000000111000000010","00000000111000000000","01000000111000000100","00100000011100001000","00000000011100000000","00000000011100000000"],"lab":["000000000000000","000000000000000","111111111111001","011111111111100","010001100111111","111011000110001","111111000110001","110001111110001","111011111111111","111111111111111"],"cinnabar":["000000000","000000000","111111110","111111110","111111110","011111110","011111110","011111110","011111110","011111110","011111110","011111110","000001110","000001110","011111110","011111110","011111110","011111110","010111010","011111110","011111110","011111110"],"saffron":["00000000000","00000000000","01111111110","01111111110","01111111110","01111111110","01111111110","01111111110","01111111110","01111111110","01101110110","01111111110","01111111110","01111111110"],"lorelei":["0000000000000","0000000000000","0000000000000","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0000000000000","0000000000000"],"lance":["0000000000000","0000000000000","0000000000000","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0000001000000","0000001000000"],"agatha":["0000000000000","0000000000000","0000000000000","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0000000000000","0000000000000"],"hof":["00000000000","00000000000","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","00001110000"]};
+const FR_FREE = {"pewter":["0000000000000","0000111110000","0000000000000","0111101011110","0111111111110","0111011101110","0111111111110","0110101010110","0011111111100","0111011101110","0011111111100","0111011101110","0111011101110","0111111111110","0111111111110","0000000000000"],"cerulean":["00000000000000000","00000000100000000","00000000000000000","01111111111111110","01111110001111110","01000000000000010","01000001110000010","01001111111110010","01000001110010010","01000000000010010","01001111111110010","01001000010000010","01001000010000010","01001111110000010","01000000010000010","01000000010000010","01000011101000010","01000001110000010","01111111111111110","00000000000000000"],"vermilion":["00000000000","00000000000","01101110110","01111111110","01111111110","01111111110","00000000000","00000000000","11111111111","11111111111","10101110101","11111111111","10101110101","11111111111","10101110101","11111111111","11101110111","11101110111","11111111111","11111111111","00000000000"],"celadon":["0000001000000","0000000000000","0111111111110","0110000000110","0010011110100","0111111110110","0110111111110","0110111110110","0110001000110","0110011100110","0111111111100","0011111111110","0111111111110","0110011100110","0110011100110","0111011101110","0111011101110","0111111111110","0111111111110","0000000000000"],"fuchsia":["000000000000000","000000000000000","111111111111111","111111111111111","111111111111111","111111000111111","111111000111111","111111000111111","111111111111111","111111111111111","111111111111111","111101111101111","111101111101111","111111111111111","111111101111111","000000000000000"],"champion":["0000000000000","0000001000000","0000001000000","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","0111111111110","0000011100000","0000011100000","0000011100000","0000011100000","0000011100000","0000011100000"],"dojo":["0000000000000","0000000000000","0000000000000","0111011101110","0111011101110","0111011101110","0111011101110","0111111111110","0111111111110","0111111111110","0111111111110","0111111111110","0111111111110","0110111110110","0111111111110","0000000000000"],"roof":["0000000000000000000","0000000000000000000","0000000000000000000","0111111110000000000","0111111111111111000","0111001111111111000","0111001111111111000","0111111111111111000","0111111111111111000","0000000000000000000"],"viridian":["00000000000000000000","00000000000000000000","01110111111111111111","01110111111111111111","01110001001000000011","01110001001000000011","01111111011011111011","01111110001111111011","00000010000000011011","00000010100000011011","11111010111111111011","11111010111111001011","11001010111111001011","11001010111111101011","11001110111111101011","11001000000000111111","11001000000000111111","11001111111111111111","11001111111111111111","11000000000000111111","11000000000000101110","11111111111111111111","11111111111111111111"],"bush":["00000000000000000","00000000000000000","00000000000000000","00000001110000000","00000011111000000","00000011111000000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011101110111000","00011101110111000","00000000000000000"],"tower":["00000000000000000000","00000000000000000000","00000001000100000000","00000110111011000000","00011000111000110000","00100001111100001000","01000001111100000100","00000001111100000000","10000001111100000010","00000001111100000000","00000001111100000000","00000001111100000000","00000000111000000010","00000000111000000000","01000000111000000100","00100000011100001000","00000000011100000000","00000000011100000000"],"lab":["000000000000000","000000000000000","111111111111001","011111111111100","010001100111111","111111100110001","111111100110001","110001111110001","111111111111111","111111111111111"],"cinnabar":["000000000","000000000","111111110","111111110","111111110","011111110","011111110","011111110","011111110","011111110","011111110","011111110","000001110","000001110","011111110","011111110","011111110","011111110","010111010","011111110","011111110","011111110"],"saffron":["00000000000","00000000000","01111111110","01111111110","01111111110","01111111110","01111111110","01111111110","01111111110","01111111110","01101110110","01111111110","01111111110","01111111110"],"lorelei":["0000000000000","0000000000000","0000000000000","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0000000000000","0000000000000"],"lance":["0000000000000","0000000000000","0000000000000","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0000001000000","0000001000000"],"agatha":["0000000000000","0000000000000","0000000000000","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0000000000000","0000000000000"],"hof":["00000000000","00000000000","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","00001110000"]};
 DESIGNS_FR.forEach(d => { if (FR_FREE[d.id]) d.free = FR_FREE[d.id]; });
 // 맵 묶음: 'fr' 파이어레드 칸토 체육관 / 'pt' 플라티나 (경완 2026-10-27 '맵은 이전 버전으로 바꿔줘봐 지금 캐릭터랑 묻는지 함 보게')
 const MAP_SET = 'fr';
@@ -100,7 +100,7 @@ const STEPS = {
   pewter: [['0-2,5-6,11-12,14-15', '0-1,4-8,11-12'], ['0-6,11-12,14-15', '0-1,4-8,11-12'], ['0-6,11-12,14-15', '0-1,3-9,11-12'], ['0-6,11-15', '0-1,3-9,11-12'], ['0-8,11-15', '0-1,3-9,11-12'], ['0-8,11-15', '']],
   cerulean: [['0-7,16-19', '0-2,6-10,14-16', [[3, 7, 4, 7, 1, 1], [7, 7, 4, 7, 1, 1, 1], [4, 8, 7, 17, 3, .5]]],   // 1단계 더 좁게 (경완 2026-10-29 '다른 1단계에 비해 너무 넓어서')
   ['0-8,15-19', '0-2,5-11,14-16', [[8, 9, 10, 13, 1, 1], [7, 8, 9, 17, 1, 1]]], ['0-8,15-19', '', [[12, 7, 4, 7, 1, 2, 1], [13, 7, 3, 7, 1, 2, 1], [10, 9, 10, 13, 1, 1], [9, 8, 9, 17, 1, 1]]], ['0-10,14,16-19', ''], ['0-11,13-14,16-19', ''], ['0-14,16-19', '']],   // 12.92 경완 '물 위 다리 2·3단계 이음새': 다리 오른쪽 그림자가 잘린 줄에서 끊기던 칸을 메움
-  vermilion: [['0-3,16-20', '0,3-7,10', [0, 6].flatMap((x, i) => [4, 5, 6, 7].map(y => [x, y, i * 10, 4, 1, 1]))], ['0-3,16-20', '', [0, 10].flatMap(x => [4, 5, 6, 7].map(y => [x, y, x, 4, 1, 1]))], ['0-9,15-20', '', [[4, 6, 4, 9, 3, 2]]], ['0-11,15-20', '', [[4, 6, 4, 9, 3, 2]]], ['0-11,14-20', '', [[4, 6, 4, 9, 3, 2]]], ['0-8,10-20', '', [[4, 6, 4, 9, 3, 2]]], ['0-20', '', [[4, 6, 4, 9, 3, 2]]]],   // v19.21 경완 'NPC 가 길 따라 오게': 전기 문 빛줄기를 바닥으로 덮어 열린 문으로
+  vermilion: [['0-3,16-20', '0,3-7,10', [0, 6].flatMap((x, i) => [4, 5, 6, 7].map(y => [x, y, i * 10, 4, 1, 1]))], ['0-3,16-20', '', [0, 10].flatMap(x => [4, 5, 6, 7].map(y => [x, y, x, 4, 1, 1]))], ['0-9,15-20', ''], ['0-11,15-20', ''], ['0-11,14-20', ''], ['0-8,10-20', '']],
   celadon: [['0-5,15-19', '0-1,4-8,11-12'], ['0-5,15-19', '0-1,3-9,11-12', [[2, 5, 5, 4, 1, 1]]], ['0-5,14-19', '', [[3, 5, 2, 5, 1, 1], [5, 6, 5, 9, 3, 1], ...[3, 4, 8, 9].map(x => [x, 6, 2, 14, 1, 1])]], ['0-8,14-19', '', [[5, 9, 5, 9, 3, 1]]], ['0-5,8-19', ''], ['0-12,14-19', '']],
   // 넓은 무대: 정사각형으로 커지고 왼쪽 그늘 줄(0)·양끝 기둥(14)은 늘 남긴다. 13칸 단계는 반쪽 창문 대신 민벽(4·10번 칸)으로 덮음 (경완 2026-10-29 '이음새 안 보이게')
   fuchsia: [['0-2,5-7,10-12,14-15', '0,4-10,14'], ['0-2,5-8,10-12,14-15', '0,3-11,14'], ['0-2,4-8,10-12,14-15', '0,3-11,14'], ['0-2,4-12,14-15', '0,2-12,14', [[1, 0, 4, 0, 1, 2], [11, 0, 10, 0, 1, 2]]], ['0-12,14-15', '0,2-12,14', [[1, 0, 4, 0, 1, 2], [11, 0, 10, 0, 1, 2]]], ['0-2,4-15', '']],
@@ -120,10 +120,6 @@ function cutOf(D, gi) { if (gi == null) { const g = st(); if (!g) return null; g
 const cutV = R => z => { let d = 0; for (const [a, b] of R) { if (z >= b) d += b - a; else if (z >= a) return null; } return z - d; };
 const cutF = R => z => { for (const [a, b] of R) if (z >= a) z += b - a; return z; };
 const keepSeg = (R, n) => { const out = []; let s = 0; for (const [a, b] of R) { if (a > s) out.push([s, a]); s = b; } if (s < n) out.push([s, n]); return out; };
-// v19.21 경완 '강박사가 물 체육관에서 물 위로 걸어옴': 맵 그림에 붙이는 타일(cut.f)을 빈 바닥 정보에도 똑같이 붙인다 (예전엔 그림만 바뀌어 다리·물 자리가 어긋남)
-const freeFix = (F, F0, fx) => { if (!fx?.length) return F; const G = F.map(r => [...r]);
-  for (const [vx, vy, sx, sy, w, h, fl] of fx) { const W = Math.floor(w), H = Math.floor(h); for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) { const ch = F0[sy + j]?.[sx + (fl ? W - 1 - i : i)]; if (ch != null && G[vy + j]?.[vx + i] != null) G[vy + j][vx + i] = ch; } }
-  return G.map(r => r.join('')); };
 const dzCache = {};
 function dzOf(id, gi) {
   const D = dzBase(id), c = cutOf(D, gi), k = D.id + JSON.stringify(c); if (dzCache[k]) return dzCache[k];
@@ -137,7 +133,7 @@ function dzOf(id, gi) {
   { const L0 = pn(D.leader), e = path[path.length - 1];   // 줄을 잘라 길 끝이 관장 칸과 겹치면(연구소·전당) 끝 줄을 한 칸 아래로 (v12.24 경완 '도전자가 내 캐릭터랑 겹침')
     if (e && e[0] === L0[0] && e[1] === L0[1]) for (let i = path.length - 1; i > 0 && path[i][1] === L0[1]; i--) path[i] = [path[i][0], L0[1] + 1]; }
   return (dzCache[k] = routeFix(Object.assign({}, D, { base: D, cut: c, h: D.h - ny, w: D.w - nx, leader: pn(D.leader), door: pn(D.door), guy: pn(D.guy), path,
-    stat: (D.stat || []).map(pn), deco: D.deco.filter(ok).map(pt), slots: D.slots.filter(ok).map(pt), free: D.free && freeFix(D.free.filter((_, y) => v(y) != null).map(r => [...r].filter((_, x) => vx(x) != null).join('')), D.free, c.f),
+    stat: (D.stat || []).map(pn), deco: D.deco.filter(ok).map(pt), slots: D.slots.filter(ok).map(pt), free: D.free && D.free.filter((_, y) => v(y) != null).map(r => [...r].filter((_, x) => vx(x) != null).join('')),
     toV: v, toF: cutF(RY), toVx: vx, toFx: cutF(RX) })));
 }
 // 도전자 길이 맵 소품(책상 등)을 지나거나 그 위에 서면 (경완 2026-10-30 "소품 있으면 내 옆에 서도 돼"):
@@ -183,10 +179,10 @@ function route(D, from, to, occ = []) {
 // 도전자(손님)가 문에서 관장 앞까지: 관장 바로 앞 → 왼쪽 옆 → 오른쪽 옆 순서로 비어 있는 칸. { path(문 다음 칸부터), cf 손님이 볼 쪽, mf 관장이 볼 쪽 }
 function chalRoute(D, skip = []) { const L = D.leader, occ = occOf(skip).filter(q => !(q[0] === L[0] && q[1] === L[1]));
   const fr = (x, y) => !D.free || (D.free[y]?.[x] === '1' && !(D.stat || []).some(q => q[0] === x && q[1] === y));   // v14.76 경완 '또 소품이랑 겹치네': 서는 칸이 책상 등 소품이면 건너뜀 (route 는 도착 칸을 안 따짐)
-  for (const O of [occ, []]) for (const [tx, ty, cf, mf] of [[L[0], L[1] + 1, 'u', 'd'], [L[0] - 1, L[1], 'r', 'l'], [L[0] + 1, L[1], 'l', 'r']]) { if (!fr(tx, ty)) continue; const P = route(D, D.door, [tx, ty], O); if (P?.length) return { path: P, cf, mf: ty === L[1] ? mf : 'd' }; }   // v19.21 경완 '물 위로 걸어옴': 좁은 다리에 트레이너가 서 있어 길이 막히면 사람은 무시하고라도 바닥 길로 (손으로 짠 길은 물을 지남)
+  for (const [tx, ty, cf, mf] of [[L[0], L[1] + 1, 'u', 'd'], [L[0] - 1, L[1], 'r', 'l'], [L[0] + 1, L[1], 'l', 'r']]) { if (!fr(tx, ty)) continue; const P = route(D, D.door, [tx, ty], occ); if (P?.length) return { path: P, cf, mf: ty === L[1] ? mf : 'd' }; }
   return { path: D.path.slice(1), cf: D.cf || 'u', mf: D.mf }; }
 // 지금 자리에서 문까지 (나가기)
-const outRoute = (D, e) => { const f = [Math.round(e.x), Math.round(e.y)]; return route(D, f, D.door, occOf([e])) || route(D, f, D.door, []) || null; };
+const outRoute = (D, e) => route(D, [Math.round(e.x), Math.round(e.y)], D.door, occOf([e])) || null;
 // 미리보기 그림을 지금 크기(data-gi 가 있으면 그 등급, 처음 열 때는 0 = 새내기)의 잘라 붙인 맵으로 (경완 2026-10-27)
 // 디자인 썸네일을 미리 그려 둔다 (경완 2026-10-28 '맵 썸네일이 바로 안 나오고 박스 텍스트 먼저')
 const preMs = gi => DESIGNS.forEach(d => mapSrc(dzOf(d.id, gi)).then(u => { const im = new Image(); im.src = u; im.decode?.().catch(() => {}); }));
@@ -1275,17 +1271,15 @@ function unlockChk() { const g = st(); if (!g || g.unl || gradeOf(g.rep || 0).i 
       <div class="ul-c"><i class="ul-pic tr"><img alt="" src="${IMG}tr/cool_trainer_f.png"></i><b>트레이너</b><span>고용하면 도전자를<br>먼저 막아 줘요</span><em>OPEN</em></div></div>
       <div class="gy-btns one"><button class="main" data-a="x">좋아요</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('ul-pop'); }); }
 // v18.27 경완 '골드랑 알 보상은 승급창 닫으면 바로 별도 알림창': 승급 보상 받는 창 (골드 + 체육관 타입 알)
-let legLast = null;   // v19.21: 방금 전당 연출에서 받은 전설 알 타입 (보상창에 줄로)
-function rwPop() { const g = st(), i = g.grwN; if (i == null) return Promise.resolve(); delete g.grwN; save(); const n = GR_GOLD[i] || 0, E0 = GR_EGG[i], LT = legLast; legLast = null;
-  const E = E0 || (LT != null ? [0, 1] : 0), legI = LT != null ? (GA.eggIco?.(LT) || '') : '', legNm = LT != null ? `${GA.LT_ADJ?.[LT] || TYPE_KO[LT]} 전설 알` : '';   /* v19.21 경완 '보상 알림창에 전설 알 슬롯도' */
+function rwPop() { const g = st(), i = g.grwN; if (i == null) return Promise.resolve(); delete g.grwN; save(); const n = GR_GOLD[i] || 0, E = GR_EGG[i];
   if (!n && !E) return Promise.resolve();
   /* v18.28 경완 '보상 알림창도 디자인, 알 2개면 스프라이트 2개': 승급창처럼 빛 무대 위에 받은 알 개수만큼 하나씩 톡톡 떨어지고, 아래 보상 줄 (골드는 0 부터 올라감) */
-  const ne = E ? E[1] : 0, stage = ne ? Array.from({ length: ne }, (_, k) => `<i class="rw-egg" style="--d:${(.25 + k * .18).toFixed(2)}s">${E0 ? grEggI(i) : legI}</i>`).join('') : '<i class="rw-coin"><i class="coin"></i></i>';
+  const ne = E ? E[1] : 0, stage = ne ? Array.from({ length: ne }, (_, k) => `<i class="rw-egg" style="--d:${(.25 + k * .18).toFixed(2)}s">${grEggI(i)}</i>`).join('') : '<i class="rw-coin"><i class="coin"></i></i>';
   /* v18.39 경완 '동네 체육관 골드만 줄 땐 빵빠레 박스 없어도 될 듯': 알 없으면 무대 박스 없이 골드 줄만 */
   return new Promise(ok => { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
     const p = pop(`${ne ? `<div class="pp-hd rw-hd"><i class="bsa-ray"></i><i class="pp-halo"></i><div class="rw-stage${ne > 3 ? ' many' : ''}">${stage}</div></div>` : ''}
       <h4 class="pp-t"><small>승급 보상</small>${GRADES[i][1]}</h4>
-      <div class="pp-ben"><ul class="pk-ben">${n ? `<li class="gold"><i class="pk-ic"><i class="coin"></i></i><span>골드</span><em><b class="rw-gn">+0G</b></em></li>` : ''}${E0 ? `<li class="eg"><i class="pk-ic"><span class="pk-le">${grEggI(i)}</span></i><span>${grEggN(i)}</span><em><b>${E0[1]}개</b></em></li>` : ''}${LT != null ? `<li class="eg"><i class="pk-ic"><span class="pk-le">${legI}</span></i><span>${legNm}</span><em><b>1개</b></em></li>` : ''}</ul>${E ? '<p class="rw-note">알은 필드의 알 가방에 들어 있어요</p>' : ''}</div>
+      <div class="pp-ben"><ul class="pk-ben">${n ? `<li class="gold"><i class="pk-ic"><i class="coin"></i></i><span>골드</span><em><b class="rw-gn">+0G</b></em></li>` : ''}${E ? `<li class="eg"><i class="pk-ic"><span class="pk-le">${grEggI(i)}</span></i><span>${grEggN(i)}</span><em><b>${ne}개</b></em></li>` : ''}</ul>${E ? '<p class="rw-note">알은 필드의 알 가방에 들어 있어요</p>' : ''}</div>
       <div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('pp-pop', 'rw-pop');
     const gn = p.querySelector('.rw-gn'); if (gn) { const t0 = performance.now() + 350, T = 800, f = now => { const k = Math.max(0, Math.min(1, (now - t0) / T)); gn.textContent = `+${Math.round(n * (1 - (1 - k) ** 3)).toLocaleString()}G`; if (k < 1 && gn.isConnected) requestAnimationFrame(f); }; requestAnimationFrame(f); }
     for (let k = 0; k < ne; k++) setTimeout(() => { try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {} }, 250 + k * 180 + 220); }); }
@@ -1296,82 +1290,44 @@ function legEggBox(t) { return new Promise(ok => { try { window.GymBGM?.se?.('DP
     pop(`<h4>${GA.LT_ADJ?.[t] || ''} 전설 알을 받았다!</h4><div class="le-get">${GA.eggIco?.(t) || ''}</div><p class="gy-msg" style="text-align:center">강박사에게서<br><b>${TYPE_KO[t]} 타입 전설 포켓몬</b>이 나오는 알을 받았어요.<br><small>필드의 알 가방에 들어 있어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); }); }
 // 탭하면 바로 넘어가는 기다림 (전당 연출은 길어서 누르면 다음 장면으로)
 const hofWait = (ov, ms) => new Promise(ok => { let d = false; const f = () => { if (d) return; d = true; ov.removeEventListener('click', f); clearTimeout(tm); ok(); }, tm = setTimeout(f, ms); ov.addEventListener('click', f); });
-async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete g.legN; save(); legLast = t;
-  // v19.18 경완 '승급 순간부터, 노크 쿵쿵쿵! 화면 흔들림 → 같이 갈 데가 있다며 데리고 나가기 → 본가 전당 맵 → 등록 기계에 볼 하나씩 → 체육관 복귀·축하·안내원 티키타카 → 강박사 나간 뒤 승급창·보상창'
+async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete g.legN; save();
   const D = g.d && dzOf(g.d), main = $g('.gy-main'); if (!D || !meEnt || !main || !meEnt.el.isConnected) return legEggBox(t);
-  const M = window.GymBGM, nm = trName() || '관장', ty = TYPE_KO[t], adj = GA.LT_ADJ?.[t] || '', KW = '<span class="gy-who">강박사</span>', GW = '<span class="gy-who">안내원</span>';
-  const say = h => { root.classList.remove('dhide'); return talk(KW + h); }, gsay = h => { root.classList.remove('dhide'); return talk(GW + h); }, se = (n, v = 1) => gse(n, v), E = esc(nm), jo = jong(nm) ? '은' : '는';
+  const M = window.GymBGM, nm = trName() || '관장', ty = TYPE_KO[t], adj = GA.LT_ADJ?.[t] || '', who = '<span class="gy-who">강박사</span>', say = h => talk(who + h), se = n => { try { M?.se?.(n); } catch (e) {} };
   busy = true; root.classList.add('busy'); root.classList.remove('gview'); openTab(null);
-  try { ['rgFollow', 'rgPallet', 'rgHof'].forEach(n => M?.prep?.(n)); M?.sePrep?.(['DP_KON', 'DP_REGI', 'DP_DOOR', 'se_ball', 'se_door', 'DP_KIRAKIRA2', 'ME_FANFA5', 'DP_PINPON', 'DP_DECIDE']); } catch (e) {}
-  let k = null, ov = null, F = null, A = null, gPath = null; const gu = guyEnt, gu0 = gu && [gu.x, gu.y, gu.f];
+  try { M?.prep?.('dendo'); M?.sePrep?.(['DP_DOOR', 'DP_KIRAKIRA2', 'ME_FANFA5', 'DP_PINPON', 'DP_DECIDE']); } catch (e) {}
+  let k = null, ov = null;
   try {
-    await Promise.all([loadJs('gymb/battle.js', 'GymBattle').catch(() => {}), loadJs('gymb/ev.js', 'GymEv')]);
-    A = window.GymEv?.tools?.(EV_API, { id: 'hof' }); if (!A) return legEggBox(t);
-    const mons = (luNow().length ? luNow() : [0, 1, 2].map(luOf).find(L => L.length) || []).slice(0, 6);
-    // ---- 1. 노크: 쿵쿵쿵! 쿵쿵쿵! (화면이 흔들림) ----
-    await wait(600);
-    for (const r of [0, 1]) { dlg(`<b>쿵쿵쿵!${r ? ' 쿵쿵쿵!' : ''}</b>`); for (let j = 0; j < 3; j++) { se('DP_KON', 1.6); GA.haptic?.(0); A.shake(); await wait(200); } await wait(450); }
-    meEnt.f = 'd'; place(meEnt); A.bub(meEnt, '!', 900); if (gu) A.bub(gu, '!', 900); se('DP_REGI', .8); await wait(900);
-    await talk('누군가 체육관 문을 세게 두드리고 있다!');
-    dlg(''); root.classList.add('dhide'); doorSe(); await wait(180);
+    await loadJs('gymb/battle.js', 'GymBattle').catch(() => {});
+    const mons = luNow().length ? luNow() : [0, 1, 2].map(luOf).find(L => L.length) || [];
+    await wait(300); doorSe(); await wait(180);
     k = ent({ ow: 'kang', src: KANG_OW, fw: 32, x: D.door[0], y: D.door[1], f: 'u' });
-    dlg('<b>강박사</b>가 헐레벌떡 뛰어 들어온다!');
+    dlg('<b>강박사</b>가 헐레벌떡 뛰어 들어온다!'); await wait(650);
     const CR = chalRoute(D, [k]); if (CR?.path?.length) { await walk(k, CR.path, 170); k.f = CR.cf; place(k); if (CR.mf) { meEnt.f = CR.mf; place(meEnt); } }
-    await say(`헉… 헉… ${E}!<br>소식 듣자마자 연구소에서<br>한달음에 달려왔단다!`);
+    await say(`헉… 헉… ${esc(nm)}!<br>소식 듣자마자 연구소에서<br>한달음에 달려왔단다!`);
     await say(`${ty} 타입 <b>전설의 체육관</b>이라니…<br>문 닫기 직전이던 그 체육관이<br>여기까지 오다니, 감격스럽구나!`);
-    await say('자, 지금 나랑 같이 갈 데가 있단다!<br>자세한 건 가 보면 알아.<br>잔말 말고 따라오게!');
-    // ---- 2. 강박사가 앞장서고 관장이 한 칸 뒤에서 따라 나간다 ----
-    dlg(''); root.classList.add('dhide'); bgmPlay('rgFollow');
-    const P = outRoute(D, k) || [[D.door[0], Math.round(k.y)], D.door], L = [[Math.round(k.x), Math.round(k.y)], ...P], WS = 267;
-    if (gu) { const ddx = D.door[0] - gu.x, ddy = D.door[1] - gu.y; gu.f = Math.abs(ddy) >= Math.abs(ddx) ? (ddy > 0 ? 'd' : 'u') : (ddx > 0 ? 'r' : 'l'); place(gu); }   /* 경완: 안내원은 나가는 쪽(문)을 바라봄 */
-    await Promise.all([walk(k, P, WS).then(() => { doorSe(); k.el.style.visibility = 'hidden'; }), wait(WS).then(() => walk(meEnt, L, WS)).then(() => { doorSe(); meEnt.el.style.visibility = 'hidden'; })]);
-    await wait(900);
-    await A.black(true);
-    // ---- 3. 명예의 전당 (본가 파이어레드 맵) ----
-    const HJ = await fetch(`${IMG}ev/hof/hof.json?v=${VER}`).then(r => r.json());
-    F = A.field({ nm: '명예의 전당', img: `${IMG}ev/hof/hof.png?v=${VER}`, over: `${IMG}ev/hof/hof_o.png?v=${VER}`, w: HJ.w, h: HJ.h, col: HJ.col, door: {} });
-    const me = F.me = F.npc(myOw(), 5, 12, 'u'); EV_API.fitMe(me); const kg = F.npc(KANG_OW, 5, 11, 'u', { fw: 32 });
-    F.cam(5, 6); bgmPlay('rgPallet'); await A.black(false); await F.show();
-    await Promise.all([kg.go([[5, 6], [6, 6], [6, 5]], WS), wait(WS).then(() => me.go([[5, 5]], WS))]);
-    kg.turn('l'); await wait(200); me.turn('r'); await wait(300);
-    const S = A.talk();
-    await S.say('여기가 바로 명예의 전당이란다.');
-    await S.say('리그 협회가 인정한 최고의 체육관과\n함께 싸운 포켓몬들의 이름이\n영원히 새겨지는 곳이지.');
-    await S.say(`오늘부터 ${E}의 이름도\n이곳에 남게 된다네!`);
-    await S.say('자, 저 기록 기계에\n함께 싸운 포켓몬들의 몬스터볼을\n하나씩 올려 보게!'); S.hide(true);
-    me.turn('u'); await wait(400);
-    // 본가 FldEff_HallOfFameRecord: 볼을 25프레임마다 하나씩 (SE_BALL) → 32프레임 쉬고 → 볼이 반짝이며 모니터가 켜짐
-    const kk = F.k, bw = document.createElement('div'); bw.className = 'hm-balls'; F.map.appendChild(bw);
-    const BP = [[84, 51], [92, 51], [84, 56], [92, 56], [84, 61], [92, 61]];
-    for (let n = 0; n < Math.max(1, mons.length); n++) { const b = document.createElement('i'); b.className = 'hm-ball'; Object.assign(b.style, { left: (BP[n][0] - 4) * kk + 'px', top: (BP[n][1] - 4) * kk + 'px', width: 8 * kk + 'px', height: 8 * kk + 'px', backgroundImage: `url(${IMG}ev/hof/ball.png?v=${VER})` }); bw.appendChild(b); se('se_ball'); await wait(417); }
-    await wait(533);
-    const mo = document.createElement('i'); mo.className = 'hm-mon'; Object.assign(mo.style, { left: 80 * kk + 'px', top: 9 * kk + 'px', width: 16 * kk + 'px', height: 16 * kk + 'px', backgroundImage: `url(${IMG}ev/hof/mon.png?v=${VER})`, backgroundSize: `${16 * kk}px ${64 * kk}px` }); F.map.appendChild(mo);
-    bw.classList.add('fl'); se('DP_KIRAKIRA2'); let mf = 0; const MF = [3, 2, 1, 0, 1, 2], mt = setInterval(() => { mo.style.backgroundPosition = `0 ${-MF[mf++ % 6] * 16 * kk}px`; }, 133);
-    await wait(2400); clearInterval(mt); bw.classList.remove('fl'); bw.classList.add('on');
-    await S.say('좋아, 기록이 시작됐구먼!'); S.hide(true);
-    // ---- 4. 등록 화면 (본가처럼 도트 그림 느낌) ----
+    await say(`이런 날엔 기록을 남겨야지.<br>${esc(g.nm || '이 체육관')}${jong(g.nm || '관') ? '과' : '와'} 함께 싸운 포켓몬들을<br><b>명예의 전당</b>에 새기자꾸나!`);
+    dlg(''); root.classList.add('dhide');
+    // ---- 전당 ----
+    ov = document.createElement('div'); ov.className = 'hof';
     const SP = Array.from({ length: 14 }, (_, n) => `<i style="left:${(n * 37 + 11) % 100}%;top:${(n * 53 + 7) % 78}%;animation-delay:${(n * .37 % 2.2).toFixed(2)}s"></i>`).join('');
-    ov = document.createElement('div'); ov.className = 'hof gba';
-    const UP = Array.from({ length: 18 }, (_, n) => `<i style="left:${(n * 41 + 5) % 100}%;--s:${(.6 + (n * 7 % 5) * .18).toFixed(2)};animation-duration:${(5 + n * 1.3 % 4).toFixed(1)}s;animation-delay:-${(n * .83 % 6).toFixed(2)}s"></i>`).join('');   /* v19.21 경완 '더 웅장하게': 올라가는 빛 알갱이 */
-    ov.innerHTML = `<i class="hof-bg"></i><i class="hof-sun"></i><i class="hof-beam l"></i><i class="hof-beam r"></i><i class="hof-beam c"></i><i class="hof-floor"></i><i class="hof-ring"></i><i class="hof-sp">${SP}</i><i class="hof-up">${UP}</i><i class="hof-bar t"></i><i class="hof-bar b"></i>
+    ov.innerHTML = `<i class="hof-bg"></i><i class="hof-beam l"></i><i class="hof-beam r"></i><i class="hof-floor"></i><i class="hof-sp">${SP}</i>
       <div class="hof-ttl"><small>${ty} 타입 · 전설의 체육관</small><b>명예의 전당</b></div><div class="hof-st"></div><div class="hof-cap"></div><i class="hof-flash"></i>`;
-    F.el.appendChild(ov); root.classList.add('lgOn'); void ov.offsetWidth; ov.classList.add('hOn'); M?.stop?.(.6); await wait(800);
-    bgmPlay('rgHof'); ov.classList.add('hTtl'); await hofWait(ov, 2600); ov.classList.remove('hTtl'); await wait(500);
+    main.appendChild(ov); root.classList.add('lgOn'); void ov.offsetWidth; ov.classList.add('hOn'); M?.stop?.(.8); await wait(900);
+    bgmPlay('dendo'); ov.classList.add('hTtl'); await hofWait(ov, 2600); ov.classList.remove('hTtl'); await wait(500);
     const st0 = ov.querySelector('.hof-st'), cap = ov.querySelector('.hof-cap');
     ov.classList.add('hLit');
-    for (const [n, P2] of mons.entries()) {
-      const lv = (() => { try { return GB()?.gm?.(P2)?.lv; } catch (e) { return 0; } })(), pn = P2.nm || SPECIES[SPECIES[P2.sp]?.rb || P2.sp]?.n || '???';
-      const el = document.createElement('div'); el.className = 'hof-pk in'; el.innerHTML = '<span></span>'; st0.appendChild(el); try { GA.pkFront?.(el.firstElementChild, { sp: P2.sp, sh: P2.shiny ? 1 : 0, sx: P2.sex }); } catch (e) {}
-      ov.classList.remove('hBurst'); void ov.offsetWidth; ov.classList.add('hBurst'); se('DP_DECIDE');
-      await wait(700); try { GA.cry?.(P2.sp, 0, 1, 2.2); } catch (e) {}   /* v19.21 경완: 포켓몬 나올 때마다 울음소리 */
-      cap.innerHTML = `<i>No.${n + 1}</i><b>${esc(pn)}</b>${lv ? `<em>Lv.${lv}</em>` : ''}`; cap.classList.remove('on'); void cap.offsetWidth; cap.classList.add('on');
-      await hofWait(ov, 3400);   /* v19.21 경완 '포켓몬 별로 지나가는 타이밍 늘려': 2.3초 → 4.1초 */
-      el.classList.remove('in'); el.classList.add('out'); cap.classList.remove('on'); await wait(700); el.remove(); }
+    for (const [n, P] of mons.entries()) {
+      const lv = (() => { try { return GB()?.gm?.(P)?.lv; } catch (e) { return 0; } })(), pn = P.nm || SPECIES[SPECIES[P.sp]?.rb || P.sp]?.n || '???';
+      const el = document.createElement('div'); el.className = 'hof-pk in'; el.innerHTML = '<span></span>'; st0.appendChild(el); try { GA.pkFront?.(el.firstElementChild, { sp: P.sp, sh: P.shiny ? 1 : 0, sx: P.sex }); } catch (e) {}
+      cap.innerHTML = `<i>${n + 1} / ${mons.length}</i><b>${esc(pn)}</b>${lv ? `<em>Lv.${lv}</em>` : ''}`; cap.classList.remove('on'); void cap.offsetWidth; cap.classList.add('on');
+      se('DP_DECIDE'); await hofWait(ov, 2300);
+      el.classList.remove('in'); el.classList.add('out'); cap.classList.remove('on'); await wait(380); el.remove(); }
+    // 관장 + 모두 함께
     const trU = await fitSrc('tr').catch(() => `${IMG}tr/${myOw()}.png`);
-    st0.innerHTML = `<div class="hof-all">${mons.map((P2, n) => `<span class="hof-mini" style="--n:${n};--c:${mons.length}"><span></span></span>`).join('')}<img class="hof-tr" alt="" src="${trU}"></div>`;
+    st0.innerHTML = `<div class="hof-all">${mons.map((P, n) => `<span class="hof-mini" style="--n:${n};--c:${mons.length}"><span></span></span>`).join('')}<img class="hof-tr" alt="" src="${trU}"></div>`;
     st0.querySelectorAll('.hof-mini>span').forEach((e, n) => { try { GA.pkFront?.(e, { sp: mons[n].sp, sh: mons[n].shiny ? 1 : 0, sx: mons[n].sex }); } catch (x) {} });
     const dt = new Date(), ds = `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, '0')}.${String(dt.getDate()).padStart(2, '0')}`;
-    cap.innerHTML = `<i>명예의 전당 등록</i><b>${esc(g.nm || '')}</b><em>관장 ${E}</em><small>${ds}</small>`; cap.classList.add('on', 'fin');
+    cap.innerHTML = `<i>명예의 전당 등록</i><b>${esc(g.nm || '')}</b><em>관장 ${esc(nm)}</em><small>${ds}</small>`; cap.classList.add('on', 'fin');
     ov.classList.add('hAll'); se('DP_KIRAKIRA2'); confetti(); await hofWait(ov, 3600);
     // 하늘에서 전설 알
     cap.classList.remove('on'); ov.classList.add('hEgg');
@@ -1379,49 +1335,19 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     await wait(60); ov.classList.add('hDrop'); se('DP_KIRAKIRA2'); await wait(1900);
     se('DP_PINPON'); ov.classList.add('hWob'); await wait(900); ov.classList.remove('hWob'); void ov.offsetWidth; ov.classList.add('hWob'); se('DP_PINPON'); await wait(900);
     ov.classList.add('hGot'); confetti(); se('DP_KIRAKIRA2');
-    /* v19.21 경완: '전설 알을 받았다!' 는 대사창 말고 하단에 따로 디자인한 알림창 (팝업 모션·효과음, 버튼으로만 닫힘) */
-    await wait(500); await new Promise(ok => { const n2 = document.createElement('div'); n2.className = 'hof-got';
-      n2.innerHTML = `<i class="hg-shine"></i><div class="hg-ic"><i class="hg-halo"></i>${GA.eggIco?.(t) || ''}</div><div class="hg-tx"><small>전설 알 획득!</small><b>${adj} 전설 알</b><p>${ty} 타입 전설 포켓몬이 태어나요<br>필드의 알 가방에 넣었어요</p></div><button class="hg-ok">좋아!</button>`;
-      ov.appendChild(n2); se('DP_PINPON'); GA.haptic?.(1);
-      n2.querySelector('.hg-ok').addEventListener('click', e => { e.stopPropagation(); se('DP_DECIDE'); n2.classList.add('bye'); setTimeout(() => { n2.remove(); ok(); }, 260); }, { once: true }); });
-    // ---- 5. 체육관으로 돌아옴 ----
-    M?.stop?.(1); await A.black(true); ov.remove(); ov = null; root.classList.remove('lgOn'); F.el.remove(); F = null;
-    meEnt.x = D.leader[0]; meEnt.y = D.leader[1]; meEnt.f = CR?.mf || 'd'; meEnt.el.style.visibility = ''; place(meEnt);
-    const kt = CR?.path?.at(-1) || D.door; k.x = kt[0]; k.y = kt[1]; k.f = CR?.cf || 'u'; k.el.style.visibility = ''; place(k);
-    bgmPlay('gym'); await A.black(false); await wait(300);
-    await say(`${E}, 다시 한번 축하하네!<br>그 알에선 ${ty} 타입 <b>전설 포켓몬</b>이<br>태어난단다. 정성껏 품어 주렴!`);
-    await say('하지만 이게 끝이 아니란다!<br>세상엔 아직 관장을 기다리는<br>다른 타입 체육관들이 잔뜩 있지.');
-    await say('다른 타입 체육관도 열어서<br>전설의 체육관을 하나씩 늘려 가 보게!<br>자네라면 할 수 있어!');
-    // ---- 6. 안내원 축하 + 티키타카 ----
-    if (gu) { A.bub(gu, '!', 800); se('DP_REGI', .7); await wait(700);
-      const nb = [[meEnt.x - 1, meEnt.y], [meEnt.x + 1, meEnt.y], [meEnt.x, meEnt.y + 1], [k.x - 1, k.y], [k.x + 1, k.y], [k.x, k.y + 1]].filter(q => !(q[0] === k.x && q[1] === k.y) && !(q[0] === meEnt.x && q[1] === meEnt.y));
-      const to = A.reach(gu, nb, [[k.x, k.y]]); if (to) await A.walkTo(gu, to, 180, [[k.x, k.y]]);
-      else { const CP = (CR?.path || D.path.slice(1)).slice(0, -1); gPath = [D.door, ...CP]; if (CP.length) await walk(gu, gPath, 180); }   // 빈 바닥 정보로 길이 안 나오는 맵: 문 → 손님 길을 따라 강박사 뒤까지
-      gu.f = 'u'; place(gu); }
-    await gsay('관장님!! 전설의 체육관이라니…!<br>제가 여기서 일한 보람이 있어요…<br>흑흑…');
-    await say('허허, 자네도 그동안 고생 많았네.');
-    await gsay('그럼… 저도 명예의 전당에<br>이름이 올라가는 건가요?!');
-    await say('…자네는 안내원이잖나.');
-    await gsay('그, 그럼 안내원의 전당은요?!');
-    await say('그런 건 없네.');
-    dlg(''); root.classList.add('dhide'); if (gu) A.bub(gu, '...', 1200); await wait(1300);
-    await say('허허허! 농담일세, 농담.<br>자네 이름은 내 연구 노트에<br>아주 크게 적어 두지!');
-    await gsay('강박사님…!<br>(…노트에 적히는 거였구나.)');
-    await say('그럼 난 연구소로 돌아가 보마!<br>둘 다 앞으로도 이 체육관을<br>잘 부탁하네!');
+    root.classList.remove('dhide'); await talk(`<b>${esc(nm)}</b>${jong(nm) ? '은' : '는'} <b>${adj} 전설 알</b>을 받았다!`, '다음', `${ty} 타입 전설 포켓몬이 태어나는 알 · 필드의 알 가방에 넣었어요`);
+    dlg(''); root.classList.add('dhide'); ov.classList.add('hBye'); M?.stop?.(1); await wait(900); ov.remove(); ov = null; root.classList.remove('lgOn'); bgmPlay('gym');
+    if (CR?.cf) { k.f = CR.cf; place(k); }
+    await say(`그 알에선 ${ty} 타입 <b>전설 포켓몬</b>이<br>태어난단다. 필드에서 많이 걸으며<br>정성껏 품어 주렴!`);
+    await say('역시 내 눈은 틀리지 않았어!<br>앞으로도 이 체육관을 잘 부탁한다.<br>그럼 난 연구소로 돌아가 보마!');
     dlg(''); root.classList.add('dhide'); meEnt.f = 'd'; place(meEnt);
     await walk(k, outRoute(D, k) || [[D.door[0], Math.round(k.y)], D.door], 200); await wait(200); doorSe(); await wait(120);
-    k.el.remove(); ents = ents.filter(x => x !== k); k = null;
-    if (gu && gu0) { if (gPath) await walk(gu, [...gPath.slice(0, -1).reverse(), [gu0[0], gu0[1]]], 200); else await A.walkTo(gu, [gu0[0], gu0[1]], 200); gu.f = gu0[2]; place(gu); }
-  } finally { if (ov) ov.remove(); if (F) F.el.remove(); root.querySelectorAll('.ev-black,.gy-kang.tw-talk').forEach(x => x.remove()); if (ov || F) bgmPlay('gym'); root.classList.remove('lgOn');
-    meEnt.el.style.visibility = ''; if (meEnt.x !== D.leader[0] || meEnt.y !== D.leader[1]) { meEnt.x = D.leader[0]; meEnt.y = D.leader[1]; } meEnt.f = 'd'; place(meEnt);
-    if (gu && gu0) { gu.x = gu0[0]; gu.y = gu0[1]; gu.f = gu0[2]; place(gu); }
-    if (k) { k.el.remove(); ents = ents.filter(x => x !== k); } dlg(''); root.classList.add('dhide'); root.classList.remove('busy'); busy = false; }
+  } finally { if (ov) { ov.remove(); bgmPlay('gym'); } root.classList.remove('lgOn'); if (k) { k.el.remove(); ents = ents.filter(x => x !== k); } dlg(''); root.classList.add('dhide'); root.classList.remove('busy'); busy = false; }
 }
 // 승급 (경완 2026-10-31): 홈 타이틀 배지가 밝게 빛나다가 번쩍 → 다음 등급 배지로 바뀜 → 축하창 (등급 혜택만, 설명 문구 없음)
 async function badgeGet(ty) {
   const g0 = st(), gN = g0.newG, gi = gN ?? gradeOf(g0.rep || 0).i;
   if (gN != null && open) await promoFx(gi); else { g0.newBdg = 0; delete g0.newG; save(); renderTop(); }
-  if (st()?.legN && open) await legEggPop();   // v19.18 경완: 전설은 승급 순간 바로 강박사 연출 → 끝나고 승급창·보상창
   return new Promise(ok => { const p = pop(`<div class="pp-hd"><i class="bsa-ray"></i><i class="pp-halo"></i><div class="bsa-bd">${bdHtml(ty, gi + 1)}</div></div>
       <h4 class="pp-t"><small>체육관 등급이 올랐어요!</small>${GRADES[gi][1]}</h4><div class="pp-ben"><h5>등급 혜택</h5>${perkHtml(gi, 1)}</div>
       <div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); rwPop().then(legEggPop).then(ok); });
@@ -2409,7 +2335,7 @@ async function intro() {
   await wait(300); dark.remove();
   // 내가 관장 자리까지 걸어가 선다, 강박사는 옆으로 비킨다
   { const fr = D.free, okT = p => !offMap(D, p) && (!fr || fr[p[1]]?.[p[0]] === '1') && !(D.stat || []).some(q => q[0] === p[0] && q[1] === p[1]); const side = [[p1[0] + 1, p1[1]], [p1[0] - 1, p1[1]]].find(okT); if (side) await walk(kE, [side]); } kE.f = 'u'; place(kE);
-  { let P = route(D, [meEnt.x, meEnt.y], D.leader, occOf([meEnt])) || route(D, [meEnt.x, meEnt.y], D.leader, []); if (!P) { P = D.path.slice(1); if (String(P.at(-1)) !== String(D.leader)) P.push(D.leader); } await walk(meEnt, P); } meEnt.f = 'd'; place(meEnt);
+  { let P = route(D, [meEnt.x, meEnt.y], D.leader, occOf([meEnt])); if (!P) { P = D.path.slice(1); if (String(P.at(-1)) !== String(D.leader)) P.push(D.leader); } await walk(meEnt, P); } meEnt.f = 'd'; place(meEnt);
   // 12. 그랜드 오픈
   await grandOpen(); if (!open) return;
   // 13. 운영 설명
@@ -2430,7 +2356,7 @@ async function intro() {
   // v13.80 경완: 보는 방향 자연스럽게 — 문 소리에 둘 다 문 쪽을 보고, 안내원이 걷는 동안 고개로 따라가고, 서면 서로 마주 본다
   await wait(120); face(kE, gE); await wait(140); face(meEnt, gE);
   { let on = 1; const trk = () => { if (!on) return; face(kE, gE); face(meEnt, gE); requestAnimationFrame(trk); }; await wait(200); requestAnimationFrame(trk);
-    await walk(gE, route(D, D.door, D.guy, occOf([gE])) || route(D, D.door, D.guy, []) || guyPath(D), 150); on = 0; }
+    await walk(gE, route(D, D.door, D.guy, occOf([gE])) || guyPath(D), 150); on = 0; }
   face(gE, meEnt); face(meEnt, gE); face(kE, gE); await wait(200);
   S1.hide(false);
   const GUY = { who: '안내원', pic: false };
@@ -2444,7 +2370,7 @@ async function intro() {
   await S1.say(`그럼 화이팅이네, ${you}!!\n다음에 또 오겠네!`, { pic: true });
   S1.hide(true); S1.pic(false);
   { let on = 1; const trk = () => { if (!on) return; face(meEnt, kE); face(gE, kE); requestAnimationFrame(trk); }; requestAnimationFrame(trk);
-    await walk(kE, route(D, [kE.x, kE.y], D.door, occOf([kE])) || route(D, [kE.x, kE.y], D.door, []) || [[kE.x, D.door[1]], D.door].filter(p => !offMap(D, p))); on = 0; }
+    await walk(kE, route(D, [kE.x, kE.y], D.door, occOf([kE])) || [[kE.x, D.door[1]], D.door].filter(p => !offMap(D, p))); on = 0; }
   kE.f = 'd'; place(kE); await wait(350); face(kE, meEnt); await wait(150);   // 문 앞에서 뒤돌아보며 한마디
   S1.hide(false); await S1.say('아, 협회에는 내가\n잘 말해 두지!'); await S1.end(); kE.f = 'd'; place(kE); await wait(200);
   doorSe(); kE.el.remove(); ents.splice(ents.indexOf(kE), 1);
