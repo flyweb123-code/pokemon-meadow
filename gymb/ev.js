@@ -140,6 +140,7 @@ const CSS = `
 #gym .ev-rw .rw-fnd i{position:relative;width:34px;height:34px;display:grid;place-items:center;border-radius:6px;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.12)}
 #gym .ev-rw .rw-fnd i img{width:26px;height:26px;object-fit:contain;image-rendering:pixelated}
 #gym .ev-rw .rw-fnd i .egg{width:22px;height:27px}
+#gym .ev-pw .ev-in{width:100%;box-sizing:border-box;padding:10px 12px;border:2px solid #4a4a5a;border-radius:10px;font-family:inherit;font-size:20px;font-weight:700;text-align:center;background:#fff;color:#222;outline:none}#gym .ev-pw .ev-in:focus{border-color:#3a7ae0}
 #gym .ev-fld .ev-rope{position:absolute;left:22%;right:22%;top:56%;height:20%;pointer-events:none;background:repeating-linear-gradient(170deg,#c89850 0 2px,#7a5428 2px 3px,transparent 3px 6px);border-top:1px solid #5a3a18;border-bottom:1px solid #5a3a18;opacity:.95}
 #gym .ev-fld .ev-tv{position:absolute;pointer-events:none;background:linear-gradient(180deg,#d8f4ff,#78c8ff 60%,#4898e8);box-shadow:0 0 8px 3px rgba(140,210,255,.75);animation:evTv .22s steps(2) infinite}
 @keyframes evTv{50%{filter:brightness(1.25)}}
