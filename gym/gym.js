@@ -48,7 +48,7 @@ const DESIGNS_FR = [
   { id: 'pewter', ty: 6, pt: 'oreburgh', n: '바위 계단', sub: '회색시티 체육관', w: 13, h: 16, leader: [6, 5], door: [6, 14], guy: [8, 13],
     deco: [[2, 5], [10, 5], [3, 9], [9, 9], [2, 11], [10, 11], [2, 13], [10, 13]],
     path: [[6, 14], [6, 6]], slots: [[7, 10, 'l'], [5, 9, 'r'], [7, 8, 'l'], [5, 8, 'r'], [8, 6, 'l'], [4, 6, 'r'], [9, 8, 'l']], inY: 10, tiny: [[7, 11], [[2, 3], [10, 11]]], cuts: [[9, 11], [9, 11], [9, 11], [9, 11], [9, 11]] },
-  { id: 'cerulean', ty: 11, pt: 'snowpoint', n: '물 위 다리', sub: '블루시티 체육관', w: 17, h: 20, leader: [8, 6], door: [8, 18], guy: [7, 18],
+  { id: 'cerulean', ty: 11, pt: 'snowpoint', n: '물 위 다리', sub: '블루시티 체육관', w: 17, h: 20, leader: [8, 6], door: [8, 18], guy: [7, 17],   /* v19.24 경완 '안내원이 체육관 밖에 있음': 문 줄(맨 아래 테두리) → 한 칸 위 다리 위 */
     deco: [[2, 3], [14, 3], [1, 8], [15, 8], [1, 13], [15, 13], [5, 18], [11, 18]],
     path: [[8, 18], [8, 16], [9, 16], [9, 10], [8, 10], [8, 7]], slots: [[8, 13, 'r'], [10, 10, 'l'], [6, 10, 'r'], [9, 8, 'l'], [7, 8, 'r'], [11, 7, 'l'], [5, 7, 'r']], inY: 15, tiny: [[8, 16], [[3, 5], [12, 14]]],
     fix: { t: [[3, 7, 4, 7, 1, 1], [9, 7, 4, 7, 1, 1, 1], [5, 8, 7, 17, 3, .5]], 0: [[9, 8.5, 9, 8, 1, .5], [12, 7, 4, 7, 1, 1, 1], [12, 8, 4, 8, 1, 1, 1], [13, 7, 11, 12, 1, 2]], 1: [[9, 8.5, 9, 8, 1, .5], [12, 7, 4, 7, 1, 1, 1], [12, 8, 4, 8, 1, 1, 1], [13, 7, 11, 12, 1, 2]],
@@ -68,7 +68,7 @@ const DESIGNS_FR = [
   { id: 'lab', stat: [[5, 8], [9, 8]], ty: 9, n: '실험실', sub: '홍련섬 포켓몬 연구소', w: 15, h: 10, leader: [7, 2], door: [7, 9], guy: [10, 9], path: [[7, 9], [7, 8], [6, 8], [6, 7], [5, 7], [5, 3], [7, 3]], inY: 9,   /* 12.92~93 경완: 석상은 카펫에서 한 칸 띄우고 카펫 길이만큼 위로 */
     deco: [[0, 6], [0, 8], [11, 8], [13, 8], [3, 9], [11, 9], [10, 2], [4, 2]], slots: [[9, 5, 'l'], [10, 8, 'l'], [4, 8, 'r'], [2, 5, 'r'], [10, 3, 'd'], [3, 2, 'd'], [12, 8, 'l'], [1, 8, 'r']] },];
 // 꾸미기 놓을 수 있는 칸 (경완 2026-10-29 '기둥처럼 입체적인 소품 위에는 못 올리게'): pokefirered 맵 충돌·물 칸 + 석상 머리 칸은 막음. '1' = 놓을 수 있음
-const FR_FREE = {"pewter":["0000000000000","0000111110000","0000000000000","0111101011110","0111111111110","0111011101110","0111111111110","0110101010110","0011111111100","0111011101110","0011111111100","0111011101110","0111011101110","0111111111110","0111111111110","0000000000000"],"cerulean":["00000000000000000","00000000100000000","00000000000000000","01111111111111110","01111110001111110","01000000000000010","01000001110000010","01001111111110010","01000001110010010","01000000000010010","01001111111110010","01001000010000010","01001000010000010","01001111110000010","01000000010000010","01000000010000010","01000011101000010","01000001110000010","01111111111111110","00000000000000000"],"vermilion":["00000000000","00000000000","01101110110","01111111110","01111111110","01111111110","00000000000","00000000000","11111111111","11111111111","10101110101","11111111111","10101110101","11111111111","10101110101","11111111111","11101110111","11101110111","11111111111","11111111111","00000000000"],"celadon":["0000001000000","0000000000000","0111111111110","0110000000110","0010011110100","0111111110110","0110111111110","0110111110110","0110001000110","0110011100110","0111111111100","0011111111110","0111111111110","0110011100110","0110011100110","0111011101110","0111011101110","0111111111110","0111111111110","0000000000000"],"fuchsia":["000000000000000","000000000000000","111111111111111","111111111111111","111111111111111","111111000111111","111111000111111","111111000111111","111111111111111","111111111111111","111111111111111","111101111101111","111101111101111","111111111111111","111111101111111","000000000000000"],"champion":["0000000000000","0000001000000","0000001000000","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","0111111111110","0000011100000","0000011100000","0000011100000","0000011100000","0000011100000","0000011100000"],"dojo":["0000000000000","0000000000000","0000000000000","0111011101110","0111011101110","0111011101110","0111011101110","0111111111110","0111111111110","0111111111110","0111111111110","0111111111110","0111111111110","0110111110110","0111111111110","0000000000000"],"roof":["0000000000000000000","0000000000000000000","0000000000000000000","0111111110000000000","0111111111111111000","0111001111111111000","0111001111111111000","0111111111111111000","0111111111111111000","0000000000000000000"],"viridian":["00000000000000000000","00000000000000000000","01110111111111111111","01110111111111111111","01110001001000000011","01110001001000000011","01111111011011111011","01111110001111111011","00000010000000011011","00000010100000011011","11111010111111111011","11111010111111001011","11001010111111001011","11001010111111101011","11001110111111101011","11001000000000111111","11001000000000111111","11001111111111111111","11001111111111111111","11000000000000111111","11000000000000101110","11111111111111111111","11111111111111111111"],"bush":["00000000000000000","00000000000000000","00000000000000000","00000001110000000","00000011111000000","00000011111000000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011101110111000","00011101110111000","00000000000000000"],"tower":["00000000000000000000","00000000000000000000","00000001000100000000","00000110111011000000","00011000111000110000","00100001111100001000","01000001111100000100","00000001111100000000","10000001111100000010","00000001111100000000","00000001111100000000","00000001111100000000","00000000111000000010","00000000111000000000","01000000111000000100","00100000011100001000","00000000011100000000","00000000011100000000"],"lab":["000000000000000","000000000000000","111111111111001","011111111111100","010001100111111","111111100110001","111111100110001","110001111110001","111111111111111","111111111111111"],"cinnabar":["000000000","000000000","111111110","111111110","111111110","011111110","011111110","011111110","011111110","011111110","011111110","011111110","000001110","000001110","011111110","011111110","011111110","011111110","010111010","011111110","011111110","011111110"],"saffron":["00000000000","00000000000","01111111110","01111111110","01111111110","01111111110","01111111110","01111111110","01111111110","01111111110","01101110110","01111111110","01111111110","01111111110"],"lorelei":["0000000000000","0000000000000","0000000000000","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0000000000000","0000000000000"],"lance":["0000000000000","0000000000000","0000000000000","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0000001000000","0000001000000"],"agatha":["0000000000000","0000000000000","0000000000000","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0000000000000","0000000000000"],"hof":["00000000000","00000000000","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","00001110000"]};
+const FR_FREE = {"pewter":["0000000000000","0000111110000","0000000000000","0111101011110","0111111111110","0111011101110","0111111111110","0110101010110","0011111111100","0111011101110","0011111111100","0111011101110","0111011101110","0111111111110","0111111111110","0000000000000"],"cerulean":["00000000000000000","00000000100000000","00000000000000000","01111111111111110","01111110001111110","01000000000000010","01000001110000010","01001111111110010","01000001110010010","01000000000010010","01001111111110010","01001000010000010","01001000010000010","01001111110000010","01000000010000010","01000000010000010","01000001110000010","01000001110000010","01111111111111110","00000000000000000"],"vermilion":["00000000000","00000000000","01101110110","01111111110","01111111110","01111111110","00000000000","00000000000","11111111111","11111111111","10101110101","11111111111","10101110101","11111111111","10101110101","11111111111","11101110111","11101110111","11111111111","11111111111","00000000000"],"celadon":["0000001000000","0000000000000","0111111111110","0110000000110","0010011110100","0111111110110","0110111111110","0110111110110","0110001000110","0110011100110","0111111111100","0011111111110","0111111111110","0110011100110","0110011100110","0111011101110","0111011101110","0111111111110","0111111111110","0000000000000"],"fuchsia":["000000000000000","000000000000000","111111111111111","111111111111111","111111111111111","111111000111111","111111000111111","111111000111111","111111111111111","111111111111111","111111111111111","111101111101111","111101111101111","111111111111111","111111101111111","000000000000000"],"champion":["0000000000000","0000001000000","0000001000000","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","1111111111111","0111111111110","0000011100000","0000011100000","0000011100000","0000011100000","0000011100000","0000011100000"],"dojo":["0000000000000","0000000000000","0000000000000","0111011101110","0111011101110","0111011101110","0111011101110","0111111111110","0111111111110","0111111111110","0111111111110","0111111111110","0111111111110","0110111110110","0111111111110","0000000000000"],"roof":["0000000000000000000","0000000000000000000","0000000000000000000","0111111110000000000","0111111111111111000","0111001111111111000","0111001111111111000","0111111111111111000","0111111111111111000","0000000000000000000"],"viridian":["00000000000000000000","00000000000000000000","01110111111111111111","01110111111111111111","01110001001000000011","01110001001000000011","01111111011011111011","01111110001111111011","00000010000000011011","00000010100000011011","11111010111111111011","11111010111111001011","11001010111111001011","11001010111111101011","11001110111111101011","11001000000000111111","11001000000000111111","11001111111111111111","11001111111111111111","11000000000000111111","11000000000000101110","11111111111111111111","11111111111111111111"],"bush":["00000000000000000","00000000000000000","00000000000000000","00000001110000000","00000011111000000","00000011111000000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011111111111000","00011101110111000","00011101110111000","00000000000000000"],"tower":["00000000000000000000","00000000000000000000","00000001000100000000","00000110111011000000","00011000111000110000","00100001111100001000","01000001111100000100","00000001111100000000","10000001111100000010","00000001111100000000","00000001111100000000","00000001111100000000","00000000111000000010","00000000111000000000","01000000111000000100","00100000011100001000","00000000011100000000","00000000011100000000"],"lab":["000000000000000","000000000000000","111111111111001","011111111111100","010001100111111","111011000110001","111111000110001","110001111110001","111011111111111","111111111111111"],"cinnabar":["000000000","000000000","111111110","111111110","111111110","011111110","011111110","011111110","011111110","011111110","011111110","011111110","000001110","000001110","011111110","011111110","011111110","011111110","010111010","011111110","011111110","011111110"],"saffron":["00000000000","00000000000","01111111110","01111111110","01111111110","01111111110","01111111110","01111111110","01111111110","01111111110","01101110110","01111111110","01111111110","01111111110"],"lorelei":["0000000000000","0000000000000","0000000000000","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0000000000000","0000000000000"],"lance":["0000000000000","0000000000000","0000000000000","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0000001000000","0000001000000"],"agatha":["0000000000000","0000000000000","0000000000000","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0101111111010","0101111111010","0111111111110","0000000000000","0000000000000"],"hof":["00000000000","00000000000","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","11111111111","00001110000"]};
 DESIGNS_FR.forEach(d => { if (FR_FREE[d.id]) d.free = FR_FREE[d.id]; });
 // 맵 묶음: 'fr' 파이어레드 칸토 체육관 / 'pt' 플라티나 (경완 2026-10-27 '맵은 이전 버전으로 바꿔줘봐 지금 캐릭터랑 묻는지 함 보게')
 const MAP_SET = 'fr';
@@ -100,7 +100,7 @@ const STEPS = {
   pewter: [['0-2,5-6,11-12,14-15', '0-1,4-8,11-12'], ['0-6,11-12,14-15', '0-1,4-8,11-12'], ['0-6,11-12,14-15', '0-1,3-9,11-12'], ['0-6,11-15', '0-1,3-9,11-12'], ['0-8,11-15', '0-1,3-9,11-12'], ['0-8,11-15', '']],
   cerulean: [['0-7,16-19', '0-2,6-10,14-16', [[3, 7, 4, 7, 1, 1], [7, 7, 4, 7, 1, 1, 1], [4, 8, 7, 17, 3, .5]]],   // 1단계 더 좁게 (경완 2026-10-29 '다른 1단계에 비해 너무 넓어서')
   ['0-8,15-19', '0-2,5-11,14-16', [[8, 9, 10, 13, 1, 1], [7, 8, 9, 17, 1, 1]]], ['0-8,15-19', '', [[12, 7, 4, 7, 1, 2, 1], [13, 7, 3, 7, 1, 2, 1], [10, 9, 10, 13, 1, 1], [9, 8, 9, 17, 1, 1]]], ['0-10,14,16-19', ''], ['0-11,13-14,16-19', ''], ['0-14,16-19', '']],   // 12.92 경완 '물 위 다리 2·3단계 이음새': 다리 오른쪽 그림자가 잘린 줄에서 끊기던 칸을 메움
-  vermilion: [['0-3,16-20', '0,3-7,10', [0, 6].flatMap((x, i) => [4, 5, 6, 7].map(y => [x, y, i * 10, 4, 1, 1]))], ['0-3,16-20', '', [0, 10].flatMap(x => [4, 5, 6, 7].map(y => [x, y, x, 4, 1, 1]))], ['0-9,15-20', ''], ['0-11,15-20', ''], ['0-11,14-20', ''], ['0-8,10-20', '']],
+  vermilion: [['0-3,16-20', '0,3-7,10', [0, 6].flatMap((x, i) => [4, 5, 6, 7].map(y => [x, y, i * 10, 4, 1, 1]))], ['0-3,16-20', '', [0, 10].flatMap(x => [4, 5, 6, 7].map(y => [x, y, x, 4, 1, 1]))], ['0-9,15-20', '', [[4, 6, 4, 9, 3, 2]]], ['0-11,15-20', '', [[4, 6, 4, 9, 3, 2]]], ['0-11,14-20', '', [[4, 6, 4, 9, 3, 2]]], ['0-8,10-20', '', [[4, 6, 4, 9, 3, 2]]], ['0-20', '', [[4, 6, 4, 9, 3, 2]]]],   // v19.21 경완 'NPC 가 길 따라 오게': 전기 문 빛줄기를 바닥으로 덮어 열린 문으로
   celadon: [['0-5,15-19', '0-1,4-8,11-12'], ['0-5,15-19', '0-1,3-9,11-12', [[2, 5, 5, 4, 1, 1]]], ['0-5,14-19', '', [[3, 5, 2, 5, 1, 1], [5, 6, 5, 9, 3, 1], ...[3, 4, 8, 9].map(x => [x, 6, 2, 14, 1, 1])]], ['0-8,14-19', '', [[5, 9, 5, 9, 3, 1]]], ['0-5,8-19', ''], ['0-12,14-19', '']],
   // 넓은 무대: 정사각형으로 커지고 왼쪽 그늘 줄(0)·양끝 기둥(14)은 늘 남긴다. 13칸 단계는 반쪽 창문 대신 민벽(4·10번 칸)으로 덮음 (경완 2026-10-29 '이음새 안 보이게')
   fuchsia: [['0-2,5-7,10-12,14-15', '0,4-10,14'], ['0-2,5-8,10-12,14-15', '0,3-11,14'], ['0-2,4-8,10-12,14-15', '0,3-11,14'], ['0-2,4-12,14-15', '0,2-12,14', [[1, 0, 4, 0, 1, 2], [11, 0, 10, 0, 1, 2]]], ['0-12,14-15', '0,2-12,14', [[1, 0, 4, 0, 1, 2], [11, 0, 10, 0, 1, 2]]], ['0-2,4-15', '']],
@@ -120,6 +120,10 @@ function cutOf(D, gi) { if (gi == null) { const g = st(); if (!g) return null; g
 const cutV = R => z => { let d = 0; for (const [a, b] of R) { if (z >= b) d += b - a; else if (z >= a) return null; } return z - d; };
 const cutF = R => z => { for (const [a, b] of R) if (z >= a) z += b - a; return z; };
 const keepSeg = (R, n) => { const out = []; let s = 0; for (const [a, b] of R) { if (a > s) out.push([s, a]); s = b; } if (s < n) out.push([s, n]); return out; };
+// v19.21 경완 '강박사가 물 체육관에서 물 위로 걸어옴': 맵 그림에 붙이는 타일(cut.f)을 빈 바닥 정보에도 똑같이 붙인다 (예전엔 그림만 바뀌어 다리·물 자리가 어긋남)
+const freeFix = (F, F0, fx) => { if (!fx?.length) return F; const G = F.map(r => [...r]);
+  for (const [vx, vy, sx, sy, w, h, fl] of fx) { const W = Math.floor(w), H = Math.floor(h); for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) { const ch = F0[sy + j]?.[sx + (fl ? W - 1 - i : i)]; if (ch != null && G[vy + j]?.[vx + i] != null) G[vy + j][vx + i] = ch; } }
+  return G.map(r => r.join('')); };
 const dzCache = {};
 function dzOf(id, gi) {
   const D = dzBase(id), c = cutOf(D, gi), k = D.id + JSON.stringify(c); if (dzCache[k]) return dzCache[k];
@@ -133,7 +137,7 @@ function dzOf(id, gi) {
   { const L0 = pn(D.leader), e = path[path.length - 1];   // 줄을 잘라 길 끝이 관장 칸과 겹치면(연구소·전당) 끝 줄을 한 칸 아래로 (v12.24 경완 '도전자가 내 캐릭터랑 겹침')
     if (e && e[0] === L0[0] && e[1] === L0[1]) for (let i = path.length - 1; i > 0 && path[i][1] === L0[1]; i--) path[i] = [path[i][0], L0[1] + 1]; }
   return (dzCache[k] = routeFix(Object.assign({}, D, { base: D, cut: c, h: D.h - ny, w: D.w - nx, leader: pn(D.leader), door: pn(D.door), guy: pn(D.guy), path,
-    stat: (D.stat || []).map(pn), deco: D.deco.filter(ok).map(pt), slots: D.slots.filter(ok).map(pt), free: D.free && D.free.filter((_, y) => v(y) != null).map(r => [...r].filter((_, x) => vx(x) != null).join('')),
+    stat: (D.stat || []).map(pn), deco: D.deco.filter(ok).map(pt), slots: D.slots.filter(ok).map(pt), free: D.free && freeFix(D.free.filter((_, y) => v(y) != null).map(r => [...r].filter((_, x) => vx(x) != null).join('')), D.free, c.f),
     toV: v, toF: cutF(RY), toVx: vx, toFx: cutF(RX) })));
 }
 // 도전자 길이 맵 소품(책상 등)을 지나거나 그 위에 서면 (경완 2026-10-30 "소품 있으면 내 옆에 서도 돼"):
@@ -179,10 +183,10 @@ function route(D, from, to, occ = []) {
 // 도전자(손님)가 문에서 관장 앞까지: 관장 바로 앞 → 왼쪽 옆 → 오른쪽 옆 순서로 비어 있는 칸. { path(문 다음 칸부터), cf 손님이 볼 쪽, mf 관장이 볼 쪽 }
 function chalRoute(D, skip = []) { const L = D.leader, occ = occOf(skip).filter(q => !(q[0] === L[0] && q[1] === L[1]));
   const fr = (x, y) => !D.free || (D.free[y]?.[x] === '1' && !(D.stat || []).some(q => q[0] === x && q[1] === y));   // v14.76 경완 '또 소품이랑 겹치네': 서는 칸이 책상 등 소품이면 건너뜀 (route 는 도착 칸을 안 따짐)
-  for (const [tx, ty, cf, mf] of [[L[0], L[1] + 1, 'u', 'd'], [L[0] - 1, L[1], 'r', 'l'], [L[0] + 1, L[1], 'l', 'r']]) { if (!fr(tx, ty)) continue; const P = route(D, D.door, [tx, ty], occ); if (P?.length) return { path: P, cf, mf: ty === L[1] ? mf : 'd' }; }
+  for (const O of [occ, []]) for (const [tx, ty, cf, mf] of [[L[0], L[1] + 1, 'u', 'd'], [L[0] - 1, L[1], 'r', 'l'], [L[0] + 1, L[1], 'l', 'r']]) { if (!fr(tx, ty)) continue; const P = route(D, D.door, [tx, ty], O); if (P?.length) return { path: P, cf, mf: ty === L[1] ? mf : 'd' }; }   // v19.21 경완 '물 위로 걸어옴': 좁은 다리에 트레이너가 서 있어 길이 막히면 사람은 무시하고라도 바닥 길로 (손으로 짠 길은 물을 지남)
   return { path: D.path.slice(1), cf: D.cf || 'u', mf: D.mf }; }
 // 지금 자리에서 문까지 (나가기)
-const outRoute = (D, e) => route(D, [Math.round(e.x), Math.round(e.y)], D.door, occOf([e])) || null;
+const outRoute = (D, e) => { const f = [Math.round(e.x), Math.round(e.y)]; return route(D, f, D.door, occOf([e])) || route(D, f, D.door, []) || null; };
 // 미리보기 그림을 지금 크기(data-gi 가 있으면 그 등급, 처음 열 때는 0 = 새내기)의 잘라 붙인 맵으로 (경완 2026-10-27)
 // 디자인 썸네일을 미리 그려 둔다 (경완 2026-10-28 '맵 썸네일이 바로 안 나오고 박스 텍스트 먼저')
 const preMs = gi => DESIGNS.forEach(d => mapSrc(dzOf(d.id, gi)).then(u => { const im = new Image(); im.src = u; im.decode?.().catch(() => {}); }));
@@ -545,6 +549,7 @@ const pickW = (L, W) => { let r = Math.random() * W.reduce((a, b) => a + b, 0); 
 const dayStart = t => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
 const nextDay = t => { const d = new Date(dayStart(t)); d.setDate(d.getDate() + 1); return d.getTime(); };
 const weekStart = t => { const d = new Date(dayStart(t)); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return d.getTime(); };
+const WK_H = 6, wkOf = t => weekStart(t - WK_H * H);   // v19.26 경완: 주간 보고서 주는 월요일 오전 6시에 바뀜 (키는 그대로 월요일 0시)
 const seeded = s => { let h = 2166136261; for (const ch of String(s)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 1e6) / 1e6; }; };
 const jong = w => { const c = String(w || '').trim().slice(-1); const k = c.charCodeAt(0); if (k >= 0xac00 && k <= 0xd7a3) return (k - 0xac00) % 28; if (/[013678]/.test(c)) return 1; if (/[a-zA-Z]/.test(c)) return /[lmnr]/i.test(c) ? 1 : 0; return 0; };
 const J = (w, a, b) => w + (jong(w) ? a : b), iga = w => J(w, '이', '가'), eul = w => J(w, '을', '를'), eun = w => J(w, '은', '는');
@@ -927,7 +932,7 @@ function rptSf(o) { const g = st(), R = { ...(o.sf || {}) }, L = [];
   return L; }
 // 지난주 보고서 (월요일): 전적·막은 도전자·번 골드, 가상 체육관들과 점수 순위 (v19.08 경완: 화면엔 순위 안 띄움)
 function rollWeek(now) {
-  const g = st(), k = weekStart(now);
+  const g = st(), k = wkOf(now);
   if (!g.wk) { g.wk = { k, w: 0, l: 0, b: 0, g: 0, r: 0 }; return; }
   if (g.wk.k === k) return;
   const o = g.wk, sc = o.w * 3 + o.b * 2 + Math.max(0, o.r), G = gradeOf(g.rep || 0), r = seeded('wk' + o.k), base = 6 + G.i * 14;
@@ -1066,7 +1071,7 @@ function tick0(now) {
 function setAt(now = Date.now()) {
   const g = st(), nq = g.q.filter(c => c.id > (g.qSeen | 0)); let a = nq.length ? nq[0].t : (g.sch[0] || nextDay(now) + 9 * H); if (g.pull && !nq.length) a = Math.min(a, g.pull);
   // 지원서(면접 지원자)는 필드 점에 넣지 않는다: 도전자 받기로 명단을 봐도 점이 남던 것 (경완 2026-10-30). 지원서 점은 체육관 안 트레이너 메뉴에만
-  a = Math.min(a, weekStart(now) + 7 * DAY + 7 * H);
+  a = Math.min(a, wkOf(now) + 7 * DAY + (WK_H + 1) * H);
   g.at = a;
 }
 
@@ -1265,7 +1270,7 @@ const into = (x, t) => { if (!x || !t) return; const rg = document.createRange()
 function unlockChk() { const g = st(); if (!g || g.unl || gradeOf(g.rep || 0).i < 1) return; g.unl = 1; save(); menuDot();
   if (g.tr?.length || g.sf?.length) return;   // 이미 쓰던 체육관은 조용히
   // 안내창 디자인 (경완 2026-10-31): 두 메뉴 카드 + 그림, 열림 도장
-  try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {}
+  try { GA.sfx('newdex'); } catch (e) {}
   return new Promise(ok => { const p = pop(`<h4 class="ul-t"><small>체육관 등급 혜택</small>새 메뉴가 열렸어요!</h4><div class="ul-cards">
       <div class="ul-c"><i class="ul-pic"><img alt="" src="${IMG}deco/tr_sandbag.png"></i><b>훈련장</b><span>포켓몬을 맡겨 두면<br>경험치가 쌓여요</span><em>OPEN</em></div>
       <div class="ul-c"><i class="ul-pic tr"><img alt="" src="${IMG}tr/cool_trainer_f.png"></i><b>트레이너</b><span>고용하면 도전자를<br>먼저 막아 줘요</span><em>OPEN</em></div></div>
@@ -1281,8 +1286,7 @@ function rwPop() { const g = st(), i = g.grwN; if (i == null) return Promise.res
       <h4 class="pp-t"><small>승급 보상</small>${GRADES[i][1]}</h4>
       <div class="pp-ben"><ul class="pk-ben">${n ? `<li class="gold"><i class="pk-ic"><i class="coin"></i></i><span>골드</span><em><b class="rw-gn">+0G</b></em></li>` : ''}${E ? `<li class="eg"><i class="pk-ic"><span class="pk-le">${grEggI(i)}</span></i><span>${grEggN(i)}</span><em><b>${ne}개</b></em></li>` : ''}</ul>${E ? '<p class="rw-note">알은 필드의 알 가방에 들어 있어요</p>' : ''}</div>
       <div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('pp-pop', 'rw-pop');
-    const gn = p.querySelector('.rw-gn'); if (gn) { const t0 = performance.now() + 350, T = 800, f = now => { const k = Math.max(0, Math.min(1, (now - t0) / T)); gn.textContent = `+${Math.round(n * (1 - (1 - k) ** 3)).toLocaleString()}G`; if (k < 1 && gn.isConnected) requestAnimationFrame(f); }; requestAnimationFrame(f); }
-    for (let k = 0; k < ne; k++) setTimeout(() => { try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {} }, 250 + k * 180 + 220); }); }
+    const gn = p.querySelector('.rw-gn'); if (gn) { const t0 = performance.now() + 350, T = 800, f = now => { const k = Math.max(0, Math.min(1, (now - t0) / T)); gn.textContent = `+${Math.round(n * (1 - (1 - k) ** 3)).toLocaleString()}G`; if (k < 1 && gn.isConnected) requestAnimationFrame(f); }; requestAnimationFrame(f); }   /* v19.38 경완 '승급 보상 알림창 딩동 없애줘': 알이 떨어질 때 DP_PINPON 뺌 */ }); }
 // 전설의 체육관 보상 알 받는 창 (경완 2026-10-29)
 // v18.93 경완 '지급 연출 너무 성의없다' + '전당 등록처럼 가슴이 웅장해지는 연출': 강박사가 헐레벌떡 들어와 관장 앞에서 축하 → 화면이 깜깜해지고 전당 곡 →
 // 스포트라이트 아래 라인업 포켓몬이 한 마리씩 (이름·레벨) → 관장과 모두 함께 '명예의 전당' 등록판 → 하늘에서 전설 알이 빛기둥 타고 내려와 번쩍 '받았다!' → 체육관으로 돌아와 강박사 한마디, 문으로 나감
@@ -1356,16 +1360,17 @@ async function badgeGet(ty) {
 async function promoFx(gi) {
   const g = st(), M = window.GymBGM; root.classList.remove('gview'); dlg(''); root.classList.add('dhide');   /* v15.52: dlg('') 가 dhide 를 지워 빈 대사창이 뜨던 것 */
   const pl = $g('.gy-plate'), bd = $g('.gy-bd'), dim = document.createElement('div'); dim.className = 'pf-dim'; $g('.gy-main').appendChild(dim);
-  pl.classList.add('pf-on'); try { M?.sePrep?.(['DP_KIRAKIRA2', 'ME_FANFA5']); } catch (e) {}
+  pl.classList.add('pf-on'); try { M?.sePrep?.(['DP_EXP', 'ME_FANFA5']); } catch (e) {}
+  try { M?.duck?.(0, .5); } catch (e) {}   /* v19.18 경완: 배지 나올 때부터 배경 곡 사라짐 (팡파르 끝나면 fan 이 다시 키움) */
   void bd.offsetWidth; pl.classList.add('pf-zoom'); await wait(600);   /* 경완 2026-11-04 '타이틀 배지 바뀔 때 화면 포커싱': 배지가 화면 가운데로 크게 다가옴 */
-  try { M?.se('DP_KIRAKIRA2'); } catch (e) {}
+  try { M?.se('DP_EXP', { dur: 1.7 }); } catch (e) {}   /* v19.18 경완: 빛이 모이는 동안 게이지 차오르는 소리 */
   bd.classList.add('pf-glow'); await wait(1700);
   const fl = document.createElement('i'); fl.className = 'pf-flash'; bd.appendChild(fl);
   await wait(160);
   g.newBdg = 0; delete g.newG; save(); renderTop();
   bd.classList.remove('pf-glow'); bd.classList.add('pf-new'); bd.insertAdjacentHTML('afterbegin', '<i class="pf-ray"></i>'); bd.appendChild(fl);
   $g('.gy-grade').classList.add('pf-gt');
-  try { M?.fan ? M.fan('ME_FANFA5') : M?.se('ME_FANFA5'); } catch (e) {}
+  try { M?.fan ? M.fan('ME_FANFA5') : (M?.se('ME_FANFA5'), M?.duck?.(1, .5)); } catch (e) { try { M?.duck?.(1, .5); } catch (x) {} }
   confetti(); await wait(1700);
   pl.classList.remove('pf-zoom'); await wait(550);
   dim.classList.add('out'); await wait(350);
@@ -1488,7 +1493,7 @@ function renderTop() {
   $g('.gy-bar>i').style.width = (G.hi > G.lo ? clampN(((g.rep || 0) - G.lo) / (G.hi - G.lo), 0, 1) : 1) * 100 + '%';
   $g('.gy-plate').classList.toggle('full', bsReady(g));   /* v15.42 경완: 평판이 꽉 차면 게이지 테두리가 은은하게 빛남 */
   { const sk = $g('.gy-stk'), n = g.stk | 0; if (sk) { sk.hidden = n < 2; sk.textContent = `${n}연승 중!`; } }   /* 홈 평판 아래 연승 딱지 (경완 2026-11-04 시안 A) */
-  $g('.gy-repn').textContent = `${g.rep || 0}${G.hi > G.lo && G.hi < REP_MAX + 1 ? `/${G.hi}` : ''}`; $g('.gy-grade').dataset.g = G.i; $g('.gy-plate').dataset.g = G.i; $g('.gy-plate').classList.toggle('canup', canBig(g));
+  $g('.gy-repn').textContent = `${g.rep || 0}${G.hi > G.lo && G.hi < REP_MAX + 1 ? `/${G.hi}` : ''}`; $g('.gy-grade').dataset.g = gi; $g('.gy-plate').dataset.g = gi;   /* v19.24 경완 '승급 전 리본이 승급 후 리본이랑 같음': 승급 연출 전엔 리본 색도 예전 등급 */ $g('.gy-plate').classList.toggle('canup', canBig(g));
   renderGoldG(); menuDot();
 }
 // 새내기 체육관(등급 1)에선 훈련장·트레이너가 잠겨 있다 (경완 2026-10-29 '고용할 수 있는 트레이너가 없으니까')
@@ -1626,7 +1631,7 @@ function openTab(t, opt) {
 // v18.91 경완: 저절로 뜨는 알림창(배틀 결과·승급·보상·주간 보고서·내가 없는 동안·오류·다시 개업)은 버튼으로만 닫힘 — 모르고 막 누르다 꺼지지 않게. 직접 눌러 연 창은 바깥 눌러도 닫힘
 const POP_LOCK = '.rs-hd,.bsa-hd,.ul-t,.pp-t,.le-get,.wr-pop,.aw-pop,.sh-re,.gy-lock';
 function pop(html, onClick) {
-  const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`; if (p.querySelector(POP_LOCK)) { p.classList.add('gy-np'); const t0 = performance.now(); setTimeout(() => { if (!p.isConnected || p.querySelector('.aw-pop') || (window.GymBGM?.seT || 0) > t0 - 400) return; try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {} GA.haptic?.(1); }, 60); }   // v18.98 경완: 저절로 뜨는 알림창은 업데이트 알림창 팝업 모션. v18.99 경완: 효과음도 항상 — 창이 따로 소리를 안 냈으면 딩동(DP_PINPON)
+  const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`; if (p.querySelector(POP_LOCK)) { p.classList.add('gy-np'); const t0 = performance.now(); setTimeout(() => { if (!p.isConnected || p.querySelector('.aw-pop') || (window.GymBGM?.seT || 0) > t0 - 400) return; try { GA.sfx('newdex'); } catch (e) { try { window.GymBGM?.se?.('DP_PINPON'); } catch (x) {} } GA.haptic?.(1); }, 60); }   /* v19.34 경완 '딩동 말고 업데이트 알림창 효과음' */   // v18.98 경완: 저절로 뜨는 알림창은 업데이트 알림창 팝업 모션. v18.99 경완: 효과음도 항상 — 창이 따로 소리를 안 냈으면 딩동(DP_PINPON)
   p.onclick = e => { if (e.target === p) { if (!p.classList.contains('gy-np')) close(); return; } const b = e.target.closest('button[data-a]'); if (b) { sfx('tap'); onClick?.(b.dataset.a, close, p); } };
   const close = () => p.remove(); $g('.gy-main').appendChild(p); return p;
 }
@@ -1857,7 +1862,7 @@ function simPop() {
     if (a === 'chal' || a === 'named') { let c = mkChal(now); if (a === 'named') { for (let i = 0; i < 30 && !c.named; i++) c = mkChal(now); } arrive(c); save(); homeSay(); return qDing(); }
     if (a === 'rep+' || a === 'rep-') { g.rep = clampN((g.rep || 0) + (a === 'rep+' ? 125 : -125), 0, REP_MAX); g.gmax = Math.max(g.gmax | 0, gradeOf(g.rep, 99).i); save(); renderTop(); return say(`평판 ${g.rep} (${gradeOf(g.rep).n})`); }
     if (a === 'gold') { S.gold += 100000; save(); renderGoldG(); return say(`골드 ${S.gold.toLocaleString()}G`); }
-    if (a === 'rpt') { const k = weekStart(Date.now()) - 7 * DAY; g.rpt = { w: 9, l: 3, b: 21, g: 7350, r: 38, rank: 2, of: 9, top: [], k, seen: 0, sf: (g.sf || []).map((s, i) => ({ nm: sfName(s), tr: s.tr, wg: s.wage, e: [Math.round(s.wage * 2.4), Math.round(s.wage * .6), Math.round(s.wage * 1.1)][i % 3], w: [6, 2, 3][i % 3], l: [1, 3, 2][i % 3], r: 8, co: s.yard && !inGym(s) ? 1 : 0 })) }; return reportPop(true); }   // 시뮬레이터: 예시 숫자
+    if (a === 'rpt') { const k = wkOf(Date.now()) - 7 * DAY; g.rpt = { w: 9, l: 3, b: 21, g: 7350, r: 38, rank: 2, of: 9, top: [], k, seen: 0, sf: (g.sf || []).map((s, i) => ({ nm: sfName(s), tr: s.tr, wg: s.wage, e: [Math.round(s.wage * 2.4), Math.round(s.wage * .6), Math.round(s.wage * 1.1)][i % 3], w: [6, 2, 3][i % 3], l: [1, 3, 2][i % 3], r: 8, co: s.yard && !inGym(s) ? 1 : 0 })) }; return reportPop(true); }   // 시뮬레이터: 예시 숫자
     if (a === 'bdg') return badgeGet(g.ty);
     if (a === 'new') { S.gym = null; save(); clearEnts(); return intro(); }
   });
@@ -1881,7 +1886,7 @@ function reportPop(any) {
   if (!r) body = `<div class="aw-hd wr-hd"><small>주간 보고서</small><b>첫 보고서는 다음 주 월요일에 와요</b></div><p class="wr-empty">한 주 동안 막은 도전자, 번 골드, 트레이너들이 주급만큼 일했는지를 정리해 드려요.</p>`;
   else {
     const L = (r.sf || []).slice().sort((a, b) => (b.co ? -1e9 : b.e - b.wg) - (a.co ? -1e9 : a.e - a.wg)), sg = L.reduce((a, x) => a + (x.e || 0), 0), wg = L.reduce((a, x) => a + (x.out ? 0 : x.wg || 0), 0), mine = Math.max(0, (r.g || 0) - sg), net = (r.g || 0) - wg;
-    const k0 = r.k || weekStart(Date.now()) - 7 * DAY, dr = r.w + r.l ? Math.round(r.w / (r.w + r.l) * 100) : 0;
+    const k0 = r.k || wkOf(Date.now()) - 7 * DAY, dr = r.w + r.l ? Math.round(r.w / (r.w + r.l) * 100) : 0;
     const row = x => { const d = (x.e || 0) - (x.wg || 0), pc = x.wg ? Math.min(100, Math.round((x.e || 0) / x.wg * 100)) : 100, tag = x.co ? '<i class="wr-tag co">훈련장 코치</i>' : x.out ? '<i class="wr-tag out">그만둠</i>' : '';
       return `<li class="${x.co ? 'co' : d >= 0 ? 'up' : 'dn'}"><span class="aw-pic"><img alt="" src="${trSrc(x.tr)}"></span><div class="wr-b"><p class="wr-n"><b>${esc(x.nm)}</b>${tag}</p>
         <p class="wr-s">${x.co ? '포켓몬 훈련 담당 · 도전자는 안 받음' : `${x.w || 0}명 막음 · ${x.l || 0}번 짐`}</p>
@@ -2334,7 +2339,7 @@ async function intro() {
   await wait(300); dark.remove();
   // 내가 관장 자리까지 걸어가 선다, 강박사는 옆으로 비킨다
   { const fr = D.free, okT = p => !offMap(D, p) && (!fr || fr[p[1]]?.[p[0]] === '1') && !(D.stat || []).some(q => q[0] === p[0] && q[1] === p[1]); const side = [[p1[0] + 1, p1[1]], [p1[0] - 1, p1[1]]].find(okT); if (side) await walk(kE, [side]); } kE.f = 'u'; place(kE);
-  { let P = route(D, [meEnt.x, meEnt.y], D.leader, occOf([meEnt])); if (!P) { P = D.path.slice(1); if (String(P.at(-1)) !== String(D.leader)) P.push(D.leader); } await walk(meEnt, P); } meEnt.f = 'd'; place(meEnt);
+  { let P = route(D, [meEnt.x, meEnt.y], D.leader, occOf([meEnt])) || route(D, [meEnt.x, meEnt.y], D.leader, []); if (!P) { P = D.path.slice(1); if (String(P.at(-1)) !== String(D.leader)) P.push(D.leader); } await walk(meEnt, P); } meEnt.f = 'd'; place(meEnt);
   // 12. 그랜드 오픈
   await grandOpen(); if (!open) return;
   // 13. 운영 설명
@@ -2355,7 +2360,7 @@ async function intro() {
   // v13.80 경완: 보는 방향 자연스럽게 — 문 소리에 둘 다 문 쪽을 보고, 안내원이 걷는 동안 고개로 따라가고, 서면 서로 마주 본다
   await wait(120); face(kE, gE); await wait(140); face(meEnt, gE);
   { let on = 1; const trk = () => { if (!on) return; face(kE, gE); face(meEnt, gE); requestAnimationFrame(trk); }; await wait(200); requestAnimationFrame(trk);
-    await walk(gE, route(D, D.door, D.guy, occOf([gE])) || guyPath(D), 150); on = 0; }
+    await walk(gE, route(D, D.door, D.guy, occOf([gE])) || route(D, D.door, D.guy, []) || guyPath(D), 150); on = 0; }
   face(gE, meEnt); face(meEnt, gE); face(kE, gE); await wait(200);
   S1.hide(false);
   const GUY = { who: '안내원', pic: false };
@@ -2369,7 +2374,7 @@ async function intro() {
   await S1.say(`그럼 화이팅이네, ${you}!!\n다음에 또 오겠네!`, { pic: true });
   S1.hide(true); S1.pic(false);
   { let on = 1; const trk = () => { if (!on) return; face(meEnt, kE); face(gE, kE); requestAnimationFrame(trk); }; requestAnimationFrame(trk);
-    await walk(kE, route(D, [kE.x, kE.y], D.door, occOf([kE])) || [[kE.x, D.door[1]], D.door].filter(p => !offMap(D, p))); on = 0; }
+    await walk(kE, route(D, [kE.x, kE.y], D.door, occOf([kE])) || route(D, [kE.x, kE.y], D.door, []) || [[kE.x, D.door[1]], D.door].filter(p => !offMap(D, p))); on = 0; }
   kE.f = 'd'; place(kE); await wait(350); face(kE, meEnt); await wait(150);   // 문 앞에서 뒤돌아보며 한마디
   S1.hide(false); await S1.say('아, 협회에는 내가\n잘 말해 두지!'); await S1.end(); kE.f = 'd'; place(kE); await wait(200);
   doorSe(); kE.el.remove(); ents.splice(ents.indexOf(kE), 1);
@@ -2464,6 +2469,21 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
   owSrc, owW, trSrc, fitSrc, GUY_OW, sfName, addG: n => window.gymEvTest ? n : addG(n), addRep: n => { if (!window.gymEvTest) addRep(n); }, renderTop, confetti, glog,
   giveFit: k => { if (window.gymEvTest || !OUTFITS[k]) return; const g = st(); g.fits = g.fits || {}; g.fits[k] = 1; if (Array.isArray(S.fits) && !S.fits.includes(k)) S.fits.push(k); save(); },
   lv: () => myAvg(), evDone: id => evDone(id),
+  // v19.18 로켓단 이벤트 '찾는 재미' (경완 2026-11-08): 따라다니는 관장 옆 포켓몬, 줍는 알·상점 물건. 운영자 시험이면 아무것도 안 줌
+  pal: () => palPick(), luAll: () => luAll(), setPal: id => { if (!window.gymEvTest) { st().pal = id; save(); } }, monNm: P => SPECIES[P?.sp]?.n || '', pmd: (sp, sex) => (GA.pmdMx || GA.pmd)(sp, sex), shinyHue: sp => GA.shinyHue?.(sp) || 0, lift: sp => GA.lift?.(sp) || 0, shBg: (e, P, u) => GA.shBg?.(e, P, u),
+  cry: sp => GA.cry?.(sp), ldB: () => loadJs('gym/battle.js', 'GymBattle').then(() => GB().loadData?.()), thumb: P => GB()?.thumb?.(P) || '', fillTh: el => GB()?.fillTh?.(el), lvOf: P => GB()?.gm?.(P)?.lv || '',   // v19.29 같이 다니는 포켓몬 고르기·울음소리
+  jong, ty: () => st().ty, tyNm: () => TYPE_KO?.[st().ty] || '', eggIco: g => GA.eggIcoG?.(g, st().ty) || '', eggGn: g => GA.EGG_GN?.(g) || '',
+  giveEgg: (g, from) => { if (window.gymEvTest) return; GA.tyEggs?.(st().ty, g, 1, from); },
+  // 숨은 상점 물건: kinds 중에서 안 가진 것 하나 (cap 골드 이하). skip = 이번 이벤트에서 이미 나온 것
+  loot: async (kinds = ['it', 'mint', 'deco'], cap = 4000, skip = []) => { await loadJs('gym/battle.js', 'GymBattle'); const B = GB(), g = st(), G = gradeOf(g.rep || 0).i, no = new Set(skip), out = [];
+    for (const k of kinds) {
+      if (k === 'it') Object.entries(B.HOLD).forEach(([id, x]) => { if (x[1] <= cap && !B.itHave(id) && !no.has(id)) out.push({ k, id, nm: x[0], img: B.itImg(id), d: x[2] }); });
+      if (k === 'mint') B.MINT.forEach(id => { if (!no.has(id)) out.push({ k, id, nm: B.mintNm(id), img: B.mintImg(id), d: B.mintD?.(id) || '먹이면 성격이 바뀌어요' }); });
+      if (k === 'deco') Object.entries(DECO).forEach(([id, o]) => { if (o.g <= cap && G >= (o.lv | 0) && !g.own?.[id] && !no.has(id)) out.push({ k, id, nm: o.n, img: `${IMG}deco/${id}.png`, d: '꾸미기에 놓을 수 있어요' }); }); }
+    return out.length ? out[Math.random() * out.length | 0] : null; },
+  giveLoot: L => { if (window.gymEvTest || !L) return; const g = st();
+    if (L.k === 'it') { g.itm = g.itm || {}; g.itm[L.id] = Math.max(1, g.itm[L.id] | 0); } else if (L.k === 'mint') { g.mint = g.mint || {}; g.mint[L.id] = (g.mint[L.id] | 0) + 1; } else if (L.k === 'deco') { g.own = g.own || {}; g.own[L.id] = 1; }
+    glog('tr', `로켓단 아지트에서 <b>${esc(L.nm)}</b>${jong(L.nm) ? '을' : '를'} 찾았다.`); save(); },
   // 이벤트 배틀: 지금 라인업 (비어 있으면 체육관 타입 포켓몬 레벨 높은 순 6마리)
   battle: async o => { await loadJs('gym/battle.js', 'GymBattle'); await GB().loadData(); const g = st();
     if (window.__evAutoWin && /[?&]debug/.test(location.search)) return { won: true };   // 시험 자동 진행
@@ -2542,7 +2562,7 @@ function awMvPop([P, mv, nm, ty], i, n) {
 // 들어온 뒤: 지난주 보고서 → 새 배지 → 면접 지원자 알림 (하나씩)
 async function later() {
   await wait(700); if (!open) return; const g = st();
-  if (g.rpt && !g.rpt.seen) await reportPop();   // v19.08 경완: 월요일 지난주 보고서 (예전엔 시뮬레이터에서만 열렸음)
+  if (g.rpt && !g.rpt.seen && g.rpt.k === wkOf(Date.now()) - 7 * DAY) await reportPop();   // v19.26: 지난주 것만 (v19.08 전에 쌓인 옛 보고서는 안 띄움)   // v19.08 경완: 월요일 지난주 보고서 (예전엔 시뮬레이터에서만 열렸음)
   if (!open) return; if (g.newBdg) await badgeGet(g.newBdg);
   await awayPop();
   await unlockChk();
