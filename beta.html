@@ -159,7 +159,7 @@ body.visitMode.petting :is(.vpad,.vjump,.vchat-b){display:none}   /* v15.16 경�
 .gb:disabled{background:#c8c2b4;color:#8a8372;text-shadow:none;box-shadow:inset 0 -4px 0 #aaa392,0 3px 0 #2c2838;transform:none;cursor:default}
 .gb small{font-size:12px;font-weight:400;opacity:.95}
 #run.gapick .eggtabs,#run.gapick #bagMulti,#run.gapick #bagMBar,#run.gapick .bag-test{display:none!important}
-.ga-endb{margin-left:auto;font:inherit;font-size:12px;border:2px dashed #ff8a80;background:transparent;color:#ff8a80;padding:4px 8px;cursor:pointer}.ga-endb:active{transform:translateY(2px)}
+.ga-endb{margin-left:auto;font:inherit;font-size:12px;border:2px dashed #ff8a80;background:transparent;color:#ff8a80;padding:4px 8px;cursor:pointer}.ga-endb:active{transform:translateY(2px)}.ga-stb{margin-left:auto;margin-right:6px;border-color:#ffd34a;color:#ffd34a}.ga-stb+.ga-endb{margin-left:0}.ga-stp{position:absolute;right:12px;top:52px;z-index:40;display:flex;gap:6px;padding:8px;background:#fffaf0;border:3px solid #20202c;box-shadow:0 4px 0 rgba(0,0,0,.3)}.ga-stp button{font:inherit;font-size:13px;color:#fff;border:2px solid #20202c;box-shadow:0 3px 0 #20202c;padding:6px 9px;cursor:pointer}.ga-stp button:active{transform:translateY(3px);box-shadow:none}.ga-stp [data-g='2']{background:#e08a2c}.ga-stp [data-g='3']{background:#3f8fe0}.ga-stp [data-g='4']{background:#9a52e0}.ga-stp [data-g='5']{background:#d9a514}#gaMach.sk .ga-mw{animation:gaShkV var(--gsp,.14s) linear infinite}@keyframes gaShkV{0%,100%{transform:rotate(0) translateX(0)}25%{transform:rotate(calc(var(--gam,3deg) * -1)) translateX(calc(var(--gax,0px) * -1))}75%{transform:rotate(var(--gam,3deg)) translateX(var(--gax,0px))}}#gaMach .ga-aura{position:absolute;left:50%;top:44%;width:296px;height:296px;margin:-148px 0 0 -148px;border-radius:50%;z-index:-2;pointer-events:none;opacity:0;background:radial-gradient(circle closest-side,var(--fc,#fff) 0 30%,color-mix(in srgb,var(--fc,#fff) 40%,transparent) 60%,transparent 100%);transition:opacity .25s,background .25s}#gaMach .ga-aura i{position:absolute;inset:0;border-radius:50%;background:repeating-conic-gradient(color-mix(in srgb,var(--fc,#fff) 55%,transparent) 0 9deg,transparent 9deg 22deg);-webkit-mask:radial-gradient(circle closest-side,#000 30%,transparent 100%);mask:radial-gradient(circle closest-side,#000 30%,transparent 100%);animation:gaRay 6s linear infinite}@keyframes gaRay{to{transform:rotate(360deg)}}#gaMach .ga-fl{position:absolute;inset:-24px;z-index:6;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 40%,#fff 0 20%,var(--fc,#fff) 38%,transparent 70%);mix-blend-mode:screen}#gaMach .ga-fl.on{animation:gaFl .6s ease-out}@keyframes gaFl{0%{opacity:0}10%{opacity:1}100%{opacity:0}}#gaMach .ga-rg{position:absolute;left:50%;top:40%;width:60px;height:60px;margin:-30px;border-radius:50%;z-index:6;pointer-events:none;opacity:0;border:6px solid var(--fc,#fff);box-shadow:0 0 18px var(--fc,#fff),inset 0 0 12px var(--fc,#fff)}#gaMach .ga-rg.on{animation:gaRg .6s ease-out}@keyframes gaRg{0%{opacity:1;transform:scale(.4)}100%{opacity:0;transform:scale(6)}}#run .ga-scr{position:absolute;inset:0;z-index:30;pointer-events:none;background:var(--fc,#fff);opacity:0}#run .ga-scr.on{animation:gaScr .45s ease-out}@keyframes gaScr{0%{opacity:0}12%{opacity:.55}100%{opacity:0}}   /* v18.90 경완: 뽑기 기계 등급별 단계 연출 (우수1·레어2·에픽3·전설4, 단계마다 번쩍·흔들림 세지고 길어짐), 시험 화면 '단계 시험' */
 .gp-hd{display:flex;align-items:center;gap:8px;background:#f08a24;color:#fff;border:3px solid #20202c;padding:0 4px 0 12px;height:44px;font-size:15px;font-weight:700;text-shadow:0 1px 0 rgba(0,0,0,.3);margin-bottom:8px;box-sizing:border-box}
 .gp-hd button{margin-left:auto;font:inherit;font-size:14px;font-weight:400;text-shadow:none;background:#fff;color:#20202c;border:2px solid #20202c;height:32px;padding:0 12px;cursor:pointer}
 .gp-tools{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
@@ -2457,7 +2457,7 @@ try { if (sessionStorage.getItem('pk-wf')) { sessionStorage.removeItem('pk-wf');
 
 <div class="sheet" id="run" hidden>
   <div class="win runwin" role="dialog" aria-label="런닝과 알">
-    <div class="sheet-head"><h3 id="runTitle">알</h3><button class="ga-endb" id="gaEnd" hidden>시험 끝내기</button><button class="opt" id="closeRun">닫기</button></div>
+    <div class="sheet-head"><h3 id="runTitle">알</h3><button class="ga-endb ga-stb" id="gaStB" hidden>단계 시험</button><button class="ga-endb" id="gaEnd" hidden>시험 끝내기</button><button class="opt" id="closeRun">닫기</button></div>
     <div class="run-body">
       <section class="rtab" data-tab="egg">
         <div class="incu-box" id="incu"></div>
@@ -7781,7 +7781,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '18.88';   /* v18.87 경완: 전설 체육관 축하창은 등급 혜택만, 강박사가 들어와 전설 알 지급, 등급표 승급 보상/등급 혜택 나눔 */ /* v18.85 경완: 모르페코가 열매 먹고 원래 폼으로 돌아올 때도 하얗게 빛나며 바뀜 */   /* v18.81 경완: 기술 효과음을 필드 곡·울음소리 크기에 맞춰 1.75배 */   /* v18.80 경완: 비 올 땐 햇볕·달빛 쬐기·나란히 광합성 안 함, 밤에 소품 뒤 포켓몬이 소품 위로 그려지던 것 */   /* v18.79 경완: 포켓몬 박스 상세카드 성격 ▲▼ 이 저장에 성격 없는 포켓몬에도 나오게, 타입·종류 줄을 이름 줄에 붙임 */ /* v18.78 경완: 비 오면 횃불도 꺼짐(연기), 불꽃 타입은 꺼진 모닥불·횃불 앞에서 … 실망 */   /* v18.77 경완: 연못 위 포켓몬 그림자·소품 발밑 그림자도 소품 그림자처럼 옅게 */   /* v18.75 경완: 포켓몬 박스 상세카드 랭크 배지 모서리에·성격 ▲▼(+N)·오른쪽 정보 여백 고르게, 체육관 상세카드 경험치 막대 꽉 차게·'경험치' 글자·친밀도 아래 맞춤 */ /* v18.74 경완: 장애물 넘기 일일 미션 한 판 1,000점, 골드 쓴 기록(pkBal gold) */ /*   /* v18.73 경완: 기술 효과음 음량 밸런스 — 소리마다 크기를 재서 맞춤 */   /* v18.72 경완: 진화구슬 골드 1분당 장애물 넘기와 같게 (13점당 1G) */ /*   /* v18.71 경완: 메뉴 열려 있을 때도 필드 기술 소리 안 남 */ /*   /* v18.70 경완: 필드 기술 쓸 때 프레임 끊김 — 효과 그림을 칸마다 잘라 두고 그림 */   /* v18.69 경완: 미니게임 중 필드 기술 소리도 안 남, 진화구슬 골드 더 (한 판 10분) */ /*   /* v18.68 경완: 미니게임 중엔 필드에서 늦게 예약된 효과음·울음소리도 안 남 */ /*   /* v18.67 경완: 진화구슬 그만하기 창에 다시 하기(기록 없이 새 판)·정렬, 기록창 '가장 큰 구슬' 칸 없앰, 랭킹 포켓몬 칸 정가운데 */ /*   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
+const APP_VER = '18.91';   /* v18.91 경완: 저절로 뜨는 알림창만 버튼으로 닫힘, 직접 눌러 연 창은 다시 바깥 눌러도 닫힘 (v18.89 는 전부 버튼으로만) */   /* v18.87 경완: 전설 체육관 축하창은 등급 혜택만, 강박사가 들어와 전설 알 지급, 등급표 승급 보상/등급 혜택 나눔 */ /* v18.85 경완: 모르페코가 열매 먹고 원래 폼으로 돌아올 때도 하얗게 빛나며 바뀜 */   /* v18.81 경완: 기술 효과음을 필드 곡·울음소리 크기에 맞춰 1.75배 */   /* v18.80 경완: 비 올 땐 햇볕·달빛 쬐기·나란히 광합성 안 함, 밤에 소품 뒤 포켓몬이 소품 위로 그려지던 것 */   /* v18.79 경완: 포켓몬 박스 상세카드 성격 ▲▼ 이 저장에 성격 없는 포켓몬에도 나오게, 타입·종류 줄을 이름 줄에 붙임 */ /* v18.78 경완: 비 오면 횃불도 꺼짐(연기), 불꽃 타입은 꺼진 모닥불·횃불 앞에서 … 실망 */   /* v18.77 경완: 연못 위 포켓몬 그림자·소품 발밑 그림자도 소품 그림자처럼 옅게 */   /* v18.75 경완: 포켓몬 박스 상세카드 랭크 배지 모서리에·성격 ▲▼(+N)·오른쪽 정보 여백 고르게, 체육관 상세카드 경험치 막대 꽉 차게·'경험치' 글자·친밀도 아래 맞춤 */ /* v18.74 경완: 장애물 넘기 일일 미션 한 판 1,000점, 골드 쓴 기록(pkBal gold) */ /*   /* v18.73 경완: 기술 효과음 음량 밸런스 — 소리마다 크기를 재서 맞춤 */   /* v18.72 경완: 진화구슬 골드 1분당 장애물 넘기와 같게 (13점당 1G) */ /*   /* v18.71 경완: 메뉴 열려 있을 때도 필드 기술 소리 안 남 */ /*   /* v18.70 경완: 필드 기술 쓸 때 프레임 끊김 — 효과 그림을 칸마다 잘라 두고 그림 */   /* v18.69 경완: 미니게임 중 필드 기술 소리도 안 남, 진화구슬 골드 더 (한 판 10분) */ /*   /* v18.68 경완: 미니게임 중엔 필드에서 늦게 예약된 효과음·울음소리도 안 남 */ /*   /* v18.67 경완: 진화구슬 그만하기 창에 다시 하기(기록 없이 새 판)·정렬, 기록창 '가장 큰 구슬' 칸 없앰, 랭킹 포켓몬 칸 정가운데 */ /*   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8860,7 +8860,7 @@ async function acctSync() {
 // v12.07: 아이폰 앱(WKWebView)은 confirm·alert 창을 못 띄워서 confirm 이 바로 '취소'가 된다 → 게임 안 창으로 묻는다
 function askPop(msg, yes = '확인', no = '취소') { return new Promise(ok => { const box = frGPop(`<p class="fr-note ask-m"></p>${no ? `<button type="button" class="lk-btn main" data-a="y">${yes}</button><button type="button" class="lk-btn" data-a="n">${no}</button>` : `<button type="button" class="lk-btn main" data-a="y">${yes}</button>`}`);
   box.style.zIndex = 9900; const m = box.querySelector('.ask-m'); m.textContent = msg; m.style.cssText = 'white-space:pre-line;font-size:14px;line-height:1.5;color:var(--win-ink)';
-  box.onclick = e => { const b = e.target.closest('[data-a]'); if (!b && e.target !== box) return; if (!b && no) return; sfx('tap'); box.remove(); ok(b?.dataset.a === 'y' || !no); }; }); }
+  box.onclick = e => { const b = e.target.closest('[data-a]'); if (!b) return;   /* v18.89 경완: 확인 하나짜리 알림창(sayPop)도 버튼으로만 닫힘 — 모르고 막 누르다 꺼지지 않게 */ sfx('tap'); box.remove(); ok(b?.dataset.a === 'y' || !no); }; }); }
 const sayPop = msg => askPop(msg, '확인', '');
 // v12.03 경완 '설정에서 로그아웃': 지금 기록을 서버에 올린 뒤, 이 기기의 계정과 기록을 지우고 처음 화면으로 (자동 백업은 남는다)
 $('#acctOut')?.addEventListener('click', async () => {
@@ -9153,7 +9153,7 @@ function frNewPop(code, c) { const nm = c?.n || '트레이너';
   document.querySelectorAll('.frn-pop').forEach(b => { if (b.dataset.code === code) b.remove(); });
   const box = frGPop(`<div class="frn-pic">${lbShow({ ...(c || {}), code })}</div><h4 class="frn-t">친구가 되었어요!</h4><p class="fr-note frn-m"><b>${esc(nm)}</b>${hasBat(nm) ? '과' : '와'} 친구가 되었어요.<br>친구 화면에서 친구를 눌러<br>알을 선물할 수 있어요.</p><button type="button" class="lk-btn main" data-a="x">확인</button>`);
   box.classList.add('frn-pop'); box.dataset.code = code; box.style.zIndex = 9950; frPics(box); haptic(1);
-  box.onclick = e => { if (e.target === box || e.target.closest('[data-a=x]')) { box.remove(); try { sfx('tap'); } catch (er) {} } }; }
+  box.onclick = e => { if (e.target.closest('[data-a=x]')) { box.remove(); try { sfx('tap'); } catch (er) {} } }; }
 function frReqNo(r) { (S.frReqDone ||= {})[r.code] = r.t; frReqIn = frReqIn.filter(x => x.code !== r.code); frReqKeep(); save(); menuDots(); }
 const frReqKeep = () => { try { localStorage.setItem('pk-frq', JSON.stringify(frReqIn)); } catch (e) {} };
 const frReqNew = () => frReqIn.some(r => r.t > (S.frReqView || 0));
@@ -15007,7 +15007,7 @@ function gaInPaint(s, c) { $('#gaOut').hidden = !s.in.length || gaBusy; { const 
 function gaCy() { const r = $('#run'), m = $('#gaMach .ga-mw'); if (!r || !m || r.hidden) return; const a = r.getBoundingClientRect(), b = m.getBoundingClientRect(); if (b.height) r.style.setProperty('--gcy', Math.round((b.top + b.bottom) / 2 - a.top) + 'px'); }   /* v18.36 경완: 금색 방사형 배경 중심 = 기계 가운데 */
 addEventListener('resize', () => { if (runTab === 'gacha') gaCy(); });
 function gaPaint() {
-  const tb = document.querySelector('.runtab[data-tab="gacha"]'); tb.hidden = !GT; tb.parentElement.classList.toggle('g3', !!GT); $('#gaEnd').hidden = !GT;
+  const tb = document.querySelector('.runtab[data-tab="gacha"]'); tb.hidden = !GT; tb.parentElement.classList.toggle('g3', !!GT); $('#gaEnd').hidden = !GT; $('#gaStB').hidden = !GT || runTab !== 'gacha'; if ($('#gaStB').hidden) $('.ga-stp')?.remove();
   if (!GT && runTab === 'gacha') setRunTab('bag');
   if (runTab !== 'gacha') return;
   requestAnimationFrame(gaCy);
@@ -15092,16 +15092,40 @@ function gaPull(k = 1) { const s = gaSt(), t = s.t || 0, c = GA_COST[t]; if (gaB
     dr.innerHTML = L.map((x, j) => { const row = j < bk ? 0 : 1, i = row ? j - bk : j, n = row ? DN - bk : bk, sp = Math.min(36, 168 / Math.max(1, n - 1)), cx = 104 + (i - (n - 1) / 2) * sp + (two && !row ? sp / 2 - 4 : 0), dx = Math.round(cx - 54), dy = row ? (two ? 56 : 48) : 38, rt = [-8, 6, -4, 9, -6][j % 5]; return eggHtml(x.g, '', x.lt || x.ct).replace('class="egg', `style="--dx:${dx}px;--dy:${dy}px;--dr:${rt}deg;animation-delay:${j * DS}ms;z-index:${j + 1}" class="egg`); }).join('');
     L.forEach((x, j) => j && setTimeout(() => { sfx('hop'); if (j % 2) haptic(); }, 900 + j * DS)); }
   else { dr.classList.remove('multi'); dr.innerHTML = eggHtml(e.g, '', e.lt || e.ct); }
-  m.classList.remove('out'); void m.offsetWidth; m.classList.add('spin'); sfx('rattle'); haptic(); [0, 130, 260, 390, 520, 650, 780].forEach((d, i) => setTimeout(() => { gaShake(i % 2 ? 1 : -1, i ? 1 : 1.6); if (i % 2) haptic(); }, d));   /* v17.90 경완: 뽑기 누르면 진동과 함께 기계 속 알들이 요동침 */
-  setTimeout(() => { m.classList.add('out'); sfx('hop'); }, 900);
+  const T = gaStages(e.g);   /* v18.90 경완: 등급만큼 단계가 올라가며 흔들림 (이전: 0.9초 고정) */   /* v17.90 경완: 뽑기 누르면 진동과 함께 기계 속 알들이 요동침 */
   setTimeout(() => { m.classList.remove('spin'); S.bag.push(...es); save(); renderBag.sig = ''; gaBusy = false; gaPaint();
     const op = x => { const sp = SPECIES[x.sp]; return `${esc(sp?.n || '?')}·${(sp?.t || []).map(y => TYPE_KO[y]).join('/')}`; };
     if (k === 1) { const nm = eggName(e);
       $('#gaRes').innerHTML = `${eggHtml(e.g, 'wob', e.lt || e.ct)}<div class="t"><b>${esc(nm)}</b>${/[가-힣]$/.test(nm) && (nm.charCodeAt(nm.length - 1) - 44032) % 28 ? '이' : '가'} 나왔다!</div>${GT ? `<p class="ga-note op">(시험) 알 속: ${op(e)}</p>` : ''}`; }
     else $('#gaRes').innerHTML = `<div class="t">알 <b>${k}개</b>가 나왔다!</div><div class="ga-grid">${es.map((x, j) => `<div class="ga-gc g${x.g}${x.g >= 4 ? ' hi' : ''}" style="animation-delay:${j * 60}ms">${eggHtml(x.g, x.g >= 4 ? 'wob' : '', x.lt || x.ct)}<small>${esc(x.lt ? '전설' : GRADE[x.g].n)}</small></div>`).join('')}</div>${GT ? `<p class="ga-note op">(시험) 알 속: ${es.map(op).join(', ')}</p>` : ''}`;
     const mo = $('#gaMore'), c2 = GA_COST[s.t || 0], k2 = k > 1 ? gaMaxK(s, c2) : 1; mo.dataset.k = k2 > 1 ? k2 : 1; mo.innerHTML = k2 > 1 ? `${k2}번 더<small>${k2 * c2}점</small>` : `한 번 더<small>${c2}점</small>`; mo.disabled = s.pt < c2; 
-    $('#gaResPop').hidden = false; sfx('newdex'); if (e.g >= 4) { setTimeout(() => sfx('shiny'), 260); haptic(2); } else haptic();   /* v17.90 경완: 결과 창이 뜰 때 효과음 (에픽·전설은 반짝 소리 더) */ }, 1600 + dl); }
+    $('#gaResPop').hidden = false; sfx('newdex'); if (e.g >= 4) { setTimeout(() => sfx('shiny'), 260); haptic(2); } else haptic();   /* v17.90 경완: 결과 창이 뜰 때 효과음 (에픽·전설은 반짝 소리 더) */ }, T + 700 + dl); }
 $('#gaGo').addEventListener('click', () => gaPull());
+/* v18.90 경완: 뽑기 기계 단계 연출. 우수 1단계(지금 흔들림) → 레어 2 → 에픽 3 → 전설 4. 단계가 오를 때마다 기계가 그 색으로 번쩍, 흔들림 세지고, 머무는 시간 늚. 시안 https://claude.ai/artifact/Cco3n4Nb9GE5mjE4t9FSsQ */
+const GA_ST = [null,
+  { a: 3, x: 0, sp: .14, k: 1, iv: 130, ms: 900, hp: 1 },
+  { a: 5, x: 2, sp: .12, k: 1.5, iv: 105, ms: 1500, hp: 1, c: '#5ab4ff', au: .55 },
+  { a: 8, x: 4, sp: .10, k: 2.1, iv: 85, ms: 1700, hp: 2, c: '#c47aff', au: .75 },
+  { a: 12, x: 7, sp: .075, k: 2.9, iv: 65, ms: 1900, hp: 2, c: '#ffd040', au: 1 }];
+let gaStTk = 0;
+function gaFx() { const mw = $('#gaMach .ga-mw'), r = $('#run'); if (mw && !mw.querySelector('.ga-aura')) mw.insertAdjacentHTML('beforeend', '<i class="ga-aura"><i></i></i><i class="ga-fl"></i><i class="ga-rg"></i>'); if (r && !r.querySelector('.ga-scr')) r.insertAdjacentHTML('beforeend', '<i class="ga-scr"></i>'); return mw; }
+function gaStage(i) { const s = GA_ST[i], m = $('#gaMach'), mw = gaFx(), r = $('#run'); m.style.setProperty('--gam', s.a + 'deg'); m.style.setProperty('--gax', s.x + 'px'); m.style.setProperty('--gsp', s.sp + 's');
+  if (s.c) { mw.style.setProperty('--fc', s.c); r.style.setProperty('--fc', s.c); mw.querySelector('.ga-aura').style.opacity = s.au;
+    for (const el of [mw.querySelector('.ga-fl'), mw.querySelector('.ga-rg'), r.querySelector('.ga-scr')]) { el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); }
+    gaKick(60 * s.k, 120); sfx('flash'); sfx('rattle'); haptic(2); setTimeout(() => haptic(2), 90); if (i >= 3) setTimeout(() => haptic(2), 180); }
+  else { sfx('rattle'); haptic(1); }
+  clearInterval(gaStTk); let n = 0; gaStTk = setInterval(() => { gaShake(n % 2 ? 1 : -1, s.k); if (n % 2 || i >= 3) haptic(s.hp); n++; }, s.iv); }
+function gaStages(g) { const m = $('#gaMach'), mw = gaFx(), L = Math.max(1, Math.min(4, g - 1)); mw.querySelector('.ga-aura').style.opacity = 0;
+  m.classList.remove('out'); void m.offsetWidth; m.classList.add('spin', 'sk'); let t = 0;
+  for (let i = 1; i <= L; i++) { setTimeout(() => gaStage(i), t); t += GA_ST[i].ms; }
+  setTimeout(() => { clearInterval(gaStTk); m.classList.remove('sk', 'spin'); m.classList.add('out'); sfx('hop'); haptic(g >= 4 ? 2 : 1); }, t);
+  setTimeout(() => { mw.querySelector('.ga-aura').style.opacity = 0; }, t + 600); return t; }
+/* v18.90 경완: 시험 화면 '단계 시험' — 등급을 골라 기계 연출만 봄 (알·점수 안 바뀜) */
+$('#gaStB').addEventListener('click', e => { e.stopPropagation(); sfx('tap'); const o = $('.ga-stp'); if (o) { o.remove(); return; }
+  $('#run .win').insertAdjacentHTML('beforeend', '<div class="ga-stp"><button data-g="2">우수</button><button data-g="3">레어</button><button data-g="4">에픽</button><button data-g="5">전설</button></div>');
+  $('.ga-stp').addEventListener('click', ev => { const b = ev.target.closest('[data-g]'); if (!b || gaBusy) return; ev.stopPropagation(); const g = +b.dataset.g; $('.ga-stp').remove();
+    gaBusy = true; gaPaint(); const dr = $('#gaDrop'); dr.classList.remove('multi'); dr.innerHTML = eggHtml(g, '', g === 5 ? 1 : 0); const T = gaStages(g);
+    setTimeout(() => { $('#gaMach').classList.remove('out'); dr.innerHTML = ''; gaBusy = false; gaPaint(); }, T + 1400); }); });
 { let D = null;   /* v18.46 경완: 기계 손잡이를 손가락으로 돌려서도 뽑기 (가챠처럼 시계 방향 한 바퀴, 30도마다 태엽 딸깍) */
   const knob = () => $('#gaMach .ga-knob'), END = 330, back = k => { k.style.transition = 'transform .28s cubic-bezier(.3,1.6,.6,1)'; k.style.transform = ''; setTimeout(() => { k.style.transition = ''; }, 300); };
   $('#gaMach').addEventListener('pointerdown', e => { const k = e.target.closest('.ga-knob'); if (!k || gaBusy || e.button > 0) return; e.preventDefault(); e.stopPropagation();
