@@ -40,11 +40,11 @@ async function fight(A, F, S, s, o) {
 // 배틀 상금 (경완 2026-11-08 '배틀 끝나면 골드는 줘'): 실제 플레이는 배틀에서 이미 받음, 운영자 시험은 안 받음
 async function prize(A, S, g) { if (!g) return; await S.say(`(상금 ${g.toLocaleString()}G 를 받았다!)${A.test ? '\n운영자 시험이라 실제로는 안 받아요.' : ''}`, { who: A.me() }); }
 // 로켓단 변장 (경완 2026-11-08 '미션 깨고 로켓단이 두고 간 복장 받아서 변장하고 암호 대면'): 입으면 내 걸음 그림이 조무래기로, 문지기에게 들키면 원래 모습
-const RK_OW = A => A.I.myFem?.() ? 'hg_rocket_f' : 'hg_rocket_m';
+const RK_G = A => A.I.myFem?.() ? 'f' : 'm';   // 변장 그림 = 로켓단 그림에 머리만 기본 캐릭터(빛나·광휘) 남색 (경완 2026-11-08), 보상 의상 fit/rocket 과 같은 그림
 const disg = A => A.has('suit') && !A.has('caught');
 async function wear(A, F, on, fx) { const I = A.I, m = F.me;
   if (fx) { A.se('DP_KIRAKIRA2'); F.fx(1, m.x, m.y - .4); m.el.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(3) saturate(0)' }, { filter: 'brightness(1)' }], { duration: 520 }); await A.wait(260); }
-  if (on) { m.src = I.owSrc(RK_OW(A)); m.fw = I.owW(RK_OW(A)); } else { m.src = undefined; m.fw = I.owW(I.myOw()); I.fitMe(m); }
+  if (on) { m.src = `${IM}fit/ow9/rocket_${RK_G(A)}.png?${VC}`; m.fw = 32; } else { m.src = undefined; m.fw = I.owW(I.myOw()); I.fitMe(m); }
   m.dis = on; m.put(); if (fx) await A.wait(420); }
 // 변장하고 로켓단에게 말 걸면: 의심만 하고 배틀은 없음 (경완 2026-11-08)
 const SUSP = ['어, 너도 여기 지키러 왔냐?\n여긴 우리로 충분해.', '...잠깐, 너 처음 보는 얼굴인데?\n어느 부대야?', '흠... 수상한데.\n...뭐, 제복 입었으니 됐다.', '신입이면 얼른 아지트로 가 봐.\n람다 님이 찾으실라.'];
@@ -97,7 +97,7 @@ function kit(A, F, S, me0) { const I = A.I, pn = () => F.pl?.nm || null, iga = w
     return false; };
   return { pn, iga, me1, ask, use, dirTo, pick }; }
 const ow = (A, F, k, x, y, f, o) => { const s = F.npc(k, x, y, f, o); s.ow = k; return s; };
-const VA = 'v=19.18', VB = 'v=19.37', VC = 'v=19.52';   // v19.18 새 그림(몬스터볼·바위·모자·금고), v19.37 (모자 앞·뒤, 화분, 발자국)
+const VA = 'v=19.18', VB = 'v=19.37', VC = 'v=19.55';   // v19.18 새 그림(몬스터볼·바위·모자·금고), v19.37 (모자 앞·뒤, 화분, 발자국)
 // 길막 로켓단마다 대사가 다르고, 말을 걸 때마다 달라진다. 끝까지 말 걸면 짜증 나서 배틀 (이스터에그, 경완 2026-11-07)
 const STOP = [
   { lines: ['어이, 거기!\n이쪽은 못 지나간다.', '안 들려? 돌아가라고!', '여긴 로켓단이 접수한 길이야.\n돌아가!', '...너 할 일 없니?', '나도 여기 서 있기 싫거든?\n다리 아파 죽겠는데...', '말 걸지 말라니까!\n집중이 안 되잖아!', '...한 번만 더 말 걸면\n가만 안 둔다?'],
@@ -342,7 +342,7 @@ GymEv.def({
         await S.say('와아! 제 모자다!\n고마워요, 관장님!', { who: kong.nm });
         await S.say('아 참! 아까 검은 옷 아저씨가\n저쪽으로 뛰어가다가\n이걸 떨어뜨리고 갔어요.', { who: kong.nm });
         // 단서 1: 로켓단 제복 → 바로 입고 변장
-        await A.got(S, { k: 'x', nm: '로켓단 제복', img: `${IM}pt/tr/${RK_OW(A)}.png`, d: '로켓단 조무래기가 떨어뜨리고 간 제복.\n입으면 로켓단으로 변장할 수 있다.' }, { key: 'suit', giver: kong.nm }); A.mark('kong');
+        await A.got(S, { k: 'x', nm: '로켓단 제복', img: `${IM}fit/rocket_${RK_G(A)}.png?${VC}`, d: '로켓단 조무래기가 떨어뜨리고 간 제복.\n입으면 로켓단으로 변장할 수 있다.' }, { key: 'suit', giver: kong.nm }); A.mark('kong');
         await say(kong.nm, ['그 아저씨들, 트레이너들을 데리고\n마을 남쪽으로 갔어요!']);
         await me1('(이걸 입으면 로켓단 사이에\n섞여 들어갈 수 있겠어!)');
         await wear(A, F, true, true); await me1('(로켓단으로 변장했다!)');
