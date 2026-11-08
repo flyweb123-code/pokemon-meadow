@@ -144,19 +144,19 @@ GymEv.def({
       const me = A.npc(I.myOw(), D.door[0], D.door[1], 'u'); I.fitMe(me);
       A.se('DP_DOOR'); await wait(300);
       await I.walk(me, [[D.door[0], D.door[1] - 1]]); await wait(300);
-      A.bub(me, '!', 1000); A.se('se_pin'); await wait(1100);
+      A.bub(me, '!', 1000); A.se('DP_KON2'); await wait(1100);
       // 문에서 가까운 조무래기 둘이 다가온다
       const near = grunts.slice().sort((a, b) => Math.hypot(a.x - me.x, a.y - me.y) - Math.hypot(b.x - me.x, b.y - me.y)).slice(0, 2);
       const FR0 = [[me.x, me.y - 1], [me.x - 1, me.y - 1], [me.x + 1, me.y - 1], [me.x - 1, me.y], [me.x + 1, me.y], [me.x, me.y - 2], [me.x - 1, me.y - 2], [me.x + 1, me.y - 2]], fr = [];
       for (const e of near) { const c = A.reach(e, FR0.filter(q => !fr.some(f => f && f[0] === q[0] && f[1] === q[1])), fr.filter(Boolean)); fr.push(c); }   // 서로 다른 칸, 걸어서 갈 수 있는 칸만
-      near.forEach(e => A.bub(e, '!', 900)); A.se('se_pin'); await wait(1000);
+      near.forEach(e => A.bub(e, '!', 900)); A.se('DP_KON2'); await wait(1000);
       await Promise.all(near.map((e, i) => fr[i] ? A.walkTo(e, fr[i], 200, fr.filter((q, j) => q && j !== i)).then(() => { const dx = me.x - e.x, dy = me.y - e.y; A.turn(e, Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'r' : 'l') : 'd'); }) : null));
       const S = A.talk(); const G = '로켓단 조무래기', B = '로켓단 간부 람다';
       await S.say('어? 이 녀석...\n이 체육관 관장이잖아!', { who: G });
       if (near[1]) await S.say('람다 님!\n관장이 돌아왔습니다!', { who: G });
       // 간부가 관장 자리에서 내려온다 (비주기는 로켓단 시리즈 마지막 이벤트에, 2026-11-07 경완)
       S.hide(true); await A.look(boss.y); await wait(300);
-      A.bub(boss, '!', 900); A.se('se_pin'); await wait(1000);
+      A.bub(boss, '!', 900); A.se('DP_KON2'); await wait(1000);
       S.hide(false); await S.say('우하하!\n생각보다 빨리 돌아왔구먼!', { who: B });
       S.hide(true);
       const by = Math.min(D.door[1] - 3, Math.max(boss.y, me.y - 3)), bt = A.reach(boss, [[me.x, by], [me.x, by - 1], [me.x - 1, by], [me.x + 1, by], [me.x, by + 1], [me.x - 1, by - 1], [me.x + 1, by - 1]]);
@@ -216,7 +216,7 @@ GymEv.def({
       const stopTalk = async s => { const o = s.stop;
         if (disg(A) && !s.done) return suspSay(A, F, S, s);
         if (s.done) { await S.say(o.beaten[s.n++ % o.beaten.length], { who: G }); S.hide(true); return; }
-        if (!s.lost && s.n < o.lines.length) { if (!s.n) { F.bub(s, '!', 700); A.se('se_pin'); await wait(500); } await S.say(o.lines[s.n++], { who: G }); S.hide(true); return; }
+        if (!s.lost && s.n < o.lines.length) { if (!s.n) { F.bub(s, '!', 700); A.se('DP_KON2'); await wait(500); } await S.say(o.lines[s.n++], { who: G }); S.hide(true); return; }
         await fight(A, F, S, s, { pre: o.pre, team: gTeam(A, 2, -1, stop.indexOf(s) + 1), g: 200, song: 'hgNibi', say: { win: '흥! 이제 좀\n저리 가라!', lose: '으아악!\n괜히 건드렸다...!' }, post: o.post }); if (s.done) s.n = 0; };
       // 마을을 돌아다니는 로켓단 셋
       const wg = [[14, 10, 'd'], [36, 22, 'l'], [24, 33, 'u']].map(([x, y, f], i) => { const s = ow(A, F, GR[(i + 1) % 2], x, y, f); F.wander(s, 2); s.wg = WG_L[i]; s.n = 0; return s; });
@@ -298,7 +298,7 @@ GymEv.def({
         await S.say('(트레이너들과 안내원을 구하려면\n로켓단 아지트부터 찾아야 해!)', { who: me0 }); S.hide(true);
         // 대표 포켓몬이 내 오른쪽에 나와서 → 같이 가 주겠다고? → 말풍선·기뻐하기 → 고마워 (경완 2026-11-08 순서)
         if (P0) { await wait(300); await F.palOut(P0); await me1('뭐!? 너도 나랑\n같이 가 주겠다고?'); await F.palJoy(); await me1('고마워!\n같이 트레이너들을 구하러 가자!'); }
-        F.bub(lass, '!', 900); A.se('se_pin'); await wait(900);
+        F.bub(lass, '!', 900); A.se('DP_KON2'); await wait(900);
         await F.approach(lass, me, 160);
         await S.say('관장님! 괜찮으세요?\n체육관에서 쫓겨나시는 거 봤어요!', { who: lass.nm });
         await S.say('검은 옷 입은 사람들이\n트레이너들을 끌고\n어디론가 가 버렸어요.', { who: lass.nm });
@@ -353,7 +353,7 @@ GymEv.def({
         await use(31, 17, async () => { A.shake(); for (let i = 0; i < 3; i++) { hat.animate([{ translate: '0 0' }, { translate: '-3px 0' }, { translate: '3px 0' }, { translate: '0 0' }], { duration: 160 }); await wait(160); }
           const t0 = parseFloat(hat.style.top), x0 = parseFloat(hat.style.left), KK = F.k; await anim(520, q => { hat.style.top = t0 + (2.6 * 16 * KK) * q * q + 'px'; hat.style.left = x0 + 1.1 * 16 * KK * q + 'px'; hat.style.rotate = 200 * q + 'deg'; }); hat.remove(); });
         await me1('(모자가 떨어졌다!)');
-        F.bub(kong, '!', 800); A.se('se_pin'); await wait(700); kongHat(); A.se('DP_PIRORIRO'); kong.hop = 4; kong.put(); await wait(140); kong.hop = 0; kong.put();
+        F.bub(kong, '!', 800); A.se('DP_KON2'); await wait(700); kongHat(); A.se('DP_PIRORIRO'); kong.hop = 4; kong.put(); await wait(140); kong.hop = 0; kong.put();
         await F.approach(kong, me, 200);
         await S.say('와아! 제 모자다!\n고마워요, 관장님!', { who: kong.nm });
         await S.say('아 참! 아까 검은 옷 아저씨가\n저쪽으로 뛰어가다가\n이걸 떨어뜨리고 갔어요.', { who: kong.nm });
@@ -368,7 +368,7 @@ GymEv.def({
         await me1('(커다란 바위가 정원 입구를\n막고 있다.)'); if (!(await ask('혼자서는 꿈쩍도 하지 않는다'))) return;
         for (const b of rocks) if (b.on) await use(b.x, b.y, async () => { A.se('DP_GASHIN', .8); b.shake(); await wait(200); await b.clear('break'); });
         A.mark('dol'); TIP(); await me1('(바위가 부서졌다!)');
-        F.bub(old, '!', 800); A.se('se_pin'); await wait(700); await F.approach(old, me, 240);
+        F.bub(old, '!', 800); A.se('DP_KON2'); await wait(700); await F.approach(old, me, 240);
         // 단서 2: 아지트 자리
         await say(old.nm, ['허허, 대단한 포켓몬이구먼!\n정원에 떨어진 건 뭐든 가져가게.', '그러고 보니 그 녀석들...\n밤마다 마을 남쪽 빈집에\n들락날락하더구먼.', '그 집은 오래전에 비었는데\n불빛이 새어 나오더란 말이지.']);
         await say(old.nm, ['아, 그리고 아까 마트 옆 나무 밑에서\n꼬마 콩이가 울고 있더구먼.\n한번 가 보게나.']);
@@ -378,7 +378,7 @@ GymEv.def({
         await me1('(무거운 상자가 통로를\n막고 있다.)'); if (!(await ask('혼자서는 밀 수 없다'))) return;
         for (const b of crates) if (b.on) await use(b.x, b.y, async () => { A.se('DP_KON', .9); await b.clear('push', F.pl ? dirTo(F.pl, [b.x, b.y]) : 'd'); });
         await me1('(통로가 뻥 뚫렸다!)');
-        F.bub(miso, '!', 800); A.se('se_pin'); await wait(700); miso.face(me); A.se('DP_PIRORIRO');
+        F.bub(miso, '!', 800); A.se('DP_KON2'); await wait(700); miso.face(me); A.se('DP_PIRORIRO');
         await S.say('와, 고마워요!\n이제 장사할 수 있겠어요!', { who: miso.nm });
         await S.say('이건 감사의 표시예요.\n체육관에 장식해 주세요!', { who: miso.nm });
         await A.got(S, { kinds: ['deco'], cap: 1500 }, { key: 'miso', giver: miso.nm }); A.mark('miso');
@@ -584,7 +584,7 @@ GymEv.def({
       const gate = async () => { const live = KS.filter(([k]) => !k.done); if (!live.length) return; F.lock(true);
         if (disg(A)) { live.forEach(([k]) => { k.face(me); F.bub(k, '?', 900); }); await wait(900);
           await S.say('...거기 신입.\n이 앞은 간부님 방이다.\n아무나 못 들어간다.', { who: G }); await S.say('잠깐... 그 얼굴...\n어디서 많이 봤는데...', { who: G }); S.hide(true);
-          live.forEach(([k]) => F.bub(k, '!', 900)); A.se('se_pin'); await wait(1000);
+          live.forEach(([k]) => F.bub(k, '!', 900)); A.se('DP_KON2'); await wait(1000);
           await S.say('체, 체육관 관장이잖아!!\n변장까지 하고 숨어들다니!', { who: G }); S.hide(true);
           A.mark('caught'); await wear(A, F, false, true); await me1('(들켜 버렸다...!)'); }
         for (const [k, o] of live) { if (Math.abs(Math.round(k.x) - Math.round(me.x)) + Math.abs(Math.round(k.y) - Math.round(me.y)) > 1) await F.approach(k, me, 200);
@@ -609,11 +609,11 @@ GymEv.def({
       // 람다 방
       F.lock(true); A.music('hgEyeRoc');
       const nm0 = i => I.sfName?.(all[i]) || '트레이너';
-      caps.forEach(c => F.bub(c, '!', 900)); F.bub(guy, '!', 900); A.se('se_pin');
+      caps.forEach(c => F.bub(c, '!', 900)); F.bub(guy, '!', 900); A.se('DP_KON2');
       await F.camTo(19, 7, 800); await wait(600);
       await S.say('관장님!!\n구하러 와 주셨군요!', { who: '안내원' });
       if (caps.length) await S.say(`관장님! 저희 여기 있어요!\n${caps.length > 1 ? '다들 무사해요!' : '전 무사해요!'}`, { who: nm0(0) });
-      S.hide(true); F.bub(boss, '!', 900); A.se('se_pin'); await wait(900);
+      S.hide(true); F.bub(boss, '!', 900); A.se('DP_KON2'); await wait(900);
       await S.say('우하하!\n결국 여기까지 왔구먼!', { who: B });
       S.hide(true); F.follow = false; await F.goTo(me, [19, 9]); me.turn('u'); await F.camTo(19, 8.5, 500);
       if (!A.retry || !A.has('c4meet')) {
