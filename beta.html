@@ -2161,12 +2161,12 @@ body.mapEdit:not(.meHas) #items .prop{filter:drop-shadow(1px 0 0 rgba(255,255,25
 #pokePop .pp-ps .dp-pic{width:108px;height:108px!important;margin:0;box-sizing:border-box}#pokePop .pp-ps .dp-pic img{height:84px!important;max-width:100%}
 #pokePop .pp-ps .hd-rk{position:absolute;left:4px;top:4px;z-index:3;min-height:0}#pokePop .pp-ps .hd-rk .rk{width:24px;font-size:12px;line-height:16px}
 #pokePop .pp-ps .bud-tag{position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);margin:0;z-index:3;white-space:nowrap}
-#pokePop .pp-id{min-width:0;padding-right:28px}#pokePop .pp-id .ih-top{margin-top:0}#pokePop .pp-id .ih-top .ih-game{margin-right:-28px;margin-left:auto;position:relative;top:34px}
+#pokePop .pp-id{min-width:0;padding-right:28px}#pokePop .pp-id .ih-top{margin-top:0}#pokePop .pp-id{position:relative}#pokePop .pp-id .ih-top .ih-game{margin:0;position:absolute;right:0;top:auto;bottom:1px}   /* v18.64 경완: 게임 아이콘은 친밀도 줄 가운데에 맞춤 */
 #pokePop .pp-id .ih-sub{margin-top:4px}#pokePop .pp-id .ih-met{margin-top:2px}#pokePop .pp-id .pv-fr{margin-top:6px}
 #pokePop .pp-na{margin-top:0}#pokePop .pp-na .na-b{position:relative;flex-direction:column;align-items:flex-start;gap:2px;padding:6px 12px 8px;border-radius:8px;border-color:rgba(0,0,0,.14);background:#fbfaf6}
 #pokePop .pp-na .na-b b{font-size:15px}
 #pokePop .pv-st{margin:10px 0 0}
-#pokePop .pv-hex,#pokePop .pv-hex.pvb{height:auto;min-height:130px;padding:4px 26px 4px 6px;justify-content:flex-start;gap:8px}
+#pokePop .pv-hex,#pokePop .pv-hex.pvb{height:138px;min-height:0;padding:4px 26px 4px 6px;justify-content:flex-start;gap:8px}#pokePop .pv-hex.pvb .pv-bars{padding:0}#pokePop .pv-bars .iv-bars{gap:3px}   /* v18.64 경완: 육각형↔막대 바꿔도 박스 크기 그대로 (138px) */
 #pokePop .pv-hex svg{width:132px;height:120px;flex:none}
 #pokePop .pv-sum{display:flex;flex-direction:column;gap:3px;min-width:0;font-size:12.5px;color:var(--dim);word-break:keep-all}#pokePop .pv-sum b{font-size:16px;color:var(--win-ink);margin-bottom:2px}
 #pokePop .pv-hex.pvb .pv-sum{display:none}
@@ -7755,7 +7755,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '18.63';   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
+const APP_VER = '18.64';   /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -12027,10 +12027,10 @@ document.addEventListener('touchstart', () => {}, { passive: true });
 // 창 바깥 좌우(화살표 힌트 있는 띠)를 누르면 넘기고, 그 밖의 바깥은 닫는다
 function sideTap(pop, e) { const r = pop.querySelector('.win:not(.ghost)').getBoundingClientRect(); return e.clientX < r.left ? -1 : e.clientX > r.right ? 1 : 0; }   /* 카드 좌우 여백은 높이와 상관없이 넘기기 띠: 눌러도 창이 닫히지 않는다 (끝이면 아무 일 없음) */
 // 카드 안쪽 가장자리 띠(좌우 24px)도 버튼·글자 입력이 아니면 넘기기로 친다
-const EDGE_IN = 48;   /* 개체값 이름(HP·공격…)과 숫자 칸까지 */
+const EDGE_IN = 26;   /* v18.64 경완 '능력치 오른쪽 화살표 누르면 넘어감': 48 → 26, 능력치 박스 안은 넘기기 아님 */   /* 개체값 이름(HP·공격…)과 숫자 칸까지 */
 document.addEventListener('click', e => { if (!e.isTrusted) return;
   for (const [pop, l, r, step] of [['#pokePop', '#ppHl', '#ppHr', d => pokeStep(d)], ['#monPop', '#mHl', '#mHr', d => monStep(d)], ['#dexPop', '#dpHl', '#dpHr', d => cardStep(d)]]) {
-    const P = $(pop); if (P.hidden) continue; const w = P.querySelector('.win:not(.ghost)'); if (!w || !w.contains(e.target) || e.target.closest('button,input,textarea,a,label,.frtap,[data-tip],.mvcard,.mvuse')) continue;
+    const P = $(pop); if (P.hidden) continue; const w = P.querySelector('.win:not(.ghost)'); if (!w || !w.contains(e.target) || e.target.closest('button,input,textarea,a,label,.frtap,[data-tip],.mvcard,.mvuse,.pv-hex')) continue;
     const R = w.getBoundingClientRect(), d = e.clientX < R.left + EDGE_IN ? -1 : e.clientX > R.right - EDGE_IN ? 1 : 0; if (!d || $(d < 0 ? l : r).hidden) continue;
     e.stopPropagation(); e.preventDefault(); step(d); return; } }, true);
 cardPager(monPop, {
