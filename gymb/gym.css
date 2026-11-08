@@ -3064,8 +3064,11 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .ty-nt{z-index:3000;mix-blend-mode:multiply;background:#fff;transition:background-color 2s}
 #gym .ty-glow{z-index:3001;mix-blend-mode:screen;opacity:0;transition:opacity 1.5s}
 #gym .ty-wx{z-index:3002;overflow:hidden}
-#gym .ty-wx.rain::before{content:"";position:absolute;inset:-40px 0 0;background:repeating-linear-gradient(104deg,transparent 0 13px,rgba(200,220,255,.45) 13px 14px,transparent 14px 31px);background-size:62px 46px;animation:tyRain .45s linear infinite}
-#gym .ty-wx.rain.storm::before{animation-duration:.28s;background-image:repeating-linear-gradient(104deg,transparent 0 10px,rgba(210,225,255,.55) 10px 12px,transparent 12px 24px)}
+/* v18.63 경완: 훈련장 비 = 필드 비와 같은 빗줄기·튀는 물방울 (beta #rain/#rainG 그대로) */
+#gym .ty-wx>i{position:absolute;top:-24px;width:2px;height:12px;background:rgba(210,228,255,.7);transform:translate3d(0,0,0) rotate(14deg);animation:tyRd .62s linear infinite;will-change:transform}
+@keyframes tyRd{from{transform:translate3d(0,0,0) rotate(14deg)}to{transform:translate3d(-150px,var(--rh,640px),0) rotate(14deg)}}
+#gym .ty-wx.storm>i{animation-duration:.4s!important;height:16px;background:rgba(220,234,255,.85)}
+#gym .ty-rg{position:absolute;inset:0;pointer-events:none;z-index:1;font-style:normal}#gym .ty-rg b{position:absolute;width:10px;height:4px;margin:-2px 0 0 -5px;border:1px solid rgba(220,236,255,.8);border-radius:50%;animation:rsp .5s ease-out infinite;opacity:0}
 @keyframes tyRain{to{transform:translate(-10px,46px)}}
 #gym .ty-wx.snow::before{content:"";position:absolute;inset:-60px 0 0;background:radial-gradient(circle,#fff 0 1.6px,transparent 2px) 0 0/38px 42px,radial-gradient(circle,rgba(255,255,255,.8) 0 1.2px,transparent 1.6px) 17px 21px/38px 42px;animation:tySnow 3.2s linear infinite}
 @keyframes tySnow{to{transform:translate(12px,42px)}}
