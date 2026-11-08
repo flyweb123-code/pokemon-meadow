@@ -41,10 +41,11 @@ async function fight(A, F, S, s, o) {
 async function prize(A, S, g) { if (!g) return; await S.say(`(상금 ${g.toLocaleString()}G 를 받았다!)${A.test ? '\n운영자 시험이라 실제로는 안 받아요.' : ''}`, { who: A.me() }); }
 // 로켓단 변장 (경완 2026-11-08 '미션 깨고 로켓단이 두고 간 복장 받아서 변장하고 암호 대면'): 입으면 내 걸음 그림이 조무래기로, 문지기에게 들키면 원래 모습
 const RK_G = A => A.I.myFem?.() ? 'f' : 'm';   // 변장 그림 = 로켓단 그림에 머리만 기본 캐릭터(빛나·광휘) 남색 (경완 2026-11-08), 보상 의상 fit/rocket 과 같은 그림
-const disg = A => A.has('suit') && !A.has('caught');
-async function wear(A, F, on, fx) { const I = A.I, m = F.me;
+const disg = A => A.has('suit') && !A.has('caught') && !A.has('nosuit');   // nosuit: 가방에서 벗음 (경완 2026-11-08)
+const imgPre = u => Promise.race([new Promise(ok => { const im = new Image(); im.onload = im.onerror = () => ok(); im.src = u; if (im.complete && im.naturalWidth) ok(); }), new Promise(ok => setTimeout(ok, 1500))]);
+async function wear(A, F, on, fx) { const I = A.I, m = F.me, u = `${IM}fit/ow9/rocket_${RK_G(A)}.png?${VC}`, pre = on && fx ? imgPre(u) : null;   // 그림을 다 받은 뒤 바꿈 (변장할 때 잠깐 사라지던 것, 경완 2026-11-08)
   if (fx) { A.se('DP_KIRAKIRA2'); F.fx(1, m.x, m.y - .4); m.el.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(3) saturate(0)' }, { filter: 'brightness(1)' }], { duration: 520 }); await A.wait(260); }
-  if (on) { m.src = `${IM}fit/ow9/rocket_${RK_G(A)}.png?${VC}`; m.fw = 32; } else { m.src = undefined; m.fw = I.owW(I.myOw()); I.fitMe(m); }
+  if (on) { if (fx) await pre; m.src = u; m.fw = 32; } else { m.src = undefined; m.fw = I.owW(I.myOw()); I.fitMe(m); }
   m.dis = on; m.put(); if (fx) await A.wait(420); }
 // 변장하고 로켓단에게 말 걸면: 의심만 하고 배틀은 없음 (경완 2026-11-08)
 const SUSP = ['어, 너도 여기 지키러 왔냐?\n여긴 우리로 충분해.', '...잠깐, 너 처음 보는 얼굴인데?\n어느 부대야?', '흠... 수상한데.\n...뭐, 제복 입었으니 됐다.', '신입이면 얼른 아지트로 가 봐.\n람다 님이 찾으실라.'];
@@ -110,6 +111,9 @@ const STOP = [
     pre: ['말실수했잖아... 너 때문이야!\n배틀로 기억을 지워 주마!!'], post: ['말도 안 돼...\n오늘 일진 최악이야...'], beaten: ['아무것도 못 들은 거다?\n알았지?', '...람다 님한텐 비밀이야.'] },
 ];
 GymEv.def({
+  // 가방 중요한 물건: 로켓단 제복을 누르면 입었다 벗었다 (경완 2026-11-08)
+  keys: A => A.has('suit') ? [{ nm: '로켓단 제복', img: `${IM}fit/rocket_${RK_G(A)}.png?${VC}`, d: '입으면 로켓단으로 변장할 수 있다.', tag: disg(A) ? '입는 중' : '',
+    use: async F => { const on = !disg(A); if (on) { A.unmark('caught'); A.unmark('nosuit'); } else A.mark('nosuit'); await wear(A, F, on, true); } }] : [],
   skipGot: ch => ch >= 2 ? ['kong', 'dol', 'suit', 'miso', 'pw', 'gr', 'stairs'] : null,   // 2장부터 시험하면 1장에서 변장까지 한 걸로 (경완 2026-11-08)
   id: 'rocket', ready: true, nm: '로켓단의 체육관 점거', sub: '로켓단이 내 체육관을 빼앗고 트레이너들을 데려갔다!',
   songs: ['hgEyeRoc', 'hgAjito', 'hgVsRoc', 'hgNibi'], imgs: ['pt/ow/hg_rocket_m', 'ev/rocket/heal_ball', 'ev/rocket/heal_mon', 'ev/rocket/ybox', 'pt/ow/hg_rocket_f', 'pt/ow/hg_petrel', 'ev/rocket/crate', 'ev/rocket/machine', 'ev/rocket/pc', 'ev/rocket/ball', 'ev/rocket/rock', 'ev/rocket/hat', 'ev/rocket/safe', 'ev/rocket/hat_d', 'ev/rocket/hat_u', 'ev/rocket/pot', 'ev/rocket/steps', 'ev/rocket/house_e', 'ev/rocket/house_e_o', 'pt/tr/hg_ariana', 'ev/rocket/mon', 'ev/rocket/mon_on'],
@@ -378,7 +382,7 @@ GymEv.def({
         await me1('(무거운 상자가 통로를\n막고 있다.)'); if (!(await ask('혼자서는 밀 수 없다'))) return;
         for (const b of crates) if (b.on) await use(b.x, b.y, async () => { A.se('DP_KON', .9); await b.clear('push', F.pl ? dirTo(F.pl, [b.x, b.y]) : 'd'); });
         await me1('(통로가 뻥 뚫렸다!)');
-        F.bub(miso, '!', 800); A.se('DP_KON2'); await wait(700); miso.face(me); A.se('DP_PIRORIRO');
+        F.bub(miso, '!', 800); A.se('DP_KON2'); await wait(700); miso.face(me); me.face(miso); F.palFace(miso); A.se('DP_PIRORIRO');   // 점원 쪽을 보고 (경완 2026-11-08)
         await S.say('와, 고마워요!\n이제 장사할 수 있겠어요!', { who: miso.nm });
         await S.say('이건 감사의 표시예요.\n체육관에 장식해 주세요!', { who: miso.nm });
         await A.got(S, { kinds: ['deco'], cap: 1500 }, { key: 'miso', giver: miso.nm }); A.mark('miso');

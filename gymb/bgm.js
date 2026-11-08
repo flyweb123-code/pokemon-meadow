@@ -30,9 +30,11 @@ const PART = {
   hbBa3: [1861056, 4348, 'hg'], hwBa3: [7615936, 8452, 'hg'], hbBa5: [1869856, 4392, 'hg'], hwBa5: [7653248, 27708, 'hg'],
   hsGymJ: [714656, 11596, 'hg'], hsGymK: [839424, 20568, 'hg'], hsRival: [726272, 15056, 'hg'], hsChamp: [794112, 12628, 'hg'],
   hsEyeRiv: [578240, 6976, 'hg'], hsWin1: [860000, 3164, 'hg'], hsWin3: [868960, 6180, 'hg'],
+  hbSeF: [1937472, 5088, 'hg'], hwSeF: [7948960, 95352, 'hg'], hbThlon: [2029760, 5180, 'hg'], hwThlon: [8398272, 99384, 'hg'],   // v19.77 하트골드 필드 효과음 (뛰어내리기·문·부딪힘, 경완 2026-11-08)
+  hseDANSA: [1544416, 60, 'hg'], hseDANSA4: [1557024, 176, 'hg'], hseDANSA5: [1529696, 60, 'hg'], hseUFO_JUMP: [1679584, 176, 'hg'], hseDOOR: [1543424, 168, 'hg'], hseDOOR_OPEN: [1543616, 164, 'hg'], hseDOOR_CLOSE: [1543808, 168, 'hg'], hseDOOR_CLOSE2: [1544000, 164, 'hg'], hseDOOR10: [1544192, 156, 'hg'], hseDOOR_OPEN5: [1536480, 184, 'hg'], hseHIKIDO_OPEN: [1700800, 328, 'hg'], hseWALL_HIT: [1542880, 152, 'hg'], hseWALL_HIT2: [1543040, 152, 'hg'], hseKABEHIT: [1689824, 280, 'hg'],
   hsEyeRoc: [665472, 3252, 'hg'], hsVsRoc: [741344, 10192, 'hg'], hsAjito: [528256, 4868, 'hg'], hbD9: [1924000, 4580, 'hg'], hwD9: [7893664, 4872, 'hg'], hsNibi: [354464, 6804, 'hg'], hbF16: [1838656, 4592, 'hg'], hwF16: [7568928, 6072, 'hg'],   // 체육관 이벤트 로켓단 (2026-11-07): SEQ_GS_EYE_ROCKET·VS_ROCKET·D_AJITO
 };
-const BANK = { field: { b: 'bField', w: ['wBasic', 'wField'] }, battle: { b: 'bBattle', w: ['wBasic', 'wBattle'] }, S: { b: 'bSe', w: ['wBasic', 'wSe'] }, B: { b: 'bBasic', w: ['wBasic'] }, F: { b: 'bSeF', w: ['wBasic', 'wSeF'] }, dungeon: { b: 'bDungeon', w: ['wBasic', 'wDungeon'] },
+const BANK = { hF: { b: 'hbSeF', w: ['hwBasic', 'hwSeF'] }, hT: { b: 'hbThlon', w: ['hwBasic', 'hwThlon'] }, field: { b: 'bField', w: ['wBasic', 'wField'] }, battle: { b: 'bBattle', w: ['wBasic', 'wBattle'] }, S: { b: 'bSe', w: ['wBasic', 'wSe'] }, B: { b: 'bBasic', w: ['wBasic'] }, F: { b: 'bSeF', w: ['wBasic', 'wSeF'] }, dungeon: { b: 'bDungeon', w: ['wBasic', 'wDungeon'] },
   hB: { b: 'hbBasic', w: ['hwBasic'] }, h1: { b: 'hbBa1', w: ['hwBasic', 'hwBa1'] }, h2: { b: 'hbBa2', w: ['hwBasic', 'hwBa2'] }, h3: { b: 'hbBa3', w: ['hwBasic', 'hwBa3'] }, h5: { b: 'hbBa5', w: ['hwBasic', 'hwBa5'] }, hD9: { b: 'hbD9', w: ['hwBasic', 'hwD9'] }, hF16: { b: 'hbF16', w: ['hwBasic', 'hwF16'] } };
 // 곡 이름 → 악보, 악기 묶음, 곡 볼륨(원본 SEQ 정보 값)
 const SONG = {
