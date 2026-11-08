@@ -1356,17 +1356,16 @@ async function badgeGet(ty) {
 async function promoFx(gi) {
   const g = st(), M = window.GymBGM; root.classList.remove('gview'); dlg(''); root.classList.add('dhide');   /* v15.52: dlg('') 가 dhide 를 지워 빈 대사창이 뜨던 것 */
   const pl = $g('.gy-plate'), bd = $g('.gy-bd'), dim = document.createElement('div'); dim.className = 'pf-dim'; $g('.gy-main').appendChild(dim);
-  pl.classList.add('pf-on'); try { M?.sePrep?.(['DP_EXP', 'ME_FANFA5']); } catch (e) {}
-  try { M?.duck?.(0, .5); } catch (e) {}   /* v19.18 경완: 배지 나올 때부터 배경 곡 사라짐 (팡파르 끝나면 fan 이 다시 키움) */
+  pl.classList.add('pf-on'); try { M?.sePrep?.(['DP_KIRAKIRA2', 'ME_FANFA5']); } catch (e) {}
   void bd.offsetWidth; pl.classList.add('pf-zoom'); await wait(600);   /* 경완 2026-11-04 '타이틀 배지 바뀔 때 화면 포커싱': 배지가 화면 가운데로 크게 다가옴 */
-  try { M?.se('DP_EXP', { dur: 1.7 }); } catch (e) {}   /* v19.18 경완: 빛이 모이는 동안 게이지 차오르는 소리 */
+  try { M?.se('DP_KIRAKIRA2'); } catch (e) {}
   bd.classList.add('pf-glow'); await wait(1700);
   const fl = document.createElement('i'); fl.className = 'pf-flash'; bd.appendChild(fl);
   await wait(160);
   g.newBdg = 0; delete g.newG; save(); renderTop();
   bd.classList.remove('pf-glow'); bd.classList.add('pf-new'); bd.insertAdjacentHTML('afterbegin', '<i class="pf-ray"></i>'); bd.appendChild(fl);
   $g('.gy-grade').classList.add('pf-gt');
-  try { M?.fan ? M.fan('ME_FANFA5') : (M?.se('ME_FANFA5'), M?.duck?.(1, .5)); } catch (e) { try { M?.duck?.(1, .5); } catch (x) {} }
+  try { M?.fan ? M.fan('ME_FANFA5') : M?.se('ME_FANFA5'); } catch (e) {}
   confetti(); await wait(1700);
   pl.classList.remove('pf-zoom'); await wait(550);
   dim.classList.add('out'); await wait(350);
