@@ -224,7 +224,7 @@ GymEv.def({
       [man, boy].forEach(s => F.wander(s, 2));
       lass.say = ['마을 사람들한테 물어보세요!\n분명 누군가 봤을 거예요.'];
       // 단서는 빈집 → 제복 → 암호 순서 (경완 2026-11-08): 마을 사람 힌트도 지금 할 차례를 가리킨다
-      const TIP = () => { man.say = [A.has('kong') ? '마트 점원 미소 씨가\n아까부터 울상이던데.\n로켓단이 뭘 했나 봐.' : '밤새 돌쇠 할아버지네 쪽이\n시끄럽더니... 무슨 일이지?'];
+      const TIP = () => { man.say = [A.has('pw') ? '남쪽 빈집 앞에 로켓단이\n떡 버티고 서 있더라고.\n뭘 지키는 걸까?' : A.has('kong') ? '마트 점원 미소 씨가\n아까부터 울상이던데.\n로켓단이 뭘 했나 봐.' : A.has('dol') ? '꼬마 콩이가 나무 밑에서\n엉엉 울고 있던데...\n무슨 일이지?' : '밤새 돌쇠 할아버지네 쪽이\n시끄럽더니... 무슨 일이지?'];   // 진행에 맞춰 다음 힌트 (경완 2026-11-08 '돌쇠 깼는데도 돌쇠 힌트')
         boy.say = [A.has('kong') ? '미소 누나네 마트에도\n검은 옷 사람들이 왔었대요!' : A.has('dol') ? '콩이가 모자를 잃어버려서\n마트 옆 나무 밑에서 울고 있어요!' : '돌쇠 할아버지네 정원 앞에\n로켓단이 바위를 잔뜩\n쏟아 놓고 갔대요!']; };
       TIP();
       const R = (k, x, y, f, room, nm, say, wr) => { const s = ow(A, F, k, x, y, f, { room, fw: /\//.test(k) ? 16 : 0 }); s.nm = nm; s.say = say; if (wr) F.wander(s, wr); return s; };
@@ -364,7 +364,7 @@ GymEv.def({
       const rockLook = async () => {
         await me1('(커다란 바위가 정원 입구를\n막고 있다.)'); if (!(await ask('혼자서는 꿈쩍도 하지 않는다'))) return;
         for (const b of rocks) if (b.on) await use(b.x, b.y, async () => { A.se('DP_GASHIN', .8); b.shake(); await wait(200); await b.clear('break'); });
-        A.mark('dol'); await me1('(바위가 부서졌다!)');
+        A.mark('dol'); TIP(); await me1('(바위가 부서졌다!)');
         F.bub(old, '!', 800); A.se('se_pin'); await wait(700); await F.approach(old, me, 240);
         // 단서 2: 아지트 자리
         await say(old.nm, ['허허, 대단한 포켓몬이구먼!\n정원에 떨어진 건 뭐든 가져가게.', '그러고 보니 그 녀석들...\n밤마다 마을 남쪽 빈집에\n들락날락하더구먼.', '그 집은 오래전에 비었는데\n불빛이 새어 나오더란 말이지.']);
@@ -381,7 +381,7 @@ GymEv.def({
         await A.got(S, { kinds: ['deco'], cap: 1500 }, { key: 'miso', giver: miso.nm }); A.mark('miso');
         // 단서 3: 암호
         await say(miso.nm, ['아, 그러고 보니 그 손님들...\n계산하면서 서로\n"우하하!" 하고 인사하더라고요.', '무슨 암호 같은 걸까요?']);
-        A.mark('pw'); await me1('(우하하...\n람다가 웃던 소리랑 똑같다!)'); };
+        A.mark('pw'); TIP(); await me1('(우하하...\n람다가 웃던 소리랑 똑같다!)'); };
       // 빈집 앞 조무래기: 변장 + 암호 (경완 2026-11-08). 비킬 땐 내가 서 있지 않은 옆 칸으로
       const grTalk = async () => {
         if (gr.done) { await S.say(disg(A) ? '...뭘 꾸물거려?\n얼른 들어가라니까.' : '...뭘 봐?', { who: G }); S.hide(true); return; }
