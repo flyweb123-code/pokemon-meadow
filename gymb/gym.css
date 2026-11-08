@@ -3357,3 +3357,9 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .tm-wp>b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:400;color:var(--ink,#20202c)}
 #gym .tm-wp>small{margin-top:-2px;font-size:10px;color:var(--dim,#68687a)}
 #gym .tm-wp.kn{opacity:.5}
+/* v19.63 경완 '훈련장 슬롯 채웠을 때 나머지 빈 슬롯들이랑 크기가 달라짐 · 데려오기 버튼 없애고 x': 줄 높이 모두 같게, 오른쪽 위 ✕ */
+#gym .ts-win .tsc-grid{grid-auto-rows:1fr}#gym .ts-win .tsc-grid>.ts-slot{min-height:0!important;height:auto}
+#gym .ts-slot.tsc{padding:6px 12px 6px 10px!important}
+#gym .ts-win .ts-slot .tsc-out,#gym .ts-slot .tsc-out{top:4px;right:4px;transform:none;padding:5px 8px;font-size:15px;font-weight:400;line-height:1;color:var(--dim);background:none;border:0;box-shadow:none}
+#gym .ts-slot .tsc-out:active{translate:none;color:var(--frame)}
+#gym .tsc-mid{padding-right:22px}
