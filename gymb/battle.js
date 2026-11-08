@@ -925,7 +925,7 @@ async function handle(a) {
       if (mhp) X.mhp = mhp; await drainHp(s, X, hp); X.st = stOf(a[3]) || X.st; if (hz) { const t = dmgFrom(from, a[2]); if (t) await msg(t, 300); } await flushPend(); break;
     }
     case '-heal': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); if (mhp) X.mhp = mhp; const from = (a.find(x => /^\[from\] /.test(x)) || '').slice(7), sil = a.includes('[silent]');
-      if (!sil && HEAL_FX[from.replace(/^(item|ability|move): /, '')]) await moveFx(s, HEAL_FX[from.replace(/^(item|ability|move): /, '')]);
+      { const h = !sil && HEAL_FX[from.replace(/^(item|ability|move): /, '')]; if (h) await (h[0] === '_' ? moveFx(s, 'recover', false, h) : moveFx(s, h)); }
       await drainHp(s, X, hp); if (!sil) await msg(healMsg(who(a[2]), from)); break; }
     case '-sethp': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp] = hpOf(a[3]); await drainHp(s, X, hp); break; }
     case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); X.fntS = true; hbBalls(s); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s === 'e') await expGain(X); break; }
@@ -1000,7 +1000,7 @@ async function resFx(s, from, a) {
   if (f === 'Sandstorm' || f === 'Hail' || f === 'confusion' || f === 'Recoil') return;
   if (/^(Life Orb|Rocky Helmet|Rough Skin|Iron Barbs|Black Sludge|Sticky Barb|Solar Power|Dry Skin|Bad Dreams|Salt Cure|Aftermath|Liquid Ooze)$/.test(f)) return hitFx(s);
 }
-const HEAL_FX = { 'Leftovers': 'aquaring', 'Black Sludge': 'aquaring', 'Shell Bell': 'aquaring', 'Aqua Ring': 'aquaring', 'Ingrain': 'ingrain', 'Wish': 'wish', 'Grassy Terrain': 'aquaring', 'Rain Dish': 'aquaring', 'Ice Body': 'aquaring', 'Poison Heal': 'aquaring', 'Dry Skin': 'aquaring' };
+const HEAL_FX = { 'Leftovers': '_item', 'Black Sludge': '_item', 'Shell Bell': '_item',   /* v19.18 경완 '먹다남은음식 본가 기준?': 본가는 지닌 도구 공통 연출(HELD_ITEM — 빛 모임·흰 번쩍·몸 늘었다 줄었다 2번) */ 'Aqua Ring': 'aquaring', 'Ingrain': 'ingrain', 'Wish': 'wish', 'Grassy Terrain': 'aquaring', 'Rain Dish': 'aquaring', 'Ice Body': 'aquaring', 'Poison Heal': 'aquaring', 'Dry Skin': 'aquaring' };
 const IT_KO = { 'Sitrus Berry': '자뭉열매', 'Oran Berry': '오렌열매', 'Lum Berry': '리샘열매', 'Focus Sash': '기합의띠', 'Focus Band': '기합의머리띠', 'Air Balloon': '풍선', 'White Herb': '하양허브', 'Mental Herb': '멘탈허브', 'Power Herb': '파워풀허브', 'Leftovers': '먹다남은음식', 'Life Orb': '생명의구슬', 'Choice Scarf': '구애스카프', 'Choice Band': '구애머리띠', 'Choice Specs': '구애안경', 'Chesto Berry': '유루열매', 'Cheri Berry': '버치열매', 'Pecha Berry': '복슝열매', 'Rawst Berry': '복분열매', 'Aspear Berry': '배리열매', 'Persim Berry': '시마열매', 'Leppa Berry': '과사열매', 'Liechi Berry': '치리열매', 'Salac Berry': '캄라열매', 'Petaya Berry': '야타비열매', 'Ganlon Berry': '용아열매', 'Apicot Berry': '규살열매' };
 const itKo = nm => { const id = toID(nm || ''); return (HOLD[id] && HOLD[id][0]) || IT_KO[nm] || nm || '도구'; };
 function healMsg(n, from) { if (from === 'drain') return `${eun(n)} 상대의 체력을 흡수했다!`; const f = from.replace(/^(move|item|ability): /, ''), T = { 'Leftovers': '먹다남은음식으로 조금 회복했다!', 'Black Sludge': '검은진흙으로 조금 회복했다!', 'Aqua Ring': '아쿠아링으로 체력을 회복했다!', 'Ingrain': '뿌리로부터 양분을 흡수했다!', 'Wish': '희망사항이 이루어졌다!', 'Shell Bell': '조개껍질방울로 조금 회복했다!', 'Grassy Terrain': '그래스필드로 체력이 회복되었다!' }; return T[f] ? `${eun(n)} ${T[f]}` : `${n}의 체력이 회복되었다!`; }
@@ -1111,13 +1111,15 @@ async function moveFx(s, id, miss, fx) {
     A = [A[0], [...A[1], ...(/^(earthquake|magnitude)$/.test(id) ? [['k', 0, 'bg', 3, 0, 1, n], ['k', 0, 'd', 3, 0, 1, n]]
       : cat === 0 ? [['m', Math.max(0, hit - 3), 'a', 14, -8, 2], ['m', hit + 1, 'a', -14, 8, 2], ['k', hit, 'd', 2, 0, 1, 3]] : [['k', hit, 'd', 2, 0, 1, 3]])]];
   }
-  const sp = B.fast ? .6 : 1, F = FR * sp, side = w => w === 'a' ? s : other(s), mw = w => $b(`.bt-mw.${side(w)}`);
-  const pan = w => w === 'a' ? panOf(s) : w === 'd' ? panOf(other(s)) : 0;
+  // 자기에게 쓰는 기술(달빛·HP회복 등): 본가처럼 맞는 쪽 = 쓰는 쪽 (v19.18 경완 '달빛 회복 효과는 내 포켓몬 위에')
+  const tg = window.PSim?.Dex.moves.get(id)?.target, me = tg === 'self' || tg === 'adjacentAllyOrSelf' || tg === 'allySide' || tg === 'allies';
+  const sp = B.fast ? .6 : 1, F = FR * sp, side = w => w === 'a' || me ? s : other(s), mw = w => $b(`.bt-mw.${side(w)}`);
+  const pan = w => w === 'a' ? panOf(s) : w === 'd' ? panOf(side('d')) : 0;
   // 원본 파티클: 그림을 다 받은 뒤 다른 연출과 같은 박자로 시작
   let spl = null;
   if (A[1].some(e => e[0] === 'p')) {
     await Promise.race([loadSpl(), wait(1500)]);
-    if (window.GymSPL && B) { spl = window.GymSPL.start($b('.bt-ptc'), A[1], s, F, VER); await Promise.race([spl.ready, wait(2000)]); }
+    if (window.GymSPL && B) { spl = window.GymSPL.start($b('.bt-ptc'), A[1], s, F, VER, me); await Promise.race([spl.ready, wait(2000)]); }
     if (!B) { spl?.stop(); return; }
     spl?.go();
   }

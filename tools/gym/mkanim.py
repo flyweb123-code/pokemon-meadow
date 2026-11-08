@@ -166,5 +166,14 @@ for d in sorted(os.listdir(SRC)):
         out[k + '_c'] = a0 if a0 == a1 else [a0, a1]
         a0, a1 = run(L, lab, 0, True), run(L, lab, 1, True)
     out[k] = a0 if a0 == a1 else [a0, a1]
+# 공통 연출 (res/battle/scripts/common_anims): 파티클이 번호라 battle_particles.order 로 이름을 찾는다
+# _item = 지닌 도구 사용 (먹다남은음식·검은진흙·조개껍질방울 회복, v19.18 경완 '먹다남은음식 먹는 효과 본가 기준 맞아?')
+ORD = [l.strip()[:-4] for l in open(PL + '/res/graphics/battle/particles/battle_particles.order') if l.strip()]
+for k, f in {'_item': 'held_item_use'}.items():
+    L, lab = parse(PL + '/res/battle/scripts/common_anims/' + f + '.s')
+    a = run(L, lab, 0)
+    for e in a[1]:
+        if e[0] == 'p' and e[3].isdigit(): e[3] = ORD[int(e[3])]
+    out[k] = a
 json.dump(out, open('gymb/mvfx.json', 'w'), separators=(',', ':'))
 print(len(out), 'moves', os.path.getsize('gymb/mvfx.json'), 'bytes')
