@@ -7757,7 +7757,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '18.69';   /* v18.69 경완: 미니게임 중 필드 기술 소리도 안 남, 진화구슬 골드 더 (한 판 10분) */ /*   /* v18.68 경완: 미니게임 중엔 필드에서 늦게 예약된 효과음·울음소리도 안 남 */ /*   /* v18.67 경완: 진화구슬 그만하기 창에 다시 하기(기록 없이 새 판)·정렬, 기록창 '가장 큰 구슬' 칸 없앰, 랭킹 포켓몬 칸 정가운데 */ /*   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
+const APP_VER = '18.70';   /* v18.70 경완: 필드 기술 쓸 때 프레임 끊김 — 효과 그림을 칸마다 잘라 두고 그림 */   /* v18.69 경완: 미니게임 중 필드 기술 소리도 안 남, 진화구슬 골드 더 (한 판 10분) */ /*   /* v18.68 경완: 미니게임 중엔 필드에서 늦게 예약된 효과음·울음소리도 안 남 */ /*   /* v18.67 경완: 진화구슬 그만하기 창에 다시 하기(기록 없이 새 판)·정렬, 기록창 '가장 큰 구슬' 칸 없앰, 랭킹 포켓몬 칸 정가운데 */ /*   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -12916,7 +12916,7 @@ function pfxTick(ms) { pfxRaf = 0; const now = ms / 1000;
 function pfxAdd(host, delay, dur, draw) { const H = pfxHost(host); H.L.push({ t0: performance.now() / 1000 + delay, dur, draw }); if (!pfxRaf) pfxRaf = requestAnimationFrame(pfxTick); }
 // 한 장 그리기 (x,y 가운데). f<0 이면 왼쪽: 8방향 그림은 왼쪽 줄(6), 5방향·1줄은 좌우 뒤집기
 /* v18.51 경완 '처음에 이전 버전 기술 효과로 나감': pfx.json(1.4MB)이 다 오기 전에 쓰면 옛 효과로 빠지던 것 — 켜고 조금 뒤 미리 받고, 쓸 땐 받을 때까지 기다림 */
-setTimeout(() => pfxLoad()?.then(() => { if (PFX) for (const m of S.mons || []) for (const [n] of movesOf(m.sp, m.pid != null ? boxOf(m.pid) : null)) pfxSndPre(n); }), 4000);
+setTimeout(() => pfxLoad()?.then(() => { if (PFX) for (const m of S.mons || []) for (const [n] of movesOf(m.sp, m.pid != null ? boxOf(m.pid) : null)) pfxSndPre(n); if (PFX) pfxWarm((S.mons || []).flatMap(m => movesOf(m.sp, m.pid != null ? boxOf(m.pid) : null).map(x => x[0]))); }), 4000);
 const pfxReady = () => PFX ? Promise.resolve() : Promise.race([pfxLoad() || Promise.resolve(), new Promise(r => setTimeout(r, 8000))]);
 /* v18.51 경완 '효과음 타이밍': 기술 효과음도 PMD Origins 기술 데이터(Sound)대로 — 시전(pre)·쏠 때(act)·맞을 때(hit) 그 순간에. 소리 파일은 저장소에 안 올리고 PMDO 자료에서 받아 씀(울음소리처럼), ogg 못 트는 기기는 예전 효과음 */
 const PSND = new Map(), PSND_U = 'https://raw.githubusercontent.com/audinowho/DumpAsset/master/Content/Sound/Battle/';
@@ -12931,7 +12931,12 @@ function pfxDraw(g, k, fr, x, y, f, o = {}) { const S = PFX.s[k], im = PFX_IM[k]
   if (fl && f < 0) row = Math.min(rows - 1, row); const s = (o.s || 1) * Math.min(PFX_SC, 130 / Math.max(fw, fh)), w = fw * s, h = fh * s;   /* 큰 그림(방전 등)은 필드에서 130px 넘지 않게 */
   g.save(); g.translate(Math.round(x), Math.round(y)); if (o.rot) g.rotate(o.rot); if (mir) g.scale(-1, 1); if (o.a != null) g.globalAlpha = Math.max(0, Math.min(1, o.a));
   if (o.fire && S[6]) { const C = pfxCells(k, fr, row), oy = o.bot ? -h / 2 : 0, R = 6 * s * Math.min(1, 1.1 / Math.max(.5, s / PFX_SC)); for (const [cx, cy, , cv] of C) pfxDisc(g, cx * s, cy * s + oy, R * .6 + 1, R * .5 + 1, `rgba(255,110,30,${(.28 * cv).toFixed(2)})`); for (const [cx, cy, col, cv] of C) { const r = R * (.22 + .26 * cv) * (col === '#96402c' ? .7 : 1); pfxDisc(g, cx * s, cy * s + oy, r, r * .82, col); if (col === '#ffd040' || col === '#fff6c0') pfxDisc(g, cx * s + 1, cy * s + oy, r * .5, r * .4, col === '#fff6c0' ? '#ffffff' : '#fff6c0'); } g.restore(); return; }
-  g.drawImage(im, fr * fw, row * fh, fw, fh, -w / 2, o.bot ? -h : -h / 2, w, h); g.restore(); }
+  g.drawImage(pfxFr(k, fr, row) || im, 0, 0, fw, fh, -w / 2, o.bot ? -h : -h / 2, w, h); g.restore(); }
+/* v18.70 경완 '필드 기술 쓸 때 프레임 끊김': 효과 그림은 6000px 넘는 긴 띠라 아이폰에서 칸마다 큰 그림을 통째로 다뤄 끊김 → 칸 하나씩 작은 캔버스로 잘라 두고 그것만 그림. 필드 포켓몬 기술 그림은 켜고 나서 한가할 때 미리 잘라 둠 */
+const PFX_FR = new Map();
+function pfxFr(k, fr, row) { const key = k + '|' + row + '|' + fr; let c = PFX_FR.get(key); if (c) return c; const S = PFX.s[k], im = PFX_IM[k]; if (!S || !im?.complete) return null; const [fw, fh] = S; c = document.createElement('canvas'); c.width = fw; c.height = fh; c.getContext('2d').drawImage(im, fr * fw, row * fh, fw, fh, 0, 0, fw, fh); PFX_FR.set(key, c); return c; }
+function pfxWarm(names) { const Q = []; for (const n of names) for (const e of PFX?.r[n]?.e || []) { const k = e[1]; for (const kk of [k, k + '_B', k + '_H']) { const S = PFX.s[kk]; if (!S) continue; const rows = S[3] >= 8 ? [2, 6] : S[3] >= 5 ? [2] : [0]; for (const r of rows) for (let f = 0; f < S[2]; f++) Q.push([kk, f, r]); } }
+  const idle = window.requestIdleCallback || (cb => setTimeout(() => cb({ timeRemaining: () => 8 }), 60)); const step = d => { const t0 = performance.now(); while (Q.length && performance.now() - t0 < Math.min(8, d.timeRemaining())) { const [k, f, r] = Q.shift(); pfxFr(k, f, r); } if (Q.length) idle(step); }; if (Q.length) idle(step); }
 const pfxLen = (k, ft) => (PFX.s[k]?.[2] || 1) * ft / 60;
 // 한 번 돌고 끝나는 효과
 function pfxOnce(host, k, ft, delay, x, y, f, o) { const d = Math.max(.1, pfxLen(k, ft)); pfxAdd(host, delay, d, (g, t) => pfxDraw(g, k, t * 60 / ft, x, y, f, o)); return d; }
@@ -12987,7 +12992,7 @@ function useMove(m, i = 0, man = false) {
   const [name, t, dc] = L[Math.min(i, L.length - 1)];
   if (m.sp === 648 && m.form === m.sp && (name === '옛노래' || name === '하이퍼보이스') && man) return meloFlip(m, name === '옛노래'), true;   /* v16.81 경완: 메로엣타는 옛노래를 부르면 스텝폼, 스텝폼에서 하이퍼보이스를 누르면 보이스폼으로 */
   if (name === '옛노래') return false;
-  pfxReady().then(() => pfxSndPre(name)); m.mvBusy = true; m.mvName = name; setTimeout(() => { m.mvBusy = false; }, 2000); { const k0 = m.sk || m.form; if (SPRITES[k0] && !SPRITES[k0].mx && !SPRITES[k0].mxNo) loadMx(k0); }
+  pfxReady().then(() => { pfxSndPre(name); pfxWarm([name]); }); m.mvBusy = true; m.mvName = name; setTimeout(() => { m.mvBusy = false; }, 2000); { const k0 = m.sk || m.form; if (SPRITES[k0] && !SPRITES[k0].mx && !SPRITES[k0].mxNo) loadMx(k0); }
   if (isTop(m)) return legendMove(m, name, t, dc);   /* 상위 기술(화면 가득 연출)은 특별 1·2단계만. 3단계·기본은 일반 기술 */
   // 튀어오르기: 아무 효과 없이 제자리에서 몇 번 퐁퐁 튄다
   if (name === '튀어오르기') {
