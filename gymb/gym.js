@@ -2734,7 +2734,7 @@ async function awayPop() {
   const g = st(), A = g.aw; if (!A || !open) return; const SF = Object.entries(A.sf).map(([id, v]) => [g.sf.find(s => String(s.id) === id), v]).filter(x => x[0]).sort((a, b) => b[1][1] - a[1][1]), MV = A.mv.map(([id, mv, nm, ty]) => [S.box.find(P => P.id === id), mv, nm, ty]).filter(x => x[0]);
   g.aw = null; save();
   if (SF.length) await awSfPop(SF);
-  for (let i = 0; i < MV.length && open; i++) await awMvPop(MV[i], i, MV.length, new Set(MV.slice(i + 1).filter(x => x[0] === MV[i][0]).map(x => x[1])));
+  for (let i = 0; i < MV.length && open; i++) await awMvPop(MV[i], i, MV.length);
 }
 const awR = n => `${n < 0 ? '' : '+'}${Math.round(n * 10) / 10}`;
 /* 트레이너 알림창: 위 띠(트레이너들이 줄지어 섬) → 합계 큰 숫자 → 트레이너별 줄 */
@@ -2748,18 +2748,7 @@ function awSfPop(SF) {
     <div class="gy-btns one"><button class="main" data-a="x">확인</button></div></div>`, (a, close) => { close(); ok(); }).classList.add('aw-wrap'));
 }
 /* 기술 알림창: 포켓몬 그림 + 반짝임 → 배틀 기술 카드 모양 (타입 색) */
-/* v19.53 경완 '특별한 기술 새로 배운 기술 창에 처음에는 실루엣 박스로 가려져 있고 배울 때마다 하나씩 오픈': 알 기술 4칸.
-   익힌 것(mv·kn)은 열림, 이번 것은 실루엣에서 열리는 연출, 뒤에 이어 뜰 것(later)은 아직 가림. 4번째는 레어 칸 */
-function awEggs(P, mv, later) {
-  const E = GB()?.EGG?.[P.sp]; if (!E || !E.includes(mv)) return ''; const m = GB().gm(P), kn = new Set([...(m.mv || []), ...(m.kn || [])]);
-  const cell = (id, k) => { const x = id && GB().mvOf(id), rare = k === 3 ? ' rare' : ''; if (!x) return '';
-    const on = id === mv ? ' new' : kn.has(id) && !later.has(id) ? ' on' : '';
-    const face = `<span class="eg-f" style="background-image:url(${IMG}bt/mv_${x[2] || 1}.png)"><b>${esc(x[1])}</b></span>`;
-    return `<li class="eg-c${rare}${on}">${on ? face : ''}${on !== ' on' ? '<i class="eg-cv"><em>?</em></i>' : ''}${rare ? '<small>레어</small>' : ''}</li>`; };
-  const got = E.filter(id => id && (id === mv || (kn.has(id) && !later.has(id)))).length, tot = E.filter(id => id && GB().mvOf(id)).length;
-  return `<div class="aw-egg"><p>알 기술 <b>${got}</b> / ${tot}</p><ul>${E.map(cell).join('')}</ul></div>`;
-}
-function awMvPop([P, mv, nm, ty], i, n, later = new Set()) {
+function awMvPop([P, mv, nm, ty], i, n) {
   const d = GB()?.D?.mv?.find(x => x[0] === mv), t = d ? d[2] : ty, cat = d ? d[3] : 0, pw = d && d[4] ? d[4] : '-', pn = P.nm || SPECIES[P.sp]?.n || '???';
   try { window.GymBGM?.se?.('ME_WAZA'); } catch (e) {} try { GA.sfx('newdex'); } catch (e) { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e2) {} } GA.haptic?.(1);
   return new Promise(ok => { const p = pop(`<div class="aw-pop aw-mvp">
@@ -2767,9 +2756,8 @@ function awMvPop([P, mv, nm, ty], i, n, later = new Set()) {
     <div class="aw-mon"><i class="aw-rays"></i><img alt="" data-awp="${P.id}"><i class="aw-st s1"></i><i class="aw-st s2"></i><i class="aw-st s3"></i></div>
     <p class="aw-say"><b>${esc(pn)}</b>${jong(pn) ? '은' : '는'}<br><b class="aw-mvn">${esc(nm)}</b>${jong(nm) ? '을' : '를'} 익혔다!</p>
     ${GB()?.mvBoxHtml?.(mv) || `<div class="aw-card" style="background-image:url(${IMG}bt/mv_${t || 1}.png)"><b>${esc(nm)}</b><span><i class="aw-ty">${tyIc0(t || 1)}${TYPE_KO[t || 1] || ''}</i><img alt="" src="${IMG}bt/cat_${cat}.png"><em>위력 ${pw}</em></span></div>`}
-    ${awEggs(P, mv, later)}<p class="aw-tip">기술 바꾸기에서 쓸 수 있어요</p>
+    <p class="aw-tip">기술 바꾸기에서 쓸 수 있어요</p>
     <div class="gy-btns one"><button class="main" data-a="x">${i + 1 < n ? '다음' : '확인'}</button></div></div>`, (a, close) => { close(); ok(); }); p.classList.add('aw-wrap');
-    if (p.querySelector('.eg-c.new')) setTimeout(() => { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} GA.haptic?.(1); }, 1150);
     p.querySelectorAll('[data-awp]').forEach(im => GA.thumb(P).then(u => { if (u) im.src = u; }).catch(() => {})); });
 }
 // 들어온 뒤: 지난주 보고서 → 새 배지 → 면접 지원자 알림 (하나씩)
