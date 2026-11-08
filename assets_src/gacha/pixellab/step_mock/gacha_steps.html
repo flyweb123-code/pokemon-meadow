@@ -122,8 +122,8 @@ const quake=ms=>{st.classList.add('quake');setTimeout(()=>st.classList.remove('q
 /* one step per grade above 일반: the machine flashes in that grade's colour and shakes harder */
 const STEP=[,{c:'#ffffff',n:'일반'},{c:'#ffb050',n:'우수'},{c:'#5aa8ff',n:'레어'},{c:'#b27aff',n:'에픽'},{c:'#ffd84a',n:'전설'}];
 const AMP=[.35,.6,.95,1.35,1.85];
-/* each step stays longer than the last: 우수 .7s, 레어 1s, 에픽 1.35s, 전설 1.75s */
-const HOLD_MS=[700,1000,1350,1750];
+/* each step stays longer than the last, and no middle step flashes by: 우수 1.1s, 레어 1.5s, 에픽 1.8s, 전설 2.1s */
+const HOLD_MS=[1100,1500,1800,2100];
 /* vibration grows with the step; phones that refuse it simply stay silent */
 const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 const BUZZ=[,[30],[40,40,40],[60,40,60,40,60],[90,40,90,40,90,40,160]];
