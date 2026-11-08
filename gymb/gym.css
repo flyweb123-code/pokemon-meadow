@@ -3322,3 +3322,23 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .hof-gu{position:absolute;z-index:3;bottom:6px;left:calc(50% + 62px);width:96px;height:96px;background:0 0/auto 96px no-repeat;image-rendering:pixelated;filter:drop-shadow(0 0 10px rgba(255,240,190,.55));animation:hofInB 1.1s cubic-bezier(.2,.9,.25,1) .5s both;transition:scale .6s cubic-bezier(.2,1.3,.4,1),filter .6s,translate .6s}
 #gym .hof.hGu .hof-gu{scale:1.35;translate:-40px 0;filter:drop-shadow(0 0 18px rgba(255,236,150,.95)) brightness(1.08);z-index:4}
 #gym .hof.hGu .hof-tr,#gym .hof.hGu .hof-mini{filter:brightness(.6);transition:filter .6s}
+
+/* v19.53 알 기술 4칸: 실루엣 → 배울 때마다 하나씩 열림 */
+#gym .aw-egg{margin:2px 14px 0;display:flex;flex-direction:column;gap:5px}
+#gym .aw-egg p{margin:0;font-size:11px;color:#707080;text-align:center}#gym .aw-egg p b{color:#7a3a8a}
+#gym .aw-egg ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+#gym .eg-c{position:relative;height:38px;border-radius:6px;overflow:visible}
+#gym .eg-f{position:absolute;inset:0;display:grid;place-items:center;background-size:100% 100%;image-rendering:pixelated;border-radius:6px;padding:0 3px;color:#fff;text-shadow:1px 1px 0 rgba(0,0,0,.6)}
+#gym .eg-f b{font-size:10.5px;line-height:1.1;text-align:center;word-break:keep-all}
+#gym .eg-cv{position:absolute;inset:0;display:grid;place-items:center;border-radius:6px;background:repeating-linear-gradient(135deg,#34303e 0 6px,#2c2836 6px 12px);box-shadow:inset 0 0 0 2px #4a4558,inset 0 -3px 0 rgba(0,0,0,.3)}
+#gym .eg-cv em{font-style:normal;font-weight:700;font-size:16px;color:#6e6880;text-shadow:1px 1px 0 #1c1a24}
+#gym .eg-c.rare .eg-cv{box-shadow:inset 0 0 0 2px #b8902c,inset 0 -3px 0 rgba(0,0,0,.3)}#gym .eg-c.rare .eg-cv em{color:#c9a23c}
+#gym .eg-c.rare.on .eg-f,#gym .eg-c.rare.new .eg-f{box-shadow:0 0 0 2px #f0c040}
+#gym .eg-c small{position:absolute;top:-6px;right:-3px;z-index:2;font-size:8.5px;line-height:1;padding:2px 4px;border-radius:6px;background:#f0c040;color:#5a3a00;font-weight:700}
+#gym .eg-c.new .eg-f{animation:egIn .5s 1.15s both cubic-bezier(.2,1.6,.4,1)}
+#gym .eg-c.new .eg-cv{animation:egShk .7s .45s both,egOut .3s 1.15s forwards}
+#gym .eg-c.new::after{content:"";position:absolute;inset:-6px;border-radius:10px;pointer-events:none;background:radial-gradient(circle,rgba(255,255,255,.95),rgba(255,240,160,.5) 45%,transparent 70%);opacity:0;animation:egFl .6s 1.1s ease-out}
+@keyframes egShk{0%,100%{transform:none}15%{transform:translateX(-2px) rotate(-3deg)}30%{transform:translateX(2px) rotate(3deg)}45%{transform:translateX(-2px) rotate(-2deg)}60%{transform:translateX(2px) rotate(2deg)}80%{transform:scale(1.06)}}
+@keyframes egOut{to{opacity:0;transform:scale(1.25)}}
+@keyframes egIn{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+@keyframes egFl{0%{opacity:0;transform:scale(.6)}35%{opacity:1}100%{opacity:0;transform:scale(1.3)}}
